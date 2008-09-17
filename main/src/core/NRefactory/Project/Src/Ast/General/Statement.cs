@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version>$Revision: 1965 $</version>
+//     <version>$Revision: 2191 $</version>
 // </file>
 
 using System;
@@ -11,7 +11,7 @@ namespace ICSharpCode.NRefactory.Ast
 {
 	public abstract class Statement : AbstractNode, INullable
 	{
-		public static NullStatement Null {
+		public static Statement Null {
 			get {
 				return NullStatement.Instance;
 			}
@@ -45,20 +45,12 @@ namespace ICSharpCode.NRefactory.Ast
 		}
 	}
 	
-	public class NullStatement : Statement
+	internal sealed class NullStatement : Statement
 	{
-		static NullStatement nullStatement = new NullStatement();
+		public static readonly NullStatement Instance = new NullStatement();
 		
 		public override bool IsNull {
 			get { return true; }
-		}
-		
-		public static NullStatement Instance {
-			get { return nullStatement; }
-		}
-		
-		NullStatement()
-		{
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data)

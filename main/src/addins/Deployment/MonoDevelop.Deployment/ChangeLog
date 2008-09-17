@@ -1,8 +1,43 @@
+2008-09-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Deployment.addin.xml: Add icon for Create Package
+	  command.
+	* MonoDevelop.Deployment/DefaultDeployServiceExtension.cs: Fix bug
+	  #422764 - Support "App.config" as well as "app.config" (lowercase)
+
+2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui/MonoDevelop.Deployment.Gui.InstallDialog.cs,
+	  gtk-gui/MonoDevelop.Deployment.Gui.EntrySelectionTree.cs,
+	  gtk-gui/MonoDevelop.Deployment.Gui.LocalFileCopyConfigurationEditorWidget.cs,
+	  gtk-gui/MonoDevelop.Deployment.Gui.BinariesZipEditorWidget.cs,
+	  gtk-gui/objects.xml,
+	  gtk-gui/MonoDevelop.Deployment.Gui.FileCopyConfigurationSelector.cs,
+	  gtk-gui/MonoDevelop.Deployment.Gui.PackagingFeatureWidget.cs,
+	  gtk-gui/MonoDevelop.Deployment.Gui.CommandDeployEditorWidget.cs,
+	  gtk-gui/generated.cs,
+	  gtk-gui/MonoDevelop.Deployment.FileReplaceDialog.cs,
+	  gtk-gui/MonoDevelop.Deployment.DeployFileListWidget.cs,
+	  gtk-gui/MonoDevelop.Deployment.Gui.SshFuseFileCopyConfigurationEditorWidget.cs,
+	  gtk-gui/MonoDevelop.Deployment.Gui.SourcesZipEditorWidget.cs,
+	  MonoDevelop.Deployment.Gui/SourcesZipEditorWidget.cs,
+	  MonoDevelop.Deployment.Gui/EntrySelectionTree.cs,
+	  MonoDevelop.Deployment.Gui/BinariesZipEditorWidget.cs,
+	  MonoDevelop.Deployment.Gui/DeployFileListWidget.cs,
+	  MonoDevelop.Deployment.Gui/FileCopyConfigurationSelector.cs,
+	  MonoDevelop.Deployment.Gui/PackagingFeatureWidget.cs: Updated
+	  generated code.
+
 2008-09-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Deployment.NodeBuilders/PackagingProjectNodeBuilder.cs,
 	  MonoDevelop.Deployment.NodeBuilders/PackageNodeBuilder.cs: Moved
 	  the extensible tree view to its own directory.
+
+2008-07-29  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Deployment.mdp: Removed some parts of the documentation
+	  service.
 
 2008-07-21  Lluis Sanchez Gual <lluis@novell.com> 
 

@@ -2,16 +2,16 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
-//     <version>$Revision: 1009 $</version>
+//     <version>$Revision: 1899 $</version>
 // </file>
 
 using System;
 using System.IO;
 using NUnit.Framework;
 using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.AST;
+using ICSharpCode.NRefactory.Ast;
 
-namespace ICSharpCode.NRefactory.Tests.AST
+namespace ICSharpCode.NRefactory.Tests.Ast
 {
 	[TestFixture]
 	public class AnonymousMethodTests
@@ -27,6 +27,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			AnonymousMethodExpression ame = Parse("delegate {}");
 			Assert.AreEqual(0, ame.Parameters.Count);
 			Assert.AreEqual(0, ame.Body.Children.Count);
+			Assert.IsFalse(ame.HasParameterList);
 		}
 		
 		[Test]
@@ -45,6 +46,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			AnonymousMethodExpression ame = Parse("delegate() {}");
 			Assert.AreEqual(0, ame.Parameters.Count);
 			Assert.AreEqual(0, ame.Body.Children.Count);
+			Assert.IsTrue(ame.HasParameterList);
 		}
 		
 		[Test]

@@ -8,6 +8,7 @@ FILES =  \
 	MonoDevelop.Core.AddIns/ExecutionModeNode.cs \
 	MonoDevelop.Core.AddIns/PackageExtensionNode.cs \
 	MonoDevelop.Core.AddIns/ServiceExtensionNode.cs \
+	MonoDevelop.Core.Collections/ReadOnlyDictionary.cs \
 	MonoDevelop.Core.Collections/Set.cs \
 	MonoDevelop.Core.Execution/AddinDependencyAttribute.cs \
 	MonoDevelop.Core.Execution/BreakpointEventHandler.cs \

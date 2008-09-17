@@ -16,51 +16,35 @@ using Mono.CSharp;
 
 namespace MonoDevelop.VBNetBinding
 {
-	public class DomParser : IParser
+	public class DomParser : AbstractParser
 	{
-		public bool CanParseMimeType (string mimeType)
+		public DomParser () : base ("VB.NET", "text/x-vb")
 		{
-			return "text/x-vb" == mimeType;
 		}
 		
-		public bool CanParseProjectType (string projectType)
-		{
-			return "VB.NET" == projectType;
-		}
-		
-		public bool CanParse (string fileName)
+		public override bool CanParse (string fileName)
 		{
 			return Path.GetExtension (fileName) == ".vb";
 		}
 		
-		public IExpressionFinder CreateExpressionFinder ()
-		{
-			return null;
-		}
-		
-		public IDocumentMetaInformation CreateMetaInformation (Stream stream)
-		{
-			return null;
-		}
-				
-
-		public ICompilationUnit Parse (string fileName, string content)
+		public override ParsedDocument Parse (string fileName, string content)
 		{
 			using (ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (ICSharpCode.NRefactory.SupportedLanguage.VBNet, new StringReader(content))) {
 				return Parse (parser, fileName);
 			}
 		}
 		
-		ICompilationUnit Parse (ICSharpCode.NRefactory.IParser parser, string fileName)
+		ParsedDocument Parse (ICSharpCode.NRefactory.IParser parser, string fileName)
 		{
 			parser.Parse();
 			
 			DomConverter visitor = new DomConverter (fileName);
-			ICompilationUnit result = (ICompilationUnit)visitor.VisitCompilationUnit(parser.CompilationUnit, null);
+			ParsedDocument result = new ParsedDocument ();
+			result.CompilationUnit = (ICompilationUnit)visitor.VisitCompilationUnit(parser.CompilationUnit, null);
 /*			visitor.Cu.ErrorsDuringCompile = p.Errors.Count > 0;
 			visitor.Cu.Tag = p.CompilationUnit;
 			RetrieveRegions(visitor.Cu, p.Lexer.SpecialTracker);
-			foreach (IClass c in visitor.Cu.Classes)
+			foreach (IType c in visitor.Cu.Classes)
 				c.Region.FileName = fileName;
 			AddCommentTags(visitor.Cu, p.Lexer.TagComments);*/
 			return result;
@@ -180,7 +164,7 @@ namespace MonoDevelop.VBNetBinding
 				
 				type.Add (new DomMethod (methodDeclaration.Name,
 				                         (Modifiers)methodDeclaration.Modifier,
-				                         false, // isConstructor
+				                         MethodModifier.None,
 				                         new DomLocation (methodDeclaration.StartLocation.Line, methodDeclaration.StartLocation.Column),
 				                         methodDeclaration.Body != null ? TranslateRegion (methodDeclaration.Body.StartLocation, methodDeclaration.Body.EndLocation) : DomRegion.Empty));
 				return null;
@@ -193,7 +177,7 @@ namespace MonoDevelop.VBNetBinding
 				
 				type.Add (new DomMethod (constructorDeclaration.Name,
 				                         (Modifiers)constructorDeclaration.Modifier,
-				                         true, // isConstructor
+				                         MethodModifier.IsConstructor,
 				                         new DomLocation (constructorDeclaration.StartLocation.Line, constructorDeclaration.StartLocation.Column),
 				                         constructorDeclaration.Body != null ? TranslateRegion (constructorDeclaration.Body.StartLocation, constructorDeclaration.Body.EndLocation) : DomRegion.Empty));
 				return null;

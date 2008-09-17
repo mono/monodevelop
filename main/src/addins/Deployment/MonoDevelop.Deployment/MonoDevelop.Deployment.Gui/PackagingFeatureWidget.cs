@@ -7,6 +7,8 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.Deployment.Gui
 {
+	[System.ComponentModel.Category("MonoDevelop.Deployment")]
+	[System.ComponentModel.ToolboxItem(true)]
 	internal partial class PackagingFeatureWidget : Gtk.Bin
 	{
 		SolutionItem entry;

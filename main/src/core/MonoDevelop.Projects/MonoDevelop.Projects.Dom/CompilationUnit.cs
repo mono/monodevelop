@@ -35,13 +35,15 @@ namespace MonoDevelop.Projects.Dom
 	public class CompilationUnit : ICompilationUnit
 	{
 		string fileName;
+		public string FileName {
+			get {
+				return fileName;
+			}
+		}
 		
 		List<IUsing>     usings         = new List<IUsing> ();
 		List<IAttribute> attributes     = new List<IAttribute> ();
 		List<IType>      types          = new List<IType> ();
-		List<Comment>    comments       = new List<Comment> ();
-		List<DomRegion>  foldingRegions = new List<DomRegion> ();
-		List<Error>      errors         = new List<Error> ();
 		
 		public CompilationUnit (string fileName)
 		{
@@ -49,12 +51,6 @@ namespace MonoDevelop.Projects.Dom
 		}
 		
 		#region ICompilationUnit
-		string ICompilationUnit.FileName {
-			get {
-				return fileName;
-			}
-		}
-		
 		public ReadOnlyCollection<IUsing> Usings {
 			get {
 				return usings.AsReadOnly ();
@@ -66,11 +62,6 @@ namespace MonoDevelop.Projects.Dom
 				return attributes;
 			}
 		}
-		public int TypeCount {
-			get {
-				return types.Count;
-			}
-		}
 		
 		public ReadOnlyCollection<IType> Types {
 			get {
@@ -78,23 +69,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public IEnumerable<Comment> Comments {
-			get {
-				return comments;
-			}
-		}
 		
-		public IEnumerable<DomRegion> FoldingRegions {
-			get {
-				return foldingRegions;
-			}
-		}
-		
-		public ReadOnlyCollection<Error> Errors {
-			get {
-				return errors.AsReadOnly ();
-			}
-		}
 		
 		object IDomVisitable.AcceptVisitior (IDomVisitor visitor, object data)
 		{
@@ -128,23 +103,10 @@ namespace MonoDevelop.Projects.Dom
 		
 		public void Add (IType newType)
 		{
+			newType.CompilationUnit = this;
 			types.Add (newType);
 		}
 		
-		public void Add (Comment comment)
-		{
-			comments.Add (comment);
-		}
-		
-		public void Add (DomRegion domRegion)
-		{
-			foldingRegions.Add (domRegion);
-		}
-		
-		public void Add (Error error)
-		{
-			errors.Add (error);
-		}
 		
 		public void GetNamespaceContents (List<IMember> list, string subNamespace, bool caseSensitive)
 		{

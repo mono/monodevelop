@@ -2,11 +2,12 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version>$Revision: 2198 $</version>
+//     <version>$Revision: 2654 $</version>
 // </file>
 
 using System;
 using ICSharpCode.NRefactory.Parser;
+using ICSharpCode.NRefactory.Ast;
 
 namespace ICSharpCode.NRefactory.PrettyPrinter
 {
@@ -15,9 +16,8 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 	/// </summary>
 	public interface IOutputAstVisitor : IAstVisitor
 	{
-		NodeTracker NodeTracker {
-			get;
-		}
+		event Action<INode> BeforeNodeVisit;
+		event Action<INode> AfterNodeVisit;
 		
 		string Text {
 			get;
@@ -42,6 +42,10 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		}
 		string Text {
 			get;
+		}
+		bool IsInMemberBody {
+			get;
+			set;
 		}
 		void NewLine();
 		void Indent();

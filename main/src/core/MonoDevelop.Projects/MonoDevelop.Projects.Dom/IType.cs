@@ -50,6 +50,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		ICompilationUnit CompilationUnit {
 			get;
+			set;
 		}
 		
 		ClassType ClassType {
@@ -133,5 +134,12 @@ namespace MonoDevelop.Projects.Dom
 		
 		bool HasOverriden (IMember member);
 		bool IsBaseType (IReturnType type);
+
+		//// <value>
+		/// MonoDoc Xml documentation.
+		/// </value>
+		System.Xml.XmlDocument HelpXml {
+			get;
+		}
 	}
 }

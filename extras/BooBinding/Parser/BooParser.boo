@@ -22,7 +22,7 @@
 // along with BooBinding; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #endregion
-
+/*
 namespace BooBinding.Parser
 
 import System
@@ -31,7 +31,8 @@ import System.Diagnostics
 import System.IO
 import MonoDevelop.Core
 import MonoDevelop.Projects
-import MonoDevelop.Projects.Parser
+import MonoDevelop.Projects.Dom
+import MonoDevelop.Projects.Dom.Parser
 import MonoDevelop.Ide.Gui
 import Boo.Lang.Compiler
 import Boo.Lang.Compiler.IO
@@ -181,3 +182,4 @@ class BooParser(IParser):
 	
 	static def Error (type, message):
 		MonoDevelop.Core.LoggingService.LogError (type.ToString () + message)
+*/

@@ -1,3 +1,28 @@
+2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* NRefactory.mdp: Updated.
+
+2008-09-10  Mike Krüger <mkrueger@novell.com> 
+
+	* Project/Src/Lexer/CSharp/Lexer.cs: fixing comment bug.
+
+2008-09-04  Mike Krüger <mkrueger@novell.com> 
+
+	* Project/Src/Lexer/CSharp/Lexer.cs: fix for comment begin line.
+
+2008-09-04  Mike Krüger <mkrueger@novell.com> 
+
+	* Project/Src/Lexer/CSharp/Lexer.cs: Fixed comment start line.
+
+2008-07-28  Mike Krüger <mkrueger@novell.com> 
+
+	* Project/Src/Lexer/CSharp/Lexer.cs,
+	  Project/Src/Lexer/Special/SpecialTracker.cs,
+	  Project/Src/Lexer/Special/TagComment.cs,
+	  Project/Src/Lexer/Special/Comment.cs,
+	  Project/Src/Lexer/VBNet/Lexer.cs: Applied some custom nrefactory
+	  changes.
+
 2008-07-13  Mike Krüger <mkrueger@novell.com> 
 
 	* Project/Src/Lexer/CSharp/Tokens.cs: Backported some nrefactory

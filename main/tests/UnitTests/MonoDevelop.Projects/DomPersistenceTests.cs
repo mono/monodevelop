@@ -27,9 +27,11 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using NUnit.Framework;
 using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Serialization;
 
 namespace MonoDevelop.Projects.DomTests
 {
@@ -148,8 +150,8 @@ namespace MonoDevelop.Projects.DomTests
 		{
 			DomMethod input = new DomMethod ();
 			input.Name      = "Test";
-			input.IsConstructor = true;
-			input.Add (new DomParameter ("par1", DomReturnType.Void));
+			input.MethodModifier = MethodModifier.IsConstructor;
+			input.Add (new DomParameter (input, "par1", DomReturnType.Void));
 			
 			MemoryStream ms = new MemoryStream ();
 			BinaryWriter writer = new BinaryWriter (ms);
@@ -160,7 +162,22 @@ namespace MonoDevelop.Projects.DomTests
 			Assert.AreEqual ("Test", result.Name);
 			Assert.AreEqual (true, result.IsConstructor);
 			Assert.AreEqual ("par1", result.Parameters [0].Name);
-			Assert.AreEqual (null, result.Parameters [0].ReturnType.Name);
+			Assert.AreEqual ("Void", result.Parameters [0].ReturnType.Name);
+		}
+		
+		[Test()]
+		public void ReadWriteDelegateTest ()
+		{
+			DomType input = DomType.CreateDelegate (null, "TestDelegate", new DomLocation (10, 10), DomReturnType.Void, new List<IParameter> ());
+			
+			MemoryStream ms = new MemoryStream ();
+			BinaryWriter writer = new BinaryWriter (ms);
+			DomPersistence.Write (writer, DefaultNameEncoder, input);
+			byte[] bytes = ms.ToArray ();
+			
+			DomType result = DomPersistence.ReadType (CreateReader (bytes), DefaultNameDecoder);
+			Assert.AreEqual ("TestDelegate", result.Name);
+			Assert.AreEqual (ClassType.Delegate, result.ClassType);
 		}
 		
 		[Test()]
@@ -168,9 +185,7 @@ namespace MonoDevelop.Projects.DomTests
 		{
 			DomProperty input = new DomProperty ();
 			input.Name      = "Test";
-			input.IsIndexer = true;
-			input.GetMethod = new DomMethod ("Getter", Modifiers.New, false, DomLocation.Empty, DomRegion.Empty);
-			input.SetMethod = new DomMethod ("Setter", Modifiers.New, false, DomLocation.Empty, DomRegion.Empty);
+			input.PropertyModifier = PropertyModifier.IsIndexer | PropertyModifier.HasGet | PropertyModifier.HasSet;
 			
 			MemoryStream ms = new MemoryStream ();
 			BinaryWriter writer = new BinaryWriter (ms);
@@ -181,9 +196,7 @@ namespace MonoDevelop.Projects.DomTests
 			Assert.AreEqual ("Test", result.Name);
 			Assert.AreEqual (true, result.IsIndexer);
 			Assert.AreEqual (true, result.HasGet);
-			Assert.AreEqual ("Getter", result.GetMethod.Name);
 			Assert.AreEqual (true, result.HasSet);
-			Assert.AreEqual ("Setter", result.SetMethod.Name);
 		}
 		
 		[Test()]
@@ -191,9 +204,9 @@ namespace MonoDevelop.Projects.DomTests
 		{
 			DomEvent input     = new DomEvent ();
 			input.Name         = "Test";
-			input.AddMethod    = new DomMethod ("AddMethod", Modifiers.New, false, DomLocation.Empty, DomRegion.Empty);
-			input.RemoveMethod = new DomMethod ("RemoveMethod", Modifiers.New, false, DomLocation.Empty, DomRegion.Empty);
-			input.RaiseMethod  = new DomMethod ("RaiseMethod", Modifiers.New, false, DomLocation.Empty, DomRegion.Empty);
+			input.AddMethod    = new DomMethod ("AddMethod", Modifiers.New, MethodModifier.None, DomLocation.Empty, DomRegion.Empty);
+			input.RemoveMethod = new DomMethod ("RemoveMethod", Modifiers.New, MethodModifier.None, DomLocation.Empty, DomRegion.Empty);
+			input.RaiseMethod  = new DomMethod ("RaiseMethod", Modifiers.New, MethodModifier.None, DomLocation.Empty, DomRegion.Empty);
 			
 			MemoryStream ms = new MemoryStream ();
 			BinaryWriter writer = new BinaryWriter (ms);
@@ -237,8 +250,8 @@ namespace MonoDevelop.Projects.DomTests
 			input.AddInterfaceImplementation (new DomReturnType ("Interface1"));
 			input.AddInterfaceImplementation (new DomReturnType ("Interface2"));
 			
-			input.Add (new DomMethod ("TestMethod", Modifiers.None, false, DomLocation.Empty, DomRegion.Empty));
-			input.Add (new DomMethod (".ctor", Modifiers.None, true, DomLocation.Empty, DomRegion.Empty));
+			input.Add (new DomMethod ("TestMethod", Modifiers.None, MethodModifier.None, DomLocation.Empty, DomRegion.Empty));
+			input.Add (new DomMethod (".ctor", Modifiers.None, MethodModifier.IsConstructor, DomLocation.Empty, DomRegion.Empty));
 			
 			input.Add (new DomField ("TestField", Modifiers.None, DomLocation.Empty, DomReturnType.Void));
 			input.Add (new DomProperty ("TestProperty", Modifiers.None, DomLocation.Empty, DomRegion.Empty, DomReturnType.Void));

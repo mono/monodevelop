@@ -132,12 +132,15 @@ namespace MonoDevelop.Components.Docking
 		
 		protected override void ForAll (bool include_internals, Gtk.Callback callback)
 		{
+			List<Widget> widgets = new List<Widget> ();
 			foreach (Widget w in notebooks)
-				callback (w);
+				widgets.Add (w);
 			foreach (DockItem it in items) {
 				if (it.HasWidget && it.Widget.Parent == this)
-					callback (it.Widget);
+					widgets.Add (it.Widget);
 			}
+			foreach (Widget w in widgets)
+				callback (w);
 		}
 		
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)

@@ -2,16 +2,16 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version>$Revision: 915 $</version>
+//     <version>$Revision: 2676 $</version>
 // </file>
 
 using System;
 using System.IO;
 using NUnit.Framework;
 using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.AST;
+using ICSharpCode.NRefactory.Ast;
 
-namespace ICSharpCode.NRefactory.Tests.AST
+namespace ICSharpCode.NRefactory.Tests.Ast
 {
 	[TestFixture]
 	public class InvocationExpressionTests
@@ -27,9 +27,21 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		{
 			Assert.AreEqual(1, expr.Arguments.Count);
 			Assert.IsTrue(expr.TargetObject is IdentifierExpression);
-			Assert.AreEqual("myMethod", ((IdentifierExpression)expr.TargetObject).Identifier);
-			Assert.AreEqual(1, expr.TypeArguments.Count);
-			Assert.AreEqual("System.Char", expr.TypeArguments[0].SystemType);
+			IdentifierExpression ident = (IdentifierExpression)expr.TargetObject;
+			Assert.AreEqual("myMethod", ident.Identifier);
+			Assert.AreEqual(1, ident.TypeArguments.Count);
+			Assert.AreEqual("System.Char", ident.TypeArguments[0].SystemType);
+		}
+		
+		void CheckGenericInvoke2(InvocationExpression expr)
+		{
+			Assert.AreEqual(0, expr.Arguments.Count);
+			Assert.IsTrue(expr.TargetObject is IdentifierExpression);
+			IdentifierExpression ident = (IdentifierExpression)expr.TargetObject;
+			Assert.AreEqual("myMethod", ident.Identifier);
+			Assert.AreEqual(2, ident.TypeArguments.Count);
+			Assert.AreEqual("T", ident.TypeArguments[0].SystemType);
+			Assert.AreEqual("System.Boolean", ident.TypeArguments[1].SystemType);
 		}
 		
 		
@@ -44,6 +56,35 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		public void CSharpGenericInvocationExpressionTest()
 		{
 			CheckGenericInvoke(ParseUtilCSharp.ParseExpression<InvocationExpression>("myMethod<char>('a')"));
+		}
+		
+		[Test]
+		public void CSharpGenericInvocation2ExpressionTest()
+		{
+			CheckGenericInvoke2(ParseUtilCSharp.ParseExpression<InvocationExpression>("myMethod<T,bool>()"));
+		}
+		
+		[Test]
+		public void CSharpAmbiguousGrammarGenericMethodCall()
+		{
+			InvocationExpression ie = ParseUtilCSharp.ParseExpression<InvocationExpression>("F(G<A,B>(7))");
+			Assert.IsTrue(ie.TargetObject is IdentifierExpression);
+			Assert.AreEqual(1, ie.Arguments.Count);
+			ie = (InvocationExpression)ie.Arguments[0];
+			Assert.AreEqual(1, ie.Arguments.Count);
+			Assert.IsTrue(ie.Arguments[0] is PrimitiveExpression);
+			IdentifierExpression ident = (IdentifierExpression)ie.TargetObject;
+			Assert.AreEqual("G", ident.Identifier);
+			Assert.AreEqual(2, ident.TypeArguments.Count);
+		}
+		
+		[Test]
+		public void CSharpAmbiguousGrammarNotAGenericMethodCall()
+		{
+			BinaryOperatorExpression boe = ParseUtilCSharp.ParseExpression<BinaryOperatorExpression>("F<A>+y");
+			Assert.AreEqual(BinaryOperatorType.GreaterThan, boe.Op);
+			Assert.IsTrue(boe.Left is BinaryOperatorExpression);
+			Assert.IsTrue(boe.Right is UnaryOperatorExpression);
 		}
 		
 		[Test]
@@ -73,6 +114,12 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		public void VBNetGenericInvocationExpressionTest()
 		{
 			CheckGenericInvoke(ParseUtilVBNet.ParseExpression<InvocationExpression>("myMethod(Of Char)(\"a\"c)"));
+		}
+		
+		[Test]
+		public void VBNetGenericInvocation2ExpressionTest()
+		{
+			CheckGenericInvoke2(ParseUtilVBNet.ParseExpression<InvocationExpression>("myMethod(Of T, Boolean)()"));
 		}
 		
 		[Test]

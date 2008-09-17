@@ -2,14 +2,14 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
-//     <version>$Revision: 1014 $</version>
+//     <version>$Revision: 3125 $</version>
 // </file>
 
 using System;
 using System.IO;
 using NUnit.Framework;
 using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.AST;
+using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.PrettyPrinter;
 
 namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
@@ -23,7 +23,8 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			parser.Parse();
 			Assert.AreEqual("", parser.Errors.ErrorOutput);
 			VBNetOutputVisitor outputVisitor = new VBNetOutputVisitor();
-			outputVisitor.Visit(parser.CompilationUnit, null);
+			outputVisitor.Options.OutputByValModifier = true;
+			outputVisitor.VisitCompilationUnit(parser.CompilationUnit, null);
 			Assert.AreEqual("", outputVisitor.Errors.ErrorOutput);
 			Assert.AreEqual(StripWhitespace(program), StripWhitespace(outputVisitor.Text));
 		}
@@ -79,6 +80,12 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		}
 		
 		[Test]
+		public void MustInheritClass()
+		{
+			TestProgram("Public MustInherit Class Foo\nEnd Class");
+		}
+		
+		[Test]
 		public void GenericClassDefinition()
 		{
 			TestProgram("Public Class Foo(Of T As {IDisposable, ICloneable})\nEnd Class");
@@ -106,6 +113,14 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		public void ArrayInitialization()
 		{
 			TestStatement("Dim a As Object() = New Object(10) {}");
+			TestTypeMember("Private MultiDim As Integer(,) = {{1, 2}, {1, 3}}");
+			TestExpression("New Integer(, ) {{1, 1}, {1, 1}}");
+		}
+		
+		[Test]
+		public void MethodCallWithOptionalArguments()
+		{
+			TestExpression("M(, )");
 		}
 		
 		[Test]
@@ -121,6 +136,54 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		}
 		
 		[Test]
+		public void ForNextLoop()
+		{
+			TestStatement("For i = 0 To 10\n" +
+			              "Next");
+			TestStatement("For i As Long = 10 To 0 Step -1\n" +
+			              "Next");
+		}
+		
+		[Test]
+		public void DoLoop()
+		{
+			TestStatement("Do\n" +
+			              "Loop");
+			TestStatement("Do\n" +
+			              "Loop While Not (i = 10)");
+		}
+		
+		[Test]
+		public void SelectCase()
+		{
+			TestStatement(@"Select Case i
+	Case 0
+	Case 1 To 4
+	Case Else
+End Select");
+		}
+		
+		[Test]
+		public void UsingStatement()
+		{
+			TestStatement(@"Using nf As New Font(), nf2 As New List(Of Font)(), nf3 = Nothing
+	Bla(nf)
+End Using");
+		}
+		
+		[Test]
+		public void UntypedVariable()
+		{
+			TestStatement("Dim x = 0");
+		}
+		
+		[Test]
+		public void UntypedField()
+		{
+			TestTypeMember("Dim x = 0");
+		}
+		
+		[Test]
 		public void Assignment()
 		{
 			TestExpression("a = b");
@@ -130,13 +193,20 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		public void SpecialIdentifiers()
 		{
 			// Assembly, Ansi and Until are contextual keywords
-			TestExpression("Assembly = Ansi * [For] + Until");
+			// Custom is valid inside methods, but not valid for field names
+			TestExpression("Assembly = Ansi * [For] + Until - [Custom]");
 		}
 		
 		[Test]
 		public void Integer()
 		{
 			TestExpression("12");
+		}
+		
+		[Test]
+		public void DictionaryAccess()
+		{
+			TestExpression("c!key");
 		}
 		
 		[Test]
@@ -178,7 +248,7 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		[Test]
 		public void Using()
 		{
-			TestStatement("Using a As A = New A()\na.Work()\nEnd Using");
+			TestStatement("Using a As New A()\na.Work()\nEnd Using");
 		}
 		
 		[Test]
@@ -212,6 +282,17 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		}
 		
 		[Test]
+		public void PropertyWithAccessorAccessModifiers()
+		{
+			TestTypeMember("Public Property ExpectsValue() As Boolean\n" +
+			               "\tPublic Get\n" +
+			               "\tEnd Get\n" +
+			               "\tProtected Set\n" +
+			               "\tEnd Set\n" +
+			               "End Property");
+		}
+		
+		[Test]
 		public void AbstractProperty()
 		{
 			TestTypeMember("Public MustOverride Property ExpectsValue() As Boolean");
@@ -242,6 +323,18 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		}
 		
 		[Test]
+		public void AssemblyAttribute()
+		{
+			TestProgram("<Assembly: CLSCompliant>");
+		}
+		
+		[Test]
+		public void ModuleAttribute()
+		{
+			TestProgram("<Module: SuppressMessageAttribute>");
+		}
+		
+		[Test]
 		public void Interface()
 		{
 			TestProgram("Interface ITest\n" +
@@ -257,6 +350,71 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		public void OnErrorStatement()
 		{
 			TestStatement("On Error Resume Next");
+		}
+		
+		[Test]
+		public void OverloadedConversionOperators()
+		{
+			TestTypeMember("Public Shared Narrowing Operator CType(ByVal xmlNode As XmlNode) As TheBug\nEnd Operator");
+			TestTypeMember("Public Shared Widening Operator CType(ByVal bugNode As TheBug) As XmlNode\nEnd Operator");
+		}
+		
+		[Test]
+		public void OverloadedTrueFalseOperators()
+		{
+			TestTypeMember("Public Shared Operator IsTrue(ByVal a As TheBug) As Boolean\nEnd Operator");
+			TestTypeMember("Public Shared Operator IsFalse(ByVal a As TheBug) As Boolean\nEnd Operator");
+		}
+		
+		[Test]
+		public void OverloadedOperators()
+		{
+			TestTypeMember("Public Shared Operator +(ByVal bugNode As TheBug, ByVal bugNode2 As TheBug) As TheBug\nEnd Operator");
+			TestTypeMember("Public Shared Operator >>(ByVal bugNode As TheBug, ByVal b As Integer) As TheBug\nEnd Operator");
+		}
+		
+		[Test]
+		public void AttributeOnParameter()
+		{
+			TestTypeMember("Sub Main(ByRef one As Integer, ByRef two As Integer, <Out> ByRef three As Integer)\nEnd Sub");
+		}
+		
+		[Test]
+		public void UsingStatementForExistingVariable()
+		{
+			TestStatement("Using obj\nEnd Using");
+		}
+		
+		[Test]
+		public void ContinueFor()
+		{
+			TestStatement("Continue For");
+		}
+		
+		[Test]
+		public void WithStatement()
+		{
+			TestStatement("With Ejes\n" +
+			              "\t.AddLine(New Point(Me.ClientSize.Width / 2, 0), (New Point(Me.ClientSize.Width / 2, Me.ClientSize.Height)))\n" +
+			              "End With");
+		}
+		
+		[Test]
+		public void NewConstraint()
+		{
+			TestProgram("Public Class Rational(Of T, O As {IRationalMath(Of T), New})\nEnd Class");
+		}
+		
+		[Test]
+		public void StructConstraint()
+		{
+			TestProgram("Public Class Rational(Of T, O As {IRationalMath(Of T), Structure})\nEnd Class");
+		}
+		
+		[Test]
+		public void ClassConstraint()
+		{
+			TestProgram("Public Class Rational(Of T, O As {IRationalMath(Of T), Class})\nEnd Class");
 		}
 	}
 }

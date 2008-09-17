@@ -35,7 +35,7 @@ using System.Globalization;
 
 using MonoDevelop.AspNet.Parser.Dom;
 using MonoDevelop.Projects.Text;
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
 using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.AspNet.Parser
@@ -100,17 +100,15 @@ namespace MonoDevelop.AspNet.Parser
 			return globalLookup;
 		}
 		
-		public IEnumerable<IClass> ListControlClasses ()
+		public IEnumerable<IType> ListControlClasses ()
 		{
-			MonoDevelop.Core.ClrVersion clrVersion = 
-				doc.Project == null? MonoDevelop.Core.ClrVersion.Default : doc.Project.ClrVersion;
-			foreach (IClass cls in WebTypeManager.ListSystemControlClasses (clrVersion))
+			foreach (IType cls in WebTypeManager.ListSystemControlClasses (doc.Project))
 				yield return cls;
 			
 			//FIXME: return other refernced controls
 		}
 		
-		public IClass GetControlType (string tagPrefix, string tagName)
+		public IType GetControlType (string tagPrefix, string tagName)
 		{
 			if (0 == string.Compare (tagPrefix, "asp", StringComparison.InvariantCultureIgnoreCase))
 				return WebTypeManager.AssemblyTypeLookup (tagName, "System.Web.UI.WebControls", "System.Web");
@@ -119,7 +117,7 @@ namespace MonoDevelop.AspNet.Parser
 			return null;
 		}
 		
-		public string GetTagPrefix (IClass control)
+		public string GetTagPrefix (IType control)
 		{
 			if (control.Namespace == "System.Web.UI.WebControls")
 				return "asp";
@@ -148,12 +146,12 @@ namespace MonoDevelop.AspNet.Parser
 		
 		#region "Refactoring" operations -- things that modify the file
 		
-		public string AddAssemblyReferenceToDocument (IClass control, string assemblyName)
+		public string AddAssemblyReferenceToDocument (IType control, string assemblyName)
 		{
 			return AddAssemblyReferenceToDocument (control, assemblyName, null);
 		}
 		
-		public string AddAssemblyReferenceToDocument (IClass control, string assemblyName, string desiredPrefix)
+		public string AddAssemblyReferenceToDocument (IType control, string assemblyName, string desiredPrefix)
 		{
 			string existingPrefix = GetTagPrefix (control);
 			if (existingPrefix != null)
@@ -196,7 +194,7 @@ namespace MonoDevelop.AspNet.Parser
 				doc.Project.References.Add (pr);
 		}
 		
-		string GetPrefix (IClass control)
+		string GetPrefix (IType control)
 		{
 			//FIXME: make this work 
 			/*

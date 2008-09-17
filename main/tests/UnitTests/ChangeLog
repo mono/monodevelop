@@ -1,3 +1,41 @@
+2008-09-16  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.CSharpBinding/MemberTests.cs: Extended test constructor
+	  test.
+
+2008-09-10  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.CSharpBinding/MemberTests.cs: Added member unit tests.
+
+2008-09-10  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.CSharpBinding/TopLevelTests.cs: changed compilation unit
+	  interface.
+
+2008-09-09  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects/DomPersistenceTests.cs: Added unit a delegate
+	  unit test.
+
+2008-09-08  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.CSharpBinding/TopLevelTests.cs: Added interface test.
+
+2008-09-08  Mike Krüger <mkrueger@novell.com> 
+
+	* UnitTests.mdp, MonoDevelop.CSharpBinding,
+	  MonoDevelop.CSharpBinding/TopLevelTests.cs, Makefile.am: Added dom
+	  parser top level tests.
+
+2008-09-05  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects/DomPersistenceTests.cs: Added persistance tests.
+
+2008-07-27  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects/DomPersistenceTests.cs: Removed persistence
+	  tests.
+
 2008-07-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects/TestProjectsChecks.cs: Moved serialization

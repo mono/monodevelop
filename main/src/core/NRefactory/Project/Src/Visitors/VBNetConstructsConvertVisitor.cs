@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
-//     <version>$Revision: 2200 $</version>
+//     <version>$Revision: 2819 $</version>
 // </file>
 
 using System;
@@ -17,7 +17,7 @@ namespace ICSharpCode.NRefactory.Visitors
 	/// <summary>
 	/// Converts special VB constructs to use more general AST classes.
 	/// </summary>
-	public class VBNetConstructsConvertVisitor : AbstractAstTransformer
+	public class VBNetConstructsConvertVisitor : ConvertVisitorBase
 	{
 		// The following conversions are implemented:
 		//   MyBase.New() and MyClass.New() calls inside the constructor are converted to :base() and :this()
@@ -27,6 +27,14 @@ namespace ICSharpCode.NRefactory.Visitors
 		//   Built-in methods => Prefix with class name
 		//   Function A() \n A = SomeValue \n End Function -> convert to return statement
 		//   Array creation => add 1 to upper bound to get array length
+		//   Comparison with empty string literal -> string.IsNullOrEmpty
+		//   Add default value to local variable declarations without initializer
+		
+		/// <summary>
+		/// Specifies whether the "Add default value to local variable declarations without initializer"
+		/// operation is executed by this convert visitor.
+		/// </summary>
+		public bool AddDefaultValueInitializerToLocalVariableDeclarations = true;
 		
 		Dictionary<string, string> usings;
 		List<UsingDeclaration> addedUsings;
@@ -100,8 +108,8 @@ namespace ICSharpCode.NRefactory.Visitors
 				if (se != null) {
 					InvocationExpression ie = se.Expression as InvocationExpression;
 					if (ie != null) {
-						FieldReferenceExpression fre = ie.TargetObject as FieldReferenceExpression;
-						if (fre != null && "New".Equals(fre.FieldName, StringComparison.InvariantCultureIgnoreCase)) {
+						MemberReferenceExpression fre = ie.TargetObject as MemberReferenceExpression;
+						if (fre != null && "New".Equals(fre.MemberName, StringComparison.InvariantCultureIgnoreCase)) {
 							if (fre.TargetObject is BaseReferenceExpression || fre.TargetObject is ClassReferenceExpression || fre.TargetObject is ThisReferenceExpression) {
 								body.Children.RemoveAt(0);
 								ConstructorInitializer ci = new ConstructorInitializer();
@@ -127,9 +135,14 @@ namespace ICSharpCode.NRefactory.Visitors
 				base.VisitUsingDeclaration(@using, data);
 			}
 			
-			MethodDeclaration method = new MethodDeclaration(declareDeclaration.Name, declareDeclaration.Modifier,
-			                                                 declareDeclaration.TypeReference, declareDeclaration.Parameters,
-			                                                 declareDeclaration.Attributes);
+			MethodDeclaration method = new MethodDeclaration {
+				Name = declareDeclaration.Name,
+				Modifier = declareDeclaration.Modifier,
+				TypeReference = declareDeclaration.TypeReference,
+				Parameters = declareDeclaration.Parameters,
+				Attributes = declareDeclaration.Attributes
+			};
+			
 			if ((method.Modifier & Modifiers.Visibility) == 0)
 				method.Modifier |= Modifiers.Public;
 			method.Modifier |= Modifiers.Extern | Modifiers.Static;
@@ -146,25 +159,23 @@ namespace ICSharpCode.NRefactory.Visitors
 			switch (declareDeclaration.Charset) {
 				case CharsetModifier.Auto:
 					att.NamedArguments.Add(new NamedArgumentExpression("CharSet",
-					                                                   new FieldReferenceExpression(new IdentifierExpression("CharSet"),
-					                                                                                "Auto")));
+					                                                   new MemberReferenceExpression(new IdentifierExpression("CharSet"),
+					                                                                                 "Auto")));
 					break;
 				case CharsetModifier.Unicode:
 					att.NamedArguments.Add(new NamedArgumentExpression("CharSet",
-					                                                   new FieldReferenceExpression(new IdentifierExpression("CharSet"),
-					                                                                                "Unicode")));
+					                                                   new MemberReferenceExpression(new IdentifierExpression("CharSet"),
+					                                                                                 "Unicode")));
 					break;
 				default:
 					att.NamedArguments.Add(new NamedArgumentExpression("CharSet",
-					                                                   new FieldReferenceExpression(new IdentifierExpression("CharSet"),
-					                                                                                "Ansi")));
+					                                                   new MemberReferenceExpression(new IdentifierExpression("CharSet"),
+					                                                                                 "Ansi")));
 					break;
 			}
 			att.NamedArguments.Add(new NamedArgumentExpression("SetLastError", new PrimitiveExpression(true, true.ToString())));
 			att.NamedArguments.Add(new NamedArgumentExpression("ExactSpelling", new PrimitiveExpression(true, true.ToString())));
-			AttributeSection sec = new AttributeSection(null, null);
-			sec.Attributes.Add(att);
-			method.Attributes.Add(sec);
+			method.Attributes.Add(new AttributeSection { Attributes = { att } });
 			ReplaceCurrentNode(method);
 			return base.VisitMethodDeclaration(method, data);
 		}
@@ -196,9 +207,9 @@ namespace ICSharpCode.NRefactory.Visitors
 						InvocationExpression ie = se.Expression as InvocationExpression;
 						if (ie != null
 						    && ie.Arguments.Count == 0
-						    && ie.TargetObject is FieldReferenceExpression
-						    && (ie.TargetObject as FieldReferenceExpression).TargetObject is BaseReferenceExpression
-						    && "Finalize".Equals((ie.TargetObject as FieldReferenceExpression).FieldName, StringComparison.InvariantCultureIgnoreCase))
+						    && ie.TargetObject is MemberReferenceExpression
+						    && (ie.TargetObject as MemberReferenceExpression).TargetObject is BaseReferenceExpression
+						    && "Finalize".Equals((ie.TargetObject as MemberReferenceExpression).MemberName, StringComparison.InvariantCultureIgnoreCase))
 						{
 							DestructorDeclaration des = new DestructorDeclaration("Destructor", Modifiers.None, methodDeclaration.Attributes);
 							ReplaceCurrentNode(des);
@@ -233,23 +244,7 @@ namespace ICSharpCode.NRefactory.Visitors
 					methodDeclaration.Body.AcceptVisitor(visitor, null);
 					if (visitor.replacementCount > 0) {
 						Expression init;
-						switch (methodDeclaration.TypeReference.SystemType) {
-							case "System.Int16":
-							case "System.Int32":
-							case "System.Int64":
-							case "System.Byte":
-							case "System.UInt16":
-							case "System.UInt32":
-							case "System.UInt64":
-								init = new PrimitiveExpression(0, "0");
-								break;
-							case "System.Boolean":
-								init = new PrimitiveExpression(false, "false");
-								break;
-							default:
-								init = new PrimitiveExpression(null, "null");
-								break;
-						}
+						init = GetDefaultValueForType(methodDeclaration.TypeReference);
 						methodDeclaration.Body.Children.Insert(0, new LocalVariableDeclaration(new VariableDeclaration(FunctionReturnValueName, init, methodDeclaration.TypeReference)));
 						methodDeclaration.Body.Children[0].Parent = methodDeclaration.Body;
 						methodDeclaration.Body.AddChild(new ReturnStatement(new IdentifierExpression(FunctionReturnValueName)));
@@ -332,29 +327,10 @@ namespace ICSharpCode.NRefactory.Visitors
 					from = p.ParameterName;
 					p.ParameterName = "Value";
 				}
-				propertyDeclaration.SetRegion.AcceptVisitor(new RenameIdentifierVisitor(from, "value"), null);
+				propertyDeclaration.SetRegion.AcceptVisitor(new RenameIdentifierVisitor(from, "value", StringComparer.InvariantCultureIgnoreCase), null);
 			}
 			
 			return base.VisitPropertyDeclaration(propertyDeclaration, data);
-		}
-		
-		class RenameIdentifierVisitor : AbstractAstVisitor
-		{
-			string from, to;
-			
-			public RenameIdentifierVisitor(string from, string to)
-			{
-				this.from = from;
-				this.to = to;
-			}
-			
-			public override object VisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
-			{
-				if (string.Equals(identifierExpression.Identifier, from, StringComparison.InvariantCultureIgnoreCase)) {
-					identifierExpression.Identifier = to;
-				}
-				return base.VisitIdentifierExpression(identifierExpression, data);
-			}
 		}
 		
 		static volatile Dictionary<string, Expression> constantTable;
@@ -386,9 +362,9 @@ namespace ICSharpCode.NRefactory.Visitors
 			}
 			Expression expr;
 			if (constantTable.TryGetValue(identifierExpression.Identifier, out expr)) {
-				FieldReferenceExpression fre = new FieldReferenceExpression(expr, identifierExpression.Identifier);
+				MemberReferenceExpression fre = new MemberReferenceExpression(expr, identifierExpression.Identifier);
 				ReplaceCurrentNode(fre);
-				return base.VisitFieldReferenceExpression(fre, data);
+				return base.VisitMemberReferenceExpression(fre, data);
 			}
 			return base.VisitIdentifierExpression(identifierExpression, data);
 		}
@@ -421,7 +397,7 @@ namespace ICSharpCode.NRefactory.Visitors
 				}
 				Expression expr;
 				if (methodTable.TryGetValue(ident.Identifier, out expr)) {
-					FieldReferenceExpression fre = new FieldReferenceExpression(expr, ident.Identifier);
+					MemberReferenceExpression fre = new MemberReferenceExpression(expr, ident.Identifier);
 					invocationExpression.TargetObject = fre;
 				}
 			}
@@ -472,6 +448,90 @@ namespace ICSharpCode.NRefactory.Visitors
 				arrayCreateExpression.ArrayInitializer = null;
 			}
 			return base.VisitArrayCreateExpression(arrayCreateExpression, data);
+		}
+		
+		bool IsEmptyStringLiteral(Expression expression)
+		{
+			PrimitiveExpression pe = expression as PrimitiveExpression;
+			if (pe != null) {
+				return (pe.Value as string) == "";
+			} else {
+				return false;
+			}
+		}
+		
+		Expression CallStringIsNullOrEmpty(Expression stringVariable)
+		{
+			List<Expression> arguments = new List<Expression>();
+			arguments.Add(stringVariable);
+			return new InvocationExpression(
+				new MemberReferenceExpression(new TypeReferenceExpression("System.String"), "IsNullOrEmpty"),
+				arguments);
+		}
+		
+		public override object VisitBinaryOperatorExpression(BinaryOperatorExpression binaryOperatorExpression, object data)
+		{
+			base.VisitBinaryOperatorExpression(binaryOperatorExpression, data);
+			if (IsEmptyStringLiteral(binaryOperatorExpression.Right)) {
+				if (binaryOperatorExpression.Op == BinaryOperatorType.Equality) {
+					ReplaceCurrentNode(CallStringIsNullOrEmpty(binaryOperatorExpression.Left));
+				} else if (binaryOperatorExpression.Op == BinaryOperatorType.InEquality) {
+					ReplaceCurrentNode(new UnaryOperatorExpression(CallStringIsNullOrEmpty(binaryOperatorExpression.Left),
+					                                               UnaryOperatorType.Not));
+				}
+			} else if (IsEmptyStringLiteral(binaryOperatorExpression.Left)) {
+				if (binaryOperatorExpression.Op == BinaryOperatorType.Equality) {
+					ReplaceCurrentNode(CallStringIsNullOrEmpty(binaryOperatorExpression.Right));
+				} else if (binaryOperatorExpression.Op == BinaryOperatorType.InEquality) {
+					ReplaceCurrentNode(new UnaryOperatorExpression(CallStringIsNullOrEmpty(binaryOperatorExpression.Right),
+					                                               UnaryOperatorType.Not));
+				}
+			}
+			return null;
+		}
+		
+		public override object VisitLocalVariableDeclaration(LocalVariableDeclaration localVariableDeclaration, object data)
+		{
+			if (AddDefaultValueInitializerToLocalVariableDeclarations) {
+				for (int i = 0; i < localVariableDeclaration.Variables.Count; i++) {
+					VariableDeclaration decl = localVariableDeclaration.Variables[i];
+					if (decl.FixedArrayInitialization.IsNull && decl.Initializer.IsNull) {
+						TypeReference type = localVariableDeclaration.GetTypeForVariable(i);
+						decl.Initializer = GetDefaultValueForType(type);
+					}
+				}
+			}
+			return base.VisitLocalVariableDeclaration(localVariableDeclaration, data);
+		}
+		
+		Expression GetDefaultValueForType(TypeReference type)
+		{
+			if (type != null && !type.IsArrayType) {
+				switch (type.SystemType) {
+					case "System.SByte":
+					case "System.Byte":
+					case "System.Int16":
+					case "System.UInt16":
+					case "System.Int32":
+					case "System.UInt32":
+					case "System.Int64":
+					case "System.UInt64":
+					case "System.Single":
+					case "System.Double":
+						return new PrimitiveExpression(0, "0");
+					case "System.Char":
+						return new PrimitiveExpression('\0', "'\\0'");
+					case "System.Object":
+					case "System.String":
+						return new PrimitiveExpression(null, "null");
+					case "System.Boolean":
+						return new PrimitiveExpression(false, "false");
+					default:
+						return new DefaultValueExpression(type);
+				}
+			} else {
+				return new PrimitiveExpression(null, "null");
+			}
 		}
 	}
 }

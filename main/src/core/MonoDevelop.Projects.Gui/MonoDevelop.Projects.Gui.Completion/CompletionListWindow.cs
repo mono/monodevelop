@@ -308,7 +308,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			ICompletionDataWithMarkup datawMarkup = data as ICompletionDataWithMarkup;
 			CodeCompletionData ccdata = data as CodeCompletionData;
 
-			string descMarkup = datawMarkup != null ? datawMarkup.DescriptionPango : data.Description;
+			string descMarkup = datawMarkup != null ? datawMarkup.DescriptionPango : GLib.Markup.EscapeText (data.Description);
 
 			declarationviewwindow.Hide ();
 			
@@ -321,7 +321,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 				if (ccdata != null) {
 					foreach (CodeCompletionData odata in ccdata.GetOverloads ()) {
 						ICompletionDataWithMarkup odatawMarkup = odata as ICompletionDataWithMarkup;
-						declarationviewwindow.AddOverload (odatawMarkup == null ? odata.Description : odatawMarkup.DescriptionPango);
+						declarationviewwindow.AddOverload (odatawMarkup == null ? GLib.Markup.EscapeText (odata.Description) : odatawMarkup.DescriptionPango);
 					}
 				}
 			}

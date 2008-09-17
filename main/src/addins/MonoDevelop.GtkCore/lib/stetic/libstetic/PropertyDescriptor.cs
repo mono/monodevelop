@@ -192,7 +192,7 @@ namespace Stetic {
 					return Convert.ChangeType (value, PropertyType, System.Globalization.CultureInfo.InvariantCulture);
 				}
 			} else
-				return Convert.ChangeType (value, PropertyType);
+				return Convert.ChangeType (value, PropertyType, System.Globalization.CultureInfo.InvariantCulture);
 		}
 		
 		// Returns a string representation of the provided property value

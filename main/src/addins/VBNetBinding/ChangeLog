@@ -1,3 +1,45 @@
+2008-09-16  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* VBNetBinding.mdp, md1format.xml, Makefile.am: Add missing file.
+
+2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* VBNetBinding.mdp, gtk-gui/generated.cs,
+	  gtk-gui/MonoDevelop.VBNetBinding.CodeGenerationPanelWidget.cs:
+	  Updated generated code.
+
+2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Gui/CodeGenerationPanelWidget.cs: Track api changes.
+
+2008-09-10  Mike Krüger <mkrueger@novell.com> 
+
+	* Parser/DomParser.cs: Changed compilation unit/document meta
+	  information interface.
+
+2008-09-09  Mike Krüger <mkrueger@novell.com> 
+
+	* Parser/DomParser.cs: Some changes caused by interface changes.
+
+2008-07-29  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/CodeGenerationPanelWidget.cs, Parser/Parser.cs,
+	  Parser/DomParser.cs, Parser/VBNetVisitor.cs, Parser/Resolver.cs,
+	  Parser/TypeVisitor.cs, Parser/ExpressionFinder.cs,
+	  Parser/SharpDevelopTree/CompilationUnit.cs,
+	  Parser/SharpDevelopTree/ReturnType.cs,
+	  Parser/SharpDevelopTree/Class.cs,
+	  Parser/SharpDevelopTree/Constructor.cs, VBAmbience.cs,
+	  VBLanguageBinding.cs: Translated old code to new dom.
+
+2008-07-28  Mike Krüger <mkrueger@novell.com> 
+
+	* Parser/TypeVisitor.cs: Some changes for the new nrefactory.
+
+2008-07-27  Mike Krüger <mkrueger@novell.com> 
+
+	* Parser/DomParser.cs: Worked on code completion/new dom.
+
 2008-07-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Project/VBCompilerParameters.cs: Moved serialization engine to

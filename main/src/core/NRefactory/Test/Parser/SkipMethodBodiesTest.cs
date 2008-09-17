@@ -2,19 +2,14 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
-//     <version>$Revision: 915 $</version>
+//     <version>$Revision: 1609 $</version>
 // </file>
 
 using System;
-using System.Drawing;
-using System.IO;
-
+using ICSharpCode.NRefactory.Ast;
 using NUnit.Framework;
 
-using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.AST;
-
-namespace ICSharpCode.NRefactory.Tests.AST
+namespace ICSharpCode.NRefactory.Tests.Ast
 {
 	[TestFixture]
 	public class SkipMethodBodiesTest

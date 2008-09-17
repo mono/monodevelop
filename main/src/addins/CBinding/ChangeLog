@@ -1,3 +1,14 @@
+2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui/CBinding.PackageDetails.cs, gtk-gui/generated.cs,
+	  gtk-gui/CBinding.EditPackagesDialog.cs,
+	  gtk-gui/CBinding.AddPathDialog.cs,
+	  gtk-gui/CBinding.CodeGenerationPanel.cs,
+	  gtk-gui/CBinding.GeneralOptionsPanel.cs,
+	  gtk-gui/CBinding.CompilerPanel.cs,
+	  gtk-gui/CBinding.OutputOptionsPanel.cs,
+	  gtk-gui/CBinding.AddLibraryDialog.cs: Updated generated code.
+
 2008-09-08  Mitchell Wheeler <mitchell.wheeler@gmail.com>
 
 	* Gui/CTextEditorExtension.cs, Gui/AddLibraryDialog.cs,
@@ -54,6 +65,11 @@
 	  Resources are now shown in the solution tree like any other files.
 	  For a detailed explanation see "Bug 381430 - [PATCH] Display
 	  resource files in main project tree".
+
+2008-07-29  Mike Krüger <mkrueger@novell.com> 
+
+	* CLanguageBinding.cs, CppLanguageBinding.cs: Translated old code to
+	  new dom.
 
 2008-07-21  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com> 
 

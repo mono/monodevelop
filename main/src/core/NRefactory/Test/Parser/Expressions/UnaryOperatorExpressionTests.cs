@@ -2,16 +2,16 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version>$Revision: 915 $</version>
+//     <version>$Revision: 3120 $</version>
 // </file>
 
 using System;
 using System.IO;
 using NUnit.Framework;
 using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.AST;
+using ICSharpCode.NRefactory.Ast;
 
-namespace ICSharpCode.NRefactory.Tests.AST
+namespace ICSharpCode.NRefactory.Tests.Ast
 {
 	[TestFixture]
 	public class UnaryOperatorExpressionTests
@@ -76,13 +76,13 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpStarTest()
 		{
-			CSharpTestUnaryOperatorExpressionTest("*a", UnaryOperatorType.Star);
+			CSharpTestUnaryOperatorExpressionTest("*a", UnaryOperatorType.Dereference);
 		}
 		
 		[Test]
 		public void CSharpBitWiseAndTest()
 		{
-			CSharpTestUnaryOperatorExpressionTest("&a", UnaryOperatorType.BitWiseAnd);
+			CSharpTestUnaryOperatorExpressionTest("&a", UnaryOperatorType.AddressOf);
 		}
 		#endregion
 		
@@ -99,6 +99,24 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		public void VBNetNotTest()
 		{
 			VBNetTestUnaryOperatorExpressionTest("Not a", UnaryOperatorType.Not);
+		}
+		
+		[Test]
+		public void VBNetInEqualsNotTest()
+		{
+			BinaryOperatorExpression e = ParseUtilVBNet.ParseExpression<BinaryOperatorExpression>("b <> Not a");
+			Assert.AreEqual(BinaryOperatorType.InEquality, e.Op);
+			UnaryOperatorExpression ue = (UnaryOperatorExpression)e.Right;
+			Assert.AreEqual(UnaryOperatorType.Not, ue.Op);
+		}
+		
+		[Test]
+		public void VBNetNotEqualTest()
+		{
+			UnaryOperatorExpression e = ParseUtilVBNet.ParseExpression<UnaryOperatorExpression>("Not a = b");
+			Assert.AreEqual(UnaryOperatorType.Not, e.Op);
+			BinaryOperatorExpression boe = (BinaryOperatorExpression)e.Expression;
+			Assert.AreEqual(BinaryOperatorType.Equality, boe.Op);
 		}
 		
 		[Test]

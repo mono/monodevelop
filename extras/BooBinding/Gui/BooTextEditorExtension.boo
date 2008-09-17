@@ -16,12 +16,12 @@
 // along with BooBinding; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #endregion
-
+/*
 namespace BooBinding.Gui
 
 import System
 
-import MonoDevelop.Projects.Parser
+import MonoDevelop.Projects.Dom.Parser
 import MonoDevelop.Ide.Gui.Content
 import MonoDevelop.Ide.Gui
 import MonoDevelop.Projects.Gui.Completion
@@ -48,17 +48,6 @@ public class BooTextEditorExtension (CompletionTextEditorExtension):
 			data_provider = CodeCompletionDataProvider (p_ctx, GetAmbience ())
 
 			resolver = Resolver (p_ctx)
-
-			/*
-			return_type = resolver.internal_resolve (expr, caret_line, caret_col, FileName, Editor.Text)
-			return null if not return_type
-
-			data_provider.DefaultCompletionString = return_type.Name
-			data_provider.AddResolveResults (resolver.IsAsResolve (expr, caret_line, caret_col, FileName, Editor.Text))
-
-			klass = p_ctx.GetClass (return_type.FullyQualifiedName, return_type.GenericArguments)
-			data_provider.AddResolveResults (klass) if klass
-			*/
 
 			return data_provider
 
@@ -95,3 +84,4 @@ public class BooTextEditorExtension (CompletionTextEditorExtension):
 
 		i -= token.Length
 		return Editor.GetText (i, i + token.Length) == token
+*/

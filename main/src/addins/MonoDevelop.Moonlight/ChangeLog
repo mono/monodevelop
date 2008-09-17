@@ -1,3 +1,8 @@
+2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Moonlight.mdp, gtk-gui/generated.cs: Updated generated
+	  code.
+
 2008-06-17  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Templates/MoonlightProject.xpt.xml: Use escaped project name for

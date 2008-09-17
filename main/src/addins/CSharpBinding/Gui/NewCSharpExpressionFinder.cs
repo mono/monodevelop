@@ -44,21 +44,27 @@ namespace MonoDevelop.CSharpBinding.Gui
 			this.projectContent = projectContent;
 		}
 		
-		public ExpressionContext FindExactContextForNewCompletion(TextEditor editor, string fileName)
+		public ExpressionContext FindExactContextForNewCompletion(TextEditor editor, ICompilationUnit unit, string fileName)
 		{
 			// find expression on left hand side of the assignment
 			string documentToCursor = editor.GetText (0, editor.CursorPosition);
-			int pos = documentToCursor.LastIndexOf('=');
+			int pos = documentToCursor.LastIndexOf("+=");
+			if (pos <= 0)
+				pos = documentToCursor.LastIndexOf("-=");
+			if (pos <= 0)
+				pos = documentToCursor.LastIndexOf("=");
 			if (pos <= 0)
 				return null;
 			ExpressionResult lhsExpr = FindExpression (documentToCursor, pos);
+			
 			if (lhsExpr.Expression != null) {
-				NRefactoryResolver resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (projectContent,
+				NRefactoryResolver resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (projectContent, unit,
 				                                                                                ICSharpCode.NRefactory.SupportedLanguage.CSharp,
 				                                                                                editor,
 				                                                                                fileName);
 				
-				ResolveResult rr = resolver.Resolve (lhsExpr);
+				ResolveResult rr = resolver.Resolve (lhsExpr, new DomLocation (editor.CursorLine, editor.CursorColumn));
+				
 				//ResolveResult rr = ParserService.Resolve (lhsExpr, currentLine.LineNumber, pos, editor.FileName, editor.Text);
 				if (rr != null && rr.ResolvedType != null) {
 					ExpressionContext context;
@@ -72,7 +78,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 						// when creating a normal instance, all non-abstract classes deriving from the type
 						// are allowed
 						c = projectContent.GetType (rr.ResolvedType);
-						context = ExpressionContext.TypeDerivingFrom(rr.ResolvedType, true);
+						context = ExpressionContext.TypeDerivingFrom (rr.ResolvedType, true);
 					}
 					if (c != null && !context.FilterEntry (c)) {
 						// Try to suggest an entry (List<int> a = new => suggest List<int>).
@@ -83,7 +89,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 								new ClassFinder(ParserService.GetParseInformation(editor.FileName), editor.ActiveTextAreaControl.Caret.Line + 1, editor.ActiveTextAreaControl.Caret.Column + 1)
 							), "");*/
 						if (suggestedClassName != c.Name) {
-							// create an IClass instance that includes the type arguments in its name
+							// create an IType instance that includes the type arguments in its name
 							//context.DefaultItem = new RenamedClass (c, suggestedClassName);
 						} else {
 							context.DefaultItem = c;
@@ -396,8 +402,10 @@ namespace MonoDevelop.CSharpBinding.Gui
 		
 		void Init(string text, int offset)
 		{
-			if (offset < 0 || offset > text.Length)
-				throw new ArgumentOutOfRangeException("offset", offset, "offset must be between 0 and " + text.Length);
+			if (offset < 0 || offset > text.Length) {
+				System.Console.WriteLine(("offset:" + offset + " - offset must be between 0 and " + text.Length));
+				offset = 0;
+			}
 			lexer = ParserFactory.CreateLexer(SupportedLanguage.CSharp, new StringReader(text));
 			lexer.SkipAllComments = true;
 			lineOffsets = new List<int>();
@@ -605,7 +613,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 					}
 					break;
 				case Tokens.Throw:
-					frame.SetExpectedType (new DomReturnType ("System.Exception"));
+					frame.SetExpectedType (DomReturnType.Exception);
 					break;
 				case Tokens.New:
 					if (frame.InExpressionMode) {
@@ -616,7 +624,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 					}
 					break;
 				case Tokens.Namespace:
-					frame.SetContext(ExpressionContext.IdentifierExpected);
+					frame.SetContext(ExpressionContext.NamespaceNameExcepted);
 					break;
 				case Tokens.Assign:
 					if (frame.type == FrameType.Global) {
@@ -640,6 +648,8 @@ namespace MonoDevelop.CSharpBinding.Gui
 						goto default;
 					}
 				case Tokens.Colon:
+					if (frame.context == ExpressionContext.NamespaceNameExcepted)
+						break;
 					if (frame.state == FrameState.MethodDecl && lastToken == Tokens.CloseParenthesis) {
 						frame.SetContext(ExpressionContext.BaseConstructorCall);
 						frame.parenthesisChildType = FrameType.Expression;
@@ -686,9 +696,9 @@ namespace MonoDevelop.CSharpBinding.Gui
 						frame.SetContext(ExpressionContext.Type);
 					}
 					break;
-//				case Tokens.LambdaArrow:
-//					frame.curlyChildType = FrameType.Statements;
-//					break;
+				case Tokens.LambdaArrow:
+					frame.curlyChildType = FrameType.Statements;
+					break;
 				case Tokens.Event:
 					frame.SetContext(ExpressionContext.DelegateType);
 					frame.curlyChildType = FrameType.Event;
@@ -708,12 +718,12 @@ namespace MonoDevelop.CSharpBinding.Gui
 						frame.SetContext(ExpressionContext.IdentifierExpected);
 					}
 					break;
-//				case Tokens.Where:
-//					if (!frame.InExpressionMode && (frame.type == FrameType.Global || frame.type == FrameType.TypeDecl)) {
-//						frame.state = FrameState.Constraints;
-//						frame.SetDefaultContext();
-//					}
-//					break;
+				case Tokens.Where:
+					if (!frame.InExpressionMode && (frame.type == FrameType.Global || frame.type == FrameType.TypeDecl)) {
+						frame.state = FrameState.Constraints;
+						frame.SetDefaultContext();
+					}
+					break;
 				case Tokens.CloseCurlyBrace:
 				case Tokens.Semicolon:
 					frame.state = FrameState.Normal;
@@ -753,6 +763,8 @@ namespace MonoDevelop.CSharpBinding.Gui
 					frame.parenthesisChildType = FrameType.TypeReference;
 					break;
 				default:
+					if (frame.context == ExpressionContext.NamespaceNameExcepted)
+						break;
 					if (Tokens.SimpleTypeName[token.kind]) {
 						if (frame.type == FrameType.Interface || frame.type == FrameType.TypeDecl) {
 							if (frame.state == FrameState.Normal) {

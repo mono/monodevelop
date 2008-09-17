@@ -2,19 +2,14 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version>$Revision: 1388 $</version>
+//     <version>$Revision: 3139 $</version>
 // </file>
 
 using System;
-using System.Drawing;
-using System.IO;
-
+using ICSharpCode.NRefactory.Ast;
 using NUnit.Framework;
 
-using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.AST;
-
-namespace ICSharpCode.NRefactory.Tests.AST
+namespace ICSharpCode.NRefactory.Tests.Ast
 {
 	[TestFixture]
 	public class TypeDeclarationTests
@@ -28,7 +23,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			Assert.AreEqual(ClassType.Class, td.Type);
 			Assert.AreEqual("MyClass", td.Name);
 			Assert.AreEqual("My.Base.Class", td.BaseTypes[0].Type);
-			Assert.AreEqual(Modifier.None, td.Modifier);
+			Assert.AreEqual(Modifiers.None, td.Modifier);
 		}
 		
 		[Test]
@@ -50,7 +45,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			Assert.IsNotNull(td);
 			Assert.AreEqual(ClassType.Class, td.Type);
 			Assert.AreEqual("MyClass", td.Name);
-			Assert.AreEqual(Modifier.Partial, td.Modifier);
+			Assert.AreEqual(Modifiers.Partial, td.Modifier);
 		}
 		
 		[Test]
@@ -60,10 +55,10 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			Assert.IsNotNull(td);
 			Assert.AreEqual(ClassType.Class, td.Type);
 			Assert.AreEqual("MyClass", td.Name);
-			Assert.AreEqual(Modifier.Partial, ((TypeDeclaration)td.Children[0]).Modifier);
-			Assert.AreEqual(Modifier.Partial | Modifier.Public, ((TypeDeclaration)td.Children[1]).Modifier);
-			Assert.AreEqual(Modifier.Static, ((TypeDeclaration)td.Children[2]).Modifier);
-			Assert.AreEqual(Modifier.Static | Modifier.Internal, ((TypeDeclaration)td.Children[3]).Modifier);
+			Assert.AreEqual(Modifiers.Partial, ((TypeDeclaration)td.Children[0]).Modifier);
+			Assert.AreEqual(Modifiers.Partial | Modifiers.Public, ((TypeDeclaration)td.Children[1]).Modifier);
+			Assert.AreEqual(Modifiers.Static, ((TypeDeclaration)td.Children[2]).Modifier);
+			Assert.AreEqual(Modifiers.Static | Modifiers.Internal, ((TypeDeclaration)td.Children[3]).Modifier);
 		}
 		
 		[Test]
@@ -73,7 +68,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			Assert.IsNotNull(td);
 			Assert.AreEqual(ClassType.Class, td.Type);
 			Assert.AreEqual("MyClass", td.Name);
-			Assert.AreEqual(Modifier.Static, td.Modifier);
+			Assert.AreEqual(Modifiers.Static, td.Modifier);
 		}
 		
 		[Test]
@@ -83,7 +78,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			
 			Assert.AreEqual(ClassType.Class, td.Type);
 			Assert.AreEqual("G", td.Name);
-			Assert.AreEqual(Modifier.Public, td.Modifier);
+			Assert.AreEqual(Modifiers.Public, td.Modifier);
 			Assert.AreEqual(0, td.BaseTypes.Count);
 			Assert.AreEqual(1, td.Templates.Count);
 			Assert.AreEqual("T", td.Templates[0].Name);
@@ -120,7 +115,7 @@ public class Generic<T, S> : System.IComparable where S : G<T[]> where  T : MyNa
 			
 			Assert.AreEqual(ClassType.Class, td.Type);
 			Assert.AreEqual("Generic", td.Name);
-			Assert.AreEqual(Modifier.Public, td.Modifier);
+			Assert.AreEqual(Modifiers.Public, td.Modifier);
 			Assert.AreEqual(1, td.BaseTypes.Count);
 			Assert.AreEqual("System.IComparable", td.BaseTypes[0].Type);
 			
@@ -149,7 +144,7 @@ public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 			
 			Assert.AreEqual(ClassType.Class, td.Type);
 			Assert.AreEqual("MyClass", td.Name);
-			Assert.AreEqual(Modifier.Public | Modifier.Abstract, td.Modifier);
+			Assert.AreEqual(Modifiers.Public | Modifiers.Abstract, td.Modifier);
 			Assert.AreEqual(1, td.Attributes.Count);
 			Assert.AreEqual(3, td.BaseTypes.Count);
 			Assert.AreEqual("MyBase", td.BaseTypes[0].Type);
@@ -215,6 +210,29 @@ public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 		}
 		
 		[Test]
+		public void VBNetEnumOnSingleLine()
+		{
+			string program = "Enum TestEnum : A : B = 1 : C : End Enum";
+			TypeDeclaration td = ParseUtilVBNet.ParseGlobal<TypeDeclaration>(program);
+			
+			Assert.AreEqual("TestEnum", td.Name);
+			Assert.AreEqual(ClassType.Enum, td.Type);
+			Assert.AreEqual(3, td.Children.Count);
+		}
+		
+		[Test]
+		public void VBNetEnumOnSingleLine2()
+		{
+			string program = "Enum TestEnum : A : : B = 1 :: C : End Enum";
+			TypeDeclaration td = ParseUtilVBNet.ParseGlobal<TypeDeclaration>(program);
+			
+			Assert.AreEqual("TestEnum", td.Name);
+			Assert.AreEqual(ClassType.Enum, td.Type);
+			Assert.AreEqual(3, td.Children.Count);
+		}
+		
+		
+		[Test]
 		public void VBNetEnumWithSystemBaseClassDeclarationTest()
 		{
 			string program = "Enum TestEnum As System.UInt16\n" +
@@ -241,6 +259,18 @@ public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 		}
 		
 		[Test]
+		public void VBNetSimpleClassTypeDeclarationWithColon()
+		{
+			string program = "Class TestClass\n" +
+				" : \n" +
+				"End Class";
+			TypeDeclaration td = ParseUtilVBNet.ParseGlobal<TypeDeclaration>(program);
+			
+			Assert.AreEqual("TestClass", td.Name);
+			Assert.AreEqual(ClassType.Class, td.Type);
+		}
+		
+		[Test]
 		public void VBNetSimplePartialClassTypeDeclarationTest()
 		{
 			string program = "Partial Class TestClass\n" +
@@ -249,7 +279,7 @@ public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 			
 			Assert.AreEqual("TestClass", td.Name);
 			Assert.AreEqual(ClassType.Class, td.Type);
-			Assert.AreEqual(Modifier.Partial, td.Modifier);
+			Assert.AreEqual(Modifiers.Partial, td.Modifier);
 		}
 		
 		[Test]
@@ -260,7 +290,7 @@ public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 			
 			Assert.AreEqual("TestClass", td.Name);
 			Assert.AreEqual(ClassType.Class, td.Type);
-			Assert.AreEqual(Modifier.Partial | Modifier.Public, td.Modifier);
+			Assert.AreEqual(Modifiers.Partial | Modifiers.Public, td.Modifier);
 		}
 		
 		[Test]
@@ -275,7 +305,7 @@ End Class
 			
 			Assert.AreEqual(ClassType.Class, td.Type);
 			Assert.AreEqual("Test", td.Name);
-			Assert.AreEqual(Modifier.Public, td.Modifier);
+			Assert.AreEqual(Modifiers.Public, td.Modifier);
 			Assert.AreEqual(0, td.BaseTypes.Count);
 			Assert.AreEqual(1, td.Templates.Count);
 			Assert.AreEqual("T", td.Templates[0].Name);
@@ -312,7 +342,7 @@ End Class
 			
 			Assert.AreEqual(ClassType.Class, td.Type);
 			Assert.AreEqual("Generic", td.Name);
-			Assert.AreEqual(Modifier.Public, td.Modifier);
+			Assert.AreEqual(Modifiers.Public, td.Modifier);
 			Assert.AreEqual(1, td.BaseTypes.Count);
 			Assert.AreEqual("System.IComparable", td.BaseTypes[0].Type);
 			

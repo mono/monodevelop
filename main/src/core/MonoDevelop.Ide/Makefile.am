@@ -7,7 +7,6 @@ REFS =  \
 	$(MONO_ADDINS_LIBS) \
 	$(MONO_ADDINS_SETUP_LIBS) \
 	$(MONODOC_LIBS) \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Documentation.dll \
 	-r:$(top_builddir)/build/bin/Mono.Debugging.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
@@ -55,7 +54,6 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.LoadSavePanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TasksPanelWidget.cs \
-	gtk-gui/MonoDevelop.Ide.Gui.Pads.ClassBrowser.ClassBrowserPadWidget.cs \
 	gtk-gui/MonoDevelop.Ide.OverridesImplementsDialog.cs \
 	gtk-gui/MonoDevelop.Ide.SelectEncodingsDialog.cs \
 	gtk-gui/MonoDevelop.Ide.StandardHeaders.NewHeaderTemplateDialog.cs \
@@ -119,6 +117,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Components/NodeBuilderExtension.cs \
 	MonoDevelop.Ide.Gui.Components/NodeCommandHandler.cs \
 	MonoDevelop.Ide.Gui.Components/NodeState.cs \
+	MonoDevelop.Ide.Gui.Components/TransactedTreeBuilder.cs \
 	MonoDevelop.Ide.Gui.Components/TreeBuilder.cs \
 	MonoDevelop.Ide.Gui.Components/TreeNodeNavigator.cs \
 	MonoDevelop.Ide.Gui.Components/TreeOptions.cs \
@@ -181,13 +180,8 @@ FILES =  \
 	MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/LoadSavePanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/TasksOptionsPanel.cs \
-	MonoDevelop.Ide.Gui.Pads.ClassBrowser/ClassBrowserPad.cs \
-	MonoDevelop.Ide.Gui.Pads.ClassBrowser/ClassBrowserPadWidget.cs \
-	MonoDevelop.Ide.Gui.Pads.ClassBrowser/MemberNodeBuilder.cs \
-	MonoDevelop.Ide.Gui.Pads.ClassBrowser/ProjectNamespaceBuilder.cs \
-	MonoDevelop.Ide.Gui.Pads.ClassBrowser/ProjectNodeBuilder.cs \
-	MonoDevelop.Ide.Gui.Pads.ClassBrowser/SolutionNodeBuilder.cs \
-	MonoDevelop.Ide.Gui.Pads.ClassBrowser/TypeNodeBuilder.cs \
+	MonoDevelop.Ide.Gui.Pads.ClassPad/ClassBrowserPad.cs \
+	MonoDevelop.Ide.Gui.Pads.ClassPad/ClassBrowserPadWidget.cs \
 	MonoDevelop.Ide.Gui.Pads.ClassPad/ClassData.cs \
 	MonoDevelop.Ide.Gui.Pads.ClassPad/ClassNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ClassPad/CombineNodeBuilder.cs \
@@ -200,6 +194,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Pads.ClassPad/NamespaceNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ClassPad/ProjectNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ClassPad/PropertyNodeBuilder.cs \
+	MonoDevelop.Ide.Gui.Pads.ClassPad/ReferenceNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ClassPad/SolutionNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/LinkedFilesFolder.cs \

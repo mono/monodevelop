@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
-//     <version>$Revision: 2615 $</version>
+//     <version>$Revision: 2654 $</version>
 // </file>
 
 using System;
@@ -13,7 +13,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 {
 	public class SpecialOutputVisitor : ISpecialVisitor
 	{
-		IOutputFormatter formatter;
+		readonly IOutputFormatter formatter;
 		
 		public SpecialOutputVisitor(IOutputFormatter formatter)
 		{
@@ -138,8 +138,8 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public static SpecialNodesInserter Install(IEnumerable<ISpecial> specials, IOutputAstVisitor outputVisitor)
 		{
 			SpecialNodesInserter sni = new SpecialNodesInserter(specials, new SpecialOutputVisitor(outputVisitor.OutputFormatter));
-			outputVisitor.NodeTracker.NodeVisiting += sni.AcceptNodeStart;
-			outputVisitor.NodeTracker.NodeVisited  += sni.AcceptNodeEnd;
+			outputVisitor.BeforeNodeVisit += sni.AcceptNodeStart;
+			outputVisitor.AfterNodeVisit  += sni.AcceptNodeEnd;
 			return sni;
 		}
 	}

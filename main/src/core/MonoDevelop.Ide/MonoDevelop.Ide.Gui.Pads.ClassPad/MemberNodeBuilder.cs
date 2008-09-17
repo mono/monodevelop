@@ -31,7 +31,8 @@ using System.Collections;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.Ide.Gui.Pads.ClassPad
@@ -75,12 +76,12 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			return 4;
 		}
 		
-		int GetAccessSortValue (ModifierEnum mods)
+		int GetAccessSortValue (Modifiers mods)
 		{
-			if ((mods & ModifierEnum.Private) != 0) return 0;
-			if ((mods & ModifierEnum.Internal) != 0) return 1;
-			if ((mods & ModifierEnum.Protected) != 0) return 2;
-			if ((mods & ModifierEnum.Public) != 0) return 3;
+			if ((mods & Modifiers.Private) != 0) return 0;
+			if ((mods & Modifiers.Internal) != 0) return 1;
+			if ((mods & Modifiers.Protected) != 0) return 2;
+			if ((mods & Modifiers.Public) != 0) return 3;
 			return 4;
 		}
 	}

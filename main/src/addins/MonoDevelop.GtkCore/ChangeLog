@@ -1,3 +1,29 @@
+2008-09-15  Mike Kestner <mkestner@novell.com> 
+
+	* MonoDevelop.GtkCode.GuiBuilder/GtkProjectServiceExtension.cs:
+	add the project stetic file to any generation warnings produced.
+	Fixes #373244.
+
+2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* lib/libsteticui.mdp, lib/libstetic.mdp, lib/gtk-gui/generated.cs,
+	  gtk-gui/generated.cs: Updated generated code.
+
+2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.GtkCore.GuiBuilder/ActionGroupDisplayBinding.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/CodeBinder.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderWindow.cs,
+	  MonoDevelop.GtkCore/WidgetFileDescriptionTemplate.cs,
+	  MonoDevelop.GtkCore/WidgetParser.cs: Track api changes.
+
+2008-09-11  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.GtkCore.GuiBuilder/CodeBinder.cs: Changes caused by
+	  interface changes.
+
 2008-09-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.GtkCore.NodeBuilders/ProjectFolderNodeBuilderExtension.cs,
@@ -59,6 +85,22 @@
 	change that was causing explicit paths to be inserted into gui.stetic
 	files for gac references.  [Fixes #412960]
 
+2008-08-19  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs: fixed issue in
+	  GetSourceCodeFile.
+
+2008-08-19  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs: fixed some
+	  possible nullrefs.
+
+2008-08-19  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.GtkCore.mdp, lib/libsteticui.mdp: re-set project
+	  references (fix some libstetic.dll not found issue,  localcopy ==
+	  true was missing).
+
 2008-08-18  Mike Kestner <mkestner@novell.com> 
 
 	* MonoDevelop.GtkCore/GtkDesignInfo.cs: make HasDesignedObjects
@@ -80,10 +122,54 @@
 	* MonoDevelop.GtkCore.GuiBuilder/CombinedDesignView.cs: Add a null
 	  check.
 
+2008-08-04  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs: fixed possible
+	  null references in the unload method.
+
 2008-08-01  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.GtkCore/GtkDesignInfo.cs: Fix crash when looking for
 	  designed objects in a project that doesn't support it.
+
+2008-07-31  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs: Fixed some
+	  issues.
+
+2008-07-29  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.GtkCore/WidgetFileDescriptionTemplate.cs,
+	  MonoDevelop.GtkCore.Dialogs/WidgetBuilderOptionPanel.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/ActionGroupDisplayBinding.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderWindow.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/CombinedDesignView.cs: Translated
+	  old code to new dom.
+
+2008-07-29  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.GtkCore/GtkDesignInfo.cs,
+	  MonoDevelop.GtkCore/ObjectsDocument.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/ActionGroupDisplayBinding.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderWindow.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/CodeBinder.cs: Changes for converted
+	  refactoring infrastructure.
+
+2008-07-27  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.GtkCore/GtkDesignInfo.cs,
+	  MonoDevelop.GtkCore/WidgetParser.cs,
+	  MonoDevelop.GtkCore/ObjectsDocument.cs,
+	  MonoDevelop.GtkCore.Dialogs/SelectRenamedClassDialog.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/ActionGroupDisplayBinding.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderWindow.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/ActionGroupView.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/ClassUtils.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/CodeBinder.cs: Worked on code
+	  completion/new dom.
 
 2008-07-24  Mike Kestner <mkestner@novell.com> 
 

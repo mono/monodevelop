@@ -25,11 +25,11 @@ using System.Text.RegularExpressions;
 using System.IO;
 using System.Collections;
 
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
-using MonoDevelop.Projects.Ambience;
-using Ambience_ = MonoDevelop.Projects.Ambience.Ambience;
+using MonoDevelop.Projects.Dom.Output;
+using Ambience_ = MonoDevelop.Projects.Dom.Output.Ambience;
 
 namespace MonoDevelop.Projects.Gui.Completion
 {
@@ -42,7 +42,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		string documentation;
 		string completionString;
 		
-		IClass cls;	// Used for lazily loading class documentation
+		IType cls;	// Used for lazily loading class documentation
 		Ambience_ ambience;
 
 		bool convertedDocumentation = false;
@@ -123,11 +123,11 @@ namespace MonoDevelop.Projects.Gui.Completion
 			return (desc + "\n" + documentation).Trim ();
 		}		
 		
-		public string Description
+		public virtual string Description
 		{
 			get {
 				if (description == null && cls != null) {
-					description = ambience.Convert (cls);
+					description = ambience.GetString (cls, MonoDevelop.Projects.Dom.Output.OutputFlags.ClassBrowserEntries);
 					if (description == null)
 						description = string.Empty;
 				}
@@ -138,18 +138,18 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 		}
 		
-		public string DescriptionPango
+		public virtual string DescriptionPango
 		{
 			get {
 				if (pango_description == null && cls != null) {
-					pango_description = ambience.Convert (cls, ConversionFlags.StandardConversionFlags | ConversionFlags.IncludePangoMarkup);
+					pango_description = ambience.GetString (cls, MonoDevelop.Projects.Dom.Output.OutputFlags.ClassBrowserEntries | MonoDevelop.Projects.Dom.Output.OutputFlags.EmitMarkup);
 					if (pango_description == null)
 						pango_description = string.Empty;
 				}
-				return GetDescription (pango_description);				
+				return GetDescription (pango_description);
 			}
 			set {
-				description = value;
+				pango_description = value;
 			}
 		}
 
@@ -193,12 +193,12 @@ namespace MonoDevelop.Projects.Gui.Completion
 			this.image = image; 
 		}
 		
-		public CodeCompletionData (IClass c, Ambience_ ambience, bool allowInstrinsicNames, ITypeNameResolver resolver)
+	/*	public CodeCompletionData (IType c, Ambience_ ambience, bool allowInstrinsicNames, ITypeNameResolver resolver)
 		{
 			FillCodeCompletionData (c, ambience, allowInstrinsicNames, resolver);
 		}
-		
-		public CodeCompletionData (IMethod method, Ambience_ ambience)
+		*/
+	/*	public CodeCompletionData (IMethod method, Ambience_ ambience)
 		{
 			FillCodeCompletionData (method, ambience);
 		}
@@ -223,15 +223,15 @@ namespace MonoDevelop.Projects.Gui.Completion
 			FillCodeCompletionData (o, ambience);
 		}
 		
-		public CodeCompletionData (ILanguageItem item, Ambience_ ambience)
+		public CodeCompletionData (IMember item, Ambience_ ambience)
 		{
 			FillCodeCompletionData (item, ambience);
 		}
 		
-		protected void FillCodeCompletionData (ILanguageItem item, Ambience_ ambience)
+		protected void FillCodeCompletionData (IMember item, Ambience_ ambience)
 		{
-			if (item is IClass)
-				FillCodeCompletionData ((IClass)item, ambience, false, null);
+			if (item is IType)
+				FillCodeCompletionData ((IType)item, ambience, false, null);
 			else if (item is IMethod)
 				FillCodeCompletionData ((IMethod)item, ambience);
 			else if (item is IField)
@@ -245,8 +245,9 @@ namespace MonoDevelop.Projects.Gui.Completion
 			else
 				throw new InvalidOperationException ("Unsupported language item type");
 		}
-		
-		protected void FillCodeCompletionData (IClass c, Ambience_ ambience, bool allowInstrinsicNames, ITypeNameResolver resolver)
+		*/
+		/*
+		protected void FillCodeCompletionData (IType c, Ambience_ ambience, bool allowInstrinsicNames, ITypeNameResolver resolver)
 		{
 			cls = c;
 			this.ambience = ambience;
@@ -255,9 +256,9 @@ namespace MonoDevelop.Projects.Gui.Completion
 			text = ambience.Convert (c, flags | ConversionFlags.ShowGenericParameters);
 			if (allowInstrinsicNames) flags |= ConversionFlags.UseFullyQualifiedNames;
 			completionString = ambience.Convert (c, flags, resolver);
-		}
+		}*/
 		
-		protected void FillCodeCompletionData (IMethod method, Ambience_ ambience)
+	/*	protected void FillCodeCompletionData (IMethod method, Ambience_ ambience)
 		{
 			image  = Services.Icons.GetIcon(method);
 			text        = method.Name;
@@ -305,7 +306,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			pango_description = "";
 			completionString = o.Name;
 			documentation = "";
-		}
+		}*/
 		
 		public static string GetDocumentation (string doc)
 		{

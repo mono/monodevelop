@@ -34,6 +34,12 @@ namespace MonoDevelop.Projects.Dom
 	{
 		int line, column;
 		
+		public bool IsEmpty {
+			get {
+				return Line < 0;
+			}
+		}
+		
 		public int Line {
 			get {
 				return line;
@@ -70,6 +76,12 @@ namespace MonoDevelop.Projects.Dom
 				return false;
 			return (DomLocation)other == this;
 		}
+
+		public override int GetHashCode ()
+		{
+			return line + column*5000;
+		}
+
 		
 		public bool Equals (DomLocation other)
 		{
@@ -88,6 +100,23 @@ namespace MonoDevelop.Projects.Dom
 		public override string ToString ()
 		{
 			return String.Format ("[DomLocation: Line={0}, Column={1}]", Line, Column);
+		}
+
+		public static DomLocation FromInvariantString (string invariantString)
+		{
+			if (invariantString.ToUpper () == "EMPTY")
+				return DomLocation.Empty;
+			string[] splits = invariantString.Split (',', '/');
+			if (splits.Length == 2) 
+				return new DomLocation (Int32.Parse (splits[0]), Int32.Parse (splits[1]));
+			return DomLocation.Empty;
+		}
+		
+		public string ToInvariantString ()
+		{
+			if (IsEmpty)
+				return "Empty";
+			return String.Format ("{0}/{1}", Line, Column);
 		}
 		
 		public static bool operator==(DomLocation left, DomLocation right)

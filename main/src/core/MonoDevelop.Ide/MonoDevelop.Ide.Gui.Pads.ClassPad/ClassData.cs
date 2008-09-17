@@ -32,22 +32,22 @@ using System.Collections;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 {
 	public class ClassData
 	{
-		IClass cls;
+		IType cls;
 		Project project;
 		
-		public ClassData (Project p, IClass c)
+		public ClassData (Project p, IType c)
 		{
 			cls = c;
 			project = p;
 		}
 		
-		public IClass Class {
+		public IType Class {
 			get { return cls; }
 		}
 		
@@ -58,18 +58,20 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		public override bool Equals (object ob)
 		{
 			ClassData other = ob as ClassData;
-			return (other != null && cls.FullyQualifiedName == other.cls.FullyQualifiedName &&
+			return (other != null && cls.FullName == other.cls.FullName &&
 					project == other.project);
 		}
 		
 		public override int GetHashCode ()
 		{
-			return (cls.FullyQualifiedName + project.Name).GetHashCode ();
+			if (project == null)
+				return cls.FullName.GetHashCode ();
+			return (cls.FullName + project.Name).GetHashCode ();
 		}
 		
 		public override string ToString ()
 		{
-			return base.ToString () + " [" + cls.FullyQualifiedName + ", " + project.Name + "]";
+			return base.ToString () + " [" + cls.FullName + ", " + (project != null ? project.Name : "null")+ "]";
 		}
 	}
 }

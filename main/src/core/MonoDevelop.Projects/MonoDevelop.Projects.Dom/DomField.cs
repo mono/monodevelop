@@ -77,12 +77,7 @@ namespace MonoDevelop.Projects.Dom
 		public static IField Resolve (IField source, ITypeResolver typeResolver)
 		{
 			DomField result       = new DomField ();
-			result.Name           = source.Name;
-			result.Documentation  = source.Documentation;
-			result.Modifiers      = source.Modifiers;
-			result.ReturnType     = DomReturnType.Resolve (source.ReturnType, typeResolver);
-			result.Location       = source.Location;
-			result.AddRange (DomAttribute.Resolve (source.Attributes, typeResolver));
+			AbstractMember.Resolve (source, result, typeResolver);
 			return result;
 		}
 		

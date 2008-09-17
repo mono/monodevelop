@@ -36,7 +36,8 @@ using System.Collections;
 using System.Collections.Generic;
 
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Ide.Gui;
@@ -50,21 +51,21 @@ namespace MonoDevelop.DesignerSupport
 		//TODO: currently case-sensitive, so some languages may not like this
 		const bool ignoreCase = false;
 		
-		public static IMember GetCompatibleMemberInClass (IClass cls, CodeTypeMember member)
+		public static IMember GetCompatibleMemberInClass (IType cls, CodeTypeMember member)
 		{
-			IParserContext ctx = IdeApp.Workspace.ParserDatabase.GetProjectParserContext ((MonoDevelop.Projects.Project) cls.SourceProject);
+			ProjectDom ctx = ProjectDomService.GetProjectDom ((MonoDevelop.Projects.Project) cls.SourceProject);
 			return GetCompatibleMemberInClass (ctx, cls, member);
 		}
 		
-		public static IMember GetCompatibleMemberInClass (IParserContext ctx, IClass cls, CodeTypeMember member)
+		public static IMember GetCompatibleMemberInClass (ProjectDom ctx, IType cls, CodeTypeMember member)
 		{
 			//check for identical property names
 			foreach (IProperty prop in cls.Properties) {
 				if (string.Compare (prop.Name, member.Name, ignoreCase) == 0) {
-					EnsureClassExists (ctx, prop.ReturnType.FullyQualifiedName, GetValidRegion (prop));
+					EnsureClassExists (ctx, prop.ReturnType.FullName, GetValidRegion (prop));
 					CodeMemberProperty memProp = member as CodeMemberProperty;
-					if (memProp == null || !IsTypeCompatible (ctx, prop.ReturnType.FullyQualifiedName, memProp.Type.BaseType))
-						throw new MemberExistsException (cls.FullyQualifiedName, MemberType.Property, member, GetValidRegion (prop));
+					if (memProp == null || !IsTypeCompatible (ctx, prop.ReturnType.FullName, memProp.Type.BaseType))
+						throw new MemberExistsException (cls.FullName, MemberType.Property, member, GetValidRegion (prop), cls.CompilationUnit.FileName);
 					return prop;
 				}
 			}
@@ -72,10 +73,10 @@ namespace MonoDevelop.DesignerSupport
 			//check for identical method names
 			foreach (IMethod meth in cls.Methods) {
 				if (string.Compare (meth.Name, member.Name, ignoreCase) == 0) {
-					EnsureClassExists (ctx, meth.ReturnType.FullyQualifiedName, GetValidRegion (meth));
+					EnsureClassExists (ctx, meth.ReturnType.FullName, GetValidRegion (meth));
 					CodeMemberMethod memMeth = member as CodeMemberMethod;
-					if (memMeth == null || !IsTypeCompatible (ctx, meth.ReturnType.FullyQualifiedName, memMeth.ReturnType.BaseType))
-						throw new MemberExistsException (cls.FullyQualifiedName, MemberType.Method, member, GetValidRegion (meth));
+					if (memMeth == null || !IsTypeCompatible (ctx, meth.ReturnType.FullName, memMeth.ReturnType.BaseType))
+						throw new MemberExistsException (cls.FullName, MemberType.Method, member, GetValidRegion (meth), cls.CompilationUnit.FileName);
 					return meth;
 				}
 			}
@@ -83,10 +84,10 @@ namespace MonoDevelop.DesignerSupport
 			//check for identical event names
 			foreach (IEvent ev in cls.Events) {
 				if (string.Compare (ev.Name, member.Name, ignoreCase) == 0) {
-					EnsureClassExists (ctx, ev.ReturnType.FullyQualifiedName, GetValidRegion (ev));
+					EnsureClassExists (ctx, ev.ReturnType.FullName, GetValidRegion (ev));
 					CodeMemberEvent memEv = member as CodeMemberEvent;
-					if (memEv == null || !IsTypeCompatible (ctx, ev.ReturnType.FullyQualifiedName, memEv.Type.BaseType))
-						throw new MemberExistsException (cls.FullyQualifiedName, MemberType.Event, member, GetValidRegion (ev));
+					if (memEv == null || !IsTypeCompatible (ctx, ev.ReturnType.FullName, memEv.Type.BaseType))
+						throw new MemberExistsException (cls.FullName, MemberType.Event, member, GetValidRegion (ev), cls.CompilationUnit.FileName);
 					return ev;
 				}
 			}
@@ -94,19 +95,19 @@ namespace MonoDevelop.DesignerSupport
 			//check for identical field names
 			foreach (IField field in cls.Fields) {
 				if (string.Compare (field.Name, member.Name, ignoreCase) == 0) {
-					EnsureClassExists (ctx, field.ReturnType.FullyQualifiedName, GetValidRegion (field));
+					EnsureClassExists (ctx, field.ReturnType.FullName, GetValidRegion (field));
 					CodeMemberField memField = member as CodeMemberField;
-					if (memField == null || !IsTypeCompatible (ctx, field.ReturnType.FullyQualifiedName, memField.Type.BaseType))
-						throw new MemberExistsException (cls.FullyQualifiedName, MemberType.Field, member, GetValidRegion (field));
+					if (memField == null || !IsTypeCompatible (ctx, field.ReturnType.FullName, memField.Type.BaseType))
+						throw new MemberExistsException (cls.FullName, MemberType.Field, member, GetValidRegion (field), cls.CompilationUnit.FileName);
 					return field;
 				}
 			}
 			
 			//walk down into base classes, if any
 			foreach (IReturnType baseType in cls.BaseTypes) {
-				IClass c = ctx.GetClass (baseType.FullyQualifiedName);
+				IType c = ctx.GetType (baseType);
 				if (c == null)
-					throw new TypeNotFoundException (baseType.FullyQualifiedName, cls.Region);
+					throw new TypeNotFoundException (baseType.FullName, cls.BodyRegion, cls.CompilationUnit.FileName);
 				IMember mem = GetCompatibleMemberInClass (ctx, c, member);
 				if (mem != null)
 					return mem;
@@ -116,37 +117,37 @@ namespace MonoDevelop.DesignerSupport
 			return null;
 		}
 		
-		static IRegion GetValidRegion (IMember member)
+		static DomRegion GetValidRegion (IMember member)
 		{
-			if (member.Region == null || member.Region.FileName == null)
-				return member.DeclaringType.Region;
-			return member.Region;
+			if (member.BodyRegion == null || member.DeclaringType.CompilationUnit.FileName == null)
+				return member.DeclaringType.BodyRegion;
+			return member.BodyRegion;
 		}
 		
-		static IClass EnsureClassExists (IParserContext ctx, string className, IRegion location)
+		static IType EnsureClassExists (ProjectDom ctx, string className, DomRegion location)
 		{
-			IClass cls = ctx.GetClass (className);
+			IType cls = ctx.GetType (className);
 			if (cls == null)
-				throw new TypeNotFoundException (className, location);
+				throw new TypeNotFoundException (className, location, null);
 			return cls;
 		}
 		
-		static bool IsTypeCompatible (IParserContext ctx, string existingType, string checkType)
+		static bool IsTypeCompatible (ProjectDom ctx, string existingType, string checkType)
 		{
 			if (existingType == checkType)
 				return true;
-			IClass cls = EnsureClassExists (ctx, checkType, null);
+			IType cls = EnsureClassExists (ctx, checkType, DomRegion.Empty);
 			foreach (IReturnType baseType in cls.BaseTypes) {
-				if (IsTypeCompatible (ctx, existingType, baseType.FullyQualifiedName))
+				if (IsTypeCompatible (ctx, existingType, baseType.FullName))
 				    return true;
 			}
 			return false;
 		}
 		
-		public static IMember AddMemberToClass (SolutionItem entry, IClass cls, IClass specificPartToAffect, CodeTypeMember member, bool throwIfExists)
+		public static IMember AddMemberToClass (SolutionItem entry, IType cls, IType specificPartToAffect, CodeTypeMember member, bool throwIfExists)
 		{
 			bool isChildClass = false;
-			foreach (IClass c in cls.Parts)
+			foreach (IType c in cls.Parts)
 				if (c == specificPartToAffect)
 					isChildClass = true;
 			if (!isChildClass)
@@ -158,20 +159,20 @@ namespace MonoDevelop.DesignerSupport
 				return GetCodeGenerator (entry).AddMember (specificPartToAffect, member);
 			
 			if (throwIfExists)
-				throw new MemberExistsException (cls.Name, member, MemberType.Method, existingMember.Region);
+				throw new MemberExistsException (cls.Name, member, MemberType.Method, existingMember.BodyRegion, cls.CompilationUnit.FileName);
 			
 			return existingMember;
 		}
 		
 		public static CodeRefactorer GetCodeGenerator (SolutionItem entry)
 		{			
-			CodeRefactorer cr = new CodeRefactorer (entry.ParentSolution, IdeApp.Workspace.ParserDatabase);
+			CodeRefactorer cr = new CodeRefactorer (entry.ParentSolution);
 			cr.TextFileProvider = OpenDocumentFileProvider.Instance;
 			return cr;
 		}
 		
 		//TODO: check accessibility
-		public static string[] GetCompatibleMethodsInClass (IClass cls, CodeMemberMethod testMethod)
+		public static string[] GetCompatibleMethodsInClass (IType cls, CodeMemberMethod testMethod)
 		{
 			List<string> list = new List<string> ();
 			
@@ -179,13 +180,13 @@ namespace MonoDevelop.DesignerSupport
 				if (method.Parameters.Count != testMethod.Parameters.Count)
 					continue;
 				
-				if (method.ReturnType.FullyQualifiedName != testMethod.ReturnType.BaseType)
+				if (method.ReturnType.FullName != testMethod.ReturnType.BaseType)
 					continue;
 				
 				//compare each parameter
 				bool mismatch = false;
 				for (int i = 0; i < testMethod.Parameters.Count; i++)
-					if (method.Parameters[i].ReturnType.FullyQualifiedName != testMethod.Parameters[i].Type.BaseType)
+					if (method.Parameters[i].ReturnType.FullName != testMethod.Parameters[i].Type.BaseType)
 						mismatch = true;
 				
 				if (!mismatch)
@@ -196,7 +197,7 @@ namespace MonoDevelop.DesignerSupport
 		}
 		
 		
-		public static string[] GetCompatibleMembersInClass (IClass cls, CodeTypeMember testMember)
+		public static string[] GetCompatibleMembersInClass (IType cls, CodeTypeMember testMember)
 		{
 			if (testMember is CodeMemberMethod)
 				return GetCompatibleMethodsInClass (cls, (CodeMemberMethod) testMember);
@@ -205,46 +206,30 @@ namespace MonoDevelop.DesignerSupport
 		}
 		
 		
-		public static bool IdentifierExistsInClass (IParserContext parserContext, IClass cls, string identifier)
+		public static bool IdentifierExistsInClass (ProjectDom parserContext, IType cls, string identifier)
 		{
-			foreach (IMethod method in cls.Methods)
-				if (method.Name == identifier)
+			foreach (IMember member in cls.Members)
+				if (member.Name == identifier)
 					return true;
 			
-			foreach (IProperty property in cls.Properties)
-				if (property.Name == identifier)
-					return true;
-			
-			foreach (IEvent ev in cls.Events)
-				if (ev.Name == identifier)
-					return true;
-			
-			foreach (IField field in cls.Fields)
-				if (field.Name == identifier)
-					return true;
-			
-			foreach (IClass innerClass in cls.InnerClasses)
-				if (innerClass.Name == identifier)
-					return true;
-			
-			return VisibleIdentifierExistsInBaseClasses (parserContext.GetClassInheritanceTree (cls), identifier);
+			return VisibleIdentifierExistsInBaseClasses (parserContext.GetInheritanceTree (cls), identifier);
 		}
 		
-		static bool VisibleIdentifierExistsInBaseClasses (IEnumerable classes, string identifier)
+		static bool VisibleIdentifierExistsInBaseClasses (IEnumerable<IType> classes, string identifier)
 		{
-			foreach (IClass cls in classes) {
+			foreach (IType cls in classes) {
 				foreach (IEnumerable en in new IEnumerable[] {cls.Methods, cls.Properties, cls.Events, cls.Fields})
 					foreach (IMember item in en)
 						if (!item.IsPrivate && item.Name == identifier)
 							return true;
-				foreach (IClass innerClass in cls.InnerClasses)
+				foreach (IType innerClass in cls.InnerTypes)
 					if (!innerClass.IsPrivate && innerClass.Name == identifier)
 						return true;
 			}
 			return false;
 		}
 		
-		public static string GenerateIdentifierUniqueInClass (IParserContext parserContext, IClass cls, string trialIdentifier)
+		public static string GenerateIdentifierUniqueInClass (ProjectDom parserContext, IType cls, string trialIdentifier)
 		{
 			string trialValue = trialIdentifier;
 			
@@ -261,18 +246,18 @@ namespace MonoDevelop.DesignerSupport
 		
 		
 		//opens the code view with the desired method, creating it if it doesn't already exist
-		public static void CreateAndShowMember (SolutionItem project, IClass cls, IClass specificPartToAffect, CodeTypeMember member)
+		public static void CreateAndShowMember (SolutionItem project, IType cls, IType specificPartToAffect, CodeTypeMember member)
 		{
 			//only adds the method if it doesn't already exist
 			IMember mem = AddMemberToClass (project, cls, specificPartToAffect, member, false);
 			
 			//some tests in case code refactorer returns bad values
-			int beginline = specificPartToAffect.Region.BeginLine;			
-			if (mem.Region != null && mem.Region.BeginLine >= beginline && mem.Region.BeginLine <= specificPartToAffect.Region.EndLine)
-				beginline = mem.Region.BeginLine;
+			int beginline = specificPartToAffect.Location.Line;			
+			if (!mem.BodyRegion.IsEmpty && mem.BodyRegion.Start.Line >= beginline && mem.Location.Line <= specificPartToAffect.BodyRegion.End.Line)
+				beginline = mem.BodyRegion.Start.Line;
 			
 			//jump to the member or class
-			IdeApp.Workbench.OpenDocument (specificPartToAffect.Region.FileName, beginline, 1, true);
+			IdeApp.Workbench.OpenDocument (specificPartToAffect.CompilationUnit.FileName, beginline, 1, true);
 		}
 		
 		public static System.CodeDom.CodeTypeMember ReflectionToCodeDomMember (MemberInfo memberInfo)
@@ -322,9 +307,9 @@ namespace MonoDevelop.DesignerSupport
 			return newMethod;
 		}
 		
-		public static System.CodeDom.CodeMemberMethod MDDomToCodeDomMethod (IEvent ev, IParserContext context)
+		public static System.CodeDom.CodeMemberMethod MDDomToCodeDomMethod (IEvent ev, ProjectDom context)
 		{
-			IClass cls = context.GetClass (ev.ReturnType.FullyQualifiedName, ev.ReturnType.GenericArguments, true, false);
+			IType cls = context.GetType (ev.ReturnType);
 			foreach(IMethod m in cls.Methods)
 				if (m.Name == "Invoke")
 					return MDDomToCodeDomMethod (m);
@@ -335,32 +320,32 @@ namespace MonoDevelop.DesignerSupport
 		{
 			CodeMemberMethod newMethod = new CodeMemberMethod ();
 			newMethod.Name = mi.Name;
-			newMethod.ReturnType = new System.CodeDom.CodeTypeReference (mi.ReturnType.FullyQualifiedName);
+			newMethod.ReturnType = new System.CodeDom.CodeTypeReference (mi.ReturnType.FullName);
 			
 			newMethod.Attributes = System.CodeDom.MemberAttributes.Private;
 			switch (mi.Modifiers) {
-			case ModifierEnum.Internal:
+			case Modifiers.Internal:
 				newMethod.Attributes |= System.CodeDom.MemberAttributes.Assembly;
 				break;
-			case ModifierEnum.ProtectedAndInternal:
+			case Modifiers.ProtectedAndInternal:
 				newMethod.Attributes |= System.CodeDom.MemberAttributes.FamilyAndAssembly;
 				break;
-			case ModifierEnum.Protected:
+			case Modifiers.Protected:
 				newMethod.Attributes |= System.CodeDom.MemberAttributes.Family;
 				break;
-			case ModifierEnum.ProtectedOrInternal:
+			case Modifiers.ProtectedOrInternal:
 				newMethod.Attributes |= System.CodeDom.MemberAttributes.FamilyAndAssembly;
 				break;
-			case ModifierEnum.Public:
+			case Modifiers.Public:
 				newMethod.Attributes |= System.CodeDom.MemberAttributes.Public;
 				break;
-			case ModifierEnum.Static:
+			case Modifiers.Static:
 				newMethod.Attributes |= System.CodeDom.MemberAttributes.Static;
 				break;
 			}
 			
 			foreach (IParameter p in mi.Parameters) {
-				CodeParameterDeclarationExpression newPar = new CodeParameterDeclarationExpression (p.ReturnType.FullyQualifiedName, p.Name);
+				CodeParameterDeclarationExpression newPar = new CodeParameterDeclarationExpression (p.ReturnType.FullName, p.Name);
 				if (p.IsRef) newPar.Direction = FieldDirection.Ref;
 				else if (p.IsOut) newPar.Direction = FieldDirection.Out;
 				else newPar.Direction = FieldDirection.In;

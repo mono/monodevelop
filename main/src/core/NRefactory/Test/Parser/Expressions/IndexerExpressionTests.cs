@@ -2,16 +2,16 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version>$Revision: 915 $</version>
+//     <version>$Revision: 1609 $</version>
 // </file>
 
 using System;
 using System.IO;
 using NUnit.Framework;
 using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.AST;
+using ICSharpCode.NRefactory.Ast;
 
-namespace ICSharpCode.NRefactory.Tests.AST
+namespace ICSharpCode.NRefactory.Tests.Ast
 {
 	[TestFixture]
 	public class IndexerExpressionTests
@@ -23,14 +23,14 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			IndexerExpression ie = ParseUtilCSharp.ParseExpression<IndexerExpression>("field[1, \"Hello\", 'a']");
 			Assert.IsTrue(ie.TargetObject is IdentifierExpression);
 			
-			Assert.AreEqual(3, ie.Indices.Count);
+			Assert.AreEqual(3, ie.Indexes.Count);
 			
-			Assert.IsTrue(ie.Indices[0] is PrimitiveExpression);
-			Assert.AreEqual(1, (int)((PrimitiveExpression)ie.Indices[0]).Value);
-			Assert.IsTrue(ie.Indices[1] is PrimitiveExpression);
-			Assert.AreEqual("Hello", (string)((PrimitiveExpression)ie.Indices[1]).Value);
-			Assert.IsTrue(ie.Indices[2] is PrimitiveExpression);
-			Assert.AreEqual('a', (char)((PrimitiveExpression)ie.Indices[2]).Value);
+			Assert.IsTrue(ie.Indexes[0] is PrimitiveExpression);
+			Assert.AreEqual(1, (int)((PrimitiveExpression)ie.Indexes[0]).Value);
+			Assert.IsTrue(ie.Indexes[1] is PrimitiveExpression);
+			Assert.AreEqual("Hello", (string)((PrimitiveExpression)ie.Indexes[1]).Value);
+			Assert.IsTrue(ie.Indexes[2] is PrimitiveExpression);
+			Assert.AreEqual('a', (char)((PrimitiveExpression)ie.Indexes[2]).Value);
 		}
 		#endregion
 		

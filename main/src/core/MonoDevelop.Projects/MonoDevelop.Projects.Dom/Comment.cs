@@ -38,6 +38,7 @@ namespace MonoDevelop.Projects.Dom
 		DomRegion region = DomRegion.Empty;
 		CommentType commentType;
 		bool isDocumentation;
+		bool commentStartsLine;
 		
 		public string OpenTag {
 			get {
@@ -81,6 +82,15 @@ namespace MonoDevelop.Projects.Dom
 			}
 			set {
 				isDocumentation = value;
+			}
+		}
+		
+		public bool CommentStartsLine {
+			get {
+				return commentStartsLine;
+			}
+			set {
+				commentStartsLine = value;
 			}
 		}
 		

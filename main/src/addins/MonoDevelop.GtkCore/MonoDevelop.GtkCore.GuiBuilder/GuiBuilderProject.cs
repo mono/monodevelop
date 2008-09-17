@@ -31,6 +31,7 @@ using System.Xml;
 using System.IO;
 using System.Reflection;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.CodeDom;
 using System.CodeDom.Compiler;
@@ -39,7 +40,8 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects.Text;
@@ -48,7 +50,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 {
 	public class GuiBuilderProject
 	{
-		ArrayList formInfos;
+		ArrayList formInfos = new ArrayList ();
 		Stetic.Project gproject;
 		DotNetProject project;
 		string fileName;
@@ -79,7 +81,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				return;
 			
 			gproject = GuiBuilderService.SteticApp.CreateProject ();
-			formInfos = new ArrayList ();
 			
 			if (!System.IO.File.Exists (fileName)) {
 				// Regenerate the gtk-gui folder if the stetic project
@@ -123,25 +124,30 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 
 			if (Unloaded != null)
 				Unloaded (this, EventArgs.Empty);
-
-			foreach (GuiBuilderWindow win in formInfos)
-				win.Dispose ();
-
-			gproject.WidgetAdded -= OnAddWidget;
-			gproject.WidgetRemoved -= OnRemoveWidget;
-			gproject.ActionGroupsChanged -= OnGroupsChanged;
-			project.FileRemovedFromProject -= OnFileRemoved;
-			project.ReferenceAddedToProject -= OnReferenceAdded;
-			project.ReferenceRemovedFromProject -= OnReferenceRemoved;
-			gproject.Dispose ();
-			gproject = null;
-			formInfos = null;
+			if (formInfos != null) {
+				foreach (GuiBuilderWindow win in formInfos)
+					win.Dispose ();
+				formInfos = null;
+			}
+			if (gproject != null) {
+				gproject.WidgetAdded -= OnAddWidget;
+				gproject.WidgetRemoved -= OnRemoveWidget;
+				gproject.ActionGroupsChanged -= OnGroupsChanged;
+				gproject.Dispose ();
+				gproject = null;
+			}
+			if (project != null) {
+				project.FileRemovedFromProject -= OnFileRemoved;
+				project.ReferenceAddedToProject -= OnReferenceAdded;
+				project.ReferenceRemovedFromProject -= OnReferenceRemoved;
+			}
 			needsUpdate = true;
 			hasError = false;
 			librariesUpdated = false;
-			
-			watcher.Dispose ();
-			watcher = null;
+			if (watcher != null) {
+				watcher.Dispose ();
+				watcher = null;
+			}
 			NotifyChanged ();
 		}
 		
@@ -177,7 +183,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		public bool IsEmpty {
 			get {
 				// If the project is not loaded, assume not empty
-				return gproject != null && Windows.Count == 0; 
+				return gproject != null && Windows != null && Windows.Count == 0; 
 			}
 		}
 		
@@ -247,17 +253,19 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 	
 		void RegisterWindow (Stetic.WidgetInfo widget, bool notify)
 		{
-			foreach (GuiBuilderWindow w in formInfos)
-				if (w.RootWidget == widget)
-					return;
-
-			GuiBuilderWindow win = new GuiBuilderWindow (this, gproject, widget);
-			formInfos.Add (win);
+			if (formInfos != null) {
+				foreach (GuiBuilderWindow w in formInfos)
+					if (w.RootWidget == widget)
+						return;
 			
-			if (notify) {
-				if (WindowAdded != null)
-					WindowAdded (this, new WindowEventArgs (win));
-				NotifyChanged ();
+				GuiBuilderWindow win = new GuiBuilderWindow (this, gproject, widget);
+				formInfos.Add (win);
+			
+				if (notify) {
+					if (WindowAdded != null)
+						WindowAdded (this, new WindowEventArgs (win));
+					NotifyChanged ();
+				}
 			}
 		}
 	
@@ -294,7 +302,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		void OnRemoveWidget (object s, Stetic.WidgetInfoEventArgs args)
 		{
-			if (disposed)
+			if (disposed || Windows == null)
 				return;
 			foreach (GuiBuilderWindow form in Windows) {
 				if (form.RootWidget.Name == args.WidgetInfo.Name) {
@@ -382,27 +390,33 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public GuiBuilderWindow GetWindowForClass (string className)
 		{
-			foreach (GuiBuilderWindow form in Windows) {
-				if (CodeBinder.GetObjectName (form.RootWidget) == className)
-					return form;
+			if (Windows != null) {
+				foreach (GuiBuilderWindow form in Windows) {
+					if (CodeBinder.GetObjectName (form.RootWidget) == className)
+						return form;
+				}
 			}
 			return null;
 		}
 		
 		public GuiBuilderWindow GetWindowForFile (string fileName)
 		{
-			foreach (GuiBuilderWindow win in Windows) {
-				if (fileName == win.SourceCodeFile)
-					return win;
+			if (Windows != null) {
+				foreach (GuiBuilderWindow win in Windows) {
+					if (fileName == win.SourceCodeFile)
+						return win;
+				}
 			}
 			return null;
 		}
 		
 		public GuiBuilderWindow GetWindow (string name)
 		{
-			foreach (GuiBuilderWindow win in Windows) {
-				if (name == win.Name)
-					return win;
+			if (Windows != null) {
+				foreach (GuiBuilderWindow win in Windows) {
+					if (name == win.Name)
+						return win;
+				}
 			}
 			return null;
 		}
@@ -428,58 +442,61 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public string GetSourceCodeFile (Stetic.ProjectItemInfo obj, bool getUserClass)
 		{
-			IClass cls = GetClass (obj, getUserClass);
-			
-			if (cls != null)
-				return cls.Region.FileName;
-			else
-				return null;
+			IType cls = GetClass (obj, getUserClass);
+			if (cls != null && cls.CompilationUnit != null)
+				return cls.CompilationUnit.FileName;
+			return null;
 		}
 		
-		IClass GetClass (Stetic.ProjectItemInfo obj, bool getUserClass)
+		IType GetClass (Stetic.ProjectItemInfo obj, bool getUserClass)
 		{
 			string name = CodeBinder.GetClassName (obj);
 			return FindClass (name, getUserClass);
 		}
 		
-		public IClass FindClass (string className)
+		public IType FindClass (string className)
 		{
 			return FindClass (className, true);
 		}
 		
-		public IClass FindClass (string className, bool getUserClass)
+		public IType FindClass (string className, bool getUserClass)
 		{
 			string gui_folder = GtkDesignInfo.FromProject (project).GtkGuiFolder;
-			IParserContext ctx = GetParserContext ();
-			IClass[] classes = ctx.GetProjectContents ();
-			foreach (IClass cls in classes) {
-				if (cls.FullyQualifiedName == className) {
-					if (getUserClass && cls.Parts.Length > 1) {
+			ProjectDom ctx = GetParserContext ();
+			if (ctx == null)
+				return null;
+			IEnumerable<IType> classes = ctx.Types;
+			if (classes == null)
+				return null;
+			foreach (IType cls in classes) {
+				if (cls.FullName == className) {
+					if (getUserClass) {
 						// Return this class only if it is declared outside the gtk-gui
 						// folder. Generated partial classes will be ignored.
-						foreach (IClass part in cls.Parts) {
-							if (!part.Region.FileName.StartsWith (gui_folder))
+						foreach (IType part in cls.Parts) {
+							if (part.CompilationUnit != null && !part.CompilationUnit.FileName.StartsWith (gui_folder)) {
 								return part;
+							}
 						}
-						return null;
+						continue;
 					}
-					if (getUserClass && cls.Region != null && !string.IsNullOrEmpty (cls.Region.FileName) && cls.Region.FileName.StartsWith (gui_folder))
-						return null;
-					else
-						return cls;
+					if (getUserClass && cls.CompilationUnit != null && !string.IsNullOrEmpty (cls.CompilationUnit.FileName) && cls.CompilationUnit.FileName.StartsWith (gui_folder))
+						continue;
+					return cls;
 				}
 			}
 			return null;
 		}
 		
-		public IParserContext GetParserContext ()
+		public ProjectDom GetParserContext ()
 		{
-			IParserContext ctx = IdeApp.Workspace.ParserDatabase.GetProjectParserContext (Project);
+			return ProjectDomService.GetProjectDom (Project);
+/*			IParserContext ctx = IdeApp.Workspace.ParserDatabase.GetProjectParserContext (Project);
 			if (ctx != null && needsUpdate) {
 				needsUpdate = false;
 				ctx.UpdateDatabase ();
 			}
-			return ctx;
+			return ctx;*/
 		}
 		
 		public WidgetParser WidgetParser {
@@ -569,9 +586,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				GuiBuilderService.SteticApp.GenerateProjectCode (path, "Stetic", provider, null);
 			}
 			files.Add (path);
-		
-			foreach (GuiBuilderWindow win in Windows)
-				files.Add (GuiBuilderService.GenerateSteticCodeStructure (project, win.RootWidget, true, false));
+
+			if (Windows != null) {
+				foreach (GuiBuilderWindow win in Windows)
+					files.Add (GuiBuilderService.GenerateSteticCodeStructure (project, win.RootWidget, true, false));
+			}
 					
 			foreach (Stetic.ActionGroupInfo ag in SteticProject.ActionGroups)
 				files.Add (GuiBuilderService.GenerateSteticCodeStructure (project, ag, true, false));

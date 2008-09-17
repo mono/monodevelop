@@ -32,7 +32,7 @@
 
 using System;
 
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.DesignerSupport
 {	
@@ -45,14 +45,14 @@ namespace MonoDevelop.DesignerSupport
 		MemberType newMemberType = MemberType.Member;
 		
 		public MemberExistsException (string className, string memberName)
-			: base (null)
+			: base (DomRegion.Empty, null)
 		{
 			this.className = className;
 			this.memberName = memberName;
 		}
 		
-		public MemberExistsException (string className, string memberName, MemberType existingMemberType, MemberType newMemberType, IRegion errorLocation)
-			: base (errorLocation)
+		public MemberExistsException (string className, string memberName, MemberType existingMemberType, MemberType newMemberType, DomRegion errorLocation, string fileName)
+			: base (errorLocation, fileName)
 		{
 			this.className = className;
 			this.memberName = memberName;
@@ -60,13 +60,13 @@ namespace MonoDevelop.DesignerSupport
 			this.newMemberType = newMemberType;
 		}
 		
-		public MemberExistsException (string className, MemberType newMemberType, System.CodeDom.CodeTypeMember existingMember, IRegion errorLocation)
-			: this (className, existingMember.Name, newMemberType, GetMemberTypeFromCodeTypeMember (existingMember), errorLocation)
+		public MemberExistsException (string className, MemberType newMemberType, System.CodeDom.CodeTypeMember existingMember, DomRegion errorLocation, string fileName)
+			: this (className, existingMember.Name, newMemberType, GetMemberTypeFromCodeTypeMember (existingMember), errorLocation, fileName)
 		{
 		}
 		
-		public MemberExistsException (string className, System.CodeDom.CodeTypeMember newMember, MemberType existingMemberType, IRegion errorLocation)
-			: this (className, newMember.Name, GetMemberTypeFromCodeTypeMember (newMember), existingMemberType, errorLocation)
+		public MemberExistsException (string className, System.CodeDom.CodeTypeMember newMember, MemberType existingMemberType, DomRegion errorLocation, string fileName)
+			: this (className, newMember.Name, GetMemberTypeFromCodeTypeMember (newMember), existingMemberType, errorLocation, fileName)
 		{
 		}
 		

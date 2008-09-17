@@ -2,12 +2,13 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
-//     <version>$Revision: 2638 $</version>
+//     <version>$Revision: 2819 $</version>
 // </file>
 
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Diagnostics;
 
 using ICSharpCode.NRefactory.Ast;
 
@@ -20,9 +21,21 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		public Parser(ILexer lexer) : base(lexer)
 		{
 			this.lexer = (Lexer)lexer;
+			// due to anonymous methods, we always need a compilation unit, so
+			// create it in the constructor
+			compilationUnit = new CompilationUnit();
 		}
 		
 		StringBuilder qualidentBuilder = new StringBuilder();
+		
+		bool IsTokenWithGenericParameters ()
+		{
+			StartPeek();
+			Token t = Peek (1);
+			if (t.kind != Tokens.LessThan) 
+				return false;
+			return SkipGeneric(ref t);
+		}
 
 		Token t {
 			[System.Diagnostics.DebuggerStepThrough]
@@ -116,7 +129,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			if (!IsTypeKWForTypeCast(ref pt)) {
 				return false;
 			}
-			if (pt.kind == Tokens.Question)
+			if (pt.kind == Tokens.Question) // TODO: check if IsTypeKWForTypeCast doesn't already to this
 				pt = lexer.Peek();
 			return pt.kind == Tokens.CloseParenthesis;
 		}
@@ -137,8 +150,8 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		/* !!! Proceeds from current peek position !!! */
 		bool IsTypeNameOrKWForTypeCast(ref Token pt)
 		{
-			if (IsTypeKWForTypeCast(ref pt))
-				return true;
+			if (Tokens.TypeKW[pt.kind] || pt.kind == Tokens.Void)
+				return IsTypeKWForTypeCast(ref pt);
 			else
 				return IsTypeNameForTypeCast(ref pt);
 		}
@@ -148,14 +161,14 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		bool IsTypeNameForTypeCast(ref Token pt)
 		{
 			// ident
-			if (pt.kind != Tokens.Identifier) {
+			if (!IsIdentifierToken(pt)) {
 				return false;
 			}
 			pt = Peek();
 			// "::" ident
 			if (pt.kind == Tokens.DoubleColon) {
 				pt = Peek();
-				if (pt.kind != Tokens.Identifier) {
+				if (!IsIdentifierToken(pt)) {
 					return false;
 				}
 				pt = Peek();
@@ -209,21 +222,60 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			}
 			// check successor
 			pt = Peek();
-			return Tokens.CastFollower[pt.kind] || (Tokens.TypeKW[pt.kind] && lexer.Peek().kind == Tokens.Dot);
+			return Tokens.CastFollower[pt.kind];
 		}
 		// END IsTypeCast
+		
+		// Gets if the token is a possible token for an expression start
+		// Is used to determine if "a is Type ? token" a the start of a ternary
+		// expression or a type test for Nullable<Type>
+		bool IsPossibleExpressionStart(int token)
+		{
+			return Tokens.CastFollower[token] || Tokens.UnaryOp[token];
+		}
+		
+		// ( { [TypeNameOrKWForTypeCast] ident "," } )
+		bool IsLambdaExpression()
+		{
+			if (la.kind != Tokens.OpenParenthesis) {
+				return false;
+			}
+			StartPeek();
+			Token pt = Peek();
+			while (pt.kind != Tokens.CloseParenthesis) {
+				if (!IsTypeNameOrKWForTypeCast(ref pt)) {
+					return false;
+				}
+				if (IsIdentifierToken(pt)) {
+					// make ident optional: if implicitly typed lambda arguments are used, IsTypeNameForTypeCast
+					// has already accepted the identifier
+					pt = Peek();
+				}
+				if (pt.kind == Tokens.CloseParenthesis) {
+					break;
+				}
+				// require comma between parameters:
+				if (pt.kind == Tokens.Comma) {
+					pt = Peek();
+				} else {
+					return false;
+				}
+			}
+			pt = Peek();
+			return pt.kind == Tokens.LambdaArrow;
+		}
 
 		/* Checks whether the next sequences of tokens is a qualident *
 		 * and returns the qualident string                           */
 		/* !!! Proceeds from current peek position !!! */
 		bool IsQualident(ref Token pt, out string qualident)
 		{
-			if (pt.kind == Tokens.Identifier) {
+			if (IsIdentifierToken(pt)) {
 				qualidentBuilder.Length = 0; qualidentBuilder.Append(pt.val);
 				pt = Peek();
 				while (pt.kind == Tokens.Dot || pt.kind == Tokens.DoubleColon) {
 					pt = Peek();
-					if (pt.kind != Tokens.Identifier) {
+					if (!IsIdentifierToken(pt)) {
 						qualident = String.Empty;
 						return false;
 					}
@@ -288,7 +340,12 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		/* True, if ident is followed by "=" */
 		bool IdentAndAsgn ()
 		{
-			return la.kind == Tokens.Identifier && Peek(1).kind == Tokens.Assign;
+			return IsIdentifierToken(la) && Peek(1).kind == Tokens.Assign;
+		}
+		
+		bool IdentAndDoubleColon ()
+		{
+			return IsIdentifierToken(la) && Peek(1).kind == Tokens.DoubleColon;
 		}
 
 		bool IsAssignment () { return IdentAndAsgn(); }
@@ -296,7 +353,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		/* True, if ident is followed by ",", "=", "[" or ";" */
 		bool IsVarDecl () {
 			int peek = Peek(1).kind;
-			return la.kind == Tokens.Identifier &&
+			return IsIdentifierToken(la) &&
 				(peek == Tokens.Comma || peek == Tokens.Assign || peek == Tokens.Semicolon || peek == Tokens.OpenSquareBracket);
 		}
 
@@ -321,19 +378,19 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 
 		/* True, if "." is followed by an ident */
 		bool DotAndIdent () {
-			return la.kind == Tokens.Dot && Peek(1).kind == Tokens.Identifier;
+			return la.kind == Tokens.Dot && IsIdentifierToken(Peek(1));
 		}
 
 		/* True, if ident is followed by ":" */
 		bool IdentAndColon () {
-			return la.kind == Tokens.Identifier && Peek(1).kind == Tokens.Colon;
+			return IsIdentifierToken(la) && Peek(1).kind == Tokens.Colon;
 		}
 
 		bool IsLabel () { return IdentAndColon(); }
 
 		/* True, if ident is followed by "(" */
 		bool IdentAndLPar () {
-			return la.kind == Tokens.Identifier && Peek(1).kind == Tokens.OpenParenthesis;
+			return IsIdentifierToken(la) && Peek(1).kind == Tokens.OpenParenthesis;
 		}
 
 		/* True, if "catch" is followed by "(" */
@@ -346,7 +403,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		bool IsGlobalAttrTarget () {
 			Token pt = Peek(1);
 			return la.kind == Tokens.OpenSquareBracket &&
-				pt.kind == Tokens.Identifier && pt.val == "assembly";
+				IsIdentifierToken(pt) && (pt.val == "assembly" || pt.val == "module");
 		}
 
 		/* True, if "[" is followed by "," or "]" */
@@ -397,25 +454,17 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			
 			StartPeek();
 			Token pt = la;
-			return IsTypeNameOrKWForTypeCast(ref pt) && pt.kind == Tokens.Identifier;
+			return IsTypeNameOrKWForTypeCast(ref pt) && IsIdentifierToken(pt);
 		}
 
-		bool IsTokenWithGenericParameters ()
-		{
-			StartPeek();
-			Token t = Peek (1);
-			if (t.kind != Tokens.LessThan) 
-				return false;
-			return SkipGeneric(ref t);
-		}
-		
-		/* True if lookahead is type parameters (<...>) followed by the specified token */
-		bool IsGenericFollowedBy(int token)
+		/* True if lookahead is a type argument list (<...>) followed by
+		 * one of "(  )  ]  }  :  ;  ,  .  ?  ==  !=" */
+		bool IsGenericInSimpleNameOrMemberAccess()
 		{
 			Token t = la;
 			if (t.kind != Tokens.LessThan) return false;
 			StartPeek();
-			return SkipGeneric(ref t) && t.kind == token;
+			return SkipGeneric(ref t) && Tokens.GenericFollower[t.kind];
 		}
 
 		bool IsExplicitInterfaceImplementation()
@@ -432,34 +481,9 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			return false;
 		}
 
-		/* True, if lookahead ident is "where" */
-		bool IdentIsWhere () {
-			return la.kind == Tokens.Identifier && la.val == "where";
-		}
-
-		/* True, if lookahead ident is "get" */
-		bool IdentIsGet () {
-			return la.kind == Tokens.Identifier && la.val == "get";
-		}
-
-		/* True, if lookahead ident is "set" */
-		bool IdentIsSet () {
-			return la.kind == Tokens.Identifier && la.val == "set";
-		}
-
-		/* True, if lookahead ident is "add" */
-		bool IdentIsAdd () {
-			return la.kind == Tokens.Identifier && la.val == "add";
-		}
-
-		/* True, if lookahead ident is "remove" */
-		bool IdentIsRemove () {
-			return la.kind == Tokens.Identifier && la.val == "remove";
-		}
-
 		/* True, if lookahead ident is "yield" and than follows a break or return */
 		bool IsYieldStatement () {
-			return la.kind == Tokens.Identifier && la.val == "yield" && (Peek(1).kind == Tokens.Return || Peek(1).kind == Tokens.Break);
+			return la.kind == Tokens.Yield && (Peek(1).kind == Tokens.Return || Peek(1).kind == Tokens.Break);
 		}
 
 		/* True, if lookahead is a local attribute target specifier, *
@@ -470,7 +494,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			string val = la.val;
 
 			return (cur == Tokens.Event || cur == Tokens.Return ||
-			        (cur == Tokens.Identifier &&
+			        (Tokens.IdentifierTokens[cur] &&
 			         (val == "field" || val == "method"   || val == "module" ||
 			          val == "param" || val == "property" || val == "type"))) &&
 				Peek(1).kind == Tokens.Colon;
@@ -483,61 +507,50 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			return (la.kind == Tokens.GreaterThan && next.kind == Tokens.GreaterThan);
 		}
 
-		bool IsTypeReferenceExpression(Expression expr)
+		bool IsGenericExpression(Expression expr)
 		{
-			if (expr is TypeReferenceExpression) return ((TypeReferenceExpression)expr).TypeReference.GenericTypes.Count == 0;
-			while (expr is FieldReferenceExpression) {
-				expr = ((FieldReferenceExpression)expr).TargetObject;
-				if (expr is TypeReferenceExpression) return true;
-			}
-			return expr is IdentifierExpression;
-		}
-
-		TypeReferenceExpression GetTypeReferenceExpression(Expression expr, List<TypeReference> genericTypes)
-		{
-			TypeReferenceExpression	tre = expr as TypeReferenceExpression;
-			if (tre != null) {
-				return new TypeReferenceExpression(new TypeReference(tre.TypeReference.Type, tre.TypeReference.PointerNestingLevel, tre.TypeReference.RankSpecifier, genericTypes));
-			}
-			StringBuilder b = new StringBuilder();
-			if (!WriteFullTypeName(b, expr)) {
-				// there is some TypeReferenceExpression hidden in the expression
-				while (expr is FieldReferenceExpression) {
-					expr = ((FieldReferenceExpression)expr).TargetObject;
-				}
-				tre = expr as TypeReferenceExpression;
-				if (tre != null) {
-					TypeReference typeRef = tre.TypeReference;
-					if (typeRef.GenericTypes.Count == 0) {
-						typeRef = typeRef.Clone();
-						typeRef.Type += "." + b.ToString();
-						typeRef.GenericTypes.AddRange(genericTypes);
-					} else {
-						typeRef = new InnerClassTypeReference(typeRef, b.ToString(), genericTypes);
-					}
-					return new TypeReferenceExpression(typeRef);
-				}
-			}
-			return new TypeReferenceExpression(new TypeReference(b.ToString(), 0, null, genericTypes));
-		}
-
-		/* Writes the type name represented through the expression into the string builder. */
-		/* Returns true when the expression was converted successfully, returns false when */
-		/* There was an unknown expression (e.g. TypeReferenceExpression) in it */
-		bool WriteFullTypeName(StringBuilder b, Expression expr)
-		{
-			FieldReferenceExpression fre = expr as FieldReferenceExpression;
-			if (fre != null) {
-				bool result = WriteFullTypeName(b, fre.TargetObject);
-				if (b.Length > 0) b.Append('.');
-				b.Append(fre.FieldName);
-				return result;
-			} else if (expr is IdentifierExpression) {
-				b.Append(((IdentifierExpression)expr).Identifier);
-				return true;
-			} else {
+			if (expr is IdentifierExpression)
+				return ((IdentifierExpression)expr).TypeArguments.Count > 0;
+			else if (expr is MemberReferenceExpression)
+				return ((MemberReferenceExpression)expr).TypeArguments.Count > 0;
+			else
 				return false;
+		}
+
+		bool ShouldConvertTargetExpressionToTypeReference(Expression targetExpr)
+		{
+			if (targetExpr is IdentifierExpression)
+				return ((IdentifierExpression)targetExpr).TypeArguments.Count > 0;
+			else if (targetExpr is MemberReferenceExpression)
+				return ((MemberReferenceExpression)targetExpr).TypeArguments.Count > 0;
+			else
+				return false;
+		}
+		
+		TypeReference GetTypeReferenceFromExpression(Expression expr)
+		{
+			if (expr is TypeReferenceExpression)
+				return (expr as TypeReferenceExpression).TypeReference;
+			
+			IdentifierExpression ident = expr as IdentifierExpression;
+			if (ident != null) {
+				return new TypeReference(ident.Identifier, ident.TypeArguments);
 			}
+			
+			MemberReferenceExpression member = expr as MemberReferenceExpression;
+			if (member != null) {
+				TypeReference targetType = GetTypeReferenceFromExpression(member.TargetObject);
+				if (targetType != null) {
+					if (targetType.GenericTypes.Count == 0 && targetType.IsArrayType == false) {
+						TypeReference tr = new TypeReference(targetType.Type + "." + member.MemberName, member.TypeArguments);
+						tr.IsGlobal = targetType.IsGlobal;
+						return tr;
+					} else {
+						return new InnerClassTypeReference(targetType, member.MemberName, member.TypeArguments);
+					}
+				}
+			}
+			return null;
 		}
 		
 		bool IsMostNegativeIntegerWithoutTypeSuffix()
@@ -558,6 +571,36 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 				return uoe.Op == UnaryOperatorType.Minus;
 			} else {
 				return false;
+			}
+		}
+		
+		bool StartOfQueryExpression()
+		{
+			if (la.kind == Tokens.From) {
+				Token p = Peek(1);
+				if (IsIdentifierToken(p) || Tokens.TypeKW[p.kind])
+					return true;
+			}
+			return false;
+		}
+		
+		static bool IsIdentifierToken(Token tk)
+		{
+			return Tokens.IdentifierTokens[tk.kind];
+		}
+		
+		/// <summary>
+		/// Adds a child item to a collection stored in the parent node.
+		/// Also set's the item's parent to <paramref name="parent"/>.
+		/// Does nothing if item is null.
+		/// </summary>
+		static void SafeAdd<T>(INode parent, List<T> list, T item) where T : class, INode
+		{
+			Debug.Assert(parent != null);
+			Debug.Assert((parent is INullable) ? !(parent as INullable).IsNull : true);
+			if (item != null) {
+				list.Add(item);
+				item.Parent = parent;
 			}
 		}
 	}

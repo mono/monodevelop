@@ -26,8 +26,10 @@
 //
 
 using System;
+using System.Collections.Generic;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
 using Mono.Addins;
@@ -42,7 +44,7 @@ namespace MonoDevelop.AddinAuthoring
 	{
 		bool allowCreate = true;
 		bool allowCreateInterface = true;
-		IClass[] typeList;
+		IEnumerable<IType> typeList;
 		DotNetProject project;
 		bool loading;
 		
@@ -84,11 +86,11 @@ namespace MonoDevelop.AddinAuthoring
 			}
 		}
 		
-		public IClass[] TypeList {
+		public IEnumerable<IType> TypeList {
 			get { 
 				if (typeList == null && project != null) {
-					IParserContext ctx = IdeApp.Workspace.ParserDatabase.GetProjectParserContext (project);
-					typeList = ctx.GetProjectContents ();
+					ProjectDom ctx = ProjectDomService.GetProjectDom (project);
+					typeList = ctx.Types;
 				}
 				return typeList; 
 			}
@@ -133,10 +135,10 @@ namespace MonoDevelop.AddinAuthoring
 				return;
 			}
 			
-			foreach (IClass cls in TypeList) {
+			foreach (IType cls in TypeList) {
 				if (cls.ClassType != ClassType.Class && cls.ClassType != ClassType.Interface)
 					continue;
-				combo.AppendText (cls.FullyQualifiedName);
+				combo.AppendText (cls.FullName);
 			}
 			UpdateIcon ();
 			
@@ -172,10 +174,10 @@ namespace MonoDevelop.AddinAuthoring
 		{
 			if (TypeList == null)
 				return false;
-			foreach (IClass cls in TypeList) {
+			foreach (IType cls in TypeList) {
 				if (cls.ClassType != ClassType.Class && cls.ClassType != ClassType.Interface)
 					continue;
-				if (cls.FullyQualifiedName == TypeName)
+				if (cls.FullName == TypeName)
 					return true;
 			}
 			return false;

@@ -1,7 +1,372 @@
+2008-09-17  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/CSharpTextEditorCompletion.cs: Some changes required for unit
+	  testing.
+
+2008-09-16  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Gui/MemberCompletionData.cs: Improve rendering of documentation. The
+	  new EscapeText call also fixes bug #416842.
+
+2008-09-16  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/NRefactoryResolver.cs, Gui/NRefactoryParameterDataProvider.cs,
+	  Gui/CSharpTextEditorCompletion.cs: Removed some debug messages.
+
+2008-09-16  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/NRefactoryResolver.cs, Gui/NewCSharpExpressionFinder.cs,
+	  Gui/CSharpTextEditorCompletion.cs: fixed regression 325081.
+
+2008-09-15  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/NRefactoryResolver.cs: fixed possible null reference exception.
+
+2008-09-15  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/NewCSharpExpressionFinder.cs, Gui/CSharpTextEditorCompletion.cs:
+	  added namespace expression context.
+
+2008-09-15  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/CSharpTextEditorCompletion.cs: fixed code completion bug.
+
+2008-09-15  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/CSharpTextEditorCompletion.cs: added typeof ( context.
+
+2008-09-15  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/CSharpTextEditorCompletion.cs: added base class context.
+
+2008-09-15  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/CSharpTextEditorCompletion.cs: fixed regression 334620.
+
+2008-09-15  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/CSharpTextEditorCompletion.cs: fixed regression 325509.
+
+2008-09-15  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Gui/MemberCompletionData.cs: Use the EmitMarkup flag when generating
+	  member documentation.
+	* Gui/CSharpAmbience.cs: Escape '<' and '>' when emitting type names
+	  with markup.
+
+2008-09-15  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/NewCSharpExpressionFinder.cs: fixed regression 324908
+
+2008-09-15  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/NRefactoryParameterDataProvider.cs, Gui/CSharpAmbience.cs: fixed
+	  regression 324907.
+
+2008-09-15  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/CSharpTextEditorCompletion.cs: Fixed offset for method
+	  completion.
+
+2008-09-15  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/ResolveVisitor.cs: fixed regression 323317.
+
+2008-09-15  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/ResolveVisitor.cs: fixed regression from 323283.
+
+2008-09-15  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/NRefactoryResolver.cs: fixed regression from 321306.
+
+2008-09-15  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/NRefactoryResolver.cs, Gui/CSharpTextEditorCompletion.cs: Fixed
+	  regression from bug 318834.
+
+2008-09-15  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/CSharpAmbience.cs: Ambiences now take care of the IncludeGenerics
+	  flag.
+
+2008-09-15  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/CSharpTextEditorCompletion.cs: fixed code completion list bug.
+
+2008-09-15  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/NRefactoryResolver.cs, Gui/CSharpTextEditorCompletion.cs: fixed
+	  cc bug.
+
+2008-09-15  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* CSharpBinding.addin.xml: Run the completion extension before the
+	  indentation extension. Fixes tab completion of 'override'.
+
+2008-09-12  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/MemberCompletionData.cs: fixed bug in code completion list.
+
+2008-09-12  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/MemberCompletionData.cs, Gui/CSharpAmbience.cs,
+	  Gui/CSharpTextEditorCompletion.cs: Worked on code completion.
+
+2008-09-12  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/NewOverrideCompletionData.cs, Gui/CSharpTextEditorCompletion.cs:
+	  Worked on override completion.
+
+2008-09-12  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/CSharpTextEditorCompletion.cs: Fixed bug in override completion.
+
+2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Autotools/Autotools.mdp, gtk-gui/generated.cs,
+	  gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs,
+	  gtk-gui/CSharpBinding.CompilerOptionsPanelWidget.cs,
+	  gtk-gui/CSharpBinding.FormattingPanelWidget.cs, gtk-gui/gui.stetic:
+	  Updated generated code.
+
+2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Gui/CompilerOptionsPanelWidget.cs, Gui/CSharpTextEditorCompletion.cs,
+	  Gui/NRefactoryResolver.cs, Gui/ResolveVisitor.cs: Track api
+	  changes.
+
+2008-09-11  Mike Krüger <mkrueger@novell.com> 
+
+	* Parser/NRefactoryParser.cs: Worked on fold information update.
+
+2008-09-10  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/ResolveVisitor.cs: Added missing search type.
+
+2008-09-10  Mike Krüger <mkrueger@novell.com> 
+
+	* Parser/NRefactoryParser.cs: recognizing using/namespace import
+	  differences
+
+2008-09-10  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/NRefactoryDocumentMetaInformation.cs, Parser/DomParser.cs,
+	  Parser/NRefactoryParser.cs: Changed compilation unit/document meta
+	  information interface.
+
+2008-09-09  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/CSharpTextEditorCompletion.cs: Added duplicate namespace filter.
+
+2008-09-09  Mike Krüger <mkrueger@novell.com> 
+
+	* Parser/DomParser.cs, Parser/NRefactoryParser.cs: Some changes caused
+	  by interface changes.
+
+2008-09-08  Mike Krüger <mkrueger@novell.com> 
+
+	* Parser/DomParser.cs, Parser/NRefactoryParser.cs: Fixed some issues
+	  found by unit testing.
+
+2008-09-05  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/NRefactoryResolver.cs, Parser/DomParser.cs,
+	  Parser/NRefactoryParser.cs: Worked on dom/refactoring.
+
+2008-09-05  Mike Krüger <mkrueger@novell.com> 
+
+	* Parser/NRefactoryParser.cs: fixed bug with namespace resolving.
+
+2008-09-04  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/NRefactoryResolver.cs: Fixed inner type bug.
+
+2008-09-04  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/NRefactoryParameterDataProvider.cs, CSharpBinding.addin.xml,
+	  CSharpBinding.mdp, Parser/NRefactoryParser.cs, gtk-gui/gui.stetic,
+	  Makefile.am: Added nrefactory based parser.
+
+2008-08-21  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/NRefactoryResolver.cs: fixed possible null ref.
+
+2008-08-20  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/NRefactoryResolver.cs, Gui/ResolveVisitor.cs,
+	  Parser/DomParser.cs: Worked on indexer resolving.
+
+2008-08-20  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/NRefactoryResolver.cs, Gui/ResolveVisitor.cs,
+	  Gui/NRefactoryParameterDataProvider.cs,
+	  Gui/NewCSharpExpressionFinder.cs: Fixed some accessibility issues.
+
 2008-08-19  Mike Krüger <mkrueger@novell.com> 
 
 	* Parser/DomParser.cs: Fixed type modifiers (fixes some bugs in
 	  stetic).
+
+2008-08-19  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/NRefactoryResolver.cs, Parser/DomParser.cs,
+	  Parser/CodeGenerator.cs: Worked on resolving/code generation.
+
+2008-08-18  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/ResolveVisitor.cs, Gui/NRefactoryParameterDataProvider.cs,
+	  Gui/CSharpTextEditorCompletion.cs: Worked on completion.
+
+2008-08-15  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/NRefactoryResolver.cs, Gui/ResolveVisitor.cs,
+	  Gui/NRefactoryParameterDataProvider.cs,
+	  Gui/CSharpTextEditorCompletion.cs,
+	  Gui/CSharpTextEditorIndentation.cs: Worked on completion.
+
+2008-08-15  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/NRefactoryResolver.cs, Gui/CSharpTextEditorCompletion.cs,
+	  Parser/DomParser.cs, Parser/CodeGenerator.cs,
+	  Parser/LanguageItemVisitor.cs,
+	  Parser/SharpDevelopTree/GenericParameter.cs,
+	  Parser/SharpDevelopTree/Destructor.cs,
+	  Parser/SharpDevelopTree/Method.cs,
+	  Parser/SharpDevelopTree/ReturnType.cs,
+	  Parser/SharpDevelopTree/Class.cs,
+	  Parser/SharpDevelopTree/Constructor.cs,
+	  Parser/SharpDevelopTree/AttributeSection.cs,
+	  Parser/CSharpExpressionFinder.cs, Makefile.am: worked on code
+	  completion/dom/enum completion,
+
+2008-08-13  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/NRefactoryResolver.cs, Gui/ResolveVisitor.cs,
+	  Parser/CodeGenerator.cs: Worked on some todos.
+
+2008-08-08  Mike Krüger <mkrueger@novell.com> 
+
+	* Parser/CodeGenerator.cs: Worked on some TODOS in the code generator.
+
+2008-08-08  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/NewOverrideCompletionData.cs, Gui/CSharpTextEditorCompletion.cs:
+	  Added ToString method auto generation.
+
+2008-08-07  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/NRefactoryResolver.cs, Gui/CSharpAmbience.cs,
+	  Parser/CodeGenerator.cs: Worked on dom.
+
+2008-08-06  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/NRefactoryResolver.cs, Gui/CSharpTextEditorCompletion.cs,
+	  Parser/DomParser.cs: Worked on code completion.
+
+2008-08-05  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/NRefactoryResolver.cs, Gui/ResolveVisitor.cs: Fixed resolver bug.
+
+2008-08-04  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/ResolveVisitor.cs, Gui/CSharpAmbience.cs, Parser/DomParser.cs:
+	  Worked on ambiences and resolving
+
+2008-08-04  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/NRefactoryResolver.cs, Gui/ResolveVisitor.cs,
+	  Gui/CSharpTextEditorCompletion.cs: Worked on C#3 code completion.
+
+2008-08-01  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Gui/CSharpTextEditorCompletion.cs,
+	  Gui/CSharpTextEditorIndentation.cs: Share the state engine between
+	  these two editor extensions. Should improve performance a fair bit.
+
+2008-08-01  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/NRefactoryResolver.cs: added some changes for return type
+	  representation.
+
+2008-07-31  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Gui/CSharpTextEditorCompletion.cs,
+	  Gui/CSharpTextEditorIndentation.cs: Only attach to C# documents.
+
+2008-07-31  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/CSharpParameterDataProvider.cs, Gui/OverrideCompletionData.cs,
+	  CSharpBinding.mdp, Parser/DomParser.cs, Parser/Parser.cs,
+	  Parser/CSharpVisitor.cs, Parser/Resolver.cs, Parser/TypeVisitor.cs,
+	  Parser/LanguageItemVisitor.cs, Parser/ExpressionFinder.cs,
+	  Parser/CSharpExpressionFinder.cs, CSharpAmbience.cs, Makefile.am:
+	  Removed outdated files.
+
+2008-07-31  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/NRefactoryResolver.cs, Gui/ResolveVisitor.cs,
+	  Gui/NewCSharpExpressionFinder.cs: Worked on C#3 code completion.
+
+2008-07-30  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/CSharpTextEditorExtension.cs, Gui/CSharpTextEditorIndentation.cs:
+	  Worked on text editor indentation.
+
+2008-07-30  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/NRefactoryResolver.cs, Gui/ResolveVisitor.cs: some changes due to
+	  dom changes.
+
+2008-07-29  Mike Krüger <mkrueger@novell.com> 
+
+	* CSharpLanguageBinding.cs, Gui/CSharpParameterDataProvider.cs,
+	  Gui/CSharpTextEditorExtension.cs, Gui/NewCSharpExpressionFinder.cs,
+	  Gui/OverrideCompletionData.cs, Gui/CSharpAmbience.cs,
+	  Gui/CodeGenerationPanel.cs, Gui/CompilerOptionsPanelWidget.cs,
+	  Parser/Parser.cs, Parser/CSharpVisitor.cs, Parser/CodeGenerator.cs,
+	  Parser/Resolver.cs, Parser/TypeVisitor.cs,
+	  Parser/LanguageItemVisitor.cs, Parser/ExpressionFinder.cs,
+	  Parser/SharpDevelopTree/GenericParameter.cs,
+	  Parser/SharpDevelopTree/Destructor.cs,
+	  Parser/SharpDevelopTree/Method.cs,
+	  Parser/SharpDevelopTree/ReturnType.cs,
+	  Parser/SharpDevelopTree/Class.cs,
+	  Parser/SharpDevelopTree/Constructor.cs,
+	  Parser/SharpDevelopTree/AttributeSection.cs,
+	  Parser/CSharpExpressionFinder.cs, CSharpAmbience.cs: Translated old
+	  code to new dom.
+
+2008-07-29  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/CSharpTextEditorExtension.cs, Parser/CodeGenerator.cs: Changes
+	  for converted refactoring infrastructure.
+
+2008-07-28  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/ResolveVisitor.cs, Parser/LanguageItemVisitor.cs: Fixed some
+	  nrefactory stuff.
+
+2008-07-28  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/NRefactoryDocumentMetaInformation.cs, Parser/Parser.cs: Some
+	  changes for nrefactory.
+
+2008-07-28  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/NRefactoryDocumentMetaInformation.cs, Gui/ResolveVisitor.cs,
+	  Parser/Parser.cs, Parser/CodeGenerator.cs, Parser/TypeVisitor.cs,
+	  Parser/LanguageItemVisitor.cs: Some changes that make the
+	  csharpbinding compile with the new nrefactory.
+
+2008-07-27  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/NewOverrideCompletionData.cs, Gui/CSharpTextEditorCompletion.cs,
+	  Gui/NRefactoryDocumentMetaInformation.cs,
+	  Gui/MemberCompletionData.cs, Gui/NRefactoryResolver.cs,
+	  Gui/ResolveVisitor.cs, Gui/NewCSharpExpressionFinder.cs,
+	  Gui/CSharpAmbience.cs, Parser/DomParser.cs, CSharpAmbience.cs:
+	  Worked on code completion/new dom.
 
 2008-07-23  Michael Hutchinson <mhutchinson@novell.com> 
 

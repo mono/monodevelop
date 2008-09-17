@@ -2,19 +2,19 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
-//     <version>$Revision: 975 $</version>
+//     <version>$Revision: 2729 $</version>
 // </file>
 
 using System;
 using System.Collections.Generic;
 
-namespace NRefactoryASTGenerator.AST
+namespace NRefactoryASTGenerator.Ast
 {
 	interface INode {}
 	interface INullable {}
-	struct Point {}
+	struct Location {}
 	
-	enum Modifier { None }
+	enum Modifiers { None }
 	
 	[CustomImplementation]
 	abstract class AbstractNode : INode {}
@@ -22,10 +22,11 @@ namespace NRefactoryASTGenerator.AST
 	abstract class AttributedNode : AbstractNode
 	{
 		List<AttributeSection> attributes;
-		Modifier               modifier;
+		Modifiers modifier;
 		
+		public AttributedNode() {}
 		public AttributedNode(List<AttributeSection> attributes) {}
-		public AttributedNode(Modifier modifier, List<AttributeSection> attributes) {}
+		public AttributedNode(Modifiers modifier, List<AttributeSection> attributes) {}
 	}
 	
 	abstract class ParametrizedNode : AttributedNode
@@ -33,27 +34,30 @@ namespace NRefactoryASTGenerator.AST
 		string name;
 		List<ParameterDeclarationExpression> parameters;
 		
-		public ParametrizedNode(Modifier modifier, List<AttributeSection> attributes,
-		                        string name, List<ParameterDeclarationExpression> parameters)
-			: base(modifier, attributes)
-		{}
+		public ParametrizedNode() {}
 		
-		public ParametrizedNode(Modifier modifier, List<AttributeSection> attributes)
+		public ParametrizedNode(Modifiers modifier, List<AttributeSection> attributes,
+		                        string name, List<ParameterDeclarationExpression> parameters)
 			: base(modifier, attributes)
 		{}
 	}
 	
 	[CustomImplementation]
-	class TypeReference : AbstractNode {}
+	class TypeReference : AbstractNode
+	{
+		List<TypeReference> genericTypes;
+	}
+	
 	[CustomImplementation]
-	class InnerClassTypeReference : TypeReference {}
+	class InnerClassTypeReference : TypeReference
+	{
+		TypeReference baseType;
+	}
 	
 	class AttributeSection : AbstractNode, INullable
 	{
 		string attributeTarget;
 		List<Attribute> attributes;
-		
-		public AttributeSection(string attributeTarget, List<Attribute> attributes) {}
 	}
 	
 	class Attribute : AbstractNode
@@ -62,6 +66,7 @@ namespace NRefactoryASTGenerator.AST
 		List<Expression> positionalArguments;
 		List<NamedArgumentExpression> namedArguments;
 		
+		public Attribute() {}
 		public Attribute(string name, List<Expression> positionalArguments, List<NamedArgumentExpression> namedArguments) {}
 	}
 }

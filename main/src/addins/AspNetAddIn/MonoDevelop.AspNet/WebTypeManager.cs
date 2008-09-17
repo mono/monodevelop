@@ -38,7 +38,8 @@ using System.Web.Configuration;
 
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Parser;
 
 namespace MonoDevelop.AspNet
 {
@@ -220,121 +221,109 @@ namespace MonoDevelop.AspNet
 		
 		public static string SystemWebControlLookup (string tagName, MonoDevelop.Core.ClrVersion clrVersion)
 		{
-			IAssemblyParserContext assem = GetSystemWebAssemblyContext (clrVersion);
-			IClass cls = assem.GetClass ("System.Web.UI.WebControls." + tagName, true, false);
-			return cls != null? cls.FullyQualifiedName : null;
+			ProjectDom database = GetSystemWebAssemblyContext (clrVersion);
+			IType cls = database.GetType ("System.Web.UI.WebControls." + tagName, false);
+			return cls != null? cls.FullName : null;
 		}
 		
-		static IAssemblyParserContext GetSystemWebAssemblyContext (MonoDevelop.Core.ClrVersion clrVersion)
+		static ProjectDom GetSystemWebAssemblyContext (MonoDevelop.Core.ClrVersion clrVersion)
 		{
 			string assem = MonoDevelop.Core.Runtime.SystemAssemblyService.GetAssemblyNameForVersion ("System.Web", clrVersion);
-			return MonoDevelop.Ide.Gui.IdeApp.Workspace.ParserDatabase.GetAssemblyParserContext (assem);
+			return MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetAssemblyDom (assem);
 		}
 		
 		public static string AssemblyTypeNameLookup (string tagName, string namespac, string assem)
 		{
-			IClass cls = AssemblyTypeLookup (tagName, namespac, assem);
-			return cls != null? cls.FullyQualifiedName : null;
+			IType cls = AssemblyTypeLookup (tagName, namespac, assem);
+			return cls != null? cls.FullName : null;
 		}
 		
-		public static IClass AssemblyTypeLookup (string tagName, string namespac, string assem)
+		public static IType AssemblyTypeLookup (string tagName, string namespac, string assem)
 		{
-			IParserContext ctx = IdeApp.Workspace.ParserDatabase.GetAssemblyParserContext (assem);
-			if (ctx == null)
+			ProjectDom database = MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetAssemblyDom (assem);
+			if (database == null)
 				return null;
-			ctx.UpdateDatabase ();
-			return ctx.GetClass (namespac + "." + tagName, true, false);
+//			ctx.UpdateDatabase ();
+			return database.GetType (namespac + "." + tagName, false);
 		}
 		
 		#endregion
 		
 		#region System type listings
 		
-		public static IEnumerable<IClass> ListSystemControlClasses (MonoDevelop.Core.ClrVersion version)
+		static MonoDevelop.Core.ClrVersion GetProjectClrVersion (AspNetAppProject project)
 		{
-			//FIXME respect versions
-			return ListControlClasses ("System.Web");
+			return project == null? MonoDevelop.Core.ClrVersion.Default : project.ClrVersion;
 		}
 		
-		public static IEnumerable<IClass> ListControlClasses (string assem)
+		public static ProjectDom GetSystemWebDom (AspNetAppProject project)
+		{
+			return MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetAssemblyDom (
+				MonoDevelop.Core.Runtime.SystemAssemblyService.GetAssemblyNameForVersion (
+					"System.Web", GetProjectClrVersion (project)));
+		}
+		
+		
+		public static IEnumerable<IType> ListSystemControlClasses (AspNetAppProject project)
+		{
+			return ListControlClasses (
+				MonoDevelop.Core.Runtime.SystemAssemblyService.GetAssemblyNameForVersion (
+					"System.Web",
+					GetProjectClrVersion (project)),
+				"System.Web.UI.WebControls");
+		}
+		
+		public static IEnumerable<IType> ListControlClasses (string assem, string namespac)
 		{
 			
-			IParserContext ctx = IdeApp.Workspace.ParserDatabase.GetAssemblyParserContext (assem);
-			if (ctx == null)
+			ProjectDom database = MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetAssemblyDom (assem);
+			if (database == null)
 				yield break;
 			
-			ctx.UpdateDatabase ();
+			DomReturnType swc = new DomReturnType ("System.Web.UI.Control");
 			
-			foreach (IClass cls in allClasses (ctx, "System.Web.UI"))
-				if (IsAspTag (ctx, cls))
-					yield return cls;
-		}
-		
-		static IEnumerable<IClass> allClasses (IParserContext ctx, string rootNamespace)
-		{
-			foreach (string namespac in ctx.GetNamespaceList (rootNamespace, true, true))
-				foreach (IClass c in allClasses (ctx, rootNamespace + "." + namespac))
-					yield return c;
-			
-			foreach (string clsStr in ctx.GetClassList (rootNamespace, true, true)) {
-				IClass cls = ctx.GetClass (rootNamespace + "." + clsStr);
-				if (cls != null)
+			//return classes if they derive from system.web.ui.control
+			foreach (IMember mem in database.GetNamespaceContents (namespac, true, true)) {
+				IType cls = mem as IType;
+				if (cls != null && !cls.IsAbstract && cls.IsPublic && cls.IsBaseType (swc))
 					yield return cls;
 			}
-		}
-		
-		static bool IsAspTag (IParserContext ctx, IClass cls)
-		{
-			if (cls.IsAbstract || !cls.IsPublic)
-				return false;
-			IClass swc = ctx.GetClass ("System.Web.UI.Control");
-			if (swc == null)
-				throw new Exception ("Could not find IClass for System.Web.UI.Control");
-			
-			return FindBaseClass (ctx, cls, swc);
-		}
-		
-		static bool FindBaseClass (IParserContext ctx, IClass cls, IClass lookingFor)
-		{
-			if (cls == lookingFor)
-				return true;
-			
-			foreach (IReturnType rt in cls.BaseTypes) {
-				if (!rt.IsRootType) {
-					IClass c2 = ctx.GetClass (rt.FullyQualifiedName);
-					if (FindBaseClass (ctx, c2, lookingFor))
-						return true;
-				}
-			}
-			return false;
 		}
 		
 		#endregion
 		
 		public static string TypeNameLookup (AspNetAppProject project, string tagName, string namespac, string assem)
 		{
-			IClass cls = TypeLookup (project, tagName, namespac, assem);
-			return cls != null? cls.FullyQualifiedName : null;
+			IType cls = TypeLookup (project, tagName, namespac, assem);
+			return cls != null? cls.FullName : null;
 		}
 		
-		public static IClass TypeLookup (AspNetAppProject project, string tagName, string namespac, string assem)
+		public static IType TypeLookup (AspNetAppProject project, string tagName, string namespac, string assem)
 		{
-			IClass cls = null;
-			IParserContext ctx = null;
+			IType cls = null;
+			ProjectDom database = null;
+			
 			if (!string.IsNullOrEmpty (namespac)) {
 				if (!string.IsNullOrEmpty (assem))
-					ctx = IdeApp.Workspace.ParserDatabase.GetAssemblyParserContext (assem);
+					database = MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetAssemblyDom (assem);
 				else if (project != null)
-					ctx = IdeApp.Workspace.ParserDatabase.GetProjectParserContext (project);
+					database = MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetProjectDom (project);
 				else
-					ctx = GetSystemWebAssemblyContext (MonoDevelop.Core.ClrVersion.Default);
-				ctx.UpdateDatabase ();
-				cls = ctx.GetClass (namespac + "." + tagName, true, false);
+					database = GetSystemWebAssemblyContext (MonoDevelop.Core.ClrVersion.Default);
+//FIXME				
+//ctx.UpdateDatabase ();
+				
+				if (database == null) {
+					MonoDevelop.Core.LoggingService.LogError ("WebTypeManager could not obtain a type database.");
+					return null;
+				}
+				
+				cls = database.GetType (namespac + "." + tagName, false);
 			}
 			return cls;
 		}
 		
-		public static string GetControlPrefix (AspNetAppProject project, IClass control)
+		public static string GetControlPrefix (AspNetAppProject project, IType control)
 		{
 			if (control.Namespace == "System.Web.UI.WebControls")
 				return "asp";

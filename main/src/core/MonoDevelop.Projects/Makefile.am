@@ -9,45 +9,74 @@ REFS =  \
 	-r:$(top_builddir)/build/bin/Mono.Cecil.dll \
 	-r:$(top_builddir)/build/bin/Mono.Cecil.Mdb.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:Mono.Data \
+	-r:Mono.Data.Sqlite \
+	-r:Mono.Data.SqliteClient \
 	-r:Mono.Posix \
 	-r:System \
+	-r:System.Data \
 	-r:System.Drawing \
 	-r:System.Xml
 
 FILES =  \
-	MonoDevelop.Projects.Ambience/Ambience.cs \
-	MonoDevelop.Projects.Ambience/AmbienceService.cs \
-	MonoDevelop.Projects.Ambience/ConversionFlags.cs \
-	MonoDevelop.Projects.Ambience/NetAmbience.cs \
 	MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs \
 	MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs \
 	MonoDevelop.Projects.CodeGeneration/IRefactorer.cs \
 	MonoDevelop.Projects.CodeGeneration/RefactorerContext.cs \
 	MonoDevelop.Projects.CodeGeneration/RefactorOperations.cs \
 	MonoDevelop.Projects.CodeGeneration/XmlCodeDomReader.cs \
-	MonoDevelop.Projects.Documentation/IDocumentationService.cs \
+	MonoDevelop.Projects.Dom.Database/CodeCompletionDatabase.cs \
+	MonoDevelop.Projects.Dom.Database/DatabaseColumnAttribute.cs \
+	MonoDevelop.Projects.Dom.Database/DatabaseEvent.cs \
+	MonoDevelop.Projects.Dom.Database/DatabaseField.cs \
+	MonoDevelop.Projects.Dom.Database/DatabaseMethod.cs \
+	MonoDevelop.Projects.Dom.Database/DatabaseParameter.cs \
+	MonoDevelop.Projects.Dom.Database/DatabaseProjectDom.cs \
+	MonoDevelop.Projects.Dom.Database/DatabaseProperty.cs \
+	MonoDevelop.Projects.Dom.Database/DatabaseType.cs \
+	MonoDevelop.Projects.Dom.Database/DateTimeUtil.cs \
+	MonoDevelop.Projects.Dom.Database/HyenaSqliteCommand.cs \
+	MonoDevelop.Projects.Dom.Database/HyenaSqliteConnection.cs \
+	MonoDevelop.Projects.Dom.Database/MonoDevelopDatabaseConnection.cs \
+	MonoDevelop.Projects.Dom.Database/SqliteUtils.cs \
 	MonoDevelop.Projects.Dom.Output/Ambience.cs \
 	MonoDevelop.Projects.Dom.Output/AmbienceService.cs \
 	MonoDevelop.Projects.Dom.Output/NetAmbience.cs \
 	MonoDevelop.Projects.Dom.Output/OutputFlags.cs \
 	MonoDevelop.Projects.Dom.Parser/AbstractParser.cs \
+	MonoDevelop.Projects.Dom.Parser/AssemblyInformationEventHandler.cs \
+	MonoDevelop.Projects.Dom.Parser/CommentTasksChangedEventHandler.cs \
 	MonoDevelop.Projects.Dom.Parser/IParser.cs \
+	MonoDevelop.Projects.Dom.Parser/IParserDatabase.cs \
+	MonoDevelop.Projects.Dom.Parser/IResolver.cs \
+	MonoDevelop.Projects.Dom.Parser/ITypeNameResolver.cs \
+	MonoDevelop.Projects.Dom.Parser/ParseInformation.cs \
+	MonoDevelop.Projects.Dom.Parser/ParseInformationEventHandler.cs \
 	MonoDevelop.Projects.Dom.Parser/ProjectDom.cs \
 	MonoDevelop.Projects.Dom.Parser/ProjectDomEventArgs.cs \
-	MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs \
+	MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs \
+	MonoDevelop.Projects.Dom.Parser/TypeNameResolver.cs \
+	MonoDevelop.Projects.Dom.Serialization/AssemblyCodeCompletionDatabase.cs \
+	MonoDevelop.Projects.Dom.Serialization/ClassEntry.cs \
+	MonoDevelop.Projects.Dom.Serialization/ClassInformationEventHandler.cs \
+	MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs \
+	MonoDevelop.Projects.Dom.Serialization/DatabaseProjectDom.cs \
+	MonoDevelop.Projects.Dom.Serialization/DomPersistence.cs \
+	MonoDevelop.Projects.Dom.Serialization/DomTypeProxy.cs \
+	MonoDevelop.Projects.Dom.Serialization/FileEntry.cs \
+	MonoDevelop.Projects.Dom.Serialization/IParserService.cs \
+	MonoDevelop.Projects.Dom.Serialization/NamespaceEntry.cs \
+	MonoDevelop.Projects.Dom.Serialization/ParserDatabase.cs \
+	MonoDevelop.Projects.Dom.Serialization/ProjectCodeCompletionDatabase.cs \
+	MonoDevelop.Projects.Dom.Serialization/SimpleCodeCompletionDatabase.cs \
 	MonoDevelop.Projects.Dom/AbstractMember.cs \
-	MonoDevelop.Projects.Dom/AssemblyCodeCompletionDatabase.cs \
 	MonoDevelop.Projects.Dom/AttributeTarget.cs \
-	MonoDevelop.Projects.Dom/ClassEntry.cs \
 	MonoDevelop.Projects.Dom/ClassType.cs \
-	MonoDevelop.Projects.Dom/CodeCompletionDatabase.cs \
 	MonoDevelop.Projects.Dom/Comment.cs \
 	MonoDevelop.Projects.Dom/CommentType.cs \
 	MonoDevelop.Projects.Dom/CompilationUnit.cs \
-	MonoDevelop.Projects.Dom/CompilationUnitEventArgs.cs \
 	MonoDevelop.Projects.Dom/CompoundType.cs \
 	MonoDevelop.Projects.Dom/ConditionalRegion.cs \
-	MonoDevelop.Projects.Dom/DefaultParserContext.cs \
 	MonoDevelop.Projects.Dom/DomAttribute.cs \
 	MonoDevelop.Projects.Dom/DomCecilAttribute.cs \
 	MonoDevelop.Projects.Dom/DomCecilCompilationUnit.cs \
@@ -56,28 +85,23 @@ FILES =  \
 	MonoDevelop.Projects.Dom/DomCecilMethod.cs \
 	MonoDevelop.Projects.Dom/DomCecilParameter.cs \
 	MonoDevelop.Projects.Dom/DomCecilProperty.cs \
-	MonoDevelop.Projects.Dom/DomCecilReturnType.cs \
 	MonoDevelop.Projects.Dom/DomCecilType.cs \
 	MonoDevelop.Projects.Dom/DomEvent.cs \
 	MonoDevelop.Projects.Dom/DomField.cs \
 	MonoDevelop.Projects.Dom/DomLocation.cs \
 	MonoDevelop.Projects.Dom/DomMethod.cs \
 	MonoDevelop.Projects.Dom/DomParameter.cs \
-	MonoDevelop.Projects.Dom/DomPersistence.cs \
 	MonoDevelop.Projects.Dom/DomProperty.cs \
 	MonoDevelop.Projects.Dom/DomRegion.cs \
 	MonoDevelop.Projects.Dom/DomReturnType.cs \
 	MonoDevelop.Projects.Dom/DomType.cs \
-	MonoDevelop.Projects.Dom/DomTypeProxy.cs \
 	MonoDevelop.Projects.Dom/DomUsing.cs \
 	MonoDevelop.Projects.Dom/Error.cs \
 	MonoDevelop.Projects.Dom/ExpressionContext.cs \
 	MonoDevelop.Projects.Dom/ExpressionResult.cs \
-	MonoDevelop.Projects.Dom/FileEntry.cs \
 	MonoDevelop.Projects.Dom/FoldingRegion.cs \
 	MonoDevelop.Projects.Dom/IAttribute.cs \
 	MonoDevelop.Projects.Dom/ICompilationUnit.cs \
-	MonoDevelop.Projects.Dom/IDocumentMetainformation.cs \
 	MonoDevelop.Projects.Dom/IDomVisitor.cs \
 	MonoDevelop.Projects.Dom/IEvent.cs \
 	MonoDevelop.Projects.Dom/IExpressionFinder.cs \
@@ -85,20 +109,20 @@ FILES =  \
 	MonoDevelop.Projects.Dom/IMember.cs \
 	MonoDevelop.Projects.Dom/IMethod.cs \
 	MonoDevelop.Projects.Dom/IParameter.cs \
-	MonoDevelop.Projects.Dom/IParserContext.cs \
 	MonoDevelop.Projects.Dom/IProperty.cs \
 	MonoDevelop.Projects.Dom/IReturnType.cs \
 	MonoDevelop.Projects.Dom/IType.cs \
 	MonoDevelop.Projects.Dom/IUsing.cs \
+	MonoDevelop.Projects.Dom/LocalVariable.cs \
 	MonoDevelop.Projects.Dom/Modifiers.cs \
 	MonoDevelop.Projects.Dom/Namespace.cs \
-	MonoDevelop.Projects.Dom/NamespaceEntry.cs \
 	MonoDevelop.Projects.Dom/ParameterModifiers.cs \
+	MonoDevelop.Projects.Dom/ParsedDocument.cs \
+	MonoDevelop.Projects.Dom/ParsedDocumentEventArgs.cs \
 	MonoDevelop.Projects.Dom/PreProcessorDefine.cs \
-	MonoDevelop.Projects.Dom/ProjectCodeCompletionDatabase.cs \
 	MonoDevelop.Projects.Dom/ReferenceEntry.cs \
 	MonoDevelop.Projects.Dom/ResolveResult.cs \
-	MonoDevelop.Projects.Dom/SimpleCodeCompletionDatabase.cs \
+	MonoDevelop.Projects.Dom/SearchTypeRequest.cs \
 	MonoDevelop.Projects.Dom/Tag.cs \
 	MonoDevelop.Projects.Dom/TypeParameter.cs \
 	MonoDevelop.Projects.Dom/TypeUpdateInformation.cs \
@@ -135,106 +159,6 @@ FILES =  \
 	MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectService.cs \
 	MonoDevelop.Projects.Formats.MSBuild/SlnData.cs \
 	MonoDevelop.Projects.Formats.MSBuild/SlnFileFormat.cs \
-	MonoDevelop.Projects.Parser/AbstractDecoration.cs \
-	MonoDevelop.Projects.Parser/AbstractMember.cs \
-	MonoDevelop.Projects.Parser/AbstractNamedEntity.cs \
-	MonoDevelop.Projects.Parser/AbstractUsing.cs \
-	MonoDevelop.Projects.Parser/AssemblyCodeCompletionDatabase.cs \
-	MonoDevelop.Projects.Parser/AssemblyInformation.cs \
-	MonoDevelop.Projects.Parser/AssemblyInformationEventHandler.cs \
-	MonoDevelop.Projects.Parser/AttributeCollection.cs \
-	MonoDevelop.Projects.Parser/AttributeSectionCollection.cs \
-	MonoDevelop.Projects.Parser/ClassCollection.cs \
-	MonoDevelop.Projects.Parser/ClassEntry.cs \
-	MonoDevelop.Projects.Parser/ClassInformationEventHandler.cs \
-	MonoDevelop.Projects.Parser/ClassType.cs \
-	MonoDevelop.Projects.Parser/ClassWrapper.cs \
-	MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs \
-	MonoDevelop.Projects.Parser/Comment.cs \
-	MonoDevelop.Projects.Parser/CommentCollection.cs \
-	MonoDevelop.Projects.Parser/CommentTasksChangedEventHandler.cs \
-	MonoDevelop.Projects.Parser/CompoundClass.cs \
-	MonoDevelop.Projects.Parser/DatabaseGeneratorTool.cs \
-	MonoDevelop.Projects.Parser/DefaultAttribute.cs \
-	MonoDevelop.Projects.Parser/DefaultClass.cs \
-	MonoDevelop.Projects.Parser/DefaultComment.cs \
-	MonoDevelop.Projects.Parser/DefaultCompilationUnit.cs \
-	MonoDevelop.Projects.Parser/DefaultEvent.cs \
-	MonoDevelop.Projects.Parser/DefaultField.cs \
-	MonoDevelop.Projects.Parser/DefaultIndexer.cs \
-	MonoDevelop.Projects.Parser/DefaultMethod.cs \
-	MonoDevelop.Projects.Parser/DefaultParameter.cs \
-	MonoDevelop.Projects.Parser/DefaultParserService.cs \
-	MonoDevelop.Projects.Parser/DefaultProperty.cs \
-	MonoDevelop.Projects.Parser/DefaultRegion.cs \
-	MonoDevelop.Projects.Parser/DefaultReturnType.cs \
-	MonoDevelop.Projects.Parser/EventCollection.cs \
-	MonoDevelop.Projects.Parser/ExpressionContext.cs \
-	MonoDevelop.Projects.Parser/FieldCollection.cs \
-	MonoDevelop.Projects.Parser/FileEntry.cs \
-	MonoDevelop.Projects.Parser/GenericParameter.cs \
-	MonoDevelop.Projects.Parser/GenericParameterList.cs \
-	MonoDevelop.Projects.Parser/IAttribute.cs \
-	MonoDevelop.Projects.Parser/IClass.cs \
-	MonoDevelop.Projects.Parser/IComment.cs \
-	MonoDevelop.Projects.Parser/ICompilationUnit.cs \
-	MonoDevelop.Projects.Parser/ICompilationUnitBase.cs \
-	MonoDevelop.Projects.Parser/IDecoration.cs \
-	MonoDevelop.Projects.Parser/IEvent.cs \
-	MonoDevelop.Projects.Parser/IExpressionFinder.cs \
-	MonoDevelop.Projects.Parser/IField.cs \
-	MonoDevelop.Projects.Parser/IIndexer.cs \
-	MonoDevelop.Projects.Parser/ILanguageItem.cs \
-	MonoDevelop.Projects.Parser/IMember.cs \
-	MonoDevelop.Projects.Parser/IMethod.cs \
-	MonoDevelop.Projects.Parser/IParameter.cs \
-	MonoDevelop.Projects.Parser/IParser.cs \
-	MonoDevelop.Projects.Parser/IParserService.cs \
-	MonoDevelop.Projects.Parser/IProperty.cs \
-	MonoDevelop.Projects.Parser/IRegion.cs \
-	MonoDevelop.Projects.Parser/IReturnType.cs \
-	MonoDevelop.Projects.Parser/ITypeNameResolver.cs \
-	MonoDevelop.Projects.Parser/IUsing.cs \
-	MonoDevelop.Projects.Parser/IUsingCollection.cs \
-	MonoDevelop.Projects.Parser/LanguageItemCollection.cs \
-	MonoDevelop.Projects.Parser/LocalVariable.cs \
-	MonoDevelop.Projects.Parser/MemberCollectionBase.cs \
-	MonoDevelop.Projects.Parser/MethodCollection.cs \
-	MonoDevelop.Projects.Parser/ModifierEnum.cs \
-	MonoDevelop.Projects.Parser/Namespace.cs \
-	MonoDevelop.Projects.Parser/NamespaceEntry.cs \
-	MonoDevelop.Projects.Parser/ParameterCollection.cs \
-	MonoDevelop.Projects.Parser/ParameterModifier.cs \
-	MonoDevelop.Projects.Parser/ParseInformation.cs \
-	MonoDevelop.Projects.Parser/ParseInformationEventHandler.cs \
-	MonoDevelop.Projects.Parser/PersistentAttribute.cs \
-	MonoDevelop.Projects.Parser/PersistentAttributeSection.cs \
-	MonoDevelop.Projects.Parser/PersistentClass.cs \
-	MonoDevelop.Projects.Parser/PersistentEvent.cs \
-	MonoDevelop.Projects.Parser/PersistentField.cs \
-	MonoDevelop.Projects.Parser/PersistentGenericParamater.cs \
-	MonoDevelop.Projects.Parser/PersistentIndexer.cs \
-	MonoDevelop.Projects.Parser/PersistentMethod.cs \
-	MonoDevelop.Projects.Parser/PersistentParameter.cs \
-	MonoDevelop.Projects.Parser/PersistentProperty.cs \
-	MonoDevelop.Projects.Parser/PersistentReturnType.cs \
-	MonoDevelop.Projects.Parser/ProjectCodeCompletionDatabase.cs \
-	MonoDevelop.Projects.Parser/PropertyCollection.cs \
-	MonoDevelop.Projects.Parser/ReferenceEntry.cs \
-	MonoDevelop.Projects.Parser/ReflectionClass.cs \
-	MonoDevelop.Projects.Parser/ReflectionEvent.cs \
-	MonoDevelop.Projects.Parser/ReflectionField.cs \
-	MonoDevelop.Projects.Parser/ReflectionIndexer.cs \
-	MonoDevelop.Projects.Parser/ReflectionMethod.cs \
-	MonoDevelop.Projects.Parser/ReflectionParameter.cs \
-	MonoDevelop.Projects.Parser/ReflectionProperty.cs \
-	MonoDevelop.Projects.Parser/ReflectionReturnType.cs \
-	MonoDevelop.Projects.Parser/ReturnTypeList.cs \
-	MonoDevelop.Projects.Parser/SimpleCodeCompletionDatabase.cs \
-	MonoDevelop.Projects.Parser/Tag.cs \
-	MonoDevelop.Projects.Parser/TagCollection.cs \
-	MonoDevelop.Projects.Parser/TypedCSharpCollection.cs \
-	MonoDevelop.Projects.Parser/TypeNameResolver.cs \
 	MonoDevelop.Projects.Text/IEditableTextFile.cs \
 	MonoDevelop.Projects.Text/ITextFile.cs \
 	MonoDevelop.Projects.Text/ITextFileProvider.cs \

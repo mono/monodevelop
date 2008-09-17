@@ -1,3 +1,11 @@
+2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs,
+	  gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs,
+	  gtk-gui/generated.cs,
+	  gtk-gui/MonoDevelop.RegexToolkit.UpdateInProgressDialog.cs: Updated
+	  generated code.
+
 2008-06-18  Ankit Jain  <jankit@novell.com>
 
 	* gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs:

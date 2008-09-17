@@ -37,7 +37,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects.Gui;
 using MonoDevelop.Core.Serialization;
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Ide.Gui.Dialogs;
 
@@ -46,7 +46,7 @@ namespace MonoDevelop.Ide.Gui
 	public class RootWorkspace: IBuildTarget, IWorkspaceObject
 	{
 		WorkspaceItemCollection items;
-		IParserDatabase parserDatabase;
+//		IParserDatabase parserDatabase;
 		string activeConfiguration;
 		Dictionary<WorkspaceItem, PropertyBag> userPrefs;
 		
@@ -95,7 +95,7 @@ namespace MonoDevelop.Ide.Gui
 				return items; 
 			}
 		}
-		
+		/*
 		public IParserDatabase ParserDatabase {
 			get { 
 				if (parserDatabase == null) {
@@ -105,7 +105,7 @@ namespace MonoDevelop.Ide.Gui
 				}
 				return parserDatabase; 
 			}
-		}
+		}*/
 		
 		public string ActiveConfiguration {
 			get {
@@ -126,7 +126,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public CodeRefactorer GetCodeRefactorer (Solution solution) 
 		{
-			CodeRefactorer refactorer = new CodeRefactorer (solution, ParserDatabase);
+			CodeRefactorer refactorer = new CodeRefactorer (solution);
 			refactorer.TextFileProvider = new OpenDocumentFileProvider ();
 			return refactorer;
 		}
@@ -519,6 +519,7 @@ namespace MonoDevelop.Ide.Gui
 					extension != ".MDS" &&
 					extension != ".MDP" && 
 					extension != ".PIDB" &&
+					extension != ".PIDB-JOURNAL" &&
 					!file.EndsWith ("make.sh") &&
 					!file.EndsWith ("~") &&
 					!file.StartsWith (".") &&
@@ -769,9 +770,9 @@ namespace MonoDevelop.Ide.Gui
 		
 		void NotifyItemAddedGui (WorkspaceItem item)
 		{
-			//MonoDevelop.Projects.Dom.Parser.ProjectDomService.Load (item);
 			try {
-				ParserDatabase.Load (item);
+				MonoDevelop.Projects.Dom.Parser.ProjectDomService.Load (item);
+				//ParserDatabase.Load (item);
 			} catch (Exception ex) {
 				LoggingService.LogError ("Could not load parser database.", ex);
 			}
@@ -822,7 +823,7 @@ namespace MonoDevelop.Ide.Gui
 				WorkspaceItemClosed (this, args);
 			
 			MonoDevelop.Projects.Dom.Parser.ProjectDomService.Unload (item);
-			ParserDatabase.Unload (item);
+//			ParserDatabase.Unload (item);
 			
 			NotifyDescendantItemRemoved (this, args);
 		}

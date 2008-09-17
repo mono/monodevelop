@@ -1,3 +1,9 @@
+2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.CodeMetrics.mdp,
+	  gtk-gui/MonoDevelop.CodeMetrics.CodeMetricsWidget.cs,
+	  gtk-gui/generated.cs: Updated generated code.
+
 2008-09-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.CodeMetrics/CodeMetricsNodeExtension.cs: Moved the

@@ -22,7 +22,6 @@ REFS =  \
 	-r:System.Xml
 
 FILES =  \
-	CSharpAmbience.cs \
 	CSharpBindingCompilerManager.cs \
 	CSharpEnhancedCodeProvider.cs \
 	CSharpLanguageBinding.cs \
@@ -36,22 +35,18 @@ FILES =  \
 	Gui/CodeGenerationPanel.cs \
 	Gui/CompilerOptionsPanelWidget.cs \
 	Gui/CSharpAmbience.cs \
-	Gui/CSharpParameterDataProvider.cs \
 	Gui/CSharpTextEditorCompletion.cs \
-	Gui/CSharpTextEditorExtension.cs \
+	Gui/CSharpTextEditorIndentation.cs \
 	Gui/FormattingPanel.cs \
+	Gui/MemberCompletionData.cs \
 	Gui/NewCSharpExpressionFinder.cs \
 	Gui/NewOverrideCompletionData.cs \
+	Gui/NRefactoryDocumentMetaInformation.cs \
 	Gui/NRefactoryParameterDataProvider.cs \
 	Gui/NRefactoryResolver.cs \
-	Gui/OverrideCompletionData.cs \
 	Gui/ResolveVisitor.cs \
 	Parser/CodeGenerator.cs \
-	Parser/CSharpExpressionFinder.cs \
-	Parser/CSharpVisitor.cs \
 	Parser/DomParser.cs \
-	Parser/ExpressionFinder.cs \
-	Parser/LanguageItemVisitor.cs \
 	Parser/mcs/cs-parser.cs \
 	Parser/mcs/dom.cs \
 	Parser/mcs/External/CryptoConvert.cs \
@@ -94,16 +89,7 @@ FILES =  \
 	Parser/mcs/mcs/support.cs \
 	Parser/mcs/mcs/symbolwriter.cs \
 	Parser/mcs/mcs/typemanager.cs \
-	Parser/Parser.cs \
-	Parser/Resolver.cs \
-	Parser/SharpDevelopTree/AttributeSection.cs \
-	Parser/SharpDevelopTree/Class.cs \
-	Parser/SharpDevelopTree/Constructor.cs \
-	Parser/SharpDevelopTree/Destructor.cs \
-	Parser/SharpDevelopTree/GenericParameter.cs \
-	Parser/SharpDevelopTree/Method.cs \
-	Parser/SharpDevelopTree/ReturnType.cs \
-	Parser/TypeVisitor.cs \
+	Parser/NRefactoryParser.cs \
 	Project/CSharpCompilerParameters.cs \
 	Project/CSharpResourceIdBuilder.cs
 

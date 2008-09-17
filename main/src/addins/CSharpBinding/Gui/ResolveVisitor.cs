@@ -38,7 +38,7 @@ using ICSharpCode.NRefactory;
 
 namespace MonoDevelop.CSharpBinding
 {
-	internal class ResolveVisitor : AbstractAstVisitor
+	public class ResolveVisitor : AbstractAstVisitor
 	{
 		NRefactoryResolver resolver;
 		
@@ -49,7 +49,7 @@ namespace MonoDevelop.CSharpBinding
 		
 		public ResolveResult Resolve (Expression expression)
 		{
-			ResolveResult result = (ResolveResult)expression.AcceptVisitor (this, null);
+			ResolveResult result = expression.AcceptVisitor (this, null) as ResolveResult;
 			if (result == null)
 				result = CreateResult ("");
 			return result;
@@ -61,36 +61,34 @@ namespace MonoDevelop.CSharpBinding
 			return result.ResolvedType ?? DomReturnType.Void;
 		}
 		
-		ResolveResult CreateResult (TypeReference typeReference)
+		internal ResolveResult CreateResult (TypeReference typeReference)
 		{
 			return CreateResult (String.IsNullOrEmpty (typeReference.SystemType) ? typeReference.Type : typeReference.SystemType);
 		}
 		
-		ResolveResult CreateResult (string fullTypeName)
+		internal ResolveResult CreateResult (string fullTypeName)
 		{
-			MemberResolveResult result = new MemberResolveResult ();
-			result.CallingType   = resolver.CallingType;
-			result.CallingMember = resolver.CallingMember;
-			if (!String.IsNullOrEmpty (fullTypeName))
-				result.ResolvedType  = new DomReturnType (fullTypeName);
-			return result;
+			return CreateResult (new DomReturnType (fullTypeName));
 		}
 		
-		ResolveResult CreateResult (IReturnType type)
+		internal ResolveResult CreateResult (IReturnType type)
 		{
-			return CreateResult (null, type);
+			return CreateResult (resolver.Unit, type);
 		}
 		
 		ResolveResult CreateResult (ICompilationUnit unit, IReturnType type)
 		{
-			MemberResolveResult result = new MemberResolveResult ();
+			MemberResolveResult result = new MemberResolveResult (null);
 			result.CallingType   = resolver.CallingType;
 			result.CallingMember = resolver.CallingMember;
 			result.ResolvedType = type;
-			if (unit != null) {
-				SearchTypeResult searchedTypeResult = resolver.Dom.SearchType (new SearchTypeRequest (unit, -1, -1, type.FullName));
-				if (searchedTypeResult != null) {
-					result.ResolvedType = searchedTypeResult.Result;
+			if (unit != null && resolver.Dom != null && type != null) {
+				SearchTypeRequest req = new SearchTypeRequest (unit, type);
+				req.CallingType = resolver.CallingType;
+				IType searchedType = resolver.Dom.SearchType (req);
+				if (searchedType != null) {
+					result.ResolvedType.Name      = searchedType.Name;
+					result.ResolvedType.Namespace = searchedType.Namespace;
 				}
 			}
 			return result;
@@ -98,7 +96,7 @@ namespace MonoDevelop.CSharpBinding
 		
 		public override object VisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
 		{
-			return resolver.ResolveIdentifier (identifierExpression.Identifier.TrimEnd ('.'));
+			return resolver.ResolveIdentifier (this, identifierExpression.Identifier.TrimEnd ('.'));
 		}
 		
 		public override object VisitSizeOfExpression (SizeOfExpression sizeOfExpression, object data)
@@ -133,10 +131,71 @@ namespace MonoDevelop.CSharpBinding
 			return Resolve (assignmentExpression.Left);
 		}
 		
-		public override object VisitUnaryOperatorExpression(UnaryOperatorExpression unaryOperatorExpression, object data)
+		public override object VisitUnaryOperatorExpression (UnaryOperatorExpression unaryOperatorExpression, object data)
 		{
 			return Resolve (unaryOperatorExpression.Expression);
 		}
+		
+		public override object VisitIndexerExpression(IndexerExpression indexerExpression, object data)
+		{
+			ResolveResult result = Resolve (indexerExpression.TargetObject);
+			if (result.ResolvedType != null && result.ResolvedType.ArrayDimensions > 0)
+				return CreateResult (result.ResolvedType.FullName);
+			IType resolvedType = resolver.Dom.GetType (result.ResolvedType);
+			if (resolvedType != null) {
+				foreach (IType curType in resolver.Dom.GetInheritanceTree (resolvedType)) {
+					foreach (IProperty property in curType.Properties) {
+						if (property.IsIndexer)
+							return CreateResult (property.ReturnType);
+					}
+				}
+			}
+			if (result.ResolvedType != null && result.ResolvedType.GenericArguments.Count > 0)
+				return result.ResolvedType.GenericArguments[0];
+			return result;
+		}
+		
+		
+		static string GetAnonymousTypeFieldName (Expression expr)
+		{
+			if (expr is MemberReferenceExpression) 
+				return ((MemberReferenceExpression)expr).MemberName;
+			if (expr is NamedArgumentExpression) 
+				return ((NamedArgumentExpression)expr).Name;
+			if (expr is IdentifierExpression) 
+				return ((IdentifierExpression)expr).Identifier;
+			return "?";
+		}
+		
+		IType CreateAnonymousClass (CollectionInitializerExpression initializer)
+		{
+			DomType result = new DomType ("AnonymousType");
+			foreach (Expression expr in initializer.CreateExpressions) {
+				DomProperty newProperty = new DomProperty (GetAnonymousTypeFieldName (expr), MonoDevelop.Projects.Dom.Modifiers.Public, DomLocation.Empty, DomRegion.Empty, ResolveType(expr));
+				newProperty.DeclaringType = result;
+				result.Add (newProperty);
+			}
+			return result;
+		}
+		public override object VisitNamedArgumentExpression (NamedArgumentExpression expr, object data)
+		{
+			return expr.Expression.AcceptVisitor (this, data);
+		}
+		
+		public override object VisitObjectCreateExpression (ObjectCreateExpression objectCreateExpression, object data)
+		{
+			if (objectCreateExpression.IsAnonymousType) {
+				ResolveResult result =  new AnonymousTypeResolveResult (CreateAnonymousClass (objectCreateExpression.ObjectInitializer));
+				result.CallingType   = resolver.CallingType;
+				result.CallingMember = resolver.CallingMember;
+				return result;
+			} else {
+				return CreateResult (objectCreateExpression.CreateType);
+			}
+			return null;
+		
+		}
+
 		
 		public override object VisitBinaryOperatorExpression(BinaryOperatorExpression binaryOperatorExpression, object data)
 		{
@@ -196,7 +255,7 @@ namespace MonoDevelop.CSharpBinding
 			ThisResolveResult result = new ThisResolveResult ();
 			result.CallingType   = resolver.CallingType;
 			result.CallingMember = resolver.CallingMember;
-			result.ResolvedType  = new DomReturnType (resolver.CallingType);
+			result.ResolvedType  = DomReturnType.GetSharedReturnType (new DomReturnType (resolver.CallingType));
 			return result;
 		}
 		
@@ -218,7 +277,7 @@ namespace MonoDevelop.CSharpBinding
 			return CreateResult (typeReferenceExpression.TypeReference);
 		}
 		
-		public override object VisitFieldReferenceExpression(FieldReferenceExpression fieldReferenceExpression, object data)
+		public override object VisitMemberReferenceExpression(MemberReferenceExpression fieldReferenceExpression, object data)
 		{
 			if (fieldReferenceExpression == null) {
 				return null;
@@ -230,11 +289,12 @@ namespace MonoDevelop.CSharpBinding
 					result.StaticResolve = true;
 					return result;
 				}
-/*				if (fieldReferenceExpression.TargetObject is ThisReferenceExpression) {
-					result = CreateResult (((TypeReferenceExpression)fieldReferenceExpression.TargetObject).TypeReference);
-					result.StaticResolve = true;
-					return result;
-				}*/
+//				if (fieldReferenceExpression.TargetObject is ThisReferenceExpression) {
+//					result = CreateResult (((TypeReferenceExpression)fieldReferenceExpression.TargetObject).TypeReference);
+//					result.StaticResolve = true;
+//					return result;
+//				}
+
 //				return fieldReferenceExpression.TargetObject.AcceptVisitor(this, data);
 			}
 			result = fieldReferenceExpression.TargetObject.AcceptVisitor(this, data) as ResolveResult;
@@ -243,10 +303,10 @@ namespace MonoDevelop.CSharpBinding
 				if (String.IsNullOrEmpty (fieldReferenceExpression.FieldName))
 					return namespaceResult;
 				string fullName = namespaceResult.Namespace + "." + fieldReferenceExpression.FieldName;
-				if (resolver.Dom.NamespaceExists (fullName))
+				if (resolver.Dom.NamespaceExists (fullName, true))
 					return new NamespaceResolveResult (fullName);
 				
-				IType type = resolver.Dom.GetType (fullName, -1, true);
+				IType type = resolver.Dom.GetType (fullName);
 				if (type != null) {
 					result = CreateResult (fullName);
 					result.StaticResolve = true;
@@ -259,23 +319,33 @@ namespace MonoDevelop.CSharpBinding
 				IType type = resolver.Dom.GetType (result.ResolvedType);
 				
 				if (type != null) {
+					List <IMember> member = new List <IMember> ();
 					foreach (IType curType in resolver.Dom.GetInheritanceTree (type)) {
-						List <IMember> member = curType.SearchMember (fieldReferenceExpression.FieldName, true);
-						if (member != null && member.Count > 0) {
-							if (member[0] is IMethod) {
-								result = new MethodResolveResult (member);
-								result.CallingType   = resolver.CallingType;
-								result.CallingMember = resolver.CallingMember;
-								return result;
+						member.AddRange (curType.SearchMember (fieldReferenceExpression.FieldName, true));
+					}
+					if (member.Count > 0) {
+						if (member[0] is IMethod) {
+							bool isStatic = result.StaticResolve;
+							for (int i = 0; i < member.Count; i++) {
+								if ((member[i].IsStatic ^ isStatic) || !member[i].IsAccessibleFrom (resolver.Dom, resolver.CallingMember)) {
+									member.RemoveAt (i);
+									i--;
+								}
 							}
-							if (member[0] is IType) {
-								result = CreateResult (member[0].FullName);
-								result.StaticResolve = true;
-							} else {
-								result = CreateResult (curType.CompilationUnit, member[0].ReturnType);
-							}
+							result = new MethodResolveResult (member);
+							result.CallingType   = resolver.CallingType;
+							result.CallingMember = resolver.CallingMember;
+							result.StaticResolve = isStatic;
 							return result;
 						}
+						if (member[0] is IType) {
+							result = CreateResult (member[0].FullName);
+							result.StaticResolve = true;
+						} else {
+							result = CreateResult (member[0].DeclaringType.CompilationUnit, member[0].ReturnType);
+							((MemberResolveResult)result).ResolvedMember = member[0];
+						}
+						return result;
 					}
 				}
 			}
@@ -289,11 +359,51 @@ namespace MonoDevelop.CSharpBinding
 				return null;
 			
 			ResolveResult targetResult = Resolve (invocationExpression.TargetObject);
-		
 			
 			return targetResult;
 		}
-
+		
+		public override object VisitPrimitiveExpression(PrimitiveExpression primitiveExpression, object data)
+		{
+			if (primitiveExpression.Value == null) 
+				return CreateResult ("");
+			Type type = primitiveExpression.Value.GetType();
+			return CreateResult (type.FullName);
+		}
+		
+		public override object VisitLambdaExpression(LambdaExpression lambdaExpression, object data)
+		{
+			return resolver.ResolveLambda (this, lambdaExpression);
+		}
+		
+		public IReturnType ResolveType (Expression expr)
+		{
+			ResolveResult res = Resolve (expr);
+			if (res is AnonymousTypeResolveResult)
+				return new DomReturnType (((AnonymousTypeResolveResult)res).AnonymousType);
+			if (res != null)
+				return res.ResolvedType;
+			return null;
+		}
+		
+		public override object VisitQueryExpression(QueryExpression queryExpression, object data)
+		{
+			IReturnType type = null;
+			QueryExpressionSelectClause selectClause = queryExpression.SelectOrGroupClause as QueryExpressionSelectClause;
+			if (selectClause != null) {
+				type = ResolveType (selectClause.Projection);
+			}
+			if (type == null) {
+				QueryExpressionGroupClause groupClause = queryExpression.SelectOrGroupClause as QueryExpressionGroupClause;
+				if (groupClause != null)
+					type = new DomReturnType ("System.Linq.IGrouping", false,  new List<IReturnType> (new IReturnType[] { ResolveType(groupClause.GroupBy), ResolveType(groupClause.Projection) }));
+			}
+			if (type != null) 
+				return CreateResult (new DomReturnType("System.Collections.Generic.IEnumerable", false, new List<IReturnType> (new IReturnType[] { type })));
+			
+			return null;
+		}
+		
 		
 		IReturnType GetCommonType (IReturnType left, IReturnType right)
 		{

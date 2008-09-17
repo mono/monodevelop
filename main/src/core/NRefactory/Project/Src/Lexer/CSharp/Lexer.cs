@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Andrea Paatz" email="andrea@icsharpcode.net"/>
-//     <version>$Revision: 2639 $</version>
+//     <version>$Revision: 2987 $</version>
 // </file>
 
 using System;
@@ -13,73 +13,12 @@ using System.Text;
 
 namespace ICSharpCode.NRefactory.Parser.CSharp
 {
-	public sealed class Lexer : AbstractLexer
+	internal sealed class Lexer : AbstractLexer
 	{
-		bool skipToken = false;
-		bool readIf    = false;
-		Dictionary<string, bool> defines = new Dictionary<string,bool> (); 
 		public Lexer(TextReader reader) : base(reader)
 		{
 		}
 		
-		public void ClearDefinedSymbols ()
-		{
-			defines.Clear ();
-		}
-		
-		public void AddDefinedSymbol (string symbol)
-		{
-			defines[symbol] = true;
-		}
-		
-		public void RemoveDefinedSymbol (string symbol)
-		{
-			if (defines.ContainsKey (symbol))
-				defines.Remove (symbol);
-		}
-		
-		public bool IsDefined (string symbol)
-		{
-			return defines.ContainsKey (symbol);
-		}
-		
-		void ReadPreProcessingDirective()
-		{
-			Location start = new Location(Col - 1, Line);
-			bool canBeKeyword;
-			string directive = ReadIdent('#', out canBeKeyword);
-			string argument  = ReadToEndOfLine();
-			string define;
-			int idx;
-			switch (directive) {
-			case "#if":
-				readIf    = true;
-				define = argument.Trim ();
-				idx = define.IndexOfAny (new char [] { ' ', '\t' });
-				if (idx > 0)
-					define = define.Substring (0, idx);
-				skipToken = !IsDefined (define);
-				break;
-			case "#elif":
-				if (!readIf)
-					break;
-				define = argument.Trim ();
-				idx = define.IndexOfAny (new char [] { ' ', '\t' });
-				if (idx > 0)
-					define = define.Substring (0, idx);
-				skipToken = !IsDefined (define);
-				break;
-			case "#endif":
-				skipToken = false;
-				readIf    = false;
-				break;
-			case "#else":
-				if (readIf)
-					skipToken = !skipToken;
-				break;
-			}
-			this.specialTracker.AddPreprocessingDirective(directive, argument.Trim(), start, new Location(start.X + directive.Length + argument.Length, start.Y));
-		}
 		bool isBegin = true;
 		protected override Token Next()
 		{
@@ -116,8 +55,8 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 							continue;
 						} else {
 							token = ReadOperator('/');
+							isBegin = false;
 						}
-						isBegin = false;
 						break;
 					case '#':
 						ReadPreProcessingDirective();
@@ -132,8 +71,8 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 						isBegin = false;
 						break;
 					case '@':
-						int next = ReaderRead();
 						isBegin = false;
+						int next = ReaderRead();
 						if (next == -1) {
 							errors.Error(Line, Col, String.Format("EOF after @"));
 							continue;
@@ -163,11 +102,10 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 							if (canBeKeyword) {
 								int keyWordToken = Keywords.GetToken(s);
 								if (keyWordToken >= 0) {
-									token =  new Token(keyWordToken, x, y);
-									break;
+									return new Token(keyWordToken, x, y, s);
 								}
 							}
-							token = new Token(Tokens.Identifier, x, y, s);
+							return new Token(Tokens.Identifier, x, y, s);
 						} else if (Char.IsDigit(ch)) {
 							token = ReadDigit(ch, Col - 1);
 						} else {
@@ -178,8 +116,6 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 				
 				// try error recovery (token = null -> continue with next char)
 				if (token != null) {
-					if (skipToken)
-						continue;
 					return token;
 				}
 			}
@@ -348,10 +284,10 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 						islong = true;
 						if (!isunsigned && (peek == 'u' || peek == 'U')) {
 							ReaderRead();
-							suffix = "lu";
+							suffix = "Lu";
 							isunsigned = true;
 						} else {
-							suffix = isunsigned ? "ul" : "l";
+							suffix = isunsigned ? "uL" : "L";
 						}
 					}
 				}
@@ -406,7 +342,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					isunsigned = true;
 				} else if (result > uint.MaxValue) {
 					islong = true;
-				} else if (result > int.MaxValue) {
+				} else if (islong == false && result > int.MaxValue) {
 					isunsigned = true;
 				}
 				
@@ -483,6 +419,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 						sb.Append(ch);
 					}
 				} else if (ch == '\n') {
+					HandleLineEnd(ch); // ensure line numbers are still correct after the error
 					errors.Error(y, x, String.Format("No new line is allowed inside a string literal"));
 					break;
 				} else {
@@ -766,6 +703,9 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 						case '=':
 							ReaderRead();
 							return new Token(Tokens.Equal, x, y);
+						case '>':
+							ReaderRead();
+							return new Token(Tokens.LambdaArrow, x, y);
 					}
 					return new Token(Tokens.Assign, x, y);
 				case '<':
@@ -851,14 +791,16 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			switch (ReaderRead()) {
 				case '*':
 					ReadMultiLineComment (col);
+					isBegin = false;
 					break;
 				case '/':
 					if (ReaderPeek() == '/') {
 						ReaderRead();
-						ReadSingleLineComment (col, CommentType.Documentation);
+						ReadSingleLineComment(col, CommentType.Documentation);
 					} else {
-						ReadSingleLineComment (col, CommentType.SingleLine);
+						ReadSingleLineComment(col, CommentType.SingleLine);
 					}
+					this.isBegin = true;
 					break;
 				default:
 					errors.Error(Line, Col, String.Format("Error while reading comment"));
@@ -871,6 +813,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			if (specialCommentHash == null) {
 				return ReadToEndOfLine();
 			}
+			sb.Length = 0;
 			StringBuilder sb2 = new StringBuilder ();
 			StringBuilder curWord = new StringBuilder();
 			
@@ -882,7 +825,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					break;
 				}
 				
-				sb2.Append(ch);
+				sb.Append(ch);sb2.Append(ch);
 				if (IsIdentifierPart(nextChar)) {
 					curWord.Append(ch);
 				} else {
@@ -891,7 +834,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					if (specialCommentHash.ContainsKey(tag)) {
 						Location p = new Location(Col, Line);
 						string comment = ReadToEndOfLine();
-						this.TagComments.Add(new TagComment(tag, isBegin, comment, p, new Location(p.Column + comment.Length, p.Line)));
+						this.TagComments.Add(new TagComment(tag, isBegin, comment, p, new Location(Col, Line)));
 						sb2.Append(comment);
 						return sb2.ToString ();
 					}
@@ -928,7 +871,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					}
 				}
 			} else {
-				specialTracker.StartComment(CommentType.Block, isBegin, new Location (startCol, Line));
+				specialTracker.StartComment(CommentType.Block, isBegin, new Location(startCol, Line));
 				
 				// sc* = special comment handling (TO DO markers)
 				string scTag = null; // is set to non-null value when we are inside a comment marker
@@ -993,13 +936,16 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 				lastToken = curToken;
 				curToken = curToken.next;
 			}
+			isBegin = true;
 			int nextChar;
 			while ((nextChar = ReaderRead()) != -1) {
 				switch (nextChar) {
 					case '{':
+						isBegin = false;
 						braceCount++;
 						break;
 					case '}':
+						isBegin = false;
 						if (--braceCount < 0) {
 							curToken = new Token(Tokens.CloseCurlyBrace, Col - 1, Line);
 							return;
@@ -1010,19 +956,24 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 						if (peek == '/' || peek == '*') {
 							ReadComment();
 						}
+						isBegin = false;
 						break;
 					case '#':
 						ReadPreProcessingDirective();
+						isBegin = false;
 						break;
 					case '"':
 						ReadString();
+						isBegin = false;
 						break;
 					case '\'':
 						ReadChar();
+						isBegin = false;
 						break;
 					case '\r':
 					case '\n':
 						HandleLineEnd((char)nextChar);
+						isBegin = true;
 						break;
 					case '@':
 						int next = ReaderRead();
@@ -1031,10 +982,220 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 						} else if (next == '"') {
 							ReadVerbatimString();
 						}
+						isBegin = false;
 						break;
 				}
 			}
 			curToken = new Token(Tokens.EOF, Col, Line);
+		}
+		
+		public override IDictionary<string, object> ConditionalCompilationSymbols {
+			get { return conditionalCompilation.Symbols; }
+		}
+		
+		ConditionalCompilation conditionalCompilation = new ConditionalCompilation();
+		
+		void ReadPreProcessingDirective()
+		{
+			PreprocessingDirective d = ReadPreProcessingDirectiveInternal(true, true);
+			this.specialTracker.AddPreprocessingDirective(d);
+			
+			if (EvaluateConditionalCompilation) {
+				switch (d.Cmd) {
+					case "#define":
+						conditionalCompilation.Define(d.Arg);
+						break;
+					case "#undef":
+						conditionalCompilation.Undefine(d.Arg);
+						break;
+					case "#if":
+						if (!conditionalCompilation.Evaluate(d.Expression)) {
+							// skip to valid #elif or #else or #endif
+							int level = 1;
+							while (true) {
+								d = SkipToPreProcessingDirective(false, level == 1);
+								if (d == null)
+									break;
+								if (d.Cmd == "#if") {
+									level++;
+								} else if (d.Cmd == "#endif") {
+									level--;
+									if (level == 0)
+										break;
+								} else if (level == 1 &&  (d.Cmd == "#else"
+								                           || d.Cmd == "#elif" && conditionalCompilation.Evaluate(d.Expression)))
+								{
+									break;
+								}
+							}
+							if (d != null)
+								this.specialTracker.AddPreprocessingDirective(d);
+						}
+						break;
+					case "#elif":
+					case "#else":
+						// we already visited the #if part or a previous #elif part, so skip until #endif
+						{
+							int level = 1;
+							while (true) {
+								d = SkipToPreProcessingDirective(false, false);
+								if (d == null)
+									break;
+								if (d.Cmd == "#if") {
+									level++;
+								} else if (d.Cmd == "#endif") {
+									level--;
+									if (level == 0)
+										break;
+								}
+							}
+							if (d != null)
+								this.specialTracker.AddPreprocessingDirective(d);
+						}
+						break;
+				}
+			}
+		}
+		
+		PreprocessingDirective SkipToPreProcessingDirective(bool parseIfExpression, bool parseElifExpression)
+		{
+			int c;
+			while (true) {
+				PPWhitespace();
+				c = ReaderRead();
+				if (c == -1) {
+					errors.Error(Line, Col, String.Format("Reached EOF but expected #endif"));
+					return null;
+				} else if (c == '#') {
+					break;
+				} else {
+					SkipToEndOfLine();
+				}
+			}
+			return ReadPreProcessingDirectiveInternal(parseIfExpression, parseElifExpression);
+		}
+		
+		PreprocessingDirective ReadPreProcessingDirectiveInternal(bool parseIfExpression, bool parseElifExpression)
+		{
+			Location start = new Location(Col - 1, Line);
+			
+			// skip spaces between # and the directive
+			PPWhitespace();
+			
+			bool canBeKeyword;
+			string directive = ReadIdent('#', out canBeKeyword);
+			
+			PPWhitespace();
+			if (parseIfExpression && directive == "#if" || parseElifExpression && directive == "#elif") {
+				Ast.Expression expr = PPExpression();
+				Location endLocation = new Location(Col, Line);
+				int c = ReaderRead();
+				if (c >= 0 && !HandleLineEnd((char)c)) {
+					if (c == '/' && ReaderRead() == '/') {
+						// comment to end of line
+					} else {
+						errors.Error(Col, Line, "Expected end of line");
+					}
+					SkipToEndOfLine(); // skip comment
+				}
+				return new PreprocessingDirective(directive, null, start, endLocation) { Expression = expr };
+			} else {
+				Location endLocation = new Location(Col, Line);
+				string arg = ReadToEndOfLine();
+				endLocation.Column += arg.Length;
+				int pos = arg.IndexOf("//");
+				if (pos >= 0)
+					arg = arg.Substring(0, pos);
+				arg = arg.Trim();
+				return new PreprocessingDirective(directive, arg, start, endLocation);
+			}
+		}
+		
+		void PPWhitespace()
+		{
+			while (ReaderPeek() == ' ' || ReaderPeek() == '\t')
+				ReaderRead();
+		}
+		
+		Ast.Expression PPExpression()
+		{
+			Ast.Expression expr = PPAndExpression();
+			while (ReaderPeek() == '|') {
+				Token token = ReadOperator((char)ReaderRead());
+				if (token == null || token.kind != Tokens.LogicalOr) {
+					return expr;
+				}
+				Ast.Expression expr2 = PPAndExpression();
+				expr = new Ast.BinaryOperatorExpression(expr, Ast.BinaryOperatorType.LogicalOr, expr2);
+			}
+			return expr;
+		}
+		
+		Ast.Expression PPAndExpression()
+		{
+			Ast.Expression expr = PPEqualityExpression();
+			while (ReaderPeek() == '&') {
+				Token token = ReadOperator((char)ReaderRead());
+				if (token == null || token.kind != Tokens.LogicalAnd) {
+					break;
+				}
+				Ast.Expression expr2 = PPEqualityExpression();
+				expr = new Ast.BinaryOperatorExpression(expr, Ast.BinaryOperatorType.LogicalAnd, expr2);
+			}
+			return expr;
+		}
+		
+		Ast.Expression PPEqualityExpression()
+		{
+			Ast.Expression expr = PPUnaryExpression();
+			while (ReaderPeek() == '=' || ReaderPeek() == '!') {
+				Token token = ReadOperator((char)ReaderRead());
+				if (token == null || token.kind != Tokens.Equals && token.kind != Tokens.NotEqual) {
+					break;
+				}
+				Ast.Expression expr2 = PPUnaryExpression();
+				expr = new Ast.BinaryOperatorExpression(expr, token.kind == Tokens.Equals ? Ast.BinaryOperatorType.Equality : Ast.BinaryOperatorType.InEquality, expr2);
+			}
+			return expr;
+		}
+		
+		Ast.Expression PPUnaryExpression()
+		{
+			PPWhitespace();
+			if (ReaderPeek() == '!') {
+				ReaderRead();
+				PPWhitespace();
+				return new Ast.UnaryOperatorExpression(PPUnaryExpression(), Ast.UnaryOperatorType.Not);
+			} else {
+				return PPPrimaryExpression();
+			}
+		}
+		
+		Ast.Expression PPPrimaryExpression()
+		{
+			int c = ReaderRead();
+			if (c < 0)
+				return Ast.Expression.Null;
+			if (c == '(') {
+				Ast.Expression expr = new Ast.ParenthesizedExpression(PPExpression());
+				PPWhitespace();
+				if (ReaderRead() != ')')
+					errors.Error(Col, Line, "Expected ')'");
+				PPWhitespace();
+				return expr;
+			} else {
+				if (c != '_' && !char.IsLetterOrDigit((char)c) && c != '\\')
+					errors.Error(Col, Line, "Expected conditional symbol");
+				bool canBeKeyword;
+				string symbol = ReadIdent((char)c, out canBeKeyword);
+				PPWhitespace();
+				if (canBeKeyword && symbol == "true")
+					return new Ast.PrimitiveExpression(true, "true");
+				else if (canBeKeyword && symbol == "false")
+					return new Ast.PrimitiveExpression(false, "false");
+				else
+					return new Ast.IdentifierExpression(symbol);
+			}
 		}
 	}
 }

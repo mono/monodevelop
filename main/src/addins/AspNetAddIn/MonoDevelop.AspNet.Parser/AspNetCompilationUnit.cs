@@ -29,19 +29,18 @@
 using System;
 using System.Collections.Generic;
 
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.AspNet.Parser
 {
 	
 	
-	public class AspNetCompilationUnit : DefaultCompilationUnit
+	public class AspNetCompilationUnit : CompilationUnit
 	{
 		PageInfo pageInfo;
 		Document doc;
-		List<ErrorInfo> errors;
 		
-		public AspNetCompilationUnit ()
+		public AspNetCompilationUnit (string filename) : base (filename)
 		{
 		}
 		
@@ -53,26 +52,6 @@ namespace MonoDevelop.AspNet.Parser
 		public Document Document {
 			get { return doc; }
 			set { doc = value; }
-		}
-		
-		public void AddError (ErrorInfo error)
-		{
-			if (errors == null) errors = new List<ErrorInfo> ();
-			errors.Add (error);
-		}
-		
-		public void AddWarning (ErrorInfo error)
-		{
-			if (errors == null) errors = new List<ErrorInfo> ();
-			errors.Add (error);
-		}
-		
-		public void CompileErrors ()
-		{
-			ErrorsDuringCompile = errors != null && errors.Count > 0;
-			ErrorInformation = ErrorsDuringCompile?
-				errors.ToArray ()
-				: null;
 		}
 	}
 }

@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version>$Revision: 1965 $</version>
+//     <version>$Revision: 2972 $</version>
 // </file>
 
 using System;
@@ -40,15 +40,10 @@ namespace ICSharpCode.NRefactory.Parser
 		// used for the original value of strings (with escape sequences).
 		protected StringBuilder originalValue = new StringBuilder();
 		
-		bool skipAllComments = false;
-		
-		public bool SkipAllComments {
-			get {
-				return skipAllComments;
-			}
-			set {
-				skipAllComments = value;
-			}
+		public bool SkipAllComments { get; set; }
+		public bool EvaluateConditionalCompilation { get; set; }
+		public virtual IDictionary<string, object> ConditionalCompilationSymbols { 
+			get { throw new NotSupportedException(); }
 		}
 		
 		protected int Line {

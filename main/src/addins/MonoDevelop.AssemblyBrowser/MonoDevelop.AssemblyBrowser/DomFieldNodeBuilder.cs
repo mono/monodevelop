@@ -55,7 +55,7 @@ namespace MonoDevelop.AssemblyBrowser
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
 			IField field = (IField)dataObject;
-			label = AmbienceService.Default.GetString (field, OutputFlags.ClassBrowserEntries);
+			label = AmbienceService.GetAmbience ("text/x-csharp").GetString (field, OutputFlags.ClassBrowserEntries);
 			if (field.IsPrivate || field.IsInternal)
 				label = DomMethodNodeBuilder.FormatPrivate (label);
 			icon = MonoDevelop.Ide.Gui.IdeApp.Services.Resources.GetIcon (field.StockIcon, Gtk.IconSize.Menu);
@@ -80,7 +80,7 @@ namespace MonoDevelop.AssemblyBrowser
 			IField field = (IField)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
 			result.Append ("<span font_family=\"monospace\">");
-			result.Append (AmbienceService.Default.GetString (field, OutputFlags.AssemblyBrowserDescription));
+			result.Append (AmbienceService.GetAmbience ("text/x-csharp").GetString (field, OutputFlags.AssemblyBrowserDescription));
 			result.Append ("</span>");
 			result.AppendLine ();
 			DomMethodNodeBuilder.PrintDeclaringType (result, navigator);
@@ -92,7 +92,7 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			IField field = (IField)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
-			result.Append (AmbienceService.Default.GetString (field, OutputFlags.AssemblyBrowserDescription));
+			result.Append (AmbienceService.GetAmbience ("text/x-csharp").GetString (field, OutputFlags.AssemblyBrowserDescription));
 			return result.ToString ();
 		}
 		#endregion

@@ -1,12 +1,9 @@
 #!/bin/sh
-
-cd Frames
-cp ../CSharp/cs.ATG .
-mono SharpCoco.exe -namespace ICSharpCode.NRefactory.Parser.CSharp cs.ATG
-mv Parser.cs ../CSharp
-rm cs.ATG
-
-cp ../VBNet/VBNET.ATG .
-mono SharpCoco.exe -namespace ICSharpCode.NRefactory.Parser.VB VBNET.ATG
-mv Parser.cs ../VBNet
-rm VBNET.ATG
+cp CSharp/cs.ATG Frames/cs.ATG
+mono Frames/SharpCoco.exe -namespace ICSharpCode.NRefactory.Parser.CSharp Frames/cs.ATG
+mv Frames/Parser.cs CSharp/Parser.cs
+rm Frames/cs.ATG
+cp VBNet/VBNET.ATG Frames/VBNET.ATG
+mono Frames/SharpCoco.exe -trace GIPXA -namespace ICSharpCode.NRefactory.Parser.VB Frames/VBNET.ATG
+mv Frames/Parser.cs VBNet/Parser.cs
+rm Frames/VBNET.ATG

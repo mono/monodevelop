@@ -1,3 +1,10 @@
+2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Tests/MonoDevelop.XmlEditor.Tests.mdp, gtk-gui/generated.cs,
+	  gtk-gui/MonoDevelop.XmlEditor.Gui.XmlEditorOptionsPanelWidget.cs,
+	  gtk-gui/MonoDevelop.XmlEditor.Gui.XmlSchemasPanelWidget.cs: Updated
+	  generated code.
+
 2008-08-26  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Xml.StateEngine/XmlTagState.cs,

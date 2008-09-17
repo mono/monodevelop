@@ -33,7 +33,8 @@ using System.IO;
 using System.Collections.Generic;
 
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core;
@@ -79,10 +80,6 @@ namespace MonoDevelop.AspNet
 			string langExt = aspProject.LanguageBinding.GetFileName ("a");
 			langExt = langExt.Substring (1, langExt.Length - 1);
 			
-			//get an updated parser database
-			IParserContext ctx = MonoDevelop.Ide.Gui.IdeApp.Workspace.ParserDatabase.GetProjectParserContext (aspProject);
-			ctx.UpdateDatabase ();
-			
 			List<CodeBehindWarning> errors = new List<CodeBehindWarning> ();
 			
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Generating CodeBehind members..."));
@@ -110,16 +107,13 @@ namespace MonoDevelop.AspNet
 					continue;
 				
 				//parse the ASP.NET file
-				IParseInformation pi = ctx.GetParseInformation (file.FilePath);
-				AspNetCompilationUnit cu = pi.MostRecentCompilationUnit as AspNetCompilationUnit;
-				if (cu == null || cu.Document == null) {
-					pi = ctx.ParseFile (file.FilePath);
-					if (cu == null || cu.Document == null)
-						continue;
-				}
+				ParsedDocument parsedDocument = ProjectDomService.Parse (aspProject, file.FilePath, null);
+				AspNetCompilationUnit cu = parsedDocument.CompilationUnit as AspNetCompilationUnit;
+				if (cu == null || cu.Document == null)
+					continue;
 				
 				//log errors
-				if (cu.ErrorsDuringCompile) {
+				if (parsedDocument.HasErrors) {
 					foreach (Exception e in cu.Document.ParseErrors) {
 						CodeBehindWarning cbw;
 						ErrorInFileException eife = e as ErrorInFileException;

@@ -1,3 +1,14 @@
+2008-09-12  Mike Kestner <mkestner@novell.com> 
+
+	* DockContainer.cs:
+	* DockFrame.cs:
+	Don't iterate directly over internal lists of widgets, since the
+	callback can remove the widget and invalidate the enumerator.
+
+2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Dock.mdp: Updated.
+
 2008-07-14  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* AssemblyInfo.cs: Fix copyright header.

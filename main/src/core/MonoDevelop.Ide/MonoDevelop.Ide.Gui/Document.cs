@@ -81,13 +81,13 @@ namespace MonoDevelop.Ide.Gui
 			return (T) GetContent (typeof(T));
 		}
 		
-		internal Document (IWorkbenchWindow window)
+		public Document (IWorkbenchWindow window)
 		{
 			this.window = window;
-			//MonoDevelop.Projects.Dom.Parser.ProjectDomService.CompilationUnitUpdated += CompilationUnitUpdated;
 			window.Closed += OnClosed;
 			window.ActiveViewContentChanged += OnActiveViewContentChanged;
-			IdeApp.Workspace.ItemRemovedFromSolution += OnEntryRemoved;
+			if (IdeApp.Workspace != null)
+				IdeApp.Workspace.ItemRemovedFromSolution += OnEntryRemoved;
 		}
 		
 		public string FileName {
@@ -327,13 +327,14 @@ namespace MonoDevelop.Ide.Gui
 		void OnClosed (object s, EventArgs a)
 		{
 			ClearTasks ();
-//			MonoDevelop.Projects.Dom.Parser.ProjectDomService.CompilationUnitUpdated -= CompilationUnitUpdated;
+			MonoDevelop.Projects.Dom.Parser.ProjectDomService.ParsedDocumentUpdated -= CompilationUnitUpdated;
 			
 			if (window is SdiWorkspaceWindow)
 				((SdiWorkspaceWindow)window).DetachFromPathedDocument ();
 			window.Closed -= OnClosed;
 			window.ActiveViewContentChanged -= OnActiveViewContentChanged;
-			IdeApp.Workspace.ItemRemovedFromSolution -= OnEntryRemoved;
+			if (IdeApp.Workspace != null)
+				IdeApp.Workspace.ItemRemovedFromSolution -= OnEntryRemoved;
 			OnClosed (a);
 			
 			while (editorExtension != null) {
@@ -345,6 +346,23 @@ namespace MonoDevelop.Ide.Gui
 #region document tasks
 		List<Task> tasks = new List<Task> ();
 		object lockObj = new object ();
+		
+		ParsedDocument parsedDocument;
+		public ParsedDocument ParsedDocument {
+			get {
+				return parsedDocument;
+			}
+			set {
+				// for unit testing purposes
+				parsedDocument = value;
+			}
+		}
+		public ICompilationUnit CompilationUnit {
+			get {
+				return parsedDocument != null ? parsedDocument.CompilationUnit : null;
+			}
+		}
+		
 		void ClearTasks ()
 		{
 			lock (lockObj) {
@@ -354,16 +372,21 @@ namespace MonoDevelop.Ide.Gui
 				tasks.Clear ();
 			}
 		}
-		void CompilationUnitUpdated (object sender, CompilationUnitEventArgs args)
+		
+		void CompilationUnitUpdated (object sender, ParsedDocumentEventArgs args)
 		{
-			if (this.FileName == args.Unit.FileName) {
+			if (this.FileName == args.FileName) {
+//				if (!args.Unit.HasErrors)
+				parsedDocument = args.ParsedDocument;
+/* TODO: Implement better task update algorithm.
+
 				ClearTasks ();
 				lock (lockObj) {
 					foreach (Error error in args.Unit.Errors) {
 						tasks.Add (new Task (this.FileName, error.Message, error.Column, error.Line, error.ErrorType == ErrorType.Error ? TaskType.Error : TaskType.Warning, this.Project));
 					}
 					IdeApp.Services.TaskService.AddRange (tasks);
-				}
+				}*/
 			}
 		}
 #endregion
@@ -389,15 +412,17 @@ namespace MonoDevelop.Ide.Gui
 			IExtensibleTextEditor editor = GetContent<IExtensibleTextEditor> ();
 			if (editor == null)
 				return;
-//			editor.TextChanged += delegate {
-//				MonoDevelop.Projects.Dom.Parser.ProjectDomService.Refresh (Project, 
-//				                                                           FileName, 
-//				                                                           MonoDevelop.Core.Gui.Services.PlatformService.GetMimeTypeForUri (FileName),
-//				                                                           delegate () {
-//					return TextEditor.Text;
-//				});
-//			};
-			
+			editor.TextChanged += delegate {
+				MonoDevelop.Projects.Dom.Parser.ProjectDomService.Parse (Project, 
+				                                                           FileName, 
+				                                                           MonoDevelop.Core.Gui.Services.PlatformService.GetMimeTypeForUri (FileName),
+				                                                           delegate () {
+					return TextEditor.Text;
+				});
+			};
+			this.parsedDocument = MonoDevelop.Projects.Dom.Parser.ProjectDomService.Parse (Project, FileName, MonoDevelop.Core.Gui.Services.PlatformService.GetMimeTypeForUri (FileName), TextEditor.Text);
+			MonoDevelop.Projects.Dom.Parser.ProjectDomService.ParsedDocumentUpdated += CompilationUnitUpdated;
+
 			// If the new document is a text editor, attach the extensions
 			
 			TextEditorExtension[] extensions = (TextEditorExtension[]) AddinManager.GetExtensionObjects ("/MonoDevelop/Ide/TextEditorExtensions", typeof(TextEditorExtension), false);

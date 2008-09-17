@@ -87,7 +87,7 @@ namespace MonoDevelop.AssemblyBrowser
 		static void PrintModuleHeader (StringBuilder result, ModuleDefinition moduleDefinition)
 		{
 			result.Append ("<span font_family=\"monospace\">");
-			result.Append (AmbienceService.Default.SingleLineComment (
+			result.Append (AmbienceService.GetAmbience ("text/x-csharp").SingleLineComment (
 			                    String.Format (GettextCatalog.GetString ("Module <b>{0}</b>"),
 			                    moduleDefinition.Name)));
 			result.Append ("</span>");

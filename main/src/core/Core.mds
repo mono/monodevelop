@@ -5,7 +5,6 @@
       <Entry build="True" name="MonoDevelop.Core.Gui" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.Components" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.Dock" configuration="Debug" />
-      <Entry build="True" name="MonoDevelop.Documentation" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.Ide" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.Projects" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.Projects.Gui" configuration="Debug" />
@@ -18,7 +17,6 @@
       <Entry build="True" name="MonoDevelop.Core.Gui" configuration="Release" />
       <Entry build="True" name="MonoDevelop.Components" configuration="Release" />
       <Entry build="True" name="MonoDevelop.Dock" configuration="Release" />
-      <Entry build="True" name="MonoDevelop.Documentation" configuration="Release" />
       <Entry build="True" name="MonoDevelop.Ide" configuration="Release" />
       <Entry build="True" name="MonoDevelop.Projects" configuration="Release" />
       <Entry build="True" name="MonoDevelop.Projects.Gui" configuration="Release" />
@@ -32,7 +30,6 @@
     <Execute type="None" entry="MonoDevelop.Core.Gui" />
     <Execute type="None" entry="MonoDevelop.Components" />
     <Execute type="None" entry="MonoDevelop.Dock" />
-    <Execute type="None" entry="MonoDevelop.Documentation" />
     <Execute type="None" entry="MonoDevelop.Ide" />
     <Execute type="None" entry="MonoDevelop.Projects" />
     <Execute type="None" entry="MonoDevelop.Projects.Gui" />
@@ -45,7 +42,6 @@
     <Entry filename="MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.mdp" />
     <Entry filename="MonoDevelop.Components/MonoDevelop.Components.mdp" />
     <Entry filename="MonoDevelop.Dock/MonoDevelop.Dock.mdp" />
-    <Entry filename="MonoDevelop.Documentation/MonoDevelop.Documentation.mdp" />
     <Entry filename="MonoDevelop.Ide/MonoDevelop.Ide.mdp" />
     <Entry filename="MonoDevelop.Projects/MonoDevelop.Projects.mdp" />
     <Entry filename="MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.mdp" />

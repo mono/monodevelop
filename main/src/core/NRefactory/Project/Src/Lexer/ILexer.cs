@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
-//     <version>$Revision: 1965 $</version>
+//     <version>$Revision: 2972 $</version>
 // </file>
 
 using System;
@@ -51,6 +51,17 @@ namespace ICSharpCode.NRefactory.Parser
 		}
 		
 		/// <summary>
+		/// Gets/Sets if the lexer should evaluate conditional compilation symbols.
+		/// </summary>
+		bool EvaluateConditionalCompilation { get; set; }
+		
+		/// <summary>
+		/// The dictionary with the conditional compilation symbols.
+		/// C# ignores the value (you can use null), it just cares whether a symbol is defined.
+		/// </summary>
+		IDictionary<string, object> ConditionalCompilationSymbols { get; }
+		
+		/// <summary>
 		/// Returns the comments that had been read and containing tag key words.
 		/// </summary>
 		List<TagComment> TagComments {
@@ -75,7 +86,7 @@ namespace ICSharpCode.NRefactory.Parser
 		/// <returns>An <see cref="Token"/> object.</returns>
 		Token NextToken();
 		
-				/// <summary>
+		/// <summary>
 		/// Skips to the end of the current code block.
 		/// For this, the lexer must have read the next token AFTER the token opening the
 		/// block (so that Lexer.Token is the block-opening token, not Lexer.LookAhead).

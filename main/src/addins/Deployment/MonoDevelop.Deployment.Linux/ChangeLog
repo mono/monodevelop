@@ -1,3 +1,21 @@
+2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Deployment.Linux/DesktopPanelWidget.cs,
+	  MonoDevelop.Deployment.Linux/BasicOptionPanelWidget.cs,
+	  MonoDevelop.Deployment.Linux/DotDesktopViewWidget.cs,
+	  gtk-gui/generated.cs,
+	  gtk-gui/MonoDevelop.Deployment.Linux.DesktopPanelWidget.cs,
+	  gtk-gui/MonoDevelop.Deployment.Linux.BasicOptionPanelWidget.cs,
+	  gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs,
+	  gtk-gui/objects.xml,
+	  gtk-gui/MonoDevelop.Deployment.Linux.MenuCategorySelectorDialog.cs:
+	  Updated generated code.
+
+2008-07-29  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Deployment.Linux.mdp: Removed some parts of the
+	  documentation service.
+
 2008-07-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Deployment.Linux/LinuxDeployData.cs: Moved serialization

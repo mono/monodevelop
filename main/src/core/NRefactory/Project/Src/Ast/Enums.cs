@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
-//     <version>$Revision: 1930 $</version>
+//     <version>$Revision: 3125 $</version>
 // </file>
 
 using System;
@@ -200,6 +200,9 @@ namespace ICSharpCode.NRefactory.Ast
 		Like,
 		/// <summary>C#: ??</summary>
 		NullCoalescing,
+		
+		/// <summary>VB-only: !</summary>
+		DictionaryAccess
 	}
 	
 	public enum CastType
@@ -238,9 +241,9 @@ namespace ICSharpCode.NRefactory.Ast
 		PostDecrement,
 		
 		/// <summary>Dereferencing pointer</summary>
-		Star,
+		Dereference,
 		/// <summary>Get address of</summary>
-		BitWiseAnd
+		AddressOf
 	}
 	
 	public enum ContinueType
@@ -357,5 +360,13 @@ namespace ICSharpCode.NRefactory.Ast
 		Strict,
 		CompareBinary,
 		CompareText
+	}
+	
+	/// <summary>
+	/// Specifies the ordering direction of a QueryExpressionOrdering node.
+	/// </summary>
+	public enum QueryExpressionOrderingDirection
+	{
+		None, Ascending, Descending
 	}
 }

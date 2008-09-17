@@ -34,7 +34,8 @@ using Mono.TextEditor;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Gui.Completion;
 using MonoDevelop.Components.Commands;
 using Mono.TextEditor.Highlighting;
@@ -43,7 +44,7 @@ using Mono.Addins;
 
 namespace MonoDevelop.SourceEditor
 {
-	public class ExtendibleTextEditor : Mono.TextEditor.TextEditor
+	public class ExtensibleTextEditor : Mono.TextEditor.TextEditor
 	{
 		ITextEditorExtension extension = null;
 		SourceEditorView view;
@@ -60,12 +61,12 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		public ExtendibleTextEditor (SourceEditorView view, Mono.TextEditor.Document doc) : base (doc)
+		public ExtensibleTextEditor (SourceEditorView view, Mono.TextEditor.Document doc) : base (doc)
 		{
 			Initialize (view);
 		}
 		
-		public ExtendibleTextEditor (SourceEditorView view)
+		public ExtensibleTextEditor (SourceEditorView view)
 		{
 			Initialize (view);
 		}
@@ -156,7 +157,7 @@ namespace MonoDevelop.SourceEditor
 		protected override void OptionsChanged (object sender, EventArgs args)
 		{
 			if (view.Control != null) {
-				((SourceEditorWidget)view.Control).IsClassBrowserVisible = SourceEditorOptions.Options.EnableQuickFinder;
+				((SourceEditorWidget)view.Control).ShowClassBrowser = SourceEditorOptions.Options.EnableQuickFinder;
 				if (!SourceEditorOptions.Options.ShowFoldMargin)
 					this.Document.ClearFoldSegments ();
 			}
@@ -285,29 +286,49 @@ namespace MonoDevelop.SourceEditor
 				return null;
 		}
 		
-		public ILanguageItem GetLanguageItem (int offset)
+		public ProjectDom ProjectDom {
+			get {
+				MonoDevelop.Ide.Gui.Document doc = IdeApp.Workbench.ActiveDocument;
+				if (doc == null)
+					return null;
+				return ProjectDomService.GetProjectDom (doc.Project);
+			}
+		}
+		
+		int           oldOffset = -1;
+		ResolveResult resolveResult = null;
+		public ResolveResult GetLanguageItem (int offset)
 		{
 			string txt = this.Document.Text;
-			string fileName = view.ContentName;
-			if (fileName == null)
-				fileName = view.UntitledName;
+			string fileName = view.ContentName ?? view.UntitledName;
 			
-			IParserContext ctx = view.GetParserContext ();
-			if (ctx == null)
+			// we'll cache old results.
+			if (offset == oldOffset)
+				return this.resolveResult;
+			oldOffset = offset;
+			
+			this.resolveResult = null;
+			MonoDevelop.Ide.Gui.Document doc = IdeApp.Workbench.ActiveDocument;
+			if (doc == null)
 				return null;
 			
-			IExpressionFinder expressionFinder = null;
-			if (fileName != null)
-				expressionFinder = ctx.GetExpressionFinder (fileName);
-			
-			string expression = expressionFinder == null ? TextUtilities.GetExpressionBeforeOffset (view, offset) : expressionFinder.FindFullExpression (txt, offset).Expression;
-			if (expression == null)
+			IParser parser = ProjectDomService.GetParser (fileName, Document.MimeType);
+			if (parser == null)
 				return null;
 			
-			int lineNumber = this.Document.OffsetToLineNumber (offset);
-			LineSegment line = this.Document.GetLine (lineNumber);
+			ProjectDom        dom      = ProjectDomService.GetProjectDom (doc.Project);
+			IResolver         resolver = parser.CreateResolver (dom, doc, fileName);
+			IExpressionFinder expressionFinder = parser.CreateExpressionFinder (dom);
+			if (resolver == null || expressionFinder == null) 
+				return null;
 			
-			return ctx.ResolveIdentifier (expression, lineNumber + 1, line.Offset + 1, fileName, txt);
+			ExpressionResult expressionResult = expressionFinder.FindFullExpression (txt, offset);
+			if (expressionResult == null) 
+				return null;
+			
+			DocumentLocation loc = Document.OffsetToLocation (offset);
+			this.resolveResult = resolver.Resolve (expressionResult, new DomLocation (loc.Line + 1, loc.Column + 1));
+			return this.resolveResult;
 		}
 		
 		protected override bool OnFocusOutEvent (Gdk.EventFocus evnt)

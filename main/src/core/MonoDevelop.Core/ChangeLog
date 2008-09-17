@@ -1,3 +1,19 @@
+2008-09-16  Mike Kestner <mkestner@novell.com> 
+
+	* MonoDevelop.Core.Execution/ProcessWrapper.cs: null check to avoid
+	NREs.  Fixes #418650.
+
+2008-09-16  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.Serialization/XmlMapAttributeProvider.cs: Allow
+	  chaining several serialization maps for a type.
+
+2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.Collections/ReadOnlyDictionary.cs,
+	  MonoDevelop.Core.mdp, Makefile.am: Implemented new
+	  ReadOnlyDictionary class.
+
 2008-09-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.Collections/Set.cs: The Add method now returns true
@@ -29,6 +45,11 @@
 	* MonoDevelop.Core/XmlReadHelper.cs: Add stack trace to error message,
 	  replace a 'goto', and fix bug that skipped nodes with same name as
 	  start node.
+
+2008-07-30  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Core/SystemAssemblyService.cs: Catched possible
+	  exception.
 
 2008-07-22  Michael Hutchinson <mhutchinson@novell.com> 
 

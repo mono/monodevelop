@@ -17,7 +17,7 @@
 	<Dependencies>
 		<Addin id="Core" version="1.9.0"/>
 		<Addin id="Core.Gui" version="1.9.0"/>
-		<Addin id="Documentation" version="1.9.0"/>
+		
 		<Addin id="Components" version="1.9.0"/>
 	</Dependencies>
 
@@ -88,6 +88,11 @@
 	
 	<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/ClassPad/Project" name = "Project node context menu in the class pad">
 		<Description>Context menu for projects in the class pad.</Description>
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/ClassPad/References" name = "Reference node context menu in the class pad">
+		<Description>Context menu for references in the class pad.</Description>
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
 	
@@ -232,6 +237,10 @@
 	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/Ide/DomParser" name = "Parsers">
+		<ExtensionNode name="Class"/>
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/MonoDevelop/Ide/Ambiences" name = "Parsers">
 		<ExtensionNode name="Class"/>
 	</ExtensionPoint>
 		
@@ -1278,7 +1287,7 @@
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.UnknownEntryNodeBuilder"/>
 		</SolutionPad>
 		
-		<SolutionPad id = "ClassPad" defaultPlacement = "Left" _label = "Classes" icon = "md-class">
+		<SolutionPad id = "ClassPad" defaultPlacement = "Left" _label = "Classes" icon = "md-class" class = "MonoDevelop.Ide.Gui.Pads.ClassBrowser.ClassBrowserPad">
 			<PadOption id = "NestedNamespaces" _label = "Nested namespaces" defaultValue = "True" />
 			<PadOption id = "ShowProjects" _label = "Show project structure" defaultValue = "True" />
 			<PadOption id = "GroupByAccess" _label = "Group members by access" defaultValue = "False" />
@@ -1294,9 +1303,9 @@
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ClassPad.FieldNodeBuilder"/>
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ClassPad.MethodNodeBuilder"/>
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ClassPad.PropertyNodeBuilder"/>
+			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.ProjectReferenceFolderNodeBuilder"/>
+			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ClassPad.ReferenceNodeBuilder"/>
 		</SolutionPad>
-		
-<!--		<Pad id = "ClassPad" defaultPlacement = "Left" _label = "Classes" class = "MonoDevelop.Ide.Gui.Pads.ClassBrowser.ClassBrowserPad"/> -->
 		
 		<Category id="Other" _name="Other Windows">
 			<Pad id = "MonoDevelop.Ide.Gui.Pads.InternalLogPad" defaultPlacement = "Bottom" _label = "Message Log" class = "MonoDevelop.Ide.Gui.Pads.InternalLogPad"/>

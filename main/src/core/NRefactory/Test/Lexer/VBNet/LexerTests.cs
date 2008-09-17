@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
-//     <version>$Revision: 915 $</version>
+//     <version>$Revision: 3125 $</version>
 // </file>
 
 using System;
@@ -104,6 +104,13 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 		{
 			ILexer lexer = GenerateLexer(new StringReader("?"));
 			Assert.AreEqual(Tokens.QuestionMark, lexer.NextToken().kind);
+		}
+
+		[Test]
+		public void TestExclamationMark()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("!"));
+			Assert.AreEqual(Tokens.ExclamationMark, lexer.NextToken().kind);
 		}
 
 		[Test]
@@ -237,6 +244,13 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 		{
 			ILexer lexer = GenerateLexer(new StringReader(">>="));
 			Assert.AreEqual(Tokens.ShiftRightAssign, lexer.NextToken().kind);
+		}
+
+		[Test]
+		public void TestConcatStringAssign()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("&="));
+			Assert.AreEqual(Tokens.ConcatStringAssign, lexer.NextToken().kind);
 		}
 
 		[Test()]

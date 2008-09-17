@@ -1,15 +1,2 @@
-<objects>
-  <object type="MonoDevelop.VBNetBinding.CodeGenerationPanelWidget" palette-category="MonoDevelop.VBNetBinding" allow-children="false" base-type="Gtk.Bin">
-    <itemgroups />
-    <signals />
-  </object>
-  <object type="MonoDevelop.VBNetBinding.CodeGenerationPanel" palette-category="MonoDevelop.VBNetBinding" allow-children="false" base-type="Gtk.Dialog">
-    <itemgroups>
-      <itemgroup label="MultiConfigItemOptionsPanel Properties">
-        <property name="AllowMixedConfigurations" />
-      </itemgroup>
-    </itemgroups>
-    <signals>
-    </signals>
-  </object>
+<objects attr-sync="on">
 </objects>

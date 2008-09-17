@@ -38,7 +38,17 @@ namespace MonoDevelop.Projects.Dom
 		protected IReturnType returnType;
 		protected List<IAttribute> attributes = null;
 		protected DomLocation location;
-		
+		IMember declaringMember;
+
+		public IMember DeclaringMember {
+			get {
+				return declaringMember;
+			}
+			set {
+				declaringMember = value;
+			}
+		}
+
 		public string Name {
 			get {
 				return name;
@@ -99,7 +109,7 @@ namespace MonoDevelop.Projects.Dom
 
 		public System.Collections.Generic.IEnumerable<IAttribute> Attributes {
 			get {
-				return attributes;
+				return (IEnumerable<IAttribute>)attributes ?? new IAttribute[0];
 			}
 		}
 
@@ -116,10 +126,11 @@ namespace MonoDevelop.Projects.Dom
 		{
 		}
 		
-		public DomParameter (string name, IReturnType returnType)
+		public DomParameter (IMember declaringMember, string name, IReturnType returnType)
 		{
-			this.name       = name;
-			this.returnType = returnType;
+			this.name            = name;
+			this.declaringMember = declaringMember;
+			this.returnType      = returnType;
 		}
 		
 		public void Add (IAttribute attribute)

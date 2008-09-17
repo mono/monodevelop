@@ -1,3 +1,162 @@
+2008-09-17  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Gui/Document.cs: Some changes required for unit
+	  tests.
+
+2008-09-16  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: Don't show refactoring
+	  commands that modify classes unless the refactoring menu is being
+	  shown for the file where the class is implemented. Fixes bug
+	  #402323 - Automatic override/implementation behaves unintuitively.
+	* MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs: Save the project after
+	  adding the file. Fixes bug #420919 - Adding New File To Solution Is
+	  *NOT* Included In Next Opening of Solution.
+
+2008-09-16  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Content/TextEditorExtension.cs,
+	  MonoDevelop.Ide.Gui/Document.cs: Prepared code completion unit
+	  tests.
+
+2008-09-16  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Components/TransactedTreeBuilder.cs: Make sure
+	  the current navigator position is restored when a move operation
+	  fails.
+
+2008-09-15  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Gui/Document.cs: changed document update.
+
+2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui/MonoDevelop.Ide.SelectEncodingsDialog.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.EncapsulateFieldDialog.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.ExportProjectDialog.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.GoToDialog.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.ReplaceDialog.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.BreakpointPropertiesDialog.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TasksPanelWidget.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.CodeGenerationPanelWidget.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewLayoutDialog.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.AddinLoadErrorDialog.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewFileDialog.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.SelectReferenceDialog.cs,
+	  gtk-gui/MonoDevelop.Ide.CodeTemplates.CodeTemplatePanelWidget.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel.cs,
+	  gtk-gui/gui.stetic, gtk-gui/MonoDevelop.Ide.DocumentSwitcher.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.AttachToProcessDialog.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.IncludeFilesDialog.cs,
+	  gtk-gui/objects.xml,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.GotoLineDialog.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.cs,
+	  gtk-gui/MonoDevelop.Ide.ExternalTools.ExternalToolPanelWidget.cs,
+	  gtk-gui/generated.cs,
+	  gtk-gui/MonoDevelop.Ide.StandardHeaders.NewHeaderTemplateDialog.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.ReplaceInFilesDialog.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.RenameItemDialog.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.LoadSavePanelWidget.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.CombineEntryFeatureSelector.cs,
+	  gtk-gui/MonoDevelop.Ide.OverridesImplementsDialog.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.FeatureSelectorDialog.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AddInsPanelWidget.cs,
+	  gtk-gui/MonoDevelop.Ide.StandardHeaders.StandardHeaderPanel.cs:
+	  Updated.
+
+2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs,
+	  MonoDevelop.Ide.Gui.Content/TextEditorExtension.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/GoToDialog.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/ClassBrowserPadWidget.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/NamespaceData.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/ProjectNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui/Document.cs, MonoDevelop.Ide.Gui/Ide.cs,
+	  MonoDevelop.Ide.Gui/ProjectOperations.cs,
+	  MonoDevelop.Ide.Gui/RootWorkspace.cs: Track api changes.
+	* MonoDevelop.Ide.Gui.Dialogs/EncapsulateFieldDialog.cs: Fix warning.
+
+2008-09-11  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Gui/Document.cs: Worked on fold information update.
+
+2008-09-10  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Pads.ClassPad/ProjectNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui/Document.cs: Changed compilation unit/document
+	  meta information interface.
+
+2008-09-09  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* gtk-gui/gui.stetic,
+	  gtk-gui/MonoDevelop.Ide.Gui.Pads.ClassBrowser.ClassBrowserPadWidget.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/ClassBrowserPadWidget.cs:
+	  De-uglify new class pad.
+	* gtk-gui/objects.xml, Makefile.am, MonoDevelop.Ide.mdp: Updated.
+
+2008-09-09  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Pads.ClassPad/ClassNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/ProjectNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/MemberNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/MethodNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/EventNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/FieldNodeBuilder.cs: Worked on
+	  class pad.
+
+2008-09-09  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Pads.ClassPad/ReferenceNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/ClassNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/ProjectNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/NamespaceData.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/ClassData.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/NamespaceNodeBuilder.cs: Worked
+	  on class pad.
+
+2008-09-09  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Pads.ClassPad/ClassNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/ProjectNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/MemberNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/CombineNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/MethodNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/ClassBrowserPad.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/EventNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/ClassData.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/FieldNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/PropertyNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/ClassBrowserPadWidget.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/NamespaceNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui/ProjectOperations.cs: Worked on class pad
+
+2008-09-08  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs,
+	  MonoDevelop.Ide.Gui.Components/TransactedTreeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Components/NodeCommandHandler.cs,
+	  MonoDevelop.Ide.Gui.Components/ITreeNavigator.cs,
+	  MonoDevelop.Ide.Gui.Components/NodeState.cs,
+	  MonoDevelop.Ide.Gui.Components/TreeBuilder.cs, MonoDevelop.Ide.mdp,
+	  Makefile.am, MonoDevelop.Ide.Gui.Components/TreeNodeNavigator.cs:
+	  Implemented support for update locking. When a command is executed,
+	  all updates to the tree will be postponed until the command
+	  execution has completed. It avoids crashes due to the tree being
+	  modified while the command is still iterating on the nodes.
+
+2008-09-05  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs: Add some spacing back.
+
+2008-09-05  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs: Add a separator between
+	  the path bar and the secondary view buttions.
+
 2008-09-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Makefile.am, MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs,
@@ -164,6 +323,12 @@
 	  solution tree like any other files. For a detailed explanation see
 	  "Bug 381430 - [PATCH] Display resource files in main project tree".
 
+2008-08-19  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/RenameItemDialog.cs: Fixed some null
+	  ref bugs in refactory commands.
+
 2008-08-18  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs,
@@ -212,6 +377,12 @@
 	  with enumerator returned by GetCheckedSiblings. The enumerator
 	  can't be reused after calling MoveNext.
 
+2008-08-08  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/RenameItemDialog.cs: Worked on
+	  refactory commands.
+
 2008-08-07  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Commands/DebugCommands.cs, MonoDevelop.Ide.addin.xml:
@@ -222,6 +393,10 @@
 	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.BreakpointPropertiesDialog.cs,
 	  gtk-gui/gui.stetic, Makefile.am: Moved breakpoint properties dialog
 	  from the debugger add-in. More stuff likely to come here.
+
+2008-08-07  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: Worked on dom.
 
 2008-08-06  Lluis Sanchez Gual <lluis@novell.com> 
 
@@ -243,15 +418,87 @@
 	* MonoDevelop.Ide.Gui/Document.cs: Request file edit permission when
 	  saving a document.
 
+2008-08-05  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: worked on refactory
+	  commands.
+
+2008-08-04  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: Changed parser
+	  interface.
+
 2008-07-31  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs: Escape < so it doesn't get
 	  handled as GMarkup. Incomplete, but enough for now.
 
+2008-07-29  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.addin.xml: removed documentation dep.
+
+2008-07-29  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: fixed todo in
+	  refactory commands.
+
+2008-07-29  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide/Services.cs,
+	  MonoDevelop.Ide.Gui.Pads/MonodocTreePad.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassBrowser/ProjectNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassBrowser/SolutionNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassBrowser/ProjectNamespaceBuilder.cs,
+	  MonoDevelop.Ide.Gui.Content/CompletionTextEditorExtension.cs,
+	  MonoDevelop.Ide.Gui.Content/TextEditorExtension.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/MethodNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/EventNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/ClassData.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/FieldNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/PropertyNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/ClassNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/ProjectNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/MemberNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/NamespaceData.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/CombineNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/NamespaceNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/MemberNodeCommandHandler.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/OverridesImplementsDialog.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/GoToDialog.cs,
+	  MonoDevelop.Ide.Gui/RootWorkspace.cs,
+	  MonoDevelop.Ide.Gui/ProjectOperations.cs,
+	  MonoDevelop.Ide.Gui/DefaultWorkbench.cs,
+	  MonoDevelop.Ide.Gui/Ide.cs, MonoDevelop.Ide.Gui/HelpViewer.cs,
+	  MonoDevelop.Ide.Tasks/TaskService.cs: Translated old code to new
+	  dom.
+
+2008-07-29  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/OverridesImplementsDialog.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/EncapsulateFieldDialog.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/RenameItemDialog.cs,
+	  MonoDevelop.Ide.Gui/RootWorkspace.cs,
+	  MonoDevelop.Ide.Gui/ProjectOperations.cs: Changes for converted
+	  refactoring infrastructure.
+
 2008-07-28  Andrés G. Aragoneses <aaragoneses@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Search/CurrentProjectDocumentIterator.cs: Be more
 	  stacktrace friendly (wrt to exception line number).
+
+2008-07-27  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassBrowser/ClassBrowserPadWidget.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassBrowser/ProjectNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassBrowser/MemberNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassBrowser/ProjectNamespaceBuilder.cs,
+	  MonoDevelop.Ide.Gui.Content/CompletionTextEditorExtension.cs,
+	  MonoDevelop.Ide.Gui/Document.cs,
+	  MonoDevelop.Ide.Gui/RootWorkspace.cs,
+	  MonoDevelop.Ide.Gui/ProjectOperations.cs: Worked on code
+	  completion/new dom.
 
 2008-07-23  Michael Hutchinson <mhutchinson@novell.com> 
 
@@ -4053,7 +4300,7 @@
 2007-05-29  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: Use the new
-	  IClass.SourceProject property to know if an IClass can be changed
+	  IType.SourceProject property to know if an IType can be changed
 	  or not. CanJumpTo is not reliable since now MD allows jumping to
 	  source code files taken from debug info of assemblies.
 	* MonoDevelop.Ide.Gui/Workbench.cs: (OpenDocument) Columns are 1 based.
@@ -4172,8 +4419,8 @@
 	* MonoDevelop.Ide.Commands/RefactoryCommands.cs (Update): Pass the
 	editor.Text into UpdateFile() to fix a bug preventing the editor
 	state from auto-updating and catching new fields as the user types
-	them. Also fixed a bug which would show IMember, IClass, IMember,
-	IClass (which looks odd).
+	them. Also fixed a bug which would show IMember, IType, IMember,
+	IType (which looks odd).
 	(BuildRefactoryMenuForItem): Keep a canJumpTo bool so we don't
 	have to check it multiple times. Also check canJumpTo when adding
 	an "Encapsulate Field" item (can't encapsulate it unless we have
@@ -4299,8 +4546,8 @@
 	* MonoDevelop.Ide.Commands/RefactoryCommands.cs (Update): If an
 	interface was selected, find the class it is being implemented on
 	to pass to BuildRefactoryMenuForItem().
-	(BuildRefactoryMenuForItem): Now takes an IClass argument for
-	toplevel interface items so that we know which IClass to implement
+	(BuildRefactoryMenuForItem): Now takes an IType argument for
+	toplevel interface items so that we know which IType to implement
 	the interface members on if the user requests to do so.
 	(ImplementInterface): Implemented.
 
@@ -5780,7 +6027,7 @@
 2006-07-05 Matej Urbas <matej.urbas@gmail.com>
  
 	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: Updated to use ReturnType
-	as BaseTypes in IClass instances.
+	as BaseTypes in IType instances.
  
 2006-07-04  Michael Hutchinson <m.j.hutchinson@gmail.com>
 
@@ -9671,11 +9918,11 @@
 	  Internal/Parser/PersistenceLayer/PersistentProperty.cs,
 	  Internal/Parser/PersistenceLayer/PersistentClass.cs,
 	  New implementation of read and write methods based on static methods. In
-	  this way it can be used to write instances of any IClass and not only
+	  this way it can be used to write instances of any IType and not only
 	  PersistentClass. Also use new helper methods for writing strings and
 	  object references.
 	  
-	* Internal/Parser/IClass.cs: Moved ClassInheritanceTree to IParserService.
+	* Internal/Parser/IType.cs: Moved ClassInheritanceTree to IParserService.
 	
 	* Internal/Parser/ReflectionLayer/ReflectionClass.cs: Added Null check for
 	  MonodocService.

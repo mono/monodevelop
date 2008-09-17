@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
-//     <version>$Revision$</version>
+//     <version>$Revision: 2644 $</version>
 // </file>
 
 using System;
@@ -32,13 +32,67 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 			Assert.AreEqual(Tokens.EOF, lexer.NextToken().kind);
 		}
 		
+		void CheckIdentifier(string text, string actualIdentifier)
+		{
+			ILexer lexer = GenerateLexer(new StringReader(text));
+			Token t = lexer.NextToken();
+			Assert.AreEqual(Tokens.Identifier, t.kind);
+			Assert.AreEqual(actualIdentifier, t.val);
+			t = lexer.NextToken();
+			Assert.AreEqual(Tokens.EOF, t.kind);
+			Assert.AreEqual("", lexer.Errors.ErrorOutput);
+		}
+		
+		[Test]
+		public void TestYieldAsIdentifier()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("yield"));
+			Token t = lexer.NextToken();
+			Assert.AreEqual(Tokens.Yield, t.kind);
+			Assert.IsTrue(Tokens.IdentifierTokens[t.kind]);
+			Assert.AreEqual("yield", t.val);
+		}
+		
 		[Test]
 		public void TestIdentifier()
 		{
-			ILexer lexer = GenerateLexer(new StringReader("a_Bc05"));
-			Token t = lexer.NextToken();
-			Assert.AreEqual(Tokens.Identifier, t.kind);
-			Assert.AreEqual("a_Bc05", t.val);
+			CheckIdentifier("a_Bc05", "a_Bc05");
+		}
+		
+		[Test]
+		public void TestIdentifierStartingWithUnderscore()
+		{
+			CheckIdentifier("_Bc05", "_Bc05");
+		}
+		
+		[Test]
+		public void TestIdentifierStartingWithEscapeSequence()
+		{
+			CheckIdentifier(@"\u006cexer", "lexer");
+		}
+		
+		[Test]
+		public void TestIdentifierContainingEscapeSequence()
+		{
+			CheckIdentifier(@"l\U00000065xer", "lexer");
+		}
+		
+		[Test]
+		public void TestKeyWordAsIdentifier()
+		{
+			CheckIdentifier("@int", "int");
+		}
+		
+		[Test]
+		public void TestKeywordWithEscapeSequenceIsIdentifier()
+		{
+			CheckIdentifier(@"i\u006et", "int");
+		}
+		
+		[Test]
+		public void TestKeyWordAsIdentifierStartingWithUnderscore()
+		{
+			CheckIdentifier("@_int", "_int");
 		}
 		
 		[Test]
@@ -47,7 +101,7 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 			ILexer lexer = GenerateLexer(new StringReader("{}+"));
 			Assert.AreEqual(Tokens.OpenCurlyBrace, lexer.NextToken().kind);
 			lexer.NextToken();
-			lexer.SkipCurrentBlock();
+			lexer.SkipCurrentBlock(Tokens.CloseCurlyBrace);
 			Assert.AreEqual(Tokens.CloseCurlyBrace, lexer.LookAhead.kind);
 			Assert.AreEqual(Tokens.Plus, lexer.NextToken().kind);
 			Assert.AreEqual(Tokens.EOF, lexer.NextToken().kind);
@@ -59,7 +113,7 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 			ILexer lexer = GenerateLexer(new StringReader("{ TestMethod('}'); /* }}} */ while(1) {break;} }+"));
 			Assert.AreEqual(Tokens.OpenCurlyBrace, lexer.NextToken().kind);
 			lexer.NextToken();
-			lexer.SkipCurrentBlock();
+			lexer.SkipCurrentBlock(Tokens.CloseCurlyBrace);
 			Assert.AreEqual(Tokens.CloseCurlyBrace, lexer.LookAhead.kind);
 			Assert.AreEqual(Tokens.Plus, lexer.NextToken().kind);
 			Assert.AreEqual(Tokens.EOF, lexer.NextToken().kind);
@@ -76,7 +130,7 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 			lexer.Peek();
 			lexer.Peek();
 			lexer.Peek();
-			lexer.SkipCurrentBlock();
+			lexer.SkipCurrentBlock(Tokens.CloseCurlyBrace);
 			Assert.AreEqual(Tokens.CloseCurlyBrace, lexer.LookAhead.kind);
 			Assert.AreEqual(Tokens.Plus, lexer.NextToken().kind);
 			Assert.AreEqual(Tokens.EOF, lexer.NextToken().kind);
@@ -92,7 +146,7 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 			lexer.Peek();
 			lexer.Peek();
 			lexer.Peek();
-			lexer.SkipCurrentBlock();
+			lexer.SkipCurrentBlock(Tokens.CloseCurlyBrace);
 			Assert.AreEqual(Tokens.CloseCurlyBrace, lexer.LookAhead.kind);
 			Assert.AreEqual(Tokens.Plus, lexer.NextToken().kind);
 			Assert.AreEqual(Tokens.EOF, lexer.NextToken().kind);

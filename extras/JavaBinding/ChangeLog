@@ -1,3 +1,11 @@
+2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* JavaLanguageBinding.cs: Track api changes.
+
+2008-09-12  Mike Krüger <mkrueger@novell.com> 
+
+	* JavaLanguageBinding.cs: Updated java backend binding.
+
 2008-08-18  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* JavaBinding.mdp: Fix reference to Mono.TextEditor. The incorrect

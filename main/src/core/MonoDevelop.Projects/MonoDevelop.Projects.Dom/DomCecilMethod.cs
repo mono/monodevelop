@@ -49,14 +49,36 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
+		public static IReturnType GetReturnType (TypeReference typeReference)
+		{
+			if (typeReference == null)
+				return DomReturnType.Void;
+			if (typeReference.GenericParameters.Count > 0) {
+				DomReturnType newType = new DomReturnType (typeReference.FullName);
+				foreach (GenericParameter gp in typeReference.GenericParameters)
+					newType.AddTypeParameter (GetReturnType (gp));
+				return newType;
+			}
+			else
+				return DomReturnType.GetSharedReturnType (DomCecilType.RemoveGenericParamSuffix (typeReference.FullName)); 
+		}
+		
+		public static IReturnType GetReturnType (MethodReference methodReference)
+		{
+			if (methodReference == null)
+				return DomReturnType.Void;
+			return DomReturnType.GetSharedReturnType (DomCecilType.RemoveGenericParamSuffix (methodReference.DeclaringType.FullName));
+		}
+		
 		public DomCecilMethod (MonoDevelop.Projects.Dom.IType declaringType, bool keepDefinitions, MethodDefinition methodDefinition)
 		{
 			this.declaringType    = declaringType;
 			if (keepDefinitions)
 				this.methodDefinition = methodDefinition;
+				
 			base.Name             = methodDefinition.Name;
 			base.modifiers        = DomCecilType.GetModifiers (methodDefinition.Attributes);
-			base.returnType       = new DomCecilReturnType (methodDefinition.ReturnType.ReturnType);
+			base.returnType       = DomCecilMethod.GetReturnType (methodDefinition.ReturnType.ReturnType);
 			foreach (ParameterDefinition paramDef in methodDefinition.Parameters) {
 				Add (new DomCecilParameter (paramDef));
 			}

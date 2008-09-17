@@ -22,12 +22,12 @@
 // along with BooBinding; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #endregion
-
+/*
 namespace BooBinding.Parser
 
 import System
 import System.Collections
-import MonoDevelop.Projects.Parser
+import MonoDevelop.Projects.Dom
 import Boo.Lang.Compiler.Ast
 
 class VariableLookupVisitor(DepthFirstVisitor):
@@ -100,3 +100,4 @@ class VariableListLookupVisitor(DepthFirstVisitor):
 			reference as ReferenceExpression = node.Left
 			Add(reference.Name, node.Right) unless reference isa MemberReferenceExpression
 		super(node)
+*/

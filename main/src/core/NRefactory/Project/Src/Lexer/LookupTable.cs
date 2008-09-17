@@ -67,7 +67,7 @@ namespace ICSharpCode.NRefactory.Parser
 				// insert word into the tree
 				for (int i = 0; i < keyword.Length; ++i) {
 					int index = ((int)keyword[i]) % 256; // index of curchar
-//					bool d = keyword[i] == '\\';
+					bool d = keyword[i] == '\\';
 					
 					next = next.leaf[index];             // get node to this index
 					

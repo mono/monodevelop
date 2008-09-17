@@ -37,28 +37,43 @@ namespace MonoDevelop.Projects.Dom
 {
 	public class DomMethod : AbstractMember, IMethod
 	{
-		protected bool isConstructor;
+		protected MethodModifier methodModifier;
 		protected List<IParameter> parameters = null;
 		protected List<IReturnType> genericParameters = null;
-		
-		public bool IsConstructor {
+
+		static readonly ReadOnlyCollection<IParameter> emptyParameters = new ReadOnlyCollection<IParameter> (new IParameter [0]);
+		static readonly ReadOnlyCollection<IReturnType> emptyGenericParameters = new ReadOnlyCollection<IReturnType> (new IReturnType [0]);
+
+		public MethodModifier MethodModifier {
 			get {
-				return isConstructor;
+				return methodModifier;
 			}
 			set {
-				isConstructor = value;
+				methodModifier = value;
 			}
 		}
 		
-		public ReadOnlyCollection<IParameter> Parameters {
+		public bool IsConstructor {
 			get {
-				return parameters != null ? parameters.AsReadOnly () : null;
+				return (methodModifier & MethodModifier.IsConstructor) == MethodModifier.IsConstructor;
+			}
+		}
+		
+		public bool IsExtension {
+			get {
+				return (methodModifier & MethodModifier.IsExtension) == MethodModifier.IsExtension;
+			}
+		}
+
+		public virtual ReadOnlyCollection<IParameter> Parameters {
+			get {
+				return parameters != null ? parameters.AsReadOnly () : emptyParameters;
 			}
 		}
 		
 		public ReadOnlyCollection<IReturnType> GenericParameters {
 			get {
-				return genericParameters != null ? genericParameters.AsReadOnly () : null;
+				return genericParameters != null ? genericParameters.AsReadOnly () : emptyGenericParameters;
 			}
 		}
 		
@@ -106,24 +121,23 @@ namespace MonoDevelop.Projects.Dom
 		{
 		}
 		
-		public DomMethod (string name, Modifiers modifiers, bool isConstructor, DomLocation location, DomRegion bodyRegion)
+		public DomMethod (string name, Modifiers modifiers, MethodModifier methodModifier, DomLocation location, DomRegion bodyRegion)
 		{
-			this.Name       = name;
+			this.Name           = name;
 			this.modifiers      = modifiers;
-			this.location   = location;
-			this.bodyRegion = bodyRegion;
-			this.isConstructor = isConstructor;
+			this.location       = location;
+			this.bodyRegion     = bodyRegion;
+			this.methodModifier = methodModifier;
 		}
 		
-		public DomMethod (string name, Modifiers modifiers, bool isConstructor, DomLocation location, DomRegion bodyRegion, IReturnType returnType, List<IParameter> parameters)
+		public DomMethod (string name, Modifiers modifiers, MethodModifier methodModifier, DomLocation location, DomRegion bodyRegion, IReturnType returnType)
 		{
-			this.Name       = name;
+			this.Name           = name;
 			this.modifiers      = modifiers;
-			this.location   = location;
-			this.bodyRegion = bodyRegion;
-			this.returnType = returnType;
-			this.parameters = parameters;
-			this.isConstructor = isConstructor;
+			this.location       = location;
+			this.bodyRegion     = bodyRegion;
+			this.returnType     = returnType;
+			this.methodModifier = methodModifier;
 		}
 		
 		public void Add (IParameter parameter)
@@ -131,6 +145,15 @@ namespace MonoDevelop.Projects.Dom
 			if (parameters == null) 
 				parameters = new List<IParameter> ();
 			parameters.Add (parameter);
+		}
+		
+		public void Add (IEnumerable<IParameter> parameters)
+		{
+			if (parameters == null)
+				return;
+			foreach (IParameter parameter in parameters) {
+				Add (parameter);
+			}
 		}
 		
 		public void AddGenericParameter (IReturnType genPara)
@@ -164,12 +187,13 @@ namespace MonoDevelop.Projects.Dom
 		
 		public override System.Xml.XmlNode GetMonodocDocumentation ()
 		{
-			System.Xml.XmlDocument doc = ProjectDomService.HelpTree.GetHelpXml (DeclaringType.HelpUrl);
-			if (doc != null) {
-				System.Xml.XmlNodeList nodes = doc.SelectNodes ("/Type/Members/Member[@MemberName='" + Name + "']");
+			if (DeclaringType.HelpXml != null) {
+				System.Xml.XmlNodeList nodes = DeclaringType.HelpXml.SelectNodes ("/Type/Members/Member[@MemberName='" + Name + "']");
 				XmlNode node = nodes.Count == 1 ? nodes[0] : FindMatch (nodes);
-				if (node != null)
-					return node.SelectSingleNode ("Docs");
+				if (node != null) {
+					System.Xml.XmlNode result = node.SelectSingleNode ("Docs");
+					return result;
+				}
 			}
 			return null;
 		}
@@ -186,14 +210,8 @@ namespace MonoDevelop.Projects.Dom
 		public static IMethod Resolve (IMethod source, ITypeResolver typeResolver)
 		{
 			DomMethod result = new DomMethod ();
-			result.Name          = source.Name;
-			result.Documentation = source.Documentation;
-			result.Modifiers     = source.Modifiers;
-			result.ReturnType    = DomReturnType.Resolve (source.ReturnType, typeResolver);
-			result.Location      = source.Location;
-			result.bodyRegion    = source.BodyRegion;
-			result.AddRange (DomAttribute.Resolve (source.Attributes, typeResolver));
-			
+			AbstractMember.Resolve (source, result, typeResolver);
+			result.MethodModifier = source.MethodModifier;
 			if (source.Parameters != null) {
 				foreach (IParameter parameter in source.Parameters)
 					result.Add (DomParameter.Resolve (parameter, typeResolver));

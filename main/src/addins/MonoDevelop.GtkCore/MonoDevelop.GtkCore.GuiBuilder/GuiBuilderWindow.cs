@@ -37,7 +37,8 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects.Text;
@@ -110,12 +111,12 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				return true;
 			
 			// Find the classes that could be bound to this design
-			
+			ProjectDom ctx = fproject.GetParserContext ();
 			ArrayList list = new ArrayList ();
-			IParserContext ctx = fproject.GetParserContext ();
-			foreach (IClass cls in ctx.GetProjectContents ())
+			foreach (IType cls in ctx.Types) {
 				if (IsValidClass (ctx, cls))
-					list.Add (cls.FullyQualifiedName);
+					list.Add (cls.FullName);
+			}
 		
 			// Ask what to do
 
@@ -142,7 +143,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			string fullName = namspace.Length > 0 ? namspace + "." + name : name;
 			
-			CodeRefactorer gen = new CodeRefactorer (fproject.Project.ParentSolution, IdeApp.Workspace.ParserDatabase);
+			CodeRefactorer gen = new CodeRefactorer (fproject.Project.ParentSolution);
 			bool partialSupport = fproject.Project.UsePartialTypes;
 			Stetic.WidgetComponent component = (Stetic.WidgetComponent) rootWidget.Component;
 			
@@ -198,16 +199,15 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				AddSignalsRec (type, ag);
 			
 			// Create the class
-			
-			IClass cls = gen.CreateClass (Project.Project, ((DotNetProject)Project.Project).LanguageName, folder, namspace, type);
+			IType cls = gen.CreateClass (Project.Project, ((DotNetProject)Project.Project).LanguageName, folder, namspace, type);
 			if (cls == null)
 				throw new UserException ("Could not create class " + fullName);
 			
-			Project.Project.AddFile (cls.Region.FileName, BuildAction.Compile);
+			Project.Project.AddFile (cls.CompilationUnit.FileName, BuildAction.Compile);
 			IdeApp.ProjectOperations.Save (Project.Project);
 			
 			// Make sure the database is up-to-date
-			IdeApp.Workspace.ParserDatabase.UpdateFile (Project.Project, cls.Region.FileName, null);
+			ProjectDomService.Parse (Project.Project, cls.CompilationUnit.FileName, null);
 		}
 		
 		void AddSignalsRec (CodeTypeDeclaration type, Stetic.Component comp)
@@ -228,14 +228,14 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 		}
 		
-		internal bool IsValidClass (IParserContext ctx, IClass cls)
+		internal bool IsValidClass (ProjectDom ctx, IType cls)
 		{
 			if (cls.BaseTypes != null) {
 				foreach (IReturnType bt in cls.BaseTypes) {
-					if (bt.FullyQualifiedName == rootWidget.Component.Type.ClassName)
+					if (bt.FullName == rootWidget.Component.Type.ClassName)
 						return true;
 					
-					IClass baseCls = ctx.GetClass (bt.FullyQualifiedName, true, true);
+					IType baseCls = ctx.GetType (bt);
 					if (baseCls != null && IsValidClass (ctx, baseCls))
 						return true;
 				}

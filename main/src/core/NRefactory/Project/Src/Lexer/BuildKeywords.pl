@@ -78,7 +78,7 @@ sub write_keywordfile
 	print DAT "\n";
 	print DAT "namespace " . $properties{'Namespace'} . "\n";
 	print DAT "{\n";
-	print DAT "\tpublic class Keywords\n";
+	print DAT "\tpublic static class Keywords\n";
 	print DAT "\t{\n";
 	print DAT "\t\tstatic readonly string[] keywordList = {\n";
 	if ($properties{'UpperCaseKeywords'} eq "True") {
@@ -119,6 +119,14 @@ sub write_keywordfile
 	print DAT "\t\t{\n";
 	print DAT "\t\t\treturn keywords[keyword];\n";
 	print DAT "\t\t}\n";
+	print DAT "\t\t\n";
+	print DAT "\t\tpublic static bool IsNonIdentifierKeyword(string word)\n";
+	print DAT "\t\t{\n";
+	print DAT "\t\t\tint token = GetToken(word);\n";
+	print DAT "\t\t\tif (token < 0)\n";
+	print DAT "\t\t\t\treturn false;\n";
+	print DAT "\t\t\treturn !Tokens.IdentifierTokens[token];\n";
+	print DAT "\t\t}\n";
 	print DAT "\t}\n";
 	print DAT "}\n";
 	close(DAT);
@@ -127,7 +135,7 @@ sub write_keywordfile
 
 sub write_token {
 	$formattedString = sprintf("%-20s", ucfirst $tokenName);
-	if ($tokenName eq "GetType") {
+	if (($tokenName eq "GetType") or ($tokenName eq "equals")) {
 		print DAT "\t\tnew public const int $formattedString = $tokenValue;\n";
 	} else {
 		print DAT "\t\tpublic const int $formattedString = $tokenValue;\n";
@@ -266,10 +274,10 @@ sub write_unittests {
 	print DAT "\t{\n";
 	print DAT "\t\tILexer GenerateLexer(StringReader sr)\n";
 	print DAT "\t\t{\n";
-	print DAT "\t\t\treturn ParserFactory.CreateLexer(SupportedLanguages.CSharp, sr);\n";
+	print DAT "\t\t\treturn ParserFactory.CreateLexer(SupportedLanguage.CSharp, sr);\n";
 	print DAT "\t\t}\n\n";
 
-	for ($i=0; $i < $#special_values; $i++) {
+	for ($i=0; $i <= $#special_values; $i++) {
 	
 		print DAT "\t\t[Test]\n";
 		print DAT "\t\tpublic void Test" . $special_chars[$i] ."()\n";

@@ -340,8 +340,6 @@ src/core/MonoDevelop.Projects/MonoDevelop.Projects.dll.config
 src/core/MonoDevelop.Projects/Makefile
 src/core/MonoDevelop.Projects.Gui/AssemblyInfo.cs
 src/core/MonoDevelop.Projects.Gui/Makefile
-src/core/MonoDevelop.Documentation/AssemblyInfo.cs
-src/core/MonoDevelop.Documentation/Makefile
 src/core/MonoDevelop.Ide/AssemblyInfo.cs
 src/core/MonoDevelop.Ide/Makefile
 src/core/MonoDevelop.Dock/Makefile

@@ -65,6 +65,15 @@ namespace MonoDevelop.Projects.Dom
 				evt.CleanCecilDefinitions ();
 			}
 		}
+		
+		public static string RemoveGenericParamSuffix (string name)
+		{
+			int idx = name.IndexOf('`');
+			if (idx > 0)
+				return name.Substring (0, idx);
+			return name;
+		}
+		
 		public DomCecilType (TypeDefinition typeDefinition) : this (true, true, typeDefinition)
 		{
 		}	
@@ -73,14 +82,16 @@ namespace MonoDevelop.Projects.Dom
 			if (keepDefinitions)
 				this.typeDefinition = typeDefinition;
 			this.classType      = GetClassType (typeDefinition);
-			this.Name           = typeDefinition.Name;
+			
+			this.Name           = DomCecilType.RemoveGenericParamSuffix (typeDefinition.Name);
+			
 			this.Namespace      = typeDefinition.Namespace;
-			this.modifiers      = GetModifiers (typeDefinition.Attributes);
+			this.Modifiers      = GetModifiers (typeDefinition.Attributes);
 			if (typeDefinition.BaseType != null)
-				this.baseType = new DomCecilReturnType (typeDefinition.BaseType);
+				this.baseType = DomCecilMethod.GetReturnType (typeDefinition.BaseType);
 			
 			foreach (TypeReference interfaceReference in typeDefinition.Interfaces) {
-				this.AddInterfaceImplementation (new DomCecilReturnType (interfaceReference));
+				this.AddInterfaceImplementation (DomCecilMethod.GetReturnType (interfaceReference));
 			}
 			foreach (FieldDefinition fieldDefinition in typeDefinition.Fields) {
 				if (!loadInternal && DomCecilCompilationUnit.IsInternal (DomCecilType.GetModifiers (fieldDefinition.Attributes)))
@@ -102,6 +113,12 @@ namespace MonoDevelop.Projects.Dom
 					continue;
 				base.Add (new DomCecilEvent (this, keepDefinitions,eventDefinition));
 			}
+			foreach (GenericParameter parameter in typeDefinition.GenericParameters) {
+				TypeParameter tp = new TypeParameter (parameter.FullName);
+				foreach (TypeReference tr in parameter.Constraints)
+					tp.AddConstraint (DomCecilMethod.GetReturnType (tr));
+				AddTypeParameter (tp);
+			}
 		}
 		
 		public TypeDefinition TypeDefinition {
@@ -121,7 +138,7 @@ namespace MonoDevelop.Projects.Dom
 			
 			if ((attr & TypeAttributes.NestedPrivate) == TypeAttributes.NestedPrivate) {
 				result |= Modifiers.Private;
-			} else if ((attr & TypeAttributes.Public) == TypeAttributes.Public) {
+			} else if ((attr & TypeAttributes.Public) == TypeAttributes.Public || (attr & TypeAttributes.NestedPublic) == TypeAttributes.NestedPublic) {
 				result |= Modifiers.Public;
 			} else if ((attr & TypeAttributes.NestedFamANDAssem) == TypeAttributes.NestedFamANDAssem) {
 				result |= Modifiers.ProtectedAndInternal;

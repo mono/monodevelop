@@ -34,6 +34,8 @@ ConcatString = "&"
 Power = "^"
 # Question mark is not needed by VB8, but we use it inside the IDE
 QuestionMark = "?"
+# Exclamation mark = Dictionary access operator (not always a token, sometimes it's a type character)
+ExclamationMark = "!"
 
 OpenCurlyBrace = "{"
 CloseCurlyBrace = "}"
@@ -207,6 +209,9 @@ ConcatStringAssign = "&="
 "WithEvents"
 "WriteOnly"
 "Xor"
+# Rem never gets passed to the parser because it is handled by the lexer, but it still
+# has to be in the keyword list for the output formatter
+"Rem"
 
 # VB.NET 2.0 Keywords:
 "Continue"
@@ -234,5 +239,5 @@ ConcatStringAssign = "&="
 Null("Nothing")
 BlockSucc("Case", "Catch", "Else", "ElseIf", "End", "Finally", "Loop", "Next")
 
-# List of unreserved keywords, must be the same as the "Identifier" production in VBNET.ATG
-Unreserved("Text", "Binary", "Compare", "Assembly", "Ansi", "Auto", "Preserve", "Unicode", "Until", "Explicit", "Off")
+# List of keywords that are valid identifiers, must be the same as the "Identifier" production in VBNET.ATG
+IdentifierTokens("Text", "Binary", "Compare", "Assembly", "Ansi", "Auto", "Preserve", "Unicode", "Until", "Explicit", "Off")

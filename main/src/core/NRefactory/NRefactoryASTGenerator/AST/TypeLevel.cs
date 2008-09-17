@@ -2,19 +2,20 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
-//     <version>$Revision: 975 $</version>
+//     <version>$Revision: 2653 $</version>
 // </file>
 
 using System;
 using System.Collections.Generic;
 
-namespace NRefactoryASTGenerator.AST
+namespace NRefactoryASTGenerator.Ast
 {
 	class VariableDeclaration : AbstractNode
 	{
 		string     name;
 		Expression initializer;
 		TypeReference typeReference;
+		Expression fixedArrayInitialization;
 		
 		public VariableDeclaration(string name) {}
 		public VariableDeclaration(string name, Expression initializer) {}
@@ -26,13 +27,13 @@ namespace NRefactoryASTGenerator.AST
 		ConstructorInitializer constructorInitializer;
 		BlockStatement         body;
 		
-		public ConstructorDeclaration(string name, Modifier modifier,
+		public ConstructorDeclaration(string name, Modifiers modifier,
 		                              List<ParameterDeclarationExpression> parameters,
 		                              List<AttributeSection> attributes)
 			: base(modifier, attributes, name, parameters)
 		{}
 		
-		public ConstructorDeclaration(string name, Modifier modifier,
+		public ConstructorDeclaration(string name, Modifiers modifier,
 		                              List<ParameterDeclarationExpression> parameters,
 		                              ConstructorInitializer constructorInitializer,
 		                              List<AttributeSection> attributes)
@@ -43,7 +44,7 @@ namespace NRefactoryASTGenerator.AST
 	enum ConstructorInitializerType { None }
 	
 	[ImplementNullable]
-	class ConstructorInitializer : AbstractNode
+	class ConstructorInitializer : AbstractNode, INullable
 	{
 		ConstructorInitializerType constructorInitializerType;
 		List<Expression>           arguments;
@@ -88,24 +89,14 @@ namespace NRefactoryASTGenerator.AST
 	[IncludeBoolProperty("HasAddRegion",    "return !addRegion.IsNull;")]
 	[IncludeBoolProperty("HasRemoveRegion", "return !removeRegion.IsNull;")]
 	[IncludeBoolProperty("HasRaiseRegion",  "return !raiseRegion.IsNull;")]
-	class EventDeclaration : ParametrizedNode
+	class EventDeclaration : MemberNode
 	{
-		TypeReference   typeReference;
-		List<InterfaceImplementation> interfaceImplementations;
 		EventAddRegion addRegion;
 		EventRemoveRegion removeRegion;
 		EventRaiseRegion raiseRegion;
-		Point bodyStart;
-		Point bodyEnd;
-		
-		public EventDeclaration(TypeReference typeReference, string name, Modifier modifier, List<AttributeSection> attributes, List<ParameterDeclarationExpression> parameters)
-			: base(modifier, attributes, name, parameters)
-		{ }
-		
-		// for VB:
-		public EventDeclaration(TypeReference typeReference, Modifier modifier, List<ParameterDeclarationExpression> parameters, List<AttributeSection> attributes, string name, List<InterfaceImplementation> interfaceImplementations)
-			: base(modifier, attributes, name, parameters)
-		{ }
+		Location bodyStart;
+		Location bodyEnd;
+		Expression initializer;
 	}
 	
 	[IncludeMember(@"
@@ -114,13 +105,7 @@ namespace NRefactoryASTGenerator.AST
 			if (!typeReference.IsNull) {
 				return typeReference;
 			}
-			
-			for (int i = fieldIndex; i < Fields.Count;++i) {
-				if (!((VariableDeclaration)Fields[i]).TypeReference.IsNull) {
-					return ((VariableDeclaration)Fields[i]).TypeReference;
-				}
-			}
-			return TypeReference.Null;
+			return ((VariableDeclaration)Fields[fieldIndex]).TypeReference;
 		}")]
 	[IncludeMember(@"
 		public VariableDeclaration GetVariableDeclaration(string variableName)
@@ -141,48 +126,41 @@ namespace NRefactoryASTGenerator.AST
 		public FieldDeclaration(List<AttributeSection> attributes) : base(attributes) {}
 		
 		// for all other cases
-		public FieldDeclaration(List<AttributeSection> attributes, TypeReference typeReference, Modifier modifier)
+		public FieldDeclaration(List<AttributeSection> attributes, TypeReference typeReference, Modifiers modifier)
 			: base(modifier, attributes)
 		{}
 	}
 	
-	class MethodDeclaration : ParametrizedNode
+	abstract class MemberNode : ParametrizedNode
 	{
-		TypeReference    typeReference;
+		List<InterfaceImplementation> interfaceImplementations;
+		TypeReference typeReference;
+		
+		public MemberNode() {}
+		
+		public MemberNode(Modifiers modifier, List<AttributeSection> attributes,
+		                  string name, List<ParameterDeclarationExpression> parameters)
+			: base(modifier, attributes, name, parameters)
+		{}
+	}
+	
+	class MethodDeclaration : MemberNode
+	{
 		BlockStatement   body;
 		List<string>     handlesClause;
-		List<InterfaceImplementation> interfaceImplementations;
 		List<TemplateDefinition> templates;
-		
-		public MethodDeclaration(string name, Modifier modifier, TypeReference typeReference, List<ParameterDeclarationExpression> parameters, List<AttributeSection> attributes) : base(modifier, attributes, name, parameters) {}
+		bool isExtensionMethod;
 	}
 	
 	enum ConversionType { None }
 	enum OverloadableOperatorType { None }
 	
 	[IncludeBoolProperty("IsConversionOperator", "return conversionType != ConversionType.None;")]
-	[FixOperatorDeclarationAttribute]
 	class OperatorDeclaration : MethodDeclaration
 	{
 		ConversionType conversionType;
 		List<AttributeSection> returnTypeAttributes;
 		OverloadableOperatorType overloadableOperator;
-		
-		public OperatorDeclaration(Modifier modifier,
-		                           List<AttributeSection> attributes,
-		                           List<ParameterDeclarationExpression> parameters,
-		                           TypeReference typeReference,
-		                           ConversionType conversionType)
-			: base(null, modifier, typeReference, parameters, attributes)
-		{}
-		
-		public OperatorDeclaration(Modifier modifier,
-		                           List<AttributeSection> attributes,
-		                           List<ParameterDeclarationExpression> parameters,
-		                           TypeReference typeReference,
-		                           OverloadableOperatorType overloadableOperator)
-			: base(null, modifier, typeReference, parameters, attributes)
-		{}
 	}
 	
 	[IncludeBoolProperty("HasGetRegion", "return !getRegion.IsNull;")]
@@ -190,25 +168,24 @@ namespace NRefactoryASTGenerator.AST
 	[IncludeBoolProperty("IsReadOnly", "return HasGetRegion && !HasSetRegion;")]
 	[IncludeBoolProperty("IsWriteOnly", "return !HasGetRegion && HasSetRegion;")]
 	[IncludeMember(@"
-		public PropertyDeclaration(string name, TypeReference typeReference, Modifier modifier, List<AttributeSection> attributes) : this(modifier, attributes, name, null)
+		internal PropertyDeclaration(string name, TypeReference typeReference, Modifiers modifier, List<AttributeSection> attributes) : this(modifier, attributes, name, null)
 		{
 			this.TypeReference = typeReference;
-			if ((modifier & Modifier.ReadOnly) == Modifier.ReadOnly) {
-				this.GetRegion = new PropertyGetRegion(null, null);
-			} else if ((modifier & Modifier.WriteOnly) == Modifier.WriteOnly) {
+			if ((modifier & Modifiers.ReadOnly) != Modifiers.ReadOnly) {
 				this.SetRegion = new PropertySetRegion(null, null);
 			}
+			if ((modifier & Modifiers.WriteOnly) != Modifiers.WriteOnly) {
+				this.GetRegion = new PropertyGetRegion(null, null);
+			}
 		}")]
-	class PropertyDeclaration : ParametrizedNode
+	class PropertyDeclaration : MemberNode
 	{
-		List<InterfaceImplementation> interfaceImplementations;
-		TypeReference     typeReference;
-		Point             bodyStart;
-		Point             bodyEnd;
+		Location          bodyStart;
+		Location          bodyEnd;
 		PropertyGetRegion getRegion;
 		PropertySetRegion setRegion;
 		
-		public PropertyDeclaration(Modifier modifier, List<AttributeSection> attributes,
+		public PropertyDeclaration(Modifiers modifier, List<AttributeSection> attributes,
 		                           string name, List<ParameterDeclarationExpression> parameters)
 			: base(modifier, attributes, name, parameters)
 		{}
@@ -242,7 +219,7 @@ namespace NRefactoryASTGenerator.AST
 		string         name;
 		BlockStatement body;
 		
-		public DestructorDeclaration(string name, Modifier modifier, List<AttributeSection> attributes) : base(modifier, attributes) {}
+		public DestructorDeclaration(string name, Modifiers modifier, List<AttributeSection> attributes) : base(modifier, attributes) {}
 	}
 	
 	[IncludeBoolProperty("HasGetRegion", "return !getRegion.IsNull;")]
@@ -254,16 +231,16 @@ namespace NRefactoryASTGenerator.AST
 		List<ParameterDeclarationExpression> parameters;
 		List<InterfaceImplementation> interfaceImplementations;
 		TypeReference     typeReference;
-		Point             bodyStart;
-		Point             bodyEnd;
+		Location          bodyStart;
+		Location          bodyEnd;
 		PropertyGetRegion getRegion;
 		PropertySetRegion setRegion;
 		
-		public IndexerDeclaration(Modifier modifier, List<ParameterDeclarationExpression> parameters, List<AttributeSection> attributes)
+		public IndexerDeclaration(Modifiers modifier, List<ParameterDeclarationExpression> parameters, List<AttributeSection> attributes)
 			: base(modifier, attributes)
 		{}
 		
-		public IndexerDeclaration(TypeReference typeReference, List<ParameterDeclarationExpression> parameters, Modifier modifier, List<AttributeSection> attributes)
+		public IndexerDeclaration(TypeReference typeReference, List<ParameterDeclarationExpression> parameters, Modifiers modifier, List<AttributeSection> attributes)
 			: base(modifier, attributes)
 		{}
 	}
@@ -277,7 +254,7 @@ namespace NRefactoryASTGenerator.AST
 		CharsetModifier charset;
 		TypeReference   typeReference;
 		
-		public DeclareDeclaration(string name, Modifier modifier, TypeReference typeReference, List<ParameterDeclarationExpression> parameters, List<AttributeSection> attributes, string library, string alias, CharsetModifier charset)
+		public DeclareDeclaration(string name, Modifiers modifier, TypeReference typeReference, List<ParameterDeclarationExpression> parameters, List<AttributeSection> attributes, string library, string alias, CharsetModifier charset)
 			: base(modifier, attributes, name, parameters)
 		{}
 	}

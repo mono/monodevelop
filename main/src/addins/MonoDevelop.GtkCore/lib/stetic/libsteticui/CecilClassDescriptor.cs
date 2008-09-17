@@ -310,7 +310,7 @@ namespace Stetic
 					Gtk.ScrolledWindow cc = new Gtk.ScrolledWindow ();
 					cc.VscrollbarPolicy = Gtk.PolicyType.Never;
 					cc.HscrollbarPolicy = Gtk.PolicyType.Never;
-					cc.Add (c);
+					cc.AddWithViewport (c);
 					return cc;
 				}
 				case "Gtk.Table": {

@@ -28,7 +28,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 						
 				if (gen.Messages != null) {
 					foreach (string s in gen.Messages)
-						res.AddWarning (s);
+						res.AddWarning (info.GuiBuilderProject.File, 0, 0, null, s);
 							
 					if (gen.Messages.Length > 0)
 						info.ForceCodeGenerationOnBuild ();

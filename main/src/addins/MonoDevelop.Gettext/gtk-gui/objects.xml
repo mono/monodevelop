@@ -1,4 +1,4 @@
-<objects>
+<objects attr-sync="on">
   <object type="MonoDevelop.Gettext.POEditorWidget" palette-category="widget" allow-children="false" base-type="Gtk.Bin">
     <itemgroups>
       <itemgroup label="POEditorWidget Properties">

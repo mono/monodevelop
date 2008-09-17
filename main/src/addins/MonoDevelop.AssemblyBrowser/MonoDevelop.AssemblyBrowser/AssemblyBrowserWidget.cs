@@ -46,6 +46,7 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Ide.Gui.Components;
 
+
 namespace MonoDevelop.AssemblyBrowser
 {
 	[System.ComponentModel.Category("MonoDevelop.AssemblyBrowser")]
@@ -148,13 +149,13 @@ namespace MonoDevelop.AssemblyBrowser
 					}
 					if (searchMode == SearchMode.Disassembler) {
 						this.notebook1.Page = 0;
-						int idx = DomMethodNodeBuilder.Disassemble ((MonoDevelop.Projects.Dom.DomCecilMethod)member, false).ToUpper ().IndexOf (searchEntry.Text.ToUpper ());
+						int idx = DomMethodNodeBuilder.Disassemble ((DomCecilMethod)member, false).ToUpper ().IndexOf (searchEntry.Text.ToUpper ());
 						this.disassemblerLabel.Selectable = true;
 						this.disassemblerLabel.SelectRegion (idx, idx + searchEntry.Text.Length);
 					}
 					if (searchMode == SearchMode.Decompiler) {
 						this.notebook1.Page = 1;
-						int idx = DomMethodNodeBuilder.Decompile ((MonoDevelop.Projects.Dom.DomCecilMethod)member, false).ToUpper ().IndexOf (searchEntry.Text.ToUpper ());
+						int idx = DomMethodNodeBuilder.Decompile ((DomCecilMethod)member, false).ToUpper ().IndexOf (searchEntry.Text.ToUpper ());
 						this.disassemblerLabel.Selectable = true;
 						this.disassemblerLabel.SelectRegion (idx, idx + searchEntry.Text.Length);
 					}
@@ -289,7 +290,7 @@ namespace MonoDevelop.AssemblyBrowser
 				string pattern = searchEntry.Text.ToUpper ();
 				int types = 0, curType = 0;
 				foreach (DomCecilCompilationUnit unit in this.definitions) {
-					types += unit.TypeCount;
+					types += unit.Types.Count;
 				}
 				List<IMember> members = new List<IMember> ();
 				switch (searchMode) {

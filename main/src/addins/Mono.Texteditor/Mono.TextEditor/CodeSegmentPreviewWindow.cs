@@ -49,7 +49,6 @@ namespace Mono.TextEditor
 			this.editor = editor;
 			this.segment = segment;
 			this.AppPaintable = true;
-			this.DoubleBuffered = false;
 			Pango.Layout layout = new Pango.Layout (this.PangoContext);
 			layout.FontDescription = editor.Options.Font;
 			layout.Ellipsize = Pango.EllipsizeMode.End;
@@ -69,11 +68,9 @@ namespace Mono.TextEditor
 			layout.GetPixelSize (out w, out h);
 			this.SetSizeRequest (System.Math.Min (w, width), 
 			                     System.Math.Min (h, height));
-			layout.Dispose ();
-			this.Hidden += delegate { Destroy (); Dispose ();};
 		}
 		
-		public override void Dispose ()
+		protected override void OnDestroyed ()
 		{
 			if (layout != null) {
 				layout.Dispose ();
@@ -83,8 +80,9 @@ namespace Mono.TextEditor
 				gc.Dispose ();
 				gc = null;
 			}
-			base.Dispose ();
+			base.OnDestroyed ();
 		}
+
 		
 		Gdk.GC gc = null;
 		Pango.Layout layout = null;

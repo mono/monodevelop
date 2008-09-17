@@ -37,7 +37,7 @@ using Glade;
 	
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Components;

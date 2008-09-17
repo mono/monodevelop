@@ -31,7 +31,7 @@ using System.CodeDom;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Gui.Completion;
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
 using MonoDevelop.DesignerSupport;
 
 namespace MonoDevelop.AspNet.Parser
@@ -42,10 +42,10 @@ namespace MonoDevelop.AspNet.Parser
 	{
 		SolutionItem entry;
 		CodeMemberMethod methodInfo;
-		IClass codeBehindClass;
-		IClass codeBehindClassPart;
+		IType codeBehindClass;
+		IType codeBehindClassPart;
 		
-		public SuggestedHandlerCompletionData (SolutionItem entry, CodeMemberMethod methodInfo, IClass codeBehindClass, IClass codeBehindClassPart)
+		public SuggestedHandlerCompletionData (SolutionItem entry, CodeMemberMethod methodInfo, IType codeBehindClass, IType codeBehindClassPart)
 		{
 			this.entry = entry;
 			this.methodInfo = methodInfo;

@@ -1,0 +1,16 @@
+<SerializationMap>
+	<DataItem class = "VBBinding.VBCompilerParameters">
+		<ItemProperty member="warninglevel" name="warninglevel"/>
+		<ItemProperty member="noWarnings" name="nowarn"/>
+		<ItemProperty member="optimize" name="optimize"/>
+		<ItemProperty member="unsafecode" name="unsafecodeallowed"/>
+		<ItemProperty member="generateOverflowChecks" name="generateoverflowchecks"/>
+		<ItemProperty member="mainclass" name="mainclass"/>
+		<ItemProperty member="definesymbols" name="definesymbols" />
+		<ItemProperty member="generateXmlDocumentation" name="generatexmldocumentation"/>
+		<ItemProperty member="win32Icon" name="win32Icon" />
+		<ItemProperty member="win32Resource" name="win32Resource"/>
+		<ItemProperty member="additionalParameters" name="additionalParameters" />
+		<LiteralProperty name="compiler" value="Mbas" />
+	</DataItem>
+</SerializationMap>

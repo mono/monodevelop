@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version>$Revision: 1965 $</version>
+//     <version>$Revision: 2661 $</version>
 // </file>
 
 using System;
@@ -312,6 +312,17 @@ namespace ICSharpCode.NRefactory.Visitors
 		protected override void GenerateAttributeDeclarationsEnd(CodeAttributeDeclarationCollection attributes)
 		{
 			Output.WriteLine("[CodeAttributeDeclarationCollection: {0}]", attributes.ToString());
+		}
+		
+		protected override void GeneratePrimitiveExpression(CodePrimitiveExpression e)
+		{
+			if (e.Value == null) {
+				Output.WriteLine("[CodePrimitiveExpression: null]");
+			} else {
+				Output.Write("[CodePrimitiveExpression: ");
+				base.GeneratePrimitiveExpression(e);
+				Output.WriteLine(" (" + e.Value.GetType().Name + ")]");
+			}
 		}
 		
 		protected override bool Supports(GeneratorSupport support)

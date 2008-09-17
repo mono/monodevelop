@@ -37,11 +37,7 @@ namespace MonoDevelop.Projects.Dom
 		string FileName {
 			get;
 		}
-		
-		int TypeCount {
-			get;
-		}
-		
+				
 		ReadOnlyCollection<IUsing> Usings {
 			get;
 		}
@@ -51,18 +47,6 @@ namespace MonoDevelop.Projects.Dom
 		}
 		
 		ReadOnlyCollection<IType> Types {
-			get;
-		}
-		
-		IEnumerable<Comment> Comments {
-			get;
-		}
-		
-		IEnumerable<DomRegion> FoldingRegions {
-			get;
-		}
-		
-		ReadOnlyCollection<Error> Errors {
 			get;
 		}
 		

@@ -2,14 +2,14 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
-//     <version>$Revision: 1080 $</version>
+//     <version>$Revision: 2819 $</version>
 // </file>
 
 using System;
 using System.IO;
 using NUnit.Framework;
 using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.AST;
+using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.PrettyPrinter;
 
 namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
@@ -23,7 +23,7 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			parser.Parse();
 			Assert.AreEqual("", parser.Errors.ErrorOutput);
 			CSharpOutputVisitor outputVisitor = new CSharpOutputVisitor();
-			outputVisitor.Visit(parser.CompilationUnit, null);
+			outputVisitor.VisitCompilationUnit(parser.CompilationUnit, null);
 			Assert.AreEqual("", outputVisitor.Errors.ErrorOutput);
 			Assert.AreEqual(StripWhitespace(program), StripWhitespace(outputVisitor.Text));
 		}
@@ -45,9 +45,11 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		
 		void TestExpression(string expression)
 		{
+			// SEMICOLON HACK : without a trailing semicolon, parsing expressions does not work correctly
 			IParser parser = ParserFactory.CreateParser(SupportedLanguage.CSharp, new StringReader(expression + ";"));
 			Expression e = parser.ParseExpression();
 			Assert.AreEqual("", parser.Errors.ErrorOutput);
+			Assert.IsNotNull(e, "ParseExpression returned null");
 			CSharpOutputVisitor outputVisitor = new CSharpOutputVisitor();
 			e.AcceptVisitor(outputVisitor, null);
 			Assert.AreEqual("", outputVisitor.Errors.ErrorOutput);
@@ -67,6 +69,12 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			               " add { obj.Click += value; }" +
 			               " remove { obj.Click -= value; } " +
 			               "}");
+		}
+		
+		[Test]
+		public void EventWithInitializer()
+		{
+			TestTypeMember("public event EventHandler Click = delegate { };");
 		}
 		
 		[Test]
@@ -120,7 +128,7 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		[Test]
 		public void ArrayInitializer()
 		{
-			TestStatement("object[] a = new object[] {1, 2, 3};");
+			TestStatement("object[] a = new object[] { 1, 2, 3 };");
 		}
 		
 		[Test]
@@ -178,6 +186,26 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		}
 		
 		[Test]
+		public void Switch()
+		{
+			TestStatement("switch (a) {" +
+			              " case 0:" +
+			              " case 1:" +
+			              "  break;" +
+			              " case 2:" +
+			              "  return;" +
+			              " default:" +
+			              "  throw new Exception(); " +
+			              "}");
+		}
+		
+		[Test]
+		public void MultipleVariableForLoop()
+		{
+			TestStatement("for (int a = 0, b = 0; b < 100; ++b,a--) { }");
+		}
+		
+		[Test]
 		public void SizeOf()
 		{
 			TestExpression("sizeof(IntPtr)");
@@ -217,13 +245,13 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		[Test]
 		public void LongInteger()
 		{
-			TestExpression("12l");
+			TestExpression("12L");
 		}
 		
 		[Test]
 		public void LongUnsignedInteger()
 		{
-			TestExpression("12ul");
+			TestExpression("12uL");
 		}
 		
 		[Test]
@@ -237,6 +265,12 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		{
 			TestExpression("12.5");
 			TestExpression("12.0");
+		}
+		
+		[Test]
+		public void StringWithUnicodeLiteral()
+		{
+			TestExpression(@"""\u0001""");
 		}
 		
 		[Test]
@@ -314,10 +348,23 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		}
 		
 		[Test]
+		public void SetOnlyProperty()
+		{
+			TestTypeMember("public bool ExpectsValue { set { DoSomething(value); } }");
+		}
+		
+		[Test]
 		public void AbstractMethod()
 		{
 			TestTypeMember("public abstract void Run();");
 			TestTypeMember("public abstract bool Run();");
+		}
+		
+		[Test]
+		public void AnonymousMethod()
+		{
+			TestStatement("Func b = delegate { return true; };");
+			TestStatement("Func a = delegate() { return false; };");
 		}
 		
 		[Test]
@@ -337,6 +384,194 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		{
 			TestTypeMember("public string this[int index] { get { return index.ToString(); } set { } }");
 			TestTypeMember("public string IList.this[int index] { get { return index.ToString(); } set { } }");
+		}
+		
+		[Test]
+		public void OverloadedConversionOperators()
+		{
+			TestTypeMember("public static explicit operator TheBug(XmlNode xmlNode) { }");
+			TestTypeMember("public static implicit operator XmlNode(TheBug bugNode) { }");
+		}
+		
+		[Test]
+		public void OverloadedTrueFalseOperators()
+		{
+			TestTypeMember("public static bool operator true(TheBug bugNode) { }");
+			TestTypeMember("public static bool operator false(TheBug bugNode) { }");
+		}
+		
+		[Test]
+		public void OverloadedOperators()
+		{
+			TestTypeMember("public static TheBug operator +(TheBug bugNode, TheBug bugNode2) { }");
+			TestTypeMember("public static TheBug operator >>(TheBug bugNode, int b) { }");
+		}
+		
+		[Test]
+		public void PropertyWithAccessorAccessModifiers()
+		{
+			TestTypeMember("public bool ExpectsValue {\n" +
+			               "\tinternal get {\n" +
+			               "\t}\n" +
+			               "\tprotected set {\n" +
+			               "\t}\n" +
+			               "}");
+		}
+		
+		[Test]
+		public void UsingStatementForExistingVariable()
+		{
+			TestStatement("using (obj) {\n}");
+		}
+		
+		[Test]
+		public void NewConstraint()
+		{
+			TestProgram("public struct Rational<T, O> where O : IRationalMath<T>, new()\n{\n}");
+		}
+		
+		[Test]
+		public void StructConstraint()
+		{
+			TestProgram("public struct Rational<T, O> where O : struct\n{\n}");
+		}
+		
+		[Test]
+		public void ClassConstraint()
+		{
+			TestProgram("public struct Rational<T, O> where O : class\n{\n}");
+		}
+		
+		[Test]
+		public void ExtensionMethod()
+		{
+			TestTypeMember("public static T[] Slice<T>(this T[] source, int index, int count)\n{ }");
+		}
+		
+		[Test]
+		public void FixedStructField()
+		{
+			TestProgram(@"unsafe struct CrudeMessage
+{
+	public fixed byte data[256];
+}");
+		}
+		
+		[Test]
+		public void FixedStructField2()
+		{
+			TestProgram(@"unsafe struct CrudeMessage
+{
+	fixed byte data[4 * sizeof(int)], data2[10];
+}");
+		}
+		
+		[Test]
+		public void ImplicitlyTypedLambda()
+		{
+			TestExpression("x => x + 1");
+		}
+		
+		[Test]
+		public void ImplicitlyTypedLambdaWithBody()
+		{
+			TestExpression("x => { return x + 1; }");
+			TestStatement("Func<int, int> f = x => { return x + 1; };");
+		}
+		
+		[Test]
+		public void ExplicitlyTypedLambda()
+		{
+			TestExpression("(int x) => x + 1");
+		}
+		
+		[Test]
+		public void ExplicitlyTypedLambdaWithBody()
+		{
+			TestExpression("(int x) => { return x + 1; }");
+		}
+		
+		[Test]
+		public void LambdaMultipleParameters()
+		{
+			TestExpression("(x, y) => x * y");
+			TestExpression("(x, y) => { return x * y; }");
+			TestExpression("(int x, int y) => x * y");
+			TestExpression("(int x, int y) => { return x * y; }");
+		}
+		
+		[Test]
+		public void LambdaNoParameters()
+		{
+			TestExpression("() => Console.WriteLine()");
+			TestExpression("() => { Console.WriteLine(); }");
+		}
+		
+		[Test]
+		public void ObjectInitializer()
+		{
+			TestExpression("new Point { X = 0, Y = 1 }");
+			TestExpression("new Rectangle { P1 = new Point { X = 0, Y = 1 }, P2 = new Point { X = 2, Y = 3 } }");
+			TestExpression("new Rectangle(arguments) { P1 = { X = 0, Y = 1 }, P2 = { X = 2, Y = 3 } }");
+		}
+		
+		[Test]
+		public void CollectionInitializer()
+		{
+			TestExpression("new List<int> { 0, 1, 2, 3, 4, 5 }");
+			TestExpression(@"new List<Contact> { new Contact { Name = ""Chris Smith"", PhoneNumbers = { ""206-555-0101"", ""425-882-8080"" } }, new Contact { Name = ""Bob Harris"", PhoneNumbers = { ""650-555-0199"" } } }");
+		}
+		
+		[Test]
+		public void AnonymousTypeCreation()
+		{
+			TestExpression("new { obj.Name, Price = 26.9, ident }");
+		}
+		
+		[Test]
+		public void ImplicitlyTypedArrayCreation()
+		{
+			TestExpression("new[] { 1, 10, 100, 1000 }");
+		}
+		
+		[Test]
+		public void QuerySimpleWhere()
+		{
+			TestExpression("from n in numbers where n < 5 select n");
+		}
+		
+		[Test]
+		public void QueryMultipleFrom()
+		{
+			TestExpression("from c in customers" +
+			               " where c.Region == \"WA\"" +
+			               " from o in c.Orders" +
+			               " where o.OrderDate >= cutoffDate" +
+			               " select new { c.CustomerID, o.OrderID }");
+		}
+		
+		[Test]
+		public void QuerySimpleOrdering()
+		{
+			TestExpression("from w in words" +
+			               " orderby w" +
+			               " select w");
+		}
+		
+		[Test]
+		public void QueryComplexOrdering()
+		{
+			TestExpression("from w in words" +
+			               " orderby w.Length descending, w ascending" +
+			               " select w");
+		}
+		
+		[Test]
+		public void QueryGroupInto()
+		{
+			TestExpression("from n in numbers" +
+			               " group n by n % 5 into g" +
+			               " select new { Remainder = g.Key, Numbers = g }");
 		}
 	}
 }

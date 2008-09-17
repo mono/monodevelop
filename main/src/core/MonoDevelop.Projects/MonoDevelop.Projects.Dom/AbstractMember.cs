@@ -60,7 +60,7 @@ namespace MonoDevelop.Projects.Dom
 			fullName = DeclaringType != null ? DeclaringType.FullName + "." + Name : Name;
 		}
 		
-		public IReturnType ReturnType {
+		public virtual IReturnType ReturnType {
 			get {
 				return returnType;
 			}
@@ -71,7 +71,13 @@ namespace MonoDevelop.Projects.Dom
 		
 		public IEnumerable<IReturnType> ExplicitInterfaces {
 			get {
-				return explicitInterfaces;
+				return (IEnumerable<IReturnType>)explicitInterfaces ?? new IReturnType [0];
+			}
+		}
+		
+		public bool IsExplicitDeclaration {
+			get {
+				return explicitInterfaces != null && explicitInterfaces.Count > 0;
 			}
 		}
 		
@@ -84,7 +90,7 @@ namespace MonoDevelop.Projects.Dom
 		protected Modifiers modifiers;
 		List<IAttribute> attributes = null;
 		
-		public string Name {
+		public virtual string Name {
 			get {
 				return name;
 			}
@@ -94,7 +100,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public string Documentation {
+		public virtual string Documentation {
 			get {
 				return documentation;
 			}
@@ -103,7 +109,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public DomLocation Location {
+		public virtual DomLocation Location {
 			get {
 				return location;
 			}
@@ -112,7 +118,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public DomRegion BodyRegion {
+		public virtual DomRegion BodyRegion {
 			get {
 				return bodyRegion;
 			}
@@ -121,7 +127,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public Modifiers Modifiers {
+		public virtual Modifiers Modifiers {
 			get {
 				return modifiers;
 			}
@@ -130,19 +136,10 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		bool isObsolete = false;
-		public bool IsObsolete {
-			get {
-				return isObsolete;
-			}
-			set {
-				isObsolete = value;
-			}
-		}
 		
-		public System.Collections.Generic.IEnumerable<IAttribute> Attributes {
+		public virtual IEnumerable<IAttribute> Attributes {
 			get {
-				return attributes;
+				return (IEnumerable<IAttribute>)attributes ?? new IAttribute[0];
 			}
 		}
 		
@@ -230,14 +227,18 @@ namespace MonoDevelop.Projects.Dom
 		{
 			if (member == null)
 				return IsStatic;
-			if (member.IsStatic && !IsStatic)
-				return false;
+	//		if (member.IsStatic && !IsStatic)
+	//			return false;
 			if (IsPublic)
 				return true;
-			if (IsInternal) // TODO: internal members
-				return true;
+			if (IsInternal) {
+				IType type1 = this is IType ? (IType)this : DeclaringType;
+				IType type2 = member is IType ? (IType)member : member.DeclaringType;
+				return type1.SourceProjectDom == type2.SourceProjectDom;
+			}
 				
-			if (member.DeclaringType == null || DeclaringType != null)
+				
+			if (member.DeclaringType == null || DeclaringType == null)
 				return false;
 			
 			if (IsProtected) {
@@ -263,6 +264,12 @@ namespace MonoDevelop.Projects.Dom
 		}
 		
 		#region ModifierAccessors
+		public bool IsObsolete {
+			get {
+				return (this.Modifiers & Modifiers.IsObsolete) == Modifiers.IsObsolete;
+			}
+		}
+		
 		public bool IsPrivate { 
 			get {
 				return (this.Modifiers & Modifiers.Private) == Modifiers.Private;
@@ -395,10 +402,25 @@ namespace MonoDevelop.Projects.Dom
 		
 		public virtual System.Xml.XmlNode GetMonodocDocumentation ()
 		{
-			System.Xml.XmlDocument doc = ProjectDomService.HelpTree.GetHelpXml (DeclaringType.HelpUrl);
-			if (doc != null) 
-				return doc.SelectSingleNode ("/Type/Members/Member[@MemberName='" + Name + "']/Docs");
+			if (DeclaringType == null)
+				return null;
+			
+			if (DeclaringType.HelpXml != null)  {
+				System.Xml.XmlNode result = DeclaringType.HelpXml.SelectSingleNode ("/Type/Members/Member[@MemberName='" + Name + "']/Docs");
+				return result;
+			}
 			return null;
+		}
+		
+		public static void Resolve (IMember source, AbstractMember target, ITypeResolver typeResolver)
+		{
+			target.Name           = source.Name;
+			target.Documentation  = source.Documentation;
+			target.Modifiers      = source.Modifiers;
+			target.ReturnType     = DomReturnType.Resolve (source.ReturnType, typeResolver);
+			target.Location       = source.Location;
+			target.BodyRegion     = source.BodyRegion;
+			target.AddRange (DomAttribute.Resolve (source.Attributes, typeResolver));
 		}
 		
 		public abstract object AcceptVisitior (IDomVisitor visitor, object data);

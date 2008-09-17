@@ -22,7 +22,7 @@
 // along with BooBinding; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #endregion
-
+/*
 namespace BooBinding.Parser
 
 import BooBinding
@@ -31,7 +31,8 @@ import System.Collections
 import System.Diagnostics
 import System.IO
 import MonoDevelop.Core
-import MonoDevelop.Projects.Parser
+import MonoDevelop.Projects.Dom
+import MonoDevelop.Projects.Dom.Parser
 import MonoDevelop.Projects
 import MonoDevelop.Ide.Gui
 import Boo.Lang.Compiler
@@ -134,11 +135,7 @@ class Resolver:
 				varLookup.Visit(property.Node.Getter) unless property.Node.Getter == null
 				varLookup.Visit(property.Node.Setter) unless property.Node.Setter == null
 				Log ("Finished visiting property body!")
-				/*
-				if varLookup.ReturnType is null:
-					Log ("null return type!")
-					return ReturnType("System.Object")
-					*/
+				
 				Log ("ReturnType: ${varLookup.ReturnType}")
 				return varLookup.ReturnType
 		return null
@@ -281,12 +278,6 @@ class Resolver:
 			if _callingClass != null and _callingClass.Region != null:
 				return false if _callingClass.Region.BeginLine > caretLine
 
-/*		if _project == null:
-			for project as Project in Ide.ProjectOperations.CurrentOpenWorkspace.GetAllProjects():
-				if project.IsFileInProject(fileName):
-					_project = project
-					break
-*/
 		return true
 	
 	def Resolve(expression as string, caretLine as int, caretColumn as int, fileName as string, fileContent as string) as ResolveResult:
@@ -484,3 +475,4 @@ class Resolver:
 	private def Error (message):
 		BooParser.Error (self.GetType(), message)
 	
+*/

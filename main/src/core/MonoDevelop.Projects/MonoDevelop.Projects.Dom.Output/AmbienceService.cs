@@ -27,20 +27,69 @@
 //
 
 using System;
+using System.Collections.Generic;
+
+using Mono.Addins;
 
 namespace MonoDevelop.Projects.Dom.Output
 {
 	public static class AmbienceService
 	{
-		public static Ambience Default {
-			get {
-				return new NetAmbience ();
+		static Ambience defaultAmbience                = new NetAmbience ();
+		static Dictionary <string, Ambience> ambiences= new Dictionary <string, Ambience> ();
+		
+		static AmbienceService ()
+		{
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/Ambiences", delegate(object sender, ExtensionNodeEventArgs args) {
+					Ambience ambience = args.ExtensionObject as Ambience;
+					if (ambience == null)
+						return;
+					string[] mimeTypes = ambience.MimeTypes.Split (';');
+						
+					switch (args.Change) {
+					case ExtensionChange.Add:
+						foreach (string mimeType in mimeTypes)
+							ambiences[mimeType] = ambience;
+						break;
+					case ExtensionChange.Remove:
+						foreach (string mimeType in mimeTypes) {
+							if (ambiences.ContainsKey (mimeType))
+								ambiences.Remove (mimeType);
+						}
+						break;
+					}
+				});
+		}
+		
+		public static Ambience GetAmbience (IMember member)
+		{
+			if (member.DeclaringType != null && member.DeclaringType.CompilationUnit != null)
+				return GetAmbienceForFile (member.DeclaringType.CompilationUnit.FileName);
+			return defaultAmbience;
+		}
+		
+		public static Ambience GetAmbienceForFile (string fileName)
+		{
+			foreach (Ambience ambience in ambiences.Values) {
+				if (ambience.IsValidFor (fileName))
+					return ambience;
 			}
+			return defaultAmbience;
 		}
 		
 		public static Ambience GetAmbience (string mimeType)
 		{
-			return new NetAmbience ();
+			Ambience result;
+			ambiences.TryGetValue (mimeType, out result);
+			return result ?? defaultAmbience;
 		}
+		
+		public static Ambience GetAmbienceForLanguage (string mimeType)
+		{
+			Ambience result;
+			ambiences.TryGetValue (mimeType, out result);
+			return result ?? defaultAmbience;
+		}
+		
 	}
 }

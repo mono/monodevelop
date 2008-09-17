@@ -38,7 +38,9 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Gui.Completion;
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Ide.Gui.Search;
@@ -84,13 +86,13 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		public ExtendibleTextEditor TextEditor {
+		public ExtensibleTextEditor TextEditor {
 			get {
 				return widget.TextEditor;
 			}
 		}
 		
-		public SourceEditorWidget SourceEditorWidget {
+		internal SourceEditorWidget SourceEditorWidget {
 			get {
 				return widget;
 			}
@@ -210,6 +212,7 @@ namespace MonoDevelop.SourceEditor
 			
 			ContentName = fileName; 
 			Document.MimeType = IdeApp.Services.PlatformService.GetMimeTypeForUri (fileName);
+			widget.SetMime (Document.MimeType);
 			Document.SetNotDirtyState ();
 			this.IsDirty = false;
 		}
@@ -230,14 +233,16 @@ namespace MonoDevelop.SourceEditor
 			}
 			
 			Document.MimeType = IdeApp.Services.PlatformService.GetMimeTypeForUri (fileName);
+			widget.SetMime (Document.MimeType);
 			Document.Text = File.ReadAllText (fileName);
 			ContentName = fileName;
+			widget.ParsedDocument = ProjectDomService.GetParsedDocument (fileName);
 //			InitializeFormatter ();
 			
 			UpdateExecutionLocation ();
 			UpdateBreakpoints ();
 
-			widget.LoadClassCombo ();
+			widget.PopulateClassCombo ();
 			this.IsDirty = false;
 		}
 		
@@ -279,24 +284,21 @@ namespace MonoDevelop.SourceEditor
 			breakpointStatusChanged = null;
 		}
 		
-		public IParserContext GetParserContext ()
+		public ProjectDom GetParserContext ()
 		{
-			IParserDatabase pdb = IdeApp.Workspace.ParserDatabase;
-			
-			Project project = Project;
-			if (project != null) 
-				return pdb.GetProjectParserContext (project);
-			
-			return pdb.GetFileParserContext (IsUntitled ? UntitledName : ContentName);
+			Project project = IdeApp.ProjectOperations.CurrentSelectedProject;
+			if (Project != null)
+				return ProjectDomService.GetProjectDom (Project);
+			return ProjectDom.Empty;
 		}
 		
-		public MonoDevelop.Projects.Ambience.Ambience GetAmbience ()
+		public Ambience GetAmbience ()
 		{
 			Project project = Project;
 			if (project != null)
 				return project.Ambience;
 			string file = this.IsUntitled ? this.UntitledName : this.ContentName;
-			return MonoDevelop.Projects.Services.Ambience.GetAmbienceForFile (file);
+			return AmbienceService.GetAmbienceForFile (file);
 		}
 		
 		void OnFileChanged (object sender, FileSystemEventArgs args)

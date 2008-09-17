@@ -40,12 +40,10 @@ namespace MonoDevelop.Projects.Dom
 		
 		IReturnType ReturnType {
 			get;
-			set;
 		}
 		
 		IType DeclaringType {
 			get;
-			set;
 		}
 		
 		IEnumerable<IReturnType> ExplicitInterfaces {
@@ -54,27 +52,22 @@ namespace MonoDevelop.Projects.Dom
 		
 		string Name {
 			get;
-			set;
 		}
 		
 		string Documentation {
 			get;
-			set;
 		}
 		
 		DomLocation Location {
 			get;
-			set;
 		}
 		
 		DomRegion BodyRegion {
 			get;
-			set;
 		}
 		
 		Modifiers Modifiers {
 			get;
-			set;
 		}
 		
 		IEnumerable<IAttribute> Attributes {
@@ -89,15 +82,15 @@ namespace MonoDevelop.Projects.Dom
 			get;
 		}
 		
-		bool IsObsolete {
+		bool IsExplicitDeclaration {
 			get;
-			set;
 		}
 		
 		System.Xml.XmlNode GetMonodocDocumentation ();
 		bool IsAccessibleFrom (ProjectDom dom, IMember member);
 		
 		#region ModifierAccessors
+		bool IsObsolete { get; }
 		bool IsPrivate   { get; }
 		bool IsInternal  { get; }
 		bool IsProtected { get; }

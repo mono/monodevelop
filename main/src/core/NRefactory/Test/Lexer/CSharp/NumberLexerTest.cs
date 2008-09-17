@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="none" email=""/>
-//     <version>$Revision: 1017 $</version>
+//     <version>$Revision: 2799 $</version>
 // </file>
 
 using System;
@@ -37,6 +37,7 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 			Assert.AreEqual(Tokens.Literal, t.kind, "Tokens.Literal");
 			Assert.AreEqual(text, t.val, "value");
 			Assert.IsNotNull(t.literalValue, "literalValue is null");
+			Assert.AreEqual(val.GetType(), t.literalValue.GetType(), "literalValue.GetType()");
 			Assert.AreEqual(val, t.literalValue, "literalValue");
 		}
 		
@@ -59,8 +60,11 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 		}
 		
 		[Test]
-		public void TestOctalInteger()
+		public void TestNonOctalInteger()
 		{
+			// C# does not have octal integers, so 077 should parse to 77
+			Assert.IsTrue(077 == 77);
+			
 			CheckToken("077", 077);
 			CheckToken("056", 056);
 		}
@@ -70,6 +74,9 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 		{
 			CheckToken("0x99F", 0x99F);
 			CheckToken("0xAB1f", 0xAB1f);
+			CheckToken("0xffffffff", 0xffffffff);
+			CheckToken("0xffffffffL", 0xffffffffL);
+			CheckToken("0xffffffffuL", 0xffffffffuL);
 		}
 		
 		[Test]
@@ -80,12 +87,26 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 			GenerateLexer(new StringReader("0xG2F")).NextToken();
 			// SD2-457
 			GenerateLexer(new StringReader("0x")).NextToken();
+			// hexadecimal integer >ulong.MaxValue
+			GenerateLexer(new StringReader("0xfedcba98765432100")).NextToken();
 		}
 		
 		[Test]
 		public void TestLongHexadecimalInteger()
 		{
 			CheckToken("0x4244636f446c6d58", 0x4244636f446c6d58);
+			CheckToken("0xf244636f446c6d58", 0xf244636f446c6d58);
+		}
+		
+		[Test]
+		public void TestLongInteger()
+		{
+			CheckToken("9223372036854775807", 9223372036854775807); // long.MaxValue
+			CheckToken("9223372036854775808", 9223372036854775808); // long.MaxValue+1
+			CheckToken("18446744073709551615", 18446744073709551615); // ulong.MaxValue
+			CheckToken("18446744073709551616f", 18446744073709551616f); // ulong.MaxValue+1 as float
+			CheckToken("18446744073709551616d", 18446744073709551616d); // ulong.MaxValue+1 as double
+			CheckToken("18446744073709551616m", 18446744073709551616m); // ulong.MaxValue+1 as decimal
 		}
 		
 		[Test]
@@ -120,6 +141,41 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 		{
 			CheckToken(@"@""-->""""<--""", @"-->""<--");
 			CheckToken(@"""-->\""<--""", "-->\"<--");
+			
+			CheckToken(@"""\U00000041""", "\U00000041");
+			CheckToken(@"""\U00010041""", "\U00010041");
+		}
+		
+		[Test]
+		public void TestInvalidString()
+		{
+			// ensure that line numbers are correct after newline in string
+			ILexer l = GenerateLexer(new StringReader("\"\n\"\n;"));
+			Token t = l.NextToken();
+			Assert.AreEqual(Tokens.Literal, t.kind);
+			Assert.AreEqual(new Location(1, 1), t.Location);
+			
+			t = l.NextToken();
+			Assert.AreEqual(Tokens.Literal, t.kind);
+			Assert.AreEqual(new Location(1, 2), t.Location);
+			
+			t = l.NextToken();
+			Assert.AreEqual(Tokens.Semicolon, t.kind);
+			Assert.AreEqual(new Location(1, 3), t.Location);
+			
+			t = l.NextToken();
+			Assert.AreEqual(Tokens.EOF, t.kind);
+		}
+		
+		[Test]
+		public void TestCharLiteral()
+		{
+			CheckToken(@"'a'", 'a');
+			CheckToken(@"'\u0041'", '\u0041');
+			CheckToken(@"'\x41'", '\x41');
+			CheckToken(@"'\x041'", '\x041');
+			CheckToken(@"'\x0041'", '\x0041');
+			CheckToken(@"'\U00000041'", '\U00000041');
 		}
 	}
 }

@@ -1,1 +1,1 @@
-SUBDIRS = MonoDevelop.Dock NRefactory Mono.Debugging MonoDevelop.Core MonoDevelop.Components MonoDevelop.Core.Gui  MonoDevelop.Projects MonoDevelop.Documentation MonoDevelop.Projects.Gui MonoDevelop.Ide MonoDevelop.Startup
+SUBDIRS = MonoDevelop.Dock NRefactory Mono.Debugging MonoDevelop.Core MonoDevelop.Components MonoDevelop.Core.Gui  MonoDevelop.Projects MonoDevelop.Projects.Gui MonoDevelop.Ide MonoDevelop.Startup

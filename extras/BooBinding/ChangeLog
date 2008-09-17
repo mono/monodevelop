@@ -1,3 +1,13 @@
+2008-09-12  Mike Krüger <mkrueger@novell.com> 
+
+	* BooAmbience.boo, Gui/ShellTextView.boo,
+	  Gui/BooTextEditorExtension.boo, BooLanguageBinding.boo,
+	  Parser/ExpressionTypeVisitor.boo, Parser/Resolver.boo,
+	  Parser/ReturnType.boo, Parser/ExpressionFinder.boo,
+	  Parser/BooParser.boo, Parser/TypeMembers.boo, Parser/Tree.boo,
+	  Parser/VariableLookupVisitor.boo, Parser/Visitor.boo: Updated boo
+	  binding.
+
 2008-08-22  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Gui/OptionPanels/GeneralBooShellPanel.boo,

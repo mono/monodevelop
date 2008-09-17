@@ -1,3 +1,43 @@
+2008-09-16  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.mdp: Update.
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs: Escape
+	  list item description since it may contain markup.
+	* MonoDevelop.Projects.Gui.Completion/DeclarationViewWindow.cs: Show
+	  documentation header in bold. Set a minimum width for the
+	  documentation window.
+
+2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.RuntimeOptionsPanelWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.BaseDirectoryPanelWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.GeneralProjectOptionsWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineInformationWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.NewConfigurationDialog.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineConfigurationPanelWidget.cs,
+	  gtk-gui/objects.xml,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CommonAssemblySigningPreferences.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanelWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineEntryConfigurationsPanelWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.DeleteConfigDialog.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.OutputOptionsPanelWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.StartupOptionsPanelWidget.cs,
+	  gtk-gui/generated.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.RenameConfigDialog.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.RunOptionsPanelWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineBuildOptionsWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandWidget.cs,
+	  gtk-gui/gui.stetic: Updated.
+
+2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/CodeCompletionDataProvider.cs:
+	  Track api changes.
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/RunOptionsPanel.cs: Run
+	  options panel will now work for non-dot net projects.
+	* MonoDevelop.Projects.Gui.Dialogs/MultiConfigItemOptionsDialog.cs:
+	  Added Configurations property to be used by subclasses.
+
 2008-08-18  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* gtk-gui/objects.xml,
@@ -9,6 +49,24 @@
 	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandPanelWidget.cs,
 	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/StartupOptionsPanel.cs:
 	  Use attributes to describe custom widgets.
+
+2008-07-29  Mike Krüger <mkrueger@novell.com> 
+
+	* gtk-gui/objects.xml: Removed some parts of the documentation service.
+
+2008-07-29  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Gui/ProjectsGuiServices.cs,
+	  MonoDevelop.Projects.Gui/IconService.cs,
+	  MonoDevelop.Projects.Gui.Completion/MethodParameterDataProvider.cs,
+	  MonoDevelop.Projects.Gui.Completion/CodeCompletionData.cs,
+	  MonoDevelop.Projects.Gui.Completion/CodeCompletionDataProvider.cs:
+	  Translated old code to new dom.
+
+2008-07-27  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/CodeCompletionData.cs: Worked on
+	  new dom/completion/database.
 
 2008-07-24  Michael Hutchinson <mhutchinson@novell.com> 
 

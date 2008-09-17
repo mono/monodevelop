@@ -2,16 +2,16 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version>$Revision: 915 $</version>
+//     <version>$Revision: 2819 $</version>
 // </file>
 
 using System;
 using System.IO;
 using NUnit.Framework;
 using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.AST;
+using ICSharpCode.NRefactory.Ast;
 
-namespace ICSharpCode.NRefactory.Tests.AST
+namespace ICSharpCode.NRefactory.Tests.Ast
 {
 	[TestFixture]
 	public class IdentifierExpressionTests
@@ -29,6 +29,22 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		{
 			IdentifierExpression ident = ParseUtilCSharp.ParseExpression<IdentifierExpression>("@public");
 			Assert.AreEqual("public", ident.Identifier);
+		}
+		
+		[Test]
+		public void CSharpGenericMethodReference()
+		{
+			IdentifierExpression ident = ParseUtilCSharp.ParseExpression<IdentifierExpression>("M<int>");
+			Assert.AreEqual("M", ident.Identifier);
+			Assert.AreEqual(1, ident.TypeArguments.Count);
+		}
+		
+		[Test]
+		public void CSharpGenericMethodReference2()
+		{
+			IdentifierExpression ident = ParseUtilCSharp.ParseExpression<IdentifierExpression>("TargetMethod<string>");
+			Assert.AreEqual("TargetMethod", ident.Identifier);
+			Assert.AreEqual(1, ident.TypeArguments.Count);
 		}
 		#endregion
 		
@@ -48,12 +64,13 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		}
 		
 		[Test]
-		public void VBNetAssemblyIdentifierExpressionTest()
+		public void VBNetContextKeywordsTest()
 		{
-			IdentifierExpression ie = ParseUtilVBNet.ParseExpression<IdentifierExpression>("Assembly");
-			Assert.AreEqual("Assembly", ie.Identifier);
+			Assert.AreEqual("Assembly", ParseUtilVBNet.ParseExpression<IdentifierExpression>("Assembly").Identifier);
+			Assert.AreEqual("Custom", ParseUtilVBNet.ParseExpression<IdentifierExpression>("Custom").Identifier);
+			Assert.AreEqual("Off", ParseUtilVBNet.ParseExpression<IdentifierExpression>("Off").Identifier);
+			Assert.AreEqual("Explicit", ParseUtilVBNet.ParseExpression<IdentifierExpression>("Explicit").Identifier);
 		}
 		#endregion
-		
 	}
 }

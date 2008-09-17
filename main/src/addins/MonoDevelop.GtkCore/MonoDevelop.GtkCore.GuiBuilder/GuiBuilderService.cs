@@ -36,7 +36,8 @@ using System.CodeDom.Compiler;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects.Text;
@@ -76,7 +77,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				return;
 			IdeApp.Workbench.ActiveDocumentChanged += new EventHandler (OnActiveDocumentChanged);
 			IdeApp.ProjectOperations.EndBuild += OnProjectCompiled;
-			IdeApp.Workspace.ParserDatabase.AssemblyInformationChanged += (AssemblyInformationEventHandler) DispatchService.GuiDispatch (new AssemblyInformationEventHandler (OnAssemblyInfoChanged));
+//			IdeApp.Workspace.ParserDatabase.AssemblyInformationChanged += (AssemblyInformationEventHandler) DispatchService.GuiDispatch (new AssemblyInformationEventHandler (OnAssemblyInfoChanged));
 			
 			IdeApp.Exited += delegate {
 				if (steticApp != null) {
@@ -209,10 +210,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			return false;
 		}
 		
-		static void OnAssemblyInfoChanged (object s, AssemblyInformationEventArgs args)
-		{
+		//static void OnAssemblyInfoChanged (object s, AssemblyInformationEventArgs args)
+//		{
 			//SteticApp.UpdateWidgetLibraries (false);
-		}
+//		}
 
 		internal static void AddCurrentWidgetToClass ()
 		{
@@ -323,12 +324,13 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				fileStream.Close ();
 			}
 
-			if (IdeApp.Workspace.ParserDatabase.IsLoaded (project)) {
+			if (ProjectDomService.HasDom (project)) {
+				// TODO dom
 				// Only update the parser database if the project is actually loaded in the IDE.
-				if (saveToFile)
+/*				if (saveToFile)
 					IdeApp.Workspace.ParserDatabase.GetProjectParserContext (project).UpdateDatabase ();
 				else
-					IdeApp.Workspace.ParserDatabase.UpdateFile (project, fileName, ((StringWriter)fileStream).ToString ());
+					IdeApp.Workspace.ParserDatabase.UpdateFile (project, fileName, ((StringWriter)fileStream).ToString ());*/
 			}
 
 			FileService.NotifyFileChanged (fileName);

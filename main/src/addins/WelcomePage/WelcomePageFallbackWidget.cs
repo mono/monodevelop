@@ -72,6 +72,8 @@ namespace MonoDevelop.WelcomePage
 
 	}
 	
+	[System.ComponentModel.Category("WelcomePage")]
+	[System.ComponentModel.ToolboxItem(true)]
 	public partial class WelcomePageFallbackWidget : Gtk.EventBox
 	{
 		Gdk.Pixbuf bgPixbuf;
@@ -329,6 +331,8 @@ namespace MonoDevelop.WelcomePage
 		}
 	}
 	
+	[System.ComponentModel.Category("WelcomePage")]
+	[System.ComponentModel.ToolboxItem(true)]
 	
 	
 	public class LinkButton : Gtk.Button

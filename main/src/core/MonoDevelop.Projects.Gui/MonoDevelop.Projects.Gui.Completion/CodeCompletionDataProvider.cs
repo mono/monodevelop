@@ -22,14 +22,16 @@ using System;
 using System.Diagnostics;
 using System.Reflection;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Xml;
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects;
-using Ambience_ = MonoDevelop.Projects.Ambience.Ambience;
+using Ambience_ = MonoDevelop.Projects.Dom.Output.Ambience;
+using MonoDevelop.Projects.Dom.Parser;
 
 using Stock = MonoDevelop.Core.Gui.Stock;
 
@@ -48,33 +50,28 @@ namespace MonoDevelop.Projects.Gui.Completion
 		Hashtable insertedEventElements      = new Hashtable();
 		
 		Ambience_ ambience;
-		IParserContext parserContext;
 		EventHandler onStartedParsing;
 		EventHandler onFinishedParsing;
 
 		string defaultCompletionString;
 		ArrayList completionData = new ArrayList ();
 		
-		public CodeCompletionDataProvider (IParserContext parserContext, Ambience_ ambience) 
+		public CodeCompletionDataProvider (ProjectDom dom, Ambience_ ambience) 
 		{
-			this.parserContext = parserContext;
 			this.ambience = ambience;
 			
 			onStartedParsing = (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnStartedParsing));
 			onFinishedParsing = (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnFinishedParsing));
-			
-			if (parserContext != null) {
-				parserContext.ParserDatabase.ParseOperationStarted += onStartedParsing;
-				parserContext.ParserDatabase.ParseOperationFinished += onFinishedParsing;
+			if (dom != null) {
+				ProjectDomService.ParseOperationStarted += onStartedParsing;
+				ProjectDomService.ParseOperationFinished += onFinishedParsing;
 			}
 		}
 		
 		public virtual void Dispose ()
 		{
-			if (parserContext != null) {
-				parserContext.ParserDatabase.ParseOperationStarted -= onStartedParsing;
-				parserContext.ParserDatabase.ParseOperationFinished -= onFinishedParsing;
-			}
+			ProjectDomService.ParseOperationStarted -= onStartedParsing;
+			ProjectDomService.ParseOperationFinished -= onFinishedParsing;
 		}
 		
 		public void Clear ()
@@ -104,27 +101,29 @@ namespace MonoDevelop.Projects.Gui.Completion
 		{
 			completionData.Add (data);
 		}
-		
-		public void AddResolveResults (LanguageItemCollection list) 
+
+		// TODO dom
+	/*	
+		public void AddResolveResults (IEnumerable<IMember> list) 
 		{
 			AddResolveResults (list, true, null);
 		}
 		
-		public void AddResolveResults (LanguageItemCollection list, bool allowInstrinsicNames) 
+		public void AddResolveResults (IEnumerable<IMember>list, bool allowInstrinsicNames) 
 		{
 			AddResolveResults (list, allowInstrinsicNames, null);
-		}
+		}*/
 		
-		public void AddResolveResults (LanguageItemCollection list, bool allowInstrinsicNames, ITypeNameResolver typeNameResolver) 
+	/*	public void AddResolveResults (IEnumerable<IMember> list, bool allowInstrinsicNames, ITypeNameResolver typeNameResolver) 
 		{
 			if (list == null) {
 				return;
 			}
 			completionData.Capacity += list.Count;
-			foreach (ILanguageItem o in list)
+			foreach (IMember o in list)
 				AddResolveResult (o, allowInstrinsicNames, typeNameResolver);
 		}
-		
+		*/
 		CodeCompletionData SearchData (string text)
 		{
 			foreach (CodeCompletionData ccd in completionData) {
@@ -133,15 +132,17 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 			return null;
 		}
-		
-		public void AddResolveResult (ILanguageItem o, bool allowInstrinsicNames, ITypeNameResolver typeNameResolver) 
+
+		// TODO dom
+		/*
+		public void AddResolveResult (IMember o, bool allowInstrinsicNames, ITypeNameResolver typeNameResolver) 
 		{
 			if (o is Namespace) {
 				Namespace ns = (Namespace) o;
 				if (SearchData (ns.Name) == null)
 					completionData.Add(new CodeCompletionData(ns.Name, Stock.NameSpace));
-			} else if (o is IClass) {
-				IClass iclass = (IClass) o;
+			} else if (o is IType) {
+				IType iclass = (IType) o;
 				if (iclass.Name != null && insertedClasses[iclass.Name] == null) {
 					completionData.Add(new CodeCompletionData(iclass, ambience, allowInstrinsicNames, typeNameResolver));
 					insertedClasses[iclass.Name] = iclass;
@@ -177,9 +178,9 @@ namespace MonoDevelop.Projects.Gui.Completion
 			} else if (o is IParameter) {
 				completionData.Add (new CodeCompletionData((IParameter)o, ambience));
 			}
-		}
+		}*/
 			
-		public void AddResolveResults (ResolveResult results)
+	/*	public void AddResolveResults (ResolveResult results)
 		{
 			AddResolveResults (results, true, null);
 		}
@@ -187,18 +188,20 @@ namespace MonoDevelop.Projects.Gui.Completion
 		public void AddResolveResults (ResolveResult results, bool allowInstrinsicNames)
 		{
 			AddResolveResults (results, allowInstrinsicNames, null);
-		}
-		
+		}*/
+		/*
 		public void AddResolveResults (ResolveResult results, bool allowInstrinsicNames, ITypeNameResolver typeNameResolver)
 		{
 			if (results != null) {
 				AddResolveResults (results.Namespaces, allowInstrinsicNames, typeNameResolver);
 				AddResolveResults (results.Members, allowInstrinsicNames, typeNameResolver);
 			}
-		}
+		}*/
 		
 		public bool IsChanging { 
-			get { return parserContext != null && parserContext.ParserDatabase.IsParsing; } 
+			get {
+				return ProjectDomService.IsParsing;
+			} 
 		}
 
 		public ICompletionData GetCompletionData (string completionString)

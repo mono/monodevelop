@@ -62,7 +62,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			
 			void AssertIsValid ()
 			{
-				if (!pad.sorting && !store.IterIsValid (currentIter)) {
+				if (!pad.sorting && !currentIter.Equals (Gtk.TreeIter.Zero) && !store.IterIsValid (currentIter)) {
 					if (dataItem == null || !MoveToObject (dataItem))
 						throw new InvalidOperationException ("Tree iterator has been invalidated.");
 				}
@@ -90,7 +90,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			internal NodeBuilder[] NodeBuilderChain {
 				get {
 					AssertIsValid ();
-					NodeBuilder[] chain = (NodeBuilder[]) store.GetValue (currentIter, ExtensibleTreeView.BuilderChainColumn);
+					NodeBuilder[] chain = (NodeBuilder[]) GetStoreValue (ExtensibleTreeView.BuilderChainColumn);
 					if (chain != null)
 						return chain;
 					else
@@ -146,7 +146,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			{
 				currentNavIter = iter;
 				if (!iter.Equals (Gtk.TreeIter.Zero))
-					dataItem = store.GetValue (currentNavIter, ExtensibleTreeView.DataItemColumn);
+					dataItem = GetStoreValue (ExtensibleTreeView.DataItemColumn);
 				else
 					dataItem = null;
 			}
@@ -359,14 +359,14 @@ namespace MonoDevelop.Ide.Gui.Components
 					object data = DataItem;
 					NodeBuilder[] chain = BuilderChain;
 					if (chain != null && chain.Length > 0) return ((TypeNodeBuilder)chain[0]).GetNodeName (this, data);
-					else return store.GetValue (currentIter, ExtensibleTreeView.TextColumn) as string;
+					else return GetStoreValue (ExtensibleTreeView.TextColumn) as string;
 				}
 			}
 			
 			public NodeBuilder[] BuilderChain {
 				get {
 					AssertIsValid ();
-					return (NodeBuilder[]) store.GetValue (currentIter, ExtensibleTreeView.BuilderChainColumn);
+					return (NodeBuilder[]) GetStoreValue (ExtensibleTreeView.BuilderChainColumn);
 				}
 			}
 			
@@ -384,18 +384,23 @@ namespace MonoDevelop.Ide.Gui.Components
 				return null;
 			}
 		
-			protected virtual void EnsureFilled ()
+			public virtual void EnsureFilled ()
 			{
 				AssertIsValid ();
-				if (!(bool) store.GetValue (currentIter, ExtensibleTreeView.FilledColumn))
+				if (!(bool) GetStoreValue (ExtensibleTreeView.FilledColumn))
 					new TreeBuilder (pad, currentIter).FillNode ();
 			}
 			
 			public bool Filled {
 				get {
 					AssertIsValid ();
-					return (bool) store.GetValue (currentIter, ExtensibleTreeView.FilledColumn);
+					return (bool) GetStoreValue (ExtensibleTreeView.FilledColumn);
 				}
+			}
+
+			object GetStoreValue (int column)
+			{
+				return store.GetValue (currentIter, column);
 			}
 		}
 	}

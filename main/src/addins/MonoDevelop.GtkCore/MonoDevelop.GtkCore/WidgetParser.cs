@@ -34,7 +34,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Parser;
 
 namespace MonoDevelop.GtkCore
 {
@@ -42,26 +43,26 @@ namespace MonoDevelop.GtkCore
 	public class WidgetParser
 	{
 
-		IParserContext ctx;
+		ProjectDom ctx;
 
-		public WidgetParser (IParserContext ctx)
+		public WidgetParser (ProjectDom ctx)
 		{
 			this.ctx = ctx;
 		}
 		
-		public Dictionary<string, IClass> ToolboxItems {
+		public Dictionary<string, IType> ToolboxItems {
 			get {
-				Dictionary<string, IClass> tb_items = new Dictionary<string, IClass> ();
-				foreach (IClass cls in ctx.GetProjectContents ())
+				Dictionary<string, IType> tb_items = new Dictionary<string, IType> ();
+				foreach (IType cls in ctx.Types)
 					if (IsToolboxWidget (cls))
-						tb_items [cls.FullyQualifiedName] = cls;
+						tb_items [cls.FullName] = cls;
 				return tb_items;
 			}
 		}
 
-		public void CollectMembers (IClass cls, bool inherited, string topType, ListDictionary properties, ListDictionary events)
+		public void CollectMembers (IType cls, bool inherited, string topType, ListDictionary properties, ListDictionary events)
 		{
-			if (cls.FullyQualifiedName == topType)
+			if (cls.FullName == topType)
 				return;
 
 			foreach (IProperty prop in cls.Properties)
@@ -74,22 +75,22 @@ namespace MonoDevelop.GtkCore
 					
 			if (inherited) {
 				foreach (IReturnType bt in cls.BaseTypes) {
-					IClass bcls = ctx.GetClass (bt.FullyQualifiedName, true, true);
+					IType bcls = ctx.GetType (bt);
 					if (bcls != null && bcls.ClassType != ClassType.Interface)
 						CollectMembers (bcls, true, topType, properties, events);
 				}
 			}
 		}
 		
-		public string GetBaseType (IClass cls, Hashtable knownTypes)
+		public string GetBaseType (IType cls, Hashtable knownTypes)
 		{
 			foreach (IReturnType bt in cls.BaseTypes) {
-				if (knownTypes.Contains (bt.FullyQualifiedName))
-					return bt.FullyQualifiedName;
+				if (knownTypes.Contains (bt.FullName))
+					return bt.FullName;
 			}
 
 			foreach (IReturnType bt in cls.BaseTypes) {
-				IClass bcls = ctx.GetClass (bt.FullyQualifiedName, true, true);
+				IType bcls = ctx.GetType (bt);
 				if (bcls != null) {
 					string ret = GetBaseType (bcls, knownTypes);
 					if (ret != null)
@@ -99,10 +100,10 @@ namespace MonoDevelop.GtkCore
 			return null;
 		}
 		
-		public string GetCategory (IDecoration decoration)
+		public string GetCategory (IMember decoration)
 		{
-			foreach (IAttributeSection section in decoration.Attributes) {
-				foreach (IAttribute at in section.Attributes) {
+//			foreach (IAttributeSection section in decoration.Attributes) {
+				foreach (IAttribute at in decoration.Attributes) {
 					switch (at.Name) {
 					case "Category":
 					case "CategoryAttribute":
@@ -112,19 +113,19 @@ namespace MonoDevelop.GtkCore
 					default:
 						continue;
 					}
-					if (at.PositionalArguments != null && at.PositionalArguments.Length > 0) {
+					if (at.PositionalArguments != null && at.PositionalArguments.Count > 0) {
 						CodePrimitiveExpression exp = at.PositionalArguments [0] as CodePrimitiveExpression;
 						if (exp != null && exp.Value != null)
 							return exp.Value.ToString ();
 					}
 				}
-			}
+	//	}
 			return "";
 		}
 		
-		public IClass GetClass (string classname)
+		public IType GetClass (string classname)
 		{
-			return ctx.GetClass (classname);
+			return ctx.GetType (classname);
 		}
 
 		public bool IsBrowsable (IMember member)
@@ -134,14 +135,14 @@ namespace MonoDevelop.GtkCore
 
 			IProperty prop = member as IProperty;
 			if (prop != null) {
-				if (!prop.CanGet || !prop.CanSet)
+				if (!prop.HasGet || !prop.HasSet)
 					return false;
-				if (Array.IndexOf (supported_types, prop.ReturnType.FullyQualifiedName) == -1)
+				if (Array.IndexOf (supported_types, prop.ReturnType.FullName) == -1)
 					return false;
 			}
 
-			foreach (IAttributeSection section in member.Attributes) {
-				foreach (IAttribute at in section.Attributes) {
+	//		foreach (IAttributeSection section in member.Attributes) {
+				foreach (IAttribute at in member.Attributes) {
 					switch (at.Name) {
 					case "Browsable":
 					case "BrowsableAttribute":
@@ -151,47 +152,45 @@ namespace MonoDevelop.GtkCore
 					default:
 						continue;
 					}
-					if (at.PositionalArguments != null && at.PositionalArguments.Length > 0) {
+					if (at.PositionalArguments != null && at.PositionalArguments.Count > 0) {
 						CodePrimitiveExpression exp = at.PositionalArguments [0] as CodePrimitiveExpression;
 						if (exp != null && exp.Value != null && exp.Value is bool) {
 							return (bool) exp.Value;
 						}
 					}
 				}
-			}
+		//	}
 			return true;
 		}
 		
-		public bool IsToolboxWidget (IClass cls)
+		public bool IsToolboxWidget (IType cls)
 		{
 			if (!cls.IsPublic || !IsWidget (ctx, cls))
 				return false;
 
-			foreach (IAttributeSection section in cls.Attributes) {
-				foreach (IAttribute at in section.Attributes) {
-					switch (at.Name) {
-					case "ToolboxItem":
-					case "ToolboxItemAttribute":
-					case "System.ComponentModel.ToolboxItem":
-					case "System.ComponentModel.ToolboxItemAttribute":
-						break;
-					default:
-						continue;
-					}
-					if (at.PositionalArguments != null && at.PositionalArguments.Length > 0) {
-						CodePrimitiveExpression exp = at.PositionalArguments [0] as CodePrimitiveExpression;
-						if (exp == null || exp.Value == null)
-							return false;
-						else if (exp.Value is bool)
-							return (bool) exp.Value;
-						else 
-							return exp.Value != null;
-					}
+			foreach (IAttribute at in cls.Attributes) {
+				switch (at.Name) {
+				case "ToolboxItem":
+				case "ToolboxItemAttribute":
+				case "System.ComponentModel.ToolboxItem":
+				case "System.ComponentModel.ToolboxItemAttribute":
+					break;
+				default:
+					continue;
+				}
+				if (at.PositionalArguments != null && at.PositionalArguments.Count > 0) {
+					CodePrimitiveExpression exp = at.PositionalArguments [0] as CodePrimitiveExpression;
+					if (exp == null || exp.Value == null)
+						return false;
+					else if (exp.Value is bool)
+						return (bool) exp.Value;
+					else 
+						return exp.Value != null;
 				}
 			}
 
 			foreach (IReturnType bt in cls.BaseTypes) {
-				IClass bcls = ctx.GetClass (bt.FullyQualifiedName, true, true);
+				IType bcls = ctx.GetType (bt);
 				if (bcls != null && bcls.ClassType != ClassType.Interface)
 					return IsToolboxWidget (bcls);
 			}
@@ -199,12 +198,12 @@ namespace MonoDevelop.GtkCore
 			return false;
 		}
 		
-		bool IsWidget (IParserContext ctx, IClass cls)
+		bool IsWidget (ProjectDom ctx, IType cls)
 		{
 			foreach (IReturnType bt in cls.BaseTypes) {
-				if (bt.FullyQualifiedName == "Gtk.Widget")
+				if (bt.FullName == "Gtk.Widget")
 					return true;
-				IClass bcls = ctx.GetClass (bt.FullyQualifiedName, true, true);
+				IType bcls = ctx.GetType (bt);
 				if (bcls != null && bcls.ClassType != ClassType.Interface)
 					return IsWidget (ctx, bcls);
 			}

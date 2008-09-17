@@ -10,6 +10,7 @@ ASSEMBLY_FILES = \
 	
 pkglib_DATA = $(ASSEMBLY_FILES)
 libsteticui_dll_sources =  \
+	../../gtk-gui/generated.cs \
 	ActionComponent.cs \
 	ActionGroupComponent.cs \
 	ActionGroupDesigner.cs \
@@ -76,6 +77,7 @@ libsteticui_dll_sources =  \
 	WidgetTreeCombo.cs
 
 libsteticui_dll_resources =  \
+	../../gtk-gui/gui.stetic \
 	action.png \
 	missing.png
 

@@ -1,8 +1,19 @@
+2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* AspNetEdit.Integration/AspNetEditViewContent.cs: Track api
+	  changes.Track api changes.
+	* AspNetEdit.Integration/MonoDevelopProxy.cs: Track api changes.
+
 2008-08-18  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* AspNetEdit.mdp: Fix reference to Mono.TextEditor. The incorrect
 	  add-in version number causes problems in the makefile
 	  synchronization.
+
+2008-07-29  Michael Hutchinson  <mhutchinson@novell.com> 
+
+	* AspNetEdit.Integration/AspNetEditViewContent.cs:
+	* AspNetEdit.Integration/MonoDevelopProxy.cs: Port to new DOM.
 
 2008-06-25  Michael Hutchinson <mhutchinson@novell.com> 
 

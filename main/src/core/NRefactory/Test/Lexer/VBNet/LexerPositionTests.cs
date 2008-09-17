@@ -2,16 +2,13 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="none" email=""/>
-//     <version>$Revision$</version>
+//     <version>$Revision: 1634 $</version>
 // </file>
 
 using System;
-using System.Drawing;
 using System.IO;
-using NUnit.Framework;
 using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.CSharp;
-using ICSharpCode.NRefactory.PrettyPrinter;
+using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 {
@@ -28,7 +25,7 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 		{
 			ILexer l = GenerateLexer("public");
 			Token t = l.NextToken();
-			Assert.AreEqual(new Point(1, 1), t.Location);
+			Assert.AreEqual(new Location(1, 1), t.Location);
 		}
 		[Test]
 		public void Test2()
@@ -36,7 +33,7 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 			ILexer l = GenerateLexer("public static");
 			Token t = l.NextToken();
 			t = l.NextToken();
-			Assert.AreEqual(new Point(8, 1), t.Location);
+			Assert.AreEqual(new Location(8, 1), t.Location);
 		}
 		[Test]
 		public void TestReturn()
@@ -45,41 +42,41 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 			Token t = l.NextToken();
 			t = l.NextToken();
 			t = l.NextToken();
-			Assert.AreEqual(new Point(1, 2), t.Location);
+			Assert.AreEqual(new Location(1, 2), t.Location);
 		}
 		[Test]
 		public void TestSpace()
 		{
 			ILexer l = GenerateLexer("  public");
 			Token t = l.NextToken();
-			Assert.AreEqual(new Point(3, 1), t.Location);
+			Assert.AreEqual(new Location(3, 1), t.Location);
 		}
 		[Test]
 		public void TestOctNumber()
 		{
 			ILexer l = GenerateLexer("0142");
 			Token t = l.NextToken();
-			Assert.AreEqual(new Point(1, 1), t.Location);
+			Assert.AreEqual(new Location(1, 1), t.Location);
 		}
 		[Test]
 		public void TestFloationPointNumber()
 		{
 			ILexer l = GenerateLexer("0.142 public");
 			Token t = l.NextToken();
-			Assert.AreEqual(new Point(1, 1), t.Location);
+			Assert.AreEqual(new Location(1, 1), t.Location);
 			t = l.NextToken();
-			Assert.AreEqual(new Point(7, 1), t.Location);
+			Assert.AreEqual(new Location(7, 1), t.Location);
 		}
 		[Test]
 		public void TestNoFloationPointNumber()
 		{
 			ILexer l = GenerateLexer("5.a");
 			Token t = l.NextToken();
-			Assert.AreEqual(new Point(1, 1), t.Location);
+			Assert.AreEqual(new Location(1, 1), t.Location);
 			t = l.NextToken();
-			Assert.AreEqual(new Point(2, 1), t.Location);
+			Assert.AreEqual(new Location(2, 1), t.Location);
 			t = l.NextToken();
-			Assert.AreEqual(new Point(3, 1), t.Location);
+			Assert.AreEqual(new Location(3, 1), t.Location);
 		}
 		[Test]
 		public void TestNumber()
@@ -88,7 +85,7 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 			Token t = l.NextToken();
 			t = l.NextToken();
 			t = l.NextToken();
-			Assert.AreEqual(new Point(1, 2), t.Location);
+			Assert.AreEqual(new Location(1, 2), t.Location);
 		}
 		[Test]
 		public void TestNumber2()
@@ -96,7 +93,7 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 			ILexer l = GenerateLexer("14 static");
 			Token t = l.NextToken();
 			t = l.NextToken();
-			Assert.AreEqual(new Point(4, 1), t.Location);
+			Assert.AreEqual(new Location(4, 1), t.Location);
 		}
 	}
 }

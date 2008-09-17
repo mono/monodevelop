@@ -30,38 +30,42 @@ using System;
 using Gtk;
 
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.CodeGeneration;
 
 namespace MonoDevelop.Ide.Gui.Dialogs {
 	public partial class RenameItemDialog : Gtk.Dialog {
-		ILanguageItem item;
+		IDomVisitable item;
 		
-		public RenameItemDialog (IParserContext ctx, ILanguageItem item)
+		public RenameItemDialog (ProjectDom ctx, IDomVisitable item)
 		{
 			this.item = item;
 			
 			this.Build ();
 
-			if (item is IClass) {
-				if ((((IClass)item).Modifiers & ModifierEnum.Public) == ModifierEnum.Public) {
+			if (item is IType) {
+				IType type = (IType)item;
+				if (type.IsPublic) {
 					this.renameFileFlag.Visible = true;
 					this.renameFileFlag.Active = true;
 				}
-				if (((IClass) item).ClassType == ClassType.Interface)
+				if (type.ClassType == ClassType.Interface)
 					this.Title = GettextCatalog.GetString ("Rename Interface");
 				else
 					this.Title = GettextCatalog.GetString ("Rename Class");
 			} else if (item is IField) {
 				this.Title = GettextCatalog.GetString ("Rename Field");
 			} else if (item is IProperty) {
-				this.Title = GettextCatalog.GetString ("Rename Property");
+				if (((IProperty)item).IsIndexer) {
+					this.Title = GettextCatalog.GetString ("Rename Indexer");
+				} else {
+					this.Title = GettextCatalog.GetString ("Rename Property");
+				}
 			} else if (item is IEvent) {
 				this.Title = GettextCatalog.GetString ("Rename Event");
 			} else if (item is IMethod) {
 				this.Title = GettextCatalog.GetString ("Rename Method");
-			} else if (item is IIndexer) {
-				this.Title = GettextCatalog.GetString ("Rename Indexer");
 			} else if (item is IParameter) {
 				this.Title = GettextCatalog.GetString ("Rename Parameter");
 			} else if (item is LocalVariable) {
@@ -69,8 +73,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			} else {
 				this.Title = GettextCatalog.GetString ("Rename Item");
 			}
-			
-			entry.Text = item.Name;
+			if (item is IMember) {
+				entry.Text = ((IMember)item).Name;
+			} else if (item is LocalVariable) {
+				entry.Text = ((LocalVariable)item).Name;
+			} else {
+				entry.Text = ((IParameter)item).Name;
+			}
 			entry.SelectRegion (0, -1);
 			
 			buttonOk.Sensitive = false;
@@ -108,16 +117,16 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 				IMember member = (IMember) item;
 				
 				refactorer.RenameMember (monitor, member.DeclaringType, member, name, RefactoryScope.Solution);
-			} else if (item is IClass) {
-				refactorer.RenameClass (monitor, (IClass) item, name, RefactoryScope.Solution);
+			} else if (item is IType) {
+				refactorer.RenameClass (monitor, (IType) item, name, RefactoryScope.Solution);
 				if (this.renameFileFlag.Active) {
-					IClass cls = ((IClass) item);
-					if ((cls.Modifiers & ModifierEnum.Public) == ModifierEnum.Public) {
-						foreach (IClass part in cls.Parts) {
-							if (System.IO.Path.GetFileNameWithoutExtension(part.Region.FileName) == cls.Name) {
-								string newFileName = System.IO.Path.HasExtension(part.Region.FileName) ? name + System.IO.Path.GetExtension(part.Region.FileName) : name;
-								newFileName = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(part.Region.FileName), newFileName);
-								FileService.RenameFile(part.Region.FileName, newFileName);
+					IType cls = ((IType) item);
+					if (cls.IsPublic) {
+						foreach (IType part in cls.Parts) {
+							if (System.IO.Path.GetFileNameWithoutExtension(part.CompilationUnit.FileName) == cls.Name) {
+								string newFileName = System.IO.Path.HasExtension(part.CompilationUnit.FileName) ? name + System.IO.Path.GetExtension(part.CompilationUnit.FileName) : name;
+								newFileName = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(part.CompilationUnit.FileName), newFileName);
+								FileService.RenameFile(part.CompilationUnit.FileName, newFileName);
 							}
 						}
 						IdeApp.ProjectOperations.Save(IdeApp.ProjectOperations.CurrentSelectedProject);

@@ -9,6 +9,8 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Deployment.Linux
 {
+	[System.ComponentModel.Category("widget")]
+	[System.ComponentModel.ToolboxItem(true)]
 	public partial class DotDesktopViewWidget : Gtk.Bin
 	{
 		public event EventHandler Changed;

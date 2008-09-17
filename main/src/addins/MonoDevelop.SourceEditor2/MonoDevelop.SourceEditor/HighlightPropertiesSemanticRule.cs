@@ -33,32 +33,34 @@ using Mono.TextEditor;
 using Mono.TextEditor.Highlighting;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Gui.Completion;
 
 namespace MonoDevelop.SourceEditor
 {
 	class HighlightPropertiesRule : SemanticRule
 	{
-		IParserContext GetParserContext (Mono.TextEditor.Document document)
+		ProjectDom GetParserContext (Mono.TextEditor.Document document)
 		{
-			IParserDatabase pdb = IdeApp.Workspace.ParserDatabase;
 			Project project = IdeApp.ProjectOperations.CurrentSelectedProject;
-			if (project != null) 
-				return pdb.GetProjectParserContext (project);
-			return pdb.GetFileParserContext (document.FileName);
+			if (project != null)
+				return ProjectDomService.GetProjectDom (project);
+			return ProjectDom.Empty;
 		}
 		
 		string expression;
-		ILanguageItem GetLanguageItem (Mono.TextEditor.Document document, int offset)
+		IMember GetLanguageItem (Mono.TextEditor.Document document, int offset)
 		{
-			IParserContext ctx = GetParserContext (document);
+			return null;
+/*
+			ProjectDom ctx = GetParserContext (document);
 			if (ctx == null)
 				return null;
 			
 			IExpressionFinder expressionFinder = null;
 			if (document.FileName != null)
-				expressionFinder = ctx.GetExpressionFinder (document.FileName);
+				expressionFinder = ProjectDomService.GetExpressionFinder (document.FileName);
 			if (expressionFinder == null)
 				return null;
 			string txt = document.Text;
@@ -68,7 +70,7 @@ namespace MonoDevelop.SourceEditor
 			int lineNumber = document.OffsetToLineNumber (offset);
 			LineSegment line = document.GetLine (lineNumber);
 			
-			return ctx.ResolveIdentifier (expression, lineNumber + 1, line.Offset + 1, document.FileName, null);
+			return ctx.ResolveIdentifier (expression, lineNumber + 1, line.Offset + 1, document.FileName, null);*/
 		}
 		
 		public override void Analyze (Mono.TextEditor.Document doc, LineSegment line, List<Chunk> chunks, int startOffset, int endOffset)
@@ -84,7 +86,7 @@ namespace MonoDevelop.SourceEditor
 						continue;
 					}
 					
-					ILanguageItem item = GetLanguageItem (doc, i);
+					IMember item = GetLanguageItem (doc, i);
 					if (item is IProperty) {
 						int propertyLength = item.Name.Length;
 						

@@ -22,14 +22,14 @@
 // along with BooBinding; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #endregion
-
+/*
 namespace BooBinding.Parser
 
 import System
 import System.CodeDom
 import System.Collections
 import System.Diagnostics
-import MonoDevelop.Projects.Parser
+import MonoDevelop.Projects.Dom
 import Boo.Lang.Compiler.Ast as AST
 
 /////////////////////////////////////
@@ -78,4 +78,4 @@ class Class(DefaultClass):
 		for p as Property in Properties:
 			p.AddModifier(ModifierEnum.Public)
 		
-
+*/

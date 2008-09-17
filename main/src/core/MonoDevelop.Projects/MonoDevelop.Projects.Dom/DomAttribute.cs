@@ -33,6 +33,7 @@ namespace MonoDevelop.Projects.Dom
 {
 	public class DomAttribute : IAttribute
 	{
+		string name;
 		protected DomRegion       region;
 		protected AttributeTarget attributeTarget;
 		protected IReturnType     attributeType;
@@ -40,9 +41,21 @@ namespace MonoDevelop.Projects.Dom
 		protected List<object> positionalArguments = new List<object> ();
 		protected Dictionary<string, object> namedArguments = new Dictionary<string, object> ();
 		
+		public string Name {
+			get {
+				return name;
+			}
+			set {
+				name = value;
+			}
+		}
+		
 		public DomRegion Region {
 			get {
 				return region;
+			}
+			set {
+				region = value;
 			}
 		}
 
@@ -50,15 +63,21 @@ namespace MonoDevelop.Projects.Dom
 			get {
 				return attributeTarget;
 			}
+			set {
+				attributeTarget = value;
+			}
 		}
 
 		public IReturnType AttributeType {
 			get {
 				return attributeType;
 			}
+			set {
+				attributeType = value;
+			}
 		}
 
-		public System.Collections.Generic.IEnumerable<object> PositionalArguments {
+		public System.Collections.Generic.IList<object> PositionalArguments {
 			get {
 				return positionalArguments;
 			}

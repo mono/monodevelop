@@ -34,13 +34,14 @@ using System.CodeDom;
 using Gtk;
 
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.CodeGeneration;
 
 namespace MonoDevelop.Ide.Gui.Dialogs {
 
 	public partial class EncapsulateFieldDialog : Gtk.Dialog {
-		IClass declaringType;
+		IType declaringType;
 		ListStore store;
 		ListStore visibilityStore;
 
@@ -51,15 +52,15 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 		private const int colReadOnlyIndex = 4;
 		private const int colFieldIndex = 5;
 
-		public EncapsulateFieldDialog (IParserContext ctx, IClass declaringType)
+		public EncapsulateFieldDialog (ProjectDom ctx, IType declaringType)
 			: this (declaringType, null)
 		{}
 
-		public EncapsulateFieldDialog (IParserContext ctx, IField field)
+		public EncapsulateFieldDialog (ProjectDom ctx, IField field)
 			: this (field.DeclaringType, field)
 		{}
 
-		private EncapsulateFieldDialog (IClass declaringType, IField field)
+		private EncapsulateFieldDialog (IType declaringType, IField field)
 		{
 			this.declaringType = declaringType;
 			this.Build ();
@@ -243,51 +244,17 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 
 		bool IsValidPropertyName (string name, out string error_msg)
 		{
-			IMember member;
-			int i;
-
 			// Don't allow the user to click OK unless there is a new name
 			if (name.Length == 0) {
 				error_msg = GettextCatalog.GetString ("Property name must be non-empty.");
 				return false;
 			}
-
-			// Check that this member name isn't already used by properties
-			for (i = 0; i < declaringType.Properties.Count; i++) {
-				member = declaringType.Properties[i];
+			foreach (IMember member in declaringType.Members) {
 				if (member.Name == name) {
-					error_msg = GettextCatalog.GetString ("Property name conflicts with an existing property name.");
+					error_msg = GettextCatalog.GetString ("Property name conflicts with an existing member name.");
 					return false;
 				}
 			}
-
-			// Check that this member name isn't already used by fields
-			for (i = 0; i < declaringType.Fields.Count; i++) {
-				member = declaringType.Fields[i];
-				if (member.Name == name) {
-					error_msg = GettextCatalog.GetString ("Property name conflicts with an existing field name.");
-					return false;
-				}
-			}
-
-			// Check that this member name isn't already used by methods
-			for (i = 0; i < declaringType.Methods.Count; i++) {
-				member = declaringType.Methods[i];
-				if (member.Name == name) {
-					error_msg = GettextCatalog.GetString ("Property name conflicts with an existing method name.");
-					return false;
-				}
-			}
-
-			// Check that this member name isn't already used by events
-			for (i = 0; i < declaringType.Events.Count; i++) {
-				member = declaringType.Events[i];
-				if (member.Name == name) {
-					error_msg = GettextCatalog.GetString ("Property name conflicts with an existing event name.");
-					return false;
-				}
-			}
-
 			error_msg = String.Empty;
 			return true;
 		}

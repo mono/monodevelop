@@ -22,12 +22,12 @@ using System;
 using System.Collections;
 using System.Text;
 
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Ambience;
+//using MonoDevelop.Projects.Ambience;
 
 namespace MonoDevelop.Core
-{
+{/*
 	public class VBAmbience : Ambience
 	{
 		static string[,] typeConversionList = new string[,] {
@@ -109,7 +109,7 @@ namespace MonoDevelop.Core
 			return builder.ToString();
 		}
 		
-		public override string Convert(IClass c, ConversionFlags conversionFlags, ITypeNameResolver resolver)
+		public override string Convert(IType c, ConversionFlags conversionFlags, ITypeNameResolver resolver)
 		{
 			StringBuilder builder = new StringBuilder();
 			
@@ -227,7 +227,7 @@ namespace MonoDevelop.Core
 			return builder.ToString();		
 		}
 		
-		public override string ConvertEnd(IClass c, ConversionFlags conversionFlags)
+		public override string ConvertEnd(IType c, ConversionFlags conversionFlags)
 		{
 			StringBuilder builder = new StringBuilder();
 			
@@ -593,5 +593,5 @@ namespace MonoDevelop.Core
 			}
 			return dotNetTypeName;
 		}
-	}	
+	}	*/
 }

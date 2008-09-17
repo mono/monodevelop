@@ -27,9 +27,10 @@
 //
 
 using System.Collections;
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Output;
+using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Text;
-using MonoDevelop.Projects.Ambience;
 
 namespace MonoDevelop.Projects.CodeGeneration
 {
@@ -37,11 +38,11 @@ namespace MonoDevelop.Projects.CodeGeneration
 	{
 		ITextFileProvider files;
 		ArrayList textFiles = new ArrayList ();
-		IParserContext ctx;
+		ProjectDom ctx;
 		static TypeNameResolver defaultResolver = new TypeNameResolver ();
 		ITypeNameResolver typeResolver;
 		
-		internal RefactorerContext (IParserContext ctx, ITextFileProvider files, IClass cls)
+		internal RefactorerContext (ProjectDom ctx, ITextFileProvider files, IType cls)
 		{
 			this.files = files;
 			this.ctx = ctx;
@@ -49,7 +50,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 				typeResolver = GetTypeNameResolver (cls);
 		}
 		
-		public IParserContext ParserContext {
+		public ProjectDom ParserContext {
 			get { return ctx; }
 		}
 		
@@ -74,21 +75,21 @@ namespace MonoDevelop.Projects.CodeGeneration
 			}
 		}
 		
-		ITypeNameResolver GetTypeNameResolver (IClass cls)
+		ITypeNameResolver GetTypeNameResolver (IType cls)
 		{
-			if (cls.Region == null || cls.Region.FileName == null)
+			if (cls.CompilationUnit == null || cls.CompilationUnit.FileName == null)
 				return null;
-			string file = cls.Region.FileName;
-			IParseInformation pi = ctx.GetParseInformation (file);
+			string file = cls.CompilationUnit.FileName;
+			ParsedDocument pi = ProjectDomService.GetParsedDocument (file);
 			if (pi == null)
 				return null;
-			ICompilationUnit unit = pi.MostRecentCompilationUnit as ICompilationUnit;
+			ICompilationUnit unit = pi.CompilationUnit;
 			if (unit != null)
 				return new TypeNameResolver (unit, cls);
 			else
 				return null;
 		}
-		
+
 		internal void Save ()
 		{
 			foreach (TextFile file in textFiles) {

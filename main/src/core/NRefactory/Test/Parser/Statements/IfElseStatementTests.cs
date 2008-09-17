@@ -2,16 +2,16 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version>$Revision: 1014 $</version>
+//     <version>$Revision: 2604 $</version>
 // </file>
 
 using System;
 using System.IO;
 using NUnit.Framework;
 using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.AST;
+using ICSharpCode.NRefactory.Ast;
 
-namespace ICSharpCode.NRefactory.Tests.AST
+namespace ICSharpCode.NRefactory.Tests.Ast
 {
 	[TestFixture]
 	public class IfElseStatementTests
@@ -80,6 +80,24 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			
 			Assert.IsTrue(ifElseStatement.TrueStatement[0] is BlockStatement, "Statement was: " + ifElseStatement.TrueStatement[0]);
 		}
+		
+		// test for SD2-1201
+		[Test]
+		public void VBNetIfStatementLocationTest()
+		{
+			IfElseStatement ifElseStatement = ParseUtilVBNet.ParseStatement<IfElseStatement>("If True THEN\n" +
+			                                                                                 "DoIt()\n" +
+			                                                                                 "ElseIf False Then\n" +
+			                                                                                 "DoIt()\n" +
+			                                                                                 "End If");
+			Assert.AreEqual(3, (ifElseStatement.StartLocation).Y);
+			Assert.AreEqual(7, (ifElseStatement.EndLocation).Y);
+			Assert.AreEqual(5, (ifElseStatement.ElseIfSections[0].StartLocation).Y);
+			Assert.AreEqual(6, (ifElseStatement.ElseIfSections[0].EndLocation).Y);
+			Assert.IsNotNull(ifElseStatement.ElseIfSections[0].Parent);
+			
+		}
+		
 		[Test]
 		public void VBNetElseIfStatementTest()
 		{
@@ -111,6 +129,47 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			
 			Assert.IsTrue(ifElseStatement.TrueStatement[0] is BlockStatement, "Statement was: " + ifElseStatement.TrueStatement[0]);
 			Assert.IsTrue(ifElseStatement.ElseIfSections[0].EmbeddedStatement.Children[0] is StopStatement, "Statement was: " + ifElseStatement.ElseIfSections[0].EmbeddedStatement.Children[0]);
+		}
+		[Test]
+		public void VBNetMultiStatementIfStatementTest()
+		{
+			IfElseStatement ifElseStatement = ParseUtilVBNet.ParseStatement<IfElseStatement>("If True THEN Stop : b");
+			Assert.IsFalse(ifElseStatement.Condition.IsNull);
+			Assert.AreEqual(2, ifElseStatement.TrueStatement.Count, "true count");
+			Assert.AreEqual(0, ifElseStatement.FalseStatement.Count, "false count");
+			
+			Assert.IsTrue(ifElseStatement.TrueStatement[0] is StopStatement);
+			Assert.IsTrue(ifElseStatement.TrueStatement[1] is ExpressionStatement);
+		}
+		[Test]
+		public void VBNetMultiStatementIfStatementWithEndStatementTest()
+		{
+			IfElseStatement ifElseStatement = ParseUtilVBNet.ParseStatement<IfElseStatement>("If True THEN Stop : End : b");
+			Assert.IsFalse(ifElseStatement.Condition.IsNull);
+			Assert.AreEqual(3, ifElseStatement.TrueStatement.Count, "true count");
+			Assert.AreEqual(0, ifElseStatement.FalseStatement.Count, "false count");
+			
+			Assert.IsTrue(ifElseStatement.TrueStatement[0] is StopStatement);
+			Assert.IsTrue(ifElseStatement.TrueStatement[1] is EndStatement);
+			Assert.IsTrue(ifElseStatement.TrueStatement[2] is ExpressionStatement);
+		}
+		
+		[Test]
+		public void VBNetIfWithEmptyElseTest()
+		{
+			IfElseStatement ifElseStatement = ParseUtilVBNet.ParseStatement<IfElseStatement>("If True THEN a Else");
+			Assert.IsFalse(ifElseStatement.Condition.IsNull);
+			Assert.AreEqual(1, ifElseStatement.TrueStatement.Count, "true count");
+			Assert.AreEqual(0, ifElseStatement.FalseStatement.Count, "false count");
+		}
+		
+		[Test]
+		public void VBNetIfWithMultipleColons()
+		{
+			IfElseStatement ifElseStatement = ParseUtilVBNet.ParseStatement<IfElseStatement>("If True THEN a : : b");
+			Assert.IsFalse(ifElseStatement.Condition.IsNull);
+			Assert.AreEqual(2, ifElseStatement.TrueStatement.Count, "true count");
+			Assert.AreEqual(0, ifElseStatement.FalseStatement.Count, "false count");
 		}
 		#endregion
 	}

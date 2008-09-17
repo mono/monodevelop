@@ -39,6 +39,8 @@ using MonoDevelop.Core.Gui.Dialogs;
 
 namespace CBinding
 {
+	[System.ComponentModel.Category("MonoDevelop.CBinding")]
+	[System.ComponentModel.ToolboxItem(true)]
 	public partial class GeneralOptionsPanel : Gtk.Bin
 	{
 		ICompiler default_c_compiler;

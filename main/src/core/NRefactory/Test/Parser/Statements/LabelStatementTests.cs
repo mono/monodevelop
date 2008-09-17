@@ -2,16 +2,16 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version>$Revision: 915 $</version>
+//     <version>$Revision: 3139 $</version>
 // </file>
 
 using System;
 using System.IO;
 using NUnit.Framework;
 using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.AST;
+using ICSharpCode.NRefactory.Ast;
 
-namespace ICSharpCode.NRefactory.Tests.AST
+namespace ICSharpCode.NRefactory.Tests.Ast
 {
 	[TestFixture]
 	public class LabelStatementTests
@@ -35,7 +35,9 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void VBNetLabelStatementTest()
 		{
-			LabelStatement labelStmt = ParseUtilVBNet.ParseStatement<LabelStatement>("myLabel: Console.WriteLine()");
+			MethodDeclaration method = ParseUtilVBNet.ParseTypeMember<MethodDeclaration>("Sub Test \n myLabel: Console.WriteLine() \n End Sub");
+			Assert.AreEqual(2, method.Body.Children.Count);
+			LabelStatement labelStmt = (LabelStatement)method.Body.Children[0];
 			Assert.AreEqual("myLabel", labelStmt.Label);
 		}
 		#endregion 

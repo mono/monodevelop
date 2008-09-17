@@ -35,6 +35,7 @@ TOKENS
 	"&"
 	"^"
 	"?"
+	"!"
 	"{"
 	"}"
 	"("
@@ -201,6 +202,7 @@ TOKENS
 	"WithEvents"
 	"WriteOnly"
 	"Xor"
+	"Rem"
 	"Continue"
 	"Operator"
 	"Using"
@@ -229,14 +231,15 @@ VBNET
 	(.
 		lexer.NextToken(); // get the first token
 		compilationUnit = new CompilationUnit();
-	.) =
-	{ EOL }
-	{ OptionStmt }
-	{ ImportsStmt}
-	{ IF (IsGlobalAttrTarget()) GlobalAttributeSection }
-	{ NamespaceMemberDecl }
+	.)
+=
+	{ EndOfStmt }
+	{ OptionStmt { EndOfStmt } }
+	{ ImportsStmt { EndOfStmt } }
+	{ IF (IsGlobalAttrTarget()) GlobalAttributeSection { EndOfStmt } }
+	{ NamespaceMemberDecl { EndOfStmt } }
 	EOF
-	.
+.
 
 OptionStmt (. INode node = null; bool val = true; .) =
 	"Option" (. Location startPos = t.Location; .)
@@ -270,10 +273,10 @@ OptionValue<ref bool val> =
 	.
 
 EndOfStmt =
-		EOL
-	|
-		":" [ EOL ]
-	.
+	EOL
+|
+	":"
+.
 
 ImportsStmt
 	(.List<Using> usings = new List<Using>();
@@ -334,7 +337,7 @@ NamespaceMemberDecl
 		compilationUnit.AddChild(node);
 		compilationUnit.BlockStart(node);
 	.)
-	EOL
+	EndOfStmt
 	NamespaceBody
 	(.
 		node.EndLocation = t.Location;
@@ -424,7 +427,7 @@ NonModuleDeclaration<ModifierList m, List<AttributeSection> attributes>
 	{ TypeImplementsClause<out baseInterfaces> (. newType.BaseTypes.AddRange(baseInterfaces); .) }
 	ClassBody<newType>
 	"End" "Class" (. newType.EndLocation = t.EndLocation; .)
-	EOL
+	EndOfStmt
 	(.
 		compilationUnit.BlockEnd();
 	.)
@@ -438,7 +441,7 @@ NonModuleDeclaration<ModifierList m, List<AttributeSection> attributes>
 			newType.Type = ClassType.Module;
 		.)
 	Identifier			 (. newType.Name = t.val; .)
-	EOL
+	EndOfStmt
 	(. newType.BodyStartLocation = t.Location; .)
 	ModuleBody<newType>
 	(.
@@ -455,7 +458,7 @@ NonModuleDeclaration<ModifierList m, List<AttributeSection> attributes>
 		.)
 	Identifier			 (. newType.Name = t.val; .) 
 	TypeParameterList<newType.Templates>
-	EOL
+	EndOfStmt
 	(. newType.BodyStartLocation = t.Location; .)
 	{ TypeImplementsClause<out baseInterfaces> (. newType.BaseTypes.AddRange(baseInterfaces);.) }
 	StructureBody<newType>
@@ -475,7 +478,7 @@ NonModuleDeclaration<ModifierList m, List<AttributeSection> attributes>
 		.)
 	Identifier			 (. newType.Name = t.val; .) 
 	[ "As" NonArrayTypeName<out typeRef, false> (. newType.BaseTypes.Add(typeRef); .) ]
-	EOL
+	EndOfStmt
 	(. newType.BodyStartLocation = t.Location; .)
 	EnumBody<newType>
 	(.
@@ -520,20 +523,25 @@ NonModuleDeclaration<ModifierList m, List<AttributeSection> attributes>
 		[ "As" (. TypeReference type; .) TypeName<out type> (. delegateDeclr.ReturnType = type; .)]
 	)
 	(. 		delegateDeclr.EndLocation = t.EndLocation; .)
-	EOL
+	EndOfStmt
 	(.
 		compilationUnit.AddChild(delegateDeclr);
 	.)
 	.
 
 NamespaceBody =
-	{ NamespaceMemberDecl }
+	{ EndOfStmt } /* allow empty lines at begin of body */
+	{
+		NamespaceMemberDecl
+		{ EndOfStmt } /* allow empty lines in body */
+	}
 	"End" "Namespace"
-	EOL
+	EndOfStmt
 	.
 
 ClassBody<TypeDeclaration newType>
 	(. AttributeSection section; .) =
+	{ EndOfStmt } /* allow empty lines at begin of body */
 	{
 		(.List<AttributeSection> attributes = new List<AttributeSection>();
 			ModifierList m = new ModifierList();
@@ -541,11 +549,13 @@ ClassBody<TypeDeclaration newType>
 		{ AttributeSection<out section> (. attributes.Add(section); .) }
 		{ MemberModifier<m> }
 		ClassMemberDecl<m, attributes>
+		{ EndOfStmt } /* allow empty lines in body */
 	}
 	.
 
 StructureBody<TypeDeclaration newType>
 	(. AttributeSection section; .) =
+	{ EndOfStmt } /* allow empty lines at begin of body */
 	{
 		(.List<AttributeSection> attributes = new List<AttributeSection>();
 			ModifierList m = new ModifierList();
@@ -553,14 +563,16 @@ StructureBody<TypeDeclaration newType>
 		{ AttributeSection<out section> (. attributes.Add(section); .) }
 		{ MemberModifier<m> }
 		StructureMemberDecl<m, attributes>
+		{ EndOfStmt } /* allow empty lines in body */
 	}
 	"End" "Structure" (. newType.EndLocation = t.EndLocation; .)
-	EOL
+	EndOfStmt
 	.
 
 /* 7.7.1 */
 ModuleBody<TypeDeclaration newType>
 	(. AttributeSection section; .) =
+	{ EndOfStmt } /* allow empty lines at begin of body */
 	{
 		(.List<AttributeSection> attributes = new List<AttributeSection>();
 			ModifierList m = new ModifierList();
@@ -568,24 +580,31 @@ ModuleBody<TypeDeclaration newType>
 		{ AttributeSection<out section> (. attributes.Add(section); .) }
 		{ MemberModifier<m> }
 		ClassMemberDecl<m, attributes>
+		{ EndOfStmt } /* allow empty lines in body */
 	}
 	"End" "Module" (. newType.EndLocation = t.EndLocation; .)
-	EOL
+	EndOfStmt
 	.
 
 EnumBody<TypeDeclaration newType>
 	(. FieldDeclaration f; .) =
+	{ EndOfStmt } /* allow empty lines at begin of body */
 	{
 		EnumMemberDecl<out f> (. compilationUnit.AddChild(f); .)
+		{ EndOfStmt } /* allow empty lines in body */
 	}
 	"End" "Enum" (. newType.EndLocation = t.EndLocation; .)
-	EOL
+	EndOfStmt
 	.
 
 InterfaceBody<TypeDeclaration newType> =
-	{ InterfaceMemberDecl }
+	{ EndOfStmt } /* allow empty lines at begin of body */
+	{
+		InterfaceMemberDecl
+		{ EndOfStmt } /* allow empty lines in body */
+	}
 	"End" "Interface" (. newType.EndLocation = t.EndLocation; .)
-	EOL
+	EndOfStmt
 	.
 
 /* The information provided in the spec about */
@@ -613,12 +632,14 @@ InterfaceMemberDecl
 		Identifier (. name = t.val; .)
 		[ "(" [ FormalParameterList<p> ] ")" ]
 		[ "As" TypeName<out type> ]
-		EOL
+		EndOfStmt
 		(.
-			EventDeclaration ed = new EventDeclaration(type, mod.Modifier, p, attributes, name, null);
+			EventDeclaration ed = new EventDeclaration {
+				Name = name, TypeReference = type, Modifier = mod.Modifier,
+				Parameters = p, Attributes = attributes,
+				StartLocation = startLocation, EndLocation = t.EndLocation
+			};
 			compilationUnit.AddChild(ed);
-			ed.StartLocation = startLocation;
-			ed.EndLocation = t.EndLocation;
 		.)
 		|
 		"Sub"
@@ -629,13 +650,18 @@ InterfaceMemberDecl
 		Identifier (. name = t.val; .)
 		TypeParameterList<templates>
 		[ "(" [ FormalParameterList<p> ] ")" ]
-		EOL
+		EndOfStmt
 		(.
-			MethodDeclaration md = new MethodDeclaration(name, mod.Modifier, null, p, attributes);
-			md.TypeReference = new TypeReference("", "System.Void");
-			md.StartLocation = startLocation;
-			md.EndLocation = t.EndLocation;
-			md.Templates = templates;
+			MethodDeclaration md = new MethodDeclaration {
+				Name = name, 
+				Modifier = mod.Modifier, 
+				Parameters = p,
+				Attributes = attributes,
+				TypeReference = new TypeReference("", "System.Void"),
+				StartLocation = startLocation,
+				EndLocation = t.EndLocation,
+				Templates = templates
+			};
 			compilationUnit.AddChild(md);
 		.)
 		|
@@ -652,7 +678,10 @@ InterfaceMemberDecl
 			if(type == null) {
 				type = new TypeReference("System.Object");
 			}
-			MethodDeclaration md = new MethodDeclaration(name, mod.Modifier, type, p, attributes);
+			MethodDeclaration md = new MethodDeclaration {
+				Name = name, Modifier = mod.Modifier, 
+				TypeReference = type, Parameters = p, Attributes = attributes
+			};
 			if (returnTypeAttributeSection != null) {
 				returnTypeAttributeSection.AttributeTarget = "return";
 				md.Attributes.Add(returnTypeAttributeSection);
@@ -662,7 +691,7 @@ InterfaceMemberDecl
 			md.Templates = templates;
 			compilationUnit.AddChild(md);
 		.)
-		EOL
+		EndOfStmt
 		|
 		"Property"
 		(.
@@ -677,7 +706,7 @@ InterfaceMemberDecl
 				type = new TypeReference("System.Object");
 			}
 		.)
-		EOL
+		EndOfStmt
 		(.
 			PropertyDeclaration pd = new PropertyDeclaration(name, type, mod.Modifier, attributes);
 			pd.Parameters = p;
@@ -703,10 +732,10 @@ EnumMemberDecl<out FieldDeclaration f>
 		f = new FieldDeclaration(attributes);
 		varDecl = new VariableDeclaration(t.val);
 		f.Fields.Add(varDecl);
-		f.StartLocation = t.Location;
+		f.StartLocation = varDecl.StartLocation = t.Location;
 	.)
 	[ "=" Expr<out expr> (. varDecl.Initializer = expr; .) ]
-	EOL
+	EndOfStmt
 	.
 
 ClassMemberDecl<ModifierList m, List<AttributeSection> attributes> =
@@ -759,33 +788,32 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 			)
 		]
 		(. Location endLocation = t.EndLocation; .)
-		EOL
 		(
 			/* abstract methods without a body */
 			IF(IsMustOverride(m))
+			EndOfStmt
 			(.
-				methodDeclaration = new MethodDeclaration(name, m.Modifier,  null, p, attributes);
-				methodDeclaration.StartLocation = m.GetDeclarationLocation(startPos);
-				methodDeclaration.EndLocation   = endLocation;
-				methodDeclaration.TypeReference = new TypeReference("", "System.Void");
-				
-				methodDeclaration.Templates = templates;
-				methodDeclaration.HandlesClause = handlesClause;
-				methodDeclaration.InterfaceImplementations = implementsClause;
-				
+				methodDeclaration = new MethodDeclaration {
+					Name = name, Modifier = m.Modifier, Parameters = p, Attributes = attributes,
+					StartLocation = m.GetDeclarationLocation(startPos), EndLocation = endLocation,
+					TypeReference = new TypeReference("", "System.Void"),
+					Templates = templates,
+					HandlesClause = handlesClause,
+					InterfaceImplementations = implementsClause
+				};
 				compilationUnit.AddChild(methodDeclaration);
 			.)
 		|
+			EOL
 			(.
-				methodDeclaration = new MethodDeclaration(name, m.Modifier,  null, p, attributes);
-				methodDeclaration.StartLocation = m.GetDeclarationLocation(startPos);
-				methodDeclaration.EndLocation   = endLocation;
-				methodDeclaration.TypeReference = new TypeReference("", "System.Void");
-				
-				methodDeclaration.Templates = templates;
-				methodDeclaration.HandlesClause = handlesClause;
-				methodDeclaration.InterfaceImplementations = implementsClause;
-				
+				methodDeclaration = new MethodDeclaration {
+					Name = name, Modifier = m.Modifier, Parameters = p, Attributes = attributes,
+					StartLocation = m.GetDeclarationLocation(startPos), EndLocation = endLocation,
+					TypeReference = new TypeReference("", "System.Void"),
+					Templates = templates,
+					HandlesClause = handlesClause,
+					InterfaceImplementations = implementsClause
+				};
 				compilationUnit.AddChild(methodDeclaration);
 			.)
 			
@@ -799,7 +827,8 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 			.)
 			
 			(. methodDeclaration.Body  = (BlockStatement)stmt; .)
-			(. methodDeclaration.Body.EndLocation = t.EndLocation; .) EOL 
+			(. methodDeclaration.Body.EndLocation = t.EndLocation; .)
+			EndOfStmt
 		)
 		/* 9.3 */
 		| "New" [ "(" [ FormalParameterList<p> ] ")" ]
@@ -816,7 +845,8 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 		   }
 		.)
 		
-		(. Location endLocation = t.EndLocation; .) EOL
+		(. Location endLocation = t.EndLocation; .)
+		EndOfStmt
 		(.
 			ConstructorDeclaration cd = new ConstructorDeclaration("New", m.Modifier, p, attributes); 
 			cd.StartLocation = m.GetDeclarationLocation(startPos);
@@ -853,18 +883,20 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 			HandlesClause<out handlesClause>
 		)
 	]
-	EOL
 	(
 		/* abstract methods without a body */
 		IF(IsMustOverride(m))
+		EndOfStmt
 			(.
-				methodDeclaration = new MethodDeclaration(name, m.Modifier,  type, p, attributes);
-				methodDeclaration.StartLocation = m.GetDeclarationLocation(startPos);
-				methodDeclaration.EndLocation   = t.EndLocation;
-				
-				methodDeclaration.HandlesClause = handlesClause;
-				methodDeclaration.Templates     = templates;
-				methodDeclaration.InterfaceImplementations = implementsClause;
+				methodDeclaration = new MethodDeclaration {
+					Name = name, Modifier = m.Modifier, TypeReference = type,
+					Parameters = p, Attributes = attributes,
+					StartLocation = m.GetDeclarationLocation(startPos),
+					EndLocation   = t.EndLocation,
+					HandlesClause = handlesClause,
+					Templates     = templates,
+					InterfaceImplementations = implementsClause
+				};
 				if (returnTypeAttributeSection != null) {
 					returnTypeAttributeSection.AttributeTarget = "return";
 					methodDeclaration.Attributes.Add(returnTypeAttributeSection);
@@ -872,14 +904,17 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 				compilationUnit.AddChild(methodDeclaration);
 			.)
 		|
+			EOL
 			(.
-				methodDeclaration = new MethodDeclaration(name, m.Modifier,  type, p, attributes);
-				methodDeclaration.StartLocation = m.GetDeclarationLocation(startPos);
-				methodDeclaration.EndLocation   = t.EndLocation;
-				
-				methodDeclaration.Templates     = templates;
-				methodDeclaration.HandlesClause = handlesClause;
-				methodDeclaration.InterfaceImplementations = implementsClause;
+				methodDeclaration = new MethodDeclaration {
+					Name = name, Modifier = m.Modifier, TypeReference = type,
+					Parameters = p, Attributes = attributes,
+					StartLocation = m.GetDeclarationLocation(startPos),
+					EndLocation   = t.EndLocation,
+					Templates     = templates,
+					HandlesClause = handlesClause,
+					InterfaceImplementations = implementsClause
+				};
 				if (returnTypeAttributeSection != null) {
 					returnTypeAttributeSection.AttributeTarget = "return";
 					methodDeclaration.Attributes.Add(returnTypeAttributeSection);
@@ -898,7 +933,7 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 				methodDeclaration.Body.StartLocation = methodDeclaration.EndLocation;
 				methodDeclaration.Body.EndLocation   = t.EndLocation;
 			.)
-			EOL
+			EndOfStmt
 	)
 |
 	/* 9.2.2. */
@@ -918,7 +953,7 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 			"Lib" LiteralString		(. library = t.literalValue as string; .)
 			["Alias" LiteralString	(. alias = t.literalValue as string; .)]
 			[ "("	[ FormalParameterList<p> ] ")" ]
-			EOL
+			EndOfStmt
 			(.
 				DeclareDeclaration declareDeclaration = new DeclareDeclaration(name, m.Modifier, null, p, attributes, library, alias, charsetModifer);
 				declareDeclaration.StartLocation = m.GetDeclarationLocation(startPos);
@@ -932,7 +967,7 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 			["Alias" LiteralString	(. alias = t.literalValue as string; .)]
 			[ "("	[ FormalParameterList<p> ] ")" ]
 			["As" TypeName<out type> ]
-			EOL
+			EndOfStmt
 			(.
 				DeclareDeclaration declareDeclaration = new DeclareDeclaration(name, m.Modifier, type, p, attributes, library, alias, charsetModifer);
 				declareDeclaration.StartLocation = m.GetDeclarationLocation(startPos);
@@ -958,12 +993,15 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 	)
 	[ ImplementsClause<out implementsClause> ]
 	(.
-		eventDeclaration = new EventDeclaration(type, m.Modifier, p, attributes, name, implementsClause);
-		eventDeclaration.StartLocation = m.GetDeclarationLocation(startPos);
-		eventDeclaration.EndLocation = t.EndLocation;
+		eventDeclaration = new EventDeclaration {
+			Name = name, TypeReference = type, Modifier = m.Modifier, 
+			Parameters = p, Attributes = attributes, InterfaceImplementations = implementsClause,
+			StartLocation = m.GetDeclarationLocation(startPos),
+			EndLocation = t.EndLocation
+		};
 		compilationUnit.AddChild(eventDeclaration);
 	.)
-	EOL
+	EndOfStmt
 | /* 9.6 */
 	(. Location startPos = t.Location; .)
 	(.
@@ -974,7 +1012,7 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 	IdentifierForFieldDeclaration (. string name = t.val; .)
 	VariableDeclaratorPartAfterIdentifier<variableDeclarators, name>
 	{ "," VariableDeclarator<variableDeclarators> }
-	EOL
+	EndOfStmt
 	(.
 		fd.EndLocation = t.EndLocation;
 		fd.Fields = variableDeclarators;
@@ -994,7 +1032,7 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 		fd.Fields = constantDeclarators;
 		fd.EndLocation = t.Location;
 	.)
-	EOL
+	EndOfStmt
 	(.
 		fd.EndLocation = t.EndLocation;
 		compilationUnit.AddChild(fd);
@@ -1015,7 +1053,7 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 		}
 	.)
 	[ ImplementsClause<out implementsClause> ]
-	EOL
+	EndOfStmt
 	(
 	/* abstract properties without a body */
 	IF(IsMustOverride(m))
@@ -1042,7 +1080,7 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 		.)
 		AccessorDecls<out getRegion, out setRegion> 
 		"End" "Property"
-		EOL
+		EndOfStmt
 		(.
 			pDecl.GetRegion = getRegion;
 			pDecl.SetRegion = setRegion;
@@ -1063,7 +1101,7 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 	Identifier (. string customEventName = t.val; .)
 	"As" TypeName<out type>
 	[ ImplementsClause<out implementsClause> ]
-	EOL
+	EndOfStmt
 	{
 		EventAccessorDeclaration<out eventAccessorDeclaration>
 		(.
@@ -1081,7 +1119,7 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 			}
 		.)
 	}
-	"End" "Event" EOL
+	"End" "Event" EndOfStmt
 	(.
 		if(addHandlerAccessorDeclaration == null)
 		{
@@ -1098,12 +1136,15 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 			Error("Need to provide RaiseEvent accessor.");
 		}
 	
-		EventDeclaration decl = new EventDeclaration(type, customEventName, m.Modifier, attributes, null);
-		decl.StartLocation = m.GetDeclarationLocation(startPos);
-		decl.EndLocation = t.EndLocation;
-		decl.AddRegion = addHandlerAccessorDeclaration;
-		decl.RemoveRegion = removeHandlerAccessorDeclaration;
-		decl.RaiseRegion = raiseEventAccessorDeclaration;
+		EventDeclaration decl = new EventDeclaration {
+			TypeReference = type, Name = customEventName, Modifier = m.Modifier,
+			Attributes = attributes,
+			StartLocation = m.GetDeclarationLocation(startPos),
+			EndLocation = t.EndLocation,
+			AddRegion = addHandlerAccessorDeclaration,
+			RemoveRegion = removeHandlerAccessorDeclaration,
+			RaiseRegion = raiseEventAccessorDeclaration
+		};
 		compilationUnit.AddChild(decl);
 	.)
 |   (. ConversionType opConversionType = ConversionType.None; .)
@@ -1134,20 +1175,22 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 		}
 	")"
 	(. Location endPos = t.EndLocation; .)
-	[ "As" { AttributeSection<out section> (. returnTypeAttributes.Add(section); .) } TypeName<out returnType> (. endPos = t.EndLocation; .) EOL ]
-	Block<out stmt> "End" "Operator" EOL
+	[ "As" { AttributeSection<out section> (. returnTypeAttributes.Add(section); .) } TypeName<out returnType> (. endPos = t.EndLocation; .) ]
+	EOL
+	Block<out stmt> "End" "Operator" EndOfStmt
 	(.
-		OperatorDeclaration operatorDeclaration = new OperatorDeclaration(m.Modifier, 
-		                                                                  attributes, 
-		                                                                  parameters, 
-		                                                                  returnType,
-		                                                                  operatorType
-		                                                                  );
-		operatorDeclaration.ConversionType = opConversionType;
-		operatorDeclaration.ReturnTypeAttributes = returnTypeAttributes;
-		operatorDeclaration.Body = (BlockStatement)stmt;
-		operatorDeclaration.StartLocation = m.GetDeclarationLocation(startPos);
-		operatorDeclaration.EndLocation = endPos;
+		OperatorDeclaration operatorDeclaration = new OperatorDeclaration {
+			Modifier = m.Modifier,
+			Attributes = attributes,
+			Parameters = parameters,
+			TypeReference = returnType,
+			OverloadableOperator = operatorType,
+			ConversionType = opConversionType,
+			ReturnTypeAttributes = returnTypeAttributes,
+			Body = (BlockStatement)stmt,
+			StartLocation = m.GetDeclarationLocation(startPos),
+			EndLocation = endPos
+		};
 		operatorDeclaration.Body.StartLocation = startPos;
 		operatorDeclaration.Body.EndLocation = t.Location;
 		compilationUnit.AddChild(operatorDeclaration);
@@ -1223,7 +1266,7 @@ EventAccessorDeclaration<out EventAddRemoveRegion eventAccessorDeclaration>
 	{ AttributeSection<out section> (. attributes.Add(section); .) }
 	(
 			"AddHandler" [ "(" [ FormalParameterList<p> ] ")" ] EOL
-			Block<out stmt> "End" "AddHandler" EOL
+			Block<out stmt> "End" "AddHandler" EndOfStmt
 			(.
 				eventAccessorDeclaration = new EventAddRegion(attributes);
 				eventAccessorDeclaration.Block = (BlockStatement)stmt;
@@ -1231,7 +1274,7 @@ EventAccessorDeclaration<out EventAddRemoveRegion eventAccessorDeclaration>
 			.)
 		|
 			"RemoveHandler" [ "(" [ FormalParameterList<p> ] ")" ] EOL
-			Block<out stmt> "End" "RemoveHandler" EOL
+			Block<out stmt> "End" "RemoveHandler" EndOfStmt
 			(.
 				eventAccessorDeclaration = new EventRemoveRegion(attributes);
 				eventAccessorDeclaration.Block = (BlockStatement)stmt;
@@ -1239,7 +1282,7 @@ EventAccessorDeclaration<out EventAddRemoveRegion eventAccessorDeclaration>
 			.)
 		|
 			"RaiseEvent" [ "(" [ FormalParameterList<p> ] ")" ] EOL
-			Block<out stmt> "End" "RaiseEvent" EOL
+			Block<out stmt> "End" "RaiseEvent" EndOfStmt
 			(.
 				eventAccessorDeclaration = new EventRaiseRegion(attributes);
 				eventAccessorDeclaration.Block = (BlockStatement)stmt;
@@ -1287,7 +1330,7 @@ GetAccessorDecl<out PropertyGetRegion getBlock, List<AttributeSection> attribute
 	"End" "Get"
 	(. getBlock.Modifier = m; .)
 	(. getBlock.StartLocation = startLocation; getBlock.EndLocation = t.EndLocation; .)
-	EOL
+	EndOfStmt
 	.
 
 /* 9.7.2 */
@@ -1311,7 +1354,7 @@ SetAccessorDecl<out PropertySetRegion setBlock, List<AttributeSection> attribute
 	.)
 	"End" "Set"
 	(. setBlock.StartLocation = startLocation; setBlock.EndLocation = t.EndLocation; .)
-	EOL
+	EndOfStmt
 	.
 
 /* 9.5 */
@@ -1320,13 +1363,15 @@ ConstantDeclarator<List<VariableDeclaration> constantDeclaration>
 		Expression expr = null;
 		TypeReference type = null;
 		string name = String.Empty;
+		Location location;
 	.) =
-	Identifier				(. name = t.val; .)
+	Identifier				(. name = t.val; location = t.Location; .)
 	["As" TypeName<out type> ]
 	"=" Expr<out expr>
 	(.
 		VariableDeclaration f = new VariableDeclaration(name, expr);
 		f.TypeReference = type;
+		f.StartLocation = location;
 		constantDeclaration.Add(f);
 	.)
 .
@@ -1344,6 +1389,7 @@ VariableDeclaratorPartAfterIdentifier<List<VariableDeclaration> fieldDeclaration
 		TypeReference type = null;
 		ArrayList rank = null;
 		List<Expression> dimension = null;
+		Location startLocation = t.Location;
 	.) =
 	[ IF(IsSize() && !IsDims()) ArrayInitializationModifier<out dimension> ]
 	[ IF(IsDims())              ArrayNameModifier<out rank> ]
@@ -1396,7 +1442,12 @@ VariableDeclaratorPartAfterIdentifier<List<VariableDeclaration> fieldDeclaration
 		.)
 		[ "=" VariableInitializer<out expr> ]
 	)
-	(. fieldDeclaration.Add(new VariableDeclaration(name, expr, type)); .)
+	(.
+		VariableDeclaration varDecl = new VariableDeclaration(name, expr, type);
+		varDecl.StartLocation = startLocation;
+		varDecl.EndLocation = t.Location;
+		fieldDeclaration.Add(varDecl);
+	.)
 .
 
 /* 6.8 */
@@ -1433,14 +1484,14 @@ VariableInitializer<out Expression initializerExpression>
 		initializerExpression = null;
 	.) =
 	Expr<out initializerExpression>
-	| ArrayInitializer<out initializerExpression>
+	| CollectionInitializer<out initializerExpression>
 	.
 
 /* 9.6.3.4 */
-ArrayInitializer<out Expression outExpr>
+CollectionInitializer<out Expression outExpr>
 	(.
 		Expression expr = null;
-		ArrayInitializerExpression initializer = new ArrayInitializerExpression();
+		CollectionInitializerExpression initializer = new CollectionInitializerExpression();
 	.) =
 	"{"
 	[
@@ -1485,7 +1536,7 @@ InterfaceBase <out List<TypeReference> bases>
 		","
 		TypeName<out type> (. bases.Add(type); .)
 	}
-	EOL
+	EndOfStmt
 	.
 
 /* 7.2 */
@@ -1554,10 +1605,12 @@ AssignmentOperator<out AssignmentOperatorType op>
 
 /* 11.4 */
 SimpleExpr<out Expression pexpr>
+(. string name; .)
 =
 	SimpleNonInvocationExpression<out pexpr>
-	{		(. string name; .)
-		"." IdentifierOrKeyword<out name> (. pexpr = new FieldReferenceExpression(pexpr, name); .)
+	{
+		"." IdentifierOrKeyword<out name> (. pexpr = new MemberReferenceExpression(pexpr, name); .)
+	|	"!" IdentifierOrKeyword<out name> (. pexpr = new BinaryOperatorExpression(pexpr, BinaryOperatorType.DictionaryAccess, new PrimitiveExpression(name, name)); .)
 	|	InvocationExpression<ref pexpr>
 	}
 .
@@ -1584,16 +1637,18 @@ SimpleNonInvocationExpression<out Expression pexpr>
 		|	"False"											(.pexpr = new PrimitiveExpression(false, "false"); .)
 		|	"Nothing"											(.pexpr = new PrimitiveExpression(null, "null");  .)
 		|	/* 11.4.2 */ "(" Expr<out expr> ")" 				(. pexpr = new ParenthesizedExpression(expr); .)
-		|	/* 11.4.4 */ Identifier					(. pexpr = new IdentifierExpression(t.val); .)
+		|	/* 11.4.4 */ Identifier
+				(. pexpr = new IdentifierExpression(t.val); .)
+				(. pexpr.StartLocation = t.Location; pexpr.EndLocation = t.EndLocation; .)
 		|	(. string val = String.Empty; .)
 			( PrimitiveTypeName<out val> | "Object" (. val = "Object"; .) )
-			"." (. t.val = ""; .) Identifier (. pexpr = new FieldReferenceExpression(new TypeReferenceExpression(val), t.val); .)
+			"." (. t.val = ""; .) Identifier (. pexpr = new MemberReferenceExpression(new TypeReferenceExpression(val), t.val); .)
 		|	"Me"							(. pexpr = new ThisReferenceExpression(); .)
 		|	(. Expression retExpr = null; .)
 			( "MyBase"										(. retExpr = new BaseReferenceExpression(); .)
 			| "MyClass"										(. retExpr = new ClassReferenceExpression(); .)
 			)
-			"." IdentifierOrKeyword<out name>				(. pexpr = new FieldReferenceExpression(retExpr, name); .)
+			"." IdentifierOrKeyword<out name>				(. pexpr = new MemberReferenceExpression(retExpr, name); .)
 		|	"Global" "."
 			Identifier (. type = new TypeReference(t.val ?? ""); .)
 			/* fallback to "" is required if the token wasn't an identifier (->parser error but no exception) */
@@ -1615,7 +1670,7 @@ SimpleNonInvocationExpression<out Expression pexpr>
 		)
 	|
 		/* this form only occurs in WithStatements*/
-		"." IdentifierOrKeyword<out name> (. pexpr = new FieldReferenceExpression(null, name);.)
+		"." IdentifierOrKeyword<out name> (. pexpr = new MemberReferenceExpression(null, name);.)
 	)
 .
 
@@ -1634,15 +1689,15 @@ InvocationExpression<ref Expression pexpr>
 		")"
 		(
 			"." Identifier
-			(. pexpr = new FieldReferenceExpression(GetTypeReferenceExpression(pexpr, typeParameters), t.val); .)
+			(. pexpr = new MemberReferenceExpression(GetTypeReferenceExpression(pexpr, typeParameters), t.val); .)
 		|	"("
 			ArgumentList<out parameters>
 			")"
-			(. pexpr = new InvocationExpression(pexpr, parameters, typeParameters); .)
+			(. pexpr = CreateInvocationExpression(pexpr, parameters, typeParameters); .)
 		)
 	|	ArgumentList<out parameters>
 		")"
-		(. pexpr = new InvocationExpression(pexpr, parameters, typeParameters); .)
+		(. pexpr = CreateInvocationExpression(pexpr, parameters, typeParameters); .)
 	)
 	(. pexpr.StartLocation = start; pexpr.EndLocation = t.Location; .)
 .
@@ -1809,7 +1864,7 @@ UnaryExpr<out Expression uExpr>
 .) =
 	{ 	"+" 		(. uop = UnaryOperatorType.Plus; isUOp = true; .)
 		| "-" 		(. uop = UnaryOperatorType.Minus; isUOp = true; .)
-		| "*" 		(. uop = UnaryOperatorType.Star;  isUOp = true;.)
+		| "*" 		(. uop = UnaryOperatorType.Dereference;  isUOp = true;.)
 	}
 	ExponentiationExpr<out expr>
 	(.
@@ -1840,10 +1895,10 @@ ObjectCreateExpression<out Expression oce>
 	["(" NormalOrReDimArgumentList<out arguments, out canBeNormal, out canBeReDim> ")"
 		[ IF (la.kind == Tokens.OpenParenthesis)
 			ArrayTypeModifiers<out dimensions>
-			ArrayInitializer<out initializer>
-		|	ArrayInitializer<out initializer>
+			CollectionInitializer<out initializer>
+		|	CollectionInitializer<out initializer>
 		]
-		(. if (canBeReDim && !canBeNormal && initializer == null) initializer = new ArrayInitializerExpression(); .)
+		(. if (canBeReDim && !canBeNormal && initializer == null) initializer = new CollectionInitializerExpression(); .)
 	]
 	(.
 		if (type == null) type = new TypeReference("Object"); // fallback type on parser errors
@@ -1853,7 +1908,7 @@ ObjectCreateExpression<out Expression oce>
 			if (dimensions == null) dimensions = new ArrayList();
 			dimensions.Insert(0, (arguments == null) ? 0 : Math.Max(arguments.Count - 1, 0));
 			type.RankSpecifier = (int[])dimensions.ToArray(typeof(int));
-			ArrayCreateExpression ace = new ArrayCreateExpression(type, initializer as ArrayInitializerExpression);
+			ArrayCreateExpression ace = new ArrayCreateExpression(type, initializer as CollectionInitializerExpression);
 			ace.Arguments = arguments;
 			oce = ace;
 		}
@@ -2024,7 +2079,7 @@ TypeArgumentList<List<TypeReference> typeArguments>
 GlobalAttributeSection =
 	"<" (. Location startPos = t.Location; .)
 	("Assembly" | "Module")
-		(.  string attributeTarget = t.val.ToLower(System.Globalization.CultureInfo.InvariantCulture);
+		(.  string attributeTarget = t.val != null ? t.val.ToLower(System.Globalization.CultureInfo.InvariantCulture) : null;
 			List<ASTAttribute> attributes = new List<ASTAttribute>();
 			ASTAttribute attribute;
 		.)
@@ -2034,9 +2089,12 @@ GlobalAttributeSection =
 	">"
 	EndOfStmt
 		(.
-			AttributeSection section = new AttributeSection(attributeTarget, attributes);
-			section.StartLocation = startPos;
-			section.EndLocation = t.EndLocation;
+			AttributeSection section = new AttributeSection {
+				AttributeTarget = attributeTarget,
+				Attributes = attributes,
+				StartLocation = startPos,
+				EndLocation = t.EndLocation
+			};
 			compilationUnit.AddChild(section);
 		.)
 	.
@@ -2119,44 +2177,37 @@ AttributeSection<out AttributeSection section>
 	[ "," ]
 	">"
 		(.
-			section = new AttributeSection(attributeTarget, attributes);
-			section.StartLocation = startPos;
-			section.EndLocation = t.EndLocation;
+			section = new AttributeSection {
+				AttributeTarget = attributeTarget,
+				Attributes = attributes,
+				StartLocation = startPos,
+				EndLocation = t.EndLocation
+			};
 		.)
 	.
 
 /* 9.2.5 */
 FormalParameterList<List<ParameterDeclarationExpression> parameter>
-	(.
-		ParameterDeclarationExpression p;
-		AttributeSection section;
-		List<AttributeSection> attributes = new List<AttributeSection>();
-	.) =
-	{ AttributeSection<out section> (.attributes.Add(section); .) }
-	(
-		FormalParameter<out p>
-		(.
-			bool paramsFound = false;
-			p.Attributes = attributes;
-			parameter.Add(p);
-		.)
-		{
-			","	(. if (paramsFound) Error("params array must be at end of parameter list"); .)
-			{ AttributeSection<out section> (.attributes.Add(section); .) }
-			(
-				FormalParameter <out p>	(. p.Attributes = attributes; parameter.Add(p); .)
-			)
-		}
-	)
-	.
+(. ParameterDeclarationExpression p; .)
+=
+	FormalParameter <out p>	(. if (p != null) parameter.Add(p); .)
+	{	","
+		FormalParameter <out p>	(. if (p != null) parameter.Add(p); .)
+	}
+.
 /* 9.2.5 */
 FormalParameter<out ParameterDeclarationExpression p>
-	(.
-		TypeReference type = null;
-		ParamModifierList mod = new ParamModifierList(this);
-		Expression expr = null;
-		p = null;ArrayList arrayModifiers = null;
-	.) =
+(.
+	AttributeSection section;
+	List<AttributeSection> attributes = new List<AttributeSection>();
+	TypeReference type = null;
+	ParamModifierList mod = new ParamModifierList(this);
+	Expression expr = null;
+	p = null;
+	ArrayList arrayModifiers = null;
+.)
+=
+	{ AttributeSection<out section> (. attributes.Add(section); .) }
 	{ ParameterModifier<mod> }
 	Identifier (. string parameterName = t.val; .)
 	[ IF(IsDims()) ArrayTypeModifiers<out arrayModifiers> ]
@@ -2178,8 +2229,9 @@ FormalParameter<out ParameterDeclarationExpression p>
 	(.
 		mod.Check();
 		p = new ParameterDeclarationExpression(type, parameterName, mod.Modifier, expr);
+		p.Attributes = attributes;
 	.)
-	.
+.
 
 /* 10.1 */
 Block<out Statement stmt>
@@ -2391,12 +2443,10 @@ EmbeddedStatement<out Statement statement>
 	(.
 		ReDimStatement reDimStatement = new ReDimStatement(isPreserve);
 		statement = reDimStatement;
-		InvocationExpression redimClause = expr as InvocationExpression;
-		if (redimClause != null) { reDimStatement.ReDimClauses.Add(redimClause); }
+		SafeAdd(reDimStatement, reDimStatement.ReDimClauses, expr as InvocationExpression);
 	.)
 	{ "," ReDimClause<out expr>
-		(. redimClause = expr as InvocationExpression; .)
-		(. if (redimClause != null) { reDimStatement.ReDimClauses.Add(redimClause); } .)
+		(. SafeAdd(reDimStatement, reDimStatement.ReDimClauses, expr as InvocationExpression); .)
 	}
 	| /* 10.12.2 */
 	"Erase"	
@@ -2502,7 +2552,7 @@ EmbeddedStatement<out Statement statement>
 		(.
 			// a field reference expression that stands alone is a
 			// invocation expression without parantheses and arguments
-			if(expr is FieldReferenceExpression || expr is IdentifierExpression) {
+			if(expr is MemberReferenceExpression || expr is IdentifierExpression) {
 				expr = new InvocationExpression(expr);
 			}
 			statement = new ExpressionStatement(expr);
@@ -2627,7 +2677,7 @@ ReDimClause<out Expression expr>
 ReDimClauseInternal<ref Expression expr>
 (. List<Expression> arguments; bool canBeNormal; bool canBeRedim; string name; .)
 =
-	{	"." IdentifierOrKeyword<out name> (. expr = new FieldReferenceExpression(expr, name); .)
+	{	"." IdentifierOrKeyword<out name> (. expr = new MemberReferenceExpression(expr, name); .)
 	|  IF (la.kind == Tokens.OpenParenthesis && Peek(1).kind == Tokens.Of)
 		InvocationExpression<ref expr>
 	}

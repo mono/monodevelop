@@ -33,15 +33,13 @@ namespace MonoDevelop.Projects.Dom.Output
 {
 	public class NetAmbience : Ambience, IDomVisitor
 	{
-		const string nullString = "Null";
-		
 		protected override IDomVisitor OutputVisitor {
 			get {
 				return this;
 			}
 		}
 		
-		public NetAmbience () : base ("NET")
+		public NetAmbience () : base ("NET", "")
 		{
 			classTypes[ClassType.Class]     = "Class";
 			classTypes[ClassType.Enum]      = "Enumeration";
@@ -316,6 +314,12 @@ namespace MonoDevelop.Projects.Dom.Output
 		{
 			return "Namespace " + ns.Name;
 		}
+		
+		object IDomVisitor.Visit (LocalVariable var, object data)
+		{
+			return var.Name;
+		}
+		
 		object IDomVisitor.Visit (IEvent evt, object data)
 		{
 			OutputFlags flags = (OutputFlags)data;

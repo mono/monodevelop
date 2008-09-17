@@ -36,10 +36,16 @@ namespace MonoDevelop.Projects.Dom.Output
 	public abstract class Ambience
 	{
 		string name;
-		
 		public string Name {
 			get {
 				return name;
+			}
+		}
+		
+		string mimeTypes;
+		public string MimeTypes {
+			get {
+				return mimeTypes;
 			}
 		}
 		
@@ -47,16 +53,23 @@ namespace MonoDevelop.Projects.Dom.Output
 		protected Dictionary<ClassType, string> classTypes = new Dictionary<ClassType, string> ();
 		protected Dictionary<ParameterModifiers, string> parameterModifiers = new Dictionary<ParameterModifiers, string> ();
 		protected Dictionary<string, string> constructs = new Dictionary<string, string> ();
-		protected string nullString = "null";
+		protected const string nullString = "null";
 		
 		protected abstract IDomVisitor OutputVisitor {
 			get;
 		}
 		
-		public Ambience (string name)
+		public Ambience (string name, string mimeTypes)
 		{
-			this.name = name;
+			this.name      = name;
+			this.mimeTypes = mimeTypes ?? "";
 		}
+		
+		public virtual bool IsValidFor (string fileName)
+		{
+			return true;
+		}
+		
 		
 		protected string GetString (Modifiers m)
 		{
@@ -125,6 +138,10 @@ namespace MonoDevelop.Projects.Dom.Output
 		protected static bool IncludeBaseTypes (OutputFlags outputFlags)
 		{
 			return (outputFlags & OutputFlags.IncludeBaseTypes) == OutputFlags.IncludeBaseTypes;
+		}
+		protected static bool IncludeGenerics (OutputFlags outputFlags)
+		{
+			return (outputFlags & OutputFlags.IncludeGenerics) == OutputFlags.IncludeGenerics;
 		}
 		#endregion			
 		

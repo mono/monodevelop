@@ -32,9 +32,6 @@ namespace MonoDevelop.Projects.Dom
 {
 	public class Namespace : AbstractMember
 	{
-		protected string name;
-		protected string documentation;
-			
 		public Namespace (string name)
 		{
 			this.Name = name;
@@ -46,25 +43,12 @@ namespace MonoDevelop.Projects.Dom
 			this.Documentation = documentation;
 		}
 		
-		public string Name {
-			get {
-				return name;
-			}
-			set {
-				name = value;
-			}
+		public override string ToString ()
+		{
+			return string.Format ("[Namespace: Name={0}]", name);
 		}
 		
-		public string Documentation {
-			get {
-				return documentation;
-			}
-			set {
-				documentation = value;
-			}
-		}
-		
-		public virtual int CompareTo (object value)
+		public override int CompareTo (object value)
 		{
 			Namespace other = value as Namespace;
 			if (other == null) 

@@ -1,3 +1,8 @@
+2008-08-15  Mike Krüger <mkrueger@novell.com> 
+
+	* cs-tokenizer.cs, ChangeLog: worked on code completion/dom/enum
+	  completion,
+
 2008-08-11  Marek Safar  <marek.safar@gmail.com>
 
 	A fix for bug #416220

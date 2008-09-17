@@ -2,13 +2,13 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
-//     <version>$Revision: 1388 $</version>
+//     <version>$Revision: 1703 $</version>
 // </file>
 
 using System;
 using System.Collections.Generic;
 
-namespace NRefactoryASTGenerator.AST
+namespace NRefactoryASTGenerator.Ast
 {
 	[CustomImplementation, HasChildren]
 	class CompilationUnit : AbstractNode {}
@@ -38,7 +38,7 @@ namespace NRefactoryASTGenerator.AST
 		List<ParameterDeclarationExpression> parameters;
 		List<TemplateDefinition> templates;
 		
-		public DelegateDeclaration(Modifier modifier, List<AttributeSection> attributes) : base(modifier, attributes) {}
+		public DelegateDeclaration(Modifiers modifier, List<AttributeSection> attributes) : base(modifier, attributes) {}
 	}
 	
 	enum ClassType { Class }
@@ -55,9 +55,9 @@ namespace NRefactoryASTGenerator.AST
 		ClassType type;
 		List<TypeReference> baseTypes;
 		List<TemplateDefinition> templates;
-		Point bodyStartLocation;
+		Location bodyStartLocation;
 		
-		public TypeDeclaration(Modifier modifier, List<AttributeSection> attributes) : base(modifier, attributes) {}
+		public TypeDeclaration(Modifiers modifier, List<AttributeSection> attributes) : base(modifier, attributes) {}
 	}
 	
 	[IncludeBoolProperty("IsAlias", "return !alias.IsNull;")]
@@ -71,10 +71,10 @@ namespace NRefactoryASTGenerator.AST
 		public Using(string name, TypeReference alias) {}
 	}
 	
-	[IncludeMember("public UsingDeclaration(string nameSpace) : this(nameSpace, null) {}")]
-	[IncludeMember("public UsingDeclaration(string nameSpace, TypeReference alias) {" +
+	[IncludeMember("public UsingDeclaration(string @namespace) : this(@namespace, null) {}")]
+	[IncludeMember("public UsingDeclaration(string @namespace, TypeReference alias) {" +
 	               " usings = new List<Using>(1);" +
-	               " usings.Add(new Using(nameSpace, alias)); " +
+	               " usings.Add(new Using(@namespace, alias)); " +
 	               "}")]
 	class UsingDeclaration : AbstractNode
 	{

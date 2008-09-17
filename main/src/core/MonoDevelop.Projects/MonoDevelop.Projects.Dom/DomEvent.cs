@@ -85,12 +85,7 @@ namespace MonoDevelop.Projects.Dom
 		public static IEvent Resolve (IEvent source, ITypeResolver typeResolver)
 		{
 			DomEvent result = new DomEvent ();
-			result.Name           = source.Name;
-			result.Documentation  = source.Documentation;
-			result.Modifiers      = source.Modifiers;
-			result.ReturnType     = DomReturnType.Resolve (source.ReturnType, typeResolver);
-			result.Location       = source.Location;
-			result.AddRange (DomAttribute.Resolve (source.Attributes, typeResolver));
+			AbstractMember.Resolve (source, result, typeResolver);
 			if (source.AddMethod != null)
 				result.addMethod = DomMethod.Resolve (source.AddMethod, typeResolver);
 			if (source.RemoveMethod != null)

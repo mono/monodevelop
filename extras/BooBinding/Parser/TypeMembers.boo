@@ -22,11 +22,11 @@
 // along with BooBinding; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #endregion
-
+/*
 namespace BooBinding.Parser
 
 import System
-import MonoDevelop.Projects.Parser
+import MonoDevelop.Projects.Dom
 import Boo.Lang.Compiler.Ast as AST
 
 class Constructor(BooDefaultMethod):
@@ -99,3 +99,4 @@ class Property(DefaultProperty):
 		self.region = region
 		self.bodyRegion = bodyRegion
 		modifiers = m
+*/

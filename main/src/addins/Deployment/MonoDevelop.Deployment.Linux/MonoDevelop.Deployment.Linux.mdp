@@ -59,13 +59,7 @@
     <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
   </References>
-  <GtkDesignInfo>
-    <ExportedWidgets>
-      <Widget>MonoDevelop.Deployment.Linux.BasicOptionPanelWidget</Widget>
-      <Widget>MonoDevelop.Deployment.Linux.DesktopPanelWidget</Widget>
-      <Widget>MonoDevelop.Deployment.Linux.DotDesktopViewWidget</Widget>
-    </ExportedWidgets>
-  </GtkDesignInfo>
+  <GtkDesignInfo />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../..">
     <BuildFilesVar Sync="True" Name="FILES" />
     <DeployFilesVar Sync="True" Name="DATA_FILES" />

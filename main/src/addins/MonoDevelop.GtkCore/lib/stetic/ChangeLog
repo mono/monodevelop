@@ -1,3 +1,8 @@
+2008-09-15  Mike Kestner <mkestner@novell.com> 
+
+	* libstetic/ErrorWidget.cs: add Project filename to the generation
+	warning messages.  Fixes #373244.
+
 2008-08-19  Mike Kestner <mkestner@novell.com> 
 
 	* libstetic/wrapper/ActionTree.cs: use field references for uim
@@ -9,6 +14,10 @@
 	* libsteticui/CodeGeneratorPartialClass.cs: add uimanager field if 
 	  needed.
 
+2008-08-19  Mike Krüger <mkrueger@novell.com> 
+
+	* libsteticui/CecilClassDescriptor.cs: fixed some possible nullrefs.
+
 2008-08-18  Mike Kestner <mkestner@novell.com> 
 
 	* libstetic/wrapper/Widget.cs: null guarding for ToString().
@@ -17,6 +26,10 @@
 
 	* libsteticui/LibraryCache.cs: add browsable properties and events
 	to the toolbox item entries in the objects xml doc.
+
+2008-07-27  Mike Krüger <mkrueger@novell.com> 
+
+	
 
 2008-07-24  Mike Kestner <mkestner@novell.com> 
 

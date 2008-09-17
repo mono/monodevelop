@@ -22,12 +22,13 @@
 // along with BooBinding; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #endregion
-
+/*
 namespace BooBinding.Parser
 
 import System
 import System.Collections
-import MonoDevelop.Projects.Parser
+import MonoDevelop.Projects.Dom
+import MonoDevelop.Projects.Dom.Parser
 import Boo.Lang.Compiler.Ast
 
 class ExpressionTypeVisitor(DepthFirstVisitor):
@@ -116,13 +117,7 @@ class ExpressionTypeVisitor(DepthFirstVisitor):
 		if possibleOverloads.Count >= 1:
 			SetReturnType(cast(IMethod, possibleOverloads[0]).ReturnType)
 			return true
-		/*// find best overload
-		argumentTypes = array(IReturnType, node.Arguments.Count)
-		for i as int in range(argumentTypes.Length):
-			Visit(node.Arguments[i])
-			argumentTypes[i] = _returnType
-		...
-		*/
+		
 		return false
 	
 	private def FindMethods(c as IClass, name as string, arguments as int):
@@ -271,3 +266,4 @@ class ExpressionTypeVisitor(DepthFirstVisitor):
 	
 	override def OnTypeofExpression(node as TypeofExpression):
 		CreateReturnType("System.Type")
+*/

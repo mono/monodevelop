@@ -2,16 +2,16 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
-//     <version>$Revision: 975 $</version>
+//     <version>$Revision: 3184 $</version>
 // </file>
 
 using System;
 using System.Collections.Generic;
 
-namespace NRefactoryASTGenerator.AST
+namespace NRefactoryASTGenerator.Ast
 {
 	[CustomImplementation]
-	abstract class Statement : AbstractNode {}
+	abstract class Statement : AbstractNode, INullable {}
 	
 	[CustomImplementation]
 	abstract class StatementWithEmbeddedStatement : Statement {
@@ -104,7 +104,7 @@ namespace NRefactoryASTGenerator.AST
 	[CustomImplementation]
 	class LocalVariableDeclaration : Statement {
 		TypeReference             typeReference;
-		Modifier                  modifier;
+		Modifiers                  modifier;
 		List<VariableDeclaration> variables;
 	}
 	
@@ -122,10 +122,10 @@ namespace NRefactoryASTGenerator.AST
 		public ReturnStatement(Expression expression) { }
 	}
 	
-	class StatementExpression : Statement {
+	class ExpressionStatement : Statement {
 		Expression expression;
 		
-		public StatementExpression(Expression expression) {}
+		public ExpressionStatement(Expression expression) {}
 	}
 	
 	class SwitchStatement : Statement {
@@ -188,10 +188,9 @@ namespace NRefactoryASTGenerator.AST
 	class EmptyStatement : Statement {}
 	
 	class FixedStatement : StatementWithEmbeddedStatement {
-		TypeReference             typeReference;
-		List<VariableDeclaration> pointerDeclarators;
+		Statement pointerDeclaration;
 		
-		public FixedStatement(TypeReference typeReference, List<VariableDeclaration> pointerDeclarators, Statement embeddedStatement) {}
+		public FixedStatement(Statement pointerDeclaration, Statement embeddedStatement) {}
 	}
 	
 	[IncludeBoolProperty("IsDefaultCase", "return expression.IsNull;")]

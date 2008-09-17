@@ -56,23 +56,38 @@ namespace MonoDevelop.Core.Serialization
 					LoggingService.LogError ("[SerializationMap " + fileId + "] Type not found: '" + tname + "'");
 					continue;
 				}
-				SerializationMap map = new SerializationMap (type);
-				maps [type] = map;
-				map.FileId = fileId;
+				
 				string cname = elem.GetAttribute ("name");
 				string ftname = elem.GetAttribute ("fallbackType");
-				if (cname.Length > 0 || ftname.Length > 0) {
-					DataItemAttribute iat = new DataItemAttribute ();
-					if (cname.Length > 0)
-						iat.Name = cname;
-					if (ftname.Length > 0)
-						iat.FallbackType = addin.GetType (ftname, true);
-					map.TypeAttributes.Add (iat);
+
+				SerializationMap map;
+				if (!maps.TryGetValue (type, out map)) {
+					map = new SerializationMap (type);
+					maps [type] = map;
+					map.FileId = fileId;
+					if (cname.Length > 0 || ftname.Length > 0) {
+						DataItemAttribute iat = new DataItemAttribute ();
+						if (cname.Length > 0)
+							iat.Name = cname;
+						if (ftname.Length > 0)
+							iat.FallbackType = addin.GetType (ftname, true);
+						map.TypeAttributes.Add (iat);
+					}
+				} else {
+					if (!string.IsNullOrEmpty (cname))
+						throw new InvalidOperationException (string.Format ("Type name for type '{0}' in map '{1}' already specified in another serialization map for the same type ({2}).", type, fileId, map.FileId));
+					if (!string.IsNullOrEmpty (ftname))
+						throw new InvalidOperationException (string.Format ("Fallback type for type '{0}' in map '{1}' already specified in another serialization map for the same type ({2}).", type, fileId, map.FileId));
 				}
 				
 				string customDataItem = elem.GetAttribute ("customDataItem");
-				if (customDataItem.Length > 0)
-					map.CustomHandler = (ICustomDataItemHandler) addin.CreateInstance (customDataItem, true);
+				if (customDataItem.Length > 0) {
+					ICustomDataItemHandler ch = (ICustomDataItemHandler) addin.CreateInstance (customDataItem, true);
+					if (map.CustomHandler != null)
+						map.CustomHandler = new CustomDataItemHandlerChain (map.CustomHandler, ch);
+					else
+						map.CustomHandler = ch;
+				}
 				
 				ItemMember lastMember = null;
 				int litc = 0;
@@ -346,6 +361,56 @@ namespace MonoDevelop.Core.Serialization
 		public void Deserialize (ITypeSerializer handler, DataCollection data)
 		{
 			itemHandler.Deserialize (ob, handler, data);
+		}
+	}
+
+	class CustomDataItemHandlerChain: ICustomDataItemHandler
+	{
+		ICustomDataItemHandler mainHandler;
+		ICustomDataItemHandler subHandler;
+		
+		public CustomDataItemHandlerChain (ICustomDataItemHandler mainHandler, ICustomDataItemHandler subHandler)
+		{
+			this.mainHandler = mainHandler;
+			this.subHandler = subHandler;
+		}
+		
+		public DataCollection Serialize (object obj, ITypeSerializer handler)
+		{
+			return subHandler.Serialize (obj, new ChainedTypeSerializer (mainHandler, handler));
+		}
+		
+		public void Deserialize (object obj, ITypeSerializer handler, DataCollection data)
+		{
+			subHandler.Deserialize (obj, new ChainedTypeSerializer (mainHandler, handler), data);
+		}
+	}
+
+	class ChainedTypeSerializer: ITypeSerializer
+	{
+		ICustomDataItemHandler handler;
+		ITypeSerializer serializer;
+		
+		public ChainedTypeSerializer (ICustomDataItemHandler handler, ITypeSerializer serializer)
+		{
+			this.handler = handler;
+			this.serializer = serializer;
+		}
+		
+		public DataCollection Serialize (object instance)
+		{
+			return handler.Serialize (instance, serializer);
+		}
+		
+		public void Deserialize (object instance, DataCollection data)
+		{
+			handler.Deserialize (instance, serializer, data);
+		}
+		
+		public SerializationContext SerializationContext {
+			get {
+				return serializer.SerializationContext;
+			}
 		}
 	}
 }

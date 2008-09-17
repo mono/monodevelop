@@ -28,6 +28,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using MonoDevelop.Core.Collections;
 
 namespace MonoDevelop.Projects.Dom
 {
@@ -36,11 +38,15 @@ namespace MonoDevelop.Projects.Dom
 		DomRegion Region {
 			get;
 		}
-		
-		IEnumerable<string> Namespaces {
+
+		bool IsFromNamespace {
 			get;
 		}
-		IDictionary<string, IReturnType> Aliases {
+		
+		ReadOnlyCollection<string> Namespaces {
+			get;
+		}
+		ReadOnlyDictionary<string, IReturnType> Aliases {
 			get;
 		}
 	}

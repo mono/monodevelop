@@ -29,8 +29,7 @@ using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.SourceEditor.OptionPanels
 {
-	
-	public partial class GeneralOptionsPanel : Gtk.Bin, IOptionsPanel
+	partial class GeneralOptionsPanel : Gtk.Bin, IOptionsPanel
 	{
 		public GeneralOptionsPanel()
 		{
@@ -49,6 +48,9 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.codeCompletioncheckbutton.Active = SourceEditorOptions.Options.EnableCodeCompletion;
 			this.quickFinderCheckbutton.Active    = SourceEditorOptions.Options.EnableQuickFinder;
 			this.foldingCheckbutton.Active        = SourceEditorOptions.Options.ShowFoldMargin;
+			this.foldregionsCheckbutton.Active    = SourceEditorOptions.Options.DefaultRegionsFolding;
+			this.foldCommentsCheckbutton.Active   = SourceEditorOptions.Options.DefaultCommentFolding;
+			
 			this.radiobutton1.Active              = SourceEditorOptions.Options.EditorFontType == EditorFontType.DefaultMonospace;
 			this.radiobutton2.Active              = SourceEditorOptions.Options.EditorFontType == EditorFontType.UserSpecified;
 			this.fontselection.FontName           = SourceEditorOptions.Options.FontName;
@@ -63,6 +65,9 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			SourceEditorOptions.Options.ShowFoldMargin       = this.foldingCheckbutton.Active;
 			SourceEditorOptions.Options.EditorFontType       = this.radiobutton1.Active ? EditorFontType.DefaultMonospace : EditorFontType.UserSpecified;
 			SourceEditorOptions.Options.FontName             = this.fontselection.FontName;
+			SourceEditorOptions.Options.DefaultRegionsFolding = this.foldregionsCheckbutton.Active;
+			SourceEditorOptions.Options.DefaultCommentFolding = this.foldCommentsCheckbutton.Active;
+			
 		}
 
 		public void Initialize (OptionsDialog dialog, object dataObject)

@@ -60,7 +60,7 @@ namespace MonoDevelop.Projects.Dom
 		public virtual bool FilterEntry (object entry)
 		{
 			if (entry is IMember) {
-				return ((IMember)entry).IsSpecialName;
+				return ((IMember)entry).DeclaringType != null && ((IMember)entry).DeclaringType.ClassType != ClassType.Enum && ((IMember)entry).IsSpecialName;
 			}
 			return false;
 		}
@@ -106,6 +106,7 @@ namespace MonoDevelop.Projects.Dom
 		public static ExpressionContext Interface                    = new ExpressionContext ("Interface");
 		public static ExpressionContext EnumBaseType                 = new ExpressionContext ("EnumBaseType");
 		public static ExpressionContext InheritableType              = new ExpressionContext ("InheritableType");
+		public static ExpressionContext NamespaceNameExcepted        = new ExpressionContext ("NamespaceNameExcepted");
 		
 		public static TypeExpressionContext TypeDerivingFrom (IReturnType baseType, bool isObjectCreation)
 		{
@@ -115,7 +116,7 @@ namespace MonoDevelop.Projects.Dom
 		public class TypeExpressionContext : ExpressionContext
 		{
 			IReturnType type;
-			public IReturnType Type {
+			public new IReturnType Type {
 				get {
 					return type;
 				}
@@ -129,13 +130,13 @@ namespace MonoDevelop.Projects.Dom
 				}
 			}
 		
-			public virtual bool FilterEntry (object entry)
+			public override bool FilterEntry (object entry)
 			{
+				IType type = entry as IType;
 				if (IsObjectCreation && entry is IType) {
-					IType type = entry as IType;
-					return (type.ClassType == ClassType.Class || type.ClassType == ClassType.Struct) && !type.IsStatic && !type.IsAbstract;
+					return type.ClassType != ClassType.Class && type.ClassType != ClassType.Struct && (type.IsStatic || type.IsAbstract);
 				}
-				return false;
+				return true;
 			}
 			
 

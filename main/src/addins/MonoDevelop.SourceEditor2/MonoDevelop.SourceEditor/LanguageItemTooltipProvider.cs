@@ -27,7 +27,9 @@
 
 using System;
 using Mono.TextEditor;
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Output;
+using MonoDevelop.Projects.Dom.Parser;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -41,19 +43,15 @@ namespace MonoDevelop.SourceEditor
 		
 		public object GetItem (TextEditor editor, int offset)
 		{
-			ExtendibleTextEditor ed = (ExtendibleTextEditor) editor;
+			ExtensibleTextEditor ed = (ExtensibleTextEditor) editor;
 			return ed.GetLanguageItem (offset);
 		}
 		
 		public Gtk.Window CreateTooltipWindow (TextEditor editor, object item)
 		{
-			ExtendibleTextEditor ed = (ExtendibleTextEditor) editor;
+			ExtensibleTextEditor ed = (ExtensibleTextEditor) editor;
 			
-			IParserContext pctx = ed.View.GetParserContext ();
-			if (pctx == null)
-				return null;
-
-			return new LanguageItemWindow ((ILanguageItem)item, pctx, ed.View.GetAmbience (), null);
+			return new LanguageItemWindow (ed.ProjectDom, AmbienceService.GetAmbience (ed.Document.MimeType), (ResolveResult)item, null);
 		}
 		
 		public void GetRequiredPosition (TextEditor editor, Gtk.Window tipWindow, out int requiredWidth, out double xalign)

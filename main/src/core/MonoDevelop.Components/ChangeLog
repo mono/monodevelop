@@ -1,3 +1,19 @@
+2008-09-16  Mike Kestner <mkestner@novell.com> 
+
+	* MonoDevelop.Components.DockToolbars/FixedPanel.cs:
+	Clone the widgets in Forall since the callback call do things like
+	removing the widget from the container which will invalidate the
+	ArrayList enumerator.  Based on a patch provided by David Anes.
+
+2008-09-08  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Makefile.am, MonoDevelop.Components.mdp,
+	  MonoDevelop.Components.Commands/Command.cs,
+	  MonoDevelop.Components.Commands/ICommandUpdateHandler.cs,
+	  MonoDevelop.Components.Commands/CommandManager.cs: Added support
+	  for custom command handlers, which can intercept the executon of
+	  commands.
+
 2008-09-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Makefile.am, MonoDevelop.Components.mdp,
@@ -36,6 +52,11 @@
 	  initial command target when creating a toolbar.
 	* MonoDevelop.Components.Commands/CommandEntrySet.cs: Added helper
 	  method for adding separators to the set.
+
+2008-07-29  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Components.mdp: Removed some parts of the documentation
+	  service.
 
 2008-07-18  Michael Hutchinson <mhutchinson@novell.com> 
 

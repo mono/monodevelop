@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
-//     <version>$Revision: 2200 $</version>
+//     <version>$Revision: 3125 $</version>
 // </file>
 
 using System;
@@ -15,15 +15,15 @@ using System.Text;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Parser.VB;
+using ICSharpCode.NRefactory.Visitors;
 
 namespace ICSharpCode.NRefactory.PrettyPrinter
 {
-	public class VBNetOutputVisitor : IOutputAstVisitor
+	public sealed class VBNetOutputVisitor : NodeTrackingAstVisitor, IOutputAstVisitor
 	{
 		Errors                  errors             = new Errors();
 		VBNetOutputFormatter    outputFormatter;
 		VBNetPrettyPrintOptions prettyPrintOptions = new VBNetPrettyPrintOptions();
-		NodeTracker             nodeTracker;
 		TypeDeclaration         currentType;
 		bool printFullSystemType;
 		
@@ -49,12 +49,6 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			get { return prettyPrintOptions; }
 		}
 		
-		public NodeTracker NodeTracker {
-			get {
-				return nodeTracker;
-			}
-		}
-		
 		public IOutputFormatter OutputFormatter {
 			get {
 				return outputFormatter;
@@ -64,7 +58,30 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public VBNetOutputVisitor()
 		{
 			outputFormatter = new VBNetOutputFormatter(prettyPrintOptions);
-			nodeTracker     = new NodeTracker(this);
+		}
+		
+		public event Action<INode> BeforeNodeVisit;
+		public event Action<INode> AfterNodeVisit;
+		
+		protected override void BeginVisit(INode node)
+		{
+			if (BeforeNodeVisit != null) {
+				BeforeNodeVisit(node);
+			}
+			base.BeginVisit(node);
+		}
+		
+		protected override void EndVisit(INode node)
+		{
+			base.EndVisit(node);
+			if (AfterNodeVisit != null) {
+				AfterNodeVisit(node);
+			}
+		}
+		
+		object TrackedVisit(INode node, object data)
+		{
+			return node.AcceptVisitor(this, data);
 		}
 		
 		void Error(string text, Location position)
@@ -78,9 +95,9 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		}
 		
 		#region ICSharpCode.NRefactory.Parser.IASTVisitor interface implementation
-		public object VisitCompilationUnit(CompilationUnit compilationUnit, object data)
+		public override object TrackedVisitCompilationUnit(CompilationUnit compilationUnit, object data)
 		{
-			nodeTracker.TrackedVisitChildren(compilationUnit, data);
+			compilationUnit.AcceptChildren(this, data);
 			outputFormatter.EndFile();
 			return null;
 		}
@@ -96,7 +113,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return primitiveType;
 		}
 
-		public object VisitTypeReference(TypeReference typeReference, object data)
+		public override object TrackedVisitTypeReference(TypeReference typeReference, object data)
 		{
 			if (typeReference == TypeReference.ClassConstraint) {
 				outputFormatter.PrintToken(Tokens.Class);
@@ -154,20 +171,23 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 		}
 		
-		public object VisitInnerClassTypeReference(InnerClassTypeReference innerClassTypeReference, object data)
+		public override object TrackedVisitInnerClassTypeReference(InnerClassTypeReference innerClassTypeReference, object data)
 		{
-			nodeTracker.TrackedVisit(innerClassTypeReference.BaseType, data);
+			TrackedVisit(innerClassTypeReference.BaseType, data);
 			outputFormatter.PrintToken(Tokens.Dot);
 			return VisitTypeReference((TypeReference)innerClassTypeReference, data);
 		}
 		
 		#region Global scope
-		public object VisitAttributeSection(AttributeSection attributeSection, object data)
+		bool printAttributeSectionInline; // is set to true when printing parameter's attributes
+		
+		public override object TrackedVisitAttributeSection(AttributeSection attributeSection, object data)
 		{
-			outputFormatter.Indent();
+			if (!printAttributeSectionInline)
+				outputFormatter.Indent();
 			outputFormatter.PrintText("<");
 			if (attributeSection.AttributeTarget != null && attributeSection.AttributeTarget.Length > 0) {
-				outputFormatter.PrintIdentifier(attributeSection.AttributeTarget);
+				outputFormatter.PrintText(char.ToUpperInvariant(attributeSection.AttributeTarget[0]) + attributeSection.AttributeTarget.Substring(1));
 				outputFormatter.PrintToken(Tokens.Colon);
 				outputFormatter.Space();
 			}
@@ -180,47 +200,52 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			    || "module".Equals(attributeSection.AttributeTarget, StringComparison.InvariantCultureIgnoreCase)) {
 				outputFormatter.NewLine();
 			} else {
-				outputFormatter.PrintLineContinuation();
+				if (printAttributeSectionInline)
+					outputFormatter.Space();
+				else
+					outputFormatter.PrintLineContinuation();
 			}
 			
 			return null;
 		}
 		
-		public object VisitAttribute(ICSharpCode.NRefactory.Ast.Attribute attribute, object data)
+		public override object TrackedVisitAttribute(ICSharpCode.NRefactory.Ast.Attribute attribute, object data)
 		{
 			outputFormatter.PrintIdentifier(attribute.Name);
-			outputFormatter.PrintToken(Tokens.OpenParenthesis);
-			AppendCommaSeparatedList(attribute.PositionalArguments);
-			
-			if (attribute.NamedArguments != null && attribute.NamedArguments.Count > 0) {
-				if (attribute.PositionalArguments.Count > 0) {
-					outputFormatter.PrintToken(Tokens.Comma);
-					outputFormatter.Space();
+			if (attribute.PositionalArguments.Count > 0 || attribute.NamedArguments.Count > 0) {
+				outputFormatter.PrintToken(Tokens.OpenParenthesis);
+				AppendCommaSeparatedList(attribute.PositionalArguments);
+				
+				if (attribute.NamedArguments.Count > 0) {
+					if (attribute.PositionalArguments.Count > 0) {
+						outputFormatter.PrintToken(Tokens.Comma);
+						outputFormatter.Space();
+					}
+					AppendCommaSeparatedList(attribute.NamedArguments);
 				}
-				AppendCommaSeparatedList(attribute.NamedArguments);
+				outputFormatter.PrintToken(Tokens.CloseParenthesis);
 			}
-			outputFormatter.PrintToken(Tokens.CloseParenthesis);
 			return null;
 		}
 		
-		public object VisitNamedArgumentExpression(NamedArgumentExpression namedArgumentExpression, object data)
+		public override object TrackedVisitNamedArgumentExpression(NamedArgumentExpression namedArgumentExpression, object data)
 		{
 			outputFormatter.PrintIdentifier(namedArgumentExpression.Name);
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.Colon);
 			outputFormatter.PrintToken(Tokens.Assign);
 			outputFormatter.Space();
-			nodeTracker.TrackedVisit(namedArgumentExpression.Expression, data);
+			TrackedVisit(namedArgumentExpression.Expression, data);
 			return null;
 		}
 		
-		public object VisitUsing(Using @using, object data)
+		public override object TrackedVisitUsing(Using @using, object data)
 		{
 			Debug.Fail("Should never be called. The usings should be handled in Visit(UsingDeclaration)");
 			return null;
 		}
 		
-		public object VisitUsingDeclaration(UsingDeclaration usingDeclaration, object data)
+		public override object TrackedVisitUsingDeclaration(UsingDeclaration usingDeclaration, object data)
 		{
 			outputFormatter.Indent();
 			outputFormatter.PrintToken(Tokens.Imports);
@@ -232,7 +257,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					outputFormatter.PrintToken(Tokens.Assign);
 					outputFormatter.Space();
 					printFullSystemType = true;
-					nodeTracker.TrackedVisit(((Using)usingDeclaration.Usings[i]).Alias, data);
+					TrackedVisit(((Using)usingDeclaration.Usings[i]).Alias, data);
 					printFullSystemType = false;
 				}
 				if (i + 1 < usingDeclaration.Usings.Count) {
@@ -244,7 +269,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object VisitNamespaceDeclaration(NamespaceDeclaration namespaceDeclaration, object data)
+		public override object TrackedVisitNamespaceDeclaration(NamespaceDeclaration namespaceDeclaration, object data)
 		{
 			outputFormatter.Indent();
 			outputFormatter.PrintToken(Tokens.Namespace);
@@ -253,7 +278,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.NewLine();
 			
 			++outputFormatter.IndentationLevel;
-			nodeTracker.TrackedVisitChildren(namespaceDeclaration, data);
+			namespaceDeclaration.AcceptChildren(this, data);
 			--outputFormatter.IndentationLevel;
 			
 			outputFormatter.Indent();
@@ -291,7 +316,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 		}
 		
-		public object VisitTypeDeclaration(TypeDeclaration typeDeclaration, object data)
+		public override object TrackedVisitTypeDeclaration(TypeDeclaration typeDeclaration, object data)
 		{
 			VisitAttributes(typeDeclaration.Attributes, data);
 			
@@ -312,7 +337,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.PrintToken(Tokens.As);
 				outputFormatter.Space();
 				foreach (TypeReference baseTypeRef in typeDeclaration.BaseTypes) {
-					nodeTracker.TrackedVisit(baseTypeRef, data);
+					TrackedVisit(baseTypeRef, data);
 				}
 			}
 			
@@ -335,7 +360,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 						outputFormatter.PrintToken(Tokens.Implements);
 					}
 					outputFormatter.Space();
-					nodeTracker.TrackedVisit(baseTypeRef, data);
+					TrackedVisit(baseTypeRef, data);
 					outputFormatter.NewLine();
 				}
 			}
@@ -346,7 +371,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			if (typeDeclaration.Type == ClassType.Enum) {
 				OutputEnumMembers(typeDeclaration, data);
 			} else {
-				nodeTracker.TrackedVisitChildren(typeDeclaration, data);
+				typeDeclaration.AcceptChildren(this, data);
 			}
 			currentType = oldType;
 			
@@ -364,7 +389,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		void OutputEnumMembers(TypeDeclaration typeDeclaration, object data)
 		{
 			foreach (FieldDeclaration fieldDeclaration in typeDeclaration.Children) {
-				nodeTracker.BeginNode(fieldDeclaration);
+				BeginVisit(fieldDeclaration);
 				VariableDeclaration f = (VariableDeclaration)fieldDeclaration.Fields[0];
 				VisitAttributes(fieldDeclaration.Attributes, data);
 				outputFormatter.Indent();
@@ -373,20 +398,20 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					outputFormatter.Space();
 					outputFormatter.PrintToken(Tokens.Assign);
 					outputFormatter.Space();
-					nodeTracker.TrackedVisit(f.Initializer, data);
+					TrackedVisit(f.Initializer, data);
 				}
 				outputFormatter.NewLine();
-				nodeTracker.EndNode(fieldDeclaration);
+				EndVisit(fieldDeclaration);
 			}
 		}
 		
-		public object VisitTemplateDefinition(TemplateDefinition templateDefinition, object data)
+		public override object TrackedVisitTemplateDefinition(TemplateDefinition templateDefinition, object data)
 		{
 			outputFormatter.PrintIdentifier(templateDefinition.Name);
 			if (templateDefinition.Bases.Count > 0) {
 				outputFormatter.PrintText(" As ");
 				if (templateDefinition.Bases.Count == 1) {
-					nodeTracker.TrackedVisit(templateDefinition.Bases[0], data);
+					TrackedVisit(templateDefinition.Bases[0], data);
 				} else {
 					outputFormatter.PrintToken(Tokens.OpenCurlyBrace);
 					AppendCommaSeparatedList(templateDefinition.Bases);
@@ -396,7 +421,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object VisitDelegateDeclaration(DelegateDeclaration delegateDeclaration, object data)
+		public override object TrackedVisitDelegateDeclaration(DelegateDeclaration delegateDeclaration, object data)
 		{
 			VisitAttributes(delegateDeclaration.Attributes, data);
 			
@@ -425,13 +450,13 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.Space();
 				outputFormatter.PrintToken(Tokens.As);
 				outputFormatter.Space();
-				nodeTracker.TrackedVisit(delegateDeclaration.ReturnType, data);
+				TrackedVisit(delegateDeclaration.ReturnType, data);
 			}
 			outputFormatter.NewLine();
 			return null;
 		}
 		
-		public object VisitOptionDeclaration(OptionDeclaration optionDeclaration, object data)
+		public override object TrackedVisitOptionDeclaration(OptionDeclaration optionDeclaration, object data)
 		{
 			outputFormatter.PrintToken(Tokens.Option);
 			outputFormatter.Space();
@@ -469,7 +494,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		#region Type level
 		TypeReference currentVariableType;
-		public object VisitFieldDeclaration(FieldDeclaration fieldDeclaration, object data)
+		public override object TrackedVisitFieldDeclaration(FieldDeclaration fieldDeclaration, object data)
 		{
 			
 			VisitAttributes(fieldDeclaration.Attributes, data);
@@ -492,7 +517,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object VisitVariableDeclaration(VariableDeclaration variableDeclaration, object data)
+		public override object TrackedVisitVariableDeclaration(VariableDeclaration variableDeclaration, object data)
 		{
 			outputFormatter.PrintIdentifier(variableDeclaration.Name);
 			
@@ -508,10 +533,10 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.Space();
 				ObjectCreateExpression init = variableDeclaration.Initializer as ObjectCreateExpression;
 				if (init != null && TypeReference.AreEqualReferences(init.CreateType, varType)) {
-					nodeTracker.TrackedVisit(variableDeclaration.Initializer, data);
+					TrackedVisit(variableDeclaration.Initializer, data);
 					return null;
 				} else {
-					nodeTracker.TrackedVisit(varType, data);
+					TrackedVisit(varType, data);
 				}
 			}
 			
@@ -519,12 +544,12 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.Space();
 				outputFormatter.PrintToken(Tokens.Assign);
 				outputFormatter.Space();
-				nodeTracker.TrackedVisit(variableDeclaration.Initializer, data);
+				TrackedVisit(variableDeclaration.Initializer, data);
 			}
 			return null;
 		}
 		
-		public object VisitPropertyDeclaration(PropertyDeclaration propertyDeclaration, object data)
+		public override object TrackedVisitPropertyDeclaration(PropertyDeclaration propertyDeclaration, object data)
 		{
 			VisitAttributes(propertyDeclaration.Attributes, data);
 			outputFormatter.Indent();
@@ -550,19 +575,21 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.As);
 			outputFormatter.Space();
-			nodeTracker.TrackedVisit(propertyDeclaration.TypeReference, data);
+			TrackedVisit(propertyDeclaration.TypeReference, data);
 			
 			PrintInterfaceImplementations(propertyDeclaration.InterfaceImplementations);
 			
 			outputFormatter.NewLine();
 			
 			if (!IsAbstract(propertyDeclaration)) {
+				outputFormatter.IsInMemberBody = true;
 				++outputFormatter.IndentationLevel;
 				exitTokenStack.Push(Tokens.Property);
-				nodeTracker.TrackedVisit(propertyDeclaration.GetRegion, data);
-				nodeTracker.TrackedVisit(propertyDeclaration.SetRegion, data);
+				TrackedVisit(propertyDeclaration.GetRegion, data);
+				TrackedVisit(propertyDeclaration.SetRegion, data);
 				exitTokenStack.Pop();
 				--outputFormatter.IndentationLevel;
+				outputFormatter.IsInMemberBody = false;
 				
 				outputFormatter.Indent();
 				outputFormatter.PrintToken(Tokens.End);
@@ -574,7 +601,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object VisitPropertyGetRegion(PropertyGetRegion propertyGetRegion, object data)
+		public override object TrackedVisitPropertyGetRegion(PropertyGetRegion propertyGetRegion, object data)
 		{
 			VisitAttributes(propertyGetRegion.Attributes, data);
 			outputFormatter.Indent();
@@ -583,7 +610,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.NewLine();
 			
 			++outputFormatter.IndentationLevel;
-			nodeTracker.TrackedVisit(propertyGetRegion.Block, data);
+			TrackedVisit(propertyGetRegion.Block, data);
 			--outputFormatter.IndentationLevel;
 			outputFormatter.Indent();
 			outputFormatter.PrintToken(Tokens.End);
@@ -593,7 +620,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object VisitPropertySetRegion(PropertySetRegion propertySetRegion, object data)
+		public override object TrackedVisitPropertySetRegion(PropertySetRegion propertySetRegion, object data)
 		{
 			VisitAttributes(propertySetRegion.Attributes, data);
 			outputFormatter.Indent();
@@ -602,7 +629,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.NewLine();
 			
 			++outputFormatter.IndentationLevel;
-			nodeTracker.TrackedVisit(propertySetRegion.Block, data);
+			TrackedVisit(propertySetRegion.Block, data);
 			--outputFormatter.IndentationLevel;
 			outputFormatter.Indent();
 			outputFormatter.PrintToken(Tokens.End);
@@ -613,7 +640,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		}
 		
 		TypeReference currentEventType = null;
-		public object VisitEventDeclaration(EventDeclaration eventDeclaration, object data)
+		public override object TrackedVisitEventDeclaration(EventDeclaration eventDeclaration, object data)
 		{
 			bool customEvent = eventDeclaration.HasAddRegion  || eventDeclaration.HasRemoveRegion;
 			
@@ -637,7 +664,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.As);
 			outputFormatter.Space();
-			nodeTracker.TrackedVisit(eventDeclaration.TypeReference, data);
+			TrackedVisit(eventDeclaration.TypeReference, data);
 			
 			PrintInterfaceImplementations(eventDeclaration.InterfaceImplementations);
 			
@@ -645,7 +672,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.Space();
 				outputFormatter.PrintToken(Tokens.Assign);
 				outputFormatter.Space();
-				nodeTracker.TrackedVisit(eventDeclaration.Initializer, data);
+				TrackedVisit(eventDeclaration.Initializer, data);
 			}
 			
 			outputFormatter.NewLine();
@@ -654,8 +681,8 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				++outputFormatter.IndentationLevel;
 				currentEventType = eventDeclaration.TypeReference;
 				exitTokenStack.Push(Tokens.Sub);
-				nodeTracker.TrackedVisit(eventDeclaration.AddRegion, data);
-				nodeTracker.TrackedVisit(eventDeclaration.RemoveRegion, data);
+				TrackedVisit(eventDeclaration.AddRegion, data);
+				TrackedVisit(eventDeclaration.RemoveRegion, data);
 				exitTokenStack.Pop();
 				--outputFormatter.IndentationLevel;
 				
@@ -678,13 +705,13 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				if (i > 0)
 					outputFormatter.PrintToken(Tokens.Comma);
 				outputFormatter.Space();
-				nodeTracker.TrackedVisit(list[i].InterfaceType, null);
+				TrackedVisit(list[i].InterfaceType, null);
 				outputFormatter.PrintToken(Tokens.Dot);
 				outputFormatter.PrintIdentifier(list[i].MemberName);
 			}
 		}
 		
-		public object VisitEventAddRegion(EventAddRegion eventAddRegion, object data)
+		public override object TrackedVisitEventAddRegion(EventAddRegion eventAddRegion, object data)
 		{
 			VisitAttributes(eventAddRegion.Attributes, data);
 			outputFormatter.Indent();
@@ -696,7 +723,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.Space();
 				outputFormatter.PrintToken(Tokens.As);
 				outputFormatter.Space();
-				nodeTracker.TrackedVisit(currentEventType, data);
+				TrackedVisit(currentEventType, data);
 			} else {
 				this.AppendCommaSeparatedList(eventAddRegion.Parameters);
 			}
@@ -704,7 +731,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.NewLine();
 			
 			++outputFormatter.IndentationLevel;
-			nodeTracker.TrackedVisit(eventAddRegion.Block, data);
+			TrackedVisit(eventAddRegion.Block, data);
 			--outputFormatter.IndentationLevel;
 			
 			outputFormatter.Indent();
@@ -715,7 +742,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object VisitEventRemoveRegion(EventRemoveRegion eventRemoveRegion, object data)
+		public override object TrackedVisitEventRemoveRegion(EventRemoveRegion eventRemoveRegion, object data)
 		{
 			VisitAttributes(eventRemoveRegion.Attributes, data);
 			outputFormatter.Indent();
@@ -728,7 +755,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.Space();
 				outputFormatter.PrintToken(Tokens.As);
 				outputFormatter.Space();
-				nodeTracker.TrackedVisit(currentEventType, data);
+				TrackedVisit(currentEventType, data);
 			} else {
 				this.AppendCommaSeparatedList(eventRemoveRegion.Parameters);
 			}
@@ -736,7 +763,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.NewLine();
 			
 			++outputFormatter.IndentationLevel;
-			nodeTracker.TrackedVisit(eventRemoveRegion.Block, data);
+			TrackedVisit(eventRemoveRegion.Block, data);
 			--outputFormatter.IndentationLevel;
 			
 			outputFormatter.Indent();
@@ -747,7 +774,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object VisitEventRaiseRegion(EventRaiseRegion eventRaiseRegion, object data)
+		public override object TrackedVisitEventRaiseRegion(EventRaiseRegion eventRaiseRegion, object data)
 		{
 			VisitAttributes(eventRaiseRegion.Attributes, data);
 			outputFormatter.Indent();
@@ -760,7 +787,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.Space();
 				outputFormatter.PrintToken(Tokens.As);
 				outputFormatter.Space();
-				nodeTracker.TrackedVisit(currentEventType, data);
+				TrackedVisit(currentEventType, data);
 			} else {
 				this.AppendCommaSeparatedList(eventRaiseRegion.Parameters);
 			}
@@ -768,7 +795,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.NewLine();
 			
 			++outputFormatter.IndentationLevel;
-			nodeTracker.TrackedVisit(eventRaiseRegion.Block, data);
+			TrackedVisit(eventRaiseRegion.Block, data);
 			--outputFormatter.IndentationLevel;
 			
 			outputFormatter.Indent();
@@ -779,21 +806,28 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object VisitParameterDeclarationExpression(ParameterDeclarationExpression parameterDeclarationExpression, object data)
+		public override object TrackedVisitParameterDeclarationExpression(ParameterDeclarationExpression parameterDeclarationExpression, object data)
 		{
+			printAttributeSectionInline = true;
 			VisitAttributes(parameterDeclarationExpression.Attributes, data);
+			printAttributeSectionInline = false;
 			OutputModifier(parameterDeclarationExpression.ParamModifier, parameterDeclarationExpression.StartLocation);
 			outputFormatter.PrintIdentifier(parameterDeclarationExpression.ParameterName);
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.As);
 			outputFormatter.Space();
-			nodeTracker.TrackedVisit(parameterDeclarationExpression.TypeReference, data);
+			TrackedVisit(parameterDeclarationExpression.TypeReference, data);
 			return null;
 		}
 		
-		public object VisitMethodDeclaration(MethodDeclaration methodDeclaration, object data)
+		public override object TrackedVisitMethodDeclaration(MethodDeclaration methodDeclaration, object data)
 		{
 			VisitAttributes(methodDeclaration.Attributes, data);
+			if (methodDeclaration.IsExtensionMethod) {
+				outputFormatter.Indent();
+				outputFormatter.PrintText("<System.Runtime.CompilerServices.Extension> _");
+				outputFormatter.NewLine();
+			}
 			outputFormatter.Indent();
 			OutputModifier(methodDeclaration.Modifier);
 			
@@ -818,18 +852,31 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.Space();
 				outputFormatter.PrintToken(Tokens.As);
 				outputFormatter.Space();
-				nodeTracker.TrackedVisit(methodDeclaration.TypeReference, data);
+				TrackedVisit(methodDeclaration.TypeReference, data);
 			}
 			
 			PrintInterfaceImplementations(methodDeclaration.InterfaceImplementations);
 			
+			if (methodDeclaration.HandlesClause.Count > 0) {
+				outputFormatter.Space();
+				outputFormatter.PrintToken(Tokens.Handles);
+				for (int i = 0; i < methodDeclaration.HandlesClause.Count; i++) {
+					if (i > 0)
+						outputFormatter.PrintToken(Tokens.Comma);
+					outputFormatter.Space();
+					outputFormatter.PrintText(methodDeclaration.HandlesClause[i]);
+				}
+			}
+			
 			outputFormatter.NewLine();
 			
 			if (!IsAbstract(methodDeclaration)) {
-				nodeTracker.BeginNode(methodDeclaration.Body);
+				outputFormatter.IsInMemberBody = true;
+				BeginVisit(methodDeclaration.Body);
 				++outputFormatter.IndentationLevel;
 				exitTokenStack.Push(isSub ? Tokens.Sub : Tokens.Function);
-				methodDeclaration.Body.AcceptVisitor(this, data);
+				// we're doing the tracking manually using BeginVisit/EndVisit, so call Tracked... directly
+				this.TrackedVisitBlockStatement(methodDeclaration.Body, data);
 				exitTokenStack.Pop();
 				--outputFormatter.IndentationLevel;
 				
@@ -842,12 +889,13 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					outputFormatter.PrintToken(Tokens.Function);
 				}
 				outputFormatter.NewLine();
-				nodeTracker.EndNode(methodDeclaration.Body);
+				EndVisit(methodDeclaration.Body);
+				outputFormatter.IsInMemberBody = false;
 			}
 			return null;
 		}
 		
-		public object VisitInterfaceImplementation(InterfaceImplementation interfaceImplementation, object data)
+		public override object TrackedVisitInterfaceImplementation(InterfaceImplementation interfaceImplementation, object data)
 		{
 			throw new InvalidOperationException();
 		}
@@ -859,7 +907,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return currentType != null && currentType.Type == ClassType.Interface;
 		}
 		
-		public object VisitConstructorDeclaration(ConstructorDeclaration constructorDeclaration, object data)
+		public override object TrackedVisitConstructorDeclaration(ConstructorDeclaration constructorDeclaration, object data)
 		{
 			VisitAttributes(constructorDeclaration.Attributes, data);
 			outputFormatter.Indent();
@@ -872,14 +920,16 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
 			outputFormatter.NewLine();
 			
+			outputFormatter.IsInMemberBody = true;
 			++outputFormatter.IndentationLevel;
 			exitTokenStack.Push(Tokens.Sub);
 			
-			nodeTracker.TrackedVisit(constructorDeclaration.ConstructorInitializer, data);
+			TrackedVisit(constructorDeclaration.ConstructorInitializer, data);
 			
-			nodeTracker.TrackedVisit(constructorDeclaration.Body, data);
+			TrackedVisit(constructorDeclaration.Body, data);
 			exitTokenStack.Pop();
 			--outputFormatter.IndentationLevel;
+			outputFormatter.IsInMemberBody = false;
 			
 			outputFormatter.Indent();
 			outputFormatter.PrintToken(Tokens.End);
@@ -890,7 +940,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object VisitConstructorInitializer(ConstructorInitializer constructorInitializer, object data)
+		public override object TrackedVisitConstructorInitializer(ConstructorInitializer constructorInitializer, object data)
 		{
 			outputFormatter.Indent();
 			if (constructorInitializer.ConstructorInitializerType == ConstructorInitializerType.This) {
@@ -908,7 +958,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object VisitIndexerDeclaration(IndexerDeclaration indexerDeclaration, object data)
+		public override object TrackedVisitIndexerDeclaration(IndexerDeclaration indexerDeclaration, object data)
 		{
 			VisitAttributes(indexerDeclaration.Attributes, data);
 			outputFormatter.Indent();
@@ -933,14 +983,14 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.As);
 			outputFormatter.Space();
-			nodeTracker.TrackedVisit(indexerDeclaration.TypeReference, data);
+			TrackedVisit(indexerDeclaration.TypeReference, data);
 			PrintInterfaceImplementations(indexerDeclaration.InterfaceImplementations);
 			
 			outputFormatter.NewLine();
 			++outputFormatter.IndentationLevel;
 			exitTokenStack.Push(Tokens.Property);
-			nodeTracker.TrackedVisit(indexerDeclaration.GetRegion, data);
-			nodeTracker.TrackedVisit(indexerDeclaration.SetRegion, data);
+			TrackedVisit(indexerDeclaration.GetRegion, data);
+			TrackedVisit(indexerDeclaration.SetRegion, data);
 			exitTokenStack.Pop();
 			--outputFormatter.IndentationLevel;
 			
@@ -952,7 +1002,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object VisitDestructorDeclaration(DestructorDeclaration destructorDeclaration, object data)
+		public override object TrackedVisitDestructorDeclaration(DestructorDeclaration destructorDeclaration, object data)
 		{
 			outputFormatter.Indent();
 			outputFormatter.PrintText("Protected Overrides Sub Finalize()");
@@ -966,7 +1016,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.NewLine();
 			
 			++outputFormatter.IndentationLevel;
-			nodeTracker.TrackedVisit(destructorDeclaration.Body, data);
+			TrackedVisit(destructorDeclaration.Body, data);
 			--outputFormatter.IndentationLevel;
 			
 			outputFormatter.Indent();
@@ -997,7 +1047,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object VisitOperatorDeclaration(OperatorDeclaration operatorDeclaration, object data)
+		public override object TrackedVisitOperatorDeclaration(OperatorDeclaration operatorDeclaration, object data)
 		{
 			VisitAttributes(operatorDeclaration.Attributes, data);
 			outputFormatter.Indent();
@@ -1118,13 +1168,13 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.Space();
 				outputFormatter.PrintToken(Tokens.As);
 				outputFormatter.Space();
-				nodeTracker.TrackedVisit(operatorDeclaration.TypeReference, data);
+				TrackedVisit(operatorDeclaration.TypeReference, data);
 			}
 			
 			outputFormatter.NewLine();
 			
 			++outputFormatter.IndentationLevel;
-			nodeTracker.TrackedVisit(operatorDeclaration.Body, data);
+			TrackedVisit(operatorDeclaration.Body, data);
 			--outputFormatter.IndentationLevel;
 			
 			outputFormatter.Indent();
@@ -1136,7 +1186,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object VisitDeclareDeclaration(DeclareDeclaration declareDeclaration, object data)
+		public override object TrackedVisitDeclareDeclaration(DeclareDeclaration declareDeclaration, object data)
 		{
 			VisitAttributes(declareDeclaration.Attributes, data);
 			outputFormatter.Indent();
@@ -1172,13 +1222,13 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.Lib);
 			outputFormatter.Space();
-			outputFormatter.PrintText('"' + ConvertString(declareDeclaration.Library) + '"');
+			outputFormatter.PrintText(ConvertString(declareDeclaration.Library));
 			outputFormatter.Space();
 			
 			if (declareDeclaration.Alias.Length > 0) {
 				outputFormatter.PrintToken(Tokens.Alias);
 				outputFormatter.Space();
-				outputFormatter.PrintText('"' + ConvertString(declareDeclaration.Alias) + '"');
+				outputFormatter.PrintText(ConvertString(declareDeclaration.Alias));
 				outputFormatter.Space();
 			}
 			
@@ -1190,7 +1240,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.Space();
 				outputFormatter.PrintToken(Tokens.As);
 				outputFormatter.Space();
-				nodeTracker.TrackedVisit(declareDeclaration.TypeReference, data);
+				TrackedVisit(declareDeclaration.TypeReference, data);
 			}
 			
 			outputFormatter.NewLine();
@@ -1200,9 +1250,21 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		#endregion
 		
 		#region Statements
-		public object VisitBlockStatement(BlockStatement blockStatement, object data)
+		public override object TrackedVisitBlockStatement(BlockStatement blockStatement, object data)
 		{
+			if (blockStatement.Parent is BlockStatement) {
+				outputFormatter.Indent();
+				outputFormatter.PrintText("If True Then");
+				outputFormatter.NewLine();
+				outputFormatter.IndentationLevel += 1;
+			}
 			VisitStatementList(blockStatement.Children);
+			if (blockStatement.Parent is BlockStatement) {
+				outputFormatter.IndentationLevel -= 1;
+				outputFormatter.Indent();
+				outputFormatter.PrintText("End If");
+				outputFormatter.NewLine();
+			}
 			return null;
 		}
 		
@@ -1210,10 +1272,10 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		{
 			outputFormatter.IndentationLevel += 1;
 			if (stmt is BlockStatement) {
-				nodeTracker.TrackedVisit(stmt, null);
+				TrackedVisit(stmt, null);
 			} else {
 				outputFormatter.Indent();
-				nodeTracker.TrackedVisit(stmt, null);
+				TrackedVisit(stmt, null);
 				outputFormatter.NewLine();
 			}
 			outputFormatter.IndentationLevel -= 1;
@@ -1230,38 +1292,38 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		{
 			foreach (Statement stmt in statements) {
 				if (stmt is BlockStatement) {
-					nodeTracker.TrackedVisit(stmt, null);
+					TrackedVisit(stmt, null);
 				} else {
 					outputFormatter.Indent();
-					nodeTracker.TrackedVisit(stmt, null);
+					TrackedVisit(stmt, null);
 					outputFormatter.NewLine();
 				}
 			}
 		}
 		
-		public object VisitAddHandlerStatement(AddHandlerStatement addHandlerStatement, object data)
+		public override object TrackedVisitAddHandlerStatement(AddHandlerStatement addHandlerStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.AddHandler);
 			outputFormatter.Space();
-			nodeTracker.TrackedVisit(addHandlerStatement.EventExpression, data);
+			TrackedVisit(addHandlerStatement.EventExpression, data);
 			outputFormatter.PrintToken(Tokens.Comma);
 			outputFormatter.Space();
-			nodeTracker.TrackedVisit(addHandlerStatement.HandlerExpression, data);
+			TrackedVisit(addHandlerStatement.HandlerExpression, data);
 			return null;
 		}
 		
-		public object VisitRemoveHandlerStatement(RemoveHandlerStatement removeHandlerStatement, object data)
+		public override object TrackedVisitRemoveHandlerStatement(RemoveHandlerStatement removeHandlerStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.RemoveHandler);
 			outputFormatter.Space();
-			nodeTracker.TrackedVisit(removeHandlerStatement.EventExpression, data);
+			TrackedVisit(removeHandlerStatement.EventExpression, data);
 			outputFormatter.PrintToken(Tokens.Comma);
 			outputFormatter.Space();
-			nodeTracker.TrackedVisit(removeHandlerStatement.HandlerExpression, data);
+			TrackedVisit(removeHandlerStatement.HandlerExpression, data);
 			return null;
 		}
 		
-		public object VisitRaiseEventStatement(RaiseEventStatement raiseEventStatement, object data)
+		public override object TrackedVisitRaiseEventStatement(RaiseEventStatement raiseEventStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.RaiseEvent);
 			outputFormatter.Space();
@@ -1272,7 +1334,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object VisitEraseStatement(EraseStatement eraseStatement, object data)
+		public override object TrackedVisitEraseStatement(EraseStatement eraseStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.Erase);
 			outputFormatter.Space();
@@ -1280,25 +1342,25 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object VisitErrorStatement(ErrorStatement errorStatement, object data)
+		public override object TrackedVisitErrorStatement(ErrorStatement errorStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.Error);
 			outputFormatter.Space();
-			nodeTracker.TrackedVisit(errorStatement.Expression, data);
+			TrackedVisit(errorStatement.Expression, data);
 			return null;
 		}
 		
-		public object VisitOnErrorStatement(OnErrorStatement onErrorStatement, object data)
+		public override object TrackedVisitOnErrorStatement(OnErrorStatement onErrorStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.On);
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.Error);
 			outputFormatter.Space();
-			nodeTracker.TrackedVisit(onErrorStatement.EmbeddedStatement, data);
+			TrackedVisit(onErrorStatement.EmbeddedStatement, data);
 			return null;
 		}
 		
-		public object VisitReDimStatement(ReDimStatement reDimStatement, object data)
+		public override object TrackedVisitReDimStatement(ReDimStatement reDimStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.ReDim);
 			outputFormatter.Space();
@@ -1311,13 +1373,13 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object VisitExpressionStatement(ExpressionStatement expressionStatement, object data)
+		public override object TrackedVisitExpressionStatement(ExpressionStatement expressionStatement, object data)
 		{
-			nodeTracker.TrackedVisit(expressionStatement.Expression, data);
+			TrackedVisit(expressionStatement.Expression, data);
 			return null;
 		}
 		
-		public object VisitLocalVariableDeclaration(LocalVariableDeclaration localVariableDeclaration, object data)
+		public override object TrackedVisitLocalVariableDeclaration(LocalVariableDeclaration localVariableDeclaration, object data)
 		{
 			if (localVariableDeclaration.Modifier != Modifiers.None) {
 				OutputModifier(localVariableDeclaration.Modifier);
@@ -1336,33 +1398,33 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object VisitEmptyStatement(EmptyStatement emptyStatement, object data)
+		public override object TrackedVisitEmptyStatement(EmptyStatement emptyStatement, object data)
 		{
 			outputFormatter.NewLine();
 			return null;
 		}
 		
-		public virtual object VisitYieldStatement(YieldStatement yieldStatement, object data)
+		public override object TrackedVisitYieldStatement(YieldStatement yieldStatement, object data)
 		{
 			UnsupportedNode(yieldStatement);
 			return null;
 		}
 		
-		public object VisitReturnStatement(ReturnStatement returnStatement, object data)
+		public override object TrackedVisitReturnStatement(ReturnStatement returnStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.Return);
 			if (!returnStatement.Expression.IsNull) {
 				outputFormatter.Space();
-				nodeTracker.TrackedVisit(returnStatement.Expression, data);
+				TrackedVisit(returnStatement.Expression, data);
 			}
 			return null;
 		}
 		
-		public object VisitIfElseStatement(IfElseStatement ifElseStatement, object data)
+		public override object TrackedVisitIfElseStatement(IfElseStatement ifElseStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.If);
 			outputFormatter.Space();
-			nodeTracker.TrackedVisit(ifElseStatement.Condition, data);
+			TrackedVisit(ifElseStatement.Condition, data);
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.Then);
 			outputFormatter.NewLine();
@@ -1370,7 +1432,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			PrintIndentedBlock(ifElseStatement.TrueStatement);
 			
 			foreach (ElseIfSection elseIfSection in ifElseStatement.ElseIfSections) {
-				nodeTracker.TrackedVisit(elseIfSection, data);
+				TrackedVisit(elseIfSection, data);
 			}
 			
 			if (ifElseStatement.HasElseStatements) {
@@ -1387,11 +1449,12 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object VisitElseIfSection(ElseIfSection elseIfSection, object data)
+		public override object TrackedVisitElseIfSection(ElseIfSection elseIfSection, object data)
 		{
+			outputFormatter.Indent();
 			outputFormatter.PrintToken(Tokens.ElseIf);
 			outputFormatter.Space();
-			nodeTracker.TrackedVisit(elseIfSection.Condition, data);
+			TrackedVisit(elseIfSection.Condition, data);
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.Then);
 			outputFormatter.NewLine();
@@ -1399,7 +1462,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object VisitForStatement(ForStatement forStatement, object data)
+		public override object TrackedVisitForStatement(ForStatement forStatement, object data)
 		{
 			// Is converted to {initializer} while <Condition> {Embedded} {Iterators} end while
 			exitTokenStack.Push(Tokens.While);
@@ -1408,7 +1471,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				if (!isFirstLine)
 					outputFormatter.Indent();
 				isFirstLine = false;
-				nodeTracker.TrackedVisit(node, data);
+				TrackedVisit(node, data);
 				outputFormatter.NewLine();
 			}
 			if (!isFirstLine)
@@ -1418,7 +1481,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			if (forStatement.Condition.IsNull) {
 				outputFormatter.PrintToken(Tokens.True);
 			} else {
-				nodeTracker.TrackedVisit(forStatement.Condition, data);
+				TrackedVisit(forStatement.Condition, data);
 			}
 			outputFormatter.NewLine();
 			
@@ -1433,14 +1496,14 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object VisitLabelStatement(LabelStatement labelStatement, object data)
+		public override object TrackedVisitLabelStatement(LabelStatement labelStatement, object data)
 		{
 			outputFormatter.PrintIdentifier(labelStatement.Label);
 			outputFormatter.PrintToken(Tokens.Colon);
 			return null;
 		}
 		
-		public object VisitGotoStatement(GotoStatement gotoStatement, object data)
+		public override object TrackedVisitGotoStatement(GotoStatement gotoStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.GoTo);
 			outputFormatter.Space();
@@ -1448,18 +1511,18 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object VisitSwitchStatement(SwitchStatement switchStatement, object data)
+		public override object TrackedVisitSwitchStatement(SwitchStatement switchStatement, object data)
 		{
 			exitTokenStack.Push(Tokens.Select);
 			outputFormatter.PrintToken(Tokens.Select);
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.Case);
 			outputFormatter.Space();
-			nodeTracker.TrackedVisit(switchStatement.SwitchExpression, data);
+			TrackedVisit(switchStatement.SwitchExpression, data);
 			outputFormatter.NewLine();
 			++outputFormatter.IndentationLevel;
 			foreach (SwitchSection section in switchStatement.SwitchSections) {
-				nodeTracker.TrackedVisit(section, data);
+				TrackedVisit(section, data);
 			}
 			--outputFormatter.IndentationLevel;
 			outputFormatter.Indent();
@@ -1470,7 +1533,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object VisitSwitchSection(SwitchSection switchSection, object data)
+		public override object TrackedVisitSwitchSection(SwitchSection switchSection, object data)
 		{
 			outputFormatter.Indent();
 			outputFormatter.PrintToken(Tokens.Case);
@@ -1483,7 +1546,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object VisitCaseLabel(CaseLabel caseLabel, object data)
+		public override object TrackedVisitCaseLabel(CaseLabel caseLabel, object data)
 		{
 			if (caseLabel.IsDefault) {
 				outputFormatter.PrintToken(Tokens.Else);
@@ -1514,19 +1577,19 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					outputFormatter.Space();
 				}
 				
-				nodeTracker.TrackedVisit(caseLabel.Label, data);
+				TrackedVisit(caseLabel.Label, data);
 				if (!caseLabel.ToExpression.IsNull) {
 					outputFormatter.Space();
 					outputFormatter.PrintToken(Tokens.To);
 					outputFormatter.Space();
-					nodeTracker.TrackedVisit(caseLabel.ToExpression, data);
+					TrackedVisit(caseLabel.ToExpression, data);
 				}
 			}
 			
 			return null;
 		}
 		
-		public object VisitBreakStatement(BreakStatement breakStatement, object data)
+		public override object TrackedVisitBreakStatement(BreakStatement breakStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.Exit);
 			if (exitTokenStack.Count > 0) {
@@ -1536,13 +1599,13 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object VisitStopStatement(StopStatement stopStatement, object data)
+		public override object TrackedVisitStopStatement(StopStatement stopStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.Stop);
 			return null;
 		}
 		
-		public object VisitResumeStatement(ResumeStatement resumeStatement, object data)
+		public override object TrackedVisitResumeStatement(ResumeStatement resumeStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.Resume);
 			outputFormatter.Space();
@@ -1554,13 +1617,13 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object VisitEndStatement(EndStatement endStatement, object data)
+		public override object TrackedVisitEndStatement(EndStatement endStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.End);
 			return null;
 		}
 		
-		public object VisitContinueStatement(ContinueStatement continueStatement, object data)
+		public override object TrackedVisitContinueStatement(ContinueStatement continueStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.Continue);
 			outputFormatter.Space();
@@ -1581,18 +1644,18 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object VisitGotoCaseStatement(GotoCaseStatement gotoCaseStatement, object data)
+		public override object TrackedVisitGotoCaseStatement(GotoCaseStatement gotoCaseStatement, object data)
 		{
 			outputFormatter.PrintText("goto case ");
 			if (gotoCaseStatement.IsDefaultCase) {
 				outputFormatter.PrintText("default");
 			} else {
-				nodeTracker.TrackedVisit(gotoCaseStatement.Expression, null);
+				TrackedVisit(gotoCaseStatement.Expression, null);
 			}
 			return null;
 		}
 		
-		public object VisitDoLoopStatement(DoLoopStatement doLoopStatement, object data)
+		public override object TrackedVisitDoLoopStatement(DoLoopStatement doLoopStatement, object data)
 		{
 			if (doLoopStatement.ConditionPosition == ConditionPosition.None) {
 				Error(String.Format("Unknown condition position for loop : {0}.", doLoopStatement), doLoopStatement.StartLocation);
@@ -1620,7 +1683,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 						throw new InvalidOperationException();
 				}
 				outputFormatter.Space();
-				nodeTracker.TrackedVisit(doLoopStatement.Condition, null);
+				TrackedVisit(doLoopStatement.Condition, null);
 			} else {
 				exitTokenStack.Push(Tokens.Do);
 				outputFormatter.PrintToken(Tokens.Do);
@@ -1651,13 +1714,13 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 						break;
 				}
 				outputFormatter.Space();
-				nodeTracker.TrackedVisit(doLoopStatement.Condition, null);
+				TrackedVisit(doLoopStatement.Condition, null);
 			}
 			exitTokenStack.Pop();
 			return null;
 		}
 		
-		public object VisitForeachStatement(ForeachStatement foreachStatement, object data)
+		public override object TrackedVisitForeachStatement(ForeachStatement foreachStatement, object data)
 		{
 			exitTokenStack.Push(Tokens.For);
 			outputFormatter.PrintToken(Tokens.For);
@@ -1670,13 +1733,13 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.As);
 			outputFormatter.Space();
-			nodeTracker.TrackedVisit(foreachStatement.TypeReference, data);
+			TrackedVisit(foreachStatement.TypeReference, data);
 			
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.In);
 			outputFormatter.Space();
 			
-			nodeTracker.TrackedVisit(foreachStatement.Expression, data);
+			TrackedVisit(foreachStatement.Expression, data);
 			outputFormatter.NewLine();
 			
 			PrintIndentedBlock(foreachStatement.EmbeddedStatement);
@@ -1685,17 +1748,17 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.PrintToken(Tokens.Next);
 			if (!foreachStatement.NextExpression.IsNull) {
 				outputFormatter.Space();
-				nodeTracker.TrackedVisit(foreachStatement.NextExpression, data);
+				TrackedVisit(foreachStatement.NextExpression, data);
 			}
 			exitTokenStack.Pop();
 			return null;
 		}
 		
-		public object VisitLockStatement(LockStatement lockStatement, object data)
+		public override object TrackedVisitLockStatement(LockStatement lockStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.SyncLock);
 			outputFormatter.Space();
-			nodeTracker.TrackedVisit(lockStatement.LockExpression, data);
+			TrackedVisit(lockStatement.LockExpression, data);
 			outputFormatter.NewLine();
 			
 			PrintIndentedBlock(lockStatement.EmbeddedStatement);
@@ -1709,13 +1772,13 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		bool isUsingResourceAcquisition;
 		
-		public object VisitUsingStatement(UsingStatement usingStatement, object data)
+		public override object TrackedVisitUsingStatement(UsingStatement usingStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.Using);
 			outputFormatter.Space();
 			
 			isUsingResourceAcquisition = true;
-			nodeTracker.TrackedVisit(usingStatement.ResourceAcquisition, data);
+			TrackedVisit(usingStatement.ResourceAcquisition, data);
 			isUsingResourceAcquisition = false;
 			outputFormatter.NewLine();
 			
@@ -1729,11 +1792,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object VisitWithStatement(WithStatement withStatement, object data)
+		public override object TrackedVisitWithStatement(WithStatement withStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.With);
 			outputFormatter.Space();
-			nodeTracker.TrackedVisit(withStatement.Expression, data);
+			TrackedVisit(withStatement.Expression, data);
 			outputFormatter.NewLine();
 			
 			PrintIndentedBlock(withStatement.Body);
@@ -1744,7 +1807,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object VisitTryCatchStatement(TryCatchStatement tryCatchStatement, object data)
+		public override object TrackedVisitTryCatchStatement(TryCatchStatement tryCatchStatement, object data)
 		{
 			exitTokenStack.Push(Tokens.Try);
 			outputFormatter.PrintToken(Tokens.Try);
@@ -1753,7 +1816,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			PrintIndentedBlock(tryCatchStatement.StatementBlock);
 			
 			foreach (CatchClause catchClause in tryCatchStatement.CatchClauses) {
-				nodeTracker.TrackedVisit(catchClause, data);
+				TrackedVisit(catchClause, data);
 			}
 			
 			if (!tryCatchStatement.FinallyBlock.IsNull) {
@@ -1770,7 +1833,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object VisitCatchClause(CatchClause catchClause, object data)
+		public override object TrackedVisitCatchClause(CatchClause catchClause, object data)
 		{
 			outputFormatter.Indent();
 			outputFormatter.PrintToken(Tokens.Catch);
@@ -1792,7 +1855,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.Space();
 				outputFormatter.PrintToken(Tokens.When);
 				outputFormatter.Space();
-				nodeTracker.TrackedVisit(catchClause.Condition, data);
+				TrackedVisit(catchClause.Condition, data);
 			}
 			outputFormatter.NewLine();
 			
@@ -1801,41 +1864,41 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object VisitThrowStatement(ThrowStatement throwStatement, object data)
+		public override object TrackedVisitThrowStatement(ThrowStatement throwStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.Throw);
 			if (!throwStatement.Expression.IsNull) {
 				outputFormatter.Space();
-				nodeTracker.TrackedVisit(throwStatement.Expression, data);
+				TrackedVisit(throwStatement.Expression, data);
 			}
 			return null;
 		}
 		
-		public object VisitFixedStatement(FixedStatement fixedStatement, object data)
+		public override object TrackedVisitFixedStatement(FixedStatement fixedStatement, object data)
 		{
 			UnsupportedNode(fixedStatement);
-			return nodeTracker.TrackedVisit(fixedStatement.EmbeddedStatement, data);
+			return TrackedVisit(fixedStatement.EmbeddedStatement, data);
 		}
 		
-		public object VisitUnsafeStatement(UnsafeStatement unsafeStatement, object data)
+		public override object TrackedVisitUnsafeStatement(UnsafeStatement unsafeStatement, object data)
 		{
 			UnsupportedNode(unsafeStatement);
-			return nodeTracker.TrackedVisit(unsafeStatement.Block, data);
+			return TrackedVisit(unsafeStatement.Block, data);
 		}
 		
-		public object VisitCheckedStatement(CheckedStatement checkedStatement, object data)
+		public override object TrackedVisitCheckedStatement(CheckedStatement checkedStatement, object data)
 		{
 			UnsupportedNode(checkedStatement);
-			return nodeTracker.TrackedVisit(checkedStatement.Block, data);
+			return TrackedVisit(checkedStatement.Block, data);
 		}
 		
-		public object VisitUncheckedStatement(UncheckedStatement uncheckedStatement, object data)
+		public override object TrackedVisitUncheckedStatement(UncheckedStatement uncheckedStatement, object data)
 		{
 			UnsupportedNode(uncheckedStatement);
-			return nodeTracker.TrackedVisit(uncheckedStatement.Block, data);
+			return TrackedVisit(uncheckedStatement.Block, data);
 		}
 		
-		public object VisitExitStatement(ExitStatement exitStatement, object data)
+		public override object TrackedVisitExitStatement(ExitStatement exitStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.Exit);
 			if (exitStatement.ExitType != ExitType.None) {
@@ -1874,7 +1937,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object VisitForNextStatement(ForNextStatement forNextStatement, object data)
+		public override object TrackedVisitForNextStatement(ForNextStatement forNextStatement, object data)
 		{
 			exitTokenStack.Push(Tokens.For);
 			outputFormatter.PrintToken(Tokens.For);
@@ -1886,26 +1949,26 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.Space();
 				outputFormatter.PrintToken(Tokens.As);
 				outputFormatter.Space();
-				nodeTracker.TrackedVisit(forNextStatement.TypeReference, data);
+				TrackedVisit(forNextStatement.TypeReference, data);
 			}
 			
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.Assign);
 			outputFormatter.Space();
 			
-			nodeTracker.TrackedVisit(forNextStatement.Start, data);
+			TrackedVisit(forNextStatement.Start, data);
 			
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.To);
 			outputFormatter.Space();
 			
-			nodeTracker.TrackedVisit(forNextStatement.End, data);
+			TrackedVisit(forNextStatement.End, data);
 			
 			if (!forNextStatement.Step.IsNull) {
 				outputFormatter.Space();
 				outputFormatter.PrintToken(Tokens.Step);
 				outputFormatter.Space();
-				nodeTracker.TrackedVisit(forNextStatement.Step, data);
+				TrackedVisit(forNextStatement.Step, data);
 			}
 			outputFormatter.NewLine();
 			
@@ -1925,7 +1988,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		#region Expressions
 		
-		public object VisitClassReferenceExpression(ClassReferenceExpression classReferenceExpression, object data)
+		public override object TrackedVisitClassReferenceExpression(ClassReferenceExpression classReferenceExpression, object data)
 		{
 			outputFormatter.PrintToken(Tokens.MyClass);
 			return null;
@@ -1935,31 +1998,79 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		static string ConvertCharLiteral(char ch)
 		{
 			if (Char.IsControl(ch)) {
-				return "Chr(" + ((int)ch) + ")";
+				string charName = GetCharName(ch);
+				if (charName != null)
+					return "ControlChars." + charName;
+				else
+					return "ChrW(" + ((int)ch).ToString() + ")";
+			} else if (ch == '"') {
+				return "\"\"\"\"C";
 			} else {
-				if (ch == '"') {
-					return "\"\"\"\"C";
-				}
-				return String.Concat("\"", ch.ToString(), "\"C");
+				return "\"" + ch.ToString() + "\"C";
+			}
+		}
+		
+		static string GetCharName(char ch)
+		{
+			switch (ch) {
+				case '\b':
+					return "Back";
+				case '\r':
+					return "Cr";
+				case '\f':
+					return "FormFeed";
+				case '\n':
+					return "Lf";
+				case '\0':
+					return "NullChar";
+				case '\t':
+					return "Tab";
+				case '\v':
+					return "VerticalTab";
+				default:
+					return null;
 			}
 		}
 		
 		static string ConvertString(string str)
 		{
 			StringBuilder sb = new StringBuilder();
+			bool inString = false;
 			foreach (char ch in str) {
 				if (char.IsControl(ch)) {
-					sb.Append("\" & Chr(" + ((int)ch) + ") & \"");
-				} else if (ch == '"') {
-					sb.Append("\"\"");
+					if (inString) {
+						sb.Append('"');
+						inString = false;
+					}
+					if (sb.Length > 0)
+						sb.Append(" & ");
+					string charName = GetCharName(ch);
+					if (charName != null)
+						sb.Append("vb" + charName);
+					else
+						sb.Append("ChrW(" + ((int)ch) + ")");
 				} else {
-					sb.Append(ch);
+					if (!inString) {
+						if (sb.Length > 0)
+							sb.Append(" & ");
+						sb.Append('"');
+						inString = true;
+					}
+					if (ch == '"') {
+						sb.Append("\"\"");
+					} else {
+						sb.Append(ch);
+					}
 				}
 			}
+			if (inString)
+				sb.Append('"');
+			if (sb.Length == 0)
+				return "\"\"";
 			return sb.ToString();
 		}
 		
-		public object VisitPrimitiveExpression(PrimitiveExpression primitiveExpression, object data)
+		public override object TrackedVisitPrimitiveExpression(PrimitiveExpression primitiveExpression, object data)
 		{
 			object val = primitiveExpression.Value;
 			if (val == null) {
@@ -1976,7 +2087,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 			
 			if (val is string) {
-				outputFormatter.PrintText('"' + ConvertString((string)val) + '"');
+				outputFormatter.PrintText(ConvertString((string)val));
 				return null;
 			}
 			
@@ -2004,10 +2115,14 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object VisitBinaryOperatorExpression(BinaryOperatorExpression binaryOperatorExpression, object data)
+		public override object TrackedVisitBinaryOperatorExpression(BinaryOperatorExpression binaryOperatorExpression, object data)
 		{
 			int  op = 0;
 			switch (binaryOperatorExpression.Op) {
+				case BinaryOperatorType.Concat:
+					op = Tokens.ConcatString;
+					break;
+					
 				case BinaryOperatorType.Add:
 					op = Tokens.Plus;
 					break;
@@ -2022,6 +2137,10 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					
 				case BinaryOperatorType.Divide:
 					op = Tokens.Div;
+					break;
+					
+				case BinaryOperatorType.DivideInteger:
+					op = Tokens.DivInteger;
 					break;
 					
 				case BinaryOperatorType.Modulus:
@@ -2069,23 +2188,29 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					op = Tokens.GreaterEqual;
 					break;
 				case BinaryOperatorType.InEquality:
-					nodeTracker.TrackedVisit(binaryOperatorExpression.Left, data);
-					outputFormatter.Space();
-					outputFormatter.PrintToken(Tokens.LessThan);
-					outputFormatter.PrintToken(Tokens.GreaterThan);
-					outputFormatter.Space();
-					nodeTracker.TrackedVisit(binaryOperatorExpression.Right, data);
-					return null;
+					op = Tokens.NotEqual;
+					break;
 				case BinaryOperatorType.NullCoalescing:
-					outputFormatter.PrintText("IIf(");
-					nodeTracker.TrackedVisit(binaryOperatorExpression.Left, data);
-					outputFormatter.PrintText(" Is Nothing, ");
-					nodeTracker.TrackedVisit(binaryOperatorExpression.Right, data);
+					outputFormatter.PrintText("If(");
+					TrackedVisit(binaryOperatorExpression.Left, data);
 					outputFormatter.PrintToken(Tokens.Comma);
 					outputFormatter.Space();
-					nodeTracker.TrackedVisit(binaryOperatorExpression.Left, data);
+					TrackedVisit(binaryOperatorExpression.Right, data);
 					outputFormatter.PrintToken(Tokens.CloseParenthesis);
 					return null;
+				case BinaryOperatorType.DictionaryAccess:
+					{
+						PrimitiveExpression pright = binaryOperatorExpression.Right as PrimitiveExpression;
+						TrackedVisit(binaryOperatorExpression.Left, data);
+						if (pright != null && pright.Value is string) {
+							outputFormatter.PrintText("!" + (string)pright.Value);
+						} else {
+							outputFormatter.PrintToken(Tokens.OpenParenthesis);
+							TrackedVisit(binaryOperatorExpression.Right, data);
+							outputFormatter.PrintToken(Tokens.CloseParenthesis);
+						}
+						return null;
+					}
 				case BinaryOperatorType.LessThan:
 					op = Tokens.LessThan;
 					break;
@@ -2094,103 +2219,123 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					break;
 			}
 			
-			nodeTracker.TrackedVisit(binaryOperatorExpression.Left, data);
+			
+			BinaryOperatorExpression childBoe = binaryOperatorExpression.Left as BinaryOperatorExpression;
+			bool requireParenthesis = childBoe != null && OperatorPrecedence.ComparePrecedenceVB(binaryOperatorExpression.Op, childBoe.Op) > 0;
+			if (requireParenthesis)
+				outputFormatter.PrintToken(Tokens.OpenParenthesis);
+			TrackedVisit(binaryOperatorExpression.Left, data);
+			if (requireParenthesis)
+				outputFormatter.PrintToken(Tokens.CloseParenthesis);
+			
 			outputFormatter.Space();
 			outputFormatter.PrintToken(op);
 			outputFormatter.Space();
-			nodeTracker.TrackedVisit(binaryOperatorExpression.Right, data);
+			
+			childBoe = binaryOperatorExpression.Right as BinaryOperatorExpression;
+			requireParenthesis = childBoe != null && OperatorPrecedence.ComparePrecedenceVB(binaryOperatorExpression.Op, childBoe.Op) >= 0;
+			if (requireParenthesis)
+				outputFormatter.PrintToken(Tokens.OpenParenthesis);
+			TrackedVisit(binaryOperatorExpression.Right, data);
+			if (requireParenthesis)
+				outputFormatter.PrintToken(Tokens.CloseParenthesis);
 			
 			return null;
 		}
 		
-		public object VisitParenthesizedExpression(ParenthesizedExpression parenthesizedExpression, object data)
+		public override object TrackedVisitParenthesizedExpression(ParenthesizedExpression parenthesizedExpression, object data)
 		{
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
-			nodeTracker.TrackedVisit(parenthesizedExpression.Expression, data);
+			TrackedVisit(parenthesizedExpression.Expression, data);
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
 			return null;
 		}
 		
-		public object VisitInvocationExpression(InvocationExpression invocationExpression, object data)
+		public override object TrackedVisitInvocationExpression(InvocationExpression invocationExpression, object data)
 		{
-			nodeTracker.TrackedVisit(invocationExpression.TargetObject, data);
-			if (invocationExpression.TypeArguments != null && invocationExpression.TypeArguments.Count > 0) {
-				outputFormatter.PrintToken(Tokens.OpenParenthesis);
-				outputFormatter.PrintToken(Tokens.Of);
-				outputFormatter.Space();
-				AppendCommaSeparatedList(invocationExpression.TypeArguments);
-				outputFormatter.PrintToken(Tokens.CloseParenthesis);
-			}
+			TrackedVisit(invocationExpression.TargetObject, data);
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
 			AppendCommaSeparatedList(invocationExpression.Arguments);
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
 			return null;
 		}
 		
-		public object VisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
+		void PrintTypeArguments(List<TypeReference> typeArguments)
+		{
+			if (typeArguments != null && typeArguments.Count > 0) {
+				outputFormatter.PrintToken(Tokens.OpenParenthesis);
+				outputFormatter.PrintToken(Tokens.Of);
+				outputFormatter.Space();
+				AppendCommaSeparatedList(typeArguments);
+				outputFormatter.PrintToken(Tokens.CloseParenthesis);
+			}
+		}
+		
+		public override object TrackedVisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
 		{
 			outputFormatter.PrintIdentifier(identifierExpression.Identifier);
+			PrintTypeArguments(identifierExpression.TypeArguments);
 			return null;
 		}
 		
-		public object VisitTypeReferenceExpression(TypeReferenceExpression typeReferenceExpression, object data)
+		public override object TrackedVisitTypeReferenceExpression(TypeReferenceExpression typeReferenceExpression, object data)
 		{
-			nodeTracker.TrackedVisit(typeReferenceExpression.TypeReference, data);
+			TrackedVisit(typeReferenceExpression.TypeReference, data);
 			return null;
 		}
 		
-		public object VisitUnaryOperatorExpression(UnaryOperatorExpression unaryOperatorExpression, object data)
+		public override object TrackedVisitUnaryOperatorExpression(UnaryOperatorExpression unaryOperatorExpression, object data)
 		{
 			switch (unaryOperatorExpression.Op) {
 				case UnaryOperatorType.Not:
 				case UnaryOperatorType.BitNot:
 					outputFormatter.PrintToken(Tokens.Not);
 					outputFormatter.Space();
-					nodeTracker.TrackedVisit(unaryOperatorExpression.Expression, data);
+					TrackedVisit(unaryOperatorExpression.Expression, data);
 					return null;
 					
 				case UnaryOperatorType.Decrement:
 					outputFormatter.PrintText("System.Threading.Interlocked.Decrement(");
-					nodeTracker.TrackedVisit(unaryOperatorExpression.Expression, data);
+					TrackedVisit(unaryOperatorExpression.Expression, data);
 					outputFormatter.PrintText(")");
 					return null;
 					
 				case UnaryOperatorType.Increment:
 					outputFormatter.PrintText("System.Threading.Interlocked.Increment(");
-					nodeTracker.TrackedVisit(unaryOperatorExpression.Expression, data);
+					TrackedVisit(unaryOperatorExpression.Expression, data);
 					outputFormatter.PrintText(")");
 					return null;
 					
 				case UnaryOperatorType.Minus:
 					outputFormatter.PrintToken(Tokens.Minus);
-					nodeTracker.TrackedVisit(unaryOperatorExpression.Expression, data);
+					TrackedVisit(unaryOperatorExpression.Expression, data);
 					return null;
 					
 				case UnaryOperatorType.Plus:
 					outputFormatter.PrintToken(Tokens.Plus);
-					nodeTracker.TrackedVisit(unaryOperatorExpression.Expression, data);
+					TrackedVisit(unaryOperatorExpression.Expression, data);
 					return null;
 					
 				case UnaryOperatorType.PostDecrement:
 					outputFormatter.PrintText("System.Math.Max(System.Threading.Interlocked.Decrement(");
-					nodeTracker.TrackedVisit(unaryOperatorExpression.Expression, data);
+					TrackedVisit(unaryOperatorExpression.Expression, data);
 					outputFormatter.PrintText("),");
-					nodeTracker.TrackedVisit(unaryOperatorExpression.Expression, data);
+					TrackedVisit(unaryOperatorExpression.Expression, data);
 					outputFormatter.PrintText(" + 1)");
 					return null;
 					
 				case UnaryOperatorType.PostIncrement:
 					outputFormatter.PrintText("System.Math.Max(System.Threading.Interlocked.Increment(");
-					nodeTracker.TrackedVisit(unaryOperatorExpression.Expression, data);
+					TrackedVisit(unaryOperatorExpression.Expression, data);
 					outputFormatter.PrintText("),");
-					nodeTracker.TrackedVisit(unaryOperatorExpression.Expression, data);
+					TrackedVisit(unaryOperatorExpression.Expression, data);
 					outputFormatter.PrintText(" - 1)");
 					return null;
 					
-				case UnaryOperatorType.Star:
+				case UnaryOperatorType.Dereference:
 					outputFormatter.PrintToken(Tokens.Times);
 					return null;
-				case UnaryOperatorType.BitWiseAnd:
+				case UnaryOperatorType.AddressOf:
 					outputFormatter.PrintToken(Tokens.AddressOf);
 					return null;
 				default:
@@ -2199,7 +2344,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 		}
 		
-		public object VisitAssignmentExpression(AssignmentExpression assignmentExpression, object data)
+		public override object TrackedVisitAssignmentExpression(AssignmentExpression assignmentExpression, object data)
 		{
 			int  op = 0;
 			bool unsupportedOpAssignment = false;
@@ -2209,31 +2354,9 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					break;
 				case AssignmentOperatorType.Add:
 					op = Tokens.PlusAssign;
-					if (IsEventHandlerCreation(assignmentExpression.Right)) {
-						outputFormatter.PrintToken(Tokens.AddHandler);
-						outputFormatter.Space();
-						nodeTracker.TrackedVisit(assignmentExpression.Left, data);
-						outputFormatter.PrintToken(Tokens.Comma);
-						outputFormatter.Space();
-						outputFormatter.PrintToken(Tokens.AddressOf);
-						outputFormatter.Space();
-						nodeTracker.TrackedVisit(GetEventHandlerMethod(assignmentExpression.Right), data);
-						return null;
-					}
 					break;
 				case AssignmentOperatorType.Subtract:
 					op = Tokens.MinusAssign;
-					if (IsEventHandlerCreation(assignmentExpression.Right)) {
-						outputFormatter.PrintToken(Tokens.RemoveHandler);
-						outputFormatter.Space();
-						nodeTracker.TrackedVisit(assignmentExpression.Left, data);
-						outputFormatter.PrintToken(Tokens.Comma);
-						outputFormatter.Space();
-						outputFormatter.PrintToken(Tokens.AddressOf);
-						outputFormatter.Space();
-						nodeTracker.TrackedVisit(GetEventHandlerMethod(assignmentExpression.Right), data);
-						return null;
-					}
 					break;
 				case AssignmentOperatorType.Multiply:
 					op = Tokens.TimesAssign;
@@ -2266,96 +2389,96 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					break;
 			}
 			
-			nodeTracker.TrackedVisit(assignmentExpression.Left, data);
+			TrackedVisit(assignmentExpression.Left, data);
 			outputFormatter.Space();
 			
 			if (unsupportedOpAssignment) { // left = left OP right
 				outputFormatter.PrintToken(Tokens.Assign);
 				outputFormatter.Space();
-				nodeTracker.TrackedVisit(assignmentExpression.Left, data);
+				TrackedVisit(assignmentExpression.Left, data);
 				outputFormatter.Space();
 			}
 			
 			outputFormatter.PrintToken(op);
 			outputFormatter.Space();
-			nodeTracker.TrackedVisit(assignmentExpression.Right, data);
+			TrackedVisit(assignmentExpression.Right, data);
 			
 			return null;
 		}
 		
-		public object VisitSizeOfExpression(SizeOfExpression sizeOfExpression, object data)
+		public override object TrackedVisitSizeOfExpression(SizeOfExpression sizeOfExpression, object data)
 		{
 			UnsupportedNode(sizeOfExpression);
 			return null;
 		}
 		
-		public object VisitTypeOfExpression(TypeOfExpression typeOfExpression, object data)
+		public override object TrackedVisitTypeOfExpression(TypeOfExpression typeOfExpression, object data)
 		{
 			outputFormatter.PrintToken(Tokens.GetType);
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
-			nodeTracker.TrackedVisit(typeOfExpression.TypeReference, data);
+			TrackedVisit(typeOfExpression.TypeReference, data);
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
 			return null;
 		}
 		
-		public object VisitDefaultValueExpression(DefaultValueExpression defaultValueExpression, object data)
+		public override object TrackedVisitDefaultValueExpression(DefaultValueExpression defaultValueExpression, object data)
 		{
 			// assigning nothing to a generic type in VB compiles to a DefaultValueExpression
 			outputFormatter.PrintToken(Tokens.Nothing);
 			return null;
 		}
 		
-		public object VisitTypeOfIsExpression(TypeOfIsExpression typeOfIsExpression, object data)
+		public override object TrackedVisitTypeOfIsExpression(TypeOfIsExpression typeOfIsExpression, object data)
 		{
 			outputFormatter.PrintToken(Tokens.TypeOf);
 			outputFormatter.Space();
-			nodeTracker.TrackedVisit(typeOfIsExpression.Expression, data);
+			TrackedVisit(typeOfIsExpression.Expression, data);
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.Is);
 			outputFormatter.Space();
-			nodeTracker.TrackedVisit(typeOfIsExpression.TypeReference, data);
+			TrackedVisit(typeOfIsExpression.TypeReference, data);
 			return null;
 		}
 		
-		public object VisitAddressOfExpression(AddressOfExpression addressOfExpression, object data)
+		public override object TrackedVisitAddressOfExpression(AddressOfExpression addressOfExpression, object data)
 		{
 			outputFormatter.PrintToken(Tokens.AddressOf);
 			outputFormatter.Space();
-			nodeTracker.TrackedVisit(addressOfExpression.Expression, data);
+			TrackedVisit(addressOfExpression.Expression, data);
 			return null;
 		}
 		
-		public object VisitAnonymousMethodExpression(AnonymousMethodExpression anonymousMethodExpression, object data)
+		public override object TrackedVisitAnonymousMethodExpression(AnonymousMethodExpression anonymousMethodExpression, object data)
 		{
-			UnsupportedNode(anonymousMethodExpression);
+			OutputAnonymousMethodWithStatementBody(anonymousMethodExpression.Parameters, anonymousMethodExpression.Body);
 			return null;
 		}
 		
-		public object VisitCheckedExpression(CheckedExpression checkedExpression, object data)
+		public override object TrackedVisitCheckedExpression(CheckedExpression checkedExpression, object data)
 		{
 			UnsupportedNode(checkedExpression);
-			return nodeTracker.TrackedVisit(checkedExpression.Expression, data);
+			return TrackedVisit(checkedExpression.Expression, data);
 		}
 		
-		public object VisitUncheckedExpression(UncheckedExpression uncheckedExpression, object data)
+		public override object TrackedVisitUncheckedExpression(UncheckedExpression uncheckedExpression, object data)
 		{
 			UnsupportedNode(uncheckedExpression);
-			return nodeTracker.TrackedVisit(uncheckedExpression.Expression, data);
+			return TrackedVisit(uncheckedExpression.Expression, data);
 		}
 		
-		public object VisitPointerReferenceExpression(PointerReferenceExpression pointerReferenceExpression, object data)
+		public override object TrackedVisitPointerReferenceExpression(PointerReferenceExpression pointerReferenceExpression, object data)
 		{
 			UnsupportedNode(pointerReferenceExpression);
 			return null;
 		}
 		
-		public object VisitCastExpression(CastExpression castExpression, object data)
+		public override object TrackedVisitCastExpression(CastExpression castExpression, object data)
 		{
-			if (castExpression.CastType == CastType.Cast) {
-				return PrintCast(Tokens.DirectCast, castExpression);
-			}
 			if (castExpression.CastType == CastType.TryCast) {
 				return PrintCast(Tokens.TryCast, castExpression);
+			}
+			if (castExpression.CastType == CastType.Cast || castExpression.CastTo.IsArrayType) {
+				return PrintCast(Tokens.DirectCast, castExpression);
 			}
 			switch (castExpression.CastTo.SystemType) {
 				case "System.Boolean":
@@ -2392,10 +2515,10 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					outputFormatter.PrintToken(Tokens.CUShort);
 					break;
 				case "System.UInt32":
-					outputFormatter.PrintToken(Tokens.CInt);
+					outputFormatter.PrintToken(Tokens.CUInt);
 					break;
 				case "System.UInt64":
-					outputFormatter.PrintToken(Tokens.CLng);
+					outputFormatter.PrintToken(Tokens.CULng);
 					break;
 				case "System.Object":
 					outputFormatter.PrintToken(Tokens.CObj);
@@ -2410,7 +2533,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					return PrintCast(Tokens.CType, castExpression);
 			}
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
-			nodeTracker.TrackedVisit(castExpression.Expression, data);
+			TrackedVisit(castExpression.Expression, data);
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
 			return null;
 		}
@@ -2419,53 +2542,53 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		{
 			outputFormatter.PrintToken(castToken);
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
-			nodeTracker.TrackedVisit(castExpression.Expression, null);
+			TrackedVisit(castExpression.Expression, null);
 			outputFormatter.PrintToken(Tokens.Comma);
 			outputFormatter.Space();
-			nodeTracker.TrackedVisit(castExpression.CastTo, null);
+			TrackedVisit(castExpression.CastTo, null);
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
 			return null;
 		}
 		
-		public object VisitStackAllocExpression(StackAllocExpression stackAllocExpression, object data)
+		public override object TrackedVisitStackAllocExpression(StackAllocExpression stackAllocExpression, object data)
 		{
 			UnsupportedNode(stackAllocExpression);
 			return null;
 		}
 		
-		public object VisitIndexerExpression(IndexerExpression indexerExpression, object data)
+		public override object TrackedVisitIndexerExpression(IndexerExpression indexerExpression, object data)
 		{
-			nodeTracker.TrackedVisit(indexerExpression.TargetObject, data);
+			TrackedVisit(indexerExpression.TargetObject, data);
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
 			AppendCommaSeparatedList(indexerExpression.Indexes);
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
 			return null;
 		}
 		
-		public object VisitThisReferenceExpression(ThisReferenceExpression thisReferenceExpression, object data)
+		public override object TrackedVisitThisReferenceExpression(ThisReferenceExpression thisReferenceExpression, object data)
 		{
 			outputFormatter.PrintToken(Tokens.Me);
 			return null;
 		}
 		
-		public object VisitBaseReferenceExpression(BaseReferenceExpression baseReferenceExpression, object data)
+		public override object TrackedVisitBaseReferenceExpression(BaseReferenceExpression baseReferenceExpression, object data)
 		{
 			outputFormatter.PrintToken(Tokens.MyBase);
 			return null;
 		}
 		
-		public object VisitObjectCreateExpression(ObjectCreateExpression objectCreateExpression, object data)
+		public override object TrackedVisitObjectCreateExpression(ObjectCreateExpression objectCreateExpression, object data)
 		{
 			outputFormatter.PrintToken(Tokens.New);
 			outputFormatter.Space();
-			nodeTracker.TrackedVisit(objectCreateExpression.CreateType, data);
+			TrackedVisit(objectCreateExpression.CreateType, data);
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
 			AppendCommaSeparatedList(objectCreateExpression.Parameters);
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
 			return null;
 		}
 		
-		public object VisitArrayCreateExpression(ArrayCreateExpression arrayCreateExpression, object data)
+		public override object TrackedVisitArrayCreateExpression(ArrayCreateExpression arrayCreateExpression, object data)
 		{
 			outputFormatter.PrintToken(Tokens.New);
 			outputFormatter.Space();
@@ -2486,12 +2609,12 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.PrintToken(Tokens.OpenCurlyBrace);
 				outputFormatter.PrintToken(Tokens.CloseCurlyBrace);
 			} else {
-				nodeTracker.TrackedVisit(arrayCreateExpression.ArrayInitializer, data);
+				TrackedVisit(arrayCreateExpression.ArrayInitializer, data);
 			}
 			return null;
 		}
 		
-		public object VisitArrayInitializerExpression(ArrayInitializerExpression arrayInitializerExpression, object data)
+		public override object TrackedVisitCollectionInitializerExpression(CollectionInitializerExpression arrayInitializerExpression, object data)
 		{
 			outputFormatter.PrintToken(Tokens.OpenCurlyBrace);
 			this.AppendCommaSeparatedList(arrayInitializerExpression.CreateExpressions);
@@ -2499,32 +2622,34 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object VisitFieldReferenceExpression(FieldReferenceExpression fieldReferenceExpression, object data)
+		public override object TrackedVisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression, object data)
 		{
-			nodeTracker.TrackedVisit(fieldReferenceExpression.TargetObject, data);
+			TrackedVisit(memberReferenceExpression.TargetObject, data);
 			outputFormatter.PrintToken(Tokens.Dot);
-			outputFormatter.PrintIdentifier(fieldReferenceExpression.FieldName);
+			outputFormatter.PrintIdentifier(memberReferenceExpression.MemberName);
+			PrintTypeArguments(memberReferenceExpression.TypeArguments);
 			return null;
 		}
 		
-		public object VisitDirectionExpression(DirectionExpression directionExpression, object data)
+		public override object TrackedVisitDirectionExpression(DirectionExpression directionExpression, object data)
 		{
 			// VB does not need to specify the direction in method calls
-			nodeTracker.TrackedVisit(directionExpression.Expression, data);
+			TrackedVisit(directionExpression.Expression, data);
 			return null;
 		}
 		
 		
-		public object VisitConditionalExpression(ConditionalExpression conditionalExpression, object data)
+		public override object TrackedVisitConditionalExpression(ConditionalExpression conditionalExpression, object data)
 		{
-			// No representation in VB.NET, but VB conversion is possible.
-			outputFormatter.PrintText("IIf");
+			outputFormatter.PrintText("If");
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
-			nodeTracker.TrackedVisit(conditionalExpression.Condition, data);
+			TrackedVisit(conditionalExpression.Condition, data);
 			outputFormatter.PrintToken(Tokens.Comma);
-			nodeTracker.TrackedVisit(conditionalExpression.TrueExpression, data);
+			outputFormatter.Space();
+			TrackedVisit(conditionalExpression.TrueExpression, data);
 			outputFormatter.PrintToken(Tokens.Comma);
-			nodeTracker.TrackedVisit(conditionalExpression.FalseExpression, data);
+			outputFormatter.Space();
+			TrackedVisit(conditionalExpression.FalseExpression, data);
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
 			return null;
 		}
@@ -2538,26 +2663,32 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			switch (modifier) {
 				case ParameterModifiers.None:
 				case ParameterModifiers.In:
-					outputFormatter.PrintToken(Tokens.ByVal);
+					if (prettyPrintOptions.OutputByValModifier) {
+						outputFormatter.PrintToken(Tokens.ByVal);
+						outputFormatter.Space();
+					}
 					break;
 				case ParameterModifiers.Out:
-					Error("Out parameter converted to ByRef", position);
+					//Error("Out parameter converted to ByRef", position);
 					outputFormatter.PrintToken(Tokens.ByRef);
+					outputFormatter.Space();
 					break;
 				case ParameterModifiers.Params:
 					outputFormatter.PrintToken(Tokens.ParamArray);
+					outputFormatter.Space();
 					break;
 				case ParameterModifiers.Ref:
 					outputFormatter.PrintToken(Tokens.ByRef);
+					outputFormatter.Space();
 					break;
 				case ParameterModifiers.Optional:
 					outputFormatter.PrintToken(Tokens.Optional);
+					outputFormatter.Space();
 					break;
 				default:
 					Error(String.Format("Unsupported modifier : {0}", modifier), position);
 					break;
 			}
-			outputFormatter.Space();
 		}
 		
 		void OutputModifier(Modifiers modifier)
@@ -2635,12 +2766,10 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				// not required in VB
 			}
 			
-			// TODO : Volatile
 			if ((modifier & Modifiers.Volatile) == Modifiers.Volatile) {
 				Error("'Volatile' modifier not convertable", Location.Empty);
 			}
 			
-			// TODO : Unsafe
 			if ((modifier & Modifiers.Unsafe) == Modifiers.Unsafe) {
 				Error("'Unsafe' modifier not convertable", Location.Empty);
 			}
@@ -2651,7 +2780,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			if (list != null) {
 				int i = 0;
 				foreach (T node in list) {
-					nodeTracker.TrackedVisit(node, null);
+					TrackedVisit(node, null);
 					if (i + 1 < list.Count) {
 						outputFormatter.PrintToken(Tokens.Comma);
 						outputFormatter.Space();
@@ -2672,27 +2801,172 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				return;
 			}
 			foreach (AttributeSection section in attributes) {
-				nodeTracker.TrackedVisit(section, data);
+				TrackedVisit(section, data);
 			}
 		}
 		
-		
-		static bool IsEventHandlerCreation(Expression expr)
+		public override object TrackedVisitLambdaExpression(LambdaExpression lambdaExpression, object data)
 		{
-			if (expr is ObjectCreateExpression) {
-				ObjectCreateExpression oce = (ObjectCreateExpression) expr;
-				if (oce.Parameters.Count == 1) {
-					return oce.CreateType.SystemType.EndsWith("Handler");
-				}
+			if (!lambdaExpression.ExpressionBody.IsNull) {
+				outputFormatter.PrintToken(Tokens.Function);
+				outputFormatter.PrintToken(Tokens.OpenParenthesis);
+				AppendCommaSeparatedList(lambdaExpression.Parameters);
+				outputFormatter.PrintToken(Tokens.CloseParenthesis);
+				outputFormatter.Space();
+				return lambdaExpression.ExpressionBody.AcceptVisitor(this, data);
+			} else {
+				OutputAnonymousMethodWithStatementBody(lambdaExpression.Parameters, lambdaExpression.StatementBody);
+				return null;
 			}
-			return false;
 		}
 		
-		// can only get called if IsEventHandlerCreation returned true for the expression
-		static Expression GetEventHandlerMethod(Expression expr)
+		void OutputAnonymousMethodWithStatementBody(List<ParameterDeclarationExpression> parameters, BlockStatement body)
 		{
-			ObjectCreateExpression oce = (ObjectCreateExpression)expr;
-			return oce.Parameters[0];
+			Error("VB does not support anonymous methods/lambda expressions with a statement body", body.StartLocation);
+			
+			outputFormatter.PrintToken(Tokens.Function);
+			outputFormatter.PrintToken(Tokens.OpenParenthesis);
+			AppendCommaSeparatedList(parameters);
+			outputFormatter.PrintToken(Tokens.CloseParenthesis);
+			outputFormatter.Space();
+			outputFormatter.PrintToken(Tokens.Do);
+			outputFormatter.NewLine();
+			
+			++outputFormatter.IndentationLevel;
+			exitTokenStack.Push(Tokens.Function);
+			body.AcceptVisitor(this, null);
+			exitTokenStack.Pop();
+			--outputFormatter.IndentationLevel;
+			
+			outputFormatter.Indent();
+			outputFormatter.PrintToken(Tokens.End);
+			outputFormatter.Space();
+			outputFormatter.PrintToken(Tokens.Function);
+		}
+		
+		public override object TrackedVisitQueryExpression(QueryExpression queryExpression, object data)
+		{
+			outputFormatter.IndentationLevel++;
+			queryExpression.FromClause.AcceptVisitor(this, data);
+			queryExpression.MiddleClauses.ForEach(PrintClause);
+			PrintClause(queryExpression.SelectOrGroupClause);
+			PrintClause(queryExpression.IntoClause);
+			outputFormatter.IndentationLevel--;
+			return null;
+		}
+		
+		void PrintClause(QueryExpressionClause clause)
+		{
+			if (!clause.IsNull) {
+				outputFormatter.PrintLineContinuation();
+				outputFormatter.Indent();
+				clause.AcceptVisitor(this, null);
+			}
+		}
+		
+		public override object TrackedVisitQueryExpressionFromClause(QueryExpressionFromClause fromClause, object data)
+		{
+			outputFormatter.PrintText("From");
+			outputFormatter.Space();
+			VisitQueryExpressionFromOrJoinClause(fromClause, data);
+			return null;
+		}
+		
+		public override object TrackedVisitQueryExpressionJoinClause(QueryExpressionJoinClause joinClause, object data)
+		{
+			outputFormatter.PrintText("Join");
+			outputFormatter.Space();
+			VisitQueryExpressionFromOrJoinClause(joinClause, data);
+			outputFormatter.Space();
+			outputFormatter.PrintToken(Tokens.On);
+			outputFormatter.Space();
+			joinClause.OnExpression.AcceptVisitor(this, data);
+			outputFormatter.Space();
+			outputFormatter.PrintToken(Tokens.Assign);
+			outputFormatter.Space();
+			joinClause.EqualsExpression.AcceptVisitor(this, data);
+			if (!string.IsNullOrEmpty(joinClause.IntoIdentifier)) {
+				outputFormatter.Space();
+				outputFormatter.PrintText("Into");
+				outputFormatter.Space();
+				outputFormatter.PrintIdentifier(joinClause.IntoIdentifier);
+			}
+			return null;
+		}
+		
+		void VisitQueryExpressionFromOrJoinClause(QueryExpressionFromOrJoinClause clause, object data)
+		{
+			outputFormatter.PrintIdentifier(clause.Identifier);
+			outputFormatter.Space();
+			outputFormatter.PrintToken(Tokens.In);
+			outputFormatter.Space();
+			clause.InExpression.AcceptVisitor(this, data);
+		}
+		
+		public override object TrackedVisitQueryExpressionLetClause(QueryExpressionLetClause letClause, object data)
+		{
+			outputFormatter.PrintToken(Tokens.Let);
+			outputFormatter.Space();
+			outputFormatter.PrintIdentifier(letClause.Identifier);
+			outputFormatter.Space();
+			outputFormatter.PrintToken(Tokens.Assign);
+			outputFormatter.Space();
+			return letClause.Expression.AcceptVisitor(this, data);
+		}
+		
+		public override object TrackedVisitQueryExpressionGroupClause(QueryExpressionGroupClause groupClause, object data)
+		{
+			outputFormatter.PrintText("Group");
+			outputFormatter.Space();
+			groupClause.Projection.AcceptVisitor(this, data);
+			outputFormatter.Space();
+			outputFormatter.PrintText("By");
+			outputFormatter.Space();
+			return groupClause.GroupBy.AcceptVisitor(this, data);
+		}
+		
+		public override object TrackedVisitQueryExpressionIntoClause(QueryExpressionIntoClause intoClause, object data)
+		{
+			outputFormatter.PrintText("Into");
+			outputFormatter.Space();
+			outputFormatter.PrintIdentifier(intoClause.IntoIdentifier);
+			outputFormatter.Space();
+			return intoClause.ContinuedQuery.AcceptVisitor(this, data);
+		}
+		
+		public override object TrackedVisitQueryExpressionOrderClause(QueryExpressionOrderClause queryExpressionOrderClause, object data)
+		{
+			outputFormatter.PrintText("Order By");
+			outputFormatter.Space();
+			AppendCommaSeparatedList(queryExpressionOrderClause.Orderings);
+			return null;
+		}
+		
+		public override object TrackedVisitQueryExpressionOrdering(QueryExpressionOrdering ordering, object data)
+		{
+			ordering.Criteria.AcceptVisitor(this, data);
+			if (ordering.Direction == QueryExpressionOrderingDirection.Ascending) {
+				outputFormatter.Space();
+				outputFormatter.PrintText("Ascending");
+			} else if (ordering.Direction == QueryExpressionOrderingDirection.Descending) {
+				outputFormatter.Space();
+				outputFormatter.PrintText("Descending");
+			}
+			return null;
+		}
+		
+		public override object TrackedVisitQueryExpressionSelectClause(QueryExpressionSelectClause selectClause, object data)
+		{
+			outputFormatter.PrintToken(Tokens.Select);
+			outputFormatter.Space();
+			return selectClause.Projection.AcceptVisitor(this, data);
+		}
+		
+		public override object TrackedVisitQueryExpressionWhereClause(QueryExpressionWhereClause whereClause, object data)
+		{
+			outputFormatter.PrintText("Where");
+			outputFormatter.Space();
+			return whereClause.Condition.AcceptVisitor(this, data);
 		}
 	}
 }

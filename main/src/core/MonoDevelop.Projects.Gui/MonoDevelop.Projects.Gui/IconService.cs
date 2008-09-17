@@ -25,7 +25,7 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Reflection;
 using System.Resources;
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
 
 using MonoDevelop.Core;
 using Mono.Addins;
@@ -86,17 +86,17 @@ namespace MonoDevelop.Projects.Gui
 				if (iconCodon.Language != null)
 					projectFileHashtable [iconCodon.Language] = image;
 			}
-		}
+		}/*
 		
-		string GetWithModifiers (ModifierEnum modifier, string mod_public, string mod_protected, string mod_internal, string mod_private)
+		string GetWithModifiers (Modifiers modifier, string mod_public, string mod_protected, string mod_internal, string mod_private)
 		{
-			if ((modifier & ModifierEnum.Public) == ModifierEnum.Public)
+			if ((modifier & Modifiers.Public) == ModifierEnum.Public)
 				return mod_public;
 			
-			if ((modifier & ModifierEnum.Protected) == ModifierEnum.Protected)
+			if ((modifier & Modifiers.Protected) == ModifierEnum.Protected)
 				return mod_protected;
 
-			if ((modifier & ModifierEnum.Internal) == ModifierEnum.Internal)
+			if ((modifier & Modifiers.Internal) == ModifierEnum.Internal)
 				return mod_internal;
 			
 			return mod_private;
@@ -140,7 +140,7 @@ namespace MonoDevelop.Projects.Gui
 			return GetWithModifiers (evt.Modifiers, Stock.Event, Stock.ProtectedEvent, Stock.InternalEvent, Stock.PrivateEvent);
 		}
 		
-		public string GetIcon (IClass c)
+		public string GetIcon (IType c)
 		{
 			switch (c.ClassType) {
 			case ClassType.Delegate:
@@ -242,7 +242,7 @@ namespace MonoDevelop.Projects.Gui
 		{
 			return GetWithModifiers (indexer.Modifiers, Stock.Property, Stock.ProtectedProperty, Stock.InternalProperty, Stock.PrivateProperty);
 		}
-		
+		*/
 		public Gdk.Pixbuf MakeTransparent (Gdk.Pixbuf icon, double opacity)
 		{
 			// If somebody knows a better way of doing this, please redo.

@@ -32,16 +32,44 @@ using System.Collections.ObjectModel;
 
 namespace MonoDevelop.Projects.Dom
 {
-	public interface IReturnType : IDomVisitable
+	[Flags]
+	public enum ReturnTypeModifiers {
+		None     = 0,
+		ByRef    = 1,
+		Nullable = 2
+	}
+	
+	public interface IReturnTypePart
 	{
-		string FullName {
+		string Name {
 			get;
 			set;
 		}
-		string Name {
+		
+		ReadOnlyCollection<IReturnType> GenericArguments {
 			get;
 		}
+		
+		void AddTypeParameter (IReturnType type);
+	}
+	
+	/// <summary>
+	/// General return type format:
+	/// Namespace.Part1,...,PartN
+	/// Where Part is a typename: Typename&lt;arg1, ... ,argn&gt;
+	/// </summary>
+	public interface IReturnType : IReturnTypePart, IDomVisitable
+	{
+		string FullName {
+			get;
+		}
+		
 		string Namespace {
+			get;
+			set;
+		}
+		
+		List<IReturnTypePart> Parts {
 			get;
 		}
 		
@@ -53,6 +81,10 @@ namespace MonoDevelop.Projects.Dom
 			get;
 		}
 		
+		ReturnTypeModifiers Modifiers {
+			get;
+		}
+		
 		bool IsByRef {
 			get;
 		}
@@ -61,11 +93,14 @@ namespace MonoDevelop.Projects.Dom
 			get;
 		}
 		
-		int GetDimension (int arrayDimension);
-		
-		ReadOnlyCollection<IReturnType> GenericArguments {
+		IType Type {
 			get;
 		}
+		
+		string ToInvariantString ();
+		int GetDimension (int arrayDimension);
+		
+		
 	}
 	
 	public interface ITypeResolver

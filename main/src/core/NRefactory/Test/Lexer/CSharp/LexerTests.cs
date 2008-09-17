@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="none" email=""/>
-//     <version>$Revision: 915 $</version>
+//     <version>$Revision: 2191 $</version>
 // </file>
 
 using System;
@@ -328,6 +328,20 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 		{
 			ILexer lexer = GenerateLexer(new StringReader("<<="));
 			Assert.AreEqual(Tokens.ShiftLeftAssign, lexer.NextToken().kind);
+		}
+
+		[Test]
+		public void TestPointer()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("->"));
+			Assert.AreEqual(Tokens.Pointer, lexer.NextToken().kind);
+		}
+
+		[Test]
+		public void TestLambdaArrow()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("=>"));
+			Assert.AreEqual(Tokens.LambdaArrow, lexer.NextToken().kind);
 		}
 
 		[Test()]
@@ -791,6 +805,96 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 		{
 			ILexer lexer = GenerateLexer(new StringReader("while"));
 			Assert.AreEqual(Tokens.While, lexer.NextToken().kind);
+		}
+		[Test()]
+		public void TestPartial()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("partial"));
+			Assert.AreEqual(Tokens.Partial, lexer.NextToken().kind);
+		}
+		[Test()]
+		public void TestWhere()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("where"));
+			Assert.AreEqual(Tokens.Where, lexer.NextToken().kind);
+		}
+		[Test()]
+		public void TestGet()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("get"));
+			Assert.AreEqual(Tokens.Get, lexer.NextToken().kind);
+		}
+		[Test()]
+		public void TestSet()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("set"));
+			Assert.AreEqual(Tokens.Set, lexer.NextToken().kind);
+		}
+		[Test()]
+		public void TestAdd()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("add"));
+			Assert.AreEqual(Tokens.Add, lexer.NextToken().kind);
+		}
+		[Test()]
+		public void TestRemove()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("remove"));
+			Assert.AreEqual(Tokens.Remove, lexer.NextToken().kind);
+		}
+		[Test()]
+		public void TestYield()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("yield"));
+			Assert.AreEqual(Tokens.Yield, lexer.NextToken().kind);
+		}
+		[Test()]
+		public void TestSelect()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("select"));
+			Assert.AreEqual(Tokens.Select, lexer.NextToken().kind);
+		}
+		[Test()]
+		public void TestGroup()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("group"));
+			Assert.AreEqual(Tokens.Group, lexer.NextToken().kind);
+		}
+		[Test()]
+		public void TestBy()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("by"));
+			Assert.AreEqual(Tokens.By, lexer.NextToken().kind);
+		}
+		[Test()]
+		public void TestInto()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("into"));
+			Assert.AreEqual(Tokens.Into, lexer.NextToken().kind);
+		}
+		[Test()]
+		public void TestFrom()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("from"));
+			Assert.AreEqual(Tokens.From, lexer.NextToken().kind);
+		}
+		[Test()]
+		public void TestAscending()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("ascending"));
+			Assert.AreEqual(Tokens.Ascending, lexer.NextToken().kind);
+		}
+		[Test()]
+		public void TestDescending()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("descending"));
+			Assert.AreEqual(Tokens.Descending, lexer.NextToken().kind);
+		}
+		[Test()]
+		public void TestOrderby()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("orderby"));
+			Assert.AreEqual(Tokens.Orderby, lexer.NextToken().kind);
 		}
 	}
 }

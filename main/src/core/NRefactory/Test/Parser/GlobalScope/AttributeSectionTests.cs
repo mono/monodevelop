@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version>$Revision: 915 $</version>
+//     <version>$Revision: 3124 $</version>
 // </file>
 
 using System;
@@ -10,9 +10,9 @@ using System.IO;
 using NUnit.Framework;
 using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Parser.VB;
-using ICSharpCode.NRefactory.Parser.AST;
+using ICSharpCode.NRefactory.Ast;
 
-namespace ICSharpCode.NRefactory.Tests.AST
+namespace ICSharpCode.NRefactory.Tests.Ast
 {
 	[TestFixture]
 	public class AttributeSectionTests
@@ -70,6 +70,50 @@ public class Form1 {
 			TypeDeclaration decl = ParseUtilCSharp.ParseGlobal<TypeDeclaration>(program);
 			Assert.AreEqual("Microsoft.VisualBasic.CompilerServices.DesignerGenerated", decl.Attributes[0].Attributes[0].Name);
 			Assert.AreEqual("someprefix.DesignerGenerated", decl.Attributes[1].Attributes[0].Name);
+		}
+		
+		[Test]
+		public void AssemblyAttributeCSharp()
+		{
+			string program = @"[assembly: System.Attribute()]";
+			AttributeSection decl = ParseUtilCSharp.ParseGlobal<AttributeSection>(program);
+			Assert.AreEqual(new Location(1, 1), decl.StartLocation);
+			Assert.AreEqual("assembly", decl.AttributeTarget);
+		}
+		
+		[Test]
+		public void ModuleAttributeCSharp()
+		{
+			string program = @"[module: System.Attribute()]";
+			AttributeSection decl = ParseUtilCSharp.ParseGlobal<AttributeSection>(program);
+			Assert.AreEqual(new Location(1, 1), decl.StartLocation);
+			Assert.AreEqual("module", decl.AttributeTarget);
+		}
+		
+		[Test]
+		public void TypeAttributeCSharp()
+		{
+			string program = @"[type: System.Attribute()] class Test {}";
+			TypeDeclaration type = ParseUtilCSharp.ParseGlobal<TypeDeclaration>(program);
+			AttributeSection decl = type.Attributes[0];
+			Assert.AreEqual(new Location(1, 1), decl.StartLocation);
+			Assert.AreEqual("type", decl.AttributeTarget);
+		}
+		
+		[Test]
+		public void AssemblyAttributeVBNet()
+		{
+			string program = @"<assembly: System.Attribute()>";
+			AttributeSection decl = ParseUtilVBNet.ParseGlobal<AttributeSection>(program);
+			Assert.AreEqual(new Location(1, 1), decl.StartLocation);
+			Assert.AreEqual("assembly", decl.AttributeTarget);
+		}
+		
+		[Test]
+		public void ModuleAttributeTargetEscapedVB()
+		{
+			// check that this doesn't crash the parser:
+			ParseUtilVBNet.ParseGlobal<AttributeSection>("<[Module]: SuppressMessageAttribute>", true);
 		}
 	}
 }

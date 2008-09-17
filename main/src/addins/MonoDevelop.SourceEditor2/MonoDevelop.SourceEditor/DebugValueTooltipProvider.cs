@@ -31,7 +31,8 @@ using Mono.TextEditor;
 using MonoDevelop.Ide.Gui;
 using Mono.Debugging.Client;
 using TextEditor = Mono.TextEditor.TextEditor;
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Gui.Completion;
 
 namespace MonoDevelop.SourceEditor
@@ -62,7 +63,7 @@ namespace MonoDevelop.SourceEditor
 			if (frame == null)
 				return null;
 			
-			ExtendibleTextEditor ed = (ExtendibleTextEditor) editor;
+			ExtensibleTextEditor ed = (ExtensibleTextEditor) editor;
 			
 			string fileName = ed.View.ContentName;
 			if (fileName == null)
@@ -73,11 +74,7 @@ namespace MonoDevelop.SourceEditor
 				expression = ed.SelectedText;
 			}
 			else {
-				IParserContext ctx = ed.View.GetParserContext ();
-				IExpressionFinder expressionFinder = null;
-				if (fileName != null && ctx != null)
-					expressionFinder = ctx.GetExpressionFinder (fileName);
-				
+				IExpressionFinder expressionFinder = ProjectDomService.GetExpressionFinder (fileName);
 				expression = expressionFinder == null ? GetExpressionBeforeOffset (ed, offset) : expressionFinder.FindFullExpression (editor.Document.Text, offset).Expression;
 				if (expression == null)
 					return null;

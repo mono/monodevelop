@@ -248,7 +248,8 @@ namespace MonoDevelop.Components.DockToolbars
 		
 		protected override void ForAll (bool include_internals, Gtk.Callback callback)
 		{
-			foreach (WidgetPosition pos in widgets)
+			WidgetPosition[] positions = (WidgetPosition[]) widgets.ToArray (typeof (WidgetPosition));
+			foreach (WidgetPosition pos in positions)
 				callback (pos.Widget);
 		}
 	}

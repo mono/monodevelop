@@ -119,16 +119,7 @@
     <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Addins, Version=0.3.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
   </References>
-  <GtkDesignInfo isWidgetLibrary="True" gtkVersion="2.8.3">
-    <ExportedWidgets>
-      <Widget>MonoDevelop.Deployment.Gui.FileCopyConfigurationSelector</Widget>
-      <Widget>MonoDevelop.Deployment.Gui.EntrySelectionTree</Widget>
-      <Widget>MonoDevelop.Deployment.Gui.BinariesZipEditorWidget</Widget>
-      <Widget>MonoDevelop.Deployment.Gui.PackagingFeatureWidget</Widget>
-      <Widget>MonoDevelop.Deployment.DeployFileListWidget</Widget>
-      <Widget>MonoDevelop.Deployment.Gui.SourcesZipEditorWidget</Widget>
-    </ExportedWidgets>
-  </GtkDesignInfo>
+  <GtkDesignInfo gtkVersion="2.8.3" />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../..">
     <BuildFilesVar Sync="True" Name="FILES" />
     <DeployFilesVar Sync="True" Name="DATA_FILES" />

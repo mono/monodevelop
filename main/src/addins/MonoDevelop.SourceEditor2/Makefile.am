@@ -10,13 +10,13 @@ FILES =  \
 	gtk-gui/MonoDevelop.SourceEditor.OptionPanels.HighlightingPanel.cs \
 	gtk-gui/MonoDevelop.SourceEditor.OptionPanels.MarkerPanel.cs \
 	gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs \
-	gtk-gui/MonoDevelop.SourceEditor.SourceEditorWidget.cs \
 	MonoDevelop.SourceEditor.Extension/TemplateCodon.cs \
 	MonoDevelop.SourceEditor.Extension/TemplateExtensionNodeLoader.cs \
 	MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs \
 	MonoDevelop.SourceEditor.OptionPanels/GeneralOptionsPanel.cs \
 	MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs \
 	MonoDevelop.SourceEditor.OptionPanels/MarkerPanel.cs \
+	MonoDevelop.SourceEditor/ClassQuickFinder.cs \
 	MonoDevelop.SourceEditor/CompileErrorTooltipProvider.cs \
 	MonoDevelop.SourceEditor/DebugValueTooltipProvider.cs \
 	MonoDevelop.SourceEditor/DebugValueWindow.cs \

@@ -43,18 +43,19 @@ namespace MonoDevelop.CSharpBinding
 		TextEditor editor;
 		List<IMethod> methods = new List<IMethod> ();
 		CSharpAmbience ambience = new CSharpAmbience ();
+		NRefactoryResolver resolver;
 		
-		public NRefactoryParameterDataProvider (TextEditor editor, ProjectDom dom, MethodResolveResult resolveResult)
+		public NRefactoryParameterDataProvider (TextEditor editor, NRefactoryResolver resolver, MethodResolveResult resolveResult)
 		{
 			this.editor = editor;
-			
+			this.resolver = resolver;
 			methods.AddRange (resolveResult.Methods);
-			
 		}
 		
-		public NRefactoryParameterDataProvider (TextEditor editor, ProjectDom dom, ThisResolveResult resolveResult)
+		public NRefactoryParameterDataProvider (TextEditor editor, NRefactoryResolver resolver, ThisResolveResult resolveResult)
 		{
 			this.editor = editor;
+			this.resolver = resolver;
 			if (resolveResult.CallingType != null) {
 				foreach (IMethod method in resolveResult.CallingType.Methods) {
 					if (!method.IsConstructor)
@@ -64,19 +65,19 @@ namespace MonoDevelop.CSharpBinding
 			}
 		}
 		
-		public NRefactoryParameterDataProvider (TextEditor editor, ProjectDom dom, BaseResolveResult resolveResult)
+		public NRefactoryParameterDataProvider (TextEditor editor, NRefactoryResolver resolver, BaseResolveResult resolveResult)
 		{
 			this.editor = editor;
+			this.resolver = resolver;
 			if (resolveResult.CallingType != null) {
-				IType baseType = dom.GetType (resolveResult.CallingType.BaseType);
-				System.Console.WriteLine("Calling:" + resolveResult.CallingType);
-				System.Console.WriteLine("base: " + resolveResult.CallingType.BaseType + " resolved :" + baseType);
-				
-				if (baseType != null) {
-					foreach (IMethod method in baseType.Methods) {
-						if (!method.IsConstructor)
-							continue;
-						methods.Add (method);
+				foreach (IReturnType rt in resolveResult.CallingType.BaseTypes) {
+					IType baseType = resolver.Dom.SearchType (new SearchTypeRequest (resolver.Unit, rt));
+					if (baseType != null) {
+						foreach (IMethod method in baseType.Methods) {
+							if (!method.IsConstructor)
+								continue;
+							methods.Add (method);
+						}
 					}
 				}
 			}
@@ -138,6 +139,8 @@ namespace MonoDevelop.CSharpBinding
 		
 		public string GetParameterMarkup (int overload, int paramIndex)
 		{
+			if (methods[overload].Parameters == null || paramIndex < 0 || paramIndex >= methods[overload].Parameters.Count)
+				return "";
 			return ambience.GetIntellisenseDescription (methods[overload].Parameters [paramIndex]);
 		}
 		

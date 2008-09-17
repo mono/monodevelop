@@ -35,6 +35,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 	{
 		string projectType;
 		string[] mimeTypes;
+		string[] lexerTags;
 		
 		protected AbstractParser (string projectType, params string[] mimeTypes)
 		{
@@ -42,14 +43,27 @@ namespace MonoDevelop.Projects.Dom.Parser
 			this.mimeTypes   = mimeTypes;
 		}
 		
-		public ICompilationUnit Parse (string fileName)
+		public ParsedDocument Parse (string fileName)
 		{
 			return Parse (fileName, System.IO.File.ReadAllText (fileName));
 		}
 		
-		public abstract IExpressionFinder CreateExpressionFinder ();
-		public abstract ICompilationUnit Parse (string fileName, string content);
-		public abstract IDocumentMetaInformation CreateMetaInformation (Stream stream);
+		public virtual IExpressionFinder CreateExpressionFinder (ProjectDom dom)
+		{
+			return null;
+		}
+		
+		public virtual IResolver CreateResolver (ProjectDom dom, object editor, string fileName)
+		{
+			return null;
+		}
+		
+		public abstract ParsedDocument Parse (string fileName, string content);
+		
+		public virtual ParsedDocument Parse (string fileName, TextReader content)
+		{
+			return Parse (fileName, content.ReadToEnd ());
+		}
 		
 		public virtual bool CanParseMimeType (string mimeType)
 		{
@@ -69,8 +83,17 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		public virtual bool CanParse (string fileName)
 		{
-			return true;
+			return false;
 //			return CanParseMimeType (IdeApp.Services.PlatformService.GetMimeTypeForUri (fileName));
+		}
+
+		public string[] LexerTags {
+			get {
+				return lexerTags;
+			}
+			set {
+				lexerTags = value;
+			}
 		}
 	}
 }

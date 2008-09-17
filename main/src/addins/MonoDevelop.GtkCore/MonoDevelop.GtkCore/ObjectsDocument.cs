@@ -34,7 +34,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.CodeGeneration;
 
 namespace MonoDevelop.GtkCore
@@ -106,12 +106,12 @@ namespace MonoDevelop.GtkCore
 
 		void InsertToolboxItemAttributes (WidgetParser parser, CodeRefactorer cref)
 		{
-			Dictionary<string, IClass> tb_items = parser.ToolboxItems;
+			Dictionary<string, IType> tb_items = parser.ToolboxItems;
 			foreach (string clsname in ObjectNames) {
 				if (tb_items.ContainsKey (clsname))
 					continue;
 
-				IClass cls = parser.GetClass (clsname);
+				IType cls = parser.GetClass (clsname);
 				if (cls == null)
 					continue;
 
@@ -134,9 +134,9 @@ namespace MonoDevelop.GtkCore
 				return;
 
 			StringCollection tb_names = new StringCollection ();
-			foreach (IClass cls in parser.ToolboxItems.Values) {
+			foreach (IType cls in parser.ToolboxItems.Values) {
 				UpdateClass (parser, stetic, cls, null);
-				tb_names.Add (cls.FullyQualifiedName);
+				tb_names.Add (cls.FullName);
 			}
 
 			List<XmlElement> toDelete = new List<XmlElement> ();
@@ -153,9 +153,9 @@ namespace MonoDevelop.GtkCore
 			Save ();
 		}
 
-		void UpdateClass (WidgetParser parser, Stetic.Project stetic, IClass widgetClass, IClass wrapperClass)
+		void UpdateClass (WidgetParser parser, Stetic.Project stetic, IType widgetClass, IType wrapperClass)
 		{
-			string typeName = widgetClass.FullyQualifiedName;
+			string typeName = widgetClass.FullName;
 			string basetypeName = GetBaseType (parser, widgetClass, stetic);
 			XmlElement objectElem = (XmlElement) SelectSingleNode ("objects/object[@type='" + typeName + "']");
 			
@@ -171,7 +171,7 @@ namespace MonoDevelop.GtkCore
 					objectElem.SetAttribute ("palette-category", category);
 				objectElem.SetAttribute ("allow-children", "false");
 				if (wrapperClass != null)
-					objectElem.SetAttribute ("wrapper", wrapperClass.FullyQualifiedName);
+					objectElem.SetAttribute ("wrapper", wrapperClass.FullName);
 				
 				// By default add a reference to Gtk.Widget properties and events
 				XmlElement itemGroups = objectElem.OwnerDocument.CreateElement ("itemgroups");
@@ -187,7 +187,7 @@ namespace MonoDevelop.GtkCore
 			UpdateObject (parser, basetypeName, objectElem, widgetClass, wrapperClass);
 		}
 		
-		string GetBaseType (WidgetParser parser, IClass widgetClass, Stetic.Project stetic)
+		string GetBaseType (WidgetParser parser, IType widgetClass, Stetic.Project stetic)
 		{
 			string[] types = stetic.GetWidgetTypes ();
 			Hashtable typesHash = new Hashtable ();
@@ -198,7 +198,7 @@ namespace MonoDevelop.GtkCore
 			return ret ?? "Gtk.Widget";
 		}
 		
-		void UpdateObject (WidgetParser parser, string topType, XmlElement objectElem, IClass widgetClass, IClass wrapperClass)
+		void UpdateObject (WidgetParser parser, string topType, XmlElement objectElem, IType widgetClass, IType wrapperClass)
 		{
 			if (widgetClass.IsPublic)
 				objectElem.RemoveAttribute ("internal");
@@ -277,7 +277,7 @@ namespace MonoDevelop.GtkCore
 			}
 		}
 		
-		XmlElement GetItemGroup (IClass cls, XmlElement itemGroups, string cat, string groupName)
+		XmlElement GetItemGroup (IType cls, XmlElement itemGroups, string cat, string groupName)
 		{
 			XmlElement itemGroup;
 			

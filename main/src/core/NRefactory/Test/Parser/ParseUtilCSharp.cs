@@ -2,19 +2,18 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version>$Revision: 915 $</version>
+//     <version>$Revision: 2533 $</version>
 // </file>
 
 using System;
-using System.Drawing;
 using System.IO;
 
 using NUnit.Framework;
 
 using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.AST;
+using ICSharpCode.NRefactory.Ast;
 
-namespace ICSharpCode.NRefactory.Tests.AST
+namespace ICSharpCode.NRefactory.Tests.Ast
 {
 	public class ParseUtilCSharp
 	{
@@ -77,6 +76,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		
 		public static T ParseExpression<T>(string expr, bool expectErrors) where T : INode
 		{
+			// SEMICOLON HACK : without a trailing semicolon, parsing expressions does not work correctly
 			IParser parser = ParserFactory.CreateParser(SupportedLanguage.CSharp, new StringReader(expr + ";"));
 			object parsedExpression = parser.ParseExpression();
 			if (expectErrors)

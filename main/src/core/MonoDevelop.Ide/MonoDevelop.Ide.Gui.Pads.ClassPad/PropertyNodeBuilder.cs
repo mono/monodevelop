@@ -31,7 +31,7 @@ using System.Collections;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui.Components;
 
@@ -51,7 +51,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		{
 			IProperty data = dataObject as IProperty;
 			label = data.Name;
-			icon = Context.GetIcon (Services.Icons.GetIcon (data));
+			icon = Context.GetIcon (data.StockIcon);
 		}
 	}
 }

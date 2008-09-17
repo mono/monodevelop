@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
-//     <version>$Revision: 2518 $</version>
+//     <version>$Revision: 2819 $</version>
 // </file>
 
 using System;
@@ -17,10 +17,11 @@ namespace ICSharpCode.NRefactory.Visitors
 	/// Not all elements are converted here, most simple elements (e.g. ConditionalExpression)
 	/// are converted in the output visitor.
 	/// </summary>
-	public class ToVBNetConvertVisitor : AbstractAstTransformer
+	public class ToVBNetConvertVisitor : ConvertVisitorBase
 	{
 		// The following conversions are implemented:
 		//   Conflicting field/property names -> m_field
+		//   Conflicting variable names inside methods
 		//   Anonymous methods are put into new methods
 		//   Simple event handler creation is replaced with AddressOfExpression
 		//   Move Imports-statements out of namespaces
@@ -104,25 +105,6 @@ namespace ICSharpCode.NRefactory.Visitors
 			return base.VisitDelegateDeclaration(delegateDeclaration, data);
 		}
 		
-		string GetAnonymousMethodName()
-		{
-			for (int i = 1;; i++) {
-				string name = "ConvertedAnonymousMethod" + i;
-				bool ok = true;
-				if (currentType != null) {
-					foreach (object c in currentType.Children) {
-						MethodDeclaration method = c as MethodDeclaration;
-						if (method != null && method.Name == name) {
-							ok = false;
-							break;
-						}
-					}
-				}
-				if (ok)
-					return name;
-			}
-		}
-		
 		public override object VisitExpressionStatement(ExpressionStatement expressionStatement, object data)
 		{
 			base.VisitExpressionStatement(expressionStatement, data);
@@ -142,53 +124,68 @@ namespace ICSharpCode.NRefactory.Visitors
 			IdentifierExpression ident = expr as IdentifierExpression;
 			if (ident != null)
 				return ident.Identifier;
-			FieldReferenceExpression fre = expr as FieldReferenceExpression;
+			MemberReferenceExpression fre = expr as MemberReferenceExpression;
 			if (fre != null && fre.TargetObject is ThisReferenceExpression)
-				return fre.FieldName;
-			return null;
-		}
-		
-		static string GetMethodNameOfDelegateCreation(Expression expr)
-		{
-			string name = GetMemberNameOnThisReference(expr);
-			if (name != null)
-				return name;
-			ObjectCreateExpression oce = expr as ObjectCreateExpression;
-			if (oce != null && oce.Parameters.Count == 1) {
-				return GetMemberNameOnThisReference(oce.Parameters[0]);
-			}
+				return fre.MemberName;
 			return null;
 		}
 		
 		public override object VisitAnonymousMethodExpression(AnonymousMethodExpression anonymousMethodExpression, object data)
 		{
-			MethodDeclaration method = new MethodDeclaration(GetAnonymousMethodName(), Modifiers.Private, new TypeReference("System.Void"), anonymousMethodExpression.Parameters, null);
-			method.Body = anonymousMethodExpression.Body;
-			if (currentType != null) {
-				currentType.Children.Add(method);
+			base.VisitAnonymousMethodExpression(anonymousMethodExpression, data);
+			if (anonymousMethodExpression.Body.Children.Count == 1) {
+				ReturnStatement rs = anonymousMethodExpression.Body.Children[0] as ReturnStatement;
+				if (rs != null) {
+					LambdaExpression lambda = new LambdaExpression();
+					lambda.ExpressionBody = rs.Expression;
+					lambda.Parameters = anonymousMethodExpression.Parameters;
+					ReplaceCurrentNode(lambda);
+				}
 			}
-			ReplaceCurrentNode(new AddressOfExpression(new IdentifierExpression(method.Name)));
 			return null;
 		}
 		
 		public override object VisitAssignmentExpression(AssignmentExpression assignmentExpression, object data)
 		{
-			if (assignmentExpression.Op == AssignmentOperatorType.Add
-			    || assignmentExpression.Op == AssignmentOperatorType.Subtract)
-			{
-				string methodName = GetMethodNameOfDelegateCreation(assignmentExpression.Right);
-				if (methodName != null && currentType != null) {
-					foreach (object c in currentType.Children) {
-						MethodDeclaration method = c as MethodDeclaration;
-						if (method != null && method.Name == methodName) {
-							// this statement is registering an event
-							assignmentExpression.Right = new AddressOfExpression(new IdentifierExpression(methodName));
-							break;
-						}
-					}
+			base.VisitAssignmentExpression(assignmentExpression, data);
+			if (assignmentExpression.Op == AssignmentOperatorType.Assign && !(assignmentExpression.Parent is ExpressionStatement)) {
+				AddInlineAssignHelper();
+				ReplaceCurrentNode(
+					new InvocationExpression(
+						new IdentifierExpression("InlineAssignHelper"),
+						new List<Expression> { assignmentExpression.Left, assignmentExpression.Right }
+					));
+			}
+			return null;
+		}
+		
+		void AddInlineAssignHelper()
+		{
+			MethodDeclaration method;
+			foreach (INode node in currentType.Children) {
+				method = node as MethodDeclaration;
+				if (method != null && method.Name == "InlineAssignHelper") {
+					// inline assign helper already exists
+					return;
 				}
 			}
-			return base.VisitAssignmentExpression(assignmentExpression, data);
+			
+			method = new MethodDeclaration {
+				Name = "InlineAssignHelper",
+				Modifier = Modifiers.Private | Modifiers.Static,
+				TypeReference = new TypeReference("T"),
+				Parameters = new List<ParameterDeclarationExpression> {
+					new ParameterDeclarationExpression(new TypeReference("T"), "target", ParameterModifiers.Ref),
+					new ParameterDeclarationExpression(new TypeReference("T"), "value")
+				}};
+			method.Templates.Add(new TemplateDefinition("T", null));
+			method.Body = new BlockStatement();
+			method.Body.AddChild(new ExpressionStatement(new AssignmentExpression(
+				new IdentifierExpression("target"),
+				AssignmentOperatorType.Assign,
+				new IdentifierExpression("value"))));
+			method.Body.AddChild(new ReturnStatement(new IdentifierExpression("value")));
+			currentType.AddChild(method);
 		}
 		
 		bool IsClassType(ClassType c)
@@ -223,6 +220,9 @@ namespace ICSharpCode.NRefactory.Visitors
 					}
 				}
 			}
+			
+			ToVBNetRenameConflictingVariablesVisitor.RenameConflicting(methodDeclaration);
+			
 			return null;
 		}
 		
@@ -256,12 +256,12 @@ namespace ICSharpCode.NRefactory.Visitors
 						break;
 					case "CharSet":
 						{
-							FieldReferenceExpression fre = arg.Expression as FieldReferenceExpression;
+							MemberReferenceExpression fre = arg.Expression as MemberReferenceExpression;
 							if (fre == null || !(fre.TargetObject is IdentifierExpression))
 								return false;
 							if ((fre.TargetObject as IdentifierExpression).Identifier != "CharSet")
 								return false;
-							switch (fre.FieldName) {
+							switch (fre.MemberName) {
 								case "Unicode":
 									charSet = CharsetModifier.Unicode;
 									break;
@@ -305,7 +305,11 @@ namespace ICSharpCode.NRefactory.Visitors
 		{
 			if (!IsClassType(ClassType.Interface) && (propertyDeclaration.Modifier & Modifiers.Visibility) == 0)
 				propertyDeclaration.Modifier |= Modifiers.Private;
-			return base.VisitPropertyDeclaration(propertyDeclaration, data);
+			base.VisitPropertyDeclaration(propertyDeclaration, data);
+			
+			ToVBNetRenameConflictingVariablesVisitor.RenameConflicting(propertyDeclaration);
+			
+			return null;
 		}
 		
 		public override object VisitEventDeclaration(EventDeclaration eventDeclaration, object data)
@@ -320,7 +324,11 @@ namespace ICSharpCode.NRefactory.Visitors
 			// make constructor private if visiblity is not set (unless constructor is static)
 			if ((constructorDeclaration.Modifier & (Modifiers.Visibility | Modifiers.Static)) == 0)
 				constructorDeclaration.Modifier |= Modifiers.Private;
-			return base.VisitConstructorDeclaration(constructorDeclaration, data);
+			base.VisitConstructorDeclaration(constructorDeclaration, data);
+			
+			ToVBNetRenameConflictingVariablesVisitor.RenameConflicting(constructorDeclaration);
+			
+			return null;
 		}
 		
 		public override object VisitParenthesizedExpression(ParenthesizedExpression parenthesizedExpression, object data)

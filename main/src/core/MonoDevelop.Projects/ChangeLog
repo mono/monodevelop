@@ -1,7 +1,354 @@
+2008-09-17  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs,
+	  MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs: Some changes
+	  required for unit tests.
+
+2008-09-16  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom/DomMethod.cs,
+	  MonoDevelop.Projects.Dom.Serialization/DomTypeProxy.cs: Removed
+	  some debug messages.
+
+2008-09-15  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom/DomReturnType.cs,
+	  MonoDevelop.Projects.Dom/DomParameter.cs,
+	  MonoDevelop.Projects.Dom/DomMethod.cs,
+	  MonoDevelop.Projects.Dom/DomProperty.cs,
+	  MonoDevelop.Projects.Dom/AbstractMember.cs: CHANGE: DOM objects
+	  that return collections now should always return != null.
+
+2008-09-15  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom/AbstractMember.cs: now recognizing internal
+	  members in isaccessible.
+
+2008-09-15  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs,
+	  MonoDevelop.Projects.mdp, Makefile.am: Renamed. Set correct path
+	  for shared code completion data.
+
+2008-09-15  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom/ResolveResult.cs: Resolve result now gets
+	  information about the calling member.
+
+2008-09-15  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom/DomMethod.cs: fixed regression 324907.
+
+2008-09-15  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom/ResolveResult.cs,
+	  MonoDevelop.Projects.Dom.Serialization/DomTypeProxy.cs: worked on
+	  resolve result bug.
+
+2008-09-15  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom.Output/OutputFlags.cs,
+	  MonoDevelop.Projects.Dom.Output/Ambience.cs: Ambiences now take
+	  care of the IncludeGenerics flag.
+
+2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
+	  MonoDevelop.Projects.Dom/IType.cs: Set the source project dom to
+	  types just after parsing.
+	* MonoDevelop.Projects.Dom/DomType.cs: For inner types, return the
+	  project dom of the parent class.
+
+2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Dom/DomMethod.cs: Return an empty collection if
+	  the method has no parameters.
+	* MonoDevelop.Projects.Dom.Serialization/ParserDatabase.cs: Set the
+	  source project to project doms.
+
+2008-09-12  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
+	  MonoDevelop.Projects.Dom/DomType.cs,
+	  MonoDevelop.Projects.Dom/DomMethod.cs,
+	  MonoDevelop.Projects.Dom/IType.cs,
+	  MonoDevelop.Projects.Dom/AbstractMember.cs: Worked on monodoc xml
+	  documentation optimization.
+
+2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Dom.Parser/ITypeNameResolver.cs,
+	  MonoDevelop.Projects.Dom.Parser/AbstractParser.cs,
+	  MonoDevelop.Projects.Dom.Parser/ParseInformation.cs,
+	  MonoDevelop.Projects.Dom.Parser/ParseInformationEventHandler.cs,
+	  MonoDevelop.Projects.Dom.Parser/CommentTasksChangedEventHandler.cs,
+	  MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
+	  MonoDevelop.Projects.Dom.Parser/TypeNameResolver.cs,
+	  MonoDevelop.Projects.Dom.Parser/IParser.cs,
+	  MonoDevelop.Projects.Dom.Parser/ProjectDomEventArgs.cs,
+	  MonoDevelop.Projects.Dom.Parser/AssemblyInformationEventHandler.cs,
+	  MonoDevelop.Projects.Dom.Parser/ProjectDom.cs,
+	  MonoDevelop.Projects.Dom.Parser/IParserDatabase.cs,
+	  MonoDevelop.Projects.Dom/ResolveResult.cs,
+	  MonoDevelop.Projects.Dom/DomReturnType.cs,
+	  MonoDevelop.Projects.Dom/TypeParameter.cs,
+	  MonoDevelop.Projects.Dom/IUsing.cs,
+	  MonoDevelop.Projects.Dom/DomAttribute.cs,
+	  MonoDevelop.Projects.Dom/SearchTypeRequest.cs,
+	  MonoDevelop.Projects.mdp,
+	  MonoDevelop.Projects.CodeGeneration/RefactorerContext.cs,
+	  MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs,
+	  MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs, Makefile.am,
+	  MonoDevelop.Projects.Dom.Serialization/ClassInformationEventHandler.cs,
+	  MonoDevelop.Projects.Dom.Serialization/DatabaseProjectDom.cs,
+	  MonoDevelop.Projects.Dom.Serialization/ProjectCodeCompletionDatabase.cs,
+	  MonoDevelop.Projects.Dom.Serialization/ParserDatabase.cs,
+	  MonoDevelop.Projects.Dom.Serialization/DomTypeProxy.cs,
+	  MonoDevelop.Projects.Dom.Serialization/SimpleCodeCompletionDatabase.cs,
+	  MonoDevelop.Projects.Dom.Serialization/DomPersistence.cs,
+	  MonoDevelop.Projects.Dom.Serialization/IParserService.cs,
+	  MonoDevelop.Projects.Dom.Serialization/ClassEntry.cs,
+	  MonoDevelop.Projects.Dom.Serialization/AssemblyCodeCompletionDatabase.cs,
+	  MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
+	  Ported old code completion database to new dom.
+	* MonoDevelop.Projects.Dom/DomCecilMethod.cs,
+	  MonoDevelop.Projects.Dom/DomCecilType.cs: Properly read generics
+	  information.
+	* MonoDevelop.Projects.Dom/IMember.cs,
+	  MonoDevelop.Projects.Dom/IType.cs: Removed unneeded setters.
+	* MonoDevelop.Projects.Dom/DomType.cs: Factorized some type resolving
+	  code into AbstractMember. Avoid returning null on collection
+	  getters. Made member counters virtual.
+	* MonoDevelop.Projects.Dom/DomUsing.cs: Avoid returning null on
+	  collection getters.
+	* MonoDevelop.Projects.Dom/DefaultParserContext.cs,
+	  MonoDevelop.Projects.Dom/IParserContext.cs: Unused, removed.
+	* MonoDevelop.Projects.Dom/DomMethod.cs,
+	  MonoDevelop.Projects.Dom/DomEvent.cs,
+	  MonoDevelop.Projects.Dom/DomField.cs,
+	  MonoDevelop.Projects.Dom/DomProperty.cs,
+	  MonoDevelop.Projects.Dom/AbstractMember.cs: Factorized some type
+	  resolving code into AbstractMember.
+	* MonoDevelop.Projects.Dom/ExpressionContext.cs: FilterEntry: Fix
+	  filter condition. Should return true if the object has to be
+	  filtered out.
+
+2008-09-11  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom/ParsedDocument.cs: Worked on fold
+	  information update.
+
+2008-09-10  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom/DomType.cs,
+	  MonoDevelop.Projects.Dom.Serialization/DatabaseProjectDom.cs,
+	  MonoDevelop.Projects.Dom.Serialization/DomTypeProxy.cs: Worked on
+	  type lookup.
+
+2008-09-10  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom/DomUsing.cs,
+	  MonoDevelop.Projects.Dom/IUsing.cs: Added the information to
+	  IUsing, if it came from namespace declaration.
+
+2008-09-10  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom.Parser/AbstractParser.cs,
+	  MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
+	  MonoDevelop.Projects.Dom.Parser/IParser.cs,
+	  MonoDevelop.Projects.Dom.Parser/ProjectDom.cs,
+	  MonoDevelop.Projects.Dom/ParsedDocumentEventArgs.cs,
+	  MonoDevelop.Projects.Dom/IDocumentMetainformation.cs,
+	  MonoDevelop.Projects.Dom/ParsedDocument.cs,
+	  MonoDevelop.Projects.Dom/CompilationUnit.cs,
+	  MonoDevelop.Projects.Dom/ICompilationUnit.cs,
+	  MonoDevelop.Projects.Dom/CompilationUnitEventArgs.cs,
+	  MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs,
+	  MonoDevelop.Projects.Dom.Serialization/DatabaseProjectDom.cs,
+	  MonoDevelop.Projects.Dom.Serialization/ProjectCodeCompletionDatabase.cs,
+	  MonoDevelop.Projects.Dom.Serialization/DomTypeProxy.cs: Changed
+	  compilation unit/document meta information interface.
+
+2008-09-10  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs,
+	  MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs,
+	  MonoDevelop.Projects.Dom.Output/Ambience.cs,
+	  MonoDevelop.Projects.Dom.Output/AmbienceService.cs,
+	  MonoDevelop.Projects.Dom.Output/NetAmbience.cs,
+	  MonoDevelop.Projects.Dom.Serialization/DomTypeProxy.cs,
+	  MonoDevelop.Projects.Dom/DomLocation.cs,
+	  MonoDevelop.Projects.Dom/DomRegion.cs,
+	  MonoDevelop.Projects.Dom/ExpressionContext.cs,
+	  MonoDevelop.Projects.Dom/Namespace.cs: Fix warnings.
+
+2008-09-09  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
+	  MonoDevelop.Projects.Dom/CompoundType.cs,
+	  MonoDevelop.Projects.Dom/CompilationUnit.cs,
+	  MonoDevelop.Projects.Dom/ICompilationUnit.cs,
+	  MonoDevelop.Projects.Dom/IType.cs,
+	  MonoDevelop.Projects.Dom.Serialization/DatabaseProjectDom.cs,
+	  MonoDevelop.Projects.Dom.Serialization/DomTypeProxy.cs,
+	  MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
+	  Worked on dom.
+
+2008-09-09  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
+	  MonoDevelop.Projects.Dom.Parser/ProjectDom.cs,
+	  MonoDevelop.Projects.Dom/ResolveResult.cs,
+	  MonoDevelop.Projects.Dom/DomType.cs,
+	  MonoDevelop.Projects.Dom/IMethod.cs,
+	  MonoDevelop.Projects.Dom/IProperty.cs,
+	  MonoDevelop.Projects.Dom/DomMethod.cs,
+	  MonoDevelop.Projects.Dom.Database/SqliteUtils.cs,
+	  MonoDevelop.Projects.Dom.Database/HyenaSqliteCommand.cs,
+	  MonoDevelop.Projects.Dom.Database/CodeCompletionDatabase.cs,
+	  MonoDevelop.Projects.Dom.Database/DateTimeUtil.cs,
+	  MonoDevelop.Projects.Dom.Database/DatabaseProjectDom.cs,
+	  MonoDevelop.Projects.Dom.Database/MonoDevelopDatabaseConnection.cs,
+	  MonoDevelop.Projects.Dom.Database/DatabaseCommand.cs,
+	  MonoDevelop.Projects.Dom.Database/DatabaseParameter.cs,
+	  MonoDevelop.Projects.Dom.Database/DatabaseMethod.cs,
+	  MonoDevelop.Projects.Dom.Database/HyenaSqliteConnection.cs,
+	  MonoDevelop.Projects.Dom.Database/DatabaseType.cs,
+	  MonoDevelop.Projects.Dom.Database/DatabaseEvent.cs,
+	  MonoDevelop.Projects.Dom.Database/DatabaseColumnAttribute.cs,
+	  MonoDevelop.Projects.Dom.Database/DatabaseField.cs,
+	  MonoDevelop.Projects.Dom.Database/DatabaseProperty.cs,
+	  MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs,
+	  MonoDevelop.Projects.Dom.Serialization/DatabaseProjectDom.cs,
+	  MonoDevelop.Projects.Dom.Serialization/DomTypeProxy.cs,
+	  MonoDevelop.Projects.Dom.Serialization/DomPersistence.cs,
+	  MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
+	  Activated custom code completion database.
+
+2008-09-08  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom/TypeParameter.cs,
+	  MonoDevelop.Projects.Dom/DomUsing.cs,
+	  MonoDevelop.Projects.Dom/IUsing.cs,
+	  MonoDevelop.Projects.Dom/Modifiers.cs: Fixed some issues found by
+	  unit testing.
+
+2008-09-05  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
+	  MonoDevelop.Projects.Dom.Parser/ProjectDom.cs,
+	  MonoDevelop.Projects.Dom/DomCecilProperty.cs,
+	  MonoDevelop.Projects.Dom/IProperty.cs,
+	  MonoDevelop.Projects.Dom/DomProperty.cs,
+	  MonoDevelop.Projects.Dom.Database/DatabaseProperty.cs,
+	  MonoDevelop.Projects.Dom.Serialization/DatabaseProjectDom.cs,
+	  MonoDevelop.Projects.Dom.Serialization/NamespaceEntry.cs,
+	  MonoDevelop.Projects.Dom.Serialization/ProjectCodeCompletionDatabase.cs,
+	  MonoDevelop.Projects.Dom.Serialization/FileEntry.cs,
+	  MonoDevelop.Projects.Dom.Serialization/SimpleCodeCompletionDatabase.cs,
+	  MonoDevelop.Projects.Dom.Serialization/DomTypeProxy.cs,
+	  MonoDevelop.Projects.Dom.Serialization/DomPersistence.cs,
+	  MonoDevelop.Projects.Dom.Serialization/ClassEntry.cs,
+	  MonoDevelop.Projects.Dom.Serialization/AssemblyCodeCompletionDatabase.cs,
+	  MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
+	  Readded custom (binary) database.
+
+2008-09-04  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs: Changed
+	  parser threading.
+
+2008-09-04  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom.Database/CodeCompletionDatabase.cs: fixed
+	  possible null ref.
+
+2008-09-04  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom.Database/CodeCompletionDatabase.cs: fixed
+	  possible null ref.
+
+2008-09-04  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom.Database/HyenaSqliteCommand.cs,
+	  MonoDevelop.Projects.Dom.Database/CodeCompletionDatabase.cs: Added
+	  a lock for insert compilation unit.
+
+2008-09-04  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom.Database/HyenaSqliteCommand.cs: add debug
+	  command tracing.
+
+2008-09-04  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom.Database/HyenaSqliteCommand.cs,
+	  MonoDevelop.Projects.Dom.Database/HyenaSqliteConnection.cs: Changed
+	  error message.
+
+2008-09-04  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom/ResolveResult.cs: fixed some resolve result
+	  issues.
+
+2008-09-04  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom.Database/HyenaSqliteCommand.cs: changed
+	  error message.
+
+2008-09-04  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom/DomAttribute.cs,
+	  MonoDevelop.Projects.Dom/DomProperty.cs,
+	  MonoDevelop.Projects.Dom.Database/CodeCompletionDatabase.cs: Some
+	  dom enhancements.
+
+2008-09-03  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom.Parser/DatabaseProjectDom.cs,
+	  MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
+	  MonoDevelop.Projects.mdp,
+	  MonoDevelop.Projects.Dom.Database/DatabaseProjectDom.cs,
+	  Makefile.am, MonoDevelop.Projects.Dom.Serialization,
+	  MonoDevelop.Projects.Dom.Serialization/NamespaceEntry.cs,
+	  MonoDevelop.Projects.Dom.Serialization/ProjectCodeCompletionDatabase.cs,
+	  MonoDevelop.Projects.Dom.Serialization/FileEntry.cs,
+	  MonoDevelop.Projects.Dom.Serialization/SimpleCodeCompletionDatabase.cs,
+	  MonoDevelop.Projects.Dom.Serialization/DomTypeProxy.cs,
+	  MonoDevelop.Projects.Dom.Serialization/DomPersistence.cs,
+	  MonoDevelop.Projects.Dom.Serialization/ClassEntry.cs,
+	  MonoDevelop.Projects.Dom.Serialization/AssemblyCodeCompletionDatabase.cs,
+	  MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
+	  Worked on custom database layer.
+
+2008-09-03  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom/AbstractMember.cs: member attributes are now
+	  always != null.
+
+2008-09-02  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom.Parser/DatabaseProjectDom.cs: fixed bug with
+	  compound types.
+
 2008-08-22  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects/Project.cs: Fix nullref.
 	* MonoDevelop.Projects.mdp: Updated.
+
+2008-08-22  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom/DomType.cs,
+	  MonoDevelop.Projects.Dom/DomReturnType.cs,
+	  MonoDevelop.Projects.Dom/AbstractMember.cs,
+	  MonoDevelop.Projects.Dom.Database/HyenaSqliteConnection.cs,
+	  MonoDevelop.Projects.Dom.Database/CodeCompletionDatabase.cs:
+	  Optimized database layer.
+
+2008-08-21  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom/DomCecilProperty.cs,
+	  MonoDevelop.Projects.Dom/DomProperty.cs: Fixed cecil indexer
+	  loading.
 
 2008-08-20  Dean Brettle <dean@brettle.com>
 
@@ -10,20 +357,413 @@
 	and "resgen2" for ClrVersion.Net_2_0, but only when the current
 	runtime major version is greater than 1.
 
+2008-08-20  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom/ExpressionContext.cs: fixed possible null
+	  ref.
+
+2008-08-19  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs: Fixed todos in
+	  base refactorer.
+
+2008-08-19  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
+	  MonoDevelop.Projects.Dom/DomType.cs,
+	  MonoDevelop.Projects.Dom/DomParameter.cs,
+	  MonoDevelop.Projects.Dom/DomMethod.cs: Worked on dom.
+
 2008-08-18  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs: Commit
 	  fix for bug bug #410408 - HintPath handling invalid. Based on patch
 	  by Scott McNally.
 
+2008-08-18  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom/AbstractMember.cs: Worked on completion.
+
+2008-08-15  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
+	  MonoDevelop.Projects.Dom.Parser/ProjectDom.cs,
+	  MonoDevelop.Projects.Dom/ResolveResult.cs,
+	  MonoDevelop.Projects.Dom/ExpressionContext.cs: Removed some debug
+	  messages.
+
+2008-08-11  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom/LocalVariable.cs: Changed  local variable
+	  interface.
+
+2008-08-08  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs,
+	  MonoDevelop.Projects.Dom/DomRegion.cs,
+	  MonoDevelop.Projects.Dom/DomUsing.cs,
+	  MonoDevelop.Projects.Dom/DomLocation.cs,
+	  MonoDevelop.Projects.Dom.Database/HyenaSqliteCommand.cs,
+	  MonoDevelop.Projects.Dom.Database/DatabaseType.cs,
+	  MonoDevelop.Projects.Dom.Database/CodeCompletionDatabase.cs: Fixed
+	  some bugs/worked on dom.
+
+2008-08-08  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom.Parser/DatabaseProjectDom.cs,
+	  MonoDevelop.Projects.Dom/DomType.cs,
+	  MonoDevelop.Projects.Dom.Database/HyenaSqliteCommand.cs,
+	  MonoDevelop.Projects.Dom.Database/CodeCompletionDatabase.cs: Fixed
+	  some bugs in the database layer.
+
+2008-08-07  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom.Output/NetAmbience.cs,
+	  MonoDevelop.Projects.Dom/ResolveResult.cs,
+	  MonoDevelop.Projects.Dom/IDomVisitor.cs,
+	  MonoDevelop.Projects.Dom/LocalVariable.cs,
+	  MonoDevelop.Projects.CodeGeneration/IRefactorer.cs,
+	  MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs,
+	  MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs: Worked on
+	  dom
+
+2008-08-07  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom/AbstractMember.cs,
+	  MonoDevelop.Projects.Dom.Database/DatabaseType.cs,
+	  MonoDevelop.Projects.Dom.Database/CodeCompletionDatabase.cs: Worked
+	  on database security & speedup.
+
 2008-08-06  Eric Butler <eric@extremeboredom.net>
 
 	* MonoDevelop.Projects/DotNetProject.cs: Add additional null check.
+
+2008-08-06  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom.Parser/DatabaseProjectDom.cs,
+	  MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
+	  MonoDevelop.Projects.Dom.Database/DatabaseType.cs,
+	  MonoDevelop.Projects.Dom.Database/CodeCompletionDatabase.cs: Worked
+	  on code completion database.
 
 2008-08-05  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects/ProjectService.cs: Request file edit permissions
 	  when saving a project or solution.
+
+
+2008-08-05  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom.Parser/DatabaseProjectDom.cs,
+	  MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
+	  MonoDevelop.Projects.Dom/IParserContext.cs,
+	  MonoDevelop.Projects.Dom.Database/HyenaSqliteCommand.cs,
+	  MonoDevelop.Projects.Dom.Database/CodeCompletionDatabase.cs: Worked
+	  on datatabase layer.
+
+2008-08-05  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom.Database/CodeCompletionDatabase.cs: fixed
+	  bug in sql statement.
+
+2008-08-04  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom.Parser/AbstractParser.cs,
+	  MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
+	  MonoDevelop.Projects.Dom.Parser/IParser.cs,
+	  MonoDevelop.Projects.Dom/DomCecilType.cs,
+	  MonoDevelop.Projects.Dom.Database/DatabaseType.cs,
+	  MonoDevelop.Projects.Dom.Database/CodeCompletionDatabase.cs: Worked
+	  on dom/code completion db/parser and fixed a bug in the dom cecil
+	  type loading.
+
+2008-08-04  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs,
+	  MonoDevelop.Projects.Dom/ResolveResult.cs,
+	  MonoDevelop.Projects.Dom/DomType.cs,
+	  MonoDevelop.Projects.Dom/DomReturnType.cs,
+	  MonoDevelop.Projects.Dom/IReturnType.cs: Worked on C#3 code
+	  completion.
+
+2008-08-04  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom/DomReturnType.cs: fixed fullname bug in
+	  return type.
+
+2008-08-01  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
+	  MonoDevelop.Projects.Dom/DomCecilMethod.cs,
+	  MonoDevelop.Projects.Dom/DomReturnType.cs,
+	  MonoDevelop.Projects.Dom/DomCecilType.cs,
+	  MonoDevelop.Projects.Dom/IReturnType.cs,
+	  MonoDevelop.Projects.Dom.Database/DatabaseType.cs,
+	  MonoDevelop.Projects.Dom.Database/CodeCompletionDatabase.cs:
+	  Changed return type representation (now it's possible to represent
+	  types of the form A.B.C<GenArg>.Inner1<a1,...>,...,InnerN<aN,...>)
+
+2008-08-01  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom.Parser/DatabaseProjectDom.cs,
+	  MonoDevelop.Projects.Dom.Parser/ProjectDom.cs,
+	  MonoDevelop.Projects.Dom.Database/DatabaseType.cs,
+	  MonoDevelop.Projects.Dom.Database/CodeCompletionDatabase.cs: Added
+	  getsubclasslist operation.
+
+2008-08-01  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom/Namespace.cs,
+	  MonoDevelop.Projects.Dom.Database/CodeCompletionDatabase.cs: Fixed
+	  bug in getnamespace contents.
+
+2008-07-31  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom/ResolveResult.cs: worked on C#3 code
+	  completion.
+
+2008-07-30  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom.Parser/DatabaseProjectDom.cs,
+	  MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
+	  MonoDevelop.Projects.Dom.Parser/ProjectDom.cs,
+	  MonoDevelop.Projects.Dom.Database/HyenaSqliteCommand.cs,
+	  MonoDevelop.Projects.Dom.Database/DatabaseType.cs,
+	  MonoDevelop.Projects.Dom.Database/CodeCompletionDatabase.cs: Worked
+	  on code completion database, optimized SQL a bit. Tried out single
+	  code completion database for assemblies.
+
+2008-07-30  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs: Added
+	  GetAssemblyProjectDom method.
+
+2008-07-29  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Projects.Dom.Database/MonoDevelopDatabaseConnection.cs,
+	  MonoDevelop.Projects.Dom.Database/CodeCompletionDatabase.cs,
+	  Makefile.am, MonoDevelop.Projects.mdp: Set some PRAGMAs (borrowed
+	  from banshee) to make the database more performant. Threading's
+	  looking worrying though.
+
+2008-07-29  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects/DotNetProject.cs, Makefile.am,
+	  MonoDevelop.Projects.mdp: Removed some parts of the documentation
+	  service.
+
+2008-07-29  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects/ILanguageBinding.cs,
+	  MonoDevelop.Projects/ProjectsServices.cs,
+	  MonoDevelop.Projects/LanguageBindingService.cs,
+	  MonoDevelop.Projects/IDotNetLanguageBinding.cs,
+	  MonoDevelop.Projects/Project.cs,
+	  MonoDevelop.Projects.Dom.CodeGeneration,
+	  MonoDevelop.Projects.Dom.CodeGeneration/CodeRefactorer.cs,
+	  MonoDevelop.Projects.Dom.CodeGeneration/ICodeGenerator.cs,
+	  MonoDevelop.Projects.Documentation,
+	  MonoDevelop.Projects.Documentation/IDocumentationService.cs,
+	  MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
+	  MonoDevelop.Projects.Dom.Output/AmbienceService.cs,
+	  MonoDevelop.Projects.Dom/ReferenceEntry.cs,
+	  MonoDevelop.Projects.Dom/DomRegion.cs, MonoDevelop.Projects.mdp,
+	  MonoDevelop.Projects.Parser,
+	  MonoDevelop.Projects.Parser/AbstractDecoration.cs,
+	  MonoDevelop.Projects.Parser/ReturnTypeList.cs,
+	  MonoDevelop.Projects.Parser/GenericParameter.cs,
+	  MonoDevelop.Projects.Parser/IClass.cs,
+	  MonoDevelop.Projects.Parser/MemberCollectionBase.cs,
+	  MonoDevelop.Projects.Parser/AttributeCollection.cs,
+	  MonoDevelop.Projects.Parser/ReflectionClass.cs,
+	  MonoDevelop.Projects.Parser/ReferenceEntry.cs,
+	  MonoDevelop.Projects.Parser/ParseInformationEventHandler.cs,
+	  MonoDevelop.Projects.Parser/ParseInformation.cs,
+	  MonoDevelop.Projects.Parser/PersistentClass.cs,
+	  MonoDevelop.Projects.Parser/AssemblyCodeCompletionDatabase.cs,
+	  MonoDevelop.Projects.Parser/IMethod.cs,
+	  MonoDevelop.Projects.Parser/MethodCollection.cs,
+	  MonoDevelop.Projects.Parser/IProperty.cs,
+	  MonoDevelop.Projects.Parser/EventCollection.cs,
+	  MonoDevelop.Projects.Parser/IUsing.cs,
+	  MonoDevelop.Projects.Parser/FieldCollection.cs,
+	  MonoDevelop.Projects.Parser/IDecoration.cs,
+	  MonoDevelop.Projects.Parser/PersistentMethod.cs,
+	  MonoDevelop.Projects.Parser/TypedCSharpCollection.cs,
+	  MonoDevelop.Projects.Parser/DefaultIndexer.cs,
+	  MonoDevelop.Projects.Parser/TypeNameResolver.cs,
+	  MonoDevelop.Projects.Parser/PersistentProperty.cs,
+	  MonoDevelop.Projects.Parser/DefaultComment.cs,
+	  MonoDevelop.Projects.Parser/AbstractUsing.cs,
+	  MonoDevelop.Projects.Parser/DatabaseGeneratorTool.cs,
+	  MonoDevelop.Projects.Parser/CompoundClass.cs,
+	  MonoDevelop.Projects.Parser/ClassInformationEventHandler.cs,
+	  MonoDevelop.Projects.Parser/Tag.cs,
+	  MonoDevelop.Projects.Parser/IAttribute.cs,
+	  MonoDevelop.Projects.Parser/NamespaceEntry.cs,
+	  MonoDevelop.Projects.Parser/LanguageItemCollection.cs,
+	  MonoDevelop.Projects.Parser/DefaultParserService.cs,
+	  MonoDevelop.Projects.Parser/CommentTasksChangedEventHandler.cs,
+	  MonoDevelop.Projects.Parser/ICompilationUnitBase.cs,
+	  MonoDevelop.Projects.Parser/PersistentAttribute.cs,
+	  MonoDevelop.Projects.Parser/AssemblyInformation.cs,
+	  MonoDevelop.Projects.Parser/AssemblyInformationEventHandler.cs,
+	  MonoDevelop.Projects.Parser/ICompilationUnit.cs,
+	  MonoDevelop.Projects.Parser/IParameter.cs,
+	  MonoDevelop.Projects.Parser/PersistentGenericParamater.cs,
+	  MonoDevelop.Projects.Parser/IEvent.cs,
+	  MonoDevelop.Projects.Parser/IReturnType.cs,
+	  MonoDevelop.Projects.Parser/ReflectionParameter.cs,
+	  MonoDevelop.Projects.Parser/AbstractMember.cs,
+	  MonoDevelop.Projects.Parser/ReflectionEvent.cs,
+	  MonoDevelop.Projects.Parser/Namespace.cs,
+	  MonoDevelop.Projects.Parser/IField.cs,
+	  MonoDevelop.Projects.Parser/IRegion.cs,
+	  MonoDevelop.Projects.Parser/ReflectionField.cs,
+	  MonoDevelop.Projects.Parser/IExpressionFinder.cs,
+	  MonoDevelop.Projects.Parser/PersistentParameter.cs,
+	  MonoDevelop.Projects.Parser/FileEntry.cs,
+	  MonoDevelop.Projects.Parser/PersistentReturnType.cs,
+	  MonoDevelop.Projects.Parser/PersistentEvent.cs,
+	  MonoDevelop.Projects.Parser/PersistentField.cs,
+	  MonoDevelop.Projects.Parser/ExpressionContext.cs,
+	  MonoDevelop.Projects.Parser/AbstractNamedEntity.cs,
+	  MonoDevelop.Projects.Parser/IParser.cs,
+	  MonoDevelop.Projects.Parser/PersistentAttributeSection.cs,
+	  MonoDevelop.Projects.Parser/GenericParameterList.cs,
+	  MonoDevelop.Projects.Parser/DefaultClass.cs,
+	  MonoDevelop.Projects.Parser/ITypeNameResolver.cs,
+	  MonoDevelop.Projects.Parser/CommentCollection.cs,
+	  MonoDevelop.Projects.Parser/IMember.cs,
+	  MonoDevelop.Projects.Parser/ProjectCodeCompletionDatabase.cs,
+	  MonoDevelop.Projects.Parser/DefaultMethod.cs,
+	  MonoDevelop.Projects.Parser/ClassEntry.cs,
+	  MonoDevelop.Projects.Parser/TagCollection.cs,
+	  MonoDevelop.Projects.Parser/DefaultProperty.cs,
+	  MonoDevelop.Projects.Parser/ReflectionMethod.cs,
+	  MonoDevelop.Projects.Parser/ParameterCollection.cs,
+	  MonoDevelop.Projects.Parser/ExpressionResult.cs,
+	  MonoDevelop.Projects.Parser/ReflectionProperty.cs,
+	  MonoDevelop.Projects.Parser/PropertyCollection.cs,
+	  MonoDevelop.Projects.Parser/Comment.cs,
+	  MonoDevelop.Projects.Parser/SimpleCodeCompletionDatabase.cs,
+	  MonoDevelop.Projects.Parser/ClassWrapper.cs,
+	  MonoDevelop.Projects.Parser/IIndexer.cs,
+	  MonoDevelop.Projects.Parser/ClassType.cs,
+	  MonoDevelop.Projects.Parser/DefaultAttribute.cs,
+	  MonoDevelop.Projects.Parser/ReflectionIndexer.cs,
+	  MonoDevelop.Projects.Parser/ILanguageItem.cs,
+	  MonoDevelop.Projects.Parser/IComment.cs,
+	  MonoDevelop.Projects.Parser/PersistentIndexer.cs,
+	  MonoDevelop.Projects.Parser/ClassCollection.cs,
+	  MonoDevelop.Projects.Parser/DefaultCompilationUnit.cs,
+	  MonoDevelop.Projects.Parser/ModifierEnum.cs,
+	  MonoDevelop.Projects.Parser/DefaultParameter.cs,
+	  MonoDevelop.Projects.Parser/IParserService.cs,
+	  MonoDevelop.Projects.Parser/DefaultReturnType.cs,
+	  MonoDevelop.Projects.Parser/DefaultEvent.cs,
+	  MonoDevelop.Projects.Parser/DefaultField.cs,
+	  MonoDevelop.Projects.Parser/DefaultRegion.cs,
+	  MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs,
+	  MonoDevelop.Projects.Parser/ReflectionReturnType.cs,
+	  MonoDevelop.Projects.Parser/ParameterModifier.cs,
+	  MonoDevelop.Projects.Parser/LocalVariable.cs,
+	  MonoDevelop.Projects.Parser/AttributeSectionCollection.cs,
+	  MonoDevelop.Projects.Parser/IUsingCollection.cs: Removed old dom
+	  (GPLed code goes down from over 30% to under 10%)
+
+2008-07-29  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs,
+	  MonoDevelop.Projects.Dom.Output/OutputFlags.cs,
+	  MonoDevelop.Projects.Dom/IMember.cs,
+	  MonoDevelop.Projects.Dom/DomParameter.cs,
+	  MonoDevelop.Projects.Dom/IParameter.cs,
+	  MonoDevelop.Projects.Dom/AbstractMember.cs,
+	  MonoDevelop.Projects.CodeGeneration/RefactorerContext.cs,
+	  MonoDevelop.Projects.CodeGeneration/IRefactorer.cs,
+	  MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs,
+	  MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs: Converted
+	  refactoring infrastructure to new dom.
+
+2008-07-28  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Projects.Dom/CompilationUnit.cs,
+	  MonoDevelop.Projects.Dom/ICompilationUnit.cs: Use the FoldingRegion
+	  class for folding regions.
+
+2008-07-27  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom.Database/DatabaseType.cs: database type
+	  caches compilation unit.
+
+2008-07-27  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom.CodeGeneration,
+	  MonoDevelop.Projects.Dom.CodeGeneration/CodeRefactorer.cs,
+	  MonoDevelop.Projects.Dom.CodeGeneration/ICodeGenerator.cs,
+	  MonoDevelop.Projects.Dom.Parser/DatabaseProjectDom.cs,
+	  MonoDevelop.Projects.Dom.Parser/AbstractParser.cs,
+	  MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
+	  MonoDevelop.Projects.Dom.Parser/IParser.cs,
+	  MonoDevelop.Projects.Dom.Parser/ProjectDom.cs,
+	  MonoDevelop.Projects.Dom.Parser/IResolver.cs,
+	  MonoDevelop.Projects.Dom.Output/Ambience.cs,
+	  MonoDevelop.Projects.Dom.Output/AmbienceService.cs,
+	  MonoDevelop.Projects.Dom.Output/NetAmbience.cs,
+	  MonoDevelop.Projects.Dom/ResolveResult.cs,
+	  MonoDevelop.Projects.Dom/DomCecilParameter.cs,
+	  MonoDevelop.Projects.Dom/DomType.cs,
+	  MonoDevelop.Projects.Dom/DomCecilField.cs,
+	  MonoDevelop.Projects.Dom/DomCecilProperty.cs,
+	  MonoDevelop.Projects.Dom/PreProcessorDefine.cs,
+	  MonoDevelop.Projects.Dom/IDocumentMetainformation.cs,
+	  MonoDevelop.Projects.Dom/IAttribute.cs,
+	  MonoDevelop.Projects.Dom/NamespaceEntry.cs,
+	  MonoDevelop.Projects.Dom/CompilationUnit.cs,
+	  MonoDevelop.Projects.Dom/DomMethod.cs,
+	  MonoDevelop.Projects.Dom/DomCecilType.cs,
+	  MonoDevelop.Projects.Dom/DomTypeProxy.cs,
+	  MonoDevelop.Projects.Dom/ICompilationUnit.cs,
+	  MonoDevelop.Projects.Dom/IReturnType.cs,
+	  MonoDevelop.Projects.Dom/AbstractMember.cs,
+	  MonoDevelop.Projects.Dom/IExpressionFinder.cs,
+	  MonoDevelop.Projects.Dom/FileEntry.cs,
+	  MonoDevelop.Projects.Dom/DomLocation.cs,
+	  MonoDevelop.Projects.Dom/ProjectCodeCompletionDatabase.cs,
+	  MonoDevelop.Projects.Dom/DomCecilMethod.cs,
+	  MonoDevelop.Projects.Dom/IMember.cs,
+	  MonoDevelop.Projects.Dom/DomReturnType.cs,
+	  MonoDevelop.Projects.Dom/DomRegion.cs,
+	  MonoDevelop.Projects.Dom/DomUsing.cs,
+	  MonoDevelop.Projects.Dom/FoldingRegion.cs,
+	  MonoDevelop.Projects.Dom/ClassEntry.cs,
+	  MonoDevelop.Projects.Dom/Comment.cs,
+	  MonoDevelop.Projects.Dom/SimpleCodeCompletionDatabase.cs,
+	  MonoDevelop.Projects.Dom/DomAttribute.cs,
+	  MonoDevelop.Projects.Dom/DefaultParserContext.cs,
+	  MonoDevelop.Projects.Dom/DomCecilReturnType.cs,
+	  MonoDevelop.Projects.Dom/Modifiers.cs,
+	  MonoDevelop.Projects.Dom/DomPersistence.cs,
+	  MonoDevelop.Projects.Dom/DomProperty.cs,
+	  MonoDevelop.Projects.Dom/CodeCompletionDatabase.cs,
+	  MonoDevelop.Projects.Dom/DomCecilAttribute.cs,
+	  MonoDevelop.Projects.Dom.Database,
+	  MonoDevelop.Projects.Dom.Database/SqliteUtils.cs,
+	  MonoDevelop.Projects.Dom.Database/DatabaseCommand.cs,
+	  MonoDevelop.Projects.Dom.Database/HyenaSqliteCommand.cs,
+	  MonoDevelop.Projects.Dom.Database/DatabaseMethod.cs,
+	  MonoDevelop.Projects.Dom.Database/DatabaseParameter.cs,
+	  MonoDevelop.Projects.Dom.Database/HyenaSqliteConnection.cs,
+	  MonoDevelop.Projects.Dom.Database/DatabaseColumnAttribute.cs,
+	  MonoDevelop.Projects.Dom.Database/DatabaseType.cs,
+	  MonoDevelop.Projects.Dom.Database/DatabaseEvent.cs,
+	  MonoDevelop.Projects.Dom.Database/DatabaseField.cs,
+	  MonoDevelop.Projects.Dom.Database/CodeCompletionDatabase.cs,
+	  MonoDevelop.Projects.Dom.Database/DatabaseProperty.cs,
+	  MonoDevelop.Projects.Dom.Database/DateTimeUtil.cs,
+	  MonoDevelop.Projects.Parser/DefaultParserService.cs: Worked on new
+	  dom/completion/database.
 
 2008-07-21  Lluis Sanchez Gual <lluis@novell.com> 
 

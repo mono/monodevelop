@@ -43,7 +43,6 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects.Gui.Completion;
 
-using CSharpBinding.Parser.SharpDevelopTree;
 using ICSharpCode.NRefactory.Visitors;
 using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Ast;
@@ -51,7 +50,7 @@ using ICSharpCode.NRefactory;
 
 namespace MonoDevelop.CSharpBinding
 {
-	public class NRefactoryResolver
+	public class NRefactoryResolver : IResolver
 	{
 		ProjectDom dom;
 		SupportedLanguage lang;
@@ -60,6 +59,8 @@ namespace MonoDevelop.CSharpBinding
 		IMember callingMember;
 		ICompilationUnit unit;
 		LookupTableVisitor lookupTableVisitor;
+		DomLocation resolvePosition;
+		string fileName;
 		
 		public IType CallingType {
 			get {
@@ -71,6 +72,9 @@ namespace MonoDevelop.CSharpBinding
 			get {
 				return callingMember;
 			}
+			set {
+				callingMember = value;
+			}
 		}
 
 		public ProjectDom Dom {
@@ -79,38 +83,69 @@ namespace MonoDevelop.CSharpBinding
 			}
 		}
 		
-		public static IType GetTypeAtCursor (ProjectDom dom, string fileName, TextEditor editor)
+		public ICompilationUnit Unit {
+			get {
+				return unit;
+			}
+		}
+
+		public static IType GetTypeAtCursor (IType outerType, string fileName, DomLocation position)
 		{
-			foreach (IType type in dom.GetTypesFrom (fileName)) {
-				if (type.BodyRegion.Contains (editor.CursorLine, editor.CursorColumn))
-					return type;
+			foreach (IType type in outerType.InnerTypes) {
+				if (type.BodyRegion.Contains (position))
+					return GetTypeAtCursor (type, fileName, position);
+			}
+			return outerType;
+		}
+		
+		public static IType GetTypeAtCursor (ICompilationUnit unit, string fileName, DomLocation position)
+		{
+			if (unit == null)
+				return null;
+			foreach (IType type in unit.Types) {
+				if (type.BodyRegion.Contains (position))
+					return GetTypeAtCursor (type, fileName, position);
 			}
 			return null;
 		}
 		
-		public NRefactoryResolver (ProjectDom dom, SupportedLanguage lang, TextEditor editor, string fileName)
+		public NRefactoryResolver (ProjectDom dom, ICompilationUnit unit, SupportedLanguage lang, TextEditor editor, string fileName)
 		{
-			this.lang   = lang;
-			this.editor = editor;
-			
-			lookupTableVisitor = new LookupTableVisitor (lang);
+			this.unit = unit;
 			
 			this.dom = dom;
-			unit = dom.GetCompilationUnit (fileName);
-			callingType = GetTypeAtCursor (dom, fileName, editor);
+			this.lang   = lang;
+			this.editor = editor;
+			this.fileName = fileName;
+		}
+		
+		ICSharpCode.NRefactory.Ast.CompilationUnit memberCompilationUnit;
+		public ICSharpCode.NRefactory.Ast.CompilationUnit MemberCompilationUnit {
+			get {
+				return this.memberCompilationUnit;
+			}
+		}
+		
+		internal void SetupResolver (DomLocation resolvePosition)
+		{
+			this.resolvePosition = resolvePosition;
+			lookupTableVisitor = new LookupTableVisitor (lang);
 			
+			callingType = GetTypeAtCursor (unit, fileName, resolvePosition);
 			if (callingType != null) {
 				foreach (IMember member in callingType.Members) {
-					if (member.BodyRegion.Contains (editor.CursorLine, editor.CursorColumn)) {
+					if (member.Location.Line == resolvePosition.Line || member.BodyRegion.Contains (resolvePosition)) {
 						callingMember = member;
 						break;
 					}
 				}
 			}
-			if (callingMember != null) {
+			
+			if (callingMember != null && editor != null) {
 				string wrapper = CreateWrapperClassForMember (callingMember);
 				ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (lang, new StringReader (wrapper));
 				parser.Parse ();
+				memberCompilationUnit = parser.CompilationUnit;
 				lookupTableVisitor.VisitCompilationUnit (parser.CompilationUnit, null);
 			}
 		}
@@ -132,7 +167,7 @@ namespace MonoDevelop.CSharpBinding
 					provider.AddCompletionData (new CodeCompletionData (parameter.Name, "md-literal"));
 				}
 			}
-			MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col = new MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector ();
+			MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col = new MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector (dom, unit);
 			foreach (IType type in dom.GetInheritanceTree (CallingType)) {
 				foreach (IMember member in type.Members) {
 //					if (member.IsAccessibleFrom (dom, CallingMember)) {
@@ -146,37 +181,41 @@ namespace MonoDevelop.CSharpBinding
 		{
 			AddContentsFromClassAndMembers (provider);
 			
-			foreach (KeyValuePair<string, List<LocalLookupVariable>> pair in lookupTableVisitor.Variables) {
-				if (pair.Value != null && pair.Value.Count > 0) {
-					foreach (LocalLookupVariable v in pair.Value) {
-						provider.AddCompletionData (new CodeCompletionData (pair.Key, "md-literal"));
-					}
-				}
-			}
-			if (CallingMember is IProperty) {
-				IProperty property = (IProperty)callingMember;
-				if (property.HasSet && property.SetMethod.BodyRegion.Contains (editor.CursorLine - 1, editor.CursorColumn - 1)) 
-					provider.AddCompletionData (new CodeCompletionData ("value", "md-literal"));
-			}
-			if (CallingMember is IEvent) {
-				provider.AddCompletionData (new CodeCompletionData ("value", "md-literal"));
-			}
-			MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col = new MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector ();
-			foreach (object o in dom.GetNamespaceContents ("", true, true)) {
-				col.AddCompletionData (provider, o);
-			}
-			if (unit != null && unit.Usings != null) {
-				foreach (IUsing u in unit.Usings) {
-					if (u.Namespaces == null)
-						continue;
-					foreach (string ns in u.Namespaces) {
-						foreach (object o in dom.GetNamespaceContents (ns, true, true)) {
-							col.AddCompletionData (provider, o);
+			if (lookupTableVisitor != null && lookupTableVisitor.Variables != null) {
+				foreach (KeyValuePair<string, List<LocalLookupVariable>> pair in lookupTableVisitor.Variables) {
+					if (pair.Value != null && pair.Value.Count > 0) {
+						foreach (LocalLookupVariable v in pair.Value) {
+							provider.AddCompletionData (new CodeCompletionData (pair.Key, "md-literal"));
 						}
 					}
 				}
 			}
 			
+			if (CallingMember is IProperty) {
+				IProperty property = (IProperty)callingMember;
+				if (property.HasSet && editor != null && property.SetRegion.Contains (resolvePosition.Line - 1, editor.CursorColumn - 1)) 
+					provider.AddCompletionData (new CodeCompletionData ("value", "md-literal"));
+			}
+			
+			if (CallingMember is IEvent) {
+				provider.AddCompletionData (new CodeCompletionData ("value", "md-literal"));
+			}
+			
+			List<string> namespaceList = new List<string> ();
+			namespaceList.Add ("");
+			if (unit != null && unit.Usings != null) {
+				foreach (IUsing u in unit.Usings) {
+					if (u.Namespaces == null)
+						continue;
+					foreach (string ns in u.Namespaces) {
+						namespaceList.Add (ns);
+					}
+				}
+			}
+			MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col = new MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector (dom, unit);
+			foreach (object o in dom.GetNamespaceContents (namespaceList, true, true)) {
+				col.AddCompletionData (provider, o);
+			}
 		}
 		
 		Expression ParseExpression (ExpressionResult expressionResult)
@@ -184,72 +223,173 @@ namespace MonoDevelop.CSharpBinding
 			if (expressionResult == null || String.IsNullOrEmpty (expressionResult.Expression))
 				return null;
 			string expr = expressionResult.Expression.Trim ();
-			System.Console.WriteLine("Parse:" + expr);
 			ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (this.lang, new StringReader (expr));
 			return parser.ParseExpression();
 		}
 		
-		public ResolveResult Resolve (ExpressionResult expressionResult)
+		public ResolveResult ResolveIdentifier (string identifier, DomLocation resolvePosition)
 		{
-			Expression expr = ParseExpression (expressionResult);
+			this.SetupResolver (resolvePosition);
+			ResolveVisitor visitor = new ResolveVisitor (this);
+			ResolveResult result = this.ResolveIdentifier (visitor, identifier);
+			return result;
+		}
+		
+		public ResolveResult ResolveExpression (Expression expr, DomLocation resolvePosition)
+		{
+			this.expr = expr;
+			this.SetupResolver (resolvePosition);
+			ResolveVisitor visitor = new ResolveVisitor (this);
+			ResolveResult result = visitor.Resolve (expr);
+			return result;
+		}
+		
+		Expression expr;
+		public Expression ResolvedExpression {
+			get {
+				return expr;
+			}
+		}
+		public ResolveResult Resolve (ExpressionResult expressionResult, DomLocation resolvePosition)
+		{
+			this.SetupResolver (resolvePosition);
+			expr = ParseExpression (expressionResult);
 			if (expr == null) {
 				System.Console.WriteLine("Can't parse expression");
 				return null;
 			}
-			System.Console.WriteLine("visit:" + expr);
 			ResolveVisitor visitor = new ResolveVisitor (this);
 			
 			ResolveResult result = visitor.Resolve (expr);
-			System.Console.WriteLine("resolve result:" + result);
 			return result;
 		}
 		
-		public static DomReturnType ConvertTypeReference (TypeReference typeRef)
+		public static IReturnType ConvertTypeReference (TypeReference typeRef)
 		{
-			DomReturnType result = new DomReturnType (typeRef.Type);
+			DomReturnType result = new DomReturnType (typeRef.SystemType ?? typeRef.Type);
 			foreach (TypeReference genericArgument in typeRef.GenericTypes) {
 				result.AddTypeParameter (ConvertTypeReference (genericArgument));
+			}
+			result.PointerNestingLevel = typeRef.PointerNestingLevel;
+			if (typeRef.IsArrayType) {
+				result.ArrayDimensions = typeRef.RankSpecifier.Length;
+				for (int i = 0; i < typeRef.RankSpecifier.Length; i++) {
+					result.SetDimension (i, typeRef.RankSpecifier[i]);
+				}
 			}
 			return result;
 		}
 		
-		void ResolveType (IReturnType type)
+		IReturnType ResolveType (IReturnType type)
 		{
-			SearchTypeResult searchedTypeResult = dom.SearchType (new SearchTypeRequest (unit, -1, -1, type.FullName));
-			if (searchedTypeResult != null && searchedTypeResult.Result != null) 
-				type.FullName = searchedTypeResult.Result.FullName;
+			return ResolveType (unit, type);
 		}
 		
-		public ResolveResult ResolveIdentifier (string identifier)
+		IReturnType ResolveType (ICompilationUnit unit, IReturnType type)
+		{
+			if (type == null)
+				return DomReturnType.Void;
+			IType resolvedType = dom.SearchType (new SearchTypeRequest (unit, type));
+			if (resolvedType != null) {
+				type.Namespace = resolvedType.Namespace;
+				type.Name      = resolvedType.Name;
+			}
+			return type;
+		}
+		
+		public ResolveResult ResolveLambda (ResolveVisitor visitor, Expression lambdaExpression)
+		{
+			if (lambdaExpression.Parent is LambdaExpression) 
+				return ResolveLambda (visitor, lambdaExpression.Parent as Expression);
+			if (lambdaExpression.Parent is ParenthesizedExpression) 
+				return ResolveLambda (visitor, lambdaExpression.Parent as Expression);
+			if (lambdaExpression.Parent is AssignmentExpression) 
+				return visitor.Resolve (((AssignmentExpression)lambdaExpression.Parent).Left);
+			if (lambdaExpression.Parent is CastExpression)
+				return visitor.Resolve (((CastExpression)lambdaExpression.Parent));
+			if (lambdaExpression.Parent is VariableDeclaration) {
+				VariableDeclaration varDec = (VariableDeclaration)lambdaExpression.Parent;
+				return visitor.CreateResult (varDec.TypeReference);
+			}
+			
+			if (lambdaExpression.Parent is ObjectCreateExpression) {
+				ObjectCreateExpression objectCreateExpression = (ObjectCreateExpression)lambdaExpression.Parent;
+				int index = objectCreateExpression.Parameters.IndexOf (lambdaExpression);
+				if (index < 0)
+					return null;
+				MemberResolveResult resolvedCreateExpression = visitor.Resolve (objectCreateExpression) as MemberResolveResult;
+				
+				if (resolvedCreateExpression != null) {
+					IMethod method = resolvedCreateExpression.ResolvedMember as IMethod;
+					if (method!= null && index < method.Parameters.Count) {
+						return new ParameterResolveResult (method.Parameters[index]);
+					} else {
+						return null;
+					}
+				}
+			}
+			
+			
+			return null;
+		}
+		
+		public ResolveResult ResolveIdentifier (ResolveVisitor visitor, string identifier)
 		{
 			ResolveResult result = null;
-			SearchTypeResult searchedTypeResult;
 			foreach (KeyValuePair<string, List<LocalLookupVariable>> pair in this.lookupTableVisitor.Variables) {
 				if (identifier == pair.Key) {
-					result = new MemberResolveResult ();
 					LocalLookupVariable var = pair.Value[pair.Value.Count - 1];
-					DomReturnType varType = ConvertTypeReference (var.TypeRef);
-					ResolveType (varType);
+					
+					IReturnType varType = null;
+					if ((var.TypeRef == null || var.TypeRef.Type == "var" || var.TypeRef.IsNull)) {
+						if (var.ParentLambdaExpression != null) 
+							varType = ResolveLambda (visitor, var.ParentLambdaExpression).ResolvedType;
+						if (var.Initializer != null) 
+							varType = visitor.Resolve (var.Initializer).ResolvedType;
+					} else { 
+						varType = ConvertTypeReference (var.TypeRef);
+					}
+					varType = ResolveType (varType);
+					
+					result = new LocalVariableResolveResult (new LocalVariable (this.CallingMember, identifier, varType, new DomRegion (var.StartPos.Line, var.StartPos.Column, var.EndPos.Line, var.EndPos.Column)), var.IsLoopVariable);
 					result.ResolvedType = varType;
 					goto end;
 				}
 			}
 			
-			if (this.callingType != null) {
+			if (this.callingType != null && dom != null) {
+				List<IMember> members = new List <IMember> ();
 				foreach (IType type in dom.GetInheritanceTree (callingType)) {
-					List<IMember> members = type.SearchMember (identifier, true);
-					if (members != null &&  members.Count > 0) {
-						result = new MemberResolveResult ();
-						result.ResolvedType = members[0].ReturnType;
-						goto end;
+					members.AddRange (type.SearchMember (identifier, true));
+				}
+				
+				// filter members
+				if (this.CallingMember != null) {
+					for (int i = 0; i < members.Count; i++) {
+						if (this.CallingMember.IsStatic && !members[i].IsStatic || !members[i].IsAccessibleFrom (dom, this.CallingMember)) {
+							members.RemoveAt (i);
+							i--;
+							continue;
+						}
 					}
+				}
+				
+				if (members.Count > 0) {
+					if (members[0] is IMethod) {
+						result = new MethodResolveResult (members);
+					} else {
+						result = new MemberResolveResult (members[0]);
+					}
+					result.ResolvedType = ResolveType (members[0].ReturnType);
+					goto end;
 				}
 			}
 			
 			if (this.callingMember != null) {
 				if (identifier == "value" && this.callingMember is IProperty) {
-					result = new MemberResolveResult ();
+					result = new MemberResolveResult (this.callingMember);
 					result.ResolvedType = ((IProperty)this.callingMember).ReturnType;
+					ResolveType (result.ResolvedType);
 					goto end;
 				}
 				if (this.callingMember is IMethod || this.callingMember is IProperty) {
@@ -257,7 +397,7 @@ namespace MonoDevelop.CSharpBinding
 					if (prms != null) {
 						foreach (IParameter para in prms) {
 							if (para.Name == identifier) {
-								result = new MemberResolveResult ();
+								result = new ParameterResolveResult (para);
 								result.ResolvedType = para.ReturnType;
 								ResolveType (result.ResolvedType);
 								goto end;
@@ -267,17 +407,31 @@ namespace MonoDevelop.CSharpBinding
 				}
 			}
 			
-			searchedTypeResult = dom.SearchType (new SearchTypeRequest (unit, -1, -1, identifier));
-			if (searchedTypeResult != null) {
-				result = new MemberResolveResult (true);
-				result.ResolvedType = searchedTypeResult.Result;
+			IType searchedType = dom.SearchType (new SearchTypeRequest (unit, -1, -1, identifier));
+			if (searchedType != null) {
+				result = new MemberResolveResult (null, true);
+				result.ResolvedType = new DomReturnType (searchedType);
 				goto end;
 			}
 			
-			if (dom.NamespaceExists (identifier)) {
+			if (dom.NamespaceExists (identifier, true)) {
 				result = new NamespaceResolveResult (identifier);
 				goto end;
 			}
+
+			if (unit.Usings != null) {
+				foreach (IUsing u in unit.Usings) {
+					if (!u.IsFromNamespace)
+						continue;
+					foreach (string ns in u.Namespaces) {
+						if (dom.NamespaceExists (ns + "."  + identifier, true)) {
+							result = new NamespaceResolveResult (ns + "."  + identifier);
+							goto end;
+						}
+					}
+				}
+			}
+				
 			
 		end:
 			if (result != null) {

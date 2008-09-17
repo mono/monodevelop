@@ -38,7 +38,8 @@ using System.Collections.Specialized;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.Gui.Dialogs;
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
@@ -176,8 +177,8 @@ namespace MonoDevelop.Ide.Gui
 				return ((WorkspaceItem)owner).ContainsItem (target);
 			return false;
 		}
-		
-		string GetDeclaredFile(ILanguageItem item)
+		/*
+		string GetDeclaredFile(IMember item)
 		{			
 			if (item is IMember) {
 				IMember mem = (IMember) item;				
@@ -186,7 +187,7 @@ namespace MonoDevelop.Ide.Gui
 				else if (mem.Region.FileName != null)
 					return mem.Region.FileName;
 				else if (mem.DeclaringType != null) {
-					foreach (IClass c in mem.DeclaringType.Parts) {
+					foreach (IType c in mem.DeclaringType.Parts) {
 						if ((mem is IField && c.Fields.Contains((IField)mem)) ||
 						    (mem is IEvent && c.Events.Contains((IEvent)mem)) || 
 						    (mem is IProperty  && c.Properties.Contains((IProperty)mem)) ||
@@ -195,26 +196,39 @@ namespace MonoDevelop.Ide.Gui
 						}                                   
 					}
 				}
-			} else if (item is IClass) {
-				IClass cls = (IClass) item;
+			} else if (item is IType) {
+				IType cls = (IType) item;
 				return GetClassFileName (cls);
-			} else if (item is LocalVariable) {
-				LocalVariable cls = (LocalVariable) item;
+			} else if (item is MonoDevelop.Projects.Parser.LocalVariable) {
+				MonoDevelop.Projects.Parser.LocalVariable cls = (MonoDevelop.Projects.Parser.LocalVariable) item;
 				return cls.Region.FileName;
 			}
 			return null;
 		}
 		
-		public bool CanJumpToDeclaration (ILanguageItem item)
+		public bool CanJumpToDeclaration (IMember item)
 		{
 			return (GetDeclaredFile(item) != null);
-		}
+		}*/
 		
+		public bool CanJumpToDeclaration (MonoDevelop.Projects.Dom.IMember member)
+		{
+			if (member == null) 
+				return false;
+			if (member is MonoDevelop.Projects.Dom.IType) {
+				return ((MonoDevelop.Projects.Dom.IType)member).CompilationUnit != null;
+			}
+			if (member.DeclaringType == null) 
+				return false ;
+			return member.DeclaringType.CompilationUnit != null;
+		}
+
 		public void JumpToDeclaration (MonoDevelop.Projects.Dom.IMember member)
 		{
 			if (member == null) 
 				return;
 			if (member is MonoDevelop.Projects.Dom.IType) {
+				System.Console.WriteLine(((MonoDevelop.Projects.Dom.IType)member).CompilationUnit.FileName + " loc:" + member.Location);
 				MonoDevelop.Ide.Gui.IdeApp.Workbench.OpenDocument (((MonoDevelop.Projects.Dom.IType)member).CompilationUnit.FileName,
 				                                                   member.Location.Line,
 				                                                   member.Location.Column,
@@ -222,13 +236,14 @@ namespace MonoDevelop.Ide.Gui
 			}
 			if (member.DeclaringType == null) 
 				return;
+			System.Console.WriteLine(member.DeclaringType + " --- " + member.DeclaringType.CompilationUnit.FileName + " loc:" + member.Location);
 			MonoDevelop.Ide.Gui.IdeApp.Workbench.OpenDocument (member.DeclaringType.CompilationUnit.FileName, 
 			                                                   member.Location.Line,
 			                                                   member.Location.Column,
 			                                                   true);
 		}
-		
-		public void JumpToDeclaration (ILanguageItem item)
+		/*
+		public void JumpToDeclaration (IMember item)
 		{
 			String file;
 			if ((file = GetDeclaredFile(item)) == null)
@@ -236,22 +251,22 @@ namespace MonoDevelop.Ide.Gui
 			if (item is IMember) {
 				IMember mem = (IMember) item;
 				IdeApp.Workbench.OpenDocument (file, mem.Region.BeginLine, mem.Region.BeginColumn, true);
-			} else if (item is IClass) {
-				IClass cls = (IClass) item;
+			} else if (item is IType) {
+				IType cls = (IType) item;
 				IdeApp.Workbench.OpenDocument (file, cls.Region.BeginLine, cls.Region.BeginColumn, true);
-			} else if (item is LocalVariable) {
-				LocalVariable lvar = (LocalVariable) item;
+			} else if (item is MonoDevelop.Projects.Parser.LocalVariable) {
+				MonoDevelop.Projects.Parser.LocalVariable lvar = (MonoDevelop.Projects.Parser.LocalVariable) item;
 				IdeApp.Workbench.OpenDocument (file, lvar.Region.BeginLine, lvar.Region.BeginColumn, true);
 			}
-		}
+		}*/
 		
-		string GetClassFileName (IClass cls)
+		string GetClassFileName (IType cls)
 		{
-			if (cls.Region != null && cls.Region.FileName != null)
-				return cls.Region.FileName;
-			if (cls.DeclaredIn is IClass)
-				return GetClassFileName ((IClass) cls.DeclaredIn);
-			else
+			if (cls.CompilationUnit.FileName != null)
+				return cls.CompilationUnit.FileName;
+/*			if (cls.DeclaredIn is IType)
+				return GetClassFileName ((IType) cls.DeclaredIn);
+			else*/
 				return null;
 		}
 

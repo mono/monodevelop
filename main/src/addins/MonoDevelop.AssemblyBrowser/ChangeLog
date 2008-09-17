@@ -1,3 +1,19 @@
+2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui/generated.cs,
+	  gtk-gui/MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget.cs,
+	  MonoDevelop.AssemblyBrowser.mdp: Updated generated code.
+
+2008-09-10  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs: Changed
+	  compilation unit/document meta information interface.
+
+2008-09-05  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.AssemblyBrowser/DomPropertyNodeBuilder.cs: some changed
+	  due dom changes.
+
 2008-09-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs: Renamed
@@ -29,6 +45,19 @@
 
 	* MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs: Fixing
 	  compilation error.
+
+2008-07-27  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.AssemblyBrowser/ModuleDefinitionNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/AssemblyNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/DomEventNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/DomReturnTypeNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/DomFieldNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/DomPropertyNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/NamespaceBuilder.cs: Worked on code
+	  completion/new dom.
 
 2008-07-17  Mike Krüger <mkrueger@novell.com> 
 

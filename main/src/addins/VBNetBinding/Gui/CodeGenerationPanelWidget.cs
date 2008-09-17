@@ -29,7 +29,8 @@
 using System;
 
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Core.Gui;
@@ -112,13 +113,13 @@ namespace MonoDevelop.VBNetBinding
 		{
 			try {
 				classListStore.Clear ();
-				IParserContext ctx = MonoDevelop.Ide.Gui.IdeApp.Workspace.ParserDatabase.GetProjectParserContext (project);
-				foreach (IClass c in ctx.GetProjectContents ()) {
+				ProjectDom ctx = ProjectDomService.GetProjectDom (project);
+				foreach (IType c in ctx.Types) {
 					if (c.Methods == null) 
 						continue;
 					foreach (IMethod m in c.Methods) {
 						if (m.IsStatic && m.Name.ToUpper () == "MAIN")
-							classListStore.AppendValues (c.FullyQualifiedName);
+							classListStore.AppendValues (c.FullName);
 					}
 				}
 			} catch (Exception) {

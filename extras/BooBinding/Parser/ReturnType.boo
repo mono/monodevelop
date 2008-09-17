@@ -22,13 +22,13 @@
 // along with BooBinding; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #endregion
-
+/*
 namespace BooBinding.Parser
 
 import System
 import System.Collections
 import System.Diagnostics
-import MonoDevelop.Projects.Parser
+import MonoDevelop.Projects.Dom
 import MonoDevelop.Core
 import Boo.Lang.Compiler.Ast as AST
 import MonoDevelop.Ide.Gui;
@@ -36,7 +36,7 @@ import MonoDevelop.Ide.Gui;
 /////////////////////////////////////
 ///          Return Type          ///
 /////////////////////////////////////
-class ReturnType(DefaultReturnType):
+class ReturnType(DomReturnType):
 	def constructor(fullyQualifiedName as string):
 		self(fullyQualifiedName, array(int, 0), 0)
 	
@@ -127,7 +127,7 @@ class ReturnType(DefaultReturnType):
 /////////////////////////////////////
 ///     Namespace Return Type     ///
 /////////////////////////////////////
-class NamespaceReturnType(DefaultReturnType):
+class NamespaceReturnType(DomReturnType):
 	def constructor(fullyQualifiedName as string):
 		self.FullyQualifiedName = fullyQualifiedName
 		self.arrayDimensions = array(int, 0)
@@ -139,7 +139,7 @@ class NamespaceReturnType(DefaultReturnType):
 /////////////////////////////////////
 ///      Inferred Return Type     ///
 /////////////////////////////////////
-class InferredReturnType(DefaultReturnType):
+class InferredReturnType(DomReturnType):
 	_expression as AST.Expression
 	
 	_filename as string
@@ -199,3 +199,4 @@ class InferredReturnType(DefaultReturnType):
 			return visitor.ReturnType
 		else:
 			return null
+*/

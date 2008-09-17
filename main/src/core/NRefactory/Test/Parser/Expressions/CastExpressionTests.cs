@@ -2,16 +2,16 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version>$Revision: 1167 $</version>
+//     <version>$Revision: 2676 $</version>
 // </file>
 
 using System;
 using System.IO;
 using NUnit.Framework;
 using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.AST;
+using ICSharpCode.NRefactory.Ast;
 
-namespace ICSharpCode.NRefactory.Tests.AST
+namespace ICSharpCode.NRefactory.Tests.Ast
 {
 	[TestFixture]
 	public class CastExpressionTests
@@ -104,8 +104,42 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			// yes, we really wanted to evaluate .Member on expr and THEN cast the result to MyType
 			CastExpression ce = ParseUtilCSharp.ParseExpression<CastExpression>("(MyType)(expr).Member");
 			Assert.AreEqual("MyType", ce.CastTo.Type);
-			Assert.IsTrue(ce.Expression is FieldReferenceExpression);
+			Assert.IsTrue(ce.Expression is MemberReferenceExpression);
 			Assert.AreEqual(CastType.Cast, ce.CastType);
+		}
+		
+		[Test]
+		public void CSharpTryCastParenthesizedExpression()
+		{
+			CastExpression ce = ParseUtilCSharp.ParseExpression<CastExpression>("(o) as string");
+			Assert.AreEqual("string", ce.CastTo.ToString());
+			Assert.IsTrue(ce.Expression is ParenthesizedExpression);
+			Assert.AreEqual(CastType.TryCast, ce.CastType);
+		}
+		
+		[Test]
+		public void CSharpCastNegation()
+		{
+			CastExpression ce = ParseUtilCSharp.ParseExpression<CastExpression>("(uint)-negativeValue");
+			Assert.AreEqual("uint", ce.CastTo.ToString());
+			Assert.IsTrue(ce.Expression is UnaryOperatorExpression);
+			Assert.AreEqual(CastType.Cast, ce.CastType);
+		}
+		
+		[Test]
+		public void CSharpSubtractionIsNotCast()
+		{
+			BinaryOperatorExpression boe = ParseUtilCSharp.ParseExpression<BinaryOperatorExpression>("(BigInt)-negativeValue");
+			Assert.IsTrue(boe.Left is ParenthesizedExpression);
+			Assert.IsTrue(boe.Right is IdentifierExpression);
+		}
+		
+		[Test]
+		public void CSharpIntMaxValueToBigInt()
+		{
+			CastExpression ce = ParseUtilCSharp.ParseExpression<CastExpression>("(BigInt)int.MaxValue");
+			Assert.AreEqual("BigInt", ce.CastTo.ToString());
+			Assert.IsTrue(ce.Expression is MemberReferenceExpression);
 		}
 		#endregion
 		
