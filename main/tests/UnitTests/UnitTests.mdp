@@ -29,6 +29,9 @@
     <File name="MonoDevelop.Projects/DomPersistenceTests.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.CSharpBinding/TopLevelTests.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.CSharpBinding/MemberTests.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.CSharpBinding/CodeCompletionTests.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.CSharpBinding/TestViewContent.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.CSharpBinding/TestWorkbenchWindow.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
@@ -41,6 +44,10 @@
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Deployment" />
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Autotools" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.CSharpBinding" />
+    <ProjectReference type="Project" localcopy="True" refto="Mono.TextEditor" />
+    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Ide" />
+    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Projects.Gui" />
+    <ProjectReference type="Gac" localcopy="True" refto="gtk-dotnet, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
   </References>
   <GtkDesignInfo />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" ExecuteTargetName="test" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../..">

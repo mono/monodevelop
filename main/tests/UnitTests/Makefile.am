@@ -10,16 +10,23 @@ FIXTURE = /fixture=$(fixture)
 
 REFS =  \
 	$(MONO_NUNIT_LIBS) \
+	-pkg:gtk-dotnet-2.0 \
 	-r:../../build/AddIns/BackendBindings/MonoDevelop.CSharpBinding.dll \
 	-r:../../build/AddIns/MonoDevelop.Autotools/MonoDevelop.Autotools.dll \
 	-r:../../build/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.dll \
+	-r:../../build/bin/Mono.TextEditor.dll \
 	-r:../../build/bin/MonoDevelop.Core.dll \
+	-r:../../build/bin/MonoDevelop.Ide.dll \
 	-r:../../build/bin/MonoDevelop.Projects.dll \
+	-r:../../build/bin/MonoDevelop.Projects.Gui.dll \
 	-r:System \
 	-r:System.Xml
 
 FILES =  \
+	MonoDevelop.CSharpBinding/CodeCompletionTests.cs \
 	MonoDevelop.CSharpBinding/MemberTests.cs \
+	MonoDevelop.CSharpBinding/TestViewContent.cs \
+	MonoDevelop.CSharpBinding/TestWorkbenchWindow.cs \
 	MonoDevelop.CSharpBinding/TopLevelTests.cs \
 	MonoDevelop.Projects/DomCompilationUnitTests.cs \
 	MonoDevelop.Projects/DomPersistenceTests.cs \

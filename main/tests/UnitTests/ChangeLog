@@ -1,3 +1,10 @@
+2008-09-17  Mike Krüger <mkrueger@novell.com> 
+
+	* UnitTests.mdp, MonoDevelop.CSharpBinding/TestViewContent.cs,
+	  MonoDevelop.CSharpBinding/CodeCompletionTests.cs,
+	  MonoDevelop.CSharpBinding/TestWorkbenchWindow.cs, Makefile.am:
+	  Added code completion unit tests.
+
 2008-09-16  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.CSharpBinding/MemberTests.cs: Extended test constructor
