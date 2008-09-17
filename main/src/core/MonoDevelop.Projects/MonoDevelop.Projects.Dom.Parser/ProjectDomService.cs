@@ -331,7 +331,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		public static ProjectDom GetProjectDom (Project project)
 		{
-			if (project == null) return null;
+			if (project == null)
+				return null;
 			return GetDom ("Project:" + project.FileName);
 		}
 		
@@ -422,7 +423,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 		{
 			if (IncLoadCount (project) != 1)
 				return;
-
+			
 			lock (databases)
 			{
 				string uri = "Project:" + project.FileName;
@@ -436,7 +437,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 		}
 
-		static void RegisterDom (ProjectDom dom, string uri)
+		public static void RegisterDom (ProjectDom dom, string uri)
 		{
 			dom.Uri = uri;
 			databasesTable [uri] = dom;
@@ -455,7 +456,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 				ProjectDom db;
 				if (!databases.TryGetValue (uri, out db)) {
 					// Create/load the database
-
+					
 					if (uri.StartsWith ("Assembly:")) {
 						string file = uri.Substring (9);
 						string realUri = uri;

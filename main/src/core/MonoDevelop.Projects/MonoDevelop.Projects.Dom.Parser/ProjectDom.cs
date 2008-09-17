@@ -376,7 +376,46 @@ namespace MonoDevelop.Projects.Dom.Parser
 		public event EventHandler Loaded;
 	}
 
-	class EmptyProjectDom: ProjectDom
+	public class SimpleProjectDom : ProjectDom
+	{
+		List<ICompilationUnit> units = new List<ICompilationUnit> ();
+
+		public void Add (ICompilationUnit unit)
+		{
+			this.units.Add (unit);
+		}
+		
+		public override IType GetType (string typeName, IList<IReturnType> genericArguments, bool deepSearchReferences, bool caseSensitive)
+		{
+			System.Console.WriteLine("GetType:" + typeName);
+			foreach (IType type in Types) {
+				if (type.Name == typeName)
+					return type;
+			}
+			return null;
+		}
+
+		public override IEnumerable<IType> Types {
+			get {
+				foreach (ICompilationUnit unit in units) {
+					foreach (IType type in unit.Types) {
+						yield return type;
+					}
+				}
+			}
+		}
+
+		public override IEnumerable<IType> GetSubclasses (IType type)
+		{
+			yield break;
+		}
+
+		internal override IEnumerable<string> OnGetReferences ()
+		{
+			yield break;
+		}
+	}
+	public class EmptyProjectDom: ProjectDom
 	{
 		public override IType GetType (string typeName, IList<IReturnType> genericArguments, bool deepSearchReferences, bool caseSensitive)
 		{
