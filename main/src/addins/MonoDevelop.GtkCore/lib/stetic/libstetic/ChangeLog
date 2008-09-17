@@ -1,3 +1,7 @@
+2008-09-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* PropertyDescriptor.cs: Use invariant culture when converting types.
+
 2008-07-27  Mike Krüger <mkrueger@novell.com> 
 
 	
