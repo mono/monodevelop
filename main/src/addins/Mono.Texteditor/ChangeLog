@@ -1,3 +1,8 @@
+2008-09-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.TextEditor/CodeSegmentPreviewWindow.cs: Fix crash caused by the
+	  double buffer flag. Dispose resources on destroy.
+
 2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* gtk-gui/generated.cs, gtk-gui/objects.xml: Updated generated code.
