@@ -40,6 +40,7 @@ using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Gui.Completion;
+using MonoDevelop.Projects.Dom.Parser;
 
 using CSharpBinding;
 using CSharpBinding.FormattingStrategy;
@@ -54,6 +55,11 @@ namespace MonoDevelop.CSharpBinding.Gui
 		
 		public CSharpTextEditorCompletion ()
 		{
+		}
+		
+		public CSharpTextEditorCompletion (Document doc)
+		{
+			Initialize (doc);
 		}
 		
 		public override void Initialize ()
