@@ -1,10 +1,2 @@
 <objects attr-sync="on">
-  <object type="MonoDevelop.Database.Sql.Npgsql.NpgsqlCreateDatabaseWidget" palette-category="MonoDevelop.Database.Sql.Npgsql" allow-children="false" base-type="Gtk.Bin">
-    <itemgroups />
-    <signals />
-  </object>
-  <object type="MonoDevelop.Database.Sql.Npgsql.NpgsqlColumnEditorWidget" palette-category="MonoDevelop.Database.Sql.Npgsql" allow-children="false" base-type="Gtk.Bin">
-    <itemgroups />
-    <signals />
-  </object>
 </objects>
