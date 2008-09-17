@@ -1,3 +1,8 @@
+2008-09-17  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/CodeCompletionDataProvider.cs:
+	  Added some functions used by unit testing.
+
 2008-09-16  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Gui.mdp: Update.

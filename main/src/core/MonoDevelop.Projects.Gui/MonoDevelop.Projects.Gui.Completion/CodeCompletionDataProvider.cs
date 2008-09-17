@@ -82,7 +82,11 @@ namespace MonoDevelop.Projects.Gui.Completion
 			insertedPropertiesElements.Clear ();
 			insertedEventElements.Clear ();
 		}
-		
+		public int CompletionDataCount {
+			get {
+				return completionData.Count;
+			}
+		}
 		public bool IsEmpty {
 			get { return completionData.Count == 0; }
 		}
@@ -124,7 +128,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 				AddResolveResult (o, allowInstrinsicNames, typeNameResolver);
 		}
 		*/
-		CodeCompletionData SearchData (string text)
+		public CodeCompletionData SearchData (string text)
 		{
 			foreach (CodeCompletionData ccd in completionData) {
 				if (ccd.Text != null && ccd.Text.Length == 1 && ccd.Text[0] == text) 
