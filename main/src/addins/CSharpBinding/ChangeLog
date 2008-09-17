@@ -1,5 +1,10 @@
 2008-09-17  Mike Krüger <mkrueger@novell.com> 
 
+	* Gui/MemberCompletionData.cs, Gui/NRefactoryResolver.cs,
+	  Gui/CSharpTextEditorCompletion.cs: Fixed code completion issue.
+
+2008-09-17  Mike Krüger <mkrueger@novell.com> 
+
 	* Gui/CSharpTextEditorCompletion.cs: Some changes required for unit
 	  testing.
 

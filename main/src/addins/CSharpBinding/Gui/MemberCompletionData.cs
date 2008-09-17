@@ -59,6 +59,11 @@ namespace MonoDevelop.CSharpBinding
 			this.member = member;
 		}
 		
+		public MemberCompletionData (IMember member, OutputFlags flags) : base (ambience.GetString (member, flags), member.StockIcon)
+		{
+			this.member = member;
+		}
+		
 		static CSharpAmbience ambience = new CSharpAmbience ();
 		bool descriptionCreated = false;
 		
