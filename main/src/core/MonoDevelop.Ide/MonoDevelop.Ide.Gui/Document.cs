@@ -352,6 +352,10 @@ namespace MonoDevelop.Ide.Gui
 			get {
 				return parsedDocument;
 			}
+			set {
+				// for unit testing purposes
+				parsedDocument = value;
+			}
 		}
 		public ICompilationUnit CompilationUnit {
 			get {
