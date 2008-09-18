@@ -27,6 +27,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.ComponentModel;
 
 using Gtk;
 
@@ -315,7 +316,8 @@ namespace MonoDevelop.SourceEditor
 			IParser parser = ProjectDomService.GetParser (fileName, Document.MimeType);
 			if (parser == null)
 				return null;
-			
+
+			// TODO dom Create file dom if there is no project
 			ProjectDom        dom      = ProjectDomService.GetProjectDom (doc.Project);
 			IResolver         resolver = parser.CreateResolver (dom, doc, fileName);
 			IExpressionFinder expressionFinder = parser.CreateExpressionFinder (dom);

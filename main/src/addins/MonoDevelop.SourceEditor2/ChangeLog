@@ -1,3 +1,8 @@
+2008-09-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui/objects.xml,
+	  MonoDevelop.SourceEditor/ExtendibleTextEditor.cs: Flush.
+
 2008-09-16  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Fixed update issue in
