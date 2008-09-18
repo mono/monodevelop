@@ -661,6 +661,10 @@ namespace MonoDevelop.Debugger
 				return string.Empty;
 			}
 		}
+
+		public bool AutoCompleteUniqueMatch {
+			get { return false; }
+		}
 	}
 	
 	class DebugCompletionData: ICompletionData
@@ -694,10 +698,6 @@ namespace MonoDevelop.Debugger
 			get {
 				return item.Name;
 			}
-		}
-
-		public bool AutoCompleteUniqueMatch {
-			get { return false; }
 		}
 	}
 }
