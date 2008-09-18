@@ -53,5 +53,8 @@ namespace MonoDevelop.Html
 			return l.ToArray ();
 		}
 
+		public bool AutoCompleteUniqueMatch {
+			get { return false; }
+		}
 	}
 }

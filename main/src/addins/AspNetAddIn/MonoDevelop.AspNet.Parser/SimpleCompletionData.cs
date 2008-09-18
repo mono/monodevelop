@@ -88,6 +88,10 @@ namespace MonoDevelop.AspNet.Parser
 		{
 			
 		}
+		
+		public bool AutoCompleteUniqueMatch {
+			get { return false; }
+		}
 	}
 	
 	public class LazyCompletionDataProvider : ICompletionDataProvider
@@ -123,6 +127,10 @@ namespace MonoDevelop.AspNet.Parser
 		
 		void IDisposable.Dispose ()
 		{
+		}
+		
+		public bool AutoCompleteUniqueMatch {
+			get { return false; }
 		}
 	}
 }

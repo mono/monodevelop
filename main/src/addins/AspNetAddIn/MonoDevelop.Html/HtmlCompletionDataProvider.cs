@@ -68,5 +68,9 @@ namespace MonoDevelop.Html
 		public event EventHandler CompletionDataChanging;
 
 		public event EventHandler CompletionDataChanged;
+		
+		public bool AutoCompleteUniqueMatch {
+			get { return false; }
+		}
 	}
 }
