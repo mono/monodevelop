@@ -1,3 +1,8 @@
+2008-09-18  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/CSharpTextEditorCompletion.cs: fixed "Bug 427284 - Code
+	  Completion: class list shows the full name of classes".
+
 2008-09-18  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Gui/CompilerOptionsPanelWidget.cs: Properly store properties in the

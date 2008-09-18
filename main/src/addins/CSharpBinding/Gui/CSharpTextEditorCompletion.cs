@@ -132,6 +132,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				int idx = result.Expression.LastIndexOf ('.');
 				if (idx > 0)
 					result.Expression = result.Expression.Substring (0, idx);
+				
 				NRefactoryResolver resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (dom,
 				                                                                                Document.CompilationUnit,
 				                                                                                ICSharpCode.NRefactory.SupportedLanguage.CSharp,
@@ -476,6 +477,16 @@ namespace MonoDevelop.CSharpBinding.Gui
 			ICompilationUnit unit;
 			DomLocation location;
 			
+			string namePrefix = "";
+			public string NamePrefix {
+				get {
+					return namePrefix;
+				}
+				set {
+					namePrefix = value ?? "";
+				}
+			}
+			
 			public CompletionDataCollector (ProjectDom dom, ICompilationUnit unit, DomLocation location)
 			{
 				this.dom  = dom;
@@ -505,7 +516,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 							}
 						}
 					}
-					if (!foundNamespace)
+					if (!foundNamespace && (NamePrefix.Length == 0 || !rt.Namespace.StartsWith (NamePrefix)) && !rt.Namespace.EndsWith ("." + NamePrefix))
 						flags |= OutputFlags.UseFullName;
 					CodeCompletionData cd = new CodeCompletionData (ambience.GetString (rt, flags), "md-class", "");
 					cd.CompletionString = ambience.GetString (rt, flags);
@@ -520,13 +531,14 @@ namespace MonoDevelop.CSharpBinding.Gui
 						bool foundType = false;
 						foreach (IUsing u in unit.Usings) {
 							if (!u.IsFromNamespace || u.Region.Contains (location)) {
+						
 								foreach (string n in u.Namespaces) {
 									if (type.Namespace == n)
 										foundType = true;
 								}
 							}
 						}
-						if (!foundType)
+						if (!foundType && (NamePrefix.Length == 0 || !type.Namespace.StartsWith (NamePrefix)) && !type.Namespace.EndsWith ("." + NamePrefix))
 							flags |= OutputFlags.UseFullName;
 					}
 					CodeCompletionData newData = new MemberCompletionData (member, flags);
@@ -541,7 +553,6 @@ namespace MonoDevelop.CSharpBinding.Gui
 				}
 			}
 		}
-		
 		ICompletionDataProvider CreateCompletionData (ResolveResult resolveResult, ExpressionResult expressionResult, NRefactoryResolver resolver)
 		{
 			if (resolveResult == null || expressionResult == null)
@@ -552,6 +563,8 @@ namespace MonoDevelop.CSharpBinding.Gui
 				return null;
 			IEnumerable<object> objects = resolveResult.CreateResolveResult (dom, resolver != null ? resolver.CallingMember : null);
 			CompletionDataCollector col = new CompletionDataCollector (dom, Document.CompilationUnit, location);
+			col.NamePrefix = expressionResult.Expression;
+			
 			if (objects != null) {
 				foreach (object obj in objects) {
 					if (expressionResult.ExpressionContext != null && expressionResult.ExpressionContext.FilterEntry (obj))
