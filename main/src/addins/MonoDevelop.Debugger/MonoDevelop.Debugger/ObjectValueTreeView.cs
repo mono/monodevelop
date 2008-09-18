@@ -695,5 +695,9 @@ namespace MonoDevelop.Debugger
 				return item.Name;
 			}
 		}
+
+		public bool AutoCompleteUniqueMatch {
+			get { return false; }
+		}
 	}
 }

@@ -1,5 +1,9 @@
 2008-09-18  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Debugger/ObjectValueTreeView.cs: Track api changes.
+
+2008-09-18  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Debugger/ObjectValuePad.cs: Fix nullref.
 
 2008-09-17  Lluis Sanchez Gual <lluis@novell.com> 
