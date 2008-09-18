@@ -102,7 +102,7 @@ namespace MonoDevelop.Debugger
 		
 		void OnFrameChanged (object s, EventArgs a)
 		{
-			if (container.Visible)
+			if (container != null && container.Visible)
 				OnUpdateList ();
 			else
 				needsUpdate = true;
