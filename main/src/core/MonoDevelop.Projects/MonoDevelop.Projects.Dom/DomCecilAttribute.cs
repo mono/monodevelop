@@ -45,8 +45,7 @@ namespace MonoDevelop.Projects.Dom
 		{
 			this.customAttribute = customAttribute;
 			base.attributeType = DomCecilMethod.GetReturnType (customAttribute.Constructor);
-			foreach (object param in customAttribute.ConstructorParameters)
-				base.positionalArguments.Add (param);
+			// TODO dom Read parameters
 //			base.AttributeTarget = customAttribute.ConstructorParameters
 		}
 	}

@@ -1,3 +1,19 @@
+2008-09-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Dom/CompoundType.cs: Avoid adding duplicate
+	  parts. Simplified the Update method. Properly set the base type of
+	  the compound type.
+	* MonoDevelop.Projects.Dom/DomAttribute.cs,
+	  MonoDevelop.Projects.Dom/IAttribute.cs,
+	  MonoDevelop.Projects.Dom/DomCecilAttribute.cs: Named and positional
+	  arguments are now represented using CodeExpression objects.
+	* MonoDevelop.Projects.Dom.Serialization/DomPersistence.cs: Store and
+	  read attribute parameters.
+	* MonoDevelop.Projects.Dom.Serialization/ClassEntry.cs: Set the
+	  HasBaseTypes flag if the class has a base type.
+	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
+	  Bump db version.
+
 2008-09-17  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Serialization/ProjectCodeCompletionDatabase.cs:

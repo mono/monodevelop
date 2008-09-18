@@ -83,6 +83,13 @@ namespace MonoDevelop.Projects.Dom
 		
 		public void AddPart (IType part)
 		{
+			for (int n=0; n<parts.Count; n++) {
+				if (parts [n].CompilationUnit != null && part.CompilationUnit != null && parts [n].CompilationUnit.FileName == part.CompilationUnit.FileName) {
+					parts [n] = part;
+					Update ();
+					return;
+				}
+			}
 			this.parts.Add (part);
 			Update ();
 		}
@@ -113,35 +120,33 @@ namespace MonoDevelop.Projects.Dom
 			this.AddTypeParameter (parts[0].TypeParameters);
 			
 			fieldCount = 0;
-			foreach (IType part in parts)
-				fieldCount += part.FieldCount;
 			methodCount = 0;
-			foreach (IType part in parts)
-				methodCount += part.MethodCount;
 			constructorCount = 0;
-			foreach (IType part in parts)
-				constructorCount += part.ConstructorCount;
 			indexerCount = 0;
-			foreach (IType part in parts)
-				indexerCount += part.IndexerCount;
 			propertyCount = 0;
-			foreach (IType part in parts)
-				propertyCount += part.PropertyCount;
 			eventCount = 0;
-			foreach (IType part in parts)
-				eventCount += part.EventCount;
 			innerTypeCount = 0;
-			foreach (IType part in parts)
-				innerTypeCount += part.InnerTypeCount;
 			
 			this.ClearInterfaceImplementations ();
 			this.ClearAttributes ();
 			Modifiers modifier = Modifiers.None;
+			BaseType = null;
+			
 			foreach (IType part in parts) {
+				fieldCount += part.FieldCount;
+				methodCount += part.MethodCount;
+				constructorCount += part.ConstructorCount;
+				indexerCount += part.IndexerCount;
+				propertyCount += part.PropertyCount;
+				eventCount += part.EventCount;
+				innerTypeCount += part.InnerTypeCount;
 				modifier |= part.Modifiers;
 				this.AddInterfaceImplementations (part.ImplementedInterfaces);
 				this.AddRange (part.Attributes);
+				if (part.BaseType != null && (BaseType == null || BaseType.FullName == "System.Object"))
+					BaseType = part.BaseType;
 			}
+			
 			this.modifiers = modifier;
 		}
 		

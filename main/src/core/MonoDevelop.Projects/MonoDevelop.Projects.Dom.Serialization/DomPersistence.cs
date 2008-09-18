@@ -27,9 +27,11 @@
 //
 
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace MonoDevelop.Projects.Dom.Serialization
 {
@@ -425,6 +427,18 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			attr.Region = ReadRegion (reader, nameTable);
 			attr.AttributeTarget = (AttributeTarget) reader.ReadInt32 ();
 			attr.AttributeType = ReadReturnType (reader, nameTable);
+			CodeExpression[] exps = (CodeExpression[]) DeserializeObject (reader);
+			if (exps != null) {
+				foreach (CodeExpression exp in exps)
+					attr.AddPositionalArgument (exp);
+			}
+
+			Dictionary<string, CodeExpression> nexps = (Dictionary<string, CodeExpression>) DeserializeObject (reader);
+			if (nexps != null) {
+				foreach (KeyValuePair<string, CodeExpression> entry in nexps) {
+					attr.AddNamedArgument (entry.Key, entry.Value);
+				}
+			}
 			return attr;
 		}
 		
@@ -434,6 +448,11 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			Write (writer, nameTable, attr.Region);
 			writer.Write ((int)attr.AttributeTarget);
 			Write (writer, nameTable, attr.AttributeType);
+			CodeExpression[] exps = new CodeExpression [attr.PositionalArguments.Count];
+			attr.PositionalArguments.CopyTo (exps, 0);
+			SerializeObject (writer, exps);
+			Dictionary<string, CodeExpression> nexps = new Dictionary<string, CodeExpression> (attr.NamedArguments);
+			SerializeObject (writer, nexps);
 		}
 		
 		public static uint GetCount<T> (IEnumerable<T> list)
@@ -494,6 +513,31 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				return null;
 			
 			return nameTable.GetStringValue (id);
+		}
+		
+		
+		static BinaryFormatter formatter = new BinaryFormatter ();
+		
+		public static void SerializeObject (BinaryWriter writer, object obj)
+		{
+			if (obj == null)
+				writer.Write (0);
+			else {
+				MemoryStream ms = new MemoryStream ();
+				formatter.Serialize (ms, obj);
+				byte[] data = ms.ToArray ();
+				writer.Write (data.Length);
+				writer.Write (data);
+			}
+		}
+		
+		public static object DeserializeObject (BinaryReader reader)
+		{
+			int len = reader.ReadInt32 ();
+			if (len == 0) return null;
+			byte[] data = reader.ReadBytes (len);
+			MemoryStream ms = new MemoryStream (data);
+			return formatter.Deserialize (ms);
 		}
 		
 		static bool ReadNull (BinaryReader reader)

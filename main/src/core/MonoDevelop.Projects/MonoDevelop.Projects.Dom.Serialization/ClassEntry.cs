@@ -108,7 +108,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				flags |= ContentFlags.HasGenericParams;
 			if (DomPersistence.GetCount (cls.Attributes) > 0)
 				flags |= ContentFlags.HasAttributes;
-			if (DomPersistence.GetCount (cls.ImplementedInterfaces) > 0)
+			if (DomPersistence.GetCount (cls.ImplementedInterfaces) > 0 || (cls.BaseType != null && !cls.BaseType.Equals (DomReturnType.Object)))
 				flags |= ContentFlags.HasBaseTypes;
 			if (cls.CompilationUnit != null)
 				flags |= ContentFlags.HasCompilationUnit;

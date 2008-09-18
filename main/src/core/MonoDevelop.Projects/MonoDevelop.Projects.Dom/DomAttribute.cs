@@ -27,7 +27,10 @@
 //
 
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using MonoDevelop.Core.Collections;
 
 namespace MonoDevelop.Projects.Dom
 {
@@ -38,8 +41,11 @@ namespace MonoDevelop.Projects.Dom
 		protected AttributeTarget attributeTarget;
 		protected IReturnType     attributeType;
 		
-		protected List<object> positionalArguments = new List<object> ();
-		protected Dictionary<string, object> namedArguments = new Dictionary<string, object> ();
+		protected List<CodeExpression> positionalArguments;
+		protected Dictionary<string, CodeExpression> namedArguments;
+
+		static readonly ReadOnlyDictionary<string, CodeExpression> emptyNamedArguments = new ReadOnlyDictionary<string, CodeExpression> (new Dictionary<string, CodeExpression> ());
+		static readonly ReadOnlyCollection<CodeExpression> emptyPositionalArguments = new ReadOnlyCollection<CodeExpression> (new CodeExpression [0]);
 		
 		public string Name {
 			get {
@@ -77,24 +83,44 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 
-		public System.Collections.Generic.IList<object> PositionalArguments {
+		public ReadOnlyCollection<CodeExpression> PositionalArguments {
 			get {
-				return positionalArguments;
+				return positionalArguments != null ? positionalArguments.AsReadOnly() : emptyPositionalArguments;
 			}
 		}
 
-		public System.Collections.Generic.IDictionary<string, object> NamedArguments {
+		public ReadOnlyDictionary<string, CodeExpression> NamedArguments {
 			get {
-				return namedArguments;
+				return namedArguments != null ? new ReadOnlyDictionary<string, CodeExpression> (namedArguments) : emptyNamedArguments;
 			}
+		}
+
+		public void AddPositionalArgument (CodeExpression exp)
+		{
+			if (positionalArguments == null)
+				positionalArguments = new List<CodeExpression> ();
+			positionalArguments.Add (exp);
+		}
+
+		public void AddNamedArgument (string name, CodeExpression exp)
+		{
+			if (namedArguments == null)
+				namedArguments = new Dictionary<string, CodeExpression> ();
+			namedArguments [name] = exp;
 		}
 		
 		public static IAttribute Resolve (IAttribute source, ITypeResolver typeResolver)
 		{
 			DomAttribute result = new DomAttribute ();
+			result.name            = source.Name;
 			result.region          = source.Region;
 			result.attributeTarget = source.AttributeTarget;
 			result.attributeType   = source.AttributeType;
+
+			if (source.PositionalArguments.Count > 0)
+				result.positionalArguments = new List<CodeExpression> (source.PositionalArguments);
+			if (source.NamedArguments.Count > 0)
+				result.namedArguments = new Dictionary<string, CodeExpression> (source.NamedArguments);
 			return result;
 		}
 		

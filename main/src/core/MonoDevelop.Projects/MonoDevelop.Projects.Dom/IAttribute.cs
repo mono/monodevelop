@@ -28,6 +28,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using MonoDevelop.Core.Collections;
+using System.CodeDom;
 
 namespace MonoDevelop.Projects.Dom
 {
@@ -49,11 +52,11 @@ namespace MonoDevelop.Projects.Dom
 			get;
 		}
 		
-		IList<object> PositionalArguments {
+		ReadOnlyCollection<CodeExpression> PositionalArguments {
 			get;
 		}
 		
-		IDictionary<string, object> NamedArguments {
+		ReadOnlyDictionary<string, CodeExpression> NamedArguments {
 			get;
 		}
 	}
