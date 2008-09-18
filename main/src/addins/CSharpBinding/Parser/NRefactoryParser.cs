@@ -31,8 +31,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.CodeDom;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
+using ICSharpCode.NRefactory.Visitors;
 
 namespace MonoDevelop.CSharpBinding
 {
@@ -209,12 +211,17 @@ namespace MonoDevelop.CSharpBinding
 			
 			static void AddAttributes (AbstractMember member, IEnumerable<ICSharpCode.NRefactory.Ast.AttributeSection> attributes)
 			{
+				CodeDomVisitor domVisitor = new CodeDomVisitor ();
 				foreach (ICSharpCode.NRefactory.Ast.AttributeSection attributeSection in attributes) {
 					foreach (ICSharpCode.NRefactory.Ast.Attribute attribute in attributeSection.Attributes) {
 						DomAttribute domAttribute = new DomAttribute ();
 						domAttribute.Name   = attribute.Name;
 						domAttribute.Region = ConvertRegion (attribute.StartLocation, attribute.EndLocation);
 						member.Add (domAttribute);
+						foreach (ICSharpCode.NRefactory.Ast.Expression exp in attribute.PositionalArguments)
+							domAttribute.AddPositionalArgument ((CodeExpression)exp.AcceptVisitor (domVisitor, null));
+						foreach (ICSharpCode.NRefactory.Ast.NamedArgumentExpression nexp in attribute.NamedArguments)
+							domAttribute.AddNamedArgument (nexp.Name, (CodeExpression) nexp.Expression.AcceptVisitor (domVisitor, null));
 					}
 				}
 			}
@@ -285,8 +292,9 @@ namespace MonoDevelop.CSharpBinding
 				}
 				
 				if (typeDeclaration.BaseTypes != null) {
+					
 					foreach (ICSharpCode.NRefactory.Ast.TypeReference type in typeDeclaration.BaseTypes) {
-						if (newType.BaseType == null) {
+						if (type == typeDeclaration.BaseTypes[0]) {
 							newType.BaseType = ConvertReturnType (type);
 						} else {
 							newType.AddInterfaceImplementation (ConvertReturnType (type));

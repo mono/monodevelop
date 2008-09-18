@@ -39,6 +39,8 @@ using MonoDevelop.Projects.Gui.Dialogs;
 namespace CSharpBinding
 {
 	
+	[System.ComponentModel.Category("CSharpBinding")]
+	[System.ComponentModel.ToolboxItem(true)]
 	public partial class CompilerOptionsPanelWidget : Gtk.Bin
 	{
 		DotNetProject project;
@@ -119,7 +121,7 @@ namespace CSharpBinding
 			return true;
 		}
 		
-		public void Store ()
+		public void Store (ItemConfigurationCollection<ItemConfiguration> configs)
 		{
 			int codePage;
 			CompileTarget compileTarget =  (CompileTarget) compileTargetCombo.Active;
@@ -148,11 +150,12 @@ namespace CSharpBinding
 				codePage = 0;
 			
 			project.CompileTarget = compileTarget;
-			foreach (DotNetProjectConfiguration configuration in project.Configurations) {
+			
+			foreach (DotNetProjectConfiguration configuration in configs) {
 				CSharpCompilerParameters compilerParameters = (CSharpCompilerParameters) configuration.CompilationParameters; 
 				
 				compilerParameters.CodePage = codePage;
-				
+
 				if (iconEntry.Sensitive)
 					compilerParameters.Win32Icon = iconEntry.Path;
 				
@@ -217,7 +220,8 @@ namespace CSharpBinding
 		
 		public override void ApplyChanges ()
 		{
-			widget.Store ();
+			MultiConfigItemOptionsDialog dlg = (MultiConfigItemOptionsDialog) ParentDialog;
+			widget.Store (dlg.Configurations);
 		}
 	}
 }

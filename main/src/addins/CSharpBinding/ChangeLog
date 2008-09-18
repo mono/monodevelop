@@ -1,3 +1,12 @@
+2008-09-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Gui/CompilerOptionsPanelWidget.cs: Properly store properties in the
+	  project configurations. The project's configuration list can't be
+	  used because it is duplicated by the properties dialog while it is
+	  being edited.
+	* Parser/NRefactoryParser.cs: Parse positional and named attribute
+	  arguments.
+
 2008-09-17  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* CSharpBinding.mdp: Updated projects.
