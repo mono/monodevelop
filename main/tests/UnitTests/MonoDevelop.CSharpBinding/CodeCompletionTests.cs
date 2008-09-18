@@ -330,6 +330,32 @@ class TestClass
 			Assert.IsNotNull (provider.SearchData ("Test"), "class 'Test' not found.");
 		}
 
+		/// <summary>
+		/// Bug 427294 - Code Completion: completion on values returned by methods doesn't work
+		/// </summary>
+		[Test()]
+		public void TestBug427294 ()
+		{
+			CodeCompletionDataProvider provider = CreateProvider (
+@"class TestClass
+{
+	public TestClass GetTestClass ()
+	{
+	}
+}
+
+class Test
+{
+	public void TestMethod ()
+	{
+		TestClass a;
+		a.GetTestClass ().$
+	}
+}");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.AreEqual (1, provider.CompletionDataCount);
+			Assert.IsNotNull (provider.SearchData ("GetTestClass"), "method 'GetTestClass' not found.");
+		}
 
 
 		[TestFixtureSetUp] 
