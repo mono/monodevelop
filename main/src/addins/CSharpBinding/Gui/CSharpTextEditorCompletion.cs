@@ -465,7 +465,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				return CreateCompletionData (resolveResult, result, resolver);
 			}
 				
-			ICompletionDataProvider provider = CreateCtrlSpaceCompletionData (result);
+			CodeCompletionDataProvider provider = CreateCtrlSpaceCompletionData (result);
 			provider.AutoCompleteUniqueMatch = true;
 			return provider;
 		}
@@ -664,7 +664,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			}
 		}
 		
-		ICompletionDataProvider CreateCtrlSpaceCompletionData (ExpressionResult expressionResult)
+		CodeCompletionDataProvider CreateCtrlSpaceCompletionData (ExpressionResult expressionResult)
 		{
 			NRefactoryResolver resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (dom, Document.CompilationUnit,
 			                                                                                ICSharpCode.NRefactory.SupportedLanguage.CSharp,

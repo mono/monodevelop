@@ -1,3 +1,8 @@
+2008-09-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Gui/CSharpTextEditorCompletion.cs: Track api changes.
+	* gtk-gui/objects.xml, gtk-gui/gui.stetic: Flush.
+
 2008-09-18  Mike Krüger <mkrueger@novell.com> 
 
 	* Gui/ResolveVisitor.cs: fixed "Bug 427294 - Code Completion:
