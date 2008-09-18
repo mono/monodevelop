@@ -103,5 +103,9 @@ namespace MonoDevelop.XmlEditor.Completion
 			
 			return name.Length != 0? name: null;
 		}
+
+		public bool AutoCompleteUniqueMatch {
+			get { return false; }
+		}
 	}
 }

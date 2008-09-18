@@ -170,5 +170,9 @@ namespace MonoDevelop.XmlEditor.Completion
 			
 			return completionData;
 		}		
+
+		public bool AutoCompleteUniqueMatch {
+			get { return false; }
+		}
 	}
 }
