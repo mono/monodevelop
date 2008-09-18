@@ -1,3 +1,8 @@
+2008-09-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/ICompletionDataProvider.cs: No
+	  setter is required. That's up to the implementation.
+
 2008-09-18  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Gui.Completion/ICompletionDataProvider.cs,

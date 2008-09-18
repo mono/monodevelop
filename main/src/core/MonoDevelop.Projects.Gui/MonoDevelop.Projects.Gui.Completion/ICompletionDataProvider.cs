@@ -28,7 +28,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 	{
 		ICompletionData[] GenerateCompletionData (ICompletionWidget widget, char charTyped);
 		string DefaultCompletionString { get; }
-		bool AutoCompleteUniqueMatch { get; set; }
+		bool AutoCompleteUniqueMatch { get; }
 	}
 	
 	public interface IMutableCompletionDataProvider: ICompletionDataProvider
