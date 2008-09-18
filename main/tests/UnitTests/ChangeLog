@@ -1,3 +1,9 @@
+2008-09-18  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.CSharpBinding/CodeCompletionTests.cs: added test for "Bug
+	  427284 - Code Completion: class list shows the full name of
+	  classes".
+
 2008-09-17  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.CSharpBinding/CodeCompletionTests.cs: Added some unit

@@ -113,7 +113,7 @@ namespace ThisOne {
 }");
 			Assert.IsNotNull (provider);
 			Assert.AreEqual (1, provider.CompletionDataCount);
-			Assert.IsNotNull (provider.SearchData ("Other.TheEnum"));
+			Assert.IsNotNull (provider.SearchData ("Other.TheEnum"), "Other.TheEnum not found.");
 		}
 
 		/// <summary>
@@ -303,6 +303,34 @@ namespace A.$
 			Assert.IsNotNull (provider, "provider not found.");
 			Assert.AreEqual (0, provider.CompletionDataCount);
 		}
+
+		/// <summary>
+		/// Bug 427284 - Code Completion: class list shows the full name of classes
+		/// </summary>
+		[Test()]
+		public void TestBug427284 ()
+		{
+			CodeCompletionDataProvider provider = CreateProvider (
+@"namespace TestNamespace
+{
+        class Test
+        {
+        }
+}
+class TestClass
+{
+	void Method ()
+	{
+		TestNamespace.$
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.AreEqual (1, provider.CompletionDataCount);
+			Assert.IsNotNull (provider.SearchData ("Test"), "class 'Test' not found.");
+		}
+
+
 
 		[TestFixtureSetUp] 
 		public void SetUp()
