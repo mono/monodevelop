@@ -1,5 +1,10 @@
 2008-09-18  Mike Krüger <mkrueger@novell.com> 
 
+	* Gui/ResolveVisitor.cs: fixed "Bug 427294 - Code Completion:
+	  completion on values returned by methods doesn't work".
+
+2008-09-18  Mike Krüger <mkrueger@novell.com> 
+
 	* Gui/CSharpTextEditorCompletion.cs: fixed "Bug 427286 - Code
 	  Completion: completion done without showing the completion list".
 
