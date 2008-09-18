@@ -165,6 +165,10 @@ namespace CBinding
 			get { return defaultCompletionString; }
 		}
 		
+		public bool AutoCompleteUniqueMatch {
+			get { return false; }
+		}
+		
 		public virtual void Dispose ()
 		{
 		}

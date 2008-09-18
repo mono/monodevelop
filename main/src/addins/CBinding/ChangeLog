@@ -1,3 +1,7 @@
+2008-09-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Gui/DataProvider.cs: Track api changes.
+
 2008-09-17  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* CBinding.mdp: Updated projects.
