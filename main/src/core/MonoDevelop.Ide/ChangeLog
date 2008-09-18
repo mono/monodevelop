@@ -1,3 +1,10 @@
+2008-09-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs: Remove
+	  debug code.
+	* MonoDevelop.Ide.Gui/Document.cs: Don't parse the whole document at
+	  every key press, do it after a small delay to improve performance.
+
 2008-09-17  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.mdp: Updated projects.

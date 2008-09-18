@@ -54,7 +54,11 @@ namespace MonoDevelop.Ide.Gui
 		TextEditorExtension editorExtension;
 		bool editorChecked;
 		TextEditor textEditor;
+		bool closed;
 		
+		bool parsing;
+		const int ParseDelay = 600;
+
 		internal IWorkbenchWindow Window {
 			get { return window; }
 		}
@@ -326,6 +330,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		void OnClosed (object s, EventArgs a)
 		{
+			closed = true;
 			ClearTasks ();
 			MonoDevelop.Projects.Dom.Parser.ProjectDomService.ParsedDocumentUpdated -= CompilationUnitUpdated;
 			
@@ -412,14 +417,7 @@ namespace MonoDevelop.Ide.Gui
 			IExtensibleTextEditor editor = GetContent<IExtensibleTextEditor> ();
 			if (editor == null)
 				return;
-			editor.TextChanged += delegate {
-				MonoDevelop.Projects.Dom.Parser.ProjectDomService.Parse (Project, 
-				                                                           FileName, 
-				                                                           MonoDevelop.Core.Gui.Services.PlatformService.GetMimeTypeForUri (FileName),
-				                                                           delegate () {
-					return TextEditor.Text;
-				});
-			};
+			editor.TextChanged += OnDocumentChanged;
 			this.parsedDocument = MonoDevelop.Projects.Dom.Parser.ProjectDomService.Parse (Project, FileName, MonoDevelop.Core.Gui.Services.PlatformService.GetMimeTypeForUri (FileName), TextEditor.Text);
 			MonoDevelop.Projects.Dom.Parser.ProjectDomService.ParsedDocumentUpdated += CompilationUnitUpdated;
 
@@ -445,6 +443,34 @@ namespace MonoDevelop.Ide.Gui
 			
 			if (window is SdiWorkspaceWindow)
 				((SdiWorkspaceWindow)window).AttachToPathedDocument (GetContent<MonoDevelop.Ide.Gui.Content.IPathedDocument> ());
+		}
+
+		void OnDocumentChanged (object o, EventArgs a)
+		{
+			// Don't directly parse the document because doing it at every key press is
+			// very inefficient. Do it after a small delay instead, so several changes can
+			// be parsed at the same time.
+			
+			if (parsing)
+				return;
+
+			parsing = true;
+			
+			GLib.Timeout.Add (ParseDelay, delegate {
+				if (closed)
+					return false;
+				parsing = false;
+				string currentParseFile = FileName;
+				string currentParseText = TextEditor.Text;
+				Project curentParseProject = Project;
+				
+				System.Threading.ThreadPool.QueueUserWorkItem (delegate {
+					// Don't access Document properties from the thread
+					DateTime t = DateTime.Now;
+					ProjectDomService.Parse (curentParseProject, currentParseFile, IdeApp.Services.PlatformService.GetMimeTypeForUri (currentParseFile), currentParseText);
+				});
+				return false;
+			});
 		}
 		
 		internal object ExtendedCommandTargetChain {

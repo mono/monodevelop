@@ -270,7 +270,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		[CommandUpdateHandler (EditCommands.Delete)]
 		public void UpdateRemoveItem (CommandInfo info)
 		{
-			Console.WriteLine ("pp: " + info.Enabled);
 			//don't allow removing children from parents. The parent can be removed and will remove the whole group.
 			info.Enabled = CanDeleteMultipleItems ();
 			info.Text = GettextCatalog.GetString ("Remove");
