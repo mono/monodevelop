@@ -465,7 +465,9 @@ namespace MonoDevelop.CSharpBinding.Gui
 				return CreateCompletionData (resolveResult, result, resolver);
 			}
 				
-			return CreateCtrlSpaceCompletionData (result);
+			ICompletionDataProvider provider = CreateCtrlSpaceCompletionData (result);
+			provider.AutoCompleteUniqueMatch = true;
+			return provider;
 		}
 		
 		public class CompletionDataCollector
