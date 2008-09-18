@@ -1,5 +1,46 @@
 2008-09-18  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Dom.Parser,
+	  MonoDevelop.Ide.Dom.Parser/AbstractParser.cs,
+	  MonoDevelop.Ide.Dom.Parser/ProjectParserService.cs,
+	  MonoDevelop.Ide.Dom.Parser/IParser.cs,
+	  MonoDevelop.Ide.Dom.Parser/ProjectDomEventArgs.cs,
+	  MonoDevelop.Ide.Dom.Parser/ProjectDom.cs,
+	  MonoDevelop.Ide.Dom.Output,
+	  MonoDevelop.Ide.Dom.Output/OutputFlags.cs,
+	  MonoDevelop.Ide.Dom.Output/Ambience.cs,
+	  MonoDevelop.Ide.Dom.Output/AmbienceService.cs,
+	  MonoDevelop.Ide.Dom.Output/CsharpAmbience.cs,
+	  MonoDevelop.Ide.Dom.Output/NetAmbience.cs, MonoDevelop.Ide.Dom,
+	  MonoDevelop.Ide.Dom/IMember.cs,
+	  MonoDevelop.Ide.Dom/DomReturnType.cs,
+	  MonoDevelop.Ide.Dom/DomType.cs,
+	  MonoDevelop.Ide.Dom/ParameterModifiers.cs,
+	  MonoDevelop.Ide.Dom/TypeParameter.cs,
+	  MonoDevelop.Ide.Dom/DomRegion.cs, MonoDevelop.Ide.Dom/DomUsing.cs,
+	  MonoDevelop.Ide.Dom/IMethod.cs, MonoDevelop.Ide.Dom/Error.cs,
+	  MonoDevelop.Ide.Dom/IProperty.cs, MonoDevelop.Ide.Dom/IUsing.cs,
+	  MonoDevelop.Ide.Dom/Comment.cs,
+	  MonoDevelop.Ide.Dom/DomAttribute.cs,
+	  MonoDevelop.Ide.Dom/ClassType.cs,
+	  MonoDevelop.Ide.Dom/IDomVisitor.cs,
+	  MonoDevelop.Ide.Dom/IAttribute.cs,
+	  MonoDevelop.Ide.Dom/CompilationUnit.cs,
+	  MonoDevelop.Ide.Dom/DomMethod.cs,
+	  MonoDevelop.Ide.Dom/DomParameter.cs,
+	  MonoDevelop.Ide.Dom/Modifiers.cs, MonoDevelop.Ide.Dom/DomEvent.cs,
+	  MonoDevelop.Ide.Dom/DomField.cs,
+	  MonoDevelop.Ide.Dom/DomProperty.cs,
+	  MonoDevelop.Ide.Dom/ICompilationUnit.cs,
+	  MonoDevelop.Ide.Dom/IParameter.cs, MonoDevelop.Ide.Dom/IType.cs,
+	  MonoDevelop.Ide.Dom/IReturnType.cs, MonoDevelop.Ide.Dom/IEvent.cs,
+	  MonoDevelop.Ide.Dom/AbstractMember.cs,
+	  MonoDevelop.Ide.Dom/IField.cs, MonoDevelop.Ide.Dom/CommentType.cs,
+	  MonoDevelop.Ide.Dom/DomLocation.cs,
+	  MonoDevelop.Ide.Dom/AttributeTarget.cs: Removed dead code.
+
+2008-09-18  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs: Remove
 	  debug code.
 	* MonoDevelop.Ide.Gui/Document.cs: Don't parse the whole document at
