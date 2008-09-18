@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
@@ -20,7 +21,7 @@ namespace MonoDevelop.VersionControl
 			if (!VersionControlService.CheckVersionControlInstalled ())
 				return false;
 			
-			ArrayList files = new ArrayList ();
+			List<string> files = new List<string> ();
 
 			// Build the list of files to be checked in			
 			string moduleName = entry.Name;
@@ -32,6 +33,9 @@ namespace MonoDevelop.VersionControl
 						files.Add (file.FilePath);
 			} else
 				return false;
+
+			if (files.Count == 0)
+				return false;
 	
 			SelectRepositoryDialog dlg = new SelectRepositoryDialog (SelectRepositoryMode.Publish);
 			try {
@@ -41,7 +45,7 @@ namespace MonoDevelop.VersionControl
 					if (dlg.Run () == (int) Gtk.ResponseType.Ok && dlg.Repository != null) {
 						AlertButton publishButton = new AlertButton ("_Publish");					
 						if (MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to publish the project?"), GettextCatalog.GetString ("The project will be published to the repository '{0}', module '{1}'.", dlg.Repository.Name, dlg.ModuleName), AlertButton.Cancel, publishButton) == publishButton) {
-							PublishWorker w = new PublishWorker (dlg.Repository, dlg.ModuleName, localPath, (string[]) files.ToArray (typeof(string)), dlg.Message);
+							PublishWorker w = new PublishWorker (dlg.Repository, dlg.ModuleName, localPath, files.ToArray (), dlg.Message);
 							w.Start ();
 							break;
 						}
@@ -54,20 +58,10 @@ namespace MonoDevelop.VersionControl
 			return true;
 		}
 		
-		static void GetFiles (ArrayList files, IWorkspaceObject entry)
+		static void GetFiles (List<string> files, IWorkspaceObject entry)
 		{
-			if (entry is SolutionEntityItem)
-				files.Add (((SolutionEntityItem)entry).FileName);
-			if (entry is Project) {
-				foreach (ProjectFile file in ((Project)entry).Files)
-					if (file.Subtype != Subtype.Directory)
-						files.Add (file.FilePath);
-			} else if (entry is SolutionFolder) {
-				foreach (SolutionItem e in ((SolutionFolder)entry).Items)
-					GetFiles (files, e);
-			} else if (entry is Solution) {
-				GetFiles (files, ((Solution)entry).RootFolder);
-			}
+			if (entry is IWorkspaceFileObject)
+				files.AddRange (((IWorkspaceFileObject)entry).GetItemFiles (true));
 		}
 		
 		public static bool CanPublish (Repository vc, string path, bool isDir) {

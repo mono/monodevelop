@@ -1,3 +1,16 @@
+2008-09-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs,
+	  gtk-gui/generated.cs,
+	  gtk-gui/MonoDevelop.VersionControl.Dialogs.EditRepositoryDialog.cs,
+	  gtk-gui/MonoDevelop.VersionControl.UrlBasedRepositoryEditor.cs,
+	  gtk-gui/MonoDevelop.VersionControl.Dialogs.CommitDialog.cs,
+	  gtk-gui/gui.stetic: Updated.
+	* MonoDevelop.VersionControl/PublishCommand.cs: When publishing a
+	  solution, use GetItemFiles to get all files to include in the
+	  commit. Fixes bug #425339 - 'Publish' command should also check in
+	  the .sln file.
+
 2008-09-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.VersionControl/VersionControlNodeExtension.cs: Moved the
