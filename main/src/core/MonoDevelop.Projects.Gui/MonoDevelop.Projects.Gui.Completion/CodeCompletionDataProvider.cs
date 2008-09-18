@@ -90,6 +90,16 @@ namespace MonoDevelop.Projects.Gui.Completion
 		public bool IsEmpty {
 			get { return completionData.Count == 0; }
 		}
+
+		bool autoCompleteUniqueMatch = false;
+		public bool AutoCompleteUniqueMatch {
+			get {
+				return autoCompleteUniqueMatch;
+			}
+			set {
+				autoCompleteUniqueMatch = value;
+			}
+		}
 		
 		public string DefaultCompletionString {
 			get { return defaultCompletionString; }

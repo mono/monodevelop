@@ -1,3 +1,11 @@
+2008-09-18  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/ICompletionDataProvider.cs,
+	  MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs,
+	  MonoDevelop.Projects.Gui.Completion/CodeCompletionDataProvider.cs:
+	  fixed "Bug 427286 - Code Completion: completion done without
+	  showing the completion list".
+
 2008-09-17  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Gui.Completion/CodeCompletionDataProvider.cs:

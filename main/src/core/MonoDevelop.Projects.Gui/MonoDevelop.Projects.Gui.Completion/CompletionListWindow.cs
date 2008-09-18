@@ -182,7 +182,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 				initialWordLength = text.Length + completionWidget.SelectedLength;
 				PartialWord = text; 
 				//if there is only one matching result we take it by default
-				if (IsUniqueMatch && !IsChanging)
+				if (provider.AutoCompleteUniqueMatch && IsUniqueMatch && !IsChanging)
 				{	
 					UpdateWord ();
 					Hide ();

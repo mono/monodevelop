@@ -28,11 +28,13 @@ namespace MonoDevelop.Projects.Gui.Completion
 	{
 		ICompletionData[] GenerateCompletionData (ICompletionWidget widget, char charTyped);
 		string DefaultCompletionString { get; }
+		bool AutoCompleteUniqueMatch { get; set; }
 	}
 	
 	public interface IMutableCompletionDataProvider: ICompletionDataProvider
 	{
 		bool IsChanging { get; }
+		
 		event EventHandler CompletionDataChanging;
 		event EventHandler CompletionDataChanged;
 	}
