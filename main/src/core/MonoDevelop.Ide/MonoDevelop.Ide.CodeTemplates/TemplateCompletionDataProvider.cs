@@ -50,6 +50,15 @@ namespace MonoDevelop.Ide.CodeTemplates
 		public string DefaultCompletionString {
 			get { return null; }
 		}
+		bool autoCompleteUniqueMatch = false;
+		public bool AutoCompleteUniqueMatch {
+			get {
+				return autoCompleteUniqueMatch;
+			}
+			set {
+				autoCompleteUniqueMatch = value;
+			}
+		}
 		
 		public ICompletionData[] GenerateCompletionData (ICompletionWidget widget, char charTyped)
 		{
