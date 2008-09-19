@@ -66,7 +66,8 @@ namespace MonoDevelop.Ide.Gui.Content
 			}
 			
 			res = base.KeyPress (key, keyChar, modifier);
-
+			if ((modifier & Gdk.ModifierType.ControlMask) == Gdk.ModifierType.ControlMask)
+				return res;
 			// Handle code completion
 			
 			if (completionWidget != null && currentCompletionContext == null) {

@@ -1,3 +1,9 @@
+2008-09-19  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Content/CompletionTextEditorExtension.cs: fixed
+	  'Bug 427326 – Code Completion: ctrl + S displays the completion
+	  window'.
+
 2008-09-18  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.CodeTemplates/TemplateCompletionDataProvider.cs:
