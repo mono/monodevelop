@@ -356,8 +356,36 @@ class Test
 			Assert.AreEqual (1, provider.CompletionDataCount);
 			Assert.IsNotNull (provider.SearchData ("GetTestClass"), "method 'GetTestClass' not found.");
 		}
+		
+		/// <summary>
+		/// Bug 405000 - Namespace alias qualifier operator (::) does not trigger code completion
+		/// </summary>
+		[Test()]
+		public void TestBug405000 ()
+		{
+			CodeCompletionDataProvider provider = CreateProvider (
+@"namespace A {
+	class Test
+	{
+	}
+}
 
-
+namespace B {
+	using foo = A;
+	class C
+	{
+		public static void Main ()
+		{
+			foo::$
+		}
+	}
+}");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.AreEqual (1, provider.CompletionDataCount);
+			Assert.IsNotNull (provider.SearchData ("Test"), "class 'Test' not found.");
+		}
+		
+	
 		[TestFixtureSetUp] 
 		public void SetUp()
 		{
