@@ -39,6 +39,14 @@ namespace MonoDevelop.Ide.Gui.Components
 		ITreeNavigator[] currentNodes;
 		ExtensibleTreeView tree;
 		object nextTarget;
+		CanDeleteFlags canDeleteFlags;
+
+		enum CanDeleteFlags {
+			NotChecked = 0,
+			Checked = 1,
+			Single = 2,
+			Multiple = 3
+		}
 		
 		internal void Initialize (ExtensibleTreeView tree)
 		{
@@ -119,14 +127,34 @@ namespace MonoDevelop.Ide.Gui.Components
 		{
 			DeleteMultipleItems ();
 		}
+
+		bool CheckCanDeleteFlags (CanDeleteFlags flag)
+		{
+			// if DeleteItem or DeleteMultipleItems, we can assume that the delete
+			// operation is supported. If it is not supported for a specific context,
+			// then the CanDelete* method will be overriden, in which case this
+			// CheckCanDeleteFlags won't be used.
+			
+			if (canDeleteFlags == CanDeleteFlags.NotChecked) {
+				canDeleteFlags |= CanDeleteFlags.Checked;
+				if (GetType().GetMethod ("DeleteItem").DeclaringType != typeof(NodeCommandHandler))
+					canDeleteFlags |= CanDeleteFlags.Single;
+				if (GetType().GetMethod ("DeleteMultipleItems").DeclaringType != typeof(NodeCommandHandler))
+					canDeleteFlags |= CanDeleteFlags.Multiple;
+			}
+			return (canDeleteFlags & flag) != 0;
+		}
 		
 		public virtual bool CanDeleteItem ()
 		{
-			return GetType().GetMethod ("DeleteItem").DeclaringType != typeof(NodeCommandHandler);
+			return CheckCanDeleteFlags (CanDeleteFlags.Single);
 		}
 		
 		public virtual bool CanDeleteMultipleItems ()
 		{
+			if (CheckCanDeleteFlags (CanDeleteFlags.Multiple))
+				return true;
+			
 			if (currentNodes.Length == 1)
 				return CanDeleteItem ();
 			else {

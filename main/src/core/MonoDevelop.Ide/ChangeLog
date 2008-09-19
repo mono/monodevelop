@@ -1,3 +1,8 @@
+2008-09-19  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Components/NodeCommandHandler.cs: Fix check for
+	  availability of multiple delete operation.
+
 2008-09-19  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: fixed 'Bug 397930 -
