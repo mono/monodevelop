@@ -273,11 +273,47 @@ namespace MonoDevelop.Projects.Dom
 	public class MethodResolveResult : ResolveResult
 	{
 		List<IMethod> methods = new List<IMethod> ();
+		List<IReturnType> arguments = new List<IReturnType> ();
+		List<IReturnType> genericArguments = new List<IReturnType> ();
 		
 		public ReadOnlyCollection<IMethod> Methods {
 			get {
 				return methods.AsReadOnly ();
 			}
+		}
+
+		public IMethod MostLikelyMethod {
+			get {
+				if (methods.Count == 0)
+					return null;
+				System.Console.WriteLine(genericArguments.Count + " / " + arguments.Count);
+				foreach (IMethod method in methods) {
+					System.Console.WriteLine(method);
+					if (method.GenericParameters.Count == genericArguments.Count && method.Parameters.Count == arguments.Count)
+						return method;
+				}
+				return methods[0];
+			}
+		}
+
+		public ReadOnlyCollection<IReturnType> GenericArguments {
+			get {
+				return genericArguments.AsReadOnly ();
+			}
+		}
+		public void AddGenericArgument (IReturnType arg)
+		{
+			genericArguments.Add (arg);
+		}
+		
+		public ReadOnlyCollection<IReturnType> Arguments {
+			get {
+				return arguments.AsReadOnly ();
+			}
+		}
+		public void AddArgument (IReturnType arg)
+		{
+			arguments.Add (arg);
 		}
 		
 		public MethodResolveResult (List<IMember> members)

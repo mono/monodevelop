@@ -229,9 +229,11 @@ namespace MonoDevelop.Projects.Dom
 		
 		public override string ToString ()
 		{
-			return string.Format ("[DomMethod:Name={0}, Modifiers={1}, ReturnType={2}, Location={3}]",
+			return string.Format ("[DomMethod:Name={0}, Modifiers={1}, #Parameters={2}, #GenParameters={3}, ReturnType={4}, Location={5}]",
 			                      Name,
 			                      Modifiers,
+			                      Parameters.Count,
+			                      GenericParameters.Count,
 			                      ReturnType,
 			                      Location);
 		}

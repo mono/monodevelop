@@ -152,9 +152,12 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			result.ReturnType = ReadReturnType (reader, nameTable);
 			result.MethodModifier = (MethodModifier)reader.ReadInt32 ();
 			uint arguments = reader.ReadUInt32 ();
-			
 			while (arguments-- > 0) {
 				result.Add (ReadParameter (reader, nameTable));
+			}
+			arguments = reader.ReadUInt32 ();
+			while (arguments-- > 0) {
+				result.AddGenericParameter (ReadReturnType (reader, nameTable));
 			}
 			return result;
 		}
@@ -173,6 +176,11 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				foreach (IParameter param in method.Parameters) {
 					Write (writer, nameTable, param);
 				}
+			}
+
+			writer.Write (method.GenericParameters.Count);
+			foreach (IReturnType genArg in method.GenericParameters) {
+				Write (writer, nameTable, genArg);
 			}
 		}
 		

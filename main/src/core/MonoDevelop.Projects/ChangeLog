@@ -1,5 +1,14 @@
 2008-09-19  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Projects.Dom/ResolveResult.cs,
+	  MonoDevelop.Projects.Dom/DomMethod.cs,
+	  MonoDevelop.Projects.Dom.Serialization/DomPersistence.cs,
+	  MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
+	  fixed 'Bug 397930 - Navigation to generic method not working
+	  correctly'.
+
+2008-09-19  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Projects.Dom/ResolveResult.cs: Found cleaner way for
 	  method resolve result.
 
