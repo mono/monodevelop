@@ -232,7 +232,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 			foreach (IType curType in dom.GetInheritanceTree (type)) {
 				foreach (IMember member in curType.Members) {
-					if (callingMember != null && !member.IsAccessibleFrom (dom, callingMember))
+					if (callingMember != null && !member.IsAccessibleFrom (dom, type, callingMember))
 						continue;
 					if (member is IMethod && ((IMethod)member).IsConstructor)
 						continue;

@@ -1,6 +1,13 @@
 2008-09-19  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/ResolveResult.cs,
+	  MonoDevelop.Projects.Dom/IMember.cs,
+	  MonoDevelop.Projects.Dom/AbstractMember.cs: fixed 'Bug 427649 -
+	  Code Completion: protected methods shown in code completion'.
+
+2008-09-19  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom/ResolveResult.cs,
 	  MonoDevelop.Projects.Dom/DomMethod.cs,
 	  MonoDevelop.Projects.Dom.Serialization/DomPersistence.cs,
 	  MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:

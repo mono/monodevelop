@@ -87,7 +87,7 @@ namespace MonoDevelop.Projects.Dom
 		}
 		
 		System.Xml.XmlNode GetMonodocDocumentation ();
-		bool IsAccessibleFrom (ProjectDom dom, IMember member);
+		bool IsAccessibleFrom (ProjectDom dom, IType calledType, IMember member);
 		
 		#region ModifierAccessors
 		bool IsObsolete { get; }

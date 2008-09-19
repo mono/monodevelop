@@ -223,7 +223,7 @@ namespace MonoDevelop.Projects.Dom
 			return 0;
 		}
 		
-		public bool IsAccessibleFrom (ProjectDom dom, IMember member)
+		public bool IsAccessibleFrom (ProjectDom dom, IType calledType, IMember member)
 		{
 			if (member == null)
 				return IsStatic;
@@ -236,16 +236,17 @@ namespace MonoDevelop.Projects.Dom
 				IType type2 = member is IType ? (IType)member : member.DeclaringType;
 				return type1.SourceProjectDom == type2.SourceProjectDom;
 			}
-				
-				
+			System.Console.WriteLine("calledType:"  + calledType);
+			System.Console.WriteLine("member:" + member);
 			if (member.DeclaringType == null || DeclaringType == null)
 				return false;
 			
 			if (IsProtected) {
-				foreach (IType type in dom.GetInheritanceTree (member.DeclaringType)) {
-					if (type.FullName == DeclaringType.FullName)
+//				foreach (IType type in dom.GetInheritanceTree (member.DeclaringType)) {
+//					System.Console.WriteLine(type);
+					if (member.DeclaringType.FullName == calledType.FullName)
 						return true;
-				}
+//				}
 				return false;
 			}
 			// inner class 
