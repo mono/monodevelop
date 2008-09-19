@@ -110,8 +110,8 @@ namespace MonoDevelop.SourceEditor
 					s.Append ("<small><i>");
 					s.Append (methodStr);
 					s.Append ("</i></small>\n");
-					s.Append (ambience.GetString (((MethodResolveResult)result).Methods[0], WindowConversionFlags));
-					doc = GetDocumentation (((MethodResolveResult)result).Methods[0]);
+					s.Append (ambience.GetString (((MethodResolveResult)result).MostLikelyMethod, WindowConversionFlags));
+					doc = GetDocumentation (((MethodResolveResult)result).MostLikelyMethod);
 				} else {
 					s.Append (ambience.GetString (result.ResolvedType, WindowConversionFlags));
 				}

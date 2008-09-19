@@ -1,3 +1,8 @@
+2008-09-19  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.SourceEditor/LanguageItemWindow.cs: fixed 'Bug 397930 -
+	  Navigation to generic method not working correctly'.
+
 2008-09-18  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* gtk-gui/objects.xml,
