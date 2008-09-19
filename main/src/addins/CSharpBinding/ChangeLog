@@ -1,5 +1,10 @@
 2008-09-19  Mike Krüger <mkrueger@novell.com> 
 
+	* Gui/ResolveVisitor.cs: fixed 'Bug 427649 - Code Completion: protected
+	  methods shown in code completion'.
+
+2008-09-19  Mike Krüger <mkrueger@novell.com> 
+
 	* Gui/ResolveVisitor.cs, Gui/CSharpTextEditorCompletion.cs: fixed 'Bug
 	  405000 - Namespace alias qualifier operator (::) does not trigger
 	  code completion'.

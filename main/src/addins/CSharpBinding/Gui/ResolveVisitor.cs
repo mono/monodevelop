@@ -328,7 +328,7 @@ namespace MonoDevelop.CSharpBinding
 						if (member[0] is IMethod) {
 							bool isStatic = result.StaticResolve;
 							for (int i = 0; i < member.Count; i++) {
-								if ((member[i].IsStatic ^ isStatic) || !member[i].IsAccessibleFrom (resolver.Dom, resolver.CallingMember)) {
+								if ((member[i].IsStatic ^ isStatic) || !member[i].IsAccessibleFrom (resolver.Dom, type, resolver.CallingMember)) {
 									member.RemoveAt (i);
 									i--;
 								}
