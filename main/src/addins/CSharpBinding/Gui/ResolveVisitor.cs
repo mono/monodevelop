@@ -358,12 +358,21 @@ namespace MonoDevelop.CSharpBinding
 		{
 			if (invocationExpression == null) 
 				return null;
-			
+				
 			ResolveResult targetResult = Resolve (invocationExpression.TargetObject);
-//			MethodResolveResult methodResult = targetResult as MethodResolveResult;
-//			if (methodResult != null) {
+			MethodResolveResult methodResult = targetResult as MethodResolveResult;
+			if (methodResult != null) {
+				foreach (Expression arg in invocationExpression.Arguments) {
+					methodResult.AddArgument (GetTypeSafe (arg));
+				}
+				MemberReferenceExpression mre = invocationExpression.TargetObject as MemberReferenceExpression;
+				if (mre != null) {
+					foreach (TypeReference typeReference in mre.TypeArguments) {
+						methodResult.AddGenericArgument (new DomReturnType (String.IsNullOrEmpty (typeReference.SystemType) ? typeReference.Type : typeReference.SystemType));
+					}
+				}
 //				return CreateResult (methodResult.Methods [0].ReturnType);
-//			}
+			}
 			return targetResult;
 		}
 		
