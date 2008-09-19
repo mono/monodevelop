@@ -1,5 +1,10 @@
 2008-09-19  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: fixed 'Bug 397930 -
+	  Navigation to generic method not working correctly'.
+
+2008-09-19  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Ide.Gui.Content/CompletionTextEditorExtension.cs: fixed
 	  'Bug 427326 – Code Completion: ctrl + S displays the completion
 	  window'.

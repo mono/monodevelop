@@ -101,7 +101,6 @@ namespace MonoDevelop.Ide.Commands
 					
 					IDomVisitable item = null;
 					IMember eitem = resolveResult != null ? (resolveResult.CallingMember ?? resolveResult.CallingType) : null;
-					
 					if (resolveResult is ParameterResolveResult) {
 						item = ((ParameterResolveResult)resolveResult).Parameter;
 					} else if (resolveResult is LocalVariableResolveResult) {
@@ -111,6 +110,11 @@ namespace MonoDevelop.Ide.Commands
 						item = ((MemberResolveResult)resolveResult).ResolvedMember;
 						if (item == null && ((MemberResolveResult)resolveResult).ResolvedType != null) {
 							item = ctx.GetType (((MemberResolveResult)resolveResult).ResolvedType);
+						}
+					} else if (resolveResult is MethodResolveResult) {
+						item = ((MethodResolveResult)resolveResult).MostLikelyMethod;
+						if (item == null && ((MethodResolveResult)resolveResult).ResolvedType != null) {
+							item = ctx.GetType (((MethodResolveResult)resolveResult).ResolvedType);
 						}
 					}
 					string itemName = null;
