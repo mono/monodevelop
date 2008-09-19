@@ -375,6 +375,8 @@ namespace MonoDevelop.CSharpBinding.Gui
 				break;
 			case "is":
 			case "as":
+				if (stateTracker.Engine.IsInsideDocLineComment || stateTracker.Engine.IsInsideOrdinaryCommentOrString)
+					return null;
 				result.ExpressionContext = ExpressionContext.Type;
 				return CreateCtrlSpaceCompletionData (result);
 			case "override":

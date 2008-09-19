@@ -1,5 +1,9 @@
 2008-09-19  Mike Krüger <mkrueger@novell.com> 
 
+	* Gui/CSharpTextEditorCompletion.cs: fixed.
+
+2008-09-19  Mike Krüger <mkrueger@novell.com> 
+
 	* Gui/NRefactoryResolver.cs: forget one commit.
 
 2008-09-19  Mike Krüger <mkrueger@novell.com> 
