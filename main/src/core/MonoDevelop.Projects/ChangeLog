@@ -1,5 +1,10 @@
 2008-09-19  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Projects.Dom/ResolveResult.cs: Removed debug
+	  message/improved method resolve result.
+
+2008-09-19  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Projects.Dom/ResolveResult.cs,
 	  MonoDevelop.Projects.Dom/IMember.cs,
 	  MonoDevelop.Projects.Dom/AbstractMember.cs: fixed 'Bug 427649 -

@@ -50,7 +50,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 
-		public IReturnType ResolvedType {
+		public virtual IReturnType ResolvedType {
 			get {
 				return resolvedType;
 			}
@@ -286,13 +286,33 @@ namespace MonoDevelop.Projects.Dom
 			get {
 				if (methods.Count == 0)
 					return null;
+				IMethod result = methods [0];
 				System.Console.WriteLine(genericArguments.Count + " / " + arguments.Count);
 				foreach (IMethod method in methods) {
-					System.Console.WriteLine(method);
-					if (method.GenericParameters.Count == genericArguments.Count && method.Parameters.Count == arguments.Count)
-						return method;
+					if (method.GenericParameters.Count == genericArguments.Count) {
+					 	if (method.Parameters.Count == arguments.Count) {
+					 		bool match = true;
+					 		for (int i = 0; i < method.Parameters.Count; i++) {
+					 			if (method.Parameters[i].ReturnType.FullName != arguments[i].FullName) {
+					 				match = false;
+					 			}
+					 		}
+					 		if (match)
+					 			return method;
+							result = method;
+						}
+					}
 				}
-				return methods[0];
+				return result;
+			}
+		}
+		
+		public override IReturnType ResolvedType {
+			get {
+				IMethod method = MostLikelyMethod;
+				if (method != null)
+					return method.ReturnType;
+				return base.ResolvedType;
 			}
 		}
 
