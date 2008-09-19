@@ -123,11 +123,11 @@ namespace MonoDevelop.CSharpBinding.Gui
 			stateTracker.UpdateEngine ();
 			ExpressionResult result;
 			int cursor, newCursorOffset = 0;
-			
 			switch (completionChar) {
+			case ':':
 			case '.':
 				result = FindExpression (dom, 0);
-				if (result == null)
+				if (result == null || result.Expression == null)
 					return null;
 				int idx = result.Expression.LastIndexOf ('.');
 				if (idx > 0)
@@ -181,7 +181,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				return null;
 			case '(':
 				result = FindExpression (dom, -1);
-				if (result == null)
+				if (result == null || result.Expression == null)
 					return null;
 				resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (dom, Document.CompilationUnit,
 				                                                                                ICSharpCode.NRefactory.SupportedLanguage.CSharp,
@@ -517,6 +517,13 @@ namespace MonoDevelop.CSharpBinding.Gui
 								break;
 							}
 						}
+						foreach (KeyValuePair<string, IReturnType> alias in u.Aliases) {
+							if (alias.Key + "::" == namePrefix.Trim ()) {
+								foundNamespace = true;
+								break;
+							}
+						}
+						
 					}
 					if (!foundNamespace && (NamePrefix.Length == 0 || !rt.Namespace.StartsWith (NamePrefix)) && !rt.Namespace.EndsWith ("." + NamePrefix))
 						flags |= OutputFlags.UseFullName;
@@ -533,12 +540,18 @@ namespace MonoDevelop.CSharpBinding.Gui
 						bool foundType = false;
 						foreach (IUsing u in unit.Usings) {
 							if (!u.IsFromNamespace || u.Region.Contains (location)) {
-						
 								foreach (string n in u.Namespaces) {
 									if (type.Namespace == n)
 										foundType = true;
 								}
 							}
+							foreach (KeyValuePair<string, IReturnType> alias in u.Aliases) {
+								if (alias.Key + "::" == namePrefix.Trim ()) {
+									foundType = true;
+									break;
+								}
+							}
+							
 						}
 						if (!foundType && (NamePrefix.Length == 0 || !type.Namespace.StartsWith (NamePrefix)) && !type.Namespace.EndsWith ("." + NamePrefix))
 							flags |= OutputFlags.UseFullName;

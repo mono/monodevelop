@@ -274,7 +274,8 @@ namespace MonoDevelop.CSharpBinding
 		
 		public override object VisitTypeReferenceExpression(TypeReferenceExpression typeReferenceExpression, object data)
 		{
-			return CreateResult (typeReferenceExpression.TypeReference);
+			ResolveResult result = resolver.ResolveIdentifier (this, typeReferenceExpression.TypeReference.Type);
+			return result ?? CreateResult (typeReferenceExpression.TypeReference);
 		}
 		
 		public override object VisitMemberReferenceExpression(MemberReferenceExpression fieldReferenceExpression, object data)
