@@ -257,11 +257,11 @@ namespace MonoDevelop.CSharpBinding
 				System.Console.WriteLine("Can't parse expression");
 				return null;
 			}
-			System.Console.WriteLine("parsed expr.:" + expr);
+//			System.Console.WriteLine("parsed expr.:" + expr);
 			ResolveVisitor visitor = new ResolveVisitor (this);
 			
 			ResolveResult result = visitor.Resolve (expr);
-			System.Console.WriteLine("result:" + result);
+			//System.Console.WriteLine("result:" + result);
 			return result;
 		}
 		
@@ -336,7 +336,6 @@ namespace MonoDevelop.CSharpBinding
 		
 		public ResolveResult ResolveIdentifier (ResolveVisitor visitor, string identifier)
 		{
-			
 			ResolveResult result = null;
 			foreach (KeyValuePair<string, List<LocalLookupVariable>> pair in this.lookupTableVisitor.Variables) {
 				if (identifier == pair.Key) {
@@ -379,6 +378,10 @@ namespace MonoDevelop.CSharpBinding
 				if (members.Count > 0) {
 					if (members[0] is IMethod) {
 						result = new MethodResolveResult (members);
+					} else if (members[0] is IType) {
+						result = new MemberResolveResult (null, true);
+						result.ResolvedType = new DomReturnType ((IType)members[0]);
+						goto end;
 					} else {
 						result = new MemberResolveResult (members[0]);
 					}
@@ -440,7 +443,6 @@ namespace MonoDevelop.CSharpBinding
 				}
 			}
 				
-			
 		end:
 			if (result != null) {
 				result.CallingType   = CallingType;
