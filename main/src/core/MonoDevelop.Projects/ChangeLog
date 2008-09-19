@@ -1,5 +1,9 @@
 2008-09-19  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Projects.Dom/ResolveResult.cs: fixed enum issue.
+
+2008-09-19  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Projects.Dom/ResolveResult.cs: Removed debug
 	  message/improved method resolve result.
 

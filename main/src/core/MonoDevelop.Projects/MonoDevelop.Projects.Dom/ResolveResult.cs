@@ -224,7 +224,8 @@ namespace MonoDevelop.Projects.Dom
 		{
 			if (type == null)
 				return;
-			if (type.ClassType == ClassType.Enum) {
+			
+			if (showStatic && type.ClassType == ClassType.Enum) {
 				foreach (IMember member in type.Fields) {
 					result.Add (member);
 				}
