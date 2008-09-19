@@ -1,3 +1,13 @@
+2008-09-19  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Dom/CompoundType.cs: Remove file must return
+	  true when removing the last file of the class.
+	* MonoDevelop.Projects.Dom/ParsedDocument.cs: Fix some warnings.
+	* MonoDevelop.Projects.Dom.Serialization/DomTypeProxy.cs,
+	  MonoDevelop.Projects.Dom.Serialization/ClassEntry.cs,
+	  MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
+	  ClassEntry.Name must hold the class name without namespace.
+
 2008-09-19  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs,

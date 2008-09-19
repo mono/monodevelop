@@ -80,19 +80,22 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		public override string Name {
 			get {
-				return DomReturnType.SplitFullName (entry.Name).Value;
+				return entry.Name;
 			}
 		}
 		
 		public override string Namespace {
 			get {
-				return DomReturnType.SplitFullName (entry.Name).Key;
+				return entry.NamespaceRef.FullName;
 			}
 		}
 		
 		public override string FullName {
 			get {
-				return entry.Name;
+				if (!string.IsNullOrEmpty (Namespace))
+					return string.Concat (Namespace, ".", Name);
+				else
+					return Name;
 			}
 		}
 		
@@ -146,7 +149,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		public override IEnumerable<IMember> Members {
 			get {
-				return WrappedType != null ? WrappedType.Members : null;
+				return WrappedType != null ? WrappedType.Members : new IMember [0];
 			}
 		}
 		

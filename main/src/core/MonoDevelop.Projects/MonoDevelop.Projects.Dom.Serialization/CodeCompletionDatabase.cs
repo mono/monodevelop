@@ -49,7 +49,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 	{
 		static protected readonly int MAX_ACTIVE_COUNT = 100;
 		static protected readonly int MIN_ACTIVE_COUNT = 10;
-		static protected readonly int FORMAT_VERSION   = 41;
+		static protected readonly int FORMAT_VERSION   = 42;
 		
 		NamespaceEntry rootNamespace;
 		protected ArrayList references;
@@ -849,7 +849,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				if (fe == null) return null;
 				
 				// Get the namespace entry for each class
-				
+
 				bool[] added = new bool [newClasses.Count];
 				NamespaceEntry[] newNss = new NamespaceEntry [newClasses.Count];
 				for (int n = 0; n < newClasses.Count; n++) {

@@ -100,7 +100,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		void UpdateContent (IType cls)
 		{
-			Name = cls.FullName; 
+			Name = cls.Name; 
 			ctype = cls.ClassType;
 			modifiers = cls.Modifiers;
 			flags = (ContentFlags) 0;

@@ -168,7 +168,11 @@ namespace MonoDevelop.Projects.Dom
 		{
 			if (type is CompoundType) 
 				return ((CompoundType)type).RemoveFile (fileName);
+
+			if (type.CompilationUnit == null || type.CompilationUnit.FileName == fileName)
+				return null;
 			
+			// Class belongs to another file
 			return type;
 		}
 	}

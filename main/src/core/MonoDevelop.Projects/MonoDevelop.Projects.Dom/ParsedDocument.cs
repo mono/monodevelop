@@ -113,14 +113,14 @@ namespace MonoDevelop.Projects.Dom
 				last = CompilationUnit.Usings[i];
 			}
 			
-			if (first.Region == null || last.Region == null || first.Region.Start.Line == last.Region.End.Line)
+			if (first.Region.IsEmpty || last.Region.IsEmpty || first.Region.Start.Line == last.Region.End.Line)
 				return;
 			foldingRegions.Add (new FoldingRegion ("...", new DomRegion (first.Region.Start, last.Region.End)));
 		}
 		
 		protected void GenerateFoldsFromType (IType type)
 		{
-			if (type.BodyRegion != null && type.BodyRegion.End.Line > type.BodyRegion.Start.Line) {
+			if (!type.BodyRegion.IsEmpty && type.BodyRegion.End.Line > type.BodyRegion.Start.Line) {
 				foldingRegions.Add (new FoldingRegion ("...", type.BodyRegion));
 			}
 			foreach (IType inner in type.InnerTypes) 
