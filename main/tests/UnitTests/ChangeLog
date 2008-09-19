@@ -1,3 +1,8 @@
+2008-09-19  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects/DomPersistenceTests.cs: Extended persistance
+	  unit test to document a bug.
+
 2008-09-18  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.CSharpBinding/CodeCompletionTests.cs: added unit test for
