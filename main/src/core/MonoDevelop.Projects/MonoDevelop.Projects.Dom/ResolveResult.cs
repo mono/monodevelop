@@ -256,7 +256,6 @@ namespace MonoDevelop.Projects.Dom
 		public override IEnumerable<object> CreateResolveResult (ProjectDom dom, IMember callingMember)
 		{
 			List<object> result = new List<object> ();
-			
 			AddType (dom, result, ResolvedType, callingMember, StaticResolve);
 			return result;
 		}
@@ -291,7 +290,9 @@ namespace MonoDevelop.Projects.Dom
 		
 		public override IEnumerable<object> CreateResolveResult (ProjectDom dom, IMember callingMember)
 		{
-			return null;
+			List<object> result = new List<object> ();
+			MemberResolveResult.AddType (dom, result, ResolvedType, callingMember, StaticResolve);
+			return result;
 		}
 		
 		public override string ToString ()
