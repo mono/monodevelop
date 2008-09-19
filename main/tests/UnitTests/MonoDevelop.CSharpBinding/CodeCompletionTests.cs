@@ -411,6 +411,49 @@ class C : BaseClass
 			Assert.IsTrue (provider == null || provider.CompletionDataCount == 0);
 		}
 		
+		/// <summary>
+		/// Bug 427734 - Code Completion issues with enums
+		/// </summary>
+		[Test()]
+		public void TestBug427734A ()
+		{
+			CodeCompletionDataProvider provider = CreateProvider (
+@"public class Test
+{
+	public enum SomeEnum { a,b }
+	
+	public void Run ()
+	{
+		Test.$
+	}
+}");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.AreEqual (1, provider.CompletionDataCount);
+			Assert.IsNotNull (provider.SearchData ("SomeEnum"), "enum 'SomeEnum' not found.");
+		}
+		
+		/// <summary>
+		/// Bug 427734 - Code Completion issues with enums
+		/// </summary>
+		[Test()]
+		public void TestBug427734B ()
+		{
+			CodeCompletionDataProvider provider = CreateProvider (
+@"public class Test
+{
+	public enum SomeEnum { a,b }
+	
+	public void Run ()
+	{
+		SomeEnum.$
+	}
+}");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.AreEqual (2, provider.CompletionDataCount);
+			Assert.IsNotNull (provider.SearchData ("a"), "enum member 'a' not found.");
+			Assert.IsNotNull (provider.SearchData ("b"), "enum member 'b' not found.");
+		}
+		
 		[TestFixtureSetUp] 
 		public void SetUp()
 		{
