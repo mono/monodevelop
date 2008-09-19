@@ -385,7 +385,32 @@ namespace B {
 			Assert.IsNotNull (provider.SearchData ("Test"), "class 'Test' not found.");
 		}
 		
-	
+		/// <summary>
+		/// Bug 427649 - Code Completion: protected methods shown in code completion
+		/// </summary>
+		[Test()]
+		public void TestBug427649 ()
+		{
+			CodeCompletionDataProvider provider = CreateProvider (
+@"class BaseClass
+{
+	protected void ProtecedMember ()
+	{
+	}
+}
+
+class C : BaseClass
+{
+	public static void Main ()
+	{
+		BaseClass bc;
+		bc.$
+	}
+}
+");
+			Assert.IsTrue (provider == null || provider.CompletionDataCount == 0);
+		}
+		
 		[TestFixtureSetUp] 
 		public void SetUp()
 		{

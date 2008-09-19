@@ -1,6 +1,12 @@
 2008-09-19  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.CSharpBinding/CodeCompletionTests.cs: added unit test for
+	  'Bug 427649 - Code Completion: protected methods shown in code
+	  completion'.
+
+2008-09-19  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.CSharpBinding/CodeCompletionTests.cs: added unit test for
 	  'Bug 405000 - Namespace alias qualifier operator (::) does not
 	  trigger code completion'.
 
