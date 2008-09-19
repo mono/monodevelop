@@ -159,7 +159,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					
 					if (FileService.IsValidFileName (newFoldername)) {
 						FileService.RenameDirectory (oldFoldername, newName);
-						IdeApp.Workspace.Save();
+						if (folder.Project != null)
+							IdeApp.ProjectOperations.Save (folder.Project);
 					}
 				} catch (System.IO.IOException) {   // assume duplicate file
 					MessageService.ShowError(GettextCatalog.GetString ("File or directory name is already in use. Please choose a different one."));

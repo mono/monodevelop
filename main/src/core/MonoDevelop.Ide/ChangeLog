@@ -1,5 +1,14 @@
 2008-09-19  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs: When
+	  renaming a folder, update the modified project, not the whole
+	  workspace.
+	* MonoDevelop.Ide.Gui/Document.cs: Parse the file after closing the
+	  document, so unsaved changes are discarded.
+	* gtk-gui/gui.stetic: Updated.
+
+2008-09-19  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.Gui.Components/NodeCommandHandler.cs: Fix check for
 	  availability of multiple delete operation.
 

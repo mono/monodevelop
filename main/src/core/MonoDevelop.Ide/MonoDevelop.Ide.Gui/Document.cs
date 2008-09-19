@@ -334,6 +334,16 @@ namespace MonoDevelop.Ide.Gui
 			ClearTasks ();
 			MonoDevelop.Projects.Dom.Parser.ProjectDomService.ParsedDocumentUpdated -= CompilationUnitUpdated;
 			
+			// Parse the file when the document is closed. In this way if the document
+			// is closed without saving the changes, the saved compilation unit
+			// information will be restored
+			string currentParseFile = FileName;
+			Project curentParseProject = Project;
+			System.Threading.ThreadPool.QueueUserWorkItem (delegate {
+				// Don't access Document properties from the thread
+				ProjectDomService.Parse (curentParseProject, currentParseFile, IdeApp.Services.PlatformService.GetMimeTypeForUri (currentParseFile));
+			});
+			
 			if (window is SdiWorkspaceWindow)
 				((SdiWorkspaceWindow)window).DetachFromPathedDocument ();
 			window.Closed -= OnClosed;
@@ -466,7 +476,6 @@ namespace MonoDevelop.Ide.Gui
 				
 				System.Threading.ThreadPool.QueueUserWorkItem (delegate {
 					// Don't access Document properties from the thread
-					DateTime t = DateTime.Now;
 					ProjectDomService.Parse (curentParseProject, currentParseFile, IdeApp.Services.PlatformService.GetMimeTypeForUri (currentParseFile), currentParseText);
 				});
 				return false;
