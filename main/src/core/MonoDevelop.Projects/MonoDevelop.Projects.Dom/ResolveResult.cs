@@ -240,6 +240,8 @@ namespace MonoDevelop.Projects.Dom
 					if (member is IType || !(showStatic ^ (member.IsStatic || member.IsConst)))
 						result.Add (member);
 				}
+				if (showStatic)
+					break;
 			}
 		}
 		

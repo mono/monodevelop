@@ -50,6 +50,7 @@ namespace MonoDevelop.Projects.Dom
 		protected ClassType classType = ClassType.Unknown;
 		protected string nameSpace;
 		
+		
 		protected override void CalculateFullName ()
 		{
 			if (DeclaringType != null) {
@@ -73,6 +74,8 @@ namespace MonoDevelop.Projects.Dom
 		
 		public virtual string Namespace {
 			get {
+				if (DeclaringType != null) 
+					return !String.IsNullOrEmpty (nameSpace) ?  nameSpace + "." + DeclaringType.Name : DeclaringType.Name;
 				return nameSpace ?? "";
 			}
 			set {

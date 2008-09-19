@@ -387,9 +387,17 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		public override IType GetType (string typeName, IList<IReturnType> genericArguments, bool deepSearchReferences, bool caseSensitive)
 		{
-			foreach (IType type in Types) {
-				if (type.FullName == typeName) 
-					return DomType.CreateInstantiatedGenericType (type, genericArguments);
+			Stack<IType> typeStack = new Stack<IType> ();
+			foreach (IType curType in Types) {
+				typeStack.Push (curType);
+				while (typeStack.Count > 0) {
+					IType type = typeStack.Pop ();
+					if (type.FullName == typeName) 
+						return DomType.CreateInstantiatedGenericType (type, genericArguments);
+					foreach (IType inner in type.InnerTypes) {
+						typeStack.Push (inner);
+					}
+				}
 			}
 			return null;
 		}
