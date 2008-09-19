@@ -1,3 +1,8 @@
+2008-09-19  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/NRefactoryResolver.cs, Gui/ResolveVisitor.cs: Found cleaner way
+	  for method resolve result.
+
 2008-09-18  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Gui/CSharpTextEditorCompletion.cs: Track api changes.

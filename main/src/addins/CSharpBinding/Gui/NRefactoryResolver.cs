@@ -257,9 +257,11 @@ namespace MonoDevelop.CSharpBinding
 				System.Console.WriteLine("Can't parse expression");
 				return null;
 			}
+//			System.Console.WriteLine("parsed expr.:" + expr);
 			ResolveVisitor visitor = new ResolveVisitor (this);
 			
 			ResolveResult result = visitor.Resolve (expr);
+//			System.Console.WriteLine("result:" + result);
 			return result;
 		}
 		

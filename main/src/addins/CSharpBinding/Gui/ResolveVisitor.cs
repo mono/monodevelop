@@ -336,6 +336,7 @@ namespace MonoDevelop.CSharpBinding
 							result.CallingType   = resolver.CallingType;
 							result.CallingMember = resolver.CallingMember;
 							result.StaticResolve = isStatic;
+							result.ResolvedType  = member[0].ReturnType;
 							return result;
 						}
 						if (member[0] is IType) {
@@ -359,10 +360,10 @@ namespace MonoDevelop.CSharpBinding
 				return null;
 			
 			ResolveResult targetResult = Resolve (invocationExpression.TargetObject);
-			MethodResolveResult methodResult = targetResult as MethodResolveResult;
-			if (methodResult != null) {
-				return CreateResult (methodResult.Methods [0].ReturnType);
-			}
+//			MethodResolveResult methodResult = targetResult as MethodResolveResult;
+//			if (methodResult != null) {
+//				return CreateResult (methodResult.Methods [0].ReturnType);
+//			}
 			return targetResult;
 		}
 		
