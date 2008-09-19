@@ -1,5 +1,9 @@
 2008-09-19  Mike Krüger <mkrueger@novell.com> 
 
+	* Gui/NRefactoryResolver.cs: forget one commit.
+
+2008-09-19  Mike Krüger <mkrueger@novell.com> 
+
 	* Gui/ResolveVisitor.cs: fixed 'Bug 427649 - Code Completion: protected
 	  methods shown in code completion'.
 

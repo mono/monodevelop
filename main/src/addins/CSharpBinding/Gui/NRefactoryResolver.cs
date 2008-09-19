@@ -257,11 +257,11 @@ namespace MonoDevelop.CSharpBinding
 				System.Console.WriteLine("Can't parse expression");
 				return null;
 			}
-//			System.Console.WriteLine("parsed expr.:" + expr);
+			System.Console.WriteLine("parsed expr.:" + expr);
 			ResolveVisitor visitor = new ResolveVisitor (this);
 			
 			ResolveResult result = visitor.Resolve (expr);
-//			System.Console.WriteLine("result:" + result);
+			System.Console.WriteLine("result:" + result);
 			return result;
 		}
 		
@@ -336,6 +336,7 @@ namespace MonoDevelop.CSharpBinding
 		
 		public ResolveResult ResolveIdentifier (ResolveVisitor visitor, string identifier)
 		{
+			
 			ResolveResult result = null;
 			foreach (KeyValuePair<string, List<LocalLookupVariable>> pair in this.lookupTableVisitor.Variables) {
 				if (identifier == pair.Key) {
@@ -367,7 +368,7 @@ namespace MonoDevelop.CSharpBinding
 				// filter members
 				if (this.CallingMember != null) {
 					for (int i = 0; i < members.Count; i++) {
-						if (this.CallingMember.IsStatic && !members[i].IsStatic || !members[i].IsAccessibleFrom (dom, this.CallingMember)) {
+						if (this.CallingMember.IsStatic && !members[i].IsStatic || !members[i].IsAccessibleFrom (dom, callingType, this.CallingMember)) {
 							members.RemoveAt (i);
 							i--;
 							continue;
@@ -422,11 +423,17 @@ namespace MonoDevelop.CSharpBinding
 
 			if (unit.Usings != null) {
 				foreach (IUsing u in unit.Usings) {
-					if (!u.IsFromNamespace)
-						continue;
-					foreach (string ns in u.Namespaces) {
-						if (dom.NamespaceExists (ns + "."  + identifier, true)) {
-							result = new NamespaceResolveResult (ns + "."  + identifier);
+					if (u.IsFromNamespace) {
+						foreach (string ns in u.Namespaces) {
+							if (dom.NamespaceExists (ns + "."  + identifier, true)) {
+								result = new NamespaceResolveResult (ns + "."  + identifier);
+								goto end;
+							}
+						}
+					}
+					foreach (KeyValuePair<string, IReturnType> alias in u.Aliases) {
+						if (alias.Key == identifier || alias.Key + ".?" == identifier) {
+							result = new NamespaceResolveResult (alias.Value.FullName);
 							goto end;
 						}
 					}
