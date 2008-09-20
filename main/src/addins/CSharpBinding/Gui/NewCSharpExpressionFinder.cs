@@ -599,7 +599,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			switch (token.kind) {
 				case Tokens.Using:
 					if (frame.type == FrameType.Global) {
-						frame.SetContext(ExpressionContext.Namespace);
+						frame.SetContext(ExpressionContext.NamespaceNameExcepted);
 						break;
 					} else {
 						goto case Tokens.For;

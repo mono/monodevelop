@@ -132,7 +132,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				int idx = result.Expression.LastIndexOf ('.');
 				if (idx > 0)
 					result.Expression = result.Expression.Substring (0, idx);
-				
+				System.Console.WriteLine(result);
 				NRefactoryResolver resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (dom,
 				                                                                                Document.CompilationUnit,
 				                                                                                ICSharpCode.NRefactory.SupportedLanguage.CSharp,
@@ -284,14 +284,14 @@ namespace MonoDevelop.CSharpBinding.Gui
 					if (prevCh != '.' && !Char.IsLetterOrDigit (prevCh)) {
 						NewCSharpExpressionFinder expressionFinder = new NewCSharpExpressionFinder (dom);
 						try {
-							result = expressionFinder.FindExpression (Editor.Text, Editor.CursorPosition - 1);
+							result = expressionFinder.FindExpression (Editor.Text, Math.Max (Editor.CursorPosition - 1, 0));
 						} catch (Exception ex) {
 							LoggingService.LogWarning (ex.Message, ex);
 							result = null;
 						}
 						if (result == null)
 							return null;
-//						System.Console.WriteLine(result);
+						System.Console.WriteLine(result);
 						if (result.ExpressionContext != ExpressionContext.IdentifierExpected) {
 							triggerWordLength = 1;
 							return CreateCtrlSpaceCompletionData (result);
@@ -739,10 +739,13 @@ namespace MonoDevelop.CSharpBinding.Gui
 				AddNRefactoryKeywords (result, ICSharpCode.NRefactory.Parser.CSharp.Tokens.ExpressionStart);
 				AddNRefactoryKeywords (result, ICSharpCode.NRefactory.Parser.CSharp.Tokens.ExpressionContent);
 				resolver.AddAccessibleCodeCompletionData (result);
+			} else if (expressionResult.ExpressionContext == ExpressionContext.Global) {
+				AddNRefactoryKeywords (result, ICSharpCode.NRefactory.Parser.CSharp.Tokens.GlobalLevel);
 			} else {
 				AddPrimitiveTypes (result);
 				resolver.AddAccessibleCodeCompletionData (result);
 			}
+			
 			if (resolver.CallingMember is IMethod && ((IMethod)resolver.CallingMember).GenericParameters != null) {
 				foreach (IReturnType returnType in ((IMethod)resolver.CallingMember).GenericParameters) {
 					result.AddCompletionData (new CodeCompletionData (returnType.Name, "md-literal"));

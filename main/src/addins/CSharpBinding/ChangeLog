@@ -1,5 +1,11 @@
 2008-09-20  Mike Krüger <mkrueger@novell.com> 
 
+	* Gui/NewCSharpExpressionFinder.cs, Gui/CSharpTextEditorCompletion.cs:
+	  Fixed 'Bug 427375 - Code Completion: Incorrect completion of
+	  "using"'
+
+2008-09-20  Mike Krüger <mkrueger@novell.com> 
+
 	* Gui/CSharpTextEditorCompletion.cs: Removed duplicate get/set in
 	  property declaration.
 
