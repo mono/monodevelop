@@ -59,6 +59,7 @@ namespace MonoDevelop.CSharpBinding
 			MonoDevelop.Ide.Gui.Document doc = (MonoDevelop.Ide.Gui.Document)editor;
 			return new NRefactoryResolver (dom, doc.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, doc.TextEditor, fileName);
 		}
+
 		
 	/*	public override IDocumentMetaInformation CreateMetaInformation (TextReader reader)
 		{
@@ -433,9 +434,90 @@ namespace MonoDevelop.CSharpBinding
 				return null;
 			}
 			
+			static string GetOperatorName (ICSharpCode.NRefactory.Ast.OperatorDeclaration operatorDeclaration)
+			{
+				if (operatorDeclaration == null)
+					return null;
+				bool isBinary = operatorDeclaration.Parameters.Count == 2;
+				switch (operatorDeclaration.OverloadableOperator) {
+				case ICSharpCode.NRefactory.Ast.OverloadableOperatorType.Add:
+					return isBinary ? "op_Addition" : "op_UnaryPlus";
+				case ICSharpCode.NRefactory.Ast.OverloadableOperatorType.Subtract:
+					return isBinary ? "op_Subtraction" : "op_UnaryNegation";
+				case ICSharpCode.NRefactory.Ast.OverloadableOperatorType.Multiply:
+					return "op_Multiply";
+				case ICSharpCode.NRefactory.Ast.OverloadableOperatorType.Divide:
+					return "op_Division";
+				case ICSharpCode.NRefactory.Ast.OverloadableOperatorType.Modulus:
+					return "op_Modulus";
+				case ICSharpCode.NRefactory.Ast.OverloadableOperatorType.Not:
+					return "op_LogicalNot";
+				case ICSharpCode.NRefactory.Ast.OverloadableOperatorType.BitNot:
+					return "op_OnesComplement";
+				case ICSharpCode.NRefactory.Ast.OverloadableOperatorType.BitwiseAnd:
+					return "op_BitwiseAnd";
+				case ICSharpCode.NRefactory.Ast.OverloadableOperatorType.BitwiseOr:
+					return "op_BitwiseOr";
+				case ICSharpCode.NRefactory.Ast.OverloadableOperatorType.ExclusiveOr:
+					return "op_ExclusiveOr";
+				case ICSharpCode.NRefactory.Ast.OverloadableOperatorType.ShiftLeft:
+					return "op_LeftShift";
+				case ICSharpCode.NRefactory.Ast.OverloadableOperatorType.ShiftRight:
+					return "op_RightShift";
+				case ICSharpCode.NRefactory.Ast.OverloadableOperatorType.GreaterThan:
+					return "op_GreaterThan";
+				case ICSharpCode.NRefactory.Ast.OverloadableOperatorType.GreaterThanOrEqual:
+					return "op_GreaterThanOrEqual";
+				case ICSharpCode.NRefactory.Ast.OverloadableOperatorType.Equality:
+					return "op_Equality";
+				case ICSharpCode.NRefactory.Ast.OverloadableOperatorType.InEquality:
+					return "op_Inequality";
+				case ICSharpCode.NRefactory.Ast.OverloadableOperatorType.LessThan:
+					return "op_LessThan";
+				case ICSharpCode.NRefactory.Ast.OverloadableOperatorType.LessThanOrEqual:
+					return "op_LessThanOrEqual";
+				case ICSharpCode.NRefactory.Ast.OverloadableOperatorType.Increment:
+					return "op_Increment";
+				case ICSharpCode.NRefactory.Ast.OverloadableOperatorType.Decrement:
+					return "op_Decrement";
+				case ICSharpCode.NRefactory.Ast.OverloadableOperatorType.IsTrue:
+					return "op_True";
+				case ICSharpCode.NRefactory.Ast.OverloadableOperatorType.IsFalse:
+					return "op_False";
+				case ICSharpCode.NRefactory.Ast.OverloadableOperatorType.None:
+					switch (operatorDeclaration.ConversionType) {
+						case ICSharpCode.NRefactory.Ast.ConversionType.Implicit:
+							return "op_Implicit";
+						case ICSharpCode.NRefactory.Ast.ConversionType.Explicit:
+							return "op_Explicit";
+					}
+					break;
+				}
+				return null;
+			}
+			
 			public override object VisitOperatorDeclaration (ICSharpCode.NRefactory.Ast.OperatorDeclaration operatorDeclaration, object data)
 			{
-				// TODO
+				DomMethod method = new DomMethod ();
+				method.Name      = GetOperatorName (operatorDeclaration);
+				method.Location  = ConvertLocation (operatorDeclaration.StartLocation);
+				method.BodyRegion = ConvertRegion (operatorDeclaration.EndLocation, operatorDeclaration.Body != null ? operatorDeclaration.Body.EndLocation : new ICSharpCode.NRefactory.Location (-1, -1));
+				method.Modifiers  = ConvertModifiers (operatorDeclaration.Modifier) | Modifiers.SpecialName;
+				if (operatorDeclaration.IsExtensionMethod)
+					method.MethodModifier |= MethodModifier.IsExtension;
+				method.ReturnType = ConvertReturnType (operatorDeclaration.TypeReference);
+				AddAttributes (method, operatorDeclaration.Attributes);
+				method.Add (ConvertParameterList (method, operatorDeclaration.Parameters));
+				AddExplicitInterfaces (method, operatorDeclaration.InterfaceImplementations);
+				
+				if (operatorDeclaration.Templates != null && operatorDeclaration.Templates.Count > 0) {
+					foreach (ICSharpCode.NRefactory.Ast.TemplateDefinition td in operatorDeclaration.Templates) {
+						method.AddGenericParameter (new DomReturnType (td.Name));
+					}
+				}
+				method.DeclaringType = typeStack.Peek ();
+				typeStack.Peek ().Add (method);
+				
 				return null;
 			}
 

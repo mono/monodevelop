@@ -1,5 +1,9 @@
 2008-09-20  Mike Krüger <mkrueger@novell.com> 
 
+	* Parser/NRefactoryParser.cs: Operators are now converted.
+
+2008-09-20  Mike Krüger <mkrueger@novell.com> 
+
 	* Gui/NewCSharpExpressionFinder.cs, Gui/CSharpTextEditorCompletion.cs:
 	  Fixed 'Bug 427375 - Code Completion: Incorrect completion of
 	  "using"'
