@@ -1,3 +1,9 @@
+2008-09-20  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom/DomCecilCompilationUnit.cs,
+	  MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
+	  Fixed special name method bug.
+
 2008-09-19  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Dom/CompoundType.cs: Remove file must return

@@ -89,8 +89,8 @@ namespace MonoDevelop.Projects.Dom
 		{
 			return (mods & MonoDevelop.Projects.Dom.Modifiers.Internal) == MonoDevelop.Projects.Dom.Modifiers.Internal ||
 			       (mods & MonoDevelop.Projects.Dom.Modifiers.Private) == MonoDevelop.Projects.Dom.Modifiers.Private ||
-			       (mods & MonoDevelop.Projects.Dom.Modifiers.ProtectedOrInternal) == MonoDevelop.Projects.Dom.Modifiers.ProtectedOrInternal ||
-			       (mods & MonoDevelop.Projects.Dom.Modifiers.SpecialName) == MonoDevelop.Projects.Dom.Modifiers.SpecialName;
+			       (mods & MonoDevelop.Projects.Dom.Modifiers.ProtectedOrInternal) == MonoDevelop.Projects.Dom.Modifiers.ProtectedOrInternal/* ||
+			       (mods & MonoDevelop.Projects.Dom.Modifiers.SpecialName) == MonoDevelop.Projects.Dom.Modifiers.SpecialName*/;
 		}
 		
 		void AddModuleDefinition (bool keepDefinitions, bool loadInternal, ModuleDefinition moduleDefinition)
@@ -99,6 +99,7 @@ namespace MonoDevelop.Projects.Dom
 				if (!loadInternal && IsInternal (DomCecilType.GetModifiers (type.Attributes)))
 					continue;
 				DomCecilType loadType = new DomCecilType (keepDefinitions, loadInternal, type);
+				
 				Add (loadType);
 			}
 		}
