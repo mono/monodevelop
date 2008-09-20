@@ -132,7 +132,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				int idx = result.Expression.LastIndexOf ('.');
 				if (idx > 0)
 					result.Expression = result.Expression.Substring (0, idx);
-				System.Console.WriteLine(result);
+				
 				NRefactoryResolver resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (dom,
 				                                                                                Document.CompilationUnit,
 				                                                                                ICSharpCode.NRefactory.SupportedLanguage.CSharp,
@@ -291,7 +291,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 						}
 						if (result == null)
 							return null;
-						System.Console.WriteLine(result);
+						
 						if (result.ExpressionContext != ExpressionContext.IdentifierExpected) {
 							triggerWordLength = 1;
 							return CreateCtrlSpaceCompletionData (result);

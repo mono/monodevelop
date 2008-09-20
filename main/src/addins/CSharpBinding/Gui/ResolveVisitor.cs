@@ -271,10 +271,10 @@ namespace MonoDevelop.CSharpBinding
 		{
 			level = 0;
 			foreach (IType curType in resolver.Dom.GetInheritanceTree (type)) {
-				System.Console.WriteLine(curType);
+				
 				foreach (IMember member in curType.SearchMember (operatorName, true)) {
 					IMethod method = (IMethod)member;
-					System.Console.WriteLine(method);
+					
 					if (method == null || !method.IsSpecialName)
 						continue;
 					return method;
@@ -289,7 +289,7 @@ namespace MonoDevelop.CSharpBinding
 			IReturnType left  = GetTypeSafe (binaryOperatorExpression.Left);
 			IReturnType right = GetTypeSafe (binaryOperatorExpression.Right);
 			string opName = GetOperatorName (binaryOperatorExpression.Op);
-			System.Console.WriteLine(left + "/" + right +" op:" + opName);
+			
 			if (!String.IsNullOrEmpty (opName)) {
 				IType leftType  = this.resolver.Dom.GetType (left);
 				int leftOperatorLevel = 0;
@@ -298,7 +298,7 @@ namespace MonoDevelop.CSharpBinding
 				IType rightType = this.resolver.Dom.GetType (right);
 				int rightOperatorLevel = 0;
 				IMethod rightOperator = rightType != null ? FindOperator (rightType, opName, out rightOperatorLevel) : null;
-				System.Console.WriteLine(leftType + "->" + leftOperator  +" / " + rightType + "->" + rightOperator );
+				
 				if (leftOperator != null && rightOperator != null) {
 					if (leftOperatorLevel < rightOperatorLevel)
 						return CreateResult (leftOperator.ReturnType);
