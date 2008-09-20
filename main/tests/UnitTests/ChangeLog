@@ -1,3 +1,9 @@
+2008-09-20  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.CSharpBinding/CodeCompletionOperatorTests.cs,
+	  MonoDevelop.CSharpBinding/CodeCompletionTests.cs: Added operator
+	  completion tests.
+
 2008-09-19  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.CSharpBinding/CodeCompletionTests.cs: added unit tests

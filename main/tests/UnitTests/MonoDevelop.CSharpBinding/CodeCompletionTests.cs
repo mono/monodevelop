@@ -41,7 +41,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 	[TestFixture()]
 	public class CodeCompletionTests
 	{
-		static CodeCompletionDataProvider CreateProvider (string text)
+		public static CodeCompletionDataProvider CreateProvider (string text)
 		{
 			int cursorPosition = text.IndexOf ('$');
 			string parsedText = text.Substring (0, cursorPosition) + text.Substring (cursorPosition + 1);
