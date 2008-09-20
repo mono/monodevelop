@@ -291,6 +291,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 						}
 						if (result == null)
 							return null;
+//						System.Console.WriteLine(result);
 						if (result.ExpressionContext != ExpressionContext.IdentifierExpected) {
 							triggerWordLength = 1;
 							return CreateCtrlSpaceCompletionData (result);
@@ -729,8 +730,6 @@ namespace MonoDevelop.CSharpBinding.Gui
 				resolver.AddAccessibleCodeCompletionData (result);
 			} else if (expressionResult.ExpressionContext == ExpressionContext.PropertyDeclaration) {
 				AddNRefactoryKeywords (result, ICSharpCode.NRefactory.Parser.CSharp.Tokens.InPropertyDeclaration);
-				result.AddCompletionData (new CodeCompletionData ("get", "md-literal"));
-				result.AddCompletionData (new CodeCompletionData ("set", "md-literal"));
 			} else if (expressionResult.ExpressionContext == ExpressionContext.EventDeclaration) {
 				result.AddCompletionData (new CodeCompletionData ("add", "md-literal"));
 				result.AddCompletionData (new CodeCompletionData ("remove", "md-literal"));

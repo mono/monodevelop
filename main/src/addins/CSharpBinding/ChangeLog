@@ -1,3 +1,8 @@
+2008-09-20  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/CSharpTextEditorCompletion.cs: Removed duplicate get/set in
+	  property declaration.
+
 2008-09-19  Mike Krüger <mkrueger@novell.com> 
 
 	* Gui/NRefactoryResolver.cs: fixed 'Bug 427734 - Code Completion issues
