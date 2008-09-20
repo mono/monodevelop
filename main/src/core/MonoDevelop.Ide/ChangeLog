@@ -1,3 +1,8 @@
+2008-09-20  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Content/CompletionTextEditorExtension.cs: fixed
+	  code completion issue with empty files.
+
 2008-09-19  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs: When

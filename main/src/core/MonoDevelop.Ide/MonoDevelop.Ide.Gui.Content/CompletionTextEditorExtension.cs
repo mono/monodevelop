@@ -74,9 +74,9 @@ namespace MonoDevelop.Ide.Gui.Content
 				currentCompletionContext = completionWidget.CreateCodeCompletionContext (Editor.CursorPosition);
 				
 				int triggerWordLength = currentCompletionContext.TriggerWordLength;
-				
 				ICompletionDataProvider cp = HandleCodeCompletion (currentCompletionContext, keyChar, ref triggerWordLength);
-				if (triggerWordLength > 0 && triggerWordLength < Editor.CursorPosition) {
+
+				if (triggerWordLength > 0 && (triggerWordLength < Editor.CursorPosition || (triggerWordLength == 1 && Editor.CursorPosition == 1))) {
 					currentCompletionContext = completionWidget.CreateCodeCompletionContext (Editor.CursorPosition - triggerWordLength);	
 					currentCompletionContext.TriggerWordLength = triggerWordLength;
 				}
