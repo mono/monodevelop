@@ -130,9 +130,36 @@ namespace MonoDevelop.CSharpBinding
 		{
 			return Resolve (assignmentExpression.Left);
 		}
+		static string GetOperatorName (UnaryOperatorType type)
+		{
+			switch (type) {
+			case UnaryOperatorType.Not:
+				return "op_LogicalNot";
+			case UnaryOperatorType.BitNot:
+				return "op_OnesComplement";
+			case UnaryOperatorType.Minus:
+				return "op_UnaryNegation";
+			case UnaryOperatorType.Plus:
+				return "op_UnaryPlus";
+			}
+			return null;
+		}
 		
 		public override object VisitUnaryOperatorExpression (UnaryOperatorExpression unaryOperatorExpression, object data)
 		{
+			string name = GetOperatorName (unaryOperatorExpression.Op);
+			if (!String.IsNullOrEmpty (name)) {
+				IReturnType returnType = GetTypeSafe (unaryOperatorExpression.Expression);
+				IType type  = returnType != null ? this.resolver.Dom.GetType (returnType) : null;
+				if (type != null) {
+					int level;
+					IMethod op = FindOperator (type, name, out level);
+					if (op != null) {
+						return CreateResult (op.ReturnType);
+					}
+				}
+			
+			}
 			return Resolve (unaryOperatorExpression.Expression);
 		}
 		
@@ -196,9 +223,93 @@ namespace MonoDevelop.CSharpBinding
 		
 		}
 
+		static string GetOperatorName (BinaryOperatorType type)
+		{
+			switch (type) {
+				case BinaryOperatorType.Add:
+					return "op_Addition";
+				case BinaryOperatorType.Subtract:
+					return "op_Subtraction";
+				case BinaryOperatorType.Multiply:
+					return "op_Multiply";
+				case BinaryOperatorType.Divide:
+					return "op_Division";
+				case BinaryOperatorType.Modulus:
+					return "op_Modulus";
+				
+				case BinaryOperatorType.BitwiseAnd:
+					return "op_BitwiseAnd";
+				case BinaryOperatorType.BitwiseOr:
+					return "op_BitwiseOr";
+				case BinaryOperatorType.ExclusiveOr:
+					return "op_ExclusiveOr";
+				
+				case BinaryOperatorType.ShiftLeft:
+					return "op_LeftShift";
+				case BinaryOperatorType.ShiftRight:
+					return "op_RightShift";
+				
+				case BinaryOperatorType.Equality:
+					return "op_Equality";
+				case BinaryOperatorType.InEquality:
+					return "op_Inequality";
+					
+				case BinaryOperatorType.LessThan:
+					return "op_LessThan";
+				case BinaryOperatorType.LessThanOrEqual:
+				
+					return "op_LessThanOrEqual";
+				case BinaryOperatorType.GreaterThan:
+					return "op_GreaterThan";
+				case BinaryOperatorType.GreaterThanOrEqual:
+					return "op_GreaterThanOrEqual";
+			}
+			return "";
+		}
+		
+		IMethod FindOperator (IType type, string operatorName, out int level)
+		{
+			level = 0;
+			foreach (IType curType in resolver.Dom.GetInheritanceTree (type)) {
+				System.Console.WriteLine(curType);
+				foreach (IMember member in curType.SearchMember (operatorName, true)) {
+					IMethod method = (IMethod)member;
+					System.Console.WriteLine(method);
+					if (method == null || !method.IsSpecialName)
+						continue;
+					return method;
+				}
+				level++;
+			}
+			return null;
+		}
 		
 		public override object VisitBinaryOperatorExpression(BinaryOperatorExpression binaryOperatorExpression, object data)
 		{
+			IReturnType left  = GetTypeSafe (binaryOperatorExpression.Left);
+			IReturnType right = GetTypeSafe (binaryOperatorExpression.Right);
+			string opName = GetOperatorName (binaryOperatorExpression.Op);
+			System.Console.WriteLine(left + "/" + right +" op:" + opName);
+			if (!String.IsNullOrEmpty (opName)) {
+				IType leftType  = this.resolver.Dom.GetType (left);
+				int leftOperatorLevel = 0;
+				IMethod leftOperator = leftType != null ? FindOperator (leftType, opName, out leftOperatorLevel) : null;
+				
+				IType rightType = this.resolver.Dom.GetType (right);
+				int rightOperatorLevel = 0;
+				IMethod rightOperator = rightType != null ? FindOperator (rightType, opName, out rightOperatorLevel) : null;
+				System.Console.WriteLine(leftType + "->" + leftOperator  +" / " + rightType + "->" + rightOperator );
+				if (leftOperator != null && rightOperator != null) {
+					if (leftOperatorLevel < rightOperatorLevel)
+						return CreateResult (leftOperator.ReturnType);
+					return CreateResult (rightOperator.ReturnType);
+				}
+				if (leftOperator != null)
+					return CreateResult (leftOperator.ReturnType);
+				if (rightOperator != null)
+					return CreateResult (rightOperator.ReturnType);
+			}
+			
 			switch (binaryOperatorExpression.Op) {
 				case BinaryOperatorType.Equality:
 				case BinaryOperatorType.InEquality:
@@ -221,8 +332,8 @@ namespace MonoDevelop.CSharpBinding
 					return CreateResult (typeof(string).FullName);
 					
 				default:
-					return CreateResult (GetCommonType (GetTypeSafe (binaryOperatorExpression.Left), 
-					                                    GetTypeSafe (binaryOperatorExpression.Right)).FullName);
+					return CreateResult (GetCommonType (left, 
+					                                    right).FullName);
 			}
 		}
 		

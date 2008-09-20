@@ -450,6 +450,7 @@ namespace MonoDevelop.CSharpBinding
 					return "op_Division";
 				case ICSharpCode.NRefactory.Ast.OverloadableOperatorType.Modulus:
 					return "op_Modulus";
+					
 				case ICSharpCode.NRefactory.Ast.OverloadableOperatorType.Not:
 					return "op_LogicalNot";
 				case ICSharpCode.NRefactory.Ast.OverloadableOperatorType.BitNot:
@@ -460,10 +461,12 @@ namespace MonoDevelop.CSharpBinding
 					return "op_BitwiseOr";
 				case ICSharpCode.NRefactory.Ast.OverloadableOperatorType.ExclusiveOr:
 					return "op_ExclusiveOr";
+					
 				case ICSharpCode.NRefactory.Ast.OverloadableOperatorType.ShiftLeft:
 					return "op_LeftShift";
 				case ICSharpCode.NRefactory.Ast.OverloadableOperatorType.ShiftRight:
 					return "op_RightShift";
+					
 				case ICSharpCode.NRefactory.Ast.OverloadableOperatorType.GreaterThan:
 					return "op_GreaterThan";
 				case ICSharpCode.NRefactory.Ast.OverloadableOperatorType.GreaterThanOrEqual:
@@ -476,14 +479,17 @@ namespace MonoDevelop.CSharpBinding
 					return "op_LessThan";
 				case ICSharpCode.NRefactory.Ast.OverloadableOperatorType.LessThanOrEqual:
 					return "op_LessThanOrEqual";
+					
 				case ICSharpCode.NRefactory.Ast.OverloadableOperatorType.Increment:
 					return "op_Increment";
 				case ICSharpCode.NRefactory.Ast.OverloadableOperatorType.Decrement:
 					return "op_Decrement";
+					
 				case ICSharpCode.NRefactory.Ast.OverloadableOperatorType.IsTrue:
 					return "op_True";
 				case ICSharpCode.NRefactory.Ast.OverloadableOperatorType.IsFalse:
 					return "op_False";
+					
 				case ICSharpCode.NRefactory.Ast.OverloadableOperatorType.None:
 					switch (operatorDeclaration.ConversionType) {
 						case ICSharpCode.NRefactory.Ast.ConversionType.Implicit:
