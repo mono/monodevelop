@@ -111,6 +111,8 @@ namespace MonoDevelop.CSharpBinding
 		
 		public NRefactoryResolver (ProjectDom dom, ICompilationUnit unit, SupportedLanguage lang, TextEditor editor, string fileName)
 		{
+			if (dom == null)
+				throw new ArgumentNullException ("dom");
 			this.unit = unit;
 			
 			this.dom = dom;
