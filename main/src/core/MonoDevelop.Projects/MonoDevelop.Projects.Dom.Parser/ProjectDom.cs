@@ -342,10 +342,10 @@ namespace MonoDevelop.Projects.Dom.Parser
 					dom.ReferenceCount++;
 				}
 			}
-//			List<ProjectDom> oldRefs = references;
+			List<ProjectDom> oldRefs = references;
 			references = refs;
-/*			foreach (ProjectDom dom in oldRefs)
-				ProjectDomService.UnloadDom (dom.Uri); */
+			foreach (ProjectDom dom in oldRefs)
+				ProjectDomService.UnrefDom (dom.Uri); 
 		}
 
 		internal IReturnType GetSharedReturnType (IReturnType rt)

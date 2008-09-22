@@ -520,7 +520,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 	
 		}
 
-		internal static bool UnloadDom (string uri)
+		internal static bool UnrefDom (string uri)
 		{
 			ProjectDom db;
 			lock (databases)
