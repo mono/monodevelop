@@ -32,6 +32,7 @@ using System.Collections;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui.Components;
 
@@ -50,7 +51,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
 			IProperty data = dataObject as IProperty;
-			label = data.Name;
+			label = AmbienceService.GetAmbience (data).GetString (data, OutputFlags.ClassBrowserEntries  | OutputFlags.EmitMarkup);
 			icon = Context.GetIcon (data.StockIcon);
 		}
 	}

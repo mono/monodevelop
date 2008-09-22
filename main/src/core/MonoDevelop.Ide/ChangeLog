@@ -1,5 +1,13 @@
 2008-09-22  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Ide.Gui.Pads.ClassPad/MethodNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/EventNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/FieldNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/PropertyNodeBuilder.cs: Added
+	  emitmarkup flag to the class browser entries.
+
+2008-09-22  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Ide.Gui.Pads.ClassPad/ProjectNodeBuilder.cs,
 	  MonoDevelop.Ide.Gui/Workbench.cs: Handled some possible null
 	  references.
