@@ -136,7 +136,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public bool IsObsolete {
+		public virtual bool IsObsolete {
 			get {
 				foreach (IAttribute attr in Attributes) {
 					switch (attr.Name) {
