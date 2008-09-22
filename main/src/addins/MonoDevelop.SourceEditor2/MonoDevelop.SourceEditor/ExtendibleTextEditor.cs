@@ -289,10 +289,15 @@ namespace MonoDevelop.SourceEditor
 		
 		public ProjectDom ProjectDom {
 			get {
+				ProjectDom result = null;
 				MonoDevelop.Ide.Gui.Document doc = IdeApp.Workbench.ActiveDocument;
-				if (doc == null)
-					return null;
-				return ProjectDomService.GetProjectDom (doc.Project);
+				if (doc != null || doc.Project == null) 
+					result = ProjectDomService.GetProjectDom (doc.Project);
+				
+				if (result == null)
+					result = ProjectDomService.GetFileDom (View.ContentName);
+				
+				return result;
 			}
 		}
 		
@@ -317,8 +322,7 @@ namespace MonoDevelop.SourceEditor
 			if (parser == null)
 				return null;
 
-			// TODO dom Create file dom if there is no project
-			ProjectDom        dom      = ProjectDomService.GetProjectDom (doc.Project);
+			ProjectDom        dom      = this.ProjectDom;
 			IResolver         resolver = parser.CreateResolver (dom, doc, fileName);
 			IExpressionFinder expressionFinder = parser.CreateExpressionFinder (dom);
 			if (resolver == null || expressionFinder == null) 
