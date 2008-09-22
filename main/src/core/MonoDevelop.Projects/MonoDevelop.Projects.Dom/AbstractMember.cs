@@ -240,15 +240,13 @@ namespace MonoDevelop.Projects.Dom
 				return IsStatic;
 	//		if (member.IsStatic && !IsStatic)
 	//			return false;
-			if (IsPublic)
+			if (IsPublic || calledType != null && calledType.ClassType == ClassType.Interface)
 				return true;
 			if (IsInternal) {
 				IType type1 = this is IType ? (IType)this : DeclaringType;
 				IType type2 = member is IType ? (IType)member : member.DeclaringType;
 				return type1.SourceProjectDom == type2.SourceProjectDom;
 			}
-			System.Console.WriteLine("calledType:"  + calledType);
-			System.Console.WriteLine("member:" + member);
 			if (member.DeclaringType == null || DeclaringType == null)
 				return false;
 			
