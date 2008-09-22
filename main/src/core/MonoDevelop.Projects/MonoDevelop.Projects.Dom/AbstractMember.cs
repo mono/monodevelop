@@ -138,11 +138,14 @@ namespace MonoDevelop.Projects.Dom
 		
 		public bool IsObsolete {
 			get {
-				if (attributes == null)
-					return false;
-				foreach (IAttribute attr in attributes) {
-					if (attr.Name.EndsWith ("Obsolete") || attr.Name.EndsWith ("ObsoleteAttribute"))
+				foreach (IAttribute attr in Attributes) {
+					switch (attr.Name) {
+					case "System.Obsolete":
+					case "System.ObsoleteAttribute":
+					case "Obsolete":
+					case "System.ObsoleteAttribute":
 						return true;
+					}
 				}
 				return false;
 			}
