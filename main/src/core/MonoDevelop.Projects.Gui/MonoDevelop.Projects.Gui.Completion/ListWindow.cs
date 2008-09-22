@@ -497,8 +497,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 			{
 				string text = win.DataProvider.GetText (page + n);
 				if (text == null)
-					text = "<null>";
-				layout.SetText (text);
+					text = "&lt;null&gt;";
+				layout.SetMarkup (text);
 				Gdk.Pixbuf icon = win.DataProvider.GetIcon (page + n);
 				
 				int wi, he, typos, iypos;
