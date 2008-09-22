@@ -267,6 +267,25 @@ namespace MonoDevelop.CSharpBinding
 					result.Append (Format (method.Name));
 				}
 			}
+			if (IncludeGenerics (flags)) {
+				if (method.GenericParameters.Count > 0) {
+					if (EmitMarkup (flags)) {
+						result.Append ("&lt;");
+					} else {
+						result.Append ('<');
+					}
+					for (int i = 0; i < method.GenericParameters.Count; i++) {
+						if (i > 0)
+							result.Append (", ");
+						result.Append (GetString (method.GenericParameters[i], flags));
+					}
+					if (EmitMarkup (flags)) {
+						result.Append ("&gt;");
+					} else {
+						result.Append ('>');
+					}
+				}
+			}
 			
 			if (IncludeParameters (flags)) {
 				result.Append ("(");
