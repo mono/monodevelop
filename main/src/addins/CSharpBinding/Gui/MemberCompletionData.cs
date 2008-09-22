@@ -54,12 +54,11 @@ namespace MonoDevelop.CSharpBinding
 			}
 		}
 		
-		public MemberCompletionData (IMember member) : base (ambience.GetString (member, OutputFlags.None), member.StockIcon)
+		public MemberCompletionData (IMember member) : this (member, OutputFlags.None)
 		{
-			this.member = member;
 		}
 		
-		public MemberCompletionData (IMember member, OutputFlags flags) : base (ambience.GetString (member, flags), member.StockIcon)
+		public MemberCompletionData (IMember member, OutputFlags flags) : base (member.IsObsolete ? "<s>" + ambience.GetString (member, OutputFlags.None) + "</s>" :  ambience.GetString (member, flags), member.StockIcon)
 		{
 			this.member = member;
 		}
@@ -76,7 +75,10 @@ namespace MonoDevelop.CSharpBinding
 			
 			string doc = ambience.GetString (member, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName);
 			string docMarkup = ambience.GetString (member, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName | OutputFlags.EmitMarkup);
-			
+			if (member.IsObsolete) {
+				doc += Environment.NewLine + "[Obsolete]";
+				docMarkup += Environment.NewLine + "[Obsolete]";
+			}
 			XmlNode node = member.GetMonodocDocumentation ();
 			if (node != null) {
 				node = node.SelectSingleNode ("summary");
