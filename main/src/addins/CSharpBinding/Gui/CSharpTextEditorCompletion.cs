@@ -68,6 +68,8 @@ namespace MonoDevelop.CSharpBinding.Gui
 			base.Initialize ();
 			InitTracker ();
 			dom = ProjectDomService.GetProjectDom (Document.Project);
+			if (dom == null)
+				dom = ProjectDomService.GetFileDom (Document.FileName);
 		}
 		
 		public override bool ExtendsEditor (MonoDevelop.Ide.Gui.Document doc, IEditableTextBuffer editor)
@@ -577,6 +579,8 @@ namespace MonoDevelop.CSharpBinding.Gui
 				return null;
 			CodeCompletionDataProvider result = new CodeCompletionDataProvider (null, null);
 			ProjectDom dom = ProjectDomService.GetProjectDom (Document.Project);
+			if (dom == null)
+				dom = ProjectDomService.GetFileDom (Document.FileName);
 			if (dom == null)
 				return null;
 			IEnumerable<object> objects = resolveResult.CreateResolveResult (dom, resolver != null ? resolver.CallingMember : null);
