@@ -448,6 +448,14 @@ namespace MonoDevelop.CSharpBinding.Gui
 		
 		public override ICompletionDataProvider CodeCompletionCommand (ICodeCompletionContext completionContext)
 		{
+			int pos = completionContext.TriggerOffset;
+			string txt = Editor.GetText (pos - 1, pos);
+			if (txt.Length > 0) {
+				ICompletionDataProvider cp = HandleCodeCompletion (completionContext, txt[0]);
+				if (cp != null)
+					return cp;
+			}
+		
 			NewCSharpExpressionFinder expressionFinder = new NewCSharpExpressionFinder (dom);
 			ExpressionResult result;
 			try {
@@ -460,18 +468,20 @@ namespace MonoDevelop.CSharpBinding.Gui
 			if (result == null)
 				return null;
 			
-			if (result.ExpressionContext == ExpressionContext.IdentifierExpected) {
+			CodeCompletionDataProvider provider;
+/*			if (result.ExpressionContext == ExpressionContext.IdentifierExpected) {
 				NRefactoryResolver resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (dom, Document.CompilationUnit,
 				                                                                                ICSharpCode.NRefactory.SupportedLanguage.CSharp,
 				                                                                                Editor,
 				                                                                                Document.FileName);
 				
 				ResolveResult resolveResult = resolver.Resolve (result, new DomLocation (Editor.CursorLine, Editor.CursorColumn));
-				return CreateCompletionData (resolveResult, result, resolver);
-			}
-				
-			CodeCompletionDataProvider provider = CreateCtrlSpaceCompletionData (result);
-			provider.AutoCompleteUniqueMatch = true;
+				provider = (CodeCompletionDataProvider)CreateCompletionData (resolveResult, result, resolver);
+			} else {
+			}*/
+			provider = CreateCtrlSpaceCompletionData (result);
+			if (provider != null)
+				provider.AutoCompleteUniqueMatch = true;
 			return provider;
 		}
 		

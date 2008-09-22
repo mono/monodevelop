@@ -1,5 +1,9 @@
 2008-09-22  Mike Krüger <mkrueger@novell.com> 
 
+	* Gui/CSharpTextEditorCompletion.cs: Worked on ctrl+space command.
+
+2008-09-22  Mike Krüger <mkrueger@novell.com> 
+
 	* Gui/CSharpAmbience.cs: Generic method parameters are now emitted.
 
 2008-09-22  Mike Krüger <mkrueger@novell.com> 
