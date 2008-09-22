@@ -311,6 +311,13 @@ namespace MonoDevelop.Projects.Dom.Serialization
 					return new IAttribute [0];
 			}
 		}
+
+		public override bool IsObsolete {
+			get {
+				return HasContent (ContentFlags.IsObsolete);
+			}
+		}
+		
 		
 		bool HasContent (ContentFlags cf)
 		{

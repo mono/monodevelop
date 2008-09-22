@@ -137,6 +137,8 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				flags |= ContentFlags.HasBodyRegion;
 			if (cls.ConstructorCount > 0)
 				flags |= ContentFlags.HasConstructors;
+			if (cls.IsObsolete)
+				flags |= ContentFlags.IsObsolete;
 		}
 		
 		public string Name {
@@ -195,6 +197,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		HasCompilationUnit = 0x0800,
 		HasAttributes      = 0x1000,
 		HasDocumentation   = 0x2000,
-		HasConstructors    = 0x4000
+		HasConstructors    = 0x4000,
+		IsObsolete         = 0x8000
 	}
 }

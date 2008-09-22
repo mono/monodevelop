@@ -143,7 +143,7 @@ namespace MonoDevelop.Projects.Dom
 					case "System.Obsolete":
 					case "System.ObsoleteAttribute":
 					case "Obsolete":
-					case "System.ObsoleteAttribute":
+					case "ObsoleteAttribute":
 						return true;
 					}
 				}
