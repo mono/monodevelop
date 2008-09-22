@@ -358,7 +358,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			ProjectDom dom = GetDom (name);
 			if (dom != null)
 				dom.ReferenceCount--;
-			UnloadDom (name);
+			UnrefDom (name);
 		}
 		
 		public static void Load (WorkspaceItem item)
@@ -410,7 +410,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 		public static void Unload (Project project)
 		{
 			string uri = "Project:" + project.FileName;
-			if (UnloadDom (uri)) {
+			if (UnrefDom (uri)) {
 				project.ReferenceAddedToProject -= OnProjectReferenceAdded;
 				project.ReferenceRemovedFromProject -= OnProjectReferenceRemoved;
 			}
@@ -553,7 +553,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 			if (db != null) {
 				foreach (ProjectDom dom in db.References)
-					UnloadDom (dom.Uri);
+					UnrefDom (dom.Uri);
 				db.Unload ();
 			}
 			return true;
