@@ -91,6 +91,25 @@ void TestMethod ()
 			Assert.IsNotNull (provider.SearchData ("TM2"));
 			Assert.IsNotNull (provider.SearchData ("TF1"));
 		}
+		[Test()]
+		public void TestSimpleInterfaceCodeCompletion ()
+		{
+			CodeCompletionDataProvider provider = CreateProvider (
+@"interface ITest { void TM1 (); void TM2 (); int TF1 { get; } }
+class CCTest {
+void TestMethod ()
+{
+	ITest t;
+	t.$
+}
+}
+");
+			Assert.IsNotNull (provider);
+			Assert.AreEqual (3, provider.CompletionDataCount);
+			Assert.IsNotNull (provider.SearchData ("TM1"));
+			Assert.IsNotNull (provider.SearchData ("TM2"));
+			Assert.IsNotNull (provider.SearchData ("TF1"));
+		}
 
 		/// <summary>
 		/// Bug 399695 - Code completion not working with an enum in a different namespace

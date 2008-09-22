@@ -1,3 +1,8 @@
+2008-09-22  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.CSharpBinding/CodeCompletionTests.cs: added test case for
+	  interface code completion bug.
+
 2008-09-20  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.CSharpBinding/CodeCompletionOperatorTests.cs,
