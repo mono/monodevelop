@@ -1421,7 +1421,12 @@ namespace Mono.TextEditor
 			object item = null;
 			
 			foreach (ITooltipProvider tp in tooltipProviders) {
-				item = tp.GetItem (this, offset);
+				try {
+					item = tp.GetItem (this, offset);
+				} catch (Exception e) {
+					System.Console.WriteLine ("Exception in tooltip provider " + tp + " GetItem:");
+					System.Console.WriteLine (e);
+				}
 				if (item != null) {
 					provider = tp;
 					break;
