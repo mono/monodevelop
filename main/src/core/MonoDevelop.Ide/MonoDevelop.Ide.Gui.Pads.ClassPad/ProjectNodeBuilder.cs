@@ -63,6 +63,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		
 		void OnCompilationUnitUpdated (object sender, ParsedDocumentEventArgs args)
 		{
+			if (!IdeApp.Workspace.IsOpen)
+				return;
 			ITreeBuilder tb = Context.GetTreeBuilder ();
 			tb.UpdateAll ();
 		}

@@ -136,7 +136,11 @@ namespace MonoDevelop.Ide.Gui
 		}
 
 		public Document ActiveDocument {
-			get { return WrapDocument (workbench.ActiveWorkbenchWindow); }
+			get {
+				if (workbench == null || workbench.ActiveWorkbenchWindow == null)
+					return null;
+				return WrapDocument (workbench.ActiveWorkbenchWindow); 
+			}
 		}
 		
 		public Document GetDocument (string fileName)
@@ -181,7 +185,7 @@ namespace MonoDevelop.Ide.Gui
 		}
 		
 		public string CurrentLayout {
-			get { return workbench.WorkbenchLayout != null ? workbench.WorkbenchLayout.CurrentLayout : ""; }
+			get { return workbench != null && workbench.WorkbenchLayout != null ? workbench.WorkbenchLayout.CurrentLayout : ""; }
 			set {
 				if (value != workbench.WorkbenchLayout.CurrentLayout)
 				{
