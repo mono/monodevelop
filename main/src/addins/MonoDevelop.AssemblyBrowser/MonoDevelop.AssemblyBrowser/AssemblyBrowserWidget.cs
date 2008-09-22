@@ -618,7 +618,7 @@ namespace MonoDevelop.AssemblyBrowser
 						
 					}
 				}
-				this.documentationLabel.Markup = documentation;
+				this.documentationLabel.Markup = FormatText (documentation);
 				IAssemblyBrowserNodeBuilder builder = nav.TypeNodeBuilder as IAssemblyBrowserNodeBuilder;
 				this.disassemblerLabel.Selectable = false;
 				if (builder != null) {
