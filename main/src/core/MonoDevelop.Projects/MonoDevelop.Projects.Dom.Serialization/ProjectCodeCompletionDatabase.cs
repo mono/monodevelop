@@ -47,9 +47,8 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		public ProjectCodeCompletionDatabase (Project project, ParserDatabase pdb): base (pdb)
 		{
-			SetLocation (project.BaseDirectory, project.Name);
-			
 			this.project = project;
+			SetLocation (project.BaseDirectory, project.Name);
 			
 			Read ();
 			
@@ -219,7 +218,8 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		{
 			switch (pr.ReferenceType) {
 				case ReferenceType.Project:
-					return new string[] { "Project:" + pr.Reference };
+					Project referencedProject = project.ParentSolution.FindProjectByName (pr.Reference);
+					return new string[] { "Project:" + (referencedProject != null ? referencedProject.FileName : "null") };
 				case ReferenceType.Gac:
 					string refId = pr.Reference;
 					string ext = Path.GetExtension (refId).ToLower ();

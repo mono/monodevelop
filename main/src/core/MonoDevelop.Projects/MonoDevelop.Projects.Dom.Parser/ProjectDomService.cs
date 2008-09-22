@@ -333,7 +333,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 		{
 			if (project == null)
 				return null;
-			return GetDom ("Project:" + project.Name);
+			return GetDom ("Project:" + project.FileName);
 		}
 		
 		public static ProjectDom GetAssemblyDom (string assemblyName)
@@ -429,7 +429,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			
 			lock (databases)
 			{
-				string uri = "Project:" + project.Name;
+				string uri = "Project:" + project.FileName;
 				if (databases.ContainsKey (uri)) return;
 				
 				ProjectDom db = parserDatabase.LoadProjectDom (project);
