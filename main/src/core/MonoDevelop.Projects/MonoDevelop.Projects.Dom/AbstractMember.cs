@@ -136,6 +136,17 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
+		public bool IsObsolete {
+			get {
+				if (attributes == null)
+					return false;
+				foreach (IAttribute attr in attributes) {
+					if (attr.Name.EndsWith ("Obsolete") || attr.Name.EndsWith ("ObsoleteAttribute"))
+						return true;
+				}
+				return false;
+			}
+		}
 		
 		public virtual IEnumerable<IAttribute> Attributes {
 			get {
@@ -265,12 +276,6 @@ namespace MonoDevelop.Projects.Dom
 		}
 		
 		#region ModifierAccessors
-		public bool IsObsolete {
-			get {
-				return (this.Modifiers & Modifiers.IsObsolete) == Modifiers.IsObsolete;
-			}
-		}
-		
 		public bool IsPrivate { 
 			get {
 				return (this.Modifiers & Modifiers.Private) == Modifiers.Private;
