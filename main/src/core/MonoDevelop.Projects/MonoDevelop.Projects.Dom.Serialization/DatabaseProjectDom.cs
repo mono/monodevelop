@@ -110,15 +110,16 @@ namespace MonoDevelop.Projects.Dom.Serialization
 
 		internal override void OnProjectReferenceAdded (ProjectReference pref)
 		{
+			base.OnProjectReferenceAdded (pref);
 			ProjectCodeCompletionDatabase db = (ProjectCodeCompletionDatabase) database;
 			db.UpdateFromProject ();
 		}
 
 		internal override void OnProjectReferenceRemoved (ProjectReference pref)
 		{
+			base.OnProjectReferenceRemoved (pref);
 			ProjectCodeCompletionDatabase db = (ProjectCodeCompletionDatabase) database;
 			db.UpdateFromProject ();
-			// TODO dom add reference
 		}
 
 		internal override void CheckModifiedFiles ()

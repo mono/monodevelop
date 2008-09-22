@@ -333,7 +333,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 		{
 			if (project == null)
 				return null;
-			return GetDom ("Project:" + project.FileName);
+			return GetDom ("Project:" + project.Name);
 		}
 		
 		public static ProjectDom GetAssemblyDom (string assemblyName)
@@ -376,6 +376,9 @@ namespace MonoDevelop.Projects.Dom.Parser
 				Solution solution = (Solution) item;
 				foreach (Project project in solution.GetAllProjects ())
 					Load (project);
+				foreach (ProjectDom dom in databases.Values) {
+					dom.UpdateReferences ();
+				}
 	
 				solution.SolutionItemAdded += OnSolutionItemAdded;
 				solution.SolutionItemRemoved += OnSolutionItemRemoved;
@@ -426,7 +429,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			
 			lock (databases)
 			{
-				string uri = "Project:" + project.FileName;
+				string uri = "Project:" + project.Name;
 				if (databases.ContainsKey (uri)) return;
 				
 				ProjectDom db = parserDatabase.LoadProjectDom (project);

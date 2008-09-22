@@ -1,3 +1,11 @@
+2008-09-22  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs,
+	  MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs,
+	  MonoDevelop.Projects.Dom.Serialization/DatabaseProjectDom.cs: fixed
+	  'Bug 427285 - Code Completion: Referenced projects not always shown
+	  in code completion'.
+
 2008-09-20  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/DomCecilCompilationUnit.cs,

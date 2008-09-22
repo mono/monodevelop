@@ -342,10 +342,10 @@ namespace MonoDevelop.Projects.Dom.Parser
 					dom.ReferenceCount++;
 				}
 			}
-			List<ProjectDom> oldRefs = references;
+//			List<ProjectDom> oldRefs = references;
 			references = refs;
-			foreach (ProjectDom dom in oldRefs)
-				ProjectDomService.UnloadDom (dom.Uri);
+/*			foreach (ProjectDom dom in oldRefs)
+				ProjectDomService.UnloadDom (dom.Uri); */
 		}
 
 		internal IReturnType GetSharedReturnType (IReturnType rt)
@@ -357,10 +357,16 @@ namespace MonoDevelop.Projects.Dom.Parser
 
 		internal virtual void OnProjectReferenceAdded (ProjectReference pref)
 		{
+			ProjectDom dom = ProjectDomService.GetDom (pref.Reference);
+			if (dom != null)
+				this.references.Add (dom);	
 		}
 
 		internal virtual void OnProjectReferenceRemoved (ProjectReference pref)
 		{
+			ProjectDom dom = ProjectDomService.GetDom (pref.Reference);
+			if (dom != null)
+				this.references.Remove (dom);	
 		}
 
 		// This method has to check all modified files and start parsing jobs if needed
