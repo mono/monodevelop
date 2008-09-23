@@ -42,14 +42,22 @@ namespace MonoDevelop.CSharpBinding
 		static Ambience ambience = new MonoDevelop.CSharpBinding.CSharpAmbience ();
 		string indent;
 		int    initialOffset;
+		int    declarationBegin;
+		bool   insertPrivate;
+		bool   insertSealed;
 		IType  type;
 		
-		public NewOverrideCompletionData (TextEditor editor, IType type, IMember member)
+		public NewOverrideCompletionData (TextEditor editor, int declarationBegin, IType type, IMember member)
 		{
 			this.editor = editor;
 			this.type   = type;
 			this.member = member;
 			this.initialOffset = editor.CursorPosition;
+			this.declarationBegin = declarationBegin;
+			string declarationText = editor.GetText (declarationBegin, initialOffset);
+			insertPrivate = declarationText.Contains ("private");
+			insertSealed  = declarationText.Contains ("sealed");
+			
 			this.indent = GetIndentString (editor.CursorPosition);
 			Image       = member.StockIcon;
 			Text        = new string[] { ambience.GetString (member, OutputFlags.ClassBrowserEntries) };
@@ -58,9 +66,21 @@ namespace MonoDevelop.CSharpBinding
 		
 		public void InsertAction (ICompletionWidget widget, ICodeCompletionContext context)
 		{
-			editor.DeleteText (initialOffset, editor.CursorPosition - initialOffset);
-			//editor.InsertText (GetModifiers (member));
+			editor.DeleteText (declarationBegin, editor.CursorPosition - declarationBegin);
+			string mod = GetModifiers (member);
 			
+			if (insertPrivate && String.IsNullOrEmpty (mod)) {
+				editor.InsertText (editor.CursorPosition, "private ");
+			} else {
+				editor.InsertText (editor.CursorPosition, mod);
+			}
+			
+			if (insertSealed)
+				editor.InsertText (editor.CursorPosition, "sealed ");
+				
+			if (member.DeclaringType.ClassType != ClassType.Interface && (member.IsVirtual || member.IsAbstract))
+				editor.InsertText (editor.CursorPosition, "override ");
+				
 			if (member is IMethod) {
 				InsertMethod (member as IMethod);
 				return;
@@ -214,22 +234,21 @@ namespace MonoDevelop.CSharpBinding
 		string GetModifiers (IMember member)
 		{
 			if (member.IsPublic) 
-				return "public";
+				return "public ";
 			if (member.IsPrivate) 
 				return "";
 				
 			if (member.IsProtectedAndInternal) 
-				return "protected internal";
+				return "protected internal ";
 			if (member.IsProtectedOrInternal) 
-				return "internal protected";
+				return "internal protected ";
 			
 			if (member.IsProtected) 
-				return "protected";
+				return "protected ";
 			if (member.IsInternal) 
-				return "internal";
+				return "internal ";
 				
 			return "";
 		}
-
 	}
 }

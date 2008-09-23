@@ -626,6 +626,23 @@ namespace MonoDevelop.CSharpBinding.Gui
 				return;
 			bool isInterface      = type.ClassType == ClassType.Interface;
 			bool includeOverriden = false;
+		
+			int declarationBegin = Editor.CursorPosition;
+			int j = declarationBegin;
+			for (int i = 0; i < 3; i++) {
+				switch (GetPreviousToken (ref j, true)) {
+					case "public":
+					case "protected":
+					case "private":
+					case "internal":
+					case "sealed":
+					case "override":
+						declarationBegin = j;
+						break;
+					case "static":
+						return; // don't add override completion for static members
+				}
+			}
 			foreach (IType t in this.dom.GetInheritanceTree (searchType)) {
 				//System.Console.WriteLine("t:" + t);
 				foreach (IMember m in t.Members) {
@@ -635,7 +652,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 					
 					if ((isInterface || m.IsVirtual || m.IsAbstract) && !m.IsSealed && (includeOverriden || !type.HasOverriden (m))) {
 						//System.Console.WriteLine("add");
-						provider.AddCompletionData (new NewOverrideCompletionData (Editor, type, m));
+						provider.AddCompletionData (new NewOverrideCompletionData (Editor, declarationBegin, type, m));
 					}
 				}
 			}
