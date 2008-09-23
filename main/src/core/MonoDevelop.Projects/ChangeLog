@@ -1,3 +1,9 @@
+2008-09-23  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Dom/DomCecilMethod.cs,
+	  MonoDevelop.Projects.Dom/DomCecilType.cs: Properly import
+	  constructors.
+
 2008-09-23  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/ConditionalRegion.cs,

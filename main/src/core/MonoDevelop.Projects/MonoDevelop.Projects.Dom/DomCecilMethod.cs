@@ -75,10 +75,15 @@ namespace MonoDevelop.Projects.Dom
 			this.declaringType    = declaringType;
 			if (keepDefinitions)
 				this.methodDefinition = methodDefinition;
+			
+			if (methodDefinition.Name == ".ctor") {
+				Name = declaringType.Name;
+				methodModifier |= MethodModifier.IsConstructor;
+			} else
+				Name = methodDefinition.Name;
 				
-			base.Name             = methodDefinition.Name;
-			base.modifiers        = DomCecilType.GetModifiers (methodDefinition.Attributes);
-			base.returnType       = DomCecilMethod.GetReturnType (methodDefinition.ReturnType.ReturnType);
+			base.modifiers  = DomCecilType.GetModifiers (methodDefinition.Attributes);
+			base.returnType = DomCecilMethod.GetReturnType (methodDefinition.ReturnType.ReturnType);
 			foreach (ParameterDefinition paramDef in methodDefinition.Parameters) {
 				Add (new DomCecilParameter (paramDef));
 			}

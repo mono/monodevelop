@@ -103,6 +103,11 @@ namespace MonoDevelop.Projects.Dom
 					continue;
 				base.Add (new DomCecilMethod (this, keepDefinitions, methodDefinition));
 			}
+			foreach (MethodDefinition methodDefinition in typeDefinition.Constructors) {
+				if (!loadInternal && DomCecilCompilationUnit.IsInternal (DomCecilType.GetModifiers (methodDefinition.Attributes)))
+					continue;
+				base.Add (new DomCecilMethod (this, keepDefinitions, methodDefinition));
+			}
 			foreach (PropertyDefinition propertyDefinition in typeDefinition.Properties) {
 				if (!loadInternal && DomCecilCompilationUnit.IsInternal (DomCecilType.GetModifiers (propertyDefinition.Attributes)))
 					continue;
