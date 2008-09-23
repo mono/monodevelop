@@ -141,15 +141,21 @@ namespace MonoDevelop.Projects
 		internal protected override BuildResult OnRunTarget (IProgressMonitor monitor, string target, string configuration)
 		{
 			BuildResult result = null;
-			foreach (WorkspaceItem it in Items) {
-				BuildResult res = it.RunTarget (monitor, target, configuration);
-				if (res != null) {
-					if (result == null) {
-						result = new BuildResult ();
-						result.BuildCount = 0;
+			monitor.BeginTask (null, Items.Count);
+			try {
+				foreach (WorkspaceItem it in Items) {
+					BuildResult res = it.RunTarget (monitor, target, configuration);
+					if (res != null) {
+						if (result == null) {
+							result = new BuildResult ();
+							result.BuildCount = 0;
+						}
+						result.Append (res);
 					}
-					result.Append (res);
+					monitor.Step (1);
 				}
+			} finally {
+				monitor.EndTask ();
 			}
 			return result;
 		}

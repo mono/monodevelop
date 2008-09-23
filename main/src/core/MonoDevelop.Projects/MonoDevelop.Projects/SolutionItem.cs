@@ -214,6 +214,8 @@ namespace MonoDevelop.Projects
 				if (p.NeedsBuilding (solutionConfiguration)) {
 					BuildResult res = p.Build (monitor, solutionConfiguration, false);
 					cres.Append (res);
+					if (res.ErrorCount > 0)
+						break;
 				}
 				monitor.Step (1);
 				if (monitor.IsCancelRequested)
