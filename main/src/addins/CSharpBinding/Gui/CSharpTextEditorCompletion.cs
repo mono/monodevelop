@@ -542,7 +542,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 					}
 					if (!foundNamespace && (NamePrefix.Length == 0 || !rt.Namespace.StartsWith (NamePrefix)) && !rt.Namespace.EndsWith ("." + NamePrefix))
 						flags |= OutputFlags.UseFullName;
-					CodeCompletionData cd = new CodeCompletionData (ambience.GetString (rt, flags), "md-class", "");
+					CodeCompletionData cd = new CodeCompletionData (ambience.GetString (rt, flags | OutputFlags.EmitMarkup), "md-class", "");
 					cd.CompletionString = ambience.GetString (rt, flags);
 					provider.AddCompletionData (cd);
 					return;
@@ -616,7 +616,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			return line.Substring (0, line.Length - trimmedLength);
 		}
 		
-		void AddVirtuals (CodeCompletionDataProvider provider, IType type, string modifiers, IReturnType curType)
+		void AddVirtuals (Dictionary<string, bool> alreadyInserted, CodeCompletionDataProvider provider, IType type, string modifiers, IReturnType curType)
 		{
 			if (curType == null)
 				return;
@@ -652,7 +652,11 @@ namespace MonoDevelop.CSharpBinding.Gui
 					
 					if ((isInterface || m.IsVirtual || m.IsAbstract) && !m.IsSealed && (includeOverriden || !type.HasOverriden (m))) {
 						//System.Console.WriteLine("add");
-						provider.AddCompletionData (new NewOverrideCompletionData (Editor, declarationBegin, type, m));
+						NewOverrideCompletionData data = new NewOverrideCompletionData (Editor, declarationBegin, type, m);
+						if (!alreadyInserted.ContainsKey (data.CompletionString)) {
+							alreadyInserted[data.CompletionString] = true;
+							provider.AddCompletionData (data);
+						}
 					}
 				}
 			}
@@ -691,7 +695,14 @@ namespace MonoDevelop.CSharpBinding.Gui
 		CodeCompletionDataProvider GetOverrideCompletionData (IType type, string modifiers)
 		{
 			CodeCompletionDataProvider result = new CodeCompletionDataProvider (null, GetAmbience ());
-			AddVirtuals (result, type, modifiers, type.BaseType ?? DomReturnType.Object);
+			Dictionary<string, bool> alreadyInserted = new Dictionary<string, bool> ();
+			bool addedVirtuals = false;
+			foreach (IReturnType baseType in type.BaseTypes) {
+				AddVirtuals (alreadyInserted, result, type, modifiers, baseType);
+				addedVirtuals = true;
+			}
+			if (!addedVirtuals)
+				AddVirtuals (alreadyInserted, result, type, modifiers, DomReturnType.Object);
 			return result;
 		}
 		

@@ -58,7 +58,7 @@ namespace MonoDevelop.CSharpBinding
 		{
 		}
 		
-		public MemberCompletionData (IMember member, OutputFlags flags) : base (member.IsObsolete ? "<s>" + ambience.GetString (member, OutputFlags.None) + "</s>" :  ambience.GetString (member, flags), member.StockIcon)
+		public MemberCompletionData (IMember member, OutputFlags flags) : base (member.IsObsolete ? "<s>" + ambience.GetString (member, OutputFlags.EmitMarkup) + "</s>" :  ambience.GetString (member, flags | OutputFlags.EmitMarkup), member.StockIcon)
 		{
 			this.member = member;
 		}
