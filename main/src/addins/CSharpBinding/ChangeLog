@@ -1,5 +1,10 @@
 2008-09-23  Mike Krüger <mkrueger@novell.com> 
 
+	* Gui/CSharpTextEditorCompletion.cs: Worked on ctrl+space code
+	  completion.
+
+2008-09-23  Mike Krüger <mkrueger@novell.com> 
+
 	* Gui/CSharpTextEditorCompletion.cs: fixed 'Bug 429034 - Class alias
 	  completion not working properly'.
 

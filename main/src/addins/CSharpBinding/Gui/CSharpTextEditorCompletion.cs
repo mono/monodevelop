@@ -121,6 +121,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 		try {
 			if (dom == null)
 				return null;
+				
 			location = new DomLocation (Editor.CursorLine - 1, Editor.CursorColumn - 1);
 			stateTracker.UpdateEngine ();
 			ExpressionResult result;
@@ -457,9 +458,12 @@ namespace MonoDevelop.CSharpBinding.Gui
 			int pos = completionContext.TriggerOffset;
 			string txt = Editor.GetText (pos - 1, pos);
 			if (txt.Length > 0) {
-				ICompletionDataProvider cp = HandleCodeCompletion (completionContext, txt[0]);
-				if (cp != null)
+				int triggerWordLength = 0; 
+				ICompletionDataProvider cp = this.HandleCodeCompletion (completionContext, txt[0], ref triggerWordLength);
+				if (cp != null) {
+					((CodeCompletionDataProvider)cp).AutoCompleteUniqueMatch = true;
 					return cp;
+				}
 			}
 		
 			NewCSharpExpressionFinder expressionFinder = new NewCSharpExpressionFinder (dom);
