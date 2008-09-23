@@ -75,7 +75,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 					continue;
 				}
 				foreach (IReturnType baseType in cur.BaseTypes) {
-					IType resolvedType = this.GetType (baseType, true);
+					IType resolvedType = this.SearchType (new SearchTypeRequest (cur.CompilationUnit, baseType));
 					if (resolvedType != null) 
 						types.Push (resolvedType);
 				}

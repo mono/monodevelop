@@ -1,5 +1,11 @@
 2008-09-23  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: fixed 'Bug 429022 -
+	  Code Completion: inherited members not shown in automatic or
+	  ctrl+space completion'.
+
+2008-09-23  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Projects.Dom/ResolveResult.cs,
 	  MonoDevelop.Projects.Dom/ExpressionContext.cs: fixed 'Bug 429036 -
 	  Object.Finalize should not be included in the completion list'.
