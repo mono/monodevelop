@@ -382,7 +382,7 @@ namespace MonoDevelop.Projects.Dom
 		{
 			List<object> result = new List<object> ();
 			if (CallingMember != null && !CallingMember.IsStatic)
-				MemberResolveResult.AddType (dom, result, CallingType.BaseType, callingMember, StaticResolve);
+				MemberResolveResult.AddType (dom, result, CallingType.BaseType ?? DomReturnType.Object, callingMember, StaticResolve);
 			return result;
 		}
 		public override string ToString ()

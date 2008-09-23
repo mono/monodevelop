@@ -59,9 +59,12 @@ namespace MonoDevelop.Projects.Dom
 		
 		public virtual bool FilterEntry (object entry)
 		{
-			if (entry is IMember) {
+			IMethod method = entry as IMethod;
+			if (method != null && method.Name == "Finalize" && method.DeclaringType.FullName == "System.Object")
+				return true;
+			if (entry is IMember) 
 				return ((IMember)entry).DeclaringType != null && ((IMember)entry).DeclaringType.ClassType != ClassType.Enum && ((IMember)entry).IsSpecialName;
-			}
+		
 			return false;
 		}
 		

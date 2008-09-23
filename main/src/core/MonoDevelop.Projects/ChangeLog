@@ -1,5 +1,11 @@
 2008-09-23  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Projects.Dom/ResolveResult.cs,
+	  MonoDevelop.Projects.Dom/ExpressionContext.cs: fixed 'Bug 429036 -
+	  Object.Finalize should not be included in the completion list'.
+
+2008-09-23  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Projects.Dom.Output/OutputFlags.cs,
 	  MonoDevelop.Projects.Dom.Output/Ambience.cs: Added highlight name
 	  output flag.
