@@ -143,7 +143,11 @@ namespace MonoDevelop.Projects.Dom.Output
 		{
 			return (outputFlags & OutputFlags.IncludeGenerics) == OutputFlags.IncludeGenerics;
 		}
-		#endregion			
+		protected static bool HighlightName (OutputFlags outputFlags)
+		{
+			return (outputFlags & OutputFlags.HighlightName) == OutputFlags.HighlightName;
+		}
+		#endregion
 		
 		public static string Format (string str)
 		{
@@ -163,7 +167,7 @@ namespace MonoDevelop.Projects.Dom.Output
 		}
 		public virtual string GetIntellisenseDescription (IParameter parameter)
 		{
-			return GetString (parameter, OutputFlags.AssemblyBrowserDescription);
+			return GetString (parameter, OutputFlags.AssemblyBrowserDescription | OutputFlags.HighlightName | OutputFlags.EmitMarkup);
 		}
 		
 		public string GetString (IDomVisitable domVisitable, OutputFlags flags)

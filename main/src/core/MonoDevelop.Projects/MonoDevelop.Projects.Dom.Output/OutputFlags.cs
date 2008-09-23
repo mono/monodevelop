@@ -45,6 +45,7 @@ namespace MonoDevelop.Projects.Dom.Output
 		IncludeBaseTypes         = 0x0080,
 		IncludeGenerics          = 0x0100,
 		UseIntrinsicTypeNames    = 0x0200,
+		HighlightName            = 0x0400,
 
 		ClassBrowserEntries        = IncludeReturnType | IncludeParameters | IncludeGenerics,
 		AssemblyBrowserDescription = IncludeBaseTypes | IncludeReturnType | IncludeParameters | IncludeParameterName | EmitMarkup | EmitKeywords | IncludeModifiers
