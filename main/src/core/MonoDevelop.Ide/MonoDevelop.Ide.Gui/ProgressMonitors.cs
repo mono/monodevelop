@@ -132,6 +132,7 @@ namespace MonoDevelop.Ide.Gui
 				title += " (" + (instanceCount+1) + ")";
 			
 			pad = IdeApp.Workbench.ShowPad (monitorPad, newPadId, title, basePadId + "/Center Bottom", icon);
+			pad.Sticky = true;
 			outputMonitors.Add (pad);
 			
 			if (instanceCount > 0) {
@@ -181,6 +182,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			SearchResultPad monitorPad = new SearchResultPad (instanceNum);
 			pad = IdeApp.Workbench.ShowPad (monitorPad, newPadId, title, basePadId + "/Center Bottom", MonoDevelop.Core.Gui.Stock.FindIcon);
+			pad.Sticky = true;
 		    searchMonitors.Add (pad);
 
 			if (searchMonitors.Count > 1) {

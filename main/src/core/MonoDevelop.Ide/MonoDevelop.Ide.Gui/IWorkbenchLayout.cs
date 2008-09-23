@@ -97,6 +97,10 @@ namespace MonoDevelop.Ide.Gui
 		/// </summary>
 		bool IsVisible(PadCodon padContent);
 		
+		bool IsSticky (PadCodon padContent);
+
+		void SetSticky (PadCodon padContent, bool sticky);
+		
 		/// <summary>
 		/// Re-initializes all components of the layout manager.
 		/// </summary>

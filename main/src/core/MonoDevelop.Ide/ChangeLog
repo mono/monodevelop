@@ -1,3 +1,13 @@
+2008-09-23  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui/IPadContainer.cs,
+	  MonoDevelop.Ide.Gui/IWorkbenchLayout.cs,
+	  MonoDevelop.Ide.Gui/Pad.cs,
+	  MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Added support for sticky
+	  dock property.
+	* MonoDevelop.Ide.Gui/ProgressMonitors.cs: Dynamically created pads are
+	  now sticky, so they won't be hidden when switching layouts.
+
 2008-09-22  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Pads.ClassPad/MethodNodeBuilder.cs,
@@ -437,6 +447,10 @@
 	  MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionFolderNodeBuilder.cs:
 	  Fix logic in GetParentObject.
 	* gtk-gui/objects.xml: Updated.
+
+2008-09-07 Alfonso Santos Luaces <asantosluaces@gmail.com>
+	* MonoDevelop.Ide.Gui.Dialogs/ExpressionEvaluatorDialog.cs: Implemented
+	  basic functionality for an expression evaluator.
 
 2008-08-13  Michael Hutchinson <mhutchinson@novell.com> 
 

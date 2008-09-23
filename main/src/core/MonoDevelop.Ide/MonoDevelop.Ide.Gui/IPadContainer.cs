@@ -42,6 +42,7 @@ namespace MonoDevelop.Ide.Gui
 		string Title { get; set; }
 		string Icon { get; set; }
 		bool Visible { get; set; }
+		bool Sticky { get; set; }
 		IPadContent Content { get; }
 		
 		void Activate ();
@@ -125,6 +126,15 @@ namespace MonoDevelop.Ide.Gui
 				else {
 					layout.HidePad (codon);
 				}
+			}
+		}
+
+		public bool Sticky {
+			get {
+				return layout.IsSticky (codon);
+			}
+			set {
+				layout.SetSticky (codon, value);
 			}
 		}
 		

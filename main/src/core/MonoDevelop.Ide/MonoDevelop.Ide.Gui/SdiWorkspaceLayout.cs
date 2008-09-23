@@ -557,6 +557,23 @@ namespace MonoDevelop.Ide.Gui
 				item.Present ();
 		}
 		
+		public bool IsSticky (PadCodon padContent)
+		{
+			DockItem item = GetDockItem (padContent);
+			return item != null && (item.Behavior & DockItemBehavior.Sticky) != 0;
+		}
+
+		public void SetSticky (PadCodon padContent, bool sticky)
+		{
+			DockItem item = GetDockItem (padContent);
+			if (item != null) {
+				if (sticky)
+					item.Behavior |= DockItemBehavior.Sticky;
+				else
+					item.Behavior &= ~DockItemBehavior.Sticky;
+			}
+		}
+		
 		public void RedrawAllComponents()
 		{
 			// If the toolbar or menubar has changed, replace it in the layout

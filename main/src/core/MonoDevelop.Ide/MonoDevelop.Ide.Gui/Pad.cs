@@ -95,6 +95,15 @@ namespace MonoDevelop.Ide.Gui
 				window.Visible = value;
 			}
 		}
+
+		public bool Sticky {
+			get {
+				return window.Sticky;
+			}
+			set {
+				window.Sticky = value;
+			}
+		}
 		
 		internal IPadWindow Window {
 			get { return window; }
