@@ -1,3 +1,9 @@
+2008-09-23  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* DockGroup.cs, DockItem.cs, DockItemBehavior.cs, DockContainer.cs: Add
+	  support for sticky dock items, that is, items which when visible,
+	  are visible in all layouts.
+
 2008-09-12  Mike Kestner <mkestner@novell.com> 
 
 	* DockContainer.cs:

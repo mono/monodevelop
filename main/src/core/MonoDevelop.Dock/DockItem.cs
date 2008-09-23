@@ -55,6 +55,7 @@ namespace MonoDevelop.Components.Docking
 		bool lastVisibleStatus;
 		bool gettingContent;
 		bool isPositionMarker;
+		bool stickyVisible;
 		
 		public event EventHandler VisibleChanged;
 		public event EventHandler ContentRequired;
@@ -75,6 +76,11 @@ namespace MonoDevelop.Components.Docking
 		public string Id {
 			get { return id; }
 		}
+
+		internal bool StickyVisible {
+			get { return stickyVisible; }
+			set { stickyVisible = value; }
+		}
 		
 		public string Label {
 			get { return label ?? string.Empty; }
@@ -93,6 +99,7 @@ namespace MonoDevelop.Components.Docking
 				return frame.GetVisible (this); 
 			}
 			set {
+				stickyVisible = value;
 				frame.SetVisible (this, value);
 				UpdateVisibleStatus ();
 			}

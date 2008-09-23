@@ -88,6 +88,17 @@ namespace MonoDevelop.Components.Docking
 
 		public void LoadLayout (DockLayout dl)
 		{
+			// Sticky items currently selected in notebooks will remain
+			// selected after switching the layout
+			List<DockItem> sickyOnTop = new List<DockItem> ();
+			foreach (DockItem it in items) {
+				if ((it.Behavior & DockItemBehavior.Sticky) != 0) {
+					DockGroupItem gitem = FindDockGroupItem (it.Id);
+					if (gitem != null && gitem.ParentGroup.IsSelectedPage (it))
+						sickyOnTop.Add (it);
+				}
+			}			
+			
 			if (layout != null)
 				layout.StoreAllocation ();
 			layout = dl;
@@ -95,11 +106,16 @@ namespace MonoDevelop.Components.Docking
 			
 			// Make sure items not present in this layout are hidden
 			foreach (DockItem it in items) {
+				if ((it.Behavior & DockItemBehavior.Sticky) != 0)
+					it.Visible = it.StickyVisible;
 				if (layout.FindDockGroupItem (it.Id) == null)
 					it.HideWidget ();
 			}
 			
 			RelayoutWidgets ();
+
+			foreach (DockItem it in sickyOnTop)
+				it.Present ();
 		}
 		
 		public void StoreAllocation ()
