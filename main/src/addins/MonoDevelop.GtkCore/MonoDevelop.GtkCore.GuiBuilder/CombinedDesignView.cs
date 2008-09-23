@@ -120,6 +120,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public void RemoveButton (int npage)
 		{
+			if (npage >= toolbar.Children.Length)
+				return;
 			notebook.RemovePage (npage);
 			Gtk.Widget cw = toolbar.Children [npage];
 			toolbar.Remove (cw);

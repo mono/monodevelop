@@ -1,5 +1,10 @@
 2008-09-23  Mike Kestner <mkestner@novell.com> 
 
+	* MonoDevelop.GtkCore.GuiBuilder/CombinedDesignView.cs: bandaid to
+	avoid exceptions when removing non-existent buttons.  Fixes #377414.
+
+2008-09-23  Mike Kestner <mkestner@novell.com> 
+
 	* lib/stetic/libsteticui/CecilWidgetLibrary.cs: don't hold assembly
 	reference beyond load operation.  Recreate it on each load so we are
 	always accessing the current assembly instance.  Only access cache 
