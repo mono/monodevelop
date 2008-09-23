@@ -1,5 +1,11 @@
 2008-09-23  Mike Krüger <mkrueger@novell.com> 
 
+	* Gui/NRefactoryParameterDataProvider.cs, Gui/CSharpAmbience.cs: fixed
+	  'Bug 429040 - Parameter completion tooltip not highlighting current
+	  parameter'.
+
+2008-09-23  Mike Krüger <mkrueger@novell.com> 
+
 	* Gui/MemberCompletionData.cs, Gui/ResolveVisitor.cs: fixed 'Bug 429035
 	  - Completion of string.IsNullOrEmpty throws an exception'.
 

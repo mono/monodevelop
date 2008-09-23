@@ -83,7 +83,7 @@ namespace MonoDevelop.CSharpBinding
 			}
 		}
 		
-		#region IParameterDataProvider implementation 
+		#region IParameterDataProvider implementation
 		public int GetCurrentParameterIndex (ICodeCompletionContext ctx)
 		{
 			int cursor = editor.CursorPosition;
@@ -134,21 +134,22 @@ namespace MonoDevelop.CSharpBinding
 		
 		public string GetMethodMarkup (int overload, string[] parameterMarkup)
 		{
-			return ambience.GetIntellisenseDescription (methods[overload]);
+			return "<b>" + methods[0].Name + "</b> (" + string.Join (", ", parameterMarkup)  + ")";
+//			return ambience.GetIntellisenseDescription (methods[overload]);
 		}
 		
 		public string GetParameterMarkup (int overload, int paramIndex)
 		{
 			if (methods[overload].Parameters == null || paramIndex < 0 || paramIndex >= methods[overload].Parameters.Count)
 				return "";
-			return ambience.GetIntellisenseDescription (methods[overload].Parameters [paramIndex]);
+			return ambience.GetString (methods[overload].Parameters [paramIndex], OutputFlags.AssemblyBrowserDescription | OutputFlags.HighlightName);
 		}
 		
 		public int GetParameterCount (int overload)
 		{
 			if (overload < 0 || overload >= OverloadCount)
 				return 0;
-			return methods[0].Parameters != null ? methods[0].Parameters.Count : 0;
+			return methods[overload].Parameters != null ? methods[overload].Parameters.Count : 0;
 		}
 		
 		public int OverloadCount {

@@ -320,7 +320,11 @@ namespace MonoDevelop.CSharpBinding
 					result.Append (GetString (parameter.ReturnType, flags));
 					result.Append (" ");
 				}
+				if (HighlightName (flags) && EmitMarkup (flags)) 
+					result.Append ("<b>");
 				result.Append (Format (parameter.Name));
+				if (HighlightName (flags) && EmitMarkup (flags)) 
+					result.Append ("</b>");
 			} else {
 				result.Append (GetString (parameter.ReturnType, flags));
 			}
