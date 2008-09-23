@@ -1886,6 +1886,7 @@ PrimaryExpr<out Expression pexpr>
 		| "uint"  (. val = "uint"; .)
 		| "ulong"    (. val = "ulong"; .)
 		| "ushort" (. val = "ushort"; .)
+		| "void" (. val = "void"; .)
 		)
 		MemberAccess<out pexpr, new TypeReferenceExpression(val) { StartLocation = t.Location, EndLocation = t.EndLocation } >
 		

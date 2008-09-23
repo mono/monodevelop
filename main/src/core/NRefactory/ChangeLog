@@ -1,5 +1,11 @@
 2008-09-23  Mike Krüger <mkrueger@novell.com> 
 
+	* Project/Src/Parser/CSharp/cs.ATG,
+	  Project/Src/Parser/CSharp/Parser.cs: fixed Bug 384199 - c# code
+	  parsing breaks on unsafe pointers
+
+2008-09-23  Mike Krüger <mkrueger@novell.com> 
+
 	* Project/Src/Lexer/CSharp/Lexer.cs,
 	  Project/Src/Lexer/Special/PreProcessingDirective.cs,
 	  Project/Src/Lexer/AbstractLexer.cs,
