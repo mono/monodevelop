@@ -345,19 +345,16 @@ namespace MonoDevelop.Projects.Dom.Parser
 		{
 			string aname = Runtime.SystemAssemblyService.GetAssemblyFullName (assemblyName);
 			string name = "Assembly:" + aname;
-			ProjectDom dom = GetDom (name);
-			if (dom != null) {
-				dom.ReferenceCount++;
-			}
-			return aname;
+			if (GetDom (name, true) != null)
+				return aname;
+			else
+				return null;
 		}
 		
 		public static void UnloadAssembly (string assemblyName)
 		{
 			string name = "Assembly:" + Runtime.SystemAssemblyService.GetAssemblyFullName (assemblyName);
 			ProjectDom dom = GetDom (name);
-			if (dom != null)
-				dom.ReferenceCount--;
 			UnrefDom (name);
 		}
 		
@@ -454,6 +451,11 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		internal static ProjectDom GetDom (string uri)
 		{
+			return GetDom (uri, false);
+		}
+		
+		internal static ProjectDom GetDom (string uri, bool addReference)
+		{
 			lock (databases)
 			{
 				ProjectDom db;
@@ -470,18 +472,19 @@ namespace MonoDevelop.Projects.Dom.Parser
 						if (fname != null)
 							realUri = "Assembly:" + fname;
 
-						if (databases.TryGetValue (realUri, out db)) {
+						if (databases.TryGetValue (realUri, out db))
 							databases [uri] = db;
-							return db;
+						else {
+							ProjectDom adb;
+							db = adb = parserDatabase.LoadAssemblyDom (file);
+							RegisterDom (db, realUri);
+							if (uri != realUri)
+								databases [uri] = adb;
 						}
-							
-						ProjectDom adb;
-						db = adb = parserDatabase.LoadAssemblyDom (file);
-						RegisterDom (db, realUri);
-						if (uri != realUri)
-							databases [uri] = adb;
 					}
 				}
+				if (addReference && db != null)
+					db.ReferenceCount++;
 				return db;
 			}
 		}

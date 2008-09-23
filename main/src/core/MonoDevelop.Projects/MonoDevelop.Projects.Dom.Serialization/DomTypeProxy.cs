@@ -200,7 +200,8 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		public override bool HasParts {
 			get {
-				return HasContent (ContentFlags.HasParts);
+				// Don't use HasContent() since that method loads the wrapped type
+				return (entry.ContentFlags & ContentFlags.HasParts) != 0;
 			}
 		}
 		
@@ -314,7 +315,8 @@ namespace MonoDevelop.Projects.Dom.Serialization
 
 		public override bool IsObsolete {
 			get {
-				return HasContent (ContentFlags.IsObsolete);
+				// Don't use HasContent() since that method loads the wrapped type
+				return (entry.ContentFlags & ContentFlags.IsObsolete) != 0;
 			}
 		}
 		

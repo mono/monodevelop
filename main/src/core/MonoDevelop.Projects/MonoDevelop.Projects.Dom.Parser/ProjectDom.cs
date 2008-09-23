@@ -333,14 +333,12 @@ namespace MonoDevelop.Projects.Dom.Parser
 			List<ProjectDom> refs = new List<ProjectDom> ();
 			foreach (string uri in OnGetReferences ()) {
 				int curRefCount = ReferenceCount;
-				ProjectDom dom = ProjectDomService.GetDom (uri);
+				ProjectDom dom = ProjectDomService.GetDom (uri, true);
 				ReferenceCount = curRefCount;
 				if (dom == this)
 					continue;
-				if (dom != null) {
+				if (dom != null)
 					refs.Add (dom);
-					dom.ReferenceCount++;
-				}
 			}
 			List<ProjectDom> oldRefs = references;
 			references = refs;
@@ -357,7 +355,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 
 		internal virtual void OnProjectReferenceAdded (ProjectReference pref)
 		{
-			ProjectDom dom = ProjectDomService.GetDom (pref.Reference);
+			ProjectDom dom = ProjectDomService.GetDom (pref.Reference, true);
 			if (dom != null)
 				this.references.Add (dom);	
 		}
@@ -365,8 +363,10 @@ namespace MonoDevelop.Projects.Dom.Parser
 		internal virtual void OnProjectReferenceRemoved (ProjectReference pref)
 		{
 			ProjectDom dom = ProjectDomService.GetDom (pref.Reference);
-			if (dom != null)
-				this.references.Remove (dom);	
+			if (dom != null) {
+				this.references.Remove (dom);
+				ProjectDomService.UnrefDom (dom.Uri); 
+			}
 		}
 
 		// This method has to check all modified files and start parsing jobs if needed

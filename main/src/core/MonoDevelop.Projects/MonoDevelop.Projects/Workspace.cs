@@ -279,11 +279,17 @@ namespace MonoDevelop.Projects
 				monitor = new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ();
 			if (items != null) {
 				string baseDir = Path.GetDirectoryName (handler.SerializationContext.BaseFile);
-				foreach (DataValue item in items.ItemData) {
-					string file = Path.Combine (baseDir, item.Value);
-					WorkspaceItem it = Services.ProjectService.ReadWorkspaceItem (monitor, file);
-					if (it != null)
-						Items.Add (it);
+				monitor.BeginTask (null, items.ItemData.Count);
+				try {
+					foreach (DataValue item in items.ItemData) {
+						string file = Path.Combine (baseDir, item.Value);
+						WorkspaceItem it = Services.ProjectService.ReadWorkspaceItem (monitor, file);
+						if (it != null)
+							Items.Add (it);
+						monitor.Step (1);
+					}
+				} finally {
+					monitor.EndTask ();
 				}
 			}
 		}
