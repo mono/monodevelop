@@ -39,7 +39,7 @@ namespace MonoDevelop.Projects.Dom
 		List<FoldingRegion> foldingRegions = new List<FoldingRegion> ();
 		List<Tag> tagComments = new List<Tag> ();
 		List<PreProcessorDefine> defines = new List<PreProcessorDefine> ();
-		List<ConditionalRegion> conditionalRegion = new List<ConditionalRegion> ();
+		List<ConditionalRegion> conditionalRegions = new List<ConditionalRegion> ();
 
 		bool hasErrors = false;
 		List<Error> errors = new List<Error> ();
@@ -76,7 +76,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		public IList<ConditionalRegion> ConditionalRegion {
 			get {
-				return conditionalRegion;
+				return conditionalRegions;
 			}
 		}
 		
@@ -141,13 +141,24 @@ namespace MonoDevelop.Projects.Dom
 				foldingRegions.Add (new FoldingRegion ("...", property.BodyRegion));
 			}
 		}
-		
+
+		public void GeneratePreProcessorFoldings ()
+		{
+			foreach (ConditionalRegion region in conditionalRegions) {
+				foldingRegions.Add (new FoldingRegion ("#if " + region.Flag, region.Region));
+				foreach (ConditionBlock block in region.ConditionBlocks) {
+					foldingRegions.Add (new FoldingRegion ("#elif " + block.Flag, block.Region));
+				}
+				if (!region.ElseBlock.IsEmpty)
+					foldingRegions.Add (new FoldingRegion ("#else", region.ElseBlock));
+			}
+		}
 		public virtual void GenerateFoldInformation ()
 		{
 			if (CompilationUnit == null)
 				return;
 			GenerateFoldsFromUsings ();
-			
+			GeneratePreProcessorFoldings ();
 			foreach (IType type in CompilationUnit.Types) {
 				GenerateFoldsFromType (type);
 			}
@@ -177,6 +188,10 @@ namespace MonoDevelop.Projects.Dom
 		public void Add (FoldingRegion foldingRegion)
 		{
 			foldingRegions.Add (foldingRegion);
+		}
+		public void Add (ConditionalRegion conditionalRegion)
+		{
+			conditionalRegions.Add (conditionalRegion);
 		}
 		
 	}

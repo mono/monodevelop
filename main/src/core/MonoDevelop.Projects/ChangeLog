@@ -1,3 +1,9 @@
+2008-09-23  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom/ConditionalRegion.cs,
+	  MonoDevelop.Projects.Dom/ParsedDocument.cs: added preprocessor
+	  directive #if folding.
+
 2008-09-23  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects/Workspace.cs: Improved loading progress

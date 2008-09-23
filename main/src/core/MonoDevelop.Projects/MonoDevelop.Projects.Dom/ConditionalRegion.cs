@@ -25,10 +25,11 @@
 //
 
 using System;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Projects.Dom
 {
-	public class ConditionalRegion
+	public class ConditionBlock
 	{
 		string flag;
 		public string Flag {
@@ -40,16 +41,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		bool flagSet;
-		public bool FlagSet {
-			get {
-				return flagSet;
-			}
-			set {
-				flagSet = value;
-			}
-		}
-		DomRegion region;
+		DomRegion region = DomRegion.Empty;
 		public DomRegion Region {
 			get {
 				return region;
@@ -59,11 +51,57 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public ConditionalRegion (string flag, bool flagSet, DomRegion region)
+		public DomLocation Start {
+			get {
+				return region.Start;
+			}
+			set {
+				region.Start = value;
+			}
+		}
+		
+		public DomLocation End {
+			get {
+				return region.End;
+			}
+			set {
+				region.End = value;
+			}
+		}
+		
+		public ConditionBlock (string flag)
 		{
 			this.flag = flag;
-			this.flagSet = flagSet;
-			this.region = region;
+		}
+		public ConditionBlock (string flag, DomLocation start)
+		{
+			this.flag = flag;
+			this.Start = start;
+		}
+	}
+	
+	public class ConditionalRegion : ConditionBlock
+	{
+		List<ConditionBlock> conditionBlocks = new List<ConditionBlock> ();
+		
+		DomRegion region;
+		public DomRegion ElseBlock {
+			get {
+				return region;
+			}
+			set {
+				region = value;
+			}
+		}
+		
+		public List<ConditionBlock> ConditionBlocks {
+			get {
+				return conditionBlocks;
+			}
+		}
+		
+		public ConditionalRegion (string flag) : base (flag)
+		{
 		}
 	}
 }
