@@ -26,6 +26,7 @@ FILES =  \
 	MonoDevelop.CSharpBinding/CodeCompletionOperatorTests.cs \
 	MonoDevelop.CSharpBinding/CodeCompletionTests.cs \
 	MonoDevelop.CSharpBinding/MemberTests.cs \
+	MonoDevelop.CSharpBinding/ParameterCompletionTests.cs \
 	MonoDevelop.CSharpBinding/TestViewContent.cs \
 	MonoDevelop.CSharpBinding/TestWorkbenchWindow.cs \
 	MonoDevelop.CSharpBinding/TopLevelTests.cs \

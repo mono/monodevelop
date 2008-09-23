@@ -33,6 +33,7 @@
     <File name="MonoDevelop.CSharpBinding/TestViewContent.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.CSharpBinding/TestWorkbenchWindow.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.CSharpBinding/CodeCompletionOperatorTests.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.CSharpBinding/ParameterCompletionTests.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
