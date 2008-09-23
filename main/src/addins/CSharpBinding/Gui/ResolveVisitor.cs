@@ -385,8 +385,9 @@ namespace MonoDevelop.CSharpBinding
 		
 		public override object VisitTypeReferenceExpression(TypeReferenceExpression typeReferenceExpression, object data)
 		{
-			ResolveResult result = resolver.ResolveIdentifier (this, typeReferenceExpression.TypeReference.Type);
-			return result ?? CreateResult (typeReferenceExpression.TypeReference);
+			ResolveResult result = resolver.ResolveIdentifier (this, typeReferenceExpression.TypeReference.Type) ?? CreateResult (typeReferenceExpression.TypeReference);
+			result.StaticResolve = true;
+			return result;
 		}
 		
 		public override object VisitMemberReferenceExpression(MemberReferenceExpression fieldReferenceExpression, object data)
@@ -444,6 +445,8 @@ namespace MonoDevelop.CSharpBinding
 									i--;
 								}
 							}
+							if (member.Count == 0)
+								return null;
 							result = new MethodResolveResult (member);
 							result.CallingType   = resolver.CallingType;
 							result.CallingMember = resolver.CallingMember;

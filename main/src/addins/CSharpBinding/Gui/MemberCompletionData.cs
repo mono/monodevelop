@@ -61,6 +61,7 @@ namespace MonoDevelop.CSharpBinding
 		public MemberCompletionData (IMember member, OutputFlags flags) : base (member.IsObsolete ? "<s>" + ambience.GetString (member, OutputFlags.EmitMarkup) + "</s>" :  ambience.GetString (member, flags | OutputFlags.EmitMarkup), member.StockIcon)
 		{
 			this.member = member;
+			this.CompletionString = ambience.GetString (member, OutputFlags.None);
 		}
 		
 		static CSharpAmbience ambience = new CSharpAmbience ();
