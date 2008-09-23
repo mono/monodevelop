@@ -409,7 +409,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				}
 				return null;
 			case "new":
-				ExpressionContext exactContext = new NewCSharpExpressionFinder (dom).FindExactContextForNewCompletion(Editor, Document.CompilationUnit, Document.FileName);
+				ExpressionContext exactContext = new NewCSharpExpressionFinder (dom).FindExactContextForNewCompletion (Editor, Document.CompilationUnit, Document.FileName);
 				if (exactContext is ExpressionContext.TypeExpressionContext)
 					return CreateTypeCompletionData (exactContext, ((ExpressionContext.TypeExpressionContext)exactContext).Type);
 				return CreateTypeCompletionData (exactContext, null);
@@ -694,6 +694,13 @@ namespace MonoDevelop.CSharpBinding.Gui
 				if (context != null && context.FilterEntry (curType))
 					continue;
 				col.AddCompletionData (result, curType);
+			}
+			// add aliases
+			foreach (IUsing u in Document.CompilationUnit.Usings) {
+				foreach (KeyValuePair<string, IReturnType> alias in u.Aliases) {
+					if (alias.Value.ToInvariantString () == returnType.ToInvariantString ())
+						result.AddCompletionData (new CodeCompletionData (alias.Key, "md-class"));
+				}
 			}
 			return result;
 		}
