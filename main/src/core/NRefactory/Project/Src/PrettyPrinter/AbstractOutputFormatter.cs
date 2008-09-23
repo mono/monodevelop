@@ -1,4 +1,4 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -88,7 +88,10 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				}
 			}
 		}
-		
+		public void Reset ()
+		{
+			text.Length = 0;
+		}
 		public void Space()
 		{
 			text.Append(' ');

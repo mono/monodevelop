@@ -88,6 +88,7 @@ namespace ICSharpCode.NRefactory
 		string cmd;
 		string arg;
 		Ast.Expression expression = Ast.Expression.Null;
+		Location lastLineEnd = new Location (0, 0);
 		
 		/// <summary>
 		/// Gets the directive name, including '#'.
@@ -119,6 +120,15 @@ namespace ICSharpCode.NRefactory
 		public Ast.Expression Expression {
 			get { return expression; }
 			set { expression = value ?? Ast.Expression.Null; }
+		}
+
+		public Location LastLineEnd {
+			get {
+				return lastLineEnd;
+			}
+			set {
+				lastLineEnd = value;
+			}
 		}
 		
 		public override string ToString()

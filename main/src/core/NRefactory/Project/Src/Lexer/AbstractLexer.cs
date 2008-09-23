@@ -1,4 +1,4 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -240,9 +240,17 @@ namespace ICSharpCode.NRefactory.Parser
 			return ch == '\n';
 		}
 		
+		protected Location lastLineEnd = new Location (1, 1);
+		protected Location curLineEnd = new Location (1, 1);
+		protected void LineBreak ()
+		{
+			lastLineEnd = curLineEnd;
+			curLineEnd = new Location (col - 1, line);
+		}
 		protected bool HandleLineEnd(char ch)
 		{
 			if (WasLineEnd(ch)) {
+				LineBreak ();
 				++line;
 				col = 1;
 				return true;
@@ -266,7 +274,6 @@ namespace ICSharpCode.NRefactory.Parser
 			int nextChar;
 			while ((nextChar = reader.Read()) != -1) {
 				char ch = (char)nextChar;
-				
 				// Return read string, if EOL is reached
 				if (HandleLineEnd(ch)) {
 					return sb.ToString();

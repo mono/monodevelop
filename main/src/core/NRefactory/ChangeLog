@@ -1,3 +1,15 @@
+2008-09-23  Mike Krüger <mkrueger@novell.com> 
+
+	* Project/Src/Lexer/CSharp/Lexer.cs,
+	  Project/Src/Lexer/Special/PreProcessingDirective.cs,
+	  Project/Src/Lexer/AbstractLexer.cs,
+	  Project/Src/PrettyPrinter/CSharp/CSharpOutputVisitor.cs,
+	  Project/Src/PrettyPrinter/CSharp/OutputFormatter.cs,
+	  Project/Src/PrettyPrinter/IOutputAstVisitor.cs,
+	  Project/Src/PrettyPrinter/AbstractOutputFormatter.cs,
+	  Project/Src/PrettyPrinter/VBNet/VBNetOutputVisitor.cs: Added some
+	  stuff for pre processor directive handling.
+
 2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* NRefactory.mdp: Updated.

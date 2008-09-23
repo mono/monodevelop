@@ -1,4 +1,4 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -33,7 +33,9 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		IOutputFormatter OutputFormatter {
 			get;
 		}
+		void Reset ();
 	}
+	
 	public interface IOutputFormatter
 	{
 		int IndentationLevel {
@@ -47,6 +49,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			get;
 			set;
 		}
+		void Reset ();
 		void NewLine();
 		void Indent();
 		void PrintComment(Comment comment, bool forceWriteInPreviousBlock);

@@ -18,7 +18,6 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		public Lexer(TextReader reader) : base(reader)
 		{
 		}
-		
 		bool isBegin = true;
 		protected override Token Next()
 		{
@@ -820,7 +819,6 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			int nextChar;
 			while ((nextChar = ReaderRead()) != -1) {
 				char ch = (char)nextChar;
-				
 				if (HandleLineEnd(ch)) {
 					break;
 				}
@@ -855,6 +853,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 				specialTracker.AddString(comment);
 				specialTracker.FinishComment(new Location(col + comment.Length, line));
 			}
+			LineBreak ();
 		}
 		
 		void ReadMultiLineComment(int startCol)
@@ -880,7 +879,6 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 				
 				while ((nextChar = ReaderRead()) != -1) {
 					char ch = (char)nextChar;
-					
 					if (HandleLineEnd(ch)) {
 						if (scTag != null) {
 							this.TagComments.Add(new TagComment(scTag, isBegin, scCurWord.ToString(), scStartLocation, new Location(Col, Line)));
@@ -999,7 +997,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		{
 			PreprocessingDirective d = ReadPreProcessingDirectiveInternal(true, true);
 			this.specialTracker.AddPreprocessingDirective(d);
-			
+			d.LastLineEnd = lastLineEnd;
 			if (EvaluateConditionalCompilation) {
 				switch (d.Cmd) {
 					case "#define":

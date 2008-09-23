@@ -60,6 +60,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter = new VBNetOutputFormatter(prettyPrintOptions);
 		}
 		
+		public void Reset ()
+		{
+			outputFormatter.Reset ();
+		}
+		
 		public event Action<INode> BeforeNodeVisit;
 		public event Action<INode> AfterNodeVisit;
 		
