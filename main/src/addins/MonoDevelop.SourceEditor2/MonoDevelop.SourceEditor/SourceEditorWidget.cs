@@ -52,6 +52,7 @@ namespace MonoDevelop.SourceEditor
 		
 		bool shouldShowclassBrowser;
 		bool canShowClassBrowser;
+		bool isInitialParseUpdate = true;
 		ClassQuickFinder classBrowser;
 		
 		bool isDisposed = false;
@@ -273,7 +274,7 @@ namespace MonoDevelop.SourceEditor
 							foreach (FoldingRegion region in widget.parsedDocument.FoldingRegions) {
 								FoldSegment marker = widget.AddMarker (foldSegments, region.Name, region.Region, FoldingType.Region);
 								if (marker != null) 
-									marker.IsFolded = SourceEditorOptions.Options.DefaultRegionsFolding && region.DefaultIsFolded;
+									marker.IsFolded = widget.isInitialParseUpdate && SourceEditorOptions.Options.DefaultRegionsFolding && region.DefaultIsFolded;
 							}
 							
 							if (widget.parsedDocument.Comments.Count > 0) {
@@ -319,12 +320,13 @@ namespace MonoDevelop.SourceEditor
 												break;
 											}
 										}
-										marker.IsFolded = !isInsideMember;
+										marker.IsFolded = widget.isInitialParseUpdate && !isInsideMember;
 									}
 								}
 							}
 						}
 						widget.TextEditor.Document.UpdateFoldSegments (foldSegments);
+						widget.isInitialParseUpdate  = false;
 					}
 					
 					widget.UpdateAutocorTimer ();
