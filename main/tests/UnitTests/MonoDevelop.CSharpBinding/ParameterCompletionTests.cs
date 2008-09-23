@@ -89,6 +89,12 @@ namespace MonoDevelop.CSharpBinding.Tests
 	public Test (string b)
 	{
 	}
+	protected Test ()
+	{
+	}
+	Test (double d, float m)
+	{
+	}
 }
 
 class AClass

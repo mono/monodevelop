@@ -1,5 +1,10 @@
 2008-09-23  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.CSharpBinding/ParameterCompletionTests.cs: extended
+	  constructor parameter test.
+
+2008-09-23  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.CSharpBinding/ParameterCompletionTests.cs: Added test for
 	  'Bug 427448 - Code Completion: completion of constructor parameters
 	  not working'.
