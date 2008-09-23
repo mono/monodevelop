@@ -1,3 +1,8 @@
+2008-09-23  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs: fixed 'Bug
+	  427700 - CodeCompletion not working properly in class constructor'.
+
 2008-09-22  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/AbstractMember.cs,

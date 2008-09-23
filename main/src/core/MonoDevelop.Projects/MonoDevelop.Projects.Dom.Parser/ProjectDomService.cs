@@ -775,25 +775,27 @@ namespace MonoDevelop.Projects.Dom.Parser
 					parseInformation = DoParseFile (fileName, fileContent);
 					if (parseInformation == null)
 						return null;
-					
-					if (projects != null && projects.Length > 0) {
-						SetSourceProject (parseInformation.CompilationUnit, GetProjectDom (projects [0]));
-						foreach (Project project in projects) {
-							ProjectDom db = GetProjectDom (project);
-							if (db != null) {
-								try {
-									TypeUpdateInformation res = db.UpdateFromParseInfo (parseInformation.CompilationUnit);
-									if (res != null)
-										NotifyTypeUpdate (project, fileName, res);
-								} catch (Exception) { }
+					// don't update project dom with incorrect parse informations, they may not contain all
+					// information.
+					if (!parseInformation.HasErrors) {
+						if (projects != null && projects.Length > 0) {
+							SetSourceProject (parseInformation.CompilationUnit, GetProjectDom (projects [0]));
+							foreach (Project project in projects) {
+								ProjectDom db = GetProjectDom (project);
+								if (db != null) {
+									try {
+										TypeUpdateInformation res = db.UpdateFromParseInfo (parseInformation.CompilationUnit);
+										if (res != null)
+											NotifyTypeUpdate (project, fileName, res);
+									} catch (Exception) { }
+								}
 							}
+						} else {
+							ProjectDom db = GetFileDom (fileName);
+							db.UpdateFromParseInfo (parseInformation.CompilationUnit);
 						}
 					}
-					else {
-						ProjectDom db = GetFileDom (fileName);
-						db.UpdateFromParseInfo (parseInformation.CompilationUnit);
-					}
-
+					
 					lastUpdateSize[fileName] = contentHash;
 					return parseInformation;
 				} else {
