@@ -109,11 +109,61 @@ namespace MonoDevelop.CSharpBinding
 			}
 			
 			Stack<ICSharpCode.NRefactory.PreprocessingDirective> regions = new Stack<ICSharpCode.NRefactory.PreprocessingDirective> ();
+
+			Stack<ConditionalRegion> conditionalRegions = new Stack<ConditionalRegion> ();
+			ConditionalRegion ConditionalRegion {
+				get {
+					return conditionalRegions.Count > 0 ? conditionalRegions.Peek () : null;
+				}
+			}
+
+			void CloseConditionBlock (DomLocation loc)
+			{
+				if (ConditionalRegion == null || ConditionalRegion.ConditionBlocks.Count == 0 || !ConditionalRegion.ConditionBlocks[ConditionalRegion.ConditionBlocks.Count - 1].End.IsEmpty)
+					return;
+				ConditionalRegion.ConditionBlocks[ConditionalRegion.ConditionBlocks.Count - 1].End = loc;
+			}
+			
+			void AddCurRegion (ICSharpCode.NRefactory.Location loc)
+			{
+				if (ConditionalRegion == null)
+					return;
+				ConditionalRegion.End = new DomLocation (loc.Line, loc.Column);
+				result.Add (ConditionalRegion);
+				conditionalRegions.Pop ();
+			}
+			
+			static ICSharpCode.NRefactory.PrettyPrinter.CSharpOutputVisitor visitor = new ICSharpCode.NRefactory.PrettyPrinter.CSharpOutputVisitor ();
+			
 			public object Visit (ICSharpCode.NRefactory.PreprocessingDirective directive, object data)
 			{
+				DomLocation loc = new DomLocation (directive.StartPosition.Line, directive.StartPosition.Column);
 				switch (directive.Cmd) {
+					case "#if":
+						directive.Expression.AcceptVisitor (visitor, null);
+						conditionalRegions.Push (new ConditionalRegion (visitor.Text));
+						visitor.Reset ();
+						ConditionalRegion.Start = loc;
+						break;
+					case "#elif":
+						CloseConditionBlock (new DomLocation (directive.LastLineEnd.Line, directive.LastLineEnd.Column));
+						directive.Expression.AcceptVisitor (visitor, null);
+						ConditionalRegion.ConditionBlocks.Add (new ConditionBlock (visitor.Text, loc));
+						visitor.Reset ();
+						break;
+					case "#else":
+						CloseConditionBlock (new DomLocation (directive.LastLineEnd.Line, directive.LastLineEnd.Column));
+						ConditionalRegion.ElseBlock = new DomRegion (loc, DomLocation.Empty);
+						break;
+					case "#endif":
+						DomLocation endLoc = new DomLocation (directive.LastLineEnd.Line, directive.LastLineEnd.Column);
+						CloseConditionBlock (endLoc);
+						if (!ConditionalRegion.ElseBlock.Start.IsEmpty)
+							ConditionalRegion.ElseBlock = new DomRegion (ConditionalRegion.ElseBlock.Start, endLoc);
+						AddCurRegion (directive.EndPosition);
+						break;
 					case "#define":
-						result.Add (new PreProcessorDefine (directive.Arg, new DomLocation (directive.StartPosition.Line, directive.StartPosition.Column)));
+						result.Add (new PreProcessorDefine (directive.Arg, loc));
 						break;
 					case "#region":
 						regions.Push (directive);
