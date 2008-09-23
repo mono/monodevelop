@@ -559,7 +559,18 @@ namespace Stetic {
 		
 		internal LibraryInfo Refresh (AssemblyResolver resolver, string assembly)
 		{
-			assembly = Path.GetFullPath (assembly);
+			if (File.Exists (assembly))
+				assembly = Path.GetFullPath (assembly);
+			else {
+				if (resolver == null)
+					resolver = new AssemblyResolver (null);
+				try {
+					string path = resolver.Resolve (assembly, null);
+					if (path != null)
+						assembly = path;
+				} catch (Exception) {
+				}
+			}
 
 			if (IsCurrent (assembly))
 				return Members [assembly];

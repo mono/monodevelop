@@ -53,15 +53,13 @@ namespace Stetic
 			name = path;
 			this.resolver = resolver;
 
-			cache.Refresh (resolver, name);
-
 			if (resolver != null)
 				filename = resolver.Resolve (path, null);
 			
 			if (filename == null)
 				filename = path;
 
-			assembly = AssemblyFactory.GetAssembly (filename);
+			cache.Refresh (resolver, filename);
 		}
 
 		public override string Name {
@@ -69,9 +67,7 @@ namespace Stetic
 		}
 		
 		public override bool NeedsReload {
-			get {
-				return File.Exists (filename) && !cache.IsCurrent (name);
-			}
+			get { return File.Exists (filename) && !cache.IsCurrent (filename); }
 		}
 		
 		public override bool CanReload {
@@ -85,6 +81,7 @@ namespace Stetic
 		public override void Load ()
 		{
 			LibraryCache.LibraryInfo info = cache.Refresh (resolver, name);
+			assembly = AssemblyFactory.GetAssembly (filename);
 
 			objects_dirty = false;
 			Load (info.ObjectsDocument);
@@ -97,6 +94,7 @@ namespace Stetic
 				if (lib != null && !lib.CanGenerateCode)
 					canGenerateCode = false;
 			}
+			assembly = null;
 		}
 		
 		protected override ClassDescriptor LoadClassDescriptor (XmlElement element)
@@ -104,7 +102,7 @@ namespace Stetic
 			string name = element.GetAttribute ("type");
 			
 			TypeDefinition cls = null;
-			Stetic.ClassDescriptor typeClassDescriptor;
+			Stetic.ClassDescriptor typeClassDescriptor = null;
 			string tname;
 			
 			if (element.HasAttribute ("baseClassType")) {
@@ -112,26 +110,25 @@ namespace Stetic
 				typeClassDescriptor = Stetic.Registry.LookupClassByName (tname);
 			} else {
 				cls = assembly.MainModule.Types [name];
-				if (cls == null)
-					return null;
-			
-				// Find the nearest type that can be loaded
-				typeClassDescriptor = FindType (assembly, cls);
-				tname = cls.Name;
-				if (typeClassDescriptor != null) {
-					element.SetAttribute ("baseClassType", typeClassDescriptor.Name);
-					objects_dirty = true;
+				if (cls != null) {
+					// Find the nearest type that can be loaded
+					typeClassDescriptor = FindType (assembly, cls);
+					tname = cls.Name;
+					if (typeClassDescriptor != null) {
+						element.SetAttribute ("baseClassType", typeClassDescriptor.Name);
+						objects_dirty = true;
+					}
 				}
 			}
 			
 			if (typeClassDescriptor == null) {
-				Console.WriteLine ("Descriptor not found: " + tname);
+				Console.WriteLine ("Descriptor not found: " + name);
 				return null;
 			}
 			
 			XmlElement steticDefinition = null;
 			
-			XmlDocument gui = cache [this.name].GuiDocument;
+			XmlDocument gui = cache [filename].GuiDocument;
 			if (gui != null) {
 				string wrappedTypeName = element.GetAttribute ("type");
 				steticDefinition = (XmlElement) gui.DocumentElement.SelectSingleNode ("widget[@id='" + wrappedTypeName + "']");

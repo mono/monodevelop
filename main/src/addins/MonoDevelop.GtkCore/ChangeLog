@@ -1,3 +1,15 @@
+2008-09-23  Mike Kestner <mkestner@novell.com> 
+
+	* lib/stetic/libsteticui/CecilWidgetLibrary.cs: don't hold assembly
+	reference beyond load operation.  Recreate it on each load so we are
+	always accessing the current assembly instance.  Only access cache 
+	using filename.  Ensure Class description lookups cause spew to 
+	console.
+	* lib/stetic/libsteticui/LibraryCache.cs: enhance the path lookup
+	logic in Refresh to avoid some churn on named lookups.
+	* lib/stetic/libsteticui/ProjectBackend.cs: reload library if 
+	necessary before getting component types.  Fixes #427334.
+
 2008-09-17  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.GtkCore.mdp: Updated projects.

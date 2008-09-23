@@ -197,6 +197,8 @@ namespace Stetic {
 				// Don't include in the list widgets which are internal (when the library is
 				// not internal to the project), widgets not assigned to any category, and deprecated ones.
 				bool isInternalLib = IsInternalLibrary (lib.Name);
+				if (lib.NeedsReload)
+					lib.Reload ();
 				foreach (ClassDescriptor cd in lib.AllClasses) {
 					if (!cd.Deprecated && cd.Category.Length > 0 && (isInternalLib || !cd.IsInternal) && cd.SupportsGtkVersion (TargetGtkVersion))
 						list.Add (cd.Name);
