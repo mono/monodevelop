@@ -163,6 +163,11 @@ namespace MonoDevelop.ValaBinding
 		public virtual void Dispose ()
 		{
 		}
+
+		public virtual bool AutoCompleteUniqueMatch
+		{
+			get { return false; }
+		}
 	}
 	
 	public class CompletionData : ICompletionDataWithMarkup

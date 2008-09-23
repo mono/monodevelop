@@ -1,3 +1,7 @@
+2008-09-23  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* Gui/DataProvider.cs: Track changes in completion API.
+
 2008-09-17  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* ValaBinding.mdp: Updated projects.
