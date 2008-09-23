@@ -48,7 +48,7 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
-		<Class class = "MonoDevelop.XmlEditor.XmlTextEditorExtension" />
+		<Class id="MonoDevelop.XmlEditor.XmlTextEditorExtension" class = "MonoDevelop.XmlEditor.XmlTextEditorExtension" />
 	</Extension>
 	
 	<!-- Commands -->
