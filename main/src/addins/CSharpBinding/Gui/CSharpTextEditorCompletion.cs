@@ -341,6 +341,8 @@ namespace MonoDevelop.CSharpBinding.Gui
 		
 		public ICompletionDataProvider HandleKeywordCompletion (ExpressionResult result, int wordStart, string word)
 		{
+			if (stateTracker.Engine.IsInsideDocLineComment || stateTracker.Engine.IsInsideOrdinaryCommentOrString)
+				return null;
 			location = new DomLocation (Editor.CursorLine - 1, Editor.CursorColumn - 1);
 			switch (word) {
 			case "namespace":
@@ -378,8 +380,6 @@ namespace MonoDevelop.CSharpBinding.Gui
 				break;
 			case "is":
 			case "as":
-				if (stateTracker.Engine.IsInsideDocLineComment || stateTracker.Engine.IsInsideOrdinaryCommentOrString)
-					return null;
 				result.ExpressionContext = ExpressionContext.Type;
 				return CreateCtrlSpaceCompletionData (result);
 			case "override":
