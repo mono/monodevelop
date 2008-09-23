@@ -1,5 +1,10 @@
 2008-09-23  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Projects.Dom/ResolveResult.cs: fixed exception in base
+	  completion.
+
+2008-09-23  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: fixed 'Bug 429022 -
 	  Code Completion: inherited members not shown in automatic or
 	  ctrl+space completion'.

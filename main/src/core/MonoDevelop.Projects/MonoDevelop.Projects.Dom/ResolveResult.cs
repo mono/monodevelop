@@ -247,6 +247,8 @@ namespace MonoDevelop.Projects.Dom
 		
 		internal static void AddType (ProjectDom dom, List<object> result, IReturnType returnType, IMember callingMember, bool showStatic)
 		{
+			if (returnType == null)
+				return;
 			if (returnType.ArrayDimensions > 0) {
 				AddType (dom, result, dom.GetType ("System.Array", null, true, true), callingMember, showStatic);
 				return;
