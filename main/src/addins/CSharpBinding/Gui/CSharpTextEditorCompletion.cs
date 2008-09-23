@@ -325,9 +325,9 @@ namespace MonoDevelop.CSharpBinding.Gui
 			                                                                                Document.FileName);
 			switch (completionChar) {
 			case '(':
+				ResolveResult resolveResult = resolver.Resolve (result, new DomLocation (Editor.CursorLine, Editor.CursorColumn));
 				if (result.ExpressionContext is ExpressionContext.TypeExpressionContext)
 					return new NRefactoryParameterDataProvider (Editor, resolver, dom.SearchType ( new SearchTypeRequest (resolver.Unit, ((ExpressionContext.TypeExpressionContext)result.ExpressionContext).Type)));
-				ResolveResult resolveResult = resolver.Resolve (result, new DomLocation (Editor.CursorLine, Editor.CursorColumn));
 				
 				if (resolveResult != null) {
 					if (resolveResult is MethodResolveResult)

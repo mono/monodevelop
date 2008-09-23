@@ -60,7 +60,8 @@ namespace MonoDevelop.CSharpBinding
 				foreach (IMethod method in resolveResult.CallingType.Methods) {
 					if (!method.IsConstructor)
 						continue;
-					methods.Add (method);
+					if (method.IsAccessibleFrom (resolver.Dom, resolver.CallingType, resolver.CallingMember))
+						methods.Add (method);
 				}
 			}
 		}
@@ -76,7 +77,8 @@ namespace MonoDevelop.CSharpBinding
 						foreach (IMethod method in baseType.Methods) {
 							if (!method.IsConstructor)
 								continue;
-							methods.Add (method);
+							if (method.IsAccessibleFrom (resolver.Dom, resolver.CallingType, resolver.CallingMember))
+								methods.Add (method);
 						}
 					}
 				}
@@ -89,7 +91,7 @@ namespace MonoDevelop.CSharpBinding
 			this.editor = editor;
 			this.resolver = resolver;
 			foreach (IMethod method in type.Methods) {
-				if (method.IsConstructor)
+				if (method.IsConstructor && method.IsAccessibleFrom (resolver.Dom, type, resolver.CallingMember))
 					methods.Add (method);
 			}
 		}
