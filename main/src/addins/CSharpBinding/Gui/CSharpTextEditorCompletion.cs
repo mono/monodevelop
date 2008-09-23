@@ -315,15 +315,20 @@ namespace MonoDevelop.CSharpBinding.Gui
 			ExpressionResult result = FindExpression (dom , -1);
 			if (result == null)
 				return null;
+			if (result.ExpressionContext is ExpressionContext.TypeExpressionContext)
+				result.ExpressionContext = new NewCSharpExpressionFinder (dom).FindExactContextForNewCompletion(Editor, Document.CompilationUnit, Document.FileName) ?? result.ExpressionContext;
+				
 			location = new DomLocation (Editor.CursorLine - 1, Editor.CursorColumn - 1);
 			NRefactoryResolver resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (dom, Document.CompilationUnit,
 			                                                                                ICSharpCode.NRefactory.SupportedLanguage.CSharp,
 			                                                                                Editor,
 			                                                                                Document.FileName);
-			
 			switch (completionChar) {
 			case '(':
+				if (result.ExpressionContext is ExpressionContext.TypeExpressionContext)
+					return new NRefactoryParameterDataProvider (Editor, resolver, dom.SearchType ( new SearchTypeRequest (resolver.Unit, ((ExpressionContext.TypeExpressionContext)result.ExpressionContext).Type)));
 				ResolveResult resolveResult = resolver.Resolve (result, new DomLocation (Editor.CursorLine, Editor.CursorColumn));
+				
 				if (resolveResult != null) {
 					if (resolveResult is MethodResolveResult)
 						return new NRefactoryParameterDataProvider (Editor, resolver, resolveResult as MethodResolveResult);
@@ -343,6 +348,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 		{
 			if (stateTracker.Engine.IsInsideDocLineComment || stateTracker.Engine.IsInsideOrdinaryCommentOrString)
 				return null;
+				
 			location = new DomLocation (Editor.CursorLine - 1, Editor.CursorColumn - 1);
 			switch (word) {
 			case "namespace":

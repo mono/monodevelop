@@ -82,6 +82,17 @@ namespace MonoDevelop.CSharpBinding
 				}
 			}
 		}
+
+		// used for constructor completion
+		public NRefactoryParameterDataProvider (TextEditor editor, NRefactoryResolver resolver, IType type)
+		{
+			this.editor = editor;
+			this.resolver = resolver;
+			foreach (IMethod method in type.Methods) {
+				if (method.IsConstructor)
+					methods.Add (method);
+			}
+		}
 		
 		#region IParameterDataProvider implementation
 		public int GetCurrentParameterIndex (ICodeCompletionContext ctx)
@@ -134,7 +145,7 @@ namespace MonoDevelop.CSharpBinding
 		
 		public string GetMethodMarkup (int overload, string[] parameterMarkup)
 		{
-			return "<b>" + methods[0].Name + "</b> (" + string.Join (", ", parameterMarkup)  + ")";
+			return "<b>" + (methods[overload].IsConstructor ? methods[overload].DeclaringType.Name : methods[overload].Name) + "</b> (" + string.Join (", ", parameterMarkup)  + ")";
 //			return ambience.GetIntellisenseDescription (methods[overload]);
 		}
 		

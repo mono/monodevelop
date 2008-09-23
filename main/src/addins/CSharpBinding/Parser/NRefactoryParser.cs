@@ -59,12 +59,6 @@ namespace MonoDevelop.CSharpBinding
 			MonoDevelop.Ide.Gui.Document doc = (MonoDevelop.Ide.Gui.Document)editor;
 			return new NRefactoryResolver (dom, doc.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, doc.TextEditor, fileName);
 		}
-
-		
-	/*	public override IDocumentMetaInformation CreateMetaInformation (TextReader reader)
-		{
-			return new NRefactoryDocumentMetaInformation (ICSharpCode.NRefactory.SupportedLanguage.CSharp, reader);
-		}*/
 		
 		class SpecialTracker : ICSharpCode.NRefactory.ISpecialVisitor
 		{
