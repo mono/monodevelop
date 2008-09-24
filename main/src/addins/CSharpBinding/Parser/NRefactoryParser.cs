@@ -178,11 +178,14 @@ namespace MonoDevelop.CSharpBinding
 		public override ParsedDocument Parse (string fileName, string content)
 		{
 			using (ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (ICSharpCode.NRefactory.SupportedLanguage.CSharp, new StringReader (content))) {
+				
 				ParsedDocument result = new ParsedDocument ();
 				result.CompilationUnit = new MonoDevelop.Projects.Dom.CompilationUnit (fileName);
 				parser.Errors.Error += delegate (int line, int col, string message) {
 					result.Add (new Error (ErrorType.Error, col, line, message));
 				};
+				parser.Lexer.SpecialCommentTags = ProjectDomService.SpecialCommentTags;
+				
 				parser.Parse ();
 				
 				SpecialTracker tracker = new SpecialTracker (result);
@@ -190,6 +193,11 @@ namespace MonoDevelop.CSharpBinding
 					special.AcceptVisitor (tracker, null);
 				}
 				
+				foreach (ICSharpCode.NRefactory.Parser.TagComment tagComment in parser.Lexer.TagComments) {
+					result.Add (new Tag (tagComment.Tag, 
+					                     tagComment.CommentText, 
+					                     new DomRegion (tagComment.StartPosition.Y, tagComment.StartPosition.X, tagComment.EndPosition.Y, tagComment.EndPosition.X)));
+				}
 				ConversionVisitior visitor = new ConversionVisitior (result);
 				visitor.VisitCompilationUnit (parser.CompilationUnit, null);
 				result.GenerateFoldInformation ();
