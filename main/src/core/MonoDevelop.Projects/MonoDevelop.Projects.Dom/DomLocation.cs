@@ -30,6 +30,7 @@ using System;
 
 namespace MonoDevelop.Projects.Dom
 {
+	[Serializable]
 	public struct DomLocation : IComparable<DomLocation>, IEquatable<DomLocation>
 	{
 		int line, column;

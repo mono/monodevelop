@@ -29,7 +29,8 @@
 using System;
 
 namespace MonoDevelop.Projects.Dom
-{	
+{
+	[Serializable]
 	public class Comment
 	{
 		string openTag;

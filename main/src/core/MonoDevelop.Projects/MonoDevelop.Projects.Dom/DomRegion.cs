@@ -30,6 +30,7 @@ using System;
 
 namespace MonoDevelop.Projects.Dom
 {
+	[Serializable]
 	public struct DomRegion : IComparable
 	{
 		public readonly static DomRegion Empty = new DomRegion (-1, -1, -1, -1);
