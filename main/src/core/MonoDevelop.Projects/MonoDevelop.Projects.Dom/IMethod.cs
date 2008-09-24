@@ -60,5 +60,10 @@ namespace MonoDevelop.Projects.Dom
 		ReadOnlyCollection<IReturnType> GenericParameters {
 			get;
 		}
+		
+		/// <summary>
+		/// Returns true, if IsExtension == true and this method extends <param name="type"/>
+		/// </summary>
+		bool Extends (IType type);
 	}
 }

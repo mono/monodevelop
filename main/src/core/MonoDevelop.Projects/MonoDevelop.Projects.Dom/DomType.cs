@@ -619,6 +619,49 @@ namespace MonoDevelop.Projects.Dom
 			
 			return result;
 		}
+		
+		/// <summary>
+		/// Returns a list of types that contains extension methods
+		/// </summary>
+		public static List<IType> GetAccessibleExtensionTypes (ProjectDom dom, ICompilationUnit unit)
+		{
+			List<IType> result = new List<IType> ();
+			List<string> namespaceList = new List<string> ();
+			namespaceList.Add ("");
+			if (unit != null && unit.Usings != null) {
+				foreach (IUsing u in unit.Usings) {
+					if (u.Namespaces == null)
+						continue;
+					foreach (string ns in u.Namespaces) {
+						namespaceList.Add (ns);
+					}
+				}
+			}
+			foreach (object o in dom.GetNamespaceContents (namespaceList, true, true)) {
+				IType type = o as IType;
+				if (type != null && type.IsStatic) {
+					foreach (IMethod m in type.Methods) {
+						if (m.IsExtension) {
+							result.Add (type);
+							break;
+						}
+					}
+				}
+			}
+			return result;
+		}
+
+		public List<IMethod> GetExtensionMethods (List<IType> accessibleExtensionTypes)
+		{
+			List<IMethod> result = new List<IMethod> ();
+			foreach (IType staticType in accessibleExtensionTypes) {
+				foreach (IMethod method in staticType.Methods) {
+					if (method.Extends (this))
+						result.Add (method);
+				}
+			}
+			return result;
+		}
 	}
 	
 	internal sealed class Stock 

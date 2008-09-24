@@ -139,6 +139,16 @@ namespace MonoDevelop.Projects.Dom
 			this.returnType     = returnType;
 			this.methodModifier = methodModifier;
 		}
+/*
+		public override bool IsAccessibleFrom (ProjectDom dom, IType calledType, IMember member)
+		{
+			return IsExtension || base.IsAccessibleFrom (dom, calledType, member);
+		}*/
+		
+		public bool Extends (IType type)
+		{
+			return IsExtension && Parameters[0].ReturnType.FullName == type.FullName;
+		}
 		
 		public void Add (IParameter parameter)
 		{

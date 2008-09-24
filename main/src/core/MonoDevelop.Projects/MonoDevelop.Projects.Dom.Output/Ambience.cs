@@ -147,6 +147,10 @@ namespace MonoDevelop.Projects.Dom.Output
 		{
 			return (outputFlags & OutputFlags.HighlightName) == OutputFlags.HighlightName;
 		}
+		protected static bool HideExtensionsParameter (OutputFlags outputFlags)
+		{
+			return (outputFlags & OutputFlags.HideExtensionsParameter) == OutputFlags.HideExtensionsParameter;
+		}
 		#endregion
 		
 		public static string Format (string str)

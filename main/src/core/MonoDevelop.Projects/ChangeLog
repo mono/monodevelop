@@ -1,5 +1,17 @@
 2008-09-24  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Projects.Dom.Output/OutputFlags.cs,
+	  MonoDevelop.Projects.Dom.Output/Ambience.cs,
+	  MonoDevelop.Projects.Dom/ResolveResult.cs,
+	  MonoDevelop.Projects.Dom/DomType.cs,
+	  MonoDevelop.Projects.Dom/IMethod.cs,
+	  MonoDevelop.Projects.Dom/DomMethod.cs,
+	  MonoDevelop.Projects.Dom/IType.cs,
+	  MonoDevelop.Projects.Dom/AbstractMember.cs: Added support for C#3.0
+	  extension methods.
+
+2008-09-24  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Projects.Dom/DomRegion.cs,
 	  MonoDevelop.Projects.Dom/Comment.cs,
 	  MonoDevelop.Projects.Dom/DomLocation.cs: Marked some classes as

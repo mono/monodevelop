@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Collections;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using MonoDevelop.Projects.Dom.Parser;
@@ -231,7 +232,11 @@ namespace MonoDevelop.Projects.Dom
 				}
 				return;
 			}
+			List<IType> accessibleStaticTypes = DomType.GetAccessibleExtensionTypes (dom, callingMember.DeclaringType.CompilationUnit);
 			foreach (IType curType in dom.GetInheritanceTree (type)) {
+				foreach (IMethod extensionMethod in curType.GetExtensionMethods (accessibleStaticTypes)) {
+					result.Add (extensionMethod);
+				}
 				foreach (IMember member in curType.Members) {
 					if (callingMember != null && !member.IsAccessibleFrom (dom, type, callingMember))
 						continue;
@@ -343,10 +348,15 @@ namespace MonoDevelop.Projects.Dom
 		
 		public MethodResolveResult (List<IMember> members)
 		{
-			foreach (IMember member in members) {
+			AddMethods (members);
+		}
+
+		public void AddMethods (IEnumerable members) 
+		{
+			foreach (object member in members) {
 				if (member is IMethod)
 					methods.Add ((IMethod)member);
-			}
+			}			
 		}
 		
 		public override IEnumerable<object> CreateResolveResult (ProjectDom dom, IMember callingMember)

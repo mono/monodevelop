@@ -237,7 +237,7 @@ namespace MonoDevelop.Projects.Dom
 			return 0;
 		}
 		
-		public bool IsAccessibleFrom (ProjectDom dom, IType calledType, IMember member)
+		public virtual bool IsAccessibleFrom (ProjectDom dom, IType calledType, IMember member)
 		{
 			if (member == null)
 				return IsStatic;

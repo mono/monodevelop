@@ -141,5 +141,7 @@ namespace MonoDevelop.Projects.Dom
 		System.Xml.XmlDocument HelpXml {
 			get;
 		}
+		
+		List<IMethod> GetExtensionMethods (List<IType> accessibleExtensionTypes);
 	}
 }
