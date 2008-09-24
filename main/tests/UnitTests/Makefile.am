@@ -23,6 +23,7 @@ REFS =  \
 	-r:System.Xml
 
 FILES =  \
+	MonoDevelop.CSharpBinding/CodeCompletionCSharp3Tests.cs \
 	MonoDevelop.CSharpBinding/CodeCompletionOperatorTests.cs \
 	MonoDevelop.CSharpBinding/CodeCompletionTests.cs \
 	MonoDevelop.CSharpBinding/MemberTests.cs \
