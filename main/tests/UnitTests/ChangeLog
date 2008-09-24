@@ -1,5 +1,10 @@
 2008-09-24  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.CSharpBinding/CodeCompletionCSharp3Tests.cs: added some
+	  c# 3.0 unit tests.
+
+2008-09-24  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.CSharpBinding/CodeCompletionCSharp3Tests.cs: Added C#3.0
 	  unit test fixture.
 

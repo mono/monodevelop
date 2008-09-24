@@ -68,6 +68,80 @@ class Program
 			Assert.IsNotNull (provider.SearchData ("ToInt32Ext"), "extension method 'ToInt32Ext' not found.");
 		}
 		
+		[Test()]
+		public void TestVarLocalVariables ()
+		{
+			CodeCompletionDataProvider provider = CodeCompletionTests.CreateProvider (
+@"using System;
+
+class Test
+{
+	public void TestMethod ()
+	{
+	}
+}
+
+class Program
+{
+	static void Main (string[] args)
+	{
+		var t = new Test ();
+		t.$
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.SearchData ("TestMethod"), "method 'TestMethod' not found.");
+		}
+		
+		[Test()]
+		public void TestVarLoopVariable ()
+		{
+			CodeCompletionDataProvider provider = CodeCompletionTests.CreateProvider (
+@"using System;
+
+class Test
+{
+	public void TestMethod ()
+	{
+	}
+}
+
+class Program
+{
+	static void Main (string[] args)
+	{
+		var t = new Test[] {};
+		foreach (var loopVar in t) {
+			loopVar.$
+		}
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.SearchData ("TestMethod"), "method 'TestMethod' not found.");
+		}
+
+		[Test()]
+		public void TestAnonymousType ()
+		{
+			CodeCompletionDataProvider provider = CodeCompletionTests.CreateProvider (
+@"
+class Program
+{
+	static void Main (string[] args)
+	{
+		var t = new { TestInt = 6, TestChar='e', TestString =""Test""};
+		t.$
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.SearchData ("TestInt"), "property 'TestInt' not found.");
+			Assert.IsNotNull (provider.SearchData ("TestChar"), "property 'TestChar' not found.");
+			Assert.IsNotNull (provider.SearchData ("TestString"), "property 'TestString' not found.");
+		}
+		
 
 	}
 }
