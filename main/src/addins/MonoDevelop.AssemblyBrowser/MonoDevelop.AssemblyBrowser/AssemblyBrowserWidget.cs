@@ -396,7 +396,7 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 		}
 		static bool preformat = false;
-		public static string FormatText (string text)
+		static string FormatText (string text)
 		{
 			if (preformat)
 				return text;
@@ -542,7 +542,6 @@ namespace MonoDevelop.AssemblyBrowser
 				return null;
 			StringBuilder result = new StringBuilder ();
 			XmlNode node = docNode.SelectSingleNode ("summary");
-			System.Console.WriteLine(node);
 			if (node != null) {
 				OutputChilds (result, node);
 				result.AppendLine ();
@@ -622,8 +621,8 @@ namespace MonoDevelop.AssemblyBrowser
 				IAssemblyBrowserNodeBuilder builder = nav.TypeNodeBuilder as IAssemblyBrowserNodeBuilder;
 				this.disassemblerLabel.Selectable = false;
 				if (builder != null) {
-					this.descriptionLabel.Markup   = builder.GetDescription (nav);
-					this.disassemblerLabel.Markup = builder.GetDisassembly (nav);
+					this.descriptionLabel.Markup  = builder.GetDescription (nav);
+					this.disassemblerLabel.Markup = FormatText (builder.GetDisassembly (nav));
 				} else {
 					this.descriptionLabel.Markup =  this.disassemblerLabel.Markup = "";
 				}

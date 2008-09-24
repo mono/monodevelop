@@ -49,7 +49,6 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		IViewContent IDisplayBinding.CreateContentForFile (string fileName)
 		{
-			System.Console.WriteLine("Create for file !!");
 			return new AssemblyBrowserViewContent ();
 		}
 		
@@ -60,7 +59,6 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		IViewContent IDisplayBinding.CreateContentForMimeType (string mimeType, System.IO.Stream content)
 		{
-			System.Console.WriteLine("Create for mime !!");
 			return new AssemblyBrowserViewContent ();
 		}
 	}

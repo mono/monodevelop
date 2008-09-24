@@ -103,7 +103,7 @@ namespace MonoDevelop.AssemblyBrowser {
             this.notebook1 = new Gtk.Notebook();
             this.notebook1.CanFocus = true;
             this.notebook1.Name = "notebook1";
-            this.notebook1.CurrentPage = 4;
+            this.notebook1.CurrentPage = 2;
             // Container child notebook1.Gtk.Notebook+NotebookChild
             this.documentationScrolledWindow = new Gtk.ScrolledWindow();
             this.documentationScrolledWindow.Name = "documentationScrolledWindow";

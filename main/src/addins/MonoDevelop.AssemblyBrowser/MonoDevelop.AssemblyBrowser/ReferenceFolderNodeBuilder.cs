@@ -81,7 +81,6 @@ namespace MonoDevelop.AssemblyBrowser
 				}
 			}
 			foreach (ModuleReference moduleRef in referenceFolder.ModuleDefinition.ModuleReferences) {
-				System.Console.WriteLine("mod:" + moduleRef);
 				ctx.AddChild (moduleRef);
 			}
 		}

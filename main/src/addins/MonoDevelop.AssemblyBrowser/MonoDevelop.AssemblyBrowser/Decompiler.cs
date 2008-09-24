@@ -680,7 +680,6 @@ namespace MonoDevelop.AssemblyBrowser
 						current = new Statement ();
 						break;
 					case Code.Ret:
-						Console.WriteLine (method.ReturnType.Name);
 						if (method.ReturnType.Name != "Void") {
 							current.StringValue = ("return " + stack.Pop ().StringValue + ";");
 							SetStatement (current);

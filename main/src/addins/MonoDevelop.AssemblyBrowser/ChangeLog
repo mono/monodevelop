@@ -1,5 +1,20 @@
 2008-09-24  Mike Krüger <mkrueger@novell.com> 
 
+	* gtk-gui/MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget.cs,
+	  MonoDevelop.AssemblyBrowser/Decompiler.cs,
+	  MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs,
+	  MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/DomEventNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/DomReturnTypeNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/DomFieldNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/DisplayBinding.cs,
+	  MonoDevelop.AssemblyBrowser/DomPropertyNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/ReferenceFolderNodeBuilder.cs: Worked
+	  on assembly browser, removed debug messages.
+
+2008-09-24  Mike Krüger <mkrueger@novell.com> 
+
 	* gtk-gui/generated.cs,
 	  gtk-gui/MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget.cs,
 	  gtk-gui/gui.stetic: Removed unnecessary label.
