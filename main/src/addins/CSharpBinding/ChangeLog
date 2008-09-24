@@ -1,5 +1,9 @@
 2008-09-24  Mike Krüger <mkrueger@novell.com> 
 
+	* Gui/ResolveVisitor.cs: fixed anonymous type bug.
+
+2008-09-24  Mike Krüger <mkrueger@novell.com> 
+
 	* Gui/MemberCompletionData.cs, Gui/CSharpTextEditorCompletion.cs: Show
 	  extension parameter for static resolve.
 
