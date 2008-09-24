@@ -54,11 +54,7 @@ namespace MonoDevelop.CSharpBinding
 			}
 		}
 		
-		public MemberCompletionData (IMember member) : this (member, OutputFlags.None)
-		{
-		}
-		
-		public MemberCompletionData (IMember member, OutputFlags flags) : base (member.IsObsolete ? "<s>" + ambience.GetString (member, OutputFlags.EmitMarkup) + "</s>" :  ambience.GetString (member, flags | OutputFlags.EmitMarkup), member.StockIcon)
+		public MemberCompletionData (IMember member, OutputFlags flags) : base (member.IsObsolete ? "<s>" + ambience.GetString (member, flags | OutputFlags.EmitMarkup) + "</s>" :  ambience.GetString (member, flags | OutputFlags.EmitMarkup), member.StockIcon)
 		{
 			this.member = member;
 			this.CompletionString = ambience.GetString (member, OutputFlags.None);
@@ -74,8 +70,8 @@ namespace MonoDevelop.CSharpBinding
 			
 			descriptionCreated = true;
 			
-			string doc = ambience.GetString (member, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName);
-			string docMarkup = ambience.GetString (member, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName | OutputFlags.EmitMarkup);
+			string doc = ambience.GetString (member, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName | OutputFlags.HideExtensionsParameter);
+			string docMarkup = ambience.GetString (member, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName | OutputFlags.EmitMarkup | OutputFlags.HideExtensionsParameter);
 			if (member.IsObsolete) {
 				doc += Environment.NewLine + "[Obsolete]";
 				docMarkup += Environment.NewLine + "[Obsolete]";

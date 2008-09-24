@@ -432,14 +432,22 @@ namespace MonoDevelop.CSharpBinding
 				IType type = resolver.Dom.GetType (result.ResolvedType);
 				
 				if (type != null) {
-					List <IMember> member = new List <IMember> ();
+					List<IMember> member = new List <IMember> ();
+					List<IType> accessibleExtTypes = DomType.GetAccessibleExtensionTypes (resolver.Dom, resolver.Unit);
 					foreach (IType curType in resolver.Dom.GetInheritanceTree (type)) {
+						foreach (IMethod method in curType.GetExtensionMethods (accessibleExtTypes)) {
+							if (method.Name == fieldReferenceExpression.FieldName) 
+								member.Add (method);
+						}
 						member.AddRange (curType.SearchMember (fieldReferenceExpression.FieldName, true));
 					}
+					
 					if (member.Count > 0) {
 						if (member[0] is IMethod) {
 							bool isStatic = result.StaticResolve;
 							for (int i = 0; i < member.Count; i++) {
+								if (member[i] is IMethod && ((IMethod)member[i]).IsExtension && member[i].IsAccessibleFrom (resolver.Dom, type, resolver.CallingMember))
+									continue;
 								if ((member[i].IsStatic ^ isStatic) || !member[i].IsAccessibleFrom (resolver.Dom, type, resolver.CallingMember)) {
 									member.RemoveAt (i);
 									i--;

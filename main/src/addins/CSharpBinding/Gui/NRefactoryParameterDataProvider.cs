@@ -44,11 +44,13 @@ namespace MonoDevelop.CSharpBinding
 		List<IMethod> methods = new List<IMethod> ();
 		CSharpAmbience ambience = new CSharpAmbience ();
 		NRefactoryResolver resolver;
+		bool staticResolve = false;
 		
 		public NRefactoryParameterDataProvider (TextEditor editor, NRefactoryResolver resolver, MethodResolveResult resolveResult)
 		{
 			this.editor = editor;
 			this.resolver = resolver;
+			this.staticResolve = resolveResult.StaticResolve;
 			methods.AddRange (resolveResult.Methods);
 		}
 		
@@ -155,16 +157,22 @@ namespace MonoDevelop.CSharpBinding
 		
 		public string GetParameterMarkup (int overload, int paramIndex)
 		{
+			if (!this.staticResolve && methods[overload].IsExtension)
+				paramIndex++;
+			
 			if (methods[overload].Parameters == null || paramIndex < 0 || paramIndex >= methods[overload].Parameters.Count)
 				return "";
-			return ambience.GetString (methods[overload].Parameters [paramIndex], OutputFlags.AssemblyBrowserDescription | OutputFlags.HighlightName);
+			return ambience.GetString (methods[overload].Parameters [paramIndex], OutputFlags.AssemblyBrowserDescription | OutputFlags.HighlightName | OutputFlags.HideExtensionsParameter);
 		}
 		
 		public int GetParameterCount (int overload)
 		{
 			if (overload < 0 || overload >= OverloadCount)
 				return 0;
-			return methods[overload].Parameters != null ? methods[overload].Parameters.Count : 0;
+			int result = methods[overload].Parameters != null ? methods[overload].Parameters.Count : 0;
+			if (!this.staticResolve && methods[overload].IsExtension)
+				result--;
+			return result;
 		}
 		
 		public int OverloadCount {

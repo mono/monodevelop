@@ -290,8 +290,11 @@ namespace MonoDevelop.CSharpBinding
 			if (IncludeParameters (flags)) {
 				result.Append ("(");
 				bool first = true;
+				
 				if (method.Parameters != null) {
 					foreach (IParameter parameter in method.Parameters) {
+						if (HideExtensionsParameter (flags) && method.IsExtension && parameter == method.Parameters[0])
+							continue;
 						if (!first)
 							result.Append (", ");
 						if (parameter.IsOut) {
