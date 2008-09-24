@@ -1,3 +1,8 @@
+2008-09-24  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Tasks/TaskService.cs: fixed 'Bug 427433 - Comment
+	  tags not shown in the task list'.
+
 2008-09-23  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui/IPadContainer.cs,

@@ -29,6 +29,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide.Tasks
@@ -50,8 +51,7 @@ namespace MonoDevelop.Ide.Tasks
 			IdeApp.Workspace.FileRemovedFromProject += new ProjectFileEventHandler (ProjectFileRemoved);
 
 			PropertyService.PropertyChanged += (EventHandler<PropertyChangedEventArgs>) DispatchService.GuiDispatch (new EventHandler<PropertyChangedEventArgs> (OnPropertyUpdated));
-		// TODO:
-		//	IdeApp.Workspace.ParserDatabase.CommentTasksChanged += new CommentTasksChangedEventHandler (OnCommentTasksChanged);
+			ProjectDomService.CommentTasksChanged += OnCommentTasksChanged;
 			
 			MonoDevelop.Projects.Text.TextFileService.CommitCountChanges += delegate (object sender, MonoDevelop.Projects.Text.TextFileEventArgs args) {
 				foreach (Task task in this.Tasks) {
@@ -102,23 +102,19 @@ namespace MonoDevelop.Ide.Tasks
 
 		void ProjectServiceSolutionOpened (object sender, WorkspaceItemEventArgs e)
 		{
-		 /*	Todo:
 			Solution sol = e.Item as Solution;
 			if (sol != null) {
 				// Load all tags that are stored in pidb files
-	           
-foreach (Project p in sol.GetAllProjects ())
-	            {
-	                IProjectParserContext pContext = IdeApp.Workspace.ParserDatabase.GetProjectParserContext (p);
+				foreach (Project p in sol.GetAllProjects ()) {
+					ProjectDom pContext = ProjectDomService.GetProjectDom (p);
 					if (pContext == null)
 						continue;
-	                foreach (ProjectFile file in p.Files)
-	                {
-	                	TagCollection tags = pContext.GetFileSpecialComments (file.Name); 
-	                	if (tags !=null)
-	                		UpdateCommentTags (sol, file.Name, tags);
-	                }
-	        	}
+					foreach (ProjectFile file in p.Files) {
+						IList<Tag> tags = pContext.GetSpecialComments (file.Name);
+						if (tags !=null)
+							UpdateCommentTags (sol, file.Name, tags);
+					}
+				}
 			}
 			
 			List<UserTask> utasks = new List<UserTask> ();
@@ -135,13 +131,13 @@ foreach (Project p in sol.GetAllProjects ())
 					utasks.AddRange ((IEnumerable<UserTask>)serializer.Deserialize (stream));
 					stream.Close ();
 					if (utasks.Count > 0 && UserTasksChanged != null)
-						UserTasksChanged (tsks);
+						UserTasksChanged (this, EventArgs.Empty);
 				}
 				catch (Exception ex)
 				{
 					LoggingService.LogWarning ("Could not load user tasks: " + fileToLoad, ex);
 				}
-        	}*/
+			}
 		}
 				
 		void ProjectServiceSolutionClosed (object sender, WorkspaceItemEventArgs e)
@@ -230,14 +226,14 @@ foreach (Project p in sol.GetAllProjects ())
 				}
 			}
 		}
-		/*
+		
 		[AsyncDispatch]
 		void OnCommentTasksChanged (object sender, CommentTasksChangedEventArgs e)
 		{
 			Project p = IdeApp.Workspace.GetProjectContainingFile (e.FileName);
 			if (p != null)
 				UpdateCommentTags (p.ParentSolution, e.FileName, e.TagComments);
-		}*/
+		}
 		
 		public void ClearExceptCommentTasks ()
 		{
