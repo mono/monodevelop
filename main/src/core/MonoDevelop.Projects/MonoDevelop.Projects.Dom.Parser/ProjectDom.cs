@@ -283,7 +283,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		public IType GetType (IReturnType returnType)
 		{
-			return GetType (returnType.FullName, returnType.GenericArguments, true, true);
+			return returnType.Type ?? GetType (returnType.FullName, returnType.GenericArguments, true, true);
 		}
 		
 		public IType GetType (IReturnType returnType, bool searchDeep)

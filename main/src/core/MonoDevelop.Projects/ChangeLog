@@ -1,5 +1,10 @@
 2008-09-24  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: fixed anonymous type
+	  bug.
+
+2008-09-24  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Projects.Dom.Output/OutputFlags.cs,
 	  MonoDevelop.Projects.Dom.Output/Ambience.cs,
 	  MonoDevelop.Projects.Dom/ResolveResult.cs,
