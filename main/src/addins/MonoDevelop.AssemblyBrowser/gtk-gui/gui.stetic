@@ -2,10 +2,12 @@
 <stetic-interface>
   <configuration>
     <images-root-path>..</images-root-path>
-    <target-gtk-version>2.10.2</target-gtk-version>
+    <target-gtk-version>2.10.0</target-gtk-version>
   </configuration>
   <import>
+    <widget-library name="../../../../build/bin/MonoDevelop.Ide.dll" />
     <widget-library name="../../../../build/bin/MonoDevelop.Components.dll" />
+    <widget-library name="../../../../build/bin/MonoDevelop.Projects.Gui.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.AssemblyBrowser.dll" internal="true" />
   </import>
   <widget class="Gtk.Bin" id="MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget" design-size="702 482">
@@ -74,7 +76,7 @@
           <widget class="Gtk.Notebook" id="notebook1">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="CurrentPage">0</property>
+            <property name="CurrentPage">2</property>
             <child>
               <widget class="Gtk.ScrolledWindow" id="documentationScrolledWindow">
                 <property name="MemberName" />
@@ -100,15 +102,6 @@
                   </widget>
                 </child>
               </widget>
-            </child>
-            <child>
-              <widget class="Gtk.Label" id="label1">
-                <property name="MemberName" />
-                <property name="LabelProp" translatable="yes">page4</property>
-              </widget>
-              <packing>
-                <property name="type">tab</property>
-              </packing>
             </child>
             <child>
               <widget class="Gtk.ScrolledWindow" id="disassemblerScrolledWindow">
