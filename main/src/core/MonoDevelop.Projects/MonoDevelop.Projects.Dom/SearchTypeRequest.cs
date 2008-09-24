@@ -113,8 +113,10 @@ namespace MonoDevelop.Projects.Dom
 			this.currentCompilationUnit = currentCompilationUnit;
 			this.caretLine   = -1;
 			this.caretColumn = -1;
-			this.name        = rtype.FullName;
-			this.genericParameterCount = rtype.GenericArguments.Count;
+			if (rtype != null) {
+				this.name        = rtype.FullName;
+				this.genericParameterCount = rtype.GenericArguments.Count;
+			}
 		}
 		
 		public SearchTypeRequest (ICompilationUnit currentCompilationUnit, int caretLine, int caretColumn, string name)

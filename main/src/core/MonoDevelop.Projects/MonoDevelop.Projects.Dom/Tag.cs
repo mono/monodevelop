@@ -45,5 +45,11 @@ namespace MonoDevelop.Projects.Dom
 			this.key    = key;
 			base.Region = region;
 		}
+		
+		public Tag (string key, string comment, DomRegion region)  : base (comment)
+		{
+			this.key    = key;
+			base.Region = region;
+		}
 	}
 }

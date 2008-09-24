@@ -39,7 +39,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		string filePath;
 		DateTime parseTime;
 		int parseErrorRetries;
-		List<Tag> commentTasks;
+		IList<Tag> commentTasks;
 		
 		// When the file contains only one class, this field has a reference to
 		// the only ClassEntry. If it has more than one class, it has a ClassEntry[]
@@ -163,7 +163,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			}
 		}
 		
-		public List<Tag> CommentTasks
+		public IList<Tag> CommentTasks
 		{
 			get { return commentTasks; }
 			set { commentTasks = value; }

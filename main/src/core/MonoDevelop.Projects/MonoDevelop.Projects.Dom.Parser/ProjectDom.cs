@@ -52,6 +52,15 @@ namespace MonoDevelop.Projects.Dom.Parser
 		}
 		
 		public abstract IEnumerable<IType> Types { get; }
+
+		public virtual IList<Tag> GetSpecialComments (string fileName)
+		{
+			return new List<Tag> ();
+		}
+		public virtual void UpdateTagComments (string fileName, IList<Tag> tags)
+		{
+		
+		}
 		
 		public virtual IEnumerable<IType> GetTypes (string fileName)
 		 {

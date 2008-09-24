@@ -30,9 +30,6 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Projects.Dom.Parser
 {
-	
-	public delegate void CommentTasksChangedEventHandler (object sender, CommentTasksChangedEventArgs e);
-	
 	public class CommentTasksChangedEventArgs : EventArgs
 	{
 		string filename;

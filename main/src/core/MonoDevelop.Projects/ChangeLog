@@ -1,3 +1,15 @@
+2008-09-24  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom.Parser/CommentTasksChangedEventHandler.cs,
+	  MonoDevelop.Projects.Dom.Parser/ProjectDom.cs,
+	  MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs,
+	  MonoDevelop.Projects.Dom/Comment.cs,
+	  MonoDevelop.Projects.Dom/Tag.cs,
+	  MonoDevelop.Projects.Dom.Serialization/DatabaseProjectDom.cs,
+	  MonoDevelop.Projects.Dom.Serialization/FileEntry.cs,
+	  MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
+	  Worked on tag comments.
+
 2008-09-23  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects/SolutionItem.cs: Stop compilation when errors

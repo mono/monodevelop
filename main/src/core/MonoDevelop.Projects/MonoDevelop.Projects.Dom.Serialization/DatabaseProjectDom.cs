@@ -58,6 +58,16 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		{
 			return database.GetFileContents (fileName);
 		}
+
+		public override IList<Tag> GetSpecialComments (string fileName)
+		{
+			return database.GetSpecialComments (fileName);
+		}
+		
+		public override void UpdateTagComments (string fileName, IList<Tag> tags)
+		{
+			database.UpdateTagComments (tags, fileName);
+		}
 		
 		internal override void GetNamespaceContentsInternal (List<IMember> result, IEnumerable<string> subNamespaces, bool caseSensitive)
 		{

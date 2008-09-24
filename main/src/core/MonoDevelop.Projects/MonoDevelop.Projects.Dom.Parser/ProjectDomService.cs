@@ -117,7 +117,22 @@ namespace MonoDevelop.Projects.Dom.Parser
 		}
 		
 		#region Parser Management
-		
+		// the special comment tags should be moved to taskservice, but I don't want to put this
+		// in GPLed #develop code. TODO: Move this code to the taskservice, when it's MIT X11.
+		const string defaultTags = "FIXME:2;TODO:1;HACK:1;UNDONE:0";
+		public static string[] SpecialCommentTags {
+			get {
+				string tags = PropertyService.Get ("Monodevelop.TaskListTokens", defaultTags);
+				List<string> result = new List<string> ();
+				foreach (string tag in tags.Split (';')) {
+					string[] splittedTag = tag.Split (':');
+					if (splittedTag != null && splittedTag.Length > 0) 
+						result.Add (splittedTag[0]);
+				}
+				return result.ToArray ();
+			}
+		}
+
 		public static List<IParser> Parsers {
 			get {
 				return parsers;
@@ -787,6 +802,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 								ProjectDom db = GetProjectDom (project);
 								if (db != null) {
 									try {
+										db.UpdateTagComments (fileName, parseInformation.TagComments);
+										UpdatedCommentTasks (fileName, parseInformation.TagComments);
 										TypeUpdateInformation res = db.UpdateFromParseInfo (parseInformation.CompilationUnit);
 										if (res != null)
 											NotifyTypeUpdate (project, fileName, res);
@@ -989,7 +1006,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		public static event EventHandler<TypeUpdateInformationEventArgs> TypesUpdated;
 		public static event AssemblyInformationEventHandler AssemblyInformationChanged;
-		public static event CommentTasksChangedEventHandler CommentTasksChanged;
+		public static event EventHandler<CommentTasksChangedEventArgs> CommentTasksChanged;
 		public static event EventHandler ParseOperationStarted;
 		public static event EventHandler ParseOperationFinished;
 		

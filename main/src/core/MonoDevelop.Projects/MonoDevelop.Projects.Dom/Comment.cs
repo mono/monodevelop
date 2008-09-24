@@ -106,5 +106,10 @@ namespace MonoDevelop.Projects.Dom
 		public Comment ()
 		{
 		}
+		
+		public Comment (string text)
+		{
+			this.text = text;
+		}
 	}
 }

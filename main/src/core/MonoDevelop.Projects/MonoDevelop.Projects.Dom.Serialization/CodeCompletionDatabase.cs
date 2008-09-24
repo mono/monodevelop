@@ -637,7 +637,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			}
 		}
 	
-		public List<Tag> GetSpecialComments (string fileName)
+		public IList<Tag> GetSpecialComments (string fileName)
 		{
 			lock (rwlock)
 			{
@@ -646,7 +646,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			}
 		}
 		
-		public void UpdateTagComments (List<Tag> tags, string fileName)
+		public void UpdateTagComments (IList<Tag> tags, string fileName)
 		{
 			lock (rwlock)
 			{
