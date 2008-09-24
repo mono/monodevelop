@@ -1,5 +1,15 @@
 2008-09-24  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Projects.Dom/DomCecilMethod.cs,
+	  MonoDevelop.Projects.Dom/DomCecilEvent.cs,
+	  MonoDevelop.Projects.Dom/DomCecilField.cs,
+	  MonoDevelop.Projects.Dom/DomCecilProperty.cs,
+	  MonoDevelop.Projects.Dom/DomCecilType.cs,
+	  MonoDevelop.Projects.Dom/DomCecilAttribute.cs: Worked on cecil
+	  layer/extension methods are now recognized.
+
+2008-09-24  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: fixed anonymous type
 	  bug.
 

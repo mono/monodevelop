@@ -83,6 +83,7 @@ namespace MonoDevelop.Projects.Dom
 			if (!propertyDefinition.IsSpecialName)
 				base.modifiers &= ~MonoDevelop.Projects.Dom.Modifiers.SpecialName;
 			base.returnType         = DomCecilMethod.GetReturnType (propertyDefinition.PropertyType);
+			DomCecilMethod.AddAttributes (this, propertyDefinition.CustomAttributes);
 		}
 	}
 }

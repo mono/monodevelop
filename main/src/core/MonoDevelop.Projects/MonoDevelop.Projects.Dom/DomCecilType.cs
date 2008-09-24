@@ -89,7 +89,7 @@ namespace MonoDevelop.Projects.Dom
 			this.Modifiers      = GetModifiers (typeDefinition.Attributes);
 			if (typeDefinition.BaseType != null)
 				this.baseType = DomCecilMethod.GetReturnType (typeDefinition.BaseType);
-			
+			DomCecilMethod.AddAttributes (this, typeDefinition.CustomAttributes);
 			foreach (TypeReference interfaceReference in typeDefinition.Interfaces) {
 				this.AddInterfaceImplementation (DomCecilMethod.GetReturnType (interfaceReference));
 			}

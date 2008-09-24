@@ -70,6 +70,13 @@ namespace MonoDevelop.Projects.Dom
 			return DomReturnType.GetSharedReturnType (DomCecilType.RemoveGenericParamSuffix (methodReference.DeclaringType.FullName));
 		}
 		
+		public static void AddAttributes (AbstractMember member, CustomAttributeCollection attributes)
+		{
+			foreach (CustomAttribute customAttribute in attributes) {
+				member.Add (new DomCecilAttribute (customAttribute));
+			}
+		}
+				
 		public DomCecilMethod (MonoDevelop.Projects.Dom.IType declaringType, bool keepDefinitions, MethodDefinition methodDefinition)
 		{
 			this.declaringType    = declaringType;
@@ -81,12 +88,24 @@ namespace MonoDevelop.Projects.Dom
 				methodModifier |= MethodModifier.IsConstructor;
 			} else
 				Name = methodDefinition.Name;
-				
+			AddAttributes (this, methodDefinition.CustomAttributes);
 			base.modifiers  = DomCecilType.GetModifiers (methodDefinition.Attributes);
 			base.returnType = DomCecilMethod.GetReturnType (methodDefinition.ReturnType.ReturnType);
 			foreach (ParameterDefinition paramDef in methodDefinition.Parameters) {
 				Add (new DomCecilParameter (paramDef));
 			}
+
+			if (this.IsStatic) {
+				foreach (IAttribute attr in this.Attributes) {
+					System.Console.WriteLine(attr.Name);
+					if (attr.Name == "System.Runtime.CompilerServices.ExtensionAttribute") {
+						System.Console.WriteLine("FOUND EXTENSION METHOD !!!!");
+						methodModifier |= MethodModifier.IsExtension;
+						break;
+					}
+				}
+			}
+
 		}
 	}
 }

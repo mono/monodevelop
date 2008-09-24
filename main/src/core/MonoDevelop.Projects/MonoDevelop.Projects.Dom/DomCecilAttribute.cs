@@ -45,6 +45,7 @@ namespace MonoDevelop.Projects.Dom
 		{
 			this.customAttribute = customAttribute;
 			base.attributeType = DomCecilMethod.GetReturnType (customAttribute.Constructor);
+			base.Name          = customAttribute.Constructor.DeclaringType.FullName;
 			// TODO dom Read parameters
 //			base.AttributeTarget = customAttribute.ConstructorParameters
 		}
