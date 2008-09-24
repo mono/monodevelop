@@ -386,9 +386,45 @@ namespace MonoDevelop.CSharpBinding.Gui
 				}
 				break;
 			case "is":
-			case "as":
+			case "as": {
+				ExpressionResult expressionResult = FindExpression (dom, -3);
+				NRefactoryResolver resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (dom, 
+				                                                                                Document.CompilationUnit,
+				                                                                                ICSharpCode.NRefactory.SupportedLanguage.CSharp,
+				                                                                                Editor,
+				                                                                                Document.FileName);
+				ResolveResult resolveResult = resolver.Resolve (expressionResult, new DomLocation (Editor.CursorLine, Editor.CursorColumn));
+				if (resolveResult != null && resolveResult.ResolvedType != null) {
+					CodeCompletionDataProvider provider = new CodeCompletionDataProvider (null, GetAmbience ());
+					CompletionDataCollector col = new CompletionDataCollector (dom, Document.CompilationUnit, location);
+					foreach (IType type in dom.GetSubclasses (dom.SearchType (new SearchTypeRequest (resolver.Unit, resolveResult.ResolvedType)))) {
+						col.AddCompletionData (provider, type);
+					}
+					List<string> namespaceList = new List<string> ();
+					namespaceList.Add ("");
+					if (resolver.Unit != null && resolver.Unit.Usings != null) {
+						foreach (IUsing u in resolver.Unit.Usings) {
+							if (u.Namespaces == null)
+								continue;
+							foreach (string ns in u.Namespaces) {
+								namespaceList.Add (ns);
+							}
+						}
+					}
+					foreach (object o in dom.GetNamespaceContents (namespaceList, true, true)) {
+						if (o is IType) {
+							IType type = (IType)o;
+							if (type.ClassType != ClassType.Interface)
+								continue;
+						}
+						col.AddCompletionData (provider, o);
+					}
+					
+					return provider;
+				}
 				result.ExpressionContext = ExpressionContext.Type;
 				return CreateCtrlSpaceCompletionData (result);
+			}
 			case "override":
 				// Look for modifiers, in order to find the beginning of the declaration
 				int firstMod = wordStart;

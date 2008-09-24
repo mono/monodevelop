@@ -90,9 +90,11 @@ namespace MonoDevelop.CSharpBinding
 		{
 			this.editor = editor;
 			this.resolver = resolver;
-			foreach (IMethod method in type.Methods) {
-				if (method.IsConstructor && method.IsAccessibleFrom (resolver.Dom, type, resolver.CallingMember))
-					methods.Add (method);
+			if (type != null) {
+				foreach (IMethod method in type.Methods) {
+					if (method.IsConstructor && method.IsAccessibleFrom (resolver.Dom, type, resolver.CallingMember))
+						methods.Add (method);
+				}
 			}
 		}
 		
