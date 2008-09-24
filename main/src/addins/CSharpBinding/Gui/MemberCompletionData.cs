@@ -54,6 +54,16 @@ namespace MonoDevelop.CSharpBinding
 			}
 		}
 		
+		bool hideExtensionParameter = true;
+		public bool HideExtensionParameter {
+			get {
+				return hideExtensionParameter;
+			}
+			set {
+				hideExtensionParameter = value;
+			}
+		}
+		
 		public MemberCompletionData (IMember member, OutputFlags flags) : base (member.IsObsolete ? "<s>" + ambience.GetString (member, flags | OutputFlags.EmitMarkup) + "</s>" :  ambience.GetString (member, flags | OutputFlags.EmitMarkup), member.StockIcon)
 		{
 			this.member = member;
@@ -62,7 +72,6 @@ namespace MonoDevelop.CSharpBinding
 		
 		static CSharpAmbience ambience = new CSharpAmbience ();
 		bool descriptionCreated = false;
-		
 		void CheckDescription ()
 		{
 			if (descriptionCreated)
@@ -70,8 +79,8 @@ namespace MonoDevelop.CSharpBinding
 			
 			descriptionCreated = true;
 			
-			string doc = ambience.GetString (member, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName | OutputFlags.HideExtensionsParameter);
-			string docMarkup = ambience.GetString (member, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName | OutputFlags.EmitMarkup | OutputFlags.HideExtensionsParameter);
+			string doc = ambience.GetString (member, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName | (HideExtensionParameter ? OutputFlags.HideExtensionsParameter : OutputFlags.None));
+			string docMarkup = ambience.GetString (member, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName | OutputFlags.EmitMarkup | (HideExtensionParameter ? OutputFlags.HideExtensionsParameter : OutputFlags.None));
 			if (member.IsObsolete) {
 				doc += Environment.NewLine + "[Obsolete]";
 				docMarkup += Environment.NewLine + "[Obsolete]";

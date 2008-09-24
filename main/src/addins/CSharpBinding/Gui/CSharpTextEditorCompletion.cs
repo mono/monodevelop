@@ -550,6 +550,16 @@ namespace MonoDevelop.CSharpBinding.Gui
 				}
 			}
 			
+			bool hideExtensionParameter = true;
+			public bool HideExtensionParameter {
+				get {
+					return hideExtensionParameter;
+				}
+				set {
+					hideExtensionParameter = value;
+				}
+			}
+			
 			public CompletionDataCollector (ProjectDom dom, ICompilationUnit unit, DomLocation location)
 			{
 				this.dom  = dom;
@@ -617,8 +627,8 @@ namespace MonoDevelop.CSharpBinding.Gui
 						if (!foundType && (NamePrefix.Length == 0 || !type.Namespace.StartsWith (NamePrefix)) && !type.Namespace.EndsWith ("." + NamePrefix))
 							flags |= OutputFlags.UseFullName;
 					}
-					CodeCompletionData newData = new MemberCompletionData (member, flags);
-					
+					MemberCompletionData newData = new MemberCompletionData (member, flags);
+					newData.HideExtensionParameter = HideExtensionParameter;
 					if (data.ContainsKey (member.Name)) {
 						data [member.Name].AddOverload (newData);
 					} else {
@@ -641,6 +651,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				return null;
 			IEnumerable<object> objects = resolveResult.CreateResolveResult (dom, resolver != null ? resolver.CallingMember : null);
 			CompletionDataCollector col = new CompletionDataCollector (dom, Document.CompilationUnit, location);
+			col.HideExtensionParameter = !resolveResult.StaticResolve;
 			col.NamePrefix = expressionResult.Expression;
 			
 			if (objects != null) {
