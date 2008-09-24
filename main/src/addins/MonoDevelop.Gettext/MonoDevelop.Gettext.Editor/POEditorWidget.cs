@@ -827,7 +827,7 @@ namespace MonoDevelop.Gettext
 						DispatchService.GuiSyncDispatch (delegate {
 							if (number < 60)
 								store.Clear ();
-							MonoDevelop.Ide.Gui.IdeApp.Workbench.StatusBar.SetProgressFraction (number / count);
+							MonoDevelop.Ide.Gui.IdeApp.Workbench.StatusBar.SetProgressFraction (Math.Min (1.0,  Math.Max (0.0, number / (double)count)));
 							foreach (CatalogEntry entry in foundEntries) {
 								if (!updateIsRunning)
 									break;
@@ -906,6 +906,7 @@ namespace MonoDevelop.Gettext
 		protected override void OnDestroyed ()
 		{
 			updateIsRunning = false;
+			StopTaskWorkerThread ();
 			
 			widgets.Remove (this);
 			ClearTasks ();
@@ -954,6 +955,7 @@ namespace MonoDevelop.Gettext
 			{
 				if (widget.catalog == null) {
 					widget.ClearTasks ();
+					Stop ();
 					return;
 				}
 				try {
@@ -1000,11 +1002,19 @@ namespace MonoDevelop.Gettext
 		}
 		
 		UpdateTaskWorkerThread updateTaskThread = null;
+		
+		void StopTaskWorkerThread ()
+		{
+			if (updateTaskThread != null)  {
+				updateTaskThread.Stop ();
+				updateTaskThread.WaitForFinish ();
+				updateTaskThread = null;
+			}
+		}
+		
 		void UpdateTasks ()
 		{
-			if (updateTaskThread != null) 
-				updateTaskThread.Stop ();
-			
+			StopTaskWorkerThread ();
 			updateTaskThread = new UpdateTaskWorkerThread (this);
 			updateTaskThread.Start ();
 		}

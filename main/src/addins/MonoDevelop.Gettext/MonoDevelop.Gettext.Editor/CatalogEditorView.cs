@@ -44,7 +44,6 @@ namespace MonoDevelop.Gettext.Editor
 		
 		public CatalogEditorView (string poFile)
 		{
-			Load (poFile);
 			catalog.DirtyChanged += delegate (object sender, EventArgs args) {
 				IsDirty = catalog.IsDirty;
 				if (sender is CatalogEntry)
