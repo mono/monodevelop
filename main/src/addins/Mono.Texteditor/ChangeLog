@@ -1,3 +1,21 @@
+2008-09-25  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/TextEditorData.cs, Mono.TextEditor.Tests,
+	  Mono.TextEditor.Tests/Mono.TextEditor.Tests.mdp,
+	  Mono.TextEditor.Tests/Mono.TextEditor.Tests,
+	  Mono.TextEditor.Tests/Mono.TextEditor.Tests/DocumentTests.cs,
+	  Mono.TextEditor.Tests/Mono.TextEditor.Tests/LineSplitterTests.cs,
+	  Mono.TextEditor.Tests/Mono.TextEditor.Tests/UndoRedoTests.cs,
+	  Mono.TextEditor.Tests/Mono.TextEditor.Tests/SearchTests.cs,
+	  Mono.TextEditor.Tests/Mono.TextEditor.Tests/SelectionTests.cs,
+	  Mono.TextEditor.Tests/Mono.TextEditor.Tests.DefaultEditActions,
+	  Mono.TextEditor.Tests/Mono.TextEditor.Tests.DefaultEditActions/InsertTabTests.cs,
+	  Mono.TextEditor.Tests/Mono.TextEditor.Tests.DefaultEditActions/SelectionSelectAllTests.cs,
+	  Mono.TextEditor.Tests/Mono.TextEditor.Tests.DefaultEditActions/RemoveTabTests.cs,
+	  Mono.TextEditor.Tests/Mono.TextEditor.Tests.DefaultEditActions/CaretMoveTests.cs,
+	  Mono.TextEditor.Tests/Mono.TextEditor.Tests.DefaultEditActions/InsertNewLineTests.cs:
+	  Moved text editor unit tests.
+
 2008-09-22  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor/TextEditor.cs: Handled tooltip provider exception, to

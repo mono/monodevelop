@@ -55,6 +55,11 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		public TextEditorData () : this (new Document ())
+		{
+			options = new TextEditorOptions ();
+		}
+		
 		public TextEditorData (Document doc)
 		{
 			Document = doc;
