@@ -180,7 +180,7 @@ namespace Mono.TextEditor
 		{
 			DisposeGCs ();
 			gc = new Gdk.GC (textEditor.GdkWindow);
-			
+			caretGc = new Gdk.GC (textEditor.GdkWindow);
 			tabMarker.FontDescription = 
 			spaceMarker.FontDescription = 
 			eolMarker.FontDescription = 
@@ -198,6 +198,10 @@ namespace Mono.TextEditor
 			if (gc != null) {
 				gc.Dispose ();
 				gc = null;
+			}
+			if (caretGc != null) {
+				caretGc.Dispose ();
+				caretGc = null;
 			}
 		}
 		
@@ -272,20 +276,22 @@ namespace Mono.TextEditor
 			caretY    = y;
 		}
 		
-		void DrawCaret (Gdk.Drawable win)
+		public void DrawCaret (Gdk.Drawable win)
 		{
-			if (!textEditor.IsFocus )
+			if (!(this.caretX >= 0 && (!this.textEditor.IsSomethingSelected || this.textEditor.SelectionRange.Length == 0)))
+				return;
+			if (!textEditor.IsFocus)
 				return;
 			if (Settings.Default.CursorBlink && (!Caret.IsVisible || !caretBlink)) 
 				return;
-			gc.RgbFgColor = ColorStyle.Caret;
+			caretGc.RgbFgColor = ColorStyle.Caret;
 			if (Caret.IsInInsertMode) {
-				win.DrawLine (gc, caretX, caretY, caretX, caretY + LineHeight);
+				win.DrawLine (caretGc, caretX, caretY, caretX, caretY + LineHeight);
 			} else {
-				win.DrawRectangle (gc, true, new Gdk.Rectangle (caretX, caretY, this.charWidth, LineHeight));
+				win.DrawRectangle (caretGc, true, new Gdk.Rectangle (caretX, caretY, this.charWidth, LineHeight));
 				layout.SetText (caretChar.ToString ());
-				gc.RgbFgColor = ColorStyle.CaretForeground;
-				win.DrawLayout (gc, caretX, caretY, layout);
+				caretGc.RgbFgColor = ColorStyle.CaretForeground;
+				win.DrawLayout (caretGc, caretX, caretY, layout);
 			}
 		}
 		
@@ -865,7 +871,7 @@ namespace Mono.TextEditor
 			                  (byte)(((byte)color.Blue * 19) / 20));
 		}
 		
-		Gdk.GC gc;
+		Gdk.GC gc, caretGc;
 		void DrawRectangleWithRuler (Gdk.Drawable win, int x, Gdk.Rectangle area, Gdk.Color color)
 		{
 			gc.RgbFgColor = color;
@@ -934,7 +940,7 @@ namespace Mono.TextEditor
 		internal protected override void Draw (Gdk.Drawable win, Gdk.Rectangle area, int lineNr, int x, int y)
 		{
 //			int visibleLine = y / this.LineHeight;
-			this.caretX = -1;
+//			this.caretX = -1;
 			layout.Alignment = Pango.Alignment.Left;
 			LineSegment line = lineNr < Document.LineCount ? Document.GetLine (lineNr) : null;
 			int xStart = System.Math.Max (area.X, XOffset);
@@ -1038,9 +1044,6 @@ namespace Mono.TextEditor
 			
 			if (caretOffset == line.Offset + line.EditableLength)
 				SetVisibleCaretPosition (win, textEditor.Options.ShowEolMarkers ? eolMarkerChar : ' ', xPos, y);
-			
-			if (this.caretX >= 0 && (!this.textEditor.IsSomethingSelected || this.textEditor.SelectionRange.Length == 0))
-				this.DrawCaret (win);
 		}
 		
 		internal protected override void MouseLeft ()
