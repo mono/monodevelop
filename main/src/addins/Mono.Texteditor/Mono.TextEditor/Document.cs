@@ -271,7 +271,7 @@ namespace Mono.TextEditor
 			if (location.Line >= this.splitter.LineCount) 
 				return -1;
 			LineSegment line = GetLine (location.Line);
-			return System.Math.Min (Length, line.Offset + System.Math.Min (line.Length, location.Column));
+			return System.Math.Min (Length, line.Offset + System.Math.Min (line.EditableLength, location.Column));
 		}
 		
 		public DocumentLocation OffsetToLocation (int offset)

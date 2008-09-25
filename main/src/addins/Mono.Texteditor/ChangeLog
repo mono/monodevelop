@@ -1,5 +1,10 @@
 2008-09-25  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/Document.cs: fixed 'Bug 429738 - Middle-click paste
+	  past end of row pastes in next line'.
+
+2008-09-25  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/TextEditorData.cs, Mono.TextEditor.Tests,
 	  Mono.TextEditor.Tests/Mono.TextEditor.Tests.mdp,
 	  Mono.TextEditor.Tests/Mono.TextEditor.Tests,
