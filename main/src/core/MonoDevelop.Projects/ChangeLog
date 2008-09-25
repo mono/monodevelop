@@ -1,3 +1,10 @@
+2008-09-25  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Projects.Text/TextFile.cs: Fix incorrect g_convert
+	  P/Invoke signature. Should fix "Bug 414144 - Cannot compile with MD
+	  and LinearIL in x86_64 (MonoDevelop.Projects.Text.TextFile.Read
+	  throw NRE exception)".
+
 2008-09-24  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/DomCecilMethod.cs,
