@@ -1,3 +1,7 @@
+2008-09-24  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Parser/NRefactoryParser.cs: Fix line/column of errors.
+
 2008-09-24  Mike Krüger <mkrueger@novell.com> 
 
 	* Gui/ResolveVisitor.cs: fixed anonymous type bug.

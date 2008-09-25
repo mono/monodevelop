@@ -182,7 +182,7 @@ namespace MonoDevelop.CSharpBinding
 				ParsedDocument result = new ParsedDocument ();
 				result.CompilationUnit = new MonoDevelop.Projects.Dom.CompilationUnit (fileName);
 				parser.Errors.Error += delegate (int line, int col, string message) {
-					result.Add (new Error (ErrorType.Error, col, line, message));
+					result.Add (new Error (ErrorType.Error, line, col, message));
 				};
 				parser.Lexer.SpecialCommentTags = ProjectDomService.SpecialCommentTags;
 				
