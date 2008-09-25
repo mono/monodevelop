@@ -49,7 +49,7 @@
 					<Panel id = "BaseDirectoryPanel" _label = "Location of Project Files" class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.BaseDirectoryPanel"/>
 				</Condition>
 			</Section>
-			<Condition id="ItemType" value="IConfigurationTarget">
+			<Condition id="ItemType" value="SolutionEntityItem">
 				<Section id = "CustomCommands" _label = "Custom Commands" fill = "true" class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanel"/>
 			</Condition>
 			<Condition id="ItemType" value="Solution">

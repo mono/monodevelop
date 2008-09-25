@@ -36,7 +36,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 	public class CodeCompletionData : ICompletionDataWithMarkup
 	{
 		string image;
-		string text;
+		string[] text;
 		string description;
 		string pango_description;
 		string documentation;
@@ -74,10 +74,10 @@ namespace MonoDevelop.Projects.Gui.Completion
 		public string[] Text
 		{
 			get {
-				return new string[] { text };
+				return text;
 			}
 			set {
-				text = value[0];
+				text = value;
 			}
 		}
 		public string SimpleDescription
@@ -175,7 +175,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		public CodeCompletionData (string s, string image)
 		{
 			description = pango_description = documentation = String.Empty;
-			text = s;
+			text = new string [] { s };
 			completionString = s;
 			this.image = image;
 		}
@@ -188,7 +188,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		{
 			this.description = pango_description = description; 
 			documentation = String.Empty;
-			text = s;
+			text = new string [] { s };
 			this.completionString = completionString;
 			this.image = image; 
 		}

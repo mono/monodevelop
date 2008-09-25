@@ -189,8 +189,10 @@ namespace MonoDevelop.Projects.Gui.Completion
 				}
 				return true;
 			}
-			else
+			else {
+				Hide ();
 				return false;
+			}
 		}
 		
 		bool FillList (bool reshow)

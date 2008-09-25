@@ -56,6 +56,10 @@ namespace MonoDevelop.Projects.Gui.Completion
 		string defaultCompletionString;
 		ArrayList completionData = new ArrayList ();
 		
+		public CodeCompletionDataProvider () 
+		{
+		}
+		
 		public CodeCompletionDataProvider (ProjectDom dom, Ambience_ ambience) 
 		{
 			this.ambience = ambience;
@@ -70,8 +74,10 @@ namespace MonoDevelop.Projects.Gui.Completion
 		
 		public virtual void Dispose ()
 		{
-			ProjectDomService.ParseOperationStarted -= onStartedParsing;
-			ProjectDomService.ParseOperationFinished -= onFinishedParsing;
+			if (onStartedParsing != null) {
+				ProjectDomService.ParseOperationStarted -= onStartedParsing;
+				ProjectDomService.ParseOperationFinished -= onFinishedParsing;
+			}
 		}
 		
 		public void Clear ()
