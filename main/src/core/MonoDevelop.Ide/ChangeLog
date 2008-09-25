@@ -1,3 +1,8 @@
+2008-09-25  Peter Johanson  <peter@peterjohanson.com>
+
+	* MonoDevelop.Ide.Gui/DocumentSwitcher.cs: Make sure the next document
+	  is property focused when initially showing the document switcher.
+
 2008-09-24  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.Tasks/TaskService.cs: fixed 'Bug 427433 - Comment

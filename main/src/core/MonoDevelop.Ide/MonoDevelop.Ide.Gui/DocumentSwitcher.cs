@@ -114,8 +114,8 @@ namespace MonoDevelop.Ide
 			FillLists ();
 			this.labelFileName.Ellipsize = Pango.EllipsizeMode.Start;
 			if (IdeApp.Workbench.ActiveDocument != null) {
-				SelectDocument (startWithNext ? GetNextDocument (IdeApp.Workbench.ActiveDocument) : GetPrevDocument (IdeApp.Workbench.ActiveDocument));
 				SwitchToDocument ();
+				SelectDocument (startWithNext ? GetNextDocument (IdeApp.Workbench.ActiveDocument) : GetPrevDocument (IdeApp.Workbench.ActiveDocument));
 			} else {
 				SwitchToPad ();
 			}
