@@ -169,7 +169,7 @@ namespace MonoDevelop.CSharpBinding
 				result.Append (GetString (property.ReturnType, flags));
 				result.Append (" ");
 			}
-			
+			AppendExplicitInterfaces(result, property);
 			if (UseFullName (flags)) {
 				result.Append (Format (property.FullName));
 			} else {
@@ -240,6 +240,14 @@ namespace MonoDevelop.CSharpBinding
 			return result.ToString ();
 		}
 		
+		void AppendExplicitInterfaces(StringBuilder sb, IMember member)
+		{
+			foreach (IReturnType explicitInterface in member.ExplicitInterfaces) {
+				sb.Append (explicitInterface.ToInvariantString ());
+				sb.Append ('.');
+			}
+		}
+		
 		object IDomVisitor.Visit (IMethod method, object data)
 		{
 			OutputFlags flags = (OutputFlags)data;
@@ -258,6 +266,8 @@ namespace MonoDevelop.CSharpBinding
 				result.Append (GetString (method.ReturnType, flags));
 				result.Append (" ");
 			}
+			AppendExplicitInterfaces(result, method);
+			
 			if (method.IsConstructor) {
 				result.Append (Format (method.DeclaringType.Name));
 			} else {
@@ -447,6 +457,7 @@ namespace MonoDevelop.CSharpBinding
 					result.Append ("</b>");
 			}
 			
+			AppendExplicitInterfaces(result, evt);
 			result.Append (Format (evt.Name));
 			
 			return result.ToString ();
