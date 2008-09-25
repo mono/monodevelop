@@ -1,3 +1,17 @@
+2008-09-25  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor.Tests/DocumentTests.cs,
+	  Mono.TextEditor.Tests/LineSplitterTests.cs,
+	  Mono.TextEditor.Tests/UndoRedoTests.cs,
+	  Mono.TextEditor.Tests/SearchTests.cs,
+	  Mono.TextEditor.Tests/SelectionTests.cs,
+	  Mono.TextEditor.Tests.DefaultEditActions/InsertTabTests.cs,
+	  Mono.TextEditor.Tests.DefaultEditActions/SelectionSelectAllTests.cs,
+	  Mono.TextEditor.Tests.DefaultEditActions/RemoveTabTests.cs,
+	  Mono.TextEditor.Tests.DefaultEditActions/CaretMoveTests.cs,
+	  Mono.TextEditor.Tests.DefaultEditActions/InsertNewLineTests.cs:
+	  Added/updated text editor unit tests.
+
 2008-09-24  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.CSharpBinding/CodeCompletionCSharp3Tests.cs: added some

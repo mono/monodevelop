@@ -35,6 +35,16 @@
     <File name="MonoDevelop.CSharpBinding/CodeCompletionOperatorTests.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.CSharpBinding/ParameterCompletionTests.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.CSharpBinding/CodeCompletionCSharp3Tests.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.TextEditor.Tests/DocumentTests.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.TextEditor.Tests/LineSplitterTests.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.TextEditor.Tests/SearchTests.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.TextEditor.Tests/SelectionTests.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.TextEditor.Tests/UndoRedoTests.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.TextEditor.Tests.DefaultEditActions/CaretMoveTests.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.TextEditor.Tests.DefaultEditActions/InsertNewLineTests.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.TextEditor.Tests.DefaultEditActions/InsertTabTests.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.TextEditor.Tests.DefaultEditActions/RemoveTabTests.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.TextEditor.Tests.DefaultEditActions/SelectionSelectAllTests.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

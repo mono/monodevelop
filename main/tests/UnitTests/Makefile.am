@@ -23,6 +23,16 @@ REFS =  \
 	-r:System.Xml
 
 FILES =  \
+	Mono.TextEditor.Tests.DefaultEditActions/CaretMoveTests.cs \
+	Mono.TextEditor.Tests.DefaultEditActions/InsertNewLineTests.cs \
+	Mono.TextEditor.Tests.DefaultEditActions/InsertTabTests.cs \
+	Mono.TextEditor.Tests.DefaultEditActions/RemoveTabTests.cs \
+	Mono.TextEditor.Tests.DefaultEditActions/SelectionSelectAllTests.cs \
+	Mono.TextEditor.Tests/DocumentTests.cs \
+	Mono.TextEditor.Tests/LineSplitterTests.cs \
+	Mono.TextEditor.Tests/SearchTests.cs \
+	Mono.TextEditor.Tests/SelectionTests.cs \
+	Mono.TextEditor.Tests/UndoRedoTests.cs \
 	MonoDevelop.CSharpBinding/CodeCompletionCSharp3Tests.cs \
 	MonoDevelop.CSharpBinding/CodeCompletionOperatorTests.cs \
 	MonoDevelop.CSharpBinding/CodeCompletionTests.cs \
