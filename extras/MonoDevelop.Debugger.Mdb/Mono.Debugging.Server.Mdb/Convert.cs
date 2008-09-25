@@ -227,7 +227,11 @@ namespace DebuggerServer
 			if (!obj.Type.HasParent)
 				return null;
 
-			return obj.GetParentObject (thread);
+			TargetObject pobj = obj.GetParentObject (thread);
+			if (pobj != null)
+				return ImplicitConversion (thread, pobj, type);
+			else
+				return null;
 		}
 
 		public static bool ImplicitConversionExists (Thread thread,
@@ -311,10 +315,11 @@ namespace DebuggerServer
 					thread, (TargetFundamentalObject) obj,
 					(TargetFundamentalType) type);
 
-			if ((obj is TargetClassObject) && (type is TargetClassType))
+			if ((obj is TargetClassObject) && (type is TargetClassType)) {
 				return ImplicitReferenceConversion (
 					thread, (TargetClassObject) obj,
 					(TargetClassType) type);
+			}
 
 			return null;
 		}

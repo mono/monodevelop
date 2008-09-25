@@ -235,11 +235,14 @@ namespace DebuggerServer
 		
 		public void RemoveBreakEvent (int handle)
 		{
-			//FIXME: handle errors
 			RunWhenStopped (delegate {
-				Event ev = session.GetEvent (handle);
-				session.DeleteEvent (ev);
-				events.Remove (handle);
+				try {
+					Event ev = session.GetEvent (handle);
+					session.DeleteEvent (ev);
+					events.Remove (handle);
+				} catch (Exception ex) {
+					Console.WriteLine (ex);
+				}
 			});
 		}
 		
@@ -678,7 +681,7 @@ namespace DebuggerServer
 									}
 								}
 								if (resume)
-									process.MainThread.Continue ();
+									guiManager.Continue (process.MainThread);
 								else if (notifyToClient)
 									NotifyTargetEvent (thread, args);
 							});

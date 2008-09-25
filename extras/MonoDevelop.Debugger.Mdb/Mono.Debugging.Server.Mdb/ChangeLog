@@ -1,3 +1,10 @@
+2008-09-25  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* DebuggerServer.cs: Use the gui manager to resume internally stopped
+	  threads.
+	* Convert.cs: Fix object conversion.
+	* ObjectUtil.cs: Make GetTypeDisplayData more robust.
+
 2008-09-17  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Debugging.Server.Mdb.mdp: Updated projects.

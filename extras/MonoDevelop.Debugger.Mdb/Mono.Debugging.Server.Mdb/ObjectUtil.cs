@@ -106,21 +106,38 @@ namespace DebuggerServer
 		
 		public static TypeDisplayData GetTypeDisplayData (MD.StackFrame frame, TargetType type)
 		{
+			try {
+				return GetTypeDisplayDataInternal (frame, type);
+			}
+			catch (Exception ex) {
+				TypeDisplayData data = new TypeDisplayData ();
+				typeDisplayData [type.Name] = data;
+				Console.WriteLine (ex);
+				return data;
+			}
+		}
+		
+		static TypeDisplayData GetTypeDisplayDataInternal (MD.StackFrame frame, TargetType type)
+		{
 			MD.Thread thread = frame.Thread;
 			
 			TypeDisplayData data;
 			if (typeDisplayData.TryGetValue (type.Name, out data))
 				return data;
 
-			TargetObject tt = GetTypeOf (frame, type);
-			TargetObject inherit = frame.Language.CreateInstance (thread, true);
-			
 			data = new TypeDisplayData ();
+			
+			TargetObject tt = GetTypeOf (frame, type);
+			if (tt == null) {
+				typeDisplayData [type.Name] = data;
+				throw new Exception ("Could not get type of " + type.Name);
+			}
+			TargetObject inherit = frame.Language.CreateInstance (thread, true);
 			
 			data.IsProxyType = proxyTypes.ContainsKey (type);
 			
 			// Look for DebuggerTypeProxyAttribute
-			TargetObject attType = GetTypeOf (frame, "System.Diagnostics.DebuggerTypeProxyAttribute");
+			TargetStructObject attType = GetTypeOf (frame, "System.Diagnostics.DebuggerTypeProxyAttribute");
 			if (attType == null)
 				return null;
 			TargetObject at = CallStaticMethod (thread, "GetCustomAttribute", "System.Attribute", tt, attType, inherit);
@@ -226,7 +243,6 @@ namespace DebuggerServer
 				return s != null ? s.ToString () : "";
 			} catch (Exception ex) {
 				// Ignore
-				Console.WriteLine ("pp: "  + ex);
 			}
 			
 			return null;
