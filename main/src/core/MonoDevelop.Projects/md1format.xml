@@ -73,6 +73,7 @@
 		<ItemProperty member="buildaction" name="buildaction"/>
 		<ItemProperty member="dependsOn" name="dependson" defaultValue=""/>
 		<ItemProperty member="resourceId" name="resource_id" defaultValue=""/>
+		<ItemProperty member="contentType" name="contentType" defaultValue=""/>
 	</DataItem>
 	<DataItem class = "MonoDevelop.Projects.ProjectReference" customDataItem="MonoDevelop.Projects.Formats.MD1.MD1CustomDataItem">
 		<ItemProperty member="referenceType" name="type" />

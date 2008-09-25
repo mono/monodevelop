@@ -184,6 +184,8 @@ namespace MonoDevelop.Projects.Dom.Serialization
 					using (DatabaseGenerator helper = GetGenerator (true))
 					{
 						helper.GenerateDatabase (baseDir, assemblyName);
+						if (Disposed)
+							return;
 						Read ();
 					}
 				} else {

@@ -57,6 +57,9 @@ namespace MonoDevelop.Projects
 		[ItemProperty("subtype")]	
 		Subtype subtype;
 		
+		[ItemProperty("SubType")]	
+		string contentType = String.Empty;
+		
 		[ItemProperty("buildaction")]
 		BuildAction buildaction;
 		
@@ -150,10 +153,20 @@ namespace MonoDevelop.Projects
 			}
 			set {
 				subtype = value;
-				if (project != null)
-					project.NotifyFilePropertyChangedInProject (this);
+				OnChanged ();
 			}
 		}
+
+		public string ContentType {
+			get {
+				return contentType;
+			}
+			set {
+				contentType = value;
+				OnChanged ();
+			}
+		}
+			
 		
 		public BuildAction BuildAction {
 			get {
@@ -161,8 +174,7 @@ namespace MonoDevelop.Projects
 			}
 			set {
 				buildaction = value;
-				if (project != null)
-					project.NotifyFilePropertyChangedInProject (this);
+				OnChanged ();
 			}
 		}
 		
@@ -181,8 +193,7 @@ namespace MonoDevelop.Projects
 				if (value != null && project != null)
 					project.Files.ResolveDependencies (this);
 				
-				if (project != null)
-					project.NotifyFilePropertyChangedInProject (this);
+				OnChanged ();
 			}
 		}
 		
@@ -236,8 +247,7 @@ namespace MonoDevelop.Projects
 			}
 			set {
 				data = value;
-				if (project != null)
-					project.NotifyFilePropertyChangedInProject (this);
+				OnChanged ();
 			}
 		}
 
@@ -250,8 +260,7 @@ namespace MonoDevelop.Projects
 			}
 			set {
 				resourceId = value;
-				if (project != null)
-					project.NotifyFilePropertyChangedInProject (this);
+				OnChanged ();
 			}
 		}
 
@@ -277,6 +286,12 @@ namespace MonoDevelop.Projects
 										
 		public virtual void Dispose ()
 		{
+		}
+
+		protected virtual void OnChanged ()
+		{
+			if (project != null)
+				project.NotifyFilePropertyChangedInProject (this);
 		}
 	}
 }

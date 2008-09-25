@@ -533,7 +533,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					}
 					MSBuildItem buildItem = fgrp.AddNewItem (itemName, MSBuildProjectService.ToMSBuildPath (project.BaseDirectory, file.FilePath));
 					WriteBuildItemMetadata (ser, buildItem, file);
-					
+
+					if (!string.IsNullOrEmpty (file.ContentType))
+						buildItem.SetMetadata ("SubType", file.ContentType);
 					if (!string.IsNullOrEmpty (file.DependsOn))
 						buildItem.SetMetadata ("DependentUpon", MSBuildProjectService.ToMSBuildPath (Path.GetDirectoryName (file.FilePath), file.DependsOn));
 					
@@ -671,6 +673,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			string resourceId = buildItem.GetMetadata ("LogicalName");
 			if (!string.IsNullOrEmpty (resourceId))
 				file.ResourceId = resourceId;
+			
+			string contentType = buildItem.GetMetadata ("SubType");
+			if (!string.IsNullOrEmpty (contentType))
+				file.ContentType = contentType;
+			
 			project.Files.Add (file);
 		}
 

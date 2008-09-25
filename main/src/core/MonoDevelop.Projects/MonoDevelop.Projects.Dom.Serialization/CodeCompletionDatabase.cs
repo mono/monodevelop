@@ -30,7 +30,6 @@
 
 using System;
 using System.Text;
-using System.Threading;
 using System.IO;
 using System.Collections;
 using System.Collections.Specialized;
@@ -232,18 +231,12 @@ namespace MonoDevelop.Projects.Dom.Serialization
 
 		FileStream OpenForWrite ()
 		{
-			FileStream stream;
-			
 			try {
-				stream = new FileStream (dataFile, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Write);
+				return new FileStream (dataFile, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Write);
 			}
 			catch (IOException) {
-				stream = null;
 			}
 
-			if (stream != null)
-				return stream;
-			
 			// The file is locked, so it can be opened. The solution is to make
 			// a copy of the file and opend the copy. The copy will later be discarded,
 			// and this is not a problem because if the main file is locked it means
@@ -274,11 +267,11 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		public static Hashtable ReadHeaders (string baseDir, string name)
 		{
 			string file = Path.Combine (baseDir, name + ".pidb");
-			FileStream ifile = new FileStream (file, FileMode.Open, FileAccess.Read, FileShare.Read);
-			BinaryFormatter bf = new BinaryFormatter ();
-			Hashtable headers = (Hashtable) bf.Deserialize (ifile);
-			ifile.Close ();
-			return headers;
+			using (FileStream ifile = new FileStream (file, FileMode.Open, FileAccess.Read, FileShare.Read)) {
+				BinaryFormatter bf = new BinaryFormatter ();
+				Hashtable headers = (Hashtable) bf.Deserialize (ifile);
+				return headers;
+			}
 		}
 		
 		public virtual void Write ()

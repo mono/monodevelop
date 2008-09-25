@@ -1,3 +1,15 @@
+2008-09-26  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects/ProjectFile.cs,
+	  MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs,
+	  md1format.xml: Read and store the SubType field. Fixes bugs #429241
+	  and #429245.
+	* MonoDevelop.Projects.Dom.Serialization/AssemblyCodeCompletionDatabase.cs:
+	  Don't try to read the completion db if it has already been
+	  disposed.
+	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
+	  Cosmetic fixes.
+
 2008-09-25  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Projects.Text/TextFile.cs: Fix incorrect g_convert
