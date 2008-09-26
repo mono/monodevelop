@@ -385,7 +385,7 @@ namespace DebuggerServer
 				guiManager.Continue (activeThread);
 			});
 		}
-		
+
 		public ThreadInfo[] GetThreads (int processId)
 		{
 			MD.Process p = GetProcess (processId);
@@ -409,11 +409,13 @@ namespace DebuggerServer
 		
 		ThreadInfo CreateThreadInfo (MD.Thread t)
 		{
-			string loc = null;
+			string loc;
 			if (t.CurrentFrame != null && t.CurrentFrame.SourceLocation != null) {
-				loc = t.CurrentFrame.SourceLocation.FileName + ":" + t.CurrentFrame.SourceLocation.Line;
-			}
-			return new ThreadInfo (t.Process.ID, t.ID, t.Name, loc, null);
+				loc = t.CurrentFrame.ToString ();
+			} else
+				loc = "<Unknown>";
+			
+			return new ThreadInfo (t.Process.ID, t.ID, t.Name, loc);
 		}
 		
 		public DL.Backtrace GetThreadBacktrace (int processId, int threadId)

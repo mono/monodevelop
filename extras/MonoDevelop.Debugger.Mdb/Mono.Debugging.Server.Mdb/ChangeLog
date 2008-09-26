@@ -1,3 +1,7 @@
+2008-09-26  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* DebuggerServer.cs: Improve thread location string.
+
 2008-09-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* DebuggerServer.cs: Use the gui manager to resume internally stopped
