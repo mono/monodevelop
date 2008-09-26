@@ -39,6 +39,7 @@ using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui.Search;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
+using Document = Mono.TextEditor.Document;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -47,6 +48,12 @@ namespace MonoDevelop.SourceEditor
 	{
 		SourceEditorView view;
 		ScrolledWindow mainsw;
+
+		// We need a reference to TextEditorData to be able to access the
+		// editor document without getting the TextEditor property. This
+		// property runs some gtk code, so it can only be used from the GUI thread.
+		// Other threads can use textEditorData to get the document.
+		TextEditorData textEditorData;
 		
 		const uint CHILD_PADDING = 3;
 		
@@ -165,7 +172,8 @@ namespace MonoDevelop.SourceEditor
 			this.textEditor.SelectionChanged += delegate {
 				this.UpdateLineCol ();
 			};
-			
+
+			textEditorData = textEditor.GetTextEditorData ();
 			ResetFocusChain ();
 			
 			UpdateLineCol ();
@@ -212,10 +220,11 @@ namespace MonoDevelop.SourceEditor
 		
 		FoldSegment AddMarker (List<FoldSegment> foldSegments, string text, DomRegion region, FoldingType type)
 		{
-			if (region == null || this.TextEditor == null || this.TextEditor.Document == null || region.Start.Line <= 0 || region.End.Line <= 0 || region.Start.Line >= this.TextEditor.Document.LineCount || region.End.Line >= this.TextEditor.Document.LineCount)
+			Document document = textEditorData.Document;
+			if (region == null || document == null || region.Start.Line <= 0 || region.End.Line <= 0 || region.Start.Line >= document.LineCount || region.End.Line >= document.LineCount)
 				return null;
-			int startOffset = this.TextEditor.Document.LocationToOffset (region.Start.Line - 1,  region.Start.Column - 1);
-			int endOffset   = this.TextEditor.Document.LocationToOffset (region.End.Line - 1,  region.End.Column - 1);
+			int startOffset = document.LocationToOffset (region.Start.Line - 1,  region.Start.Column - 1);
+			int endOffset   = document.LocationToOffset (region.End.Line - 1,  region.End.Column - 1);
 			FoldSegment result = new FoldSegment (text, startOffset, endOffset - startOffset, type);
 			
 			foldSegments.Add (result);
@@ -239,7 +248,6 @@ namespace MonoDevelop.SourceEditor
 			public ParseInformationUpdaterWorkerThread (SourceEditorWidget widget)
 			{
 				this.widget = widget;
-				//this.args = args;
 			}
 			
 			bool IsInsideMember (FoldSegment marker, DomRegion region, IType cl)
@@ -325,7 +333,7 @@ namespace MonoDevelop.SourceEditor
 								}
 							}
 						}
-						widget.TextEditor.Document.UpdateFoldSegments (foldSegments);
+						widget.textEditorData.Document.UpdateFoldSegments (foldSegments);
 						widget.isInitialParseUpdate  = false;
 					}
 					

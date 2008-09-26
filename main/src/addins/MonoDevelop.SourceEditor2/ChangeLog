@@ -1,3 +1,11 @@
+2008-09-26  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui/objects.xml: Updated.
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Fix threading problem
+	  in ParseInformationUpdaterWorkerThread. This thread was getting the
+	  TextEditor property which runs gtk code, and this is only allowed
+	  in the GUI thread.
+
 2008-09-25  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.SourceEditor/ClassQuickFinder.cs,
