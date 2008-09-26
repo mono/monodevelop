@@ -165,9 +165,10 @@ namespace MonoDevelop.CSharpBinding
 					case "#endregion":
 						if (regions.Count > 0) {
 							ICSharpCode.NRefactory.PreprocessingDirective start = regions.Pop ();
-							result.Add (new FoldingRegion (start.Arg,
-							                                       new DomRegion (start.StartPosition.Line, start.StartPosition.Column, directive.EndPosition.Line, directive.EndPosition.Column),
-							                                       true));
+							DomRegion dr = new DomRegion (start.StartPosition.Line, 
+								start.StartPosition.Column, directive.EndPosition.Line,
+								directive.EndPosition.Column);
+							result.Add (new UserRegion (start.Arg, dr, true));
 						}
 						break;
 				}

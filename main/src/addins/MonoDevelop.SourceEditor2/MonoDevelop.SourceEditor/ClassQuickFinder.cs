@@ -265,8 +265,8 @@ namespace MonoDevelop.SourceEditor
 		void UpdateRegionCombo (int line, int column)
 		{
 			int regionNumber = 0;
-			if (parsedDocument != null && parsedDocument.FoldingRegions != null) {
-				foreach (FoldingRegion region in parsedDocument.FoldingRegions) {
+			if (parsedDocument != null && parsedDocument.UserRegions != null) {
+				foreach (FoldingRegion region in parsedDocument.UserRegions) {
 					if (region.Region.Start.Line <= line && line <= region.Region.End.Line) {
 						regionCombo.Active = regionNumber;
 						tips.SetTip (regionCombo, GettextCatalog.GetString ("Region {0}", region.Name), null);
@@ -283,9 +283,9 @@ namespace MonoDevelop.SourceEditor
 		{
 			regionCombo.Model = null;
 			regionStore.Clear ();
-			if (parsedDocument == null || parsedDocument.FoldingRegions == null) 
+			if (parsedDocument == null || parsedDocument.UserRegions == null) 
 				return;
-			foreach (FoldingRegion region in parsedDocument.FoldingRegions) {
+			foreach (FoldingRegion region in parsedDocument.UserRegions) {
 				regionStore.AppendValues (
 					MonoDevelop.Core.Gui.Services.Resources.GetIcon (Gtk.Stock.Add, IconSize.Menu), 
 					region.Name, 

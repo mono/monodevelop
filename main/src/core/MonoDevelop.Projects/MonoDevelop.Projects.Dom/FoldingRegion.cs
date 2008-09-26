@@ -28,37 +28,13 @@ using System;
 
 namespace MonoDevelop.Projects.Dom
 {
-	public class FoldingRegion
+	public abstract class FoldingRegion
 	{
-		string name;
-		public string Name {
-			get {
-				return name;
-			}
-			set {
-				name = value;
-			}
-		}
+		public string Name { get; set; }
 		
-		bool defaultIsFolded;
-		public bool DefaultIsFolded {
-			get {
-				return defaultIsFolded;
-			}
-			set {
-				defaultIsFolded = value;
-			}
-		}
+		public bool DefaultIsFolded { get; set; }
 		
-		DomRegion region;
-		public DomRegion Region {
-			get {
-				return region;
-			}
-			set {
-				region = value;
-			}
-		}
+		public DomRegion Region { get; set; }
 		
 		public FoldingRegion (string name, DomRegion region) : this (name, region, false)
 		{
@@ -66,9 +42,23 @@ namespace MonoDevelop.Projects.Dom
 		
 		public FoldingRegion (string name, DomRegion region, bool defaultIsFolded)
 		{
-			this.name = name;
-			this.region = region;
-			this.defaultIsFolded = defaultIsFolded;
+			this.Name = name;
+			this.Region = region;
+			this.DefaultIsFolded = defaultIsFolded;
 		}
+	}
+	
+	public class Fold : FoldingRegion
+	{
+		static string defaultName = "...";
+		public Fold (DomRegion region) : base (defaultName, region) {}
+		public Fold (string name, DomRegion region) : base (name, region) {}
+		public Fold (string name, DomRegion region, bool defaultIsFolded) : base (name, region, defaultIsFolded) {}
+	}
+	
+	public class UserRegion : FoldingRegion
+	{
+		public UserRegion (string name, DomRegion region) : base (name, region) {}
+		public UserRegion (string name, DomRegion region, bool defaultIsFolded) : base (name, region, defaultIsFolded) {}
 	}
 }

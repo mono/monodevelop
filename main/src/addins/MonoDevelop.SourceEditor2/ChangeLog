@@ -1,3 +1,8 @@
+2008-09-25  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.SourceEditor/ClassQuickFinder.cs,
+	  MonoDevelop.SourceEditor/SourceEditorWidget.cs: Track API.
+
 2008-09-23  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: improved comment

@@ -89,7 +89,7 @@ namespace MonoDevelop.AspNet.Parser
 			else
 				region = new DomRegion (startLocation.BeginLine, startLocation.BeginColumn + 1, endLocation.EndLine, endLocation.EndColumn + 1);
 			
-			FoldingRegion f = new FoldingRegion (name, region, false);
+			Fold f = new Fold (name, region, false);
 			doc.Add (f);
 		}
 		

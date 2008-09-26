@@ -33,10 +33,9 @@ namespace MonoDevelop.Projects.Dom
 	{
 		DateTime parseTime = DateTime.Now;
 		
-		ICompilationUnit compilationUnit = null;
-		
 		List<Comment> comments = new List<Comment> ();
-		List<FoldingRegion> foldingRegions = new List<FoldingRegion> ();
+		List<FoldingRegion> folds = new List<FoldingRegion> ();
+		List<FoldingRegion> regions = new List<FoldingRegion> ();
 		List<Tag> tagComments = new List<Tag> ();
 		List<PreProcessorDefine> defines = new List<PreProcessorDefine> ();
 		List<ConditionalRegion> conditionalRegions = new List<ConditionalRegion> ();
@@ -62,9 +61,16 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public IList<FoldingRegion> FoldingRegions {
+		public IList<FoldingRegion> UserRegions {
 			get {
-				return foldingRegions;
+				return regions;
+			}
+		}
+		
+		
+		public IList<FoldingRegion> Folds {
+			get {
+				return folds;
 			}
 		}
 		
@@ -74,7 +80,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public IList<ConditionalRegion> ConditionalRegion {
+		public IList<ConditionalRegion> ConditionalRegions {
 			get {
 				return conditionalRegions;
 			}
@@ -92,77 +98,30 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public ICompilationUnit CompilationUnit {
-			get {
-				return compilationUnit;
-			}
-			set {
-				compilationUnit = value;
-			}
+		public ICompilationUnit CompilationUnit { get; set; }
+		
+		protected void AddUserRegionsToFolds ()
+		{
+			folds.AddRange (regions);
 		}
 		
-		protected void GenerateFoldsFromUsings ()
-		{
-			if (CompilationUnit.Usings == null || CompilationUnit.Usings.Count == 0)
-				return;
-			IUsing first = CompilationUnit.Usings[0];
-			IUsing last = first;
-			for (int i = 1; i < CompilationUnit.Usings.Count; i++) {
-				if (CompilationUnit.Usings[i].IsFromNamespace)
-					break;
-				last = CompilationUnit.Usings[i];
-			}
-			
-			if (first.Region.IsEmpty || last.Region.IsEmpty || first.Region.Start.Line == last.Region.End.Line)
-				return;
-			foldingRegions.Add (new FoldingRegion ("...", new DomRegion (first.Region.Start, last.Region.End)));
-		}
-		
-		protected void GenerateFoldsFromType (IType type)
-		{
-			if (!type.BodyRegion.IsEmpty && type.BodyRegion.End.Line > type.BodyRegion.Start.Line) {
-				foldingRegions.Add (new FoldingRegion ("...", type.BodyRegion));
-			}
-			foreach (IType inner in type.InnerTypes) 
-				GenerateFoldsFromType (inner);
-			
-			if (type.ClassType == ClassType.Interface)
-				return;
-
-			foreach (IMethod method in type.Methods) {
-				if (method.BodyRegion.End.Line <= 0)
-					continue;
-				foldingRegions.Add (new FoldingRegion ("...", method.BodyRegion));
-			}
-			
-			foreach (IProperty property in type.Properties) {
-				if (property.BodyRegion.End.Line <= 0)
-					continue;
-				foldingRegions.Add (new FoldingRegion ("...", property.BodyRegion));
-			}
-		}
-
-		public void GeneratePreProcessorFoldings ()
-		{
-			foreach (ConditionalRegion region in conditionalRegions) {
-				foldingRegions.Add (new FoldingRegion ("#if " + region.Flag, region.Region));
-				foreach (ConditionBlock block in region.ConditionBlocks) {
-					foldingRegions.Add (new FoldingRegion ("#elif " + block.Flag, block.Region));
-				}
-				if (!region.ElseBlock.IsEmpty)
-					foldingRegions.Add (new FoldingRegion ("#else", region.ElseBlock));
-			}
-		}
 		public virtual void GenerateFoldInformation ()
 		{
+			AddUserRegionsToFolds ();
+			Add (ConditionalRegions.ToFolds ());
+			
 			if (CompilationUnit == null)
 				return;
-			GenerateFoldsFromUsings ();
-			GeneratePreProcessorFoldings ();
-			foreach (IType type in CompilationUnit.Types) {
-				GenerateFoldsFromType (type);
-			}
+			
+			Fold f = CompilationUnit.Usings.ToFold ();
+			if (f != null)
+				Add (f);
+			
+			if (CompilationUnit.Types != null)
+				Add (CompilationUnit.Types.ToFolds ());
 		}
+		
+		#region Add methods
 		
 		public void Add (Error error)
 		{
@@ -185,14 +144,132 @@ namespace MonoDevelop.Projects.Dom
 			defines.Add (define);
 		}
 		
-		public void Add (FoldingRegion foldingRegion)
+		public void Add (Fold fold)
 		{
-			foldingRegions.Add (foldingRegion);
+			folds.Add (fold);
 		}
+		
+		public void Add (UserRegion region)
+		{
+			regions.Add (region);
+		}
+		
 		public void Add (ConditionalRegion conditionalRegion)
 		{
 			conditionalRegions.Add (conditionalRegion);
 		}
 		
+		#endregion
+		
+		#region IEnumerable Add methods
+		
+		public void Add (IEnumerable<Error> errors)
+		{
+			foreach (Error error in errors) {
+				hasErrors |= error.ErrorType == ErrorType.Error;
+				this.errors.Add (error);
+			}
+		}
+		
+		public void Add (IEnumerable<Comment> comments)
+		{
+			this.comments.AddRange (comments);
+		}
+		
+		public void Add (IEnumerable<Tag> tagComments)
+		{
+			this.tagComments.AddRange (tagComments);
+		}
+		
+		public void Add (IEnumerable<PreProcessorDefine> defines)
+		{
+			this.defines.AddRange (defines);
+		}
+		
+		public void Add (IEnumerable<Fold> folds)
+		{
+			foreach (FoldingRegion fold in folds)
+				this.folds.Add (fold);
+		}
+		
+		public void Add (IEnumerable<UserRegion> regions)
+		{
+			foreach (UserRegion region in regions)
+				this.regions.Add (region);
+		}
+		
+		public void Add (IEnumerable<ConditionalRegion> conditionalRegions)
+		{
+			this.conditionalRegions.AddRange (conditionalRegions);
+		}
+		
+		#endregion
+		
+	}
+	public static class FoldingUtilities
+	{
+		public static IEnumerable<Fold> ToFolds (this IEnumerable<ConditionalRegion> conditionalRegions)
+		{
+			foreach (ConditionalRegion region in conditionalRegions) {
+				yield return  new Fold ("#if " + region.Flag, region.Region);
+				foreach (ConditionBlock block in region.ConditionBlocks) {
+					yield return new Fold ("#elif " + block.Flag, block.Region);
+				}
+				if (!region.ElseBlock.IsEmpty)
+					yield return new Fold ("#else", region.ElseBlock);
+			}
+		}
+		
+		public static IEnumerable<Fold> ToFolds (this IEnumerable<IType> types)
+		{
+			foreach (IType type in types)
+				foreach (Fold f in type.ToFolds ())
+					yield return f;
+		}
+		
+		public static IEnumerable<Fold> ToFolds (this IType type)
+		{
+			if (!type.BodyRegion.IsEmpty && type.BodyRegion.End.Line > type.BodyRegion.Start.Line) {
+				yield return new Fold (type.BodyRegion);
+			}
+			foreach (IType inner in type.InnerTypes)
+				foreach (Fold f in inner.ToFolds ())
+					yield return f;
+			
+			if (type.ClassType == ClassType.Interface)
+				yield break;
+
+			foreach (IMethod method in type.Methods) {
+				if (method.BodyRegion.End.Line <= 0)
+					continue;
+				yield return new Fold (method.BodyRegion);
+			}
+			
+			foreach (IProperty property in type.Properties) {
+				if (property.BodyRegion.End.Line <= 0)
+					continue;
+				yield return new Fold (property.BodyRegion);
+			}
+		}
+		
+		public static Fold ToFold (this IEnumerable<IUsing> usings)
+		{
+			if (usings == null)
+				return null;
+			var en = usings.GetEnumerator ();
+			if (!en.MoveNext ())
+				return null;
+			IUsing first = en.Current;
+			IUsing last = first;
+			while (en.MoveNext ()) {
+				if (en.Current.IsFromNamespace)
+					break;
+				last = en.Current;
+			}
+			
+			if (first.Region.IsEmpty || last.Region.IsEmpty || first.Region.Start.Line == last.Region.End.Line)
+				return null;
+			return new Fold (new DomRegion (first.Region.Start, last.Region.End));
+		}
 	}
 }

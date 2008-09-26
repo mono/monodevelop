@@ -271,7 +271,7 @@ namespace MonoDevelop.SourceEditor
 						List<FoldSegment> foldSegments = new List<FoldSegment> ();
 						
 						if (widget.parsedDocument != null ) {
-							foreach (FoldingRegion region in widget.parsedDocument.FoldingRegions) {
+							foreach (FoldingRegion region in widget.parsedDocument.Folds) {
 								FoldSegment marker = widget.AddMarker (foldSegments, region.Name, region.Region, FoldingType.Region);
 								if (marker != null) 
 									marker.IsFolded = widget.isInitialParseUpdate && SourceEditorOptions.Options.DefaultRegionsFolding && region.DefaultIsFolded;
