@@ -1,3 +1,11 @@
+2008-09-25  Michael Hutchinson <mhutchinson@novell.com> 
+
+	(Backport r114103 from trunk.)
+	* MonoDevelop.Projects.Text/TextFile.cs: Fix incorrect g_convert
+	  P/Invoke signature. Should fix "Bug 414144 - Cannot compile with MD
+	  and LinearIL in x86_64 (MonoDevelop.Projects.Text.TextFile.Read
+	  throw NRE exception)".
+
 2008-06-06  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects/BuildTool.cs: The file to build can now be

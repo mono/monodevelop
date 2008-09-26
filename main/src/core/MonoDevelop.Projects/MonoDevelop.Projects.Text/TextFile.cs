@@ -88,7 +88,7 @@ namespace MonoDevelop.Projects.Text
 			}
 			
 			if (encoding != null) {
-				string s = Convert (content, encoding);
+				string s = Convert (content, "UTF-8", encoding);
 				if (s == null)
 					throw new Exception ("Invalid text file format");
 				text = new StringBuilder (s);
@@ -96,7 +96,7 @@ namespace MonoDevelop.Projects.Text
 			}
 			else {
 				foreach (TextEncoding co in TextEncoding.ConversionEncodings) {
-					string s = Convert (content, co.Id);
+					string s = Convert (content, "UTF-8", co.Id);
 					if (s != null) {
 						sourceEncoding = co.Id;
 						text = new StringBuilder (s);
@@ -114,23 +114,54 @@ namespace MonoDevelop.Projects.Text
 			return file.SourceEncoding;
 		}
 		
-		static string Convert (byte[] content, string encoding)
+		#region g_convert
+		
+		static string Convert (byte[] content, string fromEncoding, string toEncoding)
 		{
-			int nr=0, nw=0;
-			IntPtr cc = g_convert (content, content.Length, "UTF-8", encoding, ref nr, ref nw, IntPtr.Zero);
+			if (content.LongLength > int.MaxValue)
+				throw new Exception ("Cannot handle long arrays");
+			
+			IntPtr nr = IntPtr.Zero, nw = IntPtr.Zero;
+			IntPtr clPtr = new IntPtr (content.Length);
+			IntPtr cc = g_convert (content, clPtr, fromEncoding, toEncoding, ref nr, ref nw, IntPtr.Zero);
 			if (cc != IntPtr.Zero) {
-				string s = System.Runtime.InteropServices.Marshal.PtrToStringAuto (cc, nw);
+				//FIXME: check for out-of-range conversions on uints
+				int len = (int)(uint)nw.ToInt64 ();
+				string s = System.Runtime.InteropServices.Marshal.PtrToStringAuto (cc, len);
 				g_free (cc);
 				return s;
 			} else
 				return null;
 		}
 		
+		static byte[] ConvertToBytes (byte[] content, string fromEncoding, string toEncoding)
+		{
+			if (content.LongLength > int.MaxValue)
+				throw new Exception ("Cannot handle long arrays");
+			
+			IntPtr nr = IntPtr.Zero, nw = IntPtr.Zero;
+			IntPtr clPtr = new IntPtr (content.Length);
+			IntPtr cc = g_convert (content, clPtr, fromEncoding, toEncoding, ref nr, ref nw, IntPtr.Zero);
+			if (cc != IntPtr.Zero) {
+				//FIXME: check for out-of-range conversions on uints
+				int len = (int)(uint)nw.ToInt64 ();
+				byte[] buf = new byte [len];
+				System.Runtime.InteropServices.Marshal.Copy (cc, buf, 0, buf.Length);
+				g_free (cc);
+				return buf;
+			} else
+				return null;
+		}
+		
 		[DllImport("libglib-2.0-0.dll")]
-		static extern IntPtr g_convert(byte[] text, int textLength, string toCodeset, string fromCodeset, ref int read, ref int written, IntPtr err);
-
+		//note: textLength is signed, read/written are not
+		static extern IntPtr g_convert(byte[] text, IntPtr textLength, string toCodeset, string fromCodeset, 
+		                               ref IntPtr read, ref IntPtr written, IntPtr err);
+		
 		[DllImport("libglib-2.0-0.dll")]
 		static extern void g_free (IntPtr ptr);
+		
+		#endregion
 		
 		public string Name {
 			get { return name; } 
@@ -231,18 +262,9 @@ namespace MonoDevelop.Projects.Text
 			byte[] buf = Encoding.UTF8.GetBytes (content);
 			
 			if (encoding != null && encoding != "UTF-8") {
-				int nr = 0, nw = 0;
-				IntPtr converted = g_convert (buf, buf.Length, encoding, "UTF-8", 
-				                              ref nr, ref nw, IntPtr.Zero);
-				
-				buf = null;
-				
-				if (converted == IntPtr.Zero)
+				buf = ConvertToBytes (buf, encoding, "UTF-8");
+				if (buf == null)
 					throw new Exception ("Invalid encoding: " + encoding);
-				
-				buf = new byte [nw];
-				System.Runtime.InteropServices.Marshal.Copy (converted, buf, 0, nw);
-				g_free (converted);
 			}
 			
 			string tempName = Path.GetDirectoryName (fileName) + 
