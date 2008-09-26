@@ -49,18 +49,33 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public static IReturnType GetReturnType (TypeReference typeReference)
+		public static DomReturnType GetReturnType (TypeReference typeReference)
 		{
 			if (typeReference == null)
-				return DomReturnType.Void;
+				return new DomReturnType (DomReturnType.Void.ToInvariantString ());
+			if (typeReference is Mono.Cecil.ReferenceType) 
+				return GetReturnType (((Mono.Cecil.ReferenceType)typeReference).ElementType);
+			if (typeReference is Mono.Cecil.ArrayType) {
+				Mono.Cecil.ArrayType arrType = (Mono.Cecil.ArrayType)typeReference;
+				DomReturnType result = GetReturnType (arrType.ElementType);
+				result.ArrayDimensions++;
+				result.SetDimension (result.ArrayDimensions - 1, arrType.Rank);
+				return result;
+			}
+			if (typeReference is Mono.Cecil.PointerType) {
+				Mono.Cecil.PointerType ptrType = (Mono.Cecil.PointerType)typeReference;
+				DomReturnType result = GetReturnType (ptrType.ElementType);
+				result.PointerNestingLevel++;
+				return result;
+			}
+			
 			if (typeReference.GenericParameters.Count > 0) {
 				DomReturnType newType = new DomReturnType (typeReference.FullName);
 				foreach (GenericParameter gp in typeReference.GenericParameters)
 					newType.AddTypeParameter (GetReturnType (gp));
 				return newType;
 			}
-			else
-				return DomReturnType.GetSharedReturnType (DomCecilType.RemoveGenericParamSuffix (typeReference.FullName)); 
+			return new DomReturnType (DomCecilType.RemoveGenericParamSuffix (typeReference.FullName)); 
 		}
 		
 		public static IReturnType GetReturnType (MethodReference methodReference)
@@ -97,9 +112,7 @@ namespace MonoDevelop.Projects.Dom
 
 			if (this.IsStatic) {
 				foreach (IAttribute attr in this.Attributes) {
-					System.Console.WriteLine(attr.Name);
 					if (attr.Name == "System.Runtime.CompilerServices.ExtensionAttribute") {
-						System.Console.WriteLine("FOUND EXTENSION METHOD !!!!");
 						methodModifier |= MethodModifier.IsExtension;
 						break;
 					}

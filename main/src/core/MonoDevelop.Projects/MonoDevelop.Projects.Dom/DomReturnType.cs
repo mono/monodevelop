@@ -211,10 +211,15 @@ namespace MonoDevelop.Projects.Dom
 				return dimensions != null ? dimensions.Length : 0;
 			}
 			set {
-				SetDimensions (new int [value]);
+				List<int> curDimensions = new List<int> (dimensions ?? zeroDimensions);
+				if (curDimensions.Count > value) 
+					curDimensions.RemoveRange (value, value - curDimensions.Count);
+				while (curDimensions.Count < value)
+					curDimensions.Add (0);
+				SetDimensions (curDimensions.ToArray ());
 			}
 		}
-		
+
 		public bool IsNullable {
 			get {
 				return (Modifiers & ReturnTypeModifiers.Nullable) == ReturnTypeModifiers.Nullable;
@@ -327,7 +332,7 @@ namespace MonoDevelop.Projects.Dom
 			else
 				dimensions = arrayDimensions;
 		}
-
+		
 		public int[] GetDimensions ()
 		{
 			return dimensions ?? zeroDimensions;

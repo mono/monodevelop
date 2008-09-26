@@ -52,6 +52,21 @@ namespace MonoDevelop.Projects.Dom
 			base.name                = parameterDefinition.Name;
 //			base.modifiers           = DomCecilType.GetModifiers (parameterDefinition..Attributes);
 			base.returnType          = DomCecilMethod.GetReturnType (parameterDefinition.ParameterType);
+			
+			if (parameterDefinition.ParameterType is Mono.Cecil.ReferenceType) {
+				this.ParameterModifiers = (parameterDefinition.Attributes & ParameterAttributes.Out) == ParameterAttributes.Out ? ParameterModifiers.Out : ParameterModifiers.Ref;
+			} else {
+				this.ParameterModifiers = ParameterModifiers.In;
+			}
+			if ((parameterDefinition.Attributes & ParameterAttributes.Optional) == ParameterAttributes.Optional) 
+				this.ParameterModifiers |= ParameterModifiers.Optional;
+			
+			if (returnType.ArrayDimensions > 0) {
+				foreach (CustomAttribute customAttribute in parameterDefinition.CustomAttributes) {
+					if (customAttribute.Constructor.DeclaringType.FullName == "System.ParamArrayAttribute") 
+						this.ParameterModifiers |= ParameterModifiers.Params;
+				}
+			}
 		}
 	}
 }
