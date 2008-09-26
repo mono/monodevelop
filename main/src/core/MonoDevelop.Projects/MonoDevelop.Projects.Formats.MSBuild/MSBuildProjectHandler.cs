@@ -251,7 +251,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			foreach (MSBuildPropertyGroup grp in msproject.PropertyGroups) {
 				if (ParseConfigCondition (grp.Condition, out conf, out platform)) {
 					SolutionItemConfiguration config = EntityItem.CreateConfiguration (conf);
-					
 					config.Platform = platform;
 					DataItem data = ReadPropertyGroupMetadata (ser, grp, config);
 					ser.Deserialize (config, data);
@@ -534,10 +533,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					MSBuildItem buildItem = fgrp.AddNewItem (itemName, MSBuildProjectService.ToMSBuildPath (project.BaseDirectory, file.FilePath));
 					WriteBuildItemMetadata (ser, buildItem, file);
 
-					if (!string.IsNullOrEmpty (file.ContentType))
-						buildItem.SetMetadata ("SubType", file.ContentType);
 					if (!string.IsNullOrEmpty (file.DependsOn))
 						buildItem.SetMetadata ("DependentUpon", MSBuildProjectService.ToMSBuildPath (Path.GetDirectoryName (file.FilePath), file.DependsOn));
+					if (!string.IsNullOrEmpty (file.ContentType))
+						buildItem.SetMetadata ("SubType", file.ContentType);
 					
 					if (file.BuildAction == BuildAction.FileCopy) {
 						buildItem.SetMetadata ("CopyToOutputDirectory", "Always");

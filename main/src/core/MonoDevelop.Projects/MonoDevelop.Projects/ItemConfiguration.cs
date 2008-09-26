@@ -92,7 +92,6 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		[ItemProperty("PlatformTarget", DefaultValue="")]
 		public string Platform {
 			get { return platform ?? string.Empty; }
 			set { platform = value; }
