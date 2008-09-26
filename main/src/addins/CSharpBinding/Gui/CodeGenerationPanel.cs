@@ -56,7 +56,7 @@ namespace CSharpBinding
 			generateXmlOutputCheckButton.Active        = compilerParameters.GenerateXmlDocumentation;
 			enableOptimizationCheckButton.Active       = compilerParameters.Optimize;
 			generateOverflowChecksCheckButton.Active   = compilerParameters.GenerateOverflowChecks;
-			warningsAsErrorsCheckButton.Active         = ! configuration.RunWithWarnings;
+			warningsAsErrorsCheckButton.Active         = compilerParameters.TreatWarningsAsErrors;
 			warningLevelSpinButton.Value               = compilerParameters.WarningLevel;
 			additionalArgsEntry.Text                   = compilerParameters.AdditionalArguments;
 			ignoreWarningsEntry.Text                   = compilerParameters.NoWarnings;
@@ -72,7 +72,7 @@ namespace CSharpBinding
 			compilerParameters.GenerateXmlDocumentation = generateXmlOutputCheckButton.Active;
 			compilerParameters.Optimize                 = enableOptimizationCheckButton.Active;
 			compilerParameters.GenerateOverflowChecks   = generateOverflowChecksCheckButton.Active;
-			configuration.RunWithWarnings               = ! warningsAsErrorsCheckButton.Active;
+			compilerParameters.TreatWarningsAsErrors    = warningsAsErrorsCheckButton.Active;
 			compilerParameters.WarningLevel             = warningLevelSpinButton.ValueAsInt;
 			compilerParameters.AdditionalArguments      = additionalArgsEntry.Text;
 			compilerParameters.NoWarnings               = ignoreWarningsEntry.Text;

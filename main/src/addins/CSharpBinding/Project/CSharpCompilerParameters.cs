@@ -85,6 +85,9 @@ namespace CSharpBinding
 		
 		[ItemProperty ("TreatWarningsAsErrors", DefaultValue = false)]
 		bool treatWarningsAsErrors;
+
+		[ItemProperty("PlatformTarget", DefaultValue="")]
+		string platformTarget = "";
 	
 		public object Clone ()
 		{
@@ -106,7 +109,7 @@ namespace CSharpBinding
 				return win32Icon;
 			}
 			set {
-				win32Icon = value;
+				win32Icon = value ?? string.Empty;
 			}
 		}
 		
@@ -116,13 +119,13 @@ namespace CSharpBinding
 				return win32Resource;
 			}
 			set {
-				win32Resource = value;
+				win32Resource = value ?? string.Empty;
 			}
 		}
 		
 		public string AdditionalArguments {
 			get { return additionalArgs; }
-			set { additionalArgs = value; }
+			set { additionalArgs = value ?? string.Empty; }
 		}
 		
 		public LangVersion LangVersion {
@@ -145,7 +148,7 @@ namespace CSharpBinding
 				return definesymbols;
 			}
 			set {
-				definesymbols = value;
+				definesymbols = value ?? string.Empty;
 			}
 		}
 		
@@ -182,6 +185,15 @@ namespace CSharpBinding
 			}
 			set {
 				generateXmlDocumentation = value;
+			}
+		}
+		
+		public string PlatformTarget {
+			get {
+				return platformTarget;
+			}
+			set {
+				platformTarget = value ?? string.Empty;
 			}
 		}
 		
