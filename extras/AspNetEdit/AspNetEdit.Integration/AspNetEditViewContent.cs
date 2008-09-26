@@ -185,12 +185,10 @@ namespace AspNetEdit.Integration
 				string mimeType =
 					MonoDevelop.Core.Gui.Services.PlatformService.GetMimeTypeForUri (viewContent.ContentName);
 				
-				MonoDevelop.AspNet.Parser.AspNetCompilationUnit cu = 
+				MonoDevelop.AspNet.Parser.AspNetParsedDocument cu = 
 					MonoDevelop.Projects.Dom.Parser.ProjectDomService.Parse (
-						null,
-						viewContent.ContentName,
-						mimeType).CompilationUnit
-					as MonoDevelop.AspNet.Parser.AspNetCompilationUnit;
+						null, viewContent.ContentName, mimeType)
+					as MonoDevelop.AspNet.Parser.AspNetParsedDocument;
 					
 				if (cu != null && cu.PageInfo != null && !string.IsNullOrEmpty (cu.PageInfo.InheritedClass))
 					codeBehind = cu.PageInfo.InheritedClass;

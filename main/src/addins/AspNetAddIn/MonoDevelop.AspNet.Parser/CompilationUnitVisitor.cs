@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.AspNet.Parser.Dom;
@@ -37,17 +38,11 @@ namespace MonoDevelop.AspNet.Parser
 	
 	public class CompilationUnitVisitor : Visitor
 	{
-		ParsedDocument doc;
-		AspNetCompilationUnit cu;
+		List<FoldingRegion> regions;
 		
-		public CompilationUnitVisitor (ParsedDocument doc, AspNetCompilationUnit cu)
+		public CompilationUnitVisitor (List<FoldingRegion> regions)
 		{
-			this.doc = doc;
-			this.cu = cu;
-		}
-		
-		AspNetCompilationUnit CU {
-			get { return cu; }
+			this.regions = regions;
 		}
 		
 		public override void Visit (TagNode node)
@@ -85,12 +80,14 @@ namespace MonoDevelop.AspNet.Parser
 		{
 			DomRegion region;
 			if (endLocation == null)
-				region = new DomRegion (startLocation.BeginLine, startLocation.BeginColumn + 1, startLocation.EndLine, startLocation.EndColumn + 1);
+				region = new DomRegion (startLocation.BeginLine, startLocation.BeginColumn + 1, 
+				                        startLocation.EndLine, startLocation.EndColumn + 1);
 			else
-				region = new DomRegion (startLocation.BeginLine, startLocation.BeginColumn + 1, endLocation.EndLine, endLocation.EndColumn + 1);
+				region = new DomRegion (startLocation.BeginLine, startLocation.BeginColumn + 1, 
+				                        endLocation.EndLine, endLocation.EndColumn + 1);
 			
-			Fold f = new Fold (name, region, false);
-			doc.Add (f);
+			FoldingRegion f = new FoldingRegion (name, region);
+			regions.Add (f);
 		}
 		
 		bool IsMultiLine (ILocation startLocation, ILocation endLocation)

@@ -39,7 +39,7 @@ namespace MonoDevelop.VBNetBinding
 			parser.Parse();
 			
 			DomConverter visitor = new DomConverter (fileName);
-			ParsedDocument result = new ParsedDocument ();
+			ParsedDocument result = new ParsedDocument (fileName);
 			result.CompilationUnit = (ICompilationUnit)visitor.VisitCompilationUnit(parser.CompilationUnit, null);
 /*			visitor.Cu.ErrorsDuringCompile = p.Errors.Count > 0;
 			visitor.Cu.Tag = p.CompilationUnit;

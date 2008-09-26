@@ -32,25 +32,15 @@ namespace MonoDevelop.Projects.Dom
 {
 	public class ParsedDocumentEventArgs : EventArgs
 	{
-		string fileName;
-		ParsedDocument parsedDocument;
-		
-		public MonoDevelop.Projects.Dom.ParsedDocument ParsedDocument {
-			get {
-				return parsedDocument;
-			}
-		}
-
-		public string FileName {
-			get {
-				return fileName;
-			}
-		}
-		
-		public ParsedDocumentEventArgs (string fileName, ParsedDocument parsedDocument)
+		public ParsedDocumentEventArgs (ParsedDocument parsedDocument)
 		{
-			this.fileName       = fileName;
-			this.parsedDocument = parsedDocument;
+			this.ParsedDocument = parsedDocument;
+		}
+		
+		public ParsedDocument ParsedDocument { get; private set; }
+		
+		public string FileName {
+			get { return ParsedDocument.FileName; }
 		}
 	}
 }

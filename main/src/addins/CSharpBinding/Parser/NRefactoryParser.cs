@@ -168,7 +168,7 @@ namespace MonoDevelop.CSharpBinding
 							DomRegion dr = new DomRegion (start.StartPosition.Line, 
 								start.StartPosition.Column, directive.EndPosition.Line,
 								directive.EndPosition.Column);
-							result.Add (new UserRegion (start.Arg, dr, true));
+							result.Add (new FoldingRegion (start.Arg, dr, FoldType.UserRegion));
 						}
 						break;
 				}
@@ -180,7 +180,7 @@ namespace MonoDevelop.CSharpBinding
 		{
 			using (ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (ICSharpCode.NRefactory.SupportedLanguage.CSharp, new StringReader (content))) {
 				
-				ParsedDocument result = new ParsedDocument ();
+				ParsedDocument result = new ParsedDocument (fileName);
 				result.CompilationUnit = new MonoDevelop.Projects.Dom.CompilationUnit (fileName);
 				parser.Errors.Error += delegate (int line, int col, string message) {
 					result.Add (new Error (ErrorType.Error, line, col, message));
@@ -201,7 +201,6 @@ namespace MonoDevelop.CSharpBinding
 				}
 				ConversionVisitior visitor = new ConversionVisitior (result);
 				visitor.VisitCompilationUnit (parser.CompilationUnit, null);
-				result.GenerateFoldInformation ();
 				return result;
 			}
 		}

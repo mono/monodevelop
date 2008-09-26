@@ -1,3 +1,14 @@
+2008-09-26  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs,
+	  MonoDevelop.Projects.Dom/FoldingRegion.cs,
+	  MonoDevelop.Projects.Dom/ParsedDocument.cs,
+	  MonoDevelop.Projects.Dom/ParsedDocumentEventArgs.cs: Add filename
+	  info to ParsedDocument so that parsers no longer have to return a
+	  CompilationUnit to have filename info. Generalise fold generation
+	  code -- add support for different fold types, moves folding logic
+	  out of the source editor addin.
+
 2008-09-26  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects/ItemConfiguration.cs: The PlatformTarget is not

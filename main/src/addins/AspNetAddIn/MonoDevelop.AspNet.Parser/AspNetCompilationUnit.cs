@@ -35,23 +35,24 @@ namespace MonoDevelop.AspNet.Parser
 {
 	
 	
-	public class AspNetCompilationUnit : CompilationUnit
+	public class AspNetParsedDocument : ParsedDocument
 	{
-		PageInfo pageInfo;
-		Document doc;
-		
-		public AspNetCompilationUnit (string filename) : base (filename)
+		public AspNetParsedDocument (string fileName) : base (fileName)
 		{
 		}
 		
-		public PageInfo PageInfo {
-			get { return pageInfo; }
-			set { pageInfo = value; }
-		}
+		public PageInfo PageInfo { get; set; }
+		public Document Document { get; set; }
 		
-		public Document Document {
-			get { return doc; }
-			set { doc = value; }
+		public override IEnumerable<FoldingRegion> GenerateFolds ()
+		{
+			if (Document != null) {
+				List<FoldingRegion> regions = new List<FoldingRegion> ();
+				CompilationUnitVisitor cuVisitor = new CompilationUnitVisitor (regions);
+				Document.RootNode.AcceptVisit (cuVisitor);
+				return regions;
+			}
+			return new FoldingRegion [0];
 		}
 	}
 }

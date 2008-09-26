@@ -1,3 +1,14 @@
+2008-09-26  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs,
+	  MonoDevelop.AspNet.Parser/AspNetCompilationUnit.cs,
+	  MonoDevelop.AspNet.Parser/AspNetParser.cs,
+	  MonoDevelop.AspNet.Parser/CompilationUnitVisitor.cs,
+	  MonoDevelop.AspNet/AspNetParserService.cs,
+	  MonoDevelop.AspNet/AspNetToolboxNode.cs,
+	  MonoDevelop.AspNet/CodeBehind.cs,
+	  MonoDevelop.AspNet/VerifyCodeBehindBuildStep.cs: Track API.
+
 2008-09-25  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.AspNet.Parser/CompilationUnitVisitor.cs: Track API.

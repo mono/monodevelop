@@ -72,10 +72,15 @@ namespace MonoDevelop.SourceEditor
 		
 		public MonoDevelop.SourceEditor.ExtensibleTextEditor TextEditor {
 			get {
-				if (this.splittedTextEditor != null && this.splittedTextEditor.Parent != null && this.splittedTextEditor.HasFocus)
+				if (this.splittedTextEditor != null && this.splittedTextEditor.Parent != null
+				    && this.splittedTextEditor.HasFocus)
+				{
 					lastActiveEditor = this.splittedTextEditor;
+				}
 				if (this.textEditor != null && this.textEditor.Parent != null && this.textEditor.HasFocus)
+				{
 					lastActiveEditor = this.textEditor;
+				}
 				return lastActiveEditor;
 			}
 		}
@@ -221,23 +226,18 @@ namespace MonoDevelop.SourceEditor
 		FoldSegment AddMarker (List<FoldSegment> foldSegments, string text, DomRegion region, FoldingType type)
 		{
 			Document document = textEditorData.Document;
-			if (region == null || document == null || region.Start.Line <= 0 || region.End.Line <= 0 || region.Start.Line >= document.LineCount || region.End.Line >= document.LineCount)
+			if (region == null || document == null || region.Start.Line <= 0 || region.End.Line <= 0
+			    || region.Start.Line >= document.LineCount || region.End.Line >= document.LineCount)
+			{
 				return null;
+			}
+			
 			int startOffset = document.LocationToOffset (region.Start.Line - 1,  region.Start.Column - 1);
 			int endOffset   = document.LocationToOffset (region.End.Line - 1,  region.End.Column - 1);
 			FoldSegment result = new FoldSegment (text, startOffset, endOffset - startOffset, type);
 			
 			foldSegments.Add (result);
 			return result;
-		}
-		
-		void AddClass (List<FoldSegment> foldSegments, IType cl)
-		{
-			if (this.TextEditor == null || this.TextEditor.Document == null)
-				return;
-			
-			
-			
 		}
 		
 		class ParseInformationUpdaterWorkerThread : WorkerThread
@@ -250,93 +250,55 @@ namespace MonoDevelop.SourceEditor
 				this.widget = widget;
 			}
 			
-			bool IsInsideMember (FoldSegment marker, DomRegion region, IType cl)
-			{
-				if (region == null || cl == null || !cl.BodyRegion.Contains (region.Start))
-					return false;
-				foreach (IMember member in cl.Members) {
-					if (member.BodyRegion == null)
-						continue;
-					if (member.BodyRegion.Contains (region.Start) && member.BodyRegion.Contains (region.End)) 
-						return true;
-				}
-				foreach (IType inner in cl.InnerTypes) {
-					if (IsInsideMember (marker, region, inner))
-						return true;
-				}
-				return false;
-			}
-			
 			protected override void InnerRun ()
 			{
 				try {
-				
-/* Is unneccessary: (because position is changed when typing)
-					if (widget.classBrowser != null)
-						widget.classBrowser.UpdateCompilationUnit (widget.parsedDocument);*/
-						
 					if (SourceEditorOptions.Options.ShowFoldMargin && widget.parsedDocument != null) {
 						List<FoldSegment> foldSegments = new List<FoldSegment> ();
 						
-						if (widget.parsedDocument != null ) {
-							foreach (FoldingRegion region in widget.parsedDocument.Folds) {
-								FoldSegment marker = widget.AddMarker (foldSegments, region.Name, region.Region, FoldingType.Region);
-								if (marker != null) 
-									marker.IsFolded = widget.isInitialParseUpdate && SourceEditorOptions.Options.DefaultRegionsFolding && region.DefaultIsFolded;
+						foreach (FoldingRegion region in widget.parsedDocument.GenerateFolds ()) {
+							FoldingType type = FoldingType.None;
+							bool setFolded = false;
+							bool folded = false;
+							
+							//decide whether the regions should be folded by default
+							switch (region.Type) {
+							case FoldType.Member:
+								type = FoldingType.TypeMember;
+								break;
+							case FoldType.Type:
+								type = FoldingType.TypeDefinition;
+								break;
+							case FoldType.UserRegion:
+								type = FoldingType.Region;
+								setFolded = SourceEditorOptions.Options.DefaultRegionsFolding;
+								folded = true;
+								break;
+							case FoldType.Comment:
+								setFolded = SourceEditorOptions.Options.DefaultCommentFolding;
+								folded = true;
+								break;
+							case FoldType.CommentInsideMember:
+								setFolded = SourceEditorOptions.Options.DefaultCommentFolding;
+								folded = false;
+								break;
+							case FoldType.Undefined:
+								setFolded = true;
+								folded = region.IsFoldedByDefault;
+								break;
 							}
 							
-							if (widget.parsedDocument.Comments.Count > 0) {
-								Comment firstComment = null;
-								string commentText = null;
-								DomRegion commentRegion = DomRegion.Empty;
-								for (int i = 0; i < widget.parsedDocument.Comments.Count; i++) {
-									Comment comment = widget.parsedDocument.Comments[i];
-									FoldSegment marker = null;
-									if (comment.CommentType == CommentType.MultiLine) {
-										commentText = "/* */";
-										firstComment = null;
-										marker = widget.AddMarker (foldSegments, commentText, comment.Region, FoldingType.Region);
-										commentRegion = comment.Region;
-									} else {
-										if (!comment.CommentStartsLine)
-											continue;
-										int j = i;
-										int curLine = comment.Region.Start.Line - 1;
-										DomLocation end = comment.Region.End;
-										for (; j < widget.parsedDocument.Comments.Count; j++) {
-											Comment  curComment  = widget.parsedDocument.Comments[j];
-											if (curComment == null || !curComment.CommentStartsLine || curComment.CommentType != comment.CommentType || curLine + 1 != curComment.Region.Start.Line)
-												break;
-											end     = curComment.Region.End;
-											curLine = curComment.Region.Start.Line;
-										}
-										if (j - i > 1) {
-											commentRegion = new DomRegion(comment.Region.Start.Line, comment.Region.Start.Column, end.Line, end.Column);
-											marker = widget.AddMarker (foldSegments,
-											                    comment.IsDocumentation  ? "/// " : "// "  + comment.Text + "...", 
-											                    commentRegion, 
-											                    FoldingType.Region);
-											
-											i = j - 1;
-										}
-									}
-									if (marker != null && widget.parsedDocument != null && widget.parsedDocument.CompilationUnit != null && SourceEditorOptions.Options.DefaultCommentFolding) {
-										bool isInsideMember = false;
-										foreach (IType type in widget.parsedDocument.CompilationUnit.Types) {
-											if (IsInsideMember (marker, commentRegion, type)) {
-												isInsideMember = true;
-												break;
-											}
-										}
-										marker.IsFolded = widget.isInitialParseUpdate && !isInsideMember;
-									}
-								}
+							//add the region
+							FoldSegment marker = widget.AddMarker (foldSegments, region.Name, 
+							                                       region.Region, type);
+							
+							//and, if necessary, set its fold state
+							if (marker != null && setFolded) {
+								marker.IsFolded = folded;
 							}
 						}
 						widget.textEditorData.Document.UpdateFoldSegments (foldSegments);
-						widget.isInitialParseUpdate  = false;
 					}
-					
 					widget.UpdateAutocorTimer ();
 				} catch (Exception ex) {
 					LoggingService.LogError ("Unhandled exception in ParseInformationUpdaterWorkerThread", ex);
@@ -350,14 +312,12 @@ namespace MonoDevelop.SourceEditor
 		
 		void OnParseInformationChanged (object sender, ParsedDocumentEventArgs args)
 		{
-			if (this.isDisposed || args == null || args.ParsedDocument == null || this.view == null  || this.view.ContentName != args.FileName)
+			if (this.isDisposed || args == null || args.ParsedDocument == null || this.view == null
+			    || this.view.ContentName != args.FileName)
+			{
 				return;
-			/*
-			this.parsedDocument = args.ParsedDocument;
+			}
 			
-			MonoDevelop.SourceEditor.ExtensibleTextEditor editor = this.TextEditor;
-			if (editor == null || editor.Document == null)
-				return;*/
 			ParsedDocument = args.ParsedDocument;
 		}
 		
@@ -370,7 +330,8 @@ namespace MonoDevelop.SourceEditor
 				lock (syncObject) {
 					StopParseInfoThread ();
 					if (parsedDocument != null) {
-						parseInformationUpdaterWorkerThread = new ParseInformationUpdaterWorkerThread (this);
+						parseInformationUpdaterWorkerThread
+							= new ParseInformationUpdaterWorkerThread (this);
 						parseInformationUpdaterWorkerThread.Start ();
 					}
 				}
@@ -575,9 +536,11 @@ namespace MonoDevelop.SourceEditor
 			if (reloadBar == null) {
 				reloadBar = new HBox ();
 				reloadBar.BorderWidth = 3;
-				Gtk.Image img = MonoDevelop.Core.Gui.Services.Resources.GetImage ("gtk-dialog-warning", IconSize.Menu);
+				Gtk.Image img = MonoDevelop.Core.Gui.Services.Resources.GetImage ("gtk-dialog-warning",
+				                                                                  IconSize.Menu);
 				reloadBar.PackStart (img, false, false, 2);
-				reloadBar.PackStart (new Gtk.Label (GettextCatalog.GetString ("This file has been changed outside of MonoDevelop")), false, false, 5);
+				reloadBar.PackStart (new Gtk.Label (GettextCatalog.GetString (
+					"This file has been changed outside of MonoDevelop")), false, false, 5);
 				HBox box = new HBox ();
 				reloadBar.PackStart (box, true, true, 10);
 				
@@ -653,7 +616,12 @@ namespace MonoDevelop.SourceEditor
 			if (offset < 0 || offset >= this.TextEditor.Document.Length)
 				return;
 			DocumentLocation location = this.TextEditor.LogicalToVisualLocation (this.TextEditor.Caret.Location);
-			IdeApp.Workbench.StatusBar.ShowCaretState (this.TextEditor.Caret.Line + 1, location.Column + 1, this.TextEditor.IsSomethingSelected ? this.TextEditor.SelectionRange.Length : 0, this.TextEditor.Caret.IsInInsertMode);
+			IdeApp.Workbench.StatusBar.ShowCaretState (this.TextEditor.Caret.Line + 1,
+			                                           location.Column + 1,
+			                                           this.TextEditor.IsSomethingSelected ?
+			                                               this.TextEditor.SelectionRange.Length
+			                                               : 0,
+			                                           this.TextEditor.Caret.IsInInsertMode);
 		}
 		
 		#endregion
@@ -789,7 +757,10 @@ namespace MonoDevelop.SourceEditor
 		
 		internal void SetSearchOptions ()
 		{
-			this.textEditor.SearchEngine    = SearchAndReplaceWidget.SearchEngine == SearchAndReplaceWidget.DefaultSearchEngine ? (ISearchEngine)new BasicSearchEngine () : (ISearchEngine)new RegexSearchEngine ();
+			this.textEditor.SearchEngine    = 
+				SearchAndReplaceWidget.SearchEngine == SearchAndReplaceWidget.DefaultSearchEngine ?
+					(ISearchEngine)new BasicSearchEngine ()
+					: (ISearchEngine)new RegexSearchEngine ();
 			this.textEditor.IsCaseSensitive = SearchAndReplaceWidget.IsCaseSensitive;
 			this.textEditor.IsWholeWordOnly = SearchAndReplaceWidget.IsWholeWordOnly;
 			
@@ -832,7 +803,8 @@ namespace MonoDevelop.SourceEditor
 			if (result == null) {
 				IdeApp.Workbench.StatusBar.ShowError (GettextCatalog.GetString ("Search pattern not found"));
 			} else if (result.SearchWrapped) {
-				IdeApp.Workbench.StatusBar.ShowMessage (new Image (Gtk.Stock.Find, IconSize.Menu), GettextCatalog.GetString ("Reached bottom, continued from top"));
+				IdeApp.Workbench.StatusBar.ShowMessage (new Image (Gtk.Stock.Find, IconSize.Menu),
+					GettextCatalog.GetString ("Reached bottom, continued from top"));
 			} else {
 				IdeApp.Workbench.StatusBar.ShowReady ();
 			}
@@ -855,7 +827,9 @@ namespace MonoDevelop.SourceEditor
 			if (result == null) {
 				IdeApp.Workbench.StatusBar.ShowError (GettextCatalog.GetString ("Search pattern not found"));
 			} else if (result.SearchWrapped) {
-				IdeApp.Workbench.StatusBar.ShowMessage (new Image (Gtk.Stock.Find, IconSize.Menu), GettextCatalog.GetString ("Reached top, continued from bottom"));
+				IdeApp.Workbench.StatusBar.ShowMessage (
+					new Image (Gtk.Stock.Find, IconSize.Menu),
+					GettextCatalog.GetString ("Reached top, continued from bottom"));
 			} else {
 				IdeApp.Workbench.StatusBar.ShowReady ();
 			}
@@ -894,7 +868,9 @@ namespace MonoDevelop.SourceEditor
 			if (number == 0) {
 				IdeApp.Workbench.StatusBar.ShowError (GettextCatalog.GetString ("Search pattern not found"));
 			} else {
-				IdeApp.Workbench.StatusBar.ShowMessage (GettextCatalog.GetPluralString ("Found and replaced one occurrence", "Found and replaced {0} occurrences", number, number));
+				IdeApp.Workbench.StatusBar.ShowMessage (
+					GettextCatalog.GetPluralString ("Found and replaced one occurrence",
+					                                "Found and replaced {0} occurrences", number, number));
 			}
 			TextEditor.GrabFocus ();
 		}

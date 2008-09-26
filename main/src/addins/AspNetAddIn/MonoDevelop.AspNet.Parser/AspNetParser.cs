@@ -52,17 +52,12 @@ namespace MonoDevelop.AspNet.Parser
 		{
 			using (TextReader tr = new StringReader (fileContent)) {
 				Document doc = new Document (tr, null, fileName);
-				ParsedDocument result = new ParsedDocument ();
-				AspNetCompilationUnit cu = new AspNetCompilationUnit (fileName);
-				result.CompilationUnit = cu;
-				cu.Document = doc;
-				cu.PageInfo = new PageInfo ();
+				AspNetParsedDocument result = new AspNetParsedDocument (fileName) {
+					PageInfo = new PageInfo (),
+					Document = doc
+				};
 				
-				CompilationUnitVisitor cuVisitor = new CompilationUnitVisitor (result, cu);
-				doc.RootNode.AcceptVisit (cuVisitor);
-				
-				PageInfoVisitor piVisitor = new PageInfoVisitor (cu.PageInfo);
-				doc.RootNode.AcceptVisit (piVisitor);
+				doc.RootNode.AcceptVisit (new PageInfoVisitor (result.PageInfo));
 				
 				foreach (ParserException pe in doc.ParseErrors)
 					result.Add (new Error (

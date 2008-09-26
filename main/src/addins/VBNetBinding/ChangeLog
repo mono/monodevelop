@@ -1,3 +1,7 @@
+2008-09-26  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Parser/DomParser.cs: Track API.
+
 2008-09-16  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* VBNetBinding.mdp, md1format.xml, Makefile.am: Add missing file.

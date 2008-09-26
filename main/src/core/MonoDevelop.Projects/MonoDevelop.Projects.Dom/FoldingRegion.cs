@@ -28,37 +28,51 @@ using System;
 
 namespace MonoDevelop.Projects.Dom
 {
-	public abstract class FoldingRegion
+	public class FoldingRegion
 	{
+		static string defaultName = "...";
+		
 		public string Name { get; set; }
 		
-		public bool DefaultIsFolded { get; set; }
+		//NOTE: thsi is only respected if the FoldType is set to "Undefined"
+		public bool IsFoldedByDefault { get; set; }
 		
 		public DomRegion Region { get; set; }
 		
-		public FoldingRegion (string name, DomRegion region) : this (name, region, false)
+		public FoldType Type { get; set; }
+		
+		public FoldingRegion (DomRegion region) : this (null, region)
 		{
 		}
 		
-		public FoldingRegion (string name, DomRegion region, bool defaultIsFolded)
+		public FoldingRegion (string name, DomRegion region) 
 		{
-			this.Name = name;
+			this.Name = name ?? defaultName;
 			this.Region = region;
-			this.DefaultIsFolded = defaultIsFolded;
+		}
+		
+		public FoldingRegion (string name, DomRegion region, bool isFoldedByDefault) : this (name, region)
+		{
+			this.IsFoldedByDefault = isFoldedByDefault;
+		}
+		
+		public FoldingRegion (string name, DomRegion region, FoldType type) : this (name, region)
+		{
+			this.Type = type;
+		}
+		
+		public FoldingRegion (DomRegion region, FoldType type) : this (null, region, type)
+		{
 		}
 	}
 	
-	public class Fold : FoldingRegion
-	{
-		static string defaultName = "...";
-		public Fold (DomRegion region) : base (defaultName, region) {}
-		public Fold (string name, DomRegion region) : base (name, region) {}
-		public Fold (string name, DomRegion region, bool defaultIsFolded) : base (name, region, defaultIsFolded) {}
-	}
-	
-	public class UserRegion : FoldingRegion
-	{
-		public UserRegion (string name, DomRegion region) : base (name, region) {}
-		public UserRegion (string name, DomRegion region, bool defaultIsFolded) : base (name, region, defaultIsFolded) {}
+	public enum FoldType {
+		Undefined = 0,
+		ConditionalDefine,
+		Comment,
+		CommentInsideMember,
+		UserRegion,
+		Type,
+		Member
 	}
 }

@@ -797,7 +797,9 @@ namespace MonoDevelop.Projects.Dom.Parser
 					// information.
 					if (!parseInformation.HasErrors) {
 						if (projects != null && projects.Length > 0) {
-							SetSourceProject (parseInformation.CompilationUnit, GetProjectDom (projects [0]));
+							if (parseInformation.CompilationUnit != null)
+								SetSourceProject (parseInformation.CompilationUnit,
+								                  GetProjectDom (projects [0]));
 							foreach (Project project in projects) {
 								ProjectDom db = GetProjectDom (project);
 								if (db != null) {
@@ -883,9 +885,9 @@ namespace MonoDevelop.Projects.Dom.Parser
 				AddToCache (parseInformation, fileName);
 			}
 */
-			AddToCache (parserOutput, fileName);
+			AddToCache (parserOutput);
 			
-			OnParsedDocumentUpdated (new ParsedDocumentEventArgs (fileName, parserOutput));
+			OnParsedDocumentUpdated (new ParsedDocumentEventArgs (parserOutput));
 			return parserOutput;
 		}
 
@@ -909,7 +911,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 		}
 		
-		static void AddToCache (ParsedDocument info, string fileName)
+		static void AddToCache (ParsedDocument info)
 		{
 			lock (parsings) 
 			{
@@ -931,7 +933,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 				ParsingCacheEntry en = new ParsingCacheEntry();
 				en.ParseInformation = info;
 				en.AccessTime = DateTime.Now;
-				parsings [fileName] = en;
+				parsings [info.FileName] = en;
 			}
 		}
 		

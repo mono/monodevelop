@@ -40,22 +40,12 @@ namespace MonoDevelop.AspNet
 	
 	public static class AspNetParserService
 	{
-		public static AspNetCompilationUnit GetCompileUnit (Project project, string filename, bool ensureUpToDate)
-		{/*
-			IParserContext ctx;
-			if (project != null) {
-				ctx = IdeApp.Workspace.ParserDatabase.GetProjectParserContext (project);
-			} else {
-				ctx = IdeApp.Workspace.ParserDatabase.GetFileParserContext (filename);
-			}
-			if (ensureUpToDate)
-				ctx.UpdateDatabase ();*/
-			
-			ICompilationUnit pi = ProjectDomService.Parse (project, filename, null).CompilationUnit;
-			return pi as AspNetCompilationUnit;
+		public static AspNetParsedDocument GetCompileUnit (Project project, string filename, bool ensureUpToDate)
+		{
+			return ProjectDomService.Parse (project, filename, null) as AspNetParsedDocument;
 		}
 		
-		public static AspNetCompilationUnit GetCompileUnit (Project project, string filename)
+		public static AspNetParsedDocument GetCompileUnit (Project project, string filename)
 		{
 			return GetCompileUnit (project, filename, false);
 		}

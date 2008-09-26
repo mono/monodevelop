@@ -1,3 +1,9 @@
+2008-09-26  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Track API. Move
+	  folding logic out of the editor. Reduce file width to 132 cols,
+	  assuming 8-wide tabs.
+
 2008-09-26  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* gtk-gui/objects.xml: Updated.

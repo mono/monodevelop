@@ -57,13 +57,13 @@ namespace MonoDevelop.AspNet
 			//get the config object and validate
 			AspNetAppProjectConfiguration config = (AspNetAppProjectConfiguration) aspProject.GetConfiguration (configuration);
 			if (config == null) {
-				monitor.ReportWarning (GettextCatalog.GetString
+				monitor.Log.WriteLine (GettextCatalog.GetString
 					("Project configuration is invalid. Skipping CodeBehind member generation."));
 				return base.Build (monitor, project, configuration);
 			}
 			
 			if (config.DisableCodeBehindGeneration) {
-				monitor.ReportWarning (GettextCatalog.GetString
+				monitor.Log.WriteLine (GettextCatalog.GetString
 					("Skipping updating of CodeBehind partial classes, because this feature is disabled."));
 				return base.Build (monitor, project, configuration);
 			}
@@ -71,8 +71,9 @@ namespace MonoDevelop.AspNet
 			System.CodeDom.Compiler.CodeDomProvider provider = aspProject.LanguageBinding.GetCodeDomProvider ();
 			bool supportsPartialTypes = provider.Supports (System.CodeDom.Compiler.GeneratorSupport.PartialTypes);
 			if (!supportsPartialTypes) {
-				monitor.ReportWarning (GettextCatalog.GetString 
-					("The code generation for {0} does not support partial classes."));;
+				monitor.Log.WriteLine (GettextCatalog.GetString 
+					("The code generator for {0} does not support partial classes. Skipping CodeBehind member generation.", 
+					aspProject.LanguageBinding.Language));;
 				return base.Build (monitor, project, configuration);
 			}
 			
@@ -107,14 +108,14 @@ namespace MonoDevelop.AspNet
 					continue;
 				
 				//parse the ASP.NET file
-				ParsedDocument parsedDocument = ProjectDomService.Parse (aspProject, file.FilePath, null);
-				AspNetCompilationUnit cu = parsedDocument.CompilationUnit as AspNetCompilationUnit;
-				if (cu == null || cu.Document == null)
+				AspNetParsedDocument parsedDocument = ProjectDomService.Parse (aspProject, file.FilePath, null)
+					as AspNetParsedDocument;
+				if (parsedDocument == null || parsedDocument.Document == null)
 					continue;
 				
 				//log errors
 				if (parsedDocument.HasErrors) {
-					foreach (Exception e in cu.Document.ParseErrors) {
+					foreach (Exception e in parsedDocument.Document.ParseErrors) {
 						CodeBehindWarning cbw;
 						ErrorInFileException eife = e as ErrorInFileException;
 						if (eife != null)
@@ -128,7 +129,7 @@ namespace MonoDevelop.AspNet
 					}
 				}
 				
-				string className = cu.PageInfo.InheritedClass;
+				string className = parsedDocument.PageInfo.InheritedClass;
 				if (string.IsNullOrEmpty (className))
 					continue;
 				
@@ -152,7 +153,7 @@ namespace MonoDevelop.AspNet
 				}
 				
 				//add fields for each control in the page
-				foreach (System.CodeDom.CodeMemberField member in cu.Document.MemberList.Members.Values)
+				foreach (System.CodeDom.CodeMemberField member in parsedDocument.Document.MemberList.Members.Values)
 					typeDecl.Members.Add (member);
 				
 				System.CodeDom.Compiler.CodeGeneratorOptions options = new System.CodeDom.Compiler.CodeGeneratorOptions ();
@@ -235,7 +236,7 @@ namespace MonoDevelop.AspNet
 			
 			//write out a friendly message aout what we did
 			if (nUpdated > 0) {
-				monitor.Log.WriteLine (GettextCatalog.GetString ("{0} CodeBehind designer classes updated."));
+				monitor.Log.WriteLine (GettextCatalog.GetString ("{0} CodeBehind designer classes updated.", nUpdated));
 			} else {
 				monitor.Log.WriteLine (GettextCatalog.GetString ("No changes made to CodeBehind classes."));
 			}

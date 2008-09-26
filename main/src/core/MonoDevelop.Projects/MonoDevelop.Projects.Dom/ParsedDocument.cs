@@ -35,13 +35,21 @@ namespace MonoDevelop.Projects.Dom
 		
 		List<Comment> comments = new List<Comment> ();
 		List<FoldingRegion> folds = new List<FoldingRegion> ();
-		List<FoldingRegion> regions = new List<FoldingRegion> ();
 		List<Tag> tagComments = new List<Tag> ();
 		List<PreProcessorDefine> defines = new List<PreProcessorDefine> ();
 		List<ConditionalRegion> conditionalRegions = new List<ConditionalRegion> ();
-
+		
 		bool hasErrors = false;
 		List<Error> errors = new List<Error> ();
+		
+		public ParsedDocument (string fileName)
+		{
+			this.FileName = fileName;
+		}
+		
+		public string FileName {
+			get; private set;
+		}
 		
 		public DateTime ParseTime {
 			get {
@@ -61,14 +69,19 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public IList<FoldingRegion> UserRegions {
+		public IEnumerable<FoldingRegion> UserRegions {
 			get {
-				return regions;
+				foreach (FoldingRegion fold in AdditionalFolds)
+					if (fold.Type == FoldType.UserRegion)
+						yield return fold;
+//				return from FoldingRegion fold in Folds
+//				       where fold.Type == FoldType.UserRegion
+//				       select fold;
 			}
 		}
 		
 		
-		public IList<FoldingRegion> Folds {
+		public IList<FoldingRegion> AdditionalFolds {
 			get {
 				return folds;
 			}
@@ -100,25 +113,32 @@ namespace MonoDevelop.Projects.Dom
 		
 		public ICompilationUnit CompilationUnit { get; set; }
 		
-		protected void AddUserRegionsToFolds ()
+		public virtual IEnumerable<FoldingRegion> GenerateFolds ()
 		{
-			folds.AddRange (regions);
-		}
-		
-		public virtual void GenerateFoldInformation ()
-		{
-			AddUserRegionsToFolds ();
-			Add (ConditionalRegions.ToFolds ());
+			foreach (FoldingRegion fold in AdditionalFolds)
+				yield return fold;
+			
+			foreach (FoldingRegion fold in ConditionalRegions.ToFolds ())
+				yield return fold;
+			
+			IEnumerable<FoldingRegion> commentFolds = comments.ToFolds ();
+			if (CompilationUnit != null && CompilationUnit.Types != null && CompilationUnit.Types.Count > 0) {
+				commentFolds = commentFolds.FlagIfInsideMembers (CompilationUnit.Types, delegate (FoldingRegion f) {
+					f.Type = FoldType.CommentInsideMember;
+				});
+			}
+			foreach (FoldingRegion fold in commentFolds)
+				yield return fold;
 			
 			if (CompilationUnit == null)
-				return;
+				yield break;
 			
-			Fold f = CompilationUnit.Usings.ToFold ();
-			if (f != null)
-				Add (f);
+			FoldingRegion usingFold = CompilationUnit.Usings.ToFold ();
+			if (usingFold != null)
+				yield return usingFold;
 			
-			if (CompilationUnit.Types != null)
-				Add (CompilationUnit.Types.ToFolds ());
+			foreach (FoldingRegion fold in CompilationUnit.Types.ToFolds ())
+				yield return fold;
 		}
 		
 		#region Add methods
@@ -144,19 +164,14 @@ namespace MonoDevelop.Projects.Dom
 			defines.Add (define);
 		}
 		
-		public void Add (Fold fold)
+		public void Add (ConditionalRegion region)
 		{
-			folds.Add (fold);
+			conditionalRegions.Add (region);
 		}
 		
-		public void Add (UserRegion region)
+		public void Add (FoldingRegion region)
 		{
-			regions.Add (region);
-		}
-		
-		public void Add (ConditionalRegion conditionalRegion)
-		{
-			conditionalRegions.Add (conditionalRegion);
+			folds.Add (region);
 		}
 		
 		#endregion
@@ -186,16 +201,9 @@ namespace MonoDevelop.Projects.Dom
 			this.defines.AddRange (defines);
 		}
 		
-		public void Add (IEnumerable<Fold> folds)
+		public void Add (IEnumerable<FoldingRegion> folds)
 		{
-			foreach (FoldingRegion fold in folds)
-				this.folds.Add (fold);
-		}
-		
-		public void Add (IEnumerable<UserRegion> regions)
-		{
-			foreach (UserRegion region in regions)
-				this.regions.Add (region);
+			this.folds.AddRange (folds);
 		}
 		
 		public void Add (IEnumerable<ConditionalRegion> conditionalRegions)
@@ -208,32 +216,33 @@ namespace MonoDevelop.Projects.Dom
 	}
 	public static class FoldingUtilities
 	{
-		public static IEnumerable<Fold> ToFolds (this IEnumerable<ConditionalRegion> conditionalRegions)
+		public static IEnumerable<FoldingRegion> ToFolds (this IEnumerable<ConditionalRegion> conditionalRegions)
 		{
 			foreach (ConditionalRegion region in conditionalRegions) {
-				yield return  new Fold ("#if " + region.Flag, region.Region);
+				yield return new FoldingRegion ("#if " + region.Flag, region.Region, FoldType.ConditionalDefine);
 				foreach (ConditionBlock block in region.ConditionBlocks) {
-					yield return new Fold ("#elif " + block.Flag, block.Region);
+					yield return new FoldingRegion ("#elif " + block.Flag, block.Region,
+					                                FoldType.ConditionalDefine);
 				}
 				if (!region.ElseBlock.IsEmpty)
-					yield return new Fold ("#else", region.ElseBlock);
+					yield return new FoldingRegion ("#else", region.ElseBlock, FoldType.ConditionalDefine);
 			}
 		}
 		
-		public static IEnumerable<Fold> ToFolds (this IEnumerable<IType> types)
+		public static IEnumerable<FoldingRegion> ToFolds (this IEnumerable<IType> types)
 		{
 			foreach (IType type in types)
-				foreach (Fold f in type.ToFolds ())
-					yield return f;
+				foreach (FoldingRegion fold in type.ToFolds ())
+					yield return fold;
 		}
 		
-		public static IEnumerable<Fold> ToFolds (this IType type)
+		public static IEnumerable<FoldingRegion> ToFolds (this IType type)
 		{
 			if (!type.BodyRegion.IsEmpty && type.BodyRegion.End.Line > type.BodyRegion.Start.Line) {
-				yield return new Fold (type.BodyRegion);
+				yield return new FoldingRegion (type.BodyRegion, FoldType.Type);
 			}
 			foreach (IType inner in type.InnerTypes)
-				foreach (Fold f in inner.ToFolds ())
+				foreach (FoldingRegion f in inner.ToFolds ())
 					yield return f;
 			
 			if (type.ClassType == ClassType.Interface)
@@ -242,17 +251,17 @@ namespace MonoDevelop.Projects.Dom
 			foreach (IMethod method in type.Methods) {
 				if (method.BodyRegion.End.Line <= 0)
 					continue;
-				yield return new Fold (method.BodyRegion);
+				yield return new FoldingRegion (method.BodyRegion, FoldType.Member);
 			}
 			
 			foreach (IProperty property in type.Properties) {
 				if (property.BodyRegion.End.Line <= 0)
 					continue;
-				yield return new Fold (property.BodyRegion);
+				yield return new FoldingRegion (property.BodyRegion, FoldType.Member);
 			}
 		}
 		
-		public static Fold ToFold (this IEnumerable<IUsing> usings)
+		public static FoldingRegion ToFold (this IEnumerable<IUsing> usings)
 		{
 			if (usings == null)
 				return null;
@@ -269,7 +278,76 @@ namespace MonoDevelop.Projects.Dom
 			
 			if (first.Region.IsEmpty || last.Region.IsEmpty || first.Region.Start.Line == last.Region.End.Line)
 				return null;
-			return new Fold (new DomRegion (first.Region.Start, last.Region.End));
+			return new FoldingRegion (new DomRegion (first.Region.Start, last.Region.End));
+		}
+		
+		public static IEnumerable<FoldingRegion> ToFolds (this IList<Comment> comments)
+		{
+			for (int i = 0; i < comments.Count; i++) {
+				Comment comment = comments[i];
+				
+				if (comment.CommentType == CommentType.MultiLine) {
+					yield return new FoldingRegion ("/* */", comment.Region, FoldType.Comment);
+					continue;
+				}
+				
+				if (!comment.CommentStartsLine)
+					continue;
+				int j = i;
+				int curLine = comment.Region.Start.Line - 1;
+				DomLocation end = comment.Region.End;
+				
+				for (; j < comments.Count; j++) {
+					Comment  curComment  = comments[j];
+					if (curComment == null || !curComment.CommentStartsLine 
+					    || curComment.CommentType != comment.CommentType 
+					    || curLine + 1 != curComment.Region.Start.Line)
+						break;
+					end = curComment.Region.End;
+					curLine = curComment.Region.Start.Line;
+				}
+				
+				if (j - i > 1) {
+					yield return new FoldingRegion (
+						comment.IsDocumentation  ? "/// " : "// "  + comment.Text + "...",
+						new DomRegion (comment.Region.Start.Line,
+							comment.Region.Start.Column, end.Line, end.Column),
+						FoldType.Comment);
+					i = j - 1;
+				}
+			}
+		}
+		
+		public static IEnumerable<FoldingRegion> FlagIfInsideMembers (this IEnumerable<FoldingRegion> folds,
+		                                                          IEnumerable<IType> types,
+		                                                          Action<FoldingRegion> flagAction)
+		{
+			foreach (FoldingRegion fold in folds) {
+				foreach (IType type in types) {
+					if (fold.Region.IsInsideMember (type)) {
+						flagAction (fold);
+						break;
+					}
+				}
+				yield return fold;
+			}
+		}
+		
+		static bool IsInsideMember (this DomRegion region, IType cl)
+		{
+			if (region == null || cl == null || !cl.BodyRegion.Contains (region.Start))
+				return false;
+			foreach (IMember member in cl.Members) {
+				if (member.BodyRegion == null)
+					continue;
+				if (member.BodyRegion.Contains (region.Start) && member.BodyRegion.Contains (region.End)) 
+					return true;
+			}
+			foreach (IType inner in cl.InnerTypes) {
+				if (region.IsInsideMember (inner))
+					return true;
+			}
+			return false;
 		}
 	}
 }

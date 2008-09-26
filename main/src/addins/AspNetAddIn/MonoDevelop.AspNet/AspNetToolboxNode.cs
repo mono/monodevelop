@@ -114,17 +114,16 @@ namespace MonoDevelop.AspNet
 			
 			MonoDevelop.Projects.Dom.Parser.ProjectDom database =
 				MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetProjectDom (project);
-//FIXME: port to new DOM
-//			ctx.UpdateDatabase ();
+			
 			MonoDevelop.Projects.Dom.IType cls = database.GetType (Type.TypeName);
 			if (cls == null)
 				return tag;
 			
 			//look up the control prefix
 			string mime = MonoDevelop.Core.Gui.Services.PlatformService.GetMimeTypeForUri (path);
-			MonoDevelop.AspNet.Parser.AspNetCompilationUnit cu = 
-				MonoDevelop.Projects.Dom.Parser.ProjectDomService.Parse (project, path, mime).CompilationUnit
-					as MonoDevelop.AspNet.Parser.AspNetCompilationUnit;
+			MonoDevelop.AspNet.Parser.AspNetParsedDocument cu = 
+				MonoDevelop.Projects.Dom.Parser.ProjectDomService.Parse (project, path, mime)
+					as MonoDevelop.AspNet.Parser.AspNetParsedDocument;
 			
 			System.Reflection.AssemblyName assemName = 
 				MonoDevelop.Core.Runtime.SystemAssemblyService.ParseAssemblyName (Type.AssemblyName);

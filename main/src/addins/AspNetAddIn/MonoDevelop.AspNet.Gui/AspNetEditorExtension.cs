@@ -51,7 +51,7 @@ namespace MonoDevelop.AspNet.Gui
 	
 	public class AspNetEditorExtension : CompletionTextEditorExtension, IOutlinedDocument, IPathedDocument
 	{
-		AspNetCompilationUnit lastCU;
+		AspNetParsedDocument lastCU;
 		DocumentStateTracker<S.Parser> tracker;
 		
 		Gtk.TreeView outlineTreeView;
@@ -95,8 +95,8 @@ namespace MonoDevelop.AspNet.Gui
 		
 		void OnParseInformationChanged (object sender, MonoDevelop.Projects.Dom.ParsedDocumentEventArgs args)
 		{
-			if (this.FileName == args.FileName && args.ParsedDocument.CompilationUnit is MonoDevelop.AspNet.Parser.AspNetCompilationUnit)
-				lastCU = (MonoDevelop.AspNet.Parser.AspNetCompilationUnit) args.ParsedDocument.CompilationUnit;
+			if (this.FileName == args.FileName && args.ParsedDocument is MonoDevelop.AspNet.Parser.AspNetParsedDocument)
+				lastCU = (MonoDevelop.AspNet.Parser.AspNetParsedDocument) args.ParsedDocument;
 			RefreshOutline ();
 		}
 		
@@ -104,7 +104,7 @@ namespace MonoDevelop.AspNet.Gui
 		
 		#region Convenience accessors
 		
-		MonoDevelop.AspNet.Parser.AspNetCompilationUnit CU { get { return lastCU; } }
+		MonoDevelop.AspNet.Parser.AspNetParsedDocument CU { get { return lastCU; } }
 		
 		protected ITextBuffer Buffer {
 			get {
@@ -150,7 +150,7 @@ namespace MonoDevelop.AspNet.Gui
 		    CodeCompletionContext completionContext, bool forced, ref int triggerWordLength)
 		{
 			tracker.UpdateEngine ();
-			MonoDevelop.AspNet.Parser.AspNetCompilationUnit CU = this.CU;
+			MonoDevelop.AspNet.Parser.AspNetParsedDocument CU = this.CU;
 			
 			//FIXME: these may be null at startup, but we should still provive some completion
 			if (CU == null || CU.Document == null)
@@ -490,7 +490,7 @@ namespace MonoDevelop.AspNet.Gui
 		}
 		
 		static void AddAspAttributeValueCompletionData (CodeCompletionDataProvider provider,
-		    MonoDevelop.AspNet.Parser.AspNetCompilationUnit cu, S.XName tagName, S.XName attName,
+		    MonoDevelop.AspNet.Parser.AspNetParsedDocument cu, S.XName tagName, S.XName attName,
 		    Dictionary<string, string> existingAtts)
 		{
 			Debug.Assert (tagName.IsValid && tagName.HasPrefix);

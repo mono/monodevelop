@@ -54,7 +54,7 @@ namespace MonoDevelop.AspNet
 			if (proj == null)
 				return null;
 			
-			AspNetCompilationUnit cu = ProjectDomService.Parse (file.Project, file.FilePath, null).CompilationUnit as AspNetCompilationUnit;
+			AspNetParsedDocument cu = ProjectDomService.Parse (file.Project, file.FilePath, null) as AspNetParsedDocument;
 			
 			if (cu != null && string.IsNullOrEmpty (cu.PageInfo.InheritedClass))
 				return cu.PageInfo.InheritedClass;
