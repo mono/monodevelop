@@ -54,6 +54,7 @@ namespace MonoDevelop.Debugger.Gdb
 		Thread thread;
 		int currentThread = -1;
 		int activeThread = -1;
+		bool isMonoProcess;
 		string currentProcessName;
 		List<string> tempVariableObjects = new List<string> ();
 		Dictionary<int,Breakpoint> breakpoints = new Dictionary<int,Breakpoint> ();
@@ -121,6 +122,7 @@ namespace MonoDevelop.Debugger.Gdb
 				
 				currentProcessName = startInfo.Command + " " + startInfo.Arguments;
 				
+				CheckIsMonoProcess ();
 				OnStarted ();
 				
 				RunCommand ("-exec-run");
@@ -134,8 +136,24 @@ namespace MonoDevelop.Debugger.Gdb
 				currentProcessName = "PID " + processId.ToString ();
 				RunCommand ("attach", processId.ToString ());
 				currentThread = activeThread = 1;
+				CheckIsMonoProcess ();
 				OnStarted ();
 				FireTargetEvent (TargetEventType.TargetStopped, null);
+			}
+		}
+
+		public bool IsMonoProcess {
+			get { return isMonoProcess; }
+		}
+		
+		void CheckIsMonoProcess ()
+		{
+			try {
+				RunCommand ("-data-evaluate-expression", "mono_pmip");
+				isMonoProcess = true;
+			} catch {
+				isMonoProcess = false;
+				// Ignore
 			}
 		}
 		

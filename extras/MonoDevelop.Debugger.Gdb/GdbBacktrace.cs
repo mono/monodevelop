@@ -271,6 +271,26 @@ namespace MonoDevelop.Debugger.Gdb
 		
 		StackFrame CreateFrame (ResultData frameData)
 		{
+			string lang = "Native";
+			string func = frameData.GetValue ("func");
+			string sadr = frameData.GetValue ("addr");
+			
+			if (func == "??" && session.IsMonoProcess) {
+				// Try to get the managed func name
+				try {
+					ResultData data = session.RunCommand ("-data-evaluate-expression", "mono_pmip(" + sadr + ")");
+					string val = data.GetValue ("value");
+					if (val != null) {
+						int i = val.IndexOf ('"');
+						if (i != -1) {
+							func = val.Substring (i).Trim ('"',' ');
+							lang = "Mono";
+						}
+					}
+				} catch {
+				}
+			}
+
 			int line = -1;
 			string sline = frameData.GetValue ("line");
 			if (sline != null)
@@ -281,16 +301,15 @@ namespace MonoDevelop.Debugger.Gdb
 				sfile = frameData.GetValue ("file");
 			if (sfile == null)
 				sfile = frameData.GetValue ("from");
-			SourceLocation loc = new SourceLocation (frameData.GetValue ("func") ?? "?", sfile, line);
+			SourceLocation loc = new SourceLocation (func ?? "?", sfile, line);
 			
 			long addr;
-			string sadr = frameData.GetValue ("addr");
 			if (!string.IsNullOrEmpty (sadr))
 				addr = long.Parse (sadr.Substring (2), NumberStyles.HexNumber);
 			else
 				addr = 0;
 			
-			return new StackFrame (addr, loc, "");
+			return new StackFrame (addr, loc, lang);
 		}
 
 		public AssemblyLine[] Disassemble (int frameIndex, int firstLine, int count)

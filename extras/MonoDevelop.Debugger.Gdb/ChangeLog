@@ -1,3 +1,8 @@
+2008-09-26  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* GdbBacktrace.cs, GdbSession.cs: When debugging a mono process, try to
+	  get managed method names for unknown stack frames.
+
 2008-09-17  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Debugger.mdp: Updated projects.
