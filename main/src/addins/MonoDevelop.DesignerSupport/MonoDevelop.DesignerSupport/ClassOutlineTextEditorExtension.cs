@@ -143,11 +143,7 @@ namespace MonoDevelop.DesignerSupport
 			object o = model.GetValue (iter, 0);
 			Ambience am = GetAmbience ();
 			if (o is IMember) {
-				txtRenderer.Text = am.GetString ((IMember)o, 
-                                                               OutputFlags.UseIntrinsicTypeNames |
-				                               OutputFlags.IncludeParameters |
-				                               OutputFlags.IncludeParameterName |
-				                               OutputFlags.IncludeGenerics);
+				txtRenderer.Text = am.GetString ((IMember)o, OutputFlags.ClassBrowserEntries);
 			} else if (o is FoldingRegion) {
 				string name = ((FoldingRegion)o).Name.Trim ();
 				if (string.IsNullOrEmpty (name))
@@ -231,7 +227,7 @@ namespace MonoDevelop.DesignerSupport
 			});
 			
 			List<FoldingRegion> regions = new List<FoldingRegion> ();
-			foreach (FoldingRegion fr in parsedDocument.FoldingRegions)
+			foreach (FoldingRegion fr in parsedDocument.UserRegions)
 				//check regions inside class
 				if (cls.BodyRegion.Contains (fr.Region))
 					regions.Add (fr);
@@ -282,10 +278,8 @@ namespace MonoDevelop.DesignerSupport
 		
 		static bool OuterEndsAfterInner (DomRegion outer, DomRegion inner)
 		{
-			return (outer.End.Line > inner.End.Line
+			return ((outer.End.Line > 0 && outer.End.Line > inner.End.Line)
 			        || (outer.End.Line == inner.End.Line && outer.End.Column > inner.End.Column));
 		}
-		
-		
 	}
 }
