@@ -211,12 +211,16 @@ namespace MonoDevelop.CSharpBinding
 		public override int CompareTo (ICompletionData x)
 		{
 			MemberCompletionData other = x as MemberCompletionData;
-			if (member.IsObsolete && other == null)
-				return 1;
-			if (member.IsObsolete && !other.member.IsObsolete)
-				return 1;
-			if (!member.IsObsolete && other.member.IsObsolete)
-				return -1;
+			
+			if (other == null) {
+				if (member.IsObsolete)
+					return 1;
+			} else {
+				if (member.IsObsolete && !other.member.IsObsolete)
+					return 1;
+				if (!member.IsObsolete && other.member.IsObsolete)
+					return -1;
+			}
 			return base.CompareTo (x);
 		}		
 		
