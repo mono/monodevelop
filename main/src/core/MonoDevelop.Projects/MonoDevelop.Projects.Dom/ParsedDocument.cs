@@ -32,8 +32,8 @@ namespace MonoDevelop.Projects.Dom
 	[Flags]
 	public enum ParsedDocumentFlags
 	{
-		None            = 1,
-		Nonserializable = 2
+		None            = 0,
+		Nonserializable = 1
 	}
 	
 	public class ParsedDocument
