@@ -1,3 +1,11 @@
+2008-09-29  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.CodeAnalysis.addin.xml: Moved analyze command to tools
+	  submenu.
+	* Gui/ViolationWidget.cs, gtk-gui/objects.xml,
+	  gtk-gui/MonoDevelop.CodeAnalysis.ProjectOptionsPanelWidget.cs:
+	  Updated.
+
 2008-08-18  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.CodeAnalysis.mdp: Fix reference to Mono.TextEditor. The

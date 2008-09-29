@@ -1,4 +1,4 @@
-<objects>
+<objects attr-sync="on">
   <object type="MonoDevelop.CodeAnalysis.ProjectOptionsPanelWidget" palette-category="MonoDevelop.CodeAnalysis" allow-children="false" base-type="Gtk.Bin">
     <itemgroups />
     <signals />

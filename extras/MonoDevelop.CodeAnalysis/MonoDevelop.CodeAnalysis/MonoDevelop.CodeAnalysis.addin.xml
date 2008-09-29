@@ -25,12 +25,12 @@
 			defaultHandler="MonoDevelop.CodeAnalysis.AnalyzeHandler"/>
 	</Extension>
 
-	<Extension path="/MonoDevelop/Ide/ContextMenu/ProjectPad/Project">
+	<Extension path="/MonoDevelop/Ide/ContextMenu/ProjectPad/Project/Tools">
 		<CommandItem id="MonoDevelop.CodeAnalysis.CodeAnalysisCommands.AnalyzeProject" />
 	</Extension>
 
 
-	<Extension path="/MonoDevelop/Ide/ContextMenu/ProjectPad/Solution">
+	<Extension path="/MonoDevelop/Ide/ContextMenu/ProjectPad/Solution/Tools">
 		<CommandItem id="MonoDevelop.CodeAnalysis.CodeAnalysisCommands.AnalyzeSolution" />
 	</Extension>
 

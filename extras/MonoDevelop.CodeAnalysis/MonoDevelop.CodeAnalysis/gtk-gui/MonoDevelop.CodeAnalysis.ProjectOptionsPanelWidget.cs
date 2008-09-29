@@ -11,6 +11,8 @@
 namespace MonoDevelop.CodeAnalysis {
     
     
+    [System.ComponentModel.Category("MonoDevelop.CodeAnalysis")]
+    [System.ComponentModel.ToolboxItem(true)]
     public partial class ProjectOptionsPanelWidget {
         
         protected virtual void Build() {
