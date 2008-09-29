@@ -95,12 +95,15 @@ namespace CSharpBinding.Autotools
 			//}
 			
 			if (parameters.DefineSymbols.Length > 0) {
-				writer.WriteLine(" \"-define:" + parameters.DefineSymbols + '"');
+				writer.Write (" \"-define:" + parameters.DefineSymbols + '"');
 			}
 				
 			if (parameters.MainClass != null && parameters.MainClass != "") {
-				writer.WriteLine(" \"-main:" + parameters.MainClass + '"');
+				writer.Write (" \"-main:" + parameters.MainClass + '"');
 			}
+
+			if (config.SignAssembly)
+				writer.Write (" \"-keyfile:" + project.GetRelativeChildPath (config.AssemblyKeyFile) + '"');
 			
 			// TODO check paths and add to extradist?
 			//if (parameters.GenerateXmlDocumentation) {
