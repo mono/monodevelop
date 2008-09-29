@@ -699,5 +699,9 @@ namespace MonoDevelop.Debugger
 				return item.Name;
 			}
 		}
+		public virtual int CompareTo (ICompletionData x)
+		{
+			return String.Compare (Text[0], x.Text[0], true);
+		}
 	}
 }
