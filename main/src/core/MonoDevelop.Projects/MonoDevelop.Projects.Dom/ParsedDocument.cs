@@ -29,6 +29,13 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Projects.Dom
 {
+	[Flags]
+	public enum ParsedDocumentFlags
+	{
+		None            = 1,
+		Nonserializable = 2
+	}
+	
 	public class ParsedDocument
 	{
 		DateTime parseTime = DateTime.Now;
@@ -45,6 +52,13 @@ namespace MonoDevelop.Projects.Dom
 		public ParsedDocument (string fileName)
 		{
 			this.FileName = fileName;
+		}
+
+		ParsedDocumentFlags parsedDocumentFlags = ParsedDocumentFlags.None;
+		public ParsedDocumentFlags ParsedDocumentFlags {
+			get {
+				return parsedDocumentFlags;
+			}
 		}
 		
 		public string FileName {
