@@ -33,7 +33,7 @@ using Ambience_ = MonoDevelop.Projects.Dom.Output.Ambience;
 
 namespace MonoDevelop.Projects.Gui.Completion
 {
-	public class CodeCompletionData : ICompletionDataWithMarkup
+	public class CodeCompletionData : ICompletionDataWithMarkup, IComparable <ICompletionData>
 	{
 		string image;
 		string[] text;
@@ -368,6 +368,10 @@ namespace MonoDevelop.Projects.Gui.Completion
 			
 			return cref;
 		}
-	
+		
+		public virtual int CompareTo (ICompletionData x)
+		{
+			return String.Compare (Text[0], x.Text[0], true);
+		}
 	}
 }

@@ -93,7 +93,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			{
 				ICompletionData d1 = x as ICompletionData;
 				ICompletionData d2 = y as ICompletionData;
-				return String.Compare (d1.Text[0], d2.Text[0], true);
+				return d1.CompareTo (d2);
 			}
 		}
 		

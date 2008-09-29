@@ -22,7 +22,7 @@ using System;
 
 namespace MonoDevelop.Projects.Gui.Completion
 {
-	public interface ICompletionData
+	public interface ICompletionData : IComparable <ICompletionData>
 	{
 		string Image {
 			get;
