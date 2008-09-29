@@ -294,12 +294,14 @@ namespace MonoDevelop.SourceEditor
 							
 							//and, if necessary, set its fold state
 							if (marker != null && setFolded) {
-								marker.IsFolded = folded;
+								// only fold on document open, later added folds are NOT folded by default.
+								marker.IsFolded = widget.isInitialParseUpdate && folded;
 							}
 						}
 						widget.textEditorData.Document.UpdateFoldSegments (foldSegments);
 					}
 					widget.UpdateAutocorTimer ();
+					widget.isInitialParseUpdate = false;
 				} catch (Exception ex) {
 					LoggingService.LogError ("Unhandled exception in ParseInformationUpdaterWorkerThread", ex);
 				}
