@@ -1,5 +1,10 @@
 2008-09-29  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* SimpleProjectMakefileHandler.cs: If an assembly is going to be
+	  signed, make sure the key is distributed.
+
+2008-09-29  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* templates/Makefile.include: Set MONO_IOMAP=drive when running resgen
 	  since resx files may contain Windows style paths. Fixes bug
 	  #398812.

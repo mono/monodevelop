@@ -27,6 +27,7 @@ using System.Text;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Collections;
 using Mono.Addins;
 using MonoDevelop.Deployment;
 
@@ -127,6 +128,7 @@ namespace MonoDevelop.Autotools
 				res_files = new StringBuilder ();
 				extras = new StringBuilder ();
 				datafiles = new StringBuilder ();
+				Set<string> extraFiles = new Set<string> ();
 
 				string includes = String.Empty;
 				string references, dllReferences;
@@ -164,8 +166,8 @@ namespace MonoDevelop.Autotools
 							break;
 
 						case BuildAction.Nothing:
-							
-							extras.AppendFormat ( "\\\n\t{0} ", EscapeSpace (pfpath));
+
+							extraFiles.Add (EscapeSpace(pfpath));
 							break;
 
 						case BuildAction.EmbedAsResource:
@@ -347,9 +349,20 @@ namespace MonoDevelop.Autotools
 					if (config.DebugMode)
 						ctx.AddBuiltFile (project.GetOutputFileName (combineConfig.Id) + ".mdb");
 
+					if (config.SignAssembly) {
+						string spath = project.GetRelativeChildPath (config.AssemblyKeyFile);
+						spath = (PlatformID.Unix == Environment.OSVersion.Platform) ? spath : spath.Replace("\\","/");
+						spath = FileService.NormalizeRelativePath (spath);
+						extraFiles.Add (EscapeSpace (spath));
+					}
+
 					if (buildEnabled && pkgs.Count > 0)
 						ctx.AddRequiredPackages (combineConfig.Id, pkgs);
 				}
+
+
+				foreach (string ef in extraFiles)
+					extras.AppendFormat ( "\\\n\t{0} ", EscapeSpace (ef));
 
 				Dictionary<string, DeployFileData> commonDeployVars = new Dictionary<string, DeployFileData> (allDeployVars);
 				foreach (ConfigSection configSection in configSections) {
