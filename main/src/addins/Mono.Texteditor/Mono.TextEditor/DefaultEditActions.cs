@@ -678,7 +678,7 @@ namespace Mono.TextEditor
 				
 				if (whitespaces > 0) {
 					int offset = line.Offset + line.EditableLength - whitespaces;
-					if (data.Caret.Offset >= offset)
+					if (data.Caret.Offset > offset)
 						data.Caret.Offset -= whitespaces;
 					data.Document.Remove (offset, whitespaces);
 				}
