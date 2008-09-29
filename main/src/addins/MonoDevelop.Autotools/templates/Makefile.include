@@ -41,8 +41,8 @@ build_resources = $(build_resx_resources) $(build_others_resources)
 build_resources_embed = $(build_resx_resources_embed) $(build_others_resources_embed)
 
 # -usesourcepath is available only for resgen2
-emit_resgen_target_1=$(call q2s,$1) : $(call q2s,$(subst .resources,.resx,$1)); cd '$$(shell dirname '$$<')' && $$(RESGEN) '$$(shell basename '$$<')' '$$(shell basename '$$@')'
-emit_resgen_target_2=$(call q2s,$1) : $(call q2s,$(subst .resources,.resx,$1)); $$(RESGEN) -usesourcepath '$$<' '$$@'
+emit_resgen_target_1=$(call q2s,$1) : $(call q2s,$(subst .resources,.resx,$1)); cd '$$(shell dirname '$$<')' && MONO_IOMAP=drive $$(RESGEN) '$$(shell basename '$$<')' '$$(shell basename '$$@')'
+emit_resgen_target_2=$(call q2s,$1) : $(call q2s,$(subst .resources,.resx,$1)); MONO_IOMAP=drive $$(RESGEN) -usesourcepath '$$<' '$$@'
 
 emit_resgen_target=$(if $(filter resgen2,$(RESGEN)),$(emit_resgen_target_2),$(emit_resgen_target_1))
 emit_resgen_targets=$(foreach res,$(build_resx_resources_esc),$(eval $(call emit_resgen_target,$(res))))

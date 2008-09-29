@@ -1,3 +1,10 @@
+2008-09-29  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* templates/Makefile.include: Set MONO_IOMAP=drive when running resgen
+	  since resx files may contain Windows style paths. Fixes bug
+	  #398812.
+	* gtk-gui/objects.xml: Update.
+
 2008-09-17  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Autotools.mdp: Updated projects.
