@@ -37,6 +37,7 @@ FILES =  \
 	Mono.TextEditor/DocumentLocation.cs \
 	Mono.TextEditor/DocumentUpdateRequest.cs \
 	Mono.TextEditor/EditAction.cs \
+	Mono.TextEditor/EmacsWordFindStrategy.cs \
 	Mono.TextEditor/FoldingType.cs \
 	Mono.TextEditor/FoldMarkerMargin.cs \
 	Mono.TextEditor/FoldSegment.cs \
@@ -47,6 +48,7 @@ FILES =  \
 	Mono.TextEditor/ISearchEngine.cs \
 	Mono.TextEditor/ISegment.cs \
 	Mono.TextEditor/ITooltipProvider.cs \
+	Mono.TextEditor/IWordFindStrategy.cs \
 	Mono.TextEditor/LineEventArgs.cs \
 	Mono.TextEditor/LineSegment.cs \
 	Mono.TextEditor/LineSegmentTree.cs \
@@ -56,6 +58,7 @@ FILES =  \
 	Mono.TextEditor/ReplaceEventArgs.cs \
 	Mono.TextEditor/SearchResult.cs \
 	Mono.TextEditor/Segment.cs \
+	Mono.TextEditor/SharpDevelopWordFindStrategy.cs \
 	Mono.TextEditor/TextEditor.cs \
 	Mono.TextEditor/TextEditorData.cs \
 	Mono.TextEditor/TextEditorOptions.cs \

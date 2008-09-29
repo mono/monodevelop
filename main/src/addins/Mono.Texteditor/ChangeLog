@@ -1,5 +1,12 @@
 2008-09-29  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/SharpDevelopWordFindStrategy.cs,
+	  Mono.TextEditor/Document.cs, Mono.TextEditor/IWordFindStrategy.cs,
+	  Mono.TextEditor/EmacsWordFindStrategy.cs: Added emacs/sharpdevelop
+	  find word strategies.
+
+2008-09-29  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/DefaultEditActions.cs: fixed 'Bug 430512 - Editor
 	  forcefully reformats my code incorrectly'.
 

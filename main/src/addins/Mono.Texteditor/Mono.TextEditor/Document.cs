@@ -45,6 +45,7 @@ namespace Mono.TextEditor
 		string fileName;
 		bool   readOnly;
 		ReadOnlyCheckDelegate readOnlyCheckDelegate;
+		IWordFindStrategy wordFindStrategy;
 		
 		/// <value>
 		/// The eol mark used in this document - it's taken from the first line in the document,
@@ -105,6 +106,7 @@ namespace Mono.TextEditor
 				if (LineInserted != null) 
 					LineInserted (this, args);
 			};*/
+			wordFindStrategy = new EmacsWordFindStrategy ();
 		}
 		
 		public event EventHandler<LineEventArgs> LineChanged;
@@ -892,6 +894,15 @@ namespace Mono.TextEditor
 			set { readOnlyCheckDelegate = value; }
 		}
 
+		public IWordFindStrategy WordFindStrategy {
+			get {
+				return wordFindStrategy;
+			}
+			set {
+				wordFindStrategy = value;
+			}
+		}
+
 		public void RequestUpdate (DocumentUpdateRequest request)
 		{
 			lock (syncObject) {
@@ -1048,148 +1059,16 @@ namespace Mono.TextEditor
 		
 		public int FindNextWordOffset (int offset)
 		{
-			int lineNumber   = OffsetToLineNumber (offset);
-			LineSegment line = GetLine (lineNumber);
-			if (line == null)
-				return offset;
-			
-			int result    = offset;
-			int endOffset = line.Offset + line.EditableLength;
-			if (result == endOffset) {
-				line = GetLine (lineNumber + 1);
-				if (line != null)
-					result = line.Offset;
-				return result;
-			}
-			
-			CharacterClass startClass = GetCharacterClass (GetCharAt (result));
-			while (offset < endOffset && GetCharacterClass (GetCharAt (result)) == startClass) {
-				result++;
-			}
-			while (result < endOffset && GetCharacterClass (GetCharAt (result)) == CharacterClass.Whitespace) {
-				result++;
-			}
-			return result;
+			Debug.Assert (this.wordFindStrategy != null);
+			return this.wordFindStrategy.FindNextWordOffset (this, offset);
 		}
 		
 		public int FindPrevWordOffset (int offset)
 		{
-			int lineNumber = OffsetToLineNumber (offset);
-			LineSegment line = GetLine (lineNumber);
-			if (line == null)
-				return offset;
-			
-			int result = offset;
-			if (result == line.Offset) {
-				line = GetLine (lineNumber - 1);
-				if (line != null)
-					result = line.Offset + line.EditableLength;
-				return result;
-			}
-			
-			CharacterClass startClass = GetCharacterClass (GetCharAt (result - 1));
-			while (result > line.Offset && GetCharacterClass (GetCharAt (result - 1)) == startClass) {
-				result--;
-			}
-			if (startClass == CharacterClass.Whitespace && result > line.Offset) {
-				startClass = GetCharacterClass (GetCharAt (result - 1));
-				while (result > line.Offset && GetCharacterClass (GetCharAt (result - 1)) == startClass) {
-					result--;
-				}
-			}
-			return result;
+			Debug.Assert (this.wordFindStrategy != null);
+			return this.wordFindStrategy.FindPrevWordOffset (this, offset);
 		}
-		
-//gedit like routines
-//		public static int FindPrevWordOffset (Document document, int offset)
-//		{
-//			if (offset <= 0)
-//				return 0;
-//			int  result = offset - 1;
-//			bool crossedEol = false;
-//			while (result > 0 && !Char.IsLetterOrDigit (document.GetCharAt (result))) {
-//				crossedEol |= document.GetCharAt (result) == '\n';
-//				crossedEol |= document.GetCharAt (result) == '\r';
-//				result--;
-//			}
-//			
-//			bool isLetter = Char.IsLetter (document.GetCharAt (result));
-//			bool isDigit  = Char.IsDigit (document.GetCharAt (result));
-//			if (crossedEol && (isLetter || isDigit))
-//				return result + 1;
-//			while (result > 0) {
-//				char ch = document.GetCharAt (result);
-//				if (isLetter) {
-//					if (Char.IsLetter (ch)) 
-//						result--;
-//					else {
-//						result++;
-//						break;
-//					}
-//				} else if (isDigit) {
-//					if (Char.IsDigit (ch)) 
-//						result--;
-//					else {
-//						result++;
-//						break;
-//					}
-//				} else {
-//					if (Char.IsLetterOrDigit (ch)) {
-//						result++;
-//						break;
-//					} else 
-//						result--;
-//				}
-//			}
-//			foreach (FoldSegment segment in document.GetFoldingsFromOffset (result)) {
-//				if (segment.IsFolded)
-//					result = System.Math.Min (result, segment.StartLine.Offset + segment.Column);
-//			}
-//			return result;
-//		}
-//		public static int FindNextWordOffset (Document document, int offset)
-//		{
-//			if (offset + 1 >= document.Length)
-//				return document.Length;
-//			int result = offset + 1;
-//			bool crossedEol = false;
-//			while (result < document.Length && !Char.IsLetterOrDigit (document.GetCharAt (result))) {
-//				crossedEol |= document.GetCharAt (result) == '\n';
-//				crossedEol |= document.GetCharAt (result) == '\r';
-//				result++;
-//			}
-//			
-//			bool isLetter = Char.IsLetter (document.GetCharAt (result));
-//			bool isDigit  = Char.IsDigit (document.GetCharAt (result));
-//			if (crossedEol && (isLetter || isDigit))
-//				return result;
-//			while (result < document.Length) {
-//				char ch = document.GetCharAt (result);
-//				if (isLetter) {
-//					if (Char.IsLetter (ch)) 
-//						result++;
-//					else {
-//						break;
-//					}
-//				} else if (isDigit) {
-//					if (Char.IsDigit (ch)) 
-//						result++;
-//					else {
-//						break;
-//					}
-//				} else {
-//					if (Char.IsLetterOrDigit (ch)) {
-//						break;
-//					} else 
-//						result++;
-//				}
-//			}
-//			foreach (FoldSegment segment in document.GetFoldingsFromOffset (result)) {
-//				if (segment.IsFolded)
-//					result = System.Math.Max (result, segment.EndLine.Offset + segment.EndColumn);
-//			}
-//			return result;
-//		}
+
 		#endregion
 	}
 	
