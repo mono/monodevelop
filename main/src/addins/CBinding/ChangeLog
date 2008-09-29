@@ -1,3 +1,7 @@
+2008-09-29  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/DataProvider.cs: implemented IComparable.
+
 2008-09-18  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Gui/DataProvider.cs: Track api changes.
