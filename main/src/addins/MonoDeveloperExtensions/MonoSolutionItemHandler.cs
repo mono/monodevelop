@@ -211,15 +211,21 @@ namespace MonoDeveloper
 			CompilerError error = new CompilerError();
 
 			Match match=regexError.Match(error_string);
-			if (!match.Success) return null;
+			if (!match.Success)
+				return null;
+
+			string level = match.Result("${level}");
+			if (level == "warning")
+				error.IsWarning = true;
+			else if (level != "error")
+				return null;
+			
 			if (String.Empty != match.Result("${file}"))
 				error.FileName = Path.Combine (project.BaseDirectory, match.Result("${file}"));
 			if (String.Empty != match.Result("${line}"))
 				error.Line=Int32.Parse(match.Result("${line}"));
 			if (String.Empty != match.Result("${column}"))
 				error.Column = Int32.Parse(match.Result("${column}"));
-			if (match.Result("${level}") == "warning")
-				error.IsWarning = true;
 			error.ErrorNumber = match.Result ("${number}");
 			error.ErrorText = match.Result ("${message}");
 			return error;

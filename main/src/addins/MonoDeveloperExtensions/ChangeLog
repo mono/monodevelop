@@ -1,3 +1,8 @@
+2008-09-29  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoSolutionItemHandler.cs: Ignore compiler messages which are not
+	  errors or warnings. Fixes bug #393621.
+
 2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* NUnit/NUnit.mdp, MonoDeveloperExtensions.mdp: Updated generated code.
