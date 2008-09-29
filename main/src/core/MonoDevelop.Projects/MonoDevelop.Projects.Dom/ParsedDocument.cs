@@ -59,6 +59,9 @@ namespace MonoDevelop.Projects.Dom
 			get {
 				return parsedDocumentFlags;
 			}
+			set {
+				parsedDocumentFlags = value;
+			}
 		}
 		
 		public string FileName {
