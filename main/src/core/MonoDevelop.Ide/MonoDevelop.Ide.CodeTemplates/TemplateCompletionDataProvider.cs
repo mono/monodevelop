@@ -116,6 +116,10 @@ namespace MonoDevelop.Ide.CodeTemplates
 			{
 				this.template = template;
 			}
+			public virtual int CompareTo (ICompletionData x)
+			{
+				return String.Compare (Text[0], x.Text[0], true);
+			}
 		}
 		
 		public void Dispose ()
