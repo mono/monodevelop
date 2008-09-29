@@ -1,3 +1,9 @@
+2008-09-29  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.XmlEditor.Completion/XmlCompletionData.cs,
+	  MonoDevelop.XmlEditor.Completion/XmlTagCompletionData.cs:
+	  implemented IComparable <ICompletionData>
+
 2008-09-23  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.XmlEditor.addin.xml: Set an id to the xml editor
