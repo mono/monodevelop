@@ -1,3 +1,7 @@
+2008-09-29  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Gui/DataProvider.cs: Track API.
+
 2008-09-23  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* Gui/DataProvider.cs: Track changes in completion API.
