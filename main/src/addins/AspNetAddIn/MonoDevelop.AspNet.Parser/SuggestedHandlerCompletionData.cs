@@ -92,5 +92,10 @@ namespace MonoDevelop.AspNet.Parser
 			else
 				BindingService.AddMemberToClass (entry, codeBehindClass, codeBehindClass, methodInfo, false);
 		}
+
+		public virtual int CompareTo (ICompletionData x)
+		{
+			return String.Compare (Text[0], x.Text[0], true);
+		}		
 	}
 }

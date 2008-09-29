@@ -89,5 +89,10 @@ namespace MonoDevelop.Html
 				buf.EndAtomicUndo ();
 			}
 		}
+
+		public virtual int CompareTo (ICompletionData x)
+		{
+			return String.Compare (Text[0], x.Text[0], true);
+		}		
 	}
 }

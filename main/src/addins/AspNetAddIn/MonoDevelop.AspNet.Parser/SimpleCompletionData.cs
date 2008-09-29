@@ -50,6 +50,11 @@ namespace MonoDevelop.AspNet.Parser
 		public string[] Text { get { return new string[] { CompletionString }; } }
 		public string Description { get; set; }
 		public string CompletionString { get; set; }
+
+		public virtual int CompareTo (ICompletionData x)
+		{
+			return String.Compare (Text[0], x.Text[0], true);
+		}		
 	}
 	
 	public class SimpleCompletionDataWithMarkup : SimpleCompletionData, ICompletionDataWithMarkup
