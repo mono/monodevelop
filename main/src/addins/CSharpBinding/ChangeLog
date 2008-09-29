@@ -1,5 +1,10 @@
 2008-09-29  Mike Krüger <mkrueger@novell.com> 
 
+	* Gui/CSharpTextEditorCompletion.cs: fixed 'Bug 430393 - "// test/"
+	  generates <summary> comment'.
+
+2008-09-29  Mike Krüger <mkrueger@novell.com> 
+
 	* Gui/MemberCompletionData.cs: moved obsolete members at the bottom of
 	  the list.
 

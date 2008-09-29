@@ -216,12 +216,28 @@ namespace MonoDevelop.CSharpBinding.Gui
 				cursor = Editor.SelectionStartPosition;
 				if (cursor < 2)
 					break;
+					
 				if (stateTracker.Engine.IsInsideDocLineComment) {
+					string lineText = Editor.GetLineText (Editor.CursorLine);
+					bool startsDocComment = true;
+					int slashes = 0;
+					for (int i = 0; i < Editor.CursorColumn && i < lineText.Length; i++) {
+						if (lineText[i] == '/') {
+							slashes++;
+							continue;
+						}
+						if (!Char.IsWhiteSpace (lineText[i])) {
+							startsDocComment = false;
+							break;
+						}
+					}
+					if (!startsDocComment || slashes != 3)
+						break;
 					StringBuilder generatedComment = new StringBuilder ();
 					bool generateStandardComment = true;
 					IType insideClass = NRefactoryResolver.GetTypeAtCursor (Document.CompilationUnit, Document.FileName, new DomLocation (Editor.CursorLine, Editor.CursorColumn));
 					if (insideClass != null) {
-						string indent = GetLineWhiteSpace (Editor.GetLineText (Editor.CursorLine));
+						string indent = GetLineWhiteSpace (lineText);
 						if (insideClass.ClassType == ClassType.Delegate) {
 							AppendSummary (generatedComment, indent, out newCursorOffset);
 							IMethod m = null;
