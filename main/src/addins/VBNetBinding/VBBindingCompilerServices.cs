@@ -120,7 +120,7 @@ namespace VBBinding {
 			}
 			
 			if (!String.IsNullOrEmpty (compilerparameters.AdditionalParameters)) {
-				sb.Append(compilerparameters.AdditionalParameters.Length);sb.Append(Environment.NewLine);
+				sb.Append(compilerparameters.AdditionalParameters);sb.Append(Environment.NewLine);
 			}
 			
 			if(compilerparameters.Imports.Length > 0) {
