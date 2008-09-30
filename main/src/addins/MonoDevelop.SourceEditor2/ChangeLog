@@ -1,5 +1,10 @@
 2008-09-30  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs: Exposed the
+	  control left/right option to the user.
+
+2008-09-30  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.SourceEditor/SourceEditorOptions.cs: Exposet
 	  ControlLeftRightMode option in the options class == made a real
 	  monodevelop property (default value taken from platform service).

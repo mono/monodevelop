@@ -38,6 +38,10 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			indentationCombobox.InsertText (0, GettextCatalog.GetString ("None"));
 			indentationCombobox.InsertText (1, GettextCatalog.GetString ("Automatic"));
 			indentationCombobox.InsertText (2, GettextCatalog.GetString ("Smart"));
+
+			controlLeftRightCombobox.InsertText (0, GettextCatalog.GetString ("MonoDevelop"));
+			controlLeftRightCombobox.InsertText (1, GettextCatalog.GetString ("Emacs"));
+			controlLeftRightCombobox.InsertText (2, GettextCatalog.GetString ("SharpDevelop"));
 		}
 		
 		public virtual Gtk.Widget CreatePanelWidget ()
@@ -50,6 +54,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.indentAndTabSizeSpinbutton.Value = SourceEditorOptions.Options.TabSize;
 			this.removeTrailingWhitespacesCheckbutton.Active  = SourceEditorOptions.Options.RemoveTrailingWhitespaces;
 			this.tabsAfterNonTabsCheckbutton.Active  = SourceEditorOptions.Options.AllowTabsAfterNonTabs;
+			this.controlLeftRightCombobox.Active  = (int)SourceEditorOptions.Options.ControlLeftRightMode;
 			return this;
 		}
 		
@@ -63,6 +68,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			SourceEditorOptions.Options.TabIsReindent = this.tabAsReindentCheckbutton.Active;
 			SourceEditorOptions.Options.RemoveTrailingWhitespaces = this.removeTrailingWhitespacesCheckbutton.Active;
 			SourceEditorOptions.Options.AllowTabsAfterNonTabs = this.tabsAfterNonTabsCheckbutton.Active;
+			SourceEditorOptions.Options.ControlLeftRightMode = (ControlLeftRightMode)this.controlLeftRightCombobox.Active;
 		}
 
 		public void Initialize (OptionsDialog dialog, object dataObject)

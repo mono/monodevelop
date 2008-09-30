@@ -1,19 +1,8 @@
 <objects attr-sync="on">
   <object type="MonoDevelop.SourceEditor.ExtensibleTextEditor" palette-category="General" allow-children="false" base-type="Gtk.DrawingArea">
     <itemgroups>
-      <itemgroup label="TextEditor Properties">
-        <property name="SelectionAnchor" />
-        <property name="SelectedText" />
-        <property name="SearchPattern" />
-        <property name="HighlightSearchPattern" />
-        <property name="IsCaseSensitive" />
-        <property name="IsWholeWordOnly" />
-      </itemgroup>
     </itemgroups>
     <signals>
-      <itemgroup label="TextEditor Signals">
-        <signal name="SelectionChanged" />
-      </itemgroup>
     </signals>
   </object>
 </objects>
