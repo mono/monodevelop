@@ -47,6 +47,16 @@ namespace MonoDevelop.Core.Gui
 		public abstract DesktopApplication [] GetAllApplications (string mimetype);
 		public abstract string DefaultMonospaceFont { get; }
 		public abstract string Name { get; }
+
+		/// <summary>
+		/// Used in the text editor. Valid values are found in MonoDevelop.SourceEditor.ControlLeftRightMode in the
+		/// source editor project.
+		/// </summary>
+		public virtual string DefaultControlLeftRightBehavior {
+			get {
+				return "MonoDevelop";
+			}
+		}
 		
 		public virtual void ShowUrl (string url)
 		{
