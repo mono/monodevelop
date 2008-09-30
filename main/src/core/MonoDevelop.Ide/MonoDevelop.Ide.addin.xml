@@ -335,6 +335,10 @@
 				shortcut = "Control|Shift|L"
 				_description = "Convert the selected text to lowercase" 
 				_label = "_Lowercase Selection" />
+		<Command id = "MonoDevelop.Ide.Commands.EditCommands.JoinWithNextLine"
+				shortcut = "Control|Shift|J"
+				_description = "Join the current line with the next line" 
+				_label = "_Join Lines" />
 		<Command id = "MonoDevelop.Ide.Commands.EditCommands.WordCount"
 				_label = "_Word Count..." 
 				description = "Count words in a text file"/>
@@ -1478,6 +1482,8 @@
 				<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.ToggleCodeComment" />
 				<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.IndentSelection" />
 				<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.UnIndentSelection" />
+				<SeparatorItem id = "Separator1" />
+				<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.JoinWithNextLine" />
 			</ItemSet>
 
 			<ItemSet id = "Folding" _label = "F_olding">
