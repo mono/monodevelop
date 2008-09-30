@@ -69,7 +69,8 @@ namespace Mono.TextEditor
 		string colorStyle = "Default";
 		
 		double zoom = 1.0;
-		
+		IWordFindStrategy wordFindStrategy = new EmacsWordFindStrategy (true);
+
 		public double Zoom {
 			get {
 				return zoom;
@@ -116,7 +117,16 @@ namespace Mono.TextEditor
 				return this.tabsToSpaces ? new string (' ', this.TabSize) : "\t";
 			}
 		}
-
+		
+		public virtual IWordFindStrategy WordFindStrategy {
+			get {
+				return wordFindStrategy;
+			}
+			set {
+				wordFindStrategy = value;
+			}
+		}
+		
 		public virtual bool AllowTabsAfterNonTabs {
 			get {
 				return allowTabsAfterNonTabs;

@@ -67,7 +67,7 @@ namespace Mono.TextEditor
 	{
 		public override void Run (TextEditorData data)
 		{
-			data.Caret.Offset = data.Document.FindPrevWordOffset (data.Caret.Offset);
+			data.Caret.Offset = data.FindPrevWordOffset (data.Caret.Offset);
 		}
 	}
 	
@@ -76,7 +76,7 @@ namespace Mono.TextEditor
 		public override void Run (TextEditorData data)
 		{
 			int oldLine = data.Caret.Line;
-			int offset = data.Document.FindPrevWordOffset (data.Caret.Offset);
+			int offset = data.FindPrevWordOffset (data.Caret.Offset);
 			if (data.Caret.Offset != offset && data.CanEdit (oldLine) && data.CanEdit (data.Caret.Line)) {
 				data.Document.Remove (offset, data.Caret.Offset - offset);
 				data.Caret.Offset = offset;
@@ -92,7 +92,7 @@ namespace Mono.TextEditor
 		public override void Run (TextEditorData data)
 		{
 			int oldLine = data.Caret.Line;
-			int offset = data.Document.FindNextWordOffset (data.Caret.Offset);
+			int offset = data.FindNextWordOffset (data.Caret.Offset);
 			if (data.Caret.Offset != offset && data.CanEdit (oldLine) && data.CanEdit (data.Caret.Line))  {
 				data.Document.Remove (data.Caret.Offset, offset - data.Caret.Offset);
 				data.Document.CommitLineToEndUpdate (data.Caret.Line);
@@ -159,7 +159,7 @@ namespace Mono.TextEditor
 	{
 		public override void Run (TextEditorData data)
 		{
-			data.Caret.Offset = data.Document.FindNextWordOffset (data.Caret.Offset);
+			data.Caret.Offset = data.FindNextWordOffset (data.Caret.Offset);
 		}
 	}
 	

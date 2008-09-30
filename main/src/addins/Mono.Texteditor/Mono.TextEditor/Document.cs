@@ -45,7 +45,6 @@ namespace Mono.TextEditor
 		string fileName;
 		bool   readOnly;
 		ReadOnlyCheckDelegate readOnlyCheckDelegate;
-		IWordFindStrategy wordFindStrategy;
 		
 		/// <value>
 		/// The eol mark used in this document - it's taken from the first line in the document,
@@ -106,7 +105,6 @@ namespace Mono.TextEditor
 				if (LineInserted != null) 
 					LineInserted (this, args);
 			};*/
-			wordFindStrategy = new EmacsWordFindStrategy ();
 		}
 		
 		public event EventHandler<LineEventArgs> LineChanged;
@@ -894,14 +892,6 @@ namespace Mono.TextEditor
 			set { readOnlyCheckDelegate = value; }
 		}
 
-		public IWordFindStrategy WordFindStrategy {
-			get {
-				return wordFindStrategy;
-			}
-			set {
-				wordFindStrategy = value;
-			}
-		}
 
 		public void RequestUpdate (DocumentUpdateRequest request)
 		{
@@ -1057,18 +1047,6 @@ namespace Mono.TextEditor
 			return CharacterClass.Unknown;
 		}
 		
-		public int FindNextWordOffset (int offset)
-		{
-			Debug.Assert (this.wordFindStrategy != null);
-			return this.wordFindStrategy.FindNextWordOffset (this, offset);
-		}
-		
-		public int FindPrevWordOffset (int offset)
-		{
-			Debug.Assert (this.wordFindStrategy != null);
-			return this.wordFindStrategy.FindPrevWordOffset (this, offset);
-		}
-
 		#endregion
 	}
 	

@@ -359,7 +359,7 @@ namespace Mono.TextEditor.Highlighting
 //			updateIsRunning = false;
 //		}
 		
-		static readonly object syncObject  = new object();
+	//	static readonly object syncObject  = new object();
 		static Thread         updateThread = null;
 		static AutoResetEvent queueSignal  = new AutoResetEvent (false);
 		

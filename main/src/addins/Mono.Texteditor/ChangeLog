@@ -1,3 +1,13 @@
+2008-09-30  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/SharpDevelopWordFindStrategy.cs,
+	  Mono.TextEditor/Document.cs, Mono.TextEditor/TextEditorData.cs,
+	  Mono.TextEditor/TextEditorOptions.cs,
+	  Mono.TextEditor/DefaultEditActions.cs,
+	  Mono.TextEditor/EmacsWordFindStrategy.cs,
+	  Mono.TextEditor.Highlighting/SyntaxModeService.cs: Refactorey word
+	  strategy (moved to text editor options/added '_' treatment switch).
+
 2008-09-29  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor/SharpDevelopWordFindStrategy.cs,

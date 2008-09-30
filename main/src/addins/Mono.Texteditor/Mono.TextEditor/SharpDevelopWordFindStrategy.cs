@@ -40,9 +40,14 @@ namespace Mono.TextEditor
 		
 		public static CharacterClass GetCharacterClass (char ch)
 		{
+			return  GetCharacterClass (ch, true);
+		}
+		
+		public static CharacterClass GetCharacterClass (char ch, bool treat_)
+		{
 			if (Char.IsWhiteSpace (ch))
 				return CharacterClass.Whitespace;
-			if (Char.IsLetterOrDigit (ch) || ch == '_')
+			if (Char.IsLetterOrDigit (ch) || (treat_ && ch == '_'))
 				return CharacterClass.IdentifierPart;
 			return CharacterClass.Unknown;
 		}

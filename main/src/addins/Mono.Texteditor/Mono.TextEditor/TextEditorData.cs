@@ -148,7 +148,18 @@ namespace Mono.TextEditor
 				return document.ReadOnlyCheckDelegate (line);
 			return !document.ReadOnly;
 		}
+
+		public int FindNextWordOffset (int offset)
+		{
+			return this.options.WordFindStrategy.FindNextWordOffset (this.Document, offset);
+		}
 		
+		public int FindPrevWordOffset (int offset)
+		{
+			return this.options.WordFindStrategy.FindPrevWordOffset (this.Document, offset);
+		}
+
+
 		#region undo/redo handling
 		int      savedCaretPos;
 		ISegment savedSelection;
