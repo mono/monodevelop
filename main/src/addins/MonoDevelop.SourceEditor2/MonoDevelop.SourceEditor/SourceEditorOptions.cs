@@ -51,7 +51,13 @@ namespace MonoDevelop.SourceEditor
 		/// </summary>
 		UserSpecified
 	}
-	
+
+	public enum ControlLeftRightMode {
+		MonoDevelop,
+		Emacs,
+		SharpDevelop
+		
+	}
 	
 	public class SourceEditorOptions : TextEditorOptions
 	{
@@ -114,6 +120,8 @@ namespace MonoDevelop.SourceEditor
 			this.DefaultCommentFolding      =  PropertyService.Get ("DefaultCommentFolding", true);
 			base.RemoveTrailingWhitespaces = PropertyService.Get ("RemoveTrailingWhitespaces", true);
 			base.AllowTabsAfterNonTabs = PropertyService.Get ("AllowTabsAfterNonTabs", true);
+			
+			this.ControlLeftRightMode =  (ControlLeftRightMode)Enum.Parse (typeof (ControlLeftRightMode), PropertyService.Get ("ControlLeftRightMode", IdeApp.Services.PlatformService.DefaultControlLeftRightBehavior));
 		}
 		
 		#region new options
@@ -274,6 +282,47 @@ namespace MonoDevelop.SourceEditor
 		#endregion
 		
 		#region old options
+		ControlLeftRightMode controlLeftRightMode = ControlLeftRightMode.MonoDevelop;
+		public ControlLeftRightMode ControlLeftRightMode {
+			get {
+				return controlLeftRightMode;
+			}
+			set {
+				if (controlLeftRightMode != value) {
+					controlLeftRightMode = value;
+					PropertyService.Set ("ControlLeftRightMode", value.ToString ());
+					SetWordFindStrategy ();
+				}
+			}
+		}
+		
+		IWordFindStrategy wordFindStrategy = null;
+		public override IWordFindStrategy WordFindStrategy {
+			get {
+				if (wordFindStrategy == null)
+					SetWordFindStrategy ();
+				return this.wordFindStrategy;
+			}
+			set {
+				throw new System.NotImplementedException ();
+			}
+		}
+		
+		void SetWordFindStrategy ()
+		{
+			switch (ControlLeftRightMode) {
+			case ControlLeftRightMode.MonoDevelop:
+				this.wordFindStrategy = new EmacsWordFindStrategy (true);
+				break;
+			case ControlLeftRightMode.Emacs:
+				this.wordFindStrategy = new EmacsWordFindStrategy (false);
+				break;
+			case ControlLeftRightMode.SharpDevelop:
+				this.wordFindStrategy = new SharpDevelopWordFindStrategy ();
+				break;
+			}
+		}
+
 		public override bool AllowTabsAfterNonTabs {
 			set {
 				PropertyService.Set ("AllowTabsAfterNonTabs", value);
