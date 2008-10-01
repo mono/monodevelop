@@ -36,10 +36,10 @@ using MonoDevelop.CSharpBinding;
 
 namespace MonoDevelop.CSharpBinding.Tests
 {
-	[TestFixture()]
-	public class MemberTests
+	[TestFixture]
+	public class MemberTests : UnitTests.TestBase
 	{
-		public void TestFields (IParser parser)
+		void DoTestFields (IParser parser)
 		{
 			ICompilationUnit unit = parser.Parse ("a.cs", @"class AClass { int x, y; }").CompilationUnit;
 			Assert.AreEqual (1, unit.Types.Count);
@@ -53,14 +53,14 @@ namespace MonoDevelop.CSharpBinding.Tests
 			Assert.AreEqual ("System.Int32", fields[1].ReturnType.FullName);
 		}
 		
-		[Test()]
+		[Test]
 		public void TestFields ()
 		{
-			TestFields (new NRefactoryParser ());
-//			TestFields (new DomParser ());
+			DoTestFields (new NRefactoryParser ());
+//			DoTestFields (new DomParser ());
 		}
 		
-		public void TestMethods (IParser parser)
+		void DoTestMethods (IParser parser)
 		{
 			ICompilationUnit unit = parser.Parse ("a.cs", 
 @"class AClass {
@@ -83,14 +83,14 @@ namespace MonoDevelop.CSharpBinding.Tests
 			Assert.AreEqual ("a", methods[1].Parameters[0].Name);
 		}
 		
-		[Test()]
+		[Test]
 		public void TestMethods ()
 		{
-			TestMethods (new NRefactoryParser ());
-//			TestMethods (new DomParser ());
+			DoTestMethods (new NRefactoryParser ());
+//			DoTestMethods (new DomParser ());
 		}
 		
-		public void TestConstructor (IParser parser)
+		void DoTestConstructor (IParser parser)
 		{
 			ICompilationUnit unit = parser.Parse ("a.cs", 
 @"public abstract class BaseClass {
@@ -108,14 +108,14 @@ namespace MonoDevelop.CSharpBinding.Tests
 			Assert.IsTrue (methods[1].IsConstructor);
 		}
 		
-		[Test()]
+		[Test]
 		public void TestConstructor ()
 		{
-			TestConstructor (new NRefactoryParser ());
-//			TestConstructor (new DomParser ());
+			DoTestConstructor (new NRefactoryParser ());
+//			DoTestConstructor (new DomParser ());
 		}
 		
-		public void TestProperties (IParser parser)
+		void DoTestProperties (IParser parser)
 		{
 			ICompilationUnit unit = parser.Parse ("a.cs", 
 @"class AClass {
@@ -151,14 +151,14 @@ namespace MonoDevelop.CSharpBinding.Tests
 			Assert.IsFalse (properties[2].IsIndexer);
 		}
 		
-		[Test()]
+		[Test]
 		public void TestProperties ()
 		{
-			TestProperties (new NRefactoryParser ());
-//			TestProperties (new DomParser ());
+			DoTestProperties (new NRefactoryParser ());
+//			DoTestProperties (new DomParser ());
 		}
 		
-		public void TestIndexer (IParser parser)
+		void DoTestIndexer (IParser parser)
 		{
 			ICompilationUnit unit = parser.Parse ("a.cs", 
 @"class AClass {
@@ -177,14 +177,14 @@ namespace MonoDevelop.CSharpBinding.Tests
 			Assert.AreEqual ("a", properties[0].Parameters[0].Name);
 		}
 		
-		[Test()]
+		[Test]
 		public void TestIndexer ()
 		{
-			TestIndexer (new NRefactoryParser ());
-//			TestIndexer (new DomParser ());
+			DoTestIndexer (new NRefactoryParser ());
+//			DoTestIndexer (new DomParser ());
 		}
 
-		public void TestEvents (IParser parser)
+		void DoTestEvents (IParser parser)
 		{
 			ICompilationUnit unit = parser.Parse ("a.cs", 
 @"class AClass {
@@ -199,11 +199,11 @@ namespace MonoDevelop.CSharpBinding.Tests
 			Assert.AreEqual ("EventHandler", events[0].ReturnType.Name);
 		}
 		
-		[Test()]
+		[Test]
 		public void TestEvents ()
 		{
-			TestIndexer (new NRefactoryParser ());
-//			TestIndexer (new DomParser ());
+			DoTestEvents (new NRefactoryParser ());
+//			DoTestEvents (new DomParser ());
 		}
 		
 	}

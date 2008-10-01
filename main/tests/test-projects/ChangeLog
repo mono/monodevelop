@@ -1,3 +1,39 @@
+2008-10-01  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* vs-local-copy, vs-local-copy/ClassLibrary5,
+	  vs-local-copy/ClassLibrary5/Properties,
+	  vs-local-copy/ClassLibrary5/Properties/AssemblyInfo.cs,
+	  vs-local-copy/ClassLibrary5/Class5.cs,
+	  vs-local-copy/ClassLibrary5/ClassLibrary5.csproj,
+	  vs-local-copy/VSLocalCopyTest.sln, vs-local-copy/ClassLibrary1,
+	  vs-local-copy/ClassLibrary1/TextFile1.txt,
+	  vs-local-copy/ClassLibrary1/ClassLibrary1.csproj,
+	  vs-local-copy/ClassLibrary1/Class1.cs,
+	  vs-local-copy/ClassLibrary1/Properties,
+	  vs-local-copy/ClassLibrary1/Properties/AssemblyInfo.cs,
+	  vs-local-copy/ClassLibrary2,
+	  vs-local-copy/ClassLibrary2/TextFile2.txt,
+	  vs-local-copy/ClassLibrary2/Class2.cs,
+	  vs-local-copy/ClassLibrary2/ClassLibrary2.csproj,
+	  vs-local-copy/ClassLibrary2/Properties,
+	  vs-local-copy/ClassLibrary2/Properties/AssemblyInfo.cs,
+	  vs-local-copy/ClassLibrary3,
+	  vs-local-copy/ClassLibrary3/Properties,
+	  vs-local-copy/ClassLibrary3/Properties/AssemblyInfo.cs,
+	  vs-local-copy/ClassLibrary3/Class3.cs,
+	  vs-local-copy/ClassLibrary3/ClassLibrary3.csproj,
+	  vs-local-copy/ClassLibrary4,
+	  vs-local-copy/ClassLibrary4/Properties,
+	  vs-local-copy/ClassLibrary4/Properties/AssemblyInfo.cs,
+	  vs-local-copy/ClassLibrary4/ClassLibrary4.csproj,
+	  vs-local-copy/ClassLibrary4/Class4.cs,
+	  vs-local-copy/VSLocalCopyTest,
+	  vs-local-copy/VSLocalCopyTest/Program.cs,
+	  vs-local-copy/VSLocalCopyTest/Properties,
+	  vs-local-copy/VSLocalCopyTest/Properties/AssemblyInfo.cs,
+	  vs-local-copy/VSLocalCopyTest/VSLocalCopyTest.csproj: Add a test
+	  project for local copy of files and references.
+
 2008-06-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* test-build-configs, test-build-configs/test-build-configs.mds,

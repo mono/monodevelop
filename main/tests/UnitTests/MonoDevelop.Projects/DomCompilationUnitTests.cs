@@ -33,7 +33,7 @@ using MonoDevelop.Projects.Dom;
 namespace UnitTests
 {
 	[TestFixture()]
-	public class DomCompilationUnitTests
+	public class DomCompilationUnitTests : UnitTests.TestBase
 	{
 		[Test()]
 		public void TestGetNamespaceContentsCase1 ()

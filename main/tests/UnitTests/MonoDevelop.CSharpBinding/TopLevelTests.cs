@@ -34,10 +34,10 @@ using MonoDevelop.CSharpBinding;
 
 namespace MonoDevelop.CSharpBinding.Tests
 {
-	[TestFixture()]
-	public class TopLevelTests
+	[TestFixture]
+	public class TopLevelTests : UnitTests.TestBase
 	{
-		public void TestUsings (IParser parser)
+		void DoTestUsings (IParser parser)
 		{
 			ICompilationUnit unit = parser.Parse ("a.cs", 
 @"using System;
@@ -57,14 +57,14 @@ using NUnit.Framework;").CompilationUnit;
 			}
 		}
 		
-		[Test()]
+		[Test]
 		public void TestUsings ()
 		{
-			TestUsings (new NRefactoryParser ());
-			//TestUsings (new DomParser ());
+			DoTestUsings (new NRefactoryParser ());
+			//DoTestUsings (new DomParser ());
 		}
 		
-		public void TestEnums (IParser parser)
+		void DoTestEnums (IParser parser)
 		{
 			ICompilationUnit unit = parser.Parse ("a.cs", 
 @"enum TestEnum {
@@ -93,14 +93,14 @@ using NUnit.Framework;").CompilationUnit;
 			}
 		}
 		
-		[Test()]
+		[Test]
 		public void TestEnums ()
 		{
-			TestEnums (new NRefactoryParser ());
-//			TestEnums (new DomParser ());
+			DoTestEnums (new NRefactoryParser ());
+//			DoTestEnums (new DomParser ());
 		}
 		
-		public void TestStruct (IParser parser)
+		void DoTestStruct (IParser parser)
 		{
 			ICompilationUnit unit = parser.Parse ("a.cs", @"struct TestStruct { }").CompilationUnit;
 			Assert.AreEqual (1, unit.Types.Count);
@@ -109,14 +109,14 @@ using NUnit.Framework;").CompilationUnit;
 			Assert.AreEqual ("TestStruct", type.Name);
 		}
 		
-		[Test()]
+		[Test]
 		public void TestStruct ()
 		{
-			TestStruct (new NRefactoryParser ());
-//			TestStruct (new DomParser ());
+			DoTestStruct (new NRefactoryParser ());
+//			DoTestStruct (new DomParser ());
 		}
 		
-		public void TestInterface (IParser parser)
+		void DoTestInterface (IParser parser)
 		{
 			ICompilationUnit unit = parser.Parse ("a.cs", @"interface TestInterface { }").CompilationUnit;
 			Assert.AreEqual (1, unit.Types.Count);
@@ -125,14 +125,14 @@ using NUnit.Framework;").CompilationUnit;
 			Assert.AreEqual ("TestInterface", type.Name);
 		}
 		
-		[Test()]
+		[Test]
 		public void TestInterface ()
 		{
-			TestInterface (new NRefactoryParser ());
-//			TestInterface (new DomParser ());
+			DoTestInterface (new NRefactoryParser ());
+//			DoTestInterface (new DomParser ());
 		}
 		
-		public void TestDelegate (IParser parser)
+		void DoTestDelegate (IParser parser)
 		{
 			ICompilationUnit unit = parser.Parse ("a.cs", @"delegate void TestDelegate (int a, string b);").CompilationUnit;
 			Assert.AreEqual (1, unit.Types.Count);
@@ -153,14 +153,14 @@ using NUnit.Framework;").CompilationUnit;
 			}
 		}
 		
-		[Test()]
+		[Test]
 		public void TestDelegate ()
 		{
-			TestDelegate (new NRefactoryParser ());
-//			TestDelegate (new DomParser ());
+			DoTestDelegate (new NRefactoryParser ());
+//			DoTestDelegate (new DomParser ());
 		}
 		
-		public void TestClass (IParser parser)
+		void DoTestClass (IParser parser)
 		{
 			ICompilationUnit unit = parser.Parse ("a.cs", @"public partial class TestClass<T, S> : MyBaseClass where T : Constraint { }").CompilationUnit;
 			Assert.AreEqual (1, unit.Types.Count);
@@ -175,14 +175,14 @@ using NUnit.Framework;").CompilationUnit;
 			Assert.AreEqual ("S", type.TypeParameters[1].Name);
 		}
 		
-		[Test()]
+		[Test]
 		public void TestClass ()
 		{
-			TestClass (new NRefactoryParser ());
-//			TestClass (new DomParser ());
+			DoTestClass (new NRefactoryParser ());
+//			DoTestClass (new DomParser ());
 		}
 		
-		public void TestNamespace (IParser parser)
+		void DoTestNamespace (IParser parser)
 		{
 			ICompilationUnit unit = parser.Parse ("a.cs", @"namespace Test1.Test2.Test3 { class A { } }").CompilationUnit;
 			Assert.AreEqual (3, unit.Usings.Count);
@@ -194,11 +194,11 @@ using NUnit.Framework;").CompilationUnit;
 			Assert.AreEqual ("Test1.Test2.Test3", type.Namespace);
 		}
 		
-		[Test()]
+		[Test]
 		public void TestNamespace ()
 		{
-			TestNamespace (new NRefactoryParser ());
-//			TestNamespace (new DomParser ());
+			DoTestNamespace (new NRefactoryParser ());
+//			DoTestNamespace (new DomParser ());
 		}
 	}
 }

@@ -36,7 +36,7 @@ using MonoDevelop.Projects.Dom.Serialization;
 namespace MonoDevelop.Projects.DomTests
 {
 	[TestFixture()]
-	public class DomPersistenceTests
+	public class DomPersistenceTests : UnitTests.TestBase
 	{
 		
 		[Test()]

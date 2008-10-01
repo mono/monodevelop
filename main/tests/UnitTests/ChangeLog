@@ -1,3 +1,19 @@
+2008-10-01  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Projects/DomCompilationUnitTests.cs,
+	  MonoDevelop.Projects/DomPersistenceTests.cs,
+	  MonoDevelop.Projects/ProjectTests.cs,
+	  MonoDevelop.Projects/TestProjectsChecks.cs, UnitTests.mdp,
+	  MonoDevelop.CSharpBinding/CodeCompletionCSharp3Tests.cs,
+	  MonoDevelop.CSharpBinding/TopLevelTests.cs,
+	  MonoDevelop.CSharpBinding/ParameterCompletionTests.cs,
+	  MonoDevelop.CSharpBinding/CodeCompletionOperatorTests.cs,
+	  MonoDevelop.CSharpBinding/CodeCompletionTests.cs,
+	  MonoDevelop.CSharpBinding/MemberTests.cs, Makefile.am: Tweak to fix
+	  tests build/run.
+	* MonoDevelop.Projects/LocalCopyTests.cs: Add tests for local copy of
+	  files and references.
+
 2008-09-25  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor.Tests/DocumentTests.cs,

@@ -77,37 +77,37 @@ namespace MonoDevelop.Projects
 			string f = Path.Combine (p.BaseDirectory, "Bitmap1.bmp");
 			ProjectFile pf = p.Files.GetFile (f);
 			Assert.IsNotNull (pf, "Bitmap1.bmp not found");
-			Assert.AreEqual (BuildAction.EmbedAsResource, pf.BuildAction);
+			Assert.AreEqual (BuildAction.EmbeddedResource, pf.BuildAction);
 			Assert.AreEqual ("ResourcesTesterNamespace.Bitmap1.bmp", pf.ResourceId);
 			
 			f = Path.Combine (p.BaseDirectory, "BitmapCultured.ca.bmp");
 			pf = p.Files.GetFile (f);
 			Assert.IsNotNull (pf, "BitmapCultured.ca.bmp not found");
-			Assert.AreEqual (BuildAction.EmbedAsResource, pf.BuildAction);
+			Assert.AreEqual (BuildAction.EmbeddedResource, pf.BuildAction);
 			Assert.AreEqual ("ResourcesTesterNamespace.BitmapCultured.bmp", pf.ResourceId);
 			
 			f = Path.Combine (p.BaseDirectory, "Cultured.ca.resx");
 			pf = p.Files.GetFile (f);
 			Assert.IsNotNull (pf, "Cultured.ca.resx not found");
-			Assert.AreEqual (BuildAction.EmbedAsResource, pf.BuildAction);
+			Assert.AreEqual (BuildAction.EmbeddedResource, pf.BuildAction);
 			Assert.AreEqual ("ResourcesTesterNamespace.Cultured.ca.resources", pf.ResourceId);
 			
 			f = Path.Combine (p.BaseDirectory, "FormFile.ca.resx");
 			pf = p.Files.GetFile (f);
 			Assert.IsNotNull (pf, "FormFile.ca.resx not found");
-			Assert.AreEqual (BuildAction.EmbedAsResource, pf.BuildAction);
+			Assert.AreEqual (BuildAction.EmbeddedResource, pf.BuildAction);
 			Assert.AreEqual ("ResourcesTester.Form1.ca.resources", pf.ResourceId);
 			
 			f = Path.Combine (p.BaseDirectory, "FormFile.resx");
 			pf = p.Files.GetFile (f);
 			Assert.IsNotNull (pf, "FormFile.resx not found");
-			Assert.AreEqual (BuildAction.EmbedAsResource, pf.BuildAction);
+			Assert.AreEqual (BuildAction.EmbeddedResource, pf.BuildAction);
 			Assert.AreEqual ("ResourcesTester.Form1.resources", pf.ResourceId);
 			
 			f = Path.Combine (p.BaseDirectory, "Normal.resx");
 			pf = p.Files.GetFile (f);
 			Assert.IsNotNull (pf, "Normal.resx not found");
-			Assert.AreEqual (BuildAction.EmbedAsResource, pf.BuildAction);
+			Assert.AreEqual (BuildAction.EmbeddedResource, pf.BuildAction);
 			Assert.AreEqual ("ResourcesTesterNamespace.Normal.resources", pf.ResourceId);
 			
 			string subdir = Path.Combine (p.BaseDirectory, "Subfolder");
@@ -115,37 +115,37 @@ namespace MonoDevelop.Projects
 			f = Path.Combine (subdir, "Bitmap2.bmp");
 			pf = p.Files.GetFile (f);
 			Assert.IsNotNull (pf, "Subfolder/Bitmap2.bmp not found");
-			Assert.AreEqual (BuildAction.EmbedAsResource, pf.BuildAction);
+			Assert.AreEqual (BuildAction.EmbeddedResource, pf.BuildAction);
 			Assert.AreEqual ("ResourcesTesterNamespace.Subfolder.Bitmap2.bmp", pf.ResourceId);
 			
 			f = Path.Combine (subdir, "BitmapCultured2.ca.bmp");
 			pf = p.Files.GetFile (f);
 			Assert.IsNotNull (pf, "Subfolder/BitmapCultured2.ca.bmp not found");
-			Assert.AreEqual (BuildAction.EmbedAsResource, pf.BuildAction);
+			Assert.AreEqual (BuildAction.EmbeddedResource, pf.BuildAction);
 			Assert.AreEqual ("ResourcesTesterNamespace.Subfolder.BitmapCultured2.bmp", pf.ResourceId);
 			
 			f = Path.Combine (subdir, "Cultured2.ca.resx");
 			pf = p.Files.GetFile (f);
 			Assert.IsNotNull (pf, "Subfolder/Cultured2.ca.resx not found");
-			Assert.AreEqual (BuildAction.EmbedAsResource, pf.BuildAction);
+			Assert.AreEqual (BuildAction.EmbeddedResource, pf.BuildAction);
 			Assert.AreEqual ("ResourcesTesterNamespace.Subfolder.Cultured2.ca.resources", pf.ResourceId);
 			
 			f = Path.Combine (subdir, "FormFile2.ca.resx");
 			pf = p.Files.GetFile (f);
 			Assert.IsNotNull (pf, "Subfolder/FormFile2.ca.resx not found");
-			Assert.AreEqual (BuildAction.EmbedAsResource, pf.BuildAction);
+			Assert.AreEqual (BuildAction.EmbeddedResource, pf.BuildAction);
 			Assert.AreEqual ("ResourcesTester.Form2.ca.resources", pf.ResourceId);
 			
 			f = Path.Combine (subdir, "FormFile2.resx");
 			pf = p.Files.GetFile (f);
 			Assert.IsNotNull (pf, "Subfolder/FormFile2.resx not found");
-			Assert.AreEqual (BuildAction.EmbedAsResource, pf.BuildAction);
+			Assert.AreEqual (BuildAction.EmbeddedResource, pf.BuildAction);
 			Assert.AreEqual ("ResourcesTester.Form2.resources", pf.ResourceId);
 			
 			f = Path.Combine (subdir, "Normal2.resx");
 			pf = p.Files.GetFile (f);
 			Assert.IsNotNull (pf, "Subfolder/Normal2.resx not found");
-			Assert.AreEqual (BuildAction.EmbedAsResource, pf.BuildAction);
+			Assert.AreEqual (BuildAction.EmbeddedResource, pf.BuildAction);
 			Assert.AreEqual ("ResourcesTesterNamespace.Subfolder.Normal2.resources", pf.ResourceId);
 		}
 	}

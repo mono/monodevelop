@@ -11,6 +11,7 @@ FIXTURE = /fixture=$(fixture)
 REFS =  \
 	$(MONO_NUNIT_LIBS) \
 	-pkg:gtk-dotnet-2.0 \
+	-r:../../build/bin/NRefactory.dll \
 	-r:../../build/AddIns/BackendBindings/MonoDevelop.CSharpBinding.dll \
 	-r:../../build/AddIns/MonoDevelop.Autotools/MonoDevelop.Autotools.dll \
 	-r:../../build/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.dll \
@@ -43,6 +44,7 @@ FILES =  \
 	MonoDevelop.CSharpBinding/TopLevelTests.cs \
 	MonoDevelop.Projects/DomCompilationUnitTests.cs \
 	MonoDevelop.Projects/DomPersistenceTests.cs \
+	MonoDevelop.Projects/LocalCopyTests.cs \
 	MonoDevelop.Projects/MakefileTests.cs \
 	MonoDevelop.Projects/MdsTests.cs \
 	MonoDevelop.Projects/MonoDeveloperFormatTests.cs \
@@ -62,7 +64,7 @@ test: all
 	if test -n "$(fixture)"; then \
 		fp="/fixture=$(fixture)"; \
 	fi; \
-	$(MD_LAUNCH_SETUP) mono --debug $(NUNIT_CONSOLE) $(top_builddir)/build/bin/UnitTests.dll $$fp
+	$(MD_LAUNCH_SETUP) MONO_PATH=$(top_builddir)/build/AddIns/BackendBindings mono --debug $(NUNIT_CONSOLE) $(top_builddir)/build/bin/UnitTests.dll $$fp
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 EXTRA_DIST = $(FILES) $(RES)
