@@ -62,7 +62,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 			List<string> cultures = new List<string> ();
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Removing all .resources files"));
 			foreach (ProjectFile pfile in project.Files) {
-				if (pfile.BuildAction == BuildAction.EmbedAsResource &&
+				if (pfile.BuildAction == BuildAction.EmbeddedResource &&
 					Path.GetExtension (pfile.Name) == ".resx") {
 					string resFilename = Path.ChangeExtension (pfile.Name, ".resources");
 					if (File.Exists (resFilename))
@@ -94,7 +94,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 			
 			bool hasBuildableFiles = false;
 			foreach (ProjectFile pf in project.Files) {
-				if (pf.BuildAction == BuildAction.Compile || pf.BuildAction == BuildAction.EmbedAsResource) {
+				if (pf.BuildAction == BuildAction.Compile || pf.BuildAction == BuildAction.EmbeddedResource) {
 					hasBuildableFiles = true;
 					break;
 				}
@@ -178,7 +178,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 			bool cloned = false;
 			Dictionary<string, string> resourcesByCulture = new Dictionary<string, string> ();
 			foreach (ProjectFile finfo in projectFiles) {
-				if (finfo.Subtype == Subtype.Directory || finfo.BuildAction != BuildAction.EmbedAsResource)
+				if (finfo.Subtype == Subtype.Directory || finfo.BuildAction != BuildAction.EmbeddedResource)
 					continue;
 
 				string fname = finfo.Name;

@@ -6,4 +6,6 @@
 		<ItemProperty member="md1ChildEntries" scope="*" name="Entry"  serializationDataType="MonoDevelop.Projects.PathDataType"/>
 		<ItemProperty member="md1RootEntry" name="rootEntry"  serializationDataType="MonoDevelop.Projects.PathDataType"/>
 	</DataItem>
+	<DataItem class = "MonoDevelop.Projects.ProjectFile" customDataItem = "MonoDevelop.Deployment.MD1ProjectFileSerializer" >
+	</DataItem>
 </SerializationMap>

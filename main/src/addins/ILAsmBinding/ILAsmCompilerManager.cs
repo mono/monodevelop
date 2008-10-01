@@ -50,15 +50,9 @@ namespace ILAsmBinding
 			StringBuilder parameters = new StringBuilder();
 			foreach (ProjectFile finfo in projectFiles) {
 				if (finfo.Subtype != Subtype.Directory) {
-					switch (finfo.BuildAction) {
-						case BuildAction.Compile:
-							if (CanCompile (finfo.Name)) {
-								parameters.Append (finfo.Name);
-								parameters.Append (" ");
-							}
-							break;
-						default:
-							break;
+					if (finfo.BuildAction == "Compile" && CanCompile (finfo.Name)) {
+						parameters.Append (finfo.Name);
+						parameters.Append (" ");
 					}
 				}
 			}

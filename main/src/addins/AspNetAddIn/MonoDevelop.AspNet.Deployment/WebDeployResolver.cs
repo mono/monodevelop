@@ -37,32 +37,16 @@ namespace MonoDevelop.AspNet.Deployment
 		
 		public string GetDirectory (DeployContext context, string folderId)
 		{
-			string directory;
-			
-			switch (folderId) {
-			case WebTargetDirectory.AspNetBin:
-				directory = "bin";
-				break;
-			case WebTargetDirectory.SiteRoot:
-				directory = string.Empty;
-				break;
-			default:
-				return null;
-			}
+			if (folderId == TargetDirectory.ProgramFiles)
+				return string.Empty;
 			
 			// While this would seem to be what the deploy API expects, for a web deploy it could 
 			// produces results the user wouldn't expect
 			//if (context.Prefix != null)
 			//	directory = Path.Combine (context.Prefix, directory);
 			
-			return directory;
+			return null;
 		}
-	}
-	
-	public static class WebTargetDirectory
-	{
-		public const string AspNetBin = "Web.AspNet.Bin";
-		public const string SiteRoot  = "Web.SiteRoot";
 	}
 	
 }

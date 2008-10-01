@@ -6,6 +6,7 @@ REFS =  \
 	$(GTK_SHARP_LIBS) \
 	$(MONO_ADDINS_LIBS) \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.Linux.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
@@ -31,6 +32,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.AspNet.Deployment.WebTargetEditor.cs \
 	gtk-gui/MonoDevelop.AspNet.Gui.AspNetConfigurationPanelWidget.cs \
 	gtk-gui/MonoDevelop.AspNet.Gui.XspOptionsPanelWidget.cs \
+	MonoDevelop.AspNet.Deployment/AspNetDeployServiceExtension.cs \
 	MonoDevelop.AspNet.Deployment/WebDeployCommands.cs \
 	MonoDevelop.AspNet.Deployment/WebDeployLaunchDialog.cs \
 	MonoDevelop.AspNet.Deployment/WebDeployOptionsPanel.cs \
@@ -47,6 +49,7 @@ FILES =  \
 	MonoDevelop.AspNet.Gui/BrowserLauncher.cs \
 	MonoDevelop.AspNet.Gui/XspOptionsPanel.cs \
 	MonoDevelop.AspNet.Gui/XspOptionsPanelWidget.cs \
+	MonoDevelop.AspNet.MD1Serialization/MD1AspNetCustomDataItem.cs \
 	MonoDevelop.AspNet.Parser.Dom/DirectiveNode.cs \
 	MonoDevelop.AspNet.Parser.Dom/ExpressionNode.cs \
 	MonoDevelop.AspNet.Parser.Dom/ILocation.cs \
@@ -113,6 +116,7 @@ FILES =  \
 RES =  \
 	gtk-gui/gui.stetic \
 	MonoDevelop.AspNet.addin.xml \
+	MonoDevelop.AspNet.MD1Serialization/md1format.xml \
 	Templates/GlobalAsax-CodeBehind.xft.xml \
 	Templates/GlobalAsax-Empty.xft.xml \
 	Templates/MasterPage-CodeBehind.xft.xml \

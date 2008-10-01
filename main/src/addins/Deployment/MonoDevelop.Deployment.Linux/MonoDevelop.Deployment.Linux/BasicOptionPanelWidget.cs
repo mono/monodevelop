@@ -64,7 +64,7 @@ namespace MonoDevelop.Deployment.Linux
 				de.Terminal = false;
 				string file = System.IO.Path.Combine (entry.BaseDirectory, "app.desktop");
 				de.Save (file);
-				ProjectFile pfile = project.AddFile (file, BuildAction.FileCopy);
+				ProjectFile pfile = project.AddFile (file, BuildAction.Content);
 				DeployProperties props = DeployService.GetDeployProperties (pfile);
 				props.TargetDirectory = LinuxTargetDirectory.DesktopApplications;
 			}

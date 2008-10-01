@@ -79,9 +79,20 @@ namespace MonoDevelop.Deployment.Gui
 			set { props.FileAttributes = value; }
 		}
 		
+		[Category ("Deployment")]
+		[DisplayName ("Include in deploy")]
+		[Description ("Include the file in deployment in addition to the files included automatically.")]
+		public bool ShouldDeploy {
+			get { return props.ShouldDeploy; }
+			set { props.ShouldDeploy = value; }
+		}
+		
 		protected override bool IsReadOnly (string propertyName)
 		{
-			if (file.BuildAction != BuildAction.FileCopy)
+			if (file.CopyToOutputDirectory != FileCopyMode.None)
+				return true;
+			
+			if (!ShouldDeploy && propertyName != "ShouldDeploy")
 				return true;
 			if (UseProjectRelativePath) {
 				if (propertyName == "RelativeDeployPath")

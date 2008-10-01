@@ -29,7 +29,7 @@ namespace MonoDevelop.AddinAuthoring
 				return res;
 			
 			string addinFile;
-			if (file.BuildAction == BuildAction.EmbedAsResource)
+			if (file.BuildAction == BuildAction.EmbeddedResource)
 				addinFile = project.GetOutputFileName (project.DefaultConfigurationId);
 			else
 				addinFile = file.FilePath;

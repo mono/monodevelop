@@ -1,3 +1,9 @@
+2008-10-01  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.DesignerSupport.PropertyGrid.Editors/TextEditor.cs,
+	  MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs: Add
+	  support for using property grid to set arbitrary build actions.
+
 2008-09-25  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.DesignerSupport/ClassOutlineTextEditorExtension.cs: Track

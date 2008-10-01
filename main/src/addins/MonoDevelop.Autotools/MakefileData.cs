@@ -83,16 +83,16 @@ namespace MonoDevelop.Autotools
 					ProjectFileEventHandler filehandler = delegate (object sender, ProjectFileEventArgs e) {
 						MakefileVar var = null;
 						switch (e.ProjectFile.BuildAction) {
-						case BuildAction.Compile:
+						case "Compile":
 							var = BuildFilesVar;
 							break;
-						case BuildAction.FileCopy:
+						case "Content":
 							var = DeployFilesVar;
 							break;
-						case BuildAction.EmbedAsResource:
+						case "EmbeddedResource":
 							var = ResourcesVar;
 							break;
-						case BuildAction.Nothing:
+						case "None":
 							var = OthersVar;
 							break;
 						}
@@ -416,14 +416,14 @@ namespace MonoDevelop.Autotools
 			}
 		}
 		
-		public bool IsFileIntegrationEnabled (BuildAction fileType)
+		public bool IsFileIntegrationEnabled (string buildAction)
 		{
 			if (IntegrationEnabled) {
-				if (fileType == BuildAction.Compile)
+				if (buildAction == BuildAction.Compile)
 					return BuildFilesVar.Sync;
-				else if (fileType == BuildAction.EmbedAsResource)
+				else if (buildAction == BuildAction.EmbeddedResource)
 					return ResourcesVar.Sync;
-				else if (fileType == BuildAction.FileCopy)
+				else if (buildAction == BuildAction.Content)
 					return DeployFilesVar.Sync;
 				else
 					return OthersVar.Sync;
@@ -686,9 +686,9 @@ namespace MonoDevelop.Autotools
 			}
 
 			ReadFiles (BuildFilesVar, BuildAction.Compile, "Build", promptForRemoval);
-			ReadFiles (DeployFilesVar, BuildAction.FileCopy, "Deploy", promptForRemoval);
-			ReadFiles (OthersVar, BuildAction.Nothing, "Others", promptForRemoval);
-			ReadFiles (ResourcesVar, BuildAction.EmbedAsResource, "Resources", promptForRemoval);
+			ReadFiles (DeployFilesVar, BuildAction.Content, "Deploy", promptForRemoval);
+			ReadFiles (OthersVar, BuildAction.None, "Others", promptForRemoval);
+			ReadFiles (ResourcesVar, BuildAction.EmbeddedResource, "Resources", promptForRemoval);
 
 			if (!SyncReferences)
 				return;
@@ -766,7 +766,7 @@ namespace MonoDevelop.Autotools
 			this.monitor = null;
 		}
 
-		void ReadFiles (MakefileVar fileVar, BuildAction buildAction, string id, bool promptForRemoval)
+		void ReadFiles (MakefileVar fileVar, string buildAction, string id, bool promptForRemoval)
 		{
 			try { 
 				fileVar.SaveEnabled = true;
@@ -779,7 +779,7 @@ namespace MonoDevelop.Autotools
 			}
 		}
 
-		void ReadFilesActual (MakefileVar fileVar, BuildAction buildAction, string id, bool promptForRemoval)
+		void ReadFilesActual (MakefileVar fileVar, string buildAction, string id, bool promptForRemoval)
 		{
 			fileVar.Extra.Clear ();
 			if (!fileVar.Sync || String.IsNullOrEmpty (fileVar.Name))
@@ -827,7 +827,7 @@ namespace MonoDevelop.Autotools
 					fname = UnescapeString (fname);
 
 					string resourceId = null;
-					if (buildAction == BuildAction.EmbedAsResource && fname.IndexOf (',') >= 0) {
+					if (buildAction == BuildAction.EmbeddedResource && fname.IndexOf (',') >= 0) {
 						string [] tmp = fname.Split (new char [] {','}, 2);
 						fname = tmp [0];
 						if (tmp.Length > 1)
@@ -872,7 +872,7 @@ namespace MonoDevelop.Autotools
 					}
 
 					ProjectFile pf = ownerProject.AddFile (absPath, buildAction);
-					if (buildAction == BuildAction.EmbedAsResource && resourceId != null)
+					if (buildAction == BuildAction.EmbeddedResource && resourceId != null)
 						pf.ResourceId = resourceId;
 				} catch (Exception e) {
 					LoggingService.LogError (e.ToString ());
@@ -1322,9 +1322,9 @@ namespace MonoDevelop.Autotools
 			//FIXME: If anything fails while writing, skip completely
 			//FIXME: All the file vars must be distinct
 			WriteFiles (BuildFilesVar, BuildAction.Compile, makeRelative, "Build");
-			WriteFiles (DeployFilesVar, BuildAction.FileCopy, makeRelative, "Deploy");
-			WriteFiles (OthersVar, BuildAction.Nothing, makeRelative, "Others");
-			WriteFiles (ResourcesVar, BuildAction.EmbedAsResource, makeRelative, "Resources");
+			WriteFiles (DeployFilesVar, BuildAction.Content, makeRelative, "Deploy");
+			WriteFiles (OthersVar, BuildAction.None, makeRelative, "Others");
+			WriteFiles (ResourcesVar, BuildAction.EmbeddedResource, makeRelative, "Resources");
 
 			if (SyncReferences && SaveReferences) {
 				Makefile.ClearVariableValue (GacRefVar.Name);
@@ -1363,7 +1363,7 @@ namespace MonoDevelop.Autotools
 			this.monitor = null;
 		}
 
-		bool WriteFiles (MakefileVar fileVar, BuildAction action, bool makeRelative, string id)
+		bool WriteFiles (MakefileVar fileVar, string buildAction, bool makeRelative, string id)
 		{
 			if (!fileVar.Sync || !fileVar.SaveEnabled)
 				return false;
@@ -1383,7 +1383,7 @@ namespace MonoDevelop.Autotools
 					continue;
 				if (IsFileExcluded (pf.FilePath))
 					continue;
-				if (pf.BuildAction == action) {
+				if (pf.BuildAction == buildAction) {
 					string str = null;
 					if (makeRelative)
 						//Files are relative to the Makefile
@@ -1402,7 +1402,7 @@ namespace MonoDevelop.Autotools
 					}
 
 					// Emit the resource ID only when it is different from the file name
-					if (pf.BuildAction == BuildAction.EmbedAsResource && pf.ResourceId != null && pf.ResourceId.Length > 0 && pf.ResourceId != unescapedFileName)
+					if (pf.BuildAction == BuildAction.EmbeddedResource && pf.ResourceId != null && pf.ResourceId.Length > 0 && pf.ResourceId != unescapedFileName)
 						str = String.Format ("{0}{1},{2}", fileVar.Prefix, str, EscapeString (pf.ResourceId));
 					else
 						str = String.Format ("{0}{1}", fileVar.Prefix, str);

@@ -470,14 +470,6 @@
 				defaultHandler = "MonoDevelop.Ide.Commands.CleanSolutionHandler"
 				_description = "Clean all projects of the solution"
 				_label = "_Clean Solution" />
-		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.IncludeInBuild"
-				type="check"
-				_description = "File included in the build"
-				_label = "B_uild" />
-		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.IncludeInDeploy"
-				type="check"
-				_description = "File included in deployment"
-				_label = "_Deployment" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.LocalCopyReference"
 				type="check"
 				_description = "Copy the assembly to the output directory when building the project"
@@ -613,6 +605,15 @@
 		<Command id = "MonoDevelop.Ide.Commands.FileCommands.OpenContainingFolder"
 				_label = "O_pen Containing Folder" 
 				_description = "Opens the folder that contains this file."/>
+		<Command id = "MonoDevelop.Ide.Commands.FileCommands.SetBuildAction"
+				type="radio|array"
+				_label = "Build action" />
+		<Command id = "MonoDevelop.Ide.Commands.FileCommands.ShowProperties"
+				icon="gtk-properties"
+				_label = "_Properties" />
+		<Command id = "MonoDevelop.Ide.Commands.FileCommands.CopyToOutputDirectory"
+		         type = "check"
+		        _label = "_Copy to Output Directory" />
 		<Command id = "MonoDevelop.Ide.Commands.FileTabCommands.CloseAllButThis"
 		         defaultHandler = "MonoDevelop.Ide.Commands.CloseAllButThisHandler"
 				_label = "C_lose all but this"
@@ -1165,16 +1166,20 @@
 		</ItemSet>
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.OpenContainingFolder" />
 		<SeparatorItem id = "OpenSeparator" />
-		<ItemSet id = "Include" _label = "_Include">
-			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.IncludeInBuild" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.IncludeInDeploy" />
-		</ItemSet>
-		<SeparatorItem id = "IncludeSeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Copy" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Cut" />
 		<SeparatorItem id = "CutSeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Rename" />
+		<SeparatorItem id = "PropertiesStartSeparator" />
+		<ItemSet id = "BuildActions" _label = "Build Action">
+			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.SetBuildAction" />
+		</ItemSet>
+		<ItemSet id = "QuickProperties" _label = "_Quick Properties">
+			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CopyToOutputDirectory" />
+		</ItemSet>
+		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.ShowProperties" />
+		<SeparatorItem id = "PropertiesEndSeparator" />
 	</Extension>
 		
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/SystemFile">

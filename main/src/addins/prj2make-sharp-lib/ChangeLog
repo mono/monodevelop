@@ -1,3 +1,8 @@
+2008-10-01  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MsPrjHelper.cs, SilverlightMSBuildProjectExtension.cs,
+	  MSBuildProjectServiceExtension.cs: Track API.
+
 2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* prj2make-sharp-lib.mdp: Updated generated code.

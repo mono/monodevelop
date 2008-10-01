@@ -1,3 +1,8 @@
+2008-10-01  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.WebReferences.Commands/WebReferenceCommandHandler.cs:
+	  Track API.
+
 2008-09-17  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.WebReferences.mdp: Updated projects.

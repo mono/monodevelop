@@ -362,7 +362,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			// Make sure the referenced assemblies are up to date. It is necessary to do
 			// it now since they may contain widget libraries.
-			project.CopyReferencesToOutputPath (false, configuration);
+			project.CopySupportFiles (monitor, configuration);
 			
 			info.GuiBuilderProject.UpdateLibraries ();
 			
@@ -462,12 +462,12 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					return null;
 				pfile = prj.Files.GetFile (files[0]);
 			}
-			if (pfile.BuildAction == BuildAction.EmbedAsResource) {
+			if (pfile.BuildAction == BuildAction.EmbeddedResource) {
 				AlertButton embedButton = new AlertButton (GettextCatalog.GetString ("_Use as Source"));
 				if (MessageService.AskQuestion (GettextCatalog.GetString ("You are requesting the file '{0}' to be used as source for an image. However, this file is already added to the project as a resource. Are you sure you want to continue (the file will have to be removed from the resource list)?"), AlertButton.Cancel, embedButton) == embedButton)
 					return null;
 			}
-			pfile.BuildAction = BuildAction.FileCopy;
+			pfile.BuildAction = BuildAction.Content;
 			DeployProperties props = DeployService.GetDeployProperties (pfile);
 			props.UseProjectRelativePath = true;
 			return pfile.FilePath;

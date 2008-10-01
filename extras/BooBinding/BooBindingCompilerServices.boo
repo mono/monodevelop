@@ -62,7 +62,7 @@ public class BooBindingCompilerServices:
 			if finfo.Subtype != Subtype.Directory:
 				if finfo.BuildAction == BuildAction.Compile:
 					compiler.Parameters.Input.Add(Boo.Lang.Compiler.IO.FileInput(finfo.Name))
-				elif finfo.BuildAction == BuildAction.EmbedAsResource:
+				elif finfo.BuildAction == BuildAction.EmbeddedResource:
 					compiler.Parameters.Resources.Add (EmbeddedFileResource (finfo.Name))
 
 		

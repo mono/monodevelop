@@ -19,7 +19,7 @@ namespace MonoDevelop.Deployment.Linux
 				DesktopEntry de = new DesktopEntry ();
 				try {
 					de.Load (a.ProjectFile.Name);
-					a.ProjectFile.BuildAction = BuildAction.FileCopy;
+					a.ProjectFile.BuildAction = BuildAction.Content;
 					DeployProperties props = DeployService.GetDeployProperties (a.ProjectFile);
 					props.TargetDirectory = LinuxTargetDirectory.DesktopApplications;
 					if (string.IsNullOrEmpty (de.Exec)) {

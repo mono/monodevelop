@@ -50,7 +50,7 @@ namespace MonoDevelop.Prj2Make
 				return base.Build (monitor, entry, configuration);
 
 			foreach (ProjectFile pf in project.Files) {
-				if (pf.BuildAction != BuildAction.EmbedAsResource)
+				if (pf.BuildAction != BuildAction.EmbeddedResource)
 					continue;
 
 				//Check for SilverLightPage

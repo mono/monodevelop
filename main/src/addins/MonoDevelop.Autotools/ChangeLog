@@ -1,3 +1,10 @@
+2008-10-01  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Autotools.addin.xml, FileNodeBuilderExtension.cs: Added
+	  quick property for enabling inclusion in makefiles synching.
+	  Supports multi-select.
+	* SimpleProjectMakefileHandler.cs, MakefileData.cs: Track API.
+
 2008-09-29  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* SimpleProjectMakefileHandler.cs: If an assembly is going to be

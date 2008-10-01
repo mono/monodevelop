@@ -1,3 +1,7 @@
+2008-10-01  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Project/CProject.cs: Track API.
+
 2008-09-29  Mike Krüger <mkrueger@novell.com> 
 
 	* Gui/DataProvider.cs: implemented IComparable.

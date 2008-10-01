@@ -19,7 +19,7 @@ namespace MonoDevelop.Deployment
 		public override DeployFileCollection GetProjectDeployFiles (DeployContext ctx, Project project, string solutionConfiguration)
 		{
 			DeployFileCollection deployFiles = new DeployFileCollection ();
-			
+			base.GetProjectDeployFiles (ctx, project, solutionConfiguration);
 			// Add the compiled output file
 			
 			string outputFile = project.GetOutputFileName (solutionConfiguration);
@@ -27,9 +27,15 @@ namespace MonoDevelop.Deployment
 				deployFiles.Add (new DeployFile (project, outputFile, Path.GetFileName (outputFile), TargetDirectory.ProgramFiles));
 			
 			// Collect deployable files
-			
 			foreach (ProjectFile file in project.Files) {
-				if (file.BuildAction == BuildAction.FileCopy) {
+				// skip CopyToOutputDirectory files when it's just a project build, because 
+				// MonoDevelop.Project.Projects already copies these files using more subtle overwriting
+				// semantics
+				if (file.CopyToOutputDirectory != FileCopyMode.None)
+					continue;
+				    
+				DeployProperties props = new DeployProperties (file);
+				if (props.ShouldDeploy) {
 					DeployFile dp = new DeployFile (file);
 					deployFiles.Add (dp);
 					
@@ -39,18 +45,17 @@ namespace MonoDevelop.Deployment
 					}
 				}
 			}
-
+			
+			foreach (FileCopySet.Item item in project.GetSupportFileList (solutionConfiguration)) {
+				 deployFiles.Add (new DeployFile (project, item.Src, item.Target, TargetDirectory.ProgramFiles));
+			}
+			
 			DotNetProject netProject = project as DotNetProject;
 			if (netProject != null) {
 				DotNetProjectConfiguration conf = (DotNetProjectConfiguration) project.GetActiveConfiguration (solutionConfiguration);
-				
 				if (conf.DebugMode) {
 					string mdbFile = conf.CompiledOutputName + ".mdb";
 					deployFiles.Add (new DeployFile (project, mdbFile, Path.GetFileName (mdbFile), TargetDirectory.ProgramFiles));
-				}
-				// Collect referenced assemblies
-				foreach (string refFile in netProject.GetReferenceDeployFiles (false, solutionConfiguration)) {
-					deployFiles.Add (new DeployFile (project, refFile, Path.GetFileName (refFile), TargetDirectory.ProgramFiles));
 				}
 			}
 			

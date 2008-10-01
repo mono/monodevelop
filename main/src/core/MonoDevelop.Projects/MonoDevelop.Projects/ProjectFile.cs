@@ -36,14 +36,6 @@ namespace MonoDevelop.Projects
 		Directory
 	}
 	
-	public enum BuildAction {
-		[Description ("Nothing")] Nothing,
-		[Description ("Compile")] Compile,
-		[Description ("Embed as resource")] EmbedAsResource,
-		[Description ("Deploy")] FileCopy,
-		[Description ("Exclude")] Exclude		
-	}
-	
 	/// <summary>
 	/// This class represent a file information in an IProject object.
 	/// </summary>
@@ -61,7 +53,7 @@ namespace MonoDevelop.Projects
 		string contentType = String.Empty;
 		
 		[ItemProperty("buildaction")]
-		BuildAction buildaction;
+		string buildaction;
 		
 		string dependsOn;
 		
@@ -70,6 +62,12 @@ namespace MonoDevelop.Projects
 
 		[ItemProperty("resource_id", DefaultValue="")]
 		string resourceId = String.Empty;
+		
+		[ItemProperty("copyToOutputDirectory", DefaultValue=FileCopyMode.None)]
+		FileCopyMode copyToOutputDirectory;
+		
+		[ItemProperty("Visible", DefaultValue=true)]
+		bool visible = true;
 		
 		Project project;
 		ProjectFile dependsOnFile;
@@ -83,10 +81,10 @@ namespace MonoDevelop.Projects
 		{
 			this.filename = FileService.GetFullPath (filename);
 			subtype       = Subtype.Code;
-			buildaction   = BuildAction.Compile;
+			buildaction   = MonoDevelop.Projects.BuildAction.Compile;
 		}
 		
-		public ProjectFile(string filename, BuildAction buildAction)
+		public ProjectFile(string filename, string buildAction)
 		{
 			this.filename = FileService.GetFullPath (filename);
 			subtype       = Subtype.Code;
@@ -168,15 +166,38 @@ namespace MonoDevelop.Projects
 		}
 			
 		
-		public BuildAction BuildAction {
+		public string BuildAction {
 			get {
 				return buildaction;
 			}
 			set {
-				buildaction = value;
+				buildaction = string.IsNullOrEmpty (value)? MonoDevelop.Projects.BuildAction.None : value;
 				OnChanged ();
 			}
 		}
+		
+		public bool Visible {
+			get { return visible; }
+			set {
+				if (visible != value) {
+					visible = value;
+					if (project != null)
+						project.NotifyFilePropertyChangedInProject (this);
+				}
+			}
+		}
+		
+		public FileCopyMode CopyToOutputDirectory {
+			get { return copyToOutputDirectory; }
+			set {
+				if (copyToOutputDirectory != value) {
+					copyToOutputDirectory = value;
+					if (project != null)
+						project.NotifyFilePropertyChangedInProject (this);
+				}
+			}
+		}
+		
 		
 		#region File grouping
 		

@@ -39,6 +39,7 @@ FILES =  \
 	MonoDevelop.Gettext.ExtensionNodes/RegexScannerExtensionNode.cs \
 	MonoDevelop.Gettext.ExtensionNodes/TransformExtensionNode.cs \
 	MonoDevelop.Gettext.ExtensionNodes/XmlRegexScannerExtensionNode.cs \
+	MonoDevelop.Gettext.NodeBuilders/ProjectFileNodeBuilderExtension.cs \
 	MonoDevelop.Gettext.NodeBuilders/TranslationNodeBuilder.cs \
 	MonoDevelop.Gettext.NodeBuilders/TranslationProjectNodeBuilder.cs \
 	MonoDevelop.Gettext.Translator/LanguageChooserDialog.cs \

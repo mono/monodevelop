@@ -67,12 +67,14 @@
 		<ItemProperty member="envVars" name="name" scope="key"/>
 		<ItemProperty member="envVars" name="value" scope="value"/>
 	</DataItem>
-	<DataItem class = "MonoDevelop.Projects.ProjectFile">
+	<DataItem class = "MonoDevelop.Projects.ProjectFile" customDataItem="MonoDevelop.Projects.Formats.MD1.MD1CustomDataItem">
 		<ItemProperty member="filename" name="name" serializationDataType="MonoDevelop.Projects.PathDataType"/>
 		<ItemProperty member="subtype" name="subtype"/>
-		<ItemProperty member="buildaction" name="buildaction"/>
+		<ItemProperty member="buildaction" name="buildaction" serializationDataType="MonoDevelop.Projects.Formats.MD1.BuildActionDataType" />
 		<ItemProperty member="dependsOn" name="dependson" defaultValue=""/>
 		<ItemProperty member="resourceId" name="resource_id" defaultValue=""/>
+		<ItemProperty member="copyToOutputDirectory" name="copyToOutputDirectory" defaultValue="None"/>
+		<ItemProperty member="visible" name="visible" defaultValue="true"/>
 		<ItemProperty member="contentType" name="contentType" defaultValue=""/>
 	</DataItem>
 	<DataItem class = "MonoDevelop.Projects.ProjectReference" customDataItem="MonoDevelop.Projects.Formats.MD1.MD1CustomDataItem">

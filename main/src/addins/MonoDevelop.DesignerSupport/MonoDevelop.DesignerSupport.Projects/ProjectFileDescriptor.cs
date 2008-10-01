@@ -67,7 +67,8 @@ namespace MonoDevelop.DesignerSupport
 		[Category ("Build")]
 		[DisplayName ("Build action")]
 		[Description ("Action to perform when building this file.")]
-		public BuildAction BuildAction {
+		[TypeConverter (typeof (BuildActionStringsConverter))]
+		public string BuildAction {
 			get { return file.BuildAction; }
 			set { file.BuildAction = value; }
 		}
@@ -80,11 +81,122 @@ namespace MonoDevelop.DesignerSupport
 			set { file.ResourceId = value; }
 		}
 		
+		[Category ("Build")]
+		[DisplayName ("Copy to output directory")]
+		[Description ("Whether to copy the file to the project's output directory when the project is built.")]
+		public FileCopyMode CopyToOutputDirectory {
+			get { return file.CopyToOutputDirectory; }
+			set { file.CopyToOutputDirectory = value; }
+		}
+		
 		protected override bool IsReadOnly (string propertyName)
 		{
-			if (propertyName == "ResourceId" && file.BuildAction != BuildAction.EmbedAsResource)
+			if (propertyName == "ResourceId" && file.BuildAction != MonoDevelop.Projects.BuildAction.EmbeddedResource)
 				return true;
 			return false;
+		}
+		
+		[MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors.StandardValuesSeparator ("--")]
+		class BuildActionStringsConverter : StandardStringsConverter
+		{
+			public override System.Collections.ICollection GetStandardStrings (ITypeDescriptorContext context)
+			{
+				ProjectFileDescriptor descriptor = context != null?
+					context.Instance as ProjectFileDescriptor : null;
+				
+				if (descriptor != null && descriptor.file != null && descriptor.file.Project != null) {
+					return descriptor.file.Project.GetBuildActions ();
+				} else {
+					return new string[] {"Content", "None", "Compile"};
+				}
+			}
+			
+			public override bool CanConvertFrom (ITypeDescriptorContext context, Type sourceType)
+			{
+				return sourceType == typeof (string);
+			}
+			
+			public override object ConvertFrom (ITypeDescriptorContext context,
+			                                    System.Globalization.CultureInfo culture, object value)
+			{
+				if (!IsValid (context, value))
+					throw new FormatException ("Invalid build target name");
+				
+				return value;
+			}
+			
+			//these must encode into XML element names
+			public override bool IsValid (ITypeDescriptorContext context, object value)
+			{
+				if (!(value is string))
+					return false;
+				
+				string str = (string) value;
+				if (string.IsNullOrEmpty (str) || !char.IsLetter (str[0]))
+					return false;
+				
+				for (int i = 1; i < str.Length; i++) {
+					char c = str[i];
+					if (char.IsLetterOrDigit (c) || c == '_')
+						continue;
+					else
+						return false;
+				}
+				
+				return true;
+			}
+			
+			public override bool GetStandardValuesExclusive (ITypeDescriptorContext context)
+			{
+				//only make the list exclusive if we managed to get a list from the parent project
+				ProjectFileDescriptor descriptor = context != null?
+					context.Instance as ProjectFileDescriptor : null;
+				
+				return (descriptor != null && descriptor.file != null && descriptor.file.Project != null);
+			}
+		}
+		
+		abstract class StandardStringsConverter : TypeConverter
+		{
+			public override bool GetStandardValuesSupported (ITypeDescriptorContext context)
+			{
+				return true;
+			}
+		
+			public override bool CanConvertFrom (ITypeDescriptorContext context, Type sourceType)
+			{
+				return sourceType == typeof (string) || base.CanConvertFrom (context, sourceType);
+			}
+		
+			public override bool CanConvertTo (ITypeDescriptorContext context, Type destinationType)
+			{
+				return destinationType == typeof (string) || base.CanConvertTo (context, destinationType);
+			}
+		
+			public override object ConvertFrom (ITypeDescriptorContext context, 
+			                                    System.Globalization.CultureInfo culture, object value)
+			{
+				if (value != null && value is string)
+					return value;
+				else
+					return base.ConvertFrom (context, culture, value);
+			}
+		
+			public override object ConvertTo (ITypeDescriptorContext context, System.Globalization.CultureInfo culture,
+			                                  object value, Type destinationType)
+			{
+				if (value != null && (destinationType == typeof (string)))
+					return value;
+				else
+					return base.ConvertTo (context, culture, value, destinationType);
+			}
+		
+			public override StandardValuesCollection GetStandardValues (ITypeDescriptorContext context)
+			{
+				return new StandardValuesCollection (GetStandardStrings (context));
+			}
+		
+			public abstract System.Collections.ICollection GetStandardStrings (ITypeDescriptorContext context);
 		}
 	}
 }

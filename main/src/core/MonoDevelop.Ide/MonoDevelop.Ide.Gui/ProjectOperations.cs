@@ -1001,7 +1001,7 @@ namespace MonoDevelop.Ide.Gui
 			if (project.IsCompileable (newfilename)) {
 				project.AddFile (newfilename, BuildAction.Compile);
 			} else {
-				project.AddFile (newfilename, BuildAction.Nothing);
+				project.AddFile (newfilename, BuildAction.None);
 			}
 			return newfilename;
 		}		

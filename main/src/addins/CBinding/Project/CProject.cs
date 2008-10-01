@@ -405,7 +405,7 @@ namespace CBinding
 			
 			if (!Loading && !IsCompileable (e.ProjectFile.Name) &&
 			    e.ProjectFile.BuildAction == BuildAction.Compile) {
-				e.ProjectFile.BuildAction = BuildAction.Nothing;
+				e.ProjectFile.BuildAction = BuildAction.None;
 			}
 			
 			if (e.ProjectFile.BuildAction == BuildAction.Compile)
@@ -449,7 +449,7 @@ namespace CBinding
 			
 			// Headers and resources
 			foreach (ProjectFile f in Files) {
-				if (f.BuildAction == BuildAction.FileCopy) {
+				if (f.BuildAction == BuildAction.Content) {
 					string targetDirectory =
 						(IsHeaderFile (f.Name) ? TargetDirectory.Include : TargetDirectory.ProgramFiles);
 					

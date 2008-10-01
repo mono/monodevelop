@@ -159,18 +159,18 @@ namespace MonoDevelop.Autotools
 					pfpath = FileService.NormalizeRelativePath (pfpath);
 					switch ( projectFile.BuildAction )
 					{
-						case BuildAction.Compile:
+						case "Compile":
 							
 							if ( projectFile.Subtype != Subtype.Code ) continue;
 							files.AppendFormat ( "\\\n\t{0} ", EscapeSpace (pfpath));
 							break;
 
-						case BuildAction.Nothing:
+						case "None":
 
 							extraFiles.Add (EscapeSpace(pfpath));
 							break;
 
-						case BuildAction.EmbedAsResource:
+						case "EmbeddedResource":
 
 							if ( !projectFile.FilePath.StartsWith ( ctx.BaseDirectory ) )
 							{
@@ -189,7 +189,7 @@ namespace MonoDevelop.Autotools
  
 							break;
 
-						case BuildAction.FileCopy:
+						case "FileCopy":
 						
 							datafiles.AppendFormat ("\\\n\t{0} ", EscapeSpace (pfpath));
 							break;

@@ -1,3 +1,7 @@
+2008-10-01  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* BooBindingCompilerServices.boo: Track API.
+
 2008-09-17  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* BooBinding.mdp: Updated projects.

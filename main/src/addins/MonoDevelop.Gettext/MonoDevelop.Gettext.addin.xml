@@ -54,11 +54,20 @@
 			     _description = "Add another translation (language) for a solution or project" />
 		<Command id   = "MonoDevelop.Gettext.Commands.UpdateTranslations"
 		         _label = "U_pdate Translations"
-			     _description = "Updates all translation files." />
+		         _description = "Updates all translation files." />
 		<Command id   = "MonoDevelop.Gettext.Commands.UpdateTranslation"
 		         _label = "_Update Translation"
-			     _description = "Updates this translation." />
-	</Extension>	
+		         _description = "Updates this translation." />
+		<Command id           = "MonoDevelop.Gettext.Commands.ScanForTranslations"
+		         type         = "check"
+		         _label       = "_Scan for Translations"
+		         _description = "Include this file in the translations scan." />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/ProjectFile/QuickProperties">
+		<CommandItem id = "MonoDevelop.Gettext.Commands.ScanForTranslations"
+		             insertafter = "MonoDevelop.Autotools.Commands.SynchWithMakefile" />
+	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/StockIcons" extension-nodes = "StockIcon" description = "Stock icons|Available from MonoDevelop.Gettext.Resources.">
 		<StockIcon stockid = "md-gettext-locale" resource = "locale_22x22.png.png" />
@@ -125,6 +134,7 @@
 	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
 		<NodeBuilder class = "MonoDevelop.Gettext.NodeBuilders.TranslationProjectNodeBuilder"/>
 		<NodeBuilder class = "MonoDevelop.Gettext.NodeBuilders.TranslationNodeBuilder"/>
+		<NodeBuilder class = "MonoDevelop.Gettext.NodeBuilders.ProjectFileNodeBuilderExtension"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/StartupHandlers">

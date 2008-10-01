@@ -1,5 +1,6 @@
 
 using System;
+using MonoDevelop.Core.Collections;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
@@ -22,33 +23,73 @@ namespace MonoDevelop.Autotools
 	
 	class FileNodeCommandHandler: NodeCommandHandler
 	{
+		const string infoProperty = "MonoDevelop.Autotools.MakefileInfo";
+		
 		[CommandHandler (Commands.SynchWithMakefile)]
+		[AllowMultiSelection]
 		public void OnExclude ()
 		{
-			ProjectFile file = (ProjectFile) CurrentNode.DataItem;
-			Project project = file.Project;
-			if (project != null) {
-				MakefileData data = project.ExtendedProperties ["MonoDevelop.Autotools.MakefileInfo"] as MakefileData;
-				if (data != null && data.IntegrationEnabled) {
-					data.SetFileExcluded (file.FilePath, !data.IsFileExcluded (file.FilePath));
-					IdeApp.ProjectOperations.Save (project);
+			//if all of the selection is already checked, then toggle checks them off
+			//else it turns them on. hence we need to find if they're all checked,
+			bool allChecked = true;
+			foreach (ITreeNavigator node in CurrentNodes) {
+				ProjectFile file = (ProjectFile) node.DataItem;
+				if (file.Project != null) {
+					MakefileData data = file.Project.ExtendedProperties [infoProperty] as MakefileData;
+					if (data != null && data.IsFileIntegrationEnabled (file.BuildAction)) {
+						if (data.IsFileExcluded (file.FilePath)) {
+							allChecked = false;
+							break;
+						}
+					}
 				}
 			}
+			
+			Set<SolutionEntityItem> projects = new Set<SolutionEntityItem> ();
+			
+			foreach (ITreeNavigator node in CurrentNodes) {
+				ProjectFile file = (ProjectFile) node.DataItem;
+				if (file.Project != null) {
+					projects.Add (file.Project);
+					MakefileData data = file.Project.ExtendedProperties [infoProperty] as MakefileData;
+					if (data != null && data.IntegrationEnabled) {
+						data.SetFileExcluded (file.FilePath, allChecked);
+					}
+				}
+			}
+				
+			IdeApp.ProjectOperations.Save (projects);
 		}
 		
 		[CommandUpdateHandler (Commands.SynchWithMakefile)]
 		public void OnUpdateExclude (CommandInfo cinfo)
 		{
-			ProjectFile file = (ProjectFile) CurrentNode.DataItem;
-			Project project = file.Project;
-			if (project != null) {
-				MakefileData data = project.ExtendedProperties ["MonoDevelop.Autotools.MakefileInfo"] as MakefileData;
-				if (data != null && data.IsFileIntegrationEnabled (file.BuildAction)) {
-					cinfo.Checked = !data.IsFileExcluded (file.FilePath);
-					return;
+			bool anyChecked = false;
+			bool allChecked = true;
+			bool anyEnabled = false;
+			bool allEnabled = true;
+			
+			foreach (ITreeNavigator node in CurrentNodes) {
+				ProjectFile file = (ProjectFile) node.DataItem;
+				if (file.Project != null) {
+					MakefileData data = file.Project.ExtendedProperties [infoProperty] as MakefileData;
+					if (data != null && data.IsFileIntegrationEnabled (file.BuildAction)) {
+						anyEnabled = true;
+						if (!data.IsFileExcluded (file.FilePath)) {
+							anyChecked = true;
+						} else {
+							allChecked = false;
+						}
+					} else {
+						allEnabled = false;
+					}
 				}
 			}
-			cinfo.Visible = false;
+				
+			cinfo.Visible = anyEnabled;
+			cinfo.Enabled = anyEnabled && allEnabled;
+			cinfo.Checked = anyChecked;
+			cinfo.CheckedInconsistent = anyChecked && !allChecked;
 		}
 	}
 }

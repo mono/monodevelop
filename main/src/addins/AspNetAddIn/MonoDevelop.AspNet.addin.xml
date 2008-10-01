@@ -217,4 +217,12 @@
 &quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd&quot;>" 
 		         xsdFile = "xhtml1-frameset.xsd" />
 	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/MD1SerializationMaps">
+		<SerializationMap resource="md1format.xml" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Deployment/DeployServiceExtensions">
+		<Class id="AspNetDeploy" insertbefore="PrepareDeploy" class = "MonoDevelop.AspNet.Deployment.AspNetDeployServiceExtension" />
+	</Extension>
 </Addin>

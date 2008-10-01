@@ -69,8 +69,8 @@
 		<CommandItem id = "MonoDevelop.Autotools.Commands.GenerateFiles" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.ExportProject"/>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/ProjectFile/Include">
-		<CommandItem id = "MonoDevelop.Autotools.Commands.SynchWithMakefile" insertafter="Include"/>
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/ProjectFile/QuickProperties">
+		<CommandItem id = "MonoDevelop.Autotools.Commands.SynchWithMakefile" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">

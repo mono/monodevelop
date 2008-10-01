@@ -141,6 +141,7 @@ FILES =  \
 	MonoDevelop.Projects.Extensions/SerlializationMapNode.cs \
 	MonoDevelop.Projects.Extensions/SolutionItemHandler.cs \
 	MonoDevelop.Projects.Extensions/SolutionItemNode.cs \
+	MonoDevelop.Projects.Formats.MD1/BuildActionDataType.cs \
 	MonoDevelop.Projects.Formats.MD1/CmbxFileFormat.cs \
 	MonoDevelop.Projects.Formats.MD1/CombineConfiguration.cs \
 	MonoDevelop.Projects.Formats.MD1/CombineConfigurationEntry.cs \
@@ -169,6 +170,7 @@ FILES =  \
 	MonoDevelop.Projects.Text/TextFileService.cs \
 	MonoDevelop.Projects.Utility/DiffUtility.cs \
 	MonoDevelop.Projects/AbstractProjectConfiguration.cs \
+	MonoDevelop.Projects/BuildAction.cs \
 	MonoDevelop.Projects/BuildEventHandler.cs \
 	MonoDevelop.Projects/BuildResult.cs \
 	MonoDevelop.Projects/BuildTool.cs \
@@ -185,6 +187,8 @@ FILES =  \
 	MonoDevelop.Projects/DotNetProjectBinding.cs \
 	MonoDevelop.Projects/DotNetProjectConfiguration.cs \
 	MonoDevelop.Projects/ExecutionContext.cs \
+	MonoDevelop.Projects/FileCopyMode.cs \
+	MonoDevelop.Projects/FileCopySet.cs \
 	MonoDevelop.Projects/FileFormat.cs \
 	MonoDevelop.Projects/FileFormatManager.cs \
 	MonoDevelop.Projects/GenericProject.cs \

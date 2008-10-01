@@ -1,3 +1,7 @@
+2008-10-01  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* ILAsmCompilerManager.cs: Track API.
+
 2008-08-18  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* ILAsmBinding.addin.xml: Register the project guid for msbuild. Fixes

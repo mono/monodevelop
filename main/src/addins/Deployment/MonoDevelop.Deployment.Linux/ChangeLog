@@ -1,3 +1,9 @@
+2008-10-01  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Deployment.Linux/BasicOptionPanelWidget.cs: Track API.
+	* MonoDevelop.Deployment.Linux/LinuxDeploymentSetup.cs: Added quick
+	  property for enabling translation of files. Supports multi-select.
+
 2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Deployment.Linux/DesktopPanelWidget.cs,

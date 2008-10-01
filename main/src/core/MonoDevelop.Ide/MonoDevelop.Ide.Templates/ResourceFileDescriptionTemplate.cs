@@ -56,7 +56,7 @@ namespace MonoDevelop.Ide.Templates
 		{
 			ProjectFile file = template.AddFileToProject (project, language, directory, name);
 			if (file != null) {
-				file.BuildAction = BuildAction.EmbedAsResource;
+				file.BuildAction = BuildAction.EmbeddedResource;
 				return true;
 			}
 			else

@@ -1,0 +1,13 @@
+<SerializationMap>
+	<DataItem class = "MonoDevelop.AspNet.AspNetAppProject" customDataItem="MonoDevelop.AspNet.MD1Serialization.MD1AspNetCustomDataItem" >
+		<ItemProperty member="xspParameters" name = "XspParameters" />
+		<ItemProperty member="verifyCodeBehindFields" name = "VerifyCodeBehindFields" />
+		<ItemProperty member="verifyCodeBehindEvents" name = "VerifyCodeBehindEvents" />
+		<ItemProperty member="webDeployTargets" name = "WebDeployTargets" />
+		<ItemProperty member="webDeployTargets" scope="*" name="Target" valueType="MonoDevelop.AspNet.Deployment.WebDeployTarget" />
+	</DataItem>
+	<DataItem class = "MonoDevelop.AspNet.AspNetAppProjectConfiguration" >
+		<ItemProperty member="disableCodeBehindGeneration" name="AspNet/DisableCodeBehindGeneration" defaultValue="false"/>
+		<ItemProperty member="nonStandardOutputDirectory" name="AspNet/nonStandardOutputDirectory" defaultValue="false"/>
+	</DataItem>
+</SerializationMap>

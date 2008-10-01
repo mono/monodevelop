@@ -60,4 +60,50 @@ namespace MonoDevelop.Deployment
 		}
 
 	}
+	
+	public class MD1ProjectFileSerializer : ICustomDataItemHandler
+	{
+		static string[] keys = new string[] {
+			"DeployService.Deploy",
+			"DeployService.TargetDirectoryId",
+			"DeployService.RelativeDeployPath",
+			"DeployService.HasPathReferences",
+			"DeployService.FileAttributes"
+		};
+		
+		public DataCollection Serialize (object obj, ITypeSerializer handler)
+		{
+			DataCollection data = handler.Serialize (obj);
+			ProjectFile file = (ProjectFile) obj;
+			
+			//if the file is marked to copy to output, the deploy settings are useless, so strip them out
+			if (file.CopyToOutputDirectory != FileCopyMode.None) {
+				foreach (string key in keys) {
+					data.Extract (key);
+				}
+			}
+			
+			return data;
+		}
+
+		public void Deserialize (object obj, ITypeSerializer handler, DataCollection data)
+		{
+			DataValue value = data ["buildaction"] as DataValue;
+			bool isFileCopy = value != null && value.Value == "FileCopy";
+			
+			handler.Deserialize (obj, data);
+			ProjectFile file = (ProjectFile) obj;
+			if (!isFileCopy)
+				return;
+			
+			//if there were any deploy settings remaining in the project file, then the file isn't "copy to output"
+			bool shouldDeploy = false;
+			foreach (string key in keys) {
+				if (file.ExtendedProperties.Contains (key)) {
+					file.CopyToOutputDirectory = FileCopyMode.None;
+					return;
+				}
+			}
+		}
+	}
 }

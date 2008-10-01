@@ -127,6 +127,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return GetGroup (elem);
 		}
 		
+		public IEnumerable<MSBuildItem> GetAllItems ()
+		{
+			foreach (XmlElement elem in doc.DocumentElement.SelectNodes ("tns:ItemGroup/*", XmlNamespaceManager)) {
+				yield return GetItem (elem);
+			}
+		}
+		
 		public IEnumerable<MSBuildItem> GetAllItems (params string[] names)
 		{
 			string name = string.Join ("|tns:ItemGroup/tns:", names);
@@ -388,6 +395,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				Element.AppendChild (elem);
 			}
 			elem.InnerXml = value;
+		}
+		
+		public void UnsetMetadata (string name)
+		{
+			XmlElement elem = Element [name, MSBuildProject.Schema];
+			if (elem != null)
+				Element.RemoveChild (elem);
 		}
 		
 		public string GetMetadata (string name)

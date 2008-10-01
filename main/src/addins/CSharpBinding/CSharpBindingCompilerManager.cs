@@ -184,10 +184,10 @@ namespace CSharpBinding
 					continue;
 
 				switch (finfo.BuildAction) {
-					case BuildAction.Compile:
+					case "Compile":
 						writer.WriteLine('"' + finfo.Name + '"');
 						break;
-					case BuildAction.EmbedAsResource:
+					case "EmbeddedResource":
 						string fname = finfo.Name;
 						if (String.Compare (Path.GetExtension (fname), ".resx", true) == 0)
 							fname = Path.ChangeExtension (fname, ".resources");

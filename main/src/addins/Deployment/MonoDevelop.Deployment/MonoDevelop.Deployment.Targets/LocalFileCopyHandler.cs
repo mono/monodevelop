@@ -76,9 +76,11 @@ namespace MonoDevelop.Deployment.Targets
 				dfc.SourceFile = df.SourcePath;
 				dfc.FileSize = FileSize (dfc.SourceFile);
 				totalFileSize += dfc.FileSize;
-				dfc.TargetFile = Path.Combine (targetDirectory, context.GetResolvedPath (df.TargetDirectoryID, df.RelativeTargetPath));
-				if (dfc.TargetFile == null)
+				
+				string relativeTarget = context.GetResolvedPath (df.TargetDirectoryID, df.RelativeTargetPath);
+				if (relativeTarget == null)
 					throw new InvalidOperationException (GettextCatalog.GetString ("Could not resolve target directory ID \"{0}\"", df.TargetDirectoryID));
+				dfc.TargetFile = Path.Combine (targetDirectory, relativeTarget);
 				
 				//this is a bit hacky; it's an internal hook to the BaseFuseFileCopyHandler implementation a level up the inheritance heirarchy
 				//Essentailly we are aliasing the path so that  BaseFuseFileCopyHandler can use LocalFileCopyHandler to do the local copying 

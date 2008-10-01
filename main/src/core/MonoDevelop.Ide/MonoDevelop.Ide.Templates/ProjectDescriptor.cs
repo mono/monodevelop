@@ -122,7 +122,7 @@ namespace MonoDevelop.Ide.Templates
 					string fileName = singleFile.SaveFile (project, defaultLanguage, project.BaseDirectory, null);
 
 					ProjectFile resource = new ProjectFile (fileName);
-					resource.BuildAction = BuildAction.EmbedAsResource;
+					resource.BuildAction = BuildAction.EmbeddedResource;
 					project.Files.Add(resource);
 				} catch (Exception ex) {
 					string err = GettextCatalog.GetString ("File {0} could not be written.", file.Name);

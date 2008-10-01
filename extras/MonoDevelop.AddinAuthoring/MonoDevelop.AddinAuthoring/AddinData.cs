@@ -155,7 +155,7 @@ namespace MonoDevelop.AddinAuthoring
 				AddinDescription desc = new AddinDescription ();
 				string file = Path.Combine (project.BaseDirectory, "manifest.addin.xml");
 				desc.Save (file);
-				project.AddFile (file, BuildAction.EmbedAsResource);
+				project.AddFile (file, BuildAction.EmbeddedResource);
 				return file;
 			}
 		}

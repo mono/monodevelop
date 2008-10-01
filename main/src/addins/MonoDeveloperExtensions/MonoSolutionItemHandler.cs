@@ -117,7 +117,7 @@ namespace MonoDeveloper
 						checkedFolders.Add (dir);
 						fname = Path.Combine (dir, "ChangeLog");
 						if (File.Exists (fname))
-							project.Files.Add (new ProjectFile (fname, BuildAction.Exclude));
+							project.Files.Add (new ProjectFile (fname, BuildAction.Content));
 					}
 				}
 			}

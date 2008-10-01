@@ -23,6 +23,13 @@ namespace MonoDevelop.Deployment
 			this.resolver = resolver;
 		}
 		
+		///<summary>
+		///Set when the deployment is only for a project's build, becuase it only uses the ProgramFiles type.
+		///</summary>
+		public bool ProjectBuildOnly {
+			get { return resolver is DefaultDeployServiceExtension; }
+		}
+		
 		public string GetDirectory (string folderId)
 		{
 			string dir = resolver.GetDirectory (this, folderId);

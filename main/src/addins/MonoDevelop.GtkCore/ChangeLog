@@ -1,3 +1,9 @@
+2008-10-01  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.GtkCore/GtkDesignInfo.cs,
+	  MonoDevelop.GtkCore/ProjectResourceProvider.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs: Track API.
+
 2008-09-23  Mike Kestner <mkestner@novell.com> 
 
 	* MonoDevelop.GtkCore.GuiBuilder/CombinedDesignView.cs: bandaid to

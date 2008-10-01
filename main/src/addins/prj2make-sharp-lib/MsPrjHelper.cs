@@ -741,13 +741,13 @@ namespace MonoDevelop.Prj2Make
 						flOut.BuildAction = BuildAction.Compile;
 						break;
 					case MonoDevelop.Prj2Make.Schema.Csproj.FileBuildAction.Content:
-						flOut.BuildAction = BuildAction.Nothing;
+						flOut.BuildAction = BuildAction.Content;
 						break;
 					case MonoDevelop.Prj2Make.Schema.Csproj.FileBuildAction.EmbeddedResource:
-						flOut.BuildAction = BuildAction.EmbedAsResource;
+						flOut.BuildAction = BuildAction.EmbeddedResource;
 						break;
 					case MonoDevelop.Prj2Make.Schema.Csproj.FileBuildAction.None:
-						flOut.BuildAction = BuildAction.Nothing;
+						flOut.BuildAction = BuildAction.None;
 						break;				
 				}
 				// DependentUpon is relative to flOut

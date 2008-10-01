@@ -228,7 +228,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 						if (project.IsCompileable (file.Path))
 							project.AddFile (file.Path, BuildAction.Compile);
 						else
-							project.AddFile (file.Path, BuildAction.Nothing);
+							project.AddFile (file.Path, BuildAction.None);
 					}
 
 					projects.Add (project);

@@ -114,9 +114,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				string file = FileService.RelativeToAbsolutePath(project.BaseDirectory,fileName);
 				ProjectFile finfo = new ProjectFile(file);
 				if (isSelected) {
-					finfo.BuildAction = project.IsCompileable(file) ? BuildAction.Compile : BuildAction.Nothing;
+					finfo.BuildAction = project.IsCompileable(file) ? BuildAction.Compile : BuildAction.None;
 				} else {
-					finfo.BuildAction = BuildAction.Exclude;
+					finfo.BuildAction = BuildAction.Content;
 				}
 				project.Files.Add(finfo);
 				

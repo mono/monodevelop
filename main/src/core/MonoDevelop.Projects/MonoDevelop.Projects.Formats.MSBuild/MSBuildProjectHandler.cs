@@ -187,6 +187,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return item;
 		}
 		
+		IEnumerable<MSBuildItem> GetAllItemsExceptMatches (MSBuildProject msproject, params string[] skip)
+		{
+			foreach (MSBuildItem buildItem in msproject.GetAllItems ())
+				if (Array.IndexOf<string> (skip, buildItem.Name) < 0)
+					yield return buildItem;
+		}
+		
 		void Load (IProgressMonitor monitor, MSBuildProject msproject)
 		{
 			MSBuildSerializer ser = CreateSerializer ();
@@ -200,16 +207,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			// Read files
 			
 			Project project = Item as Project;
-			if (project != null) {
-				foreach (MSBuildItem buildItem in msproject.GetAllItems ("Compile"))
-					AddFile (ser, project, buildItem, BuildAction.Compile);
-				foreach (MSBuildItem buildItem in msproject.GetAllItems ("EmbeddedResource"))
-					AddFile (ser, project, buildItem, BuildAction.EmbedAsResource);
-				foreach (MSBuildItem buildItem in msproject.GetAllItems ("Content"))
-					AddFile (ser, project, buildItem, BuildAction.Exclude);
-				foreach (MSBuildItem buildItem in msproject.GetAllItems ("None"))
-					AddFile (ser, project, buildItem, BuildAction.Nothing);
-			}
+			if (project != null)
+				foreach (MSBuildItem buildItem in GetAllItemsExceptMatches (msproject , "Reference", "ProjectReference"))
+					AddFile (ser, project, buildItem);
 			
 			string assemblyName = null;
 			string frameworkVersion = "v2.0";
@@ -509,22 +509,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				// Remove all files and add the new ones
 				
 				ArrayList list = new ArrayList ();
-				foreach (object ob in msproject.GetAllItems ("Compile","EmbeddedResource","Content","None"))
+				foreach (object ob in GetAllItemsExceptMatches (msproject , "Reference", "ProjectReference"))
 					list.Add (ob);
 
 				Hashtable grps = new Hashtable ();
 				foreach (ProjectFile file in project.Files) {
 					if (file.Subtype == Subtype.Directory)
 						continue;
-					string itemName;
-					switch (file.BuildAction) {
-						case BuildAction.Compile: itemName = "Compile"; break;
-						case BuildAction.EmbedAsResource: itemName = "EmbeddedResource"; break;
-						case BuildAction.FileCopy:
-						case BuildAction.Exclude: itemName = "Content"; break;
-						case BuildAction.Nothing: itemName = "None"; break;
-						default: continue; // Ignore
-					}
+					string itemName = file.BuildAction;
 					MSBuildItemGroup fgrp = (MSBuildItemGroup) grps [itemName];
 					if (fgrp == null) {
 						fgrp = FindItemGroup (msproject, itemName);
@@ -538,11 +530,20 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					if (!string.IsNullOrEmpty (file.ContentType))
 						buildItem.SetMetadata ("SubType", file.ContentType);
 					
-					if (file.BuildAction == BuildAction.FileCopy) {
-						buildItem.SetMetadata ("CopyToOutputDirectory", "Always");
+					if (file.CopyToOutputDirectory == FileCopyMode.None) {
+						buildItem.UnsetMetadata ("CopyToOutputDirectory");
+					} else {
+						buildItem.SetMetadata ("CopyToOutputDirectory", file.CopyToOutputDirectory.ToString ());
 					}
-					else if (file.BuildAction == BuildAction.EmbedAsResource) {
-						//Emit LogicalName if we are writing elements for a Non-MSBuidProject,
+					
+					if (!file.Visible) {
+						buildItem.SetMetadata ("Visible", "False");
+					} else {
+						buildItem.UnsetMetadata ("Visible");
+					}
+					
+					if (file.BuildAction == BuildAction.EmbeddedResource) {
+						//Emit LogicalName if we are writing elements for a Non-MSBuildProject,
 						//  (eg. when converting a gtk-sharp project, it might depend on non-vs
 						//  style resource naming )
 						//Or when the resourceId is different from the default one
@@ -650,16 +651,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return msproject.AddNewItemGroup ();
 		}
 		
-		void AddFile (DataSerializer ser, Project project, MSBuildItem buildItem, BuildAction buildAction)
+		void AddFile (DataSerializer ser, Project project, MSBuildItem buildItem)
 		{
-			if (buildAction == BuildAction.Exclude && buildItem.HasMetadata ("CopyToOutputDirectory")) {
-				string copyMode = buildItem.GetMetadata("CopyToOutputDirectory");
-				if (copyMode == "PreserveNewest" || copyMode == "Always")
-					buildAction = BuildAction.FileCopy;
-			}
-			
 			string path = MSBuildProjectService.FromMSBuildPath (project.BaseDirectory, buildItem.Include);
-			ProjectFile file = new ProjectFile (path, buildAction);
+			ProjectFile file = new ProjectFile (path, buildItem.Name);
 			
 			ReadBuildItemMetadata (ser, buildItem, file, typeof(ProjectFile));
 			
@@ -668,6 +663,24 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				dependentFile = MSBuildProjectService.FromMSBuildPath (Path.GetDirectoryName (path), dependentFile);
 				file.DependsOn = dependentFile;
 			}
+			
+			string copyToOutputDirectory = buildItem.GetMetadata ("CopyToOutputDirectory");
+			if (!string.IsNullOrEmpty (copyToOutputDirectory)) {
+				switch (copyToOutputDirectory) {
+				case "None": break;
+				case "Always": file.CopyToOutputDirectory = FileCopyMode.Always; break;
+				case "PreserveNewest": file.CopyToOutputDirectory = FileCopyMode.PreserveNewest; break;
+				default:
+					MonoDevelop.Core.LoggingService.LogWarning (
+						"Unrecognised value {0} for CopyToOutputDirectory MSBuild property",
+						copyToOutputDirectory);
+					break;
+				}
+			}
+			
+			if (buildItem.GetMetadata ("Visible") == "False")
+				file.Visible = false;
+				
 			
 			string resourceId = buildItem.GetMetadata ("LogicalName");
 			if (!string.IsNullOrEmpty (resourceId))

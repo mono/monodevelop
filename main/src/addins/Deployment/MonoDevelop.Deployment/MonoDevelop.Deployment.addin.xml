@@ -177,10 +177,6 @@
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels">
 		<Section id = "Deployment" _label = "Deployment" />
 	</Extension>
-
-	<Extension path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions">
-		<Class class = "MonoDevelop.Deployment.DeployProjectServiceExtension" insertbefore="FinalStep"/>
-	</Extension>
 	
 	<Extension path = "/MonoDevelop/Deployment/DeployDirectories">
 		<DeployDirectory id="ProgramFiles" _label="Program files" />

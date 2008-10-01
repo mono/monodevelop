@@ -262,20 +262,40 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		[CommandHandler (ProjectCommands.AddFiles)]
 		public void AddFilesToProject()
 		{
-			Project project = CurrentNode.GetParentDataItem (typeof(Project), true) as Project;
+			Project project = (Project) CurrentNode.GetParentDataItem (typeof(Project), true);
 			
 			FileSelector fdiag  = new FileSelector (GettextCatalog.GetString ("Add files"));
 			fdiag.SetCurrentFolder (GetFolderPath (CurrentNode.DataItem));
 			fdiag.SelectMultiple = true;
 			
+			//add a combo that can be used to override the default build action
+			ComboBox combo = new ComboBox (project.GetBuildActions ());
+			combo.Sensitive = false;
+			combo.Active = 0;
+			combo.RowSeparatorFunc = delegate (TreeModel model, TreeIter iter) {
+				return "--" == ((string) model.GetValue (iter, 0));
+			};
+			
+			CheckButton check = new CheckButton (GettextCatalog.GetString ("Override default build action"));
+			check.Toggled += delegate { combo.Sensitive = check.Active; };
+			
+			HBox box = new HBox ();
+			fdiag.ExtraWidget = box;
+			box.PackStart (check, false, false, 4);
+			box.PackStart (combo, false, false, 4);
+			box.ShowAll ();
+			
 			int result;
 			string[] files;
+			string overrideAction = null;
 			
 			try {
 				result = fdiag.Run ();
 				files = fdiag.Filenames;
 				if (result != (int) ResponseType.Ok)
 					return;
+				if (check.Active)
+					overrideAction = combo.ActiveText;
 			} finally {
 				fdiag.Destroy ();
 			}
@@ -283,14 +303,24 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			ProjectFolder folder = CurrentNode.GetParentDataItem (typeof(ProjectFolder), true) as ProjectFolder;
 			string baseDirectory = folder != null ? folder.Path : project.BaseDirectory;
 			
-			IdeApp.ProjectOperations.AddFilesToProject (project, files, baseDirectory);
+			string[] addedFiles = IdeApp.ProjectOperations.AddFilesToProject (project, files, baseDirectory);
+			
+			//override the build action of the added files if needed
+			if (!string.IsNullOrEmpty (overrideAction)) {
+				foreach (string fileName in addedFiles) {
+					ProjectFile pf = project.Files.GetFile (fileName);
+					if (pf != null)
+						pf.BuildAction = overrideAction;
+				}
+			}
+			
 			IdeApp.ProjectOperations.Save (project);
 		}
 		
 		[CommandHandler (ProjectCommands.AddNewFiles)]
 		public void AddNewFileToProject()
 		{
-			Project project = CurrentNode.GetParentDataItem (typeof(Project), true) as Project;
+			Project project = (Project) CurrentNode.GetParentDataItem (typeof(Project), true);
 			IdeApp.ProjectOperations.CreateProjectFile (project, GetFolderPath (CurrentNode.DataItem));
 			IdeApp.ProjectOperations.Save (project);
 			CurrentNode.Expanded = true;

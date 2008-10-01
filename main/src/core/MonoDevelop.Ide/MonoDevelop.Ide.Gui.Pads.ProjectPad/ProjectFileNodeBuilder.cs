@@ -71,6 +71,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			} else {
 				attributes |= NodeAttributes.AllowRename;
 			}
+			if (!file.Visible && !treeNavigator.Options ["ShowAllFiles"])
+				attributes |= NodeAttributes.Hidden;
 		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
@@ -275,64 +277,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			info.Text = GettextCatalog.GetString ("Remove");
 		}
 		
-		void UpdateBuildActionToggle (CommandInfo info, BuildAction action)
-		{
-			int val = -1;
-			foreach (ITreeNavigator node in CurrentNodes) {
-				ProjectFile file = (ProjectFile) node.DataItem;
-				if (val == -1)
-					val = (int) file.BuildAction;
-				else if ((int) file.BuildAction != val) {
-					val = -2;
-					break;
-				}
-			}
-			info.Checked = ((BuildAction) val) == action;
-			info.CheckedInconsistent = val == -2;
-		}
-
-		void BuildActionToggle (BuildAction action)
-		{
-			ProjectFile firstFile = null;
-			Set<SolutionEntityItem> projects = new Set<SolutionEntityItem> ();
-			foreach (ITreeNavigator node in CurrentNodes) {
-				ProjectFile finfo = (ProjectFile) node.DataItem;
-				if (firstFile == null) {
-					finfo.BuildAction = (finfo.BuildAction == action) ? BuildAction.Nothing : action;
-					firstFile = finfo;
-				} else
-					finfo.BuildAction = firstFile.BuildAction;
-				projects.Add (finfo.Project);
-			}
-			IdeApp.ProjectOperations.Save (projects);
-		}
-		
-		[CommandUpdateHandler (ProjectCommands.IncludeInBuild)]
-		public void OnUpdateIncludeInBuild (CommandInfo info)
-		{
-			UpdateBuildActionToggle (info, BuildAction.Compile);
-		}
-		
-		[CommandHandler (ProjectCommands.IncludeInBuild)]
-		[AllowMultiSelection]
-		public void OnIncludeInBuild ()
-		{
-			BuildActionToggle (BuildAction.Compile);
-		}
-		
-		[CommandUpdateHandler (ProjectCommands.IncludeInDeploy)]
-		public void OnUpdateIncludeInDeploy (CommandInfo info)
-		{
-			UpdateBuildActionToggle (info, BuildAction.FileCopy);
-		}
-		
-		[CommandHandler (ProjectCommands.IncludeInDeploy)]
-		[AllowMultiSelection]
-		public void OnIncludeInDeploy ()
-		{
-			BuildActionToggle (BuildAction.FileCopy);
-		}
-		
 		[CommandHandler (ViewCommands.OpenWithList)]
 		public void OnOpenWith (object ob)
 		{
@@ -351,6 +295,114 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				CommandInfo ci = info.Add (fv.Title, fv);
 				ci.Description = GettextCatalog.GetString ("Open with '{0}'", fv.Title);
 				prev = fv;
+			}
+		}
+		
+		[CommandHandler (FileCommands.SetBuildAction)]
+		[AllowMultiSelection]
+		public void OnSetBuildAction (object ob)
+		{
+			Set<SolutionEntityItem> projects = new Set<SolutionEntityItem> ();
+			string action = (string)ob;
+			
+			foreach (ITreeNavigator node in CurrentNodes) {
+				ProjectFile file = (ProjectFile) node.DataItem;
+				file.BuildAction = action;
+				projects.Add (file.Project);
+			}
+			IdeApp.ProjectOperations.Save (projects);
+		}
+		
+		[CommandUpdateHandler (FileCommands.SetBuildAction)]
+		public void OnSetBuildActionUpdate (CommandArrayInfo info)
+		{
+			Set<string> toggledActions = new Set<string> ();
+			Project proj = null;
+			foreach (ITreeNavigator node in CurrentNodes) {
+				ProjectFile finfo = (ProjectFile) node.DataItem;
+				
+				//disallow multi-slect on more than one project, since available build actions may differ
+				if (proj == null && finfo.Project != null) {
+					proj = finfo.Project;
+				} else if (proj == null || proj != finfo.Project) {
+					info.Clear ();
+					return;
+				}
+				toggledActions.Add (finfo.BuildAction);
+			}
+			
+			foreach (string action in proj.GetBuildActions ()) {
+				if (action == "--") {
+					info.AddSeparator ();
+				} else {
+					CommandInfo ci = info.Add (action, action);
+					ci.Checked = toggledActions.Contains (action);
+					if (ci.Checked)
+						ci.CheckedInconsistent = toggledActions.Count > 1;
+				}
+			}
+		}
+		
+		[CommandHandler (FileCommands.ShowProperties)]
+		[AllowMultiSelection]
+		public void OnShowProperties ()
+		{
+			foreach (Pad pad in IdeApp.Workbench.Pads) {
+				if (pad.Id == "MonoDevelop.DesignerSupport.PropertyPad") {
+					pad.Visible = true;
+					pad.BringToFront ();
+					return;
+				}
+			}
+		}
+		
+		//NOTE: This command is slightly odd, as it operates on a tri-state value, 
+		//when only being a dual-state control. However, it's straightforward enough.
+		// Enabled == (PreserveNewest | Always)
+		// Disabled == None
+		// Disabling == !None -> None
+		// Enabling == None -> PreserveNewest
+		//So there is no way to use.
+		[CommandHandler (FileCommands.CopyToOutputDirectory)]
+		[AllowMultiSelection]
+		public void OnCopyToOutputDirectory ()
+		{
+			//if all of the selection is already checked, then toggle checks them off
+			//else it turns them on. hence we need to find if they're all checked,
+			bool allChecked = true;
+			foreach (ITreeNavigator node in CurrentNodes) {
+				ProjectFile file = (ProjectFile) node.DataItem;
+				if (file.CopyToOutputDirectory == FileCopyMode.None) {
+					allChecked = false;
+					break;
+				}
+			}
+			
+			Set<SolutionEntityItem> projects = new Set<SolutionEntityItem> ();
+			
+			foreach (ITreeNavigator node in CurrentNodes) {
+				ProjectFile file = (ProjectFile) node.DataItem;
+				projects.Add (file.Project);
+				if (allChecked) {
+					file.CopyToOutputDirectory = FileCopyMode.None;
+				} else {
+					file.CopyToOutputDirectory = FileCopyMode.PreserveNewest;
+				}
+			}
+				
+			IdeApp.ProjectOperations.Save (projects);
+		}
+		
+		[CommandUpdateHandler (FileCommands.CopyToOutputDirectory)]
+		public void OnCopyToOutputDirectoryUpdate (CommandInfo info)
+		{
+			foreach (ITreeNavigator node in CurrentNodes) {
+				ProjectFile file = (ProjectFile) node.DataItem;
+				if (file.CopyToOutputDirectory != FileCopyMode.None) {
+					info.Checked = true;
+				} else if (info.Checked) {
+					info.CheckedInconsistent = true;
+				}
 			}
 		}
 	}

@@ -79,7 +79,7 @@ namespace MonoDevelop.Prj2Make
 				if (path == null)
 					return;
 
-				ProjectFile pf = project.AddFile (path, BuildAction.EmbedAsResource);
+				ProjectFile pf = project.AddFile (path, BuildAction.EmbeddedResource);
 				pf.ExtendedProperties ["MonoDevelop.MSBuildFileFormat.SilverlightPage"] = String.Empty;
 				data.ProjectFileElements [pf] = (XmlElement) node;
 

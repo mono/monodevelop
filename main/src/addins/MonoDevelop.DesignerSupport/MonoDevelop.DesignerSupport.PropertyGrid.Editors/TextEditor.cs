@@ -55,7 +55,8 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors
 			//we list them in a combo
 			if (session.Property.Converter.GetStandardValuesSupported (session))
 			{
-				ComboBoxEntry combo = ComboBoxEntry.NewText ();
+				ListStore store = new ListStore (typeof (string));
+				ComboBoxEntry combo = new ComboBoxEntry (store, 0);
 				PackStart (combo, true, true, 0);
 				combo.Changed += TextChanged;
 				entry = combo.Entry;
@@ -70,7 +71,17 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors
 				
 				//fill the list
 				foreach (object stdValue in session.Property.Converter.GetStandardValues (session)) {
-					combo.AppendText (session.Property.Converter.ConvertToString (session, stdValue));
+					store.AppendValues (session.Property.Converter.ConvertToString (session, stdValue));
+				}
+				
+				//a value of "--" gets rendered as a --, if typeconverter marked with UsesDashesForSeparator
+				object[] atts = session.Property.Converter.GetType ()
+					.GetCustomAttributes (typeof (StandardValuesSeparatorAttribute), true);
+				if (atts.Length > 0) {
+					string separator = ((StandardValuesSeparatorAttribute)atts[0]).Separator;
+					combo.RowSeparatorFunc = delegate (TreeModel model, TreeIter iter) {
+						return separator == ((string) model.GetValue (iter, 0));
+					};
 				}
 			}
 			// no standard values, so just use an entry
@@ -165,5 +176,17 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors
 
 		// To be fired when the edited value changes.
 		public event EventHandler ValueChanged;	
+	}
+	
+	public class StandardValuesSeparatorAttribute : Attribute
+	{
+		string separator;
+		
+		public string Separator { get { return separator; } }
+		
+		public StandardValuesSeparatorAttribute (string separator)
+		{
+			this.separator = separator;
+		}
 	}
 }

@@ -62,6 +62,7 @@ namespace MonoDevelop.Projects
 		[ItemProperty ("AppDesignerFolder")]
 		string designerFolder;
 
+		string [] buildActions = null;
 		ProjectFileCollection projectFiles;
 		
 		bool isDirty = false;
@@ -122,6 +123,71 @@ namespace MonoDevelop.Projects
 				designerFolder = value;
 			}
 		}
+		
+		//NOTE: groups the common actions at the top, separated by a "--" entry *IF* there are 
+		// more "uncommon" actions than "common" actions
+		public string[] GetBuildActions ()
+		{
+			if (buildActions != null)
+				return buildActions;
+			
+			// find all the actions in use and add them to the list of standard actions
+			Hashtable actions = new Hashtable ();
+			object marker = new object (); //avoid using bools as they need to be boxed. re-use single object instead
+			
+			//ad the standard actions
+			foreach (string action in GetStandardBuildActions ())
+				actions [action] = marker;
+			
+			//add any more actions that are in the project file
+			foreach (ProjectFile pf in projectFiles)
+				if (!actions.ContainsKey (pf.BuildAction))
+					actions [pf.BuildAction] = marker;
+			
+			//remove the "common" actions, since they're handled separately
+			IList<string> commonActions = GetCommonBuildActions ();
+			foreach (string action in commonActions)
+				if (actions.Contains (action))
+					actions.Remove (action);
+			
+			//calculate dimensions for our new array and create it
+			int dashPos = commonActions.Count;
+			bool hasDash = commonActions.Count > 0 && actions.Count > 0;
+			int arrayLen = commonActions.Count + actions.Count;
+			int uncommonStart = hasDash? dashPos + 1 : dashPos;
+			if (hasDash)
+				arrayLen++;
+			buildActions = new string [arrayLen];
+			
+			//populate it
+			if (commonActions.Count > 0)
+				commonActions.CopyTo (buildActions, 0);
+			if (hasDash)
+				buildActions [dashPos] = "--";
+			if (actions.Count > 0)
+				actions.Keys.CopyTo (buildActions, uncommonStart);
+			
+			//sort the actions
+			if (hasDash) {
+				//it may be better to leave common actions in the order that the project specified
+				//Array.Sort (buildActions, 0, commonActions.Count, StringComparer.Ordinal);
+				Array.Sort (buildActions, uncommonStart, arrayLen - uncommonStart, StringComparer.Ordinal);
+			} else {
+				Array.Sort (buildActions, StringComparer.Ordinal);
+			}
+			
+			return buildActions;
+		}
+		
+		protected virtual IEnumerable<string> GetStandardBuildActions ()
+		{
+			return BuildAction.StandardActions;
+		}
+		
+		protected virtual IList<string> GetCommonBuildActions ()
+		{
+			return BuildAction.StandardActions;
+		}
 
 		public bool IsFileInProject(string filename)
 		{
@@ -156,14 +222,14 @@ namespace MonoDevelop.Projects
 			base.Dispose ();
 		}
 		
-		public ProjectFile AddFile (string filename, BuildAction action)
+		public ProjectFile AddFile (string filename, string buildAction)
 		{
 			foreach (ProjectFile fInfo in Files) {
 				if (fInfo.Name == filename) {
 					return fInfo;
 				}
 			}
-			ProjectFile newFileInformation = new ProjectFile (filename, action);
+			ProjectFile newFileInformation = new ProjectFile (filename, buildAction);
 			Files.Add (newFileInformation);
 			return newFileInformation;
 		}
@@ -212,6 +278,9 @@ namespace MonoDevelop.Projects
 			} catch (Exception e) {
 				throw new ApplicationException("Can't create project output directory " + outputDir + " original exception:\n" + e.ToString());
 			}
+			
+			//copy references and files marked to "CopyToOutputDirectory"
+			CopySupportFiles (monitor, solutionConfiguration);
 		
 			StringParserService.Properties["Project"] = Name;
 			
@@ -228,6 +297,79 @@ namespace MonoDevelop.Projects
 			}
 			
 			return res;
+		}
+		
+		public void CopySupportFiles (IProgressMonitor monitor, string solutionConfiguration)
+		{
+			ProjectConfiguration config = (ProjectConfiguration) GetActiveConfiguration (solutionConfiguration);
+			
+			foreach (FileCopySet.Item item in GetSupportFileList (solutionConfiguration)) {
+				string dest = Path.Combine (config.OutputDirectory, item.Target);
+				
+				try {
+					if (item.CopyOnlyIfNewer && File.Exists (dest) &&
+					    (File.GetLastWriteTimeUtc (dest) >  File.GetLastWriteTimeUtc (item.Src)))
+						continue;
+					
+					if (!Directory.Exists (Path.GetDirectoryName (dest)))
+						FileService.CreateDirectory (dest);
+					
+					FileService.CopyFile (item.Src, dest);
+				} catch (IOException ex) {
+					monitor.ReportError (
+						GettextCatalog.GetString ("Error copying support file '{0}'.", dest), ex);
+				}
+			}
+		}
+		
+		public void DeleteSupportFiles (IProgressMonitor monitor, string solutionConfiguration)
+		{
+			ProjectConfiguration config = (ProjectConfiguration) GetActiveConfiguration (solutionConfiguration);
+			
+			foreach (FileCopySet.Item item in GetSupportFileList (solutionConfiguration)) {
+				string dest = Path.Combine (config.OutputDirectory, item.Target);
+				
+				try {
+					if (File.Exists (dest)) {
+						FileService.DeleteFile (dest);
+					}
+				} catch (IOException ex) {
+					monitor.ReportError (
+						GettextCatalog.GetString ("Error deleting support file '{0}'.", dest), ex);
+				}
+			}
+		}
+		
+		public FileCopySet GetSupportFileList (string solutionConfiguration)
+		{
+			FileCopySet list = new FileCopySet ();
+			PopulateSupportFileList (list, solutionConfiguration);
+			return list;
+		}
+		
+		protected virtual void PopulateSupportFileList (FileCopySet list, string solutionConfiguration)
+		{
+			ProjectConfiguration config = GetActiveConfiguration (solutionConfiguration) as ProjectConfiguration;
+			
+			foreach (ProjectFile pf in Files) {
+				if (pf.CopyToOutputDirectory == FileCopyMode.None)
+					continue;
+				
+				string src = pf.FilePath;
+				string dest = Path.GetFileName (src);
+				
+				if (config == null)
+					continue;
+				
+				dest = Path.Combine (config.OutputDirectory, dest);
+				
+				//skip if "PreserveNewest" and destination file is newer
+				if (pf.CopyToOutputDirectory == FileCopyMode.PreserveNewest && File.Exists (dest) &&
+				    (File.GetLastWriteTimeUtc (dest) >  File.GetLastWriteTimeUtc (src)))
+					continue;
+				
+				list.Add (src, pf.CopyToOutputDirectory == FileCopyMode.PreserveNewest);
+			}
 		}
 		
 		protected virtual BuildResult DoBuild (IProgressMonitor monitor, string itemConfiguration)
@@ -251,6 +393,8 @@ namespace MonoDevelop.Projects
 				if (File.Exists (file))
 					FileService.DeleteFile (file);
 			}
+			
+			DeleteSupportFiles (monitor, solutionConfiguration);
 
 			DoClean (monitor, config.Id);
 		}
@@ -326,7 +470,7 @@ namespace MonoDevelop.Projects
 			}
 			
 			foreach (ProjectFile file in Files) {
-				if (file.BuildAction == BuildAction.Exclude || file.BuildAction == BuildAction.Nothing)
+				if (file.BuildAction == BuildAction.Content || file.BuildAction == BuildAction.None)
 					continue;
 				FileInfo finfo = new FileInfo (file.FilePath);
 				if (finfo.Exists && finfo.LastWriteTime > tim) {
@@ -394,7 +538,7 @@ namespace MonoDevelop.Projects
 			
 			Dictionary<ProjectFile,string> rids = new Dictionary<ProjectFile,string> ();
 			foreach (ProjectFile p in Files) {
-				if (p.BuildAction == BuildAction.EmbedAsResource)
+				if (p.BuildAction == BuildAction.EmbeddedResource)
 					rids [p] = p.ResourceId;
 			}
 			
@@ -455,6 +599,7 @@ namespace MonoDevelop.Projects
 		
 		protected virtual void OnFileRemovedFromProject (ProjectFileEventArgs e)
 		{
+			buildActions = null;
 			if (FileRemovedFromProject != null) {
 				FileRemovedFromProject (this, e);
 			}
@@ -462,6 +607,7 @@ namespace MonoDevelop.Projects
 		
 		protected virtual void OnFileAddedToProject (ProjectFileEventArgs e)
 		{
+			buildActions = null;
 			if (FileAddedToProject != null) {
 				FileAddedToProject (this, e);
 			}
@@ -490,6 +636,7 @@ namespace MonoDevelop.Projects
 		
  		protected virtual void OnFilePropertyChangedInProject (ProjectFileEventArgs e)
 		{
+			buildActions = null;
 			if (FilePropertyChangedInProject != null) {
 				FilePropertyChangedInProject (this, e);
 			}

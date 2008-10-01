@@ -48,7 +48,7 @@ namespace MonoDevelop.Ide.Templates
 		bool suppressAutoOpen = false;
 		bool addStandardHeader = false;
 		string dependsOn;
-		BuildAction buildAction;
+		string buildAction;
 		
 		public override void Load (XmlElement filenode)
 		{
@@ -56,11 +56,11 @@ namespace MonoDevelop.Ide.Templates
 			defaultName = filenode.GetAttribute ("DefaultName");
 			defaultExtension = filenode.GetAttribute ("DefaultExtension");
 			dependsOn = filenode.GetAttribute ("DependsOn");
+			
 			buildAction = BuildAction.Compile;
-			try {
-				buildAction = (BuildAction) Enum.Parse (typeof (BuildAction), filenode.GetAttribute ("BuildAction"), true);
-			} catch (ArgumentException) {
-			}
+			buildAction = filenode.GetAttribute ("BuildAction");
+			if (string.IsNullOrEmpty (buildAction))
+				buildAction = BuildAction.Compile;
 			
 			string suppressAutoOpenStr = filenode.GetAttribute ("SuppressAutoOpen");
 			if (!string.IsNullOrEmpty (suppressAutoOpenStr)) {

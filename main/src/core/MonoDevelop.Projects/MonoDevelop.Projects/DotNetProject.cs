@@ -276,75 +276,80 @@ namespace MonoDevelop.Projects
 				this.References.Add(prNew);
 			}
 		}
-
-		public void CopyReferencesToOutputPath (bool force, string configuration)
+		
+		protected override void PopulateSupportFileList (FileCopySet list, string solutionConfiguration)
 		{
-			ProjectConfiguration config = GetConfiguration (configuration) as ProjectConfiguration;
-			if (config == null) {
-				return;
-			}
-			CopyReferencesToOutputPath (config.OutputDirectory, force, configuration);
+			PopulateSupportFileList (list, solutionConfiguration, 0);
 		}
 		
-		void CopyReferencesToOutputPath (string destPath, bool force, string configuration)
+		void PopulateSupportFileList (FileCopySet list, string solutionConfiguration, int referenceDistance)
 		{
-			string[] deployFiles = GetReferenceDeployFiles (force, configuration);
+			if (referenceDistance < 2)
+				base.PopulateSupportFileList (list, solutionConfiguration);
 			
-			foreach (string sourcePath in deployFiles) {
-				string destinationFileName = Path.Combine (destPath, Path.GetFileName (sourcePath));
-				try {
-					if (destinationFileName != sourcePath) {
-						// Make sure the target directory exists
-						if (!Directory.Exists (Path.GetDirectoryName (destinationFileName)))
-							Directory.CreateDirectory (Path.GetDirectoryName (destinationFileName));
-						// Copy the file
-						FileService.CopyFile (sourcePath, destinationFileName);
-					}
-				} catch (Exception e) {
-					LoggingService.LogError ("Can't copy reference file from {0} to {1}: {2}", sourcePath, destinationFileName, e);
-				}
+			//rename the app.config file
+			FileCopySet.Item appConfig = list.Remove ("app.config");
+			if (appConfig == null)
+				appConfig = list.Remove ("App.config");
+			if (appConfig != null) {
+				string output = GetOutputFileName (solutionConfiguration);
+				list.Add (appConfig.Src, appConfig.CopyOnlyIfNewer, output + ".config");
 			}
-		}
-		
-		public string[] GetReferenceDeployFiles (bool force, string configuration)
-		{
-			ArrayList deployFiles = new ArrayList ();
-
+			
+			//collect all the "local copy" references and their attendant files
 			foreach (ProjectReference projectReference in References) {
-				if ((projectReference.LocalCopy || force) && projectReference.ReferenceType != ReferenceType.Gac) {
-					foreach (string referenceFileName in projectReference.GetReferencedFileNames (configuration)) {
-						deployFiles.Add (referenceFileName);
-						if (File.Exists (referenceFileName + ".config"))
-							deployFiles.Add (referenceFileName + ".config");
+				if (!projectReference.LocalCopy || ParentSolution == null)
+					continue;
+				
+				if (projectReference.ReferenceType == ReferenceType.Project )
+				{
+					DotNetProject p = ParentSolution.FindProjectByName (projectReference.Reference)
+						as DotNetProject;
+					
+					if (p == null) {
+						LoggingService.LogWarning (
+							"Project '{0}' referenced from '{1}' could not be found",
+							projectReference.Reference, this.Name);
+						continue;
+					}
+					
+					string refOutput = p.GetOutputFileName (solutionConfiguration);
+					if (string.IsNullOrEmpty (refOutput)) {
+						LoggingService.LogWarning (
+							"Project '{0}' referenced from '{1}' has an empty output filename",
+							p.Name, this.Name);
+						continue;
+					}
+					
+					list.Add (refOutput);
+					
+					//VS COMPAT: recursively copy references's "local copy" files
+					//but only copy the "copy to output" files from the immediate references
+					p.PopulateSupportFileList (list, solutionConfiguration, referenceDistance + 1);
+					
+					DotNetProjectConfiguration refConfig = p.GetActiveConfiguration (solutionConfiguration)
+						as DotNetProjectConfiguration;
+					
+					if (refConfig != null && refConfig.DebugMode) {
+						string mdbFile = refOutput + ".mdb";
+						if (File.Exists (mdbFile)) {
+							list.Add (mdbFile);
+						}
 					}
 				}
-				if (projectReference.ReferenceType == ReferenceType.Project && projectReference.LocalCopy && ParentSolution != null) {
-					DotNetProject p = ParentSolution.FindProjectByName (projectReference.Reference) as DotNetProject;
-					if (p != null) {
-						ProjectConfiguration config = p.GetActiveConfiguration (configuration) as ProjectConfiguration;
-						if (config != null && config.DebugMode)
-							deployFiles.Add (p.GetOutputFileName (configuration) + ".mdb");
-
-						deployFiles.AddRange (p.GetReferenceDeployFiles (force, configuration));
-					}
+				else if (projectReference.ReferenceType == ReferenceType.Assembly)
+				{
+					list.Add (projectReference.Reference);
+					if (File.Exists (projectReference.Reference + ".config"))
+						list.Add (projectReference.Reference + ".config");
+					string mdbFile = projectReference.Reference  + ".mdb";
+					if (File.Exists (mdbFile))
+						list.Add (mdbFile);
 				}
-			}
-			return (string[]) deployFiles.ToArray (typeof(string));
-		}
-		
-		void CleanReferencesInOutputPath (string destPath, string configuration)
-		{
-			string[] deployFiles = GetReferenceDeployFiles (true, configuration);
-			
-			foreach (string sourcePath in deployFiles) {
-				string destinationFileName = Path.Combine (destPath, Path.GetFileName (sourcePath));
-				try {
-					if (destinationFileName != sourcePath) {
-						if (File.Exists (destinationFileName))
-							FileService.DeleteFile (destinationFileName);
-					}
-				} catch (Exception e) {
-					LoggingService.LogError ("Can't delete reference file {0}: {2}", destinationFileName, e);
+				else if (projectReference.ReferenceType == ReferenceType.Custom)
+				{
+					foreach (string refFile in projectReference.GetReferencedFileNames (solutionConfiguration))
+						list.Add (refFile);
 				}
 			}
 		}
@@ -410,8 +415,6 @@ namespace MonoDevelop.Projects
 		
 		protected override void DoExecute (IProgressMonitor monitor, ExecutionContext context, string config)
 		{
-			CopyReferencesToOutputPath (true, config);
-			
 			DotNetProjectConfiguration configuration = (DotNetProjectConfiguration) GetConfiguration (config);
 			monitor.Log.WriteLine ("Running " + configuration.CompiledOutputName + " ...");
 			
@@ -449,17 +452,6 @@ namespace MonoDevelop.Projects
 		{
 			return (compileTarget == CompileTarget.Exe || compileTarget == CompileTarget.WinExe) &&
 				context.ExecutionHandlerFactory.SupportsPlatform (ExecutionPlatform.Mono);
-		}
-
-		
-		protected internal override void OnClean (IProgressMonitor monitor, string configuration)
-		{
-			// Delete referenced assemblies
-			ProjectConfiguration config = GetConfiguration (configuration) as ProjectConfiguration;
-			if (config != null)
-				CleanReferencesInOutputPath (config.OutputDirectory, configuration);
-			
-			base.OnClean (monitor, configuration);
 		}
 		
 		protected internal override List<string> OnGetItemFiles (bool includeReferencedFiles)
@@ -540,6 +532,16 @@ namespace MonoDevelop.Projects
 			foreach (ProjectReference pref in toAdd) {
 				References.Add (pref);
 			}
+		}
+		
+		protected override IEnumerable<string> GetStandardBuildActions ()
+		{
+			return BuildAction.DotNetActions;
+		}
+		
+		protected override IList<string> GetCommonBuildActions () 
+		{
+			return BuildAction.DotNetCommonActions;
 		}
 	}
 }

@@ -32,11 +32,26 @@ using MonoDevelop.Core.Serialization;
 
 namespace MonoDevelop.Projects.Formats.MD1
 {
-	class MD1CustomDataItem: ICustomDataItemHandler
+	public class MD1CustomDataItem: ICustomDataItemHandler
 	{
-		public DataCollection Serialize (object obj, ITypeSerializer handler)
+		public virtual DataCollection Serialize (object obj, ITypeSerializer handler)
 		{
-			if (obj is SolutionEntityItem) {
+			if (obj is ProjectFile) {
+				ProjectFile pf = (ProjectFile) obj;
+				
+				//Map the Content build action to the old FileCopy action if CopyToOutputDirectory is set
+				if (pf.BuildAction == BuildAction.Content && pf.CopyToOutputDirectory != FileCopyMode.None) {
+					DataCollection data = handler.Serialize (obj);
+					DataValue value = data ["buildaction"] as DataValue;
+					if (value != null) {
+						data.Remove (value);
+						data.Add (new DataValue ("buildaction", "FileCopy"));
+						data.Extract ("copyToOutputDirectory");
+					}
+					return data;
+				}
+			}
+			else if (obj is SolutionEntityItem) {
 				if (obj is DotNetProject) {
 					DotNetProject project = obj as DotNetProject;
 					foreach (DotNetProjectConfiguration config in project.Configurations)
@@ -70,9 +85,21 @@ namespace MonoDevelop.Projects.Formats.MD1
 			return handler.Serialize (obj);
 		}
 		
-		public void Deserialize (object obj, ITypeSerializer handler, DataCollection data)
+		public virtual void Deserialize (object obj, ITypeSerializer handler, DataCollection data)
 		{
-			if (obj is SolutionEntityItem) {
+			if (obj is ProjectFile) {
+				ProjectFile pf = (ProjectFile) obj;
+				
+				//Map the old FileCopy action to the Content BuildAction with CopyToOutputDirectory set to "always"
+				//BuildActionDataType handles mapping the BuildAction to "Content"
+				DataValue value = data ["buildaction"] as DataValue;
+				bool isFileCopy = value != null && value.Value == "FileCopy";
+				
+				handler.Deserialize (obj, data);
+				if (isFileCopy)
+					pf.CopyToOutputDirectory = FileCopyMode.Always;
+			}
+			else if (obj is SolutionEntityItem) {
 				DataValue ac = null;
 				DataItem confItem = data ["Configurations"] as DataItem;
 				if (confItem != null)

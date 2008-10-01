@@ -282,7 +282,7 @@ namespace MonoDevelop.GtkCore
 			}
 				
 			if (!project.IsFileInProject (SteticFile)) {
-				ProjectFile pf = project.AddFile (SteticFile, BuildAction.EmbedAsResource);
+				ProjectFile pf = project.AddFile (SteticFile, BuildAction.EmbeddedResource);
 				pf.ResourceId = "gui.stetic";
 				projectModified = true;
 			}

@@ -46,7 +46,7 @@ namespace MonoDevelop.GtkCore
 		{
 			ArrayList list = new ArrayList ();
 			foreach (ProjectFile file in project.Files) {
-				if (file.BuildAction == BuildAction.EmbedAsResource)
+				if (file.BuildAction == BuildAction.EmbeddedResource)
 					list.Add (new Stetic.ResourceInfo (Path.GetFileName (file.Name), file.Name));
 			}
 			return (Stetic.ResourceInfo[]) list.ToArray (typeof(Stetic.ResourceInfo));
@@ -63,7 +63,7 @@ namespace MonoDevelop.GtkCore
 		
 		public Stetic.ResourceInfo AddResource (string fileName)
 		{
-			project.AddFile (fileName, BuildAction.EmbedAsResource);
+			project.AddFile (fileName, BuildAction.EmbeddedResource);
 			project.Save (new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor());
 			return new Stetic.ResourceInfo (Path.GetFileName (fileName), fileName);
 		}

@@ -75,7 +75,6 @@ FILES =  \
 	MonoDevelop.Deployment/DeployFile.cs \
 	MonoDevelop.Deployment/DeployPlatformInfo.cs \
 	MonoDevelop.Deployment/DeployPlatformNodeType.cs \
-	MonoDevelop.Deployment/DeployProjectServiceExtension.cs \
 	MonoDevelop.Deployment/DeployProperties.cs \
 	MonoDevelop.Deployment/DeployService.cs \
 	MonoDevelop.Deployment/DeployServiceExtension.cs \

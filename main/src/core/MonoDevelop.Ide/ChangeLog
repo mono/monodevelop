@@ -1,3 +1,21 @@
+2008-10-01  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs,
+	  MonoDevelop.Ide.Templates/ResourceFileDescriptionTemplate.cs,
+	  MonoDevelop.Ide.Templates/ProjectDescriptor.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/IncludeFilesDialog.cs,
+	  templates/EmptyTextFile.xft.xml, templates/EmptyXMLFile.xft.xml,
+	  MonoDevelop.Ide.Gui/RootWorkspace.cs,
+	  MonoDevelop.Ide.Gui/ProjectOperations.cs: Track API.
+	* MonoDevelop.Ide.Commands/FileCommands.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs,
+	  MonoDevelop.Ide.addin.xml: Implement solution pad context commands
+	  for setting properties, setting build action, and showing property
+	  grid. Includes multi-select support.
+
 2008-09-30  Peter Johanson  <peter@peterjohanson.com>
 
 	* MonoDevelop.Ide.Commands/EditCommands.cs:

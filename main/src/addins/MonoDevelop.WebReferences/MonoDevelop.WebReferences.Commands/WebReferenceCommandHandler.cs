@@ -57,7 +57,7 @@ namespace MonoDevelop.WebReferences.Commands
 					// Generate the wsdl, disco and map files
 					string mapSpec = gen.CreateMapFile(basePath, "Reference.map");
 					ProjectFile mapFile = new ProjectFile(mapSpec);
-					mapFile.BuildAction = BuildAction.Nothing;
+					mapFile.BuildAction = BuildAction.None;
 					mapFile.Subtype = Subtype.Code;
 					project.Files.Add(mapFile);
 			

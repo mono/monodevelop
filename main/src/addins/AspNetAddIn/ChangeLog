@@ -1,3 +1,17 @@
+2008-10-01  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.AspNet/AspNetAppProject.cs: Track API.
+	* MonoDevelop.AspNet.addin.xml, MonoDevelop.AspNet.MD1Serialization,
+	  MonoDevelop.AspNet.MD1Serialization/MD1AspNetCustomDataItem.cs,
+	  MonoDevelop.AspNet.MD1Serialization/md1format.xml,
+	  MonoDevelop.AspNet.Deployment/WebDeployService.cs,
+	  MonoDevelop.AspNet.Deployment/WebDeployResolver.cs,
+	  MonoDevelop.AspNet.Deployment/AspNetDeployServiceExtension.cs,
+	  AspNetAddIn.mdp, Makefile.am: Integrate deployment with the
+	  deployment service chnages; makes it much cleaner. Track "arbitrary
+	  build action" API changes; this improves compatibility with VS Web
+	  Apps.
+
 2008-09-29  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Html/DocTypeCompletionData.cs,

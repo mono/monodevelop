@@ -60,7 +60,10 @@ namespace MonoDevelop.Ide.Commands
 		OpenFolder,
 		OpenContainingFolder,
 		PrintDocument,
-		PrintPreviewDocument
+		PrintPreviewDocument,
+		SetBuildAction,
+		ShowProperties,
+		CopyToOutputDirectory
 	}
 	
 	internal class NewProjectHandler : CommandHandler

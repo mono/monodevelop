@@ -125,6 +125,9 @@
     <File name="MonoDevelop.AspNet.StateEngine/AspNetDirectiveState.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.AspNet.StateEngine/AspNetServerCommentState.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.AspNet.StateEngine/AspNetSpeculativeExpressionState.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.AspNet.MD1Serialization/md1format.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="MonoDevelop.AspNet.MD1Serialization/MD1AspNetCustomDataItem.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.AspNet.Deployment/AspNetDeployServiceExtension.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.AspNet.Parser/Directive.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.AspNet.Parser/SimpleCompletionData.cs" subtype="Code" buildaction="Compile" />
   </Contents>
@@ -144,6 +147,7 @@
     <ProjectReference type="Gac" localcopy="True" refto="System.Configuration, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Addins, Version=0.3.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Deployment" />
+    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Deployment.Linux" />
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Projects.Gui" />
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.XmlEditor" />
     <ProjectReference type="Gac" localcopy="True" refto="glib-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />

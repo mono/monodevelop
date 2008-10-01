@@ -1,13 +1,11 @@
-//
-// Commands.cs
-//
+// 
+// FileCopyMode.cs
+// 
 // Author:
-//   Rafael 'Monoman' Teixeira
-//   David Makovský <yakeen@sannyas-on.net>
-//
-// Copyright (C) 2006 Rafael 'Monoman' Teixeira
-// Copyright (C) 2007 David Makovský
-//
+//   Michael Hutchinson <mhutchinson@novell.com>
+// 
+// Copyright (C) 2008 Novell, Inc (http://www.novell.com)
+// 
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
 // "Software"), to deal in the Software without restriction, including
@@ -28,28 +26,19 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
-using System.Collections;
-using System.IO;
-using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Core.Gui.ProgressMonitoring;
-using MonoDevelop.Projects;
-using MonoDevelop.Components;
-using MonoDevelop.Components.Commands;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Gui.Pads;
-using MonoDevelop.Ide.Gui.Pads.ProjectPad;
-using Gtk;
+using System.ComponentModel;
 
-namespace MonoDevelop.Gettext
+namespace MonoDevelop.Projects
 {
-	public enum Commands
+	
+	public enum FileCopyMode
 	{
-		AddTranslation,
-		IncludeInTranslation,
-		UpdateTranslations,
-		UpdateTranslation,
-		ScanForTranslations
+		[Description ("Do not copy")]
+		None = 0,
+		[Description ("Always copy")]
+		Always,
+		[Description ("Copy if newer")]
+		PreserveNewest
 	}
 }
+

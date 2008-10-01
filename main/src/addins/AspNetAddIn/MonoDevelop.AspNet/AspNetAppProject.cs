@@ -50,7 +50,7 @@ using MonoDevelop.AspNet.Gui;
 namespace MonoDevelop.AspNet
 {
 	[DataInclude (typeof(AspNetAppProjectConfiguration))]
-	public class AspNetAppProject : DotNetProject, IDeployable
+	public class AspNetAppProject : DotNetProject
 	{
 		[ItemProperty("XspParameters", IsExternal=true)]
 		protected XspParameters xspParameters = new XspParameters ();
@@ -148,29 +148,6 @@ namespace MonoDevelop.AspNet
 		
 		#endregion
 		
-		//custom version of GetDeployFiles which puts libraries in the bin directory
-		public DeployFileCollection GetDeployFiles (string configuration)
-		{
-			DeployFileCollection files = new DeployFileCollection ();
-			
-			//add files that are marked to 'deploy'
-			//ASP.NET files etc all go relative to the application root
-			foreach (ProjectFile pf in Files)
-				if (pf.BuildAction == BuildAction.FileCopy)
-					files.Add (new DeployFile (this, pf.FilePath, pf.RelativePath, WebTargetDirectory.SiteRoot));
-			
-			//add referenced libraries
-			foreach (string refFile in GetReferenceDeployFiles (false, configuration))
-				files.Add (new DeployFile (this, refFile, Path.GetFileName (refFile), WebTargetDirectory.AspNetBin));
-			
-			//add the compiled output file
-			string outputFile = this.GetOutputFileName (configuration);
-			if (!string.IsNullOrEmpty (outputFile))
-				files.Add (new DeployFile (this, outputFile, Path.GetFileName (outputFile), WebTargetDirectory.AspNetBin));
-			
-			return files;
-		}
-		
 		#region build/prebuild/execute
 		
 		
@@ -188,16 +165,9 @@ namespace MonoDevelop.AspNet
 			
 			BuildResult ret;
 			if (needsCompile)
-				ret = base.DoBuild (monitor, configuration);
+				return base.DoBuild (monitor, configuration);
 			else
-				ret = new BuildResult ();
-			
-			// all this does is makes sure that references are copied after building
-			// it's not strictly necessary, as the Run/Deploy commands do it too..
-			// but some users expect it to happen during a compile, so it's easier all round this way
-			//need to do this after the compile, as the compile phase removes copied references
-			CopyReferencesToOutputPath (false, configuration);
-			return ret;
+				return new BuildResult ();
 		}
 		
 		static bool CheckXsp (string command)
@@ -223,8 +193,6 @@ namespace MonoDevelop.AspNet
 				monitor.ReportError (string.Format ("The \"{0}\" web server cannot be started. Please ensure that it is installed.",xspVersion), null);
 				return;
 			}
-			
-			CopyReferencesToOutputPath (false, config);
 			
 			IConsole console = null;
 			AggregatedOperationMonitor operationMonitor = new AggregatedOperationMonitor (monitor);
@@ -522,7 +490,7 @@ namespace MonoDevelop.AspNet
 			if (filesToAdd != null) {
 				foreach (string file in filesToAdd) {
 					//NOTE: this only adds files if they are not already in the project
-					AddFile (file, BuildAction.FileCopy);
+					AddFile (file, BuildAction.Content);
 				}
 			}
 		}
@@ -596,7 +564,7 @@ namespace MonoDevelop.AspNet
 			//make sure web files are deployed, not built
 			WebSubtype type = DetermineWebSubtype (file);
 			if (type != WebSubtype.None && type != WebSubtype.Code)
-				file.BuildAction = BuildAction.FileCopy;
+				file.BuildAction = BuildAction.Content;
 		}
 		
 		#endregion
@@ -623,6 +591,17 @@ namespace MonoDevelop.AspNet
 			"App_LocalResources",
 			"App_GlobalResources",		
 		};
+		
+		protected override IList<string> GetCommonBuildActions ()
+		{
+			return new string[] {
+				BuildAction.None,
+				BuildAction.Compile,
+				BuildAction.Content,
+				BuildAction.EmbeddedResource,
+			};
+		}
+
 	}
 	
 	public enum WebSubtype

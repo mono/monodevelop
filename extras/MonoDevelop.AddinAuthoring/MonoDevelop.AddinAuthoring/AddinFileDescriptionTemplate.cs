@@ -72,7 +72,7 @@ namespace MonoDevelop.AddinAuthoring
 			string file = Path.Combine (directory, "manifest.addin.xml");
 			doc.Save (file);
 			
-			project.AddFile (file, BuildAction.EmbedAsResource);
+			project.AddFile (file, BuildAction.EmbeddedResource);
 			
 			AddinData.EnableAddinAuthoringSupport ((DotNetProject)project);
 			return true;

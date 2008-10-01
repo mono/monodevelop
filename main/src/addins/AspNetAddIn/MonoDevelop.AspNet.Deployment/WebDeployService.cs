@@ -55,8 +55,11 @@ namespace MonoDevelop.AspNet.Deployment
 			MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.Build (project);
 			
 			//set up and launch a copying thread
-			DeployThreadParams threadParams = new DeployThreadParams (); 
-			threadParams.Files = project.GetDeployFiles (configuration);
+			DeployThreadParams threadParams = new DeployThreadParams ();
+			threadParams.Context = new DeployContext (new WebDeployResolver (), null, null);
+			threadParams.Files = MonoDevelop.Deployment.DeployService.GetDeployFiles (threadParams.Context,
+			                                                                          project, configuration);
+			
 			Dictionary<string, string> taskAliases = new Dictionary<string,string> ();
 			foreach (WebDeployTarget target in targets) {
 				threadParams.Targets.Add ((WebDeployTarget) target.Clone ());
@@ -83,12 +86,15 @@ namespace MonoDevelop.AspNet.Deployment
 					if (threadParams.Monitor.IsCancelRequested)
 						break;
 					try {
-						DeployContext context = new DeployContext (new WebDeployResolver (), null, null);
-						target.FileCopier.CopyFiles (threadParams.Monitor, replacePolicy, threadParams.Files, context);
-					} catch (OperationCanceledException ex) {
+						
+						target.FileCopier.CopyFiles (threadParams.Monitor, replacePolicy,
+						                             threadParams.Files, threadParams.Context);
+					}
+					catch (OperationCanceledException ex) {
 						threadParams.Monitor.ReportError (GettextCatalog.GetString ("Web deploy aborted."), ex);
 						break;
-					} catch (InvalidOperationException ex) {
+					}
+					catch (InvalidOperationException ex) {
 						threadParams.Monitor.ReportError (GettextCatalog.GetString ("Web deploy aborted."), ex);
 						break;
 					}
@@ -130,6 +136,7 @@ namespace MonoDevelop.AspNet.Deployment
 			public List<WebDeployTarget> Targets = new List<WebDeployTarget> ();
 			public DeployFileCollection Files;
 			public IProgressMonitor Monitor;
+			public DeployContext Context;
 		}
 	}
 }
