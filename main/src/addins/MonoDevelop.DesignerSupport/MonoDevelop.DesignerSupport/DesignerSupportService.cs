@@ -44,7 +44,7 @@ namespace MonoDevelop.DesignerSupport
 {
 	
 	
-	public class DesignerSupportService : AbstractService
+	public class DesignerSupportService
 	{
 		PropertyPad propertyPad = null;
 		ToolboxService toolboxService = null;
@@ -198,11 +198,8 @@ namespace MonoDevelop.DesignerSupport
 		
 		#endregion
 		
-		#region IService implementations
-		
-		public override void InitializeService()
+		internal DesignerSupportService ()
 		{
-			base.InitializeService ();
 			IdeApp.CommandService.RegisterCommandTargetVisitor (new PropertyPadVisitor ());
 			AddinManager.ExtensionChanged += OnExtensionChanged;
 		}
@@ -214,14 +211,6 @@ namespace MonoDevelop.DesignerSupport
 				ReSetPad ();
 			}
 		}
-		
-		public override void UnloadService ()
-		{
-			base.UnloadService ();
-		}
-
-		
-		#endregion
 	}
 	
 	public static class DesignerSupport
@@ -231,7 +220,7 @@ namespace MonoDevelop.DesignerSupport
 		public static DesignerSupportService Service {
 			get {
 				if (designerSupportService == null)
-					designerSupportService = (DesignerSupportService) ServiceManager.GetService (typeof(DesignerSupportService));
+					designerSupportService = new DesignerSupportService ();
 				return designerSupportService;
 			}
 		}
