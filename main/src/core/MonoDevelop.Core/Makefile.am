@@ -83,7 +83,7 @@ FILES =  \
 	MonoDevelop.Core/DefaultAddinLocalizer.cs \
 	MonoDevelop.Core/FileEventArgs.cs \
 	MonoDevelop.Core/FileService.cs \
-	MonoDevelop.Core/GettextCatalog.cs \
+	MonoDevelop.Core/Gettext.cs \
 	MonoDevelop.Core/IAsyncOperation.cs \
 	MonoDevelop.Core/ICustomXmlSerializer.cs \
 	MonoDevelop.Core/IProgressMonitor.cs \

@@ -56,7 +56,6 @@
     <File name="MonoDevelop.Core/FileEventArgs.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Core.FileSystem/FileSystemExtension.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Core.FileSystem/DefaultFileSystemExtension.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Core/GettextCatalog.cs" subtype="Code" buildaction="Compile" />
     <File name="AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Core.AddIns/ExecutionHandlerCodon.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Core.ProgressMonitoring/ConsoleProgressStatus.cs" subtype="Code" buildaction="Compile" />
@@ -113,6 +112,7 @@
     <File name="MonoDevelop.Core.Serialization/XmlMapAttributeProvider.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Core.Collections/Set.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Core.Collections/ReadOnlyDictionary.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core/Gettext.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
