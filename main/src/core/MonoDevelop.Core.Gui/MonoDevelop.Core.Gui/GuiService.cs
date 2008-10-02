@@ -48,7 +48,6 @@ namespace MonoDevelop.Core.Gui
 				platformService = new DefaultPlatformService ();
 				LoggingService.LogFatalError ("A platform service implementation has not been found.");
 			}
-			platformService.InitializeService ();
 		}
 
 		public static ResourceService Resources {

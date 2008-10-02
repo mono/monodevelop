@@ -39,7 +39,7 @@ using MonoDevelop.Core.Gui.Codons;
 
 namespace MonoDevelop.Core.Gui
 {
-	public abstract class PlatformService : AbstractService
+	public abstract class PlatformService
 	{
 		Hashtable iconHash = new Hashtable ();
 		

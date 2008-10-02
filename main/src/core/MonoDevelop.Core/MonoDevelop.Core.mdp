@@ -14,9 +14,6 @@
     </Configuration>
   </Configurations>
   <Contents>
-    <File name="MonoDevelop.Core/AbstractService.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Core/IService.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Core/ServiceManager.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Core/StringParserService.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Core/UserException.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Core/Runtime.cs" subtype="Code" buildaction="Compile" />
@@ -63,7 +60,6 @@
     <File name="AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Core.AddIns/ExecutionHandlerCodon.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Core.ProgressMonitoring/ConsoleProgressStatus.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Core.AddIns/ServiceExtensionNode.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Core.AddIns/AssemblyExtensionNode.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Core.AddIns/PackageExtensionNode.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Core.AddIns/ApplicationExtensionNode.cs" subtype="Code" buildaction="Compile" />

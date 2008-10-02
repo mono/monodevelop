@@ -1,3 +1,8 @@
+2008-10-02  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Ide.Gui/Ide.cs, MonoDevelop.Ide.Gui/IdeStartup.cs,
+	  MonoDevelop.Ide/Services.cs: Track removal of service APIs.
+
 2008-10-01  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs,

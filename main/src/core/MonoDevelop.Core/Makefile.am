@@ -7,7 +7,6 @@ FILES =  \
 	MonoDevelop.Core.AddIns/ExecutionHandlerCodon.cs \
 	MonoDevelop.Core.AddIns/ExecutionModeNode.cs \
 	MonoDevelop.Core.AddIns/PackageExtensionNode.cs \
-	MonoDevelop.Core.AddIns/ServiceExtensionNode.cs \
 	MonoDevelop.Core.Collections/ReadOnlyDictionary.cs \
 	MonoDevelop.Core.Collections/Set.cs \
 	MonoDevelop.Core.Execution/AddinDependencyAttribute.cs \
@@ -80,7 +79,6 @@ FILES =  \
 	MonoDevelop.Core.Serialization/XmlDataSerializer.cs \
 	MonoDevelop.Core.Serialization/XmlElementDataType.cs \
 	MonoDevelop.Core.Serialization/XmlMapAttributeProvider.cs \
-	MonoDevelop.Core/AbstractService.cs \
 	MonoDevelop.Core/ClrVersion.cs \
 	MonoDevelop.Core/DefaultAddinLocalizer.cs \
 	MonoDevelop.Core/FileEventArgs.cs \
@@ -89,13 +87,11 @@ FILES =  \
 	MonoDevelop.Core/IAsyncOperation.cs \
 	MonoDevelop.Core/ICustomXmlSerializer.cs \
 	MonoDevelop.Core/IProgressMonitor.cs \
-	MonoDevelop.Core/IService.cs \
 	MonoDevelop.Core/LoggingService.cs \
 	MonoDevelop.Core/Properties.cs \
 	MonoDevelop.Core/PropertyChangedEventArgs.cs \
 	MonoDevelop.Core/PropertyService.cs \
 	MonoDevelop.Core/Runtime.cs \
-	MonoDevelop.Core/ServiceManager.cs \
 	MonoDevelop.Core/StringParserService.cs \
 	MonoDevelop.Core/SystemAssemblyService.cs \
 	MonoDevelop.Core/SystemPackage.cs \

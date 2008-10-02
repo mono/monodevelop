@@ -1,3 +1,11 @@
+2008-10-02  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Core.Gui.mdp,
+	  MonoDevelop.Core.Gui/GuiSyncAbstractService.cs,
+	  MonoDevelop.Core.Gui/GuiService.cs,
+	  MonoDevelop.Core.Gui/PlatformService.cs, Makefile.am: Track removal
+	  of service APIs.
+
 2008-09-30  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Core.Gui/PlatformService.cs: added

@@ -256,7 +256,6 @@ namespace MonoDevelop.Ide.Gui
 		
 		internal static void OnExited ()
 		{
-			PropertyService.SaveProperties ();
 			if (Exited != null)
 				Exited (null, EventArgs.Empty);
 		}
@@ -273,9 +272,7 @@ namespace MonoDevelop.Ide.Gui
 	
 		public IconService Icons {
 			get {
-				if (icons == null)
-					icons = (IconService) ServiceManager.GetService (typeof(IconService));
-				return icons;
+				return MonoDevelop.Projects.Gui.Services.Icons;
 			}
 		}
 	

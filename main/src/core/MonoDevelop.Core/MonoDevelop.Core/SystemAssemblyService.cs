@@ -41,7 +41,7 @@ using Mono.Addins;
 
 namespace MonoDevelop.Core
 {
-	public class SystemAssemblyService : AbstractService
+	public class SystemAssemblyService
 	{
 		Dictionary<string, SystemPackage> assemblyPathToPackage = new Dictionary<string, SystemPackage> ();
 		Dictionary<string, string> assemblyFullNameToPath = new Dictionary<string, string> ();
@@ -63,7 +63,7 @@ namespace MonoDevelop.Core
 		
 		public event EventHandler PackagesChanged;
 
-		public override void InitializeService ()
+		internal SystemAssemblyService ()
 		{
 			// Initialize the service in a background thread.
 			Thread t = new Thread (new ThreadStart (BackgroundInitialize));

@@ -34,13 +34,13 @@ using Stock = MonoDevelop.Core.Gui.Stock;
 
 namespace MonoDevelop.Projects.Gui
 {
-	public class IconService : AbstractService {
+	public class IconService
+	{
 		Hashtable extensionHashtable   = new Hashtable ();
 		Hashtable projectFileHashtable = new Hashtable ();
 		
-		public override void InitializeService()
+		internal IconService ()
 		{
-			base.InitializeService();
 			InitializeIcons ("/MonoDevelop/ProjectModel/Gui/Icons");
 		}
 		

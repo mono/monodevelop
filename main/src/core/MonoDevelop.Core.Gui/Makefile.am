@@ -59,7 +59,6 @@ FILES =  \
 	MonoDevelop.Core.Gui/FreeDispatchAttribute.cs \
 	MonoDevelop.Core.Gui/GLibLogging.cs \
 	MonoDevelop.Core.Gui/GuiService.cs \
-	MonoDevelop.Core.Gui/GuiSyncAbstractService.cs \
 	MonoDevelop.Core.Gui/GuiSyncContext.cs \
 	MonoDevelop.Core.Gui/GuiSyncObject.cs \
 	MonoDevelop.Core.Gui/IMementoCapable.cs \

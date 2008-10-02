@@ -47,11 +47,7 @@ namespace MonoDevelop.Ide
 		}
 	
 		public static IconService Icons {
-			get {
-				if (icons == null)
-					icons = (IconService) ServiceManager.GetService (typeof(IconService));
-				return icons;
-			}
+			get { return MonoDevelop.Projects.Gui.Services.Icons; }
 		}
 
 		public static TaskService TaskService {
@@ -61,7 +57,6 @@ namespace MonoDevelop.Ide
 				return taskService;
 			}
 		}
-	
 		
 		public static ProjectService ProjectService {
 			get { return MonoDevelop.Projects.Services.ProjectService; }

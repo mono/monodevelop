@@ -66,7 +66,6 @@
     <File name="MonoDevelop.Core.Gui/AsyncDispatchAttribute.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Core.Gui/DispatchService.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Core.Gui/FreeDispatchAttribute.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Core.Gui/GuiSyncAbstractService.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Core.Gui/GuiSyncContext.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Core.Gui/GuiSyncObject.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Core.Gui/SyncContext.cs" subtype="Code" buildaction="Compile" />

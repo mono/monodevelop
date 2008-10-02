@@ -33,7 +33,7 @@ using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.Projects.Gui
 {
-	internal class Services
+	public class Services
 	{
 		static IconService icons;
 
@@ -52,7 +52,7 @@ namespace MonoDevelop.Projects.Gui
 		public static IconService Icons {
 			get {
 				if (icons == null)
-					icons = (IconService) ServiceManager.GetService (typeof(IconService));
+					icons = new IconService ();
 				return icons;
 			}
 		}

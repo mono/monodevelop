@@ -44,7 +44,7 @@ using Mono.Addins;
 
 namespace MonoDevelop.Core.Execution
 {
-	public class ProcessService : AbstractService
+	public class ProcessService : IDisposable
 	{
 		ProcessHostController externalProcess;
 		List<ExtensionNode> executionHandlers;
@@ -73,7 +73,7 @@ namespace MonoDevelop.Core.Execution
 			}
 		}
 		
-		public override void InitializeService ()
+		internal ProcessService ()
 		{
 			if (PlatformID.Unix != Environment.OSVersion.Platform) {
 				remotingChannel = "tcp";
@@ -316,7 +316,7 @@ namespace MonoDevelop.Core.Execution
 			return remotingChannel;
 		}
 		
-		public override void UnloadService ()
+		public virtual void Dispose ()
 		{
 			if (unixRemotingFile != null)
 				File.Delete (unixRemotingFile);

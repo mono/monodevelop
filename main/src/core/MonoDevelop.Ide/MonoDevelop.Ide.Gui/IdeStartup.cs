@@ -150,8 +150,9 @@ namespace MonoDevelop.Ide.Gui
 			int reportedFailures = 0;
 			
 			try {
-				ServiceManager.AddService(new IconService());
-
+				//force initialisation
+				IconService s = MonoDevelop.Projects.Gui.Services.Icons;
+				
 				if (errorsList.Count > 0) {
 					SplashScreenForm.SplashScreen.Hide ();
 					AddinLoadErrorDialog dlg = new AddinLoadErrorDialog ((AddinError[]) errorsList.ToArray (typeof(AddinError)), false);
@@ -205,7 +206,7 @@ namespace MonoDevelop.Ide.Gui
 			if (null != socket_filename)
 				File.Delete (socket_filename);
 			
-			ServiceManager.UnloadAllServices ();
+			Runtime.Shutdown ();
 			System.Environment.Exit (0);
 			return 0;
 		}

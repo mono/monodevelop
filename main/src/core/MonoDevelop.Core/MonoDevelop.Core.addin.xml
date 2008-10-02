@@ -13,11 +13,6 @@
 	<Runtime>
 		<Import assembly="../bin/MonoDevelop.Core.dll"/>
 	</Runtime>
-	
-	<ExtensionPoint path = "/MonoDevelop/Core/Services" name = "Services">
-		<Description>Services to be initialized by the runtime. Specified classes must implement MonoDevelop.Core.IService</Description>
-		<ExtensionNode name="Class" type="MonoDevelop.Core.AddIns.ServiceExtensionNode" />
-	</ExtensionPoint>
 
 	<ExtensionPoint path = "/MonoDevelop/Core/ExecutionModes" name = "Execution modes">
 		<Description>Execution modes such as default, debug, profiler, etc.</Description>
@@ -42,13 +37,6 @@
 	<ExtensionPoint path = "/MonoDevelop/Core/SupportPackages">
 		<ExtensionNode name="Package" type="MonoDevelop.Core.AddIns.PackageExtensionNode"/>
 	</ExtensionPoint>
-
-	<Extension path = "/MonoDevelop/Core/Services">
-		<Class id    = "SystemAssemblyService"
-		       class = "MonoDevelop.Core.SystemAssemblyService"/>
-		<Class id    = "ProcessService"
-		       class = "MonoDevelop.Core.Execution.ProcessService"/>
-	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/ExecutionModes">
 		<Mode id="Default" _name="Default" class="MonoDevelop.Core.Execution.DefaultExecutionHandlerFactory"/>

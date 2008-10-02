@@ -39,17 +39,13 @@ using Mono.Addins.Setup;
 
 namespace MonoDevelop.Core
 {
-	public class Runtime
+	public static class Runtime
 	{
 		static ProcessService processService;
 		static SystemAssemblyService systemAssemblyService;
 		static SetupService setupService;
 		static ApplicationService applicationService;
 		static bool initialized;
-		
-		private Runtime ()
-		{
-		}
 		
 		public static void Initialize (bool updateAddinRegistry)
 		{
@@ -77,7 +73,7 @@ namespace MonoDevelop.Core
 			}
 			setupService.Repositories.RegisterRepository (null, mainRep, false);
 
-			ServiceManager.Initialize ();
+			systemAssemblyService = new SystemAssemblyService ();
 		}
 		
 		static void OnLoadError (object s, AddinErrorEventArgs args)
@@ -102,22 +98,32 @@ namespace MonoDevelop.Core
 		
 		public static void Shutdown ()
 		{
-			ServiceManager.UnloadAllServices ();
+			if (systemAssemblyService == null)
+				return;
+			
+			systemAssemblyService = null;
+			
+			if (ShuttingDown != null)
+				ShuttingDown (null, EventArgs.Empty);
+			
 			PropertyService.SaveProperties ();
+			
+			if (processService != null) {
+				processService.Dispose ();
+				processService = null;
+			}
 		}
 		
 		public static ProcessService ProcessService {
 			get {
 				if (processService == null)
-					processService = (ProcessService) ServiceManager.GetService (typeof(ProcessService));
+					processService = new ProcessService ();
 				return processService;
 			}
 		}
 		
 		public static SystemAssemblyService SystemAssemblyService {
 			get {
-				if (systemAssemblyService == null)
-					systemAssemblyService = (SystemAssemblyService) ServiceManager.GetService (typeof(SystemAssemblyService));
 				return systemAssemblyService;
 			}
 		}
@@ -167,6 +173,8 @@ namespace MonoDevelop.Core
 				} catch (EntryPointNotFoundException) {}
 			}
 		}
+		
+		public static event EventHandler ShuttingDown;
 	}
 	
 	public class ApplicationService

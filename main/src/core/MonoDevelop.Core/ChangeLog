@@ -1,3 +1,13 @@
+2008-10-02  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Core.AddIns/ServiceExtensionNode.cs,
+	  MonoDevelop.Core.Execution/ProcessService.cs,
+	  MonoDevelop.Core.addin.xml, MonoDevelop.Core.mdp, Makefile.am,
+	  MonoDevelop.Core/Runtime.cs, MonoDevelop.Core/AbstractService.cs,
+	  MonoDevelop.Core/ServiceManager.cs,
+	  MonoDevelop.Core/SystemAssemblyService.cs,
+	  MonoDevelop.Core/IService.cs: Remove service APIs.
+
 2008-09-16  Mike Kestner <mkestner@novell.com> 
 
 	* MonoDevelop.Core.Execution/ProcessWrapper.cs: null check to avoid
