@@ -605,7 +605,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 							}
 						}
 						foreach (KeyValuePair<string, IReturnType> alias in u.Aliases) {
-							if (alias.Key + "::" == namePrefix.Trim ()) {
+							if (alias.Key == namePrefix.Trim () || alias.Key + "::" == namePrefix.Trim ()) {
 								foundNamespace = true;
 								break;
 							}
@@ -633,13 +633,14 @@ namespace MonoDevelop.CSharpBinding.Gui
 								}
 							}
 							foreach (KeyValuePair<string, IReturnType> alias in u.Aliases) {
-								if (alias.Key + "::" == namePrefix.Trim ()) {
+									if (alias.Key == namePrefix.Trim () || alias.Key + "::" == namePrefix.Trim ()) {
 									foundType = true;
 									break;
 								}
 							}
 							
 						}
+						
 						if (!foundType && (NamePrefix.Length == 0 || !type.Namespace.StartsWith (NamePrefix)) && !type.Namespace.EndsWith ("." + NamePrefix))
 							flags |= OutputFlags.UseFullName;
 					}

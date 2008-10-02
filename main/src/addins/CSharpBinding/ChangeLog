@@ -1,3 +1,8 @@
+2008-10-02  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/CSharpTextEditorCompletion.cs: fixed 'Bug 431462 - Code
+	  completion generally unusable with with 'using' aliases'.
+
 2008-10-01  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* CSharpBindingCompilerManager.cs: Track API.
