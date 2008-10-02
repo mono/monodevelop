@@ -79,7 +79,7 @@ namespace MonoDevelop.NUnit
 		
 		protected override void OnCreateTests ()
 		{
-			NUnitService testService = (NUnitService) ServiceManager.GetService (typeof(NUnitService));
+			NUnitService testService = NUnitService.Instance;
 			foreach (WorkspaceItem e in workspace.Items) {
 				UnitTest t = testService.BuildTest (e);
 				if (t != null)

@@ -46,7 +46,7 @@ namespace MonoDevelop.NUnit
 {
 	class TestResultsPad: IPadContent, ITestProgressMonitor
 	{
-		NUnitService testService = (NUnitService) ServiceManager.GetService (typeof(NUnitService));
+		NUnitService testService = NUnitService.Instance;
 		
 		IPadWindow window;
 		VBox panel;
@@ -385,8 +385,7 @@ namespace MonoDevelop.NUnit
 		{
 			if (rootTest == null)
 				return;
-			NUnitService testService = (NUnitService) ServiceManager.GetService (typeof(NUnitService));
-			testService.RunTest (rootTest);
+			NUnitService.Instance.RunTest (rootTest);
 		}
 		
 		void OnPopupMenu (object o, Gtk.ButtonReleaseEventArgs args)

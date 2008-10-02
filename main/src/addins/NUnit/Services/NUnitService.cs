@@ -43,12 +43,14 @@ using GuiServices = MonoDevelop.Core.Gui.Services;
 
 namespace MonoDevelop.NUnit
 {
-	public class NUnitService : AbstractService
+	public class NUnitService
 	{
+		static NUnitService instance;
+		
 		ArrayList providers = new ArrayList ();
 		UnitTest[] rootTests;
 		
-		public override void InitializeService ()
+		private NUnitService ()
 		{
 			IdeApp.Workspace.ReferenceAddedToProject += OnWorkspaceChanged;
 			IdeApp.Workspace.ReferenceRemovedFromProject += OnWorkspaceChanged;
@@ -62,6 +64,14 @@ namespace MonoDevelop.NUnit
 			Mono.Addins.AddinManager.AddExtensionNodeHandler ("/MonoDevelop/NUnit/TestProviders", OnExtensionChange);
 			
 			RebuildTests ();
+		}
+		
+		public static NUnitService Instance {
+			get {
+				if (instance == null)
+					instance = new NUnitService ();
+				return instance;
+			}
 		}
 		
 		void OnExtensionChange (object s, ExtensionNodeEventArgs args)

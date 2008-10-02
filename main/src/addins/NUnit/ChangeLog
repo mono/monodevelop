@@ -1,3 +1,10 @@
+2008-10-02  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelopNUnit.addin.xml, Services/WorkspaceTestGroup.cs,
+	  Services/NUnitService.cs, Services/SolutionFolderTestGroup.cs,
+	  Gui/TestResultsPad.cs, Gui/TestPad.cs: Use a simple lazy singleton
+	  instead of an IService.
+
 2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.NUnit.mdp: Updated generated code.

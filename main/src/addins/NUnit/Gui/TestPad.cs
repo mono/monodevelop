@@ -44,7 +44,7 @@ namespace MonoDevelop.NUnit
 {
 	public class TestPad : TreeViewPad
 	{
-		NUnitService testService = (NUnitService) ServiceManager.GetService (typeof(NUnitService));
+		NUnitService testService = NUnitService.Instance;
 		
 		IAsyncOperation runningTestOperation;
 		VPaned paned;
