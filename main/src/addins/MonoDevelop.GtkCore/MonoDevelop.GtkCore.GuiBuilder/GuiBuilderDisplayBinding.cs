@@ -32,6 +32,8 @@ using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Codons;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
+using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Parser;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
@@ -91,7 +93,20 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (!GtkDesignInfo.HasDesignedObjects (project))
 				return null;
 
-			return GtkDesignInfo.FromProject (project).GuiBuilderProject.GetWindowForFile (file);
+			GtkDesignInfo info = GtkDesignInfo.FromProject (project);
+			if (file.StartsWith (info.GtkGuiFolder))
+				return null;
+
+			ParsedDocument doc = ProjectDomService.GetParsedDocument (file);
+			if (doc == null || doc.CompilationUnit == null)
+				return null;
+
+			foreach (IType t in doc.CompilationUnit.Types) {
+				GuiBuilderWindow win = info.GuiBuilderProject.GetWindowForClass (t.FullName);
+				if (win != null)
+					return win;
+			}
+			return null;
 		}
 	}
 }

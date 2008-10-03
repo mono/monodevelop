@@ -1,3 +1,13 @@
+2008-10-03  Mike Kestner <mkestner@novell.com> 
+
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderDisplayBinding:
+	rework GetWindow method. now uses the ParsedDocument for a requested 
+	file to check if any of its types have a GuiBuilderWindow.
+	The existing method of walking the project windows list and using 
+	the ProjectDom database to lookup their file locations is susceptible
+	to timing problems due to imcomplete parse databases.  This method is
+	probably slightly more efficient as well.
+
 2008-10-01  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.GtkCore/GtkDesignInfo.cs,
