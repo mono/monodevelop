@@ -67,6 +67,7 @@ namespace MonoDevelop.Deployment
 			"DeployService.Deploy",
 			"DeployService.TargetDirectoryId",
 			"DeployService.RelativeDeployPath",
+			"DeployService.UseProjectRelativePath",
 			"DeployService.HasPathReferences",
 			"DeployService.FileAttributes"
 		};
@@ -97,7 +98,6 @@ namespace MonoDevelop.Deployment
 				return;
 			
 			//if there were any deploy settings remaining in the project file, then the file isn't "copy to output"
-			bool shouldDeploy = false;
 			foreach (string key in keys) {
 				if (file.ExtendedProperties.Contains (key)) {
 					file.CopyToOutputDirectory = FileCopyMode.None;

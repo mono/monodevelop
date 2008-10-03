@@ -1,3 +1,8 @@
+2008-10-03  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Deployment/MD1Serializer.cs: Add missing deploy key,
+	  remove unused variable.
+
 2008-10-01  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Deployment.addin.xml, MonoDevelop.Deployment.mdp,
