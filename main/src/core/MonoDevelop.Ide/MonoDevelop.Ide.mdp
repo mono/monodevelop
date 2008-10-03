@@ -87,7 +87,6 @@
     <File name="MonoDevelop.Ide.Gui.Content/IParsableContent.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Content/IPrintable.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Content/ITextBuffer.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Gui.Content/IViewHistory.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Dialogs/DirtyFilesDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs" subtype="Code" buildaction="Compile" />
@@ -218,12 +217,8 @@
     <File name="MonoDevelop.Ide.Gui.Dialogs/GoToDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Content/TextEditorExtension.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui/TextEditor.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Gui/INavigationPoint.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Gui/NavigationService.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Gui/DefaultNavigationPoint.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui/ViewContentEventHandler.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Commands/NavigationCommands.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Gui/NavigationHistory.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Dialogs/ExportProjectDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Templates/ISolutionItemFeature.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Dialogs/CombineEntryFeatureSelector.cs" subtype="Code" buildaction="Compile" />
@@ -298,7 +293,6 @@
     <File name="MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs" subtype="Code" buildaction="Compile" />
     <File name="gtk-gui/MonoDevelop.Ide.ExternalTools.ExternalToolPanelWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="options/KeyBindingSchemeMonoDevelop1.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="MonoDevelop.Ide.Gui/TextNavigationPoint.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs" subtype="Code" buildaction="Compile" />
     <File name="gtk-gui/MonoDevelop.Ide.DocumentSwitcher.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui/DocumentSwitcher.cs" subtype="Code" buildaction="Compile" />
@@ -342,6 +336,9 @@
     <File name="gtk-gui/MonoDevelop.Ide.OverridesImplementsDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Search/CurrentProjectDocumentIterator.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Search/FilesDocumentIterator.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Gui/NavigationHistoryService.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Gui/TextFileNavigationPoint.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Gui/FileNavigationPoint.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Dialogs/BreakpointPropertiesDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="gtk-gui/MonoDevelop.Ide.Gui.Dialogs.BreakpointPropertiesDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs" subtype="Code" buildaction="Compile" />
@@ -365,6 +362,7 @@
     <File name="MonoDevelop.Ide.Gui.Pads.ClassPad/ClassBrowserPad.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Pads.ClassPad/ClassBrowserPadWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Pads.ClassPad/ReferenceNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Gui.Content/INavigable.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
@@ -387,11 +385,11 @@
     <ProjectReference type="Gac" localcopy="True" refto="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <ProjectReference type="Project" localcopy="True" refto="Mono.Debugging" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Addins.Gui, Version=0.3.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
-    <ProjectReference type="Gac" localcopy="True" refto="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="True" refto="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="glib-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
   </References>
   <GtkDesignInfo />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">

@@ -429,7 +429,7 @@ namespace MonoDevelop.Ide.Gui
 				button.ArrowType = (i + 1 < pathDoc.CurrentPath.Length)? ArrowType.Right : (ArrowType?) null;
 				
 				if (i == pathDoc.SelectedIndex) {
-					string escaped = pathDoc.CurrentPath[i].Replace ("<", "&lt;");
+					string escaped = GLib.Markup.EscapeText (pathDoc.CurrentPath[i]);
 					button.Markup = string.Concat ("<b>", escaped ,"</b>");
 				} else {
 					button.Label = pathDoc.CurrentPath[i];

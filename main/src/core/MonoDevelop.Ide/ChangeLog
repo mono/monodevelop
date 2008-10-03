@@ -1,5 +1,25 @@
 2008-10-02  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.Ide.Gui.Content/IViewHistory.cs,
+	  MonoDevelop.Ide.Gui/TextNavigationPoint.cs,
+	  MonoDevelop.Ide.Gui/NavigationHistory.cs,
+	  MonoDevelop.Ide.Gui/DefaultNavigationPoint.cs,
+	  MonoDevelop.Ide.Gui/NavigationService.cs,
+	  MonoDevelop.Ide.Gui/INavigationPoint.cs: Removed old history
+	  system.
+	* MonoDevelop.Ide.Commands/NavigationCommands.cs,
+	  MonoDevelop.Ide.addin.xml, MonoDevelop.Ide.mdp, Makefile.am,
+	  MonoDevelop.Ide.Gui/TextFileNavigationPoint.cs,
+	  MonoDevelop.Ide.Gui/FileNavigationPoint.cs,
+	  MonoDevelop.Ide.Gui/Workbench.cs,
+	  MonoDevelop.Ide.Gui/NavigationHistoryService.cs,
+	  MonoDevelop.Ide.Gui.Content/INavigable.cs: New navigation history
+	  system. Fixes "Bug 412296 - [PATCH] Make history navigation more
+	  reliable and intuitive".
+	* MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs: Escape text correctly.
+
+2008-10-02  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.Ide.Gui/Ide.cs, MonoDevelop.Ide.Gui/IdeStartup.cs,
 	  MonoDevelop.Ide/Services.cs: Track removal of service APIs.
 

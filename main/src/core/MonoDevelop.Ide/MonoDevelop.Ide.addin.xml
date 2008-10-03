@@ -684,28 +684,28 @@
 				_label = "Browse Previous" 
 				_description = "Move cursor to previous error or search match"
 				shortcut = "Shift|F4" />
-		<Command id = "@MonoDevelop.Ide.Commands.NavigationCommands.NavigateBackWidget"
-				type = "custom"
-				widget = "MonoDevelop.Ide.Gui.NavigationHistoryBack"
-				_label = "Navigate _Back"
-				_description = "Navigate Back"/>
-		<Command id = "@MonoDevelop.Ide.Commands.NavigationCommands.NavigateForwardWidget"
-				type = "custom"
-				widget = "MonoDevelop.Ide.Gui.NavigationHistoryForward"
-				_label = "Move cursor to next position in the code navigation history"
-				_description = "Navigate Forward"/>
+		
 		<Command id = "MonoDevelop.Ide.Commands.NavigationCommands.NavigateBack"
 				_label = "Navigate _Back"
 				icon = "md-navigate-back"
 				defaultHandler = "MonoDevelop.Ide.Commands.NavigateBack"
 				shortcut = "Alt|Left"
-				_description = "Move cursor to previous position in the code navigation history"/>
+				_description = "Move to previous point in code navigation history"/>
 		<Command id = "MonoDevelop.Ide.Commands.NavigationCommands.NavigateForward"
 				_label = "Navigate _Forward"
 				icon = "md-navigate-forward"
 				defaultHandler = "MonoDevelop.Ide.Commands.NavigateForward"
 				shortcut = "Alt|Right"
-				_description = "Navigate Forward"/>
+				_description = "Move to next point in code navigation history"/>
+		<Command id = "MonoDevelop.Ide.Commands.NavigationCommands.NavigateHistory"
+				type="radio|array" 
+				_label = "Navigate _History"
+				defaultHandler = "MonoDevelop.Ide.Commands.NavigateHistory"
+				_description = "Select a point from the navigation history"/>
+		<Command id = "MonoDevelop.Ide.Commands.NavigationCommands.ClearNavigationHistory"
+				_label = "_Clear Navigation _History"
+				defaultHandler = "MonoDevelop.Ide.Commands.ClearNavigationHistory"
+				_description = "Clear the navigation history"/>
 
 		<Command id = "MonoDevelop.Ide.Commands.ViewCommands.ZoomIn"
 				defaultHandler = "MonoDevelop.Ide.Commands.ZoomIn"
@@ -1424,8 +1424,13 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.FullScreen" />
 		</ItemSet>
 		<ItemSet id = "Navigation" _label = "Navigation">
-			<CommandItem id = "@MonoDevelop.Ide.Commands.NavigationCommands.NavigateBackWidget" />
-			<CommandItem id = "@MonoDevelop.Ide.Commands.NavigationCommands.NavigateForwardWidget" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.NavigationCommands.NavigateBack" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.NavigationCommands.NavigateForward" />
+			<ItemSet id = "NavigationListToolbar">
+				<CommandItem id = "MonoDevelop.Ide.Commands.NavigationCommands.NavigateHistory" />
+				<SeparatorItem id = "NavigationHistoryClearToolbarSeparator" />
+				<CommandItem id = "MonoDevelop.Ide.Commands.NavigationCommands.ClearNavigationHistory" />
+			</ItemSet>
 		</ItemSet>
 	</Extension>
 
@@ -1549,10 +1554,16 @@
 			<SeparatorItem id = "Separator2" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.GotoLineNumber" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.GotoFile" />
-            <CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.GotoType" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.GotoType" />
 			<SeparatorItem id = "ViewItemsSeparator3" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.NavigationCommands.NavigateBack" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.NavigationCommands.NavigateForward" />
+			<ItemSet id = "NavigationList" _label = "Navigation _History"
+			         _description = "Select a point from the navigation history" >
+				<CommandItem id = "MonoDevelop.Ide.Commands.NavigationCommands.NavigateHistory" />
+				<SeparatorItem id = "NavigationHistoryClearSeparator" />
+				<CommandItem id = "MonoDevelop.Ide.Commands.NavigationCommands.ClearNavigationHistory" />
+			</ItemSet>
 			<SeparatorItem id = "ViewItemsSeparator4" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ShowPrevious" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ShowNext" />

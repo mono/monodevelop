@@ -134,13 +134,13 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Content/IEncodedTextContent.cs \
 	MonoDevelop.Ide.Gui.Content/IExtensibleTextEditor.cs \
 	MonoDevelop.Ide.Gui.Content/IFoldable.cs \
+	MonoDevelop.Ide.Gui.Content/INavigable.cs \
 	MonoDevelop.Ide.Gui.Content/IndentStyle.cs \
 	MonoDevelop.Ide.Gui.Content/IParsableContent.cs \
 	MonoDevelop.Ide.Gui.Content/IPathedDocument.cs \
 	MonoDevelop.Ide.Gui.Content/IPrintable.cs \
 	MonoDevelop.Ide.Gui.Content/ISplittable.cs \
 	MonoDevelop.Ide.Gui.Content/ITextBuffer.cs \
-	MonoDevelop.Ide.Gui.Content/IViewHistory.cs \
 	MonoDevelop.Ide.Gui.Content/IZoomable.cs \
 	MonoDevelop.Ide.Gui.Content/SmartIndenter.cs \
 	MonoDevelop.Ide.Gui.Content/TextEditorExtension.cs \
@@ -263,13 +263,13 @@ FILES =  \
 	MonoDevelop.Ide.Gui/BackgroundProgressMonitor.cs \
 	MonoDevelop.Ide.Gui/ConfigurationComboBox.cs \
 	MonoDevelop.Ide.Gui/DefaultDisplayBinding.cs \
-	MonoDevelop.Ide.Gui/DefaultNavigationPoint.cs \
 	MonoDevelop.Ide.Gui/DefaultWorkbench.cs \
 	MonoDevelop.Ide.Gui/DisplayBindingService.cs \
 	MonoDevelop.Ide.Gui/Document.cs \
 	MonoDevelop.Ide.Gui/DocumentSwitcher.cs \
 	MonoDevelop.Ide.Gui/DragNotebook.cs \
 	MonoDevelop.Ide.Gui/ExitEventHandler.cs \
+	MonoDevelop.Ide.Gui/FileNavigationPoint.cs \
 	MonoDevelop.Ide.Gui/FileViewer.cs \
 	MonoDevelop.Ide.Gui/HelpOperations.cs \
 	MonoDevelop.Ide.Gui/HelpViewer.cs \
@@ -277,7 +277,6 @@ FILES =  \
 	MonoDevelop.Ide.Gui/Ide.cs \
 	MonoDevelop.Ide.Gui/IdePreferences.cs \
 	MonoDevelop.Ide.Gui/IdeStartup.cs \
-	MonoDevelop.Ide.Gui/INavigationPoint.cs \
 	MonoDevelop.Ide.Gui/InternalLog.cs \
 	MonoDevelop.Ide.Gui/IPadContainer.cs \
 	MonoDevelop.Ide.Gui/IPadContent.cs \
@@ -288,8 +287,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui/IWorkbenchWindow.cs \
 	MonoDevelop.Ide.Gui/LayoutComboBox.cs \
 	MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs \
-	MonoDevelop.Ide.Gui/NavigationHistory.cs \
-	MonoDevelop.Ide.Gui/NavigationService.cs \
+	MonoDevelop.Ide.Gui/NavigationHistoryService.cs \
 	MonoDevelop.Ide.Gui/OutputProgressMonitor.cs \
 	MonoDevelop.Ide.Gui/Pad.cs \
 	MonoDevelop.Ide.Gui/ProgressMonitors.cs \
@@ -300,7 +298,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui/StartupInfo.cs \
 	MonoDevelop.Ide.Gui/StatusProgressMonitor.cs \
 	MonoDevelop.Ide.Gui/TextEditor.cs \
-	MonoDevelop.Ide.Gui/TextNavigationPoint.cs \
+	MonoDevelop.Ide.Gui/TextFileNavigationPoint.cs \
 	MonoDevelop.Ide.Gui/TipOfTheDayStartupHandler.cs \
 	MonoDevelop.Ide.Gui/ToolbarComboBox.cs \
 	MonoDevelop.Ide.Gui/ViewCommandHandlers.cs \

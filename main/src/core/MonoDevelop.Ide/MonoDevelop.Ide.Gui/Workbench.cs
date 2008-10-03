@@ -324,15 +324,8 @@ namespace MonoDevelop.Ide.Gui
 		
 		internal Document OpenDocument (string fileName, int line, int column, bool bringToFront, string encoding, IDisplayBinding binding)
 		{
-			// Build navigation point for current document.
-			if (ActiveDocument != null) {
-				IEditableTextBuffer textBuffer = ActiveDocument.GetContent (typeof(IEditableTextBuffer)) as IEditableTextBuffer;
-				if (textBuffer != null) {
-					NavigationService.Log (NavigationService.BuildNavPoint (textBuffer));
-				} else {
-					NavigationService.Log (new DefaultNavigationPoint (ActiveDocument.FileName));
-				}
-			}
+			NavigationHistoryService.LogActiveDocument ();
+			
 			foreach (Document doc in Documents) {
 				IBaseViewContent vcFound = null;
 				int vcIndex = 0;
@@ -366,6 +359,7 @@ namespace MonoDevelop.Ide.Gui
 						ipos.SetCaretTo (line, column >= 1 ? column : 1);
 					}
 					
+					NavigationHistoryService.LogActiveDocument ();
 					return doc;
 				}
 			}
@@ -384,10 +378,13 @@ namespace MonoDevelop.Ide.Gui
 			if (!pm.AsyncOperation.Success)
 				return null;
 			
-			if (openFileInfo.NewContent != null)
-				return WrapDocument (openFileInfo.NewContent.WorkbenchWindow);
-			else
+			if (openFileInfo.NewContent != null) {
+				Document doc = WrapDocument (openFileInfo.NewContent.WorkbenchWindow);
+				NavigationHistoryService.LogActiveDocument ();
+				return doc;
+			} else {
 				return null;
+			}
 		}
 		
 		public Document OpenDocument (IViewContent content, bool bringToFront)

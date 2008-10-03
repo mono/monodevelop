@@ -27,6 +27,7 @@
 
 
 using System;
+using System.Collections.Generic;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
@@ -37,19 +38,21 @@ namespace MonoDevelop.Ide.Commands
 	public enum NavigationCommands
 	{
 		NavigateBack,
-		NavigateForward
+		NavigateForward,
+		NavigateHistory,
+		ClearNavigationHistory
 	}
 	
 	internal class NavigateBack : CommandHandler
 	{
 		protected override void Run ()
 		{
-			NavigationService.Go (-1);
+			NavigationHistoryService.MoveBack ();
 		}
 		
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = NavigationService.CanNavigateBack;
+			info.Enabled = NavigationHistoryService.CanMoveBack;
 		}
 	}
 	
@@ -57,12 +60,55 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			NavigationService.Go (1);
+			NavigationHistoryService.MoveForward ();
 		}
 		
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = NavigationService.CanNavigateForward;
+			info.Enabled = NavigationHistoryService.CanMoveForward;
+		}
+	}
+	
+	internal class NavigateHistory : CommandHandler
+	{
+		protected override void Run (object ob)
+		{
+			NavigationPoint nav = ob as NavigationPoint;
+			if (nav != null)
+				NavigationHistoryService.MoveTo (nav);
+		}
+		
+		protected override void Update (CommandArrayInfo info)
+		{
+			int currentIndex;
+			IList<NavigationPoint> points = NavigationHistoryService.GetNavigationList (15, out currentIndex);
+			
+			if (points.Count < 1) {
+				Document doc = IdeApp.Workbench.ActiveDocument;
+				if (doc != null) {
+					CommandInfo item = info.Add (doc.Window.Title, null);
+					item.Checked = true;
+				}
+				return;
+			}
+			
+			for (int i = points.Count - 1; i >= 0; i--) {
+				CommandInfo item = info.Add (points[i].DisplayName, points[i]);
+				item.Checked = (i == currentIndex);
+			}
+		}
+	}
+	
+	internal class ClearNavigationHistory : CommandHandler
+	{
+		protected override void Run ()
+		{
+			NavigationHistoryService.Clear ();
+		}
+		
+		protected override void Update (CommandInfo info)
+		{
+			info.Enabled = NavigationHistoryService.CanMoveForward || NavigationHistoryService.CanMoveBack;
 		}
 	}
 }
