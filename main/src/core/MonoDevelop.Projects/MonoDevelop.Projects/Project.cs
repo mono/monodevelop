@@ -308,7 +308,7 @@ namespace MonoDevelop.Projects
 				
 				try {
 					if (item.CopyOnlyIfNewer && File.Exists (dest) &&
-					    (File.GetLastWriteTimeUtc (dest) >  File.GetLastWriteTimeUtc (item.Src)))
+					    (File.GetLastWriteTimeUtc (dest) >=  File.GetLastWriteTimeUtc (item.Src)))
 						continue;
 					
 					if (!Directory.Exists (Path.GetDirectoryName (dest)))
@@ -355,20 +355,7 @@ namespace MonoDevelop.Projects
 				if (pf.CopyToOutputDirectory == FileCopyMode.None)
 					continue;
 				
-				string src = pf.FilePath;
-				string dest = Path.GetFileName (src);
-				
-				if (config == null)
-					continue;
-				
-				dest = Path.Combine (config.OutputDirectory, dest);
-				
-				//skip if "PreserveNewest" and destination file is newer
-				if (pf.CopyToOutputDirectory == FileCopyMode.PreserveNewest && File.Exists (dest) &&
-				    (File.GetLastWriteTimeUtc (dest) >  File.GetLastWriteTimeUtc (src)))
-					continue;
-				
-				list.Add (src, pf.CopyToOutputDirectory == FileCopyMode.PreserveNewest);
+				list.Add (pf.FilePath, pf.CopyToOutputDirectory == FileCopyMode.PreserveNewest);
 			}
 		}
 		

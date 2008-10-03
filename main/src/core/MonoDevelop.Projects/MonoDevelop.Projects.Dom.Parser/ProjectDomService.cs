@@ -795,7 +795,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 						return null;
 					// don't update project dom with incorrect parse informations, they may not contain all
 					// information.
-					if (!parseInformation.HasErrors && (parseInformation.ParsedDocumentFlags & ParsedDocumentFlags.Nonserializable) != ParsedDocumentFlags.Nonserializable) {
+					if (!parseInformation.HasErrors &&
+					    (parseInformation.Flags & ParsedDocumentFlags.NonSerializable) == 0) {
 						if (projects != null && projects.Length > 0) {
 							if (parseInformation.CompilationUnit != null)
 								SetSourceProject (parseInformation.CompilationUnit,

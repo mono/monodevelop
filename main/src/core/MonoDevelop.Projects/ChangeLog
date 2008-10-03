@@ -1,3 +1,12 @@
+2008-10-03  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Projects/Project.cs: Skip unnecessary file write time
+	  checks.
+	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs,
+	  MonoDevelop.Projects.Dom/ParsedDocument.cs: Tweak flags API.
+	* MonoDevelop.Projects/DotNetProjectConfiguration.cs: Avoid unnecessary
+	  string creation/concat.
+
 2008-10-01  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Projects/FileCopyMode.cs,

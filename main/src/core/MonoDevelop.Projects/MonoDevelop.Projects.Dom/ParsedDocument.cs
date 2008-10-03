@@ -33,7 +33,7 @@ namespace MonoDevelop.Projects.Dom
 	public enum ParsedDocumentFlags
 	{
 		None            = 0,
-		Nonserializable = 1
+		NonSerializable = 1
 	}
 	
 	public class ParsedDocument
@@ -53,15 +53,9 @@ namespace MonoDevelop.Projects.Dom
 		{
 			this.FileName = fileName;
 		}
-
-		ParsedDocumentFlags parsedDocumentFlags = ParsedDocumentFlags.None;
-		public ParsedDocumentFlags ParsedDocumentFlags {
-			get {
-				return parsedDocumentFlags;
-			}
-			set {
-				parsedDocumentFlags = value;
-			}
+		
+		public ParsedDocumentFlags Flags {
+			get; set;
 		}
 		
 		public string FileName {
