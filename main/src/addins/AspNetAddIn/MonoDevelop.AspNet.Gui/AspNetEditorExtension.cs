@@ -252,6 +252,30 @@ namespace MonoDevelop.AspNet.Gui
 				}
 			}
 			
+			
+			//directive attribute completion
+			if (tracker.Engine.CurrentState is AspNetDirectiveState && forced || 
+				(tracker.Engine.CurrentState is S.XmlNameState 
+			 	 && tracker.Engine.CurrentState.Parent is S.XmlAttributeState
+			     && tracker.Engine.CurrentState.Parent.Parent is AspNetDirectiveState
+			         && tracker.Engine.CurrentStateLength == 1)
+			) {
+				AspNetDirective dir = (tracker.Engine.CurrentState is AspNetDirectiveState)?
+					(AspNetDirective) tracker.Engine.Nodes.Peek () :
+					(AspNetDirective) tracker.Engine.Nodes.Peek (1);
+				System.Console.WriteLine(dir.Name.FullName);
+				//attributes
+				if (dir != null && dir.Name.IsValid && (forced ||
+					(char.IsWhiteSpace (previousChar) && char.IsLetter (currentChar))))
+				{
+					//if triggered by first letter of value, grab that letter
+					if (tracker.Engine.CurrentStateLength == 1)
+						triggerWordLength = 1;
+					
+					return DirectiveCompletion.GetAttributes (dir.Name.FullName, ClrVersion.Default);
+				}
+			}	
+			
 			//attributes names within tags
 			if (tracker.Engine.CurrentState is S.XmlTagState && forced || 
 				(tracker.Engine.CurrentState is S.XmlNameState 

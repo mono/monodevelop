@@ -49,9 +49,27 @@ namespace MonoDevelop.AspNet.Parser
 			return null;
 		}
 		
-		public static ICompletionDataProvider AddAttributes (string tag, ClrVersion clrVersion)
+		public static ICompletionDataProvider GetAttributes (string tag, ClrVersion clrVersion)
 		{
+			switch (tag.ToLower ()) {
+			case "page":
+				return GetPageAttributes (clrVersion);
+			}
 			return null;
+		}
+		
+		static ICompletionDataProvider GetPageAttributes (ClrVersion clrVersion)
+		{
+			List<SimpleCompletionData> list = new List<SimpleCompletionData> ();
+			foreach (string s in new string[] {
+				"Async",
+				"AspCompat",
+				//"Explicit",
+				"MaintainScrollPositionOnPostback"
+				})
+				list.Add (new SimpleCompletionData (s));
+			
+			return new SimpleCompletionDataProvider (list.ToArray (), null);
 		}
 		
 		static ICompletionDataProvider GetPageAttributeValues (string attribute, ClrVersion clrVersion)

@@ -42,7 +42,7 @@ namespace MonoDevelop.AspNet.Parser
 		public SimpleCompletionData (string text, string image, string description)
 		{
 			this.CompletionString = text;
-			this.Image = image;
+			this.Image = image ?? "md-literal";
 			this.Description = description;
 		}
 		
@@ -77,6 +77,7 @@ namespace MonoDevelop.AspNet.Parser
 	public class SimpleCompletionDataProvider : ICompletionDataProvider
 	{
 		public ICompletionData[] Data { get; set; }
+		public bool AutoCompleteUniqueMatch { get; set; } 
 		
 		ICompletionData[] ICompletionDataProvider.GenerateCompletionData (ICompletionWidget widget, char charTyped)
 		{
@@ -91,11 +92,8 @@ namespace MonoDevelop.AspNet.Parser
 		
 		public SimpleCompletionDataProvider (ICompletionData [] data, string defaultVal)
 		{
-			
-		}
-		
-		public bool AutoCompleteUniqueMatch {
-			get { return false; }
+			Data = data;
+			DefaultCompletionString = defaultVal;
 		}
 	}
 	
@@ -103,6 +101,7 @@ namespace MonoDevelop.AspNet.Parser
 	{
 		public Func<ICompletionWidget, char, IEnumerable<ICompletionData>> Func { get; set; }
 		public string DefaultCompletionString { get; set; }
+		public bool AutoCompleteUniqueMatch { get; set; } 
 		
 		public LazyCompletionDataProvider (Func<ICompletionWidget, char, IEnumerable<ICompletionData>> func, string defaultVal)
 		{
@@ -132,10 +131,6 @@ namespace MonoDevelop.AspNet.Parser
 		
 		void IDisposable.Dispose ()
 		{
-		}
-		
-		public bool AutoCompleteUniqueMatch {
-			get { return false; }
 		}
 	}
 }
