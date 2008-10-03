@@ -77,10 +77,21 @@ namespace MonoDevelop.Deployment
 			DataCollection data = handler.Serialize (obj);
 			ProjectFile file = (ProjectFile) obj;
 			
-			//if the file is marked to copy to output, the deploy settings are useless, so strip them out
+			//if the file is marked to copy to output, the deploy settings are useless, so strip them out and return
 			if (file.CopyToOutputDirectory != FileCopyMode.None) {
 				foreach (string key in keys) {
 					data.Extract (key);
+				}
+				return data;
+			}
+			
+			//if the file was FileCopyMode.None and is BuildAction.Content and is marked to deploy, then we can 
+			//map it back to a FileCopy build action
+			if (file.BuildAction == BuildAction.Content) {
+				object val = file.ExtendedProperties ["DeployService.Deploy"];
+				if (val != null && (bool) val) {
+					data.Extract ("buildaction");
+					data.Add (new DataValue ("buildaction", "FileCopy"));
 				}
 			}
 			
@@ -89,18 +100,23 @@ namespace MonoDevelop.Deployment
 
 		public void Deserialize (object obj, ITypeSerializer handler, DataCollection data)
 		{
+			//find whether is was marked as FileCopy
 			DataValue value = data ["buildaction"] as DataValue;
 			bool isFileCopy = value != null && value.Value == "FileCopy";
 			
 			handler.Deserialize (obj, data);
 			ProjectFile file = (ProjectFile) obj;
+			
+			//if it wasn't, no fancy migrations to do
 			if (!isFileCopy)
 				return;
 			
 			//if there were any deploy settings remaining in the project file, then the file isn't "copy to output"
+			//but instead should be marked to deploy
 			foreach (string key in keys) {
 				if (file.ExtendedProperties.Contains (key)) {
 					file.CopyToOutputDirectory = FileCopyMode.None;
+					file.ExtendedProperties ["DeployService.Deploy"] = true;
 					return;
 				}
 			}

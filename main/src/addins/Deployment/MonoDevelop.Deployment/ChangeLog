@@ -1,5 +1,10 @@
 2008-10-03  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.Deployment/MD1Serializer.cs: Another shot at BuildAction
+	  mapping, with comments.
+
+2008-10-03  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.Deployment/MD1Serializer.cs: Add missing deploy key,
 	  remove unused variable.
 
