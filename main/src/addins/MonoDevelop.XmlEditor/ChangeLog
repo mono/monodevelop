@@ -1,3 +1,11 @@
+2008-10-03  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.XmlEditor.Gui/BaseXmlEditorExtension.cs: New base class
+	  containing common XML completion code from the
+	  AspNetEditorExtension.
+	* Makefile.am, MonoDevelop.XmlEditor.mdp: Updated.
+	* MonoDevelop.Xml.StateEngine/Parser2.cs: Remove unused parser.
+
 2008-09-29  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.XmlEditor.Completion/XmlCompletionData.cs,

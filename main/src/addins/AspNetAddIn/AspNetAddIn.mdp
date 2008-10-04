@@ -103,16 +103,16 @@
     <File name="MonoDevelop.Html/DocTypeExtensionNode.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Html/DocTypeCompletionData.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Html/DocTypeCompletionDataProvider.cs" subtype="Code" buildaction="Compile" />
-    <File name="Schemas/xhtml1-frameset.xsd" subtype="Code" buildaction="FileCopy" DeployService.UseProjectRelativePath="True" />
-    <File name="Schemas/xhtml1-strict.xsd" subtype="Code" buildaction="FileCopy" DeployService.UseProjectRelativePath="True" />
-    <File name="Schemas/xhtml1-transitional.xsd" subtype="Code" buildaction="FileCopy" DeployService.UseProjectRelativePath="True" />
+    <File name="Schemas/xhtml1-frameset.xsd" subtype="Code" DeployService.UseProjectRelativePath="True" buildaction="FileCopy" />
+    <File name="Schemas/xhtml1-strict.xsd" subtype="Code" DeployService.UseProjectRelativePath="True" buildaction="FileCopy" />
+    <File name="Schemas/xhtml1-transitional.xsd" subtype="Code" DeployService.UseProjectRelativePath="True" buildaction="FileCopy" />
     <File name="Schemas/readme.txt" subtype="Code" buildaction="FileCopy" />
     <File name="Schemas/W3C-License.html" subtype="Code" buildaction="FileCopy" />
     <File name="MonoDevelop.AspNet.Parser/SuggestedHandlerCompletionData.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.AspNet.StateEngine/AspNetFreeState.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Html/HtmlCompletionDataProvider.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.AspNet.Parser/AspNetParser.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.AspNet.Parser/AspNetCompilationUnit.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.AspNet.Parser/AspNetParsedDocument.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.AspNet.Parser/CompilationUnitVisitor.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.AspNet.Parser/PageInfo.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.AspNet/AspNetToolboxLoader.cs" subtype="Code" buildaction="Compile" />

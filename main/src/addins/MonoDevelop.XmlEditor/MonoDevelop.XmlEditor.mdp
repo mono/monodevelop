@@ -39,14 +39,14 @@
     <File name="MonoDevelop.XmlEditor.XPath/XPathQueryPad.cs" subtype="Code" buildaction="Nothing" />
     <File name="MonoDevelop.XmlEditor.XPath/XPathQueryPadOptions.cs" subtype="Code" buildaction="Nothing" />
     <File name="MonoDevelop.XmlEditor.XPath/XPathQueryWidget.cs" subtype="Code" buildaction="Nothing" />
-    <File name="schemas/appconfig.xsd" subtype="Code" buildaction="FileCopy" DeployService.UseProjectRelativePath="True" />
-    <File name="schemas/MonoDevelopAddIn.xsd" subtype="Code" buildaction="FileCopy" DeployService.UseProjectRelativePath="True" />
-    <File name="schemas/manifest.xsd" subtype="Code" buildaction="FileCopy" DeployService.UseProjectRelativePath="True" />
-    <File name="schemas/nant.xsd" subtype="Code" buildaction="FileCopy" DeployService.UseProjectRelativePath="True" />
-    <File name="schemas/readme.txt" subtype="Code" buildaction="FileCopy" DeployService.UseProjectRelativePath="True" />
-    <File name="schemas/W3C-License.html" subtype="Code" buildaction="FileCopy" DeployService.UseProjectRelativePath="True" />
-    <File name="schemas/XMLSchema.xsd" subtype="Code" buildaction="FileCopy" DeployService.UseProjectRelativePath="True" />
-    <File name="schemas/xslt.xsd" subtype="Code" buildaction="FileCopy" DeployService.UseProjectRelativePath="True" />
+    <File name="schemas/appconfig.xsd" subtype="Code" DeployService.UseProjectRelativePath="True" buildaction="FileCopy" />
+    <File name="schemas/MonoDevelopAddIn.xsd" subtype="Code" DeployService.UseProjectRelativePath="True" buildaction="FileCopy" />
+    <File name="schemas/manifest.xsd" subtype="Code" DeployService.UseProjectRelativePath="True" buildaction="FileCopy" />
+    <File name="schemas/nant.xsd" subtype="Code" DeployService.UseProjectRelativePath="True" buildaction="FileCopy" />
+    <File name="schemas/readme.txt" subtype="Code" DeployService.UseProjectRelativePath="True" buildaction="FileCopy" />
+    <File name="schemas/W3C-License.html" subtype="Code" DeployService.UseProjectRelativePath="True" buildaction="FileCopy" />
+    <File name="schemas/XMLSchema.xsd" subtype="Code" DeployService.UseProjectRelativePath="True" buildaction="FileCopy" />
+    <File name="schemas/xslt.xsd" subtype="Code" DeployService.UseProjectRelativePath="True" buildaction="FileCopy" />
     <File name="Icons/XPathQueryPad.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="MonoDevelop.XmlEditor/XmlTextEditorExtension.cs" subtype="Code" buildaction="Compile" />
     <File name="gtk-gui/gui.stetic" subtype="Code" buildaction="EmbedAsResource" />
@@ -86,10 +86,10 @@
     <File name="MonoDevelop.Xml.StateEngine/XmlProcessingInstructionState.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Xml.StateEngine/XDom.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Xml.StateEngine/XmlDocTypeState.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Xml.StateEngine/Parser2.cs" subtype="Code" buildaction="Nothing" />
     <File name="MonoDevelop.Xml.StateEngine/XmlParser.cs" subtype="Code" buildaction="Nothing" />
     <File name="MonoDevelop.Xml.StateEngine/XState.cs" subtype="Code" buildaction="Nothing" />
     <File name="MonoDevelop.Xml.StateEngine/XmlChar.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor.Gui/BaseXmlEditorExtension.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

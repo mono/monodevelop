@@ -69,7 +69,7 @@ FILES =  \
 	MonoDevelop.AspNet.Parser.Internal/StrUtils.cs \
 	MonoDevelop.AspNet.Parser.Internal/TagAttributes.cs \
 	MonoDevelop.AspNet.Parser.Internal/TagType.cs \
-	MonoDevelop.AspNet.Parser/AspNetCompilationUnit.cs \
+	MonoDevelop.AspNet.Parser/AspNetParsedDocument.cs \
 	MonoDevelop.AspNet.Parser/AspNetParser.cs \
 	MonoDevelop.AspNet.Parser/CompilationUnitVisitor.cs \
 	MonoDevelop.AspNet.Parser/DebugStringVisitor.cs \

@@ -50,6 +50,7 @@ FILES =  \
 	MonoDevelop.XmlEditor.Completion/XmlSchemaCompletionData.cs \
 	MonoDevelop.XmlEditor.Completion/XmlSchemaCompletionDataCollection.cs \
 	MonoDevelop.XmlEditor.Completion/XmlTagCompletionData.cs \
+	MonoDevelop.XmlEditor.Gui/BaseXmlEditorExtension.cs \
 	MonoDevelop.XmlEditor.Gui/XmlEditorOptionsPanel.cs \
 	MonoDevelop.XmlEditor.Gui/XmlEditorOptionsPanelWidget.cs \
 	MonoDevelop.XmlEditor.Gui/XmlSchemasPanel.cs \

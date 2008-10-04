@@ -49,62 +49,34 @@ namespace MonoDevelop.AspNet.Gui
 {
 	
 	
-	public class AspNetEditorExtension : CompletionTextEditorExtension, IOutlinedDocument, IPathedDocument
+	public class AspNetEditorExtension : MonoDevelop.XmlEditor.Gui.BaseXmlEditorExtension
 	{
-		AspNetParsedDocument lastCU;
-		DocumentStateTracker<S.Parser> tracker;
-		
-		Gtk.TreeView outlineTreeView;
-		Gtk.TreeStore outlineTreeStore;
-		
 		#region Setup and teardown
 		
-		public AspNetEditorExtension () : base ()
-		{
+		protected override IEnumerable<string> SupportedExtensions {
+			get {
+				yield return ".aspx";
+				yield return ".ascx";
+				yield return ".master";
+			}
 		}
 		
-		public override bool ExtendsEditor (MonoDevelop.Ide.Gui.Document doc, IEditableTextBuffer editor)
+		protected override S.RootState CreateRootState ()
 		{
-			string[] supportedExtensions = {".aspx", ".ascx", ".master"};
-			return (doc.Project is AspNetAppProject) 
-				&& Array.IndexOf (supportedExtensions, System.IO.Path.GetExtension (doc.Title)) > -1;
+			return new AspNetFreeState ();
 		}
 		
 		public override void Initialize ()
 		{
 			base.Initialize ();
 			
-			S.Parser parser = new S.Parser (new AspNetFreeState (), false);
-			tracker = new DocumentStateTracker<S.Parser> (parser, Editor);
-			
-			MonoDevelop.Projects.Dom.Parser.ProjectDomService.ParsedDocumentUpdated += OnParseInformationChanged;
-			
 			//ensure that the schema service is initialised, or code completion may take a couple of seconds to trigger
 			HtmlSchemaService.Initialise ();
-		}
-		
-		public override void Dispose ()
-		{
-			if (tracker != null) {
-				tracker = null;
-				MonoDevelop.Projects.Dom.Parser.ProjectDomService.ParsedDocumentUpdated
-					-= OnParseInformationChanged;
-				base.Dispose ();
-			}
-		}
-		
-		void OnParseInformationChanged (object sender, MonoDevelop.Projects.Dom.ParsedDocumentEventArgs args)
-		{
-			if (this.FileName == args.FileName && args.ParsedDocument is MonoDevelop.AspNet.Parser.AspNetParsedDocument)
-				lastCU = (MonoDevelop.AspNet.Parser.AspNetParsedDocument) args.ParsedDocument;
-			RefreshOutline ();
 		}
 		
 		#endregion
 		
 		#region Convenience accessors
-		
-		MonoDevelop.AspNet.Parser.AspNetParsedDocument CU { get { return lastCU; } }
 		
 		protected ITextBuffer Buffer {
 			get {
@@ -149,8 +121,9 @@ namespace MonoDevelop.AspNet.Gui
 		ICompletionDataProvider HandleCodeCompletion (
 		    CodeCompletionContext completionContext, bool forced, ref int triggerWordLength)
 		{
-			tracker.UpdateEngine ();
-			MonoDevelop.AspNet.Parser.AspNetParsedDocument CU = this.CU;
+			Tracker.UpdateEngine ();
+			MonoDevelop.AspNet.Parser.AspNetParsedDocument CU
+				= (MonoDevelop.AspNet.Parser.AspNetParsedDocument) this.CU;
 			
 			//FIXME: these may be null at startup, but we should still provive some completion
 			if (CU == null || CU.Document == null)
@@ -168,7 +141,7 @@ namespace MonoDevelop.AspNet.Gui
 			char previousChar = buf.GetCharAt (currentPosition - 1);
 			
 			LoggingService.LogDebug ("Attempting ASP.NET completion for state '{0}'x{1}, previousChar='{2}'," 
-				+ " currentChar='{3}', forced='{4}'", tracker.Engine.CurrentState, tracker.Engine.CurrentStateLength,
+				+ " currentChar='{3}', forced='{4}'", Tracker.Engine.CurrentState, Tracker.Engine.CurrentStateLength,
 				previousChar, currentChar, forced);
 			
 			//doctype completion
@@ -185,14 +158,14 @@ namespace MonoDevelop.AspNet.Gui
 			//parsing, which hurts editor responsiveness
 			if (!forced) {
 				//
-				if (tracker.Engine.CurrentState is S.XmlFreeState && !(currentChar == '<' || currentChar == '>'))
+				if (Tracker.Engine.CurrentState is S.XmlFreeState && !(currentChar == '<' || currentChar == '>'))
 					return null;
 				
-				if (tracker.Engine.CurrentState is S.XmlNameState 
-				    && tracker.Engine.CurrentState.Parent is S.XmlAttributeState && previousChar != ' ')
+				if (Tracker.Engine.CurrentState is S.XmlNameState 
+				    && Tracker.Engine.CurrentState.Parent is S.XmlAttributeState && previousChar != ' ')
 					return null;
 				
-				if (tracker.Engine.CurrentState is S.XmlAttributeValueState 
+				if (Tracker.Engine.CurrentState is S.XmlAttributeValueState 
 				    && !(previousChar == '\'' || previousChar == '"' || currentChar =='\'' || currentChar == '"'))
 					return null;
 			}
@@ -217,15 +190,15 @@ namespace MonoDevelop.AspNet.Gui
 			if (currentChar == '<') {
 				CodeCompletionDataProvider cp = new CodeCompletionDataProvider (null, GetAmbience ());
 				
-				if (tracker.Engine.CurrentState is S.XmlFreeState) {
+				if (Tracker.Engine.CurrentState is S.XmlFreeState) {
 					
-					S.XElement el = tracker.Engine.Nodes.Peek () as S.XElement;
+					S.XElement el = Tracker.Engine.Nodes.Peek () as S.XElement;
 					S.XName parentName = (el != null && el.IsNamed)? el.Name : new S.XName ();
 					
 					AddHtmlTagCompletionData (cp, schema, parentName);
 					AddHtmlMiscBegins (cp);
 					AddAspTags (cp, CU == null? null : CU.Document, parentName);
-					AddCloseTag (cp, tracker.Engine.Nodes);
+					AddCloseTag (cp, Tracker.Engine.Nodes);
 					
 //						if (line < 3) {
 //						cp.AddCompletionData (new CodeCompletionData ("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>"));
@@ -239,9 +212,9 @@ namespace MonoDevelop.AspNet.Gui
 			}
 			
 			//closing tag completion
-			if (tracker.Engine.CurrentState is S.XmlFreeState && currentPosition - 1 > 0 && currentChar == '>') {
+			if (Tracker.Engine.CurrentState is S.XmlFreeState && currentPosition - 1 > 0 && currentChar == '>') {
 				//get name of current node in document that's being ended
-				S.XElement el = tracker.Engine.Nodes.Peek () as S.XElement;
+				S.XElement el = Tracker.Engine.Nodes.Peek () as S.XElement;
 				if (el != null && el.Position.End >= currentPosition && !el.IsClosed && el.IsNamed) {
 					CodeCompletionDataProvider cp = new CodeCompletionDataProvider (null, GetAmbience ());
 					cp.AddCompletionData (
@@ -254,22 +227,22 @@ namespace MonoDevelop.AspNet.Gui
 			
 			
 			//directive attribute completion
-			if (tracker.Engine.CurrentState is AspNetDirectiveState && forced || 
-				(tracker.Engine.CurrentState is S.XmlNameState 
-			 	 && tracker.Engine.CurrentState.Parent is S.XmlAttributeState
-			     && tracker.Engine.CurrentState.Parent.Parent is AspNetDirectiveState
-			         && tracker.Engine.CurrentStateLength == 1)
+			if (Tracker.Engine.CurrentState is AspNetDirectiveState && forced || 
+				(Tracker.Engine.CurrentState is S.XmlNameState 
+			 	 && Tracker.Engine.CurrentState.Parent is S.XmlAttributeState
+			     && Tracker.Engine.CurrentState.Parent.Parent is AspNetDirectiveState
+			         && Tracker.Engine.CurrentStateLength == 1)
 			) {
-				AspNetDirective dir = (tracker.Engine.CurrentState is AspNetDirectiveState)?
-					(AspNetDirective) tracker.Engine.Nodes.Peek () :
-					(AspNetDirective) tracker.Engine.Nodes.Peek (1);
+				AspNetDirective dir = (Tracker.Engine.CurrentState is AspNetDirectiveState)?
+					(AspNetDirective) Tracker.Engine.Nodes.Peek () :
+					(AspNetDirective) Tracker.Engine.Nodes.Peek (1);
 				System.Console.WriteLine(dir.Name.FullName);
 				//attributes
 				if (dir != null && dir.Name.IsValid && (forced ||
 					(char.IsWhiteSpace (previousChar) && char.IsLetter (currentChar))))
 				{
 					//if triggered by first letter of value, grab that letter
-					if (tracker.Engine.CurrentStateLength == 1)
+					if (Tracker.Engine.CurrentStateLength == 1)
 						triggerWordLength = 1;
 					
 					return DirectiveCompletion.GetAttributes (dir.Name.FullName, ClrVersion.Default);
@@ -277,14 +250,14 @@ namespace MonoDevelop.AspNet.Gui
 			}	
 			
 			//attributes names within tags
-			if (tracker.Engine.CurrentState is S.XmlTagState && forced || 
-				(tracker.Engine.CurrentState is S.XmlNameState 
-			 	 && tracker.Engine.CurrentState.Parent is S.XmlAttributeState
-			         && tracker.Engine.CurrentStateLength == 1)
+			if (Tracker.Engine.CurrentState is S.XmlTagState && forced || 
+				(Tracker.Engine.CurrentState is S.XmlNameState 
+			 	 && Tracker.Engine.CurrentState.Parent is S.XmlAttributeState
+			         && Tracker.Engine.CurrentStateLength == 1)
 			) {
-				S.XElement el = (tracker.Engine.CurrentState is S.XmlTagState)?
-					(S.XElement) tracker.Engine.Nodes.Peek () :
-					(S.XElement) tracker.Engine.Nodes.Peek (1);
+				S.XElement el = (Tracker.Engine.CurrentState is S.XmlTagState)?
+					(S.XElement) Tracker.Engine.Nodes.Peek () :
+					(S.XElement) Tracker.Engine.Nodes.Peek (1);
 				
 				//attributes
 				if (el != null && el.Name.IsValid && (forced ||
@@ -330,29 +303,29 @@ namespace MonoDevelop.AspNet.Gui
 			
 			//attribute values
 			//determine whether to trigger completion within attribute values quotes
-			if ((tracker.Engine.CurrentState is S.XmlDoubleQuotedAttributeValueState
-			    || tracker.Engine.CurrentState is S.XmlSingleQuotedAttributeValueState)
+			if ((Tracker.Engine.CurrentState is S.XmlDoubleQuotedAttributeValueState
+			    || Tracker.Engine.CurrentState is S.XmlSingleQuotedAttributeValueState)
 			    //trigger on the opening quote
-			    && (tracker.Engine.CurrentStateLength == 0
+			    && (Tracker.Engine.CurrentStateLength == 0
 			        //or trigger on first letter of value, if unforced
-			        || (!forced && tracker.Engine.CurrentStateLength == 1))
+			        || (!forced && Tracker.Engine.CurrentStateLength == 1))
 			    ) {
-				S.XAttribute att = (S.XAttribute) tracker.Engine.Nodes.Peek ();
+				S.XAttribute att = (S.XAttribute) Tracker.Engine.Nodes.Peek ();
 				
 				if (att.IsNamed) {
-					S.XElement el = (S.XElement) tracker.Engine.Nodes.Peek (1);
+					S.XElement el = (S.XElement) Tracker.Engine.Nodes.Peek (1);
 					
 					char next = ' ';
 					if (currentPosition + 1 < buf.Length)
 						next = buf.GetCharAt (currentPosition + 1);
 					
-					char compareChar = (tracker.Engine.CurrentStateLength == 0)? currentChar : previousChar;
+					char compareChar = (Tracker.Engine.CurrentStateLength == 0)? currentChar : previousChar;
 					
 					if ((compareChar == '"' || compareChar == '\'') 
 					    && (next == compareChar || char.IsWhiteSpace (next))
 					) {
 						//if triggered by first letter of value, grab that letter
-						if (tracker.Engine.CurrentStateLength == 1)
+						if (Tracker.Engine.CurrentStateLength == 1)
 							triggerWordLength = 1;
 						
 						CodeCompletionDataProvider cp = new CodeCompletionDataProvider (null, GetAmbience ());
@@ -662,223 +635,42 @@ namespace MonoDevelop.AspNet.Gui
 		
 		#endregion
 		
+		#region Document outline
 		
-		static void AddCloseTag (CodeCompletionDataProvider provider, S.NodeStack stack)
+		protected override void RefillOutlineStore (MonoDevelop.Projects.Dom.ParsedDocument doc, Gtk.TreeStore store)
 		{
-			//FIXME: check against fully parsed doc to see if tag's closed already
-			foreach (S.XObject ob in stack) {
-				S.XElement el = ob as S.XElement;
-				if (el != null && el.IsNamed && !el.IsClosed) {
-					string name = el.Name.FullName;
-					provider.AddCompletionData (new CodeCompletionData ("/" + name + ">",
-						Gtk.Stock.GoBack, "Closing tag for '" + name + "'"));
-					return;
-				}
-			}
+			ParentNode p = ((AspNetParsedDocument)doc).Document.RootNode;
+//			Gtk.TreeIter iter = outlineTreeStore.AppendValues (System.IO.Path.GetFileName (CU.Document.FilePath), p);
+			BuildTreeChildren (store, Gtk.TreeIter.Zero, p);
 		}
 		
-
-		#region IPathedDocument
-		
-		string[] currentPath;
-		int selectedPathIndex;
-		bool pathUpdateQueued = false;
-		
-		
-		public override void CursorPositionChanged ()
+		protected override void InitializeOutlineColumns (Gtk.TreeView outlineTree)
 		{
-			if (pathUpdateQueued)
-				return;
-			pathUpdateQueued = true;
-			GLib.Timeout.Add (500, delegate {
-				pathUpdateQueued = false;
-				UpdatePath ();
-				return false;
-			});
-				
-		}
-
-		public void SelectPath (int depth)
-		{
-			SelectPath (depth, false);
-		}
-
-		public void SelectPathContents (int depth)
-		{
-			SelectPath (depth, true);
-		}
-		
-		void SelectPath (int depth, bool contents)
-		{
-			//clone the parser and put it in tree mode
-			S.Parser treeParser = this.tracker.Engine.GetTreeParser ();
-			
-			//locate the node
-			List<S.XObject> path = new List<S.XObject> (treeParser.Nodes);
-			
-			//note: list is backwards, and we want ignore the root XDocument
-			S.XObject ob = path [path.Count - (depth + 2)];
-			S.XNode node = ob as S.XNode;
-			S.XElement el = node as S.XElement;
-			
-			//hoist this as it may not be cheap to evaluate (P/Invoke), but won't be changing during the loop
-			int textLen = Editor.TextLength;
-			
-			//run the parser until the tag's closed, or we move to its sibling or parent
-			if (node != null) {
-				while (node.NextSibling == null &&
-					treeParser.Position < textLen && treeParser.Nodes.Peek () != ob.Parent)
-				{
-					char c = Editor.GetCharAt (treeParser.Position);
-					treeParser.Push (c);
-					if (el != null && el.IsClosed && el.ClosingTag.IsComplete)
-						break;
-				}
-			} else {
-				while (ob.Position.End < ob.Position.Start &&
-			       		treeParser.Position < textLen && treeParser.Nodes.Peek () != ob.Parent)
-				{
-					char c = Editor.GetCharAt (treeParser.Position);
-					treeParser.Push (c);
-				}
-			}
-			
-			if (el == null) {
-				MonoDevelop.Core.LoggingService.LogDebug ("Selecting {0}", ob.Position);
-				int s = ob.Position.Start;
-				int e = ob.Position.End;
-				if (s > -1 && e > s)
-					Editor.Select (s, e);
-			}
-			else if (el.IsClosed) {
-				MonoDevelop.Core.LoggingService.LogDebug ("Selecting {0}-{1}",
-				    el.Position, el.ClosingTag.Position);
-				
-				if (el.IsSelfClosing)
-					contents = false;
-				
-				//pick out the locations, with some offsets to account for the parsing model
-				int s = contents? el.Position.End : el.Position.Start;
-				int e = contents? el.ClosingTag.Position.Start : el.ClosingTag.Position.End;
-				
-				if (s > -1 && e > s)
-					Editor.Select (s, e);
-			} else {
-				MonoDevelop.Core.LoggingService.LogDebug ("No end tag found for selection");
-			}
-		}
-		
-		public event EventHandler<DocumentPathChangedEventArgs> PathChanged;
-		
-		protected void OnPathChanged (string[] oldPath, int oldSelectedIndex)
-		{
-			if (PathChanged != null)
-				PathChanged (this, new DocumentPathChangedEventArgs (oldPath, oldSelectedIndex));
-		}
-		
-		S.XName GetCompleteName ()
-		{
-			Debug.Assert (this.tracker.Engine.CurrentState is S.XmlNameState);
-			
-			int pos = this.tracker.Engine.Position;
-			
-			//hoist this as it may not be cheap to evaluate (P/Invoke), but won't be changing during the loop
-			int textLen = Editor.TextLength;
-			
-			//try to find the end of the name, but don't go too far
-			for (int len = 0; pos < textLen && len < 30; pos++, len++) {
-				char c = Editor.GetCharAt (pos);
-				if (!char.IsLetterOrDigit (c) && c != ':' && c != '_')
-					break;
-			}
-			
-			return new S.XName (Editor.GetText (this.tracker.Engine.Position - this.tracker.Engine.CurrentStateLength, pos));
-		}
-		
-		List<S.XObject> GetCurrentPath ()
-		{
-			this.tracker.UpdateEngine ();
-			List<S.XObject> path = new List<S.XObject> (this.tracker.Engine.Nodes);
-			
-			//remove the root XDocument
-			path.RemoveAt (path.Count - 1);
-			
-			//complete incomplete XName if present
-			if (this.tracker.Engine.CurrentState is S.XmlNameState && path[0] is S.INamedXObject) {
-				path[0] = (S.XObject) path[0].ShallowCopy ();
-				S.XName completeName = GetCompleteName ();
-				((S.INamedXObject)path[0]).Name = completeName;
-			}
-			path.Reverse ();
-			return path;
-		}
-		
-		void UpdatePath ()
-		{
-			List<S.XObject> l = GetCurrentPath ();
-			
-			//build the list
-			string[] path = new string[l.Count];
-			for (int i = 0; i < l.Count; i++) {
-				if (l[i].FriendlyPathRepresentation == null) System.Console.WriteLine(l[i].GetType ());
-				path[i] = l[i].FriendlyPathRepresentation ?? "<>";
-			}
-			
-			string[] oldPath = currentPath;
-			int oldIndex = selectedPathIndex;
-			currentPath = path;
-			selectedPathIndex = currentPath.Length - 1;
-			
-			OnPathChanged (oldPath, oldIndex);
-		}
-		
-		public string[] CurrentPath {
-			get { return currentPath; }
-		}
-		
-		public int SelectedIndex {
-			get { return selectedPathIndex; }
-		}
-		
-		#endregion
-		
-		#region IOutlinedDocument
-		
-		bool refreshingOutline = false;
-		
-		Gtk.Widget IOutlinedDocument.GetOutlineWidget ()
-		{
-			if (outlineTreeView != null)
-				return outlineTreeView;
-			
-			outlineTreeStore = new Gtk.TreeStore (typeof (Node));
-			outlineTreeView = new Gtk.TreeView (outlineTreeStore);
-			
-			System.Reflection.PropertyInfo prop = typeof (Gtk.TreeView).GetProperty ("EnableTreeLines");
-			if (prop != null)
-				prop.SetValue (outlineTreeView, true, null);
-			
 			Gtk.CellRendererText crt = new Gtk.CellRendererText ();
 			crt.Xpad = 0;
 			crt.Ypad = 0;
-			outlineTreeView.AppendColumn ("Node", crt, new Gtk.TreeCellDataFunc (outlineTreeDataFunc));
-			outlineTreeView.HeadersVisible = false;
-			
-			outlineTreeView.Realized += delegate { refillOutlineStore (); };
-			outlineTreeView.Selection.Changed += delegate {
-				Gtk.TreeIter iter;
-				if (!outlineTreeView.Selection.GetSelected (out iter))
-					return;
-				Node n = (Node) outlineTreeStore.GetValue (iter, 0);
-				SelectNode (n);
-			};
-			
-			refillOutlineStore ();
-			
-			Gtk.ScrolledWindow sw = new Gtk.ScrolledWindow ();
-			sw.Add (outlineTreeView);
-			sw.ShowAll ();
-			return sw;
+			outlineTree.AppendColumn ("Node", crt, new Gtk.TreeCellDataFunc (outlineTreeDataFunc));
+		}
+		
+		protected override void OutlineSelectionChanged (object selection)
+		{
+			SelectNode ((Node)selection);
+		}
+		
+		static void BuildTreeChildren (Gtk.TreeStore store, Gtk.TreeIter parent, ParentNode p)
+		{
+			foreach (Node n in p) {
+				if ( !(n is TagNode || n is DirectiveNode || n is ExpressionNode))
+					continue;
+				Gtk.TreeIter childIter;
+				if (!parent.Equals (Gtk.TreeIter.Zero))
+					childIter = store.AppendValues (parent, n);
+				else
+					childIter = store.AppendValues (n);
+				ParentNode pChild = n as ParentNode;
+				if (pChild != null)
+					BuildTreeChildren (store, childIter, pChild);
+			}
 		}
 		
 		void outlineTreeDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
@@ -928,73 +720,6 @@ namespace MonoDevelop.AspNet.Gui
 			int e = Editor.GetPositionFromLineColumn (end.EndLine, end.EndColumn + offset);
 			if (e > s && s > -1)
 				Editor.Select (s, e);
-		}
-		
-		void RefreshOutline ()
-		{
-			if (refreshingOutline || outlineTreeView == null )
-				return;
-			refreshingOutline = true;
-			GLib.Timeout.Add (3000, refillOutlineStoreIdleHandler);
-		}
-		
-		bool refillOutlineStoreIdleHandler ()
-		{
-			refreshingOutline = false;
-			refillOutlineStore ();
-			return false;
-		}
-		
-		void refillOutlineStore ()
-		{
-			MonoDevelop.Core.Gui.DispatchService.AssertGuiThread ();
-			Gdk.Threads.Enter ();
-			refreshingOutline = false;
-			if (outlineTreeStore == null || !outlineTreeView.IsRealized)
-				return;
-			
-			outlineTreeStore.Clear ();
-			if (CU != null) {
-				DateTime start = DateTime.Now;
-				ParentNode p = CU.Document.RootNode;
-//				Gtk.TreeIter iter = outlineTreeStore.AppendValues (System.IO.Path.GetFileName (CU.Document.FilePath), p);
-				BuildTreeChildren (outlineTreeStore, Gtk.TreeIter.Zero, p);
-				outlineTreeView.ExpandAll ();
-				LoggingService.LogDebug ("Built ASP.NET outline in {0}ms", (DateTime.Now - start).Milliseconds);
-			}
-			
-			Gdk.Threads.Leave ();
-		}
-		
-		static void BuildTreeChildren (Gtk.TreeStore store, Gtk.TreeIter parent, ParentNode p)
-		{
-			foreach (Node n in p) {
-				if ( !(n is TagNode || n is DirectiveNode || n is ExpressionNode))
-					continue;
-				Gtk.TreeIter childIter;
-				if (!parent.Equals (Gtk.TreeIter.Zero))
-					childIter = store.AppendValues (parent, n);
-				else
-					childIter = store.AppendValues (n);
-				ParentNode pChild = n as ParentNode;
-				if (pChild != null)
-					BuildTreeChildren (store, childIter, pChild);
-			}
-		}
-
-		void IOutlinedDocument.ReleaseOutlineWidget ()
-		{
-			if (outlineTreeView == null)
-				return;
-			
-			Gtk.ScrolledWindow w = (Gtk.ScrolledWindow) outlineTreeView.Parent;
-			w.Destroy ();
-			w.Dispose ();
-			outlineTreeView.Destroy ();
-			outlineTreeView.Dispose ();
-			outlineTreeStore.Dispose ();
-			outlineTreeStore = null;
-			outlineTreeView = null;
 		}
 		
 		#endregion

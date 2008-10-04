@@ -1,5 +1,13 @@
 2008-10-03  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Moved lots of code
+	  down to the BaseXmlEditorExtension.
+	* AspNetAddIn.mdp, Makefile.am: Updated.
+	* MonoDevelop.AspNet.Parser/AspNetParsedDocument.cs: Renamed. Add
+	  NonSerializable flag.
+
+2008-10-03  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs,
 	  MonoDevelop.AspNet.Parser/SimpleCompletionData.cs,
 	  MonoDevelop.AspNet.Parser/Directive.cs: Enable some simple
