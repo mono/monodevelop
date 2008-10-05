@@ -258,6 +258,15 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		public static DomType ReadType (BinaryReader reader, INameDecoder nameTable)
 		{
+			uint typeCount = reader.ReadUInt32();
+			if (typeCount > 1) {
+				CompoundType compoundResult = new CompoundType ();
+				while (typeCount-- > 0) {
+					compoundResult.AddPart (ReadType (reader, nameTable));
+				}
+				return compoundResult;
+			}
+			
 			DomType result = new DomType ();
 			ReadMemberInformation (reader, nameTable, result);
 //			bool verbose = result.Name == "CopyDelegate";
@@ -339,9 +348,18 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		public static void Write (BinaryWriter writer, INameEncoder nameTable, IType type)
 		{
 			Debug.Assert (type != null);
+	//		System.Console.WriteLine("write:" + type);
+	//		System.Console.WriteLine(Environment.StackTrace);
+			if (type is CompoundType) {
+				CompoundType compoundType = type as CompoundType;
+				writer.Write ((uint)compoundType.PartsCount);
+				foreach (IType part in compoundType.Parts)
+					Write (writer, nameTable, part);
+			}
+			
 //			bool verbose  = type.Name == "CopyDelegate";
 //			if (verbose) Console.WriteLine (type.GetType ());
-			
+			writer.Write ((uint)1);
 			WriteMemberInformation (writer, nameTable, type);
 			Write (writer, nameTable, type.BodyRegion);
 			

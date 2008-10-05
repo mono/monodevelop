@@ -71,6 +71,11 @@ namespace MonoDevelop.Projects.Dom
 				return parts.Count > 0;
 			}
 		}
+		public int PartsCount {
+			get {
+				return parts.Count;
+			}
+		}
 		public override IEnumerable<IMember> Members {
 			get {
 				foreach (IType part in Parts) {
