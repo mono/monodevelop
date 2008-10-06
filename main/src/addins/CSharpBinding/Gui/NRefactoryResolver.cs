@@ -168,12 +168,14 @@ namespace MonoDevelop.CSharpBinding
 					provider.AddCompletionData (new CodeCompletionData (parameter.Name, "md-literal"));
 				}
 			}
-			MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col = new MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector (dom, unit, new DomLocation (editor.CursorLine - 1, editor.CursorColumn - 1));
-			foreach (IType type in dom.GetInheritanceTree (CallingType)) {
-				foreach (IMember member in type.Members) {
-//					if (member.IsAccessibleFrom (dom, CallingMember)) {
-						col.AddCompletionData (provider, member);
-//					}
+			if (CallingMember != null) {
+				MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col = new MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector (dom, unit, new DomLocation (editor.CursorLine - 1, editor.CursorColumn - 1));
+				foreach (IType type in dom.GetInheritanceTree (CallingType)) {
+					foreach (IMember member in type.Members) {
+	//					if (member.IsAccessibleFrom (dom, CallingMember)) {
+							col.AddCompletionData (provider, member);
+	//					}
+					}
 				}
 			}
 		}
@@ -259,11 +261,11 @@ namespace MonoDevelop.CSharpBinding
 				System.Console.WriteLine("Can't parse expression");
 				return null;
 			}
-//			System.Console.WriteLine("parsed expr.:" + expr);
+			System.Console.WriteLine("parsed expr.:" + expr);
 			ResolveVisitor visitor = new ResolveVisitor (this);
 			
 			ResolveResult result = visitor.Resolve (expr);
-			//System.Console.WriteLine("result:" + result);
+			System.Console.WriteLine("result:" + result);
 			return result;
 		}
 		
