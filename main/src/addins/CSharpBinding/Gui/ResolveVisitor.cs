@@ -165,6 +165,8 @@ namespace MonoDevelop.CSharpBinding
 		
 		public override object VisitIndexerExpression(IndexerExpression indexerExpression, object data)
 		{
+			if (indexerExpression.Indexes == null || indexerExpression.Indexes.Count == 0)
+				return null;
 			ResolveResult result = Resolve (indexerExpression.TargetObject);
 			if (result.ResolvedType != null && result.ResolvedType.ArrayDimensions > 0)
 				return CreateResult (result.ResolvedType.FullName);

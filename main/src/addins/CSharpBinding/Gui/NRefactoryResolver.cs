@@ -136,6 +136,8 @@ namespace MonoDevelop.CSharpBinding
 			callingType = GetTypeAtCursor (unit, fileName, resolvePosition);
 			if (callingType != null) {
 				foreach (IMember member in callingType.Members) {
+					if (!(member is IMethod || member is IProperty))
+						continue;
 					if (member.Location.Line == resolvePosition.Line || member.BodyRegion.Contains (resolvePosition)) {
 						callingMember = member;
 						break;
@@ -261,11 +263,12 @@ namespace MonoDevelop.CSharpBinding
 				System.Console.WriteLine("Can't parse expression");
 				return null;
 			}
-			System.Console.WriteLine("parsed expr.:" + expr);
+			//System.Console.WriteLine("expressionResult:" + expressionResult);
+			//System.Console.WriteLine("parsed expr.:" + expr);
 			ResolveVisitor visitor = new ResolveVisitor (this);
 			
 			ResolveResult result = visitor.Resolve (expr);
-			System.Console.WriteLine("result:" + result);
+			//System.Console.WriteLine("result:" + result);
 			return result;
 		}
 		

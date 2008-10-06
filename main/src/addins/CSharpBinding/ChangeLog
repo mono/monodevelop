@@ -1,5 +1,11 @@
 2008-10-06  Mike Krüger <mkrueger@novell.com> 
 
+	* Gui/NRefactoryResolver.cs, Gui/ResolveVisitor.cs: fixed 'Bug 432436 -
+	  Code completion shouldn't activate before the equals when declaring
+	  variables'.
+
+2008-10-06  Mike Krüger <mkrueger@novell.com> 
+
 	* Gui/MemberCompletionData.cs, Gui/NRefactoryResolver.cs,
 	  Gui/CSharpTextEditorCompletion.cs: fixed Bug 432435 - Code
 	  completion shows 'List', not List<T>.
