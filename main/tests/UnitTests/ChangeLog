@@ -1,5 +1,9 @@
 2008-10-06  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.CSharpBinding/ParameterCompletionTests.cs: fixed 432658.
+
+2008-10-06  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.CSharpBinding/CodeCompletionTests.cs: added unit tests
 	  for 'Bug 431797 - Code completion showing invalid options'.
 

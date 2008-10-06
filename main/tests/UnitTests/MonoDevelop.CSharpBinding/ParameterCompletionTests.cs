@@ -130,5 +130,27 @@ class Test
 			Assert.IsNotNull (provider, "provider was not created.");
 			Assert.AreEqual (1, provider.OverloadCount);
 		}
+
+		/// <summary>
+		/// Bug 432658 - Incorrect completion when calling an extension method from inside another extension method
+		/// </summary>
+		[Test()]
+		public void TestBug432658 ()
+		{
+			IParameterDataProvider provider = CreateProvider (
+@"static class Extensions
+{
+	public static void Ext1 (this int start)
+	{
+	}
+	public static void Ext2 (this int end)
+	{
+		Ext1($
+	}
+}");
+			Assert.IsNotNull (provider, "provider was not created.");
+			Assert.AreEqual (1, provider.OverloadCount, "There should be one overload");
+			Assert.AreEqual (1, provider.GetParameterCount(0), "Parameter 'start' should exist");
+		}
 	}
 }
