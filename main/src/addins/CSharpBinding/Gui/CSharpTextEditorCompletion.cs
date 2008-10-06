@@ -345,7 +345,6 @@ namespace MonoDevelop.CSharpBinding.Gui
 				ResolveResult resolveResult = resolver.Resolve (result, new DomLocation (Editor.CursorLine, Editor.CursorColumn));
 				if (result.ExpressionContext is ExpressionContext.TypeExpressionContext)
 					return new NRefactoryParameterDataProvider (Editor, resolver, dom.SearchType ( new SearchTypeRequest (resolver.Unit, ((ExpressionContext.TypeExpressionContext)result.ExpressionContext).Type)));
-				
 				if (resolveResult != null) {
 					if (resolveResult is MethodResolveResult)
 						return new NRefactoryParameterDataProvider (Editor, resolver, resolveResult as MethodResolveResult);
@@ -354,6 +353,10 @@ namespace MonoDevelop.CSharpBinding.Gui
 							return new NRefactoryParameterDataProvider (Editor, resolver, resolveResult as ThisResolveResult);
 						if (resolveResult is BaseResolveResult)
 							return new NRefactoryParameterDataProvider (Editor, resolver, resolveResult as BaseResolveResult);
+					}
+					IType resolvedType = dom.SearchType (new SearchTypeRequest (resolver.Unit, resolveResult.ResolvedType));
+					if (resolvedType != null && resolvedType.ClassType == ClassType.Delegate) {
+						return new NRefactoryParameterDataProvider (Editor, resolver, result.Expression, resolvedType);
 					}
 				}
 				break;

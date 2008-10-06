@@ -94,8 +94,21 @@ namespace MonoDevelop.CSharpBinding
 			this.resolver = resolver;
 			if (type != null) {
 				foreach (IMethod method in type.Methods) {
-					if (method.IsConstructor && method.IsAccessibleFrom (resolver.Dom, type, resolver.CallingMember))
+					if ((method.IsConstructor && method.IsAccessibleFrom (resolver.Dom, type, resolver.CallingMember)))
 						methods.Add (method);
+				}
+			}
+		}
+		
+ 		string delegateName = null;
+		public NRefactoryParameterDataProvider (TextEditor editor, NRefactoryResolver resolver, string delegateName, IType type)
+		{
+			this.editor = editor;
+			this.resolver = resolver;
+			this.delegateName = delegateName;
+			if (type != null) {
+				foreach (IMethod method in type.Methods) {
+					methods.Add (method);
 				}
 			}
 		}
@@ -151,7 +164,7 @@ namespace MonoDevelop.CSharpBinding
 		
 		public string GetMethodMarkup (int overload, string[] parameterMarkup)
 		{
-			return "<b>" + (methods[overload].IsConstructor ? methods[overload].DeclaringType.Name : methods[overload].Name) + "</b> (" + string.Join (", ", parameterMarkup)  + ")";
+			return "<b>" + (this.delegateName ?? (methods[overload].IsConstructor ? methods[overload].DeclaringType.Name : methods[overload].Name)) + "</b> (" + string.Join (", ", parameterMarkup)  + ")";
 //			return ambience.GetIntellisenseDescription (methods[overload]);
 		}
 		
