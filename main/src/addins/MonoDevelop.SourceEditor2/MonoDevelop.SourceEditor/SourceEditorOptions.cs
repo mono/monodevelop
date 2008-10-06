@@ -92,6 +92,17 @@ namespace MonoDevelop.SourceEditor
 		
 		public SourceEditorOptions ()
 		{
+			GetOptions (this, EventArgs.Empty);
+			PropertyService.PropertyChanged += GetOptions;
+		}
+		
+		public override void Dispose()
+		{
+			PropertyService.PropertyChanged -= GetOptions;
+		}
+		
+		void GetOptions (object sender, EventArgs args)
+		{
 			this.enableSemanticHighlighting = PropertyService.Get ("EnableSemanticHighlighting", false);
 			this.autoInsertTemplates        = PropertyService.Get ("AutoInsertTemplates", false);
 			this.autoInsertMatchingBracket  = PropertyService.Get ("AutoInsertMatchingBracket", false);
@@ -259,7 +270,7 @@ namespace MonoDevelop.SourceEditor
 			set {
 				if (value != this.indentStyle) {
 					this.indentStyle = value;
-					PropertyService.Set ("IndentStyle", value);
+					PropertyService.Set ("IndentStyle", value.ToString ());
 					OnChanged (EventArgs.Empty);
 				}
 			}

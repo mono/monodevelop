@@ -1,3 +1,8 @@
+2008-10-06  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.SourceEditor/SourceEditorOptions.cs: Fixed bug with on
+	  the fly edit options changing.
+
 2008-09-30  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs: Exposed the
