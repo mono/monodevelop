@@ -206,7 +206,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 							}
 						}
 					}
-					MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col = new MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector (dom, Document.CompilationUnit, location);
+					MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col = new MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector (Editor, dom, Document.CompilationUnit, location);
 					foreach (object o in dom.GetNamespaceContents (namespaceList, true, true)) {
 						col.AddCompletionData (provider, o);
 					}
@@ -286,7 +286,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 						IType resolvedType = dom.GetType (resolveResult.ResolvedType);
 						if (resolvedType != null && resolvedType.ClassType == ClassType.Enum) {
 							CodeCompletionDataProvider provider = new CodeCompletionDataProvider (null, GetAmbience ());
-							CompletionDataCollector cdc = new CompletionDataCollector (dom, Document.CompilationUnit, location);
+							CompletionDataCollector cdc = new CompletionDataCollector (Editor, dom, Document.CompilationUnit, location);
 							cdc.AddCompletionData (provider, resolvedType);
 							
 	//						foreach (IField field in resolvedType.Fields) {
@@ -394,7 +394,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 							}
 						}
 					}
-					MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col = new MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector (dom, Document.CompilationUnit, location);
+					MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col = new MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector (Editor, dom, Document.CompilationUnit, location);
 					foreach (object o in dom.GetNamespaceContents (namespaceList, true, true)) {
 						if (cls != null && o is IType && ((IType)o).Name == cls.Name) {
 							continue;
@@ -416,7 +416,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				ResolveResult resolveResult = resolver.Resolve (expressionResult, new DomLocation (Editor.CursorLine, Editor.CursorColumn));
 				if (resolveResult != null && resolveResult.ResolvedType != null) {
 					CodeCompletionDataProvider provider = new CodeCompletionDataProvider (null, GetAmbience ());
-					CompletionDataCollector col = new CompletionDataCollector (dom, Document.CompilationUnit, location);
+					CompletionDataCollector col = new CompletionDataCollector (Editor, dom, Document.CompilationUnit, location);
 					foreach (IType type in dom.GetSubclasses (dom.SearchType (new SearchTypeRequest (resolver.Unit, resolveResult.ResolvedType)))) {
 						col.AddCompletionData (provider, type);
 					}
@@ -561,6 +561,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			ProjectDom dom;
 			ICompilationUnit unit;
 			DomLocation location;
+			TextEditor editor;
 			
 			string namePrefix = "";
 			public string NamePrefix {
@@ -582,8 +583,9 @@ namespace MonoDevelop.CSharpBinding.Gui
 				}
 			}
 			
-			public CompletionDataCollector (ProjectDom dom, ICompilationUnit unit, DomLocation location)
+			public CompletionDataCollector (TextEditor editor, ProjectDom dom, ICompilationUnit unit, DomLocation location)
 			{
+				this.editor = editor;
 				this.dom  = dom;
 				this.unit = unit;
 				this.location = location;
@@ -627,7 +629,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				}
 				IMember member = obj as IMember;
 				if (member != null && !String.IsNullOrEmpty (member.Name)) {
-					OutputFlags flags = OutputFlags.None;
+					OutputFlags flags = OutputFlags.IncludeGenerics;
 					if (member is IType) {
 						IType type = member as IType;
 						bool foundType = false;
@@ -650,7 +652,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 						if (!foundType && (NamePrefix.Length == 0 || !type.Namespace.StartsWith (NamePrefix)) && !type.Namespace.EndsWith ("." + NamePrefix))
 							flags |= OutputFlags.UseFullName;
 					}
-					MemberCompletionData newData = new MemberCompletionData (member, flags);
+					MemberCompletionData newData = new MemberCompletionData (editor, member, flags);
 					newData.HideExtensionParameter = HideExtensionParameter;
 					if (data.ContainsKey (member.Name)) {
 						data [member.Name].AddOverload (newData);
@@ -673,7 +675,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			if (dom == null)
 				return null;
 			IEnumerable<object> objects = resolveResult.CreateResolveResult (dom, resolver != null ? resolver.CallingMember : null);
-			CompletionDataCollector col = new CompletionDataCollector (dom, Document.CompilationUnit, location);
+			CompletionDataCollector col = new CompletionDataCollector (Editor, dom, Document.CompilationUnit, location);
 			col.HideExtensionParameter = !resolveResult.StaticResolve;
 			col.NamePrefix = expressionResult.Expression;
 			
@@ -751,7 +753,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				type = dom.SearchType (new SearchTypeRequest (Document.CompilationUnit, returnType));
 			ExpressionContext.TypeExpressionContext tce = context as ExpressionContext.TypeExpressionContext;
 			
-			CompletionDataCollector col = new CompletionDataCollector (dom, Document.CompilationUnit, location);
+			CompletionDataCollector col = new CompletionDataCollector (Editor, dom, Document.CompilationUnit, location);
 			if (type == null) {
 				if (returnType != null) {
 					col.AddCompletionData (result, returnType);
@@ -903,7 +905,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			ResolveResult resolveResult = resolver.ResolveExpression (switchFinder.SwitchStatement.SwitchExpression, location);
 			IType type = dom.GetType (resolveResult.ResolvedType);
 			if (type != null && type.ClassType == ClassType.Enum) {
-				CompletionDataCollector cdc = new CompletionDataCollector (dom, Document.CompilationUnit, location);
+				CompletionDataCollector cdc = new CompletionDataCollector (Editor, dom, Document.CompilationUnit, location);
 				cdc.AddCompletionData (result, type);
 			}
 			return result;

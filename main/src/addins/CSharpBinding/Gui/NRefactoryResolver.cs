@@ -169,7 +169,7 @@ namespace MonoDevelop.CSharpBinding
 				}
 			}
 			if (CallingMember != null) {
-				MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col = new MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector (dom, unit, new DomLocation (editor.CursorLine - 1, editor.CursorColumn - 1));
+				MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col = new MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector (this.editor, dom, unit, new DomLocation (editor.CursorLine - 1, editor.CursorColumn - 1));
 				foreach (IType type in dom.GetInheritanceTree (CallingType)) {
 					foreach (IMember member in type.Members) {
 	//					if (member.IsAccessibleFrom (dom, CallingMember)) {
@@ -215,7 +215,7 @@ namespace MonoDevelop.CSharpBinding
 					}
 				}
 			}
-			MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col = new MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector (dom, unit, new DomLocation (editor.CursorLine - 1, editor.CursorColumn - 1));
+			MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col = new MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector (this.editor, dom, unit, new DomLocation (editor.CursorLine - 1, editor.CursorColumn - 1));
 			foreach (object o in dom.GetNamespaceContents (namespaceList, true, true)) {
 				col.AddCompletionData (provider, o);
 			}

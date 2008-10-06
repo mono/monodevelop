@@ -1,5 +1,11 @@
 2008-10-06  Mike Krüger <mkrueger@novell.com> 
 
+	* Gui/MemberCompletionData.cs, Gui/NRefactoryResolver.cs,
+	  Gui/CSharpTextEditorCompletion.cs: fixed Bug 432435 - Code
+	  completion shows 'List', not List<T>.
+
+2008-10-06  Mike Krüger <mkrueger@novell.com> 
+
 	* Gui/NRefactoryResolver.cs: fixed Bug 432658 - Incorrect completion
 	  when calling an extension method from inside another extension
 	  method.

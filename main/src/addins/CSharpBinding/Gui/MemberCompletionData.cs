@@ -37,7 +37,7 @@ using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.CSharpBinding
 {
-	public class MemberCompletionData : MonoDevelop.Projects.Gui.Completion.CodeCompletionData
+	public class MemberCompletionData : MonoDevelop.Projects.Gui.Completion.CodeCompletionData, IActionCompletionData
 	{
 		IMember member;
 		
@@ -64,10 +64,32 @@ namespace MonoDevelop.CSharpBinding
 			}
 		}
 		
-		public MemberCompletionData (IMember member, OutputFlags flags) : base (member.IsObsolete ? "<s>" + ambience.GetString (member, flags | OutputFlags.EmitMarkup) + "</s>" :  ambience.GetString (member, flags | OutputFlags.EmitMarkup), member.StockIcon)
+		int declarationBegin;
+		TextEditor editor;
+		public MemberCompletionData (TextEditor editor, IMember member, OutputFlags flags) : base (member.IsObsolete ? "<s>" + ambience.GetString (member, flags | OutputFlags.EmitMarkup) + "</s>" :  ambience.GetString (member, flags | OutputFlags.EmitMarkup), member.StockIcon)
 		{
 			this.member = member;
-			this.CompletionString = ambience.GetString (member, OutputFlags.None);
+			this.declarationBegin = editor.CursorPosition;
+			this.editor = editor;
+		}
+		
+		public void InsertAction (ICompletionWidget widget, ICodeCompletionContext context)
+		{
+			editor.DeleteText (context.TriggerOffset, editor.CursorPosition - context.TriggerOffset);
+			string text = ambience.GetString (member, OutputFlags.IncludeGenerics);
+			editor.InsertText (context.TriggerOffset, text);
+			int offset = text.IndexOf ('<');
+			if (offset >= 0) {
+				int endOffset = offset + 1;
+				while (endOffset < text.Length) {
+					char ch = text[endOffset];
+					if (!Char.IsLetterOrDigit(ch) && ch != '_')
+						break;
+					endOffset++;
+				}
+				editor.CursorPosition = context.TriggerOffset + offset;
+				editor.Select (context.TriggerOffset + offset + 1, context.TriggerOffset + endOffset);
+			}
 		}
 		
 		static CSharpAmbience ambience = new CSharpAmbience ();
