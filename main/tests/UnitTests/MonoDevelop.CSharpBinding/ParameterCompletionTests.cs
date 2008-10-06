@@ -107,5 +107,28 @@ class AClass
 			Assert.IsNotNull (provider, "provider was not created.");
 			Assert.AreEqual (2, provider.OverloadCount);
 		}
+
+		/// <summary>
+		/// Bug 432437 - No completion when invoking delegates
+		/// </summary>
+		[Test()]
+		public void TestBug432437 ()
+		{
+			IParameterDataProvider provider = CreateProvider (
+@"
+public delegate void MyDel (int value);
+
+class Test
+{
+        void A()
+        {
+                MyDel d;
+
+                d ($
+        }
+}");
+			Assert.IsNotNull (provider, "provider was not created.");
+			Assert.AreEqual (1, provider.OverloadCount);
+		}
 	}
 }

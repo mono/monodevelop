@@ -11,7 +11,6 @@ FIXTURE = /fixture=$(fixture)
 REFS =  \
 	$(MONO_NUNIT_LIBS) \
 	-pkg:gtk-dotnet-2.0 \
-	-r:../../build/bin/NRefactory.dll \
 	-r:../../build/AddIns/BackendBindings/MonoDevelop.CSharpBinding.dll \
 	-r:../../build/AddIns/MonoDevelop.Autotools/MonoDevelop.Autotools.dll \
 	-r:../../build/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.dll \
@@ -20,6 +19,7 @@ REFS =  \
 	-r:../../build/bin/MonoDevelop.Ide.dll \
 	-r:../../build/bin/MonoDevelop.Projects.dll \
 	-r:../../build/bin/MonoDevelop.Projects.Gui.dll \
+	-r:../../build/bin/NRefactory.dll \
 	-r:System \
 	-r:System.Xml
 

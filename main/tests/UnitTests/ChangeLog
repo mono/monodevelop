@@ -1,3 +1,8 @@
+2008-10-06  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.CSharpBinding/ParameterCompletionTests.cs: added unit
+	  test for 'Bug 432437 - No completion when invoking delegates'.
+
 2008-10-01  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Projects/DomCompilationUnitTests.cs,

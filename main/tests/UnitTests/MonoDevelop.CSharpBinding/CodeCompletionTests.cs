@@ -472,7 +472,7 @@ class C : BaseClass
 			Assert.IsNotNull (provider.SearchData ("a"), "enum member 'a' not found.");
 			Assert.IsNotNull (provider.SearchData ("b"), "enum member 'b' not found.");
 		}
-		
+
 		[TestFixtureSetUp] 
 		public void SetUp()
 		{

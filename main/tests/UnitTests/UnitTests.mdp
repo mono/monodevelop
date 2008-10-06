@@ -57,7 +57,7 @@
     <ProjectReference type="Gac" localcopy="True" refto="System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Deployment" />
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Autotools" />
-    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.CSharpBinding" />
+    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.CSharpBinding" />
     <ProjectReference type="Project" localcopy="False" refto="Mono.TextEditor" />
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Ide" />
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Projects.Gui" />
