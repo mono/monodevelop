@@ -374,7 +374,7 @@ namespace Mono.TextEditor
 			ColorScheme = other.ColorScheme;
 		}
 		
-		public void Dispose ()
+		public virtual void Dispose ()
 		{
 		}
 		protected void OnChanged (EventArgs args)
