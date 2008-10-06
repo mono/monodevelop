@@ -30,7 +30,7 @@ using Mono.TextEditor.Highlighting;
 
 namespace Mono.TextEditor
 {
-	public class TextEditorOptions
+	public class TextEditorOptions : IDisposable
 	{
 		public const string DEFAULT_FONT = "Mono 10";
 		static TextEditorOptions options = new TextEditorOptions ();
@@ -374,6 +374,9 @@ namespace Mono.TextEditor
 			ColorScheme = other.ColorScheme;
 		}
 		
+		public void Dispose ()
+		{
+		}
 		protected void OnChanged (EventArgs args)
 		{
 			if (Changed != null)

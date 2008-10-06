@@ -123,6 +123,11 @@ namespace Mono.TextEditor
 				this.states = null;
 			}
 			
+			if (options != null) {
+				options.Dispose ();
+				options = null;
+			}
+			
 			if (document != null) {
 				document.BeginUndo -= OnBeginUndo;
 				document.EndUndo   -= OnEndUndo;
