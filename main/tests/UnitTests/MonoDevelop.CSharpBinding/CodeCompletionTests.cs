@@ -71,6 +71,37 @@ namespace MonoDevelop.CSharpBinding.Tests
 			
 			return textEditorCompletion.HandleCodeCompletion (ctx, text[cursorPosition - 1] , ref triggerWordLength) as CodeCompletionDataProvider;
 		}
+
+		public static CodeCompletionDataProvider CreateCtrlSpaceProvider (string text)
+		{
+			int cursorPosition = text.IndexOf ('$');
+			string parsedText = text.Substring (0, cursorPosition) + text.Substring (cursorPosition + 1);
+			
+			TestWorkbenchWindow tww = new TestWorkbenchWindow ();
+			TestViewContent sev = new TestViewContent ();
+			DotNetProject project = new DotNetProject ("C#");
+			project.FileName = "/tmp/a.csproj";
+			
+			SimpleProjectDom dom = new SimpleProjectDom ();
+			dom.Project = project;
+			ProjectDomService.RegisterDom (dom, "Project:" + project.FileName);
+			
+			sev.Project = project;
+			sev.ContentName = "a.cs";
+			sev.Text = parsedText;
+			sev.CursorPosition = cursorPosition;
+			tww.ViewContent = sev;
+			Document doc = new Document (tww);
+			doc.ParsedDocument = new NRefactoryParser ().Parse (sev.ContentName, sev.Text);
+			dom.Add (doc.CompilationUnit);
+			CSharpTextEditorCompletion textEditorCompletion = new CSharpTextEditorCompletion (doc);
+			
+			int triggerWordLength = 1;
+			CodeCompletionContext ctx = new CodeCompletionContext ();
+			ctx.TriggerOffset = sev.CursorPosition;
+			
+			return textEditorCompletion.CodeCompletionCommand (ctx) as CodeCompletionDataProvider;
+		}
 		
 		[Test()]
 		public void TestSimpleCodeCompletion ()
@@ -472,7 +503,25 @@ class C : BaseClass
 			Assert.IsNotNull (provider.SearchData ("a"), "enum member 'a' not found.");
 			Assert.IsNotNull (provider.SearchData ("b"), "enum member 'b' not found.");
 		}
-
+		
+		/// <summary>
+		/// Bug 431764 - Completion doesn't work in properties
+		/// </summary>
+		[Test()]
+		public void TestBug431764 ()
+		{
+			CodeCompletionDataProvider provider = CreateCtrlSpaceProvider (
+@"public class Test
+{
+	int number;
+	public int Number {
+		set { this.number = $ }
+	}
+}");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.GetCompletionData ("value"), "Should contain 'value'");
+		}
+		
 		[TestFixtureSetUp] 
 		public void SetUp()
 		{
