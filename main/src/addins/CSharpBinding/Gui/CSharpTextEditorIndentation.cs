@@ -122,6 +122,11 @@ namespace MonoDevelop.CSharpBinding.Gui
 				return retval;
 			}
 			
+			if (TextEditorProperties.IndentStyle == IndentStyle.Auto && TextEditorProperties.TabIsReindent && key == Gdk.Key.Tab) {
+				DoReSmartIndent ();
+				return false;
+			}
+			
 			//pass through to the base class, which actually inserts the character
 			//and calls HandleCodeCompletion etc to handles completion
 			return base.KeyPress (key, keyChar, modifier);
