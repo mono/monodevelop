@@ -40,11 +40,13 @@ namespace Mono.TextEditor
 		
 		Dictionary<int, EditAction> navMaps = new Dictionary<int, EditAction> ();
 		Dictionary<int, EditAction> insertModeMaps = new Dictionary<int, EditAction> ();
+		Dictionary<int, EditAction> commandMaps = new Dictionary<int, EditAction> ();
 		
 		public ViMode ()
 		{
 			InitNavMaps ();
 			InitInsertMaps ();
+			InitCommandMaps ();
 		}
 		
 		void InitNavMaps ()
@@ -154,6 +156,14 @@ namespace Mono.TextEditor
 			insertModeMaps.Add (GetKeyCode (Gdk.Key.Delete, Gdk.ModifierType.ControlMask), action);
 		}
 		
+		void InitCommandMaps ()
+		{
+			EditAction action;
+			
+			action = new UndoAction ();
+			commandMaps.Add (GetKeyCode (Gdk.Key.u), action);
+		}
+		
 		public string Status {
 			get { return status; }
 			private set {
@@ -212,7 +222,9 @@ namespace Mono.TextEditor
 				
 				keyCode = GetKeyCode (key, modifier);
 				if (navMaps.TryGetValue (keyCode, out action))
-				    RunAction (action);
+					RunAction (action);
+				else if (commandMaps.TryGetValue (keyCode, out action))
+					RunAction (action);
 				
 				return;
 				

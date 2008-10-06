@@ -1,5 +1,9 @@
 2008-10-06  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* Mono.TextEditor/ViMode.cs: Implement 'u' for undo.
+
+2008-10-06  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* Mono.TextEditor/ViMode.cs: Implement a simple vi-like editing mode.
 	* Mono.TextEditor/TextEditor.cs, Mono.TextEditor/SimpleEditMode.cs,
 	  Mono.TextEditor/EditMode.cs: Abstract out the editing into a mode
