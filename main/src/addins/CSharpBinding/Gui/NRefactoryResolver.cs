@@ -194,7 +194,7 @@ namespace MonoDevelop.CSharpBinding
 			
 			if (CallingMember is IProperty) {
 				IProperty property = (IProperty)callingMember;
-				if (property.HasSet && editor != null && property.SetRegion.Contains (resolvePosition.Line - 1, editor.CursorColumn - 1)) 
+				if (property.HasSet && editor != null && property.SetRegion.Contains (resolvePosition.Line, editor.CursorColumn)) 
 					provider.AddCompletionData (new CodeCompletionData ("value", "md-literal"));
 			}
 			
