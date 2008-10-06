@@ -1060,10 +1060,14 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				if (tns == null) return;
 				
 				foreach (DictionaryEntry en in tns.Contents) {
-					if (en.Value is NamespaceEntry)
+					if (en.Value is NamespaceEntry) {
 						list.Add (new Namespace ((string)en.Key));
-					else
-						list.Add (GetClass ((ClassEntry)en.Value));
+					} else {
+						IType type = GetClass ((ClassEntry)en.Value);
+						if (type.Name.IndexOfAny (new char[] { '<', '>' }) >= 0)
+							continue;
+						list.Add (type);
+					}
 				}
 			}
 		}

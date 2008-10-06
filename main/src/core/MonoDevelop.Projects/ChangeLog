@@ -1,3 +1,8 @@
+2008-10-06  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
+	  filtered compiler generated types.
+
 2008-10-05  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/CompoundType.cs,
