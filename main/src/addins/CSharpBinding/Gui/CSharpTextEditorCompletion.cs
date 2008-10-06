@@ -121,7 +121,8 @@ namespace MonoDevelop.CSharpBinding.Gui
 		try {
 			if (dom == null)
 				return null;
-				
+			if (completionChar != '#' && stateTracker.Engine.IsInsidePreprocessorDirective)
+				return null;
 			location = new DomLocation (Editor.CursorLine - 1, Editor.CursorColumn - 1);
 			stateTracker.UpdateEngine ();
 			ExpressionResult result;
@@ -510,6 +511,8 @@ namespace MonoDevelop.CSharpBinding.Gui
 		
 		public override ICompletionDataProvider CodeCompletionCommand (ICodeCompletionContext completionContext)
 		{
+			if (stateTracker.Engine.IsInsidePreprocessorDirective || stateTracker.Engine.IsInsideOrdinaryCommentOrString || stateTracker.Engine.IsInsideDocLineComment)
+				return null;
 			int pos = completionContext.TriggerOffset;
 			string txt = Editor.GetText (pos - 1, pos);
 			if (txt.Length > 0) {
@@ -520,7 +523,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 					return cp;
 				}
 			}
-		
+
 			NewCSharpExpressionFinder expressionFinder = new NewCSharpExpressionFinder (dom);
 			ExpressionResult result;
 			try {
