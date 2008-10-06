@@ -232,12 +232,15 @@ namespace MonoDevelop.Projects.Dom
 				}
 				return;
 			}
-			if (callingMember == null || callingMember.DeclaringType == null)
-				return;
-			List<IType> accessibleStaticTypes = DomType.GetAccessibleExtensionTypes (dom, callingMember.DeclaringType.CompilationUnit);
+			List<IType> accessibleStaticTypes = null;
+			if (callingMember != null && callingMember.DeclaringType != null)
+				accessibleStaticTypes = DomType.GetAccessibleExtensionTypes (dom, callingMember.DeclaringType.CompilationUnit);
+			
 			foreach (IType curType in dom.GetInheritanceTree (type)) {
-				foreach (IMethod extensionMethod in curType.GetExtensionMethods (accessibleStaticTypes)) {
-					result.Add (extensionMethod);
+				if (accessibleStaticTypes != null) {
+					foreach (IMethod extensionMethod in curType.GetExtensionMethods (accessibleStaticTypes)) {
+						result.Add (extensionMethod);
+					}
 				}
 				foreach (IMember member in curType.Members) {
 					if (callingMember != null && !member.IsAccessibleFrom (dom, type, callingMember))
@@ -399,7 +402,7 @@ namespace MonoDevelop.Projects.Dom
 		{
 			List<object> result = new List<object> ();
 			if (CallingMember != null && !CallingMember.IsStatic)
-				MemberResolveResult.AddType (dom, result, CallingType.BaseType ?? DomReturnType.Object, callingMember, StaticResolve);
+				MemberResolveResult.AddType (dom, result, dom.SearchType (new SearchTypeRequest (CallingType.CompilationUnit, CallingType.BaseType ?? DomReturnType.Object)), CallingMember, StaticResolve);
 			return result;
 		}
 		public override string ToString ()
