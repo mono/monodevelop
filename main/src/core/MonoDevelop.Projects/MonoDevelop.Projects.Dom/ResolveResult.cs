@@ -242,8 +242,11 @@ namespace MonoDevelop.Projects.Dom
 						continue;
 					if (member is IMethod && ((IMethod)member).IsConstructor)
 						continue;
-					if (member is IType || !(showStatic ^ (member.IsStatic || member.IsConst)))
+					if (!showStatic && member is IType)
+						continue;
+					if (member is IType || !(showStatic ^ (member.IsStatic || member.IsConst))) {
 						result.Add (member);
+					}
 				}
 				if (showStatic)
 					break;
