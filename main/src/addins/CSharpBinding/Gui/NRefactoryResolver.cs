@@ -382,6 +382,8 @@ namespace MonoDevelop.CSharpBinding
 				if (members.Count > 0) {
 					if (members[0] is IMethod) {
 						result = new MethodResolveResult (members);
+						if (CallingMember != null)
+							result.StaticResolve = CallingMember.IsStatic;
 					} else if (members[0] is IType) {
 						result = new MemberResolveResult (null, true);
 						result.ResolvedType = new DomReturnType ((IType)members[0]);
