@@ -232,6 +232,8 @@ namespace MonoDevelop.Projects.Dom
 				}
 				return;
 			}
+			if (callingMember == null || callingMember.DeclaringType == null)
+				return;
 			List<IType> accessibleStaticTypes = DomType.GetAccessibleExtensionTypes (dom, callingMember.DeclaringType.CompilationUnit);
 			foreach (IType curType in dom.GetInheritanceTree (type)) {
 				foreach (IMethod extensionMethod in curType.GetExtensionMethods (accessibleStaticTypes)) {

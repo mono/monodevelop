@@ -1,5 +1,10 @@
 2008-10-06  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Projects.Dom/ResolveResult.cs: fixed a possible resolve
+	  null reference.
+
+2008-10-06  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Projects.Dom/ResolveResult.cs: fixed bug in member
 	  resolve result.
 
