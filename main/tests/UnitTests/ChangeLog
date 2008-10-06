@@ -1,5 +1,10 @@
 2008-10-06  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.CSharpBinding/CodeCompletionTests.cs: added unit tests
+	  for 'Bug 431797 - Code completion showing invalid options'.
+
+2008-10-06  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.CSharpBinding/CodeCompletionTests.cs: added unit test for
 	  Bug 431764 - Completion doesn't work in properties.
 

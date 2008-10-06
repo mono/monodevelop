@@ -522,6 +522,43 @@ class C : BaseClass
 			Assert.IsNotNull (provider.GetCompletionData ("value"), "Should contain 'value'");
 		}
 		
+		/// <summary>
+		/// Bug 431797 - Code completion showing invalid options
+		/// </summary>
+		[Test()]
+		public void TestBug431797A ()
+		{
+			CodeCompletionDataProvider provider = CreateCtrlSpaceProvider (
+@"public class Test
+{
+	private List<string> strings;
+	public $
+}");
+		
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNull (provider.GetCompletionData ("strings"), "should not contain 'strings'");
+		}
+		
+		/// <summary>
+		/// Bug 431797 - Code completion showing invalid options
+		/// </summary>
+		[Test()]
+		public void TestBug431797B ()
+		{
+			CodeCompletionDataProvider provider = CreateProvider (
+@"public class Test
+{
+	public delegate string [] AutoCompleteHandler (string text, int pos);
+	public void Method ()
+	{
+		Test t = new Test ();
+		t.$
+	}
+}");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNull (provider.GetCompletionData("AutoCompleteHandler"), "should not contain 'AutoCompleteHandler' delegate");
+		}
+		
 		[TestFixtureSetUp] 
 		public void SetUp()
 		{
