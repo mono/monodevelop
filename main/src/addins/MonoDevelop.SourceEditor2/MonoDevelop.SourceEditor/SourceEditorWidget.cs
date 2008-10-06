@@ -147,9 +147,9 @@ namespace MonoDevelop.SourceEditor
 
 		bool ITextEditorExtension.KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
+			this.TextEditor.SimulateKeyPress (key, (uint)keyChar, modifier);
 			if (key == Gdk.Key.Escape)
 				return true;
-			this.TextEditor.SimulateKeyPress (key, (uint)keyChar, modifier);
 			return false;
 		}
 		#endregion

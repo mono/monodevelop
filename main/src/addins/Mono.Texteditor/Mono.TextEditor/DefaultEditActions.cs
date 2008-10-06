@@ -201,7 +201,7 @@ namespace Mono.TextEditor
 			DocumentLocation newLocation = data.Caret.Location;
 			LineSegment line = data.Document.GetLine (data.Caret.Line);
 			int homeMark = GetHomeMark (data.Document, line);
-			newLocation.Column = newLocation.Column == homeMark ? 0 : homeMark;
+			newLocation.Column = NextCol (newLocation.Column, homeMark);
 			
 			// handle folding
 			List<FoldSegment> foldings = data.Document.GetEndFoldings (line);
@@ -217,6 +217,27 @@ namespace Mono.TextEditor
 			
 			if (newLocation != data.Caret.Location) 
 				data.Caret.Location = newLocation;
+		}
+		
+		protected virtual int NextCol (int currentCol, int homeMark)
+		{
+			return currentCol == homeMark ? 0 : homeMark;
+		}
+	}
+	
+	public class CaretMoveLineStart : CaretMoveHome
+	{
+		protected override int NextCol (int currentCol, int homeMark)
+		{
+			return 0;
+		}
+	}
+	
+	public class CaretMoveFirstNonWhitespace : CaretMoveHome
+	{
+		protected override int NextCol (int currentCol, int homeMark)
+		{
+			return homeMark;
 		}
 	}
 	

@@ -37,6 +37,7 @@ FILES =  \
 	Mono.TextEditor/DocumentLocation.cs \
 	Mono.TextEditor/DocumentUpdateRequest.cs \
 	Mono.TextEditor/EditAction.cs \
+	Mono.TextEditor/EditMode.cs \
 	Mono.TextEditor/EmacsWordFindStrategy.cs \
 	Mono.TextEditor/FoldingType.cs \
 	Mono.TextEditor/FoldMarkerMargin.cs \
@@ -59,11 +60,13 @@ FILES =  \
 	Mono.TextEditor/SearchResult.cs \
 	Mono.TextEditor/Segment.cs \
 	Mono.TextEditor/SharpDevelopWordFindStrategy.cs \
+	Mono.TextEditor/SimpleEditMode.cs \
 	Mono.TextEditor/TextEditor.cs \
 	Mono.TextEditor/TextEditorData.cs \
 	Mono.TextEditor/TextEditorOptions.cs \
 	Mono.TextEditor/TextMarker.cs \
-	Mono.TextEditor/TextViewMargin.cs 
+	Mono.TextEditor/TextViewMargin.cs \
+	Mono.TextEditor/ViMode.cs 
 	Mono.TextEditor.Highlighting/Match.cs \
 	Mono.TextEditor.Highlighting/Style.cs \
 	Mono.TextEditor.Highlighting/SyntaxMode.cs \

@@ -45,7 +45,6 @@ namespace Mono.TextEditor
 	{
 		TextEditorData textEditorData;
 		
-		protected Dictionary <int, EditAction> keyBindings = new Dictionary<int,EditAction> ();
 		protected IconMargin       iconMargin;
 		protected GutterMargin     gutterMargin;
 		protected FoldMarkerMargin foldMarkerMargin;
@@ -60,6 +59,8 @@ namespace Mono.TextEditor
 		IMMulticontext imContext;
 		Gdk.EventKey lastIMEvent;
 		bool imContextActive;
+		
+		string currentModeStatus;
 		
 		// Tooltip fields
 		const int TooltipTimer = 800;
@@ -89,6 +90,8 @@ namespace Mono.TextEditor
 				return textEditorData.Caret;
 			}
 		}
+		
+		protected EditMode CurrentMode { get; set; }
 		
 		protected IMMulticontext IMContext {
 			get { return imContext; }
@@ -212,9 +215,16 @@ namespace Mono.TextEditor
 		}
 		
 		public TextEditor (Document doc)
+			: this (doc, new ViMode ())
+		{
+		}
+		
+		public TextEditor (Document doc, EditMode initialMode)
 		{
 			textEditorData = new TextEditorData (doc);
 			doc.TextReplaced += OnDocumentStateChanged;
+			
+			CurrentMode = initialMode;
 			
 //			this.Events = EventMask.AllEventsMask;
 			this.Events = EventMask.PointerMotionMask | 
@@ -230,108 +240,6 @@ namespace Mono.TextEditor
 			this.DoubleBuffered = false;
 			this.AppPaintable = true;
 			base.CanFocus = true;
-			
-			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Left), new CaretMoveLeft ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Left, Gdk.ModifierType.ShiftMask), new SelectionMoveLeft ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Left, Gdk.ModifierType.ControlMask), new CaretMovePrevWord ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Left, Gdk.ModifierType.ShiftMask | Gdk.ModifierType.ControlMask), new SelectionMovePrevWord ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.Left), new CaretMoveLeft ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.Left, Gdk.ModifierType.ShiftMask), new SelectionMoveLeft ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.Left, Gdk.ModifierType.ControlMask), new CaretMovePrevWord ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.Left, Gdk.ModifierType.ShiftMask | Gdk.ModifierType.ControlMask), new SelectionMovePrevWord ());
-			
-			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Right), new CaretMoveRight ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Right, Gdk.ModifierType.ShiftMask), new SelectionMoveRight ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Right, Gdk.ModifierType.ControlMask), new CaretMoveNextWord ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Right, Gdk.ModifierType.ShiftMask | Gdk.ModifierType.ControlMask), new SelectionMoveNextWord ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.Right), new CaretMoveRight ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.Right, Gdk.ModifierType.ShiftMask), new SelectionMoveRight ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.Right, Gdk.ModifierType.ControlMask), new CaretMoveNextWord ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.Right, Gdk.ModifierType.ShiftMask | Gdk.ModifierType.ControlMask), new SelectionMoveNextWord ());
-			
-			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Up), new CaretMoveUp ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Up, Gdk.ModifierType.ControlMask), new ScrollUpAction ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Up, Gdk.ModifierType.ShiftMask), new SelectionMoveUp ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.Up), new CaretMoveUp ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.Up, Gdk.ModifierType.ControlMask), new ScrollUpAction ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.Up, Gdk.ModifierType.ShiftMask), new SelectionMoveUp ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.Up, Gdk.ModifierType.ShiftMask | Gdk.ModifierType.ControlMask), new SelectionMoveUp ());
-			
-			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Down), new CaretMoveDown ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Down, Gdk.ModifierType.ControlMask), new ScrollDownAction ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Down, Gdk.ModifierType.ShiftMask), new SelectionMoveDown ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.Down), new CaretMoveDown ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.Down, Gdk.ModifierType.ControlMask), new ScrollDownAction ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.Down, Gdk.ModifierType.ShiftMask), new SelectionMoveDown ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.Down, Gdk.ModifierType.ShiftMask | Gdk.ModifierType.ControlMask), new SelectionMoveDown ());
-			
-			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Home), new CaretMoveHome ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Home, Gdk.ModifierType.ShiftMask), new SelectionMoveHome ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Home, Gdk.ModifierType.ControlMask), new CaretMoveToDocumentStart ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Home, Gdk.ModifierType.ShiftMask | Gdk.ModifierType.ControlMask), new SelectionMoveToDocumentStart ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.Home), new CaretMoveHome ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.Home, Gdk.ModifierType.ShiftMask), new SelectionMoveHome ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.Home, Gdk.ModifierType.ControlMask), new CaretMoveToDocumentStart ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.Home, Gdk.ModifierType.ShiftMask | Gdk.ModifierType.ControlMask), new SelectionMoveToDocumentStart ());
-			
-			keyBindings.Add (GetKeyCode (Gdk.Key.KP_End), new CaretMoveEnd ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.KP_End, Gdk.ModifierType.ShiftMask), new SelectionMoveEnd ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.KP_End, Gdk.ModifierType.ControlMask), new CaretMoveToDocumentEnd ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.KP_End, Gdk.ModifierType.ShiftMask | Gdk.ModifierType.ControlMask), new SelectionMoveToDocumentEnd ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.End), new CaretMoveEnd ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.End, Gdk.ModifierType.ShiftMask), new SelectionMoveEnd ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.End, Gdk.ModifierType.ControlMask), new CaretMoveToDocumentEnd ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.End, Gdk.ModifierType.ShiftMask | Gdk.ModifierType.ControlMask), new SelectionMoveToDocumentEnd ());
-			
-			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Insert), new SwitchCaretModeAction ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.Insert), new SwitchCaretModeAction ());
-			
-			keyBindings.Add (GetKeyCode (Gdk.Key.Tab), new InsertTab ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.ISO_Left_Tab, Gdk.ModifierType.ShiftMask), new RemoveTab ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.Return), new InsertNewLine ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Enter), new InsertNewLine ());
-			
-			keyBindings.Add (GetKeyCode (Gdk.Key.BackSpace), new BackspaceAction ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.BackSpace, Gdk.ModifierType.ControlMask), new DeletePrevWord ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.BackSpace, Gdk.ModifierType.ShiftMask), new BackspaceAction ());
-			
-			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Delete), new DeleteAction ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Delete, Gdk.ModifierType.ControlMask), new DeleteNextWord ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.Delete), new DeleteAction ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.Delete, Gdk.ModifierType.ControlMask), new DeleteNextWord ());
-			
-			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Delete, Gdk.ModifierType.ShiftMask), new CutAction ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.Delete, Gdk.ModifierType.ShiftMask), new CutAction ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Insert, Gdk.ModifierType.ControlMask), new CopyAction ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Insert, Gdk.ModifierType.ShiftMask), new PasteAction ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.Insert, Gdk.ModifierType.ControlMask), new CopyAction ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.Insert, Gdk.ModifierType.ShiftMask), new PasteAction ());
-			
-			keyBindings.Add (GetKeyCode (Gdk.Key.x, Gdk.ModifierType.ControlMask), new CutAction ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.c, Gdk.ModifierType.ControlMask), new CopyAction ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.v, Gdk.ModifierType.ControlMask), new PasteAction ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.a, Gdk.ModifierType.ControlMask), new SelectionSelectAll ());
-
-			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Page_Down), new PageDownAction ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Page_Down, Gdk.ModifierType.ShiftMask), new SelectionPageDownAction ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.Page_Down), new PageDownAction ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.Page_Down, Gdk.ModifierType.ShiftMask), new SelectionPageDownAction ());
-			
-			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Page_Up), new PageUpAction ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Page_Up, Gdk.ModifierType.ShiftMask), new SelectionPageUpAction ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.Page_Up), new PageUpAction ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.Page_Up, Gdk.ModifierType.ShiftMask), new SelectionPageUpAction ());
-			
-			keyBindings.Add (GetKeyCode (Gdk.Key.d, Gdk.ModifierType.ControlMask), new DeleteCaretLine ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.D, Gdk.ModifierType.ShiftMask | Gdk.ModifierType.ControlMask), new DeleteCaretLineToEnd ());
-			
-			keyBindings.Add (GetKeyCode (Gdk.Key.z, Gdk.ModifierType.ControlMask), new UndoAction ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.z, Gdk.ModifierType.ControlMask | Gdk.ModifierType.ShiftMask), new RedoAction ());
-			
-			keyBindings.Add (GetKeyCode (Gdk.Key.F2), new GotoNextBookmark ());
-			keyBindings.Add (GetKeyCode (Gdk.Key.F2, Gdk.ModifierType.ShiftMask), new GotoPrevBookmark ());
-			
-			keyBindings.Add (GetKeyCode (Gdk.Key.b, Gdk.ModifierType.ControlMask), new GotoMatchingBracket ());
 			
 			iconMargin = new IconMargin (this);
 			gutterMargin = new GutterMargin (this);
@@ -512,17 +420,6 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		protected static int GetKeyCode (Gdk.Key key)
-		{
-			return (int)key;
-		}
-		
-		protected static int GetKeyCode (Gdk.Key key, Gdk.ModifierType modifier)
-		{
-			int m = ((int)modifier) & ((int)Gdk.ModifierType.ControlMask | (int)Gdk.ModifierType.ShiftMask);
-			return (int)key | (int)m << 16;
-		}
-		
 		protected override void OnDestroyed ()
 		{
 			base.OnDestroyed ();
@@ -531,10 +428,10 @@ namespace Mono.TextEditor
 					return;
 				this.isDisposed = true;
 				DisposeBgBuffer ();
-				if (this.keyBindings != null) {
-					this.keyBindings.Clear ();
-					this.keyBindings = null;
-				}
+//				if (this.keyBindings != null) {
+//					this.keyBindings.Clear ();
+//					this.keyBindings = null;
+//				}
 				Caret.PositionChanged -= CaretPositionChanged;
 				
 				Document.DocumentUpdated -= DocumentUpdatedHandler;
@@ -646,40 +543,10 @@ namespace Mono.TextEditor
 		
 		public void SimulateKeyPress (Gdk.Key key, uint unicodeKey, Gdk.ModifierType modifier)
 		{
-			int keyCode = GetKeyCode (key, modifier);
 			if ((modifier & Gdk.ModifierType.ControlMask) == Gdk.ModifierType.ControlMask) 
 				unicodeKey = 0;
-			if (keyBindings.ContainsKey (keyCode)) {
-				try {
-					Document.BeginAtomicUndo ();
-					keyBindings[keyCode].Run (this.textEditorData);
-					Document.EndAtomicUndo ();
-				} catch (Exception e) {
-					Console.WriteLine ("Error while executing " + keyBindings[keyCode] + " :" + e);
-				}
-			} else if (unicodeKey != 0) {
-				Document.BeginAtomicUndo ();
-				if (textEditorData.CanEditSelection)
-					textEditorData.DeleteSelectedText ();
-				char ch = (char)unicodeKey;
-				if (!char.IsControl (ch) && textEditorData.CanEdit (Caret.Line)) {
-					LineSegment line = Document.GetLine (Caret.Line);
-					if (Caret.IsInInsertMode || Caret.Column >= line.EditableLength) {
-						Document.Insert (Caret.Offset, ch.ToString());
-					} else {
-						Document.Replace (Caret.Offset, 1, ch.ToString());
-					}
-					bool autoScroll = Caret.AutoScrollToCaret;
-					Caret.Column++;
-					Caret.AutoScrollToCaret = autoScroll;
-					if (autoScroll)
-						ScrollToCaret ();
-					Document.RequestUpdate (new LineUpdate (Caret.Line));
-					Document.CommitDocumentUpdate ();
-				}
-				Document.EndAtomicUndo ();
-				Document.OptimizeTypedUndo ();
-			}
+			
+			CurrentMode.InternalHandleKeypress (this, textEditorData, key, unicodeKey, modifier);
 			textViewMargin.ResetCaretBlink ();
 		}
 		

@@ -1,3 +1,13 @@
+2008-10-06  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Mono.TextEditor/ViMode.cs: Implement a simple vi-like editing mode.
+	* Mono.TextEditor/TextEditor.cs, Mono.TextEditor/SimpleEditMode.cs,
+	  Mono.TextEditor/EditMode.cs: Abstract out the editing into a mode
+	  object.
+	* Mono.TextEditor/DefaultEditActions.cs: Add soem new actions for
+	  jumping to zero/home.
+	* Mono.TextEditor.mdp, Makefile.am: Updated.
+
 2008-10-06  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor/TextEditorData.cs,

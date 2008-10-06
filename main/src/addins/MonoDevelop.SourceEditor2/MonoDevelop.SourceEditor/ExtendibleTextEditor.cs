@@ -62,7 +62,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		public ExtensibleTextEditor (SourceEditorView view, Mono.TextEditor.Document doc) : base (doc)
+		public ExtensibleTextEditor (SourceEditorView view, Mono.TextEditor.Document doc) : base (doc, null)
 		{
 			Initialize (view);
 		}
@@ -107,9 +107,24 @@ namespace MonoDevelop.SourceEditor
 					}
 				}
 			};
-
-			keyBindings [GetKeyCode (Gdk.Key.Tab)] = new TabAction (this);
-			keyBindings [GetKeyCode (Gdk.Key.BackSpace)] = new AdvancedBackspaceAction ();
+			
+			bool vi = false;
+			if (vi)
+			{
+				ViMode viMode = new ViMode ();
+				viMode.StatusChanged += delegate (object sender, EventArgs args) {
+					IdeApp.Workbench.StatusBar.ShowMessage (((ViMode)sender).Status);
+				};
+				
+				CurrentMode = viMode;
+			}
+			else
+			{
+				SimpleEditMode simpleMode = new SimpleEditMode ();
+				simpleMode.KeyBindings [EditMode.GetKeyCode (Gdk.Key.Tab)] = new TabAction (this);
+				simpleMode.KeyBindings [EditMode.GetKeyCode (Gdk.Key.BackSpace)] = new AdvancedBackspaceAction ();
+				CurrentMode = simpleMode;
+			}
 			
 			this.ButtonPressEvent += OnPopupMenu;
 
