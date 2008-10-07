@@ -208,7 +208,7 @@ namespace MonoDevelop.CSharpBinding
 			
 			List<string> namespaceList = new List<string> ();
 			namespaceList.Add ("");
-			if (unit != null && unit.Usings != null) {
+			if (unit != null) {
 				foreach (IUsing u in unit.Usings) {
 					if (u.Namespaces == null)
 						continue;
@@ -216,10 +216,10 @@ namespace MonoDevelop.CSharpBinding
 						namespaceList.Add (ns);
 					}
 				}
-			}
-			MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col = new MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector (this.editor, dom, unit, new DomLocation (editor.CursorLine - 1, editor.CursorColumn - 1));
-			foreach (object o in dom.GetNamespaceContents (namespaceList, true, true)) {
-				col.AddCompletionData (provider, o);
+				MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col = new MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector (this.editor, dom, unit, new DomLocation (editor.CursorLine - 1, editor.CursorColumn - 1));
+				foreach (object o in dom.GetNamespaceContents (namespaceList, true, true)) {
+					col.AddCompletionData (provider, o);
+				}
 			}
 		}
 		
