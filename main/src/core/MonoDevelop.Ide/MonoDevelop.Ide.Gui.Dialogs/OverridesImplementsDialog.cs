@@ -346,7 +346,7 @@ namespace MonoDevelop.Ide
 			string sig = null;
 			OutputFlags flags = default_conversion_flags & ~OutputFlags.IncludeReturnType;
 
-			sig = ambience.GetString ((IMethod) member, flags);
+			sig = ambience.GetString (member, flags);
 
 			if (sig == null)
 				throw new InvalidOperationException (String.Format ("Unsupported language member type: {0}", member.GetType ()));
