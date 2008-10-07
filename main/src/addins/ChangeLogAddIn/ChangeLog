@@ -1,3 +1,14 @@
+2008-10-07  Aaron Bockover  <abockover@novell.com>
+
+	* ChangeLogAddIn.cs:
+	* CommitDialogExtensionWidget.cs: Make the addin use the new
+	  ChangeLogWriter
+
+	* AddLogEntryDialog.cs: Make tabs 4 characters wide instead of the
+	  default 8; use the default monospace font as provided by
+	  PlatformService; set some other properties; make the widget at least
+	  80 characters wide for better preview/editing of ChangeLogs by hand
+
 2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* gtk-gui/generated.cs,

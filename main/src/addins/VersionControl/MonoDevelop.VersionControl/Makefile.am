@@ -14,6 +14,7 @@ FILES =  \
 	MonoDevelop.VersionControl.Views/StatusView.cs \
 	MonoDevelop.VersionControl/AddRemoveMoveCommand.cs \
 	MonoDevelop.VersionControl/BaseView.cs \
+	MonoDevelop.VersionControl/ChangeLogWriter.cs \
 	MonoDevelop.VersionControl/ChangeSet.cs \
 	MonoDevelop.VersionControl/CheckoutCommand.cs \
 	MonoDevelop.VersionControl/Commands.cs \

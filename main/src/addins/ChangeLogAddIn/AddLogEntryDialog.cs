@@ -44,11 +44,25 @@ namespace MonoDevelop.ChangeLogAddIn
 		public AddLogEntryDialog (Dictionary<string,ChangeLogEntry> entries)
 		{
 			Build ();
+			
+			Pango.FontDescription font = Pango.FontDescription.FromString (
+				MonoDevelop.Core.Gui.Services.PlatformService.DefaultMonospaceFont);
+			textview.ModifyFont (font);
+			textview.WrapMode = WrapMode.None;
+			textview.AcceptsTab = true;
+			Pango.TabArray tabs = new Pango.TabArray (1, true);
+			tabs.SetTab (0, Pango.TabAlign.Left, GetStringWidth (" ") * 4);
+			textview.Tabs = tabs;
+			textview.SizeRequested += delegate (object o, SizeRequestedArgs args) {
+				textview.WidthRequest = GetStringWidth (string.Empty.PadRight (80));
+			};
+			font.Dispose ();
+			
 			store = new ListStore (typeof(ChangeLogEntry), typeof(Gdk.Pixbuf), typeof(string));
 			fileList.Model = store;
 			
-			fileList.AppendColumn ("", new CellRendererPixbuf (), "pixbuf", 1);
-			fileList.AppendColumn ("", new CellRendererText (), "text", 2);
+			fileList.AppendColumn (string.Empty, new CellRendererPixbuf (), "pixbuf", 1);
+			fileList.AppendColumn (string.Empty, new CellRendererText (), "text", 2);
 			
 			foreach (ChangeLogEntry ce in entries.Values) {
 				Gdk.Pixbuf pic;
@@ -72,6 +86,16 @@ namespace MonoDevelop.ChangeLogAddIn
 			
 			if (store.GetIterFirst (out it))
 				fileList.Selection.SelectIter (it);
+		}
+		
+		private int GetStringWidth (string str)
+		{
+			int width, height;
+			Pango.Layout layout = new Pango.Layout (textview.PangoContext);
+			layout.SetText (str);
+			layout.GetPixelSize (out width, out height);
+			layout.Dispose ();
+			return width;
 		}
 		
 		public void OnSelectionChanged (object s, EventArgs a)

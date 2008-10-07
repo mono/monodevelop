@@ -79,6 +79,7 @@
     <File name="overlay_unlocked.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="MonoDevelop.VersionControl/LockCommand.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.VersionControl/UnlockCommand.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.VersionControl/ChangeLogWriter.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="False" refto="Diff" />

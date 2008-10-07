@@ -1,3 +1,13 @@
+2008-10-07  Aaron Bockover  <abockover@novell.com>
+
+	* MonoDevelop.VersionControl/ChangeSet.cs: Use ChangeLogWriter to
+	  generate messages instead of the old formatting
+
+	* MonoDevelop.VersionControl/ChangeLogWriter.cs: Writes a standard
+	  ChangeLog file with proper grouping, alignment, word wrapping, and
+	  spacing; it can produce a commit message without indentation or
+	  header as well
+
 2008-09-18  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs,

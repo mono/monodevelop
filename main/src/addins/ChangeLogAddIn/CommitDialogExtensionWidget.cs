@@ -98,10 +98,10 @@ namespace MonoDevelop.ChangeLogAddIn
 			if (!IntegrationEnabled)
 				Remove (box);
 
-			string name = PropertyService.Get ("ChangeLogAddIn.Name", "");
-			string email = PropertyService.Get ("ChangeLogAddIn.Email", "");
+			string name = PropertyService.Get ("ChangeLogAddIn.Name", string.Empty);
+			string email = PropertyService.Get ("ChangeLogAddIn.Email", string.Empty);
 			
-			if (name.Length == 0 || email.Length == 0) {
+			if (string.IsNullOrEmpty (name) || string.IsNullOrEmpty (email)) {
 				msgLabel.Markup = "<b><span foreground='red'>" + GettextCatalog.GetString ("ChangeLog entries can't be generated.") + "</span></b>";
 				pathLabel.Text = GettextCatalog.GetString ("The name or e-mail of the user has not been configured.");
 				logButton.Label = GettextCatalog.GetString ("Configure user data");
@@ -248,16 +248,9 @@ namespace MonoDevelop.ChangeLogAddIn
 			}
 			
 			foreach (ChangeLogEntry entry in entries.Values) {
-				string path = System.IO.Path.GetDirectoryName (entry.File);
-				string msg = cset.GeneratePathComment (path, entry.Items, 70);
-
-				string name = PropertyService.Get ("ChangeLogAddIn.Name", "");
-				string email = PropertyService.Get ("ChangeLogAddIn.Email", "");
-				string date = DateTime.Now.ToString("yyyy-MM-dd");
-				string text = date + "  " + name + " <" + email + "> " + Environment.NewLine + Environment.NewLine;
-				
-				msg = msg.Trim ('\n');
-				entry.Message = text + "\t" + msg.Replace ("\n", "\n\t") + "\n\n";
+				entry.Message = cset.GeneratePathComment (entry.File, entry.Items, true, 
+					PropertyService.Get ("ChangeLogAddIn.Name", "Full Name"),
+					PropertyService.Get ("ChangeLogAddIn.Email", "Email Address"));
 			}
 		}
 		

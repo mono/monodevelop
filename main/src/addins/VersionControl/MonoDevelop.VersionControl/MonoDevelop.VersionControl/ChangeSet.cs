@@ -25,80 +25,22 @@ namespace MonoDevelop.VersionControl
 		
 		public string GenerateGlobalComment (int maxColumns)
 		{
-			return GeneratePathComment (basePath, items, maxColumns);
+			return GeneratePathComment (basePath, items, false, null, null);
 		}
 		
-		public string GeneratePathComment (string path, IEnumerable<ChangeSetItem> its, int maxColumns)
+		public string GeneratePathComment (string path, IEnumerable<ChangeSetItem> items, 
+			bool writeHeader, string name, string email)
 		{
-			ArrayList comms = new ArrayList ();
-			foreach (ChangeSetItem it in its) {
-				if (!it.LocalPath.StartsWith (path))
-					continue;
-				bool found = false;
-				string relPath;
-				if (it.LocalPath == path)
-					relPath = ".";
-				else
-					relPath = it.LocalPath.Substring (path.Length + 1);
-				if (it.Comment.Length > 0) {
-					foreach (object[] com in comms) {
-						if (((string)com[0]) == it.Comment) {
-							com[1] = ((string)com[1]) + ", " + relPath;
-							found = true;
-							break;
-						}
-					}
-					if (!found)
-						comms.Add (new object[] { it.Comment, relPath });
-				}
-			}
-			StringBuilder message = new StringBuilder ();
-			foreach (object[] com in comms) {
-				string msg = (string) com[1] + ": " + (string) com[0];
-				if (message.Length > 0)
-					message.Append ('\n');
-				message.Append ("* " + FormatText (msg, 0, 2, maxColumns));
-			}
-			return message.ToString ();
-		}
-		
-		static string FormatText (string text, int initialLeftMargin, int leftMargin, int maxCols)
-		{
-			int n = 0;
-			int margin = initialLeftMargin;
+			ChangeLogWriter writer = new ChangeLogWriter (path);
+			writer.WriteHeader = writeHeader;
+			writer.FullName = name;
+			writer.EmailAddress = email;
 			
-			if (text == "")
-				return "";
-			
-			StringBuilder outs = new StringBuilder ();
-			while (n < text.Length)
-			{
-				int col = margin;
-				int lastWhite = -1;
-				int sn = n;
-				while ((col < maxCols || lastWhite==-1) && n < text.Length) {
-					if (char.IsWhiteSpace (text[n]))
-						lastWhite = n;
-					if (text[n] == '\n') {
-						lastWhite = n;
-						n++;
-						break;
-					}
-					col++;
-					n++;
-				}
-				
-				if (lastWhite == -1 || col < maxCols)
-					lastWhite = n;
-				else if (col >= maxCols)
-					n = lastWhite + 1;
-				
-				if (outs.Length > 0) outs.Append ('\n');
-				
-				outs.Append (new String (' ', margin) + text.Substring (sn, lastWhite - sn));
-				margin = leftMargin;
+			foreach (ChangeSetItem item in items) {
+				writer.AddFile (item.Comment, item.LocalPath);
 			}
-			return outs.ToString ();
+			
+			return writer.ToString ();
 		}
 		
 		public string GlobalComment {

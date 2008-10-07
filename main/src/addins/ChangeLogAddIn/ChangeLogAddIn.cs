@@ -114,7 +114,7 @@ namespace MonoDevelop.ChangeLogAddIn
 			string name = PropertyService.Get("ChangeLogAddIn.Name", "Full Name");
 			string email = PropertyService.Get("ChangeLogAddIn.Email", "Email Address");
 			string date = DateTime.Now.ToString("yyyy-MM-dd");
-			string text = date + "  " + name + " <" + email + ">" 
+			string text = date + "  " + name + "  <" + email + ">" 
 			    + Environment.NewLine + Environment.NewLine;
 
             // Read the first line and compare it with the header: if they are
