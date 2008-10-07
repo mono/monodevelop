@@ -304,17 +304,26 @@ namespace MonoDevelop.Projects
 			ProjectConfiguration config = (ProjectConfiguration) GetActiveConfiguration (solutionConfiguration);
 			
 			foreach (FileCopySet.Item item in GetSupportFileList (solutionConfiguration)) {
-				string dest = Path.Combine (config.OutputDirectory, item.Target);
+				string dest = Path.GetFullPath (Path.Combine (config.OutputDirectory, item.Target));
+				string src = Path.GetFullPath (item.Src);
 				
 				try {
+					if (dest == src)
+						continue;
+					
 					if (item.CopyOnlyIfNewer && File.Exists (dest) &&
-					    (File.GetLastWriteTimeUtc (dest) >=  File.GetLastWriteTimeUtc (item.Src)))
+					    (File.GetLastWriteTimeUtc (dest) >=  File.GetLastWriteTimeUtc (src)))
 						continue;
 					
 					if (!Directory.Exists (Path.GetDirectoryName (dest)))
 						FileService.CreateDirectory (dest);
 					
-					FileService.CopyFile (item.Src, dest);
+					if (File.Exists (src))
+						FileService.CopyFile (src, dest);
+					else
+						monitor.ReportError (
+							GettextCatalog.GetString ("Could not find support file '{0}'.", src), null);
+					
 				} catch (IOException ex) {
 					monitor.ReportError (
 						GettextCatalog.GetString ("Error copying support file '{0}'.", dest), ex);
