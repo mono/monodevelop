@@ -522,8 +522,9 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			ce.LastGetTime = currentGetTime++;
 			if (ce.Class != null)
 				return ce.Class;
-			else
-				return new DomTypeProxy (this, ce);
+			DomTypeProxy result = new DomTypeProxy (this, ce);
+			result.SourceProjectDom = this.SourceProjectDom;
+			return result;
 		}
 		
 		public IEnumerable GetSubclasses (string fullName, string[] namespaces)
