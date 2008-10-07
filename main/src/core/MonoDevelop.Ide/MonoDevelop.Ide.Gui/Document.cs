@@ -332,7 +332,6 @@ namespace MonoDevelop.Ide.Gui
 		{
 			closed = true;
 			ClearTasks ();
-			MonoDevelop.Projects.Dom.Parser.ProjectDomService.ParsedDocumentUpdated -= CompilationUnitUpdated;
 			
 			// Parse the file when the document is closed. In this way if the document
 			// is closed without saving the changes, the saved compilation unit
@@ -388,22 +387,22 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		void CompilationUnitUpdated (object sender, ParsedDocumentEventArgs args)
-		{
-			if (this.FileName == args.FileName) {
-//				if (!args.Unit.HasErrors)
-				parsedDocument = args.ParsedDocument;
-/* TODO: Implement better task update algorithm.
-
-				ClearTasks ();
-				lock (lockObj) {
-					foreach (Error error in args.Unit.Errors) {
-						tasks.Add (new Task (this.FileName, error.Message, error.Column, error.Line, error.ErrorType == ErrorType.Error ? TaskType.Error : TaskType.Warning, this.Project));
-					}
-					IdeApp.Services.TaskService.AddRange (tasks);
-				}*/
-			}
-		}
+//		void CompilationUnitUpdated (object sender, ParsedDocumentEventArgs args)
+//		{
+//			if (this.FileName == args.FileName) {
+////				if (!args.Unit.HasErrors)
+//				parsedDocument = args.ParsedDocument;
+///* TODO: Implement better task update algorithm.
+//
+//				ClearTasks ();
+//				lock (lockObj) {
+//					foreach (Error error in args.Unit.Errors) {
+//						tasks.Add (new Task (this.FileName, error.Message, error.Column, error.Line, error.ErrorType == ErrorType.Error ? TaskType.Error : TaskType.Warning, this.Project));
+//					}
+//					IdeApp.Services.TaskService.AddRange (tasks);
+//				}*/
+//			}
+//		}
 #endregion
 		void OnActiveViewContentChanged (object s, EventArgs args)
 		{
@@ -429,7 +428,6 @@ namespace MonoDevelop.Ide.Gui
 				return;
 			editor.TextChanged += OnDocumentChanged;
 			this.parsedDocument = MonoDevelop.Projects.Dom.Parser.ProjectDomService.Parse (Project, FileName, MonoDevelop.Core.Gui.Services.PlatformService.GetMimeTypeForUri (FileName), TextEditor.Text);
-			MonoDevelop.Projects.Dom.Parser.ProjectDomService.ParsedDocumentUpdated += CompilationUnitUpdated;
 
 			// If the new document is a text editor, attach the extensions
 			
@@ -476,7 +474,7 @@ namespace MonoDevelop.Ide.Gui
 				
 				System.Threading.ThreadPool.QueueUserWorkItem (delegate {
 					// Don't access Document properties from the thread
-					ProjectDomService.Parse (curentParseProject, currentParseFile, IdeApp.Services.PlatformService.GetMimeTypeForUri (currentParseFile), currentParseText);
+					this.parsedDocument = ProjectDomService.Parse (curentParseProject, currentParseFile, IdeApp.Services.PlatformService.GetMimeTypeForUri (currentParseFile), currentParseText);
 				});
 				return false;
 			});

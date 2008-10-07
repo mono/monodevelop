@@ -1,3 +1,8 @@
+2008-10-07  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Gui/Document.cs: Document doesn't hook up to the
+	  parser document update anymore.
+
 2008-10-02  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Content/IViewHistory.cs,
