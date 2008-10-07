@@ -103,7 +103,7 @@ namespace MonoDevelop.VersionControl
 			}
 			
 			string lead_indent = MessageStyle == ChangeLogMessageStyle.ChangeLogEntry ? "\t" : string.Empty;
-			string wrap_indent = string.Format ("{0}  ", lead_indent);
+			string wrap_indent = MessageStyle == ChangeLogMessageStyle.ChangeLogEntry ? "\t" : "  ";
 			int m_i = 0;
 			
 			foreach (KeyValuePair<string, List<string>> message in messages) {

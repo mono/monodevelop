@@ -1,5 +1,11 @@
 2008-10-07  Aaron Bockover  <abockover@novell.com>
 
+	* MonoDevelop.VersionControl/ChangeLogWriter.cs: Remove the space
+	alignment from the tab indent on the ChangeLog message, preserve it
+	for the commit message
+
+2008-10-07  Aaron Bockover  <abockover@novell.com>
+
 	* MonoDevelop.VersionControl/ChangeSet.cs: Updated to use
 	  ChangeLogMessageStyle instead of the WriteHeader bool
 
