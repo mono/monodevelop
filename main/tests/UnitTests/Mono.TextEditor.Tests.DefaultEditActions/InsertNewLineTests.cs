@@ -39,7 +39,7 @@ namespace Mono.TextEditor.Tests
 			TextEditorData data = new Mono.TextEditor.TextEditorData  ();
 			data.Document.Text = "Hello World!";
 			data.Caret.Location = new DocumentLocation (0, "Hello".Length);
-			new InsertNewLine().Run (data);
+			MiscActions.InsertNewLine (data);
 			Assert.AreEqual (2, data.Document.LineCount);
 			Assert.AreEqual (1, data.Caret.Line);
 			Assert.AreEqual (0, data.Caret.Column);

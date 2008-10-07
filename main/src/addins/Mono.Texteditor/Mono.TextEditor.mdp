@@ -20,7 +20,6 @@
     <File name="Mono.TextEditor/LineSegment.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.TextEditor/LineSplitter.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.TextEditor/ReplaceEventArgs.cs" subtype="Code" buildaction="Compile" />
-    <File name="Mono.TextEditor/EditAction.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.TextEditor/DefaultEditActions.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.TextEditor/DocumentLocation.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.TextEditor/Document.cs" subtype="Code" buildaction="Compile" />
@@ -91,6 +90,11 @@
     <File name="Mono.TextEditor/EditMode.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.TextEditor/SimpleEditMode.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.TextEditor/ViMode.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.TextEditor/CaretMoveActions.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.TextEditor/SelectionActions.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.TextEditor/DeleteActions.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.TextEditor/ClipboardActions.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.TextEditor/BookmarkActions.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

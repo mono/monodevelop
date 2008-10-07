@@ -47,7 +47,7 @@ namespace Mono.TextEditor.Tests
 \t123456789";
 			InsertTabTests.SetSelection (data, false);
 			
-			new RemoveTab ().Run (data);
+			MiscActions.RemoveTab (data);
 			ISegment currentSelection = InsertTabTests.GetSelection (data, false);
 			
 			Assert.AreEqual (currentSelection.Offset, data.SelectionRange.Offset);
@@ -78,7 +78,7 @@ namespace Mono.TextEditor.Tests
 \t123456789";
 			InsertTabTests.SetSelection (data, true);
 			
-			new RemoveTab ().Run (data);
+			MiscActions.RemoveTab (data);
 			ISegment currentSelection = InsertTabTests.GetSelection (data, true);
 			
 			Assert.AreEqual (currentSelection.Offset, data.SelectionRange.Offset);
@@ -109,7 +109,7 @@ namespace Mono.TextEditor.Tests
 \t123456789";
 			InsertTabTests.SetSelection (data, false);
 			
-			new RemoveTab ().Run (data);
+			MiscActions.RemoveTab (data);
 			ISegment currentSelection = InsertTabTests.GetSelection (data, false);
 			
 			Assert.AreEqual (currentSelection.Offset, data.SelectionRange.Offset);
@@ -141,7 +141,7 @@ namespace Mono.TextEditor.Tests
 \t123456789";
 			InsertTabTests.SetSelection (data, true);
 			
-			new RemoveTab ().Run (data);
+			MiscActions.RemoveTab (data);
 			ISegment currentSelection = InsertTabTests.GetSelection (data, true);
 			
 			Assert.AreEqual (currentSelection.Offset, data.SelectionRange.Offset);

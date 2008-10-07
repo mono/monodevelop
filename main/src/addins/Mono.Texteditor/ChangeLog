@@ -1,3 +1,19 @@
+2008-10-07  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Mono.TextEditor.mdp, Makefile.am: Updated.
+	* Mono.TextEditor/BookmarkActions.cs,
+	  Mono.TextEditor/CaretMoveActions.cs,
+	  Mono.TextEditor/ClipboardActions.cs,
+	  Mono.TextEditor/DefaultEditActions.cs,
+	  Mono.TextEditor/DeleteActions.cs, Mono.TextEditor/EditAction.cs,
+	  Mono.TextEditor/EditMode.cs, Mono.TextEditor/SelectionActions.cs,
+	  Mono.TextEditor/SimpleEditMode.cs, Mono.TextEditor/TextEditor.cs,
+	  Mono.TextEditor/TextViewMargin.cs, Mono.TextEditor/ViMode.cs:
+	  Switch to a delegate-based API so we aren't always newing up
+	  objects in order to perform actions. Allows actions to be invoked
+	  more easily, and tidies up API. Group actions logically in static
+	  classes.
+
 2008-10-07  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor/TextEditorData.cs: fixed 'Bug 430805 - Cannot

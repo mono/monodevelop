@@ -40,7 +40,7 @@ namespace Mono.TextEditor.Tests
 			TextEditorData data = new Mono.TextEditor.TextEditorData  ();
 			data.Document.Text = "1\n2\n3";
 			data.Caret.Location = new DocumentLocation (1, 0);
-			new CaretMoveDown ().Run (data);
+			CaretMoveActions.Down (data);
 			Assert.AreEqual (2, data.Caret.Line);
 			Assert.AreEqual (0, data.Caret.Column);
 		}
@@ -52,10 +52,10 @@ namespace Mono.TextEditor.Tests
 			data.Document.Text = "test";
 			
 			data.Caret.Location = new DocumentLocation (0, 1);
-			new CaretMoveLeft ().Run (data);
+			CaretMoveActions.Left (data);
 			Assert.AreEqual (0, data.Caret.Line);
 			Assert.AreEqual (0, data.Caret.Column);
-			new CaretMoveLeft ().Run (data);
+			CaretMoveActions.Left (data);
 			Assert.AreEqual (0, data.Caret.Line);
 			Assert.AreEqual (0, data.Caret.Column);
 		}
@@ -67,7 +67,7 @@ namespace Mono.TextEditor.Tests
 			data.Document.Text = "test";
 			
 			data.Caret.Location = new DocumentLocation (0, 3);
-			new CaretMoveRight ().Run (data);
+			CaretMoveActions.Right (data);
 			Assert.AreEqual (4, data.Caret.Column);
 		}
 		

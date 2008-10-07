@@ -28,7 +28,7 @@ using Mono.TextEditor;
 
 namespace MonoDevelop.SourceEditor
 {
-	public class TabAction : InsertTab
+	public class TabAction
 	{
 		ExtensibleTextEditor editor;
 		
@@ -37,7 +37,7 @@ namespace MonoDevelop.SourceEditor
 			this.editor = editor;
 		}
 		
-		public override void Run (TextEditorData data)
+		public void Action (TextEditorData data)
 		{/*
 			MonoDevelop.Projects.Dom.Parser.ProjectDom dom = MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetProjectDom (MonoDevelop.Ide.Gui.IdeApp.Workbench.ActiveDocument.Project);
 			System.DateTime now = DateTime.Now;
@@ -55,16 +55,22 @@ namespace MonoDevelop.SourceEditor
 			}*/
 			
 			if (!editor.DoInsertTemplate ())
-				base.Run (data);
+				MiscActions.InsertTab (data);
 		}
 	}
 	
-	public class AdvancedBackspaceAction : BackspaceAction
+	public static class EditActions
 	{
+		
+		public static void AdvancedBackspace (TextEditorData data)
+		{
+			DeleteActions.Backspace (data, RemoveCharBeforCaret);
+		}
+		
 		const string open    = "'\"([{<";
 		const string closing = "'\")]}>";
 		
-		int GetNextNonWsCharOffset (TextEditorData data, int offset)
+		static int GetNextNonWsCharOffset (TextEditorData data, int offset)
 		{
 			int result = offset;
 			if (result >= data.Document.Length)
@@ -77,7 +83,7 @@ namespace MonoDevelop.SourceEditor
 			return result;
 		}
 		
-		protected override void RemoveCharBeforCaret (TextEditorData data)
+		static void RemoveCharBeforCaret (TextEditorData data)
 		{
 			if (SourceEditorOptions.Options.AutoInsertMatchingBracket) {
 				char ch = data.Document.GetCharAt (data.Caret.Offset - 1);
@@ -92,7 +98,7 @@ namespace MonoDevelop.SourceEditor
 					}
 				}
 			}
-			base.RemoveCharBeforCaret (data);
+			DeleteActions.RemoveCharBeforeCaret (data);
 		}
 	}
 }

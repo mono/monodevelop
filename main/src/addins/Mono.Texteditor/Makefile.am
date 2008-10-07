@@ -28,15 +28,18 @@ FILES =  \
 	Mono.TextEditor.Highlighting/SyntaxModeService.cs \
 	Mono.TextEditor.Highlighting/WorkerThread.cs \
 	Mono.TextEditor.Highlighting/XmlReadHelper.cs \
+	Mono.TextEditor/BookmarkActions.cs \
 	Mono.TextEditor/BookmarkMarker.cs \
 	Mono.TextEditor/BufferedTextReader.cs \
 	Mono.TextEditor/Caret.cs \
+	Mono.TextEditor/CaretMoveActions.cs \
+	Mono.TextEditor/ClipboardActions.cs \
 	Mono.TextEditor/CodeSegmentPreviewWindow.cs \
 	Mono.TextEditor/DefaultEditActions.cs \
+	Mono.TextEditor/DeleteActions.cs \
 	Mono.TextEditor/Document.cs \
 	Mono.TextEditor/DocumentLocation.cs \
 	Mono.TextEditor/DocumentUpdateRequest.cs \
-	Mono.TextEditor/EditAction.cs \
 	Mono.TextEditor/EditMode.cs \
 	Mono.TextEditor/EmacsWordFindStrategy.cs \
 	Mono.TextEditor/FoldingType.cs \
@@ -59,6 +62,7 @@ FILES =  \
 	Mono.TextEditor/ReplaceEventArgs.cs \
 	Mono.TextEditor/SearchResult.cs \
 	Mono.TextEditor/Segment.cs \
+	Mono.TextEditor/SelectionActions.cs \
 	Mono.TextEditor/SharpDevelopWordFindStrategy.cs \
 	Mono.TextEditor/SimpleEditMode.cs \
 	Mono.TextEditor/TextEditor.cs \

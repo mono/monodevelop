@@ -89,11 +89,11 @@ namespace Mono.TextEditor
 			Document.OptimizeTypedUndo ();
 		}
 		
-		protected void RunAction (EditAction action)
+		protected void RunAction (Action<TextEditorData> action)
 		{
 			try {
 				Document.BeginAtomicUndo ();
-				action.Run (this.textEditorData);
+				action (this.textEditorData);
 				Document.EndAtomicUndo ();
 			} catch (Exception e) {
 				Console.WriteLine ("Error while executing action " + action.ToString () + " :" + e);

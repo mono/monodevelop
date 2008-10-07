@@ -38,9 +38,9 @@ namespace Mono.TextEditor
 		State state;
 		string status;
 		
-		Dictionary<int, EditAction> navMaps = new Dictionary<int, EditAction> ();
-		Dictionary<int, EditAction> insertModeMaps = new Dictionary<int, EditAction> ();
-		Dictionary<int, EditAction> commandMaps = new Dictionary<int, EditAction> ();
+		Dictionary<int, Action<TextEditorData>> navMaps = new Dictionary<int, Action<TextEditorData>> ();
+		Dictionary<int, Action<TextEditorData>> insertModeMaps = new Dictionary<int, Action<TextEditorData>> ();
+		Dictionary<int, Action<TextEditorData>> commandMaps = new Dictionary<int, Action<TextEditorData>> ();
 		
 		public ViMode ()
 		{
@@ -51,93 +51,93 @@ namespace Mono.TextEditor
 		
 		void InitNavMaps ()
 		{
-			EditAction action;
+			Action<TextEditorData> action;
 			
 			// ==== Left ====
 			
-			action = new CaretMoveLeft ();
+			action = CaretMoveActions.Left;
 			navMaps.Add (GetKeyCode (Gdk.Key.KP_Left), action);
 			navMaps.Add (GetKeyCode (Gdk.Key.Left), action);
 			navMaps.Add (GetKeyCode (Gdk.Key.h), action);
 			
-			action = new CaretMovePrevWord ();
+			action = CaretMoveActions.PreviousWord;
 			navMaps.Add (GetKeyCode (Gdk.Key.KP_Left, Gdk.ModifierType.ControlMask), action);
 			navMaps.Add (GetKeyCode (Gdk.Key.Left, Gdk.ModifierType.ControlMask), action);
 			navMaps.Add (GetKeyCode (Gdk.Key.b), action);
 			
 			// ==== Right ====
 			
-			action = new CaretMoveRight ();
+			action = CaretMoveActions.Right;
 			navMaps.Add (GetKeyCode (Gdk.Key.KP_Right), action);
 			navMaps.Add (GetKeyCode (Gdk.Key.Right), action);
 			navMaps.Add (GetKeyCode (Gdk.Key.l), action);
 			
-			action = new CaretMoveNextWord ();
+			action = CaretMoveActions.NextWord;
 			navMaps.Add (GetKeyCode (Gdk.Key.KP_Right, Gdk.ModifierType.ControlMask), action);
 			navMaps.Add (GetKeyCode (Gdk.Key.Right, Gdk.ModifierType.ControlMask), action);
 			navMaps.Add (GetKeyCode (Gdk.Key.w), action);
 			
 			// ==== Up ====
 			
-			action = new CaretMoveUp ();
+			action = CaretMoveActions.Up;
 			navMaps.Add (GetKeyCode (Gdk.Key.KP_Up), action);
 			navMaps.Add (GetKeyCode (Gdk.Key.Up), action);
 			navMaps.Add (GetKeyCode (Gdk.Key.k), action);
 			
-			action = new ScrollUpAction ();
+			action = ScrollActions.Up;
 			navMaps.Add (GetKeyCode (Gdk.Key.KP_Up, Gdk.ModifierType.ControlMask), action);
 			navMaps.Add (GetKeyCode (Gdk.Key.Up, Gdk.ModifierType.ControlMask), action);
 
 			// combination usually bound at IDE level
-			action = new PageUpAction ();
+			action = CaretMoveActions.PageUp;
 			navMaps.Add (GetKeyCode (Gdk.Key.u, Gdk.ModifierType.ControlMask), action);
 			
 			// ==== Down ====
 			
-			action = new CaretMoveDown ();
+			action = CaretMoveActions.Down;
 			navMaps.Add (GetKeyCode (Gdk.Key.KP_Down), action);
 			navMaps.Add (GetKeyCode (Gdk.Key.Down), action);
 			navMaps.Add (GetKeyCode (Gdk.Key.j), action);
 			
-			action = new ScrollDownAction ();
+			action = ScrollActions.Down;
 			navMaps.Add (GetKeyCode (Gdk.Key.KP_Down, Gdk.ModifierType.ControlMask), action);
 			navMaps.Add (GetKeyCode (Gdk.Key.Down, Gdk.ModifierType.ControlMask), action);
 
 			// combination usually bound at IDE level
-			action = new PageDownAction ();
+			action = CaretMoveActions.PageDown;
 			navMaps.Add (GetKeyCode (Gdk.Key.d, Gdk.ModifierType.ControlMask), action);
 
 			// ==== Editing ====
 
-			action = new GotoMatchingBracket ();
+			action = MiscActions.GotoMatchingBracket;
 			navMaps.Add (GetKeyCode (Gdk.Key.percent, Gdk.ModifierType.ShiftMask), action);
 			
 			// === Home ===
 			
 			//not strictly vi, but more useful IMO
-			action = new CaretMoveHome ();
+			action = CaretMoveActions.LineHome;
 			navMaps.Add (GetKeyCode (Gdk.Key.KP_Home), action);
 			navMaps.Add (GetKeyCode (Gdk.Key.Home), action);
 			
-			action = new CaretMoveToDocumentStart ();
+			action = CaretMoveActions.ToDocumentStart;
 			navMaps.Add (GetKeyCode (Gdk.Key.KP_Home, Gdk.ModifierType.ControlMask), action);
 			navMaps.Add (GetKeyCode (Gdk.Key.Home, Gdk.ModifierType.ControlMask), action);
 			
-			action = new CaretMoveLineStart ();
+			action = CaretMoveActions.LineStart;
 			navMaps.Add (GetKeyCode (Gdk.Key.Key_0), action);
 			
-			action = new CaretMoveFirstNonWhitespace ();
+			action = CaretMoveActions.LineFirstNonWhitespace;
 			navMaps.Add (GetKeyCode (Gdk.Key.asciicircum, Gdk.ModifierType.ShiftMask), action);
 			navMaps.Add (GetKeyCode (Gdk.Key.underscore, Gdk.ModifierType.ShiftMask), action);
 			
 			// ==== End ====
 			
-			action = new CaretMoveEnd ();
+			action = CaretMoveActions.LineEnd;
 			navMaps.Add (GetKeyCode (Gdk.Key.KP_End), action);
 			navMaps.Add (GetKeyCode (Gdk.Key.End), action);
 			navMaps.Add (GetKeyCode (Gdk.Key.dollar, Gdk.ModifierType.ShiftMask), action);
 			
-			action = new CaretMoveToDocumentEnd ();
+			action = CaretMoveActions.ToDocumentEnd;
 			navMaps.Add (GetKeyCode (Gdk.Key.KP_End, Gdk.ModifierType.ControlMask), action);
 			navMaps.Add (GetKeyCode (Gdk.Key.End, Gdk.ModifierType.ControlMask), action);
 			navMaps.Add (GetKeyCode (Gdk.Key.G, Gdk.ModifierType.ShiftMask), action);
@@ -145,37 +145,37 @@ namespace Mono.TextEditor
 		
 		void InitInsertMaps ()
 		{
-			EditAction action;
+			Action<TextEditorData> action;
 			
 			// ==== Maps for insert mode ====
 			
-			insertModeMaps.Add (GetKeyCode (Gdk.Key.Tab), new InsertTab ());
-			insertModeMaps.Add (GetKeyCode (Gdk.Key.ISO_Left_Tab, Gdk.ModifierType.ShiftMask), new RemoveTab ());
+			insertModeMaps.Add (GetKeyCode (Gdk.Key.Tab), MiscActions.InsertTab);
+			insertModeMaps.Add (GetKeyCode (Gdk.Key.ISO_Left_Tab, Gdk.ModifierType.ShiftMask), MiscActions.RemoveTab);
 			
-			action = new InsertNewLine ();
+			action = MiscActions.InsertNewLine;
 			insertModeMaps.Add (GetKeyCode (Gdk.Key.Return), action);
 			insertModeMaps.Add (GetKeyCode (Gdk.Key.KP_Enter), action);
 			
-			action = new BackspaceAction ();
+			action = DeleteActions.Backspace;
 			insertModeMaps.Add (GetKeyCode (Gdk.Key.BackSpace), action);
 			insertModeMaps.Add (GetKeyCode (Gdk.Key.BackSpace, Gdk.ModifierType.ShiftMask), action);
 			
-			insertModeMaps.Add (GetKeyCode (Gdk.Key.BackSpace, Gdk.ModifierType.ControlMask), new DeletePrevWord ());
+			insertModeMaps.Add (GetKeyCode (Gdk.Key.BackSpace, Gdk.ModifierType.ControlMask), DeleteActions.PreviousWord);
 			
-			action = new DeleteAction ();
+			action = DeleteActions.Delete;
 			insertModeMaps.Add (GetKeyCode (Gdk.Key.KP_Delete), action);
 			insertModeMaps.Add (GetKeyCode (Gdk.Key.Delete), action);
 			
-			action = new DeleteNextWord ();
+			action = DeleteActions.NextWord;
 			insertModeMaps.Add (GetKeyCode (Gdk.Key.KP_Delete, Gdk.ModifierType.ControlMask), action);
 			insertModeMaps.Add (GetKeyCode (Gdk.Key.Delete, Gdk.ModifierType.ControlMask), action);
 		}
 		
 		void InitCommandMaps ()
 		{
-			EditAction action;
+			Action<TextEditorData> action;
 			
-			action = new UndoAction ();
+			action = MiscActions.Undo;
 			commandMaps.Add (GetKeyCode (Gdk.Key.u), action);
 		}
 		
@@ -213,7 +213,7 @@ namespace Mono.TextEditor
 			}
 			
 			int keyCode;
-			EditAction action;
+			Action<TextEditorData> action;
 			
 			switch (state) {
 			case State.Normal:
@@ -264,9 +264,7 @@ namespace Mono.TextEditor
 			case State.Visual:
 				keyCode = GetKeyCode (key, modifier);
 				if (navMaps.TryGetValue (keyCode, out action)) {
-					SelectionMoveLeft.StartSelection (Data);
-					RunAction (action);
-					SelectionMoveLeft.EndSelection (Data);
+					SelectionActions.Select (Data, action);
 				}
 				return;
 			}

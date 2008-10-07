@@ -69,7 +69,7 @@ namespace Mono.TextEditor.Tests
 123456789";
 			SetSelection (data, false);
 			
-			new InsertTab ().Run (data);
+			MiscActions.InsertTab (data);
 			ISegment currentSelection = GetSelection (data, false);
 			
 			Assert.AreEqual (currentSelection.Offset, data.SelectionRange.Offset);
@@ -97,7 +97,7 @@ namespace Mono.TextEditor.Tests
 123456789";
 			SetSelection (data, true);
 			
-			new InsertTab ().Run (data);
+			MiscActions.InsertTab (data);
 			ISegment currentSelection = GetSelection (data, true);
 			
 			Assert.AreEqual (currentSelection.Offset, data.SelectionRange.Offset);
@@ -125,7 +125,7 @@ namespace Mono.TextEditor.Tests
 123456789";
 			SetSelection (data, false);
 			
-			new InsertTab ().Run (data);
+			MiscActions.InsertTab (data);
 			ISegment currentSelection = GetSelection (data, false);
 			
 			Assert.AreEqual (currentSelection.Offset, data.SelectionRange.Offset);
@@ -152,7 +152,7 @@ namespace Mono.TextEditor.Tests
 123456789";
 			SetSelection (data, false);
 			
-			new InsertTab ().Run (data);
+			MiscActions.InsertTab (data);
 			ISegment currentSelection = GetSelection (data, false);
 			
 			Assert.AreEqual (currentSelection.Offset, data.SelectionRange.Offset);
@@ -179,7 +179,7 @@ namespace Mono.TextEditor.Tests
 123456789";
 			SetSelection (data, true);
 			
-			new InsertTab ().Run (data);
+			MiscActions.InsertTab (data);
 			ISegment currentSelection = GetSelection (data, true);
 			
 			Assert.AreEqual (currentSelection.Offset, data.SelectionRange.Offset);
@@ -206,7 +206,7 @@ namespace Mono.TextEditor.Tests
 123456789";
 			SetSelection (data, false);
 			
-			new InsertTab ().Run (data);
+			MiscActions.InsertTab (data);
 			ISegment currentSelection = GetSelection (data, false);
 			
 			Assert.AreEqual (currentSelection.EndOffset, data.SelectionRange.EndOffset);

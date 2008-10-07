@@ -683,16 +683,16 @@ namespace MonoDevelop.SourceEditor
 		
 		public void PrevBookmark ()
 		{
-			TextEditor.RunAction (new GotoPrevBookmark ());
+			TextEditor.RunAction (BookmarkActions.GotoPrevious);
 		}
 		
 		public void NextBookmark ()
 		{
-			TextEditor.RunAction (new GotoNextBookmark ());
+			TextEditor.RunAction (BookmarkActions.GotoNext);
 		}
 		public void ClearBookmarks ()
 		{
-			TextEditor.RunAction (new ClearAllBookmarks ());
+			TextEditor.RunAction (BookmarkActions.ClearAll);
 		}
 		#endregion
 		
@@ -725,17 +725,17 @@ namespace MonoDevelop.SourceEditor
 		
 		public void Cut ()
 		{
-			TextEditor.RunAction (new CutAction ());
+			TextEditor.RunAction (ClipboardActions.Cut);
 		}
 		
 		public void Copy ()
 		{
-			TextEditor.RunAction (new CopyAction ());
+			TextEditor.RunAction (ClipboardActions.Copy);
 		}
 		
 		public void Paste ()
 		{
-			TextEditor.RunAction (new PasteAction ());
+			TextEditor.RunAction (ClipboardActions.Paste);
 		}
 		
 		public void Delete ()
@@ -746,7 +746,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public void SelectAll ()
 		{
-			TextEditor.RunAction (new SelectionSelectAll ());
+			TextEditor.RunAction (SelectionActions.SelectAll);
 		}
 		#endregion
 		
@@ -1062,12 +1062,12 @@ namespace MonoDevelop.SourceEditor
 		
 		public void IndentSelection ()
 		{
-			InsertTab.IndentSelection (TextEditor.GetTextEditorData ());
+			MiscActions.IndentSelection (TextEditor.GetTextEditorData ());
 		}
 		
 		public void UnIndentSelection ()
 		{
-			RemoveTab.RemoveIndentSelection (TextEditor.GetTextEditorData ());
+			MiscActions.RemoveIndentSelection (TextEditor.GetTextEditorData ());
 		}
 		#endregion
 		
@@ -1340,7 +1340,7 @@ namespace MonoDevelop.SourceEditor
 		
 		static SourceEditorView ()
 		{
-			CopyAction.Copy += delegate (string text) {
+			ClipboardActions.CopyOperation.Copy += delegate (string text) {
 				if (String.IsNullOrEmpty (text))
 					return;
 				foreach (TextToolboxNode node in clipboardRing) {
@@ -1453,7 +1453,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public Gtk.TargetEntry[] DragTargets { 
 			get {
-				return (Gtk.TargetEntry[])CopyAction.TargetList;
+				return (Gtk.TargetEntry[])ClipboardActions.CopyOperation.TargetList;
 			}
 		}
 				

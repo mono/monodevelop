@@ -260,7 +260,7 @@ namespace Mono.TextEditor
 			
 			
 			Gtk.TargetList list = new Gtk.TargetList ();
-			list.AddTextTargets (CopyAction.TextType);
+			list.AddTextTargets (ClipboardActions.CopyOperation.TextType);
 			Gtk.Drag.DestSet (this, DestDefaults.All, (TargetEntry[])list, DragAction.Move | DragAction.Copy);
 			
 			imContext = new IMMulticontext ();
@@ -283,9 +283,9 @@ namespace Mono.TextEditor
 		void TextEditorDataSelectionChanged (object sender, EventArgs args)
 		{
 			if (IsSomethingSelected && SelectionRange.Offset >= 0 && SelectionRange.EndOffset < Document.Length) {
-				new CopyAction ().CopyToPrimary (this.textEditorData);
+				ClipboardActions.CopyToPrimary (this.textEditorData);
 			} else {
-				new CopyAction ().ClearPrimary ();
+				ClipboardActions.ClearPrimary ();
 			}
 				
 			// Handle redraw
@@ -529,10 +529,10 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public void RunAction (EditAction action)
+		public void RunAction (Action<TextEditorData> action)
 		{
 			try {
-				action.Run (this.textEditorData);
+				action (this.textEditorData);
 			} catch (Exception e) {
 				Console.WriteLine ("Error while executing " + action + " :" + e);
 			}
@@ -652,7 +652,7 @@ namespace Mono.TextEditor
 		}
 		
 		bool dragOver = false;
-		CopyAction dragContents = null;
+		ClipboardActions.CopyOperation dragContents = null;
 		DocumentLocation defaultCaretPos, dragCaretPos;
 		ISegment selection = null;
 		DragContext dragContext;
@@ -760,9 +760,10 @@ namespace Mono.TextEditor
 			if (oldMargin != margin && oldMargin != null)
 				oldMargin.MouseLeft ();
 			if (textViewMargin.inDrag && margin == this.textViewMargin && Gtk.Drag.CheckThreshold (this, pressPositionX, pressPositionY, (int)e.X, (int)e.Y)) {
-				dragContents = new CopyAction ();
+				dragContents = new ClipboardActions.CopyOperation ();
 				dragContents.CopyData (textEditorData);
-				DragContext context = Gtk.Drag.Begin (this, CopyAction.TargetList, DragAction.Move | DragAction.Copy, 1, e);
+				DragContext context = Gtk.Drag.Begin (this, ClipboardActions.CopyOperation.TargetList,
+				                                      DragAction.Move | DragAction.Copy, 1, e);
 				CodeSegmentPreviewWindow window = new CodeSegmentPreviewWindow (this, textEditorData.SelectionRange, 300, 300);
 				Gtk.Drag.SetIconWidget (context, window, 0, 0);
 				selection = SelectionRange;
@@ -1122,9 +1123,9 @@ namespace Mono.TextEditor
 			this.textEditorData.DeleteSelectedText ();
 		}
 		
-		public void RunEditAction (EditAction action)
+		public void RunEditAction (Action<TextEditorData> action)
 		{
-			action.Run (this.textEditorData);
+			action (this.textEditorData);
 		}
 		public void ExtendSelectionTo (DocumentLocation location)
 		{

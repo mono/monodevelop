@@ -47,7 +47,7 @@ namespace Mono.TextEditor.Tests
 123456789";
 			
 			Assert.IsFalse (data.IsSomethingSelected);
-			new SelectionSelectAll ().Run (data);
+			SelectionActions.SelectAll (data);
 			Assert.IsTrue (data.IsSomethingSelected);
 			
 			Assert.AreEqual (data.SelectionRange.Offset, 0);
@@ -65,7 +65,7 @@ namespace Mono.TextEditor.Tests
 			TextEditorData data = new Mono.TextEditor.TextEditorData  ();
 			data.Document.Text = "Test";
 			Assert.IsFalse (data.IsSomethingSelected);
-			new SelectionSelectAll ().Run (data);
+			SelectionActions.SelectAll (data);
 			Assert.IsTrue (data.IsSomethingSelected);
 			data.Caret.Offset = 0;
 			Assert.IsFalse (data.IsSomethingSelected);

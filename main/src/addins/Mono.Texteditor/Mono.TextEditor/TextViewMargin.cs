@@ -626,7 +626,7 @@ namespace Mono.TextEditor
 				
 				int offset = Document.LocationToOffset (clickLocation);
 				if (offset < 0) {
-					textEditor.RunAction (new CaretMoveToDocumentEnd ());
+					textEditor.RunAction (CaretMoveActions.ToDocumentEnd);
 					return;
 				}
 				if (args.Button == 2 && selection != null && selection.Contains (offset)) {
@@ -671,7 +671,7 @@ namespace Mono.TextEditor
 			}
 			if (args.Button == 2)  {
 				int offset = Document.LocationToOffset (VisualToDocumentLocation (args.X, args.Y));
-				int length = PasteAction.PasteFromPrimary (textEditor.GetTextEditorData (), offset);
+				int length = ClipboardActions.PasteFromPrimary (textEditor.GetTextEditorData (), offset);
 				int newOffset = textEditor.Caret.Offset;
 				if (selection != null) {
 					if (newOffset < selection.EndOffset) {
