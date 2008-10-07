@@ -1,5 +1,10 @@
 2008-10-07  Mike Krüger <mkrueger@novell.com> 
 
+	* Gui/MemberCompletionData.cs: fixed possible null reference in
+	  compare.
+
+2008-10-07  Mike Krüger <mkrueger@novell.com> 
+
 	* Gui/MemberCompletionData.cs: fixed 'Bug 430813 - Completion list
 	  feels really broken when items are not sorted alphabetically'.
 
