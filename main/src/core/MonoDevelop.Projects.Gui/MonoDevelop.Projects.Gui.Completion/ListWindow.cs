@@ -246,14 +246,11 @@ namespace MonoDevelop.Projects.Gui.Completion
 				word.Insert (curPos, c);
 				bool hasMismatches;
 				int match = findMatchedEntry (word.ToString (), out hasMismatches);
-				System.Console.WriteLine(match + " -- " + hasMismatches);
 				if (match >= 0 && !hasMismatches) {
-					System.Console.WriteLine(1);
 					curPos++;
 					SelectEntry (match);
 					return KeyAction.Process;
 				} else {
-					System.Console.WriteLine(2);
 					word.Remove (curPos, 1);
 					return c == '<' ? KeyAction.Complete | KeyAction.Ignore | KeyAction.CloseWindow : KeyAction.Complete | KeyAction.Process | KeyAction.CloseWindow;
 				}
