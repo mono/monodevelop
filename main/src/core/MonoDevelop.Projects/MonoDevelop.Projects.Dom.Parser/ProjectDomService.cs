@@ -263,7 +263,16 @@ namespace MonoDevelop.Projects.Dom.Parser
 		// Parses a file an updates the parser database
 		public static ParsedDocument Parse (Project project, string fileName, string mimeType)
 		{
-			return Parse (project, fileName, mimeType, delegate () { return System.IO.File.ReadAllText (fileName); });
+			return Parse (project, fileName, mimeType, delegate () {
+				if (!System.IO.File.Exists (fileName))
+					return "";
+				try {
+					return System.IO.File.ReadAllText (fileName);
+				} catch (Exception e) {
+					System.Console.WriteLine (e);
+					return "";
+				}
+			});
 		}
 		
 		public static ParsedDocument Parse (Project project, string fileName, string mimeType, string content)
@@ -306,6 +315,9 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		public static ProjectDom GetFileDom (string file)
 		{
+			if (file == null)
+				file = Path.GetTempFileName ();
+			
 			lock (singleDatabases)
 			{
 				SingleFileCacheEntry entry;
