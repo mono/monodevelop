@@ -1,5 +1,9 @@
 2008-10-07  Mike Krüger <mkrueger@novell.com> 
 
+	* Gui/MemberCompletionData.cs: fixed +-1 error.
+
+2008-10-07  Mike Krüger <mkrueger@novell.com> 
+
 	* Gui/CSharpTextEditorCompletion.cs: fixed possible null reference.
 
 2008-10-06  Mike Krüger <mkrueger@novell.com> 

@@ -87,8 +87,8 @@ namespace MonoDevelop.CSharpBinding
 						break;
 					endOffset++;
 				}
-				editor.CursorPosition = context.TriggerOffset + offset;
-				editor.Select (context.TriggerOffset + offset + 1, context.TriggerOffset + endOffset);
+				editor.CursorPosition = context.TriggerOffset + offset + 1;
+				editor.Select (editor.CursorPosition, context.TriggerOffset + endOffset);
 			}
 		}
 		
