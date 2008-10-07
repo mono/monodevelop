@@ -60,6 +60,10 @@ namespace Mono.TextEditor
 		
 		protected abstract void HandleKeypress (Gdk.Key key, uint unicodeKey, Gdk.ModifierType modifier);
 		
+		public virtual bool WantsToPreemptIM {
+			get { return false; }
+		}
+		
 		protected void InsertCharacter (uint unicodeKey)
 		{
 			Document.BeginAtomicUndo ();

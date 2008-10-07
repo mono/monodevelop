@@ -1,5 +1,14 @@
 2008-10-06  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* Mono.TextEditor/ViMode.cs, Mono.TextEditor/TextEditor.cs,
+	  Mono.TextEditor/EditMode.cs: Add a way for the EditMode to pre-empt
+	  the IM handling. This prevents the keystroke from reaching the
+	  editor extension chain, hence preventing code completion from
+	  triggering. Prevents accidental triggering of completion in vi
+	  navigation.
+
+2008-10-06  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* Mono.TextEditor/ViMode.cs: Implement 'u' for undo.
 
 2008-10-06  Michael Hutchinson <mhutchinson@novell.com> 

@@ -428,10 +428,7 @@ namespace Mono.TextEditor
 					return;
 				this.isDisposed = true;
 				DisposeBgBuffer ();
-//				if (this.keyBindings != null) {
-//					this.keyBindings.Clear ();
-//					this.keyBindings = null;
-//				}
+				
 				Caret.PositionChanged -= CaretPositionChanged;
 				
 				Document.DocumentUpdated -= DocumentUpdatedHandler;
@@ -568,8 +565,16 @@ namespace Mono.TextEditor
 		
 		protected override bool OnKeyPressEvent (Gdk.EventKey evt)
 		{
+			char ch = (char)Gdk.Keyval.ToUnicode (evt.KeyValue);
+			
+			if (CurrentMode.WantsToPreemptIM) {
+				ResetIMContext ();
+				SimulateKeyPress (evt.Key, ch, evt.State);
+				return true;
+			}
+			
 			if (!IMFilterKeyPress (evt)) {
-				return OnIMProcessedKeyPressEvent (evt, (char)Gdk.Keyval.ToUnicode (evt.KeyValue));
+				return OnIMProcessedKeyPressEvent (evt, ch);
 			}
 			return true;
 		}

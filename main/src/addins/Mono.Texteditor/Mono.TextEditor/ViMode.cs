@@ -112,6 +112,7 @@ namespace Mono.TextEditor
 			
 			action = new CaretMoveLineStart ();
 			navMaps.Add (GetKeyCode (Gdk.Key.Key_0), action);
+			navMaps.Add (GetKeyCode (Gdk.Key.underscore, Gdk.ModifierType.ShiftMask), action);
 			
 			action = new CaretMoveFirstNonWhitespace ();
 			navMaps.Add (GetKeyCode (Gdk.Key.asciicircum, Gdk.ModifierType.ShiftMask), action);
@@ -179,6 +180,12 @@ namespace Mono.TextEditor
 		}
 		
 		public event EventHandler StatusChanged;
+		
+		public override bool WantsToPreemptIM {
+			get {
+				return state != State.Insert && state != State.Replace;
+			}
+		}
 		
 		protected override void HandleKeypress (Gdk.Key key, uint unicodeKey, Gdk.ModifierType modifier)
 		{
