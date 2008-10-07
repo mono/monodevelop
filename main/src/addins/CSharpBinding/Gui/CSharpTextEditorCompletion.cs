@@ -179,6 +179,11 @@ namespace MonoDevelop.CSharpBinding.Gui
 					}
 				}
 				return null;
+			case '[':
+				result = FindExpression (dom, 0);
+				if (result.ExpressionContext == ExpressionContext.Attribute)
+					return CreateCtrlSpaceCompletionData (result);
+				return null;
 			case '<':
 				if (stateTracker.Engine.IsInsideDocLineComment) 
 					return GetXmlDocumentationCompletionData ();
@@ -596,15 +601,16 @@ namespace MonoDevelop.CSharpBinding.Gui
 				this.location = location;
 			}
 			
-			public void AddCompletionData (CodeCompletionDataProvider provider, object obj)
+			public CodeCompletionData AddCompletionData (CodeCompletionDataProvider provider, object obj)
 			{
 				Namespace ns = obj as Namespace;
 				if (ns != null) {
 					if (namespaces.ContainsKey(ns.Name))
-						return;
+						return null;
 					namespaces[ns.Name] = true;
-					provider.AddCompletionData (new CodeCompletionData (ns.Name, ns.StockIcon, ns.Documentation));
-					return;
+					CodeCompletionData data = new CodeCompletionData (ns.Name, ns.StockIcon, ns.Documentation);
+					provider.AddCompletionData (data);
+					return data;
 				}
 				IReturnType rt = obj as IReturnType;
 				if (rt != null) {
@@ -630,7 +636,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 					CodeCompletionData cd = new CodeCompletionData (ambience.GetString (rt, flags | OutputFlags.EmitMarkup), "md-class", "");
 					cd.CompletionString = ambience.GetString (rt, flags);
 					provider.AddCompletionData (cd);
-					return;
+					return cd;
 				}
 				IMember member = obj as IMember;
 				if (member != null && !String.IsNullOrEmpty (member.Name)) {
@@ -665,8 +671,9 @@ namespace MonoDevelop.CSharpBinding.Gui
 						provider.AddCompletionData (newData);
 						data [member.Name] = newData;
 					}
-					return;
+					return newData;
 				}
+				return null;
 			}
 		}
 		ICompletionDataProvider CreateCompletionData (ResolveResult resolveResult, ExpressionResult expressionResult, NRefactoryResolver resolver)

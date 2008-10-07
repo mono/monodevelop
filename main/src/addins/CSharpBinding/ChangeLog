@@ -1,5 +1,12 @@
 2008-10-07  Mike Krüger <mkrueger@novell.com> 
 
+	* Gui/MemberCompletionData.cs, Gui/NRefactoryResolver.cs,
+	  Gui/CSharpTextEditorCompletion.cs: fixed 'Bug 431382 - Code
+	  completion should strip Attribute suffix from classes deriving from
+	  System.Attribute'.
+
+2008-10-07  Mike Krüger <mkrueger@novell.com> 
+
 	* Gui/MemberCompletionData.cs: fixed possible null reference in
 	  compare.
 

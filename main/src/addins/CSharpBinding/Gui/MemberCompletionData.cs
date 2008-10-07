@@ -71,18 +71,19 @@ namespace MonoDevelop.CSharpBinding
 			this.member = member;
 			this.declarationBegin = editor.CursorPosition;
 			this.editor = editor;
+			this.CompletionString = ambience.GetString (member, OutputFlags.IncludeGenerics);
 		}
 		
 		public void InsertAction (ICompletionWidget widget, ICodeCompletionContext context)
 		{
 			editor.DeleteText (context.TriggerOffset, editor.CursorPosition - context.TriggerOffset);
-			string text = ambience.GetString (member, OutputFlags.IncludeGenerics);
-			editor.InsertText (context.TriggerOffset, text);
-			int offset = text.IndexOf ('<');
+			
+			editor.InsertText (context.TriggerOffset, this.CompletionString);
+			int offset = this.CompletionString.IndexOf ('<');
 			if (offset >= 0) {
 				int endOffset = offset + 1;
-				while (endOffset < text.Length) {
-					char ch = text[endOffset];
+				while (endOffset < this.CompletionString.Length) {
+					char ch = this.CompletionString[endOffset];
 					if (!Char.IsLetterOrDigit(ch) && ch != '_')
 						break;
 					endOffset++;

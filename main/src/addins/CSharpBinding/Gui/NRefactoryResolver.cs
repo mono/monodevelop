@@ -183,7 +183,7 @@ namespace MonoDevelop.CSharpBinding
 				}
 			}
 		}
-		
+		static readonly IReturnType attributeType = new DomReturnType ("System.Attribute");
 		public void AddAccessibleCodeCompletionData (ExpressionContext context, CodeCompletionDataProvider provider)
 		{
 			AddContentsFromClassAndMembers (context, provider);
@@ -218,11 +218,24 @@ namespace MonoDevelop.CSharpBinding
 						namespaceList.Add (ns);
 					}
 				}
+				
 				MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col = new MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector (this.editor, dom, unit, new DomLocation (editor.CursorLine - 1, editor.CursorColumn - 1));
 				foreach (object o in dom.GetNamespaceContents (namespaceList, true, true)) {
 					if (context.FilterEntry (o))
 						continue;
-					col.AddCompletionData (provider, o);
+					IMember member = o as IMember;
+					if (member != null && member.IsAbstract)
+						continue;
+					if (context == ExpressionContext.Attribute) {
+						IType t = o as IType;
+						if (t != null && !t.IsBaseType (attributeType))
+							continue;
+					}
+					CodeCompletionData data = col.AddCompletionData (provider, o);
+					if (context == ExpressionContext.Attribute) {
+						if (data != null && data.CompletionString != null && data.CompletionString.EndsWith ("Attribute"))
+							data.CompletionString = data.CompletionString.Substring (0, data.CompletionString.Length - "Attribute".Length);
+					}
 				}
 			}
 		}
