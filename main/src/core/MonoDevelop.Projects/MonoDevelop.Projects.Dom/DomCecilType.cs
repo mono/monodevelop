@@ -87,6 +87,7 @@ namespace MonoDevelop.Projects.Dom
 			
 			this.Namespace      = typeDefinition.Namespace;
 			this.Modifiers      = GetModifiers (typeDefinition.Attributes);
+			
 			if (typeDefinition.BaseType != null)
 				this.baseType = DomCecilMethod.GetReturnType (typeDefinition.BaseType);
 			DomCecilMethod.AddAttributes (this, typeDefinition.CustomAttributes);
@@ -140,6 +141,8 @@ namespace MonoDevelop.Projects.Dom
 				result |= Modifiers.Abstract;
 			if ((attr & TypeAttributes.Sealed) == TypeAttributes.Sealed)
 				result |= Modifiers.Sealed;
+			if ((attr & TypeAttributes.SpecialName) == TypeAttributes.SpecialName)
+				result |= Modifiers.SpecialName;
 			
 			if ((attr & TypeAttributes.NestedPrivate) == TypeAttributes.NestedPrivate) {
 				result |= Modifiers.Private;
@@ -151,11 +154,13 @@ namespace MonoDevelop.Projects.Dom
 				result |= Modifiers.ProtectedOrInternal;
 			} else if ((attr & TypeAttributes.NestedFamily) == TypeAttributes.NestedFamily) {
 				result |= Modifiers.Protected;
-			} else if ((attr & TypeAttributes.NestedAssembly) == TypeAttributes.NestedAssembly) {
-				result |= Modifiers.Internal;
 			} else {
 				result |= Modifiers.Private;
 			}
+			
+			if ((attr & TypeAttributes.NestedAssembly) == TypeAttributes.NestedAssembly) {
+				result |= Modifiers.Internal;
+			} 
 			return result;
 		}
 		
