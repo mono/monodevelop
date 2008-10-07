@@ -97,6 +97,13 @@ namespace MonoDevelop.CSharpBinding
 					if ((method.IsConstructor && method.IsAccessibleFrom (resolver.Dom, type, resolver.CallingMember)))
 						methods.Add (method);
 				}
+				// No constructor - generating default
+				if (methods.Count == 0) {
+					DomMethod defaultConstructor = new DomMethod ();
+					defaultConstructor.MethodModifier = MethodModifier.IsConstructor;
+					defaultConstructor.DeclaringType = type;
+					methods.Add (defaultConstructor);
+				}
 			}
 		}
 		
