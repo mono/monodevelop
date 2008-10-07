@@ -468,7 +468,7 @@ namespace MonoDevelop.Ide.Gui
 				if (closed)
 					return false;
 				parsing = false;
-				string currentParseFile = FileName;
+				string currentParseFile = FileName ?? this.UntitledName;
 				string currentParseText = TextEditor.Text;
 				Project curentParseProject = Project;
 				
