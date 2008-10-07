@@ -318,7 +318,7 @@ namespace MonoDevelop.SourceEditor
 				writeAccessChecked = true;
 				writeAllowed = FileService.RequestFileEdit (ContentName);
 			}
-			return writeAllowed;
+			return IsUntitled || writeAllowed;
 		}
 		
 		string oldReplaceText;

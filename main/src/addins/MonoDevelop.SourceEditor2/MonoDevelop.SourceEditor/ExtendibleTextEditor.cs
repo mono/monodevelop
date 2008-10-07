@@ -109,17 +109,13 @@ namespace MonoDevelop.SourceEditor
 			};
 			
 			bool vi = false;
-			if (vi)
-			{
+			if (vi) {
 				ViMode viMode = new ViMode ();
 				viMode.StatusChanged += delegate (object sender, EventArgs args) {
 					IdeApp.Workbench.StatusBar.ShowMessage (((ViMode)sender).Status);
 				};
-				
 				CurrentMode = viMode;
-			}
-			else
-			{
+			} else {
 				SimpleEditMode simpleMode = new SimpleEditMode ();
 				simpleMode.KeyBindings [EditMode.GetKeyCode (Gdk.Key.Tab)] = new TabAction (this);
 				simpleMode.KeyBindings [EditMode.GetKeyCode (Gdk.Key.BackSpace)] = new AdvancedBackspaceAction ();
@@ -143,10 +139,11 @@ namespace MonoDevelop.SourceEditor
 		
 		void OnTooltipProviderChanged (object s, ExtensionNodeEventArgs a)
 		{
-			if (a.Change == ExtensionChange.Add)
+			if (a.Change == ExtensionChange.Add) {
 				TooltipProviders.Add ((ITooltipProvider) a.ExtensionObject);
-			else
+			} else {
 				TooltipProviders.Remove ((ITooltipProvider) a.ExtensionObject);
+			}
 		}
 
 		void OnPopupMenu (object sender, Gtk.ButtonPressEventArgs args)
@@ -212,7 +209,8 @@ namespace MonoDevelop.SourceEditor
 			return false;
 		}
 		
-		void ReportExtensionError (Exception ex) {
+		void ReportExtensionError (Exception ex) 
+		{
 			MonoDevelop.Core.LoggingService.LogError ("Error in text editor extension chain", ex);
 			MonoDevelop.Core.Gui.MessageService.ShowException (ex, "Error in text editor extension chain");
 		}
@@ -220,7 +218,6 @@ namespace MonoDevelop.SourceEditor
 		protected override bool OnIMProcessedKeyPressEvent (Gdk.EventKey evnt, char ch)
 		{
 			bool result = true;
-			
 			if (evnt.Key == Gdk.Key.Escape) {
 				bool b;
 				if (extension != null)

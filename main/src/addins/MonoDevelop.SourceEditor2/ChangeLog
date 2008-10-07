@@ -1,3 +1,8 @@
+2008-10-07  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.SourceEditor/ExtendibleTextEditor.cs: fixed 'Bug 432856 -
+	  Creation and editing broken for unsaved files'.
+
 2008-10-06  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.SourceEditor.mdp: Updated.
