@@ -115,7 +115,8 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			if (IsSimpleTypeCast()) {
 				return true;
 			}
-			return GuessTypeCast();
+			bool result = GuessTypeCast();
+			return result;
 		}
 
 		// "(" ( typeKW [ "[" {","} "]" | "*" ] | void  ( "[" {","} "]" | "*" ) ) ")"
@@ -222,7 +223,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			}
 			// check successor
 			pt = Peek();
-			return Tokens.CastFollower[pt.kind];
+			return Tokens.CastFollower[pt.kind] || Tokens.UnaryOp[pt.kind];
 		}
 		// END IsTypeCast
 		

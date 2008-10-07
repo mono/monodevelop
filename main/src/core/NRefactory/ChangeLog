@@ -1,3 +1,8 @@
+2008-10-07  Mike Krüger <mkrueger@novell.com> 
+
+	* Project/Src/Parser/CSharp/CSharpParser.cs: fixed 'Bug 431183 -
+	  Invalid UnaryExpr'.
+
 2008-09-23  Mike Krüger <mkrueger@novell.com> 
 
 	* Project/Src/Parser/CSharp/cs.ATG,
