@@ -64,6 +64,7 @@ namespace Mono.TextEditor
 		{
 			Document = doc;
 			this.SearchEngine = new BasicSearchEngine ();
+			SelectionChanging += HandleSelectionChanging;
 		}
 		
 		public Document Document {
@@ -139,6 +140,7 @@ namespace Mono.TextEditor
 				caret.Dispose ();
 				caret = null;
 			}
+			SelectionChanging -= HandleSelectionChanging;
 		}
 		
 		void CaretPositionChanged (object sender, EventArgs args)
@@ -272,6 +274,33 @@ namespace Mono.TextEditor
 				return CanEdit (caret.Line);
 			}
 		}
+		class TextEditorDataEventArgs : EventArgs
+		{
+			TextEditorData data;
+			public TextEditorData TextEditorData {
+				get {
+					return data;
+				}
+			}
+			public TextEditorDataEventArgs (TextEditorData data)
+			{
+				this.data = data;
+			}
+		}
+		
+		void HandleSelectionChanging (object sender, TextEditorDataEventArgs args)
+		{
+			if (args.TextEditorData != this)
+				this.ClearSelection ();
+		}
+		
+		static event EventHandler<TextEditorDataEventArgs> SelectionChanging;
+		
+		static void OnSelectionChanging (TextEditorDataEventArgs args)
+		{
+			if (SelectionChanging != null)
+				SelectionChanging (null, args);
+		}
 		
 		public ISegment SelectionRange {
 			get {
@@ -279,6 +308,7 @@ namespace Mono.TextEditor
 			}
 			set {
 				if (!Segment.Equals (this.selectionRange, value))  {
+					OnSelectionChanging (new TextEditorDataEventArgs (this));
 					selectionRange = value;
 					OnSelectionChanged (EventArgs.Empty);
 				}

@@ -1,3 +1,8 @@
+2008-10-07  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/TextEditorData.cs: fixed 'Bug 430805 - Cannot
+	  middle-click-paste between source editors'.
+
 2008-10-06  Gabriel Burt <gburt@novell.com> 
 
 	* Mono.TextEditor/ViMode.cs: Added keybindings for ctrl-d and ctrl-u
