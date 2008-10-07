@@ -59,6 +59,9 @@ namespace MonoDevelop.Projects.Dom
 		
 		public virtual bool FilterEntry (object entry)
 		{
+			IMember member = entry as IMember;
+			if (member != null && member.Name.IndexOf ('<') >= 0)
+				return true;
 			IMethod method = entry as IMethod;
 			if (method != null && method.Name == "Finalize" && method.DeclaringType.FullName == "System.Object")
 				return true;
@@ -136,6 +139,8 @@ namespace MonoDevelop.Projects.Dom
 			public override bool FilterEntry (object entry)
 			{
 				IType type = entry as IType;
+				if (type != null && (type.IsSpecialName || type.Name.IndexOf ('<') >= 0))
+					return true;
 				if (IsObjectCreation && entry is IType) {
 					return type.ClassType != ClassType.Class && type.ClassType != ClassType.Struct && (type.IsStatic || type.IsAbstract);
 				}
