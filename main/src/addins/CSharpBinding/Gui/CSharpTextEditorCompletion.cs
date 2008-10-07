@@ -119,7 +119,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 		public override ICompletionDataProvider HandleCodeCompletion (ICodeCompletionContext completionContext, char completionChar, ref int triggerWordLength)
 		{
 		try {
-			if (dom == null)
+			if (dom == null || Document.CompilationUnit == null)
 				return null;
 			if (completionChar != '#' && stateTracker.Engine.IsInsidePreprocessorDirective)
 				return null;
