@@ -1,5 +1,10 @@
 2008-10-07  Aaron Bockover  <abockover@novell.com>
 
+	* CommitDialogExtensionWidget.cs: Updated to use ChangeLogMessageStyle
+	  instead of the WriteHeader bool
+
+2008-10-07  Aaron Bockover  <abockover@novell.com>
+
 	* ChangeLogAddIn.cs:
 	* CommitDialogExtensionWidget.cs: Make the addin use the new
 	  ChangeLogWriter

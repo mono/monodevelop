@@ -1,5 +1,17 @@
 2008-10-07  Aaron Bockover  <abockover@novell.com>
 
+	* MonoDevelop.VersionControl/ChangeSet.cs: Updated to use
+	  ChangeLogMessageStyle instead of the WriteHeader bool
+
+	* MonoDevelop.VersionControl/ChangeLogWriter.cs: Omit files with
+	  empty/unset messages from the ChangeLog by default; when the GUI
+	  builder is working again I'll add a preference for this; if the
+	  ChangeLog is empty, also insert some extra whitespace for easily
+	  entering commit messages without applying to files; opted for
+	  ChangeLogMessageStyle enum instead of a bool WriteHeader
+
+2008-10-07  Aaron Bockover  <abockover@novell.com>
+
 	* MonoDevelop.VersionControl/ChangeSet.cs: Use ChangeLogWriter to
 	  generate messages instead of the old formatting
 

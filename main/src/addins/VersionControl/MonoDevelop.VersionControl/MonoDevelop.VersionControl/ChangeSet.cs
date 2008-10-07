@@ -25,14 +25,14 @@ namespace MonoDevelop.VersionControl
 		
 		public string GenerateGlobalComment (int maxColumns)
 		{
-			return GeneratePathComment (basePath, items, false, null, null);
+			return GeneratePathComment (basePath, items, ChangeLogMessageStyle.CommitMessage, null, null);
 		}
 		
 		public string GeneratePathComment (string path, IEnumerable<ChangeSetItem> items, 
-			bool writeHeader, string name, string email)
+			ChangeLogMessageStyle messageStyle, string name, string email)
 		{
 			ChangeLogWriter writer = new ChangeLogWriter (path);
-			writer.WriteHeader = writeHeader;
+			writer.MessageStyle = messageStyle;
 			writer.FullName = name;
 			writer.EmailAddress = email;
 			

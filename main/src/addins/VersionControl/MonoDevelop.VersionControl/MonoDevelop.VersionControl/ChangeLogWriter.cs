@@ -35,6 +35,12 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.VersionControl
 {
+	public enum ChangeLogMessageStyle
+	{
+		ChangeLogEntry,
+		CommitMessage
+	}
+
 	public class ChangeLogWriter
 	{
 		private Dictionary<string, List<string>> messages = new Dictionary<string, List<string>> ();
@@ -47,6 +53,10 @@ namespace MonoDevelop.VersionControl
 	
 		public void AddFile (string message, string path)
 		{
+			if (SkipEmpty && string.IsNullOrEmpty (message)) {
+				return;
+			}
+			
 			string relative_path = GetRelativeEntryPath (path);
 			if (relative_path == null) {
 				return;
@@ -76,16 +86,25 @@ namespace MonoDevelop.VersionControl
 		{
 			StringBuilder builder = new StringBuilder ();
 			
-			if (WriteHeader) {
+			if (MessageStyle == ChangeLogMessageStyle.ChangeLogEntry) {
 				builder.AppendFormat ("{0}  {1}  <{2}>", 
 					DateTime.Now.ToString ("yyyy-MM-dd"), 
 					FullName, EmailAddress);
 				builder.AppendLine ();
 				builder.AppendLine ();
+				
+				if (messages.Count == 0) {
+					builder.Append ('\t');
+					builder.AppendLine ();
+					builder.AppendLine ();
+				}
+			} else if (messages.Count == 0) {
+				return String.Empty;
 			}
 			
-			string lead_indent = WriteHeader ? "\t" : string.Empty;
+			string lead_indent = MessageStyle == ChangeLogMessageStyle.ChangeLogEntry ? "\t" : string.Empty;
 			string wrap_indent = string.Format ("{0}  ", lead_indent);
+			int m_i = 0;
 			
 			foreach (KeyValuePair<string, List<string>> message in messages) {
 				List<string> paths = message.Value;
@@ -102,12 +121,20 @@ namespace MonoDevelop.VersionControl
 					builder.Append (lead_indent);
 					builder.Append ("* ");
 					WrapAlign (builder, string.Format ("{0}: {1}", paths[i], message.Key), 70, wrap_indent, 1, true);
-					builder.AppendLine ();
-					builder.AppendLine ();
+					
+					if (m_i++ < messages.Count - 1) {
+						builder.AppendLine ();
+						builder.AppendLine ();
+					}
 				}
 			}
 			
-			return builder.ToString ().Trim ();
+			if (MessageStyle == ChangeLogMessageStyle.ChangeLogEntry) {
+				builder.AppendLine ();
+				builder.AppendLine ();
+			}
+			
+			return builder.ToString ();
 		}
 		
 		// Adapted from Hyena.CommandLine.Layout (Banshee)
@@ -141,7 +168,13 @@ namespace MonoDevelop.VersionControl
 			
 			return builder;
 		}
-				
+		
+		private bool skip_empty = true;
+		public bool SkipEmpty {
+			get { return skip_empty; }
+			set { skip_empty = value; }
+		}
+		
 		private string full_name;
 		public string FullName {
 			get { return full_name; }
@@ -154,10 +187,10 @@ namespace MonoDevelop.VersionControl
 			set { email_address = value; }
 		}
 		
-		private bool write_header;
-		public bool WriteHeader {
-			get { return write_header; }
-			set { write_header = value; }
+		private ChangeLogMessageStyle message_style;
+		public ChangeLogMessageStyle MessageStyle {
+			get { return message_style; }
+			set { message_style = value; }
 		}
 	}
 }

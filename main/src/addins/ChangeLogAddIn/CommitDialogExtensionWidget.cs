@@ -248,7 +248,8 @@ namespace MonoDevelop.ChangeLogAddIn
 			}
 			
 			foreach (ChangeLogEntry entry in entries.Values) {
-				entry.Message = cset.GeneratePathComment (entry.File, entry.Items, true, 
+				entry.Message = cset.GeneratePathComment (entry.File, entry.Items, 
+					ChangeLogMessageStyle.ChangeLogEntry, 
 					PropertyService.Get ("ChangeLogAddIn.Name", "Full Name"),
 					PropertyService.Get ("ChangeLogAddIn.Email", "Email Address"));
 			}
