@@ -153,7 +153,7 @@ namespace MonoDevelop.CSharpBinding
 			}
 		}
 		
-		void AddContentsFromClassAndMembers (CodeCompletionDataProvider provider)
+		void AddContentsFromClassAndMembers (ExpressionContext context, CodeCompletionDataProvider provider)
 		{
 			IMethod method = callingMember as IMethod;
 			if (method != null && method.Parameters != null) {
@@ -175,6 +175,8 @@ namespace MonoDevelop.CSharpBinding
 				foreach (IType type in dom.GetInheritanceTree (CallingType)) {
 					foreach (IMember member in type.Members) {
 	//					if (member.IsAccessibleFrom (dom, CallingMember)) {
+							if (context.FilterEntry (member))
+								continue;
 							col.AddCompletionData (provider, member);
 	//					}
 					}
@@ -182,9 +184,9 @@ namespace MonoDevelop.CSharpBinding
 			}
 		}
 		
-		public void AddAccessibleCodeCompletionData (CodeCompletionDataProvider provider)
+		public void AddAccessibleCodeCompletionData (ExpressionContext context, CodeCompletionDataProvider provider)
 		{
-			AddContentsFromClassAndMembers (provider);
+			AddContentsFromClassAndMembers (context, provider);
 			
 			if (lookupTableVisitor != null && lookupTableVisitor.Variables != null) {
 				foreach (KeyValuePair<string, List<LocalLookupVariable>> pair in lookupTableVisitor.Variables) {
@@ -218,6 +220,8 @@ namespace MonoDevelop.CSharpBinding
 				}
 				MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col = new MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector (this.editor, dom, unit, new DomLocation (editor.CursorLine - 1, editor.CursorColumn - 1));
 				foreach (object o in dom.GetNamespaceContents (namespaceList, true, true)) {
+					if (context.FilterEntry (o))
+						continue;
 					col.AddCompletionData (provider, o);
 				}
 			}
