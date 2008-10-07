@@ -292,7 +292,7 @@ namespace MonoDevelop.Projects
 			if (appConfig == null)
 				appConfig = list.Remove ("App.config");
 			if (appConfig != null) {
-				string output = GetOutputFileName (solutionConfiguration);
+				string output = Path.GetFileName (GetOutputFileName (solutionConfiguration));
 				list.Add (appConfig.Src, appConfig.CopyOnlyIfNewer, output + ".config");
 			}
 			

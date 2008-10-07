@@ -1,5 +1,9 @@
 2008-10-07  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.Projects/DotNetProject.cs: Fix copying app.config.
+
+2008-10-07  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.Projects/Project.cs: Don't try to copy a file to itself.
 
 2008-10-07  Mike Krüger <mkrueger@novell.com> 
