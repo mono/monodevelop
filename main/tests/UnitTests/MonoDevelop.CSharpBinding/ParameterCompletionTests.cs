@@ -152,5 +152,24 @@ class Test
 			Assert.AreEqual (1, provider.OverloadCount, "There should be one overload");
 			Assert.AreEqual (1, provider.GetParameterCount(0), "Parameter 'start' should exist");
 		}
+
+		/// <summary>
+		/// Bug 432727 - No completion if no constructor
+		/// </summary>
+		[Test()]
+		public void TestBug432727 ()
+		{
+			IParameterDataProvider provider = CreateProvider (
+@"class A
+{
+	void Method ()
+	{
+		A aTest = new A ($
+	}
+}");
+			Assert.IsNotNull (provider, "provider was not created.");
+			Assert.AreEqual (1, provider.OverloadCount);
+		}
+		
 	}
 }

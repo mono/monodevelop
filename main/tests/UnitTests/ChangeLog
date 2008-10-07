@@ -1,3 +1,8 @@
+2008-10-07  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.CSharpBinding/ParameterCompletionTests.cs: added unit
+	  test for Bug 432727 - No completion if no constructor.
+
 2008-10-06  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.CSharpBinding/ParameterCompletionTests.cs: fixed 432658.
