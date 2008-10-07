@@ -387,7 +387,7 @@ namespace MonoDevelop.CSharpBinding
 				for (int i = 0; i < type.TypeParameters.Count; i++) {
 					if (i > 0)
 						result.Append (", ");
-					result.Append (type.TypeParameters[i].Name);
+					result.Append (NetToCSharpTypeName (type.TypeParameters[i].Name));
 				}
 				if (EmitMarkup (flags)) {
 					result.Append ("&gt;");

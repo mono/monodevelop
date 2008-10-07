@@ -345,7 +345,8 @@ namespace MonoDevelop.CSharpBinding.Gui
 			case '(':
 				ResolveResult resolveResult = resolver.Resolve (result, new DomLocation (Editor.CursorLine, Editor.CursorColumn));
 				if (result.ExpressionContext is ExpressionContext.TypeExpressionContext)
-					return new NRefactoryParameterDataProvider (Editor, resolver, dom.SearchType ( new SearchTypeRequest (resolver.Unit, ((ExpressionContext.TypeExpressionContext)result.ExpressionContext).Type)));
+					return new NRefactoryParameterDataProvider (Editor, resolver, DomType.CreateInstantiatedGenericType (dom.SearchType (new SearchTypeRequest (resolver.Unit, ((ExpressionContext.TypeExpressionContext)result.ExpressionContext).Type)),
+					                                                                                               ((ExpressionContext.TypeExpressionContext)result.ExpressionContext).Type.GenericArguments));
 				if (resolveResult != null) {
 					if (resolveResult is MethodResolveResult)
 						return new NRefactoryParameterDataProvider (Editor, resolver, resolveResult as MethodResolveResult);
@@ -757,13 +758,13 @@ namespace MonoDevelop.CSharpBinding.Gui
 			
 			if (type == null) {
 				col.AddCompletionData (result, returnType);
-				result.DefaultCompletionString = CompletionDataCollector.ambience.GetString (returnType, OutputFlags.ClassBrowserEntries);
+				result.DefaultCompletionString = CompletionDataCollector.ambience.GetString (returnType, OutputFlags.None);
 				return result;
 			}
 			
 			if (tce != null && tce.Type != null) {
 				col.AddCompletionData (result, tce.Type);
-				result.DefaultCompletionString = CompletionDataCollector.ambience.GetString (tce.Type, OutputFlags.ClassBrowserEntries);
+				result.DefaultCompletionString = CompletionDataCollector.ambience.GetString (tce.Type, OutputFlags.None);
 			} else {
 				if (context == null || !context.FilterEntry (type))
 					col.AddCompletionData (result, type);

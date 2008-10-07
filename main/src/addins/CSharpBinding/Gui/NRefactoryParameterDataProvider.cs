@@ -164,7 +164,7 @@ namespace MonoDevelop.CSharpBinding
 		
 		public string GetMethodMarkup (int overload, string[] parameterMarkup)
 		{
-			return "<b>" + (this.delegateName ?? (methods[overload].IsConstructor ? methods[overload].DeclaringType.Name : methods[overload].Name)) + "</b> (" + string.Join (", ", parameterMarkup)  + ")";
+			return "<b>" + (this.delegateName ?? (methods[overload].IsConstructor ? ambience.GetString (methods[overload].DeclaringType, OutputFlags.ClassBrowserEntries | OutputFlags.EmitMarkup  | OutputFlags.IncludeGenerics) : methods[overload].Name)) + "</b> (" + string.Join (", ", parameterMarkup)  + ")";
 //			return ambience.GetIntellisenseDescription (methods[overload]);
 		}
 		
