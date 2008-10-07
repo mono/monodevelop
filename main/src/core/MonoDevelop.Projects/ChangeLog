@@ -1,5 +1,10 @@
 2008-10-07  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Projects.Dom/DomType.cs: Instantiated generic types now
+	  preserve generic parameters.
+
+2008-10-07  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Projects.Dom/DomCecilType.cs: fixed 'Bug 431761 - Code
 	  completion is incorrect'.
 
