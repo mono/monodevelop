@@ -241,19 +241,21 @@ namespace MonoDevelop.Projects.Gui.Completion
 				curPos++;
 				UpdateWordSelection ();
 				return KeyAction.Process;
-			} else if (System.Char.IsPunctuation (c) || c == ' ') {
-				
+			} else if (System.Char.IsPunctuation (c) || c == ' ' || c == '<') {
 				//punctuation is only accepted if it actually matches an item in the list
 				word.Insert (curPos, c);
 				bool hasMismatches;
 				int match = findMatchedEntry (word.ToString (), out hasMismatches);
+				System.Console.WriteLine(match + " -- " + hasMismatches);
 				if (match >= 0 && !hasMismatches) {
+					System.Console.WriteLine(1);
 					curPos++;
 					SelectEntry (match);
 					return KeyAction.Process;
 				} else {
+					System.Console.WriteLine(2);
 					word.Remove (curPos, 1);
-					return KeyAction.Complete | KeyAction.Process | KeyAction.CloseWindow;
+					return c == '<' ? KeyAction.Complete | KeyAction.Ignore | KeyAction.CloseWindow : KeyAction.Complete | KeyAction.Process | KeyAction.CloseWindow;
 				}
 			}
 			
