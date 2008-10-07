@@ -93,8 +93,8 @@ namespace MonoDevelop.Database.Components
 					if (proj is DotNetProject && (proj as DotNetProject).LanguageBinding == null) {
 						pixbuf = MonoDevelop.Core.Gui.Services.Resources.GetIcon (Stock.DialogError);
 					} else {
-						IconService service = (IconService) ServiceManager.GetService (typeof(IconService));
-						string icon = service.GetImageForProjectType (proj.ProjectType);
+						string icon = MonoDevelop.Projects.Gui.Services.Icons
+							.GetImageForProjectType (proj.ProjectType);
 
 						pixbuf = MonoDevelop.Core.Gui.Services.Resources.GetIcon (icon, IconSize.Menu);
 					}
