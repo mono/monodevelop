@@ -266,6 +266,8 @@ namespace MonoDevelop.Ide.Commands
 					txt = GettextCatalog.GetString ("Struct <b>{0}</b>", itemName);
 				else if (cls.ClassType == ClassType.Interface)
 					txt = GettextCatalog.GetString ("Interface <b>{0}</b>", itemName);
+				else if (cls.ClassType == ClassType.Delegate)
+					txt = GettextCatalog.GetString ("Delegate <b>{0}</b>", itemName);
 				else
 					txt = GettextCatalog.GetString ("Class <b>{0}</b>", itemName);
 				
@@ -409,8 +411,13 @@ namespace MonoDevelop.Ide.Commands
 		{
 			using (monitor) {
 				CodeRefactorer refactorer = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
-				
-				if (item is IMember) {
+				if (item is IType) {
+					references = refactorer.FindClassReferences (monitor, (IType)item, RefactoryScope.Solution);
+				} else if (item is LocalVariable) {
+					references = refactorer.FindVariableReferences (monitor, (LocalVariable)item);
+				} else if (item is IParameter) {
+					references = refactorer.FindParameterReferences (monitor, (IParameter)item);
+				} else if (item is IMember) {
 					IMember member = (IMember) item;
 					
 					// private is filled only in keyword case
@@ -424,12 +431,6 @@ namespace MonoDevelop.Ide.Commands
 						references = refactorer.FindMemberReferences (monitor, member.DeclaringType, member,
 						                                              RefactoryScope.Solution);
 					}
-				} else if (item is IType) {
-					references = refactorer.FindClassReferences (monitor, (IType)item, RefactoryScope.Solution);
-				} else if (item is LocalVariable) {
-					references = refactorer.FindVariableReferences (monitor, (LocalVariable)item);
-				} else if (item is IParameter) {
-					references = refactorer.FindParameterReferences (monitor, (IParameter)item);
 				}
 				
 				if (references != null) {

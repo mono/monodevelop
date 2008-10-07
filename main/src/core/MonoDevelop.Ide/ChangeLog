@@ -1,5 +1,10 @@
 2008-10-07  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: delegates are now
+	  recognized by context menu.
+
+2008-10-07  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Ide.Gui/Document.cs: fixed 'Bug 432856 - Creation and
 	  editing broken for unsaved files'.
 
