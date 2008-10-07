@@ -87,6 +87,10 @@ namespace Mono.TextEditor
 			action = new ScrollUpAction ();
 			navMaps.Add (GetKeyCode (Gdk.Key.KP_Up, Gdk.ModifierType.ControlMask), action);
 			navMaps.Add (GetKeyCode (Gdk.Key.Up, Gdk.ModifierType.ControlMask), action);
+
+			// combination usually bound at IDE level
+			action = new PageUpAction ();
+			navMaps.Add (GetKeyCode (Gdk.Key.u, Gdk.ModifierType.ControlMask), action);
 			
 			// ==== Down ====
 			
@@ -98,6 +102,15 @@ namespace Mono.TextEditor
 			action = new ScrollDownAction ();
 			navMaps.Add (GetKeyCode (Gdk.Key.KP_Down, Gdk.ModifierType.ControlMask), action);
 			navMaps.Add (GetKeyCode (Gdk.Key.Down, Gdk.ModifierType.ControlMask), action);
+
+			// combination usually bound at IDE level
+			action = new PageDownAction ();
+			navMaps.Add (GetKeyCode (Gdk.Key.d, Gdk.ModifierType.ControlMask), action);
+
+			// ==== Editing ====
+
+			action = new GotoMatchingBracket ();
+			navMaps.Add (GetKeyCode (Gdk.Key.percent, Gdk.ModifierType.ShiftMask), action);
 			
 			// === Home ===
 			
@@ -112,10 +125,10 @@ namespace Mono.TextEditor
 			
 			action = new CaretMoveLineStart ();
 			navMaps.Add (GetKeyCode (Gdk.Key.Key_0), action);
-			navMaps.Add (GetKeyCode (Gdk.Key.underscore, Gdk.ModifierType.ShiftMask), action);
 			
 			action = new CaretMoveFirstNonWhitespace ();
 			navMaps.Add (GetKeyCode (Gdk.Key.asciicircum, Gdk.ModifierType.ShiftMask), action);
+			navMaps.Add (GetKeyCode (Gdk.Key.underscore, Gdk.ModifierType.ShiftMask), action);
 			
 			// ==== End ====
 			
@@ -127,6 +140,7 @@ namespace Mono.TextEditor
 			action = new CaretMoveToDocumentEnd ();
 			navMaps.Add (GetKeyCode (Gdk.Key.KP_End, Gdk.ModifierType.ControlMask), action);
 			navMaps.Add (GetKeyCode (Gdk.Key.End, Gdk.ModifierType.ControlMask), action);
+			navMaps.Add (GetKeyCode (Gdk.Key.G, Gdk.ModifierType.ShiftMask), action);
 		}
 		
 		void InitInsertMaps ()

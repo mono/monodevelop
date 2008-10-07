@@ -1,3 +1,10 @@
+2008-10-06  Gabriel Burt <gburt@novell.com> 
+
+	* Mono.TextEditor/ViMode.cs: Added keybindings for ctrl-d and ctrl-u
+	  (pg dn/up), % (go to matching bracket), and G (go to eof), and fix
+	  keybinding for _ to go to first non-whitespace char instead of
+	  start of line
+
 2008-10-06  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Mono.TextEditor/ViMode.cs, Mono.TextEditor/TextEditor.cs,
