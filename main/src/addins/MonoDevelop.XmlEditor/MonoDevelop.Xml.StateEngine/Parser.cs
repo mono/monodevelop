@@ -233,20 +233,23 @@ namespace MonoDevelop.Xml.StateEngine
 		
 		void IParseContext.LogError (string message)
 		{
-			Error err = new Error (Position, message, ErrorSeverity.Error);
-			System.Console.WriteLine (err.ToString ());
-			if (errors != null)
-				errors.Add (err);
-			Console.WriteLine (ToString ());
+			InternalLogError (message, ErrorSeverity.Error);
 		}
 		
 		void IParseContext.LogWarning (string message)
 		{
-			Error err = new Error (Position, message, ErrorSeverity.Warning);
-			System.Console.WriteLine (err.ToString ());
+			InternalLogError (message, ErrorSeverity.Warning);
+		}
+		
+		void InternalLogError (string message, ErrorSeverity severity)
+		{
+			if (ErrorLogged == null && errors == null)
+				return;
+			Error err = new Error (Position, message, severity);
 			if (errors != null)
 				errors.Add (err);
-			Console.WriteLine (ToString ());
+			if (ErrorLogged != null)
+				ErrorLogged (err);
 		}
 		
 		void IParseContext.ConnectAll ()
@@ -281,6 +284,10 @@ namespace MonoDevelop.Xml.StateEngine
 		#endregion
 		
 		public State CurrentState { get { return currentState; } }
+		
+		public IList<Error> Errors { get { return errors; } }
+		
+		public event Action<Error> ErrorLogged;
 	}
 	
 	public interface IParseContext
