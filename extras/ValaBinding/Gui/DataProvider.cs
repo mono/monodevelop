@@ -231,10 +231,9 @@ namespace MonoDevelop.ValaBinding
 			get { return description_pango; }
 		}
 		
-		public int CompareTo (ICompletionData x)
-		{
-			return String.Compare (Text[0], x.Text[0], true);
-		}	
+		public bool Sink {
+			get { return false; }
+		}
 	}
 
 }

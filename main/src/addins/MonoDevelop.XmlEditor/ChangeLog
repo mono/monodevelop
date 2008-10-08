@@ -1,3 +1,8 @@
+2008-10-07  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.XmlEditor.Completion/XmlCompletionData.cs:
+	* MonoDevelop.XmlEditor.Completion/XmlTagCompletionData.cs: Track API.
+
 2008-10-03  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.XmlEditor.Gui/BaseXmlEditorExtension.cs: New base class

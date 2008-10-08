@@ -67,6 +67,10 @@ namespace MonoDevelop.Html
 		public string Description {
 			get { return description; }
 		}
+		
+		public bool Sink {
+			get { return false; }
+		}
 
 		public void InsertAction (ICompletionWidget widget, ICodeCompletionContext context)
 		{
@@ -88,11 +92,6 @@ namespace MonoDevelop.Html
 				buf.InsertText (buf.CursorPosition, text);
 				buf.EndAtomicUndo ();
 			}
-		}
-
-		public virtual int CompareTo (ICompletionData x)
-		{
-			return String.Compare (Text[0], x.Text[0], true);
 		}		
 	}
 }

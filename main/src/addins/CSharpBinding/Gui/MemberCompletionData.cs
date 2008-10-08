@@ -231,26 +231,10 @@ namespace MonoDevelop.CSharpBinding
 			return ret.ToString ();
 		}
 		
-		public override int CompareTo (ICompletionData x)
-		{
-			MemberCompletionData other = x as MemberCompletionData;
-
-			//
-			// Until MonoDevelop 2.2, or until we do the big UI 
-			// hack-athon, obsolete members will go to the bottom
-			// of the list.
-			//	
-			if (other == null) {
-				if (member.IsObsolete)
-					return 1;
-			} else {
-				if (member.IsObsolete && !other.member.IsObsolete)
-					return 1;
-				if (!member.IsObsolete && other.member.IsObsolete)
-					return -1;
+		public override bool Sink {
+			get {
+				 return member.IsObsolete;
 			}
-			return base.CompareTo (x);
 		}
-		
 	}
 }

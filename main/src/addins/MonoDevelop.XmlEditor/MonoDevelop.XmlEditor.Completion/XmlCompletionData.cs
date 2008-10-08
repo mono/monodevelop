@@ -79,6 +79,10 @@ namespace MonoDevelop.XmlEditor.Completion
 			get { return description; }
 		}
 		
+		public bool Sink {
+			get { return false; }
+		}
+		
 		public void InsertAction(ICompletionWidget widget, ICodeCompletionContext completionContext)
 		{
 			MonoDevelop.Ide.Gui.Content.IEditableTextBuffer buf = widget as MonoDevelop.Ide.Gui.Content.IEditableTextBuffer;
@@ -99,19 +103,6 @@ namespace MonoDevelop.XmlEditor.Completion
 				}
 				buf.EndAtomicUndo ();
 			}
-		}
-
-		public int CompareTo(object obj)
-		{
-			if ((obj == null) || !(obj is XmlCompletionData)) {
-				return -1;
-			}
-			return text.CompareTo(((XmlCompletionData)obj).text);
-		}
-
-		public virtual int CompareTo (ICompletionData x)
-		{
-			return String.Compare (Text[0], x.Text[0], true);
 		}		
 	}
 }

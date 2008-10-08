@@ -74,6 +74,10 @@ namespace MonoDevelop.AspNet.Parser
 					    "be generated in the CodeBehind class.");
 			}
 		}
+		
+		public bool Sink {
+			get { return false; }
+		}
 
 		public void InsertAction (ICompletionWidget widget, ICodeCompletionContext context)
 		{
@@ -91,11 +95,6 @@ namespace MonoDevelop.AspNet.Parser
 				BindingService.AddMemberToClass (entry, codeBehindClass, codeBehindClassPart, methodInfo, false);
 			else
 				BindingService.AddMemberToClass (entry, codeBehindClass, codeBehindClass, methodInfo, false);
-		}
-
-		public virtual int CompareTo (ICompletionData x)
-		{
-			return String.Compare (Text[0], x.Text[0], true);
-		}		
+		}	
 	}
 }

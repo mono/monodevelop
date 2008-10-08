@@ -1,3 +1,8 @@
+2008-10-07  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Gui/MemberCompletionData.cs: Re-implement sinking obsolete members to
+	  the bottom, but in a non-broken way this time.
+
 2008-10-07  Mike Krüger <mkrueger@novell.com> 
 
 	* Gui/NRefactoryParameterDataProvider.cs: fixed 'Bug 432727 - No

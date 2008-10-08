@@ -1,3 +1,10 @@
+2008-10-07  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ICompletionData.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Re-implement sinking obsolete members to the bottom, but in a
+	  non-broken way this time.
+
 2008-10-07  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: now '<' is a

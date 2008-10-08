@@ -85,17 +85,6 @@ namespace MonoDevelop.Projects.Gui.Completion
 		int initialWordLength;
 		
 		const int declarationWindowMargin = 3;
-		static DataComparer dataComparer = new DataComparer ();
-		
-		class DataComparer: IComparer
-		{
-			public int Compare (object x, object y)
-			{
-				ICompletionData d1 = x as ICompletionData;
-				ICompletionData d2 = y as ICompletionData;
-				return d1.CompareTo (d2);
-			}
-		}
 		
 		internal CompletionListWindow ()
 		{
@@ -203,10 +192,14 @@ namespace MonoDevelop.Projects.Gui.Completion
 			
 			this.Style = completionWidget.GtkStyle;
 			
-			if (completionData == null)
+			if (completionData == null) {
 				completionData = new ICompletionData [0];
-			else
-				Array.Sort (completionData, dataComparer);
+			} else {
+				Array.Sort (completionData, (ICompletionData a, ICompletionData b) => 
+					(a.Sink == b.Sink)
+						? string.Compare (a.Text[0], b.Text[0], true)
+						: a.Sink? 1 : -1);
+			}
 			
 			DataProvider = this;
 

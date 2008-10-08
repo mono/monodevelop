@@ -68,7 +68,10 @@ namespace MonoDevelop.XmlEditor.Completion
 		public string CompletionString {
 			get { return element; }
 		}
-
+		
+		public bool Sink {
+			get { return false; }
+		}
 		
 		public void InsertAction (ICompletionWidget widget, ICodeCompletionContext context)
 		{
@@ -82,11 +85,6 @@ namespace MonoDevelop.XmlEditor.Completion
 				buf.Select (buf.CursorPosition, buf.CursorPosition);
 				buf.EndAtomicUndo ();
 			}
-		}
-
-		public virtual int CompareTo (ICompletionData x)
-		{
-			return String.Compare (Text[0], x.Text[0], true);
 		}		
 	}
 }
