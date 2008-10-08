@@ -1,3 +1,21 @@
+2008-10-08  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Dom/DomType.cs:
+	* MonoDevelop.Projects.Dom/DomField.cs:
+	* MonoDevelop.Projects.Dom/DomEvent.cs:
+	* MonoDevelop.Projects.Dom/DomUsing.cs:
+	* MonoDevelop.Projects.Dom/Namespace.cs:
+	* MonoDevelop.Projects.Dom/DomMethod.cs:
+	* MonoDevelop.Projects.Dom/DomProperty.cs:
+	* MonoDevelop.Projects.Dom/IDomVisitor.cs:
+	* MonoDevelop.Projects.Dom/DomAttribute.cs:
+	* MonoDevelop.Projects.Dom/DomParameter.cs:
+	* MonoDevelop.Projects.Dom/LocalVariable.cs:
+	* MonoDevelop.Projects.Dom/DomReturnType.cs:
+	* MonoDevelop.Projects.Dom/AbstractMember.cs:
+	* MonoDevelop.Projects.Dom/CompilationUnit.cs:
+	* MonoDevelop.Projects.Dom.Output/Ambience.cs: Fix spelling.
+
 2008-10-08  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomType.cs: fixed regression bug.

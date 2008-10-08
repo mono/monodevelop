@@ -178,7 +178,7 @@ namespace MonoDevelop.Projects.Dom.Output
 		{
 			if (domVisitable == null)
 				return nullString;
-			return (string)domVisitable.AcceptVisitior (OutputVisitor, flags);
+			return (string)domVisitable.AcceptVisitor (OutputVisitor, flags);
 		}
 	}
 }

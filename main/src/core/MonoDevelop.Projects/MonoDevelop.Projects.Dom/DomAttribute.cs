@@ -135,7 +135,7 @@ namespace MonoDevelop.Projects.Dom
 			return result;
 		}
 		
-		public object AcceptVisitior (IDomVisitor visitor, object data)
+		public object AcceptVisitor (IDomVisitor visitor, object data)
 		{
 			return visitor.Visit (this, data);
 		}

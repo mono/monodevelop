@@ -149,7 +149,7 @@ namespace MonoDevelop.Projects.Dom
 			                      Location);
 		}
 
-		public object AcceptVisitior (IDomVisitor visitor, object data)
+		public object AcceptVisitor (IDomVisitor visitor, object data)
 		{
 			return visitor.Visit (this, data);
 		}

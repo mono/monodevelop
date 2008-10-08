@@ -430,7 +430,7 @@ namespace MonoDevelop.Projects.Dom
 			target.AddRange (DomAttribute.Resolve (source.Attributes, typeResolver));
 		}
 		
-		public abstract object AcceptVisitior (IDomVisitor visitor, object data);
+		public abstract object AcceptVisitor (IDomVisitor visitor, object data);
 		
 	}
 }

@@ -71,7 +71,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		
 		
-		object IDomVisitable.AcceptVisitior (IDomVisitor visitor, object data)
+		object IDomVisitable.AcceptVisitor (IDomVisitor visitor, object data)
 		{
 			return visitor.Visit (this, data);
 		}

@@ -97,7 +97,7 @@ namespace MonoDevelop.Projects.Dom
 			aliases[nspace] = alias;
 		}
 
-		public object AcceptVisitior (IDomVisitor visitor, object data)
+		public object AcceptVisitor (IDomVisitor visitor, object data)
 		{
 			return visitor.Visit (this, data);
 		}

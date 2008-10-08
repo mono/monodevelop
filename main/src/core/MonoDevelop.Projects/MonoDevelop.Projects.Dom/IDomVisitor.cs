@@ -32,7 +32,7 @@ namespace MonoDevelop.Projects.Dom
 {
 	public interface IDomVisitable
 	{
-		object AcceptVisitior (IDomVisitor visitor, object data);
+		object AcceptVisitor (IDomVisitor visitor, object data);
 	}
 	
 	public interface IDomVisitor

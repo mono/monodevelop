@@ -64,7 +64,7 @@ namespace MonoDevelop.Projects.Dom
 			return CompareTo (other) == 0;
 		}
 
-		public override object AcceptVisitior (IDomVisitor visitor, object data)
+		public override object AcceptVisitor (IDomVisitor visitor, object data)
 		{
 			return visitor.Visit (this, data);
 		}

@@ -383,7 +383,7 @@ namespace MonoDevelop.Projects.Dom
 			return invariantString = result.ToString ();
 		}
 		
-		public object AcceptVisitior (IDomVisitor visitor, object data)
+		public object AcceptVisitor (IDomVisitor visitor, object data)
 		{
 			return visitor.Visit (this, data);
 		}
