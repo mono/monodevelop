@@ -224,8 +224,8 @@ namespace MonoDevelop.CSharpBinding
 					if (context.FilterEntry (o))
 						continue;
 					IMember member = o as IMember;
-					if (member != null && member.IsAbstract)
-						continue;
+//					if (member != null && member.IsAbstract)
+//						continue;
 					if (context == ExpressionContext.Attribute) {
 						IType t = o as IType;
 						if (t != null && !t.IsBaseType (attributeType))
