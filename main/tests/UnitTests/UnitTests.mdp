@@ -46,6 +46,8 @@
     <File name="Mono.TextEditor.Tests.DefaultEditActions/RemoveTabTests.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.TextEditor.Tests.DefaultEditActions/SelectionSelectAllTests.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects/LocalCopyTests.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Xml.StateEngine" subtype="Directory" buildaction="Compile" />
+    <File name="MonoDevelop.Xml.StateEngine/ParsingTests.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
@@ -63,6 +65,8 @@
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Projects.Gui" />
     <ProjectReference type="Gac" localcopy="True" refto="gtk-dotnet, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Project" localcopy="False" refto="NRefactory" />
+    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.XmlEditor" />
+    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.AspNet" />
   </References>
   <GtkDesignInfo />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" ExecuteTargetName="test" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../..">

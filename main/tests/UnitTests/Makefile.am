@@ -12,8 +12,10 @@ REFS =  \
 	$(MONO_NUNIT_LIBS) \
 	-pkg:gtk-dotnet-2.0 \
 	-r:../../build/AddIns/BackendBindings/MonoDevelop.CSharpBinding.dll \
+	-r:../../build/AddIns/MonoDevelop.AspNet/MonoDevelop.AspNet.dll \
 	-r:../../build/AddIns/MonoDevelop.Autotools/MonoDevelop.Autotools.dll \
 	-r:../../build/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.dll \
+	-r:../../build/AddIns/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.dll \
 	-r:../../build/bin/Mono.TextEditor.dll \
 	-r:../../build/bin/MonoDevelop.Core.dll \
 	-r:../../build/bin/MonoDevelop.Ide.dll \
@@ -54,6 +56,7 @@ FILES =  \
 	MonoDevelop.Projects/SolutionTests.cs \
 	MonoDevelop.Projects/TestProjectsChecks.cs \
 	MonoDevelop.Projects/WorkspaceTests.cs \
+	MonoDevelop.Xml.StateEngine/ParsingTests.cs \
 	TestBase.cs \
 	Util.cs
 
@@ -64,7 +67,7 @@ test: all
 	if test -n "$(fixture)"; then \
 		fp="/fixture=$(fixture)"; \
 	fi; \
-	$(MD_LAUNCH_SETUP) MONO_PATH=$(top_builddir)/build/AddIns/BackendBindings mono --debug $(NUNIT_CONSOLE) $(top_builddir)/build/bin/UnitTests.dll $$fp
+	$(MD_LAUNCH_SETUP) MONO_PATH=$(top_builddir)/build/AddIns/BackendBindings:$(top_builddir)/build/AddIns/MonoDevelop.XmlEditor:$(top_builddir)/build/AddIns/MonoDevelop.AspNet mono --debug $(NUNIT_CONSOLE) $(top_builddir)/build/bin/UnitTests.dll $$fp
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 EXTRA_DIST = $(FILES) $(RES)
