@@ -263,6 +263,8 @@ namespace MonoDevelop.Projects.Dom
 		
 		public DomReturnType (IType type)
 		{
+			if (type == null)
+				throw new ArgumentNullException ("type was null");
 			this.type = type;
 			this.nspace = type.Namespace;
 			IType curType = type;

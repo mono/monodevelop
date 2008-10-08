@@ -1,3 +1,8 @@
+2008-10-08  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom/DomReturnType.cs: domreturntype now throws
+	  null argument exception on null types. 
+
 2008-10-07  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Projects/DotNetProject.cs: Fix copying app.config.
