@@ -1,5 +1,16 @@
 2008-10-08  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Projects.Gui.Completion/CompletionData.cs: Add some very
+	simple default completion data objects.
+
+	* MonoDevelop.Projects.Gui.Completion/CodeCompletionData.cs: Fix
+	compilation.
+
+	* Makefile.am:
+	* MonoDevelop.Projects.Gui.mdp: Updated.
+
+2008-10-08  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Projects.Gui.Completion/CodeCompletionData.cs:
 	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
 	* MonoDevelop.Projects.Gui.Completion/IOverloadedCompletionData.cs: Move

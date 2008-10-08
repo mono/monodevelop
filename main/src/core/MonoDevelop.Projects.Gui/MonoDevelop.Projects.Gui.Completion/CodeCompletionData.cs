@@ -155,9 +155,10 @@ namespace MonoDevelop.Projects.Gui.Completion
 
 		public IEnumerable<ICompletionData> GetOverloads ()
 		{
-			return overload_data == null
-				? new ICompletionData[0]
-				: overload_data.Values;
+			if (overload_data == null)
+				return new ICompletionData[0];
+			else
+				return overload_data.Values;
 		}
 
 		public void AddOverload (CodeCompletionData overload)

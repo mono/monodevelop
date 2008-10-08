@@ -33,6 +33,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.RenameConfigDialog.cs \
 	MonoDevelop.Projects.Gui.Completion/CodeCompletionData.cs \
 	MonoDevelop.Projects.Gui.Completion/CodeCompletionDataProvider.cs \
+	MonoDevelop.Projects.Gui.Completion/CompletionData.cs \
 	MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs \
 	MonoDevelop.Projects.Gui.Completion/DeclarationViewWindow.cs \
 	MonoDevelop.Projects.Gui.Completion/ICompletionData.cs \
