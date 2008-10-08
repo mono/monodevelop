@@ -115,8 +115,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			get {
 				if (HasContent (ContentFlags.HasBaseTypes))
 					return WrappedType.BaseType;
-				else
-					return null;
+				return null;
 			}
 		}
 		
@@ -124,8 +123,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			get {
 				if (HasContent (ContentFlags.HasInnerClasses))
 					return WrappedType.InnerTypes;
-				else
-					return new IType [0];
+				return new IType [0];
 			}
 		}
 		
@@ -133,8 +131,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			get {
 				if (HasContent (ContentFlags.HasBaseTypes))
 					return WrappedType.ImplementedInterfaces;
-				else
-					return new ReadOnlyCollection<IReturnType> (new IReturnType[0]);
+				return new ReadOnlyCollection<IReturnType> (new IReturnType[0]);
 			}
 		}
 		
@@ -142,8 +139,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			get {
 				if (HasContent (ContentFlags.HasGenericParams))
 					return WrappedType.TypeParameters;
-				else
-					return new ReadOnlyCollection<TypeParameter> (new TypeParameter[0]);
+				return new ReadOnlyCollection<TypeParameter> (new TypeParameter[0]);
 			}
 		}
 		
@@ -157,8 +153,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			get {
 				if (HasContent (ContentFlags.HasFields))
 					return WrappedType.Fields;
-				else
-					return new IField [0];
+				return new IField [0];
 			}
 		}
 		
@@ -166,8 +161,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			get {
 				if (HasContent (ContentFlags.HasProperties))
 					return WrappedType.Properties;
-				else
-					return new IProperty [0];
+				return new IProperty [0];
 			}
 		}
 		
@@ -175,8 +169,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			get {
 				if (HasContent (ContentFlags.HasMethods))
 					return WrappedType.Methods;
-				else
-					return new IMethod [0];;
+				return new IMethod [0];;
 			}
 		}
 		
@@ -184,8 +177,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			get {
 				if (HasContent (ContentFlags.HasEvents))
 					return WrappedType.Events;
-				else
-					return new IEvent [0];
+				return new IEvent [0];
 			}
 		}
 		
@@ -193,8 +185,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			get {
 				if (HasContent (ContentFlags.HasParts))
 					return WrappedType.Parts;
-				else
-					return base.Parts;
+				return base.Parts;
 			}
 		}
 		
@@ -209,8 +200,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			get {
 				if (HasContent (ContentFlags.HasCompilationUnit))
 					return WrappedType.CompilationUnit;
-				else
-					return null;
+				return null;
 			}
 		}
 		
@@ -218,8 +208,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			get {
 				if (HasContent (ContentFlags.HasBodyRegion))
 					return WrappedType.BodyRegion;
-				else
-					return DomRegion.Empty;
+				return DomRegion.Empty;
 			}
 			set {
 				throw new NotSupportedException ();
@@ -230,8 +219,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			get {
 				if (HasContent (ContentFlags.HasRegion))
 					return WrappedType.Location;
-				else
-					return DomLocation.Empty;
+				return DomLocation.Empty;
 			}
 		}
 		
@@ -239,56 +227,49 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			get {
 				if (HasContent (ContentFlags.HasProperties))
 					return WrappedType.PropertyCount;
-				else
-					return 0;
+				return 0;
 			}
 		}
 		public override int FieldCount {
 			get {
 				if (HasContent (ContentFlags.HasFields))
 					return WrappedType.FieldCount;
-				else
-					return 0;
+				return 0;
 			}
 		}
 		public override int MethodCount {
 			get {
 				if (HasContent (ContentFlags.HasMethods))
 					return WrappedType.MethodCount;
-				else
-					return 0;
+				return 0;
 			}
 		}
 		public override int ConstructorCount {
 			get {
 				if (HasContent (ContentFlags.HasConstructors))
 					return WrappedType.ConstructorCount;
-				else
-					return 0;
+				return 0;
 			}
 		}
 		public override int IndexerCount {
 			get {
 				if (HasContent (ContentFlags.HasIndexers))
 					return WrappedType.IndexerCount;
-				else
-					return 0;
+				return 0;
 			}
 		}
 		public override int EventCount {
 			get {
 				if (HasContent (ContentFlags.HasEvents))
 					return WrappedType.EventCount;
-				else
-					return 0;
+				return 0;
 			}
 		}
 		public override int InnerTypeCount {
 			get {
 				if (HasContent (ContentFlags.HasInnerClasses))
 					return WrappedType.InnerTypeCount;
-				else
-					return 0;
+				return 0;
 			}
 		}
 		
@@ -296,8 +277,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			get {
 				if (HasContent (ContentFlags.HasDocumentation))
 					return WrappedType.Documentation;
-				else
-					return null;
+				return null;
 			}
 			set {
 				throw new NotSupportedException ();
@@ -308,8 +288,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			get {
 				if (HasContent (ContentFlags.HasAttributes))
 					return WrappedType.Attributes;
-				else
-					return new IAttribute [0];
+				return new IAttribute [0];
 			}
 		}
 

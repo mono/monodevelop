@@ -595,6 +595,9 @@ namespace MonoDevelop.Projects.Dom
 			result.Name          = type.Name;
 			result.Namespace     = type.Namespace;
 			result.ClassType     = type.ClassType;
+			foreach (TypeParameter param in type.TypeParameters) {
+				result.AddTypeParameter (param);
+			}
 			
 			if (type.BaseType != null)
 				result.baseType = DomReturnType.Resolve (type.BaseType, typeResolver);
