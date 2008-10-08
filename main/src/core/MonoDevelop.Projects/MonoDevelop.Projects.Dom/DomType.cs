@@ -75,7 +75,7 @@ namespace MonoDevelop.Projects.Dom
 		public virtual string Namespace {
 			get {
 				if (DeclaringType != null) 
-					return !String.IsNullOrEmpty (nameSpace) ?  nameSpace + "." + DeclaringType.Name : DeclaringType.Name;
+					return DeclaringType.FullName;
 				return nameSpace ?? "";
 			}
 			set {
