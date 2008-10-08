@@ -23,7 +23,7 @@ using System.Xml;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.IO;
-using System.Collections;
+using System.Collections.Generic;
 
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Core;
@@ -33,7 +33,7 @@ using Ambience_ = MonoDevelop.Projects.Dom.Output.Ambience;
 
 namespace MonoDevelop.Projects.Gui.Completion
 {
-	public class CodeCompletionData : ICompletionDataWithMarkup
+	public class CodeCompletionData : ICompletionDataWithMarkup, IOverloadedCompletionData
 	{
 		string image;
 		string[] text;
@@ -53,12 +53,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 		}
 		
 		
-		public int Overloads
-		{
-			get {
-				//return overloads;
-				return overload_data.Count;
-			}
+		public bool HasOverloads {
+			get { return overload_data.Count > 0; }
 		}
 		
 		public string Image
@@ -155,18 +151,23 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 		}
 
-		Hashtable overload_data = new Hashtable ();
+		Dictionary<string, ICompletionData> overload_data;
 
-		public CodeCompletionData[] GetOverloads ()
+		public IEnumerable<ICompletionData> GetOverloads ()
 		{
-			return (CodeCompletionData[]) (new ArrayList (overload_data.Values)).ToArray (typeof (CodeCompletionData));
+			return overload_data == null
+				? new ICompletionData[0]
+				: overload_data.Values;
 		}
 
 		public void AddOverload (CodeCompletionData overload)
 		{
 			string desc = overload.SimpleDescription;
-
-			if (desc != description || !overload_data.Contains (desc))
+			
+			if (overload_data == null)
+				overload_data = new Dictionary<string, ICompletionData> ();
+			
+			if (desc != description || !overload_data.ContainsKey (desc))
 				overload_data[desc] = overload;
 		}
 		

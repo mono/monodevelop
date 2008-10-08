@@ -1,3 +1,16 @@
+2008-10-08  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CodeCompletionData.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/IOverloadedCompletionData.cs: Move
+	overloading functionality into an IOverloadedCompletionData interface
+	so that ICompletionData implementors that want overloads do not have
+	to subclass CodeCompletionData, and can customise overloading
+	behaviour.
+
+	* Makefile.am:
+	* MonoDevelop.Projects.Gui.mdp: Updated.
+
 2008-10-07  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects.Gui.Completion/CodeCompletionData.cs: Track API.

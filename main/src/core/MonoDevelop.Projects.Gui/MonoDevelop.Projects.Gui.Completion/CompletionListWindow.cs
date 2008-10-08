@@ -301,7 +301,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 
 			ICompletionData data = completionData[List.Selection];
 			ICompletionDataWithMarkup datawMarkup = data as ICompletionDataWithMarkup;
-			CodeCompletionData ccdata = data as CodeCompletionData;
+			IOverloadedCompletionData overloadedData = data as IOverloadedCompletionData;
 
 			string descMarkup = datawMarkup != null ? datawMarkup.DescriptionPango : GLib.Markup.EscapeText (data.Description);
 
@@ -313,10 +313,12 @@ namespace MonoDevelop.Projects.Gui.Completion
 	
 				declarationviewwindow.AddOverload (descMarkup);
 
-				if (ccdata != null) {
-					foreach (CodeCompletionData odata in ccdata.GetOverloads ()) {
-						ICompletionDataWithMarkup odatawMarkup = odata as ICompletionDataWithMarkup;
-						declarationviewwindow.AddOverload (odatawMarkup == null ? GLib.Markup.EscapeText (odata.Description) : odatawMarkup.DescriptionPango);
+				if (overloadedData != null) {
+					foreach (ICompletionData oData in overloadedData.GetOverloads ()) {
+						ICompletionDataWithMarkup odatawMarkup = oData as ICompletionDataWithMarkup;
+						declarationviewwindow.AddOverload (odatawMarkup == null
+							? GLib.Markup.EscapeText (oData.Description)
+							: odatawMarkup.DescriptionPango);
 					}
 				}
 			}
@@ -333,7 +335,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			declarationviewwindow.SetFixedWidth (-1);
 			declarationviewwindow.ReshowWithInitialSize ();
 			declarationviewwindow.ShowAll ();
-			declarationviewwindow.Multiple = (ccdata != null && ccdata.Overloads != 0);
+			declarationviewwindow.Multiple = (overloadedData != null && overloadedData.HasOverloads);
 
 			declarationviewwindow.GdkWindow.GetSize (out dvwWidth, out dvwHeight);
 
