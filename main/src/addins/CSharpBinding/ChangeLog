@@ -1,5 +1,9 @@
 2008-10-08  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Gui/MemberCompletionData.cs: Make code more readable.
+
+2008-10-08  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Gui/NRefactoryResolver.cs: Track API changes.
 
 2008-10-08  Michael Hutchinson  <mhutchinson@novell.com>

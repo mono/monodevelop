@@ -221,29 +221,39 @@ namespace MonoDevelop.CSharpBinding
 				xml.Read();
 				do {
 					if (xml.NodeType == XmlNodeType.Element) {
-						string elname = xml.Name.ToLower();
-						if (elname == "remarks") {
+						switch (xml.Name.ToLower()) {
+						case "remarks":
 							ret.Append("Remarks:\n");
+							break;
 						// skip <example>-nodes
-						} else if (elname == "example") {
+						case "example":
 							xml.Skip();
 							xml.Skip();
-						} else if (elname == "exception") {
-							ret.Append("Exception: " + GetCref(xml["cref"]) + ":\n");
-						} else if (elname == "returns") {
-							ret.Append("Returns: ");
-						} else if (elname == "see") {
-							ret.Append(GetCref(xml["cref"]) + xml["langword"]);
-						} else if (elname == "seealso") {
-							ret.Append("See also: " + GetCref(xml["cref"]) + xml["langword"]);
-						} else if (elname == "paramref") {
-							ret.Append(xml["name"]);
-						} else if (elname == "param") {
-							ret.Append(xml["name"].Trim() + ": ");
-						} else if (elname == "value") {
-							ret.Append("Value: ");
-						} else if (elname == "para")
+							break;
+						case "exception":
+							ret.Append ("Exception: " + GetCref (xml["cref"]) + ":\n");
+							break;
+						case "returns":
+							ret.Append ("Returns: ");
+							break;
+						case "see":
+							ret.Append (GetCref (xml["cref"]) + xml["langword"]);
+							break;
+						case "seealso":
+							ret.Append ("See also: " + GetCref (xml["cref"]) + xml["langword"]);
+							break;
+						case "paramref":
+							ret.Append (xml["name"]);
+							break;
+						case "param":
+							ret.Append (xml["name"].Trim() + ": ");
+							break;
+						case "value":
+							ret.Append ("Value: ");
+							break;
+						case "para":
 							continue; // Keep new line flag
+						}
 						lastLinePos = -1;
 					} else if (xml.NodeType == XmlNodeType.EndElement) {
 						string elname = xml.Name.ToLower();
