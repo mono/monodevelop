@@ -231,10 +231,12 @@ namespace MonoDevelop.CSharpBinding
 						if (t != null && !t.IsBaseType (attributeType))
 							continue;
 					}
-					CodeCompletionData data = col.AddCompletionData (provider, o);
-					if (context == ExpressionContext.Attribute) {
-						if (data != null && data.CompletionString != null && data.CompletionString.EndsWith ("Attribute"))
-							data.CompletionString = data.CompletionString.Substring (0, data.CompletionString.Length - "Attribute".Length);
+					ICompletionData data = col.AddCompletionData (provider, o);
+					if (data is CodeCompletionData && context == ExpressionContext.Attribute) {
+						if (data.CompletionString != null && data.CompletionString.EndsWith ("Attribute"))
+							((CodeCompletionData)data).CompletionString
+								= data.CompletionString.Substring
+									(0, data.CompletionString.Length - "Attribute".Length);
 					}
 				}
 			}
