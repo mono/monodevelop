@@ -1,3 +1,8 @@
+2008-10-08  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs: exposed
+	GetAssemblyInfo method.
+
 2008-10-08  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/DomReturnType.cs: domreturntype now throws

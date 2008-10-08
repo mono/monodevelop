@@ -1024,6 +1024,10 @@ namespace MonoDevelop.Projects.Dom.Parser
 		public static event EventHandler ParseOperationStarted;
 		public static event EventHandler ParseOperationFinished;
 		
+		public static bool GetAssemblyInfo (string assemblyName, out string realAssemblyName, out string assemblyFile, out string name)
+		{
+			return MonoDevelop.Projects.Dom.Serialization.AssemblyCodeCompletionDatabase.GetAssemblyInfo (assemblyName, out realAssemblyName, out assemblyFile, out name);
+		}
 	}
 	
 	class CompilationUnitTypeResolver: ITypeResolver
