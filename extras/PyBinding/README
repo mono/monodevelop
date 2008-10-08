@@ -1,0 +1,7 @@
+This addin provides support for the standard cPython runtime.  It is in no
+way supporting IronPython.  If you wish to have IronPython support, look
+at bringing PythonBinding up to date.  The reason for this is that an
+IronPython binding would want to inherit DotNetProject and that makes no
+sense for cPython.
+
+-- Christian Hergert

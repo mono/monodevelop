@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<Template
+    Originator="Christian Hergert"
+    Language="Python"
+    Created="10/1/2008"
+    LastModified="10/1/2008">
+
+    <TemplateConfiguration>
+        <_Name>Basic Python Script</_Name>
+        <Icon>res:py-icon-32.png</Icon>
+        <_Category>General</_Category>
+        <_Description>Creates an Python script that can parse command line options.</_Description>
+        <LanguageName>Python</LanguageName>
+    </TemplateConfiguration>
+
+    <TemplateFiles>
+<File DefaultExtension=".py" DefaultName="EmptyPySourceFile" AddStandardHeader="True">
+import getopt
+import sys
+
+def usage(stream = sys.stdout, args = sys.argv):
+	"""Prints application usage to @stream."""
+	print >> stream, 'usage: %s [OPTIONS]' % args[0]
+	print >> stream, ''
+	print >> stream, 'options'
+	print >> stream, ''
+	print >> stream, '  -h, --help    Show this help menu'
+	print >> stream, ''
+
+def main(args = sys.argv):
+	"""Script entry point.
+
+	@args: command line arguments to the script.
+
+	Returns: int of the shell exit code"""
+	try:
+		_opts, _args = getopt.getopt(args[1:], 'h', ['help'])
+	except getopt.GetoptError:
+		usage()
+		return 1
+
+	for o,a in _opts:
+		if o in ('--help', '-h'):
+			usage()
+			return 0
+
+	print >> sys.stdout, 'Remaining args ... "' + ' '.join(_args) + '"'
+
+if __name__ == '__main__':
+	sys.exit(main(sys.argv))
+</File>
+    </TemplateFiles>
+
+    <FileOptions/>
+
+</Template>
