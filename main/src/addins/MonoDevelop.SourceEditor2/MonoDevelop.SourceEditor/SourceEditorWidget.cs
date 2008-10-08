@@ -349,6 +349,8 @@ namespace MonoDevelop.SourceEditor
 		}
 		void UpdateAutocorTimer ()
 		{
+			if (!SourceEditorOptions.Options.UnderlineErrors)
+				return;
 			uint timeout = 900;
 			
 			if (resetTimerStarted) {

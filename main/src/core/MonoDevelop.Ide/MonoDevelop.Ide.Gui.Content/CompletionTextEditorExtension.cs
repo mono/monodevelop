@@ -34,6 +34,7 @@ using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Gui.Content
 {
@@ -42,8 +43,8 @@ namespace MonoDevelop.Ide.Gui.Content
 		CodeCompletionContext currentCompletionContext;
 		ICompletionWidget completionWidget;
 		bool autoHideCompletionWindow = true;
-		
-		
+		bool enableCodeCompletion = false;
+
 		// When a key is pressed, and before the key is processed by the editor, this method will be invoked.
 		// Return true if the key press should be processed by the editor.
 		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
@@ -68,8 +69,12 @@ namespace MonoDevelop.Ide.Gui.Content
 			res = base.KeyPress (key, keyChar, modifier);
 			if ((modifier & Gdk.ModifierType.ControlMask) == Gdk.ModifierType.ControlMask)
 				return res;
-			// Handle code completion
+
+			if (!enableCodeCompletion)
+				return res;
 			
+			// Handle code completion
+
 			if (completionWidget != null && currentCompletionContext == null) {
 				currentCompletionContext = completionWidget.CreateCodeCompletionContext (Editor.CursorPosition);
 				
@@ -285,10 +290,28 @@ namespace MonoDevelop.Ide.Gui.Content
 		{
 			base.Initialize ();
 			
+			enableCodeCompletion = (bool)PropertyService.Get ("EnableCodeCompletion", true);
+			PropertyService.PropertyChanged += OnPropertyUpdated;
 			completionWidget = Document.GetContent <ICompletionWidget> ();
 			if (completionWidget != null)
 				completionWidget.CompletionContextChanged += OnCompletionContextChanged;
 		}
+
+		bool disposed;
+		public override void Dispose ()
+		{
+			if (!disposed) {
+				disposed = false;
+				PropertyService.PropertyChanged -= OnPropertyUpdated;
+				base.Dispose ();
+			}
+		}
+
+		void OnPropertyUpdated (object sender, PropertyChangedEventArgs e)
+		{
+			if (e.Key == "EnableCodeCompletion" && e.NewValue != e.OldValue)
+				enableCodeCompletion  = (bool)e.NewValue;
+		}	
 	}
 	public interface ITypeNameResolver
 	{

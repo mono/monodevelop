@@ -1,3 +1,9 @@
+2008-10-08  Andreia Gaita  <avidigal@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Don't run the
+	autocorrect/underline error timer if the UnderlineErrors options is
+	false (fixes #433288)
+
 2008-10-07  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.SourceEditor/SourceEditorView.cs,
