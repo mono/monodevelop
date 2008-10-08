@@ -316,7 +316,7 @@ namespace MonoDevelop.CSharpBinding
 				return DomReturnType.Void;
 			IType resolvedType = dom.SearchType (new SearchTypeRequest (unit, type));
 			if (resolvedType != null)
-				return new DomReturnType (resolvedType);
+				return new DomReturnType (DomType.CreateInstantiatedGenericType (resolvedType, type.GenericArguments));
 			return type;
 		}
 		

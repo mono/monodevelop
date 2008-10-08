@@ -758,7 +758,13 @@ namespace MonoDevelop.CSharpBinding.Gui
 				}
 			}
 		}
-		
+		static string StripGenerics (string str)
+		{
+			int idx = str.IndexOf ('<');
+			if (idx > 0)
+				return str.Substring (0, idx);
+			return str;
+		}
 		CodeCompletionDataProvider CreateTypeCompletionData (ExpressionContext context, IReturnType returnType)
 		{
 			CodeCompletionDataProvider result = new CodeCompletionDataProvider (null, GetAmbience ());
@@ -771,13 +777,12 @@ namespace MonoDevelop.CSharpBinding.Gui
 			CompletionDataCollector col = new CompletionDataCollector (Editor, dom, Document.CompilationUnit, location);
 			
 			if (type == null) {
-				result.DefaultCompletionString = col.AddCompletionData (result, returnType).CompletionString;
+				result.DefaultCompletionString = StripGenerics (col.AddCompletionData (result, returnType).CompletionString);
 				return result;
 			}
 			
 			if (tce != null && tce.Type != null) {
-				
-				result.DefaultCompletionString = col.AddCompletionData (result, tce.Type).CompletionString;
+				result.DefaultCompletionString = StripGenerics (col.AddCompletionData (result, tce.Type).CompletionString);
 			} else {
 				if (context == null || !context.FilterEntry (type))
 					col.AddCompletionData (result, type);
