@@ -584,7 +584,7 @@ namespace Mono.TextEditor
 				if (searchResult == null || searchResult.SearchWrapped)
 					break;
 				searchEngine.Replace (searchResult, withPattern);
-				offset = searchResult.EndOffset;
+				offset = searchResult.Offset + withPattern.Length;
 				result++;
 			}
 			if (result > 0)
