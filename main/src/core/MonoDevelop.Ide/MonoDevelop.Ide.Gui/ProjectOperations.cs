@@ -227,39 +227,31 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (member == null) 
 				return;
+			string fileName;
 			if (member is MonoDevelop.Projects.Dom.IType) {
-				System.Console.WriteLine(((MonoDevelop.Projects.Dom.IType)member).CompilationUnit.FileName + " loc:" + member.Location);
-				MonoDevelop.Ide.Gui.IdeApp.Workbench.OpenDocument (((MonoDevelop.Projects.Dom.IType)member).CompilationUnit.FileName,
-				                                                   member.Location.Line,
-				                                                   member.Location.Column,
-				                                                   true);
+				fileName = ((MonoDevelop.Projects.Dom.IType)member).CompilationUnit.FileName;
+			} else {
+				if (member.DeclaringType == null) 
+					return;
+				fileName = member.DeclaringType.CompilationUnit.FileName;
 			}
-			if (member.DeclaringType == null) 
-				return;
-			System.Console.WriteLine(member.DeclaringType + " --- " + member.DeclaringType.CompilationUnit.FileName + " loc:" + member.Location);
-			MonoDevelop.Ide.Gui.IdeApp.Workbench.OpenDocument (member.DeclaringType.CompilationUnit.FileName, 
+			if (!System.IO.Path.IsPathRooted (fileName)) {
+				string realAssemblyName;
+				string assemblyFile;
+				string name;
+				if (ProjectDomService.GetAssemblyInfo (fileName, out realAssemblyName, out assemblyFile, out name)) {
+					Document doc = MonoDevelop.Ide.Gui.IdeApp.Workbench.OpenDocument (assemblyFile, member.Location.Line, member.Location.Column, true);
+					MonoDevelop.Ide.Gui.Content.IUrlHandler handler = doc.ActiveView as MonoDevelop.Ide.Gui.Content.IUrlHandler;
+					if (handler != null)
+						handler.Open (member.HelpUrl);
+					return;
+				}
+			}
+			MonoDevelop.Ide.Gui.IdeApp.Workbench.OpenDocument (fileName,
 			                                                   member.Location.Line,
 			                                                   member.Location.Column,
 			                                                   true);
 		}
-		/*
-		public void JumpToDeclaration (IMember item)
-		{
-			String file;
-			if ((file = GetDeclaredFile(item)) == null)
-				return;
-			if (item is IMember) {
-				IMember mem = (IMember) item;
-				IdeApp.Workbench.OpenDocument (file, mem.Region.BeginLine, mem.Region.BeginColumn, true);
-			} else if (item is IType) {
-				IType cls = (IType) item;
-				IdeApp.Workbench.OpenDocument (file, cls.Region.BeginLine, cls.Region.BeginColumn, true);
-			} else if (item is MonoDevelop.Projects.Parser.LocalVariable) {
-				MonoDevelop.Projects.Parser.LocalVariable lvar = (MonoDevelop.Projects.Parser.LocalVariable) item;
-				IdeApp.Workbench.OpenDocument (file, lvar.Region.BeginLine, lvar.Region.BeginColumn, true);
-			}
-		}*/
-		
 		string GetClassFileName (IType cls)
 		{
 			if (cls.CompilationUnit.FileName != null)

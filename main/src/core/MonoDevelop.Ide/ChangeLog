@@ -1,3 +1,9 @@
+2008-10-08  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs:
+	* MonoDevelop.Ide.Gui.Content/IUrlHandler.cs: Jump to declaration now is
+	able to handle dom objects defined in assemblies.
+
 2008-10-08  Ankit Jain  <jankit@novell.com>
 
 	* MonoDevelop.Ide.CodeTemplates/TemplateCompletionDataProvider.cs:

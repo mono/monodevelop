@@ -141,6 +141,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Content/IPrintable.cs \
 	MonoDevelop.Ide.Gui.Content/ISplittable.cs \
 	MonoDevelop.Ide.Gui.Content/ITextBuffer.cs \
+	MonoDevelop.Ide.Gui.Content/IUrlHandler.cs \
 	MonoDevelop.Ide.Gui.Content/IZoomable.cs \
 	MonoDevelop.Ide.Gui.Content/SmartIndenter.cs \
 	MonoDevelop.Ide.Gui.Content/TextEditorExtension.cs \
