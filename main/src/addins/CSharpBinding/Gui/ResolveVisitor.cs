@@ -381,8 +381,12 @@ namespace MonoDevelop.CSharpBinding
 			BaseResolveResult result = new BaseResolveResult ();
 			result.CallingType   = resolver.CallingType;
 			result.CallingMember = resolver.CallingMember;
-			if (resolver.CallingType != null)
-				result.ResolvedType  = new DomReturnType (this.resolver.Dom.SearchType (new SearchTypeRequest (resolver.Unit, resolver.CallingType.BaseType)));
+			if (resolver.CallingType != null) {
+				IType type = null;
+				if (resolver.CallingType.BaseType != null) 
+					type = this.resolver.Dom.SearchType (new SearchTypeRequest (resolver.Unit, resolver.CallingType.BaseType));
+				result.ResolvedType  = type != null ? new DomReturnType (type) : DomReturnType.Object;
+			}
 			return result;
 		}
 		

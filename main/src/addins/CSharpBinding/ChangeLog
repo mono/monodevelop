@@ -1,5 +1,10 @@
 2008-10-08  Mike Krüger <mkrueger@novell.com> 
 
+	* Gui/ResolveVisitor.cs: fixed 'Bug 429025 - Code completion of 'base'
+	  doesn't work'.
+
+2008-10-08  Mike Krüger <mkrueger@novell.com> 
+
 	* Parser/CodeGenerator.cs: fixed possible null references.
 
 2008-10-07  Michael Hutchinson  <mhutchinson@novell.com>
