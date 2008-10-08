@@ -280,12 +280,12 @@ namespace MonoDevelop.CSharpBinding
 				System.Console.WriteLine("Can't parse expression");
 				return null;
 			}
-			//System.Console.WriteLine("expressionResult:" + expressionResult);
-			//System.Console.WriteLine("parsed expr.:" + expr);
+//			System.Console.WriteLine("expressionResult:" + expressionResult);
+//			System.Console.WriteLine("parsed expr.:" + expr);
 			ResolveVisitor visitor = new ResolveVisitor (this);
 			
 			ResolveResult result = visitor.Resolve (expr);
-			//System.Console.WriteLine("result:" + result);
+//			System.Console.WriteLine("result:" + result);
 			return result;
 		}
 		
@@ -315,10 +315,8 @@ namespace MonoDevelop.CSharpBinding
 			if (type == null)
 				return DomReturnType.Void;
 			IType resolvedType = dom.SearchType (new SearchTypeRequest (unit, type));
-			if (resolvedType != null) {
-				type.Namespace = resolvedType.Namespace;
-				type.Name      = resolvedType.Name;
-			}
+			if (resolvedType != null)
+				return new DomReturnType (resolvedType);
 			return type;
 		}
 		

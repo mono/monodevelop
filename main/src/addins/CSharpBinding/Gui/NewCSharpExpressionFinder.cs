@@ -64,7 +64,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				                                                                                fileName);
 				
 				ResolveResult rr = resolver.Resolve (lhsExpr, new DomLocation (editor.CursorLine, editor.CursorColumn));
-				
+				System.Console.WriteLine(lhsExpr);
 				//ResolveResult rr = ParserService.Resolve (lhsExpr, currentLine.LineNumber, pos, editor.FileName, editor.Text);
 				if (rr != null && rr.ResolvedType != null) {
 					ExpressionContext context;

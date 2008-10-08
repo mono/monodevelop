@@ -477,6 +477,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				return null;
 			case "new":
 				ExpressionContext exactContext = new NewCSharpExpressionFinder (dom).FindExactContextForNewCompletion (Editor, Document.CompilationUnit, Document.FileName);
+				
 				if (exactContext is ExpressionContext.TypeExpressionContext)
 					return CreateTypeCompletionData (exactContext, ((ExpressionContext.TypeExpressionContext)exactContext).Type);
 				return CreateTypeCompletionData (exactContext, null);
@@ -633,6 +634,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 					}
 					if (!foundNamespace && (NamePrefix.Length == 0 || !rt.Namespace.StartsWith (NamePrefix)) && !rt.Namespace.EndsWith ("." + NamePrefix))
 						flags |= OutputFlags.UseFullName;
+					
 					CodeCompletionData cd = new CodeCompletionData (ambience.GetString (rt, flags | OutputFlags.EmitMarkup), "md-class", "");
 					cd.CompletionString = ambience.GetString (rt, flags);
 					provider.AddCompletionData (cd);
@@ -676,6 +678,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				return null;
 			}
 		}
+		
 		ICompletionDataProvider CreateCompletionData (ResolveResult resolveResult, ExpressionResult expressionResult, NRefactoryResolver resolver)
 		{
 			if (resolveResult == null || expressionResult == null)
@@ -768,14 +771,13 @@ namespace MonoDevelop.CSharpBinding.Gui
 			CompletionDataCollector col = new CompletionDataCollector (Editor, dom, Document.CompilationUnit, location);
 			
 			if (type == null) {
-				col.AddCompletionData (result, returnType);
-				result.DefaultCompletionString = CompletionDataCollector.ambience.GetString (returnType, OutputFlags.None);
+				result.DefaultCompletionString = col.AddCompletionData (result, returnType).CompletionString;
 				return result;
 			}
 			
 			if (tce != null && tce.Type != null) {
-				col.AddCompletionData (result, tce.Type);
-				result.DefaultCompletionString = CompletionDataCollector.ambience.GetString (tce.Type, OutputFlags.None);
+				
+				result.DefaultCompletionString = col.AddCompletionData (result, tce.Type).CompletionString;
 			} else {
 				if (context == null || !context.FilterEntry (type))
 					col.AddCompletionData (result, type);
