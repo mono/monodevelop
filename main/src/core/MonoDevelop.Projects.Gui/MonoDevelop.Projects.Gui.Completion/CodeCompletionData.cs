@@ -33,7 +33,7 @@ using Ambience_ = MonoDevelop.Projects.Dom.Output.Ambience;
 
 namespace MonoDevelop.Projects.Gui.Completion
 {
-	public class CodeCompletionData : ICompletionDataWithMarkup, IComparable <ICompletionData>
+	public class CodeCompletionData : ICompletionDataWithMarkup
 	{
 		string image;
 		string[] text;
@@ -89,6 +89,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 				description = value;
 			}
 		}
+		
+		public virtual bool Sink { get { return false; } }
 		
 		protected string Documentation {
 			get { return documentation; }
@@ -367,11 +369,6 @@ namespace MonoDevelop.Projects.Gui.Completion
 				return cref.Substring (2, cref.Length - 2);
 			
 			return cref;
-		}
-		
-		public virtual int CompareTo (ICompletionData x)
-		{
-			return String.Compare (Text[0], x.Text[0], true);
 		}
 	}
 }
