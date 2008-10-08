@@ -1,3 +1,7 @@
+2008-10-08  Mike Krüger <mkrueger@novell.com> 
+
+	* Parser/CodeGenerator.cs: fixed possible null references.
+
 2008-10-07  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Gui/MemberCompletionData.cs: Re-implement sinking obsolete members to

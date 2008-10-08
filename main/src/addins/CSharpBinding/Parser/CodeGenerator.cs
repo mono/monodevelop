@@ -568,7 +568,9 @@ namespace CSharpBinding.Parser
 			if (member is IType && member.Name == GetNameWithoutPrefix (type)) {
 				int line = fieldDeclaration.StartLocation.Y;
 				int col = fieldDeclaration.StartLocation.X;
-				IReturnType cls = resolver.ResolveIdentifier (type, new DomLocation (line, col)).ResolvedType;
+				ResolveResult resolveResult = resolver.ResolveIdentifier (type, new DomLocation (line, col));
+				IReturnType cls = resolveResult != null ? resolveResult.ResolvedType : null;
+				
 				if (cls != null && cls.FullName == ((IType) member).FullName) {
 					//Debug ("adding FieldDeclaration", cls.FullName, fieldDeclaration);
 					AddUniqueReference (line, col, cls.FullName);
@@ -584,7 +586,8 @@ namespace CSharpBinding.Parser
 			if (member is IType && member.Name == GetNameWithoutPrefix (type)) {
 				int line = typeReference.StartLocation.Y;
 				int col = typeReference.StartLocation.X;
-				IReturnType cls = resolver.ResolveIdentifier (type, new DomLocation (line, col)).ResolvedType;
+				ResolveResult resolveResult = resolver.ResolveIdentifier (type, new DomLocation (line, col));
+				IReturnType cls = resolveResult != null ? resolveResult.ResolvedType : null;
 				
 				if (cls != null && cls.FullName == declaringType.FullName) {
 					//Debug ("adding CastExpression", cls.FullName, castExpression);
@@ -706,7 +709,8 @@ namespace CSharpBinding.Parser
 			if (member is IType && member.Name == GetNameWithoutPrefix (type)) {
 				int line = propertyDeclaration.StartLocation.Y;
 				int col = propertyDeclaration.StartLocation.X;
-				IReturnType cls = resolver.ResolveIdentifier (type, new DomLocation (line, col)).ResolvedType;
+				ResolveResult resolveResult = resolver.ResolveIdentifier (type, new DomLocation (line, col));
+				IReturnType cls = resolveResult != null ? resolveResult.ResolvedType : null;
 				
 				if (cls != null && cls.FullName == ((IType) member).FullName) {
 					//Debug ("adding PropertyDeclaration", cls.FullName, propertyDeclaration);
@@ -741,7 +745,8 @@ namespace CSharpBinding.Parser
 			if (member is IType && member.Name == GetNameWithoutPrefix (type)) {
 				int line = castExpression.CastTo.StartLocation.Y;
 				int col = castExpression.CastTo.StartLocation.X;
-				IReturnType cls = resolver.ResolveIdentifier (type, new DomLocation (line, col)).ResolvedType;
+				ResolveResult resolveResult = resolver.ResolveIdentifier (type, new DomLocation (line, col));
+				IReturnType cls = resolveResult != null ? resolveResult.ResolvedType : null;
 				
 				if (cls != null && cls.FullName == declaringType.FullName) {
 					//Debug ("adding CastExpression", cls.FullName, castExpression);
@@ -761,7 +766,8 @@ namespace CSharpBinding.Parser
 			
 			if ((member is IType || (member is IMethod && ((IMethod) member).IsConstructor)) 
 			    && declaringType.Name == GetNameWithoutPrefix (type)) {
-				IReturnType cls = resolver.ResolveIdentifier (type, new DomLocation (line, col)).ResolvedType;
+				ResolveResult resolveResult = resolver.ResolveIdentifier (type, new DomLocation (line, col));
+				IReturnType cls = resolveResult != null ? resolveResult.ResolvedType : null;
 				
 				if (cls != null && cls.FullName == declaringType.FullName) {
 					//Debug ("adding ObjectCreateExpression", cls.FullName, objCreateExpression);
@@ -779,7 +785,8 @@ namespace CSharpBinding.Parser
 			if (member is IType && member.Name == GetNameWithoutPrefix (type)) {
 				int line = varDeclaration.StartLocation.Y;
 				int col = varDeclaration.StartLocation.X;
-				IReturnType cls = resolver.ResolveIdentifier (type, new DomLocation (line, col)).ResolvedType;
+				ResolveResult resolveResult = resolver.ResolveIdentifier (type, new DomLocation (line, col));
+				IReturnType cls = resolveResult != null ? resolveResult.ResolvedType : null;
 				
 				if (cls != null && cls.FullName == declaringType.FullName) {
 					//Debug ("adding varDeclaration", cls.FullName, varDeclaration);
@@ -799,7 +806,8 @@ namespace CSharpBinding.Parser
 				string fname = declaringType.FullName;
 				
 				foreach (TypeReference bc in typeDeclaration.BaseTypes) {
-					IReturnType bclass = resolver.ResolveIdentifier (bc.Type, new DomLocation (typeDeclaration.StartLocation.Y, typeDeclaration.StartLocation.X)).ResolvedType;
+					ResolveResult resolveResult = resolver.ResolveIdentifier (bc.Type, new DomLocation (typeDeclaration.StartLocation.Y, typeDeclaration.StartLocation.X));
+					IReturnType bclass = resolveResult != null ? resolveResult.ResolvedType : null;
 					if (bclass == null || bclass.FullName != fname)
 						continue;
 					
