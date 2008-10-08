@@ -1,3 +1,8 @@
+2008-10-08  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharpBinding/CodeCompletionTests.cs: added test for
+	432681
+
 2008-10-07  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Mono.TextEditor.Tests.DefaultEditActions/CaretMoveTests.cs,

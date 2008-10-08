@@ -559,6 +559,28 @@ class C : BaseClass
 			Assert.IsNull (provider.GetCompletionData("AutoCompleteHandler"), "should not contain 'AutoCompleteHandler' delegate");
 		}
 		
+		/// <summary>
+		/// Bug 432681 - Incorrect completion in nested classes
+		/// </summary>
+		[Test()]
+		public void TestBug432681 ()
+		{
+			CodeCompletionDataProvider provider = CreateProvider (
+@"
+
+class C {
+        public class D
+        {
+        }
+
+        public void Method ()
+        {
+                C.D c = new $
+        }
+}");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.AreEqual ("C.D", provider.DefaultCompletionString, "Completion string is incorrect");
+		}
 		[TestFixtureSetUp] 
 		public void SetUp()
 		{
