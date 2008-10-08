@@ -129,7 +129,6 @@
     <File name="MonoDevelop.AspNet.MD1Serialization/MD1AspNetCustomDataItem.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.AspNet.Deployment/AspNetDeployServiceExtension.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.AspNet.Parser/Directive.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.AspNet.Parser/SimpleCompletionData.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Components" />

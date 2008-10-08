@@ -60,14 +60,14 @@ namespace MonoDevelop.AspNet.Parser
 		
 		static ICompletionDataProvider GetPageAttributes (ClrVersion clrVersion)
 		{
-			List<SimpleCompletionData> list = new List<SimpleCompletionData> ();
+			List<CompletionData> list = new List<CompletionData> ();
 			foreach (string s in new string[] {
 				"Async",
 				"AspCompat",
 				//"Explicit",
 				"MaintainScrollPositionOnPostback"
 				})
-				list.Add (new SimpleCompletionData (s));
+				list.Add (new CompletionData (s));
 			
 			return new SimpleCompletionDataProvider (list.ToArray (), null);
 		}

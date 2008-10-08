@@ -1,3 +1,11 @@
+2008-10-08  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Gui/CSharpTextEditorCompletion.cs: Track API.
+
+	* Gui/MemberCompletionData.cs: Don't subclass CodeCompletionData, but
+	implement interfaces directly so we have more control over the API.
+	Don't mark as obsolete if some overloads are not obsolete.
+
 2008-10-08  Mike Krüger  <mkrueger@novell.com>
 
 	* Gui/NRefactoryResolver.cs:

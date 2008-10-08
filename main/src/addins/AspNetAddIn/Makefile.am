@@ -82,7 +82,6 @@ FILES =  \
 	MonoDevelop.AspNet.Parser/PageInfo.cs \
 	MonoDevelop.AspNet.Parser/PageInfoVisitor.cs \
 	MonoDevelop.AspNet.Parser/Regexes.cs \
-	MonoDevelop.AspNet.Parser/SimpleCompletionData.cs \
 	MonoDevelop.AspNet.Parser/SuggestedHandlerCompletionData.cs \
 	MonoDevelop.AspNet.Parser/WebFormReferenceManager.cs \
 	MonoDevelop.AspNet.StateEngine/AspNetDirectiveState.cs \

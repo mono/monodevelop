@@ -25,6 +25,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Xml;
 using MonoDevelop.Projects.Gui.Completion;
@@ -37,24 +38,46 @@ using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.CSharpBinding
 {
-	public class MemberCompletionData : MonoDevelop.Projects.Gui.Completion.CodeCompletionData, IActionCompletionData
+	public class MemberCompletionData : ICompletionDataWithMarkup, IActionCompletionData, IOverloadedCompletionData
 	{
 		IMember member;
-		
-		public override string Description {
-			get {
-				CheckDescription ();
-				return base.Description;
-			}
-		}
-		public override string DescriptionPango {
-			get {
-				CheckDescription ();
-				return base.DescriptionPango;
-			}
-		}
-		
+		OutputFlags flags;
 		bool hideExtensionParameter = true;
+		static CSharpAmbience ambience = new CSharpAmbience ();
+		bool descriptionCreated = false;
+		
+		string description, descriptionPango, completionString;
+		string[] text;
+		bool markObsolete;
+		
+		Dictionary<string, ICompletionData> overloads;
+		
+		public string Description {
+			get {
+				CheckDescription ();
+				return description;
+			}
+		}
+		
+		public string CompletionString {
+			get { return completionString; }
+		}
+		
+		public string[] Text {
+			get { return text; }
+		}
+		
+		public string Image {
+			get { return member.StockIcon; }
+		}
+		
+		public string DescriptionPango {
+			get {
+				CheckDescription ();
+				return descriptionPango;
+			}
+		}
+		
 		public bool HideExtensionParameter {
 			get {
 				return hideExtensionParameter;
@@ -64,21 +87,43 @@ namespace MonoDevelop.CSharpBinding
 			}
 		}
 		
-		int declarationBegin;
-		TextEditor editor;
-		public MemberCompletionData (TextEditor editor, IMember member, OutputFlags flags) : base (member.IsObsolete ? "<s>" + ambience.GetString (member, flags | OutputFlags.EmitMarkup) + "</s>" :  ambience.GetString (member, flags | OutputFlags.EmitMarkup), member.StockIcon)
+		bool MarkObsolete {
+			get { return markObsolete; }
+			set {
+				if (value == markObsolete)
+					return;
+				markObsolete = value;
+				if (value) {
+					text[0] = "<s>" + text[0] + "</s>";
+				} else {
+					text[0] = text[0].Substring (3, text[0].Length - 7);
+				}
+			}
+		}
+		
+		public MemberCompletionData (IMember member, OutputFlags flags)
 		{
 			this.member = member;
-			this.declarationBegin = editor.CursorPosition;
-			this.editor = editor;
-			this.CompletionString = ambience.GetString (member, OutputFlags.IncludeGenerics);
+			this.text = new string [] { ambience.GetString (member, flags | OutputFlags.EmitMarkup) };
+			this.completionString = ambience.GetString (member, flags | OutputFlags.IncludeGenerics);
+			MarkObsolete = member.IsObsolete;
 		}
 		
 		public void InsertAction (ICompletionWidget widget, ICodeCompletionContext context)
 		{
-			editor.DeleteText (context.TriggerOffset, editor.CursorPosition - context.TriggerOffset);
+			MonoDevelop.Ide.Gui.Content.IEditableTextBuffer buf = widget
+				as MonoDevelop.Ide.Gui.Content.IEditableTextBuffer;
 			
-			editor.InsertText (context.TriggerOffset, this.CompletionString);
+			if (buf == null) {
+				LoggingService.LogError ("ICompletionWidget widget is not an IEditableTextBuffer");
+				return;
+			}
+			
+			buf.BeginAtomicUndo ();
+			buf.DeleteText (context.TriggerOffset, buf.CursorPosition - context.TriggerOffset);
+			buf.InsertText (context.TriggerOffset, this.CompletionString);
+			
+			//select any generic parameters e.g. T in <T>
 			int offset = this.CompletionString.IndexOf ('<');
 			if (offset >= 0) {
 				int endOffset = offset + 1;
@@ -88,13 +133,12 @@ namespace MonoDevelop.CSharpBinding
 						break;
 					endOffset++;
 				}
-				editor.CursorPosition = context.TriggerOffset + offset + 1;
-				editor.Select (editor.CursorPosition, context.TriggerOffset + endOffset);
+				buf.CursorPosition = context.TriggerOffset + offset + 1;
+				buf.Select (buf.CursorPosition, context.TriggerOffset + endOffset);
 			}
+			buf.EndAtomicUndo ();
 		}
 		
-		static CSharpAmbience ambience = new CSharpAmbience ();
-		bool descriptionCreated = false;
 		void CheckDescription ()
 		{
 			if (descriptionCreated)
@@ -102,8 +146,12 @@ namespace MonoDevelop.CSharpBinding
 			
 			descriptionCreated = true;
 			
-			string doc = ambience.GetString (member, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName | (HideExtensionParameter ? OutputFlags.HideExtensionsParameter : OutputFlags.None));
-			string docMarkup = ambience.GetString (member, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName | OutputFlags.EmitMarkup | (HideExtensionParameter ? OutputFlags.HideExtensionsParameter : OutputFlags.None));
+			string doc = ambience.GetString (member,
+				OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName
+				| (HideExtensionParameter ? OutputFlags.HideExtensionsParameter : OutputFlags.None));
+			string docMarkup = ambience.GetString (member,
+				OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName | OutputFlags.EmitMarkup
+				| (HideExtensionParameter ? OutputFlags.HideExtensionsParameter : OutputFlags.None));
 			if (member.IsObsolete) {
 				doc += Environment.NewLine + "[Obsolete]";
 				docMarkup += Environment.NewLine + "[Obsolete]";
@@ -117,9 +165,8 @@ namespace MonoDevelop.CSharpBinding
 					docMarkup += Environment.NewLine + mdDoc;
 				}
 			}
-			base.Documentation = "";
-			base.Description = doc;
-			base.DescriptionPango = docMarkup;
+			description = doc;
+			descriptionPango = docMarkup;
 		}
 	
 		public static string FormatText (string text)
@@ -230,10 +277,40 @@ namespace MonoDevelop.CSharpBinding
 			}
 			return ret.ToString ();
 		}
+
+		#region IOverloadedCompletionData implementation 
 		
-		public override bool Sink {
+		public IEnumerable<ICompletionData> GetOverloads ()
+		{
+			if (overloads == null)
+				return new ICompletionData[0];
+			else
+				return overloads.Values;
+		}
+		
+		public bool HasOverloads {
+			get { return overloads != null; }
+		}
+		
+		public void AddOverload (MemberCompletionData overload)
+		{
+			if (overloads == null)
+				overloads = new Dictionary<string, ICompletionData> ();
+			
+			if (!overload.member.IsObsolete)
+				MarkObsolete = false;
+			
+			string description = overload.Description;
+			if (description != this.description || !overloads.ContainsKey (description))
+				overloads[description] = overload;
+		}
+		
+		#endregion 
+		
+		
+		public bool Sink {
 			get {
-				 return member.IsObsolete;
+				 return MarkObsolete;
 			}
 		}
 	}

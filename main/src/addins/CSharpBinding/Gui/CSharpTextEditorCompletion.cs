@@ -566,7 +566,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 		
 		public class CompletionDataCollector
 		{
-			Dictionary<string, CodeCompletionData> data = new Dictionary<string, CodeCompletionData> ();
+			Dictionary<string, MemberCompletionData> data = new Dictionary<string, MemberCompletionData> ();
 			Dictionary<string, bool> namespaces = new Dictionary<string,bool> ();
 			internal static CSharpAmbience ambience = new CSharpAmbience ();
 			ProjectDom dom;
@@ -602,7 +602,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				this.location = location;
 			}
 			
-			public CodeCompletionData AddCompletionData (CodeCompletionDataProvider provider, object obj)
+			public ICompletionData AddCompletionData (CodeCompletionDataProvider provider, object obj)
 			{
 				Namespace ns = obj as Namespace;
 				if (ns != null) {
@@ -665,8 +665,9 @@ namespace MonoDevelop.CSharpBinding.Gui
 						if (!foundType && (NamePrefix.Length == 0 || !type.Namespace.StartsWith (NamePrefix)) && !type.Namespace.EndsWith ("." + NamePrefix))
 							flags |= OutputFlags.UseFullName;
 					}
-					MemberCompletionData newData = new MemberCompletionData (editor, member, flags);
+					MemberCompletionData newData = new MemberCompletionData (member, flags);
 					newData.HideExtensionParameter = HideExtensionParameter;
+					
 					if (data.ContainsKey (member.Name)) {
 						data [member.Name].AddOverload (newData);
 					} else {

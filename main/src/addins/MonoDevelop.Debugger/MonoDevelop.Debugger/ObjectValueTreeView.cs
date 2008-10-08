@@ -55,7 +55,7 @@ namespace MonoDevelop.Debugger
 		CellRendererText crtValue;
 		CellRendererText crtType;
 		Gtk.Entry editEntry;
-		CompletionData currentCompletionData;
+		Mono.Debugging.Client.CompletionData currentCompletionData;
 		
 		TreeViewColumn valueCol;
 		TreeViewColumn typeCol;
@@ -626,7 +626,7 @@ namespace MonoDevelop.Debugger
 			}
 		}
 		
-		CompletionData GetCompletionData (string exp)
+		Mono.Debugging.Client.CompletionData GetCompletionData (string exp)
 		{
 			if (frame != null)
 				return frame.GetExpressionCompletionData (exp);
@@ -637,9 +637,9 @@ namespace MonoDevelop.Debugger
 	
 	class DebugCompletionDataProvider: ICompletionDataProvider
 	{
-		CompletionData data;
+		Mono.Debugging.Client.CompletionData data;
 		
-		public DebugCompletionDataProvider (CompletionData data)
+		public DebugCompletionDataProvider (Mono.Debugging.Client.CompletionData data)
 		{
 			this.data = data;
 		}
