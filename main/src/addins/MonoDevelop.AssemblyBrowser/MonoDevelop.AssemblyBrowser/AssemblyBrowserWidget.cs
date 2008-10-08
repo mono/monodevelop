@@ -165,37 +165,42 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		ITreeNavigator SearchMember (IMember member)
 		{
-			string fullName      = member.FullName;
-			string declaringType = member.DeclaringType != null ? member.DeclaringType.FullName : null;
-			return SearchMember (declaringType, fullName);
+			return SearchMember (member.HelpUrl);
 		}
 			
-		ITreeNavigator SearchMember (string typeName, string fullName)
+		ITreeNavigator SearchMember (string helpUrl)
 		{
-			return SearchMember (treeView.GetRootNode (), typeName, fullName);
+			return SearchMember (treeView.GetRootNode (), helpUrl);
 		}
 		
-		ITreeNavigator SearchMember (ITreeNavigator nav, string typeName, string fullName)
+		static bool IsMatch (ITreeNavigator nav, string helpUrl)
 		{
 			IMember member = nav.DataItem as IMember;
-			if (member != null) {
-				string declaringType = member.DeclaringType != null ? member.DeclaringType.FullName : null;
-				if (typeName == declaringType && fullName == member.FullName) 
+			return member != null && member.HelpUrl == helpUrl;
+		}
+			
+		static bool SkipChildren (ITreeNavigator nav, string helpUrl)
+		{
+			if (nav.DataItem is IType && !helpUrl.Contains ((nav.DataItem as IType).FullName)) 
+				return true;
+			if (nav.DataItem is Namespace && !helpUrl.Contains (((Namespace)nav.DataItem).Name))
+				return true;
+			return false;
+		}
+		
+		ITreeNavigator SearchMember (ITreeNavigator nav, string helpUrl)
+		{
+			do {
+				if (IsMatch (nav, helpUrl))
 					return nav;
-			}
-			if (nav.DataItem is Namespace) {
-				if (!(typeName+fullName).StartsWith (((Namespace)nav.DataItem).Name)) {
-					return null;
-				}
-			}
-			if (nav.HasChildren ()) {
-				nav.MoveToFirstChild ();
-				do {
-					ITreeNavigator result = SearchMember (nav.Clone (), typeName, fullName);
+				if (!SkipChildren (nav, helpUrl) && nav.HasChildren ()) {
+					nav.MoveToFirstChild ();
+					ITreeNavigator result = SearchMember (nav, helpUrl);
 					if (result != null)
 						return result;
-				} while (nav.MoveNext());
-			}
+					nav.MoveToParent ();
+				}
+			} while (nav.MoveNext());
 			return null;
 		}
 		
@@ -396,7 +401,7 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 		}
 		static bool preformat = false;
-		static string FormatText (string text)
+		internal static string FormatText (string text)
 		{
 			if (preformat)
 				return text;
@@ -617,12 +622,12 @@ namespace MonoDevelop.AssemblyBrowser
 						
 					}
 				}
-				this.documentationLabel.Markup = FormatText (documentation);
+				this.documentationLabel.Markup = documentation;
 				IAssemblyBrowserNodeBuilder builder = nav.TypeNodeBuilder as IAssemblyBrowserNodeBuilder;
 				this.disassemblerLabel.Selectable = false;
 				if (builder != null) {
 					this.descriptionLabel.Markup  = builder.GetDescription (nav);
-					this.disassemblerLabel.Markup = FormatText (builder.GetDisassembly (nav));
+					this.disassemblerLabel.Markup = builder.GetDisassembly (nav);
 				} else {
 					this.descriptionLabel.Markup =  this.disassemblerLabel.Markup = "";
 				}
@@ -656,8 +661,16 @@ namespace MonoDevelop.AssemblyBrowser
 			oldSize2 = size;
 			this.hpaned1.Position = Math.Min (350, this.Allocation.Width * 2 / 3);
 		}
+			
+		public void Open (string url)
+		{
+			ITreeNavigator nav = SearchMember (url);
+			if (nav != null) {
+				nav.ExpandToNode ();
+				nav.Selected = true;
+			}
+		}
 		
-					
 		List<DomCecilCompilationUnit> definitions = new List<DomCecilCompilationUnit> ();
 		public void AddReference (string fileName)
 		{

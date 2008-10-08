@@ -159,12 +159,12 @@ namespace MonoDevelop.AssemblyBrowser
 					result.Append (' ');
 					if (instruction.Operand is string) {
 						result.Append ('"');
-						result.Append (instruction.Operand);
+						result.Append (AssemblyBrowserWidget.FormatText (instruction.Operand.ToString ()));
 						result.Append ('"');
 					} else if (instruction.Operand is Mono.Cecil.Cil.Instruction) {
 						result.Append (GetInstructionOffset ((Mono.Cecil.Cil.Instruction)instruction.Operand));
 					} else {
-						result.Append (instruction.Operand);
+						result.Append (AssemblyBrowserWidget.FormatText (instruction.Operand.ToString ()));
 					}
 				}
 				if (markup)

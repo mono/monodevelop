@@ -50,7 +50,7 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			return (string)dataObject;
+			return dataObject != null ? dataObject.ToString () : "null module";
 		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)

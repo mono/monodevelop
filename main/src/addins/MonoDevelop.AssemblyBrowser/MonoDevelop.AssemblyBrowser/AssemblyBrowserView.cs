@@ -34,7 +34,7 @@ using Mono.Cecil;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	public class AssemblyBrowserViewContent : AbstractViewContent
+	public class AssemblyBrowserViewContent : AbstractViewContent, MonoDevelop.Ide.Gui.Content.IUrlHandler
 	{
 		AssemblyBrowserWidget widget;
 		
@@ -54,6 +54,16 @@ namespace MonoDevelop.AssemblyBrowser
 			this.ContentName = System.IO.Path.GetFileName (fileName);
 			widget.AddReference (fileName);
 		}
+
+		#region IUrlHandler implementation 
+		
+		public void Open (string url)
+		{
+			widget.Open (url);
+		}
+		
+		#endregion 
+		
 
 	}
 }
