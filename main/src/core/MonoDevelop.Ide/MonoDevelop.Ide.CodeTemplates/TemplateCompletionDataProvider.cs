@@ -106,6 +106,11 @@ namespace MonoDevelop.Ide.CodeTemplates
 					return template.Text;
 				}
 			}
+
+			public bool Sink
+			{
+				get { return false; }
+			}
 			
 			public void InsertAction(ICompletionWidget widget)
 			{
@@ -115,10 +120,6 @@ namespace MonoDevelop.Ide.CodeTemplates
 			public TemplateCompletionData(CodeTemplate template) 
 			{
 				this.template = template;
-			}
-			public virtual int CompareTo (ICompletionData x)
-			{
-				return String.Compare (Text[0], x.Text[0], true);
 			}
 		}
 		
