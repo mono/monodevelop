@@ -10,4 +10,5 @@ extras/MonoDevelop.AddinAuthoring
 extras/MonoDevelop.CodeAnalysis
 extras/MonoDevelop.Debugger.Mdb
 extras/MonoDevelop.Debugger.Gdb
+extras/PyBinding
 

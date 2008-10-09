@@ -10,5 +10,6 @@
     <Item>AspNetEdit/AspNetEdit.mds</Item>
     <Item>ValaBinding/ValaBinding.mds</Item>
     <Item>MonoDevelop.Debugger.Gdb/MonoDevelop.Debugger.Gdb.mds</Item>
+    <Item>PyBinding/PyBinding.mds</Item>
   </Items>
 </WorkspaceItem>
