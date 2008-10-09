@@ -541,13 +541,13 @@ namespace MonoDevelop.Projects.Dom
 			}
 			
 			DomType result = (DomType)Resolve (type, resolver);
+			if (result.typeParameters != null)
+				result.typeParameters.Clear ();
 			result.Name = name;
 			if (genericArguments != null) {
 				for (int i = 0; i < genericArguments.Count; i++)
 					result.AddTypeParameter (new TypeParameter (genericArguments[i].ToInvariantString ()));
 			}
-//			if (result.typeParameters != null)
-//				result.typeParameters.Clear ();
 			return result;
 		}
 		
