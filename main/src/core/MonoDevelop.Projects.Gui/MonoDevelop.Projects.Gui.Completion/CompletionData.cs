@@ -36,38 +36,23 @@ namespace MonoDevelop.Projects.Gui.Completion
 	public class CompletionData : ICompletionData
 	{
 		public CompletionData (string text) : this (text, null, null) {}
-		public CompletionData (string text, string image) : this (text, image, null) {}
+		public CompletionData (string text, string icon) : this (text, icon, null) {}
+		public CompletionData (string text, string icon, string description) : this (text, icon, description, text) {}
 		
-		public CompletionData (string text, string image, string description)
+		public CompletionData (string displayText, string icon, string description, string completionText)
 		{
-			this.CompletionString = text;
-			this.Image = image ?? "md-literal";
+			this.DisplayText = displayText;
+			this.Icon = icon;
 			this.Description = description;
+			this.CompletionText = completionText;
 		}
 		
-		public string Image { get; set; }
-		public string[] Text { get { return new string[] { CompletionString }; } }
+		public string Icon { get; set; }
+		public string DisplayText { get; set; }
 		public string Description { get; set; }
-		public string CompletionString { get; set; }
-		public bool Sink { get { return false; } }
+		public string CompletionText { get; set; }
+		public DisplayFlags DisplayFlags { get; set; }
 	}
-	
-	public class CompletionDataWithMarkup : CompletionData, ICompletionDataWithMarkup
-	{
-		public CompletionDataWithMarkup (string text) : this (text, null, null, null) {}
-		public CompletionDataWithMarkup (string text, string image) : this (text, image, null, null) {}
-		public CompletionDataWithMarkup (string text, string image, string description)
-			: this (text, image, description, null) {}
-		
-		public CompletionDataWithMarkup (string text, string image, string description, string descMarkup)
-			: base (text, image, description)
-		{
-			this.DescriptionPango = descMarkup;
-		}
-		
-		public string DescriptionPango { get; set; }
-	}
-	
 	
 	public class SimpleCompletionDataProvider : ICompletionDataProvider
 	{

@@ -1,5 +1,10 @@
 2008-10-09  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* PyBinding/PyBinding.Completion/PythonCompletionDataProvider.cs: Track
+	CompletionData API.
+
+2008-10-09  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* PyBinding/Makefile:
 	* PyBinding/PyBinding.mdp: Fix output directory.
 

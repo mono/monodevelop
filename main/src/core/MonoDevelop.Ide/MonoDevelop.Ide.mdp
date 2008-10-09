@@ -168,7 +168,6 @@
     <File name="MonoDevelop.Ide.Templates/SolutionItemDescriptor.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui/ConfigurationComboBox.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui/IPadContainer.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.CodeTemplates/TemplateCompletionDataProvider.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui/Document.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui/HelpOperations.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui/Ide.cs" subtype="Code" buildaction="Compile" />

@@ -676,15 +676,15 @@ namespace MonoDevelop.Debugger
 			this.item = item;
 		}
 		
-		public string Image {
+		public string Icon {
 			get {
 				return ObjectValueTreeView.GetIcon (item.Flags);
 			}
 		}
 		
-		public string[] Text {
+		public string DisplayText {
 			get {
-				return new string [] { item.Name };
+				return item.Name;
 			}
 		}
 		
@@ -694,14 +694,14 @@ namespace MonoDevelop.Debugger
 			}
 		}
 		
-		public string CompletionString {
+		public string CompletionText {
 			get {
 				return item.Name;
 			}
 		}
 		
-		public bool Sink {
-			get { return false; }
+		public DisplayFlags DisplayFlags {
+			get { return DisplayFlags.None; }
 		}
 	}
 }

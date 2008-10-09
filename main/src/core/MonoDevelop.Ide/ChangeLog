@@ -1,3 +1,11 @@
+2008-10-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.CodeTemplates/TemplateCompletionDataProvider.cs:
+	Unused & GPL => remove.
+
+	* Makefile.am:
+	* MonoDevelop.Ide.mdp: Updated.
+
 2008-10-08  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Gui/ProjectOperations.cs:

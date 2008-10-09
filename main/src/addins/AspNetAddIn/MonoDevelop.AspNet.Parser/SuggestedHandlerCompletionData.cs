@@ -53,15 +53,15 @@ namespace MonoDevelop.AspNet.Parser
 			this.codeBehindClassPart = codeBehindClassPart;
 		}
 		
-		public string Image {
+		public string Icon {
 			get { return "md-method"; }
 		}
 
-		public string[] Text {
-			get { return new string[] { methodInfo.Name }; }
+		public string DisplayText {
+			get { return methodInfo.Name; }
 		}
 		
-		public string CompletionString {
+		public string CompletionText {
 			get { return methodInfo.Name; }
 		}
 
@@ -75,11 +75,11 @@ namespace MonoDevelop.AspNet.Parser
 			}
 		}
 		
-		public bool Sink {
-			get { return false; }
+		public DisplayFlags DisplayFlags {
+			get { return DisplayFlags.None; }
 		}
 
-		public void InsertAction (ICompletionWidget widget, ICodeCompletionContext context)
+		public void InsertCompletionText (ICompletionWidget widget, ICodeCompletionContext context)
 		{
 			//insert the method name
 			MonoDevelop.Ide.Gui.Content.IEditableTextBuffer buf = widget as MonoDevelop.Ide.Gui.Content.IEditableTextBuffer;

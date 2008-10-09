@@ -52,15 +52,15 @@ namespace MonoDevelop.Html
 			this.name = name;
 		}
 		
-		public string Image {
+		public string Icon {
 			get { return "md-literal"; }
 		}
 
-		public string[] Text {
-			get { return new string[] { name }; }
+		public string DisplayText {
+			get { return name; }
 		}
 		
-		public string CompletionString {
+		public string CompletionText {
 			get { return name; }
 		}
 
@@ -68,11 +68,11 @@ namespace MonoDevelop.Html
 			get { return description; }
 		}
 		
-		public bool Sink {
-			get { return false; }
+		public DisplayFlags DisplayFlags {
+			get { return DisplayFlags.None; }
 		}
 
-		public void InsertAction (ICompletionWidget widget, ICodeCompletionContext context)
+		public void InsertCompletionText (ICompletionWidget widget, ICodeCompletionContext context)
 		{
 			MonoDevelop.Ide.Gui.Content.IEditableTextBuffer buf = widget as MonoDevelop.Ide.Gui.Content.IEditableTextBuffer;
 			if (buf != null) {

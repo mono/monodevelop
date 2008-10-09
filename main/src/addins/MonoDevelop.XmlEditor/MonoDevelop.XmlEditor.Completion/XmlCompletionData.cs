@@ -59,15 +59,15 @@ namespace MonoDevelop.XmlEditor.Completion
 			get { return dataType; }
 		}
 		
-		public string Image {
+		public string Icon {
 			get { return Gtk.Stock.GoForward; }
 		}
 		
-		public string[] Text {
-			get { return new string[] { text }; }
+		public string DisplayText {
+			get { return text; }
 		}
 		
-		public string CompletionString {
+		public string CompletionText {
 			get { return text; }
 		}
 		
@@ -79,11 +79,11 @@ namespace MonoDevelop.XmlEditor.Completion
 			get { return description; }
 		}
 		
-		public bool Sink {
-			get { return false; }
+		public DisplayFlags DisplayFlags {
+			get { return DisplayFlags.None; }
 		}
 		
-		public void InsertAction(ICompletionWidget widget, ICodeCompletionContext completionContext)
+		public void InsertCompletionText (ICompletionWidget widget, ICodeCompletionContext completionContext)
 		{
 			MonoDevelop.Ide.Gui.Content.IEditableTextBuffer buf = widget as MonoDevelop.Ide.Gui.Content.IEditableTextBuffer;
 			if (buf != null) {

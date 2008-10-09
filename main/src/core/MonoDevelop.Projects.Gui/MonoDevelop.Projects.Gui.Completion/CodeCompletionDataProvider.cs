@@ -144,10 +144,10 @@ namespace MonoDevelop.Projects.Gui.Completion
 				AddResolveResult (o, allowInstrinsicNames, typeNameResolver);
 		}
 		*/
-		public CodeCompletionData SearchData (string text)
+		public ICompletionData SearchData (string text)
 		{
-			foreach (CodeCompletionData ccd in completionData) {
-				if (ccd.Text != null && ccd.Text.Length == 1 && ccd.Text[0] == text) 
+			foreach (ICompletionData ccd in completionData) {
+				if (ccd.DisplayText == text) 
 					return ccd;
 			}
 			return null;
@@ -227,7 +227,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		public ICompletionData GetCompletionData (string completionString)
 		{
 			foreach (ICompletionData data in completionData) {
-				if (data.CompletionString == completionString)
+				if (data.CompletionText == completionString)
 					return data;
 			}
 			return null;

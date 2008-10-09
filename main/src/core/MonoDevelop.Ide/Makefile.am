@@ -64,7 +64,6 @@ FILES =  \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplateService.cs \
 	MonoDevelop.Ide.CodeTemplates/EditTemplateDialog.cs \
 	MonoDevelop.Ide.CodeTemplates/EditTemplateGroupDialog.cs \
-	MonoDevelop.Ide.CodeTemplates/TemplateCompletionDataProvider.cs \
 	MonoDevelop.Ide.Codons/CategoryNode.cs \
 	MonoDevelop.Ide.Codons/CombineOpenCondition.cs \
 	MonoDevelop.Ide.Codons/ContextPadCodon.cs \

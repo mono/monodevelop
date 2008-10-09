@@ -32,12 +32,10 @@ FILES =  \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.RuntimeOptionsPanelWidget.cs \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.StartupOptionsPanelWidget.cs \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.RenameConfigDialog.cs \
-	MonoDevelop.Projects.Gui.Completion/CodeCompletionData.cs \
 	MonoDevelop.Projects.Gui.Completion/CodeCompletionDataProvider.cs \
 	MonoDevelop.Projects.Gui.Completion/CompletionData.cs \
 	MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs \
 	MonoDevelop.Projects.Gui.Completion/DeclarationViewWindow.cs \
-	MonoDevelop.Projects.Gui.Completion/ICompletionData.cs \
 	MonoDevelop.Projects.Gui.Completion/ICompletionDataProvider.cs \
 	MonoDevelop.Projects.Gui.Completion/ICompletionWidget.cs \
 	MonoDevelop.Projects.Gui.Completion/IOverloadedCompletionData.cs \

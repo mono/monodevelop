@@ -622,7 +622,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 					if (namespaces.ContainsKey(ns.Name))
 						return null;
 					namespaces[ns.Name] = true;
-					CodeCompletionData data = new CodeCompletionData (ns.Name, ns.StockIcon, ns.Documentation);
+					CompletionData data = new CompletionData (ns.Name, ns.StockIcon, ns.Documentation);
 					provider.AddCompletionData (data);
 					return data;
 				}
@@ -648,8 +648,8 @@ namespace MonoDevelop.CSharpBinding.Gui
 					if (!foundNamespace && (NamePrefix.Length == 0 || !rt.Namespace.StartsWith (NamePrefix)) && !rt.Namespace.EndsWith ("." + NamePrefix))
 						flags |= OutputFlags.UseFullName;
 					
-					CodeCompletionData cd = new CodeCompletionData (ambience.GetString (rt, flags | OutputFlags.EmitMarkup), "md-class", "");
-					cd.CompletionString = ambience.GetString (rt, flags);
+					CompletionData cd = new CompletionData (ambience.GetString (rt, flags), "md-class", "");
+					cd.CompletionText = ambience.GetString (rt, flags);
 					provider.AddCompletionData (cd);
 					return cd;
 				}
@@ -764,8 +764,8 @@ namespace MonoDevelop.CSharpBinding.Gui
 					if ((isInterface || m.IsVirtual || m.IsAbstract) && !m.IsSealed && (includeOverriden || !type.HasOverriden (m))) {
 						//System.Console.WriteLine("add");
 						NewOverrideCompletionData data = new NewOverrideCompletionData (Editor, declarationBegin, type, m);
-						if (!alreadyInserted.ContainsKey (data.CompletionString)) {
-							alreadyInserted[data.CompletionString] = true;
+						if (!alreadyInserted.ContainsKey (data.CompletionText)) {
+							alreadyInserted[data.CompletionText] = true;
 							provider.AddCompletionData (data);
 						}
 					}
@@ -790,7 +790,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			
 			CompletionDataCollector col = new CompletionDataCollector (Editor, dom, Document.CompilationUnit, location);
 			if (returnTypeUnresolved != null)
-				result.DefaultCompletionString = StripGenerics (col.AddCompletionData (result, returnTypeUnresolved).CompletionString);
+				result.DefaultCompletionString = StripGenerics (col.AddCompletionData (result, returnTypeUnresolved).CompletionText);
 			if (type == null) {
 				return result;
 			}
@@ -811,7 +811,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			foreach (IUsing u in Document.CompilationUnit.Usings) {
 				foreach (KeyValuePair<string, IReturnType> alias in u.Aliases) {
 					if (alias.Value.ToInvariantString () == returnType.ToInvariantString ())
-						result.AddCompletionData (new CodeCompletionData (alias.Key, "md-class"));
+						result.AddCompletionData (new CompletionData (alias.Key, "md-class"));
 				}
 			}
 			return result;
@@ -834,8 +834,8 @@ namespace MonoDevelop.CSharpBinding.Gui
 		static string[] primitiveTypes = new string [] { "void", "object", "bool", "byte", "sbyte", "char", "short", "int", "long", "ushort", "uint", "ulong", "float", "double", "decimal", "string"};
 		static void AddPrimitiveTypes (CodeCompletionDataProvider provider)
 		{
-			foreach (string pimitiveType in primitiveTypes) {
-				provider.AddCompletionData (new CodeCompletionData (pimitiveType, "md-literal"));
+			foreach (string primitiveType in primitiveTypes) {
+				provider.AddCompletionData (new CompletionData (primitiveType, "md-literal"));
 			}
 		}
 		
@@ -843,7 +843,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 		{
 			for (int i = 0; i < keywords.Length; i++) {
 				if (keywords[i]) 
-					provider.AddCompletionData (new CodeCompletionData (ICSharpCode.NRefactory.Parser.CSharp.Tokens.GetTokenString (i), "md-literal"));
+					provider.AddCompletionData (new CompletionData (ICSharpCode.NRefactory.Parser.CSharp.Tokens.GetTokenString (i), "md-literal"));
 			}
 		}
 		
@@ -871,37 +871,37 @@ namespace MonoDevelop.CSharpBinding.Gui
 				AddPrimitiveTypes (result);
 				resolver.AddAccessibleCodeCompletionData (expressionResult.ExpressionContext, result);
 			} else if (expressionResult.ExpressionContext == ExpressionContext.InterfacePropertyDeclaration) {
-				result.AddCompletionData (new CodeCompletionData ("get", "md-literal"));
-				result.AddCompletionData (new CodeCompletionData ("set", "md-literal"));
+				result.AddCompletionData (new CompletionData ("get", "md-literal"));
+				result.AddCompletionData (new CompletionData ("set", "md-literal"));
 			} else if (expressionResult.ExpressionContext == ExpressionContext.Attribute) {
-				result.AddCompletionData (new CodeCompletionData ("assembly", "md-literal"));
-				result.AddCompletionData (new CodeCompletionData ("module", "md-literal"));
-				result.AddCompletionData (new CodeCompletionData ("type", "md-literal"));
+				result.AddCompletionData (new CompletionData ("assembly", "md-literal"));
+				result.AddCompletionData (new CompletionData ("module", "md-literal"));
+				result.AddCompletionData (new CompletionData ("type", "md-literal"));
 			
-				result.AddCompletionData (new CodeCompletionData ("method", "md-literal"));
-				result.AddCompletionData (new CodeCompletionData ("field", "md-literal"));
-				result.AddCompletionData (new CodeCompletionData ("property", "md-literal"));
-				result.AddCompletionData (new CodeCompletionData ("event", "md-literal"));
-				result.AddCompletionData (new CodeCompletionData ("param", "md-literal"));
-				result.AddCompletionData (new CodeCompletionData ("return", "md-literal"));
+				result.AddCompletionData (new CompletionData ("method", "md-literal"));
+				result.AddCompletionData (new CompletionData ("field", "md-literal"));
+				result.AddCompletionData (new CompletionData ("property", "md-literal"));
+				result.AddCompletionData (new CompletionData ("event", "md-literal"));
+				result.AddCompletionData (new CompletionData ("param", "md-literal"));
+				result.AddCompletionData (new CompletionData ("return", "md-literal"));
 				resolver.AddAccessibleCodeCompletionData (expressionResult.ExpressionContext, result);
 			} else if (expressionResult.ExpressionContext == ExpressionContext.BaseConstructorCall) {
-				result.AddCompletionData (new CodeCompletionData ("this", "md-literal"));
-				result.AddCompletionData (new CodeCompletionData ("base", "md-literal"));
+				result.AddCompletionData (new CompletionData ("this", "md-literal"));
+				result.AddCompletionData (new CompletionData ("base", "md-literal"));
 			} else  if (expressionResult.ExpressionContext == ExpressionContext.ParameterType || expressionResult.ExpressionContext == ExpressionContext.FirstParameterType) {
-				result.AddCompletionData (new CodeCompletionData ("ref", "md-literal"));
-				result.AddCompletionData (new CodeCompletionData ("out", "md-literal"));
-				result.AddCompletionData (new CodeCompletionData ("params", "md-literal"));
+				result.AddCompletionData (new CompletionData ("ref", "md-literal"));
+				result.AddCompletionData (new CompletionData ("out", "md-literal"));
+				result.AddCompletionData (new CompletionData ("params", "md-literal"));
 				// C# 3.0 extension method
 				if (expressionResult.ExpressionContext == ExpressionContext.FirstParameterType)
-					result.AddCompletionData (new CodeCompletionData ("this", "md-literal"));
+					result.AddCompletionData (new CompletionData ("this", "md-literal"));
 				AddPrimitiveTypes (result);
 				resolver.AddAccessibleCodeCompletionData (expressionResult.ExpressionContext, result);
 			} else if (expressionResult.ExpressionContext == ExpressionContext.PropertyDeclaration) {
 				AddNRefactoryKeywords (result, ICSharpCode.NRefactory.Parser.CSharp.Tokens.InPropertyDeclaration);
 			} else if (expressionResult.ExpressionContext == ExpressionContext.EventDeclaration) {
-				result.AddCompletionData (new CodeCompletionData ("add", "md-literal"));
-				result.AddCompletionData (new CodeCompletionData ("remove", "md-literal"));
+				result.AddCompletionData (new CompletionData ("add", "md-literal"));
+				result.AddCompletionData (new CompletionData ("remove", "md-literal"));
 			} //else if (expressionResult.ExpressionContext == ExpressionContext.FullyQualifiedType) {} 
 			else if (expressionResult.ExpressionContext == ExpressionContext.Default) {
 				AddPrimitiveTypes (result);
@@ -917,7 +917,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			
 			if (resolver.CallingMember is IMethod && ((IMethod)resolver.CallingMember).GenericParameters != null) {
 				foreach (IReturnType returnType in ((IMethod)resolver.CallingMember).GenericParameters) {
-					result.AddCompletionData (new CodeCompletionData (returnType.Name, "md-literal"));
+					result.AddCompletionData (new CompletionData (returnType.Name, "md-literal"));
 				}
 			}
 			return result;
@@ -991,7 +991,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 						string ss = s.Trim ();
 						if (ss.Length > 0 && !symbols.ContainsKey (ss)) {
 							symbols [ss] = ss;
-							cp.AddCompletionData (new CodeCompletionData (ss, "md-literal"));
+							cp.AddCompletionData (new CompletionData (ss, "md-literal"));
 						}
 					}
 				}
@@ -1002,20 +1002,20 @@ namespace MonoDevelop.CSharpBinding.Gui
 		CodeCompletionDataProvider GetDirectiveCompletionData ()
 		{
 			CodeCompletionDataProvider cp = new CodeCompletionDataProvider (null, GetAmbience ());
-			cp.AddCompletionData (new CodeCompletionData ("if", "md-literal"));
-			cp.AddCompletionData (new CodeCompletionData ("else", "md-literal"));
-			cp.AddCompletionData (new CodeCompletionData ("elif", "md-literal"));
-			cp.AddCompletionData (new CodeCompletionData ("endif", "md-literal"));
-			cp.AddCompletionData (new CodeCompletionData ("define", "md-literal"));
-			cp.AddCompletionData (new CodeCompletionData ("undef", "md-literal"));
-			cp.AddCompletionData (new CodeCompletionData ("warning", "md-literal"));
-			cp.AddCompletionData (new CodeCompletionData ("error", "md-literal"));
-			cp.AddCompletionData (new CodeCompletionData ("pragma", "md-literal"));
-			cp.AddCompletionData (new CodeCompletionData ("line", "md-literal"));
-			cp.AddCompletionData (new CodeCompletionData ("line hidden", "md-literal"));
-			cp.AddCompletionData (new CodeCompletionData ("line default", "md-literal"));
-			cp.AddCompletionData (new CodeCompletionData ("region", "md-literal"));
-			cp.AddCompletionData (new CodeCompletionData ("endregion", "md-literal"));
+			cp.AddCompletionData (new CompletionData ("if", "md-literal"));
+			cp.AddCompletionData (new CompletionData ("else", "md-literal"));
+			cp.AddCompletionData (new CompletionData ("elif", "md-literal"));
+			cp.AddCompletionData (new CompletionData ("endif", "md-literal"));
+			cp.AddCompletionData (new CompletionData ("define", "md-literal"));
+			cp.AddCompletionData (new CompletionData ("undef", "md-literal"));
+			cp.AddCompletionData (new CompletionData ("warning", "md-literal"));
+			cp.AddCompletionData (new CompletionData ("error", "md-literal"));
+			cp.AddCompletionData (new CompletionData ("pragma", "md-literal"));
+			cp.AddCompletionData (new CompletionData ("line", "md-literal"));
+			cp.AddCompletionData (new CompletionData ("line hidden", "md-literal"));
+			cp.AddCompletionData (new CompletionData ("line default", "md-literal"));
+			cp.AddCompletionData (new CompletionData ("region", "md-literal"));
+			cp.AddCompletionData (new CompletionData ("endregion", "md-literal"));
 			return cp;
 		}
 		#endregion
@@ -1123,31 +1123,31 @@ namespace MonoDevelop.CSharpBinding.Gui
 		CodeCompletionDataProvider GetXmlDocumentationCompletionData ()
 		{
 			CodeCompletionDataProvider cp = new CodeCompletionDataProvider (null, GetAmbience ());
-			cp.AddCompletionData (new CodeCompletionData ("c", "md-literal", GettextCatalog.GetString ("Set text in a code-like font")));
-			cp.AddCompletionData (new CodeCompletionData ("code", "md-literal", GettextCatalog.GetString ("Set one or more lines of source code or program output")));
-			cp.AddCompletionData (new CodeCompletionData ("example", "md-literal", GettextCatalog.GetString ("Indicate an example")));
-			cp.AddCompletionData (new CodeCompletionData ("exception", "md-literal", GettextCatalog.GetString ("Identifies the exceptions a method can throw"), "exception cref=\"|\"></exception>"));
-			cp.AddCompletionData (new CodeCompletionData ("include", "md-literal", GettextCatalog.GetString ("Includes comments from a external file"), "include file=\"|\" path=\"\">"));
-			cp.AddCompletionData (new CodeCompletionData ("list", "md-literal", GettextCatalog.GetString ("Create a list or table"), "list type=\"|\">"));
+			cp.AddCompletionData (new CompletionData ("c", "md-literal", GettextCatalog.GetString ("Set text in a code-like font")));
+			cp.AddCompletionData (new CompletionData ("code", "md-literal", GettextCatalog.GetString ("Set one or more lines of source code or program output")));
+			cp.AddCompletionData (new CompletionData ("example", "md-literal", GettextCatalog.GetString ("Indicate an example")));
+			cp.AddCompletionData (new CompletionData ("exception", "md-literal", GettextCatalog.GetString ("Identifies the exceptions a method can throw"), "exception cref=\"|\"></exception>"));
+			cp.AddCompletionData (new CompletionData ("include", "md-literal", GettextCatalog.GetString ("Includes comments from a external file"), "include file=\"|\" path=\"\">"));
+			cp.AddCompletionData (new CompletionData ("list", "md-literal", GettextCatalog.GetString ("Create a list or table"), "list type=\"|\">"));
 			
-			cp.AddCompletionData (new CodeCompletionData ("listheader", "md-literal", GettextCatalog.GetString ("Define the heading row")));
-			cp.AddCompletionData (new CodeCompletionData ("item", "md-literal", GettextCatalog.GetString ("Defines list or table item")));
-			cp.AddCompletionData (new CodeCompletionData ("term", "md-literal", GettextCatalog.GetString ("A term to define")));
-			cp.AddCompletionData (new CodeCompletionData ("description", "md-literal", GettextCatalog.GetString ("Describes a list item")));
-			cp.AddCompletionData (new CodeCompletionData ("para", "md-literal", GettextCatalog.GetString ("Permit structure to be added to text")));
+			cp.AddCompletionData (new CompletionData ("listheader", "md-literal", GettextCatalog.GetString ("Define the heading row")));
+			cp.AddCompletionData (new CompletionData ("item", "md-literal", GettextCatalog.GetString ("Defines list or table item")));
+			cp.AddCompletionData (new CompletionData ("term", "md-literal", GettextCatalog.GetString ("A term to define")));
+			cp.AddCompletionData (new CompletionData ("description", "md-literal", GettextCatalog.GetString ("Describes a list item")));
+			cp.AddCompletionData (new CompletionData ("para", "md-literal", GettextCatalog.GetString ("Permit structure to be added to text")));
 
-			cp.AddCompletionData (new CodeCompletionData ("param", "md-literal", GettextCatalog.GetString ("Describe a parameter for a method or constructor"), "param name=\"|\">"));
-			cp.AddCompletionData (new CodeCompletionData ("paramref", "md-literal", GettextCatalog.GetString ("Identify that a word is a parameter name"), "paramref name=\"|\"/>"));
+			cp.AddCompletionData (new CompletionData ("param", "md-literal", GettextCatalog.GetString ("Describe a parameter for a method or constructor"), "param name=\"|\">"));
+			cp.AddCompletionData (new CompletionData ("paramref", "md-literal", GettextCatalog.GetString ("Identify that a word is a parameter name"), "paramref name=\"|\"/>"));
 			
-			cp.AddCompletionData (new CodeCompletionData ("permission", "md-literal", GettextCatalog.GetString ("Document the security accessibility of a member"), "permission cref=\"|\""));
-			cp.AddCompletionData (new CodeCompletionData ("remarks", "md-literal", GettextCatalog.GetString ("Describe a type")));
-			cp.AddCompletionData (new CodeCompletionData ("returns", "md-literal", GettextCatalog.GetString ("Describe the return value of a method")));
-			cp.AddCompletionData (new CodeCompletionData ("see", "md-literal", GettextCatalog.GetString ("Specify a link"), "see cref=\"|\"/>"));
-			cp.AddCompletionData (new CodeCompletionData ("seealso", "md-literal", GettextCatalog.GetString ("Generate a See Also entry"), "seealso cref=\"|\"/>"));
-			cp.AddCompletionData (new CodeCompletionData ("summary", "md-literal", GettextCatalog.GetString ("Describe a member of a type")));
-			cp.AddCompletionData (new CodeCompletionData ("typeparam", "md-literal", GettextCatalog.GetString ("Describe a type parameter for a generic type or method")));
-			cp.AddCompletionData (new CodeCompletionData ("typeparamref", "md-literal", GettextCatalog.GetString ("Identify that a word is a type parameter name")));
-			cp.AddCompletionData (new CodeCompletionData ("value", "md-literal", GettextCatalog.GetString ("Describe a property")));
+			cp.AddCompletionData (new CompletionData ("permission", "md-literal", GettextCatalog.GetString ("Document the security accessibility of a member"), "permission cref=\"|\""));
+			cp.AddCompletionData (new CompletionData ("remarks", "md-literal", GettextCatalog.GetString ("Describe a type")));
+			cp.AddCompletionData (new CompletionData ("returns", "md-literal", GettextCatalog.GetString ("Describe the return value of a method")));
+			cp.AddCompletionData (new CompletionData ("see", "md-literal", GettextCatalog.GetString ("Specify a link"), "see cref=\"|\"/>"));
+			cp.AddCompletionData (new CompletionData ("seealso", "md-literal", GettextCatalog.GetString ("Generate a See Also entry"), "seealso cref=\"|\"/>"));
+			cp.AddCompletionData (new CompletionData ("summary", "md-literal", GettextCatalog.GetString ("Describe a member of a type")));
+			cp.AddCompletionData (new CompletionData ("typeparam", "md-literal", GettextCatalog.GetString ("Describe a type parameter for a generic type or method")));
+			cp.AddCompletionData (new CompletionData ("typeparamref", "md-literal", GettextCatalog.GetString ("Identify that a word is a type parameter name")));
+			cp.AddCompletionData (new CompletionData ("value", "md-literal", GettextCatalog.GetString ("Describe a property")));
 			
 			return cp;
 		}

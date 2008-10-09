@@ -53,27 +53,27 @@ namespace MonoDevelop.XmlEditor.Completion
 			this.closing = closing;
 		}
 		
-		public string Image {
+		public string Icon {
 			get { return closing? Gtk.Stock.GoBack : Gtk.Stock.GoForward; }
 		}
 
-		public string[] Text {
-			get { return new string [] { element }; }
+		public string DisplayText {
+			get { return element; }
 		}
 
 		public string Description {
 			get { return null; }
 		}
 
-		public string CompletionString {
+		public string CompletionText {
 			get { return element; }
 		}
 		
-		public bool Sink {
-			get { return false; }
+		public DisplayFlags DisplayFlags {
+			get { return DisplayFlags.None; }
 		}
 		
-		public void InsertAction (ICompletionWidget widget, ICodeCompletionContext context)
+		public void InsertCompletionText (ICompletionWidget widget, ICodeCompletionContext context)
 		{
 			IEditableTextBuffer buf = widget as IEditableTextBuffer;
 			if (buf != null) {

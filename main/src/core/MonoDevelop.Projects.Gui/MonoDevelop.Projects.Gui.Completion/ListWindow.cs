@@ -156,7 +156,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 			get
 			{
 				int pos = list.Selection + 1;
-				if (provider.ItemCount > pos && provider.GetText (pos).ToLower ().StartsWith (PartialWord.ToLower ()) || !(provider.GetText (list.Selection).ToLower ().StartsWith (PartialWord.ToLower ())))
+				if (provider.ItemCount > pos && provider.GetText (pos).ToLower ().StartsWith (PartialWord.ToLower ())
+				    || !(provider.GetText (list.Selection).ToLower ().StartsWith (PartialWord.ToLower ())))
 					return false;
 				
 				return true;	
@@ -494,31 +495,48 @@ namespace MonoDevelop.Projects.Gui.Completion
 			int n = 0;
 			while (ypos < winHeight - margin && (page + n) < win.DataProvider.ItemCount)
 			{
-				string text = win.DataProvider.GetText (page + n);
-				if (text == null)
-					text = "&lt;null&gt;";
-				layout.SetMarkup (text);
+				if (win.DataProvider.HasMarkup (page + n)) {
+					string markup = win.DataProvider.GetMarkup (page + n);
+					if (markup == null)
+						markup = "&lt;null&gt;";
+					layout.SetMarkup (markup);
+				} else {
+					string text = win.DataProvider.GetText (page + n);
+					if (text == null)
+						text = "<null>";
+					layout.SetText (text);
+				}
+				
 				Gdk.Pixbuf icon = win.DataProvider.GetIcon (page + n);
+				int iconHeight = icon != null? icon.Height : 24;
+				int iconWidth = icon != null? icon.Width : 24;
 				
 				int wi, he, typos, iypos;
 				layout.GetPixelSize (out wi, out he);
 				typos = he < rowHeight ? ypos + (rowHeight - he) / 2 : ypos;
-				iypos = icon.Height < rowHeight ? ypos + (rowHeight - icon.Height) / 2 : ypos;
+				iypos = iconHeight < rowHeight ? ypos + (rowHeight - iconHeight) / 2 : ypos;
 				
 				if (page + n == selection) {
 					if (!disableSelection) {
-						this.GdkWindow.DrawRectangle (this.Style.BaseGC (StateType.Selected), true, margin, ypos, lineWidth, he + padding);
-						this.GdkWindow.DrawLayout (this.Style.TextGC (StateType.Selected), xpos + icon.Width + 2, typos, layout);
+						this.GdkWindow.DrawRectangle (this.Style.BaseGC (StateType.Selected),
+						                              true, margin, ypos, lineWidth, he + padding);
+						this.GdkWindow.DrawLayout (this.Style.TextGC (StateType.Selected),
+							                           xpos + iconWidth + 2, typos, layout);
 					}
 					else {
-						this.GdkWindow.DrawRectangle (this.Style.BaseGC (StateType.Selected), false, margin, ypos, lineWidth, he + padding);
-						this.GdkWindow.DrawLayout (this.Style.TextGC (StateType.Normal), xpos + icon.Width + 2, typos, layout);
+						this.GdkWindow.DrawRectangle (this.Style.BaseGC (StateType.Selected),
+						                              false, margin, ypos, lineWidth, he + padding);
+						this.GdkWindow.DrawLayout (this.Style.TextGC (StateType.Normal), 
+						                           xpos + iconWidth + 2, typos, layout);
 					}
 				}
 				else
-					this.GdkWindow.DrawLayout (this.Style.TextGC (StateType.Normal), xpos + icon.Width + 2, typos, layout);
-					
-				this.GdkWindow.DrawPixbuf (this.Style.ForegroundGC (StateType.Normal), icon, 0, 0, xpos, iypos, icon.Width, icon.Height, Gdk.RgbDither.None, 0, 0);
+					this.GdkWindow.DrawLayout (this.Style.TextGC (StateType.Normal),
+					                           xpos + iconWidth + 2, typos, layout);
+				
+				if (icon != null)
+					this.GdkWindow.DrawPixbuf (this.Style.ForegroundGC (StateType.Normal), icon, 0, 0,
+					                           xpos, iypos, iconWidth, iconHeight, Gdk.RgbDither.None, 0, 0);
 				
 				ypos += rowHeight;
 				n++;
@@ -593,6 +611,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 	{
 		int ItemCount { get; }
 		string GetText (int n);
+		string GetMarkup (int n);
+		bool HasMarkup (int n);
 		string GetCompletionText (int n);
 		Gdk.Pixbuf GetIcon (int n);
 	}

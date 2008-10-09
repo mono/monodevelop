@@ -196,9 +196,9 @@ namespace MonoDevelop.Projects.Gui.Completion
 				completionData = new ICompletionData [0];
 			} else {
 				Array.Sort (completionData, (ICompletionData a, ICompletionData b) => 
-					(a.Sink == b.Sink)
-						? string.Compare (a.Text[0], b.Text[0], true)
-						: a.Sink? 1 : -1);
+					((a.DisplayFlags & DisplayFlags.Obsolete) == (b.DisplayFlags & DisplayFlags.Obsolete))
+						? string.Compare (a.DisplayText, b.DisplayText, true)
+						: (a.DisplayFlags & DisplayFlags.Obsolete) != 0? 1 : -1);
 			}
 			
 			DataProvider = this;
@@ -232,7 +232,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 				if (Selection != -1) {
 					IActionCompletionData ac = completionData [Selection] as IActionCompletionData;
 					if (ac != null) {
-						ac.InsertAction (completionWidget, completionContext);
+						ac.InsertCompletionText (completionWidget, completionContext);
 						return;
 					}
 				}
@@ -300,10 +300,12 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 
 			ICompletionData data = completionData[List.Selection];
-			ICompletionDataWithMarkup datawMarkup = data as ICompletionDataWithMarkup;
+			bool descriptionHasMarkup = (data.DisplayFlags & DisplayFlags.DescriptionHasMarkup) != 0;
 			IOverloadedCompletionData overloadedData = data as IOverloadedCompletionData;
 
-			string descMarkup = datawMarkup != null ? datawMarkup.DescriptionPango : GLib.Markup.EscapeText (data.Description);
+			string descMarkup = descriptionHasMarkup
+				? data.Description
+				: GLib.Markup.EscapeText (data.Description);
 
 			declarationviewwindow.Hide ();
 			
@@ -315,10 +317,10 @@ namespace MonoDevelop.Projects.Gui.Completion
 
 				if (overloadedData != null) {
 					foreach (ICompletionData oData in overloadedData.GetOverloads ()) {
-						ICompletionDataWithMarkup odatawMarkup = oData as ICompletionDataWithMarkup;
-						declarationviewwindow.AddOverload (odatawMarkup == null
+						bool oDataHasMarkup = (oData.DisplayFlags & DisplayFlags.DescriptionHasMarkup) != 0;
+						declarationviewwindow.AddOverload (oDataHasMarkup
 							? GLib.Markup.EscapeText (oData.Description)
-							: odatawMarkup.DescriptionPango);
+							: oData.Description);
 					}
 				}
 			}
@@ -354,25 +356,43 @@ namespace MonoDevelop.Projects.Gui.Completion
 			declarationviewwindow.Move (horiz, vert);
 		}
 		
-		public int ItemCount 
+		#region IListDataProvider
+		
+		int IListDataProvider.ItemCount 
 		{ 
 			get { return completionData.Length; } 
 		}
 		
-		public string GetText (int n)
+		string IListDataProvider.GetText (int n)
 		{
-			return completionData[n].Text[0];
+			return completionData[n].DisplayText;
 		}
 		
-		public string GetCompletionText (int n)
+		bool IListDataProvider.HasMarkup (int n)
 		{
-			return completionData[n].CompletionString;
+			return (completionData[n].DisplayFlags & DisplayFlags.Obsolete) != 0;
 		}
 		
-		public Gdk.Pixbuf GetIcon (int n)
+		//NOTE: we only ever return markup for items marked as obsolete
+		string IListDataProvider.GetMarkup (int n)
 		{
-			return MonoDevelop.Core.Gui.Services.Resources.GetIcon (completionData[n].Image, Gtk.IconSize.Menu);
+			return "<s>" + GLib.Markup.EscapeText (completionData[n].DisplayText) + "</s>";
 		}
+		
+		string IListDataProvider.GetCompletionText (int n)
+		{
+			return completionData[n].CompletionText;
+		}
+		
+		Gdk.Pixbuf IListDataProvider.GetIcon (int n)
+		{
+			string iconName = completionData[n].Icon;
+			if (string.IsNullOrEmpty (iconName))
+				return null;
+			return MonoDevelop.Core.Gui.Services.Resources.GetIcon (iconName, Gtk.IconSize.Menu);
+		}
+		
+		#endregion
 		
 		internal bool IsChanging {
 			get { return mutableProvider != null && mutableProvider.IsChanging; }

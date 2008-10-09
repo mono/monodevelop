@@ -35,7 +35,7 @@ using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.CSharpBinding
 {
-	public class NewOverrideCompletionData : CodeCompletionData, IActionCompletionData
+	public class NewOverrideCompletionData : CompletionData, IActionCompletionData
 	{
 		TextEditor editor;
 		IMember member;
@@ -48,6 +48,7 @@ namespace MonoDevelop.CSharpBinding
 		IType  type;
 		
 		public NewOverrideCompletionData (TextEditor editor, int declarationBegin, IType type, IMember member)
+			: base (null)
 		{
 			this.editor = editor;
 			this.type   = type;
@@ -59,12 +60,13 @@ namespace MonoDevelop.CSharpBinding
 			insertSealed  = declarationText.Contains ("sealed");
 			
 			this.indent = GetIndentString (editor.CursorPosition);
-			Image       = member.StockIcon;
-			Text        = new string[] { ambience.GetString (member, OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics | OutputFlags.EmitMarkup | OutputFlags.HideExtensionsParameter) };
-			CompletionString = member.Name;
+			this.Icon = member.StockIcon;
+			this.DisplayText = ambience.GetString (member, OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics
+			                                       | OutputFlags.EmitMarkup | OutputFlags.HideExtensionsParameter);
+			this.CompletionText = member.Name;
 		}
 		
-		public void InsertAction (ICompletionWidget widget, ICodeCompletionContext context)
+		public void InsertCompletionText (ICompletionWidget widget, ICodeCompletionContext context)
 		{
 			editor.DeleteText (declarationBegin, editor.CursorPosition - declarationBegin);
 			string mod = GetModifiers (member);
@@ -108,7 +110,7 @@ namespace MonoDevelop.CSharpBinding
 		void GenerateMethodBody (StringBuilder sb, IMethod method)
 		{
 			sb.Append (this.indent);
-			sb.Append (SingeleIndent);
+			sb.Append (SingleIndent);
 			if (method.Name == "ToString" && (method.Parameters == null || method.Parameters.Count == 0) && method.ReturnType != null && method.ReturnType.FullName == "System.String") {
 				sb.Append ("return string.Format(");
 				sb.Append ("\"[");
@@ -178,7 +180,7 @@ namespace MonoDevelop.CSharpBinding
 			editor.InsertText (editor.CursorPosition, sb.ToString ());
 		}
 		
-		string SingeleIndent {
+		string SingleIndent {
 			get {
 				if (TextEditorProperties.ConvertTabsToSpaces) 
 					return new string (' ', TextEditorProperties.TabIndent);
@@ -190,11 +192,11 @@ namespace MonoDevelop.CSharpBinding
 		{
 			if (property.HasGet) {
 				sb.Append (this.indent);
-				sb.Append (SingeleIndent);
+				sb.Append (SingleIndent);
 				sb.AppendLine ("get {");
 				sb.Append (this.indent);
-				sb.Append (SingeleIndent);
-				sb.Append (SingeleIndent);
+				sb.Append (SingleIndent);
+				sb.Append (SingleIndent);
 				if (!property.IsAbstract) {
 					sb.Append (" return base.");
 					sb.Append (property.Name);
@@ -202,20 +204,20 @@ namespace MonoDevelop.CSharpBinding
 				}
 				sb.AppendLine ();
 				sb.Append (this.indent);
-				sb.Append (SingeleIndent);
+				sb.Append (SingleIndent);
 				sb.AppendLine ("}");
 			}
 			
 			if (property.HasSet) {
 				sb.Append (this.indent);
-				sb.Append (SingeleIndent);
+				sb.Append (SingleIndent);
 				sb.AppendLine ("set {");
 				sb.Append (this.indent);
-				sb.Append (SingeleIndent);
-				sb.Append (SingeleIndent);
+				sb.Append (SingleIndent);
+				sb.Append (SingleIndent);
 				sb.AppendLine ("throw new System.NotImplementedException ();");
 				sb.Append (this.indent);
-				sb.Append (SingeleIndent);
+				sb.Append (SingleIndent);
 				sb.AppendLine ("}");
 			}
 		}

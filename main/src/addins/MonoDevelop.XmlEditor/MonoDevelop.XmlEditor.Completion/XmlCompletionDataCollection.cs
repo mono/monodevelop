@@ -120,10 +120,8 @@ namespace MonoDevelop.XmlEditor.Completion
 		/// <seealso cref='XmlCompletionDataCollection.IndexOf'/>
 		public bool Contains(XmlCompletionData val)
 		{
-			if (val.Text != null) {
-				if (val.Text.Length > 0) {
-					return Contains(val.Text[0]);
-				}
+			if (!string.IsNullOrEmpty (val.DisplayText)) {
+				return Contains (val.DisplayText);
 			}
 			return false;
 		}
@@ -133,12 +131,10 @@ namespace MonoDevelop.XmlEditor.Completion
 			bool contains = false;
 			
 			foreach (XmlCompletionData data in this) {
-				if (data.Text != null) {
-					if (data.Text.Length > 0) {
-						if (data.Text[0] == name) {
-							contains = true;
-							break;
-						}
+				if (!string.IsNullOrEmpty (data.DisplayText)) {
+					if (data.DisplayText == name) {
+						contains = true;
+						break;
 					}
 				}
 			}

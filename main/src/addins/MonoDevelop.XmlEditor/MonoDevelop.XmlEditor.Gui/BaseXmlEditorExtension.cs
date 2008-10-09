@@ -186,7 +186,7 @@ namespace MonoDevelop.XmlEditor.Gui
 				XElement el = ob as XElement;
 				if (el != null && el.IsNamed && !el.IsClosed) {
 					string name = el.Name.FullName;
-					provider.AddCompletionData (new CodeCompletionData ("/" + name + ">",
+					provider.AddCompletionData (new CompletionData ("/" + name + ">",
 						Gtk.Stock.GoBack, "Closing tag for '" + name + "'"));
 					return;
 				}

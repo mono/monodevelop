@@ -38,4 +38,26 @@ namespace MonoDevelop.Projects.Gui.Completion
 		IEnumerable<ICompletionData> GetOverloads ();
 		bool HasOverloads { get; }
 	}
+	
+	public interface ICompletionData
+	{
+		string Icon { get; }
+		string DisplayText { get; }
+		string Description { get; }
+		string CompletionText { get; }
+		DisplayFlags DisplayFlags { get; }
+	}
+	
+	public interface IActionCompletionData : ICompletionData
+	{
+		void InsertCompletionText (ICompletionWidget widget, ICodeCompletionContext context);
+	}
+	
+	[Flags]
+	public enum DisplayFlags
+	{
+		None = 0,
+		Obsolete = 1,
+		DescriptionHasMarkup = 2,
+	}
 }

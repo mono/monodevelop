@@ -170,13 +170,12 @@ namespace MonoDevelop.ValaBinding
 		}
 	}
 	
-	public class CompletionData : ICompletionDataWithMarkup
+	public class CompletionData : ICompletionData
 	{
 		private string image;
 		private string text;
 		private string description;
 		private string completion_string;
-		private string description_pango;
 		
 		public CompletionData (LanguageItem item)
 		{
@@ -208,31 +207,26 @@ namespace MonoDevelop.ValaBinding
 			this.text = item.Name;
 			this.completion_string = item.Name;
 			this.description = string.Empty;
-			this.description_pango = string.Empty;
 		}
 		
-		public string Image {
+		public string Icon {
 			get { return image; }
 		}
 		
-		public string[] Text {
-			get { return new string[] { text }; }
+		public string DisplayText {
+			get { return text; }
 		}
 		
 		public string Description {
 			get { return description; }
 		}
 
-		public string CompletionString {
+		public string CompletionText {
 			get { return completion_string; }
 		}
 		
-		public string DescriptionPango {
-			get { return description_pango; }
-		}
-		
-		public bool Sink {
-			get { return false; }
+		public DisplayFlags DisplayFlags {
+			get { return DisplayFlags.None; }
 		}
 	}
 

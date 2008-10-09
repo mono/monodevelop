@@ -38,7 +38,7 @@ using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.CSharpBinding
 {
-	public class MemberCompletionData : ICompletionDataWithMarkup, IActionCompletionData, IOverloadedCompletionData
+	public class MemberCompletionData : IActionCompletionData, IOverloadedCompletionData
 	{
 		IMember member;
 		OutputFlags flags;
@@ -46,9 +46,8 @@ namespace MonoDevelop.CSharpBinding
 		static CSharpAmbience ambience = new CSharpAmbience ();
 		bool descriptionCreated = false;
 		
-		string description, descriptionPango, completionString;
-		string[] text;
-		bool markObsolete;
+		string description, completionString;
+		string text;
 		
 		Dictionary<string, ICompletionData> overloads;
 		
@@ -59,24 +58,19 @@ namespace MonoDevelop.CSharpBinding
 			}
 		}
 		
-		public string CompletionString {
+		public string CompletionText {
 			get { return completionString; }
 		}
 		
-		public string[] Text {
+		public string DisplayText {
 			get { return text; }
 		}
 		
-		public string Image {
+		public string Icon {
 			get { return member.StockIcon; }
 		}
 		
-		public string DescriptionPango {
-			get {
-				CheckDescription ();
-				return descriptionPango;
-			}
-		}
+		public DisplayFlags DisplayFlags { get; set; }
 		
 		public bool HideExtensionParameter {
 			get {
@@ -87,29 +81,17 @@ namespace MonoDevelop.CSharpBinding
 			}
 		}
 		
-		bool MarkObsolete {
-			get { return markObsolete; }
-			set {
-				if (value == markObsolete)
-					return;
-				markObsolete = value;
-				if (value) {
-					text[0] = "<s>" + text[0] + "</s>";
-				} else {
-					text[0] = text[0].Substring (3, text[0].Length - 7);
-				}
-			}
-		}
-		
 		public MemberCompletionData (IMember member, OutputFlags flags)
 		{
 			this.member = member;
-			this.text = new string [] { ambience.GetString (member, flags | OutputFlags.EmitMarkup) };
+			this.text = ambience.GetString (member, flags);
 			this.completionString = ambience.GetString (member, flags | OutputFlags.IncludeGenerics);
-			MarkObsolete = member.IsObsolete;
+			DisplayFlags = DisplayFlags.DescriptionHasMarkup;
+			if (member.IsObsolete)
+				DisplayFlags |= DisplayFlags.Obsolete;
 		}
 		
-		public void InsertAction (ICompletionWidget widget, ICodeCompletionContext context)
+		public void InsertCompletionText (ICompletionWidget widget, ICodeCompletionContext context)
 		{
 			MonoDevelop.Ide.Gui.Content.IEditableTextBuffer buf = widget
 				as MonoDevelop.Ide.Gui.Content.IEditableTextBuffer;
@@ -121,14 +103,14 @@ namespace MonoDevelop.CSharpBinding
 			
 			buf.BeginAtomicUndo ();
 			buf.DeleteText (context.TriggerOffset, buf.CursorPosition - context.TriggerOffset);
-			buf.InsertText (context.TriggerOffset, this.CompletionString);
+			buf.InsertText (context.TriggerOffset, this.CompletionText);
 			
 			//select any generic parameters e.g. T in <T>
-			int offset = this.CompletionString.IndexOf ('<');
+			int offset = this.CompletionText.IndexOf ('<');
 			if (offset >= 0) {
 				int endOffset = offset + 1;
-				while (endOffset < this.CompletionString.Length) {
-					char ch = this.CompletionString[endOffset];
+				while (endOffset < this.CompletionText.Length) {
+					char ch = this.CompletionText[endOffset];
 					if (!Char.IsLetterOrDigit(ch) && ch != '_')
 						break;
 					endOffset++;
@@ -145,15 +127,10 @@ namespace MonoDevelop.CSharpBinding
 				return;
 			
 			descriptionCreated = true;
-			
-			string doc = ambience.GetString (member,
-				OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName
-				| (HideExtensionParameter ? OutputFlags.HideExtensionsParameter : OutputFlags.None));
 			string docMarkup = ambience.GetString (member,
 				OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName | OutputFlags.EmitMarkup
 				| (HideExtensionParameter ? OutputFlags.HideExtensionsParameter : OutputFlags.None));
 			if (member.IsObsolete) {
-				doc += Environment.NewLine + "[Obsolete]";
 				docMarkup += Environment.NewLine + "[Obsolete]";
 			}
 			XmlNode node = member.GetMonodocDocumentation ();
@@ -161,12 +138,10 @@ namespace MonoDevelop.CSharpBinding
 				node = node.SelectSingleNode ("summary");
 				if (node != null) {
 					string mdDoc = GetDocumentation (node.InnerXml);
-					doc += Environment.NewLine + mdDoc;
 					docMarkup += Environment.NewLine + mdDoc;
 				}
 			}
-			description = doc;
-			descriptionPango = docMarkup;
+			description = docMarkup;
 		}
 	
 		public static string FormatText (string text)
@@ -308,20 +283,13 @@ namespace MonoDevelop.CSharpBinding
 				overloads = new Dictionary<string, ICompletionData> ();
 			
 			if (!overload.member.IsObsolete)
-				MarkObsolete = false;
+				DisplayFlags ^= DisplayFlags.Obsolete;
 			
 			string description = overload.Description;
 			if (description != this.description || !overloads.ContainsKey (description))
 				overloads[description] = overload;
 		}
 		
-		#endregion 
-		
-		
-		public bool Sink {
-			get {
-				 return MarkObsolete;
-			}
-		}
+		#endregion
 	}
 }

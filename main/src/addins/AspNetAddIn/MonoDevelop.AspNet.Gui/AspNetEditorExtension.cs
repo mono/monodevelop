@@ -201,10 +201,10 @@ namespace MonoDevelop.AspNet.Gui
 					AddCloseTag (cp, Tracker.Engine.Nodes);
 					
 //						if (line < 3) {
-//						cp.AddCompletionData (new CodeCompletionData ("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>"));
+//						cp.AddCompletionData (new CompletionData ("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>"));
 				
 					if (line < 4 && string.IsNullOrEmpty (doctype))
-						cp.AddCompletionData (new CodeCompletionData ("!DOCTYPE", "md-literal"));
+						cp.AddCompletionData (new CompletionData ("!DOCTYPE", "md-literal"));
 				}
 				
 				AddAspBeginExpressions (cp, CU == null? null : CU.Document);
@@ -281,7 +281,7 @@ namespace MonoDevelop.AspNet.Gui
 					}
 					
 					if (!existingAtts.ContainsKey ("runat"))
-						cp.AddCompletionData (new CodeCompletionData ("runat=\"server\"", "md-literal",
+						cp.AddCompletionData (new CompletionData ("runat=\"server\"", "md-literal",
 						    GettextCatalog.GetString ("Required for ASP.NET controls.\n") +
 						    GettextCatalog.GetString (
 						        "Indicates that this tag should be able to be\n" +
@@ -290,7 +290,7 @@ namespace MonoDevelop.AspNet.Gui
 					
 					if (!existingAtts.ContainsKey ("id"))
 						cp.AddCompletionData (
-						    new CodeCompletionData ("id", "md-literal",
+						    new CompletionData ("id", "md-literal",
 						        GettextCatalog.GetString ("Unique identifier.\n") +
 						        GettextCatalog.GetString (
 						            "An identifier that is unique within the document.\n" + 
@@ -369,7 +369,7 @@ namespace MonoDevelop.AspNet.Gui
 			
 			//add atts only if they're not aready in the tag
 			foreach (ICompletionData datum in schema.CompletionProvider.GetAttributeCompletionData (tagName.FullName))
-				if (existingAtts == null || !existingAtts.ContainsKey (datum.Text[0]))
+				if (existingAtts == null || !existingAtts.ContainsKey (datum.DisplayText))
 					provider.AddCompletionData (datum);
 		}
 		
@@ -390,10 +390,10 @@ namespace MonoDevelop.AspNet.Gui
 		static void AddHtmlMiscBegins (CodeCompletionDataProvider provider)
 		{
 			provider.AddCompletionData (
-			    new CodeCompletionData ("!--",  "md-literal", GettextCatalog.GetString ("Comment"))
+			    new CompletionData ("!--",  "md-literal", GettextCatalog.GetString ("Comment"))
 			    );
 			provider.AddCompletionData (
-			    new CodeCompletionData ("![CDATA[", "md-literal", GettextCatalog.GetString ("Character data"))
+			    new CompletionData ("![CDATA[", "md-literal", GettextCatalog.GetString ("Character data"))
 			    );
 		}
 		
@@ -404,26 +404,26 @@ namespace MonoDevelop.AspNet.Gui
 		static void AddAspBeginExpressions (CodeCompletionDataProvider provider, Document doc)
 		{
 			provider.AddCompletionData (
-			    new CodeCompletionData ("%",  "md-literal", GettextCatalog.GetString ("ASP.NET render block"))
+			    new CompletionData ("%",  "md-literal", GettextCatalog.GetString ("ASP.NET render block"))
 			    );
 			provider.AddCompletionData (
-			    new CodeCompletionData ("%=", "md-literal", GettextCatalog.GetString ("ASP.NET render expression"))
+			    new CompletionData ("%=", "md-literal", GettextCatalog.GetString ("ASP.NET render expression"))
 			    );
 			provider.AddCompletionData (
-			    new CodeCompletionData ("%@", "md-literal", GettextCatalog.GetString ("ASP.NET directive"))
+			    new CompletionData ("%@", "md-literal", GettextCatalog.GetString ("ASP.NET directive"))
 			    );
 			provider.AddCompletionData (
-			    new CodeCompletionData ("%#", "md-literal", GettextCatalog.GetString ("ASP.NET databinding expression"))
+			    new CompletionData ("%#", "md-literal", GettextCatalog.GetString ("ASP.NET databinding expression"))
 			    );
 			provider.AddCompletionData (
-			    new CodeCompletionData ("%--", "md-literal", GettextCatalog.GetString ("ASP.NET server-side comment"))
+			    new CompletionData ("%--", "md-literal", GettextCatalog.GetString ("ASP.NET server-side comment"))
 			    );
 			
 			//valid on 2.0 runtime only
 			if (doc.Project == null || doc.Project.ClrVersion == ClrVersion.Net_2_0
 			    || doc.Project.ClrVersion == ClrVersion.Default) {
 				provider.AddCompletionData (
-				    new CodeCompletionData ("%$", "md-literal", GettextCatalog.GetString ("ASP.NET resource expression"))
+				    new CompletionData ("%$", "md-literal", GettextCatalog.GetString ("ASP.NET resource expression"))
 				    );
 			}
 		}
@@ -432,7 +432,7 @@ namespace MonoDevelop.AspNet.Gui
 		{
 			foreach (MonoDevelop.Projects.Dom.IType cls in doc.ReferenceManager.ListControlClasses ())
 				provider.AddCompletionData (
-				    new CodeCompletionData ("asp:" + cls.Name, Gtk.Stock.GoForward, cls.Documentation));
+				    new CompletionData ("asp:" + cls.Name, Gtk.Stock.GoForward, cls.Documentation));
 		}
 		
 		static void AddAspAttributeCompletionData (CodeCompletionDataProvider provider,
@@ -475,14 +475,14 @@ namespace MonoDevelop.AspNet.Gui
 			foreach (MonoDevelop.Projects.Dom.IProperty prop 
 			    in GetUniqueMembers<MonoDevelop.Projects.Dom.IProperty> (GetAllProperties (database, controlClass)))
 				if (prop.IsPublic && (existingAtts == null || !existingAtts.ContainsKey (prop.Name)))
-					provider.AddCompletionData (new CodeCompletionData (prop.Name, prop.StockIcon, prop.Documentation));
+					provider.AddCompletionData (new CompletionData (prop.Name, prop.StockIcon, prop.Documentation));
 			
 			//similarly add events
 			foreach (MonoDevelop.Projects.Dom.IEvent eve 
 			    in GetUniqueMembers<MonoDevelop.Projects.Dom.IEvent> (GetAllEvents (database, controlClass))) {
 				string eveName = "On" + eve.Name;
 				if (eve.IsPublic && (existingAtts == null || !existingAtts.ContainsKey (eveName)))
-					provider.AddCompletionData (new CodeCompletionData (eveName, eve.StockIcon, eve.Documentation));
+					provider.AddCompletionData (new CompletionData (eveName, eve.StockIcon, eve.Documentation));
 			}
 		}
 		
@@ -532,7 +532,7 @@ namespace MonoDevelop.AspNet.Gui
 						foreach (string meth 
 						    in BindingService.GetCompatibleMethodsInClass (codeBehindClass, domMethod))
 						{
-							provider.AddCompletionData (new CodeCompletionData (meth, "md-method",
+							provider.AddCompletionData (new CompletionData (meth, "md-method",
 							    "A compatible method in the CodeBehind class"));
 						}
 						
@@ -581,7 +581,7 @@ namespace MonoDevelop.AspNet.Gui
 						if (c.IsSystemColor)
 							continue;
 						string hexcol = string.Format ("#{0:x2}{1:x2}{2:x2}", c.R, c.G, c.B);
-						provider.AddCompletionData (new CodeCompletionData (c.Name, hexcol));
+						provider.AddCompletionData (new CompletionData (c.Name, hexcol));
 					}
 					return;
 				}
@@ -592,7 +592,7 @@ namespace MonoDevelop.AspNet.Gui
 					foreach (MonoDevelop.Projects.Dom.IField enumVal in retCls.Fields)
 						if (enumVal.IsPublic && enumVal.IsStatic)
 							provider.AddCompletionData (
-							    new CodeCompletionData (enumVal.Name, "md-literal", enumVal.Documentation));
+							    new CompletionData (enumVal.Name, "md-literal", enumVal.Documentation));
 					return;
 				}
 			}
@@ -629,8 +629,8 @@ namespace MonoDevelop.AspNet.Gui
 		
 		static void AddBooleanCompletionData (CodeCompletionDataProvider provider)
 		{
-			provider.AddCompletionData (new CodeCompletionData ("true", "md-literal"));
-			provider.AddCompletionData (new CodeCompletionData ("false", "md-literal"));
+			provider.AddCompletionData (new CompletionData ("true", "md-literal"));
+			provider.AddCompletionData (new CompletionData ("false", "md-literal"));
 		}
 		
 		#endregion

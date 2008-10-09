@@ -1,4 +1,4 @@
-// PythonCompletionDataProvider.cs
+// CompletionDataProvider.cs
 //
 // Copyright (c) 2008 Christian Hergert <chris@dronelabs.com>
 //
@@ -200,11 +200,7 @@ namespace PyBinding.Completion
 
 			foreach (PythonLocal pyLocal in OurFunc.Locals)
 			{
-				results.Add (new PythonCompletionData () {
-					Image = s_ImgAttr,
-					Text = new string[] { pyLocal.Name },
-					CompletionString = pyLocal.Name
-				});
+				results.Add (new CompletionData (pyLocal.Name, s_ImgAttr));
 			}
 
 			return results.ToArray ();
@@ -219,12 +215,8 @@ namespace PyBinding.Completion
 
 			foreach (PythonClass pyClass in ParsedDocument.Module.Classes)
 			{
-				results.Add (new PythonCompletionData () {
-					Image = s_ImgClass,
-					Text = new string[] { pyClass.Name },
-					CompletionString = String.Format ("{0}(", pyClass.Name),
-					Description = pyClass.Documentation.Trim ()
-				});
+				results.Add (new CompletionData (pyClass.Name, s_ImgClass, pyClass.Documentation.Trim (),
+				                                 String.Format ("{0}(", pyClass.Name)));
 			}
 
 			return results.ToArray ();
@@ -239,11 +231,8 @@ namespace PyBinding.Completion
 
 			foreach (PythonFunction pyFunc in OurClass.Functions)
 			{
-				results.Add (new PythonCompletionData () {
-					Image = s_ImgFunc,
-					Text = new string[] { pyFunc.Name },
-					CompletionString = String.Format ("{0}(", pyFunc.Name),
-					Description = pyFunc.Documentation
+				results.Add (new CompletionData (pyFunc.Name, s_ImgFunc, pyFunc.Documentation) {
+					CompletionText = String.Format ("{0}(", pyFunc.Name),
 				});
 			}
 
@@ -259,11 +248,7 @@ namespace PyBinding.Completion
 
 			foreach (PythonAttribute pyAttr in OurClass.Attributes)
 			{
-				results.Add (new PythonCompletionData () {
-					Image = s_ImgAttr,
-					Text = new string[] { pyAttr.Name },
-					CompletionString = pyAttr.Name
-				});
+				results.Add (new CompletionData (pyAttr.Name, s_ImgAttr));
 			}
 
 			return results.ToArray ();
@@ -272,60 +257,25 @@ namespace PyBinding.Completion
 		ICompletionData[] GenerateClassFunctionsSpecial ()
 		{
 			return new ICompletionData[] {
-				new PythonCompletionData () {
-					Image = s_ImgFunc,
-					Text = new string[] { "__init__" },
-					CompletionString = "__init__(self, "
+				new CompletionData ("__init__", s_ImgFunc) {
+					CompletionText = "__init__(self, "
 				},
-				new PythonCompletionData () {
-					Image = s_ImgFunc,
-					Text = new string[] { "__str__" },
-					CompletionString = "__str__(self):"
+				new CompletionData ("__str__", s_ImgFunc) {
+					CompletionText = "__str__(self):"
 				},
-				new PythonCompletionData () {
-					Image = s_ImgFunc,
-					Text = new string[] { "__repr__" },
-					CompletionString = "__repr__(self):"
+				new CompletionData ("__repr__", s_ImgFunc) {
+					CompletionText = "__repr__(self):"
 				},
-				new PythonCompletionData () {
-					Image = s_ImgFunc,
-					Text = new string[] { "__getattribute__" },
-					CompletionString = "__getattribute__(self, attr):"
+				new CompletionData ("__getattribute__", s_ImgFunc) {
+					CompletionText = "__getattribute__(self, attr):"
 				},
-				new PythonCompletionData () {
-					Image = s_ImgFunc,
-					Text = new string[] { "__setattr__" },
-					CompletionString = "__setattr__(self, attr, value):"
+				new CompletionData ("__setattr__", s_ImgFunc) {
+					CompletionText = "__setattr__(self, attr, value):"
 				},
-				new PythonCompletionData () {
-					Image = s_ImgFunc,
-					Text = new string[] { "__delattr__" },
-					CompletionString = "__delattr__(self, attr):"
+				new CompletionData ("__delattr__", s_ImgFunc) {
+					CompletionText = "__delattr__(self, attr):"
 				},
 			};
-		}
-	}
-
-	public class PythonCompletionData : ICompletionData
-	{
-		public string Image {
-			get;
-			set;
-		}
-
-		public string[] Text {
-			get;
-			set;
-		}
-
-		public string Description {
-			get;
-			set;
-		}
-
-		public string CompletionString {
-			get;
-			set;
 		}
 	}
 }

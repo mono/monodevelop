@@ -1,5 +1,19 @@
 2008-10-09  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionData.cs:
+	* MonoDevelop.Projects.Gui.Completion/ICompletionData.cs:
+	* MonoDevelop.Projects.Gui.Completion/CodeCompletionData.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/IOverloadedCompletionData.cs:
+	* MonoDevelop.Projects.Gui.Completion/CodeCompletionDataProvider.cs:
+	Tidy up ICompletionData API.
+
+	* Makefile.am:
+	* MonoDevelop.Projects.Gui.mdp: Updated.
+
+2008-10-09  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Projects.Gui.mdp: Add a reference to System.Core.
 
