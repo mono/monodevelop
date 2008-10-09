@@ -371,18 +371,25 @@ namespace MonoDevelop.CSharpBinding
 					LocalLookupVariable var = pair.Value[pair.Value.Count - 1];
 					
 					IReturnType varType = null;
+					IReturnType varTypeUnresolved = null;
 					if ((var.TypeRef == null || var.TypeRef.Type == "var" || var.TypeRef.IsNull)) {
-						if (var.ParentLambdaExpression != null) 
-							varType = ResolveLambda (visitor, var.ParentLambdaExpression).ResolvedType;
-						if (var.Initializer != null) 
-							varType = visitor.Resolve (var.Initializer).ResolvedType;
+						if (var.ParentLambdaExpression != null)  {
+							ResolveResult lambdaResolve = ResolveLambda (visitor, var.ParentLambdaExpression);
+							varType           = lambdaResolve.ResolvedType;
+							varTypeUnresolved = lambdaResolve.UnresolvedType;
+						}
+						if (var.Initializer != null) {
+							ResolveResult initializerResolve = visitor.Resolve (var.Initializer);
+							varType           = initializerResolve.ResolvedType;
+							varTypeUnresolved = initializerResolve.UnresolvedType;
+						}
 					} else { 
-						varType = ConvertTypeReference (var.TypeRef);
+						varTypeUnresolved = varType = ConvertTypeReference (var.TypeRef);
 					}
 					varType = ResolveType (varType);
-					
 					result = new LocalVariableResolveResult (new LocalVariable (this.CallingMember, identifier, varType, new DomRegion (var.StartPos.Line, var.StartPos.Column, var.EndPos.Line, var.EndPos.Column)), var.IsLoopVariable);
 					result.ResolvedType = varType;
+					result.UnresolvedType = varTypeUnresolved;
 					goto end;
 				}
 			}
@@ -411,11 +418,12 @@ namespace MonoDevelop.CSharpBinding
 							result.StaticResolve = CallingMember.IsStatic;
 					} else if (members[0] is IType) {
 						result = new MemberResolveResult (null, true);
-						result.ResolvedType = new DomReturnType ((IType)members[0]);
+						result.UnresolvedType = result.ResolvedType = new DomReturnType ((IType)members[0]);
 						goto end;
 					} else {
 						result = new MemberResolveResult (members[0]);
 					}
+					result.UnresolvedType = members[0].ReturnType;
 					result.ResolvedType = ResolveType (members[0].ReturnType);
 					goto end;
 				}
@@ -424,6 +432,7 @@ namespace MonoDevelop.CSharpBinding
 			if (this.callingMember != null) {
 				if (identifier == "value" && this.callingMember is IProperty) {
 					result = new MemberResolveResult (this.callingMember);
+					result.UnresolvedType = ((IProperty)this.callingMember).ReturnType;
 					result.ResolvedType = ResolveType (((IProperty)this.callingMember).ReturnType);
 					goto end;
 				}
@@ -433,6 +442,7 @@ namespace MonoDevelop.CSharpBinding
 						foreach (IParameter para in prms) {
 							if (para.Name == identifier) {
 								result = new ParameterResolveResult (para);
+								result.UnresolvedType = para.ReturnType;
 								result.ResolvedType = ResolveType (para.ReturnType);
 								goto end;
 							}
@@ -444,7 +454,7 @@ namespace MonoDevelop.CSharpBinding
 			IType searchedType = dom.SearchType (new SearchTypeRequest (unit, -1, -1, identifier));
 			if (searchedType != null) {
 				result = new MemberResolveResult (null, true);
-				result.ResolvedType = new DomReturnType (searchedType);
+				result.UnresolvedType = result.ResolvedType = new DomReturnType (searchedType);
 				goto end;
 			}
 			

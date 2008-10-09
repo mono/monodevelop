@@ -82,14 +82,13 @@ namespace MonoDevelop.CSharpBinding
 			result.CallingType   = resolver.CallingType;
 			result.CallingMember = resolver.CallingMember;
 			result.ResolvedType = type;
+			result.UnresolvedType = type;
 			if (unit != null && resolver.Dom != null && type != null) {
 				SearchTypeRequest req = new SearchTypeRequest (unit, type);
 				req.CallingType = resolver.CallingType;
 				IType searchedType = resolver.Dom.SearchType (req);
-				if (searchedType != null) {
-					result.ResolvedType.Name      = searchedType.Name;
-					result.ResolvedType.Namespace = searchedType.Namespace;
-				}
+				if (searchedType != null)
+					result.ResolvedType = new DomReturnType (searchedType);
 			}
 			return result;
 		}
@@ -369,7 +368,7 @@ namespace MonoDevelop.CSharpBinding
 			ThisResolveResult result = new ThisResolveResult ();
 			result.CallingType   = resolver.CallingType;
 			result.CallingMember = resolver.CallingMember;
-			result.ResolvedType  = DomReturnType.GetSharedReturnType (new DomReturnType (resolver.CallingType));
+			result.UnresolvedType = result.ResolvedType  = DomReturnType.GetSharedReturnType (new DomReturnType (resolver.CallingType));
 			return result;
 		}
 		
@@ -385,7 +384,7 @@ namespace MonoDevelop.CSharpBinding
 				IType type = null;
 				if (resolver.CallingType.BaseType != null) 
 					type = this.resolver.Dom.SearchType (new SearchTypeRequest (resolver.Unit, resolver.CallingType.BaseType));
-				result.ResolvedType  = type != null ? new DomReturnType (type) : DomReturnType.Object;
+				result.UnresolvedType = result.ResolvedType  = type != null ? new DomReturnType (type) : DomReturnType.Object;
 			}
 			return result;
 		}
@@ -466,7 +465,7 @@ namespace MonoDevelop.CSharpBinding
 							result.CallingType   = resolver.CallingType;
 							result.CallingMember = resolver.CallingMember;
 							result.StaticResolve = isStatic;
-							result.ResolvedType  = member[0].ReturnType;
+							result.UnresolvedType = result.ResolvedType  = member[0].ReturnType;
 							return result;
 						}
 						if (member[0] is IType) {

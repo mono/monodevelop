@@ -64,7 +64,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				                                                                                fileName);
 				
 				ResolveResult rr = resolver.Resolve (lhsExpr, new DomLocation (editor.CursorLine, editor.CursorColumn));
-				System.Console.WriteLine(lhsExpr);
+				
 				//ResolveResult rr = ParserService.Resolve (lhsExpr, currentLine.LineNumber, pos, editor.FileName, editor.Text);
 				if (rr != null && rr.ResolvedType != null) {
 					ExpressionContext context;
@@ -78,7 +78,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 						// when creating a normal instance, all non-abstract classes deriving from the type
 						// are allowed
 						c = projectContent.GetType (rr.ResolvedType);
-						context = ExpressionContext.TypeDerivingFrom (rr.ResolvedType, true);
+						context = ExpressionContext.TypeDerivingFrom (rr.ResolvedType, rr.UnresolvedType, true);
 					}
 					if (c != null && !context.FilterEntry (c)) {
 						// Try to suggest an entry (List<int> a = new => suggest List<int>).
@@ -617,7 +617,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 					break;
 				case Tokens.New:
 					if (frame.InExpressionMode) {
-						frame.SetContext(ExpressionContext.TypeDerivingFrom(frame.expectedType, true));
+						frame.SetContext(ExpressionContext.TypeDerivingFrom(frame.expectedType, frame.expectedType, true));
 						frame.state = FrameState.ObjectCreation;
 						frame.curlyChildType = FrameType.ObjectInitializer;
 						frame.lastNewTokenStart = token.Location;

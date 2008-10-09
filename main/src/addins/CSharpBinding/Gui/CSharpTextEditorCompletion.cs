@@ -481,10 +481,9 @@ namespace MonoDevelop.CSharpBinding.Gui
 				return null;
 			case "new":
 				ExpressionContext exactContext = new NewCSharpExpressionFinder (dom).FindExactContextForNewCompletion (Editor, Document.CompilationUnit, Document.FileName);
-				
 				if (exactContext is ExpressionContext.TypeExpressionContext)
-					return CreateTypeCompletionData (exactContext, ((ExpressionContext.TypeExpressionContext)exactContext).Type);
-				return CreateTypeCompletionData (exactContext, null);
+					return CreateTypeCompletionData (exactContext, ((ExpressionContext.TypeExpressionContext)exactContext).Type, ((ExpressionContext.TypeExpressionContext)exactContext).UnresolvedType);
+				return CreateTypeCompletionData (exactContext, null, null);
 			case "if":
 			case "elif":
 				if (stateTracker.Engine.IsInsidePreprocessorDirective) 
@@ -770,7 +769,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				return str.Substring (0, idx);
 			return str;
 		}
-		CodeCompletionDataProvider CreateTypeCompletionData (ExpressionContext context, IReturnType returnType)
+		CodeCompletionDataProvider CreateTypeCompletionData (ExpressionContext context, IReturnType returnType, IReturnType returnTypeUnresolved)
 		{
 			CodeCompletionDataProvider result = new CodeCompletionDataProvider (null, GetAmbience ());
 			
@@ -781,13 +780,13 @@ namespace MonoDevelop.CSharpBinding.Gui
 			
 			CompletionDataCollector col = new CompletionDataCollector (Editor, dom, Document.CompilationUnit, location);
 			
+			result.DefaultCompletionString = StripGenerics (col.AddCompletionData (result, returnTypeUnresolved).CompletionString);
 			if (type == null) {
-				result.DefaultCompletionString = StripGenerics (col.AddCompletionData (result, returnType).CompletionString);
 				return result;
 			}
 			
 			if (tce != null && tce.Type != null) {
-				result.DefaultCompletionString = StripGenerics (col.AddCompletionData (result, tce.Type).CompletionString);
+				//result.DefaultCompletionString = StripGenerics (col.AddCompletionData (result, tce.Type).CompletionString);
 			} else {
 				if (context == null || !context.FilterEntry (type))
 					col.AddCompletionData (result, type);

@@ -1,5 +1,13 @@
 2008-10-09  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/ResolveVisitor.cs:
+	* Gui/NRefactoryResolver.cs:
+	* Gui/NewCSharpExpressionFinder.cs:
+	* Gui/CSharpTextEditorCompletion.cs: fixed 'Bug 432681 - Incorrect
+	completion in nested classes'.
+
+2008-10-09  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/NRefactoryResolver.cs: fixed possible null reference.
 
 2008-10-09  Mike Krüger  <mkrueger@novell.com>
