@@ -11,11 +11,11 @@ include $(top_srcdir)/config.make
 ifeq ($(CONFIG),DEBUG)
 ASSEMBLY_COMPILER_COMMAND = gmcs
 ASSEMBLY_COMPILER_FLAGS =  -noconfig -codepage:utf8 -warn:4 -optimize+ -debug "-define:DEBUG"
-ASSEMBLY = bin/Debug/PyBinding.dll
+ASSEMBLY = ../build/PyBinding.dll
 ASSEMBLY_MDB = $(ASSEMBLY).mdb
 COMPILE_TARGET = library
 PROJECT_REFERENCES = 
-BUILD_DIR = bin/Debug
+BUILD_DIR = ../build
 
 PYBINDING_DLL_MDB_SOURCE=bin/Debug/PyBinding.dll.mdb
 PYBINDING_DLL_MDB=$(BUILD_DIR)/PyBinding.dll.mdb
@@ -25,11 +25,11 @@ endif
 ifeq ($(CONFIG),RELEASE)
 ASSEMBLY_COMPILER_COMMAND = gmcs
 ASSEMBLY_COMPILER_FLAGS =  -noconfig -codepage:utf8 -warn:4 -optimize+
-ASSEMBLY = bin/Release/PyBinding.dll
+ASSEMBLY = ../build/PyBinding.dll
 ASSEMBLY_MDB = 
 COMPILE_TARGET = library
 PROJECT_REFERENCES = 
-BUILD_DIR = bin/Release
+BUILD_DIR = ../build
 
 PYBINDING_DLL_MDB=
 
