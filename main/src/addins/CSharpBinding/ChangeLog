@@ -1,5 +1,9 @@
 2008-10-09  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/NRefactoryResolver.cs: fixed possible null reference.
+
+2008-10-09  Mike Krüger  <mkrueger@novell.com>
+
 	* Parser/NRefactoryParser.cs: fixed 'Bug 433410 - Code folding toggle in
 	the wrong place'.
 

@@ -453,7 +453,7 @@ namespace MonoDevelop.CSharpBinding
 				goto end;
 			}
 
-			if (unit.Usings != null) {
+			if (unit != null && unit.Usings != null) {
 				foreach (IUsing u in unit.Usings) {
 					if (u.IsFromNamespace) {
 						foreach (string ns in u.Namespaces) {
