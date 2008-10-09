@@ -1,3 +1,9 @@
+2008-10-09  Christian Hergert  <chris@dronelabs.com>
+
+	* PyBinding/PyBinding.Parser.Dom/PythonParsedDocument.cs:
+	* PyBinding/PyBinding/PythonHelper.cs: Handle null/empty directories and
+	filenames.
+
 2008-10-09  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* PyBinding/PyBinding.Completion/PythonCompletionDataProvider.cs: Track

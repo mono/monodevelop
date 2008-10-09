@@ -50,7 +50,9 @@ namespace PyBinding
 
 		public static string ModuleFromFilename (string fileName)
 		{
-			if (!fileName.ToLower ().EndsWith (".py"))
+			if (String.IsNullOrEmpty (fileName))
+				return String.Empty;
+			else if (!fileName.ToLower ().EndsWith (".py"))
 				return String.Empty;
 
 			if (!m_ModuleCache.ContainsKey (fileName))
@@ -58,8 +60,14 @@ namespace PyBinding
 				string[] parts = fileName.Split (Path.DirectorySeparatorChar);
 				string module = parts[parts.Length - 1];
 				module = module.Substring (0, module.Length - 3);
-				DirectoryInfo dirInfo = new DirectoryInfo (Path.GetDirectoryName (fileName));
-				m_ModuleCache[fileName] = RecursiveModuleFromFile (dirInfo, module);
+				string dirname = Path.GetDirectoryName (fileName);
+				if (!String.IsNullOrEmpty (dirname)) {
+					DirectoryInfo dirInfo = new DirectoryInfo (Path.GetDirectoryName (fileName));
+					m_ModuleCache[fileName] = RecursiveModuleFromFile (dirInfo, module);
+				}
+				else {
+					m_ModuleCache[fileName] = module;
+				}
 			}
 
 			return m_ModuleCache[fileName];

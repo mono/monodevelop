@@ -142,9 +142,13 @@ namespace PyBinding.Parser.Dom
 		void BuildFromXmlElement (XmlElement rootElement, StringReader content)
 		{
 			Debug.Assert (rootElement.LocalName == "module");
+			string moduleName = String.Empty;
+
+			if (!String.IsNullOrEmpty (FileName))
+				moduleName = PythonHelper.ModuleFromFilename (FileName);
 
 			Module = new PythonModule () {
-				FullName = PythonHelper.ModuleFromFilename (FileName),
+				FullName = moduleName,
 				Region   = GetDomRegion (rootElement),
 			};
 
