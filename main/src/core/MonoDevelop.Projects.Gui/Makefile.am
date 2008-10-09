@@ -36,9 +36,9 @@ FILES =  \
 	MonoDevelop.Projects.Gui.Completion/CompletionData.cs \
 	MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs \
 	MonoDevelop.Projects.Gui.Completion/DeclarationViewWindow.cs \
+	MonoDevelop.Projects.Gui.Completion/ICompletionData.cs \
 	MonoDevelop.Projects.Gui.Completion/ICompletionDataProvider.cs \
 	MonoDevelop.Projects.Gui.Completion/ICompletionWidget.cs \
-	MonoDevelop.Projects.Gui.Completion/IOverloadedCompletionData.cs \
 	MonoDevelop.Projects.Gui.Completion/IParameterDataProvider.cs \
 	MonoDevelop.Projects.Gui.Completion/ListWindow.cs \
 	MonoDevelop.Projects.Gui.Completion/MethodParameterDataProvider.cs \
