@@ -1,3 +1,8 @@
+2008-10-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Projects.Gui.mdp: Add a reference to System.Core.
+
 2008-10-08  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects.Gui.Completion/CompletionData.cs: Add some very

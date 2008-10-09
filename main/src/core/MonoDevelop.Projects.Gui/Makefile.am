@@ -11,6 +11,7 @@ REFS =  \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
 	-r:Mono.Posix \
 	-r:System \
+	-r:System.Core \
 	-r:System.Xml
 
 FILES =  \
