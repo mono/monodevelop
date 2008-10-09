@@ -1,0 +1,89 @@
+<Project name="PyBinding" fileversion="2.0" language="C#" UseParentDirectoryAsNamespace="True" clr-version="Net_2_0" ctype="DotNetProject">
+  <Configurations active="Debug">
+    <Configuration name="Debug" ctype="DotNetProjectConfiguration">
+      <Output directory="bin/Debug" assembly="PyBinding" />
+      <Build debugmode="True" target="Library" />
+      <Execution runwithwarnings="True" consolepause="False" runtime="MsNet" clr-version="Net_2_0" />
+      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" definesymbols="DEBUG" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+    </Configuration>
+    <Configuration name="Release" ctype="DotNetProjectConfiguration">
+      <Output directory="bin/Release" assembly="PyBinding" />
+      <Build debugmode="False" target="Library" />
+      <Execution runwithwarnings="True" consolepause="False" runtime="MsNet" clr-version="Net_2_0" />
+      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+    </Configuration>
+  </Configurations>
+  <Contents>
+    <File name="AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="PyBinding" subtype="Directory" buildaction="Compile" />
+    <File name="PyBinding/PythonLanguageBinding.cs" subtype="Code" buildaction="Compile" />
+    <File name="PyBinding.Runtime" subtype="Directory" buildaction="Compile" />
+    <File name="PyBinding.Compiler" subtype="Directory" buildaction="Compile" />
+    <File name="PyBinding.Compiler/Python25Compiler.cs" subtype="Code" buildaction="Compile" />
+    <File name="PyBinding.Runtime/Python25Runtime.cs" subtype="Code" buildaction="Compile" />
+    <File name="PyBinding/PythonProject.cs" subtype="Code" buildaction="Compile" />
+    <File name="PyBinding/PythonConfiguration.cs" subtype="Code" buildaction="Compile" />
+    <File name="PyBinding.Runtime/IPythonRuntime.cs" subtype="Code" buildaction="Compile" />
+    <File name="PyBinding.Runtime/AbstractPythonRuntime.cs" subtype="Code" buildaction="Compile" />
+    <File name="PyBinding.Compiler/IPythonCompiler.cs" subtype="Code" buildaction="Compile" />
+    <File name="PyBinding/PythonProjectBinding.cs" subtype="Code" buildaction="Compile" />
+    <File name="Resources/EmptyPyProject.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="Resources/EmptyPySourceFile.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="Resources/py-icon-32.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="Resources/text-x-pysrc.16x16.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="Resources/PyBinding.addin.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="PyBinding.Gui" subtype="Directory" buildaction="Compile" />
+    <File name="PyBinding.Completion" subtype="Directory" buildaction="Compile" />
+    <File name="PyBinding.Completion/PythonCompletionDataProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="PyBinding.Gui/PythonOptionsWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="Resources/completion.py" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="PyBinding.Parser" subtype="Directory" buildaction="Compile" />
+    <File name="PyBinding.Parser/PythonParser.cs" subtype="Code" buildaction="Compile" />
+    <File name="PyBinding/PythonHelper.cs" subtype="Code" buildaction="Compile" />
+    <File name="gtk-gui/gui.stetic" subtype="Code" buildaction="EmbedAsResource" resource_id="gui.stetic" />
+    <File name="gtk-gui/generated.cs" subtype="Code" buildaction="Compile" />
+    <File name="gtk-gui/PyBinding.Gui.PythonOptionsWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="PyBinding.Gui/PythonEditorCompletion.cs" subtype="Code" buildaction="Compile" />
+    <File name="PyBinding.Parser.Dom" subtype="Directory" buildaction="Compile" />
+    <File name="PyBinding.Parser/PythonParserInternal.cs" subtype="Code" buildaction="Compile" />
+    <File name="PyBinding.Parser.Dom/PythonCompilationUnit.cs" subtype="Code" buildaction="Compile" />
+    <File name="PyBinding.Parser.Dom/PythonParsedDocument.cs" subtype="Code" buildaction="Compile" />
+    <File name="PyBinding.Parser.Dom/PythonModule.cs" subtype="Code" buildaction="Compile" />
+    <File name="PyBinding.Parser.Dom/PythonNode.cs" subtype="Code" buildaction="Compile" />
+    <File name="PyBinding.Parser.Dom/PythonClass.cs" subtype="Code" buildaction="Compile" />
+    <File name="PyBinding.Parser.Dom/PythonFunction.cs" subtype="Code" buildaction="Compile" />
+    <File name="PyBinding.Parser.Dom/PythonAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="PyBinding.Parser.Dom/PythonArgument.cs" subtype="Code" buildaction="Compile" />
+    <File name="PyBinding.Parser.Dom/PythonLocal.cs" subtype="Code" buildaction="Compile" />
+    <File name="PyBinding.Parser.Dom/PythonComment.cs" subtype="Code" buildaction="Compile" />
+    <File name="PyBinding.Parser.Dom/PythonImport.cs" subtype="Code" buildaction="Compile" />
+    <File name="Resources/BasicScriptPySourceFile.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="PyBinding.Gui.Navigation" subtype="Directory" buildaction="Compile" />
+    <File name="PyBinding.Gui.Navigation/ProjectNodeBuilderExtension.cs" subtype="Code" buildaction="Compile" />
+    <File name="PyBinding.Gui.Navigation/PackagesNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="PyBinding.Gui.Navigation/PackageNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="PyBinding.Gui.Navigation/ClassNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="PyBinding.Gui.Navigation/AttributeNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="PyBinding.Gui.Navigation/FunctionNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="PyBinding.Gui/PythonEditorIndentation.cs" subtype="Code" buildaction="Compile" />
+    <File name="PyBinding.Gui/PythonEditorOutline.cs" subtype="Code" buildaction="Compile" />
+    <File name="PyBinding.Gui/PythonOptionsPanel.cs" subtype="Code" buildaction="Compile" />
+  </Contents>
+  <References>
+    <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Core, Version=0.19.0.0, Culture=neutral, PublicKeyToken=null" />
+    <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Gettext, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+    <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Ide, Version=0.19.0.0, Culture=neutral, PublicKeyToken=null" />
+    <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Projects, Version=0.19.0.0, Culture=neutral, PublicKeyToken=null" />
+    <ProjectReference type="Gac" localcopy="True" refto="System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <ProjectReference type="Gac" localcopy="True" refto="Mono.Addins, Version=0.3.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
+    <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
+    <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Projects.Gui, Version=1.9.0.0, Culture=neutral, PublicKeyToken=null" />
+    <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Components, Version=1.9.0.0, Culture=neutral, PublicKeyToken=null" />
+    <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.GtkCore, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
+    <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.DesignerSupport, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
+  </References>
+  <GtkDesignInfo />
+</Project>

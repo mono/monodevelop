@@ -1,0 +1,16 @@
+<Combine name="PyBinding" fileversion="2.0">
+  <Configurations active="Debug">
+    <Configuration name="Debug" ctype="CombineConfiguration">
+      <Entry build="True" name="PyBinding" configuration="Debug" />
+    </Configuration>
+    <Configuration name="Release" ctype="CombineConfiguration">
+      <Entry build="True" name="PyBinding" configuration="Release" />
+    </Configuration>
+  </Configurations>
+  <StartMode startupentry="PyBinding" single="True">
+    <Execute type="None" entry="PyBinding" />
+  </StartMode>
+  <Entries>
+    <Entry filename="PyBinding/PyBinding.mdp" />
+  </Entries>
+</Combine>
