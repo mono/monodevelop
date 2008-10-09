@@ -1,5 +1,10 @@
 2008-10-09  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: fixed 'Bug 433271 -
+	Problems with code completion while creating #regions'.
+
+2008-10-09  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: fixed 'Bug 433401 -
 	Static methods don't show in the Methods dropdown'.
 
