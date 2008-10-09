@@ -581,6 +581,25 @@ class C {
 			Assert.IsNotNull (provider, "provider not found.");
 			Assert.AreEqual ("C.D", provider.DefaultCompletionString, "Completion string is incorrect");
 		}
+		
+		[Test()]
+		public void TestGenericObjectCreation ()
+		{
+			CodeCompletionDataProvider provider = CreateProvider (
+@"
+class List<T>
+{
+}
+class Test{
+	public void Method ()
+	{
+		List<int> i = new $
+	}
+}");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsTrue (provider.SearchData ("List<int>") != null, "List<int> not found");
+		}
+		
 		[TestFixtureSetUp] 
 		public void SetUp()
 		{
