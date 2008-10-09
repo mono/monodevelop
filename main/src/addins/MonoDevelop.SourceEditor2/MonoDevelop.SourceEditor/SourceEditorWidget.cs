@@ -301,6 +301,7 @@ namespace MonoDevelop.SourceEditor
 						widget.textEditorData.Document.UpdateFoldSegments (foldSegments);
 					}
 					widget.UpdateAutocorTimer ();
+					widget.PopulateClassCombo ();
 					widget.isInitialParseUpdate = false;
 				} catch (Exception ex) {
 					LoggingService.LogError ("Unhandled exception in ParseInformationUpdaterWorkerThread", ex);
@@ -314,9 +315,7 @@ namespace MonoDevelop.SourceEditor
 		
 		void OnParseInformationChanged (object sender, ParsedDocumentEventArgs args)
 		{
-			if (this.isDisposed || args == null || args.ParsedDocument == null || this.view == null
-			    || this.view.ContentName != args.FileName)
-			{
+			if (this.isDisposed || args == null || args.ParsedDocument == null || this.view == null || this.view.ContentName != args.FileName) {
 				return;
 			}
 			
@@ -332,8 +331,7 @@ namespace MonoDevelop.SourceEditor
 				lock (syncObject) {
 					StopParseInfoThread ();
 					if (parsedDocument != null) {
-						parseInformationUpdaterWorkerThread
-							= new ParseInformationUpdaterWorkerThread (this);
+						parseInformationUpdaterWorkerThread = new ParseInformationUpdaterWorkerThread (this);
 						parseInformationUpdaterWorkerThread.Start ();
 					}
 				}
