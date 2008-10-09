@@ -382,8 +382,12 @@ namespace MonoDevelop.CSharpBinding.Gui
 				
 			location = new DomLocation (Editor.CursorLine - 1, Editor.CursorColumn - 1);
 			switch (word) {
-			case "namespace":
 			case "using":
+				if (result.ExpressionContext != ExpressionContext.NamespaceNameExcepted)
+					return null;
+				return CreateCompletionData (new NamespaceResolveResult (""), result, null);
+			case "namespace":
+				
 				result.ExpressionContext = ExpressionContext.NamespaceNameExcepted;
 				return CreateCompletionData (new NamespaceResolveResult (""), result, null);
 			case "case":

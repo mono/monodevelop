@@ -1,3 +1,10 @@
+2008-10-09  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/NRefactoryResolver.cs: fixed some bugs with parameters,
+
+	* Gui/CSharpTextEditorCompletion.cs: fixed 'Bug 433735 - Autocomplete of
+	`using' statement behaves like `using' directive'.
+
 2008-10-08  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Gui/MemberCompletionData.cs: Make code more readable.

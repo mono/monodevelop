@@ -153,14 +153,21 @@ namespace MonoDevelop.CSharpBinding
 			}
 		}
 		
+		static void AddParameterList (CodeCompletionDataProvider provider, IEnumerable<IParameter> parameters)
+		{
+			foreach (IParameter p in parameters) {
+				provider.AddCompletionData (new CodeCompletionData (p.Name, "md-literal"));
+			}
+		}
+				
 		void AddContentsFromClassAndMembers (ExpressionContext context, CodeCompletionDataProvider provider)
 		{
 			IMethod method = callingMember as IMethod;
-			if (method != null && method.Parameters != null) {
-				foreach (IParameter p in method.Parameters) {
-					provider.AddCompletionData (new CodeCompletionData (p.Name, "md-literal"));
-				}
-			}
+			if (method != null && method.Parameters != null)
+				AddParameterList (provider, method.Parameters);
+			IProperty property = callingMember as IProperty;
+			if (property != null && property.Parameters != null) 
+				AddParameterList (provider, property.Parameters);
 			if (CallingType == null)
 				return;
 			bool isInStatic = CallingMember != null ? CallingMember.IsStatic : false;
@@ -234,9 +241,7 @@ namespace MonoDevelop.CSharpBinding
 					ICompletionData data = col.AddCompletionData (provider, o);
 					if (data is CodeCompletionData && context == ExpressionContext.Attribute) {
 						if (data.CompletionString != null && data.CompletionString.EndsWith ("Attribute"))
-							((CodeCompletionData)data).CompletionString
-								= data.CompletionString.Substring
-									(0, data.CompletionString.Length - "Attribute".Length);
+							((CodeCompletionData)data).CompletionString = data.CompletionString.Substring (0, data.CompletionString.Length - "Attribute".Length);
 					}
 				}
 			}
@@ -419,8 +424,7 @@ namespace MonoDevelop.CSharpBinding
 			if (this.callingMember != null) {
 				if (identifier == "value" && this.callingMember is IProperty) {
 					result = new MemberResolveResult (this.callingMember);
-					result.ResolvedType = ((IProperty)this.callingMember).ReturnType;
-					ResolveType (result.ResolvedType);
+					result.ResolvedType = ResolveType (((IProperty)this.callingMember).ReturnType);
 					goto end;
 				}
 				if (this.callingMember is IMethod || this.callingMember is IProperty) {
@@ -429,8 +433,7 @@ namespace MonoDevelop.CSharpBinding
 						foreach (IParameter para in prms) {
 							if (para.Name == identifier) {
 								result = new ParameterResolveResult (para);
-								result.ResolvedType = para.ReturnType;
-								ResolveType (result.ResolvedType);
+								result.ResolvedType = ResolveType (para.ReturnType);
 								goto end;
 							}
 						}
