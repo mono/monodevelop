@@ -1,3 +1,15 @@
+2008-10-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile:
+	* configure:
+	* rules.make:
+	* Makefile.include:
+	* PyBinding/Makefile:
+	* PyBinding/PyBinding.mdp:
+	* PyBinding/gtk-gui/gui.stetic:
+	* PyBinding/monodevelop-pybinding.pc.in: Add makefile build system. Set
+	GTK# version to 2.8.
+
 2008-10-08	Christian Hergert	<chris@dronelabs.com>
 
 	* .: Initial import
