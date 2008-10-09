@@ -1,5 +1,12 @@
 2008-10-09  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Dom/ResolveResult.cs:
+	* MonoDevelop.Projects.Dom/ExpressionContext.cs:
+	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs: fixed 'Bug
+	432681 - Incorrect completion in nested classes'.
+
+2008-10-09  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Dom/DomType.cs: fixed type parameter duplication.
 
 2008-10-08  Michael Hutchinson  <mhutchinson@novell.com>

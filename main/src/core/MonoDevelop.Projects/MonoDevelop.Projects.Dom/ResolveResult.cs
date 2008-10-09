@@ -39,7 +39,7 @@ namespace MonoDevelop.Projects.Dom
 		IType       callingType;
 		IMember     callingMember;
 		
-		IReturnType resolvedType;
+		IReturnType resolvedType, unresolvedType;
 		bool        staticResolve = false;
 		
 		public IType CallingType {
@@ -57,6 +57,14 @@ namespace MonoDevelop.Projects.Dom
 			}
 			set {
 				resolvedType = value;
+			}
+		}
+		public virtual IReturnType UnresolvedType {
+			get {
+				return unresolvedType;
+			}
+			set {
+				unresolvedType = value;
 			}
 		}
 

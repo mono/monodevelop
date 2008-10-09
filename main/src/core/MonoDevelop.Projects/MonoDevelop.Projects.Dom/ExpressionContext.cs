@@ -114,9 +114,9 @@ namespace MonoDevelop.Projects.Dom
 		public static ExpressionContext InheritableType              = new ExpressionContext ("InheritableType");
 		public static ExpressionContext NamespaceNameExcepted        = new ExpressionContext ("NamespaceNameExcepted");
 		
-		public static TypeExpressionContext TypeDerivingFrom (IReturnType baseType, bool isObjectCreation)
+		public static TypeExpressionContext TypeDerivingFrom (IReturnType baseType, IReturnType unresolvedBaseType, bool isObjectCreation)
 		{
-			return new TypeExpressionContext (baseType, isObjectCreation);
+			return new TypeExpressionContext (baseType, unresolvedBaseType, isObjectCreation);
 		}
 		
 		public class TypeExpressionContext : ExpressionContext
@@ -125,6 +125,12 @@ namespace MonoDevelop.Projects.Dom
 			public new IReturnType Type {
 				get {
 					return type;
+				}
+			}
+			IReturnType unresolvedType;
+			public IReturnType UnresolvedType {
+				get {
+					return unresolvedType;
 				}
 			}
 			
@@ -148,9 +154,10 @@ namespace MonoDevelop.Projects.Dom
 			}
 			
 
-			public TypeExpressionContext (IReturnType type, bool isObjectCreation)
+			public TypeExpressionContext (IReturnType type, IReturnType unresolvedType, bool isObjectCreation)
 			{
 				this.type             = type;
+				this.unresolvedType   = unresolvedType;
 				this.isObjectCreation = isObjectCreation;
 			}
 			
