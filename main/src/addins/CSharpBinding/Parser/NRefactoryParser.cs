@@ -604,7 +604,7 @@ namespace MonoDevelop.CSharpBinding
 				DomProperty property = new DomProperty ();
 				property.Name      = propertyDeclaration.Name;
 				property.Location  = ConvertLocation (propertyDeclaration.StartLocation);
-				property.BodyRegion = ConvertRegion (propertyDeclaration.BodyStart, propertyDeclaration.BodyEnd);
+				property.BodyRegion = ConvertRegion (propertyDeclaration.EndLocation, propertyDeclaration.BodyEnd);
 				property.Modifiers  = ConvertModifiers (propertyDeclaration.Modifier);
 				property.ReturnType = ConvertReturnType (propertyDeclaration.TypeReference);
 				AddAttributes (property, propertyDeclaration.Attributes);
@@ -628,7 +628,7 @@ namespace MonoDevelop.CSharpBinding
 				indexer.Name      = "this";
 				indexer.PropertyModifier |= PropertyModifier.IsIndexer;
 				indexer.Location  = ConvertLocation (indexerDeclaration.StartLocation);
-				indexer.BodyRegion = ConvertRegion (indexerDeclaration.BodyStart, indexerDeclaration.BodyEnd);
+				indexer.BodyRegion = ConvertRegion (indexerDeclaration.EndLocation, indexerDeclaration.BodyEnd);
 				indexer.Modifiers  = ConvertModifiers (indexerDeclaration.Modifier);
 				indexer.ReturnType = ConvertReturnType (indexerDeclaration.TypeReference);
 				indexer.Add (ConvertParameterList (indexer, indexerDeclaration.Parameters));
