@@ -483,6 +483,16 @@ namespace MonoDevelop.CSharpBinding.Gui
 				ExpressionContext exactContext = new NewCSharpExpressionFinder (dom).FindExactContextForNewCompletion (Editor, Document.CompilationUnit, Document.FileName);
 				if (exactContext is ExpressionContext.TypeExpressionContext)
 					return CreateTypeCompletionData (exactContext, ((ExpressionContext.TypeExpressionContext)exactContext).Type, ((ExpressionContext.TypeExpressionContext)exactContext).UnresolvedType);
+				if (exactContext == null) {
+					int j = Editor.CursorPosition - 4;
+					string token = GetPreviousToken (ref j, true);
+					if (token == "return") {
+						NRefactoryResolver resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (dom, Document.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, Editor, Document.FileName);
+						resolver.SetupResolver (new DomLocation (Editor.CursorLine, Editor.CursorColumn));
+						if (resolver.CallingMember != null)
+							return CreateTypeCompletionData (exactContext, null, resolver.CallingMember.ReturnType);
+					}
+				}
 				return CreateTypeCompletionData (exactContext, null, null);
 			case "if":
 			case "elif":
@@ -779,8 +789,8 @@ namespace MonoDevelop.CSharpBinding.Gui
 			ExpressionContext.TypeExpressionContext tce = context as ExpressionContext.TypeExpressionContext;
 			
 			CompletionDataCollector col = new CompletionDataCollector (Editor, dom, Document.CompilationUnit, location);
-			
-			result.DefaultCompletionString = StripGenerics (col.AddCompletionData (result, returnTypeUnresolved).CompletionString);
+			if (returnTypeUnresolved != null)
+				result.DefaultCompletionString = StripGenerics (col.AddCompletionData (result, returnTypeUnresolved).CompletionString);
 			if (type == null) {
 				return result;
 			}

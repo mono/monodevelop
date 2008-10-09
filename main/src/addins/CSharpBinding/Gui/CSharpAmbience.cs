@@ -237,6 +237,15 @@ namespace MonoDevelop.CSharpBinding
 					}
 				}
 			}
+			if (returnType.ArrayDimensions > 0) {
+				for (int i = 0; i < returnType.ArrayDimensions; i++) {
+					result.Append ('[');
+					int dimension = returnType.GetDimension (i);
+					if (dimension > 0)
+						result.Append (new string (',', dimension));
+					result.Append (']');
+				}
+			}
 			return result.ToString ();
 		}
 		
