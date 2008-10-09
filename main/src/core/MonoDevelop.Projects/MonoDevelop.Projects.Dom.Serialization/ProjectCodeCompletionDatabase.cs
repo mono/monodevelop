@@ -158,7 +158,6 @@ namespace MonoDevelop.Projects.Dom.Serialization
 					}
 				}
 			}
-			
 			keys.Clear();
 			keys.AddRange (references);
 			foreach (ReferenceEntry re in keys)
@@ -217,20 +216,22 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		string[] GetReferenceKeys (ProjectReference pr)
 		{
 			switch (pr.ReferenceType) {
-				case ReferenceType.Project:
-					Project referencedProject = project.ParentSolution.FindProjectByName (pr.Reference);
-					return new string[] { "Project:" + (referencedProject != null ? referencedProject.FileName : "null") };
-				case ReferenceType.Gac:
-					string refId = pr.Reference;
-					string ext = Path.GetExtension (refId).ToLower ();
-					if (ext == ".dll" || ext == ".exe")
-						refId = refId.Substring (0, refId.Length - 4);
-					return new string[] { "Assembly:" + refId };
-				default:
-					ArrayList list = new ArrayList ();
-					foreach (string s in pr.GetReferencedFileNames (ProjectService.DefaultConfiguration))
-						list.Add ("Assembly:" + s);
-					return (string[]) list.ToArray (typeof(string));
+			case ReferenceType.Project:
+				Project referencedProject = project.ParentSolution.FindProjectByName (pr.Reference);
+				return new string[] { "Project:" + (referencedProject != null ? referencedProject.FileName : "null") };
+			case ReferenceType.Gac:
+				string refId = pr.Reference;
+				string ext = Path.GetExtension (refId).ToLower ();
+				if (ext == ".dll" || ext == ".exe")
+					refId = refId.Substring (0, refId.Length - 4);
+				return new string[] { "Assembly:" + refId };
+			case ReferenceType.Assembly:
+				return new string[] { "Assembly:" + pr.Reference };
+			default:
+				ArrayList list = new ArrayList ();
+				foreach (string s in pr.GetReferencedFileNames (ProjectService.DefaultConfiguration))
+					list.Add ("Assembly:" + s);
+				return (string[]) list.ToArray (typeof(string));
 			}
 		}
 		
