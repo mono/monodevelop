@@ -61,6 +61,7 @@ namespace Mono.TextEditor
 			foreach (FoldSegment segment in editor.Document.GetStartFoldings (lineHover)) {
 				segment.IsFolded = !segment.IsFolded; 
 			}
+			editor.Caret.MoveCaretBeforeFoldings ();
 			editor.Repaint = true;
 			editor.QueueDraw ();
 		}

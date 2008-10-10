@@ -1,3 +1,10 @@
+2008-10-10  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/Caret.cs:
+	* Mono.TextEditor/CaretMoveActions.cs:
+	* Mono.TextEditor/FoldMarkerMargin.cs: fixed 'Bug 434165 - Page UP/Down
+	Key on top/bottom of a code folded make the region Unfolded'.
+
 2008-10-08  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor/TextEditorData.cs: fixed 'Bug 432845 - Find and

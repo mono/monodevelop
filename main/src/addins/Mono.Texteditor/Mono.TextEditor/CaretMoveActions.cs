@@ -212,10 +212,11 @@ namespace Mono.TextEditor
 		{
 			int pageIncrement =  LineHeight * ((int)(data.VAdjustment.PageIncrement / LineHeight) - 1);
 			data.VAdjustment.Value = System.Math.Max (data.VAdjustment.Lower, data.VAdjustment.Value - pageIncrement); 
-			if (data.Caret.Line - pageIncrement / LineHeight > 0)
-				data.Caret.Line -= pageIncrement / LineHeight;
-			else
-				data.Caret.Line = 0;
+			
+			int visualLine = data.Document.LogicalToVisualLine (data.Caret.Line);
+			visualLine -= pageIncrement / LineHeight;
+			int line = System.Math.Max (data.Document.VisualToLogicalLine (visualLine), 0);
+			data.Caret.Line = line;
 		}
 		
 		public static void PageDown (TextEditorData data)
@@ -223,10 +224,11 @@ namespace Mono.TextEditor
 			int pageIncrement =  LineHeight * ((int)(data.VAdjustment.PageIncrement / LineHeight) - 1);
 			if (data.VAdjustment.Value < data.VAdjustment.Upper - data.VAdjustment.PageIncrement)
 				data.VAdjustment.Value = data.VAdjustment.Value + pageIncrement;
-			if (data.Caret.Line + pageIncrement / LineHeight < data.Document.LineCount)
-				data.Caret.Line += pageIncrement / LineHeight;
-			else 
-				data.Caret.Line = data.Document.LineCount - 1;
+			
+			int visualLine = data.Document.LogicalToVisualLine (data.Caret.Line);
+			visualLine += pageIncrement / LineHeight;
+			int line = System.Math.Min (data.Document.VisualToLogicalLine (visualLine), data.Document.LineCount - 1);
+			data.Caret.Line = line;
 		}
 	}
 }

@@ -167,6 +167,20 @@ namespace Mono.TextEditor
 			                      this.Location,
 			                      this.isInInsertMode);
 		}
+
+		/// <summary>
+		/// This method should be called after a fold segment is folded, to ensure
+		/// that the caret is in a valid state.
+		/// </summary>
+		public void MoveCaretBeforeFoldings ()
+		{
+			int offset = this.Offset;
+			foreach (FoldSegment fold in this.document.GetFoldingsFromOffset (this.Offset)) {
+				if (fold.IsFolded)
+					offset = System.Math.Min (offset, fold.Offset);
+			}
+			this.Offset = offset;
+		}
 		
 		protected virtual void OnPositionChanged (DocumentLocationEventArgs args)
 		{
