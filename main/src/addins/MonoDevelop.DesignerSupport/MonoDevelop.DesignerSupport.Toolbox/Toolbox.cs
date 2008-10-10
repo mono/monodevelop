@@ -222,22 +222,22 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		
 		public void Refresh ()
 		{
-			lock (categories) {
-				categories.Clear ();
-				AddItems (toolboxService.GetCurrentToolboxItems ());
-				
-				Drag.SourceUnset (toolboxWidget);
-				toolboxWidget.ClearCategories ();
-				foreach (Category category in categories.Values) {
-					category.IsExpanded = true;
-					toolboxWidget.AddCategory (category);
-				}
-				toolboxWidget.QueueResize ();
-				Gtk.TargetEntry[] targetTable = toolboxService.GetCurrentDragTargetTable ();
-				if (targetTable != null)
-					Drag.SourceSet (toolboxWidget, Gdk.ModifierType.Button1Mask, targetTable, Gdk.DragAction.Copy | Gdk.DragAction.Move);
-				compactModeToggleButton.Visible = toolboxWidget.CanIconizeToolboxCategories;
+			// GUI assert here is to catch Bug 434065 - Exception while going to the editor
+			MonoDevelop.Core.Gui.DispatchService.AssertGuiThread ();
+			categories.Clear ();
+			AddItems (toolboxService.GetCurrentToolboxItems ());
+			
+			Drag.SourceUnset (toolboxWidget);
+			toolboxWidget.ClearCategories ();
+			foreach (Category category in categories.Values) {
+				category.IsExpanded = true;
+				toolboxWidget.AddCategory (category);
 			}
+			toolboxWidget.QueueResize ();
+			Gtk.TargetEntry[] targetTable = toolboxService.GetCurrentDragTargetTable ();
+			if (targetTable != null)
+				Drag.SourceSet (toolboxWidget, Gdk.ModifierType.Button1Mask, targetTable, Gdk.DragAction.Copy | Gdk.DragAction.Move);
+			compactModeToggleButton.Visible = toolboxWidget.CanIconizeToolboxCategories;
 		}
 
 		

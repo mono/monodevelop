@@ -1,3 +1,9 @@
+2008-10-10  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs: Remove lock, and add a
+	GUI thread assertion so we can find the rogue thread that's causing
+	Bug 434065.
+
 2008-10-10  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs: Added lock for
