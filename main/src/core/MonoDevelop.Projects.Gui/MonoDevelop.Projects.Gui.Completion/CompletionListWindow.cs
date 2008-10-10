@@ -223,21 +223,19 @@ namespace MonoDevelop.Projects.Gui.Completion
 		
 		void UpdateWord ()
 		{
-			string word = CompleteWord;
+			if (Selection == -1 || SelectionDisabled)
+				return;
 			
-			if (word != null) {
-				if (Selection != -1) {
-					IActionCompletionData ac = completionDataList [Selection] as IActionCompletionData;
-					if (ac != null) {
-						ac.InsertCompletionText (completionWidget, completionContext);
-						return;
-					}
-				}
-				int replaceLen = completionContext.TriggerWordLength + PartialWord.Length - initialWordLength;
-				string pword = completionWidget.GetText (completionContext.TriggerOffset, completionContext.TriggerOffset + replaceLen);
-				
-				completionWidget.SetCompletionText (completionContext, pword, word);
+			string word = currentData.CompletionText;
+			IActionCompletionData ac = currentData as IActionCompletionData;
+			if (ac != null) {
+				ac.InsertCompletionText (completionWidget, completionContext);
+				return;
 			}
+			int replaceLen = completionContext.TriggerWordLength + PartialWord.Length - initialWordLength;
+			string pword = completionWidget.GetText (completionContext.TriggerOffset, completionContext.TriggerOffset + replaceLen);
+			
+			completionWidget.SetCompletionText (completionContext, pword, word);
 		}
 		
 		public new void Hide ()

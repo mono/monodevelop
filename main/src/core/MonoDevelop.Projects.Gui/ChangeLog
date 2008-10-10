@@ -1,5 +1,12 @@
 2008-10-09  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs: Fix NRE
+	on commiting selection. The code was relying on keeping the
+	completion list; recent changes disposed it when the window was
+	hidden.
+
+2008-10-09  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Projects.Gui.Completion/CompletionData.cs:
 	* MonoDevelop.Projects.Gui.Completion/CompletionDataList.cs:
 	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs: New
