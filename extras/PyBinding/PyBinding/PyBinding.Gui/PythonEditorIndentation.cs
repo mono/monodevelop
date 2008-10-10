@@ -22,6 +22,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
@@ -37,6 +38,9 @@ namespace PyBinding.Gui
 	{
 		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
+			if (String.IsNullOrEmpty (FileName) || Path.GetExtension (FileName) != ".py")
+				return true;
+			
 			if (key == Gdk.Key.Return)
 			{
 				string lastLine = Editor.GetLineText (Editor.CursorLine);

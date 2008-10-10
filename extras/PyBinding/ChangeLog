@@ -1,3 +1,8 @@
+2008-10-09  Christian Hergert  <chris@dronelabs.com>
+
+	* PyBinding/PyBinding.Gui/PythonEditorIndentation.cs: Only indent if
+	the file is python.
+
 2008-10-09  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* PyBinding/PyBinding.Gui/PythonEditorCompletion.cs:
