@@ -1,3 +1,9 @@
+2008-10-10  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: Restore
+	functionality to pop up context menu at caret if activated by key
+	press.
+
 2008-10-10  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: fixed 'Bug 434165 - Page
