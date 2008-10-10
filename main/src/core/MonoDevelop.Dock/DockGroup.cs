@@ -656,7 +656,7 @@ namespace MonoDevelop.Components.Docking
 
 		internal bool IsSelectedPage (DockItem it)
 		{
-			if (type != DockGroupType.Tabbed || boundTabStrip.CurrentTab == -1 || boundTabStrip.CurrentTab >= VisibleObjects.Count)
+			if (type != DockGroupType.Tabbed || boundTabStrip == null || boundTabStrip.CurrentTab == -1 || VisibleObjects == null || boundTabStrip.CurrentTab >= VisibleObjects.Count)
 				return false;
 			DockGroupItem dit = VisibleObjects[boundTabStrip.CurrentTab] as DockGroupItem;
 			return dit.Item == it;
