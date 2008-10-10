@@ -228,9 +228,9 @@ namespace MonoDevelop.Projects.CodeGeneration
 			}
 			string name = IsBaseType (rtype.FullName) ? rtype.FullName : ctx.TypeNameResolver.ResolveName (rtype.FullName);
 			CodeTypeReference typeRef = argTypes != null ? new CodeTypeReference (name, argTypes) : new CodeTypeReference (name);
-			
-			if (rtype.ArrayDimensions > 0)
-				typeRef = new CodeTypeReference (typeRef, rtype.ArrayDimensions);
+			for (int i = 0; i < rtype.ArrayDimensions; i++) {
+				typeRef = new CodeTypeReference (typeRef, rtype.GetDimension (i) + 1);
+			}
 			return typeRef;
 		}
 		
