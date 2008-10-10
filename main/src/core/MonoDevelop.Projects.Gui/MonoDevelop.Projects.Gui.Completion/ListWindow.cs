@@ -495,17 +495,12 @@ namespace MonoDevelop.Projects.Gui.Completion
 			int n = 0;
 			while (ypos < winHeight - margin && (page + n) < win.DataProvider.ItemCount)
 			{
-				if (win.DataProvider.HasMarkup (page + n)) {
-					string markup = win.DataProvider.GetMarkup (page + n);
-					if (markup == null)
-						markup = "&lt;null&gt;";
-					layout.SetMarkup (markup);
-				} else {
-					string text = win.DataProvider.GetText (page + n);
-					if (text == null)
-						text = "<null>";
-					layout.SetText (text);
-				}
+				bool hasMarkup = win.DataProvider.HasMarkup (page + n);
+				
+				if (hasMarkup)
+					layout.SetMarkup (win.DataProvider.GetMarkup (page + n) ?? "&lt;null&gt;");
+				else
+					layout.SetText (win.DataProvider.GetText (page + n) ?? "<null>");
 				
 				Gdk.Pixbuf icon = win.DataProvider.GetIcon (page + n);
 				int iconHeight = icon != null? icon.Height : 24;
@@ -540,6 +535,10 @@ namespace MonoDevelop.Projects.Gui.Completion
 				
 				ypos += rowHeight;
 				n++;
+				
+				//reset the markup or it carries over to the next SetText
+				if (hasMarkup)
+					layout.SetMarkup (string.Empty);
 			}
 		}
 		

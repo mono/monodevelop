@@ -1,3 +1,9 @@
+2008-10-10  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Reset after using
+	markup, or the same attributes will be applied to later SetText
+	calls.
+
 2008-10-09  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs: Fix NRE
