@@ -79,6 +79,7 @@
 	<Keywords color = "kw:literals">
 		<Word>true</Word>
 		<Word>false</Word>
+		<Word>NULL</Word>
 	</Keywords>
 	
 	<Keywords color = "kw:modifiers">

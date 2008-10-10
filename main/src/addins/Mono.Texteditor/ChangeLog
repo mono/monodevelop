@@ -1,3 +1,9 @@
+2008-10-10  Christian Hergert  <chris@dronelabs.com>
+
+	* SyntaxModes/PythonSyntaxMode.xml: Python does not support multiline
+	comments.
+	* SyntaxModes/CSyntaxMode.xml: Add NULL as a literal keyword.
+
 2008-10-10  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/Caret.cs:

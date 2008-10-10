@@ -27,10 +27,6 @@
 	
 	<EolSpan color = "comment" rule="Comment" tagColor="commenttag">#</EolSpan>
 	
-	<Span color = "comment" rule="Comment" tagColor="commenttag">
-		<Begin>/*</Begin>
-		<End>*/</End>
-	</Span>
 	
 	<Span color = "markup" rule="Comment">
 		<Begin>"""</Begin>
@@ -86,6 +82,7 @@
 		<Word>try</Word>
 		<Word>while</Word>
 		<Word>yield</Word>
+		<Word>with</Word>
 	</Keywords>
 	
 	<Keywords color = "kw:iteration">
