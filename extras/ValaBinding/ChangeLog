@@ -1,5 +1,10 @@
 2008-10-09  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Gui/DataProvider.cs:
+	* Gui/ValaTextEditorExtension.cs: Track APIs.
+
+2008-10-09  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Gui/DataProvider.cs: Track CompletionData API.
 
 2008-10-07  Michael Hutchinson  <mhutchinson@novell.com>

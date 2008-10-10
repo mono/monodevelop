@@ -32,7 +32,7 @@ using MonoDevelop.Projects.Gui.Completion;
 
 namespace MonoDevelop.Html
 {
-	
+	/*
 	
 	public class HtmlTagCompletionDataProvider : IMutableCompletionDataProvider
 	{
@@ -72,5 +72,5 @@ namespace MonoDevelop.Html
 		public bool AutoCompleteUniqueMatch {
 			get { return false; }
 		}
-	}
+	}*/
 }

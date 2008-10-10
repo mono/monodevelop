@@ -106,7 +106,6 @@ FILES =  \
 	MonoDevelop.AspNet/WebTypeManager.cs \
 	MonoDevelop.AspNet/XspParameters.cs \
 	MonoDevelop.Html/DocTypeCompletionData.cs \
-	MonoDevelop.Html/DocTypeCompletionDataProvider.cs \
 	MonoDevelop.Html/DocTypeExtensionNode.cs \
 	MonoDevelop.Html/HtmlCompletionDataProvider.cs \
 	MonoDevelop.Html/HtmlSchema.cs \

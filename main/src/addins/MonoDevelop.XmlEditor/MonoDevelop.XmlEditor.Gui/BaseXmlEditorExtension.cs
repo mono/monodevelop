@@ -131,19 +131,19 @@ namespace MonoDevelop.XmlEditor.Gui
 
 		#region Code completion
 
-		public override ICompletionDataProvider CodeCompletionCommand (ICodeCompletionContext completionContext)
+		public override ICompletionDataList CodeCompletionCommand (ICodeCompletionContext completionContext)
 		{
 			int pos = completionContext.TriggerOffset;
 			string txt = Editor.GetText (pos - 1, pos);
 			int triggerWordLength = 0;
-			ICompletionDataProvider cp = null;
+			ICompletionDataList list = null;
 			if (txt.Length > 0)
-				cp = HandleCodeCompletion ((CodeCompletionContext) completionContext, true, ref triggerWordLength);
+				list = HandleCodeCompletion ((CodeCompletionContext) completionContext, true, ref triggerWordLength);
 			
-			return cp;
+			return list;
 		}
 
-		public override ICompletionDataProvider HandleCodeCompletion (
+		public override ICompletionDataList HandleCodeCompletion (
 		    ICodeCompletionContext completionContext, char completionChar, ref int triggerWordLength)
 		{
 			int pos = completionContext.TriggerOffset;
@@ -154,7 +154,7 @@ namespace MonoDevelop.XmlEditor.Gui
 			return null;
 		}
 
-		ICompletionDataProvider HandleCodeCompletion (
+		ICompletionDataList HandleCodeCompletion (
 		    CodeCompletionContext completionContext, bool forced, ref int triggerWordLength)
 		{
 			tracker.UpdateEngine ();
@@ -179,15 +179,15 @@ namespace MonoDevelop.XmlEditor.Gui
 		}
 		
 		//FIXME: this should offer all unclosed tags, and accepting them should close back up to that level
-		protected static void AddCloseTag (CodeCompletionDataProvider provider, NodeStack stack)
+		protected static void AddCloseTag (CompletionDataList completionList, NodeStack stack)
 		{
 			//FIXME: search forward to see if tag's closed already
 			foreach (XObject ob in stack) {
 				XElement el = ob as XElement;
 				if (el != null && el.IsNamed && !el.IsClosed) {
 					string name = el.Name.FullName;
-					provider.AddCompletionData (new CompletionData ("/" + name + ">",
-						Gtk.Stock.GoBack, "Closing tag for '" + name + "'"));
+					completionList.Add ("/" + name + ">", Gtk.Stock.GoBack,
+					                    GettextCatalog.GetString ("Closing tag for '{0}'", name));
 					return;
 				}
 			}

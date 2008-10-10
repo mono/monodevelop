@@ -60,7 +60,7 @@ namespace CBinding
 		/// <summary>
 		/// A delegate for getting completion data 
 		/// </summary>
-		private delegate CompletionDataProvider GetMembersForExtension (CTextEditorExtension self, string completionExtension, string completionText);
+		private delegate CompletionDataList GetMembersForExtension (CTextEditorExtension self, string completionExtension, string completionText);
 		
 		/// <summary>
 		/// An associative array containing each completion-triggering extension 
@@ -104,7 +104,7 @@ namespace CBinding
 			return base.KeyPress (key, keyChar, modifier);
 		}
 		
-		public override ICompletionDataProvider HandleCodeCompletion (
+		public override ICompletionDataList HandleCodeCompletion (
 		    ICodeCompletionContext completionContext, char completionChar)
 		{
 			string lineText = Editor.GetLineText (completionContext.TriggerLine + 1).TrimEnd();
@@ -127,7 +127,7 @@ namespace CBinding
 			return null;
 		}
 		
-		public override ICompletionDataProvider CodeCompletionCommand (
+		public override ICompletionDataList CodeCompletionCommand (
 		    ICodeCompletionContext completionContext)
 		{
 			int pos = completionContext.TriggerOffset;
@@ -163,9 +163,9 @@ namespace CBinding
 		/// </param>
 		/// <returns>
 		/// Completion data for the namespace or class
-		/// <see cref="CompletionDataProvider"/>
+		/// <see cref="CompletionDataList"/>
 		/// </returns>
-		private static CompletionDataProvider GetItemMembers (CTextEditorExtension self, string completionExtension, string completionText) {
+		private static CompletionDataList GetItemMembers (CTextEditorExtension self, string completionExtension, string completionText) {
 			return self.GetMembersOfItem (completionText);
 		}
 		
@@ -188,13 +188,13 @@ namespace CBinding
 		/// </param>
 		/// <returns>
 		/// Completion data for the instance
-		/// <see cref="CompletionDataProvider"/>
+		/// <see cref="CompletionDataList"/>
 		/// </returns>
-		private static CompletionDataProvider GetInstanceMembers (CTextEditorExtension self, string completionExtension, string completionText) {
+		private static CompletionDataList GetInstanceMembers (CTextEditorExtension self, string completionExtension, string completionText) {
 			return self.GetMembersOfInstance (completionText, ("->" == completionExtension));
 		}
 		
-		private CompletionDataProvider GetMembersOfItem (string itemFullName)
+		private CompletionDataList GetMembersOfItem (string itemFullName)
 		{
 			CProject project = Document.Project as CProject;
 			
@@ -202,7 +202,7 @@ namespace CBinding
 				return null;
 				
 			ProjectInformation info = ProjectInformationManager.Instance.Get (project);
-			CompletionDataProvider provider = new CompletionDataProvider ();
+			CompletionDataList list = new CompletionDataList ();
 			
 			LanguageItem container = null;
 			
@@ -229,22 +229,22 @@ namespace CBinding
 				return null;
 			
 			if (in_project) {
-				AddItemsWithParent (provider, info.AllItems (), container);
+				AddItemsWithParent (list, info.AllItems (), container);
 			} else {
 				foreach (FileInformation fi in info.IncludedFiles[currentFileName]) {
-					AddItemsWithParent (provider, fi.AllItems (), container);
+					AddItemsWithParent (list, fi.AllItems (), container);
 				}
 			}
 			
-			return provider;
+			return list;
 		}
 		
 		/// <summary>
-		/// Adds completion data for children to a provider
+		/// Adds completion data for children to a list
 		/// </summary>
-		/// <param name="provider">
-		/// The provider to which completion data will be added
-		/// <see cref="CompletionDataProvider"/>
+		/// <param name="list">
+		/// The list to which completion data will be added
+		/// <see cref="CompletionDataList"/>
 		/// </param>
 		/// <param name="items">
 		/// A list of items to search
@@ -253,10 +253,10 @@ namespace CBinding
 		/// <param name="parent">
 		/// The parent that will be matched
 		/// </param>
-		public static void AddItemsWithParent(CompletionDataProvider provider, IEnumerable<LanguageItem> items, LanguageItem parent) {
+		public static void AddItemsWithParent(CompletionDataList list, IEnumerable<LanguageItem> items, LanguageItem parent) {
 			foreach (LanguageItem li in items) {
 				if (li.Parent != null && li.Parent.Equals (parent))
-					provider.AddCompletionData (new CompletionData (li));
+					list.Add (new CompletionData (li));
 			}
 		}
 
@@ -274,9 +274,9 @@ namespace CBinding
 		/// </param>
 		/// <returns>
 		/// Completion data for the instance
-		/// <see cref="CompletionDataProvider"/>
+		/// <see cref="CompletionDataList"/>
 		/// </returns>
-		private CompletionDataProvider GetMembersOfInstance (string instanceName, bool isPointer)
+		private CompletionDataList GetMembersOfInstance (string instanceName, bool isPointer)
 		{
 			CProject project = Document.Project as CProject;
 			
@@ -284,7 +284,7 @@ namespace CBinding
 				return null;
 				
 			ProjectInformation info = ProjectInformationManager.Instance.Get (project);
-			CompletionDataProvider provider = new CompletionDataProvider ();
+			CompletionDataList list = new CompletionDataList ();
 			
 			string container = null;
 			
@@ -330,22 +330,22 @@ namespace CBinding
 			// Get the LanguageItem corresponding to the typename 
 			// and populate completion data accordingly
 			if (in_project) {
-				AddMembersWithParent (provider, info.InstanceMembers (), container);
+				AddMembersWithParent (list, info.InstanceMembers (), container);
 			} else {
 				foreach (FileInformation fi in info.IncludedFiles[currentFileName]) {
-					AddMembersWithParent (provider, fi.InstanceMembers (), container);
+					AddMembersWithParent (list, fi.InstanceMembers (), container);
 				}
 			}
 			
-			return provider;
+			return list;
 		}
 		
 		/// <summary>
-		/// Adds completion data for children to a provider
+		/// Adds completion data for children to a list
 		/// </summary>
-		/// <param name="provider">
-		/// The provider to which completion data will be added
-		/// <see cref="CompletionDataProvider"/>
+		/// <param name="list">
+		/// The list to which completion data will be added
+		/// <see cref="CompletionDataList"/>
 		/// </param>
 		/// <param name="items">
 		/// A list of items to search
@@ -355,14 +355,14 @@ namespace CBinding
 		/// The name of the parent that will be matched
 		/// <see cref="System.String"/>
 		/// </param>
-		public static void AddMembersWithParent(CompletionDataProvider provider, IEnumerable<LanguageItem> items, string parentName) {
+		public static void AddMembersWithParent(CompletionDataList list, IEnumerable<LanguageItem> items, string parentName) {
 				foreach (LanguageItem li in items) {
 					if (li.Parent != null && li.Parent.Name.EndsWith (parentName))
-						provider.AddCompletionData (new CompletionData (li));
+						list.Add (new CompletionData (li));
 				}
 		}
 
-		private ICompletionDataProvider GlobalComplete ()
+		private ICompletionDataList GlobalComplete ()
 		{
 			CProject project = Document.Project as CProject;
 			
@@ -371,21 +371,21 @@ namespace CBinding
 			
 			ProjectInformation info = ProjectInformationManager.Instance.Get (project);
 			
-			CompletionDataProvider provider = new CompletionDataProvider ();
+			CompletionDataList list = new CompletionDataList ();
 			
 			foreach (LanguageItem li in info.Containers ())
 				if (li.Parent == null)
-					provider.AddCompletionData (new CompletionData (li));
+					list.Add (new CompletionData (li));
 			
 			foreach (Function f in info.Functions)
 				if (f.Parent == null)
-					provider.AddCompletionData (new CompletionData (f));
+					list.Add (new CompletionData (f));
 
 			foreach (Enumerator e in info.Enumerators)
-				provider.AddCompletionData (new CompletionData (e));
+				list.Add (new CompletionData (e));
 			
 			foreach (Macro m in info.Macros)
-				provider.AddCompletionData (new CompletionData (m));
+				list.Add (new CompletionData (m));
 			
 			string currentFileName = Document.FileName;
 			
@@ -393,21 +393,21 @@ namespace CBinding
 				foreach (FileInformation fi in info.IncludedFiles[currentFileName]) {
 					foreach (LanguageItem li in fi.Containers ())
 						if (li.Parent == null)
-							provider.AddCompletionData (new CompletionData (li));
+							list.Add (new CompletionData (li));
 					
 					foreach (Function f in fi.Functions)
 						if (f.Parent == null)
-							provider.AddCompletionData (new CompletionData (f));
+							list.Add (new CompletionData (f));
 
 					foreach (Enumerator e in fi.Enumerators)
-						provider.AddCompletionData (new CompletionData (e));
+						list.Add (new CompletionData (e));
 					
 					foreach (Macro m in fi.Macros)
-						provider.AddCompletionData (new CompletionData (m));
+						list.Add (new CompletionData (m));
 				}
 			}
 			
-			return provider;
+			return list;
 		}
 		
 		public override  IParameterDataProvider HandleParameterCompletion (

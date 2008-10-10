@@ -1,5 +1,15 @@
 2008-10-09  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.AspNet.Parser/Directive.cs:
+	* MonoDevelop.Html/HtmlCompletionDataProvider.cs:
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:
+	* MonoDevelop.Html/DocTypeCompletionDataProvider.cs: Track APIs.
+
+	* Makefile.am:
+	* AspNetAddIn.mdp: Updated.
+
+2008-10-09  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Html/DocTypeCompletionData.cs:
 	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:
 	* MonoDevelop.AspNet.Parser/SuggestedHandlerCompletionData.cs: Track

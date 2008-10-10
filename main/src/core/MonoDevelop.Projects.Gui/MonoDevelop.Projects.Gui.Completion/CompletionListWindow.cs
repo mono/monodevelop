@@ -26,7 +26,7 @@
 //
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 
 using Gtk;
 using MonoDevelop.Projects;
@@ -44,11 +44,13 @@ namespace MonoDevelop.Projects.Gui.Completion
 			wnd = new CompletionListWindow ();
 		}
 		
-		public static bool ShowWindow (char firstChar, ICompletionDataProvider provider, ICompletionWidget completionWidget, ICodeCompletionContext completionContext, CompletionDelegate closedDelegate)
+		public static bool ShowWindow (char firstChar, ICompletionDataList list, ICompletionWidget completionWidget,
+		                               ICodeCompletionContext completionContext, CompletionDelegate closedDelegate)
 		{
 			try {
-				if (!wnd.ShowListWindow (firstChar, provider,  completionWidget, completionContext, closedDelegate)) {
-					provider.Dispose ();
+				if (!wnd.ShowListWindow (firstChar, list,  completionWidget, completionContext, closedDelegate)) {
+					if (list is IDisposable)
+						((IDisposable)list).Dispose ();
 					return false;
 				}
 				return true;
@@ -74,11 +76,10 @@ namespace MonoDevelop.Projects.Gui.Completion
 	{
 		internal ICompletionWidget completionWidget;
 		ICodeCompletionContext completionContext;
-		ICompletionData[] completionData;
 		DeclarationViewWindow declarationviewwindow = new DeclarationViewWindow ();
 		ICompletionData currentData;
-		ICompletionDataProvider provider;
-		IMutableCompletionDataProvider mutableProvider;
+		ICompletionDataList completionDataList;
+		IMutableCompletionDataList mutableList;
 		Widget parsingMessage;
 		char firstChar;
 		CompletionDelegate closedDelegate;
@@ -133,24 +134,25 @@ namespace MonoDevelop.Projects.Gui.Completion
 			return false;
 		}
 		
-		internal bool ShowListWindow (char firstChar, ICompletionDataProvider provider, ICompletionWidget completionWidget, ICodeCompletionContext completionContext, CompletionDelegate closedDelegate)
+		internal bool ShowListWindow (char firstChar, ICompletionDataList list, ICompletionWidget completionWidget,
+		                              ICodeCompletionContext completionContext, CompletionDelegate closedDelegate)
 		{
-			if (mutableProvider != null) {
-				mutableProvider.CompletionDataChanging -= OnCompletionDataChanging;
-				mutableProvider.CompletionDataChanged -= OnCompletionDataChanged;
+			if (mutableList != null) {
+				mutableList.Changing -= OnCompletionDataChanging;
+				mutableList.Changed -= OnCompletionDataChanged;
 			}
 			
 			//initialWordLength = 0;
-			this.provider = provider;
+			this.completionDataList = list;
 			this.completionContext = completionContext;
 			this.closedDelegate = closedDelegate;
-			mutableProvider = provider as IMutableCompletionDataProvider;
+			mutableList = completionDataList as IMutableCompletionDataList;
 			
-			if (mutableProvider != null) {
-				mutableProvider.CompletionDataChanging += OnCompletionDataChanging;
-				mutableProvider.CompletionDataChanged += OnCompletionDataChanged;
+			if (mutableList != null) {
+				mutableList.Changing += OnCompletionDataChanging;
+				mutableList.Changed += OnCompletionDataChanged;
 			
-				if (mutableProvider.IsChanging)
+				if (mutableList.IsChanging)
 					OnCompletionDataChanging (null, null);
 			}
 			
@@ -161,7 +163,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 				// makes control-space in midle of words to work
 				string text = completionWidget.GetCompletionText (completionContext);
 				if (text.Length == 0) {
-					text = provider.DefaultCompletionString;
+					text = completionDataList.DefaultCompletionString;
 					if (text != null && text.Length > 0)
 						SelectEntry (text);
 					initialWordLength = completionWidget.SelectedLength;
@@ -171,7 +173,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 				initialWordLength = text.Length + completionWidget.SelectedLength;
 				PartialWord = text; 
 				//if there is only one matching result we take it by default
-				if (provider.AutoCompleteUniqueMatch && IsUniqueMatch && !IsChanging)
+				if (completionDataList.AutoCompleteUniqueMatch && IsUniqueMatch && !IsChanging)
 				{	
 					UpdateWord ();
 					Hide ();
@@ -186,20 +188,15 @@ namespace MonoDevelop.Projects.Gui.Completion
 		
 		bool FillList (bool reshow)
 		{
-			completionData = provider.GenerateCompletionData (completionWidget, firstChar);
-			if ((completionData == null || completionData.Length == 0) && !IsChanging)
+			if ((completionDataList.Count == 0) && !IsChanging)
 				return false;
 			
 			this.Style = completionWidget.GtkStyle;
 			
-			if (completionData == null) {
-				completionData = new ICompletionData [0];
-			} else {
-				Array.Sort (completionData, (ICompletionData a, ICompletionData b) => 
-					((a.DisplayFlags & DisplayFlags.Obsolete) == (b.DisplayFlags & DisplayFlags.Obsolete))
-						? string.Compare (a.DisplayText, b.DisplayText, true)
-						: (a.DisplayFlags & DisplayFlags.Obsolete) != 0? 1 : -1);
-			}
+			completionDataList.Sort ((ICompletionData a, ICompletionData b) => 
+				((a.DisplayFlags & DisplayFlags.Obsolete) == (b.DisplayFlags & DisplayFlags.Obsolete))
+					? string.Compare (a.DisplayText, b.DisplayText, true)
+					: (a.DisplayFlags & DisplayFlags.Obsolete) != 0? 1 : -1);
 			
 			DataProvider = this;
 
@@ -230,7 +227,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			
 			if (word != null) {
 				if (Selection != -1) {
-					IActionCompletionData ac = completionData [Selection] as IActionCompletionData;
+					IActionCompletionData ac = completionDataList [Selection] as IActionCompletionData;
 					if (ac != null) {
 						ac.InsertCompletionText (completionWidget, completionContext);
 						return;
@@ -247,10 +244,20 @@ namespace MonoDevelop.Projects.Gui.Completion
 		{
 			base.Hide ();
 			declarationviewwindow.HideAll ();
-			if (provider != null) {
-				provider.Dispose ();
-				provider = null;
+			
+			if (mutableList != null) {
+				mutableList.Changing -= OnCompletionDataChanging;
+				mutableList.Changed -= OnCompletionDataChanged;
+				mutableList = null;
 			}
+			
+			if (completionDataList != null) {
+				if (completionDataList is IDisposable) {
+					((IDisposable)completionDataList).Dispose ();
+				}
+				completionDataList = null;
+			}
+			
 			if (closedDelegate != null) {
 				closedDelegate ();
 				closedDelegate = null;
@@ -280,7 +287,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		
 		void UpdateDeclarationView ()
 		{
-			if (completionData == null || List.Selection >= completionData.Length || List.Selection == -1)
+			if (completionDataList == null || List.Selection >= completionDataList.Count || List.Selection == -1)
 				return;
 
 			if (List.GdkWindow == null) return;
@@ -299,7 +306,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 				vert = listpos_y;
 			}
 
-			ICompletionData data = completionData[List.Selection];
+			ICompletionData data = completionDataList[List.Selection];
 			bool descriptionHasMarkup = (data.DisplayFlags & DisplayFlags.DescriptionHasMarkup) != 0;
 			IOverloadedCompletionData overloadedData = data as IOverloadedCompletionData;
 
@@ -360,33 +367,33 @@ namespace MonoDevelop.Projects.Gui.Completion
 		
 		int IListDataProvider.ItemCount 
 		{ 
-			get { return completionData.Length; } 
+			get { return completionDataList.Count; } 
 		}
 		
 		string IListDataProvider.GetText (int n)
 		{
-			return completionData[n].DisplayText;
+			return completionDataList[n].DisplayText;
 		}
 		
 		bool IListDataProvider.HasMarkup (int n)
 		{
-			return (completionData[n].DisplayFlags & DisplayFlags.Obsolete) != 0;
+			return (completionDataList[n].DisplayFlags & DisplayFlags.Obsolete) != 0;
 		}
 		
 		//NOTE: we only ever return markup for items marked as obsolete
 		string IListDataProvider.GetMarkup (int n)
 		{
-			return "<s>" + GLib.Markup.EscapeText (completionData[n].DisplayText) + "</s>";
+			return "<s>" + GLib.Markup.EscapeText (completionDataList[n].DisplayText) + "</s>";
 		}
 		
 		string IListDataProvider.GetCompletionText (int n)
 		{
-			return completionData[n].CompletionText;
+			return completionDataList[n].CompletionText;
 		}
 		
 		Gdk.Pixbuf IListDataProvider.GetIcon (int n)
 		{
-			string iconName = completionData[n].Icon;
+			string iconName = completionDataList[n].Icon;
 			if (string.IsNullOrEmpty (iconName))
 				return null;
 			return MonoDevelop.Core.Gui.Services.Resources.GetIcon (iconName, Gtk.IconSize.Menu);
@@ -395,7 +402,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		#endregion
 		
 		internal bool IsChanging {
-			get { return mutableProvider != null && mutableProvider.IsChanging; }
+			get { return mutableList != null && mutableList.IsChanging; }
 		}
 		
 		void OnCompletionDataChanging (object s, EventArgs args)

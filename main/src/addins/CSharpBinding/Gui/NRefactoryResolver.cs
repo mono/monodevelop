@@ -154,28 +154,28 @@ namespace MonoDevelop.CSharpBinding
 			}
 		}
 		
-		static void AddParameterList (CodeCompletionDataProvider provider, IEnumerable<IParameter> parameters)
+		static void AddParameterList (CompletionDataList completionList, IEnumerable<IParameter> parameters)
 		{
 			foreach (IParameter p in parameters) {
-				provider.AddCompletionData (new CompletionData (p.Name, "md-literal"));
+				completionList.Add (p.Name, "md-literal");
 			}
 		}
 				
-		void AddContentsFromClassAndMembers (ExpressionContext context, CodeCompletionDataProvider provider)
+		void AddContentsFromClassAndMembers (ExpressionContext context, CompletionDataList completionList)
 		{
 			IMethod method = callingMember as IMethod;
 			if (method != null && method.Parameters != null)
-				AddParameterList (provider, method.Parameters);
+				AddParameterList (completionList, method.Parameters);
 			IProperty property = callingMember as IProperty;
 			if (property != null && property.Parameters != null) 
-				AddParameterList (provider, property.Parameters);
+				AddParameterList (completionList, property.Parameters);
 			if (CallingType == null)
 				return;
 			bool isInStatic = CallingMember != null ? CallingMember.IsStatic : false;
 			
 			if (CallingType.TypeParameters != null) {
 				foreach (TypeParameter parameter in CallingType.TypeParameters) {
-					provider.AddCompletionData (new CompletionData (parameter.Name, "md-literal"));
+					completionList.Add (parameter.Name, "md-literal");
 				}
 			}
 			if (CallingMember != null) {
@@ -188,22 +188,22 @@ namespace MonoDevelop.CSharpBinding
 	//					if (member.IsAccessibleFrom (dom, CallingMember)) {
 							if (context.FilterEntry (member))
 								continue;
-							col.AddCompletionData (provider, member);
+							col.AddCompletionData (completionList, member);
 	//					}
 					}
 				}
 			}
 		}
 		static readonly IReturnType attributeType = new DomReturnType ("System.Attribute");
-		public void AddAccessibleCodeCompletionData (ExpressionContext context, CodeCompletionDataProvider provider)
+		public void AddAccessibleCodeCompletionData (ExpressionContext context, CompletionDataList completionList)
 		{
-			AddContentsFromClassAndMembers (context, provider);
+			AddContentsFromClassAndMembers (context, completionList);
 			
 			if (lookupTableVisitor != null && lookupTableVisitor.Variables != null) {
 				foreach (KeyValuePair<string, List<LocalLookupVariable>> pair in lookupTableVisitor.Variables) {
 					if (pair.Value != null && pair.Value.Count > 0) {
 						foreach (LocalLookupVariable v in pair.Value) {
-							provider.AddCompletionData (new CompletionData (pair.Key, "md-literal"));
+							completionList.Add (pair.Key, "md-literal");
 						}
 					}
 				}
@@ -212,11 +212,11 @@ namespace MonoDevelop.CSharpBinding
 			if (CallingMember is IProperty) {
 				IProperty property = (IProperty)callingMember;
 				if (property.HasSet && editor != null && property.SetRegion.Contains (resolvePosition.Line, editor.CursorColumn)) 
-					provider.AddCompletionData (new CompletionData ("value", "md-literal"));
+					completionList.Add ("value", "md-literal");
 			}
 			
 			if (CallingMember is IEvent) {
-				provider.AddCompletionData (new CompletionData ("value", "md-literal"));
+				completionList.Add ("value", "md-literal");
 			}
 			
 			List<string> namespaceList = new List<string> ();
@@ -244,7 +244,7 @@ namespace MonoDevelop.CSharpBinding
 						if (t != null && !t.IsBaseType (attributeType))
 							continue;
 					}
-					ICompletionData data = col.AddCompletionData (provider, o);
+					ICompletionData data = col.AddCompletionData (completionList, o);
 					if (data is CompletionData && context == ExpressionContext.Attribute) {
 						if (data.CompletionText != null && data.CompletionText.EndsWith ("Attribute"))
 							((CompletionData)data).CompletionText = 

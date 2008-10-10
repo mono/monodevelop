@@ -21,10 +21,8 @@
     <File name="MonoDevelop.Projects.Gui.Dialogs.OptionPanels/GeneralProjectOptions.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Gui.Dialogs/CombineOptionsDialog.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects.Gui.Completion/CodeCompletionDataProvider.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Gui.Completion/DeclarationViewWindow.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects.Gui.Completion/ICompletionDataProvider.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Gui.Completion/ICompletionWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Gui.Completion/ListWindow.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Gui.Completion/TextUtilities.cs" subtype="Code" buildaction="Compile" />
@@ -81,6 +79,7 @@
     <File name="MonoDevelop.Projects.Gui.Dialogs.OptionPanels/EnvVarList.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Gui.Completion/ICompletionData.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Gui.Completion/CompletionData.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Gui.Completion/CompletionDataList.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

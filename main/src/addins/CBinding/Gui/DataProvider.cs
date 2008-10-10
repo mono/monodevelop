@@ -140,40 +140,6 @@ namespace CBinding
 		}
 	}
 	
-	public class CompletionDataProvider : ICompletionDataProvider
-	{
-		private string defaultCompletionString;
-		private ArrayList completionData = new ArrayList ();
-		
-		public ICompletionData[] GenerateCompletionData (ICompletionWidget widget, char charTyped)
-		{
-			return (ICompletionData[])completionData.ToArray (typeof(ICompletionData));
-		}
-		
-		public void AddCompletionData (ICompletionData data)
-		{
-			// Don't add duplicates
-			foreach (ICompletionData icd in completionData) {
-				if (icd.DisplayText == data.DisplayText)
-					return;
-			}
-			
-			completionData.Add (data);
-		}
-		
-		public string DefaultCompletionString {
-			get { return defaultCompletionString; }
-		}
-		
-		public bool AutoCompleteUniqueMatch {
-			get { return false; }
-		}
-		
-		public virtual void Dispose ()
-		{
-		}
-	}
-	
 	public class CompletionData : ICompletionData
 	{
 		private string image;

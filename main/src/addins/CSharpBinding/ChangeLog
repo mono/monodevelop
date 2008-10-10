@@ -1,6 +1,11 @@
 2008-10-09  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Gui/NRefactoryResolver.cs:
+	* Gui/CSharpTextEditorCompletion.cs: Track APIs.
+
+2008-10-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Gui/NRefactoryResolver.cs:
 	* Gui/MemberCompletionData.cs:
 	* Gui/NewOverrideCompletionData.cs:
 	* Gui/CSharpTextEditorCompletion.cs: Track CompletionData API.

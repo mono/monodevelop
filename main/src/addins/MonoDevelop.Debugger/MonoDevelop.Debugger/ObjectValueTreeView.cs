@@ -515,9 +515,9 @@ namespace MonoDevelop.Debugger
 					string exp = entry.Text.Substring (0, entry.CursorPosition);
 					currentCompletionData = GetCompletionData (exp);
 					if (currentCompletionData != null && currentCompletionData.Items.Count > 1) {
-						DebugCompletionDataProvider dataProvider = new DebugCompletionDataProvider (currentCompletionData);
+						DebugCompletionDataList dataList = new DebugCompletionDataList (currentCompletionData);
 						ICodeCompletionContext ctx = ((ICompletionWidget)this).CreateCodeCompletionContext (entry.CursorPosition - currentCompletionData.ExpressionLenght);
-						CompletionWindowManager.ShowWindow (c, dataProvider, this, ctx, OnCompletionWindowClosed);
+						CompletionWindowManager.ShowWindow (c, dataList, this, ctx, OnCompletionWindowClosed);
 					} else
 						currentCompletionData = null;
 				}
@@ -635,25 +635,12 @@ namespace MonoDevelop.Debugger
 		}
 	}
 	
-	class DebugCompletionDataProvider: ICompletionDataProvider
+	class DebugCompletionDataList: List<ICompletionData>, ICompletionDataList
 	{
-		Mono.Debugging.Client.CompletionData data;
-		
-		public DebugCompletionDataProvider (Mono.Debugging.Client.CompletionData data)
+		public DebugCompletionDataList (Mono.Debugging.Client.CompletionData data)
 		{
-			this.data = data;
-		}
-		
-		public void Dispose ()
-		{
-		}
-
-		public ICompletionData[] GenerateCompletionData (ICompletionWidget widget, char charTyped)
-		{
-			List<ICompletionData> list = new List<ICompletionData> ();
 			foreach (CompletionItem it in data.Items)
-				list.Add (new DebugCompletionData (it));
-			return list.ToArray ();
+				Add (new DebugCompletionData (it));
 		}
 		
 		public string DefaultCompletionString {

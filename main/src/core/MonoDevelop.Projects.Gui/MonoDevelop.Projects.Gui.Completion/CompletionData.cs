@@ -35,6 +35,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 	
 	public class CompletionData : ICompletionData
 	{
+		protected CompletionData () {}
 		public CompletionData (string text) : this (text, null, null) {}
 		public CompletionData (string text, string icon) : this (text, icon, null) {}
 		public CompletionData (string text, string icon, string description) : this (text, icon, description, text) {}
@@ -47,71 +48,10 @@ namespace MonoDevelop.Projects.Gui.Completion
 			this.CompletionText = completionText;
 		}
 		
-		public string Icon { get; set; }
-		public string DisplayText { get; set; }
-		public string Description { get; set; }
-		public string CompletionText { get; set; }
-		public DisplayFlags DisplayFlags { get; set; }
-	}
-	
-	public class SimpleCompletionDataProvider : ICompletionDataProvider
-	{
-		public ICompletionData[] Data { get; set; }
-		public bool AutoCompleteUniqueMatch { get; set; } 
-		
-		ICompletionData[] ICompletionDataProvider.GenerateCompletionData (ICompletionWidget widget, char charTyped)
-		{
-			return Data;
-		}
-		
-		void IDisposable.Dispose ()
-		{
-		}
-		
-		public string DefaultCompletionString { get; set; }
-		
-		public SimpleCompletionDataProvider (ICompletionData [] data, string defaultVal)
-		{
-			Data = data;
-			DefaultCompletionString = defaultVal;
-		}
-	}
-	
-	public class LazyCompletionDataProvider : ICompletionDataProvider
-	{
-		public Func<ICompletionWidget, char, IEnumerable<ICompletionData>> Func { get; set; }
-		public string DefaultCompletionString { get; set; }
-		public bool AutoCompleteUniqueMatch { get; set; } 
-		
-		public LazyCompletionDataProvider (Func<ICompletionWidget, char,
-		                                   IEnumerable<ICompletionData>> func, string defaultVal)
-		{
-			this.Func = func;
-			this.DefaultCompletionString = defaultVal;
-		}
-		
-		public LazyCompletionDataProvider (Func<ICompletionWidget, char, IEnumerable<ICompletionData>> func)
-			: this (func, null)
-		{
-		}
-		
-		public LazyCompletionDataProvider (Func<IEnumerable<ICompletionData>> func, string defaultVal)
-			: this ((ICompletionWidget x, char y) => func (), defaultVal)
-		{
-		}
-		
-		public LazyCompletionDataProvider (Func<IEnumerable<ICompletionData>> func)
-			: this (func, null)
-		{
-		}
-		
-		ICompletionData[] ICompletionDataProvider.GenerateCompletionData (ICompletionWidget widget, char charTyped)
-		{
-			return Func (widget, charTyped).ToArray ();
-		}
-		
-		void IDisposable.Dispose ()
-		{
-		}
+		public virtual string Icon { get; set; }
+		public virtual string DisplayText { get; set; }
+		public virtual string Description { get; set; }
+		public virtual string CompletionText { get; set; }
+		public virtual DisplayFlags DisplayFlags { get; set; }
 	}
 }

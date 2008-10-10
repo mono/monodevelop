@@ -1,5 +1,14 @@
 2008-10-09  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.XmlEditor/XmlTextEditorExtension.cs:
+	* MonoDevelop.XmlEditor.Gui/BaseXmlEditorExtension.cs:
+	* MonoDevelop.XmlEditor.Completion/XmlSchemaCompletionData.cs:
+	* MonoDevelop.XmlEditor.Completion/XmlCompletionDataProvider.cs:
+	* MonoDevelop.XmlEditor.Completion/ClosingBracketCompletionDataProvider.cs:
+	Track APIs.
+
+2008-10-09  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.XmlEditor.Gui/BaseXmlEditorExtension.cs:
 	* MonoDevelop.XmlEditor.Completion/XmlCompletionData.cs:
 	* MonoDevelop.XmlEditor.Completion/XmlTagCompletionData.cs:

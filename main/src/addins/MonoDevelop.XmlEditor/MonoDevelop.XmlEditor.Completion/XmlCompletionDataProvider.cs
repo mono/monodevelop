@@ -16,7 +16,7 @@ namespace MonoDevelop.XmlEditor.Completion
 	/// Provides the autocomplete (intellisense) data for an
 	/// xml document that specifies a known schema.
 	/// </summary>
-	public class XmlCompletionDataProvider : ICompletionDataProvider
+	public class XmlCompletionDataProvider
 	{
 		IXmlSchemaCompletionDataCollection schemaCompletionDataItems;
 		XmlSchemaCompletionData defaultSchemaCompletionData;

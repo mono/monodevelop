@@ -79,15 +79,20 @@ namespace MonoDevelop.Ide.Gui.Content
 				currentCompletionContext = completionWidget.CreateCodeCompletionContext (Editor.CursorPosition);
 				
 				int triggerWordLength = currentCompletionContext.TriggerWordLength;
-				ICompletionDataProvider cp = HandleCodeCompletion (currentCompletionContext, keyChar, ref triggerWordLength);
+				ICompletionDataList completionList = HandleCodeCompletion (currentCompletionContext, keyChar,
+				                                                           ref triggerWordLength);
 
-				if (triggerWordLength > 0 && (triggerWordLength < Editor.CursorPosition || (triggerWordLength == 1 && Editor.CursorPosition == 1))) {
-					currentCompletionContext = completionWidget.CreateCodeCompletionContext (Editor.CursorPosition - triggerWordLength);	
+				if (triggerWordLength > 0 && (triggerWordLength < Editor.CursorPosition
+				                              || (triggerWordLength == 1 && Editor.CursorPosition == 1)))
+				{
+					currentCompletionContext
+						= completionWidget.CreateCodeCompletionContext (Editor.CursorPosition - triggerWordLength);	
 					currentCompletionContext.TriggerWordLength = triggerWordLength;
 				}
 				
-				if (cp != null) {
-					if (!CompletionWindowManager.ShowWindow (keyChar, cp, completionWidget, currentCompletionContext, OnCompletionWindowClosed))
+				if (completionList != null) {
+					if (!CompletionWindowManager.ShowWindow (keyChar, completionList, completionWidget, 
+					                                         currentCompletionContext, OnCompletionWindowClosed))
 						currentCompletionContext = null;
 				} else {
 					currentCompletionContext = null;
@@ -111,16 +116,18 @@ namespace MonoDevelop.Ide.Gui.Content
 			return res;
 		}
 		
-		protected void ShowCompletion (ICompletionDataProvider cp, int triggerWordLength, char keyChar)
+		protected void ShowCompletion (ICompletionDataList completionList, int triggerWordLength, char keyChar)
 		{
 			if (completionWidget != null && currentCompletionContext == null) {
 				currentCompletionContext = completionWidget.CreateCodeCompletionContext (Editor.CursorPosition);
 				if (triggerWordLength > 0 && triggerWordLength < Editor.CursorPosition) {
-					currentCompletionContext = completionWidget.CreateCodeCompletionContext (Editor.CursorPosition - triggerWordLength);	
+					currentCompletionContext =
+						completionWidget.CreateCodeCompletionContext (Editor.CursorPosition - triggerWordLength);	
 					currentCompletionContext.TriggerWordLength = triggerWordLength;
 				}
-				if (cp != null)
-					CompletionWindowManager.ShowWindow (keyChar, cp, completionWidget, currentCompletionContext, OnCompletionWindowClosed);
+				if (completionList != null)
+					CompletionWindowManager.ShowWindow (keyChar, completionList, completionWidget, 
+					                                    currentCompletionContext, OnCompletionWindowClosed);
 				else
 					currentCompletionContext = null;
 			}
@@ -156,7 +163,7 @@ namespace MonoDevelop.Ide.Gui.Content
 		[CommandHandler (TextEditorCommands.ShowCompletionWindow)]
 		public virtual void RunCompletionCommand ()
 		{
-			ICompletionDataProvider cp = null;
+			ICompletionDataList completionList = null;
 			int cpos, wlen;
 			if (!GetCompletionCommandOffset (out cpos, out wlen)) {
 				cpos = Editor.CursorPosition;
@@ -164,10 +171,11 @@ namespace MonoDevelop.Ide.Gui.Content
 			}
 			currentCompletionContext = completionWidget.CreateCodeCompletionContext (cpos);
 			currentCompletionContext.TriggerWordLength = wlen;
-			cp = CodeCompletionCommand (currentCompletionContext);
+			completionList = CodeCompletionCommand (currentCompletionContext);
 				
-			if (cp != null)
-				CompletionWindowManager.ShowWindow ((char)0, cp, completionWidget, currentCompletionContext, OnCompletionWindowClosed);
+			if (completionList != null)
+				CompletionWindowManager.ShowWindow ((char)0, completionList, completionWidget, 
+				                                    currentCompletionContext, OnCompletionWindowClosed);
 			else
 				currentCompletionContext = null;
 		}
@@ -197,12 +205,14 @@ namespace MonoDevelop.Ide.Gui.Content
 		}
 		
 		
-		public virtual ICompletionDataProvider HandleCodeCompletion (ICodeCompletionContext completionContext, char completionChar, ref int triggerWordLength)
+		public virtual ICompletionDataList HandleCodeCompletion (ICodeCompletionContext completionContext,
+		                                                         char completionChar, ref int triggerWordLength)
 		{
 			return HandleCodeCompletion (completionContext, completionChar);
 		}
 		
-		public virtual ICompletionDataProvider HandleCodeCompletion (ICodeCompletionContext completionContext, char completionChar)
+		public virtual ICompletionDataList HandleCodeCompletion (ICodeCompletionContext completionContext,
+		                                                         char completionChar)
 		{
 			return null;
 		}
@@ -246,7 +256,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			return false;
 		}
 
-		public virtual ICompletionDataProvider CodeCompletionCommand (ICodeCompletionContext completionContext)
+		public virtual ICompletionDataList CodeCompletionCommand (ICodeCompletionContext completionContext)
 		{
 			// This default implementation of CodeCompletionCommand calls HandleCodeCompletion providing
 			// the char at the cursor position. If it returns a provider, just return it.
@@ -254,9 +264,9 @@ namespace MonoDevelop.Ide.Gui.Content
 			int pos = completionContext.TriggerOffset;
 			string txt = Editor.GetText (pos - 1, pos);
 			if (txt.Length > 0) {
-				ICompletionDataProvider cp = HandleCodeCompletion (completionContext, txt[0]);
-				if (cp != null)
-					return cp;
+				ICompletionDataList completionList = HandleCodeCompletion (completionContext, txt[0]);
+				if (completionList != null)
+					return completionList;
 			}
 			
 			// If there is a parser context, try resolving by calling CtrlSpace.
@@ -264,7 +274,8 @@ namespace MonoDevelop.Ide.Gui.Content
 			if (ctx != null) {
 // TODO:
 				//CodeCompletionDataProvider completionProvider = new CodeCompletionDataProvider (ctx, GetAmbience ());
-				//completionProvider.AddResolveResults (ctx.CtrlSpace (completionContext.TriggerLine + 1, completionContext.TriggerLineOffset + 1, FileName), true, SimpleTypeNameResolver.Instance);
+				//completionProvider.AddResolveResults (ctx.CtrlSpace (completionContext.TriggerLine + 1, 
+//						completionContext.TriggerLineOffset + 1, FileName), true, SimpleTypeNameResolver.Instance);
 //				if (!completionProvider.IsEmpty)
 //					return completionProvider;
 			}

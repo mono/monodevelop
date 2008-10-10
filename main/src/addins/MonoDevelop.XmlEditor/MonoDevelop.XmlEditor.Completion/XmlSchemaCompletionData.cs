@@ -17,7 +17,7 @@ namespace MonoDevelop.XmlEditor.Completion
 	/// <summary>
 	/// Holds the completion (intellisense) data for an xml schema.
 	/// </summary>
-	public class XmlSchemaCompletionData : IXmlCompletionProvider, ILazilyLoadedProvider
+	public class XmlSchemaCompletionData : IXmlCompletionProvider
 	{
 		string namespaceUri = String.Empty;
 		XmlSchema schema = null;

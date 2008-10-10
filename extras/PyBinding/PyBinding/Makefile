@@ -55,7 +55,6 @@ FILES =  \
 	gtk-gui/PyBinding.Gui.PythonOptionsWidget.cs \
 	PyBinding.Compiler/IPythonCompiler.cs \
 	PyBinding.Compiler/Python25Compiler.cs \
-	PyBinding.Completion/PythonCompletionDataProvider.cs \
 	PyBinding.Gui.Navigation/AttributeNodeBuilder.cs \
 	PyBinding.Gui.Navigation/ClassNodeBuilder.cs \
 	PyBinding.Gui.Navigation/FunctionNodeBuilder.cs \
@@ -111,6 +110,7 @@ REFERENCES =  \
 	-pkg:monodevelop \
 	-pkg:monodevelop-core-addins \
 	System \
+	System.Core \
 	System.Xml
 
 DLL_REFERENCES = 

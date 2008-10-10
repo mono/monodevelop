@@ -1,5 +1,19 @@
 2008-10-09  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Projects.Gui.Completion/CompletionData.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionDataList.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs: New
+	CompletionDataList API to replace CompletionDataProvider.
+
+	* Makefile.am:
+	* MonoDevelop.Projects.Gui.mdp: Updated.
+
+	* MonoDevelop.Projects.Gui.Completion/ICompletionDataProvider.cs:
+	* MonoDevelop.Projects.Gui.Completion/CodeCompletionDataProvider.cs:
+	Removed.
+
+2008-10-09  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Projects.Gui.mdp:
 	* MonoDevelop.Projects.Gui.Completion/ICompletionData.cs:

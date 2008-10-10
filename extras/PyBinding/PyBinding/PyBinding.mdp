@@ -29,7 +29,6 @@
     <File name="Resources/py-icon-32.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="Resources/text-x-pysrc.16x16.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="Resources/PyBinding.addin.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="PyBinding.Completion/PythonCompletionDataProvider.cs" subtype="Code" buildaction="Compile" />
     <File name="PyBinding.Gui/PythonOptionsWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="Resources/completion.py" subtype="Code" buildaction="EmbedAsResource" />
     <File name="PyBinding.Parser/PythonParser.cs" subtype="Code" buildaction="Compile" />
@@ -60,6 +59,7 @@
     <File name="PyBinding.Gui/PythonEditorIndentation.cs" subtype="Code" buildaction="Compile" />
     <File name="PyBinding.Gui/PythonEditorOutline.cs" subtype="Code" buildaction="Compile" />
     <File name="PyBinding.Gui/PythonOptionsPanel.cs" subtype="Code" buildaction="Compile" />
+    <File name="PyBinding.Completion" subtype="Directory" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
@@ -84,7 +84,7 @@
     <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.XmlEditor, Version=0.6.0.0, Culture=neutral, PublicKeyToken=null" />
     <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.AspNet, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
     <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Deployment, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
-    <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Deployment.Linux, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+    <ProjectReference type="Gac" localcopy="False" refto="MonoDevelop.Deployment.Linux, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
     <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.VBNetBinding, Version=1.0.1.1649, Culture=neutral, PublicKeyToken=null" />
     <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.CBinding, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
     <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.CSharpBinding, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
@@ -93,6 +93,7 @@
     <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="System.Core, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   </References>
   <GtkDesignInfo />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile" BuildTargetName="" CleanTargetName="" SyncReferences="True">

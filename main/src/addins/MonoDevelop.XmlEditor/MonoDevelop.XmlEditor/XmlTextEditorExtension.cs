@@ -92,7 +92,7 @@ namespace MonoDevelop.XmlEditor
 			return buf;
 		}
 		
-		public override ICompletionDataProvider HandleCodeCompletion (ICodeCompletionContext completionContext, char completionChar)
+		public override ICompletionDataList HandleCodeCompletion (ICodeCompletionContext completionContext, char completionChar)
 		{
 			switch (completionChar) {
 			case ' ':
@@ -100,12 +100,22 @@ namespace MonoDevelop.XmlEditor
 			case '<':
 			case '"':
 			case '\'':
-				IXmlSchemaCompletionDataCollection schemaCompletionDataItems = XmlSchemaManager.SchemaCompletionDataItems;
-				return new XmlCompletionDataProvider (schemaCompletionDataItems, defaultSchemaCompletionData, defaultNamespacePrefix, completionContext);
+				IXmlSchemaCompletionDataCollection schemaCompletionDataItems =
+					XmlSchemaManager.SchemaCompletionDataItems;
+				XmlCompletionDataProvider provider =
+					new XmlCompletionDataProvider (schemaCompletionDataItems, defaultSchemaCompletionData,
+					                               defaultNamespacePrefix, completionContext);
+				return new CompletionDataList (provider.GenerateCompletionData ((ICompletionWidget)GetBuffer (),
+				                                                                completionChar));
 			case '>':
 				//this is "optional" autocompletion of elements, so disable if fully automatic completion enabled
-				if (!autoCompleteElements)
-					return new ClosingBracketCompletionDataProvider (GetBuffer ());
+				if (!autoCompleteElements) {
+					ClosingBracketCompletionDataProvider provider2 =
+						new ClosingBracketCompletionDataProvider (GetBuffer ());
+					return new CompletionDataList (provider2.GenerateCompletionData ((ICompletionWidget)GetBuffer (),
+					                                                                completionChar));
+				}
+					
 				return null;
 			default:
 				return null;

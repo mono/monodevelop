@@ -40,7 +40,7 @@ namespace MonoDevelop.AspNet.Parser
 {
 	static class DirectiveCompletion
 	{
-		public static ICompletionDataProvider GetAttributeValues (string tag, string attribute, ClrVersion clrVersion)
+		public static ICompletionDataList GetAttributeValues (string tag, string attribute, ClrVersion clrVersion)
 		{
 			switch (tag.ToLower ()) {
 			case "page":
@@ -49,7 +49,7 @@ namespace MonoDevelop.AspNet.Parser
 			return null;
 		}
 		
-		public static ICompletionDataProvider GetAttributes (string tag, ClrVersion clrVersion)
+		public static ICompletionDataList GetAttributes (string tag, ClrVersion clrVersion)
 		{
 			switch (tag.ToLower ()) {
 			case "page":
@@ -58,21 +58,17 @@ namespace MonoDevelop.AspNet.Parser
 			return null;
 		}
 		
-		static ICompletionDataProvider GetPageAttributes (ClrVersion clrVersion)
+		static ICompletionDataList GetPageAttributes (ClrVersion clrVersion)
 		{
-			List<CompletionData> list = new List<CompletionData> ();
-			foreach (string s in new string[] {
-				"Async",
-				"AspCompat",
-				//"Explicit",
-				"MaintainScrollPositionOnPostback"
-				})
-				list.Add (new CompletionData (s));
-			
-			return new SimpleCompletionDataProvider (list.ToArray (), null);
+			CompletionDataList list = new CompletionDataList ();
+			list.Add ("Async");
+			list.Add ("AspCompat");
+			//list.Add ("Explicit");
+			list.Add ("MaintainScrollPositionOnPostback");
+			return list;
 		}
 		
-		static ICompletionDataProvider GetPageAttributeValues (string attribute, ClrVersion clrVersion)
+		static ICompletionDataList GetPageAttributeValues (string attribute, ClrVersion clrVersion)
 		{
 			switch (attribute.ToLower ()) {
 			
@@ -196,36 +192,36 @@ namespace MonoDevelop.AspNet.Parser
 		
 		
 		
-		static ICompletionDataProvider GetBooleanProvider (bool defaultValue)
+		static ICompletionDataList GetBooleanProvider (bool defaultValue)
 		{
-			CodeCompletionDataProvider provider = null;//new CodeCompletionDataProvider ();
-//			provider.Add (new CodeCompletionData ("true", "md-literal"));
-//			provider.Add (new CodeCompletionData ("false", "md-literal"));
+			CompletionDataList provider = new CompletionDataList ();
+			provider.Add ("true", "md-literal");
+			provider.Add ("false", "md-literal");
 			provider.DefaultCompletionString = defaultValue? "true" : "false";
 			return provider;
 		}
 		
-		static ICompletionDataProvider GetEnumProvider<T> (T defaultValue)
+		static ICompletionDataList GetEnumProvider<T> (T defaultValue)
 		{
-			CodeCompletionDataProvider provider = null;//new CodeCompletionDataProvider ();
+			CompletionDataList provider = new CompletionDataList ();
 			foreach (string name in Enum.GetNames (typeof (T))) {
-//				provider.Add (new CodeCompletionData (name, "md-literal"));
+				provider.Add (name, "md-literal");
 			}
 			provider.DefaultCompletionString = defaultValue.ToString ();
 			return provider;
 		}
 		
-		static ICompletionDataProvider GetProvider (string defaultValue, IEnumerable<string> vals)
+		static ICompletionDataList GetProvider (string defaultValue, IEnumerable<string> vals)
 		{
-			CodeCompletionDataProvider provider = null;//new CodeCompletionDataProvider ();
+			CompletionDataList provider = new CompletionDataList ();
 			foreach (string v in vals) {
-//				provider.Add (new CodeCompletionData (v, "md-literal"));
+				provider.Add (v, "md-literal");
 			}
 			provider.DefaultCompletionString = defaultValue;
 			return provider;
 		}
 		
-		static ICompletionDataProvider GetProvider (int defaultValue, IEnumerable<int> vals)
+		static ICompletionDataList GetProvider (int defaultValue, IEnumerable<int> vals)
 		{
 			return GetProvider (defaultValue.ToString (), from s in vals select s.ToString ());
 		}

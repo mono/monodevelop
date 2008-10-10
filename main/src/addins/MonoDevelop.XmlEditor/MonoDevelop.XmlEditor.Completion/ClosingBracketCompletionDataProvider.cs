@@ -22,8 +22,7 @@ using MonoDevelop.Ide.Gui.Content;
 namespace MonoDevelop.XmlEditor.Completion
 {
 	
-	
-	public class ClosingBracketCompletionDataProvider : ICompletionDataProvider
+	public class ClosingBracketCompletionDataProvider
 	{
 		IEditableTextBuffer buffer;
 		

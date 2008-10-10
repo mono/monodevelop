@@ -102,7 +102,6 @@
     <File name="MonoDevelop.AspNet.Gui/BrowserLauncher.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Html/DocTypeExtensionNode.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Html/DocTypeCompletionData.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Html/DocTypeCompletionDataProvider.cs" subtype="Code" buildaction="Compile" />
     <File name="Schemas/xhtml1-frameset.xsd" subtype="Code" DeployService.UseProjectRelativePath="True" buildaction="FileCopy" />
     <File name="Schemas/xhtml1-strict.xsd" subtype="Code" DeployService.UseProjectRelativePath="True" buildaction="FileCopy" />
     <File name="Schemas/xhtml1-transitional.xsd" subtype="Code" DeployService.UseProjectRelativePath="True" buildaction="FileCopy" />

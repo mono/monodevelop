@@ -141,35 +141,6 @@ namespace MonoDevelop.ValaBinding
 		}
 	}
 	
-	public class CompletionDataProvider : ICompletionDataProvider
-	{
-		private string defaultCompletionString;
-		private ArrayList completionData = new ArrayList ();
-		
-		public ICompletionData[] GenerateCompletionData (ICompletionWidget widget, char charTyped)
-		{
-			return (ICompletionData[])completionData.ToArray (typeof(ICompletionData));
-		}
-		
-		public void AddCompletionData (ICompletionData data)
-		{
-			completionData.Add (data);
-		}
-		
-		public string DefaultCompletionString {
-			get { return defaultCompletionString; }
-		}
-		
-		public virtual void Dispose ()
-		{
-		}
-
-		public virtual bool AutoCompleteUniqueMatch
-		{
-			get { return false; }
-		}
-	}
-	
 	public class CompletionData : ICompletionData
 	{
 		private string image;

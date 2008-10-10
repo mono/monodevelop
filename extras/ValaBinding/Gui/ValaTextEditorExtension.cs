@@ -89,7 +89,7 @@ namespace MonoDevelop.ValaBinding
 			return base.KeyPress (key, keyChar, modifier);
 		}
 		
-		public override ICompletionDataProvider HandleCodeCompletion (
+		public override ICompletionDataList HandleCodeCompletion (
 		    ICodeCompletionContext completionContext, char completionChar)
 		{
 			string lineText = Editor.GetLineText (completionContext.TriggerLine + 1);
@@ -113,7 +113,7 @@ namespace MonoDevelop.ValaBinding
 			return null;
 		}
 		
-		public override ICompletionDataProvider CodeCompletionCommand (
+		public override ICompletionDataList CodeCompletionCommand (
 		    ICodeCompletionContext completionContext)
 		{
 			int pos = completionContext.TriggerOffset;
@@ -127,7 +127,7 @@ namespace MonoDevelop.ValaBinding
 			return HandleCodeCompletion (completionContext, Editor.GetText (pos - 1, pos)[0]);
 		}
 		
-		private CompletionDataProvider GetMembersOfItem (string itemFullName)
+		private CompletionDataList GetMembersOfItem (string itemFullName)
 		{
 			ValaProject project = Document.Project as ValaProject;
 			
@@ -135,7 +135,7 @@ namespace MonoDevelop.ValaBinding
 				return null;
 				
 			ProjectInformation info = ProjectInformationManager.Instance.Get (project);
-			CompletionDataProvider provider = new CompletionDataProvider ();
+			CompletionDataList list = new CompletionDataList ();
 			
 			LanguageItem container = null;
 			string containerType = null;
@@ -205,36 +205,36 @@ namespace MonoDevelop.ValaBinding
 				if (in_project) {
 					foreach (LanguageItem li in info.AllItems ()) {
 						if (li.Parent != null && li.Parent.Equals (container)) {
-							provider.AddCompletionData (new CompletionData (li));
+							list.Add (new CompletionData (li));
 						}
 					}
 				} else {
 					foreach (FileInformation fi in info.IncludedFiles[currentFileName]) {
 						foreach (LanguageItem li in fi.AllItems ()) {
 							if (li.Parent != null && li.Parent.Equals (container))
-								provider.AddCompletionData (new CompletionData (li));
+								list.Add (new CompletionData (li));
 						}
 					}
 				}
 			} else {
 				if (in_project) {
-					AddMembersWithParent (provider, info.InstanceMembers (), containerType);
+					AddMembersWithParent (list, info.InstanceMembers (), containerType);
 				} else {
 					foreach (FileInformation fi in info.IncludedFiles[currentFileName]) {
-						AddMembersWithParent (provider, fi.InstanceMembers (), containerType);
+						AddMembersWithParent (list, fi.InstanceMembers (), containerType);
 					}
 				}
 			}
 			
-			return provider;
+			return list;
 		}
 		
 		/// <summary>
-		/// Adds completion data for children to a provider
+		/// Adds completion data for children to a list
 		/// </summary>
-		/// <param name="provider">
-		/// The provider to which completion data will be added
-		/// <see cref="CompletionDataProvider"/>
+		/// <param name="list">
+		/// The list to which completion data will be added
+		/// <see cref="CompletionDataList"/>
 		/// </param>
 		/// <param name="items">
 		/// A list of items to search
@@ -244,15 +244,15 @@ namespace MonoDevelop.ValaBinding
 		/// The name of the parent that will be matched
 		/// <see cref="System.String"/>
 		/// </param>
-		public static void AddMembersWithParent(CompletionDataProvider provider, IEnumerable<LanguageItem> items, string parentName) {
+		public static void AddMembersWithParent(CompletionDataList list, IEnumerable<LanguageItem> items, string parentName) {
 				foreach (LanguageItem li in items) {
 					if (li.Parent != null && li.Parent.Name.EndsWith (parentName))
-						provider.AddCompletionData (new CompletionData (li));
+						list.Add (new CompletionData (li));
 				}
 		}
 
 		
-		private ICompletionDataProvider GlobalComplete ()
+		private ICompletionDataList GlobalComplete ()
 		{
 			ValaProject project = Document.Project as ValaProject;
 			
@@ -261,21 +261,21 @@ namespace MonoDevelop.ValaBinding
 			
 			ProjectInformation info = ProjectInformationManager.Instance.Get (project);
 			
-			CompletionDataProvider provider = new CompletionDataProvider ();
+			CompletionDataList list = new CompletionDataList ();
 			
 			foreach (LanguageItem li in info.Containers ())
 				if (li.Parent == null)
-					provider.AddCompletionData (new CompletionData (li));
+					list.Add (new CompletionData (li));
 			
 			foreach (Function f in info.Functions)
 				if (f.Parent == null)
-					provider.AddCompletionData (new CompletionData (f));
+					list.Add (new CompletionData (f));
 
 			foreach (Enumerator e in info.Enumerators)
-				provider.AddCompletionData (new CompletionData (e));
+				list.Add (new CompletionData (e));
 			
 			foreach (Macro m in info.Macros)
-				provider.AddCompletionData (new CompletionData (m));
+				list.Add (new CompletionData (m));
 			
 			string currentFileName = Document.FileName;
 			
@@ -283,21 +283,21 @@ namespace MonoDevelop.ValaBinding
 				foreach (FileInformation fi in info.IncludedFiles[currentFileName]) {
 					foreach (LanguageItem li in fi.Containers ())
 						if (li.Parent == null)
-							provider.AddCompletionData (new CompletionData (li));
+							list.Add (new CompletionData (li));
 					
 					foreach (Function f in fi.Functions)
 						if (f.Parent == null)
-							provider.AddCompletionData (new CompletionData (f));
+							list.Add (new CompletionData (f));
 
 					foreach (Enumerator e in fi.Enumerators)
-						provider.AddCompletionData (new CompletionData (e));
+						list.Add (new CompletionData (e));
 					
 					foreach (Macro m in fi.Macros)
-						provider.AddCompletionData (new CompletionData (m));
+						list.Add (new CompletionData (m));
 				}
 			}
 			
-			return provider;
+			return list;
 		}
 		
 		public override  IParameterDataProvider HandleParameterCompletion (
