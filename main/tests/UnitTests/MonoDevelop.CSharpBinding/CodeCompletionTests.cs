@@ -600,6 +600,25 @@ class Test{
 			Assert.IsTrue (provider.SearchData ("List<int>") != null, "List<int> not found");
 		}
 		
+		/// <summary>
+		/// Bug 431803 - Autocomplete not giving any options
+		/// </summary>
+		[Test()]
+		public void TestBug431803 ()
+		{
+			CodeCompletionDataProvider provider = CreateProvider (
+@"public class Test
+{
+	public string[] GetStrings ()
+	{
+		return new $
+	}
+}");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.AreEqual (1, provider.CompletionDataCount);
+			Assert.IsNotNull (provider.SearchData ("string[]"), "type string not found.");
+		}
+		
 		[TestFixtureSetUp] 
 		public void SetUp()
 		{
