@@ -222,20 +222,22 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		
 		public void Refresh ()
 		{
-			categories.Clear ();
-			AddItems (toolboxService.GetCurrentToolboxItems ());
-			
-			Drag.SourceUnset (toolboxWidget);
-			toolboxWidget.ClearCategories ();
-			foreach (Category category in categories.Values) {
-				category.IsExpanded = true;
-				toolboxWidget.AddCategory (category);
+			lock (categories) {
+				categories.Clear ();
+				AddItems (toolboxService.GetCurrentToolboxItems ());
+				
+				Drag.SourceUnset (toolboxWidget);
+				toolboxWidget.ClearCategories ();
+				foreach (Category category in categories.Values) {
+					category.IsExpanded = true;
+					toolboxWidget.AddCategory (category);
+				}
+				toolboxWidget.QueueResize ();
+				Gtk.TargetEntry[] targetTable = toolboxService.GetCurrentDragTargetTable ();
+				if (targetTable != null)
+					Drag.SourceSet (toolboxWidget, Gdk.ModifierType.Button1Mask, targetTable, Gdk.DragAction.Copy | Gdk.DragAction.Move);
+				compactModeToggleButton.Visible = toolboxWidget.CanIconizeToolboxCategories;
 			}
-			toolboxWidget.QueueResize ();
-			Gtk.TargetEntry[] targetTable = toolboxService.GetCurrentDragTargetTable ();
-			if (targetTable != null)
-				Drag.SourceSet (toolboxWidget, Gdk.ModifierType.Button1Mask, targetTable, Gdk.DragAction.Copy | Gdk.DragAction.Move);
-			compactModeToggleButton.Visible = toolboxWidget.CanIconizeToolboxCategories;
 		}
 
 		
