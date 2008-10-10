@@ -29,13 +29,17 @@ namespace MonoDevelop.AssemblyBrowser {
         
         private Gtk.Label documentationLabel;
         
-        private Gtk.ScrolledWindow disassemblerScrolledWindow;
+        private Gtk.VBox vboxInspect;
         
-        private Gtk.Label disassemblerLabel;
+        private Gtk.HBox hbox2;
         
-        private Gtk.ScrolledWindow decompilerScrolledWindow;
+        private Gtk.Label label1;
         
-        private Gtk.Label decompilerLabel;
+        private Gtk.ComboBox languageCombobox;
+        
+        private Gtk.ScrolledWindow GtkScrolledWindow1;
+        
+        private Gtk.Label inspectLabel;
         
         private Gtk.VBox searchWidget;
         
@@ -103,7 +107,7 @@ namespace MonoDevelop.AssemblyBrowser {
             this.notebook1 = new Gtk.Notebook();
             this.notebook1.CanFocus = true;
             this.notebook1.Name = "notebook1";
-            this.notebook1.CurrentPage = 2;
+            this.notebook1.CurrentPage = 1;
             // Container child notebook1.Gtk.Notebook+NotebookChild
             this.documentationScrolledWindow = new Gtk.ScrolledWindow();
             this.documentationScrolledWindow.Name = "documentationScrolledWindow";
@@ -125,49 +129,58 @@ namespace MonoDevelop.AssemblyBrowser {
             this.documentationScrolledWindow.Add(w7);
             this.notebook1.Add(this.documentationScrolledWindow);
             // Container child notebook1.Gtk.Notebook+NotebookChild
-            this.disassemblerScrolledWindow = new Gtk.ScrolledWindow();
-            this.disassemblerScrolledWindow.Name = "disassemblerScrolledWindow";
-            this.disassemblerScrolledWindow.ShadowType = ((Gtk.ShadowType)(1));
-            // Container child disassemblerScrolledWindow.Gtk.Container+ContainerChild
-            Gtk.Viewport w11 = new Gtk.Viewport();
-            w11.ShadowType = ((Gtk.ShadowType)(0));
+            this.vboxInspect = new Gtk.VBox();
+            this.vboxInspect.Name = "vboxInspect";
+            this.vboxInspect.Spacing = 6;
+            // Container child vboxInspect.Gtk.Box+BoxChild
+            this.hbox2 = new Gtk.HBox();
+            this.hbox2.Name = "hbox2";
+            this.hbox2.Spacing = 6;
+            // Container child hbox2.Gtk.Box+BoxChild
+            this.label1 = new Gtk.Label();
+            this.label1.Name = "label1";
+            this.label1.LabelProp = Mono.Unix.Catalog.GetString("Language:");
+            this.hbox2.Add(this.label1);
+            Gtk.Box.BoxChild w11 = ((Gtk.Box.BoxChild)(this.hbox2[this.label1]));
+            w11.Position = 0;
+            w11.Expand = false;
+            w11.Fill = false;
+            // Container child hbox2.Gtk.Box+BoxChild
+            this.languageCombobox = Gtk.ComboBox.NewText();
+            this.languageCombobox.Name = "languageCombobox";
+            this.hbox2.Add(this.languageCombobox);
+            Gtk.Box.BoxChild w12 = ((Gtk.Box.BoxChild)(this.hbox2[this.languageCombobox]));
+            w12.Position = 1;
+            this.vboxInspect.Add(this.hbox2);
+            Gtk.Box.BoxChild w13 = ((Gtk.Box.BoxChild)(this.vboxInspect[this.hbox2]));
+            w13.Position = 0;
+            w13.Expand = false;
+            w13.Fill = false;
+            // Container child vboxInspect.Gtk.Box+BoxChild
+            this.GtkScrolledWindow1 = new Gtk.ScrolledWindow();
+            this.GtkScrolledWindow1.Name = "GtkScrolledWindow1";
+            this.GtkScrolledWindow1.ShadowType = ((Gtk.ShadowType)(1));
+            // Container child GtkScrolledWindow1.Gtk.Container+ContainerChild
+            Gtk.Viewport w14 = new Gtk.Viewport();
+            w14.ShadowType = ((Gtk.ShadowType)(0));
             // Container child GtkViewport3.Gtk.Container+ContainerChild
-            this.disassemblerLabel = new Gtk.Label();
-            this.disassemblerLabel.Name = "disassemblerLabel";
-            this.disassemblerLabel.Xpad = 6;
-            this.disassemblerLabel.Ypad = 6;
-            this.disassemblerLabel.Xalign = 0F;
-            this.disassemblerLabel.Yalign = 0F;
-            this.disassemblerLabel.LabelProp = "";
-            this.disassemblerLabel.UseMarkup = true;
-            this.disassemblerLabel.Selectable = true;
-            w11.Add(this.disassemblerLabel);
-            this.disassemblerScrolledWindow.Add(w11);
-            this.notebook1.Add(this.disassemblerScrolledWindow);
-            Gtk.Notebook.NotebookChild w14 = ((Gtk.Notebook.NotebookChild)(this.notebook1[this.disassemblerScrolledWindow]));
-            w14.Position = 1;
-            // Container child notebook1.Gtk.Notebook+NotebookChild
-            this.decompilerScrolledWindow = new Gtk.ScrolledWindow();
-            this.decompilerScrolledWindow.Name = "decompilerScrolledWindow";
-            this.decompilerScrolledWindow.ShadowType = ((Gtk.ShadowType)(1));
-            // Container child decompilerScrolledWindow.Gtk.Container+ContainerChild
-            Gtk.Viewport w15 = new Gtk.Viewport();
-            w15.ShadowType = ((Gtk.ShadowType)(0));
-            // Container child GtkViewport4.Gtk.Container+ContainerChild
-            this.decompilerLabel = new Gtk.Label();
-            this.decompilerLabel.Name = "decompilerLabel";
-            this.decompilerLabel.Xpad = 6;
-            this.decompilerLabel.Ypad = 6;
-            this.decompilerLabel.Xalign = 0F;
-            this.decompilerLabel.Yalign = 0F;
-            this.decompilerLabel.LabelProp = "";
-            this.decompilerLabel.UseMarkup = true;
-            this.decompilerLabel.Selectable = true;
-            w15.Add(this.decompilerLabel);
-            this.decompilerScrolledWindow.Add(w15);
-            this.notebook1.Add(this.decompilerScrolledWindow);
-            Gtk.Notebook.NotebookChild w18 = ((Gtk.Notebook.NotebookChild)(this.notebook1[this.decompilerScrolledWindow]));
-            w18.Position = 2;
+            this.inspectLabel = new Gtk.Label();
+            this.inspectLabel.Name = "inspectLabel";
+            this.inspectLabel.Xpad = 6;
+            this.inspectLabel.Ypad = 6;
+            this.inspectLabel.Xalign = 0F;
+            this.inspectLabel.Yalign = 0F;
+            this.inspectLabel.LabelProp = "";
+            this.inspectLabel.UseMarkup = true;
+            this.inspectLabel.Selectable = true;
+            w14.Add(this.inspectLabel);
+            this.GtkScrolledWindow1.Add(w14);
+            this.vboxInspect.Add(this.GtkScrolledWindow1);
+            Gtk.Box.BoxChild w17 = ((Gtk.Box.BoxChild)(this.vboxInspect[this.GtkScrolledWindow1]));
+            w17.Position = 1;
+            this.notebook1.Add(this.vboxInspect);
+            Gtk.Notebook.NotebookChild w18 = ((Gtk.Notebook.NotebookChild)(this.notebook1[this.vboxInspect]));
+            w18.Position = 1;
             // Container child notebook1.Gtk.Notebook+NotebookChild
             this.searchWidget = new Gtk.VBox();
             this.searchWidget.Name = "searchWidget";
@@ -234,7 +247,7 @@ namespace MonoDevelop.AssemblyBrowser {
             w25.Position = 1;
             this.notebook1.Add(this.searchWidget);
             Gtk.Notebook.NotebookChild w26 = ((Gtk.Notebook.NotebookChild)(this.notebook1[this.searchWidget]));
-            w26.Position = 3;
+            w26.Position = 2;
             this.hpaned1.Add(this.notebook1);
             this.Add(this.hpaned1);
             if ((this.Child != null)) {

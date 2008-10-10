@@ -63,7 +63,10 @@ namespace MonoDevelop.AssemblyBrowser
 		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)
 		{
 			Namespace ns = (Namespace)dataObject;
+			bool publicOnly = ctx.Options ["PublicApiOnly"];
 			foreach (IType type in ns.Types) {
+				if (publicOnly && !type.IsPublic)
+					continue;
 				ctx.AddChild (type);
 			}
 		}
@@ -105,6 +108,10 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 			result.AppendLine ();
 			return result.ToString ();
+		}
+		string IAssemblyBrowserNodeBuilder.GetDecompiledCode (ITreeNavigator navigator)
+		{
+			return "";
 		}
 		#endregion
 	}

@@ -127,6 +127,10 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 			return result.ToString ();
 		}
+		string IAssemblyBrowserNodeBuilder.GetDecompiledCode (ITreeNavigator navigator)
+		{
+			return "";
+		}
 		#endregion
 	}
 }

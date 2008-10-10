@@ -65,7 +65,10 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			ModuleDefinition moduleDefinition = (ModuleDefinition)dataObject;
 			Dictionary<string, Namespace> namespaces = new Dictionary<string, Namespace> ();
+			bool publicOnly = ctx.Options ["PublicApiOnly"];
 			foreach (TypeDefinition type in moduleDefinition.Types) {
+				if (publicOnly && (type.Attributes & TypeAttributes.Public) != TypeAttributes.Public)
+					continue;
 				if (!namespaces.ContainsKey (type.Namespace))
 					namespaces [type.Namespace] = new Namespace (type.Namespace);
 				namespaces [type.Namespace].Types.Add (new DomCecilType (true, true, type));
@@ -112,6 +115,10 @@ namespace MonoDevelop.AssemblyBrowser
 			StringBuilder result = new StringBuilder ();
 			PrintModuleHeader (result, moduleDefinition);
 			return result.ToString ();
+		}
+		string IAssemblyBrowserNodeBuilder.GetDecompiledCode (ITreeNavigator navigator)
+		{
+			return "";
 		}
 		#endregion		
 	}

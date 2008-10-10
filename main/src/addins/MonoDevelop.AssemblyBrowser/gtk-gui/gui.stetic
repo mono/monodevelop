@@ -77,7 +77,7 @@
           <widget class="Gtk.Notebook" id="notebook1">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="CurrentPage">2</property>
+            <property name="CurrentPage">1</property>
             <child>
               <widget class="Gtk.ScrolledWindow" id="documentationScrolledWindow">
                 <property name="MemberName" />
@@ -105,61 +105,77 @@
               </widget>
             </child>
             <child>
-              <widget class="Gtk.ScrolledWindow" id="disassemblerScrolledWindow">
+              <widget class="Gtk.VBox" id="vboxInspect">
                 <property name="MemberName" />
-                <property name="ShadowType">In</property>
+                <property name="Spacing">6</property>
                 <child>
-                  <widget class="Gtk.Viewport" id="GtkViewport3">
+                  <widget class="Gtk.HBox" id="hbox2">
                     <property name="MemberName" />
-                    <property name="ShadowType">None</property>
+                    <property name="Spacing">6</property>
                     <child>
-                      <widget class="Gtk.Label" id="disassemblerLabel">
+                      <widget class="Gtk.Label" id="label1">
                         <property name="MemberName" />
-                        <property name="ShowScrollbars">True</property>
-                        <property name="Xpad">6</property>
-                        <property name="Ypad">6</property>
-                        <property name="Xalign">0</property>
-                        <property name="Yalign">0</property>
-                        <property name="LabelProp" translatable="yes" />
-                        <property name="UseMarkup">True</property>
-                        <property name="MnemonicWidget">titleTextBox</property>
-                        <property name="Selectable">True</property>
+                        <property name="LabelProp" translatable="yes">Language:</property>
+                      </widget>
+                      <packing>
+                        <property name="Position">0</property>
+                        <property name="AutoSize">True</property>
+                        <property name="Expand">False</property>
+                        <property name="Fill">False</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="Gtk.ComboBox" id="languageCombobox">
+                        <property name="MemberName" />
+                        <property name="IsTextCombo">True</property>
+                        <property name="Items" translatable="yes" />
+                      </widget>
+                      <packing>
+                        <property name="Position">1</property>
+                        <property name="AutoSize">False</property>
+                      </packing>
+                    </child>
+                  </widget>
+                  <packing>
+                    <property name="Position">0</property>
+                    <property name="AutoSize">True</property>
+                    <property name="Expand">False</property>
+                    <property name="Fill">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="Gtk.ScrolledWindow" id="GtkScrolledWindow1">
+                    <property name="MemberName" />
+                    <property name="ShadowType">In</property>
+                    <child>
+                      <widget class="Gtk.Viewport" id="GtkViewport3">
+                        <property name="MemberName" />
+                        <property name="ShadowType">None</property>
+                        <child>
+                          <widget class="Gtk.Label" id="inspectLabel">
+                            <property name="MemberName" />
+                            <property name="ShowScrollbars">True</property>
+                            <property name="Xpad">6</property>
+                            <property name="Ypad">6</property>
+                            <property name="Xalign">0</property>
+                            <property name="Yalign">0</property>
+                            <property name="LabelProp" translatable="yes" />
+                            <property name="UseMarkup">True</property>
+                            <property name="MnemonicWidget">titleTextBox</property>
+                            <property name="Selectable">True</property>
+                          </widget>
+                        </child>
                       </widget>
                     </child>
                   </widget>
+                  <packing>
+                    <property name="Position">1</property>
+                    <property name="AutoSize">True</property>
+                  </packing>
                 </child>
               </widget>
               <packing>
                 <property name="Position">1</property>
-              </packing>
-            </child>
-            <child>
-              <widget class="Gtk.ScrolledWindow" id="decompilerScrolledWindow">
-                <property name="MemberName" />
-                <property name="ShadowType">In</property>
-                <child>
-                  <widget class="Gtk.Viewport" id="GtkViewport4">
-                    <property name="MemberName" />
-                    <property name="ShadowType">None</property>
-                    <child>
-                      <widget class="Gtk.Label" id="decompilerLabel">
-                        <property name="MemberName" />
-                        <property name="ShowScrollbars">True</property>
-                        <property name="Xpad">6</property>
-                        <property name="Ypad">6</property>
-                        <property name="Xalign">0</property>
-                        <property name="Yalign">0</property>
-                        <property name="LabelProp" translatable="yes" />
-                        <property name="UseMarkup">True</property>
-                        <property name="MnemonicWidget">titleTextBox</property>
-                        <property name="Selectable">True</property>
-                      </widget>
-                    </child>
-                  </widget>
-                </child>
-              </widget>
-              <packing>
-                <property name="Position">2</property>
               </packing>
             </child>
             <child>
@@ -252,7 +268,7 @@
                 </child>
               </widget>
               <packing>
-                <property name="Position">3</property>
+                <property name="Position">2</property>
               </packing>
             </child>
           </widget>

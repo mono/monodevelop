@@ -74,11 +74,17 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			IType type = (IType)dataObject;
 			ctx.AddChild (new BaseTypeFolder (type));
+			bool publicOnly = ctx.Options ["PublicApiOnly"];
+			System.Console.WriteLine("Build Child nodes:  " + publicOnly);
 			foreach (object o in type.Members) {
-				if (o is IMember && ((IMember)o).IsSpecialName) {
-					continue;
+				IMember member = o as IMember;
+				if (member != null) {
+					if (member.IsSpecialName) 
+						continue;
+					if (publicOnly && !member.IsPublic)
+						continue;
+					ctx.AddChild (member);
 				}
-				ctx.AddChild (o);
 			}
 		}
 		
@@ -207,6 +213,10 @@ namespace MonoDevelop.AssemblyBrowser
 				result.AppendLine ();
 			}
 			return result.ToString ();
+		}
+		string IAssemblyBrowserNodeBuilder.GetDecompiledCode (ITreeNavigator navigator)
+		{
+			return "";
 		}
 		#endregion
 		

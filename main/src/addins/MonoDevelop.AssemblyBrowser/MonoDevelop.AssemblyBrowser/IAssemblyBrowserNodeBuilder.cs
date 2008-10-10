@@ -36,5 +36,6 @@ namespace MonoDevelop.AssemblyBrowser
 	{
 		string GetDescription (ITreeNavigator navigator);
 		string GetDisassembly (ITreeNavigator navigator);
+		string GetDecompiledCode (ITreeNavigator navigator);
 	}
 }

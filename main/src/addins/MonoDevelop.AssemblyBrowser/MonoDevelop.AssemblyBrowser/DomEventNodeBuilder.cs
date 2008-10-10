@@ -106,6 +106,13 @@ namespace MonoDevelop.AssemblyBrowser
 			result.Append (AmbienceService.GetAmbience ("text/x-csharp").GetString (evt, OutputFlags.AssemblyBrowserDescription));
 			return result.ToString ();
 		}
+		string IAssemblyBrowserNodeBuilder.GetDecompiledCode (ITreeNavigator navigator)
+		{
+			IEvent evt = (IEvent)navigator.DataItem;
+			StringBuilder result = new StringBuilder ();
+			result.Append (AmbienceService.GetAmbience ("text/x-csharp").GetString (evt, OutputFlags.AssemblyBrowserDescription));
+			return result.ToString ();
+		}
 		#endregion
 		
 	}
