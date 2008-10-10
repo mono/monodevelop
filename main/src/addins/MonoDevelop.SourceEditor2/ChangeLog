@@ -1,3 +1,8 @@
+2008-10-10  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: fixed 'Bug 434165 - Page
+	UP/Down Key on top/bottom of a code folded make the region Unfolded'.
+
 2008-10-09  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: fixed 'Bug 433271 -

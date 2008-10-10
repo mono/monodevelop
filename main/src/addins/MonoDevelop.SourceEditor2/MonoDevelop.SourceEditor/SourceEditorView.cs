@@ -1125,6 +1125,7 @@ namespace MonoDevelop.SourceEditor
 			foreach (FoldSegment segment in segments) {
 				segment.IsFolded = doFold;
 			}
+			widget.TextEditor.Caret.MoveCaretBeforeFoldings ();
 			Document.RequestUpdate (new UpdateAll ());
 			Document.CommitDocumentUpdate ();
 		}
@@ -1139,6 +1140,7 @@ namespace MonoDevelop.SourceEditor
 			foreach (FoldSegment segment in Document.FoldSegments) {
 				segment.IsFolded = segment.FoldingType == FoldingType.TypeMember;
 			}
+			widget.TextEditor.Caret.MoveCaretBeforeFoldings ();
 			Document.RequestUpdate (new UpdateAll ());
 			Document.CommitDocumentUpdate ();
 		}
