@@ -1,3 +1,9 @@
+2008-10-10  Michael Hutchinson  <mhutchinson@novell.com>
+
+	
+
+
+
 2008-10-09  Christian Hergert  <chris@dronelabs.com>
 
 	* PyBinding/PyBinding.Gui/PythonEditorIndentation.cs: Only indent if
