@@ -1,5 +1,16 @@
 2008-10-10  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: Allow enabling the
+	vi mode without recompilation.
+
+	* Makefile.am:
+	* MonoDevelop.SourceEditor.mdp: Updated.
+
+	* MonoDevelop.SourceEditor/IdeViMode.cs: Add support for simple vi
+	commands.
+
+2008-10-10  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: Restore
 	functionality to pop up context menu at caret if activated by key
 	press.

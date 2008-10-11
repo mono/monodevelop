@@ -108,13 +108,9 @@ namespace MonoDevelop.SourceEditor
 				}
 			};
 			
-			bool vi = false;
+			bool vi = MonoDevelop.Core.PropertyService.Get<bool> ("SourceEditor2.ViMode", false);
 			if (vi) {
-				ViMode viMode = new ViMode ();
-				viMode.StatusChanged += delegate (object sender, EventArgs args) {
-					IdeApp.Workbench.StatusBar.ShowMessage (((ViMode)sender).Status);
-				};
-				CurrentMode = viMode;
+				CurrentMode = new IdeViMode (this);
 			} else {
 				SimpleEditMode simpleMode = new SimpleEditMode ();
 				simpleMode.KeyBindings [EditMode.GetKeyCode (Gdk.Key.Tab)] = new TabAction (this).Action;
@@ -135,7 +131,6 @@ namespace MonoDevelop.SourceEditor
 			AddinManager.RemoveExtensionNodeHandler  ("MonoDevelop/SourceEditor2/TooltipProviders", OnTooltipProviderChanged);
 			base.OnDestroyed ();
 		}
-
 		
 		void OnTooltipProviderChanged (object s, ExtensionNodeEventArgs a)
 		{

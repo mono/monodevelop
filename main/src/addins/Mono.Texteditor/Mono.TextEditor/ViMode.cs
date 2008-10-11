@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Text;
 using System.Collections.Generic;
 
 namespace Mono.TextEditor
@@ -37,6 +38,7 @@ namespace Mono.TextEditor
 	{
 		State state;
 		string status;
+		StringBuilder commandBuffer = new StringBuilder ();
 		
 		Dictionary<int, Action<TextEditorData>> navMaps = new Dictionary<int, Action<TextEditorData>> ();
 		Dictionary<int, Action<TextEditorData>> insertModeMaps = new Dictionary<int, Action<TextEditorData>> ();
@@ -193,6 +195,11 @@ namespace Mono.TextEditor
 				StatusChanged (this, EventArgs.Empty);
 		}
 		
+		protected virtual string RunCommand (string command)
+		{
+			return "Command not recognised";
+		}
+		
 		public event EventHandler StatusChanged;
 		
 		public override bool WantsToPreemptIM {
@@ -203,11 +210,12 @@ namespace Mono.TextEditor
 		
 		protected override void HandleKeypress (Gdk.Key key, uint unicodeKey, Gdk.ModifierType modifier)
 		{
-			if (key == Gdk.Key.Escape) {
+			if (key == Gdk.Key.Escape || (key == Gdk.Key.c && (modifier & Gdk.ModifierType.ControlMask) != null)) {
 				Data.ClearSelection ();
 				if (!Caret.IsInInsertMode)
 					Caret.IsInInsertMode = true;
 				state = State.Normal;
+				commandBuffer.Length = 0;
 				Status = string.Empty;
 				return;
 			}
@@ -220,7 +228,8 @@ namespace Mono.TextEditor
 				switch (key) {
 				case Gdk.Key.colon:
 					state = State.Command;
-					Status = ":";
+					commandBuffer.Append (":");
+					Status = commandBuffer.ToString ();
 					return;
 					
 				case Gdk.Key.i:
@@ -265,6 +274,17 @@ namespace Mono.TextEditor
 				keyCode = GetKeyCode (key, modifier);
 				if (navMaps.TryGetValue (keyCode, out action)) {
 					SelectionActions.Select (Data, action);
+				}
+				return;
+				
+			case State.Command:
+				if (key == Gdk.Key.Return || key == Gdk.Key.KP_Enter) {
+					Status = RunCommand (commandBuffer.ToString ());
+					commandBuffer.Length = 0;
+					state = State.Normal;
+				} else if (unicodeKey != 0) {
+					commandBuffer.Append ((char)unicodeKey);
+					Status = commandBuffer.ToString ();
 				}
 				return;
 			}
