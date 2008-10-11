@@ -1,3 +1,13 @@
+2008-10-11  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextEditor/ViMode.cs: Refactor the dictionaries into switches to
+	reduce overhead (also more readable for character commands). Split
+	cursor and character navigation keys so that cursor keys can work in
+	insert mode.
+
+	* Mono.TextEditor/SelectionActions.cs: Add method for converting a
+	movement action to a selection action.
+
 2008-10-10  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.TextEditor/ViMode.cs: Add support for simple vi commands.

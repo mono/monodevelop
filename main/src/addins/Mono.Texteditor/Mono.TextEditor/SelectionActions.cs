@@ -40,6 +40,15 @@ namespace Mono.TextEditor
 	
 	public class SelectionActions
 	{
+		public static Action<TextEditorData> FromMoveAction (Action<TextEditorData> moveAction)
+		{
+			return delegate (TextEditorData data) {
+				StartSelection (data);
+				moveAction (data);
+				EndSelection (data);
+			};
+		}
+		
 		public static void StartSelection (TextEditorData data)
 		{
 			data.Caret.PreserveSelection = true;

@@ -40,145 +40,176 @@ namespace Mono.TextEditor
 		string status;
 		StringBuilder commandBuffer = new StringBuilder ();
 		
-		Dictionary<int, Action<TextEditorData>> navMaps = new Dictionary<int, Action<TextEditorData>> ();
-		Dictionary<int, Action<TextEditorData>> insertModeMaps = new Dictionary<int, Action<TextEditorData>> ();
-		Dictionary<int, Action<TextEditorData>> commandMaps = new Dictionary<int, Action<TextEditorData>> ();
-		
 		public ViMode ()
 		{
-			InitNavMaps ();
-			InitInsertMaps ();
-			InitCommandMaps ();
 		}
 		
-		void InitNavMaps ()
+		Action<TextEditorData> GetNavCharAction (char c)
 		{
-			Action<TextEditorData> action;
-			
-			// ==== Left ====
-			
-			action = CaretMoveActions.Left;
-			navMaps.Add (GetKeyCode (Gdk.Key.KP_Left), action);
-			navMaps.Add (GetKeyCode (Gdk.Key.Left), action);
-			navMaps.Add (GetKeyCode (Gdk.Key.h), action);
-			
-			action = CaretMoveActions.PreviousWord;
-			navMaps.Add (GetKeyCode (Gdk.Key.KP_Left, Gdk.ModifierType.ControlMask), action);
-			navMaps.Add (GetKeyCode (Gdk.Key.Left, Gdk.ModifierType.ControlMask), action);
-			navMaps.Add (GetKeyCode (Gdk.Key.b), action);
-			
-			// ==== Right ====
-			
-			action = CaretMoveActions.Right;
-			navMaps.Add (GetKeyCode (Gdk.Key.KP_Right), action);
-			navMaps.Add (GetKeyCode (Gdk.Key.Right), action);
-			navMaps.Add (GetKeyCode (Gdk.Key.l), action);
-			
-			action = CaretMoveActions.NextWord;
-			navMaps.Add (GetKeyCode (Gdk.Key.KP_Right, Gdk.ModifierType.ControlMask), action);
-			navMaps.Add (GetKeyCode (Gdk.Key.Right, Gdk.ModifierType.ControlMask), action);
-			navMaps.Add (GetKeyCode (Gdk.Key.w), action);
-			
-			// ==== Up ====
-			
-			action = CaretMoveActions.Up;
-			navMaps.Add (GetKeyCode (Gdk.Key.KP_Up), action);
-			navMaps.Add (GetKeyCode (Gdk.Key.Up), action);
-			navMaps.Add (GetKeyCode (Gdk.Key.k), action);
-			
-			action = ScrollActions.Up;
-			navMaps.Add (GetKeyCode (Gdk.Key.KP_Up, Gdk.ModifierType.ControlMask), action);
-			navMaps.Add (GetKeyCode (Gdk.Key.Up, Gdk.ModifierType.ControlMask), action);
-
-			// combination usually bound at IDE level
-			action = CaretMoveActions.PageUp;
-			navMaps.Add (GetKeyCode (Gdk.Key.u, Gdk.ModifierType.ControlMask), action);
-			
-			// ==== Down ====
-			
-			action = CaretMoveActions.Down;
-			navMaps.Add (GetKeyCode (Gdk.Key.KP_Down), action);
-			navMaps.Add (GetKeyCode (Gdk.Key.Down), action);
-			navMaps.Add (GetKeyCode (Gdk.Key.j), action);
-			
-			action = ScrollActions.Down;
-			navMaps.Add (GetKeyCode (Gdk.Key.KP_Down, Gdk.ModifierType.ControlMask), action);
-			navMaps.Add (GetKeyCode (Gdk.Key.Down, Gdk.ModifierType.ControlMask), action);
-
-			// combination usually bound at IDE level
-			action = CaretMoveActions.PageDown;
-			navMaps.Add (GetKeyCode (Gdk.Key.d, Gdk.ModifierType.ControlMask), action);
-
-			// ==== Editing ====
-
-			action = MiscActions.GotoMatchingBracket;
-			navMaps.Add (GetKeyCode (Gdk.Key.percent, Gdk.ModifierType.ShiftMask), action);
-			
-			// === Home ===
-			
-			//not strictly vi, but more useful IMO
-			action = CaretMoveActions.LineHome;
-			navMaps.Add (GetKeyCode (Gdk.Key.KP_Home), action);
-			navMaps.Add (GetKeyCode (Gdk.Key.Home), action);
-			
-			action = CaretMoveActions.ToDocumentStart;
-			navMaps.Add (GetKeyCode (Gdk.Key.KP_Home, Gdk.ModifierType.ControlMask), action);
-			navMaps.Add (GetKeyCode (Gdk.Key.Home, Gdk.ModifierType.ControlMask), action);
-			
-			action = CaretMoveActions.LineStart;
-			navMaps.Add (GetKeyCode (Gdk.Key.Key_0), action);
-			
-			action = CaretMoveActions.LineFirstNonWhitespace;
-			navMaps.Add (GetKeyCode (Gdk.Key.asciicircum, Gdk.ModifierType.ShiftMask), action);
-			navMaps.Add (GetKeyCode (Gdk.Key.underscore, Gdk.ModifierType.ShiftMask), action);
-			
-			// ==== End ====
-			
-			action = CaretMoveActions.LineEnd;
-			navMaps.Add (GetKeyCode (Gdk.Key.KP_End), action);
-			navMaps.Add (GetKeyCode (Gdk.Key.End), action);
-			navMaps.Add (GetKeyCode (Gdk.Key.dollar, Gdk.ModifierType.ShiftMask), action);
-			
-			action = CaretMoveActions.ToDocumentEnd;
-			navMaps.Add (GetKeyCode (Gdk.Key.KP_End, Gdk.ModifierType.ControlMask), action);
-			navMaps.Add (GetKeyCode (Gdk.Key.End, Gdk.ModifierType.ControlMask), action);
-			navMaps.Add (GetKeyCode (Gdk.Key.G, Gdk.ModifierType.ShiftMask), action);
+			switch (c) {
+			case 'h':
+				return CaretMoveActions.Left;
+			case 'b':
+				return CaretMoveActions.PreviousWord;
+			case 'l':
+				return CaretMoveActions.Right;
+			case 'w':
+				return CaretMoveActions.NextWord;
+			case 'k':
+				return CaretMoveActions.Up;
+			case 'j':
+				return CaretMoveActions.Down;
+			case '%':
+				return MiscActions.GotoMatchingBracket;
+			case '0':
+				return CaretMoveActions.LineStart;
+			case '^':
+			case '_':
+				return CaretMoveActions.LineFirstNonWhitespace;
+			case '$':
+				return CaretMoveActions.LineEnd;
+			case 'G':
+				return CaretMoveActions.ToDocumentEnd;
+			}
+			return null;
 		}
 		
-		void InitInsertMaps ()
+		Action<TextEditorData> GetDirectionKeyAction (Gdk.Key key, Gdk.ModifierType modifier)
 		{
-			Action<TextEditorData> action;
-			
-			// ==== Maps for insert mode ====
-			
-			insertModeMaps.Add (GetKeyCode (Gdk.Key.Tab), MiscActions.InsertTab);
-			insertModeMaps.Add (GetKeyCode (Gdk.Key.ISO_Left_Tab, Gdk.ModifierType.ShiftMask), MiscActions.RemoveTab);
-			
-			action = MiscActions.InsertNewLine;
-			insertModeMaps.Add (GetKeyCode (Gdk.Key.Return), action);
-			insertModeMaps.Add (GetKeyCode (Gdk.Key.KP_Enter), action);
-			
-			action = DeleteActions.Backspace;
-			insertModeMaps.Add (GetKeyCode (Gdk.Key.BackSpace), action);
-			insertModeMaps.Add (GetKeyCode (Gdk.Key.BackSpace, Gdk.ModifierType.ShiftMask), action);
-			
-			insertModeMaps.Add (GetKeyCode (Gdk.Key.BackSpace, Gdk.ModifierType.ControlMask), DeleteActions.PreviousWord);
-			
-			action = DeleteActions.Delete;
-			insertModeMaps.Add (GetKeyCode (Gdk.Key.KP_Delete), action);
-			insertModeMaps.Add (GetKeyCode (Gdk.Key.Delete), action);
-			
-			action = DeleteActions.NextWord;
-			insertModeMaps.Add (GetKeyCode (Gdk.Key.KP_Delete, Gdk.ModifierType.ControlMask), action);
-			insertModeMaps.Add (GetKeyCode (Gdk.Key.Delete, Gdk.ModifierType.ControlMask), action);
+			//
+			// NO MODIFIERS
+			//
+			if ((modifier & (Gdk.ModifierType.ShiftMask | Gdk.ModifierType.ControlMask)) == 0) {
+				switch (key) {
+				case Gdk.Key.Left:
+				case Gdk.Key.KP_Left:
+					return CaretMoveActions.Left;
+					
+				case Gdk.Key.Right:
+				case Gdk.Key.KP_Right:
+					return CaretMoveActions.Right;
+					
+				case Gdk.Key.Up:
+				case Gdk.Key.KP_Up:
+					return CaretMoveActions.Up;
+					
+				case Gdk.Key.Down:
+				case Gdk.Key.KP_Down:
+					return CaretMoveActions.Down;
+				
+				//not strictly vi, but more useful IMO
+				case Gdk.Key.KP_Home:
+				case Gdk.Key.Home:
+					return CaretMoveActions.LineHome;
+					
+				case Gdk.Key.KP_End:
+				case Gdk.Key.End:
+					return CaretMoveActions.LineEnd;
+				}
+			}
+			//
+			// === CONTROL ===
+			//
+			else if ((modifier & Gdk.ModifierType.ShiftMask) == 0
+			         && (modifier & Gdk.ModifierType.ControlMask) != 0)
+			{
+				switch (key) {
+				case Gdk.Key.Left:
+				case Gdk.Key.KP_Left:
+					return CaretMoveActions.PreviousWord;
+					
+				case Gdk.Key.Right:
+				case Gdk.Key.KP_Right:
+					return CaretMoveActions.NextWord;
+					
+				case Gdk.Key.Up:
+				case Gdk.Key.KP_Up:
+					return ScrollActions.Up;
+					
+				// usually bound at IDE level
+				case Gdk.Key.u:
+					return CaretMoveActions.PageUp;
+					
+				case Gdk.Key.Down:
+				case Gdk.Key.KP_Down:
+					return ScrollActions.Down;
+					
+				case Gdk.Key.d:
+					return CaretMoveActions.PageDown;
+				
+				case Gdk.Key.KP_Home:
+				case Gdk.Key.Home:
+					return CaretMoveActions.ToDocumentStart;
+					
+				case Gdk.Key.KP_End:
+				case Gdk.Key.End:
+					return CaretMoveActions.ToDocumentEnd;
+				}
+			}
+			return null;
 		}
 		
-		void InitCommandMaps ()
+		Action<TextEditorData> GetInsertKeyAction (Gdk.Key key, Gdk.ModifierType modifier)
 		{
-			Action<TextEditorData> action;
-			
-			action = MiscActions.Undo;
-			commandMaps.Add (GetKeyCode (Gdk.Key.u), action);
+			//
+			// NO MODIFIERS
+			//
+			if ((modifier & (Gdk.ModifierType.ShiftMask | Gdk.ModifierType.ControlMask)) == 0) {
+				switch (key) {
+				case Gdk.Key.Tab:
+					return MiscActions.InsertTab;
+					
+				case Gdk.Key.Return:
+				case Gdk.Key.KP_Enter:
+					return MiscActions.InsertNewLine;
+					
+				case Gdk.Key.BackSpace:
+					return DeleteActions.Backspace;
+					
+				case Gdk.Key.Delete:
+				case Gdk.Key.KP_Delete:
+					return DeleteActions.Delete;
+				}
+			}
+			//
+			// CONTROL
+			//
+			else if ((modifier & Gdk.ModifierType.ControlMask) != 0
+			         && (modifier & Gdk.ModifierType.ShiftMask) == 0)
+			{
+				switch (key) {
+				case Gdk.Key.BackSpace:
+					return DeleteActions.PreviousWord;
+					
+				case Gdk.Key.Delete:
+				case Gdk.Key.KP_Delete:
+					return DeleteActions.NextWord;
+				}
+			}
+			//
+			// SHIFT
+			//
+			else if ((modifier & Gdk.ModifierType.ControlMask) == 0
+			         && (modifier & Gdk.ModifierType.ShiftMask) != 0)
+			{
+				switch (key) {
+				case Gdk.Key.ISO_Left_Tab:
+					return MiscActions.RemoveTab;
+					
+				case Gdk.Key.BackSpace:
+					return DeleteActions.Backspace;
+				}
+			}
+			return null;
+		}
+		
+		Action<TextEditorData> GetCommandCharAction (char c)
+		{
+			switch (c) {
+			case 'u':
+				return MiscActions.Undo;
+			}
+			return null;
 		}
 		
 		public string Status {
@@ -208,12 +239,17 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		void ResetEditorState (TextEditorData data)
+		{
+			data.ClearSelection ();
+			if (!data.Caret.IsInInsertMode)
+				data.Caret.IsInInsertMode = true;
+		}
+		
 		protected override void HandleKeypress (Gdk.Key key, uint unicodeKey, Gdk.ModifierType modifier)
 		{
 			if (key == Gdk.Key.Escape || (key == Gdk.Key.c && (modifier & Gdk.ModifierType.ControlMask) != null)) {
-				Data.ClearSelection ();
-				if (!Caret.IsInInsertMode)
-					Caret.IsInInsertMode = true;
+				ResetEditorState (Data);
 				state = State.Normal;
 				commandBuffer.Length = 0;
 				Status = string.Empty;
@@ -250,31 +286,38 @@ namespace Mono.TextEditor
 					return;
 				}
 				
-				keyCode = GetKeyCode (key, modifier);
-				if (navMaps.TryGetValue (keyCode, out action))
-					RunAction (action);
-				else if (commandMaps.TryGetValue (keyCode, out action))
+				action = GetNavCharAction ((char)unicodeKey);
+				if (action == null)
+					action = GetDirectionKeyAction (key, modifier);
+				if (action == null)
+					action = GetCommandCharAction ((char)unicodeKey);
+				
+				if (action != null)
 					RunAction (action);
 				
 				return;
 				
 			case State.Insert:
 			case State.Replace:
-				keyCode = GetKeyCode (key, modifier);
-				if (insertModeMaps.TryGetValue (keyCode, out action))
-				    RunAction (action);
+				action = GetInsertKeyAction (key, modifier);
+				if (action == null)
+					action = GetDirectionKeyAction (key, modifier);
+				
+				if (action != null)
+					RunAction (action);
 				else if (unicodeKey != 0)
 					InsertCharacter (unicodeKey);
-				else if (navMaps.TryGetValue (keyCode, out action)) {
-					RunAction (action);
-				}
+				
 				return;
 				
 			case State.Visual:
-				keyCode = GetKeyCode (key, modifier);
-				if (navMaps.TryGetValue (keyCode, out action)) {
-					SelectionActions.Select (Data, action);
-				}
+				action = GetNavCharAction ((char)unicodeKey);
+				if (action == null)
+					action = GetDirectionKeyAction (key, modifier);
+				
+				if (action != null)
+					RunAction (SelectionActions.FromMoveAction (action));
+				
 				return;
 				
 			case State.Command:
