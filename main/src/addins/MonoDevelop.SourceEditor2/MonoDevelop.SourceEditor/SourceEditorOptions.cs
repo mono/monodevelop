@@ -127,10 +127,11 @@ namespace MonoDevelop.SourceEditor
 			base.ShowRuler                = PropertyService.Get ("ShowRuler", false);
 			base.FontName                 = PropertyService.Get ("FontName", "Mono 10");
 			base.ColorScheme               =  PropertyService.Get ("ColorScheme", "Default");
-			this.DefaultRegionsFolding      =  PropertyService.Get ("DefaultRegionsFolding", false);
-			this.DefaultCommentFolding      =  PropertyService.Get ("DefaultCommentFolding", true);
+			this.defaultRegionsFolding      =  PropertyService.Get ("DefaultRegionsFolding", false);
+			this.defaultCommentFolding      =  PropertyService.Get ("DefaultCommentFolding", true);
 			base.RemoveTrailingWhitespaces = PropertyService.Get ("RemoveTrailingWhitespaces", true);
 			base.AllowTabsAfterNonTabs = PropertyService.Get ("AllowTabsAfterNonTabs", true);
+			this.useViModes = PropertyService.Get ("UseViModes", false);
 			
 			this.ControlLeftRightMode =  (ControlLeftRightMode)Enum.Parse (typeof (ControlLeftRightMode), PropertyService.Get ("ControlLeftRightMode", IdeApp.Services.PlatformService.DefaultControlLeftRightBehavior));
 		}
@@ -304,6 +305,19 @@ namespace MonoDevelop.SourceEditor
 					PropertyService.Set ("ControlLeftRightMode", value.ToString ());
 					SetWordFindStrategy ();
 				}
+			}
+		}
+		
+		bool useViModes = false;
+		public bool UseViModes {
+			get {
+				return useViModes;
+			}
+			set {
+				if (useViModes == value)
+					return;
+				useViModes = value;
+				PropertyService.Set ("UseViModes", value);
 			}
 		}
 		

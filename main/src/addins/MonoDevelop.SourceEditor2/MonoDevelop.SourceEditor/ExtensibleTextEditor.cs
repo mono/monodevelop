@@ -50,6 +50,7 @@ namespace MonoDevelop.SourceEditor
 		ITextEditorExtension extension = null;
 		SourceEditorView view;
 		Dictionary<int, Error> errors;
+		bool useViModes;
 		
 		Gdk.Point menuPopupLocation;
 		
@@ -108,19 +109,26 @@ namespace MonoDevelop.SourceEditor
 				}
 			};
 			
-			bool vi = MonoDevelop.Core.PropertyService.Get<bool> ("SourceEditor2.ViMode", false);
-			if (vi) {
-				CurrentMode = new IdeViMode (this);
-			} else {
-				SimpleEditMode simpleMode = new SimpleEditMode ();
-				simpleMode.KeyBindings [EditMode.GetKeyCode (Gdk.Key.Tab)] = new TabAction (this).Action;
-				simpleMode.KeyBindings [EditMode.GetKeyCode (Gdk.Key.BackSpace)] = EditActions.AdvancedBackspace;
-				CurrentMode = simpleMode;
-			}
+			SetCurrentMode (SourceEditorOptions.Options.UseViModes);
 			
 			this.ButtonPressEvent += OnPopupMenu;
 
 			AddinManager.AddExtensionNodeHandler ("MonoDevelop/SourceEditor2/TooltipProviders", OnTooltipProviderChanged);
+		}
+		
+		void SetCurrentMode (bool useViModes)
+		{
+			if (useViModes) {
+				if (!(CurrentMode is IdeViMode))
+					CurrentMode = new IdeViMode (this);
+			} else {
+				if (!(CurrentMode is SimpleEditMode)){
+					SimpleEditMode simpleMode = new SimpleEditMode ();
+					simpleMode.KeyBindings [EditMode.GetKeyCode (Gdk.Key.Tab)] = new TabAction (this).Action;
+					simpleMode.KeyBindings [EditMode.GetKeyCode (Gdk.Key.BackSpace)] = EditActions.AdvancedBackspace;
+					CurrentMode = simpleMode;
+				}
+			}
 		}
 
 		protected override void OnDestroyed ()
@@ -169,6 +177,7 @@ namespace MonoDevelop.SourceEditor
 				if (!SourceEditorOptions.Options.ShowFoldMargin)
 					this.Document.ClearFoldSegments ();
 			}
+			SetCurrentMode (SourceEditorOptions.Options.UseViModes);
 			base.OptionsChanged (sender, args);
 		}
 		

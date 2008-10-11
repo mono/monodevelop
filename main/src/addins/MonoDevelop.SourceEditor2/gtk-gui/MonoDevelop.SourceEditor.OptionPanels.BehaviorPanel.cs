@@ -51,6 +51,14 @@ namespace MonoDevelop.SourceEditor.OptionPanels {
         
         private Gtk.CheckButton tabsAfterNonTabsCheckbutton;
         
+        private Gtk.Label GtkLabel8;
+        
+        private Gtk.Alignment alignment4;
+        
+        private Gtk.VBox vbox5;
+        
+        private Gtk.CheckButton useViModesCheck;
+        
         private Gtk.HBox hbox3;
         
         private Gtk.Label label2;
@@ -247,32 +255,69 @@ namespace MonoDevelop.SourceEditor.OptionPanels {
             w18.Expand = false;
             w18.Fill = false;
             // Container child vbox1.Gtk.Box+BoxChild
+            this.GtkLabel8 = new Gtk.Label();
+            this.GtkLabel8.Name = "GtkLabel8";
+            this.GtkLabel8.Xalign = 0F;
+            this.GtkLabel8.LabelProp = Mono.Unix.Catalog.GetString("<b>Navigation</b>");
+            this.GtkLabel8.UseMarkup = true;
+            this.vbox1.Add(this.GtkLabel8);
+            Gtk.Box.BoxChild w19 = ((Gtk.Box.BoxChild)(this.vbox1[this.GtkLabel8]));
+            w19.Position = 4;
+            w19.Expand = false;
+            w19.Fill = false;
+            // Container child vbox1.Gtk.Box+BoxChild
+            this.alignment4 = new Gtk.Alignment(0.5F, 0.5F, 1F, 1F);
+            this.alignment4.Name = "alignment4";
+            this.alignment4.LeftPadding = ((uint)(12));
+            // Container child alignment4.Gtk.Container+ContainerChild
+            this.vbox5 = new Gtk.VBox();
+            this.vbox5.Name = "vbox5";
+            this.vbox5.Spacing = 6;
+            // Container child vbox5.Gtk.Box+BoxChild
+            this.useViModesCheck = new Gtk.CheckButton();
+            this.useViModesCheck.CanFocus = true;
+            this.useViModesCheck.Name = "useViModesCheck";
+            this.useViModesCheck.Label = Mono.Unix.Catalog.GetString("Use _Vi modes");
+            this.useViModesCheck.DrawIndicator = true;
+            this.useViModesCheck.UseUnderline = true;
+            this.vbox5.Add(this.useViModesCheck);
+            Gtk.Box.BoxChild w20 = ((Gtk.Box.BoxChild)(this.vbox5[this.useViModesCheck]));
+            w20.Position = 0;
+            w20.Expand = false;
+            w20.Fill = false;
+            // Container child vbox5.Gtk.Box+BoxChild
             this.hbox3 = new Gtk.HBox();
             this.hbox3.Name = "hbox3";
             this.hbox3.Spacing = 6;
             // Container child hbox3.Gtk.Box+BoxChild
             this.label2 = new Gtk.Label();
             this.label2.Name = "label2";
-            this.label2.LabelProp = Mono.Unix.Catalog.GetString("_Control left/right mode");
+            this.label2.LabelProp = Mono.Unix.Catalog.GetString("Word _break mode:");
             this.label2.UseUnderline = true;
             this.hbox3.Add(this.label2);
-            Gtk.Box.BoxChild w19 = ((Gtk.Box.BoxChild)(this.hbox3[this.label2]));
-            w19.Position = 0;
-            w19.Expand = false;
-            w19.Fill = false;
+            Gtk.Box.BoxChild w21 = ((Gtk.Box.BoxChild)(this.hbox3[this.label2]));
+            w21.Position = 0;
+            w21.Expand = false;
+            w21.Fill = false;
             // Container child hbox3.Gtk.Box+BoxChild
             this.controlLeftRightCombobox = Gtk.ComboBox.NewText();
             this.controlLeftRightCombobox.Name = "controlLeftRightCombobox";
             this.hbox3.Add(this.controlLeftRightCombobox);
-            Gtk.Box.BoxChild w20 = ((Gtk.Box.BoxChild)(this.hbox3[this.controlLeftRightCombobox]));
-            w20.Position = 1;
-            w20.Expand = false;
-            w20.Fill = false;
-            this.vbox1.Add(this.hbox3);
-            Gtk.Box.BoxChild w21 = ((Gtk.Box.BoxChild)(this.vbox1[this.hbox3]));
-            w21.Position = 4;
-            w21.Expand = false;
-            w21.Fill = false;
+            Gtk.Box.BoxChild w22 = ((Gtk.Box.BoxChild)(this.hbox3[this.controlLeftRightCombobox]));
+            w22.Position = 1;
+            w22.Expand = false;
+            w22.Fill = false;
+            this.vbox5.Add(this.hbox3);
+            Gtk.Box.BoxChild w23 = ((Gtk.Box.BoxChild)(this.vbox5[this.hbox3]));
+            w23.Position = 1;
+            w23.Expand = false;
+            w23.Fill = false;
+            this.alignment4.Add(this.vbox5);
+            this.vbox1.Add(this.alignment4);
+            Gtk.Box.BoxChild w25 = ((Gtk.Box.BoxChild)(this.vbox1[this.alignment4]));
+            w25.Position = 5;
+            w25.Expand = false;
+            w25.Fill = false;
             this.Add(this.vbox1);
             if ((this.Child != null)) {
                 this.Child.ShowAll();

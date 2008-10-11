@@ -55,6 +55,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.removeTrailingWhitespacesCheckbutton.Active  = SourceEditorOptions.Options.RemoveTrailingWhitespaces;
 			this.tabsAfterNonTabsCheckbutton.Active  = SourceEditorOptions.Options.AllowTabsAfterNonTabs;
 			this.controlLeftRightCombobox.Active  = (int)SourceEditorOptions.Options.ControlLeftRightMode;
+			this.useViModesCheck.Active = SourceEditorOptions.Options.UseViModes;
 			return this;
 		}
 		
@@ -69,6 +70,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			SourceEditorOptions.Options.RemoveTrailingWhitespaces = this.removeTrailingWhitespacesCheckbutton.Active;
 			SourceEditorOptions.Options.AllowTabsAfterNonTabs = this.tabsAfterNonTabsCheckbutton.Active;
 			SourceEditorOptions.Options.ControlLeftRightMode = (ControlLeftRightMode)this.controlLeftRightCombobox.Active;
+			SourceEditorOptions.Options.UseViModes = this.useViModesCheck.Active;
 		}
 
 		public void Initialize (OptionsDialog dialog, object dataObject)

@@ -1,3 +1,16 @@
+2008-10-11  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.SourceEditor.mdp: Updated.
+
+	* MonoDevelop.SourceEditor/SourceEditorOptions.cs:
+	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: Add an option for
+	enabling vi modes.
+
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:
+	* gtk-gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs: Add UI
+	for enabling vi modes.
+
 2008-10-10  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: Allow enabling the
