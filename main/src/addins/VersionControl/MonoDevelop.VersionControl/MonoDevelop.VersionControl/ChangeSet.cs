@@ -4,6 +4,9 @@ using System.Text;
 using System.Collections;
 using System.Collections.Generic;
 
+//using System.Core;
+using System.Linq;
+
 namespace MonoDevelop.VersionControl
 {
 	public class ChangeSet
@@ -21,6 +24,15 @@ namespace MonoDevelop.VersionControl
 		
 		public bool IsEmpty {
 			get { return items.Count == 0; }
+		}
+
+		
+		public int Count {
+			get { return items.Count; }
+		}
+		
+		public int CommentsCount {
+			get { return items.Count (item => !string.IsNullOrEmpty (item.Comment)); }
 		}
 		
 		public string GenerateGlobalComment (int maxColumns)

@@ -550,6 +550,15 @@ namespace MonoDevelop.VersionControl.Views
 			// Nothing to commit
 			if (changeSet.IsEmpty)
 				return;
+
+			int comments = changeSet.CommentsCount;
+			if ((comments > 0) && (changeSet.Count > comments)) {
+				if (MessageService.AskQuestion (
+				  GettextCatalog.GetString ("Some of the files in this commit do not have ChangeLog messages."),
+				  GettextCatalog.GetString ("You may have forgotten to unselect items."),
+				  AlertButton.Cancel, AlertButton.Proceed) != AlertButton.Proceed)
+					return;
+			}
 			
 			// Reset the global comment. It may be already set from previous commits.
 			changeSet.GlobalComment = string.Empty;
