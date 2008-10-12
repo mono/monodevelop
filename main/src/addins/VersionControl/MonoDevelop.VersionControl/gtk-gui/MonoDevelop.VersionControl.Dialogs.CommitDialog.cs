@@ -56,7 +56,7 @@ namespace MonoDevelop.VersionControl.Dialogs {
             this.label1 = new Gtk.Label();
             this.label1.Name = "label1";
             this.label1.Xalign = 0F;
-            this.label1.LabelProp = Mono.Unix.Catalog.GetString("Select the files to commit:");
+            this.label1.LabelProp = Mono.Unix.Catalog.GetString("The following files will be committed:");
             this.mainBox.Add(this.label1);
             Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.mainBox[this.label1]));
             w2.Position = 0;

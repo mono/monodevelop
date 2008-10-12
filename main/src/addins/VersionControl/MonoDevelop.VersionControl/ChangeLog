@@ -1,5 +1,11 @@
 2008-10-12  Andrés G. Aragoneses  <aaragoneses@novell.com>
 
+	* gtk-gui/gui.stetic:
+	* gtk-gui/MonoDevelop.VersionControl.Dialogs.CommitDialog.cs: Correct a
+	string (mhutch agrees).
+
+2008-10-12  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.VersionControl.mdp:
 	* MonoDevelop.VersionControl/ChangeSet.cs:
