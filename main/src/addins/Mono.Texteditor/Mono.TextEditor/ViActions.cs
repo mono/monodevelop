@@ -46,8 +46,10 @@ namespace Mono.TextEditor
 			while (line < data.Document.LineCount - 1) {
 				line++;
 				LineSegment nextLine = data.Document.GetLine (line);
-				if (currentLine.EditableLength == 0 && nextLine.EditableLength > 0)
-					break;
+				if (currentLine.EditableLength != 0 && nextLine.EditableLength == 0) {
+					data.Caret.Offset = nextLine.Offset;
+					return;
+				}
 				currentLine = nextLine;
 			}
 			
@@ -66,8 +68,10 @@ namespace Mono.TextEditor
 			while (line > 0) {
 				line--;
 				LineSegment previousLine = data.Document.GetLine (line);
-				if (currentLine.EditableLength == 0 && previousLine.EditableLength > 0)
-					break;
+				if (currentLine.EditableLength != 0 && previousLine.EditableLength == 0) {
+					data.Caret.Offset = previousLine.Offset;
+					return;
+				}
 				currentLine = previousLine;
 			}
 			

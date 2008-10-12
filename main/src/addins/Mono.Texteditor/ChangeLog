@@ -1,5 +1,9 @@
 2008-10-11  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Mono.TextEditor/ViActions.cs: Fix { } behaviour.
+
+2008-10-11  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Makefile.am:
 	* Mono.TextEditor.mdp: Updated.
 
