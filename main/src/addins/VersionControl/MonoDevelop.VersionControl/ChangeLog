@@ -1,7 +1,7 @@
 2008-10-12  Andrés G. Aragoneses  <aaragoneses@novell.com>
 
 	* MonoDevelop.VersionControl.Views/LogView.cs: Improve the control of
-	what is selected: no sense to rever to *current* rev.
+	what is selected: no sense to revert to *current* rev.
 
 2008-10-12  Andrés G. Aragoneses  <aaragoneses@novell.com>
 

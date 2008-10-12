@@ -223,7 +223,7 @@ namespace MonoDevelop.VersionControl.Views
 			
 			revertButton.Sensitive = (d != null);
 			revertToButton.Sensitive = ((d != null) &&
-			                            (indices.Length == 1) && //no sense to rever to *many* revs
+			                            (indices.Length == 1) && //no sense to revert to *many* revs
 			                            (indices [0] != 0)); //no sense to revert to *current* rev
 			
 			changedpathstore.Clear ();
