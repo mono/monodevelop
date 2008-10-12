@@ -95,11 +95,11 @@ namespace MonoDevelop.VersionControl.Views
 			commandbar = new Toolbar ();
 			commandbar.ToolbarStyle = Gtk.ToolbarStyle.BothHoriz;
 			commandbar.IconSize = Gtk.IconSize.Menu;
-			main.PackStart(commandbar, false, false, 0);
+			main.PackStart (commandbar, false, false, 0);
 			
 			buttonCommit = new Gtk.ToolButton (new Gtk.Image ("vc-commit", Gtk.IconSize.Menu), GettextCatalog.GetString ("Commit..."));
 			buttonCommit.IsImportant = true;
-			buttonCommit.Clicked += new EventHandler(OnCommitClicked);
+			buttonCommit.Clicked += new EventHandler (OnCommitClicked);
 			commandbar.Insert (buttonCommit, -1);
 			
 			Gtk.ToolButton btnRefresh = new Gtk.ToolButton (Gtk.Stock.Refresh);
@@ -442,7 +442,7 @@ namespace MonoDevelop.VersionControl.Views
 				// If all selected files have the same message,
 				// then show it so it can be modified. If not, show
 				// a blank message
-				string msg = GetCommitMessage (files[0]);
+				string msg = GetCommitMessage (files [0]);
 				foreach (string file in files) {
 					if (msg != GetCommitMessage (file)) {
 						commitText.Buffer.Text = "";
@@ -454,7 +454,7 @@ namespace MonoDevelop.VersionControl.Views
 				updatingComment = false;
 			} else {
 				updatingComment = true;
-				commitText.Buffer.Text = "";
+				commitText.Buffer.Text = String.Empty;
 				updatingComment = false;
 				commitBox.Visible = false;
 			}
@@ -493,7 +493,7 @@ namespace MonoDevelop.VersionControl.Views
 		string GetCommitMessage (string file)
 		{
 			string txt = VersionControlService.GetCommitComment (file);
-			return txt != null ? txt : "";
+			return txt != null ? txt : String.Empty;
 		}
 		
 		void SetCommitMessage (string file, string text)
@@ -508,15 +508,15 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 		
-		void OnRowActivated(object o, RowActivatedArgs args) {
-			int index = args.Path.Indices[0];
-			VersionInfo node = statuses[index];
+		void OnRowActivated (object o, RowActivatedArgs args) {
+			int index = args.Path.Indices [0];
+			VersionInfo node = statuses [index];
 			DiffView.Show (vc, node.LocalPath, false);
 		}
 		
 		void OnCommitToggledHandler(object o, ToggledArgs args) {
 			TreeIter pos;
-			if (!filestore.GetIterFromString(out pos, args.Path))
+			if (!filestore.GetIterFromString (out pos, args.Path))
 				return;
 
 			string localpath = (string) filestore.GetValue (pos, ColFullPath);
@@ -542,10 +542,10 @@ namespace MonoDevelop.VersionControl.Views
 		
 		private void OnShowRemoteStatusClicked(object src, EventArgs args) {
 			remoteStatus = true;
-			StartUpdate();
+			StartUpdate ();
 		}
 		
-		private void OnCommitClicked(object src, EventArgs args)
+		private void OnCommitClicked (object src, EventArgs args)
 		{
 			// Nothing to commit
 			if (changeSet.IsEmpty)

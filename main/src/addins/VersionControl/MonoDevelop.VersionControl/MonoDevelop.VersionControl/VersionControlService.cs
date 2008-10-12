@@ -160,7 +160,7 @@ namespace MonoDevelop.VersionControl
 				case VersionStatus.Missing:
 					return GettextCatalog.GetString ("Missing");
 			}
-			return "";
+			return String.Empty;
 		}
 		
 		public static Repository GetRepository (IWorkspaceObject entry)
@@ -509,7 +509,7 @@ namespace MonoDevelop.VersionControl
 					XmlDataSerializer ser = new XmlDataSerializer (dataContext);
 					XmlTextReader reader = new XmlTextReader (new StreamReader (ConfigFile));
 					try {
-						configuration = (VersionControlConfiguration) ser.Deserialize (reader, typeof(VersionControlConfiguration));
+						configuration = (VersionControlConfiguration) ser.Deserialize (reader, typeof (VersionControlConfiguration));
 					} finally {
 						reader.Close ();
 					}
@@ -526,7 +526,7 @@ namespace MonoDevelop.VersionControl
 				XmlDataSerializer ser = new XmlDataSerializer (dataContext);
 				XmlTextWriter tw = new XmlTextWriter (new StreamWriter (ConfigFile));
 				try {
-					ser.Serialize (tw, configuration, typeof(VersionControlConfiguration));
+					ser.Serialize (tw, configuration, typeof (VersionControlConfiguration));
 				} finally {
 					tw.Close ();
 				}

@@ -134,7 +134,7 @@ namespace MonoDevelop.VersionControl
 		public string Comment {
 			get {
 				string txt = VersionControlService.GetCommitComment (LocalPath);
-				return txt != null ? txt : "";
+				return txt != null ? txt : String.Empty;
 			}
 			set { VersionControlService.SetCommitComment (LocalPath, value, true); }
 		}

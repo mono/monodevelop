@@ -1,5 +1,12 @@
 2008-10-12  Andrés G. Aragoneses  <aaragoneses@novell.com>
 
+	* MonoDevelop.VersionControl/ChangeSet.cs:
+	* MonoDevelop.VersionControl.Views/StatusView.cs:
+	* MonoDevelop.VersionControl/VersionControlService.cs: Coding
+	guidelines.
+
+2008-10-12  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
 	* MonoDevelop.VersionControl.Views/LogView.cs: Improve the control of
 	what is selected: no sense to revert to *current* rev.
 
