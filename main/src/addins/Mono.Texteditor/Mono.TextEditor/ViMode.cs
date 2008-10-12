@@ -70,6 +70,10 @@ namespace Mono.TextEditor
 				return CaretMoveActions.LineEnd;
 			case 'G':
 				return CaretMoveActions.ToDocumentEnd;
+			case '{':
+				return ViActions.MoveToPreviousEmptyLine;
+			case '}':
+				return ViActions.MoveToNextEmptyLine;
 			}
 			return null;
 		}

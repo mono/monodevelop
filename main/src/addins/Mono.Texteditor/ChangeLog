@@ -1,5 +1,13 @@
 2008-10-11  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Makefile.am:
+	* Mono.TextEditor.mdp: Updated.
+
+	* Mono.TextEditor/ViMode.cs:
+	* Mono.TextEditor/ViActions.cs: Implemented { and }.
+
+2008-10-11  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Mono.TextEditor/ViMode.cs:
 	* Mono.TextEditor/DeleteActions.cs: Implemented 'dd' and 'd{motion}' for
 	simple motions.

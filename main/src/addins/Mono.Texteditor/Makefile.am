@@ -70,6 +70,7 @@ FILES =  \
 	Mono.TextEditor/TextEditorOptions.cs \
 	Mono.TextEditor/TextMarker.cs \
 	Mono.TextEditor/TextViewMargin.cs \
+	Mono.TextEditor/ViActions.cs \
 	Mono.TextEditor/ViMode.cs 
 	Mono.TextEditor.Highlighting/Match.cs \
 	Mono.TextEditor.Highlighting/Style.cs \
