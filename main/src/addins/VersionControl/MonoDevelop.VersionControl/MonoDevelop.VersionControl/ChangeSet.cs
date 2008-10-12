@@ -4,7 +4,6 @@ using System.Text;
 using System.Collections;
 using System.Collections.Generic;
 
-//using System.Core;
 using System.Linq;
 
 namespace MonoDevelop.VersionControl
