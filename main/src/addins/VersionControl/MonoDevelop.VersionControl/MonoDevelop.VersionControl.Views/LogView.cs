@@ -27,8 +27,9 @@ namespace MonoDevelop.VersionControl.Views
 		public static bool Show (Repository vc, string filepath, bool isDirectory, Revision since, bool test)
 		{
 			if (vc.IsHistoryAvailable (filepath)) {
-				if (test) return true;
-				new Worker(vc, filepath, isDirectory, since).Start();
+				if (test)
+					return true;
+				new Worker (vc, filepath, isDirectory, since).Start ();
 				return true;
 			}
 			return false;
@@ -48,23 +49,24 @@ namespace MonoDevelop.VersionControl.Views
 				this.since = since;
 			}
 			
-			protected override string GetDescription() {
-				return GettextCatalog.GetString ("Retrieving history for {0}...", Path.GetFileName(filepath));
+			protected override string GetDescription () {
+				return GettextCatalog.GetString ("Retrieving history for {0}...", Path.GetFileName (filepath));
 			}
 			
-			protected override void Run() {
+			protected override void Run () {
 				history = vc.GetHistory (filepath, since);
 			}
 		
 			protected override void Finished() {
-				if (history == null) return;
-				LogView d = new LogView(filepath, isDirectory, history, vc);
+				if (history == null)
+					return;
+				LogView d = new LogView (filepath, isDirectory, history, vc);
 				MonoDevelop.Ide.Gui.IdeApp.Workbench.OpenDocument (d, true);
 			}
 		}
 		
-		public LogView (string filepath, bool isDirectory, Revision[] history, Repository vc) 
-			: base(Path.GetFileName(filepath) + " Log")
+		public LogView (string filepath, bool isDirectory, Revision [] history, Repository vc) 
+			: base (Path.GetFileName (filepath) + " Log")
 		{
 			this.vc = vc;
 			this.filepath = filepath;
@@ -79,7 +81,7 @@ namespace MonoDevelop.VersionControl.Views
 
 			// Widget setup
 			
-			VBox box = new VBox(false, 6);
+			VBox box = new VBox (false, 6);
 			
 			widget = box;
 
@@ -92,7 +94,7 @@ namespace MonoDevelop.VersionControl.Views
 			if (!isDirectory && vinfo != null) {
 				Gtk.ToolButton button = new Gtk.ToolButton (new Gtk.Image ("vc-diff", Gtk.IconSize.Menu), GettextCatalog.GetString ("View Changes"));
 				button.IsImportant = true;
-				button.Clicked += new EventHandler(DiffButtonClicked);
+				button.Clicked += new EventHandler (DiffButtonClicked);
 				commandbar.Insert (button, -1);
 				
 				button = new Gtk.ToolButton (new Gtk.Image (Gtk.Stock.Open, Gtk.IconSize.Menu), GettextCatalog.GetString ("View File"));
@@ -122,7 +124,7 @@ namespace MonoDevelop.VersionControl.Views
 			// Create the log list
 			
 			loglist = new TreeView ();
-			ScrolledWindow loglistscroll = new ScrolledWindow();
+			ScrolledWindow loglistscroll = new ScrolledWindow ();
 			loglistscroll.ShadowType = Gtk.ShadowType.In;
 			loglistscroll.Add (loglist);
 			loglistscroll.HscrollbarPolicy = PolicyType.Automatic;
@@ -130,8 +132,8 @@ namespace MonoDevelop.VersionControl.Views
 			paned.Add1 (loglistscroll);
 			((Paned.PanedChild)paned [loglistscroll]).Resize = true;
 			
-			TreeView changedPaths = new TreeView();
-			ScrolledWindow changedPathsScroll = new ScrolledWindow();
+			TreeView changedPaths = new TreeView ();
+			ScrolledWindow changedPathsScroll = new ScrolledWindow ();
 			changedPathsScroll.ShadowType = Gtk.ShadowType.In;
 			changedPathsScroll.HscrollbarPolicy = PolicyType.Automatic;
 			changedPathsScroll.VscrollbarPolicy = PolicyType.Automatic;
@@ -139,30 +141,30 @@ namespace MonoDevelop.VersionControl.Views
 			paned.Add2 (changedPathsScroll);
 			((Paned.PanedChild)paned [changedPathsScroll]).Resize = false;
 
-			widget.ShowAll();
+			widget.ShowAll ();
 			
 			// Revision list setup
 			
-			CellRendererText textRenderer = new CellRendererText();
+			CellRendererText textRenderer = new CellRendererText ();
 			textRenderer.Yalign = 0;
 			
-			TreeViewColumn colRevNum = new TreeViewColumn(GettextCatalog.GetString ("Revision"), textRenderer, "text", 0);
-			TreeViewColumn colRevDate = new TreeViewColumn(GettextCatalog.GetString ("Date"), textRenderer, "text", 1);
-			TreeViewColumn colRevAuthor = new TreeViewColumn(GettextCatalog.GetString ("Author"), textRenderer, "text", 2);
-			TreeViewColumn colRevMessage = new TreeViewColumn(GettextCatalog.GetString ("Message"), textRenderer, "text", 3);
+			TreeViewColumn colRevNum = new TreeViewColumn (GettextCatalog.GetString ("Revision"), textRenderer, "text", 0);
+			TreeViewColumn colRevDate = new TreeViewColumn (GettextCatalog.GetString ("Date"), textRenderer, "text", 1);
+			TreeViewColumn colRevAuthor = new TreeViewColumn (GettextCatalog.GetString ("Author"), textRenderer, "text", 2);
+			TreeViewColumn colRevMessage = new TreeViewColumn (GettextCatalog.GetString ("Message"), textRenderer, "text", 3);
 			
-			loglist.AppendColumn(colRevNum);
-			loglist.AppendColumn(colRevDate);
-			loglist.AppendColumn(colRevAuthor);
-			loglist.AppendColumn(colRevMessage);
+			loglist.AppendColumn (colRevNum);
+			loglist.AppendColumn (colRevDate);
+			loglist.AppendColumn (colRevAuthor);
+			loglist.AppendColumn (colRevMessage);
 			
 			ListStore logstore = new ListStore (typeof (string), typeof (string), typeof (string), typeof (string));
 			loglist.Model = logstore;
 			 
 			foreach (Revision d in history) {
 				logstore.AppendValues(
-					d.ToString(),
-					d.Time.ToString(),
+					d.ToString (),
+					d.Time.ToString (),
 					d.Author,
 					d.Message == "" ? GettextCatalog.GetString ("(No message)") : d.Message);
 			}
@@ -173,8 +175,8 @@ namespace MonoDevelop.VersionControl.Views
 			changedPaths.Model = changedpathstore;
 			
 			TreeViewColumn colOperation = new TreeViewColumn ();
-			CellRendererText crt = new CellRendererText();
-			CellRendererPixbuf crp = new CellRendererPixbuf();
+			CellRendererText crt = new CellRendererText ();
+			CellRendererPixbuf crp = new CellRendererPixbuf ();
 			colOperation.Title = GettextCatalog.GetString ("Operation");
 			colOperation.PackStart (crp, false);
 			colOperation.PackStart (crt, true);
@@ -183,8 +185,8 @@ namespace MonoDevelop.VersionControl.Views
 			changedPaths.AppendColumn (colOperation);
 			
 			TreeViewColumn colChangedPath = new TreeViewColumn ();
-			crp = new CellRendererPixbuf();
-			crt = new CellRendererText();
+			crp = new CellRendererPixbuf ();
+			crt = new CellRendererText ();
 			colChangedPath.Title = GettextCatalog.GetString ("File Path");
 			colChangedPath.PackStart (crp, false);
 			colChangedPath.PackStart (crt, true);
@@ -192,25 +194,28 @@ namespace MonoDevelop.VersionControl.Views
 			colChangedPath.AddAttribute (crt, "text", 3);
 			changedPaths.AppendColumn (colChangedPath);
 			
-			loglist.Selection.Changed += new EventHandler(TreeSelectionChanged);
+			loglist.Selection.Changed += new EventHandler (TreeSelectionChanged);
 		}
 		
-		Revision GetSelectedRev()
+		Revision GetSelectedRev ()
 		{
 			TreePath path;
 			TreeViewColumn col;
-			loglist.GetCursor(out path, out col);
-			if (path == null) return null;
-			return history [path.Indices[0]];
+			
+			loglist.GetCursor (out path, out col);
+			if (path == null)
+				return null;
+			
+			return history [path.Indices [0]];
 		}
 		
-		void TreeSelectionChanged(object o, EventArgs args) {
-			Revision d = GetSelectedRev();
+		void TreeSelectionChanged (object o, EventArgs args) {
+			Revision d = GetSelectedRev ();
 			
 			revertButton.Sensitive = (d != null);
 			revertToButton.Sensitive = (d != null);
 			
-			changedpathstore.Clear();
+			changedpathstore.Clear ();
 			foreach (RevisionPath rp in d.ChangedFiles) 
 			{
 				string actionIcon;
@@ -245,32 +250,32 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 		
-		void DiffButtonClicked(object src, EventArgs args) {
-			Revision d = GetSelectedRev();
-			if (d == null) return;
-			new DiffWorker(Path.GetFileName(filepath), vc, vinfo.RepositoryPath, d).Start();
+		void DiffButtonClicked (object src, EventArgs args) {
+			Revision d = GetSelectedRev ();
+			if (d == null)
+				return;
+			new DiffWorker (Path.GetFileName (filepath), vc, vinfo.RepositoryPath, d).Start ();
 		}
 		
-		void ViewTextButtonClicked(object src, EventArgs args) {
-			Revision d = GetSelectedRev();
-			if (d == null) return;
-			HistoricalFileView.Show(filepath, vc, vinfo.RepositoryPath, d);
+		void ViewTextButtonClicked (object src, EventArgs args) {
+			Revision d = GetSelectedRev ();
+			if (d == null)
+				return;
+			HistoricalFileView.Show (filepath, vc, vinfo.RepositoryPath, d);
 		}
 		
 		void RevertToRevisionClicked(object src, EventArgs args) {
-			Revision d = GetSelectedRev();
+			Revision d = GetSelectedRev ();
 			RevertRevisionsCommands.RevertToRevision (vc, filepath, d, false);
 		}
 		
 		void RevertRevisionClicked(object src, EventArgs args) {
-			Revision d = GetSelectedRev();
+			Revision d = GetSelectedRev ();
 			RevertRevisionsCommands.RevertRevision (vc, filepath, d, false);
 		}
 		
 		public override Gtk.Widget Control { 
-			get {
-				return widget;
-			}
+			get { return widget; }
 		}
 		
 		public override void Dispose ()
@@ -287,33 +292,33 @@ namespace MonoDevelop.VersionControl.Views
 			string text1, text2;
 			string revPath;
 						
-			public DiffWorker(string name, Repository vc, string revPath, Revision revision) {
+			public DiffWorker (string name, Repository vc, string revPath, Revision revision) {
 				this.name = name;
 				this.vc = vc;
 				this.revPath = revPath;
 				this.revision = revision;
 			}
 			
-			protected override string GetDescription() {
+			protected override string GetDescription () {
 				return GettextCatalog.GetString ("Retreiving changes in {0} at revision {1}...", name, revision);
 			}
 			
-			protected override void Run() {
-				Log (GettextCatalog.GetString ("Getting text of {0} at revision {1}...", revPath, revision.GetPrevious()));
+			protected override void Run () {
+				Log (GettextCatalog.GetString ("Getting text of {0} at revision {1}...", revPath, revision.GetPrevious ()));
 				try {
-					text1 = vc.GetTextAtRevision(revPath, revision.GetPrevious());
+					text1 = vc.GetTextAtRevision (revPath, revision.GetPrevious());
 				} catch {
 					// If the file was added in this revision, no previous
 					// text exists.
-					text1 = "";
+					text1 = String.Empty;
 				}
 				Log (GettextCatalog.GetString ("Getting text of {0} at revision {1}...", revPath, revision));
-				text2 = vc.GetTextAtRevision(revPath, revision);
+				text2 = vc.GetTextAtRevision (revPath, revision);
 			}
 		
-			protected override void Finished() {
+			protected override void Finished () {
 				if (text1 == null || text2 == null) return;
-				DiffView.Show(name + " (revision " + revision.ToString() + ")", text1, text2);
+				DiffView.Show (name + " (revision " + revision.ToString () + ")", text1, text2);
 			}
 		}
 		
@@ -321,7 +326,7 @@ namespace MonoDevelop.VersionControl.Views
 
 	internal class HistoricalFileView
 	{
-		public static void Show(string name, string file, string text) {
+		public static void Show (string name, string file, string text) {
 			string mimeType = IdeApp.Services.PlatformService.GetMimeTypeForUri (file);
 			if (mimeType == null || mimeType.Length == 0)
 				mimeType = "text/plain";
@@ -329,9 +334,9 @@ namespace MonoDevelop.VersionControl.Views
 			doc.IsDirty = false;
 		}
 			
-		public static void Show(string file, Repository vc, string revPath, Revision revision) {
-			new Worker(Path.GetFileName(file) + " (revision " + revision.ToString() + ")",
-				file, vc, revPath, revision).Start();
+		public static void Show (string file, Repository vc, string revPath, Revision revision) {
+			new Worker (Path.GetFileName (file) + " (revision " + revision.ToString () + ")",
+				file, vc, revPath, revision).Start ();
 		}
 		
 			
@@ -342,7 +347,7 @@ namespace MonoDevelop.VersionControl.Views
 			Revision revision;
 			string text;
 						
-			public Worker(string name, string file, Repository vc, string revPath, Revision revision) {
+			public Worker (string name, string file, Repository vc, string revPath, Revision revision) {
 				this.name = name;
 				this.file = file;
 				this.vc = vc;
@@ -350,17 +355,18 @@ namespace MonoDevelop.VersionControl.Views
 				this.revision = revision;
 			}
 			
-			protected override string GetDescription() {
+			protected override string GetDescription () {
 				return GettextCatalog.GetString ("Retreiving content of {0} at revision {1}...", name, revision);
 			}
 			
-			protected override void Run() {
-				text = vc.GetTextAtRevision(revPath, revision);
+			protected override void Run () {
+				text = vc.GetTextAtRevision (revPath, revision);
 			}
 		
-			protected override void Finished() {
-				if (text == null) return;
-				HistoricalFileView.Show(name, file, text);
+			protected override void Finished () {
+				if (text == null)
+					return;
+				HistoricalFileView.Show (name, file, text);
 			}
 		}
 	}

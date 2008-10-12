@@ -1,3 +1,7 @@
+2008-10-12  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* MonoDevelop.VersionControl.Views/LogView.cs: Coding guidelines.
+
 2008-10-07  Aaron Bockover  <abockover@novell.com>
 
 	* MonoDevelop.VersionControl/ChangeLogWriter.cs: Remove the space
