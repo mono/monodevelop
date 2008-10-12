@@ -28,7 +28,7 @@
 
 using System;
 
-namespace Mono.TextEditor
+namespace Mono.TextEditor.Vi
 {
 	
 	
@@ -76,6 +76,27 @@ namespace Mono.TextEditor
 			}
 			
 			data.Caret.Offset = currentLine.Offset;
+		}
+		
+		public static void NewLineBelow (TextEditorData data)
+		{
+			LineSegment currentLine = data.Document.GetLine (data.Caret.Line);
+			data.Caret.Offset = currentLine.Offset + currentLine.EditableLength;
+			MiscActions.InsertNewLine (data);
+		}
+		
+		public static void NewLineAbove (TextEditorData data)
+		{
+			if (data.Caret.Line == 0) {
+				data.Caret.Offset = 0;
+				MiscActions.InsertNewLine (data);
+				data.Caret.Offset = 0;
+				return;
+			}
+			
+			LineSegment currentLine = data.Document.GetLine (data.Caret.Line - 1);
+			data.Caret.Offset = currentLine.Offset + currentLine.EditableLength;
+			MiscActions.InsertNewLine (data);
 		}
 	}
 }

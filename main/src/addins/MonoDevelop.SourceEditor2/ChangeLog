@@ -1,3 +1,7 @@
+2008-10-12  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.SourceEditor/IdeViMode.cs: Track API.
+
 2008-10-11  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.SourceEditor.mdp: Updated.

@@ -215,7 +215,7 @@ namespace Mono.TextEditor
 		}
 		
 		public TextEditor (Document doc)
-			: this (doc, new ViMode ())
+			: this (doc, new SimpleEditMode ())
 		{
 		}
 		

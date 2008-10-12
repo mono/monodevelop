@@ -28,6 +28,9 @@ FILES =  \
 	Mono.TextEditor.Highlighting/SyntaxModeService.cs \
 	Mono.TextEditor.Highlighting/WorkerThread.cs \
 	Mono.TextEditor.Highlighting/XmlReadHelper.cs \
+	Mono.TextEditor.Vi/ViActionMaps.cs \
+	Mono.TextEditor.Vi/ViActions.cs \
+	Mono.TextEditor.Vi/ViMode.cs \
 	Mono.TextEditor/BookmarkActions.cs \
 	Mono.TextEditor/BookmarkMarker.cs \
 	Mono.TextEditor/BufferedTextReader.cs \
@@ -69,9 +72,7 @@ FILES =  \
 	Mono.TextEditor/TextEditorData.cs \
 	Mono.TextEditor/TextEditorOptions.cs \
 	Mono.TextEditor/TextMarker.cs \
-	Mono.TextEditor/TextViewMargin.cs \
-	Mono.TextEditor/ViActions.cs \
-	Mono.TextEditor/ViMode.cs 
+	Mono.TextEditor/TextViewMargin.cs 
 	Mono.TextEditor.Highlighting/Match.cs \
 	Mono.TextEditor.Highlighting/Style.cs \
 	Mono.TextEditor.Highlighting/SyntaxMode.cs \

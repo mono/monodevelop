@@ -1,3 +1,21 @@
+2008-10-12  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextEditor/TextEditor.cs: Don't use vi mode on default
+	constructor.
+
+	* Makefile.am:
+	* Mono.TextEditor.mdp: Updated.
+
+	* Mono.TextEditor.Vi/ViMode.cs:
+	* Mono.TextEditor.Vi/ViActions.cs:
+	* Mono.TextEditor.Vi/ViActionMaps.cs: Move vi code to new namespace.
+	Move action lookup out of the way. Implement 'o' and 'O', and
+	:{number}. Unbreak 'c' key and ':' commands by removing overzealous
+	modifier check.
+
+	* Mono.TextEditor/ViMode.cs:
+	* Mono.TextEditor/ViActions.cs: Moved.
+
 2008-10-11  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.TextEditor/ViActions.cs: Fix { } behaviour.

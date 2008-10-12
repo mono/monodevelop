@@ -34,7 +34,7 @@ namespace MonoDevelop.SourceEditor
 {
 	
 	
-	public class IdeViMode : ViMode
+	public class IdeViMode : Mono.TextEditor.Vi.ViEditMode
 	{
 		ExtensibleTextEditor editor;
 		
@@ -43,13 +43,15 @@ namespace MonoDevelop.SourceEditor
 			this.editor = editor;
 		}
 		
-		protected override void OnStatusChanged ()
-		{
-			IdeApp.Workbench.StatusBar.ShowMessage (Status);
-			base.OnStatusChanged ();
+		public override string Status {
+			get { return base.Status; }
+			protected set {
+				base.Status = value;
+				IdeApp.Workbench.StatusBar.ShowMessage (value);
+			}
 		}
 		
-		protected override string RunCommand (string command)
+		protected override string RunExCommand (string command)
 		{
 			switch (command) {
 			case ":w":
@@ -76,10 +78,9 @@ namespace MonoDevelop.SourceEditor
 					editor.View.WorkbenchWindow.CloseWindow (false, true, -1);
 				});
 				return "Saved and closed file.";
-				
-			default:
-				return base.RunCommand (command);
 			}
+			
+			return base.RunExCommand (command);
 		}
 	}
 }
