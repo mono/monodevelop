@@ -196,24 +196,35 @@ namespace MonoDevelop.VersionControl.Views
 			
 			loglist.Selection.Changed += new EventHandler (TreeSelectionChanged);
 		}
-		
+
 		Revision GetSelectedRev ()
 		{
+			int[] indices;
+			return GetSelectedRev (out indices);
+		}
+		
+		Revision GetSelectedRev (out int[] indices)
+		{
+			indices = null;
 			TreePath path;
 			TreeViewColumn col;
 			
 			loglist.GetCursor (out path, out col);
 			if (path == null)
 				return null;
-			
-			return history [path.Indices [0]];
+
+			indices = path.Indices;
+			return history [indices [0]];
 		}
 		
 		void TreeSelectionChanged (object o, EventArgs args) {
-			Revision d = GetSelectedRev ();
+			int [] indices;
+			Revision d = GetSelectedRev (out indices);
 			
 			revertButton.Sensitive = (d != null);
-			revertToButton.Sensitive = (d != null);
+			revertToButton.Sensitive = ((d != null) &&
+			                            (indices.Length == 1) && //no sense to rever to *many* revs
+			                            (indices [0] != 0)); //no sense to revert to *current* rev
 			
 			changedpathstore.Clear ();
 			foreach (RevisionPath rp in d.ChangedFiles) 
