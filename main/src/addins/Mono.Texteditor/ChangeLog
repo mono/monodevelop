@@ -1,5 +1,11 @@
 2008-10-11  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Mono.TextEditor/ViMode.cs:
+	* Mono.TextEditor/DeleteActions.cs: Implemented 'dd' and 'd{motion}' for
+	simple motions.
+
+2008-10-11  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Mono.TextEditor/ViMode.cs: Refactor the dictionaries into switches to
 	reduce overhead (also more readable for character commands). Split
 	cursor and character navigation keys so that cursor keys can work in

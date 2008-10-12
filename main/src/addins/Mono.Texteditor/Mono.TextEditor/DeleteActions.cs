@@ -41,6 +41,16 @@ namespace Mono.TextEditor
 	
 	public static class DeleteActions
 	{
+		public static Action<TextEditorData> FromMoveAction (Action<TextEditorData> moveAction)
+		{
+			return delegate (TextEditorData data) {
+				SelectionActions.StartSelection (data);
+				moveAction (data);
+				SelectionActions.EndSelection (data);
+				data.DeleteSelectedText ();
+			};
+		}
+		
 		public static void PreviousWord (TextEditorData data)
 		{
 			int oldLine = data.Caret.Line;

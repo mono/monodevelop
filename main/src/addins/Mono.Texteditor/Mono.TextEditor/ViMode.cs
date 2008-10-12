@@ -261,29 +261,36 @@ namespace Mono.TextEditor
 			
 			switch (state) {
 			case State.Normal:
-				switch (key) {
-				case Gdk.Key.colon:
-					state = State.Command;
-					commandBuffer.Append (":");
-					Status = commandBuffer.ToString ();
-					return;
+				if (((modifier & (Gdk.ModifierType.ShiftMask | Gdk.ModifierType.ControlMask)) == 0)) {
+					switch ((char)unicodeKey) {
+					case ':':
+						state = State.Command;
+						commandBuffer.Append (":");
+						Status = commandBuffer.ToString ();
+						return;
 					
-				case Gdk.Key.i:
-				case Gdk.Key.a:
-					Status = "-- INSERT --";
-					state = State.Insert;
-					return;
-					
-				case Gdk.Key.R:
-					Caret.IsInInsertMode = false;
-					Status = "-- REPLACE --";
-					state = State.Replace;
-					return;
-					
-				case Gdk.Key.v:
-					Status = "-- VISUAL --";
-					state = State.Visual;
-					return;
+					case 'i':
+					case 'a':
+						Status = "-- INSERT --";
+						state = State.Insert;
+						return;
+						
+					case 'R':
+						Caret.IsInInsertMode = false;
+						Status = "-- REPLACE --";
+						state = State.Replace;
+						return;
+						
+					case 'v':
+						Status = "-- VISUAL --";
+						state = State.Visual;
+						return;
+						
+					case 'd':
+						Status = "d";
+						state = State.Delete;
+						return;
+					}
 				}
 				
 				action = GetNavCharAction ((char)unicodeKey);
@@ -295,6 +302,26 @@ namespace Mono.TextEditor
 				if (action != null)
 					RunAction (action);
 				
+				return;
+				
+			case State.Delete:
+				if (((modifier & (Gdk.ModifierType.ShiftMask | Gdk.ModifierType.ControlMask)) == 0 
+				     && key == Gdk.Key.d))
+				{
+					action = DeleteActions.CaretLine;
+				} else {
+					action = GetNavCharAction ((char)unicodeKey);
+					if (action == null)
+						action = GetDirectionKeyAction (key, modifier);
+					if (action != null)
+						action = DeleteActions.FromMoveAction (action);
+				}
+				
+				if (action != null) {
+					RunAction (action);
+				}
+				
+				state = State.Normal;
 				return;
 				
 			case State.Insert:
@@ -336,6 +363,7 @@ namespace Mono.TextEditor
 		enum State {
 			Normal = 0,
 			Command,
+			Delete,
 			Visual,
 			VisualLine,
 			Insert,
