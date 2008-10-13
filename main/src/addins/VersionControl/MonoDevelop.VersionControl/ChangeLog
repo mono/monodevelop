@@ -1,3 +1,8 @@
+2008-10-13  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.VersionControl/ChangeSet.cs: Commited patch from alan, to
+	fix compilation issues with the public mono version.
+
 2008-10-12  Andrés G. Aragoneses  <aaragoneses@novell.com>
 
 	* gtk-gui/gui.stetic:
