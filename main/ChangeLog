@@ -1,3 +1,7 @@
+2008-10-13  Michael Hutchinson  <mhutchinson@novell.com> 
+
+	* configure.in: Bump Mono version requirement to 2.0.
+
 2008-09-17  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Main.mds: Updated projects.

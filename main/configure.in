@@ -65,7 +65,7 @@ if test "x$MSGMERGE" = "xno"; then
         AC_MSG_ERROR([You need to install msgmerge from intltool])
 fi
 
-MONO_REQUIRED_VERSION=1.1.10
+MONO_REQUIRED_VERSION=2.0
 PKG_CHECK_MODULES(UNMANAGED_DEPENDENCIES_MONO,mono >= $MONO_REQUIRED_VERSION, has_mono=true, has_mono=false)
 
 if test "x$has_mono" = "xfalse"; then
