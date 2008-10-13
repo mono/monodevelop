@@ -314,7 +314,6 @@ namespace MonoDevelop.Projects.CodeGeneration
 			} else if (member is IProperty) {
 				IProperty property = (IProperty) member;
 				if (!property.IsIndexer) {
-					isIndexer = true;
 					CodeMemberProperty mProperty = new CodeMemberProperty ();
 					m = mProperty;
 					if (!is_interface_method)
@@ -333,6 +332,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 					if (privateImplementationType != null)
 						mProperty.PrivateImplementationType = ReturnTypeToDom (ctx, cls.CompilationUnit, privateImplementationType);
 				} else {
+					isIndexer = true;
 					CodeMemberProperty mProperty = new CodeMemberProperty ();
 					m = mProperty;
 					if (!is_interface_method)
