@@ -90,6 +90,7 @@ namespace MonoDevelop.Ide.Gui.Search
 			if (CurrentDocumentInformation != null && TextIterator != null) {
 				TextIterator.Position = result.Position;
 				TextIterator.Replace (result.Length, pattern);
+				TextIterator.Position = result.Position + pattern.Length - 1;
 			}
 		}
 		
