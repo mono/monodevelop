@@ -282,12 +282,14 @@ namespace MonoDevelop.CSharpBinding
 			if (overloads == null)
 				overloads = new Dictionary<string, ICompletionData> ();
 			
-			if (!overload.member.IsObsolete)
-				DisplayFlags ^= DisplayFlags.Obsolete;
-			
 			string description = overload.Description;
-			if (description != this.description || !overloads.ContainsKey (description))
+			if (description != this.description || !overloads.ContainsKey (description)) {
 				overloads[description] = overload;
+				
+				//if any of the overloads is obsolete, we should not mark the item obsolete
+				if (!overload.member.IsObsolete)
+					DisplayFlags &= ~MonoDevelop.Projects.Gui.Completion.DisplayFlags.Obsolete;
+			}
 		}
 		
 		#endregion
