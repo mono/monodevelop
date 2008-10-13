@@ -308,6 +308,14 @@ namespace MonoDevelop.Projects.Gui.Completion
 		
 		public void SelectEntry (string s)
 		{
+			//when the list is empty, disable the selection or users get annoyed by it accepting
+			//the top entry automatically
+			if (string.IsNullOrEmpty (s)) {
+				list.Selection = 0;
+				list.SelectionDisabled = true;
+				return;
+			}
+				
 			bool hasMismatches;
 			int n = findMatchedEntry (s, out hasMismatches);
 			SelectEntry (n);
