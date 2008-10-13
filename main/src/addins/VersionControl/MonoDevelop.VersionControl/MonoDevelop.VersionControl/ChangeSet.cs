@@ -31,16 +31,7 @@ namespace MonoDevelop.VersionControl
 		}
 		
 		public int CommentsCount {
-// Doesn´t work with public mono version:
-//			get { return items.Count (item => !string.IsNullOrEmpty (item.Comment)); }
-			get {
-				int c = 0;
-				for (int i = 0; i < items.Count; i++) {
-					if (!string.IsNullOrEmpty (items[i].Comment))
-						c++;
-				}
-				return c;
-			}
+			get { return items.Count (item => !string.IsNullOrEmpty (item.Comment)); }
 		}
 		
 		public string GenerateGlobalComment (int maxColumns)
