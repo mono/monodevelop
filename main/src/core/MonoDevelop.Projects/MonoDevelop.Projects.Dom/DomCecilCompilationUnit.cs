@@ -67,20 +67,21 @@ namespace MonoDevelop.Projects.Dom
 			System.GC.Collect ();
 		}
 		
-		public static ICompilationUnit Load (string fileName)
+		public static DomCecilCompilationUnit Load (string fileName)
 		{
 			return Load (fileName, true);
 		}
-		public static ICompilationUnit Load (string fileName, bool keepDefinitions)
+		public static DomCecilCompilationUnit Load (string fileName, bool keepDefinitions)
 		{
 			return Load (fileName, true, true);
 		}
 		
-		public static ICompilationUnit Load (string fileName, bool keepDefinitions, bool loadInternals)
+		public static DomCecilCompilationUnit Load (string fileName, bool keepDefinitions, bool loadInternals)
 		{
 			if (String.IsNullOrEmpty (fileName))
-				return new CompilationUnit (fileName);
+				return null;
 			DomCecilCompilationUnit result = new DomCecilCompilationUnit (keepDefinitions, loadInternals, AssemblyFactory.GetAssembly (fileName));
+			result.fileName = fileName;
 			System.GC.Collect ();
 			return result;
 		}

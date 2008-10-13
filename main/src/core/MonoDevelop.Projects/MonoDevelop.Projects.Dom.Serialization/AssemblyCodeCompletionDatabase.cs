@@ -118,7 +118,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		protected override bool IsFileModified (FileEntry file)
 		{
-			if (parsing)
+			if (parsing || String.IsNullOrEmpty (assemblyName))
 				return false;
 				
 			if (!isPackageAssembly)

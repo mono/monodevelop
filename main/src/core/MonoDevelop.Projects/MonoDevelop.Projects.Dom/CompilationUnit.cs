@@ -34,7 +34,7 @@ namespace MonoDevelop.Projects.Dom
 {
 	public class CompilationUnit : ICompilationUnit
 	{
-		string fileName;
+		protected string fileName;
 		public string FileName {
 			get {
 				return fileName;

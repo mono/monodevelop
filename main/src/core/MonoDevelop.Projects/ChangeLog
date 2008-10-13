@@ -1,3 +1,10 @@
+2008-10-13  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom/CompilationUnit.cs:
+	* MonoDevelop.Projects.Dom/DomCecilCompilationUnit.cs:
+	* MonoDevelop.Projects.Dom.Serialization/AssemblyCodeCompletionDatabase.cs:
+	Worked on assembly compilation units.
+
 2008-10-10  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs: fixed 'Bug
