@@ -47,6 +47,7 @@ namespace MonoDevelop.Core.Gui
 		public static AlertButton CloseWithoutSave = new AlertButton (GettextCatalog.GetString ("Close _without Saving"));
 		public static AlertButton Discard = new AlertButton (GettextCatalog.GetString ("D_iscard"));
 		public static AlertButton Stop    = new AlertButton (Gtk.Stock.Stop, true);
+		public static AlertButton Proceed = new AlertButton (GettextCatalog.GetString ("_Proceed"));
 		
 		public static AlertButton OverwriteFile = new AlertButton (GettextCatalog.GetString ("_Overwrite file"));
 		
