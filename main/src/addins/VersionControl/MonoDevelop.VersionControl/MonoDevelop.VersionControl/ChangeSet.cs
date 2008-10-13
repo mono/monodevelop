@@ -35,9 +35,10 @@ namespace MonoDevelop.VersionControl
 //			get { return items.Count (item => !string.IsNullOrEmpty (item.Comment)); }
 			get {
 				int c = 0;
-				for (int i = 0; i < items.Count; i++)
-                                    if (!string.IsNullOrEmpty (items[i].Comment))
-					c++;
+				for (int i = 0; i < items.Count; i++) {
+					if (!string.IsNullOrEmpty (items[i].Comment))
+						c++;
+				}
 				return c;
 			}
 		}
