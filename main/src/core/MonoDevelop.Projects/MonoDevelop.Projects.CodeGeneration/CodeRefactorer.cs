@@ -358,35 +358,31 @@ namespace MonoDevelop.Projects.CodeGeneration
 			List<KeyValuePair<IMember,IReturnType>> toImplement = new List<KeyValuePair<IMember,IReturnType>> ();
 			
 			ProjectDom ctx = GetParserContext (klass);
-			foreach (IReturnType rType in iface.BaseTypes) {
-				if (rType.FullName == "System.Object")
+			foreach (IType baseClass in iface.SourceProjectDom.GetInheritanceTree (iface)) {
+				if (baseClass == iface || baseClass.FullName == "System.Object")
 					continue;
-				IType baseClass = ctx.GetType (rType);
-				if (baseClass == null)
+/*				if (baseClass == null)
 					LoggingService.LogError (GettextCatalog.GetString
 						("Error while implementing interface '{0}' in '{1}': base type '{2}' was not found.", klass, iface, baseClass)
 					);
-				else
-					klass = ImplementInterface (pinfo, klass, baseClass, explicitly, declaringClass, hintReturnType);
+				else*/
+				klass = ImplementInterface (pinfo, klass, baseClass, explicitly, declaringClass, hintReturnType);
 			}
-			
-			prefix = new DomReturnType (iface.FullName);
+			prefix = new DomReturnType (iface);
 			
 			// Stub out non-implemented events defined by @iface
 			foreach (IEvent ev in iface.Events) {
 				bool needsExplicitly = explicitly;
 				alreadyImplemented = false;
 				foreach (IEvent cev in klass.Events) {
-					if (cev.Name == ev.Name && cev.IsExplicitDeclaration == needsExplicitly) {
-						if (!needsExplicitly && !cev.ReturnType.Equals (ev.ReturnType))
-							needsExplicitly = true;
-						else
-							alreadyImplemented = !needsExplicitly || (iface.FullName == GetExplicitPrefix (cev.ExplicitInterfaces));
+					if (cev.Name == ev.Name) {
+						alreadyImplemented = true;
+						break;
 					}
 				}
 				
 				if (!alreadyImplemented)
-					toImplement.Add (new KeyValuePair<IMember,IReturnType> (ev, needsExplicitly ? prefix : null));
+					toImplement.Add (new KeyValuePair<IMember,IReturnType> (ev, null));
 			}
 			
 			// Stub out non-implemented methods defined by @iface
