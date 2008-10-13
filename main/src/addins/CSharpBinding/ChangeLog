@@ -1,5 +1,9 @@
 2008-10-13  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Gui/MemberCompletionData.cs: Tidy up last commit.
+
+2008-10-13  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Gui/MemberCompletionData.cs: Fix accidentally marking all overloads as
 	obsolete.
 

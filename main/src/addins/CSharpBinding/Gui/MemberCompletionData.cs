@@ -288,7 +288,7 @@ namespace MonoDevelop.CSharpBinding
 				
 				//if any of the overloads is obsolete, we should not mark the item obsolete
 				if (!overload.member.IsObsolete)
-					DisplayFlags &= ~MonoDevelop.Projects.Gui.Completion.DisplayFlags.Obsolete;
+					DisplayFlags &= ~DisplayFlags.Obsolete;
 			}
 		}
 		
