@@ -7,6 +7,7 @@ REFS =  \
 	-r:Mono.Cairo \
 	-r:Mono.Posix \
 	-r:System \
+	-r:System.Core \
 	-r:System.Xml
 
 FILES =  \

@@ -1,3 +1,8 @@
+2008-10-13  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/Document.cs: fixed 'Bug 434248 - Need to refresh
+	texteditor after removing folded code'.
+
 2008-10-12  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.TextEditor/TextEditor.cs: Don't use vi mode on default

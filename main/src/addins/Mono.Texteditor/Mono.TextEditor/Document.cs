@@ -31,6 +31,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Text;
 using Mono.TextEditor.Highlighting;
+using System.Linq;
 
 namespace Mono.TextEditor
 {
@@ -192,6 +193,10 @@ namespace Mono.TextEditor
 			int oldLineCount = this.LineCount;
 			ReplaceEventArgs args = new ReplaceEventArgs (offset, count, value);
 			OnTextReplacing (args);
+			lock (syncObject) {
+				int endOffset = offset + count;
+				foldSegments = new List<FoldSegment> (foldSegments.Where (s => (s.Offset < offset || s.Offset >= endOffset) && (s.EndOffset < offset || s.EndOffset >= endOffset)));
+			}
 			if (!isInUndo) {
 				UndoOperation operation = new UndoOperation (args, GetTextAt (offset, count));
 				if (currentAtomicOperation != null) {
