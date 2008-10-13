@@ -71,13 +71,18 @@ namespace Mono.TextEditor.Vi
 				data.Caret.IsInInsertMode = true;
 		}
 		
+		void Reset (string status)
+		{
+			ResetEditorState (Data);
+			state = State.Normal;
+			commandBuffer.Length = 0;
+			Status = status;
+		}
+		
 		protected override void HandleKeypress (Gdk.Key key, uint unicodeKey, Gdk.ModifierType modifier)
 		{
 			if (key == Gdk.Key.Escape || (key == Gdk.Key.c && (modifier & Gdk.ModifierType.ControlMask) != 0)) {
-				ResetEditorState (Data);
-				state = State.Normal;
-				commandBuffer.Length = 0;
-				Status = string.Empty;
+				Reset (string.Empty);
 				return;
 			}
 			
@@ -93,6 +98,14 @@ namespace Mono.TextEditor.Vi
 						commandBuffer.Append (":");
 						Status = commandBuffer.ToString ();
 						return;
+					
+					case 'A':
+						RunAction (CaretMoveActions.LineEnd);
+						goto case 'i';
+						
+					case 'I':
+						RunAction (CaretMoveActions.LineStart);
+						goto case 'i';
 					
 					case 'i':
 					case 'a':
@@ -123,6 +136,34 @@ namespace Mono.TextEditor.Vi
 					case 'o':
 						RunAction (ViActions.NewLineBelow);
 						goto case 'i';
+						
+					case 'r':
+						RunAction (SelectionActions.MoveRight);
+						state = State.WriteChar;
+						return;
+						
+					case 'c':
+						Status = "c";
+						state = State.Change;
+						return;
+						
+					case 'x':
+						Status = string.Empty;
+						RunAction (DeleteActions.Delete);
+						return;
+						
+					case 'X':
+						Status = string.Empty;
+						RunAction (DeleteActions.Backspace);
+						return;
+						
+					case 'D':
+						RunAction (DeleteActions.FromMoveAction (CaretMoveActions.LineEnd));
+						return;
+						
+					case 'C':
+						RunAction (DeleteActions.FromMoveAction (CaretMoveActions.LineEnd));
+						goto case 'i';
 					}
 				}
 				
@@ -152,9 +193,34 @@ namespace Mono.TextEditor.Vi
 				
 				if (action != null) {
 					RunAction (action);
+				} else {
+					Status = "Unrecognised motion";
 				}
 				
 				state = State.Normal;
+				return;
+				
+			case State.Change:
+				//copied from delete action
+				if (((modifier & (Gdk.ModifierType.ShiftMask | Gdk.ModifierType.ControlMask)) == 0 
+				     && key == Gdk.Key.c))
+				{
+					action = DeleteActions.CaretLine;
+				} else {
+					action = ViActionMaps.GetNavCharAction ((char)unicodeKey);
+					if (action == null)
+						action = ViActionMaps.GetDirectionKeyAction (key, modifier);
+					if (action != null)
+						action = DeleteActions.FromMoveAction (action);
+				}
+				
+				if (action != null) {
+					RunAction (action);
+				} else {
+					Status = "Unrecognised motion";
+				}
+				
+				state = State.Insert;
 				return;
 				
 			case State.Insert:
@@ -190,6 +256,15 @@ namespace Mono.TextEditor.Vi
 					Status = commandBuffer.ToString ();
 				}
 				return;
+				
+			case State.WriteChar:
+				if (unicodeKey != 0) {
+					InsertCharacter ((char) unicodeKey);
+					Reset (string.Empty);
+				} else {
+					Reset ("Keystroke was not a character");
+				}
+				return;
 			}
 		}
 		
@@ -200,7 +275,9 @@ namespace Mono.TextEditor.Vi
 			Visual,
 			VisualLine,
 			Insert,
-			Replace
+			Replace,
+			WriteChar,
+			Change
 		}
 	}
 }

@@ -1,3 +1,7 @@
+2008-10-13  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextEditor.Vi/ViMode.cs: Implement A I c C x X D.
+
 2008-10-13  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/Document.cs: fixed 'Bug 434248 - Need to refresh
