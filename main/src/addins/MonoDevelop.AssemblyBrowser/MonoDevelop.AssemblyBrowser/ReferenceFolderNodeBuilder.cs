@@ -70,14 +70,20 @@ namespace MonoDevelop.AssemblyBrowser
 			foreach (AssemblyNameReference assemblyNameReference in referenceFolder.ModuleDefinition.AssemblyReferences) {
 				AssemblyDefinition assembly = null;
 				try {
-					assembly = AssemblyFactory.GetAssembly (assemblyNameReference.FullName);
-				} catch (Exception) {
-				}
-				if (assembly != null) {
-					widget.TreeView.AddChild (assembly); 
-					ctx.AddChild (assembly);
-				} else {
-					ctx.AddChild (new Error (MonoDevelop.Core.GettextCatalog.GetString ("Can't find:") + assemblyNameReference.FullName));
+					string realAssemblyName;
+					string assemblyFile;
+					string name;
+					if (MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetAssemblyInfo (assemblyNameReference.FullName, out realAssemblyName, out assemblyFile, out name)) {
+						if (System.IO.File.Exists (assemblyFile)) {
+							ctx.AddChild (new Reference (assemblyFile));
+						} else {
+							ctx.AddChild (new Error (MonoDevelop.Core.GettextCatalog.GetString ("Can't load:") + assemblyNameReference.FullName));
+						}
+					} else {
+						ctx.AddChild (new Error (MonoDevelop.Core.GettextCatalog.GetString ("Can't find:") + assemblyNameReference.FullName));
+					}
+				} catch (Exception e) {
+				//	ctx.AddChild (new Error (MonoDevelop.Core.GettextCatalog.GetString ("Error while loading:") + assemblyNameReference.FullName + "/" + e.Message));
 				}
 			}
 			foreach (ModuleReference moduleRef in referenceFolder.ModuleDefinition.ModuleReferences) {

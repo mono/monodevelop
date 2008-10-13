@@ -25,8 +25,10 @@ FILES =  \
 	MonoDevelop.AssemblyBrowser/ModuleReferenceNodeBuilder.cs \
 	MonoDevelop.AssemblyBrowser/Namespace.cs \
 	MonoDevelop.AssemblyBrowser/NamespaceBuilder.cs \
+	MonoDevelop.AssemblyBrowser/Reference.cs \
 	MonoDevelop.AssemblyBrowser/ReferenceFolder.cs \
 	MonoDevelop.AssemblyBrowser/ReferenceFolderNodeBuilder.cs \
+	MonoDevelop.AssemblyBrowser/ReferenceNodeBuilder.cs \
 	MonoDevelop.AssemblyBrowser/ResourceFolder.cs \
 	MonoDevelop.AssemblyBrowser/ResourceFolderNodeBuilder.cs \
 	MonoDevelop.AssemblyBrowser/ResourceNodeBuilder.cs

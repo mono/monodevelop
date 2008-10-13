@@ -79,7 +79,8 @@ namespace MonoDevelop.AssemblyBrowser
 				new DomEventNodeBuilder (),
 				new DomPropertyNodeBuilder (),
 				new BaseTypeFolderNodeBuilder (),
-				new DomReturnTypeNodeBuilder ()
+				new DomReturnTypeNodeBuilder (),
+				new ReferenceNodeBuilder (this)
 				}, new TreePadOption [] {
 					new TreePadOption ("PublicApiOnly", GettextCatalog.GetString ("Show public members only"), PropertyService.Get ("AssemblyBrowser.ShowPublicOnly", true))
 				});
@@ -693,12 +694,42 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 		}
 		
-		List<DomCecilCompilationUnit> definitions = new List<DomCecilCompilationUnit> ();
-		public void AddReference (string fileName)
+		public void SelectAssembly (string fileName)
 		{
-			AssemblyDefinition assemblyDefinition = AssemblyFactory.GetAssembly (fileName);
-			definitions.Add (new DomCecilCompilationUnit (assemblyDefinition));
-			treeView.LoadTree (assemblyDefinition);
+			DomCecilCompilationUnit cu = null;
+			foreach (DomCecilCompilationUnit unit in definitions) {
+				if (unit.FileName == fileName)
+					cu = unit;
+			}
+			if (cu == null)
+				return;
+			
+			ITreeNavigator nav = treeView.GetRootNode ();
+			do {
+				if (nav.DataItem == cu.AssemblyDefinition) {
+					nav.ExpandToNode ();
+					nav.Selected = true;
+					return;
+				}
+			} while (nav.MoveNext());
+					
+		}
+		
+		List<DomCecilCompilationUnit> definitions = new List<DomCecilCompilationUnit> ();
+		public AssemblyDefinition AddReference (string fileName)
+		{
+			foreach (DomCecilCompilationUnit unit in definitions) {
+				if (unit.FileName == fileName) 
+					return unit.AssemblyDefinition;
+			}
+			DomCecilCompilationUnit newUnit = DomCecilCompilationUnit.Load (fileName);
+			definitions.Add (newUnit);
+			if (definitions.Count == 1) {
+				treeView.LoadTree (newUnit.AssemblyDefinition);
+			} else {
+				treeView.AddChild (newUnit.AssemblyDefinition);
+			}
+			return newUnit.AssemblyDefinition;
 		}
 		
 		[CommandHandler (SearchCommands.Find)]

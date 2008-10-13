@@ -46,6 +46,8 @@
     <File name="gtk-gui/MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.AssemblyBrowser/Decompiler.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.AssemblyBrowser/Reference.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.AssemblyBrowser/ReferenceNodeBuilder.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />

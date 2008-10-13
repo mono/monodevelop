@@ -1,3 +1,11 @@
+2008-10-13  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.AssemblyBrowser/Reference.cs:
+	* MonoDevelop.AssemblyBrowser/ReferenceNodeBuilder.cs:
+	* MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:
+	* MonoDevelop.AssemblyBrowser/ReferenceFolderNodeBuilder.cs: Worked on
+	reference loading.
+
 2008-10-10  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.AssemblyBrowser/NamespaceBuilder.cs:
