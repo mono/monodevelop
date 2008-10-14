@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MonoDevelop.Projects.Gui.Completion
 {
@@ -94,6 +95,27 @@ namespace MonoDevelop.Projects.Gui.Completion
 				if (datum.DisplayText == name)
 					return datum;
 			return null;
+		}
+		
+		public bool Remove (string name)
+		{
+			for (int i = 0; i < this.Count; i++) {
+				if (this[i].DisplayText == name) {
+					this.RemoveAt (i);
+					return true;
+				}
+			}
+			return false;
+		}
+		
+		public void RemoveWhere (Func<ICompletionData,bool> shouldRemove)
+		{
+			for (int i = 0; i < this.Count;) {
+				if (shouldRemove (this[i]))
+					this.RemoveAt (i);
+				else
+					i++;
+			}
 		}
 	}
 }
