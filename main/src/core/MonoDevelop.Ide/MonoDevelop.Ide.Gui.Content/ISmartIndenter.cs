@@ -1,5 +1,5 @@
 // 
-// SmartIndenter.cs
+// ISmartIndenter.cs
 // 
 // Author:
 //   Michael Hutchinson <mhutchinson@novell.com>
@@ -31,23 +31,33 @@ using System;
 namespace MonoDevelop.Ide.Gui.Content
 {
 	
-	public struct Indent
+	public interface ISmartIndenter
 	{
-		int scopeDepth, alignmentOffset;
-		
-		public Indent (int scopeDepth, int alignmentOffset)
-		{
-			this.scopeDepth = scopeDepth;
-			this.alignmentOffset = alignmentOffset;
-		}
-		
-		public int ScopeDepth { get { return scopeDepth; } }
-		public int AlignmentOffset { get { return alignmentOffset; } }
+		Indent GetIndent (int line);
+		Indent GetAutoTriggeredReindent (int insertionOffset, int length);
 	}
 	
-	public interface ISmartIndentEngine : IDocumentStateEngine
+	public struct Indent
 	{
-		int CurrentLineNumber { get; }
-		Indent CurrentLineIndent { get; }
+		int depth, alignment;
+		bool isRelative;
+		
+		public Indent (int depth, int alignment)
+			: this (depth, alignment, false)
+		{
+		}
+		
+		public Indent (int depth, int alignment, bool isRelative)
+		{
+			this.depth = depth;
+			this.alignment = alignment;
+			this.isRelative = isRelative;
+		}
+		
+		public int Depth { get { return depth; } }
+		public int Alignment { get { return alignment; } }
+		public bool IsRelativeToPreviousLine { get { return isRelative; } }
+		
+		public bool IsZero { get { return Depth == 0 && Alignment == 0; } }
 	}
 }

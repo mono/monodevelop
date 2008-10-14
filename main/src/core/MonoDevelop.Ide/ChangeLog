@@ -1,3 +1,13 @@
+2008-10-13  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Ide.mdp: Updated.
+
+	* MonoDevelop.Ide.Gui.Content/ISmartIndenter.cs: Sketch out an API for
+	smart indent.
+
+	* MonoDevelop.Ide.Gui.Content/SmartIndenter.cs: Removed.
+
 2008-10-13  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Gui.Search/DefaultFind.cs: fixed 'Bug 432845 - Find
