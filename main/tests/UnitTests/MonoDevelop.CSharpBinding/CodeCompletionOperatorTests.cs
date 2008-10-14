@@ -44,7 +44,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 		[Test()]
 		public void TestAddOperator ()
 		{
-			CodeCompletionDataProvider provider = CodeCompletionTests.CreateProvider (
+			CompletionDataList provider = CodeCompletionTests.CreateProvider (
 @"class A
 {
 	public static B operator+(A left, A right)
@@ -70,13 +70,13 @@ class TestClass
 	}
 }");
 			Assert.IsNotNull (provider);
-			Assert.IsNotNull (provider.SearchData ("BMethod"));
+			Assert.IsNotNull (provider.Find ("BMethod"));
 		}
 
 		[Test()]
 		public void TestSubtractOperator ()
 		{
-			CodeCompletionDataProvider provider = CodeCompletionTests.CreateProvider (
+			CompletionDataList provider = CodeCompletionTests.CreateProvider (
 @"class A
 {
 	public static B operator-(A left, A right)
@@ -102,13 +102,13 @@ class TestClass
 	}
 }");
 			Assert.IsNotNull (provider);
-			Assert.IsNotNull (provider.SearchData ("BMethod"));
+			Assert.IsNotNull (provider.Find ("BMethod"));
 		}
 		
 		[Test()]
 		public void TestMultiplyOperator ()
 		{
-			CodeCompletionDataProvider provider = CodeCompletionTests.CreateProvider (
+			CompletionDataList provider = CodeCompletionTests.CreateProvider (
 @"class A
 {
 	public static B operator*(A left, A right)
@@ -134,13 +134,13 @@ class TestClass
 	}
 }");
 			Assert.IsNotNull (provider);
-			Assert.IsNotNull (provider.SearchData ("BMethod"));
+			Assert.IsNotNull (provider.Find ("BMethod"));
 		}
 		
 		[Test()]
 		public void TestDivideOperator ()
 		{
-			CodeCompletionDataProvider provider = CodeCompletionTests.CreateProvider (
+			CompletionDataList provider = CodeCompletionTests.CreateProvider (
 @"class A
 {
 	public static B operator/(A left, A right)
@@ -166,13 +166,13 @@ class TestClass
 	}
 }");
 			Assert.IsNotNull (provider);
-			Assert.IsNotNull (provider.SearchData ("BMethod"));
+			Assert.IsNotNull (provider.Find ("BMethod"));
 		}
 
 		[Test()]
 		public void TestModulusOperator ()
 		{
-			CodeCompletionDataProvider provider = CodeCompletionTests.CreateProvider (
+			CompletionDataList provider = CodeCompletionTests.CreateProvider (
 @"class A
 {
 	public static B operator%(A left, A right)
@@ -198,13 +198,13 @@ class TestClass
 	}
 }");
 			Assert.IsNotNull (provider);
-			Assert.IsNotNull (provider.SearchData ("BMethod"));
+			Assert.IsNotNull (provider.Find ("BMethod"));
 		}
 		
 		[Test()]
 		public void TestBitwiseAndOperator ()
 		{
-			CodeCompletionDataProvider provider = CodeCompletionTests.CreateProvider (
+			CompletionDataList provider = CodeCompletionTests.CreateProvider (
 @"class A
 {
 	public static B operator&(A left, A right)
@@ -230,13 +230,13 @@ class TestClass
 	}
 }");
 			Assert.IsNotNull (provider);
-			Assert.IsNotNull (provider.SearchData ("BMethod"));
+			Assert.IsNotNull (provider.Find ("BMethod"));
 		}
 		
 		[Test()]
 		public void TestBitwiseOrOperator ()
 		{
-			CodeCompletionDataProvider provider = CodeCompletionTests.CreateProvider (
+			CompletionDataList provider = CodeCompletionTests.CreateProvider (
 @"class A
 {
 	public static B operator|(A left, A right)
@@ -262,13 +262,13 @@ class TestClass
 	}
 }");
 			Assert.IsNotNull (provider);
-			Assert.IsNotNull (provider.SearchData ("BMethod"));
+			Assert.IsNotNull (provider.Find ("BMethod"));
 		}
 		
 		[Test()]
 		public void TestExclusiveOrOperator ()
 		{
-			CodeCompletionDataProvider provider = CodeCompletionTests.CreateProvider (
+			CompletionDataList provider = CodeCompletionTests.CreateProvider (
 @"class A
 {
 	public static B operator^(A left, A right)
@@ -294,13 +294,13 @@ class TestClass
 	}
 }");
 			Assert.IsNotNull (provider);
-			Assert.IsNotNull (provider.SearchData ("BMethod"));
+			Assert.IsNotNull (provider.Find ("BMethod"));
 		}
 		
 		[Test()]
 		public void TestShiftLeftOperator ()
 		{
-			CodeCompletionDataProvider provider = CodeCompletionTests.CreateProvider (
+			CompletionDataList provider = CodeCompletionTests.CreateProvider (
 @"class A
 {
 	public static B operator<<(A left, A right)
@@ -326,13 +326,13 @@ class TestClass
 	}
 }");
 			Assert.IsNotNull (provider);
-			Assert.IsNotNull (provider.SearchData ("BMethod"));
+			Assert.IsNotNull (provider.Find ("BMethod"));
 		}
 		
 		[Test()]
 		public void TestShiftRightOperator ()
 		{
-			CodeCompletionDataProvider provider = CodeCompletionTests.CreateProvider (
+			CompletionDataList provider = CodeCompletionTests.CreateProvider (
 @"class A
 {
 	public static B operator>>(A left, A right)
@@ -358,13 +358,13 @@ class TestClass
 	}
 }");
 			Assert.IsNotNull (provider);
-			Assert.IsNotNull (provider.SearchData ("BMethod"));
+			Assert.IsNotNull (provider.Find ("BMethod"));
 		}
 		
 		[Test()]
 		public void TestGreaterThanOperator ()
 		{
-			CodeCompletionDataProvider provider = CodeCompletionTests.CreateProvider (
+			CompletionDataList provider = CodeCompletionTests.CreateProvider (
 @"class A
 {
 	public static B operator>(A left, A right)
@@ -390,13 +390,13 @@ class TestClass
 	}
 }");
 			Assert.IsNotNull (provider);
-			Assert.IsNotNull (provider.SearchData ("BMethod"));
+			Assert.IsNotNull (provider.Find ("BMethod"));
 		}
 		
 		[Test()]
 		public void TestGreaterThanOrEqualOperator ()
 		{
-			CodeCompletionDataProvider provider = CodeCompletionTests.CreateProvider (
+			CompletionDataList provider = CodeCompletionTests.CreateProvider (
 @"class A
 {
 	public static B operator>=(A left, A right)
@@ -422,13 +422,13 @@ class TestClass
 	}
 }");
 			Assert.IsNotNull (provider);
-			Assert.IsNotNull (provider.SearchData ("BMethod"));
+			Assert.IsNotNull (provider.Find ("BMethod"));
 		}
 		
 		[Test()]
 		public void TestEqualityOperator ()
 		{
-			CodeCompletionDataProvider provider = CodeCompletionTests.CreateProvider (
+			CompletionDataList provider = CodeCompletionTests.CreateProvider (
 @"class A
 {
 	public static B operator==(A left, A right)
@@ -454,13 +454,13 @@ class TestClass
 	}
 }");
 			Assert.IsNotNull (provider);
-			Assert.IsNotNull (provider.SearchData ("BMethod"));
+			Assert.IsNotNull (provider.Find ("BMethod"));
 		}
 		
 		[Test()]
 		public void TestInEqualityOperator ()
 		{
-			CodeCompletionDataProvider provider = CodeCompletionTests.CreateProvider (
+			CompletionDataList provider = CodeCompletionTests.CreateProvider (
 @"class A
 {
 	public static B operator!=(A left, A right)
@@ -486,13 +486,13 @@ class TestClass
 	}
 }");
 			Assert.IsNotNull (provider);
-			Assert.IsNotNull (provider.SearchData ("BMethod"));
+			Assert.IsNotNull (provider.Find ("BMethod"));
 		}
 		
 		[Test()]
 		public void TestLessThanOperator ()
 		{
-			CodeCompletionDataProvider provider = CodeCompletionTests.CreateProvider (
+			CompletionDataList provider = CodeCompletionTests.CreateProvider (
 @"class A
 {
 	public static B operator<(A left, A right)
@@ -518,13 +518,13 @@ class TestClass
 	}
 }");
 			Assert.IsNotNull (provider);
-			Assert.IsNotNull (provider.SearchData ("BMethod"));
+			Assert.IsNotNull (provider.Find ("BMethod"));
 		}
 		
 		[Test()]
 		public void TestLessThanOrEqualOperator ()
 		{
-			CodeCompletionDataProvider provider = CodeCompletionTests.CreateProvider (
+			CompletionDataList provider = CodeCompletionTests.CreateProvider (
 @"class A
 {
 	public static B operator<=(A left, A right)
@@ -550,13 +550,13 @@ class TestClass
 	}
 }");
 			Assert.IsNotNull (provider);
-			Assert.IsNotNull (provider.SearchData ("BMethod"));
+			Assert.IsNotNull (provider.Find ("BMethod"));
 		}
 		
 		[Test()]
 		public void TestUnaryPlusOperator ()
 		{
-			CodeCompletionDataProvider provider = CodeCompletionTests.CreateProvider (
+			CompletionDataList provider = CodeCompletionTests.CreateProvider (
 @"class A
 {
 	public static B operator+(A left)
@@ -581,13 +581,13 @@ class TestClass
 	}
 }");
 			Assert.IsNotNull (provider);
-			Assert.IsNotNull (provider.SearchData ("BMethod"));
+			Assert.IsNotNull (provider.Find ("BMethod"));
 		}
 		
 		[Test()]
 		public void TestUnaryMinusOperator ()
 		{
-			CodeCompletionDataProvider provider = CodeCompletionTests.CreateProvider (
+			CompletionDataList provider = CodeCompletionTests.CreateProvider (
 @"class A
 {
 	public static B operator-(A left)
@@ -612,13 +612,13 @@ class TestClass
 	}
 }");
 			Assert.IsNotNull (provider);
-			Assert.IsNotNull (provider.SearchData ("BMethod"));
+			Assert.IsNotNull (provider.Find ("BMethod"));
 		}
 		
 		[Test()]
 		public void TestUnaryNotOperator ()
 		{
-			CodeCompletionDataProvider provider = CodeCompletionTests.CreateProvider (
+			CompletionDataList provider = CodeCompletionTests.CreateProvider (
 @"class A
 {
 	public static B operator!(A left)
@@ -643,13 +643,13 @@ class TestClass
 	}
 }");
 			Assert.IsNotNull (provider);
-			Assert.IsNotNull (provider.SearchData ("BMethod"));
+			Assert.IsNotNull (provider.Find ("BMethod"));
 		}
 		
 		[Test()]
 		public void TestUnaryBitwiseNotOperator ()
 		{
-			CodeCompletionDataProvider provider = CodeCompletionTests.CreateProvider (
+			CompletionDataList provider = CodeCompletionTests.CreateProvider (
 @"class A
 {
 	public static B operator~(A left)
@@ -674,7 +674,7 @@ class TestClass
 	}
 }");
 			Assert.IsNotNull (provider);
-			Assert.IsNotNull (provider.SearchData ("BMethod"));
+			Assert.IsNotNull (provider.Find ("BMethod"));
 		}
 	}
 }

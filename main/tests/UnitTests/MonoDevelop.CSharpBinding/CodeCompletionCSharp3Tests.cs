@@ -44,7 +44,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 		[Test()]
 		public void TestExtensionMethods ()
 		{
-			CodeCompletionDataProvider provider = CodeCompletionTests.CreateProvider (
+			CompletionDataList provider = CodeCompletionTests.CreateProvider (
 @"using System;
 
 public static class EMClass
@@ -65,13 +65,13 @@ class Program
 }
 ");
 			Assert.IsNotNull (provider, "provider == null");
-			Assert.IsNotNull (provider.SearchData ("ToInt32Ext"), "extension method 'ToInt32Ext' not found.");
+			Assert.IsNotNull (provider.Find ("ToInt32Ext"), "extension method 'ToInt32Ext' not found.");
 		}
 		
 		[Test()]
 		public void TestVarLocalVariables ()
 		{
-			CodeCompletionDataProvider provider = CodeCompletionTests.CreateProvider (
+			CompletionDataList provider = CodeCompletionTests.CreateProvider (
 @"using System;
 
 class Test
@@ -91,13 +91,13 @@ class Program
 }
 ");
 			Assert.IsNotNull (provider, "provider == null");
-			Assert.IsNotNull (provider.SearchData ("TestMethod"), "method 'TestMethod' not found.");
+			Assert.IsNotNull (provider.Find ("TestMethod"), "method 'TestMethod' not found.");
 		}
 		
 		[Test()]
 		public void TestVarLoopVariable ()
 		{
-			CodeCompletionDataProvider provider = CodeCompletionTests.CreateProvider (
+			CompletionDataList provider = CodeCompletionTests.CreateProvider (
 @"using System;
 
 class Test
@@ -119,13 +119,13 @@ class Program
 }
 ");
 			Assert.IsNotNull (provider, "provider == null");
-			Assert.IsNotNull (provider.SearchData ("TestMethod"), "method 'TestMethod' not found.");
+			Assert.IsNotNull (provider.Find ("TestMethod"), "method 'TestMethod' not found.");
 		}
 
 		[Test()]
 		public void TestAnonymousType ()
 		{
-			CodeCompletionDataProvider provider = CodeCompletionTests.CreateProvider (
+			CompletionDataList provider = CodeCompletionTests.CreateProvider (
 @"
 class Program
 {
@@ -137,9 +137,9 @@ class Program
 }
 ");
 			Assert.IsNotNull (provider, "provider == null");
-			Assert.IsNotNull (provider.SearchData ("TestInt"), "property 'TestInt' not found.");
-			Assert.IsNotNull (provider.SearchData ("TestChar"), "property 'TestChar' not found.");
-			Assert.IsNotNull (provider.SearchData ("TestString"), "property 'TestString' not found.");
+			Assert.IsNotNull (provider.Find ("TestInt"), "property 'TestInt' not found.");
+			Assert.IsNotNull (provider.Find ("TestChar"), "property 'TestChar' not found.");
+			Assert.IsNotNull (provider.Find ("TestString"), "property 'TestString' not found.");
 		}
 		
 

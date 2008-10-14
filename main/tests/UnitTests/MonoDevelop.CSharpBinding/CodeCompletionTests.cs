@@ -41,7 +41,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 	[TestFixture()]
 	public class CodeCompletionTests : UnitTests.TestBase
 	{
-		public static CodeCompletionDataProvider CreateProvider (string text)
+		public static CompletionDataList CreateProvider (string text)
 		{
 			int cursorPosition = text.IndexOf ('$');
 			string parsedText = text.Substring (0, cursorPosition) + text.Substring (cursorPosition + 1);
@@ -69,10 +69,10 @@ namespace MonoDevelop.CSharpBinding.Tests
 			CodeCompletionContext ctx = new CodeCompletionContext ();
 			ctx.TriggerOffset = sev.CursorPosition;
 			
-			return textEditorCompletion.HandleCodeCompletion (ctx, text[cursorPosition - 1] , ref triggerWordLength) as CodeCompletionDataProvider;
+			return textEditorCompletion.HandleCodeCompletion (ctx, text[cursorPosition - 1] , ref triggerWordLength) as CompletionDataList;
 		}
 
-		public static CodeCompletionDataProvider CreateCtrlSpaceProvider (string text)
+		public static CompletionDataList CreateCtrlSpaceProvider (string text)
 		{
 			int cursorPosition = text.IndexOf ('$');
 			string parsedText = text.Substring (0, cursorPosition) + text.Substring (cursorPosition + 1);
@@ -100,13 +100,13 @@ namespace MonoDevelop.CSharpBinding.Tests
 			CodeCompletionContext ctx = new CodeCompletionContext ();
 			ctx.TriggerOffset = sev.CursorPosition;
 			
-			return textEditorCompletion.CodeCompletionCommand (ctx) as CodeCompletionDataProvider;
+			return textEditorCompletion.CodeCompletionCommand (ctx) as CompletionDataList;
 		}
 		
 		[Test()]
 		public void TestSimpleCodeCompletion ()
 		{
-			CodeCompletionDataProvider provider = CreateProvider (
+			CompletionDataList provider = CreateProvider (
 @"class Test { public void TM1 () {} public void TM2 () {} public int TF1; }
 class CCTest {
 void TestMethod ()
@@ -117,15 +117,15 @@ void TestMethod ()
 }
 ");
 			Assert.IsNotNull (provider);
-			Assert.AreEqual (3, provider.CompletionDataCount);
-			Assert.IsNotNull (provider.SearchData ("TM1"));
-			Assert.IsNotNull (provider.SearchData ("TM2"));
-			Assert.IsNotNull (provider.SearchData ("TF1"));
+			Assert.AreEqual (3, provider.Count);
+			Assert.IsNotNull (provider.Find ("TM1"));
+			Assert.IsNotNull (provider.Find ("TM2"));
+			Assert.IsNotNull (provider.Find ("TF1"));
 		}
 		[Test()]
 		public void TestSimpleInterfaceCodeCompletion ()
 		{
-			CodeCompletionDataProvider provider = CreateProvider (
+			CompletionDataList provider = CreateProvider (
 @"interface ITest { void TM1 (); void TM2 (); int TF1 { get; } }
 class CCTest {
 void TestMethod ()
@@ -136,10 +136,10 @@ void TestMethod ()
 }
 ");
 			Assert.IsNotNull (provider);
-			Assert.AreEqual (3, provider.CompletionDataCount);
-			Assert.IsNotNull (provider.SearchData ("TM1"));
-			Assert.IsNotNull (provider.SearchData ("TM2"));
-			Assert.IsNotNull (provider.SearchData ("TF1"));
+			Assert.AreEqual (3, provider.Count);
+			Assert.IsNotNull (provider.Find ("TM1"));
+			Assert.IsNotNull (provider.Find ("TM2"));
+			Assert.IsNotNull (provider.Find ("TF1"));
 		}
 
 		/// <summary>
@@ -148,7 +148,7 @@ void TestMethod ()
 		[Test()]
 		public void TestBug399695 ()
 		{
-			CodeCompletionDataProvider provider = CreateProvider (
+			CompletionDataList provider = CreateProvider (
 @"namespace Other { enum TheEnum { One, Two } }
 namespace ThisOne { 
         public class Test {
@@ -162,8 +162,8 @@ namespace ThisOne {
         }
 }");
 			Assert.IsNotNull (provider);
-			Assert.AreEqual (1, provider.CompletionDataCount);
-			Assert.IsNotNull (provider.SearchData ("Other.TheEnum"), "Other.TheEnum not found.");
+			Assert.AreEqual (1, provider.Count);
+			Assert.IsNotNull (provider.Find ("Other.TheEnum"), "Other.TheEnum not found.");
 		}
 
 		/// <summary>
@@ -172,7 +172,7 @@ namespace ThisOne {
 		[Test()]
 		public void TestBug318834 ()
 		{
-			CodeCompletionDataProvider provider = CreateProvider (
+			CompletionDataList provider = CreateProvider (
 @"class T
 {
         static void Main ()
@@ -191,7 +191,7 @@ namespace ThisOne {
 		[Test()]
 		public void TestBug321306 ()
 		{
-			CodeCompletionDataProvider provider = CreateProvider (
+			CompletionDataList provider = CreateProvider (
 @"namespace a
 {
 	namespace b
@@ -211,8 +211,8 @@ namespace ThisOne {
 	}
 }");
 			Assert.IsNotNull (provider, "provider not found.");
-			Assert.AreEqual (1, provider.CompletionDataCount);
-			Assert.IsNotNull (provider.SearchData ("c"), "class 'c' not found.");
+			Assert.AreEqual (1, provider.Count);
+			Assert.IsNotNull (provider.Find ("c"), "class 'c' not found.");
 		}
 
 		/// <summary>
@@ -221,7 +221,7 @@ namespace ThisOne {
 		[Test()]
 		public void TestBug322089 ()
 		{
-			CodeCompletionDataProvider provider = CreateProvider (
+			CompletionDataList provider = CreateProvider (
 @"class AClass
 {
 	public int AField;
@@ -237,9 +237,9 @@ class Test
 	}
 }");
 			Assert.IsNotNull (provider, "provider not found.");
-			Assert.AreEqual (2, provider.CompletionDataCount);
-			Assert.IsNotNull (provider.SearchData ("AField"), "field 'AField' not found.");
-			Assert.IsNotNull (provider.SearchData ("BField"), "field 'BField' not found.");
+			Assert.AreEqual (2, provider.Count);
+			Assert.IsNotNull (provider.Find ("AField"), "field 'AField' not found.");
+			Assert.IsNotNull (provider.Find ("BField"), "field 'BField' not found.");
 		}
 		
 		/// <summary>
@@ -248,7 +248,7 @@ class Test
 		[Test()]
 		public void TestBug323283 ()
 		{
-			CodeCompletionDataProvider provider = CreateProvider (
+			CompletionDataList provider = CreateProvider (
 @"class AClass
 {
 	public int AField;
@@ -273,9 +273,9 @@ class Test
 	}
 }");
 			Assert.IsNotNull (provider, "provider not found.");
-			Assert.AreEqual (2, provider.CompletionDataCount);
-			Assert.IsNotNull (provider.SearchData ("AField"), "field 'AField' not found.");
-			Assert.IsNotNull (provider.SearchData ("BField"), "field 'BField' not found.");
+			Assert.AreEqual (2, provider.Count);
+			Assert.IsNotNull (provider.Find ("AField"), "field 'AField' not found.");
+			Assert.IsNotNull (provider.Find ("BField"), "field 'BField' not found.");
 		}
 
 		/// <summary>
@@ -284,7 +284,7 @@ class Test
 		[Test()]
 		public void TestBug323317 ()
 		{
-			CodeCompletionDataProvider provider = CreateProvider (
+			CompletionDataList provider = CreateProvider (
 @"class AClass
 {
 	public int AField;
@@ -299,9 +299,9 @@ class Test
 	}
 }");
 			Assert.IsNotNull (provider, "provider not found.");
-			Assert.AreEqual (2, provider.CompletionDataCount);
-			Assert.IsNotNull (provider.SearchData ("AField"), "field 'AField' not found.");
-			Assert.IsNotNull (provider.SearchData ("BField"), "field 'BField' not found.");
+			Assert.AreEqual (2, provider.Count);
+			Assert.IsNotNull (provider.Find ("AField"), "field 'AField' not found.");
+			Assert.IsNotNull (provider.Find ("BField"), "field 'BField' not found.");
 		}
 		
 		/// <summary>
@@ -310,7 +310,7 @@ class Test
 		[Test()]
 		public void TestBug325509 ()
 		{
-			CodeCompletionDataProvider provider = CreateProvider (
+			CompletionDataList provider = CreateProvider (
 @"class AClass
 {
 	public int A;
@@ -329,9 +329,9 @@ class Test
 	}
 }");
 			Assert.IsNotNull (provider, "provider not found.");
-			Assert.AreEqual (2, provider.CompletionDataCount);
-			Assert.IsNotNull (provider.SearchData ("A"), "field 'A' not found.");
-			Assert.IsNotNull (provider.SearchData ("B"), "field 'B' not found.");
+			Assert.AreEqual (2, provider.Count);
+			Assert.IsNotNull (provider.Find ("A"), "field 'A' not found.");
+			Assert.IsNotNull (provider.Find ("B"), "field 'B' not found.");
 		}
 
 		/// <summary>
@@ -340,7 +340,7 @@ class Test
 		[Test()]
 		public void TestBug338392 ()
 		{
-			CodeCompletionDataProvider provider = CreateProvider (
+			CompletionDataList provider = CreateProvider (
 @"namespace A
 {
         class C
@@ -351,7 +351,7 @@ class Test
 namespace A.$
 ");
 			Assert.IsNotNull (provider, "provider not found.");
-			Assert.AreEqual (0, provider.CompletionDataCount);
+			Assert.AreEqual (0, provider.Count);
 		}
 
 		/// <summary>
@@ -360,7 +360,7 @@ namespace A.$
 		[Test()]
 		public void TestBug427284 ()
 		{
-			CodeCompletionDataProvider provider = CreateProvider (
+			CompletionDataList provider = CreateProvider (
 @"namespace TestNamespace
 {
         class Test
@@ -376,8 +376,8 @@ class TestClass
 }
 ");
 			Assert.IsNotNull (provider, "provider not found.");
-			Assert.AreEqual (1, provider.CompletionDataCount);
-			Assert.IsNotNull (provider.SearchData ("Test"), "class 'Test' not found.");
+			Assert.AreEqual (1, provider.Count);
+			Assert.IsNotNull (provider.Find ("Test"), "class 'Test' not found.");
 		}
 
 		/// <summary>
@@ -386,7 +386,7 @@ class TestClass
 		[Test()]
 		public void TestBug427294 ()
 		{
-			CodeCompletionDataProvider provider = CreateProvider (
+			CompletionDataList provider = CreateProvider (
 @"class TestClass
 {
 	public TestClass GetTestClass ()
@@ -403,8 +403,8 @@ class Test
 	}
 }");
 			Assert.IsNotNull (provider, "provider not found.");
-			Assert.AreEqual (1, provider.CompletionDataCount);
-			Assert.IsNotNull (provider.SearchData ("GetTestClass"), "method 'GetTestClass' not found.");
+			Assert.AreEqual (1, provider.Count);
+			Assert.IsNotNull (provider.Find ("GetTestClass"), "method 'GetTestClass' not found.");
 		}
 		
 		/// <summary>
@@ -413,7 +413,7 @@ class Test
 		[Test()]
 		public void TestBug405000 ()
 		{
-			CodeCompletionDataProvider provider = CreateProvider (
+			CompletionDataList provider = CreateProvider (
 @"namespace A {
 	class Test
 	{
@@ -431,8 +431,8 @@ namespace B {
 	}
 }");
 			Assert.IsNotNull (provider, "provider not found.");
-			Assert.AreEqual (1, provider.CompletionDataCount);
-			Assert.IsNotNull (provider.SearchData ("Test"), "class 'Test' not found.");
+			Assert.AreEqual (1, provider.Count);
+			Assert.IsNotNull (provider.Find ("Test"), "class 'Test' not found.");
 		}
 		
 		/// <summary>
@@ -441,7 +441,7 @@ namespace B {
 		[Test()]
 		public void TestBug427649 ()
 		{
-			CodeCompletionDataProvider provider = CreateProvider (
+			CompletionDataList provider = CreateProvider (
 @"class BaseClass
 {
 	protected void ProtecedMember ()
@@ -458,7 +458,7 @@ class C : BaseClass
 	}
 }
 ");
-			Assert.IsTrue (provider == null || provider.CompletionDataCount == 0);
+			Assert.IsTrue (provider == null || provider.Count == 0);
 		}
 		
 		/// <summary>
@@ -467,7 +467,7 @@ class C : BaseClass
 		[Test()]
 		public void TestBug427734A ()
 		{
-			CodeCompletionDataProvider provider = CreateProvider (
+			CompletionDataList provider = CreateProvider (
 @"public class Test
 {
 	public enum SomeEnum { a,b }
@@ -478,8 +478,8 @@ class C : BaseClass
 	}
 }");
 			Assert.IsNotNull (provider, "provider not found.");
-			Assert.AreEqual (1, provider.CompletionDataCount);
-			Assert.IsNotNull (provider.SearchData ("SomeEnum"), "enum 'SomeEnum' not found.");
+			Assert.AreEqual (1, provider.Count);
+			Assert.IsNotNull (provider.Find ("SomeEnum"), "enum 'SomeEnum' not found.");
 		}
 		
 		/// <summary>
@@ -488,7 +488,7 @@ class C : BaseClass
 		[Test()]
 		public void TestBug427734B ()
 		{
-			CodeCompletionDataProvider provider = CreateProvider (
+			CompletionDataList provider = CreateProvider (
 @"public class Test
 {
 	public enum SomeEnum { a,b }
@@ -499,9 +499,9 @@ class C : BaseClass
 	}
 }");
 			Assert.IsNotNull (provider, "provider not found.");
-			Assert.AreEqual (2, provider.CompletionDataCount);
-			Assert.IsNotNull (provider.SearchData ("a"), "enum member 'a' not found.");
-			Assert.IsNotNull (provider.SearchData ("b"), "enum member 'b' not found.");
+			Assert.AreEqual (2, provider.Count);
+			Assert.IsNotNull (provider.Find ("a"), "enum member 'a' not found.");
+			Assert.IsNotNull (provider.Find ("b"), "enum member 'b' not found.");
 		}
 		
 		/// <summary>
@@ -510,7 +510,7 @@ class C : BaseClass
 		[Test()]
 		public void TestBug431764 ()
 		{
-			CodeCompletionDataProvider provider = CreateCtrlSpaceProvider (
+			CompletionDataList provider = CreateCtrlSpaceProvider (
 @"public class Test
 {
 	int number;
@@ -519,7 +519,7 @@ class C : BaseClass
 	}
 }");
 			Assert.IsNotNull (provider, "provider not found.");
-			Assert.IsNotNull (provider.GetCompletionData ("value"), "Should contain 'value'");
+			Assert.IsNotNull (provider.Find ("value"), "Should contain 'value'");
 		}
 		
 		/// <summary>
@@ -528,7 +528,7 @@ class C : BaseClass
 		[Test()]
 		public void TestBug431797A ()
 		{
-			CodeCompletionDataProvider provider = CreateCtrlSpaceProvider (
+			CompletionDataList provider = CreateCtrlSpaceProvider (
 @"public class Test
 {
 	private List<string> strings;
@@ -536,7 +536,7 @@ class C : BaseClass
 }");
 		
 			Assert.IsNotNull (provider, "provider not found.");
-			Assert.IsNull (provider.GetCompletionData ("strings"), "should not contain 'strings'");
+			Assert.IsNull (provider.Find ("strings"), "should not contain 'strings'");
 		}
 		
 		/// <summary>
@@ -545,7 +545,7 @@ class C : BaseClass
 		[Test()]
 		public void TestBug431797B ()
 		{
-			CodeCompletionDataProvider provider = CreateProvider (
+			CompletionDataList provider = CreateProvider (
 @"public class Test
 {
 	public delegate string [] AutoCompleteHandler (string text, int pos);
@@ -556,7 +556,7 @@ class C : BaseClass
 	}
 }");
 			Assert.IsNotNull (provider, "provider not found.");
-			Assert.IsNull (provider.GetCompletionData("AutoCompleteHandler"), "should not contain 'AutoCompleteHandler' delegate");
+			Assert.IsNull (provider.Find ("AutoCompleteHandler"), "should not contain 'AutoCompleteHandler' delegate");
 		}
 		
 		/// <summary>
@@ -565,7 +565,7 @@ class C : BaseClass
 		[Test()]
 		public void TestBug432681 ()
 		{
-			CodeCompletionDataProvider provider = CreateProvider (
+			CompletionDataList provider = CreateProvider (
 @"
 
 class C {
@@ -585,7 +585,7 @@ class C {
 		[Test()]
 		public void TestGenericObjectCreation ()
 		{
-			CodeCompletionDataProvider provider = CreateProvider (
+			CompletionDataList provider = CreateProvider (
 @"
 class List<T>
 {
@@ -597,7 +597,7 @@ class Test{
 	}
 }");
 			Assert.IsNotNull (provider, "provider not found.");
-			Assert.IsTrue (provider.SearchData ("List<int>") != null, "List<int> not found");
+			Assert.IsTrue (provider.Find ("List<int>") != null, "List<int> not found");
 		}
 		
 		/// <summary>
@@ -606,7 +606,7 @@ class Test{
 		[Test()]
 		public void TestBug431803 ()
 		{
-			CodeCompletionDataProvider provider = CreateProvider (
+			CompletionDataList provider = CreateProvider (
 @"public class Test
 {
 	public string[] GetStrings ()
@@ -615,8 +615,8 @@ class Test{
 	}
 }");
 			Assert.IsNotNull (provider, "provider not found.");
-			Assert.AreEqual (1, provider.CompletionDataCount);
-			Assert.IsNotNull (provider.SearchData ("string[]"), "type string not found.");
+			Assert.AreEqual (1, provider.Count);
+			Assert.IsNotNull (provider.Find ("string[]"), "type string not found.");
 		}
 		
 		[TestFixtureSetUp] 
