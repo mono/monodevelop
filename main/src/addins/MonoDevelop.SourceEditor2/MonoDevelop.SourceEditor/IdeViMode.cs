@@ -78,6 +78,15 @@ namespace MonoDevelop.SourceEditor
 					editor.View.WorkbenchWindow.CloseWindow (false, true, -1);
 				});
 				return "Saved and closed file.";
+				
+			case ":make":
+				MonoDevelop.Projects.Project proj = editor.View.Project;
+				if (proj != null) {
+					IdeApp.ProjectOperations.Build (proj);
+					return string.Format ("Building project {0}", proj.Name);
+				} else {
+					return "File is not part of a project";
+				}
 			}
 			
 			return base.RunExCommand (command);
