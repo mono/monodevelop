@@ -1,3 +1,10 @@
+2008-10-13  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AspNet.Parser/Directive.cs: Add more attributes.
+
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Remove code that's
+	moved to base class.
+
 2008-10-09  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.AspNet.Parser/Directive.cs:

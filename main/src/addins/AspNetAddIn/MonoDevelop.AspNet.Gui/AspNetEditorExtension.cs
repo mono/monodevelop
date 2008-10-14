@@ -76,26 +76,6 @@ namespace MonoDevelop.AspNet.Gui
 		}
 		
 		#endregion
-		
-		#region Convenience accessors
-		
-		protected ITextBuffer Buffer {
-			get {
-				if (Document == null)
-					throw new InvalidOperationException ("Editor extension not yet initialized");
-				return Document.GetContent<ITextBuffer> ();
-			}
-		}
-		
-		protected IEditableTextBuffer EditableBuffer {
-			get {
-				if (Document == null)
-					throw new InvalidOperationException ("Editor extension not yet initialized");
-				return Document.GetContent<IEditableTextBuffer> ();
-			}
-		}
-		
-		#endregion
 			
 		public override ICompletionDataList CodeCompletionCommand (ICodeCompletionContext completionContext)
 		{

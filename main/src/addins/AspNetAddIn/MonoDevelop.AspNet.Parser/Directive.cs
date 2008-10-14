@@ -60,11 +60,57 @@ namespace MonoDevelop.AspNet.Parser
 		
 		static ICompletionDataList GetPageAttributes (ClrVersion clrVersion)
 		{
+			bool isVB = false;
+			
 			CompletionDataList list = new CompletionDataList ();
 			list.Add ("Async");
 			list.Add ("AspCompat");
-			//list.Add ("Explicit");
+			list.Add ("AsyncTimeOut");
+			list.Add ("AutoEventWireup");
+			list.Add ("Buffer");
+			list.Add ("ClassName");
+			list.Add ("ClientTarget");
+			list.Add ("CodeBehind");
+			list.Add ("CompilerOptions");
+			list.Add ("CodeFile");
+			list.Add ("CodePage");
+			list.Add ("CompilationMode");
+			list.Add ("Culture");
+			list.Add ("ContentType");
+			list.Add ("CodeFileBaseClass");
+			list.Add ("Debug");
+			list.Add ("Description");
+			list.Add ("EnableEventValidation");
+			list.Add ("EnableSessionState");
+			list.Add ("EnableTheming");
+			list.Add ("EnableViewState");
+			list.Add ("EnableViewStateMac");
+			list.Add ("ErrorPage");
+			if (isVB)
+				list.Add ("Explicit");
+			list.Add ("Inherits");
+			list.Add ("Language");
+			list.Add ("LCID");
+			list.Add ("LinePragmas");
+			list.Add ("MasterPageFile");
+			
 			list.Add ("MaintainScrollPositionOnPostback");
+			list.Add ("ResponseEncoding");
+			list.Add ("SmartNavigation");
+			list.Add ("Src");
+			if (isVB)
+				list.Add ("Strict");
+			list.Add ("StyleSheetTheme");
+			list.Add ("Theme");
+			list.Add ("TargetSchema");
+			list.Add ("Title");
+			list.Add ("Trace");
+			list.Add ("TraceMode");
+			list.Add ("Transaction");
+			list.Add ("UICulture");
+			list.Add ("ValidateRequest");
+			list.Add ("ViewStateEncryptionMode");
+			list.Add ("WarningLevel");
 			return list;
 		}
 		
