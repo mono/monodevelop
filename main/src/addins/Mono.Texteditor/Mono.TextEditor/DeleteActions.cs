@@ -150,5 +150,15 @@ namespace Mono.TextEditor
 				data.Document.CommitLineUpdate (data.Caret.Line);
 			}
 		}
+		
+		public static void DeleteSelection (TextEditorData data)
+		{
+			if (!data.CanEditSelection)
+				return;
+			if (data.IsSomethingSelected) {
+				data.DeleteSelectedText ();
+				return;
+			}
+		}
 	}
 }

@@ -1,3 +1,10 @@
+2008-10-14  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextEditor/DeleteActions.cs: Add DeleteSelection.
+
+	* Mono.TextEditor.Vi/ViMode.cs: Implement >{motion}, <{motion}, >>, <<
+	for normal mode, and and c d > < for visual mode.
+
 2008-10-13  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.TextEditor.Vi/ViMode.cs: Implement A I c C x X D.

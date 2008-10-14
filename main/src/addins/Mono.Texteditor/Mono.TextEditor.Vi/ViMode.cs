@@ -164,6 +164,16 @@ namespace Mono.TextEditor.Vi
 					case 'C':
 						RunAction (DeleteActions.FromMoveAction (CaretMoveActions.LineEnd));
 						goto case 'i';
+						
+					case '>':
+						Status = ">";
+						state = State.Indent;
+						return;
+						
+					case '<':
+						Status = "<";
+						state = State.Unindent;
+						return;
 					}
 				}
 				
@@ -193,11 +203,11 @@ namespace Mono.TextEditor.Vi
 				
 				if (action != null) {
 					RunAction (action);
+					Reset ("");
 				} else {
-					Status = "Unrecognised motion";
+					Reset ("Unrecognised motion");
 				}
 				
-				state = State.Normal;
 				return;
 				
 			case State.Change:
@@ -216,11 +226,12 @@ namespace Mono.TextEditor.Vi
 				
 				if (action != null) {
 					RunAction (action);
+					Reset ("--INSERT");
+					state = State.Insert;
 				} else {
-					Status = "Unrecognised motion";
+					Reset ("Unrecognised motion");
 				}
 				
-				state = State.Insert;
 				return;
 				
 			case State.Insert:
@@ -238,11 +249,37 @@ namespace Mono.TextEditor.Vi
 				
 			case State.Visual:
 				action = ViActionMaps.GetNavCharAction ((char)unicodeKey);
-				if (action == null)
+				if (action == null) {
 					action = ViActionMaps.GetDirectionKeyAction (key, modifier);
-				
-				if (action != null)
+				}
+				if (action != null) {
 					RunAction (SelectionActions.FromMoveAction (action));
+					return;
+				}
+				
+				if (Data.IsSomethingSelected && (modifier & (Gdk.ModifierType.ControlMask)) == 0) {
+					switch ((char)unicodeKey) {
+					case 'd':
+						RunAction (DeleteActions.DeleteSelection);
+						Reset ("Deleted selection");
+						return;
+					case 'c':
+						RunAction (DeleteActions.DeleteSelection);
+						state = State.Insert;
+						Status = "-- INSERT --";
+						return;
+						
+					case '>':
+						RunAction (MiscActions.IndentSelection);
+						Reset ("");
+						return;
+						
+					case '<':
+						RunAction (MiscActions.RemoveIndentSelection);
+						Reset ("");
+						return;
+					}
+				}
 				
 				return;
 				
@@ -265,6 +302,48 @@ namespace Mono.TextEditor.Vi
 					Reset ("Keystroke was not a character");
 				}
 				return;
+				
+			case State.Indent:
+				if (((modifier & (Gdk.ModifierType.ControlMask)) == 0 && ((char)unicodeKey) == '>'))
+				{
+					RunAction (MiscActions.IndentSelection);
+					Reset ("");
+					return;
+				}
+				
+				action = ViActionMaps.GetNavCharAction ((char)unicodeKey);
+				if (action == null)
+					action = ViActionMaps.GetDirectionKeyAction (key, modifier);
+				
+				if (action != null) {
+					RunAction (SelectionActions.FromMoveAction (action));
+					RunAction (MiscActions.IndentSelection);
+					Reset ("");
+				} else {
+					Reset ("Unrecognised motion");
+				}
+				return;
+				
+			case State.Unindent:
+				if (((modifier & (Gdk.ModifierType.ControlMask)) == 0 && ((char)unicodeKey) == '<'))
+				{
+					RunAction (MiscActions.RemoveIndentSelection);
+					Reset ("");
+					return;
+				}
+				
+				action = ViActionMaps.GetNavCharAction ((char)unicodeKey);
+				if (action == null)
+					action = ViActionMaps.GetDirectionKeyAction (key, modifier);
+				
+				if (action != null) {
+					RunAction (SelectionActions.FromMoveAction (action));
+					RunAction (MiscActions.RemoveIndentSelection);
+					Reset ("");
+				} else {
+					Reset ("Unrecognised motion");
+				}
+				return;
 			}
 		}
 		
@@ -277,7 +356,9 @@ namespace Mono.TextEditor.Vi
 			Insert,
 			Replace,
 			WriteChar,
-			Change
+			Change,
+			Indent,
+			Unindent
 		}
 	}
 }
