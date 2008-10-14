@@ -174,11 +174,17 @@ namespace MonoDevelop.Projects.Gui.Completion
 			switch (key)
 			{
 				case Gdk.Key.Up:
-					list.Selection --;
+					if (list.SelectionDisabled)
+						list.SelectionDisabled = false;
+					else
+						list.Selection --;
 					return KeyAction.Ignore;
 					
 				case Gdk.Key.Down:
-					list.Selection ++;
+					if (list.SelectionDisabled)
+						list.SelectionDisabled = false;
+					else
+						list.Selection ++;
 					return KeyAction.Ignore;
 					
 				case Gdk.Key.Page_Up:

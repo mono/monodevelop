@@ -1,5 +1,12 @@
 2008-10-13  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: When the selection
+	is disabled, first up/down keystroke enables the selection and does
+	not move it. Makes it easier to select current deselected item, and
+	mimics VS behaviour.
+
+2008-10-13  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Disable the
 	selection when the completion string is empty.
 
