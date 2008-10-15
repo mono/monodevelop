@@ -1,5 +1,10 @@
 2008-10-15  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Xml.StateEngine/ParsingTests.cs: Don't start up the MD
+	runtime for parser tests.
+
+2008-10-15  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Xml.StateEngine/ParsingTests.cs: Improve tests using new
 	TestParser utility class.
 

@@ -36,7 +36,7 @@ namespace MonoDevelop.Xml.StateEngine
 {
 	
 	[TestFixture]
-	public class ParsingTests : UnitTests.TestBase
+	public class ParsingTests
 	{
 		
 		[Test]
