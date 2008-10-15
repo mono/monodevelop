@@ -1,5 +1,13 @@
 2008-10-14  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Projects.Gui.Completion/DeclarationViewWindow.cs: Empty
+	the windows when the assigned description is empty as well as when
+	it's null. Prevents showing empty tooltip.
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs: Cleanup.
+
+2008-10-14  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Projects.Gui.Completion/CompletionDataList.cs: Add methods
 	for removing completion data.
 

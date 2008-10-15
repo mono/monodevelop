@@ -305,10 +305,9 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 
 			ICompletionData data = completionDataList[List.Selection];
-			bool descriptionHasMarkup = (data.DisplayFlags & DisplayFlags.DescriptionHasMarkup) != 0;
 			IOverloadedCompletionData overloadedData = data as IOverloadedCompletionData;
 
-			string descMarkup = descriptionHasMarkup
+			string descMarkup = (data.DisplayFlags & DisplayFlags.DescriptionHasMarkup) != 0
 				? data.Description
 				: GLib.Markup.EscapeText (data.Description);
 
@@ -331,7 +330,6 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 			
 			currentData = data;
-			
 			if (declarationviewwindow.DescriptionMarkup.Length == 0)
 				return;
 

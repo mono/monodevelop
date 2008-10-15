@@ -49,7 +49,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 			
 			set {
-				if (value == null) {
+				if (string.IsNullOrEmpty (value)) {
 					headlabel.Markup = string.Empty;
 					bodylabel.Markup = string.Empty;
 					return;
