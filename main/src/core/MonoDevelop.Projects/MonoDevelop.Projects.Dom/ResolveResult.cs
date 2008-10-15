@@ -245,12 +245,15 @@ namespace MonoDevelop.Projects.Dom
 				accessibleStaticTypes = DomType.GetAccessibleExtensionTypes (dom, callingMember.DeclaringType.CompilationUnit);
 			
 			foreach (IType curType in dom.GetInheritanceTree (type)) {
+				if (curType.ClassType == ClassType.Interface)
+					continue;
 				if (accessibleStaticTypes != null) {
 					foreach (IMethod extensionMethod in curType.GetExtensionMethods (accessibleStaticTypes)) {
 						result.Add (extensionMethod);
 					}
 				}
 				foreach (IMember member in curType.Members) {
+					
 					if (callingMember != null && !member.IsAccessibleFrom (dom, type, callingMember))
 						continue;
 					if (member is IMethod && ((IMethod)member).IsConstructor)

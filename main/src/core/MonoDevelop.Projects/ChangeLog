@@ -1,5 +1,9 @@
 2008-10-15  Full Name  <Email Address>
 
+	* MonoDevelop.Projects.Dom/ResolveResult.cs: filtered some members.
+
+2008-10-15  Full Name  <Email Address>
+
 	* MonoDevelop.Projects.Dom/DomProperty.cs:
 	* MonoDevelop.Projects.Dom/AbstractMember.cs:
 	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs:
