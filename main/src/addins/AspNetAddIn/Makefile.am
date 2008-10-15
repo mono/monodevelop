@@ -32,6 +32,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.AspNet.Deployment.WebTargetEditor.cs \
 	gtk-gui/MonoDevelop.AspNet.Gui.AspNetConfigurationPanelWidget.cs \
 	gtk-gui/MonoDevelop.AspNet.Gui.XspOptionsPanelWidget.cs \
+	MonoDevelop.AspNet.Completion/SimpleLists.cs \
 	MonoDevelop.AspNet.Deployment/AspNetDeployServiceExtension.cs \
 	MonoDevelop.AspNet.Deployment/WebDeployCommands.cs \
 	MonoDevelop.AspNet.Deployment/WebDeployLaunchDialog.cs \

@@ -226,7 +226,14 @@ namespace MonoDevelop.AspNet.Gui
 					if (Tracker.Engine.CurrentStateLength == 1)
 						triggerWordLength = 1;
 					
-					return DirectiveCompletion.GetAttributes (dir.Name.FullName, ClrVersion.Default);
+					Dictionary<string, string> existingAtts = new Dictionary<string,string>
+						(StringComparer.InvariantCultureIgnoreCase);
+					
+					foreach (S.XAttribute att in dir.Attributes) {
+						existingAtts [att.Name.FullName] = att.Value ?? string.Empty;
+					}
+					
+					return DirectiveCompletion.GetAttributes (dir.Name.FullName, ClrVersion.Default, existingAtts);
 				}
 			}	
 			
@@ -236,9 +243,12 @@ namespace MonoDevelop.AspNet.Gui
 			 	 && Tracker.Engine.CurrentState.Parent is S.XmlAttributeState
 			         && Tracker.Engine.CurrentStateLength == 1)
 			) {
-				S.XElement el = (Tracker.Engine.CurrentState is S.XmlTagState)?
-					(S.XElement) Tracker.Engine.Nodes.Peek () :
-					(S.XElement) Tracker.Engine.Nodes.Peek (1);
+				S.XElement el = (Tracker.Engine.Nodes.Peek () as S.XElement) ?? 
+					Tracker.Engine.Nodes.Peek (1) as S.XElement;
+				
+				//HACK: we should handle other kinds of parent node
+				if (el == null)
+					return null;
 				
 				//attributes
 				if (el != null && el.Name.IsValid && (forced ||
@@ -293,7 +303,10 @@ namespace MonoDevelop.AspNet.Gui
 				S.XAttribute att = (S.XAttribute) Tracker.Engine.Nodes.Peek ();
 				
 				if (att.IsNamed) {
-					S.XElement el = (S.XElement) Tracker.Engine.Nodes.Peek (1);
+					S.XElement el = Tracker.Engine.Nodes.Peek (1) as S.XElement;
+					//HACK: we should handle other kinds of parent node
+					if (el == null)
+						return null;
 					
 					char next = ' ';
 					if (currentPosition + 1 < buf.Length)

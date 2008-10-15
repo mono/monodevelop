@@ -1,5 +1,5 @@
 // 
-// AspNetCompilationUnit.cs
+// SimpleLists.cs
 // 
 // Author:
 //   Michael Hutchinson <mhutchinson@novell.com>
@@ -28,34 +28,49 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
-using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Gui.Completion;
 
-namespace MonoDevelop.AspNet.Parser
+namespace MonoDevelop.AspNet.Completion
 {
 	
 	
-	public class AspNetParsedDocument : ParsedDocument
+	static class SimpleList
 	{
-		public AspNetParsedDocument (string fileName) : base (fileName)
+		
+		public static ICompletionDataList CreateBoolean (bool defaultValue)
 		{
-			Flags |= ParsedDocumentFlags.NonSerializable;
-			Type = AspNetAppProject.DetermineWebSubtype (System.IO.Path.GetExtension (fileName));
+			CompletionDataList provider = new CompletionDataList ();
+			provider.Add ("true", "md-literal");
+			provider.Add ("false", "md-literal");
+			provider.DefaultCompletionString = defaultValue? "true" : "false";
+			return provider;
 		}
 		
-		public PageInfo PageInfo { get; set; }
-		public Document Document { get; set; }
-		public WebSubtype Type { get; set; }
-		
-		public override IEnumerable<FoldingRegion> GenerateFolds ()
+		public static ICompletionDataList CreateEnum<T> (T defaultValue)
 		{
-			if (Document != null) {
-				List<FoldingRegion> regions = new List<FoldingRegion> ();
-				CompilationUnitVisitor cuVisitor = new CompilationUnitVisitor (regions);
-				Document.RootNode.AcceptVisit (cuVisitor);
-				return regions;
+			CompletionDataList provider = new CompletionDataList ();
+			foreach (string name in Enum.GetNames (typeof (T))) {
+				provider.Add (name, "md-literal");
 			}
-			return new FoldingRegion [0];
+			provider.DefaultCompletionString = defaultValue.ToString ();
+			return provider;
+		}
+		
+		public static ICompletionDataList Create (string defaultValue, IEnumerable<string> vals)
+		{
+			CompletionDataList provider = new CompletionDataList ();
+			foreach (string v in vals) {
+				provider.Add (v, "md-literal");
+			}
+			provider.DefaultCompletionString = defaultValue;
+			return provider;
+		}
+		
+		public static ICompletionDataList Create (int defaultValue, IEnumerable<int> vals)
+		{
+			return Create (defaultValue.ToString (), from s in vals select s.ToString ());
 		}
 	}
 }

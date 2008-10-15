@@ -34,83 +34,147 @@ using System.Text;
 using System.Web.UI;
 
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Projects;
 using MonoDevelop.Projects.Gui.Completion;
+
+using MonoDevelop.AspNet.Completion;
 
 namespace MonoDevelop.AspNet.Parser
 {
 	static class DirectiveCompletion
 	{
-		public static ICompletionDataList GetAttributeValues (string tag, string attribute, ClrVersion clrVersion)
+		//
+		// NOTE: MS' documentation for directives is at http://msdn.microsoft.com/en-us/library/t8syafc7.aspx
+		//
+		public static ICompletionDataList GetDirectives (AspNetAppProject project, AspNetParsedDocument doc)
 		{
-			switch (tag.ToLower ()) {
+			CompletionDataList list = new CompletionDataList ();
+			
+			if (doc.Type == WebSubtype.WebForm) {
+				list.Add ("Implements", null, "Declare that this page implements an interface.");
+				list.Add ("Page", null, "Define properties of this page.");
+				list.Add ("PreviousPageType", null, "Strongly type the page's PreviousPage property.");
+				list.Add ("MasterType", null, "Strongly type the page's Master property.");
+			} else if (doc.Type == WebSubtype.MasterPage) {
+				list.Add ("Implements", null, "Declare that this master page implements an interface.");
+				list.Add ("Master", null, "Define properties of this master page.");
+			} else if (doc.Type == WebSubtype.WebControl) {
+				list.Add ("Control", null, "Define properties of this user control.");
+				list.Add ("Implements", null, "Declare that this control implements an interface.");
+			} else {
+				return null;
+			}
+			
+			list.Add ("Assembly", null, "Reference an assembly.");
+			list.Add ("Import", null, "Import a namespace.");
+			
+			if (doc.Type != WebSubtype.MasterPage) {
+				list.Add ("OutputCache", null, "Set output caching behaviour.");
+			}
+			
+			list.Add ("Reference", "Reference a page or user control.");
+			list.Add ("Register", null, "Register a user control or custom web controls.");
+			
+			return list.Count > 0? list : null;
+		}
+		
+
+		public static ICompletionDataList GetAttributeValues (AspNetAppProject project, ProjectFile file,
+		                                                      string directiveName, string attribute, ClrVersion clrVersion)
+		{
+			switch (directiveName.ToLower ()) {
 			case "page":
 				return GetPageAttributeValues (attribute, clrVersion);
+				
 			}
 			return null;
 		}
 		
-		public static ICompletionDataList GetAttributes (string tag, ClrVersion clrVersion)
+		public static ICompletionDataList GetAttributes (string directiveName, ClrVersion clrVersion,
+		                                                 Dictionary<string, string> existingAtts)
 		{
-			switch (tag.ToLower ()) {
+			bool net20 = clrVersion != ClrVersion.Net_1_1;
+			
+			//FIXME: detect whether the page is VB
+			bool vb = false;
+			
+			CompletionDataList list;
+			
+			switch (directiveName.ToLower ()) {
 			case "page":
-				return GetPageAttributes (clrVersion);
+				list = new CompletionDataList ();
+				ExclusiveAdd (list, existingAtts, page11Attributes);
+				if (net20)
+					ExclusiveAdd (list, existingAtts, page20Attributes);
+				if (vb)
+					ExclusiveAdd (list, existingAtts, pageVBAttributes);
+				MutexAdd (list, existingAtts, page11MutexAttributes);
+				return list;
+				
+			case "control":
+				list = new CompletionDataList ();
+				ExclusiveAdd (list, existingAtts, userControlAttributes);
+				if (vb)
+					ExclusiveAdd (list, existingAtts, pageVBAttributes);
+				return list;
+				
+			case "master":
+				list = new CompletionDataList ();
+				ExclusiveAdd (list, existingAtts, userControlAttributes);
+				ExclusiveAdd (list, existingAtts, masterControlAttributes);
+				if (vb)
+					ExclusiveAdd (list, existingAtts, pageVBAttributes);
+				return list;
+				
+			case "assembly":
+				//the two assembly directive attributes are mutually exclusive
+				return MutexAdd (new CompletionDataList (), existingAtts, assemblyAttributes);
+				
+			case "import":
+				return ExclusiveAdd (new CompletionDataList (), existingAtts, importAttributes);
+				
+			case "reference":
+				return MutexAdd (new CompletionDataList (), existingAtts, referenceAttributes);
+				
+			case "register":
+				list = new CompletionDataList ();
+				foreach (string s in registerAssemblyAttributes)
+					if (existingAtts.ContainsKey (s))
+						
+				
+				ExclusiveAdd (list, existingAtts, registerAttributes);
+				return list;
+				
+			case "outputcache":
+				return ExclusiveAdd (new CompletionDataList (), existingAtts, outputcacheAttributes);
+				
+			case "previouspagetype":
+				return MutexAdd (new CompletionDataList (), existingAtts, previousPageTypeAttributes);
+				
+			case "implements":
+				return ExclusiveAdd (new CompletionDataList (), existingAtts, implementsAttributes);
 			}
 			return null;
 		}
 		
-		static ICompletionDataList GetPageAttributes (ClrVersion clrVersion)
+		static CompletionDataList ExclusiveAdd (CompletionDataList list, Dictionary<string, string> existingAtts,
+		                                        IEnumerable<string> values)
 		{
-			bool isVB = false;
-			
-			CompletionDataList list = new CompletionDataList ();
-			list.Add ("Async");
-			list.Add ("AspCompat");
-			list.Add ("AsyncTimeOut");
-			list.Add ("AutoEventWireup");
-			list.Add ("Buffer");
-			list.Add ("ClassName");
-			list.Add ("ClientTarget");
-			list.Add ("CodeBehind");
-			list.Add ("CompilerOptions");
-			list.Add ("CodeFile");
-			list.Add ("CodePage");
-			list.Add ("CompilationMode");
-			list.Add ("Culture");
-			list.Add ("ContentType");
-			list.Add ("CodeFileBaseClass");
-			list.Add ("Debug");
-			list.Add ("Description");
-			list.Add ("EnableEventValidation");
-			list.Add ("EnableSessionState");
-			list.Add ("EnableTheming");
-			list.Add ("EnableViewState");
-			list.Add ("EnableViewStateMac");
-			list.Add ("ErrorPage");
-			if (isVB)
-				list.Add ("Explicit");
-			list.Add ("Inherits");
-			list.Add ("Language");
-			list.Add ("LCID");
-			list.Add ("LinePragmas");
-			list.Add ("MasterPageFile");
-			
-			list.Add ("MaintainScrollPositionOnPostback");
-			list.Add ("ResponseEncoding");
-			list.Add ("SmartNavigation");
-			list.Add ("Src");
-			if (isVB)
-				list.Add ("Strict");
-			list.Add ("StyleSheetTheme");
-			list.Add ("Theme");
-			list.Add ("TargetSchema");
-			list.Add ("Title");
-			list.Add ("Trace");
-			list.Add ("TraceMode");
-			list.Add ("Transaction");
-			list.Add ("UICulture");
-			list.Add ("ValidateRequest");
-			list.Add ("ViewStateEncryptionMode");
-			list.Add ("WarningLevel");
+			foreach (string s in values)
+				if (!existingAtts.ContainsKey (s))
+					list.Add (s);
+			return list;
+		}
+		
+		static CompletionDataList MutexAdd (CompletionDataList list, Dictionary<string, string> existingAtts,
+		                                    IEnumerable<string> mutexValues)
+		{
+			foreach (string s in mutexValues)
+				if (existingAtts.ContainsKey (s))
+					return null;
+			foreach (string s in mutexValues)
+				list.Add (s);
 			return list;
 		}
 		
@@ -121,65 +185,65 @@ namespace MonoDevelop.AspNet.Parser
 			//
 			//boolean, default to false
 			//
-			case "Async":
-			case "AspCompat":
-			case "Explicit": // useful for VB only. set to true in machine.config
-			case "MaintainScrollPositionOnPostback":
-			case "LinePragmas": //actually not sure if this defaults true or false
-			case "SmartNavigation":
-			case "Strict": //VB ONLY 
-			case "Trace":
-				return GetBooleanProvider (false);
+			case "async":
+			case "aspcompat":
+			case "explicit": // useful for VB only. set to true in machine.config
+			case "maintainscrollpositiononpostback":
+			case "linepragmas": //actually not sure if this defaults true or false
+			case "smartnavigation":
+			case "strict": //VB ONLY 
+			case "trace":
+				return SimpleList.CreateBoolean (false);
 			
 			//
 			//boolean, default to true
 			//
-			case "AutoEventWireup":
-			case "Buffer":	
-			case "EnableEventValidation":
-			case "EnableSessionState":
-			case "EnableTheming":
-			case "EnableViewState":
-			case "EnableViewStateMac":
-			case "ValidateRequest": //enabled in machine.config
-			case "Debug":
-				return GetBooleanProvider (true);
+			case "autoeventwireup":
+			case "buffer":	
+			case "enableeventvalidation":
+			case "enablesessionstate":
+			case "enabletheming":
+			case "enableviewstate":
+			case "enableviewstatemac":
+			case "validaterequest": //enabled in machine.config
+			case "debug":
+				return SimpleList.CreateBoolean (true);
 			
 			//
 			//specialised hard value list completions
 			//
-			case "CodePage":
-				return GetProvider (Encoding.UTF8.CodePage,
+			case "codepage":
+				return SimpleList.Create (Encoding.UTF8.CodePage,
 					from EncodingInfo e in Encoding.GetEncodings () select e.CodePage);
 				
-			case "CompilationMode":
-				return GetEnumProvider<System.Web.UI.CompilationMode> (System.Web.UI.CompilationMode.Always);
+			case "compilationmode":
+				return SimpleList.CreateEnum (System.Web.UI.CompilationMode.Always);
 				
-			case "Culture":
-				return GetProvider (CultureInfo.CurrentCulture.Name,
+			case "culture":
+				return SimpleList.Create (CultureInfo.CurrentCulture.Name,
 					from CultureInfo c in CultureInfo.GetCultures (CultureTypes.AllCultures) select c.Name);
 			
-			case "LCID":
+			case "lcid":
 				//  locale ID, MUTUALLY EXCLUSIVE with Culture
-				return GetProvider (CultureInfo.CurrentCulture.LCID,
+				return SimpleList.Create (CultureInfo.CurrentCulture.LCID,
 					from CultureInfo c in CultureInfo.GetCultures (CultureTypes.AllCultures) select c.LCID);
 			
-			case "ResponseEncoding":
-				return GetProvider (Encoding.UTF8.EncodingName,
+			case "responseencoding":
+				return SimpleList.Create (Encoding.UTF8.EncodingName,
 					from EncodingInfo e in Encoding.GetEncodings () select e.Name);
 			
-			case "TraceMode":
-				return GetProvider ("SortByTime", new string[] { "SortByTime", "SortByCategory" });
+			case "tracemode":
+				return SimpleList.Create ("SortByTime", new string[] { "SortByTime", "SortByCategory" });
 			
-			case "Transaction":
-				return GetProvider ("Disabled",
+			case "transaction":
+				return SimpleList.Create ("Disabled",
 				                          new string[] { "Disabled", "NotSupported", "Required", "RequiresNew" });
 			
-			case "ViewStateEncryptionMode":
-				return GetEnumProvider<ViewStateEncryptionMode> (ViewStateEncryptionMode.Auto);
+			case "viewstateencryptionmode":
+				return SimpleList.CreateEnum (ViewStateEncryptionMode.Auto);
 				
-			case "WarningLevel":
-				return GetProvider ("0", new string[] { "1", "2", "3", "4" });	
+			case "warninglevel":
+				return SimpleList.Create ("0", new string[] { "1", "2", "3", "4" });	
 			
 			//
 			//we can probably complete these using info from the project, but not yet
@@ -211,7 +275,7 @@ namespace MonoDevelop.AspNet.Parser
 			*/
 			
 			//
-			//we're not likely to be able to complete these:
+			//we're not likely to suggest anything for these:
 			//
 			/*
 			case "AsyncTimeOut":
@@ -236,90 +300,96 @@ namespace MonoDevelop.AspNet.Parser
 			return null;
 		}
 		
+		#region Attribute lists
 		
+		static string[] page11Attributes = new string[] {
+			"Async", "AspCompat", "AsyncTimeOut","Buffer", "ClientTarget", "CodeBehind", "CompilerOptions",
+			"CodeFile", "CodePage", "CompilationMode", "ContentType", "CodeFileBaseClass",
+			"Debug", "Description", "EnableSessionState", "EnableTheming", "EnableViewState", "EnableViewStateMac",
+			"ErrorPage", "Inherits", "Language", "LinePragmas", "MasterPageFile", "ResponseEncoding",
+			"SmartNavigation", "Src", "StyleSheetTheme", "Theme", "TargetSchema", "Title", "Trace", "TraceMode",
+			"Transaction", "UICulture", "ValidateRequest", "ViewStateEncryptionMode", "WarningLevel"
+		};
 		
-		static ICompletionDataList GetBooleanProvider (bool defaultValue)
-		{
-			CompletionDataList provider = new CompletionDataList ();
-			provider.Add ("true", "md-literal");
-			provider.Add ("false", "md-literal");
-			provider.DefaultCompletionString = defaultValue? "true" : "false";
-			return provider;
-		}
+		static string[] page11MutexAttributes = new string[] {
+			"LCID", "Culture"
+		};
 		
-		static ICompletionDataList GetEnumProvider<T> (T defaultValue)
-		{
-			CompletionDataList provider = new CompletionDataList ();
-			foreach (string name in Enum.GetNames (typeof (T))) {
-				provider.Add (name, "md-literal");
-			}
-			provider.DefaultCompletionString = defaultValue.ToString ();
-			return provider;
-		}
+		static string[] page20Attributes = new string[] {
+			"EnableEventValidation", "MaintainScrollPositionOnPostback"
+		};
 		
-		static ICompletionDataList GetProvider (string defaultValue, IEnumerable<string> vals)
-		{
-			CompletionDataList provider = new CompletionDataList ();
-			foreach (string v in vals) {
-				provider.Add (v, "md-literal");
-			}
-			provider.DefaultCompletionString = defaultValue;
-			return provider;
-		}
+		static string[] pageVBAttributes = new string[] {
+			"Explicit", "Strict"
+		};
 		
-		static ICompletionDataList GetProvider (int defaultValue, IEnumerable<int> vals)
-		{
-			return GetProvider (defaultValue.ToString (), from s in vals select s.ToString ());
-		}
-		/*
+		static string[] userControlAttributes = new string[] {
+			"AutoEventWireup", "ClassName", "CodeBehind", "CodeFile", "CodeFileBaseClass", "CompilationMode",
+			"CompilerOptions", "Debug", "Description", "EnableTheming", "EnableViewState", "Inherits", "Language",
+			"LinePragmas", "Src", "TargetSchema", "WarningLevel"
+		};
 		
+		static string[] masterControlAttributes = new string[] { "MasterPageFile" };
 		
-		Async = false, bool
-AsyncTimeOut = 45, int
-AspCompat = false, bool 
-AutoEventWireup = true, bool
-Buffer = true, bool
-ClassName = string, .NET name, default namespace ASP
-ClientTarget = string, user agent
-CodeBehind = valid but IGNORE. VS-only
-CodeFile = file to compile for codebehind on server
-CodeFileBaseClass = known base class for the partial classes, so code generator knows not to redefine fields to ignore members in partial class
-CodePage = int, Encoding
-CompilationMode = enum, Always
-CompilerOptions = string, list of compiler switches
-ContentType = string, HTTP MIME content-type
-Culture = CultureInfo
-Debug = bool, true
-Description = string, pointless
-EnableEventValidation = bool, true
-EnableSessionState = bool, true
-EnableTheming = bool, true
-EnableViewState = bool, true
-EnableViewStateMac = bool, true
-ErrorPage = string, URL
-Explicit = bool, false // useful for VB only. set to true in machine.config
-Inherits = IType : Page. defaults to namespace from ClassName 
-Language = string, any .NET langauge
-LCID = locale ID, MUTUALLY EXCLUSIVE with Culture
-LinePragmas = bool, unknown
-MaintainScrollPositionOnPostback = bool, false
-MasterPageFile = master page path
-ResponseEncoding = string, Encoding
-SmartNavigation = bool, false 
-Src = string, extra source code for page
-Strict = bool, false  //VB ONLY 
-StyleSheetTheme == theme ID, can be overridden by controls
-TargetSchema == schema to validate page content. IGNORED, so rather pointless
-Theme = theme identifier, overrides controls' themes
-Title = string for <title>
-Trace = bool, false
-TraceMode = string: SortByTime, SortByCategory
-Transaction = string: Disabled, NotSupported, Supported, Required, RequiresNew. Default disabled
-UICulture = string, valid UI culture 
-ValidateRequest = bool, true //enabled in machine.config
-ViewStateEncryptionMode = ViewStateEncryptionMode:: Auto, Always, or Never.  Default auto.
-WarningLevel 0,1,2,3,4
-
-*/
+		static string[] assemblyAttributes = new string[] {
+			//mutually exclusive
+			"Name", //assembly name to link
+			"Src" //source file name to compile and link
+		};
+		
+		static string[] importAttributes = new string[] {
+			"Namespace",
+		};
+		
+		static string[] referenceAttributes = new string[] {
+			//one of:
+			"Page",
+			"Control",
+			"VirtualPath"
+		};
+		
+		static string[] registerAttributes = new string[] {
+			"TagPrefix"
+		};
+		
+		static string[] registerAssemblyAttributes = new string[] {
+			"Assembly",  //assembly name from bin directory
+			"Namespace", //if no assembly, assumes App_Code
+		};
+		
+		static string[] registerUserControlAttributes = new string[] {
+			"Src",       //user controls only. Start with ~ for app root
+			"TagName"   //user controls only
+		};
+		
+		static string[] outputcacheAttributes = new string[] {
+			"Duration", //seconds, required
+			"Location", //OutputCacheLocation enum, default "Any". aspx-only
+			"CacheProfile", // arbitrary string from config outputCacheSettings/outputCacheProfiles. aspx-only
+			"NoStore", // bool. aspx-only
+			"Shared", //bool, default true. ascx-only
+			"SqlDependency", //string of tables and stuff, or "CommandNotification on aspx
+			"VaryByCustom", // custom requirement. "browser" varies by user agent. Other strings should be handled in GetVaryByCustomString Globl.asax
+			"VaryByHeader", // HTTP headers in a semicolon-separated list. Each combination is cached. aspx-only
+			"VaryByParam", // none or *, or semicolon-separated list of GET/POST parameters. Required or VaryByControl.
+			"VaryByControl", // IDs of server controls, in a semicolon-separated list.  Required or VaryByParam.
+			"VaryByContentEncodings" //list of Accept-Encoding encodings
+		};
+		
+		static string[] mastertypeAttributes = new string[] {
+			//only one allowed
+			"TypeName",    //name of type
+			"VirtualPath"  //path to strong type
+		};
+		
+		static string[] previousPageTypeAttributes = new string[] {
+			"TypeName", "VirtualPath"
+		};
+		
+		static string[] implementsAttributes = new string[] {
+			"Interface"
+		};
+		
+		#endregion
 	}
 }

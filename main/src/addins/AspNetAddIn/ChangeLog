@@ -1,3 +1,22 @@
+2008-10-14  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Track API. Work
+	around some bugs in directive completion until they're fixed
+	properly.
+
+	* Makefile.am:
+	* AspNetAddIn.mdp: Updated.
+
+	* MonoDevelop.AspNet.Completion/SimpleLists.cs: Add utility methods for
+	simple completion lists with default values.
+
+	* MonoDevelop.AspNet.Parser/Directive.cs: Add attribute completion for
+	all directives. Some work towards completing directive names and
+	values.
+
+	* MonoDevelop.AspNet.Parser/AspNetParsedDocument.cs: Add a WebSubType
+	property.
+
 2008-10-13  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.AspNet.Parser/Directive.cs: Add more attributes.
