@@ -47,6 +47,7 @@
     <File name="Mono.TextEditor.Tests.DefaultEditActions/SelectionSelectAllTests.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects/LocalCopyTests.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Xml.StateEngine/ParsingTests.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Xml.StateEngine/TestParser.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
@@ -66,6 +67,7 @@
     <ProjectReference type="Project" localcopy="False" refto="NRefactory" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.XmlEditor" />
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.AspNet" />
+    <ProjectReference type="Gac" localcopy="True" refto="System.Core, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   </References>
   <GtkDesignInfo />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" ExecuteTargetName="test" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../..">

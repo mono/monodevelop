@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 using MonoDevelop.Ide.Gui.Content;
 
 using NUnit.Framework;
@@ -41,63 +42,70 @@ namespace MonoDevelop.Xml.StateEngine
 		[Test]
 		public void AttributeName ()
 		{
-			string testString = @"
+			TestParser parser = new TestParser (new XmlFreeState());
+			parser.Parse (@"
 <doc>
 	<tag.a>
-		<tag.b id=""foo"" />
+		<tag.b id=""$foo"" />
 	</tag.a>
 </doc>
-";
-			Parser parser = new Parser (new XmlFreeState(), false);
-			for (int i = 0; i < 30; i++)
-				parser.Push (testString[i]);
-			
-			Assert.AreEqual (parser.Position, 30);
-			Assert.IsTrue (parser.CurrentState is XmlDoubleQuotedAttributeValueState);
-			XAttribute attr = parser.Nodes.Peek () as XAttribute;
-			Assert.IsNotNull (attr);
-			Assert.AreEqual (attr.Name.FullName, "id");
+",
+				delegate {
+					parser.AssertStateIs<XmlDoubleQuotedAttributeValueState> ();
+					parser.AssertPath ("//doc/tag.a/tag.b/@id");
+				}
+			);
+			parser.AssertEmpty ();
+			parser.AssertErrorCount (0);
+		}
+		
+		[Test, Ignore ("Not working")]
+		public void IncompleteAttribute ()
+		{
+			TestParser parser = new TestParser (new XmlFreeState());
+			parser.Parse (@"
+<doc>
+	<tag.a att = >
+		<tag.b id='$foo' />
+	</tag.a>
+</doc>
+",
+				delegate {
+					parser.AssertStateIs<XmlSingleQuotedAttributeValueState> ();
+					parser.AssertPath ("//doc/tag.a/tag.b/@id");
+				}
+			);
+			parser.AssertEmpty ();
+			parser.AssertErrorCount (1);
 		}
 		
 		[Test]
 		public void Unclosed ()
 		{
-			string testString = @"
+			TestParser parser = new TestParser (new XmlFreeState());
+			parser.Parse (@"
 <doc>
 	<tag.a>
-		<tag.b><tag.b>
-	</tag.a>
+		<tag.b><tag.b>$
+	</tag.a>$
 </doc>
-";
-			Parser parser = new Parser (new XmlFreeState(), false);
-			int errorCount = 0;
-			parser.ErrorLogged += delegate { errorCount++; };
-			
-			MoveParser (parser, testString, 33);
-			Assert.IsTrue (parser.CurrentState is XmlFreeState);
-			Assert.AreEqual (parser.Nodes.Count, 5);
-			AssertName (parser.Nodes.Peek () as XElement, "tag.b");
-			
-			MoveParser (parser, testString, 10);
-			Assert.IsTrue (parser.CurrentState is XmlFreeState);
-			Assert.AreEqual (parser.Nodes.Count, 2);
-			AssertName (parser.Nodes.Peek () as XElement, "doc");
-			
-			Assert.AreEqual (errorCount, 2);
+",
+				delegate {
+					parser.AssertStateIs<XmlFreeState> ();
+					parser.AssertNodeDepth (5);
+					parser.AssertPath ("//doc/tag.a/tag.b/tag.b");
+				},
+				delegate {
+					parser.AssertStateIs<XmlFreeState> ();
+					parser.AssertNodeDepth (2);
+					parser.AssertPath ("//doc");
+				}
+			);
+			parser.AssertEmpty ();
+			parser.AssertErrorCount (2);
 		}
 		
-		void MoveParser (Parser parser, string str, int count)
-		{
-			int end = parser.Position + count;
-			for (int i = parser.Position; i < end; i++)
-				parser.Push (str[i]);
-			Assert.AreEqual (parser.Position, end);
-		}
 		
-		void AssertName<T> (T node, string name) where T : INamedXObject
-		{
-			Assert.IsNotNull (node);
-			Assert.AreEqual (node.Name.FullName, name);
-		}
 	}
+	
 }

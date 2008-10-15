@@ -23,6 +23,7 @@ REFS =  \
 	-r:../../build/bin/MonoDevelop.Projects.Gui.dll \
 	-r:../../build/bin/NRefactory.dll \
 	-r:System \
+	-r:System.Core \
 	-r:System.Xml
 
 FILES =  \
@@ -57,6 +58,7 @@ FILES =  \
 	MonoDevelop.Projects/TestProjectsChecks.cs \
 	MonoDevelop.Projects/WorkspaceTests.cs \
 	MonoDevelop.Xml.StateEngine/ParsingTests.cs \
+	MonoDevelop.Xml.StateEngine/TestParser.cs \
 	TestBase.cs \
 	Util.cs
 

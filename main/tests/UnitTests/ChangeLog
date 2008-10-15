@@ -1,3 +1,14 @@
+2008-10-15  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Xml.StateEngine/ParsingTests.cs: Improve tests using new
+	TestParser utility class.
+
+	* Makefile.am:
+	* UnitTests.mdp: Updated.
+
+	* MonoDevelop.Xml.StateEngine/TestParser.cs: Utility for testing the XML
+	parser.
+
 2008-10-15  Full Name  <Email Address>
 
 	* MonoDevelop.CSharpBinding/CodeCompletionTests.cs: added test for 'Bug
