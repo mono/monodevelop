@@ -251,7 +251,6 @@ namespace MonoDevelop.Projects.Dom
 					}
 				}
 				foreach (IMember member in curType.Members) {
-					System.Console.WriteLine (member);
 					if (callingMember != null && !member.IsAccessibleFrom (dom, type, callingMember))
 						continue;
 					if (member is IMethod && ((IMethod)member).IsConstructor)
@@ -314,7 +313,6 @@ namespace MonoDevelop.Projects.Dom
 				if (methods.Count == 0)
 					return null;
 				IMethod result = methods [0];
-				System.Console.WriteLine(genericArguments.Count + " / " + arguments.Count);
 				foreach (IMethod method in methods) {
 					if (method.GenericParameters.Count == genericArguments.Count) {
 					 	if (method.Parameters.Count == arguments.Count) {
