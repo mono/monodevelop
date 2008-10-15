@@ -170,14 +170,15 @@ namespace MonoDevelop.Projects.Dom
 		
 		public override string ToString ()
 		{
-			return string.Format ("[DomProperty:Name={0}, Modifiers={1}, ReturnType={2}, Location={3}, PropertyModifier={4}, GetRegion={5}, SetRegion={6}]",
+			return string.Format ("[DomProperty:Name={0}, Modifiers={1}, ReturnType={2}, Location={3}, PropertyModifier={4}, GetRegion={5}, SetRegion={6}, ExplicitInterfaces={7}]",
 			                      Name,
 			                      Modifiers,
 			                      ReturnType,
 			                      Location,
 			                      PropertyModifier,
 			                      GetRegion,
-			                      SetRegion);
+			                      SetRegion,
+			                      this.explicitInterfaces != null ? this.explicitInterfaces.Count.ToString () : "0");
 		}
 		
 		public override object AcceptVisitor (IDomVisitor visitor, object data)

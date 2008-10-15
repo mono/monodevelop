@@ -30,6 +30,7 @@ using System;
 using System.CodeDom;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
@@ -148,9 +149,16 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		{
 			DomMethod result = new DomMethod ();
 			ReadMemberInformation (reader, nameTable, result);
+			uint explicitInterfaces = reader.ReadUInt32 ();
+			while (explicitInterfaces-- > 0) {
+				result.AddExplicitInterface (ReadReturnType (reader, nameTable));
+			}
+			
 			result.BodyRegion = ReadRegion (reader, nameTable);
 			result.ReturnType = ReadReturnType (reader, nameTable);
 			result.MethodModifier = (MethodModifier)reader.ReadInt32 ();
+			
+				
 			uint arguments = reader.ReadUInt32 ();
 			while (arguments-- > 0) {
 				result.Add (ReadParameter (reader, nameTable));
@@ -166,6 +174,10 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		{
 			Debug.Assert (method != null);
 			WriteMemberInformation (writer, nameTable, method);
+			writer.Write (method.ExplicitInterfaces.Count());
+			foreach (IReturnType returnType in method.ExplicitInterfaces) {
+				Write (writer, nameTable, returnType);
+			}
 			Write (writer, nameTable, method.BodyRegion);
 			Write (writer, nameTable, method.ReturnType);
 			writer.Write ((int)method.MethodModifier);
@@ -177,6 +189,8 @@ namespace MonoDevelop.Projects.Dom.Serialization
 					Write (writer, nameTable, param);
 				}
 			}
+			
+			
 
 			writer.Write (method.GenericParameters.Count);
 			foreach (IReturnType genArg in method.GenericParameters) {
@@ -209,6 +223,10 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		{
 			DomProperty result = new DomProperty ();
 			ReadMemberInformation (reader, nameTable, result);
+			uint explicitInterfaces = reader.ReadUInt32 ();
+			while (explicitInterfaces-- > 0) {
+				result.AddExplicitInterface (ReadReturnType (reader, nameTable));
+			}
  			result.BodyRegion = ReadRegion (reader, nameTable);
 			result.ReturnType = ReadReturnType (reader, nameTable);
 			result.PropertyModifier = (PropertyModifier)reader.ReadInt32 ();
@@ -221,6 +239,10 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		{
 			Debug.Assert (property != null);
 			WriteMemberInformation (writer, nameTable, property);
+			writer.Write (property.ExplicitInterfaces.Count ());
+			foreach (IReturnType returnType in property.ExplicitInterfaces) {
+				Write (writer, nameTable, returnType);
+			}
 			Write (writer, nameTable, property.BodyRegion);
 			Write (writer, nameTable, property.ReturnType);
 			writer.Write ((int)property.PropertyModifier);

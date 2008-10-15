@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using MonoDevelop.Projects.Dom.Parser;
 
 namespace MonoDevelop.Projects.Dom
@@ -427,6 +428,7 @@ namespace MonoDevelop.Projects.Dom
 			target.ReturnType     = DomReturnType.Resolve (source.ReturnType, typeResolver);
 			target.Location       = source.Location;
 			target.BodyRegion     = source.BodyRegion;
+			target.explicitInterfaces = new List<IReturnType> (source.ExplicitInterfaces.Select ( x => DomReturnType.Resolve (x, typeResolver)));
 			target.AddRange (DomAttribute.Resolve (source.Attributes, typeResolver));
 		}
 		

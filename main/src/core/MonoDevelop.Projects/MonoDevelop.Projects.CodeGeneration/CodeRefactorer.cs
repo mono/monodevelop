@@ -392,6 +392,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 				alreadyImplemented = false;
 				foreach (IMethod cmet in klass.Methods) {
 					if (cmet.Name == method.Name && Equals (cmet.Parameters, method.Parameters) && cmet.IsExplicitDeclaration == needsExplicitly) {
+						alreadyImplemented = true;
 						if (!needsExplicitly && !cmet.ReturnType.Equals (method.ReturnType))
 							needsExplicitly = true;
 						else
@@ -408,7 +409,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 				bool needsExplicitly = explicitly;
 				alreadyImplemented = false;
 				foreach (IProperty cprop in klass.Properties) {
-					if (cprop.Name == prop.Name && cprop.IsExplicitDeclaration == needsExplicitly) {
+					if (cprop.Name == prop.Name) {
 						if (!needsExplicitly && !cprop.ReturnType.Equals (prop.ReturnType))
 							needsExplicitly = true;
 						else

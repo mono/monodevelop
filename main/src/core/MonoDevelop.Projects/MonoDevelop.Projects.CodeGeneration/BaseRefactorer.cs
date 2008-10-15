@@ -31,6 +31,7 @@ using System.IO;
 using System.CodeDom;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.CSharp;
 
 using MonoDevelop.Projects.Dom;
@@ -137,6 +138,9 @@ namespace MonoDevelop.Projects.CodeGeneration
 				AddMembers (ctx, cls, members);
 				return;
 			}
+			
+			if (!members.Any ())
+				return;
 			
 			IEditableTextFile buffer = ctx.GetFile (cls.CompilationUnit.FileName);
 			int pos;
