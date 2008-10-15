@@ -283,7 +283,12 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		public IType GetType (IReturnType returnType)
 		{
-			return returnType.Type ?? GetType (returnType.FullName, returnType.GenericArguments, true, true);
+			if (returnType.Type != null)  {
+				if (returnType.GenericArguments == null || returnType.GenericArguments.Count == 0)
+					return returnType.Type;
+				return DomType.CreateInstantiatedGenericType (returnType.Type, returnType.GenericArguments);
+			}
+			return GetType (returnType.FullName, returnType.GenericArguments, true, true);
 		}
 		
 		public IType GetType (IReturnType returnType, bool searchDeep)
@@ -407,8 +412,9 @@ namespace MonoDevelop.Projects.Dom.Parser
 				typeStack.Push (curType);
 				while (typeStack.Count > 0) {
 					IType type = typeStack.Pop ();
+					System.Console.WriteLine(type);
 					if (type.FullName == typeName) 
-						return DomType.CreateInstantiatedGenericType (type, genericArguments);
+						return type;
 					foreach (IType inner in type.InnerTypes) {
 						typeStack.Push (inner);
 					}

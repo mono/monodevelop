@@ -1,5 +1,10 @@
 2008-10-15  Full Name  <Email Address>
 
+	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: fixed failing unit
+	test.
+
+2008-10-15  Full Name  <Email Address>
+
 	* MonoDevelop.Projects.Dom/DomCecilType.cs:
 	* MonoDevelop.Projects.Dom/ResolveResult.cs:
 	* MonoDevelop.Projects.Dom/DomCecilProperty.cs:
