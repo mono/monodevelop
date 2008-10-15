@@ -67,7 +67,7 @@ namespace MonoDevelop.Projects.Dom
 			this.declaringType      = declaringType;
 			if (keepDefinitions)
 				this.propertyDefinition = propertyDefinition;
-			base.Name               = propertyDefinition.Name;
+			base.Name = propertyDefinition.Name;
 			if (Name == "Item" && propertyDefinition.Parameters.Count > 0) {
 				this.propertyModifier |= PropertyModifier.IsIndexer;
 				foreach (ParameterDefinition paramDef in propertyDefinition.Parameters) {

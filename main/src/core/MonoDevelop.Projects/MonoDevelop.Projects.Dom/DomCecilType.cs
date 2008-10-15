@@ -208,7 +208,7 @@ namespace MonoDevelop.Projects.Dom
 			if ((attr & MethodAttributes.Static) == MethodAttributes.Static) 
 				result |= Modifiers.Static;
 			if ((attr & MethodAttributes.Abstract) == MethodAttributes.Abstract) 
-				result |= Modifiers.Static;
+				result |= Modifiers.Abstract;
 			if ((attr & MethodAttributes.Virtual) == MethodAttributes.Virtual) 
 				result |= Modifiers.Virtual;
 			if ((attr & MethodAttributes.Final) == MethodAttributes.Final) 

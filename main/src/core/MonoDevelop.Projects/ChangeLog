@@ -1,3 +1,11 @@
+2008-10-15  Full Name  <Email Address>
+
+	* MonoDevelop.Projects.Dom/DomCecilType.cs:
+	* MonoDevelop.Projects.Dom/ResolveResult.cs:
+	* MonoDevelop.Projects.Dom/DomCecilProperty.cs:
+	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
+	fixed 'Bug 435253 - *Lots* of members missing from code completion'.
+
 2008-10-13  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs: fixed 'Bug
