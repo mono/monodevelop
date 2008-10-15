@@ -172,6 +172,8 @@ namespace MonoDevelop.AspNet.Parser.Internal
 			TagAttributes attributes;
 			TagType tagtype = TagType.Text;
 			StringBuilder text =  new StringBuilder ();
+			
+			try {
 
 			while ((token = tokenizer.get_token ()) != Token.EOF) {
 				BeginElement ();
@@ -221,6 +223,10 @@ namespace MonoDevelop.AspNet.Parser.Internal
 				tokenizer.put_back ();
 				EndElement ();
 				OnTextParsed (text.ToString ());
+			}
+			
+			} catch (System.Web.HttpException ex) {
+				OnError ("Malformed");
 			}
 		}
 
