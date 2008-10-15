@@ -618,6 +618,38 @@ class Test{
 			Assert.AreEqual (1, provider.Count);
 			Assert.IsNotNull (provider.Find ("string[]"), "type string not found.");
 		}
+
+		/// <summary>
+		/// Bug 434770 - No autocomplete on array types
+		/// </summary>
+		[Test()]
+		public void TestBug434770 ()
+		{
+			CompletionDataList provider = CreateProvider (
+@"
+namespace System {
+	public class Array 
+	{
+		public int Length {
+			get {}
+			set {}
+		}
+		public int MyField;
+	}
+}
+public class Test
+{
+	public void AMethod ()
+	{
+		byte[] buffer = new byte[1024];
+		buffer.$
+	}
+}");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.Find ("Length"), "property 'Length' not found.");
+			Assert.IsNotNull (provider.Find ("MyField"), "field 'MyField' not found.");
+		}
+		
 		
 		[TestFixtureSetUp] 
 		public void SetUp()

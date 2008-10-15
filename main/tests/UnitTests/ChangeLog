@@ -1,3 +1,8 @@
+2008-10-15  Full Name  <Email Address>
+
+	* MonoDevelop.CSharpBinding/CodeCompletionTests.cs: added test for 'Bug
+	434770 - No autocomplete on array types'.
+
 2008-10-14  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.CSharpBinding/CodeCompletionTests.cs:
