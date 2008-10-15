@@ -164,8 +164,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 				string text = completionWidget.GetCompletionText (completionContext);
 				if (text.Length == 0) {
 					text = completionDataList.DefaultCompletionString;
-					if (text != null && text.Length > 0)
-						SelectEntry (text);
+					SelectEntry (text);
 					initialWordLength = completionWidget.SelectedLength;
 					return true;
 				}

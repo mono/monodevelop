@@ -1,3 +1,9 @@
+2008-10-15  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs: When the
+	list is first shown, don't autoselect the top item unless it matches
+	the DefaultCompletionString.
+
 2008-10-14  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects.Gui.Completion/DeclarationViewWindow.cs: Empty
