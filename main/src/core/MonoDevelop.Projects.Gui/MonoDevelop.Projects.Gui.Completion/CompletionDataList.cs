@@ -117,5 +117,16 @@ namespace MonoDevelop.Projects.Gui.Completion
 					i++;
 			}
 		}
+		
+		public void AddRange (IEnumerable<string> vals)
+		{
+			AddRange (from s in vals select new CompletionData (s));
+		}
+		
+		public void AddRange (IEnumerable<CompletionData> vals)
+		{
+			foreach (CompletionData s in vals) 
+				Add (s);
+		}
 	}
 }
