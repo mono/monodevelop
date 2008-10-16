@@ -340,7 +340,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				return null;
 			if (result.ExpressionContext is ExpressionContext.TypeExpressionContext)
 				result.ExpressionContext = new NewCSharpExpressionFinder (dom).FindExactContextForNewCompletion(Editor, Document.CompilationUnit, Document.FileName) ?? result.ExpressionContext;
-				
+			
 			location = new DomLocation (Editor.CursorLine - 1, Editor.CursorColumn - 1);
 			NRefactoryResolver resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (dom, Document.CompilationUnit,
 			                                                                                ICSharpCode.NRefactory.SupportedLanguage.CSharp,
@@ -350,7 +350,8 @@ namespace MonoDevelop.CSharpBinding.Gui
 			case '(':
 				ResolveResult resolveResult = resolver.Resolve (result, new DomLocation (Editor.CursorLine, Editor.CursorColumn));
 				if (result.ExpressionContext is ExpressionContext.TypeExpressionContext) {
-					IReturnType returnType = ((ExpressionContext.TypeExpressionContext)result.ExpressionContext).Type;
+					IReturnType returnType = ((ExpressionContext.TypeExpressionContext)result.ExpressionContext).Type ?? resolveResult.ResolvedType;
+					
 					IType type = dom.SearchType (new SearchTypeRequest (resolver.Unit, returnType));
 					if (type != null && returnType.GenericArguments != null)
 						type = DomType.CreateInstantiatedGenericType (type, returnType.GenericArguments);
