@@ -47,19 +47,19 @@ namespace MonoDevelop.AspNet.Parser
 		//
 		// NOTE: MS' documentation for directives is at http://msdn.microsoft.com/en-us/library/t8syafc7.aspx
 		//
-		public static ICompletionDataList GetDirectives (AspNetAppProject project, AspNetParsedDocument doc)
+		public static ICompletionDataList GetDirectives (WebSubtype type)
 		{
 			CompletionDataList list = new CompletionDataList ();
 			
-			if (doc.Type == WebSubtype.WebForm) {
+			if (type == WebSubtype.WebForm) {
 				list.Add ("Implements", null, "Declare that this page implements an interface.");
 				list.Add ("Page", null, "Define properties of this page.");
 				list.Add ("PreviousPageType", null, "Strongly type the page's PreviousPage property.");
 				list.Add ("MasterType", null, "Strongly type the page's Master property.");
-			} else if (doc.Type == WebSubtype.MasterPage) {
+			} else if (type == WebSubtype.MasterPage) {
 				list.Add ("Implements", null, "Declare that this master page implements an interface.");
 				list.Add ("Master", null, "Define properties of this master page.");
-			} else if (doc.Type == WebSubtype.WebControl) {
+			} else if (type == WebSubtype.WebControl) {
 				list.Add ("Control", null, "Define properties of this user control.");
 				list.Add ("Implements", null, "Declare that this control implements an interface.");
 			} else {
@@ -69,24 +69,22 @@ namespace MonoDevelop.AspNet.Parser
 			list.Add ("Assembly", null, "Reference an assembly.");
 			list.Add ("Import", null, "Import a namespace.");
 			
-			if (doc.Type != WebSubtype.MasterPage) {
+			if (type != WebSubtype.MasterPage) {
 				list.Add ("OutputCache", null, "Set output caching behaviour.");
 			}
 			
-			list.Add ("Reference", "Reference a page or user control.");
+			list.Add ("Reference", null, "Reference a page or user control.");
 			list.Add ("Register", null, "Register a user control or custom web controls.");
 			
 			return list.Count > 0? list : null;
 		}
 		
 
-		public static ICompletionDataList GetAttributeValues (AspNetAppProject project, ProjectFile file,
-		                                                      string directiveName, string attribute, ClrVersion clrVersion)
+		public static ICompletionDataList GetAttributeValues (string directiveName, string attribute, ClrVersion clrVersion)
 		{
 			switch (directiveName.ToLower ()) {
 			case "page":
 				return GetPageAttributeValues (attribute, clrVersion);
-				
 			}
 			return null;
 		}

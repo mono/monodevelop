@@ -1,5 +1,12 @@
 2008-10-15  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Move more into the
+	base class. Implement directive name completion.
+
+	* MonoDevelop.AspNet.Parser/Directive.cs: Remove unused parameters.
+
+2008-10-15  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.AspNet.Parser.Internal/AspParser.cs: Improve error
 	reporting.
 

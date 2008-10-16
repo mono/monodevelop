@@ -28,6 +28,7 @@
 
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -154,7 +155,7 @@ namespace MonoDevelop.XmlEditor.Gui
 			return null;
 		}
 
-		ICompletionDataList HandleCodeCompletion (
+		protected virtual ICompletionDataList HandleCodeCompletion (
 		    CodeCompletionContext completionContext, bool forced, ref int triggerWordLength)
 		{
 			tracker.UpdateEngine ();
@@ -174,8 +175,81 @@ namespace MonoDevelop.XmlEditor.Gui
 				+ " currentChar='{3}', forced='{4}'", tracker.Engine.CurrentState,
 				tracker.Engine.CurrentStateLength, previousChar, currentChar, forced);
 			
+			//closing tag completion
+			if (tracker.Engine.CurrentState is XmlFreeState && currentPosition - 1 > 0 && currentChar == '>') {
+				//get name of current node in document that's being ended
+				XElement el = tracker.Engine.Nodes.Peek () as XElement;
+				if (el != null && el.Position.End >= currentPosition && !el.IsClosed && el.IsNamed) {
+					CompletionDataList cp = new CompletionDataList ();
+					cp.Add (new MonoDevelop.XmlEditor.Completion.XmlTagCompletionData (
+					        String.Concat ("</", el.Name.FullName, ">"), 0, true));
+					return cp;
+				}
+				return null;
+			}
+			
+			//element completion
+			if (currentChar == '<' && tracker.Engine.CurrentState is XmlFreeState) {
+				CompletionDataList list = new CompletionDataList ();
+				GetElementCompletions (list);
+				return list.Count > 0? list : null;
+			}
+			
+			//doctype completion
+			if (tracker.Engine.CurrentState is XmlDocTypeState) {
+				if (tracker.Engine.CurrentStateLength == 1) {
+					CompletionDataList list = GetDocTypeCompletions ();
+					if (list != null && list.Count > 0)
+						return list;
+				}
+				return null;
+			}
+			
 			return null;
-
+		}
+		
+		protected virtual void GetElementCompletions (CompletionDataList list)
+		{
+		}
+		
+		protected virtual void GetAttributeCompletions (CompletionDataList list)
+		{
+		}
+		
+		protected virtual void GetAttributeValueCompletions (CompletionDataList list)
+		{
+		}
+		
+		protected virtual CompletionDataList GetDocTypeCompletions ()
+		{
+			return null;
+		}
+		
+		protected IEnumerable<XName> GetParents (int skip)
+		{
+			foreach (XObject obj in tracker.Engine.Nodes) {
+				if (skip > 0) {
+					skip--;
+					continue;
+				}
+				XElement el = obj as XElement;
+				if (el == null || !el.IsNamed)
+					yield break;
+				yield return el.Name;
+			}
+		}
+		
+		protected XName GetParent (int skip)
+		{
+			foreach (XObject obj in tracker.Engine.Nodes) {
+				if (skip > 0) {
+					skip--;
+					continue;
+				}
+				XElement el = obj as XElement;
+				return el != null? el.Name : new XName ();
+			}
+			return new XName ();
 		}
 		
 		//FIXME: this should offer all unclosed tags, and accepting them should close back up to that level

@@ -1,3 +1,8 @@
+2008-10-15  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.XmlEditor.Gui/BaseXmlEditorExtension.cs: Move more code
+	here from the ASP.NET completion extension.
+
 2008-10-09  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.XmlEditor/XmlTextEditorExtension.cs:
