@@ -1,5 +1,9 @@
 2008-10-16  Full Name  <Email Address>
 
+	* MonoDevelop.Projects.Dom/AbstractMember.cs: fixed accessible issue.
+
+2008-10-16  Full Name  <Email Address>
+
 	* MonoDevelop.Projects.Dom/DomType.cs:
 	* MonoDevelop.Projects.Dom/DomCecilMethod.cs:
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs:

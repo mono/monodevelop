@@ -241,7 +241,7 @@ namespace MonoDevelop.Projects.Dom
 		public virtual bool IsAccessibleFrom (ProjectDom dom, IType calledType, IMember member)
 		{
 			if (member == null)
-				return IsStatic;
+				return IsStatic || IsPublic;
 	//		if (member.IsStatic && !IsStatic)
 	//			return false;
 			if (IsPublic || calledType != null && calledType.ClassType == ClassType.Interface)
