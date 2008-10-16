@@ -1,3 +1,13 @@
+2008-10-16  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AspNet.Completion/SimpleLists.cs: Remove unused methods.
+
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Move code to base
+	class. Implement more directive completions.
+
+	* MonoDevelop.AspNet.Parser/Directive.cs: Change API to alter lists
+	instead of creating them.
+
 2008-10-15  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Move more into the

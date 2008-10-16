@@ -205,6 +205,76 @@ namespace MonoDevelop.XmlEditor.Gui
 				return null;
 			}
 			
+			//attribute name completion
+			if ((forced && Tracker.Engine.Nodes.Peek () is IAttributedXObject)
+			     || (Tracker.Engine.CurrentState is XmlNameState 
+			 	 && Tracker.Engine.CurrentState.Parent is XmlAttributeState
+			         && Tracker.Engine.CurrentStateLength == 1)
+			) {
+				IAttributedXObject attributedOb = (Tracker.Engine.Nodes.Peek () as IAttributedXObject) ?? 
+					Tracker.Engine.Nodes.Peek (1) as IAttributedXObject;
+				if (attributedOb == null)
+					return null;
+				
+				//attributes
+				if (attributedOb.Name.IsValid && (forced ||
+					(char.IsWhiteSpace (previousChar) && char.IsLetter (currentChar))))
+				{
+					
+					if (!forced)
+						triggerWordLength = 1;
+					
+					Dictionary<string, string> existingAtts = new Dictionary<string,string>
+						(StringComparer.InvariantCultureIgnoreCase);
+					
+					foreach (XAttribute att in attributedOb.Attributes) {
+						existingAtts [att.Name.FullName] = att.Value ?? string.Empty;
+					}
+					
+					CompletionDataList list = new CompletionDataList ();
+					GetAttributeCompletions (list, attributedOb, existingAtts);
+					return list.Count > 0? list : null;
+				}
+			}
+			
+			//attribute value completion
+			//determine whether to trigger completion within attribute values quotes
+			if ((Tracker.Engine.CurrentState is XmlDoubleQuotedAttributeValueState
+			    || Tracker.Engine.CurrentState is XmlSingleQuotedAttributeValueState)
+			    //trigger on the opening quote
+			    && (Tracker.Engine.CurrentStateLength == 0
+			        //or trigger on first letter of value, if unforced
+			        || (!forced && Tracker.Engine.CurrentStateLength == 1))
+			    )
+			{
+				XAttribute att = (XAttribute) Tracker.Engine.Nodes.Peek ();
+				
+				if (att.IsNamed) {
+					IAttributedXObject attributedOb = Tracker.Engine.Nodes.Peek (1) as IAttributedXObject;
+					if (attributedOb == null)
+						return null;
+					
+					char next = ' ';
+					if (currentPosition + 1 < buf.Length)
+						next = buf.GetCharAt (currentPosition + 1);
+					
+					char compareChar = (Tracker.Engine.CurrentStateLength == 0)? currentChar : previousChar;
+					
+					if ((compareChar == '"' || compareChar == '\'') 
+					    && (next == compareChar || char.IsWhiteSpace (next))
+					) {
+						//if triggered by first letter of value, grab that letter
+						if (Tracker.Engine.CurrentStateLength == 1)
+							triggerWordLength = 1;
+						
+						CompletionDataList list = new CompletionDataList ();
+						GetAttributeValueCompletions (list, attributedOb, att);	
+						return list.Count > 0? list : null;
+					}
+				}
+				
+			}
+			
 			return null;
 		}
 		
@@ -212,11 +282,14 @@ namespace MonoDevelop.XmlEditor.Gui
 		{
 		}
 		
-		protected virtual void GetAttributeCompletions (CompletionDataList list)
+		protected virtual void GetAttributeCompletions (CompletionDataList list, IAttributedXObject attributedOb,
+		                                                Dictionary<string, string> existingAtts)
 		{
 		}
 		
-		protected virtual void GetAttributeValueCompletions (CompletionDataList list)
+		protected virtual void GetAttributeValueCompletions (CompletionDataList list,
+		                                                     IAttributedXObject attributedOb,
+		                                                     XAttribute att)
 		{
 		}
 		
@@ -225,7 +298,7 @@ namespace MonoDevelop.XmlEditor.Gui
 			return null;
 		}
 		
-		protected IEnumerable<XName> GetParents (int skip)
+		protected IEnumerable<XName> GetParentElementNames (int skip)
 		{
 			foreach (XObject obj in tracker.Engine.Nodes) {
 				if (skip > 0) {
@@ -239,7 +312,7 @@ namespace MonoDevelop.XmlEditor.Gui
 			}
 		}
 		
-		protected XName GetParent (int skip)
+		protected XName GetParentElementName (int skip)
 		{
 			foreach (XObject obj in tracker.Engine.Nodes) {
 				if (skip > 0) {

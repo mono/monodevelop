@@ -80,103 +80,100 @@ namespace MonoDevelop.AspNet.Parser
 		}
 		
 
-		public static ICompletionDataList GetAttributeValues (string directiveName, string attribute, ClrVersion clrVersion)
+		public static void GetAttributeValues (CompletionDataList list, string directiveName, string attribute, ClrVersion clrVersion)
 		{
 			switch (directiveName.ToLower ()) {
 			case "page":
-				return GetPageAttributeValues (attribute, clrVersion);
+				GetPageAttributeValues (list, attribute, clrVersion);
+				break;
 			}
-			return null;
 		}
 		
-		public static ICompletionDataList GetAttributes (string directiveName, ClrVersion clrVersion,
-		                                                 Dictionary<string, string> existingAtts)
+		public static void GetAttributes (CompletionDataList list, string directiveName,
+		                                  ClrVersion clrVersion, Dictionary<string, string> existingAtts)
 		{
 			bool net20 = clrVersion != ClrVersion.Net_1_1;
 			
 			//FIXME: detect whether the page is VB
 			bool vb = false;
 			
-			CompletionDataList list;
-			
 			switch (directiveName.ToLower ()) {
 			case "page":
-				list = new CompletionDataList ();
 				ExclusiveAdd (list, existingAtts, page11Attributes);
 				if (net20)
 					ExclusiveAdd (list, existingAtts, page20Attributes);
 				if (vb)
 					ExclusiveAdd (list, existingAtts, pageVBAttributes);
 				MutexAdd (list, existingAtts, page11MutexAttributes);
-				return list;
+				break;
 				
 			case "control":
-				list = new CompletionDataList ();
 				ExclusiveAdd (list, existingAtts, userControlAttributes);
 				if (vb)
 					ExclusiveAdd (list, existingAtts, pageVBAttributes);
-				return list;
+				break;
 				
 			case "master":
-				list = new CompletionDataList ();
 				ExclusiveAdd (list, existingAtts, userControlAttributes);
 				ExclusiveAdd (list, existingAtts, masterControlAttributes);
 				if (vb)
 					ExclusiveAdd (list, existingAtts, pageVBAttributes);
-				return list;
+				break;
 				
 			case "assembly":
 				//the two assembly directive attributes are mutually exclusive
-				return MutexAdd (new CompletionDataList (), existingAtts, assemblyAttributes);
+				MutexAdd (list, existingAtts, assemblyAttributes);
+				break;
 				
 			case "import":
-				return ExclusiveAdd (new CompletionDataList (), existingAtts, importAttributes);
+				ExclusiveAdd (list, existingAtts, importAttributes);
+				break;
 				
 			case "reference":
-				return MutexAdd (new CompletionDataList (), existingAtts, referenceAttributes);
+				MutexAdd (list, existingAtts, referenceAttributes);
+				break;
 				
 			case "register":
-				list = new CompletionDataList ();
 				foreach (string s in registerAssemblyAttributes)
 					if (existingAtts.ContainsKey (s))
 						
 				
 				ExclusiveAdd (list, existingAtts, registerAttributes);
-				return list;
+				break;
 				
 			case "outputcache":
-				return ExclusiveAdd (new CompletionDataList (), existingAtts, outputcacheAttributes);
+				ExclusiveAdd (list, existingAtts, outputcacheAttributes);
+				break;
 				
 			case "previouspagetype":
-				return MutexAdd (new CompletionDataList (), existingAtts, previousPageTypeAttributes);
+				MutexAdd (list, existingAtts, previousPageTypeAttributes);
+				break;
 				
 			case "implements":
-				return ExclusiveAdd (new CompletionDataList (), existingAtts, implementsAttributes);
+				ExclusiveAdd (list, existingAtts, implementsAttributes);
+				break;
 			}
-			return null;
 		}
 		
-		static CompletionDataList ExclusiveAdd (CompletionDataList list, Dictionary<string, string> existingAtts,
+		static void ExclusiveAdd (CompletionDataList list, Dictionary<string, string> existingAtts,
 		                                        IEnumerable<string> values)
 		{
 			foreach (string s in values)
 				if (!existingAtts.ContainsKey (s))
 					list.Add (s);
-			return list;
 		}
 		
-		static CompletionDataList MutexAdd (CompletionDataList list, Dictionary<string, string> existingAtts,
+		static void MutexAdd (CompletionDataList list, Dictionary<string, string> existingAtts,
 		                                    IEnumerable<string> mutexValues)
 		{
 			foreach (string s in mutexValues)
 				if (existingAtts.ContainsKey (s))
-					return null;
+					return;
 			foreach (string s in mutexValues)
 				list.Add (s);
-			return list;
 		}
 		
-		static ICompletionDataList GetPageAttributeValues (string attribute, ClrVersion clrVersion)
+		static void GetPageAttributeValues (CompletionDataList list, string attribute, ClrVersion clrVersion)
 		{
 			switch (attribute.ToLower ()) {
 			
@@ -191,7 +188,8 @@ namespace MonoDevelop.AspNet.Parser
 			case "smartnavigation":
 			case "strict": //VB ONLY 
 			case "trace":
-				return SimpleList.CreateBoolean (false);
+				SimpleList.AddBoolean (list, false);
+				return;
 			
 			//
 			//boolean, default to true
@@ -205,43 +203,60 @@ namespace MonoDevelop.AspNet.Parser
 			case "enableviewstatemac":
 			case "validaterequest": //enabled in machine.config
 			case "debug":
-				return SimpleList.CreateBoolean (true);
+				SimpleList.AddBoolean (list, true);
+				return;
 			
 			//
 			//specialised hard value list completions
 			//
 			case "codepage":
-				return SimpleList.Create (Encoding.UTF8.CodePage,
-					from EncodingInfo e in Encoding.GetEncodings () select e.CodePage);
+				list.AddRange (from e in Encoding.GetEncodings () select e.CodePage.ToString ());
+				list.DefaultCompletionString = Encoding.UTF8.CodePage.ToString ();
+				return;
 				
 			case "compilationmode":
-				return SimpleList.CreateEnum (System.Web.UI.CompilationMode.Always);
+				SimpleList.AddEnum (list, System.Web.UI.CompilationMode.Always);
+				return;
 				
 			case "culture":
-				return SimpleList.Create (CultureInfo.CurrentCulture.Name,
-					from CultureInfo c in CultureInfo.GetCultures (CultureTypes.AllCultures) select c.Name);
+				list.AddRange (from c in CultureInfo.GetCultures (CultureTypes.AllCultures) select c.Name);
+				list.DefaultCompletionString = CultureInfo.CurrentCulture.Name;
+				return;
 			
 			case "lcid":
 				//  locale ID, MUTUALLY EXCLUSIVE with Culture
-				return SimpleList.Create (CultureInfo.CurrentCulture.LCID,
-					from CultureInfo c in CultureInfo.GetCultures (CultureTypes.AllCultures) select c.LCID);
+				list.AddRange (from c in CultureInfo.GetCultures (CultureTypes.AllCultures)
+				               select c.LCID.ToString ());
+				list.DefaultCompletionString = CultureInfo.CurrentCulture.LCID.ToString ();
+				return;
 			
 			case "responseencoding":
-				return SimpleList.Create (Encoding.UTF8.EncodingName,
-					from EncodingInfo e in Encoding.GetEncodings () select e.Name);
+				list.AddRange (from e in Encoding.GetEncodings () select e.Name);
+				list.DefaultCompletionString = Encoding.UTF8.EncodingName;
+				return;
 			
 			case "tracemode":
-				return SimpleList.Create ("SortByTime", new string[] { "SortByTime", "SortByCategory" });
+				list.Add ("SortByTime");
+				list.Add ("SortByCategory");
+				list.DefaultCompletionString = "SortByTime";
+				return;
 			
 			case "transaction":
-				return SimpleList.Create ("Disabled",
-				                          new string[] { "Disabled", "NotSupported", "Required", "RequiresNew" });
+				list.Add ("Disabled");
+				list.Add ("NotSupported");
+				list.Add ("Required");
+				list.Add ("RequiresNew");
+				list.DefaultCompletionString = "Disabled";
+				return;
 			
 			case "viewstateencryptionmode":
-				return SimpleList.CreateEnum (ViewStateEncryptionMode.Auto);
+				SimpleList.AddEnum (list, ViewStateEncryptionMode.Auto);
+				return;
 				
 			case "warninglevel":
-				return SimpleList.Create ("0", new string[] { "1", "2", "3", "4" });	
+				list.AddRange (new string[] {"0", "1", "2", "3", "4"});
+				list.DefaultCompletionString = "0";
+				return;
 			
 			//
 			//we can probably complete these using info from the project, but not yet
@@ -294,8 +309,6 @@ namespace MonoDevelop.AspNet.Parser
 				//  string for <title>
 			*/	
 			}
-			
-			return null;
 		}
 		
 		#region Attribute lists

@@ -39,38 +39,19 @@ namespace MonoDevelop.AspNet.Completion
 	static class SimpleList
 	{
 		
-		public static ICompletionDataList CreateBoolean (bool defaultValue)
+		public static void AddBoolean (CompletionDataList list, bool defaultValue)
 		{
-			CompletionDataList provider = new CompletionDataList ();
-			provider.Add ("true", "md-literal");
-			provider.Add ("false", "md-literal");
-			provider.DefaultCompletionString = defaultValue? "true" : "false";
-			return provider;
+			list.Add ("true", "md-literal");
+			list.Add ("false", "md-literal");
+			list.DefaultCompletionString = defaultValue? "true" : "false";
 		}
 		
-		public static ICompletionDataList CreateEnum<T> (T defaultValue)
+		public static void AddEnum<T> (CompletionDataList list, T defaultValue)
 		{
-			CompletionDataList provider = new CompletionDataList ();
 			foreach (string name in Enum.GetNames (typeof (T))) {
-				provider.Add (name, "md-literal");
+				list.Add (name, "md-literal");
 			}
-			provider.DefaultCompletionString = defaultValue.ToString ();
-			return provider;
-		}
-		
-		public static ICompletionDataList Create (string defaultValue, IEnumerable<string> vals)
-		{
-			CompletionDataList provider = new CompletionDataList ();
-			foreach (string v in vals) {
-				provider.Add (v, "md-literal");
-			}
-			provider.DefaultCompletionString = defaultValue;
-			return provider;
-		}
-		
-		public static ICompletionDataList Create (int defaultValue, IEnumerable<int> vals)
-		{
-			return Create (defaultValue.ToString (), from s in vals select s.ToString ());
+			list.DefaultCompletionString = defaultValue.ToString ();
 		}
 	}
 }

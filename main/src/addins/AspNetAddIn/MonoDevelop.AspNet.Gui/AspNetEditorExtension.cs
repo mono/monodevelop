@@ -95,38 +95,6 @@ namespace MonoDevelop.AspNet.Gui
 			char currentChar = buf.GetCharAt (currentPosition);
 			char previousChar = buf.GetCharAt (currentPosition - 1);
 			
-			LoggingService.LogDebug ("Attempting ASP.NET completion for state '{0}'x{1}, previousChar='{2}'," 
-				+ " currentChar='{3}', forced='{4}'", Tracker.Engine.CurrentState, Tracker.Engine.CurrentStateLength,
-				previousChar, currentChar, forced);
-			
-			//doctype completion
-			if (line <= 5 && currentChar ==' ' && previousChar == 'E') {
-				int start = currentPosition - 9;
-				if (start >= 0) {
-					string readback = Buffer.GetText (start, currentPosition);
-					if (string.Compare (readback, "<!DOCTYPE", System.StringComparison.InvariantCulture) == 0)
-						return new CompletionDataList (from DocTypeCompletionData dat
-						                               in HtmlSchemaService.DocTypeCompletionData
-						                               select (ICompletionData) dat);
-				}
-			}
-			
-			//decide whether completion will be auto-activated, to avoid unnecessary
-			//parsing, which hurts editor responsiveness
-			if (!forced) {
-				//
-				if (Tracker.Engine.CurrentState is S.XmlFreeState && !(currentChar == '<' || currentChar == '>'))
-					return null;
-				
-				if (Tracker.Engine.CurrentState is S.XmlNameState 
-				    && Tracker.Engine.CurrentState.Parent is S.XmlAttributeState && previousChar != ' ')
-					return null;
-				
-				if (Tracker.Engine.CurrentState is S.XmlAttributeValueState 
-				    && !(previousChar == '\'' || previousChar == '"' || currentChar =='\'' || currentChar == '"'))
-					return null;
-			}
-			
 			//lazily load the schema to avoid a multi-second interruption when a schema
 			//is first used. While loading, fall back to the default schema (which is pre-loaded) so that
 			//the user still gets completion
@@ -174,138 +142,12 @@ namespace MonoDevelop.AspNet.Gui
 				return cp;
 			}
 			
-			
-			//directive attribute completion
-			if (Tracker.Engine.CurrentState is AspNetDirectiveState && forced || 
-				(Tracker.Engine.CurrentState is S.XmlNameState 
-			 	 && Tracker.Engine.CurrentState.Parent is S.XmlAttributeState
-			     && Tracker.Engine.CurrentState.Parent.Parent is AspNetDirectiveState
-			         && Tracker.Engine.CurrentStateLength == 1)
-			) {
-				AspNetDirective dir = (Tracker.Engine.CurrentState is AspNetDirectiveState)?
-					(AspNetDirective) Tracker.Engine.Nodes.Peek () :
-					(AspNetDirective) Tracker.Engine.Nodes.Peek (1);
-				System.Console.WriteLine(dir.Name.FullName);
-				//attributes
-				if (dir != null && dir.Name.IsValid && (forced ||
-					(char.IsWhiteSpace (previousChar) && char.IsLetter (currentChar))))
-				{
-					//if triggered by first letter of value, grab that letter
-					if (Tracker.Engine.CurrentStateLength == 1)
-						triggerWordLength = 1;
-					
-					Dictionary<string, string> existingAtts = new Dictionary<string,string>
-						(StringComparer.InvariantCultureIgnoreCase);
-					
-					foreach (S.XAttribute att in dir.Attributes) {
-						existingAtts [att.Name.FullName] = att.Value ?? string.Empty;
-					}
-					
-					return DirectiveCompletion.GetAttributes (dir.Name.FullName, ClrVersion.Default, existingAtts);
-				}
-			}	
-			
-			//attributes names within tags
-			if (Tracker.Engine.CurrentState is S.XmlTagState && forced || 
-				(Tracker.Engine.CurrentState is S.XmlNameState 
-			 	 && Tracker.Engine.CurrentState.Parent is S.XmlAttributeState
-			         && Tracker.Engine.CurrentStateLength == 1)
-			) {
-				S.XElement el = (Tracker.Engine.Nodes.Peek () as S.XElement) ?? 
-					Tracker.Engine.Nodes.Peek (1) as S.XElement;
-				
-				//HACK: we should handle other kinds of parent node
-				if (el == null)
-					return null;
-				
-				//attributes
-				if (el != null && el.Name.IsValid && (forced ||
-					(char.IsWhiteSpace (previousChar) && char.IsLetter (currentChar))))
-				{
-					CompletionDataList cp = new CompletionDataList ();
-					if (!forced)
-						triggerWordLength = 1;
-					
-					Dictionary<string, string> existingAtts = new Dictionary<string,string>
-						(StringComparer.InvariantCultureIgnoreCase);
-					
-					foreach (S.XAttribute att in el.Attributes) {
-						existingAtts [att.Name.FullName] = att.Value ?? string.Empty;
-					}
-					
-					if (el.Name.HasPrefix) {
-						AddAspAttributeCompletionData (cp, AspDocument, el.Name, existingAtts);
-					} else {
-						AddHtmlAttributeCompletionData (cp, Schema, el.Name, existingAtts);
-					}
-					
-					if (!existingAtts.ContainsKey ("runat"))
-						cp.Add ("runat=\"server\"", "md-literal",
-						    GettextCatalog.GetString ("Required for ASP.NET controls.\n") +
-						    GettextCatalog.GetString (
-						        "Indicates that this tag should be able to be\n" +
-						        "manipulated programmatically on the web server.")
-						    );
-					
-					if (!existingAtts.ContainsKey ("id"))
-						cp.Add ("id", "md-literal",
-						        GettextCatalog.GetString ("Unique identifier.\n") +
-						        GettextCatalog.GetString (
-						            "An identifier that is unique within the document.\n" + 
-						            "If the tag is a server control, this will be used \n" +
-						            "for the corresponding variable name in the CodeBehind.")
-						    );
-					return cp;
-				}
-			}
-			
-			//attribute values
-			//determine whether to trigger completion within attribute values quotes
-			if ((Tracker.Engine.CurrentState is S.XmlDoubleQuotedAttributeValueState
-			    || Tracker.Engine.CurrentState is S.XmlSingleQuotedAttributeValueState)
-			    //trigger on the opening quote
-			    && (Tracker.Engine.CurrentStateLength == 0
-			        //or trigger on first letter of value, if unforced
-			        || (!forced && Tracker.Engine.CurrentStateLength == 1))
-			    ) {
-				S.XAttribute att = (S.XAttribute) Tracker.Engine.Nodes.Peek ();
-				
-				if (att.IsNamed) {
-					S.XElement el = Tracker.Engine.Nodes.Peek (1) as S.XElement;
-					//HACK: we should handle other kinds of parent node
-					if (el == null)
-						return null;
-					
-					char next = ' ';
-					if (currentPosition + 1 < buf.Length)
-						next = buf.GetCharAt (currentPosition + 1);
-					
-					char compareChar = (Tracker.Engine.CurrentStateLength == 0)? currentChar : previousChar;
-					
-					if ((compareChar == '"' || compareChar == '\'') 
-					    && (next == compareChar || char.IsWhiteSpace (next))
-					) {
-						//if triggered by first letter of value, grab that letter
-						if (Tracker.Engine.CurrentStateLength == 1)
-							triggerWordLength = 1;
-						
-						CompletionDataList cp = new CompletionDataList ();
-						if (el.Name.HasPrefix)
-							AddAspAttributeValueCompletionData (cp, AspCU, el.Name, att.Name, null);
-						else
-							AddHtmlAttributeValueCompletionData (cp, Schema, el.Name, att.Name);
-							
-						return cp;
-					}
-				}
-			}
-			
 			return null; 
 		}
 		
 		protected override void GetElementCompletions (CompletionDataList list)
 		{
-			S.XName parentName = GetParent (0);
+			S.XName parentName = GetParentElementName (0);
 			if (Schema != null)
 				AddHtmlTagCompletionData (list, Schema, parentName);
 			AddHtmlMiscBegins (list);
@@ -314,11 +156,54 @@ namespace MonoDevelop.AspNet.Gui
 			AddAspBeginExpressions (list, AspDocument);
 		}
 		
-		protected override CompletionDataList GetDocTypeCompletions()
+		protected override CompletionDataList GetDocTypeCompletions ()
 		{
 			return new CompletionDataList (from DocTypeCompletionData dat
 			                               in HtmlSchemaService.DocTypeCompletionData
 			                               select (ICompletionData) dat);
+		}
+		
+		protected override void GetAttributeCompletions (CompletionDataList list, S.IAttributedXObject attributedOb,
+		                                                 Dictionary<string, string> existingAtts)
+		{
+			if (attributedOb is S.XElement) {
+				if (attributedOb.Name.HasPrefix) {
+					AddAspAttributeCompletionData (list, AspDocument, attributedOb.Name, existingAtts);
+				} else {
+					AddHtmlAttributeCompletionData (list, Schema, attributedOb.Name, existingAtts);
+				}
+				if (!existingAtts.ContainsKey ("runat"))
+					list.Add ("runat=\"server\"", "md-literal",
+						GettextCatalog.GetString ("Required for ASP.NET controls.\n") +
+						GettextCatalog.GetString (
+							"Indicates that this tag should be able to be\n" +
+							"manipulated programmatically on the web server."));
+				
+				if (!existingAtts.ContainsKey ("id"))
+					list.Add ("id", "md-literal",
+						GettextCatalog.GetString ("Unique identifier.\n") +
+						GettextCatalog.GetString (
+							"An identifier that is unique within the document.\n" + 
+							"If the tag is a server control, this will be used \n" +
+							"for the corresponding variable name in the CodeBehind."));
+				
+			}  else if (attributedOb is AspNetDirective) {
+				//FIXME: use correct ClrVersion
+				DirectiveCompletion.GetAttributes (list, attributedOb.Name.FullName, ClrVersion.Net_2_0, existingAtts);
+			}
+		}
+		
+		protected override void GetAttributeValueCompletions (CompletionDataList list, S.IAttributedXObject ob, S.XAttribute att)
+		{
+			if (ob is S.XElement) {
+				if (ob.Name.HasPrefix)
+						AddAspAttributeValueCompletionData (list, AspCU, ob.Name, att.Name, null);
+					else
+						AddHtmlAttributeValueCompletionData (list, Schema, ob.Name, att.Name);
+			} else if (ob is AspNetDirective) {
+				//FIXME: use correct ClrVersion
+				DirectiveCompletion.GetAttributeValues (list, ob.Name.FullName, att.Name.FullName, ClrVersion.Net_2_0);
+			}
 		}
 		
 		#region HTML data

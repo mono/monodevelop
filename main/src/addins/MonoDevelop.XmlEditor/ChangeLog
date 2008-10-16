@@ -1,3 +1,8 @@
+2008-10-16  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.XmlEditor.Gui/BaseXmlEditorExtension.cs: Implement
+	attribute value completion and attribute completion.
+
 2008-10-15  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.XmlEditor.Gui/BaseXmlEditorExtension.cs: Move more code
