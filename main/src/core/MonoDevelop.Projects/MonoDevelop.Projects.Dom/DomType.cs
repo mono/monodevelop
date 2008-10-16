@@ -30,6 +30,7 @@ using System;
 using System.Text;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using MonoDevelop.Projects.Dom.Parser;
 
 namespace MonoDevelop.Projects.Dom
@@ -566,7 +567,7 @@ namespace MonoDevelop.Projects.Dom
 				IReturnType copyFrom = type;
 				
 				if (typeTable.ContainsKey (type.FullName)) {
-					if (type.GenericArguments == null || type.GenericArguments.Count == 0)
+					if (type.ArrayDimensions == 0 && (type.GenericArguments == null || type.GenericArguments.Count == 0))
 						return typeTable [type.FullName];
 					copyFrom = typeTable [type.FullName];
 				}
@@ -577,9 +578,9 @@ namespace MonoDevelop.Projects.Dom
 				result.Type       = copyFrom.Type;
 				result.PointerNestingLevel = copyFrom.PointerNestingLevel;
 				result.IsNullable = copyFrom.IsNullable;
-				result.ArrayDimensions = copyFrom.ArrayDimensions;
-				for (int n=0; n<copyFrom.ArrayDimensions; n++)
-					result.SetDimension (n, copyFrom.GetDimension (n));
+				result.ArrayDimensions = type.ArrayDimensions;
+				for (int n=0; n< type.ArrayDimensions; n++)
+					result.SetDimension (n, type.GetDimension (n));
 				foreach (IReturnType param in copyFrom.GenericArguments) {
 					result.AddTypeParameter (Resolve (param));
 				}

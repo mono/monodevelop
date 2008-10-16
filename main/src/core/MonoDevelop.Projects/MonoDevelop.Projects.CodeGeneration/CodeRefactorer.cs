@@ -35,6 +35,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.Projects.Dom.Output;
 
 namespace MonoDevelop.Projects.CodeGeneration
 {
@@ -355,23 +356,16 @@ namespace MonoDevelop.Projects.CodeGeneration
 			bool alreadyImplemented;
 			IReturnType prefix = null;
 			
+			
 			List<KeyValuePair<IMember,IReturnType>> toImplement = new List<KeyValuePair<IMember,IReturnType>> ();
 			
 			ProjectDom ctx = GetParserContext (klass);
-			foreach (IType baseClass in iface.SourceProjectDom.GetInheritanceTree (iface)) {
-				if (baseClass == iface || baseClass.FullName == "System.Object")
-					continue;
-/*				if (baseClass == null)
-					LoggingService.LogError (GettextCatalog.GetString
-						("Error while implementing interface '{0}' in '{1}': base type '{2}' was not found.", klass, iface, baseClass)
-					);
-				else*/
-				klass = ImplementInterface (pinfo, klass, baseClass, explicitly, declaringClass, hintReturnType);
-			}
 			prefix = new DomReturnType (iface);
 			
 			// Stub out non-implemented events defined by @iface
 			foreach (IEvent ev in iface.Events) {
+				if (ev.IsSpecialName)
+					continue;
 				bool needsExplicitly = explicitly;
 				alreadyImplemented = false;
 				foreach (IEvent cev in klass.Events) {
@@ -387,25 +381,28 @@ namespace MonoDevelop.Projects.CodeGeneration
 			
 			// Stub out non-implemented methods defined by @iface
 			foreach (IMethod method in iface.Methods) {
+				if (method.IsSpecialName)
+					continue;
 				bool needsExplicitly = explicitly;
 				
 				alreadyImplemented = false;
 				foreach (IMethod cmet in klass.Methods) {
-					if (cmet.Name == method.Name && Equals (cmet.Parameters, method.Parameters) && cmet.IsExplicitDeclaration == needsExplicitly) {
-						alreadyImplemented = true;
+					if (cmet.Name == method.Name && Equals (cmet.Parameters, method.Parameters)) {
 						if (!needsExplicitly && !cmet.ReturnType.Equals (method.ReturnType))
 							needsExplicitly = true;
 						else
-							alreadyImplemented = !needsExplicitly || (iface.FullName == GetExplicitPrefix (cmet.ExplicitInterfaces));
+							alreadyImplemented |= !needsExplicitly || (iface.FullName == GetExplicitPrefix (cmet.ExplicitInterfaces));
 					}
 				}
 				
-				if (!alreadyImplemented)
+				if (!alreadyImplemented) 
 					toImplement.Add (new KeyValuePair<IMember,IReturnType> (method, needsExplicitly ? prefix : null));
 			}
 			
 			// Stub out non-implemented properties defined by @iface
 			foreach (IProperty prop in iface.Properties) {
+				if (prop.IsSpecialName)
+					continue;
 				bool needsExplicitly = explicitly;
 				alreadyImplemented = false;
 				foreach (IProperty cprop in klass.Properties) {
@@ -413,19 +410,27 @@ namespace MonoDevelop.Projects.CodeGeneration
 						if (!needsExplicitly && !cprop.ReturnType.Equals (prop.ReturnType))
 							needsExplicitly = true;
 						else
-							alreadyImplemented = !needsExplicitly || (iface.FullName == GetExplicitPrefix (cprop.ExplicitInterfaces));
+							alreadyImplemented |= !needsExplicitly || (iface.FullName == GetExplicitPrefix (cprop.ExplicitInterfaces));
 					}
 				}
 
 				if (!alreadyImplemented)
 					toImplement.Add (new KeyValuePair<IMember,IReturnType> (prop, needsExplicitly ? prefix : null)); 				}
 			
-		
+			Ambience ambience = AmbienceService.GetAmbienceForFile (klass.CompilationUnit.FileName);
 			//implement members
-			ImplementMembers (klass, toImplement, iface.Name +  " implementation");
+			ImplementMembers (klass, toImplement, ambience.GetString (iface, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters) +  " implementation");
 			gctx.Save ();
 			
-			return GetUpdatedClass (gctx, klass);
+			klass = GetUpdatedClass (gctx, klass);
+			foreach (IType baseClass in iface.SourceProjectDom.GetInheritanceTree (iface)) {
+				if (baseClass == iface || baseClass.FullName == "System.Object")
+					continue;
+				klass = ImplementInterface (pinfo, klass, baseClass, explicitly, declaringClass, hintReturnType);
+			}
+			
+			
+			return klass;
 		}
 		
 		IType GetUpdatedClass (RefactorerContext gctx, IType klass)

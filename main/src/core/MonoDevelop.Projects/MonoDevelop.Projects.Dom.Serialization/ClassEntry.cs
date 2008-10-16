@@ -178,6 +178,11 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			get { return subclasses; }
 			set { subclasses = value; }
 		}
+		
+		public override string ToString()
+		{
+			return string.Format("[ClassEntry: Position={0}, ClassType={1}, Modifiers={2}, ContentFlags={3}, Class={4}, Name={5}, NamespaceRef={6}, LastGetTime={7}, Subclasses={8}]", Position, ClassType, Modifiers, ContentFlags, Class, Name, NamespaceRef, LastGetTime, Subclasses);
+		}
 	}
 
 	[Flags]

@@ -79,15 +79,13 @@ namespace MonoDevelop.Projects.Dom.Parser
 				if (cur == null)
 					continue;
 				yield return cur;
-				if (cur.BaseType == null && cur.FullName != "System.Object") {
-					types.Push (this.GetType (DomReturnType.Object));
-					continue;
-				}
 				foreach (IReturnType baseType in cur.BaseTypes) {
 					IType resolvedType = this.SearchType (new SearchTypeRequest (cur.CompilationUnit, baseType));
-					if (resolvedType != null) 
-						types.Push (resolvedType);
+					if (resolvedType != null)
+						types.Push (DomType.CreateInstantiatedGenericType (resolvedType, baseType.GenericArguments));
 				}
+				if (cur.BaseType == null && cur.FullName != "System.Object") 
+					types.Push (this.GetType (DomReturnType.Object));
 			}
 		}
 		

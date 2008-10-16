@@ -48,33 +48,68 @@ namespace MonoDevelop.Projects.Dom
 				parameter.CleanCecilDefinitions ();
 			}
 		}
-		
+		/*
+			// Check if 'type' has some decorations applied to it
+				if (type is Mono.Cecil.TypeSpecification) {
+					// Go through all levels of 'indirection', 'array dimensions'
+					// and 'generic types' - in the end, we should get the actual
+					// type of the ReturnType (but all data about its array
+					// dimensions, levels of indirection and even its generic
+					// parameters is correctly stored within ArrayCount and
+					// ArrayDimensions, PointerNestingLevel and GenericArguments
+					// respectively).
+					if (type is ArrayType) {
+						// This return type is obviously an array - add the rank
+						ArrayType at = (ArrayType) type;
+						if (arrays == null)
+							arrays = new Stack<int>();
+						arrays.Push(at.Rank);
+						type = at.ElementType;
+					} else else if (type is Mono.Cecil.ReferenceType) {
+						Mono.Cecil.ReferenceType rt = (Mono.Cecil.ReferenceType) type;
+						byRef = true;
+						type = rt.ElementType;
+					} else if (type is PointerType) {
+						// The type is a pointer
+						PointerType pt = (PointerType) type;
+						++pointerNestingLevel;
+						type = pt.ElementType;
+						// Go down one level
+					} else {
+						// TODO: Check if we loose some relevant info here
+						type = ((TypeSpecification)type).ElementType;
+					}*/
 		public static DomReturnType GetReturnType (TypeReference typeReference)
 		{
 			if (typeReference == null)
 				return new DomReturnType (DomReturnType.Void.ToInvariantString ());
-			if (typeReference is Mono.Cecil.ReferenceType) 
-				return GetReturnType (((Mono.Cecil.ReferenceType)typeReference).ElementType);
+
+			if (typeReference is Mono.Cecil.GenericInstanceType) {
+				Mono.Cecil.GenericInstanceType genType = (Mono.Cecil.GenericInstanceType)typeReference;
+				DomReturnType result = GetReturnType (genType.ElementType);
+				foreach (TypeReference typeRef in genType.GenericArguments) {
+					result.AddTypeParameter (GetReturnType (typeRef));
+				}
+				return result;
+			}
+			
 			if (typeReference is Mono.Cecil.ArrayType) {
 				Mono.Cecil.ArrayType arrType = (Mono.Cecil.ArrayType)typeReference;
 				DomReturnType result = GetReturnType (arrType.ElementType);
 				result.ArrayDimensions++;
-				result.SetDimension (result.ArrayDimensions - 1, arrType.Rank);
+				result.SetDimension (result.ArrayDimensions - 1, arrType.Rank - 1);
 				return result;
 			}
+			
 			if (typeReference is Mono.Cecil.PointerType) {
 				Mono.Cecil.PointerType ptrType = (Mono.Cecil.PointerType)typeReference;
 				DomReturnType result = GetReturnType (ptrType.ElementType);
 				result.PointerNestingLevel++;
 				return result;
 			}
+			if (typeReference is Mono.Cecil.ReferenceType)
+				return GetReturnType (((Mono.Cecil.ReferenceType)typeReference).ElementType);
 			
-			if (typeReference.GenericParameters.Count > 0) {
-				DomReturnType newType = new DomReturnType (typeReference.FullName);
-				foreach (GenericParameter gp in typeReference.GenericParameters)
-					newType.AddTypeParameter (GetReturnType (gp));
-				return newType;
-			}
 			return new DomReturnType (DomCecilType.RemoveGenericParamSuffix (typeReference.FullName)); 
 		}
 		
