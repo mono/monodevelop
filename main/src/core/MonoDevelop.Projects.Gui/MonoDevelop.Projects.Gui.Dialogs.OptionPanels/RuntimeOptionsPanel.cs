@@ -84,7 +84,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 						desc = "Mono/.NET 2.0 Profile";
 						break;
 					case ClrVersion.Clr_2_1:
-						desc = "Moonlight/Silverlight 1.1";
+						desc = "Moonlight/Silverlight 2.0";
 						break;
 					default:
 						throw new Exception ("Unknown ClrVersion '" + ver.ToString () + "'");

@@ -1,3 +1,8 @@
+2008-10-16  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/RuntimeOptionsPanel.cs:
+	Rename Moonlight 1.1 to Moonlight 2.0.
+
 2008-10-16 Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: fixed 'Bug 432435 -
