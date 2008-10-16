@@ -1,3 +1,7 @@
+2008-10-15  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* MonoDevelop.SourceEditor/IdeViMode.cs: Refactor.
+
 2008-10-14  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.SourceEditor/IdeViMode.cs: Add :make command.

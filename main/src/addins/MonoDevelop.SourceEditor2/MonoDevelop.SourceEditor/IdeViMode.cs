@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Text.RegularExpressions;
 using Mono.TextEditor;
 using MonoDevelop.Ide.Gui;
 
@@ -53,33 +54,54 @@ namespace MonoDevelop.SourceEditor
 		
 		protected override string RunExCommand (string command)
 		{
-			switch (command) {
-			case ":w":
-				editor.View.Save ();
+			if (':' != command[0] || 2 > command.Length)
+				return base.RunExCommand (command);
+
+			string message = string.Empty;
+
+			switch (command[1]) {
+			case 'w':
+				if (2 < command.Length) { 
+					switch (command[2]) {
+					case 'q':	// :wq
+						editor.View.Save ();
+						Gtk.Application.Invoke (delegate {
+							editor.View.WorkbenchWindow.CloseWindow (false, true, -1);
+						});
+						return "Saved and closed file.";
+					case '!':	// :w!
+						editor.View.Save ();
+						break;
+					default:
+						return base.RunExCommand (command);
+					}
+				} 
 				return "Saved file.";
 				
-			case ":q":
-				if (editor.View.IsDirty)
+			case 'q':
+				bool force = false;
+				if (2 < command.Length) {
+					switch (command[2]) {
+					case '!':	// :q!
+						force = true;
+						break;
+					default:
+						return base.RunExCommand (command);
+					}
+				}
+				
+				if (!force && editor.View.IsDirty)
 					return "Document has not been saved!";
+
 				Gtk.Application.Invoke (delegate {
-					editor.View.WorkbenchWindow.CloseWindow (false, true, -1);
+					editor.View.WorkbenchWindow.CloseWindow (force, true, -1);
 				});
-				return "Closed file.";
+				return force? "Closed file without saving.": "Closed file.";
 				
-			case ":q!":
-				Gtk.Application.Invoke (delegate {
-					editor.View.WorkbenchWindow.CloseWindow (true, true, -1);
-				});
-				return "Closed file without saving.";
 				
-			case ":wq":
-				editor.View.Save ();
-				Gtk.Application.Invoke (delegate {
-					editor.View.WorkbenchWindow.CloseWindow (false, true, -1);
-				});
-				return "Saved and closed file.";
-				
-			case ":make":
+			case 'm':
+				if (!Regex.IsMatch (command, "^:mak[e!]", RegexOptions.Compiled))
+					break;
 				MonoDevelop.Projects.Project proj = editor.View.Project;
 				if (proj != null) {
 					IdeApp.ProjectOperations.Build (proj);

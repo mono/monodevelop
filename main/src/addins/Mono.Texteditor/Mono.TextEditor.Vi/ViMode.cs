@@ -28,6 +28,7 @@
 
 using System;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Collections.Generic;
 
 namespace Mono.TextEditor.Vi
@@ -38,6 +39,9 @@ namespace Mono.TextEditor.Vi
 	{
 		State state;
 		string status;
+		static string lastPattern;
+		static string lastReplacement;
+
 		StringBuilder commandBuffer = new StringBuilder ();
 		
 		public virtual string Status { get; protected set; }
@@ -54,7 +58,24 @@ namespace Mono.TextEditor.Vi
 				Editor.ScrollToCaret ();
 				return string.Format ("Jumped to line {0}.", line);
 			}
-			
+
+			switch (command[1]) {
+			case 's':
+				if (2 == command.Length) {
+					if (null == lastPattern || null == lastReplacement)
+						return "No stored pattern.";
+						
+					// Perform replacement with stored stuff
+					command = string.Format (":s/{0}/{1}/", lastPattern, lastReplacement);
+				}
+	
+				System.Text.RegularExpressions.Match match = Regex.Match (command, @"^:s(?<sep>.)(?<pattern>.+?)\k<sep>(?<replacement>.*?)(\k<sep>(?<trailer>i?))?$", RegexOptions.Compiled);
+				if (!(match.Success && match.Groups["pattern"].Success && match.Groups["replacement"].Success))
+					break;
+	
+				return RegexReplace (match);
+			}
+
 			return "Command not recognised";
 		}
 		
@@ -278,6 +299,13 @@ namespace Mono.TextEditor.Vi
 						RunAction (MiscActions.RemoveIndentSelection);
 						Reset ("");
 						return;
+
+					case ':':
+						commandBuffer.Append (":");
+						Status = commandBuffer.ToString ();
+						state = State.Command;
+						break;
+
 					}
 				}
 				
@@ -346,7 +374,49 @@ namespace Mono.TextEditor.Vi
 				return;
 			}
 		}
-		
+
+		/// <summary>
+		/// Runs an in-place replacement on the selection or the current line
+		/// using the "pattern", "replacement", and "trailer" groups of match.
+		/// </summary>
+		public string RegexReplace (System.Text.RegularExpressions.Match match)
+		{
+			string line = null;
+			ISegment segment = null;
+
+			if (Data.IsSomethingSelected) {
+				// Operate on selection
+				line = Data.SelectedText;
+				segment = Data.SelectionRange;
+			} else {
+				// Operate on current line
+				segment = Editor.Document.GetLine (Caret.Line);
+				line = Editor.Document.GetTextBetween (segment.Offset, segment.EndOffset);
+			}
+
+			// Set regex options
+			RegexOptions options = RegexOptions.Multiline;
+			if (match.Groups["trailer"].Success && "i" == match.Groups["trailer"].Value)
+				options |= RegexOptions.IgnoreCase;
+
+			// Mogrify group backreferences to .net-style references
+			string replacement = Regex.Replace (match.Groups["replacement"].Value, @"\\([0-9]+)", "$$$1", RegexOptions.Compiled);
+			replacement = Regex.Replace (replacement, "&", "$$$0", RegexOptions.Compiled);
+
+			try {
+				string newline = Regex.Replace (line, match.Groups["pattern"].Value, replacement, options);
+				Editor.Document.Replace (segment.Offset, line.Length, newline);
+				if (Data.IsSomethingSelected)
+					Data.ClearSelection ();
+				lastPattern = match.Groups["pattern"].Value;
+				lastReplacement = replacement; 
+			} catch (ArgumentException ae) {
+				return string.Format("Replacement error: {0}", ae.Message);
+			}
+
+			return "Performed replacement.";
+		}
+
 		enum State {
 			Normal = 0,
 			Command,
