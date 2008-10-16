@@ -201,6 +201,7 @@
 	
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
 		<Class class = "MonoDevelop.AspNet.Gui.AspNetEditorExtension" />
+		<Class class = "MonoDevelop.AspNet.Gui.HtmlEditorExtension" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Html/DocTypes">

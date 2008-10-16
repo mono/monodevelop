@@ -50,9 +50,8 @@ namespace MonoDevelop.AspNet.Gui
 {
 	
 	
-	public class AspNetEditorExtension : MonoDevelop.XmlEditor.Gui.BaseXmlEditorExtension
+	public class AspNetEditorExtension : HtmlEditorExtension
 	{
-		HtmlSchema Schema { get; set; }
 		AspNetParsedDocument AspCU { get { return CU as AspNetParsedDocument; } }
 		Document AspDocument { get { return AspCU == null? null : AspCU.Document; } }
 		
@@ -71,14 +70,6 @@ namespace MonoDevelop.AspNet.Gui
 			return new AspNetFreeState ();
 		}
 		
-		public override void Initialize ()
-		{
-			base.Initialize ();
-			
-			//ensure that the schema service is initialised, or code completion may take a couple of seconds to trigger
-			HtmlSchemaService.Initialise ();
-		}
-		
 		#endregion
 		
 		protected override ICompletionDataList HandleCodeCompletion (CodeCompletionContext completionContext,
@@ -92,27 +83,8 @@ namespace MonoDevelop.AspNet.Gui
 			
 			// completionChar may be a space even if the current char isn't, when ctrl-space is fired t
 			int currentPosition = buf.CursorPosition - 1;
-			char currentChar = buf.GetCharAt (currentPosition);
-			char previousChar = buf.GetCharAt (currentPosition - 1);
-			
-			//lazily load the schema to avoid a multi-second interruption when a schema
-			//is first used. While loading, fall back to the default schema (which is pre-loaded) so that
-			//the user still gets completion
-			string doctype = AspCU != null ? AspCU.PageInfo.DocType : null;
-			if (!string.IsNullOrEmpty (doctype)) {
-				Schema = HtmlSchemaService.GetSchema (doctype, true);
-			}
-			if (Schema == null)
-				Schema = HtmlSchemaService.DefaultDocType;
-			LoggingService.LogDebug ("AspNetCompletion using completion for doctype {0}", Schema.Name);
-			
-			ICompletionDataList baseList = base.HandleCodeCompletion (completionContext, forced, ref triggerWordLength);
-			if (baseList != null)
-				return baseList;
-			
-			//determine the node at the current location
-//			Node n = doc.RootNode.GetNodeAtPosition (line, col);
-//			LoggingService.LogDebug ("AspNetCompletion({0},{1}): {2}", line, col, n==null? "(not found)" : n.ToString ());
+			char currentChar = currentPosition < 0? ' ' : buf.GetCharAt (currentPosition);
+			char previousChar = currentPosition < 1? ' ' : buf.GetCharAt (currentPosition - 1);
 			
 			//directive names
 			if (Tracker.Engine.CurrentState is AspNetDirectiveState) {
@@ -131,46 +103,32 @@ namespace MonoDevelop.AspNet.Gui
 			}
 			
 			//non-xml tag completion
-			if (currentChar == '<') {
-				CompletionDataList cp = new CompletionDataList ();
-				if (Tracker.Engine.CurrentState is S.XmlFreeState) {
-//						if (line < 3) {
-//						cp.Add ("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>");
-				}
-				
-				AddAspBeginExpressions (cp, AspDocument);
-				return cp;
+			if (currentChar == '<' && !(Tracker.Engine.CurrentState is S.XmlFreeState) ) {
+				CompletionDataList list = new CompletionDataList ();
+				AddAspBeginExpressions (list, AspDocument);
+				return list;
 			}
 			
-			return null; 
+			DocType = AspCU != null ? AspCU.PageInfo.DocType : null;
+			
+			return base.HandleCodeCompletion (completionContext, forced, ref triggerWordLength);
 		}
 		
 		protected override void GetElementCompletions (CompletionDataList list)
 		{
 			S.XName parentName = GetParentElementName (0);
-			if (Schema != null)
-				AddHtmlTagCompletionData (list, Schema, parentName);
-			AddHtmlMiscBegins (list);
 			AddAspTags (list, AspDocument, parentName);
-			AddCloseTag (list, Tracker.Engine.Nodes);
 			AddAspBeginExpressions (list, AspDocument);
-		}
-		
-		protected override CompletionDataList GetDocTypeCompletions ()
-		{
-			return new CompletionDataList (from DocTypeCompletionData dat
-			                               in HtmlSchemaService.DocTypeCompletionData
-			                               select (ICompletionData) dat);
+			base.GetElementCompletions (list);
 		}
 		
 		protected override void GetAttributeCompletions (CompletionDataList list, S.IAttributedXObject attributedOb,
 		                                                 Dictionary<string, string> existingAtts)
 		{
+			base.GetAttributeCompletions (list, attributedOb, existingAtts);
 			if (attributedOb is S.XElement) {
 				if (attributedOb.Name.HasPrefix) {
 					AddAspAttributeCompletionData (list, AspDocument, attributedOb.Name, existingAtts);
-				} else {
-					AddHtmlAttributeCompletionData (list, Schema, attributedOb.Name, existingAtts);
 				}
 				if (!existingAtts.ContainsKey ("runat"))
 					list.Add ("runat=\"server\"", "md-literal",
@@ -195,51 +153,15 @@ namespace MonoDevelop.AspNet.Gui
 		
 		protected override void GetAttributeValueCompletions (CompletionDataList list, S.IAttributedXObject ob, S.XAttribute att)
 		{
+			base.GetAttributeValueCompletions (list, ob, att);
 			if (ob is S.XElement) {
 				if (ob.Name.HasPrefix)
-						AddAspAttributeValueCompletionData (list, AspCU, ob.Name, att.Name, null);
-					else
-						AddHtmlAttributeValueCompletionData (list, Schema, ob.Name, att.Name);
+					AddAspAttributeValueCompletionData (list, AspCU, ob.Name, att.Name, null);
 			} else if (ob is AspNetDirective) {
 				//FIXME: use correct ClrVersion
 				DirectiveCompletion.GetAttributeValues (list, ob.Name.FullName, att.Name.FullName, ClrVersion.Net_2_0);
 			}
 		}
-		
-		#region HTML data
-		
-		void AddHtmlTagCompletionData (CompletionDataList list, HtmlSchema schema, S.XName parentName)
-		{
-			if (parentName.IsValid) {
-				list.AddRange (schema.CompletionProvider.GetChildElementCompletionData (parentName.FullName));
-			} else {
-				list.AddRange (schema.CompletionProvider.GetElementCompletionData ());
-			}			
-		}
-		
-		void AddHtmlAttributeCompletionData (CompletionDataList list, HtmlSchema schema, 
-		    S.XName tagName, Dictionary<string, string> existingAtts)
-		{
-			//add atts only if they're not aready in the tag
-			foreach (ICompletionData datum in schema.CompletionProvider.GetAttributeCompletionData (tagName.FullName))
-				if (existingAtts == null || !existingAtts.ContainsKey (datum.DisplayText))
-					list.Add (datum);
-		}
-		
-		void AddHtmlAttributeValueCompletionData (CompletionDataList list, HtmlSchema schema, 
-		    S.XName tagName, S.XName attributeName)
-		{
-			list.AddRange (schema.CompletionProvider.GetAttributeValueCompletionData (tagName.FullName, 
-			                                                                          attributeName.FullName));
-		}
-		
-		static void AddHtmlMiscBegins (CompletionDataList list)
-		{
-			list.Add ("!--",  "md-literal", GettextCatalog.GetString ("Comment"));
-			list.Add ("![CDATA[", "md-literal", GettextCatalog.GetString ("Character data"));
-		}
-		
-		#endregion
 		
 		#region ASP.NET data
 		

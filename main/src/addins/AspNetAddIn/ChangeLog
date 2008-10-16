@@ -1,5 +1,18 @@
 2008-10-16  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Makefile.am:
+	* AspNetAddIn.mdp: Updated.
+
+	* MonoDevelop.AspNet.addin.xml: Enable HtmlEditorExtension for HTML
+	completion.
+
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:
+	* MonoDevelop.AspNet.Gui/HtmlTextEditorExtension.cs: Refactor HTML
+	completion from AspNetEditorExtension into an HtmlEditorExtension
+	base class.
+
+2008-10-16  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.AspNet.Completion/SimpleLists.cs: Remove unused methods.
 
 	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Move code to base

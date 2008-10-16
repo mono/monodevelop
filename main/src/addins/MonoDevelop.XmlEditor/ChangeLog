@@ -1,5 +1,10 @@
 2008-10-16  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.XmlEditor.Gui/BaseXmlEditorExtension.cs: Move updating of
+	state engine so that subclasses don't have to do it.
+
+2008-10-16  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.XmlEditor.Gui/BaseXmlEditorExtension.cs: Implement
 	attribute value completion and attribute completion.
 
