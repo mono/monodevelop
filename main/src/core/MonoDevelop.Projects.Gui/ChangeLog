@@ -1,4 +1,4 @@
-2008-10-16  Full Name  <Email Address>
+2008-10-16 Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: fixed 'Bug 432435 -
 	Code completion shows 'List', not List<T>'.

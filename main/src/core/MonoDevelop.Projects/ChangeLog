@@ -1,8 +1,8 @@
-2008-10-16  Full Name  <Email Address>
+2008-10-16 Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/AbstractMember.cs: fixed accessible issue.
 
-2008-10-16  Full Name  <Email Address>
+2008-10-16 Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomType.cs:
 	* MonoDevelop.Projects.Dom/DomCecilMethod.cs:
@@ -12,20 +12,20 @@
 	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
 	Worked on dom & implement interfaces.
 
-2008-10-16  Full Name  <Email Address>
+2008-10-16 Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomType.cs: set source project dom for
 	instantiated types.
 
-2008-10-15  Full Name  <Email Address>
+2008-10-15 Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/ResolveResult.cs: fixed failing unit test.
 
-2008-10-15  Full Name  <Email Address>
+2008-10-15 Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/ResolveResult.cs: filtered some members.
 
-2008-10-15  Full Name  <Email Address>
+2008-10-15 Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomProperty.cs:
 	* MonoDevelop.Projects.Dom/AbstractMember.cs:
@@ -36,12 +36,12 @@
 	Worked on implement  interface feature / fixed explicit interface
 	issue.
 
-2008-10-15  Full Name  <Email Address>
+2008-10-15 Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: fixed failing unit
 	test.
 
-2008-10-15  Full Name  <Email Address>
+2008-10-15 Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomCecilType.cs:
 	* MonoDevelop.Projects.Dom/ResolveResult.cs:

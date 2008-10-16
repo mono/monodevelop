@@ -1,9 +1,9 @@
-2008-10-16  Full Name  <Email Address>
+2008-10-16 Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharpBinding/ParameterCompletionTests.cs: Added unit test
 	for 'Bug 434701 - No autocomplete in attributes'.
 
-2008-10-16  Full Name  <Email Address>
+2008-10-16 Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharpBinding/ParameterCompletionTests.cs: added unit test
 	for 'Bug 434705 - No autocomplete offered if not assigning result of
@@ -25,7 +25,7 @@
 	* MonoDevelop.Xml.StateEngine/TestParser.cs: Utility for testing the XML
 	parser.
 
-2008-10-15  Full Name  <Email Address>
+2008-10-15  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharpBinding/CodeCompletionTests.cs: added test for 'Bug
 	434770 - No autocomplete on array types'.
