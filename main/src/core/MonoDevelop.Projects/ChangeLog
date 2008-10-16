@@ -1,3 +1,8 @@
+2008-10-16  Full Name  <Email Address>
+
+	* MonoDevelop.Projects.Dom/DomType.cs: set source project dom for
+	instantiated types.
+
 2008-10-15  Full Name  <Email Address>
 
 	* MonoDevelop.Projects.Dom/ResolveResult.cs: fixed failing unit test.

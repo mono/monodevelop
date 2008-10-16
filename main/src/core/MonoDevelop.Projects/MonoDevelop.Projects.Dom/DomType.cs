@@ -544,6 +544,7 @@ namespace MonoDevelop.Projects.Dom
 			if (result.typeParameters != null)
 				result.typeParameters.Clear ();
 			result.Name = name;
+			result.SourceProjectDom = type.SourceProjectDom;
 			if (genericArguments != null) {
 				for (int i = 0; i < genericArguments.Count; i++)
 					result.AddTypeParameter (new TypeParameter (genericArguments[i].ToInvariantString ()));
