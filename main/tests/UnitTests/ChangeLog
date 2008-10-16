@@ -1,3 +1,9 @@
+2008-10-16  Full Name  <Email Address>
+
+	* MonoDevelop.CSharpBinding/ParameterCompletionTests.cs: added unit test
+	for 'Bug 434705 - No autocomplete offered if not assigning result of
+	'new' to a variable'.
+
 2008-10-15  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Xml.StateEngine/ParsingTests.cs: Don't start up the MD

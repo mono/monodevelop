@@ -170,6 +170,32 @@ class Test
 			Assert.IsNotNull (provider, "provider was not created.");
 			Assert.AreEqual (1, provider.OverloadCount);
 		}
+
+		/// <summary>
+		/// Bug 434705 - No autocomplete offered if not assigning result of 'new' to a variable
+		/// </summary>
+		[Test()]
+		public void TestBug434705 ()
+		{
+			IParameterDataProvider provider = CreateProvider (
+@"class Test
+{
+	public Test (int a)
+	{
+	}
+}
+
+class AClass
+{
+	Test A()
+	{
+		return new Test ($
+	}
+}");
+			Assert.IsNotNull (provider, "provider was not created.");
+			Assert.AreEqual (1, provider.OverloadCount);
+		}
+		
 		
 	}
 }
