@@ -309,8 +309,12 @@ namespace MonoDevelop.DesignerSupport
 		
 		public static System.CodeDom.CodeMemberMethod MDDomToCodeDomMethod (IEvent ev, ProjectDom context)
 		{
+			if (ev.ReturnType == null)
+				return null;
 			IType cls = context.GetType (ev.ReturnType);
-			foreach(IMethod m in cls.Methods)
+			if (cls == null)
+				return null;
+			foreach (IMethod m in cls.Methods)
 				if (m.Name == "Invoke")
 					return MDDomToCodeDomMethod (m);
 			return null;

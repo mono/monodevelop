@@ -1,3 +1,8 @@
+2008-10-16  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.DesignerSupport/BindingService.cs: Null checks in case
+	event's ReturnType is null or unresolvable.
+
 2008-10-10  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs: Remove lock, and add a
