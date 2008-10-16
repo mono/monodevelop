@@ -253,13 +253,14 @@ namespace MonoDevelop.Projects.Gui.Completion
 				word.Insert (curPos, c);
 				bool hasMismatches;
 				int match = findMatchedEntry (word.ToString (), out hasMismatches);
-				if (match >= 0 && !hasMismatches) {
+				if (match >= 0 && !hasMismatches && c != '<') {
 					curPos++;
 					SelectEntry (match);
 					return KeyAction.Process;
 				} else {
 					word.Remove (curPos, 1);
-					return c == '<' ? KeyAction.Complete | KeyAction.Ignore | KeyAction.CloseWindow : KeyAction.Complete | KeyAction.Process | KeyAction.CloseWindow;
+					return c == '<' ? KeyAction.Complete | KeyAction.Ignore | KeyAction.CloseWindow : 
+						              KeyAction.Complete | KeyAction.Process | KeyAction.CloseWindow;
 				}
 			}
 			
