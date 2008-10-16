@@ -196,6 +196,28 @@ class AClass
 			Assert.AreEqual (1, provider.OverloadCount);
 		}
 		
+		/// <summary>
+		/// Bug 434701 - No autocomplete in attributes
+		/// </summary>
+		[Test()]
+		public void TestBug434701 ()
+		{
+			IParameterDataProvider provider = CreateProvider (
+@"class TestAttribute : System.Attribute
+{
+	public Test (int a)
+	{
+	}
+}
+
+[Test($
+class AClass
+{
+}");
+			Assert.IsNotNull (provider, "provider was not created.");
+			Assert.AreEqual (1, provider.OverloadCount);
+		}
+		
 		
 	}
 }

@@ -1,5 +1,10 @@
 2008-10-16  Full Name  <Email Address>
 
+	* MonoDevelop.CSharpBinding/ParameterCompletionTests.cs: Added unit test
+	for 'Bug 434701 - No autocomplete in attributes'.
+
+2008-10-16  Full Name  <Email Address>
+
 	* MonoDevelop.CSharpBinding/ParameterCompletionTests.cs: added unit test
 	for 'Bug 434705 - No autocomplete offered if not assigning result of
 	'new' to a variable'.
