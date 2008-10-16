@@ -60,6 +60,7 @@ namespace MonoDevelop.CSharpBinding
 		
 		public string CompletionText {
 			get { return completionString; }
+			set { completionString = value; }
 		}
 		
 		public string DisplayText {

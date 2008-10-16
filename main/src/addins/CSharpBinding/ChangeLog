@@ -1,5 +1,13 @@
 2008-10-16  Full Name  <Email Address>
 
+	* Gui/NRefactoryResolver.cs:
+	* Gui/MemberCompletionData.cs:
+	* Gui/CSharpTextEditorCompletion.cs:
+	* Gui/NRefactoryParameterDataProvider.cs: fixed 'Bug 434701 - No
+	autocomplete in attributes'.
+
+2008-10-16  Full Name  <Email Address>
+
 	* Gui/CSharpTextEditorCompletion.cs: fixed 'Bug 434705 - No autocomplete
 	offered if not assigning result of 'new' to a variable'.
 

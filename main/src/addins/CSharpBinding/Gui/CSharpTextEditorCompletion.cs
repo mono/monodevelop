@@ -346,6 +346,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			                                                                                ICSharpCode.NRefactory.SupportedLanguage.CSharp,
 			                                                                                Editor,
 			                                                                                Document.FileName);
+			
 			switch (completionChar) {
 			case '(':
 				ResolveResult resolveResult = resolver.Resolve (result, new DomLocation (Editor.CursorLine, Editor.CursorColumn));
@@ -354,6 +355,15 @@ namespace MonoDevelop.CSharpBinding.Gui
 					
 					IType type = dom.SearchType (new SearchTypeRequest (resolver.Unit, returnType));
 					if (type != null && returnType.GenericArguments != null)
+						type = DomType.CreateInstantiatedGenericType (type, returnType.GenericArguments);
+					return new NRefactoryParameterDataProvider (Editor, resolver, type);
+				}
+				if (result.ExpressionContext == ExpressionContext.Attribute) {
+					IReturnType returnType = resolveResult.ResolvedType;
+					IType type = dom.SearchType (new SearchTypeRequest (resolver.Unit, returnType));
+					if (type == null) 
+						type = dom.SearchType (new SearchTypeRequest (resolver.Unit, new DomReturnType (result.Expression + "Attribute")));
+					if (type != null && returnType != null && returnType.GenericArguments != null)
 						type = DomType.CreateInstantiatedGenericType (type, returnType.GenericArguments);
 					return new NRefactoryParameterDataProvider (Editor, resolver, type);
 				}

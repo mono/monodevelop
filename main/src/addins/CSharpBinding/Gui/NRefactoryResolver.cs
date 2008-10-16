@@ -230,9 +230,7 @@ namespace MonoDevelop.CSharpBinding
 					}
 				}
 				
-				MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col
-					= new MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector (
-						this.editor, dom, unit, new DomLocation (editor.CursorLine - 1, editor.CursorColumn - 1));
+				MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col = new MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector ( this.editor, dom, unit, new DomLocation (editor.CursorLine - 1, editor.CursorColumn - 1));
 				foreach (object o in dom.GetNamespaceContents (namespaceList, true, true)) {
 					if (context.FilterEntry (o))
 						continue;
@@ -245,11 +243,15 @@ namespace MonoDevelop.CSharpBinding
 							continue;
 					}
 					ICompletionData data = col.AddCompletionData (completionList, o);
-					if (data is CompletionData && context == ExpressionContext.Attribute) {
-						if (data.CompletionText != null && data.CompletionText.EndsWith ("Attribute"))
-							((CompletionData)data).CompletionText = 
-								data.CompletionText.Substring (
-									0, data.CompletionText.Length - "Attribute".Length);
+					if (data != null && context == ExpressionContext.Attribute && data.CompletionText != null && data.CompletionText.EndsWith ("Attribute")) {
+						string newText = data.CompletionText.Substring (0, data.CompletionText.Length - "Attribute".Length);
+						if (data is CompletionData) {
+							((CompletionData)data).CompletionText = newText;
+						} else if (data is MemberCompletionData) {
+							((MemberCompletionData)data).CompletionText = newText;
+						} else {
+							System.Console.WriteLine("Unknown completion data:" + data);
+						}
 					}
 				}
 			}
