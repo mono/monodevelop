@@ -75,7 +75,8 @@ namespace MonoDevelop.SourceEditor
 					default:
 						return base.RunExCommand (command);
 					}
-				} 
+				}
+				else editor.View.Save ();
 				return "Saved file.";
 				
 			case 'q':
