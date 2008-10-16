@@ -50,7 +50,6 @@ namespace MonoDevelop.SourceEditor
 		ITextEditorExtension extension = null;
 		SourceEditorView view;
 		Dictionary<int, Error> errors;
-		bool useViModes;
 		
 		Gdk.Point menuPopupLocation;
 		
@@ -109,16 +108,16 @@ namespace MonoDevelop.SourceEditor
 				}
 			};
 			
-			SetCurrentMode (SourceEditorOptions.Options.UseViModes);
+			UpdateEditMode ();
 			
 			this.ButtonPressEvent += OnPopupMenu;
 
 			AddinManager.AddExtensionNodeHandler ("MonoDevelop/SourceEditor2/TooltipProviders", OnTooltipProviderChanged);
 		}
 		
-		void SetCurrentMode (bool useViModes)
+		void UpdateEditMode ()
 		{
-			if (useViModes) {
+			if (SourceEditorOptions.Options.UseViModes) {
 				if (!(CurrentMode is IdeViMode))
 					CurrentMode = new IdeViMode (this);
 			} else {
@@ -177,7 +176,7 @@ namespace MonoDevelop.SourceEditor
 				if (!SourceEditorOptions.Options.ShowFoldMargin)
 					this.Document.ClearFoldSegments ();
 			}
-			SetCurrentMode (SourceEditorOptions.Options.UseViModes);
+			UpdateEditMode ();
 			base.OptionsChanged (sender, args);
 		}
 		

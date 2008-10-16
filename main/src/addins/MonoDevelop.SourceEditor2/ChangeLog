@@ -1,3 +1,12 @@
+2008-10-16  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: Remove unneeded
+	field and parameter. Rename SetCurrentMode to UpdateEditMode.
+
+	* MonoDevelop.SourceEditor/SourceEditorOptions.cs: Fire an OnChanged
+	event when the UseViModes setting changes, so that the setting is
+	applied by open editors.
+
 2008-10-15  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* MonoDevelop.SourceEditor/IdeViMode.cs: Refactor.

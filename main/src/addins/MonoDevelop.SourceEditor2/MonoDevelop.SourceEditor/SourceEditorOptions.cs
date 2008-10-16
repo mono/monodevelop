@@ -318,6 +318,7 @@ namespace MonoDevelop.SourceEditor
 					return;
 				useViModes = value;
 				PropertyService.Set ("UseViModes", value);
+				OnChanged (EventArgs.Empty);
 			}
 		}
 		
