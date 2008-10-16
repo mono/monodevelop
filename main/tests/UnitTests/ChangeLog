@@ -1,3 +1,8 @@
+2008-10-16  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharpBinding/CodeCompletionAccessibleTests.cs: Added some
+	unit tests.
+
 2008-10-16 Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharpBinding/ParameterCompletionTests.cs: Added unit test

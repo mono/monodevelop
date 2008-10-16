@@ -37,6 +37,7 @@ FILES =  \
 	Mono.TextEditor.Tests/SearchTests.cs \
 	Mono.TextEditor.Tests/SelectionTests.cs \
 	Mono.TextEditor.Tests/UndoRedoTests.cs \
+	MonoDevelop.CSharpBinding/CodeCompletionAccessibleTests.cs \
 	MonoDevelop.CSharpBinding/CodeCompletionCSharp3Tests.cs \
 	MonoDevelop.CSharpBinding/CodeCompletionOperatorTests.cs \
 	MonoDevelop.CSharpBinding/CodeCompletionTests.cs \
