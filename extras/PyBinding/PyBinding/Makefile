@@ -47,6 +47,8 @@ LINUX_PKGCONFIG = \
 
 RESGEN=resgen2
 
+INSTALL_DIR = $(DESTDIR)$(prefix)/lib/monodevelop/AddIns/PyBinding
+
 PYBINDING_PC = $(BUILD_DIR)/monodevelop-pybinding.pc
 
 FILES =  \
@@ -146,20 +148,20 @@ $(ASSEMBLY) $(ASSEMBLY_MDB): $(build_sources) $(build_resources) $(build_datafil
 
 install-local: $(ASSEMBLY) $(ASSEMBLY_MDB)
 	make pre-install-local-hook prefix=$(prefix)
-	mkdir -p '$(DESTDIR)$(libdir)/$(PACKAGE)'
-	$(call cp,$(ASSEMBLY),$(DESTDIR)$(libdir)/$(PACKAGE))
-	$(call cp,$(ASSEMBLY_MDB),$(DESTDIR)$(libdir)/$(PACKAGE))
+	mkdir -p $(INSTALL_DIR)
+	$(call cp,$(ASSEMBLY),$(INSTALL_DIR))
+	$(call cp,$(ASSEMBLY_MDB),$(INSTALL_DIR))
 	mkdir -p '$(DESTDIR)$(libdir)/pkgconfig'
 	$(call cp,$(PYBINDING_PC),$(DESTDIR)$(libdir)/pkgconfig)
-	$(call cp,$(PYBINDING_DLL_MDB),$(DESTDIR)$(libdir)/$(PACKAGE))
+	$(call cp,$(PYBINDING_DLL_MDB),$(INSTALL_DIR))
 	make post-install-local-hook prefix=$(prefix)
 
 uninstall-local: $(ASSEMBLY) $(ASSEMBLY_MDB)
 	make pre-uninstall-local-hook prefix=$(prefix)
-	$(call rm,$(ASSEMBLY),$(DESTDIR)$(libdir)/$(PACKAGE))
-	$(call rm,$(ASSEMBLY_MDB),$(DESTDIR)$(libdir)/$(PACKAGE))
+	$(call rm,$(ASSEMBLY),$(INSTALL_DIR))
+	$(call rm,$(ASSEMBLY_MDB),$(INSTALL_DIR))
 	$(call rm,$(PYBINDING_PC),$(DESTDIR)$(libdir)/pkgconfig)
-	$(call rm,$(PYBINDING_DLL_MDB),$(DESTDIR)$(libdir)/$(PACKAGE))
+	$(call rm,$(PYBINDING_DLL_MDB),$(INSTALL_DIR))
 	make post-uninstall-local-hook prefix=$(prefix)
 
 install: install-local
