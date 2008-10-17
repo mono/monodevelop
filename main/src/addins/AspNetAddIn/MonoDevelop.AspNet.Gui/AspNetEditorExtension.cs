@@ -155,8 +155,13 @@ namespace MonoDevelop.AspNet.Gui
 		{
 			base.GetAttributeValueCompletions (list, ob, att);
 			if (ob is S.XElement) {
-				if (ob.Name.HasPrefix)
-					AddAspAttributeValueCompletionData (list, AspCU, ob.Name, att.Name, null);
+				if (ob.Name.HasPrefix) {
+					S.XAttribute idAtt = ob.Attributes[new S.XName ("id")];
+					string id = idAtt == null? null : idAtt.Value;
+					if (string.IsNullOrEmpty (id) || string.IsNullOrEmpty (id.Trim ()))
+						id = null;
+					AddAspAttributeValueCompletionData (list, AspCU, ob.Name, att.Name, id);
+				}
 			} else if (ob is AspNetDirective) {
 				//FIXME: use correct ClrVersion
 				DirectiveCompletion.GetAttributeValues (list, ob.Name.FullName, att.Name.FullName, ClrVersion.Net_2_0);
@@ -238,8 +243,7 @@ namespace MonoDevelop.AspNet.Gui
 		}
 		
 		static void AddAspAttributeValueCompletionData (CompletionDataList list,
-		    MonoDevelop.AspNet.Parser.AspNetParsedDocument cu, S.XName tagName, S.XName attName,
-		    Dictionary<string, string> existingAtts)
+		    MonoDevelop.AspNet.Parser.AspNetParsedDocument cu, S.XName tagName, S.XName attName, string id)
 		{
 			Debug.Assert (tagName.IsValid && tagName.HasPrefix);
 			Debug.Assert (attName.IsValid && !attName.HasPrefix);
@@ -288,14 +292,15 @@ namespace MonoDevelop.AspNet.Gui
 						}
 						
 						string suggestedIdentifier = ev.Name;
-						if (existingAtts != null && !existingAtts.ContainsKey ("id") 
-						    && !string.IsNullOrEmpty (existingAtts["id"]))
-						{
-							suggestedIdentifier = existingAtts["id"] + "_" + suggestedIdentifier;
+						if (id != null) {
+							suggestedIdentifier = id + "_" + suggestedIdentifier;
+						} else {
+							suggestedIdentifier = tagName.Name + "_" + suggestedIdentifier;
 						}
 							
 						domMethod.Name = BindingService.GenerateIdentifierUniqueInClass
 							(projectDatabase, codeBehindClass, suggestedIdentifier);
+						domMethod.Attributes |= System.CodeDom.MemberAttributes.Family;
 						list.Add (
 						    new SuggestedHandlerCompletionData (cu.Document.Project, domMethod, codeBehindClass,
 						        MonoDevelop.AspNet.CodeBehind.GetNonDesignerClass (codeBehindClass))
