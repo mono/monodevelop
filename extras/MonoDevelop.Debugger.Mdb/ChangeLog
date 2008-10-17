@@ -1,3 +1,7 @@
+2008-10-16  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* configure: Fix tarball name. Update debugger version requirement.
+
 2008-08-22  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Debugger.Mdb, MonoDevelop.Debugger.Mdb/AssemblyInfo.cs,

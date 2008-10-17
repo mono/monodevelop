@@ -1,6 +1,6 @@
 #!/bin/bash
 VERSION=0.1
-PACKAGE=monodevelop.debugger
+PACKAGE=monodevelop-debugger-gdb
 prefix=/usr/local
 config=DEBUG
 configurations=" RELEASE DEBUG"

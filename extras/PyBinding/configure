@@ -1,6 +1,6 @@
 #!/bin/bash
 VERSION=0.1
-PACKAGE=pybinding
+PACKAGE=monodevelop-python
 prefix=/usr/local
 config=DEBUG
 configurations=" RELEASE DEBUG"
