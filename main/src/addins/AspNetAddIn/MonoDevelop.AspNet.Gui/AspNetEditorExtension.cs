@@ -109,6 +109,17 @@ namespace MonoDevelop.AspNet.Gui
 				return list;
 			}
 			
+			//simple completion for ASP.NET expressions
+			if (Tracker.Engine.CurrentState is AspNetExpressionState
+			    && previousChar == ' ' && char.IsLetter (currentChar))
+			{
+				AspNetExpression expr = Tracker.Engine.Nodes.Peek () as AspNetExpression;
+				CompletionDataList list = HandleExpressionCompletion (expr);
+				if (list != null && !forced)
+					triggerWordLength = 1;
+				return list;
+			}
+			
 			DocType = AspCU != null ? AspCU.PageInfo.DocType : null;
 			
 			return base.HandleCodeCompletion (completionContext, forced, ref triggerWordLength);
@@ -165,6 +176,46 @@ namespace MonoDevelop.AspNet.Gui
 			} else if (ob is AspNetDirective) {
 				//FIXME: use correct ClrVersion
 				DirectiveCompletion.GetAttributeValues (list, ob.Name.FullName, att.Name.FullName, ClrVersion.Net_2_0);
+			}
+		}
+		
+		CompletionDataList HandleExpressionCompletion (AspNetExpression expr)
+		{
+			if (!(expr is AspNetDataBindingExpression || expr is AspNetRenderExpression))
+				return null;
+			
+			MonoDevelop.Projects.Dom.IType codeBehindClass;
+			MonoDevelop.Projects.Dom.Parser.ProjectDom projectDatabase;
+			GetCodeBehind (AspCU, out codeBehindClass, out projectDatabase);
+			
+			if (codeBehindClass == null)
+				return null;
+			
+			//list just the class's properties, not properties on base types
+			CompletionDataList list = new CompletionDataList ();
+			list.AddRange (from p in codeBehindClass.Properties
+				where p.IsProtected || p.IsPublic
+				select new CompletionData (p.Name, "md-property"));
+			list.AddRange (from p in codeBehindClass.Fields
+				where p.IsProtected || p.IsPublic
+				select new CompletionData (p.Name, "md-property"));
+			
+			return list.Count > 0? list : null;
+		}
+		
+		static void GetCodeBehind (AspNetParsedDocument cu,
+		                           out MonoDevelop.Projects.Dom.IType codeBehindClass,
+		                           out MonoDevelop.Projects.Dom.Parser.ProjectDom projectDatabase)
+		{
+			codeBehindClass = null;
+			projectDatabase = null;
+			
+			if (cu != null && cu.Document.Project != null) {
+				projectDatabase = MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetProjectDom
+					(cu.Document.Project);
+				
+				if (projectDatabase != null && !string.IsNullOrEmpty (cu.PageInfo.InheritedClass))
+					codeBehindClass = projectDatabase.GetType (cu.PageInfo.InheritedClass, false, false);
 			}
 		}
 		
@@ -263,15 +314,9 @@ namespace MonoDevelop.AspNet.Gui
 			}
 			
 			//find the codebehind class
-			MonoDevelop.Projects.Dom.IType codeBehindClass = null;
-			MonoDevelop.Projects.Dom.Parser.ProjectDom projectDatabase = null;
-			if (cu != null && cu.Document.Project != null) {
-				projectDatabase = MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetProjectDom
-					(cu.Document.Project);
-				
-				if (projectDatabase != null && !string.IsNullOrEmpty (cu.PageInfo.InheritedClass))
-					codeBehindClass = projectDatabase.GetType (cu.PageInfo.InheritedClass, false, false);
-			}
+			MonoDevelop.Projects.Dom.IType codeBehindClass;
+			MonoDevelop.Projects.Dom.Parser.ProjectDom projectDatabase;
+			GetCodeBehind (cu, out codeBehindClass, out projectDatabase);
 			
 			//if it's an event, suggest compatible methods 
 			if (codeBehindClass != null && attName.Name.StartsWith ("On")) {
