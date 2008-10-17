@@ -1,3 +1,8 @@
+2008-10-16  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Dom/DomCecilEvent.cs: Load event's return type 
+	  from the assembly. Fixes Bug 436315 - ReturnType of IEvents is null.
+
 2008-10-16 Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/AbstractMember.cs: fixed accessible issue.
