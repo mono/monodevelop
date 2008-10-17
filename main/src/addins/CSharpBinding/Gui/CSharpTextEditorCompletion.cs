@@ -504,7 +504,8 @@ namespace MonoDevelop.CSharpBinding.Gui
 							return CreateTypeCompletionData (exactContext, null, resolver.CallingMember.ReturnType);
 					}
 				}
-				return CreateTypeCompletionData (exactContext, null, null);
+				
+				return CreateCtrlSpaceCompletionData (null);
 			case "if":
 			case "elif":
 				if (stateTracker.Engine.IsInsidePreprocessorDirective) 
@@ -865,8 +866,10 @@ namespace MonoDevelop.CSharpBinding.Gui
 			resolver.SetupResolver (new DomLocation (Editor.CursorLine, Editor.CursorColumn));
 			//System.Console.WriteLine(expressionResult.ExpressionContext );
 			CompletionDataList result = new CompletionDataList ();
-			
-			if (expressionResult.ExpressionContext == ExpressionContext.TypeDeclaration) {
+			if (expressionResult == null) {
+				AddPrimitiveTypes (result);
+				resolver.AddAccessibleCodeCompletionData (ExpressionContext.Global, result);
+			} else if (expressionResult.ExpressionContext == ExpressionContext.TypeDeclaration) {
 				AddPrimitiveTypes (result);
 				AddNRefactoryKeywords (result, ICSharpCode.NRefactory.Parser.CSharp.Tokens.TypeLevel);
 				resolver.AddAccessibleCodeCompletionData (expressionResult.ExpressionContext, result);

@@ -197,26 +197,27 @@ namespace MonoDevelop.CSharpBinding
 		static readonly IReturnType attributeType = new DomReturnType ("System.Attribute");
 		public void AddAccessibleCodeCompletionData (ExpressionContext context, CompletionDataList completionList)
 		{
-			AddContentsFromClassAndMembers (context, completionList);
+			if (context != ExpressionContext.Global) {
+				AddContentsFromClassAndMembers (context, completionList);
 			
-			if (lookupTableVisitor != null && lookupTableVisitor.Variables != null) {
-				foreach (KeyValuePair<string, List<LocalLookupVariable>> pair in lookupTableVisitor.Variables) {
-					if (pair.Value != null && pair.Value.Count > 0) {
-						foreach (LocalLookupVariable v in pair.Value) {
-							completionList.Add (pair.Key, "md-literal");
+				if (lookupTableVisitor != null && lookupTableVisitor.Variables != null) {
+					foreach (KeyValuePair<string, List<LocalLookupVariable>> pair in lookupTableVisitor.Variables) {
+						if (pair.Value != null && pair.Value.Count > 0) {
+							foreach (LocalLookupVariable v in pair.Value) {
+								completionList.Add (pair.Key, "md-literal");
+							}
 						}
 					}
 				}
-			}
 			
-			if (CallingMember is IProperty) {
-				IProperty property = (IProperty)callingMember;
-				if (property.HasSet && editor != null && property.SetRegion.Contains (resolvePosition.Line, editor.CursorColumn)) 
+				if (CallingMember is IProperty) {
+					IProperty property = (IProperty)callingMember;
+					if (property.HasSet && editor != null && property.SetRegion.Contains (resolvePosition.Line, editor.CursorColumn)) 
+						completionList.Add ("value", "md-literal");
+				}
+			
+				if (CallingMember is IEvent) 
 					completionList.Add ("value", "md-literal");
-			}
-			
-			if (CallingMember is IEvent) {
-				completionList.Add ("value", "md-literal");
 			}
 			
 			List<string> namespaceList = new List<string> ();
