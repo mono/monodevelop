@@ -48,7 +48,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 	{
 		static protected readonly int MAX_ACTIVE_COUNT = 100;
 		static protected readonly int MIN_ACTIVE_COUNT = 10;
-		static protected readonly int FORMAT_VERSION   = 51;
+		static protected readonly int FORMAT_VERSION   = 52;
 		
 		NamespaceEntry rootNamespace;
 		protected ArrayList references;
@@ -460,6 +460,13 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			lock (rwlock)
 			{
 				if (genericArguments != null && genericArguments.Count > 0) {
+/*					foreach (ClassEntry entry in this.GetAllClasses()) {
+						if (entry.Name == typeName) {
+							IType result = GetClass (entry);
+							if (result.TypeParameters.Count == genericArguments.Count)
+								return DomType.CreateInstantiatedGenericType (result, genericArguments);
+						}
+					}*/
 					IType templateClass = GetClass (typeName, null, caseSensitive);
 					if (templateClass == null)
 						return null;

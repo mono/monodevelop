@@ -1,3 +1,12 @@
+2008-10-18  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom/DomCecilType.cs:
+	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs:
+	* MonoDevelop.Projects.Dom/SearchTypeRequest.cs:
+	* MonoDevelop.Projects.Dom.Serialization/DomPersistence.cs:
+	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
+	Worked on dom.
+
 2008-10-16  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomCecilEvent.cs: Load event's return type 

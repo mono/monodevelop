@@ -358,7 +358,8 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				evt.DeclaringType = result;
 				result.Add (evt);
 			}
-
+			
+			// type parameters
 			count = reader.ReadUInt32 ();
 			while (count-- > 0) {
 				TypeParameter tp = ReadTypeParameter (reader, nameTable);

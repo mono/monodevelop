@@ -39,13 +39,14 @@ namespace MonoDevelop.Projects.Dom
 		
 		static ClassType GetClassType (TypeDefinition typeDefinition)
 		{
+			if (typeDefinition.BaseType != null && (typeDefinition.BaseType.FullName == "System.Delegate" || typeDefinition.BaseType.FullName == "System.MulticastDelegate"))
+				return ClassType.Delegate;
 			if (typeDefinition.IsInterface)
 				return ClassType.Interface;
 			if (typeDefinition.IsEnum)
 				return ClassType.Enum;
 			if (typeDefinition.IsValueType)
 				return ClassType.Struct;
-			// Todo: Delegates
 			return ClassType.Class;
 		}
 		

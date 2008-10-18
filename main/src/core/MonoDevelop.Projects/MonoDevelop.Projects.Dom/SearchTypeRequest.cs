@@ -34,7 +34,7 @@ namespace MonoDevelop.Projects.Dom
 	public class SearchTypeRequest
 	{
 		string name;
-		int    genericParameterCount;
+		List<IReturnType> genericParameters;
 		ICompilationUnit currentCompilationUnit;
 		int    caretLine, caretColumn;
 		bool   caseSensitive = true;
@@ -46,12 +46,6 @@ namespace MonoDevelop.Projects.Dom
 			}
 			set {
 				name = value;
-			}
-		}
-		
-		public int GenericParameterCount {
-			get {
-				return genericParameterCount;
 			}
 		}
 		
@@ -90,13 +84,19 @@ namespace MonoDevelop.Projects.Dom
 				callingType = value;
 			}
 		}
+
+		public List<IReturnType> GenericParameters {
+			get {
+				return genericParameters;
+			}
+		}
 		
 		public SearchTypeRequest (ICompilationUnit currentCompilationUnit)
 		{
 			this.currentCompilationUnit = currentCompilationUnit;
 			this.caretLine   = -1;
 			this.caretColumn = -1;
-			this.genericParameterCount = -1;
+		//	this.genericParameterCount = -1;
 		}
 		
 		public SearchTypeRequest (ICompilationUnit currentCompilationUnit, string name)
@@ -105,7 +105,7 @@ namespace MonoDevelop.Projects.Dom
 			this.caretLine   = -1;
 			this.caretColumn = -1;
 			this.name        = name;
-			this.genericParameterCount = -1;
+		//	this.genericParameterCount = -1;
 		}
 		
 		public SearchTypeRequest (ICompilationUnit currentCompilationUnit, IReturnType rtype)
@@ -114,8 +114,8 @@ namespace MonoDevelop.Projects.Dom
 			this.caretLine   = -1;
 			this.caretColumn = -1;
 			if (rtype != null) {
-				this.name        = rtype.FullName;
-				this.genericParameterCount = rtype.GenericArguments.Count;
+				this.name              = rtype.FullName;
+				this.genericParameters = new List<IReturnType> (rtype.GenericArguments);
 			}
 		}
 		
@@ -125,7 +125,7 @@ namespace MonoDevelop.Projects.Dom
 			this.caretLine   = caretLine;
 			this.caretColumn = caretColumn;
 			this.name        = name;
-			this.genericParameterCount = -1;
+		//	this.genericParameterCount = -1;
 		}
 		
 		public SearchTypeRequest (ICompilationUnit currentCompilationUnit, IType callingType, string name)
@@ -133,16 +133,16 @@ namespace MonoDevelop.Projects.Dom
 			this.currentCompilationUnit = currentCompilationUnit;
 			this.callingType = callingType;
 			this.name        = name;
-			this.genericParameterCount = -1;
+		//	this.genericParameterCount = -1;
 		}
 		
-		public SearchTypeRequest (ICompilationUnit currentCompilationUnit, int caretLine, int caretColumn, string name, int genericParameterCount)
+		public SearchTypeRequest (ICompilationUnit currentCompilationUnit, int caretLine, int caretColumn, string name, List<IReturnType> genericParameters)
 		{
 			this.currentCompilationUnit = currentCompilationUnit;
 			this.caretLine   = caretLine;
 			this.caretColumn = caretColumn;
 			this.name        = name;
-			this.genericParameterCount = genericParameterCount;
+			this.genericParameters = genericParameters;
 		}
 		
 	}

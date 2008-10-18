@@ -91,10 +91,10 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		public virtual IType SearchType (SearchTypeRequest request)
 		{
-			return SearchType (request.Name, request.CallingType, request.CurrentCompilationUnit, request.GenericParameterCount);
+			return SearchType (request.Name, request.CallingType, request.CurrentCompilationUnit, request.GenericParameters);
 		}
 		
-		internal IType SearchType (string name, IType callingClass, ICompilationUnit unit, int genericParameterCount)
+		internal IType SearchType (string name, IType callingClass, ICompilationUnit unit, List<IReturnType> genericParameters)
 		{
 			// TODO dom check generic parameter count
 			
@@ -129,7 +129,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 				
 				do {
 					curnamespace += namespaces[i] + '.';
-					c = GetType (curnamespace + name, null, false, true);
+					c = GetType (curnamespace + name, genericParameters, false, true);
 					if (c != null) {
 						return c;
 					}
@@ -143,7 +143,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			if (unit != null) {
 				foreach (IUsing u in unit.Usings) {
 					if (u != null) {
-						c = SearchType (u, name, null, true);
+						c = SearchType (u, name, genericParameters, true);
 						if (c != null) {
 							return c;
 						}
