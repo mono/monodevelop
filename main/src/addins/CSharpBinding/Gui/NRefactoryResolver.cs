@@ -246,13 +246,7 @@ namespace MonoDevelop.CSharpBinding
 					ICompletionData data = col.AddCompletionData (completionList, o);
 					if (data != null && context == ExpressionContext.Attribute && data.CompletionText != null && data.CompletionText.EndsWith ("Attribute")) {
 						string newText = data.CompletionText.Substring (0, data.CompletionText.Length - "Attribute".Length);
-						if (data is CompletionData) {
-							((CompletionData)data).CompletionText = newText;
-						} else if (data is MemberCompletionData) {
-							((MemberCompletionData)data).CompletionText = newText;
-						} else {
-							System.Console.WriteLine("Unknown completion data:" + data);
-						}
+						data.SetText (newText);
 					}
 				}
 			}
@@ -531,4 +525,18 @@ namespace MonoDevelop.CSharpBinding
 			return result.ToString ();
 		}
 	}
+	static class HelperMethods
+	{
+		public static void SetText (this ICompletionData data, string text)
+		{
+			if (data is CompletionData) {
+				((CompletionData)data).CompletionText = text;
+			} else if (data is MemberCompletionData) {
+				((MemberCompletionData)data).CompletionText = text;
+			} else {
+				System.Console.WriteLine("Unknown completion data:" + data);
+			}
+		}
+	}
+	
 }

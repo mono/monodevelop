@@ -1,3 +1,9 @@
+2008-10-18  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/NRefactoryResolver.cs:
+	* Gui/CSharpTextEditorCompletion.cs:
+	* Gui/EventCreationCompletionData.cs: Worked on event completion.
+
 2008-10-17  Mike Krüger  <mkrueger@novell.com>
 
 	* Gui/NRefactoryResolver.cs:

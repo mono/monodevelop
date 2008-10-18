@@ -18,6 +18,7 @@ REFS =  \
 	-r:$(top_builddir)/build/bin/NRefactory.dll \
 	-r:Mono.Posix \
 	-r:System \
+	-r:System.Core \
 	-r:System.Drawing \
 	-r:System.Xml
 
@@ -37,6 +38,7 @@ FILES =  \
 	Gui/CSharpAmbience.cs \
 	Gui/CSharpTextEditorCompletion.cs \
 	Gui/CSharpTextEditorIndentation.cs \
+	Gui/EventCreationCompletionData.cs \
 	Gui/FormattingPanel.cs \
 	Gui/MemberCompletionData.cs \
 	Gui/NewCSharpExpressionFinder.cs \
