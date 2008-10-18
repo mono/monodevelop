@@ -361,6 +361,8 @@ namespace MonoDevelop.Ide.Gui
 		List<Task> tasks = new List<Task> ();
 		object lockObj = new object ();
 		
+		ParsedDocument lastErrorFreeParsedDocument;
+		
 		ParsedDocument parsedDocument;
 		public ParsedDocument ParsedDocument {
 			get {
@@ -371,6 +373,7 @@ namespace MonoDevelop.Ide.Gui
 				parsedDocument = value;
 			}
 		}
+		
 		public ICompilationUnit CompilationUnit {
 			get {
 				return parsedDocument != null ? parsedDocument.CompilationUnit : null;
@@ -475,6 +478,8 @@ namespace MonoDevelop.Ide.Gui
 				System.Threading.ThreadPool.QueueUserWorkItem (delegate {
 					// Don't access Document properties from the thread
 					this.parsedDocument = ProjectDomService.Parse (curentParseProject, currentParseFile, IdeApp.Services.PlatformService.GetMimeTypeForUri (currentParseFile), currentParseText);
+					if (!this.parsedDocument.HasErrors)
+						this.lastErrorFreeParsedDocument = parsedDocument;
 				});
 				return false;
 			});
@@ -482,6 +487,12 @@ namespace MonoDevelop.Ide.Gui
 		
 		internal object ExtendedCommandTargetChain {
 			get { return editorExtension; }
+		}
+
+		public ParsedDocument LastErrorFreeParsedDocument {
+			get {
+				return lastErrorFreeParsedDocument;
+			}
 		}
 		
 		void OnEntryRemoved (object sender, SolutionItemEventArgs args)

@@ -1,3 +1,8 @@
+2008-10-18  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui/Document.cs: Stored last error free document in
+	document.
+
 2008-10-13  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am:
