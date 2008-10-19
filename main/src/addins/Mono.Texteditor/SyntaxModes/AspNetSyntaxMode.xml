@@ -23,7 +23,7 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE. -->
  
-<SyntaxMode name = "Asp.Net" mimeTypes="application/x-aspx;application/x-ashx;application/x-ascx">
+<SyntaxMode name = "Asp.Net" mimeTypes="application/x-aspx;application/x-ashx;application/x-ascx;application/x-master-page">
 	<!-- directives -->
 	<Span color = "kw:literals" rule = "InTag">
 		<Begin>&lt;%@</Begin>
