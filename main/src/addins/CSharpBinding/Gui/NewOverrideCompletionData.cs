@@ -59,7 +59,7 @@ namespace MonoDevelop.CSharpBinding
 			insertPrivate = declarationText.Contains ("private");
 			insertSealed  = declarationText.Contains ("sealed");
 			
-			this.indent = GetIndentString (editor.CursorPosition);
+			this.indent = GetIndentString (editor, editor.CursorPosition);
 			this.Icon = member.StockIcon;
 			this.DisplayText = ambience.GetString (member, OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics
 			                                       | OutputFlags.EmitMarkup | OutputFlags.HideExtensionsParameter);
@@ -94,7 +94,7 @@ namespace MonoDevelop.CSharpBinding
 			editor.InsertText (editor.CursorPosition, member.Name);
 		}
 		
-		string GetIndentString (int pos)
+		internal static string GetIndentString (TextEditor editor, int pos)
 		{
 			string ch = editor.GetText (pos - 1, pos);
 			int nwpos = pos;

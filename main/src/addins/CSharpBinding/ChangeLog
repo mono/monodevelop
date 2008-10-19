@@ -1,5 +1,12 @@
 2008-10-19  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/NewOverrideCompletionData.cs:
+	* Gui/CSharpTextEditorCompletion.cs:
+	* Gui/EventCreationCompletionData.cs: fixed 'Bug 436320 - Autocomplete
+	does not show compatible event handlers'.
+
+2008-10-19  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/CSharpTextEditorCompletion.cs: fixed 'Bug 434701 - No autocomplete
 	in attributes'.
 

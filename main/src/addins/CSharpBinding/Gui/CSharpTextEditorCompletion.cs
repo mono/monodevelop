@@ -362,7 +362,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 							sb.Append (")");
 							completionList.Add ("delegate" + sb, "md-literal", GettextCatalog.GetString ("Creates anonymous delegate."), "delegate" + sb+" {\n" + stateTracker.Engine.ThisLineIndent  + TextEditorProperties.IndentString + "|\n" + stateTracker.Engine.ThisLineIndent +"};");
 								
-							completionList.Add (new EventCreationCompletionData(Editor, this.stateTracker.Engine, delegateType, sb.ToString (), resolver.CallingMember, declaringType));
+							completionList.Add (new EventCreationCompletionData (Editor, delegateType, sb.ToString (), resolver.CallingMember, declaringType));
 						}
 						return completionList;
 					}

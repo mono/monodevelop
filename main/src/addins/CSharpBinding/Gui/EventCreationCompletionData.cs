@@ -43,9 +43,8 @@ namespace MonoDevelop.CSharpBinding
 		IMember callingMember;
 		TextEditor editor;
 		int initialOffset;
-		CSharpIndentEngine indentEngine;
 		
-		public EventCreationCompletionData (TextEditor editor, CSharpIndentEngine indentEngine, IType delegateType, string parameterList, IMember callingMember, IType declaringType) : base (null)
+		public EventCreationCompletionData (TextEditor editor, IType delegateType, string parameterList, IMember callingMember, IType declaringType) : base (null)
 		{
 			this.DisplayText   = "Handle" + delegateType.Name;
 			if (declaringType.SearchMember (this.DisplayText, true).Count > 0) {
@@ -58,7 +57,6 @@ namespace MonoDevelop.CSharpBinding
 			}
 			this.editor        = editor;
 			this.parameterList = parameterList;
-			this.indentEngine  = indentEngine;
 			this.callingMember = callingMember;
 			this.Icon          = delegateType.Methods.First ().StockIcon;
 			this.initialOffset = editor.CursorPosition;
@@ -71,8 +69,10 @@ namespace MonoDevelop.CSharpBinding
 			int pos = editor.GetPositionFromLineColumn (callingMember.BodyRegion.End.Line, callingMember.BodyRegion.End.Column);
 			int lastPos = editor.GetPositionFromLineColumn (callingMember.DeclaringType.BodyRegion.End.Line, callingMember.DeclaringType.BodyRegion.End.Column) - 1;
 			pos = Math.Min (pos, lastPos);
-			string text = "\n"+ indentEngine.NewLineIndent  +"void " + this.DisplayText + " " + this.parameterList + "\n" + indentEngine.NewLineIndent +"{\n" + indentEngine.NewLineIndent + TextEditorProperties.IndentString;
-			editor.InsertText (pos, text + "\n" + indentEngine.NewLineIndent +"}\n");
+			
+			string indent = NewOverrideCompletionData.GetIndentString (editor, editor.GetPositionFromLineColumn (callingMember.Location.Line + 1, 0));
+			string text = "\n" + indent +"void " + this.DisplayText + " " + this.parameterList + "\n" + indent +"{\n" + indent + TextEditorProperties.IndentString;
+			editor.InsertText (pos, text + "\n" + indent +"}\n");
 			editor.CursorPosition = pos + text.Length;
 		}
 		
