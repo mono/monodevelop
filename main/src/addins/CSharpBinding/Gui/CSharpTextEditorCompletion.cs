@@ -428,7 +428,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 					IReturnType returnType = resolveResult.ResolvedType;
 					IType type = dom.SearchType (new SearchTypeRequest (resolver.Unit, returnType));
 					if (type == null) 
-						type = dom.SearchType (new SearchTypeRequest (resolver.Unit, new DomReturnType (result.Expression + "Attribute")));
+						type = dom.SearchType (new SearchTypeRequest (resolver.Unit, new DomReturnType (result.Expression.Trim () + "Attribute")));
 					if (type != null && returnType != null && returnType.GenericArguments != null)
 						type = DomType.CreateInstantiatedGenericType (type, returnType.GenericArguments);
 					return new NRefactoryParameterDataProvider (Editor, resolver, type);
