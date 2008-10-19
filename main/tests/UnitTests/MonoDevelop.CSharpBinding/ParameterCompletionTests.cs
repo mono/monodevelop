@@ -210,7 +210,7 @@ class AClass
 	}
 }
 
-[Test($
+[Test ($
 class AClass
 {
 }");

@@ -1,3 +1,8 @@
+2008-10-19  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharpBinding/ParameterCompletionTests.cs: made attribute
+	unit test a bit harder.
+
 2008-10-16  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharpBinding/CodeCompletionAccessibleTests.cs: Added some
