@@ -3,7 +3,6 @@ ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoDevelop.MsVisualStudio
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.MsVisualStudio.dll
 
 REFS =  \
-	$(GTK_SHARP_LIBS) \
 	$(MONO_ADDINS_LIBS) \
 	-r:$(top_builddir)/build/AddIns/BackendBindings/MonoDevelop.CSharpBinding.dll \
 	-r:$(top_builddir)/build/AddIns/BackendBindings/MonoDevelop.VBNetBinding.dll \
@@ -22,7 +21,6 @@ REFS =  \
 FILES =  \
 	csproj_ver2003.cs \
 	CsprojInfo.cs \
-	gtk-gui/generated.cs \
 	MdPrjHelper.cs \
 	MSBuildProjectServiceExtension.cs \
 	MsPrjHelper.cs \
@@ -33,9 +31,7 @@ FILES =  \
 	sharp_d_prjx.cs \
 	VS2003ProjectFileFormat.cs
 
-RES =  \
-	gtk-gui/gui.stetic \
-	prj2make-sharp-lib.addin.xml
+RES = prj2make-sharp-lib.addin.xml
 
 GENERATED_FILES = \
 AssemblyInfo.cs

@@ -1,5 +1,9 @@
 2008-10-20  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Makefile.am, prj2make-sharp-lib.mdp: Fix build again.
+
+2008-10-20  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Makefile.am, prj2make-sharp-lib.mdp: Fix build.
 
 2008-10-01  Michael Hutchinson <mhutchinson@novell.com> 
