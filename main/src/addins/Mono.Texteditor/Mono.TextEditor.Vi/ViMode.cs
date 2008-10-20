@@ -139,6 +139,12 @@ namespace Mono.TextEditor.Vi
 						Status = "-- REPLACE --";
 						state = State.Replace;
 						return;
+
+					case 'V':
+						Status = "-- VISUAL LINE --";
+						Data.SetSelectLines (Caret.Line, Caret.Line);
+						state = State.VisualLine;
+						return;
 						
 					case 'v':
 						Status = "-- VISUAL --";
@@ -267,7 +273,20 @@ namespace Mono.TextEditor.Vi
 					InsertCharacter (unicodeKey);
 				
 				return;
-				
+
+			case State.VisualLine:
+				action = ViActionMaps.GetNavCharAction ((char)unicodeKey);
+				if (action == null) {
+					action = ViActionMaps.GetDirectionKeyAction (key, modifier);
+				}
+				if (action != null) {
+					RunAction (SelectionActions.LineActionFromMoveAction (action));
+					return;
+				}
+
+				ApplyActionToSelection (modifier, unicodeKey);
+				return;
+
 			case State.Visual:
 				action = ViActionMaps.GetNavCharAction ((char)unicodeKey);
 				if (action == null) {
@@ -277,38 +296,8 @@ namespace Mono.TextEditor.Vi
 					RunAction (SelectionActions.FromMoveAction (action));
 					return;
 				}
-				
-				if (Data.IsSomethingSelected && (modifier & (Gdk.ModifierType.ControlMask)) == 0) {
-					switch ((char)unicodeKey) {
-					case 'd':
-						RunAction (DeleteActions.DeleteSelection);
-						Reset ("Deleted selection");
-						return;
-					case 'c':
-						RunAction (DeleteActions.DeleteSelection);
-						state = State.Insert;
-						Status = "-- INSERT --";
-						return;
-						
-					case '>':
-						RunAction (MiscActions.IndentSelection);
-						Reset ("");
-						return;
-						
-					case '<':
-						RunAction (MiscActions.RemoveIndentSelection);
-						Reset ("");
-						return;
 
-					case ':':
-						commandBuffer.Append (":");
-						Status = commandBuffer.ToString ();
-						state = State.Command;
-						break;
-
-					}
-				}
-				
+				ApplyActionToSelection (modifier, unicodeKey);
 				return;
 				
 			case State.Command:
@@ -415,6 +404,40 @@ namespace Mono.TextEditor.Vi
 			}
 
 			return "Performed replacement.";
+		}
+
+		public void ApplyActionToSelection (Gdk.ModifierType modifier, uint unicodeKey)
+		{
+			if (Data.IsSomethingSelected && (modifier & (Gdk.ModifierType.ControlMask)) == 0) {
+				switch ((char)unicodeKey) {
+				case 'd':
+					RunAction (DeleteActions.DeleteSelection);
+					Reset ("Deleted selection");
+					return;
+				case 'c':
+					RunAction (DeleteActions.DeleteSelection);
+					state = State.Insert;
+					Status = "-- INSERT --";
+					return;
+					
+				case '>':
+					RunAction (MiscActions.IndentSelection);
+					Reset ("");
+					return;
+					
+				case '<':
+					RunAction (MiscActions.RemoveIndentSelection);
+					Reset ("");
+					return;
+
+				case ':':
+					commandBuffer.Append (":");
+					Status = commandBuffer.ToString ();
+					state = State.Command;
+					break;
+
+				}
+			}
 		}
 
 		enum State {

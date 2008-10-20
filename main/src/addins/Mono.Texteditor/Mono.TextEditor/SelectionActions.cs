@@ -48,6 +48,15 @@ namespace Mono.TextEditor
 				EndSelection (data);
 			};
 		}
+
+		public static Action<TextEditorData> LineActionFromMoveAction (Action<TextEditorData> moveAction)
+		{
+			return delegate (TextEditorData data) {
+				StartLineSelection (data);
+				moveAction (data);
+				EndLineSelection (data);
+			};
+		}
 		
 		public static void StartSelection (TextEditorData data)
 		{
@@ -67,6 +76,28 @@ namespace Mono.TextEditor
 			StartSelection (data);
 			caretMoveAction (data);
 			EndSelection (data);
+		}
+
+		public static void StartLineSelection (TextEditorData data)
+		{
+			StartSelection (data);
+		}
+
+		public static void EndLineSelection (TextEditorData data)
+		{
+			if (null != data.SelectionRange) {
+				if (data.Caret.Offset < data.SelectionAnchor)
+					data.SetSelectLines (data.Caret.Line, data.Document.OffsetToLineNumber (data.SelectionAnchor));
+				else data.SetSelectLines (data.Document.OffsetToLineNumber (data.SelectionAnchor), data.Caret.Line);
+			}
+			data.Caret.PreserveSelection = false;
+		}
+
+		public static void SelectLine (TextEditorData data, Action<TextEditorData> caretMoveAction)
+		{
+			StartLineSelection (data);
+			caretMoveAction (data);
+			EndLineSelection (data);
 		}
 		
 		public static void SelectAll (TextEditorData data)

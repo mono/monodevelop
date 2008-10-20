@@ -1,3 +1,8 @@
+2008-10-20  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* Mono.TextEditor/SelectionActions.cs,
+	  Mono.TextEditor/SelectionActions.cs: Implement V.
+
 2008-10-19  Mike Krüger  <mkrueger@novell.com>
 
 	* SyntaxModes/AspNetSyntaxMode.xml: applied patch from 'Bug 436777 -
