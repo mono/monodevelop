@@ -279,22 +279,40 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Update (CommandArrayInfo info)
 		{
 			RecentOpen recentOpen = IdeApp.Workbench.RecentOpen;
-			if (recentOpen.RecentProject != null && recentOpen.RecentProject.Length > 0) {
-				for (int i = 0; i < recentOpen.RecentProject.Length; ++i) {
-					string accelaratorKeyPrefix = i < 10 ? "_" + ((i + 1) % 10).ToString() + " " : "";
-					RecentItem ri = recentOpen.RecentProject[i];
-					string label = ((ri.Private == null || ri.Private.Length < 1) ? Path.GetFileNameWithoutExtension (ri.ToString ()) : ri.Private);
-					CommandInfo cmd = new CommandInfo (accelaratorKeyPrefix + label.Replace ("_", "__"));
-					string str = GettextCatalog.GetString ("Load solution {0}", ri.ToString ());
-					if (IdeApp.Workspace.IsOpen)
-						str += " - " + GettextCatalog.GetString ("Hold Control to open in current workspace.");
-					cmd.Description = str;
-					if (IdeApp.Services.ProjectService.FileFormats.GetFileFormats (ri.LocalPath, typeof(Solution)).Length > 0)
-						cmd.Icon = "md-solution";
-					else
-						cmd.Icon = "md-workspace";
-					info.Add (cmd, ri);
+			
+			if (recentOpen.RecentProject == null || recentOpen.RecentProject.Length > 0)
+				return;
+				
+			for (int i = 0; i < recentOpen.RecentProject.Length; ++i) {
+				RecentItem ri = recentOpen.RecentProject[i];
+				
+				//getting the icon requires probing the file, so handle IO errors
+				string icon;
+				try {
+					if (!Directory.Exists (System.IO.Path.GetDirectoryName (ri.LocalPath))
+					    || !File.Exists (ri.LocalPath))
+						continue;
+					
+					icon = IdeApp.Services.ProjectService.FileFormats.GetFileFormats
+						(ri.LocalPath, typeof(Solution)).Length > 0
+							? "md-solution"
+							: "md-workspace";
 				}
+				catch (IOException ex) {
+					LoggingService.LogWarning ("Error building recent solutions list", ex);
+					continue;
+				}
+				
+				string accelaratorKeyPrefix = i < 10 ? "_" + ((i + 1) % 10).ToString() + " " : "";
+				string label = ((ri.Private == null || ri.Private.Length < 1)
+				                ? Path.GetFileNameWithoutExtension (ri.ToString ())
+				                : ri.Private);
+				CommandInfo cmd = new CommandInfo (accelaratorKeyPrefix + label.Replace ("_", "__"));
+				string str = GettextCatalog.GetString ("Load solution {0}", ri.ToString ());
+				if (IdeApp.Workspace.IsOpen)
+					str += " - " + GettextCatalog.GetString ("Hold Control to open in current workspace.");
+				cmd.Description = str;
+				info.Add (cmd, ri);
 			}
 		}
 		

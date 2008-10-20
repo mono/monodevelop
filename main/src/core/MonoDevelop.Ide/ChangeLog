@@ -1,3 +1,9 @@
+2008-10-20  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Commands/FileCommands.cs: Add error handling for
+	recent solution not existing. Fixes "Bug 437120 - Recent solutions
+	list does not handle DirectoryNotFoundException gracefully".
+
 2008-10-20  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: fixed 'Bug 436871 -

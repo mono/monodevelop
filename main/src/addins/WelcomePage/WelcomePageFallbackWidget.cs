@@ -298,6 +298,23 @@ namespace MonoDevelop.WelcomePage
 			
 			uint i = 2;
 			foreach (RecentItem ri in items) {
+				//getting the icon requires probing the file, so handle IO errors
+				string icon;
+				try {
+					if (!System.IO.Directory.Exists (System.IO.Path.GetDirectoryName (ri.LocalPath))
+					    || !System.IO.File.Exists (ri.LocalPath))
+						continue;
+					
+					icon = IdeApp.Services.ProjectService.FileFormats.GetFileFormats
+							(ri.LocalPath, typeof(Solution)).Length > 0
+								? "md-solution"
+								: "md-workspace";
+				}
+				catch (IOException ex) {
+					LoggingService.LogWarning ("Error building recent solutions list", ex);
+					continue;
+				}
+				
 				LinkButton button = new LinkButton ();
 				Label label = new Label ();
 				recentFilesTable.Attach (button, 0, 1, i, i+1);
@@ -315,11 +332,8 @@ namespace MonoDevelop.WelcomePage
 				button.Label = string.Format (textFormat, name);
 				button.HoverMessage = ri.LocalPath;
 				button.LinkUrl = "project://" + ri.LocalPath;
+				button.Icon = icon;
 				label.Markup = string.Format (textFormat, WelcomePageView.TimeSinceEdited (ri.Timestamp));
-				if (IdeApp.Services.ProjectService.FileFormats.GetFileFormats (ri.LocalPath, typeof(Solution)).Length > 0)
-					button.Icon = "md-solution";
-				else
-					button.Icon = "md-workspace";
 				
 				i++;
 				
