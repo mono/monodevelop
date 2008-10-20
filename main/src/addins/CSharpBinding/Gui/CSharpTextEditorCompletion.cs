@@ -831,20 +831,21 @@ namespace MonoDevelop.CSharpBinding.Gui
 				//System.Console.WriteLine("t:" + t);
 				foreach (IMember m in t.Members) {
 					//System.Console.WriteLine ("scan:" + m);
-					if (m.IsInternal && searchType.SourceProject != Document.Project)
+					if (m.IsSpecialName || m.IsInternal && searchType.SourceProject != Document.Project)
 						continue;
 					
 					if ((isInterface || m.IsVirtual || m.IsAbstract) && !m.IsSealed && (includeOverriden || !type.HasOverriden (m))) {
 						//System.Console.WriteLine("add");
 						NewOverrideCompletionData data = new NewOverrideCompletionData (Editor, declarationBegin, type, m);
-						if (!alreadyInserted.ContainsKey (data.CompletionText)) {
-							alreadyInserted[data.CompletionText] = true;
+						if (!alreadyInserted.ContainsKey (data.DisplayText)) {
+							alreadyInserted[data.DisplayText] = true;
 							completionList.Add (data);
 						}
 					}
 				}
 			}
 		}
+		
 		static string StripGenerics (string str)
 		{
 			int idx = str.IndexOf ('<');

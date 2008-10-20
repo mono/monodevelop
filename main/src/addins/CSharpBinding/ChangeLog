@@ -1,5 +1,10 @@
 2008-10-20  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/CSharpTextEditorCompletion.cs: fixed "Bug 436870 - Inheriting from
+	base class gives bad code completion".
+
+2008-10-20  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/NewOverrideCompletionData.cs: fixed Bug 436951 - Overriding an
 	abstract property is incorrect.
 
