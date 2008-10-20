@@ -1,5 +1,9 @@
 2008-10-20  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
+	* Mono.TextEditor.Vi/ViMode.cs: Implement / ? n N.
+
+2008-10-20  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
 	* Mono.TextEditor/SelectionActions.cs,
 	  Mono.TextEditor/SelectionActions.cs: Implement V.
 

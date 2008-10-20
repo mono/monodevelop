@@ -39,6 +39,7 @@ namespace Mono.TextEditor.Vi
 	{
 		State state;
 		string status;
+		bool searchBackward;
 		static string lastPattern;
 		static string lastReplacement;
 
@@ -48,32 +49,48 @@ namespace Mono.TextEditor.Vi
 		
 		protected virtual string RunExCommand (string command)
 		{
-			int line;
-			if (int.TryParse (command.Substring (1), out line)) {
-				if (line <= 0 || line > Data.Document.LineCount) {
-					return "Invalid line number.";
-				}
-				
-				Data.Caret.Line = line - 1;
-				Editor.ScrollToCaret ();
-				return string.Format ("Jumped to line {0}.", line);
-			}
-
-			switch (command[1]) {
-			case 's':
-				if (2 == command.Length) {
-					if (null == lastPattern || null == lastReplacement)
-						return "No stored pattern.";
-						
-					// Perform replacement with stored stuff
-					command = string.Format (":s/{0}/{1}/", lastPattern, lastReplacement);
-				}
-	
-				System.Text.RegularExpressions.Match match = Regex.Match (command, @"^:s(?<sep>.)(?<pattern>.+?)\k<sep>(?<replacement>.*?)(\k<sep>(?<trailer>i?))?$", RegexOptions.Compiled);
-				if (!(match.Success && match.Groups["pattern"].Success && match.Groups["replacement"].Success))
+			switch (command[0]) {
+			case ':':
+				if (2 > command.Length)
 					break;
+					
+				int line;
+				if (int.TryParse (command.Substring (1), out line)) {
+					if (line <= 0 || line > Data.Document.LineCount) {
+						return "Invalid line number.";
+					}
+					
+					Data.Caret.Line = line - 1;
+					Editor.ScrollToCaret ();
+					return string.Format ("Jumped to line {0}.", line);
+				}
 	
-				return RegexReplace (match);
+				switch (command[1]) {
+				case 's':
+					if (2 == command.Length) {
+						if (null == lastPattern || null == lastReplacement)
+							return "No stored pattern.";
+							
+						// Perform replacement with stored stuff
+						command = string.Format (":s/{0}/{1}/", lastPattern, lastReplacement);
+					}
+		
+					System.Text.RegularExpressions.Match match = Regex.Match (command, @"^:s(?<sep>.)(?<pattern>.+?)\k<sep>(?<replacement>.*?)(\k<sep>(?<trailer>i?))?$", RegexOptions.Compiled);
+					if (!(match.Success && match.Groups["pattern"].Success && match.Groups["replacement"].Success))
+						break;
+		
+					return RegexReplace (match);
+				}
+				break;
+
+			case '?':
+			case '/':
+				searchBackward = ('?' == command[0]);
+				if (1 < command.Length) {
+					Editor.SearchEngine = new RegexSearchEngine ();
+					Editor.SearchPattern = command.Substring (1);
+				}
+				return Search ();
 			}
 
 			return "Command not recognised";
@@ -112,11 +129,14 @@ namespace Mono.TextEditor.Vi
 			
 			switch (state) {
 			case State.Normal:
+				Editor.HighlightSearchPattern = false;
 				if (((modifier & (Gdk.ModifierType.ControlMask)) == 0)) {
 					switch ((char)unicodeKey) {
+					case '?':
+					case '/':
 					case ':':
 						state = State.Command;
-						commandBuffer.Append (":");
+						commandBuffer.Append ((char)unicodeKey);
 						Status = commandBuffer.ToString ();
 						return;
 					
@@ -200,6 +220,14 @@ namespace Mono.TextEditor.Vi
 					case '<':
 						Status = "<";
 						state = State.Unindent;
+						return;
+					case 'n':
+						Search ();
+						return;
+					case 'N':
+						searchBackward = !searchBackward;
+						Search ();
+						searchBackward = !searchBackward;
 						return;
 					}
 				}
@@ -438,6 +466,19 @@ namespace Mono.TextEditor.Vi
 
 				}
 			}
+		}
+
+		private string Search()
+		{
+			SearchResult result = searchBackward?
+				Editor.SearchBackward (Caret.Offset):
+				Editor.SearchForward (Caret.Offset+1);
+			if (null == result) 
+				return string.Format ("Pattern not found: '{0}'", Editor.SearchPattern);
+			else Caret.Offset = result.Offset;
+			Editor.HighlightSearchPattern = (null != result);
+		
+			return string.Empty;
 		}
 
 		enum State {
