@@ -140,7 +140,7 @@ namespace MonoDevelop.CSharpBinding
 				return;
 			}
 			
-			if (method.ReturnType != null && method.ReturnType.FullName != "System.Void") {
+			if (!method.IsAbstract && method.ReturnType != null && method.ReturnType.FullName != "System.Void") {
 				sb.Append ("return base.");
 				sb.Append (method.Name);
 				sb.Append (" (");
@@ -198,9 +198,11 @@ namespace MonoDevelop.CSharpBinding
 				sb.Append (SingleIndent);
 				sb.Append (SingleIndent);
 				if (!property.IsAbstract) {
-					sb.Append (" return base.");
+					sb.Append ("return base.");
 					sb.Append (property.Name);
 					sb.Append (";");
+				} else {
+					sb.Append ("throw new System.NotImplementedException ();");
 				}
 				sb.AppendLine ();
 				sb.Append (this.indent);

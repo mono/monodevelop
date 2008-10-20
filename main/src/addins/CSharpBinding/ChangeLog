@@ -1,3 +1,8 @@
+2008-10-20  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/NewOverrideCompletionData.cs: fixed Bug 436951 - Overriding an
+	abstract property is incorrect.
+
 2008-10-20  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Autotools/Autotools.mdp, Autotools/Makefile.am: Fix build.
