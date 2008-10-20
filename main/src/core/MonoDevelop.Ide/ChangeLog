@@ -1,3 +1,8 @@
+2008-10-20  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: fixed 'Bug 436871 -
+	Automatically inserted text cannot be undone in one move'.
+
 2008-10-18  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Gui/Document.cs: Stored last error free document in

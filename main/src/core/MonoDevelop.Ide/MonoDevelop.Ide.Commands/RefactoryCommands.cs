@@ -554,12 +554,12 @@ namespace MonoDevelop.Ide.Commands
 		public void OverrideOrImplementMembers ()
 		{
 			IEditableTextBuffer editor = IdeApp.Workbench.ActiveDocument.GetContent <IEditableTextBuffer>();
-			if (editor != null)
+			if (editor != null) 
 				editor.BeginAtomicUndo ();
 			
 			try {
-				OverridesImplementsDialog dialog = new MonoDevelop.Ide.OverridesImplementsDialog ((IType) item);
-				dialog.Show ();
+				OverridesImplementsDialog dialog = new MonoDevelop.Ide.OverridesImplementsDialog ((IType)item);
+				dialog.Run ();
 			} finally {
 				if (editor != null)
 					editor.EndAtomicUndo ();
