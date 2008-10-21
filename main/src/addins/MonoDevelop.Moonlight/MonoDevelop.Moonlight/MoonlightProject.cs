@@ -45,18 +45,34 @@ namespace MonoDevelop.Moonlight
 		public MoonlightProject ()
 			: base ()
 		{
+			Init ();
+		}
+		
+		public MoonlightProject (string languageName)
+			: base (languageName)
+		{
+			Init ();
 		}
 		
 		public MoonlightProject (string languageName, ProjectCreateInformation info, XmlElement projectOptions)
 			: base (languageName, info, projectOptions)
 		{
+			Init ();
+		}
+		
+		void Init ()
+		{
 			//set parameters to ones required for Moonlight build
 			ClrVersion = MonoDevelop.Core.ClrVersion.Clr_2_1;
 			CompileTarget = CompileTarget.Library;
-			foreach (DotNetProjectConfiguration parameter in Configurations) {
-				parameter.OutputDirectory = Path.Combine (".", "ClientBin");
+		}
+		
+		public override ClrVersion[] SupportedClrVersions {
+			get {
+				return new ClrVersion[] { ClrVersion.Clr_2_1 };
 			}
 		}
+
 		
 		public override string ProjectType {
 			get { return "Moonlight"; }

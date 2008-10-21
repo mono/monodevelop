@@ -29,7 +29,15 @@
 		<FileTemplate id       = "Moonlight-CreateSilverlightJs"
 		              resource = "Moonlight-CreateSilverlightJs.xft.xml"/>
 	</Extension>
-
+	
+	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
+		<DotNetProjectSubtype
+			guid="{A1591282-1198-4647-A2B1-27E5FF5F6F3B}"
+			type="MonoDevelop.Moonlight.MoonlightProject"
+			import="$(MSBuildExtensionsPath)\Microsoft\Silverlight\v2.0\Microsoft.Silverlight.CSharp.targets"
+			/>
+	</Extension>
+	
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
 		<ProjectTemplate id = "MoonlightProject" resource = "MoonlightProject.xpt.xml"/>
 		<ProjectTemplate id = "MoonlightProject-Empty" resource = "MoonlightProject-Empty.xpt.xml"/>

@@ -1,3 +1,9 @@
+2008-10-20  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Moonlight.addin.xml:
+	* MonoDevelop.Moonlight/MoonlightProject.cs: Enable loading of SL 2.0
+	projects. Currently only works with C#.
+
 2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Moonlight.mdp, gtk-gui/generated.cs: Updated generated
