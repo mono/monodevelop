@@ -34,6 +34,8 @@ namespace MonoDevelop.Core.Gui
 {
 	public class AlertButton 
 	{
+		public static AlertButton Ok      = new AlertButton (Gtk.Stock.Ok, true);
+		public static AlertButton Close   = new AlertButton (Gtk.Stock.Close, true);
 		public static AlertButton Cancel  = new AlertButton (Gtk.Stock.Cancel, true);
 		public static AlertButton Delete  = new AlertButton (Gtk.Stock.Delete, true);
 		public static AlertButton Remove  = new AlertButton (Gtk.Stock.Remove, true);
@@ -168,7 +170,7 @@ namespace MonoDevelop.Core.Gui
 		}
 		public static void ShowWarning (Gtk.Window parent, string primaryText, string secondaryText)
 		{
-			GenericAlert (Stock.Warning, primaryText, secondaryText, AlertButton.Cancel);
+			GenericAlert (Stock.Warning, primaryText, secondaryText, AlertButton.Ok);
 		}
 		#endregion
 		
