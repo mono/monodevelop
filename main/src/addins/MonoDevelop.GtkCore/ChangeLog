@@ -1,5 +1,11 @@
 2008-10-21  Mike Kestner <mkestner@novell.com> 
 
+	* MonoDevelop.GtkCore/GtkDesignInfo.cs (HasDesignedObjects): don't
+	instantiate just to get the SteticFile. Avoids project file garbage.
+	[Fixes #436201]
+
+2008-10-21  Mike Kestner <mkestner@novell.com> 
+
 	* MonoDevelop.GtkCore.GuiBuilder/CodeBinder.cs: guard against null
 	documents returned from parse.  I think this is related to the old
 	ErrorsDuringCompile check that was commented with the new parser port.
