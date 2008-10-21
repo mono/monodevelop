@@ -91,10 +91,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (targetObject == null)
 				return;
 			
-			ICompilationUnit pi = ProjectDomService.Parse (project, fileName, null).CompilationUnit;
+			ParsedDocument doc = ProjectDomService.Parse (project, fileName, null);
 			classFile = fileName;
 			
-			if (pi != null /*&& !pi.ErrorsDuringCompile*/) {
+			if (doc != null && doc.CompilationUnit != null) {
 				IType cls = GetClass ();
 				UpdateBindings (targetObject, cls);
 			
