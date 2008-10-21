@@ -208,8 +208,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			
 			Project project = Item as Project;
 			if (project != null)
-				foreach (MSBuildItem buildItem in GetAllItemsExceptMatches (msproject , "Reference", "ProjectReference"))
+				foreach (MSBuildItem buildItem in GetAllItemsExceptMatches (msproject , "Reference", "ProjectReference", "Folder"))
 					AddFile (ser, project, buildItem);
+			
+			// Read folders
+			foreach (MSBuildItem buildItem in msproject.GetAllItems ("Folder")) {
+				string path = MSBuildProjectService.FromMSBuildPath (project.BaseDirectory, buildItem.Include);
+				project.AddDirectory (Path.GetDirectoryName (path));
+			}
 			
 			string assemblyName = null;
 			string frameworkVersion = "v2.0";
@@ -514,17 +520,22 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 				Hashtable grps = new Hashtable ();
 				foreach (ProjectFile file in project.Files) {
-					if (file.Subtype == Subtype.Directory)
-						continue;
-					string itemName = file.BuildAction;
+					string itemName = (file.Subtype == Subtype.Directory)? "Folder" : file.BuildAction;
 					MSBuildItemGroup fgrp = (MSBuildItemGroup) grps [itemName];
 					if (fgrp == null) {
 						fgrp = FindItemGroup (msproject, itemName);
 						grps [itemName] = fgrp;
 					}
-					MSBuildItem buildItem = fgrp.AddNewItem (itemName, MSBuildProjectService.ToMSBuildPath (project.BaseDirectory, file.FilePath));
+					
+					string path = MSBuildProjectService.ToMSBuildPath (project.BaseDirectory, file.FilePath);
+					
+					//directory paths must end with '/'
+					if ((file.Subtype == Subtype.Directory) && path[path.Length-1] != '/')
+						path = path + "/";
+					
+					MSBuildItem buildItem = fgrp.AddNewItem (itemName, path);
 					WriteBuildItemMetadata (ser, buildItem, file);
-
+					
 					if (!string.IsNullOrEmpty (file.DependsOn))
 						buildItem.SetMetadata ("DependentUpon", MSBuildProjectService.ToMSBuildPath (Path.GetDirectoryName (file.FilePath), file.DependsOn));
 					if (!string.IsNullOrEmpty (file.ContentType))

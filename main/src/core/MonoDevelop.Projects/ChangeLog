@@ -1,3 +1,9 @@
+2008-10-20  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs: Handle
+	"Folder" item type. Fixes Bug 436656 - empty folder disappears after
+	close/reopen solution.
+
 2008-10-18  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomCecilType.cs:
