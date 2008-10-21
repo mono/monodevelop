@@ -280,7 +280,7 @@ namespace MonoDevelop.Ide.Commands
 		{
 			RecentOpen recentOpen = IdeApp.Workbench.RecentOpen;
 			
-			if (recentOpen.RecentProject == null || recentOpen.RecentProject.Length > 0)
+			if (recentOpen.RecentProject == null || recentOpen.RecentProject.Length <= 0)
 				return;
 				
 			for (int i = 0; i < recentOpen.RecentProject.Length; ++i) {

@@ -1,3 +1,8 @@
+2008-10-21  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Commands/FileCommands.cs: Correct >/<= mistake. Fixes
+	recent solutions list.
+
 2008-10-20  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.Commands/FileCommands.cs: Add error handling for
