@@ -59,7 +59,7 @@ namespace MonoDevelop.XmlEditor.Completion
 		public static string GetAutoCloseElement (IEditableTextBuffer buffer)
 		{
 			// Move to char before '>'
-			int index = buffer.CursorPosition - 2;
+			int index = buffer.CursorPosition - 1;
 			int elementEnd = index;
 
 			// Ignore if is empty element, element has no name or if comment.
@@ -71,8 +71,14 @@ namespace MonoDevelop.XmlEditor.Completion
 			// element start.
 			while (--index > -1) {
 				c = buffer.GetCharAt (index);
-				if (c != '<')
+				switch (c) {
+				case '<':
+					break;
+				case '>':
+					return null;
+				default:
 					continue;
+				}
 				
 				//have found start of tag, so work out its name
 				string elementName = GetElementNameFromStartElement (buffer.GetText (index + 1, elementEnd));

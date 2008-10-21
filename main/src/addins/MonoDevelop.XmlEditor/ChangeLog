@@ -1,3 +1,8 @@
+2008-10-21  Ryan Bair  <ryandbair@gmail.com>
+
+	* MonoDevelop.XmlEditor.Completion/ClosingBracketCompletionDataProvider.cs:
+	  Capture full name of opening tag. Don't read back past an end bracket.
+
 2008-10-16  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.XmlEditor.Gui/BaseXmlEditorExtension.cs: Move updating of
