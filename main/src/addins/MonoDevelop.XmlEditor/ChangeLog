@@ -1,3 +1,9 @@
+2008-10-21  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.XmlEditor/XmlTextEditorExtension.cs: Don't try to create
+	completion list when the array of source elements is null. Fixes
+	exception in XML editor.
+
 2008-10-21  Ryan Bair  <ryandbair@gmail.com>
 
 	* MonoDevelop.XmlEditor.Completion/ClosingBracketCompletionDataProvider.cs:

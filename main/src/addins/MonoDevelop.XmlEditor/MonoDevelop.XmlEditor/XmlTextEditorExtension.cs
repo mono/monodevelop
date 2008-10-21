@@ -94,6 +94,7 @@ namespace MonoDevelop.XmlEditor
 		
 		public override ICompletionDataList HandleCodeCompletion (ICodeCompletionContext completionContext, char completionChar)
 		{
+			ICompletionData[] data = null;
 			switch (completionChar) {
 			case ' ':
 			case '=':
@@ -105,18 +106,17 @@ namespace MonoDevelop.XmlEditor
 				XmlCompletionDataProvider provider =
 					new XmlCompletionDataProvider (schemaCompletionDataItems, defaultSchemaCompletionData,
 					                               defaultNamespacePrefix, completionContext);
-				return new CompletionDataList (provider.GenerateCompletionData ((ICompletionWidget)GetBuffer (),
-				                                                                completionChar));
+				data = provider.GenerateCompletionData ((ICompletionWidget)GetBuffer (), completionChar);
+				return data != null? new CompletionDataList (data) : null;
 			case '>':
 				//this is "optional" autocompletion of elements, so disable if fully automatic completion enabled
 				if (!autoCompleteElements) {
 					ClosingBracketCompletionDataProvider provider2 =
 						new ClosingBracketCompletionDataProvider (GetBuffer ());
-					return new CompletionDataList (provider2.GenerateCompletionData ((ICompletionWidget)GetBuffer (),
-					                                                                completionChar));
+					data = provider2.GenerateCompletionData ((ICompletionWidget)GetBuffer (), completionChar);
 				}
-					
-				return null;
+				return data != null? new CompletionDataList (data) : null;	
+				
 			default:
 				return null;
 			}
