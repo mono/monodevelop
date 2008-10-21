@@ -361,6 +361,8 @@ namespace MonoDevelop.CSharpBinding
 		
 		object IDomVisitor.Visit (IType type, object data)
 		{
+			InstantiatedType instantiatedType = type as InstantiatedType;
+						
 			OutputFlags flags = (OutputFlags)data;
 			StringBuilder result = new StringBuilder ();
 			if (IncludeModifiers (flags)) {
@@ -382,21 +384,29 @@ namespace MonoDevelop.CSharpBinding
 			}
 			
 			if (UseFullName (flags)) {
-				result.Append (Format (type.FullName));
+				result.Append (Format (instantiatedType == null ? type.FullName : instantiatedType.UninstantiatedType.FullName));
 			} else { 
-				result.Append (Format (NormalizeTypeName (type.Name)));
+				result.Append (Format (NormalizeTypeName (instantiatedType == null ? type.Name : instantiatedType.UninstantiatedType.Name)));
 			}
+			int parameterCount = type.TypeParameters.Count;
+			if (instantiatedType != null)
+				parameterCount = instantiatedType.GenericParameters.Count;
 			
-			if (IncludeGenerics (flags) && type.TypeParameters != null && type.TypeParameters.Count > 0) {
+			if (IncludeGenerics (flags) && parameterCount > 0) {
 				if (EmitMarkup (flags)) {
 					result.Append ("&lt;");
 				} else {
 					result.Append ('<');
 				}
-				for (int i = 0; i < type.TypeParameters.Count; i++) {
+				for (int i = 0; i < parameterCount; i++) {
 					if (i > 0)
 						result.Append (", ");
-					result.Append (NetToCSharpTypeName (type.TypeParameters[i].Name));
+					if (instantiatedType != null) {
+						result.Append (instantiatedType.GenericParameters[i].AcceptVisitor (this, null));
+					} else {
+						result.Append (NetToCSharpTypeName (type.TypeParameters[i].Name));
+					}
+					
 				}
 				if (EmitMarkup (flags)) {
 					result.Append ("&gt;");
