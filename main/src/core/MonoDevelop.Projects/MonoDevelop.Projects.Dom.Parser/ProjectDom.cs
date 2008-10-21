@@ -78,6 +78,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 				IType cur = types.Pop ();
 				if (cur == null)
 					continue;
+				
 				yield return cur;
 				foreach (IReturnType baseType in cur.BaseTypes) {
 					IType resolvedType = this.SearchType (new SearchTypeRequest (cur.CompilationUnit, baseType));

@@ -310,7 +310,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		public override string ToString ()
 		{
-			return String.Format ("[DomType: FullName={0}, #Members={1}]", this.FullName, this.members.Count);
+			return String.Format ("[DomType: FullName={0}, #TypeArguments={2}, #Members={1}]", this.FullName, this.members.Count, TypeParameters.Count);
 		}
 		
 		bool IsEqual (ReadOnlyCollection<IParameter> c1, ReadOnlyCollection<IParameter> c2)
@@ -534,22 +534,19 @@ namespace MonoDevelop.Projects.Dom
 		
 		public static IType CreateInstantiatedGenericType (IType type, IList<IReturnType> genericArguments)
 		{
-			string name = type.Name; //GetInstantiatedTypeName (type.Name, genericArguments);
+			string name = GetInstantiatedTypeName (type.Name, genericArguments);
 			GenericTypeInstanceResolver resolver = new GenericTypeInstanceResolver ();
 			if (genericArguments != null) {
 				for (int i = 0; i < type.TypeParameters.Count && i < genericArguments.Count; i++)
 					resolver.Add (type.TypeParameters[i].Name, genericArguments[i]);
 			}
-			
-			DomType result = (DomType)Resolve (type, resolver);
+			InstantiatedType result = (InstantiatedType)Resolve (new InstantiatedType (), type, resolver);
 			if (result.typeParameters != null)
 				result.typeParameters.Clear ();
 			result.Name = name;
 			result.SourceProjectDom = type.SourceProjectDom;
-			if (genericArguments != null) {
-				for (int i = 0; i < genericArguments.Count; i++)
-					result.AddTypeParameter (new TypeParameter (genericArguments[i].ToInvariantString ()));
-			}
+			result.GenericParameters = genericArguments;
+			result.UninstantiatedType = type;
 			return result;
 		}
 		
@@ -588,10 +585,14 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		
 		public static DomType Resolve (IType type, ITypeResolver typeResolver)
 		{
-			DomType result = new DomType ();
+			return Resolve (new DomType (), type, typeResolver);
+		}
+		
+		static DomType Resolve (DomType result, IType type, ITypeResolver typeResolver)
+		{
+			
 			AbstractMember.Resolve (type, result, typeResolver);
 			result.CompilationUnit = type.CompilationUnit;
 			result.Name          = type.Name;
