@@ -1,5 +1,9 @@
 2008-10-21  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Dom/InstantiatedType.cs: changed header.
+
+2008-10-21  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Dom/DomType.cs:
 	* MonoDevelop.Projects.Dom/InstantiatedType.cs:
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: Changed type
