@@ -266,10 +266,15 @@ namespace MonoDevelop.Projects.Dom
 			if (type == null)
 				throw new ArgumentNullException ("type was null");
 			this.type = type;
-			this.nspace = type.Namespace;
+			this.nspace = type is InstantiatedType ? ((InstantiatedType)type).UninstantiatedType.Namespace : type.Namespace;
 			IType curType = type;
 			do {
-				this.parts.Insert (0, new ReturnTypePart (curType.Name, curType.TypeParameters));
+				if (curType is InstantiatedType) {
+					InstantiatedType instType = (InstantiatedType)curType;
+					this.parts.Insert (0, new ReturnTypePart (instType.UninstantiatedType.Name, instType.GenericParameters));
+				} else { 
+					this.parts.Insert (0, new ReturnTypePart (curType.Name, curType.TypeParameters));
+				}
 				curType = curType.DeclaringType;
 			} while (curType != null);
 		}

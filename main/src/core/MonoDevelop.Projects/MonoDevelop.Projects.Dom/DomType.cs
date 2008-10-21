@@ -534,6 +534,8 @@ namespace MonoDevelop.Projects.Dom
 		
 		public static IType CreateInstantiatedGenericType (IType type, IList<IReturnType> genericArguments)
 		{
+			if (type is InstantiatedType)
+				return type;
 			string name = GetInstantiatedTypeName (type.Name, genericArguments);
 			GenericTypeInstanceResolver resolver = new GenericTypeInstanceResolver ();
 			if (genericArguments != null) {
