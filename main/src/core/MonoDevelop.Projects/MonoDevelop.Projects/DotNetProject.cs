@@ -461,6 +461,10 @@ namespace MonoDevelop.Projects
 				foreach (ProjectReference pref in References)
 					if (pref.ReferenceType == ReferenceType.Assembly)
 						col.Add (pref.Reference);
+				foreach (DotNetProjectConfiguration c in Configurations) {
+					if (c.SignAssembly)
+						col.Add (c.AssemblyKeyFile);
+				}
 			}
 			return col;
 		}
