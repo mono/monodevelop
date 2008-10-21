@@ -48,7 +48,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 	{
 		static protected readonly int MAX_ACTIVE_COUNT = 100;
 		static protected readonly int MIN_ACTIVE_COUNT = 10;
-		static protected readonly int FORMAT_VERSION   = 52;
+		static protected readonly int FORMAT_VERSION   = 54;
 		
 		NamespaceEntry rootNamespace;
 		protected ArrayList references;
@@ -460,13 +460,13 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			lock (rwlock)
 			{
 				if (genericArguments != null && genericArguments.Count > 0) {
-/*					foreach (ClassEntry entry in this.GetAllClasses()) {
-						if (entry.Name == typeName) {
+					foreach (ClassEntry entry in this.GetAllClasses()) {
+						if (entry.Name == typeName && entry.TypeParameterCount == genericArguments.Count) {
 							IType result = GetClass (entry);
 							if (result.TypeParameters.Count == genericArguments.Count)
 								return DomType.CreateInstantiatedGenericType (result, genericArguments);
 						}
-					}*/
+					}
 					IType templateClass = GetClass (typeName, null, caseSensitive);
 					if (templateClass == null)
 						return null;
@@ -824,7 +824,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 						classInfo.Removed.Add (ce.Class);
 						RemoveSubclassReferences (ce);
 						UnresolveSubclasses (ce);
-						ce.NamespaceRef.Remove (ce.Name);
+						ce.NamespaceRef.Remove (ce);
 					} else
 						ce.Class = c;
 				}
@@ -904,7 +904,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 								RemoveSubclassReferences (ce);
 								UnresolveSubclasses (ce);
 								res.Removed.Add (c);
-								ce.NamespaceRef.Remove (ce.Name);
+								ce.NamespaceRef.Remove (ce);
 							}
 						}
 					}
@@ -930,7 +930,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 						} else {
 							// It's a new class
 							ce = new ClassEntry (c, newNss[n]);
-							newNss[n].Add (c.Name, ce);
+							newNss[n].Add (ce);
 							res.Added.Add (c);
 							ResolveSubclasses (ce);
 						}
@@ -1210,7 +1210,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 						}
 						
 						nh = new NamespaceEntry (lastEntry, path[n]);
-						lastEntry.Add (path[n], nh);
+						lastEntry.Add (nh);
 					}
 					lastEntry = nh;
 				}

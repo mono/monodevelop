@@ -103,7 +103,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 				return null;
 				
 			IType c;
-			c = GetType (name, null, false, true);
+			c = GetType (name, genericParameters, false, true);
 			if (c != null)
 				return c;
 

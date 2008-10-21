@@ -98,16 +98,39 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			return contents_ci[name] as ClassEntry;
 		}
 		
-		public void Add (string name, object value)
+		public void Add (NamespaceEntry value)
 		{
+			
+			contents [value.name] = value;
+			if (contents_ci != null)
+				contents_ci [value.name] = value;
+		}
+
+		static string GetName (ClassEntry entry)
+		{
+			if (entry.TypeParameterCount == 0)
+				return entry.Name;
+			return entry.Name + "~" + entry.TypeParameterCount;
+		}
+		
+		public void Add (ClassEntry value)
+		{
+			string name = GetName (value);
+			
 			contents [name] = value;
 			if (contents_ci != null)
 				contents_ci [name] = value;
 		}
 		
-		public void Remove (string name)
+		public void Remove (NamespaceEntry name)
 		{
 			contents.Remove (name);
+			contents_ci = null;
+		}
+		
+		public void Remove (ClassEntry entry)
+		{
+			contents.Remove (GetName (entry));
 			contents_ci = null;
 		}
 		

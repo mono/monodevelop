@@ -48,6 +48,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		[NonSerialized]
 		IType cls;
 		
+		int typeParameterCount;
 		ArrayList subclasses;
 		ContentFlags flags;
 		ClassType ctype;
@@ -103,8 +104,9 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			Name = cls.Name; 
 			ctype = cls.ClassType;
 			modifiers = cls.Modifiers;
+			this.typeParameterCount = cls.TypeParameters.Count;
 			flags = (ContentFlags) 0;
-			if (cls.TypeParameters != null && cls.TypeParameters.Count > 0)
+			if (this.typeParameterCount > 0)
 				flags |= ContentFlags.HasGenericParams;
 			if (DomPersistence.GetCount (cls.Attributes) > 0)
 				flags |= ContentFlags.HasAttributes;
@@ -178,10 +180,19 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			get { return subclasses; }
 			set { subclasses = value; }
 		}
+
+		public int TypeParameterCount {
+			get {
+				return typeParameterCount;
+			}
+			set {
+				typeParameterCount = value;
+			}
+		}
 		
 		public override string ToString()
 		{
-			return string.Format("[ClassEntry: Position={0}, ClassType={1}, Modifiers={2}, ContentFlags={3}, Class={4}, Name={5}, NamespaceRef={6}, LastGetTime={7}, Subclasses={8}]", Position, ClassType, Modifiers, ContentFlags, Class, Name, NamespaceRef, LastGetTime, Subclasses);
+			return string.Format("[ClassEntry: Position={0}, ClassType={1}, Modifiers={2}, ContentFlags={3}, Class={4}, Name={5}, NamespaceRef={6}, LastGetTime={7}, Subclasses={8}, TypeParameterCount={9}]", Position, ClassType, Modifiers, ContentFlags, Class, Name, NamespaceRef, LastGetTime, Subclasses, TypeParameterCount);
 		}
 	}
 

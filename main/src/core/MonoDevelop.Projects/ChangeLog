@@ -1,3 +1,13 @@
+2008-10-22  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom/InstantiatedType.cs:
+	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs:
+	* MonoDevelop.Projects.Dom.Serialization/ClassEntry.cs:
+	* MonoDevelop.Projects.Dom.Serialization/NamespaceEntry.cs:
+	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
+	Fixed the lookup of generic classes in the custom code completion
+	database.
+
 2008-10-21  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/InstantiatedType.cs: changed header.
