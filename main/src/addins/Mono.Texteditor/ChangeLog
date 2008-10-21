@@ -1,3 +1,8 @@
+2008-10-21  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/Document.cs: fixed 'Bug 437110 - NRE when switching to
+	another file'.
+
 2008-10-20  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* Mono.TextEditor.Vi/ViMode.cs: Implement / ? n N.
