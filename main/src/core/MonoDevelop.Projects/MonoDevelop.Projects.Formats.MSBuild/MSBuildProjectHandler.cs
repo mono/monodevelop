@@ -269,7 +269,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 							ser.Deserialize (dpc.CompilationParameters, data);
 						}
 						
-						if (!string.IsNullOrEmpty (assemblyName))
+						if (!string.IsNullOrEmpty (assemblyName) && string.IsNullOrEmpty (dpc.OutputAssembly))
 							dpc.OutputAssembly = assemblyName;
 						
 						string fw = (string) dpc.ExtendedProperties ["TargetFrameworkVersion"];
@@ -398,6 +398,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			
 			if (!string.IsNullOrEmpty (assemblyName))
 				SetGroupProperty (globalGroup, "AssemblyName", assemblyName, false);
+			else
+				globalGroup.RemoveProperty ("AssemblyName");
 			
 			if (!string.IsNullOrEmpty (clrVersion)) {
 				// When using the VS05 format, only write the framework version if it is not 2.0

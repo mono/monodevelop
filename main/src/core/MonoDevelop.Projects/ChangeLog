@@ -1,3 +1,10 @@
+2008-10-22  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs: If
+	there isn't a common assembly name for all configurations, make sure
+	the common name property is removed. Fixes bug Bug 433511 - project
+	configurations are not preserved.
+
 2008-10-22  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomType.cs:
