@@ -631,7 +631,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 								"Error while trying to load the project {0}. Exception : {1}",
 								projectPath, e.ToString ()));
 					monitor.ReportWarning (GettextCatalog.GetString (
-						"Error while trying to load the project {0}. Exception : {1}", projectPath, e.Message));
+						"Error while trying to load the project '{0}': {1}", projectPath, e.Message));
 
 					if (item == null)
 						data.UnknownProjects.AddRange (lines.GetRange (sec.Start, sec.Count));
