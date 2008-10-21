@@ -1,5 +1,9 @@
 2008-10-21  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide.Commands/FileCommands.cs: Remove unnecessary check.
+
+2008-10-21  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.Commands/FileCommands.cs: Correct >/<= mistake. Fixes
 	recent solutions list.
 

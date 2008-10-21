@@ -289,8 +289,7 @@ namespace MonoDevelop.Ide.Commands
 				//getting the icon requires probing the file, so handle IO errors
 				string icon;
 				try {
-					if (!Directory.Exists (System.IO.Path.GetDirectoryName (ri.LocalPath))
-					    || !File.Exists (ri.LocalPath))
+					if (!File.Exists (ri.LocalPath))
 						continue;
 					
 					icon = IdeApp.Services.ProjectService.FileFormats.GetFileFormats

@@ -301,8 +301,7 @@ namespace MonoDevelop.WelcomePage
 				//getting the icon requires probing the file, so handle IO errors
 				string icon;
 				try {
-					if (!System.IO.Directory.Exists (System.IO.Path.GetDirectoryName (ri.LocalPath))
-					    || !System.IO.File.Exists (ri.LocalPath))
+					if (!System.IO.File.Exists (ri.LocalPath))
 						continue;
 					
 					icon = IdeApp.Services.ProjectService.FileFormats.GetFileFormats
