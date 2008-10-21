@@ -386,7 +386,11 @@ namespace MonoDevelop.Projects.Formats.MD1
 					foreach (SolutionConfiguration conf in folder.ParentSolution.Configurations) {
 						CombineConfiguration cc = configs.GetConfig (conf.Id);
 						SolutionConfigurationEntry sce = conf.GetEntryForItem (sit);
-						CombineConfigurationEntry ce = new CombineConfigurationEntry (it.Name, sce.Build, sce.ItemConfiguration);
+						CombineConfigurationEntry ce = null;
+						if (sce == null)
+							ce = new CombineConfigurationEntry (it.Name, true, conf.Id);
+						else
+							ce = new CombineConfigurationEntry (it.Name, sce.Build, sce.ItemConfiguration);						
 						cc.Entries.Add (ce);
 					}
 				}

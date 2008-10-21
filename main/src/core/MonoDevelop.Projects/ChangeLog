@@ -1,3 +1,9 @@
+2008-10-16  Andreia Gaita  <avidigal@novell.com>
+
+	* MonoDevelop.Projects.Formats.MD1/CmbxFileFormat.cs: If the solution
+	doesn't have a Configuration that matches the project's, add it.
+	Fixes #435901
+
 2008-10-21  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/DotNetProject.cs: Add assembly key file to
