@@ -190,6 +190,9 @@ namespace MonoDevelop.GtkCore
 		
 		public static bool HasDesignedObjects (Project project)
 		{
+			if (project == null)
+				return false;
+
 			string stetic_file = Path.Combine (Path.Combine (project.BaseDirectory, "gtk-gui"), "gui.stetic");
 			return SupportsDesigner (project) && File.Exists (stetic_file);
 		}

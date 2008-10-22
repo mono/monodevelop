@@ -1,3 +1,8 @@
+2008-10-22  Mike Kestner <mkestner@novell.com> 
+
+	* MonoDevelop.GtkCore/GtkDesignInfo.cs (HasDesignedObjects): guard
+	against null projects.
+
 2008-10-21  Mike Kestner <mkestner@novell.com> 
 
 	* MonoDevelop.GtkCore/GtkDesignInfo.cs (HasDesignedObjects): don't
