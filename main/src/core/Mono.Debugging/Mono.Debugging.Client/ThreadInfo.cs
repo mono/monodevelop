@@ -59,7 +59,14 @@ namespace Mono.Debugging.Client
 		}
 		
 		public string Location {
-			get { return location; }
+			get {
+				if (location == null) {
+					Backtrace bt = Backtrace;
+					if (bt != null && bt.FrameCount > 0)
+						location = bt.GetFrame (0).ToString ();
+				}
+				return location;
+			}
 		}
 		
 		internal int ProcessId {
