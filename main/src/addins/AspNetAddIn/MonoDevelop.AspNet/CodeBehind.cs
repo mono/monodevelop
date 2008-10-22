@@ -47,7 +47,6 @@ namespace MonoDevelop.AspNet
 	
 	public static class CodeBehind
 	{
-		
 		public static string GetCodeBehindClassName (ProjectFile file)
 		{
 			AspNetAppProject proj = file.Project as AspNetAppProject;
@@ -60,34 +59,6 @@ namespace MonoDevelop.AspNet
 				return cu.PageInfo.InheritedClass;
 			else
 				return null;
-		}
-		
-		public static IType GetDesignerClass (IType cls)
-		{
-			if (!cls.HasParts)
-				return null;
-			
-			string designerEnding = ".designer" + Path.GetExtension (cls.CompilationUnit.FileName);
-			
-			foreach (IType c in cls.Parts)
-				if (c.CompilationUnit.FileName.EndsWith (designerEnding, StringComparison.OrdinalIgnoreCase))
-				    return c;
-			
-			return null;
-		}
-		
-		public static IType GetNonDesignerClass (IType cls)
-		{
-			if (!cls.HasParts)
-				return null;
-			
-			string designerEnding = ".designer" + Path.GetExtension (cls.CompilationUnit.FileName);
-			
-			foreach (IType c in cls.Parts)
-				if (!c.CompilationUnit.FileName.EndsWith (designerEnding, StringComparison.OrdinalIgnoreCase))
-				    return c;
-			
-			return null;
 		}
 	}
 }

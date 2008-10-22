@@ -1,3 +1,11 @@
+2008-10-22  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.DesignerSupport.mdp: Updated.
+
+	* MonoDevelop.DesignerSupport/CodeBehind.cs: Moved designer/codebehind
+	lookup from MonoDevelop.AspNet.
+
 2008-10-16  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.DesignerSupport/BindingService.cs: Null checks in case

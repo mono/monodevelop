@@ -1,3 +1,11 @@
+2008-10-22  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AspNet/CodeBehind.cs:
+	* MonoDevelop.AspNet/AspNetAppProject.cs:
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Moved
+	codebehind/designer lookup functionality to
+	MonoDevelop.DesignerSupport.
+
 2008-10-16  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Add simple

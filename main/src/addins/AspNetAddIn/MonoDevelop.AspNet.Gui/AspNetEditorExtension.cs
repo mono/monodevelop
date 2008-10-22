@@ -348,7 +348,7 @@ namespace MonoDevelop.AspNet.Gui
 						domMethod.Attributes |= System.CodeDom.MemberAttributes.Family;
 						list.Add (
 						    new SuggestedHandlerCompletionData (cu.Document.Project, domMethod, codeBehindClass,
-						        MonoDevelop.AspNet.CodeBehind.GetNonDesignerClass (codeBehindClass))
+						        MonoDevelop.DesignerSupport.CodeBehind.GetNonDesignerClass (codeBehindClass))
 						    );
 						return;
 					}

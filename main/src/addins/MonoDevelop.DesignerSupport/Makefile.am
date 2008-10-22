@@ -82,6 +82,7 @@ FILES =  \
 	MonoDevelop.DesignerSupport.Toolbox/UnknownToolboxNode.cs \
 	MonoDevelop.DesignerSupport/BindingService.cs \
 	MonoDevelop.DesignerSupport/ClassOutlineTextEditorExtension.cs \
+	MonoDevelop.DesignerSupport/CodeBehind.cs \
 	MonoDevelop.DesignerSupport/Commands.cs \
 	MonoDevelop.DesignerSupport/CustomDescriptor.cs \
 	MonoDevelop.DesignerSupport/DesignerSupportService.cs \

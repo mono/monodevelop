@@ -477,7 +477,8 @@ namespace MonoDevelop.AspNet
 			
 			SetDefaultBuildAction (e.ProjectFile);
 			
-			IEnumerable<string> filesToAdd = GuessDependencies (e.ProjectFile);
+			IEnumerable<string> filesToAdd = MonoDevelop.DesignerSupport.CodeBehind.GuessDependencies
+				(this, e.ProjectFile, groupedExtensions);
 			
 			if (Path.GetFullPath (e.ProjectFile.FilePath) == Path.GetFullPath (WebConfigPath))
 				UpdateWebConfigRefs ();
@@ -496,68 +497,6 @@ namespace MonoDevelop.AspNet
 		}
 		
 		static string[] groupedExtensions =  { ".aspx", ".master", ".ashx", ".ascx", ".asmx", ".asax" };
-		
-		IEnumerable<string> GuessDependencies (ProjectFile file)
-		{
-			//only change the grouping if it's not already been set
-			if (!string.IsNullOrEmpty (file.DependsOn) || LanguageBinding == null)
-				return null;
-			
-			//we only handle names that end with the language extension
-			string langExt = LanguageBinding.GetFileName ("a");
-			langExt = langExt.Substring (1, langExt.Length - 1);
-			
-			//if filename ends with lang extension, it could be a child file
-			if (file.Name.EndsWith (langExt, StringComparison.InvariantCultureIgnoreCase)) {
-				
-				//get the parent's name, amputating ".designer" if encountered
-				string parentName = Path.GetFileName (file.Name);
-				parentName = parentName.Substring (0, parentName.Length - langExt.Length);
-				if (parentName.EndsWith (".designer", StringComparison.InvariantCultureIgnoreCase))
-					parentName = parentName.Substring (0, parentName.Length - 9);
-				
-				//for each ASP.NET extension that allows codebehind, check whether the filename matches this extension
-				foreach (string ext in groupedExtensions) {
-					if (!parentName.EndsWith (ext, StringComparison.InvariantCultureIgnoreCase))
-						continue;
-					
-					//if the file exists, set the dependency
-					string path = Path.Combine (Path.GetDirectoryName (file.FilePath), parentName);
-					if (File.Exists (path))
-						file.DependsOn = parentName;
-					return new string[] { path };
-				}
-			} 
-			//else, it may be a parent
-			else {
-				//check whether its extension matches known parent extensions
-				foreach (string ext in groupedExtensions) {
-					if (!file.FilePath.EndsWith (ext, StringComparison.InvariantCultureIgnoreCase))
-						continue;
-					
-					//check for codebehind files
-					string codebehind = file.FilePath + langExt;
-					if (!File.Exists (codebehind))
-						codebehind = null;
-					string designer = file.FilePath + ".designer" + langExt;
-					if (!File.Exists (designer)) {
-						designer = file.FilePath + ".Designer" + langExt;
-						if (!File.Exists (designer))
-							designer = null;
-					}
-					
-					//return any found files that match
-					if (designer != null) {
-						return codebehind != null ? new string[] { designer, codebehind }
-							: new string[] { designer };
-					} else {
-						return codebehind != null?  new string[] { codebehind }
-							: null;
-					}
-				}
-			}
-			return null;
-		}
 		
 		void SetDefaultBuildAction (ProjectFile file)
 		{
