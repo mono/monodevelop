@@ -32,6 +32,7 @@ using System.IO;
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
+using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects;
 using MonoDevelop.AspNet.Gui;
 
@@ -58,6 +59,44 @@ namespace MonoDevelop.Moonlight
 			: base (languageName, info, projectOptions)
 		{
 			Init ();
+			
+			ExtendedProperties["TargetFrameworkVersion"]="3.5";
+			
+			XmlNode silverAppNode = projectOptions.SelectSingleNode ("SilverlightApplication");
+			if (silverAppNode == null || !Boolean.TryParse (silverAppNode.InnerText, out silverlightApplication))
+				throw new Exception ("Moonlight template is missing SilverlightApplication node");
+			
+			
+			XmlNode validateXmlNode = projectOptions.SelectSingleNode ("ValidateXaml");
+			if (validateXmlNode != null && !Boolean.TryParse (validateXmlNode.InnerText, out validateXaml))
+				throw new Exception ("Bad value in ValidateXaml template element");
+			
+			XmlNode throwErrorsNode = projectOptions.SelectSingleNode ("ThrowErrorsInValidation");
+			if (throwErrorsNode != null && !Boolean.TryParse (throwErrorsNode.InnerText, out throwErrorsInValidation))
+				throw new Exception ("Bad value in ThrowErrorsInValidation template element");
+			
+			if (!silverlightApplication)
+				//it's a classlib, and the rest of the options don't apply
+				return;
+			
+			XmlNode manifestNode = projectOptions.SelectSingleNode ("SilverlightManifestTemplate");
+			if (manifestNode != null) {
+				generateSilverlightManifest = true;
+				silverlightManifestTemplate = manifestNode.InnerText;
+			}
+			
+			xapOutputs = true;
+			xapFilename = info.ProjectName + ".xap";
+			
+			XmlNode testPageNode = projectOptions.SelectSingleNode ("SilverlightTestPage");
+			if (testPageNode != null)
+				testPageFileName = testPageNode.InnerText;
+			else
+				createTestPage = true;
+			
+			XmlNode appEntryNode = projectOptions.SelectSingleNode ("SilverlightAppEntry");
+			if (testPageNode != null)
+				silverlightAppEntry = appEntryNode.InnerText;
 		}
 		
 		void Init ()
@@ -67,12 +106,18 @@ namespace MonoDevelop.Moonlight
 			CompileTarget = CompileTarget.Library;
 		}
 		
+		public override SolutionItemConfiguration CreateConfiguration (string name)
+		{
+			DotNetProjectConfiguration conf = (DotNetProjectConfiguration) base.CreateConfiguration (name);
+			//TODO add environment variable conf.CompilationParameters			
+			return conf;
+		}
+		
 		public override ClrVersion[] SupportedClrVersions {
 			get {
 				return new ClrVersion[] { ClrVersion.Clr_2_1 };
 			}
 		}
-
 		
 		public override string ProjectType {
 			get { return "Moonlight"; }
@@ -102,5 +147,144 @@ namespace MonoDevelop.Moonlight
 					monitor.ReportError (GettextCatalog.GetString ("Failed to open test page in browser."), null);
 			}
 		}
+		
+		#region VS-compatible MSBuild properties
+		
+		[ItemProperty("SilverlightApplication")]
+		bool silverlightApplication = false;
+		
+		[ItemProperty("XapOutputs", DefaultValue=false)]
+		bool xapOutputs = false;
+		
+		[ItemProperty("GenerateSilverlightManifest", DefaultValue=false)]
+		bool generateSilverlightManifest = false;
+		
+		[ItemProperty("XapFilename", DefaultValue="")]
+		string xapFilename = string.Empty;
+		
+		[ItemProperty("SilverlightManifestTemplate", DefaultValue=false)]
+		string silverlightManifestTemplate;
+		
+		[ItemProperty("SilverlightAppEntry", DefaultValue="")]
+		string silverlightAppEntry = string.Empty;
+		
+		[ItemProperty("TestPageFileName", DefaultValue="")]
+		string testPageFileName = string.Empty;
+		
+		[ItemProperty("CreateTestPage", DefaultValue=false)]
+		bool createTestPage = false;
+		
+		[ItemProperty("ValidateXaml")]
+		bool validateXaml = true;
+		
+		[ItemProperty("ThrowErrorsInValidation")]
+		bool throwErrorsInValidation = false;
+		
+		//whether it's an application or a classlib
+		public bool SilverlightApplication {
+			get { return silverlightApplication; }
+			set {
+				if (silverlightApplication == value)
+					return;
+				NotifyModified ("SilverlightApplication");
+				silverlightApplication = value;
+			}
+		}
+		
+		public bool XapOutputs {
+			get { return xapOutputs; }
+			set {
+				if (xapOutputs == value)
+					return;
+				NotifyModified ("XapOutputs");
+				xapOutputs = value;
+			}
+		}
+		
+		public bool GenerateSilverlightManifest {
+			get { return generateSilverlightManifest; }
+			set {
+				if (generateSilverlightManifest == value)
+					return;
+				NotifyModified ("GenerateSilverlightManifest");
+				generateSilverlightManifest = value;
+			}
+		}
+		
+		public string XapFilename {
+			get { return xapFilename; }
+			set {
+				if (xapFilename == value)
+					return;
+				NotifyModified ("XapFilename");
+				xapFilename = value;
+			}
+			//VBSilver.xap
+		}
+		
+		public string SilverlightManifestTemplate {
+			get { return silverlightManifestTemplate; }
+			set {
+				if (silverlightManifestTemplate == value)
+					return;
+				NotifyModified ("SilverlightManifestTemplate");
+				silverlightManifestTemplate = value;
+			}
+			//My Project\AppManifest.xml
+		}
+		
+		public string SilverlightAppEntry {
+			get { return silverlightAppEntry; }
+			set {
+				if (silverlightAppEntry == value)
+					return;
+				NotifyModified ("SilverlightAppEntry");
+				silverlightAppEntry = value;
+			}
+			//VBSilver.App
+		}
+		
+		public string TestPageFileName {
+			get { return testPageFileName; }
+			set {
+				if (testPageFileName == value)
+					return;
+				NotifyModified ("TestPageFileName");
+				testPageFileName = value;
+			}
+			// TestPage.html
+		}
+		
+		public bool CreateTestPage {
+			get { return createTestPage; }
+			set {
+				if (createTestPage == value)
+					return;
+				NotifyModified ("CreateTestPage");
+				createTestPage = value;
+			}
+		}
+		
+		public bool ValidateXaml {
+			get { return validateXaml; }
+			set {
+				if (validateXaml == value)
+					return;
+				NotifyModified ("ValidateXaml");
+				validateXaml = value;
+			}
+		}
+		
+		public bool ThrowErrorsInValidation {
+			get { return throwErrorsInValidation; }
+			set {
+				if (throwErrorsInValidation == value)
+					return;
+				NotifyModified ("ThrowErrorsInValidation");
+				throwErrorsInValidation = value;
+			}
+		}
+		
+		#endregion
 	}
 }

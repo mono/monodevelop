@@ -1,3 +1,22 @@
+2008-10-21  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Templates/MoonlightProject.xpt.xml:
+	* Templates/Moonlight-TestPage.xft.xml:
+	* Templates/MoonlightProject-Empty.xpt.xml:
+	* Templates/Moonlight-CreateSilverlightJs.xft.xml: Remove outdated
+	templates.
+
+	* Makefile.am:
+	* MonoDevelop.Moonlight.mdp:
+	* MonoDevelop.Moonlight.addin.xml: Updated.
+
+	* Templates/Silverlight.js: Add.
+
+	* Templates/Moonlight-Library.xpt.xml:
+	* Templates/Moonlight-Application.xpt.xml:
+	* MonoDevelop.Moonlight/MoonlightProject.cs: Create VS-compatible
+	Moonlight/Silverlight projects. Limit it to C# for now.
+
 2008-10-20  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Moonlight.addin.xml:

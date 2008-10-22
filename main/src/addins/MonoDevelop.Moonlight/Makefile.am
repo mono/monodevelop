@@ -23,14 +23,21 @@ FILES =  \
 RES =  \
 	gtk-gui/gui.stetic \
 	MonoDevelop.Moonlight.addin.xml \
-	Templates/Moonlight-CreateSilverlightJs.xft.xml \
-	Templates/MoonlightProject.xpt.xml \
-	Templates/MoonlightProject-Empty.xpt.xml \
-	Templates/Moonlight-TestPage.xft.xml \
+	Templates/Moonlight-Application.xpt.xml \
+	Templates/Moonlight-Library.xpt.xml \
 	Templates/Moonlight-Xaml.xft.xml \
 	Templates/Moonlight-XamlWithCodeBehind.xft.xml
 
-all: $(ASSEMBLY)
+DATA_FILES = \
+	Templates/Silverlight.js
+
+DATA_FILE_BUILD = $(addprefix $(ADDIN_BUILD)/, $(notdir $(DATA_FILES)))
+
+all: $(ASSEMBLY) $(DATA_FILE_BUILD)
+
+$(DATA_FILE_BUILD): $(srcdir)/$(subst $(ADDIN_BUILD),, $@)
+	mkdir -p $(ADDIN_BUILD)
+	cp $(srcdir)/Templates$(subst $(ADDIN_BUILD),,$@) $@
 
 $(ASSEMBLY): $(build_sources) $(build_resources)
 	mkdir -p $(ADDIN_BUILD)
@@ -40,11 +47,11 @@ $(ASSEMBLY): $(build_sources) $(build_resources)
 check: all
 
 mdmoonlightlibdir = $(MD_ADDIN_DIR)/MonoDevelop.Moonlight
-mdmoonlightlib_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb
+mdmoonlightlib_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb $(DATA_FILES)
 
-CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
+CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(DATA_FILE_BUILD)
 
-EXTRA_DIST = $(FILES) $(RES)
+EXTRA_DIST = $(FILES) $(RES) $(DATA_FILES)
 
 include $(top_srcdir)/Makefile.include
 

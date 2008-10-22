@@ -18,16 +18,16 @@
 		<Addin id="Deployment" version="1.9.0"/>
 		<Addin id="AspNet" version="1.9.0" />
 	</Dependencies>
+	
+	<Runtime>
+		<Import file="Silverlight.js" />
+	</Runtime>
 
 	<Extension path = "/MonoDevelop/Ide/FileTemplates">
-		<FileTemplate id       = "Moonlight-TestPage"
-		              resource = "Moonlight-TestPage.xft.xml"/>
 		<FileTemplate id       = "Moonlight-Xaml"
 		              resource = "Moonlight-Xaml.xft.xml"/>
 		<FileTemplate id       = "Moonlight-XamlWithCodeBehind"
 		              resource = "Moonlight-XamlWithCodeBehind.xft.xml"/>
-		<FileTemplate id       = "Moonlight-CreateSilverlightJs"
-		              resource = "Moonlight-CreateSilverlightJs.xft.xml"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
@@ -39,8 +39,8 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
-		<ProjectTemplate id = "MoonlightProject" resource = "MoonlightProject.xpt.xml"/>
-		<ProjectTemplate id = "MoonlightProject-Empty" resource = "MoonlightProject-Empty.xpt.xml"/>
+		<ProjectTemplate id = "Moonlight-Application" resource = "Moonlight-Application.xpt.xml"/>
+		<ProjectTemplate id = "Moonlight-Library"     resource = "Moonlight-Library.xpt.xml"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/FileFilters">
