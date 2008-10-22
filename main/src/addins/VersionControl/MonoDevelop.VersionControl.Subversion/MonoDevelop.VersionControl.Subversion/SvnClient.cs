@@ -479,6 +479,29 @@ namespace MonoDevelop.VersionControl.Subversion {
 			}
 		}
 		
+		public void Resolve (string path, bool recurse, IProgressMonitor monitor)
+		{
+			if (path == null || monitor == null)
+				throw new ArgumentNullException();
+			
+			lock (sync) {
+				if (inProgress)
+					throw new SubversionException("Another Subversion operation is already in progress.");
+				inProgress = true;
+			}
+			
+			updatemonitor = monitor;
+			IntPtr localpool = newpool (pool);
+			
+			try {
+				CheckError (svn.client_resolved (path, recurse ? 1 : 0, ctx, localpool));
+			} finally {
+				apr.pool_destroy (localpool);
+				updatemonitor = null;
+				inProgress = false;
+			}
+		}
+		
 		public void Add (string path, bool recurse, IProgressMonitor monitor)
 		{
 			if (path == null || monitor == null)

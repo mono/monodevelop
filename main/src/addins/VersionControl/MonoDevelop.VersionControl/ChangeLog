@@ -1,3 +1,26 @@
+2008-10-22  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* VersionControl.addin.xml:
+	* MonoDevelop.VersionControl.mdp:
+	* MonoDevelop.VersionControl/Repository.cs:
+	* MonoDevelop.VersionControl/LockCommand.cs:
+	* MonoDevelop.VersionControl/CommitCommand.cs:
+	* MonoDevelop.VersionControl/RevertCommand.cs:
+	* MonoDevelop.VersionControl/UnlockCommand.cs:
+	* MonoDevelop.VersionControl.Views/LogView.cs:
+	* MonoDevelop.VersionControl/UpdateCommand.cs:
+	* MonoDevelop.VersionControl.Views/DiffView.cs:
+	* MonoDevelop.VersionControl.Views/StatusView.cs:
+	* MonoDevelop.VersionControl/UnknownRepository.cs:
+	* MonoDevelop.VersionControl/VersionControlItem.cs:
+	* MonoDevelop.VersionControl/AddRemoveMoveCommand.cs:
+	* MonoDevelop.VersionControl/VersionControlItemList.cs:
+	* MonoDevelop.VersionControl/VersionControlNodeExtension.cs:
+	* MonoDevelop.VersionControl/VersionControlCommandHandler.cs: Improved
+	support for multiple selection in the project pad. Added new
+	extension point for the status view context menu.
+
 2008-10-13  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.VersionControl/ChangeSet.cs: Commited patch from alan, to

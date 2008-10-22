@@ -15,34 +15,37 @@ namespace MonoDevelop.VersionControl
 {
 	internal class UpdateCommand
 	{
-		public static bool Update (Repository vc, string path, bool test)
+		public static bool Update (VersionControlItemList items, bool test)
 		{
-			if (vc.CanUpdate (path)) {
-				if (test) return true;
-				new UpdateWorker(vc, path).Start();
+			foreach (VersionControlItem it in items)
+				if (!it.Repository.CanUpdate (it.Path))
+					return false;
+			if (test)
 				return true;
-			}
-			return false;
+			
+			new UpdateWorker (items).Start();
+			return true;
 		}
 
 		private class UpdateWorker : Task {
-			Repository vc;
-			string path;
+			VersionControlItemList items;
 						
-			public UpdateWorker(Repository vc, string path) {
-				this.vc = vc;
-				this.path = path;
+			public UpdateWorker (VersionControlItemList items) {
+				this.items = items;
 			}
 			
 			protected override string GetDescription() {
-				return GettextCatalog.GetString ("Updating {0}...", path);
+				return GettextCatalog.GetString ("Updating...");
 			}
 			
 			protected override void Run ()
 			{
-				vc.Update (path, true, GetProgressMonitor ());
+				foreach (VersionControlItemList list in items.SplitByRepository ()) {
+					list[0].Repository.Update (list.Paths, true, GetProgressMonitor ());
+				}
 				Gtk.Application.Invoke (delegate {
-					VersionControlService.NotifyFileStatusChanged (vc, path, Directory.Exists (path));
+					foreach (VersionControlItem item in items)
+						VersionControlService.NotifyFileStatusChanged (item.Repository, item.Path, item.IsDirectory);
 				});
 			}
 		}

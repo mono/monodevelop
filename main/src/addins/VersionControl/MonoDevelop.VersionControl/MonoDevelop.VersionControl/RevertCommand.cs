@@ -17,17 +17,12 @@ namespace MonoDevelop.VersionControl
 {
 	internal class RevertCommand
 	{
-		public static bool Revert (Repository vc, string path, bool test)
-		{
-			return Revert (vc, new string[] {path}, test);
-		}
-		
-		public static bool Revert (Repository vc, string[] path, bool test)
+		public static bool Revert (VersionControlItemList items, bool test)
 		{
 			try {
 				if (test) {
-					foreach (string s in path)
-						if (!vc.CanRevert (s))
+					foreach (VersionControlItem item in items)
+						if (!item.Repository.CanRevert (item.Path))
 							return false;
 					return true;
 				}
@@ -37,7 +32,7 @@ namespace MonoDevelop.VersionControl
 				                                AlertButton.Cancel, AlertButton.Revert) != AlertButton.Revert)
 					return false;
 
-				new RevertWorker(vc, path).Start();
+				new RevertWorker (items).Start();
 				return true;
 			}
 			catch (Exception ex) {
@@ -50,12 +45,10 @@ namespace MonoDevelop.VersionControl
 		}
 
 		private class RevertWorker : Task {
-			Repository vc;
-			string[] paths;
+			VersionControlItemList items;
 						
-			public RevertWorker(Repository vc, string[] paths) {
-				this.vc = vc;
-				this.paths = paths;
+			public RevertWorker (VersionControlItemList items) {
+				this.items = items;
 			}
 			
 			protected override string GetDescription() {
@@ -64,31 +57,20 @@ namespace MonoDevelop.VersionControl
 			
 			protected override void Run ()
 			{
-				// A revert operation can create or remove a directory, so the directory
-				// check must be done before and after the revert.
-				
-				ArrayList files = new ArrayList ();
-				ArrayList dirs = new ArrayList ();
-				foreach (string s in paths) {
-					bool isDir = Directory.Exists (s);
-					vc.Revert (s, true, GetProgressMonitor ());
-					if (isDir || Directory.Exists (s))
-						dirs.Add (s);
-					else
-						files.Add (s);
-				}
+				foreach (VersionControlItemList list in items.SplitByRepository ())
+					list[0].Repository.Revert (list.Paths, true, GetProgressMonitor ());
 				
 				Gtk.Application.Invoke (delegate {
-					foreach (string s in files) {
-						// Reload reverted files
-						Document doc = IdeApp.Workbench.GetDocument (s);
-						if (doc != null)
-							doc.Reload ();
-						VersionControlService.NotifyFileStatusChanged (vc, s, false);
-						FileService.NotifyFileChanged (s);
+					foreach (VersionControlItem item in items) {
+						if (!item.IsDirectory) {
+							// Reload reverted files
+							Document doc = IdeApp.Workbench.GetDocument (item.Path);
+							if (doc != null)
+								doc.Reload ();
+							FileService.NotifyFileChanged (item.Path);
+						}
+						VersionControlService.NotifyFileStatusChanged (item.Repository, item.Path, item.IsDirectory);
 					}
-					foreach (string s in dirs)
-						VersionControlService.NotifyFileStatusChanged (vc, s, true);
 				});
 			}
 		}

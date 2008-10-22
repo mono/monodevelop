@@ -181,9 +181,10 @@ namespace MonoDevelop.VersionControl.Subversion
 			}
 		}
 
-		public override void Update (string path, bool recurse, IProgressMonitor monitor)
+		public override void Update (string[] paths, bool recurse, IProgressMonitor monitor)
 		{
-			Svn.Update (path, recurse, monitor);
+			foreach (string path in paths)
+				Svn.Update (path, recurse, monitor);
 		}
 		
 		public override void Commit (ChangeSet changeSet, IProgressMonitor monitor)
@@ -204,9 +205,16 @@ namespace MonoDevelop.VersionControl.Subversion
 			Svn.Checkout (this.Url, path, rev, recurse, monitor);
 		}
 		
-		public override void Revert (string localPath, bool recurse, IProgressMonitor monitor)
+		public void Resolve (string[] localPaths, bool recurse, IProgressMonitor monitor)
 		{
-			Svn.Revert (new string[] {localPath}, recurse, monitor);
+			Svn.Resolve (localPaths, recurse, monitor);
+			foreach (string path in localPaths)
+				VersionControlService.NotifyFileStatusChanged (this, path, Directory.Exists (path));
+		}
+		
+		public override void Revert (string[] localPaths, bool recurse, IProgressMonitor monitor)
+		{
+			Svn.Revert (localPaths, recurse, monitor);
 		}
 
 		public override void RevertRevision (string localPath, Revision revision, IProgressMonitor monitor)
@@ -219,27 +227,29 @@ namespace MonoDevelop.VersionControl.Subversion
 			Svn.RevertToRevision (localPath, revision, monitor);
 		}
 		
-		public override void Add (string path, bool recurse, IProgressMonitor monitor)
+		public override void Add (string[] paths, bool recurse, IProgressMonitor monitor)
 		{
-			if (IsVersioned (path) && File.Exists (path) && !Directory.Exists (path)) {
-				VersionInfo srcInfo = GetVersionInfo (path, false);
-				if (srcInfo.HasLocalChange (VersionStatus.ScheduledDelete)) {
-					// It is a file that was deleted. It can be restored now since it's going
-					// to be added again.
-					// First of all, make a copy of the file
-					string tmp = Path.GetTempFileName ();
-					File.Copy (path, tmp, true);
-					
-					// Now revert the status of the file
-					Revert (path, false, monitor);
-					
-					// Copy the file over the old one and clean up
-					File.Copy (tmp, path, true);
-					File.Delete (tmp);
+			foreach (string path in paths) {
+				if (IsVersioned (path) && File.Exists (path) && !Directory.Exists (path)) {
+					VersionInfo srcInfo = GetVersionInfo (path, false);
+					if (srcInfo.HasLocalChange (VersionStatus.ScheduledDelete)) {
+						// It is a file that was deleted. It can be restored now since it's going
+						// to be added again.
+						// First of all, make a copy of the file
+						string tmp = Path.GetTempFileName ();
+						File.Copy (path, tmp, true);
+						
+						// Now revert the status of the file
+						Revert (path, false, monitor);
+						
+						// Copy the file over the old one and clean up
+						File.Copy (tmp, path, true);
+						File.Delete (tmp);
+					}
 				}
+				else
+					Svn.Add (path, recurse, monitor);
 			}
-			else
-				Svn.Add (path, recurse, monitor);
 		}
 		
 		public override bool CanMoveFileFrom (Repository srcRepository, string localSrcPath, string localDestPath)
@@ -399,26 +409,30 @@ namespace MonoDevelop.VersionControl.Subversion
 		}
 
 		
-		public override void DeleteFile (string path, bool force, IProgressMonitor monitor)
+		public override void DeleteFiles (string[] paths, bool force, IProgressMonitor monitor)
 		{
-			if (IsVersioned (path))
-				Svn.Delete (path, force, monitor);
-			else {
-				VersionInfo srcInfo = GetVersionInfo (path, false);
-				if (srcInfo != null && srcInfo.HasLocalChange (VersionStatus.ScheduledAdd)) {
-					// Revert the add command
-					Revert (path, false, monitor);
+			foreach (string path in paths) {
+				if (IsVersioned (path))
+					Svn.Delete (path, force, monitor);
+				else {
+					VersionInfo srcInfo = GetVersionInfo (path, false);
+					if (srcInfo != null && srcInfo.HasLocalChange (VersionStatus.ScheduledAdd)) {
+						// Revert the add command
+						Revert (path, false, monitor);
+					}
+					File.Delete (path);
 				}
-				base.DeleteFile (path, force, monitor);
 			}
 		}
 		
-		public override void DeleteDirectory (string path, bool force, IProgressMonitor monitor)
+		public override void DeleteDirectories (string[] paths, bool force, IProgressMonitor monitor)
 		{
-			if (IsVersioned (path))
-				Svn.Delete (path, force, monitor);
-			else
-				base.DeleteDirectory (path, force, monitor);
+			foreach (string path in paths) {
+				if (IsVersioned (path))
+					Svn.Delete (path, force, monitor);
+				else
+					Directory.Delete (path, true);
+			}
 		}
 		
 		public override DiffInfo[] PathDiff (string baseLocalPath, string[] localPaths, bool remoteDiff)

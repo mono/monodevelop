@@ -34,7 +34,13 @@
 		</ExtensionNode>	
 	</ExtensionPoint>
 
-	<Extension path = "/MonoDevelop/Core/FileSystemExtensions" extension-nodes="Class" description="File system extensions|File system extensions which can provide specific behavior when handling files. Specified classes must implement MonoDevelop.Core.FileSystem.FileSystemExtension.">
+	<ExtensionPoint path = "/MonoDevelop/VersionControl/StatusViewCommands" name = "Status View Commands">
+		<Description>Commands to be shown in the context menu of the status view. The id must match an existing code. The provided type must be a subclass of VersionControlCommandHandler.</Description>
+		<ExtensionNode name="CommandItem" />
+		<ExtensionNode name="SeparatorItem" type="MonoDevelop.Components.Commands.ExtensionNodes.SeparatorItemCodon" />
+	</ExtensionPoint>
+	
+	<Extension path = "/MonoDevelop/Core/FileSystemExtensions">
 		<Class class = "MonoDevelop.VersionControl.VersionControlFileSystemExtension" />
 	</Extension>
 
@@ -204,6 +210,20 @@
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Log"/>
 		</ItemSet>
 		<SeparatorItem />
+	</Extension>
+	<Extension path = "/MonoDevelop/VersionControl/StatusViewCommands">
+		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.Open" type="MonoDevelop.VersionControl.OpenCommandHandler"/>
+		<SeparatorItem id = "CommandSeparator0" />
+		<CommandItem id = "MonoDevelop.VersionControl.Commands.Update" type="MonoDevelop.VersionControl.AddinCommandHandler"/>
+		<CommandItem id = "MonoDevelop.VersionControl.Commands.Diff" type="MonoDevelop.VersionControl.AddinCommandHandler"/>
+		<CommandItem id = "MonoDevelop.VersionControl.Commands.Log" type="MonoDevelop.VersionControl.AddinCommandHandler"/>
+		<SeparatorItem id = "CommandSeparator1" />
+		<CommandItem id = "MonoDevelop.VersionControl.Commands.Remove" type="MonoDevelop.VersionControl.AddinCommandHandler"/>
+		<CommandItem id = "MonoDevelop.VersionControl.Commands.Revert" type="MonoDevelop.VersionControl.AddinCommandHandler"/>
+		<SeparatorItem id = "CommandSeparator2" />
+		<CommandItem id = "MonoDevelop.VersionControl.Commands.Lock" type="MonoDevelop.VersionControl.AddinCommandHandler"/>
+		<CommandItem id = "MonoDevelop.VersionControl.Commands.Unlock" type="MonoDevelop.VersionControl.AddinCommandHandler"/>
+		<SeparatorItem id = "CommandSeparator3" />
 	</Extension>
 </Addin>
 	

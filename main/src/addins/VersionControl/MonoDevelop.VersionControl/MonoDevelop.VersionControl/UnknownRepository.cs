@@ -48,7 +48,7 @@ namespace MonoDevelop.VersionControl
 			return null;
 		}
 
-		public override void Update (string path, bool recurse, IProgressMonitor monitor)
+		public override void Update (string[] paths, bool recurse, IProgressMonitor monitor)
 		{
 		}
 		
@@ -60,7 +60,7 @@ namespace MonoDevelop.VersionControl
 		{
 		}
 		
-		public override void Revert (string localPath, bool recurse, IProgressMonitor monitor)
+		public override void Revert (string[] localPaths, bool recurse, IProgressMonitor monitor)
 		{
 		}
 		
@@ -72,7 +72,7 @@ namespace MonoDevelop.VersionControl
 		{
 		}
 		
-		public override void Add (string path, bool recurse, IProgressMonitor monitor)
+		public override void Add (string[] paths, bool recurse, IProgressMonitor monitor)
 		{
 		}
 		
@@ -84,11 +84,11 @@ namespace MonoDevelop.VersionControl
 		{
 		}
 		
-		public override void DeleteFile (string path, bool force, IProgressMonitor monitor)
+		public override void DeleteFiles (string[] path, bool force, IProgressMonitor monitor)
 		{
 		}
 		
-		public override void DeleteDirectory (string path, bool force, IProgressMonitor monitor)
+		public override void DeleteDirectories (string[] path, bool force, IProgressMonitor monitor)
 		{
 		}
 	}

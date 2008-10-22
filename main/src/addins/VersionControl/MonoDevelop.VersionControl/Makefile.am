@@ -34,8 +34,11 @@ FILES =  \
 	MonoDevelop.VersionControl/UpdateCommand.cs \
 	MonoDevelop.VersionControl/UrlBasedRepository.cs \
 	MonoDevelop.VersionControl/UrlBasedRepositoryEditor.cs \
+	MonoDevelop.VersionControl/VersionControlCommandHandler.cs \
 	MonoDevelop.VersionControl/VersionControlConfiguration.cs \
 	MonoDevelop.VersionControl/VersionControlFileSystemExtension.cs \
+	MonoDevelop.VersionControl/VersionControlItem.cs \
+	MonoDevelop.VersionControl/VersionControlItemList.cs \
 	MonoDevelop.VersionControl/VersionControlNodeExtension.cs \
 	MonoDevelop.VersionControl/VersionControlService.cs \
 	MonoDevelop.VersionControl/VersionControlSystem.cs \

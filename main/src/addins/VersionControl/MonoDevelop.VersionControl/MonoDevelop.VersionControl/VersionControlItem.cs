@@ -1,4 +1,4 @@
-// UnlockCommand.cs
+// VersionControlItem.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -26,50 +26,46 @@
 //
 
 using System;
-using MonoDevelop.Core;
-using System.IO;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.VersionControl
 {
-	
-	
-	public class UnlockCommand
+	public class VersionControlItem
 	{
-		public static bool Unlock (VersionControlItemList items, bool test)
-		{
-			foreach (VersionControlItem it in items)
-				if (!it.Repository.CanUnlock (it.Path))
-					return false;
-			if (test)
-				return true;
-			
-			new UnlockWorker (items).Start();
-			return true;
-		}
+		string path;
+		bool isDirectory;
+		IWorkspaceObject workspaceObject;
+		Repository repository;
 
-		private class UnlockWorker : Task 
+		public VersionControlItem (Repository repository, IWorkspaceObject workspaceObject, string path, bool isDirectory)
 		{
-			VersionControlItemList items;
-						
-			public UnlockWorker (VersionControlItemList items) {
-				this.items = items;
+			this.path = path;
+			this.repository = repository;
+			this.workspaceObject = workspaceObject;
+			this.isDirectory = isDirectory;
+		}
+		
+		public IWorkspaceObject WorkspaceObject {
+			get {
+				return workspaceObject;
 			}
-			
-			protected override string GetDescription() {
-				return GettextCatalog.GetString ("Unlocking...");
+		}
+		
+		public Repository Repository {
+			get {
+				return repository;
 			}
-			
-			protected override void Run ()
-			{
-				IProgressMonitor monitor = GetProgressMonitor ();
-				
-				foreach (VersionControlItemList list in items.SplitByRepository ())
-					list[0].Repository.Unlock (monitor, list.Paths);
-				
-				Gtk.Application.Invoke (delegate {
-					foreach (VersionControlItem item in items)
-						VersionControlService.NotifyFileStatusChanged (item.Repository, item.Path, item.IsDirectory);
-				});
+		}
+		
+		public string Path {
+			get {
+				return path;
+			}
+		}
+		
+		public bool IsDirectory {
+			get {
+				return isDirectory;
 			}
 		}
 	}

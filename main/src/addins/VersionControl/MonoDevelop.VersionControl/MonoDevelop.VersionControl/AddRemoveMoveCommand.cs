@@ -16,13 +16,16 @@ namespace MonoDevelop.VersionControl
 {
 	internal class AddCommand
 	{
-		public static bool Add (Repository vc, string path, bool test) {
-			if (vc.CanAdd(path)) {
-				if (test) return true;
-				new AddWorker(vc, path).Start();
+		public static bool Add (VersionControlItemList items, bool test)
+		{
+			foreach (VersionControlItem it in items)
+				if (!it.Repository.CanAdd (it.Path))
+					return false;
+			if (test)
 				return true;
-			}
-			return false;
+			
+			new AddWorker (items).Start();
+			return true;
 		}
 		
 		public static bool CanAdd (Repository vc, string path) {
@@ -33,24 +36,29 @@ namespace MonoDevelop.VersionControl
 		}
 
 		private class AddWorker : Task {
-			Repository vc;
-			string path;
+			VersionControlItemList items;
 						
-			public AddWorker (Repository vc, string path) 
+			public AddWorker (VersionControlItemList items) 
 			{
-				this.vc = vc;
-				this.path = path;
+				this.items = items;
 			}
 			
 			protected override string GetDescription()
 			{
-				return GettextCatalog.GetString ("Adding {0}...", path);
+				return GettextCatalog.GetString ("Adding...");
 			}
 			
 			protected override void Run ()
 			{
-				vc.Add (path, true, GetProgressMonitor ());
-				VersionControlService.NotifyFileStatusChanged (vc, path, Directory.Exists (path));
+				IProgressMonitor monitor = GetProgressMonitor ();
+				
+				foreach (VersionControlItemList list in items.SplitByRepository ())
+					list[0].Repository.Add (list.Paths, true, monitor);
+				
+				Gtk.Application.Invoke (delegate {
+					foreach (VersionControlItem item in items)
+						VersionControlService.NotifyFileStatusChanged (item.Repository, item.Path, item.IsDirectory);
+				});
 			}
 		}
 		
@@ -105,14 +113,16 @@ namespace MonoDevelop.VersionControl
 	
 	internal class RemoveCommand
 	{
-		public static bool Remove (Repository vc, string path, bool isDir, bool test)
+		public static bool Remove (VersionControlItemList items, bool test)
 		{
-			if (vc.CanRemove(path)) {
-				if (test) return true;
-				new RemoveWorker(vc, path, isDir).Start();
+			foreach (VersionControlItem it in items)
+				if (!it.Repository.CanRemove (it.Path))
+					return false;
+			if (test)
 				return true;
-			}
-			return false;
+			
+			new RemoveWorker (items).Start();
+			return true;
 		}
 		
 		public static bool CanRemove (Repository vc, string path) {
@@ -123,25 +133,31 @@ namespace MonoDevelop.VersionControl
 		}
 
 		private class RemoveWorker : Task {
-			Repository vc;
-			string path;
+			VersionControlItemList items;
 						
-			public RemoveWorker(Repository vc, string path, bool isDir) {
-				this.vc = vc;
-				this.path = path;
+			public RemoveWorker (VersionControlItemList items) {
+				this.items = items;
 			}
 			
 			protected override string GetDescription() {
-				return "Removing " + path + "...";
+				return GettextCatalog.GetString ("Removing...");
 			}
 			
-			protected override void Run() {
-				bool isDir = Directory.Exists (path);
-				if (isDir)
-					vc.DeleteDirectory (path, true, GetProgressMonitor ());
-				else
-					vc.DeleteFile (path, true, GetProgressMonitor ());
-				VersionControlService.NotifyFileStatusChanged (vc, path, isDir);
+			protected override void Run()
+			{
+				foreach (VersionControlItemList list in items.SplitByRepository ()) {
+					VersionControlItemList files = list.GetFiles ();
+					if (files.Count > 0)
+						files[0].Repository.DeleteFiles (files.Paths, true, GetProgressMonitor ());
+					VersionControlItemList dirs = list.GetDirectories ();
+					if (dirs.Count > 0)
+						dirs[0].Repository.DeleteDirectories (dirs.Paths, true, GetProgressMonitor ());
+				}
+				
+				Gtk.Application.Invoke (delegate {
+					foreach (VersionControlItem item in items)
+						VersionControlService.NotifyFileStatusChanged (item.Repository, item.Path, item.IsDirectory);
+				});
 			}
 		}
 		

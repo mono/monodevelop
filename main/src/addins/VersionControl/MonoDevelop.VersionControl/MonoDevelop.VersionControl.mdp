@@ -80,6 +80,9 @@
     <File name="MonoDevelop.VersionControl/LockCommand.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.VersionControl/UnlockCommand.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.VersionControl/ChangeLogWriter.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.VersionControl/VersionControlItem.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.VersionControl/VersionControlItemList.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.VersionControl/VersionControlCommandHandler.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="False" refto="Diff" />

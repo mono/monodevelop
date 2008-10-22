@@ -1,4 +1,4 @@
-// UnlockCommand.cs
+// Commands.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -26,51 +26,11 @@
 //
 
 using System;
-using MonoDevelop.Core;
-using System.IO;
 
-namespace MonoDevelop.VersionControl
+namespace MonoDevelop.VersionControl.Subversion
 {
-	
-	
-	public class UnlockCommand
+	public enum Commands
 	{
-		public static bool Unlock (VersionControlItemList items, bool test)
-		{
-			foreach (VersionControlItem it in items)
-				if (!it.Repository.CanUnlock (it.Path))
-					return false;
-			if (test)
-				return true;
-			
-			new UnlockWorker (items).Start();
-			return true;
-		}
-
-		private class UnlockWorker : Task 
-		{
-			VersionControlItemList items;
-						
-			public UnlockWorker (VersionControlItemList items) {
-				this.items = items;
-			}
-			
-			protected override string GetDescription() {
-				return GettextCatalog.GetString ("Unlocking...");
-			}
-			
-			protected override void Run ()
-			{
-				IProgressMonitor monitor = GetProgressMonitor ();
-				
-				foreach (VersionControlItemList list in items.SplitByRepository ())
-					list[0].Repository.Unlock (monitor, list.Paths);
-				
-				Gtk.Application.Invoke (delegate {
-					foreach (VersionControlItem item in items)
-						VersionControlService.NotifyFileStatusChanged (item.Repository, item.Path, item.IsDirectory);
-				});
-			}
-		}
+		Resolve
 	}
 }

@@ -197,7 +197,12 @@ namespace MonoDevelop.VersionControl
 		
 		// Updates a local file or directory from the repository
 		// Returns a list of updated files
-		public abstract void Update (string localPath, bool recurse, IProgressMonitor monitor);
+		public void Update (string localPath, bool recurse, IProgressMonitor monitor)
+		{
+			Update (new string [] { localPath }, recurse, monitor);
+		}
+		
+		public abstract void Update (string[] localPaths, bool recurse, IProgressMonitor monitor);
 		
 		// Called to create a ChangeSet to be used for a commit operation
 		public virtual ChangeSet CreateChangeSet (string basePath)
@@ -212,15 +217,25 @@ namespace MonoDevelop.VersionControl
 		public void Checkout (string targetLocalPath, bool recurse, IProgressMonitor monitor) { Checkout (targetLocalPath, null, recurse, monitor); }
 		public abstract void Checkout (string targetLocalPath, Revision rev, bool recurse, IProgressMonitor monitor);
 		
-		public abstract void Revert (string localPath, bool recurse, IProgressMonitor monitor);
+		public abstract void Revert (string[] localPaths, bool recurse, IProgressMonitor monitor);
+		
+		public void Revert (string localPath, bool recurse, IProgressMonitor monitor)
+		{
+			Revert (new string[] { localPath }, recurse, monitor);
+		}
 		
 		public abstract void RevertRevision (string localPath, Revision revision, IProgressMonitor monitor);
 		
 		public abstract void RevertToRevision (string localPath, Revision revision, IProgressMonitor monitor);
 		
 		// Adds a file or directory to the repository
-		public abstract void Add (string localPath, bool recurse, IProgressMonitor monitor);
+		public void Add (string localPath, bool recurse, IProgressMonitor monitor)
+		{
+			Add (new string[] { localPath }, recurse, monitor);
+		}
 
+		public abstract void Add (string[] localPaths, bool recurse, IProgressMonitor monitor);
+		
 		// Returns true if the file can be moved from source location (and repository) to this repository
 		public virtual bool CanMoveFileFrom (Repository srcRepository, string localSrcPath, string localDestPath)
 		{
@@ -247,20 +262,34 @@ namespace MonoDevelop.VersionControl
 		
 		// Deletes a file or directory. This method may be called for versioned and unversioned
 		// files. The default implementetions performs a system file delete.
-		public virtual void DeleteFile (string localPath, bool force, IProgressMonitor monitor)
+		public void DeleteFile (string localPath, bool force, IProgressMonitor monitor)
 		{
-			if (Directory.Exists (localPath))
-				Directory.Delete (localPath, true);
-			else
-				File.Delete (localPath);
+			DeleteFiles (new string[] { localPath }, force, monitor);
 		}
 		
-		public virtual void DeleteDirectory (string localPath, bool force, IProgressMonitor monitor)
+		public virtual void DeleteFiles (string[] localPaths, bool force, IProgressMonitor monitor)
 		{
-			if (Directory.Exists (localPath))
-				Directory.Delete (localPath, true);
-			else
-				File.Delete (localPath);
+			foreach (string localPath in localPaths) {
+				if (Directory.Exists (localPath))
+					Directory.Delete (localPath, true);
+				else
+					File.Delete (localPath);
+			}
+		}
+		
+		public void DeleteDirectory (string localPath, bool force, IProgressMonitor monitor)
+		{
+			DeleteDirectories (new string[] { localPath }, force, monitor);
+		}
+		
+		public virtual void DeleteDirectories (string[] localPaths, bool force, IProgressMonitor monitor)
+		{
+			foreach (string localPath in localPaths) {
+				if (Directory.Exists (localPath))
+					Directory.Delete (localPath, true);
+				else
+					File.Delete (localPath);
+			}
 		}
 		
 		// Creates a local directory.

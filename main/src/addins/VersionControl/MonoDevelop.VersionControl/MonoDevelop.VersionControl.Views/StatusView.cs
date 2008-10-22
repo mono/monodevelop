@@ -5,6 +5,7 @@ using System.IO;
 using System.Threading;
 using System.Text;
 using System.Collections.Specialized;
+using Mono.Addins;
 
 using Gtk;
 
@@ -12,6 +13,9 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide.Commands;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -29,7 +33,7 @@ namespace MonoDevelop.VersionControl.Views
 		Gtk.ToolButton buttonCommit;
 		Gtk.ToolButton buttonRevert;
 		
-		TreeView filelist;
+		FileTreeView filelist;
 		TreeViewColumn colCommit, colRemote;
 		TreeStore filestore;
 		ScrolledWindow scroller;
@@ -71,11 +75,15 @@ namespace MonoDevelop.VersionControl.Views
 		const int ColStatusColor = 12;
 		const int ColStatusRemoteDiff = 13;
 		
-		public static bool Show (Repository vc, string path, bool test)
+		public static bool Show (VersionControlItemList items, bool test)
 		{
-			if (vc.IsVersioned(path)) {
+			if (items.Count != 1)
+				return false;
+
+			VersionControlItem item = items [0];
+			if (item.Repository.IsVersioned (item.Path)) {
 				if (test) return true;
-				StatusView d = new StatusView(path, vc);
+				StatusView d = new StatusView (item.Path, item.Repository);
 				MonoDevelop.Ide.Gui.IdeApp.Workbench.OpenDocument (d, true);
 				return true;
 			}
@@ -153,7 +161,7 @@ namespace MonoDevelop.VersionControl.Views
 			
 			scroller = new ScrolledWindow();
 			scroller.ShadowType = Gtk.ShadowType.In;
-			filelist = new TreeView();
+			filelist = new FileTreeView();
 			filelist.Selection.Mode = SelectionMode.Multiple;
 			scroller.Add(filelist);
 			scroller.HscrollbarPolicy = PolicyType.Automatic;
@@ -257,6 +265,8 @@ namespace MonoDevelop.VersionControl.Views
 			colFile.SortColumnId = 3;
 			
 			filestore.SetSortColumnId (3, Gtk.SortType.Ascending);
+			
+			filelist.ShowContextMenu += OnPopupMenu;
 			
 			StartUpdate();
 		}
@@ -511,7 +521,7 @@ namespace MonoDevelop.VersionControl.Views
 		void OnRowActivated (object o, RowActivatedArgs args) {
 			int index = args.Path.Indices [0];
 			VersionInfo node = statuses [index];
-			DiffView.Show (vc, node.LocalPath, false);
+			DiffView.Show (vc, node.LocalPath);
 		}
 		
 		void OnCommitToggledHandler(object o, ToggledArgs args) {
@@ -581,6 +591,94 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 		
+		void OnPopupMenu (object o, EventArgs args)
+		{
+			object commandChain = this;
+			CommandEntrySet opset = new CommandEntrySet ();
+			VersionControlItemList items = GetSelectedItems ();
+			
+			foreach (object ob in AddinManager.GetExtensionNodes ("/MonoDevelop/VersionControl/StatusViewCommands")) {
+				if (ob is TypeExtensionNode) {
+					TypeExtensionNode node = (TypeExtensionNode) ob;
+					opset.AddItem (ParseCommandId (node));
+					VersionControlCommandHandler handler = node.CreateInstance () as VersionControlCommandHandler;
+					if (handler == null) {
+						LoggingService.LogError ("Invalid type specified in extension point 'MonoDevelop/VersionControl/StatusViewCommands'. Subclass of 'VersionControlCommandHandler' expected.");
+						continue;
+					}
+					handler.Init (items);
+					CommandRouter rt = new CommandRouter (handler);
+					rt.Next = commandChain;
+					commandChain = rt;
+				} else
+					opset.AddSeparator ();
+			}
+			IdeApp.CommandService.ShowContextMenu (opset, commandChain);
+		}
+		
+		public VersionControlItemList GetSelectedItems ()
+		{
+			string[] files = GetCurrentFiles ();
+			VersionControlItemList items = new VersionControlItemList ();
+			foreach (string file in files) {
+				Project prj = IdeApp.Workspace.GetProjectContainingFile (file);
+				items.Add (new VersionControlItem (vc, prj, file, Directory.Exists (file)));
+			}
+			return items;
+		}
+		
+		class CommandRouter: ICommandDelegatorRouter
+		{
+			object handler;
+			public object Next;
+			
+			public CommandRouter (object handler)
+			{
+				this.handler = handler;
+			}
+			
+			public object GetNextCommandTarget ()
+			{
+				return Next;
+			}
+			
+			public object GetDelegatedCommandTarget ()
+			{
+				return handler;
+			}
+		}
+
+		internal static object ParseCommandId (ExtensionNode codon)
+		{
+			string id = codon.Id;
+			if (id.StartsWith ("@"))
+				return id.Substring (1);
+
+			Type enumType = null;
+			string typeName = id;
+			
+			int i = id.LastIndexOf (".");
+			if (i != -1)
+				typeName = id.Substring (0,i);
+				
+			enumType = codon.Addin.GetType (typeName);
+				
+			if (enumType == null)
+				enumType = Type.GetType (typeName);
+
+			if (enumType == null)
+				enumType = typeof(Command).Assembly.GetType (typeName);
+
+			if (enumType == null || !enumType.IsEnum)
+				throw new InvalidOperationException ("Could not find an enum type for the command '" + id + "'.");
+				
+			try {
+				return Enum.Parse (enumType, id.Substring (i+1));
+			} catch {
+				throw new InvalidOperationException ("Could not find an enum value for the command '" + id + "'.");
+			}
+		}
+		
 		void OnExpandAll (object s, EventArgs args)
 		{
 			filelist.ExpandAll ();
@@ -629,8 +727,7 @@ namespace MonoDevelop.VersionControl.Views
 		
 		void OnRevert (object s, EventArgs args)
 		{
-			string[] files = GetCurrentFiles ();
-			RevertCommand.Revert (vc, files, false);
+			RevertCommand.Revert (GetSelectedItems (), false);
 		}
 		
 		void OnOpen (object s, EventArgs args)
@@ -861,4 +958,38 @@ namespace MonoDevelop.VersionControl.Views
 		}
 	}
 
+	class FileTreeView: TreeView
+	{
+		protected override bool OnButtonPressEvent(Gdk.EventButton evnt)
+		{
+			bool res = true;
+			bool withModifider = (evnt.State & Gdk.ModifierType.ShiftMask) != 0 || (evnt.State & Gdk.ModifierType.ControlMask) != 0;
+			if (!IsClickedNodeSelected ((int)evnt.X, (int)evnt.Y) || (Selection.GetSelectedRows ().Length <= 1) || withModifider || evnt.Button != 3)
+				res = base.OnButtonPressEvent (evnt);
+			
+			if (evnt.Button == 3) {
+				if (ShowContextMenu != null)
+					ShowContextMenu (this, EventArgs.Empty);
+			}
+			return res;
+		}
+
+		bool IsClickedNodeSelected (int x, int y)
+		{
+			Gtk.TreePath path;
+			if (GetPathAtPos (x, y, out path))
+				return Selection.PathIsSelected (path);
+			else
+				return false;
+		}
+
+		protected override bool OnPopupMenu()
+		{
+			if (ShowContextMenu != null)
+				ShowContextMenu (this, EventArgs.Empty);
+			return true;
+		}
+
+		public event EventHandler ShowContextMenu;
+	}
 }

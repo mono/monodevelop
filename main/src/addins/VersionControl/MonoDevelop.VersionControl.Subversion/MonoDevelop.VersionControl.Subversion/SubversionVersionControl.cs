@@ -240,6 +240,11 @@ namespace MonoDevelop.VersionControl.Subversion
 			Client.Revert (paths, recurse, monitor);
 		}
 		
+		public void Resolve (string[] paths, bool recurse, IProgressMonitor monitor) {
+			foreach (string path in paths)
+				Client.Resolve (path, recurse, monitor);
+		}
+		
 		public void RevertRevision (string path, Revision revision, IProgressMonitor monitor) {
 			SvnRevision svnRev = (SvnRevision)revision;
 			Client.RevertRevision (path, svnRev.Rev);

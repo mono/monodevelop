@@ -24,15 +24,18 @@ namespace MonoDevelop.VersionControl.Views
 		ListStore changedpathstore;
 		Toolbar commandbar;
 		
-		public static bool Show (Repository vc, string filepath, bool isDirectory, Revision since, bool test)
+		public static bool Show (VersionControlItemList items, Revision since, bool test)
 		{
-			if (vc.IsHistoryAvailable (filepath)) {
-				if (test)
-					return true;
-				new Worker (vc, filepath, isDirectory, since).Start ();
-				return true;
+			bool found = false;
+			foreach (VersionControlItem item in items) {
+				if (item.Repository.IsHistoryAvailable (item.Path)) {
+					if (test)
+						return true;
+					found = true;
+					new Worker (item.Repository, item.Path, item.IsDirectory, since).Start ();
+				}
 			}
-			return false;
+			return found;
 		}
 		
 		private class Worker : Task {

@@ -1,3 +1,16 @@
+2008-10-22  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.VersionControl.Subversion/Makefile.am:
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.mdp:
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.addin.xml:
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/Commands.cs:
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/LibSvnClient.cs:
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionRepository.cs:
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionNodeExtension.cs:
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionVersionControl.cs:
+	Implemented Resolve command and tracked some api changes.
+
 2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.VersionControl.Subversion/gtk-gui/MonoDevelop.VersionControl.Subversion.Gui.ClientCertificateDialog.cs,

@@ -25,18 +25,28 @@ namespace MonoDevelop.VersionControl.Views
 		
 		double pos = -1;
 		
-		public static bool Show (Repository vc, string filepath, bool test)
+		public static void Show (Repository repo, string path)
 		{
-			if (vc.IsModified (filepath)) {
-				if (test) return true;
-				DiffView d = new DiffView(
-					Path.GetFileName(filepath),
-					vc.GetPathToBaseText(filepath),
-					filepath);
-				MonoDevelop.Ide.Gui.IdeApp.Workbench.OpenDocument (d, true);
-				return true;
+			VersionControlItemList list = new VersionControlItemList ();
+			list.Add (new VersionControlItem (repo, null, path, Directory.Exists (path)));
+			Show (list, false);
+		}
+		
+		public static bool Show (VersionControlItemList items, bool test)
+		{
+			bool found = false;
+			foreach (VersionControlItem item in items) {
+				if (item.Repository.IsModified (item.Path)) {
+					if (test) return true;
+					found = true;
+					DiffView d = new DiffView(
+						Path.GetFileName (item.Path),
+						item.Repository.GetPathToBaseText (item.Path),
+						item.Path);
+					MonoDevelop.Ide.Gui.IdeApp.Workbench.OpenDocument (d, true);
+				}
 			}
-			return false;
+			return found;
 		}
 			
 		static string[] split(string text) {

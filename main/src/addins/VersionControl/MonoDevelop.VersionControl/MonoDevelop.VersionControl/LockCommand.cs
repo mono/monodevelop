@@ -33,35 +33,40 @@ namespace MonoDevelop.VersionControl
 {
 	public class LockCommand
 	{
-		public static bool Lock (Repository vc, string path, bool test)
+		public static bool Lock (VersionControlItemList items, bool test)
 		{
-			if (vc.CanLock (path)) {
-				if (test) return true;
-				new LockWorker (vc, path).Start();
+			foreach (VersionControlItem it in items)
+				if (!it.Repository.CanLock (it.Path))
+					return false;
+			if (test)
 				return true;
-			}
-			return false;
+			
+			new LockWorker (items).Start();
+			return true;
 		}
 
 		private class LockWorker : Task 
 		{
-			Repository vc;
-			string path;
+			VersionControlItemList items;
 						
-			public LockWorker (Repository vc, string path) {
-				this.vc = vc;
-				this.path = path;
+			public LockWorker (VersionControlItemList items) {
+				this.items = items;
 			}
 			
 			protected override string GetDescription() {
-				return GettextCatalog.GetString ("Locking {0}...", path);
+				return GettextCatalog.GetString ("Locking...");
 			}
 			
 			protected override void Run ()
 			{
-				vc.Lock (GetProgressMonitor (), path);
+				IProgressMonitor monitor = GetProgressMonitor ();
+				
+				foreach (VersionControlItemList list in items.SplitByRepository ())
+					list[0].Repository.Lock (monitor, list.Paths);
+				
 				Gtk.Application.Invoke (delegate {
-					VersionControlService.NotifyFileStatusChanged (vc, path, Directory.Exists (path));
+					foreach (VersionControlItem item in items)
+						VersionControlService.NotifyFileStatusChanged (item.Repository, item.Path, item.IsDirectory);
 				});
 			}
 		}

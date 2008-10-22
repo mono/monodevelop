@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 
 using Gtk;
@@ -7,6 +8,7 @@ using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Gui.Pads.ProjectPad;
 using MonoDevelop.Projects;
@@ -176,9 +178,13 @@ namespace MonoDevelop.VersionControl
 			get { return typeof(AddinCommandHandler); }
 		}
 	}
+
 	
-	class AddinCommandHandler : NodeCommandHandler 
+
+	
+	class AddinCommandHandler : VersionControlCommandHandler 
 	{
+		[AllowMultiSelection]
 		[CommandHandler (Commands.Update)]
 		protected void OnUpdate() {
 			RunCommand(Commands.Update, false);
@@ -189,6 +195,7 @@ namespace MonoDevelop.VersionControl
 			TestCommand(Commands.Update, item);
 		}
 		
+		[AllowMultiSelection]
 		[CommandHandler (Commands.Diff)]
 		protected void OnDiff() {
 			RunCommand(Commands.Diff, false);
@@ -199,6 +206,7 @@ namespace MonoDevelop.VersionControl
 			TestCommand(Commands.Diff, item);
 		}
 		
+		[AllowMultiSelection]
 		[CommandHandler (Commands.Log)]
 		protected void OnLog() {
 			RunCommand(Commands.Log, false);
@@ -229,6 +237,7 @@ namespace MonoDevelop.VersionControl
 			TestCommand(Commands.Commit, item);
 		}
 		
+		[AllowMultiSelection]
 		[CommandHandler (Commands.Add)]
 		protected void OnAdd() {
 			RunCommand(Commands.Add, false);
@@ -239,6 +248,7 @@ namespace MonoDevelop.VersionControl
 			TestCommand(Commands.Add, item);
 		}
 		
+		[AllowMultiSelection]
 		[CommandHandler (Commands.Remove)]
 		protected void OnRemove() {
 			RunCommand(Commands.Remove, false);
@@ -260,6 +270,7 @@ namespace MonoDevelop.VersionControl
 			TestCommand(Commands.Publish, item);
 		}
 		
+		[AllowMultiSelection]
 		[CommandHandler (Commands.Revert)]
 		protected void OnRevert() {
 			RunCommand(Commands.Revert, false);
@@ -270,6 +281,7 @@ namespace MonoDevelop.VersionControl
 			TestCommand(Commands.Revert, item);
 		}
 		
+		[AllowMultiSelection]
 		[CommandHandler (Commands.Lock)]
 		protected void OnLock() {
 			RunCommand(Commands.Lock, false);
@@ -280,6 +292,7 @@ namespace MonoDevelop.VersionControl
 			TestCommand(Commands.Lock, item);
 		}
 		
+		[AllowMultiSelection]
 		[CommandHandler (Commands.Unlock)]
 		protected void OnUnlock() {
 			RunCommand(Commands.Unlock, false);
@@ -301,81 +314,57 @@ namespace MonoDevelop.VersionControl
 				item.Visible = res == TestResult.Enable;
 		}
 		
-		private TestResult RunCommand(Commands cmd, bool test)
+		private TestResult RunCommand (Commands cmd, bool test)
 		{
-			string path;
-			bool isDir;
-			IWorkspaceObject pentry;
-			
-			if (CurrentNode.DataItem is ProjectFile) {
-				ProjectFile file = (ProjectFile)CurrentNode.DataItem;
-				path = file.FilePath;
-				isDir = false;
-				pentry = file.Project;
-			} else if (CurrentNode.DataItem is SystemFile) {
-				SystemFile file = (SystemFile)CurrentNode.DataItem;
-				path = file.Path;
-				isDir = false;
-				pentry = file.Project;
-			} else if (CurrentNode.DataItem is ProjectFolder) {
-				ProjectFolder f = ((ProjectFolder)CurrentNode.DataItem);
-				path = f.Path;
-				isDir = true;
-				pentry = f.Project;
-			} else if (CurrentNode.DataItem is IWorkspaceObject) {
-				pentry = ((IWorkspaceObject)CurrentNode.DataItem);
-				path = pentry.BaseDirectory;
-				isDir = true;
-			} else {
-				Console.Error.WriteLine(CurrentNode.DataItem);
-				return TestResult.NoVersionControl;
+			VersionControlItemList items = GetItems ();
+
+			foreach (VersionControlItem it in items) {
+				if (it.Repository == null) {
+					if (cmd != Commands.Publish)
+						return TestResult.NoVersionControl;
+				} else if (!it.Repository.VersionControlSystem.IsInstalled) {
+					return TestResult.Disable;
+				}
 			}
-			
-			Repository repo = VersionControlService.GetRepository (pentry);
-			if (repo == null) {
-				if (cmd != Commands.Publish)
-					return TestResult.NoVersionControl;
-			} else if (!repo.VersionControlSystem.IsInstalled) {
-				return TestResult.Disable;
-			}
-			
+
 			bool res = false;
 			
 			try {
 				switch (cmd) {
 					case Commands.Update:
-						res = UpdateCommand.Update (repo, path, test);
+						res = UpdateCommand.Update (items, test);
 						break;
 					case Commands.Diff:
-						res = DiffView.Show (repo, path, test);
+						res = DiffView.Show (items, test);
 						break;
 					case Commands.Log:
-						res = LogView.Show (repo, path, isDir, null, test);
+						res = LogView.Show (items, null, test);
 						break;
 					case Commands.Status:
-						res = StatusView.Show (repo, path, test);
+						res = StatusView.Show (items, test);
 						break;
 					case Commands.Commit:
-						res = CommitCommand.Commit (repo, path, test);
+						res = CommitCommand.Commit (items, test);
 						break;
 					case Commands.Add:
-						res = AddCommand.Add (repo, path, test);
+						res = AddCommand.Add (items, test);
 						break;
 					case Commands.Remove:
-						res = RemoveCommand.Remove (repo, path, isDir, test);
+						res = RemoveCommand.Remove (items, test);
 						break;
 					case Commands.Revert:
-						res = RevertCommand.Revert (repo, path, test);
+						res = RevertCommand.Revert (items, test);
 						break;
 					case Commands.Lock:
-						res = LockCommand.Lock (repo, path, test);
+						res = LockCommand.Lock (items, test);
 						break;
 					case Commands.Unlock:
-						res = UnlockCommand.Unlock (repo, path, test);
+						res = UnlockCommand.Unlock (items, test);
 						break;
 					case Commands.Publish:
-						if (isDir)
-							res = PublishCommand.Publish (pentry, path, test);
+						VersionControlItem it = items [0];
+						if (items.Count == 1 && it.IsDirectory && it.WorkspaceObject != null)
+							res = PublishCommand.Publish (it.WorkspaceObject, it.Path, test);
 						break;
 				}
 			}
@@ -390,6 +379,20 @@ namespace MonoDevelop.VersionControl
 			return res ? TestResult.Enable : TestResult.Disable;
 		}
 	}
+
+	class OpenCommandHandler : VersionControlCommandHandler 
+	{
+		[AllowMultiSelection]
+		[CommandHandler (ViewCommands.Open)]
+		protected void OnOpen ()
+		{
+			foreach (VersionControlItem it in GetItems ()) {
+				if (!it.IsDirectory)
+					IdeApp.Workbench.OpenDocument (it.Path);
+			}
+		}
+	}		
+	
 	
 	enum TestResult
 	{

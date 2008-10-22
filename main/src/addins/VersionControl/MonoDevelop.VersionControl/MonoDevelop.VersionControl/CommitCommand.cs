@@ -11,15 +11,19 @@ namespace MonoDevelop.VersionControl
 {
 	class CommitCommand
 	{
-		public static bool Commit (Repository vc, string path, bool test)
+		public static bool Commit (VersionControlItemList items, bool test)
 		{
-			if (vc.CanCommit (path)) {
+			if (items.Count != 1)
+				return false;
+
+			VersionControlItem item = items [0];
+			if (item.Repository.CanCommit (item.Path)) {
 				if (test) return true;
-				ChangeSet cset = vc.CreateChangeSet (path);
-				foreach (VersionInfo vi in vc.GetDirectoryVersionInfo (path, false, true))
+				ChangeSet cset = item.Repository.CreateChangeSet (item.Path);
+				foreach (VersionInfo vi in item.Repository.GetDirectoryVersionInfo (item.Path, false, true))
 					if (vi.HasLocalChanges)
 						cset.AddFile (vi);
-				Commit (vc, cset, false);
+				Commit (item.Repository, cset, false);
 			}
 			return false;
 		}

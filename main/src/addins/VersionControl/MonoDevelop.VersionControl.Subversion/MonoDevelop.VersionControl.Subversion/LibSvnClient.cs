@@ -99,6 +99,8 @@ namespace MonoDevelop.VersionControl.Subversion {
 		public abstract IntPtr client_revert (IntPtr apr_array_header_t_targets, int recursive,
 		                                      IntPtr ctx, IntPtr pool);
 		
+		public abstract IntPtr client_resolved (string path, int recursive, IntPtr ctx, IntPtr pool);
+		
 		public abstract IntPtr client_move (ref IntPtr commit_info_p, string srcPath, ref Rev rev,
 		                                    string destPath, int force, IntPtr ctx, IntPtr pool);
 		
@@ -774,6 +776,11 @@ namespace MonoDevelop.VersionControl.Subversion {
 			return svn_client_revert (apr_array_header_t_targets, recursive, ctx, pool);
 		}
 		
+		public override IntPtr client_resolved (string path, int recursive, IntPtr ctx, IntPtr pool)
+		{
+			return svn_client_resolved (path, recursive, ctx, pool);
+		}
+		
 		public override IntPtr client_move (ref IntPtr commit_info_p, string srcPath, ref Rev rev,
 		                                    string destPath, int force, IntPtr ctx, IntPtr pool)
 		{
@@ -902,6 +909,8 @@ namespace MonoDevelop.VersionControl.Subversion {
 		
 		[DllImport(svnclientlib)] static extern IntPtr svn_client_revert (IntPtr apr_array_header_t_targets, int recursive,
 		                                                                  IntPtr ctx, IntPtr pool);
+		
+		[DllImport(svnclientlib)] static extern IntPtr svn_client_resolved (string path, int recursive, IntPtr ctx, IntPtr pool);
 		
 		[DllImport(svnclientlib)] static extern IntPtr svn_client_move (ref IntPtr commit_info_p, string srcPath, ref Rev rev,
 		                                                                string destPath, int force, IntPtr ctx, IntPtr pool);
@@ -1119,6 +1128,11 @@ namespace MonoDevelop.VersionControl.Subversion {
 			return svn_client_revert (apr_array_header_t_targets, recursive, ctx, pool);
 		}
 		
+		public override IntPtr client_resolved (string path, int recursive, IntPtr ctx, IntPtr pool)
+		{
+			return svn_client_resolved (path, recursive, ctx, pool);
+		}
+		
 		public override IntPtr client_move (ref IntPtr commit_info_p, string srcPath, ref Rev rev,
 		                                    string destPath, int force, IntPtr ctx, IntPtr pool)
 		{
@@ -1247,6 +1261,8 @@ namespace MonoDevelop.VersionControl.Subversion {
 		
 		[DllImport(svnclientlib)] static extern IntPtr svn_client_revert (IntPtr apr_array_header_t_targets, int recursive,
 		                                                                  IntPtr ctx, IntPtr pool);
+		
+		[DllImport(svnclientlib)] static extern IntPtr svn_client_resolved (string path, int recursive, IntPtr ctx, IntPtr pool);
 		
 		[DllImport(svnclientlib)] static extern IntPtr svn_client_move (ref IntPtr commit_info_p, string srcPath, ref Rev rev,
 		                                                                string destPath, int force, IntPtr ctx, IntPtr pool);
