@@ -76,6 +76,7 @@
 		<ItemProperty member="copyToOutputDirectory" name="copyToOutputDirectory" defaultValue="None"/>
 		<ItemProperty member="visible" name="visible" defaultValue="true"/>
 		<ItemProperty member="contentType" name="contentType" defaultValue=""/>
+		<ItemProperty member="generator" name="generator" defaultValue=""/>
 	</DataItem>
 	<DataItem class = "MonoDevelop.Projects.ProjectReference" customDataItem="MonoDevelop.Projects.Formats.MD1.MD1CustomDataItem">
 		<ItemProperty member="referenceType" name="type" />

@@ -1,3 +1,10 @@
+2008-10-22  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* md1format.xml:
+	* MonoDevelop.Projects/ProjectFile.cs:
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs: Added
+	Generator property. Fixed Silverlight version mapping.
+
 2008-10-22  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs: Added protection

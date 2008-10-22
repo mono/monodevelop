@@ -69,6 +69,9 @@ namespace MonoDevelop.Projects
 		[ItemProperty("Visible", DefaultValue=true)]
 		bool visible = true;
 		
+		[ItemProperty("Generator", DefaultValue="")]
+		string generator;
+		
 		Project project;
 		ProjectFile dependsOnFile;
 		List<ProjectFile> dependentChildren;
@@ -181,6 +184,17 @@ namespace MonoDevelop.Projects
 			set {
 				if (visible != value) {
 					visible = value;
+					if (project != null)
+						project.NotifyFilePropertyChangedInProject (this);
+				}
+			}
+		}
+		
+		public string Generator {
+			get { return generator; }
+			set {
+				if (generator != value) {
+					generator = value;
 					if (project != null)
 						project.NotifyFilePropertyChangedInProject (this);
 				}

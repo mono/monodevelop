@@ -543,6 +543,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					if (!string.IsNullOrEmpty (file.ContentType))
 						buildItem.SetMetadata ("SubType", file.ContentType);
 					
+					if (!string.IsNullOrEmpty (file.Generator))
+						buildItem.SetMetadata ("Generator", file.Generator);
+					else
+						buildItem.UnsetMetadata ("Generator");
+					
 					if (file.CopyToOutputDirectory == FileCopyMode.None) {
 						buildItem.UnsetMetadata ("CopyToOutputDirectory");
 					} else {
@@ -757,8 +762,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			switch (frameworkVersion) {
 				case "v1.1": return ClrVersion.Net_1_1;
 				case "v2.0": return ClrVersion.Net_2_0;
-				case "v2.1": return ClrVersion.Clr_2_1;
 				case "v3.0": return ClrVersion.Net_2_0;
+				//note: mapping to CLR 2.1 (Silverlight CoreCLR) is overridden by the moonlight project type.
+				// the "version" is still 3.5.
 				case "v3.5": return ClrVersion.Net_2_0;
 			}
 			return ClrVersion.Net_2_0;
@@ -769,7 +775,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			switch (version) {
 				case ClrVersion.Net_1_1: return "v1.1";
 				case ClrVersion.Net_2_0: return "v2.0";
-				case ClrVersion.Clr_2_1: return "v2.1";
+				case ClrVersion.Clr_2_1: return "v3.5";
 				case ClrVersion.Default: return GetFrameworkVersion (Runtime.SystemAssemblyService.CurrentClrVersion);
 			}
 			return null;
