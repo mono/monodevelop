@@ -114,6 +114,10 @@ namespace MonoDevelop.Ide.Gui.Components
 		public virtual void OnItemSelected ()
 		{
 		}
+
+		internal protected virtual bool MultipleSelectedNodes {
+			get { return CurrentNodes.Length > 1; }
+		}
 		
 		[CommandUpdateHandler (EditCommands.Delete)]
 		internal void CanDeleteCurrentItem (CommandInfo info)
@@ -228,6 +232,10 @@ namespace MonoDevelop.Ide.Gui.Components
 			protected override void Run (object target, Command cmd)
 			{
 				NodeCommandHandler nch = (NodeCommandHandler) target;
+				if (nch.tree == null) {
+					base.Run (target, cmd);
+					return;
+				}
 				try {
 					nch.tree.LockUpdates ();
 					base.Run (target, cmd);
@@ -253,7 +261,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		{
 			NodeCommandHandler nc = (NodeCommandHandler) target;
 			base.CommandUpdate (target, cinfo);
-			if (nc.CurrentNodes.Length > 1) {
+			if (nc.MultipleSelectedNodes) {
 				bool allowMultiArray = false;
 				ICommandArrayUpdateHandler h = ((ICommandArrayUpdateHandler)this).Next;
 				while (h != null) {
@@ -274,7 +282,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			
 			base.CommandUpdate (target, cinfo);
 			
-			if (nc.CurrentNodes.Length > 1) {
+			if (nc.MultipleSelectedNodes) {
 				bool allowMulti = false;
 				ICommandUpdateHandler h = ((ICommandUpdateHandler)this).Next;
 				while (h != null) {

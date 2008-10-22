@@ -1,5 +1,11 @@
 2008-10-22  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Gui.Components/NodeCommandHandler.cs: Done some
+	changes to allow using command handlers in contexts other than the
+	extensible tree.
+
+2008-10-22  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui/StatusProgressMonitor.cs: Escape messages shown in
 	dialogs and the status bar. Fixes bug #432287 - Empty warning message
 	when trying to open a badly formatted .csproj file.
