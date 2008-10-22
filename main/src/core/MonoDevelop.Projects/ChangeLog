@@ -1,5 +1,11 @@
 2008-10-22  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs: Added protection
+	against database collection changes while iterating to update
+	references.
+
+2008-10-22  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects.Formats.MSBuild/SlnFileFormat.cs: Improve warning
 	message.
 

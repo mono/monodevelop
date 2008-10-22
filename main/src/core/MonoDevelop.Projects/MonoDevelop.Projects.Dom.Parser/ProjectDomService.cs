@@ -400,7 +400,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 				Solution solution = (Solution) item;
 				foreach (Project project in solution.GetAllProjects ())
 					Load (project);
-				foreach (ProjectDom dom in databases.Values) {
+				foreach (ProjectDom dom in new List<ProjectDom> (databases.Values)) {
 					dom.UpdateReferences ();
 				}
 	
