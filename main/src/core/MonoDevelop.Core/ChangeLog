@@ -1,3 +1,8 @@
+2008-10-22  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Serialization/GenericCollectionHandler.cs: Added
+	protection against multiple Add methods in a class.
+
 2008-10-02  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Core.mdp, Makefile.am,

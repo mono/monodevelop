@@ -52,8 +52,13 @@ namespace MonoDevelop.Core.Serialization
 		public static ICollectionHandler CreateHandler (Type t)
 		{
 			Type elemType;
-			
-			MethodInfo addMethod = t.GetMethod ("Add");
+
+			MethodInfo addMethod = null;
+			try {
+				addMethod = t.GetMethod ("Add");
+			} catch (System.Reflection.AmbiguousMatchException) {
+				// It can't be a collection
+			}
 			if (addMethod == null) return null;
 
 			ParameterInfo[] pars = addMethod.GetParameters();
