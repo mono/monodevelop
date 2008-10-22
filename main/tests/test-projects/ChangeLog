@@ -1,3 +1,14 @@
+2008-10-23  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* test-configuration-merging:
+	* test-configuration-merging/TestConfigurationMerging:
+	* test-configuration-merging/TestConfigurationMerging.sln:
+	* test-configuration-merging/TestConfigurationMerging/Main.cs:
+	* test-configuration-merging/TestConfigurationMerging/AssemblyInfo.cs:
+	* test-configuration-merging/TestConfigurationMerging/TestConfigurationMerging.csproj:
+	* test-configuration-merging/TestConfigurationMerging/TestConfigurationMergingSaved.csproj:
+	Add new test projects.
+
 2008-10-01  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* vs-local-copy, vs-local-copy/ClassLibrary5,
