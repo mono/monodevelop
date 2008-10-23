@@ -1,5 +1,10 @@
 2008-10-22  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs:
+	Deserialise Generator too.
+
+2008-10-22  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* md1format.xml:
 	* MonoDevelop.Projects/ProjectFile.cs:
 	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs: Added

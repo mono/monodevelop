@@ -708,6 +708,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (!string.IsNullOrEmpty (contentType))
 				file.ContentType = contentType;
 			
+			string generator = buildItem.GetMetadata ("Generator");
+			if (!string.IsNullOrEmpty (generator))
+				file.Generator = generator;
+			
 			project.Files.Add (file);
 		}
 
