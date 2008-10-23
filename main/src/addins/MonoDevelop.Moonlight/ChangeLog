@@ -1,3 +1,21 @@
+2008-10-22  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Moonlight/MoonlightProject.cs: Set generator and content
+	type on added xaml files. Auto-add codebehind.
+
+	* Makefile.am:
+	* MonoDevelop.Moonlight.mdp: Updated.
+
+	* MonoDevelop.Moonlight.addin.xml:
+	* Templates/Moonlight-Xaml.xft.xml:
+	* Templates/Moonlight-Library.xpt.xml:
+	* Templates/Moonlight-Application.xpt.xml:
+	* Templates/Moonlight-LibraryProject.xpt.xml:
+	* Templates/Moonlight-UserControlXaml.xft.xml:
+	* Templates/Moonlight-ApplicationXaml.xft.xml:
+	* Templates/Moonlight-XamlWithCodeBehind.xft.xml:
+	* Templates/Moonlight-ApplicationProject.xpt.xml: Updated templates.
+
 2008-10-21  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Templates/MoonlightProject.xpt.xml:

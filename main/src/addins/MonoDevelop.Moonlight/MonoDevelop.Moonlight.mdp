@@ -21,11 +21,11 @@
     <File name="MonoDevelop.Moonlight/MoonlightProject.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Moonlight/MoonlightProjectConfiguration.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Moonlight/MoonlightProjectBinding.cs" subtype="Code" buildaction="Compile" />
-    <File name="Templates/Moonlight-Application.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="Templates/Moonlight-Xaml.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="Templates/Moonlight-XamlWithCodeBehind.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="Templates/Moonlight-ApplicationProject.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="Templates/Moonlight-ApplicationXaml.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="Templates/Moonlight-UserControlXaml.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="Templates/Silverlight.js" subtype="Code" buildaction="Nothing" copyToOutputDirectory="PreserveNewest" />
-    <File name="Templates/Moonlight-Library.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="Templates/Moonlight-LibraryProject.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />

@@ -23,10 +23,10 @@ FILES =  \
 RES =  \
 	gtk-gui/gui.stetic \
 	MonoDevelop.Moonlight.addin.xml \
-	Templates/Moonlight-Application.xpt.xml \
-	Templates/Moonlight-Library.xpt.xml \
-	Templates/Moonlight-Xaml.xft.xml \
-	Templates/Moonlight-XamlWithCodeBehind.xft.xml
+	Templates/Moonlight-ApplicationProject.xpt.xml \
+	Templates/Moonlight-ApplicationXaml.xft.xml \
+	Templates/Moonlight-LibraryProject.xpt.xml \
+	Templates/Moonlight-UserControlXaml.xft.xml
 
 DATA_FILES = \
 	Templates/Silverlight.js

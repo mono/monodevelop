@@ -24,10 +24,10 @@
 	</Runtime>
 
 	<Extension path = "/MonoDevelop/Ide/FileTemplates">
-		<FileTemplate id       = "Moonlight-Xaml"
-		              resource = "Moonlight-Xaml.xft.xml"/>
-		<FileTemplate id       = "Moonlight-XamlWithCodeBehind"
-		              resource = "Moonlight-XamlWithCodeBehind.xft.xml"/>
+		<FileTemplate id       = "Moonlight-ApplicationXaml"
+		              resource = "Moonlight-ApplicationXaml.xft.xml"/>
+		<FileTemplate id       = "Moonlight-UserControlXaml"
+		              resource = "Moonlight-UserControlXaml.xft.xml"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
@@ -39,8 +39,8 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
-		<ProjectTemplate id = "Moonlight-Application" resource = "Moonlight-Application.xpt.xml"/>
-		<ProjectTemplate id = "Moonlight-Library"     resource = "Moonlight-Library.xpt.xml"/>
+		<ProjectTemplate id = "Moonlight-ApplicationProject" resource = "Moonlight-ApplicationProject.xpt.xml"/>
+		<ProjectTemplate id = "Moonlight-LibraryProject"     resource = "Moonlight-LibraryProject.xpt.xml"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/FileFilters">

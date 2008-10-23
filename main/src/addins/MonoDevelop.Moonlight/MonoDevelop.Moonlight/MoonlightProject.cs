@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.Xml;
 using System.IO;
 
@@ -59,8 +60,6 @@ namespace MonoDevelop.Moonlight
 			: base (languageName, info, projectOptions)
 		{
 			Init ();
-			
-			ExtendedProperties["TargetFrameworkVersion"]="3.5";
 			
 			XmlNode silverAppNode = projectOptions.SelectSingleNode ("SilverlightApplication");
 			if (silverAppNode == null || !Boolean.TryParse (silverAppNode.InnerText, out silverlightApplication))
@@ -282,6 +281,48 @@ namespace MonoDevelop.Moonlight
 					return;
 				NotifyModified ("ThrowErrorsInValidation");
 				throwErrorsInValidation = value;
+			}
+		}
+		
+		#endregion
+		
+		#region File events
+		
+		static string[] groupedExtensions = { ".xaml" };
+		
+		protected override void OnFileAddedToProject (ProjectFileEventArgs e)
+		{
+			//short-circuit if the project is being deserialised
+			if (Loading) {
+				base.OnFileAddedToProject (e);
+				return;
+			}
+			
+			//set some properties automatically
+			if (Path.GetExtension (e.ProjectFile.FilePath) == ".xaml") {
+				e.ProjectFile.Generator = "MSBuild:MarkupCompilePass1";
+				e.ProjectFile.ContentType = "Designer";
+				
+				if (e.ProjectFile.BuildAction == BuildAction.Compile
+				    || e.ProjectFile.BuildAction == BuildAction.None)
+					//fixme: detect Application xaml
+					e.ProjectFile.BuildAction = BuildAction.Page;
+			}
+			
+			//find any related files, e.g codebehind
+			IEnumerable<string> filesToAdd = MonoDevelop.DesignerSupport.CodeBehind.GuessDependencies
+				(this, e.ProjectFile, groupedExtensions);
+			
+			//let the base fire the event before we add files
+			//don't want to fire events out of order of files being added
+			base.OnFileAddedToProject (e);
+			
+			//make sure that the parent and child files are in the project
+			if (filesToAdd != null) {
+				foreach (string file in filesToAdd) {
+					//NOTE: this only adds files if they are not already in the project
+					AddFile (file, BuildAction.Compile );
+				}
 			}
 		}
 		
