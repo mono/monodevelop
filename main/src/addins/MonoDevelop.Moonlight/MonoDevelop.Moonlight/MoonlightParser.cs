@@ -114,6 +114,7 @@ namespace MonoDevelop.Moonlight
 			DomMethod initcomp = new DomMethod ();
 			initcomp.Name = "InitializeComponent";
 			initcomp.Modifiers = Modifiers.Public;
+			initcomp.ReturnType = DomReturnType.Void;
 			decl_type.Add (initcomp);
 			
 			DomField _contentLoaded = new DomField ("_contentLoaded");

@@ -1,5 +1,10 @@
 2008-10-23  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Moonlight/MoonlightParser.cs: Fix return type of
+	InitialiseComponent.
+
+2008-10-23  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Templates/Moonlight-UserControlXaml.xft.xml:
 	* Templates/Moonlight-ApplicationProject.xpt.xml: Fix end tag in user
 	control.
