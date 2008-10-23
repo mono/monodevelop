@@ -248,7 +248,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					dotNetProject.References.Add (pref);
 				}
 				foreach (MSBuildItem buildItem in msproject.GetAllItems ("ProjectReference")) {
-					ProjectReference pref = new ProjectReference (ReferenceType.Project, buildItem.GetMetadata ("Name"));
+					string name = buildItem.GetMetadata ("Name");
+					// The name of the project is the first word of the string (it may contain other stuff).
+					int i = name.IndexOf (' ');
+					if (i != -1)
+						name = name.Substring (0, i);
+					ProjectReference pref = new ProjectReference (ReferenceType.Project, name);
 					pref.LocalCopy = buildItem.GetMetadata ("Private") != "False";
 					dotNetProject.References.Add (pref);
 				}

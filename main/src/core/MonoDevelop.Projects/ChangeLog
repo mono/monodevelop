@@ -1,5 +1,10 @@
 2008-10-23  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs: Name of
+	project in project references may contain some other info. Strip it.
+
+2008-10-23  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProject.cs:
 	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs: When
 	loading a configuration, look for other configurations with the same
