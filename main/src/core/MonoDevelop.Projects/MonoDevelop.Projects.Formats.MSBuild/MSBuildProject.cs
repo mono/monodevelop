@@ -123,7 +123,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public MSBuildPropertyGroup AddNewPropertyGroup (bool insertAtEnd)
 		{
 			XmlElement elem = doc.CreateElement (null, "PropertyGroup", MSBuildProject.Schema);
-			doc.DocumentElement.AppendChild (elem);
+			
+			XmlElement last = doc.DocumentElement.SelectSingleNode ("tns:PropertyGroup[last()]", XmlNamespaceManager) as XmlElement;
+			if (last != null)
+				doc.DocumentElement.InsertAfter (elem, last);
+			else
+				doc.DocumentElement.AppendChild (elem);
+			
 			return GetGroup (elem);
 		}
 		
@@ -360,6 +366,47 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				Element.RemoveChild (prop.Element);
 			}
 		}
+
+		public void RemoveAllProperties ()
+		{
+			List<XmlNode> toDelete = new List<XmlNode> ();
+			foreach (XmlNode node in Element.ChildNodes) {
+				if (node is XmlElement)
+					toDelete.Add (node);
+			}
+			foreach (XmlNode node in toDelete)
+				Element.RemoveChild (node);
+			properties.Clear ();
+		}
+
+		public static MSBuildPropertyGroup Merge (MSBuildPropertyGroup g1, MSBuildPropertyGroup g2)
+		{
+			XmlElement elem = g1.Element.OwnerDocument.CreateElement (null, "PropertyGroup", MSBuildProject.Schema);
+			MSBuildPropertyGroup grp = new MSBuildPropertyGroup (elem);
+			foreach (MSBuildProperty prop in g1.Properties)
+				grp.SetPropertyValue (prop.Name, prop.Value);
+			foreach (MSBuildProperty prop in g2.Properties)
+				grp.SetPropertyValue (prop.Name, prop.Value);
+			return grp;
+		}
+
+		public void UnMerge (MSBuildPropertyGroup baseGrp)
+		{
+			foreach (MSBuildProperty prop in baseGrp.Properties) {
+				MSBuildProperty thisProp = GetProperty (prop.Name);
+				if (thisProp != null && prop.Value == thisProp.Value)
+					RemoveProperty (prop.Name);
+			}
+		}
+
+		public override string ToString()
+		{
+			string s = "[MSBuildPropertyGroup:";
+			foreach (MSBuildProperty prop in Properties)
+				s += " " + prop.Name + "=" + prop.Value;
+			return s + "]";
+		}
+
 	}
 	
 	class MSBuildItem: MSBuildObject

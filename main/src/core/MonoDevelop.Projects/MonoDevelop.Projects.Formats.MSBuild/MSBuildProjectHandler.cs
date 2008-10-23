@@ -45,6 +45,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		List<string> targetImports = new List<string> ();
 		IResourceHandler customResourceHandler;
 		List<string> subtypeGuids = new List<string> ();
+		const string Unspecificed = null;
 		
 		SolutionEntityItem EntityItem {
 			get { return (SolutionEntityItem) Item; }
@@ -235,7 +236,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 							pref = new ProjectReference (ReferenceType.Gac, buildItem.Include);
 						}
 					} else {
-						pref = new ProjectReference (ReferenceType.Gac, buildItem.Include);
+						string asm = buildItem.Include;
+						// This is a workaround for a VS bug. Looks like it is writing this assembly incorrectly
+						if (asm == "System.configuration")
+							asm = "System.Configuration";
+						else if (asm == "System.XML")
+							asm = "System.Xml";
+						pref = new ProjectReference (ReferenceType.Gac, asm);
 					}
 					ReadBuildItemMetadata (ser, buildItem, pref, typeof(ProjectReference));
 					dotNetProject.References.Add (pref);
@@ -253,30 +260,43 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			
 			// Read configurations
 			
-			string conf, platform;
-			foreach (MSBuildPropertyGroup grp in msproject.PropertyGroups) {
-				if (ParseConfigCondition (grp.Condition, out conf, out platform)) {
-					SolutionItemConfiguration config = EntityItem.CreateConfiguration (conf);
-					config.Platform = platform;
-					DataItem data = ReadPropertyGroupMetadata (ser, grp, config);
-					ser.Deserialize (config, data);
-					EntityItem.Configurations.Add (config);
-					
-					if (config is DotNetProjectConfiguration) {
-						DotNetProjectConfiguration dpc = (DotNetProjectConfiguration) config;
-						if (dpc.CompilationParameters != null) {
-							data = ReadPropertyGroupMetadata (ser, grp, dpc.CompilationParameters);
-							ser.Deserialize (dpc.CompilationParameters, data);
-						}
-						
-						if (!string.IsNullOrEmpty (assemblyName) && string.IsNullOrEmpty (dpc.OutputAssembly))
-							dpc.OutputAssembly = assemblyName;
-						
-						string fw = (string) dpc.ExtendedProperties ["TargetFrameworkVersion"];
-						if (fw == null)
-							fw = frameworkVersion;
-						dpc.ClrVersion = GetClrVersion (fw);
+			List<ConfigData> configData = GetConfigData (msproject);
+			List<ConfigData> readConfigData = new List<ConfigData> ();
+			
+			foreach (ConfigData cgrp in configData) {
+				readConfigData.Add (cgrp);
+
+				string conf = cgrp.Config;
+				string platform = cgrp.Platform;
+
+				if (platform == Unspecificed && conf != Unspecificed && !ContainsSpecificPlatformConfiguration (configData, conf))
+					platform = string.Empty;
+
+				// It may be a partial configuration
+				if (conf == Unspecificed || platform == Unspecificed)
+					continue;
+				
+				MSBuildPropertyGroup grp = CreateMergedConfiguration (readConfigData, conf, platform);
+				SolutionItemConfiguration config = EntityItem.CreateConfiguration (conf);
+				config.Platform = platform;
+				DataItem data = ReadPropertyGroupMetadata (ser, grp, config);
+				ser.Deserialize (config, data);
+				EntityItem.Configurations.Add (config);
+				
+				if (config is DotNetProjectConfiguration) {
+					DotNetProjectConfiguration dpc = (DotNetProjectConfiguration) config;
+					if (dpc.CompilationParameters != null) {
+						data = ReadPropertyGroupMetadata (ser, grp, dpc.CompilationParameters);
+						ser.Deserialize (dpc.CompilationParameters, data);
 					}
+					
+					if (!string.IsNullOrEmpty (assemblyName) && string.IsNullOrEmpty (dpc.OutputAssembly))
+						dpc.OutputAssembly = assemblyName;
+					
+					string fw = (string) dpc.ExtendedProperties ["TargetFrameworkVersion"];
+					if (fw == null)
+						fw = frameworkVersion;
+					dpc.ClrVersion = GetClrVersion (fw);
 				}
 			}
 			
@@ -293,6 +313,44 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			ser.Deserialize (Item, globalData);
 			
 			Item.NeedsReload = false;
+		}
+
+		class ConfigData
+		{
+			public ConfigData (string conf, string plt, MSBuildPropertyGroup grp)
+			{
+				Config = conf;
+				Platform = plt;
+				Group = grp;
+			}
+			
+			public string Config;
+			public string Platform;
+			public MSBuildPropertyGroup Group;
+		}
+
+		MSBuildPropertyGroup CreateMergedConfiguration (List<ConfigData> configData, string conf, string platform)
+		{
+			MSBuildPropertyGroup merged = null;
+			
+			foreach (ConfigData grp in configData) {
+				if ((grp.Config == conf || grp.Config == Unspecificed) && (grp.Platform == platform || grp.Platform == Unspecificed)) {
+					if (merged == null)
+						merged = grp.Group;
+					else
+						merged = MSBuildPropertyGroup.Merge (merged, grp.Group);
+				}
+			}
+			return merged;
+		}
+
+		bool ContainsSpecificPlatformConfiguration (List<ConfigData> configData, string conf)
+		{
+			foreach (ConfigData grp in configData) {
+				if (grp.Config == conf && grp.Platform != Unspecificed)
+					return true;
+			}
+			return false;
 		}
 
 		public override void Save (MonoDevelop.Core.IProgressMonitor monitor)
@@ -408,13 +466,17 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 			
 			// Configurations
+
+			List<ConfigData> configData = GetConfigData (msproject);
 			
 			foreach (SolutionItemConfiguration conf in eitem.Configurations) {
-				MSBuildPropertyGroup propGroup = FindPropertyGroup (msproject, conf);
+				MSBuildPropertyGroup propGroup = FindPropertyGroup (configData, conf);
 				if (propGroup == null) {
 					propGroup = msproject.AddNewPropertyGroup (false);
 					propGroup.Condition = BuildConfigCondition (conf.Name, conf.Platform);
 				}
+				else
+					propGroup.RemoveAllProperties ();
 				
 				DotNetProjectConfiguration netConfig = conf as DotNetProjectConfiguration;
 				if (netConfig != null) {
@@ -427,6 +489,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				DataItem ditem = (DataItem) ser.Serialize (conf);
 				
 				if (netConfig != null) {
+					// Remove all compilation parameters properties from the data item, since we are going to write them again.
+					ClassDataType dt = (ClassDataType) ser.DataContext.GetConfigurationDataType (netConfig.CompilationParameters.GetType ());
+					foreach (ItemProperty prop in dt.GetProperties (ser.SerializationContext, netConfig.CompilationParameters)) {
+						DataNode n = ditem.ItemData [prop.Name];
+						if (n != null)
+							ditem.ItemData.Remove (n);
+					}
 					DataItem ditemComp = (DataItem) ser.Serialize (netConfig.CompilationParameters);
 					ditem.ItemData.AddRange (ditemComp.ItemData);
 				}
@@ -436,6 +505,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				
 				if (!string.IsNullOrEmpty (assemblyName))
 					propGroup.RemoveProperty ("AssemblyName");
+
+				UnmergeBaseConfiguration (configData, propGroup, conf.Name, conf.Platform);
 			}
 			
 			Project project = Item as Project;
@@ -589,6 +660,24 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			
 			msproject.Save (eitem.FileName);
 		}
+
+		void UnmergeBaseConfiguration (List<ConfigData> configData, MSBuildPropertyGroup propGroup, string conf, string platform)
+		{
+			MSBuildPropertyGroup baseGroup = null;
+			
+			foreach (ConfigData data in configData) {
+				if (data.Group == propGroup)
+					break;
+				if ((data.Config == conf || data.Config == Unspecificed) && (data.Platform == platform || data.Platform == Unspecificed)) {
+					if (baseGroup == null)
+						baseGroup = data.Group;
+					else
+						baseGroup = MSBuildPropertyGroup.Merge (baseGroup, data.Group);
+				}
+			}
+			if (baseGroup != null)
+				propGroup.UnMerge (baseGroup);
+		}
 		
 		void ReadBuildItemMetadata (DataSerializer ser, MSBuildItem buildItem, object dataItem, Type extendedType)
 		{
@@ -639,6 +728,17 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					SetGroupProperty (propGroup, node.Name, GetXmlString (node), node is DataItem);
 			}
 		}
+
+		List<ConfigData> GetConfigData (MSBuildProject msproject)
+		{
+			List<ConfigData> configData = new List<ConfigData> ();
+			foreach (MSBuildPropertyGroup cgrp in msproject.PropertyGroups) {
+				string conf, platform;
+				if (ParseConfigCondition (cgrp.Condition, out conf, out platform))
+					configData.Add (new ConfigData (conf, platform, cgrp));
+			}
+			return configData;
+		}
 		
 		MSBuildProperty SetGroupProperty (MSBuildPropertyGroup propGroup, string name, string value, bool isLiteral)
 		{
@@ -646,14 +746,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return propGroup.GetProperty (name);
 		}
 		
-		MSBuildPropertyGroup FindPropertyGroup (MSBuildProject msproject, SolutionItemConfiguration config)
+		MSBuildPropertyGroup FindPropertyGroup (List<ConfigData> configData, SolutionItemConfiguration config)
 		{
-			string conf, platform;
-			foreach (MSBuildPropertyGroup grp in msproject.PropertyGroups) {
-				if (ParseConfigCondition (grp.Condition, out conf, out platform)) {
-					if (conf == config.Name && platform == config.Platform)
-						return grp;
-				}
+			foreach (ConfigData data in configData) {
+				if (data.Config == config.Name && data.Platform == config.Platform)
+					return data.Group;
 			}
 			return null;
 		}
@@ -721,15 +818,28 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			int i = cond.IndexOf ("==");
 			if (i == -1)
 				return false;
-			if (cond.Substring (0, i).Trim () != "'$(Configuration)|$(Platform)'")
-				return false;
-			cond = cond.Substring (i+2).Trim (' ','\'');
-			i = cond.IndexOf ('|');
-			config = cond.Substring (0, i);
-			platform = cond.Substring (i+1);
-			if (platform == "AnyCPU")
-				platform = string.Empty;
-			return true;
+			if (cond.Substring (0, i).Trim () == "'$(Configuration)|$(Platform)'") {
+				cond = cond.Substring (i+2).Trim (' ','\'');
+				i = cond.IndexOf ('|');
+				config = cond.Substring (0, i);
+				platform = cond.Substring (i+1);
+				if (platform == "AnyCPU")
+					platform = string.Empty;
+				return true;
+			}
+			else if (cond.Substring (0, i).Trim () == "'$(Configuration)'") {
+				config = cond.Substring (i+2).Trim (' ','\'');
+				platform = Unspecificed;
+				return true;
+			}
+			else if (cond.Substring (0, i).Trim () == "'$(Platform)'") {
+				config = Unspecificed;
+				platform = cond.Substring (i+2).Trim (' ','\'');
+				if (platform == "AnyCPU")
+					platform = string.Empty;
+				return true;
+			}
+			return false;
 		}
 		
 		string BuildConfigCondition (string config, string platform)
