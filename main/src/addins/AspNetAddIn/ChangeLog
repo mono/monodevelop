@@ -1,5 +1,10 @@
 2008-10-22  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.AspNet/AspNetAppProject.cs: Better default build action
+	for auto-added codebehind files.
+
+2008-10-22  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.AspNet/CodeBehind.cs:
 	* MonoDevelop.AspNet/AspNetAppProject.cs:
 	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Moved

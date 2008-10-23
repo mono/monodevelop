@@ -491,9 +491,20 @@ namespace MonoDevelop.AspNet
 			if (filesToAdd != null) {
 				foreach (string file in filesToAdd) {
 					//NOTE: this only adds files if they are not already in the project
-					AddFile (file, BuildAction.Content);
+					AddFile (file, GetDefaultBuildAction (file));
 				}
 			}
+		}
+		
+		string GetDefaultBuildAction (string file)
+		{
+			WebSubtype type = DetermineWebSubtype (file);
+			if (type == WebSubtype.Code)
+				return BuildAction.Compile;
+			if (type != WebSubtype.None)
+				return BuildAction.Content;
+			else
+				return BuildAction.None;
 		}
 		
 		static string[] groupedExtensions =  { ".aspx", ".master", ".ashx", ".ascx", ".asmx", ".asax" };
