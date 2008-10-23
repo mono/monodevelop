@@ -1,3 +1,21 @@
+2008-10-23  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Templates/Moonlight-UserControlXaml.xft.xml:
+	* Templates/Moonlight-ApplicationProject.xpt.xml: Fix end tag in user
+	control.
+
+	* MonoDevelop.Moonlight/MoonlightEditorExtension.cs: Add stub editor
+	extension. Enables path bar.
+
+	* MonoDevelop.Moonlight/XamlG.cs: Import xamlg from moonlight.
+
+	* Makefile.am:
+	* MonoDevelop.Moonlight.mdp:
+	* MonoDevelop.Moonlight.addin.xml: Updated.
+
+	* MonoDevelop.Moonlight/MoonlightParser.cs: Add live parser based on
+	xamlg to inject member info on the fly.
+
 2008-10-22  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Moonlight/MoonlightProject.cs: Set generator and content

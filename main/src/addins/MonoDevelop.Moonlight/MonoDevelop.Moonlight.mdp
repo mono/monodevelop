@@ -26,6 +26,9 @@
     <File name="Templates/Moonlight-UserControlXaml.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="Templates/Silverlight.js" subtype="Code" buildaction="Nothing" copyToOutputDirectory="PreserveNewest" />
     <File name="Templates/Moonlight-LibraryProject.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="MonoDevelop.Moonlight/MoonlightParser.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Moonlight/MoonlightEditorExtension.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Moonlight/XamlG.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
@@ -42,6 +45,7 @@
     <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.DesignerSupport" />
+    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.XmlEditor" />
   </References>
   <GtkDesignInfo />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../..">

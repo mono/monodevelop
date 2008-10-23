@@ -80,7 +80,7 @@ namespace ${Namespace}
 	<Grid x:Name="LayoutRoot" Background="Black">
 		<TextBlock FontSize="30" Foreground="White">Hello Moon!</TextBlock>
 	</Grid>
-</Canvas>
+</UserControl>
 ]]></File>
 		
 				<CodeTranslationFile name="Page.xaml.${LanguageExtension}" DependsOn="Page.xaml" >

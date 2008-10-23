@@ -27,7 +27,7 @@
 	<Grid x:Name="LayoutRoot" Background="White">
 		
 	</Grid>
-</Canvas>
+</UserControl>
 ]]></File>
 		
 		<CodeTranslationFile name="${Name}.xaml.${LanguageExtension}" DependsOn="${Name}.xaml" >

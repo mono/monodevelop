@@ -5,6 +5,7 @@ REFS =  \
 	$(GTK_SHARP_LIBS) \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.AspNet/MonoDevelop.AspNet.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
@@ -16,9 +17,12 @@ REFS =  \
 
 FILES =  \
 	gtk-gui/generated.cs \
+	MonoDevelop.Moonlight/MoonlightEditorExtension.cs \
+	MonoDevelop.Moonlight/MoonlightParser.cs \
 	MonoDevelop.Moonlight/MoonlightProject.cs \
 	MonoDevelop.Moonlight/MoonlightProjectBinding.cs \
-	MonoDevelop.Moonlight/MoonlightProjectConfiguration.cs
+	MonoDevelop.Moonlight/MoonlightProjectConfiguration.cs \
+	MonoDevelop.Moonlight/XamlG.cs
 
 RES =  \
 	gtk-gui/gui.stetic \

@@ -64,4 +64,12 @@
 			<File pattern="*.xaml" />
 		</MimeType>
 	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/DomParser">
+		<Class class = "MonoDevelop.Moonlight.MoonlightParser" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
+		<Class class = "MonoDevelop.Moonlight.MoonlightEditorExtension" />
+	</Extension>
 </Addin>
