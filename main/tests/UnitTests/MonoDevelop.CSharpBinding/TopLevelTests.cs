@@ -27,6 +27,8 @@
 //
 
 using System;
+using System.CodeDom;
+using System.Collections.Generic;
 using NUnit.Framework;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
@@ -199,6 +201,55 @@ using NUnit.Framework;").CompilationUnit;
 		{
 			DoTestNamespace (new NRefactoryParser ());
 //			DoTestNamespace (new DomParser ());
+		}
+		
+		void DoTestAttributes (IParser parser)
+		{
+			ICompilationUnit unit = parser.Parse ("a.cs", @"[Attr1][Attr2(1,true)][Attr3('c',a=1,b=""hi"")] public class TestClass { }").CompilationUnit;
+			Assert.AreEqual (1, unit.Types.Count);
+			IType type = unit.Types[0];
+			Assert.AreEqual (ClassType.Class, type.ClassType);
+			Assert.AreEqual ("TestClass", type.Name);
+			IEnumerator<IAttribute> e = type.Attributes.GetEnumerator ();
+			
+			Assert.IsTrue (e.MoveNext ());
+			IAttribute att = e.Current;
+			Assert.AreEqual ("Attr1", att.Name);
+			Assert.AreEqual (0, att.PositionalArguments.Count);
+			Assert.AreEqual (0, att.NamedArguments.Count);
+			
+			Assert.IsTrue (e.MoveNext ());
+			att = e.Current;
+			Assert.AreEqual ("Attr2", att.Name);
+			Assert.AreEqual (2, att.PositionalArguments.Count);
+			Assert.AreEqual (0, att.NamedArguments.Count);
+			Assert.IsTrue (att.PositionalArguments [0] is CodePrimitiveExpression);
+			CodePrimitiveExpression exp = (CodePrimitiveExpression) att.PositionalArguments [0];
+			Assert.AreEqual (1, exp.Value);
+			exp = (CodePrimitiveExpression) att.PositionalArguments [1];
+			Assert.AreEqual (true, exp.Value);
+			
+			Assert.IsTrue (e.MoveNext ());
+			att = e.Current;
+			Assert.AreEqual ("Attr3", att.Name);
+			Assert.AreEqual (1, att.PositionalArguments.Count);
+			Assert.AreEqual (2, att.NamedArguments.Count);
+			Assert.IsTrue (att.PositionalArguments [0] is CodePrimitiveExpression);
+			exp = (CodePrimitiveExpression) att.PositionalArguments [0];
+			Assert.AreEqual ('c', exp.Value);
+			exp = (CodePrimitiveExpression) att.NamedArguments ["a"];
+			Assert.AreEqual (1, exp.Value);
+			exp = (CodePrimitiveExpression) att.NamedArguments ["b"];
+			Assert.AreEqual ("hi", exp.Value);
+			
+			Assert.IsFalse (e.MoveNext ());
+		}
+		
+		[Test()]
+		public void TestAttributes ()
+		{
+			DoTestAttributes (new NRefactoryParser ());
+//			DoTestAttributes (new DomParser ());
 		}
 	}
 }

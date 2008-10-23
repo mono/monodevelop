@@ -30,6 +30,7 @@ using System.IO;
 using NUnit.Framework;
 using UnitTests;
 using MonoDevelop.Projects.Extensions;
+using CSharpBinding;
 
 namespace MonoDevelop.Projects
 {
@@ -125,6 +126,53 @@ namespace MonoDevelop.Projects
 		public void TestLoadSaveResources ()
 		{
 			TestProjectsChecks.TestLoadSaveResources ("MSBuild05");
+		}
+		
+		[Test]
+		public void TestConfigurationMerging ()
+		{
+			string solFile = Util.GetSampleProject ("test-configuration-merging", "TestConfigurationMerging.sln");
+			Solution sol = Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile) as Solution;
+			Assert.IsNotNull (sol);
+			Assert.AreEqual (1, sol.Items.Count);
+
+			DotNetProject p = sol.Items [0] as DotNetProject;
+			Assert.IsNotNull (p);
+
+			// Debug config
+			
+			DotNetProjectConfiguration conf = p.GetConfiguration ("Debug") as DotNetProjectConfiguration;
+			Assert.IsNotNull (conf);
+			Assert.AreEqual ("Debug", conf.Name);
+			Assert.AreEqual (string.Empty, conf.Platform);
+
+			CSharpCompilerParameters pars = conf.CompilationParameters as CSharpCompilerParameters;
+			Assert.IsNotNull (pars);
+			Assert.AreEqual (2, pars.WarningLevel);
+
+			pars.WarningLevel = 4;
+
+			// Release config
+			
+			conf = p.GetConfiguration ("Release") as DotNetProjectConfiguration;
+			Assert.IsNotNull (conf);
+			Assert.AreEqual ("Release", conf.Name);
+			Assert.AreEqual (string.Empty, conf.Platform);
+
+			pars = conf.CompilationParameters as CSharpCompilerParameters;
+			Assert.IsNotNull (pars);
+			Assert.AreEqual ("ReleaseMod", Path.GetFileName (conf.OutputDirectory));
+			Assert.AreEqual (3, pars.WarningLevel);
+			
+			pars.WarningLevel = 1;
+			Assert.AreEqual (1, pars.WarningLevel);
+			conf.DebugMode = true;
+
+			sol.Save (Util.GetMonitor ());
+			Assert.AreEqual (1, pars.WarningLevel);
+
+			string savedFile = Path.Combine (p.BaseDirectory, "TestConfigurationMergingSaved.csproj");
+			Assert.AreEqual (Util.GetXmlFileInfoset (savedFile), Util.GetXmlFileInfoset (p.FileName));
 		}
 	}
 }

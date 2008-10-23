@@ -1,5 +1,10 @@
 2008-10-23  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* test-configuration-merging/TestConfigurationMerging/TestConfigurationMerging.csproj:
+	Fixed invalid project file.
+
+2008-10-23  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* test-configuration-merging:
 	* test-configuration-merging/TestConfigurationMerging:
 	* test-configuration-merging/TestConfigurationMerging.sln:
