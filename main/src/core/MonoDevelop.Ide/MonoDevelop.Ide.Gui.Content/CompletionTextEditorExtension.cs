@@ -190,8 +190,10 @@ namespace MonoDevelop.Ide.Gui.Content
 			ICodeCompletionContext ctx = completionWidget.CreateCodeCompletionContext (cpos);
 			cp = ParameterCompletionCommand (ctx);
 
-			if (cp != null)
+			if (cp != null) {
 				ParameterInformationWindowManager.ShowWindow (ctx, cp);
+				ParameterInformationWindowManager.PostProcessKeyEvent (Gdk.Key.F, Gdk.ModifierType.None);
+			}
 		}
 		
 		public virtual bool CanRunCompletionCommand ()

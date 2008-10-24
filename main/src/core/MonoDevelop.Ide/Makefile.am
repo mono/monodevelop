@@ -103,6 +103,9 @@ FILES =  \
 	MonoDevelop.Ide.ExternalTools/ExternalTool.cs \
 	MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs \
 	MonoDevelop.Ide.ExternalTools/ExternalToolService.cs \
+	MonoDevelop.Ide.FindInFiles/SearchResult.cs \
+	MonoDevelop.Ide.FindInFiles/SearchResultPad.cs \
+	MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs \
 	MonoDevelop.Ide.Gui.BrowserDisplayBinding/BrowserDisplayBinding.cs \
 	MonoDevelop.Ide.Gui.BrowserDisplayBinding/HtmlViewPane.cs \
 	MonoDevelop.Ide.Gui.Components/DragOperation.cs \
