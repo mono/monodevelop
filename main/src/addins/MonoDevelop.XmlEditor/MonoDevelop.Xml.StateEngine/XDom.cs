@@ -272,18 +272,12 @@ namespace MonoDevelop.Xml.StateEngine
 		
 		public IEnumerable<XNode> AllDescendentNodes {
 			get {
-				XNode next = firstNode;
-				while (true) {
-					yield return next;
-					XContainer container = next as XContainer;
-					if (container != null && container.FirstChild != null)
-						next = ((XContainer)next).FirstChild;
-					else if (next.NextSibling != null)
-						next = next.NextSibling;
-					else if (next.Parent != this)
-						next = (XContainer) next.Parent;
-					else
-						break;
+				foreach (XNode n in Nodes) {
+					yield return n;
+					XContainer c = n as XContainer;
+					if (c != null)
+						foreach (XNode n2 in c.AllDescendentNodes)
+							yield return n2;
 				}
 			}
 		}
@@ -422,11 +416,10 @@ namespace MonoDevelop.Xml.StateEngine
 		
 		public IEnumerable<XElement> AllDescendentElements {
 			get {
-				XElement el;
-				foreach (XNode node in AllDescendentNodes) {
-					el = node as XElement;
-					if (el != null)
-						yield return el;
+				foreach (XElement el in Elements) {
+					yield return el;
+					foreach (XElement el2 in el.AllDescendentElements)
+						yield return el2;
 				}
 			}	
 		}
@@ -676,6 +669,7 @@ namespace MonoDevelop.Xml.StateEngine
 		{
 			if (RootElement == null && newChild is XElement)
 				RootElement = (XElement) newChild;
+			base.AddChildNode (newChild);
 		}
  
 	}

@@ -91,6 +91,8 @@ namespace MonoDevelop.Xml.StateEngine
 		#region IDocumentStateEngine
 		
 		public int Position { get { return position; } }
+		public int Line { get { return line; } }
+		public int Column { get { return col; } }
 		
 		public void Reset ()
 		{
@@ -229,6 +231,15 @@ namespace MonoDevelop.Xml.StateEngine
 				builder.Append (' ', 2);
 				builder.AppendLine ("Tree=");
 				rootOb.BuildTreeString (builder, 3);
+			}
+			
+			if (buildTree && errors.Count > 0) {
+				builder.Append (' ', 2);
+				builder.AppendLine ("Errors=");
+				foreach (Error err in errors) {
+					builder.Append (' ', 4);
+					builder.AppendFormat ("[{0}@{1}:{2}, {3}]\n", err.ErrorType, err.Line, err.Column, err.Message);
+				}
 			}
 			
 			builder.AppendLine ("]");

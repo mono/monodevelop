@@ -1,5 +1,13 @@
 2008-10-23  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Xml.StateEngine/XDom.cs: Fix recursive enumerables. Fix
+	bug that prevented tree being built.
+
+	* MonoDevelop.Xml.StateEngine/Parser.cs: Make line, col accessible.
+	Write out errors in debug string.
+
+2008-10-23  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Xml.StateEngine/XmlTagState.cs: Catch multiple root nodes.
 
 	* MonoDevelop.Xml.StateEngine/XDom.cs: Add field to XDocument for root
