@@ -1,5 +1,10 @@
 2008-10-24  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Moonlight/MoonlightEditorExtension.cs: Implement document
+	outline.
+
+2008-10-24  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Moonlight/MoonlightParsedDocument.cs: Enable folding.
 
 	* Makefile.am:

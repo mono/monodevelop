@@ -47,5 +47,68 @@ namespace MonoDevelop.Moonlight
 				yield return ".xaml";
 			}
 		}
+		
+		#region Document outline
+		
+		protected override void RefillOutlineStore (MonoDevelop.Projects.Dom.ParsedDocument doc, Gtk.TreeStore store)
+		{
+			XDocument xdoc = ((MoonlightParsedDocument)doc).XDocument;
+			if (xdoc == null)
+				return;
+//			Gtk.TreeIter iter = outlineTreeStore.AppendValues (System.IO.Path.GetFileName (CU.Document.FilePath), p);
+			BuildTreeChildren (store, Gtk.TreeIter.Zero, xdoc);
+		}
+		
+		protected override void InitializeOutlineColumns (Gtk.TreeView outlineTree)
+		{
+			Gtk.CellRendererText crt = new Gtk.CellRendererText ();
+			crt.Xpad = 0;
+			crt.Ypad = 0;
+			outlineTree.AppendColumn ("Node", crt, new Gtk.TreeCellDataFunc (outlineTreeDataFunc));
+		}
+		
+		protected override void OutlineSelectionChanged (object selection)
+		{
+			SelectNode ((XNode)selection);
+		}
+		
+		static void BuildTreeChildren (Gtk.TreeStore store, Gtk.TreeIter parent, XContainer p)
+		{
+			foreach (XNode n in p.Nodes) {
+				Gtk.TreeIter childIter;
+				if (!parent.Equals (Gtk.TreeIter.Zero))
+					childIter = store.AppendValues (parent, n);
+				else
+					childIter = store.AppendValues (n);
+				
+				XContainer c = n as XContainer;
+				if (c != null && c.FirstChild != null)
+					BuildTreeChildren (store, childIter, c);
+			}
+		}
+		
+		void outlineTreeDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		{
+			Gtk.CellRendererText txtRenderer = (Gtk.CellRendererText) cell;
+			XNode n = (XNode) model.GetValue (iter, 0);
+			txtRenderer.Text = n.FriendlyPathRepresentation;
+		}
+		
+		void SelectNode (XNode n)
+		{
+			MonoDevelop.Projects.Dom.DomRegion region = n.Region;
+			
+			XElement el = n as XElement;
+			if (el != null && el.IsClosed && el.ClosingTag.Region.End > region.End) {
+				region.End = el.ClosingTag.Region.End;
+			}
+			
+			int s = Editor.GetPositionFromLineColumn (region.Start.Line, region.Start.Column);
+			int e = Editor.GetPositionFromLineColumn (region.End.Line, region.End.Column);
+			if (e > s && s > -1)
+				Editor.Select (s, e);
+		}
+		
+		#endregion
 	}
 }
