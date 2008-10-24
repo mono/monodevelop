@@ -1,5 +1,18 @@
 2008-10-24  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* gtk-gui/generated.cs:
+	* MonoDevelop.Moonlight.mdp:
+	* MonoDevelop.Moonlight.Gui:
+	* MonoDevelop.Moonlight.addin.xml:
+	* MonoDevelop.Moonlight.Gui/MoonlightOptionsPanel.cs:
+	* MonoDevelop.Moonlight.Gui/MoonlightOptionsPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Moonlight.Gui.MoonlightOptionsPanelWidget.cs: Add
+	options panel for Moonlight settings.
+
+2008-10-24  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Moonlight/MoonlightEditorExtension.cs: Implement document
 	outline.
 

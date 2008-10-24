@@ -72,4 +72,12 @@
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
 		<Class class = "MonoDevelop.Moonlight.MoonlightEditorExtension" />
 	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Build">
+		<Condition id="ItemType" value="MonoDevelop.Moonlight.MoonlightProject">
+			<Section id = "MoonlightOptions"
+			         _label = "Moonlight"
+			         class = "MonoDevelop.Moonlight.Gui.MoonlightOptionsPanel"/>
+		</Condition>
+	</Extension>
 </Addin>
