@@ -134,6 +134,13 @@ namespace MonoDevelop.CSharpBinding.Gui
 			return true;
 		}
 		
+		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
+		{
+			if (keyChar == ',' && CanRunParameterCompletionCommand ()) 
+				base.RunParameterCompletionCommand ();
+			return base.KeyPress (key, keyChar, modifier);
+		}
+
 		public override ICompletionDataList HandleCodeCompletion (ICodeCompletionContext completionContext, char completionChar, ref int triggerWordLength)
 		{
 		try {
@@ -427,6 +434,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			ExpressionResult result = FindExpression (dom, completionContext.TriggerOffset, -1);
 			if (result == null)
 				return null;
+			
 			if (result.ExpressionContext is ExpressionContext.TypeExpressionContext)
 				result.ExpressionContext = new NewCSharpExpressionFinder (dom).FindExactContextForNewCompletion(Editor, Document.CompilationUnit, Document.FileName) ?? result.ExpressionContext;
 			
@@ -436,10 +444,6 @@ namespace MonoDevelop.CSharpBinding.Gui
 			                                                                                Editor,
 			                                                                                Document.FileName);
 			switch (completionChar) {
-			case ',':
-				if (CanRunParameterCompletionCommand ()) 
-					base.RunParameterCompletionCommand ();
-				break;
 			case '(':
 				ResolveResult resolveResult = resolver.Resolve (result, new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
 				if (result.ExpressionContext is ExpressionContext.TypeExpressionContext) {
