@@ -80,6 +80,7 @@ namespace Mono.TextEditor
 			LineSegment line = data.Document.GetLine (data.Caret.Line);
 			data.Document.Remove (line.Offset, line.Length);
 			data.Document.CommitLineToEndUpdate (data.Caret.Line);
+			data.Caret.CheckCaretPosition ();
 		}
 		
 		public static void CaretLineToEnd (TextEditorData data)

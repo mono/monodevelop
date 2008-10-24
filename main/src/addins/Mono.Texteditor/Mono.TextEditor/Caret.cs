@@ -148,6 +148,14 @@ namespace Mono.TextEditor
 			this.document = null;
 		}
 		
+		public void CheckCaretPosition ()
+		{
+			if (this.Line >= this.document.LineCount) 
+				this.Line = this.document.LineCount - 1;
+			LineSegment curLine = this.document.GetLine (this.Line);
+			this.Column = System.Math.Min (curLine.EditableLength, System.Math.Max (0, this.Column));
+		}
+		
 		void SetDesiredColumn ()
 		{
 			LineSegment curLine = this.document.GetLine (this.Line);

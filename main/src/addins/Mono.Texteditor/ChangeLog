@@ -1,5 +1,11 @@
 2008-10-24  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/Caret.cs:
+	* Mono.TextEditor/DeleteActions.cs: fixed 'Bug 438696 - Error in text
+	editor extension chain.'.
+
+2008-10-24  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextViewMargin.cs: Fixed caret drawing when scrolling
 	horizontally.
 
