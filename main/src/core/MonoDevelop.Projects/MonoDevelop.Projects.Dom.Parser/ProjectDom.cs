@@ -72,6 +72,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		public IEnumerable<IType> GetInheritanceTree (IType type)
 		{
+			Dictionary<string, bool> alreadyTaken = new Dictionary<string, bool> ();
 			Stack<IType> types = new Stack<IType> ();
 			types.Push (type);
 			while (types.Count > 0) {
@@ -79,12 +80,19 @@ namespace MonoDevelop.Projects.Dom.Parser
 				if (cur == null)
 					continue;
 				
+				string fullName = DomType.GetNetFullName (cur);
+				if (alreadyTaken.ContainsKey (fullName))
+					continue;
+				alreadyTaken[fullName] = true;
+				
 				yield return cur;
+				
 				foreach (IReturnType baseType in cur.BaseTypes) {
 					IType resolvedType = this.SearchType (new SearchTypeRequest (cur.CompilationUnit, baseType));
 					if (resolvedType != null)
 						types.Push (DomType.CreateInstantiatedGenericType (resolvedType, baseType.GenericArguments));
 				}
+				
 				if (cur.BaseType == null && cur.FullName != "System.Object") 
 					types.Push (this.GetType (DomReturnType.Object));
 			}

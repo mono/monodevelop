@@ -541,6 +541,12 @@ namespace MonoDevelop.Projects.Dom
 			return sb.ToString ();
 		}
 		
+		public static string GetNetFullName (IType type)
+		{
+			if (type.TypeParameters.Count == 0)
+				return type.FullName;
+			return type.FullName + "~" + type.TypeParameters.Count;
+		}
 		
 		public static IType CreateInstantiatedGenericType (IType type, IList<IReturnType> genericArguments)
 		{
