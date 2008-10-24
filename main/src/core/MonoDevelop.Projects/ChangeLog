@@ -1,5 +1,13 @@
 2008-10-24  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Dom/DomType.cs:
+	* MonoDevelop.Projects.Dom.Serialization/ClassEntry.cs:
+	* MonoDevelop.Projects.Dom.Serialization/DomTypeProxy.cs:
+	* MonoDevelop.Projects.Dom.Serialization/DomPersistence.cs: Fixed
+	possible endless loop.
+
+2008-10-24  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
 	fixed issue in generic type lookup.
 

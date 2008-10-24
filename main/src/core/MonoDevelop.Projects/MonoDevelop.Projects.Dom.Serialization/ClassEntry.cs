@@ -29,6 +29,7 @@
 
 using System;
 using System.Collections;
+using System.Linq;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.Projects.Dom.Serialization
@@ -108,9 +109,9 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			flags = (ContentFlags) 0;
 			if (this.typeParameterCount > 0)
 				flags |= ContentFlags.HasGenericParams;
-			if (DomPersistence.GetCount (cls.Attributes) > 0)
+			if (cls.Attributes.Count () > 0)
 				flags |= ContentFlags.HasAttributes;
-			if (DomPersistence.GetCount (cls.ImplementedInterfaces) > 0 || (cls.BaseType != null && !cls.BaseType.Equals (DomReturnType.Object)))
+			if ((cls.BaseType != null && !cls.BaseType.ToInvariantString ().Equals (DomReturnType.Object.ToInvariantString ())) || cls.ImplementedInterfaces.Count () > 0)
 				flags |= ContentFlags.HasBaseTypes;
 			if (cls.CompilationUnit != null)
 				flags |= ContentFlags.HasCompilationUnit;
@@ -203,14 +204,17 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		HasBaseTypes       = 0x0002,
 		HasInnerClasses    = 0x0004,
 		HasFields          = 0x0008,
+		
 		HasMethods         = 0x0010,
 		HasProperties      = 0x0020,
 		HasIndexers        = 0x0040,
 		HasEvents          = 0x0080,
+		
 		HasParts           = 0x0100,
 		HasRegion          = 0x0200,
 		HasBodyRegion      = 0x0400,
 		HasCompilationUnit = 0x0800,
+		
 		HasAttributes      = 0x1000,
 		HasDocumentation   = 0x2000,
 		HasConstructors    = 0x4000,

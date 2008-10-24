@@ -135,6 +135,15 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			}
 		}
 		
+		public override IEnumerable<IReturnType> BaseTypes {
+			get {
+				if (HasContent (ContentFlags.HasBaseTypes))
+					return WrappedType.BaseTypes;
+				return new ReadOnlyCollection<IReturnType> (new IReturnType[0]);
+			}
+		}
+		
+		
 		public override ReadOnlyCollection<TypeParameter> TypeParameters {
 			get {
 				if (HasContent (ContentFlags.HasGenericParams))

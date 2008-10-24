@@ -356,18 +356,28 @@ namespace MonoDevelop.Projects.Dom
 		{
 			if (type == null)
 				return false;
-			if (FullName == type.FullName)
-				return true;
-			foreach (IReturnType baseType in BaseTypes) {
-				if (baseType.FullName == type.FullName)
+			Stack<IReturnType> typeStack = new Stack<IReturnType> ();
+			Dictionary<string, bool> alreadyTaken = new Dictionary<string, bool> ();
+			typeStack.Push (new DomReturnType (this));
+			string typeFullName = type.FullName;
+			while (typeStack.Count > 0) {
+				IReturnType curType = typeStack.Pop ();
+				IType resolvedType = this.SourceProjectDom.GetType (curType);
+				if (resolvedType == null) {
+					continue;
+				}
+				
+				string fullName = resolvedType.FullName;
+				if (alreadyTaken.ContainsKey (fullName))
+					continue;
+				alreadyTaken[fullName] = true;
+				
+				if (fullName == typeFullName) {
 					return true;
-			}
-			SearchTypeRequest request = new SearchTypeRequest (this.CompilationUnit);
-			foreach (IReturnType baseType in BaseTypes) {
-				request.Name = baseType.FullName;
-				IType resolvedBaseType = this.SourceProjectDom.SearchType (request);
-				if (resolvedBaseType != null && resolvedBaseType.IsBaseType (type))
-					return true;
+				}
+				foreach (IReturnType baseType in resolvedType.BaseTypes) {
+					typeStack.Push (baseType);
+				}
 			}
 			return false;
 		}

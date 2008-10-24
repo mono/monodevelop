@@ -458,13 +458,13 @@ namespace MonoDevelop.Projects.Dom.Serialization
 
 			// Constraints
 			
-			writer.Write (GetCount (typeParameter.Constraints));
+			writer.Write (typeParameter.Constraints.Count ());
 			foreach (IReturnType rt in typeParameter.Constraints)
 				Write (writer, nameTable, rt);
 
 			// Attributes
 			
-			writer.Write (GetCount (typeParameter.Attributes));
+			writer.Write (typeParameter.Attributes.Count ());
 			foreach (IAttribute attr in typeParameter.Attributes)
 				Write (writer, nameTable, attr);
 		}
@@ -504,19 +504,6 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			SerializeObject (writer, nexps);
 		}
 		
-		public static uint GetCount<T> (IEnumerable<T> list)
-		{
-			if (list == null)
-				return 0;
-			uint result = 0;
-			IEnumerator<T> en = list.GetEnumerator ();
-			while (en.MoveNext ()) {
-				result++;
-			}
-			return result;
-		}
-		
-		
 #region Helper methods
 		static void WriteMemberInformation (BinaryWriter writer, INameEncoder nameTable, IMember member)
 		{
@@ -525,7 +512,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			writer.Write ((uint)member.Modifiers);
 			Write (writer, nameTable, member.Location);
 			
-			writer.Write (GetCount (member.Attributes));
+			writer.Write (member.Attributes.Count ());
 			foreach (IAttribute attr in member.Attributes)
 				Write (writer, nameTable, attr);
 		}
