@@ -43,8 +43,7 @@ namespace MonoDevelop.AspNet.StateEngine
 		public override State PushChar (char c, IParseContext context, ref string rollback)
 		{
 			if (context.CurrentStateLength == 1) {
-				int start = context.Position - (context.CurrentStateLength + "<%--".Length);
-				context.Nodes.Push (new AspNetServerComment (start));
+				context.Nodes.Push (new AspNetServerComment (context.LocationMinus (context.CurrentStateLength + "<%--".Length)));
 			}
 			
 			switch (context.StateTag) {
@@ -70,7 +69,7 @@ namespace MonoDevelop.AspNet.StateEngine
 			case PERCENT:
 				if (c == '>') {
 					AspNetServerComment comment = (AspNetServerComment) context.Nodes.Pop ();
-					comment.End (context.Position);
+					comment.End (context.Location);
 					if (context.BuildTree) {
 						XObject ob = context.Nodes.Peek ();
 						if (ob is XContainer) {

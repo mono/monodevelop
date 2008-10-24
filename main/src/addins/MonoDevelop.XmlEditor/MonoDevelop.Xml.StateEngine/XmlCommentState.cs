@@ -41,8 +41,7 @@ namespace MonoDevelop.Xml.StateEngine
 		public override State PushChar (char c, IParseContext context, ref string rollback)
 		{
 			if (context.CurrentStateLength == 1) {
-				int start = context.Position - "<!--".Length - 1;
-				context.Nodes.Push (new XComment (start));
+				context.Nodes.Push (new XComment (context.LocationMinus ("<!--".Length + 1)));
 			}
 			
 			if (c == '-') {
@@ -59,7 +58,7 @@ namespace MonoDevelop.Xml.StateEngine
 					XComment comment = (XComment) context.Nodes.Pop ();
 					
 					if (context.BuildTree) {
-						comment.End (context.Position);
+						comment.End (context.Location);
 						((XContainer) context.Nodes.Peek ()).AddChildNode (comment);
 					}
 					

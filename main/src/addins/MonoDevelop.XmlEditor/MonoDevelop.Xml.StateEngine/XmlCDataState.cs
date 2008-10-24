@@ -41,8 +41,7 @@ namespace MonoDevelop.Xml.StateEngine
 		public override State PushChar (char c, IParseContext context, ref string rollback)
 		{
 			if (context.CurrentStateLength == 1) {
-				int start = context.Position - "<![CDATA[".Length - 1;
-				context.Nodes.Push (new XCData (start));
+				context.Nodes.Push (new XCData (context.LocationMinus ("<![CDATA[".Length + 1)));
 			}
 			
 			if (c == ']') {
@@ -58,7 +57,7 @@ namespace MonoDevelop.Xml.StateEngine
 				XCData cdata = (XCData) context.Nodes.Pop ();
 				
 				if (context.BuildTree) {
-					cdata.End (context.Position);
+					cdata.End (context.Location);
 					((XContainer) context.Nodes.Peek ()).AddChildNode (cdata); 
 				}
 				return Parent;

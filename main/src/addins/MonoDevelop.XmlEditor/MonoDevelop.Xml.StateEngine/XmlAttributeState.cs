@@ -97,7 +97,7 @@ namespace MonoDevelop.Xml.StateEngine
 				else if (context.PreviousState is XmlAttributeValueState) {
 					//Got value, so end attribute
 					context.Nodes.Pop ();
-					att.End (context.Position - 1);
+					att.End (context.LocationMinus (1));
 					IAttributedXObject element = (IAttributedXObject) context.Nodes.Peek ();
 					element.Attributes.AddAttribute (att);
 					rollback = string.Empty;
@@ -107,7 +107,7 @@ namespace MonoDevelop.Xml.StateEngine
 					//starting a new attribute
 					Debug.Assert (att == null);
 					Debug.Assert (context.StateTag == NAMING);
-					att = new XAttribute (context.Position - 1);
+					att = new XAttribute (context.LocationMinus (1));
 					context.Nodes.Push (att);
 					rollback = string.Empty;
 					return XmlNameState;

@@ -51,22 +51,22 @@ namespace MonoDevelop.AspNet.StateEngine
 				
 				//DATABINDING EXPRESSION <%#
 				case '#':
-					context.Nodes.Push (new AspNetDataBindingExpression (context.Position - 3));
+					context.Nodes.Push (new AspNetDataBindingExpression (context.LocationMinus (3)));
 					break;
 					
 				//RESOURCE EXPRESSION <%$
 				case '$':
-					context.Nodes.Push (new AspNetResourceExpression (context.Position - 3));
+					context.Nodes.Push (new AspNetResourceExpression (context.LocationMinus (3)));
 					break;
 				
 				//RENDER EXPRESSION <%=
 				case '=':
-					context.Nodes.Push (new AspNetRenderExpression (context.Position - 3));
+					context.Nodes.Push (new AspNetRenderExpression (context.LocationMinus (3)));
 					break;
 				
 				// RENDER BLOCK
 				default:
-					context.Nodes.Push (new AspNetRenderBlock (context.Position - 2));
+					context.Nodes.Push (new AspNetRenderBlock (context.LocationMinus (2)));
 					break;
 				}
 				return null;
@@ -78,7 +78,7 @@ namespace MonoDevelop.AspNet.StateEngine
 			else if (c == '>') {
 				if (context.StateTag == PERCENT) {
 					XNode expr = (XNode) context.Nodes.Pop ();
-					expr.End (context.Position);
+					expr.End (context.Location);
 					if (context.BuildTree) {
 						XObject ob = context.Nodes.Peek ();
 						if (ob is XContainer) {

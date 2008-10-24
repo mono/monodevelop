@@ -77,7 +77,8 @@ namespace MonoDevelop.AspNet.Gui
 		{
 			//FIXME: lines in completionContext are zero-indexed, but ILocation and buffer are 1-indexed.
 			//This could easily cause bugs.
-			int line = completionContext.TriggerLine + 1, col = completionContext.TriggerLineOffset;
+			MonoDevelop.Projects.Dom.DomLocation location = new MonoDevelop.Projects.Dom.DomLocation
+				(completionContext.TriggerLine + 1, completionContext.TriggerLineOffset);
 			
 			ITextBuffer buf = this.Buffer;
 			
@@ -89,13 +90,15 @@ namespace MonoDevelop.AspNet.Gui
 			//directive names
 			if (Tracker.Engine.CurrentState is AspNetDirectiveState) {
 				AspNetDirective directive = Tracker.Engine.Nodes.Peek () as AspNetDirective;
-				if (directive != null && currentChar == ' ' && directive.Position.Start + 4 == buf.CursorPosition) {
+				if (directive != null && currentChar == ' ' && directive.Region.Start == location) {
 					return DirectiveCompletion.GetDirectives (AspCU.Type);
 				}
 				return null;
 			} else if (Tracker.Engine.CurrentState is S.XmlNameState && Tracker.Engine.CurrentState.Parent is AspNetDirectiveState) {
 				AspNetDirective directive = Tracker.Engine.Nodes.Peek () as AspNetDirective;
-				if (directive != null && directive.Position.Start + 5 == buf.CursorPosition && char.IsLetter (currentChar)) {
+				if (directive != null && directive.Region.Start.Line == location.Line &&
+				    directive.Region.Start.Column + 5 == location.Column && char.IsLetter (currentChar))
+				{
 					triggerWordLength = 1;
 					return DirectiveCompletion.GetDirectives (AspCU.Type);
 				}

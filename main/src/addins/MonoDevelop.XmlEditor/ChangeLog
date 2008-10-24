@@ -1,3 +1,17 @@
+2008-10-24  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Xml.StateEngine/XDom.cs:
+	* MonoDevelop.Xml.StateEngine/Parser.cs:
+	* MonoDevelop.Xml.StateEngine/XmlTagState.cs:
+	* MonoDevelop.Xml.StateEngine/XmlCDataState.cs:
+	* MonoDevelop.Xml.StateEngine/XmlDocTypeState.cs:
+	* MonoDevelop.Xml.StateEngine/XmlCommentState.cs:
+	* MonoDevelop.Xml.StateEngine/XmlAttributeState.cs:
+	* MonoDevelop.Xml.StateEngine/XmlClosingTagState.cs:
+	* MonoDevelop.XmlEditor.Gui/BaseXmlEditorExtension.cs:
+	* MonoDevelop.Xml.StateEngine/XmlProcessingInstructionState.cs: Changed
+	Xml StateEngine from offset-based positions to line/column positions.
+
 2008-10-23  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Xml.StateEngine/XDom.cs: Fix recursive enumerables. Fix

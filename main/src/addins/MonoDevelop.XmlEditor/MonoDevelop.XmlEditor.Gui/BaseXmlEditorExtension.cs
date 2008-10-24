@@ -168,6 +168,8 @@ namespace MonoDevelop.XmlEditor.Gui
 
 			// completionChar may be a space even if the current char isn't, when ctrl-space is fired t
 			int currentPosition = buf.CursorPosition - 1;
+			DomLocation currentLocation = new DomLocation (line, col);
+			
 			char currentChar = currentPosition < 0? ' ' : buf.GetCharAt (currentPosition);
 			char previousChar = currentPosition < 1? ' ' : buf.GetCharAt (currentPosition - 1);
 
@@ -179,7 +181,7 @@ namespace MonoDevelop.XmlEditor.Gui
 			if (tracker.Engine.CurrentState is XmlFreeState && currentPosition - 1 > 0 && currentChar == '>') {
 				//get name of current node in document that's being ended
 				XElement el = tracker.Engine.Nodes.Peek () as XElement;
-				if (el != null && el.Position.End >= currentPosition && !el.IsClosed && el.IsNamed) {
+				if (el != null && el.Region.End >= currentLocation && !el.IsClosed && el.IsNamed) {
 					CompletionDataList cp = new CompletionDataList ();
 					cp.Add (new MonoDevelop.XmlEditor.Completion.XmlTagCompletionData (
 					        String.Concat ("</", el.Name.FullName, ">"), 0, true));
@@ -404,7 +406,7 @@ namespace MonoDevelop.XmlEditor.Gui
 						break;
 				}
 			} else {
-				while (ob.Position.End < ob.Position.Start &&
+				while (ob.Region.End < ob.Region.Start &&
 			       		treeParser.Position < textLen && treeParser.Nodes.Peek () != ob.Parent)
 				{
 					char c = Editor.GetCharAt (treeParser.Position);
@@ -413,28 +415,31 @@ namespace MonoDevelop.XmlEditor.Gui
 			}
 			
 			if (el == null) {
-				MonoDevelop.Core.LoggingService.LogDebug ("Selecting {0}", ob.Position);
-				int s = ob.Position.Start;
-				int e = ob.Position.End;
-				if (s > -1 && e > s)
-					Editor.Select (s, e);
+				MonoDevelop.Core.LoggingService.LogDebug ("Selecting {0}", ob.Region);
+				EditorSelect (ob.Region.Start, ob.Region.End);
 			}
 			else if (el.IsClosed) {
 				MonoDevelop.Core.LoggingService.LogDebug ("Selecting {0}-{1}",
-				    el.Position, el.ClosingTag.Position);
+				    el.Region.Start, el.ClosingTag.Region.End);
 				
 				if (el.IsSelfClosing)
 					contents = false;
 				
 				//pick out the locations, with some offsets to account for the parsing model
-				int s = contents? el.Position.End : el.Position.Start;
-				int e = contents? el.ClosingTag.Position.Start : el.ClosingTag.Position.End;
-				
-				if (s > -1 && e > s)
-					Editor.Select (s, e);
+				DomLocation s = contents? el.Region.End : el.Region.Start;
+				DomLocation e = contents? el.ClosingTag.Region.Start : el.ClosingTag.Region.End;
+				EditorSelect (s, e);
 			} else {
 				MonoDevelop.Core.LoggingService.LogDebug ("No end tag found for selection");
 			}
+		}
+		
+		void EditorSelect (DomLocation start, DomLocation end)
+		{
+			int s = Editor.GetPositionFromLineColumn (start.Line, start.Column);
+			int e = Editor.GetPositionFromLineColumn (end.Line, end.Column);
+			if (s > -1 && e > s)
+				Editor.Select (s, e);
 		}
 		
 		public event EventHandler<DocumentPathChangedEventArgs> PathChanged;

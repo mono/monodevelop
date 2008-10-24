@@ -1,3 +1,12 @@
+2008-10-24  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AspNet.StateEngine/AspNetDom.cs:
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:
+	* MonoDevelop.AspNet.StateEngine/AspNetDirectiveState.cs:
+	* MonoDevelop.AspNet.StateEngine/AspNetExpressionState.cs:
+	* MonoDevelop.AspNet.StateEngine/AspNetServerCommentState.cs: Changed
+	Xml StateEngine from offset-based positions to line/column positions.
+
 2008-10-22  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.AspNet/AspNetAppProject.cs: Better default build action

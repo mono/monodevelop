@@ -31,31 +31,33 @@ using System.Diagnostics;
 using System.Collections.Generic;
 using System.Text;
 
+using MonoDevelop.Projects.Dom;
+
 namespace MonoDevelop.Xml.StateEngine
 {
 	public abstract class XObject
 	{
-		XPosition position;
+		DomRegion region;
 		XObject parent;
 		
-		public XObject (int start)
+		public XObject (DomLocation start)
 		{
-			position = new XPosition (start, -1);
+			region = new DomRegion (start, DomLocation.Empty);
 		}
 		
-		protected XObject (int start, int end)
+		protected XObject (DomRegion region)
 		{
-			Debug.Assert (start < end, "End must be greater than start.");
-			position = new XPosition (start, end);
+			Debug.Assert (region.Start < region.End, "End must be greater than start.");
+			this.region = region;
 		}
 		
 		public XObject Parent {
 			get { return parent; }
 			internal protected set {
 				parent = value;
-				Debug.Assert (parent != null || position.Start >= 0, "When parent is null, start must not be negative.");
+				Debug.Assert (parent != null || !region.Start.IsEmpty, "When parent is null, start must not be negative.");
 				Debug.Assert (parent.IsComplete, "Parent must be complete.");
-				Debug.Assert (position.Start > parent.Position.End, "Start must greater than parent's end.");
+				Debug.Assert (region.Start > parent.Region.End, "Start must greater than parent's end.");
 			}
 		}
 		
@@ -69,19 +71,23 @@ namespace MonoDevelop.Xml.StateEngine
 			}
 		}
 		
-		public XPosition Position {
-			get { return position; }	
+		public DomRegion Region {
+			get { return region; }	
 		}
 		
-		public void End (int endPosition)
+		public void End (DomLocation endLocation)
 		{
-			Debug.Assert (position.Start < endPosition, "End must be greater than start.");
-			Debug.Assert (position.End < 0, "XObject cannot be ended multiple times.");
-			position = new XPosition (position.Start, endPosition);
+			Debug.Assert (region.Start < endLocation, "End must be greater than start.");
+			Debug.Assert (region.Start < region.End, "XObject cannot be ended multiple times.");
+			region.End = endLocation;
+		}
+		
+		public bool IsEnded {
+			get { return region.End > region.Start; }
 		}
 		
 		public virtual bool IsComplete {
-			get { return position.End > position.Start; }
+			get { return region.End > region.Start; }
 		}
 		
 		public virtual void BuildTreeString (System.Text.StringBuilder builder, int indentLevel)
@@ -93,7 +99,7 @@ namespace MonoDevelop.Xml.StateEngine
 		
 		public override string ToString ()
 		{
-			return string.Format ("[{0} Location='{1}']", GetType (), Position);
+			return string.Format ("[{0} Location='{1}']", GetType (), Region);
 		}
 		
 		//creates a parallel tree -- should NOT retain references into old tree
@@ -102,7 +108,7 @@ namespace MonoDevelop.Xml.StateEngine
 			XObject copy = NewInstance ();
 			Debug.Assert (copy.GetType () == this.GetType ());
 			copy.ShallowCopyFrom (this);
-			Debug.Assert (copy.position == this.position);
+			Debug.Assert (copy.region == this.region);
 			return copy;
 		}
 		
@@ -110,7 +116,7 @@ namespace MonoDevelop.Xml.StateEngine
 		
 		protected virtual void ShallowCopyFrom (XObject copyFrom)
 		{
-			this.position = copyFrom.position; //immutable value type
+			this.region = copyFrom.region; //immutable value type
 		}
 		
 		protected XObject () {}
@@ -122,8 +128,8 @@ namespace MonoDevelop.Xml.StateEngine
 	
 	public abstract class XNode : XObject
 	{
-		public XNode (int start) : base (start) {}
-		protected XNode (int start, int end) : base (start, end) {}
+		public XNode (DomLocation start) : base (start) {}
+		protected XNode (DomRegion region) : base (region) {}
 		
 		XNode nextSibling;
 		
@@ -131,63 +137,12 @@ namespace MonoDevelop.Xml.StateEngine
 			get { return nextSibling; }
 			internal protected set {
 				Debug.Assert (nextSibling == null, "The NextSibling cannot be changed after it is set.");
-				Debug.Assert (value.Position.Start > Position.Start, "Start must greater than parent's end.");
+				Debug.Assert (value.Region.Start > Region.Start, "Start must greater than parent's end.");
 				nextSibling = value;
 			}
 		}
 		
 		protected XNode () {}
-	}
-	
-	public struct XPosition : IEquatable<XPosition>
-	{
-		int start, end;
-		
-		public XPosition (int start, int end)
-		{
-			this.start = start;
-			this.end = end;
-		}
-		
-		public int Start { get { return start; } }
-		public int End { get { return end; } }
-		
-		#region Equality
-		
-		public static bool operator == (XPosition x, XPosition y)
-		{
-			return x.Equals (y);
-		}
-		
-		public static bool operator != (XPosition x, XPosition y)
-		{
-			return !x.Equals (y);
-		}
-		
-		public bool Equals (XPosition other)
-		{
-			return start == other.start && end == other.end;
-		}
-		
-		public override bool Equals (object o)
-		{
-			if (!(o is XPosition))
-				return false;
-			return Equals ((XPosition) o); 
-		}
-		
-		public override int GetHashCode ()
-		{
-			return start ^ end;
-		}
-		
-		#endregion
-		
-		public override string ToString ()
-		{
-			return string.Format ("[{0}:{1}]", start, end);
-		}
-
 	}
 	
 	public struct XName : IEquatable<XName>
@@ -253,7 +208,7 @@ namespace MonoDevelop.Xml.StateEngine
 	
 	public abstract class XContainer : XNode
 	{
-		public XContainer (int start) : base (start) {	}
+		public XContainer (DomLocation start) : base (start) {	}
 		
 		XNode firstNode;
 		XNode lastChild;
@@ -308,12 +263,12 @@ namespace MonoDevelop.Xml.StateEngine
 		XName name;
 		XAttributeCollection attributes;
 		
-		public XElement (int start) : base (start)
+		public XElement (DomLocation start) : base (start)
 		{
 			attributes = new XAttributeCollection (this);
 		}
 		
-		public XElement (int start, XName name) : this (start)
+		public XElement (DomLocation start, XName name) : this (start)
 		{
 			this.name = name;
 		}
@@ -368,13 +323,13 @@ namespace MonoDevelop.Xml.StateEngine
 		
 		public override string ToString ()
 		{
-			return string.Format ("[XElement Name='{0}' Location='{1}'",  name.FullName, this.Position);
+			return string.Format ("[XElement Name='{0}' Location='{1}'",  name.FullName, this.Region);
 		}
 		
 		public override void BuildTreeString (StringBuilder builder, int indentLevel)
 		{
 			builder.Append (' ', indentLevel * 2);
-			builder.AppendFormat ("[XElement Name='{0}' Location='{1}' Children=", name.FullName, this.Position);
+			builder.AppendFormat ("[XElement Name='{0}' Location='{1}' Children=", name.FullName, this.Region);
 			builder.AppendLine ();
 			
 			foreach (XNode child in Nodes)
@@ -431,13 +386,13 @@ namespace MonoDevelop.Xml.StateEngine
 		XName name;
 		string valu;
 		
-		public XAttribute (int start, XName name, string valu) : base (start)
+		public XAttribute (DomLocation start, XName name, string valu) : base (start)
 		{
 			this.name = name;
 			this.valu = valu;
 		}
 		
-		public XAttribute (int start) : base (start)
+		public XAttribute (DomLocation start) : base (start)
 		{
 		}
 		
@@ -466,7 +421,7 @@ namespace MonoDevelop.Xml.StateEngine
 			get { return nextSibling; }
 			internal protected set {
 				Debug.Assert (nextSibling == null, "The NextSibling cannot be changed after it is set.");
-				Debug.Assert (value.Position.Start > Position.Start, "Start must greater than parent's end.");
+				Debug.Assert (value.Region.Start > Region.Start, "Start must greater than parent's end.");
 				nextSibling = value;
 			}
 		}
@@ -486,7 +441,7 @@ namespace MonoDevelop.Xml.StateEngine
 		public override string ToString ()
 		{
 			return string.Format (
-				"[XAttribute Name='{0}' Location='{1}' Value='{2}']", name.FullName, this.Position, this.valu);
+				"[XAttribute Name='{0}' Location='{1}' Value='{2}']", name.FullName, this.Region, this.valu);
 		}
 		
 		public override string FriendlyPathRepresentation {
@@ -561,8 +516,8 @@ namespace MonoDevelop.Xml.StateEngine
 	
 	public class XCData : XNode
 	{
-		public XCData (int start) : base (start) {}
-		public XCData (int start, int end) : base (start, end) {}
+		public XCData (DomLocation start) : base (start) {}
+		public XCData (DomRegion region) : base (region) {}
 		
 		protected XCData () {}
 		protected override XObject NewInstance () { return new XCData (); }
@@ -575,8 +530,8 @@ namespace MonoDevelop.Xml.StateEngine
 	
 	public class XComment : XNode
 	{
-		public XComment (int start) : base (start) {}
-		public XComment (int start, int end) : base (start, end) {}
+		public XComment (DomLocation start) : base (start) {}
+		public XComment (DomRegion region) : base (region) {}
 		
 		protected XComment () {}
 		protected override XObject NewInstance () { return new XComment (); }
@@ -588,8 +543,8 @@ namespace MonoDevelop.Xml.StateEngine
 	
 	public class XProcessingInstruction : XNode
 	{
-		public XProcessingInstruction (int start) : base (start) {}
-		public XProcessingInstruction (int start, int end) : base (start, end) {}
+		public XProcessingInstruction (DomLocation start) : base (start) {}
+		public XProcessingInstruction (DomRegion region) : base (region) {}
 		
 		protected XProcessingInstruction () {}
 		protected override XObject NewInstance () { return new XProcessingInstruction (); }
@@ -601,8 +556,8 @@ namespace MonoDevelop.Xml.StateEngine
 	
 	public class XDocType : XNode 
 	{
-		public XDocType (int start) : base (start) {}
-		public XDocType (int start, int end) : base (start, end) {}
+		public XDocType (DomLocation start) : base (start) {}
+		public XDocType (DomRegion region) : base (region) {}
 		
 		protected XDocType () {}
 		protected override XObject NewInstance () { return new XDocType (); }
@@ -616,9 +571,9 @@ namespace MonoDevelop.Xml.StateEngine
 	{
 		XName name;
 		
-		public XClosingTag (int start) : base (start) {}
+		public XClosingTag (DomLocation start) : base (start) {}
 		
-		public XClosingTag (XName name, int start) : base (start)
+		public XClosingTag (XName name, DomLocation start) : base (start)
 		{
 			this.name = name;
 		}
@@ -658,7 +613,7 @@ namespace MonoDevelop.Xml.StateEngine
 	{
 		public XElement RootElement { get; private set; }
 		
-		public XDocument () : base (0) {}
+		public XDocument () : base (new DomLocation (1, 1)) {}
 		protected override XObject NewInstance () { return new XDocument (); }
 		
 		public override string FriendlyPathRepresentation {

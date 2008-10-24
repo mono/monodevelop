@@ -37,8 +37,7 @@ namespace MonoDevelop.Xml.StateEngine
 		public override State PushChar (char c, IParseContext context, ref string rollback)
 		{
 			if (context.CurrentStateLength == 1) {
-				int start = context.Position - "<!DOCTYPE".Length - 1;
-				context.Nodes.Push (new XDocType (start));
+				context.Nodes.Push (new XDocType (context.LocationMinus ("<!DOCTYPE".Length + 1)));
 			}
 			
 			if (c == '>' || c == '<') {
@@ -50,7 +49,7 @@ namespace MonoDevelop.Xml.StateEngine
 				}
 				
 				if (context.BuildTree) {
-					doc.End (context.Position);
+					doc.End (context.Location);
 					((XContainer) context.Nodes.Peek ()).AddChildNode (doc); 
 				}
 				return Parent;

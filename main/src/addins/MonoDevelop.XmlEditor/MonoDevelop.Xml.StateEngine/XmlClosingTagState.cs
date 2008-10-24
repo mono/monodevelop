@@ -62,7 +62,7 @@ namespace MonoDevelop.Xml.StateEngine
 					"IncompleteNode must not be an XClosingTag when CurrentStateLength is 1");
 				Debug.Assert (context.Nodes.Peek () is XElement);
 				
-				ct = new XClosingTag (context.Position - 3); //3 = </ and the current char
+				ct = new XClosingTag (context.LocationMinus (3)); //3 = </ and the current char
 				context.Nodes.Push (ct);
 			}
 			
@@ -71,7 +71,7 @@ namespace MonoDevelop.Xml.StateEngine
 				context.Nodes.Pop ();
 				
 				if (ct.IsNamed) {
-					ct.End (context.Position);
+					ct.End (context.Location);
 					
 					// walk up tree of parents looking for matching tag
 					int popCount = 0;
@@ -92,7 +92,7 @@ namespace MonoDevelop.Xml.StateEngine
 						XElement el = context.Nodes.Pop () as XElement;
 						if (el != null)
 							context.LogError (string.Format (
-								"Unclosed tag '{0}' at '{1}'.", el.Name.FullName, el.Position));
+								"Unclosed tag '{0}' at '{1}'.", el.Name.FullName, el.Region.Start));
 						popCount--;
 					}
 					

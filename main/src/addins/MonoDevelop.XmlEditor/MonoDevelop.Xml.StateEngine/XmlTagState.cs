@@ -66,7 +66,7 @@ namespace MonoDevelop.Xml.StateEngine
 			XElement element = context.Nodes.Peek () as XElement;
 			
 			if (element == null || element.IsComplete) {
-				element = new XElement (context.Position - 2); // 2 == < + current char
+				element = new XElement (context.LocationMinus (2)); // 2 == < + current char
 				context.Nodes.Push (element);
 			}
 			
@@ -99,7 +99,7 @@ namespace MonoDevelop.Xml.StateEngine
 				if (!element.IsNamed) {
 					context.LogError ("Tag closed prematurely.");
 				} else {
-					element.End (context.Position);
+					element.End (context.Location);
 					if (context.BuildTree) {
 						XContainer container = element.IsClosed? 
 							  (XContainer) context.Nodes.Peek ()

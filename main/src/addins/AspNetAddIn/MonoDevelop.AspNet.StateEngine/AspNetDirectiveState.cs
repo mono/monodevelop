@@ -68,7 +68,7 @@ namespace MonoDevelop.AspNet.StateEngine
 			AspNetDirective directive = context.Nodes.Peek () as AspNetDirective;
 			
 			if (directive == null || directive.IsComplete) {
-				directive = new AspNetDirective (context.Position - 4); // 4 == <%@ + current char
+				directive = new AspNetDirective (context.LocationMinus (4)); // 4 == <%@ + current char
 				context.Nodes.Push (directive);
 			}
 			
@@ -94,7 +94,7 @@ namespace MonoDevelop.AspNet.StateEngine
 					if (!directive.IsNamed) {
 						context.LogError ("Directive closed prematurely.");
 					} else {
-						directive.End (context.Position);
+						directive.End (context.Location);
 						if (context.BuildTree) {
 							XContainer container = (XContainer) context.Nodes.Peek ();
 							container.AddChildNode (directive);

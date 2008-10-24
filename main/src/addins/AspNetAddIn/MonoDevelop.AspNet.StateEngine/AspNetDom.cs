@@ -31,6 +31,7 @@ using System.Text;
 using System.Diagnostics;
 using System.Collections.Generic;
 
+using MonoDevelop.Projects.Dom;
 using MonoDevelop.Xml.StateEngine;
 
 namespace MonoDevelop.AspNet.StateEngine
@@ -41,12 +42,12 @@ namespace MonoDevelop.AspNet.StateEngine
 		XName name;
 		XAttributeCollection attributes;
 		
-		public AspNetDirective (int start) : base (start)
+		public AspNetDirective (DomLocation start) : base (start)
 		{
 			attributes = new XAttributeCollection (this);
 		}
 		
-		public AspNetDirective (int start, XName name) : this (start)
+		public AspNetDirective (DomLocation start, XName name) : this (start)
 		{
 			this.name = name;
 		}
@@ -85,13 +86,13 @@ namespace MonoDevelop.AspNet.StateEngine
 		
 		public override string ToString ()
 		{
-			return string.Format ("[AspNetDirective Name='{0}' Location='{1}'",  name.FullName, this.Position);
+			return string.Format ("[AspNetDirective Name='{0}' Location='{1}'",  name.FullName, this.Region);
 		}
 		
 		public override void BuildTreeString (StringBuilder builder, int indentLevel)
 		{
 			builder.Append (' ', indentLevel * 2);
-			builder.AppendFormat ("[AspNetDirective Name='{0}' Location='{1}' Children=", name.FullName, this.Position);
+			builder.AppendFormat ("[AspNetDirective Name='{0}' Location='{1}' Children=", name.FullName, this.Region);
 			builder.AppendLine ();
 			
 			builder.Append (' ', indentLevel * 2);
@@ -113,23 +114,23 @@ namespace MonoDevelop.AspNet.StateEngine
 	
 	public abstract class AspNetExpression : XNode
 	{
-		public AspNetExpression (int start, int end) : base (start, end) {}
-		public AspNetExpression (int start) : base (start) {}
+		public AspNetExpression (DomRegion region) : base (region) {}
+		public AspNetExpression (DomLocation start) : base (start) {}
 		protected AspNetExpression () {}
 	}
 	
 	
 	public class AspNetRenderExpression : AspNetExpression
 	{
-		public AspNetRenderExpression (int start, int end) : base (start, end) {}
-		public AspNetRenderExpression (int start) : base (start) {}
+		public AspNetRenderExpression (DomRegion region) : base (region) {}
+		public AspNetRenderExpression (DomLocation start) : base (start) {}
 		protected AspNetRenderExpression () {}
 		
 		protected override XObject NewInstance () { return new AspNetRenderExpression (); }
 		
 		public override string ToString ()
 		{
-			return string.Format ("[AspNetRenderExpression Location='{0}'", this.Position);
+			return string.Format ("[AspNetRenderExpression Location='{0}'", this.Region);
 		}
 		
 		public override string FriendlyPathRepresentation {
@@ -139,15 +140,15 @@ namespace MonoDevelop.AspNet.StateEngine
 	
 	public class AspNetDataBindingExpression : AspNetExpression
 	{
-		public AspNetDataBindingExpression (int start, int end) : base (start, end) {}
-		public AspNetDataBindingExpression (int start) : base (start) {}
+		public AspNetDataBindingExpression (DomRegion region) : base (region) {}
+		public AspNetDataBindingExpression (DomLocation start) : base (start) {}
 		protected AspNetDataBindingExpression () {}
 		
 		protected override XObject NewInstance () { return new AspNetDataBindingExpression (); }
 		
 		public override string ToString ()
 		{
-			return string.Format ("[AspNetDataBindingExpression Location='{0}'", this.Position);
+			return string.Format ("[AspNetDataBindingExpression Location='{0}'", this.Region);
 		}
 		
 		public override string FriendlyPathRepresentation {
@@ -157,15 +158,15 @@ namespace MonoDevelop.AspNet.StateEngine
 	
 	public class AspNetResourceExpression : AspNetExpression
 	{
-		public AspNetResourceExpression (int start, int end) : base (start, end) {}
-		public AspNetResourceExpression (int start) : base (start) {}
+		public AspNetResourceExpression (DomRegion region) : base (region) {}
+		public AspNetResourceExpression (DomLocation start) : base (start) {}
 		protected AspNetResourceExpression () {}
 		
 		protected override XObject NewInstance () { return new AspNetResourceExpression (); }
 		
 		public override string ToString ()
 		{
-			return string.Format ("[AspNetResourceExpression Location='{0}'", this.Position);
+			return string.Format ("[AspNetResourceExpression Location='{0}'", this.Region);
 		}
 		
 		public override string FriendlyPathRepresentation {
@@ -175,15 +176,15 @@ namespace MonoDevelop.AspNet.StateEngine
 	
 	public class AspNetServerComment : XNode
 	{
-		public AspNetServerComment (int start, int end) : base (start, end) {}
-		public AspNetServerComment (int start) : base (start) {}
+		public AspNetServerComment (DomRegion region) : base (region) {}
+		public AspNetServerComment (DomLocation start) : base (start) {}
 		protected AspNetServerComment () {}
 		
 		protected override XObject NewInstance () { return new AspNetServerComment (); }
 		
 		public override string ToString ()
 		{
-			return string.Format ("[AspNetServerComment Location='{0}'", this.Position);
+			return string.Format ("[AspNetServerComment Location='{0}'", this.Region);
 		}
 		
 		public override string FriendlyPathRepresentation {
@@ -193,15 +194,15 @@ namespace MonoDevelop.AspNet.StateEngine
 	
 	public class AspNetRenderBlock : XNode
 	{
-		public AspNetRenderBlock (int start, int end) : base (start, end) {}
-		public AspNetRenderBlock (int start) : base (start) {}
+		public AspNetRenderBlock (DomRegion region) : base (region) {}
+		public AspNetRenderBlock (DomLocation start) : base (start) {}
 		protected AspNetRenderBlock () {}
 		
 		protected override XObject NewInstance () { return new AspNetRenderBlock (); }
 		
 		public override string ToString ()
 		{
-			return string.Format ("[AspNetRenderBlock Location='{0}'", this.Position);
+			return string.Format ("[AspNetRenderBlock Location='{0}'", this.Region);
 		}
 		
 		

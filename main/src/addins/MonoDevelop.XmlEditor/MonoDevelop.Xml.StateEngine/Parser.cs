@@ -43,7 +43,7 @@ namespace MonoDevelop.Xml.StateEngine
 		bool buildTree;
 		
 		int position;
-		int line, col;
+		DomLocation location;
 		int stateTag;
 		StringBuilder keywordBuilder;
 		int currentStateLength;
@@ -68,8 +68,7 @@ namespace MonoDevelop.Xml.StateEngine
 			previousState = copyFrom.previousState;
 			
 			position = copyFrom.position;
-			line = copyFrom.line;
-			col = copyFrom.col;
+			location = copyFrom.location;
 			stateTag = copyFrom.stateTag;
 			keywordBuilder = new StringBuilder (copyFrom.keywordBuilder.ToString ());
 			currentStateLength = copyFrom.currentStateLength;
@@ -91,8 +90,7 @@ namespace MonoDevelop.Xml.StateEngine
 		#region IDocumentStateEngine
 		
 		public int Position { get { return position; } }
-		public int Line { get { return line; } }
-		public int Column { get { return col; } }
+		public DomLocation Location { get { return location; } }
 		
 		public void Reset ()
 		{
@@ -100,8 +98,8 @@ namespace MonoDevelop.Xml.StateEngine
 			previousState = rootState;
 			position = 0;
 			stateTag = 0;
-			line = 1;
-			col = 0;
+			location.Line = 1;
+			location.Column = 1;
 			keywordBuilder = new StringBuilder ();
 			currentStateLength = 0;
 			nodes = new NodeStack ();
@@ -128,10 +126,10 @@ namespace MonoDevelop.Xml.StateEngine
 			try {
 				//track line, column
 				if (c == '\n') {
-					line++;
-					col = 0;
+					location.Line++;
+					location.Column = 1;
 				} else {
-					col++;
+					location.Column++;
 				}
 				
 				position++;
@@ -253,6 +251,13 @@ namespace MonoDevelop.Xml.StateEngine
 			set { stateTag = value; }
 		}
 		
+		DomLocation IParseContext.LocationMinus (int colOffset)
+		{
+			int col = Location.Column - colOffset;
+			System.Diagnostics.Debug.Assert (col > 0);
+			return new DomLocation (Location.Line, col);
+		}
+		
 		StringBuilder IParseContext.KeywordBuilder {
 			get { return keywordBuilder; }
 		}
@@ -280,7 +285,7 @@ namespace MonoDevelop.Xml.StateEngine
 		{
 			if (ErrorLogged == null && errors == null)
 				return;
-			Error err = new Error (type, line, col, message);
+			Error err = new Error (type, Location.Line, Location.Column, message);
 			if (errors != null)
 				errors.Add (err);
 			if (ErrorLogged != null)
@@ -304,8 +309,8 @@ namespace MonoDevelop.Xml.StateEngine
 		{
 			int popCount = 0;
 			foreach (XObject ob in Nodes) {
-				if (ob.Position.End < 0 && !(ob is XDocument)) {
-					ob.End (this.Position);
+				if (!ob.IsEnded && !(ob is XDocument)) {
+					ob.End (Location);
 					popCount++;
 				} else {
 					break;
@@ -330,7 +335,8 @@ namespace MonoDevelop.Xml.StateEngine
 		int StateTag { get; set; }
 		StringBuilder KeywordBuilder { get; }
 		int CurrentStateLength { get; }
-		int Position { get; }
+		DomLocation Location { get; }
+		DomLocation LocationMinus (int colOffset);
 		State PreviousState { get; }
 		NodeStack Nodes { get; }
 		bool BuildTree { get; }
