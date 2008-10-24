@@ -402,7 +402,7 @@ namespace MonoDevelop.CSharpBinding
 					if (i > 0)
 						result.Append (", ");
 					if (instantiatedType != null) {
-						result.Append (instantiatedType.GenericParameters[i].AcceptVisitor (this, null));
+						result.Append (instantiatedType.GenericParameters[i].AcceptVisitor (this, data));
 					} else {
 						result.Append (NetToCSharpTypeName (type.TypeParameters[i].Name));
 					}

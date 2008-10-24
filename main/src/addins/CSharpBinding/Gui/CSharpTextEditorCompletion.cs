@@ -95,15 +95,20 @@ namespace MonoDevelop.CSharpBinding.Gui
 		
 		#endregion
 		
-		ExpressionResult FindExpression (ProjectDom dom, int offset)
+		ExpressionResult FindExpression (ProjectDom dom, int absOffset, int relOffset)
 		{
 			NewCSharpExpressionFinder expressionFinder = new NewCSharpExpressionFinder (dom);
 			try {
-				return expressionFinder.FindExpression (Editor.Text, Editor.CursorPosition + offset);
+				return expressionFinder.FindExpression (Editor.Text, absOffset + relOffset);
 			} catch (Exception ex) {
 				LoggingService.LogWarning (ex.Message, ex);
 				return null;
 			}
+		}
+		
+		ExpressionResult FindExpression (ProjectDom dom, int offset)
+		{
+			return FindExpression (dom, Editor.CursorPosition, offset);
 		}
 		
 		ExpressionResult FindFullExpression (ProjectDom dom, int offset)
@@ -397,11 +402,29 @@ namespace MonoDevelop.CSharpBinding.Gui
 			return null;
 		}
 		
+		public override bool GetParameterCompletionCommandOffset (out int cpos)
+		{
+			cpos = Editor.CursorPosition - 1;
+			while (cpos > 0) {
+				char c = Editor.GetCharAt (cpos);
+				if (c == '(') {
+					int p = NRefactoryParameterDataProvider.GetCurrentParameterIndex (Editor, cpos + 1);
+					if (p != -1) {
+						cpos++;
+						return true;
+					}
+				}
+				cpos--;
+			}
+			return false;
+		}
+		
 		public override IParameterDataProvider HandleParameterCompletion (ICodeCompletionContext completionContext, char completionChar)
 		{
 			if (dom == null)
 				return null;
-			ExpressionResult result = FindExpression (dom , -1);
+			
+			ExpressionResult result = FindExpression (dom, completionContext.TriggerOffset, -1);
 			if (result == null)
 				return null;
 			if (result.ExpressionContext is ExpressionContext.TypeExpressionContext)
@@ -412,10 +435,13 @@ namespace MonoDevelop.CSharpBinding.Gui
 			                                                                                ICSharpCode.NRefactory.SupportedLanguage.CSharp,
 			                                                                                Editor,
 			                                                                                Document.FileName);
-			
 			switch (completionChar) {
+			case ',':
+				if (CanRunParameterCompletionCommand ()) 
+					base.RunParameterCompletionCommand ();
+				break;
 			case '(':
-				ResolveResult resolveResult = resolver.Resolve (result, new DomLocation (Editor.CursorLine, Editor.CursorColumn));
+				ResolveResult resolveResult = resolver.Resolve (result, new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
 				if (result.ExpressionContext is ExpressionContext.TypeExpressionContext) {
 					IReturnType returnType = ((ExpressionContext.TypeExpressionContext)result.ExpressionContext).Type ?? resolveResult.ResolvedType;
 					

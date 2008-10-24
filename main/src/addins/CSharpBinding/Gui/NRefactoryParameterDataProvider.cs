@@ -122,10 +122,16 @@ namespace MonoDevelop.CSharpBinding
 		}
 		
 		#region IParameterDataProvider implementation
+		
 		public int GetCurrentParameterIndex (ICodeCompletionContext ctx)
 		{
+			return GetCurrentParameterIndex (editor, ctx.TriggerOffset);
+		}
+		
+		internal static int GetCurrentParameterIndex (TextEditor editor, int offset)
+		{
 			int cursor = editor.CursorPosition;
-			int i = ctx.TriggerOffset;
+			int i = offset;
 			
 			if (i > cursor)
 				return -1;

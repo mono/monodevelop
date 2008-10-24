@@ -1,3 +1,15 @@
+2008-10-24  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/NRefactoryResolver.cs:
+	* Gui/CSharpTextEditorCompletion.cs:
+	* Gui/NRefactoryParameterDataProvider.cs: fixed
+Bug 434706 -
+	Autocomplete should expand on pressing comma
+Bug 434717 - No
+	completion for nullable types
+
+	* Gui/CSharpAmbience.cs: Fixed a null reference exception.
+
 2008-10-22  Mike Krüger  <mkrueger@novell.com>
 
 	* Gui/CSharpAmbience.cs: C# ambience can now print instantiated types.
