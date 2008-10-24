@@ -461,7 +461,9 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			{
 				if (genericArguments != null && genericArguments.Count > 0) {
 					foreach (ClassEntry entry in this.GetAllClasses()) {
-						if (entry.Name == typeName && entry.TypeParameterCount == genericArguments.Count) {
+						string nsName = entry.NamespaceRef != null ? entry.NamespaceRef.FullName : null;
+						string name   = String.IsNullOrEmpty (nsName) ? entry.Name : nsName + "." + entry.Name;
+						if (name == typeName && entry.TypeParameterCount == genericArguments.Count) {
 							IType result = GetClass (entry);
 							if (result.TypeParameters.Count == genericArguments.Count)
 								return DomType.CreateInstantiatedGenericType (result, genericArguments);

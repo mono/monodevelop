@@ -1,3 +1,8 @@
+2008-10-24  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
+	fixed issue in generic type lookup.
+
 2008-10-23  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs: Name of
