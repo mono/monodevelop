@@ -1,3 +1,9 @@
+2008-10-24  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Components/MenuButton.cs: Don't attach a StateChanged
+	event handler from a variable, because GTK# explodes. Instead of the
+	attach/remove, use a flag and an override.
+
 2008-09-16  Mike Kestner <mkestner@novell.com> 
 
 	* MonoDevelop.Components.DockToolbars/FixedPanel.cs:

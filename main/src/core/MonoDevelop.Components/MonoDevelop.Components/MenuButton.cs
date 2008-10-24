@@ -40,6 +40,7 @@ namespace MonoDevelop.Components
 		MenuCreator creator;
 		Label label;
 		Arrow arrow;
+		bool isOpen;
 		
 		public MenuButton ()
 			: base ()
@@ -73,21 +74,16 @@ namespace MonoDevelop.Components
 				Menu menu = creator (this);
 				
 				if (menu != null) {
+					isOpen = true;
 					
 					//make sure the button looks depressed
 					ReliefStyle oldRelief = this.Relief;
 					this.Relief = ReliefStyle.Normal;
-					StateChangedHandler h;
-					h = delegate {
-						if (this.State != StateType.Active)
-							this.State = StateType.Active;
-					};
-					this.StateChanged += h;
 					
 					//clean up after the menu's done
 					menu.Hidden += delegate {
 						this.Relief = oldRelief ;
-						this.StateChanged -= h;
+						isOpen = false;
 						this.State = StateType.Normal;
 						
 						//FIXME: for some reason the menu's children don't get activated if we destroy 
@@ -101,6 +97,15 @@ namespace MonoDevelop.Components
 				}
 			}
 			
+		}
+		
+		protected override void OnStateChanged(StateType previous_state)
+		{
+			base.OnStateChanged (previous_state);
+			
+			//while the menu's open, make sure the button looks depressed
+			if (isOpen && this.State != StateType.Active)
+				this.State = StateType.Active;
 		}
 		
 		void PositionFunc (Menu mn, out int x, out int y, out bool push_in)
