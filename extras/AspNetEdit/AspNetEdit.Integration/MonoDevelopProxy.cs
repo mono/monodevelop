@@ -79,7 +79,7 @@ namespace AspNetEdit.Integration
 		{
 			ProjectDom ctx;
 			IType cls = GetFullClass (out ctx);
-			IType nonDesigner = MonoDevelop.AspNet.CodeBehind.GetNonDesignerClass (cls);
+			IType nonDesigner = MonoDevelop.DesignerSupport.CodeBehind.GetNonDesignerClass (cls);
 			return nonDesigner ?? cls;
 		}
 		
@@ -131,7 +131,7 @@ namespace AspNetEdit.Integration
 			if (fullCls == null)
 				return false;
 			
-			IType codeBehindClass = MonoDevelop.AspNet.CodeBehind.GetNonDesignerClass (fullCls) ?? fullCls;
+			IType codeBehindClass = MonoDevelop.DesignerSupport.CodeBehind.GetNonDesignerClass (fullCls) ?? fullCls;
 			
 			Gtk.Application.Invoke ( delegate {
 				BindingService.CreateAndShowMember (project, fullCls, codeBehindClass, method);
