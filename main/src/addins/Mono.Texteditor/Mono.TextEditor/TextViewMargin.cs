@@ -286,8 +286,12 @@ namespace Mono.TextEditor
 				return;
 			caretGc.RgbFgColor = ColorStyle.Caret;
 			if (Caret.IsInInsertMode) {
+				if (caretX < this.XOffset)
+					return;
 				win.DrawLine (caretGc, caretX, caretY, caretX, caretY + LineHeight);
 			} else {
+				if (caretX + this.charWidth < this.XOffset)
+					return;
 				win.DrawRectangle (caretGc, true, new Gdk.Rectangle (caretX, caretY, this.charWidth, LineHeight));
 				layout.SetText (caretChar.ToString ());
 				caretGc.RgbFgColor = ColorStyle.CaretForeground;
