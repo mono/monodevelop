@@ -270,7 +270,7 @@ namespace MonoDevelop.Xml.StateEngine
 			}
 		}
 		
-		public IEnumerable<XNode> RecursiveNodes {
+		public IEnumerable<XNode> AllDescendentNodes {
 			get {
 				XNode next = firstNode;
 				while (true) {
@@ -407,6 +407,28 @@ namespace MonoDevelop.Xml.StateEngine
 		
 		public override string FriendlyPathRepresentation {
 			get { return name.FullName; }
+		}
+		
+		public IEnumerable<XElement> Elements {
+			get {
+				XElement el;
+				foreach (XNode node in Nodes) {
+					el = node as XElement;
+					if (el != null)
+						yield return el;
+				}
+			}	
+		}
+		
+		public IEnumerable<XElement> AllDescendentElements {
+			get {
+				XElement el;
+				foreach (XNode node in AllDescendentNodes) {
+					el = node as XElement;
+					if (el != null)
+						yield return el;
+				}
+			}	
 		}
 
 	}
@@ -641,12 +663,21 @@ namespace MonoDevelop.Xml.StateEngine
 	
 	public class XDocument : XContainer
 	{
+		public XElement RootElement { get; private set; }
+		
 		public XDocument () : base (0) {}
 		protected override XObject NewInstance () { return new XDocument (); }
 		
 		public override string FriendlyPathRepresentation {
 			get { throw new InvalidOperationException ("Should not display document in path bar."); }
 		}
+		
+		public override void AddChildNode (XNode newChild)
+		{
+			if (RootElement == null && newChild is XElement)
+				RootElement = (XElement) newChild;
+		}
+ 
 	}
 	
 	public interface INamedXObject

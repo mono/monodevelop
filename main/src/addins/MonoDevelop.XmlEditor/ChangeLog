@@ -1,3 +1,14 @@
+2008-10-23  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Xml.StateEngine/XmlTagState.cs: Catch multiple root nodes.
+
+	* MonoDevelop.Xml.StateEngine/XDom.cs: Add field to XDocument for root
+	node. Add some element-enumerating methods to XElement. Rename
+	RecursiveNodes to AllDescendentNodes.
+
+	* MonoDevelop.Xml.StateEngine/Parser.cs: Track line/col so we can use
+	the same error class as MonoDevelop.Projects.Dom.
+
 2008-10-21  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.XmlEditor/XmlTextEditorExtension.cs: Don't try to create

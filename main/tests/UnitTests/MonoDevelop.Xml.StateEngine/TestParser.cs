@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Projects.Dom;
 
 using NUnit.Framework;
 

@@ -104,6 +104,11 @@ namespace MonoDevelop.Xml.StateEngine
 						XContainer container = element.IsClosed? 
 							  (XContainer) context.Nodes.Peek ()
 							: (XContainer) context.Nodes.Peek (1);
+						
+						XDocument doc = container as XDocument;
+						if (doc != null && doc.RootElement != null)
+							context.LogError ("Multiple root nodes");
+						
 						container.AddChildNode (element);
 					}
 				}

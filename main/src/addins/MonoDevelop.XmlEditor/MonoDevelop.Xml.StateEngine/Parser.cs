@@ -30,6 +30,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using MonoDevelop.Projects.Dom;
 using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.Xml.StateEngine
@@ -42,6 +43,7 @@ namespace MonoDevelop.Xml.StateEngine
 		bool buildTree;
 		
 		int position;
+		int line, col;
 		int stateTag;
 		StringBuilder keywordBuilder;
 		int currentStateLength;
@@ -66,6 +68,8 @@ namespace MonoDevelop.Xml.StateEngine
 			previousState = copyFrom.previousState;
 			
 			position = copyFrom.position;
+			line = copyFrom.line;
+			col = copyFrom.col;
 			stateTag = copyFrom.stateTag;
 			keywordBuilder = new StringBuilder (copyFrom.keywordBuilder.ToString ());
 			currentStateLength = copyFrom.currentStateLength;
@@ -94,6 +98,8 @@ namespace MonoDevelop.Xml.StateEngine
 			previousState = rootState;
 			position = 0;
 			stateTag = 0;
+			line = 1;
+			col = 0;
 			keywordBuilder = new StringBuilder ();
 			currentStateLength = 0;
 			nodes = new NodeStack ();
@@ -104,10 +110,28 @@ namespace MonoDevelop.Xml.StateEngine
 			else
 				errors = null;
 		}
+		
+		public void Parse (System.IO.TextReader reader)
+		{
+			int i = reader.Read ();
+			while (i >= 0) {
+				char c = (char) i;
+				Push (c);
+				i = reader.Read ();
+			}
+		}
 
 		public void Push (char c)
 		{
 			try {
+				//track line, column
+				if (c == '\n') {
+					line++;
+					col = 0;
+				} else {
+					col++;
+				}
+				
 				position++;
 				for (int loopLimit = 0; loopLimit < 10; loopLimit++) {
 					currentStateLength++;
@@ -233,19 +257,19 @@ namespace MonoDevelop.Xml.StateEngine
 		
 		void IParseContext.LogError (string message)
 		{
-			InternalLogError (message, ErrorSeverity.Error);
+			InternalLogError (message, ErrorType.Error);
 		}
 		
 		void IParseContext.LogWarning (string message)
 		{
-			InternalLogError (message, ErrorSeverity.Warning);
+			InternalLogError (message, ErrorType.Warning);
 		}
 		
-		void InternalLogError (string message, ErrorSeverity severity)
+		void InternalLogError (string message, ErrorType type)
 		{
 			if (ErrorLogged == null && errors == null)
 				return;
-			Error err = new Error (Position, message, severity);
+			Error err = new Error (type, line, col, message);
 			if (errors != null)
 				errors.Add (err);
 			if (ErrorLogged != null)
@@ -305,35 +329,6 @@ namespace MonoDevelop.Xml.StateEngine
 		void ConnectAll ();
 	}
 	
-	//NOTE: this is immutable so that collections of it can be cloned safely
-	public class Error
-	{
-		int position;
-		string message;
-		public ErrorSeverity severity;
-		
-		public Error (int position, string message, ErrorSeverity severity)
-		{
-			this.position = position;
-			this.message = message;
-			this.severity = severity;
-		}
-		
-		public int Position { get { return position; } }
-		public string Message { get { return message; } }
-		public ErrorSeverity Severity { get { return severity; } }
-		
-		public override string ToString ()
-		{
-			return string.Format ("[{0}@{1}: {2}]", severity, position, message);
-		}
-	}
-	
-	public enum ErrorSeverity {
-		Error,
-		Warning
-	}
-	
 	public class NodeStack : Stack<XObject>
 	{
 		public NodeStack (IEnumerable<XObject> collection) : base (collection) {}
@@ -348,6 +343,14 @@ namespace MonoDevelop.Xml.StateEngine
 				i++;
 			}
 			return null;
+		}
+		
+		public XDocument GetRoot ()
+		{
+			XObject last = null;
+			foreach (XObject o in this)
+				last = o;
+			return last as XDocument;
 		}
 	}
 }
