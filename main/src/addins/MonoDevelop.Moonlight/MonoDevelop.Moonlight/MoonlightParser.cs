@@ -27,9 +27,12 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Xml;
 
+using MonoDevelop.Xml.StateEngine;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 
@@ -51,52 +54,70 @@ namespace MonoDevelop.Moonlight
 		
 		public override ParsedDocument Parse (string fileName, string fileContent)
 		{
-			using (TextReader tr = new StringReader (fileContent))
-			{
-				ParsedDocument doc = new ParsedDocument (fileName);
-				try {
-					GenerateCU (fileName, tr, doc);
-				} catch (Exception ex) {
-					MonoDevelop.Core.LoggingService.LogError ("Unhandled error parsing xaml document", ex);
+			MoonlightParsedDocument doc = new MoonlightParsedDocument (fileName);
+			TextReader tr = new StringReader (fileContent);
+			try {
+				Parser xmlParser = new Parser (new XmlFreeState (), true);
+				xmlParser.Parse (tr);
+				doc.XDocument = xmlParser.Nodes.GetRoot ();
+				doc.Add (xmlParser.Errors);
+				
+				if (doc.XDocument != null || doc.XDocument.RootElement != null) {
+					if (!doc.XDocument.RootElement.IsEnded)
+						doc.XDocument.RootElement.End (xmlParser.Location);
+					GenerateCU (doc);
 				}
-				return doc;
 			}
+			catch (Exception ex) {
+				MonoDevelop.Core.LoggingService.LogError ("Unhandled error parsing xaml document", ex);
+			}
+			finally {
+				if (tr != null)
+					tr.Dispose ();
+			}
+			return doc;
 		}
 		
-		static ParsedDocument GenerateCU (string fileName, TextReader fileContents, ParsedDocument doc)
+		static void GenerateCU (MoonlightParsedDocument doc)
 		{
-			XmlDocument xmldoc = new XmlDocument ();
-			try {
-				xmldoc.Load (fileContents);
-			} catch (XmlException ex) {
-				doc.Add (new Error (ErrorType.Error, ex.LineNumber, ex.LinePosition, ex.Message));
-				return doc;
-			}
-
-			XmlNamespaceManager nsmgr = new XmlNamespaceManager (xmldoc.NameTable);
-			nsmgr.AddNamespace("x", "http://schemas.microsoft.com/winfx/2006/xaml");
-
-			XmlNode root = xmldoc.SelectSingleNode ("/*", nsmgr);
-			if (root == null) {
+			if (doc.XDocument == null || doc.XDocument.RootElement == null) {
 				doc.Add (new Error (ErrorType.Error, 1, 1, "No root node found."));
-				return doc;
+				return;
 			}
 
-			XmlAttribute root_class = root.Attributes ["x:Class"];
-			if (root_class == null) {
+			XAttribute rootClass = doc.XDocument.RootElement.Attributes [new XName ("x", "Class")];
+			if (rootClass == null) {
 				doc.Add (new Error (ErrorType.Error, 1, 1, "Root node does not contain an x:Class attribute."));
-				return doc;
+				return;
 			}
 
-			bool is_application = root.LocalName == "Application";
-			string root_ns;
-			string root_type;
-			string root_asm;
-
-			XamlG.ParseXmlns (root_class.Value, out root_type, out root_ns, out root_asm);
+			bool isApplication = doc.XDocument.RootElement.Name.Name == "Application";
 			
-			CompilationUnit cu = new CompilationUnit (fileName);
+			string rootNamespace, rootType, rootAssembly;
+			XamlG.ParseXmlns (rootClass.Value, out rootType, out rootNamespace, out rootAssembly);
+			
+			CompilationUnit cu = new CompilationUnit (doc.FileName);
 			doc.CompilationUnit = cu;
+
+			DomRegion rootRegion = doc.XDocument.RootElement.Region;
+			if (doc.XDocument.RootElement.IsClosed)
+				rootRegion.End = doc.XDocument.RootElement.ClosingTag.Region.End;
+			
+			DomType declType = new DomType (cu, ClassType.Class, Modifiers.Partial | Modifiers.Public, rootType,
+			                                doc.XDocument.RootElement.Region.Start, rootNamespace, rootRegion);
+			cu.Add (declType);
+			
+			DomMethod initcomp = new DomMethod ();
+			initcomp.Name = "InitializeComponent";
+			initcomp.Modifiers = Modifiers.Public;
+			initcomp.ReturnType = DomReturnType.Void;
+			declType.Add (initcomp);
+			
+			DomField _contentLoaded = new DomField ("_contentLoaded");
+			_contentLoaded.ReturnType = new DomReturnType ("System.Boolean");
+
+			if (isApplication)
+				return;
 			
 			cu.Add (new DomUsing (new DomRegion (), "System"));
 			cu.Add (new DomUsing (new DomRegion (), "System.Windows"));
@@ -106,43 +127,33 @@ namespace MonoDevelop.Moonlight
 			cu.Add (new DomUsing (new DomRegion (), "System.Windows.Media"));
 			cu.Add (new DomUsing (new DomRegion (), "System.Windows.Media.Animation"));
 			cu.Add (new DomUsing (new DomRegion (), "System.Windows.Shapes"));
-
-			DomType decl_type = new DomType (cu, ClassType.Class, Modifiers.Partial | Modifiers.Public,
-			                                 root_type, new DomLocation (1, 1), root_ns, new DomRegion (1, 1));
-			cu.Add (decl_type);
 			
-			DomMethod initcomp = new DomMethod ();
-			initcomp.Name = "InitializeComponent";
-			initcomp.Modifiers = Modifiers.Public;
-			initcomp.ReturnType = DomReturnType.Void;
-			decl_type.Add (initcomp);
+//			Dictionary<string,string> namespaceMap = new Dictionary<string, string> ();
+//			namespaceMap["x"] = "http://schemas.microsoft.com/winfx/2006/xaml";
 			
-			DomField _contentLoaded = new DomField ("_contentLoaded");
-			_contentLoaded.ReturnType = new DomReturnType ("System.Boolean");
-
-			if (is_application)
-				return doc;
+			XName nameAtt = new XName ("x", "Name");
 			
-			XmlNodeList names = root.SelectNodes ("//*[@x:Name]", nsmgr);
-			foreach (XmlNode node in names)	{
-				// Don't take the root canvas
-				if (node == root)
-					continue;
-
-				XmlAttribute attr = node.Attributes ["x:Name"];
-				string name = attr.Value;
-				string ns = XamlG.GetNamespace (node);
-				string type = node.LocalName;
-
-				if (ns != null)
-					type = String.Concat (ns, ".", type);
-				
-				DomField field = new DomField (name, Modifiers.Internal, DomLocation.Empty,
-					                       new DomReturnType (type));
-				decl_type.Add (field);
-			}
+			IEnumerable<DomField> fields =
+				from XElement el in doc.XDocument.RootElement.AllDescendentElements
+				let name = el.Attributes [nameAtt]
+				where name != null
+				select new DomField (name.Value, Modifiers.Internal, el.Region.Start,
+					             new DomReturnType (ResolveType (el)));
 			
-			return doc;
+			foreach (DomField f in fields)
+				declType.Add (f);
+		}
+		
+		static string ResolveType (XElement el)
+		{
+			//FIXME implement
+//			string name = attr.Value;
+//			string ns = XamlG.GetNamespace (node);
+//			string type = node.LocalName;
+//			
+//			if (ns != null)
+//				type = String.Concat (ns, ".", type);
+			return el.Name.Name;
 		}
 	}
 }

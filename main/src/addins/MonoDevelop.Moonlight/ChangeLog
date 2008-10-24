@@ -1,3 +1,13 @@
+2008-10-24  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Moonlight/MoonlightParsedDocument.cs: Enable folding.
+
+	* Makefile.am:
+	* MonoDevelop.Moonlight.mdp: Updated.
+
+	* MonoDevelop.Moonlight/MoonlightParser.cs: Use StateEngine XML parser.
+	Gives better position information and more robust errors.
+
 2008-10-23  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Moonlight/MoonlightParser.cs: Fix return type of

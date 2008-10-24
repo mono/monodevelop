@@ -13,11 +13,13 @@ REFS =  \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll \
 	-r:Mono.Posix \
 	-r:System \
+	-r:System.Core \
 	-r:System.Xml
 
 FILES =  \
 	gtk-gui/generated.cs \
 	MonoDevelop.Moonlight/MoonlightEditorExtension.cs \
+	MonoDevelop.Moonlight/MoonlightParsedDocument.cs \
 	MonoDevelop.Moonlight/MoonlightParser.cs \
 	MonoDevelop.Moonlight/MoonlightProject.cs \
 	MonoDevelop.Moonlight/MoonlightProjectBinding.cs \
