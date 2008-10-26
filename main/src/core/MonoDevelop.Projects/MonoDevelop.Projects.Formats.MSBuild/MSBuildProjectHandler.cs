@@ -244,6 +244,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 							asm = "System.Xml";
 						pref = new ProjectReference (ReferenceType.Gac, asm);
 					}
+					pref.Condition = buildItem.Condition;
 					ReadBuildItemMetadata (ser, buildItem, pref, typeof(ProjectReference));
 					dotNetProject.References.Add (pref);
 				}
@@ -255,6 +256,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						name = name.Substring (0, i);
 					ProjectReference pref = new ProjectReference (ReferenceType.Project, name);
 					pref.LocalCopy = buildItem.GetMetadata ("Private") != "False";
+					pref.Condition = buildItem.Condition;
 					dotNetProject.References.Add (pref);
 				}
 				
@@ -582,6 +584,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						buildItem = msproject.AddNewItem ("CustomReference", pref.Reference);
 					}
 					WriteBuildItemMetadata (ser, buildItem, pref);
+					buildItem.Condition = pref.Condition;
 				}
 				
 				foreach (MSBuildItem buildItem in list)
@@ -623,6 +626,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						buildItem.SetMetadata ("Generator", file.Generator);
 					else
 						buildItem.UnsetMetadata ("Generator");
+					
+					buildItem.Condition = file.Condition;
 					
 					if (file.CopyToOutputDirectory == FileCopyMode.None) {
 						buildItem.UnsetMetadata ("CopyToOutputDirectory");
@@ -813,6 +818,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			string generator = buildItem.GetMetadata ("Generator");
 			if (!string.IsNullOrEmpty (generator))
 				file.Generator = generator;
+			
+			file.Condition = buildItem.Condition;
 			
 			project.Files.Add (file);
 		}

@@ -272,7 +272,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				return Element.GetAttribute ("Condition");
 			}
 			set {
-				Element.SetAttribute ("Condition", value);
+				if (string.IsNullOrEmpty (value))
+					Element.RemoveAttribute ("Condition");
+				else
+					Element.SetAttribute ("Condition", value);
 			}
 		}
 	}

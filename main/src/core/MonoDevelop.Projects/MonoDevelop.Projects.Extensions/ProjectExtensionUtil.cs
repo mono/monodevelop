@@ -58,6 +58,11 @@ namespace MonoDevelop.Projects.Extensions
 			return Services.ProjectService.ExtensionChain.LoadSolutionItem (monitor, fileName, callback);
 		}
 		
+		public static BuildResult Compile (IProgressMonitor monitor, SolutionEntityItem item, BuildData buildData, ItemCompileCallback callback)
+		{
+			return Services.ProjectService.ExtensionChain.Compile (monitor, item, buildData, callback);
+		}
+		
 		public static void BeginLoadOperation ()
 		{
 			Interlocked.Increment (ref loading);
@@ -135,4 +140,6 @@ namespace MonoDevelop.Projects.Extensions
 
 	
 	public delegate SolutionEntityItem ItemLoadCallback (IProgressMonitor monitor, string fileName);
+	
+	public delegate BuildResult ItemCompileCallback (IProgressMonitor monitor, SolutionEntityItem item, BuildData buildData);
 }

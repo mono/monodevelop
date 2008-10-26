@@ -38,6 +38,7 @@ namespace MonoDevelop.Projects
 		internal ProjectServiceExtension Next;
 		
 		Stack<ItemLoadCallback> loadCallbackStack = new Stack<ItemLoadCallback> ();
+		Stack<ItemCompileCallback> compileCallbackStack = new Stack<ItemCompileCallback> ();
 
 		public virtual void Save (IProgressMonitor monitor, SolutionEntityItem item)
 		{
@@ -67,9 +68,12 @@ namespace MonoDevelop.Projects
 		internal virtual SolutionEntityItem LoadSolutionItem (IProgressMonitor monitor, string fileName, ItemLoadCallback callback)
 		{
 			loadCallbackStack.Push (callback);
-			SolutionEntityItem res = LoadSolutionItem (monitor, fileName);
-			loadCallbackStack.Pop ();
-			return res;
+			try {
+				SolutionEntityItem res = LoadSolutionItem (monitor, fileName);
+				return res;
+			} finally {
+				loadCallbackStack.Pop ();
+			}
 		}
 		
 		protected virtual SolutionEntityItem LoadSolutionItem (IProgressMonitor monitor, string fileName)
@@ -257,5 +261,29 @@ namespace MonoDevelop.Projects
 			else
 				Next.SetNeedsBuilding ((IBuildTarget) item, val, configuration);
 		}
+		
+		internal virtual BuildResult Compile (IProgressMonitor monitor, SolutionEntityItem item, BuildData buildData, ItemCompileCallback callback)
+		{
+			compileCallbackStack.Push (callback);
+			try {
+				BuildResult res = Compile (monitor, item, buildData);
+				return res;
+			} finally {
+				compileCallbackStack.Pop ();
+			}
+		}
+		
+		protected virtual BuildResult Compile (IProgressMonitor monitor, SolutionEntityItem item, BuildData buildData)
+		{
+			return Next.Compile (monitor, item, buildData, compileCallbackStack.Peek ());
+		}
+		
+	}
+
+	public class BuildData
+	{
+		public ProjectFileCollection Files { get; internal set; }
+		public ProjectReferenceCollection References { get; internal set; }
+		public DotNetProjectConfiguration Configuration { get; internal set; }
 	}
 }

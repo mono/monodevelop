@@ -140,6 +140,8 @@ namespace MonoDevelop.Projects
 				loadedReference = value;
 			}
 		}
+
+		internal string Condition { get; set; }
 		
 		/// <summary>
 		/// Returns the file name to an assembly, regardless of what 

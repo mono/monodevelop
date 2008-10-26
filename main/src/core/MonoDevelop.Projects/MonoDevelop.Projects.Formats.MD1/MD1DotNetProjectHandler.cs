@@ -34,7 +34,9 @@ using System.CodeDom.Compiler;
 using System.Text.RegularExpressions;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
-
+using MonoDevelop.Projects.Extensions;
+using Microsoft.Build.BuildEngine;
+	
 namespace MonoDevelop.Projects.Formats.MD1
 {
 	internal class MD1DotNetProjectHandler: MD1SolutionEntityItemHandler
@@ -131,36 +133,57 @@ namespace MonoDevelop.Projects.Formats.MD1
 			
 			DotNetProjectConfiguration conf = (DotNetProjectConfiguration) project.GetConfiguration (configuration);
 			conf.SourceDirectory = project.BaseDirectory;
+
+			// Create a copy of the data needed to compile the project.
+			// This data can be modified by extensions.
+			// Also filter out items whose condition evaluates to false
 			
-			ProjectFileCollection files = project.Files;
-			BuildResult res = BuildResources (conf, ref files, monitor);
-			if (res != null)
-				return res;
-
-			List<string> supportAssemblies = new List<string> ();
-			CopySupportAssemblies (supportAssemblies, configuration);
-
-			try {
-				res = project.LanguageBinding.Compile (files, project.References, conf, monitor);
-				if (refres != null) {
-					refres.Append (res);
-					return refres;
-				}
-				else
-					return res;
-			}
-			finally {
-				// Delete support assemblies
-				foreach (string s in supportAssemblies) {
-					try {
-						File.Delete (s);
-					} catch {
-						// Ignore
-					}
-				}
-			}		
-		}
+			BuildData buildData = new BuildData ();
+			ProjectParserContext ctx = new ProjectParserContext (project, conf);
 		
+			buildData.Files = new ProjectFileCollection ();
+			foreach (ProjectFile file in project.Files) {
+				if (ConditionParser.ParseAndEvaluate (file.Condition, ctx))
+					buildData.Files.Add (file);
+			}
+			buildData.References = new ProjectReferenceCollection ();
+			foreach (ProjectReference pref in project.References) {
+				if (ConditionParser.ParseAndEvaluate (pref.Condition, ctx))
+					buildData.References.Add (pref);
+			}
+			buildData.Configuration = (DotNetProjectConfiguration) conf.Clone ();
+			buildData.Configuration.SetParentItem (project);
+
+			return ProjectExtensionUtil.Compile (monitor, project, buildData, delegate {
+				ProjectFileCollection files = buildData.Files;
+				BuildResult res = BuildResources (buildData.Configuration, ref files, monitor);
+				if (res != null)
+					return res;
+				
+				List<string> supportAssemblies = new List<string> ();
+				CopySupportAssemblies (supportAssemblies, configuration);
+	
+				try {
+					res = project.LanguageBinding.Compile (files, buildData.References, buildData.Configuration, monitor);
+					if (refres != null) {
+						refres.Append (res);
+						return refres;
+					}
+					else
+						return res;
+				}
+				finally {
+					// Delete support assemblies
+					foreach (string s in supportAssemblies) {
+						try {
+							File.Delete (s);
+						} catch {
+							// Ignore
+						}
+					}
+				}		
+			});
+		}		
 
 		// Builds the EmbedAsResource files. If any localized resources are found then builds the satellite assemblies
 		// and sets @projectFiles to a cloned collection minus such resource files.
@@ -459,6 +482,30 @@ namespace MonoDevelop.Projects.Formats.MD1
 
 				return cultureNamesTable;
 			}
+		}
+	}
+
+	class ProjectParserContext: IExpressionContext
+	{
+		Project project;
+		DotNetProjectConfiguration config;
+		
+		public ProjectParserContext (Project project, DotNetProjectConfiguration config)
+		{
+			this.project = project;
+			this.config = config;
+		}
+		
+		public string FullFileName {
+			get {
+				return project.FileName;
+			}
+		}
+		
+		public string EvaluateString (string value)
+		{
+			string val = value.Replace ("$(Configuration)", config.Name);
+			return val;
 		}
 	}
 }

@@ -240,6 +240,8 @@ namespace MonoDevelop.Projects
 		public bool HasChildren {
 			get { return dependentChildren != null && dependentChildren.Count > 0; }
 		}
+
+		internal string Condition { get; set; }
 		
 		public IEnumerable<ProjectFile> DependentChildren {
 			get { return ((IEnumerable<ProjectFile>)dependentChildren) ?? new ProjectFile[0]; }

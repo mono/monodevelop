@@ -1,3 +1,41 @@
+2008-10-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs: Read
+	and write conditions for files and references.
+
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProject.cs: Remove the
+	condition attribute when it has an empty value.
+
+	* Makefile.am:
+	* MonoDevelop.Projects.mdp:
+	* MonoDevelop.Projects/ProjectReference.cs:
+	* MonoDevelop.Projects.Formats.MSBuild.Conditions:
+	* MonoDevelop.Projects.Formats.MSBuild.Conditions/Token.cs:
+	* MonoDevelop.Projects.Formats.MD1/MD1DotNetProjectHandler.cs:
+	* MonoDevelop.Projects.Formats.MSBuild.Conditions/ConditionParser.cs:
+	* MonoDevelop.Projects.Formats.MSBuild.Conditions/ConditionTokenizer.cs:
+	* MonoDevelop.Projects.Formats.MSBuild.Conditions/ConditionExpression.cs:
+	* MonoDevelop.Projects.Formats.MSBuild.Conditions/ConditionOrExpression.cs:
+	* MonoDevelop.Projects.Formats.MSBuild.Conditions/ConditionNotExpression.cs:
+	* MonoDevelop.Projects.Formats.MSBuild.Conditions/ConditionAndExpression.cs:
+	* MonoDevelop.Projects.Formats.MSBuild.Conditions/ExpressionParseException.cs:
+	* MonoDevelop.Projects.Formats.MSBuild.Conditions/ConditionFactorExpresion.cs:
+	* MonoDevelop.Projects.Formats.MSBuild.Conditions/InvalidProjectFileException.cs:
+	* MonoDevelop.Projects.Formats.MSBuild.Conditions/ConditionFunctionExpression.cs:
+	* MonoDevelop.Projects.Formats.MSBuild.Conditions/ConditionRelationalExpression.cs:
+	Add support for conditions for files and references. Conditions are
+	only evaluated and compile time, not when showing items in the IDE.
+
+	* MonoDevelop.Projects/ProjectService.cs:
+	* MonoDevelop.Projects/ProjectServiceExtension.cs:
+	* MonoDevelop.Projects.Extensions/ProjectExtensionUtil.cs: Added hook
+	which allows add-ins to change build data such as files and
+	references. 
+
+	* MonoDevelop.Projects/ProjectFile.cs: Add support for conditions.
+	Conditions are only evaluated and compile time, not when showing
+	items in the IDE.
+
 2008-10-24  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: Added cyclic check for 

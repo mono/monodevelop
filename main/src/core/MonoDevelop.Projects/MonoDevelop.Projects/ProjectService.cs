@@ -711,5 +711,10 @@ namespace MonoDevelop.Projects
 			else
 				throw new InvalidOperationException ("Unknown item type: " + item);
 		}
+
+		internal override BuildResult Compile(IProgressMonitor monitor, SolutionEntityItem item, BuildData buildData, ItemCompileCallback callback)
+		{
+			return callback (monitor, item, buildData);
+		}
 	}	
 }

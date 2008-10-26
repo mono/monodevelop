@@ -155,6 +155,18 @@ FILES =  \
 	MonoDevelop.Projects.Formats.MD1/MD1SolutionEntityItemHandler.cs \
 	MonoDevelop.Projects.Formats.MD1/MD1SolutionItemHandler.cs \
 	MonoDevelop.Projects.Formats.MD1/PrjxFileFormat.cs \
+	MonoDevelop.Projects.Formats.MSBuild.Conditions/ConditionAndExpression.cs \
+	MonoDevelop.Projects.Formats.MSBuild.Conditions/ConditionExpression.cs \
+	MonoDevelop.Projects.Formats.MSBuild.Conditions/ConditionFactorExpresion.cs \
+	MonoDevelop.Projects.Formats.MSBuild.Conditions/ConditionFunctionExpression.cs \
+	MonoDevelop.Projects.Formats.MSBuild.Conditions/ConditionNotExpression.cs \
+	MonoDevelop.Projects.Formats.MSBuild.Conditions/ConditionOrExpression.cs \
+	MonoDevelop.Projects.Formats.MSBuild.Conditions/ConditionParser.cs \
+	MonoDevelop.Projects.Formats.MSBuild.Conditions/ConditionRelationalExpression.cs \
+	MonoDevelop.Projects.Formats.MSBuild.Conditions/ConditionTokenizer.cs \
+	MonoDevelop.Projects.Formats.MSBuild.Conditions/ExpressionParseException.cs \
+	MonoDevelop.Projects.Formats.MSBuild.Conditions/InvalidProjectFileException.cs \
+	MonoDevelop.Projects.Formats.MSBuild.Conditions/Token.cs \
 	MonoDevelop.Projects.Formats.MSBuild/MSBuildFileFormat.cs \
 	MonoDevelop.Projects.Formats.MSBuild/MSBuildHandler.cs \
 	MonoDevelop.Projects.Formats.MSBuild/MSBuildProject.cs \
