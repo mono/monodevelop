@@ -1,0 +1,6 @@
+Name: WebKitWebBrowser
+Description: WebKitWebBrowser
+Version: 0.1
+
+Requires: 
+Libs: -r:@expanded_libdir@/@PACKAGE@/WebKitWebBrowser.dll

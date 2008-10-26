@@ -4,6 +4,7 @@ extras/BooBinding
 extras/ValaBinding
 extras/AspNetEdit
 extras/GeckoWebBrowser
+extras/WebKitWebBrowser
 extras/MonoDevelop.Database
 extras/MonoDevelop.Profiling
 extras/MonoDevelop.AddinAuthoring
