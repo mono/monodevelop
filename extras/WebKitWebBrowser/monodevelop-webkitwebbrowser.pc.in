@@ -3,4 +3,4 @@ Description: WebKitWebBrowser
 Version: 0.1
 
 Requires: 
-Libs: -r:@expanded_libdir@/@PACKAGE@/WebKitWebBrowser.dll
+Libs: -r:@prefix@/lib/@PACKAGE@/MonoDevelop.WebKitWebBrowser.dll

@@ -5,110 +5,107 @@
 srcdir=.
 top_srcdir=.
 
+include $(top_srcdir)/Makefile.include
 include $(top_srcdir)/config.make
 
 ifeq ($(CONFIG),DEBUG)
 ASSEMBLY_COMPILER_COMMAND = gmcs
-ASSEMBLY_COMPILER_FLAGS =  -noconfig -codepage:utf8 -warn:4 -optimize- -debug "-define:DEBUG"
-ASSEMBLY = build/WebKitWebBrowser.dll
+ASSEMBLY_COMPILER_FLAGS =  -noconfig -codepage:utf8 -warn:4 -optimize+ -debug -define:DEBUG
+ASSEMBLY = build/MonoDevelop.WebKitWebBrowser.dll
 ASSEMBLY_MDB = $(ASSEMBLY).mdb
 COMPILE_TARGET = library
 PROJECT_REFERENCES = 
 BUILD_DIR = build
 
-WEBKITWEBBROWSER_DLL_MDB_SOURCE=build/WebKitWebBrowser.dll.mdb
-WEBKITWEBBROWSER_DLL_MDB=$(BUILD_DIR)/WebKitWebBrowser.dll.mdb
 
 endif
 
 ifeq ($(CONFIG),RELEASE)
 ASSEMBLY_COMPILER_COMMAND = gmcs
-ASSEMBLY_COMPILER_FLAGS =  -noconfig -codepage:utf8 -warn:4 -optimize-
-ASSEMBLY = bin/Release/WebKitWebBrowser.dll
+ASSEMBLY_COMPILER_FLAGS =  -noconfig -codepage:utf8 -warn:4 -optimize+
+ASSEMBLY = build/MonoDevelop.WebKitWebBrowser.dll
 ASSEMBLY_MDB = 
 COMPILE_TARGET = library
 PROJECT_REFERENCES = 
-BUILD_DIR = bin/Release
+BUILD_DIR = build
 
-WEBKITWEBBROWSER_DLL_MDB=
 
 endif
 
-AL=al2
-SATELLITE_ASSEMBLY_NAME=.resources.dll
-
-PROGRAMFILES = \
-	$(WEBKITWEBBROWSER_DLL_MDB)  
+INSTALL_DIR = $(DESTDIR)$(prefix)/lib/monodevelop/AddIns/WebKitWebBrowser
 
 LINUX_PKGCONFIG = \
 	$(WEBKITWEBBROWSER_PC)  
 
 
-RESGEN=resgen2
 
-WEBKITWEBBROWSER_PC = $(BUILD_DIR)/webkitwebbrowser.pc
+WEBKITWEBBROWSER_PC = $(BUILD_DIR)/monodevelop-webkitwebbrowser.pc
 
-FILES = \
+
+FILES =  \
 	WebKitWebBrowser.cs \
-	WebKitWebBrowserLoader.cs 
+	WebKitWebBrowserLoader.cs
 
 DATA_FILES = 
 
-RESOURCES = \
+RESOURCES =  \
 	MonoDevelop.WebBrowsers.WebKitWebBrowser.addin.xml 
 
 EXTRAS = \
-	webkitwebbrowser.pc.in 
+	ChangeLog \
+	monodevelop-webkitwebbrowser.pc.in 
 
 REFERENCES =  \
-	System \
-	Mono.Posix \
-	-pkg:monodevelop \
-	-pkg:gtk-sharp-2.0 \
+	-pkg:webkit-sharp-1.0 \
 	-pkg:glib-sharp-2.0 \
-	-pkg:glade-sharp-2.0 \
-	-pkg:webkit-sharp-1.0
+	-pkg:gtk-sharp-2.0 \
+	-pkg:monodevelop
 
 DLL_REFERENCES = 
 
-CLEANFILES = $(PROGRAMFILES) $(LINUX_PKGCONFIG) 
+CLEANFILES += $(LINUX_PKGCONFIG) 
 
 #Targets
-all-local: $(ASSEMBLY) $(PROGRAMFILES) $(LINUX_PKGCONFIG)  $(top_srcdir)/config.make
+all-local: $(ASSEMBLY) $(LINUX_PKGCONFIG)  $(top_srcdir)/config.make
+
+$(WEBKITWEBBROWSER_PC): monodevelop-webkitwebbrowser.pc
+	mkdir -p $(BUILD_DIR)
+	cp '$<' '$@'
 
 
 
-$(eval $(call emit-deploy-wrapper,WEBKITWEBBROWSER_PC,webkitwebbrowser.pc))
+monodevelop-webkitwebbrowser.pc: monodevelop-webkitwebbrowser.pc.in $(top_srcdir)/config.make
+	sed -e "s,@prefix@,$(prefix)," -e "s,@PACKAGE@,$(PACKAGE)," < monodevelop-webkitwebbrowser.pc.in > monodevelop-webkitwebbrowser.pc
 
 
-$(eval $(call emit_resgen_targets))
 $(build_xamlg_list): %.xaml.g.cs: %.xaml
 	xamlg '$<'
 
+$(build_resx_resources) : %.resources: %.resx
+	resgen2 '$<' '$@'
+
 LOCAL_PKGCONFIG=PKG_CONFIG_PATH=../../local-config:$$PKG_CONFIG_PATH
 
-$(ASSEMBLY) $(ASSEMBLY_MDB): $(build_sources) $(build_resources) $(build_datafiles) $(DLL_REFERENCES) $(PROJECT_REFERENCES) $(build_xamlg_list) $(build_satellite_assembly_list)
+$(ASSEMBLY) $(ASSEMBLY_MDB): $(build_sources) $(build_resources) $(build_datafiles) $(DLL_REFERENCES) $(PROJECT_REFERENCES) $(build_xamlg_list)
 	make pre-all-local-hook prefix=$(prefix)
-	mkdir -p $(shell dirname $(ASSEMBLY))
+	mkdir -p $(dir $(ASSEMBLY))
 	make $(CONFIG)_BeforeBuild
 	$(LOCAL_PKGCONFIG) $(ASSEMBLY_COMPILER_COMMAND) $(ASSEMBLY_COMPILER_FLAGS) -out:$(ASSEMBLY) -target:$(COMPILE_TARGET) $(build_sources_embed) $(build_resources_embed) $(build_references_ref)
 	make $(CONFIG)_AfterBuild
 	make post-all-local-hook prefix=$(prefix)
 
-install-local: $(ASSEMBLY) $(ASSEMBLY_MDB)
+
+install-local: $(ASSEMBLY) $(ASSEMBLY_MDB) $(WEBKITWEBBROWSER_PC)
 	make pre-install-local-hook prefix=$(prefix)
-	mkdir -p '$(DESTDIR)$(libdir)/$(PACKAGE)'
-	$(call cp,$(ASSEMBLY),$(DESTDIR)$(libdir)/$(PACKAGE))
-	$(call cp,$(ASSEMBLY_MDB),$(DESTDIR)$(libdir)/$(PACKAGE))
-	$(call cp,$(WEBKITWEBBROWSER_DLL_MDB),$(DESTDIR)$(libdir)/$(PACKAGE))
-	mkdir -p '$(DESTDIR)$(libdir)/pkgconfig'
-	$(call cp,$(WEBKITWEBBROWSER_PC),$(DESTDIR)$(libdir)/pkgconfig)
+	mkdir -p $(INSTALL_DIR)
+	cp $(ASSEMBLY) $(ASSEMBLY_MDB) $(INSTALL_DIR)
+	mkdir -p $(DESTDIR)$(prefix)/lib/pkgconfig
+	test -z '$(WEBKITWEBBROWSER_PC)' || cp $(WEBKITWEBBROWSER_PC) $(DESTDIR)$(prefix)/lib/pkgconfig
 	make post-install-local-hook prefix=$(prefix)
 
-uninstall-local: $(ASSEMBLY) $(ASSEMBLY_MDB)
+uninstall-local: $(ASSEMBLY) $(ASSEMBLY_MDB) $(WEBKITWEBBROWSER_PC)
 	make pre-uninstall-local-hook prefix=$(prefix)
-	$(call rm,$(ASSEMBLY),$(DESTDIR)$(libdir)/$(PACKAGE))
-	$(call rm,$(ASSEMBLY_MDB),$(DESTDIR)$(libdir)/$(PACKAGE))
-	$(call rm,$(WEBKITWEBBROWSER_DLL_MDB),$(DESTDIR)$(libdir)/$(PACKAGE))
-	$(call rm,$(WEBKITWEBBROWSER_PC),$(DESTDIR)$(libdir)/pkgconfig)
+	rm -f $(INSTALL_DIR)/$(notdir $(ASSEMBLY))
+	test -z '$(ASSEMBLY_MDB)' || rm -f $(INSTALL_DIR)/$(notdir $(ASSEMBLY_MDB))
+	test -z '$(WEBKITWEBBROWSER_PC)' || rm -f $(DESTDIR)$(prefix)/lib/pkgconfig/$(notdir $(WEBKITWEBBROWSER_PC))
 	make post-uninstall-local-hook prefix=$(prefix)
