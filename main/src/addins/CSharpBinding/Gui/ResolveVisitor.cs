@@ -61,26 +61,9 @@ namespace MonoDevelop.CSharpBinding
 			return result.ResolvedType ?? DomReturnType.Void;
 		}
 		
-		static IReturnType ConvertTypeReference (TypeReference typeReference)
-		{
-			if (!String.IsNullOrEmpty (typeReference.SystemType))
-				return new DomReturnType (typeReference.SystemType);
-			DomReturnType result = new DomReturnType (typeReference.Type);
-			result.IsNullable = typeReference.IsNull;
-			result.PointerNestingLevel = typeReference.PointerNestingLevel;
-			if (typeReference.IsArrayType) {
-				result.ArrayDimensions = typeReference.RankSpecifier.Length;
-				result.SetDimensions (typeReference.RankSpecifier);
-			}
-			foreach (TypeReference generic in typeReference.GenericTypes) {
-				result.AddTypeParameter (ConvertTypeReference (generic));
-			}
-			return result;
-		}
-		
 		internal ResolveResult CreateResult (TypeReference typeReference)
 		{
-			return CreateResult (ConvertTypeReference (typeReference));
+			return CreateResult (NRefactoryResolver.ConvertTypeReference (typeReference));
 		}
 		
 		internal ResolveResult CreateResult (string fullTypeName)
