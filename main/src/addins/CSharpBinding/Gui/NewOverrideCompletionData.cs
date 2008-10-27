@@ -219,7 +219,14 @@ namespace MonoDevelop.CSharpBinding
 				sb.Append (this.indent);
 				sb.Append (SingleIndent);
 				sb.Append (SingleIndent);
-				sb.AppendLine ("throw new System.NotImplementedException ();");
+				if (!property.IsAbstract) {
+					sb.Append ("base.");
+					sb.Append (property.Name);
+					sb.AppendLine (" = value;");
+				} else {
+				
+					sb.AppendLine ("throw new System.NotImplementedException ();");
+				}
 				sb.Append (this.indent);
 				sb.Append (SingleIndent);
 				sb.AppendLine ("}");
