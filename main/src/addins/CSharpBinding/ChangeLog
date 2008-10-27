@@ -1,3 +1,8 @@
+2008-10-27  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/NRefactoryResolver.cs:
+	* Gui/NRefactoryParameterDataProvider.cs: Removed debug messages.
+
 2008-10-24  Mike Krüger  <mkrueger@novell.com>
 
 	* Gui/NewOverrideCompletionData.cs: fixed override bug.

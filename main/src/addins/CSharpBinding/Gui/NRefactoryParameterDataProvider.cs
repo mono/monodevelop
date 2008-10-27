@@ -94,7 +94,6 @@ namespace MonoDevelop.CSharpBinding
 			this.resolver = resolver;
 			if (type != null) {
 				foreach (IMethod method in type.Methods) {
-					System.Console.WriteLine(method);
 					if ((method.IsConstructor && method.IsAccessibleFrom (resolver.Dom, type, resolver.CallingMember)))
 						methods.Add (method);
 				}
