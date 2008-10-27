@@ -59,6 +59,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 			sev.ContentName = "a.cs";
 			sev.Text = parsedText;
 			sev.CursorPosition = cursorPosition;
+			
 			tww.ViewContent = sev;
 			Document doc = new Document (tww);
 			doc.ParsedDocument = new NRefactoryParser ().Parse (sev.ContentName, sev.Text);
@@ -68,7 +69,10 @@ namespace MonoDevelop.CSharpBinding.Tests
 			int triggerWordLength = 1;
 			CodeCompletionContext ctx = new CodeCompletionContext ();
 			ctx.TriggerOffset = sev.CursorPosition;
-			 
+			int line, column;
+			sev.GetLineColumnFromPosition (sev.CursorPosition, out line, out column);
+			ctx.TriggerLineOffset = column;
+			ctx.TriggerLine = line;
 			IParameterDataProvider result =  textEditorCompletion.HandleParameterCompletion (ctx, text[cursorPosition - 1]);
 			return result;
 		}
@@ -115,17 +119,16 @@ class AClass
 		public void TestBug432437 ()
 		{
 			IParameterDataProvider provider = CreateProvider (
-@"
-public delegate void MyDel (int value);
+@"public delegate void MyDel (int value);
 
 class Test
 {
-        void A()
-        {
-                MyDel d;
+	MyDel d;
 
-                d ($
-        }
+	void A()
+	{
+		d ($
+	}
 }");
 			Assert.IsNotNull (provider, "provider was not created.");
 			Assert.AreEqual (1, provider.OverloadCount);

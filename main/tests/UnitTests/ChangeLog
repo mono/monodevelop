@@ -1,5 +1,10 @@
 2008-10-27  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharpBinding/ParameterCompletionTests.cs: fixed a bug in
+	unit tests.
+
+2008-10-27  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharpBinding/ParameterCompletionTests.cs: Added test for
 	"Bug 434705 - No autocomplete offered if not assigning result of
 	'new' to a variable".
