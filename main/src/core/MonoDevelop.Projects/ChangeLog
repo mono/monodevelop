@@ -1,5 +1,12 @@
 2008-10-27  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Dom/DomCecilType.cs:
+	* MonoDevelop.Projects.Dom/DomCecilCompilationUnit.cs:
+	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
+	fixed 'Bug 438699 - Code completion shows too many options'.
+
+2008-10-27  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs: fixed "Bug
 	436951 - Overriding an abstract property is incorrect".
 

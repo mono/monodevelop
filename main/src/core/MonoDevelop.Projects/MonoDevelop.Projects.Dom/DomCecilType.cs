@@ -92,6 +92,7 @@ namespace MonoDevelop.Projects.Dom
 			if (typeDefinition.BaseType != null)
 				this.baseType = DomCecilMethod.GetReturnType (typeDefinition.BaseType);
 			DomCecilMethod.AddAttributes (this, typeDefinition.CustomAttributes);
+			
 			foreach (TypeReference interfaceReference in typeDefinition.Interfaces) {
 				this.AddInterfaceImplementation (DomCecilMethod.GetReturnType (interfaceReference));
 			}
@@ -120,6 +121,11 @@ namespace MonoDevelop.Projects.Dom
 					continue;
 				base.Add (new DomCecilEvent (this, keepDefinitions,eventDefinition));
 			}
+			
+			foreach (TypeDefinition nestedType in typeDefinition.NestedTypes) {
+				base.Add (new DomCecilType (keepDefinitions, loadInternal, nestedType));
+			}
+			
 			foreach (GenericParameter parameter in typeDefinition.GenericParameters) {
 				TypeParameter tp = new TypeParameter (parameter.FullName);
 				foreach (TypeReference tr in parameter.Constraints)
