@@ -1,5 +1,10 @@
 2008-10-27  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs: fixed "Bug
+	436951 - Overriding an abstract property is incorrect".
+
+2008-10-27  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: removed debug message.
 
 2008-10-26  Lluis Sanchez Gual  <lluis@novell.com>

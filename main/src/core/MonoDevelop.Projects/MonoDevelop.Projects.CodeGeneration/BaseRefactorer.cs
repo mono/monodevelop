@@ -298,9 +298,17 @@ namespace MonoDevelop.Projects.CodeGeneration
 					mMethod.Attributes = MemberAttributes.Override;
 				
 				mMethod.ReturnType = ReturnTypeToDom (ctx, cls.CompilationUnit, member.ReturnType);
-				CodeExpression nieReference = new CodeObjectCreateExpression (TypeToDom (ctx, typeof (NotImplementedException)));
-				CodeStatement throwExpression = new CodeThrowExceptionStatement (nieReference);
-				mMethod.Statements.Add (throwExpression);
+				if (member.IsAbstract || member.DeclaringType.ClassType == ClassType.Interface) {
+					CodeExpression nieReference = new CodeObjectCreateExpression (TypeToDom (ctx, typeof (NotImplementedException)));
+					CodeStatement throwExpression = new CodeThrowExceptionStatement (nieReference);
+					mMethod.Statements.Add (throwExpression);
+				} else {
+					List<CodeExpression> parameters = new List<CodeExpression> ();
+					foreach (IParameter parameter in method.Parameters) {
+						parameters.Add (new CodeVariableReferenceExpression (parameter.Name));
+					}
+					mMethod.Statements.Add (new CodeMethodInvokeExpression (new CodeBaseReferenceExpression (), member.Name, parameters.ToArray ()));
+				}
 				
 				foreach (IParameter param in method.Parameters) {
 					CodeParameterDeclarationExpression par;
@@ -327,10 +335,20 @@ namespace MonoDevelop.Projects.CodeGeneration
 					CodeStatement throwExpression = new CodeThrowExceptionStatement (nieReference);
 					mProperty.HasGet = property.HasGet;
 					mProperty.HasSet = property.HasSet;
-					if (property.HasGet)
-						mProperty.GetStatements.Add (throwExpression);
-					if (property.HasSet)
-						mProperty.SetStatements.Add (throwExpression);
+					if (property.HasGet) {
+						if (member.IsAbstract || member.DeclaringType.ClassType == ClassType.Interface) {
+							mProperty.GetStatements.Add (throwExpression);
+						} else {
+							mProperty.GetStatements.Add (new CodeMethodReturnStatement (new CodePropertyReferenceExpression(new CodeBaseReferenceExpression(), property.Name)));
+						}
+					}
+					if (property.HasSet) {
+						if (member.IsAbstract || member.DeclaringType.ClassType == ClassType.Interface) {
+							mProperty.SetStatements.Add (throwExpression);
+						} else {
+							mProperty.SetStatements.Add (new CodeAssignStatement (new CodePropertyReferenceExpression(new CodeBaseReferenceExpression(), property.Name), new CodePropertySetValueReferenceExpression ()));
+						}
+					}
 				
 					mProperty.Type = ReturnTypeToDom (ctx, cls.CompilationUnit, member.ReturnType);
 					if (privateImplementationType != null)
@@ -347,10 +365,25 @@ namespace MonoDevelop.Projects.CodeGeneration
 					mProperty.HasGet = property.HasGet;
 					mProperty.HasSet = property.HasSet;
 
-					if (mProperty.HasGet)
-						mProperty.GetStatements.Add (throwExpression);
-					if (mProperty.HasSet)
-						mProperty.SetStatements.Add (throwExpression);
+					List<CodeExpression> parameters = new List<CodeExpression> ();
+					foreach (IParameter parameter in property.Parameters) {
+						parameters.Add (new CodeVariableReferenceExpression (parameter.Name));
+					}
+
+					if (mProperty.HasGet) {
+						if (member.IsAbstract || member.DeclaringType.ClassType == ClassType.Interface) {
+							mProperty.GetStatements.Add (throwExpression);
+						} else {
+							mProperty.GetStatements.Add (new CodeMethodReturnStatement (new CodeIndexerExpression (new CodeBaseReferenceExpression(), parameters.ToArray ())));
+						}
+					}
+					if (mProperty.HasSet) {
+						if (member.IsAbstract || member.DeclaringType.ClassType == ClassType.Interface) {
+							mProperty.SetStatements.Add (throwExpression);
+						} else {
+							mProperty.SetStatements.Add (new CodeAssignStatement (new CodeIndexerExpression (new CodeBaseReferenceExpression(), parameters.ToArray ()), new CodePropertySetValueReferenceExpression ()));
+						}
+					}
 				
 					foreach (IParameter param in property.Parameters) {
 						CodeParameterDeclarationExpression par;
