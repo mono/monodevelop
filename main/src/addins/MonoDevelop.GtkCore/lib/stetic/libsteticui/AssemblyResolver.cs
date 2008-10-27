@@ -59,6 +59,15 @@ namespace Stetic {
 		{
 			AssemblyDefinition asm = (AssemblyDefinition) _assemblies [name.Name];
 			if (asm == null) {
+				if (app != null) {
+					string ares = app.ResolveAssembly (name.Name);
+					if (ares != null) {
+						asm = AssemblyFactory.GetAssembly (ares);
+						asm.Resolver = this;
+						_assemblies [name.Name] = asm;
+						return asm;
+					}
+				}
 				asm = base.Resolve (name);
 				asm.Resolver = this;
 				_assemblies [name.Name] = asm;

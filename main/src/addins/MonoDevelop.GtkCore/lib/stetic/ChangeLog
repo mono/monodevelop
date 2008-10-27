@@ -1,3 +1,10 @@
+2008-10-27  Mike Kestner <mkestner@novell.com> 
+
+	* libsteticui/AssemblyResolver.cs: use the app backend's name resolver
+	in the AssemblyNameRef resolve overload to avoid some dependency load
+	failures.  I think this also fixes #436246.  At least I can't repro it
+	with this fix in place.
+
 2008-09-15  Mike Kestner <mkestner@novell.com> 
 
 	* libstetic/ErrorWidget.cs: add Project filename to the generation
