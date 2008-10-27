@@ -93,12 +93,14 @@ namespace MonoDevelop.CSharpBinding
 			this.editor = editor;
 			this.resolver = resolver;
 			if (type != null) {
+				bool constructorFound = false;
 				foreach (IMethod method in type.Methods) {
+					constructorFound |= method.IsConstructor;
 					if ((method.IsConstructor && method.IsAccessibleFrom (resolver.Dom, type, resolver.CallingMember)))
 						methods.Add (method);
 				}
 				// No constructor - generating default
-				if (methods.Count == 0) {
+				if (!constructorFound) {
 					DomMethod defaultConstructor = new DomMethod ();
 					defaultConstructor.MethodModifier = MethodModifier.IsConstructor;
 					defaultConstructor.DeclaringType = type;
