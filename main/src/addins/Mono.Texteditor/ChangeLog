@@ -1,3 +1,9 @@
+2008-10-27  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextViewMargin.cs:
+	* Mono.TextEditor.Highlighting/ChunkStyle.cs: fixed 'Bug 438946 – Editor
+	does not respect Bold font setting for font'.
+
 2008-10-24  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/Caret.cs:

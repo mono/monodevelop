@@ -411,7 +411,16 @@ namespace Mono.TextEditor
 			}
 			return false;
 		}
-		
+		Pango.Weight DefaultWeight {
+			get {
+				return textEditor.Options.Font.Weight;
+			}
+		}
+		Pango.Style DefaultStyle {
+			get {
+				return textEditor.Options.Font.Style;
+			}
+		}
 		void DrawStyledText (Gdk.Drawable win, LineSegment line, bool selected, ChunkStyle style, ref int visibleColumn, ref int xPos, int y, int startOffset, int endOffset)
 		{
 			int caretOffset = Caret.Offset;
@@ -422,11 +431,14 @@ namespace Mono.TextEditor
 				foreach (TextMarker marker in line.Markers)
 					style = marker.GetStyle (style);
 			}
-	
-			if (style.Bold)
-				layout.FontDescription.Weight = Pango.Weight.Bold;
-			if (style.Italic)
-				layout.FontDescription.Style = Pango.Style.Italic;
+			
+			Pango.Weight requestedWeight = style.GetWeight (DefaultWeight);
+			if (layout.FontDescription.Weight != requestedWeight)
+				layout.FontDescription.Weight = requestedWeight;
+			
+			Pango.Style requestedStyle = style.GetStyle (DefaultStyle);
+			if (layout.FontDescription.Style != requestedStyle)
+				layout.FontDescription.Style = requestedStyle;
 			
 			for (int offset = startOffset; offset < endOffset; offset++) {
 				char ch = Document.GetCharAt (offset);
@@ -544,11 +556,11 @@ namespace Mono.TextEditor
 			
 			OutputWordBuilder (win, line, selected, style, ref visibleColumn, ref xPos, y, endOffset);
 			
-			if (style.Bold)
-				layout.FontDescription.Weight = Pango.Weight.Normal;
-			if (style.Italic)
-				layout.FontDescription.Style = Pango.Style.Normal;
-			
+			if (DefaultWeight != requestedWeight)
+				layout.FontDescription.Weight = DefaultWeight;
+			if (DefaultStyle != requestedStyle)
+				layout.FontDescription.Style = DefaultStyle;
+
 			if (drawCaretAt >= 0)
 				SetVisibleCaretPosition (win, Document.Contains (caretOffset) ? Document.GetCharAt (caretOffset) : ' ', drawCaretAt, y);
 		}
@@ -1099,8 +1111,9 @@ namespace Mono.TextEditor
 							delta = margin.charWidth;
 							visibleColumn++;
 						} else {
-							measureLayout.FontDescription.Weight = chunk.Style.Bold ? Pango.Weight.Bold : Pango.Weight.Normal;
-							measureLayout.FontDescription.Style =  chunk.Style.Italic ? Pango.Style.Italic: Pango.Style.Normal;
+							measureLayout.FontDescription.Weight = chunk.Style.GetWeight (margin.DefaultWeight);
+							measureLayout.FontDescription.Style =  chunk.Style.GetStyle (margin.DefaultStyle);
+							
 							measureLayout.SetText (ch.ToString ());
 							int height;
 							measureLayout.GetPixelSize (out delta, out height);

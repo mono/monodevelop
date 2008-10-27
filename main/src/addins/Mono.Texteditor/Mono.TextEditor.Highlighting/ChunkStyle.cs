@@ -85,6 +85,17 @@ namespace Mono.TextEditor
 			italic = style.italic;
 			transparentBackround = style.transparentBackround;
 		}
+
+		public Pango.Style GetStyle (Pango.Style defaultStyle)
+		{
+			return italic ? Pango.Style.Italic : Pango.Style.Normal;
+		}
+		public Pango.Weight GetWeight (Pango.Weight defaultWeight)
+		{
+			if (defaultWeight == Pango.Weight.Bold)
+				return bold ? Pango.Weight.Heavy : Pango.Weight.Bold;
+			return bold ? Pango.Weight.Bold : Pango.Weight.Normal;
+		}
 		
 		public ChunkStyle () : this (new Gdk.Color (0, 0, 0), false)
 		{
