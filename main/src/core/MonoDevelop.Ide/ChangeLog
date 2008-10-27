@@ -1,3 +1,7 @@
+2008-10-27  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui/Workbench.cs: Added gui lock/unlock events.
+
 2008-10-24  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Gui.Content/CompletionTextEditorExtension.cs: fixed

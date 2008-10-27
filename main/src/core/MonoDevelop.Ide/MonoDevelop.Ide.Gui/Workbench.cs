@@ -59,6 +59,8 @@ namespace MonoDevelop.Ide.Gui
 		
 		public event EventHandler ActiveDocumentChanged;
 		public event EventHandler LayoutChanged;
+		public event EventHandler GuiLocked;
+		public event EventHandler GuiUnlocked;
 		
 		internal void Initialize (IProgressMonitor monitor)
 		{
@@ -236,11 +238,15 @@ namespace MonoDevelop.Ide.Gui
 		public void LockGui ()
 		{
 			IdeApp.CommandService.LockAll ();
+			if (GuiLocked != null)
+				GuiLocked (this, EventArgs.Empty);
 		}
 		
 		public void UnlockGui ()
 		{
 			IdeApp.CommandService.UnlockAll ();
+			if (GuiUnlocked != null)
+				GuiUnlocked (this, EventArgs.Empty);
 		}
 		
 		public void SaveAll ()
