@@ -1,5 +1,10 @@
 2008-10-27  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Dom/DomCecilCompilationUnit.cs: filtered more
+	types.
+
+2008-10-27  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Dom/DomCecilType.cs:
 	* MonoDevelop.Projects.Dom/DomCecilCompilationUnit.cs:
 	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:

@@ -98,14 +98,16 @@ namespace MonoDevelop.Projects.Dom
 		{
 			foreach (TypeDefinition type in moduleDefinition.Types) {
 				// filter nested types, they're handled in DomCecilType.
-				if ((type.Attributes & TypeAttributes.NestedPublic) == TypeAttributes.NestedPublic || 
+				if ((type.Attributes & TypeAttributes.NestedPublic) == TypeAttributes.NestedPublic ||
+				    (type.Attributes & TypeAttributes.NestedFamily) == TypeAttributes.NestedFamily || 
 				    (type.Attributes & TypeAttributes.NestedAssembly) == TypeAttributes.NestedAssembly ||
 				    (type.Attributes & TypeAttributes.NestedPrivate) == TypeAttributes.NestedPrivate || 
 				    (type.Attributes & TypeAttributes.NestedFamANDAssem) == TypeAttributes.NestedFamANDAssem)
 					continue;
-				
 				if (!loadInternal && IsInternal (DomCecilType.GetModifiers (type.Attributes)))
 					continue;
+//				if (type.Name == "SimplePropertyDescriptor")
+//					System.Console.WriteLine(type.Attributes + "/" + DomCecilType.GetModifiers (type.Attributes) + "/" + IsInternal (DomCecilType.GetModifiers (type.Attributes)));
 				DomCecilType loadType = new DomCecilType (keepDefinitions, loadInternal, type);
 				
 				Add (loadType);
