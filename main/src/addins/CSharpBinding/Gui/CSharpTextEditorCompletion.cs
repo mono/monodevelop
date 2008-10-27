@@ -829,8 +829,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			return line.Substring (0, line.Length - trimmedLength);
 		}
 		
-		void AddVirtuals (Dictionary<string, bool> alreadyInserted, CompletionDataList completionList, IType type, 
-		                  string modifiers, IReturnType curType)
+		void AddVirtuals (Dictionary<string, bool> alreadyInserted, CompletionDataList completionList, IType type, string modifiers, IReturnType curType)
 		{
 			if (curType == null)
 				return;
@@ -867,8 +866,17 @@ namespace MonoDevelop.CSharpBinding.Gui
 					if ((isInterface || m.IsVirtual || m.IsAbstract) && !m.IsSealed && (includeOverriden || !type.HasOverriden (m))) {
 						//System.Console.WriteLine("add");
 						NewOverrideCompletionData data = new NewOverrideCompletionData (Editor, declarationBegin, type, m);
-						if (!alreadyInserted.ContainsKey (data.DisplayText)) {
-							alreadyInserted[data.DisplayText] = true;
+						string text = CompletionDataCollector.ambience.GetString (m, OutputFlags.ClassBrowserEntries);
+						// check if the member is already implemented
+						bool foundMember = false;
+						foreach (IMember member in type.Members) {
+							if (text == CompletionDataCollector.ambience.GetString (member, OutputFlags.ClassBrowserEntries)) {
+								foundMember = true;
+								break;
+							}
+						}
+						if (!foundMember && !alreadyInserted.ContainsKey (text)) {
+							alreadyInserted[text] = true;
 							completionList.Add (data);
 						}
 					}
