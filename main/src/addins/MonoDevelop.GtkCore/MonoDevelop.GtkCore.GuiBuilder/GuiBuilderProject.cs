@@ -201,7 +201,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				
 			if (GtkDesignInfo.FromProject (project).UpdateGtkFolder () && saveMdProject)
 				IdeApp.ProjectOperations.Save (project);
-			GuiBuilderService.StoreConfiguration ();
 		}
 		
 		public string File {

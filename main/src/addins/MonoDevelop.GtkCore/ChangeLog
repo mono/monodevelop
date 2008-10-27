@@ -1,3 +1,10 @@
+2008-10-27  Mike Kestner <mkestner@novell.com> 
+
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs: don't store
+	configuration on Project Save.  Avoids a crash due to file availability
+	when saving config while loading and it's extraneous since we store
+	the config on app exit and it contains no project specific props.
+
 2008-10-22  Mike Kestner <mkestner@novell.com> 
 
 	* MonoDevelop.GtkCore/GtkDesignInfo.cs (HasDesignedObjects): guard
