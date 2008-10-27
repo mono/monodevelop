@@ -185,11 +185,13 @@ namespace MonoDevelop.CSharpBinding
 						new DomLocation (editor.CursorLine - 1, editor.CursorColumn - 1));
 				foreach (IType type in dom.GetInheritanceTree (CallingType)) {
 					foreach (IMember member in type.Members) {
-	//					if (member.IsAccessibleFrom (dom, CallingMember)) {
+						if (CallingMember.IsStatic && !member.IsStatic)
+							continue;
+						if (member.IsAccessibleFrom (dom, CallingType, CallingMember)) {
 							if (context.FilterEntry (member))
 								continue;
 							col.AddCompletionData (completionList, member);
-	//					}
+						}
 					}
 				}
 			}
