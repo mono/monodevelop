@@ -197,6 +197,32 @@ class AClass
 		}
 		
 		/// <summary>
+		/// Bug 434705 - No autocomplete offered if not assigning result of 'new' to a variable
+		/// </summary>
+		[Test()]
+		public void TestBug434705B ()
+		{
+			IParameterDataProvider provider = CreateProvider (
+@"
+class Test<T>
+{
+	public Test (T t)
+	{
+	}
+}
+class TestClass
+{
+	void TestMethod ()
+	{
+		Test<int> l = new Test<int> ($
+	}
+}");
+			Assert.IsNotNull (provider, "provider was not created.");
+			Assert.AreEqual (1, provider.OverloadCount);
+		}
+	
+		
+		/// <summary>
 		/// Bug 434701 - No autocomplete in attributes
 		/// </summary>
 		[Test()]
