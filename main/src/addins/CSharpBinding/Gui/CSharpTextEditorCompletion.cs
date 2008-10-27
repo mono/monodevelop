@@ -446,14 +446,6 @@ namespace MonoDevelop.CSharpBinding.Gui
 			switch (completionChar) {
 			case '(':
 				ResolveResult resolveResult = resolver.Resolve (result, new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
-				if (result.ExpressionContext is ExpressionContext.TypeExpressionContext) {
-					IReturnType returnType = ((ExpressionContext.TypeExpressionContext)result.ExpressionContext).Type ?? resolveResult.ResolvedType;
-					
-					IType type = dom.SearchType (new SearchTypeRequest (resolver.Unit, returnType));
-					if (type != null && returnType.GenericArguments != null)
-						type = DomType.CreateInstantiatedGenericType (type, returnType.GenericArguments);
-					return new NRefactoryParameterDataProvider (Editor, resolver, type);
-				}
 				if (result.ExpressionContext == ExpressionContext.Attribute) {
 					IReturnType returnType = resolveResult.ResolvedType;
 					IType type = dom.SearchType (new SearchTypeRequest (resolver.Unit, returnType));
@@ -464,6 +456,15 @@ namespace MonoDevelop.CSharpBinding.Gui
 					return new NRefactoryParameterDataProvider (Editor, resolver, type);
 				}
 				if (resolveResult != null) {
+					if (result.ExpressionContext is ExpressionContext.TypeExpressionContext) {
+						IReturnType returnType = ((ExpressionContext.TypeExpressionContext)result.ExpressionContext).Type ?? resolveResult.ResolvedType;
+						
+						IType type = dom.SearchType (new SearchTypeRequest (resolver.Unit, returnType));
+						if (type != null && returnType.GenericArguments != null)
+							type = DomType.CreateInstantiatedGenericType (type, returnType.GenericArguments);
+						return new NRefactoryParameterDataProvider (Editor, resolver, type);
+					}
+					
 					if (resolveResult is MethodResolveResult)
 						return new NRefactoryParameterDataProvider (Editor, resolver, resolveResult as MethodResolveResult);
 					if (result.ExpressionContext == ExpressionContext.BaseConstructorCall) {
