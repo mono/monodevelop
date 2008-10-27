@@ -61,9 +61,26 @@ namespace MonoDevelop.CSharpBinding
 			return result.ResolvedType ?? DomReturnType.Void;
 		}
 		
+		static IReturnType ConvertTypeReference (TypeReference typeReference)
+		{
+			if (!String.IsNullOrEmpty (typeReference.SystemType))
+				return new DomReturnType (typeReference.SystemType);
+			DomReturnType result = new DomReturnType (typeReference.Type);
+			result.IsNullable = typeReference.IsNull;
+			result.PointerNestingLevel = typeReference.PointerNestingLevel;
+			if (typeReference.IsArrayType) {
+				result.ArrayDimensions = typeReference.RankSpecifier.Length;
+				result.SetDimensions (typeReference.RankSpecifier);
+			}
+			foreach (TypeReference generic in typeReference.GenericTypes) {
+				result.AddTypeParameter (ConvertTypeReference (generic));
+			}
+			return result;
+		}
+		
 		internal ResolveResult CreateResult (TypeReference typeReference)
 		{
-			return CreateResult (String.IsNullOrEmpty (typeReference.SystemType) ? typeReference.Type : typeReference.SystemType);
+			return CreateResult (ConvertTypeReference (typeReference));
 		}
 		
 		internal ResolveResult CreateResult (string fullTypeName)
@@ -436,7 +453,6 @@ namespace MonoDevelop.CSharpBinding
 			
 			if (result != null && result.ResolvedType != null) {
 				IType type = resolver.Dom.GetType (result.ResolvedType);
-				
 				if (type != null) {
 					List<IMember> member = new List <IMember> ();
 					List<IType> accessibleExtTypes = DomType.GetAccessibleExtensionTypes (resolver.Dom, resolver.Unit);

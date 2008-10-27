@@ -1,5 +1,11 @@
 2008-10-27  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/ResolveVisitor.cs:
+	* Gui/CSharpTextEditorCompletion.cs: fixed 'Bug 434705 - No autocomplete
+	offered if not assigning result of 'new' to a variable'.
+
+2008-10-27  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/CSharpTextEditorCompletion.cs: fixed possible null reference
 	exception.
 

@@ -217,10 +217,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				result = FindExpression (dom, -1);
 				if (result == null || result.Expression == null)
 					return null;
-				resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (dom, Document.CompilationUnit,
-				                                                                                ICSharpCode.NRefactory.SupportedLanguage.CSharp,
-				                                                                                Editor,
-				                                                                                Document.FileName);
+				resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (dom, Document.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, Editor, Document.FileName);
 				resolveResult = resolver.Resolve (result, new DomLocation (Editor.CursorLine, Editor.CursorColumn - 1));
 				
 				if (resolveResult != null && resolver.ResolvedExpression is ICSharpCode.NRefactory.Ast.TypeOfExpression) {
@@ -455,7 +452,10 @@ namespace MonoDevelop.CSharpBinding.Gui
 						type = DomType.CreateInstantiatedGenericType (type, returnType.GenericArguments);
 					return new NRefactoryParameterDataProvider (Editor, resolver, type);
 				}
+				
 				if (resolveResult != null) {
+					System.Console.WriteLine("resolveResult:" + resolveResult);
+					
 					if (result.ExpressionContext is ExpressionContext.TypeExpressionContext) {
 						IReturnType returnType = ((ExpressionContext.TypeExpressionContext)result.ExpressionContext).Type ?? resolveResult.ResolvedType;
 						
