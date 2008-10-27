@@ -1,3 +1,8 @@
+2008-10-27  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: added lock for
+	possible threading issue.
+
 2008-10-16  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: Remove unneeded

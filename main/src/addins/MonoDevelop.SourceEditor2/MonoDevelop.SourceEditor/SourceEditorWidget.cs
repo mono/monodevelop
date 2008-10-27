@@ -345,18 +345,20 @@ namespace MonoDevelop.SourceEditor
 				parseInformationUpdaterWorkerThread = null;
 			}
 		}
+		object autocorlock = new object ();
 		void UpdateAutocorTimer ()
 		{
 			if (!SourceEditorOptions.Options.UnderlineErrors)
 				return;
 			uint timeout = 900;
-			
-			if (resetTimerStarted) {
-				// Reset the timer
-				GLib.Source.Remove (resetTimerId);
-			} else {
-				// Start the timer for the first time
-				resetTimerStarted = true;
+			lock (autocorlock) {
+				if (resetTimerStarted) {
+					// Reset the timer
+					GLib.Source.Remove (resetTimerId);
+				} else {
+					// Start the timer for the first time
+					resetTimerStarted = true;
+				}
 			}
 			resetTimerId = GLib.Timeout.Add (timeout, AutocorrResetMeth);
 		}
@@ -366,7 +368,9 @@ namespace MonoDevelop.SourceEditor
 			ResetUnderlineChangement ();
 			if (parsedDocument != null)
 				ParseCompilationUnit (parsedDocument);
-			resetTimerStarted = false;
+			lock (autocorlock) {
+				resetTimerStarted = false;
+			}
 			return false;
 		}
 		
