@@ -55,6 +55,15 @@ namespace MonoDevelop.CSharpBinding.Gui
 				pos = documentToCursor.LastIndexOf("=");
 			if (pos <= 0)
 				return null;
+			
+			// check if new +=/-=/= is right before "new"
+			for (int i = pos; i < editor.CursorPosition; i++) {
+				char ch = documentToCursor[i];
+				if (Char.IsWhiteSpace (ch))
+					continue;
+				if (ch != '=' && ch != '+' && ch != '-' && ch != 'n' && ch != 'e' && ch != 'w')
+					return null;
+			}
 			ExpressionResult lhsExpr = FindExpression (documentToCursor, pos);
 			
 			if (lhsExpr.Expression != null) {
