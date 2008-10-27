@@ -1,5 +1,11 @@
 2008-10-27  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Dom/DomType.cs:
+	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs: fixed 'Bug
+	438139 - Refactory commands missing'.
+
+2008-10-27  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Dom/DomCecilCompilationUnit.cs: filtered more
 	types.
 

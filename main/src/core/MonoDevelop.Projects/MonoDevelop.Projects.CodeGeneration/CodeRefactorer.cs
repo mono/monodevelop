@@ -167,16 +167,17 @@ namespace MonoDevelop.Projects.CodeGeneration
 			FindOverridables (pctx, cls, cls, classMembers, interfaceMembers, visited, includeOverridenClassMembers, includeOverridenInterfaceMembers);
 		}
 
-		void FindOverridables (ProjectDom pctx, IType motherClass, IType cls, List<IMember> classMembers, List<IMember> interfaceMembers,
-		                       List<IType> visited, bool includeOverridenClassMembers, bool includeOverridenInterfaceMembers)
+		void FindOverridables (ProjectDom pctx, IType motherClass, IType cls, List<IMember> classMembers, List<IMember> interfaceMembers, List<IType> visited, bool includeOverridenClassMembers, bool includeOverridenInterfaceMembers)
 		{
 			if (visited.Contains (cls))
 				return;
+			
 			visited.Add (cls);
-
+			
 			foreach (IReturnType rt in cls.BaseTypes)
 			{
-				IType baseCls = pctx.GetType (rt);
+				IType baseCls = pctx.SearchType (new SearchTypeRequest (cls.CompilationUnit, rt));
+				
 				if (baseCls == null)
 					continue;
 

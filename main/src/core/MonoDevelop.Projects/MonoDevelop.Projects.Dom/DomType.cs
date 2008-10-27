@@ -98,12 +98,15 @@ namespace MonoDevelop.Projects.Dom
 		
 		public SolutionItem SourceProject {
 			get {
+				
 				return SourceProjectDom != null ? SourceProjectDom.Project : null;
 			}
 		}
 
 		public virtual ICompilationUnit CompilationUnit {
 			get {
+				if (DeclaringType != null)
+					return DeclaringType.CompilationUnit;
 				return compilationUnit;
 			}
 			set {
