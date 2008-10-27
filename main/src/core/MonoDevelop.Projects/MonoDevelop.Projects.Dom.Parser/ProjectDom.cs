@@ -419,7 +419,6 @@ namespace MonoDevelop.Projects.Dom.Parser
 				typeStack.Push (curType);
 				while (typeStack.Count > 0) {
 					IType type = typeStack.Pop ();
-					System.Console.WriteLine(type);
 					if (type.FullName == typeName) 
 						return type;
 					foreach (IType inner in type.InnerTypes) {

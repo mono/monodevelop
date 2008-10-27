@@ -1,3 +1,7 @@
+2008-10-27  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: removed debug message.
+
 2008-10-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs: Read
