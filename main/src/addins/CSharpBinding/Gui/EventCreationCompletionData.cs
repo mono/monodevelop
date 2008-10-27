@@ -46,7 +46,11 @@ namespace MonoDevelop.CSharpBinding
 		
 		public EventCreationCompletionData (TextEditor editor, IType delegateType, string parameterList, IMember callingMember, IType declaringType) : base (null)
 		{
-			this.DisplayText   = "Handle" + delegateType.Name;
+			if (delegateType is InstantiatedType) {
+				this.DisplayText   = "Handle" + ((InstantiatedType)delegateType).UninstantiatedType.Name;
+			} else {
+				this.DisplayText   = "Handle" + delegateType.Name;
+			}
 			if (declaringType.SearchMember (this.DisplayText, true).Count > 0) {
 				for (int i = 1; i < 10000; i++) {
 					if (declaringType.SearchMember (this.DisplayText + i.ToString (), true).Count == 0) {
@@ -66,8 +70,9 @@ namespace MonoDevelop.CSharpBinding
 		{
 			editor.DeleteText (initialOffset, editor.CursorPosition - initialOffset);
 			editor.InsertText (editor.CursorPosition, this.DisplayText + ";");
-			int pos = editor.GetPositionFromLineColumn (callingMember.BodyRegion.End.Line, callingMember.BodyRegion.End.Column);
-			int lastPos = editor.GetPositionFromLineColumn (callingMember.DeclaringType.BodyRegion.End.Line, callingMember.DeclaringType.BodyRegion.End.Column) - 1;
+			
+			int pos = editor.GetPositionFromLineColumn (callingMember.BodyRegion.End.Line + 1, 1);
+			int lastPos = editor.GetPositionFromLineColumn (callingMember.DeclaringType.BodyRegion.End.Line - 1, 1);
 			pos = Math.Min (pos, lastPos);
 			
 			string indent = NewOverrideCompletionData.GetIndentString (editor, editor.GetPositionFromLineColumn (callingMember.Location.Line + 1, 0));

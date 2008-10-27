@@ -1,5 +1,10 @@
 2008-10-27  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/EventCreationCompletionData.cs: handled instantiated types for
+	event completion.
+
+2008-10-27  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/ResolveVisitor.cs: Removed duplicate method.
 
 2008-10-27  Mike Krüger  <mkrueger@novell.com>
