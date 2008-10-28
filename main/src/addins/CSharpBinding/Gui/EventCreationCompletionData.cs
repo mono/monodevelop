@@ -44,12 +44,12 @@ namespace MonoDevelop.CSharpBinding
 		TextEditor editor;
 		int initialOffset;
 		
-		public EventCreationCompletionData (TextEditor editor, IType delegateType, string parameterList, IMember callingMember, IType declaringType) : base (null)
+		public EventCreationCompletionData (TextEditor editor, IType delegateType, IEvent evt, string parameterList, IMember callingMember, IType declaringType) : base (null)
 		{
 			if (delegateType is InstantiatedType) {
-				this.DisplayText   = "Handle" + ((InstantiatedType)delegateType).UninstantiatedType.Name;
+				this.DisplayText   = "Handle" + evt.Name;
 			} else {
-				this.DisplayText   = "Handle" + delegateType.Name;
+				this.DisplayText   = "Handle" + evt.Name;
 			}
 			if (declaringType.SearchMember (this.DisplayText, true).Count > 0) {
 				for (int i = 1; i < 10000; i++) {
@@ -65,19 +65,26 @@ namespace MonoDevelop.CSharpBinding
 			this.Icon          = delegateType.Methods.First ().StockIcon;
 			this.initialOffset = editor.CursorPosition;
 		}
-		
+
 		public void InsertCompletionText (ICompletionWidget widget, ICodeCompletionContext context)
 		{
+			// insert add/remove event handler code after +=/-=
 			editor.DeleteText (initialOffset, editor.CursorPosition - initialOffset);
 			editor.InsertText (editor.CursorPosition, this.DisplayText + ";");
 			
-			int pos = editor.GetPositionFromLineColumn (callingMember.BodyRegion.End.Line + 1, 1);
-			int lastPos = editor.GetPositionFromLineColumn (callingMember.DeclaringType.BodyRegion.End.Line - 1, 1);
-			pos = Math.Min (pos, lastPos);
+			// Search opening bracket of member
+			int pos = editor.GetPositionFromLineColumn (callingMember.BodyRegion.Start.Line, callingMember.BodyRegion.Start.Column);
+			pos = Math.Max (pos, editor.SearchChar (pos, '{'));
 			
+			// Search closing bracket of member
+			pos = editor.SearchBracketForward (pos + 1, '{', '}') + 1;
+//			int lastPos = editor.GetPositionFromLineColumn (callingMember.DeclaringType.BodyRegion.End.Line, callingMember.DeclaringType.BodyRegion.End.Column);
+			pos = Math.Min (pos /*Math.Min (pos, lastPos)*/, editor.TextLength - 1);
+			
+			// Insert new event handler after closing bracket
 			string indent = NewOverrideCompletionData.GetIndentString (editor, editor.GetPositionFromLineColumn (callingMember.Location.Line + 1, 0));
-			string text = "\n" + indent +"void " + this.DisplayText + " " + this.parameterList + "\n" + indent +"{\n" + indent + TextEditorProperties.IndentString;
-			editor.InsertText (pos, text + "\n" + indent +"}\n");
+			string text = Environment.NewLine + Environment.NewLine + indent +"void " + this.DisplayText + " " + this.parameterList + Environment.NewLine + indent +"{" + Environment.NewLine + indent + TextEditorProperties.IndentString;
+			editor.InsertText (pos, text + Environment.NewLine + indent + "}");
 			editor.CursorPosition = pos + text.Length;
 		}
 		

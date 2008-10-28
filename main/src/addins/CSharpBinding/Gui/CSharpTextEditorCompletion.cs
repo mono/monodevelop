@@ -350,8 +350,8 @@ namespace MonoDevelop.CSharpBinding.Gui
 						if (Document.LastErrorFreeParsedDocument != null) {
 							declaringType = Document.LastErrorFreeParsedDocument.CompilationUnit.GetType (declaringType.FullName, declaringType.TypeParameters.Count);
 						}
-						
-						foreach (IType type in dom.GetInheritanceTree (declaringType)) {
+						IType typeFromDatabase = dom.GetType (declaringType.FullName, new DomReturnType (declaringType).GenericArguments) ?? declaringType;
+						foreach (IType type in dom.GetInheritanceTree (typeFromDatabase)) {
 							foreach (IMethod method in type.Methods) {
 								if (method.IsAccessibleFrom (dom, resolver.CallingType, resolver.CallingMember) && MatchDelegate (delegateType, method)) {
 									ICompletionData data = cdc.AddCompletionData (completionList, method);
@@ -370,8 +370,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 							}
 							sb.Append (")");
 							completionList.Add ("delegate" + sb, "md-literal", GettextCatalog.GetString ("Creates anonymous delegate."), "delegate" + sb+" {\n" + stateTracker.Engine.ThisLineIndent  + TextEditorProperties.IndentString + "|\n" + stateTracker.Engine.ThisLineIndent +"};");
-								
-							completionList.Add (new EventCreationCompletionData (Editor, delegateType, sb.ToString (), resolver.CallingMember, declaringType));
+							completionList.Add (new EventCreationCompletionData (Editor, delegateType, evt, sb.ToString (), resolver.CallingMember, typeFromDatabase));
 						}
 						return completionList;
 					}
