@@ -354,6 +354,59 @@ namespace MonoDevelop.Ide.Gui
 		{
 			return ch == '(' || ch == '{' || ch == '[';
 		}
+
+		public int SearchBracketForward (int offset, char openBracket, char closingBracket)
+		{
+			return MonoDevelop.Projects.Gui.Completion.TextUtilities.SearchBracketForward (completionWidget, offset, openBracket, closingBracket);
+		}
+		
+		public int SearchBracketBackward (int offset, char openBracket, char closingBracket)
+		{
+			return MonoDevelop.Projects.Gui.Completion.TextUtilities.SearchBracketBackward (completionWidget, offset, openBracket, closingBracket);
+		}
+		
+		public int SearchChar (int startPos, char searchChar)
+		{
+			bool isInString = false, isInChar = false;
+			bool isInLineComment  = false, isInBlockComment = false;
+			
+			for (int pos = startPos; pos < TextLength; pos++) {
+				char ch = GetCharAt (pos);
+				switch (ch) {
+					case '\r':
+					case '\n':
+						isInLineComment = false;
+						break;
+					case '/':
+						if (isInBlockComment) {
+							if (pos > 0 && GetCharAt (pos - 1) == '*') 
+								isInBlockComment = false;
+						} else  if (!isInString && !isInChar && pos + 1 < TextLength) {
+							char nextChar = GetCharAt (pos + 1);
+							if (nextChar == '/')
+								isInLineComment = true;
+							if (!isInLineComment && nextChar == '*')
+								isInBlockComment = true;
+						}
+						break;
+					case '"':
+						if (!(isInChar || isInLineComment || isInBlockComment)) 
+							isInString = !isInString;
+						break;
+					case '\'':
+						if (!(isInString || isInLineComment || isInBlockComment)) 
+							isInChar = !isInChar;
+						break;
+					default :
+						if (ch == searchChar) {
+							if (!(isInString || isInChar || isInLineComment || isInBlockComment))
+								return pos;
+						}
+						break;
+				}
+			}
+			return -1;
+		}
 		
 		public void GotoMatchingBrace ()
 		{
@@ -367,10 +420,10 @@ namespace MonoDevelop.Ide.Gui
 				bool searchForward = IsOpenBrace (open);
 				if (searchForward) {
 					close = GetMatchingBrace (open);
-					offset = MonoDevelop.Projects.Gui.Completion.TextUtilities.SearchBracketForward (completionWidget, offset + 1, open, close);
+					offset = SearchBracketForward (offset + 1, open, close);
 				} else {
 					open  = GetMatchingBrace (open);
-					offset = MonoDevelop.Projects.Gui.Completion.TextUtilities.SearchBracketBackward (completionWidget, offset - 1, open, close);
+					offset = SearchBracketBackward (offset - 1, open, close);
 				}
 				if (offset >= 0)
 					textBuffer.CursorPosition = offset;
