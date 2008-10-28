@@ -1,3 +1,8 @@
+2008-10-28  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Made the case a.Count ==
+	0 a bit more  efficient in the OnTextReplacing event.
+
 2008-10-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Make sure find/replace

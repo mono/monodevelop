@@ -327,7 +327,11 @@ namespace MonoDevelop.SourceEditor
 		
 		void OnTextReplacing (object s, ReplaceEventArgs a)
 		{
-			oldReplaceText = widget.TextEditor.Document.GetTextAt (a.Offset, a.Count);
+			if (a.Count > 0)  {
+				oldReplaceText = widget.TextEditor.Document.GetTextAt (a.Offset, a.Count);
+			} else {
+				oldReplaceText = "";
+			}
 		}
 		
 		void OnTextReplaced (object s, ReplaceEventArgs a)
