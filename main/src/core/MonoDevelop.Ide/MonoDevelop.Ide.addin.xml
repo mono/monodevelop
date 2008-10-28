@@ -236,10 +236,6 @@
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/MonoDevelop/Ide/DomParser" name = "Parsers">
-		<ExtensionNode name="Class"/>
-	</ExtensionPoint>
-	
 	<ExtensionPoint path = "/MonoDevelop/Ide/Ambiences" name = "Parsers">
 		<ExtensionNode name="Class"/>
 	</ExtensionPoint>
