@@ -1,5 +1,13 @@
 2008-10-28  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Dom/IMethod.cs:
+	* MonoDevelop.Projects.Dom/DomType.cs:
+	* MonoDevelop.Projects.Dom/DomMethod.cs:
+	* MonoDevelop.Projects.Dom/ResolveResult.cs: fixed 'Bug 431806 -
+	Extension methods aren't shown in autocomplete'.
+
+2008-10-28  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.addin.xml: updated netambience reference.
 
 2008-10-28  Mike Krüger  <mkrueger@novell.com>

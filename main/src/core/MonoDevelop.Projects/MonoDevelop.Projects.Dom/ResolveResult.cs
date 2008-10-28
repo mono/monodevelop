@@ -243,6 +243,10 @@ namespace MonoDevelop.Projects.Dom
 			List<IType> accessibleStaticTypes = null;
 			if (callingMember != null && callingMember.DeclaringType != null)
 				accessibleStaticTypes = DomType.GetAccessibleExtensionTypes (dom, callingMember.DeclaringType.CompilationUnit);
+/* TODO: Typed extension methods
+			IList<IReturnType> genericParameters = null;
+			if (type is InstantiatedType) 
+				genericParameters = ((InstantiatedType)type).GenericParameters;*/
 			
 			foreach (IType curType in dom.GetInheritanceTree (type)) {
 				if (curType.ClassType == ClassType.Interface && type.ClassType != ClassType.Interface)

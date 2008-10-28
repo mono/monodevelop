@@ -145,9 +145,33 @@ namespace MonoDevelop.Projects.Dom
 			return IsExtension || base.IsAccessibleFrom (dom, calledType, member);
 		}*/
 		
-		public bool Extends (IType type)
+		static Dictionary<string, bool> extensionTable = new Dictionary<string, bool> ();
+		public bool Extends (ProjectDom dom, IType type)
 		{
-			return IsExtension && Parameters[0].ReturnType.FullName == type.FullName;
+			if (!IsExtension)
+				return false;
+			string extensionTableKey = Parameters[0].ReturnType.FullName + "/" + type.FullName;
+			lock (extensionTable) {
+				if (extensionTable.ContainsKey (extensionTableKey))
+					return extensionTable[extensionTableKey];
+				
+				IType extensionType = dom.GetType (Parameters[0].ReturnType);
+				if (extensionType == null) {
+					bool result = Parameters[0].ReturnType.FullName == type.FullName;
+					extensionTable.Add (extensionTableKey, result);
+					return result;
+				}
+				
+				foreach (IType e in dom.GetInheritanceTree (extensionType)) {
+					if (type.FullName == e.FullName) {
+						extensionTable.Add (extensionTableKey, true);
+						return true;
+					}
+				}
+				
+				extensionTable.Add (extensionTableKey, false);
+				return false;
+			}
 		}
 		
 		public void Add (IParameter parameter)

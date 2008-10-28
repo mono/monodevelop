@@ -670,7 +670,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 			foreach (object o in dom.GetNamespaceContents (namespaceList, true, true)) {
 				IType type = o as IType;
-				if (type != null && type.IsStatic) {
+				if (type != null && (type.IsStatic || type.IsSealed)) {
 					foreach (IMethod m in type.Methods) {
 						if (m.IsExtension) {
 							result.Add (type);
@@ -687,7 +687,7 @@ namespace MonoDevelop.Projects.Dom
 			List<IMethod> result = new List<IMethod> ();
 			foreach (IType staticType in accessibleExtensionTypes) {
 				foreach (IMethod method in staticType.Methods) {
-					if (method.Extends (this))
+					if (method.Extends (this.SourceProjectDom, this))
 						result.Add (method);
 				}
 			}

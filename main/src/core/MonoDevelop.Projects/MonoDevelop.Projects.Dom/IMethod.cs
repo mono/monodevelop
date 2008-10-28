@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using MonoDevelop.Projects.Dom.Parser;
 
 namespace MonoDevelop.Projects.Dom
 {
@@ -64,6 +65,6 @@ namespace MonoDevelop.Projects.Dom
 		/// <summary>
 		/// Returns true, if IsExtension == true and this method extends <param name="type"/>
 		/// </summary>
-		bool Extends (IType type);
+		bool Extends (ProjectDom dom, IType type);
 	}
 }
