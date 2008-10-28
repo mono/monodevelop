@@ -47,6 +47,8 @@ using MonoDevelop.Ide.Gui.Search;
 using MonoDevelop.Debugger;
 using Mono.Debugging.Client;
 using MonoDevelop.DesignerSupport.Toolbox;
+using MonoDevelop.Core.Gui;
+using Services = MonoDevelop.Projects.Services;
 
 namespace MonoDevelop.SourceEditor
 {	
@@ -850,7 +852,7 @@ namespace MonoDevelop.SourceEditor
 			return this.widget.TextEditor.Document.GetTextAt (line);
 		}
 		
-		class DocumentTextIterator : ITextIterator
+		class DocumentTextIterator : GuiSyncObject, ITextIterator
 		{
 			SourceEditorView view;
 			int initialOffset, offset;
@@ -860,27 +862,31 @@ namespace MonoDevelop.SourceEditor
 				this.view = view;
 				this.initialOffset = this.offset = offset;
 			}
-			
+
 			public char Current {
 				get {
 					return view.Document.GetCharAt (offset);
 				}
 			}
 			public int Position {
+				[FreeDispatch]
 				get {
 					return offset;
 				}
+				[FreeDispatch]
 				set {
 					offset = value;
 				}
 			}
 			public int Line { 
+				[FreeDispatch]
 				get {
 					return view.Document.OffsetToLineNumber (offset);
 				}
 			}
 			
 			public int Column {
+				[FreeDispatch]
 				get {
 					return view.Document.OffsetToLocation (offset).Column;
 				}
@@ -922,6 +928,7 @@ namespace MonoDevelop.SourceEditor
 				}
 			}
 					
+			[FreeDispatch]
 			public void Reset()
 			{
 				offset = this.initialOffset;
@@ -930,21 +937,27 @@ namespace MonoDevelop.SourceEditor
 			{
 				view.Document.Replace (offset, length, new StringBuilder (pattern));
 			}
+			
+			[FreeDispatch]
 			public void Close ()
 			{
 				// nothing
 			}
 		
 			public IDocumentInformation DocumentInformation { 
+				[FreeDispatch]
 				get {
 					return this.view;
 				}
 			}
 			
+			[FreeDispatch]
 			public bool SupportsSearch (MonoDevelop.Ide.Gui.Search.SearchOptions options, bool reverse)
 			{
 				return false;
 			}
+			
+			[FreeDispatch]
 			public bool SearchNext (string text, MonoDevelop.Ide.Gui.Search.SearchOptions options, bool reverse)
 			{
 				return false;

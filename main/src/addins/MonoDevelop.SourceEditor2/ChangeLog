@@ -1,3 +1,9 @@
+2008-10-28  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Make sure find/replace
+	changes to the editor are done in the gui thread. Should fix bug
+	#434159.
+
 2008-10-27  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: added lock for
