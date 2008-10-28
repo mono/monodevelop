@@ -1,5 +1,9 @@
 2008-10-28  Mike Krüger  <mkrueger@novell.com>
 
+	* CSharpBinding.addin.xml: removed old ambience reference.
+
+2008-10-28  Mike Krüger  <mkrueger@novell.com>
+
 	* CSharpBinding.addin.xml: moved ambience extension node to project
 	model.
 

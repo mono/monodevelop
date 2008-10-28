@@ -26,11 +26,6 @@
 			/>
 	</Extension>
 
-	<Extension path = "/MonoDevelop/ProjectModel/Ambiences">
-		<Class id    = "C#"
-		       class = "CSharpBinding.CSharpAmbience"/>
-	</Extension>
-
 	<Extension path = "/MonoDevelop/Ide/FileTemplates">
 		<FileTemplate id = "CSharpEmptyFile" resource = "EmptyCSharpFile.xft.xml"/>
 		<FileTemplate id = "CSharpAssemblyInfo" resource = "AssemblyInfo.xft.xml"/>
