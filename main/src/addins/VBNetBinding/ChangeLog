@@ -1,5 +1,9 @@
 2008-10-28  Mike Krüger  <mkrueger@novell.com>
 
+	* VBNetBinding.addin.xml: Removed vb ambience.
+
+2008-10-28  Mike Krüger  <mkrueger@novell.com>
+
 	* VBNetBinding.addin.xml: fixed 'Bug 399737 - Code completion busted for
 	referenced assemblies that are not in GAC, are outside of the
 	solution, and which are referenced by other non-GAC outside

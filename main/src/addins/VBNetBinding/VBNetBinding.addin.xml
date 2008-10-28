@@ -87,11 +87,6 @@
                      class = "VBBinding.VBLanguageBinding" />
   </Extension>
   
-	<Extension path = "/MonoDevelop/ProjectModel/Ambiences">
-		<Class id    = "VBNet"
-		       class = "MonoDevelop.Core.VBAmbience"/>
-	</Extension>
-  
 	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
 		<DataType class = "VBBinding.VBCompilerParameters" />
 	</Extension>
