@@ -73,6 +73,10 @@
 		<ExtensionNode name="SerializationMap" type="MonoDevelop.Projects.Extensions.SerializationMapNode"/>
 	</ExtensionPoint>
 	
+	<ExtensionPoint path = "/MonoDevelop/ProjectModel/DomParser" name = "Parsers">
+		<ExtensionNode name="Class"/>
+	</ExtensionPoint>
+	
 	<!-- Extensions -->
 
 	<Extension path = "/MonoDevelop/Core/Applications">

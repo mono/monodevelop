@@ -97,8 +97,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 		{
 			codeCompletionPath = GetDefaultCompletionFileLocation ();
 			CoreDB = typeof(object).Assembly.FullName.ToString ();
-			
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/DomParser", delegate(object sender, ExtensionNodeEventArgs args) {
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/ProjectModel/DomParser", delegate(object sender, ExtensionNodeEventArgs args) {
 				switch (args.Change) {
 				case ExtensionChange.Add:
 					parsers.Add ((IParser) args.ExtensionObject);
@@ -493,15 +492,17 @@ namespace MonoDevelop.Projects.Dom.Parser
 						string file = uri.Substring (9);
 						string realUri = uri;
 						
-						// We may be trying to load an assembly db using a partial name.
-						// In this case we get the full name to avoid database conflicts
-						string fname = Runtime.SystemAssemblyService.GetAssemblyFullName (file);
-						if (fname != null)
-							realUri = "Assembly:" + fname;
-
-						if (databases.TryGetValue (realUri, out db))
+						if (!File.Exists (file)) {
+							// We may be trying to load an assembly db using a partial name.
+							// In this case we get the full name to avoid database conflicts
+							string fname = Runtime.SystemAssemblyService.GetAssemblyFullName (file);
+							if (fname != null)
+								realUri = "Assembly:" + fname;
+						}
+						
+						if (databases.TryGetValue (realUri, out db)) {
 							databases [uri] = db;
-						else {
+						} else {
 							ProjectDom adb;
 							db = adb = parserDatabase.LoadAssemblyDom (file);
 							RegisterDom (db, realUri);
