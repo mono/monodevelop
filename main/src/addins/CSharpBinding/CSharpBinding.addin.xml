@@ -114,7 +114,7 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/Ambiences">
-		<Class class = "MonoDevelop.CSharpBinding.CSharpAmbience" />
+		<Class id = "C#" class = "MonoDevelop.CSharpBinding.CSharpAmbience" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/StockIcons">
