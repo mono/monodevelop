@@ -118,7 +118,7 @@
 		<Class class = "MonoDevelop.CSharpBinding.NRefactoryParser" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Ide/Ambiences">
+	<Extension path = "/MonoDevelop/ProjectModel/Ambiences">
 		<Class class = "MonoDevelop.CSharpBinding.CSharpAmbience" />
 	</Extension>
 	
