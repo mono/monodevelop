@@ -65,7 +65,7 @@
 		</MimeType>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Ide/DomParser">
+	<Extension path = "/MonoDevelop/ProjectModel/DomParser">
 		<Class class = "MonoDevelop.Moonlight.MoonlightParser" />
 	</Extension>
 	

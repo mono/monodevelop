@@ -100,7 +100,7 @@
 		<ProjectBinding id = "AspNetApplication" class = "MonoDevelop.AspNet.AspNetAppProjectBinding" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Ide/DomParser">
+	<Extension path = "/MonoDevelop/ProjectModel/DomParser">
 		<Class class = "MonoDevelop.AspNet.Parser.AspNetParser" />
 	</Extension>
 	

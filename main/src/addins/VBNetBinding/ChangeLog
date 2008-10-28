@@ -1,3 +1,10 @@
+2008-10-28  Mike Krüger  <mkrueger@novell.com>
+
+	* VBNetBinding.addin.xml: fixed 'Bug 399737 - Code completion busted for
+	referenced assemblies that are not in GAC, are outside of the
+	solution, and which are referenced by other non-GAC outside
+	referenced assemblies'.
+
 2008-10-01  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* VBBindingCompilerServices.cs: Track API.

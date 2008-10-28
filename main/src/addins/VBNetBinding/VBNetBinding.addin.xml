@@ -96,7 +96,7 @@
 		<DataType class = "VBBinding.VBCompilerParameters" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Ide/DomParser">
+	<Extension path = "/MonoDevelop/ProjectModel/DomParser">
 		<Class class = "MonoDevelop.VBNetBinding.DomParser" />
 	</Extension>
 	

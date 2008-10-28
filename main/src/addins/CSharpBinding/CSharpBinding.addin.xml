@@ -113,7 +113,7 @@
 		<SerializationMap resource="md1format.xml" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Ide/DomParser">
+	<Extension path = "/MonoDevelop/ProjectModel/DomParser">
 <!--	<Class class = "MonoDevelop.CSharpBinding.DomParser" /> -->
 		<Class class = "MonoDevelop.CSharpBinding.NRefactoryParser" />
 	</Extension>
