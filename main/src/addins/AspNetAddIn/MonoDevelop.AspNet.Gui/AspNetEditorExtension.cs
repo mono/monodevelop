@@ -90,14 +90,16 @@ namespace MonoDevelop.AspNet.Gui
 			//directive names
 			if (Tracker.Engine.CurrentState is AspNetDirectiveState) {
 				AspNetDirective directive = Tracker.Engine.Nodes.Peek () as AspNetDirective;
-				if (directive != null && currentChar == ' ' && directive.Region.Start == location) {
+				if (directive != null && directive.Region.Start.Line == location.Line &&
+				    directive.Region.Start.Column + 3 == location.Column)
+				{
 					return DirectiveCompletion.GetDirectives (AspCU.Type);
 				}
 				return null;
 			} else if (Tracker.Engine.CurrentState is S.XmlNameState && Tracker.Engine.CurrentState.Parent is AspNetDirectiveState) {
 				AspNetDirective directive = Tracker.Engine.Nodes.Peek () as AspNetDirective;
 				if (directive != null && directive.Region.Start.Line == location.Line &&
-				    directive.Region.Start.Column + 5 == location.Column && char.IsLetter (currentChar))
+				    directive.Region.Start.Column + 4 == location.Column && char.IsLetter (currentChar))
 				{
 					triggerWordLength = 1;
 					return DirectiveCompletion.GetDirectives (AspCU.Type);

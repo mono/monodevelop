@@ -1,3 +1,8 @@
+2008-10-27  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Fix directive name
+	completion triggering.
+
 2008-10-24  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.AspNet.StateEngine/AspNetDom.cs:
