@@ -1,3 +1,10 @@
+2008-10-28  Mike Kestner <mkestner@novell.com> 
+
+	* MonoDevelop.GtkCore/ReferenceManager.cs: switch default updating
+	to use the current assembly StoredReference version.  Avoids problems
+	when the stored version has no corresponding installed package.
+	Fixes #436246.
+
 2008-10-27  Mike Kestner <mkestner@novell.com> 
 
 	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs: don't store

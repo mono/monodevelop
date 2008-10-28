@@ -37,7 +37,6 @@ namespace MonoDevelop.GtkCore {
 	public class ReferenceManager : IDisposable {
 
 		DotNetProject project;
-		string gtk_pkg_version;
 		
 		public ReferenceManager (DotNetProject project)
 		{
@@ -49,28 +48,26 @@ namespace MonoDevelop.GtkCore {
 			project = null;
 		}
 		
-		public string GtkPackageVersion {
+		string CurrentAssemblyVersion {
 			get {
-				if (gtk_pkg_version == null) {
-					gtk_pkg_version = String.Empty;
-					foreach (ProjectReference pref in project.References) {
-						if (!IsGtkReference (pref))
-							continue;
-						string val = pref.StoredReference;
-						int idx = val.IndexOf (",") + 1;
-						gtk_pkg_version = GetGtkPackageVersion (val.Substring (idx).Trim ());
-						break;
-					}
+				foreach (ProjectReference pref in project.References) {
+					if (!IsGtkReference (pref))
+						continue;
+					string val = pref.StoredReference;
+					int idx = val.IndexOf (",") + 1;
+					return val.Substring (idx).Trim ();
 				}
-				return gtk_pkg_version;
+				return String.Empty;
 			}
+		}
+
+		public string GtkPackageVersion {
+			get { return GetGtkPackageVersion (CurrentAssemblyVersion); }
 			set {
-				if (gtk_pkg_version == value)
-					return;
-				else if (String.IsNullOrEmpty (value))
+				if (String.IsNullOrEmpty (value))
 					throw new ArgumentException ("value");
-				gtk_pkg_version = value;
-				Update (value, null);
+
+				Update (GetGtkAssemblyVersion (value));
 			}
 		}
 
@@ -110,19 +107,17 @@ namespace MonoDevelop.GtkCore {
 
 		public bool Update ()
 		{
-			return Update (GtkPackageVersion, null);
+			return Update (CurrentAssemblyVersion);
 		}
 
-		bool Update (string pkg_version, string assm_version)
+		bool Update (string assm_version)
 		{
+			if (assm_version == null)
+				throw new ArgumentException (assm_version);
+
 			bool changed = false;
 			updating = true;
-			if (assm_version == null)
-				assm_version = GetGtkAssemblyVersion (pkg_version);
 
-			if (assm_version == null)
-				throw new ArgumentException ("pkg_version", "Unable to obtain assembly version for supplied package version");
-			
 			bool gdk = false, gtk = false, posix = false;
 			
 			foreach (ProjectReference r in new List<ProjectReference> (project.References)) {
@@ -193,8 +188,10 @@ namespace MonoDevelop.GtkCore {
 			if (updating || !IsGtkReference (args.ProjectReference))
 				return;
 
+			string sr = args.ProjectReference.StoredReference;
+			string version = sr.Substring (sr.IndexOf (",") + 1).Trim ();
 			ReferenceManager rm = new ReferenceManager (args.Project as DotNetProject);
-			rm.Update (rm.GtkPackageVersion, null);
+			rm.Update (version);
 		}
 
 		static void OnReferenceRemoved (object o, ProjectReferenceEventArgs args)
@@ -235,6 +232,5 @@ namespace MonoDevelop.GtkCore {
 					return true;
 			return false;
 		}
-		
 	}	
 }
