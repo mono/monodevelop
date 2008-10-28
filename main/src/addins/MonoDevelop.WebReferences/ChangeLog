@@ -1,4 +1,9 @@
-2008-10-01  Michael Hutchinson <mhutchinson@novell.com> 
+2008-10-22 Luciano N. Callero <lnc19@hotmail.com>
+
+	* MonoDevelop.WebReferences/CodeGenerator.cs: Add a new Constructor
+	  to the proxy class with Url as a parameter.
+
+2008-10-01  Michael Hutchinson <mhutchinson@novell.com>
 
 	* MonoDevelop.WebReferences.Commands/WebReferenceCommandHandler.cs:
 	  Track API.

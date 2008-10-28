@@ -113,17 +113,36 @@ namespace MonoDevelop.WebReferences
 			// Setup the proxy namespacec and compile unit
 			ICodeGenerator codeGen = Provider.CreateGenerator();
 			CodeNamespace codeNamespace = new CodeNamespace(proxyNamespace);
+			CodeConstructor urlConstructor = new CodeConstructor ();
 			CodeCompileUnit codeUnit = new CodeCompileUnit();
 			codeUnit.Namespaces.Add(codeNamespace);
-			
+
 			// Setup the importer and import the service description into the code unit
 			ServiceDescriptionImporter importer = Library.ReadServiceDescriptionImporter(protocol);
 			ServiceDescriptionImportWarnings warnings = importer.Import(codeNamespace, codeUnit);
+
+			// Add the new Constructor with Url as a paremeter
+			// Search for the class which inherit SoapHttpClientProtocol (Which is the Service Class)
+			foreach (CodeTypeDeclaration declarationType in codeUnit.Namespaces[0].Types) 
+				if (declarationType.IsClass) 
+					if (declarationType.BaseTypes.Count > 0)
+						// Is a Service Class
+						if (declarationType.BaseTypes [0].BaseType.IndexOf ("SoapHttpClientProtocol") > -1) {
+							// Create new public constructor with the Url as parameter
+							urlConstructor.Attributes = MemberAttributes.Public;
+							urlConstructor.Parameters.Add (new CodeParameterDeclarationExpression ("System.String", "url"));
+							urlConstructor.Statements.Add (new CodeAssignStatement (
+						                                                        new CodePropertyReferenceExpression (new CodeThisReferenceExpression(), 
+						                                                                                             "Url"),
+						                                                        new CodeVariableReferenceExpression ("url")));
+							declarationType.Members.Add (urlConstructor);
+						}
 			
 			// Generate the code and save the file
 			string fileSpec = Path.Combine(basePath, referenceName + DefaultExtension);
 			StreamWriter writer = new StreamWriter(fileSpec);
 			codeGen.GenerateCodeFromCompileUnit(codeUnit, writer, new CodeGeneratorOptions());
+			
 			writer.Close();
 			
 			return fileSpec;
