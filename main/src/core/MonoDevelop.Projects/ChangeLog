@@ -1,5 +1,10 @@
 2008-10-28  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects/Solution.cs:
+	* MonoDevelop.Projects/IBuildTarget.cs: Implemented CanExecute.
+
+2008-10-28  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects/SolutionFolder.cs: In GetBuildableEntries,
 	include entries belonging to other solution folders, if
 	includeExternalReferences is specified. Fixes bug 389127 - Solution

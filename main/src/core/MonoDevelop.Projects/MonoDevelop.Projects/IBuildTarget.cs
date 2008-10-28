@@ -36,6 +36,7 @@ namespace MonoDevelop.Projects
 	{
 		BuildResult RunTarget (IProgressMonitor monitor, string target, string configuration);
 		void Execute (IProgressMonitor monitor, ExecutionContext context, string configuration);
+		bool CanExecute (ExecutionContext context, string configuration);
 		bool NeedsBuilding (string configuration);
 		void SetNeedsBuilding (bool needsBuilding, string configuration);
 		

@@ -403,6 +403,21 @@ namespace MonoDevelop.Projects
 					cce.Item.Clean (monitor, configuration);
 			}
 		}
+
+		protected internal override bool OnGetCanExecute(ExecutionContext context, string configuration)
+		{
+			if (SingleStartup) {
+				if (StartupItem == null)
+					return false;
+				return StartupItem.CanExecute (context, configuration);
+			} else {
+				foreach (SolutionEntityItem it in MultiStartupItems) {
+					if (it.CanExecute (context, configuration))
+						return true;
+				}
+				return false;
+			}
+		}
 		
 		protected internal override void OnExecute (IProgressMonitor monitor, ExecutionContext context, string configuration)
 		{
@@ -419,6 +434,8 @@ namespace MonoDevelop.Projects
 				SynchronizedProgressMonitor syncMonitor = new SynchronizedProgressMonitor (monitor);
 				
 				foreach (SolutionEntityItem it in MultiStartupItems) {
+					if (!it.CanExecute (context, configuration))
+						continue;
 					AggregatedProgressMonitor mon = new AggregatedProgressMonitor ();
 					mon.AddSlaveMonitor (syncMonitor, MonitorAction.ReportError | MonitorAction.ReportWarning | MonitorAction.SlaveCancel);
 					list.Add (mon.AsyncOperation);
