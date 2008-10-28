@@ -118,6 +118,19 @@ namespace MonoDevelop.WelcomePage
 			alignment1.SetPadding ((uint) (logoOffset + logoPixbuf.Height + logoOffset), 0, (uint) logoOffset, 0);
 			BuildFromXml ();
 			LoadRecent ();
+
+			IdeApp.Workbench.GuiLocked += OnLock;
+			IdeApp.Workbench.GuiUnlocked += OnUnlock;
+		}
+
+		void OnLock (object s, EventArgs a)
+		{
+			Sensitive = false;
+		}
+		
+		void OnUnlock (object s, EventArgs a)
+		{
+			Sensitive = true;
 		}
 		
 		public void Rebuild ()
@@ -281,6 +294,8 @@ namespace MonoDevelop.WelcomePage
 		{
 			base.OnDestroyed ();
 			parentView = null;
+			IdeApp.Workbench.GuiLocked -= OnLock;
+			IdeApp.Workbench.GuiUnlocked -= OnUnlock;
 		}
 		
 		public void LoadRecent ()
