@@ -163,6 +163,7 @@ namespace MonoDevelop.CSharpBinding
 				
 		void AddContentsFromClassAndMembers (ExpressionContext context, CompletionDataList completionList)
 		{
+			
 			IMethod method = callingMember as IMethod;
 			if (method != null && method.Parameters != null)
 				AddParameterList (completionList, method.Parameters);
@@ -238,8 +239,8 @@ namespace MonoDevelop.CSharpBinding
 					if (context.FilterEntry (o))
 						continue;
 					IMember member = o as IMember;
-//					if (member != null && member.IsAbstract)
-//						continue;
+					if (member != null && completionList.Find (member.Name) != null)
+						continue;
 					if (context == ExpressionContext.Attribute) {
 						IType t = o as IType;
 						if (t != null && !t.IsBaseType (attributeType))
@@ -300,6 +301,7 @@ namespace MonoDevelop.CSharpBinding
 			ResolveVisitor visitor = new ResolveVisitor (this);
 			
 			ResolveResult result = visitor.Resolve (expr);
+			
 	//		System.Console.WriteLine("result:" + result);
 			return result;
 		}
