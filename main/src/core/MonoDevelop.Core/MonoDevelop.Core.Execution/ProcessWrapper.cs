@@ -61,12 +61,16 @@ namespace MonoDevelop.Core.Execution
 							OutputStreamChanged (this, new string (buffer, 0, nr));
 					}
 				}
+			} catch (ThreadAbortException) {
+				// There is no need to keep propagating the abort exception
+				Thread.ResetAbort ();
 			} finally {
 				// WORKAROUND for "Bug 410743 - wapi leak in System.Diagnostic.Process"
 				// Process leaks when an exit event is registered
 				WaitHandle.WaitAll (new WaitHandle[] {endEventErr});
+
 				OnExited (this, EventArgs.Empty);
-				
+
 				//call this AFTER the exit event, or the ProcessWrapper may get disposed and abort this thread
 				if (endEventOut != null)
 					endEventOut.Set ();
@@ -148,11 +152,17 @@ namespace MonoDevelop.Core.Execution
 			try {
 				if (!HasExited)
 					WaitForExit ();
+			} catch {
+				// Ignore
 			} finally {
 				lock (lockObj) {
 					done = true;
-					if (completedEvent != null)
-						completedEvent (this);
+					try {
+						if (completedEvent != null)
+							completedEvent (this);
+					} catch {
+						// Ignore
+					}
 				}
 			}
 		}

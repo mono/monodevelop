@@ -1,3 +1,8 @@
+2008-10-28  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Execution/ProcessWrapper.cs: Fix bug 436200 - Crash
+	when stopping a process execution.
+
 2008-10-22  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Serialization/GenericCollectionHandler.cs: Added
