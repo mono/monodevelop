@@ -1,5 +1,10 @@
 2008-10-28  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Dom/ResolveResult.cs: don't show members for
+	"System.Void".
+
+2008-10-28  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Dom/IMethod.cs:
 	* MonoDevelop.Projects.Dom/DomType.cs:
 	* MonoDevelop.Projects.Dom/DomMethod.cs:
