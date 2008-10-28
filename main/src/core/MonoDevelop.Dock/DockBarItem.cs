@@ -119,7 +119,19 @@ namespace MonoDevelop.Components.Docking
 			bool res = base.OnExposeEvent (evnt);
 			return res;
 		}
-		
+
+		public void Present ()
+		{
+			AutoShow ();
+			GLib.Timeout.Add (200, delegate {
+				// Using a small delay because AutoShow uses an animation and setting focus may
+				// not work until the item is visible
+				it.Widget.ChildFocus (DirectionType.TabForward);
+				ScheduleAutoHide (false);
+				return false;
+			});
+		}
+
 		void AutoShow ()
 		{
 			UnscheduleAutoHide ();
@@ -160,9 +172,10 @@ namespace MonoDevelop.Components.Docking
 			}
 		}
 		
-		void ScheduleAutoHide ()
+		void ScheduleAutoHide (bool cancelAutoShow)
 		{
-			UnscheduleAutoShow ();
+			if (cancelAutoShow)
+				UnscheduleAutoShow ();
 			if (autoHideTimeout == uint.MaxValue) {
 				autoHideTimeout = GLib.Timeout.Add (bar.Frame.AutoHideDelay, delegate {
 					// Don't hide the item if it has the focus. Try again later.
@@ -200,7 +213,7 @@ namespace MonoDevelop.Components.Docking
 		
 		protected override bool OnLeaveNotifyEvent (Gdk.EventCrossing evnt)
 		{
-			ScheduleAutoHide ();
+			ScheduleAutoHide (true);
 			ModifyBg (StateType.Normal, bar.Style.Background (Gtk.StateType.Normal));
 			return base.OnLeaveNotifyEvent (evnt);
 		}
@@ -213,7 +226,7 @@ namespace MonoDevelop.Components.Docking
 		void OnFrameLeave (object s, Gtk.LeaveNotifyEventArgs args)
 		{
 			if (args.Event.Detail != Gdk.NotifyType.Inferior)
-				ScheduleAutoHide ();
+				ScheduleAutoHide (true);
 		}
 		
 		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)

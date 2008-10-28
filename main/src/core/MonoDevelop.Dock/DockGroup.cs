@@ -641,17 +641,19 @@ namespace MonoDevelop.Components.Docking
 		
 		internal void Present (DockItem it)
 		{
-			if (type != DockGroupType.Tabbed)
-				return;
-			for (int n=0; n<VisibleObjects.Count; n++) {
-				DockGroupItem dit = VisibleObjects[n] as DockGroupItem;
-				if (dit.Item == it) {
-					currentTabPage = n;
-					if (boundTabStrip != null)
-						boundTabStrip.CurrentPage = it.Widget;
-					return;
+			if (type == DockGroupType.Tabbed) {
+				for (int n=0; n<VisibleObjects.Count; n++) {
+					DockGroupItem dit = VisibleObjects[n] as DockGroupItem;
+					if (dit.Item == it) {
+						currentTabPage = n;
+						if (boundTabStrip != null)
+							boundTabStrip.CurrentPage = it.Widget;
+						break;
+					}
 				}
 			}
+			if (it.Visible)
+				it.Widget.ChildFocus (DirectionType.TabForward);
 		}
 
 		internal bool IsSelectedPage (DockItem it)

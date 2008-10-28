@@ -216,7 +216,10 @@ namespace MonoDevelop.Components.Docking
 		
 		public void Present ()
 		{
-			frame.Present (this);
+			if (dockBarItem != null)
+				dockBarItem.Present ();
+			else
+				frame.Present (this);
 		}
 		
 		internal void UpdateVisibleStatus ()

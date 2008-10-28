@@ -1,3 +1,11 @@
+2008-10-28  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* DockItem.cs:
+	* DockBarItem.cs: When presenting an iconized item, give it the focus
+	and show it.
+
+	* DockGroup.cs: Focus the item's widget when presenting it.
+
 2008-10-09  Christian Hergert  <chris@dronelabs.com>
 
 	* DockGroup.cs: Fix a nullref when compressing an expanded editor tab
