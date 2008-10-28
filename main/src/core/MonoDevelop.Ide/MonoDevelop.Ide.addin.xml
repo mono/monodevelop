@@ -236,10 +236,6 @@
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/MonoDevelop/Ide/Ambiences" name = "Parsers">
-		<ExtensionNode name="Class"/>
-	</ExtensionPoint>
-		
 	<ExtensionPoint path="/MonoDevelop/Debugging/DebuggerFactories">
 		<Description>Debug session factories. Specified classes must implement Mono.Debugging.IDebuggerSessionFactory.</Description>
 		<ExtensionNode name="DebuggerFactory" />
