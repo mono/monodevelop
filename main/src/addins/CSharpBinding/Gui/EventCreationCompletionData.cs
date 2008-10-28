@@ -83,9 +83,20 @@ namespace MonoDevelop.CSharpBinding
 			
 			// Insert new event handler after closing bracket
 			string indent = NewOverrideCompletionData.GetIndentString (editor, editor.GetPositionFromLineColumn (callingMember.Location.Line + 1, 0));
-			string text = Environment.NewLine + Environment.NewLine + indent +"void " + this.DisplayText + " " + this.parameterList + Environment.NewLine + indent +"{" + Environment.NewLine + indent + TextEditorProperties.IndentString;
-			editor.InsertText (pos, text + Environment.NewLine + indent + "}");
-			editor.CursorPosition = pos + text.Length;
+			StringBuilder sb = new StringBuilder ();
+			sb.AppendLine ();
+			sb.AppendLine ();
+			sb.Append (indent);
+			if (callingMember.IsStatic)
+				sb.Append ("static ");
+			sb.Append ("void ");sb.Append (this.DisplayText);sb.Append (this.parameterList);sb.AppendLine ();
+			sb.Append (indent);sb.Append ("{");sb.AppendLine ();
+			sb.Append (indent);sb.Append (TextEditorProperties.IndentString);
+			int cursorPos = pos + sb.Length;
+			sb.AppendLine ();
+			sb.Append (indent);sb.Append ("}");
+			editor.InsertText (pos, sb.ToString ());
+			editor.CursorPosition = cursorPos;
 		}
 		
 	}

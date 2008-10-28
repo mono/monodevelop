@@ -1,5 +1,10 @@
 2008-10-28  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/EventCreationCompletionData.cs: event creation is now done with a
+	stringbuilder.
+
+2008-10-28  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/CSharpTextEditorCompletion.cs:
 	* Gui/EventCreationCompletionData.cs: Worked on event handler
 	completion.
