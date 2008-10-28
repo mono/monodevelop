@@ -1,3 +1,9 @@
+2008-10-28  Mike Kestner  <mkestner@novell.com>
+
+	* MonoDevelop.Projects.Formats.MD1/MD1DotNetProjectHandler.cs:
+	add compile warnings when assembly reference versions are "upgraded"
+	to newer versions because the requested versions are not installed.
+
 2008-10-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/Solution.cs:

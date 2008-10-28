@@ -128,6 +128,12 @@ namespace MonoDevelop.Projects.Formats.MD1
 						monitor.ReportWarning (msg);
 						refres.AddWarning (msg);
 					}
+				} else if (pr.StoredReference != pr.Reference && !pr.Reference.StartsWith (pr.StoredReference + ",")) {
+					if (refres == null)
+						refres = new BuildResult ();
+					string msg = GettextCatalog.GetString ("Reference '{0}' not found on system. Using '{1} instead.", pr.StoredReference, pr.Reference);
+					monitor.ReportWarning (msg);
+					refres.AddWarning (msg);
 				}
 			}
 			
