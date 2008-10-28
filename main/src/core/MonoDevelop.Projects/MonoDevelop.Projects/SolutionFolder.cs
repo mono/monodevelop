@@ -432,10 +432,10 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		public ReadOnlyCollection<SolutionItem> GetAllBuildableEntries (string configuration, bool topologicalSort)
+		public ReadOnlyCollection<SolutionItem> GetAllBuildableEntries (string configuration, bool topologicalSort, bool includeExternalReferences)
 		{
 			List<SolutionItem> list = new List<SolutionItem> ();
-			GetAllBuildableEntries (list, configuration);
+			GetAllBuildableEntries (list, configuration, includeExternalReferences);
 			if (topologicalSort)
 				return TopologicalSort<SolutionItem> (list, configuration);
 			else
@@ -444,10 +444,10 @@ namespace MonoDevelop.Projects
 		
 		public ReadOnlyCollection<SolutionItem> GetAllBuildableEntries (string configuration)
 		{
-			return GetAllBuildableEntries (configuration, false);
+			return GetAllBuildableEntries (configuration, false, false);
 		}
 		
-		void GetAllBuildableEntries (List<SolutionItem> list, string configuration)
+		void GetAllBuildableEntries (List<SolutionItem> list, string configuration, bool includeExternalReferences)
 		{
 			if (ParentSolution == null)
 				return;
@@ -457,9 +457,20 @@ namespace MonoDevelop.Projects
 
 			foreach (SolutionItem item in Items) {
 				if (item is SolutionFolder)
-					((SolutionFolder)item).GetAllBuildableEntries (list, configuration);
+					((SolutionFolder)item).GetAllBuildableEntries (list, configuration, includeExternalReferences);
 				else if ((item is SolutionEntityItem) && conf.BuildEnabledForItem ((SolutionEntityItem) item))
-					list.Add (item);
+					GetAllBuildableReferences (list, item, configuration, includeExternalReferences);
+			}
+		}
+
+		void GetAllBuildableReferences (List<SolutionItem> list, SolutionItem item, string configuration, bool includeExternalReferences)
+		{
+			if (list.Contains (item))
+				return;
+			list.Add (item);
+			if (includeExternalReferences) {
+				foreach (SolutionItem it in item.GetReferencedItems (configuration))
+					GetAllBuildableReferences (list, it, configuration, includeExternalReferences);
 			}
 		}
 		
@@ -535,7 +546,7 @@ namespace MonoDevelop.Projects
 			ReadOnlyCollection<SolutionItem> allProjects;
 				
 			try {
-				allProjects = GetAllBuildableEntries (configuration, true);
+				allProjects = GetAllBuildableEntries (configuration, true, true);
 			} catch (CyclicBuildOrderException) {
 				monitor.ReportError (GettextCatalog.GetString ("Cyclic dependencies are not supported."), null);
 				return new BuildResult ("", 1, 1);

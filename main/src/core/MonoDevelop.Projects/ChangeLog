@@ -1,3 +1,10 @@
+2008-10-28  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/SolutionFolder.cs: In GetBuildableEntries,
+	include entries belonging to other solution folders, if
+	includeExternalReferences is specified. Fixes bug 389127 - Solution
+	doesn't build while all their projects build.
+
 2008-10-28  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/ResolveResult.cs: don't show members for
