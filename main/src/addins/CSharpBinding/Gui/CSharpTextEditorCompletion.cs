@@ -453,7 +453,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				}
 				
 				if (resolveResult != null) {
-					System.Console.WriteLine("resolveResult:" + resolveResult);
+//					System.Console.WriteLine("resolveResult:" + resolveResult);
 					
 					if (result.ExpressionContext is ExpressionContext.TypeExpressionContext) {
 						IReturnType returnType = ((ExpressionContext.TypeExpressionContext)result.ExpressionContext).Type ?? resolveResult.ResolvedType;

@@ -117,7 +117,10 @@ namespace MonoDevelop.CSharpBinding
 			this.delegateName = delegateName;
 			if (type != null) {
 				foreach (IMethod method in type.Methods) {
-					methods.Add (method);
+					if (method.Name == "Invoke") {
+						methods.Add (method);
+						break;
+					}
 				}
 			}
 		}
