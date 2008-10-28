@@ -623,6 +623,17 @@ namespace MonoDevelop.Ide.Gui
 		}
 
 		
+		public bool CanExecute (IBuildTarget entry)
+		{
+			ExecutionContext context = new ExecutionContext (new DefaultExecutionHandlerFactory (), IdeApp.Workbench.ProgressMonitors);
+			return CanExecute (entry, context);
+		}
+		
+		public bool CanExecute (IBuildTarget entry, ExecutionContext context)
+		{
+			return entry.CanExecute (context, IdeApp.Workspace.ActiveConfiguration);
+		}
+		
 		public IAsyncOperation Execute (IBuildTarget entry)
 		{
 			ExecutionContext context = new ExecutionContext (new DefaultExecutionHandlerFactory (), IdeApp.Workbench.ProgressMonitors);
@@ -654,6 +665,12 @@ namespace MonoDevelop.Ide.Gui
 			} finally {
 				monitor.Dispose ();
 			}
+		}
+		
+		public bool CanDebug (IBuildTarget entry)
+		{
+			ExecutionContext context = new ExecutionContext (IdeApp.Services.DebuggingService.GetExecutionHandlerFactory (), IdeApp.Workbench.ProgressMonitors);
+			return CanExecute (entry, context);
 		}
 		
 		public IAsyncOperation Debug (IBuildTarget entry)

@@ -272,6 +272,24 @@ namespace MonoDevelop.Ide.Gui
 				return null;
 			}
 		}
+
+		public bool CanExecute ()
+		{
+			if (IdeApp.ProjectOperations.CurrentSelectedSolution != null)
+				return IdeApp.ProjectOperations.CanExecute (IdeApp.ProjectOperations.CurrentSelectedSolution);
+			else {
+				return false;
+			}
+		}
+
+		bool IBuildTarget.CanExecute (ExecutionContext context, string configuration)
+		{
+			if (IdeApp.ProjectOperations.CurrentSelectedSolution != null)
+				return IdeApp.ProjectOperations.CurrentSelectedSolution.CanExecute (context, configuration);
+			else {
+				return false;
+			}
+		}
 		
 		public void Dispose ()
 		{

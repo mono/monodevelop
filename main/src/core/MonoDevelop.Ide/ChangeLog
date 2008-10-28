@@ -1,3 +1,9 @@
+2008-10-28  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui/RootWorkspace.cs:
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Disable the Run command if
+	the current solution or project can't be executed.
+
 2008-10-28  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.addin.xml: moved ambience extension node to project
