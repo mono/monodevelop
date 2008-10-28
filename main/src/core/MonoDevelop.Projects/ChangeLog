@@ -1,5 +1,10 @@
 2008-10-28  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Dom.Output/AmbienceService.cs: moved ambience
+	extension node to project model.
+
+2008-10-28  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.addin.xml:
 	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs: fixed 'Bug
 	399737 - Code completion busted for referenced assemblies that are

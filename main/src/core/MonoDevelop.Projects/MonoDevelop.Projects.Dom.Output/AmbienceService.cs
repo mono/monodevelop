@@ -40,7 +40,7 @@ namespace MonoDevelop.Projects.Dom.Output
 		
 		static AmbienceService ()
 		{
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/Ambiences", delegate(object sender, ExtensionNodeEventArgs args) {
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/ProjectModel/Ambiences", delegate(object sender, ExtensionNodeEventArgs args) {
 					Ambience ambience = args.ExtensionObject as Ambience;
 					if (ambience == null)
 						return;
