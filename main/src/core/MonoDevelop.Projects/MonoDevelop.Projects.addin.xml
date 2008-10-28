@@ -86,8 +86,7 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/Ambiences">
-		<Class id    = ".NET"
-		       class = "MonoDevelop.Projects.Ambience.NetAmbience"/>
+		<Class id = ".NET" class = "MonoDevelop.Projects.Dom.Output.NetAmbience"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/ProjectBindings">

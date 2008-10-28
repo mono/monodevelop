@@ -1,5 +1,9 @@
 2008-10-28  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.addin.xml: updated netambience reference.
+
+2008-10-28  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Dom.Output/AmbienceService.cs: moved ambience
 	extension node to project model.
 
