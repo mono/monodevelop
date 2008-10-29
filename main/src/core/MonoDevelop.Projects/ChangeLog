@@ -1,5 +1,12 @@
 2008-10-29  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
+	Don't crash if the code completion database can't be created. Fixes
+	bug #439113 - Exception when trying to close a solution which
+	couldn't load all subprojects.
+
+2008-10-29  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects/Project.cs: Fix bug 431720 - Build failed. XXX is
 	a directory.
 

@@ -286,9 +286,14 @@ namespace MonoDevelop.Projects.Dom.Serialization
 
 				LoggingService.LogDebug ("Writing " + dataFile);
 
-				if (dataFileStream == null) {
-					dataFileStream = OpenForWrite ();
-					datareader = new BinaryReader (dataFileStream);
+				try {
+					if (dataFileStream == null) {
+						dataFileStream = OpenForWrite ();
+						datareader = new BinaryReader (dataFileStream);
+					}
+				} catch (Exception ex) {
+					LoggingService.LogError ("Could not write parser database.", ex);
+					return;
 				}
 
 				MemoryStream tmpStream = new MemoryStream ();
