@@ -255,11 +255,11 @@ namespace MonoDevelop.Projects.Dom
 				return false;
 			
 			if (IsProtected) {
-//				foreach (IType type in dom.GetInheritanceTree (member.DeclaringType)) {
-//					System.Console.WriteLine(type);
-					if (member.DeclaringType.FullName == calledType.FullName)
+				foreach (IType type in dom.GetInheritanceTree (calledType)) {
+					System.Console.WriteLine(type.FullName + "/" + member.DeclaringType.FullName);
+					if (type.FullName == member.DeclaringType.FullName)
 						return true;
-//				}
+				}
 				return false;
 			}
 			// inner class 

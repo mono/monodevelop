@@ -412,11 +412,27 @@ namespace MonoDevelop.Projects.Dom
 	
 	public class BaseResolveResult : ResolveResult
 	{
+		class BaseMemberDecorator : DomMemberDecorator
+		{
+			IType fakeDeclaringType;
+			public override IType DeclaringType {
+				get {
+					return fakeDeclaringType;
+				}
+			}
+			public BaseMemberDecorator (IMember member, IType fakeDeclaringType) : base (member)
+			{
+				this.fakeDeclaringType = fakeDeclaringType;
+			}
+		}
+		
 		public override IEnumerable<object> CreateResolveResult (ProjectDom dom, IMember callingMember)
 		{
 			List<object> result = new List<object> ();
-			if (CallingMember != null && !CallingMember.IsStatic)
-				MemberResolveResult.AddType (dom, result, dom.SearchType (new SearchTypeRequest (CallingType.CompilationUnit, CallingType.BaseType ?? DomReturnType.Object)), CallingMember, StaticResolve);
+			if (CallingMember != null && !CallingMember.IsStatic) {
+				IType baseType = dom.SearchType (new SearchTypeRequest (CallingType.CompilationUnit, CallingType.BaseType ?? DomReturnType.Object));
+				MemberResolveResult.AddType (dom, result, baseType, new BaseMemberDecorator (CallingMember, baseType), StaticResolve);
+			}
 			return result;
 		}
 		public override string ToString ()

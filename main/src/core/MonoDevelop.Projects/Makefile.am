@@ -90,6 +90,7 @@ FILES =  \
 	MonoDevelop.Projects.Dom/DomEvent.cs \
 	MonoDevelop.Projects.Dom/DomField.cs \
 	MonoDevelop.Projects.Dom/DomLocation.cs \
+	MonoDevelop.Projects.Dom/DomMemberDecorator.cs \
 	MonoDevelop.Projects.Dom/DomMethod.cs \
 	MonoDevelop.Projects.Dom/DomParameter.cs \
 	MonoDevelop.Projects.Dom/DomProperty.cs \
