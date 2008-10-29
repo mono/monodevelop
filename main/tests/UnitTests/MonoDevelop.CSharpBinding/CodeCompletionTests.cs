@@ -650,6 +650,50 @@ public class Test
 			Assert.IsNotNull (provider.Find ("MyField"), "field 'MyField' not found.");
 		}
 		
+		/// <summary>
+		/// Bug 439601 - Intellisense Broken For Partial Classes
+		/// </summary>
+		[Test()]
+		public void TestBug439601 ()
+		{
+			CompletionDataList provider = CreateProvider (
+@"
+namespace MyNamespace
+{
+	partial class FormMain
+	{
+		private void Foo()
+		{
+			Bar();
+		}
+		
+		private void Blah()
+		{
+			Foo();
+		}
+	}
+}
+
+namespace MyNamespace
+{
+	public partial class FormMain
+	{
+		public FormMain()
+		{
+		}
+		
+		private void Bar()
+		{
+			this.$
+		}
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.Find ("Foo"), "method 'Foo' not found.");
+			Assert.IsNotNull (provider.Find ("Foo"), "method 'Blah' not found.");
+			Assert.IsNotNull (provider.Find ("Foo"), "method 'Bar' not found.");
+		}
 		
 		[TestFixtureSetUp] 
 		public void SetUp()

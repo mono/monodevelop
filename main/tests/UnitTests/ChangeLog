@@ -1,3 +1,8 @@
+2008-10-29  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharpBinding/CodeCompletionTests.cs: added  unit test for
+	"Bug 439601 - Intellisense Broken For Partial Classes".
+
 2008-10-27  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharpBinding/ParameterCompletionTests.cs: fixed a bug in
