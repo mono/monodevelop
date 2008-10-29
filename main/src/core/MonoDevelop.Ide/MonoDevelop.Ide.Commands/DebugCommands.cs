@@ -314,25 +314,4 @@ namespace MonoDevelop.Ide.Commands
 				info.Enabled = false;
 		}
 	}
-
-	internal class ExpressionEvaluatorHandler: CommandHandler
-	{
-		protected override void Run ()
-		{
-			ExpressionEvaluatorDialog dlg = new ExpressionEvaluatorDialog ();
-			try {
-				if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
-					
-				}
-			}
-			finally {
-				dlg.Destroy ();
-			}
-		}
-		
-		protected override void Update (CommandInfo info)
-		{
-			info.Enabled = IdeApp.Services.DebuggingService.IsDebugging;
-		}
-	}
 }

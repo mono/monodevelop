@@ -1,5 +1,9 @@
 2008-10-28  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Commands/DebugCommands.cs: Fix the build.
+
+2008-10-28  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Commands/DebugCommands.cs:
 	* MonoDevelop.Ide.Commands/ProjectCommands.cs: Disable the Run and Debug
 	commands if the current solution or project can't be executed.
