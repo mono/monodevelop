@@ -1,5 +1,11 @@
 2008-10-29  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects/DotNetProject.cs: When creating a new
+	configuration, give it a valid path and assembly name. Fixes bug
+	#439047 - Cannot create makefiles.
+
+2008-10-29  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
 	Don't crash if the code completion database can't be created. Fixes
 	bug #439113 - Exception when trying to close a solution which
