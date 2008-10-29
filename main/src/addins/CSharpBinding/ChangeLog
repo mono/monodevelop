@@ -1,3 +1,8 @@
+2008-10-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* CSharpBindingCompilerManager.cs: Write the comand used for compiling
+	to the output. Fixes bug #430499.
+
 2008-10-29  Mike Krüger  <mkrueger@novell.com>
 
 	* Gui/NRefactoryResolver.cs: fixed bug 'Bug 439601 - Intellisense Broken

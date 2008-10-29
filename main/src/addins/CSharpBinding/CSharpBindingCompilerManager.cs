@@ -214,7 +214,7 @@ namespace CSharpBinding
 
 			string output = String.Empty;
 			string error  = String.Empty;
-			
+
 			File.WriteAllText (responseFileName, writer.ToString ());
 			
 			string compilerName;
@@ -225,6 +225,8 @@ namespace CSharpBinding
 				monitor.ReportError (message, e);
 				return null;
 			}
+			
+			monitor.Log.WriteLine (compilerName + " " + writer.ToString ().Replace ('\n',' '));
 			
 			string outstr = compilerName + " @" + responseFileName;
 			TempFileCollection tf = new TempFileCollection();
