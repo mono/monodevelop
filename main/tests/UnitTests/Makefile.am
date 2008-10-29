@@ -38,9 +38,10 @@ FILES =  \
 	Mono.TextEditor.Tests/SelectionTests.cs \
 	Mono.TextEditor.Tests/UndoRedoTests.cs \
 	MonoDevelop.CSharpBinding/CodeCompletionAccessibleTests.cs \
+	MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs \
 	MonoDevelop.CSharpBinding/CodeCompletionCSharp3Tests.cs \
+	MonoDevelop.CSharpBinding/CodeCompletionCSharpTests.cs \
 	MonoDevelop.CSharpBinding/CodeCompletionOperatorTests.cs \
-	MonoDevelop.CSharpBinding/CodeCompletionTests.cs \
 	MonoDevelop.CSharpBinding/MemberTests.cs \
 	MonoDevelop.CSharpBinding/ParameterCompletionTests.cs \
 	MonoDevelop.CSharpBinding/TestViewContent.cs \

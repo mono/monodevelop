@@ -44,7 +44,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 		[Test()]
 		public void TestAddOperator ()
 		{
-			CompletionDataList provider = CodeCompletionTests.CreateProvider (
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
 @"class A
 {
 	public static B operator+(A left, A right)
@@ -76,7 +76,7 @@ class TestClass
 		[Test()]
 		public void TestSubtractOperator ()
 		{
-			CompletionDataList provider = CodeCompletionTests.CreateProvider (
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
 @"class A
 {
 	public static B operator-(A left, A right)
@@ -108,7 +108,7 @@ class TestClass
 		[Test()]
 		public void TestMultiplyOperator ()
 		{
-			CompletionDataList provider = CodeCompletionTests.CreateProvider (
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
 @"class A
 {
 	public static B operator*(A left, A right)
@@ -140,7 +140,7 @@ class TestClass
 		[Test()]
 		public void TestDivideOperator ()
 		{
-			CompletionDataList provider = CodeCompletionTests.CreateProvider (
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
 @"class A
 {
 	public static B operator/(A left, A right)
@@ -172,7 +172,7 @@ class TestClass
 		[Test()]
 		public void TestModulusOperator ()
 		{
-			CompletionDataList provider = CodeCompletionTests.CreateProvider (
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
 @"class A
 {
 	public static B operator%(A left, A right)
@@ -204,7 +204,7 @@ class TestClass
 		[Test()]
 		public void TestBitwiseAndOperator ()
 		{
-			CompletionDataList provider = CodeCompletionTests.CreateProvider (
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
 @"class A
 {
 	public static B operator&(A left, A right)
@@ -236,7 +236,7 @@ class TestClass
 		[Test()]
 		public void TestBitwiseOrOperator ()
 		{
-			CompletionDataList provider = CodeCompletionTests.CreateProvider (
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
 @"class A
 {
 	public static B operator|(A left, A right)
@@ -268,7 +268,7 @@ class TestClass
 		[Test()]
 		public void TestExclusiveOrOperator ()
 		{
-			CompletionDataList provider = CodeCompletionTests.CreateProvider (
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
 @"class A
 {
 	public static B operator^(A left, A right)
@@ -300,7 +300,7 @@ class TestClass
 		[Test()]
 		public void TestShiftLeftOperator ()
 		{
-			CompletionDataList provider = CodeCompletionTests.CreateProvider (
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
 @"class A
 {
 	public static B operator<<(A left, A right)
@@ -332,7 +332,7 @@ class TestClass
 		[Test()]
 		public void TestShiftRightOperator ()
 		{
-			CompletionDataList provider = CodeCompletionTests.CreateProvider (
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
 @"class A
 {
 	public static B operator>>(A left, A right)
@@ -364,7 +364,7 @@ class TestClass
 		[Test()]
 		public void TestGreaterThanOperator ()
 		{
-			CompletionDataList provider = CodeCompletionTests.CreateProvider (
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
 @"class A
 {
 	public static B operator>(A left, A right)
@@ -396,7 +396,7 @@ class TestClass
 		[Test()]
 		public void TestGreaterThanOrEqualOperator ()
 		{
-			CompletionDataList provider = CodeCompletionTests.CreateProvider (
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
 @"class A
 {
 	public static B operator>=(A left, A right)
@@ -428,7 +428,7 @@ class TestClass
 		[Test()]
 		public void TestEqualityOperator ()
 		{
-			CompletionDataList provider = CodeCompletionTests.CreateProvider (
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
 @"class A
 {
 	public static B operator==(A left, A right)
@@ -460,7 +460,7 @@ class TestClass
 		[Test()]
 		public void TestInEqualityOperator ()
 		{
-			CompletionDataList provider = CodeCompletionTests.CreateProvider (
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
 @"class A
 {
 	public static B operator!=(A left, A right)
@@ -492,7 +492,7 @@ class TestClass
 		[Test()]
 		public void TestLessThanOperator ()
 		{
-			CompletionDataList provider = CodeCompletionTests.CreateProvider (
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
 @"class A
 {
 	public static B operator<(A left, A right)
@@ -524,7 +524,7 @@ class TestClass
 		[Test()]
 		public void TestLessThanOrEqualOperator ()
 		{
-			CompletionDataList provider = CodeCompletionTests.CreateProvider (
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
 @"class A
 {
 	public static B operator<=(A left, A right)
@@ -556,7 +556,7 @@ class TestClass
 		[Test()]
 		public void TestUnaryPlusOperator ()
 		{
-			CompletionDataList provider = CodeCompletionTests.CreateProvider (
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
 @"class A
 {
 	public static B operator+(A left)
@@ -587,7 +587,7 @@ class TestClass
 		[Test()]
 		public void TestUnaryMinusOperator ()
 		{
-			CompletionDataList provider = CodeCompletionTests.CreateProvider (
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
 @"class A
 {
 	public static B operator-(A left)
@@ -618,7 +618,7 @@ class TestClass
 		[Test()]
 		public void TestUnaryNotOperator ()
 		{
-			CompletionDataList provider = CodeCompletionTests.CreateProvider (
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
 @"class A
 {
 	public static B operator!(A left)
@@ -649,7 +649,7 @@ class TestClass
 		[Test()]
 		public void TestUnaryBitwiseNotOperator ()
 		{
-			CompletionDataList provider = CodeCompletionTests.CreateProvider (
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
 @"class A
 {
 	public static B operator~(A left)

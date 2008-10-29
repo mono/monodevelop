@@ -73,7 +73,7 @@ public class TestClass
 		[Test()]
 		public void TestNonStaticClassAccess ()
 		{
-			CompletionDataList provider = CodeCompletionTests.CreateProvider (testClass +
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (testClass +
 @"
 	void TestMethod () 
 	{
@@ -98,7 +98,7 @@ public class TestClass
 		[Test()]
 		public void TestStaticClassAccess ()
 		{
-			CompletionDataList provider = CodeCompletionTests.CreateProvider (testClass +
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (testClass +
 @"
 	void TestMethod () 
 	{
@@ -123,7 +123,7 @@ public class TestClass
 		[Test()]
 		public void TestExternalNonStaticClassAccess ()
 		{
-			CompletionDataList provider = CodeCompletionTests.CreateProvider (testClass +
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (testClass +
 @"}
 class AClass {
 	void TestMethod () 
@@ -142,7 +142,7 @@ class AClass {
 		[Test()]
 		public void TestExternalStaticClassAccess ()
 		{
-			CompletionDataList provider = CodeCompletionTests.CreateProvider (testClass +
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (testClass +
 @"}
 class AClass {
 	void TestMethod () 
@@ -160,7 +160,7 @@ class AClass {
 		[Test()]
 		public void TestExternalNonStaticSubclassAccess ()
 		{
-			CompletionDataList provider = CodeCompletionTests.CreateProvider (testClass +
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (testClass +
 @"}
 class AClass : TestClass {
 	void TestMethod () 
@@ -177,5 +177,75 @@ class AClass : TestClass {
 			Assert.IsNotNull (provider.Find ("ProtProperty"));
 			Assert.IsNotNull (provider.Find ("ProtMethod"));
 		}
+
+		[Test()]
+		public void TestThisProtectedMemberAccess ()
+		{
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
+@"
+class Test
+{
+	protected void Test ()
+	{
+	}
+}
+
+class Test2 : Test
+{
+	void Test2 ()
+	{
+		this.$
+	}
+}");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("Test"), "method 'Test' not found.");
+		}
+		
+		[Test()]
+		public void TestBaseProtectedMemberAccess ()
+		{
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
+@"
+class Test
+{
+	protected void Test ()
+	{
+	}
+}
+
+class Test2 : Test
+{
+	void Test2 ()
+	{
+		base.$
+	}
+}");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("Test"), "method 'Test' not found.");
+		}
+		
+		[Test()]
+		public void TestProtectedMemberAccess2 ()
+		{
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
+@"
+class Test
+{
+	protected void Test ()
+	{
+	}
+}
+
+class Test2
+{
+	void Test2 ()
+	{
+		(new Test ()).$
+	}
+}");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNull (provider.Find ("Test"), "method 'Test' found, but shouldn't.");
+		}
+		
 	}
 }

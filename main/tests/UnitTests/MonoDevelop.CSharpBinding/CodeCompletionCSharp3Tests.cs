@@ -45,7 +45,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 		[Test()]
 		public void TestExtensionMethods ()
 		{
-			CompletionDataList provider = CodeCompletionTests.CreateProvider (
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
 @"using System;
 
 public static class EMClass
@@ -72,7 +72,7 @@ class Program
 		[Test()]
 		public void TestVarLocalVariables ()
 		{
-			CompletionDataList provider = CodeCompletionTests.CreateProvider (
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
 @"using System;
 
 class Test
@@ -98,7 +98,7 @@ class Program
 		[Test()]
 		public void TestVarLoopVariable ()
 		{
-			CompletionDataList provider = CodeCompletionTests.CreateProvider (
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
 @"using System;
 
 class Test
@@ -126,7 +126,7 @@ class Program
 		[Test()]
 		public void TestAnonymousType ()
 		{
-			CompletionDataList provider = CodeCompletionTests.CreateProvider (
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
 @"
 class Program
 {

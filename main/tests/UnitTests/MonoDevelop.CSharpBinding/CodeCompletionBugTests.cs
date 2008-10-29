@@ -1,5 +1,5 @@
 //
-// CodeCompletionTests.cs
+// CodeCompletionBugTests.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -39,7 +39,7 @@ using MonoDevelop.Projects.Dom.Parser;
 namespace MonoDevelop.CSharpBinding.Tests
 {
 	[TestFixture()]
-	public class CodeCompletionTests : UnitTests.TestBase
+	public class CodeCompletionBugTests : UnitTests.TestBase
 	{
 		public static CompletionDataList CreateProvider (string text)
 		{
