@@ -1,3 +1,11 @@
+2008-10-29  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs: fixed 'Bug 439552
+	- Search in document doesn't work properly'.
+
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Handled the
+	resetTimerId differently.
+
 2008-10-28  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Made the case a.Count ==

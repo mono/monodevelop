@@ -243,10 +243,13 @@ namespace MonoDevelop.SourceEditor
 			args.RetVal = false;
 			switch (args.Event.Key) {
 				case Gdk.Key.Return:
-				case Gdk.Key.KP_Enter:
+				case Gdk.Key.KP_Enter:/*
+I think this is not needed, this code leads to a search twice bug when you hit return. 
+But I leave it in in the case I've missed something. Mike
 					if (o == buttonSearchBackward || o == buttonSearchForward) {
-						((Button)o).Click ();
-					}
+						if (!((Button)o).HasFocus)
+							((Button)o).Click ();
+					}*/
 					break;
 				case Gdk.Key.N:
 				case Gdk.Key.n:
