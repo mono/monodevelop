@@ -1,3 +1,8 @@
+2008-10-29  Mike Kestner <mkestner@novell.com> 
+
+	* libstetic/editor/ActionMenuItem.cs (Select): don't clear and reshow
+	parent's submenu if it's the current item's menu. Fixes #430520.
+
 2008-10-27  Mike Kestner <mkestner@novell.com> 
 
 	* libsteticui/AssemblyResolver.cs: use the app backend's name resolver

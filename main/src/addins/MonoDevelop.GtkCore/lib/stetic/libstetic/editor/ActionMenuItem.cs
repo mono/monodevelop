@@ -118,10 +118,11 @@ namespace Stetic.Editor
 		{
 			base.Select ();
 			
-			parentMenu.OpenSubmenu = null;
-				
-			if (HasSubmenu)
-				ShowSubmenu (GetDesignArea (), this);
+			if (!IsSubmenuVisible) {
+				parentMenu.OpenSubmenu = null;
+				if (HasSubmenu)
+					ShowSubmenu (GetDesignArea (), this);
+			}
 			GrabFocus ();
 		}
 		
