@@ -911,6 +911,11 @@ namespace MonoDevelop.CSharpBinding.Gui
 		
 		ExpressionResult MakeResult(string text, int startOffset, int endOffset, ExpressionContext context)
 		{
+			if (endOffset < startOffset) {
+				int tmp = startOffset;
+				startOffset = endOffset;
+				endOffset = tmp;
+			}
 			Location start = OffsetToLocation(startOffset), end = OffsetToLocation(endOffset);
 			return new ExpressionResult(text.Substring(startOffset, endOffset - startOffset),
 			                            new DomRegion (start.Line, start.Column, end.Line, end.Column),
