@@ -143,11 +143,13 @@ namespace MonoDevelop.CSharpBinding
 						break;
 					}
 				}
+				IType typeFromDatabase = dom.GetType (callingType.FullName, new DomReturnType (callingType).GenericArguments);
+				if (typeFromDatabase != null)
+					callingType = typeFromDatabase;
 			}
 			if (callingMember != null && editor != null) {
 				string wrapper = CreateWrapperClassForMember (callingMember);
-				ICSharpCode.NRefactory.IParser parser
-					= ICSharpCode.NRefactory.ParserFactory.CreateParser (lang, new StringReader (wrapper));
+				ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (lang, new StringReader (wrapper));
 				parser.Parse ();
 				memberCompilationUnit = parser.CompilationUnit;
 				lookupTableVisitor.VisitCompilationUnit (parser.CompilationUnit, null);
