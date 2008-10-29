@@ -194,7 +194,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public override void ShowPage (int npage)
 		{
-			if (designer != null && window != null && !ErrorMode) {
+			if (npage == 0 && designer != null && window != null && !ErrorMode) {
 				// At every page switch update the generated code, to make sure code completion works
 				// for the generated fields. The call to GenerateSteticCodeStructure will generate
 				// the code for the window (only the fields in fact) and update the parser database, it
