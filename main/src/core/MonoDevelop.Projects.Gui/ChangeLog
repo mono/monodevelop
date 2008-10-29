@@ -1,3 +1,9 @@
+2008-10-29  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ParameterInformationWindowManager.cs:
+	fixed 'Bug 436669 - function hints (tooltip) hides typing when typing
+	a multi-line function'.
+
 2008-10-16  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/RuntimeOptionsPanel.cs:

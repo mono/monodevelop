@@ -38,6 +38,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 		static List<MethodData> methods = new List<MethodData> ();
 		static ParameterInformationWindow window;
 		
+		public static ICodeCompletionContext CurrentCodeCompletionContext { get; set; }
+		
 		public static bool IsWindowVisible {
 			get { return methods.Count > 0; }
 		}
@@ -114,6 +116,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			md.MethodProvider = provider;
 			md.CurrentOverload = 0;
 			md.CompletionContext = ctx;
+			CurrentCodeCompletionContext = ctx;
 			methods.Add (md);
 			UpdateWindow ();
 		}
@@ -180,11 +183,10 @@ namespace MonoDevelop.Projects.Gui.Completion
 			
 			MethodData md = methods [methods.Count - 1];
 			int cparam = md.MethodProvider.GetCurrentParameterIndex (md.CompletionContext);
-			
 			Gtk.Requisition reqSize = window.ShowParameterInfo (md.MethodProvider, md.CurrentOverload, cparam - 1);
 			
 			int x = md.CompletionContext.TriggerXCoord;
-			int y = md.CompletionContext.TriggerYCoord;
+			int y = CurrentCodeCompletionContext.TriggerYCoord;
 			
 			if (x + reqSize.Width > window.Screen.Width)
 				x = window.Screen.Width - reqSize.Width;
