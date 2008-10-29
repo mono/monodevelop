@@ -364,6 +364,14 @@ namespace MonoDevelop.Ide.Gui
 		{
 			return MonoDevelop.Projects.Gui.Completion.TextUtilities.SearchBracketBackward (completionWidget, offset, openBracket, closingBracket);
 		}
+
+		public CodeCompletionContext CurrentCodeCompletionContext {
+			get {
+				if (completionWidget == null)
+					return null;
+				return completionWidget.CreateCodeCompletionContext (this.CursorPosition);
+			}
+		}
 		
 		public int SearchChar (int startPos, char searchChar)
 		{

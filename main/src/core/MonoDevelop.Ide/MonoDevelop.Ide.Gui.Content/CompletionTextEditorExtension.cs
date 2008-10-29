@@ -101,8 +101,10 @@ namespace MonoDevelop.Ide.Gui.Content
 			
 			// Handle parameter completion
 			
-			if (ParameterInformationWindowManager.IsWindowVisible)
+			if (ParameterInformationWindowManager.IsWindowVisible) {
+				ParameterInformationWindowManager.CurrentCodeCompletionContext = Editor.CurrentCodeCompletionContext;
 				ParameterInformationWindowManager.PostProcessKeyEvent (key, modifier);
+			}
 
 			if (completionWidget != null) {
 				ICodeCompletionContext ctx = completionWidget.CreateCodeCompletionContext (Editor.CursorPosition);
