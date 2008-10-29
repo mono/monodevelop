@@ -209,6 +209,7 @@ namespace MonoDevelop.Ide.Gui.Search
 				}
 				
 				File.Delete (fileBackup);
+				FileService.NotifyFileChanged (fileName);
 			}
 			else
 				reader.Close ();
