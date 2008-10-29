@@ -1,5 +1,10 @@
 2008-10-29  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Gui/RootWorkspace.cs: Don't crash if the project
+	preferences files can't be created.
+
+2008-10-29  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui.Search/ForwardTextFileIterator.cs: Notify changes
 	done in files. Fixes bug 434693 - Status icon doesn't update when
 	find/replace is done.

@@ -663,17 +663,19 @@ namespace MonoDevelop.Ide.Gui
 				return;
 			}
 			
-			XmlTextWriter writer = new XmlTextWriter (file, System.Text.Encoding.UTF8);
-			writer.Formatting = Formatting.Indented;
-			XmlDataSerializer ser = new XmlDataSerializer (new DataContext ());
-			ser.SerializationContext.BaseFile = file;
 		
+			XmlTextWriter writer = null;
 			try {
+				writer = new XmlTextWriter (file, System.Text.Encoding.UTF8);
+				writer.Formatting = Formatting.Indented;
+				XmlDataSerializer ser = new XmlDataSerializer (new DataContext ());
+				ser.SerializationContext.BaseFile = file;
 				ser.Serialize (writer, props, typeof(PropertyBag));
 			} catch (Exception e) {
 				LoggingService.LogWarning ("Could not save solution preferences: " + GetPreferencesFileName (item), e);
 			} finally {
-				writer.Close ();
+				if (writer != null)
+					writer.Close ();
 			}
 		}
 		
