@@ -316,7 +316,7 @@ namespace MonoDevelop.Projects
 						continue;
 					
 					if (!Directory.Exists (Path.GetDirectoryName (dest)))
-						FileService.CreateDirectory (dest);
+						FileService.CreateDirectory (Path.GetDirectoryName (dest));
 					
 					if (File.Exists (src))
 						FileService.CopyFile (src, dest);
