@@ -64,12 +64,13 @@ namespace MonoDevelop.CSharpBinding.Gui
 				if (ch != '=' && ch != '+' && ch != '-' && ch != 'n' && ch != 'e' && ch != 'w')
 					return null;
 			}
-			int lastWs = pos;
+			int lastWs = pos - 1;
 			while (lastWs > 0 && Char.IsWhiteSpace (documentToCursor [lastWs]))
 				lastWs--;
 			while (lastWs > 0 && !Char.IsWhiteSpace (documentToCursor [lastWs]))
 				lastWs--;
-			ExpressionResult firstExprs = FindExpression (documentToCursor, lastWs - 1);
+			ExpressionResult firstExprs = FindExpression (documentToCursor, lastWs);
+			System.Console.WriteLine(firstExprs);
 			if (firstExprs.Expression != null) {
 				IReturnType unresolvedReturnType = NRefactoryResolver.ParseReturnType (firstExprs);
 				if (unresolvedReturnType != null) {
@@ -88,6 +89,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				
 				ResolveResult rr = resolver.Resolve (lhsExpr, new DomLocation (editor.CursorLine, editor.CursorColumn));
 				//ResolveResult rr = ParserService.Resolve (lhsExpr, currentLine.LineNumber, pos, editor.FileName, editor.Text);
+				System.Console.WriteLine(rr);
 				if (rr != null && rr.ResolvedType != null) {
 					ExpressionContext context;
 					IType c;
@@ -100,7 +102,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 						// when creating a normal instance, all non-abstract classes deriving from the type
 						// are allowed
 						c = projectContent.GetType (rr.ResolvedType);
-						context = ExpressionContext.TypeDerivingFrom (rr.ResolvedType, rr.UnresolvedType, true);
+						context = ExpressionContext.TypeDerivingFrom (rr.ResolvedType, null, true);
 					}
 					if (c != null && !context.FilterEntry (c)) {
 						// Try to suggest an entry (List<int> a = new => suggest List<int>).

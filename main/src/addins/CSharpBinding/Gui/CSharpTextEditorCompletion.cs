@@ -920,11 +920,15 @@ namespace MonoDevelop.CSharpBinding.Gui
 				ICompletionData unresovedCompletionData = col.AddCompletionData (result, returnTypeUnresolved);
 				col.FullyQualify = false;
 				result.DefaultCompletionString = StripGenerics (unresovedCompletionData.CompletionText);
+			} else {
+				ICompletionData unresovedCompletionData = col.AddCompletionData (result, returnType);
+				result.DefaultCompletionString = StripGenerics (unresovedCompletionData.CompletionText);
+				
 			}
-			
-//			if (tce != null && tce.Type != null) {
-				//result.DefaultCompletionString = StripGenerics (col.AddCompletionData (result, tce.Type).CompletionString);
-//			} else {
+//				if (tce != null && tce.Type != null) {
+//					result.DefaultCompletionString = StripGenerics (col.AddCompletionData (result, tce.Type).CompletionString);
+//				} 
+//			else {
 //			}
 			
 			IType type = null;
