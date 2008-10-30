@@ -31,7 +31,10 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		bool IsTokenWithGenericParameters ()
 		{
 			StartPeek();
-			Token t = Peek (1);
+			Token t = Peek ();
+			while (t.kind == Tokens.Dot || t.kind == Tokens.Identifier) {
+				t = Peek ();
+			}
 			if (t.kind != Tokens.LessThan) 
 				return false;
 			return SkipGeneric(ref t);
