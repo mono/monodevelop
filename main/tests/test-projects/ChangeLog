@@ -1,3 +1,9 @@
+2008-10-30  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* test-build-configs/Lib4/Lib4.mdp:
+	* test-build-configs/Lib3/Lib3.mdp:
+	* test-build-configs/Lib2/Lib2.mdp: Fix test solutions.
+
 2008-10-23  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* test-configuration-merging/TestConfigurationMerging/TestConfigurationMerging.csproj:
