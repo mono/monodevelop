@@ -256,7 +256,6 @@ namespace MonoDevelop.Projects.Dom
 			
 			if (IsProtected) {
 				foreach (IType type in dom.GetInheritanceTree (calledType)) {
-					System.Console.WriteLine(type.FullName + "/" + member.DeclaringType.FullName);
 					if (type.FullName == member.DeclaringType.FullName)
 						return true;
 				}
