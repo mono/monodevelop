@@ -521,6 +521,18 @@ namespace MonoDevelop.CSharpBinding.Gui
 						}
 						col.AddCompletionData (completionList, o);
 					}
+					// Add inner classes
+					Stack<IType> innerStack = new Stack<IType> ();
+					innerStack.Push (cls);
+					while (innerStack.Count > 0) {
+						IType curType = innerStack.Pop ();
+						foreach (IType innerType in curType.InnerTypes) {
+							if (innerType != cls) // don't add the calling class as possible base type
+								col.AddCompletionData (completionList, innerType);
+						}
+						if (curType.DeclaringType != null)
+							innerStack.Push (curType.DeclaringType);
+					}
 					return completionList;
 					
 				}

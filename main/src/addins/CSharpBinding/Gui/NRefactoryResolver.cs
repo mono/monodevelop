@@ -202,6 +202,7 @@ namespace MonoDevelop.CSharpBinding
 		static readonly IReturnType attributeType = new DomReturnType ("System.Attribute");
 		public void AddAccessibleCodeCompletionData (ExpressionContext context, CompletionDataList completionList)
 		{
+// System.Console.WriteLine("AddAccessibleCodeCompletionData in " + context);
 			if (context != ExpressionContext.Global) {
 				AddContentsFromClassAndMembers (context, completionList);
 			
@@ -342,6 +343,23 @@ namespace MonoDevelop.CSharpBinding
 		{
 			return ResolveType (unit, type);
 		}
+
+		bool TryResolve (ICompilationUnit unit, IReturnType type, out DomReturnType result)
+		{
+			IType resolvedType = dom.SearchType (new SearchTypeRequest (unit, type));
+			//System.Console.WriteLine(type +" resolved to: " +resolvedType);
+			if (resolvedType != null) {
+				result = new DomReturnType (DomType.CreateInstantiatedGenericType (resolvedType, type.GenericArguments));
+				result.ArrayDimensions = type.ArrayDimensions;
+				for (int i = 0; i < result.ArrayDimensions; i++) {
+					result.SetDimension (i, type.GetDimension (i));
+				}
+				result.IsNullable = type.IsNullable;
+				return true;
+			}
+			result = null;
+			return false;
+		}
 		
 		IReturnType ResolveType (ICompilationUnit unit, IReturnType type)
 		{
@@ -349,25 +367,28 @@ namespace MonoDevelop.CSharpBinding
 				return DomReturnType.Void;
 			if (type.Type != null) // type known (possible anonymous type), no resolving needed
 				return type;
-			IType resolvedType = dom.SearchType (new SearchTypeRequest (unit, type));
-			if (resolvedType != null) {
-				DomReturnType result = new DomReturnType (DomType.CreateInstantiatedGenericType (resolvedType, type.GenericArguments));
-				result.ArrayDimensions = type.ArrayDimensions;
-				for (int i = 0; i < result.ArrayDimensions; i++) {
-					result.SetDimension (i, type.GetDimension (i));
-				}
-				result.IsNullable = type.IsNullable;
+			DomReturnType result = null;
+			if (TryResolve (unit, type, out result))
 				return result;
-			} else {
-				if (!type.FullName.StartsWith (this.CallingType.FullName + ".")) {
-					DomReturnType possibleInnerType = new DomReturnType (this.CallingType.FullName + "." + type.Name, type.IsNullable, type.GenericArguments);
-					possibleInnerType.ArrayDimensions = type.ArrayDimensions;
-					for (int i = 0; i < type.ArrayDimensions; i++) {
-						possibleInnerType.SetDimension (i, type.GetDimension (i));
-					}
-					return ResolveType (unit, possibleInnerType);
-				}
+			
+			DomReturnType possibleInnerType = new DomReturnType (this.CallingType.FullName + "." + type.Name, type.IsNullable, type.GenericArguments);
+			possibleInnerType.ArrayDimensions = type.ArrayDimensions;
+			for (int i = 0; i < type.ArrayDimensions; i++) {
+				possibleInnerType.SetDimension (i, type.GetDimension (i));
 			}
+			if (TryResolve (unit, possibleInnerType, out result))
+				return result;
+			
+			if (this.CallingType.DeclaringType != null) {
+				possibleInnerType = new DomReturnType (this.CallingType.DeclaringType.FullName + "." + type.Name, type.IsNullable, type.GenericArguments);
+				possibleInnerType.ArrayDimensions = type.ArrayDimensions;
+				for (int i = 0; i < type.ArrayDimensions; i++) {
+					possibleInnerType.SetDimension (i, type.GetDimension (i));
+				}
+				if (TryResolve (unit, possibleInnerType, out result))
+					return result;
+			}
+						
 			return type;
 		}
 		
@@ -430,9 +451,9 @@ namespace MonoDevelop.CSharpBinding
 					} else { 
 						varTypeUnresolved = varType = ConvertTypeReference (var.TypeRef);
 					}
-					System.Console.Write("varType: " + varType);
+					//System.Console.Write("varType: " + varType);
 					varType = ResolveType (varType);
-					System.Console.WriteLine(" resolved: " + varType);
+					//System.Console.WriteLine(" resolved: " + varType);
 					result = new LocalVariableResolveResult (
 						new LocalVariable (this.CallingMember, identifier, varType,
 							new DomRegion (var.StartPos.Line, var.StartPos.Column, var.EndPos.Line, var.EndPos.Column)),

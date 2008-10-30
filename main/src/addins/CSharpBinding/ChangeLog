@@ -1,6 +1,12 @@
 2008-10-30  Mike Krüger  <mkrueger@novell.com>
 
 	* Gui/NRefactoryResolver.cs:
+	* Gui/CSharpTextEditorCompletion.cs: Fixed 'Bug 432434 - Code completion
+	doesn't work with subclasses'.
+
+2008-10-30  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/NRefactoryResolver.cs:
 	* Gui/CSharpTextEditorCompletion.cs: fixed 'Bug 436312 - Couldn't deal
 	well with elements which have generic and non-generic presence at the
 	same time'.
