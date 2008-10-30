@@ -64,8 +64,22 @@ namespace MonoDevelop.CSharpBinding.Gui
 				if (ch != '=' && ch != '+' && ch != '-' && ch != 'n' && ch != 'e' && ch != 'w')
 					return null;
 			}
-			ExpressionResult lhsExpr = FindExpression (documentToCursor, pos);
+			int lastWs = pos;
+			while (lastWs > 0 && Char.IsWhiteSpace (documentToCursor [lastWs]))
+				lastWs--;
+			while (lastWs > 0 && !Char.IsWhiteSpace (documentToCursor [lastWs]))
+				lastWs--;
+			ExpressionResult firstExprs = FindExpression (documentToCursor, lastWs - 1);
+			if (firstExprs.Expression != null) {
+				IReturnType unresolvedReturnType = NRefactoryResolver.ParseReturnType (firstExprs);
+				if (unresolvedReturnType != null) {
+					IType resolvedType = projectContent.SearchType (new SearchTypeRequest (unit, unresolvedReturnType));
+					return ExpressionContext.TypeDerivingFrom (resolvedType != null ? new DomReturnType (resolvedType) : null, unresolvedReturnType, true);
+				}
+				
+			}
 			
+			ExpressionResult lhsExpr = FindExpression (documentToCursor, pos);
 			if (lhsExpr.Expression != null) {
 				NRefactoryResolver resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (projectContent, unit,
 				                                                                                ICSharpCode.NRefactory.SupportedLanguage.CSharp,
@@ -73,7 +87,6 @@ namespace MonoDevelop.CSharpBinding.Gui
 				                                                                                fileName);
 				
 				ResolveResult rr = resolver.Resolve (lhsExpr, new DomLocation (editor.CursorLine, editor.CursorColumn));
-				
 				//ResolveResult rr = ParserService.Resolve (lhsExpr, currentLine.LineNumber, pos, editor.FileName, editor.Text);
 				if (rr != null && rr.ResolvedType != null) {
 					ExpressionContext context;
