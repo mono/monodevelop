@@ -1,3 +1,7 @@
+2008-10-30  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/ProjectTests.cs: Added some bug tests.
+
 2008-10-30  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: added more cases

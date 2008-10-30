@@ -148,5 +148,32 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (BuildAction.EmbeddedResource, pf.BuildAction);
 			Assert.AreEqual ("ResourcesTesterNamespace.Subfolder.Normal2.resources", pf.ResourceId);
 		}
+		
+		[Test()]
+		public void ProjectNameWithDots ()
+		{
+			// Test case for bug #437392
+
+			ProjectCreateInformation info = new ProjectCreateInformation ();
+			info.ProjectName = "Some.Test";
+			info.ProjectBasePath = "/tmp/test";
+			DotNetProject p = new DotNetProject ("C#", info, null);
+
+			Assert.AreEqual (2, p.Configurations.Count);
+			Assert.AreEqual ("Debug", p.Configurations [0].Name);
+			Assert.AreEqual ("Release", p.Configurations [1].Name);
+			
+			Assert.AreEqual ("Some.Test", ((DotNetProjectConfiguration) p.Configurations [0]).OutputAssembly);
+			Assert.AreEqual ("Some.Test", ((DotNetProjectConfiguration) p.Configurations [1]).OutputAssembly);
+		}
+		
+		[Test()]
+		public void NewConfigurationsHaveAnAssemblyName ()
+		{
+			DotNetProject p = new DotNetProject ("C#");
+			p.Name = "HiThere";
+			DotNetProjectConfiguration c = (DotNetProjectConfiguration) p.CreateConfiguration ("First");
+			Assert.AreEqual ("HiThere", c.OutputAssembly);
+		}
 	}
 }
