@@ -776,7 +776,6 @@ namespace MonoDevelop.CSharpBinding.Gui
 									break;
 								}
 							}
-							
 						}
 						
 						if (!foundType && (NamePrefix.Length == 0 || !type.Namespace.StartsWith (NamePrefix)) && !type.Namespace.EndsWith ("." + NamePrefix) && type.DeclaringType == null) {
@@ -786,7 +785,6 @@ namespace MonoDevelop.CSharpBinding.Gui
 					MemberCompletionData newData = new MemberCompletionData (member, flags);
 					newData.HideExtensionParameter = HideExtensionParameter;
 					string memberKey = ambience.GetString (member, OutputFlags.IncludeGenerics);
-						
 					if (data.ContainsKey (memberKey)) {
 						data [memberKey].AddOverload (newData);
 					} else {

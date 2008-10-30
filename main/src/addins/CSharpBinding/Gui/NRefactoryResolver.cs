@@ -240,9 +240,9 @@ namespace MonoDevelop.CSharpBinding
 				foreach (object o in dom.GetNamespaceContents (namespaceList, true, true)) {
 					if (context.FilterEntry (o))
 						continue;
-					IMember member = o as IMember;
-					if (member != null && completionList.Find (member.Name) != null)
-						continue;
+					//IMember member = o as IMember;
+					//if (member != null && completionList.Find (member.Name) != null)
+					//	continue;
 					if (context == ExpressionContext.Attribute) {
 						IType t = o as IType;
 						if (t != null && !t.IsBaseType (attributeType))

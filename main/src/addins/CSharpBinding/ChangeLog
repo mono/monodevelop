@@ -1,5 +1,12 @@
 2008-10-30  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/NRefactoryResolver.cs:
+	* Gui/CSharpTextEditorCompletion.cs: fixed 'Bug 436312 - Couldn't deal
+	well with elements which have generic and non-generic presence at the
+	same time'.
+
+2008-10-30  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/CSharpTextEditorCompletion.cs: fixed  duplicate member bug.
 
 2008-10-30  Mike Krüger  <mkrueger@novell.com>
