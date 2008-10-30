@@ -266,6 +266,16 @@ namespace MonoDevelop.CSharpBinding
 				= ICSharpCode.NRefactory.ParserFactory.CreateParser (this.lang, new StringReader (expr));
 			return parser.ParseExpression();
 		}
+		TypeReference ParseTypeReference (ExpressionResult expressionResult)
+		{
+			if (expressionResult == null || String.IsNullOrEmpty (expressionResult.Expression))
+				return null;
+			string expr = expressionResult.Expression.Trim ();
+			ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (this.lang, new StringReader (expr));
+			return parser.ParseTypeReference ();
+		}
+
+		
 		
 		public ResolveResult ResolveIdentifier (string identifier, DomLocation resolvePosition)
 		{
@@ -293,18 +303,15 @@ namespace MonoDevelop.CSharpBinding
 		public ResolveResult Resolve (ExpressionResult expressionResult, DomLocation resolvePosition)
 		{
 			this.SetupResolver (resolvePosition);
+			ResolveVisitor visitor = new ResolveVisitor (this);
+			if (expressionResult.ExpressionContext.IsObjectCreation) 
+				return visitor.CreateResult (ConvertTypeReference (ParseTypeReference (expressionResult)));
 			expr = ParseExpression (expressionResult);
 			if (expr == null) {
 				System.Console.WriteLine("Can't parse expression");
 				return null;
 			}
-	//		System.Console.WriteLine("expressionResult:" + expressionResult);
-	//		System.Console.WriteLine("parsed expr.:" + expr);
-			ResolveVisitor visitor = new ResolveVisitor (this);
-			
 			ResolveResult result = visitor.Resolve (expr);
-			
-	//		System.Console.WriteLine("result:" + result);
 			return result;
 		}
 		
