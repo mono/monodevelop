@@ -4365,15 +4365,6 @@ out Expression pexpr) {
 #line  1846 "Frames/cs.ATG" 
 			pexpr = new PrimitiveExpression(t.literalValue, t.val);  
 		} else if (
-#line  1847 "Frames/cs.ATG" 
-IsTokenWithGenericParameters()) {
-			TypeName(
-#line  1848 "Frames/cs.ATG" 
-out type, true);
-
-#line  1848 "Frames/cs.ATG" 
-			pexpr = new MemberReferenceExpression(new TypeReferenceExpression (type), ""); 
-		} else if (
 #line  1849 "Frames/cs.ATG" 
 StartOfQueryExpression()) {
 			QueryExpression(

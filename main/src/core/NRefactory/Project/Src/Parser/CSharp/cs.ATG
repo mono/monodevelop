@@ -1844,8 +1844,8 @@ PrimaryExpr<out Expression pexpr>
 	|	"false"                           (.pexpr = new PrimitiveExpression(false, "false"); .)
 	|	"null"                            (.pexpr = new PrimitiveExpression(null, "null");  .)          /* from literal token */
 	|	Literal                           (.pexpr = new PrimitiveExpression(t.literalValue, t.val);  .)
-	| IF (IsTokenWithGenericParameters()) 
-		TypeName<out type, true>          (.pexpr = new MemberReferenceExpression(new TypeReferenceExpression (type), ""); .)
+/*	| IF (IsTokenWithGenericParameters()) 
+		TypeName<out type, true>          (.pexpr = new MemberReferenceExpression(new TypeReferenceExpression (type), ""); .)*/
 	| IF (StartOfQueryExpression())
 		QueryExpression<out pexpr>
 	| IF (IdentAndDoubleColon())
