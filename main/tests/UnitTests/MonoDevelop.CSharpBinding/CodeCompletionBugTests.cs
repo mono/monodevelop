@@ -729,6 +729,56 @@ namespace MyNamespace
 		}
 
 		/// <summary>
+		/// Bug 432434A - Code completion doesn't work with subclasses
+		/// </summary>
+		[Test()]
+		public void TestBug432434A ()
+		{
+			CompletionDataList provider = CreateProvider (
+
+@"    public class E
+        {
+                public class Inner
+                {
+                        public void Method ()
+                        {
+                                Inner inner = new Inner();
+                                inner.$
+                        }
+                }
+        }
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.Find ("Method"), "Method 'Method' not found.");
+		}
+		
+		/// <summary>
+		/// Bug 432434B - Code completion doesn't work with subclasses
+		/// </summary>
+		[Test()]
+		public void TestBug432434B ()
+		{
+			CompletionDataList provider = CreateProvider (
+
+@"  public class E
+        {
+                public class Inner
+                {
+                        public class ReallyInner : $
+                        {
+
+                        }
+                }
+        }
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.Find ("E"), "Class 'E' not found.");
+			Assert.IsNotNull (provider.Find ("Inner"), "Class 'Inner' not found.");
+			Assert.IsNull (provider.Find ("ReallyInner"), "Class 'ReallyInner' found, but shouldn't.");
+		}
+		
+
+		/// <summary>
 		/// Bug 436705 - code completion for constructors does not handle class name collisions properly
 		/// </summary>
 		[Test()]
