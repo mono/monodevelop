@@ -349,7 +349,7 @@ namespace MonoDevelop.Projects.Dom
 		{
 		}
 		
-		public DomReturnType (string name, bool isNullable, List<IReturnType> typeParameters)
+		public DomReturnType (string name, bool isNullable, IEnumerable<IReturnType> typeParameters)
 		{
 			KeyValuePair<string, string> splitted = SplitFullName (name);
 			this.nspace = splitted.Key;
