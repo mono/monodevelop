@@ -1,5 +1,12 @@
 2008-10-30  Mike Krüger  <mkrueger@novell.com>
 
+	* Project/Src/Parser/IParser.cs:
+	* Project/Src/Parser/AbstractParser.cs:
+	* Project/Src/Parser/VBNet/VBNetParser.cs:
+	* Project/Src/Parser/CSharp/CSharpParser.cs: Added pase type reference.
+
+2008-10-30  Mike Krüger  <mkrueger@novell.com>
+
 	* Project/Src/Parser/CSharp/CSharpParser.cs: fixed bug in nrefactory.
 
 2008-10-30  Mike Krüger  <mkrueger@novell.com>

@@ -68,6 +68,11 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			Expect(Tokens.EOF);
 			return expr;
 		}
+		public override TypeReference ParseTypeReference ()
+		{
+			// todo
+			return null;
+		}
 		
 		public override BlockStatement ParseBlock()
 		{

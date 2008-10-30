@@ -69,6 +69,14 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			Expect(Tokens.EOF);
 			return expr;
 		}
+
+		public override TypeReference ParseTypeReference ()
+		{
+			lexer.NextToken();
+			TypeReference type;
+			Type(out type);
+			return type;
+		}
 		
 		public override BlockStatement ParseBlock()
 		{
