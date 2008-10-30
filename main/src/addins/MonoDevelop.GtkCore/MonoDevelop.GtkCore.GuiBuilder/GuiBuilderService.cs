@@ -326,13 +326,14 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 
 			if (ProjectDomService.HasDom (project)) {
 				// Only update the parser database if the project is actually loaded in the IDE.
-				if (saveToFile)
+				if (saveToFile) {
 					ProjectDomService.Parse (project, fileName, "");
+					FileService.NotifyFileChanged (fileName);
+				}
 				else
 					ProjectDomService.Parse (project, fileName, "", ((StringWriter)fileStream).ToString ());
 			}
 
-			FileService.NotifyFileChanged (fileName);
 			return fileName;
 		}
 		

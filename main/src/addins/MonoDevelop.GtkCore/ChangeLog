@@ -1,3 +1,10 @@
+2008-10-30  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs: Don't notify the
+	file has changed unless the changes are saved to disk. Fixes bug
+	#430497 - Widget names created in Stetic not available for
+	autocomplete.
+
 2008-10-29  Mike Kestner <mkestner@novell.com> 
 
 	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs (ShowPage): only
