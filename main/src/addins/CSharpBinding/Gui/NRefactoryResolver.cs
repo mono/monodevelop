@@ -309,7 +309,10 @@ namespace MonoDevelop.CSharpBinding
 			
 			if (expressionResult.ExpressionContext.IsObjectCreation) {
 //				System.Console.WriteLine(" out1");
-				return visitor.CreateResult (ConvertTypeReference (ParseTypeReference (expressionResult)));
+				TypeReference typeRef = ParseTypeReference (expressionResult);
+				if (typeRef == null)
+					return null;
+				return visitor.CreateResult (ConvertTypeReference (typeRef));
 			}
 			expr = ParseExpression (expressionResult);
 //			System.Console.WriteLine("parsed expression:" + expr);

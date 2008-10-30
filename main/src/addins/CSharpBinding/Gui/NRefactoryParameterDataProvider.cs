@@ -93,6 +93,19 @@ namespace MonoDevelop.CSharpBinding
 			this.editor = editor;
 			this.resolver = resolver;
 			if (type != null) {
+				if (type.ClassType == ClassType.Delegate) {
+					IMethod invokeMethod = ExtractInvokeMethod (type);
+					if (type is InstantiatedType) {
+						this.delegateName = ((InstantiatedType)type).UninstantiatedType.Name;
+					} else {
+						this.delegateName = type.Name;
+					}
+					this.prefix = ambience.GetString (invokeMethod.ReturnType, OutputFlags.ClassBrowserEntries | OutputFlags.EmitMarkup  | OutputFlags.IncludeGenerics) + " ";
+					
+					methods.Add (invokeMethod);
+					return;
+				}
+				
 				bool constructorFound = false;
 				foreach (IMethod method in type.Methods) {
 					constructorFound |= method.IsConstructor;
@@ -108,20 +121,24 @@ namespace MonoDevelop.CSharpBinding
 				}
 			}
 		}
+		IMethod ExtractInvokeMethod (IType type)
+		{
+			foreach (IMethod method in type.Methods) {
+				if (method.Name == "Invoke")
+					return method;
+			}
+			return null;
+		}
 		
  		string delegateName = null;
+		string prefix = null;
 		public NRefactoryParameterDataProvider (TextEditor editor, NRefactoryResolver resolver, string delegateName, IType type)
 		{
 			this.editor = editor;
 			this.resolver = resolver;
 			this.delegateName = delegateName;
 			if (type != null) {
-				foreach (IMethod method in type.Methods) {
-					if (method.Name == "Invoke") {
-						methods.Add (method);
-						break;
-					}
-				}
+				methods.Add (ExtractInvokeMethod (type));
 			}
 		}
 		
@@ -182,7 +199,7 @@ namespace MonoDevelop.CSharpBinding
 		
 		public string GetMethodMarkup (int overload, string[] parameterMarkup)
 		{
-			return "<b>" + (this.delegateName ?? (methods[overload].IsConstructor ? ambience.GetString (methods[overload].DeclaringType, OutputFlags.ClassBrowserEntries | OutputFlags.EmitMarkup  | OutputFlags.IncludeGenerics) : methods[overload].Name)) + "</b> (" + string.Join (", ", parameterMarkup)  + ")";
+			return prefix + "<b>" + (this.delegateName ?? (methods[overload].IsConstructor ? ambience.GetString (methods[overload].DeclaringType, OutputFlags.ClassBrowserEntries | OutputFlags.EmitMarkup  | OutputFlags.IncludeGenerics) : methods[overload].Name)) + "</b> (" + string.Join (", ", parameterMarkup)  + ")";
 //			return ambience.GetIntellisenseDescription (methods[overload]);
 		}
 		
