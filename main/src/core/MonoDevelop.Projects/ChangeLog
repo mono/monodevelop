@@ -1,5 +1,11 @@
 2008-10-30  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Dom/ResolveResult.cs:
+	* MonoDevelop.Projects.Dom/AbstractMember.cs:
+	* MonoDevelop.Projects.Dom/ExpressionContext.cs: Fixed speed issue.
+
+2008-10-30  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Dom/DomReturnType.cs:
 	* MonoDevelop.Projects.Dom.Serialization/NamespaceEntry.cs:
 	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:

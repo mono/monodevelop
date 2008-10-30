@@ -237,7 +237,7 @@ namespace MonoDevelop.Projects.Dom
 				return 3;
 			return 0;
 		}
-		
+//		Dictionary<string, bool> protectedTable = new Dictionary<string, bool> ();
 		public virtual bool IsAccessibleFrom (ProjectDom dom, IType calledType, IMember member)
 		{
 			if (member == null)
@@ -255,10 +255,13 @@ namespace MonoDevelop.Projects.Dom
 				return false;
 			
 			if (IsProtected) {
-				foreach (IType type in dom.GetInheritanceTree (calledType)) {
-					if (type.FullName == member.DeclaringType.FullName)
+				
+/*				foreach (IType type in dom.GetInheritanceTree (calledType)) {
+					if (type.FullName == member.DeclaringType.FullName) {
+						protectedTable[protectedTableKey] = true;
 						return true;
-				}
+					}
+				}*/
 				return false;
 			}
 			// inner class 

@@ -163,7 +163,7 @@ namespace MonoDevelop.Projects.Dom
 			
 			public override string ToString ()
 			{
-				return String.Format ("[TypeExpressionContext:Type={0}, IsObjectCreation={1}]", Type, IsObjectCreation);
+				return String.Format ("[TypeExpressionContext:Type={0}, UnresolvedType={1}, IsObjectCreation={2}]", Type, UnresolvedType, IsObjectCreation);
 			}
 		
 		}
