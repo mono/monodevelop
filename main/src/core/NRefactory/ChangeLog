@@ -1,5 +1,9 @@
 2008-10-30  Mike Krüger  <mkrueger@novell.com>
 
+	* Project/Src/Parser/CSharp/CSharpParser.cs: fixed bug in nrefactory.
+
+2008-10-30  Mike Krüger  <mkrueger@novell.com>
+
 	* Project/Src/Parser/CSharp/CSharpParser.cs: fixed 'Bug 434705 - No
 	autocomplete offered if not assigning result of 'new' to a variable'.
 
