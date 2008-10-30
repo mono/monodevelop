@@ -1,3 +1,13 @@
+2008-10-30  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/DotNetProject.cs: When creating a project, use
+	the provided project name when setting the assembly name. The project
+	object name can't be used here because it is still not valid. Fixes
+	bug #437392.
+
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs: Reset
+	the default output assembly name before reading a configuration.
+
 2008-10-30  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/ResolveResult.cs:

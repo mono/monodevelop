@@ -229,7 +229,7 @@ namespace MonoDevelop.Projects
 			
 			foreach (DotNetProjectConfiguration parameter in Configurations) {
 				parameter.OutputDirectory = Path.Combine (binPath, parameter.Id);
-				parameter.OutputAssembly  = Name;
+				parameter.OutputAssembly  = info.ProjectName;
 				
 				if (projectOptions != null) {
 					if (projectOptions.Attributes["PauseConsoleOutput"] != null) {

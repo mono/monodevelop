@@ -292,6 +292,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				
 				if (config is DotNetProjectConfiguration) {
 					DotNetProjectConfiguration dpc = (DotNetProjectConfiguration) config;
+					dpc.OutputAssembly = string.Empty;
 					if (dpc.CompilationParameters != null) {
 						data = ReadPropertyGroupMetadata (ser, grp, dpc.CompilationParameters);
 						ser.Deserialize (dpc.CompilationParameters, data);
@@ -299,7 +300,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					
 					if (!string.IsNullOrEmpty (assemblyName) && string.IsNullOrEmpty (dpc.OutputAssembly))
 						dpc.OutputAssembly = assemblyName;
-					
+
 					string fw = (string) dpc.ExtendedProperties ["TargetFrameworkVersion"];
 					if (fw == null)
 						fw = frameworkVersion;
