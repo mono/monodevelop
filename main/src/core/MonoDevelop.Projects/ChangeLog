@@ -1,5 +1,13 @@
 2008-10-30  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Dom/DomReturnType.cs:
+	* MonoDevelop.Projects.Dom.Serialization/NamespaceEntry.cs:
+	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
+	fixed 'Bug 436312 - Couldn't deal well with elements which have
+	generic and non-generic presence at the same time'.
+
+2008-10-30  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Dom/DomReturnType.cs: fixed "Bug 432434 - Code
 	completion doesn't work with subclasses".
 

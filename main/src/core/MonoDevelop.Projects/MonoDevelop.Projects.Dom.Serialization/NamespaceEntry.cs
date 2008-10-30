@@ -106,7 +106,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				contents_ci [value.name] = value;
 		}
 
-		static string GetName (ClassEntry entry)
+		internal static string GetName (ClassEntry entry)
 		{
 			if (entry.TypeParameterCount == 0)
 				return entry.Name;

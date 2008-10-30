@@ -48,7 +48,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 	{
 		static protected readonly int MAX_ACTIVE_COUNT = 100;
 		static protected readonly int MIN_ACTIVE_COUNT = 10;
-		static protected readonly int FORMAT_VERSION   = 55;
+		static protected readonly int FORMAT_VERSION   = 56;
 		
 		NamespaceEntry rootNamespace;
 		protected ArrayList references;
@@ -875,7 +875,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 						IType newClass = null;
 						for (int n=0; n<newClasses.Count && newClass == null; n++) {
 							IType uc = newClasses [n];
-							if (uc.Name == ce.Name && newNss[n] == ce.NamespaceRef) {
+							if (uc.Name == ce.Name  && uc.TypeParameters.Count == ce.TypeParameterCount && newNss[n] == ce.NamespaceRef) {
 								newClass = uc;
 								added[n] = true;
 							}
@@ -927,7 +927,8 @@ namespace MonoDevelop.Projects.Dom.Serialization
 						IType c = CopyClass (newClasses[n]);
 						
 						// A ClassEntry may already exist if part of the class is defined in another file
-						ClassEntry ce = newNss[n].GetClass (c.Name, true);
+						string name = c.TypeParameters.Count == 0 ? c.Name : c.Name + "~" + c.TypeParameters.Count;
+						ClassEntry ce = newNss[n].GetClass (name, true);
 						if (ce != null) {
 							// The entry exists, just update it
 							if (ce.Class == null) ce.Class = ReadClass (ce);
@@ -1079,6 +1080,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 						list.Add (new Namespace ((string)en.Key));
 					} else {
 						IType type = GetClass ((ClassEntry)en.Value);
+						
 						if (type.Name.IndexOfAny (new char[] { '<', '>' }) >= 0)
 							continue;
 						list.Add (type);

@@ -413,11 +413,12 @@ namespace MonoDevelop.Projects.Dom
 				genArgs.Append ("}");
 			}
 			
-			return string.Format ("[DomReturnType:FullName={0}, PointerNestingLevel={1}, ArrayDimensions={2}, GenericArguments={3}]",
+			return string.Format ("[DomReturnType:FullName={0}, PointerNestingLevel={1}, ArrayDimensions={2}, GenericArguments={3}, UnderlyingType={4}]",
 			                      FullName,
 			                      PointerNestingLevel,
 			                      ArrayDimensions,
-			                      genArgs.ToString ());
+			                      genArgs.ToString (),
+			                      Type == null ? "null" : Type.ToString ());
 		}
 		
 		public static string ConvertToString (IReturnType type)
