@@ -703,6 +703,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 					namePrefix = value ?? "";
 				}
 			}
+			public bool FullyQualify { get; set; }
 			
 			bool hideExtensionParameter = true;
 			public bool HideExtensionParameter {
@@ -720,6 +721,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				this.dom  = dom;
 				this.unit = unit;
 				this.location = location;
+				this.FullyQualify = false;
 			}
 			
 			public ICompletionData AddCompletionData (CompletionDataList completionList, object obj)
@@ -750,7 +752,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 						}
 						
 					}
-					if (!foundNamespace && (NamePrefix.Length == 0 || !rt.Namespace.StartsWith (NamePrefix)) && !rt.Namespace.EndsWith ("." + NamePrefix))
+					if (FullyQualify || !foundNamespace && (NamePrefix.Length == 0 || !rt.Namespace.StartsWith (NamePrefix)) && !rt.Namespace.EndsWith ("." + NamePrefix))
 						flags |= OutputFlags.UseFullName;
 					
 					return completionList.Add (ambience.GetString (rt, flags), "md-class");
@@ -897,30 +899,37 @@ namespace MonoDevelop.CSharpBinding.Gui
 		{
 			CompletionDataList result = new CompletionDataList ();
 			
-			IType type = null;
-			if (returnType != null)
-				type = dom.SearchType (new SearchTypeRequest (Document.CompilationUnit, returnType));
+			
 			ExpressionContext.TypeExpressionContext tce = context as ExpressionContext.TypeExpressionContext;
 			
 			CompletionDataCollector col = new CompletionDataCollector (Editor, dom, Document.CompilationUnit, location);
-			if (returnTypeUnresolved != null)
-				result.DefaultCompletionString = StripGenerics (col.AddCompletionData (result, returnTypeUnresolved).CompletionText);
-			if (type == null) {
-				return result;
+			
+			if (returnTypeUnresolved != null) {
+				col.FullyQualify = true;
+				ICompletionData unresovedCompletionData = col.AddCompletionData (result, returnTypeUnresolved);
+				col.FullyQualify = false;
+				result.DefaultCompletionString = StripGenerics (unresovedCompletionData.CompletionText);
 			}
 			
-			if (tce != null && tce.Type != null) {
+//			if (tce != null && tce.Type != null) {
 				//result.DefaultCompletionString = StripGenerics (col.AddCompletionData (result, tce.Type).CompletionString);
-			} else {
-				if (context == null || !context.FilterEntry (type))
-					col.AddCompletionData (result, type);
-			}
+//			} else {
+//			}
+			
+			IType type = null;
+			if (returnType != null) 
+				type = dom.GetType (returnType);
+			if (type == null)
+				type = dom.SearchType (new SearchTypeRequest (Document.CompilationUnit, returnTypeUnresolved));
+			if (type == null)
+				return result;
 			
 			foreach (IType curType in dom.GetSubclasses (type)) {
 				if (context != null && context.FilterEntry (curType))
 					continue;
 				col.AddCompletionData (result, curType);
 			}
+			
 			// add aliases
 			foreach (IUsing u in Document.CompilationUnit.Usings) {
 				foreach (KeyValuePair<string, IReturnType> alias in u.Aliases) {

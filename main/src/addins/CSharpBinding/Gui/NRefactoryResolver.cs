@@ -304,14 +304,21 @@ namespace MonoDevelop.CSharpBinding
 		{
 			this.SetupResolver (resolvePosition);
 			ResolveVisitor visitor = new ResolveVisitor (this);
-			if (expressionResult.ExpressionContext.IsObjectCreation) 
+//			System.Console.WriteLine("expressionResult:" + expressionResult);
+			
+			if (expressionResult.ExpressionContext.IsObjectCreation) {
+//				System.Console.WriteLine(" out1");
 				return visitor.CreateResult (ConvertTypeReference (ParseTypeReference (expressionResult)));
+			}
 			expr = ParseExpression (expressionResult);
+//			System.Console.WriteLine("parsed expression:" + expr);
 			if (expr == null) {
-				System.Console.WriteLine("Can't parse expression");
+//				System.Console.WriteLine("Can't parse expression");
 				return null;
 			}
+			
 			ResolveResult result = visitor.Resolve (expr);
+//			System.Console.WriteLine("result:" + result);
 			return result;
 		}
 		
@@ -340,6 +347,8 @@ namespace MonoDevelop.CSharpBinding
 		{
 			if (type == null)
 				return DomReturnType.Void;
+			if (type.Type != null) // type known (possible anonymous type), no resolving needed
+				return type;
 			IType resolvedType = dom.SearchType (new SearchTypeRequest (unit, type));
 			if (resolvedType != null) {
 				DomReturnType result = new DomReturnType (DomType.CreateInstantiatedGenericType (resolvedType, type.GenericArguments));
@@ -350,8 +359,14 @@ namespace MonoDevelop.CSharpBinding
 				result.IsNullable = type.IsNullable;
 				return result;
 			} else {
-				if (!type.FullName.StartsWith (this.CallingType.FullName + "."))
-					return ResolveType (unit, new DomReturnType (this.CallingType.FullName + "." + type.Name, type.IsNullable, type.GenericArguments));
+				if (!type.FullName.StartsWith (this.CallingType.FullName + ".")) {
+					DomReturnType possibleInnerType = new DomReturnType (this.CallingType.FullName + "." + type.Name, type.IsNullable, type.GenericArguments);
+					possibleInnerType.ArrayDimensions = type.ArrayDimensions;
+					for (int i = 0; i < type.ArrayDimensions; i++) {
+						possibleInnerType.SetDimension (i, type.GetDimension (i));
+					}
+					return ResolveType (unit, possibleInnerType);
+				}
 			}
 			return type;
 		}
@@ -415,7 +430,9 @@ namespace MonoDevelop.CSharpBinding
 					} else { 
 						varTypeUnresolved = varType = ConvertTypeReference (var.TypeRef);
 					}
+					System.Console.Write("varType: " + varType);
 					varType = ResolveType (varType);
+					System.Console.WriteLine(" resolved: " + varType);
 					result = new LocalVariableResolveResult (
 						new LocalVariable (this.CallingMember, identifier, varType,
 							new DomRegion (var.StartPos.Line, var.StartPos.Column, var.EndPos.Line, var.EndPos.Column)),

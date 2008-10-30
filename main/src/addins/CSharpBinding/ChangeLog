@@ -1,5 +1,11 @@
 2008-10-30  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/NRefactoryResolver.cs:
+	* Gui/CSharpTextEditorCompletion.cs: fixed 'Bug 436705 - code completion
+	for constructors does not handle class name collisions properly'.
+
+2008-10-30  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/NRefactoryResolver.cs: using type reference parsing for object
 	creation.
 
