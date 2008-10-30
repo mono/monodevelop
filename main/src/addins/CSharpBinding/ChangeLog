@@ -1,3 +1,9 @@
+2008-10-30  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/NRefactoryResolver.cs:
+	* Gui/CSharpTextEditorCompletion.cs: fixed 'Bug 432434 - Code completion
+	doesn't work with subclasses'.
+
 2008-10-29  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* CSharpBindingCompilerManager.cs: Write the comand used for compiling

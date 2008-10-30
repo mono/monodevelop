@@ -777,8 +777,9 @@ namespace MonoDevelop.CSharpBinding.Gui
 							
 						}
 						
-						if (!foundType && (NamePrefix.Length == 0 || !type.Namespace.StartsWith (NamePrefix)) && !type.Namespace.EndsWith ("." + NamePrefix))
+						if (!foundType && (NamePrefix.Length == 0 || !type.Namespace.StartsWith (NamePrefix)) && !type.Namespace.EndsWith ("." + NamePrefix) && type.DeclaringType == null) {
 							flags |= OutputFlags.UseFullName;
+						}
 					}
 					MemberCompletionData newData = new MemberCompletionData (member, flags);
 					newData.HideExtensionParameter = HideExtensionParameter;

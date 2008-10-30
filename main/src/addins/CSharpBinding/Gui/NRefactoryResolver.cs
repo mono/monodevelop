@@ -188,7 +188,7 @@ namespace MonoDevelop.CSharpBinding
 						new DomLocation (editor.CursorLine - 1, editor.CursorColumn - 1));
 				foreach (IType type in dom.GetInheritanceTree (CallingType)) {
 					foreach (IMember member in type.Members) {
-						if (CallingMember.IsStatic && !member.IsStatic)
+						if (!(member is IType) && CallingMember.IsStatic && !member.IsStatic)
 							continue;
 						if (member.IsAccessibleFrom (dom, CallingType, CallingMember)) {
 							if (context.FilterEntry (member))
@@ -342,6 +342,9 @@ namespace MonoDevelop.CSharpBinding
 				}
 				result.IsNullable = type.IsNullable;
 				return result;
+			} else {
+				if (!type.FullName.StartsWith (this.CallingType.FullName + "."))
+					return ResolveType (unit, new DomReturnType (this.CallingType.FullName + "." + type.Name, type.IsNullable, type.GenericArguments));
 			}
 			return type;
 		}
