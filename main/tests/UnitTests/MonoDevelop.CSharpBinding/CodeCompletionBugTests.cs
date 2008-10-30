@@ -695,6 +695,40 @@ namespace MyNamespace
 			Assert.IsNotNull (provider.Find ("Foo"), "method 'Bar' not found.");
 		}
 		
+		/// <summary>
+		/// Bug 432434 - Code completion doesn't work with subclasses
+		/// </summary>
+		[Test()]
+		public void TestBug432434 ()
+		{
+			CompletionDataList provider = CreateProvider (
+
+@"public class Test
+{
+	public class Inner
+	{
+		public void Inner1 ()
+		{
+		}
+		
+		public void Inner2 ()
+		{
+		}
+	}
+	
+	public void Run ()
+	{
+		Inner inner = new Inner ();
+		inner.$
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.Find ("Inner1"), "Method inner1 not found.");
+			Assert.IsNotNull (provider.Find ("Inner2"), "Method inner2 not found.");
+		}
+
+		
 		[TestFixtureSetUp] 
 		public void SetUp()
 		{
