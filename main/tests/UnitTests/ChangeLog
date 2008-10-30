@@ -1,5 +1,11 @@
 2008-10-30  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: Added test for
+	'Bug 436705 - code completion for constructors does not handle class
+	name collisions properly'.
+
+2008-10-30  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: added test for
 	'Bug 432434 - Code completion doesn't work with subclasses'.
 

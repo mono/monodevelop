@@ -728,6 +728,28 @@ namespace MyNamespace
 			Assert.IsNotNull (provider.Find ("Inner2"), "Method inner2 not found.");
 		}
 
+		/// <summary>
+		/// Bug 436705 - code completion for constructors does not handle class name collisions properly
+		/// </summary>
+		[Test()]
+		public void TestBug436705 ()
+		{
+			CompletionDataList provider = CreateProvider (
+@"
+public class Point
+{
+}
+
+class C {
+
+        public void Method ()
+        {
+                System.Drawing.Point p = new $
+        }
+}");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.AreEqual ("System.Drawing.Point", provider.DefaultCompletionString, "Completion string is incorrect");
+		}
 		
 		[TestFixtureSetUp] 
 		public void SetUp()
