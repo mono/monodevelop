@@ -785,12 +785,13 @@ namespace MonoDevelop.CSharpBinding.Gui
 					}
 					MemberCompletionData newData = new MemberCompletionData (member, flags);
 					newData.HideExtensionParameter = HideExtensionParameter;
-					
-					if (data.ContainsKey (member.Name)) {
-						data [member.Name].AddOverload (newData);
+					string memberKey = ambience.GetString (member, OutputFlags.IncludeGenerics);
+						
+					if (data.ContainsKey (memberKey)) {
+						data [memberKey].AddOverload (newData);
 					} else {
 						completionList.Add (newData);
-						data [member.Name] = newData;
+						data [memberKey] = newData;
 					}
 					return newData;
 				}
