@@ -127,6 +127,12 @@ namespace MonoDevelop.Components.Docking
 				// Using a small delay because AutoShow uses an animation and setting focus may
 				// not work until the item is visible
 				it.Widget.ChildFocus (DirectionType.TabForward);
+
+				// Make sure focus is not given to internal children
+				Container c = ((Window)it.Widget.Toplevel).Focus.Parent as Container;
+				if (c.Children.Length == 0)
+					((Window)it.Widget.Toplevel).Focus = c;
+				
 				ScheduleAutoHide (false);
 				return false;
 			});
@@ -141,6 +147,7 @@ namespace MonoDevelop.Components.Docking
 				autoShowFrame = bar.Frame.AutoShow (it, bar, size);
 				autoShowFrame.EnterNotifyEvent += OnFrameEnter;
 				autoShowFrame.LeaveNotifyEvent += OnFrameLeave;
+				autoShowFrame.KeyPressEvent += OnFrameKeyPress;
 			}
 		}
 		
@@ -155,7 +162,8 @@ namespace MonoDevelop.Components.Docking
 				};
 				bar.Frame.AutoHide (it, autoShowFrame, animate);
 				autoShowFrame.EnterNotifyEvent -= OnFrameEnter;
-				autoShowFrame.LeaveNotifyEvent += OnFrameLeave;
+				autoShowFrame.LeaveNotifyEvent -= OnFrameLeave;
+				autoShowFrame.KeyPressEvent -= OnFrameKeyPress;
 				autoShowFrame = null;
 			}
 		}
@@ -174,10 +182,17 @@ namespace MonoDevelop.Components.Docking
 		
 		void ScheduleAutoHide (bool cancelAutoShow)
 		{
+			ScheduleAutoHide (cancelAutoShow, false);
+		}
+		
+		void ScheduleAutoHide (bool cancelAutoShow, bool force)
+		{
 			if (cancelAutoShow)
 				UnscheduleAutoShow ();
+			if (force)
+				it.Widget.FocusChild = null;
 			if (autoHideTimeout == uint.MaxValue) {
-				autoHideTimeout = GLib.Timeout.Add (bar.Frame.AutoHideDelay, delegate {
+				autoHideTimeout = GLib.Timeout.Add (force ? 0 : bar.Frame.AutoHideDelay, delegate {
 					// Don't hide the item if it has the focus. Try again later.
 					if (it.Widget.FocusChild != null)
 						return true;
@@ -221,6 +236,12 @@ namespace MonoDevelop.Components.Docking
 		void OnFrameEnter (object s, Gtk.EnterNotifyEventArgs args)
 		{
 			AutoShow ();
+		}
+
+		void OnFrameKeyPress (object s, Gtk.KeyPressEventArgs args)
+		{
+			if (args.Event.Key == Gdk.Key.Escape)
+				ScheduleAutoHide (true, true);
 		}
 		
 		void OnFrameLeave (object s, Gtk.LeaveNotifyEventArgs args)

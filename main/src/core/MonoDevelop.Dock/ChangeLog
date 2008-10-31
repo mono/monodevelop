@@ -1,3 +1,8 @@
+2008-10-31  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* DockBarItem.cs: Improved dock item focusing. Close autohide panels
+	when pressing Esc.
+
 2008-10-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* DockItem.cs:
