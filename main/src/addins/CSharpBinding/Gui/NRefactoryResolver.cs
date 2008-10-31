@@ -315,7 +315,7 @@ namespace MonoDevelop.CSharpBinding
 			ResolveVisitor visitor = new ResolveVisitor (this);
 //			System.Console.WriteLine("expressionResult:" + expressionResult);
 			
-			if (expressionResult.ExpressionContext.IsObjectCreation) {
+			if (expressionResult != null && expressionResult.ExpressionContext != null && expressionResult.ExpressionContext.IsObjectCreation) {
 //				System.Console.WriteLine(" out1");
 				TypeReference typeRef = ParseTypeReference (expressionResult);
 				if (typeRef == null)
