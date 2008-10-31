@@ -77,7 +77,6 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			this.baseDir = ProjectDomService.CodeCompletionPath;
 			
 			SetLocation (baseDir, name);
-
 			Read ();
 			
 			ArrayList oldFiles = new ArrayList ();
@@ -114,6 +113,12 @@ namespace MonoDevelop.Projects.Dom.Serialization
 						RemoveReference (re.Uri);
 				}
 			}
+		}
+		
+		public override void Write ()
+		{
+			base.Write ();
+			Read ();
 		}
 		
 		protected override bool IsFileModified (FileEntry file)

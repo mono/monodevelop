@@ -761,7 +761,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 					if (job != null) {
 						try {
 							job.ParseCallback (job.Data, monitor);
-							dbsToFlush.Add (job.Database);
+							if (job.Database != null)
+								dbsToFlush.Add (job.Database);
 						} catch (Exception ex) {
 							if (monitor == null)
 								monitor = GetParseProgressMonitor ();
