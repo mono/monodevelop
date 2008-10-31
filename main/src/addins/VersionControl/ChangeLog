@@ -1,3 +1,9 @@
+2008-10-31  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionRepository.cs:
+	Use CanMoveFiles to check if a directory can be moved from one SVN
+	dir to another SVN dir. Fixes bug #436289.
+
 2008-10-22  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.VersionControl.Subversion/Makefile.am:

@@ -48,7 +48,7 @@ namespace MonoDevelop.VersionControl
 			Repository srcRepo = GetRepository (source);
 			Repository dstRepo = GetRepository (dest);
 			
-			if (dstRepo.CanMoveFileFrom (srcRepo, source, dest))
+			if (dstRepo.CanMoveFilesFrom (srcRepo, source, dest))
 				srcRepo.MoveFile (source, dest, true, monitor);
 			else {
 				CopyFile (source, dest, true);
@@ -75,7 +75,7 @@ namespace MonoDevelop.VersionControl
 			Repository srcRepo = GetRepository (sourcePath);
 			Repository dstRepo = GetRepository (destPath);
 			
-			if (srcRepo == dstRepo)
+			if (dstRepo.CanMoveFilesFrom (srcRepo, sourcePath, destPath))
 				srcRepo.MoveDirectory (sourcePath, destPath, true, monitor);
 			else {
 				CopyDirectory (sourcePath, destPath);

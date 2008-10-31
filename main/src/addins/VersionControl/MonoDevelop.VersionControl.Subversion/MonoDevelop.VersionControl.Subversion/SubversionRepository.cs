@@ -252,7 +252,7 @@ namespace MonoDevelop.VersionControl.Subversion
 			}
 		}
 		
-		public override bool CanMoveFileFrom (Repository srcRepository, string localSrcPath, string localDestPath)
+		public override bool CanMoveFilesFrom (Repository srcRepository, string localSrcPath, string localDestPath)
 		{
 			return (srcRepository is SubversionRepository) && ((SubversionRepository)srcRepository).Root == Root;
 		}

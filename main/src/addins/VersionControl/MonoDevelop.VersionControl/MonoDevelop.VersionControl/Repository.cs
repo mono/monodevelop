@@ -237,7 +237,7 @@ namespace MonoDevelop.VersionControl
 		public abstract void Add (string[] localPaths, bool recurse, IProgressMonitor monitor);
 		
 		// Returns true if the file can be moved from source location (and repository) to this repository
-		public virtual bool CanMoveFileFrom (Repository srcRepository, string localSrcPath, string localDestPath)
+		public virtual bool CanMoveFilesFrom (Repository srcRepository, string localSrcPath, string localDestPath)
 		{
 			return srcRepository == this;
 		}
