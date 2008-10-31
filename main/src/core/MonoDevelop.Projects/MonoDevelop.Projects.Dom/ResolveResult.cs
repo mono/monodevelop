@@ -247,6 +247,10 @@ namespace MonoDevelop.Projects.Dom
 			IList<IReturnType> genericParameters = null;
 			if (type is InstantiatedType) 
 				genericParameters = ((InstantiatedType)type).GenericParameters;*/
+
+			bool includeProtected = DomType.IncludeProtected (dom, type, callingMember.DeclaringType);
+			
+			
 			foreach (IType curType in dom.GetInheritanceTree (type)) {
 				if (curType.ClassType == ClassType.Interface && type.ClassType != ClassType.Interface)
 					continue;
@@ -256,7 +260,9 @@ namespace MonoDevelop.Projects.Dom
 					}
 				}
 				foreach (IMember member in curType.Members) {
-					if (callingMember != null && !member.IsAccessibleFrom (dom, type, callingMember))
+					if (callingMember != null && !member.IsAccessibleFrom (dom, type, callingMember, includeProtected))
+						continue;
+					if (member.IsProtected && !includeProtected)
 						continue;
 					if (member is IMethod && ((IMethod)member).IsConstructor)
 						continue;

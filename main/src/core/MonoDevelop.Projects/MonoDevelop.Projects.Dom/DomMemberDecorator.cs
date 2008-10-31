@@ -46,9 +46,9 @@ namespace MonoDevelop.Projects.Dom
 			return member.GetMonodocDocumentation ();
 		}
 		
-		public virtual bool IsAccessibleFrom (ProjectDom dom, IType calledType, IMember member)
+		public virtual bool IsAccessibleFrom (ProjectDom dom, IType calledType, IMember member, bool includeProtected)
 		{
-			return member.IsAccessibleFrom (dom, calledType, member);
+			return member.IsAccessibleFrom (dom, calledType, member, includeProtected);
 		}
 		
 		public virtual string FullName {

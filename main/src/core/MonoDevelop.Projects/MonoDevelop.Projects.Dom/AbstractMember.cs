@@ -238,7 +238,7 @@ namespace MonoDevelop.Projects.Dom
 			return 0;
 		}
 //		Dictionary<string, bool> protectedTable = new Dictionary<string, bool> ();
-		public virtual bool IsAccessibleFrom (ProjectDom dom, IType calledType, IMember member)
+		public virtual bool IsAccessibleFrom (ProjectDom dom, IType calledType, IMember member, bool includeProtected)
 		{
 			if (member == null)
 				return IsStatic || IsPublic;
@@ -262,7 +262,7 @@ namespace MonoDevelop.Projects.Dom
 						return true;
 					}
 				}*/
-				return false;
+				return includeProtected;
 			}
 			// inner class 
 			if (member.DeclaringType.DeclaringType == DeclaringType)

@@ -693,6 +693,18 @@ namespace MonoDevelop.Projects.Dom
 			}
 			return result;
 		}
+
+		public static bool IncludeProtected (ProjectDom dom, IType type, IType callingType)
+		{
+			if (type == null || callingType == null)
+				return false;
+			bool includeProtected = false;
+			foreach (IType t in dom.GetInheritanceTree (type)) {
+				if (t.FullName == callingType.FullName)
+					return true;
+			}
+			return false;
+		}
 	}
 	
 	internal sealed class Stock 
