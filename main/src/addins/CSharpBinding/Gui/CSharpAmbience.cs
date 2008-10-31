@@ -341,13 +341,14 @@ namespace MonoDevelop.CSharpBinding
 				if (IncludeReturnType (flags)) {
 					result.Append (GetString (parameter.ReturnType, flags));
 					result.Append (" ");
+				} else {
+					if (parameter.IsOut)
+						result.Append ("out ");
+					if (parameter.IsRef)
+						result.Append ("ref ");
+					if (parameter.IsParams)
+						result.Append ("params ");
 				}
-				if (parameter.IsOut)
-					result.Append ("out ");
-				if (parameter.IsRef)
-					result.Append ("ref ");
-				if (parameter.IsParams)
-					result.Append ("params ");
 				if (HighlightName (flags) && EmitMarkup (flags)) 
 					result.Append ("<b>");
 				result.Append (Format (parameter.Name));

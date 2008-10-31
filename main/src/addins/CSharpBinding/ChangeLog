@@ -1,3 +1,7 @@
+2008-10-31  Full Name  <Email Address>
+
+	* Gui/CSharpAmbience.cs: fixed bug in parameter output.
+
 2008-10-31  Mike Krüger  <mkrueger@novell.com>
 
 	* Gui/ResolveVisitor.cs:
