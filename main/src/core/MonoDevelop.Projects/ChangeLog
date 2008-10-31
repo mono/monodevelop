@@ -1,5 +1,10 @@
 2008-10-31  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects/SolutionFolder.cs: Fixed and simplified
+	RemoveAllInDirectory.
+
+2008-10-31  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects.Formats.MD1/MD1DotNetProjectHandler.cs: Delete
 	satellite assembly directories when cleaning. Fixes bug #400420.
 

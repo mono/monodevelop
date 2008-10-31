@@ -587,12 +587,7 @@ namespace MonoDevelop.Projects
 		void RemoveAllInDirectory (string dirName)
 		{
 			foreach (Project projectEntry in GetAllProjects()) {
-				List<ProjectFile> toDelete = new List<ProjectFile> ();
-				foreach (ProjectFile fInfo in projectEntry.Files) {
-					if (fInfo.Name.StartsWith (dirName))
-						toDelete.Add (fInfo);
-				}
-				foreach (ProjectFile file in toDelete)
+				foreach (ProjectFile file in projectEntry.Files.GetFilesInPath (dirName))
 					projectEntry.Files.Remove (file);
 			}
 		}
