@@ -1,3 +1,13 @@
+2008-10-30  Mike Kestner <mkestner@novell.com> 
+
+	* MonoDevelop.GtkCore/ReferenceManager.cs: 
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs: 
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs: 
+	switch to a x.y TargetGtkVersion obtained by parsing the gtk-sharp
+	reference version. Invert the version comparison in the toolboxitem
+	filter.  We want toolbox items that are less than the project target
+	version, not greater.  Fixes #440435.
+
 2008-10-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs: Don't notify the

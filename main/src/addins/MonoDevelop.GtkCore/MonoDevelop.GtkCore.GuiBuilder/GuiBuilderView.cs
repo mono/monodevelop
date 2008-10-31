@@ -379,7 +379,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			ComponentToolboxNode cnode = item as ComponentToolboxNode;
 			if (cnode != null && gproject.SteticProject != null) {
-				if (cnode.GtkVersion == null || Mono.Addins.Addin.CompareVersions (gproject.SteticProject.TargetGtkVersion, cnode.GtkVersion) <= 0)
+				if (cnode.GtkVersion == null || Mono.Addins.Addin.CompareVersions (gproject.SteticProject.TargetGtkVersion, cnode.GtkVersion) >= 0)
 					return true;
 			}
 			return false;

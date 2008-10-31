@@ -71,6 +71,20 @@ namespace MonoDevelop.GtkCore {
 			}
 		}
 
+		public string TargetGtkVersion {
+			get {
+				string assm_version = CurrentAssemblyVersion;
+				if (String.IsNullOrEmpty (assm_version))
+					return String.Empty;
+				int idx = assm_version.IndexOf (",");
+				if (idx > 0)
+					assm_version = assm_version.Substring (0, idx);
+				string[] toks = assm_version.Split ('.');
+				if (toks.Length > 1)
+					return toks[0] + "." + toks[1];
+				return String.Empty;
+			}
+		}
 		static string GetGtkAssemblyVersion (string pkg_version)
 		{
 			if (String.IsNullOrEmpty (pkg_version))

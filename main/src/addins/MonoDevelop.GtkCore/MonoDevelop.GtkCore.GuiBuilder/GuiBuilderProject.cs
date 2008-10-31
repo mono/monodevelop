@@ -524,7 +524,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 			
 			ReferenceManager refmgr = new ReferenceManager (project);
-			string target_version = refmgr.GtkPackageVersion;
+			string target_version = refmgr.TargetGtkVersion;
 			
 			// Make sure the target gtk version is properly set
 			if (gproject.TargetGtkVersion != target_version) {
