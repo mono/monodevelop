@@ -51,7 +51,7 @@ namespace MonoDevelop.Projects.Dom
 			if (keepDefinitions)
 				this.eventDefinition = eventDefinition;
 			base.Name            = eventDefinition.Name;
-			base.modifiers       = DomCecilType.GetModifiers (eventDefinition.AddMethod.Attributes);
+			base.modifiers       = DomCecilType.GetModifiers (eventDefinition.AddMethod);
 			base.returnType = DomCecilMethod.GetReturnType (eventDefinition.EventType);
 			DomCecilMethod.AddAttributes (this, eventDefinition.CustomAttributes);
 			if (!eventDefinition.IsSpecialName)

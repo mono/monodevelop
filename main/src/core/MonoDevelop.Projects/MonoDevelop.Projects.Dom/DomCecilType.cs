@@ -97,17 +97,17 @@ namespace MonoDevelop.Projects.Dom
 				this.AddInterfaceImplementation (DomCecilMethod.GetReturnType (interfaceReference));
 			}
 			foreach (FieldDefinition fieldDefinition in typeDefinition.Fields) {
-				if (!loadInternal && DomCecilCompilationUnit.IsInternal (DomCecilType.GetModifiers (fieldDefinition.Attributes)))
+				if (!loadInternal && DomCecilCompilationUnit.IsInternal (DomCecilType.GetModifiers (fieldDefinition)))
 					continue;
 				base.Add (new DomCecilField (this, keepDefinitions, fieldDefinition));
 			}
 			foreach (MethodDefinition methodDefinition in typeDefinition.Methods) {
-				if (!loadInternal && DomCecilCompilationUnit.IsInternal (DomCecilType.GetModifiers (methodDefinition.Attributes)))
+				if (!loadInternal && DomCecilCompilationUnit.IsInternal (DomCecilType.GetModifiers (methodDefinition)))
 					continue;
 				base.Add (new DomCecilMethod (this, keepDefinitions, methodDefinition));
 			}
 			foreach (MethodDefinition methodDefinition in typeDefinition.Constructors) {
-				if (!loadInternal && DomCecilCompilationUnit.IsInternal (DomCecilType.GetModifiers (methodDefinition.Attributes)))
+				if (!loadInternal && DomCecilCompilationUnit.IsInternal (DomCecilType.GetModifiers (methodDefinition)))
 					continue;
 				base.Add (new DomCecilMethod (this, keepDefinitions, methodDefinition));
 			}
@@ -171,32 +171,27 @@ namespace MonoDevelop.Projects.Dom
 			return result;
 		}
 		
-		public static MonoDevelop.Projects.Dom.Modifiers GetModifiers (Mono.Cecil.FieldAttributes attr)
+		public static MonoDevelop.Projects.Dom.Modifiers GetModifiers (Mono.Cecil.FieldDefinition field)
 		{
 			MonoDevelop.Projects.Dom.Modifiers result = MonoDevelop.Projects.Dom.Modifiers.None;
-			
-			if ((attr & FieldAttributes.Literal) == FieldAttributes.Literal) 
-				result |= Modifiers.Literal;
-			if ((attr & FieldAttributes.Static) == FieldAttributes.Static) 
+			if (field.IsStatic)
 				result |= Modifiers.Static;
-			if ((attr & FieldAttributes.SpecialName) == FieldAttributes.SpecialName) 
-				result |= Modifiers.SpecialName;
-			if ((attr & FieldAttributes.InitOnly) == FieldAttributes.InitOnly) 
+			
+			if (field.IsLiteral) 
+				result |= Modifiers.Literal;
+			
+			if (field.IsInitOnly)
 				result |= Modifiers.Readonly;
 			
-			if ((attr & FieldAttributes.Public) == FieldAttributes.Public) {
+			if (field.IsPublic) {
 				result |= Modifiers.Public;
-			} else if ((attr & FieldAttributes.FamANDAssem) == FieldAttributes.FamANDAssem) {
-				result |= Modifiers.ProtectedAndInternal;
-			} else if ((attr & FieldAttributes.FamORAssem) == FieldAttributes.FamORAssem) {
-				result |= Modifiers.ProtectedOrInternal;
-			} else if ((attr & FieldAttributes.Family) == FieldAttributes.Family) {
-				result |= Modifiers.Protected;
-			} else if ((attr & FieldAttributes.Assembly) == FieldAttributes.Assembly) {
-				result |= Modifiers.Internal;
-			} else {
+			} else if (field.IsPrivate) {
 				result |= Modifiers.Private;
+			} else {
+				result |= Modifiers.Protected;
 			}
+			if (field.IsAssembly)
+				result |= Modifiers.Internal;
 			return result;
 		}
 		
@@ -208,34 +203,30 @@ namespace MonoDevelop.Projects.Dom
 			return result;
 		}
 		
-		public static MonoDevelop.Projects.Dom.Modifiers GetModifiers (Mono.Cecil.MethodAttributes attr)
+		public static MonoDevelop.Projects.Dom.Modifiers GetModifiers (Mono.Cecil.MethodDefinition method)
 		{
 			MonoDevelop.Projects.Dom.Modifiers result = MonoDevelop.Projects.Dom.Modifiers.None;
 			
-			if ((attr & MethodAttributes.Static) == MethodAttributes.Static) 
+			if (method.IsStatic) 
 				result |= Modifiers.Static;
-			if ((attr & MethodAttributes.Abstract) == MethodAttributes.Abstract) 
+				
+			if (method.IsAbstract) {
 				result |= Modifiers.Abstract;
-			if ((attr & MethodAttributes.Virtual) == MethodAttributes.Virtual) 
-				result |= Modifiers.Virtual;
-			if ((attr & MethodAttributes.Final) == MethodAttributes.Final) 
+			} else if (method.IsFinal) {
 				result |= Modifiers.Final;
-			if ((attr & MethodAttributes.SpecialName) == MethodAttributes.SpecialName) 
-				result |= Modifiers.SpecialName;
-			
-			if ((attr & MethodAttributes.Public) == MethodAttributes.Public) {
-				result |= Modifiers.Public;
-			} else if ((attr & MethodAttributes.FamANDAssem) == MethodAttributes.FamANDAssem) {
-				result |= Modifiers.ProtectedAndInternal;
-			} else if ((attr & MethodAttributes.FamORAssem) == MethodAttributes.FamORAssem) {
-				result |= Modifiers.ProtectedOrInternal;
-			} else if ((attr & MethodAttributes.Family) == MethodAttributes.Family) {
-				result |= Modifiers.Protected;
-			} else if ((attr & MethodAttributes.Assem) == MethodAttributes.Assem) {
-				result |= Modifiers.Internal;
-			} else {
-				result |= Modifiers.Private;
+			} else if (method.IsVirtual) {
+				result |= Modifiers.Virtual;
 			}
+
+			if (method.IsPublic) {
+				result |= Modifiers.Public;
+			} else if (method.IsPrivate) {
+				result |= Modifiers.Private;
+			} else {
+				result |= Modifiers.Protected;
+			}
+			if (method.IsAssembly)
+				result |= Modifiers.Internal;
 			
 			return result;
 		}

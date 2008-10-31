@@ -79,7 +79,7 @@ namespace MonoDevelop.Projects.Dom
 			if (propertyDefinition.SetMethod != null) 
 				this.propertyModifier |= PropertyModifier.HasSet;
 			
-			base.modifiers          = DomCecilType.GetModifiers ((propertyDefinition.GetMethod != null ? propertyDefinition.GetMethod : propertyDefinition.SetMethod).Attributes);
+			base.modifiers          = DomCecilType.GetModifiers ((propertyDefinition.GetMethod != null ? propertyDefinition.GetMethod : propertyDefinition.SetMethod));
 			if (!propertyDefinition.IsSpecialName)
 				base.modifiers &= ~MonoDevelop.Projects.Dom.Modifiers.SpecialName;
 			base.returnType         = DomCecilMethod.GetReturnType (propertyDefinition.PropertyType);

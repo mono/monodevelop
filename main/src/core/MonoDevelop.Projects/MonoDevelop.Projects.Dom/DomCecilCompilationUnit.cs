@@ -89,8 +89,9 @@ namespace MonoDevelop.Projects.Dom
 		public static bool IsInternal (MonoDevelop.Projects.Dom.Modifiers mods)
 		{
 			return (mods & MonoDevelop.Projects.Dom.Modifiers.Internal) == MonoDevelop.Projects.Dom.Modifiers.Internal ||
-			       (mods & MonoDevelop.Projects.Dom.Modifiers.Private) == MonoDevelop.Projects.Dom.Modifiers.Private ||
-			       (mods & MonoDevelop.Projects.Dom.Modifiers.ProtectedOrInternal) == MonoDevelop.Projects.Dom.Modifiers.ProtectedOrInternal/* ||
+			       (mods & MonoDevelop.Projects.Dom.Modifiers.Private) == MonoDevelop.Projects.Dom.Modifiers.Private
+/*					||
+			       (mods & MonoDevelop.Projects.Dom.Modifiers.ProtectedOrInternal) == MonoDevelop.Projects.Dom.Modifiers.ProtectedOrInternal ||
 			       (mods & MonoDevelop.Projects.Dom.Modifiers.SpecialName) == MonoDevelop.Projects.Dom.Modifiers.SpecialName*/;
 		}
 		
