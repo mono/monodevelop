@@ -1,3 +1,8 @@
+2008-10-31  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: added unit test
+	for 'Bug 439963 - Lacking members in code completion'.
+
 2008-10-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/ProjectTests.cs: Added some bug tests.

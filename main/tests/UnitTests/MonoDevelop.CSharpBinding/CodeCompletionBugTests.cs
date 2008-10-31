@@ -801,6 +801,39 @@ class C {
 			Assert.AreEqual ("System.Drawing.Point", provider.DefaultCompletionString, "Completion string is incorrect");
 		}
 		
+		/// <summary>
+		/// Bug 439963 - Lacking members in code completion
+		/// </summary>
+		[Test()]
+		public void TestBug439963 ()
+		{
+			CompletionDataList provider = CreateProvider (
+@"public class StaticTest
+{
+	public void Test1()
+	{}
+	public void Test2()
+	{}
+	
+	public static StaticTest GetObject ()
+	{
+	}
+}
+
+public class Test
+{
+	public void TestMethod ()
+	{
+		StaticTest.GetObject ().$
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.Find ("Test1"), "Method 'Test1' not found.");
+			Assert.IsNotNull (provider.Find ("Test2"), "Method 'Test2' not found.");
+			Assert.IsNull (provider.Find ("GetObject"), "Method 'GetObject' found, but shouldn't.");
+		}
+		
 		[TestFixtureSetUp] 
 		public void SetUp()
 		{
