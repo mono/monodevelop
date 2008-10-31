@@ -62,7 +62,6 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		bool modified;
 		bool disposed;
 		
-		string basePath;
 		string dataFile;
 		string tempDataFile;
 		DatabaseProjectDom sourceProjectDom;
@@ -114,9 +113,13 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			}
 		}
 		
-		public string DataFile
-		{
+		public string DataFile {
 			get { return dataFile; }
+		}
+
+		// File where data is actually readen from of written to. It can be a temp file. 
+		public string RealDataFile {
+			get { return tempDataFile ?? dataFile; }
 		}
 		
 		public bool Modified {
@@ -136,29 +139,15 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		protected void SetLocation (string basePath, string name)
 		{
 			dataFile = Path.Combine (basePath, name + ".pidb");
-			this.basePath = basePath;
 		}
 		
-		public void Rename (string name)
+		protected void SetFile (string file)
 		{
-			lock (rwlock)
-			{
-				Flush ();
-				string oldDataFile = dataFile;
-				dataFile = Path.Combine (basePath, name + ".pidb");
-
-				CloseReader ();
-				
-				if (File.Exists (oldDataFile))
-					FileService.MoveFile (oldDataFile, dataFile);
-			}
+			dataFile = file;
 		}
 		
 		public virtual void Read ()
 		{
-			if (basePath == null)
-				throw new InvalidOperationException ("Location not set");
-				
 			if (!File.Exists (dataFile)) return;
 			
 			lock (rwlock)
@@ -168,8 +157,8 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				references = new ArrayList ();
 				headers = new Hashtable ();
 				unresolvedSubclassTable = new Hashtable ();
+				instantiatedGenericTypes = new Hashtable ();
 			
-				LoggingService.LogDebug ("Reading " + dataFile);
 				CloseReader ();
 
 				try {
@@ -216,7 +205,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 						LoggingService.LogError ("PIDB file '{0}' could not be loaded: '{1}'. The file will be recreated.", dataFile, ex);
 				}
 			}
-			
+
 			// Notify read comments
 			foreach (FileEntry fe in files.Values) {
 				if (! fe.IsAssembly && fe.CommentTasks != null) {
@@ -231,6 +220,11 @@ namespace MonoDevelop.Projects.Dom.Serialization
 
 		FileStream OpenForWrite ()
 		{
+			if (tempDataFile != null) {
+				// Already a temp file.
+				return new FileStream (tempDataFile, FileMode.Open, FileAccess.ReadWrite, FileShare.Read);
+			}
+			
 			try {
 				return new FileStream (dataFile, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Write);
 			}
@@ -285,7 +279,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				headers["LastValidTaskListTokens"] = (string)PropertyService.Get ("Monodevelop.TaskListTokens", "");
 
 				LoggingService.LogDebug ("Writing " + dataFile);
-
+				
 				try {
 					if (dataFileStream == null) {
 						dataFileStream = OpenForWrite ();
@@ -441,6 +435,11 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				cls.SourceProjectDom = SourceProjectDom;
 				return cls;
 			}
+		}
+
+		protected void UnlockDatabaseFile ()
+		{
+			CloseReader ();
 		}
 		
 		void CloseReader ()

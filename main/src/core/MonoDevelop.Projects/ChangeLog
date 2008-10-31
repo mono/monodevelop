@@ -1,3 +1,17 @@
+2008-10-31  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
+	Added helper methods and properties for accessing to the db file
+	name.
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs: Don't pre-load
+	the mscrolib database. It is not necessary anymore.
+
+	* MonoDevelop.Projects.Dom.Serialization/AssemblyCodeCompletionDatabase.cs:
+	When generating a database for an assembly, generate first in a temp
+	file, and then move it to the original file. Also unlock the original
+	file before copying. Fixes bug #440254.
+
 2008-10-31  Full Name  <Email Address>
 
 	* MonoDevelop.Projects.Dom/DomCecilType.cs:

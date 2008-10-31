@@ -49,9 +49,6 @@ namespace MonoDevelop.Projects.Dom.Parser
 		static RootTree helpTree = RootTree.LoadTree ();
 		static IParserDatabase parserDatabase = new MonoDevelop.Projects.Dom.Serialization.ParserDatabase ();
 
-		static ProjectDom coreDatabase;
-		static string CoreDB;
-		
 		static bool threadRunning;
 		static bool trackingFileChanges;
 		static IProgressMonitorFactory parseProgressMonitorFactory;
@@ -96,7 +93,6 @@ namespace MonoDevelop.Projects.Dom.Parser
 		static ProjectDomService ()
 		{
 			codeCompletionPath = GetDefaultCompletionFileLocation ();
-			CoreDB = typeof(object).Assembly.FullName.ToString ();
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/ProjectModel/DomParser", delegate(object sender, ExtensionNodeEventArgs args) {
 				switch (args.Change) {
 				case ExtensionChange.Add:
@@ -224,16 +220,15 @@ namespace MonoDevelop.Projects.Dom.Parser
 
 			return path;
 		}
+
+		static bool initialized;
 		
 		static Dictionary<string,ProjectDom> databases {
 			get {
 				lock (databasesTable) {
-					if (coreDatabase == null) {
+					if (!initialized) {
+						initialized = true;
 						parserDatabase.Initialize ();
-						string coreName = typeof(object).Assembly.GetName().ToString ();
-						coreDatabase = parserDatabase.LoadAssemblyDom (coreName);
-						RegisterDom (coreDatabase, "Assembly:" + CoreDB);
-						coreDatabase.ReferenceCount = 1;
 					}
 				}
 				return databasesTable;

@@ -54,7 +54,11 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		// This is the package version of the assembly. It is serialized.
 		string packageVersion;
 		
-		public AssemblyCodeCompletionDatabase (string assemblyName, ParserDatabase pdb): base (pdb)
+		public AssemblyCodeCompletionDatabase (string assemblyName, ParserDatabase pdb): this (assemblyName, pdb, false)
+		{
+		}
+		
+		public AssemblyCodeCompletionDatabase (string assemblyName, ParserDatabase pdb, bool isTempDatabase): base (pdb)
 		{
 			string name;
 			
@@ -75,8 +79,11 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			}
 
 			this.baseDir = ProjectDomService.CodeCompletionPath;
-			
-			SetLocation (baseDir, name);
+
+			if (isTempDatabase)
+				SetFile (Path.GetTempFileName ());
+			else
+				SetLocation (baseDir, name);
 			Read ();
 			
 			ArrayList oldFiles = new ArrayList ();
@@ -188,10 +195,21 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				{
 					using (DatabaseGenerator helper = GetGenerator (true))
 					{
-						helper.GenerateDatabase (baseDir, assemblyName);
-						if (Disposed)
+						string tmpDbFile = helper.GenerateDatabase (baseDir, assemblyName);
+						if (Disposed) {
+							if (tmpDbFile != null)
+								File.Delete (tmpDbFile);
 							return;
-						Read ();
+						}
+						if (tmpDbFile != null) {
+							// GenerateDatabase generates the info in a temp file. Now we have to
+							// unlock the current database file, copy the new file over it, and
+							// read (and lock) the database again.
+							UnlockDatabaseFile ();
+							File.Delete (RealDataFile);
+							File.Move (tmpDbFile, RealDataFile);
+							Read ();
+						}
 					}
 				} else {
 					ICompilationUnit ainfo = DomCecilCompilationUnit.Load (fileName, false, false);
@@ -334,21 +352,24 @@ namespace MonoDevelop.Projects.Dom.Serialization
 	
 	internal class DatabaseGenerator: RemoteProcessObject
 	{
-		public void GenerateDatabase (string baseDir, string assemblyName)
+		public string GenerateDatabase (string baseDir, string assemblyName)
 		{
 			try {
 				Runtime.Initialize (false);
 				ParserDatabase pdb = new ParserDatabase ();
-				AssemblyCodeCompletionDatabase db = new AssemblyCodeCompletionDatabase (assemblyName, pdb);
-				
-				if (db.LoadError)
-					throw new InvalidOperationException ("Could find assembly: " + assemblyName);
-					
-				db.ParseInExternalProcess = false;
-				db.ParseAll ();
-				db.Write ();
+
+				// Generate the new db in a temp file. The main process will move the file if required.
+				using (AssemblyCodeCompletionDatabase db = new AssemblyCodeCompletionDatabase (assemblyName, pdb, true)) {
+					if (db.LoadError)
+						throw new InvalidOperationException ("Could find assembly: " + assemblyName);
+					db.ParseInExternalProcess = false;
+					db.ParseAll ();
+					db.Write ();
+					return db.RealDataFile;
+				}
 			} catch (Exception ex) {
 				Console.WriteLine (ex);
+				return null;
 			}
 		}
 	}
