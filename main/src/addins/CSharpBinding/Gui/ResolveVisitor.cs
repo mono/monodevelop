@@ -417,6 +417,7 @@ namespace MonoDevelop.CSharpBinding
 //				return fieldReferenceExpression.TargetObject.AcceptVisitor(this, data);
 			}
 			result = fieldReferenceExpression.TargetObject.AcceptVisitor(this, data) as ResolveResult;
+			
 			NamespaceResolveResult namespaceResult = result as NamespaceResolveResult;
 			if (namespaceResult != null) {
 				if (String.IsNullOrEmpty (fieldReferenceExpression.FieldName))
@@ -450,10 +451,11 @@ namespace MonoDevelop.CSharpBinding
 					if (member.Count > 0) {
 						if (member[0] is IMethod) {
 							bool isStatic = result.StaticResolve;
+							bool includeProtected = true;
 							for (int i = 0; i < member.Count; i++) {
-								if (member[i] is IMethod && ((IMethod)member[i]).IsExtension && member[i].IsAccessibleFrom (resolver.Dom, type, resolver.CallingMember))
+								if (member[i] is IMethod && ((IMethod)member[i]).IsExtension && member[i].IsAccessibleFrom (resolver.Dom, type, resolver.CallingMember, true))
 									continue;
-								if ((member[i].IsStatic ^ isStatic) || !member[i].IsAccessibleFrom (resolver.Dom, type, resolver.CallingMember)) {
+								if ((member[i].IsStatic ^ isStatic) || !member[i].IsAccessibleFrom (resolver.Dom, type, resolver.CallingMember, includeProtected)) {
 									member.RemoveAt (i);
 									i--;
 								}
@@ -463,7 +465,7 @@ namespace MonoDevelop.CSharpBinding
 							result = new MethodResolveResult (member);
 							result.CallingType   = resolver.CallingType;
 							result.CallingMember = resolver.CallingMember;
-							result.StaticResolve = isStatic;
+							//result.StaticResolve = isStatic;
 							result.UnresolvedType = result.ResolvedType  = member[0].ReturnType;
 							return result;
 						}
@@ -488,6 +490,7 @@ namespace MonoDevelop.CSharpBinding
 				return null;
 				
 			ResolveResult targetResult = Resolve (invocationExpression.TargetObject);
+			
 			MethodResolveResult methodResult = targetResult as MethodResolveResult;
 			if (methodResult != null) {
 				foreach (Expression arg in invocationExpression.Arguments) {

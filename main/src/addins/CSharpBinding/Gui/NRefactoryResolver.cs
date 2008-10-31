@@ -186,11 +186,13 @@ namespace MonoDevelop.CSharpBinding
 					= new MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector (
 						this.editor, dom, unit,
 						new DomLocation (editor.CursorLine - 1, editor.CursorColumn - 1));
+				
+				bool includeProtected = DomType.IncludeProtected (dom, CallingType, CallingMember.DeclaringType);
 				foreach (IType type in dom.GetInheritanceTree (CallingType)) {
 					foreach (IMember member in type.Members) {
 						if (!(member is IType) && CallingMember.IsStatic && !member.IsStatic)
 							continue;
-						if (member.IsAccessibleFrom (dom, CallingType, CallingMember)) {
+						if (member.IsAccessibleFrom (dom, CallingType, CallingMember, includeProtected)) {
 							if (context.FilterEntry (member))
 								continue;
 							col.AddCompletionData (completionList, member);
@@ -480,12 +482,12 @@ namespace MonoDevelop.CSharpBinding
 				foreach (IType type in dom.GetInheritanceTree (callingType)) {
 					members.AddRange (type.SearchMember (identifier, true));
 				}
-				
+				bool includeProtected = true;
 				// filter members
 				if (this.CallingMember != null) {
 					for (int i = 0; i < members.Count; i++) {
 						if (this.CallingMember.IsStatic && !members[i].IsStatic
-						    || !members[i].IsAccessibleFrom (dom, callingType, this.CallingMember))
+						    || !members[i].IsAccessibleFrom (dom, callingType, this.CallingMember, includeProtected))
 						{
 							members.RemoveAt (i);
 							i--;

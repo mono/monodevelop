@@ -1,5 +1,13 @@
 2008-10-31  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/ResolveVisitor.cs:
+	* Gui/NRefactoryResolver.cs:
+	* Gui/CSharpTextEditorCompletion.cs:
+	* Gui/NRefactoryParameterDataProvider.cs: fixed 'Bug 439963 - Lacking
+	members in code completion'
+
+2008-10-31  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/NRefactoryResolver.cs: fixed possible null reference.
 
 2008-10-30  Mike Krüger  <mkrueger@novell.com>

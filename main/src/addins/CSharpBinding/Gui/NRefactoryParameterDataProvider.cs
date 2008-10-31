@@ -59,10 +59,11 @@ namespace MonoDevelop.CSharpBinding
 			this.editor = editor;
 			this.resolver = resolver;
 			if (resolveResult.CallingType != null) {
+				bool includeProtected = true;
 				foreach (IMethod method in resolveResult.CallingType.Methods) {
 					if (!method.IsConstructor)
 						continue;
-					if (method.IsAccessibleFrom (resolver.Dom, resolver.CallingType, resolver.CallingMember))
+					if (method.IsAccessibleFrom (resolver.Dom, resolver.CallingType, resolver.CallingMember, includeProtected))
 						methods.Add (method);
 				}
 			}
@@ -73,13 +74,16 @@ namespace MonoDevelop.CSharpBinding
 			this.editor = editor;
 			this.resolver = resolver;
 			if (resolveResult.CallingType != null) {
+				IType resolvedType = resolver.Dom.GetType (resolveResult.ResolvedType);
 				foreach (IReturnType rt in resolveResult.CallingType.BaseTypes) {
 					IType baseType = resolver.Dom.SearchType (new SearchTypeRequest (resolver.Unit, rt));
+					bool includeProtected = DomType.IncludeProtected (resolver.Dom, baseType, resolvedType);
+					
 					if (baseType != null) {
 						foreach (IMethod method in baseType.Methods) {
 							if (!method.IsConstructor)
 								continue;
-							if (method.IsAccessibleFrom (resolver.Dom, resolver.CallingType, resolver.CallingMember))
+							if (method.IsAccessibleFrom (resolver.Dom, resolver.CallingType, resolver.CallingMember, includeProtected))
 								methods.Add (method);
 						}
 					}
@@ -105,11 +109,11 @@ namespace MonoDevelop.CSharpBinding
 					methods.Add (invokeMethod);
 					return;
 				}
-				
+				bool includeProtected = DomType.IncludeProtected (resolver.Dom, type, resolver.CallingType);
 				bool constructorFound = false;
 				foreach (IMethod method in type.Methods) {
 					constructorFound |= method.IsConstructor;
-					if ((method.IsConstructor && method.IsAccessibleFrom (resolver.Dom, type, resolver.CallingMember)))
+					if ((method.IsConstructor && method.IsAccessibleFrom (resolver.Dom, type, resolver.CallingMember, includeProtected)))
 						methods.Add (method);
 				}
 				// No constructor - generating default

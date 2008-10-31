@@ -351,9 +351,10 @@ namespace MonoDevelop.CSharpBinding.Gui
 							declaringType = Document.LastErrorFreeParsedDocument.CompilationUnit.GetType (declaringType.FullName, declaringType.TypeParameters.Count);
 						}
 						IType typeFromDatabase = dom.GetType (declaringType.FullName, new DomReturnType (declaringType).GenericArguments) ?? declaringType;
+						bool includeProtected = DomType.IncludeProtected (dom, typeFromDatabase, resolver.CallingType);
 						foreach (IType type in dom.GetInheritanceTree (typeFromDatabase)) {
 							foreach (IMethod method in type.Methods) {
-								if (method.IsAccessibleFrom (dom, resolver.CallingType, resolver.CallingMember) && MatchDelegate (delegateType, method)) {
+								if (method.IsAccessibleFrom (dom, resolver.CallingType, resolver.CallingMember, includeProtected) && MatchDelegate (delegateType, method)) {
 									ICompletionData data = cdc.AddCompletionData (completionList, method);
 									data.SetText (data.CompletionText + ";");
 								}
