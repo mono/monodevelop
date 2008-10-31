@@ -68,7 +68,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 					Path.GetExtension (pfile.Name) == ".resx") {
 					string resFilename = Path.ChangeExtension (pfile.Name, ".resources");
 					if (File.Exists (resFilename))
-						File.Delete (resFilename);
+						FileService.DeleteFile (resFilename);
 				}
 				string culture = GetCulture (pfile.Name);
 				if (culture != null)
@@ -83,7 +83,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 				foreach (string culture in cultures) {
 					string path = String.Format ("{0}{3}{1}{3}{2}", outputDir, culture, satelliteAsmName, Path.DirectorySeparatorChar);
 					if (File.Exists (path))
-						File.Delete (path);
+						FileService.DeleteFile (path);
 				}
 			}
 			return null;
@@ -182,7 +182,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 					// Delete support assemblies
 					foreach (string s in supportAssemblies) {
 						try {
-							File.Delete (s);
+							FileService.DeleteFile (s);
 						} catch {
 							// Ignore
 						}

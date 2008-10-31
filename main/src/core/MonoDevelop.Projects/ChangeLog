@@ -1,5 +1,11 @@
 2008-10-31  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects.Formats.MD1/MD1DotNetProjectHandler.cs: Use the
+	file service to delete files so that events are fired and the
+	solution pad can be updated. 
+
+2008-10-31  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
 	Added helper methods and properties for accessing to the db file
 	name.
