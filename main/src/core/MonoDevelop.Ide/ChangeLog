@@ -1,5 +1,11 @@
 2008-10-31  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Fix in TransferFiles. Make a
+	copy of the original project files before moving, since MoveDirectory
+	will automatically remove the from the project.
+
+2008-10-31  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs: When browsing errors, show
 	the activated error message in the status bar. Fixes bug #430493.
 

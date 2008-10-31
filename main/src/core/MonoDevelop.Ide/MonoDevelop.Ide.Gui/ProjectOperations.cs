@@ -1085,6 +1085,15 @@ namespace MonoDevelop.Ide.Gui
 				return;
 			}
 
+			// Make a copy of the original project files, since MoveDirectory will
+			// automatically remove them from the project
+			
+			ProjectFileCollection oldProjectFiles = null;
+			if (sourceProject != null) {
+				oldProjectFiles = new ProjectFileCollection ();
+				oldProjectFiles.AddRange (sourceProject.Files);
+			}
+
 			// Transfer files
 			// If moving a folder, do it all at once
 			
@@ -1092,7 +1101,8 @@ namespace MonoDevelop.Ide.Gui
 				try {
 					FileService.MoveDirectory (sourcePath, newFolder);
 				} catch (Exception ex) {
-					monitor.ReportError (GettextCatalog.GetString ("Directory '{0}' could not be deleted.", sourcePath), ex);
+					monitor.ReportError (GettextCatalog.GetString ("Directory '{0}' could not be moved.", sourcePath), ex);
+					return;
 				}
 			}
 
@@ -1103,7 +1113,7 @@ namespace MonoDevelop.Ide.Gui
 				string sourceFile = file.Name;
 				string newFile = targetPath + sourceFile.Substring (basePath.Length);
 				
-				ProjectFile oldProjectFile = sourceProject != null ? sourceProject.Files.GetFile (sourceFile) : null;
+				ProjectFile oldProjectFile = oldProjectFiles != null ? oldProjectFiles.GetFile (sourceFile) : null;
 				
 				if (!movingFolder) {
 					try {
