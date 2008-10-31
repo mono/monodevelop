@@ -334,6 +334,8 @@ namespace MonoDevelop.CSharpBinding
 		
 		public static IReturnType ConvertTypeReference (TypeReference typeRef)
 		{
+			if (typeRef == null)
+				return null;
 			DomReturnType result = new DomReturnType (typeRef.SystemType ?? typeRef.Type);
 			foreach (TypeReference genericArgument in typeRef.GenericTypes) {
 				result.AddTypeParameter (ConvertTypeReference (genericArgument));
