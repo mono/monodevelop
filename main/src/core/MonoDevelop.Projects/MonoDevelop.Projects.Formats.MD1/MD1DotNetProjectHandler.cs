@@ -82,8 +82,12 @@ namespace MonoDevelop.Projects.Formats.MD1
 
 				foreach (string culture in cultures) {
 					string path = String.Format ("{0}{3}{1}{3}{2}", outputDir, culture, satelliteAsmName, Path.DirectorySeparatorChar);
-					if (File.Exists (path))
+					if (File.Exists (path)) {
 						FileService.DeleteFile (path);
+						string dir = Path.GetDirectoryName (path);
+						if (Directory.GetFiles (dir).Length == 0)
+							FileService.DeleteDirectory (dir);
+					}
 				}
 			}
 			return null;
