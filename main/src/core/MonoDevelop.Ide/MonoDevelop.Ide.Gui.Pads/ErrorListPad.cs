@@ -193,6 +193,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 			foreach (Task t in Services.TaskService.Tasks) {
 				AddTask (t);
 			}
+
+			control.FocusChain = new Gtk.Widget [] { sw };
 		}
 		
 		void LoadColumnsVisibility ()
@@ -390,8 +392,10 @@ namespace MonoDevelop.Ide.Gui.Pads
 				iter = filter.ConvertIterToChildIter (iter);
 				store.SetValue (iter, (int)Columns.Weight, (int) Pango.Weight.Normal);
 				Task task = (Task) store.GetValue (iter, (int)Columns.Task);
-				if (task != null)
+				if (task != null) {
+					DisplayTask (task);
 					task.JumpToPosition ();
+				}
 			}
 		}
 
@@ -707,6 +711,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				line = 0;
 				column = 0;
 				view.Selection.UnselectAll ();
+				DisplayTask (null);
 				return false;
 			} else {
 				view.Selection.SelectIter (iter);
@@ -719,6 +724,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				view.ScrollToCell (view.Model.GetPath (iter), view.Columns[0], false, 0, 0);
 				iter = filter.ConvertIterToChildIter (iter);
 				store.SetValue (iter, (int)Columns.Weight, (int) Pango.Weight.Normal);
+				DisplayTask (t);
 				return true;
 			}
 		}
@@ -746,6 +752,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				line = 0;
 				column = 0;
 				view.Selection.UnselectAll ();
+				DisplayTask (null);
 				return false;
 			} else {
 				view.Selection.SelectIter (prevIter);
@@ -758,8 +765,21 @@ namespace MonoDevelop.Ide.Gui.Pads
 				view.ScrollToCell (view.Model.GetPath (prevIter), view.Columns[0], false, 0, 0);
 				prevIter = filter.ConvertIterToChildIter (prevIter);
 				store.SetValue (prevIter, (int)Columns.Weight, (int) Pango.Weight.Normal);
+				DisplayTask (t);
 				return true;
 			}
+		}
+
+		void DisplayTask (Task t)
+		{
+			if (t == null)
+				IdeApp.Workbench.StatusBar.ShowMessage (GettextCatalog.GetString ("No more errors or warnings"));
+			else if (t.TaskType == TaskType.Error)
+				IdeApp.Workbench.StatusBar.ShowError (t.ErrorNumber + " - " + t.Description);
+			else if (t.TaskType == TaskType.Warning)
+				IdeApp.Workbench.StatusBar.ShowError (t.ErrorNumber + " - " + t.Description);
+			else
+				IdeApp.Workbench.StatusBar.ShowMessage (t.Description);
 		}
 	}
 }

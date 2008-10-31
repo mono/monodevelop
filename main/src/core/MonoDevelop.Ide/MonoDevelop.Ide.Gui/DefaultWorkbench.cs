@@ -333,15 +333,29 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public virtual void ShowPad (PadCodon content)
+		public void ShowPad (PadCodon content)
+		{
+			AddPad (content, true);
+		}
+		
+		public void AddPad (PadCodon content)
+		{
+			AddPad (content, false);
+		}
+		
+		void AddPad (PadCodon content, bool show)
 		{
 			if (padContentCollection.Contains (content))
 				return;
 			
 			padContentCollection.Add (content);
 			
-			if (layout != null)
-				layout.ShowPad (content);
+			if (layout != null) {
+				if (show)
+					layout.ShowPad (content);
+				else
+					layout.AddPad (content);
+			}
 		}
 		
 		public void RemovePad (PadCodon codon)

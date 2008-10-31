@@ -46,6 +46,11 @@ namespace MonoDevelop.Ide.Gui
 		ArrayList outputMonitors = new ArrayList ();
 		
 		/******************************/
+
+		internal void Initialize ()
+		{
+			CreateMonitorPad (GettextCatalog.GetString ("Build Output"), MonoDevelop.Core.Gui.Stock.BuildCombine, false, true, false);
+		}
 		
 		public IProgressMonitor GetBuildProgressMonitor ()
 		{
@@ -95,6 +100,12 @@ namespace MonoDevelop.Ide.Gui
 		
 		public IProgressMonitor GetOutputProgressMonitor (string title, string icon, bool bringToFront, bool allowMonitorReuse)
 		{
+			DefaultMonitorPad monitorPad = CreateMonitorPad (title, icon, bringToFront, allowMonitorReuse, true);
+			return new OutputProgressMonitor (monitorPad, title, icon);
+		}
+		
+		DefaultMonitorPad CreateMonitorPad (string title, string icon, bool bringToFront, bool allowMonitorReuse, bool show)
+		{
 			Pad pad = null;
 			if (icon == null)
 				icon = MonoDevelop.Core.Gui.Stock.OutputIcon;
@@ -118,7 +129,7 @@ namespace MonoDevelop.Ide.Gui
 				}
 				if (pad != null) {
 					if (bringToFront) pad.BringToFront ();
-					return new OutputProgressMonitor ((DefaultMonitorPad) pad.Content, pad.Title, icon);
+					return (DefaultMonitorPad) pad.Content;
 				}
 			}
 
@@ -130,8 +141,12 @@ namespace MonoDevelop.Ide.Gui
 			
 			if (instanceCount > 0)
 				title += " (" + (instanceCount+1) + ")";
+
+			if (show)
+				pad = IdeApp.Workbench.ShowPad (monitorPad, newPadId, title, basePadId + "/Center Bottom", icon);
+			else
+				pad = IdeApp.Workbench.AddPad (monitorPad, newPadId, title, basePadId + "/Center Bottom", icon);
 			
-			pad = IdeApp.Workbench.ShowPad (monitorPad, newPadId, title, basePadId + "/Center Bottom", icon);
 			pad.Sticky = true;
 			outputMonitors.Add (pad);
 			
@@ -145,9 +160,9 @@ namespace MonoDevelop.Ide.Gui
 			if (bringToFront)
 				pad.BringToFront ();
 
-			return new OutputProgressMonitor (monitorPad, title, icon);
+			return monitorPad;
 		}
-
+		
 		public ISearchProgressMonitor GetSearchProgressMonitor (bool bringToFront)
 		{
 			Pad pad = null;

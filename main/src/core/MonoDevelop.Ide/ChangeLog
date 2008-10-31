@@ -1,5 +1,20 @@
 2008-10-31  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs: When browsing errors, show
+	the activated error message in the status bar. Fixes bug #430493.
+
+	* MonoDevelop.Ide.Gui/Pad.cs:
+	* MonoDevelop.Ide.Gui/Workbench.cs:
+	* MonoDevelop.Ide.Gui/IWorkbench.cs:
+	* MonoDevelop.Ide.Gui/ProgressMonitors.cs:
+	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs:
+	* MonoDevelop.Ide.Gui/IWorkbenchLayout.cs:
+	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Show the build output pad
+	in the view list, so it can be made visible even before building a
+	project.
+
+2008-10-31  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.mdp: Fix assembly references.
 
 2008-10-29  Lluis Sanchez Gual  <lluis@novell.com>

@@ -75,7 +75,8 @@ namespace MonoDevelop.Ide.Gui
 		/// <summary>
 		/// Shows a new <see cref="IPadContent"/>.
 		/// </summary>
-		void ShowPad(PadCodon content);
+		void ShowPad (PadCodon content);
+		void AddPad (PadCodon content);
 		
 		IPadWindow GetPadWindow (PadCodon content);
 		

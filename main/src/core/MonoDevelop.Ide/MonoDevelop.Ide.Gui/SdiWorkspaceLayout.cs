@@ -520,6 +520,13 @@ namespace MonoDevelop.Ide.Gui
 				AddPad (content, content.DefaultPlacement);
 		}
 		
+		public void AddPad (PadCodon content)
+		{
+			DockItem item = GetDockItem (content);
+			if (item == null)
+				AddPad (content, content.DefaultPlacement);
+		}
+		
 		public void RemovePad (PadCodon content)
 		{
 			PadWindow win = (PadWindow) padWindows [content];

@@ -117,6 +117,8 @@ namespace MonoDevelop.Ide.Gui
 				LayoutChanged (this, EventArgs.Empty);
 
 			workbench.RedrawAllComponents ();
+			monitors.Initialize ();
+			
 			RootWindow.Present ();
 		}
 		
@@ -279,6 +281,17 @@ namespace MonoDevelop.Ide.Gui
 		{
 			workbench.ShowPad (content);
 			return WrapPad (content);
+		}
+
+		internal Pad AddPad (PadCodon content)
+		{
+			workbench.AddPad (content);
+			return WrapPad (content);
+		}
+
+		public Pad AddPad (IPadContent padContent, string id, string label, string defaultPlacement, string icon)
+		{
+			return AddPad (new PadCodon (padContent, id, label, defaultPlacement, icon));
 		}
 		
 		public Pad ShowPad (IPadContent padContent, string id, string label, string defaultPlacement, string icon)
@@ -544,6 +557,12 @@ namespace MonoDevelop.Ide.Gui
 		
 		Pad WrapPad (PadCodon padContent)
 		{
+			if (pads == null) {
+				foreach (Pad p in Pads) {
+					if (p.InternalContent == padContent)
+						return p;
+				}
+			}
 			Pad pad = new Pad (workbench, padContent);
 			Pads.Add (pad);
 			pad.Window.PadDestroyed += delegate {

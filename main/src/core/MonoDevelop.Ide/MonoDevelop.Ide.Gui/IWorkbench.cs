@@ -107,6 +107,7 @@ namespace MonoDevelop.Ide.Gui
 		/// Inserts a new <see cref="IPadContent"/> object in the workspace.
 		/// </summary>
 		void ShowPad(PadCodon content);
+		void AddPad(PadCodon content);
 		
 		void CloseContent(IViewContent content);
 		

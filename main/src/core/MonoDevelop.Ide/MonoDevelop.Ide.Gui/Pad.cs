@@ -49,6 +49,10 @@ namespace MonoDevelop.Ide.Gui
 			this.content   = content;
 			this.workbench = workbench;
 		}
+
+		internal PadCodon InternalContent {
+			get { return content; }
+		}
 		
 		public object Content {
 			get { return window.Content; }
