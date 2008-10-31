@@ -1,3 +1,8 @@
+2008-10-31  Full Name  <Email Address>
+
+	* Mono.TextEditor/Document.cs: fixed 'Bug 433729 - Copy/Paste/Folding
+	the top comment of a file, you get a wrong display.'.
+
 2008-10-27  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextViewMargin.cs:

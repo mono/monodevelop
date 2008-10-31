@@ -639,7 +639,8 @@ namespace Mono.TextEditor
 						return;
 					int cmp = doc.foldSegments[i].CompareTo (newSegments [j]);
 					if (cmp == 0) {
-						newSegments[j].IsFolded = doc.foldSegments[i].IsFolded;
+						if (newSegments[j].Length == doc.foldSegments[i].Length) 
+							newSegments[j].IsFolded = doc.foldSegments[i].IsFolded;
 						i++;j++;
 					} else  if (cmp > 0) {
 						j++;
