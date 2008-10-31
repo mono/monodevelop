@@ -1,3 +1,7 @@
+2008-10-31  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/ProjectTests.cs: Add unit test for bug #400420.
+
 2008-10-31  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: added unit test

@@ -1,4 +1,4 @@
-namespace ResourcesTesterNamespace.Subfolder
+namespace ResourcesTester
 {
     partial class Form2
     {

@@ -1,3 +1,8 @@
+2008-10-31  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* resources-tester/ResourcesTester/Subfolder/FormFile2.Designer.cs: Fix
+	build of test solution.
+
 2008-10-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* test-build-configs/Lib4/Lib4.mdp:
