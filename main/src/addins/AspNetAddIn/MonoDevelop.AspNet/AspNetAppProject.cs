@@ -181,6 +181,11 @@ namespace MonoDevelop.AspNet
 			}
 		}
 		
+		protected override bool OnGetCanExecute (MonoDevelop.Projects.ExecutionContext context, string configuration)
+		{
+			return true;
+		}
+		
 		protected override void DoExecute (IProgressMonitor monitor, ExecutionContext context, string config)
 		{
 			//check XSP is available

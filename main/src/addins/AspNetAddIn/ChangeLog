@@ -1,3 +1,8 @@
+2008-11-02  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AspNet/AspNetAppProject.cs: Track MD core API to re-enable
+	running of ASP.NET projects.
+
 2008-10-28  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.AspNet.addin.xml: fixed 'Bug 399737 - Code completion
