@@ -448,20 +448,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 		{
 		}
 		
-		void SelectTaskView (object s, BuildEventArgs args)
-		{
-			if (Services.TaskService.Tasks.Count > 0) {
-				try {
-					if (window.Visible)
-						window.Activate ();
-					else if ((bool) PropertyService.Get ("SharpDevelop.ShowTaskListAfterBuild", true)) {
-						window.Visible = true;
-						window.Activate ();
-					}
-				} catch {}
-			}
-		}
-		
 		void OnRowActivated (object o, RowActivatedArgs args)
 		{
 			OnTaskJumpto (null, null);
@@ -502,10 +488,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 		{
 			Clear();
 
-			foreach (Task t in Services.TaskService.Tasks) {
+			foreach (Task t in Services.TaskService.Tasks)
 				AddTask (t);
-			}
-			SelectTaskView (null, null);
 		}
 
 		private void Clear()
