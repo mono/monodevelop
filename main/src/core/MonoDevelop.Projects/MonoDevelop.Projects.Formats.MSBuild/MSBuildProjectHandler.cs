@@ -263,6 +263,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				// Get the common assembly name
 				assemblyName = globalGroup.GetPropertyValue ("AssemblyName");
 				frameworkVersion = globalGroup.GetPropertyValue ("TargetFrameworkVersion");
+				dotNetProject.ClrVersion = GetClrVersion (frameworkVersion);
 			}
 			
 			// Read configurations
@@ -466,12 +467,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				SetGroupProperty (globalGroup, "AssemblyName", assemblyName, false);
 			else
 				globalGroup.RemoveProperty ("AssemblyName");
-			
+
 			if (!string.IsNullOrEmpty (clrVersion)) {
 				// When using the VS05 format, only write the framework version if it is not 2.0
 				if (productVersion != MSBuildFileFormatVS05.Version || clrVersion != "v2.0")
 					SetGroupProperty (globalGroup, "TargetFrameworkVersion", clrVersion, false);
-			}
+				else
+					globalGroup.RemoveProperty ("TargetFrameworkVersion");
+			} else
+				globalGroup.RemoveProperty ("TargetFrameworkVersion");
 			
 			// Configurations
 

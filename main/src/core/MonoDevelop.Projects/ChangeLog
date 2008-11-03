@@ -1,3 +1,9 @@
+2008-11-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs:
+	Properly read the clr version. It must be assigned to the project in
+	addition to assigning to the configurations.
+
 2008-11-03  Mike Krüger  <mike@icsharpcode.net>
 
 	* MonoDevelop.Projects.Dom/DomCecilType.cs: fixed 'Bug 440366 - Cannot
