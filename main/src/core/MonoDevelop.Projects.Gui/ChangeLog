@@ -1,3 +1,14 @@
+2008-11-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs/ItemOptionsPanel.cs: Added property
+	for getting the list of configuration objects being edited in the
+	dialog (they are a copy of the original configurations).
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/RuntimeOptionsPanel.cs:
+	Assign the selected clr version to all configurations (The ClrVersion
+	setter of DotNetProject does it, but configurations are replaced by
+	the copies being edited in the dialog).
+
 2008-10-29  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Gui.Completion/ParameterInformationWindowManager.cs:

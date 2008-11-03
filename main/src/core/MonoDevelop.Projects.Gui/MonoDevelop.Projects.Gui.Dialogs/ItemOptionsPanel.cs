@@ -58,6 +58,19 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 			}
 		}
 		
+		public System.Collections.Generic.IEnumerable<ItemConfiguration> ItemConfigurations {
+			get {
+				if (ParentDialog is MultiConfigItemOptionsDialog)
+					return ((MultiConfigItemOptionsDialog)ParentDialog).Configurations;
+				else if (solutionItem != null)
+					return solutionItem.Configurations;
+				else if (ConfiguredSolution != null)
+					return ConfiguredSolution.Configurations;
+				else
+					return new ItemConfiguration [0];
+			}
+		}
+
 		public override void Initialize (OptionsDialog dialog, object dataObject)
 		{
 			base.Initialize (dialog, dataObject);

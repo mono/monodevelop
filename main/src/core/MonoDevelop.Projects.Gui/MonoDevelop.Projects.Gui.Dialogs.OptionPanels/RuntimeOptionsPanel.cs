@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 
 using MonoDevelop.Projects;
@@ -50,7 +51,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 		
 		public override Widget CreatePanelWidget()
 		{
-			return (widget = new RuntimeOptionsPanelWidget ((DotNetProject)ConfiguredProject));
+			return (widget = new RuntimeOptionsPanelWidget ((DotNetProject)ConfiguredProject, ItemConfigurations));
 		}
 		
 		public override void ApplyChanges()
@@ -62,13 +63,15 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 	partial class RuntimeOptionsPanelWidget : Gtk.Bin 
 	{
 		DotNetProject project;
+		IEnumerable<ItemConfiguration> configurations;
 		ArrayList supportedVersions = new ArrayList (); 
 
-		public RuntimeOptionsPanelWidget (DotNetProject project)
+		public RuntimeOptionsPanelWidget (DotNetProject project, IEnumerable<ItemConfiguration> configurations)
 		{
 			Build ();
 			
 			this.project = project;
+			this.configurations = configurations;
 			if (project != null) {
 				// Get the list of available versions, and add only those supported by the target language.
 				ClrVersion[] langSupported = project.SupportedClrVersions;
@@ -106,6 +109,8 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			if (project == null || runtimeVersionCombo.Active == -1)
 				return;
 			project.ClrVersion = (ClrVersion) supportedVersions [runtimeVersionCombo.Active];
+			foreach (DotNetProjectConfiguration conf in configurations)
+				conf.ClrVersion = project.ClrVersion;
 		}
 	}
 }
