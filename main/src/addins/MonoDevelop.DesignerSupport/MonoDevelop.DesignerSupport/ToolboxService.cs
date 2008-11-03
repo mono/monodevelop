@@ -576,6 +576,8 @@ namespace MonoDevelop.DesignerSupport
 					todelete.Add (ia);
 				if (ia.NeedsUpdate)
 					toupdate.Add (ia);
+				if (monitor.IsCancelRequested)
+					return index;
 			}
 			
 			// Look for new assemblies
@@ -586,6 +588,8 @@ namespace MonoDevelop.DesignerSupport
 					index.Files.Add (c);
 					toupdate.Add (c);
 				}
+				if (monitor.IsCancelRequested)
+					return index;
 			}
 			
 			foreach (ComponentIndexFile ia in todelete) {
@@ -597,6 +601,8 @@ namespace MonoDevelop.DesignerSupport
 				foreach (ComponentIndexFile ia in toupdate) {
 					ia.Update ();
 					monitor.Step (1);
+					if (monitor.IsCancelRequested)
+						return index;
 				}
 				monitor.EndTask ();
 			}
