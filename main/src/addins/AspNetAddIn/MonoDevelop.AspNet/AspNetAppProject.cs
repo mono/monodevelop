@@ -116,7 +116,10 @@ namespace MonoDevelop.AspNet
 		
 		public override CompileTarget CompileTarget {
 			get { return CompileTarget.Library; }
-			set { base.CompileTarget = CompileTarget.Library; }
+			set {
+				if (value == CompileTarget.Library)
+					base.CompileTarget = value;
+			}
 		}
 		
 		#endregion
@@ -125,16 +128,19 @@ namespace MonoDevelop.AspNet
 		
 		public AspNetAppProject ()
 		{
+			Init ();
 		}
 		
 		public AspNetAppProject (string languageName)
 			: base (languageName)
 		{
+			Init ();
 		}
 		
 		public AspNetAppProject (string languageName, ProjectCreateInformation info, XmlElement projectOptions)
 			: base (languageName, info, projectOptions)
 		{
+			Init ();
 		}	
 		
 		public override SolutionItemConfiguration CreateConfiguration (string name)
@@ -144,6 +150,11 @@ namespace MonoDevelop.AspNet
 			conf.Name = name;
 			conf.CompilationParameters = LanguageBinding.CreateCompilationParameters (null);			
 			return conf;
+		}
+		
+		void Init ()
+		{
+			base.CompileTarget = CompileTarget.Library;
 		}
 		
 		#endregion

@@ -1,3 +1,9 @@
+2008-11-03  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AspNet/AspNetAppProject.cs: Set CompileTarget to library
+	on base class, not just overriding the values on the property. Fixes
+	Bug 436275 - MD ASP.Net project does not build in VS2005.
+
 2008-11-02  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.AspNet/AspNetAppProject.cs: Track MD core API to re-enable
