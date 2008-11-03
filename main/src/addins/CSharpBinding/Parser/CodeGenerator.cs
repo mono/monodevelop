@@ -425,16 +425,17 @@ namespace CSharpBinding.Parser
 		
 		public override MemberReferenceCollection FindMemberReferences (RefactorerContext ctx, string fileName, IType cls, IMember member)
 		{
-//			System.Console.WriteLine("Find member references !!!");
-			NRefactoryResolver resolver = new NRefactoryResolver (ctx.ParserContext, cls.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, null, fileName);
+			ParsedDocument parsedDocument = ProjectDomService.ParseFile (fileName);
+			
+			NRefactoryResolver resolver = new NRefactoryResolver (ctx.ParserContext, parsedDocument.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, null, fileName);
 			MemberReferenceCollection refs = new MemberReferenceCollection ();
-			MemberRefactoryVisitor visitor = new MemberRefactoryVisitor (ctx, resolver, cls, cls, refs);
+			MemberRefactoryVisitor visitor = new MemberRefactoryVisitor (ctx, resolver, cls, member, refs);
 			
 			IEditableTextFile file = ctx.GetFile (fileName);
 			visitor.Visit (ctx.ParserContext, file);
 			return refs;
 		}
-		
+
 		public override MemberReferenceCollection FindVariableReferences (RefactorerContext ctx, string fileName, LocalVariable var)
 		{
 //			System.Console.WriteLine("Find variable references !!!");
@@ -533,7 +534,7 @@ namespace CSharpBinding.Parser
 		
 		bool IsExpectedClass (IType type, Dictionary<string,string> checkedTypes)
 		{
-			if (checkedTypes.ContainsKey (type.FullName))
+			if (type == null || checkedTypes.ContainsKey (type.FullName))
 				return false;
 			
 			if (type.FullName == declaringType.FullName)
@@ -600,8 +601,8 @@ namespace CSharpBinding.Parser
 		public override object VisitMemberReferenceExpression (MemberReferenceExpression fieldExp, object data)
 		{
 			//Debug ("FieldReferenceExpression", fieldExp.FieldName, fieldExp);
-			if (!(member is IParameter) && fieldExp.FieldName == member.Name) {
-				ResolveResult resolveResult = resolver.ResolveExpression (fieldExp.TargetObject, new DomLocation (fieldExp.StartLocation.Y, fieldExp.StartLocation.X));
+			if (!(member is IParameter) && fieldExp.MemberName == member.Name) {
+				ResolveResult resolveResult = resolver.ResolveExpression (fieldExp.TargetObject, new DomLocation (fieldExp.EndLocation.Y, fieldExp.EndLocation.X));
 				IType cls = resolveResult != null ? this.ctx.ParserContext.GetType (resolveResult.ResolvedType) : null;
 				if (cls != null && IsExpectedClass (cls)) {
 					int pos = file.GetPositionFromLineColumn (fieldExp.StartLocation.Y, fieldExp.StartLocation.X);

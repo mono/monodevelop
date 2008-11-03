@@ -1,5 +1,10 @@
 2008-11-03  Mike Krüger  <mike@icsharpcode.net>
 
+	* Parser/CodeGenerator.cs:
+	* Gui/NRefactoryResolver.cs: worked on refactoring operations.
+
+2008-11-03  Mike Krüger  <mike@icsharpcode.net>
+
 	* Gui/NRefactoryParameterDataProvider.cs: fixed 'Bug 439960 - Return
 	type not shown in tool tip'.
 

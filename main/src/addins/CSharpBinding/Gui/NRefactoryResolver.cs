@@ -134,6 +134,7 @@ namespace MonoDevelop.CSharpBinding
 			lookupTableVisitor = new LookupTableVisitor (lang);
 			
 			callingType = GetTypeAtCursor (unit, fileName, resolvePosition);
+			
 			if (callingType != null) {
 				foreach (IMember member in callingType.Members) {
 					if (!(member is IMethod || member is IProperty))
@@ -147,7 +148,8 @@ namespace MonoDevelop.CSharpBinding
 				if (typeFromDatabase != null)
 					callingType = typeFromDatabase;
 			}
-			if (callingMember != null && editor != null) {
+			
+			if (callingMember != null) {
 				string wrapper = CreateWrapperClassForMember (callingMember);
 				ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (lang, new StringReader (wrapper));
 				parser.Parse ();
@@ -585,8 +587,16 @@ namespace MonoDevelop.CSharpBinding
 			if (!member.BodyRegion.IsEmpty)
 				endLine = member.BodyRegion.End.Line;
 			result.Append ("class Wrapper {");
-			result.Append (this.editor.GetText (this.editor.GetPositionFromLineColumn (startLine, 0),
-			                                    this.editor.GetPositionFromLineColumn (endLine, this.editor.GetLineLength (endLine))));
+			if (editor != null) {
+				result.Append (this.editor.GetText (this.editor.GetPositionFromLineColumn (startLine, 0),
+				                                    this.editor.GetPositionFromLineColumn (endLine, this.editor.GetLineLength (endLine))));
+			} else {
+				Mono.TextEditor.Document doc = new Mono.TextEditor.Document ();
+				doc.Text = File.ReadAllText (fileName);
+				int startOffset = doc.LocationToOffset (startLine - 1, 0);
+				result.Append (doc.GetTextAt (startOffset,
+				                              doc.LocationToOffset (endLine  - 1, doc.GetLine (endLine - 1).EditableLength) - startOffset));
+			}
 			
 			result.Append ("}");
 			return result.ToString ();
