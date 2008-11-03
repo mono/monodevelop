@@ -1,3 +1,8 @@
+2008-11-03  Mike Krüger  <mike@icsharpcode.net>
+
+	* MonoDevelop.CSharpBinding/CodeCompletionCSharpTests.cs: added some
+	basic unit tests.
+
 2008-10-31  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/ProjectTests.cs: Add unit test for bug #400420.

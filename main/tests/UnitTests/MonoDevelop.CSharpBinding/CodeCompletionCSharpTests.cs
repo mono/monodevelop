@@ -228,6 +228,74 @@ class Test
 			Assert.IsNotNull (provider.Find ("Test"), "method 'Test' not found.");
 		}
 		
+		[Test()]
+		public void TestMethodAccess ()
+		{
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
+@"
+class AClass
+{
+	public AClass TestMethod ()
+	{
+	}
+}
 
+class Test
+{
+	void Test ()
+	{
+		AClass a;
+		a.TestMethod().$
+	}
+}");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("TestMethod"), "method 'TestMethod ' not found.");
+		}
+		
+		[Test()]
+		public void TestFieldAccess ()
+		{
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
+@"
+class AClass
+{
+	public AClass TestField;
+}
+
+class Test
+{
+	void Test ()
+	{
+		AClass a;
+		a.TestField.$
+	}
+}");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("TestField"), "field 'TestField' not found.");
+		}
+		
+		[Test()]
+		public void TestPropertyAccess ()
+		{
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
+@"
+class AClass
+{
+	public AClass TestProperty { get { return null; } }
+}
+
+class Test
+{
+	void Test ()
+	{
+		AClass a;
+		a.TestProperty.$
+	}
+}");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("TestProperty"), "property 'TestProperty' not found.");
+		}
+
+		
 	}
 }
