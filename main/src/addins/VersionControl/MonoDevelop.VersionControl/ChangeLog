@@ -1,3 +1,10 @@
+2008-11-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.VersionControl.Views/StatusView.cs: Don't crash when
+	updating the status of deleted files (there isn't a VersionInfo for
+	them after comitting). Fixes bug #437988 - NREs in version control
+	addin after commit.
+
 2008-10-31  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.VersionControl/Repository.cs:

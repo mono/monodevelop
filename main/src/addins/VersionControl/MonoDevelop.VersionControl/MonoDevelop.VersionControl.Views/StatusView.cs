@@ -785,9 +785,12 @@ namespace MonoDevelop.VersionControl.Views
 			try {
 				// Reuse remote status from old version info
 				newInfo = vc.GetVersionInfo (args.FilePath, false);
-				if (found) {
-					newInfo.RemoteStatus = statuses [oldStatusIndex].RemoteStatus;
-					newInfo.RemoteRevision = statuses [oldStatusIndex].RemoteRevision;
+				if (found && newInfo != null) {
+					VersionInfo oldInfo = statuses [oldStatusIndex];
+					if (oldInfo != null) {
+						newInfo.RemoteStatus = oldInfo.RemoteStatus;
+						newInfo.RemoteRevision = oldInfo.RemoteRevision;
+					}
 				}
 			}
 			catch (Exception ex) {
