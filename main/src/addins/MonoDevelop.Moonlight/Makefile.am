@@ -14,6 +14,7 @@ REFS =  \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Core \
+	-r:System.Drawing \
 	-r:System.Xml
 
 FILES =  \

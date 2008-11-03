@@ -1,3 +1,11 @@
+2008-11-02  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Moonlight.mdp: Updated.
+
+	* MonoDevelop.Moonlight/MoonlightEditorExtension.cs: Added some very
+	simple XAML completions.
+
 2008-10-28  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Moonlight.addin.xml: fixed 'Bug 399737 - Code completion
