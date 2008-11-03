@@ -28,7 +28,7 @@
 	file, and then move it to the original file. Also unlock the original
 	file before copying. Fixes bug #440254.
 
-2008-10-31  Full Name  <Email Address>
+2008-10-31  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomCecilType.cs:
 	* MonoDevelop.Projects.Dom/DomCecilField.cs:
@@ -38,7 +38,7 @@
 	* MonoDevelop.Projects.Dom/DomCecilCompilationUnit.cs: fixed 'Bug 440366
 	- Cannot override base methods'.
 
-2008-10-31  Full Name  <Email Address>
+2008-10-31  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs:
 	* MonoDevelop.Projects.Dom.Serialization/DatabaseProjectDom.cs:
