@@ -52,6 +52,8 @@ namespace MonoDevelop.CSharpBinding
 			this.resolver = resolver;
 			this.staticResolve = resolveResult.StaticResolve;
 			methods.AddRange (resolveResult.Methods);
+			if (resolveResult.Methods.Count > 0)
+				this.prefix = ambience.GetString (resolveResult.Methods[0].ReturnType, OutputFlags.ClassBrowserEntries | OutputFlags.EmitMarkup  | OutputFlags.IncludeGenerics) + " ";
 		}
 		
 		public NRefactoryParameterDataProvider (TextEditor editor, NRefactoryResolver resolver, ThisResolveResult resolveResult)

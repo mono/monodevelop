@@ -1,3 +1,8 @@
+2008-11-03  Mike Krüger  <mike@icsharpcode.net>
+
+	* Gui/NRefactoryParameterDataProvider.cs: fixed 'Bug 439960 - Return
+	type not shown in tool tip'.
+
 2008-10-31  Mike Krüger  <mkrueger@novell.com>
 
 	* Gui/CSharpAmbience.cs: fixed bug in parameter output.
