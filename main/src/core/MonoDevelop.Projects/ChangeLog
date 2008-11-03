@@ -1,3 +1,8 @@
+2008-11-03  Mike Krüger  <mike@icsharpcode.net>
+
+	* MonoDevelop.Projects.Dom/DomCecilType.cs: fixed 'Bug 440366 - Cannot
+	override base methods'.
+
 2008-10-31  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/SolutionFolder.cs: Fixed and simplified

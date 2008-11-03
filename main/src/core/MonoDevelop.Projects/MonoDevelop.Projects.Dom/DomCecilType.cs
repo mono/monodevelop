@@ -190,6 +190,8 @@ namespace MonoDevelop.Projects.Dom
 			} else {
 				result |= Modifiers.Protected;
 			}
+			if (field.IsSpecialName)
+				result |= Modifiers.SpecialName;
 			if (field.IsAssembly)
 				result |= Modifiers.Internal;
 			return result;
@@ -227,6 +229,9 @@ namespace MonoDevelop.Projects.Dom
 			}
 			if (method.IsAssembly)
 				result |= Modifiers.Internal;
+			
+			if (method.IsSpecialName)
+				result |= Modifiers.SpecialName;
 			
 			return result;
 		}
