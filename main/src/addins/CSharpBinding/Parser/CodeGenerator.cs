@@ -642,11 +642,13 @@ namespace CSharpBinding.Parser
 		{
 			//System.Console.WriteLine("VisitMethodDeclaration " + methodDeclaration);
 			// find override references.
-			if (member is IMethod && (methodDeclaration.Modifier & ICSharpCode.NRefactory.Ast.Modifiers.Override) == ICSharpCode.NRefactory.Ast.Modifiers.Override && methodDeclaration.Name == memberName) {
-				MemberResolveResult mrr = resolver.ResolveIdentifier (memberName, new DomLocation (methodDeclaration.StartLocation.Y, methodDeclaration.StartLocation.X)) as MemberResolveResult;
-				IMember m = mrr.ResolvedMember;
-				if (IsExpectedClass (m.DeclaringType)) {
-					AddUniqueReference (methodDeclaration.StartLocation.Y, methodDeclaration.StartLocation.X, memberName);
+			if (member is IMethod && /*(methodDeclaration.Modifier & ICSharpCode.NRefactory.Ast.Modifiers.Override) == ICSharpCode.NRefactory.Ast.Modifiers.Override && */methodDeclaration.Name == memberName) {
+				MethodResolveResult mrr = resolver.ResolveIdentifier (memberName, new DomLocation (methodDeclaration.StartLocation.Y, methodDeclaration.StartLocation.X)) as MethodResolveResult;
+				if (mrr != null) {
+					IMember m = mrr.MostLikelyMethod;
+					if (IsExpectedClass (m.DeclaringType)) {
+						AddUniqueReference (methodDeclaration.StartLocation.Y, methodDeclaration.StartLocation.X, memberName);
+					}
 				}
 			}
 			return base.VisitMethodDeclaration (methodDeclaration, data);
@@ -655,16 +657,18 @@ namespace CSharpBinding.Parser
 		public override object VisitInvocationExpression (InvocationExpression invokeExp, object data)
 		{
 			//Debug ("InvocationExpression", invokeExp.ToString (), invokeExp);
-			if (member is IMethod && invokeExp.TargetObject is MemberReferenceExpression) {
-				MemberReferenceExpression fieldExp = (MemberReferenceExpression) invokeExp.TargetObject;
-				if (fieldExp.FieldName == memberName) {
-					ResolveResult resolveResult = resolver.ResolveExpression (fieldExp.TargetObject, new DomLocation (fieldExp.StartLocation.Y, fieldExp.StartLocation.X));
-					IType cls = resolveResult != null ? this.ctx.ParserContext.GetType (resolveResult.ResolvedType) : null;
-					if (cls != null && IsExpectedClass (cls)) {
-						//Debug ("adding InvocationExpression", member.Name, invokeExp);
-						AddUniqueReference (fieldExp.StartLocation.Y, fieldExp.StartLocation.X, memberName);
-					}
+			if (member is IMethod) {
+				ResolveResult resolveResult = resolver.ResolveExpression (invokeExp.TargetObject, new DomLocation (invokeExp.StartLocation.Y, invokeExp.StartLocation.X));
+				if (resolveResult is MethodResolveResult) {
+					MethodResolveResult mrr = (MethodResolveResult)resolveResult;
+					if (mrr.MostLikelyMethod.FullName == ((IMethod)member).FullName)
+						AddUniqueReference (invokeExp.StartLocation.Y, invokeExp.StartLocation.X, memberName);	
 				}
+				/*IType cls = resolveResult != null ? this.ctx.ParserContext.GetType (resolveResult.ResolvedType) : null;
+				if (cls == null || IsExpectedClass (cls)) {
+					//Debug ("adding InvocationExpression", member.Name, invokeExp);
+					
+				}*/
 			}
 			
 			return base.VisitInvocationExpression (invokeExp, data);
