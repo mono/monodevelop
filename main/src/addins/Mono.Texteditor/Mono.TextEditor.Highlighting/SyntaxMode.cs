@@ -74,7 +74,7 @@ namespace Mono.TextEditor.Highlighting
 			curOffset = offset;
 			
 			StringBuilder result = new StringBuilder ();
-			while (curOffset < offset + length) {
+			while (curOffset < offset + length && curOffset < doc.Length) {
 				LineSegment line = doc.GetLineByOffset (curOffset);
 				int toOffset = System.Math.Min (line.Offset + line.EditableLength, offset + length);
 				Chunk[] chunks = GetChunks (doc, style, line, curOffset, toOffset - curOffset);
