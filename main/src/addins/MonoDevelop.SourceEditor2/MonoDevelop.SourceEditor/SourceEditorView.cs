@@ -1088,13 +1088,13 @@ namespace MonoDevelop.SourceEditor
 			Document.CommitMultipleLineUpdate (startLineNr, endLineNr);
 		}
 		
-		[CommandUpdateHandler (EditCommands.IndentSelection)]
+		[CommandHandler (EditCommands.IndentSelection)]
 		public void IndentSelection ()
 		{
 			MiscActions.IndentSelection (TextEditor.GetTextEditorData ());
 		}
 		
-		[CommandUpdateHandler (EditCommands.UnIndentSelection)]
+		[CommandHandler (EditCommands.UnIndentSelection)]
 		public void UnIndentSelection ()
 		{
 			MiscActions.RemoveIndentSelection (TextEditor.GetTextEditorData ());
