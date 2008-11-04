@@ -290,6 +290,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		public IType GetType (IReturnType returnType)
 		{
+			if (returnType == null)
+				return null;
 			if (returnType.Type != null)  {
 				if (returnType.GenericArguments == null || returnType.GenericArguments.Count == 0)
 					return returnType.Type;
