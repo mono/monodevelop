@@ -146,6 +146,7 @@ namespace MonoDevelop.Projects.Dom
 		}*/
 		
 		static Dictionary<string, bool> extensionTable = new Dictionary<string, bool> ();
+		
 		public bool Extends (ProjectDom dom, IType type)
 		{
 			if (!IsExtension)
@@ -155,15 +156,16 @@ namespace MonoDevelop.Projects.Dom
 				if (extensionTable.ContainsKey (extensionTableKey))
 					return extensionTable[extensionTableKey];
 				
-				IType extensionType = dom.GetType (Parameters[0].ReturnType);
+				IType extensionType = dom.GetType (Parameters[0].ReturnType, true);
+				
 				if (extensionType == null) {
 					bool result = Parameters[0].ReturnType.FullName == type.FullName;
 					extensionTable.Add (extensionTableKey, result);
 					return result;
 				}
 				
-				foreach (IType e in dom.GetInheritanceTree (extensionType)) {
-					if (type.FullName == e.FullName) {
+				foreach (IType e in dom.GetInheritanceTree (type)) {
+					if (extensionType.Equals (e)) {
 						extensionTable.Add (extensionTableKey, true);
 						return true;
 					}

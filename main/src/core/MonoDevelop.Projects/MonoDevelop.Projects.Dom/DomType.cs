@@ -687,8 +687,9 @@ namespace MonoDevelop.Projects.Dom
 			List<IMethod> result = new List<IMethod> ();
 			foreach (IType staticType in accessibleExtensionTypes) {
 				foreach (IMethod method in staticType.Methods) {
-					if (method.Extends (this.SourceProjectDom, this))
+					if (method.Extends (this.SourceProjectDom, this)) {
 						result.Add (method);
+					}
 				}
 			}
 			return result;
@@ -705,6 +706,21 @@ namespace MonoDevelop.Projects.Dom
 			}
 			return false;
 		}
+		
+		public override bool Equals(object obj)
+		{
+			if (!(obj is IType))
+				return false;
+			return Equals ((IType)obj);
+		}
+		
+		public bool Equals (IType other)
+		{
+			IType a = this is InstantiatedType ? ((InstantiatedType)this).UninstantiatedType : this;
+			IType b = other is InstantiatedType ? ((InstantiatedType)other).UninstantiatedType : other;
+			return a.TypeParameters.Count == b.TypeParameters.Count && a.FullName == b.FullName;
+		}
+		
 	}
 	
 	internal sealed class Stock 
