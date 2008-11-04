@@ -232,7 +232,14 @@ namespace MonoDevelop.Ide.Commands
 			Refactorer refactorer = new Refactorer (ctx, pinfo, eclass, item, null);
 			CommandInfoSet ciset = new CommandInfoSet ();
 			Ambience ambience = AmbienceService.GetAmbienceForFile (pinfo.FileName);
-			string itemName = EscapeName (ambience.GetString (item, OutputFlags.IncludeParameters | OutputFlags.EmitMarkup));
+			OutputFlags flags = OutputFlags.EmitMarkup;
+			if (item is IParameter) {
+				flags |= OutputFlags.IncludeParameterName;
+			} else {
+				flags |= OutputFlags.IncludeParameters;
+			}
+				
+			string itemName = EscapeName (ambience.GetString (item, flags));
 			bool canRename = false;
 			string txt;
 			if (IdeApp.ProjectOperations.CanJumpToDeclaration (item as IMember))
