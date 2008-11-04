@@ -36,6 +36,7 @@ using Gnome;
 using Mono.TextEditor;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Gui.Completion;
 using MonoDevelop.Projects.Dom;
@@ -43,6 +44,7 @@ using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Text;
+using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui.Search;
 using MonoDevelop.Debugger;
 using Mono.Debugging.Client;
@@ -53,7 +55,7 @@ using Services = MonoDevelop.Projects.Services;
 namespace MonoDevelop.SourceEditor
 {	
 	public class SourceEditorView : AbstractViewContent, IExtensibleTextEditor, IBookmarkBuffer, IClipboardHandler, 
-		ICompletionWidget, IDocumentInformation, ICodeStyleOperations, ISplittable, IFoldable, IToolboxDynamicProvider, 
+		ICompletionWidget, IDocumentInformation, ISplittable, IFoldable, IToolboxDynamicProvider, 
 		ICustomFilteringToolboxConsumer, IZoomable
 #if GNOME_PRINT
 		, IPrintable
@@ -969,14 +971,23 @@ namespace MonoDevelop.SourceEditor
 		}
 		#endregion
 		
-		#region ICodeStyleOperations
+		#region commenting and indentation
+		
+		[CommandUpdateHandler (EditCommands.ToggleCodeComment)]
+		protected void OnUpdateToggleComment (MonoDevelop.Components.Commands.CommandInfo info)
+		{
+			ILanguageBinding binding = Services.Languages.GetBindingPerFileName (this.ContentName);
+			info.Visible = binding != null && binding.CommentTag != null;
+		}
+		
+		[CommandHandler (EditCommands.ToggleCodeComment)]
 		public void ToggleCodeComment ()
 		{
 			bool comment = false;
 			ILanguageBinding binding = Services.Languages.GetBindingPerFileName (this.ContentName);
-			if (binding == null)
+			if (binding == null || binding.CommentTag == null)
 				return;
-			string commentTag = binding.CommentTag ?? "//";
+			string commentTag = binding.CommentTag;
 			foreach (LineSegment line in TextEditor.SelectedLines) {
 				string text = Document.GetTextAt (line);
 				string trimmedText = text.TrimStart ();
@@ -986,13 +997,13 @@ namespace MonoDevelop.SourceEditor
 				}
 			}
 			if (comment) {
-				CommentCode ();
+				CommentSelectedLines (commentTag);
 			} else {
-				UncommentCode ();
+				UncommentSelectedLines (commentTag);
 			}
 		}
 		
-		public void CommentCode ()
+		void CommentSelectedLines (string commentTag)
 		{
 			int startLineNr = TextEditor.IsSomethingSelected ? Document.OffsetToLineNumber (TextEditor.SelectionRange.Offset) : TextEditor.Caret.Line;
 			int endLineNr   = TextEditor.IsSomethingSelected ? Document.OffsetToLineNumber (TextEditor.SelectionRange.EndOffset) : TextEditor.Caret.Line;
@@ -1002,7 +1013,6 @@ namespace MonoDevelop.SourceEditor
 			LineSegment anchorLine   = TextEditor.IsSomethingSelected ? TextEditor.Document.GetLineByOffset (TextEditor.SelectionAnchor) : null;
 			int         anchorColumn = TextEditor.IsSomethingSelected ? TextEditor.SelectionAnchor - anchorLine.Offset : -1;
 			
-			StringBuilder commentTag = new StringBuilder(Services.Languages.GetBindingPerFileName (this.ContentName).CommentTag ?? "//");
 			Document.BeginAtomicUndo ();
 			foreach (LineSegment line in TextEditor.SelectedLines) {
 				Document.Insert (line.Offset, commentTag);
@@ -1032,7 +1042,7 @@ namespace MonoDevelop.SourceEditor
 			Document.CommitMultipleLineUpdate (startLineNr, endLineNr);
 		}
 		
-		public void UncommentCode ()
+		void UncommentSelectedLines (string commentTag)
 		{
 			int startLineNr = TextEditor.IsSomethingSelected ? Document.OffsetToLineNumber (TextEditor.SelectionRange.Offset) : TextEditor.Caret.Line;
 			int endLineNr   = TextEditor.IsSomethingSelected ? Document.OffsetToLineNumber (TextEditor.SelectionRange.EndOffset) : TextEditor.Caret.Line;
@@ -1041,7 +1051,6 @@ namespace MonoDevelop.SourceEditor
 			LineSegment anchorLine   = TextEditor.IsSomethingSelected ? TextEditor.Document.GetLineByOffset (TextEditor.SelectionAnchor) : null;
 			int         anchorColumn = TextEditor.IsSomethingSelected ? TextEditor.SelectionAnchor - anchorLine.Offset : -1;
 			
-			string commentTag = Services.Languages.GetBindingPerFileName (this.ContentName).CommentTag ?? "//";
 			Document.BeginAtomicUndo ();
 			int first = -1;
 			int last  = 0;
@@ -1079,11 +1088,13 @@ namespace MonoDevelop.SourceEditor
 			Document.CommitMultipleLineUpdate (startLineNr, endLineNr);
 		}
 		
+		[CommandUpdateHandler (EditCommands.IndentSelection)]
 		public void IndentSelection ()
 		{
 			MiscActions.IndentSelection (TextEditor.GetTextEditorData ());
 		}
 		
+		[CommandUpdateHandler (EditCommands.UnIndentSelection)]
 		public void UnIndentSelection ()
 		{
 			MiscActions.RemoveIndentSelection (TextEditor.GetTextEditorData ());

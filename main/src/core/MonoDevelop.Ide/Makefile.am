@@ -130,7 +130,6 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Content/DocumentStateTracker.cs \
 	MonoDevelop.Ide.Gui.Content/IBookmarkBuffer.cs \
 	MonoDevelop.Ide.Gui.Content/IClipboardHandler.cs \
-	MonoDevelop.Ide.Gui.Content/ICodeStyleOperations.cs \
 	MonoDevelop.Ide.Gui.Content/ICustomizedCommands.cs \
 	MonoDevelop.Ide.Gui.Content/IEditableTextBuffer.cs \
 	MonoDevelop.Ide.Gui.Content/IEncodedTextContent.cs \

@@ -1,3 +1,13 @@
+2008-11-04  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Ide.mdp:
+	* MonoDevelop.Ide.Gui/TextEditor.cs:
+	* MonoDevelop.Ide.Gui/ViewCommandHandlers.cs:
+	* MonoDevelop.Ide.Gui.Content/ICodeStyleOperations.cs: Remove
+	ICodeStyleOperations. Text editors and extensions can handle the
+	commands directly with more flexibility.
+
 2008-11-04  Mike Krüger  <mike@icsharpcode.net>
 
 	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: fixed parameter name

@@ -1,3 +1,15 @@
+2008-11-04  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Implement
+	Indent/Unindent/ToggleComment commands directly on the editor instead
+	of implementing removed ICodeStyleOperations interface. Rename some
+	methods. Disable comment toggling command if language binding has
+	null single line comment value, so it no longer breaks on
+	XML/HTML/ASP.NET etc. Workaround for enhancement bugs "433644 -
+	'toggle line comment(s)' within script tags in aspx file fails" and
+	"440592 - 'toggle line comment(s)' in xml file should add comment
+	tags ('<!--', '-->')".
+
 2008-10-29  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs: fixed 'Bug 439552

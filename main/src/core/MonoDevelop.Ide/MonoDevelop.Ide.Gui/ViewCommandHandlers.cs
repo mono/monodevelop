@@ -248,48 +248,6 @@ namespace MonoDevelop.Ide.Gui
 				info.Bypass = true;
 		}
 		
-		[CommandUpdateHandler (EditCommands.ToggleCodeComment)]
-		protected void OnUpdateCommentCode (CommandInfo info)
-		{
-			info.Enabled = GetContent<ICodeStyleOperations> () != null;
-		}
-		
-		[CommandHandler (EditCommands.ToggleCodeComment)]
-		public void OnUncommentCode()
-		{
-			ICodeStyleOperations  styling = GetContent <ICodeStyleOperations> ();
-			if (styling != null)
-				styling.ToggleCodeComment ();
-		}
-		
-		[CommandHandler (EditCommands.IndentSelection)]
-		public void OnIndentSelection()
-		{
-			ICodeStyleOperations  styling = GetContent<ICodeStyleOperations> ();
-			if (styling != null)
-				styling.IndentSelection ();
-		}
-		
-		[CommandUpdateHandler (EditCommands.IndentSelection)]
-		protected void OnUpdateIndentSelection (CommandInfo info)
-		{
-			info.Enabled = GetContent<ICodeStyleOperations> () != null;
-		}
-		
-		[CommandHandler (EditCommands.UnIndentSelection)]
-		public void OnUnIndentSelection()
-		{
-			ICodeStyleOperations  styling = GetContent<ICodeStyleOperations> ();
-			if (styling != null)
-				styling.UnIndentSelection ();
-		}
-		
-		[CommandUpdateHandler (EditCommands.UnIndentSelection)]
-		protected void OnUpdateUnIndentSelection (CommandInfo info)
-		{
-			info.Enabled = GetContent<ICodeStyleOperations> () != null;
-		}
-		
 		[CommandHandler (EditCommands.UppercaseSelection)]
 		public void OnUppercaseSelection ()
 		{

@@ -35,7 +35,6 @@ namespace MonoDevelop.Ide.Gui
 	public class TextEditor
 	{
 		IBookmarkBuffer bookmarkBuffer;
-		ICodeStyleOperations codeStyleOperations;
 		IEditableTextBuffer textBuffer;
 		IEncodedTextContent encodedTextContent;
 		ICompletionWidget completionWidget;
@@ -52,7 +51,6 @@ namespace MonoDevelop.Ide.Gui
 			TextEditor ed = new TextEditor ();
 			ed.textBuffer = tb;
 			ed.bookmarkBuffer = (IBookmarkBuffer) content.GetContent (typeof(IBookmarkBuffer));
-			ed.codeStyleOperations = (ICodeStyleOperations) content.GetContent (typeof(ICodeStyleOperations));
 			ed.encodedTextContent = (IEncodedTextContent) content.GetContent (typeof(IEncodedTextContent));
 			ed.completionWidget = (ICompletionWidget) content.GetContent (typeof(ICompletionWidget));
 			ed.clipboardHandler = (IClipboardHandler) content.GetContent (typeof(IClipboardHandler));
@@ -61,10 +59,6 @@ namespace MonoDevelop.Ide.Gui
 		
 		public bool SupportsBookmarks {
 			get { return bookmarkBuffer != null; }
-		}
-		
-		public bool SupportsCodeStyleOperations {
-			get { return codeStyleOperations != null; }
 		}
 		
 		public void SetBookmarked (int position, bool mark)
@@ -248,24 +242,6 @@ namespace MonoDevelop.Ide.Gui
 				else
 					return null;
 			}
-		}
-
-		public void ToggleCodeComment ()
-		{
-			if (codeStyleOperations != null)
-				codeStyleOperations.ToggleCodeComment ();
-		}
-		
-		public void IndentSelection ()
-		{
-			if (codeStyleOperations != null)
-				codeStyleOperations.IndentSelection ();
-		}
-		
-		public void UnIndentSelection ()
-		{
-			if (codeStyleOperations != null)
-				codeStyleOperations.UnIndentSelection ();
 		}
 		
 		public string NewLine
