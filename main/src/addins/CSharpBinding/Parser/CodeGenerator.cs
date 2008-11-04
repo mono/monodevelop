@@ -594,16 +594,17 @@ namespace CSharpBinding.Parser
 		
 		public override object VisitTypeReference(TypeReference typeReference, object data)
 		{
+			//System.Console.WriteLine("visit type reference: " + typeReference);
 			string type = typeReference.SystemType ?? typeReference.Type;
+			
 			if (member is IType && memberName == GetNameWithoutPrefix (type)) {
 				int line = typeReference.StartLocation.Y;
 				int col = typeReference.StartLocation.X;
 				ResolveResult resolveResult = resolver.ResolveIdentifier (type, new DomLocation (line, col));
 				IReturnType cls = resolveResult != null ? resolveResult.ResolvedType : null;
-				
-				if (cls != null && cls.FullName == declaringType.FullName) {
+				if (cls == null || cls.FullName == declaringType.FullName) {
 					//Debug ("adding CastExpression", cls.FullName, castExpression);
-					AddUniqueReference (line, col, cls.FullName);
+					AddUniqueReference (line, col, typeReference.Type);
 				}
 			}
 			return base.VisitTypeReference (typeReference, data);
@@ -611,11 +612,10 @@ namespace CSharpBinding.Parser
 		
 		public override object VisitMemberReferenceExpression (MemberReferenceExpression fieldExp, object data)
 		{
-			//Debug ("FieldReferenceExpression", fieldExp.FieldName, fieldExp);
 			if (!(member is IParameter) && fieldExp.MemberName == memberName) {
-				ResolveResult resolveResult = resolver.ResolveExpression (fieldExp.TargetObject, new DomLocation (fieldExp.EndLocation.Y, fieldExp.EndLocation.X));
-				IType cls = resolveResult != null ? this.ctx.ParserContext.GetType (resolveResult.ResolvedType) : null;
-				if (cls != null && IsExpectedClass (cls)) {
+				ResolveResult resolveResult= resolver.ResolveExpression (fieldExp, new DomLocation (fieldExp.EndLocation.Y, fieldExp.EndLocation.X));
+				IType cls = resolveResult != null ? resolver.Dom.GetType (resolveResult.ResolvedType) : null;
+				if (cls != null && (IsExpectedClass (cls) || cls.Equals (member))) {
 					int pos = file.GetPositionFromLineColumn (fieldExp.StartLocation.Y, fieldExp.StartLocation.X);
 					int endpos = file.GetPositionFromLineColumn (fieldExp.EndLocation.Y, fieldExp.EndLocation.X);
 					string txt = file.GetText (pos, endpos);
@@ -681,16 +681,14 @@ namespace CSharpBinding.Parser
 
 		public override object VisitIdentifierExpression (IdentifierExpression idExp, object data)
 		{
-			//System.Console.WriteLine("VisitIdentifierExpression " + idExp.Identifier + "/" + member);
 			if (idExp.Identifier == memberName) {
 				int line = idExp.StartLocation.Y;
 				int col = idExp.StartLocation.X;
 				
 				ResolveResult result = resolver.ResolveIdentifier (idExp.Identifier, new DomLocation (line, col));
-				//System.Console.WriteLine("result: " + result + " member: " + member);
 				if (member is IType) {
-					IMember item = ((MemberResolveResult)result).ResolvedMember;
-					if (item is IType && ((IType) item).FullName == declaringType.FullName) {
+					IMember item = result != null ? ((MemberResolveResult)result).ResolvedMember : null;
+					if (item == null || item is IType && ((IType) item).FullName == declaringType.FullName) {
 						//Debug ("adding IdentifierExpression class", idExp.Identifier, idExp);
 						AddUniqueReference (line, col, idExp.Identifier);
 					}
@@ -795,8 +793,7 @@ namespace CSharpBinding.Parser
 			int line = objCreateExpression.CreateType.StartLocation.Y;
 			int col = objCreateExpression.CreateType.StartLocation.X;
 			
-			if ((member is IType || (member is IMethod && ((IMethod) member).IsConstructor)) 
-			    && declaringType.Name == GetNameWithoutPrefix (type)) {
+			if ((member is IType || (member is IMethod && ((IMethod) member).IsConstructor)) && declaringType.Name == GetNameWithoutPrefix (type)) {
 				ResolveResult resolveResult = resolver.ResolveIdentifier (type, new DomLocation (line, col));
 				IReturnType cls = resolveResult != null ? resolveResult.ResolvedType : null;
 				
@@ -835,10 +832,13 @@ namespace CSharpBinding.Parser
 //			System.Console.WriteLine("VisitTypeDeclaration " + typeDeclaration);
 			if (member is IType && typeDeclaration.BaseTypes != null) {
 				string fname = declaringType.FullName;
+				if (typeDeclaration.Name == memberName && ((IType)member).TypeParameters.Count == typeDeclaration.Templates.Count)
+					AddUniqueReference (typeDeclaration.StartLocation.Line, typeDeclaration.StartLocation.Column, typeDeclaration.Name);
 				
 				foreach (TypeReference bc in typeDeclaration.BaseTypes) {
 					ResolveResult resolveResult = resolver.ResolveIdentifier (bc.Type, new DomLocation (typeDeclaration.StartLocation.Y, typeDeclaration.StartLocation.X));
 					IReturnType bclass = resolveResult != null ? resolveResult.ResolvedType : null;
+					//System.Console.WriteLine(resolveResult + "/ bclass:" + bclass);
 					if (bclass == null || bclass.FullName != fname)
 						continue;
 					
