@@ -210,12 +210,14 @@ namespace MonoDevelop.Autotools
 					programFilesDir = TranslateDir (programFilesDir);
 					installDirs.Add (programFilesDir);
 					installTarget.Append ("\tmake pre-install-local-hook prefix=$(prefix)\n");
+					installTarget.Append ("\tmake install-satellite-assemblies prefix=$(prefix)\n");
 					installTarget.AppendFormat ("\tmkdir -p '$(DESTDIR){0}'\n", programFilesDir);
 					installTarget.AppendFormat ("\t$(call cp,$(ASSEMBLY),$(DESTDIR){0})\n", programFilesDir);
 					installTarget.AppendFormat ("\t$(call cp,$(ASSEMBLY_MDB),$(DESTDIR){0})\n", programFilesDir);
 
 					//remove dir?
 					uninstallTarget.Append ("\tmake pre-uninstall-local-hook prefix=$(prefix)\n");
+					uninstallTarget.Append ("\tmake uninstall-satellite-assemblies prefix=$(prefix)\n");
 					uninstallTarget.AppendFormat ("\t$(call rm,$(ASSEMBLY),$(DESTDIR){0})\n", programFilesDir);
 					uninstallTarget.AppendFormat ("\t$(call rm,$(ASSEMBLY_MDB),$(DESTDIR){0})\n", programFilesDir);
 
@@ -416,7 +418,7 @@ namespace MonoDevelop.Autotools
 				}
 
 				conf_vars.AppendFormat ("AL={0}\n", (dotnetProject.ClrVersion == ClrVersion.Net_2_0) ? "al2" : "al");
-				conf_vars.AppendFormat ("SATELLITE_ASSEMBLY_NAME={0}.resources.dll\n", dotnetProject.DefaultNamespace);
+				conf_vars.AppendFormat ("SATELLITE_ASSEMBLY_NAME=$(notdir $(basename $(ASSEMBLY))).resources.dll\n");
 
 				foreach (KeyValuePair<string, DeployFileData> pair in allDeployVars) {
 					HandleDeployFile (pair.Value, pair.Key, project, ctx);

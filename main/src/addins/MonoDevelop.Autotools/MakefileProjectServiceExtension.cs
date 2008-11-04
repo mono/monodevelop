@@ -127,6 +127,13 @@ namespace MonoDevelop.Autotools
 				return col;
 			
 			col.Add (data.AbsoluteMakefileName);
+			if (!string.IsNullOrEmpty (data.RelativeConfigureInPath)) {
+				string file = Path.Combine (data.AbsoluteConfigureInPath, "configure.in");
+				if (!File.Exists (file))
+					file = Path.Combine (data.AbsoluteConfigureInPath, "configure.ac");
+				if (File.Exists (file))
+					col.Add (file);
+			}
 			return col;
 		}
 

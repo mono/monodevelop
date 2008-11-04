@@ -681,7 +681,7 @@ namespace MonoDevelop.Autotools
 					AbsoluteConfigureInPath, OwnerProject.Name, e.ToString ());
 
 				monitor.ReportWarning (GettextCatalog.GetString (
-					"Error trying to read configure.in ('{0'}) for project '{1}':\n{2}",
+					"Error trying to read configure.in ('{0}') for project '{1}':\n{2}",
 					AbsoluteConfigureInPath, OwnerProject.Name, e.Message));
 			}
 
