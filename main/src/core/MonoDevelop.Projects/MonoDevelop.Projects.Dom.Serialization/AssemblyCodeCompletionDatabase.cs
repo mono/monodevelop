@@ -61,6 +61,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		public AssemblyCodeCompletionDatabase (string assemblyName, ParserDatabase pdb, bool isTempDatabase): base (pdb)
 		{
 			string name;
+
 			
 			if (!GetAssemblyInfo (assemblyName, out this.assemblyName, out assemblyFile, out name)) {
 				loadError = true;
@@ -82,9 +83,10 @@ namespace MonoDevelop.Projects.Dom.Serialization
 
 			if (isTempDatabase)
 				SetFile (Path.GetTempFileName ());
-			else
+			else {
 				SetLocation (baseDir, name);
-			Read ();
+				Read ();
+			}
 			
 			ArrayList oldFiles = new ArrayList ();
 			foreach (FileEntry e in GetAllFiles ()) {

@@ -78,7 +78,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 			if (cultures.Count > 0 && conf != null && project.DefaultNamespace != null) {
 				monitor.Log.WriteLine (GettextCatalog.GetString ("Removing all satellite assemblies"));
 				string outputDir = ((DotNetProjectConfiguration)conf).OutputDirectory;
-				string satelliteAsmName = project.DefaultNamespace + ".resources.dll";
+				string satelliteAsmName = Path.GetFileNameWithoutExtension (((DotNetProjectConfiguration)conf).OutputAssembly) + ".resources.dll";
 
 				foreach (string culture in cultures) {
 					string path = String.Format ("{0}{3}{1}{3}{2}", outputDir, culture, satelliteAsmName, Path.DirectorySeparatorChar);
@@ -244,7 +244,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 			}
 
 			string al = configuration.ClrVersion == ClrVersion.Net_2_0 ? "al2" : "al";
-			CompilerError err = GenerateSatelliteAssemblies (resourcesByCulture, configuration.OutputDirectory, al, project.DefaultNamespace, monitor);
+			CompilerError err = GenerateSatelliteAssemblies (resourcesByCulture, configuration.OutputDirectory, al, Path.GetFileNameWithoutExtension (configuration.OutputAssembly), monitor);
 			if (err != null) {
 				CompilerResults cr = new CompilerResults (new TempFileCollection ());
 				cr.Errors.Add (err);

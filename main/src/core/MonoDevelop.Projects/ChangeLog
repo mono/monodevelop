@@ -1,3 +1,11 @@
+2008-11-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Formats.MD1/MD1DotNetProjectHandler.cs: Use the
+	original assembly name as base name for satellite assemblies.
+
+	* MonoDevelop.Projects.Dom.Serialization/AssemblyCodeCompletionDatabase.cs:
+	Don't try to read an existing db when creating a new temporary one.
+
 2008-11-04  Mike Krüger  <mike@icsharpcode.net>
 
 	* MonoDevelop.Projects.Dom/IType.cs:
