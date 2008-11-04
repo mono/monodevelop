@@ -46,22 +46,25 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 {
 	internal class SlnFileFormat
 	{
-		public string GetValidFormatName (object obj, string fileName)
+		public string GetValidFormatName (object obj, string fileName, string productVersion)
 		{
 			return Path.ChangeExtension (fileName, ".sln");
 		}
 		
-		public bool CanReadFile (string file)
+		public bool CanReadFile (string file, string productVersion)
 		{
 			if (String.Compare (Path.GetExtension (file), ".sln", true) == 0) {
 				string tmp;
 				string version = GetSlnFileVersion (file, out tmp);
-				return version == "9.00" || version == "10.00";
+				if (version == "9.00")
+					return productVersion == MSBuildFileFormatVS05.Version;
+				else if (version == "10.00")
+					return productVersion == MSBuildFileFormatVS08.Version;
 			}
 			return false;
 		}
 		
-		public bool CanWriteFile (object obj)
+		public bool CanWriteFile (object obj, string productVersion)
 		{
 			return obj is Solution;
 		}
@@ -71,7 +74,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return null;
 		}
 		
-		public void WriteFile (string file, object obj, IProgressMonitor monitor)
+		public void WriteFile (string file, object obj, string productVersion, IProgressMonitor monitor)
 		{
 			Solution sol = (Solution) obj;
 
@@ -85,9 +88,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				}
 
 				if (tmpfilename == String.Empty) {
-					WriteFileInternal (file, sol, monitor);
+					WriteFileInternal (file, sol, productVersion, monitor);
 				} else {
-					WriteFileInternal (tmpfilename, sol, monitor);
+					WriteFileInternal (tmpfilename, sol, productVersion, monitor);
 					File.Delete (file);
 					File.Move (tmpfilename, file);
 				}
@@ -103,7 +106,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 
-		void WriteFileInternal (string file, Solution solution, IProgressMonitor monitor)
+		void WriteFileInternal (string file, Solution solution, string productVersion, IProgressMonitor monitor)
 		{
 			string baseDir = solution.BaseDirectory;
 			SolutionFolder c = solution.RootFolder;
@@ -118,6 +121,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					slnData = new SlnData ();
 					c.ExtendedProperties [typeof (SlnFileFormat)] = slnData;
 				}
+
+				slnData.UpdateVersion (productVersion);
+				
 
 				sw.WriteLine ();
 				//Write Header
@@ -451,7 +457,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		}
 
 		//Reader
-		public object ReadFile (string fileName, IProgressMonitor monitor)
+		public object ReadFile (string fileName, string productVersion, IProgressMonitor monitor)
 		{
 			if (fileName == null || monitor == null)
 				return null;

@@ -44,11 +44,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		List<string> unknownProjects;
 		Dictionary<string, SolutionEntityItem> projectsByGuidTable;
 
-		public SlnData ()
+		public void UpdateVersion (string productVersion)
 		{
-			// default, vs2005
-			versionString = "9.00";
-			headerComment = "# Visual Studio 2005";
+			if (productVersion == MSBuildFileFormatVS05.Version) {
+				versionString = "9.00";
+				headerComment = "# Visual Studio 2005";
+			} else {
+				versionString = "10.00";
+				headerComment = "# Visual Studio 2008";
+			}
 		}
 
 		// Eg. "# Visual C# Express 2008"

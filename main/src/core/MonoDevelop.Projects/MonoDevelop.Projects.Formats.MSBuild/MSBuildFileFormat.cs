@@ -50,8 +50,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public string GetValidFormatName (object obj, string fileName)
 		{
-			if (slnFileFormat.CanWriteFile (obj))
-				return slnFileFormat.GetValidFormatName (obj, fileName);
+			if (slnFileFormat.CanWriteFile (obj, productVersion))
+				return slnFileFormat.GetValidFormatName (obj, fileName, productVersion);
 			else {
 				ItemTypeNode node = MSBuildProjectService.FindHandlerForItem ((SolutionEntityItem)obj);
 				if (node != null)
@@ -63,7 +63,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public bool CanReadFile (string file, Type expectedType)
 		{
-			if (expectedType.IsAssignableFrom (typeof(Solution)) && slnFileFormat.CanReadFile (file))
+			if (expectedType.IsAssignableFrom (typeof(Solution)) && slnFileFormat.CanReadFile (file, productVersion))
 				return true;
 			else if (expectedType.IsAssignableFrom (typeof(SolutionEntityItem))) {
 				ItemTypeNode node = MSBuildProjectService.FindHandlerForFile (file);
@@ -74,7 +74,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public bool CanWriteFile (object obj)
 		{
-			if (slnFileFormat.CanWriteFile (obj))
+			if (slnFileFormat.CanWriteFile (obj, productVersion))
 				return true;
 			else if (obj is SolutionEntityItem) {
 				ItemTypeNode node = MSBuildProjectService.FindHandlerForItem ((SolutionEntityItem)obj);
@@ -85,8 +85,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public void WriteFile (string file, object obj, MonoDevelop.Core.IProgressMonitor monitor)
 		{
-			if (slnFileFormat.CanWriteFile (obj)) {
-				slnFileFormat.WriteFile (file, obj, monitor);
+			if (slnFileFormat.CanWriteFile (obj, productVersion)) {
+				slnFileFormat.WriteFile (file, obj, productVersion, monitor);
 			} else {
 				SolutionEntityItem item = (SolutionEntityItem) obj;
 				if (!(item.ItemHandler is MSBuildProjectHandler))
@@ -98,8 +98,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public object ReadFile (string file, Type expectedType, MonoDevelop.Core.IProgressMonitor monitor)
 		{
-			if (slnFileFormat.CanReadFile (file))
-				return slnFileFormat.ReadFile (file, monitor);
+			if (slnFileFormat.CanReadFile (file, productVersion))
+				return slnFileFormat.ReadFile (file, productVersion, monitor);
 			else
 				return MSBuildProjectService.LoadItem (monitor, file, null, null);
 		}
@@ -115,9 +115,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public void ConvertToFormat (object obj)
 		{
-			SolutionItem item = obj as SolutionItem;
-			if (obj == null || (item.GetItemHandler() is MSBuildHandler))
+			if (obj == null)
 				return;
+			SolutionItem item = obj as SolutionItem;
+			if (item != null && (item.GetItemHandler() is MSBuildHandler)) {
+				item.ExtendedProperties ["ProductVersion"] = productVersion;
+				return;
+			}
 			
 			item.ExtendedProperties ["ProductVersion"] = productVersion;
 			MSBuildProjectService.InitializeItemHandler (item);
