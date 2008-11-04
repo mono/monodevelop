@@ -76,6 +76,10 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
+		public virtual bool IsLibraryBasedProjectType {
+			get { return false; }
+		}
+		
 		public ProjectReferenceCollection References {
 			get {
 				return projectReferences;
@@ -98,9 +102,13 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		public virtual CompileTarget CompileTarget {
+		public CompileTarget CompileTarget {
 			get { return compileTarget; }
-			set { compileTarget = value; }
+			set {
+				if (IsLibraryBasedProjectType && value != CompileTarget.Library)
+					throw new InvalidOperationException ("CompileTarget cannot be changed on library-based project type.");
+				compileTarget = value;
+			}
 		}
 
 		public string DefaultNamespace {
@@ -184,6 +192,8 @@ namespace MonoDevelop.Projects
 		{
 			projectReferences = new ProjectReferenceCollection ();
 			projectReferences.SetProject (this);
+			if (IsLibraryBasedProjectType)
+				CompileTarget = CompileTarget.Library;
 		}
 		
 		public DotNetProject (string languageName): this ()
@@ -225,6 +235,8 @@ namespace MonoDevelop.Projects
 			
 			if (projectOptions != null && projectOptions.Attributes["Target"] != null) {
 				compileTarget = (CompileTarget) Enum.Parse(typeof(CompileTarget), projectOptions.Attributes["Target"].InnerText);
+			} else if (IsLibraryBasedProjectType) {
+				CompileTarget = CompileTarget.Library;
 			}
 			
 			foreach (DotNetProjectConfiguration parameter in Configurations) {

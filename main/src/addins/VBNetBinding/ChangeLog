@@ -1,3 +1,9 @@
+2008-11-04  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Gui/CodeGenerationPanelWidget.cs: Disable CompileTarget and MainClass
+	setting when project.IsLibraryBasedProjectType. Prevents messing up
+	ASP.NET and Moonlight projects.
+
 2008-10-28  Mike Krüger  <mkrueger@novell.com>
 
 	* VBNetBinding.addin.xml: Removed vb ambience.

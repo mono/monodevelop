@@ -1,3 +1,8 @@
+2008-11-04  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Moonlight/MoonlightProject.cs: Override new
+	IsLibraryBasedProjectType property, consolidating code in base class.
+
 2008-11-02  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am:

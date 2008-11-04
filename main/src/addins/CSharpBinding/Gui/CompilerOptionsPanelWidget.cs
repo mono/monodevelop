@@ -39,8 +39,6 @@ using MonoDevelop.Projects.Gui.Dialogs;
 namespace CSharpBinding
 {
 	
-	[System.ComponentModel.Category("CSharpBinding")]
-	[System.ComponentModel.ToolboxItem(true)]
 	public partial class CompilerOptionsPanelWidget : Gtk.Bin
 	{
 		DotNetProject project;
@@ -66,12 +64,18 @@ namespace CSharpBinding
 			compileTargetCombo.Active = (int) configuration.CompileTarget;
 			compileTargetCombo.Changed += new EventHandler (OnTargetChanged);
 			
-			classListStore = new ListStore (typeof(string));
-			mainClassEntry.Model = classListStore;
-			mainClassEntry.TextColumn = 0;
-			((Entry)mainClassEntry.Child).Text = compilerParameters.MainClass ?? string.Empty;
+			if (project.IsLibraryBasedProjectType) {
+				//fixme: should we totally hide these?
+				compileTargetCombo.Sensitive = false;
+				mainClassEntry.Sensitive = false;
+			} else {
+				classListStore = new ListStore (typeof(string));
+				mainClassEntry.Model = classListStore;
+				mainClassEntry.TextColumn = 0;
+				((Entry)mainClassEntry.Child).Text = compilerParameters.MainClass ?? string.Empty;
 			
-			UpdateTarget ();
+				UpdateTarget ();
+			}
 			
 			// Load the codepage. If it matches any of the supported encodigs, use the encoding name 			
 			string foundEncoding = null;

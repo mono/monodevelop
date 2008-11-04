@@ -71,6 +71,10 @@ namespace MonoDevelop.AspNet
 			get  { return "AspNetApp"; }
 		}
 		
+		public override bool IsLibraryBasedProjectType {
+			get { return true; }
+		}
+		
 		public XspParameters XspParameters {
 			get { return xspParameters; }
 		}
@@ -114,33 +118,22 @@ namespace MonoDevelop.AspNet
 			}
 		}
 		
-		public override CompileTarget CompileTarget {
-			get { return CompileTarget.Library; }
-			set {
-				if (value == CompileTarget.Library)
-					base.CompileTarget = value;
-			}
-		}
-		
 		#endregion
 		
 		#region constructors
 		
 		public AspNetAppProject ()
 		{
-			Init ();
 		}
 		
 		public AspNetAppProject (string languageName)
 			: base (languageName)
 		{
-			Init ();
 		}
 		
 		public AspNetAppProject (string languageName, ProjectCreateInformation info, XmlElement projectOptions)
 			: base (languageName, info, projectOptions)
 		{
-			Init ();
 		}	
 		
 		public override SolutionItemConfiguration CreateConfiguration (string name)
@@ -150,11 +143,6 @@ namespace MonoDevelop.AspNet
 			conf.Name = name;
 			conf.CompilationParameters = LanguageBinding.CreateCompilationParameters (null);			
 			return conf;
-		}
-		
-		void Init ()
-		{
-			base.CompileTarget = CompileTarget.Library;
 		}
 		
 		#endregion

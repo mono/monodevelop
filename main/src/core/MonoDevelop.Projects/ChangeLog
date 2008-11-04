@@ -1,3 +1,10 @@
+2008-11-04  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects/DotNetProject.cs: New IsLibraryBasedProjectType
+	property consolidates code in base class and allows language
+	bindings' GUIs to disable compilation options that shouldn't be
+	altered for ASP.NET and Moonlight projects.
+
 2008-11-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Formats.MSBuild/SlnData.cs:

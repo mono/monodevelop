@@ -86,6 +86,12 @@ namespace MonoDevelop.VBNetBinding
 			warningsAsErrorsCheckButton.Active = !config.RunWithWarnings;
 			warningLevelSpinButton.Value = parameters.WarningLevel;
 			additionalArgsEntry.Text = parameters.AdditionalParameters;
+			
+			if (config.ParentItem.IsLibraryBasedProjectType) {
+				//fixme: should we totally hide these?
+				compileTargetCombo.Sensitive = false;
+				mainClassEntry.Sensitive = false;
+			}
 		}
 		
 		public void StorePanelContents ()

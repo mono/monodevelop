@@ -102,7 +102,6 @@ namespace MonoDevelop.Moonlight
 		{
 			//set parameters to ones required for Moonlight build
 			ClrVersion = MonoDevelop.Core.ClrVersion.Clr_2_1;
-			CompileTarget = CompileTarget.Library;
 		}
 		
 		public override SolutionItemConfiguration CreateConfiguration (string name)
@@ -120,6 +119,10 @@ namespace MonoDevelop.Moonlight
 		
 		public override string ProjectType {
 			get { return "Moonlight"; }
+		}
+		
+		public override bool IsLibraryBasedProjectType {
+			get { return true; }
 		}
 		
 		protected override void DoExecute (IProgressMonitor monitor, ExecutionContext context, string configuration)
