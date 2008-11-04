@@ -175,10 +175,8 @@ namespace CSharpBinding
 		void UpdateTarget ()
 		{
 			if ((CompileTarget) compileTargetCombo.Active == CompileTarget.Library) {
-				mainClassEntry.Sensitive = false;
 				iconEntry.Sensitive = false;
 			} else {
-				mainClassEntry.Sensitive = true;
 				iconEntry.Sensitive = true;
 				if (!classListFilled)
 					FillClasses ();

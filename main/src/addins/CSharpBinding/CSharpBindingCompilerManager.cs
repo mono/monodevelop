@@ -162,12 +162,19 @@ namespace CSharpBinding
 			if (compilerparameters.DefineSymbols.Length > 0) {
 				writer.WriteLine("/define:" + '"' + compilerparameters.DefineSymbols + '"');
 			}
+
+			CompileTarget ctarget = configuration.CompileTarget;
 			
 			if (compilerparameters.MainClass != null && compilerparameters.MainClass.Length > 0) {
 				writer.WriteLine("/main:" + compilerparameters.MainClass);
+				// mcs does not allow providing a Main class when compiling a dll
+				// As a workaround, we compile as WinExe (although the output will still
+				// have a .dll extension).
+				if (ctarget == CompileTarget.Library)
+					ctarget = CompileTarget.WinExe;
 			}
 			
-			switch (configuration.CompileTarget) {
+			switch (ctarget) {
 				case CompileTarget.Exe:
 					writer.WriteLine("/t:exe");
 					break;
