@@ -478,7 +478,7 @@ namespace MonoDevelop.Ide.Gui
 				System.Threading.ThreadPool.QueueUserWorkItem (delegate {
 					// Don't access Document properties from the thread
 					this.parsedDocument = ProjectDomService.Parse (curentParseProject, currentParseFile, IdeApp.Services.PlatformService.GetMimeTypeForUri (currentParseFile), currentParseText);
-					if (!this.parsedDocument.HasErrors)
+					if (this.parsedDocument != null && !this.parsedDocument.HasErrors)
 						this.lastErrorFreeParsedDocument = parsedDocument;
 				});
 				return false;
