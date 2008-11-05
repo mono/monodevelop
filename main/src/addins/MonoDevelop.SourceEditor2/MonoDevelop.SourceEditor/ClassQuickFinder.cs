@@ -431,7 +431,7 @@ namespace MonoDevelop.SourceEditor
 			if (classStore.GetIterFirst (out iter)) {
 				do {
 					IType c = (IType)classStore.GetValue (iter, 2);
-					if (c.BodyRegion != null && c.BodyRegion.Start.Line <= line && line <= c.BodyRegion.End.Line)	{
+					if (c.BodyRegion.Start.Line <= line && line <= c.BodyRegion.End.Line)	{
 						if (result == null || result.BodyRegion.Start.Line <= c.BodyRegion.Start.Line) {
 							result = c;
 							foundIndex = i;
@@ -469,14 +469,14 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (mem is IMethod) {
 				IMethod method = (IMethod) mem;
-				return (method.BodyRegion != null && method.BodyRegion.Start.Line <= line && line <= method.BodyRegion.End.Line || 
+				return (method.BodyRegion.Start.Line <= line && line <= method.BodyRegion.End.Line || 
 				       (method.BodyRegion.Start.Line == line && 0 == method.BodyRegion.End.Line));
 			} else if (mem is IProperty) {
 				IProperty property = (IProperty) mem;
-				return (property.BodyRegion != null && property.BodyRegion.Start.Line <= line && line <= property.BodyRegion.End.Line);
+				return (property.BodyRegion.Start.Line <= line && line <= property.BodyRegion.End.Line);
 			}
 			
-			return (mem.Location != null && mem.Location.Line <= line && line <= mem.Location.Line);
+			return (mem.Location.Line <= line && line <= mem.Location.Line);
 		}
 		
 //		public void GetLineColumnFromPosition (int position, out int line, out int column)

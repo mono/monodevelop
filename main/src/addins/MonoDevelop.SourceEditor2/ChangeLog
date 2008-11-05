@@ -1,3 +1,10 @@
+2008-11-05  Mike Krüger  <mike@icsharpcode.net>
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs:
+	* MonoDevelop.SourceEditor/ClassQuickFinder.cs:
+	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: Fixed some
+	warnings/cosmetic changes.
+
 2008-11-04  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Implement

@@ -275,16 +275,16 @@ namespace MonoDevelop.SourceEditor
 					}
 					break;
 				case '[':
-					Document.Insert (Caret.Offset, new StringBuilder ("]"));
+					Document.Insert (Caret.Offset, "]");
 					break;
 				case '(':
-					Document.Insert (Caret.Offset, new StringBuilder (")"));
+					Document.Insert (Caret.Offset, ")");
 					break;
 				case '\'':
-					Document.Insert (Caret.Offset, new StringBuilder ("'"));
+					Document.Insert (Caret.Offset, "'");
 					break;
 				case '"':
-					Document.Insert (Caret.Offset, new StringBuilder ("\""));
+					Document.Insert (Caret.Offset, "\"");
 					break;
 				}
 			}
@@ -497,7 +497,7 @@ namespace MonoDevelop.SourceEditor
 //			if (endLine > beginLine) {
 //				IndentLines (beginLine+1, endLine, leadingWhiteSpace);
 //			}
-			Document.Insert (offset, builder);
+			Document.Insert (offset, builder.ToString ());
 			Caret.Offset = finalCaretOffset;
 		}		
 #endregion

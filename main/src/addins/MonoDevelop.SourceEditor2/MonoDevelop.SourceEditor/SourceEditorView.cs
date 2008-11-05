@@ -351,7 +351,7 @@ namespace MonoDevelop.SourceEditor
 
 			if (a.Value != null) {
 				i=0;
-				StringBuilder sb = a.Value;
+				string sb = a.Value;
 				while (i < sb.Length) {
 					if (sb [i] == '\n')
 						lines++;
@@ -544,7 +544,7 @@ namespace MonoDevelop.SourceEditor
 			}
 			set {
 				TextEditor.DeleteSelectedText ();
-				Document.Insert (TextEditor.Caret.Offset, new StringBuilder (value));
+				Document.Insert (TextEditor.Caret.Offset, value);
 				TextEditor.SelectionRange = new Segment (TextEditor.Caret.Offset, value.Length);
 				TextEditor.Caret.Offset += value.Length; 
 			}
@@ -653,7 +653,7 @@ namespace MonoDevelop.SourceEditor
 		#region IEditableTextFile
 		public void InsertText (int position, string text)
 		{
-			this.widget.TextEditor.Document.Insert (position, new StringBuilder (text));
+			this.widget.TextEditor.Document.Insert (position, text);
 			if (text != null && this.widget.TextEditor.Caret.Offset >= position) 
 				this.widget.TextEditor.Caret.Offset += text.Length;
 		}
@@ -825,7 +825,7 @@ namespace MonoDevelop.SourceEditor
 			int length = String.IsNullOrEmpty (partial_word) ? 0 : partial_word.Length;
 			int offset = this.widget.TextEditor.Caret.Offset - length;
 			
-			this.widget.TextEditor.Document.Replace (offset, length, new StringBuilder (complete_word));
+			this.widget.TextEditor.Document.Replace (offset, length, complete_word);
 			this.widget.TextEditor.Caret.Offset = offset + idx;
 		}
 		
@@ -941,7 +941,7 @@ namespace MonoDevelop.SourceEditor
 			}
 			public void Replace (int length, string pattern)
 			{
-				view.Document.Replace (offset, length, new StringBuilder (pattern));
+				view.Document.Replace (offset, length, pattern);
 			}
 			
 			[FreeDispatch]
@@ -1141,7 +1141,7 @@ namespace MonoDevelop.SourceEditor
 		#endregion
 		
 		#region IFoldable
-		void ToggleFoldings (ICollection<FoldSegment> segments)
+		void ToggleFoldings (IEnumerable<FoldSegment> segments)
 		{
 			bool doFold = true;
 			foreach (FoldSegment segment in segments) {
