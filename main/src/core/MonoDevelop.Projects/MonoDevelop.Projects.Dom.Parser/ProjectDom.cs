@@ -255,10 +255,11 @@ namespace MonoDevelop.Projects.Dom.Parser
 		public virtual List<IMember> GetNamespaceContents (IEnumerable<string> subNamespaces, bool includeReferences, bool caseSensitive)
 		{
 			List<IMember> result = new List<IMember> ();
-			GetNamespaceContentsInternal (result, subNamespaces, caseSensitive);
+			HashSet<string> uniqueNamespaces = new HashSet<string> (subNamespaces);
+			GetNamespaceContentsInternal (result, uniqueNamespaces, caseSensitive);
 			if (includeReferences) {
 				foreach (ProjectDom reference in references) {
-					reference.GetNamespaceContentsInternal (result, subNamespaces, caseSensitive);
+					reference.GetNamespaceContentsInternal (result, uniqueNamespaces, caseSensitive);
 				}
 			}
 			return result;

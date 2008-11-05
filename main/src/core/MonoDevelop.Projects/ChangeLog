@@ -1,5 +1,10 @@
 2008-11-05  Mike Krüger  <mike@icsharpcode.net>
 
+	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: optimized
+	GetNamespaceContents
+
+2008-11-05  Mike Krüger  <mike@icsharpcode.net>
+
 	* MonoDevelop.Projects.Dom/IMethod.cs:
 	* MonoDevelop.Projects.Dom/DomMethod.cs:
 	* MonoDevelop.Projects.Dom/ResolveResult.cs: Fixed bug 'Bug 441671 -
