@@ -453,9 +453,10 @@ namespace MonoDevelop.CSharpBinding
 							bool isStatic = result.StaticResolve;
 							bool includeProtected = true;
 							for (int i = 0; i < member.Count; i++) {
-								if (member[i] is IMethod && ((IMethod)member[i]).IsExtension && member[i].IsAccessibleFrom (resolver.Dom, type, resolver.CallingMember, true))
+								IMethod method = member[i] as IMethod;
+								if (method != null && !method.IsFinalizer && method.IsExtension && method.IsAccessibleFrom (resolver.Dom, type, resolver.CallingMember, true))
 									continue;
-								if ((member[i].IsStatic ^ isStatic) || !member[i].IsAccessibleFrom (resolver.Dom, type, resolver.CallingMember, includeProtected)) {
+								if ((member[i].IsStatic ^ isStatic) || !member[i].IsAccessibleFrom (resolver.Dom, type, resolver.CallingMember, includeProtected) || (method != null && method.IsFinalizer)) {
 									member.RemoveAt (i);
 									i--;
 								}

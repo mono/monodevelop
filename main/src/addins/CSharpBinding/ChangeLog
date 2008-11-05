@@ -1,3 +1,9 @@
+2008-11-05  Mike Krüger  <mike@icsharpcode.net>
+
+	* Gui/ResolveVisitor.cs:
+	* Parser/NRefactoryParser.cs: fixed bug 'Bug 441671 - Finalisers show up
+	in code completion'.
+
 2008-11-04  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Gui/CompilerOptionsPanelWidget.cs: Disable CompileTarget and MainClass

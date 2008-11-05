@@ -475,10 +475,12 @@ namespace MonoDevelop.CSharpBinding
 			{
 				DomMethod destructor = new DomMethod ();
 				destructor.Name      = ".dtor";
+				
 				destructor.Location  = ConvertLocation (destructorDeclaration.StartLocation);
 				destructor.BodyRegion = ConvertRegion (destructorDeclaration.EndLocation, destructorDeclaration.Body != null ? destructorDeclaration.Body.EndLocation : new ICSharpCode.NRefactory.Location (-1, -1));
 				destructor.Modifiers  = ConvertModifiers (destructorDeclaration.Modifier);
 				AddAttributes (destructor, destructorDeclaration.Attributes);
+				destructor.MethodModifier |= MethodModifier.IsFinalizer;
 				
 				destructor.DeclaringType = typeStack.Peek ();
 				typeStack.Peek ().Add (destructor);
