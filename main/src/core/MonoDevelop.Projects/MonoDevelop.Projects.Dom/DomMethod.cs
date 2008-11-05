@@ -64,7 +64,13 @@ namespace MonoDevelop.Projects.Dom
 				return (methodModifier & MethodModifier.IsExtension) == MethodModifier.IsExtension;
 			}
 		}
-
+		
+		public bool IsFinalizer {
+			get {
+				return (methodModifier & MethodModifier.IsFinalizer) == MethodModifier.IsFinalizer;
+			}
+		}
+		
 		public virtual ReadOnlyCollection<IParameter> Parameters {
 			get {
 				return parameters != null ? parameters.AsReadOnly () : emptyParameters;

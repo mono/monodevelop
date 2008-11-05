@@ -37,7 +37,8 @@ namespace MonoDevelop.Projects.Dom
 	public enum MethodModifier {	
 		None          = 0,
 		IsConstructor = 1,
-		IsExtension   = 2
+		IsExtension   = 2,
+		IsFinalizer   = 4
 	}
 	
 	public interface IMethod : IMember
@@ -51,6 +52,10 @@ namespace MonoDevelop.Projects.Dom
 		}
 
 		bool IsExtension {
+			get;
+		}
+		
+		bool IsFinalizer {
 			get;
 		}
 		

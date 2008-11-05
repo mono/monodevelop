@@ -264,7 +264,7 @@ namespace MonoDevelop.Projects.Dom
 						continue;
 					if (member.IsProtected && !includeProtected)
 						continue;
-					if (member is IMethod && ((IMethod)member).IsConstructor)
+					if (member is IMethod && (((IMethod)member).IsConstructor || ((IMethod)member).IsFinalizer))
 						continue;
 					if (!showStatic && member is IType)
 						continue;
