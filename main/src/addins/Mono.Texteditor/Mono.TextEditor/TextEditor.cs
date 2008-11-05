@@ -886,8 +886,8 @@ namespace Mono.TextEditor
 				this.textEditorData.VAdjustment.Value = caretPosition - this.textEditorData.VAdjustment.PageSize + this.LineHeight + yMargin;
 			}
 			int caretX = textViewMargin.ColumnToVisualX (Document.GetLine (Caret.Line), Caret.Column);
-			if (this.textEditorData.HAdjustment.Value > caretX) {
-				this.textEditorData.HAdjustment.Value = caretX ;
+			if (this.textEditorData.HAdjustment.Value > caretX - this.TextViewMargin.XOffset) {
+				this.textEditorData.HAdjustment.Value = caretX - this.TextViewMargin.XOffset;
 			} else if (this.textEditorData.HAdjustment.Value + this.textEditorData.HAdjustment.PageSize - 60 < caretX + xMargin) {
 				this.textEditorData.HAdjustment.Value = caretX - this.textEditorData.HAdjustment.PageSize + 60 + xMargin;
 			}
