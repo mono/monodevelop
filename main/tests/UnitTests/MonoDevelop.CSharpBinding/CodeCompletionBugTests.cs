@@ -833,6 +833,41 @@ public class Test
 			Assert.IsNotNull (provider.Find ("Test2"), "Method 'Test2' not found.");
 			Assert.IsNull (provider.Find ("GetObject"), "Method 'GetObject' found, but shouldn't.");
 		}
+
+		/// <summary>
+		/// Bug 441671 - Finalisers show up in code completion
+		/// </summary>
+		[Test()]
+		public void TestBug441671 ()
+		{
+			CompletionDataList provider = CreateProvider (
+@"class TestClass
+{
+	public TestClass (int i)
+	{
+	}
+	public void TestMethod ()
+	{
+	}
+	public ~TestClass ()
+	{
+	}
+}
+
+class AClass
+{
+	void AMethod ()
+	{
+		TestClass c;
+		c.$
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.AreEqual (1, provider.Count);
+			Assert.IsNull (provider.Find (".dtor"), "destructor found - but shouldn't.");
+			Assert.IsNotNull (provider.Find ("TestMethod"), "method 'TestMethod' not found.");
+		}
 		
 		[TestFixtureSetUp] 
 		public void SetUp()

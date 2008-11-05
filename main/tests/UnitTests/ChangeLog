@@ -1,3 +1,8 @@
+2008-11-05  Mike Krüger  <mike@icsharpcode.net>
+
+	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: Added test for
+	'Bug 441671 - Finalisers show up in code completion'.
+
 2008-11-03  Mike Krüger  <mike@icsharpcode.net>
 
 	* MonoDevelop.CSharpBinding/CodeCompletionCSharpTests.cs: added some
