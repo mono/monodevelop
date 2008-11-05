@@ -1,5 +1,9 @@
 2008-11-05  Mike Krüger  <mike@icsharpcode.net>
 
+	* Mono.TextEditor.Tests/LineSplitterTests.cs: some cosmetic changes.
+
+2008-11-05  Mike Krüger  <mike@icsharpcode.net>
+
 	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: Added test for
 	'Bug 441671 - Finalisers show up in code completion'.
 

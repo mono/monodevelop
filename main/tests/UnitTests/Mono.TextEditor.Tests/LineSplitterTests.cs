@@ -41,7 +41,7 @@ namespace Mono.TextEditor.Tests
 			IBuffer buffer = new Mono.TextEditor.GapBuffer ();
 			LineSplitter splitter = new Mono.TextEditor.LineSplitter (buffer);
 			buffer.Text = "1\n2\n3\n";
-			splitter.TextReplaced (null, new ReplaceEventArgs (0, 0, new StringBuilder (buffer.Text)));
+			splitter.TextReplaced (null, new ReplaceEventArgs (0, 0, buffer.Text));
 			Assert.AreEqual (4, splitter.LineCount);
 			for (int i = 0; i < 3; i++) {
 				Assert.AreEqual (i * 2, splitter.Get (i).Offset);
@@ -61,10 +61,10 @@ namespace Mono.TextEditor.Tests
 			IBuffer buffer = new Mono.TextEditor.GapBuffer ();
 			LineSplitter splitter = new Mono.TextEditor.LineSplitter (buffer);
 			buffer.Text = "1\n2\n3\n";
-			splitter.TextReplaced (null, new ReplaceEventArgs (0, 0, new StringBuilder (buffer.Text)));
+			splitter.TextReplaced (null, new ReplaceEventArgs (0, 0, buffer.Text));
 			
 			LineSegment lastLine = splitter.Get (2);
-			splitter.TextReplaced (null, new ReplaceEventArgs (lastLine.Offset, lastLine.Length, new StringBuilder ("")));
+			splitter.TextReplaced (null, new ReplaceEventArgs (lastLine.Offset, lastLine.Length, ""));
 			
 			Assert.AreEqual (3, splitter.LineCount);
 			
