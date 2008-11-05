@@ -221,7 +221,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				resolveResult = resolver.Resolve (result, new DomLocation (Editor.CursorLine, Editor.CursorColumn - 1));
 				
 				if (resolveResult != null && resolver.ResolvedExpression is ICSharpCode.NRefactory.Ast.TypeOfExpression) {
-					CompletionDataList completionList = new CompletionDataList ();
+					CompletionDataList completionList = new ProjectDomCompletionDataList ();
 					List<string> namespaceList = new List<string> ();
 					namespaceList.Add ("");
 					if (Document.CompilationUnit != null && Document.CompilationUnit.Usings != null) {
@@ -317,7 +317,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 					if (resolveResult != null) {
 						IType resolvedType = dom.GetType (resolveResult.ResolvedType);
 						if (resolvedType != null && resolvedType.ClassType == ClassType.Enum) {
-							CompletionDataList completionList = new CompletionDataList ();
+							CompletionDataList completionList = new ProjectDomCompletionDataList ();
 							CompletionDataCollector cdc = new CompletionDataCollector (Editor, dom, Document.CompilationUnit, location);
 							cdc.AddCompletionData (completionList, resolvedType);
 							
@@ -344,7 +344,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 						IType delegateType = dom.SearchType (new SearchTypeRequest (resolver.Unit, evt.ReturnType));
 						if (delegateType == null || delegateType.ClassType != ClassType.Delegate)
 							return null;
-						CompletionDataList completionList = new CompletionDataList ();
+						CompletionDataList completionList = new ProjectDomCompletionDataList ();
 						CompletionDataCollector cdc = new CompletionDataCollector (Editor, dom, Document.CompilationUnit, location);
 						IType declaringType = resolver.CallingType;
 						if (Document.LastErrorFreeParsedDocument != null) {
@@ -503,7 +503,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			case ":":
 				if (result.ExpressionContext == ExpressionContext.InheritableType) {
 					IType cls = NRefactoryResolver.GetTypeAtCursor (Document.CompilationUnit, Document.FileName, new DomLocation (Editor.CursorLine, Editor.CursorColumn));
-					CompletionDataList completionList = new CompletionDataList ();
+					CompletionDataList completionList = new ProjectDomCompletionDataList ();
 					List<string> namespaceList = new List<string> ();
 					namespaceList.Add ("");
 					if (Document.CompilationUnit != null && Document.CompilationUnit.Usings != null) {
@@ -548,7 +548,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				                                                                                Document.FileName);
 				ResolveResult resolveResult = resolver.Resolve (expressionResult, new DomLocation (Editor.CursorLine, Editor.CursorColumn));
 				if (resolveResult != null && resolveResult.ResolvedType != null) {
-					CompletionDataList completionList = new CompletionDataList ();
+					CompletionDataList completionList = new ProjectDomCompletionDataList ();
 					CompletionDataCollector col = new CompletionDataCollector (Editor, dom, Document.CompilationUnit, location);
 					foreach (IType type in dom.GetSubclasses (dom.SearchType (new SearchTypeRequest (resolver.Unit, resolveResult.ResolvedType)))) {
 						col.AddCompletionData (completionList, type);
@@ -814,7 +814,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 		{
 			if (resolveResult == null || expressionResult == null)
 				return null;
-			CompletionDataList result = new CompletionDataList ();
+			CompletionDataList result = new ProjectDomCompletionDataList ();
 			ProjectDom dom = ProjectDomService.GetProjectDom (Document.Project);
 			if (dom == null)
 				dom = ProjectDomService.GetFileDom (Document.FileName);
@@ -909,7 +909,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 		
 		CompletionDataList CreateTypeCompletionData (ExpressionContext context, IReturnType returnType, IReturnType returnTypeUnresolved)
 		{
-			CompletionDataList result = new CompletionDataList ();
+			CompletionDataList result = new ProjectDomCompletionDataList ();
 			
 			
 			ExpressionContext.TypeExpressionContext tce = context as ExpressionContext.TypeExpressionContext;
@@ -958,7 +958,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 		
 		CompletionDataList GetOverrideCompletionData (IType type, string modifiers)
 		{
-			CompletionDataList result = new CompletionDataList ();
+			CompletionDataList result = new ProjectDomCompletionDataList ();
 			Dictionary<string, bool> alreadyInserted = new Dictionary<string, bool> ();
 			bool addedVirtuals = false;
 			foreach (IReturnType baseType in type.BaseTypes) {
@@ -995,7 +995,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			
 			resolver.SetupResolver (new DomLocation (Editor.CursorLine, Editor.CursorColumn));
 			//System.Console.WriteLine(expressionResult.ExpressionContext );
-			CompletionDataList result = new CompletionDataList ();
+			CompletionDataList result = new ProjectDomCompletionDataList ();
 			if (expressionResult == null) {
 				AddPrimitiveTypes (result);
 				resolver.AddAccessibleCodeCompletionData (ExpressionContext.Global, result);
@@ -1075,7 +1075,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			SwitchFinder switchFinder = new SwitchFinder (location);
 			if (resolver.MemberCompilationUnit != null)
 				switchFinder.VisitCompilationUnit (resolver.MemberCompilationUnit, null);
-			CompletionDataList result = new CompletionDataList ();
+			CompletionDataList result = new ProjectDomCompletionDataList ();
 			if (switchFinder.SwitchStatement == null)
 				return result;
 			ResolveResult resolveResult = resolver.ResolveExpression (switchFinder.SwitchStatement.SwitchExpression, location);
@@ -1120,7 +1120,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				return null;
 
 			Dictionary<string, string> symbols = new Dictionary<string, string> ();
-			CompletionDataList cp = new CompletionDataList ();
+			CompletionDataList cp = new ProjectDomCompletionDataList ();
 			foreach (DotNetProjectConfiguration conf in Document.Project.Configurations) {
 				CSharpCompilerParameters cparams = conf.CompilationParameters as CSharpCompilerParameters;
 				if (cparams != null) {

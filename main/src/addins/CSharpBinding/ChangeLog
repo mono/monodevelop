@@ -1,3 +1,9 @@
+2008-11-05  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Gui/CSharpTextEditorCompletion.cs: Return mutable completion lists
+	when appropriate. Fixes Bug 440641 - "Parsing files" message not
+	shown anymore in the completion window.
+
 2008-11-05  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* CSharpBinding.addin.xml: Bump MD version.

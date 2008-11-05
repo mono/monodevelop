@@ -41,6 +41,7 @@ FILES =  \
 	MonoDevelop.Projects.Gui.Completion/IParameterDataProvider.cs \
 	MonoDevelop.Projects.Gui.Completion/ListWindow.cs \
 	MonoDevelop.Projects.Gui.Completion/MethodParameterDataProvider.cs \
+	MonoDevelop.Projects.Gui.Completion/MutableCompletionDataList.cs \
 	MonoDevelop.Projects.Gui.Completion/ParameterInformationWindow.cs \
 	MonoDevelop.Projects.Gui.Completion/ParameterInformationWindowManager.cs \
 	MonoDevelop.Projects.Gui.Completion/TextUtilities.cs \

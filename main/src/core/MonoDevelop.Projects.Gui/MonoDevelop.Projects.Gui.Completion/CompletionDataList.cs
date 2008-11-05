@@ -39,14 +39,6 @@ namespace MonoDevelop.Projects.Gui.Completion
 		void Sort (Comparison<ICompletionData> comparison);
 	}
 	
-	public interface IMutableCompletionDataList : ICompletionDataList, IDisposable
-	{
-		ICompletionDataList GetSnapshot ();
-		bool IsChanging { get; }
-		event EventHandler Changing;
-		event EventHandler Changed;
-	}
-	
 	public class CompletionDataList : List<ICompletionData>, ICompletionDataList
 	{
 		public bool AutoCompleteUniqueMatch { get; set; }

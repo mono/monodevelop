@@ -81,7 +81,6 @@ namespace MonoDevelop.Projects.Gui.Completion
 		ICompletionDataList completionDataList;
 		IMutableCompletionDataList mutableList;
 		Widget parsingMessage;
-		char firstChar;
 		CompletionDelegate closedDelegate;
 		int initialWordLength;
 		
@@ -140,6 +139,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			if (mutableList != null) {
 				mutableList.Changing -= OnCompletionDataChanging;
 				mutableList.Changed -= OnCompletionDataChanged;
+				HideFooter ();
 			}
 			
 			//initialWordLength = 0;
@@ -157,7 +157,6 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 			
 			this.completionWidget = completionWidget;
-			this.firstChar = firstChar;
 
 			if (FillList (true)) {
 				// makes control-space in midle of words to work
