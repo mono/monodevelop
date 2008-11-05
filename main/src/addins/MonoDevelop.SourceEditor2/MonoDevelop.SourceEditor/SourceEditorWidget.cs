@@ -165,6 +165,7 @@ namespace MonoDevelop.SourceEditor
 			this.SetSizeRequest (32, 32);
 			this.lastActiveEditor = this.textEditor = new MonoDevelop.SourceEditor.ExtensibleTextEditor (view);
 			mainsw = new ScrolledWindow ();
+			mainsw.ShadowType = ShadowType.In;
 			mainsw.Child = this.TextEditor;
 			this.PackStart (mainsw, true, true, 0);
 			this.mainsw.ButtonPressEvent += PrepareEvent;
@@ -506,6 +507,7 @@ namespace MonoDevelop.SourceEditor
 				}
 			};
 			secondsw = new ScrolledWindow ();
+			secondsw.ShadowType = ShadowType.In;
 			secondsw.ButtonPressEvent += PrepareEvent;
 			this.splittedTextEditor = new MonoDevelop.SourceEditor.ExtensibleTextEditor (view, textEditor.Document);
 			this.splittedTextEditor.Extension = textEditor.Extension;
@@ -627,10 +629,6 @@ namespace MonoDevelop.SourceEditor
 			                                           this.TextEditor.Caret.IsInInsertMode);
 		}
 		
-		#endregion
-		
-		#region Class/Member combo handling
-
 		#endregion
 		
 		#region Search and Replace

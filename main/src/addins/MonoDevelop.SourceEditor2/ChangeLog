@@ -1,3 +1,9 @@
+2008-11-05  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Add border around text
+	editor to give it definition when UI and colours schemes are both
+	light or dark.
+
 2008-11-05  Mike Krüger  <mike@icsharpcode.net>
 
 	* MonoDevelop.SourceEditor/SourceEditorView.cs:
