@@ -1,3 +1,7 @@
+2008-11-05  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* configure.in: Bump MD version.
+
 2008-10-13  Michael Hutchinson  <mhutchinson@novell.com> 
 
 	* configure.in: Bump Mono version requirement to 2.0.

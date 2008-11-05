@@ -6,15 +6,15 @@
        url       = ""
        description = "Support for VS2005 or MSBuild based projects and importer for VS2003 projects"
        category    = "Project Import and Export"
-       version   = "1.9.0">
+       version   = "1.9.1">
 
 	<Dependencies>
-	    <Addin id="Core" version="1.9.0"/>
-	    <Addin id="Core.Gui" version="1.9.0"/>
-	    <Addin id="Projects" version="1.9.0"/>
-		<Addin id="Ide" version="1.9.0"/>
-		<Addin id="CSharpBinding" version="1.9.0"/>
-		<Addin id="VBBinding" version="1.9.0"/>
+	    <Addin id="Core" version="1.9.1"/>
+	    <Addin id="Core.Gui" version="1.9.1"/>
+	    <Addin id="Projects" version="1.9.1"/>
+		<Addin id="Ide" version="1.9.1"/>
+		<Addin id="CSharpBinding" version="1.9.1"/>
+		<Addin id="VBBinding" version="1.9.1"/>
 	</Dependencies>
 	
 	<ExtensionPoint path = "/MonoDevelop/Prj2Make/MSBuildProjectExtension">

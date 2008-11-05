@@ -1,3 +1,7 @@
+2008-11-05  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Gui.addin.xml: Bump MD version.
+
 2008-10-22  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Gui/MessageService.cs: Use Ok button for warning

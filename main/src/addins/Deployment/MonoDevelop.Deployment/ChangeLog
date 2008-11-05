@@ -1,3 +1,7 @@
+2008-11-05  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Deployment.addin.xml: Bump MD version.
+
 2008-10-03  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Deployment/MD1Serializer.cs: Another shot at BuildAction

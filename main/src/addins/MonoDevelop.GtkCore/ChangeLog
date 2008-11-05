@@ -1,3 +1,7 @@
+2008-11-05  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.GtkCore.addin.xml: Bump MD version.
+
 2008-10-30  Mike Kestner <mkestner@novell.com> 
 
 	* MonoDevelop.GtkCore/ReferenceManager.cs: 

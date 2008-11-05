@@ -6,7 +6,7 @@
        url       = "http://monodevelop.com"
        description = "Integrates NUnit into the MonoDevelop IDE."
 	   category    = "IDE extensions"
-       version   = "1.9.0">
+       version   = "1.9.1">
 
 	<Runtime>
 		<Import assembly="MonoDevelop.NUnit.dll" />
@@ -15,12 +15,12 @@
 	</Runtime>
 	
 	<Dependencies>
-		<Addin id="Core" version="1.9.0"/>
-		<Addin id="Core.Gui" version="1.9.0"/>
-		<Addin id="Projects" version="1.9.0"/>
-		<Addin id="Projects.Gui" version="1.9.0"/>
-		<Addin id="Ide" version="1.9.0"/>
-		<Addin id="Components" version="1.9.0"/>
+		<Addin id="Core" version="1.9.1"/>
+		<Addin id="Core.Gui" version="1.9.1"/>
+		<Addin id="Projects" version="1.9.1"/>
+		<Addin id="Projects.Gui" version="1.9.1"/>
+		<Addin id="Ide" version="1.9.1"/>
+		<Addin id="Components" version="1.9.1"/>
 	</Dependencies>
 	
 	<!-- Extension Points -->

@@ -6,15 +6,15 @@
        url         = "http://monodevelop.com/"
        description = "GNOME Platform Support for MonoDevelop"
        category    = "MonoDevelop Core"
-       version     = "1.9.0">
+       version     = "1.9.1">
 	
 	<Runtime>
 		<Import assembly="GnomePlatform.dll"/>
 	</Runtime>
 
 	<Dependencies>
-		<Addin id="Core" version="1.9.0"/>
-		<Addin id="Core.Gui" version="1.9.0"/>
+		<Addin id="Core" version="1.9.1"/>
+		<Addin id="Core.Gui" version="1.9.1"/>
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/Core/PlatformService">

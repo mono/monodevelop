@@ -1,3 +1,7 @@
+2008-11-05  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* GnomePlatform.addin.xml: Bump MD version.
+
 2008-07-28  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* GnomePlatform.cs: Escape file names when querying the mime type.

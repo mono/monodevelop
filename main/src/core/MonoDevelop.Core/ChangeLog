@@ -1,3 +1,7 @@
+2008-11-05  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.addin.xml: Bump MD version.
+
 2008-10-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Execution/ProcessWrapper.cs: Fix bug 436200 - Crash

@@ -1,3 +1,7 @@
+2008-11-05  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.AssemblyBrowser.addin.xml: Bump MD version.
+
 2008-10-13  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.AssemblyBrowser/Reference.cs:

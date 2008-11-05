@@ -1,3 +1,7 @@
+2008-11-05  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* CSharpBinding.addin.xml: Bump MD version.
+
 2008-11-05  Mike Krüger  <mike@icsharpcode.net>
 
 	* Gui/ResolveVisitor.cs:
