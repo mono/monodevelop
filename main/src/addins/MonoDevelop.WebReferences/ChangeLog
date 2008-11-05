@@ -1,3 +1,9 @@
+2008-11-05  Mike Kestner <mkestner@novell.com>
+
+	* MonoDevelop.WebReferences.mdp: update the UsePartialTypes attribute.
+	Not sure how or why it got set to False, but it should be true.
+	[Fixes #440796]
+
 2008-10-22 Luciano N. Callero <lnc19@hotmail.com>
 
 	* MonoDevelop.WebReferences/CodeGenerator.cs: Add a new Constructor
