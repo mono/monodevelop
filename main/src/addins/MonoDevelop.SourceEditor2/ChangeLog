@@ -1,3 +1,8 @@
+2008-11-05  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.SourceEditor.addin.xml: Removed options which are not
+	really contextual.
+
 2008-11-05  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Add border around text

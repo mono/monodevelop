@@ -83,17 +83,10 @@
 	<Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/Editor">
 		<CommandItem id = "MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.RefactoryCommands.CurrentRefactoryOperations" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Undo" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Redo" />
 		<SeparatorItem id = "Separator1" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Cut" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Copy" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Paste" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
-		<SeparatorItem id = "Separator1" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.Save" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.SaveAs" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CloseFile" />
 		<SeparatorItem id = "Separator2" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.ToggleCodeComment" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.IndentSelection" />
