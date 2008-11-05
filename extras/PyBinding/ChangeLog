@@ -1,3 +1,8 @@
+2008-11-04  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* PyBinding/Resources/PyBinding.addin.xml: Track movement of parser 
+	  extension point.
+
 2008-10-17  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* PyBinding/Makefile: Fix install path.
@@ -8,9 +13,8 @@
 
 2008-10-10  Michael Hutchinson  <mhutchinson@novell.com>
 
-	
-
-
+	* PyBinding/PyBinding.Gui/PythonEditorIndentation.cs: Don't break the 
+	  text editor extension chain for non-python files.
 
 2008-10-09  Christian Hergert  <chris@dronelabs.com>
 

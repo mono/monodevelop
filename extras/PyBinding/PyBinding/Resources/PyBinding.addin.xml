@@ -88,7 +88,7 @@
 		<Class id = "PyBinding.Gui.PythonEditorOutline" class = "PyBinding.Gui.PythonEditorOutline" />
 	</Extension>
 
-	<Extension path = "/MonoDevelop/Ide/DomParser">
+	<Extension path = "/MonoDevelop/ProjectModel/DomParser">
 		<Class class = "PyBinding.Parser.PythonParser" />
 	</Extension>
 
