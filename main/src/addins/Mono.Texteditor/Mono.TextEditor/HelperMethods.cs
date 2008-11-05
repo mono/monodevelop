@@ -1,9 +1,9 @@
-// Segment.cs
+// HelperMethods.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
 //
-// Copyright (c) 2007 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2008 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,50 +23,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 //
-//
 
 using System;
+using System.Linq;
 
 namespace Mono.TextEditor
 {
-	public class Segment : ISegment
+	internal static class HelperMethods
 	{
-		public virtual int Offset { get; set; }
-		public virtual int Length { get; set; }
+		public static T Kill<T>(this T gc) where T : IDisposable
+		{
+			if (gc != null) 
+				gc.Dispose ();
+			return default(T);
+		}
 		
-		public int EndOffset {
-			get {
-				return Offset + Length;
+		public static T Kill<T>(this T gc, Action<T> action) where T : IDisposable
+		{
+			if (gc != null) {
+				action (gc);
+				gc.Dispose ();
 			}
-		}
-
-		protected Segment ()
-		{
-		}
-		
-		public Segment (int offset, int length)
-		{
-			this.Offset = offset;
-			this.Length = length;
-		}
-		
-		public static bool Equals (ISegment left, ISegment right)
-		{
-			return left != null && right != null && left.Offset == right.Offset && left.Length == right.Length;
-		}
-		
-		public bool Contains (int offset)
-		{
-			return Offset <= offset && offset < EndOffset;
-		}
-		public bool Contains (ISegment segment)
-		{
-			return  segment != null && Offset <= segment.Offset && segment.EndOffset <= EndOffset;
-		}
-		
-		public override string ToString ()
-		{
-			return String.Format ("[Segment: Offset={0}, Length={1}]", this.Offset, this.Length);
+				
+			return default(T);
 		}
 	}
 }

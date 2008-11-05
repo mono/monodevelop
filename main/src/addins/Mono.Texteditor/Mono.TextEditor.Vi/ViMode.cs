@@ -38,7 +38,7 @@ namespace Mono.TextEditor.Vi
 	public class ViEditMode : EditMode
 	{
 		State state;
-		string status;
+	//	string status;
 		bool searchBackward;
 		static string lastPattern;
 		static string lastReplacement;
@@ -124,7 +124,7 @@ namespace Mono.TextEditor.Vi
 				return;
 			}
 			
-			int keyCode;
+		//	int keyCode;
 			Action<TextEditorData> action;
 			
 			switch (state) {

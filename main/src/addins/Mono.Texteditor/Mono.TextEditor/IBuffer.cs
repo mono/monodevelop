@@ -41,9 +41,9 @@ namespace Mono.TextEditor
 			set;
 		}
 		
-		void Insert (int offset, StringBuilder value);
+		void Insert (int offset, string value);
 		void Remove (int offset, int count);
-		void Replace (int offset, int count, StringBuilder value);
+		void Replace (int offset, int count, string value);
 		
 		string GetTextAt (int offset, int count);
 		string GetTextAt (ISegment segment);
@@ -62,11 +62,11 @@ namespace Mono.TextEditor
 			set;
 		}
 		
-		public abstract void Replace (int offset, int count, StringBuilder value);
+		public abstract void Replace (int offset, int count, string value);
 		public abstract string GetTextAt (int offset, int count);
 		public abstract char GetCharAt (int offset);
 		
-		public void Insert (int offset, StringBuilder text)
+		public void Insert (int offset, string text)
 		{
 			Replace (offset, 0, text);
 		}

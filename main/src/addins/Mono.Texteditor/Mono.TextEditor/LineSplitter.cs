@@ -60,10 +60,7 @@ namespace Mono.TextEditor
 		
 		public void Dispose ()
 		{
-			if (lines != null) {
-				lines.Dispose ();
-				lines = null;
-			}
+			lines = lines.Kill ();
 		}
 		
 		public void Clear ()
@@ -124,7 +121,7 @@ namespace Mono.TextEditor
 			lines.ChangeLength (startNode, startNode.Length - charsRemoved + charsLeft, endNode.DelimiterLength);
 		}
 		
-		void TextInsert (int offset, StringBuilder text)
+		void TextInsert (int offset, string text)
 		{
 			if (text == null || text.Length == 0)
 				return;
@@ -149,7 +146,7 @@ namespace Mono.TextEditor
 			return lines.OffsetToLineNumber (offset);
 		}
 		
-		Segment FindDelimiter (StringBuilder text, int startOffset) 
+		Segment FindDelimiter (string text, int startOffset) 
 		{
 			for (int i = startOffset; i < text.Length; i++) {
 				switch (text[i]) {

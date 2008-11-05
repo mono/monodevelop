@@ -1,4 +1,4 @@
-// IMargin.cs
+// Margin.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -34,32 +34,26 @@ namespace Mono.TextEditor
 		public abstract int Width {
 			get;
 		}
-		bool isVisible = true;
-		public bool IsVisible {
-			get {
-				return isVisible;
-			}
-			set {
-				isVisible = value;
-			}
-		}
 		
-		int xOffset = 0;
+		public bool IsVisible { get; set; }
+		
 		// set by the text editor
 		public int XOffset {
-			get {
-				return xOffset;
-			}
-			internal set {
-				 xOffset = value;
-			}
+			get;
+			internal set;
 		}
 		
 		protected Gdk.Cursor cursor = null;
+		
 		public Gdk.Cursor MarginCursor {
 			get {
 				return cursor;
 			}
+		}
+		
+		protected Margin ()
+		{
+			IsVisible = true;
 		}
 		
 		internal protected abstract void Draw (Gdk.Drawable drawable, Gdk.Rectangle area, int line, int x, int y);
@@ -94,10 +88,7 @@ namespace Mono.TextEditor
 		
 		public virtual void Dispose ()
 		{
-			if (cursor != null) {
-				cursor.Dispose ();
-				cursor = null;
-			}
+			cursor = cursor.Kill ();
 		}
 		
 		public event EventHandler<MarginMouseEventArgs> ButtonPressed;
@@ -106,7 +97,7 @@ namespace Mono.TextEditor
 		public event EventHandler MouseLeave;
 	}
 	
-	public class MarginMouseEventArgs: EventArgs
+	public class MarginMouseEventArgs : EventArgs
 	{
 		int button;
 		int x;

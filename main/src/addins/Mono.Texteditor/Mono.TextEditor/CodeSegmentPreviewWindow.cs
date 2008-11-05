@@ -72,14 +72,8 @@ namespace Mono.TextEditor
 		
 		protected override void OnDestroyed ()
 		{
-			if (layout != null) {
-				layout.Dispose ();
-				layout = null;
-			}
-			if (gc != null) { 
-				gc.Dispose ();
-				gc = null;
-			}
+			layout = layout.Kill ();
+			gc = gc.Kill ();
 			base.OnDestroyed ();
 		}
 

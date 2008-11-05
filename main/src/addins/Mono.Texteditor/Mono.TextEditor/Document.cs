@@ -114,14 +114,8 @@ namespace Mono.TextEditor
 		
 		public override void Dispose ()
 		{
-			if (buffer != null) {
-				buffer.Dispose ();
-				buffer = null;
-			}
-			if (splitter != null) {
-				splitter.Dispose ();
-				splitter = null;
-			}
+			buffer = buffer.Kill ();
+			splitter = splitter.Kill ();
 			if (undoStack != null) {
 				undoStack.Clear ();
 				undoStack = null;
@@ -152,7 +146,7 @@ namespace Mono.TextEditor
 			set {
 				splitter.Clear ();
 				int oldLength = Length;
-				ReplaceEventArgs args = new ReplaceEventArgs (0, oldLength, new StringBuilder (value));
+				ReplaceEventArgs args = new ReplaceEventArgs (0, oldLength, value);
 				this.OnTextReplacing (args);
 				this.buffer.Text = value;
 				splitter.TextReplaced (this, args);
@@ -174,17 +168,7 @@ namespace Mono.TextEditor
 			return new BufferedTextReader (this.buffer);
 		}
 		
-		public void Insert (int offset, string value)
-		{
-			Insert (offset, new StringBuilder (value));
-		}
-		
-		public void Replace (int offset, int count, string value)
-		{
-			Replace (offset, count, new StringBuilder (value));
-		}
-		
-		public override void Replace (int offset, int count, StringBuilder value)
+		public override void Replace (int offset, int count, string value)
 		{
 			InterruptFoldWorker ();
 //			Mono.TextEditor.Highlighting.SyntaxModeService.WaitForUpdate (true);
@@ -703,80 +687,55 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public List<FoldSegment> GetFoldingsFromOffset (int offset)
+		public IEnumerable<FoldSegment> GetFoldingsFromOffset (int offset)
 		{
-			List<FoldSegment> result = new List<FoldSegment> ();
-			foreach (FoldSegment foldSegment in foldSegments) {
-				if (foldSegment.StartLine.Offset + foldSegment.Column < offset && offset < foldSegment.EndLine.Offset + foldSegment.EndColumn)
-					result.Add (foldSegment);
-			}
-			return result;
+			return foldSegments.Where (s => s.StartLine.Offset + s.Column < offset && offset < s.EndLine.Offset + s.EndColumn);
 		}
 		
-		public List<FoldSegment> GetFoldingContaining (int lineNumber)
+		public IEnumerable<FoldSegment> GetFoldingContaining (int lineNumber)
 		{
 			return GetFoldingContaining (this.GetLine (lineNumber));
 		}
-		public List<FoldSegment> GetFoldingContaining (LineSegment line)
+		
+		public IEnumerable<FoldSegment> GetFoldingContaining (LineSegment line)
 		{
-			List<FoldSegment> result = new List<FoldSegment> ();
-			if (line != null) { 
-				foreach (FoldSegment foldSegment in foldSegments) {
-					if (foldSegment.StartLine != line && foldSegment.EndLine != line &&
-					    foldSegment.StartLine.Offset < line.Offset && line.Offset < foldSegment.EndLine.Offset)
-						result.Add (foldSegment);
-				}
-			}
-			return result;
+			if (line == null)
+				return new FoldSegment[0];
+			return foldSegments.Where (s => s.StartLine != line && s.EndLine != line && s.StartLine.Offset < line.Offset && line.Offset < s.EndLine.Offset);
 		}
 		
-		public List<FoldSegment> GetStartFoldings (int lineNumber)
+		public IEnumerable<FoldSegment> GetStartFoldings (int lineNumber)
 		{
 			return GetStartFoldings (this.GetLine (lineNumber));
 		}
-		public List<FoldSegment> GetStartFoldings (LineSegment line)
+		public IEnumerable<FoldSegment> GetStartFoldings (LineSegment line)
 		{
-			List<FoldSegment> result = new List<FoldSegment> ();
-			if (line != null) { 
-				foreach (FoldSegment foldSegment in foldSegments) {
-					if (foldSegment.StartLine == line)
-						result.Add (foldSegment);
-				}
-			}
-			return result;
+			if (line == null)
+				return new FoldSegment[0];
+			return foldSegments.Where (s => s.StartLine == line);
 		}
 		
-		public List<FoldSegment> GetEndFoldings (int lineNumber)
+		public IEnumerable<FoldSegment> GetEndFoldings (int lineNumber)
 		{
 			return GetEndFoldings (this.GetLine (lineNumber));
 		}
-		public List<FoldSegment> GetEndFoldings (LineSegment line)
+		public IEnumerable<FoldSegment> GetEndFoldings (LineSegment line)
 		{
-			List<FoldSegment> result = new List<FoldSegment> ();
-			if (line != null) { 
-				foreach (FoldSegment foldSegment in foldSegments) {
-					if (foldSegment.EndLine == line)
-						result.Add (foldSegment);
-				}
-			}
-			return result;
+			if (line == null)
+				return new FoldSegment[0];
+			return foldSegments.Where (s => s.EndLine == line);
 		}
 		
-		public List<FoldSegment> GetFoldingsBefore (int lineNumber)
+		public IEnumerable<FoldSegment> GetFoldingsBefore (int lineNumber)
 		{
 			return GetFoldingsBefore (GetLine (lineNumber));
 		}
 		
-		public List<FoldSegment> GetFoldingsBefore (LineSegment line)
+		public IEnumerable<FoldSegment> GetFoldingsBefore (LineSegment line)
 		{
-			List<FoldSegment> result = new List<FoldSegment> ();
-			if (line != null) {
-				foreach (FoldSegment foldSegment in foldSegments) {
-					if (foldSegment.StartLine.Offset < line.Offset)
-						result.Add (foldSegment);
-				}
-			}
-			return result;
+			if (line == null)
+				return new FoldSegment[0];
+			return foldSegments.Where (s => s.StartLine.Offset < line.Offset);
 		}
 		
 		public int GetLineCount (FoldSegment segment)
@@ -839,9 +798,7 @@ namespace Mono.TextEditor
 			int result = visualLineNumber;
 			int lastFoldingEnd = 0;
 			LineSegment line = GetLine (result);
-			foreach (FoldSegment foldSegment in foldSegments) {
-				if (foldSegment.Offset > line.Offset)
-					break;
+			foreach (FoldSegment foldSegment in foldSegments.Where (s => s.Offset <= line.Offset)) {
 				if (foldSegment.IsFolded && foldSegment.StartLine.Offset < line.Offset && lastFoldingEnd < foldSegment.EndOffset ) {
 					result += GetLineCount (foldSegment);
 					lastFoldingEnd = foldSegment.EndOffset;
@@ -863,10 +820,9 @@ namespace Mono.TextEditor
 		
 		public int LogicalToVisualLine (int logicalLineNumber)
 		{
-			List<FoldSegment> foldings = GetFoldingsBefore (logicalLineNumber);
 			int lastFoldingEnd = 0;
 			int result = logicalLineNumber;
-			foreach (FoldSegment folding in foldings) {
+			foreach (FoldSegment folding in GetFoldingsBefore (logicalLineNumber)) {
 				if (folding.IsFolded && lastFoldingEnd < folding.EndOffset) {
 					result -= GetLineCount (folding);
 					lastFoldingEnd = folding.EndOffset;

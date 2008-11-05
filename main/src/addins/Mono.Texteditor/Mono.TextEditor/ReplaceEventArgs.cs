@@ -32,41 +32,34 @@ namespace Mono.TextEditor
 {
 	public class ReplaceEventArgs : System.EventArgs
 	{
-		int offset;
-		int count;
-		StringBuilder value;
-		
 		public int Offset {
-			get {
-				return offset;
-			}
+			get;
+			private set;
 		}
 
 		public int Count {
-			get {
-				return count;
-			}
+			get;
+			private set;
 		}
 		
-		public StringBuilder Value {
-			get {
-				return value;
-			}
+		public string Value {
+			get;
+			private set;
 		}
 		
-		public ReplaceEventArgs (int offset, int count, StringBuilder value)
+		public ReplaceEventArgs (int offset, int count, string value)
 		{
-			this.offset = offset;
-			this.count  = count;
-			this.value  = value;
+			this.Offset = offset;
+			this.Count  = count;
+			this.Value  = value;
 		}
 		
 		public override string ToString ()
 		{
 			return String.Format ("[ReplaceEventArgs: Offset={0}, Count={1}, Value={2}]",
-			                      this.offset,
-			                      this.count,
-			                      this.value);
+			                      this.Offset,
+			                      this.Count,
+			                      this.Value);
 		}
 
 	}

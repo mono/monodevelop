@@ -123,11 +123,7 @@ namespace Mono.TextEditor
 				}
 				this.states = null;
 			}
-			
-			if (options != null) {
-				options.Dispose ();
-				options = null;
-			}
+			options = options.Kill ();
 			
 			if (document != null) {
 				document.BeginUndo -= OnBeginUndo;
@@ -135,11 +131,7 @@ namespace Mono.TextEditor
 				// DOCUMENT MUST NOT BE DISPOSED !!! (Split View shares document)
 				document = null;
 			}
-			if (caret != null) {
-				caret.PositionChanged -= CaretPositionChanged;
-				caret.Dispose ();
-				caret = null;
-			}
+			caret = caret.Kill (x => x.PositionChanged -= CaretPositionChanged);
 			SelectionChanging -= HandleSelectionChanging;
 		}
 		

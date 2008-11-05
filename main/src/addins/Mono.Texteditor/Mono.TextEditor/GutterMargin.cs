@@ -130,30 +130,16 @@ namespace Mono.TextEditor
 		
 		public override void Dispose ()
 		{
-			if (layout != null) {
-				layout.Dispose ();
-				layout = null;
-			}
+			layout = layout.Kill ();
 			DisposeGCs ();
 			base.Dispose ();
 		}
 		
 		void DisposeGCs ()
 		{
-			if (lineNumberBgGC != null) {
-				lineNumberBgGC.Dispose ();
-				lineNumberBgGC = null;
-			}
-			
-			if (lineNumberGC != null) {
-				lineNumberGC.Dispose ();
-				lineNumberGC = null;
-			}
-			
-			if (lineNumberHighlightGC != null) {
-				lineNumberHighlightGC.Dispose ();
-				lineNumberHighlightGC = null;
-			}
+			lineNumberBgGC = lineNumberBgGC.Kill ();
+			lineNumberGC = lineNumberGC.Kill ();
+			lineNumberHighlightGC = lineNumberHighlightGC.Kill ();
 		}
 		
 		Gdk.GC lineNumberBgGC, lineNumberGC, lineNumberHighlightGC;

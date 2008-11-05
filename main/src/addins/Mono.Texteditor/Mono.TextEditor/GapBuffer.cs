@@ -101,7 +101,7 @@ namespace Mono.TextEditor
 			return new string (result);
 		}
 		
-		public override void Replace (int offset, int count, StringBuilder text)
+		public override void Replace (int offset, int count, string text)
 		{
 #if DEBUG
 			if (offset < 0) 

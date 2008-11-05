@@ -38,7 +38,7 @@ namespace Mono.TextEditor
 		// friendlier for implementors
 		TextEditorData textEditorData;
 		TextEditor editor;
-		string status;
+	//	string status;
 		
 		internal void InternalHandleKeypress (TextEditor editor, TextEditorData data, Gdk.Key key, 
 		                                      uint unicodeKey, Gdk.ModifierType modifier)

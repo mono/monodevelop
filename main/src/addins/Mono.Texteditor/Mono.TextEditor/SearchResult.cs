@@ -26,31 +26,20 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
-
 namespace Mono.TextEditor
 {
 	public class SearchResult : Segment
 	{
-		bool searchWrapped;
-		
-		public bool SearchWrapped {
-			get {
-				return searchWrapped;
-			}
-			set {
-				searchWrapped = value;
-			}
-		}
+		public bool SearchWrapped { get; set; }
 		
 		public SearchResult (int offset, int length, bool searchWrapped) : base (offset, length)
 		{
-			this.searchWrapped = searchWrapped;
+			this.SearchWrapped = searchWrapped;
 		}
 		
 		public override string ToString ()
 		{
-			return String.Format ("[SearchResult: Offset={0}, Length={1}, SearchWrapped={2}]", this.Offset, this.Length, this.SearchWrapped);
+			return string.Format ("[SearchResult: Offset={0}, Length={1}, SearchWrapped={2}]", this.Offset, this.Length, this.SearchWrapped);
 		}
 	}
 }

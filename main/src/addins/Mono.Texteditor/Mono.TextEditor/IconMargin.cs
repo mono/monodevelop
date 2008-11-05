@@ -52,23 +52,14 @@ namespace Mono.TextEditor
 		
 		public override void Dispose ()
 		{
-			if (layout != null) {
-				layout.Dispose ();
-				layout = null;
-			}
+			layout = layout.Kill ();
 			DisposeGCs ();
 		}
 		
 		void DisposeGCs ()
 		{
-			if (backgroundGC != null) {
-				backgroundGC.Dispose ();
-				backgroundGC = null;
-			}
-			if (seperatorGC != null) {
-				seperatorGC.Dispose ();
-				seperatorGC = null;
-			}
+			backgroundGC = backgroundGC.Kill ();
+			seperatorGC  = seperatorGC.Kill ();
 		}
 		
 		internal protected override void OptionsChanged ()
@@ -184,6 +175,7 @@ namespace Mono.TextEditor
 				return lineSegment;
 			}
 		}
+		
 		public BookmarkMarginDrawEventArgs (TextEditor editor, Gdk.Drawable win, LineSegment line, int lineNumber, int xPos, int yPos)
 		{
 			this.editor = editor;

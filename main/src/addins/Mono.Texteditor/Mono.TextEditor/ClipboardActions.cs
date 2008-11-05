@@ -319,16 +319,16 @@ namespace Mono.TextEditor
 					data.DeleteSelectedText ();
 				
 				data.Caret.PreserveSelection = true;
-				StringBuilder sb = new StringBuilder (text);
-				data.Document.Insert (insertionOffset, sb);
+				
+				data.Document.Insert (insertionOffset, text);
 				//int oldLine = data.Caret.Line;
-				result = sb.Length;
+				result = text.Length;
 				if (data.Caret.Offset >= insertionOffset) 
-					data.Caret.Offset += sb.Length;
+					data.Caret.Offset += text.Length;
 				if (data.IsSomethingSelected && data.SelectionRange.Offset >= insertionOffset) 
-					data.SelectionRange.Offset += sb.Length;
+					data.SelectionRange.Offset += text.Length;
 				if (data.IsSomethingSelected && data.SelectionAnchor >= insertionOffset) 
-					data.SelectionAnchor += sb.Length;
+					data.SelectionAnchor += text.Length;
 				data.Caret.PreserveSelection = false;
 				data.Document.EndAtomicUndo ();
 			});

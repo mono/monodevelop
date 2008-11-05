@@ -195,14 +195,8 @@ namespace Mono.TextEditor
 		void DisposeGCs ()
 		{
 			ShowTooltip (null, Gdk.Rectangle.Zero);
-			if (gc != null) {
-				gc.Dispose ();
-				gc = null;
-			}
-			if (caretGc != null) {
-				caretGc.Dispose ();
-				caretGc = null;
-			}
+			gc = gc.Kill ();
+			caretGc = caretGc.Kill ();
 		}
 		
 		public override void Dispose ()
@@ -217,26 +211,11 @@ namespace Mono.TextEditor
 	//		Document.LineInserted -= CheckLongestLine;
 		
 			DisposeGCs ();
-			if (layout != null) {
-				layout.Dispose ();
-				layout = null;
-			}
-			if (tabMarker != null) {
-				tabMarker.Dispose ();
-				tabMarker = null;
-			}
-			if (spaceMarker != null) {
-				spaceMarker.Dispose ();
-				spaceMarker = null;
-			}
-			if (eolMarker != null) {
-				eolMarker.Dispose ();
-				eolMarker = null;
-			}
-			if (invalidLineMarker != null) {
-				invalidLineMarker.Dispose ();
-				invalidLineMarker = null;
-			}
+			layout = layout.Kill ();
+			tabMarker = tabMarker.Kill ();
+			spaceMarker = spaceMarker.Kill ();
+			eolMarker = eolMarker.Kill ();
+			invalidLineMarker = invalidLineMarker.Kill ();
 			base.Dispose ();
 		}
 		
@@ -920,11 +899,11 @@ namespace Mono.TextEditor
 				return result;
 			}
 			
-			List<FoldSegment> foldings = Document.GetStartFoldings (line);
+			IEnumerable<FoldSegment> foldings = Document.GetStartFoldings (line);
 			int offset = line.Offset;
 //			int caretOffset = Caret.Offset;
-			for (int i = 0; i < foldings.Count; ++i) {
-				FoldSegment folding = foldings[i];
+		 restart:
+			foreach (FoldSegment folding in foldings) {
 				int foldOffset = folding.StartLine.Offset + folding.Column;
 				if (foldOffset < offset)
 					continue;
@@ -943,7 +922,7 @@ namespace Mono.TextEditor
 					if (folding.EndLine != line) {
 						line   = folding.EndLine;
 						foldings = Document.GetStartFoldings (line);
-						i = -1;
+						goto restart;
 					}
 				}
 			}
@@ -992,11 +971,11 @@ namespace Mono.TextEditor
 				}
 			}
 			
-			List<FoldSegment> foldings = Document.GetStartFoldings (line);
+			IEnumerable<FoldSegment> foldings = Document.GetStartFoldings (line);
 			int offset = line.Offset;
 			int caretOffset = Caret.Offset;
-			for (int i = 0; i < foldings.Count; ++i) {
-				FoldSegment folding = foldings[i];
+		 restart:
+			foreach (FoldSegment folding  in foldings) {
 				int foldOffset = folding.StartLine.Offset + folding.Column;
 				if (foldOffset < offset)
 					continue;
@@ -1030,7 +1009,7 @@ namespace Mono.TextEditor
 					if (folding.EndLine != line) {
 						line   = folding.EndLine;
 						foldings = Document.GetStartFoldings (line);
-						i = -1;
+						goto restart;
 					}
 				}
 			}
@@ -1140,13 +1119,13 @@ namespace Mono.TextEditor
 				measureLayout = new Pango.Layout (margin.textEditor.PangoContext);
 				measureLayout.Alignment = Pango.Alignment.Left;
 				measureLayout.FontDescription = margin.textEditor.Options.Font;
-				List<FoldSegment> foldings = margin.Document.GetStartFoldings (line);
+				IEnumerable<FoldSegment> foldings = margin.Document.GetStartFoldings (line);
 				int offset = line.Offset;
 //				int caretOffset = margin.Caret.Offset;
 //				int index, trailing;
 				visualXPos = xp + (int)margin.textEditor.HAdjustment.Value;
-				for (int i = 0; i < foldings.Count; ++i) {
-					FoldSegment folding = foldings[i];
+			 restart:
+				foreach (FoldSegment folding in foldings) {
 					int foldOffset = folding.StartLine.Offset + folding.Column;
 					if (foldOffset < offset)
 						continue;
@@ -1171,7 +1150,7 @@ namespace Mono.TextEditor
 						if (folding.EndLine != line) {
 							line   = folding.EndLine;
 							foldings = margin.Document.GetStartFoldings (line);
-							i = -1;
+							goto restart;
 						}
 					} else {
 						chunks = mode.GetChunks (margin.Document, margin.textEditor.ColorStyle, line, foldOffset, folding.EndLine.Offset + folding.EndColumn - offset);

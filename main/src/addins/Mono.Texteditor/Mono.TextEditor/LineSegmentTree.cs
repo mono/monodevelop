@@ -81,10 +81,7 @@ namespace Mono.TextEditor
 		
 		public void Dispose ()
 		{
-			if (tree != null) {
-				tree.Dispose ();
-				tree = null;
-			}
+			tree = tree.Kill ();
 		}
 		
 		void UpdateNode (RedBlackTree<TreeNode>.RedBlackTreeNode node)

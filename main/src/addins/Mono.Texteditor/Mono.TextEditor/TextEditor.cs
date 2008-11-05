@@ -60,7 +60,7 @@ namespace Mono.TextEditor
 		Gdk.EventKey lastIMEvent;
 		bool imContextActive;
 		
-		string currentModeStatus;
+	//	string currentModeStatus;
 		
 		// Tooltip fields
 		const int TooltipTimer = 800;
@@ -128,11 +128,8 @@ namespace Mono.TextEditor
 		void DisposeBgBuffer ()
 		{
 			this.repaint = true;
-			if (buffer != null) {
-				buffer.Dispose ();
-				flipBuffer.Dispose ();
-				buffer = flipBuffer = null;
-			}
+			buffer = buffer.Kill ();
+			flipBuffer = flipBuffer.Kill ();
 		}
 		
 		void AllocateWindowBuffer (Rectangle allocation)
@@ -434,12 +431,8 @@ namespace Mono.TextEditor
 				Document.DocumentUpdated -= DocumentUpdatedHandler;
 				if (textEditorData.Options != null)
 					textEditorData.Options.Changed -= OptionsChanged;
-				
-				if (imContext != null) {
-					imContext.Commit -= IMCommit;
-					imContext.Dispose ();
-					imContext = null;
-				}
+
+				imContext = imContext.Kill (x => x.Commit -= IMCommit);
 
 				if (this.textEditorData.HAdjustment != null) {
 					this.textEditorData.HAdjustment.ValueChanged -= HAdjustmentValueChanged; 
@@ -462,13 +455,7 @@ namespace Mono.TextEditor
 				gutterMargin = null;
 				foldMarkerMargin = null;
 				textViewMargin = null;
-				
-				if (this.textEditorData != null) {
-					this.textEditorData.SelectionChanged -= TextEditorDataSelectionChanged; 
-					this.textEditorData.Dispose ();
-					this.textEditorData = null;
-				}
-
+				this.textEditorData = this.textEditorData.Kill (x => x.SelectionChanged -= TextEditorDataSelectionChanged);
 				this.Realized -= OptionsChanged;
 			}
 		}

@@ -27,7 +27,7 @@
 
 using System;
 using System.Collections.Generic;
-
+using System.Linq;
 using Gtk;
 
 namespace Mono.TextEditor
@@ -119,31 +119,16 @@ namespace Mono.TextEditor
 		
 		public override void Dispose ()
 		{
-			if (layout != null) {
-				layout.Dispose ();
-				layout = null;
-			}
+			layout = layout.Kill ();
 			DisposeGCs ();
 		}
 		
 		void DisposeGCs ()
 		{
-			if (foldBgGC != null) {
-				foldBgGC.Dispose ();
-				foldBgGC = null;
-			}
-			if (foldLineGC != null) {
-				foldLineGC.Dispose ();
-				foldLineGC = null;
-			}
-			if (foldLineHighlightedGC != null) {
-				foldLineHighlightedGC.Dispose ();
-				foldLineHighlightedGC = null;
-			}
-			if (foldToggleMarkerGC != null) {
-				foldToggleMarkerGC.Dispose ();
-				foldToggleMarkerGC = null;
-			}
+			foldBgGC = foldBgGC.Kill ();
+			foldLineGC = foldLineGC.Kill ();
+			foldLineHighlightedGC = foldLineHighlightedGC.Kill ();
+			foldToggleMarkerGC = foldToggleMarkerGC.Kill ();
 		}
 		
 		void DrawFoldSegment (Gdk.Drawable win, int x, int y, bool isOpen, bool isSelected)
@@ -174,13 +159,9 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		bool IsMouseHover (List<FoldSegment> foldings)
+		bool IsMouseHover (IEnumerable<FoldSegment> foldings)
 		{
-			foreach (FoldSegment segment in foldings) {
-				if (this.lineHover == segment.StartLine)
-					return true;
-			}
-			return false;
+			return foldings.Any (s => this.lineHover == s.StartLine);
 		}
 		
 		internal protected override void Draw (Gdk.Drawable win, Gdk.Rectangle area, int line, int x, int y)
@@ -194,13 +175,13 @@ namespace Mono.TextEditor
 			
 			if (line < editor.Document.LineCount) {
 				LineSegment lineSegment = editor.Document.GetLine (line);
-				List<FoldSegment> startFoldings      = editor.Document.GetStartFoldings (lineSegment);
-				List<FoldSegment> containingFoldings = editor.Document.GetFoldingContaining (lineSegment);
-				List<FoldSegment> endFoldings        = editor.Document.GetEndFoldings (lineSegment);
+				IEnumerable<FoldSegment> startFoldings      = editor.Document.GetStartFoldings (lineSegment);
+				IEnumerable<FoldSegment> containingFoldings = editor.Document.GetFoldingContaining (lineSegment);
+				IEnumerable<FoldSegment> endFoldings        = editor.Document.GetEndFoldings (lineSegment);
 				
-				bool isFoldStart  = startFoldings.Count > 0;
-				bool isContaining = containingFoldings.Count > 0;
-				bool isFoldEnd    = endFoldings.Count > 0;
+				bool isFoldStart  = startFoldings.Any ();
+				bool isContaining = containingFoldings.Any ();
+				bool isFoldEnd    = endFoldings.Any ();
 				
 				bool isStartSelected      = IsMouseHover (startFoldings);
 				bool isContainingSelected = IsMouseHover (containingFoldings);

@@ -33,57 +33,39 @@ namespace Mono.TextEditor
 	{
 		public static readonly DocumentLocation Empty = new DocumentLocation (-1, -1);
 		
-		int line;
-		int column;
-		
-		public int Line {
-			get {
-				return line;
-			}
-			set {
-				line = value;
-			}
-		}
-
-		public int Column {
-			get {
-				return column;
-			}
-			set {
-				column = value;
-			}
-		}
+		public int Line { get; set; }
+		public int Column { get; set; }
 		
 		public bool IsEmpty {
 			get {
-				return line < 0 && column < 0;
+				return Line < 0 && Column < 0;
 			}
 		}
 		
 		public DocumentLocation (int line, int column)
 		{
-			
-			this.line = line;
-			this.column = column;
+			this.Line = line;
+			this.Column = column;
 		}
 		
 		public override string ToString ()
 		{
-			return String.Format ("[DocumentLocation: Line={0}, Column={1}]", this.line, this.column);
+			return String.Format ("[DocumentLocation: Line={0}, Column={1}]", this.Line, this.Column);
 		}
 		
 		#region Operations
 		public static bool operator ==(DocumentLocation left, DocumentLocation right)
 		{
-			return left.line == right.line && left.column == right.column;
+			return left.Line == right.Line && left.Column == right.Column;
 		}
 		public static bool operator !=(DocumentLocation left, DocumentLocation right)
 		{
 			return !(left == right);
 		}
+		
 		public static bool operator <(DocumentLocation left, DocumentLocation right)
 		{
-			return left.line < right.line || (left.line == right.line && left.column < right.line);   
+			return left.Line < right.Line || (left.Line == right.Line && left.Column < right.Line);
 		}
 		public static bool operator <=(DocumentLocation left, DocumentLocation right)
 		{
@@ -101,7 +83,7 @@ namespace Mono.TextEditor
 		
 		public override int GetHashCode()
 		{
-			return unchecked (column.GetHashCode () * line.GetHashCode ());
+			return unchecked (Column.GetHashCode () * Line.GetHashCode ());
 		}
 		
 		public override bool Equals(object obj)

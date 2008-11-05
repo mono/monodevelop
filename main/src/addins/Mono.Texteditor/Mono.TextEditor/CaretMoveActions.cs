@@ -43,7 +43,7 @@ namespace Mono.TextEditor
 		public static void Left (TextEditorData data)
 		{
 			LineSegment line = data.Document.GetLine (data.Caret.Line);
-			List<FoldSegment> foldings = data.Document.GetEndFoldings (line);
+			IEnumerable<FoldSegment> foldings = data.Document.GetEndFoldings (line);
 			FoldSegment segment = null;
 			foreach (FoldSegment folding in foldings) {
 				if (folding.IsFolded && folding.EndColumn == data.Caret.Column) {
@@ -72,7 +72,7 @@ namespace Mono.TextEditor
 		public static void Right (TextEditorData data)
 		{
 			LineSegment line = data.Document.GetLine (data.Caret.Line);
-			List<FoldSegment> foldings = data.Document.GetStartFoldings (line);
+			IEnumerable<FoldSegment> foldings = data.Document.GetStartFoldings (line);
 			FoldSegment segment = null;
 			foreach (FoldSegment folding in foldings) {
 				if (folding.IsFolded && folding.Column == data.Caret.Column) {
@@ -138,7 +138,7 @@ namespace Mono.TextEditor
 			}
 			
 			// handle folding
-			List<FoldSegment> foldings = data.Document.GetEndFoldings (line);
+			IEnumerable<FoldSegment> foldings = data.Document.GetEndFoldings (line);
 			FoldSegment segment = null;
 			foreach (FoldSegment folding in foldings) {
 				if (folding.IsFolded && folding.Contains (data.Document.LocationToOffset (newLocation))) {
@@ -177,7 +177,7 @@ namespace Mono.TextEditor
 			newLocation.Column = line.EditableLength;
 			
 			// handle folding
-			List<FoldSegment> foldings = data.Document.GetStartFoldings (line);
+			IEnumerable<FoldSegment> foldings = data.Document.GetStartFoldings (line);
 			FoldSegment segment = null;
 			foreach (FoldSegment folding in foldings) {
 				if (folding.IsFolded && folding.Contains (data.Document.LocationToOffset (newLocation))) {

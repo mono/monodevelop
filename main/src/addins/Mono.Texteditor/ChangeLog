@@ -1,5 +1,34 @@
 2008-11-05  Mike Krüger  <mike@icsharpcode.net>
 
+	* Mono.TextEditor/Margin.cs:
+	* Mono.TextEditor/IBuffer.cs:
+	* Mono.TextEditor/Segment.cs:
+	* Mono.TextEditor/Document.cs:
+	* Mono.TextEditor/EditMode.cs:
+	* Mono.TextEditor/GapBuffer.cs:
+	* Mono.TextEditor.Vi/ViMode.cs:
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/IconMargin.cs:
+	* Mono.TextEditor/FoldSegment.cs:
+	* Mono.TextEditor/SearchResult.cs:
+	* Mono.TextEditor/RedBlackTree.cs:
+	* Mono.TextEditor/LineSplitter.cs:
+	* Mono.TextEditor/GutterMargin.cs:
+	* Mono.TextEditor/HelperMethods.cs:
+	* Mono.TextEditor/TextViewMargin.cs:
+	* Mono.TextEditor/TextEditorData.cs:
+	* Mono.TextEditor/BookmarkActions.cs:
+	* Mono.TextEditor/LineSegmentTree.cs:
+	* Mono.TextEditor/ClipboardActions.cs:
+	* Mono.TextEditor/CaretMoveActions.cs:
+	* Mono.TextEditor/FoldMarkerMargin.cs:
+	* Mono.TextEditor/ReplaceEventArgs.cs:
+	* Mono.TextEditor/DocumentLocation.cs:
+	* Mono.TextEditor/CodeSegmentPreviewWindow.cs: Done some minor cosmetic
+	changes. Fixed all warning messages.
+
+2008-11-05  Mike Krüger  <mike@icsharpcode.net>
+
 	* Mono.TextEditor/TextEditor.cs: fixed 'Bug 437049 - Horizontal keyboard
 	scrolling sometimes does not work'.
 

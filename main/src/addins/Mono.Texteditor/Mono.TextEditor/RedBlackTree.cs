@@ -48,10 +48,7 @@ namespace Mono.TextEditor
 		
 		public void Dispose ()
 		{
-			if (root != null) {
-				root.Dispose ();
-				root = null;
-			}
+			root = root.Kill ();
 		}
 		public void Add (RedBlackTreeNode node)
 		{
@@ -514,14 +511,8 @@ namespace Mono.TextEditor
 					((System.IDisposable)value).Dispose ();
 				}
 				value  = default (T);
-				if (left != null) {
-					left.Dispose ();
-					left = null;
-				}
-				if (right != null) {
-					right.Dispose ();
-					right = null;
-				}
+				left = left.Kill ();
+				right = right.Kill ();
 			}
 		}
 		
