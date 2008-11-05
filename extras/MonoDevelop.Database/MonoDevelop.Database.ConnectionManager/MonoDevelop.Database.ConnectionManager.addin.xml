@@ -6,7 +6,7 @@
 	url		= "http://www.monodevelop.com"
 	description	= "Database ConnectionManager Module"
 	category    = "Database"
-	version		= "1.9.0">
+	version		= "1.9.1">
     
 	<Runtime>
 		<Import assembly="MonoDevelop.Database.ConnectionManager.dll"/>
@@ -15,13 +15,13 @@
   	<Localizer type="Gettext" catalog="monodevelop-database"/>
 	
 	<Dependencies>
-		<Addin id="Core" version="1.9.0"/>
-		<Addin id="Core.Gui" version="1.9.0"/>
-		<Addin id="Ide" version="1.9.0"/>
-		<Addin id="Database.Sql" version="1.9.0"/>
-		<Addin id="Database.Components" version="1.9.0"/>
-		<Addin id="Database.Query" version="1.9.0"/>
-		<Addin id="Database.Designer" version="1.9.0"/>
+		<Addin id="Core" version="1.9.1"/>
+		<Addin id="Core.Gui" version="1.9.1"/>
+		<Addin id="Ide" version="1.9.1"/>
+		<Addin id="Database.Sql" version="1.9.1"/>
+		<Addin id="Database.Components" version="1.9.1"/>
+		<Addin id="Database.Query" version="1.9.1"/>
+		<Addin id="Database.Designer" version="1.9.1"/>
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/Ide/Pads">

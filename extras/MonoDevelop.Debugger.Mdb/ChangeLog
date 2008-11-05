@@ -1,3 +1,7 @@
+2008-11-05  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* configure: Bump MD version.
+
 2008-10-16  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* configure: Fix tarball name. Update debugger version requirement.

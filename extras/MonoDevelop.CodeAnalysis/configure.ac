@@ -1,4 +1,4 @@
-AC_INIT([monodevelop-codeanalysis], 0.1, [monodevelop-list@lists.ximian.com])
+AC_INIT([monodevelop-codeanalysis], 0.2, [monodevelop-list@lists.ximian.com])
 AC_PREREQ(2.53)
 AM_INIT_AUTOMAKE([1.9 tar-ustar])
 AM_MAINTAINER_MODE
@@ -52,7 +52,7 @@ fi
 
 dnl hard dependencies
 MONOADDINS_REQUIRED_VERSION=0.3
-MONODEVELOP_REQUIRED_VERSION=1.9
+MONODEVELOP_REQUIRED_VERSION=1.9.1
 GTKSHARP_REQUIRED_VERSION=2.8.0
 CECIL_VERSION=0.5
 GENDARME_VERSION=1.9

@@ -1,9 +1,9 @@
-AC_INIT([monodevelop-profiling], 0.2, [monodevelop-list@lists.ximian.com])
+AC_INIT([monodevelop-profiling], 1.9.1, [monodevelop-list@lists.ximian.com])
 AC_PREREQ(2.53)
 AM_INIT_AUTOMAKE([1.9 tar-ustar])
 AM_MAINTAINER_MODE
 
-ASSEMBLY_VERSION=0.2.0.0
+ASSEMBLY_VERSION=1.9.1.0
 
 AC_PATH_PROG(MONO, mono)
 AC_PATH_PROG(MCS, gmcs)
@@ -42,7 +42,7 @@ fi
 
 dnl hard dependencies
 MONOADDINS_REQUIRED_VERSION=0.3
-MONODEVELOP_REQUIRED_VERSION=1.9
+MONODEVELOP_REQUIRED_VERSION=1.9.1
 GTKSHARP_REQUIRED_VERSION=2.8.0
 
 PKG_CHECK_MODULES(MONO_ADDINS, mono-addins >= $MONOADDINS_REQUIRED_VERSION)
