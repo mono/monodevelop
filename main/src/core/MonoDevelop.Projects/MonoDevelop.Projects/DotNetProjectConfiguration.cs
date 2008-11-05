@@ -110,6 +110,10 @@ namespace MonoDevelop.Projects
 			clrVersion = conf.clrVersion;
 			compilationParameters = conf.compilationParameters != null ? (ICloneable)conf.compilationParameters.Clone () : null;
 		}
+		
+		public new DotNetProject ParentItem {
+			get { return (DotNetProject) base.ParentItem; }
+		}
 	}
 	
 	public class UnknownCompilationParameters: ICloneable, IExtendedDataItem
