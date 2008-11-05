@@ -332,6 +332,18 @@ namespace MonoDevelop.XmlEditor.Gui
 			return new XName ();
 		}
 		
+		protected XElement GetParentElement (int skip)
+		{
+			foreach (XObject obj in tracker.Engine.Nodes) {
+				if (skip > 0) {
+					skip--;
+					continue;
+				}
+				return obj as XElement;
+			}
+			return null;
+		}
+		
 		//FIXME: this should offer all unclosed tags, and accepting them should close back up to that level
 		protected static void AddCloseTag (CompletionDataList completionList, NodeStack stack)
 		{
