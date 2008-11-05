@@ -1,3 +1,10 @@
+2008-11-04  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Gui/OptionPanels/CodeCompilationPanel.boo: Show widgets, or the 
+	  panel's invisible. Don't allow user to modify output type if 
+	  project's library based, so the user can't mess up ASP.NET and 
+	  Moonlight projects.
+
 2008-10-10  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* BooBinding.addin.xml: Disable text editor extension since class is

@@ -85,6 +85,8 @@ public class CodeGenerationPanel(MultiConfigItemOptionsPanel):
 		hboxTmp = HBox()
 		hboxTmp.PackStart (checkDucky, false, false, 6)
 		vbox.PackStart (hboxTmp, false, false, 0)
+		
+		vbox.ShowAll ()
 
 	private def InitializeComponent() as void:
 		codeGenerationLabel.Markup = String.Format ("<b>{0}</b>", GettextCatalog.GetString ("Code Generation"))
@@ -141,6 +143,8 @@ public class CodeGenerationPanel(MultiConfigItemOptionsPanel):
 		
 		culture.Text = compilerParameters.Culture
 		compileTargetCombo.Active = cast (int, configuration.CompileTarget)
+		if project.IsLibraryBasedProjectType:
+			compileTargetCombo.Sensitive = false
 
 	public override def CreatePanelWidget() as Gtk.Widget:
 		return vbox
