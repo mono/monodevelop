@@ -1,5 +1,10 @@
 2008-11-05  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Make "Tab" key
+	always complete item even if selection is disabled.
+
+2008-11-05  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Projects.Gui.Completion/CompletionDataList.cs: Moved
 	interface to another file.
 
