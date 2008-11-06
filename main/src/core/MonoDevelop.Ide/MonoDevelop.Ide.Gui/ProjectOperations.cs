@@ -211,20 +211,29 @@ namespace MonoDevelop.Ide.Gui
 			return (GetDeclaredFile(item) != null);
 		}*/
 		
-		public bool CanJumpToDeclaration (MonoDevelop.Projects.Dom.IMember member)
+		public bool CanJumpToDeclaration (MonoDevelop.Projects.Dom.IDomVisitable visitable)
 		{
-			if (member == null) 
-				return false;
-			if (member is MonoDevelop.Projects.Dom.IType) {
-				return ((MonoDevelop.Projects.Dom.IType)member).CompilationUnit != null;
-			}
-			if (member.DeclaringType == null) 
+			if (visitable is MonoDevelop.Projects.Dom.IType) 
+				return ((MonoDevelop.Projects.Dom.IType)visitable).CompilationUnit != null;
+			if (visitable is LocalVariable)
+				return true;
+			IMember member = visitable as MonoDevelop.Projects.Dom.IMember;
+			if (member == null || member.DeclaringType == null) 
 				return false ;
 			return member.DeclaringType.CompilationUnit != null;
 		}
 
-		public void JumpToDeclaration (MonoDevelop.Projects.Dom.IMember member)
+		public void JumpToDeclaration (MonoDevelop.Projects.Dom.IDomVisitable visitable)
 		{
+			if (visitable is LocalVariable) {
+				LocalVariable var = (LocalVariable)visitable;
+				MonoDevelop.Ide.Gui.IdeApp.Workbench.OpenDocument (var.FileName,
+				                                                   var.Region.Start.Line,
+				                                                   var.Region.Start.Column,
+				                                                   true);
+				return;
+			}
+			IMember member = visitable as MonoDevelop.Projects.Dom.IMember;
 			if (member == null) 
 				return;
 			string fileName;

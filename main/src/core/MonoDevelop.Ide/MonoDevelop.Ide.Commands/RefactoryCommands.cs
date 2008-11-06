@@ -242,7 +242,7 @@ namespace MonoDevelop.Ide.Commands
 			string itemName = EscapeName (ambience.GetString (item, flags));
 			bool canRename = false;
 			string txt;
-			if (IdeApp.ProjectOperations.CanJumpToDeclaration (item as IMember))
+			if (IdeApp.ProjectOperations.CanJumpToDeclaration (item))
 				ciset.CommandInfos.Add (GettextCatalog.GetString ("_Go to declaration"), new RefactoryOperation (refactorer.GoToDeclaration));
 			
 			if ((item is IMember || item is LocalVariable || item is IParameter) && !(item is IType))
@@ -403,7 +403,7 @@ namespace MonoDevelop.Ide.Commands
 		
 		public void GoToDeclaration ()
 		{
-			IdeApp.ProjectOperations.JumpToDeclaration (item as IMember);
+			IdeApp.ProjectOperations.JumpToDeclaration (item);
 		}
 		
 		public void FindReferences ()
