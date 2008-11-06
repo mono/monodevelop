@@ -145,7 +145,7 @@ namespace Mono.TextEditor.Vi
 						goto case 'i';
 						
 					case 'I':
-						RunAction (CaretMoveActions.LineStart);
+						RunAction (CaretMoveActions.LineFirstNonWhitespace);
 						goto case 'i';
 					
 					case 'i':

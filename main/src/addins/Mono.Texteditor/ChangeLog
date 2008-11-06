@@ -1,3 +1,9 @@
+2008-11-05  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextEditor.Vi/ViMode.cs: Made the "I" command open insert mode
+	before the first non-whitespace character on the line, not the line
+	start. Fixes "Bug 438177 - [vi] 'I' behavior inconsistent with vi".
+
 2008-11-05  Mike Krüger  <mike@icsharpcode.net>
 
 	* Mono.TextEditor/Margin.cs:
