@@ -247,7 +247,7 @@ namespace Mono.TextEditor.Highlighting
 					char ch = str [textOffset];
 					
 					if (curSpan != null && !String.IsNullOrEmpty (curSpan.End)) {
-						if (curSpan.Escape == ch && i + 1 < maxEnd && endOffset == 0 && doc.GetCharAt (i + 1) == curSpan.End[0]) {
+						if (curSpan.Escape == ch && i + 1 < maxEnd && endOffset == 0) {
 							curChunk.Length += 2;
 							i++;
 							continue;
