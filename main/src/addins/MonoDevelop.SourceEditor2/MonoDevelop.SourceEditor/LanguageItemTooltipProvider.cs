@@ -50,8 +50,10 @@ namespace MonoDevelop.SourceEditor
 		public Gtk.Window CreateTooltipWindow (TextEditor editor, object item)
 		{
 			ExtensibleTextEditor ed = (ExtensibleTextEditor) editor;
-			
-			return new LanguageItemWindow (ed.ProjectDom, AmbienceService.GetAmbience (ed.Document.MimeType), (ResolveResult)item, null);
+			LanguageItemWindow result = new LanguageItemWindow (ed.ProjectDom, AmbienceService.GetAmbience (ed.Document.MimeType), (ResolveResult)item, null);
+			if (result.IsEmpty)
+				return null;
+			return result;
 		}
 		
 		public void GetRequiredPosition (TextEditor editor, Gtk.Window tipWindow, out int requiredWidth, out double xalign)

@@ -1,3 +1,10 @@
+2008-11-06  Mike Krüger  <mike@icsharpcode.net>
+
+	* MonoDevelop.SourceEditor/LanguageItemWindow.cs:
+	* MonoDevelop.SourceEditor/LanguageItemTooltipProvider.cs:
+	* MonoDevelop.SourceEditor/CompileErrorTooltipProvider.cs: fixed 'Bug
+	442099 - Empty code info tooltips should not be shown'.
+
 2008-11-05  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.SourceEditor.addin.xml: Bump MD version.

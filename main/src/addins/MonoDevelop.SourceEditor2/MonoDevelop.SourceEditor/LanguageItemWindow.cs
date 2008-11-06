@@ -49,6 +49,11 @@ namespace MonoDevelop.SourceEditor
 		static string methodStr = GettextCatalog.GetString ("Method");
 		static string namespaceStr = GettextCatalog.GetString ("Namespace");
 		
+		public bool IsEmpty {
+			get; 
+			set;
+		}
+		
 		static string GetDocumentation (IMember member)
 		{
 			if (member == null)
@@ -131,7 +136,11 @@ namespace MonoDevelop.SourceEditor
 				s.Append (errorInformations);
 				s.Append ("</small>");
 			}
-			
+			System.Console.WriteLine ("Result:" + s.ToString ());
+			if (s.ToString ().Trim ().Length == 0) {
+				IsEmpty = true;
+				return;
+			}
 			MonoDevelop.Components.FixedWidthWrapLabel lab = new MonoDevelop.Components.FixedWidthWrapLabel ();
 			lab.Wrap = Pango.WrapMode.WordChar;
 			lab.Indent = -20;
