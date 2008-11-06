@@ -1,5 +1,11 @@
 2008-11-06  Mike Kestner <mkestner@novell.com> 
 
+	* MonoDevelop.GtkCore.NodeBuilders/ProjectFolderNodeBuilderExtension.cs:
+	revert the context menu changes. Don't show them if the project has no
+	gtk-sharp ref, only add the templates to the dialog, per Lluis.
+
+2008-11-06  Mike Kestner <mkestner@novell.com> 
+
 	* MonoDevelop.GtkCore/WidgetFileDescriptionTemplate.cs:
 	* MonoDevelop.GtkCore.NodeBuilders/ProjectFolderNodeBuilderExtension.cs:
 	show Add Widget|Window|Dialog|ActionGroup template items in the context
