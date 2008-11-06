@@ -1,3 +1,10 @@
+2008-11-06  Mike Kestner <mkestner@novell.com> 
+
+	* MonoDevelop.GtkCore/WidgetFileDescriptionTemplate.cs:
+	* MonoDevelop.GtkCore.NodeBuilders/ProjectFolderNodeBuilderExtension.cs:
+	show Add Widget|Window|Dialog|ActionGroup template items in the context
+	menu and Add File dialog even when the project has no Gtk# reference.
+
 2008-11-05  Mike Kestner <mkestner@novell.com> 
 
 	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs: needed to revert
