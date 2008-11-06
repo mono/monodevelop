@@ -1,5 +1,10 @@
 2008-11-06  Mike Krüger  <mike@icsharpcode.net>
 
+	* Gui/NRefactoryResolver.cs: fixed 'Bug 442127 - "Find all references"
+	hit uncancelable infinite loop, 100% CPU'.
+
+2008-11-06  Mike Krüger  <mike@icsharpcode.net>
+
 	* Gui/NRefactoryResolver.cs:
 	* Gui/CodeTemplateCompletionData.cs:
 	* Gui/CSharpTextEditorCompletion.cs: Code templates are now shown in

@@ -599,6 +599,8 @@ namespace MonoDevelop.CSharpBinding
 		
 		string CreateWrapperClassForMember (IMember member)
 		{
+			if (member == null)
+				return "";
 			StringBuilder result = new StringBuilder ();
 			int startLine = member.Location.Line;
 			int endLine   = member.Location.Line;
@@ -610,7 +612,9 @@ namespace MonoDevelop.CSharpBinding
 				                                    this.editor.GetPositionFromLineColumn (endLine, this.editor.GetLineLength (endLine))));
 			} else {
 				Mono.TextEditor.Document doc = new Mono.TextEditor.Document ();
-				doc.Text = File.ReadAllText (fileName);
+				doc.Text = File.ReadAllText (fileName) ?? "";
+				startLine = Math.Min (doc.LineCount, Math.Max (1, startLine));
+				endLine   = Math.Min (doc.LineCount, Math.Max (1, endLine));
 				int startOffset = doc.LocationToOffset (startLine - 1, 0);
 				result.Append (doc.GetTextAt (startOffset,
 				                              doc.LocationToOffset (endLine  - 1, doc.GetLine (endLine - 1).EditableLength) - startOffset));
