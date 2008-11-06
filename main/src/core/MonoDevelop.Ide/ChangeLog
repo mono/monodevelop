@@ -1,5 +1,10 @@
 2008-11-06  Mike Krüger  <mike@icsharpcode.net>
 
+	* MonoDevelop.Ide.Gui.Pads.ClassPad/ProjectNodeBuilder.cs: fixed
+	possible threading problem with class pad update.
+
+2008-11-06  Mike Krüger  <mike@icsharpcode.net>
+
 	* MonoDevelop.Ide.Gui/ProjectOperations.cs:
 	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: fixed 'Bug 442047 - 'Go
 	to declaration' missing for vars'.
