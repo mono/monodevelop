@@ -469,10 +469,12 @@ namespace MonoDevelop.CSharpBinding
 					//System.Console.Write("varType: " + varType);
 					varType = ResolveType (varType);
 					//System.Console.WriteLine(" resolved: " + varType);
+						
 					result = new LocalVariableResolveResult (
-						new LocalVariable (this.CallingMember, identifier, varType,
-							new DomRegion (var.StartPos.Line, var.StartPos.Column, var.EndPos.Line, var.EndPos.Column)),
+						new LocalVariable (CallingMember, identifier, varType,
+							new DomRegion (CallingMember.Location.Line - 2 + var.StartPos.Line, var.StartPos.Column, CallingMember.Location.Line - 2 +var.EndPos.Line, var.EndPos.Column)),
 							var.IsLoopVariable);
+					
 					result.ResolvedType = varType;
 					result.UnresolvedType = varTypeUnresolved;
 					goto end;
