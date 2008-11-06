@@ -1,3 +1,9 @@
+2008-11-06  Mike Krüger  <mike@icsharpcode.net>
+
+	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
+	upped code completion format for "Bug 442147 - Autocompletion shows
+	get_ and set_ methods that should not be shown.".
+
 2008-11-05  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.addin.xml: Bump MD version.
