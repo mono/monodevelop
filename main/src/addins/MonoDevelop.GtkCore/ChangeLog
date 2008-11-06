@@ -1,3 +1,8 @@
+2008-11-05  Mike Kestner <mkestner@novell.com> 
+
+	* MonoDevelop.GtkCore/ReferenceManager.cs: strip Version= out of
+	TargetGtkVersion.
+
 2008-11-05  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.GtkCore.addin.xml: Bump MD version.

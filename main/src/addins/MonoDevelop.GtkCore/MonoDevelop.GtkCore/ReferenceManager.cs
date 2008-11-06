@@ -79,6 +79,9 @@ namespace MonoDevelop.GtkCore {
 				int idx = assm_version.IndexOf (",");
 				if (idx > 0)
 					assm_version = assm_version.Substring (0, idx);
+				idx = assm_version.IndexOf ("=");
+				if (idx > 0)
+					assm_version = assm_version.Substring (idx + 1);
 				string[] toks = assm_version.Split ('.');
 				if (toks.Length > 1)
 					return toks[0] + "." + toks[1];
