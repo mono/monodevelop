@@ -1,5 +1,11 @@
 2008-11-05  Mike Kestner <mkestner@novell.com> 
 
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs: needed to revert
+	the >= to <= change from the 440435 fix since the refmgr is now 
+	reporting TargetGtkVersion without Version=.  oops.
+
+2008-11-05  Mike Kestner <mkestner@novell.com> 
+
 	* MonoDevelop.GtkCore/ReferenceManager.cs: strip Version= out of
 	TargetGtkVersion.
 
