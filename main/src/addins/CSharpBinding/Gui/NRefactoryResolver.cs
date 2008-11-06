@@ -41,6 +41,7 @@ using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Ide.CodeTemplates;
 using MonoDevelop.Projects.Gui.Completion;
 
 using ICSharpCode.NRefactory.Visitors;
@@ -232,6 +233,7 @@ namespace MonoDevelop.CSharpBinding
 			
 			List<string> namespaceList = new List<string> ();
 			namespaceList.Add ("");
+				
 			if (unit != null) {
 				foreach (IUsing u in unit.Usings) {
 					if (u.Namespaces == null)
@@ -257,6 +259,20 @@ namespace MonoDevelop.CSharpBinding
 					if (data != null && context == ExpressionContext.Attribute && data.CompletionText != null && data.CompletionText.EndsWith ("Attribute")) {
 						string newText = data.CompletionText.Substring (0, data.CompletionText.Length - "Attribute".Length);
 						data.SetText (newText);
+					}
+				}
+				AddTemplates (completionList);
+			}
+		}
+
+		public void AddTemplates (CompletionDataList completionList)
+		{
+			if (TextEditorProperties.AutoInsertTemplates) {
+				MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col = new MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector ( this.editor, dom, unit, new DomLocation (editor.CursorLine - 1, editor.CursorColumn - 1));
+				CodeTemplateGroup templateGroup = CodeTemplateService.GetTemplateGroupPerFilename ("a.cs");
+				if (templateGroup != null) {
+					foreach (CodeTemplate template in templateGroup.Templates) {
+						col.AddCompletionData (completionList, template);
 					}
 				}
 			}
