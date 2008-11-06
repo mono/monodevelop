@@ -322,10 +322,10 @@ namespace MonoDevelop.Ide.Gui.Content {
 		
 		public static bool AutoInsertTemplates {
 			get {
-				return properties.Get("AutoInsertTemplates", true);
+				return PropertyService.Get ("AutoInsertTemplates", false);
 			}
 			set {
-				properties.Set("AutoInsertTemplates", value);
+				PropertyService.Set ("AutoInsertTemplates", value);
 			}
 		}
 		

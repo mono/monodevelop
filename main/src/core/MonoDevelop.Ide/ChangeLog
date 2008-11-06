@@ -1,5 +1,11 @@
 2008-11-06  Mike Krüger  <mike@icsharpcode.net>
 
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs:
+	* MonoDevelop.Ide.Gui.Content/TextEditorProperties.cs: Worked on code
+	templates.
+
+2008-11-06  Mike Krüger  <mike@icsharpcode.net>
+
 	* MonoDevelop.Ide.Gui.Pads.ClassPad/ProjectNodeBuilder.cs: fixed
 	possible threading problem with class pad update.
 

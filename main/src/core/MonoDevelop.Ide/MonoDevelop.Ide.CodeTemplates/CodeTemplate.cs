@@ -28,6 +28,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Text;
 using System.Xml;
 
 namespace MonoDevelop.Ide.CodeTemplates
@@ -83,6 +84,71 @@ namespace MonoDevelop.Ide.CodeTemplates
 		{
 			return String.Format ("[CodeTemplate: Shortcut={0}, Description={1}, Text={2}]", this.shortcut, this.description, this.text);
 		}
+		
+		static int FindPrevWordStart (MonoDevelop.Ide.Gui.TextEditor editor, int offset)
+		{
+			while (--offset >= 0 && !Char.IsWhiteSpace (editor.GetCharAt (offset))) 
+				;
+			return ++offset;
+		}
+		
+		static string GetWordBeforeCaret (MonoDevelop.Ide.Gui.TextEditor editor)
+		{
+			int offset = editor.CursorPosition;
+			int start  = FindPrevWordStart (editor, offset);
+			return editor.GetText (start, offset);
+		}
+		
+		static int DeleteWordBeforeCaret (MonoDevelop.Ide.Gui.TextEditor editor)
+		{
+			int offset = editor.CursorPosition;
+			int start  = FindPrevWordStart (editor, offset);
+			editor.DeleteText (start, offset - start);
+			return start;
+		}
+		static string GetLeadingWhiteSpace (MonoDevelop.Ide.Gui.TextEditor editor, int lineNr)
+		{
+			string lineText = editor.GetLineText (lineNr);
+			int index = 0;
+			while (index < lineText.Length && Char.IsWhiteSpace (lineText[index]))
+				index++;
+			return index > 0 ? lineText.Substring (0, index) : "";
+		}
+		
+		public void InsertTemplate (MonoDevelop.Ide.Gui.TextEditor editor)
+		{
+			int offset = editor.CursorPosition;
+			string word = GetWordBeforeCaret (editor).Trim ();
+			if (word.Length > 0)
+				offset = DeleteWordBeforeCaret (editor);
+			
+			string leadingWhiteSpace = GetLeadingWhiteSpace (editor, editor.CursorLine);
+
+			int finalCaretOffset = offset + Text.Length;
+			StringBuilder builder = new StringBuilder ();
+			for (int i = 0; i < Text.Length; ++i) {
+				switch (Text[i]) {
+				case '|':
+					finalCaretOffset = i + offset;
+					break;
+				case '\r':
+					break;
+				case '\n':
+					builder.Append (Environment.NewLine);
+					builder.Append (leadingWhiteSpace);
+					break;
+				default:
+					builder.Append (Text[i]);
+					break;
+				}
+			}
+			
+//			if (endLine > beginLine) {
+//				IndentLines (beginLine+1, endLine, leadingWhiteSpace);
+//			}
+			editor.InsertText (offset, builder.ToString ());
+			editor.CursorPosition = finalCaretOffset;
+		}		
 
 #region I/O
 		public const string Node          = "CodeTemplate";
