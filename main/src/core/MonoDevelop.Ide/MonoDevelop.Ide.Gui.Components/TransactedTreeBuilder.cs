@@ -520,7 +520,12 @@ namespace MonoDevelop.Ide.Gui.Components
 			public void AddChild (object dataObject, bool moveToChild)
 			{
 				CreateNode ();
-				EnsureFilled ();
+				if (!Filled) {
+					// Don't fill the parent now. The child node will be shown
+					// when expanding the parent.
+					UpdateChildren ();
+					return;
+				}
 				TreeNode n = CreateNode (dataObject);
 				if (n != null) {
 					n.Options = node.Options;
@@ -786,6 +791,10 @@ namespace MonoDevelop.Ide.Gui.Components
 					}
 				}
 				if (node.Reset && !node.Filled) {
+					// Remove old children
+					Gtk.TreeIter ci;
+					while (tree.Store.IterChildren (out ci, node.NodeIter))
+						tree.Store.Remove (ref ci);
 					tree.Store.AppendNode (node.NodeIter);	// Dummy node
 					tree.Store.SetValue (node.NodeIter, ExtensibleTreeView.FilledColumn, false);
 				}

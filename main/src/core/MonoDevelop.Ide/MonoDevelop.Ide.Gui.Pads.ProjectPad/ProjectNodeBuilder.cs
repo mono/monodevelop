@@ -169,6 +169,16 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			ITreeBuilder tb = Context.GetTreeBuilder ();
 			
+			if (file.DependsOnFile != null) {
+				if (!tb.MoveToObject (file.DependsOnFile)) {
+					// The parent is not in the tree. Add it now, and it will add this file as a child.
+					AddFile (file.DependsOnFile, project);
+				}
+				else
+					tb.AddChild (file);
+				return;
+			}
+			
 			if (file.IsExternalToProject) {
 				// Files from outside the project folder are added in a special folder
 				if (!tb.MoveToObject (new LinkedFilesFolder (project))) {

@@ -1,3 +1,14 @@
+2008-11-06  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Components/TransactedTreeBuilder.cs: AddChild
+	should not trigger the filling of the parent. If the parent is not
+	filled, just do nothing. The new child will be shown when the parent
+	is expanded.
+
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs: Add
+	dependent files under the files they depend upon. Fixes bug #436774 -
+	Moving aspx with codebehind between directories is incorrect.
+
 2008-11-06  Mike Krüger  <mike@icsharpcode.net>
 
 	* MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs:
