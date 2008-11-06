@@ -416,23 +416,6 @@ namespace MonoDevelop.SourceEditor
 			return Document.GetTextAt (start, offset - start);
 		}
 		
-		public int DeleteWordBeforeCaret ()
-		{
-			int offset = this.Caret.Offset;
-			int start  = FindPrevWordStart (offset);
-			Document.Remove (start, offset - start);
-			return start;
-		}
-
-		public string GetLeadingWhiteSpace (int lineNr)
-		{
-			LineSegment line = Document.GetLine (lineNr);
-			int index = 0;
-			while (index < line.EditableLength && Char.IsWhiteSpace (Document.GetCharAt (line.Offset + index)))
-				index++;
-			return index > 0 ? Document.GetTextAt (line.Offset, index) : "";
-		}
-
 		public bool IsTemplateKnown ()
 		{
 			string word = GetWordBeforeCaret ();
@@ -471,37 +454,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public void InsertTemplate (CodeTemplate template)
 		{
-			int offset = Caret.Offset;
-			string word = GetWordBeforeCaret ().Trim ();
-			if (word.Length > 0)
-				offset = DeleteWordBeforeCaret ();
-			
-			string leadingWhiteSpace = GetLeadingWhiteSpace (Caret.Line);
-
-			int finalCaretOffset = offset + template.Text.Length;
-			StringBuilder builder = new StringBuilder ();
-			for (int i = 0; i < template.Text.Length; ++i) {
-				switch (template.Text[i]) {
-				case '|':
-					finalCaretOffset = i + offset;
-					break;
-				case '\r':
-					break;
-				case '\n':
-					builder.Append (Environment.NewLine);
-					builder.Append (leadingWhiteSpace);
-					break;
-				default:
-					builder.Append (template.Text[i]);
-					break;
-				}
-			}
-			
-//			if (endLine > beginLine) {
-//				IndentLines (beginLine+1, endLine, leadingWhiteSpace);
-//			}
-			Document.Insert (offset, builder.ToString ());
-			Caret.Offset = finalCaretOffset;
+			template.InsertTemplate (MonoDevelop.Ide.Gui.TextEditor.GetTextEditor (this.view));
 		}		
 #endregion
 		
