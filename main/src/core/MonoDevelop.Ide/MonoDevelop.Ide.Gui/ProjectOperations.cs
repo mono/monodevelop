@@ -1016,11 +1016,7 @@ namespace MonoDevelop.Ide.Gui
 					FileService.DeleteFile (filename);
 			}
 			
-			if (project.IsCompileable (newfilename)) {
-				project.AddFile (newfilename, BuildAction.Compile);
-			} else {
-				project.AddFile (newfilename, BuildAction.None);
-			}
+			project.AddFile (newfilename);
 			return newfilename;
 		}		
 

@@ -553,9 +553,7 @@ namespace MonoDevelop.Ide.Gui
 			if (newFiles.Count > 0) {
 				if (project.NewFileSearch == NewFileSearch.OnLoadAutoInsert) {
 					foreach (string file in newFiles) {
-						ProjectFile newFile = new ProjectFile(file);
-						newFile.BuildAction = project.IsCompileable(file) ? BuildAction.Compile : BuildAction.None;
-						project.Files.Add(newFile);
+						project.AddFile (file);
 					}		
 				} else {
 					DispatchService.GuiDispatch (

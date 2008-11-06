@@ -60,7 +60,7 @@ namespace MonoDevelop.Ide.Templates
 			buildAction = BuildAction.Compile;
 			buildAction = filenode.GetAttribute ("BuildAction");
 			if (string.IsNullOrEmpty (buildAction))
-				buildAction = BuildAction.Compile;
+				buildAction = null;
 			
 			string suppressAutoOpenStr = filenode.GetAttribute ("SuppressAutoOpen");
 			if (!string.IsNullOrEmpty (suppressAutoOpenStr)) {
@@ -102,10 +102,11 @@ namespace MonoDevelop.Ide.Templates
 				throw new UserException (GettextCatalog.GetString ("The file '{0}' already exists in the project.", Path.GetFileName (generatedFile)));
 			
 			generatedFile = SaveFile (project, language, directory, name);
-			if (generatedFile != null) {
+			if (generatedFile != null) {		
+				string buildAction = this.buildAction ?? project.GetDefaultBuildAction (generatedFile);
 				ProjectFile projectFile = new ProjectFile (generatedFile, buildAction);
+				
 				if (!string.IsNullOrEmpty (dependsOn)) {
-					System.Console.WriteLine(dependsOn);
 					Hashtable tags = new Hashtable ();
 					ModifyTags (project, language, null, generatedFile, ref tags);
 					string parsedDepName = StringParserService.Parse (dependsOn, HashtableToStringArray (tags));

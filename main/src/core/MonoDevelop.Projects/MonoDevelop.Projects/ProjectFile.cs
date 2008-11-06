@@ -53,7 +53,7 @@ namespace MonoDevelop.Projects
 		string contentType = String.Empty;
 		
 		[ItemProperty("buildaction")]
-		string buildaction;
+		string buildaction = MonoDevelop.Projects.BuildAction.None;
 		
 		string dependsOn;
 		

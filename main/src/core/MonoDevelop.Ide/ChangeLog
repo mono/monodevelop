@@ -1,3 +1,18 @@
+2008-11-06  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Gui/RootWorkspace.cs:
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/IncludeFilesDialog.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs: Use
+	new default build action API.
+
+	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs: Use
+	default build action when template does not have an explicit build
+	action set, instead of assuming BuildAction.Compile. Fixes Bug 427508
+	- adding a 'Empty HTML File' to web site is included in build by
+	default.
+
 2008-11-06  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.Components/TransactedTreeBuilder.cs: AddChild

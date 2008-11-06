@@ -306,10 +306,12 @@ namespace MonoDevelop.Moonlight
 				e.ProjectFile.Generator = "MSBuild:MarkupCompilePass1";
 				e.ProjectFile.ContentType = "Designer";
 				
-				if (e.ProjectFile.BuildAction == BuildAction.Compile
-				    || e.ProjectFile.BuildAction == BuildAction.None)
-					//fixme: detect Application xaml
-					e.ProjectFile.BuildAction = BuildAction.Page;
+				//fixme: detect Application xaml?
+				//if (e.ProjectFile.BuildAction == BuildAction.Page
+				//    && Path.GetFileName (e.ProjectFile.Name).Contains ("Application"))
+				//{
+				//	e.ProjectFile.BuildAction = BuildAction.ApplicationDefinition;
+				//}
 			}
 			
 			//find any related files, e.g codebehind
@@ -324,8 +326,17 @@ namespace MonoDevelop.Moonlight
 			if (filesToAdd != null) {
 				foreach (string file in filesToAdd) {
 					//NOTE: this only adds files if they are not already in the project
-					AddFile (file, BuildAction.Compile );
+					AddFile (file);
 				}
+			}
+		}
+		
+		public override string GetDefaultBuildAction (string fileName)
+		{
+			if (Path.GetExtension (fileName) == ".xaml") {
+				return BuildAction.Page;
+			} else {
+				return base.GetDefaultBuildAction (fileName);
 			}
 		}
 		

@@ -203,6 +203,14 @@ namespace MonoDevelop.Projects
 		{
 			return false;
 		}
+		
+		public virtual string GetDefaultBuildAction (string fileName)
+		{
+			if (IsCompileable (fileName))
+				return BuildAction.Compile;
+			else
+				return BuildAction.None;
+		}
 				
 		public static Project LoadProject (string filename, IProgressMonitor monitor)
 		{
@@ -222,6 +230,11 @@ namespace MonoDevelop.Projects
 			base.Dispose ();
 		}
 		
+		public ProjectFile AddFile (string filename)
+		{
+			return AddFile (filename, null);
+		}
+		
 		public ProjectFile AddFile (string filename, string buildAction)
 		{
 			foreach (ProjectFile fInfo in Files) {
@@ -229,6 +242,11 @@ namespace MonoDevelop.Projects
 					return fInfo;
 				}
 			}
+			
+			if (String.IsNullOrEmpty (buildAction)) {
+				buildAction = GetDefaultBuildAction (filename);
+			}
+			
 			ProjectFile newFileInformation = new ProjectFile (filename, buildAction);
 			Files.Add (newFileInformation);
 			return newFileInformation;

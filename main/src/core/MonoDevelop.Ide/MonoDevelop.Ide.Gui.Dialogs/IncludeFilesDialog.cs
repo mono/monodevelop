@@ -111,14 +111,14 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				string fileName = (string) store.GetValue(current, 1);
 			
 				// process raw values into actual project details
-				string file = FileService.RelativeToAbsolutePath(project.BaseDirectory,fileName);
-				ProjectFile finfo = new ProjectFile(file);
+				string file = FileService.RelativeToAbsolutePath (project.BaseDirectory,fileName);
 				if (isSelected) {
-					finfo.BuildAction = project.IsCompileable(file) ? BuildAction.Compile : BuildAction.None;
+					project.AddFile (file);
 				} else {
-					finfo.BuildAction = BuildAction.Content;
+					ProjectFile pf = project.AddFile (file, BuildAction.None);
+					if (pf != null)
+						pf.Visible = false;
 				}
-				project.Files.Add(finfo);
 				
 				store.IterNext(ref current);
 			}

@@ -479,8 +479,6 @@ namespace MonoDevelop.AspNet
 				return;
 			}
 			
-			SetDefaultBuildAction (e.ProjectFile);
-			
 			IEnumerable<string> filesToAdd = MonoDevelop.DesignerSupport.CodeBehind.GuessDependencies
 				(this, e.ProjectFile, groupedExtensions);
 			
@@ -495,31 +493,23 @@ namespace MonoDevelop.AspNet
 			if (filesToAdd != null) {
 				foreach (string file in filesToAdd) {
 					//NOTE: this only adds files if they are not already in the project
-					AddFile (file, GetDefaultBuildAction (file));
+					AddFile (file);
 				}
 			}
 		}
 		
-		string GetDefaultBuildAction (string file)
+		public override string GetDefaultBuildAction (string fileName)
 		{
-			WebSubtype type = DetermineWebSubtype (file);
+			WebSubtype type = DetermineWebSubtype (fileName);
 			if (type == WebSubtype.Code)
 				return BuildAction.Compile;
 			if (type != WebSubtype.None)
 				return BuildAction.Content;
 			else
-				return BuildAction.None;
+				return base.GetDefaultBuildAction (fileName);
 		}
 		
 		static string[] groupedExtensions =  { ".aspx", ".master", ".ashx", ".ascx", ".asmx", ".asax" };
-		
-		void SetDefaultBuildAction (ProjectFile file)
-		{
-			//make sure web files are deployed, not built
-			WebSubtype type = DetermineWebSubtype (file);
-			if (type != WebSubtype.None && type != WebSubtype.Code)
-				file.BuildAction = BuildAction.Content;
-		}
 		
 		#endregion
 		

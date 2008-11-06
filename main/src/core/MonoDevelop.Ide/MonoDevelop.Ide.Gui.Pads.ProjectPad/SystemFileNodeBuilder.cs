@@ -151,10 +151,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				Project project = node.GetParentDataItem (typeof(Project), true) as Project;
 				SystemFile file = (SystemFile) node.DataItem;
 				
-				if (project.IsCompileable (file.Path))
-					project.AddFile (file.Path, BuildAction.Compile);
-				else
-					project.AddFile (file.Path, BuildAction.None);
+				project.AddFile (file.Path);
 				projects.Add (project);
 			}
 			IdeApp.ProjectOperations.Save (projects);

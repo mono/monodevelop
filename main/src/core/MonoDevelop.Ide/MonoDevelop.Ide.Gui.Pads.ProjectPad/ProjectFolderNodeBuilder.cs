@@ -224,12 +224,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					ITreeNavigator nav = node.Clone ();
 					GetFiles (nav, filesToAdd);
 	
-					foreach (SystemFile file in filesToAdd) {
-						if (project.IsCompileable (file.Path))
-							project.AddFile (file.Path, BuildAction.Compile);
-						else
-							project.AddFile (file.Path, BuildAction.None);
-					}
+					foreach (SystemFile file in filesToAdd)
+						project.AddFile (file.Path);
 
 					projects.Add (project);
 				}

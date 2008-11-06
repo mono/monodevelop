@@ -1,3 +1,11 @@
+2008-11-06  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects/Project.cs: Add API for automatically setting
+	build action on new files.
+
+	* MonoDevelop.Projects/ProjectFile.cs: Set default build action so it's
+	never null.
+
 2008-11-06  Mike Krüger  <mike@icsharpcode.net>
 
 	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
