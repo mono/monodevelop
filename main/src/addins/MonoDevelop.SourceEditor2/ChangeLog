@@ -1,5 +1,11 @@
 2008-11-06  Mike Krüger  <mike@icsharpcode.net>
 
+	* MonoDevelop.SourceEditor/EditActions.cs:
+	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: fixes some bugs with
+	code templates and auto insert brackets.
+
+2008-11-06  Mike Krüger  <mike@icsharpcode.net>
+
 	* MonoDevelop.SourceEditor/LanguageItemWindow.cs:
 	* MonoDevelop.SourceEditor/LanguageItemTooltipProvider.cs:
 	* MonoDevelop.SourceEditor/CompileErrorTooltipProvider.cs: fixed 'Bug

@@ -64,7 +64,8 @@ namespace MonoDevelop.SourceEditor
 		
 		public static void AdvancedBackspace (TextEditorData data)
 		{
-			DeleteActions.Backspace (data, RemoveCharBeforCaret);
+			RemoveCharBeforCaret (data);
+			//DeleteActions.Backspace (data, RemoveCharBeforCaret);
 		}
 		
 		const string open    = "'\"([{<";
@@ -88,6 +89,7 @@ namespace MonoDevelop.SourceEditor
 			if (SourceEditorOptions.Options.AutoInsertMatchingBracket) {
 				char ch = data.Document.GetCharAt (data.Caret.Offset - 1);
 				int idx = open.IndexOf (ch);
+				System.Console.WriteLine(idx);
 				if (idx >= 0) {
 					int nextCharOffset = GetNextNonWsCharOffset (data, data.Caret.Offset);
 					if (nextCharOffset >= 0 && closing[idx] == data.Document.GetCharAt (nextCharOffset)) {
@@ -98,7 +100,7 @@ namespace MonoDevelop.SourceEditor
 					}
 				}
 			}
-			DeleteActions.RemoveCharBeforeCaret (data);
+			DeleteActions.Backspace (data);
 		}
 	}
 }

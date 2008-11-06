@@ -121,12 +121,12 @@ namespace MonoDevelop.SourceEditor
 				if (!(CurrentMode is IdeViMode))
 					CurrentMode = new IdeViMode (this);
 			} else {
-				if (!(CurrentMode is SimpleEditMode)){
+		//		if (!(CurrentMode is SimpleEditMode)){
 					SimpleEditMode simpleMode = new SimpleEditMode ();
 					simpleMode.KeyBindings [EditMode.GetKeyCode (Gdk.Key.Tab)] = new TabAction (this).Action;
 					simpleMode.KeyBindings [EditMode.GetKeyCode (Gdk.Key.BackSpace)] = EditActions.AdvancedBackspace;
 					CurrentMode = simpleMode;
-				}
+		//		}
 			}
 		}
 
@@ -234,21 +234,21 @@ namespace MonoDevelop.SourceEditor
 				return false;
 			}
 			
-			bool inStringOrComment = false;
-			bool templateDetected  = SourceEditorOptions.Options.AutoInsertTemplates && IsTemplateKnown ();
-			if (SourceEditorOptions.Options.AutoInsertMatchingBracket && (ch == '{' || ch == '[' || ch == '(' || ch == '"' || ch == '\'' ) || templateDetected) {
-				LineSegment line = Document.GetLine (Caret.Line);
-				Stack<Span> stack = line.StartSpan != null ? new Stack<Span> (line.StartSpan) : new Stack<Span> ();
-				SyntaxModeService.ScanSpans (Document, Document.SyntaxMode, stack, line.Offset, Caret.Offset);
-				foreach (Span span in stack) {
-					if (span.Color == "comment" || span.Color == "literal") {
-						inStringOrComment = true;
-						break;
-					}
-				}
-			}
+			
 			if (Document == null)
 				return true;
+			
+			bool inStringOrComment = false;
+			LineSegment line = Document.GetLine (Caret.Line);
+			Stack<Span> stack = line.StartSpan != null ? new Stack<Span> (line.StartSpan) : new Stack<Span> ();
+			SyntaxModeService.ScanSpans (Document, Document.SyntaxMode, stack, line.Offset, Caret.Offset);
+			foreach (Span span in stack) {
+				if (span.Color == "comment" || span.Color == "literal") {
+					inStringOrComment = true;
+					break;
+				}
+			}
+			
 			Document.BeginAtomicUndo ();
 			if (extension != null) {
 				if (ExtensionKeyPress (evnt.Key, ch, evnt.State)) 
@@ -256,6 +256,8 @@ namespace MonoDevelop.SourceEditor
 			} else {
 				result = base.OnIMProcessedKeyPressEvent (evnt, ch);
 			}
+			
+			bool templateDetected  = SourceEditorOptions.Options.AutoInsertTemplates && IsTemplateKnown ();
 			
 			if (!inStringOrComment && templateDetected)
 				DoInsertTemplate ();
@@ -434,6 +436,7 @@ namespace MonoDevelop.SourceEditor
 		public bool IsTemplateKnown ()
 		{
 			string word = GetWordBeforeCaret ();
+			
 			CodeTemplateGroup templateGroup = CodeTemplateService.GetTemplateGroupPerFilename (this.view.ContentName);
 			if (String.IsNullOrEmpty (word) || templateGroup == null) 
 				return false;
