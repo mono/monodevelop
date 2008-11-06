@@ -61,11 +61,18 @@ namespace MonoDevelop.Projects.Gui.Completion
 			scrollbar = new VScrollbar (null);
 			scrollbar.ValueChanged += new EventHandler (OnScrollChanged); 
 			box.PackStart (scrollbar, false, false, 0);
-			
+			list.ButtonPressEvent += delegate(object o, ButtonPressEventArgs args) {
+				if (args.Event.Button == 1 && args.Event.Type == Gdk.EventType.TwoButtonPress)
+					DoubleClick ();
+			};
 			vbox.PackStart (box, true, true, 0);
 			Add (vbox);
 			
 			this.TypeHint = WindowTypeHint.Menu;
+		}
+		protected virtual void DoubleClick ()
+		{
+			
 		}
 		
 		public new void Show ()
@@ -422,7 +429,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 					value = 0;
 				if (value >= win.DataProvider.ItemCount)
 					value = win.DataProvider.ItemCount - 1;
-					
+				
 				if (value != selection) 
 				{
 					selection = value;

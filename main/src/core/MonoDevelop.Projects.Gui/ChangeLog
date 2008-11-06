@@ -1,3 +1,10 @@
+2008-11-06  Mike Krüger  <mike@icsharpcode.net>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs: fixed
+	'Bug 442160 - Double-click on scrollbar down arrow of code completion
+	menu results in selection'.
+
 2008-11-05  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Make "Tab" key

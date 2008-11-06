@@ -265,14 +265,10 @@ namespace MonoDevelop.Projects.Gui.Completion
 			UpdateDeclarationView ();
 		}
 
-		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
+		protected override void DoubleClick ()
 		{
-			bool ret = base.OnButtonPressEvent (evnt);
-			if (evnt.Button == 1 && evnt.Type == Gdk.EventType.TwoButtonPress) {
-				UpdateWord ();
-				Hide ();
-			}
-			return ret;
+			UpdateWord ();
+			Hide ();
 		}
 		
 		protected override void OnSelectionChanged ()
