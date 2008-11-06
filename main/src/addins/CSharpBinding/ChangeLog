@@ -1,3 +1,7 @@
+2008-11-06  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Gui/NRefactoryResolver.cs: Disable debug message.
+
 2008-11-06  Mike Krüger  <mike@icsharpcode.net>
 
 	* Gui/NRefactoryResolver.cs: fixed 'Bug 442127 - "Find all references"

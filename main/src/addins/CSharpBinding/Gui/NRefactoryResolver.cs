@@ -343,7 +343,7 @@ namespace MonoDevelop.CSharpBinding
 			expr = ParseExpression (expressionResult);
 //			System.Console.WriteLine("parsed expression:" + expr);
 			if (expr == null) {
-				System.Console.WriteLine("Can't parse expression");
+//				System.Console.WriteLine("Can't parse expression");
 				return null;
 			}
 			
