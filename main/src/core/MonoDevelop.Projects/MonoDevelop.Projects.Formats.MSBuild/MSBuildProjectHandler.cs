@@ -286,6 +286,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				
 				MSBuildPropertyGroup grp = CreateMergedConfiguration (readConfigData, conf, platform);
 				SolutionItemConfiguration config = EntityItem.CreateConfiguration (conf);
+				
+				if (config is DotNetProjectConfiguration) {
+					// Clean the default assembly name
+					((DotNetProjectConfiguration)config).OutputAssembly = string.Empty;
+				}
+				
 				config.Platform = platform;
 				DataItem data = ReadPropertyGroupMetadata (ser, grp, config);
 				ser.Deserialize (config, data);
@@ -293,7 +299,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				
 				if (config is DotNetProjectConfiguration) {
 					DotNetProjectConfiguration dpc = (DotNetProjectConfiguration) config;
-					dpc.OutputAssembly = string.Empty;
 					if (dpc.CompilationParameters != null) {
 						data = ReadPropertyGroupMetadata (ser, grp, dpc.CompilationParameters);
 						ser.Deserialize (dpc.CompilationParameters, data);
@@ -420,9 +425,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				Item.ExtendedProperties.Remove ("ProjectTypeGuids");
 			
 			ser.Serialize (Item, Item.GetType ());
-			ser.InternalItemProperties.ItemData.Sort (globalConfigOrder);
-			foreach (DataNode node in ser.InternalItemProperties.ItemData)
-				SetGroupProperty (globalGroup, node.Name, GetXmlString (node), node is DataItem);
+			
+			if (fileContent == null)
+				ser.InternalItemProperties.ItemData.Sort (globalConfigOrder);
+			
+			WritePropertyGroupMetadata (globalGroup, ser.InternalItemProperties.ItemData, Item, ser);
 			
 			// Find a common assembly name for all configurations
 			
@@ -482,13 +489,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			List<ConfigData> configData = GetConfigData (msproject);
 			
 			foreach (SolutionItemConfiguration conf in eitem.Configurations) {
+				bool newConf = false;
 				MSBuildPropertyGroup propGroup = FindPropertyGroup (configData, conf);
 				if (propGroup == null) {
 					propGroup = msproject.AddNewPropertyGroup (false);
 					propGroup.Condition = BuildConfigCondition (conf.Name, conf.Platform);
+					newConf = true;
 				}
-				else
-					propGroup.RemoveAllProperties ();
 				
 				DotNetProjectConfiguration netConfig = conf as DotNetProjectConfiguration;
 				if (netConfig != null) {
@@ -511,9 +518,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					DataItem ditemComp = (DataItem) ser.Serialize (netConfig.CompilationParameters);
 					ditem.ItemData.AddRange (ditemComp.ItemData);
 				}
+
+				if (newConf)
+					ditem.ItemData.Sort (configOrder);
 				
-				ditem.ItemData.Sort (configOrder);
-				WritePropertyGroupMetadata (propGroup, ditem);
+				WritePropertyGroupMetadata (propGroup, ditem.ItemData, conf, ser);
 				
 				if (!string.IsNullOrEmpty (assemblyName))
 					propGroup.RemoveProperty ("AssemblyName");
@@ -736,12 +745,19 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return ditem;
 		}
 		
-		void WritePropertyGroupMetadata (MSBuildPropertyGroup propGroup, DataItem ditem)
+		void WritePropertyGroupMetadata (MSBuildPropertyGroup propGroup, DataCollection itemData, object itemToReplace, MSBuildSerializer ser)
 		{
-			if (ditem.HasItemData) {
-				foreach (DataNode node in ditem.ItemData)
-					SetGroupProperty (propGroup, node.Name, GetXmlString (node), node is DataItem);
+			var notWrittenProps = new HashSet<string> ();
+			ClassDataType dt = (ClassDataType) ser.DataContext.GetConfigurationDataType (itemToReplace.GetType ());
+			foreach (ItemProperty prop in dt.GetProperties (ser.SerializationContext, itemToReplace))
+				notWrittenProps.Add (prop.Name);
+	
+			foreach (DataNode node in itemData) {
+				SetGroupProperty (propGroup, node.Name, GetXmlString (node), node is DataItem);
+				notWrittenProps.Remove (node.Name);
 			}
+			foreach (string prop in notWrittenProps)
+				propGroup.RemoveProperty (prop);
 		}
 
 		List<ConfigData> GetConfigData (MSBuildProject msproject)
