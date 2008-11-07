@@ -46,6 +46,7 @@ namespace MonoDevelop.Ide.Gui
 		TabLabel tabLabel;
 		Widget    tabPage;
 		Notebook  tabControl;
+		SeparatorToolItem separatorItem;
 		
 		string myUntitledTitle     = null;
 		string _titleHolder = "";
@@ -319,12 +320,19 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (toolbarBox == null || subViewToolbar == null)
 				return;
-			
-			SeparatorToolItem sep = subViewToolbar.GetNthItem (subViewToolbar.NumChildren - 1) as SeparatorToolItem;
-			if (sep != null && pathBox == null)
-				subViewToolbar.Remove (sep);
-			else if (sep == null && pathBox != null)
-				subViewToolbar.Insert (new SeparatorToolItem (), -1);
+
+			if (separatorItem != null && pathBox == null) {
+				subViewToolbar.Remove (separatorItem);
+				separatorItem = null;
+			} else if (separatorItem == null && pathBox != null) {
+				separatorItem = new SeparatorToolItem ();
+				subViewToolbar.Insert (separatorItem, -1);
+			} else if (separatorItem != null && pathBox != null) {
+				if (subViewToolbar.GetItemIndex(separatorItem) != subViewToolbar.NumChildren - 1) {
+					subViewToolbar.Remove (separatorItem);
+					subViewToolbar.Insert (separatorItem, -1);
+				}
+			}
 		}
 		
 		void CheckCreateToolbarBox ()
@@ -384,7 +392,7 @@ namespace MonoDevelop.Ide.Gui
 			button.IsImportant = true;
 			button.Clicked += new EventHandler (OnButtonToggled);
 			button.ShowAll ();
-			subViewToolbar.Insert (button, subViewToolbar.NumChildren - 1);
+			subViewToolbar.Insert (button, -1);
 			subViewNotebook.AppendPage (page, new Gtk.Label ());
 			page.ShowAll ();
 			EnsureToolbarBoxSeparator ();
@@ -496,17 +504,16 @@ namespace MonoDevelop.Ide.Gui
 		
 		protected void ShowPage (int npage)
 		{
-			if (subViewNotebook.CurrentPage == npage)
-				return;
-				
 			if (updating) return;
 			updating = true;
 			
 			subViewNotebook.CurrentPage = npage;
 			Gtk.Widget[] buttons = subViewToolbar.Children;
 			for (int n=0; n<buttons.Length; n++) {
-				ToggleToolButton b = (ToggleToolButton) buttons [n];
-				b.Active = (n == npage);
+				if (buttons [n] is ToggleToolButton) {
+					ToggleToolButton b = (ToggleToolButton) buttons [n];
+					b.Active = (n == npage);
+				}
 			}
 
 			updating = false;

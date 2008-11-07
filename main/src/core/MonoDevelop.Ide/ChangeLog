@@ -1,3 +1,13 @@
+2008-11-07  Eric Butler  <eric@extremeboredom.net>
+
+	* MonoDevelop.Ide.Gui.BrowserDisplayBinding/HtmlViewPane.cs: Show
+	"Preview" instead of "Web Browser" if a secondary view, remove
+	outdated/broken hack for GTK+ 2.4, and don't allow user to un-check
+	buttons.
+		
+	* MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs: Move separator to end of
+	toolbar after adding a button if one already exists.
+
 2008-11-06  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.Gui/RootWorkspace.cs:

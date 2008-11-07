@@ -50,7 +50,10 @@ namespace MonoDevelop.Ide.Gui.BrowserDisplayBinding
 		public override string TabPageLabel
 		{
 			get {
-				return GettextCatalog.GetString ("Web Browser");
+				if (parent != null)
+					return GettextCatalog.GetString ("Preview");
+				else
+					return GettextCatalog.GetString ("Web Browser");
 			}
 		}
 		
@@ -59,21 +62,9 @@ namespace MonoDevelop.Ide.Gui.BrowserDisplayBinding
 			try {
 				ITextBuffer buffer = (ITextBuffer) parent.GetContent (typeof(ITextBuffer));
 				htmlViewPane.IWebBrowser.LoadHtml (buffer.Text);
-				GLib.Timeout.Add (50, new GLib.TimeoutHandler (checkFocus));
 			} catch (Exception e) {
 				LoggingService.LogError ("Exception in BrowserPane.BaseContentChanged", e);
 			}
-		}
-
-		public bool checkFocus ()
-		{			
-			//not sure why this was here, may be to fix a GTK+ 2.4 bug
-			Gtk.ScrolledWindow sw = (ScrolledWindow) ((VBox) parent.Control).Children [1];
-			if (sw.Children[0].HasFocus == false) {
-				sw.Children[0].GrabFocus ();
-				return false;
-			}
-			return true;
 		}
 
 		public override Widget Control {
