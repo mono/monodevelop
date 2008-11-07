@@ -1,3 +1,7 @@
+2008-11-06  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am: Fix build dependencies.
+
 2008-11-06  Mike Krüger  <mike@icsharpcode.net>
 
 	* Mono.TextEditor.Highlighting/SyntaxMode.cs: Fixed 'Bug 442110 - Syntax

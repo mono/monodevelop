@@ -80,7 +80,7 @@ $(DATA_FILE_BUILD): $(srcdir)$(subst $(ADDIN_BUILD),, $@)
 	mkdir -p $(ADDIN_BUILD)
 	cp $(srcdir)/templates$(subst $(ADDIN_BUILD),,$@) $@
 
-$(ASSEMBLY): $(FILES) $(build_resources)
+$(ASSEMBLY): $(build_sources) $(build_resources)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) $(REFS) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -target:library
 

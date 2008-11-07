@@ -1,5 +1,10 @@
 2008-11-06  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Moonlight/MoonlightParsedDocument.cs: Fix build
+	dependencies.
+
+2008-11-06  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Moonlight/MoonlightProject.cs: Use new API; move default
 	build action code into GetDefaultBuildAction override.
 

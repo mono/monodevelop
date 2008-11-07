@@ -45,7 +45,7 @@ namespace MonoDevelop.Moonlight
 		
 		public MonoDevelop.Xml.StateEngine.XDocument XDocument { get; internal set; }
 		
-		public override IEnumerable<FoldingRegion> GenerateFolds()
+		public override IEnumerable<FoldingRegion> GenerateFolds ()
 		{
 			if (XDocument == null)
 				yield break;

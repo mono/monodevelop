@@ -1,3 +1,7 @@
+2008-11-06  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am: Fix build dependencies.
+
 2008-11-05  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Database.Sql.Npgsql.addin.xml: Bump MD version.
