@@ -1,3 +1,9 @@
+2008-11-07  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: Add submenu on
+	context menu for selecting input method. Seems be be the standard
+	thing to do in GTK.
+
 2008-11-06  Mike Krüger  <mike@icsharpcode.net>
 
 	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: Worked on code

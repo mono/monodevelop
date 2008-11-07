@@ -97,6 +97,15 @@ namespace Mono.TextEditor
 			get { return imContext; }
 		}
 		
+		public MenuItem CreateInputMethodMenuItem (string label)
+		{
+			MenuItem imContextMenuItem = new MenuItem (label);
+			Menu imContextMenu = new Menu ();
+			imContextMenuItem.Submenu = imContextMenu;
+			IMContext.AppendMenuitems (imContextMenu);
+			return imContextMenuItem;
+		}
+		
 		public TextEditorOptions Options {
 			get {
 				return textEditorData.Options;

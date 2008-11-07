@@ -373,6 +373,8 @@ namespace MonoDevelop.SourceEditor
 			HideTooltip ();
 			CommandEntrySet cset = IdeApp.CommandService.CreateCommandEntrySet ("/MonoDevelop/SourceEditor2/ContextMenu/Editor");
 			Gtk.Menu menu = IdeApp.CommandService.CreateMenu (cset);
+			menu.Append (new SeparatorMenuItem ());
+			menu.Append (CreateInputMethodMenuItem (GettextCatalog.GetString ("_Input Methods")));
 			
 			menu.Destroyed += delegate {
 				this.QueueDraw ();

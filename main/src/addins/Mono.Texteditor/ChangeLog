@@ -1,3 +1,8 @@
+2008-11-07  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextEditor/TextEditor.cs: Add helper for generating menu for
+	selecting input method.
+
 2008-11-06  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am: Fix build dependencies.
