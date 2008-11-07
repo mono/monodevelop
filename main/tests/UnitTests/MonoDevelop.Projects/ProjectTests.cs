@@ -73,7 +73,7 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (0, res.WarningCount);
 			Assert.AreEqual (1, res.BuildCount);
 
-			string spath = Util.Combine (sol.BaseDirectory, "ResourcesTester", "bin", "Debug", "ca", "ResourcesTesterNamespace.resources.dll");
+			string spath = Util.Combine (sol.BaseDirectory, "ResourcesTester", "bin", "Debug", "ca", "ResourcesTesterApp.resources.dll");
 			Assert.IsTrue (File.Exists (spath), "Satellite assembly not generated");
 
 			sol.Clean (Util.GetMonitor (), "Debug");
