@@ -1,8 +1,0 @@
-<objects attr-sync="on">
-  <object type="MonoDevelop.SourceEditor.ExtensibleTextEditor" palette-category="General" allow-children="false" base-type="Gtk.DrawingArea">
-    <itemgroups>
-    </itemgroups>
-    <signals>
-    </signals>
-  </object>
-</objects>
