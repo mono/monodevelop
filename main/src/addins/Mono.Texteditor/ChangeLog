@@ -1,3 +1,7 @@
+2008-11-07  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* Mono.TextEditor.Vi/ViMode.cs: Implement p P.
+
 2008-11-07  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.TextEditor/TextEditor.cs: Add helper for generating menu for

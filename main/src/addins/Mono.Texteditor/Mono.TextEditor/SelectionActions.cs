@@ -89,17 +89,10 @@ namespace Mono.TextEditor
 				if (data.Caret.Offset < data.SelectionAnchor)
 					data.SetSelectLines (data.Caret.Line, data.Document.OffsetToLineNumber (data.SelectionAnchor));
 				else data.SetSelectLines (data.Document.OffsetToLineNumber (data.SelectionAnchor), data.Caret.Line);
-			}
+			} else data.SetSelectLines (data.Caret.Line, data.Caret.Line);
 			data.Caret.PreserveSelection = false;
 		}
 
-		public static void SelectLine (TextEditorData data, Action<TextEditorData> caretMoveAction)
-		{
-			StartLineSelection (data);
-			caretMoveAction (data);
-			EndLineSelection (data);
-		}
-		
 		public static void SelectAll (TextEditorData data)
 		{
 			data.Caret.AutoScrollToCaret = false;

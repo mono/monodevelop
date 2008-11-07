@@ -196,20 +196,26 @@ namespace Mono.TextEditor.Vi
 						
 					case 'x':
 						Status = string.Empty;
-						RunAction (DeleteActions.Delete);
+						if (!Data.IsSomethingSelected)
+							RunAction (SelectionActions.FromMoveAction (CaretMoveActions.Right));
+						RunAction (ClipboardActions.Cut);
 						return;
 						
 					case 'X':
 						Status = string.Empty;
-						RunAction (DeleteActions.Backspace);
+						if (!Data.IsSomethingSelected && 0 < Caret.Offset)
+							RunAction (SelectionActions.FromMoveAction (CaretMoveActions.Left));
+						RunAction (ClipboardActions.Cut);
 						return;
 						
 					case 'D':
-						RunAction (DeleteActions.FromMoveAction (CaretMoveActions.LineEnd));
+						RunAction (SelectionActions.FromMoveAction (CaretMoveActions.LineEnd));
+						RunAction (ClipboardActions.Cut);
 						return;
 						
 					case 'C':
-						RunAction (DeleteActions.FromMoveAction (CaretMoveActions.LineEnd));
+						RunAction (SelectionActions.FromMoveAction (CaretMoveActions.LineEnd));
+						RunAction (ClipboardActions.Cut);
 						goto case 'i';
 						
 					case '>':
@@ -229,6 +235,12 @@ namespace Mono.TextEditor.Vi
 						Search ();
 						searchBackward = !searchBackward;
 						return;
+					case 'p':
+						PasteAfter (false);
+						return;
+					case 'P':
+						PasteBefore (false);
+						return;
 					}
 				}
 				
@@ -247,17 +259,18 @@ namespace Mono.TextEditor.Vi
 				if (((modifier & (Gdk.ModifierType.ShiftMask | Gdk.ModifierType.ControlMask)) == 0 
 				     && key == Gdk.Key.d))
 				{
-					action = DeleteActions.CaretLine;
+					action = SelectionActions.LineActionFromMoveAction (CaretMoveActions.LineEnd);
 				} else {
 					action = ViActionMaps.GetNavCharAction ((char)unicodeKey);
 					if (action == null)
 						action = ViActionMaps.GetDirectionKeyAction (key, modifier);
 					if (action != null)
-						action = DeleteActions.FromMoveAction (action);
+						action = SelectionActions.FromMoveAction (action);
 				}
 				
 				if (action != null) {
 					RunAction (action);
+					RunAction (ClipboardActions.Cut);
 					Reset ("");
 				} else {
 					Reset ("Unrecognised motion");
@@ -270,17 +283,18 @@ namespace Mono.TextEditor.Vi
 				if (((modifier & (Gdk.ModifierType.ShiftMask | Gdk.ModifierType.ControlMask)) == 0 
 				     && key == Gdk.Key.c))
 				{
-					action = DeleteActions.CaretLine;
+					action = SelectionActions.LineActionFromMoveAction (CaretMoveActions.LineEnd);
 				} else {
 					action = ViActionMaps.GetNavCharAction ((char)unicodeKey);
 					if (action == null)
 						action = ViActionMaps.GetDirectionKeyAction (key, modifier);
 					if (action != null)
-						action = DeleteActions.FromMoveAction (action);
+						action = SelectionActions.FromMoveAction (action);
 				}
 				
 				if (action != null) {
 					RunAction (action);
+					RunAction (ClipboardActions.Cut);
 					Reset ("--INSERT");
 					state = State.Insert;
 				} else {
@@ -303,6 +317,14 @@ namespace Mono.TextEditor.Vi
 				return;
 
 			case State.VisualLine:
+				switch ((char)unicodeKey) {
+				case 'p':
+					PasteAfter (true);
+					return;
+				case 'P':
+					PasteBefore (true);
+					return;
+				}
 				action = ViActionMaps.GetNavCharAction ((char)unicodeKey);
 				if (action == null) {
 					action = ViActionMaps.GetDirectionKeyAction (key, modifier);
@@ -316,6 +338,14 @@ namespace Mono.TextEditor.Vi
 				return;
 
 			case State.Visual:
+				switch ((char)unicodeKey) {
+				case 'p':
+					PasteAfter (false);
+					return;
+				case 'P':
+					PasteBefore (false);
+					return;
+				}
 				action = ViActionMaps.GetNavCharAction ((char)unicodeKey);
 				if (action == null) {
 					action = ViActionMaps.GetDirectionKeyAction (key, modifier);
@@ -438,12 +468,13 @@ namespace Mono.TextEditor.Vi
 		{
 			if (Data.IsSomethingSelected && (modifier & (Gdk.ModifierType.ControlMask)) == 0) {
 				switch ((char)unicodeKey) {
+				case 'x':
 				case 'd':
-					RunAction (DeleteActions.DeleteSelection);
+					RunAction (ClipboardActions.Cut);
 					Reset ("Deleted selection");
 					return;
 				case 'c':
-					RunAction (DeleteActions.DeleteSelection);
+					RunAction (ClipboardActions.Cut);
 					state = State.Insert;
 					Status = "-- INSERT --";
 					return;
@@ -479,6 +510,96 @@ namespace Mono.TextEditor.Vi
 			Editor.HighlightSearchPattern = (null != result);
 		
 			return string.Empty;
+		}
+
+		/// <summary>
+		/// Pastes the selection after the caret,
+		/// or replacing an existing selection.
+		/// </summary>
+		private void PasteAfter (bool linemode)
+		{
+			TextEditorData data = Data;
+			
+			Gtk.Clipboard.Get (ClipboardActions.CopyOperation.CLIPBOARD_ATOM).RequestText 
+				(delegate (Gtk.Clipboard cb, string contents) {
+				if (contents.EndsWith ("\r") || contents.EndsWith ("\n")) {
+					// Line mode paste
+					if (data.IsSomethingSelected) {
+						// Replace selection
+						RunAction (ClipboardActions.Cut);
+						data.InsertAtCaret (data.Document.EolMarker);
+						int offset = data.Caret.Offset;
+						data.InsertAtCaret (contents);
+						if (linemode) {
+							// Existing selection was also in line mode
+							data.Caret.Offset = offset;
+							RunAction (DeleteActions.FromMoveAction (CaretMoveActions.Left));
+						}
+						RunAction (CaretMoveActions.LineStart);
+					} else {
+						// Paste on new line
+						RunAction (ViActions.NewLineBelow);
+						RunAction (DeleteActions.FromMoveAction (CaretMoveActions.LineStart));
+						data.InsertAtCaret (contents);
+						RunAction (DeleteActions.FromMoveAction (CaretMoveActions.Left));
+						RunAction (CaretMoveActions.LineStart);
+					}
+				} else {
+					// Inline paste
+					if (data.IsSomethingSelected) 
+						RunAction (ClipboardActions.Cut);
+					else if (Caret.Offset < data.Document.GetLine (Caret.Line).EndOffset)
+						RunAction (CaretMoveActions.Right);
+					int offset = Caret.Offset;
+					data.InsertAtCaret (contents);
+					Caret.Offset = offset;
+				}
+			});
+		}
+
+		/// <summary>
+		/// Pastes the selection before the caret,
+		/// or replacing an existing selection.
+		/// </summary>
+		private void PasteBefore (bool linemode)
+		{
+			TextEditorData data = Data;
+			
+			Gtk.Clipboard.Get (ClipboardActions.CopyOperation.CLIPBOARD_ATOM).RequestText 
+				(delegate (Gtk.Clipboard cb, string contents) {
+				if (contents.EndsWith ("\r") || contents.EndsWith ("\n")) {
+					// Line mode paste
+					if (data.IsSomethingSelected) {
+						// Replace selection
+						RunAction (ClipboardActions.Cut);
+						data.InsertAtCaret (data.Document.EolMarker);
+						int offset = data.Caret.Offset;
+						data.InsertAtCaret (contents);
+						if (linemode) {
+							// Existing selection was also in line mode
+							data.Caret.Offset = offset;
+							RunAction (DeleteActions.FromMoveAction (CaretMoveActions.Left));
+						}
+						RunAction (CaretMoveActions.LineStart);
+					} else {
+						// Paste on new line
+						RunAction (ViActions.NewLineAbove);
+						RunAction (DeleteActions.FromMoveAction (CaretMoveActions.LineStart));
+						data.InsertAtCaret (contents);
+						RunAction (DeleteActions.FromMoveAction (CaretMoveActions.Left));
+						RunAction (CaretMoveActions.LineStart);
+					}
+				} else {
+					// Inline paste
+					if (data.IsSomethingSelected) 
+						RunAction (ClipboardActions.Cut);
+					else if (Caret.Offset > data.Document.GetLine (Caret.Line).Offset)
+						RunAction (CaretMoveActions.Left);
+					int offset = Caret.Offset;
+					data.InsertAtCaret (contents);
+					Caret.Offset = offset;
+				}
+			});
 		}
 
 		enum State {
