@@ -120,6 +120,8 @@ namespace MonoDevelop.CSharpBinding
 			this.lang   = lang;
 			this.editor = editor;
 			this.fileName = fileName;
+			this.lookupTableVisitor = new LookupTableVisitor (lang);
+			
 		}
 		
 		ICSharpCode.NRefactory.Ast.CompilationUnit memberCompilationUnit;
@@ -148,9 +150,8 @@ namespace MonoDevelop.CSharpBinding
 				if (typeFromDatabase != null)
 					callingType = typeFromDatabase;
 			}
-			
 			if (callingMember != null && !setupLookupTableVisitor ) {
-				lookupTableVisitor = new LookupTableVisitor (lang);
+				
 				string wrapper = CreateWrapperClassForMember (callingMember);
 				ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (lang, new StringReader (wrapper));
 				parser.Parse ();
@@ -163,7 +164,6 @@ namespace MonoDevelop.CSharpBinding
 		internal void SetupParsedCompilationUnit (ICSharpCode.NRefactory.Ast.CompilationUnit unit)
 		{
 			memberCompilationUnit = unit;
-			lookupTableVisitor = new LookupTableVisitor (lang);
 			lookupTableVisitor.VisitCompilationUnit (unit, null);
 			setupLookupTableVisitor = true;
 		}
