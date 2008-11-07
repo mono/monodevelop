@@ -132,7 +132,6 @@ namespace MonoDevelop.CSharpBinding
 		internal void SetupResolver (DomLocation resolvePosition)
 		{
 			this.resolvePosition = resolvePosition;
-			lookupTableVisitor = new LookupTableVisitor (lang);
 			
 			callingType = GetTypeAtCursor (unit, fileName, resolvePosition);
 			
@@ -150,13 +149,23 @@ namespace MonoDevelop.CSharpBinding
 					callingType = typeFromDatabase;
 			}
 			
-			if (callingMember != null) {
+			if (callingMember != null && !setupLookupTableVisitor ) {
+				lookupTableVisitor = new LookupTableVisitor (lang);
 				string wrapper = CreateWrapperClassForMember (callingMember);
 				ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (lang, new StringReader (wrapper));
 				parser.Parse ();
 				memberCompilationUnit = parser.CompilationUnit;
 				lookupTableVisitor.VisitCompilationUnit (parser.CompilationUnit, null);
+				setupLookupTableVisitor = true;
 			}
+		}
+		bool setupLookupTableVisitor = false;
+		internal void SetupParsedCompilationUnit (ICSharpCode.NRefactory.Ast.CompilationUnit unit)
+		{
+			memberCompilationUnit = unit;
+			lookupTableVisitor = new LookupTableVisitor (lang);
+			lookupTableVisitor.VisitCompilationUnit (unit, null);
+			setupLookupTableVisitor = true;
 		}
 		
 		static void AddParameterList (CompletionDataList completionList, IEnumerable<IParameter> parameters)
@@ -402,24 +411,26 @@ namespace MonoDevelop.CSharpBinding
 			if (TryResolve (unit, type, out result))
 				return result;
 			
-			DomReturnType possibleInnerType = new DomReturnType (this.CallingType.FullName + "." + type.Name, type.IsNullable, type.GenericArguments);
-			possibleInnerType.ArrayDimensions = type.ArrayDimensions;
-			for (int i = 0; i < type.ArrayDimensions; i++) {
-				possibleInnerType.SetDimension (i, type.GetDimension (i));
-			}
-			if (TryResolve (unit, possibleInnerType, out result))
-				return result;
-			
-			if (this.CallingType.DeclaringType != null) {
-				possibleInnerType = new DomReturnType (this.CallingType.DeclaringType.FullName + "." + type.Name, type.IsNullable, type.GenericArguments);
+			if (this.CallingType != null) {
+				DomReturnType possibleInnerType = new DomReturnType (this.CallingType.FullName + "." + type.Name, type.IsNullable, type.GenericArguments);
 				possibleInnerType.ArrayDimensions = type.ArrayDimensions;
 				for (int i = 0; i < type.ArrayDimensions; i++) {
 					possibleInnerType.SetDimension (i, type.GetDimension (i));
 				}
 				if (TryResolve (unit, possibleInnerType, out result))
 					return result;
+				
+				if (this.CallingType.DeclaringType != null) {
+					possibleInnerType = new DomReturnType (this.CallingType.DeclaringType.FullName + "." + type.Name, type.IsNullable, type.GenericArguments);
+					possibleInnerType.ArrayDimensions = type.ArrayDimensions;
+					for (int i = 0; i < type.ArrayDimensions; i++) {
+						possibleInnerType.SetDimension (i, type.GetDimension (i));
+					}
+					if (TryResolve (unit, possibleInnerType, out result))
+						return result;
+				}
 			}
-						
+			
 			return type;
 		}
 		

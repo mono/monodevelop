@@ -175,13 +175,17 @@ namespace MonoDevelop.CSharpBinding
 				return null;
 			}
 		}
-		
+		public ICSharpCode.NRefactory.Ast.CompilationUnit LastUnit {
+			get;
+			set;
+		}
 		public override ParsedDocument Parse (string fileName, string content)
 		{
 			using (ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (ICSharpCode.NRefactory.SupportedLanguage.CSharp, new StringReader (content))) {
 				
 				ParsedDocument result = new ParsedDocument (fileName);
 				result.CompilationUnit = new MonoDevelop.Projects.Dom.CompilationUnit (fileName);
+				
 				parser.Errors.Error += delegate (int line, int col, string message) {
 					result.Add (new Error (ErrorType.Error, line, col, message));
 				};
@@ -201,6 +205,7 @@ namespace MonoDevelop.CSharpBinding
 				}
 				ConversionVisitior visitor = new ConversionVisitior (result);
 				visitor.VisitCompilationUnit (parser.CompilationUnit, null);
+				LastUnit = parser.CompilationUnit;
 				return result;
 			}
 		}

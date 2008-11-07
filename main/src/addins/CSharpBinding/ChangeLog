@@ -1,3 +1,10 @@
+2008-11-07  Mike Krüger  <mike@icsharpcode.net>
+
+	* Parser/CodeGenerator.cs:
+	* Gui/NRefactoryResolver.cs:
+	* Parser/NRefactoryParser.cs: fixed 'Bug 364779 - When I click "Find All
+	References" monodevevlop crashes'.
+
 2008-11-06  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Gui/NRefactoryResolver.cs: Disable debug message.

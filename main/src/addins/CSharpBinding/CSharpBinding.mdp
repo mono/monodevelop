@@ -52,7 +52,6 @@
     <File name="Parser/mcs/External/MonoSymbolFile.cs" subtype="Code" buildaction="Compile" />
     <File name="Parser/mcs/External/MonoSymbolTable.cs" subtype="Code" buildaction="Compile" />
     <File name="Parser/mcs/External/MonoSymbolWriter.cs" subtype="Code" buildaction="Compile" />
-    <File name="Parser/DomParser.cs" subtype="Code" buildaction="Compile" />
     <File name="Parser/mcs/dom.cs" subtype="Code" buildaction="Compile" />
     <File name="Parser/mcs/mcs/anonymous.cs" subtype="Code" buildaction="Compile" />
     <File name="Parser/mcs/mcs/assign.cs" subtype="Code" buildaction="Compile" />
