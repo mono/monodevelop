@@ -314,7 +314,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 			
 			protected override string GetDescription () {
-				return GettextCatalog.GetString ("Retreiving changes in {0} at revision {1}...", name, revision);
+				return GettextCatalog.GetString ("Retrieving changes in {0} at revision {1}...", name, revision);
 			}
 			
 			protected override void Run () {
