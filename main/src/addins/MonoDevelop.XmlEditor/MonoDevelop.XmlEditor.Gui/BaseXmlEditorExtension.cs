@@ -38,6 +38,7 @@ using MonoDevelop.Projects.Dom;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects.Gui.Completion;
 using MonoDevelop.Xml.StateEngine;
+using MonoDevelop.XmlEditor.Completion;
 
 namespace MonoDevelop.XmlEditor.Gui
 {
@@ -344,18 +345,29 @@ namespace MonoDevelop.XmlEditor.Gui
 			return null;
 		}
 		
-		//FIXME: this should offer all unclosed tags, and accepting them should close back up to that level
 		protected static void AddCloseTag (CompletionDataList completionList, NodeStack stack)
 		{
 			//FIXME: search forward to see if tag's closed already
+			List<XElement> elements = new List<XElement> ();
 			foreach (XObject ob in stack) {
 				XElement el = ob as XElement;
-				if (el != null && el.IsNamed && !el.IsClosed) {
+				if (el == null)
+					continue;
+				if (!el.IsNamed || el.IsClosed)
+					return;
+				
+				if (elements.Count == 0) {
 					string name = el.Name.FullName;
 					completionList.Add ("/" + name + ">", Gtk.Stock.GoBack,
 					                    GettextCatalog.GetString ("Closing tag for '{0}'", name));
-					return;
+				} else {
+					foreach (XElement listEl in elements) {
+						if (listEl.Name == el.Name)
+							return;
+					}
+					completionList.Add (new XmlMultipleClosingTagCompletionData (el, elements.ToArray ()));
 				}
+				elements.Add (el);
 			}
 		}
 

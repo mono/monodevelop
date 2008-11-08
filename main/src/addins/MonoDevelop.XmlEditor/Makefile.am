@@ -47,6 +47,7 @@ FILES =  \
 	MonoDevelop.XmlEditor.Completion/XmlCompletionData.cs \
 	MonoDevelop.XmlEditor.Completion/XmlCompletionDataCollection.cs \
 	MonoDevelop.XmlEditor.Completion/XmlCompletionDataProvider.cs \
+	MonoDevelop.XmlEditor.Completion/XmlMultipleClosingTagCompletionData.cs \
 	MonoDevelop.XmlEditor.Completion/XmlSchemaCompletionData.cs \
 	MonoDevelop.XmlEditor.Completion/XmlSchemaCompletionDataCollection.cs \
 	MonoDevelop.XmlEditor.Completion/XmlTagCompletionData.cs \
