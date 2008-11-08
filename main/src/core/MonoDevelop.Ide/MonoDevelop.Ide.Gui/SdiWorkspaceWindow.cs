@@ -287,6 +287,9 @@ namespace MonoDevelop.Ide.Gui
 			}
 			content.Dispose ();
 			tabLabel.Dispose ();
+			
+			this.subViewToolbar = null;
+			this.separatorItem = null;
 			DetachFromPathedDocument ();
 
 			OnClosed (null);

@@ -1,4 +1,9 @@
 2008-11-07  Eric Butler  <eric@extremeboredom.net>
+	* MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs: Set toolbar variables to
+	null when window is closing so that EnsureToolbarBoxSeparator won't
+	try to do anything.
+
+2008-11-07  Eric Butler  <eric@extremeboredom.net>
 
 	* MonoDevelop.Ide.Gui.BrowserDisplayBinding/HtmlViewPane.cs: Show
 	"Preview" instead of "Web Browser" if a secondary view, remove

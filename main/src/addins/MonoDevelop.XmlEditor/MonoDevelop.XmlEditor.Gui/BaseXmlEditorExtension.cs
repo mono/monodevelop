@@ -495,6 +495,9 @@ namespace MonoDevelop.XmlEditor.Gui
 		
 		List<XObject> GetCurrentPath ()
 		{
+			if (this.tracker == null)
+				return null;
+
 			this.tracker.UpdateEngine ();
 			List<XObject> path = new List<XObject> (this.tracker.Engine.Nodes);
 			
@@ -514,6 +517,9 @@ namespace MonoDevelop.XmlEditor.Gui
 		void UpdatePath ()
 		{
 			List<XObject> l = GetCurrentPath ();
+
+			if (l == null)
+				return;
 			
 			//build the list
 			string[] path = new string[l.Count];
