@@ -97,5 +97,5 @@ case x$1 in
 		;;
 esac
 
-exec -a "monodevelop"  @RUNTIME@ ./MonoDevelop.exe "$@"
+exec -a "monodevelop"  @RUNTIME@ --debug ./MonoDevelop.exe "$@"
 
