@@ -1,5 +1,9 @@
 2008-11-10  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
+	* Mono.TextEditor.Vi/ViActionMaps.cs: Allow Page(Up|Down).
+
+2008-11-10  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
 	* Mono.TextEditor.Vi/ViMode.cs: Allow backspace for search/ex.
 
 2008-11-10  Mike Krüger  <mike@icsharpcode.net>

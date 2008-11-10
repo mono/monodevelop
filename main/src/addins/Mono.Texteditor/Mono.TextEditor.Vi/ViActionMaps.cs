@@ -99,6 +99,14 @@ namespace Mono.TextEditor.Vi
 				case Gdk.Key.KP_End:
 				case Gdk.Key.End:
 					return CaretMoveActions.LineEnd;
+
+				case Gdk.Key.Page_Up:
+				case Gdk.Key.KP_Page_Up:
+					return CaretMoveActions.PageUp;
+
+				case Gdk.Key.Page_Down:
+				case Gdk.Key.KP_Page_Down:
+					return CaretMoveActions.PageDown;
 				}
 			}
 			//
