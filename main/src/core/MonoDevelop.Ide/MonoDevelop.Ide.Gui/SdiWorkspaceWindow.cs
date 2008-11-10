@@ -163,6 +163,8 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void SelectWindow()	
 		{
+			if (this.Parent == null)
+				return;
 			int toSelect = tabControl.PageNum (this);
 			tabControl.CurrentPage = toSelect;
 		}

@@ -25,7 +25,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Xml;
 using System.Xml.Serialization;
-
+using System.Linq;
 using MonoDevelop.Core;
 
 using Gtk;
@@ -81,6 +81,8 @@ namespace MonoDevelop.Ide.Gui
 		
 		bool initialized;
 		IWorkbenchWindow lastActive;
+		const int MAX_LASTACTIVEWINDOWS = 10;
+		LinkedList<IWorkbenchWindow> lastActiveWindows = new LinkedList<IWorkbenchWindow> ();
 		bool ignorePageSwitch;
 		bool isInFullViewMode = false;
 
@@ -134,7 +136,6 @@ namespace MonoDevelop.Ide.Gui
 			tabControl = new SdiDragNotebook ();
 			tabControl.Scrollable = true;
 			tabControl.SwitchPage += new SwitchPageHandler (ActiveMdiChanged);
-			
 			tabControl.ButtonPressEvent += delegate(object sender, ButtonPressEventArgs e) {
 				int tab = tabControl.FindTabAtPosition (e.Event.XRoot, e.Event.YRoot);
 				if (tab < 0)
@@ -619,16 +620,33 @@ namespace MonoDevelop.Ide.Gui
 			return padWindows [content];
 		}
 		
+		bool SelectLastActiveWindow ()
+		{
+			if (lastActiveWindows.Count == 0 || lastActive == ActiveWorkbenchwindow)
+				return false;
+			IWorkbenchWindow last = null;
+			do {
+				last = lastActiveWindows.Last.Value;
+				lastActiveWindows.RemoveLast ();
+			} while (lastActiveWindows.Count > 0 && (last == null || (last != null && last.ViewContent == null)));
+			if (last != null)  {
+				last.SelectWindow ();
+				return true;
+			}
+			return false;
+		}
+		
 		public void CloseWindowEvent (object sender, EventArgs e)
 		{
 			SdiWorkspaceWindow f = (SdiWorkspaceWindow) sender;
 			
 			// Unsubscribe events to avoid memory leaks
-			f.TabLabel.CloseClicked -= new EventHandler (closeClicked);			
-
+			f.TabLabel.CloseClicked -= new EventHandler (closeClicked);
+			
 			if (f.ViewContent != null) {
 				((IWorkbench)wbWindow).CloseContent (f.ViewContent);
-				ActiveMdiChanged(this, null);
+				if (!SelectLastActiveWindow ())
+					ActiveMdiChanged(this, null);
 			}
 		}
 		
@@ -703,12 +721,16 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (ignorePageSwitch)
 				return;
-
+			
 			if (lastActive == ActiveWorkbenchwindow)
 				return;
-				
+			
+			if (lastActiveWindows.Count > MAX_LASTACTIVEWINDOWS)
+				lastActiveWindows.RemoveFirst ();
+			lastActiveWindows.AddLast (lastActive);
+			
 			lastActive = ActiveWorkbenchwindow;
-
+			
 			try {
 				if (ActiveWorkbenchwindow != null) {
 					if (ActiveWorkbenchwindow.ViewContent.IsUntitled) {

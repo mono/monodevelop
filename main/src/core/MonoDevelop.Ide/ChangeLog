@@ -1,5 +1,11 @@
 2008-11-10  Mike Krüger  <mike@icsharpcode.net>
 
+	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs:
+	* MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs: impl. enh. "Bug 442022 -
+	Improve annoying behaviour of the MD notebook".
+
+2008-11-10  Mike Krüger  <mike@icsharpcode.net>
+
 	* MonoDevelop.Ide.Gui.Content/TextEditorProperties.cs: Added enable auto
 	completion option.
 
