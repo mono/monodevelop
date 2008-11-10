@@ -70,7 +70,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			while (lastWs > 0 && !Char.IsWhiteSpace (documentToCursor [lastWs]))
 				lastWs--;
 			ExpressionResult firstExprs = FindExpression (documentToCursor, lastWs);
-			System.Console.WriteLine(firstExprs);
+			
 			if (firstExprs.Expression != null) {
 				IReturnType unresolvedReturnType = NRefactoryResolver.ParseReturnType (firstExprs);
 				if (unresolvedReturnType != null) {
@@ -89,7 +89,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				
 				ResolveResult rr = resolver.Resolve (lhsExpr, new DomLocation (editor.CursorLine, editor.CursorColumn));
 				//ResolveResult rr = ParserService.Resolve (lhsExpr, currentLine.LineNumber, pos, editor.FileName, editor.Text);
-				System.Console.WriteLine(rr);
+				
 				if (rr != null && rr.ResolvedType != null) {
 					ExpressionContext context;
 					IType c;

@@ -380,7 +380,6 @@ namespace MonoDevelop.CSharpBinding.Gui
 				}
 				return HandleKeywordCompletion (result, i, token);
 			default:
-				System.Console.WriteLine("auto completion:" + TextEditorProperties.EnableAutoCodeCompletion);
 				if (Char.IsLetter (completionChar) && TextEditorProperties.EnableAutoCodeCompletion && !stateTracker.Engine.IsInsideDocLineComment && !stateTracker.Engine.IsInsideOrdinaryCommentOrString) {
 					char prevCh = Editor.CursorPosition > 2 ? Editor.GetCharAt (Editor.CursorPosition - 2) : '\0';
 					if (prevCh != '.' && !Char.IsLetterOrDigit (prevCh)) {
