@@ -34,8 +34,14 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		public GeneralOptionsPanel()
 		{
 			this.Build();
+			this.codeCompletioncheckbutton.Toggled += HandleCodeCompletioncheckbuttonToggled;
 			this.radiobutton1.Toggled += CheckFontSelection;
 			this.radiobutton2.Toggled += CheckFontSelection;
+		}
+
+		void HandleCodeCompletioncheckbuttonToggled (object sender, EventArgs e)
+		{
+			this.autoCodeCompletionCheckbutton.Sensitive = this.codeCompletioncheckbutton.Active;
 		}
 		
 		void CheckFontSelection (object sender, EventArgs args)
@@ -50,11 +56,12 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.foldingCheckbutton.Active        = SourceEditorOptions.Options.ShowFoldMargin;
 			this.foldregionsCheckbutton.Active    = SourceEditorOptions.Options.DefaultRegionsFolding;
 			this.foldCommentsCheckbutton.Active   = SourceEditorOptions.Options.DefaultCommentFolding;
-			
+			this.autoCodeCompletionCheckbutton.Active    = SourceEditorOptions.Options.EnableAutoCodeCompletion;
 			this.radiobutton1.Active              = SourceEditorOptions.Options.EditorFontType == EditorFontType.DefaultMonospace;
 			this.radiobutton2.Active              = SourceEditorOptions.Options.EditorFontType == EditorFontType.UserSpecified;
 			this.fontselection.FontName           = SourceEditorOptions.Options.FontName;
 			CheckFontSelection (this, EventArgs.Empty);
+			HandleCodeCompletioncheckbuttonToggled (this, EventArgs.Empty);
 			return this;
 		}
 		
@@ -67,7 +74,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			SourceEditorOptions.Options.FontName             = this.fontselection.FontName;
 			SourceEditorOptions.Options.DefaultRegionsFolding = this.foldregionsCheckbutton.Active;
 			SourceEditorOptions.Options.DefaultCommentFolding = this.foldCommentsCheckbutton.Active;
-			
+			SourceEditorOptions.Options.EnableAutoCodeCompletion = this.autoCodeCompletionCheckbutton.Active;
 		}
 
 		public void Initialize (OptionsDialog dialog, object dataObject)

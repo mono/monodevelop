@@ -132,11 +132,25 @@ namespace MonoDevelop.SourceEditor
 			base.RemoveTrailingWhitespaces = PropertyService.Get ("RemoveTrailingWhitespaces", true);
 			base.AllowTabsAfterNonTabs = PropertyService.Get ("AllowTabsAfterNonTabs", true);
 			this.useViModes = PropertyService.Get ("UseViModes", false);
+			this.enableAutoCodeCompletion = PropertyService.Get ("EnableAutoCodeCompletion", true);
 			
 			this.ControlLeftRightMode =  (ControlLeftRightMode)Enum.Parse (typeof (ControlLeftRightMode), PropertyService.Get ("ControlLeftRightMode", IdeApp.Services.PlatformService.DefaultControlLeftRightBehavior));
 		}
 		
 		#region new options
+		bool enableAutoCodeCompletion;
+		public bool EnableAutoCodeCompletion {
+			get {
+				return enableAutoCodeCompletion;
+			}
+			set {
+				if (value != enableAutoCodeCompletion) {
+					enableAutoCodeCompletion = value;
+					PropertyService.Set ("EnableAutoCodeCompletion", value);
+				}
+			}
+		}
+		
 		bool defaultRegionsFolding;
 		public bool DefaultRegionsFolding {
 			get {
