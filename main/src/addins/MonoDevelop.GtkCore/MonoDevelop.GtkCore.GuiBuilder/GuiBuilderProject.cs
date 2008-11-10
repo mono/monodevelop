@@ -50,7 +50,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 {
 	public class GuiBuilderProject
 	{
-		ArrayList formInfos = new ArrayList ();
+		ArrayList formInfos;
 		Stetic.Project gproject;
 		DotNetProject project;
 		string fileName;
@@ -81,6 +81,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				return;
 			
 			gproject = GuiBuilderService.SteticApp.CreateProject ();
+			formInfos = new ArrayList ();
 			
 			if (!System.IO.File.Exists (fileName)) {
 				// Regenerate the gtk-gui folder if the stetic project
