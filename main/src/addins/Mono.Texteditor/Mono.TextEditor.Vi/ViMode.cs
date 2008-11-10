@@ -359,13 +359,27 @@ namespace Mono.TextEditor.Vi
 				return;
 				
 			case State.Command:
-				if (key == Gdk.Key.Return || key == Gdk.Key.KP_Enter) {
+				switch (key) {
+				case Gdk.Key.Return:
+				case Gdk.Key.KP_Enter:
 					Status = RunExCommand (commandBuffer.ToString ());
 					commandBuffer.Length = 0;
 					state = State.Normal;
-				} else if (unicodeKey != 0) {
-					commandBuffer.Append ((char)unicodeKey);
-					Status = commandBuffer.ToString ();
+					break;
+				case Gdk.Key.BackSpace:
+				case Gdk.Key.Delete:
+				case Gdk.Key.KP_Delete:
+					if (0 < commandBuffer.Length) {
+						commandBuffer.Remove (commandBuffer.Length-1, 1);
+						Status = commandBuffer.ToString ();
+					}
+					break;
+				default:
+					if(unicodeKey != 0) {
+						commandBuffer.Append ((char)unicodeKey);
+						Status = commandBuffer.ToString ();
+					}
+					break;
 				}
 				return;
 				
