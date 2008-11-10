@@ -136,7 +136,7 @@ namespace MonoDevelop.SourceEditor
 				s.Append (errorInformations);
 				s.Append ("</small>");
 			}
-			System.Console.WriteLine ("Result:" + s.ToString ());
+			
 			if (s.ToString ().Trim ().Length == 0) {
 				IsEmpty = true;
 				return;
