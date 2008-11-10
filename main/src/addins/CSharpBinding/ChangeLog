@@ -1,3 +1,8 @@
+2008-11-10  Mike Krüger  <mike@icsharpcode.net>
+
+	* Gui/CSharpTextEditorCompletion.cs: Added enable auto completion
+	option.
+
 2008-11-07  Mike Krüger  <mike@icsharpcode.net>
 
 	* Parser/CodeGenerator.cs:
