@@ -85,7 +85,7 @@ namespace MonoDevelop.Core.Execution
 					string location = Path.GetDirectoryName (System.Reflection.Assembly.GetExecutingAssembly ().Location);
 					string args = string.Empty;
 					if (isDebugMode) args += " --debug";
-					args += " '" + Path.Combine (location, "mdhost.exe") + "' " + id;
+					args += " \"" + Path.Combine (location, "mdhost.exe") + "\" " + id;
 					process.StartInfo = new ProcessStartInfo ("mono", args);
 					process.StartInfo.WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory;
 					process.StartInfo.UseShellExecute = false;

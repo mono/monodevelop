@@ -1,3 +1,8 @@
+2008-11-10  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Execution/ProcessHostController.cs: Windows doesn't
+	like single quotes when specifying arguments to a process.
+
 2008-11-05  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.addin.xml: Bump MD version.
