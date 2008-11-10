@@ -322,13 +322,14 @@ namespace Mono.TextEditor
 				
 				data.Document.Insert (insertionOffset, text);
 				//int oldLine = data.Caret.Line;
-				result = text.Length;
+				int textLength = text != null ? text.Length : 0;
+				result = textLength;
 				if (data.Caret.Offset >= insertionOffset) 
-					data.Caret.Offset += text.Length;
+					data.Caret.Offset += textLength;
 				if (data.IsSomethingSelected && data.SelectionRange.Offset >= insertionOffset) 
-					data.SelectionRange.Offset += text.Length;
+					data.SelectionRange.Offset += textLength;
 				if (data.IsSomethingSelected && data.SelectionAnchor >= insertionOffset) 
-					data.SelectionAnchor += text.Length;
+					data.SelectionAnchor += textLength;
 				data.Caret.PreserveSelection = false;
 				data.Document.EndAtomicUndo ();
 			});
