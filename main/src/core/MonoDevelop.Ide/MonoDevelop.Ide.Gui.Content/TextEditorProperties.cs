@@ -98,6 +98,15 @@ namespace MonoDevelop.Ide.Gui.Content {
 			}
 		}
 		
+		public static bool EnableAutoCodeCompletion {
+			get {
+				return PropertyService.Get ("EnableAutoCodeCompletion", true);
+			}
+			set {
+				PropertyService.Set ("EnableAutoCodeCompletion", value);
+			}
+		}
+
 		public static bool EnableAutoCorrection {
 			get {
 				return properties.Get ("EnableAutoCorrection", true);
