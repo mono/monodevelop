@@ -1,3 +1,10 @@
+2008-11-10  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs: Create the
+	formInfos list when the project is loaded. This is necessary since
+	the list is destroyed when the project is unloaded. Fixes bug #Bug
+	431723 - Cannot build GTK applications with sln format.
+
 2008-11-06  Mike Kestner <mkestner@novell.com> 
 
 	* MonoDevelop.GtkCore.NodeBuilders/ProjectFolderNodeBuilderExtension.cs:
