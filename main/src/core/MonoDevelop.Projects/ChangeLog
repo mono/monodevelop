@@ -1,3 +1,11 @@
+2008-11-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs:
+	* MonoDevelop.Projects.Dom.Serialization/DatabaseProjectDom.cs: Added an
+	ForceUpdate method which forces the updating of the database.
+
+	* Makefile.am: Fixes for parallel make building.
+
 2008-11-07  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs: When

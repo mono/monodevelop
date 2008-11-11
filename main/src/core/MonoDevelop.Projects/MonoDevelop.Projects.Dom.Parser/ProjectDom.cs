@@ -61,6 +61,15 @@ namespace MonoDevelop.Projects.Dom.Parser
 		{
 		
 		}
+
+		// This method checks all modified source files, parses them and updates
+		// the database. Calling this method is in general not required since
+		// updating is automatically done in the background. However, in some
+		// cases an up-to-date database is required to do some operation,
+		// and this method will ensure that everything is up-to-date.
+		public virtual void ForceUpdate ()
+		{
+		}
 		
 		public virtual IEnumerable<IType> GetTypes (string fileName)
 		 {

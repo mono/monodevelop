@@ -159,5 +159,11 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		{
 			return dbProvider.GetClass (database, typeName, genericArguments, deepSearchReferences, caseSensitive);
 		}
+
+		public override void ForceUpdate()
+		{
+			database.UpdateDatabase ();
+		}
+
 	}
 }
