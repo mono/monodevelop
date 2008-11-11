@@ -111,7 +111,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.Realized += new EventHandler (OnRealized);
 			this.ExposeEvent += new ExposeEventHandler (OnExposed);
 			
-			image = new Gdk.Pixbuf (GetType().Assembly, "Icons.AboutImage");
+			image = new Gdk.Pixbuf (GetType().Assembly, "AboutImage.png");
 			monoPowered = new Gdk.Pixbuf (GetType().Assembly, "mono-powered.png");
 			
 			TimerHandle = GLib.Timeout.Add (50, new TimeoutHandler (ScrollDown));
@@ -147,14 +147,18 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					++scroll;
 			} else
 				++scroll;
-			this.QueueDrawArea (0, 0, 450, 220);
+			int w, h;
+			this.GdkWindow.GetSize (out w, out h);
+			this.QueueDrawArea (0, 0, w, 220);
 			return true;
 		}
 		
 		private void DrawImage ()
 		{
 			if (image != null) {
-				this.GdkWindow.DrawPixbuf (this.Style.BackgroundGC (StateType.Normal), image, 0, 0, 0, 0, -1, -1, RgbDither.Normal,  0,  0);
+				int w, h;
+				this.GdkWindow.GetSize (out w, out h);
+				this.GdkWindow.DrawPixbuf (this.Style.BackgroundGC (StateType.Normal), image, 0, 0, (w - image.Width) / 2, 0, -1, -1, RgbDither.Normal,  0,  0);
 			}
 		}
 
@@ -167,10 +171,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		private void DrawText ()
 		{
-			int maxHeight = GetTextHeight ();
+			int w, h;
+			this.GdkWindow.GetSize (out w, out h);
+			int tw, maxHeight;
+			layout.GetPixelSize (out tw, out maxHeight);
 			
 			this.GdkWindow.DrawLayout (this.Style.TextGC (StateType.Normal), 0, textTop - scroll, layout);
-			this.GdkWindow.DrawPixbuf (this.Style.BackgroundGC (StateType.Normal), monoPowered, 0, 0, (450/2) - (monoPowered.Width/2), textTop - scroll + maxHeight + monoLogoSpacing, -1, -1, RgbDither.Normal,  0,  0);
+			this.GdkWindow.DrawPixbuf (this.Style.BackgroundGC (StateType.Normal), monoPowered, 0, 0, (w/2) - (monoPowered.Width/2), textTop - scroll + maxHeight + monoLogoSpacing, -1, -1, RgbDither.Normal,  0,  0);
 
 			if (scroll == maxHeight && scrollPause == 0)
 				scrollPause = 60;
@@ -191,14 +198,17 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		protected void OnRealized (object o, EventArgs args)
 		{
 			int x, y;
+			int w, h;
 			GdkWindow.GetOrigin (out x, out y);
+			GdkWindow.GetSize (out w, out h);
+			
 			textTop = y + image.Height - 30;
 			scrollStart = -(220 - textTop);
 			scroll = scrollStart;
 			
 			layout = new Pango.Layout (this.PangoContext);
 			// FIXME: this seems wrong but works
-			layout.Width = 450 * (int)Pango.Scale.PangoScale;
+			layout.Width = w * (int)Pango.Scale.PangoScale;
 			layout.Wrap = Pango.WrapMode.Word;
 			layout.Alignment = Pango.Alignment.Center;
 			FontDescription fd = FontDescription.FromString ("Tahoma 10");
@@ -226,7 +236,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 			Notebook nb = new Notebook ();
 			nb.BorderWidth = 6;
-			nb.SetSizeRequest (440, 240);
+//			nb.SetSizeRequest (440, 240);
 			this.ModifyBg (Gtk.StateType.Normal, new Gdk.Color (255, 255, 255));
 			nb.ModifyBg (Gtk.StateType.Normal, new Gdk.Color (255, 255, 255));
 			VersionInformationTabPage vinfo = new VersionInformationTabPage ();

@@ -341,8 +341,8 @@ FILES =  \
 RES =  \
 	gtk-gui/gui.stetic \
 	gtk-gui/objects.xml \
+	icons/AboutImage.png \
 	icons/Icons.16x16.LinkOverlay.png \
-	icons/Icons.AboutImage \
 	icons/keyboard-shortcuts-16.png \
 	icons/keyboard-shortcuts-22.png \
 	icons/mono-powered.png \
@@ -392,7 +392,7 @@ build_OPTIONS = $(addprefix $(top_builddir)/build/data/options/, $(notdir $(OPTI
 
 ASSEMBLY = $(top_builddir)/build/bin/MonoDevelop.Ide.dll
 
-all: $(ASSEMBLY) $(build_OPTIONS)
+all: $(ASSEMBLY) $(ASSEMBLY).mdb $(build_OPTIONS)
 
 $(build_OPTIONS): $(top_builddir)/build/data/options/%.xml: $(srcdir)/options/%.xml
 	mkdir -p $(top_builddir)/build/data/options
@@ -401,6 +401,8 @@ $(build_OPTIONS): $(top_builddir)/build/data/options/%.xml: $(srcdir)/options/%.
 $(ASSEMBLY): $(build_sources) $(build_resources)
 	$(CSC) $(CSC_FLAGS) -debug -codepage:utf8 -out:$@ -target:library $(REFS) \
 		$(monodoc_libflags) $(build_resources:%=/resource:%) $(build_sources)
+
+$(ASSEMBLY).mdb: $(ASSEMBLY)
 
 assemblydir = $(MD_ASSEMBLY_DIR)
 assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb
