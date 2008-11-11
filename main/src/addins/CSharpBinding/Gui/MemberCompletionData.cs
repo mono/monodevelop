@@ -94,8 +94,7 @@ namespace MonoDevelop.CSharpBinding
 		
 		public void InsertCompletionText (ICompletionWidget widget, ICodeCompletionContext context)
 		{
-			MonoDevelop.Ide.Gui.Content.IEditableTextBuffer buf = widget
-				as MonoDevelop.Ide.Gui.Content.IEditableTextBuffer;
+			MonoDevelop.Ide.Gui.Content.IEditableTextBuffer buf = widget as MonoDevelop.Ide.Gui.Content.IEditableTextBuffer;
 			
 			if (buf == null) {
 				LoggingService.LogError ("ICompletionWidget widget is not an IEditableTextBuffer");
@@ -103,9 +102,10 @@ namespace MonoDevelop.CSharpBinding
 			}
 			
 			buf.BeginAtomicUndo ();
-			buf.DeleteText (context.TriggerOffset, buf.CursorPosition - context.TriggerOffset);
-			buf.InsertText (context.TriggerOffset, this.CompletionText);
 			
+			buf.DeleteText (context.TriggerOffset, Math.Max (buf.CursorPosition - context.TriggerOffset, context.TriggerWordLength));
+			buf.InsertText (context.TriggerOffset, this.CompletionText);
+			buf.CursorPosition = context.TriggerOffset + this.CompletionText.Length;
 			//select any generic parameters e.g. T in <T>
 			int offset = this.CompletionText.IndexOf ('<');
 			if (offset >= 0) {

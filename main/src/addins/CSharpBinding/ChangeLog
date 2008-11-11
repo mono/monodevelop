@@ -1,5 +1,10 @@
 2008-11-11  Mike Krüger  <mike@icsharpcode.net>
 
+	* Gui/MemberCompletionData.cs: fixed 'Bug 441621 - Ctrl-space in middle
+	of word does not overwrite rest of word'.
+
+2008-11-11  Mike Krüger  <mike@icsharpcode.net>
+
 	* Gui/CSharpTextEditorCompletion.cs: fixed completion popup for
 	string/char literals.
 
