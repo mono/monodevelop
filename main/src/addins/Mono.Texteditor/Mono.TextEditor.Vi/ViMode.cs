@@ -176,6 +176,11 @@ namespace Mono.TextEditor.Vi
 						state = State.Delete;
 						return;
 						
+					case 'y':
+						Status = "y";
+						state = State.Yank;
+						return;
+						
 					case 'O':
 						RunAction (ViActions.NewLineAbove);
 						goto case 'i';
@@ -272,6 +277,29 @@ namespace Mono.TextEditor.Vi
 					RunAction (action);
 					RunAction (ClipboardActions.Cut);
 					Reset ("");
+				} else {
+					Reset ("Unrecognised motion");
+				}
+				
+				return;
+
+			case State.Yank:
+				if (((modifier & (Gdk.ModifierType.ShiftMask | Gdk.ModifierType.ControlMask)) == 0 
+				     && key == Gdk.Key.y))
+				{
+					action = SelectionActions.LineActionFromMoveAction (CaretMoveActions.LineEnd);
+				} else {
+					action = ViActionMaps.GetNavCharAction ((char)unicodeKey);
+					if (action == null)
+						action = ViActionMaps.GetDirectionKeyAction (key, modifier);
+					if (action != null)
+						action = SelectionActions.FromMoveAction (action);
+				}
+				
+				if (action != null) {
+					RunAction (action);
+					RunAction (ClipboardActions.Copy);
+					Reset (string.Empty);
 				} else {
 					Reset ("Unrecognised motion");
 				}
@@ -487,6 +515,10 @@ namespace Mono.TextEditor.Vi
 					RunAction (ClipboardActions.Cut);
 					Reset ("Deleted selection");
 					return;
+				case 'y':
+					RunAction (ClipboardActions.Copy);
+					Reset ("Yanked selection");
+					return;
 				case 'c':
 					RunAction (ClipboardActions.Cut);
 					state = State.Insert;
@@ -620,6 +652,7 @@ namespace Mono.TextEditor.Vi
 			Normal = 0,
 			Command,
 			Delete,
+			Yank,
 			Visual,
 			VisualLine,
 			Insert,

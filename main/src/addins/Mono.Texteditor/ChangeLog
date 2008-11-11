@@ -1,3 +1,7 @@
+2008-11-11  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* Mono.TextEditor.Vi/ViMode.cs: Implement y.
+
 2008-11-10  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* Mono.TextEditor.Vi/ViActionMaps.cs: Allow Page(Up|Down).
