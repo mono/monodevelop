@@ -244,22 +244,10 @@ namespace MonoDevelop.Ide.Gui
 					return;
 				fileName = member.DeclaringType.CompilationUnit.FileName;
 			}
-			if (!System.IO.Path.IsPathRooted (fileName)) {
-				string realAssemblyName;
-				string assemblyFile;
-				string name;
-				if (ProjectDomService.GetAssemblyInfo (fileName, out realAssemblyName, out assemblyFile, out name)) {
-					Document doc = MonoDevelop.Ide.Gui.IdeApp.Workbench.OpenDocument (assemblyFile, member.Location.Line, member.Location.Column, true);
-					MonoDevelop.Ide.Gui.Content.IUrlHandler handler = doc.ActiveView as MonoDevelop.Ide.Gui.Content.IUrlHandler;
-					if (handler != null)
-						handler.Open (member.HelpUrl);
-					return;
-				}
-			}
-			MonoDevelop.Ide.Gui.IdeApp.Workbench.OpenDocument (fileName,
-			                                                   member.Location.Line,
-			                                                   member.Location.Column,
-			                                                   true);
+			Document doc = MonoDevelop.Ide.Gui.IdeApp.Workbench.OpenDocument (fileName, member.Location.Line, member.Location.Column, true);
+			MonoDevelop.Ide.Gui.Content.IUrlHandler handler = doc.ActiveView as MonoDevelop.Ide.Gui.Content.IUrlHandler;
+			if (handler != null)
+				handler.Open (member.HelpUrl);
 		}
 		string GetClassFileName (IType cls)
 		{
