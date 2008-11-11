@@ -265,14 +265,16 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				
 			// The class name may have changed. Try to guess the new name.
 			
-			ProjectDom ctx = gproject.GetParserContext ();
-			ICompilationUnit pi = ProjectDomService.Parse (ctx.Project, classFile, null).CompilationUnit;
-			System.Console.WriteLine(classFile + " unit:" + pi + " >>" +  pi.Types.Count);
 			ArrayList matches = new ArrayList ();
-			foreach (IType fcls in pi.Types) {
-				System.Console.WriteLine(fcls);
-				if (IsValidClass (ctx, fcls, targetObject))
-					matches.Add (fcls);
+			ICompilationUnit unit = null;
+			ProjectDom ctx = gproject.GetParserContext ();
+			ParsedDocument doc = ProjectDomService.Parse (project, classFile, null);
+			if (doc != null && doc.CompilationUnit != null) {
+				unit = doc.CompilationUnit;
+				foreach (IType fcls in unit.Types) {
+					if (IsValidClass (ctx, fcls, targetObject))
+						matches.Add (fcls);
+				}
 			}
 			
 			// If found the class, just return it
@@ -286,8 +288,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			// If not found, warn the user.
 			
-			if (pi.Types.Count > 0) {
-				using (SelectRenamedClassDialog dialog = new SelectRenamedClassDialog (pi.Types)) {
+			if (unit != null && unit.Types.Count > 0) {
+				using (SelectRenamedClassDialog dialog = new SelectRenamedClassDialog (unit.Types)) {
 					if (dialog.Run ()) {
 						className = dialog.SelectedClass;
 						if (className == null)

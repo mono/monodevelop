@@ -1,3 +1,9 @@
+2008-11-11  Mike Kestner <mkestner@novell.com> 
+
+	* MonoDevelop.GtkCore.GuiBuilder/CodeBinder.cs: null guarding for
+	all the things that can possibly go wrong with the parse in 
+	GetClass.
+
 2008-11-10  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs: Create the
