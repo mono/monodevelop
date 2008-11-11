@@ -47,7 +47,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 	}
 	
 	public interface ICodeCompletionContext
-	{
+	{ // TODO: do we need ICodeCompletionContext ? we should consider removing this and just using CodeCompletionContext.
 		int TriggerOffset { get; }
 		int TriggerWordLength { get; }
 		int TriggerLine { get; }
@@ -57,49 +57,46 @@ namespace MonoDevelop.Projects.Gui.Completion
 		int TriggerTextHeight { get; }
 	}
 	
-	public class CodeCompletionContext: ICodeCompletionContext
+	public class CodeCompletionContext : ICodeCompletionContext
 	{
-		int triggerOffset;
-		int triggerWordLength;
-		int triggerLine;
-		int triggerLineOffset;
-		int triggerXCoord;
-		int triggerYCoord;
-		int triggerTextHeight;
-		
 		public int TriggerOffset {
-			get { return triggerOffset; }
-			set { triggerOffset = value; }
+			get;
+			set;
 		}
 		
 		public int TriggerLine {
-			get { return triggerLine; }
-			set { triggerLine = value; }
+			get;
+			set;
 		}
 		
 		public int TriggerLineOffset {
-			get { return triggerLineOffset; }
-			set { triggerLineOffset = value; }
+			get;
+			set;
 		}
 		
 		public int TriggerXCoord {
-			get { return triggerXCoord; }
-			set { triggerXCoord = value; }
+			get;
+			set;
 		}
 		
 		public int TriggerYCoord {
-			get { return triggerYCoord; }
-			set { triggerYCoord = value; }
+			get;
+			set;
 		}
 		
 		public int TriggerTextHeight {
-			get { return triggerTextHeight; }
-			set { triggerTextHeight = value; }
+			get;
+			set;
 		}
 
 		public int TriggerWordLength {
-			get { return triggerWordLength; }
-			set { triggerWordLength = value; }
+			get;
+			set;
+		}
+		
+		public override string ToString ()
+		{
+			return string.Format("[CodeCompletionContext: TriggerOffset={0}, TriggerLine={1}, TriggerLineOffset={2}, TriggerXCoord={3}, TriggerYCoord={4}, TriggerTextHeight={5}, TriggerWordLength={6}]", TriggerOffset, TriggerLine, TriggerLineOffset, TriggerXCoord, TriggerYCoord, TriggerTextHeight, TriggerWordLength);
 		}
 	}
 }

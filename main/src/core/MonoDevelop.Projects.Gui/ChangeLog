@@ -1,3 +1,8 @@
+2008-11-11  Mike Krüger  <mike@icsharpcode.net>
+
+	* MonoDevelop.Projects.Gui.Completion/ICompletionWidget.cs: added
+	tostring method.
+
 2008-11-06  Mike Krüger  <mike@icsharpcode.net>
 
 	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
