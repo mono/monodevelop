@@ -2,7 +2,7 @@
 <stetic-interface>
   <configuration>
     <images-root-path>..</images-root-path>
-    <target-gtk-version>2.10.0</target-gtk-version>
+    <target-gtk-version>2.10</target-gtk-version>
   </configuration>
   <import>
     <widget-library name="../../../../build/bin/MonoDevelop.Ide.dll" />

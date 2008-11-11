@@ -1,3 +1,8 @@
+2008-11-11  Mike Krüger  <mike@icsharpcode.net>
+
+	* MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs: removed the
+	documentation tab out of the assembly browser.
+
 2008-11-05  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.AssemblyBrowser.addin.xml: Bump MD version.

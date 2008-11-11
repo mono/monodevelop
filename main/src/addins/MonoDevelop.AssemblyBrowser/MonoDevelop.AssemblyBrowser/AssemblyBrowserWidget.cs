@@ -101,7 +101,7 @@ namespace MonoDevelop.AssemblyBrowser
 				// Hack for the switch page select all bug.
 				this.inspectLabel.Selectable = false;
 			};
-			
+			this.notebook1.GetNthPage (0).Hide ();
 			treeView.Tree.CursorChanged += delegate {
 				CreateOutput ();
 			};
