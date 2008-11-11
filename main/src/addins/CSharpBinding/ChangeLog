@@ -1,3 +1,8 @@
+2008-11-11  Mike Krüger  <mike@icsharpcode.net>
+
+	* Gui/CSharpTextEditorCompletion.cs: fixed 'Bug 443493 - C# completion
+	should not trigger at start of existing words'.
+
 2008-11-10  Mike Krüger  <mike@icsharpcode.net>
 
 	* Gui/CSharpTextEditorCompletion.cs: Added enable auto completion

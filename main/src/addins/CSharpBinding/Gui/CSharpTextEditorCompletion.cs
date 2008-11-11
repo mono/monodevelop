@@ -382,7 +382,8 @@ namespace MonoDevelop.CSharpBinding.Gui
 			default:
 				if (Char.IsLetter (completionChar) && TextEditorProperties.EnableAutoCodeCompletion && !stateTracker.Engine.IsInsideDocLineComment && !stateTracker.Engine.IsInsideOrdinaryCommentOrString) {
 					char prevCh = Editor.CursorPosition > 2 ? Editor.GetCharAt (Editor.CursorPosition - 2) : '\0';
-					if (prevCh != '.' && !Char.IsLetterOrDigit (prevCh)) {
+					const string allowedChars = ";)}+-*/%^?:&|~!<>=";
+					if (Char.IsWhiteSpace (prevCh) || allowedChars.IndexOf (prevCh) >= 0) {
 						NewCSharpExpressionFinder expressionFinder = new NewCSharpExpressionFinder (dom);
 						try {
 							result = expressionFinder.FindExpression (Editor.Text, Math.Max (Editor.CursorPosition - 1, 0));
