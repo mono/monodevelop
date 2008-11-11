@@ -1,5 +1,11 @@
 2008-11-11  Mike Kestner <mkestner@novell.com> 
 
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs: use the 
+	new ForceUpdate method on the ProjectDom returned by GetParserContext
+	to ensure a fully updated database.
+
+2008-11-11  Mike Kestner <mkestner@novell.com> 
+
 	* MonoDevelop.GtkCore.GuiBuilder/CodeBinder.cs: null guarding for
 	all the things that can possibly go wrong with the parse in 
 	GetClass.
