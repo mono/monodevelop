@@ -1,3 +1,8 @@
+2008-11-11  Mike Krüger  <mike@icsharpcode.net>
+
+	* MonoDevelop.SourceEditor/LanguageItemWindow.cs: fixed 'Bug 442768 -
+	Should show fully qualified name in tooltip when namespaces clash'.
+
 2008-11-10  Mike Krüger  <mike@icsharpcode.net>
 
 	* gtk-gui/gui.stetic:

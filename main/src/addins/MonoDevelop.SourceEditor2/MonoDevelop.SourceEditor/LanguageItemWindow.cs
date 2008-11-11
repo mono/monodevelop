@@ -40,7 +40,7 @@ namespace MonoDevelop.SourceEditor
 {
 	public class LanguageItemWindow: MonoDevelop.Projects.Gui.Completion.TooltipWindow
 	{
-		static OutputFlags WindowConversionFlags = OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName | OutputFlags.EmitKeywords | OutputFlags.EmitMarkup;
+		static OutputFlags WindowConversionFlags = OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName | OutputFlags.EmitKeywords | OutputFlags.EmitMarkup | OutputFlags.UseFullName;
 		
 		static string paramStr = GettextCatalog.GetString ("Parameter");
 		static string localStr = GettextCatalog.GetString ("Local variable");
