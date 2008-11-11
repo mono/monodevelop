@@ -304,7 +304,7 @@ namespace MonoDevelop.Ide.Gui
 			return offset;
 		}
 		
-		char GetMatchingBrace (char ch)
+		public static char GetMatchingBrace (char ch)
 		{
 			switch (ch) {
 			case '(':
@@ -322,11 +322,11 @@ namespace MonoDevelop.Ide.Gui
 			}
 			throw new System.ArgumentException (ch.ToString (), "ch");
 		}
-		bool IsBrace (char ch)
+		public static bool IsBrace (char ch)
 		{
 			return ch == '(' || ch == ')' || ch == '{' || ch == '}' || ch == '[' || ch == ']';
 		}
-		bool IsOpenBrace (char ch)
+		public static bool IsOpenBrace (char ch)
 		{
 			return ch == '(' || ch == '{' || ch == '[';
 		}
