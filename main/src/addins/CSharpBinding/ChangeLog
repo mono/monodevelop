@@ -1,5 +1,10 @@
 2008-11-11  Mike Krüger  <mike@icsharpcode.net>
 
+	* Gui/CSharpTextEditorCompletion.cs: fixed completion popup for
+	string/char literals.
+
+2008-11-11  Mike Krüger  <mike@icsharpcode.net>
+
 	* Gui/NewOverrideCompletionData.cs:
 	* Gui/CSharpTextEditorCompletion.cs: fixed "Bug 442728 - Code completion
 	for 'override' is not aware of namespaces".

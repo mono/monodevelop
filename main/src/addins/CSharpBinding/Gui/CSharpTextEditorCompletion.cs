@@ -182,8 +182,12 @@ namespace MonoDevelop.CSharpBinding.Gui
 				                                                                                Editor,
 				                                                                                Document.FileName);
 				ResolveResult resolveResult = resolver.Resolve (result, new DomLocation (Editor.CursorLine, Editor.CursorColumn));
-				if (resolver.ResolvedExpression is ICSharpCode.NRefactory.Ast.PrimitiveExpression)
-					return null;
+				if (resolver.ResolvedExpression is ICSharpCode.NRefactory.Ast.PrimitiveExpression) {
+					ICSharpCode.NRefactory.Ast.PrimitiveExpression pex = (ICSharpCode.NRefactory.Ast.PrimitiveExpression)resolver.ResolvedExpression;
+					if (!(pex.Value is string || pex.Value is char))
+						return null;
+				}
+					
 				return CreateCompletionData (resolveResult, result, resolver);
 			case '#':
 				if (stateTracker.Engine.IsInsidePreprocessorDirective) 
