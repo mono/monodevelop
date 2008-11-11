@@ -904,7 +904,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 					
 					if ((isInterface || m.IsVirtual || m.IsAbstract) && !m.IsSealed && (includeOverriden || !type.HasOverriden (m))) {
 						//System.Console.WriteLine("add");
-						NewOverrideCompletionData data = new NewOverrideCompletionData (Editor, declarationBegin, type, m);
+						NewOverrideCompletionData data = new NewOverrideCompletionData (Editor, declarationBegin, type.CompilationUnit, type, m);
 						string text = CompletionDataCollector.ambience.GetString (m, OutputFlags.ClassBrowserEntries);
 						// check if the member is already implemented
 						bool foundMember = false;

@@ -46,23 +46,23 @@ namespace MonoDevelop.CSharpBinding
 		bool   insertPrivate;
 		bool   insertSealed;
 		IType  type;
-		
-		public NewOverrideCompletionData (TextEditor editor, int declarationBegin, IType type, IMember member)
-			: base (null)
+		ICompilationUnit unit;
+			
+		public NewOverrideCompletionData (TextEditor editor, int declarationBegin, ICompilationUnit unit, IType type, IMember member) : base (null)
 		{
 			this.editor = editor;
 			this.type   = type;
 			this.member = member;
 			this.initialOffset = editor.CursorPosition;
 			this.declarationBegin = declarationBegin;
+			this.unit = unit;
 			string declarationText = editor.GetText (declarationBegin, initialOffset);
 			insertPrivate = declarationText.Contains ("private");
 			insertSealed  = declarationText.Contains ("sealed");
 			
 			this.indent = GetIndentString (editor, editor.CursorPosition);
 			this.Icon = member.StockIcon;
-			this.DisplayText = ambience.GetString (member, OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics
-			                                       | OutputFlags.EmitMarkup | OutputFlags.HideExtensionsParameter);
+			this.DisplayText = ambience.GetString (member, OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics | OutputFlags.EmitMarkup | OutputFlags.HideExtensionsParameter);
 			this.CompletionText = member.Name;
 		}
 		
@@ -168,10 +168,33 @@ namespace MonoDevelop.CSharpBinding
 			sb.AppendLine ();
 		}
 		
+		bool NamespaceImported (string namespaceName)
+		{
+			foreach (IUsing u in unit.Usings) {
+				if (u.Region.Contains (editor.CursorLine, editor.CursorColumn)) {
+					foreach (string n in u.Namespaces) {
+						if (n == namespaceName)
+							return true;
+					}
+				}
+			}
+			return false;
+		}
+		
 		void InsertMethod (IMethod method)
 		{
 			StringBuilder sb = new StringBuilder ();
-			sb.Append (ambience.GetString (method, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName));
+			sb.Append (ambience.GetString (method.ReturnType, OutputFlags.ClassBrowserEntries));
+			sb.Append (" ");
+			sb.Append (method.Name);
+			sb.Append (" (");
+			OutputFlags flags = OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName;
+			for (int i = 0; i < method.Parameters.Count; i++) {
+				if (i > 0)
+					sb.Append (", ");
+				sb.Append (ambience.GetString (method.Parameters[i], NamespaceImported (method.Parameters[i].ReturnType.Namespace) ? flags : flags | OutputFlags.UseFullName));
+			}
+			sb.Append (")");
 			sb.AppendLine ();
 			sb.Append (this.indent);
 			sb.AppendLine ("{");
