@@ -84,7 +84,6 @@ namespace MonoDevelop.SourceEditor
 				errors = value;
 			}
 		}
-		
 		void Initialize (SourceEditorView view)
 		{
 			this.view = view;
@@ -218,6 +217,47 @@ namespace MonoDevelop.SourceEditor
 			MonoDevelop.Core.Gui.MessageService.ShowException (ex, "Error in text editor extension chain");
 		}
 		
+		IEnumerable<char> TextWithoutCommentsAndStrings {
+			get {
+				bool isInString = false, isInChar = false;
+				bool isInLineComment  = false, isInBlockComment = false;
+				
+				for (int pos = 0; pos < Document.Length; pos++) {
+					char ch = Document.GetCharAt (pos);
+					switch (ch) {
+						case '\r':
+						case '\n':
+							isInLineComment = false;
+							break;
+						case '/':
+							if (isInBlockComment) {
+								if (pos > 0 && Document.GetCharAt (pos - 1) == '*') 
+									isInBlockComment = false;
+							} else  if (!isInString && !isInChar && pos + 1 < Document.Length) {
+								char nextChar = Document.GetCharAt (pos + 1);
+								if (nextChar == '/')
+									isInLineComment = true;
+								if (!isInLineComment && nextChar == '*')
+									isInBlockComment = true;
+							}
+							break;
+						case '"':
+							if (!(isInChar || isInLineComment || isInBlockComment)) 
+								isInString = !isInString;
+							break;
+						case '\'':
+							if (!(isInString || isInLineComment || isInBlockComment)) 
+								isInChar = !isInChar;
+							break;
+						default :
+							if (!(isInString || isInChar || isInLineComment || isInBlockComment))
+								yield return ch;
+							break;
+					}
+				}
+			}
+		}
+			
 		protected override bool OnIMProcessedKeyPressEvent (Gdk.EventKey evnt, char ch)
 		{
 			bool result = true;
@@ -261,33 +301,44 @@ namespace MonoDevelop.SourceEditor
 			
 			if (!inStringOrComment && templateDetected)
 				DoInsertTemplate ();
-			if (SourceEditorOptions.Options.AutoInsertMatchingBracket && !inStringOrComment) {
-				switch (ch) {
-				case '{':
-					if (extension != null) {
-						int offset = Caret.Offset;
-						ExtensionKeyPress (Gdk.Key.Return, (char)0, Gdk.ModifierType.None);
-						ExtensionKeyPress (Gdk.Key.braceright, '}', Gdk.ModifierType.None);
-						Caret.Offset = offset;
-						ExtensionKeyPress (Gdk.Key.Return, (char)0, Gdk.ModifierType.None);
-					} else {
-						result = base.OnIMProcessedKeyPressEvent (evnt, ch);
-						base.SimulateKeyPress (Gdk.Key.Return, 0, Gdk.ModifierType.None);
-						Document.Insert (Caret.Offset, "}");
+			if (SourceEditorOptions.Options.AutoInsertMatchingBracket && !inStringOrComment && MonoDevelop.Ide.Gui.TextEditor.IsOpenBrace (ch)) {
+				char closingBrace = MonoDevelop.Ide.Gui.TextEditor.GetMatchingBrace (ch);
+				int count = 0;
+				foreach (char curCh in TextWithoutCommentsAndStrings) {
+					if (curCh == ch) {
+						count++;
+					} else if (curCh == closingBrace) {
+						count--;
 					}
-					break;
-				case '[':
-					Document.Insert (Caret.Offset, "]");
-					break;
-				case '(':
-					Document.Insert (Caret.Offset, ")");
-					break;
-				case '\'':
-					Document.Insert (Caret.Offset, "'");
-					break;
-				case '"':
-					Document.Insert (Caret.Offset, "\"");
-					break;
+				}
+				if (count > 0) {
+					switch (ch) {
+					case '{':
+						if (extension != null) {
+							int offset = Caret.Offset;
+							ExtensionKeyPress (Gdk.Key.Return, (char)0, Gdk.ModifierType.None);
+							ExtensionKeyPress (Gdk.Key.braceright, '}', Gdk.ModifierType.None);
+							Caret.Offset = offset;
+							ExtensionKeyPress (Gdk.Key.Return, (char)0, Gdk.ModifierType.None);
+						} else {
+							result = base.OnIMProcessedKeyPressEvent (evnt, ch);
+							base.SimulateKeyPress (Gdk.Key.Return, 0, Gdk.ModifierType.None);
+							Document.Insert (Caret.Offset, "}");
+						}
+						break;
+					case '[':
+						Document.Insert (Caret.Offset, "]");
+						break;
+					case '(':
+						Document.Insert (Caret.Offset, ")");
+						break;
+					case '\'':
+						Document.Insert (Caret.Offset, "'");
+						break;
+					case '"':
+						Document.Insert (Caret.Offset, "\"");
+						break;
+					}
 				}
 			}
 			Document.EndAtomicUndo ();

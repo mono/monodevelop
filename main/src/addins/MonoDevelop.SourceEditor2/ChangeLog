@@ -1,5 +1,11 @@
 2008-11-11  Mike Krüger  <mike@icsharpcode.net>
 
+	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: made brace auto
+	insertion more intelligent (doesn't insert closing brace when it
+	exists).
+
+2008-11-11  Mike Krüger  <mike@icsharpcode.net>
+
 	* MonoDevelop.SourceEditor/LanguageItemWindow.cs: fixed 'Bug 442768 -
 	Should show fully qualified name in tooltip when namespaces clash'.
 
