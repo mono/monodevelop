@@ -126,6 +126,10 @@ namespace CSharpBinding.FormattingStrategy {
 			get { return (stack.PeekInside (0) & (Inside.LineComment | Inside.MultiLineComment | Inside.StringOrChar)) != 0; }
 		}
 		
+		public bool IsInsideComment {
+			get { return (stack.PeekInside (0) & (Inside.LineComment | Inside.MultiLineComment | Inside.DocComment)) != 0; }
+		}
+		
 		string TabsToSpaces (string indent)
 		{
 			StringBuilder builder;

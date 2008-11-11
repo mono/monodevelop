@@ -1,5 +1,11 @@
 2008-11-11  Mike Krüger  <mike@icsharpcode.net>
 
+	* Gui/CSharpTextEditorCompletion.cs:
+	* FormattingStrategy/CSharpIndentEngine.cs: fixed 'Bug 443453 -
+	Parameter completion and comments'.
+
+2008-11-11  Mike Krüger  <mike@icsharpcode.net>
+
 	* Gui/CSharpTextEditorCompletion.cs: fixed 'Bug 443493 - C# completion
 	should not trigger at start of existing words'.
 

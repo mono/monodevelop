@@ -139,7 +139,20 @@ namespace MonoDevelop.CSharpBinding.Gui
 		{
 			if (keyChar == ',' && CanRunParameterCompletionCommand ()) 
 				base.RunParameterCompletionCommand ();
-			return base.KeyPress (key, keyChar, modifier);
+			bool result = base.KeyPress (key, keyChar, modifier);
+			
+			if (stateTracker.Engine.IsInsideComment) {
+				ParameterInformationWindowManager.HideWindow ();
+			} else {
+				int cpos;
+				if (key == Gdk.Key.Return && CanRunParameterCompletionCommand () && GetParameterCompletionCommandOffset (out cpos))  {
+					base.RunParameterCompletionCommand ();
+					ParameterInformationWindowManager.CurrentCodeCompletionContext = Editor.CurrentCodeCompletionContext;
+					ParameterInformationWindowManager.PostProcessKeyEvent (key, modifier);
+				}
+					
+			}
+			return result;
 		}
 
 		public override ICompletionDataList HandleCodeCompletion (ICodeCompletionContext completionContext, char completionChar, ref int triggerWordLength)
@@ -428,6 +441,9 @@ namespace MonoDevelop.CSharpBinding.Gui
 		public override IParameterDataProvider HandleParameterCompletion (ICodeCompletionContext completionContext, char completionChar)
 		{
 			if (dom == null)
+				return null;
+			
+			if (stateTracker.Engine.IsInsideDocLineComment || stateTracker.Engine.IsInsideOrdinaryCommentOrString)
 				return null;
 			
 			ExpressionResult result = FindExpression (dom, completionContext.TriggerOffset, -1);
