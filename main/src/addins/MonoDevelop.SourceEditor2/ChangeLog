@@ -1,3 +1,9 @@
+2008-11-12  Mike Krüger  <mike@icsharpcode.net>
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs:
+	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: fixed some slight
+	issues with templates and code completion insertion.
+
 2008-11-11  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Fix line/col indexing on

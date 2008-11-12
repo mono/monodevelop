@@ -290,6 +290,10 @@ namespace MonoDevelop.SourceEditor
 			}
 			
 			Document.BeginAtomicUndo ();
+			
+			// insert template when space is typed.
+			bool templateInserted = !inStringOrComment && (evnt.Key == Gdk.Key.space) && DoInsertTemplate ();
+			
 			if (extension != null) {
 				if (ExtensionKeyPress (evnt.Key, ch, evnt.State)) 
 					result = base.OnIMProcessedKeyPressEvent (evnt, ch);
@@ -297,10 +301,19 @@ namespace MonoDevelop.SourceEditor
 				result = base.OnIMProcessedKeyPressEvent (evnt, ch);
 			}
 			
-			bool templateDetected  = SourceEditorOptions.Options.AutoInsertTemplates && IsTemplateKnown ();
-			
-			if (!inStringOrComment && templateDetected)
-				DoInsertTemplate ();
+			// auto insert templates
+			if (!templateInserted &&
+			    SourceEditorOptions.Options.AutoInsertTemplates && 
+			    ch != '\0' && // don't auto insert templates for control keys
+			    IsTemplateKnown () // only insert templates when there is a 100% match (ex.: scw vs. scwl)
+			    ) {
+				templateInserted = !inStringOrComment && DoInsertTemplate ();
+			}
+			if (templateInserted) {
+				Document.EndAtomicUndo ();
+				return true;
+			}
+				
 			if (SourceEditorOptions.Options.AutoInsertMatchingBracket && !inStringOrComment && MonoDevelop.Ide.Gui.TextEditor.IsOpenBrace (ch)) {
 				char closingBrace = MonoDevelop.Ide.Gui.TextEditor.GetMatchingBrace (ch);
 				int count = 0;
@@ -324,7 +337,7 @@ namespace MonoDevelop.SourceEditor
 							result = base.OnIMProcessedKeyPressEvent (evnt, ch);
 							base.SimulateKeyPress (Gdk.Key.Return, 0, Gdk.ModifierType.None);
 							Document.Insert (Caret.Offset, "}");
-						}
+						} 
 						break;
 					case '[':
 						Document.Insert (Caret.Offset, "]");
