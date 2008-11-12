@@ -291,8 +291,8 @@ namespace MonoDevelop.SourceEditor
 			
 			Document.BeginAtomicUndo ();
 			
-			// insert template when space is typed.
-			bool templateInserted = !inStringOrComment && (evnt.Key == Gdk.Key.space) && DoInsertTemplate ();
+			// insert template when space is typed (currently disabled - it's annoying).
+			bool templateInserted = false; //!inStringOrComment && (evnt.Key == Gdk.Key.space) && DoInsertTemplate ();
 			
 			if (extension != null) {
 				if (ExtensionKeyPress (evnt.Key, ch, evnt.State)) 
