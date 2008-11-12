@@ -102,7 +102,6 @@ namespace MonoDevelop.CSharpBinding
 			}
 			
 			buf.BeginAtomicUndo ();
-			
 			buf.DeleteText (context.TriggerOffset, Math.Max (buf.CursorPosition - context.TriggerOffset, context.TriggerWordLength));
 			buf.InsertText (context.TriggerOffset, this.CompletionText);
 			buf.CursorPosition = context.TriggerOffset + this.CompletionText.Length;
