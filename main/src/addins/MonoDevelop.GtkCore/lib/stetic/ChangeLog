@@ -1,3 +1,15 @@
+2008-11-12  Mike Kestner <mkestner@novell.com> 
+
+	* libsteticui/PropertyTree.cs: refine store column type declarations.
+	* libsteticui/SignalEditorBacked.cs: eliminate multiple refreshes on
+	selection changes.  some changes to the store, simplifying to string
+	and bool columns, and using AppendValues for all row insertions. I
+	don't think most of the model changes are necessary, but this bug
+	fought me so hard I was trying everything and am too tired of it to
+	back down to a minimal patch.
+	* libsteticui/WidgetPropertyEditorBacked.cs: check the selection is
+	really changing before refreshing.  [Fixes #431751]
+
 2008-10-29  Mike Kestner <mkestner@novell.com> 
 
 	* libstetic/editor/ActionMenuItem.cs (Select): don't clear and reshow

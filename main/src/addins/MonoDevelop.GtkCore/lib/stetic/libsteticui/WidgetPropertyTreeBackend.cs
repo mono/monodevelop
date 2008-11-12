@@ -51,7 +51,11 @@ namespace Stetic
 		public object TargetObject {
 			get { return selection.Wrapped; }
 			set {
-				newSelection = ObjectWrapper.Lookup (value);
+				ObjectWrapper wrapper = ObjectWrapper.Lookup (value);
+				if (newSelection == wrapper)
+					return;
+
+				newSelection = wrapper;
 				if (newSelection != null)
 					GLib.Timeout.Add (50, new GLib.TimeoutHandler (SelectedHandler));
 				else

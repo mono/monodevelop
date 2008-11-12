@@ -21,16 +21,14 @@ namespace Stetic
 		const int ColAfter = 2;
 		const int ColHasHandler = 3;
 		const int ColIsSignal = 4;
-		const int ColDescriptorObject = 5;
-		const int ColSignalObject = 6;
-		const int ColSignalTextWeight = 7;
+		const int ColSignalTextWeight = 5;
 		
 		public SignalsEditorBackend (SignalsEditorFrontend frontend)
 		{
 			this.frontend = frontend;
 			
 			tree = new Gtk.TreeView ();
-			store = new Gtk.TreeStore (typeof(string), typeof(string), typeof(bool), typeof(bool), typeof(bool), typeof(SignalDescriptor), typeof(Signal), typeof(int));
+			store = new Gtk.TreeStore (typeof(string), typeof(string), typeof(bool), typeof(bool), typeof(bool), typeof(int));
 			tree.Model = store;
 			tree.RowActivated += new Gtk.RowActivatedHandler (OnRowActivated);
 			
@@ -78,7 +76,7 @@ namespace Stetic
 					project.SignalRemoved += new SignalEventHandler (OnSignalAddedOrRemoved);
 					project.SignalChanged += new SignalChangedEventHandler (OnSignalChanged);
 					project.ProjectReloaded += new EventHandler (OnProjectReloaded);
-				} else {
+				} else if (selection != null) {
 					selection = null;
 					RefreshTree ();
 				}
@@ -106,7 +104,10 @@ namespace Stetic
 			}
 			set {
 				if (project != null) {
-					selection = ObjectWrapper.Lookup (value);
+					ObjectWrapper wrapper = ObjectWrapper.Lookup (value);
+					if (wrapper == selection)
+						return;
+					selection = wrapper;
 					RefreshTree ();
 				}
 			}
@@ -114,7 +115,10 @@ namespace Stetic
 		
 		void OnWidgetSelected (object s, Wrapper.WidgetEventArgs args)
 		{
-			selection = args != null ? args.WidgetWrapper : null;
+			ObjectWrapper wrapper = args != null ? args.WidgetWrapper : null;
+			if (wrapper == selection)
+				return;
+			selection = wrapper;
 			RefreshTree ();
 		}
 		
@@ -141,17 +145,14 @@ namespace Stetic
 			ClassDescriptor klass = selection.ClassDescriptor;
 			
 			foreach (ItemGroup group in klass.SignalGroups) {
-				Gtk.TreeIter iter = store.AppendNode ();
-				store.SetValue (iter, ColSignal, group.Label);
+				Gtk.TreeIter iter = store.AppendValues (group.Label, null, false, false, false, (int) Pango.Weight.Normal);
 				if (FillGroup (iter, group))
 					store.SetValue (iter, ColSignalTextWeight, (int) Pango.Weight.Bold);
-				else
-					store.SetValue (iter, ColSignalTextWeight, (int) Pango.Weight.Normal);
 			}
 			RestoreStatus (status);
 		}
 		
-		bool FillGroup (Gtk.TreeIter parentIter, ItemGroup group)
+		bool FillGroup (Gtk.TreeIter groupIter, ItemGroup group)
 		{
 			bool hasSignals = false;
 			foreach (SignalDescriptor sd in group) {
@@ -159,25 +160,21 @@ namespace Stetic
 					continue;
 				
 				bool foundSignal = false;
-				Gtk.TreeIter signalParent = parentIter;
+				Gtk.TreeIter parent = groupIter;
 				
 				foreach (Signal signal in selection.Signals) {
 					if (signal.SignalDescriptor != sd) continue;
 
-					Gtk.TreeIter iter = store.AppendNode (signalParent);
+					Gtk.TreeIter iter = store.AppendValues (parent, null, signal.Handler, false, true, true, (int) Pango.Weight.Normal);
 					if (!foundSignal) {
-						signalParent = iter;
+						parent = iter;
 						store.SetValue (iter, ColSignal, sd.Name);
 						store.SetValue (iter, ColSignalTextWeight, (int) Pango.Weight.Bold);
-						foundSignal = true;
+						hasSignals = foundSignal = true;
 					}
-					SetSignalData (iter, signal);
 				}
 				
-				Gtk.TreeIter signalIter = store.AppendNode (signalParent);
-				SetEmptySingalRow (signalIter, sd, !foundSignal);
-				
-				hasSignals = hasSignals || foundSignal;
+				InsertEmptySignalRow (parent, foundSignal ? null : sd.Name);
 			}
 			return hasSignals;
 		}
@@ -188,19 +185,11 @@ namespace Stetic
 			store.SetValue (iter, ColAfter, false);
 			store.SetValue (iter, ColHasHandler, true);
 			store.SetValue (iter, ColIsSignal, true);
-			store.SetValue (iter, ColDescriptorObject, signal.SignalDescriptor);
-			store.SetValue (iter, ColSignalObject, signal);
 		}
 		
-		void SetEmptySingalRow (Gtk.TreeIter signalIter, SignalDescriptor sd, bool showName)
+		void InsertEmptySignalRow (Gtk.TreeIter parent, string name)
 		{
-			if (showName)
-				store.SetValue (signalIter, ColSignal, sd.Name);
-			store.SetValue (signalIter, ColHandler, "<i><span foreground=\"grey\">" + EmptyHandlerText + "</span></i>");
-			store.SetValue (signalIter, ColHasHandler, false);
-			store.SetValue (signalIter, ColIsSignal, true);
-			store.SetValue (signalIter, ColDescriptorObject, sd);
-			store.SetValue (signalIter, ColSignalTextWeight, (int) Pango.Weight.Normal);
+			store.AppendValues (parent, name, EmptyHandlerMarkup, false, false, true, (int) Pango.Weight.Normal);
 		}
 		
 		void OnRowActivated (object sender, Gtk.RowActivatedArgs args)
@@ -213,8 +202,7 @@ namespace Stetic
 			if (sd != null) {
 				if (GetSignal (iter) == null)
 					AddHandler (iter, GetHandlerName (sd.Name));
-				else 
-					frontend.NotifySignalActivated ();
+				frontend.NotifySignalActivated ();
 			}
 		}
 		
@@ -278,18 +266,15 @@ namespace Stetic
 			Signal signal = GetSignal (iter);
 			if (signal == null) {
 				if (name != "") {
-					SignalDescriptor sd = (SignalDescriptor) store.GetValue (iter, ColDescriptorObject);
+					SignalDescriptor sd = GetSignalDescriptor (iter);
 					signal = new Signal (sd);
 					signal.Handler = name;
 					selection.Signals.Add (signal);
 					SetSignalData (iter, signal);
 					store.SetValue (iter, ColSignalTextWeight, (int) Pango.Weight.Bold);
-					if (store.IterDepth (iter) == 1)
-						SetEmptySingalRow (store.AppendNode (iter), signal.SignalDescriptor, false);
-					else {
+					if (store.IterDepth (iter) != 1)
 						store.IterParent (out iter, iter);
-						SetEmptySingalRow (store.AppendNode (iter), signal.SignalDescriptor, false);
-					}
+					InsertEmptySignalRow (iter, null);
 				}
 			} else {
 				if (name != "") {
@@ -299,10 +284,10 @@ namespace Stetic
 					selection.Signals.Remove (signal);
 					if (store.IterDepth (iter) == 1) {
 						if (store.IterNChildren (iter) == 1) {
-							SetEmptySingalRow (iter, signal.SignalDescriptor, true);
-							// Remove the empty row
-							store.IterChildren (out iter, iter);
+							Gtk.TreeIter parent;
+							store.IterParent (out parent, iter);
 							store.Remove (ref iter);
+							InsertEmptySignalRow (parent, signal.SignalDescriptor.Name);
 						} else {
 							Gtk.TreeIter citer;
 							store.IterChildren (out citer, iter);
@@ -352,14 +337,30 @@ namespace Stetic
 		{
 			if (! (bool) store.GetValue (iter, ColHasHandler))
 				return null;
-			return (Signal) store.GetValue (iter, ColSignalObject);
+			string handler = (string) store.GetValue (iter, ColHandler);
+			foreach (Signal sig in selection.Signals)
+				if (sig.Handler == handler)
+					return sig;
+			return null;
 		}
 		
 		SignalDescriptor GetSignalDescriptor (Gtk.TreeIter iter)
 		{
-			if (! (bool) store.GetValue (iter, ColIsSignal))
+			Gtk.TreeIter group_iter;
+			if (! (bool) store.GetValue (iter, ColIsSignal) || !store.IterParent (out group_iter, iter))
 				return null;
-			return (SignalDescriptor) store.GetValue (iter, ColDescriptorObject);
+			string name = (string) store.GetValue (iter, ColSignal);
+			string group_name = (string) store.GetValue (group_iter, ColSignal);
+
+			foreach (ItemGroup igroup in selection.ClassDescriptor.SignalGroups) {
+				if (igroup.Label != group_name)
+					continue;
+				SignalDescriptor desc = (SignalDescriptor) igroup [name];
+				if (desc != null)
+					return desc;
+			}
+
+			return null;
 		}
 		
 		ArrayList SaveStatus ()
@@ -381,8 +382,10 @@ namespace Stetic
 		{
 			string basePath = path + "/" + store.GetValue (iter, ColSignal);
 				
-			if (tree.GetRowExpanded (store.GetPath (iter)))
-				list.Add (basePath);
+			if (!tree.GetRowExpanded (store.GetPath (iter)))
+				return;
+
+			list.Add (basePath);
 			
 			if (store.IterChildren (out iter, iter)) {
 				do {
@@ -429,6 +432,10 @@ namespace Stetic
 			return false;
 		}
 		
+		string EmptyHandlerMarkup {
+			get { return "<i><span foreground=\"grey\">" + EmptyHandlerText + "</span></i>"; }
+		}
+
 		string EmptyHandlerText {
 			get { return Catalog.GetString ("Click here to add a new handler"); } 
 		}

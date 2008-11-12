@@ -22,7 +22,7 @@ namespace Stetic
 			sensitives = new Hashtable ();
 			invisibles = new Hashtable ();
 			
-			store = new TreeStore (typeof (string), typeof(object), typeof(bool), typeof(object));
+			store = new TreeStore (typeof (string), typeof(PropertyDescriptor), typeof(bool), typeof(InstanceData));
 			
 			tree = new InternalTree (this, store);
 
