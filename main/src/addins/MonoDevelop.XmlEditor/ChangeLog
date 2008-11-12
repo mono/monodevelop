@@ -1,3 +1,9 @@
+2008-11-12  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.XmlEditor.Gui/BaseXmlEditorExtension.cs: Show code
+	templates for forced completion in free space. Fix accidental leak of
+	attribute name triggering into free space.
+
 2008-11-11  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.XmlEditor.Gui/BaseXmlEditorExtension.cs: Track fix in text
