@@ -81,7 +81,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 		public static void AddCompletionDataForFileName (string fileName, CompletionDataList list)
 		{
-			AddCompletionDataForFileName(Path.GetExtension (fileName), list);
+			AddCompletionDataForExtension (Path.GetExtension (fileName), list);
 		}
 		
 		public static void AddCompletionDataForExtension (string extension, CompletionDataList list)
