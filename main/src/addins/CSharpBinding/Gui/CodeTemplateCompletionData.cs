@@ -56,8 +56,9 @@ namespace MonoDevelop.CSharpBinding
 		public void InsertCompletionText (ICompletionWidget widget, ICodeCompletionContext context)
 		{
 			editor.DeleteText (context.TriggerOffset, Math.Max (editor.CursorPosition - context.TriggerOffset, context.TriggerWordLength));
-			editor.CursorPosition = context.TriggerOffset;
-			template.InsertTemplate (editor);
+			editor.InsertText (context.TriggerOffset, template.Shortcut);
+			editor.CursorPosition = context.TriggerOffset + template.Shortcut.Length;
+//			template.InsertTemplate (editor);
 		}
 		
 	}

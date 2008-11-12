@@ -276,13 +276,11 @@ namespace MonoDevelop.CSharpBinding
 
 		public void AddTemplates (CompletionDataList completionList)
 		{
-			if (TextEditorProperties.AutoInsertTemplates) {
-				MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col = new MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector ( this.editor, dom, unit, new DomLocation (editor.CursorLine - 1, editor.CursorColumn - 1));
-				CodeTemplateGroup templateGroup = CodeTemplateService.GetTemplateGroupPerFilename ("a.cs");
-				if (templateGroup != null) {
-					foreach (CodeTemplate template in templateGroup.Templates) {
-						col.AddCompletionData (completionList, template);
-					}
+			MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col = new MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector ( this.editor, dom, unit, new DomLocation (editor.CursorLine - 1, editor.CursorColumn - 1));
+			CodeTemplateGroup templateGroup = CodeTemplateService.GetTemplateGroupPerFilename ("a.cs");
+			if (templateGroup != null) {
+				foreach (CodeTemplate template in templateGroup.Templates) {
+					col.AddCompletionData (completionList, template);
 				}
 			}
 		}
