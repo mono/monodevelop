@@ -151,12 +151,14 @@ TESTDLLS = \
 
 TESTASSEMBLY = $(top_builddir)/build/bin/CSharpBinding.Test.dll
 
-all: $(ASSEMBLY)
+all: $(ASSEMBLY) $(ASSEMBLY).mdb
 
 $(ASSEMBLY): $(build_sources) $(build_resources)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) -define:GMCS_SOURCE -debug -out:$@ -target:library $(REFS) \
 		$(build_resources:%=/resource:%) $(build_sources)
+
+$(ASSEMBLY).mdb: $(ASSEMBLY)
 
 #check: all $(TESTASSEMBLY)
 #	MONO_PATH=$(top_builddir)/build/AddIns nunit-console $(TESTASSEMBLY)

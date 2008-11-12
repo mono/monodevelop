@@ -282,9 +282,9 @@ namespace MonoDevelop.CSharpBinding
 			if (overloads == null)
 				overloads = new Dictionary<string, ICompletionData> ();
 			
-			string description = overload.Description;
-			if (description != this.description || !overloads.ContainsKey (description)) {
-				overloads[description] = overload;
+			string memberId = overload.member.HelpUrl;
+			if (memberId != this.member.HelpUrl || !overloads.ContainsKey (memberId)) {
+				overloads[memberId] = overload;
 				
 				//if any of the overloads is obsolete, we should not mark the item obsolete
 				if (!overload.member.IsObsolete)

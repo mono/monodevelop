@@ -1,3 +1,13 @@
+2008-11-12  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* Autotools/Makefile.am: Fix issue with parallel building.
+
+	* Gui/MemberCompletionData.cs: Don't use the description to
+	differentiate overloads, since it has to query info from monodoc and
+	that's very slow. Use the help url instead, which seems to work fine
+	as id.
+
 2008-11-12  Mike Krüger  <mike@icsharpcode.net>
 
 	* Gui/MemberCompletionData.cs:
