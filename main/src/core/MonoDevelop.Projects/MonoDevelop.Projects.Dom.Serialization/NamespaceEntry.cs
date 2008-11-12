@@ -30,6 +30,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.Projects.Dom.Serialization
@@ -40,6 +41,9 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		Hashtable contents = new Hashtable ();
 		NamespaceEntry parent;
 		string name;
+
+		[NonSerialized]
+		string fullName;
 		
 		// This is the case insensitive version of the hashtable.
 		// It is constructed only when needed.
@@ -53,12 +57,20 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		public string FullName {
 			get {
+				if (fullName != null)
+					return fullName;
+				
 				if (parent != null) {
-					string bn = parent.FullName;
-					if (bn.Length > 0)
-						return string.Concat (bn, ".", name);
-					else
-						return name;
+					if (string.IsNullOrEmpty (parent.name))
+						return fullName = name;
+					NamespaceEntry p = parent;
+					StringBuilder sb = new StringBuilder (name);
+					do {
+						sb.Insert (0, ".").Insert (0, p.name);
+						p = p.parent;
+					} while (p != null && !string.IsNullOrEmpty (p.name));
+					
+					return fullName = sb.ToString ();;
 				}
 				else
 					return string.Empty;

@@ -1,3 +1,8 @@
+2008-11-12  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Dom.Serialization/NamespaceEntry.cs: Reduce
+	string allocation.
+
 2008-11-12  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/Error.cs:
