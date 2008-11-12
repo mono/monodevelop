@@ -107,7 +107,6 @@ namespace MonoDevelop.Projects.Dom
 			types.Add (newType);
 		}
 		
-		
 		public void GetNamespaceContents (List<IMember> list, string subNamespace, bool caseSensitive)
 		{
 			foreach (IType type in Types) {

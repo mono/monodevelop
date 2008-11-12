@@ -67,21 +67,21 @@ namespace MonoDevelop.Projects.Dom
 			this.declaringType      = declaringType;
 			if (keepDefinitions)
 				this.propertyDefinition = propertyDefinition;
-			base.Name = propertyDefinition.Name;
-			if (Name == "Item" && propertyDefinition.Parameters.Count > 0) {
-				this.propertyModifier |= PropertyModifier.IsIndexer;
+			base.name = propertyDefinition.Name;
+			if (base.name == "Item" && propertyDefinition.Parameters.Count > 0) {
+				this.PropertyModifier |= PropertyModifier.IsIndexer;
 				foreach (ParameterDefinition paramDef in propertyDefinition.Parameters) {
 					Add (new DomCecilParameter (paramDef));
 				}
 			}
 			if (propertyDefinition.GetMethod != null) 
-				this.propertyModifier |= PropertyModifier.HasGet;
+				this.PropertyModifier |= PropertyModifier.HasGet;
 			if (propertyDefinition.SetMethod != null) 
-				this.propertyModifier |= PropertyModifier.HasSet;
+				this.PropertyModifier |= PropertyModifier.HasSet;
 			
-			base.modifiers          = DomCecilType.GetModifiers ((propertyDefinition.GetMethod != null ? propertyDefinition.GetMethod : propertyDefinition.SetMethod));
+			base.Modifiers          = DomCecilType.GetModifiers ((propertyDefinition.GetMethod != null ? propertyDefinition.GetMethod : propertyDefinition.SetMethod));
 			if (!propertyDefinition.IsSpecialName)
-				base.modifiers &= ~MonoDevelop.Projects.Dom.Modifiers.SpecialName;
+				base.Modifiers &= ~MonoDevelop.Projects.Dom.Modifiers.SpecialName;
 			base.returnType         = DomCecilMethod.GetReturnType (propertyDefinition.PropertyType);
 			DomCecilMethod.AddAttributes (this, propertyDefinition.CustomAttributes);
 		}

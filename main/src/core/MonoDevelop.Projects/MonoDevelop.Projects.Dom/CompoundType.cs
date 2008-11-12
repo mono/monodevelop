@@ -71,11 +71,13 @@ namespace MonoDevelop.Projects.Dom
 				return parts.Count > 0;
 			}
 		}
+		
 		public int PartsCount {
 			get {
 				return parts.Count;
 			}
 		}
+		
 		public override IEnumerable<IMember> Members {
 			get {
 				foreach (IType part in Parts) {
@@ -152,7 +154,7 @@ namespace MonoDevelop.Projects.Dom
 					BaseType = part.BaseType;
 			}
 			
-			this.modifiers = modifier;
+			this.Modifiers = modifier;
 		}
 		
 		public static IType Merge (IType type1, IType type2)

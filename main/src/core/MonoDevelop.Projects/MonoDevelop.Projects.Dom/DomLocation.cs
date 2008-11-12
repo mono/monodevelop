@@ -33,8 +33,6 @@ namespace MonoDevelop.Projects.Dom
 	[Serializable]
 	public struct DomLocation : IComparable<DomLocation>, IEquatable<DomLocation>
 	{
-		int line, column;
-		
 		public bool IsEmpty {
 			get {
 				return Line < 0;
@@ -42,21 +40,13 @@ namespace MonoDevelop.Projects.Dom
 		}
 		
 		public int Line {
-			get {
-				return line;
-			}
-			set {
-				line = value;
-			}
+			get;
+			set;
 		}
 
 		public int Column {
-			get {
-				return column;
-			}
-			set {
-				column = value;
-			}
+			get;
+			set;
 		}
 		
 		public static DomLocation Empty {
@@ -67,8 +57,8 @@ namespace MonoDevelop.Projects.Dom
 		
 		public DomLocation (int line, int column)
 		{
-			this.line   = line;
-			this.column = column;
+			this.Line   = line;
+			this.Column = column;
 		}
 		
 		public override bool Equals (object other)
@@ -77,12 +67,11 @@ namespace MonoDevelop.Projects.Dom
 				return false;
 			return (DomLocation)other == this;
 		}
-
+		
 		public override int GetHashCode ()
 		{
-			return line + column*5000;
+			return Line + Column * 5000;
 		}
-
 		
 		public bool Equals (DomLocation other)
 		{

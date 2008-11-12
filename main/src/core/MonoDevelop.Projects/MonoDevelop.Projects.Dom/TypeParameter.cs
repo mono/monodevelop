@@ -34,23 +34,28 @@ namespace MonoDevelop.Projects.Dom
 	public class TypeParameter
 	{
 		string name;
-		List<IAttribute>  attributes  = new List<IAttribute> ();
-		List<IReturnType> constraints = new List<IReturnType> ();
-		
 		public string Name {
 			get {
 				return name;
 			}
 		}
 
+		List<IAttribute> attributes = null;
+		static readonly IAttribute[] emptyAttributes = new IAttribute[0];
 		public IEnumerable<IAttribute> Attributes {
 			get {
+				if (attributes == null)
+					return emptyAttributes;
 				return attributes;
 			}
 		}
 
+		List<IReturnType> constraints = null;
+		static readonly IReturnType[] emptyConstraints = new IReturnType[0];
 		public IList<IReturnType> Constraints {
 			get {
+				if (constraints == null)
+					return emptyConstraints;
 				return constraints;
 			}
 		}
@@ -62,11 +67,15 @@ namespace MonoDevelop.Projects.Dom
 
 		public void AddConstraint (IReturnType type)
 		{
+			if (constraints == null)
+				constraints = new List<IReturnType> ();
 			this.constraints.Add (type);
 		}
 
 		public void AddAttribute (IAttribute attr)
 		{
+			if (attributes == null)
+				attributes = new List<IAttribute> ();
 			attributes.Add (attr);
 		}
 	}

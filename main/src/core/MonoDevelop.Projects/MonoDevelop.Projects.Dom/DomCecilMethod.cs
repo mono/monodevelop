@@ -134,12 +134,14 @@ namespace MonoDevelop.Projects.Dom
 				this.methodDefinition = methodDefinition;
 			
 			if (methodDefinition.Name == ".ctor") {
-				Name = declaringType.Name;
-				methodModifier |= MethodModifier.IsConstructor;
-			} else
-				Name = methodDefinition.Name;
+				this.name = declaringType.Name;
+				MethodModifier |= MethodModifier.IsConstructor;
+			} else {
+				this.name = methodDefinition.Name;
+			}
+			
 			AddAttributes (this, methodDefinition.CustomAttributes);
-			base.modifiers  = DomCecilType.GetModifiers (methodDefinition);
+			base.Modifiers  = DomCecilType.GetModifiers (methodDefinition);
 			base.returnType = DomCecilMethod.GetReturnType (methodDefinition.ReturnType.ReturnType);
 			foreach (ParameterDefinition paramDef in methodDefinition.Parameters) {
 				Add (new DomCecilParameter (paramDef));
@@ -148,7 +150,7 @@ namespace MonoDevelop.Projects.Dom
 			if (this.IsStatic) {
 				foreach (IAttribute attr in this.Attributes) {
 					if (attr.Name == "System.Runtime.CompilerServices.ExtensionAttribute") {
-						methodModifier |= MethodModifier.IsExtension;
+						MethodModifier |= MethodModifier.IsExtension;
 						break;
 					}
 				}

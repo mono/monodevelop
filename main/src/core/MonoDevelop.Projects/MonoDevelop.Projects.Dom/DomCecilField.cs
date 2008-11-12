@@ -51,8 +51,8 @@ namespace MonoDevelop.Projects.Dom
 			this.declaringType   = declaringType;
 			if (keepDefinitions)
 				this.fieldDefinition = fieldDefinition;
-			base.Name            = fieldDefinition.Name;
-			base.modifiers       = DomCecilType.GetModifiers (fieldDefinition);
+			base.name            = fieldDefinition.Name;
+			base.Modifiers       = DomCecilType.GetModifiers (fieldDefinition);
 			base.returnType      = DomCecilMethod.GetReturnType (fieldDefinition.FieldType);
 			DomCecilMethod.AddAttributes (this, fieldDefinition.CustomAttributes);
 		}

@@ -36,59 +36,36 @@ namespace MonoDevelop.Projects.Dom
 {
 	public class DomAttribute : IAttribute
 	{
-		string name;
-		protected DomRegion       region;
-		protected AttributeTarget attributeTarget;
-		protected IReturnType     attributeType;
-		
-		protected List<CodeExpression> positionalArguments;
-		protected Dictionary<string, CodeExpression> namedArguments;
-
-		static readonly ReadOnlyDictionary<string, CodeExpression> emptyNamedArguments = new ReadOnlyDictionary<string, CodeExpression> (new Dictionary<string, CodeExpression> ());
-		static readonly ReadOnlyCollection<CodeExpression> emptyPositionalArguments = new ReadOnlyCollection<CodeExpression> (new CodeExpression [0]);
-		
 		public string Name {
-			get {
-				return name;
-			}
-			set {
-				name = value;
-			}
+			get;
+			set;
 		}
 		
 		public DomRegion Region {
-			get {
-				return region;
-			}
-			set {
-				region = value;
-			}
+			get;
+			set;
 		}
 
 		public AttributeTarget AttributeTarget {
-			get {
-				return attributeTarget;
-			}
-			set {
-				attributeTarget = value;
-			}
+			get;
+			set;
 		}
 
 		public IReturnType AttributeType {
-			get {
-				return attributeType;
-			}
-			set {
-				attributeType = value;
-			}
+			get;
+			set;
 		}
 
+		protected List<CodeExpression> positionalArguments;
+		static readonly ReadOnlyCollection<CodeExpression> emptyPositionalArguments = new ReadOnlyCollection<CodeExpression> (new CodeExpression [0]);
 		public ReadOnlyCollection<CodeExpression> PositionalArguments {
 			get {
 				return positionalArguments != null ? positionalArguments.AsReadOnly() : emptyPositionalArguments;
 			}
 		}
 
+		protected Dictionary<string, CodeExpression> namedArguments;
+		static readonly ReadOnlyDictionary<string, CodeExpression> emptyNamedArguments = new ReadOnlyDictionary<string, CodeExpression> (new Dictionary<string, CodeExpression> ());
 		public ReadOnlyDictionary<string, CodeExpression> NamedArguments {
 			get {
 				return namedArguments != null ? new ReadOnlyDictionary<string, CodeExpression> (namedArguments) : emptyNamedArguments;
@@ -112,10 +89,10 @@ namespace MonoDevelop.Projects.Dom
 		public static IAttribute Resolve (IAttribute source, ITypeResolver typeResolver)
 		{
 			DomAttribute result = new DomAttribute ();
-			result.name            = source.Name;
-			result.region          = source.Region;
-			result.attributeTarget = source.AttributeTarget;
-			result.attributeType   = source.AttributeType;
+			result.Name            = source.Name;
+			result.Region          = source.Region;
+			result.AttributeTarget = source.AttributeTarget;
+			result.AttributeType   = source.AttributeType;
 
 			if (source.PositionalArguments.Count > 0)
 				result.positionalArguments = new List<CodeExpression> (source.PositionalArguments);

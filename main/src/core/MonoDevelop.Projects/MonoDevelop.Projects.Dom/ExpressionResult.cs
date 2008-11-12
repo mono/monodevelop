@@ -34,28 +34,18 @@ namespace MonoDevelop.Projects.Dom
 	
 	public class ExpressionResult
 	{
-		string expression;
-		ExpressionContext expressionContext;
-		DomRegion region;
 		
 		public string Expression {
-			get {
-				return expression;
-			}
-			set {
-				expression = value;
-			}
+			get;
+			set;
 		}
 
 		public ExpressionContext ExpressionContext {
-			get {
-				return expressionContext;
-			}
-			set {
-				expressionContext = value;
-			}
+			get;
+			set;
 		}
 
+		DomRegion region;
 		public DomRegion Region {
 			get {
 				return region;
@@ -68,9 +58,9 @@ namespace MonoDevelop.Projects.Dom
 		
 		public ExpressionResult (string expression, DomRegion region, ExpressionContext expressionContext)
 		{
-			this.expression = expression;
+			this.Expression = expression;
 			this.region = region;
-			this.expressionContext = expressionContext;
+			this.ExpressionContext = expressionContext;
 		}
 		
 		public ExpressionResult (string expression, ExpressionContext expressionContext) : this (expression, DomRegion.Empty, expressionContext)
@@ -80,9 +70,9 @@ namespace MonoDevelop.Projects.Dom
 		public override string ToString ()
 		{
 			return String.Format ("[ExpressionResult:Expression={0}, ExpressionContext={1}, Region={2}]",
-			                      this.expression,
-			                      this.expressionContext,
-			                      this.region);
+			                      this.Expression,
+			                      this.ExpressionContext,
+			                      this.Region);
 		}
 	}
 }

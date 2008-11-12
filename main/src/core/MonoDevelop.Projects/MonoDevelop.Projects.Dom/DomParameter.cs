@@ -33,47 +33,26 @@ namespace MonoDevelop.Projects.Dom
 {
 	public class DomParameter : IParameter
 	{
-		protected string name;
-		protected ParameterModifiers parameterModifiers;
-		protected IReturnType returnType;
 		protected List<IAttribute> attributes = null;
-		protected DomLocation location;
-		IMember declaringMember;
 
 		public IMember DeclaringMember {
-			get {
-				return declaringMember;
-			}
-			set {
-				declaringMember = value;
-			}
+			get;
+			set;
 		}
 
 		public string Name {
-			get {
-				return name;
-			}
-			set {
-				name = value;
-			}
+			get;
+			set;
 		}
 
 		public ParameterModifiers ParameterModifiers {
-			get {
-				return parameterModifiers;
-			}
-			set {
-				parameterModifiers = value;
-			}
+			get;
+			set;
 		}
 
 		public IReturnType ReturnType {
-			get {
-				return returnType;
-			}
-			set {
-				returnType = value;
-			}
+			get;
+			set;
 		}
 		
 		public bool IsOut {
@@ -94,7 +73,6 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		
 		public static IParameter Resolve (IParameter source, ITypeResolver typeResolver)
 		{
 			DomParameter result = new DomParameter ();
@@ -114,12 +92,8 @@ namespace MonoDevelop.Projects.Dom
 		}
 
 		public DomLocation Location {
-			get {
-				return location;
-			}
-			set {
-				location = value;
-			}
+			get;
+			set;
 		}
 		
 		public DomParameter ()
@@ -128,9 +102,9 @@ namespace MonoDevelop.Projects.Dom
 		
 		public DomParameter (IMember declaringMember, string name, IReturnType returnType)
 		{
-			this.name            = name;
-			this.declaringMember = declaringMember;
-			this.returnType      = returnType;
+			this.Name            = name;
+			this.DeclaringMember = declaringMember;
+			this.ReturnType      = returnType;
 		}
 		
 		public void Add (IAttribute attribute)

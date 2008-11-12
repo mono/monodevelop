@@ -36,35 +36,28 @@ namespace MonoDevelop.Projects.Dom
 {
 	public class DomProperty : AbstractMember, IProperty
 	{
-		protected PropertyModifier propertyModifier;
 		protected List<IParameter> parameters = null;
-		protected DomRegion getRegion = DomRegion.Empty;
-		protected DomRegion setRegion = DomRegion.Empty;
 
 		public PropertyModifier PropertyModifier {
-			get {
-				return propertyModifier;
-			}
-			set {
-				propertyModifier = value;
-			}
+			get;
+			set;
 		}
 		
 		public bool IsIndexer {
 			get {
-				return (propertyModifier & PropertyModifier.IsIndexer) == PropertyModifier.IsIndexer;
+				return (PropertyModifier & PropertyModifier.IsIndexer) == PropertyModifier.IsIndexer;
 			}
 		}
 		
 		public bool HasGet {
 			get {
-				return (propertyModifier & PropertyModifier.HasGet) == PropertyModifier.HasGet;
+				return (PropertyModifier & PropertyModifier.HasGet) == PropertyModifier.HasGet;
 			}
 		}
 		
 		public bool HasSet {
 			get {
-				return (propertyModifier & PropertyModifier.HasSet) == PropertyModifier.HasSet;
+				return (PropertyModifier & PropertyModifier.HasSet) == PropertyModifier.HasSet;
 			}
 		}
 		static readonly ReadOnlyCollection<IParameter> emptyParameters = new ReadOnlyCollection<IParameter> (new IParameter [0]);
@@ -75,22 +68,15 @@ namespace MonoDevelop.Projects.Dom
 		}
 
 		public DomRegion GetRegion {
-			get {
-				return this.getRegion;
-			}
-			set {
-				this.getRegion = value;
-			}
+			get;
+			set;
 		}
 		
 		public DomRegion SetRegion {
-			get {
-				return this.setRegion;
-			}
-			set {
-				this.setRegion = value;
-			}
+			get;
+			set;
 		}
+		
 		public override string HelpUrl {
 			get {
 				StringBuilder result = new StringBuilder ();
@@ -136,10 +122,10 @@ namespace MonoDevelop.Projects.Dom
 		public DomProperty (string name, Modifiers modifiers, DomLocation location, DomRegion bodyRegion, IReturnType returnType)
 		{
 			base.Name       = name;
-			this.modifiers  = modifiers;
-			this.location   = location;
-			this.bodyRegion = bodyRegion;
-			base.returnType = returnType;
+			this.Modifiers  = modifiers;
+			this.Location   = location;
+			this.BodyRegion = bodyRegion;
+			base.ReturnType = returnType;
 		}
 		
 		public void Add (IParameter parameter)

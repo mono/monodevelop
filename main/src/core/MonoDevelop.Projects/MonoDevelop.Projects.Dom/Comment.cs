@@ -33,75 +33,39 @@ namespace MonoDevelop.Projects.Dom
 	[Serializable]
 	public class Comment
 	{
-		string openTag;
-		string closingTag;
-		string text;
-		DomRegion region = DomRegion.Empty;
-		CommentType commentType;
-		bool isDocumentation;
-		bool commentStartsLine;
-		
 		public string OpenTag {
-			get {
-				return openTag;
-			}
-			set {
-				openTag = value;
-			}
+			get;
+			set;
 		}
 
 		public string ClosingTag {
-			get {
-				return closingTag;
-			}
-			set {
-				closingTag = value;
-			}
+			get;
+			set;
 		}
 
 		public string Text {
-			get {
-				return text;
-			}
-			set {
-				text = value;
-			}
+			get;
+			set;
 		}
 
 		public DomRegion Region {
-			get {
-				return region;
-			}
-			set {
-				region = value;
-			}
+			get;
+			set;
 		}
 
 		public bool IsDocumentation {
-			get {
-				return isDocumentation;
-			}
-			set {
-				isDocumentation = value;
-			}
+			get;
+			set;
 		}
 		
 		public bool CommentStartsLine {
-			get {
-				return commentStartsLine;
-			}
-			set {
-				commentStartsLine = value;
-			}
+			get;
+			set;
 		}
 		
 		public CommentType CommentType {
-			get {
-				return commentType;
-			}
-			set {
-				commentType = value;
-			}
+			get;
+			set;
 		}
 		
 		public Comment ()
@@ -110,7 +74,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		public Comment (string text)
 		{
-			this.text = text;
+			this.Text = text;
 		}
 	}
 }

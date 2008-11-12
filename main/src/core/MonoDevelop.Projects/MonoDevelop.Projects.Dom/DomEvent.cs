@@ -77,9 +77,9 @@ namespace MonoDevelop.Projects.Dom
 		public DomEvent (string name, Modifiers modifiers, DomLocation location, IReturnType returnType)
 		{
 			this.Name = name;
-			this.modifiers = modifiers;
-			this.location = location;
-			this.returnType = returnType;
+			this.Modifiers = modifiers;
+			this.Location = location;
+			this.ReturnType = returnType;
 		}
 		
 		public static IEvent Resolve (IEvent source, ITypeResolver typeResolver)

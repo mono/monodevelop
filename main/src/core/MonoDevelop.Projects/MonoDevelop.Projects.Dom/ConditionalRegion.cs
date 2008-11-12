@@ -31,69 +31,45 @@ namespace MonoDevelop.Projects.Dom
 {
 	public class ConditionBlock
 	{
-		string flag;
 		public string Flag {
-			get {
-				return flag;
-			}
-			set {
-				flag = value;
-			}
+			get;
+			set;
 		}
 		
-		DomRegion region = DomRegion.Empty;
 		public DomRegion Region {
-			get {
-				return region;
-			}
-			set {
-				region = value;
-			}
+			get;
+			set;
 		}
 		
 		public DomLocation Start {
-			get {
-				return region.Start;
-			}
-			set {
-				region.Start = value;
-			}
+			get;
+			set;
 		}
 		
 		public DomLocation End {
-			get {
-				return region.End;
-			}
-			set {
-				region.End = value;
-			}
+			get;
+			set;
 		}
 		
-		public ConditionBlock (string flag)
+		public ConditionBlock (string flag) : this (flag, DomLocation.Empty)
 		{
-			this.flag = flag;
 		}
 		public ConditionBlock (string flag, DomLocation start)
 		{
-			this.flag = flag;
-			this.Start = start;
+			this.Flag   = flag;
+			this.Start  = start;
+			this.Region = DomRegion.Empty;
 		}
 	}
 	
 	public class ConditionalRegion : ConditionBlock
 	{
-		List<ConditionBlock> conditionBlocks = new List<ConditionBlock> ();
-		
-		DomRegion region;
 		public DomRegion ElseBlock {
-			get {
-				return region;
-			}
-			set {
-				region = value;
-			}
+			get;
+			set;
 		}
 		
+		List<ConditionBlock> conditionBlocks = new List<ConditionBlock> ();
 		public List<ConditionBlock> ConditionBlocks {
 			get {
 				return conditionBlocks;

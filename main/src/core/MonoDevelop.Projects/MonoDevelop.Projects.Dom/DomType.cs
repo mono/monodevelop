@@ -52,13 +52,12 @@ namespace MonoDevelop.Projects.Dom
 		protected string nameSpace;
 		
 		
-		protected override void CalculateFullName ()
+		protected override string CalculateFullName ()
 		{
-			if (DeclaringType != null) {
-				fullName = DeclaringType.FullName + "." + Name;
-			} else {
-				fullName = !String.IsNullOrEmpty (Namespace) ? Namespace + "." + Name : Name;
-			}
+			if (DeclaringType != null) 
+				return DeclaringType.FullName + "." + Name;
+			return !String.IsNullOrEmpty (Namespace) ? Namespace + "." + Name : Name;
+			base.fullNameIsDirty = false;
 		}
 		
 		protected void SetName (string fullName)
@@ -81,7 +80,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 			set {
 				nameSpace = value;
-				CalculateFullName ();
+				base.fullNameIsDirty = true;
 			}
 		}
 		
@@ -256,9 +255,9 @@ namespace MonoDevelop.Projects.Dom
 			this.classType   = classType;
 			this.Name        = name;
 			this.Namespace   = namesp;
-			this.bodyRegion  = region;
+			this.BodyRegion  = region;
 			this.members     = members;
-			this.location    = location;
+			this.Location    = location;
 			
 			foreach (IMember member in members) {
 				((AbstractMember)member).DeclaringType = this;
@@ -275,11 +274,11 @@ namespace MonoDevelop.Projects.Dom
 		{
 			this.compilationUnit = compilationUnit;
 			this.classType   = classType;
-			this.modifiers   = modifiers;
+			this.Modifiers   = modifiers;
 			this.Name        = name;
 			this.Namespace   = namesp;
-			this.bodyRegion  = region;
-			this.location    = location;
+			this.BodyRegion  = region;
+			this.Location    = location;
 		}
 		
 		System.Xml.XmlDocument helpXml;

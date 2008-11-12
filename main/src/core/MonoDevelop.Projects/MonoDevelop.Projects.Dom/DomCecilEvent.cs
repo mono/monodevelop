@@ -50,12 +50,12 @@ namespace MonoDevelop.Projects.Dom
 			this.declaringType      = declaringType;
 			if (keepDefinitions)
 				this.eventDefinition = eventDefinition;
-			base.Name            = eventDefinition.Name;
-			base.modifiers       = DomCecilType.GetModifiers (eventDefinition.AddMethod);
-			base.returnType = DomCecilMethod.GetReturnType (eventDefinition.EventType);
+			base.name                = eventDefinition.Name;
+			base.Modifiers           = DomCecilType.GetModifiers (eventDefinition.AddMethod);
+			base.returnType          = DomCecilMethod.GetReturnType (eventDefinition.EventType);
 			DomCecilMethod.AddAttributes (this, eventDefinition.CustomAttributes);
 			if (!eventDefinition.IsSpecialName)
-				base.modifiers &= ~MonoDevelop.Projects.Dom.Modifiers.SpecialName;
+				base.Modifiers &= ~MonoDevelop.Projects.Dom.Modifiers.SpecialName;
 		}
 	}
 }

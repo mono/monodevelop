@@ -39,7 +39,6 @@ namespace MonoDevelop.Projects.Dom
 	public class Error
 	{
 		int line, column;
-		ErrorType errorType;
 		string message;
 		
 		public int Line {
@@ -61,12 +60,8 @@ namespace MonoDevelop.Projects.Dom
 		}
 
 		public ErrorType ErrorType {
-			get {
-				return errorType;
-			}
-			set {
-				errorType = value;
-			}
+			get;
+			set;
 		}
 		
 		public Error (int line, int column, string message) : this(ErrorType.Error, line, column, message)
@@ -75,7 +70,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		public Error (ErrorType errorType, int line, int column, string message)
 		{
-			this.errorType = errorType;
+			this.ErrorType = errorType;
 			this.line = line;
 			this.column = column;
 			this.message = message;

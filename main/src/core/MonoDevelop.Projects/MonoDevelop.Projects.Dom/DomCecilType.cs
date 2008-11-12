@@ -85,8 +85,8 @@ namespace MonoDevelop.Projects.Dom
 			this.classType      = GetClassType (typeDefinition);
 			
 			this.Name           = DomCecilType.RemoveGenericParamSuffix (typeDefinition.Name);
-			
 			this.Namespace      = typeDefinition.Namespace;
+			
 			this.Modifiers      = GetModifiers (typeDefinition.Attributes);
 			
 			if (typeDefinition.BaseType != null)

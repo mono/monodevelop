@@ -46,19 +46,25 @@ namespace MonoDevelop.Projects.Dom
 			}
 			set {
 				this.declaringType = value;
-				CalculateFullName ();
+				fullNameIsDirty = true;
 			}
 		}
 		
+		string fullName;
 		public virtual string FullName {
 			get {
+				if (fullNameIsDirty) {
+					fullName = CalculateFullName ();
+					fullNameIsDirty = false;
+				}
 				return fullName;
 			}
 		}
 		
-		protected virtual void CalculateFullName ()
+		protected bool fullNameIsDirty = true;
+		protected virtual string CalculateFullName ()
 		{
-			fullName = DeclaringType != null ? DeclaringType.FullName + "." + Name : Name;
+			return DeclaringType != null ? DeclaringType.FullName + "." + Name : Name;
 		}
 		
 		public virtual IReturnType ReturnType {
@@ -83,58 +89,34 @@ namespace MonoDevelop.Projects.Dom
 		}
 		
 		protected string name;
-		protected string documentation;
-		protected string fullName;
-		
-		protected DomRegion bodyRegion;
-		protected DomLocation location;
-		protected Modifiers modifiers;
-		List<IAttribute> attributes = null;
-		
 		public virtual string Name {
 			get {
 				return name;
 			}
 			set {
 				name = value;
-				CalculateFullName ();
+				fullNameIsDirty = true;
 			}
 		}
 		
 		public virtual string Documentation {
-			get {
-				return documentation;
-			}
-			set {
-				documentation = value;
-			}
+			get;
+			set;
 		}
 		
 		public virtual DomLocation Location {
-			get {
-				return location;
-			}
-			set {
-				location = value;
-			}
+			get;
+			set;
 		}
 		
 		public virtual DomRegion BodyRegion {
-			get {
-				return bodyRegion;
-			}
-			set {
-				bodyRegion = value;
-			}
+			get;
+			set;
 		}
 		
 		public virtual Modifiers Modifiers {
-			get {
-				return modifiers;
-			}
-			set {
-				modifiers = value;
-			}
+			get;
+			set;
 		}
 		
 		public virtual bool IsObsolete {
@@ -152,9 +134,11 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
+		List<IAttribute> attributes = null;
+		static readonly IAttribute[] emptyAttributes = new IAttribute[0];
 		public virtual IEnumerable<IAttribute> Attributes {
 			get {
-				return (IEnumerable<IAttribute>)attributes ?? new IAttribute[0];
+				return (IEnumerable<IAttribute>)attributes ?? emptyAttributes;
 			}
 		}
 		

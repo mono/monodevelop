@@ -38,18 +38,12 @@ namespace MonoDevelop.Projects.Dom
 		static readonly Dictionary<string, IReturnType> emptyAliases = new Dictionary<string,IReturnType> ();
 		static readonly List<string> emptyNamespaces = new List<string> ();
 		
-		protected DomRegion domRegion;
 		protected List<string>                    namespaces = emptyNamespaces;
 		protected Dictionary<string, IReturnType> aliases    = emptyAliases;
-		bool isFromNamespace = false;
 		
 		public DomRegion Region {
-			get {
-				return domRegion;
-			}
-			set {
-				domRegion = value;
-			}
+			get;
+			set;
 		}
 
 		public ReadOnlyCollection<string> Namespaces {
@@ -65,21 +59,18 @@ namespace MonoDevelop.Projects.Dom
 		}
 
 		public bool IsFromNamespace {
-			get {
-				return isFromNamespace;
-			}
-			set {
-				isFromNamespace = value;
-			}
+			get;
+			set;
 		}
 		
 		public DomUsing ()
 		{
+			IsFromNamespace = false;
 		}
 		
-		public DomUsing (DomRegion region, string nspace)
+		public DomUsing (DomRegion region, string nspace) : this ()
 		{
-			this.domRegion = region;
+			this.Region = region;
 			Add (nspace);
 		}
 		

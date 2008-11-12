@@ -31,11 +31,9 @@ using System;
 namespace MonoDevelop.Projects.Dom
 {
 	[Serializable]
-	public struct DomRegion : IComparable
+	public struct DomRegion : IComparable, IComparable<DomRegion>
 	{
 		public readonly static DomRegion Empty = new DomRegion (-1, -1, -1, -1);
-		
-		DomLocation start, end;
 		
 		public bool IsEmpty {
 			get {
@@ -44,21 +42,13 @@ namespace MonoDevelop.Projects.Dom
 		}
 
 		public DomLocation Start {
-			get {
-				return start;
-			}
-			set {
-				start = value;
-			}
+			get;
+			set;
 		}
 
 		public DomLocation End {
-			get {
-				return end;
-			}
-			set {
-				end = value;
-			}
+			get;
+			set;
 		}
 		
 		public DomRegion (int startLine, int endLine) : this (startLine, -1, endLine, -1)
@@ -67,8 +57,8 @@ namespace MonoDevelop.Projects.Dom
 		
 		public DomRegion (int startLine, int startColumn, int endLine, int endColumn)
 		{
-			this.start = new DomLocation (startLine, startColumn);
-			this.end   = new DomLocation (endLine, endColumn);
+			this.Start = new DomLocation (startLine, startColumn);
+			this.End   = new DomLocation (endLine, endColumn);
 		}
 		
 		public DomRegion (DomLocation start, DomLocation end) : this (start.Line, start.Column, end.Line, end.Column)
@@ -128,7 +118,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		public bool Contains (DomLocation location)
 		{
-			return start <= location && location <= end;
+			return Start <= location && location <= End;
 		}
 		public bool Contains (int line, int column)
 		{
@@ -154,7 +144,7 @@ namespace MonoDevelop.Projects.Dom
 
 		public override int GetHashCode ()
 		{
-			return start.GetHashCode () + end.GetHashCode ();
+			return Start.GetHashCode () + End.GetHashCode ();
 		}
 	}
 }

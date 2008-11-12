@@ -67,10 +67,10 @@ namespace MonoDevelop.Projects.Dom
 		
 		public DomField (string name, Modifiers modifiers, DomLocation location, IReturnType returnType)
 		{
-			this.location   = location;
-			this.modifiers  = modifiers;
+			this.Location   = location;
+			this.Modifiers  = modifiers;
 			this.Name       = name;
-			this.returnType = returnType;
+			this.ReturnType = returnType;
 		}
 		
 		

@@ -36,62 +36,37 @@ namespace MonoDevelop.Projects.Dom
 {
 	public abstract class ResolveResult
 	{
-		IType       callingType;
-		IMember     callingMember;
-		
-		IReturnType resolvedType, unresolvedType;
-		bool        staticResolve = false;
-		
 		public IType CallingType {
-			get {
-				return callingType;
-			}
-			set {
-				callingType = value;
-			}
+			get;
+			set;
 		}
 
 		public virtual IReturnType ResolvedType {
-			get {
-				return resolvedType;
-			}
-			set {
-				resolvedType = value;
-			}
+			get;
+			set;
 		}
 		public virtual IReturnType UnresolvedType {
-			get {
-				return unresolvedType;
-			}
-			set {
-				unresolvedType = value;
-			}
+			get;
+			set;
 		}
 
 		public IMember CallingMember {
-			get {
-				return callingMember;
-			}
-			set {
-				callingMember = value;
-			}
+			get;
+			set;
 		}
 
 		public bool StaticResolve {
-			get {
-				return staticResolve;
-			}
-			set {
-				staticResolve = value;
-			}
+			get;
+			set;
 		}
 		
-		public ResolveResult ()
+		public ResolveResult () : this (false)
 		{
 		}
+		
 		public ResolveResult (bool staticResolve)
 		{
-			this.staticResolve = staticResolve;
+			this.StaticResolve = staticResolve;
 		}
 		
 		public abstract IEnumerable<object> CreateResolveResult (ProjectDom dom, IMember callingMember);
@@ -100,15 +75,13 @@ namespace MonoDevelop.Projects.Dom
 	public class LocalVariableResolveResult : ResolveResult
 	{
 		LocalVariable variable;
-		
-		bool   isLoopVariable;
-		
 		public LocalVariable LocalVariable {
 			get {
 				return variable;
 			}
 		}
 		
+		bool   isLoopVariable;
 		public bool IsLoopVariable {
 			get {
 				return isLoopVariable;
@@ -150,7 +123,6 @@ namespace MonoDevelop.Projects.Dom
 	public class ParameterResolveResult : ResolveResult
 	{
 		IParameter parameter;
-		
 		public IParameter Parameter {
 			get {
 				return parameter;
@@ -177,20 +149,14 @@ namespace MonoDevelop.Projects.Dom
 	
 	public class AnonymousTypeResolveResult : ResolveResult
 	{
-		IType anonymousType;
-		
 		public IType AnonymousType {
-			get {
-				return anonymousType;
-			}
-			set {
-				anonymousType = value;
-			}
+			get;
+			set;
 		}
 		
 		public AnonymousTypeResolveResult (IType anonymousType)
 		{
-			this.anonymousType = anonymousType; 
+			this.AnonymousType = anonymousType; 
 			this.ResolvedType  = new DomReturnType (anonymousType);
 		}
 		
@@ -209,24 +175,19 @@ namespace MonoDevelop.Projects.Dom
 	
 	public class MemberResolveResult : ResolveResult
 	{
-		IMember resolvedMember;
 		public IMember ResolvedMember {
-			get {
-				return resolvedMember;
-			}
-			set {
-				resolvedMember = value;
-			}
+			get;
+			set;
 		}
 		
 		public MemberResolveResult (IMember resolvedMember)
 		{
-			this.resolvedMember = resolvedMember;
+			this.ResolvedMember = resolvedMember;
 		}
 		
 		public MemberResolveResult (IMember resolvedMember, bool staticResolve) : base (staticResolve)
 		{
-			this.resolvedMember = resolvedMember;
+			this.ResolvedMember = resolvedMember;
 		}
 		
 		internal static void AddType (ProjectDom dom, List<object> result, IType type, IMember callingMember, bool showStatic)

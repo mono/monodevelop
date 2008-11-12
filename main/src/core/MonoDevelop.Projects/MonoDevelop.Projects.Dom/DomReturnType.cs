@@ -36,14 +36,9 @@ namespace MonoDevelop.Projects.Dom
 {
 	public class ReturnTypePart : IReturnTypePart
 	{
-		protected string name;
 		public string Name {
-			get {
-				return name;
-			}
-			set {
-				name = value;
-			}
+			get;
+			set;
 		}
 		
 		protected List<IReturnType> genericArguments = null;
@@ -61,13 +56,13 @@ namespace MonoDevelop.Projects.Dom
 		
 		public ReturnTypePart (string name, IEnumerable<IReturnType> typeParameters)
 		{
-			this.name           = name;
+			this.Name = name;
 			if (typeParameters != null) 
 				this.genericArguments = new List<IReturnType> (typeParameters);
 		}
 		public ReturnTypePart (string name, IEnumerable<TypeParameter> typeParameters)
 		{
-			this.name           = name;
+			this.Name = name;
 			if (typeParameters != null) {
 				this.genericArguments = new List<IReturnType> ();
 				foreach (TypeParameter para in typeParameters) {
@@ -80,7 +75,7 @@ namespace MonoDevelop.Projects.Dom
 		{
 			if (genericArguments != null && genericArguments.Count > 0) {
 				StringBuilder result = new StringBuilder ();
-				result.Append (name);
+				result.Append (Name);
 				result.Append ('<');
 				for (int i = 0; i < genericArguments.Count; i++) {
 					if (i > 0)
@@ -90,7 +85,7 @@ namespace MonoDevelop.Projects.Dom
 				result.Append ('>');
 				return result.ToString ();
 			}
-			return name;
+			return Name;
 		}
 		
 		public void AddTypeParameter (IReturnType type)

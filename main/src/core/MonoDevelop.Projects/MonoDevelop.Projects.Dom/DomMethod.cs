@@ -37,7 +37,6 @@ namespace MonoDevelop.Projects.Dom
 {
 	public class DomMethod : AbstractMember, IMethod
 	{
-		protected MethodModifier methodModifier;
 		protected List<IParameter> parameters = null;
 		protected List<IReturnType> genericParameters = null;
 
@@ -45,29 +44,25 @@ namespace MonoDevelop.Projects.Dom
 		static readonly ReadOnlyCollection<IReturnType> emptyGenericParameters = new ReadOnlyCollection<IReturnType> (new IReturnType [0]);
 
 		public MethodModifier MethodModifier {
-			get {
-				return methodModifier;
-			}
-			set {
-				methodModifier = value;
-			}
+			get;
+			set;
 		}
 		
 		public bool IsConstructor {
 			get {
-				return (methodModifier & MethodModifier.IsConstructor) == MethodModifier.IsConstructor;
+				return (MethodModifier & MethodModifier.IsConstructor) == MethodModifier.IsConstructor;
 			}
 		}
 		
 		public bool IsExtension {
 			get {
-				return (methodModifier & MethodModifier.IsExtension) == MethodModifier.IsExtension;
+				return (MethodModifier & MethodModifier.IsExtension) == MethodModifier.IsExtension;
 			}
 		}
 		
 		public bool IsFinalizer {
 			get {
-				return (methodModifier & MethodModifier.IsFinalizer) == MethodModifier.IsFinalizer;
+				return (MethodModifier & MethodModifier.IsFinalizer) == MethodModifier.IsFinalizer;
 			}
 		}
 		
@@ -127,23 +122,23 @@ namespace MonoDevelop.Projects.Dom
 		{
 		}
 		
-		public DomMethod (string name, Modifiers modifiers, MethodModifier methodModifier, DomLocation location, DomRegion bodyRegion)
+		public DomMethod (string name, Modifiers modifiers, MethodModifier MethodModifier, DomLocation location, DomRegion bodyRegion)
 		{
 			this.Name           = name;
-			this.modifiers      = modifiers;
-			this.location       = location;
-			this.bodyRegion     = bodyRegion;
-			this.methodModifier = methodModifier;
+			this.Modifiers      = modifiers;
+			this.Location       = location;
+			this.BodyRegion     = bodyRegion;
+			this.MethodModifier = MethodModifier;
 		}
 		
-		public DomMethod (string name, Modifiers modifiers, MethodModifier methodModifier, DomLocation location, DomRegion bodyRegion, IReturnType returnType)
+		public DomMethod (string name, Modifiers modifiers, MethodModifier MethodModifier, DomLocation location, DomRegion bodyRegion, IReturnType returnType)
 		{
 			this.Name           = name;
-			this.modifiers      = modifiers;
-			this.location       = location;
-			this.bodyRegion     = bodyRegion;
-			this.returnType     = returnType;
-			this.methodModifier = methodModifier;
+			this.Modifiers      = modifiers;
+			this.Location       = location;
+			this.BodyRegion     = bodyRegion;
+			this.ReturnType     = returnType;
+			this.MethodModifier = MethodModifier;
 		}
 /*
 		public override bool IsAccessibleFrom (ProjectDom dom, IType calledType, IMember member)

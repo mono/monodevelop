@@ -32,15 +32,9 @@ namespace MonoDevelop.Projects.Dom
 {
 	public class ExpressionContext
 	{
-		object defaultItem;
-		
 		public object DefaultItem {
-			get {
-				return defaultItem;
-			}
-			set {
-				defaultItem = value;
-			}
+			get;
+			set;
 		}
 		
 		string contextName;
