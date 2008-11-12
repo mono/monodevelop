@@ -1,17 +1,17 @@
 <CodeTemplates version="2.0">
   <CodeTemplateGroup extensions=".cs">
-    <CodeTemplate template="classb" description="class declaration (public)">public class |
+    <CodeTemplate template="class" description="class declaration (public)">public class |
 {
 	
 }</CodeTemplate>
-    <CodeTemplate template="forb" description="for block">for (|; ; ) {
+    <CodeTemplate template="for" description="for block">for (|; ; ) {
 
 }</CodeTemplate>
     <CodeTemplate template="fors" description="for (no braces)">for (|; ; )</CodeTemplate>
     <CodeTemplate template="foreach" description="foreach block">foreach (| in ) {
 
 }</CodeTemplate>
-    <CodeTemplate template="ifb" description="if statement">if (|) {
+    <CodeTemplate template="if" description="if statement">if (|) {
 	
 }</CodeTemplate>
     <CodeTemplate template="ife" description="if else">if (|) {
@@ -20,7 +20,7 @@
 	
 }</CodeTemplate>
     <CodeTemplate template="ifs" description="if statement (no braces)">if (|)</CodeTemplate>
-    <CodeTemplate template="switchb" description="switch statement (with default)">switch (|) {
+    <CodeTemplate template="switch" description="switch statement (with default)">switch (|) {
 case:
 case:
 default:
@@ -29,7 +29,7 @@ default:
 case :
 case :
 }</CodeTemplate>
-    <CodeTemplate template="tryb" description="try / catch">try {
+    <CodeTemplate template="try" description="try / catch">try {
 |
 } catch (Exception) {
 	
@@ -46,7 +46,7 @@ case :
 } finally {
 
 }</CodeTemplate>
-    <CodeTemplate template="whileb" description="while">while (|) {
+    <CodeTemplate template="while" description="while">while (|) {
 
 }</CodeTemplate>
     <CodeTemplate template="whiles" description="while (no braces)">while (|)</CodeTemplate>

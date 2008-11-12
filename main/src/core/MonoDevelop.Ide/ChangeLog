@@ -1,5 +1,9 @@
 2008-11-12  Mike Krüger  <mkrueger@novell.com>
 
+	* options/MonoDevelop-templates.xml: renamed templates *again*
+
+2008-11-12  Mike Krüger  <mkrueger@novell.com>
+
 	* options/MonoDevelop-templates.xml: changed some default templates.
 
 2008-11-11  Lluis Sanchez Gual  <lluis@novell.com>
