@@ -75,31 +75,25 @@ namespace MonoDevelop.AspNet.Gui
 		protected override ICompletionDataList HandleCodeCompletion (CodeCompletionContext completionContext,
 		                                                            bool forced, ref int triggerWordLength)
 		{
-			//FIXME: lines in completionContext are zero-indexed, but ILocation and buffer are 1-indexed.
-			//This could easily cause bugs.
-			MonoDevelop.Projects.Dom.DomLocation location = new MonoDevelop.Projects.Dom.DomLocation
-				(completionContext.TriggerLine + 1, completionContext.TriggerLineOffset);
-			
 			ITextBuffer buf = this.Buffer;
 			
 			// completionChar may be a space even if the current char isn't, when ctrl-space is fired t
-			int currentPosition = buf.CursorPosition - 1;
-			char currentChar = currentPosition < 0? ' ' : buf.GetCharAt (currentPosition);
-			char previousChar = currentPosition < 1? ' ' : buf.GetCharAt (currentPosition - 1);
+			char currentChar = completionContext.TriggerOffset < 1? ' ' : buf.GetCharAt (completionContext.TriggerOffset - 1);
+			char previousChar = completionContext.TriggerOffset < 2? ' ' : buf.GetCharAt (completionContext.TriggerOffset - 2);
 			
 			//directive names
 			if (Tracker.Engine.CurrentState is AspNetDirectiveState) {
 				AspNetDirective directive = Tracker.Engine.Nodes.Peek () as AspNetDirective;
-				if (directive != null && directive.Region.Start.Line == location.Line &&
-				    directive.Region.Start.Column + 3 == location.Column)
+				if (directive != null && directive.Region.Start.Line == completionContext.TriggerLine &&
+				    directive.Region.Start.Column + 4 == completionContext.TriggerLineOffset)
 				{
 					return DirectiveCompletion.GetDirectives (AspCU.Type);
 				}
 				return null;
 			} else if (Tracker.Engine.CurrentState is S.XmlNameState && Tracker.Engine.CurrentState.Parent is AspNetDirectiveState) {
 				AspNetDirective directive = Tracker.Engine.Nodes.Peek () as AspNetDirective;
-				if (directive != null && directive.Region.Start.Line == location.Line &&
-				    directive.Region.Start.Column + 4 == location.Column && char.IsLetter (currentChar))
+				if (directive != null && directive.Region.Start.Line == completionContext.TriggerLine &&
+				    directive.Region.Start.Column + 5 == completionContext.TriggerLineOffset && char.IsLetter (currentChar))
 				{
 					triggerWordLength = 1;
 					return DirectiveCompletion.GetDirectives (AspCU.Type);
@@ -309,13 +303,16 @@ namespace MonoDevelop.AspNet.Gui
 				controlClass = cu.Document.ReferenceManager.GetControlType (tagName.Prefix, tagName.Name);
 			
 			if (controlClass == null) {
+				LoggingService.LogWarning ("Could not obtain IType for {0}", tagName.FullName);
+				
 				MonoDevelop.Projects.Dom.Parser.ProjectDom database =
 					WebTypeManager.GetSystemWebDom (cu == null? null : cu.Document.Project);
 				controlClass = database.GetType ("System.Web.UI.WebControls.WebControl", true, false);
 				
-				if (controlClass == null)
+				if (controlClass == null) {
 					LoggingService.LogWarning ("Could not obtain IType for System.Web.UI.WebControls.WebControl");
-				return;
+					return;
+				}
 			}
 			
 			//find the codebehind class

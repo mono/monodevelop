@@ -92,7 +92,7 @@ namespace MonoDevelop.AspNet.Parser
 			
 			foreach (MonoDevelop.AspNet.Parser.Internal.ParseException ex in rootNode.ParseErrors)
 				errors.Add (new ParserException (ex.Location, ex.Message));
-			
+			/*
 			if (MonoDevelop.Core.LoggingService.IsLevelEnabled (MonoDevelop.Core.Logging.LogLevel.Debug)) {
 				DebugStringVisitor dbg = new DebugStringVisitor ();
 				rootNode.AcceptVisit (dbg);
@@ -105,7 +105,7 @@ namespace MonoDevelop.AspNet.Parser
 						sb.AppendLine (ex.ToString ());
 				}
 				MonoDevelop.Core.LoggingService.LogDebug (sb.ToString ());
-			}
+			}*/
 		}
 		
 		public bool IsValid {

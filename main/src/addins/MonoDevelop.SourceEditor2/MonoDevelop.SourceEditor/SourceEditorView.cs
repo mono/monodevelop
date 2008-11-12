@@ -789,8 +789,8 @@ namespace MonoDevelop.SourceEditor
 			CodeCompletionContext result = new CodeCompletionContext ();
 			result.TriggerOffset = triggerOffset;
 			DocumentLocation loc = Document.OffsetToLocation (triggerOffset);
-			result.TriggerLine   = loc.Line;
-			result.TriggerLineOffset = loc.Column;
+			result.TriggerLine   = loc.Line + 1;
+			result.TriggerLineOffset = loc.Column + 1;
 			Gdk.Point p = this.widget.TextEditor.DocumentToVisualLocation (loc);
 			int tx, ty;
 			

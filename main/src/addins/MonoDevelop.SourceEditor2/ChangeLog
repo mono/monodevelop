@@ -1,3 +1,9 @@
+2008-11-11  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Fix line/col indexing on
+	the CodeCompletionContext. It should be one-indexed for compatibility
+	with the rest of MD.
+
 2008-11-11  Mike Krüger  <mike@icsharpcode.net>
 
 	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: made brace auto

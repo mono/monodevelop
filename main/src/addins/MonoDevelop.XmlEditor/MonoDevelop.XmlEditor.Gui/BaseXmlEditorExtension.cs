@@ -161,25 +161,19 @@ namespace MonoDevelop.XmlEditor.Gui
 		protected virtual ICompletionDataList HandleCodeCompletion (
 		    CodeCompletionContext completionContext, bool forced, ref int triggerWordLength)
 		{
-			//FIXME: lines in completionContext are zero-indexed, but ILocation and buffer are 1-indexed.
-			//This could easily cause bugs.
-			int line = completionContext.TriggerLine + 1, col = completionContext.TriggerLineOffset;
-			
 			ITextBuffer buf = this.Buffer;
 
 			// completionChar may be a space even if the current char isn't, when ctrl-space is fired t
-			int currentPosition = buf.CursorPosition - 1;
-			DomLocation currentLocation = new DomLocation (line, col);
-			
-			char currentChar = currentPosition < 0? ' ' : buf.GetCharAt (currentPosition);
-			char previousChar = currentPosition < 1? ' ' : buf.GetCharAt (currentPosition - 1);
+			DomLocation currentLocation = new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset);
+			char currentChar = completionContext.TriggerOffset < 1? ' ' : buf.GetCharAt (completionContext.TriggerOffset - 1);
+			char previousChar = completionContext.TriggerOffset < 2? ' ' : buf.GetCharAt (completionContext.TriggerOffset - 2);
 
 			LoggingService.LogDebug ("Attempting completion for state '{0}'x{1}, previousChar='{2}'," 
 				+ " currentChar='{3}', forced='{4}'", tracker.Engine.CurrentState,
 				tracker.Engine.CurrentStateLength, previousChar, currentChar, forced);
 			
 			//closing tag completion
-			if (tracker.Engine.CurrentState is XmlFreeState && currentPosition - 1 > 0 && currentChar == '>') {
+			if (tracker.Engine.CurrentState is XmlFreeState && currentChar == '>') {
 				//get name of current node in document that's being ended
 				XElement el = tracker.Engine.Nodes.Peek () as XElement;
 				if (el != null && el.Region.End >= currentLocation && !el.IsClosed && el.IsNamed) {
@@ -258,8 +252,8 @@ namespace MonoDevelop.XmlEditor.Gui
 						return null;
 					
 					char next = ' ';
-					if (currentPosition + 1 < buf.Length)
-						next = buf.GetCharAt (currentPosition + 1);
+					if (completionContext.TriggerOffset < buf.Length)
+						next = buf.GetCharAt (completionContext.TriggerOffset);
 					
 					char compareChar = (Tracker.Engine.CurrentStateLength == 0)? currentChar : previousChar;
 					

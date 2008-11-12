@@ -1,3 +1,12 @@
+2008-11-11  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Track fix in text
+	editor's completion line/col indexing. It's now 1-indexed, as it
+	should be. Fix attribute value type resolution fallback.
+
+	* MonoDevelop.AspNet.Parser/Document.cs: Comment out some noisy debug
+	code.
+
 2008-11-06  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.AspNet/AspNetAppProject.cs: Use new API; move default
