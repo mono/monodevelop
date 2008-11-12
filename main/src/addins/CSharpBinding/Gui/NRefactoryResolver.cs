@@ -270,18 +270,7 @@ namespace MonoDevelop.CSharpBinding
 						data.SetText (newText);
 					}
 				}
-				AddTemplates (completionList);
-			}
-		}
-
-		public void AddTemplates (CompletionDataList completionList)
-		{
-			MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col = new MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector ( this.editor, dom, unit, new DomLocation (editor.CursorLine - 1, editor.CursorColumn - 1));
-			CodeTemplateGroup templateGroup = CodeTemplateService.GetTemplateGroupPerFilename ("a.cs");
-			if (templateGroup != null) {
-				foreach (CodeTemplate template in templateGroup.Templates) {
-					col.AddCompletionData (completionList, template);
-				}
+				CodeTemplateService.AddCompletionDataForExtension (".cs", completionList);
 			}
 		}
 		

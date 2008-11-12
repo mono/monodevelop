@@ -34,6 +34,7 @@ using System.Collections.Generic;
 using System.Xml;
 
 using MonoDevelop.Core;
+using MonoDevelop.Projects.Gui.Completion;
 
 namespace MonoDevelop.Ide.CodeTemplates
 {
@@ -77,7 +78,25 @@ namespace MonoDevelop.Ide.CodeTemplates
 			}
 			return null;
 		}
-
+		
+		public static void AddCompletionDataForFileName (string fileName, CompletionDataList list)
+		{
+			AddCompletionDataForFileName(Path.GetExtension (fileName), list);
+		}
+		
+		public static void AddCompletionDataForExtension (string extension, CompletionDataList list)
+		{
+			CodeTemplateGroup group = GetTemplateGroupPerExtension (extension);
+			if (group == null)
+				return;
+			foreach (CodeTemplate ct in group.Templates) {
+				if (string.IsNullOrEmpty (ct.Shortcut))
+					continue;
+				list.Remove (ct.Shortcut);
+				list.Add (new CompletionData (ct.Shortcut, "md-literal", ct.Description));
+			}
+		}
+		
 #region I/O
 		const string Node             = "CodeTemplates";
 		const string VersionAttribute = "version";

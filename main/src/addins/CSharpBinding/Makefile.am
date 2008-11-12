@@ -35,7 +35,6 @@ FILES =  \
 	gtk-gui/CSharpBinding.FormattingPanelWidget.cs \
 	gtk-gui/generated.cs \
 	Gui/CodeGenerationPanel.cs \
-	Gui/CodeTemplateCompletionData.cs \
 	Gui/CompilerOptionsPanelWidget.cs \
 	Gui/CSharpAmbience.cs \
 	Gui/CSharpTextEditorCompletion.cs \

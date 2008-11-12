@@ -756,12 +756,6 @@ namespace MonoDevelop.CSharpBinding.Gui
 			
 			public ICompletionData AddCompletionData (CompletionDataList completionList, object obj)
 			{
-				CodeTemplate template = obj as CodeTemplate;
-				if (template != null) {
-					completionList.Remove (template.Shortcut);
-					completionList.Add (new CodeTemplateCompletionData (editor, template));
-				}
-				
 				Namespace ns = obj as Namespace;
 				if (ns != null) {
 					if (namespaces.ContainsKey(ns.Name))
@@ -1074,7 +1068,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				resolver.AddAccessibleCodeCompletionData (expressionResult.ExpressionContext, result);
 			} else if (expressionResult.ExpressionContext == ExpressionContext.Global) {
 				AddNRefactoryKeywords (result, ICSharpCode.NRefactory.Parser.CSharp.Tokens.GlobalLevel);
-				resolver.AddTemplates (result);
+				CodeTemplateService.AddCompletionDataForExtension (".cs", result);
 			} else {
 				AddPrimitiveTypes (result);
 				resolver.AddAccessibleCodeCompletionData (expressionResult.ExpressionContext, result);

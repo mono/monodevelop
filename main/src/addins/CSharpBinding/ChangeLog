@@ -1,3 +1,14 @@
+2008-11-12  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Gui/NRefactoryResolver.cs:
+	* Gui/CSharpTextEditorCompletion.cs: Move template completion code to
+	MonoDevelop.Ide.
+
+	* Makefile.am:
+	* CSharpBinding.mdp: Updated.
+
+	* Gui/CodeTemplateCompletionData.cs: Unused, remove.
+
 2008-11-12  Mike Krüger  <mkrueger@novell.com>
 
 	* Gui/NRefactoryResolver.cs:
