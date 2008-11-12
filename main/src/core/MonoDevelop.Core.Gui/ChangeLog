@@ -1,3 +1,7 @@
+2008-11-11  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* MonoDevelop.Core.Gui/AlertDialog.cs: Escape error text.
+
 2008-11-05  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Gui.addin.xml: Bump MD version.

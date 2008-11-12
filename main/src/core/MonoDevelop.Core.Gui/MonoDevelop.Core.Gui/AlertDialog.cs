@@ -87,14 +87,14 @@ namespace MonoDevelop.Core.Gui
 			image.Pixbuf = Services.Resources.GetBitmap (icon, IconSize.Dialog);
 			
 			StringBuilder markup = new StringBuilder (@"<span weight=""bold"" size=""larger"">");
-			markup.Append (primaryText);
+			markup.Append (GLib.Markup.EscapeText (primaryText));
 			markup.Append ("</span>");
 			if (!String.IsNullOrEmpty (secondaryText)) {
 				if (!String.IsNullOrEmpty (primaryText)) {
 					markup.AppendLine ();
 					markup.AppendLine ();
 				}
-				markup.Append (secondaryText);
+				markup.Append (GLib.Markup.EscapeText (secondaryText));
 			}
 			label.Markup = markup.ToString ();
 			
