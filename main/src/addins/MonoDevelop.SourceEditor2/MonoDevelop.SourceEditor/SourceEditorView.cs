@@ -822,9 +822,9 @@ namespace MonoDevelop.SourceEditor
 			} else {
 				idx = complete_word.Length;
 			}
-			int length = String.IsNullOrEmpty (partial_word) ? 0 : partial_word.Length - 1;
-			//int offset = this.widget.TextEditor.Caret.Offset - length;
-			
+			int length = String.IsNullOrEmpty (partial_word) ? 0 : partial_word.Length;
+			if (ctx.TriggerWordLength == 1)
+				length--;
 			this.widget.TextEditor.Document.Replace (ctx.TriggerOffset, ctx.TriggerWordLength + length, complete_word);
 			this.widget.TextEditor.Caret.Offset = ctx.TriggerOffset + complete_word.Length; //offset + idx;
 		}
