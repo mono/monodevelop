@@ -300,7 +300,7 @@ namespace MonoDevelop.SourceEditor
 			} else {
 				result = base.OnIMProcessedKeyPressEvent (evnt, ch);
 			}
-			
+/* auto insert templates IS annoying !!!
 			// auto insert templates
 			if (!templateInserted &&
 			    SourceEditorOptions.Options.AutoInsertTemplates && 
@@ -308,7 +308,7 @@ namespace MonoDevelop.SourceEditor
 			    IsTemplateKnown () // only insert templates when there is a 100% match (ex.: scw vs. scwl)
 			    ) {
 				templateInserted = !inStringOrComment && DoInsertTemplate ();
-			}
+			}*/
 			if (templateInserted) {
 				Document.EndAtomicUndo ();
 				return true;

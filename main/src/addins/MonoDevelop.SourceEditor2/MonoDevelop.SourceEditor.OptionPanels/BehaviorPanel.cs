@@ -46,7 +46,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		
 		public virtual Gtk.Widget CreatePanelWidget ()
 		{
-			this.autoInsertTemplateCheckbutton.Active  = SourceEditorOptions.Options.AutoInsertTemplates;
+//			this.autoInsertTemplateCheckbutton.Active  = SourceEditorOptions.Options.AutoInsertTemplates;
 			this.convertTabsToSpacesCheckbutton.Active = SourceEditorOptions.Options.TabsToSpaces;
 			this.autoInsertBraceCheckbutton.Active = SourceEditorOptions.Options.AutoInsertMatchingBracket;
 			this.tabAsReindentCheckbutton.Active = SourceEditorOptions.Options.TabIsReindent;
@@ -61,7 +61,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		
 		public virtual void ApplyChanges ()
 		{
-			SourceEditorOptions.Options.AutoInsertTemplates = this.autoInsertTemplateCheckbutton.Active;
+			//SourceEditorOptions.Options.AutoInsertTemplates = this.autoInsertTemplateCheckbutton.Active;
 			SourceEditorOptions.Options.TabsToSpaces = this.convertTabsToSpacesCheckbutton.Active;
 			SourceEditorOptions.Options.AutoInsertMatchingBracket = this.autoInsertBraceCheckbutton.Active;
 			SourceEditorOptions.Options.IndentStyle = (MonoDevelop.Ide.Gui.Content.IndentStyle)this.indentationCombobox.Active;

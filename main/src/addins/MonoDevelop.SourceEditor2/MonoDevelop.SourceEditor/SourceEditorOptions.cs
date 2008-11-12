@@ -104,7 +104,7 @@ namespace MonoDevelop.SourceEditor
 		void GetOptions (object sender, EventArgs args)
 		{
 			this.enableSemanticHighlighting = PropertyService.Get ("EnableSemanticHighlighting", false);
-			this.autoInsertTemplates        = PropertyService.Get ("AutoInsertTemplates", false);
+//			this.autoInsertTemplates        = PropertyService.Get ("AutoInsertTemplates", false);
 			this.autoInsertMatchingBracket  = PropertyService.Get ("AutoInsertMatchingBracket", false);
 			this.enableCodeCompletion       = PropertyService.Get ("EnableCodeCompletion", true);
 			this.enableQuickFinder          = PropertyService.Get ("EnableQuickFinder", true);
@@ -192,7 +192,7 @@ namespace MonoDevelop.SourceEditor
 				}
 			}
 		}
-		
+		/*
 		bool autoInsertTemplates;
 		public bool AutoInsertTemplates {
 			get {
@@ -205,7 +205,7 @@ namespace MonoDevelop.SourceEditor
 					OnChanged (EventArgs.Empty);
 				}
 			}
-		}
+		}*/
 		
 		bool tabIsReindent;
 		public bool TabIsReindent {
