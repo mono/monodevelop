@@ -47,8 +47,8 @@ FILES =  \
 	MonoDevelop.AspNet.Gui/AspNetConfigurationPanel.cs \
 	MonoDevelop.AspNet.Gui/AspNetConfigurationPanelWidget.cs \
 	MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs \
+	MonoDevelop.AspNet.Gui/BaseHtmlEditorExtension.cs \
 	MonoDevelop.AspNet.Gui/BrowserLauncher.cs \
-	MonoDevelop.AspNet.Gui/HtmlTextEditorExtension.cs \
 	MonoDevelop.AspNet.Gui/XspOptionsPanel.cs \
 	MonoDevelop.AspNet.Gui/XspOptionsPanelWidget.cs \
 	MonoDevelop.AspNet.MD1Serialization/MD1AspNetCustomDataItem.cs \
