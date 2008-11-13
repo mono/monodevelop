@@ -49,7 +49,43 @@ namespace MonoDevelop.AspNet.Gui
 	
 	public class HtmlEditorExtension : MonoDevelop.XmlEditor.Gui.BaseXmlEditorExtension
 	{
-		protected HtmlSchema Schema { get; private set; }
+		HtmlSchema schema;
+		bool lookedUpDoctype;
+		string docType;
+		
+		protected HtmlSchema Schema {
+			get {
+				if (lookedUpDoctype)
+					return schema;
+				
+				lookedUpDoctype = true;
+				
+				if (string.IsNullOrEmpty (DocType)) {
+					LoggingService.LogDebug ("HTML completion found no doctype, using default");
+					schema = HtmlSchemaService.DefaultDocType;
+					return schema;
+				}
+				
+				schema = HtmlSchemaService.GetSchema (DocType, true);
+				if (schema != null) {
+					LoggingService.LogDebug ("HTML completion using doctype {0}", schema.Name);
+				} else {
+					LoggingService.LogDebug ("HTML completion could not find schema for doctype {0} so is falling back to default", DocType);
+					schema = HtmlSchemaService.DefaultDocType;
+				}
+				return schema;
+			}
+		}
+		
+		protected string DocType {
+			get { return docType; }
+			set {
+				if (docType == value)
+					return;
+				lookedUpDoctype = false;
+				docType = value;
+			}
+		}
 		
 		#region Setup and teardown
 		
@@ -73,32 +109,13 @@ namespace MonoDevelop.AspNet.Gui
 			HtmlSchemaService.Initialise ();
 		}
 		
-		protected string DocType { get; set; }
-		
 		#endregion
-		
-		protected override ICompletionDataList HandleCodeCompletion (CodeCompletionContext completionContext,
-		                                                            bool forced, ref int triggerWordLength)
-		{
-			//lazily load the schema to avoid a multi-second interruption when a schema
-			//is first used. While loading, fall back to the default schema (which is pre-loaded) so that
-			//the user still gets completion
-			if (!string.IsNullOrEmpty (DocType)) {
-				Schema = HtmlSchemaService.GetSchema (DocType, true);
-			}
-			
-			if (Schema == null)
-				Schema = HtmlSchemaService.DefaultDocType;
-			LoggingService.LogDebug ("HTML completion using doctype {0}", Schema.Name);
-			
-			return base.HandleCodeCompletion (completionContext, forced, ref triggerWordLength);
-		}
 		
 		protected override void GetElementCompletions (CompletionDataList list)
 		{
 			XName parentName = GetParentElementName (0);
 			if (Schema != null)
-				AddHtmlTagCompletionData (list, Schema, parentName);
+				AddHtmlTagCompletionData (list, Schema, parentName.ToLower ());
 			AddHtmlMiscBegins (list);
 			AddCloseTag (list, Tracker.Engine.Nodes);
 			
