@@ -205,16 +205,18 @@ namespace MonoDevelop.Xml.StateEngine
 		
 		public XName ToLower ()
 		{
+			string lowerName = name == null? null : name.ToLower ();
 			return prefix == null
-				? new XName (name.ToLower ())
-				: new XName (prefix.ToLower (), name.ToLower ());
+				? new XName (lowerName)
+				: new XName (prefix.ToLower (), lowerName);
 		}
 		
 		public XName ToUpper ()
 		{
+			string upperName = name == null? null : name.ToUpper ();
 			return prefix == null
-				? new XName (name.ToUpper ())
-				: new XName (prefix.ToUpper (), name.ToUpper ());
+				? new XName (upperName)
+				: new XName (prefix.ToUpper (), upperName);
 		}
 		
 		#endregion
