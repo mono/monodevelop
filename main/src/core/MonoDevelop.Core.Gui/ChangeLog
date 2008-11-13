@@ -1,3 +1,9 @@
+2008-11-13  Mike Kestner  <mkestner@novell.com>
+
+	* gtk-gui/*.cs: regen
+	* gtk-gui/gui.stetic: replace the main hbox with an hpaned to
+	allow resizing.
+
 2008-11-11  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* MonoDevelop.Core.Gui/AlertDialog.cs: Escape error text.
