@@ -203,6 +203,20 @@ namespace MonoDevelop.Xml.StateEngine
 			return hash;
 		}
 		
+		public XName ToLower ()
+		{
+			return prefix == null
+				? new XName (name.ToLower ())
+				: new XName (prefix.ToLower (), name.ToLower ());
+		}
+		
+		public XName ToUpper ()
+		{
+			return prefix == null
+				? new XName (name.ToUpper ())
+				: new XName (prefix.ToUpper (), name.ToUpper ());
+		}
+		
 		#endregion
 	}
 	

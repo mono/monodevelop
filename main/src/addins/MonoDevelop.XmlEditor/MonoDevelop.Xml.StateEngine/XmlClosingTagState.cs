@@ -97,19 +97,15 @@ namespace MonoDevelop.Xml.StateEngine
 					}
 					
 					//close the start tag, if we found it
-					if (context.BuildTree) {
-						if (popCount > 0) {
-							XElement element = (XElement) context.Nodes.Pop ();
-							if (context.BuildTree)
-								element.Close (ct);
-						} else {
-							context.LogError (
-								"Closing tag '" + ct.Name.FullName + "' does not match any currently open tag.");
-						}
+					if (popCount > 0) {
+						if (context.BuildTree)
+							((XElement) context.Nodes.Pop ()).Close (ct);
+						else
+							context.Nodes.Pop ();
 					} else {
-						context.Nodes.Pop ();
+						context.LogError (
+							"Closing tag '" + ct.Name.FullName + "' does not match any currently open tag.");
 					}
-					
 				} else {
 					context.LogError ("Closing tag ended prematurely.");
 				}

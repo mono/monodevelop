@@ -1,5 +1,14 @@
 2008-11-12  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Xml.StateEngine/XDom.cs: Add ToUpper/ToLower methods on
+	XName.
+
+	* MonoDevelop.Xml.StateEngine/XmlClosingTagState.cs: Fixed bug that
+	popped unmatched opening nodes when not in tree mode. Fixes exception
+	in path bar when closing tags outnumber opening tags.
+
+2008-11-12  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.XmlEditor.Gui/BaseXmlEditorExtension.cs: Fix build.
 
 2008-11-12  Michael Hutchinson  <mhutchinson@novell.com>
