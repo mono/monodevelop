@@ -1,5 +1,5 @@
 // 
-// MoonlightParsedDocument.cs
+// HtmlParser.cs
 // 
 // Author:
 //   Michael Hutchinson <mhutchinson@novell.com>
@@ -27,51 +27,51 @@
 //
 
 using System;
+using System.IO;
 using System.Collections.Generic;
 
-using MonoDevelop.Projects.Dom;
 using MonoDevelop.Xml.StateEngine;
+using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Parser;
 
-namespace MonoDevelop.Moonlight
+namespace MonoDevelop.Html
 {
 	
 	
-	public class MoonlightParsedDocument : ParsedDocument
+	public class HtmlParser : AbstractParser
 	{
-		public MoonlightParsedDocument (string fileName)
-			: base (fileName)
+		
+		public HtmlParser () : base (null, "text/html", "application/xhtml+xml")
 		{
 		}
 		
-		public MonoDevelop.Xml.StateEngine.XDocument XDocument { get; internal set; }
-		
-		public override IEnumerable<FoldingRegion> GenerateFolds ()
+		public override bool CanParse (string fileName)
 		{
-			if (XDocument == null)
-				yield break;
+			return fileName.EndsWith (".html", StringComparison.OrdinalIgnoreCase)
+				|| fileName.EndsWith (".htm", StringComparison.OrdinalIgnoreCase);
+		}
+		
+		public override ParsedDocument Parse (string fileName, string fileContent)
+		{
+			XmlParsedDocument doc = new XmlParsedDocument (fileName);
+			doc.Flags = ParsedDocumentFlags.NonSerializable;
 			
-			foreach (XNode node in XDocument.AllDescendentNodes) {
-				if (node is XCData)
-				{
-					if (node.Region.End.Line - node.Region.Start.Line > 2)
-						yield return new FoldingRegion ("<![CDATA[ ]]>", node.Region);
-				}
-				else if (node is XComment)
-				{
-					if (node.Region.End.Line - node.Region.Start.Line > 2)
-						yield return new FoldingRegion ("<!-- -->", node.Region);
-				}
-				else if (node is XElement)
-				{
-					XElement el = (XElement) node;
-					if (el.IsClosed && el.ClosingTag.Region.End.Line - el.Region.Start.Line > 2) {
-						yield return new FoldingRegion
-							(string.Format ("<{0}...>", el.Name.FullName),
-							 new DomRegion (el.Region.Start, el.ClosingTag.Region.End));
-					}
-				}
+			TextReader tr = new StringReader (fileContent);
+			try {
+				Parser xmlParser = new Parser (new XmlFreeState (), true);
+				xmlParser.Parse (tr);
+				doc.XDocument = xmlParser.Nodes.GetRoot ();
+				doc.Add (xmlParser.Errors);
 			}
+			catch (Exception ex) {
+				MonoDevelop.Core.LoggingService.LogError ("Unhandled error parsing HTML document", ex);
+			}
+			finally {
+				if (tr != null)
+					tr.Dispose ();
+			}
+			
+			return doc;
 		}
-
 	}
 }

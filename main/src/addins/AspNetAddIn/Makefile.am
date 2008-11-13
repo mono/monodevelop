@@ -49,6 +49,7 @@ FILES =  \
 	MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs \
 	MonoDevelop.AspNet.Gui/BaseHtmlEditorExtension.cs \
 	MonoDevelop.AspNet.Gui/BrowserLauncher.cs \
+	MonoDevelop.AspNet.Gui/HtmlEditorExtension.cs \
 	MonoDevelop.AspNet.Gui/XspOptionsPanel.cs \
 	MonoDevelop.AspNet.Gui/XspOptionsPanelWidget.cs \
 	MonoDevelop.AspNet.MD1Serialization/MD1AspNetCustomDataItem.cs \
@@ -110,6 +111,7 @@ FILES =  \
 	MonoDevelop.Html/DocTypeCompletionData.cs \
 	MonoDevelop.Html/DocTypeExtensionNode.cs \
 	MonoDevelop.Html/HtmlCompletionDataProvider.cs \
+	MonoDevelop.Html/HtmlParser.cs \
 	MonoDevelop.Html/HtmlSchema.cs \
 	MonoDevelop.Html/HtmlSchemaService.cs
 

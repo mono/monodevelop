@@ -1,3 +1,13 @@
+2008-11-13  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Moonlight.mdp: Updated.
+
+	* MonoDevelop.Moonlight/MoonlightParser.cs:
+	* MonoDevelop.Moonlight/MoonlightParsedDocument.cs:
+	* MonoDevelop.Moonlight/MoonlightEditorExtension.cs: Moved
+	MoonlightParsedDocument to XmlParsedDocument in the Xml addin.
+
 2008-11-06  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Moonlight/MoonlightParsedDocument.cs: Fix build

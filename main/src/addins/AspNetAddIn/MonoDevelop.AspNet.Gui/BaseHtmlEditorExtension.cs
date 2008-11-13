@@ -1,5 +1,5 @@
 // 
-// HtmlTextEditorExtension.cs
+// BaseHtmlEditorExtension.cs
 // 
 // Author:
 //   Michael Hutchinson <mhutchinson@novell.com>
@@ -45,15 +45,6 @@ using MonoDevelop.Xml.StateEngine;
 
 namespace MonoDevelop.AspNet.Gui
 {
-	sealed class HtmlEditorExtension : BaseHtmlEditorExtension
-	{
-		protected override IEnumerable<string> SupportedExtensions {
-			get {
-				yield return ".html";
-				yield return ".htm";
-			}
-		}
-	}
 	
 	public abstract class BaseHtmlEditorExtension : MonoDevelop.XmlEditor.Gui.BaseXmlEditorExtension
 	{

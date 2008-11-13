@@ -227,7 +227,7 @@ namespace MonoDevelop.Moonlight
 		
 		protected override void RefillOutlineStore (ParsedDocument doc, Gtk.TreeStore store)
 		{
-			XDocument xdoc = ((MoonlightParsedDocument)doc).XDocument;
+			XDocument xdoc = ((XmlParsedDocument)doc).XDocument;
 			if (xdoc == null)
 				return;
 //			Gtk.TreeIter iter = outlineTreeStore.AppendValues (System.IO.Path.GetFileName (CU.Document.FilePath), p);

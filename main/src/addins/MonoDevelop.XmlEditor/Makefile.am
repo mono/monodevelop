@@ -38,6 +38,7 @@ FILES =  \
 	MonoDevelop.Xml.StateEngine/XmlFreeState.cs \
 	MonoDevelop.Xml.StateEngine/XmlMalformedTagState.cs \
 	MonoDevelop.Xml.StateEngine/XmlNameState.cs \
+	MonoDevelop.Xml.StateEngine/XmlParsedDocument.cs \
 	MonoDevelop.Xml.StateEngine/XmlProcessingInstructionState.cs \
 	MonoDevelop.Xml.StateEngine/XmlTagState.cs \
 	MonoDevelop.XmlEditor.Completion/ClosingBracketCompletionDataProvider.cs \

@@ -1,3 +1,18 @@
+2008-11-13  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AspNet.Gui/BaseHtmlEditorExtension.cs: Split out the HTML
+	editor extension. Add document outlining.
+
+	* Makefile.am:
+	* AspNetAddIn.mdp: Updated.
+
+	* MonoDevelop.AspNet.addin.xml:
+	* MonoDevelop.Html/HtmlParser.cs: Added an HTML parser.
+
+	* MonoDevelop.AspNet.Gui/HtmlEditorExtension.cs: Split out the HTML
+	editor extension. Add document outlining. Mostly extracted from
+	Moonlight addin.
+
 2008-11-12  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am:

@@ -102,6 +102,7 @@
 	
 	<Extension path = "/MonoDevelop/ProjectModel/DomParser">
 		<Class class = "MonoDevelop.AspNet.Parser.AspNetParser" />
+		<Class class = "MonoDevelop.Html.HtmlParser" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
@@ -196,6 +197,9 @@
 		</MimeType>
 		<MimeType id="application/javascript" _description="Javascript source code" icon="md-html-file-icon" isText="true">
 			<File pattern="*.js" />
+		</MimeType>
+		<MimeType id="text/html" _description="HTML document" icon="md-html-file-icon" isText="true">
+			<File pattern="*.html|*.htm" />
 		</MimeType>
 	</Extension>
 	

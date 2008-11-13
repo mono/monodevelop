@@ -54,7 +54,7 @@ namespace MonoDevelop.Moonlight
 		
 		public override ParsedDocument Parse (string fileName, string fileContent)
 		{
-			MoonlightParsedDocument doc = new MoonlightParsedDocument (fileName);
+			XmlParsedDocument doc = new XmlParsedDocument (fileName);
 			TextReader tr = new StringReader (fileContent);
 			try {
 				Parser xmlParser = new Parser (new XmlFreeState (), true);
@@ -78,7 +78,7 @@ namespace MonoDevelop.Moonlight
 			return doc;
 		}
 		
-		static void GenerateCU (MoonlightParsedDocument doc)
+		static void GenerateCU (XmlParsedDocument doc)
 		{
 			if (doc.XDocument == null || doc.XDocument.RootElement == null) {
 				doc.Add (new Error (ErrorType.Error, 1, 1, "No root node found."));

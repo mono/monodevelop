@@ -23,7 +23,6 @@ FILES =  \
 	MonoDevelop.Moonlight.Gui/MoonlightOptionsPanel.cs \
 	MonoDevelop.Moonlight.Gui/MoonlightOptionsPanelWidget.cs \
 	MonoDevelop.Moonlight/MoonlightEditorExtension.cs \
-	MonoDevelop.Moonlight/MoonlightParsedDocument.cs \
 	MonoDevelop.Moonlight/MoonlightParser.cs \
 	MonoDevelop.Moonlight/MoonlightProject.cs \
 	MonoDevelop.Moonlight/MoonlightProjectBinding.cs \
