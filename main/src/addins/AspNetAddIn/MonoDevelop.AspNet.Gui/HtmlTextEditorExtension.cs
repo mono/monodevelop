@@ -45,9 +45,17 @@ using MonoDevelop.Xml.StateEngine;
 
 namespace MonoDevelop.AspNet.Gui
 {
+	sealed class HtmlEditorExtension : BaseHtmlEditorExtension
+	{
+		protected override IEnumerable<string> SupportedExtensions {
+			get {
+				yield return ".html";
+				yield return ".htm";
+			}
+		}
+	}
 	
-	
-	public class HtmlEditorExtension : MonoDevelop.XmlEditor.Gui.BaseXmlEditorExtension
+	public abstract class BaseHtmlEditorExtension : MonoDevelop.XmlEditor.Gui.BaseXmlEditorExtension
 	{
 		HtmlSchema schema;
 		bool lookedUpDoctype;
@@ -88,13 +96,6 @@ namespace MonoDevelop.AspNet.Gui
 		}
 		
 		#region Setup and teardown
-		
-		protected override IEnumerable<string> SupportedExtensions {
-			get {
-				yield return ".html";
-				yield return ".htm";
-			}
-		}
 		
 		protected override RootState CreateRootState ()
 		{

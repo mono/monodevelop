@@ -1,5 +1,11 @@
 2008-11-12  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:
+	* MonoDevelop.AspNet.Gui/HtmlTextEditorExtension.cs: Move re-usable HTML
+	editing into base class in preparation for other changes.
+
+2008-11-12  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.AspNet.Gui/HtmlTextEditorExtension.cs: Tidy up
 	doctype->schema resolution code, and only try to resolve doctype when
 	it changes. Use case-insensitive completion.

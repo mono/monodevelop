@@ -50,7 +50,7 @@ namespace MonoDevelop.AspNet.Gui
 {
 	
 	
-	public class AspNetEditorExtension : HtmlEditorExtension
+	public class AspNetEditorExtension : BaseHtmlEditorExtension
 	{
 		AspNetParsedDocument AspCU { get { return CU as AspNetParsedDocument; } }
 		Document AspDocument { get { return AspCU == null? null : AspCU.Document; } }
