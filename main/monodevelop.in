@@ -1,21 +1,14 @@
 #!/bin/bash
 
-reWrite() {
-    ret=""
-    WD=`pwd`
-    for arg in "$@"
-    do
-	if [ -f "./$arg" ]
-	then
-	    ret="$ret '$WD/$arg'"
-	else
-	    ret="$ret '$arg'"
-	fi
-   done
+#this script should be in $PREFIX/bin
+PREFIX="${0%%/monodevelop}/.."
 
-   echo "$ret"
-}
+MD_FORCE_DEBUG=yes
+MD_REDIRECT_LOG="$HOME/.config/MonoDevelop/log"
 
+#############################
+## BEGIN MOZILLA DETECTION ##
+#############################
 
 #(NOTE: any changes to this block should be kept in sync with the one in configure.in)
 MOZFILE="libgtkembedmoz.so"
@@ -53,49 +46,84 @@ else
 	fi
 fi
 
-MD_BIN_PATH=@prefix@/lib/monodevelop/bin
-
 if [ -n $LD_LIBRARY_PATH ]; then
-	export LD_LIBRARY_PATH=$MOZILLA_HOME:$LD_LIBRARY_PATH
+	export LD_LIBRARY_PATH="$MOZILLA_HOME:$LD_LIBRARY_PATH"
 else
-	export LD_LIBRARY_PATH=$MOZILLA_HOME
+	export LD_LIBRARY_PATH="$MOZILLA_HOME"
 fi
 
+export MOZILLA_FIVE_HOME="$MOZILLA_HOME"
+
+###########################
+## END MOZILLA DETECTION ##
+###########################
+
 ### SYNCH BLOCK: any changes to this block should be kept in sync with the one in Makefile.include and mdtool.in
-MD_PKG_CONFIG_PATH=@gtksharp_prefix@/lib/pkgconfig/:/usr/lib/pkgconfig/:/usr/local/lib/pkgconfig/:/usr/share/pkgconfig/:/usr/local/share/pkgconfig/
-if test -d /usr/lib64; then MD_PKG_CONFIG_PATH=$MD_PKG_CONFIG_PATH:/usr/lib64/pkgconfig/:/usr/local/lib64/pkgconfig/; fi
+MONO_PREFIX=`which mono`
+MONO_PREFIX="${MONO_PREFIX%%/mono}/.."
+PKGCONFIG_PREFIX=`which pkg-config`
+PKGCONFIG_PREFIX="${PKGCONFIG_PREFIX%%/pkg-config}/.."
+
+MD_PKG_CONFIG_PATH=""
+for D in "$PREFIX/.." "$MONO_PREFIX" "$PKGCONFIG_PREFIX" '/usr/local' '/usr'; do
+	for PKGDIR in "$D/../lib/pkgconfig" "$D/../lib64/pkgconfig" "$D/../share/pkgconfig"; do
+		if [ -d "$PKGDIR" ]; then MD_PKG_CONFIG_PATH="$MD_PKG_CONFIG_PATH:$PKGDIR"; fi
+	done
+done
 ### END BLOCK
 
 if [ -n $PKG_CONFIG_PATH ]; then
-	export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:$MD_PKG_CONFIG_PATH
+	export PKG_CONFIG_PATH="$PKG_CONFIG_PATH:$MD_PKG_CONFIG_PATH"
 else
-	export PKG_CONFIG_PATH=$MD_PKG_CONFIG_PATH
+	export PKG_CONFIG_PATH="$MD_PKG_CONFIG_PATH"
 fi
 
-export MOZILLA_FIVE_HOME=$MOZILLA_HOME
+ARGS=""
 
-eval set -- `reWrite "$@"`
-
-cd $MD_BIN_PATH
-
-case x$1 in
-	x--profile)
+for arg in $*; do 
+case x$arg in
+	x--profile*)
+		MONO_OPTIONS="$MONO_OPTIONS $arg"
 		shift
-		exec -a "monodevelop" @RUNTIME@ --profile ./MonoDevelop.exe "$@"
-		exit 0
 		;;
-	x--debug)
-		shift
+	x--debug*)
 		export MONODEVELOP_DISPATCH_DEBUG=yes
-		exec -a "monodevelop"  @RUNTIME@ --debug ./MonoDevelop.exe "$@"
-		exit 0
-		;;
-	x--trace)
+		unset MD_FORCE_DEBUG
+		MONO_OPTIONS="$MONO_OPTIONS $arg"
 		shift
-		exec -a "monodevelop"  @RUNTIME@ --trace ./MonoDevelop.exe "$@"
-		exit 0;
 		;;
-esac
+	x--trace*)
+		MONO_OPTIONS="$MONO_OPTIONS $arg"
+		shift
+		;;
+	x--no-log)
+		unset MD_REDIRECT_LOG
+		shift
+		;;
+	x--no-debug)
+		unset MD_FORCE_DEBUG
+		shift
+		;;
+	*)
+		ARGS="$ARGS $arg"
+		shift
+		;;
+esac		
+done
 
-exec -a "monodevelop"  @RUNTIME@ --debug ./MonoDevelop.exe "$@"
+if [ -n "$MONO_OPTIONS" ]; then
+	echo "** Running with Mono options: $MONO_OPTIONS **"
+fi
 
+if [ -z MD_FORCE_DEBUG ]; then
+	MONO_OPTIONS="$MONO_OPTIONS --debug"
+fi
+
+exec_args="-a monodevelop mono $MONO_OPTIONS $PREFIX/lib/monodevelop/bin/MonoDevelop.exe $ARGS"
+
+if [ -n "$MD_REDIRECT_LOG" ]; then
+	mkdir -p `dirname "$MD_REDIRECT_LOG"`
+	exec $exec_args 2>&1 | tee "$MD_REDIRECT_LOG"
+else
+	exec $exec_args
+fi

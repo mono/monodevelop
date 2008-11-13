@@ -1,3 +1,8 @@
+2008-11-13  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* monodevelop.in:
+	* mdtool.in: Make relocatable. Handle arguments better.
+
 2008-11-10  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* monodevelop.in: Always use debug mode when running the alpha.

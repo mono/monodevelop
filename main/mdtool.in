@@ -1,26 +1,22 @@
 #!/bin/sh
 
-reWrite() {
-    ret=""
-    WD=`pwd`
-    for arg in "$@"
-    do
-	if [ -f "./$arg" ]
-	then
-	    ret="$ret '$WD/$arg'"
-	else
-	    ret="$ret '$arg'"
-	fi
-   done
+#this script should be in $PREFIX/bin
+PREFIX="${0%%/mdtool}/.."
 
-    echo "$ret"
-}
- 
-MD_BIN_PATH=@prefix@/lib/monodevelop/bin
+MD_FORCE_DEBUG=yes
 
 ### SYNCH BLOCK: any changes to this block should be kept in sync with the one in Makefile.include and monodevelop.in
-MD_PKG_CONFIG_PATH=@gtksharp_prefix@/lib/pkgconfig/:/usr/lib/pkgconfig/:/usr/local/lib/pkgconfig/:/usr/share/pkgconfig/:/usr/local/share/pkgconfig/
-if test -d /usr/lib64; then MD_PKG_CONFIG_PATH=$MD_PKG_CONFIG_PATH:/usr/lib64/pkgconfig/:/usr/local/lib64/pkgconfig/; fi
+MONO_PREFIX=`which mono`
+MONO_PREFIX="${MONO_PREFIX%%/mono}/.."
+PKGCONFIG_PREFIX=`which pkg-config`
+PKGCONFIG_PREFIX="${PKGCONFIG_PREFIX%%/pkg-config}/.."
+
+MD_PKG_CONFIG_PATH=""
+for D in "$PREFIX/.." "$MONO_PREFIX" "$PKGCONFIG_PREFIX" '/usr/local' '/usr'; do
+	for PKGDIR in "$D/../lib/pkgconfig" "$D/../lib64/pkgconfig" "$D/../share/pkgconfig"; do
+		if [ -d "$PKGDIR" ]; then MD_PKG_CONFIG_PATH="$MD_PKG_CONFIG_PATH:$PKGDIR"; fi
+	done
+done
 ### END BLOCK
 
 if [ -n $PKG_CONFIG_PATH ]; then
@@ -29,26 +25,44 @@ else
 	export PKG_CONFIG_PATH=$MD_PKG_CONFIG_PATH
 fi
 
-eval set -- `reWrite "$@"`
+ARGS=""
 
-case x$1 in
-	x--profile)
+for arg in $*; do 
+case x$arg in
+	x--profile*)
+		MONO_OPTIONS="$MONO_OPTIONS $arg"
 		shift
-		exec -a "mdtool" @RUNTIME@ --profile $MD_BIN_PATH/mdrun.exe "$@"
-		exit 0
 		;;
-	x--debug)
-		shift
+	x--debug*)
 		export MONODEVELOP_DISPATCH_DEBUG=yes
-		exec -a "mdtool" @RUNTIME@ --debug $MD_BIN_PATH/mdrun.exe "$@"
-		exit 0
-		;;
-	x--trace)
+		unset MD_FORCE_DEBUG
+		MONO_OPTIONS="$MONO_OPTIONS $arg"
 		shift
-		exec -a "mdtool" @RUNTIME@ --trace $MD_BIN_PATH/mdrun.exe "$@"
-		exit 0;
 		;;
-esac
+	x--trace*)
+		MONO_OPTIONS="$MONO_OPTIONS $arg"
+		shift
+		;;
+	x--no-debug)
+		unset MD_FORCE_DEBUG
+		shift
+		;;
+	*)
+		ARGS="$ARGS $arg"
+		shift
+		;;
+esac		
+done
 
-exec @RUNTIME@ $MD_BIN_PATH/mdrun.exe "$@"
+if [ -z MD_FORCE_DEBUG ]; then
+	MONO_OPTIONS="$MONO_OPTIONS --debug"
+fi
+
+if [ -n "$MONO_OPTIONS" ]; then
+	echo "** Running with Mono options: $MONO_OPTIONS **"
+fi
+
+exec_args="-a mdtool mono $MONO_OPTIONS $PREFIX/lib/monodevelop/bin/mdrun.exe $ARGS"
+
+exec $exec_args
 
