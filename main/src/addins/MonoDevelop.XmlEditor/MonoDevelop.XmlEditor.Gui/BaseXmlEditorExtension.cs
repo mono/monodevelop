@@ -272,12 +272,12 @@ namespace MonoDevelop.XmlEditor.Gui
 				
 			}
 			
-//			if (Tracker.Engine.CurrentState is S.XmlFreeState) {
+//			if (Tracker.Engine.CurrentState is XmlFreeState) {
 //				if (line < 3) {
 //				cp.Add ("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>");
 //			}
 			
-			if (forced && Tracker.Engine.CurrentState is S.XmlFreeState) {
+			if (forced && Tracker.Engine.CurrentState is XmlFreeState) {
 				CompletionDataList list = new CompletionDataList ();
 				MonoDevelop.Ide.CodeTemplates.CodeTemplateService.AddCompletionDataForFileName (Document.Title, list);
 				return list.Count > 0? list : null;
