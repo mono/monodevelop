@@ -511,7 +511,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 		{
 			if (stateTracker.Engine.IsInsideDocLineComment || stateTracker.Engine.IsInsideOrdinaryCommentOrString)
 				return null;
-			DomLocation location = new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset - 1);
+			DomLocation location = new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset);
 			switch (word) {
 			case "using":
 				if (result.ExpressionContext != ExpressionContext.NamespaceNameExcepted)

@@ -1,5 +1,10 @@
 2008-11-12  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Gui/CSharpTextEditorCompletion.cs: Fix completion location off-by-one.
+	Fixes extra char that was added at end of namespaces.
+
+2008-11-12  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Gui/NRefactoryResolver.cs:
 	* Gui/CSharpTextEditorCompletion.cs: Move template completion code to
 	MonoDevelop.Ide.
