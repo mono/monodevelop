@@ -92,7 +92,7 @@ namespace MonoDevelop.AspNet
 			foreach (ProjectFile file in aspProject.Files)
 			{
 				WebSubtype type = AspNetAppProject.DetermineWebSubtype (Path.GetExtension (file.FilePath));
-				if ((type != WebSubtype.WebForm))//TODO && (type != WebSubtype.WebControl) && (type != WebSubtype.MasterPage))
+				if (type != WebSubtype.WebForm && type != WebSubtype.WebControl && type != WebSubtype.MasterPage)
 						continue;
 				
 				//find the designer file

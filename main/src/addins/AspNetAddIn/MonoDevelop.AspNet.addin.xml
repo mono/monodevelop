@@ -131,7 +131,7 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions">
-		<Class class = "MonoDevelop.AspNet.VerifyCodeBehindBuildStep" />
+		<Class class = "MonoDevelop.AspNet.VerifyCodeBehindBuildStep" insertafter="MidStep" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/DesignerSupport/ToolboxLoaders">

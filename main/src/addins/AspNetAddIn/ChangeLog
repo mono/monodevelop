@@ -1,5 +1,12 @@
 2008-11-13  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.AspNet.addin.xml: Specify position for build step.
+
+	* MonoDevelop.AspNet/VerifyCodeBehindBuildStep.cs: Enable designer class
+	updating for UserControls and MasterPages.
+
+2008-11-13  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.AspNet.Gui/BaseHtmlEditorExtension.cs: Split out the HTML
 	editor extension. Add document outlining.
 
