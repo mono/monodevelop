@@ -46,7 +46,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 	public static class ProjectDomService
 	{
 		static List<IParser> parsers = new List<IParser>();
-		static RootTree helpTree = RootTree.LoadTree ();
+		static RootTree helpTree;
 		static IParserDatabase parserDatabase = new MonoDevelop.Projects.Dom.Serialization.ParserDatabase ();
 
 		static bool threadRunning;
@@ -92,6 +92,11 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		static ProjectDomService ()
 		{
+			try {
+				helpTree = RootTree.LoadTree ();
+			} catch (Exception ex) {
+				LoggingService.LogError ("Monodoc documentation tree could not be loaded.", ex);
+			}
 			codeCompletionPath = GetDefaultCompletionFileLocation ();
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/ProjectModel/DomParser", delegate(object sender, ExtensionNodeEventArgs args) {
 				switch (args.Change) {
@@ -394,10 +399,6 @@ namespace MonoDevelop.Projects.Dom.Parser
 				Solution solution = (Solution) item;
 				foreach (Project project in solution.GetAllProjects ())
 					Load (project);
-				foreach (ProjectDom dom in new List<ProjectDom> (databases.Values)) {
-					dom.UpdateReferences ();
-				}
-	
 				solution.SolutionItemAdded += OnSolutionItemAdded;
 				solution.SolutionItemRemoved += OnSolutionItemRemoved;
 			}

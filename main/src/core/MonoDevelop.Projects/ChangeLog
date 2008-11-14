@@ -1,3 +1,11 @@
+2008-11-14  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs: Don't crash if
+	something goes wrong with Monodoc initialization. Removed
+	UpdateReferences call in Load(). This call was added to fix bug
+	#427285, but this is the wrong fix. Everything seems to work fine
+	without it, and it is a performance bottleneck.
+
 2008-11-14  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/ResolveResult.cs: fixed 'Bug 444643 -
