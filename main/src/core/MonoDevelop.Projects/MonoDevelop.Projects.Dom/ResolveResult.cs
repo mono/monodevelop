@@ -244,6 +244,8 @@ namespace MonoDevelop.Projects.Dom
 				return;
 			if (returnType.ArrayDimensions > 0) {
 				AddType (dom, result, dom.GetType ("System.Array", null, true, true), callingMember, showStatic);
+				DomReturnType arrType = new DomReturnType (returnType.ToInvariantString ());
+				AddType (dom, result, dom.GetType ("System.Collections.Generic.IList", new IReturnType [] { arrType }, true, true), callingMember, showStatic);
 				return;
 			}
 			IType type = dom.GetType (returnType);

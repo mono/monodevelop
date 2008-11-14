@@ -1,3 +1,8 @@
+2008-11-14  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom/ResolveResult.cs: fixed 'Bug 444643 -
+	Extension methods don't show up on array types'.
+
 2008-11-13  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs:
