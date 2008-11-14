@@ -1,3 +1,7 @@
+2008-11-13  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* MonoDevelop.VersionControl.Views/LogView.cs: Coding guidelines.
+
 2008-11-05  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* VersionControl.addin.xml: Bump MD version.

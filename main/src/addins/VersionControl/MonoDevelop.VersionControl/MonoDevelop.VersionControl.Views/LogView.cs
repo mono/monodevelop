@@ -15,7 +15,7 @@ namespace MonoDevelop.VersionControl.Views
 	{
 		string filepath;
 		Widget widget;
-		Revision[] history;
+		Revision [] history;
 		Repository vc;
 		VersionInfo vinfo;
 		Gtk.ToolButton revertButton, revertToButton;
@@ -43,7 +43,7 @@ namespace MonoDevelop.VersionControl.Views
 			string filepath;
 			bool isDirectory;
 			Revision since;
-			Revision[] history;
+			Revision [] history;
 						
 			public Worker (Repository vc, string filepath, bool isDirectory, Revision since) {
 				this.vc = vc;
@@ -169,7 +169,7 @@ namespace MonoDevelop.VersionControl.Views
 					d.ToString (),
 					d.Time.ToString (),
 					d.Author,
-					d.Message == "" ? GettextCatalog.GetString ("(No message)") : d.Message);
+					d.Message == String.Empty ? GettextCatalog.GetString ("(No message)") : d.Message);
 			}
 
 			// Changed paths list setup
@@ -202,11 +202,11 @@ namespace MonoDevelop.VersionControl.Views
 
 		Revision GetSelectedRev ()
 		{
-			int[] indices;
+			int [] indices;
 			return GetSelectedRev (out indices);
 		}
 		
-		Revision GetSelectedRev (out int[] indices)
+		Revision GetSelectedRev (out int [] indices)
 		{
 			indices = null;
 			TreePath path;
@@ -278,12 +278,12 @@ namespace MonoDevelop.VersionControl.Views
 			HistoricalFileView.Show (filepath, vc, vinfo.RepositoryPath, d);
 		}
 		
-		void RevertToRevisionClicked(object src, EventArgs args) {
+		void RevertToRevisionClicked (object src, EventArgs args) {
 			Revision d = GetSelectedRev ();
 			RevertRevisionsCommands.RevertToRevision (vc, filepath, d, false);
 		}
 		
-		void RevertRevisionClicked(object src, EventArgs args) {
+		void RevertRevisionClicked (object src, EventArgs args) {
 			Revision d = GetSelectedRev ();
 			RevertRevisionsCommands.RevertRevision (vc, filepath, d, false);
 		}
@@ -320,7 +320,7 @@ namespace MonoDevelop.VersionControl.Views
 			protected override void Run () {
 				Log (GettextCatalog.GetString ("Getting text of {0} at revision {1}...", revPath, revision.GetPrevious ()));
 				try {
-					text1 = vc.GetTextAtRevision (revPath, revision.GetPrevious());
+					text1 = vc.GetTextAtRevision (revPath, revision.GetPrevious ());
 				} catch {
 					// If the file was added in this revision, no previous
 					// text exists.
