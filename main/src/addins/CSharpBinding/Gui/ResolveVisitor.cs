@@ -474,7 +474,12 @@ namespace MonoDevelop.CSharpBinding
 							result = CreateResult (member[0].FullName);
 							result.StaticResolve = true;
 						} else {
-							result = CreateResult (member[0].DeclaringType.CompilationUnit, member[0].ReturnType);
+							IType searchType = resolver.Dom.GetType (member[0].ReturnType);
+							if (searchType == null)
+								searchType = resolver.Dom.SearchType (new SearchTypeRequest (member[0].DeclaringType.CompilationUnit, member[0].ReturnType));
+							if (searchType == null)
+								searchType = resolver.Dom.SearchType (new SearchTypeRequest (this.resolver.Unit, member[0].ReturnType));
+							result = CreateResult (member[0].DeclaringType.CompilationUnit, searchType != null ? new DomReturnType (searchType) : DomReturnType.Void);
 							((MemberResolveResult)result).ResolvedMember = member[0];
 						}
 						return result;

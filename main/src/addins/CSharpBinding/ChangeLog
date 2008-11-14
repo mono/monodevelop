@@ -1,5 +1,10 @@
 2008-11-14  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/ResolveVisitor.cs: fixed 'Bug 444110 - Code completion doesn't
+	activate'.
+
+2008-11-14  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/CSharpAmbience.cs: Fixed full namespace display of members.
 
 	* Gui/CSharpTextEditorCompletion.cs: Worked on new completion.
