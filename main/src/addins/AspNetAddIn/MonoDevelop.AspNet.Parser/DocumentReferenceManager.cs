@@ -33,6 +33,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 
+using MonoDevelop.Core;
 using MonoDevelop.AspNet.Parser.Dom;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.Dom;
@@ -103,8 +104,9 @@ namespace MonoDevelop.AspNet.Parser
 		
 		public IEnumerable<CompletionData> GetControlCompletionData ()
 		{
+			string aspPrefix = "asp:";
 			foreach (IType cls in WebTypeManager.ListSystemControlClasses (doc.Project))
-				yield return new CompletionData ("asp:" + cls.Name, Gtk.Stock.GoForward, cls.Documentation);
+				yield return new AspTagCompletionData (aspPrefix, cls);
 			
 			foreach (RegisterDirective rd in pageRefsList) {
 				if (!rd.IsValid ())
@@ -114,7 +116,7 @@ namespace MonoDevelop.AspNet.Parser
 				if (ard != null) {
 					string prefix = ard.TagPrefix + ":";
 					foreach (IType cls in WebTypeManager.ListControlClasses (doc.Project, ard.Assembly, ard.Namespace))
-						yield return new CompletionData (prefix + cls.Name, Gtk.Stock.GoForward, cls.Documentation);
+						yield return new AspTagCompletionData (prefix, cls);
 					continue;
 				}
 				
@@ -128,12 +130,60 @@ namespace MonoDevelop.AspNet.Parser
 			//FIXME: return controls from web.config
 		}
 		
+		//lazily loads docs
+		private class AspTagCompletionData : CompletionData
+		{
+			IType cls;
+			
+			public AspTagCompletionData (string prefix, IType cls)
+				: base (prefix + cls.Name, Gtk.Stock.GoForward)
+			{
+				this.cls = cls;
+			}
+			
+			public override string Description {
+				get {
+					if (base.Description == null && cls != null)
+						base.Description = cls.Documentation;
+					return cls.Documentation;
+				}
+				set { base.Description = value;	}
+			}
+		}
+		
 		public IType GetControlType (string tagPrefix, string tagName)
 		{
-			if (0 == string.Compare (tagPrefix, "asp", StringComparison.InvariantCultureIgnoreCase))
-				return WebTypeManager.AssemblyTypeLookup (tagName, "System.Web.UI.WebControls", "System.Web");
+			IType type = null;
+			if (0 == string.Compare (tagPrefix, "asp", StringComparison.InvariantCultureIgnoreCase)) {
+				type = WebTypeManager.AssemblyTypeLookup (doc.Project, "System.Web", "System.Web.UI.WebControls", tagName);
+				if (type != null)
+					return type;
+			}
 			
-			//FIXME: Implement for non-builtins
+			foreach (RegisterDirective rd in pageRefsList) {
+				if (string.Compare (rd.TagPrefix, tagPrefix, StringComparison.InvariantCultureIgnoreCase) != 0)
+					continue;
+				
+				AssemblyRegisterDirective ard = rd as AssemblyRegisterDirective;
+				if (ard != null) {
+					type = WebTypeManager.AssemblyTypeLookup (doc.Project, ard.Assembly, ard.Namespace, tagName);
+					if (type != null)
+						return type;
+					continue;
+				}
+				
+				ControlRegisterDirective crd = rd as ControlRegisterDirective;
+				if (crd != null && string.Compare (crd.TagName, tagName, StringComparison.InvariantCultureIgnoreCase) != 0) {
+					//FIXME: return the codebehind class's IType
+					type = WebTypeManager.AssemblyTypeLookup (doc.Project, "System.Web", "System.Web.UI", "UserControl");
+					if (type == null)
+						LoggingService.LogWarning ("Could not obtain IType for System.Web.UI.WebControls.WebControl");
+					return type;
+				
+				}	
+			}
+			
+			//FIXME: return controls from web.config
 			return null;
 		}
 		

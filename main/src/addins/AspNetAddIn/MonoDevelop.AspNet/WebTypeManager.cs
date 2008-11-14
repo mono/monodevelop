@@ -52,7 +52,7 @@ namespace MonoDevelop.AspNet
 		public static string GetRegisteredTypeName (AspNetAppProject project, string webDirectory, string tagPrefix, string tagName)
 		{
 			if (project == null)
-				return GetMachineRegisteredTypeName (tagPrefix, tagName);
+				return GetMachineRegisteredTypeName (project, tagPrefix, tagName);
 			
 			//global control registration not possible in ASP.NET 1.1
 			if (project.ClrVersion == MonoDevelop.Core.ClrVersion.Net_1_1)
@@ -72,10 +72,10 @@ namespace MonoDevelop.AspNet
 				dir = dir.Parent;
 			}
 			
-			return GetMachineRegisteredTypeName (tagPrefix, tagName);
+			return GetMachineRegisteredTypeName (project, tagPrefix, tagName);
 		}
 		
-		public static string GetMachineRegisteredTypeName (string tagPrefix, string tagName)
+		public static string GetMachineRegisteredTypeName (AspNetAppProject project, string tagPrefix, string tagName)
 		{
 			//check in machine.config
 			Configuration config = ConfigurationManager.OpenMachineConfiguration ();
@@ -84,7 +84,7 @@ namespace MonoDevelop.AspNet
 			foreach (TagPrefixInfo tpxInfo in pages.Controls) {
 				if (tpxInfo.TagPrefix != tagPrefix)
 					continue;
-				string fullName = AssemblyTypeNameLookup (tagName, tpxInfo.Namespace, tpxInfo.Assembly);
+				string fullName = AssemblyTypeNameLookup (project, tagName, tpxInfo.Namespace, tpxInfo.Assembly);
 				if (fullName != null)
 					return fullName;
 				//user controls don't make sense in machine.config; ignore them
@@ -117,7 +117,7 @@ namespace MonoDevelop.AspNet
 							if (reader.MoveToAttribute ("namespace")) {
 								string _namespace = reader.Value;
 								string _assembly = reader.MoveToAttribute ("assembly")? reader.Value : null;
-								string fullName = AssemblyTypeNameLookup (tagName, _namespace, _assembly);
+								string fullName = AssemblyTypeNameLookup (null, _assembly, _namespace, tagName);
 								if (fullName != null)
 									return fullName;
 							}
@@ -233,19 +233,22 @@ namespace MonoDevelop.AspNet
 			return MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetAssemblyDom (assem);
 		}
 		
-		public static string AssemblyTypeNameLookup (string tagName, string namespac, string assem)
+		public static string AssemblyTypeNameLookup (AspNetAppProject project, string assem, string namespac, string tagName)
 		{
-			IType cls = AssemblyTypeLookup (tagName, namespac, assem);
+			IType cls = AssemblyTypeLookup (project, assem, namespac, tagName);
 			return cls != null? cls.FullName : null;
 		}
 		
-		public static IType AssemblyTypeLookup (string tagName, string namespac, string assem)
+		public static IType AssemblyTypeLookup (AspNetAppProject project, string assem, string namespac, string tagName)
 		{
+			assem = MonoDevelop.Core.Runtime.SystemAssemblyService.GetAssemblyNameForVersion (
+					assem,
+					GetProjectClrVersion (project));
 			ProjectDom database = MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetAssemblyDom (assem);
 			if (database == null)
 				return null;
-//			ctx.UpdateDatabase ();
-			return database.GetType (namespac + "." + tagName, false);
+			
+			return database.GetType (namespac + "." + tagName, false, false);
 		}
 		
 		#endregion
