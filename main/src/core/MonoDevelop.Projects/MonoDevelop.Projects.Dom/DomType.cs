@@ -284,7 +284,7 @@ namespace MonoDevelop.Projects.Dom
 		System.Xml.XmlDocument helpXml;
 		public System.Xml.XmlDocument HelpXml {
 			get {
-				if (helpXml == null)
+				if (helpXml == null && ProjectDomService.HelpTree != null)
 					helpXml = ProjectDomService.HelpTree.GetHelpXml (this.HelpUrl);
 				return helpXml;
 			}

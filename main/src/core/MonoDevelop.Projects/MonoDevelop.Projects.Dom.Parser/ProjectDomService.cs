@@ -92,11 +92,15 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		static ProjectDomService ()
 		{
-			try {
-				helpTree = RootTree.LoadTree ();
-			} catch (Exception ex) {
-				LoggingService.LogError ("Monodoc documentation tree could not be loaded.", ex);
-			}
+			ThreadPool.QueueUserWorkItem (delegate {
+				// Load the help tree asynchronously. Reduces startup time.
+				try {
+					helpTree = RootTree.LoadTree ();
+				} catch (Exception ex) {
+					LoggingService.LogError ("Monodoc documentation tree could not be loaded.", ex);
+				}
+			});
+			
 			codeCompletionPath = GetDefaultCompletionFileLocation ();
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/ProjectModel/DomParser", delegate(object sender, ExtensionNodeEventArgs args) {
 				switch (args.Change) {
