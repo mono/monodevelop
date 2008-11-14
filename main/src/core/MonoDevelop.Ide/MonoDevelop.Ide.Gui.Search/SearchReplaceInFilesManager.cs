@@ -179,7 +179,9 @@ namespace MonoDevelop.Ide.Gui.Search
 				}
 				catch (Exception ex) 
 				{
+					searchMonitor.Log.WriteLine (ex);
 					searchError = ex.Message;
+					LoggingService.LogError ("Error while replacing", ex);
 					break;
 				}
 			}
@@ -228,6 +230,7 @@ namespace MonoDevelop.Ide.Gui.Search
 				{
 					searchMonitor.Log.WriteLine (ex);
 					searchError = ex.Message;
+					LoggingService.LogError ("Error while searching", ex);
 					break;
 				}
 			}

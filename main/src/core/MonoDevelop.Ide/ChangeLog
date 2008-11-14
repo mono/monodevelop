@@ -1,3 +1,9 @@
+2008-11-13  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs: Send the
+	exception to the loggingService (this way we give more clues to fix
+	#444455).
+
 2008-11-12  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.CodeTemplates/CodeTemplateService.cs: Fix accidental
