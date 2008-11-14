@@ -1,3 +1,8 @@
+2008-11-14  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Tasks/TaskService.cs: Avoid unneeded calls to
+	GetFullPath.
+
 2008-11-13  Andrés G. Aragoneses  <aaragoneses@novell.com>
 
 	* MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs: Send the

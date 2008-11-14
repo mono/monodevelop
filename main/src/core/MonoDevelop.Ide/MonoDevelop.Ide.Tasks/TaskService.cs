@@ -430,11 +430,11 @@ namespace MonoDevelop.Ide.Tasks
 				}
 			}
 			List<Task> oldTasks = new List<Task> ();
-			
+
+			fileName = Path.GetFullPath (fileName);
 			foreach (Task task in CommentTasks) {
-				if (Path.GetFullPath (task.FileName) == Path.GetFullPath (fileName)) {
+				if (task.FileName == fileName)
 					oldTasks.Add (task);
-				}
 			}
 			
 			for (int i = 0; i < newTasks.Count; ++i) {
