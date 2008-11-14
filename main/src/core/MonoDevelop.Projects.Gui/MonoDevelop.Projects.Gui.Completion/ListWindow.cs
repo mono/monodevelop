@@ -208,7 +208,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 					return KeyAction.Process;
 					
 				case Gdk.Key.BackSpace:
-					if (curPos == 0) return KeyAction.CloseWindow | KeyAction.Process;
+					if (curPos == 0 || (modifier & Gdk.ModifierType.ControlMask) != 0)
+						return KeyAction.CloseWindow | KeyAction.Process;
 					curPos--;
 					word.Remove (curPos, 1);
 					UpdateWordSelection ();
