@@ -1,5 +1,10 @@
 2008-11-14  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects.Dom.Serialization/FileEntry.cs: Use File class
+	instead of FileInfo to get the last write time. It is faster.
+
+2008-11-14  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects.Dom/DomType.cs:
 	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs: Load the help
 	tree asynchronously. Reduces startup time.

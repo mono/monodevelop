@@ -96,8 +96,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			get {
 				if (!System.IO.File.Exists (FileName))
 					return false;
-				System.IO.FileInfo fi = new System.IO.FileInfo (FileName);
-				return ((fi.LastWriteTime > LastParseTime || ParseErrorRetries > 0) && !DisableParse);
+				return ((System.IO.File.GetLastWriteTime (FileName) > LastParseTime || ParseErrorRetries > 0) && !DisableParse);
 			}
 		}
 		
