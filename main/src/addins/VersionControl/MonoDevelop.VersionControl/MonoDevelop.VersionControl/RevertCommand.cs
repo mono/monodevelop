@@ -17,7 +17,18 @@ namespace MonoDevelop.VersionControl
 {
 	internal class RevertCommand
 	{
+
 		public static bool Revert (VersionControlItemList items, bool test)
+		{
+			if (RevertInternal (items, test)) {
+				foreach (var itemPath in items.Paths)
+					VersionControlService.SetCommitComment (itemPath, string.Empty, true);
+				return true;
+			}
+			return false;
+		}
+		
+		private static bool RevertInternal (VersionControlItemList items, bool test)
 		{
 			try {
 				if (test) {

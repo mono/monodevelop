@@ -282,14 +282,14 @@ namespace MonoDevelop.VersionControl.Views
 			Revision d = GetSelectedRev ();
 			if (RevertRevisionsCommands.RevertToRevision (vc, filepath, d, false))
 				VersionControlService.SetCommitComment (filepath, 
-				                                        String.Format ("(Revert to revision {0})", d.ToString ()), true);
+				  string.Format ("(Revert to revision {0})", d.ToString ()), true);
 		}
 		
 		void RevertRevisionClicked (object src, EventArgs args) {
 			Revision d = GetSelectedRev ();
 			if (RevertRevisionsCommands.RevertRevision (vc, filepath, d, false))
 				VersionControlService.SetCommitComment (filepath, 
-				                                        String.Format ("(Revert to revision {0})", d.ToString ()), true);
+				  string.Format ("(Revert revision {0})", d.ToString ()), true);
 		}
 		
 		public override Gtk.Widget Control { 
