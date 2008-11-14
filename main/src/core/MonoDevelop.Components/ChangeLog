@@ -1,5 +1,10 @@
 2008-11-14  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Components.Commands/KeyBindingService.cs: Added method for
+	reseting the current bindings.
+
+2008-11-14  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Makefile.am: Fix issue with parallel building.
 
 	* MonoDevelop.Components.Commands/CommandManager.cs:

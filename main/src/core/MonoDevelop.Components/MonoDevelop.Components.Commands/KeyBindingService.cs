@@ -113,6 +113,11 @@ namespace MonoDevelop.Components.Commands {
 			string key = GetCommandKey (cmd);
 			defaultScheme [key] = cmd.AccelKey;
 		}
+
+		public static void ResetCurrent ()
+		{
+			current.Clear ();
+		}
 		
 		public static void StoreBinding (Command cmd)
 		{
