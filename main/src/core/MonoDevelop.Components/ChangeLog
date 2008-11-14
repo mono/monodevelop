@@ -1,3 +1,11 @@
+2008-11-14  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am: Fix issue with parallel building.
+
+	* MonoDevelop.Components.Commands/CommandManager.cs:
+	* MonoDevelop.Components.Commands/KeyBindingService.cs: Create the
+	default binding scheme from what's defined in the commands.
+
 2008-11-05  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Components.addin.xml: Bump MD version.

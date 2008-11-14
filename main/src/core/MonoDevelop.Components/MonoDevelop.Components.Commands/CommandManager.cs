@@ -275,6 +275,7 @@ namespace MonoDevelop.Components.Commands
 		
 		public void RegisterCommand (Command cmd)
 		{
+			KeyBindingService.LoadDefaultBinding (cmd);
 			KeyBindingService.LoadBinding (cmd);
 			
 			cmds[cmd.Id] = cmd;

@@ -40,10 +40,13 @@ namespace MonoDevelop.Components.Commands {
 	public class KeyBindingService {
 		const string configFileName = "KeyBindings.xml";
 		const string version = "1.0";
+		const string DefaultSchemeName = "Default";
 		
 		static SortedDictionary<string, string> current;
 		static SortedDictionary<string, string> scheme;
 		static SortedDictionary<string, SchemeExtensionNode> schemes;
+		static SortedDictionary<string, string> defaultScheme;
+
 		static string schemeName;
 		
 		static KeyBindingService ()
@@ -53,6 +56,7 @@ namespace MonoDevelop.Components.Commands {
 			
 			scheme = new SortedDictionary<string, string> ();
 			schemes = new SortedDictionary<string,SchemeExtensionNode> ();
+			defaultScheme = new SortedDictionary<string, string> ();
 		}
 		
 		static string ConfigFileName {
@@ -62,7 +66,11 @@ namespace MonoDevelop.Components.Commands {
 		}
 		
 		public static IEnumerable<string> SchemeNames {
-			get { return schemes.Keys; }
+			get {
+				yield return DefaultSchemeName;
+				foreach (string s in schemes.Keys)
+					yield return s;
+			}
 		}
 		
 		public static void LoadBindingsFromExtensionPath (string path)
@@ -87,17 +95,23 @@ namespace MonoDevelop.Components.Commands {
 			if (cmd == null)
 				return;
 			
-			string key;
-			if (cmd.Id is Enum)
-				key = cmd.Id.GetType () + "." + cmd.Id;
-			else
-				key = cmd.Id.ToString ();
+			string key = GetCommandKey (cmd);
 			
 			// Note: Only override the cmd.AccelKey if the scheme had the binding defined,
 			// this way if an Addin later gets installed which has its own set of Commands
 			// w/ key-bindings, we won't inadvertantly override them.
-			if (current.ContainsKey (key))
-				cmd.AccelKey = current[key];
+			string accel;
+			if (current.TryGetValue (key, out accel))
+				cmd.AccelKey = accel;
+		}
+		
+		public static void LoadDefaultBinding (Command cmd)
+		{
+			if (cmd == null)
+				return;
+			
+			string key = GetCommandKey (cmd);
+			defaultScheme [key] = cmd.AccelKey;
 		}
 		
 		public static void StoreBinding (Command cmd)
@@ -105,14 +119,14 @@ namespace MonoDevelop.Components.Commands {
 			if (cmd == null)
 				return;
 			
-			string key;
-			if (cmd.Id is Enum)
-				key = cmd.Id.GetType () + "." + cmd.Id;
-			else
-				key = cmd.Id.ToString ();
+			string key = GetCommandKey (cmd);
+
+			string defaultAccel;
+			defaultScheme.TryGetValue (key, out defaultAccel);
 			
-			if (!current.ContainsKey (key))
-				current.Add (key, cmd.AccelKey);
+			// If the key is the same as the default, remove it from the scheme
+			if (cmd.AccelKey == defaultAccel)
+				current.Remove (key);
 			else
 				current[key] = cmd.AccelKey;
 		}
@@ -122,16 +136,16 @@ namespace MonoDevelop.Components.Commands {
 			if (schemeName == null || cmd == null)
 				return null;
 			
-			string key;
-			if (cmd.Id is Enum)
-				key = cmd.Id.GetType () + "." + cmd.Id;
+			string key = GetCommandKey (cmd);
+
+			// Schemes use default key bindings when not explicitly overriden
+			string accel;
+			if (scheme.TryGetValue (key, out accel))
+				return accel;
+			else if (defaultScheme.TryGetValue (key, out accel))
+				return accel;
 			else
-				key = cmd.Id.ToString ();
-			
-			if (scheme.ContainsKey (key))
-				return scheme[key];
-			
-			return null;
+				return cmd.AccelKey;
 		}
 		
 		public static string SchemeBinding (string name, Command cmd)
@@ -143,6 +157,14 @@ namespace MonoDevelop.Components.Commands {
 				LoadScheme (name);
 			
 			return SchemeBinding (cmd);
+		}
+
+		static string GetCommandKey (Command cmd)
+		{
+			if (cmd.Id is Enum)
+				return cmd.Id.GetType () + "." + cmd.Id;
+			else
+				return cmd.Id.ToString ();
 		}
 		
 		const string commandAttr = "command";
@@ -222,6 +244,12 @@ namespace MonoDevelop.Components.Commands {
 			
 			if (name == null)
 				return;
+
+			if (name == DefaultSchemeName) {
+				schemeName = DefaultSchemeName;
+				scheme = defaultScheme;
+				return;
+			}
 			
 			SchemeExtensionNode node = schemes [name];
 			
@@ -242,10 +270,11 @@ namespace MonoDevelop.Components.Commands {
 		
 		public static void UnloadScheme ()
 		{
+			// The default scheme is kept in memory, so don't clear it here.
 			schemeName = null;
-			scheme.Clear ();
+			scheme = new SortedDictionary<string, string> ();
 		}
-		
+
 		static void Save (XmlTextWriter writer, string name, ref SortedDictionary<string, string> bindings)
 		{
 			writer.WriteStartElement ("scheme");
