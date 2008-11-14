@@ -869,6 +869,47 @@ class AClass
 			Assert.IsNotNull (provider.Find ("TestMethod"), "method 'TestMethod' not found.");
 		}
 		
+		/// <summary>
+		/// Bug 444110 - Code completion doesn't activate
+		/// </summary>
+		[Test()]
+		public void TestBug444110 ()
+		{
+			CompletionDataList provider = CreateProvider (
+@"using System;
+using System.Collections.Generic;
+
+namespace System.Collections.Generic {
+	
+	public class TemplateClass<T>
+	{
+		public T TestField;
+	}
+}
+
+namespace CCTests
+{
+	
+	public class Test
+	{
+		public TemplateClass<int> TemplateClass { get; set; }
+	}
+	
+	class MainClass
+	{
+		public static void Main(string[] args)
+		{
+			Test t = new Test();
+			t.TemplateClass.$
+		}
+	}
+}");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.AreEqual (1, provider.Count);
+			Assert.IsNotNull (provider.Find ("TestField"), "field 'TestField' not found.");
+		}
+
+		
 		[TestFixtureSetUp] 
 		public void SetUp()
 		{

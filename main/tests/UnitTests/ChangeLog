@@ -1,3 +1,8 @@
+2008-11-14  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: added test for
+	bug 4441110
+
 2008-11-07  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/ProjectTests.cs: Fix incorrect satellit assembly
