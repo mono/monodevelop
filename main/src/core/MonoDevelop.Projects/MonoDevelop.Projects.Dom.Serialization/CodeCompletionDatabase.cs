@@ -540,11 +540,10 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			return result;
 		}
 		
-		public IEnumerable GetSubclasses (string fullName, string[] namespaces)
+		public IEnumerable GetSubclasses (string fullName, IList<string> namespaces)
 		{
 			ArrayList nsubs = (ArrayList) unresolvedSubclassTable [fullName];
 			ArrayList csubs = null;
-			IList nsList = namespaces;
 			
 			ClassEntry ce = FindClassEntry (fullName);
 			if (ce != null)
@@ -556,7 +555,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				foreach (object ob in subs) {
 					if (ob is ClassEntry) {
 						string ns = ((ClassEntry) ob).NamespaceRef.FullName;
-						if (namespaces == null || nsList.Contains (ns)) {
+						if (namespaces == null || namespaces.Contains (ns)) {
 							IType t = GetClass ((ClassEntry)ob);
 							yield return t;
 						}
@@ -564,7 +563,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 					else {
 						// It's a full class name
 						IType cls = this.GetClass ((string)ob, null, true);
-						if (cls != null && (namespaces == null || nsList.Contains (cls.Namespace)))
+						if (cls != null && (namespaces == null || namespaces.Contains (cls.Namespace)))
 							yield return cls;
 					}
 				}
@@ -1115,15 +1114,14 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			}
 		}
 		
-		public IEnumerable<IType> GetClassList (bool includeInner, string[] namespaces)
+		public IEnumerable<IType> GetClassList (bool includeInner, IList<string> namespaces)
 		{
 			lock (rwlock)
 			{
-				IList nsList = namespaces;
 				ArrayList list = new ArrayList ();
 				foreach (ClassEntry ce in GetAllClasses ()) {
 					IType cls = GetClass (ce);
-					if (nsList != null && !nsList.Contains (cls.Namespace))
+					if (namespaces != null && !namespaces.Contains (cls.Namespace))
 						continue;
 					list.Add (cls);
 					if (includeInner && ((ce.ContentFlags & ContentFlags.HasInnerClasses) != 0))

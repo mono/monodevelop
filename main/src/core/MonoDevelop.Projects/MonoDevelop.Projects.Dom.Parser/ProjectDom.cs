@@ -295,8 +295,17 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return false;
 		}
 		
-		public abstract IEnumerable<IType> GetSubclasses (IType type);
+		public IEnumerable<IType> GetSubclasses (IType type)
+		{
+			return GetSubclasses (type, true);
+		}
 		
+		public IEnumerable<IType> GetSubclasses (IType type, bool searchDeep)
+		{
+			return GetSubclasses (type, searchDeep, null);
+		}
+		
+		public abstract IEnumerable<IType> GetSubclasses (IType type, bool searchDeep, IList<string> namespaces);
 		
 		public IType GetType (IReturnType returnType)
 		{
@@ -451,9 +460,12 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 		}
 
-		public override IEnumerable<IType> GetSubclasses (IType type)
+		public override IEnumerable<IType> GetSubclasses (IType type, bool searchDeep, IList<string> namespaces)
 		{
-			yield return type;
+			if (namespaces == null || namespaces.Contains (type.Namespace))
+				yield return type;
+			else
+				yield break;
 		}
 
 		internal override IEnumerable<string> OnGetReferences ()
@@ -474,7 +486,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 		}
 
-		public override IEnumerable<IType> GetSubclasses (IType type)
+		public override IEnumerable<IType> GetSubclasses (IType type, bool searchDeep, IList<string> namespaces)
 		{
 			yield break;
 		}

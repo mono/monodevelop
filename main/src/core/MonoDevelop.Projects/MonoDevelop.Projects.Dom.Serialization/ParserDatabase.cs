@@ -300,7 +300,8 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		}
 */
 		
-		public IEnumerable GetSubclassesTree (SerializationCodeCompletionDatabase db, IType cls, string[] namespaces)
+		public IEnumerable<IType> GetSubclassesTree (SerializationCodeCompletionDatabase db, IType cls, 
+		                                             bool searchDeep, IList<string> namespaces)
 		{
 			string fn = cls.FullName;
 			
@@ -324,9 +325,13 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				// Look for subclasses in all databases
 				foreach (IType dsub in db.GetSubclasses (fn, namespaces)) {
 					yield return dsub;
-					foreach (IType sub in GetSubclassesTree (db, dsub, namespaces))
+					foreach (IType sub in GetSubclassesTree (db, dsub, searchDeep, namespaces))
 						yield return sub;
 				}
+				
+				if (!searchDeep)
+					yield break;
+				
 				foreach (ReferenceEntry re in db.References)
 				{
 					SerializationCodeCompletionDatabase cdb = GetDatabase (re.Uri);
@@ -334,7 +339,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 					
 					foreach (IType dsub in cdb.GetSubclasses (fn, namespaces)) {
 						yield return dsub;
-						foreach (IType sub in GetSubclassesTree (db, dsub, namespaces))
+						foreach (IType sub in GetSubclassesTree (db, dsub, searchDeep, namespaces))
 							yield return sub;
 					}
 				}
