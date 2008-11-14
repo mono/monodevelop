@@ -56,9 +56,10 @@ namespace MonoDevelop.Ide.Gui.Pads
 			tree_view.Selection.Changed += new EventHandler (RowActivated);
 			
 			store = new TreeStore (typeof (string), typeof (Node));
-			root_iter = store.AppendValues (GettextCatalog.GetString ("Mono Documentation"), ProjectDomService.HelpTree);
-
-			PopulateNode (root_iter);
+			if (ProjectDomService.HelpTree != null) {
+				root_iter = store.AppendValues (GettextCatalog.GetString ("Mono Documentation"), ProjectDomService.HelpTree);
+				PopulateNode (root_iter);
+			}
 
 			tree_view.Model = store;
 			tree_view.HeadersVisible = false;

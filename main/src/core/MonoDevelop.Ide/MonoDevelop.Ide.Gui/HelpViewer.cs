@@ -35,6 +35,7 @@ using Monodoc;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.WebBrowser;
 using MonoDevelop.Core;
+using MonoDevelop.Projects.Dom.Parser;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -116,10 +117,12 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (html_viewer == null || url.StartsWith("#"))
 				return;
-			Node node;
 
-			string res = MonoDevelop.Projects.Dom.Parser.ProjectDomService.HelpTree.RenderUrl (url, out node);
-			LoadNode (res, node, url);
+			if (ProjectDomService.HelpTree != null) {
+				Node node;
+				string res = ProjectDomService.HelpTree.RenderUrl (url, out node);
+				LoadNode (res, node, url);
+			}
 		}
 		
 		string buildTempDocDirectory (string fileText)
@@ -203,7 +206,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		void WriteImage (string path, string url)
 		{
-			using (Stream s = MonoDevelop.Projects.Dom.Parser.ProjectDomService.HelpTree.GetImage (url)) {
+			using (Stream s = ProjectDomService.HelpTree.GetImage (url)) {
 				using (FileStream fs = new FileStream (path, FileMode.Create)) {
 					byte[] buffer = new byte [8192];
 					int n = 0;

@@ -1,5 +1,11 @@
 2008-11-14  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Gui/HelpViewer.cs:
+	* MonoDevelop.Ide.Gui.Pads/MonodocTreePad.cs: Don't crash if the
+	documentation tree has not been loaded.
+
+2008-11-14  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Tasks/TaskService.cs: Avoid unneeded calls to
 	GetFullPath.
 
