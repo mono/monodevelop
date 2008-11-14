@@ -13,13 +13,13 @@ namespace MonoDevelop.Core.Gui.Dialogs {
     
     public partial class OptionsDialog {
         
-        private Gtk.HPaned hpaned1;
+        private Gtk.HBox hbox1;
         
         private Gtk.ScrolledWindow GtkScrolledWindow;
         
         private Gtk.TreeView tree;
         
-        private Gtk.VBox vbox2;
+        private Gtk.VBox vbox3;
         
         private Gtk.HBox hbox2;
         
@@ -42,36 +42,35 @@ namespace MonoDevelop.Core.Gui.Dialogs {
             this.Title = Mono.Unix.Catalog.GetString("Options");
             this.WindowPosition = ((Gtk.WindowPosition)(4));
             this.Modal = true;
-            this.DefaultWidth = 770;
-            this.DefaultHeight = 545;
             // Internal child MonoDevelop.Core.Gui.Dialogs.OptionsDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog1_VBox";
             w1.BorderWidth = ((uint)(2));
             // Container child dialog1_VBox.Gtk.Box+BoxChild
-            this.hpaned1 = new Gtk.HPaned();
-            this.hpaned1.CanFocus = true;
-            this.hpaned1.Name = "hpaned1";
-            this.hpaned1.Position = 227;
-            // Container child hpaned1.Gtk.Paned+PanedChild
+            this.hbox1 = new Gtk.HBox();
+            this.hbox1.Name = "hbox1";
+            this.hbox1.Spacing = 6;
+            this.hbox1.BorderWidth = ((uint)(12));
+            // Container child hbox1.Gtk.Box+BoxChild
             this.GtkScrolledWindow = new Gtk.ScrolledWindow();
             this.GtkScrolledWindow.Name = "GtkScrolledWindow";
+            this.GtkScrolledWindow.HscrollbarPolicy = ((Gtk.PolicyType)(2));
             this.GtkScrolledWindow.ShadowType = ((Gtk.ShadowType)(1));
             // Container child GtkScrolledWindow.Gtk.Container+ContainerChild
             this.tree = new Gtk.TreeView();
-            this.tree.WidthRequest = 195;
             this.tree.CanFocus = true;
             this.tree.Name = "tree";
             this.tree.HeadersClickable = true;
             this.GtkScrolledWindow.Add(this.tree);
-            this.hpaned1.Add(this.GtkScrolledWindow);
-            Gtk.Paned.PanedChild w3 = ((Gtk.Paned.PanedChild)(this.hpaned1[this.GtkScrolledWindow]));
-            w3.Resize = false;
-            // Container child hpaned1.Gtk.Paned+PanedChild
-            this.vbox2 = new Gtk.VBox();
-            this.vbox2.Name = "vbox2";
-            this.vbox2.Spacing = 9;
-            // Container child vbox2.Gtk.Box+BoxChild
+            this.hbox1.Add(this.GtkScrolledWindow);
+            Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.hbox1[this.GtkScrolledWindow]));
+            w3.Position = 0;
+            w3.Expand = false;
+            // Container child hbox1.Gtk.Box+BoxChild
+            this.vbox3 = new Gtk.VBox();
+            this.vbox3.Name = "vbox3";
+            this.vbox3.Spacing = 9;
+            // Container child vbox3.Gtk.Box+BoxChild
             this.hbox2 = new Gtk.HBox();
             this.hbox2.Name = "hbox2";
             this.hbox2.Spacing = 6;
@@ -93,29 +92,32 @@ namespace MonoDevelop.Core.Gui.Dialogs {
             this.hbox2.Add(this.labelTitle);
             Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.hbox2[this.labelTitle]));
             w5.Position = 1;
-            this.vbox2.Add(this.hbox2);
-            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.vbox2[this.hbox2]));
+            this.vbox3.Add(this.hbox2);
+            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.vbox3[this.hbox2]));
             w6.Position = 0;
             w6.Expand = false;
             w6.Fill = false;
-            // Container child vbox2.Gtk.Box+BoxChild
+            // Container child vbox3.Gtk.Box+BoxChild
             this.hseparator1 = new Gtk.HSeparator();
             this.hseparator1.Name = "hseparator1";
-            this.vbox2.Add(this.hseparator1);
-            Gtk.Box.BoxChild w7 = ((Gtk.Box.BoxChild)(this.vbox2[this.hseparator1]));
+            this.vbox3.Add(this.hseparator1);
+            Gtk.Box.BoxChild w7 = ((Gtk.Box.BoxChild)(this.vbox3[this.hseparator1]));
             w7.Position = 1;
             w7.Expand = false;
             w7.Fill = false;
-            // Container child vbox2.Gtk.Box+BoxChild
+            // Container child vbox3.Gtk.Box+BoxChild
             this.pageFrame = new Gtk.HBox();
             this.pageFrame.Name = "pageFrame";
             this.pageFrame.Spacing = 6;
-            this.vbox2.Add(this.pageFrame);
-            Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.vbox2[this.pageFrame]));
+            this.vbox3.Add(this.pageFrame);
+            Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.vbox3[this.pageFrame]));
             w8.Position = 2;
-            this.hpaned1.Add(this.vbox2);
-            w1.Add(this.hpaned1);
-            Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(w1[this.hpaned1]));
+            this.hbox1.Add(this.vbox3);
+            Gtk.Box.BoxChild w9 = ((Gtk.Box.BoxChild)(this.hbox1[this.vbox3]));
+            w9.Position = 1;
+            w9.Padding = ((uint)(6));
+            w1.Add(this.hbox1);
+            Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(w1[this.hbox1]));
             w10.Position = 0;
             // Internal child MonoDevelop.Core.Gui.Dialogs.OptionsDialog.ActionArea
             Gtk.HButtonBox w11 = this.ActionArea;
@@ -151,6 +153,8 @@ namespace MonoDevelop.Core.Gui.Dialogs {
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
+            this.DefaultWidth = 722;
+            this.DefaultHeight = 502;
             this.Show();
         }
     }

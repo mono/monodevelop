@@ -1,3 +1,9 @@
+2008-11-14  Mike Kestner  <mkestner@novell.com>
+
+	* gtk-gui/*.cs: regen
+	* gtk-gui/gui.stetic: go back to an hbox, reset some packing and
+	sizing vars to let gtk layout do the right thing.
+
 2008-11-13  Mike Kestner  <mkestner@novell.com>
 
 	* gtk-gui/*.cs: regen

@@ -152,8 +152,6 @@
     <property name="Title" translatable="yes">Options</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Modal">True</property>
-    <property name="DefaultWidth">770</property>
-    <property name="DefaultHeight">545</property>
     <property name="Buttons">2</property>
     <property name="HelpButton">False</property>
     <child internal-child="VBox">
@@ -161,18 +159,18 @@
         <property name="MemberName" />
         <property name="BorderWidth">2</property>
         <child>
-          <widget class="Gtk.HPaned" id="hpaned1">
+          <widget class="Gtk.HBox" id="hbox1">
             <property name="MemberName" />
-            <property name="CanFocus">True</property>
-            <property name="Position">227</property>
+            <property name="Spacing">6</property>
+            <property name="BorderWidth">12</property>
             <child>
               <widget class="Gtk.ScrolledWindow" id="GtkScrolledWindow">
                 <property name="MemberName" />
+                <property name="HscrollbarPolicy">Never</property>
                 <property name="ShadowType">In</property>
                 <child>
                   <widget class="Gtk.TreeView" id="tree">
                     <property name="MemberName" />
-                    <property name="WidthRequest">195</property>
                     <property name="CanFocus">True</property>
                     <property name="ShowScrollbars">True</property>
                     <property name="HeadersClickable">True</property>
@@ -180,11 +178,13 @@
                 </child>
               </widget>
               <packing>
-                <property name="Resize">False</property>
+                <property name="Position">0</property>
+                <property name="AutoSize">False</property>
+                <property name="Expand">False</property>
               </packing>
             </child>
             <child>
-              <widget class="Gtk.VBox" id="vbox2">
+              <widget class="Gtk.VBox" id="vbox3">
                 <property name="MemberName" />
                 <property name="Spacing">9</property>
                 <child>
@@ -251,6 +251,11 @@
                   </packing>
                 </child>
               </widget>
+              <packing>
+                <property name="Position">1</property>
+                <property name="AutoSize">False</property>
+                <property name="Padding">6</property>
+              </packing>
             </child>
           </widget>
           <packing>
