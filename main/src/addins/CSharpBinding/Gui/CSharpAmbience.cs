@@ -170,11 +170,11 @@ namespace MonoDevelop.CSharpBinding
 				result.Append (" ");
 			}
 			AppendExplicitInterfaces(result, property);
-			if (UseFullName (flags)) {
+/*			if (UseFullName (flags)) {
 				result.Append (Format (property.FullName));
-			} else {
+			} else {*/
 				result.Append (Format (property.Name));
-			}
+//			}
 			return result.ToString ();
 		}
 		
@@ -197,11 +197,8 @@ namespace MonoDevelop.CSharpBinding
 				result.Append (" ");
 			}
 			
-			if (UseFullName (flags)) {
-				result.Append (Format (field.FullName));
-			} else {
-				result.Append (Format (field.Name));
-			}
+			result.Append (Format (field.Name));
+			
 			return result.ToString ();
 		}
 		
@@ -280,11 +277,11 @@ namespace MonoDevelop.CSharpBinding
 			if (method.IsConstructor) {
 				result.Append (Format (method.DeclaringType.Name));
 			} else {
-				if (UseFullName (flags)) {
+/*				if (UseFullName (flags)) {
 					result.Append (Format (method.FullName));
-				} else {
+				} else {*/
 					result.Append (Format (method.Name));
-				}
+//				}
 			}
 			if (IncludeGenerics (flags)) {
 				if (method.GenericParameters.Count > 0) {

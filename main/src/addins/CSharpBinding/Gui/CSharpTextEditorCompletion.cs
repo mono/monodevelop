@@ -506,6 +506,22 @@ namespace MonoDevelop.CSharpBinding.Gui
 			return null;
 		}
 		
+		List<string> GetUsedNamespaces ()
+		{
+			List<string> result = new List<string> ();
+			result.Add ("");
+			if (Document.CompilationUnit != null && Document.CompilationUnit.Usings != null) {
+				foreach (IUsing u in Document.CompilationUnit.Usings) {
+					if (u.Namespaces == null)
+						continue;
+					foreach (string ns in u.Namespaces) {
+						result.Add (ns);
+					}
+				}
+			}
+			return result;
+		}
+		
 		public ICompletionDataList HandleKeywordCompletion (ICodeCompletionContext completionContext,
 		                                                    ExpressionResult result, int wordStart, string word)
 		{
@@ -528,17 +544,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				if (result.ExpressionContext == ExpressionContext.InheritableType) {
 					IType cls = NRefactoryResolver.GetTypeAtCursor (Document.CompilationUnit, Document.FileName, new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
 					CompletionDataList completionList = new ProjectDomCompletionDataList ();
-					List<string> namespaceList = new List<string> ();
-					namespaceList.Add ("");
-					if (Document.CompilationUnit != null && Document.CompilationUnit.Usings != null) {
-						foreach (IUsing u in Document.CompilationUnit.Usings) {
-							if (u.Namespaces == null)
-								continue;
-							foreach (string ns in u.Namespaces) {
-								namespaceList.Add (ns);
-							}
-						}
-					}
+					List<string> namespaceList = GetUsedNamespaces ();
 					MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col = new MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector (Editor, dom, Document.CompilationUnit, location);
 					foreach (object o in dom.GetNamespaceContents (namespaceList, true, true)) {
 						if (cls != null && o is IType && ((IType)o).Name == cls.Name) {
@@ -957,11 +963,20 @@ namespace MonoDevelop.CSharpBinding.Gui
 				type = dom.SearchType (new SearchTypeRequest (Document.CompilationUnit, returnTypeUnresolved));
 			if (type == null)
 				return result;
+			HashSet<string> usedNamespaces = new HashSet<string> (GetUsedNamespaces ());
 			
 			foreach (IType curType in dom.GetSubclasses (type)) {
 				if (context != null && context.FilterEntry (curType))
 					continue;
-				col.AddCompletionData (result, curType);
+				if (usedNamespaces.Contains (curType.Namespace)) {
+					col.AddCompletionData (result, curType);
+				} else {
+					string nsName = curType.Namespace;
+					int idx = nsName.IndexOf ('.');
+					if (idx >= 0)
+						nsName = nsName.Substring (0, idx);
+					col.AddCompletionData (result, new Namespace (nsName));
+				}
 			}
 			
 			// add aliases
@@ -1081,7 +1096,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			}
 			return result;
 		}
-
+		
 		#region case completion
 		ICompletionDataList CreateCaseCompletionData (DomLocation location, ExpressionResult expressionResult)
 		{
