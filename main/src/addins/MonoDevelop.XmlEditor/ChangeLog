@@ -1,3 +1,14 @@
+2008-11-14  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Xml.StateEngine/XDom.cs: Add a Value property to XDocType.
+
+	* MonoDevelop.Xml.StateEngine/XmlDocTypeState.cs: Copture the doctype
+	string when in tree mode.
+
+	* MonoDevelop.XmlEditor.Gui/BaseXmlEditorExtension.cs: Copture doctype
+	from the ParsedDocument if it's an XmlParsedDocument. Add utility
+	GetBufferText method.
+
 2008-11-13  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Xml.StateEngine/XDom.cs: Avoid possible NRE in

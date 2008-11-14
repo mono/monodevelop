@@ -49,15 +49,15 @@ namespace MonoDevelop.AspNet.Gui
 	public abstract class BaseHtmlEditorExtension : MonoDevelop.XmlEditor.Gui.BaseXmlEditorExtension
 	{
 		HtmlSchema schema;
-		bool lookedUpDoctype;
+		bool resolvedDocType;
 		string docType;
 		
 		protected HtmlSchema Schema {
 			get {
-				if (lookedUpDoctype)
+				if (resolvedDocType)
 					return schema;
 				
-				lookedUpDoctype = true;
+				resolvedDocType = true;
 				
 				if (string.IsNullOrEmpty (DocType)) {
 					LoggingService.LogDebug ("HTML completion found no doctype, using default");
@@ -76,14 +76,9 @@ namespace MonoDevelop.AspNet.Gui
 			}
 		}
 		
-		protected string DocType {
-			get { return docType; }
-			set {
-				if (docType == value)
-					return;
-				lookedUpDoctype = false;
-				docType = value;
-			}
+		protected override void OnDocTypeChanged ()
+		{
+			resolvedDocType = false;
 		}
 		
 		#region Setup and teardown

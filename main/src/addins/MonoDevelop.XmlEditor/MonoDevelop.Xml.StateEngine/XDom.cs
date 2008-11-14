@@ -578,8 +578,18 @@ namespace MonoDevelop.Xml.StateEngine
 		protected XDocType () {}
 		protected override XObject NewInstance () { return new XDocType (); }
 		
+		public string Value { get; set; }
+		
 		public override string FriendlyPathRepresentation {
 			get { return "<!DOCTYPE>"; }
+		}
+		
+		protected override void ShallowCopyFrom (XObject copyFrom)
+		{
+			base.ShallowCopyFrom (copyFrom);
+			XDocType copyFromDT = (XDocType) copyFrom;
+			//immutable types
+			Value = copyFromDT.Value;
 		}
 	}
 	

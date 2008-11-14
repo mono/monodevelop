@@ -49,6 +49,8 @@ namespace MonoDevelop.XmlEditor.Gui
 		DocumentStateTracker<Parser> tracker;
 		ParsedDocument lastCU;
 		
+		string docType;
+		
 		Gtk.TreeView outlineTreeView;
 		Gtk.TreeStore outlineTreeStore;
 
@@ -98,6 +100,24 @@ namespace MonoDevelop.XmlEditor.Gui
 			if (this.FileName == args.FileName && args.ParsedDocument != null) {
 				lastCU = args.ParsedDocument;
 				RefreshOutline ();
+				
+				//use the doctype to select a completion schema
+				XmlParsedDocument doc = CU as XmlParsedDocument;
+				bool found = false;
+				if (doc != null && doc.XDocument != null) {
+					foreach (XNode node in doc.XDocument.Nodes) {
+						if (node is XDocType) {
+							DocType = ((XDocType)node).Value;
+							found = true;
+							break;
+						}
+						//cannot validly have a doctype after these nodes
+						if (node is XElement || node is XCData)
+							break;
+					}
+					if (!found)
+						DocType = null;
+				}
 			}
 		}
 
@@ -129,7 +149,32 @@ namespace MonoDevelop.XmlEditor.Gui
 			get { return tracker; }
 		}
 		
+		protected string GetBufferText (DomRegion region)
+		{
+			MonoDevelop.Ide.Gui.Content.ITextBuffer buf = Buffer;
+			int start = buf.GetPositionFromLineColumn (region.Start.Line, region.Start.Column);
+			int end = buf.GetPositionFromLineColumn (region.End.Line, region.End.Column);
+			if (end > start && start >= 0)
+				return buf.GetText (start, end);
+			else
+				return null;
+		}
+		
 		#endregion
+		
+		protected string DocType {
+			get { return docType; }
+			set {
+				if (docType == value)
+					return;
+				docType = value;
+				OnDocTypeChanged ();
+			}
+		}
+		
+		protected virtual void OnDocTypeChanged ()
+		{
+		}
 
 		#region Code completion
 

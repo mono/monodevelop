@@ -49,11 +49,15 @@ namespace MonoDevelop.Xml.StateEngine
 				}
 				
 				if (context.BuildTree) {
+					doc.Value = context.KeywordBuilder.ToString ();
 					doc.End (context.Location);
 					((XContainer) context.Nodes.Peek ()).AddChildNode (doc); 
 				}
 				return Parent;
 			}
+			
+			if (context.BuildTree)
+				context.KeywordBuilder.Append (c);
 			
 			return null;
 		}

@@ -1,5 +1,10 @@
 2008-11-14  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.AspNet.Gui/BaseHtmlEditorExtension.cs: Flag schema for
+	update when doctype changes.
+
+2008-11-14  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.AspNet/WebTypeManager.cs: Use project to resolve target
 	.NET version for assemblies.
 
