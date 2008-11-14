@@ -1,3 +1,8 @@
+2008-11-14  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* MonoDevelop.VersionControl.Views/LogView.cs: Prevent commit message
+	creation when user cancels.
+
 2008-11-13  Andrés G. Aragoneses  <aaragoneses@novell.com>
 
 	* MonoDevelop.VersionControl.Views/LogView.cs: Improve

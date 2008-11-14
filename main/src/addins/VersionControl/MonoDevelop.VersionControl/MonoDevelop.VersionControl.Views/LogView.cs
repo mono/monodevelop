@@ -280,14 +280,16 @@ namespace MonoDevelop.VersionControl.Views
 		
 		void RevertToRevisionClicked (object src, EventArgs args) {
 			Revision d = GetSelectedRev ();
-			RevertRevisionsCommands.RevertToRevision (vc, filepath, d, false);
-			VersionControlService.SetCommitComment (filepath, String.Format ("(Revert to revision {0})", d.ToString ()), true);
+			if (RevertRevisionsCommands.RevertToRevision (vc, filepath, d, false))
+				VersionControlService.SetCommitComment (filepath, 
+				                                        String.Format ("(Revert to revision {0})", d.ToString ()), true);
 		}
 		
 		void RevertRevisionClicked (object src, EventArgs args) {
 			Revision d = GetSelectedRev ();
-			RevertRevisionsCommands.RevertRevision (vc, filepath, d, false);
-			VersionControlService.SetCommitComment (filepath, String.Format ("(Revert to revision {0})", d.ToString ()), true);
+			if (RevertRevisionsCommands.RevertRevision (vc, filepath, d, false))
+				VersionControlService.SetCommitComment (filepath, 
+				                                        String.Format ("(Revert to revision {0})", d.ToString ()), true);
 		}
 		
 		public override Gtk.Widget Control { 
