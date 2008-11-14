@@ -408,8 +408,11 @@ namespace MonoDevelop.SourceEditor
 			IExpressionFinder expressionFinder = parser.CreateExpressionFinder (dom);
 			if (resolver == null || expressionFinder == null) 
 				return null;
+			int wordEnd = offset;
+			while (wordEnd < txt.Length && (Char.IsLetterOrDigit (txt[wordEnd]) || txt[wordEnd] == '_'))
+				wordEnd++;
+			ExpressionResult expressionResult = expressionFinder.FindExpression (txt, wordEnd);
 			
-			ExpressionResult expressionResult = expressionFinder.FindFullExpression (txt, offset);
 			if (expressionResult == null) 
 				return null;
 			
