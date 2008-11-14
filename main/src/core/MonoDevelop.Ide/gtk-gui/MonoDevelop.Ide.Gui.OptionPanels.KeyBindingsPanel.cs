@@ -25,6 +25,8 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
         
         private Gtk.TreeView keyTreeView;
         
+        private Gtk.Label labelMessage;
+        
         private Gtk.HBox hbox;
         
         private Gtk.Label labelEditBinding;
@@ -84,6 +86,17 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.vbox[this.scrolledwindow]));
             w5.Position = 1;
             // Container child vbox.Gtk.Box+BoxChild
+            this.labelMessage = new Gtk.Label();
+            this.labelMessage.Name = "labelMessage";
+            this.labelMessage.Xalign = 0F;
+            this.labelMessage.LabelProp = "";
+            this.labelMessage.UseMarkup = true;
+            this.vbox.Add(this.labelMessage);
+            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.vbox[this.labelMessage]));
+            w6.Position = 2;
+            w6.Expand = false;
+            w6.Fill = false;
+            // Container child vbox.Gtk.Box+BoxChild
             this.hbox = new Gtk.HBox();
             this.hbox.Name = "hbox";
             this.hbox.Spacing = 6;
@@ -92,10 +105,10 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             this.labelEditBinding.Name = "labelEditBinding";
             this.labelEditBinding.LabelProp = Mono.Unix.Catalog.GetString("Edit Binding");
             this.hbox.Add(this.labelEditBinding);
-            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.hbox[this.labelEditBinding]));
-            w6.Position = 0;
-            w6.Expand = false;
-            w6.Fill = false;
+            Gtk.Box.BoxChild w7 = ((Gtk.Box.BoxChild)(this.hbox[this.labelEditBinding]));
+            w7.Position = 0;
+            w7.Expand = false;
+            w7.Fill = false;
             // Container child hbox.Gtk.Box+BoxChild
             this.accelEntry = new Gtk.Entry();
             this.accelEntry.CanFocus = true;
@@ -103,43 +116,44 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             this.accelEntry.IsEditable = true;
             this.accelEntry.InvisibleChar = '●';
             this.hbox.Add(this.accelEntry);
-            Gtk.Box.BoxChild w7 = ((Gtk.Box.BoxChild)(this.hbox[this.accelEntry]));
-            w7.Position = 1;
+            Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.hbox[this.accelEntry]));
+            w8.Position = 1;
             // Container child hbox.Gtk.Box+BoxChild
             this.updateButton = new Gtk.Button();
             this.updateButton.CanFocus = true;
             this.updateButton.Name = "updateButton";
             this.updateButton.UseUnderline = true;
             // Container child updateButton.Gtk.Container+ContainerChild
-            Gtk.Alignment w8 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
+            Gtk.Alignment w9 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
             // Container child GtkAlignment.Gtk.Container+ContainerChild
-            Gtk.HBox w9 = new Gtk.HBox();
-            w9.Spacing = 2;
+            Gtk.HBox w10 = new Gtk.HBox();
+            w10.Spacing = 2;
             // Container child GtkHBox.Gtk.Container+ContainerChild
-            Gtk.Image w10 = new Gtk.Image();
-            w10.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-apply", Gtk.IconSize.Button, 20);
+            Gtk.Image w11 = new Gtk.Image();
+            w11.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-apply", Gtk.IconSize.Button, 20);
+            w10.Add(w11);
+            // Container child GtkHBox.Gtk.Container+ContainerChild
+            Gtk.Label w13 = new Gtk.Label();
+            w13.LabelProp = Mono.Unix.Catalog.GetString("Apply");
+            w13.UseUnderline = true;
+            w10.Add(w13);
             w9.Add(w10);
-            // Container child GtkHBox.Gtk.Container+ContainerChild
-            Gtk.Label w12 = new Gtk.Label();
-            w12.LabelProp = Mono.Unix.Catalog.GetString("Apply");
-            w12.UseUnderline = true;
-            w9.Add(w12);
-            w8.Add(w9);
-            this.updateButton.Add(w8);
+            this.updateButton.Add(w9);
             this.hbox.Add(this.updateButton);
-            Gtk.Box.BoxChild w16 = ((Gtk.Box.BoxChild)(this.hbox[this.updateButton]));
-            w16.Position = 2;
-            w16.Expand = false;
-            w16.Fill = false;
-            this.vbox.Add(this.hbox);
-            Gtk.Box.BoxChild w17 = ((Gtk.Box.BoxChild)(this.vbox[this.hbox]));
+            Gtk.Box.BoxChild w17 = ((Gtk.Box.BoxChild)(this.hbox[this.updateButton]));
             w17.Position = 2;
             w17.Expand = false;
             w17.Fill = false;
+            this.vbox.Add(this.hbox);
+            Gtk.Box.BoxChild w18 = ((Gtk.Box.BoxChild)(this.vbox[this.hbox]));
+            w18.Position = 3;
+            w18.Expand = false;
+            w18.Fill = false;
             this.Add(this.vbox);
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
+            this.labelMessage.Hide();
             this.Show();
         }
     }

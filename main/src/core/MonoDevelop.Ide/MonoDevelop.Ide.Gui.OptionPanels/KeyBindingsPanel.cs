@@ -83,6 +83,9 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			
 			accelEntry.KeyPressEvent += new KeyPressEventHandler (OnAccelEntryKeyPress);
 			accelEntry.KeyReleaseEvent += new KeyReleaseEventHandler (OnAccelEntryKeyRelease);
+			accelEntry.Changed += delegate {
+				UpdateWarningLabel ();
+			};
 			updateButton.Clicked += new EventHandler (OnUpdateButtonClick);
 			
 			schemeCombo.AppendText (GettextCatalog.GetString ("Current"));
@@ -101,7 +104,8 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			
 			if (!model.GetIterFirst (out iter))
 				return;
-			
+
+			KeyBindingService.ResetCurrent ();
 			do {
 				TreeIter citer;
 				model.IterChildren (out citer, iter);
@@ -154,10 +158,15 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 					categories [cat] = icat;
 				}
 			}
+
+			List<Command> sortedCommands = new List<Command> (commands.Values);
+			sortedCommands.Sort (delegate (Command c1, Command c2) {
+				string t1 = c1.Text.Replace ("_", String.Empty);
+				string t2 = c2.Text.Replace ("_", String.Empty);
+				return t1.CompareTo (t2);
+			});
 			
-			foreach (KeyValuePair<string, Command> pair in commands) {
-				Command cmd = pair.Value;
-				
+			foreach (Command cmd in sortedCommands) {
 				string label = cmd.Text.Replace ("_", String.Empty);
 				
 				TreeIter icat = categories [cmd.Category];
@@ -290,6 +299,55 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			
 			if (sel.GetSelected (out model, out iter) && model.GetValue (iter, commandCol) != null)
 				keyStore.SetValue (iter, bindingCol, accelEntry.Text);
+		}
+
+		void UpdateWarningLabel ()
+		{
+			if (accelEntry.Text.Length == 0) {
+				labelMessage.Visible = false;
+				return;
+			}
+
+			Command cmd = null;
+			TreeIter iter;
+			if (keyTreeView.Selection.GetSelected (out iter))
+				cmd = (Command) keyTreeView.Model.GetValue (iter, commandCol);
+			
+			if (cmd == null) {
+				labelMessage.Visible = false;
+				return;
+			}
+			
+			var bindings = FindBindings (accelEntry.Text);
+			bindings.Remove (cmd);
+			
+			if (bindings.Count > 0) {
+				labelMessage.Markup = "<b>" + GettextCatalog.GetString ("This key combination is already bound to command '{0}'", bindings [0].Text.Replace ("_","")) + "</b>";
+				labelMessage.Visible = true;
+			}
+			else
+				labelMessage.Visible = false;
+		}
+
+		List<Command> FindBindings (string accel)
+		{
+			List<Command> bindings = new List<Command> ();
+			TreeModel model = (TreeModel) keyStore;
+			TreeIter iter;
+			if (!model.GetIterFirst (out iter))
+				return bindings;
+			do {
+				TreeIter citer;
+				model.IterChildren (out citer, iter);
+				do {
+					string binding = (string) model.GetValue (citer, bindingCol);
+					if (binding == accel) {
+						Command command = (Command) model.GetValue (citer, commandCol);
+						bindings.Add (command);
+					}
+				} while (model.IterNext (ref citer));
+			} while (model.IterNext (ref iter));
+			return bindings;
 		}
 		
 		public bool ValidateChanges ()

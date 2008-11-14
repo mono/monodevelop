@@ -2,7 +2,7 @@
 <stetic-interface>
   <configuration>
     <images-root-path>..</images-root-path>
-    <target-gtk-version>2.8.3</target-gtk-version>
+    <target-gtk-version>2.8</target-gtk-version>
   </configuration>
   <import>
     <widget-library name="../../../../build/bin/MonoDevelop.Dock.dll" />
@@ -1709,7 +1709,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel" design-size="322 296">
+  <widget class="Gtk.Bin" id="MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel" design-size="447 296">
     <property name="MemberName" />
     <child>
       <widget class="Gtk.VBox" id="vbox">
@@ -1772,6 +1772,21 @@
           </packing>
         </child>
         <child>
+          <widget class="Gtk.Label" id="labelMessage">
+            <property name="MemberName" />
+            <property name="Visible">False</property>
+            <property name="Xalign">0</property>
+            <property name="LabelProp" translatable="yes" />
+            <property name="UseMarkup">True</property>
+          </widget>
+          <packing>
+            <property name="Position">2</property>
+            <property name="AutoSize">True</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
+        <child>
           <widget class="Gtk.HBox" id="hbox">
             <property name="MemberName" />
             <property name="Spacing">6</property>
@@ -1817,7 +1832,7 @@
             </child>
           </widget>
           <packing>
-            <property name="Position">2</property>
+            <property name="Position">3</property>
             <property name="AutoSize">True</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>

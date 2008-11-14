@@ -1,5 +1,25 @@
 2008-11-14  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel.cs: Sort the
+	commands in the list. When entering a shortcut, show a warning if it
+	is already bound to another command. 
+
+	* options/KeyBindingSchemeEmacs.xml:
+	* options/KeyBindingSchemeVisualStudio.xml:
+	* options/KeyBindingSchemeMonoDevelop1.xml: Cleaned up the schemes.
+	Leave only the bindings which differ from the default.
+
+	* Makefile.am:
+	* MonoDevelop.Ide.mdp:
+	* options/KeyBindingSchemeDefault.xml: Removed default scheme. It is now
+	automatically generated.
+
+	* MonoDevelop.Ide.addin.xml: Remove duplicate shortcut.
+
+2008-11-14  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui/HelpViewer.cs:
 	* MonoDevelop.Ide.Gui.Pads/MonodocTreePad.cs: Don't crash if the
 	documentation tree has not been loaded.
