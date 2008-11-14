@@ -237,8 +237,7 @@ namespace MonoDevelop.AspNet.Gui
 		
 		static void AddAspTags (CompletionDataList list, Document doc, S.XName parentName)
 		{
-			foreach (MonoDevelop.Projects.Dom.IType cls in doc.ReferenceManager.ListControlClasses ())
-				list.Add ("asp:" + cls.Name, Gtk.Stock.GoForward, cls.Documentation);
+			list.AddRange (doc.ReferenceManager.GetControlCompletionData ());
 		}
 		
 		static void AddAspAttributeCompletionData (CompletionDataList list,

@@ -33,6 +33,7 @@ using System;
 using System.Collections.Generic;
 using System.Xml;
 using System.IO;
+using System.Linq;
 using System.Configuration;
 using System.Web.Configuration;
 
@@ -263,7 +264,6 @@ namespace MonoDevelop.AspNet
 					"System.Web", GetProjectClrVersion (project)));
 		}
 		
-		
 		public static IEnumerable<IType> ListSystemControlClasses (AspNetAppProject project)
 		{
 			return ListControlClasses (
@@ -273,6 +273,15 @@ namespace MonoDevelop.AspNet
 				"System.Web.UI.WebControls");
 		}
 		
+		public static IEnumerable<IType> ListControlClasses (AspNetAppProject project, string assem, string namespac)
+		{
+			return ListControlClasses (
+				MonoDevelop.Core.Runtime.SystemAssemblyService.GetAssemblyNameForVersion (
+					assem,
+					GetProjectClrVersion (project)),
+				namespac);
+		}
+		
 		public static IEnumerable<IType> ListControlClasses (string assem, string namespac)
 		{
 			
@@ -280,14 +289,12 @@ namespace MonoDevelop.AspNet
 			if (database == null)
 				yield break;
 			
-			DomReturnType swc = new DomReturnType ("System.Web.UI.Control");
+			DomType swc = new DomType ("System.Web.UI.Control");
 			
 			//return classes if they derive from system.web.ui.control
-			foreach (IMember mem in database.GetNamespaceContents (namespac, true, true)) {
-				IType cls = mem as IType;
-				if (cls != null && !cls.IsAbstract && cls.IsPublic && cls.IsBaseType (swc))
-					yield return cls;
-			}
+			foreach (IType type in database.GetSubclasses (swc, false, new string [] {namespac}))
+				if (!type.IsAbstract && type.IsPublic)
+					yield return type;
 		}
 		
 		#endregion
@@ -397,5 +404,26 @@ namespace MonoDevelop.AspNet
 		}
 		
 		#endregion
+		
+		static void AddDefaultImportedNamespaces (System.Collections.Generic.Dictionary<string, object> list)
+		{
+			//see http://msdn.microsoft.com/en-us/library/eb44kack.aspx
+			object flag = new object ();
+			list ["System"] = flag;
+			list ["System.Collections"] = flag;
+			list ["System.Collections.Specialized"] = flag;
+			list ["System.Configuration"] = flag;
+			list ["System.Text"] = flag;
+			list ["System.Text.RegularExpressions"] = flag;
+			list ["System.Web"] = flag;
+			list ["System.Web.Caching"] = flag;
+			list ["System.Web.Profile"] = flag;
+			list ["System.Web.Security"] = flag;
+			list ["System.Web.SessionState"] = flag;
+			list ["System.Web.UI"] = flag;
+			list ["System.Web.UI.HtmlControls"] = flag;
+			list ["System.Web.UI.WebControls"] = flag;
+			list ["System.Web.UI.WebControls.WebParts "] = flag;
+		}
 	}
 }

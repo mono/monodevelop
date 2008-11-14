@@ -36,6 +36,7 @@ using System.Globalization;
 using MonoDevelop.AspNet.Parser.Dom;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Gui.Completion;
 using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.AspNet.Parser
@@ -100,12 +101,31 @@ namespace MonoDevelop.AspNet.Parser
 			return globalLookup;
 		}
 		
-		public IEnumerable<IType> ListControlClasses ()
+		public IEnumerable<CompletionData> GetControlCompletionData ()
 		{
 			foreach (IType cls in WebTypeManager.ListSystemControlClasses (doc.Project))
-				yield return cls;
+				yield return new CompletionData ("asp:" + cls.Name, Gtk.Stock.GoForward, cls.Documentation);
 			
-			//FIXME: return other refernced controls
+			foreach (RegisterDirective rd in pageRefsList) {
+				if (!rd.IsValid ())
+					continue;
+				
+				AssemblyRegisterDirective ard = rd as AssemblyRegisterDirective;
+				if (ard != null) {
+					string prefix = ard.TagPrefix + ":";
+					foreach (IType cls in WebTypeManager.ListControlClasses (doc.Project, ard.Assembly, ard.Namespace))
+						yield return new CompletionData (prefix + cls.Name, Gtk.Stock.GoForward, cls.Documentation);
+					continue;
+				}
+				
+				ControlRegisterDirective cd = rd as ControlRegisterDirective;
+				if (cd != null) {
+					yield return new CompletionData (string.Concat (cd.TagPrefix, ":", cd.TagName),
+					                                 Gtk.Stock.GoForward);
+				}
+			}
+			
+			//FIXME: return controls from web.config
 		}
 		
 		public IType GetControlType (string tagPrefix, string tagName)
@@ -295,6 +315,18 @@ namespace MonoDevelop.AspNet.Parser
 				get { return (string) node.Attributes ["TagPrefix"]; }
 				set { node.Attributes ["TagPrefix"] = value; }
 			}
+			
+			public virtual bool IsValid ()
+			{
+				if (string.IsNullOrEmpty (TagPrefix))
+					return false;
+				
+				foreach (char c in TagPrefix)
+					if (!Char.IsLetterOrDigit (c))
+						return false;
+				
+				return true;
+			}
 		}
 		
 		protected class AssemblyRegisterDirective : RegisterDirective
@@ -318,6 +350,13 @@ namespace MonoDevelop.AspNet.Parser
 			{	
 				return String.Format ("<%@ Register {0}=\"{1}\" {2}=\"{3}\" {4}=\"{5}\" %>", "TagPrefix", TagPrefix, "Namespace", Namespace, "Assembly", Assembly);
 			}
+			
+			public override bool IsValid ()
+			{
+				if (string.IsNullOrEmpty (Assembly) || string.IsNullOrEmpty (Namespace) || !base.IsValid ())
+					return false;
+				return true;
+			}
 		}
 		
 		protected class ControlRegisterDirective : RegisterDirective
@@ -340,6 +379,13 @@ namespace MonoDevelop.AspNet.Parser
 			public override string ToString ()
 			{	
 				return String.Format ("<%@ Register {0}=\"{1}\" {2}=\"{3}\" {4}=\"{5}\" %>", "TagPrefix", TagPrefix, "TagName", TagName, "Src", Src);
+			}
+			
+			public override bool IsValid ()
+			{
+				if (string.IsNullOrEmpty (TagName) || string.IsNullOrEmpty (Src) || !base.IsValid ())
+					return false;
+				return true;
 			}
 		}
 		
