@@ -33,6 +33,7 @@ using System.Collections.Generic;
 using MonoDevelop.Xml.StateEngine;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.AspNet.StateEngine;
 
 namespace MonoDevelop.Html
 {
@@ -58,7 +59,10 @@ namespace MonoDevelop.Html
 			
 			TextReader tr = new StringReader (fileContent);
 			try {
-				Parser xmlParser = new Parser (new XmlFreeState (), true);
+				Parser xmlParser = new Parser (
+					new XmlFreeState (new HtmlTagState (true), new HtmlClosingTagState (true)),
+					true);
+				
 				xmlParser.Parse (tr);
 				doc.XDocument = xmlParser.Nodes.GetRoot ();
 				doc.Add (xmlParser.Errors);

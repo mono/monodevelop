@@ -39,6 +39,7 @@ using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.AspNet;
 using MonoDevelop.AspNet.Parser;
 using MonoDevelop.AspNet.Parser.Dom;
+using MonoDevelop.AspNet.StateEngine;
 using MonoDevelop.Html;
 using MonoDevelop.DesignerSupport;
 using MonoDevelop.Xml.StateEngine; 
@@ -85,7 +86,7 @@ namespace MonoDevelop.AspNet.Gui
 		
 		protected override RootState CreateRootState ()
 		{
-			return new XmlFreeState ();
+			return new XmlFreeState (new HtmlTagState (true), new HtmlClosingTagState (true));
 		}
 		
 		public override void Initialize ()

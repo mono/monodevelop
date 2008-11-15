@@ -93,6 +93,8 @@ FILES =  \
 	MonoDevelop.AspNet.StateEngine/AspNetFreeState.cs \
 	MonoDevelop.AspNet.StateEngine/AspNetServerCommentState.cs \
 	MonoDevelop.AspNet.StateEngine/AspNetSpeculativeExpressionState.cs \
+	MonoDevelop.AspNet.StateEngine/HtmlClosingTagState.cs \
+	MonoDevelop.AspNet.StateEngine/HtmlTagState.cs \
 	MonoDevelop.AspNet/AspNetAppProject.cs \
 	MonoDevelop.AspNet/AspNetAppProjectBinding.cs \
 	MonoDevelop.AspNet/AspNetAppProjectConfiguration.cs \
@@ -110,6 +112,7 @@ FILES =  \
 	MonoDevelop.AspNet/XspParameters.cs \
 	MonoDevelop.Html/DocTypeCompletionData.cs \
 	MonoDevelop.Html/DocTypeExtensionNode.cs \
+	MonoDevelop.Html/ElementTypes.cs \
 	MonoDevelop.Html/HtmlCompletionDataProvider.cs \
 	MonoDevelop.Html/HtmlParser.cs \
 	MonoDevelop.Html/HtmlSchema.cs \

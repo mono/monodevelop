@@ -42,7 +42,7 @@ namespace MonoDevelop.AspNet.StateEngine
 		AspNetServerCommentState serverCommentState;
 		
 		public AspNetFreeState () : this (
-			new XmlTagState (
+			new HtmlTagState (true,
 				new XmlAttributeState (
 					new XmlNameState (),
 					new XmlDoubleQuotedAttributeValueState (
@@ -54,7 +54,7 @@ namespace MonoDevelop.AspNet.StateEngine
 					new AspNetSpeculativeExpressionState ()),
 				new XmlNameState (),
 				new AspNetSpeculativeExpressionState ()),
-			new XmlClosingTagState (),
+			new HtmlClosingTagState (true),
 			new XmlCommentState (),
 			new XmlCDataState (),
 			new XmlDocTypeState (),
@@ -65,8 +65,8 @@ namespace MonoDevelop.AspNet.StateEngine
 		) { }
 		
 		public AspNetFreeState (
-			XmlTagState tagState,
-			XmlClosingTagState closingTagState,
+			HtmlTagState tagState,
+			HtmlClosingTagState closingTagState,
 			XmlCommentState commentState,
 			XmlCDataState cDataState,
 			XmlDocTypeState docTypeState,

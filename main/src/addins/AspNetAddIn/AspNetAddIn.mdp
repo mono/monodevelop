@@ -132,6 +132,9 @@
     <File name="MonoDevelop.AspNet.Gui/BaseHtmlEditorExtension.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.AspNet.Gui/HtmlEditorExtension.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Html/HtmlParser.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Html/ElementTypes.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.AspNet.StateEngine/HtmlTagState.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.AspNet.StateEngine/HtmlClosingTagState.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Components" />

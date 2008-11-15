@@ -1,5 +1,22 @@
 2008-11-14  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.AspNet.StateEngine/HtmlTagState.cs:
+	* MonoDevelop.AspNet.StateEngine/HtmlClosingTagState.cs: Implement new
+	parser states that handle implicit tag closing for HTML.
+
+	* Makefile.am:
+	* AspNetAddIn.mdp: Updated.
+
+	* MonoDevelop.Html/HtmlParser.cs:
+	* MonoDevelop.AspNet.Gui/BaseHtmlEditorExtension.cs:
+	* MonoDevelop.AspNet.StateEngine/AspNetFreeState.cs: Use the new HTML
+	parsing states.
+
+	* MonoDevelop.Html/ElementTypes.cs: Lookups to determine if an HTML tags
+	is block/inline/empty/paragraph.
+
+2008-11-14  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.AspNet.Gui/BaseHtmlEditorExtension.cs: Flag schema for
 	update when doctype changes.
 
