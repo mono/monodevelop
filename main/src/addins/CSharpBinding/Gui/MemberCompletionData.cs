@@ -143,35 +143,7 @@ namespace MonoDevelop.CSharpBinding
 			}
 			description = docMarkup;
 		}
-	
-		public static string FormatText (string text)
-		{
-			StringBuilder result = new StringBuilder ();
-			bool wasWhitespace = false;
-			foreach (char ch in text) {
-				switch (ch) {
-					case '\n':
-					case '\r':
-						break;
-					case '<':
-						result.Append ("&lt;");
-						break;
-					case '>':
-						result.Append ("&gt;");
-						break;
-					case '&':
-						result.Append ("&amp;");
-						break;
-					default:
-						if (wasWhitespace && Char.IsWhiteSpace (ch))
-							break;
-						wasWhitespace = Char.IsWhiteSpace (ch);
-						result.Append (ch);
-						break;
-				}
-			}
-			return result.ToString ();
-		}
+		
 		static string GetCref (string cref)
 		{
 			if (cref == null)

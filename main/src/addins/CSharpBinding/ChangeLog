@@ -1,3 +1,7 @@
+2008-11-14  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Gui/MemberCompletionData.cs: Remove unused code.
+
 2008-11-14  Mike Krüger  <mkrueger@novell.com>
 
 	* Gui/ResolveVisitor.cs: fixed 'Bug 444110 - Code completion doesn't
