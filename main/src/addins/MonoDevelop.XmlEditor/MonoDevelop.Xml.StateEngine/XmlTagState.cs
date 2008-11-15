@@ -59,8 +59,6 @@ namespace MonoDevelop.Xml.StateEngine
 			Adopt (this.MalformedTagState);
 		}
 		
-		const int SELFCLOSING = 1;
-		
 		public override State PushChar (char c, IParseContext context, ref string rollback)
 		{
 			XElement element = context.Nodes.Peek () as XElement;

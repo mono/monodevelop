@@ -273,19 +273,39 @@ namespace MonoDevelop.Xml.StateEngine
 		
 		void IParseContext.LogError (string message)
 		{
-			InternalLogError (message, ErrorType.Error);
+			InternalLogError (message, ErrorType.Error, Location);
 		}
 		
 		void IParseContext.LogWarning (string message)
 		{
-			InternalLogError (message, ErrorType.Warning);
+			InternalLogError (message, ErrorType.Warning, Location);
 		}
 		
-		void InternalLogError (string message, ErrorType type)
+		void IParseContext.LogError (string message, DomLocation location)
+		{
+			InternalLogError (message, ErrorType.Error, location);
+		}
+		
+		void IParseContext.LogWarning (string message, DomLocation location)
+		{
+			InternalLogError (message, ErrorType.Warning, location);
+		}
+		
+		void IParseContext.LogError (string message, DomRegion region)
+		{
+			InternalLogError (message, ErrorType.Error, region.Start);
+		}
+		
+		void IParseContext.LogWarning (string message, DomRegion region)
+		{
+			InternalLogError (message, ErrorType.Warning, region.Start);
+		}
+		
+		void InternalLogError (string message, ErrorType type, DomLocation location)
 		{
 			if (ErrorLogged == null && errors == null)
 				return;
-			Error err = new Error (type, Location.Line, Location.Column, message);
+			Error err = new Error (type, location.Line, location.Column, message);
 			if (errors != null)
 				errors.Add (err);
 			if (ErrorLogged != null)
@@ -342,6 +362,10 @@ namespace MonoDevelop.Xml.StateEngine
 		bool BuildTree { get; }
 		void LogError (string message);
 		void LogWarning (string message);
+		void LogError (string message, DomLocation location);
+		void LogWarning (string message, DomLocation location);
+		void LogError (string message, DomRegion region);
+		void LogWarning (string message, DomRegion region);
 		void EndAll (bool pop);
 		void ConnectAll ();
 	}

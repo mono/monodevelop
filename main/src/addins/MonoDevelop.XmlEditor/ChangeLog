@@ -1,5 +1,12 @@
 2008-11-14  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Xml.StateEngine/Parser.cs: Add overloads for logging with
+	more accurate locations.
+
+	* MonoDevelop.Xml.StateEngine/XmlTagState.cs: Remove unused code.
+
+2008-11-14  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Xml.StateEngine/XDom.cs: Add a Value property to XDocType.
 
 	* MonoDevelop.Xml.StateEngine/XmlDocTypeState.cs: Copture the doctype
