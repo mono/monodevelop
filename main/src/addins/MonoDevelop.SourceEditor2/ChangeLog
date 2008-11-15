@@ -1,3 +1,10 @@
+2008-11-14  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Don't add
+	TriggerWordLength to the partial_word's length; the latter is all we
+	need. Fixes Bug 445388 - Ctrl-space in middle of word sometimes
+	overwrites too far.
+
 2008-11-14  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: fixed 'Bug 444922 -
