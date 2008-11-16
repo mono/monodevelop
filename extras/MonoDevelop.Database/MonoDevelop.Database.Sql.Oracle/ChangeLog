@@ -1,3 +1,8 @@
+2008-11-15  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* MonoDevelop.Database.Sql.Oracle.mdp: Update project file (deleting
+	entries for non-existant files).
+
 2008-11-05  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Database.Sql.Oracle.addin.xml: Bump MD version.
