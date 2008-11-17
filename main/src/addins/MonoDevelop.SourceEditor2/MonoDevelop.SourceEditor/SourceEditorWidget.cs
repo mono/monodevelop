@@ -36,7 +36,6 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
-using MonoDevelop.Ide.Gui.Search;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
 using Document = Mono.TextEditor.Document;
