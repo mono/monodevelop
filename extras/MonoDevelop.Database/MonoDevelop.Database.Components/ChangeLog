@@ -1,3 +1,8 @@
+2008-11-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Widgets/ConnectionSettingsWidget.cs: Fix for bug #360297 - Cannot
+	create new database connection.
+
 2008-11-06  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am: Fix build dependencies.
