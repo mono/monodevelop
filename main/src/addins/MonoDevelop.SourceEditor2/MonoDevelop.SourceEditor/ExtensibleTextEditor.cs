@@ -360,9 +360,11 @@ namespace MonoDevelop.SourceEditor
 			DocumentLocation location = Document.OffsetToLocation (offset);
 			if (errors.TryGetValue (location.Line, out error)) {
 				if (error.Info.ErrorType == ErrorType.Warning)
-					return GettextCatalog.GetString ("<b>Parser Warning</b>: {0}", error.Info.Message);
+					return GettextCatalog.GetString ("<b>Parser Warning</b>: {0}",
+					                                 GLib.Markup.EscapeText (error.Info.Message));
 				else
-					return GettextCatalog.GetString ("<b>Parser Error</b>: {0}", error.Info.Message);
+					return GettextCatalog.GetString ("<b>Parser Error</b>: {0}",
+					                                 GLib.Markup.EscapeText (error.Info.Message));
 			}
 			else
 				return null;

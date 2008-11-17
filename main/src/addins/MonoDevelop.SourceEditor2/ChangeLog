@@ -1,5 +1,13 @@
 2008-11-17  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Use named colours in
+	error/warning markers.
+
+	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: Escape markup in
+	error message tooltips.
+
+2008-11-17  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs:
 	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: Rename Error to
 	ErrorMarker to reduce ambiguity. Track Error API. Use different

@@ -178,21 +178,18 @@ namespace Mono.TextEditor
 	
 	public class UnderlineMarker: TextMarker
 	{
-		Gdk.Color   color = new Color (255, 0, 0);
-
-		public Color Color {
-			get {
-				return color;
-			}
-			set {
-				color = value;
-			}
+		public UnderlineMarker (string colorName)
+		{
+			this.ColorName = colorName;
 		}
+		
+		public string ColorName { get; set; }
 		
 		public override void Draw (TextEditor editor, Gdk.Drawable win, bool selected, int startOffset, int endOffset, int y, int startXPos, int endXPos)
 		{
+			//editor.ColorStyle.ErrorUnderline
 			using (Gdk.GC gc = new Gdk.GC (win)) {
-				gc.RgbFgColor = color;
+				gc.RgbFgColor = editor.ColorStyle.GetColorFromDefinition (ColorName);
 				int drawY    = y + editor.LineHeight - 1;
 				const int length = 6;
 				const int height = 2;
@@ -211,7 +208,7 @@ namespace Mono.TextEditor
 		public enum StyleFlag {
 			None = 0,
 			Color = 1,
-			BackroundColor = 2,
+			BackgroundColor = 2,
 			Bold = 4,
 			Italic = 8
 		}
@@ -267,7 +264,7 @@ namespace Mono.TextEditor
 			}
 			set {
 				backColor = value;
-				includedStyles |= StyleFlag.BackroundColor;
+				includedStyles |= StyleFlag.BackgroundColor;
 			}
 		}
 		
@@ -279,7 +276,7 @@ namespace Mono.TextEditor
 			ChunkStyle style = new ChunkStyle (baseStyle);
 			if ((includedStyles & StyleFlag.Color) != 0)
 				style.Color = Color;
-			if ((includedStyles & StyleFlag.BackroundColor) != 0)
+			if ((includedStyles & StyleFlag.BackgroundColor) != 0)
 				style.BackgroundColor = BackgroundColor;
 			if ((includedStyles & StyleFlag.Bold) != 0)
 				style.Bold = bold;

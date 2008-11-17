@@ -1,3 +1,11 @@
+2008-11-17  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextEditor/TextMarker.cs: Make underline marker use named
+	colours. Fix some spelling.
+
+	* Mono.TextEditor.Highlighting/Style.cs: Define colour names for error
+	and warning underlines.
+
 2008-11-11  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* Mono.TextEditor.Vi/ViMode.cs: Implement y.

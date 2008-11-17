@@ -882,14 +882,17 @@ namespace MonoDevelop.SourceEditor
 		public Error Info { get; private set; }
 		public LineSegment Line { get; private set; }
 		
-		UnderlineMarker marker = new UnderlineMarker ();
+		UnderlineMarker marker;
 		
 		public ErrorMarker (MonoDevelop.Projects.Dom.Error info, LineSegment line)
 		{
 			this.Info = info;
 			this.Line = line; // may be null if no line is assigned to the error.
 			if (info.ErrorType == ErrorType.Warning)
-				marker.Color = new Gdk.Color (0, 0, 255);
+				marker = new UnderlineMarker (Mono.TextEditor.Highlighting.Style.WarningUnderlineString);
+			else
+				
+				marker = new UnderlineMarker (Mono.TextEditor.Highlighting.Style.ErrorUnderlineString);
 		}
 		
 		public void AddToLine (Mono.TextEditor.Document doc)

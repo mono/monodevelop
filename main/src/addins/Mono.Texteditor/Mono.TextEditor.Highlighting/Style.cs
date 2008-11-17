@@ -310,6 +310,20 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 		
+		public const string ErrorUnderlineString = "errorUnderline";
+		public Color ErrorUnderline {
+			get {
+				return GetColorFromDefinition (ErrorUnderlineString);
+			}
+		}
+		
+		public const string WarningUnderlineString = "warningUnderline";
+		public Color WarningUnderline {
+			get {
+				return GetColorFromDefinition (WarningUnderlineString);
+			}
+		}
+		
 		public string Name {
 			get {
 				return name;
@@ -378,6 +392,9 @@ namespace Mono.TextEditor.Highlighting
 			
 			colors[BookmarkColor1String] = new ColorDefinition (new Gdk.Color (255, 255, 255));
 			colors[BookmarkColor2String] = new ColorDefinition (new Gdk.Color (105, 156, 235));
+			
+			colors[ErrorUnderlineString] = new ColorDefinition (new Gdk.Color (255, 0, 0));
+			colors[WarningUnderlineString] = new ColorDefinition (new Gdk.Color (30, 30, 255));
 			
 			SetStyle ("default", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0, 0), false, false));
 			SetStyle ("comment", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0, 255), false, false));
