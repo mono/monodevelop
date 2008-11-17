@@ -1,3 +1,8 @@
+2008-11-17  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/NRefactoryResolver.cs: fixed 'Bug 444538 - Namespaces missing when
+	completing 'new' operator'.
+
 2008-11-14  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Gui/MemberCompletionData.cs: Remove unused code.
