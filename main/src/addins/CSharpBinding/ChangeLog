@@ -1,3 +1,8 @@
+2008-11-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* CSharpBindingCompilerManager.cs: Don't add the codepage:utf8 option if
+	the user selected another codepage. Fix by Ernesto Carrea.
+
 2008-11-17  Mike Krüger  <mkrueger@novell.com>
 
 	* Gui/CSharpTextEditorCompletion.cs: fixed 'Bug 444542 - Weird options

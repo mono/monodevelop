@@ -95,7 +95,6 @@ namespace CSharpBinding
 			
 			writer.WriteLine("/noconfig");
 			writer.WriteLine("/nologo");
-			writer.WriteLine("/codepage:utf8");
 //			writer.WriteLine("/utf8output");
 			writer.WriteLine("/warn:" + compilerparameters.WarningLevel);
 				
@@ -143,9 +142,10 @@ namespace CSharpBinding
 					writer.WriteLine("\"/win32icon:" + compilerparameters.Win32Icon + "\"");
 			}
 			
-			if (compilerparameters.CodePage != 0) {
+			if (compilerparameters.CodePage != 0)
 				writer.WriteLine ("/codepage:" + compilerparameters.CodePage);
-			}
+			else
+				writer.WriteLine("/codepage:utf8");
 			
 			if (compilerparameters.UnsafeCode) {
 				writer.WriteLine("-unsafe");
