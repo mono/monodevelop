@@ -38,42 +38,31 @@ namespace MonoDevelop.Projects.Dom
 		
 	public class Error
 	{
-		int line, column;
-		string message;
+		public DomRegion Region { get; private set; }
+
+		public string Message { get; private set; }
+
+		public ErrorType ErrorType { get; set; }
 		
-		public int Line {
-			get {
-				return line;
-			}
-		}
-
-		public int Column {
-			get {
-				return column;
-			}
-		}
-
-		public string Message {
-			get {
-				return message;
-			}
-		}
-
-		public ErrorType ErrorType {
-			get;
-			set;
-		}
-		
-		public Error (int line, int column, string message) : this(ErrorType.Error, line, column, message)
+		public Error (int line, int column, string message) : this (ErrorType.Error, line, column, message)
 		{
 		}
 		
 		public Error (ErrorType errorType, int line, int column, string message)
+			: this (errorType, new DomLocation (line, column), message)
+		{
+		}
+		
+		public Error (ErrorType errorType, DomLocation location , string message)
+			: this (ErrorType.Error, new DomRegion (location, DomLocation.Empty), message)
+		{
+		}
+		
+		public Error (ErrorType errorType, DomRegion region, string message)
 		{
 			this.ErrorType = errorType;
-			this.line = line;
-			this.column = column;
-			this.message = message;
+			this.Region = region;
+			this.Message = message;
 		}
 	}
 }

@@ -1,3 +1,8 @@
+2008-11-17  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Xml.StateEngine/Parser.cs: Log an error region instead of
+	a line/col location when possible.
+
 2008-11-14  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Xml.StateEngine/Parser.cs: Add overloads for logging with

@@ -219,7 +219,7 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 		#region Error underlining
-		Dictionary<int, Error> errors = new Dictionary<int, Error> ();
+		Dictionary<int, ErrorMarker> errors = new Dictionary<int, ErrorMarker> ();
 		uint resetTimerId;
 		bool resetTimerStarted = false;
 		
@@ -374,8 +374,8 @@ namespace MonoDevelop.SourceEditor
 		void ResetUnderlineChangement ()
 		{
 			if (errors.Count > 0) {
-				foreach (Error error in this.errors.Values) {
-					error.RemoveFromLine ();
+				foreach (ErrorMarker error in this.errors.Values) {
+					error.RemoveFromLine (this.TextEditor.Document);
 				}
 				errors.Clear ();
 			}
@@ -391,7 +391,7 @@ namespace MonoDevelop.SourceEditor
 				UnderLineError (info);
 		}
 		
-		void UnderLineError (MonoDevelop.Projects.Dom.Error info)
+		void UnderLineError (Error info)
 		{
 			if (this.isDisposed)
 				return;
@@ -399,13 +399,13 @@ namespace MonoDevelop.SourceEditor
 //			info.Line -= 1;
 			
 			// If the line is already underlined
-			if (errors.ContainsKey (info.Line - 1))
+			if (errors.ContainsKey (info.Region.Start.Line - 1))
 				return;
 			
-			LineSegment line = this.TextEditor.Document.GetLine (info.Line - 1);
-			Error error = new Error (this.TextEditor.Document, info, line); 
-			errors [info.Line - 1] = error;
-			error.AddToLine ();
+			LineSegment line = this.TextEditor.Document.GetLine (info.Region.Start.Line - 1);
+			ErrorMarker error = new ErrorMarker (info, line);
+			errors [info.Region.Start.Line - 1] = error;
+			error.AddToLine (this.TextEditor.Document);
 		}
 		#endregion
 		
@@ -877,31 +877,32 @@ namespace MonoDevelop.SourceEditor
 		#endregion
 	}
 
-	class Error
+	class ErrorMarker
 	{
-		public MonoDevelop.Projects.Dom.Error info;
-		public LineSegment line;
-		public Mono.TextEditor.Document doc;
-		TextMarker marker = new UnderlineMarker ();
+		public Error Info { get; private set; }
+		public LineSegment Line { get; private set; }
 		
-		public Error (Mono.TextEditor.Document doc, MonoDevelop.Projects.Dom.Error info, LineSegment line)
+		UnderlineMarker marker = new UnderlineMarker ();
+		
+		public ErrorMarker (MonoDevelop.Projects.Dom.Error info, LineSegment line)
 		{
-			this.info = info;
-			this.line = line; // may be null if no line is assigned to the error.
-			this.doc  = doc;
+			this.Info = info;
+			this.Line = line; // may be null if no line is assigned to the error.
+			if (info.ErrorType == ErrorType.Warning)
+				marker.Color = new Gdk.Color (0, 0, 255);
 		}
 		
-		public void AddToLine ()
+		public void AddToLine (Mono.TextEditor.Document doc)
 		{
-			if (line != null) {
-				doc.AddMarker (line, marker);
+			if (Line != null) {
+				doc.AddMarker (Line, marker);
 			}
 		}
 		
-		public void RemoveFromLine ()
+		public void RemoveFromLine (Mono.TextEditor.Document doc)
 		{
-			if (line != null) {
-				doc.RemoveMarker (line, marker);
+			if (Line != null) {
+				doc.RemoveMarker (Line, marker);
 			}
 		}
 	}

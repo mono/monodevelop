@@ -49,7 +49,7 @@ namespace MonoDevelop.SourceEditor
 	{
 		ITextEditorExtension extension = null;
 		SourceEditorView view;
-		Dictionary<int, Error> errors;
+		Dictionary<int, ErrorMarker> errors;
 		
 		Gdk.Point menuPopupLocation;
 		
@@ -76,13 +76,9 @@ namespace MonoDevelop.SourceEditor
 			get { return view; }
 		}
 
-		internal Dictionary<int, Error> Errors {
-			get {
-				return errors;
-			}
-			set {
-				errors = value;
-			}
+		internal Dictionary<int, ErrorMarker> Errors {
+			get { return errors; }
+			set { errors = value; }
 		}
 		void Initialize (SourceEditorView view)
 		{
@@ -360,10 +356,14 @@ namespace MonoDevelop.SourceEditor
 		
 		internal string GetErrorInformationAt (int offset)
 		{
-			Error error;
+			ErrorMarker error;
 			DocumentLocation location = Document.OffsetToLocation (offset);
-			if (errors.TryGetValue (location.Line, out error))
-				return "<b>" + GettextCatalog.GetString ("Parser Error:") + " </b> " + error.info.Message;
+			if (errors.TryGetValue (location.Line, out error)) {
+				if (error.Info.ErrorType == ErrorType.Warning)
+					return GettextCatalog.GetString ("<b>Parser Warning</b>: {0}", error.Info.Message);
+				else
+					return GettextCatalog.GetString ("<b>Parser Error</b>: {0}", error.Info.Message);
+			}
 			else
 				return null;
 		}

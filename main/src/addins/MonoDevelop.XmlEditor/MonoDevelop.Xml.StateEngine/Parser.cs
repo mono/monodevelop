@@ -236,7 +236,8 @@ namespace MonoDevelop.Xml.StateEngine
 				builder.AppendLine ("Errors=");
 				foreach (Error err in errors) {
 					builder.Append (' ', 4);
-					builder.AppendFormat ("[{0}@{1}:{2}, {3}]\n", err.ErrorType, err.Line, err.Column, err.Message);
+					builder.AppendFormat ("[{0}@{1}:{2}, {3}]\n", err.ErrorType, err.Region.Start.Line,
+					                      err.Region.Start.Column, err.Message);
 				}
 			}
 			
@@ -273,39 +274,42 @@ namespace MonoDevelop.Xml.StateEngine
 		
 		void IParseContext.LogError (string message)
 		{
-			InternalLogError (message, ErrorType.Error, Location);
+			if (errors != null || ErrorLogged != null)
+				InternalLogError (new Error (ErrorType.Error, Location, message));
 		}
 		
 		void IParseContext.LogWarning (string message)
 		{
-			InternalLogError (message, ErrorType.Warning, Location);
+			if (errors != null || ErrorLogged != null)
+				InternalLogError (new Error (ErrorType.Warning, Location, message));
 		}
 		
 		void IParseContext.LogError (string message, DomLocation location)
 		{
-			InternalLogError (message, ErrorType.Error, location);
+			if (errors != null || ErrorLogged != null)
+				InternalLogError (new Error (ErrorType.Error, location, message));
 		}
 		
 		void IParseContext.LogWarning (string message, DomLocation location)
 		{
-			InternalLogError (message, ErrorType.Warning, location);
+			if (errors != null || ErrorLogged != null)
+				InternalLogError (new Error (ErrorType.Warning, location, message));
 		}
 		
 		void IParseContext.LogError (string message, DomRegion region)
 		{
-			InternalLogError (message, ErrorType.Error, region.Start);
+			if (errors != null || ErrorLogged != null)
+				InternalLogError (new Error (ErrorType.Error, region, message));
 		}
 		
 		void IParseContext.LogWarning (string message, DomRegion region)
 		{
-			InternalLogError (message, ErrorType.Warning, region.Start);
+			if (errors != null || ErrorLogged != null)
+				InternalLogError (new Error (ErrorType.Warning, region, message));
 		}
 		
-		void InternalLogError (string message, ErrorType type, DomLocation location)
+		void InternalLogError (Error err)
 		{
-			if (ErrorLogged == null && errors == null)
-				return;
-			Error err = new Error (type, location.Line, location.Column, message);
 			if (errors != null)
 				errors.Add (err);
 			if (ErrorLogged != null)

@@ -1,3 +1,11 @@
+2008-11-17  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs:
+	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: Rename Error to
+	ErrorMarker to reduce ambiguity. Track Error API. Use different
+	colour for warnings. Tidy up API. Remove unnecessary field from
+	ErrorMarker class.
+
 2008-11-14  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Don't add

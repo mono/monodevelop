@@ -1,3 +1,8 @@
+2008-11-17  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Dom/Error.cs: Allow errors to contain a region
+	instead of just a line/col location.
+
 2008-11-17  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/ExpressionContext.cs: fixed 'Bug 444538 -
