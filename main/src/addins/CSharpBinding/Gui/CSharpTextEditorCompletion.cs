@@ -581,6 +581,8 @@ namespace MonoDevelop.CSharpBinding.Gui
 					CompletionDataList completionList = new ProjectDomCompletionDataList ();
 					CompletionDataCollector col = new CompletionDataCollector (Editor, dom, Document.CompilationUnit, location);
 					foreach (IType type in dom.GetSubclasses (dom.SearchType (new SearchTypeRequest (resolver.Unit, resolveResult.ResolvedType)))) {
+						if (type.IsSpecialName || type.Name.StartsWith ("<"))
+							continue;
 						col.AddCompletionData (completionList, type);
 					}
 					List<string> namespaceList = new List<string> ();
@@ -597,12 +599,12 @@ namespace MonoDevelop.CSharpBinding.Gui
 					foreach (object o in dom.GetNamespaceContents (namespaceList, true, true)) {
 						if (o is IType) {
 							IType type = (IType)o;
-							if (type.ClassType != ClassType.Interface)
+							if (type.ClassType != ClassType.Interface || type.IsSpecialName || type.Name.StartsWith ("<"))
 								continue;
 						}
 						col.AddCompletionData (completionList, o);
 					}
-					
+					AddNRefactoryKeywords (completionList, ICSharpCode.NRefactory.Parser.CSharp.Tokens.SimpleTypeName);
 					return completionList;
 				}
 				result.ExpressionContext = ExpressionContext.Type;
