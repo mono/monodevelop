@@ -1,4 +1,4 @@
-﻿//
+//
 // Authors:
 //   Ben Motmans  <ben.motmans@gmail.com>
 //
@@ -81,7 +81,8 @@ namespace MonoDevelop.Database.Components
 		
 		public DatabaseConnectionSettings ConnectionSettings {
 			get {
-				FillDatabaseConnectionSettings (settings);
+				if (settings == null)
+					settings = CreateDatabaseConnectionSettings ();
 				return settings;
 			}
 		}
