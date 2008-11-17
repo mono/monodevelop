@@ -156,7 +156,7 @@ namespace MonoDevelop.Ide.Gui.Search
 					
 				// not found or first start -> move forward to the next document
 				bool more = !reverse ? documentIterator.MoveForward () : documentIterator.MoveBackward ();
-				if (more) {
+				if (more && ((info = documentIterator.Current) != null)) {
 					searchedFiles++;
 					info = documentIterator.Current;
 					textIterator = info.GetTextIterator ();

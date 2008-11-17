@@ -1,5 +1,10 @@
 2008-11-17  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Gui.Search/DefaultFind.cs: added patch for "Bug 444455
+	- NRE when using Find in files".
+
+2008-11-17  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.Gui.Search/IFind.cs:
 	* MonoDevelop.Ide.Gui.Search/DefaultFind.cs:
 	* MonoDevelop.Ide.Gui/ViewCommandHandlers.cs:
