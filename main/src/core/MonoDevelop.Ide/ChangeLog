@@ -1,3 +1,35 @@
+2008-11-17  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui.Search/IFind.cs:
+	* MonoDevelop.Ide.Gui.Search/DefaultFind.cs:
+	* MonoDevelop.Ide.Gui/ViewCommandHandlers.cs:
+	* MonoDevelop.Ide.Gui.Search/SearchResult.cs:
+	* MonoDevelop.Ide.Gui.Search/SearchOptions.cs:
+	* MonoDevelop.Ide.Gui.Search/ISearchResult.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/ReplaceDialog.cs:
+	* MonoDevelop.Ide.Gui.Search/ISearchStrategy.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/GotoLineDialog.cs:
+	* MonoDevelop.Ide.Gui.Search/KMPSearchStrategy.cs:
+	* MonoDevelop.Ide.Gui.Search/RegExSearchStrategy.cs:
+	* MonoDevelop.Ide.Gui.Search/ForwardTextIterator.cs:
+	* MonoDevelop.Ide.Gui.Search/SearchReplaceManager.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:
+	* MonoDevelop.Ide.Gui.Search/SearchReplaceUtilities.cs:
+	* MonoDevelop.Ide.Gui.Search/WildcardSearchStrategy.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.ReplaceDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.GotoLineDialog.cs:
+	* MonoDevelop.Ide.Gui.Search/CurrentDocumentIterator.cs:
+	* MonoDevelop.Ide.Gui.Search/ReverseDocumentIterator.cs:
+	* MonoDevelop.Ide.Gui.Search/BruteForceSearchStrategy.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ClassPad/SolutionNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/WorkspaceNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionFolderNodeBuilder.cs:
+	fixed "Bug 444916 - Buggy Find in Files". Did some renamings. Removed
+	old unused code.
+
 2008-11-14  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/gui.stetic:

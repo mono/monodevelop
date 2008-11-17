@@ -1,4 +1,4 @@
-// GotoLineDialog.cs
+// SearchResult.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -22,56 +22,61 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+//
 
 using System;
-using MonoDevelop.Ide.Gui.Content;
 
-namespace MonoDevelop.Ide.Gui.Dialogs
+namespace MonoDevelop.Ide.Gui.Search
 {
-	public partial class GotoLineDialog : Gtk.Dialog
+	public class SearchResult
 	{
-		IEditableTextBuffer positionable;
-		
-		static GotoLineDialog instance = null;
-		public static bool CanShow {
-			get {
-				return instance != null;
-			}
+		public string FileName {
+			get;
+			internal set;
 		}
 		
-		public static void ShowDialog (IEditableTextBuffer positionable)
-		{
-			if (instance != null)
-				return;
-			instance = new GotoLineDialog (positionable);
-			instance.ShowAll ();
+		public IDocumentInformation DocumentInformation {
+			get;
+			internal set;
 		}
 		
-		public GotoLineDialog (IEditableTextBuffer positionable)
+		public int Position {
+			get;
+			internal set;
+		}
+		
+		public int DocumentOffset {
+			get;
+			internal set;
+		}
+
+		public int Length {
+			get;
+			internal set;
+		}
+
+		public int Line { get; internal set; }
+		public int Column {get; internal set; }
+		
+		public SearchResult (ITextIterator iter, int length)
 		{
-			this.positionable = positionable;
-			this.Build();
-			this.TransientFor = IdeApp.Workbench.RootWindow;
-			this.Destroyed += delegate {
-				instance = null;
-			};
-			
-			this.Close += delegate {
-				this.Destroy ();
-			};
-			
-			this.buttonClose.Clicked += delegate {
-				this.Destroy ();
-			};
-			
-			this.buttonGoToLine.Clicked += delegate {
-				try {
-					int line = System.Math.Max (1, System.Int32.Parse (entryLineNumber.Text));
-					positionable.SetCaretTo (line, 1);
-				} catch (System.Exception) { 
-				}
-				this.Destroy ();
-			};
+			Position = iter.Position;
+			DocumentOffset = iter.DocumentOffset;
+			Line = iter.Line + 1;
+			Column = iter.Column + 1;
+			this.Length = length;
+			this.DocumentInformation = iter.DocumentInformation;
+			this.FileName = DocumentInformation.FileName;
+		}
+
+		public virtual string TransformReplacePattern (string pattern)
+		{
+			return pattern;
+		}
+		
+		public override string ToString ()
+		{
+			return string.Format("[SearchResult: FileName={0}, DocumentInformation={1}, Position={2}, DocumentOffset={3}, Length={4}, Line={5}, Column={6}]", FileName, DocumentInformation, Position, DocumentOffset, Length, Line, Column);
 		}
 	}
 }

@@ -257,8 +257,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public void OnFindInFiles ()
 		{
 			SolutionFolder folder = (SolutionFolder) CurrentNode.DataItem;
-			SearchReplaceInFilesManager.SearchOptions.SearchDirectory = folder.BaseDirectory;
-			SearchReplaceInFilesManager.ShowFindDialog ();
+			SearchReplaceInFilesManager.ShowFindDialog (folder.BaseDirectory);
 		}
 		
 		void OnEntryInserted (ITreeNavigator nav)

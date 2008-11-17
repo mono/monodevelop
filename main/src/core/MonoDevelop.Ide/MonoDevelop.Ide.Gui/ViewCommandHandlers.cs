@@ -310,7 +310,7 @@ namespace MonoDevelop.Ide.Gui
 				buffer.CursorPosition = cursor_pos;
 			}
 		}
-		
+		/*
 		[CommandUpdateHandler (SearchCommands.GotoLineNumber)]
 		void OnUpdateGotoLineNumber (CommandInfo info)
 		{
@@ -321,7 +321,7 @@ namespace MonoDevelop.Ide.Gui
 		void OnGotoLineNumber ()
 		{
 			MonoDevelop.Ide.Gui.Dialogs.GotoLineDialog.ShowDialog (GetContent <IEditableTextBuffer> ());
-		}
+		}*/
 		
 		[CommandHandler (EditCommands.LowercaseSelection)]
 		public void OnLowercaseSelection ()

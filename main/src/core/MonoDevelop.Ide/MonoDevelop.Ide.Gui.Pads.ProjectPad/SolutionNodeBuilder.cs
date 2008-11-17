@@ -329,8 +329,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public void OnFindInFiles ()
 		{
 			Solution solution = (Solution) CurrentNode.DataItem;
-			SearchReplaceInFilesManager.SearchOptions.SearchDirectory = solution.BaseDirectory;
-			SearchReplaceInFilesManager.ShowFindDialog ();
+			SearchReplaceInFilesManager.ShowFindDialog (solution.BaseDirectory);
 		}
 		
 		[CommandHandler (FileCommands.CloseWorkspaceItem)]

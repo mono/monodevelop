@@ -37,13 +37,11 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.ExportProjectDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.FeatureSelectorDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.GoToDialog.cs \
-	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.GotoLineDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.IncludeFilesDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewFileDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewLayoutDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.RenameItemDialog.cs \
-	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.ReplaceDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.ReplaceInFilesDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.SelectReferenceDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow.cs \
@@ -160,7 +158,6 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Dialogs/FileSelectorDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs \
 	MonoDevelop.Ide.Gui.Dialogs/GoToDialog.cs \
-	MonoDevelop.Ide.Gui.Dialogs/GotoLineDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/IncludeFilesDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/NewLayoutDialog.cs \
@@ -168,7 +165,6 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Dialogs/OverridesImplementsDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs \
 	MonoDevelop.Ide.Gui.Dialogs/RenameItemDialog.cs \
-	MonoDevelop.Ide.Gui.Dialogs/ReplaceDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/SelectEncodingsDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs \
@@ -229,31 +225,26 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs \
 	MonoDevelop.Ide.Gui.Search/AllOpenDocumentIterator.cs \
 	MonoDevelop.Ide.Gui.Search/BruteForceSearchStrategy.cs \
-	MonoDevelop.Ide.Gui.Search/CurrentDocumentIterator.cs \
 	MonoDevelop.Ide.Gui.Search/CurrentProjectDocumentIterator.cs \
 	MonoDevelop.Ide.Gui.Search/DefaultFind.cs \
-	MonoDevelop.Ide.Gui.Search/DefaultSearchResult.cs \
 	MonoDevelop.Ide.Gui.Search/DirectoryDocumentIterator.cs \
 	MonoDevelop.Ide.Gui.Search/ExtendedStreamReader.cs \
 	MonoDevelop.Ide.Gui.Search/FileDocumentInformation.cs \
 	MonoDevelop.Ide.Gui.Search/FilesDocumentIterator.cs \
 	MonoDevelop.Ide.Gui.Search/ForwardTextFileIterator.cs \
-	MonoDevelop.Ide.Gui.Search/ForwardTextIterator.cs \
 	MonoDevelop.Ide.Gui.Search/IDocumentInformation.cs \
 	MonoDevelop.Ide.Gui.Search/IDocumentIterator.cs \
 	MonoDevelop.Ide.Gui.Search/IFind.cs \
 	MonoDevelop.Ide.Gui.Search/ISearchProgressMonitor.cs \
-	MonoDevelop.Ide.Gui.Search/ISearchResult.cs \
 	MonoDevelop.Ide.Gui.Search/ISearchStrategy.cs \
 	MonoDevelop.Ide.Gui.Search/ITextIterator.cs \
 	MonoDevelop.Ide.Gui.Search/KMPSearchStrategy.cs \
 	MonoDevelop.Ide.Gui.Search/RegExSearchStrategy.cs \
-	MonoDevelop.Ide.Gui.Search/ReverseDocumentIterator.cs \
 	MonoDevelop.Ide.Gui.Search/SearchOptions.cs \
 	MonoDevelop.Ide.Gui.Search/SearchProgressMonitor.cs \
 	MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs \
-	MonoDevelop.Ide.Gui.Search/SearchReplaceManager.cs \
 	MonoDevelop.Ide.Gui.Search/SearchReplaceUtilities.cs \
+	MonoDevelop.Ide.Gui.Search/SearchResult.cs \
 	MonoDevelop.Ide.Gui.Search/WholeCombineDocumentIterator.cs \
 	MonoDevelop.Ide.Gui.Search/WildcardSearchStrategy.cs \
 	MonoDevelop.Ide.Gui/AbstractBaseViewContent.cs \

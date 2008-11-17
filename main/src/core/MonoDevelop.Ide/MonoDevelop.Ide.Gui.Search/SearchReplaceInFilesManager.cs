@@ -39,7 +39,6 @@ namespace MonoDevelop.Ide.Gui.Search
 		internal static ReplaceInFilesDialog ReplaceDialog;
 
 		static IFind find                  = new DefaultFind();
-		static SearchOptions searchOptions = new SearchOptions("SharpDevelop.SearchAndReplace.SearchAndReplaceInFilesProperties");
 		
 		static DateTime timer;
 		static bool searching;
@@ -47,34 +46,14 @@ namespace MonoDevelop.Ide.Gui.Search
 		static string searchError;
 		static ISearchProgressMonitor searchMonitor;
 		
-		public static SearchOptions SearchOptions {
-			get {
-				return searchOptions;
-			}
-		}
-		
-		static SearchReplaceInFilesManager()
+		public static SearchOptions GetDefaultSearchOptions ()
 		{
-			searchOptions.SearchStrategyTypeChanged   += new EventHandler(InitializeSearchStrategy);
-			searchOptions.DocumentIteratorTypeChanged += new EventHandler(InitializeDocumentIterator);
-			InitializeDocumentIterator(null, null);
-			InitializeSearchStrategy(null, null);
+			return SearchOptions.CreateOptions ("SharpDevelop.SearchAndReplace.SearchAndReplaceInFilesProperties");
 		}
-		
-		static void InitializeSearchStrategy(object sender, EventArgs e)
-		{
-			find.SearchStrategy = SearchReplaceUtilities.CreateSearchStrategy(SearchOptions.SearchStrategyType);
-		}
-		
-		static void InitializeDocumentIterator(object sender, EventArgs e)
-		{
-			find.DocumentIterator = SearchReplaceUtilities.CreateDocumentIterator(SearchOptions.DocumentIteratorType);
-		}
-		
 		/// <remarks>
 		/// This method displays the search result in the search results pad
 		/// </remarks>
-		static void DisplaySearchResult(ISearchResult result)
+		static void DisplaySearchResult(SearchResult result)
 		{
 			if (result.Line != -1) {
 				string text = result.DocumentInformation.GetLineTextAtOffset (result.DocumentOffset);
@@ -88,25 +67,24 @@ namespace MonoDevelop.Ide.Gui.Search
 			}
 		}
 		
-		static bool InitializeSearchInFiles()
+		static SearchOptions InitializeSearchInFiles()
 		{
-			Debug.Assert(searchOptions != null);
 			cancelled = false;
 			
 			searchMonitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true);
 			searchMonitor.CancelRequested += (MonitorHandler) DispatchService.GuiDispatch (new MonitorHandler (OnCancelRequested));
-			
-			InitializeDocumentIterator(null, null);
-			InitializeSearchStrategy(null, null);
+			SearchOptions options = GetDefaultSearchOptions ();
+			find.SearchStrategy = options.CreateStrategy ();
+			find.DocumentIterator = options.CreateIterator ();
 			find.Reset();
 			
 			try {
-				find.SearchStrategy.CompilePattern(searchOptions);
+				find.SearchStrategy.CompilePattern(options);
 			} catch {
 				MessageService.ShowError (GettextCatalog.GetString ("Search pattern is invalid"));
-				return false;
+				return null;
 			}
-			return true;
+			return options;
 		}
 		
 		static void OnCancelRequested (IProgressMonitor monitor)
@@ -148,19 +126,20 @@ namespace MonoDevelop.Ide.Gui.Search
 					return;
 				CancelSearch ();
 			}
-			
-			if (!InitializeSearchInFiles()) {
+			SearchOptions options = InitializeSearchInFiles();
+			if (options == null) 
 				return;
-			}
 			
-			string msg = GettextCatalog.GetString ("Replacing '{0}' in {1}.", searchOptions.SearchPattern, searchOptions.SearchDirectory);
+			string msg = GettextCatalog.GetString ("Replacing '{0}' in {1}.", options.SearchPattern, options.SearchDirectory);
 			searchMonitor.ReportStatus (msg);
 			
 			timer = DateTime.Now;
-			DispatchService.BackgroundDispatch (new MessageHandler(ReplaceAllThread));
+			DispatchService.BackgroundDispatch (delegate {
+				ReplaceAllThread (options);
+			});
 		}
 		
-		static void ReplaceAllThread()
+		static void ReplaceAllThread (SearchOptions searchOptions)
 		{
 			searching = true;
 			searchError = null;
@@ -169,12 +148,12 @@ namespace MonoDevelop.Ide.Gui.Search
 			{
 				try
 				{
-					ISearchResult result = find.FindNext(searchOptions);
+					SearchResult result = find.FindNext(searchOptions);
 					if (result == null) {
 						break;
 					}
 					
-					find.Replace(result, result.TransformReplacePattern(SearchOptions.ReplacePattern));
+					find.Replace(result, result.TransformReplacePattern(searchOptions.ReplacePattern));
 					DisplaySearchResult (result);
 				}
 				catch (Exception ex) 
@@ -198,19 +177,20 @@ namespace MonoDevelop.Ide.Gui.Search
 					return;
 				CancelSearch ();
 			}
-			
-			if (!InitializeSearchInFiles()) {
+			SearchOptions options = InitializeSearchInFiles();
+			if (options == null) 
 				return;
-			}
 			
-			string msg = GettextCatalog.GetString ("Looking for '{0}' in {1}.", searchOptions.SearchPattern, searchOptions.SearchDirectory);
+			string msg = GettextCatalog.GetString ("Looking for '{0}' in {1}.", options.SearchPattern, options.SearchDirectory);
 			searchMonitor.ReportStatus (msg);
 			
 			timer = DateTime.Now;
-			DispatchService.BackgroundDispatch (new MessageHandler(FindAllThread));
+			DispatchService.BackgroundDispatch (delegate {
+				FindAllThread (options);
+			});
 		}
 		
-		static void FindAllThread()
+		static void FindAllThread(SearchOptions searchOptions)
 		{
 			searching = true;
 			searchError = null;
@@ -219,7 +199,7 @@ namespace MonoDevelop.Ide.Gui.Search
 			{
 				try
 				{
-					ISearchResult result = find.FindNext (searchOptions);
+					SearchResult result = find.FindNext (searchOptions);
 					if (result == null) {
 						break;
 					}
@@ -257,12 +237,24 @@ namespace MonoDevelop.Ide.Gui.Search
 				ITextBuffer view = IdeApp.Workbench.ActiveDocument.GetContent<ITextBuffer> (); 
 				if (view != null) {
 					string selectedText = view.SelectedText;
-					if (selectedText != null && selectedText.Length > 0)
-						SearchOptions.SearchPattern = selectedText.Split ('\n')[0];
+					if (selectedText != null && selectedText.Length > 0) {
+						SearchOptions options = GetDefaultSearchOptions ();
+						options.SearchPattern = selectedText.Split ('\n')[0];
+						options.Store ();
+					}
+						
 				}
 			}
 		}
-
+		
+		public static void ShowFindDialog (string inDirectory)
+		{
+			SearchOptions options = SearchReplaceInFilesManager.GetDefaultSearchOptions ();
+			options.SearchDirectory = inDirectory;
+			options.Store ();
+			ShowFindDialog ();
+		}
+		
 		public static void ShowFindDialog ()
 		{
 			SetSearchPattern ();

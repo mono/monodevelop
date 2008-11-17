@@ -41,11 +41,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs
  		private const char historySeparator = '\n';
  		StringCollection findHistory = new StringCollection();
  		StringCollection replaceHistory = new StringCollection();
- 		
+ 		SearchOptions searchOptions;
 
 		void InitDialog ()
 		{
-			findButton.UseUnderline = true;			
+			searchOptions = SearchReplaceInFilesManager.GetDefaultSearchOptions ();
+
+			findButton.UseUnderline = true;
 			closeButton.UseUnderline = true;
 			
 			//set up the size groups
@@ -188,7 +190,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		public void LoadOptions ()
 		{
 			int index = 0;
-			switch (SearchReplaceManager.SearchOptions.SearchStrategyType) {
+			switch (searchOptions.SearchStrategyType) {
 				case SearchStrategyType.Normal:
 				case SearchStrategyType.Wildcard:
 					break;
@@ -200,7 +202,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			specialSearchStrategyComboBox.Active = index;
 			
 			index = 0;
-			switch (SearchReplaceInFilesManager.SearchOptions.DocumentIteratorType) {
+			switch (searchOptions.DocumentIteratorType) {
 				case DocumentIteratorType.AllOpenFiles:
 					index = 1;
 					break;
@@ -211,16 +213,16 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			
 			searchLocationComboBox.Active = index;
 			
-			directoryTextBox.Text = SearchReplaceInFilesManager.SearchOptions.SearchDirectory;
-			fileMaskTextBox.Text = SearchReplaceInFilesManager.SearchOptions.FileMask;
-			includeSubdirectoriesCheckBox.Active = SearchReplaceInFilesManager.SearchOptions.SearchSubdirectories;
+			directoryTextBox.Text = searchOptions.SearchDirectory;
+			fileMaskTextBox.Text = searchOptions.FileMask;
+			includeSubdirectoriesCheckBox.Active = searchOptions.SearchSubdirectories;
 			
 			searchLocationComboBox.Active = PropertyService.Get ("MonoDevelop.FindReplaceDialogs.DocumentIterator", 0);
 			
-			searchPatternEntry.Entry.Text = SearchReplaceInFilesManager.SearchOptions.SearchPattern;
+			searchPatternEntry.Entry.Text = searchOptions.SearchPattern;
 			
 			if (replacePatternEntry != null)
-				replacePatternEntry.Entry.Text = SearchReplaceInFilesManager.SearchOptions.ReplacePattern;
+				replacePatternEntry.Entry.Text = searchOptions.ReplacePattern;
 		}
 		
 		void FindEvent (object sender, EventArgs e)
@@ -348,45 +350,46 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				}
 			}
 
-			SearchReplaceInFilesManager.SearchOptions.FileMask        = fileMask;
-			SearchReplaceInFilesManager.SearchOptions.SearchDirectory = directoryName;
-			SearchReplaceInFilesManager.SearchOptions.SearchSubdirectories = includeSubdirectoriesCheckBox.Active;
+			searchOptions.FileMask = fileMask;
+			searchOptions.SearchDirectory = directoryName;
+			searchOptions.SearchSubdirectories = includeSubdirectoriesCheckBox.Active;
 			
-			SearchReplaceInFilesManager.SearchOptions.SearchPattern  = searchPattern;
+			searchOptions.SearchPattern  = searchPattern;
 			if (replaceMode)
-				SearchReplaceInFilesManager.SearchOptions.ReplacePattern = replacePatternEntry.ActiveText;
+				searchOptions.ReplacePattern = replacePatternEntry.ActiveText;
 			
-			SearchReplaceInFilesManager.SearchOptions.IgnoreCase          = !ignoreCaseCheckBox.Active;
-			SearchReplaceInFilesManager.SearchOptions.SearchWholeWordOnly = searchWholeWordOnlyCheckBox.Active;
+			searchOptions.IgnoreCase = !ignoreCaseCheckBox.Active;
+			searchOptions.SearchWholeWordOnly = searchWholeWordOnlyCheckBox.Active;
 			
 			if (useSpecialSearchStrategyCheckBox.Active) {
 				switch (specialSearchStrategyComboBox.Active) {
 					case 0:
-						SearchReplaceInFilesManager.SearchOptions.SearchStrategyType = SearchStrategyType.Wildcard;
+						searchOptions.SearchStrategyType = SearchStrategyType.Wildcard;
 						break;
 					case 1:
-						SearchReplaceInFilesManager.SearchOptions.SearchStrategyType = SearchStrategyType.RegEx;
+						searchOptions.SearchStrategyType = SearchStrategyType.RegEx;
 						break;
 				}
 			} else {
-				SearchReplaceInFilesManager.SearchOptions.SearchStrategyType = SearchStrategyType.Normal;
+				searchOptions.SearchStrategyType = SearchStrategyType.Normal;
 			}
 			
 			PropertyService.Set ("MonoDevelop.FindReplaceDialogs.DocumentIterator", searchLocationComboBox.Active);
 			switch (searchLocationComboBox.Active) {
 				case 0:
-					SearchReplaceInFilesManager.SearchOptions.DocumentIteratorType = DocumentIteratorType.Directory;
+					searchOptions.DocumentIteratorType = DocumentIteratorType.Directory;
 					break;
 				case 1:
-					SearchReplaceInFilesManager.SearchOptions.DocumentIteratorType = DocumentIteratorType.AllOpenFiles;
+					searchOptions.DocumentIteratorType = DocumentIteratorType.AllOpenFiles;
 					break;
 				case 2:
-					SearchReplaceInFilesManager.SearchOptions.DocumentIteratorType = DocumentIteratorType.CurrentProject;
+					searchOptions.DocumentIteratorType = DocumentIteratorType.CurrentProject;
 					break;
 				case 3:
-					SearchReplaceInFilesManager.SearchOptions.DocumentIteratorType = DocumentIteratorType.WholeCombine;
+					searchOptions.DocumentIteratorType = DocumentIteratorType.WholeCombine;
 					break;
 			}
+			searchOptions.Store ();
 			return true;
 		}
 		

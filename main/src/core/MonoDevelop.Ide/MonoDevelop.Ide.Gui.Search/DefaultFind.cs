@@ -85,7 +85,7 @@ namespace MonoDevelop.Ide.Gui.Search
 			lastResultPos = -1;
 		}
 		
-		public void Replace (ISearchResult result, string pattern)
+		public void Replace (SearchResult result, string pattern)
 		{
 			if (CurrentDocumentInformation != null && TextIterator != null) {
 				TextIterator.Position = result.Position;
@@ -94,17 +94,17 @@ namespace MonoDevelop.Ide.Gui.Search
 			}
 		}
 		
-		public ISearchResult FindNext(SearchOptions options) 
+		public SearchResult FindNext(SearchOptions options) 
 		{
 			return Find (options, false);
 		}
 		
-		public ISearchResult FindPrevious (SearchOptions options) 
+		public SearchResult FindPrevious (SearchOptions options) 
 		{
 			return Find (options, true);
 		}
 		
-		public ISearchResult Find (SearchOptions options, bool reverse)
+		public SearchResult Find (SearchOptions options, bool reverse)
 		{
 			// insanity check
 			Debug.Assert(searchStrategy      != null);
@@ -124,7 +124,7 @@ namespace MonoDevelop.Ide.Gui.Search
 							textIterator.MoveToEnd ();
 					} 
 
-					ISearchResult result;
+					SearchResult result;
 					if (!reverse)
 						result = searchStrategy.FindNext (textIterator, options, false);
 					else {
@@ -190,7 +190,7 @@ namespace MonoDevelop.Ide.Gui.Search
 			int startPos = it.Position;
 			it.Reset ();
 
-			ISearchResult res = strategy.FindNext (it, options, false);
+			SearchResult res = strategy.FindNext (it, options, false);
 			while (res != null) {
 				matches.Add (res);
 				res = strategy.FindNext (it, options, false);
@@ -198,12 +198,12 @@ namespace MonoDevelop.Ide.Gui.Search
 			it.Position = startPos;
 		}
 		
-		public ISearchResult GetPreviousMatch (int pos)
+		public SearchResult GetPreviousMatch (int pos)
 		{
 			if (matches.Count == 0) return null;
 			
 			for (int n = matches.Count - 1; n >= 0; n--) {
-				ISearchResult m = (ISearchResult) matches [n];
+				SearchResult m = (SearchResult) matches [n];
 				if (m.Position < pos)
 					return m;
 			}

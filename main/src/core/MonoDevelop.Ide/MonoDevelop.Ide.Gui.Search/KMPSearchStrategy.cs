@@ -77,7 +77,7 @@ namespace MonoDevelop.Ide.Gui.Search
 			}			
 		}
 		
-		public ISearchResult FindNext(ITextIterator textIterator, SearchOptions options, bool reverseSearch)
+		public SearchResult FindNext(ITextIterator textIterator, SearchOptions options, bool reverseSearch)
 		{
 			if (reverseSearch)
 				throw new NotSupportedException ();
@@ -94,7 +94,7 @@ namespace MonoDevelop.Ide.Gui.Search
 					return null;
 			}
 			
-			return new DefaultSearchResult (textIterator, searchPattern.Length);
+			return new SearchResult (textIterator, searchPattern.Length);
 		}
 		
 		public bool SupportsReverseSearch (ITextIterator textIterator, SearchOptions options)

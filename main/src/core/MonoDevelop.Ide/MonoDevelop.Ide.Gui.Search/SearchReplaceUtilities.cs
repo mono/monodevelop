@@ -62,44 +62,6 @@ namespace MonoDevelop.Ide.Gui.Search
 			return 0;
 		}*/
 		
-		public static ISearchStrategy CreateSearchStrategy(SearchStrategyType type)
-		{
-			switch (type) {
-				case SearchStrategyType.None:
-					return null;
-				case SearchStrategyType.Normal:
-					return new BruteForceSearchStrategy(); // new KMPSearchStrategy();
-				case SearchStrategyType.RegEx:
-					return new RegExSearchStrategy();
-				case SearchStrategyType.Wildcard:
-					return new WildcardSearchStrategy();
-				default:
-					throw new System.NotImplementedException("CreateSearchStrategy for type " + type);
-			}
-		}
-		
-		
-		public static IDocumentIterator CreateDocumentIterator(DocumentIteratorType type)
-		{
-			switch (type) {
-				case DocumentIteratorType.None:
-					return null;
-				case DocumentIteratorType.CurrentDocument:
-					return new CurrentDocumentIterator();
-				case DocumentIteratorType.Directory:
-					return new DirectoryDocumentIterator(SearchReplaceInFilesManager.SearchOptions.SearchDirectory, 
-					                                     SearchReplaceInFilesManager.SearchOptions.FileMask, 
-					                                     SearchReplaceInFilesManager.SearchOptions.SearchSubdirectories);
-				case DocumentIteratorType.AllOpenFiles:
-					return new AllOpenDocumentIterator();
-				case DocumentIteratorType.WholeCombine:
-					return new WholeCombineDocumentIterator();
-				case DocumentIteratorType.CurrentProject:
-					return new CurrentProjectDocumentIterator();
-				default:
-					throw new System.NotImplementedException("CreateDocumentIterator for type " + type);
-			}
-		}
 	}
 	
 }

@@ -36,7 +36,7 @@ namespace MonoDevelop.Ide.Gui.Search
 			regex = new Regex(options.SearchPattern, regexOptions);
 		}
 		
-		public ISearchResult FindNext(ITextIterator textIterator, SearchOptions options, bool reverseSearch)
+		public SearchResult FindNext(ITextIterator textIterator, SearchOptions options, bool reverseSearch)
 		{
 			if (reverseSearch)
 				throw new NotSupportedException ();
@@ -53,7 +53,7 @@ namespace MonoDevelop.Ide.Gui.Search
 				return null;
 			} else {
 				if (textIterator.MoveAhead (m.Index)) {
-					return new DefaultSearchResult (textIterator, m.Length);
+					return new SearchResult (textIterator, m.Length);
 				} else {
 					return null;
 				}

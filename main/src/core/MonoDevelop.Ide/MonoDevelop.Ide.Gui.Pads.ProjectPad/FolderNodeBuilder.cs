@@ -363,9 +363,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		[CommandHandler (SearchCommands.FindInFiles)]
 		public void OnFindInFiles ()
 		{
-			string path = GetFolderPath (CurrentNode.DataItem);
-			SearchReplaceInFilesManager.SearchOptions.SearchDirectory = path;
-			SearchReplaceInFilesManager.ShowFindDialog ();
+			SearchReplaceInFilesManager.ShowFindDialog (GetFolderPath (CurrentNode.DataItem));
 		}
 		
 		public static string TerminalCommand {

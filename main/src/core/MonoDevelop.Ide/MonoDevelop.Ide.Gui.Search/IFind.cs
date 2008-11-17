@@ -57,7 +57,7 @@ namespace MonoDevelop.Ide.Gui.Search
 		/// is the only method which should be used for doing replacements
 		/// in a searched document.
 		/// </remarks>
-		void Replace (ISearchResult result, string pattern);
+		void Replace (SearchResult result, string pattern);
 		
 		/// <remarks>
 		/// Finds next pattern.
@@ -67,9 +67,7 @@ namespace MonoDevelop.Ide.Gui.Search
 		/// information will be null too otherwise it will point to the document in which
 		/// the search pattern was found.
 		/// </returns>
-		ISearchResult FindNext(SearchOptions options);
-		
-		ISearchResult FindPrevious(SearchOptions options);
+		SearchResult FindNext(SearchOptions options);
 		
 		/// <remarks>
 		/// Resets the find object to the original state.
