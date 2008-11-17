@@ -1,3 +1,8 @@
+2008-11-17  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom/ExpressionContext.cs: fixed 'Bug 444538 -
+	Namespaces missing when completing 'new' operator'.
+
 2008-11-14  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Dom.Serialization/FileEntry.cs: Use File class
@@ -91,7 +96,7 @@
 	* MonoDevelop.Projects/ProjectFile.cs: Set default build action so it's
 	never null.
 
-2008-11-06  Mike Krüger  <mike@icsharpcode.net>
+2008-11-06  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
 	upped code completion format for "Bug 442147 - Autocompletion shows
@@ -101,12 +106,12 @@
 
 	* MonoDevelop.Projects.addin.xml: Bump MD version.
 
-2008-11-05  Mike Krüger  <mike@icsharpcode.net>
+2008-11-05  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: optimized
 	GetNamespaceContents
 
-2008-11-05  Mike Krüger  <mike@icsharpcode.net>
+2008-11-05  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/IMethod.cs:
 	* MonoDevelop.Projects.Dom/DomMethod.cs:
@@ -140,7 +145,7 @@
 	* MonoDevelop.Projects.Dom.Serialization/AssemblyCodeCompletionDatabase.cs:
 	Don't try to read an existing db when creating a new temporary one.
 
-2008-11-04  Mike Krüger  <mike@icsharpcode.net>
+2008-11-04  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/IType.cs:
 	* MonoDevelop.Projects.Dom/DomType.cs:
@@ -153,7 +158,7 @@
 	Properly read the clr version. It must be assigned to the project in
 	addition to assigning to the configurations.
 
-2008-11-03  Mike Krüger  <mike@icsharpcode.net>
+2008-11-03  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomCecilType.cs: fixed 'Bug 440366 - Cannot
 	override base methods'.

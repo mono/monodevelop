@@ -144,6 +144,8 @@ namespace MonoDevelop.Projects.Dom
 				if (IsObjectCreation && entry is IType) {
 					return type.ClassType != ClassType.Class && type.ClassType != ClassType.Struct && (type.IsStatic || type.IsAbstract);
 				}
+				if (entry is Namespace)
+					return false;
 				return true;
 			}
 			
