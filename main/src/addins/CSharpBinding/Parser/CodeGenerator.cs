@@ -36,6 +36,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.CodeDom.Compiler;
 using System.Text.RegularExpressions;
+using System.Linq;
 using Microsoft.CSharp;
 
 using MonoDevelop.Ide.Gui.Content;
@@ -526,12 +527,84 @@ namespace CSharpBinding.Parser
 				this.memberName = ((LocalVariable)member).Name;
 			}
 		}
+		class ExpressionVisitor : ICSharpCode.NRefactory.Visitors.AbstractAstVisitor
+		{
+			HashSet<string> identifiers = new HashSet<string> ();
+			public HashSet<string> Identifiers {
+				get {
+					return identifiers;
+				}
+			}
+			
+			public override object VisitIdentifierExpression(ICSharpCode.NRefactory.Ast.IdentifierExpression identifierExpression, object data)
+			{
+				identifiers.Add (identifierExpression.Identifier);
+				return null;
+			}
+		}
+		
+		static IEnumerable<HashSet<T>> GetAllCombinations<T> (IEnumerable<T> input)
+		{
+			List<T> strings = new List<T> (input);
+			List<HashSet<T>> result = new List<HashSet<T>> ();
+			result.Add (new HashSet<T>());
+			for (int i = 0; i < strings.Count; i++) {
+				int curCount = result.Count;
+				for (int j = 0; j < curCount; j++) {
+					HashSet<T> newSet = new HashSet<T> (result[j]);
+					newSet.Add (strings[i]);
+					result.Add (newSet);
+				}
+			}
+			return result;
+		}
+		
+		static List<HashSet<string>> GetUsedDefineCombinations (ICSharpCode.NRefactory.IParser parser)
+		{
+			List<HashSet<string>> result = new List<HashSet<string>> ();
+			foreach (ISpecial special in parser.Lexer.SpecialTracker.CurrentSpecials) {
+				PreprocessingDirective directive = special as PreprocessingDirective;
+				if (directive == null || (directive.Cmd != "#if" && directive.Cmd != "#elif"))
+					continue;
+				
+				ExpressionVisitor visitor = new ExpressionVisitor ();
+				directive.Expression.AcceptVisitor (visitor, null);
+				ICSharpCode.NRefactory.Parser.CSharp.ConditionalCompilation cond = new ICSharpCode.NRefactory.Parser.CSharp.ConditionalCompilation ();
+				bool nothingDefined = cond.Evaluate (directive.Expression);
+				foreach (var combination in GetAllCombinations (visitor.Identifiers)) {
+					cond = new ICSharpCode.NRefactory.Parser.CSharp.ConditionalCompilation ();
+					HashSet<string> defines = new HashSet<string> ();
+					foreach (string usedIdentifier in combination) {
+						cond.Define (usedIdentifier);
+						defines.Add (usedIdentifier);
+						bool curDefineStatus = cond.Evaluate (directive.Expression);
+						if (curDefineStatus != nothingDefined) {
+							result.Add (defines);
+							goto next;
+						}
+					}
+				}
+			 next: ;
+			}
+			return result ;
+		}
 		
 		public void Visit (ProjectDom pctx, IEditableTextFile file)
 		{
 			ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (ICSharpCode.NRefactory.SupportedLanguage.CSharp, new StringReader (file.Text));
+			parser.Lexer.EvaluateConditionalCompilation = true;
 			parser.Parse ();
 			Visit (pctx, file, parser.CompilationUnit);
+			List<HashSet<string>> usedIdentifiers = GetUsedDefineCombinations (parser);
+			
+			for (int i = 0; i < usedIdentifiers.Count; i++) {
+				parser.Lexer.ConditionalCompilationSymbols.Clear ();
+				foreach (string define in usedIdentifiers[i])
+					parser.Lexer.ConditionalCompilationSymbols.Add (define, true);
+				parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (ICSharpCode.NRefactory.SupportedLanguage.CSharp, new StringReader (file.Text));
+				parser.Parse ();
+				Visit (pctx, file, parser.CompilationUnit);
+			}
 		}
 		
 		public void Visit (ProjectDom pctx, IEditableTextFile file, ICSharpCode.NRefactory.Ast.CompilationUnit unit)
