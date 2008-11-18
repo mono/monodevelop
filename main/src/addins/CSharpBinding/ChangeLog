@@ -1,5 +1,10 @@
 2008-11-18  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/NRefactoryParameterDataProvider.cs: fixed 'Bug 444112 - Generic
+	parameters missing in code completion'.
+
+2008-11-18  Mike Krüger  <mkrueger@novell.com>
+
 	* Parser/CodeGenerator.cs: fixed 'Bug 355948 - Rename refactoring does
 	not rename within #ifdef blocks'.
 
