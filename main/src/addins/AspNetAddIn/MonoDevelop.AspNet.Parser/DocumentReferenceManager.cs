@@ -72,7 +72,7 @@ namespace MonoDevelop.AspNet.Parser
 			if (tagPrefix == null || tagPrefix.Length < 1)
 				return WebTypeManager.HtmlControlLookup (tagName, htmlTypeAttribute);
 			
-			if (0 == string.Compare (tagPrefix, "asp", true, CultureInfo.InvariantCulture))
+			if (0 == string.Compare (tagPrefix, "asp", StringComparison.OrdinalIgnoreCase))
 				return WebTypeManager.SystemWebControlLookup (tagName,
 				    doc.Project == null? MonoDevelop.Core.ClrVersion.Default : doc.Project.ClrVersion);
 			
