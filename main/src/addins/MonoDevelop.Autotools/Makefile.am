@@ -74,7 +74,7 @@ DATA_FILES =  \
 
 DATA_FILE_BUILD = $(addprefix $(ADDIN_BUILD)/, $(notdir $(DATA_FILES)))
 
-all: $(ASSEMBLY) $(DATA_FILE_BUILD)
+all: $(ASSEMBLY) $(ASSEMBLY).mdb $(DATA_FILE_BUILD)
 
 $(DATA_FILE_BUILD): $(srcdir)$(subst $(ADDIN_BUILD),, $@)
 	mkdir -p $(ADDIN_BUILD)
@@ -83,6 +83,8 @@ $(DATA_FILE_BUILD): $(srcdir)$(subst $(ADDIN_BUILD),, $@)
 $(ASSEMBLY): $(build_sources) $(build_resources)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) $(REFS) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -target:library
+
+$(ASSEMBLY).mdb: $(ASSEMBLY)
 
 assemblydir = $(MD_ADDIN_DIR)/MonoDevelop.Autotools
 assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb $(DATA_FILES)

@@ -1,3 +1,10 @@
+2008-11-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MakefileProjectServiceExtension.cs: Allow executing when a makefile
+	execution target is defined.
+
+	* Makefile.am: Fix parallel build issues.
+
 2008-11-06  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am: Fix build dependencies.
