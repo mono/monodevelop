@@ -132,7 +132,7 @@ namespace MonoDevelop.Debugger
 
 		public BreakpointTextMarker (TextEditor editor) : base (editor)
 		{
-			IncludedStyles |= StyleFlag.BackroundColor | StyleFlag.Color;
+			IncludedStyles |= StyleFlag.BackgroundColor | StyleFlag.Color;
 		}
 		
 		protected override void DrawIcon (Cairo.Context cr, int x, int y, int size)
@@ -154,7 +154,7 @@ namespace MonoDevelop.Debugger
 	
 		public DisabledBreakpointTextMarker (TextEditor editor) : base (editor)
 		{
-			IncludedStyles |= StyleFlag.BackroundColor;
+			IncludedStyles |= StyleFlag.BackgroundColor;
 		}
 		
 		protected override void DrawIcon (Cairo.Context cr, int x, int y, int size)
@@ -180,7 +180,7 @@ namespace MonoDevelop.Debugger
 		
 		public CurrentDebugLineTextMarker (TextEditor editor) : base (editor)
 		{
-			IncludedStyles |= StyleFlag.BackroundColor | StyleFlag.Color;
+			IncludedStyles |= StyleFlag.BackgroundColor | StyleFlag.Color;
 		}
 		
 		protected override void DrawIcon (Cairo.Context cr, int x, int y, int size)
@@ -204,7 +204,7 @@ namespace MonoDevelop.Debugger
 		
 		public InvalidBreakpointTextMarker (TextEditor editor) : base (editor)
 		{
-			IncludedStyles |= StyleFlag.BackroundColor;
+			IncludedStyles |= StyleFlag.BackgroundColor;
 		}
 		
 		protected override void DrawIcon (Cairo.Context cr, int x, int y, int size)
