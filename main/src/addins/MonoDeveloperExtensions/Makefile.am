@@ -8,7 +8,6 @@ FILES =  \
 	MonoSolutionItemHandler.cs
 
 REFS =  \
-	$(GCONF_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	$(MONO_ADDINS_LIBS) \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
