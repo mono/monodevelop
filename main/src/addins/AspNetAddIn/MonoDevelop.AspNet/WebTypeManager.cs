@@ -222,7 +222,7 @@ namespace MonoDevelop.AspNet
 		public static string SystemWebControlLookup (string tagName, MonoDevelop.Core.ClrVersion clrVersion)
 		{
 			ProjectDom database = GetSystemWebAssemblyContext (clrVersion);
-			IType cls = database.GetType ("System.Web.UI.WebControls." + tagName, false);
+			IType cls = database.GetType ("System.Web.UI.WebControls." + tagName, false, false);
 			return cls != null? cls.FullName : null;
 		}
 		
@@ -318,7 +318,7 @@ namespace MonoDevelop.AspNet
 					return null;
 				}
 				
-				cls = database.GetType (namespac + "." + tagName, false);
+				cls = database.GetType (namespac + "." + tagName, false, false);
 			}
 			return cls;
 		}

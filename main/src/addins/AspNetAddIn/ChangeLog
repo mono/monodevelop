@@ -1,3 +1,15 @@
+2008-11-17  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Templates/WebApplication.xpt.xml: Fix case of asp:button.
+
+	* MonoDevelop.AspNet/WebTypeManager.cs: Make sure all type name lookups
+	are case insensitive (seems that MonoDevelop's defaults changed).
+	Fixes Bug 445850 - [Regression] The C# Asp Web application template
+	fails to compile .
+
+	* MonoDevelop.AspNet.Parser/DocumentReferenceManager.cs: Trivial 1.1 to
+	2.0 API update.
+
 2008-11-06  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.AspNet/AspNetAppProject.cs: Use new API; move default
