@@ -1,3 +1,7 @@
+2008-11-18  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* Compiler/ValaCompiler.cs: valac no longer supports -D.
+
 2008-11-05  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* configure.in:

@@ -345,9 +345,10 @@ namespace MonoDevelop.ValaBinding
 		/// </returns>
 		private string ProcessDefineSymbols (string symbols)
 		{
-			return ((null == symbols) || (0 == symbols.Length))?
-				string.Empty:
-				"-D " + Regex.Replace(symbols, " +", " -D ");
+			return string.Empty; // No -D in valac for now :-(
+//			return ((null == symbols) || (0 == symbols.Length))?
+//				string.Empty:
+//				"-D " + Regex.Replace(symbols, " +", " -D ");
 		}
 		
 		/// <summary>
