@@ -242,6 +242,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 				string fullName = type.FullName;
 				foreach (string subNamespace in subNamespaces) {
 					if (fullName.StartsWith (subNamespace, caseSensitive ? StringComparison.InvariantCulture : StringComparison.InvariantCultureIgnoreCase)) {
+						if (subNamespace.Length == fullName.Length)
+							continue;
 						string tmp = subNamespace.Length > 0 ? fullName.Substring (subNamespace.Length + 1) : fullName;
 						int idx = tmp.IndexOf('.');
 						IMember newMember;
@@ -287,7 +289,14 @@ namespace MonoDevelop.Projects.Dom.Parser
 		public virtual bool NamespaceExists (string namespaceName, bool searchDeep, bool caseSensitive)
 		{
 			List<IMember> members = GetNamespaceContents (namespaceName, searchDeep, caseSensitive);
-			return members != null && members.Count > 0;
+			foreach (IMember member in members) {
+				IType t = member as IType;
+				if (t == null)
+					continue;
+				if (t.Namespace == namespaceName || t.Namespace.StartsWith (namespaceName + "."))
+					return true;
+			}
+			return false;
 		}
 		
 		public virtual bool NeedCompilation (string fileName)
