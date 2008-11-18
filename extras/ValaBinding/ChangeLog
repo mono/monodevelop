@@ -1,3 +1,7 @@
+2008-11-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Project/ValaProject.cs: Allow executing Vala projects.
+
 2008-11-05  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* configure.in:

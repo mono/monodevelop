@@ -280,6 +280,13 @@ namespace MonoDevelop.ValaBinding
 				pc,
 				monitor);
 		}
+
+		protected override bool OnGetCanExecute (MonoDevelop.Projects.ExecutionContext context, string solutionConfiguration)
+		{
+			ValaProjectConfiguration conf = (ValaProjectConfiguration)GetConfiguration(solutionConfiguration);
+			return (conf.CompileTarget == ValaBinding.CompileTarget.Bin) &&
+				context.ExecutionHandlerFactory.SupportsPlatform (ExecutionPlatform.Native);
+		}
 		
 		protected override void DoExecute (IProgressMonitor monitor,
 										   ExecutionContext context,
