@@ -12,7 +12,7 @@ using ICSharpCode.NRefactory.Visitors;
 
 namespace ICSharpCode.NRefactory.Parser.CSharp
 {
-	sealed class ConditionalCompilation : AbstractAstVisitor
+	public sealed class ConditionalCompilation : AbstractAstVisitor
 	{
 		static readonly object SymbolDefined = new object();
 		Dictionary<string, object> symbols = new Dictionary<string, object>();
