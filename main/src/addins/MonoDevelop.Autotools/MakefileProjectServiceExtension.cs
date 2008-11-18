@@ -373,6 +373,18 @@ namespace MonoDevelop.Autotools
 			monitor.ReportSuccess ( GettextCatalog.GetString ( "Project successfully cleaned"));
 		}
 
+		protected override bool CanExecute (SolutionEntityItem item, ExecutionContext context, string configuration)
+		{
+			Project project = item as Project;
+			if (project != null) {
+				MakefileData data = project.ExtendedProperties ["MonoDevelop.Autotools.MakefileInfo"] as MakefileData;
+				if (data != null && data.IntegrationEnabled && !String.IsNullOrEmpty (data.ExecuteTargetName))
+					return true;
+			}
+			return base.CanExecute (item, context, configuration);
+		}
+
+
 		protected override void Execute (IProgressMonitor monitor, SolutionEntityItem entry, ExecutionContext context, string configuration)
 		{
 			Project project = entry as Project;
