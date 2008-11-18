@@ -68,7 +68,10 @@ namespace MonoDevelop.CSharpBinding.Tests
 			int triggerWordLength = 1;
 			CodeCompletionContext ctx = new CodeCompletionContext ();
 			ctx.TriggerOffset = sev.CursorPosition;
-			
+			int line, column;
+			sev.GetLineColumnFromPosition (sev.CursorPosition, out line, out column);
+			ctx.TriggerLine = line;
+			ctx.TriggerLineOffset = column;
 			return textEditorCompletion.HandleCodeCompletion (ctx, text[cursorPosition - 1] , ref triggerWordLength) as CompletionDataList;
 		}
 
@@ -99,6 +102,10 @@ namespace MonoDevelop.CSharpBinding.Tests
 			int triggerWordLength = 1;
 			CodeCompletionContext ctx = new CodeCompletionContext ();
 			ctx.TriggerOffset = sev.CursorPosition;
+			int line, column;
+			sev.GetLineColumnFromPosition (sev.CursorPosition, out line, out column);
+			ctx.TriggerLine = line;
+			ctx.TriggerLineOffset = column;
 			
 			return textEditorCompletion.CodeCompletionCommand (ctx) as CompletionDataList;
 		}
