@@ -1,3 +1,7 @@
+2008-11-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* COPYING: Add GPL v2 license.
+
 2008-11-10  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* monodevelop.in: Always use debug mode when running the alpha.
