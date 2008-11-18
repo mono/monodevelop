@@ -1,5 +1,11 @@
 2008-11-18  Mike Kestner <mkestner@novell.com> 
 
+	* libstetic/editor/ActionMenuItem.cs: check for whitespace only Text
+	values before saving actions to stop people from doing silly things.
+	[Fixes #446281]
+
+2008-11-18  Mike Kestner <mkestner@novell.com> 
+
 	* *: kill gnome dependency.  Dynamically load GConf.Client object
 	to query for stetic theme.  Dynamically load Gnome.Stock for icon
 	editors.  Establish callbacks for MIME resolution and showing urls.

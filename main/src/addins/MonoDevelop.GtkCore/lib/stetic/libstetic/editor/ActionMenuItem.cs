@@ -83,7 +83,7 @@ namespace Stetic.Editor
 				Gtk.Entry entry = label as Gtk.Entry;
 				if (entry != null && exitKey != Gdk.Key.Escape) {
 					localUpdate = true;
-					if (entry.Text.Length > 0 || node.Action.GtkAction.StockId != null) {
+					if (entry.Text.Trim().Length > 0 || node.Action.GtkAction.StockId != null) {
 						using (node.Action.UndoManager.AtomicChange) {
 							node.Action.Label = entry.Text;
 							node.Action.NotifyChanged ();
