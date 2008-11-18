@@ -158,13 +158,16 @@ namespace MonoDevelop.Projects.Gui.Completion
 			
 			this.completionWidget = completionWidget;
 
-			if (FillList (true)) {
+			if (FillList ()) {
+				Reset (true);
+				
 				// makes control-space in midle of words to work
 				string text = completionWidget.GetCompletionText (completionContext);
 				if (text.Length == 0) {
 					text = completionDataList.DefaultCompletionString;
 					SelectEntry (text);
 					initialWordLength = completionWidget.SelectedLength;
+					Show ();
 					return true;
 				}
 				
@@ -175,6 +178,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 				{	
 					UpdateWord ();
 					Hide ();
+				} else {
+					Show ();
 				}
 				return true;
 			}
@@ -184,7 +189,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 		}
 		
-		bool FillList (bool reshow)
+		bool FillList ()
 		{
 			if ((completionDataList.Count == 0) && !IsChanging)
 				return false;
@@ -214,8 +219,6 @@ namespace MonoDevelop.Projects.Gui.Completion
 
 			Move (x, y);
 			
-			if (reshow)
-				Show ();
 			return true;
 		}
 		
@@ -224,8 +227,9 @@ namespace MonoDevelop.Projects.Gui.Completion
 			if (Selection == -1 || SelectionDisabled)
 				return;
 			
-			string word = currentData.CompletionText;
-			IActionCompletionData ac = currentData as IActionCompletionData;
+			ICompletionData item = currentData ?? completionDataList[Selection];
+			string word = item.CompletionText;
+			IActionCompletionData ac = item as IActionCompletionData;
 			if (ac != null) {
 				ac.InsertCompletionText (completionWidget, completionContext);
 				return;
@@ -427,7 +431,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			if (Visible) {
 				//don't reset the user-entered word when refilling the list
 				Reset (false);
-				FillList (false);
+				FillList ();
 				if (last != null)
 					SelectEntry (last);
 			}

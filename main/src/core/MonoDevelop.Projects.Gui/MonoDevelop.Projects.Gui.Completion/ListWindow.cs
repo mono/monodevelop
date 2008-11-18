@@ -78,7 +78,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		public new void Show ()
 		{
 			this.ShowAll ();
-			Reset (true);
+			ResetSizes ();
 		}
 		
 		public void ShowFooter (Widget w)
@@ -96,7 +96,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 		}
 		
-		public void Reset (bool clearWord)
+		protected void Reset (bool clearWord)
 		{
 			if (clearWord) {
 				word = new StringBuilder ();
@@ -106,7 +106,14 @@ namespace MonoDevelop.Projects.Gui.Completion
 			list.Reset ();
 			if (provider == null)
 				return;
-
+			
+			if (IsRealized) {
+				ResetSizes ();
+			}
+		}
+		
+		void ResetSizes ()
+		{
 			scrollbar.Adjustment.Lower = 0;
 			scrollbar.Adjustment.Upper = Math.Max(0, provider.ItemCount - list.VisibleRows);
 			scrollbar.Adjustment.PageIncrement = list.VisibleRows - 1;
@@ -414,8 +421,10 @@ namespace MonoDevelop.Projects.Gui.Completion
 
 			page = 0;
 			disableSelection = false;
-			UpdateStyle ();
-			QueueDraw ();
+			if (IsRealized) {
+				UpdateStyle ();
+				QueueDraw ();
+			}
 			if (SelectionChanged != null) SelectionChanged (this, EventArgs.Empty);
 		}
 		
@@ -434,19 +443,29 @@ namespace MonoDevelop.Projects.Gui.Completion
 				if (value != selection) 
 				{
 					selection = value;
-						
-					if (selection < page || selection >= page + VisibleRows) {
-						page = selection - (VisibleRows / 2);
-						if (page < 0) page = 0;
-					}
+					UpdatePage ();
 					
-					if (SelectionChanged != null) SelectionChanged (this, EventArgs.Empty);
+					if (SelectionChanged != null)
+						SelectionChanged (this, EventArgs.Empty);
 				}
 				
 				if (disableSelection)
 					disableSelection = false;
 
 				this.QueueDraw ();
+			}
+		}
+		
+		void UpdatePage ()
+		{
+			if (!IsRealized) {
+				page = 0;
+				return;
+			}
+			
+			if (selection < page || selection >= page + VisibleRows) {
+				page = selection - (VisibleRows / 2);
+				if (page < 0) page = 0;
 			}
 		}
 		
@@ -620,6 +639,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		{
 			base.OnRealized ();
 			UpdateStyle ();
+			UpdatePage ();
 		}
 		
 		void UpdateStyle ()

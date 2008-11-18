@@ -1,3 +1,14 @@
+2008-11-18  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Don't crash on
+	setting selection or resetting when the window isn't realised. Handle
+	these cases properly.
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs: Don't
+	show completion window if it's an auto-accepting unique match. Fixes
+	Bug 445390 - Ctrl-space with auto-accept still briefly shows
+	completion window.
+
 2008-11-13  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects.Gui.mdp: Flush.
