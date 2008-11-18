@@ -1,3 +1,7 @@
+2008-11-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Project/ValaProject.cs: Allow executing Vala projects.
+
 2008-11-18  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* Compiler/ValaCompiler.cs: valac no longer supports -D.
