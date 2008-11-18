@@ -1,3 +1,10 @@
+2008-11-18  Mike Kestner <mkestner@novell.com> 
+
+	* */Makefile.am: break the gnome/gconf-sharp dependencies.
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs: set up
+	callbacks to the PlatformService for MIME resolution and showing
+	urls.
+
 2008-11-11  Mike Kestner <mkestner@novell.com> 
 
 	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs: use the 

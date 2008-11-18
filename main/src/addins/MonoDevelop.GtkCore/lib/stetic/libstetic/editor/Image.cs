@@ -29,7 +29,7 @@ namespace Stetic.Editor {
 				if (info.CanRead && info.PropertyType == typeof (string))
 					tmpIds.Add (info.GetValue (null, null));
 			}
-			foreach (PropertyInfo info in typeof (Gnome.Stock).GetProperties (BindingFlags.Public | BindingFlags.Static)) {
+			foreach (PropertyInfo info in GnomeStock.Properties) {
 				if (info.CanRead && info.PropertyType == typeof (string))
 					tmpIds.Add (info.GetValue (null, null));
 			}
@@ -75,12 +75,12 @@ namespace Stetic.Editor {
 
 		public Image (bool allowStock, bool allowFile) : base (false, 6)
 		{
-			image = new Gtk.Image (Gnome.Stock.Blank, Gtk.IconSize.Button);
+			image = new Gtk.Image (GnomeStock.Blank, Gtk.IconSize.Button);
 			PackStart (image, false, false, 0);
 
 			if (allowStock) {
 				store = new Gtk.ListStore (typeof (string), typeof (string));
-				store.AppendValues (Gnome.Stock.Blank, Catalog.GetString ("(None)"));
+				store.AppendValues (GnomeStock.Blank, Catalog.GetString ("(None)"));
 				for (int i = 0; i < stockIds.Length; i++)
 					store.AppendValues (stockIds[i], stockLabels[i]);
 
@@ -225,7 +225,7 @@ namespace Stetic.Editor {
 				try {
 					image.Pixbuf = new Gdk.Pixbuf (value, imgWidth, imgHeight);
 				} catch {
-					image.SetFromStock (Gnome.Stock.Blank, Gtk.IconSize.Button);
+					image.SetFromStock (GnomeStock.Blank, Gtk.IconSize.Button);
 				}
 
 				if (!syncing) {

@@ -1,6 +1,42 @@
 using System;
+using System.Collections.Generic;
+using System.Reflection;
 
 namespace Stetic.Editor {
+
+	internal static class GnomeStock {
+
+		static string blank;
+		static List<PropertyInfo> props = new List<PropertyInfo> ();
+
+		static GnomeStock ()
+		{
+			try {
+				Assembly assm = Assembly.Load ("gnome-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f");
+				if (assm == null)
+					return;
+
+				Type type = assm.GetType ("Gnome.Stock");
+				if (type == null)
+					return;
+
+				foreach (PropertyInfo info in type.GetProperties (BindingFlags.Static | BindingFlags.Public)) {
+					if (info.Name == "Blank")
+						blank = (string) info.GetValue (null, null);
+					props.Add (info);
+				}
+			} catch {
+			}
+		}
+
+		public static string Blank {
+			get { return blank == null ? Gtk.Stock.New : blank; }
+		}
+
+		public static List<PropertyInfo> Properties {
+			get { return props; }
+		}
+	}
 
 	public class StockItem: BaseImageCell
 	{
@@ -75,7 +111,7 @@ namespace Stetic.Editor {
 			imageFrame.BorderWidth = 2;
 			PackStart (imageFrame, false, false, 0);
 
-			image = new Gtk.Image (Gnome.Stock.Blank, Gtk.IconSize.Button);
+			image = new Gtk.Image (GnomeStock.Blank, Gtk.IconSize.Button);
 			imageFrame.Add (image);
 			
 			entry = new Gtk.Entry ();

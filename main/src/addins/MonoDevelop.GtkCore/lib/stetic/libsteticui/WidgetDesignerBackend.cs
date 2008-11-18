@@ -29,6 +29,7 @@
 
 using System;
 using System.Collections;
+using System.Reflection;
 using Gtk;
 using Gdk;
 
@@ -214,9 +215,11 @@ namespace Stetic
 		{
 			if (theme == null) {
 				try {
-					GConf.Client client = new GConf.Client ();
-					// client.AddNotify ("/apps/metacity/general", GConfNotify);
-					string themeName = (string)client.Get ("/apps/metacity/general/theme");
+					Assembly assm = Assembly.Load ("gconf-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f");
+					Type client_type = assm.GetType ("GConf.Client");
+					MethodInfo method = client_type.GetMethod ("Get", BindingFlags.Instance | BindingFlags.Public);
+					object client = Activator.CreateInstance (client_type, new object[] {});
+					string themeName = (string) method.Invoke (client, new object[] {"/apps/metacity/general/theme"});
 					theme = Metacity.Theme.Load (themeName);
 				} catch {
 					// Don't crash if metacity is not available

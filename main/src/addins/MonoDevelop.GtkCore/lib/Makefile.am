@@ -53,9 +53,7 @@ libsteticui_DIST := $(addprefix $(libsteticui_DIR)/,$(libsteticui_DATAFILES)) $(
 # fails because makefile has relative references
 #libsteticui_REFERENCES := $(shell sh $(EXTRACT_VARS) $(libsteticui_MAKEFILE) "libsteticui_dll_references")
 libsteticui_REFERENCES  =  \
-	-pkg:gconf-sharp-2.0 \
 	-pkg:glib-sharp-2.0 \
-	-pkg:gnome-sharp-2.0 \
 	-pkg:gtk-sharp-2.0 \
 	-r:$(libstetic) \
 	-r:$(top_builddir)/build/bin/Mono.Cecil.dll \

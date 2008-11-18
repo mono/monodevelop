@@ -93,6 +93,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					steticApp = Stetic.ApplicationFactory.CreateApplication (Stetic.IsolationMode.None);
 					steticApp.AllowInProcLibraries = false;
 					steticApp.ShowNonContainerWarning = PropertyService.Get ("MonoDevelop.GtkCore.ShowNonContainerWarning", true);
+					steticApp.MimeResolver = OnMimeResolve;
+					steticApp.ShowUrl = OnShowUrl;
 					steticApp.WidgetLibraryResolver = OnAssemblyResolve;
 				}
 				return steticApp;
@@ -102,6 +104,16 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		static string OnAssemblyResolve (string assemblyName)
 		{
 			return Runtime.SystemAssemblyService.GetAssemblyLocation (assemblyName);
+		}
+		
+		static string OnMimeResolve (string url)
+		{
+			return MonoDevelop.Core.Gui.Services.PlatformService.GetMimeTypeForUri (url);
+		}
+		
+		static void OnShowUrl (string url)
+		{
+			MonoDevelop.Core.Gui.Services.PlatformService.ShowUrl (url);
 		}
 		
 		internal static void StoreConfiguration ()

@@ -207,6 +207,14 @@ namespace Stetic
 			set { Backend.WidgetLibraryResolver = value; }
 		}
 		
+		public MimeResolverDelegate MimeResolver {
+			set { Backend.MimeResolver = value; }
+		}
+		
+		public Editor.ShowUrlDelegate ShowUrl {
+			set { Backend.ShowUrl = value; }
+		}
+		
 		public bool ShowNonContainerWarning {
 			get { return Backend.ShowNonContainerWarning; }
 			set { Backend.ShowNonContainerWarning = value; }

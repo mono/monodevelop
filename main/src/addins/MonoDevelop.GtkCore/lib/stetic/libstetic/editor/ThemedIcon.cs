@@ -11,7 +11,7 @@ namespace Stetic.Editor {
 
 		public ThemedIcon () : base (false, 6)
 		{
-			image = new Gtk.Image (Gnome.Stock.Blank, Gtk.IconSize.Button);
+			image = new Gtk.Image (GnomeStock.Blank, Gtk.IconSize.Button);
 			PackStart (image, false, false, 0);
 
 			entry = new Gtk.Entry ();
@@ -64,7 +64,7 @@ namespace Stetic.Editor {
 				if (pix != null) {
 					image.Pixbuf = pix;
 				} else {
-					image.Stock = Gnome.Stock.Blank;
+					image.Stock = GnomeStock.Blank;
 				}
 
 				syncing = true;

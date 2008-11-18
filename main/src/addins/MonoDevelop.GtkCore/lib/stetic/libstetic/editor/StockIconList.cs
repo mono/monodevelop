@@ -16,7 +16,7 @@ namespace Stetic.Editor
 					AddIcon (name, WidgetUtils.LoadIcon (name, Gtk.IconSize.Menu), name);
 				}
 			}
-			foreach (PropertyInfo info in typeof (Gnome.Stock).GetProperties (BindingFlags.Public | BindingFlags.Static)) {
+			foreach (PropertyInfo info in GnomeStock.Properties) {
 				if (info.CanRead && info.PropertyType == typeof (string)) {
 					string name = (string) info.GetValue (null, null);
 					AddIcon (name, WidgetUtils.LoadIcon (name, Gtk.IconSize.Menu), name);

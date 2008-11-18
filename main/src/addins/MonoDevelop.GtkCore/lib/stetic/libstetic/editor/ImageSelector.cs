@@ -98,7 +98,7 @@ namespace Stetic.Editor
 			imageFrame.BorderWidth = 2;
 			PackStart (imageFrame, false, false, 0);
 
-			image = new Gtk.Image (Gnome.Stock.Blank, Gtk.IconSize.Button);
+			image = new Gtk.Image (GnomeStock.Blank, Gtk.IconSize.Button);
 			imageFrame.Add (image);
 			
 			Gtk.Frame frame = new Gtk.Frame ();

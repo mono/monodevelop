@@ -1,3 +1,9 @@
+2008-11-18  Mike Kestner <mkestner@novell.com> 
+
+	* *: kill gnome dependency.  Dynamically load GConf.Client object
+	to query for stetic theme.  Dynamically load Gnome.Stock for icon
+	editors.  Establish callbacks for MIME resolution and showing urls.
+
 2008-11-12  Mike Kestner <mkestner@novell.com> 
 
 	* libsteticui/PropertyTree.cs: refine store column type declarations.

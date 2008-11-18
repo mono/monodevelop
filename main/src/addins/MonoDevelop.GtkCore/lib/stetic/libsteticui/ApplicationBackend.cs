@@ -41,8 +41,6 @@ namespace Stetic
 			
 			System.Threading.Thread.CurrentThread.Name = "gui-thread";
 			
-			new Gnome.Program ("SteticBackend", "0.0", Gnome.Modules.UI, new string[0]);
-			
 			// Read the remoting channel to use
 			
 			string channel = Console.In.ReadLine ();
@@ -102,6 +100,14 @@ namespace Stetic
 			set { widgetLibraryResolver = value; }
 		}
 		
+		public MimeResolverDelegate MimeResolver {
+			set { ResourceInfo.MimeResolver = value; }
+		}
+
+		public Editor.ShowUrlDelegate ShowUrl {
+			set { Editor.NonContainerWarningDialog.ShowUrl = value; }
+		}
+
 		public bool ShowNonContainerWarning {
 			get { return Wrapper.Container.ShowNonContainerWarning; }
 			set { Wrapper.Container.ShowNonContainerWarning = value; }
