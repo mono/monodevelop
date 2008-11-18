@@ -1,3 +1,9 @@
+2008-11-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Project/CProject.cs: Allow running C projects.
+
+	* Makefile.am: Fix parallel build issues.
+
 2008-11-05  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* CBinding.addin.xml: Bump MD version.

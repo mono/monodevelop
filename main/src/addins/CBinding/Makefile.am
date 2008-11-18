@@ -134,7 +134,7 @@ RES =  \
 	templates/StaticLibraryCProject.xpt.xml
 
 if ENABLE_C
-all: $(ASSEMBLY)
+all: $(ASSEMBLY) $(ASSEMBLY).mdb
 else
 all:
 endif
@@ -143,6 +143,8 @@ $(ASSEMBLY): $(build_sources) $(build_resources)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library $(REFS) \
 		$(build_resources:%=/resource:%) $(build_sources)
+
+$(ASSEMBLY).mdb: $(ASSEMBLY)
 
 if ENABLE_C
 cbindinglibdir = $(MD_ADDIN_DIR)/BackendBindings

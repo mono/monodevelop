@@ -298,7 +298,13 @@ namespace CBinding
 				pc,
 			    monitor);
 		}
-		
+
+		protected override bool OnGetCanExecute (ExecutionContext context, string solutionConfiguration)
+		{
+			return (target == CBinding.CompileTarget.Bin) &&
+				context.ExecutionHandlerFactory.SupportsPlatform (ExecutionPlatform.Native);
+		}
+
 		protected override void DoExecute (IProgressMonitor monitor, ExecutionContext context, string configuration)
 		{
 			CProjectConfiguration conf = (CProjectConfiguration) GetConfiguration (configuration);
