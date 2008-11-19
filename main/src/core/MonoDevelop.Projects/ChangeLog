@@ -1,3 +1,7 @@
+2008-11-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/BuildTool.cs: Fix help message.
+
 2008-11-19  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Serialization/ParserDatabase.cs:

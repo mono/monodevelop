@@ -53,7 +53,7 @@ namespace MonoDevelop.Projects
 			if (help) {
 				Console.WriteLine ("build [options] [build-file]");
 				Console.WriteLine ("-p --project:PROJECT  Name of the project to build.");
-				Console.WriteLine ("-t --target:TARGET    Name of the solution configuration to build.");
+				Console.WriteLine ("-t --target:TARGET    Name of the target: Build or Clean.");
 				Console.WriteLine ("-c --configuration:CONFIGURATION  Name of the solution configuration to build.");
 				Console.WriteLine ();
 				Console.WriteLine ("Supported targets:");
