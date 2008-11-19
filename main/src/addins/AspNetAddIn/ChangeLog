@@ -1,3 +1,13 @@
+2008-11-18  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Use ASP.NET
+	serialisation attributes to improve completion. Display properties as
+	children when appropriate; don't display properties as attributes or
+	controls as children when inappropriate.
+
+	* MonoDevelop.AspNet.Parser/DocumentReferenceManager.cs: Add a shortcut
+	for HTML controls.
+
 2008-11-17  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Templates/WebApplication.xpt.xml: Fix case of asp:button.

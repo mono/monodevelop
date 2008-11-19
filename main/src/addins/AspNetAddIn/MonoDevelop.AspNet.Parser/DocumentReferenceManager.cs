@@ -153,6 +153,9 @@ namespace MonoDevelop.AspNet.Parser
 		
 		public IType GetControlType (string tagPrefix, string tagName)
 		{
+			if (String.IsNullOrEmpty (tagPrefix))
+				return null;
+			
 			IType type = null;
 			if (0 == string.Compare (tagPrefix, "asp", StringComparison.InvariantCultureIgnoreCase)) {
 				type = WebTypeManager.AssemblyTypeLookup (doc.Project, "System.Web", "System.Web.UI.WebControls", tagName);
