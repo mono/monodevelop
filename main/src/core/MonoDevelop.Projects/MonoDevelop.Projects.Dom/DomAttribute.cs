@@ -116,5 +116,15 @@ namespace MonoDevelop.Projects.Dom
 		{
 			return visitor.Visit (this, data);
 		}
+		
+		public override string ToString ()
+		{
+			return string.Format ("[DomAttribute:Name={0}, #PositionalArguments={1}, #NamedArguments={2}, AttributeType={3}, Region={4}]",
+			                      Name,
+			                      PositionalArguments.Count,
+			                      NamedArguments.Count,
+			                      AttributeType,
+			                      Region);
+		}
 	}
 }

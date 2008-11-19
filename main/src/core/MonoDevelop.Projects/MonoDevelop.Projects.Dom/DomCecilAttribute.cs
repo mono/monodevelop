@@ -46,8 +46,18 @@ namespace MonoDevelop.Projects.Dom
 			this.customAttribute = customAttribute;
 			base.AttributeType = DomCecilMethod.GetReturnType (customAttribute.Constructor);
 			base.Name          = customAttribute.Constructor.DeclaringType.FullName;
-			// TODO dom Read parameters
-//			base.AttributeTarget = customAttribute.ConstructorParameters
+			
+			if (!customAttribute.Resolve ())
+				return;
+			
+			foreach (object par in customAttribute.ConstructorParameters)
+				AddPositionalArgument (new System.CodeDom.CodePrimitiveExpression (par));
+			
+			foreach (System.Collections.DictionaryEntry entry in customAttribute.Properties)
+				AddNamedArgument ((string)entry.Key, new System.CodeDom.CodePrimitiveExpression (entry.Value));
+			
+			foreach (System.Collections.DictionaryEntry entry in customAttribute.Fields)
+				AddNamedArgument ((string)entry.Key, new System.CodeDom.CodePrimitiveExpression (entry.Value));
 		}
 	}
 }

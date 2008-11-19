@@ -1,3 +1,10 @@
+2008-11-18  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Dom/DomCecilAttribute.cs: Load constructor
+	arguments from assembly.
+
+	* MonoDevelop.Projects.Dom/DomAttribute.cs: Add a ToString override.
+
 2008-11-18  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: fixed unit tests.
