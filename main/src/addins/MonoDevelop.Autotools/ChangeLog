@@ -1,5 +1,10 @@
 2008-11-19  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MakefileOptionPanelWidget.cs: Avoid asking for creating makefiles when
+	switching pages.
+
+2008-11-19  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Commands.cs:
 	* MakefileOptionPanelWidget.cs: When enabling makefile integration, if
 	no makefiles are found in the project directory, show a message

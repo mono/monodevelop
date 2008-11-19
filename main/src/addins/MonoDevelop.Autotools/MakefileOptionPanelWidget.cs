@@ -17,6 +17,7 @@ namespace MonoDevelop.Autotools
 		MakefileData data;
 		ComboBox [] combos = null;
 		bool isDotNetProject;
+		bool loading = true;
 		
 		public MakefileOptionPanelWidget (Project project, MakefileData tmpData)
 			: this ()
@@ -110,6 +111,8 @@ namespace MonoDevelop.Autotools
 
 			((Gtk.Container) comboOutputDir.Parent).Remove (comboOutputDir);
 			((Gtk.Container) lblOutputDirVar.Parent).Remove (lblOutputDirVar);
+			
+			loading = false;
 		}
 
 		void FindExistingMakefile (Project project)
@@ -371,7 +374,7 @@ namespace MonoDevelop.Autotools
 						tryAgain = false;
 					} else {
 						bool generate = false;
-						if (!tryAgain) {
+						if (!tryAgain && !loading) {
 							generate = MessageService.Confirm (
 							      GettextCatalog.GetString ("No makefile was found in the project directory. Do you want to generate it now?"), 
 							      GettextCatalog.GetString ("Notice that generation of makefiles is not supported for single projects. A set of makefiles will have to be generated for the whole solution."), 
