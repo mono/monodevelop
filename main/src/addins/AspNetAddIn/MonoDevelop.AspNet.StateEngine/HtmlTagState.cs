@@ -88,6 +88,8 @@ namespace MonoDevelop.AspNet.StateEngine
 					parent = context.Nodes.Peek (1) as XElement;
 				}
 			}
+						
+			State ret = base.PushChar (c, context, ref rollback);
 			
 			//handle implicitly empty tags
 			if (c == '>')
@@ -97,6 +99,8 @@ namespace MonoDevelop.AspNet.StateEngine
 				    && ElementTypes.IsEmpty (element.Name.Name))
 				{
 					element.Close (element);
+					context.Nodes.Pop ();
+					
 					if (warnAutoClose) {
 						context.LogWarning (string.Format ("Implicitly closed empty tag '{0}'", element.Name.Name),
 						                    element.Region);
@@ -104,7 +108,7 @@ namespace MonoDevelop.AspNet.StateEngine
 				}
 			}
 			
-			return base.PushChar (c, context, ref rollback);
+			return ret;
 		}
 	}
 }

@@ -178,23 +178,49 @@ namespace Mono.TextEditor
 	
 	public class UnderlineMarker: TextMarker
 	{
-		public UnderlineMarker (string colorName)
+		public UnderlineMarker (string colorName, int start, int end)
 		{
 			this.ColorName = colorName;
+			this.StartCol = start;
+			this.EndCol = end;
 		}
 		
 		public string ColorName { get; set; }
+		public int StartCol { get; set; }
+		public int EndCol { get; set; }
 		
 		public override void Draw (TextEditor editor, Gdk.Drawable win, bool selected, int startOffset, int endOffset, int y, int startXPos, int endXPos)
 		{
-			//editor.ColorStyle.ErrorUnderline
+			int markerStart = LineSegment.Offset + System.Math.Max (StartCol, 0);
+			int markerEnd   = LineSegment.Offset + System.Math.Min (System.Math.Max (EndCol, LineSegment.Length), LineSegment.Length);
+			if (markerEnd < startOffset || markerStart > endOffset)
+				return;
+			
+			int from;
+			int to;
+			
+			if (markerStart < startOffset && endOffset < markerEnd) {
+				from = startXPos;
+				to   = endXPos;
+			} else {
+				int start = startOffset < markerStart ? markerStart : startOffset;
+				int end   = endOffset < markerEnd ? endOffset : markerEnd;
+				from = startXPos + editor.GetWidth (editor.Document.GetTextAt (startOffset, start - startOffset));
+				to   = startXPos + editor.GetWidth (editor.Document.GetTextAt (startOffset, end - startOffset));
+			}
+ 			from = System.Math.Max (from, editor.TextViewMargin.XOffset);
+ 			to   = System.Math.Max (to, editor.TextViewMargin.XOffset);
+			if (from >= to) {
+				return;
+			}
+			
 			using (Gdk.GC gc = new Gdk.GC (win)) {
 				gc.RgbFgColor = editor.ColorStyle.GetColorFromDefinition (ColorName);
 				int drawY    = y + editor.LineHeight - 1;
 				const int length = 6;
 				const int height = 2;
 				startXPos = System.Math.Max (startXPos, editor.TextViewMargin.XOffset);
-				for (int i = startXPos; i < endXPos; i += length) {
+				for (int i = from; i < to; i += length) {
 					win.DrawLine (gc, i, drawY, i + length / 2, drawY - height);
 					win.DrawLine (gc, i + length / 2, drawY - height, i + length, drawY);
 				}

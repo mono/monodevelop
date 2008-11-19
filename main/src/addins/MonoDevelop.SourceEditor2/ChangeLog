@@ -1,3 +1,8 @@
+2008-11-18  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Use more precise error
+	underline positioning when available.
+
 2008-11-17  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Use named colours in

@@ -888,11 +888,16 @@ namespace MonoDevelop.SourceEditor
 		{
 			this.Info = info;
 			this.Line = line; // may be null if no line is assigned to the error.
+			string underlineColor;
 			if (info.ErrorType == ErrorType.Warning)
-				marker = new UnderlineMarker (Mono.TextEditor.Highlighting.Style.WarningUnderlineString);
+				underlineColor = Mono.TextEditor.Highlighting.Style.WarningUnderlineString;
 			else
-				
-				marker = new UnderlineMarker (Mono.TextEditor.Highlighting.Style.ErrorUnderlineString);
+				underlineColor = Mono.TextEditor.Highlighting.Style.ErrorUnderlineString;
+			
+			if (Info.Region.Start.Line == info.Region.End.Line)
+				marker = new UnderlineMarker (underlineColor, Info.Region.Start.Column - 1, info.Region.End.Column - 1);
+			else
+				marker = new UnderlineMarker (underlineColor, - 1, - 1);
 		}
 		
 		public void AddToLine (Mono.TextEditor.Document doc)
