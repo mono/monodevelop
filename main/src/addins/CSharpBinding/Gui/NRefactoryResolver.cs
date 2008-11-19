@@ -339,17 +339,16 @@ namespace MonoDevelop.CSharpBinding
 					//System.Console.WriteLine("type reference resolve result");
 					return visitor.CreateResult (ConvertTypeReference (typeRef));
 				}
-				return null;
 			}
 			expr = ParseExpression (expressionResult);
 			//System.Console.WriteLine("parsed expression:" + expr);
 			if (expr == null) {
-//				System.Console.WriteLine("Can't parse expression");
+				//System.Console.WriteLine("Can't parse expression");
 				return null;
 			}
 			
 			ResolveResult result = visitor.Resolve (expr);
-		//	System.Console.WriteLine("result:" + result);
+			//System.Console.WriteLine("result:" + result);
 			return result;
 		}
 		
