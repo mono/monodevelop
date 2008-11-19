@@ -64,6 +64,11 @@ namespace MonoDevelop.Autotools
 		{
 			SolutionItem entry = CurrentNode.DataItem as SolutionItem;
 			Solution solution = CurrentNode.DataItem as Solution;
+			GenerateMakefiles (entry, solution);
+		}
+		
+		internal static void GenerateMakefiles (SolutionItem entry, Solution solution)
+		{
 			if (solution == null) {
 				AlertButton generateMakefilesButton = new AlertButton (GettextCatalog.GetString ("_Generate Makefiles"));
 				if (MessageService.AskQuestion (GettextCatalog.GetString ("Generating Makefiles is not supported for single projects. Do you want to generate them for the full solution - '{0}' ?", entry.ParentSolution.Name),

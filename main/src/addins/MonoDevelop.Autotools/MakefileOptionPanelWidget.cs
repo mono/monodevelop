@@ -36,10 +36,7 @@ namespace MonoDevelop.Autotools
 
 				this.cbEnableMakefileIntegration.Active = false;
 
-				if (File.Exists (SPath.Combine (project.BaseDirectory, "Makefile.am")))
-					this.fileEntryMakefilePath.Path = SPath.Combine (project.BaseDirectory, "Makefile.am");
-				else if (File.Exists (SPath.Combine (project.BaseDirectory, "Makefile")))
-					this.fileEntryMakefilePath.Path = SPath.Combine (project.BaseDirectory, "Makefile");
+				FindExistingMakefile (project);
 
 				this.fileEntryMakefilePath.DefaultPath = project.BaseDirectory;
 
@@ -113,6 +110,14 @@ namespace MonoDevelop.Autotools
 
 			((Gtk.Container) comboOutputDir.Parent).Remove (comboOutputDir);
 			((Gtk.Container) lblOutputDirVar.Parent).Remove (lblOutputDirVar);
+		}
+
+		void FindExistingMakefile (Project project)
+		{
+			if (File.Exists (SPath.Combine (project.BaseDirectory, "Makefile.am")))
+				this.fileEntryMakefilePath.Path = SPath.Combine (project.BaseDirectory, "Makefile.am");
+			else if (File.Exists (SPath.Combine (project.BaseDirectory, "Makefile")))
+				this.fileEntryMakefilePath.Path = SPath.Combine (project.BaseDirectory, "Makefile");
 		}
 		
 		public void SetImportMode ()
@@ -355,15 +360,32 @@ namespace MonoDevelop.Autotools
 		{
 			table1.Sensitive = active;
 			if (active) {
-				bool first_load = String.IsNullOrEmpty (data.RelativeMakefileName);
-				if (TryLoadMakefile (false)) {
-					if (first_load)
-						GuessVariables ();
-					else
-						LoadVariables ();
-				} else {
-					fileEntryMakefilePath.Path = fileEntryMakefilePath.DefaultPath;
-				}
+				bool tryAgain = false;
+				do {
+					bool first_load = String.IsNullOrEmpty (data.RelativeMakefileName);
+					if (TryLoadMakefile (false)) {
+						if (first_load)
+							GuessVariables ();
+						else
+							LoadVariables ();
+						tryAgain = false;
+					} else {
+						bool generate = false;
+						if (!tryAgain) {
+							generate = MessageService.Confirm (
+							      GettextCatalog.GetString ("No makefile was found in the project directory. Do you want to generate it now?"), 
+							      GettextCatalog.GetString ("Notice that generation of makefiles is not supported for single projects. A set of makefiles will have to be generated for the whole solution."), 
+							      new AlertButton (GettextCatalog.GetString ("Generate Makefile...")));
+						}
+						if (generate) {
+							AutotoolsCommandHandler.GenerateMakefiles (data.OwnerProject, data.OwnerProject.ParentSolution);
+							FindExistingMakefile (data.OwnerProject);
+						} else
+							fileEntryMakefilePath.Path = fileEntryMakefilePath.DefaultPath;
+						tryAgain = generate;
+					}
+				} while (tryAgain);
+				
 			} else {
 				SetActive (active);
 			}
