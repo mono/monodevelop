@@ -82,11 +82,11 @@
     <Class class = "BooBinding.Gui.BooTextEditorExtension" />
   </Extension>
 -->
-  <Extension path = "/MonoDevelop/ProjectModel/Ambiences">
+<!--  <Extension path = "/MonoDevelop/ProjectModel/Ambiences">
 	  <Class id    = "Boo"
 		 class = "BooBinding.BooAmbience"/>
   </Extension>
-
+-->
   <Extension path = "/MonoDevelop/Ide/Pads">
 	<Pad id = "BooBinding.Pads.BooShellPadContent" _label="Boo Shell" icon="boo-project-icon" class = "BooBinding.Pads.BooShellPadContent" defaultPlacement = "Bottom"/>
   </Extension>
