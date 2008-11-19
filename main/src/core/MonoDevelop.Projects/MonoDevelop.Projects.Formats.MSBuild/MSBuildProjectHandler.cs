@@ -621,8 +621,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						fgrp = FindItemGroup (msproject, itemName);
 						grps [itemName] = fgrp;
 					}
-					
+
 					string path = MSBuildProjectService.ToMSBuildPath (project.BaseDirectory, file.FilePath);
+					if (path.Length == 0)
+						continue;
 					
 					//directory paths must end with '/'
 					if ((file.Subtype == Subtype.Directory) && path[path.Length-1] != '/')
