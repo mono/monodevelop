@@ -107,7 +107,6 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			List<IType> result = new List<IType> (dbProvider.GetSubclassesTree (new HashSet<string> (), database, underlyingType, searchDeep, namespaces));
 			if (type is InstantiatedType) {
 				for (int i = 0; i < result.Count; i++) {
-					System.Console.WriteLine(result[i].FullName);
 					result[i] = DomType.CreateInstantiatedGenericType (result[i], ((InstantiatedType)type).GenericParameters);
 				}
 			}
