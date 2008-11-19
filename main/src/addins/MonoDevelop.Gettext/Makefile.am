@@ -68,7 +68,6 @@ RES =  \
 	gtk-gui/objects.xml \
 	icons/gettext-overlay-16.png \
 	icons/gettext-overlay-32.png \
-	icons/locale.svg \
 	icons/locale_16x16.png \
 	icons/locale_22x22.png \
 	icons/locale_32x32.png \
@@ -77,7 +76,7 @@ RES =  \
 	templates/Makefile.template \
 	templates/TranslationProject.xpt.xml
 
-all: $(ASSEMBLY)
+all: $(ASSEMBLY) $(ASSEMBLY).mdb
 
 $(ADDIN_BUILD)/%: $(srcdir)/lib/%
 	mkdir -p $(ADDIN_BUILD)
@@ -87,6 +86,7 @@ $(ASSEMBLY): $(build_sources) $(build_resources)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) $(REFS) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -target:library
 
+$(ASSEMBLY).mdb: $(ASSEMBLY)
 
 assemblydir = $(MD_ADDIN_DIR)/MonoDevelop.Gettext
 assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb

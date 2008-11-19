@@ -1,3 +1,11 @@
+2008-11-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* icons/locale.svg:
+	* MonoDevelop.Gettext.mdp:
+	* MonoDevelop.Gettext.addin.xml: Removed the locale.svg file.
+	PixbufLoader does not support svg in all platforms.
+
 2008-11-06  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am: Fix build dependencies.

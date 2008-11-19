@@ -26,7 +26,6 @@
     <File name="MonoDevelop.Gettext.Translator/LanguageChooserDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="icons/locale_22x22.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/locale_16x16.png" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/locale.svg" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/locale_32x32.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="templates/TranslationProject.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="gtk-gui/MonoDevelop.Gettext.Translator.LanguageChooserDialog.cs" subtype="Code" buildaction="Compile" />
