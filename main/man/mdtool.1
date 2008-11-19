@@ -34,8 +34,8 @@ Graphical add-in setup utility.
 .B build [options] [project-file]
 Project build tool. Use this tool to build any solution supported by MonoDevelop
 (eg. .mds, .sln). If no solution/project is specified then it will pull the
-first file in the directory with the .mds extension).
-You would use this option to build packages in a head-less or batch
+first solution it can find in the current directory.
+You can use this option to build packages in a head-less or batch
 fashion.
 .RS
 .ne 8
@@ -43,10 +43,13 @@ fashion.
 .B Options
 .RS
 .ne 8
-.B --f , --buildfile:FILE
-Filename of the Project or the solution to build.
+.B -c , --configuration:CONFIGURATION
+Name of the solution configuration to build.
 
-.B --p , --project:PROJECT
+.B -t , --target:TARGET
+Name of the target: Clean or Build
+
+.B -p , --project:PROJECT
 Name of the project to build.
 .RE
 
