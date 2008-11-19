@@ -1,5 +1,9 @@
 2008-11-19  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/CSharpAmbience.cs: worked on c# ambience.
+
+2008-11-19  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/MemberCompletionData.cs:
 	* Gui/CSharpTextEditorCompletion.cs: worked on "Bug 444547 - Invalid
 	options shown when completing 'new' operator".

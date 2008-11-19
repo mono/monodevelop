@@ -25,6 +25,7 @@
 //
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 using MonoDevelop.Projects.Dom;
@@ -272,7 +273,7 @@ namespace MonoDevelop.CSharpBinding
 				result.Append (GetString (method.ReturnType, flags));
 				result.Append (" ");
 			}
-			AppendExplicitInterfaces(result, method);
+			AppendExplicitInterfaces (result, method);
 			
 			if (method.IsConstructor) {
 				result.Append (Format (method.DeclaringType.Name));
@@ -394,11 +395,7 @@ namespace MonoDevelop.CSharpBinding
 				parameterCount = instantiatedType.GenericParameters.Count;
 			
 			if (IncludeGenerics (flags) && parameterCount > 0) {
-				if (EmitMarkup (flags)) {
-					result.Append ("&lt;");
-				} else {
-					result.Append ('<');
-				}
+				result.Append (EmitMarkup (flags) ? "&lt;" : "<");
 				for (int i = 0; i < parameterCount; i++) {
 					if (i > 0)
 						result.Append (", ");
@@ -409,16 +406,21 @@ namespace MonoDevelop.CSharpBinding
 					}
 					
 				}
-				if (EmitMarkup (flags)) {
-					result.Append ("&gt;");
-				} else {
-					result.Append ('>');
-				}
+				result.Append (EmitMarkup (flags) ? "&gt;" : ">");
 			}
 			
-			if (IncludeBaseTypes (flags) && type.BaseType != null) {
+			if (IncludeBaseTypes (flags) && type.BaseTypes.Any ()) {
 				result.Append (" : ");
-				result.Append (Format (NormalizeTypeName (type.BaseType.Name)));
+				bool first = true;
+				foreach (IReturnType baseType in type.BaseTypes) {
+					if (baseType.FullName == "System.Object")
+						continue;
+					if (!first)
+						result.Append (", ");
+					first = false;
+					result.Append (baseType.AcceptVisitor (this, data));	
+				}
+				
 			}
 			return result.ToString ();
 		}
