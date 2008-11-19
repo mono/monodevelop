@@ -626,7 +626,7 @@ namespace CSharpBinding.Parser
 			if (type == null || checkedTypes.ContainsKey (type.FullName))
 				return false;
 			
-			if (type.FullName == declaringType.FullName)
+			if (member is IType && type.FullName == ((IType)member).FullName)
 				return true;
 			
 			checkedTypes [type.FullName] = type.FullName;
@@ -680,7 +680,7 @@ namespace CSharpBinding.Parser
 				int col = typeReference.StartLocation.X;
 				ResolveResult resolveResult = resolver.ResolveIdentifier (type, new DomLocation (line, col));
 				IReturnType cls = resolveResult != null ? resolveResult.ResolvedType : null;
-				if (cls == null || cls.FullName == declaringType.FullName) {
+				if (cls == null || cls.FullName == ((IType)member).FullName) {
 					//Debug ("adding CastExpression", cls.FullName, castExpression);
 					AddUniqueReference (line, col, typeReference.Type);
 				}
@@ -782,7 +782,7 @@ namespace CSharpBinding.Parser
 				ResolveResult result = resolver.ResolveIdentifier (idExp.Identifier, new DomLocation (line, col));
 				if (member is IType) {
 					IMember item = result != null ? ((MemberResolveResult)result).ResolvedMember : null;
-					if (item == null || item is IType && ((IType) item).FullName == declaringType.FullName) {
+					if (item == null || item is IType && ((IType) item).FullName == ((IType)member).FullName) {
 						//Debug ("adding IdentifierExpression class", idExp.Identifier, idExp);
 						AddUniqueReference (line, col, idExp.Identifier);
 					}
@@ -871,7 +871,7 @@ namespace CSharpBinding.Parser
 				ResolveResult resolveResult = resolver.ResolveIdentifier (type, new DomLocation (line, col));
 				IReturnType cls = resolveResult != null ? resolveResult.ResolvedType : null;
 				
-				if (cls != null && cls.FullName == declaringType.FullName) {
+				if (cls != null && cls.FullName == ((IType)member).FullName) {
 					//Debug ("adding CastExpression", cls.FullName, castExpression);
 					AddUniqueReference (line, col, cls.FullName);
 				}
@@ -887,11 +887,11 @@ namespace CSharpBinding.Parser
 			int line = objCreateExpression.CreateType.StartLocation.Y;
 			int col = objCreateExpression.CreateType.StartLocation.X;
 			
-			if ((member is IType || (member is IMethod && ((IMethod) member).IsConstructor)) && declaringType.Name == GetNameWithoutPrefix (type)) {
+			if ((member is IType || (member is IMethod && ((IMethod) member).IsConstructor)) && declaringType != null && declaringType.Name == GetNameWithoutPrefix (type)) {
 				ResolveResult resolveResult = resolver.ResolveIdentifier (type, new DomLocation (line, col));
 				IReturnType cls = resolveResult != null ? resolveResult.ResolvedType : null;
 				
-				if (cls != null && cls.FullName == declaringType.FullName) {
+				if (cls != null && (member is IType && cls.FullName == ((IType)member).FullName) || declaringType.FullName == cls.FullName) {
 					//Debug ("adding ObjectCreateExpression", cls.FullName, objCreateExpression);
 					AddUniqueReference (line, col, cls.FullName);
 				}
@@ -900,6 +900,15 @@ namespace CSharpBinding.Parser
 			return base.VisitObjectCreateExpression (objCreateExpression, data);
 		}
 		
+		public override object VisitConstructorDeclaration (ICSharpCode.NRefactory.Ast.ConstructorDeclaration constructorDeclaration, object data)
+		{
+			if (member is IType) {
+				if (constructorDeclaration.Name == memberName)
+					AddUniqueReference (constructorDeclaration.StartLocation.Line, constructorDeclaration.StartLocation.Column, memberName);
+			}
+			return base.VisitConstructorDeclaration (constructorDeclaration, data);
+		}
+
 		public override object VisitVariableDeclaration (VariableDeclaration varDeclaration, object data)
 		{
 			//System.Console.WriteLine("VariableDeclaration:" + varDeclaration);
@@ -910,7 +919,7 @@ namespace CSharpBinding.Parser
 				ResolveResult resolveResult = resolver.ResolveIdentifier (type, new DomLocation (line, col));
 				IReturnType cls = resolveResult != null ? resolveResult.ResolvedType : null;
 				
-				if (cls != null && cls.FullName == declaringType.FullName) {
+				if (cls != null && cls.FullName == ((IType)member).FullName) {
 					//Debug ("adding varDeclaration", cls.FullName, varDeclaration);
 					line = varDeclaration.TypeReference.StartLocation.Y;
 					col = varDeclaration.TypeReference.StartLocation.X;
@@ -925,7 +934,7 @@ namespace CSharpBinding.Parser
 		{
 			//System.Console.WriteLine("VisitTypeDeclaration " + typeDeclaration);
 			if (member is IType && typeDeclaration.BaseTypes != null) {
-				string fname = declaringType.FullName;
+				string fname = ((IType)member).FullName;
 				if (typeDeclaration.Name == memberName && ((IType)member).TypeParameters.Count == typeDeclaration.Templates.Count)
 					AddUniqueReference (typeDeclaration.StartLocation.Line, typeDeclaration.StartLocation.Column, typeDeclaration.Name);
 				

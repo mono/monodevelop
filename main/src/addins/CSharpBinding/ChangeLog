@@ -1,3 +1,8 @@
+2008-11-19  Mike Krüger  <mkrueger@novell.com>
+
+	* Parser/CodeGenerator.cs: fixed 'Bug 445774 - Renaming class badly
+	broken; results in many errors'.
+
 2008-11-18  Mike Krüger  <mkrueger@novell.com>
 
 	* Gui/NRefactoryParameterDataProvider.cs: fixed 'Bug 444112 - Generic
