@@ -336,7 +336,9 @@ namespace MonoDevelop.CSharpBinding
 				newType.Name      = typeDeclaration.Name;
 				newType.Location  = ConvertLocation (typeDeclaration.StartLocation);
 				newType.ClassType = ConvertClassType (typeDeclaration.Type);
-				newType.BodyRegion = ConvertRegion (typeDeclaration.BodyStartLocation, typeDeclaration.EndLocation);
+				DomRegion region = ConvertRegion (typeDeclaration.BodyStartLocation, typeDeclaration.EndLocation);
+				region.End = new DomLocation (region.End.Line, region.End.Column + 1);
+				newType.BodyRegion = region;
 				newType.Modifiers  = ConvertModifiers (typeDeclaration.Modifier);
 				
 				AddAttributes (newType, typeDeclaration.Attributes);

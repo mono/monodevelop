@@ -1,5 +1,9 @@
 2008-11-19  Mike Krüger  <mkrueger@novell.com>
 
+	* Parser/NRefactoryParser.cs: fixed folding region bug.
+
+2008-11-19  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/CSharpAmbience.cs: worked on c# ambience.
 
 2008-11-19  Mike Krüger  <mkrueger@novell.com>
