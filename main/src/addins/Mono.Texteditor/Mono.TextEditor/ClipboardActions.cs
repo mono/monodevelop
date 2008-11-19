@@ -313,6 +313,8 @@ namespace Mono.TextEditor
 		static int PasteFrom (Clipboard clipboard, TextEditorData data, bool preserveSelection, int insertionOffset)
 		{
 			int result = -1;
+			if (data.Document.ReadOnly)
+				return result;
 			clipboard.RequestText (delegate (Clipboard clp, string text) {
 				data.Document.BeginAtomicUndo ();
 				if (preserveSelection && data.IsSomethingSelected) 
