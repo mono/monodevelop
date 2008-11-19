@@ -461,9 +461,10 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		public IType GetClass (string typeName, IList<IReturnType> genericArguments, bool caseSensitive)
 		{
+			int genericArgumentCount = genericArguments != null ? genericArguments.Count : 0;
 			lock (rwlock)
 			{
-				if (genericArguments != null && genericArguments.Count > 0) {
+				if (genericArgumentCount > 0) {
 					foreach (ClassEntry entry in this.GetAllClasses()) {
 						string nsName = entry.NamespaceRef != null ? entry.NamespaceRef.FullName : null;
 						string name   = String.IsNullOrEmpty (nsName) ? entry.Name : nsName + "." + entry.Name;
@@ -502,14 +503,14 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				
 				if (GetBestNamespaceEntry (path, len, false, caseSensitive, out nst, out nextPos)) 
 				{
-					ClassEntry ce = nst.GetClass (path[len], caseSensitive);
+					ClassEntry ce = nst.GetClass (path[len], genericArgumentCount, caseSensitive);
 					if (ce == null) return null;
 					return GetClass (ce);
 				}
 				else
 				{
 					// It may be an inner class
-					ClassEntry ce = nst.GetClass (path[nextPos++], caseSensitive);
+					ClassEntry ce = nst.GetClass (path[nextPos++], genericArgumentCount, caseSensitive);
 					if (ce == null) return null;
 					
 					len++;	// Now include class name
@@ -540,12 +541,12 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			return result;
 		}
 		
-		public IEnumerable GetSubclasses (string fullName, IList<string> namespaces)
+		public IEnumerable GetSubclasses (string fullName, int genericArgumentCount, IList<string> namespaces)
 		{
 			ArrayList nsubs = (ArrayList) unresolvedSubclassTable [fullName];
 			ArrayList csubs = null;
 			
-			ClassEntry ce = FindClassEntry (fullName);
+			ClassEntry ce = FindClassEntry (fullName, genericArgumentCount);
 			if (ce != null)
 				csubs = ce.Subclasses;
 
@@ -556,15 +557,23 @@ namespace MonoDevelop.Projects.Dom.Serialization
 					if (ob is ClassEntry) {
 						string ns = ((ClassEntry) ob).NamespaceRef.FullName;
 						if (namespaces == null || namespaces.Contains (ns)) {
+							if (genericArgumentCount >= 0 && ((ClassEntry)ob).TypeParameterCount != genericArgumentCount)
+								continue;
 							IType t = GetClass ((ClassEntry)ob);
-							yield return t;
+							if (t.FullName != fullName)
+								yield return t;
 						}
 					}
 					else {
 						// It's a full class name
 						IType cls = this.GetClass ((string)ob, null, true);
-						if (cls != null && (namespaces == null || namespaces.Contains (cls.Namespace)))
-							yield return cls;
+						
+						if (cls != null && (namespaces == null || namespaces.Contains (cls.Namespace))) {
+							if (genericArgumentCount >= 0 && cls.TypeParameters.Count != genericArgumentCount)
+								continue;
+							if (cls.FullName != fullName)
+								yield return cls;
+						}
 					}
 				}
 			}
@@ -926,7 +935,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 						
 						// A ClassEntry may already exist if part of the class is defined in another file
 						string name = c.TypeParameters.Count == 0 ? c.Name : c.Name + "~" + c.TypeParameters.Count;
-						ClassEntry ce = newNss[n].GetClass (name, true);
+						ClassEntry ce = newNss[n].GetClass (name, c.TypeParameters.Count , true);
 						if (ce != null) {
 							// The entry exists, just update it
 							if (ce.Class == null) ce.Class = ReadClass (ce);
@@ -988,7 +997,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				string bt = type.FullName;
 				if (bt == "System.Object")
 					continue;
-				ClassEntry sup = FindClassEntry (bt);
+				ClassEntry sup = FindClassEntry (bt, type.GenericArguments.Count);
 				if (sup != null)
 					sup.RegisterSubclass (ce);
 				else {
@@ -1024,7 +1033,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		void RemoveSubclassReferences (ClassEntry ce)
 		{
 			foreach (IReturnType type in GetAllBaseTypes (ce.Class)) {
-				ClassEntry sup = FindClassEntry (type.FullName);
+				ClassEntry sup = FindClassEntry (type.FullName, type.GenericArguments.Count);
 				if (sup != null)
 					sup.UnregisterSubclass (ce);
 					
@@ -1050,7 +1059,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				RemoveInnerSubclassReferences (ic);
 		}
 		
-		ClassEntry FindClassEntry (string fullName)
+		ClassEntry FindClassEntry (string fullName, int genericArgumentCount)
 		{
 			string[] path = fullName.Split ('.');
 			int len = path.Length - 1;
@@ -1059,7 +1068,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			
 			if (GetBestNamespaceEntry (path, len, false, true, out nst, out nextPos)) 
 			{
-				ClassEntry ce = nst.GetClass (path[len], true);
+				ClassEntry ce = nst.GetClass (path[len], genericArgumentCount, true);
 				if (ce == null) return null;
 				return ce;
 			}

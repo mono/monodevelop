@@ -300,8 +300,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		}
 */
 		
-		public IEnumerable<IType> GetSubclassesTree (HashSet<string> deepSearchedSet,
-		                                             SerializationCodeCompletionDatabase db,
+		public IEnumerable<IType> GetSubclassesTree (SerializationCodeCompletionDatabase db,
 		                                             IType cls,
 		                                             bool searchDeep, 
 		                                             IList<string> namespaces)
@@ -326,9 +325,9 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			
 			if (db != null) {
 				// Look for subclasses in all databases
-				foreach (IType dsub in db.GetSubclasses (fn, namespaces)) {
+				foreach (IType dsub in db.GetSubclasses (fn, cls.TypeParameters.Count, namespaces)) {
 					yield return dsub;
-					foreach (IType sub in GetSubclassesTree (deepSearchedSet, db, dsub, searchDeep, namespaces))
+					foreach (IType sub in GetSubclassesTree (db, dsub, searchDeep, namespaces))
 						yield return sub;
 				}
 				
@@ -337,15 +336,12 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				
 				foreach (ReferenceEntry re in db.References)
 				{
-					if (deepSearchedSet.Contains (re.Uri))
-						continue;
 					SerializationCodeCompletionDatabase cdb = GetDatabase (re.Uri);
 					if (cdb == null) continue;
-					deepSearchedSet.Add (re.Uri);
 					
-					foreach (IType dsub in cdb.GetSubclasses (fn, namespaces)) {
+					foreach (IType dsub in cdb.GetSubclasses (fn, cls.TypeParameters.Count, namespaces)) {
 						yield return dsub;
-						foreach (IType sub in GetSubclassesTree (deepSearchedSet, db, dsub, searchDeep, namespaces)) {
+						foreach (IType sub in GetSubclassesTree (db, dsub, searchDeep, namespaces)) {
 							yield return sub;
 						}
 					}

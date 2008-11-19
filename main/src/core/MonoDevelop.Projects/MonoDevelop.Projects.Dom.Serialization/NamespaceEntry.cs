@@ -101,13 +101,14 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			return contents_ci[ns] as NamespaceEntry;
 		}
 		
-		public ClassEntry GetClass (string name, bool caseSensitive)
+		public ClassEntry GetClass (string name, int genericArgumentCount, bool caseSensitive)
 		{
-			ClassEntry ne = contents[name] as ClassEntry;
+			string fullName = GetName (name, genericArgumentCount);
+			ClassEntry ne = contents[fullName] as ClassEntry;
 			if (ne != null || caseSensitive) return ne;
 			
 			if (contents_ci == null) BuildCaseInsensitiveTable ();
-			return contents_ci[name] as ClassEntry;
+			return contents_ci[fullName] as ClassEntry;
 		}
 		
 		public void Add (NamespaceEntry value)
@@ -117,12 +118,15 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			if (contents_ci != null)
 				contents_ci [value.name] = value;
 		}
-
+		internal static string GetName (string name, int genericArgumentCount)
+		{
+			if (genericArgumentCount <= 0)
+				return name;
+			return name + "~" + genericArgumentCount;
+		}
 		internal static string GetName (ClassEntry entry)
 		{
-			if (entry.TypeParameterCount == 0)
-				return entry.Name;
-			return entry.Name + "~" + entry.TypeParameterCount;
+			return GetName (entry.Name, entry.TypeParameterCount);
 		}
 		
 		public void Add (ClassEntry value)
