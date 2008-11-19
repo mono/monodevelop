@@ -1,3 +1,7 @@
+2008-11-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/BuildTool.cs: Fix help message.
+
 2008-11-07  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs: When
