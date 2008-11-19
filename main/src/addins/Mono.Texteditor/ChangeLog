@@ -1,3 +1,7 @@
+2008-11-19  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextEditor/ClipboardActions.cs: Add missing '!'. Fixes pasting.
+
 2008-11-19  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextEditor.cs:
