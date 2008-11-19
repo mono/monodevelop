@@ -839,7 +839,9 @@ namespace Mono.TextEditor
 				return updateRequests.AsReadOnly ();
 			}
 		}
-
+		// Use CanEdit (int lineNumber) instead for getting a request
+		// if a part of a document can be read. ReadOnly should generally not be used
+		// for deciding, if a document is readonly or not.
 		public bool ReadOnly {
 			get {
 				return readOnly;

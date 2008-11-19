@@ -664,8 +664,9 @@ namespace Mono.TextEditor
 					this.caretBlink = false;
 				}
 			}
-			if (args.Button == 2 && !Document.ReadOnly)  {
-				int offset = Document.LocationToOffset (VisualToDocumentLocation (args.X, args.Y));
+			DocumentLocation docLocation = VisualToDocumentLocation (args.X, args.Y);
+			if (args.Button == 2 && this.textEditor.CanEdit (docLocation.Line))  {
+				int offset = Document.LocationToOffset (docLocation);
 				int length = ClipboardActions.PasteFromPrimary (textEditor.GetTextEditorData (), offset);
 				int newOffset = textEditor.Caret.Offset;
 				if (selection != null) {

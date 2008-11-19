@@ -1141,6 +1141,12 @@ namespace Mono.TextEditor
 			textEditorData.InsertAtCaret (text);
 		}
 		
+		public bool CanEdit (int line)
+		{
+			return textEditorData.CanEdit (line);
+		}
+		
+		
 		/// <summary>
 		/// Use with care.
 		/// </summary>

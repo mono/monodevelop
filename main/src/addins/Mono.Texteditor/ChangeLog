@@ -1,5 +1,11 @@
 2008-11-19  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/TextViewMargin.cs:
+	* Mono.TextEditor/ClipboardActions.cs: Used CanEdit instead of readonly
+
+2008-11-19  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextViewMargin.cs:
 	* Mono.TextEditor/ClipboardActions.cs: Recognizing readonly property for
 	cut&paste operations.
