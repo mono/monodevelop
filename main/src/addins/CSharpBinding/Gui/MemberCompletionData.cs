@@ -107,7 +107,8 @@ namespace MonoDevelop.CSharpBinding
 			buf.CursorPosition = context.TriggerOffset + this.CompletionText.Length;
 			//select any generic parameters e.g. T in <T>
 			int offset = this.CompletionText.IndexOf ('<');
-			if (offset >= 0) {
+			
+			if (offset >= 0 && !(member is InstantiatedType)) {
 				int endOffset = offset + 1;
 				while (endOffset < this.CompletionText.Length) {
 					char ch = this.CompletionText[endOffset];

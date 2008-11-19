@@ -941,16 +941,21 @@ namespace MonoDevelop.CSharpBinding.Gui
 			ExpressionContext.TypeExpressionContext tce = context as ExpressionContext.TypeExpressionContext;
 			
 			CompletionDataCollector col = new CompletionDataCollector (Editor, dom, Document.CompilationUnit, location);
-			
-			if (returnTypeUnresolved != null) {
-				col.FullyQualify = true;
-				ICompletionData unresovedCompletionData = col.AddCompletionData (result, returnTypeUnresolved);
-				col.FullyQualify = false;
-				result.DefaultCompletionString = StripGenerics (unresovedCompletionData.CompletionText);
-			} else {
-				ICompletionData unresovedCompletionData = col.AddCompletionData (result, returnType);
-				result.DefaultCompletionString = StripGenerics (unresovedCompletionData.CompletionText);
-				
+			IType type = null;
+			if (returnType != null) 
+				type = dom.GetType (returnType);
+			if (type == null)
+				type = dom.SearchType (new SearchTypeRequest (Document.CompilationUnit, returnTypeUnresolved));
+			if (type == null || !(type.IsAbstract || type.ClassType == ClassType.Interface)) {
+				if (returnTypeUnresolved != null) {
+					col.FullyQualify = true;
+					ICompletionData unresovedCompletionData = col.AddCompletionData (result, returnTypeUnresolved);
+					col.FullyQualify = false;
+					result.DefaultCompletionString = StripGenerics (unresovedCompletionData.CompletionText);
+				} else {
+					ICompletionData unresovedCompletionData = col.AddCompletionData (result, returnType);
+					result.DefaultCompletionString = StripGenerics (unresovedCompletionData.CompletionText);
+				}
 			}
 //				if (tce != null && tce.Type != null) {
 //					result.DefaultCompletionString = StripGenerics (col.AddCompletionData (result, tce.Type).CompletionString);
@@ -958,11 +963,6 @@ namespace MonoDevelop.CSharpBinding.Gui
 //			else {
 //			}
 			
-			IType type = null;
-			if (returnType != null) 
-				type = dom.GetType (returnType);
-			if (type == null)
-				type = dom.SearchType (new SearchTypeRequest (Document.CompilationUnit, returnTypeUnresolved));
 			if (type == null)
 				return result;
 			HashSet<string> usedNamespaces = new HashSet<string> (GetUsedNamespaces ());
