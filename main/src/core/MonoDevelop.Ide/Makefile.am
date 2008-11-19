@@ -1,5 +1,5 @@
 
-DEPS =	\
+DEPS =  \
 	$(top_builddir)/build/bin/Mono.Debugging.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
@@ -15,13 +15,6 @@ REFS =  \
 	$(MONO_ADDINS_LIBS) \
 	$(MONO_ADDINS_SETUP_LIBS) \
 	$(MONODOC_LIBS) \
-	-r:$(top_builddir)/build/bin/Mono.Debugging.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Dock.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll \
 	-r:ICSharpCode.SharpZipLib \
 	-r:Mono.GetOptions \
 	-r:Mono.Posix \
@@ -397,7 +390,7 @@ $(build_OPTIONS): $(top_builddir)/build/data/options/%.xml: $(srcdir)/options/%.
 	cp $(srcdir)/options/$(notdir $@) $@
 
 $(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
-	$(CSC) $(CSC_FLAGS) -debug -codepage:utf8 -out:$@ -target:library $(REFS) \
+	$(CSC) $(CSC_FLAGS) -debug -codepage:utf8 -out:$@ -target:library $(REFS) $(build_deps) \
 		$(monodoc_libflags) $(build_resources:%=/resource:%) $(build_sources)
 
 $(ASSEMBLY).mdb: $(ASSEMBLY)

@@ -96,7 +96,6 @@
     <File name="icons/edit-select-all.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/edit-select-all_22.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/Icons.16x16.TextFileIcon" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
     <File name="icons/plugin-16.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/plugin-22.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/plugin-32.png" subtype="Code" buildaction="EmbedAsResource" />
@@ -190,6 +189,7 @@
     <File name="icons/breakpoint-new-22.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/empty-category-16.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/empty-category-22.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
@@ -204,15 +204,13 @@
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Addins.Setup, Version=0.3.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <ProjectReference type="Gac" localcopy="True" refto="glade-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="glib-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="True" refto="gnome-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="True" refto="gnome-vfs-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
   </References>
   <GtkDesignInfo />
-  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">
+  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">
     <ExcludedFiles>
       <File>AssemblyInfo.cs</File>
     </ExcludedFiles>
@@ -222,7 +220,7 @@
     <OthersVar />
     <GacRefVar Sync="True" Name="REFS" Prefix="-r:" />
     <AsmRefVar Sync="True" Name="REFS" Prefix="-r:" />
-    <ProjectRefVar Sync="True" Name="REFS" Prefix="-r:" />
+    <ProjectRefVar Sync="True" Name="DEPS" />
   </MonoDevelop.Autotools.MakefileInfo>
   <DeploymentInformation strategy="File" />
 </Project>

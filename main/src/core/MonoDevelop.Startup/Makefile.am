@@ -10,17 +10,14 @@ AssemblyInfo.cs
 
 all: $(ASSEMBLY) $(ASSEMBLY).config
 
-DEPS =	\
+DEPS =  \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Ide.dll
 
-REFS =  \
-	$(MONO_ADDINS_LIBS) \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll
+REFS = $(MONO_ADDINS_LIBS)
 
 $(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
-	$(CSC) $(CSC_FLAGS) -out:$@ $(REFS) $(build_resources:%=/resource:%) $(build_sources)
+	$(CSC) $(CSC_FLAGS) -out:$@ $(REFS) $(build_deps) $(build_resources:%=/resource:%) $(build_sources)
 
 $(ASSEMBLY).config: $(ASSEMBLY) $(srcdir)/app.config
 	cp $(srcdir)/app.config $(ASSEMBLY).config

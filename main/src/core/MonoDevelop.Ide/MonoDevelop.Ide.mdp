@@ -265,7 +265,6 @@
     <File name="MonoDevelop.Ide.Templates/ClrVersionFileTemplateCondition.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Templates/FileTemplateCondition.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Templates/PartialTypeFileTemplateCondition.cs" subtype="Code" buildaction="Compile" />
-    <File name="AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Templates/ParentProjectFileTemplateCondition.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Content/CompletionTextEditorExtension.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui/DragNotebook.cs" subtype="Code" buildaction="Compile" />
@@ -355,6 +354,7 @@
     <File name="MonoDevelop.Ide.Gui.Search/AllOpenDocumentIterator.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Search/SearchOptions.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Search/SearchResult.cs" subtype="Code" buildaction="Compile" />
+    <File name="AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
@@ -384,7 +384,7 @@
     <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
   </References>
   <GtkDesignInfo />
-  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">
+  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">
     <ExcludedFiles>
       <File>AssemblyInfo.cs</File>
     </ExcludedFiles>
@@ -394,7 +394,7 @@
     <OthersVar />
     <GacRefVar Sync="True" Name="REFS" Prefix="-r:" />
     <AsmRefVar Sync="True" Name="REFS" Prefix="-r:" />
-    <ProjectRefVar Sync="True" Name="REFS" Prefix="-r:" />
+    <ProjectRefVar Sync="True" Name="DEPS" />
   </MonoDevelop.Autotools.MakefileInfo>
   <DeploymentInformation strategy="File" />
 </Project>

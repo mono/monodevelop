@@ -2,7 +2,7 @@
 ASSEMBLY = $(top_builddir)/build/bin/MonoDevelop.Projects.dll
 CONFIG = MonoDevelop.Projects.dll.config
   
-DEPS =	\
+DEPS =  \
 	$(top_builddir)/build/bin/Mono.Cecil.dll \
 	$(top_builddir)/build/bin/Mono.Cecil.Mdb.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll
@@ -10,9 +10,6 @@ DEPS =	\
 REFS =  \
 	$(MONO_ADDINS_LIBS) \
 	$(MONODOC_LIBS) \
-	-r:$(top_builddir)/build/bin/Mono.Cecil.dll \
-	-r:$(top_builddir)/build/bin/Mono.Cecil.Mdb.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	-r:Mono.Data \
 	-r:Mono.Data.Sqlite \
 	-r:Mono.Data.SqliteClient \
@@ -270,7 +267,7 @@ AssemblyInfo.cs
 all: $(ASSEMBLY) $(ASSEMBLY).mdb
 
 $(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
-	$(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library $(REFS) $(build_resources:%=/resource:%) $(build_sources) \
+	$(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library $(REFS) $(build_deps) $(build_resources:%=/resource:%) $(build_sources) \
 	&& cp $(CONFIG) $(top_builddir)/build/bin
 	
 $(ASSEMBLY).mdb: $(ASSEMBLY)

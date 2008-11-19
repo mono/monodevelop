@@ -8,7 +8,6 @@
     <widget-library name="../../../../build/bin/MonoDevelop.Components.dll" />
     <widget-library name="Mono.Addins.Gui, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <widget-library name="glade-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <widget-library name="gnome-sharp, Version=2.20.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <widget-library name="../../../../build/bin/MonoDevelop.Core.Gui.dll" internal="true" />
   </import>
   <widget class="Gtk.Dialog" id="MonoDevelop.Core.Gui.Dialogs.MultiTaskProgressDialog" design-size="491 418">
