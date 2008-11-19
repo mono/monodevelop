@@ -335,10 +335,7 @@ namespace MonoDevelop.CSharpBinding
 			OutputFlags flags = (OutputFlags)data;
 			StringBuilder result = new StringBuilder ();
 			if (IncludeParameterName (flags)) {
-				if (IncludeReturnType (flags)) {
-					result.Append (GetString (parameter.ReturnType, flags));
-					result.Append (" ");
-				} else {
+				if (IncludeModifiers (flags)) {
 					if (parameter.IsOut)
 						result.Append ("out ");
 					if (parameter.IsRef)
@@ -346,7 +343,13 @@ namespace MonoDevelop.CSharpBinding
 					if (parameter.IsParams)
 						result.Append ("params ");
 				}
-				if (HighlightName (flags) && EmitMarkup (flags)) 
+				
+				if (IncludeReturnType (flags)) {
+					result.Append (GetString (parameter.ReturnType, flags));
+					result.Append (" ");
+				}
+				
+				if (HighlightName (flags) && EmitMarkup (flags))
 					result.Append ("<b>");
 				result.Append (Format (parameter.Name));
 				if (HighlightName (flags) && EmitMarkup (flags)) 

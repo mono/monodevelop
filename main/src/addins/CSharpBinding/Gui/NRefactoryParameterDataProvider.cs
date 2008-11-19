@@ -216,7 +216,7 @@ namespace MonoDevelop.CSharpBinding
 			
 			if (methods[overload].Parameters == null || paramIndex < 0 || paramIndex >= methods[overload].Parameters.Count)
 				return "";
-			return ambience.GetString (methods[overload].Parameters [paramIndex], OutputFlags.AssemblyBrowserDescription | OutputFlags.HighlightName | OutputFlags.HideExtensionsParameter | OutputFlags.IncludeGenerics);
+			return ambience.GetString (methods[overload].Parameters [paramIndex], OutputFlags.AssemblyBrowserDescription | OutputFlags.HighlightName | OutputFlags.HideExtensionsParameter | OutputFlags.IncludeGenerics | OutputFlags.IncludeModifiers);
 		}
 		
 		public int GetParameterCount (int overload)
