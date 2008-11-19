@@ -1,3 +1,8 @@
+2008-11-18  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Gui/CTextEditorExtension.cs: Fix Bug 446207 - [Regression] C
+	auto-formatting screws up.
+
 2008-11-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Project/CProject.cs: Allow running C projects.

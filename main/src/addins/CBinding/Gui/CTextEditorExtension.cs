@@ -82,12 +82,12 @@ namespace CBinding
 		{
 			int line, column;
 			Editor.GetLineColumnFromPosition (Editor.CursorPosition, out line, out column);
-			string lineText = Editor.GetLineText (line).TrimEnd();
+			string lineText = Editor.GetLineText (line);
 			
 			// smart formatting strategy
 			if (TextEditorProperties.IndentStyle == IndentStyle.Smart) {
 				if (key == Gdk.Key.Return) {
-					if (lineText.EndsWith ("{")) {
+					if (lineText.TrimEnd ().EndsWith ("{")) {
 						Editor.InsertText (Editor.CursorPosition, 
 						    "\n" + TextEditorProperties.IndentString + GetIndent (Editor, line));
 						return false;
