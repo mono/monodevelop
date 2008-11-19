@@ -102,9 +102,8 @@ namespace MonoDevelop.AspNet.Gui
 		protected override void GetElementCompletions (CompletionDataList list)
 		{
 			XName parentName = GetParentElementName (0);
-			if (Schema != null)
-				AddHtmlTagCompletionData (list, Schema, parentName.ToLower ());
-			AddHtmlMiscBegins (list);
+			AddHtmlTagCompletionData (list, Schema, parentName.ToLower ());
+			AddMiscBeginTags (list);
 			AddCloseTag (list, Tracker.Engine.Nodes);
 			
 			//FIXME: don't show this after any elements
@@ -134,8 +133,11 @@ namespace MonoDevelop.AspNet.Gui
 		
 		#region HTML data
 		
-		void AddHtmlTagCompletionData (CompletionDataList list, HtmlSchema schema, XName parentName)
+		protected static void AddHtmlTagCompletionData (CompletionDataList list, HtmlSchema schema, XName parentName)
 		{
+			if (schema == null)
+				return;
+			
 			if (parentName.IsValid) {
 				list.AddRange (schema.CompletionProvider.GetChildElementCompletionData (parentName.FullName));
 			} else {
@@ -143,7 +145,7 @@ namespace MonoDevelop.AspNet.Gui
 			}			
 		}
 		
-		void AddHtmlAttributeCompletionData (CompletionDataList list, HtmlSchema schema, 
+		protected void AddHtmlAttributeCompletionData (CompletionDataList list, HtmlSchema schema, 
 		    XName tagName, Dictionary<string, string> existingAtts)
 		{
 			//add atts only if they're not aready in the tag
@@ -152,17 +154,11 @@ namespace MonoDevelop.AspNet.Gui
 					list.Add (datum);
 		}
 		
-		void AddHtmlAttributeValueCompletionData (CompletionDataList list, HtmlSchema schema, 
+		protected void AddHtmlAttributeValueCompletionData (CompletionDataList list, HtmlSchema schema, 
 		    XName tagName, XName attributeName)
 		{
 			list.AddRange (schema.CompletionProvider.GetAttributeValueCompletionData (tagName.FullName, 
 			                                                                          attributeName.FullName));
-		}
-		
-		static void AddHtmlMiscBegins (CompletionDataList list)
-		{
-			list.Add ("!--",  "md-literal", GettextCatalog.GetString ("Comment"));
-			list.Add ("![CDATA[", "md-literal", GettextCatalog.GetString ("Character data"));
 		}
 		
 		#endregion

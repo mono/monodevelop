@@ -415,6 +415,12 @@ namespace MonoDevelop.XmlEditor.Gui
 				elements.Add (el);
 			}
 		}
+		
+		protected static void AddMiscBeginTags (CompletionDataList list)
+		{
+			list.Add ("!--",  "md-literal", GettextCatalog.GetString ("Comment"));
+			list.Add ("![CDATA[", "md-literal", GettextCatalog.GetString ("Character data"));
+		}
 
 		#endregion
 		

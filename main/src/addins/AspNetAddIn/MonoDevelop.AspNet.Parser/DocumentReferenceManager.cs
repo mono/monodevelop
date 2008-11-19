@@ -130,27 +130,6 @@ namespace MonoDevelop.AspNet.Parser
 			//FIXME: return controls from web.config
 		}
 		
-		//lazily loads docs
-		private class AspTagCompletionData : CompletionData
-		{
-			IType cls;
-			
-			public AspTagCompletionData (string prefix, IType cls)
-				: base (prefix + cls.Name, Gtk.Stock.GoForward)
-			{
-				this.cls = cls;
-			}
-			
-			public override string Description {
-				get {
-					if (base.Description == null && cls != null)
-						base.Description = cls.Documentation;
-					return cls.Documentation;
-				}
-				set { base.Description = value;	}
-			}
-		}
-		
 		public IType GetControlType (string tagPrefix, string tagName)
 		{
 			if (String.IsNullOrEmpty (tagPrefix))
@@ -464,5 +443,26 @@ namespace MonoDevelop.AspNet.Parser
 		}
 		
 		#endregion classes
+	}
+	
+	//lazily loads docs
+	class AspTagCompletionData : CompletionData
+	{
+		IType cls;
+		
+		public AspTagCompletionData (string prefix, IType cls)
+			: base (prefix + cls.Name, Gtk.Stock.GoForward)
+		{
+			this.cls = cls;
+		}
+		
+		public override string Description {
+			get {
+				if (base.Description == null && cls != null)
+					base.Description = cls.Documentation;
+				return cls.Documentation;
+			}
+			set { base.Description = value;	}
+		}
 	}
 }

@@ -129,9 +129,44 @@ namespace MonoDevelop.AspNet.Gui
 		protected override void GetElementCompletions (CompletionDataList list)
 		{
 			S.XName parentName = GetParentElementName (0);
-			AddAspTags (list, AspDocument, parentName);
-			AddAspBeginExpressions (list, AspDocument);
-			base.GetElementCompletions (list);
+			
+			//fallback
+			if (AspDocument == null)
+			{
+				AddAspBeginExpressions (list, AspDocument);
+				string aspPrefix = "asp:";
+				foreach (IType cls in WebTypeManager.ListSystemControlClasses (this.Document.Project as AspNetAppProject))
+					list.Add (new AspTagCompletionData (aspPrefix, cls));
+				base.GetElementCompletions (list);
+				return;
+			}
+			
+			IType controlClass = AspDocument.ReferenceManager.GetControlType (parentName.Prefix, parentName.Name);
+			
+			if (controlClass == null)
+			{
+				AddAspBeginExpressions (list, AspDocument);
+				list.AddRange (AspDocument.ReferenceManager.GetControlCompletionData ());
+				base.GetElementCompletions (list);
+			}
+			else if (ShouldPersistChildren (controlClass))
+			{
+				AddAspBeginExpressions (list, AspDocument);
+				list.AddRange (AspDocument.ReferenceManager.GetControlCompletionData ());
+				AddMiscBeginTags (list);
+				base.AddHtmlTagCompletionData (list, Schema, new S.XName ("body"));
+			}
+			else
+			{
+				string defaultProp;
+				bool childrenAsProperties = AreChildrenAsProperties (controlClass, out defaultProp);
+				if (childrenAsProperties && controlClass.SourceProjectDom != null)
+				{
+					foreach (IProperty prop in GetUniqueMembers<IProperty> (GetAllProperties (controlClass.SourceProjectDom, controlClass)))
+						if (GetPersistenceMode (prop) != System.Web.UI.PersistenceMode.Attribute)
+							list.Add (prop.Name, prop.StockIcon, prop.Documentation);
+				}
+			}
 		}
 		
 		protected override void GetAttributeCompletions (CompletionDataList list, S.IAttributedXObject attributedOb,
@@ -233,22 +268,6 @@ namespace MonoDevelop.AspNet.Gui
 			if (doc.Project == null || doc.Project.ClrVersion == ClrVersion.Net_2_0
 			    || doc.Project.ClrVersion == ClrVersion.Default) {
 				list.Add ("%$", "md-literal", GettextCatalog.GetString ("ASP.NET resource expression"));
-			}
-		}
-		
-		static void AddAspTags (CompletionDataList list, Document doc, S.XName parentName)
-		{
-			IType controlClass = doc.ReferenceManager.GetControlType (parentName.Prefix, parentName.Name);
-			if (controlClass == null || ShouldPersistChildren (controlClass)) {
-				list.AddRange (doc.ReferenceManager.GetControlCompletionData ());
-			} else {
-				string defaultProp;
-				bool childrenAsProperties = AreChildrenAsProperties (controlClass, out defaultProp);
-				if (childrenAsProperties && controlClass.SourceProjectDom != null) {
-					foreach (IProperty prop in GetUniqueMembers<IProperty> (GetAllProperties (controlClass.SourceProjectDom, controlClass)))
-						if (GetPersistenceMode (prop) != System.Web.UI.PersistenceMode.Attribute)
-							list.Add (prop.Name, prop.StockIcon, prop.Documentation);
-				}
 			}
 		}
 		

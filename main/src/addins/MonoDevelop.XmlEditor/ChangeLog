@@ -1,3 +1,8 @@
+2008-11-18  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.XmlEditor.Gui/BaseXmlEditorExtension.cs: Add
+	AddMiscBeginTags member that adds begin tags for comments and CData.
+
 2008-11-17  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Xml.StateEngine/Parser.cs: Log an error region instead of
