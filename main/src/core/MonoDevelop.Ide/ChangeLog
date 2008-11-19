@@ -1,3 +1,8 @@
+2008-11-19  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: fixed "Bug 443771 - Go
+	to declaration not working for base () calls".
+
 2008-11-17  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Gui.Search/DefaultFind.cs: added patch for "Bug 444455

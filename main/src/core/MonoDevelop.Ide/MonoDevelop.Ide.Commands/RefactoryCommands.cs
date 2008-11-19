@@ -116,6 +116,10 @@ namespace MonoDevelop.Ide.Commands
 						if (item == null && ((MethodResolveResult)resolveResult).ResolvedType != null) {
 							item = ctx.GetType (((MethodResolveResult)resolveResult).ResolvedType);
 						}
+					} else if (resolveResult is BaseResolveResult) {
+						item = ctx.GetType (((BaseResolveResult)resolveResult).ResolvedType);
+					} else if (resolveResult is ThisResolveResult) {
+						item = ctx.GetType (((ThisResolveResult)resolveResult).ResolvedType);
 					}
 					string itemName = null;
 					if (item is IMember)
