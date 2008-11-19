@@ -423,7 +423,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 			else
 				Item.ExtendedProperties.Remove ("ProjectTypeGuids");
-			
+
+			// This serialize call will write data to ser.InternalItemProperties and ser.ExternalItemProperties
 			ser.Serialize (Item, Item.GetType ());
 			
 			if (fileContent == null)
@@ -714,6 +715,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					ditem.ItemData.Add (GetDataNode (prop, data));
 				}
 			}
+			ConvertFromMsbuildFormat (ditem);
 			ser.Deserialize (dataItem, ditem);
 		}
 		
@@ -721,8 +723,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			DataItem ditem = (DataItem) ser.Serialize (dataItem, dataItem.GetType ());
 			if (ditem.HasItemData) {
-				foreach (DataNode node in ditem.ItemData)
+				foreach (DataNode node in ditem.ItemData) {
+					ConvertToMsbuildFormat (node);
 					buildItem.SetMetadata (node.Name, GetXmlString (node), node is DataItem);
+				}
 			}
 		}
 		
@@ -738,10 +742,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						break;
 					}
 				}
-				if (node != null)
-					ditem.ItemData.Add (node);
-				else 
-					ditem.ItemData.Add (new DataValue (bprop.Name, bprop.Value));
+				if (node == null)
+					node = new DataValue (bprop.Name, bprop.Value);
+				
+				ConvertFromMsbuildFormat (node);
+				ditem.ItemData.Add (node);
 			}
 			
 			return ditem;
@@ -755,11 +760,33 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				notWrittenProps.Add (prop.Name);
 	
 			foreach (DataNode node in itemData) {
-				SetGroupProperty (propGroup, node.Name, GetXmlString (node), node is DataItem);
 				notWrittenProps.Remove (node.Name);
+				ConvertToMsbuildFormat (node);
+				SetGroupProperty (propGroup, node.Name, GetXmlString (node), node is DataItem);
 			}
 			foreach (string prop in notWrittenProps)
 				propGroup.RemoveProperty (prop);
+		}
+
+		void ConvertToMsbuildFormat (DataNode node)
+		{
+			ReplaceChar (node, true, '.', '-');
+		}
+		
+		void ConvertFromMsbuildFormat (DataNode node)
+		{
+			ReplaceChar (node, true, '-', '.');
+		}
+		
+		void ReplaceChar (DataNode node, bool force, char oldChar, char newChar)
+		{
+			DataItem it = node as DataItem;
+			if ((force || it != null) && node.Name != null)
+				node.Name = node.Name.Replace (oldChar, newChar);
+			if (it != null) {
+				foreach (DataNode cnode in it.ItemData)
+					ReplaceChar (cnode, !it.UniqueNames, oldChar, newChar);
+			}
 		}
 
 		List<ConfigData> GetConfigData (MSBuildProject msproject)

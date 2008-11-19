@@ -1,5 +1,11 @@
 2008-11-19  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs: MSBuild
+	does not support dots in element names. Replaced by dashes. Fixes bug
+	#424746 - .Desktop made VS unable to load project.
+
+2008-11-19  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs:
 	ToMSBuildPath returns an empty string when the path is the project
 	path. Handled this case. Fixes bug #445126 - Unable to export mds
