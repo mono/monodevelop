@@ -1,3 +1,7 @@
+2008-11-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* BooBinding.addin.xml: Remove boo ambience. It's not yet implemented.
+
 2008-11-05  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* configure:
