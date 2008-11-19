@@ -100,7 +100,18 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		public override IEnumerable<IType> GetSubclasses (IType type, bool searchDeep, IList<string> namespaces)
 		{
-			return dbProvider.GetSubclassesTree (database, type, searchDeep, namespaces);
+			IType underlyingType = type;
+			if (type is InstantiatedType) 
+				underlyingType = ((InstantiatedType)type).UninstantiatedType;
+			
+			List<IType> result = new List<IType> (dbProvider.GetSubclassesTree (new HashSet<string> (), database, underlyingType, searchDeep, namespaces));
+			if (type is InstantiatedType) {
+				for (int i = 0; i < result.Count; i++) {
+					System.Console.WriteLine(result[i].FullName);
+					result[i] = DomType.CreateInstantiatedGenericType (result[i], ((InstantiatedType)type).GenericParameters);
+				}
+			}
+			return result;
 		}
 		
 		internal override IEnumerable<string> OnGetReferences ()
