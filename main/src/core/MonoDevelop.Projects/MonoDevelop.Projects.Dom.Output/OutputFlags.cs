@@ -49,6 +49,6 @@ namespace MonoDevelop.Projects.Dom.Output
 		HideExtensionsParameter  = 0x0800,
 
 		ClassBrowserEntries        = IncludeReturnType | IncludeParameters | IncludeGenerics,
-		AssemblyBrowserDescription = IncludeBaseTypes | IncludeReturnType | IncludeParameters | IncludeParameterName | EmitMarkup | EmitKeywords | IncludeModifiers
+		AssemblyBrowserDescription = IncludeGenerics | IncludeBaseTypes | IncludeReturnType | IncludeParameters | IncludeParameterName | EmitMarkup | EmitKeywords | IncludeModifiers 
 	}
 }

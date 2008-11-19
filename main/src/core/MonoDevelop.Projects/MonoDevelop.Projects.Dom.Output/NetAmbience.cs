@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Linq;
 using System.Text;
 
 namespace MonoDevelop.Projects.Dom.Output
@@ -252,6 +253,7 @@ namespace MonoDevelop.Projects.Dom.Output
 		
 		object IDomVisitor.Visit (IType type, object data)
 		{
+			InstantiatedType instantiatedType = type as InstantiatedType;
 			OutputFlags flags = (OutputFlags)data;
 			StringBuilder result = new StringBuilder ();
 			if (IncludeModifiers (flags)) {
@@ -273,9 +275,36 @@ namespace MonoDevelop.Projects.Dom.Output
 			}
 						
 			result.Append (Format (type.Name));
-			if (IncludeBaseTypes (flags) && type.BaseType != null) {
+			
+			int parameterCount = type.TypeParameters.Count;
+			if (instantiatedType != null)
+				parameterCount = instantiatedType.GenericParameters.Count;
+			if (IncludeGenerics (flags) && parameterCount > 0) {
+				result.Append (EmitMarkup (flags) ? "&lt;" : "<");
+				for (int i = 0; i < parameterCount; i++) {
+					if (i > 0)
+						result.Append (", ");
+					if (instantiatedType != null) {
+						result.Append (instantiatedType.GenericParameters[i].AcceptVisitor (this, data));
+					} else {
+						result.Append (type.TypeParameters[i].Name);
+					}
+				}
+				result.Append (EmitMarkup (flags) ? "&gt;" : ">");
+			
+			}
+			if (IncludeBaseTypes (flags) && type.BaseTypes.Any ()) {
 				result.Append (" : ");
-				result.Append (Format (type.BaseType.Name));
+				bool first = true;
+				foreach (IReturnType baseType in type.BaseTypes) {
+					if (baseType.FullName == "System.Object")
+						continue;
+					if (!first)
+						result.Append (", ");
+					first = false;
+					result.Append (baseType.AcceptVisitor (this, data));	
+				}
+				
 			}
 			return result.ToString ();
 		}
