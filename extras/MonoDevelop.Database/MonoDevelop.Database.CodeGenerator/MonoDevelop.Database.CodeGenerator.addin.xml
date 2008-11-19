@@ -20,6 +20,7 @@
 		<Addin id="Ide" version="1.9.1"/>
 		<Addin id="Database.Sql" version="1.9.1"/>
 		<Addin id="Database.Components" version="1.9.1"/>
+		<Addin id="Database.Query" version="1.9.1"/>
 	</Dependencies>
 
 	<Extension path = "/MonoDevelop/Ide/Commands">
