@@ -1,4 +1,4 @@
-<Project name="MonoDevelop.WebReferences" fileversion="2.0" language="C#" clr-version="Net_2_0" UsePartialTypes="True" defaultDeployTarget="Make" ctype="DotNetProject">
+<Project name="MonoDevelop.WebReferences" fileversion="2.0" language="C#" clr-version="Net_2_0" defaultDeployTarget="Make" ctype="DotNetProject">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
       <Output directory="../../../build/AddIns/MonoDevelop.WebReferences" assembly="MonoDevelop.WebReferences" />

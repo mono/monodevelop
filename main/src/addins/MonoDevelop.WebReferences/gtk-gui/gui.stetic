@@ -2,12 +2,14 @@
 <stetic-interface>
   <configuration>
     <images-root-path>..</images-root-path>
-    <target-gtk-version>2.8.3</target-gtk-version>
+    <target-gtk-version>2.8</target-gtk-version>
   </configuration>
   <import>
     <widget-library name="../../../../build/bin/MonoDevelop.Projects.Gui.dll" />
     <widget-library name="../../../../build/bin/MonoDevelop.Components.dll" />
     <widget-library name="../../../../build/bin/MonoDevelop.Ide.dll" />
+    <widget-library name="../../../../build/bin/MonoDevelop.Core.Gui.dll" />
+    <widget-library name="../../../../build/AddIns/MonoDevelop.WebReferences/MonoDevelop.WebReferences.dll" internal="true" />
   </import>
   <widget class="Gtk.Dialog" id="MonoDevelop.WebReferences.Dialogs.WebReferenceDialog" design-size="639 472">
     <action-group name="Default">
@@ -171,7 +173,6 @@
               <widget class="Gtk.Frame" id="frmBrowser">
                 <property name="MemberName">frmBrowser</property>
                 <property name="ShadowType">None</property>
-                <property name="LabelXalign">0</property>
                 <property name="LabelYalign">0</property>
                 <child>
                   <placeholder />
@@ -291,7 +292,7 @@
       <widget class="Gtk.HButtonBox" id="pnlActionArea">
         <property name="MemberName" />
         <property name="Events">ButtonPressMask</property>
-        <property name="Spacing">10</property>
+        <property name="Spacing">6</property>
         <property name="BorderWidth">5</property>
         <property name="Size">2</property>
         <property name="LayoutStyle">End</property>

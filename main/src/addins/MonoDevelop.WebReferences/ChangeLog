@@ -1,3 +1,19 @@
+2008-11-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.WebReferences.NodeBuilders/WebReferenceNodeBuilder.cs:
+	* MonoDevelop.WebReferences.NodeBuilders/WebReferenceFolderNodeBuilder.cs:
+	Fix comments.
+
+	* MonoDevelop.WebReferences.Commands/WebReferenceCommandHandler.cs: Make
+	sure no files are added to the project if the web reference proxy
+	can't be generated.
+
+	* gtk-gui/gui.stetic:
+	* gtk-gui/MonoDevelop.WebReferences.Dialogs.WebReferenceDialog.cs:
+	Flush.
+
+	* Makefile.am: Fix parallel build.
+
 2008-11-05  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.WebReferences.addin.xml: Bump MD version.

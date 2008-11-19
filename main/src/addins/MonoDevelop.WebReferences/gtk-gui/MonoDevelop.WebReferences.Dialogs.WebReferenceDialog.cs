@@ -214,7 +214,7 @@ namespace MonoDevelop.WebReferences.Dialogs {
             Gtk.HButtonBox w15 = this.ActionArea;
             w15.Events = ((Gdk.EventMask)(256));
             w15.Name = "pnlActionArea";
-            w15.Spacing = 10;
+            w15.Spacing = 6;
             w15.BorderWidth = ((uint)(5));
             w15.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child pnlActionArea.Gtk.ButtonBox+ButtonBoxChild

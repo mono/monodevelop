@@ -72,7 +72,7 @@ namespace MonoDevelop.WebReferences.NodeBuilders
 		
 		/// <summary>Checks if the node builder has contains any child nodes.</summary>
 		/// <param name="builder">An ITreeBuilder containing all the node builder information.</param>
-		/// <param name="dataObject>An object containing the current activated node.</param> 
+		/// <param name="dataObject">An object containing the current activated node.</param> 
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
 			return Library.ProjectContainsWebReference(((WebReferenceFolder)dataObject).Project);

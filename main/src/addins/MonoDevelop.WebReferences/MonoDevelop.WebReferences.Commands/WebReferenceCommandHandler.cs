@@ -56,13 +56,15 @@ namespace MonoDevelop.WebReferences.Commands
 					
 					// Generate the wsdl, disco and map files
 					string mapSpec = gen.CreateMapFile(basePath, "Reference.map");
+					
+					// Generate the proxy class
+					string proxySpec = gen.CreateProxyFile(basePath, dialog.Namespace + "." + dialog.ReferenceName, "Reference");
+					
 					ProjectFile mapFile = new ProjectFile(mapSpec);
 					mapFile.BuildAction = BuildAction.None;
 					mapFile.Subtype = Subtype.Code;
 					project.Files.Add(mapFile);
 			
-					// Generate the proxy class
-					string proxySpec = gen.CreateProxyFile(basePath, dialog.Namespace + "." + dialog.ReferenceName, "Reference");
 					ProjectFile proxyFile = new ProjectFile(proxySpec);
 					proxyFile.BuildAction = BuildAction.Compile;
 					proxyFile.Subtype = Subtype.Code;

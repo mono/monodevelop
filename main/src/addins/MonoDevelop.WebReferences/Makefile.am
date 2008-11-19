@@ -45,7 +45,7 @@ RES =  \
 	MonoDevelop.WebReferences.Resources/WebReferenceItem.png \
 	MonoDevelop.WebReferences.Resources/wsdl.html
 
-all: $(ASSEMBLY)
+all: $(ASSEMBLY) $(ASSEMBLY).mdb
 
 $(ADDIN_BUILD)/%: $(srcdir)/lib/%
 	mkdir -p $(ADDIN_BUILD)
@@ -55,6 +55,8 @@ $(ASSEMBLY): $(build_sources) $(build_resources)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library \
 	$(build_resources:%=/resource:%) $(build_sources) $(REFS)
+
+$(ASSEMBLY).mdb: $(ASSEMBLY)
 
 assemblydir = $(MD_ADDIN_DIR)/MonoDevelop.WebReferences
 assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb
