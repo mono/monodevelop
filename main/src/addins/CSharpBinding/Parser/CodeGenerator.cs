@@ -766,9 +766,11 @@ namespace CSharpBinding.Parser
 		
 		public override object VisitLocalVariableDeclaration (LocalVariableDeclaration localVariableDeclaration, object data)
 		{
-			foreach (VariableDeclaration decl in localVariableDeclaration.Variables ) {
-				if (decl.Name == memberName) 
-					AddUniqueReference (decl.StartLocation.Y, decl.StartLocation.X, decl.Name);
+			if (member is LocalVariable) {
+				foreach (VariableDeclaration decl in localVariableDeclaration.Variables ) {
+					if (decl.Name == memberName) 
+						AddUniqueReference (decl.StartLocation.Y, decl.StartLocation.X, decl.Name);
+				}
 			}
 			return base.VisitLocalVariableDeclaration (localVariableDeclaration, data);
 		}
