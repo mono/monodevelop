@@ -1,6 +1,16 @@
 ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoDevelop.Moonlight
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.Moonlight.dll
 
+DEPS =	\
+	$(top_builddir)/build/AddIns/MonoDevelop.AspNet/MonoDevelop.AspNet.dll \
+	$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
+	$(top_builddir)/build/AddIns/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll
+
 REFS =  \
 	$(GTK_SHARP_LIBS) \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.AspNet/MonoDevelop.AspNet.dll \
@@ -48,7 +58,7 @@ $(DATA_FILE_BUILD): $(srcdir)/$(subst $(ADDIN_BUILD),, $@)
 	mkdir -p $(ADDIN_BUILD)
 	cp $(srcdir)/Templates$(subst $(ADDIN_BUILD),,$@) $@
 
-$(ASSEMBLY): $(build_sources) $(build_resources)
+$(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library $(REFS) \
 		$(build_resources:%=/resource:%) $(build_sources)

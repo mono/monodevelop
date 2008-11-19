@@ -2,6 +2,18 @@
 ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoDevelop.Gettext
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.Gettext.dll
 
+DEPS =	\
+	$(top_builddir)/build/AddIns/MonoDevelop.Autotools/MonoDevelop.Autotools.dll \
+	$(top_builddir)/build/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.dll \
+	$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
+	$(top_builddir)/build/bin/Mono.TextEditor.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Components.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll
+
 REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
@@ -82,7 +94,7 @@ $(ADDIN_BUILD)/%: $(srcdir)/lib/%
 	mkdir -p $(ADDIN_BUILD)
 	cp $< $@
 
-$(ASSEMBLY): $(build_sources) $(build_resources)
+$(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) $(REFS) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -target:library
 

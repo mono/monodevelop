@@ -2,6 +2,14 @@
 ADDIN_BUILD = $(top_builddir)/build/AddIns/VersionControl
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.VersionControl.Subversion.dll
 
+DEPS =	\
+	$(top_builddir)/build/AddIns/VersionControl/MonoDevelop.VersionControl.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Components.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Projects.dll
+
 REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
@@ -37,7 +45,7 @@ RES =  \
 	gtk-gui/objects.xml \
 	MonoDevelop.VersionControl.Subversion.addin.xml
 
-$(ASSEMBLY): $(build_sources) $(build_resources)
+$(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) -unsafe $(build_sources) $(REFS) $(build_resources:%=/resource:%) -out:$@ -target:library
 

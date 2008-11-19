@@ -2,6 +2,10 @@
 ASSEMBLY = $(top_builddir)/build/bin/MonoDevelop.Projects.dll
 CONFIG = MonoDevelop.Projects.dll.config
   
+DEPS =	\
+	$(top_builddir)/build/bin/Mono.Cecil.dll \
+	$(top_builddir)/build/bin/Mono.Cecil.Mdb.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Core.dll
 
 REFS =  \
 	$(MONO_ADDINS_LIBS) \
@@ -265,7 +269,7 @@ AssemblyInfo.cs
 
 all: $(ASSEMBLY) $(ASSEMBLY).mdb
 
-$(ASSEMBLY): $(build_sources) $(build_resources)
+$(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
 	$(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library $(REFS) $(build_resources:%=/resource:%) $(build_sources) \
 	&& cp $(CONFIG) $(top_builddir)/build/bin
 	

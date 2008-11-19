@@ -2,6 +2,16 @@
 ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoDevelop.Debugger
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.Debugger.dll
 
+DEPS =	\
+	$(top_builddir)/build/bin/Mono.Debugging.dll \
+	$(top_builddir)/build/bin/Mono.TextEditor.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Components.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll
+
 REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
@@ -46,7 +56,7 @@ $(DATA_FILE_BUILD): $(srcdir)$(subst $(ADDIN_BUILD),, $@)
 	mkdir -p $(ADDIN_BUILD)
 	cp $(srcdir)/templates$(subst $(ADDIN_BUILD),,$@) $@
 
-$(ASSEMBLY): $(build_sources) $(build_resources)
+$(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) $(REFS) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -target:library
 

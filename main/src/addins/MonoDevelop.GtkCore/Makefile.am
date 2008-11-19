@@ -3,6 +3,18 @@ SUBDIRS = lib
 ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoDevelop.GtkCore
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.GtkCore.dll
 
+DEPS =	\
+	$(top_builddir)/build/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.dll \
+	$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
+	$(top_builddir)/build/AddIns/MonoDevelop.GtkCore/libstetic.dll \
+	$(top_builddir)/build/AddIns/MonoDevelop.GtkCore/libsteticui.dll \
+	$(top_builddir)/build/bin/Mono.Cecil.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Components.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Projects.dll
+
 REFS =  \
 	$(GLADE_SHARP_LIBS) \
 	$(GLIB_SHARP_LIBS) \
@@ -90,7 +102,7 @@ $(ADDIN_BUILD)/%: $(srcdir)/lib/%
 	mkdir -p $(ADDIN_BUILD)
 	cp $< $@
 
-$(ASSEMBLY): $(build_sources) $(build_resources) $(ADDIN_BUILD)/libstetic.dll $(ADDIN_BUILD)/libsteticui.dll
+$(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library \
 	$(build_resources:%=/resource:%) $(build_sources) $(REFS)

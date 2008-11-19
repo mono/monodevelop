@@ -45,6 +45,15 @@ FILES =  \
 	MonoDevelop.VersionControl/VersionInfo.cs \
 	MonoDevelop.VersionControl/VersionStatus.cs
 
+DEPS =	\
+	$(top_builddir)/build/AddIns/VersionControl/Diff.dll \
+	$(top_builddir)/build/AddIns/VersionControl/DiffWidget.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Components.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Projects.dll
+
 REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
@@ -102,7 +111,7 @@ addindir = $(MD_ADDIN_DIR)/VersionControl
 addin_DATA = $(DLL) $(DLL).mdb
 endif
 
-$(DLL): $(build_sources) $(build_resources)
+$(DLL): $(build_sources) $(build_resources) $(DEPS)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) -target:library -out:$@ $(REFS) $(build_sources) $(build_resources:%=/resource:%)
 

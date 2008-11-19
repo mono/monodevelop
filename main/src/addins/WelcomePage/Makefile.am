@@ -1,6 +1,14 @@
 
 ADDIN_BUILD = $(top_builddir)/build/AddIns/WelcomePage
 ASSEMBLY = $(ADDIN_BUILD)/WelcomePage.dll
+
+DEPS =	\
+	$(top_builddir)/build/bin/MonoDevelop.Components.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Projects.dll
+
 REFS =  \
 	$(GTK_SHARP_LIBS) \
 	$(MONO_ADDINS_LIBS) \
@@ -44,7 +52,7 @@ $(DATA_FILE_BUILD): $(srcdir)/$(notdir $@)
 	mkdir -p $(ADDIN_BUILD)
 	cp $(srcdir)/$(notdir $@) $(ADDIN_BUILD)/.
 
-$(ASSEMBLY): $(build_sources) $(build_resources)
+$(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) $(REFS) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -target:library
 

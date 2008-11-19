@@ -115,7 +115,7 @@ AssemblyInfo.cs
 
 all: $(ASSEMBLY) $(ASSEMBLY).mdb
 
-$(ASSEMBLY): $(build_sources) $(build_resources)
+$(ASSEMBLY): $(build_sources) $(build_resources) $(top_builddir)/build/bin/MonoDevelop.Core.dll
 	$(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library $(REFS) $(build_resources:%=/resource:%) $(build_sources)
 
 $(ASSEMBLY).mdb: $(ASSEMBLY)

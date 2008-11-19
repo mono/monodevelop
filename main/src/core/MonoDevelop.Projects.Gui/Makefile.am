@@ -1,6 +1,12 @@
 
 ASSEMBLY = $(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll
 
+DEPS =	\
+	$(top_builddir)/build/bin/MonoDevelop.Components.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Projects.dll
+
 REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
@@ -88,7 +94,7 @@ AssemblyInfo.cs
 
 all: $(ASSEMBLY)
 
-$(ASSEMBLY): $(build_sources) $(build_resources)
+$(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
 	$(CSC) $(CSC_FLAGS) -out:$@ -target:library $(REFS) $(build_resources:%=/resource:%) $(build_sources)
 
 assemblydir = $(MD_ASSEMBLY_DIR)

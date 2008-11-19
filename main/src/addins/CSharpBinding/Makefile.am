@@ -5,6 +5,16 @@ ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.CSharpBinding.dll
 
 PARSE = parse.exe
 
+DEPS =	\
+	$(top_builddir)/build/bin/Mono.TextEditor.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Components.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll \
+	$(top_builddir)/build/bin/NRefactory.dll
+
 REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
@@ -152,7 +162,7 @@ TESTASSEMBLY = $(top_builddir)/build/bin/CSharpBinding.Test.dll
 
 all: $(ASSEMBLY) $(ASSEMBLY).mdb
 
-$(ASSEMBLY): $(build_sources) $(build_resources)
+$(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) -define:GMCS_SOURCE -debug -out:$@ -target:library $(REFS) \
 		$(build_resources:%=/resource:%) $(build_sources)

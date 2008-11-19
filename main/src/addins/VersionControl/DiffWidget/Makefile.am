@@ -9,7 +9,7 @@ FILES = widget.cs
 
 $(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
 
-$(ASSEMBLY): $(build_sources)
+$(ASSEMBLY): $(build_sources) $(top_builddir)/build/AddIns/VersionControl/Diff.dll
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) $(build_sources) $(REFS) -out:$@ -target:library
 

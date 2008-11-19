@@ -36,6 +36,14 @@ RES =  \
 GENERATED_FILES = \
 AssemblyInfo.cs
 
+DEPS =	\
+	$(top_builddir)/build/bin/MonoDevelop.Components.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll
+
 REFS =  \
 	$(GCONF_SHARP_LIBS) \
 	$(GLADE_SHARP_LIBS) \
@@ -60,7 +68,7 @@ ADDIN_BUILD = $(top_builddir)/build/AddIns
 
 all: $(ASSEMBLY)
 
-$(ASSEMBLY) : $(build_sources) $(build_resources)
+$(ASSEMBLY) : $(build_sources) $(build_resources) $(DEPS)
 	mkdir -p $(top_builddir)/build/bin
 	$(CSC) $(CSC_FLAGS) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -t:library $(REFS)
 

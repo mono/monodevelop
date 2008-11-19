@@ -1,4 +1,12 @@
 
+DEPS =	\
+	$(top_builddir)/build/bin/Mono.Debugging.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Components.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Dock.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll
 
 REFS =  \
 	$(GLIB_SHARP_LIBS) \
@@ -388,7 +396,7 @@ $(build_OPTIONS): $(top_builddir)/build/data/options/%.xml: $(srcdir)/options/%.
 	mkdir -p $(top_builddir)/build/data/options
 	cp $(srcdir)/options/$(notdir $@) $@
 
-$(ASSEMBLY): $(build_sources) $(build_resources)
+$(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
 	$(CSC) $(CSC_FLAGS) -debug -codepage:utf8 -out:$@ -target:library $(REFS) \
 		$(monodoc_libflags) $(build_resources:%=/resource:%) $(build_sources)
 

@@ -2,6 +2,17 @@
 ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoDevelop.XmlEditor
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.XmlEditor.dll
 
+DEPS =	\
+	$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
+	$(top_builddir)/build/AddIns/MonoDevelop.SourceEditor2.dll \
+	$(top_builddir)/build/bin/Mono.TextEditor.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Components.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll
+
 REFS =  \
 	$(GLADE_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
@@ -98,7 +109,7 @@ $(DATA_FILE_BUILD): $(srcdir)$(subst $(ADDIN_BUILD),, $@)
 	mkdir -p $(ADDIN_BUILD)/schemas
 	cp $(srcdir)/$(subst $(ADDIN_BUILD),,$@) $@
 
-$(ASSEMBLY): $(build_sources) $(build_resources) $(top_builddir)/build/AddIns/MonoDevelop.SourceEditor2.dll
+$(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) $(REFS) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -target:library -define:DEBUG
 
