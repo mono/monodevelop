@@ -1,3 +1,9 @@
+2008-11-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionRepository.cs:
+	Avoid adding duplicate trailing slash. Fixes bug #425338 - crash when
+	trying to publish project to svn.
+
 2008-11-05  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.addin.xml:

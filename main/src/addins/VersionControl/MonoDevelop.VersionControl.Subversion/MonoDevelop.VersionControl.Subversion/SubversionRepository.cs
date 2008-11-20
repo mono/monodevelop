@@ -144,7 +144,7 @@ namespace MonoDevelop.VersionControl.Subversion
 		public override Repository Publish (string serverPath, string localPath, string[] files, string message, IProgressMonitor monitor)
 		{
 			string url = Url;
-			if (!serverPath.StartsWith ("/"))
+			if (!serverPath.StartsWith ("/") && !url.EndsWith ("/"))
 				url += "/";
 			url += serverPath;
 			
