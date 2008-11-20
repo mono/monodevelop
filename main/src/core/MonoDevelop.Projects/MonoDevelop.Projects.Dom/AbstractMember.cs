@@ -233,7 +233,13 @@ namespace MonoDevelop.Projects.Dom
 			if (IsInternal) {
 				IType type1 = this is IType ? (IType)this : DeclaringType;
 				IType type2 = member is IType ? (IType)member : member.DeclaringType;
-				return type1.SourceProjectDom == type2.SourceProjectDom;
+				// easy case, projects are the same
+				if (type1.SourceProjectDom == type2.SourceProjectDom)
+					return true;
+				// maybe type2 hasn't project dom set (may occur in some cases), check if the file is in the project
+				if (type1.SourceProjectDom.Project != null)
+					return type1.SourceProjectDom.Project.GetProjectFile (type2.CompilationUnit.FileName) != null;
+				return false;
 			}
 			if (member.DeclaringType == null || DeclaringType == null)
 				return false;

@@ -1,3 +1,8 @@
+2008-11-20  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom/AbstractMember.cs: fixed 'Bug 444911 -
+	Refactor options not shown'.
+
 2008-11-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs: MSBuild
