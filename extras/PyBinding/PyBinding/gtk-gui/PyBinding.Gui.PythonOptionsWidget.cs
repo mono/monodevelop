@@ -141,6 +141,7 @@ namespace PyBinding.Gui {
             this.m_PathsTreeView = new Gtk.TreeView();
             this.m_PathsTreeView.CanFocus = true;
             this.m_PathsTreeView.Name = "m_PathsTreeView";
+            this.m_PathsTreeView.HeadersClickable = true;
             w8.Add(this.m_PathsTreeView);
             this.scrolledwindow1.Add(w8);
             this.hbox1.Add(this.scrolledwindow1);

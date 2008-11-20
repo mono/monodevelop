@@ -2,15 +2,25 @@
 <stetic-interface>
   <configuration>
     <images-root-path>..</images-root-path>
-    <target-gtk-version>2.8.3</target-gtk-version>
+    <target-gtk-version>2.8</target-gtk-version>
   </configuration>
   <import>
     <widget-library name="MonoDevelop.Gettext, Version=1.0.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Ide, Version=1.9.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Projects.Gui, Version=1.9.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Components, Version=1.9.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Ide, Version=1.9.1.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Projects.Gui, Version=1.9.1.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Components, Version=1.9.1.0, Culture=neutral" />
     <widget-library name="MonoDevelop.GtkCore, Version=0.0.0.0, Culture=neutral" />
-    <widget-library name="../bin/Debug/PyBinding.dll" internal="true" />
+    <widget-library name="MonoDevelop.Core.Gui, Version=1.9.1.0, Culture=neutral" />
+    <widget-library name="Mono.TextEditor, Version=1.0.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.VersionControl, Version=0.0.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.XmlEditor, Version=0.6.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Deployment, Version=1.0.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Deployment.Linux, Version=1.0.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.VBNetBinding, Version=1.0.1.1649, Culture=neutral" />
+    <widget-library name="MonoDevelop.CBinding, Version=0.0.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.CSharpBinding, Version=0.0.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Autotools, Version=0.1.0.0, Culture=neutral" />
+    <widget-library name="../../build/PyBinding.dll" internal="true" />
   </import>
   <widget class="Gtk.Bin" id="PyBinding.Gui.PythonOptionsWidget" design-size="491 370">
     <property name="MemberName" />

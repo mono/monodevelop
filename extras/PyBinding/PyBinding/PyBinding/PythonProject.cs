@@ -114,6 +114,12 @@ namespace PyBinding
 			
 			return result;
 		}
+
+		protected override bool OnGetCanExecute (MonoDevelop.Projects.ExecutionContext context, string solutionConfiguration)
+		{
+			return context.ExecutionHandlerFactory.SupportsPlatform ("Native");
+		}
+
 		
 		protected override void DoExecute (IProgressMonitor monitor,
 		                                   ExecutionContext context,

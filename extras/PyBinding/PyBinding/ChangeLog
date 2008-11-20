@@ -1,0 +1,9 @@
+2008-11-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* PyBinding.mdp: Set changelog policy.
+
+	* PyBinding/PythonProject.cs: Allow executing the project.
+
+	* gtk-gui/gui.stetic:
+	* gtk-gui/PyBinding.Gui.PythonOptionsWidget.cs: Flush.
+
