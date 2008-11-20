@@ -104,8 +104,15 @@ namespace MonoDevelop.AspNet.Parser
 		
 		public IEnumerable<CompletionData> GetControlCompletionData ()
 		{
+			return GetControlCompletionData (new DomType ("System.Web.UI.Control"));
+		}
+		
+		public IEnumerable<CompletionData> GetControlCompletionData (IType baseType)
+		{
+			bool isSWC = baseType.FullName == "System.Web.UI.Control";
+			
 			string aspPrefix = "asp:";
-			foreach (IType cls in WebTypeManager.ListSystemControlClasses (doc.Project))
+			foreach (IType cls in WebTypeManager.ListSystemControlClasses (baseType, doc.Project))
 				yield return new AspTagCompletionData (aspPrefix, cls);
 			
 			foreach (RegisterDirective rd in pageRefsList) {
@@ -115,10 +122,13 @@ namespace MonoDevelop.AspNet.Parser
 				AssemblyRegisterDirective ard = rd as AssemblyRegisterDirective;
 				if (ard != null) {
 					string prefix = ard.TagPrefix + ":";
-					foreach (IType cls in WebTypeManager.ListControlClasses (doc.Project, ard.Assembly, ard.Namespace))
+					foreach (IType cls in WebTypeManager.ListControlClasses (doc.Project, baseType, ard.Assembly, ard.Namespace))
 						yield return new AspTagCompletionData (prefix, cls);
 					continue;
 				}
+				
+				if (!isSWC)
+					continue;
 				
 				ControlRegisterDirective cd = rd as ControlRegisterDirective;
 				if (cd != null) {

@@ -135,37 +135,131 @@ namespace MonoDevelop.AspNet.Gui
 			{
 				AddAspBeginExpressions (list, AspDocument);
 				string aspPrefix = "asp:";
-				foreach (IType cls in WebTypeManager.ListSystemControlClasses (this.Document.Project as AspNetAppProject))
+				foreach (IType cls in WebTypeManager.ListSystemControlClasses (
+					new DomType ("System.Web.UI.Control"), this.Document.Project as AspNetAppProject))
+				{
 					list.Add (new AspTagCompletionData (aspPrefix, cls));
+				}
+				
 				base.GetElementCompletions (list);
 				return;
 			}
 			
-			IType controlClass = AspDocument.ReferenceManager.GetControlType (parentName.Prefix, parentName.Name);
+			IType controlClass = null;
 			
+			if (parentName.HasPrefix) {
+				controlClass = AspDocument.ReferenceManager.GetControlType (parentName.Prefix, parentName.Name);
+			} else {
+				S.XName grandparentName = GetParentElementName (1);
+				if (grandparentName.IsValid && grandparentName.HasPrefix) {
+					controlClass = AspDocument.ReferenceManager.GetControlType (grandparentName.Prefix,
+					                                                            grandparentName.Name);
+				}
+			}
+			
+			//we're just in HTML
 			if (controlClass == null)
 			{
 				AddAspBeginExpressions (list, AspDocument);
 				list.AddRange (AspDocument.ReferenceManager.GetControlCompletionData ());
 				base.GetElementCompletions (list);
+				return;
 			}
-			else if (ShouldPersistChildren (controlClass))
+			
+			string defaultProp;
+			bool childrenAsProperties = AreChildrenAsProperties (controlClass, out defaultProp);
+			if (defaultProp != null && defaultProp.Length == 0)
+				defaultProp = null;
+			
+			//parent permits child controls directly
+			if (!childrenAsProperties && ShouldPersistChildren (controlClass))
 			{
 				AddAspBeginExpressions (list, AspDocument);
 				list.AddRange (AspDocument.ReferenceManager.GetControlCompletionData ());
 				AddMiscBeginTags (list);
 				base.AddHtmlTagCompletionData (list, Schema, new S.XName ("body"));
+				return;
 			}
-			else
-			{
-				string defaultProp;
-				bool childrenAsProperties = AreChildrenAsProperties (controlClass, out defaultProp);
-				if (childrenAsProperties && controlClass.SourceProjectDom != null)
-				{
-					foreach (IProperty prop in GetUniqueMembers<IProperty> (GetAllProperties (controlClass.SourceProjectDom, controlClass)))
-						if (GetPersistenceMode (prop) != System.Web.UI.PersistenceMode.Attribute)
-							list.Add (prop.Name, prop.StockIcon, prop.Documentation);
+			
+			//children of properties
+			if (childrenAsProperties && (!parentName.HasPrefix || defaultProp != null)) {
+				if (controlClass.SourceProjectDom == null) {
+					LoggingService.LogWarning ("IType {0} does not have a SourceProjectDom", controlClass);
+					return;
 				}
+				
+				string propName = defaultProp ?? parentName.Name;
+				IProperty property =
+					GetAllProperties (controlClass.SourceProjectDom, controlClass)
+						.Where (x => string.Compare (propName, x.Name, StringComparison.OrdinalIgnoreCase) == 0)
+						.FirstOrDefault ();
+				
+				if (property == null)
+					return;
+				
+				//sanity checks on attributes
+				switch (GetPersistenceMode (property)) {
+				case System.Web.UI.PersistenceMode.Attribute:
+				case System.Web.UI.PersistenceMode.EncodedInnerDefaultProperty:
+					return;
+					
+				case System.Web.UI.PersistenceMode.InnerDefaultProperty:
+					if (!parentName.HasPrefix)
+						return;
+					break;
+					
+				case System.Web.UI.PersistenceMode.InnerProperty:
+					if (parentName.HasPrefix)
+						return;
+					break;
+				}
+				
+				//check if allows freeform ASP/HTML content
+				if (property.ReturnType.FullName == "System.Web.UI.ITemplate") {
+					AddAspBeginExpressions (list, AspDocument);
+					AddMiscBeginTags (list);
+					base.AddHtmlTagCompletionData (list, Schema, new S.XName ("body"));
+					list.AddRange (AspDocument.ReferenceManager.GetControlCompletionData ());
+					return;
+				}
+				
+				//FIXME:unfortunately ASP.NEt doesn't seem to have enough type information / attributes
+				//to be able to resolve the correct child types here
+				//so we assume it's a list and have a quick hack to find arguments of strongly typed ILists
+				
+				IType collectionType = controlClass.SourceProjectDom.GetType (property.ReturnType);
+				if (collectionType == null) {
+					list.AddRange (AspDocument.ReferenceManager.GetControlCompletionData ());
+					return;
+				}
+				
+				string addStr = "Add";
+				IMethod meth = GetAllMethods (controlClass.SourceProjectDom, collectionType)
+					.Where (m => m.Parameters.Count == 1 && m.Name == addStr).FirstOrDefault ();
+				
+				if (meth != null) {
+					IType argType = controlClass.SourceProjectDom.GetType (meth.Parameters[0].ReturnType);
+					if (argType != null && argType.IsBaseType (new DomReturnType ("System.Web.UI.Control"))) {
+						list.AddRange (AspDocument.ReferenceManager.GetControlCompletionData (argType));
+						return;
+					}
+				}
+				
+				list.AddRange (AspDocument.ReferenceManager.GetControlCompletionData ());
+				return;
+			}
+			
+			//properties as children of controls
+			if (parentName.HasPrefix && childrenAsProperties)
+			{
+				if (controlClass.SourceProjectDom == null) {
+					LoggingService.LogWarning ("IType {0} does not have a SourceProjectDom", controlClass);
+				}
+				
+				foreach (IProperty prop in GetUniqueMembers<IProperty> (GetAllProperties (controlClass.SourceProjectDom, controlClass)))
+					if (GetPersistenceMode (prop) != System.Web.UI.PersistenceMode.Attribute)
+						list.Add (prop.Name, prop.StockIcon, prop.Documentation);
+				return;
 			}
 		}
 		
@@ -174,9 +268,7 @@ namespace MonoDevelop.AspNet.Gui
 		{
 			base.GetAttributeCompletions (list, attributedOb, existingAtts);
 			if (attributedOb is S.XElement) {
-				if (attributedOb.Name.HasPrefix) {
-					AddAspAttributeCompletionData (list, AspDocument, attributedOb.Name, existingAtts);
-				}
+				
 				if (!existingAtts.ContainsKey ("runat"))
 					list.Add ("runat=\"server\"", "md-literal",
 						GettextCatalog.GetString ("Required for ASP.NET controls.\n") +
@@ -191,6 +283,11 @@ namespace MonoDevelop.AspNet.Gui
 							"An identifier that is unique within the document.\n" + 
 							"If the tag is a server control, this will be used \n" +
 							"for the corresponding variable name in the CodeBehind."));
+				
+				existingAtts["ID"] = "";
+				if (attributedOb.Name.HasPrefix) {
+					AddAspAttributeCompletionData (list, AspDocument, attributedOb.Name, existingAtts);
+				}
 				
 			}  else if (attributedOb is AspNetDirective) {
 				//FIXME: use correct ClrVersion
@@ -458,6 +555,15 @@ namespace MonoDevelop.AspNet.Gui
 			foreach (IType type in projectDatabase.GetInheritanceTree (cls))
 				foreach (IEvent ev in type.Events)
 					yield return ev;
+		}
+		
+		static IEnumerable<IMethod> GetAllMethods (
+		    ProjectDom projectDatabase,
+		    IType cls)
+		{
+			foreach (IType type in projectDatabase.GetInheritanceTree (cls))
+				foreach (IMethod meth in type.Methods)
+					yield return meth;
 		}
 		
 		static void AddBooleanCompletionData (CompletionDataList list)

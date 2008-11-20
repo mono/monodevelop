@@ -1,3 +1,13 @@
+2008-11-19  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Improve accuracy of
+	completions for controls' children. Add support for completing
+	properties' childen.
+
+	* MonoDevelop.AspNet/WebTypeManager.cs:
+	* MonoDevelop.AspNet.Parser/DocumentReferenceManager.cs: Extend lookup
+	methods to be able to look for types other than Control.
+
 2008-11-18  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.AspNet.StateEngine/HtmlTagState.cs: Improve error location

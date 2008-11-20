@@ -267,37 +267,44 @@ namespace MonoDevelop.AspNet
 					"System.Web", GetProjectClrVersion (project)));
 		}
 		
-		public static IEnumerable<IType> ListSystemControlClasses (AspNetAppProject project)
+		public static IEnumerable<IType> ListSystemControlClasses (IType baseType, AspNetAppProject project)
 		{
 			return ListControlClasses (
+				baseType,
 				MonoDevelop.Core.Runtime.SystemAssemblyService.GetAssemblyNameForVersion (
 					"System.Web",
 					GetProjectClrVersion (project)),
 				"System.Web.UI.WebControls");
 		}
 		
-		public static IEnumerable<IType> ListControlClasses (AspNetAppProject project, string assem, string namespac)
+		public static IEnumerable<IType> ListControlClasses (AspNetAppProject project, IType baseType, 
+		                                                     string assem, string namespac)
 		{
 			return ListControlClasses (
+				baseType,
 				MonoDevelop.Core.Runtime.SystemAssemblyService.GetAssemblyNameForVersion (
 					assem,
 					GetProjectClrVersion (project)),
 				namespac);
 		}
 		
-		public static IEnumerable<IType> ListControlClasses (string assem, string namespac)
+		public static IEnumerable<IType> ListControlClasses (IType baseType, string assem, string namespac)
 		{
 			
 			ProjectDom database = MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetAssemblyDom (assem);
 			if (database == null)
 				yield break;
 			
-			DomType swc = new DomType ("System.Web.UI.Control");
-			
 			//return classes if they derive from system.web.ui.control
-			foreach (IType type in database.GetSubclasses (swc, false, new string [] {namespac}))
+			foreach (IType type in database.GetSubclasses (baseType, false, new string [] {namespac}))
 				if (!type.IsAbstract && type.IsPublic)
 					yield return type;
+			
+			if (!baseType.IsAbstract && baseType.IsPublic && baseType.Namespace == namespac) {
+				IType t = database.GetType (baseType.FullName);
+				if (t != null)
+					yield return baseType;
+			}
 		}
 		
 		#endregion
