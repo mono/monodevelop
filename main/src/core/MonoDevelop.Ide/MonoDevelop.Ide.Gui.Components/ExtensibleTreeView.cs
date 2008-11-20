@@ -717,7 +717,7 @@ namespace MonoDevelop.Ide.Gui.Components
 					foreach (NodeBuilder b in grp.BuilderChain) {
 						NodeCommandHandler handler = b.CommandHandler;
 						handler.SetCurrentNodes (grp.Nodes.ToArray ());
-						handler.ActivateItem ();
+						handler.ActivateMultipleItems ();
 						if (!grp.RestorePositions ())
 							break;
 					}
@@ -1549,7 +1549,11 @@ namespace MonoDevelop.Ide.Gui.Components
 				}
 				args.RetVal = true;
 			}
-			
+
+			if (args.Event.Key == Gdk.Key.Return || args.Event.Key == Gdk.Key.KP_Enter) {
+				ActivateCurrentItem ();
+				args.RetVal = true;
+			}
 		}
 
 		void Expand (Gtk.TreeIter it)

@@ -1,3 +1,8 @@
+2008-11-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs: Fix bug #Bug
+	431791 - Opening multiple files doesn't work.
+
 2008-11-20  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.Gui.Search/IDocumentIterator.cs:
