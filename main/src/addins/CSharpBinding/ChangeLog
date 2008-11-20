@@ -1,3 +1,7 @@
+2008-11-20  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Gui/CSharpAmbience.cs: Format finalisers correctly.
+
 2008-11-19  Mike Krüger  <mkrueger@novell.com>
 
 	* Parser/NRefactoryParser.cs: fixed folding region bug.

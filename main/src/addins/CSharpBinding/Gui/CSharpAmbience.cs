@@ -277,6 +277,9 @@ namespace MonoDevelop.CSharpBinding
 			
 			if (method.IsConstructor) {
 				result.Append (Format (method.DeclaringType.Name));
+			} else if (method.IsFinalizer) {
+				result.Append ('~');
+				result.Append (Format (method.DeclaringType.Name));
 			} else {
 /*				if (UseFullName (flags)) {
 					result.Append (Format (method.FullName));
@@ -284,6 +287,7 @@ namespace MonoDevelop.CSharpBinding
 					result.Append (Format (method.Name));
 //				}
 			}
+			
 			if (IncludeGenerics (flags)) {
 				if (method.GenericParameters.Count > 0) {
 					if (EmitMarkup (flags)) {
