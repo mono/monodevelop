@@ -269,7 +269,7 @@ namespace MonoDevelop.CSharpBinding
 					result.Append ("</b>");
 			}
 				
-			if (IncludeReturnType (flags) && !method.IsConstructor) {
+			if (IncludeReturnType (flags) && !method.IsConstructor && !method.IsFinalizer) {
 				result.Append (GetString (method.ReturnType, flags));
 				result.Append (" ");
 			}
