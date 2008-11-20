@@ -347,9 +347,6 @@
     <File name="MonoDevelop.Ide.Gui.Content/INavigable.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Content/IUrlHandler.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Content/ISmartIndenter.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.FindInFiles/SearchResult.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.FindInFiles/SearchResultPad.cs" subtype="Code" buildaction="Compile" />
     <File name="icons/AboutImage.png" subtype="Code" buildaction="EmbedAsResource" resource_id="AboutImage.png" />
     <File name="MonoDevelop.Ide.Gui.Search/AllOpenDocumentIterator.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Search/SearchOptions.cs" subtype="Code" buildaction="Compile" />

@@ -1,5 +1,16 @@
 2008-11-20  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Makefile.am:
+	* MonoDevelop.Ide.mdp:
+	* MonoDevelop.Ide.FindInFiles:
+	* MonoDevelop.Ide.FindInFiles/SearchResult.cs:
+	* MonoDevelop.Ide.FindInFiles/SearchResultPad.cs:
+	* MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs: Remove unused code.
+
+	* gtk-gui/gui.stetic: Flush.
+
+2008-11-20  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs: Make sure
 	something is always selected when filling the tree. Fixes bug #446906
 	- Can't run a C / C++ project without opening a file from the project
