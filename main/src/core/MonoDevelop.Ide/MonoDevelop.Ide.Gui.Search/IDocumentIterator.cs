@@ -63,5 +63,8 @@ namespace MonoDevelop.Ide.Gui.Search
 		/// Resets the iterator to the start position.
 		/// </remarks>
 		void Reset();
+		
+		string GetSearchDescription (string pattern);
+		string GetReplaceDescription (string pattern);
 	}
 }

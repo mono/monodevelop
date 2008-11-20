@@ -130,8 +130,7 @@ namespace MonoDevelop.Ide.Gui.Search
 			if (options == null) 
 				return;
 			
-			string msg = GettextCatalog.GetString ("Replacing '{0}' in {1}.", options.SearchPattern, options.SearchDirectory);
-			searchMonitor.ReportStatus (msg);
+			searchMonitor.ReportStatus (find.DocumentIterator.GetReplaceDescription (options.SearchPattern));
 			
 			timer = DateTime.Now;
 			DispatchService.BackgroundDispatch (delegate {
@@ -181,8 +180,7 @@ namespace MonoDevelop.Ide.Gui.Search
 			if (options == null) 
 				return;
 			
-			string msg = GettextCatalog.GetString ("Looking for '{0}' in {1}.", options.SearchPattern, options.SearchDirectory);
-			searchMonitor.ReportStatus (msg);
+			searchMonitor.ReportStatus (find.DocumentIterator.GetSearchDescription (options.SearchPattern));
 			
 			timer = DateTime.Now;
 			DispatchService.BackgroundDispatch (delegate {

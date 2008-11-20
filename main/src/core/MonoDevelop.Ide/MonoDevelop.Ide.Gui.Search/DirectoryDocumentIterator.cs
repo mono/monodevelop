@@ -29,6 +29,7 @@ namespace MonoDevelop.Ide.Gui.Search
 {
 	internal class DirectoryDocumentIterator : IDocumentIterator
 	{
+		string searchDirectory;
 		string fileMask;
 		bool searchSubdirectories;
 		
@@ -38,6 +39,7 @@ namespace MonoDevelop.Ide.Gui.Search
 		
 		public DirectoryDocumentIterator(string searchDirectory, string fileMask, bool searchSubdirectories)
 		{
+			this.searchDirectory      = searchDirectory;
 			this.fileMask             = fileMask;
 			this.searchSubdirectories = searchSubdirectories;
 			directories.Enqueue (searchDirectory);
@@ -115,6 +117,16 @@ namespace MonoDevelop.Ide.Gui.Search
 		public void Reset() 
 		{
 			curIndex = -1;
+		}
+		
+		public string GetSearchDescription (string pattern)
+		{
+			return GettextCatalog.GetString ("Looking for '{0}' in directory '{1}'.", pattern, searchDirectory);
+		}
+		
+		public string GetReplaceDescription (string pattern)
+		{
+			return GettextCatalog.GetString ("Replacing '{0}' in directory '{1}'.", pattern, searchDirectory);
 		}
 	}
 }

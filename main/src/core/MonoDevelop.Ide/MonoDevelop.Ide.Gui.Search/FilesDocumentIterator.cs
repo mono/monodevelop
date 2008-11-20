@@ -41,6 +41,9 @@ namespace MonoDevelop.Ide.Gui.Search
 			Reset();
 		}
 		
+		public abstract string GetSearchDescription (string pattern);
+		public abstract string GetReplaceDescription (string pattern);
+		
 		public string CurrentFileName {
 			get {
 				if (curIndex < 0 || curIndex >= files.Count) {

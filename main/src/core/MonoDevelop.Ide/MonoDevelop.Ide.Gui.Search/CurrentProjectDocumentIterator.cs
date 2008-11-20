@@ -27,14 +27,26 @@ using System;
 using System.Collections;
 
 using MonoDevelop.Projects;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Gui.Search
 {
 	internal class CurrentProjectDocumentIterator : FilesDocumentIterator
 	{
+		string projectName;
 
 		public CurrentProjectDocumentIterator () : base ()
 		{
+		}
+		
+		public override string GetSearchDescription (string pattern)
+		{
+			return GettextCatalog.GetString ("Looking for '{0}' in project '{1}'.", pattern, projectName);
+		}
+		
+		public override string GetReplaceDescription (string pattern)
+		{
+			return GettextCatalog.GetString ("Replacing '{0}' in project '{1}'.", pattern, projectName);
 		}
 		
 		public override void Reset() 
@@ -43,9 +55,12 @@ namespace MonoDevelop.Ide.Gui.Search
 			Document document = IdeApp.Workbench.ActiveDocument;
 			if (IdeApp.Workspace.IsOpen && document != null) {
 				Project theProject = IdeApp.Workspace.GetProjectContainingFile (document.FileName);
+				projectName = theProject.Name;
 				foreach (ProjectFile file in theProject.Files)
 					if (file.Subtype == Subtype.Code)
 						files.Add(file.Name);
+			} else {
+				projectName = GettextCatalog.GetString ("(none selected)");
 			}
 			
 			curIndex = -1;

@@ -1,3 +1,15 @@
+2008-11-20  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Gui.Search/IDocumentIterator.cs:
+	* MonoDevelop.Ide.Gui.Search/FilesDocumentIterator.cs:
+	* MonoDevelop.Ide.Gui.Search/AllOpenDocumentIterator.cs:
+	* MonoDevelop.Ide.Gui.Search/DirectoryDocumentIterator.cs:
+	* MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:
+	* MonoDevelop.Ide.Gui.Search/WholeCombineDocumentIterator.cs:
+	* MonoDevelop.Ide.Gui.Search/CurrentProjectDocumentIterator.cs: Make
+	searc/replace status messages specific to the file iterator type.
+	Fixes Bug 440909 - Find in Files reports wrong project path.
+
 2008-11-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:

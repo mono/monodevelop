@@ -35,6 +35,16 @@ namespace MonoDevelop.Ide.Gui.Search
 		{
 		}
 		
+		public override string GetSearchDescription (string pattern)
+		{
+			return GettextCatalog.GetString ("Looking for '{0}' in all projects.", pattern);
+		}
+		
+		public override string GetReplaceDescription (string pattern)
+		{
+			return GettextCatalog.GetString ("Replacing '{0}' in all projects.", pattern);
+		}
+		
 		public override void Reset() 
 		{
 			files.Clear();
