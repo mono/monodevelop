@@ -20,6 +20,7 @@ FILES =  \
 	Mono.TextEditor.Highlighting/IXmlProvider.cs \
 	Mono.TextEditor.Highlighting/Keywords.cs \
 	Mono.TextEditor.Highlighting/Marker.cs \
+	Mono.TextEditor.Highlighting/MarkupSyntaxMode.cs \
 	Mono.TextEditor.Highlighting/Match.cs \
 	Mono.TextEditor.Highlighting/Rule.cs \
 	Mono.TextEditor.Highlighting/SemanticRule.cs \

@@ -50,5 +50,10 @@ namespace Mono.TextEditor
 		{
 			this.style = style;
 		}
+
+		public virtual char GetCharAt (Document doc, int offset)
+		{
+			return doc.GetCharAt (offset);
+		}
 	}
 }

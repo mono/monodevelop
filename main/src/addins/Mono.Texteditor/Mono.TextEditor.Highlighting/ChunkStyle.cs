@@ -32,8 +32,6 @@ namespace Mono.TextEditor
 	{
 		Gdk.Color color;
 		Gdk.Color backColor;
-		bool      bold;
-		bool      italic;
 		bool      transparentBackround = true;
 		
 		public Gdk.Color Color {
@@ -60,41 +58,39 @@ namespace Mono.TextEditor
 		}
 
 		public bool Bold {
-			get {
-				return bold;
-			}
-			set {
-				bold = value;
-			}
+			get;
+			set;
 		}
 
 		public bool Italic {
-			get {
-				return italic;
-			}
-			set {
-				italic = value;
-			}
+			get;
+			set;
+		}
+
+		public bool Underline {
+			get;
+			set;
 		}
 		
 		public ChunkStyle (ChunkStyle style)
 		{
 			color = style.color;
 			backColor = style.backColor;
-			bold = style.bold;
-			italic = style.italic;
+			Bold = style.Bold;
+			Italic = style.Italic;
 			transparentBackround = style.transparentBackround;
 		}
 
 		public Pango.Style GetStyle (Pango.Style defaultStyle)
 		{
-			return italic ? Pango.Style.Italic : Pango.Style.Normal;
+			System.Console.WriteLine("isItalic:" + Italic);
+			return Italic ? Pango.Style.Italic : Pango.Style.Normal;
 		}
 		public Pango.Weight GetWeight (Pango.Weight defaultWeight)
 		{
 			if (defaultWeight == Pango.Weight.Bold)
-				return bold ? Pango.Weight.Heavy : Pango.Weight.Bold;
-			return bold ? Pango.Weight.Bold : Pango.Weight.Normal;
+				return Bold ? Pango.Weight.Heavy : Pango.Weight.Bold;
+			return Bold ? Pango.Weight.Bold : Pango.Weight.Normal;
 		}
 		
 		public ChunkStyle () : this (new Gdk.Color (0, 0, 0), false)
@@ -108,30 +104,30 @@ namespace Mono.TextEditor
 		public ChunkStyle (Gdk.Color color, bool bold)
 		{
 			this.color = color;
-			this.bold  = bold;
+			this.Bold  = bold;
 		}
 		
 		public ChunkStyle (Gdk.Color color, bool bold, bool italic)
 		{
 			this.color = color;
-			this.bold  = bold;
-			this.italic  = italic;
+			this.Bold  = bold;
+			this.Italic  = italic;
 		}
 
 		public override string ToString ()
 		{
-			return String.Format ("[ChunkStyle: Color={0}, bold={1}]", color, bold);
+			return String.Format ("[ChunkStyle: Color={0}, bold={1}]", color, Bold);
 		}
 
 		public override int GetHashCode ()
 		{
-			return color.GetHashCode () ^ bold.GetHashCode ();
+			return color.GetHashCode () ^ Bold.GetHashCode ();
 		}
 
 		public override bool Equals (object o)
 		{
 			ChunkStyle c = o as ChunkStyle;
-			return c != null && bold == c.bold && color.GetHashCode () == c.color.GetHashCode ();
+			return c != null && Bold == c.Bold && Italic == c.Italic && color.GetHashCode () == c.color.GetHashCode ();
 		}
 	}
 }

@@ -57,7 +57,7 @@ namespace Mono.TextEditor.Highlighting
 		{
 		}
 		
-		public Chunk[] GetChunks (Document doc, Style style, LineSegment line, int offset, int length)
+		public virtual Chunk[] GetChunks (Document doc, Style style, LineSegment line, int offset, int length)
 		{
 			return new ChunkParser (doc, style, this, line).GetChunks (offset, length);
 		}
@@ -225,7 +225,7 @@ namespace Mono.TextEditor.Highlighting
 			Chunk curChunk;
 			int maxEnd;
 			
-			public Chunk[] GetChunks (int offset, int length)
+			public virtual Chunk[] GetChunks (int offset, int length)
 			{
 				curRule = mode;
 				this.ruleStart = offset;

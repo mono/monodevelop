@@ -293,19 +293,19 @@ namespace Mono.TextEditor
 			
 			foreach (Chunk chunk in chunks) {
 				if (chunk.Offset >= selectionStart && chunk.EndOffset <= selectionEnd) {
-					DrawStyledText (win, line, true, chunk.Style, ref visibleColumn, ref xPos, y, chunk.Offset, chunk.EndOffset);
+					DrawStyledText (win, line, true, chunk, ref visibleColumn, ref xPos, y, chunk.Offset, chunk.EndOffset);
 				} else if (chunk.Offset >= selectionStart && chunk.Offset < selectionEnd && chunk.EndOffset > selectionEnd) {
-					DrawStyledText (win, line, true, chunk.Style, ref visibleColumn, ref xPos, y, chunk.Offset, selectionEnd);
-					DrawStyledText (win, line, false, chunk.Style, ref visibleColumn, ref xPos, y, selectionEnd, chunk.EndOffset);
+					DrawStyledText (win, line, true, chunk, ref visibleColumn, ref xPos, y, chunk.Offset, selectionEnd);
+					DrawStyledText (win, line, false, chunk, ref visibleColumn, ref xPos, y, selectionEnd, chunk.EndOffset);
 				} else if (chunk.Offset < selectionStart && chunk.EndOffset > selectionStart && chunk.EndOffset <= selectionEnd) {
-					DrawStyledText (win, line, false, chunk.Style, ref visibleColumn, ref xPos, y, chunk.Offset, selectionStart);
-					DrawStyledText (win, line, true, chunk.Style, ref visibleColumn, ref xPos, y, selectionStart, chunk.EndOffset);
+					DrawStyledText (win, line, false, chunk, ref visibleColumn, ref xPos, y, chunk.Offset, selectionStart);
+					DrawStyledText (win, line, true, chunk, ref visibleColumn, ref xPos, y, selectionStart, chunk.EndOffset);
 				} else if (chunk.Offset < selectionStart && chunk.EndOffset > selectionEnd) {
-					DrawStyledText (win, line, false, chunk.Style, ref visibleColumn, ref xPos, y, chunk.Offset, selectionStart);
-					DrawStyledText (win, line, true, chunk.Style, ref visibleColumn, ref xPos, y, selectionStart, selectionEnd);
-					DrawStyledText (win, line, false, chunk.Style, ref visibleColumn, ref xPos, y, selectionEnd, chunk.EndOffset);
+					DrawStyledText (win, line, false, chunk, ref visibleColumn, ref xPos, y, chunk.Offset, selectionStart);
+					DrawStyledText (win, line, true, chunk, ref visibleColumn, ref xPos, y, selectionStart, selectionEnd);
+					DrawStyledText (win, line, false, chunk, ref visibleColumn, ref xPos, y, selectionEnd, chunk.EndOffset);
 				} else 
-					DrawStyledText (win, line, false, chunk.Style, ref visibleColumn, ref xPos, y, chunk.Offset, chunk.EndOffset);
+					DrawStyledText (win, line, false, chunk, ref visibleColumn, ref xPos, y, chunk.Offset, chunk.EndOffset);
 			}
 			
 			if (Caret.Offset == offset + length) 
@@ -400,27 +400,31 @@ namespace Mono.TextEditor
 				return textEditor.Options.Font.Style;
 			}
 		}
-		void DrawStyledText (Gdk.Drawable win, LineSegment line, bool selected, ChunkStyle style, ref int visibleColumn, ref int xPos, int y, int startOffset, int endOffset)
+
+		void DrawStyledText (Gdk.Drawable win, LineSegment line, bool selected, Chunk chunk, ref int visibleColumn, ref int xPos, int y, int startOffset, int endOffset)
 		{
 			int caretOffset = Caret.Offset;
 			int drawCaretAt = -1;
 			wordBuilder.Length = 0;
-			
+			ChunkStyle style = chunk.Style;
 			if (line.Markers != null) {
 				foreach (TextMarker marker in line.Markers)
 					style = marker.GetStyle (style);
 			}
 			
-			Pango.Weight requestedWeight = style.GetWeight (DefaultWeight);
+			Pango.Weight requestedWeight = chunk.Style.GetWeight (DefaultWeight);
 			if (layout.FontDescription.Weight != requestedWeight)
 				layout.FontDescription.Weight = requestedWeight;
 			
-			Pango.Style requestedStyle = style.GetStyle (DefaultStyle);
+			Pango.Style requestedStyle = chunk.Style.GetStyle (DefaultStyle);
 			if (layout.FontDescription.Style != requestedStyle)
 				layout.FontDescription.Style = requestedStyle;
-			
+/*			if (style.Underline) {
+				layout.Attributes.Change (new Pango.AttrUnderline (Pango.Underline.Low));
+			}*/
+				
 			for (int offset = startOffset; offset < endOffset; offset++) {
-				char ch = Document.GetCharAt (offset);
+				char ch = chunk.GetCharAt (Document, offset);
 				if (textEditor.Options.HighlightMatchingBracket && offset == this.highlightBracketOffset && (!this.textEditor.IsSomethingSelected || this.textEditor.SelectionRange.Length == 0)) {
 					OutputWordBuilder (win, line, selected, style, ref visibleColumn, ref xPos, y, offset);
 					
@@ -539,7 +543,9 @@ namespace Mono.TextEditor
 				layout.FontDescription.Weight = DefaultWeight;
 			if (DefaultStyle != requestedStyle)
 				layout.FontDescription.Style = DefaultStyle;
-
+/*			if (style.Underline) 
+				layout.Attributes.Change (new Pango.AttrFallback (true));
+				*/
 			if (drawCaretAt >= 0)
 				SetVisibleCaretPosition (win, Document.Contains (caretOffset) ? Document.GetCharAt (caretOffset) : ' ', drawCaretAt, y);
 		}

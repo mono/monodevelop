@@ -1,3 +1,14 @@
+2008-11-20  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* Mono.TextEditor.mdp:
+	* Mono.TextEditor/TextViewMargin.cs:
+	* Mono.TextEditor.Highlighting/Chunk.cs:
+	* Mono.TextEditor.Highlighting/SyntaxMode.cs:
+	* Mono.TextEditor.Highlighting/ChunkStyle.cs:
+	* Mono.TextEditor.Highlighting/MarkupSyntaxMode.cs: Worked on markup
+	syntax mode.
+
 2008-11-19  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.TextEditor/ClipboardActions.cs: Add missing '!'. Fixes pasting.
