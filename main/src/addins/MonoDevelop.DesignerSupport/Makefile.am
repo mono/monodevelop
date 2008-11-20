@@ -1,7 +1,7 @@
 ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.DesignerSupport.dll
 
-DEPS =	\
+DEPS =  \
 	$(top_builddir)/build/bin/Mono.Cecil.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
@@ -14,13 +14,6 @@ REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	$(MONO_ADDINS_LIBS) \
-	-r:$(top_builddir)/build/bin/Mono.Cecil.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll \
 	-r:Mono.Cairo \
 	-r:Mono.Posix \
 	-r:System \
@@ -124,7 +117,7 @@ all: $(ASSEMBLY)
 
 $(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
 	mkdir -p $(ADDIN_BUILD)
-	$(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library $(REFS) \
+	$(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library $(REFS) $(build_deps) \
 		$(build_resources:%=/resource:%) $(build_sources)
 
 assemblydir = $(MD_ADDIN_DIR)/MonoDevelop.DesignerSupport

@@ -2,7 +2,7 @@
 ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoDevelop.Gettext
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.Gettext.dll
 
-DEPS =	\
+DEPS =  \
 	$(top_builddir)/build/AddIns/MonoDevelop.Autotools/MonoDevelop.Autotools.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
@@ -18,16 +18,6 @@ REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	$(MONO_ADDINS_LIBS) \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Autotools/MonoDevelop.Autotools.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
-	-r:$(top_builddir)/build/bin/Mono.TextEditor.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Xml
@@ -96,7 +86,7 @@ $(ADDIN_BUILD)/%: $(srcdir)/lib/%
 
 $(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
 	mkdir -p $(ADDIN_BUILD)
-	$(CSC) $(CSC_FLAGS) $(REFS) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -target:library
+	$(CSC) $(CSC_FLAGS) $(REFS) $(build_deps) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -target:library
 
 $(ASSEMBLY).mdb: $(ASSEMBLY)
 

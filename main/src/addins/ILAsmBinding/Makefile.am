@@ -2,7 +2,7 @@
 ADDIN_BUILD = $(top_builddir)/build/AddIns/BackendBindings
 ASSEMBLY = $(ADDIN_BUILD)/ILAsmBinding.dll
 
-DEPS =	\
+DEPS =  \
 	$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
@@ -13,12 +13,6 @@ DEPS =	\
 REFS =  \
 	$(GTK_SHARP_LIBS) \
 	$(MONO_ADDINS_LIBS) \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll \
 	-r:System \
 	-r:System.Xml
 
@@ -41,7 +35,7 @@ all: $(ASSEMBLY)
 
 $(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
 	mkdir -p $(ADDIN_BUILD)
-	$(CSC) $(CSC_FLAGS) $(build_resources:%=/resource:%) $(build_sources) $(REFS) -out:$@ -target:library
+	$(CSC) $(CSC_FLAGS) $(build_resources:%=/resource:%) $(build_sources) $(REFS) $(build_deps) -out:$@ -target:library
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 EXTRA_DIST = $(FILES) $(RES)

@@ -74,7 +74,7 @@
     <OthersVar />
     <GacRefVar Sync="True" Name="REFS" Prefix="-r:" />
     <AsmRefVar Sync="True" Name="REFS" Prefix="-r:" />
-    <ProjectRefVar Sync="True" Name="REFS" Prefix="-r:" />
+    <ProjectRefVar Sync="True" Name="DEPS" />
   </MonoDevelop.Autotools.MakefileInfo>
   <MonoDevelop.ChangeLogAddIn.ChangeLogInfo policy="UseParentPolicy" />
 </Project>

@@ -2,7 +2,7 @@
 ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoDevelop.XmlEditor
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.XmlEditor.dll
 
-DEPS =	\
+DEPS =  \
 	$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.SourceEditor2.dll \
 	$(top_builddir)/build/bin/Mono.TextEditor.dll \
@@ -17,15 +17,6 @@ REFS =  \
 	$(GLADE_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	$(MONO_ADDINS_LIBS) \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.SourceEditor2.dll \
-	-r:$(top_builddir)/build/bin/Mono.TextEditor.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Data \
@@ -111,7 +102,7 @@ $(DATA_FILE_BUILD): $(srcdir)$(subst $(ADDIN_BUILD),, $@)
 
 $(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
 	mkdir -p $(ADDIN_BUILD)
-	$(CSC) $(CSC_FLAGS) $(REFS) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -target:library -define:DEBUG
+	$(CSC) $(CSC_FLAGS) $(REFS) $(build_deps) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -target:library -define:DEBUG
 
 assemblydir = $(MD_ADDIN_DIR)/MonoDevelop.XmlEditor
 assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb

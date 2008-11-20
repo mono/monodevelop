@@ -7,7 +7,7 @@ FILES =  \
 	MonoMakefileFormat.cs \
 	MonoSolutionItemHandler.cs
 
-DEPS =	\
+DEPS =  \
 	$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
@@ -18,12 +18,6 @@ DEPS =	\
 REFS =  \
 	$(GTK_SHARP_LIBS) \
 	$(MONO_ADDINS_LIBS) \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll \
 	-r:System \
 	-r:System.Data
 
@@ -41,7 +35,7 @@ endif
 
 $(ASSEMBLY): $(build_sources) $(srcdir)/$(GLADEFILE) $(build_resources) $(DEPS)
 	mkdir -p $(ADDIN_BUILD)
-	$(CSC) $(CSC_FLAGS) -target:library -out:$@ $(build_resources:%=/resource:%) $(build_sources) $(REFS)
+	$(CSC) $(CSC_FLAGS) -target:library -out:$@ $(build_resources:%=/resource:%) $(build_sources) $(REFS) $(build_deps)
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 

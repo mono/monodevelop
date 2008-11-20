@@ -42,7 +42,7 @@ RES =  \
 	gtk-gui/objects.xml \
 	MonoDevelop.SourceEditor.addin.xml  
 
-DEPS =	\
+DEPS =  \
 	$(top_builddir)/build/AddIns/MonoDevelop.Debugger/MonoDevelop.Debugger.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
 	$(top_builddir)/build/bin/Mono.Debugging.dll \
@@ -58,16 +58,6 @@ REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	$(MONO_ADDINS_LIBS) \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Debugger/MonoDevelop.Debugger.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
-	-r:$(top_builddir)/build/bin/Mono.Debugging.dll \
-	-r:$(top_builddir)/build/bin/Mono.TextEditor.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll \
 	-r:Mono.Cairo \
 	-r:Mono.Posix \
 	-r:System \
@@ -79,7 +69,7 @@ all: $(ASSEMBLY)
 
 $(ASSEMBLY) : $(build_sources) $(build_resources) $(DEPS)
 	mkdir -p $(top_builddir)/build/bin
-	$(CSC) $(CSC_FLAGS) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -t:library $(REFS)
+	$(CSC) $(CSC_FLAGS) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -t:library $(REFS) $(build_deps)
 
 assemblydir = $(MD_ADDIN_DIR)
 assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb

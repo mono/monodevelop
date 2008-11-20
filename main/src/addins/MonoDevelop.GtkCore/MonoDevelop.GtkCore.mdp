@@ -82,7 +82,6 @@
     <ProjectReference type="Project" localcopy="False" refto="Mono.Cecil" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Addins, Version=0.3.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Deployment" />
-    <ProjectReference type="Gac" localcopy="True" refto="gconf-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="glade-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="glib-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
@@ -94,14 +93,14 @@
     <ProjectReference type="Project" localcopy="True" refto="libsteticui" />
   </References>
   <GtkDesignInfo />
-  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">
+  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">
     <BuildFilesVar Sync="True" Name="FILES" />
     <DeployFilesVar />
     <ResourcesVar Sync="True" Name="RES" />
     <OthersVar />
     <GacRefVar Sync="True" Name="REFS" Prefix="-r:" />
     <AsmRefVar Sync="True" Name="REFS" Prefix="-r:" />
-    <ProjectRefVar Sync="True" Name="REFS" Prefix="-r:" />
+    <ProjectRefVar Sync="True" Name="DEPS" />
   </MonoDevelop.Autotools.MakefileInfo>
   <DeploymentInformation strategy="File" />
 </Project>

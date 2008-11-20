@@ -2,7 +2,7 @@
 ADDIN_BUILD = $(top_builddir)/build/AddIns/WelcomePage
 ASSEMBLY = $(ADDIN_BUILD)/WelcomePage.dll
 
-DEPS =	\
+DEPS =  \
 	$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
@@ -12,11 +12,6 @@ DEPS =	\
 REFS =  \
 	$(GTK_SHARP_LIBS) \
 	$(MONO_ADDINS_LIBS) \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Xml
@@ -54,7 +49,7 @@ $(DATA_FILE_BUILD): $(srcdir)/$(notdir $@)
 
 $(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
 	mkdir -p $(ADDIN_BUILD)
-	$(CSC) $(CSC_FLAGS) $(REFS) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -target:library
+	$(CSC) $(CSC_FLAGS) $(REFS) $(build_deps) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -target:library
 
 assemblydir = $(MD_ADDIN_DIR)/WelcomePage
 assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb $(DATA_FILES)

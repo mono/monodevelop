@@ -2,7 +2,7 @@
 ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoDevelop.Debugger
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.Debugger.dll
 
-DEPS =	\
+DEPS =  \
 	$(top_builddir)/build/bin/Mono.Debugging.dll \
 	$(top_builddir)/build/bin/Mono.TextEditor.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Components.dll \
@@ -15,14 +15,6 @@ DEPS =	\
 REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
-	-r:$(top_builddir)/build/bin/Mono.Debugging.dll \
-	-r:$(top_builddir)/build/bin/Mono.TextEditor.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll \
 	-r:Mono.Cairo \
 	-r:Mono.Posix \
 	-r:System \
@@ -58,7 +50,7 @@ $(DATA_FILE_BUILD): $(srcdir)$(subst $(ADDIN_BUILD),, $@)
 
 $(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
 	mkdir -p $(ADDIN_BUILD)
-	$(CSC) $(CSC_FLAGS) $(REFS) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -target:library
+	$(CSC) $(CSC_FLAGS) $(REFS) $(build_deps) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -target:library
 
 assemblydir = $(MD_ADDIN_DIR)/MonoDevelop.Debugger
 assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb $(DATA_FILES)

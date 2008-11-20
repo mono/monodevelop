@@ -40,7 +40,7 @@ RES =  \
 
 GENERATED_FILES =  
 
-DEPS =	\
+DEPS =  \
 	$(top_builddir)/build/bin/Mono.Cecil.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
@@ -52,13 +52,6 @@ DEPS =	\
 REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
-	-r:$(top_builddir)/build/bin/Mono.Cecil.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Xml
@@ -69,7 +62,7 @@ ADDIN_BUILD = $(top_builddir)/build/AddIns
 
 $(ASSEMBLY) : $(build_sources) $(build_resources) $(DEPS)
 	mkdir -p $(top_builddir)/build/bin
-	$(CSC) $(CSC_FLAGS) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -t:library $(REFS)
+	$(CSC) $(CSC_FLAGS) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -t:library $(REFS) $(build_deps)
 
 assemblydir = $(MD_ADDIN_DIR)
 assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb

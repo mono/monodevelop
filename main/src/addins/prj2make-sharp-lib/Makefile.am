@@ -2,7 +2,7 @@
 ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoDevelop.MsVisualStudio
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.MsVisualStudio.dll
 
-DEPS =	\
+DEPS =  \
 	$(top_builddir)/build/AddIns/BackendBindings/MonoDevelop.CSharpBinding.dll \
 	$(top_builddir)/build/AddIns/BackendBindings/MonoDevelop.VBNetBinding.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.dll \
@@ -16,16 +16,6 @@ DEPS =	\
 
 REFS =  \
 	$(MONO_ADDINS_LIBS) \
-	-r:$(top_builddir)/build/AddIns/BackendBindings/MonoDevelop.CSharpBinding.dll \
-	-r:$(top_builddir)/build/AddIns/BackendBindings/MonoDevelop.VBNetBinding.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll \
-	-r:$(top_builddir)/build/bin/NRefactory.dll \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Xml
@@ -54,7 +44,7 @@ all: $(ASSEMBLY)
 
 $(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
 	mkdir -p $(ADDIN_BUILD)
-	$(CSC) $(CSC_FLAGS) -out:$@ -target:library $(build_resources:%=/resource:%) $(build_sources) $(REFS)
+	$(CSC) $(CSC_FLAGS) -out:$@ -target:library $(build_resources:%=/resource:%) $(build_sources) $(REFS) $(build_deps)
 
 assemblydir = $(MD_ADDIN_DIR)/MonoDevelop.MsVisualStudio
 assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb

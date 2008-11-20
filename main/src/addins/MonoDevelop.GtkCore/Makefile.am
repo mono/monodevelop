@@ -3,7 +3,7 @@ SUBDIRS = lib
 ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoDevelop.GtkCore
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.GtkCore.dll
 
-DEPS =	\
+DEPS =  \
 	$(top_builddir)/build/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.GtkCore/libstetic.dll \
@@ -13,24 +13,14 @@ DEPS =	\
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
-	$(top_builddir)/build/bin/MonoDevelop.Projects.dll
+	$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll
 
 REFS =  \
 	$(GLADE_SHARP_LIBS) \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	$(MONO_ADDINS_LIBS) \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.GtkCore/libstetic.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.GtkCore/libsteticui.dll \
-	-r:$(top_builddir)/build/bin/Mono.Cecil.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Xml
@@ -105,7 +95,7 @@ $(ADDIN_BUILD)/%: $(srcdir)/lib/%
 $(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library \
-	$(build_resources:%=/resource:%) $(build_sources) $(REFS)
+	$(build_resources:%=/resource:%) $(build_sources) $(REFS) $(build_deps)
 
 assemblydir = $(MD_ADDIN_DIR)/MonoDevelop.GtkCore
 assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb
