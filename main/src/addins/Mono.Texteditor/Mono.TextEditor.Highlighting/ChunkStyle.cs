@@ -83,7 +83,6 @@ namespace Mono.TextEditor
 
 		public Pango.Style GetStyle (Pango.Style defaultStyle)
 		{
-			System.Console.WriteLine("isItalic:" + Italic);
 			return Italic ? Pango.Style.Italic : Pango.Style.Normal;
 		}
 		public Pango.Weight GetWeight (Pango.Weight defaultWeight)
