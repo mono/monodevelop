@@ -1,5 +1,23 @@
 2008-11-20  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Makefile.am:
+	* MonoDevelop.Ide.mdp:
+	* MonoDevelop.Ide.Gui/StatusProgressMonitor.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/ProgressMonitorResultDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.ProgressMonitorResultDialog.cs:
+	When presenting the results of an operation in a dialog, show them
+	inside a scrolled window, to avoid huge windows when there are many
+	errors or warnings. Fixes bug #443164 - Too large dialog when the
+	load of a solution yields a lot of warnings.
+
+	* gtk-gui/objects.xml:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.EncapsulateFieldDialog.cs: Flush.
+
+	* gtk-gui/gui.stetic: Added new dialog and removed some old ones.
+
+2008-11-20  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Templates/CombineDescriptor.cs: Use SetLocation to set
 	the path of the new solution. We can't use FileName because we don't
 	know the file name yet. Fixes bug #Bug 445119 - File names != from

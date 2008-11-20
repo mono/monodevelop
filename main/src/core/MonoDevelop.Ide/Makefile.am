@@ -42,6 +42,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewFileDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewLayoutDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.cs \
+	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.ProgressMonitorResultDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.RenameItemDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.ReplaceInFilesDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.SelectReferenceDialog.cs \
@@ -164,6 +165,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Dialogs/NewLayoutDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/OverridesImplementsDialog.cs \
+	MonoDevelop.Ide.Gui.Dialogs/ProgressMonitorResultDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs \
 	MonoDevelop.Ide.Gui.Dialogs/RenameItemDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs \

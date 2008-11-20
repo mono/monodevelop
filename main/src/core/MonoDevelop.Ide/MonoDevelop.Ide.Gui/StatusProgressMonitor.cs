@@ -33,6 +33,7 @@ using System.IO;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.ProgressMonitoring;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -98,37 +99,29 @@ namespace MonoDevelop.Ide.Gui
 			
 			monitorQueue.RemoveAt (i);
 
-			if (Errors.Count > 0) {
-				if (showErrorDialogs) {
-					string s = "";
-					foreach (string m in Errors)
-						s += m + "\n";
-					MessageService.ShowException (ErrorException, s);
-				}
+			if (Errors.Count > 0 || Warnings.Count > 0) {
 				if (uniqueMonitor) {
-					Gtk.Image img = Services.Resources.GetImage (Stock.Error, Gtk.IconSize.Menu);
-					IdeApp.Workbench.StatusBar.ShowMessage (img, GLib.Markup.EscapeText (Errors [Errors.Count - 1]));
-				}
-				base.OnCompleted ();
-				return;
-			}
-			
-			if (Warnings.Count > 0) {
-				if (showErrorDialogs) {
-					string s = "";
-					foreach (string m in Warnings)
-						s += m + "\n";
-					MessageService.ShowWarning (GLib.Markup.EscapeText (s));
-				}
-				
-				if (SuccessMessages.Count == 0) {
-					if (uniqueMonitor) {
+					if (Errors.Count > 0) {
+						Gtk.Image img = Services.Resources.GetImage (Stock.Error, Gtk.IconSize.Menu);
+						IdeApp.Workbench.StatusBar.ShowMessage (img, GLib.Markup.EscapeText (Errors [Errors.Count - 1]));
+					} else if (SuccessMessages.Count == 0) {
 						Gtk.Image img = Services.Resources.GetImage (Stock.Warning, Gtk.IconSize.Menu);
 						IdeApp.Workbench.StatusBar.ShowMessage (img, GLib.Markup.EscapeText (Warnings [Warnings.Count - 1]));
 					}
-					base.OnCompleted ();
-					return;
 				}
+				
+				base.OnCompleted ();
+				
+				if (showErrorDialogs) {
+					ProgressMonitorResultDialog resultDialog = new ProgressMonitorResultDialog ();
+					foreach (string m in Errors)
+						resultDialog.AddError (m);
+					foreach (string m in Warnings)
+						resultDialog.AddWarning (m);
+					resultDialog.Run ();
+					resultDialog.Destroy ();
+				}
+				return;
 			}
 
 			if (uniqueMonitor) {
