@@ -66,7 +66,13 @@ namespace MonoDevelop.VBNetBinding
 			compileTargetCombo.AddAttribute (cr, "text", 0);
 			compileTargetCombo.Changed += new EventHandler (OnTargetChanged);
 			
-			FillClasses (project);
+			if (((DotNetProject)project).IsLibraryBasedProjectType) {
+				//fixme: should we totally hide these?
+				compileTargetCombo.Sensitive = false;
+				mainClassEntry.Sensitive = false;
+			} else {
+				FillClasses (project);
+			}
 		}
 		
 		public void Load (DotNetProjectConfiguration config)
@@ -86,12 +92,6 @@ namespace MonoDevelop.VBNetBinding
 			warningsAsErrorsCheckButton.Active = !config.RunWithWarnings;
 			warningLevelSpinButton.Value = parameters.WarningLevel;
 			additionalArgsEntry.Text = parameters.AdditionalParameters;
-			
-			if (config.ParentItem.IsLibraryBasedProjectType) {
-				//fixme: should we totally hide these?
-				compileTargetCombo.Sensitive = false;
-				mainClassEntry.Sensitive = false;
-			}
 		}
 		
 		public void StorePanelContents ()
