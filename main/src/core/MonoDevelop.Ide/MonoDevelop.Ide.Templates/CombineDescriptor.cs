@@ -116,7 +116,7 @@ namespace MonoDevelop.Ide.Templates
 			
 			projectCreateInformation.CombinePath = oldCombinePath;
 			projectCreateInformation.ProjectBasePath = oldProjectPath;
-			item.FileName = Path.Combine (projectCreateInformation.CombinePath, newCombineName);
+			item.SetLocation (projectCreateInformation.CombinePath, newCombineName);
 			
 			return item;
 		}

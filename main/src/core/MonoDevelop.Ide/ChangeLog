@@ -1,3 +1,10 @@
+2008-11-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Templates/CombineDescriptor.cs: Use SetLocation to set
+	the path of the new solution. We can't use FileName because we don't
+	know the file name yet. Fixes bug #Bug 445119 - File names != from
+	solution/project names.
+
 2008-11-20  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Gui.Content/TextEditorProperties.cs: fixed 'Bug 446871
