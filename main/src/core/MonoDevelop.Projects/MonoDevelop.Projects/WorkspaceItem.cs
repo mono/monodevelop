@@ -71,7 +71,7 @@ namespace MonoDevelop.Projects
 			}
 			set {
 				if (string.IsNullOrEmpty (fileName))
-					FileName = value;
+					SetLocation (".", value);
 				else {
 					string dir = Path.GetDirectoryName (fileName);
 					string ext = Path.GetExtension (fileName);
@@ -93,6 +93,13 @@ namespace MonoDevelop.Projects
 					OnNameChanged (new WorkspaceItemRenamedEventArgs (this, oldName, Name));
 				NotifyModified ();
 			}
+		}
+
+		public void SetLocation (string baseDirectory, string name)
+		{
+			// Add a dummy extension to the file name.
+			// It will be replaced by the correct one, depending on the format
+			FileName = Path.Combine (baseDirectory, name + ".x");
 		}
 		
 		public string BaseDirectory {

@@ -473,11 +473,7 @@ namespace MonoDevelop.Projects
 		
 		protected virtual void CheckNeedsBuild (string solutionConfiguration)
 		{
-			string config = GetActiveConfigurationId (solutionConfiguration);
-			if (config == null)
-				return;
-			
-			DateTime tim = GetLastBuildTime (config);
+			DateTime tim = GetLastBuildTime (solutionConfiguration);
 			if (tim == DateTime.MinValue) {
 				SetDirty ();
 				return;
@@ -486,28 +482,28 @@ namespace MonoDevelop.Projects
 			foreach (ProjectFile file in Files) {
 				if (file.BuildAction == BuildAction.Content || file.BuildAction == BuildAction.None)
 					continue;
-				FileInfo finfo = new FileInfo (file.FilePath);
-				if (finfo.Exists && finfo.LastWriteTime > tim) {
-					SetDirty ();
-					return;
+				try {
+					if (File.GetLastWriteTime (file.FilePath) > tim) {
+						SetDirty ();
+						return;
+					}
+				} catch (IOException) {
+					// Ignore.
 				}
 			}
 			
 			foreach (SolutionItem pref in GetReferencedItems (solutionConfiguration)) {
-				if (pref.NeedsBuilding (solutionConfiguration)) {
+				if (pref.GetLastBuildTime (solutionConfiguration) > tim || pref.NeedsBuilding (solutionConfiguration)) {
 					SetDirty ();
 					return;
 				}
 			}
 		}
 		
-		protected virtual DateTime GetLastBuildTime (string itemConfiguration)
+		internal protected override DateTime OnGetLastBuildTime (string solutionConfiguration)
 		{
-			return GetLastWriteTime (OnGetOutputFileName (itemConfiguration));
-		}
-
-		DateTime GetLastWriteTime (string file)
-		{
+			string conf = GetActiveConfigurationId (solutionConfiguration);
+			string file = OnGetOutputFileName (conf);
 			if (file == null)
 				return DateTime.MinValue;
 

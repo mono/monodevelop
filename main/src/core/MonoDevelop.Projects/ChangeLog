@@ -1,3 +1,16 @@
+2008-11-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/WorkspaceItem.cs:
+	* MonoDevelop.Projects/ProjectService.cs: Added SetLocation method to
+	WorkspaceItem, which allows setting the path and name of an item, and
+	avoids having to specify a concrete file name.
+
+	* MonoDevelop.Projects/Project.cs:
+	* MonoDevelop.Projects/SolutionItem.cs:
+	* MonoDevelop.Projects/SolutionFolder.cs: Take into account the build
+	time of dependencies when checking if the project needs to be
+	rebuilt. Fixes bug #447058.
+
 2008-11-20  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/AbstractMember.cs: fixed 'Bug 444911 -

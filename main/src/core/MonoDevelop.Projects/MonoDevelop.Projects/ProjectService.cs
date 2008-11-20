@@ -422,7 +422,7 @@ namespace MonoDevelop.Projects
 			}
 			else {
 				// Create a temporary solution and add the project to the solution
-				tempSolution.FileName = filename;
+				tempSolution.SetLocation (Path.GetDirectoryName (filename), Path.GetFileNameWithoutExtension (filename));
 				SolutionEntityItem sitem = Services.ProjectService.ReadSolutionItem (monitor, filename);
 				tempSolution.ConvertToFormat (solutionFileFormat, false);
 				tempSolution.RootFolder.Items.Add (sitem);

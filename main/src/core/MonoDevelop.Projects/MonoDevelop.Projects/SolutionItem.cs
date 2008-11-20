@@ -225,6 +225,11 @@ namespace MonoDevelop.Projects
 			return cres;
 		}
 		
+		public DateTime GetLastBuildTime (string itemConfiguration)
+		{
+			return OnGetLastBuildTime (itemConfiguration);
+		}
+		
 		void GetBuildableReferencedItems (List<SolutionItem> referenced, SolutionItem item, string solutionConfiguration)
 		{
 			if (referenced.Contains (item)) return;
@@ -362,6 +367,11 @@ namespace MonoDevelop.Projects
 		internal protected abstract void OnExecute (IProgressMonitor monitor, ExecutionContext context, string solutionConfiguration);
 		internal protected abstract bool OnGetNeedsBuilding (string solutionConfiguration);
 		internal protected abstract void OnSetNeedsBuilding (bool val, string solutionConfiguration);
+		
+		internal protected virtual DateTime OnGetLastBuildTime (string solutionConfiguration)
+		{
+			return DateTime.MinValue;
+		}
 		
 		internal protected virtual bool OnGetCanExecute (ExecutionContext context, string solutionConfiguration)
 		{

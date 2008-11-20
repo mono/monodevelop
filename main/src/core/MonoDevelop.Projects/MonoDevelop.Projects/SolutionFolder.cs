@@ -575,6 +575,20 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		protected internal override DateTime OnGetLastBuildTime (string solutionConfiguration)
+		{
+			// Return the min value, since that the last time all items in the
+			// folder were built
+			DateTime tim = DateTime.MaxValue;
+			foreach (SolutionItem it in Items) {
+				DateTime t = it.GetLastBuildTime (solutionConfiguration);
+				if (t < tim)
+					tim = t;
+			}
+			return tim;
+		}
+
+
 		public void RemoveFileFromProjects (string fileName)
 		{
 			if (Directory.Exists (fileName)) {
