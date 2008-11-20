@@ -449,6 +449,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			TreeBuilder builder = new TreeBuilder (this);
 			builder.AddChild (nodeObject, true);
 			builder.Expanded = true;
+			InitialSelection ();
 		}
 		
 		public void AddChild (object nodeObject)
@@ -456,13 +457,27 @@ namespace MonoDevelop.Ide.Gui.Components
 			TreeBuilder builder = new TreeBuilder (this);
 			builder.AddChild (nodeObject, true);
 			builder.Expanded = true;
+			InitialSelection ();
 		}
 		
 		public void RemoveChild (object nodeObject)
 		{
 			TreeBuilder builder = new TreeBuilder (this);
-			if (builder.MoveToObject (nodeObject))
+			if (builder.MoveToObject (nodeObject)) {
 				builder.Remove ();
+				InitialSelection ();
+			}
+		}
+		
+		void InitialSelection ()
+		{
+			if (tree.Selection.CountSelectedRows () == 0) {
+				Gtk.TreeIter it;
+				if (store.GetIterFirst (out it)) {
+					tree.Selection.SelectIter (it);
+					tree.SetCursor (store.GetPath (it), tree.Columns [0], false);
+				}
+			}
 		}
 		
 		public void Clear ()
