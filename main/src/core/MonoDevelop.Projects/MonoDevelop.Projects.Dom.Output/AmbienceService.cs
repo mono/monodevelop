@@ -36,7 +36,7 @@ namespace MonoDevelop.Projects.Dom.Output
 	public static class AmbienceService
 	{
 		static Ambience defaultAmbience                = new NetAmbience ();
-		static Dictionary <string, Ambience> ambiences= new Dictionary <string, Ambience> ();
+		static Dictionary <string, Ambience> ambiences = new Dictionary <string, Ambience> ();
 		
 		static AmbienceService ()
 		{
@@ -84,11 +84,14 @@ namespace MonoDevelop.Projects.Dom.Output
 			return result ?? defaultAmbience;
 		}
 		
-		public static Ambience GetAmbienceForLanguage (string mimeType)
+		public static Ambience GetAmbienceForLanguage (string languageName)
 		{
-			Ambience result;
-			ambiences.TryGetValue (mimeType, out result);
-			return result ?? defaultAmbience;
+			ILanguageBinding binding = Services.Languages.GetBindingPerLanguageName (languageName);
+			if (binding != null) {
+				return GetAmbienceForFile (binding.GetFileName ("a"));
+			} else {
+				return defaultAmbience;
+			}
 		}
 		
 	}
