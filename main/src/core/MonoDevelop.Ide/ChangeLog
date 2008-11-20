@@ -1,3 +1,8 @@
+2008-11-20  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui.Content/TextEditorProperties.cs: fixed 'Bug 446871
+	- [Regression] Autoindent doesn't indent far enough'.
+
 2008-11-19  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: fixed "Bug 443771 - Go

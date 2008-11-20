@@ -123,8 +123,13 @@ namespace MonoDevelop.Ide.Gui.Content {
 					return IndentStyle.Smart;
 				case "Auto":
 					return IndentStyle.Auto;
+				case "None":
+					return IndentStyle.None;
 				}
-				return IndentStyle.None;
+				// invalid indent style -> setting to smart for default
+				// fixes: Bug 446871 - [Regression] Autoindent doesn't indent far enough
+				PropertyService.Set ("IndentStyle", "Smart");
+				return IndentStyle.Smart;
 			}
 			set {
 				PropertyService.Set ("IndentStyle", value);
