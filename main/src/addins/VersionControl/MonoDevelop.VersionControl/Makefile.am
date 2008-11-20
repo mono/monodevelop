@@ -45,7 +45,7 @@ FILES =  \
 	MonoDevelop.VersionControl/VersionInfo.cs \
 	MonoDevelop.VersionControl/VersionStatus.cs
 
-DEPS =	\
+DEPS =  \
 	$(top_builddir)/build/AddIns/VersionControl/Diff.dll \
 	$(top_builddir)/build/AddIns/VersionControl/DiffWidget.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Components.dll \
@@ -58,13 +58,6 @@ REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	$(MONO_ADDINS_LIBS) \
-	-r:$(top_builddir)/build/AddIns/VersionControl/Diff.dll \
-	-r:$(top_builddir)/build/AddIns/VersionControl/DiffWidget.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Core \
@@ -113,7 +106,7 @@ endif
 
 $(DLL): $(build_sources) $(build_resources) $(DEPS)
 	mkdir -p $(ADDIN_BUILD)
-	$(CSC) $(CSC_FLAGS) -target:library -out:$@ $(REFS) $(build_sources) $(build_resources:%=/resource:%)
+	$(CSC) $(CSC_FLAGS) -target:library -out:$@ $(REFS) $(build_deps) $(build_sources) $(build_resources:%=/resource:%)
 
 CLEANFILES = $(DLL) $(DLL).mdb
 

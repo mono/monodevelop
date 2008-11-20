@@ -2,7 +2,7 @@
 ADDIN_BUILD = $(top_builddir)/build/AddIns/VersionControl
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.VersionControl.Subversion.dll
 
-DEPS =	\
+DEPS =  \
 	$(top_builddir)/build/AddIns/VersionControl/MonoDevelop.VersionControl.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
@@ -13,12 +13,6 @@ DEPS =	\
 REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
-	-r:$(top_builddir)/build/AddIns/VersionControl/MonoDevelop.VersionControl.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
 	-r:Mono.Posix \
 	-r:System
 
@@ -47,7 +41,7 @@ RES =  \
 
 $(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
 	mkdir -p $(ADDIN_BUILD)
-	$(CSC) $(CSC_FLAGS) -unsafe $(build_sources) $(REFS) $(build_resources:%=/resource:%) -out:$@ -target:library
+	$(CSC) $(CSC_FLAGS) -unsafe $(build_sources) $(REFS) $(build_deps) $(build_resources:%=/resource:%) -out:$@ -target:library
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 EXTRA_DIST = $(FILES) $(RES)

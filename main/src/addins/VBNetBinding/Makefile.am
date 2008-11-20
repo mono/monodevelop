@@ -2,7 +2,7 @@
 ADDIN_BUILD = $(top_builddir)/build/AddIns/BackendBindings
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.VBNetBinding.dll
 
-DEPS =	\
+DEPS =  \
 	$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
@@ -14,13 +14,6 @@ DEPS =	\
 REFS =  \
 	$(GTK_SHARP_LIBS) \
 	$(MONO_ADDINS_LIBS) \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll \
-	-r:$(top_builddir)/build/bin/NRefactory.dll \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Drawing \
@@ -66,7 +59,7 @@ all: $(ASSEMBLY)
 
 $(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
 	mkdir -p $(ADDIN_BUILD)
-	$(CSC) $(CSC_FLAGS) -out:$@ -target:library $(REFS) \
+	$(CSC) $(CSC_FLAGS) -out:$@ -target:library $(REFS) $(build_deps) \
 		$(build_resources:%=/resource:%) \
 		$(build_sources)
 
