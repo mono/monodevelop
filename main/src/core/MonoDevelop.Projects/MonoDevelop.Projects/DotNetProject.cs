@@ -44,6 +44,7 @@ namespace MonoDevelop.Projects
 		string language;
 		ClrVersion clrVersion = ClrVersion.Default;
 		bool usePartialTypes = true;
+		Ambience ambience;
 		
 		[ItemProperty ("OutputType")]
 		CompileTarget compileTarget;
@@ -63,7 +64,11 @@ namespace MonoDevelop.Projects
 		}
 		
 		public override Ambience Ambience {
-			get { return AmbienceService.GetAmbienceForLanguage (LanguageName); }
+			get {
+				if (ambience == null)
+					ambience = AmbienceService.GetAmbienceForLanguage (LanguageName);
+				return ambience;
+			}
 		}
 		
 		public string LanguageName {
