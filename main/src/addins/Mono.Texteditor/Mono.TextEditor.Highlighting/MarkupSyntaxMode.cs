@@ -151,7 +151,8 @@ namespace Mono.TextEditor.Highlighting
 						break;
 					string tagText = doc.GetTextBetween (tagBegin + 1, i);
 					if (tagText.StartsWith ("/")) {
-						tagStack.Pop ();
+						if (tagStack.Count > 0)
+							tagStack.Pop ();
 					} else {
 						tagStack.Push (Tag.Parse (tagText));
 					}

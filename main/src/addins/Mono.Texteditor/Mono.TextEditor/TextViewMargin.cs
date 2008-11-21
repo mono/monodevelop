@@ -1091,7 +1091,7 @@ namespace Mono.TextEditor
 			{
 				foreach (Chunk chunk in chunks) {
 					for (int o = chunk.Offset; o < chunk.EndOffset; o++) {
-						char ch = margin.Document.GetCharAt (o);
+						char ch = chunk.GetCharAt (margin.Document, o);
 						int delta = 0;
 						if (ch == '\t') {
 							int newColumn = GetNextTabstop (margin.textEditor.GetTextEditorData (), visibleColumn);
@@ -1116,7 +1116,7 @@ namespace Mono.TextEditor
 							done = true;
 							return;
 						}
-						column++;
+						column = o - line.Offset;
 						xPos = nextXPosition;
 					}
 				}

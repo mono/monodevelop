@@ -1,5 +1,12 @@
 2008-11-21  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/TextViewMargin.cs:
+	* Mono.TextEditor.Highlighting/MarkupSyntaxMode.cs: Worked on markup
+	syntax mode.
+
+2008-11-21  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextMarker.cs:
 	* Mono.TextEditor/TextViewMargin.cs:
 	* Mono.TextEditor.Highlighting/MarkupSyntaxMode.cs: Added support for

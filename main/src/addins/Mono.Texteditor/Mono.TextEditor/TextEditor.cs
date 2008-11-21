@@ -662,16 +662,18 @@ namespace Mono.TextEditor
 		protected override void OnDragDataDelete (DragContext context)
 		{
 			int offset = Caret.Offset;
-			Document.Remove (selection.Offset, selection.Length);
-			if (offset >= selection.Offset) {
-				Caret.PreserveSelection = true;
-				Caret.Offset = offset - selection.Length;
-				Caret.PreserveSelection = false;
+			if (CanEdit (Caret.Line)) {
+				Document.Remove (selection.Offset, selection.Length);
+				if (offset >= selection.Offset) {
+					Caret.PreserveSelection = true;
+					Caret.Offset = offset - selection.Length;
+					Caret.PreserveSelection = false;
+				}
+				if (this.textEditorData.IsSomethingSelected && selection.Offset <= this.textEditorData.SelectionRange.Offset) {
+					this.textEditorData.SelectionRange.Offset -= selection.Length;
+				}
+				selection = null;
 			}
-			if (this.textEditorData.IsSomethingSelected && selection.Offset <= this.textEditorData.SelectionRange.Offset) {
-				this.textEditorData.SelectionRange.Offset -= selection.Length;
-			}
-			selection = null;
 			base.OnDragDataDelete (context); 
 		}
 
@@ -699,12 +701,14 @@ namespace Mono.TextEditor
 		{
 			if (selection_data.Length > 0 && selection_data.Format == 8) {
 				Caret.Location = dragCaretPos;
-				int offset = Caret.Offset;
-				if (selection != null && selection.Offset >= offset)
-					selection.Offset += selection_data.Text.Length;
-				Document.Insert (offset, selection_data.Text);
-				Caret.Offset = offset + selection_data.Text.Length;
-				SelectionRange = new Segment (offset, selection_data.Text.Length);
+				if (CanEdit (dragCaretPos.Line)) {
+					int offset = Caret.Offset;
+					if (selection != null && selection.Offset >= offset)
+						selection.Offset += selection_data.Text.Length;
+					Document.Insert (offset, selection_data.Text);
+					Caret.Offset = offset + selection_data.Text.Length;
+					SelectionRange = new Segment (offset, selection_data.Text.Length);
+				}
 				dragOver  = false;
 				context   = null;
 			}
@@ -1037,7 +1041,9 @@ namespace Mono.TextEditor
 				                       buffer,
 				                       e.Area.X, e.Area.Y, e.Area.X, e.Area.Y,
 				                       e.Area.Width, e.Area.Height + 1);
-				textViewMargin.DrawCaret (e.Window);
+				// If the whole document is readonly - don't display caret.
+				if (!Document.ReadOnly)
+					textViewMargin.DrawCaret (e.Window);
 			}
 			return true;
 		}
