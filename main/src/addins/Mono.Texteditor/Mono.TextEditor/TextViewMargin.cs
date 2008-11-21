@@ -1116,7 +1116,7 @@ namespace Mono.TextEditor
 							done = true;
 							return;
 						}
-						column = o - line.Offset;
+						column = o - line.Offset + 1;
 						xPos = nextXPosition;
 					}
 				}
