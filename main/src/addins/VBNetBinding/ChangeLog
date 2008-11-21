@@ -1,5 +1,11 @@
 2008-11-20  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* VBBindingCompilerServices.cs: Skip the space after the end of
+	filenames when capturing error locations. Fixes Bug 444089 - File not
+	found when going to source of error.
+
+2008-11-20  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Gui/CodeGenerationPanelWidget.cs: Fix NRE.
 
 2008-11-05  Lluis Sanchez Gual  <lluis@novell.com>
