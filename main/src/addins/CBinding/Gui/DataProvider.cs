@@ -82,8 +82,7 @@ namespace CBinding
 		{
 			int cursor = editor.CursorPosition;
 			int i = ctx.TriggerOffset;
-			
-			if (editor.GetCharAt (i) == ')')
+			if (i < 0 || i >= editor.TextLength || editor.GetCharAt (i) == ')')
 				return -1;
 			
 			if (i > cursor)
