@@ -58,7 +58,7 @@ namespace MonoDevelop.ValaBinding
 		bool compilerFound;
 		bool appsChecked;
 		
-		public ValaCompiler()
+		public ValaCompiler ()
 		{
 			compilerCommand = "valac";
 		}
@@ -154,9 +154,9 @@ namespace MonoDevelop.ValaBinding
 			
 			monitor.BeginTask (GettextCatalog.GetString ("Compiling source"), 1);
 			
-			success = DoCompilation(projectFiles, compilerArgs, outputName, monitor, cr);
+			success = DoCompilation (projectFiles, compilerArgs, outputName, monitor, cr);
 
-			GenerateDepfile(configuration, packages);
+			GenerateDepfile (configuration, packages);
 
 			if (success)
 				monitor.Step (1);
@@ -178,19 +178,19 @@ namespace MonoDevelop.ValaBinding
 		/// </returns>
 		public string GetCompilerFlags (ValaProjectConfiguration configuration)
 		{
-			List<string> args = new List<string>();
+			List<string> args = new List<string> ();
 			
 			
 			ValaCompilationParameters cp =
 				(ValaCompilationParameters)configuration.CompilationParameters;
 
-			args.Add(string.Format("-d '{0}'", configuration.OutputDirectory));
+			args.Add (string.Format ("-d '{0}'", configuration.OutputDirectory));
 			
 			if (configuration.DebugMode)
-				args.Add("-g");
+				args.Add ("-g");
 
 			if (configuration.CompileTarget == ValaBinding.CompileTarget.SharedLibrary) {
-				args.Add(string.Format("--Xcc=\"-shared\" --Xcc=\"-fPIC\" --Xcc=\"-I'{0}'\" --library \"{1}\"", configuration.OutputDirectory, configuration.Output));
+				args.Add (string.Format ("--Xcc=\"-shared\" --Xcc=\"-fPIC\" --Xcc=\"-I'{0}'\" --library \"{1}\"", configuration.OutputDirectory, configuration.Output));
 			}
 
 // Valac will get these sooner or later			
@@ -210,27 +210,27 @@ namespace MonoDevelop.ValaBinding
 //			if (cp.WarningsAsErrors)
 //				args.Append ("-Werror ");
 //			
-			if(0 < cp.OptimizationLevel) { 
-				args.Add("--Xcc=\"-O" + cp.OptimizationLevel + "\"");
+			if (0 < cp.OptimizationLevel) { 
+				args.Add ("--Xcc=\"-O" + cp.OptimizationLevel + "\"");
 			}
 			
 			if (cp.ExtraCompilerArguments != null && cp.ExtraCompilerArguments.Length > 0) {
-				args.Add(ExpandBacktickedParameters(cp.ExtraCompilerArguments.Replace (Environment.NewLine, " ")));
+				args.Add (ExpandBacktickedParameters (cp.ExtraCompilerArguments.Replace (Environment.NewLine, " ")));
 			}
 			
 			if (cp.DefineSymbols != null && cp.DefineSymbols.Length > 0) {
-				args.Add(ProcessDefineSymbols (cp.DefineSymbols));
+				args.Add (ProcessDefineSymbols (cp.DefineSymbols));
 			}
 			
 			if (configuration.Includes != null)
 				foreach (string inc in configuration.Includes)
-					args.Add("--vapidir \"" + inc + "\"");
+					args.Add ("--vapidir \"" + inc + "\"");
 
 			if (configuration.Libs != null)
 				foreach (string lib in configuration.Libs)
-					args.Add("--pkg \"" + lib + "\"");
+					args.Add ("--pkg \"" + lib + "\"");
 			
-			return string.Join(" ", args.ToArray());
+			return string.Join (" ", args.ToArray ());
 		}
 		
 		/// <summary>
@@ -348,7 +348,7 @@ namespace MonoDevelop.ValaBinding
 			return string.Empty; // No -D in valac for now :-(
 //			return ((null == symbols) || (0 == symbols.Length))?
 //				string.Empty:
-//				"-D " + Regex.Replace(symbols, " +", " -D ");
+//				"-D " + Regex.Replace (symbols, " +", " -D ");
 		}
 		
 		/// <summary>
@@ -359,15 +359,15 @@ namespace MonoDevelop.ValaBinding
 									IProgressMonitor monitor,
 									CompilerResults cr)
 		{
-			StringBuilder filelist = new StringBuilder();
+			StringBuilder filelist = new StringBuilder ();
 			foreach (ProjectFile f in projectFiles) { 
 				if (f.Subtype != Subtype.Directory && f.BuildAction == BuildAction.Compile) {
-					filelist.AppendFormat("\"{0}\" ", f.FilePath);
+					filelist.AppendFormat ("\"{0}\" ", f.FilePath);
 				}
 			}/// Build file list
 
 			string compiler_args = string.Format ("{0} {1} -o \"{2}\"",
-				args, filelist.ToString(), Path.GetFileName(outputName));
+				args, filelist.ToString (), Path.GetFileName (outputName));
 			
 			string errorOutput = string.Empty;
 			int exitCode = ExecuteCommand (compilerCommand, compiler_args, Path.GetDirectoryName (outputName), monitor, out errorOutput);
@@ -397,16 +397,16 @@ namespace MonoDevelop.ValaBinding
 			/// These should only be generated for libraries, but we'll check for them in all cases
 			foreach (ProjectFile file in projectFiles) {
 				if (file.BuildAction == BuildAction.Compile) {
-					string cFile = Path.Combine(configuration.OutputDirectory, Path.GetFileNameWithoutExtension(file.Name) + ".c");
+					string cFile = Path.Combine (configuration.OutputDirectory, Path.GetFileNameWithoutExtension (file.Name) + ".c");
 					if (File.Exists (cFile)){ File.Delete (cFile); }
 						
-					string hFile = Path.Combine(configuration.OutputDirectory, Path.GetFileNameWithoutExtension(file.Name) + ".h");
+					string hFile = Path.Combine (configuration.OutputDirectory, Path.GetFileNameWithoutExtension (file.Name) + ".h");
 					if (File.Exists (hFile)){ File.Delete (hFile); }
 				}
 			}
 			
-			string vapiFile = Path.Combine(configuration.OutputDirectory, configuration.Output + ".vapi");
-			if(File.Exists(vapiFile)){ File.Delete(vapiFile); }
+			string vapiFile = Path.Combine (configuration.OutputDirectory, configuration.Output + ".vapi");
+			if (File.Exists (vapiFile)){ File.Delete (vapiFile); }
 		}
 		
 		/// <summary>
@@ -448,10 +448,10 @@ namespace MonoDevelop.ValaBinding
 				
 			while ((next = reader.ReadLine ()) != null) {
 				CompilerError error = CreateErrorFromErrorString (next, projectFiles);
-				// System.Console.WriteLine("Creating error from string \"{0}\"", next);
+				// System.Console.WriteLine ("Creating error from string \"{0}\"", next);
 				if (error != null) {
 					cr.Errors.Insert (0, error);
-					// System.Console.WriteLine("Adding error");
+					// System.Console.WriteLine ("Adding error");
 				}
 			}
 			
@@ -460,8 +460,12 @@ namespace MonoDevelop.ValaBinding
 		
 		/// Error regex for valac
 		/// Sample output: "/home/user/project/src/blah.vala:23.5-23.5: error: syntax error, unexpected }, expecting ;"
-		private static Regex errorRegex = new Regex(
+		private static Regex errorRegex = new Regex (
 			@"^\s*(?<file>.*):(?<line>\d*)\.(?<column>\d*)-\d*\.\d*: (?<level>[^:]*): (?<message>.*)",
+			RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+
+		private static Regex gccRegex = new Regex (
+		    @"^\s*(?<file>.*):(?<line>\d*):((?<column>\d*):)?\s*(?<level>.*)\s*:\s(?<message>.*)",
 			RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 
 		/// Error regex for gnu linker - this could still be pertinent for vala
@@ -482,30 +486,32 @@ namespace MonoDevelop.ValaBinding
 		/// </returns>
 		private CompilerError CreateErrorFromErrorString (string errorString, ProjectFileCollection projectFiles)
 		{
+			Match errorMatch = null;
+			foreach (Regex regex in new Regex[]{errorRegex, gccRegex})
+				if ((errorMatch = regex.Match (errorString)).Success)
+					break;
+			
+			if (!errorMatch.Success)
+				return null;
+
 			CompilerError error = new CompilerError ();
 			
-			Match errorMatch = errorRegex.Match (errorString);
-			
-			if (errorMatch.Success)
-			{
-				foreach(ProjectFile pf in projectFiles) {
-					if(Path.GetFileName(pf.Name) == errorMatch.Groups["file"].Value) {
-						error.FileName = pf.FilePath;
-						break;
-					}
-				}// check for fully pathed file
-				if(string.Empty == error.FileName) {
-					error.FileName = errorMatch.Groups["file"].Value;
-				}// fallback to exact match
-				error.Line = int.Parse (errorMatch.Groups["line"].Value);
+			foreach (ProjectFile pf in projectFiles) {
+				if (Path.GetFileName (pf.Name) == errorMatch.Groups["file"].Value) {
+					error.FileName = pf.FilePath;
+					break;
+				}
+			}// check for fully pathed file
+			if (string.Empty == error.FileName) {
+				error.FileName = errorMatch.Groups["file"].Value;
+			}// fallback to exact match
+			error.Line = int.Parse (errorMatch.Groups["line"].Value);
+			if (errorMatch.Groups["column"].Success)
 				error.Column = int.Parse (errorMatch.Groups["column"].Value);
-				error.IsWarning = errorMatch.Groups["level"].Value.Equals ("warning");
-				error.ErrorText = errorMatch.Groups["message"].Value;
-				
-				return error;
-			}// if we successfully matched the error pattern
+			error.IsWarning = errorMatch.Groups["level"].Value.Equals ("warning");
+			error.ErrorText = errorMatch.Groups["message"].Value;
 			
-			return null;
+			return error;
 		}
 		
 		/// <summary>
@@ -575,19 +581,19 @@ namespace MonoDevelop.ValaBinding
 		/// </returns> 
 		// TODO: Portability, although otoh, probably someone who doesn't have sh 
 		// isn't going to put backticks in the compiler flags
-		public string ExpandBacktickedParameters(string tmp)
+		public string ExpandBacktickedParameters (string tmp)
 		{
 			string parameters = "-c \"echo -n " + tmp + "\"";
-			Process p = new Process();
+			Process p = new Process ();
 			
 			p.StartInfo.FileName = "sh";
 			p.StartInfo.Arguments = parameters;
 			p.StartInfo.UseShellExecute = false;
 			p.StartInfo.RedirectStandardOutput = true;
-			p.Start();
-			p.WaitForExit();
+			p.Start ();
+			p.WaitForExit ();
 
-			return p.StandardOutput.ReadToEnd();
+			return p.StandardOutput.ReadToEnd ();
 		}
 		
 		/// <summary>
@@ -615,11 +621,11 @@ namespace MonoDevelop.ValaBinding
 		public void GenerateDepfile (ValaProjectConfiguration configuration, ProjectPackageCollection packages)
 		{
 			try {
-				if(configuration.CompileTarget != CompileTarget.SharedLibrary){ return; }
+				if (configuration.CompileTarget != CompileTarget.SharedLibrary){ return; }
 				
 				using (StreamWriter writer = new StreamWriter (Path.Combine (configuration.OutputDirectory, Path.ChangeExtension (configuration.Output, ".deps")))) {
 					foreach (ProjectPackage package in packages) {
-						writer.WriteLine(package.Name);
+						writer.WriteLine (package.Name);
 					}
 				}
 			} catch { /* Don't care */ }

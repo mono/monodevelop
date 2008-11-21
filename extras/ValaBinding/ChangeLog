@@ -1,3 +1,7 @@
+2008-11-21  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* Compiler/ValaCompiler.cs: Display errors originating from gcc.
+
 2008-11-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Project/ValaProject.cs: Allow executing Vala projects.
