@@ -446,7 +446,7 @@ namespace MonoDevelop.Ide.Commands
 				
 				if (references != null) {
 					foreach (MemberReference mref in references) {
-						monitor.ReportResult (mref.FileName, mref.Line, mref.Column, mref.TextLine);
+						monitor.ReportResult (mref.FileName, mref.Line, mref.Column, mref.TextLine, mref.Name.Length);
 					}
 				}
 			}
@@ -503,7 +503,7 @@ namespace MonoDevelop.Ide.Commands
 				CodeRefactorer cr = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
 				foreach (IType sub in cr.FindDerivedClasses (cls)) {
 					if (!sub.Location.IsEmpty)
-						monitor.ReportResult (sub.CompilationUnit.FileName, sub.Location.Line, sub.Location.Column, sub.FullName);
+						monitor.ReportResult (sub.CompilationUnit.FileName, sub.Location.Line, sub.Location.Column, sub.FullName, 0);
 				}
 			}
 		}

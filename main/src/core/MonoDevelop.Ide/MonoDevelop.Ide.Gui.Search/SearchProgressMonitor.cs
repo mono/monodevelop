@@ -66,9 +66,9 @@ namespace MonoDevelop.Ide.Gui.Search
 		}
 		
 		[AsyncDispatch]
-		public void ReportResult (string fileName, int line, int column, string text)
+		public void ReportResult (string fileName, int line, int column, string text, int matchLength)
 		{
-			outputPad.AddResult (fileName, line, column, text);
+			outputPad.AddResult (fileName, line, column, text, matchLength);
 		}
 		
 		[AsyncDispatch]

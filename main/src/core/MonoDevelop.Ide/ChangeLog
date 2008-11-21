@@ -1,5 +1,16 @@
 2008-11-20  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs:
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs:
+	* MonoDevelop.Ide.Gui.Search/SearchProgressMonitor.cs:
+	* MonoDevelop.Ide.Gui.Search/ISearchProgressMonitor.cs:
+	* MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs: Highlight
+	matches in the search-in-files results list. Show all matches in a
+	line in a single row. Fixes bug #341224 - Find results for the same
+	line should have only one entry.
+
+2008-11-20  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Ide.mdp:
 	* MonoDevelop.Ide.FindInFiles:

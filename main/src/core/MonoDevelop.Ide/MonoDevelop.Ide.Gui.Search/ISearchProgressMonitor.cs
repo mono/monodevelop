@@ -34,7 +34,7 @@ namespace MonoDevelop.Ide.Gui.Search
 	public interface ISearchProgressMonitor: IProgressMonitor
 	{
 		void SetBasePath (string path);
-		void ReportResult (string fileName, int line, int column, string text);
+		void ReportResult (string fileName, int line, int column, string text, int matchLenght);
 		void ReportStatus (string resultMessage);
 	}
 }

@@ -57,13 +57,10 @@ namespace MonoDevelop.Ide.Gui.Search
 		{
 			if (result.Line != -1) {
 				string text = result.DocumentInformation.GetLineTextAtOffset (result.DocumentOffset);
-				if(null != text) {
-					text = text.Trim();
-				}
-				searchMonitor.ReportResult (result.FileName, result.Line, result.Column, text);
+				searchMonitor.ReportResult (result.FileName, result.Line, result.Column, text, result.Length);
 			} else {
 				string msg = GettextCatalog.GetString ("Match at offset {0}", result.DocumentOffset);
-				searchMonitor.ReportResult (result.FileName, 0, 0, msg);
+				searchMonitor.ReportResult (result.FileName, 0, 0, msg, 0);
 			}
 		}
 		

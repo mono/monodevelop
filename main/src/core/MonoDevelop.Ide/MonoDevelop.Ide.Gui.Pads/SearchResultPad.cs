@@ -21,6 +21,7 @@
 using System;
 using System.Text;
 using System.Collections;
+using System.Collections.Generic;
 using System.CodeDom.Compiler;
 using System.IO;
 using System.Diagnostics;
@@ -47,6 +48,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		string statusText;
 		int instanceNum;
 		bool customStatusSet;
+		Dictionary<string,Result> results = new Dictionary<string, Result> ();
 
 		Clipboard clipboard;
 		
@@ -64,6 +66,26 @@ namespace MonoDevelop.Ide.Gui.Pads
 		StringBuilder log = new StringBuilder ();
 		Widget control;
 		IPadWindow window;
+
+		class Result
+		{
+			public Gtk.TreeIter Iter;
+			public string Text;
+			public List<int> Positions;
+
+			public void AddPosition (int pos, int len)
+			{
+				for (int n=0; n < Positions.Count; n++) {
+					if (Positions [n] > pos) {
+						Positions.Insert (n, len);
+						Positions.Insert (n, pos);
+						return;
+					}
+				}
+				Positions.Add (pos);
+				Positions.Add (len);
+			}
+		}
 		
 		public SearchResultPad (int instanceNum)
 		{
@@ -173,6 +195,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			
 			matchCount = 0;
 			store.Clear ();
+			results.Clear ();
 			logBuffer.Clear ();
 			if (!logScroller.Visible)
 				log = new StringBuilder ();
@@ -355,7 +378,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			col = view.AppendColumn (GettextCatalog.GetString ("File"), file, "text", COL_FILE, "weight", COL_READ_WEIGHT, "visible", COL_ISFILE);
 			col.SortColumnId = COL_FILE;
 			col.Resizable = true;
-			col = view.AppendColumn (GettextCatalog.GetString ("Text"), desc, "text", COL_DESC, "weight", COL_READ_WEIGHT);
+			col = view.AppendColumn (GettextCatalog.GetString ("Text"), desc, "markup", COL_DESC, "weight", COL_READ_WEIGHT);
 			col.SortColumnId = COL_DESC;
 			col.Resizable = true;
 			col = view.AppendColumn (GettextCatalog.GetString ("Path"), path, "text", COL_PATH, "weight", COL_READ_WEIGHT, "visible", COL_ISFILE);
@@ -399,9 +422,20 @@ namespace MonoDevelop.Ide.Gui.Pads
 			customStatusSet = true;
 		}
 
-		public void AddResult (string file, int line, int column, string text)
+		public void AddResult (string file, int line, int column, string text, int matchLength)
 		{
 			matchCount++;
+			string mkey = file + " " + line;
+			
+			Result res;
+			if (results.TryGetValue (mkey, out res)) {
+				if (matchLength <= 0)
+					return;
+				res.AddPosition (column-1, matchLength);
+				string tline = RenderResult (res);
+				store.SetValue (res.Iter, COL_DESC, tline);
+				return;
+			}
 			
 			Gdk.Pixbuf stock;
 			stock = sw.RenderIcon (Services.Icons.GetImageForFile (file), Gtk.IconSize.Menu, "");
@@ -418,11 +452,37 @@ namespace MonoDevelop.Ide.Gui.Pads
 			try {
 				path = Path.GetDirectoryName (tmpPath);
 			} catch (Exception) {}
+
+			res = new Result ();
+			res.Text = text;
+			res.Positions = new List<int> ();
+			if (matchLength > 0)
+				res.AddPosition (column-1, matchLength);
 			
-			store.AppendValues (stock, line, column, text, fileName, path, file, false, (int) Pango.Weight.Bold, file != null);
+			text = RenderResult (res);
+			Gtk.TreeIter it = store.AppendValues (stock, line, column, text, fileName, path, file, false, (int) Pango.Weight.Bold, file != null);
+			res.Iter = it;
+			results [mkey] = res;
 			
 			status.Text = " " + statusText + " - " + string.Format(GettextCatalog.GetPluralString("{0} match.", "{0} matches.", matchCount), matchCount);
 			customStatusSet = false;
+		}
+
+		string RenderResult (Result res)
+		{
+			if (res.Positions.Count == 0)
+				return GLib.Markup.EscapeText (res.Text).Trim ();
+			StringBuilder sb = new StringBuilder (res.Text);
+			for (int n = res.Positions.Count - 2; n >= 0; n-= 2) {
+				int pos = res.Positions [n];
+				int len = res.Positions [n+1];
+				if (pos + len > res.Text.Length)
+					continue;
+				string txt = "<span background='yellow'>" + GLib.Markup.EscapeText (res.Text.Substring (pos, len)) + "</span>";
+				sb.Remove (pos, len);
+				sb.Insert (pos, txt);
+			}
+			return sb.ToString ().Trim ();
 		}
 
 		public virtual bool GetNextLocation (out string file, out int line, out int column)
