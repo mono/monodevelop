@@ -1,3 +1,8 @@
+2008-11-21  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Core/Gettext.cs: Fix some obsoletion warnings by using
+	Mono.Unix.Catalog instead of Mono.Posix.Catalog.
+
 2008-11-10  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Execution/ProcessHostController.cs: Windows doesn't

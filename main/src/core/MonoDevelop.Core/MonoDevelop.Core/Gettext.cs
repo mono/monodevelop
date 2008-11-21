@@ -29,7 +29,7 @@
 using System;
 using System.IO;
 
-using Mono.Posix;
+using Mono.Unix;
 
 namespace MonoDevelop.Core
 {
