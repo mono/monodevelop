@@ -1,3 +1,10 @@
+2008-11-21  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextMarker.cs:
+	* Mono.TextEditor/TextViewMargin.cs:
+	* Mono.TextEditor.Highlighting/MarkupSyntaxMode.cs: Added support for
+	underlining highlighting styles.
+
 2008-11-20  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.TextEditor.Highlighting/ChunkStyle.cs: Remove Console.WriteLine.

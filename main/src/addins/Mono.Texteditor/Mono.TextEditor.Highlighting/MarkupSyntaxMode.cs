@@ -59,18 +59,18 @@ namespace Mono.TextEditor.Highlighting
 		{
 			string text;
 			
-			public TextChunk (ChunkStyle style, string text)
+			public TextChunk (ChunkStyle style, int offset, string text)
 			{
 				this.text = text;
-				this.Offset = 0;
+				this.Offset = offset;
 				this.Length = text.Length;
 				this.Style = style;
 			}
 			
 			public override char GetCharAt (Document doc, int offset)
 			{
-				return text [offset];
-			}	
+				return text [offset - this.Offset];
+			}
 		}
 			
 		static ChunkStyle GetChunkStyle (IEnumerable<Tag> tagStack)
@@ -133,13 +133,13 @@ namespace Mono.TextEditor.Highlighting
 						}
 						switch (specialText) {
 						case "lt": 
-							result.Add (new TextChunk (GetChunkStyle (tagStack), "<"));
+							result.Add (new TextChunk (GetChunkStyle (tagStack), specialBegin, "<"));
 							break;
 						case "gt": 
-							result.Add (new TextChunk (GetChunkStyle (tagStack), ">"));
+							result.Add (new TextChunk (GetChunkStyle (tagStack), specialBegin, ">"));
 							break;
 						case "amp": 
-							result.Add (new TextChunk (GetChunkStyle (tagStack), "&"));
+							result.Add (new TextChunk (GetChunkStyle (tagStack), specialBegin, "&"));
 							break;
 						}
 						curChunk.Offset = i + 1;

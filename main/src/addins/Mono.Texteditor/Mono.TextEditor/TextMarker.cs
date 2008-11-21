@@ -183,11 +183,21 @@ namespace Mono.TextEditor
 			this.ColorName = colorName;
 			this.StartCol = start;
 			this.EndCol = end;
+			this.Wave = true;
+		}
+		public UnderlineMarker (Gdk.Color color, int start, int end)
+		{
+			this.Color = color;
+			this.StartCol = start;
+			this.EndCol = end;
+			this.Wave = false;
 		}
 		
 		public string ColorName { get; set; }
+		public Gdk.Color Color { get; set; }
 		public int StartCol { get; set; }
 		public int EndCol { get; set; }
+		public bool Wave { get; set; }
 		
 		public override void Draw (TextEditor editor, Gdk.Drawable win, bool selected, int startOffset, int endOffset, int y, int startXPos, int endXPos)
 		{
@@ -215,14 +225,18 @@ namespace Mono.TextEditor
 			}
 			
 			using (Gdk.GC gc = new Gdk.GC (win)) {
-				gc.RgbFgColor = editor.ColorStyle.GetColorFromDefinition (ColorName);
+				gc.RgbFgColor = ColorName == null ? Color : editor.ColorStyle.GetColorFromDefinition (ColorName);
 				int drawY    = y + editor.LineHeight - 1;
 				const int length = 6;
 				const int height = 2;
-				startXPos = System.Math.Max (startXPos, editor.TextViewMargin.XOffset);
-				for (int i = from; i < to; i += length) {
-					win.DrawLine (gc, i, drawY, i + length / 2, drawY - height);
-					win.DrawLine (gc, i + length / 2, drawY - height, i + length, drawY);
+				if (Wave) {
+					startXPos = System.Math.Max (startXPos, editor.TextViewMargin.XOffset);
+					for (int i = from; i < to; i += length) {
+						win.DrawLine (gc, i, drawY, i + length / 2, drawY - height);
+						win.DrawLine (gc, i + length / 2, drawY - height, i + length, drawY);
+					}
+				} else {
+					win.DrawLine (gc, from, drawY, to, drawY);
 				}
 			}
 		}

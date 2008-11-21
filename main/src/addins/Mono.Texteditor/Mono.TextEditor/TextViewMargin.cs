@@ -411,6 +411,13 @@ namespace Mono.TextEditor
 				foreach (TextMarker marker in line.Markers)
 					style = marker.GetStyle (style);
 			}
+			UnderlineMarker underlineMarker = null;
+			if (style.Underline) {
+				underlineMarker = new UnderlineMarker (selected ? this.ColorStyle.SelectedFg : style.Color, 
+				                                       chunk.Offset - line.Offset, 
+				                                       chunk.EndOffset - line.Offset);
+				line.AddMarker (underlineMarker);
+			}
 			
 			Pango.Weight requestedWeight = chunk.Style.GetWeight (DefaultWeight);
 			if (layout.FontDescription.Weight != requestedWeight)
@@ -419,9 +426,6 @@ namespace Mono.TextEditor
 			Pango.Style requestedStyle = chunk.Style.GetStyle (DefaultStyle);
 			if (layout.FontDescription.Style != requestedStyle)
 				layout.FontDescription.Style = requestedStyle;
-/*			if (style.Underline) {
-				layout.Attributes.Change (new Pango.AttrUnderline (Pango.Underline.Low));
-			}*/
 				
 			for (int offset = startOffset; offset < endOffset; offset++) {
 				char ch = chunk.GetCharAt (Document, offset);
@@ -543,9 +547,9 @@ namespace Mono.TextEditor
 				layout.FontDescription.Weight = DefaultWeight;
 			if (DefaultStyle != requestedStyle)
 				layout.FontDescription.Style = DefaultStyle;
-/*			if (style.Underline) 
-				layout.Attributes.Change (new Pango.AttrFallback (true));
-				*/
+			if (style.Underline) 
+				line.RemoveMarker (underlineMarker);
+						
 			if (drawCaretAt >= 0)
 				SetVisibleCaretPosition (win, Document.Contains (caretOffset) ? Document.GetCharAt (caretOffset) : ' ', drawCaretAt, y);
 		}
