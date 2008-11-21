@@ -1,3 +1,8 @@
+2008-11-21  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.CodeGeneration/IRefactorer.cs: fixed compilation
+	error.
+
 2008-11-20  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects/DotNetProject.cs: Cache ambience.

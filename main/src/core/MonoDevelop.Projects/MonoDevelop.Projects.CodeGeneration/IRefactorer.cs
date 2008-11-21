@@ -116,7 +116,9 @@ namespace MonoDevelop.Projects.CodeGeneration
 		public string TextLine {
 			get { return textLine; }
 		}
-		
+		public string Name {
+			get { return name; }
+		}
 		public virtual void Rename (string newName)
 		{
 			if (rctx == null)
