@@ -1,5 +1,14 @@
 2008-11-20  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.FindInFiles:
+	* MonoDevelop.Ide.Gui/RootWorkspace.cs:
+	* MonoDevelop.Ide.FindInFiles/SearchResult.cs:
+	* MonoDevelop.Ide.FindInFiles/SearchResultPad.cs:
+	* MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs: Restored folder. I
+	though it was old unused code, but turns out it is actually new code.
+
+2008-11-20  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs:
 	* MonoDevelop.Ide.Commands/RefactoryCommands.cs:
 	* MonoDevelop.Ide.Gui.Search/SearchProgressMonitor.cs:

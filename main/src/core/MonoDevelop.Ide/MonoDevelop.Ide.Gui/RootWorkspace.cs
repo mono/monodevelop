@@ -40,6 +40,7 @@ using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Ide.Gui.Dialogs;
+using System.Runtime.CompilerServices;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -518,6 +519,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		void SearchNewFiles (Project project)
 		{
+			Console.WriteLine ("pp searching files for: " + project.Name);
 			StringCollection newFiles   = new StringCollection();
 			string[] collection = Directory.GetFiles (project.BaseDirectory, "*", SearchOption.AllDirectories);
 
@@ -789,8 +791,11 @@ namespace MonoDevelop.Ide.Gui
 		void NotifyItemAddedGui (WorkspaceItem item)
 		{
 			try {
+				DateTime t = DateTime.Now;
+//				Mono.Profiler.RuntimeControls.EnableProfiler ();
 				MonoDevelop.Projects.Dom.Parser.ProjectDomService.Load (item);
-				//ParserDatabase.Load (item);
+//				Mono.Profiler.RuntimeControls.DisableProfiler ();
+				Console.WriteLine ("PARSE LOAD: " + (DateTime.Now - t).TotalMilliseconds);
 			} catch (Exception ex) {
 				LoggingService.LogError ("Could not load parser database.", ex);
 			}
@@ -1118,5 +1123,18 @@ namespace MonoDevelop.Ide.Gui
 	{
 		[ItemProperty]
 		public string ActiveConfiguration;
+	}
+}
+namespace Mono.Profiler {
+	public class RuntimeControls {
+		
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		public static extern void TakeHeapSnapshot ();
+		
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		public static extern void EnableProfiler ();
+		
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		public static extern void DisableProfiler ();
 	}
 }
