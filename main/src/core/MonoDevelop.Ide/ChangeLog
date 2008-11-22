@@ -1,3 +1,9 @@
+2008-11-21  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs: Escape markup in the
+	surrounding text as well as the actual matches. Fixes GTK warnings
+	and misdisplay of search results.
+
 2008-11-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.FindInFiles:

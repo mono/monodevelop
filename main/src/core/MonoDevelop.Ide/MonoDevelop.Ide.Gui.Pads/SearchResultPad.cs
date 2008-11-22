@@ -472,16 +472,32 @@ namespace MonoDevelop.Ide.Gui.Pads
 		{
 			if (res.Positions.Count == 0)
 				return GLib.Markup.EscapeText (res.Text).Trim ();
-			StringBuilder sb = new StringBuilder (res.Text);
-			for (int n = res.Positions.Count - 2; n >= 0; n-= 2) {
-				int pos = res.Positions [n];
-				int len = res.Positions [n+1];
-				if (pos + len > res.Text.Length)
-					continue;
-				string txt = "<span background='yellow'>" + GLib.Markup.EscapeText (res.Text.Substring (pos, len)) + "</span>";
-				sb.Remove (pos, len);
-				sb.Insert (pos, txt);
+			
+			StringBuilder sb = new StringBuilder (res.Text.Length);
+			int posEnd = 0;
+			
+			try {
+				for (int n = 0; n < res.Positions.Count; n += 2) {
+					int pos = res.Positions [n];
+					int len = res.Positions [n + 1];
+					sb.Append (GLib.Markup.EscapeText (res.Text.Substring (posEnd, pos)));
+					sb.Append ("<span background='yellow'>");
+					sb.Append (GLib.Markup.EscapeText (res.Text.Substring (pos, len)));
+					sb.Append ("</span>");
+					posEnd = pos + len;
+				}
+				
+				if (res.Text.Length - posEnd > 0)
+					sb.Append (GLib.Markup.EscapeText (res.Text.Substring (posEnd, (res.Text.Length - posEnd))));
 			}
+			//old implementation seemed to think that pos+len might be out of bounds,
+			//but I think catching & logging an exception's more appropriate than a range check
+			catch (Exception ex)
+			{
+				LoggingService.LogWarning ("Error escaping search result", ex);
+				return GLib.Markup.EscapeText (res.Text).Trim ();
+			}
+			
 			return sb.ToString ().Trim ();
 		}
 
