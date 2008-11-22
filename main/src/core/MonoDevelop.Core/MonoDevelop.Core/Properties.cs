@@ -208,15 +208,41 @@ namespace MonoDevelop.Core
 		
 		public void Save (string fileName)
 		{
-			XmlTextWriter writer = new XmlTextWriter (fileName, System.Text.Encoding.UTF8);
-			writer.Formatting = Formatting.Indented;
+			string backupFileName = fileName + ".previous";
+			string tempFileName = Path.GetDirectoryName (fileName) + 
+				Path.DirectorySeparatorChar + ".#" + Path.GetFileName (fileName);
+			
+			//make a copy of the current file
 			try {
+				if (File.Exists (fileName)) {
+					File.Copy (fileName, backupFileName, true);
+				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error copying properties file '{0}' to backup\n{1}", fileName, ex);
+			}
+			
+			//write out the new state to a temp file
+			XmlTextWriter writer = null;
+			try {
+				writer = new XmlTextWriter (tempFileName, System.Text.Encoding.UTF8);
+				writer.Formatting = Formatting.Indented;
 				writer.WriteStartElement (PropertiesRootNode);
 				writer.WriteAttributeString (PropertiesVersionAttribute, PropertiesVersion);
 				Write (writer, false);
 				writer.WriteEndElement (); // PropertiesRootNode
-			} finally {
-				writer.Close ();
+				
+				//write was successful (no exception)
+				//so move the file to the real location, overwriting the old file
+				//(NOTE: File.Move doesn't overwrite existing files, so using Mono.Unix)
+				Mono.Unix.Native.Syscall.rename (tempFileName, fileName);
+				return;
+			}
+			catch (Exception ex) {
+				LoggingService.LogError ("Error writing properties file '{0}'\n{1}", tempFileName, ex);
+			}
+			finally {
+				if (writer != null)
+					writer.Close ();
 			}
 		}
 		

@@ -83,8 +83,23 @@ namespace MonoDevelop.Core
 		{
 			properties = null;
 			if (File.Exists (fileName)) {
-				properties = Properties.Load (fileName);
+				try {
+					properties = Properties.Load (fileName);
+				} catch (Exception ex) {
+					LoggingService.LogError ("Error loading properties from file '{0}':\n{1}", fileName, ex);
+				}
 			}
+			
+			//if it failed and a backup file exists, try that instead
+			string backupFile = fileName + ".previous";
+			if (properties == null && File.Exists (backupFile)) {
+				try {
+					properties = Properties.Load (backupFile);
+				} catch (Exception ex) {
+					LoggingService.LogError ("Error loading properties from backup file '{0}':\n{1}", backupFile, ex);
+				}
+			}
+			
 			return properties != null;
 		}
 		

@@ -1,5 +1,16 @@
 2008-11-21  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Core/Properties.cs: Copy properties file to backup when
+	saving it. Restore the backup if the save fails.
+
+	* MonoDevelop.Core/PropertyService.cs: Catch and report errors when
+	loading config file, and fall back to trying previous settings file.
+	Prevents MD crash.
+
+	Should fix Bug 442567 - Crash at shutdown lost all setting.
+
+2008-11-21  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Core/Gettext.cs: Fix some obsoletion warnings by using
 	Mono.Unix.Catalog instead of Mono.Posix.Catalog.
 
