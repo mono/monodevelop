@@ -20,7 +20,7 @@
     <File name="MonoDevelop.Debugger/ObjectValueTreeView.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Debugger/WatchPad.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Debugger/Initializer.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Debugger/DisasemblyView.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Debugger/DisassemblyView.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Debugger/DebugTextMarker.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Debugger/BreakpointPad.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Debugger/LocalsPad.cs" subtype="Code" buildaction="Compile" />

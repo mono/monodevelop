@@ -25,7 +25,7 @@ FILES =  \
 	gtk-gui/generated.cs \
 	MonoDevelop.Debugger/BreakpointPad.cs \
 	MonoDevelop.Debugger/DebugTextMarker.cs \
-	MonoDevelop.Debugger/DisasemblyView.cs \
+	MonoDevelop.Debugger/DisassemblyView.cs \
 	MonoDevelop.Debugger/Initializer.cs \
 	MonoDevelop.Debugger/LocalsPad.cs \
 	MonoDevelop.Debugger/ObjectValuePad.cs \
