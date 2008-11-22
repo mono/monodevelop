@@ -1,3 +1,10 @@
+2008-11-23  Mitchell Wheeler  <mitchell.wheeler@gmail.com>
+
+	* Gui/CTextEditorExtension.cs: Refactored code relating to auto
+	indentation - making it more maintainable/extensible for the
+	future in addition to fixing various indentation errors under
+	certain circumstances.
+
 2008-11-21  Mike Krüger  <mkrueger@novell.com>
 
 	* Gui/DataProvider.cs: fixed 'Bug 447040 - Error in text editor

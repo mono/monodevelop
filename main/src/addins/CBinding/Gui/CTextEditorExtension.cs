@@ -82,22 +82,62 @@ namespace CBinding
 		{
 			int line, column;
 			Editor.GetLineColumnFromPosition (Editor.CursorPosition, out line, out column);
+			int lineBegins = Editor.GetPositionFromLineColumn(line, 0);
+			int lineCursorIndex = (Editor.CursorPosition - lineBegins) - 1;
 			string lineText = Editor.GetLineText (line);
 			
-			// smart formatting strategy
-			if (TextEditorProperties.IndentStyle == IndentStyle.Smart) {
-				if (key == Gdk.Key.Return) {
-					if (lineText.TrimEnd ().EndsWith ("{")) {
-						Editor.InsertText (Editor.CursorPosition, 
-						    "\n" + TextEditorProperties.IndentString + GetIndent (Editor, line));
+			// Smart Indentation
+			if (TextEditorProperties.IndentStyle == IndentStyle.Smart)
+			{
+				switch(key)
+				{
+					case Gdk.Key.Return:
+						// Calculate additional indentation, if any.
+						char finalChar = '\0';
+						char nextChar = '\0';
+						string indent = String.Empty;
+						
+						//lineText = lineText.TrimEnd(); // Trim excess whitespace to properly identify the last symbol.
+						if(lineText.Length > 0)
+						{
+							finalChar = lineText[Math.Min(lineCursorIndex, lineText.Length) - 1];
+							
+							if(lineCursorIndex < lineText.Length)
+								nextChar = lineText[lineCursorIndex];
+
+							if(finalChar == '{')
+								indent = TextEditorProperties.IndentString;
+						}
+
+						// If the next character is an closing brace, indent it appropriately.
+						if(TextEditor.IsBrace(nextChar) && !TextEditor.IsOpenBrace(nextChar))
+						{
+							int openingLine = 0;
+							if(Editor.GetClosingBraceForLine(line, out openingLine) >= 0)
+							{
+								Editor.InsertText(Editor.CursorPosition, Editor.NewLine + GetIndent(Editor, openingLine));
+								return false;
+							}
+						}
+
+						// Default indentation method
+						Editor.InsertText(Editor.CursorPosition, Editor.NewLine + indent + GetIndent(Editor, line));
+						
 						return false;
-					}
-				} else if (key == Gdk.Key.braceright && AllWhiteSpace (lineText) 
-				    && lineText.StartsWith (TextEditorProperties.IndentString)) {
-					if (lineText.Length > 0)
-						lineText = lineText.Substring (TextEditorProperties.IndentString.Length);
-					Editor.ReplaceLine (line, lineText + "}");
-					return false;
+
+					case Gdk.Key.braceright:
+						// Only indent if the brace is preceeded by whitespace.
+						if(AllWhiteSpace(lineText.Substring(0, lineCursorIndex)) == false)
+							break;
+
+						int openingLine = 0;
+						if(Editor.GetClosingBraceForLine(line, out openingLine) >= 0)
+						{
+							Editor.ReplaceLine(line, GetIndent(Editor, openingLine) + "}" + lineText.Substring(lineCursorIndex));
+							return false;
+						}
+
+						break;
 				}
 			}
 			
@@ -442,6 +482,7 @@ namespace CBinding
 		
 		private bool AllWhiteSpace (string lineText)
 		{
+			// We will almost definately need a faster method than this
 			foreach (char c in lineText)
 				if (!char.IsWhiteSpace (c))
 					return false;
@@ -453,6 +494,7 @@ namespace CBinding
 		private string GetIndent (TextEditor d, int lineNumber)
 		{
 			string lineText = d.GetLineText (lineNumber);
+			
 			StringBuilder whitespaces = new StringBuilder ();
 			
 			foreach (char ch in lineText) {
