@@ -1569,7 +1569,7 @@ msgstr "Cerca cancel·lada."
 #
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:127
 msgid "Search completed. "
-msgstr "Cerca completada."
+msgstr "Cerca completada. "
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:133
 msgid "Search time: {0} seconds."
@@ -1578,7 +1578,7 @@ msgstr "Temps de cerca: {0} segons."
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:146
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:192
 msgid "There is a search already in progress. Do you want to cancel it?"
-msgstr "Ja hi ha una cerca en progrés. La voleu cancel·lar?"
+msgstr "Ja hi ha una cerca en progrés. Voleu cancel·lar-la?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:155
 msgid "Replacing '{0}' in {1}."
@@ -6309,7 +6309,7 @@ msgstr ""
 #
 #: ../src/addins/WelcomePage/WelcomePageContent.xml:3
 msgid "Common Actions"
-msgstr "Accions comunes"
+msgstr "Accions habituals"
 
 #: ../src/addins/WelcomePage/WelcomePageContent.xml:4
 #, fuzzy
@@ -10824,7 +10824,7 @@ msgstr "Canvia el nom de l'esdeveniment"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:291
 msgid "Matches"
-msgstr ""
+msgstr "Coincidències"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:345
 #, fuzzy
