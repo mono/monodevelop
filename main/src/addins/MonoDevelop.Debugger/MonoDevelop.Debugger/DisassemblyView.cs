@@ -1,4 +1,4 @@
-// DisasemblyView.cs
+// DisassemblyView.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -39,7 +39,7 @@ using Mono.Debugging.Client;
 
 namespace MonoDevelop.Debugger
 {
-	public class DisasemblyView: AbstractViewContent
+	public class DisassemblyView: AbstractViewContent
 	{
 		Gtk.ScrolledWindow sw;
 		TextEditor editor;
@@ -56,7 +56,7 @@ namespace MonoDevelop.Debugger
 		
 		const int FillMarginLines = 50;
 		
-		public DisasemblyView ()
+		public DisassemblyView ()
 		{
 			UntitledName = GettextCatalog.GetString ("Disassembly");
 			sw = new Gtk.ScrolledWindow ();

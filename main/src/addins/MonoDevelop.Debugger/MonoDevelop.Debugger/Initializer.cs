@@ -35,7 +35,7 @@ namespace MonoDevelop.Debugger
 	public class Initializer: CommandHandler
 	{
 		Document disassemblyDoc;
-		DisasemblyView disassemblyView;
+		DisassemblyView disassemblyView;
 		
 		protected override void Run ()
 		{
@@ -86,7 +86,7 @@ namespace MonoDevelop.Debugger
 		void OnShowDisassembly (object s, EventArgs a)
 		{
 			if (disassemblyDoc == null) {
-				disassemblyView = new DisasemblyView ();
+				disassemblyView = new DisassemblyView ();
 				disassemblyDoc = IdeApp.Workbench.OpenDocument (disassemblyView, true);
 				disassemblyDoc.Closed += delegate {
 					disassemblyDoc = null;

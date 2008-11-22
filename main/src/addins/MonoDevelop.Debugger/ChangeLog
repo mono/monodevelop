@@ -1,3 +1,9 @@
+2008-11-21  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Debugger/Initializer.cs:
+	* MonoDevelop.Debugger/DisasemblyView.cs:
+	* MonoDevelop.Debugger/DisassemblyView.cs: Fix spelling.
+
 2008-11-18  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Debugger/DebugTextMarker.cs: fixed compilation error.
