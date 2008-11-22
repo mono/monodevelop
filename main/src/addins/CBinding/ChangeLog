@@ -1,5 +1,11 @@
 2008-11-23  Mitchell Wheeler  <mitchell.wheeler@gmail.com>
 
+	* Gui/CTextEditorExtension.cs: Fixed index out of range
+	exception when attempting to add a new line to the
+	beginning of a file.
+
+2008-11-23  Mitchell Wheeler  <mitchell.wheeler@gmail.com>
+
 	* Gui/CTextEditorExtension.cs: Refactored code relating to auto
 	indentation - making it more maintainable/extensible for the
 	future in addition to fixing various indentation errors under

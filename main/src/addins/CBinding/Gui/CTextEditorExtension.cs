@@ -100,7 +100,8 @@ namespace CBinding
 						//lineText = lineText.TrimEnd(); // Trim excess whitespace to properly identify the last symbol.
 						if(lineText.Length > 0)
 						{
-							finalChar = lineText[Math.Min(lineCursorIndex, lineText.Length) - 1];
+							if(lineCursorIndex > 0)
+								finalChar = lineText[Math.Min(lineCursorIndex, lineText.Length) - 1];
 							
 							if(lineCursorIndex < lineText.Length)
 								nextChar = lineText[lineCursorIndex];
