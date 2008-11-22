@@ -45,7 +45,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		List<string> targetImports = new List<string> ();
 		IResourceHandler customResourceHandler;
 		List<string> subtypeGuids = new List<string> ();
-		const string Unspecificed = null;
+		const string Unspecified = null;
 		
 		SolutionEntityItem EntityItem {
 			get { return (SolutionEntityItem) Item; }
@@ -277,11 +277,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				string conf = cgrp.Config;
 				string platform = cgrp.Platform;
 
-				if (platform == Unspecificed && conf != Unspecificed && !ContainsSpecificPlatformConfiguration (configData, conf))
+				if (platform == Unspecified && conf != Unspecified && !ContainsSpecificPlatformConfiguration (configData, conf))
 					platform = string.Empty;
 
 				// It may be a partial configuration
-				if (conf == Unspecificed || platform == Unspecificed)
+				if (conf == Unspecified || platform == Unspecified)
 					continue;
 				
 				MSBuildPropertyGroup grp = CreateMergedConfiguration (readConfigData, conf, platform);
@@ -348,7 +348,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			MSBuildPropertyGroup merged = null;
 			
 			foreach (ConfigData grp in configData) {
-				if ((grp.Config == conf || grp.Config == Unspecificed) && (grp.Platform == platform || grp.Platform == Unspecificed)) {
+				if ((grp.Config == conf || grp.Config == Unspecified) && (grp.Platform == platform || grp.Platform == Unspecified)) {
 					if (merged == null)
 						merged = grp.Group;
 					else
@@ -361,7 +361,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		bool ContainsSpecificPlatformConfiguration (List<ConfigData> configData, string conf)
 		{
 			foreach (ConfigData grp in configData) {
-				if (grp.Config == conf && grp.Platform != Unspecificed)
+				if (grp.Config == conf && grp.Platform != Unspecified)
 					return true;
 			}
 			return false;
@@ -695,7 +695,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			foreach (ConfigData data in configData) {
 				if (data.Group == propGroup)
 					break;
-				if ((data.Config == conf || data.Config == Unspecificed) && (data.Platform == platform || data.Platform == Unspecificed)) {
+				if ((data.Config == conf || data.Config == Unspecified) && (data.Platform == platform || data.Platform == Unspecified)) {
 					if (baseGroup == null)
 						baseGroup = data.Group;
 					else
@@ -891,11 +891,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 			else if (cond.Substring (0, i).Trim () == "'$(Configuration)'") {
 				config = cond.Substring (i+2).Trim (' ','\'');
-				platform = Unspecificed;
+				platform = Unspecified;
 				return true;
 			}
 			else if (cond.Substring (0, i).Trim () == "'$(Platform)'") {
-				config = Unspecificed;
+				config = Unspecified;
 				platform = cond.Substring (i+2).Trim (' ','\'');
 				if (platform == "AnyCPU")
 					platform = string.Empty;

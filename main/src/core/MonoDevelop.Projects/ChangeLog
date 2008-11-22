@@ -1,3 +1,8 @@
+2008-11-21  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs: Fix
+	spelling.
+
 2008-11-21  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.CodeGeneration/IRefactorer.cs: fixed compilation
