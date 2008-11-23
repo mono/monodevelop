@@ -1,5 +1,11 @@
 2008-11-23  Mitchell Wheeler  <mitchell.wheeler@gmail.com>
 
+	* Gui/CTextEditorExtension.cs: Trailing whitespace after the
+	cursor when inserting a new line will no longer copy additional
+	whitespace into the next line.
+
+2008-11-23  Mitchell Wheeler  <mitchell.wheeler@gmail.com>
+
 	* Gui/CTextEditorExtension.cs: Fixed index out of range
 	exception when attempting to add a new line to the
 	beginning of a file.

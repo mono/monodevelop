@@ -97,7 +97,6 @@ namespace CBinding
 						char nextChar = '\0';
 						string indent = String.Empty;
 						
-						//lineText = lineText.TrimEnd(); // Trim excess whitespace to properly identify the last symbol.
 						if(lineText.Length > 0)
 						{
 							if(lineCursorIndex > 0)
@@ -116,13 +115,13 @@ namespace CBinding
 							int openingLine = 0;
 							if(Editor.GetClosingBraceForLine(line, out openingLine) >= 0)
 							{
-								Editor.InsertText(Editor.CursorPosition, Editor.NewLine + GetIndent(Editor, openingLine));
+								Editor.InsertText(Editor.CursorPosition, Editor.NewLine + GetIndent(Editor, openingLine, 0));
 								return false;
 							}
 						}
 
 						// Default indentation method
-						Editor.InsertText(Editor.CursorPosition, Editor.NewLine + indent + GetIndent(Editor, line));
+						Editor.InsertText(Editor.CursorPosition, Editor.NewLine + indent + GetIndent(Editor, line, lineCursorIndex));
 						
 						return false;
 
@@ -134,7 +133,7 @@ namespace CBinding
 						int openingLine = 0;
 						if(Editor.GetClosingBraceForLine(line, out openingLine) >= 0)
 						{
-							Editor.ReplaceLine(line, GetIndent(Editor, openingLine) + "}" + lineText.Substring(lineCursorIndex));
+							Editor.ReplaceLine(line, GetIndent(Editor, openingLine, 0) + "}" + lineText.Substring(lineCursorIndex));
 							return false;
 						}
 
@@ -492,9 +491,11 @@ namespace CBinding
 		}
 		
 		// Snatched from DefaultFormattingStrategy
-		private string GetIndent (TextEditor d, int lineNumber)
+		private string GetIndent (TextEditor d, int lineNumber, int terminateIndex)
 		{
 			string lineText = d.GetLineText (lineNumber);
+			if(terminateIndex > 0)
+				lineText = lineText.Substring(0, terminateIndex);
 			
 			StringBuilder whitespaces = new StringBuilder ();
 			
