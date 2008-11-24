@@ -18,7 +18,7 @@
   </StartMode>
   <Entries>
     <Entry filename="MonoDevelop.GtkCore.mdp" />
-    <Entry filename="lib/libstetic.mdp" />
-    <Entry filename="lib/libsteticui.mdp" />
+    <Entry filename="libstetic/libstetic.mdp" />
+    <Entry filename="libsteticui/libsteticui.mdp" />
   </Entries>
 </Combine>

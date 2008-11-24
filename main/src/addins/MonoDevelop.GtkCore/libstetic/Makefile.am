@@ -1,15 +1,9 @@
-ASSEMBLY_DIR = $(top_builddir)/bin
+ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoDevelop.GtkCore
+ASSEMBLY = $(ADDIN_BUILD)/libstetic.dll
+assemblydir = $(MD_ADDIN_DIR)/MonoDevelop.GtkCore
+assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb $(build_dll_config)
 
-ASSEMBLY = $(ASSEMBLY_DIR)/libstetic.dll
-
-ASSEMBLY_FILES = \
-	$(ASSEMBLY) \
-	$(ASSEMBLY_DIR)/libstetic.dll.mdb \
-	$(DATA_FILE_BUILD)
-
-pkglib_DATA = $(ASSEMBLY_FILES)
-libstetic_dll_sources =  \
-	../../gtk-gui/generated.cs \
+FILES =  \
 	ClassDescriptor.cs \
 	Clipboard.cs \
 	CommandDescriptor.cs \
@@ -168,8 +162,7 @@ libstetic_dll_sources =  \
 	wrapper/WidgetNameChangedHandler.cs \
 	wrapper/Window.cs
 
-libstetic_dll_resources =  \
-	../../gtk-gui/gui.stetic \
+RES =  \
 	stetic.glade \
 	wrapper/objects.xml \
 	wrapper/pixmaps/accellabel.png \
@@ -246,38 +239,27 @@ libstetic_dll_resources =  \
 	wrapper/pixmaps/widget.png \
 	wrapper/pixmaps/window.png
 
-libstetic_dll_datafiles = libstetic.dll.config
-
-	
-libstetic_dll_references =  \
-	-pkg:glade-sharp-2.0 \
-	-pkg:gtk-sharp-2.0 \
+REFS =  \
+	$(GLADE_SHARP_LIBS) \
+	$(GLIB_SHARP_LIBS) \
+	$(GTK_SHARP_LIBS) \
 	-r:Mono.Posix \
-	-r:System
+	-r:System \
+	-r:System.Xml
 
+dll_config = libstetic.dll.config
+build_dll_config = $(ADDIN_BUILD)/$(dll_config)
 
-all: $(ASSEMBLY) $(DATA_FILE_BUILD)
+EXTRA_DIST = $(FILES) $(RES) $(dll_config) wrapper/pixmaps/COPIED
 
-RESOURCE_FILES = $(addprefix $(srcdir)/, $(libstetic_dll_resources))
+$(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
+	mkdir -p $(ADDIN_BUILD)
+	$(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library $(build_resources:%=/resource:%) $(build_sources) $(REFS)
 
-$(ASSEMBLY): $(libstetic_dll_sources) $(RESOURCE_FILES) $(DATA_FILE_BUILD)
-	mkdir -p $(ASSEMBLY_DIR)
-	@rm -f sources.rsp
-	@echo $(libstetic_dll_sources:%=$(srcdir)/%) > sources.rsp
-	@for resource in $(RESOURCE_FILES); do echo -resource:$$resource,`basename $$resource` >> sources.rsp; done
-	$(MCS) -debug $(libstetic_dll_references) -target:library -out:$@ @sources.rsp
+$(build_dll_config): $(srcdir)/$(dll_config)
+	mkdir -p $(ADDIN_BUILD)
+	cp $(srcdir)/$(dll_config) $@
 
-DATA_FILE_BUILD = $(addprefix $(ASSEMBLY_DIR)/, $(libstetic_dll_datafiles))
+CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(build_dll_config)
 
-$(DATA_FILE_BUILD): $(srcdir)/$(notdir $@)
-	mkdir -p $(ASSEMBLY_DIR)
-	cp $(srcdir)/$(notdir $@) $(ASSEMBLY_DIR)/.
-
-CLEANFILES = $(ASSEMBLY_FILES) sources.rsp
-
-## Don't remove the 'COPIED' file below without fixing 'dist-hook'.
-EXTRA_DIST =				\
-	$(libstetic_dll_sources)	\
-	$(RESOURCE_FILES)		\
-	$(libstetic_dll_datafiles)		\
-	wrapper/pixmaps/COPIED
+include $(top_srcdir)/Makefile.include

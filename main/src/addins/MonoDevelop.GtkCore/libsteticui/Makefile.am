@@ -1,16 +1,9 @@
-ASSEMBLY_DIR = $(top_builddir)/bin
+ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoDevelop.GtkCore
+ASSEMBLY = $(ADDIN_BUILD)/libsteticui.dll
+assemblydir = $(MD_ADDIN_DIR)/MonoDevelop.GtkCore
+assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb $(build_dll_config)
 
-ASSEMBLY = $(ASSEMBLY_DIR)/libsteticui.dll
-
-ASSEMBLY_FILES = \
-	$(ASSEMBLY) \
-	$(ASSEMBLY_DIR)/libsteticui.dll.mdb \
-	$(CECIL_DLL) \
-	$(DATA_FILE_BUILD)
-	
-pkglib_DATA = $(ASSEMBLY_FILES)
-libsteticui_dll_sources =  \
-	../../gtk-gui/generated.cs \
+FILES =  \
 	ActionComponent.cs \
 	ActionGroupComponent.cs \
 	ActionGroupDesigner.cs \
@@ -76,51 +69,38 @@ libsteticui_dll_sources =  \
 	WidgetTree.cs \
 	WidgetTreeCombo.cs
 
-libsteticui_dll_resources =  \
-	../../gtk-gui/gui.stetic \
+RES =  \
 	action.png \
 	missing.png
 
-	
-libsteticui_dll_references =  \
-	-pkg:glib-sharp-2.0 \
-	-pkg:gtk-sharp-2.0 \
-	-r:$(top_builddir)/bin/libstetic.dll \
-	-r:$(CECIL_DLL) \
+DEPS =  \
+	../../../../build/AddIns/MonoDevelop.GtkCore/libstetic.dll \
+	../../../../build/bin/Mono.Cecil.dll
+
+REFS =  \
+	$(GLADE_SHARP_LIBS) \
+	$(GLIB_SHARP_LIBS) \
+	$(GTK_SHARP_LIBS) \
 	-r:Mono.Posix \
+	-r:System \
 	-r:System.Runtime.Remoting \
 	-r:System.Xml
 
-libsteticui_dll_datafiles = libsteticui.dll.config
+$(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
+	mkdir -p $(ADDIN_BUILD)
+	$(CSC) $(CSC_FLAGS) -debug -unsafe -main:Stetic.ApplicationBackend -out:$@ \
+	$(build_resources:%=/resource:%) $(build_sources) $(REFS) $(build_deps)
 
+dll_config = libsteticui.dll.config
+build_dll_config = $(ADDIN_BUILD)/$(dll_config)
 
-all: $(ASSEMBLY) $(DATA_FILE_BUILD) $(CECIL_DLL)
-	
-RESOURCE_FILES = $(addprefix $(srcdir)/, $(libsteticui_dll_resources))
-DATA_FILES = $(addprefix $(srcdir)/, $(libsteticui_dll_datafiles))
+$(build_dll_config): $(srcdir)/$(dll_config)
+	mkdir -p $(ADDIN_BUILD)
+	cp $(srcdir)/$(dll_config) $@
 
-$(ASSEMBLY): $(libsteticui_dll_sources) $(RESOURCE_FILES) $(CECIL_DLL)
-	@rm -f sources.rsp
-	@echo $(libsteticui_dll_sources:%=$(srcdir)/%) > sources.rsp
-	@for resource in $(RESOURCE_FILES); do echo -resource:$$resource,`basename $$resource` >> sources.rsp; done
-	$(GMCS) -debug -unsafe -main:Stetic.ApplicationBackend $(libsteticui_dll_references) -out:$@ @sources.rsp
+EXTRA_DIST = $(FILES) $(RES) $(dll_config)
 
-DATA_FILE_BUILD = $(addprefix $(ASSEMBLY_DIR)/, $(libsteticui_dll_datafiles))
+CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 
-$(DATA_FILE_BUILD): $(srcdir)/$(notdir $@)
-	mkdir -p $(ASSEMBLY_DIR)
-	cp $(srcdir)/$(subst $(ASSEMBLY_DIR),$(srcdir),$@) $(ASSEMBLY_DIR)/.
+include $(top_srcdir)/Makefile.include
 
-CECIL = Mono.Cecil.dll
-CECIL_DLL = $(ASSEMBLY_DIR)/$(CECIL)
-
-$(CECIL_DLL): $(CECIL_PATH)
-	mkdir -p $(ASSEMBLY_DIR)
-	cp $(CECIL_PATH) $(ASSEMBLY_DIR)/.
-
-CLEANFILES = $(ASSEMBLY_FILES) sources.rsp
-
-EXTRA_DIST = \
-	$(libsteticui_dll_sources)	\
-	$(RESOURCE_FILES) \
-	$(DATA_FILES)

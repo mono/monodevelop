@@ -115,13 +115,10 @@ AC_SUBST(MONO_CAIRO_LIBS)
 dnl soft dependencies
 PKG_CHECK_MODULES(GNOME_SHARP, gnome-sharp-2.0 >= $GTKSHARP_REQUIRED_VERSION, [gnome_sharp=yes], [gnome_sharp=no])
 AC_SUBST(GNOME_SHARP_LIBS)
-AM_CONDITIONAL(HAVE_GNOME_SHARP, test x$gnome_sharp = xyes)
 PKG_CHECK_MODULES(GNOME_VFS_SHARP, gnome-vfs-sharp-2.0 >= $GTKSHARP_REQUIRED_VERSION, [gnome_vfs_sharp=yes], [gnome_vfs_sharp=no])
 AC_SUBST(GNOME_VFS_SHARP_LIBS)
-AM_CONDITIONAL(HAVE_GNOME_VFS_SHARP, test x$gnome_vfs_sharp = xyes)
 PKG_CHECK_MODULES(GCONF_SHARP, gconf-sharp-2.0 >= $GTKSHARP_REQUIRED_VERSION, [gconf_sharp=yes], [gconf_sharp=no])
 AC_SUBST(GCONF_SHARP_LIBS)
-AM_CONDITIONAL(HAVE_GCONF_SHARP, test x$gconf_sharp = xyes)
 
 gtksharp_prefix="`$PKG_CONFIG --variable=prefix gtk-sharp-2.0`"
 AC_SUBST(gtksharp_prefix)
@@ -371,7 +368,8 @@ src/addins/prj2make-sharp-lib/Makefile
 src/addins/WelcomePage/Makefile
 src/addins/ChangeLogAddIn/Makefile
 src/addins/MonoDevelop.GtkCore/Makefile
-src/addins/MonoDevelop.GtkCore/lib/Makefile
+src/addins/MonoDevelop.GtkCore/libstetic/Makefile
+src/addins/MonoDevelop.GtkCore/libsteticui/Makefile
 src/addins/AspNetAddIn/Makefile
 src/addins/MonoDevelop.Autotools/Makefile
 src/addins/MonoDevelop.DesignerSupport/Makefile

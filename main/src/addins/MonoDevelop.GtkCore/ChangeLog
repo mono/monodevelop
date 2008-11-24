@@ -1,3 +1,7 @@
+2008-11-23  Mike Kestner <mkestner@novell.com> 
+
+	* *: I've typed lib/stetic/libstetic(ui) a few too many times.
+
 2008-11-18  Mike Kestner <mkestner@novell.com> 
 
 	* */Makefile.am: break the gnome/gconf-sharp dependencies.

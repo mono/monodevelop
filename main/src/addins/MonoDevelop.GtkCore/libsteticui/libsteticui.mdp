@@ -1,0 +1,108 @@
+<Project name="libsteticui" fileversion="2.0" language="C#" clr-version="Net_2_0" ctype="DotNetProject">
+  <Configurations active="Debug">
+    <Configuration name="Debug" ctype="DotNetProjectConfiguration">
+      <Output directory="../../../../build/AddIns/MonoDevelop.GtkCore" assembly="libsteticui.dll" />
+      <Build debugmode="True" target="Exe" />
+      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
+      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="False" unsafecodeallowed="False" generateoverflowchecks="False" definesymbols="DEBUG" generatexmldocumentation="False" additionalargs="-unsafe -main:Stetic.ApplicationBackend" ctype="CSharpCompilerParameters" />
+    </Configuration>
+    <Configuration name="Release" ctype="DotNetProjectConfiguration">
+      <Output directory="bin/Release" assembly="libsteticui" />
+      <Build debugmode="False" target="Exe" />
+      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
+      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="False" unsafecodeallowed="False" generateoverflowchecks="False" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+    </Configuration>
+  </Configurations>
+  <Contents>
+    <File name="ActionComponent.cs" subtype="Code" buildaction="Compile" />
+    <File name="ActionGroupComponent.cs" subtype="Code" buildaction="Compile" />
+    <File name="ActionGroupDesigner.cs" subtype="Code" buildaction="Compile" />
+    <File name="ActionGroupDesignerBackend.cs" subtype="Code" buildaction="Compile" />
+    <File name="ActionGroupEditSession.cs" subtype="Code" buildaction="Compile" />
+    <File name="ActionGroupToolbar.cs" subtype="Code" buildaction="Compile" />
+    <File name="Application.cs" subtype="Code" buildaction="Compile" />
+    <File name="ApplicationBackend.cs" subtype="Code" buildaction="Compile" />
+    <File name="ApplicationBackendController.cs" subtype="Code" buildaction="Compile" />
+    <File name="AssemblyResolver.cs" subtype="Code" buildaction="Compile" />
+    <File name="AssemblyWidgetLibrary.cs" subtype="Code" buildaction="Compile" />
+    <File name="CecilClassDescriptor.cs" subtype="Code" buildaction="Compile" />
+    <File name="CecilPropertyDescriptor.cs" subtype="Code" buildaction="Compile" />
+    <File name="CecilSignalDescriptor.cs" subtype="Code" buildaction="Compile" />
+    <File name="CecilWidgetLibrary.cs" subtype="Code" buildaction="Compile" />
+    <File name="CodeGenerationResult.cs" subtype="Code" buildaction="Compile" />
+    <File name="CodeGenerator.cs" subtype="Code" buildaction="Compile" />
+    <File name="CodeGeneratorInternalClass.cs" subtype="Code" buildaction="Compile" />
+    <File name="CodeGeneratorPartialClass.cs" subtype="Code" buildaction="Compile" />
+    <File name="Component.cs" subtype="Code" buildaction="Compile" />
+    <File name="ComponentEventHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="ComponentSignalEventHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="ComponentType.cs" subtype="Code" buildaction="Compile" />
+    <File name="ContainerUndoRedoManager.cs" subtype="Code" buildaction="Compile" />
+    <File name="ContextMenu.cs" subtype="Code" buildaction="Compile" />
+    <File name="Designer.cs" subtype="Code" buildaction="Compile" />
+    <File name="EmbedWindow.cs" subtype="Code" buildaction="Compile" />
+    <File name="Glade.cs" subtype="Code" buildaction="Compile" />
+    <File name="Grid.cs" subtype="Code" buildaction="Compile" />
+    <File name="GuiDispatchServerSink.cs" subtype="Code" buildaction="Compile" />
+    <File name="GuiDispatchServerSinkProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="LibraryCache.cs" subtype="Code" buildaction="Compile" />
+    <File name="Metacity/ButtonFunction.cs" subtype="Code" buildaction="Compile" />
+    <File name="Metacity/ButtonLayout.cs" subtype="Code" buildaction="Compile" />
+    <File name="Metacity/FrameFlags.cs" subtype="Code" buildaction="Compile" />
+    <File name="Metacity/FrameType.cs" subtype="Code" buildaction="Compile" />
+    <File name="Metacity/ObjectManager.cs" subtype="Code" buildaction="Compile" />
+    <File name="Metacity/Preview.cs" subtype="Code" buildaction="Compile" />
+    <File name="Metacity/Theme.cs" subtype="Code" buildaction="Compile" />
+    <File name="Palette.cs" subtype="Code" buildaction="Compile" />
+    <File name="PaletteBackend.cs" subtype="Code" buildaction="Compile" />
+    <File name="PluggableWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="Project.cs" subtype="Code" buildaction="Compile" />
+    <File name="ProjectBackend.cs" subtype="Code" buildaction="Compile" />
+    <File name="ProjectViewBackend.cs" subtype="Code" buildaction="Compile" />
+    <File name="PropertyEditor.cs" subtype="Code" buildaction="Compile" />
+    <File name="PropertyGrid.cs" subtype="Code" buildaction="Compile" />
+    <File name="PropertyTree.cs" subtype="Code" buildaction="Compile" />
+    <File name="Shadow.cs" subtype="Code" buildaction="Compile" />
+    <File name="SignalsEditor.cs" subtype="Code" buildaction="Compile" />
+    <File name="SignalsEditorBackend.cs" subtype="Code" buildaction="Compile" />
+    <File name="UndoQueue.cs" subtype="Code" buildaction="Compile" />
+    <File name="UserInterface.cs" subtype="Code" buildaction="Compile" />
+    <File name="WidgetActionBar.cs" subtype="Code" buildaction="Compile" />
+    <File name="WidgetComponent.cs" subtype="Code" buildaction="Compile" />
+    <File name="WidgetDesigner.cs" subtype="Code" buildaction="Compile" />
+    <File name="WidgetDesignerBackend.cs" subtype="Code" buildaction="Compile" />
+    <File name="WidgetEditSession.cs" subtype="Code" buildaction="Compile" />
+    <File name="WidgetFactory.cs" subtype="Code" buildaction="Compile" />
+    <File name="WidgetInfoEventHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="WidgetPropertyTree.cs" subtype="Code" buildaction="Compile" />
+    <File name="WidgetPropertyTreeBackend.cs" subtype="Code" buildaction="Compile" />
+    <File name="WidgetTree.cs" subtype="Code" buildaction="Compile" />
+    <File name="WidgetTreeCombo.cs" subtype="Code" buildaction="Compile" />
+    <File name="action.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="missing.png" subtype="Code" buildaction="EmbedAsResource" />
+  </Contents>
+  <References>
+    <ProjectReference type="Gac" localcopy="True" refto="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
+    <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <ProjectReference type="Gac" localcopy="True" refto="System.Runtime.Remoting, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <ProjectReference type="Gac" localcopy="True" refto="System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <ProjectReference type="Project" localcopy="True" refto="Mono.Cecil" />
+    <ProjectReference type="Gac" localcopy="True" refto="glade-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="glib-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Project" localcopy="True" refto="libstetic" />
+  </References>
+  <GtkDesignInfo />
+  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../..">
+    <BuildFilesVar Sync="True" Name="FILES" />
+    <DeployFilesVar />
+    <ResourcesVar Sync="True" Name="RES" />
+    <OthersVar />
+    <GacRefVar Sync="True" Name="REFS" Prefix="-r:" />
+    <AsmRefVar Sync="True" Name="REFS" Prefix="-r:" />
+    <ProjectRefVar Sync="True" Name="DEPS" />
+  </MonoDevelop.Autotools.MakefileInfo>
+</Project>

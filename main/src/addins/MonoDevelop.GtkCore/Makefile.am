@@ -1,4 +1,4 @@
-SUBDIRS = lib
+SUBDIRS = libstetic libsteticui
 
 ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoDevelop.GtkCore
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.GtkCore.dll
