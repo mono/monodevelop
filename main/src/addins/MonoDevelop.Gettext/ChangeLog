@@ -1,5 +1,11 @@
 2008-11-24  Mike Kestner  <mkestner@novell.com>
 
+	* MonoDevelop.Gettext.Editor/POEditorWidget.cs: set labels on the
+	valid/missing/fuzzy filter buttons. Use a MenuButton to ensure 
+	proper menu placement on the options button.  Fixes #367274.
+
+2008-11-24  Mike Kestner  <mkestner@novell.com>
+
 	* MonoDevelop.Gettext.Editor/CatalogHeadersWidget.cs: some null
 	guarding for a couple strings.
 

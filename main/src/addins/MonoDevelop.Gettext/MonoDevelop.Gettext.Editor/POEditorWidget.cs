@@ -35,6 +35,7 @@ using System.Text.RegularExpressions;
 using Gtk;
 using Gdk;
 
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
@@ -203,7 +204,9 @@ namespace MonoDevelop.Gettext
 				if (e.Event.Button == 3)
 					ShowPopup ();
 			};
-			this.buttonOptions.Clicked += ShowOptionsContextMenu;
+			this.buttonOptions.Label = "Options";
+			this.buttonOptions.StockImage = Gtk.Stock.Properties;
+			this.buttonOptions.MenuCreator = CreateOptionsMenu;
 			widgets.Add (this);
 			UpdateTasks ();
 //			this.vpaned2.AcceptPosition += delegate {
@@ -286,7 +289,7 @@ namespace MonoDevelop.Gettext
 		}
 		#endregion
 		
-		public void ShowOptionsContextMenu (object sender, EventArgs args)
+		public Menu CreateOptionsMenu (MenuButton button)
 		{
 			Menu menu = new Menu ();
 			
@@ -372,9 +375,8 @@ namespace MonoDevelop.Gettext
 				}
 			};
 			menu.Append (wholeWordsOnly);
-			
-			MonoDevelop.Ide.Gui.IdeApp.CommandService.ShowContextMenu (menu);
 			menu.ShowAll ();
+			return menu;
 		}
 		
 		public static void ReloadWidgets ()
