@@ -121,12 +121,12 @@ namespace MonoDevelop.Ide.Gui.Search
 		
 		public string GetSearchDescription (string pattern)
 		{
-			return GettextCatalog.GetString ("Looking for '{0}' in directory '{1}'.", pattern, searchDirectory);
+			return GettextCatalog.GetString ("Looking for '{0}' in directory '{1}'", pattern, searchDirectory);
 		}
 		
 		public string GetReplaceDescription (string pattern)
 		{
-			return GettextCatalog.GetString ("Replacing '{0}' in directory '{1}'.", pattern, searchDirectory);
+			return GettextCatalog.GetString ("Replacing '{0}' in directory '{1}'", pattern, searchDirectory);
 		}
 	}
 }

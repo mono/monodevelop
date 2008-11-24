@@ -1,5 +1,13 @@
 2008-11-24  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide.Gui.Search/AllOpenDocumentIterator.cs:
+	* MonoDevelop.Ide.Gui.Search/DirectoryDocumentIterator.cs:
+	* MonoDevelop.Ide.Gui.Search/WholeCombineDocumentIterator.cs:
+	* MonoDevelop.Ide.Gui.Search/CurrentProjectDocumentIterator.cs: Fix
+	string punctuation to fit with " - matches found" suffix.
+
+2008-11-24  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.Gui.Search/ForwardTextFileIterator.cs: Revert broken
 	reimplementation. Many problems --  Close () doesn't make a backup
 	when it writes. It deletes and rewrites ALL files even if they're not

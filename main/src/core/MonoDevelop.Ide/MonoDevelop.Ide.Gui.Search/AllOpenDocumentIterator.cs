@@ -37,12 +37,12 @@ namespace MonoDevelop.Ide.Gui.Search
 		
 		public string GetSearchDescription (string pattern)
 		{
-			return MonoDevelop.Core.GettextCatalog.GetString ("Looking for '{0}' in all open documents.", pattern);
+			return MonoDevelop.Core.GettextCatalog.GetString ("Looking for '{0}' in all open documents", pattern);
 		}
 		
 		public string GetReplaceDescription (string pattern)
 		{
-			return MonoDevelop.Core.GettextCatalog.GetString ("Replacing '{0}' in all open documents.", pattern);
+			return MonoDevelop.Core.GettextCatalog.GetString ("Replacing '{0}' in all open documents", pattern);
 		}
 		
 		public string CurrentFileName {
