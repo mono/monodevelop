@@ -1,5 +1,10 @@
 2008-11-24  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide.Gui.Search/ForwardTextFileIterator.cs: Remove unneeded
+	code.
+
+2008-11-24  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.Gui.Search/AllOpenDocumentIterator.cs:
 	* MonoDevelop.Ide.Gui.Search/DirectoryDocumentIterator.cs:
 	* MonoDevelop.Ide.Gui.Search/WholeCombineDocumentIterator.cs:
