@@ -51,7 +51,7 @@ namespace MonoDevelop.Ide.Gui.Search
 		{
 			this.document = document;
 			this.fileName = fileName;
-			stream = new FileStream (fileName, FileMode.Open, FileAccess.Read, FileShare.Read);
+			stream = new FileStream (fileName, FileMode.Open, FileAccess.Read, FileShare.None);
 			streamReader = new StreamReader (stream);
 			reader = new ExtendedStreamReader (streamReader);
 			Reset();

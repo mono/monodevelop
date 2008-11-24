@@ -1,5 +1,13 @@
 2008-11-24  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide.Gui.Search/FileDocumentInformation.cs:
+	* MonoDevelop.Ide.Gui.Search/ForwardTextFileIterator.cs: Use
+	FileShare.None instead of FileShare.Read, as file sharing seems to
+	cause prohibitively expensive thread sync/locking. Speeds up searches
+	by a factor of ~6. Fixes Bug 448335 - Searching is really slow.
+
+2008-11-24  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.Gui.Search/ForwardTextFileIterator.cs: Remove unneeded
 	code.
 
