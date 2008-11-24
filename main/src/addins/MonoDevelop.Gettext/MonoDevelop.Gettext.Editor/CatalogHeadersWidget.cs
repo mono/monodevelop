@@ -92,8 +92,8 @@ namespace MonoDevelop.Gettext.Editor
 			
 			// language tab
 			
-			entryTranslatorName.Text = headers.Translator;
-			entryTranslatorEmail.Text = headers.TranslatorEmail;
+			entryTranslatorName.Text = headers.Translator == null ? String.Empty : headers.Translator;
+			entryTranslatorEmail.Text = headers.TranslatorEmail == null ? String.Empty : headers.TranslatorEmail;
 			
 			entryLanguageGroupName.Text = headers.Team;
 			entryLanguageGroupEmail.Text = headers.TeamEmail;
