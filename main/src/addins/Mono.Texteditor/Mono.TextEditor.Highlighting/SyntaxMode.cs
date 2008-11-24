@@ -313,6 +313,7 @@ namespace Mono.TextEditor.Highlighting
 								
 								AddChunk (ref curChunk, span.Begin.Length, !String.IsNullOrEmpty (span.TagColor) ? style.GetChunkStyle (span.TagColor) : GetSpanStyle ());
 								SetSpan (i);
+								endOffset = 0;
 								SetTree ();
 								if (!String.IsNullOrEmpty (span.NextColor))
 									curChunk.Style = style.GetChunkStyle (span.NextColor);

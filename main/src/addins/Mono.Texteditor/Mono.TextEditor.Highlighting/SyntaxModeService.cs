@@ -204,6 +204,7 @@ namespace Mono.TextEditor.Highlighting
 							spanTree = curRule != null ? curRule.spanStarts : null;
 							found = true; 
 							offset += span.Begin.Length - 1;
+							endOffset = 0;
 							break;
 						}
 					}
@@ -318,7 +319,8 @@ namespace Mono.TextEditor.Highlighting
 								curRule = doc.SyntaxMode.GetRule (curSpan.Rule);
 								spanTree = curRule != null ? curRule.spanStarts : null;
 								offset += span.Begin.Length - 1;
-
+								endOffset = 0;
+								
 								found = true; 
 								break;
 							}

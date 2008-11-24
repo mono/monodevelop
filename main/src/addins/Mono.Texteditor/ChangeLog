@@ -1,5 +1,11 @@
 2008-11-24  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor.Highlighting/SyntaxMode.cs:
+	* Mono.TextEditor.Highlighting/SyntaxModeService.cs: fixed 'Bug 448006 -
+	MD crashes while editing XML files'.
+
+2008-11-24  Mike Krüger  <mkrueger@novell.com>
+
 	* SyntaxModes/CSharpSyntaxMode.xml:
 	* Mono.TextEditor.Highlighting/Span.cs:
 	* Mono.TextEditor.Highlighting/SyntaxMode.cs:
