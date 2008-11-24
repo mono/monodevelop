@@ -150,10 +150,22 @@ namespace Mono.TextEditor.Highlighting
 			for (int offset = start; offset < end; offset++) {
 				char ch = doc.GetCharAt (offset);
 				if (curSpan != null && !String.IsNullOrEmpty (curSpan.End)) {
-					if (curSpan.Escape == ch && offset + 1 < end && endOffset == 0 && doc.GetCharAt (offset + 1) == curSpan.End[0]) {
-						offset++;
-						continue;
-					} else if (curSpan.End[endOffset] == ch) {
+					if (!String.IsNullOrEmpty (curSpan.Escape) && offset + 1 < end && endOffset == 0 && doc.GetCharAt (offset + 1) == curSpan.End[0]) {
+						bool match = true;
+						for (int j = 0; j < curSpan.Escape.Length; j++) {
+							if (doc.GetCharAt (offset + j) != curSpan.Escape[j]) {
+								match = false;
+								break;
+							}
+						}
+						if (match) {
+							offset += curSpan.Escape.Length;
+							continue;
+						}
+							
+						
+					} 
+					if (curSpan.End[endOffset] == ch) {
 						endOffset++;
 						if (endOffset >= curSpan.End.Length) {
 							spanStack.Pop ();
@@ -252,10 +264,23 @@ namespace Mono.TextEditor.Highlighting
 						return;
 					}
 					if (curSpan != null && !String.IsNullOrEmpty (curSpan.End)) {
-						if (curSpan.Escape == ch && offset + 1 < end && endOffset == 0 && doc.GetCharAt (offset + 1) == curSpan.End[0]) {
-							offset++;
-							continue;
-						} else if (curSpan.End[endOffset] == ch) {
+						if (!String.IsNullOrEmpty (curSpan.Escape) && offset + 1 < end && endOffset == 0 && doc.GetCharAt (offset + 1) == curSpan.End[0]) {
+							bool match = true;
+							for (int j = 0; j < curSpan.Escape.Length; j++) {
+								if (doc.GetCharAt (offset + j) != curSpan.Escape[j]) {
+									match = false;
+									break;
+								}
+							}
+							
+							if (match) {
+								offset += curSpan.Escape.Length;
+								continue;
+							}
+							
+							
+						}
+						if (curSpan.End[endOffset] == ch) {
 							endOffset++;
 							if (endOffset >= curSpan.End.Length) {
 								spanStack.Pop ();

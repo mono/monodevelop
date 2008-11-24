@@ -1,3 +1,11 @@
+2008-11-24  Mike Krüger  <mkrueger@novell.com>
+
+	* SyntaxModes/CSharpSyntaxMode.xml:
+	* Mono.TextEditor.Highlighting/Span.cs:
+	* Mono.TextEditor.Highlighting/SyntaxMode.cs:
+	* Mono.TextEditor.Highlighting/SyntaxModeService.cs: fixed 'Bug 447547 -
+	Error occurred when highlighting multiline strings(@"")'.
+
 2008-11-21  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextViewMargin.cs: fixed off by 1 error.

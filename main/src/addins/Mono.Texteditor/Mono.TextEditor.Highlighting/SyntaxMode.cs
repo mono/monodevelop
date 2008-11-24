@@ -247,11 +247,24 @@ namespace Mono.TextEditor.Highlighting
 					char ch = str [textOffset];
 					
 					if (curSpan != null && !String.IsNullOrEmpty (curSpan.End)) {
-						if (curSpan.Escape == ch && i + 1 < maxEnd && endOffset == 0) {
-							curChunk.Length += 2;
-							i++;
-							continue;
-						} else if (curSpan.End[endOffset] == ch) {
+						if (!String.IsNullOrEmpty (curSpan.Escape) && i + 1 < maxEnd && endOffset == 0) {
+							bool match = true;
+							for (int j = 0; j < curSpan.Escape.Length; j++) {
+								if (doc.GetCharAt (i + j) != curSpan.Escape[j]) {
+									match = false;
+									break;
+								}
+							}
+							if (match) {
+								curChunk.Length += curSpan.Escape.Length;
+								if (curSpan.Escape.Length == 1)
+									curChunk.Length++;
+								i += curSpan.Escape.Length;
+								continue;
+							}
+						}
+						
+						if (curSpan.End[endOffset] == ch) {
 							// check if keyword is before span end
 							if (pair != null && pair.o1 != null) {
 								curChunk.Length -= wordOffset;

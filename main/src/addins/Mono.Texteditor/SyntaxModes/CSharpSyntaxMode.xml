@@ -34,7 +34,7 @@
 		<End>*/</End>
 	</Span>
 	
-	<Span color = "literal" rule="String" stopateol = "false" escape='"'>
+	<Span color = "literal" rule="String" stopateol = "false" escape='""'>
 		<Begin>@"</Begin>
 		<End>"</End>
 	</Span>

@@ -40,7 +40,7 @@ namespace Mono.TextEditor.Highlighting
 		string end;
 		string constraint;
 		string nextColor;
-		char   escape;
+		string escape;
 		
 		bool   stopAtEol;
 			
@@ -75,7 +75,7 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 
-		public char Escape {
+		public string Escape {
 			get {
 				return escape;
 			}
@@ -107,7 +107,7 @@ namespace Mono.TextEditor.Highlighting
 		
 		public override string ToString ()
 		{
-			return String.Format ("[Span: Color={0}, Rule={1}, Begin={2}, End={3}, Escape={4}, stopAtEol={5}]", color, rule, begin, end, escape == '\0' ? "not set" : "'" + escape +"'", stopAtEol);
+			return String.Format ("[Span: Color={0}, Rule={1}, Begin={2}, End={3}, Escape={4}, stopAtEol={5}]", color, rule, begin, end, String.IsNullOrEmpty (escape) ? "not set" : "'" + escape +"'", stopAtEol);
 		}
 		
 		public static Span Read (XmlReader reader)
@@ -120,11 +120,8 @@ namespace Mono.TextEditor.Highlighting
 			result.constraint = reader.GetAttribute ("constraint");
 			result.nextColor  = reader.GetAttribute ("nextColor");
 			
-			string esc = reader.GetAttribute ("escape");
-			if (!String.IsNullOrEmpty (esc)) {
-				Debug.Assert (esc.Length == 1);
-				result.escape = esc[0];
-			}
+			result.escape = reader.GetAttribute ("escape");
+			
 			string stopateol = reader.GetAttribute ("stopateol");
 			if (!String.IsNullOrEmpty (stopateol)) {
 				result.stopAtEol = Boolean.Parse (stopateol);
