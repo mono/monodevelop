@@ -102,7 +102,7 @@ namespace MonoDevelop.Ide.Gui.Search
 		{
 			switch (SearchStrategyType) {
 				case SearchStrategyType.Normal:
-					return new BruteForceSearchStrategy();
+					return new KMPSearchStrategy();
 				case SearchStrategyType.RegEx:
 					return new RegExSearchStrategy();
 				case SearchStrategyType.Wildcard:
