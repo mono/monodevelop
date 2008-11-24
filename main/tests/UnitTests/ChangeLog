@@ -1,3 +1,9 @@
+2008-11-24  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharpBinding/ParameterCompletionTests.cs: added unit test
+	for 'Bug 447985 - Exception display tip is inaccurate for derived
+	(custom) exceptions'.
+
 2008-11-18  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: Fixed unit tests.

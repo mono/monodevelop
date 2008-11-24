@@ -247,6 +247,40 @@ class AClass
 			Assert.AreEqual (1, provider.OverloadCount);
 		}
 		
+		/// <summary>
+		/// Bug 447985 - Exception display tip is inaccurate for derived (custom) exceptions
+		/// </summary>
+		[Test()]
+		public void TestBug447985 ()
+		{
+			IParameterDataProvider provider = CreateProvider (
+@"
+namespace System {
+	public class Exception
+	{
+		public Exception () {}
+	}
+}
+
+class MyException : System.Exception
+{
+	public MyException (int test)
+	{}
+}
+
+class AClass
+{
+	public void Test ()
+	{
+		throw new MyException($
+	}
+
+}");
+			Assert.IsNotNull (provider, "provider was not created.");
+			Assert.AreEqual (1, provider.OverloadCount);
+			Assert.AreEqual (1, provider.GetParameterCount(0), "Parameter 'test' should exist");
+		}
+		
 		
 	}
 }
