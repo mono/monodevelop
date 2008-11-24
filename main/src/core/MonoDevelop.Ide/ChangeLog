@@ -1,3 +1,11 @@
+2008-11-24  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Gui.Search/ForwardTextFileIterator.cs: Revert broken
+	reimplementation. Many problems --  Close () doesn't make a backup
+	when it writes. It deletes and rewrites ALL files even if they're not
+	modified, e.g. in a search (not replace) operation. Replace
+	operations will be doing huge string concats.
+
 2008-11-24  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Gui.Search/SearchOptions.cs: Activated KMP search.

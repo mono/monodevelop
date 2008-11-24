@@ -33,7 +33,7 @@ using System.Collections;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Gui.Search
-{
+{/*
 	public class ForwardTextFileIterator : ITextIterator
 	{
 		string fileName;
@@ -165,7 +165,7 @@ namespace MonoDevelop.Ide.Gui.Search
 		
 		#endregion 
 
-	}/*
+	}*/
 	public class ForwardTextFileIterator : ITextIterator
 	{
 		string fileName;
@@ -358,5 +358,5 @@ namespace MonoDevelop.Ide.Gui.Search
 		{
 			throw new NotSupportedException ();
 		}
-	}*/
+	}
 }
