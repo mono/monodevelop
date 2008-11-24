@@ -1,3 +1,9 @@
+2008-11-24  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom/CompoundType.cs:
+	* MonoDevelop.Projects.Dom/AbstractMember.cs: Bug 447636 - Code
+	completion window throws exception, then never opens again
+
 2008-11-21  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs: Fix

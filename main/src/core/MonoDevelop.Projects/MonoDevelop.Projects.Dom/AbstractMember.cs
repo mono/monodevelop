@@ -237,8 +237,10 @@ namespace MonoDevelop.Projects.Dom
 				if (type1.SourceProjectDom == type2.SourceProjectDom)
 					return true;
 				// maybe type2 hasn't project dom set (may occur in some cases), check if the file is in the project
-				if (type1.SourceProjectDom.Project != null)
+				if (type1.SourceProjectDom != null && type1.SourceProjectDom.Project != null)
 					return type1.SourceProjectDom.Project.GetProjectFile (type2.CompilationUnit.FileName) != null;
+				if (type2.SourceProjectDom != null && type2.SourceProjectDom.Project != null)
+					return type2.SourceProjectDom.Project.GetProjectFile (type1.CompilationUnit.FileName) != null;
 				return false;
 			}
 			if (member.DeclaringType == null || DeclaringType == null)

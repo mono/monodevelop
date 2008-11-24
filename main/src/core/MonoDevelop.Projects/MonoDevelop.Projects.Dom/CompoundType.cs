@@ -123,6 +123,7 @@ namespace MonoDevelop.Projects.Dom
 			this.classType = parts[0].ClassType;
 			this.Name      = parts[0].Name;
 			this.Namespace = parts[0].Namespace;
+			this.SourceProjectDom = parts[0].SourceProjectDom;
 			this.ClearTypeParameter ();
 			this.AddTypeParameter (parts[0].TypeParameters);
 			
