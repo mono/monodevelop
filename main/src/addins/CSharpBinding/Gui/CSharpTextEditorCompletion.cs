@@ -480,7 +480,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 //					System.Console.WriteLine("resolveResult:" + resolveResult);
 					
 					if (result.ExpressionContext is ExpressionContext.TypeExpressionContext) {
-						IReturnType returnType = ((ExpressionContext.TypeExpressionContext)result.ExpressionContext).Type ?? resolveResult.ResolvedType;
+						IReturnType returnType = resolveResult.ResolvedType ?? ((ExpressionContext.TypeExpressionContext)result.ExpressionContext).Type;
 						
 						IType type = dom.SearchType (new SearchTypeRequest (resolver.Unit, returnType));
 						if (type != null && returnType.GenericArguments != null)

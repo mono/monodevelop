@@ -98,6 +98,7 @@ namespace MonoDevelop.CSharpBinding
 		{
 			this.editor = editor;
 			this.resolver = resolver;
+			
 			if (type != null) {
 				if (type.ClassType == ClassType.Delegate) {
 					IMethod invokeMethod = ExtractInvokeMethod (type);
