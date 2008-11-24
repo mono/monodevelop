@@ -39,6 +39,7 @@ namespace MonoDevelop.Components
 	{
 		MenuCreator creator;
 		Label label;
+		Image image;
 		Arrow arrow;
 		bool isOpen;
 		
@@ -49,6 +50,8 @@ namespace MonoDevelop.Components
 			box.Spacing = 6;
 			Add (box);
 			
+			image = new Image ();
+			box.PackStart (image, false, false, 0);
 			label = new Label ();
 			box.PackStart (label, false, false, 0);
 			ArrowType = Gtk.ArrowType.Down;
@@ -150,10 +153,14 @@ namespace MonoDevelop.Components
 			creator = null;
 			base.OnDestroyed ();
 		}
-		
+
 		public new string Label {
 			get { return label.Text; }
 			set { label.Text = value; }
+		}
+		
+		public string StockImage {
+			set { image.Pixbuf = RenderIcon (value, IconSize.Button, null); }
 		}
 		
 		public new bool UseMarkup

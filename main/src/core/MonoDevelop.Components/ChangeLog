@@ -1,3 +1,8 @@
+2008-11-24  Mike Kestner <mkestner@novell.com> 
+
+	* MonoDevelop.Components/MenuButton.cs: Added StockImage property to
+	set an image from a stock item value.
+
 2008-11-14  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Components.Commands/KeyBindingService.cs: Added method for
