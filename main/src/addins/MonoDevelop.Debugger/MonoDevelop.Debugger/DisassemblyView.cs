@@ -83,7 +83,7 @@ namespace MonoDevelop.Debugger
 			sw.Sensitive = false;
 			
 			currentDebugLineMarker = new CurrentDebugLineTextMarker (editor);
-			IdeApp.Services.DebuggingService.StoppedEvent += OnStop;
+			DebuggingService.StoppedEvent += OnStop;
 		}
 		
 		public override Gtk.Widget Control {
@@ -104,7 +104,7 @@ namespace MonoDevelop.Debugger
 				editor.Document.RemoveMarker (lastDebugLine, currentDebugLineMarker);
 			}
 			
-			if (IdeApp.Services.DebuggingService.CurrentFrame == null) {
+			if (DebuggingService.CurrentFrame == null) {
 				sw.Sensitive = false;
 				lastDebugLine = -1;
 				return;
@@ -112,7 +112,7 @@ namespace MonoDevelop.Debugger
 			
 			sw.Sensitive = true;
 			
-			StackFrame sf = IdeApp.Services.DebuggingService.CurrentFrame;
+			StackFrame sf = DebuggingService.CurrentFrame;
 			if (!string.IsNullOrEmpty (sf.SourceLocation.Filename) && File.Exists (sf.SourceLocation.Filename) && sf.SourceLocation.Line != -1)
 				FillWithSource ();
 			else
@@ -123,10 +123,10 @@ namespace MonoDevelop.Debugger
 		{
 			lines.Clear ();
 			
-			StackFrame sf = IdeApp.Services.DebuggingService.CurrentFrame;
+			StackFrame sf = DebuggingService.CurrentFrame;
 			
 			if (currentFile != sf.SourceLocation.Filename) {
-				AssemblyLine[] asmLines = IdeApp.Services.DebuggingService.DebuggerSession.DisassembleFile (sf.SourceLocation.Filename);
+				AssemblyLine[] asmLines = DebuggingService.DebuggerSession.DisassembleFile (sf.SourceLocation.Filename);
 				if (asmLines == null) {
 					// Mixed disassemble not supported
 					Fill ();
@@ -177,7 +177,7 @@ namespace MonoDevelop.Debugger
 		public void Fill ()
 		{
 			currentFile = null;
-			StackFrame sf = IdeApp.Services.DebuggingService.CurrentFrame;
+			StackFrame sf = DebuggingService.CurrentFrame;
 			if (lines.Count > 0) {
 				if (sf.Address >= lines [0].Address && sf.Address <= lines [lines.Count - 1].Address) {
 					// The same address range can be reused
@@ -262,7 +262,7 @@ namespace MonoDevelop.Debugger
 		void InsertLines (int offset, int start, int end)
 		{
 			StringBuilder sb = new StringBuilder ();
-			StackFrame ff = IdeApp.Services.DebuggingService.CurrentFrame;
+			StackFrame ff = DebuggingService.CurrentFrame;
 			AssemblyLine[] lines = ff.Disassemble (start, end - start + 1);
 			foreach (AssemblyLine li in lines) {
 				sb.AppendFormat ("0x{0:x}   {1}\n", li.Address, li.Code);
@@ -292,20 +292,20 @@ namespace MonoDevelop.Debugger
 		public override void Dispose ()
 		{
 			base.Dispose ();
-			IdeApp.Services.DebuggingService.StoppedEvent -= OnStop;
+			DebuggingService.StoppedEvent -= OnStop;
 			sw.Destroy ();
 		}
 		
 		[CommandHandler (DebugCommands.StepOver)]
 		protected void OnStepOver ()
 		{
-			IdeApp.Services.DebuggingService.DebuggerSession.NextInstruction ();
+			DebuggingService.DebuggerSession.NextInstruction ();
 		}
 		
 		[CommandHandler (DebugCommands.StepInto)]
 		protected void OnStepInto ()
 		{
-			IdeApp.Services.DebuggingService.DebuggerSession.StepInstruction ();
+			DebuggingService.DebuggerSession.StepInstruction ();
 		}
 		
 		[CommandUpdateHandler (DebugCommands.StepOver)]

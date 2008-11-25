@@ -116,19 +116,19 @@ namespace MonoDevelop.Debugger
 			UpdateDisplay ();
 			
 			tree.RowActivated += OnRowActivated;
-			IdeApp.Services.DebuggingService.CallStackChanged += OnStackChanged;
-			IdeApp.Services.DebuggingService.PausedEvent += OnDebuggerPaused;
-			IdeApp.Services.DebuggingService.ResumedEvent += OnDebuggerResumed;
-			IdeApp.Services.DebuggingService.StoppedEvent += OnDebuggerStopped;
+			DebuggingService.CallStackChanged += OnStackChanged;
+			DebuggingService.PausedEvent += OnDebuggerPaused;
+			DebuggingService.ResumedEvent += OnDebuggerResumed;
+			DebuggingService.StoppedEvent += OnDebuggerStopped;
 		}
 		
 		public override void Dispose ()
 		{
 			base.Dispose ();
-			IdeApp.Services.DebuggingService.CallStackChanged -= OnStackChanged;
-			IdeApp.Services.DebuggingService.PausedEvent -= OnDebuggerPaused;
-			IdeApp.Services.DebuggingService.ResumedEvent -= OnDebuggerResumed;
-			IdeApp.Services.DebuggingService.StoppedEvent -= OnDebuggerStopped;
+			DebuggingService.CallStackChanged -= OnStackChanged;
+			DebuggingService.PausedEvent -= OnDebuggerPaused;
+			DebuggingService.ResumedEvent -= OnDebuggerResumed;
+			DebuggingService.StoppedEvent -= OnDebuggerStopped;
 		}
 		
 		void OnStackChanged (object s, EventArgs a)
@@ -148,10 +148,10 @@ namespace MonoDevelop.Debugger
 			
 			store.Clear ();
 			
-			if (IdeApp.Services.DebuggingService.DebuggerSession == null)
+			if (DebuggingService.DebuggerSession == null)
 				return;
 			
-			ProcessInfo[] currentProcesses = IdeApp.Services.DebuggingService.DebuggerSession.GetPocesses ();
+			ProcessInfo[] currentProcesses = DebuggingService.DebuggerSession.GetPocesses ();
 			
 			if (currentProcesses.Length == 1) {
 				AppendThreads (TreeIter.Zero, currentProcesses [0]);
@@ -174,7 +174,7 @@ namespace MonoDevelop.Debugger
 				return t1.Id.CompareTo (t2.Id);
 			});
 			foreach (ThreadInfo t in threads) {
-				ThreadInfo activeThread = IdeApp.Services.DebuggingService.DebuggerSession.ActiveThread;
+				ThreadInfo activeThread = DebuggingService.DebuggerSession.ActiveThread;
 				Pango.Weight wi = t == activeThread ? Pango.Weight.Bold : Pango.Weight.Normal;
 				string icon = t == activeThread ? Gtk.Stock.GoForward : null;
 				if (it.Equals (TreeIter.Zero))
@@ -190,7 +190,7 @@ namespace MonoDevelop.Debugger
 			tree.Selection.GetSelected (out it);
 			ThreadInfo t = store.GetValue (it, (int)Columns.Object) as ThreadInfo;
 			if (t != null)
-				IdeApp.Services.DebuggingService.ActiveThread = t;
+				DebuggingService.ActiveThread = t;
 		}
 		
 		public Gtk.Widget Control {

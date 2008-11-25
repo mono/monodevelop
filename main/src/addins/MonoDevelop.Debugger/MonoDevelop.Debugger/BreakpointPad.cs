@@ -164,7 +164,7 @@ namespace MonoDevelop.Debugger
 			
 			control.ShowAll ();
 			
-			bps = IdeApp.Services.DebuggingService.Breakpoints;
+			bps = DebuggingService.Breakpoints;
 			
 			UpdateDisplay ();
 			
@@ -173,10 +173,10 @@ namespace MonoDevelop.Debugger
 
 			breakpointUpdatedHandler = DispatchService.GuiDispatch (new EventHandler<BreakpointEventArgs> (OnBreakpointUpdated));
 			
-			IdeApp.Services.DebuggingService.Breakpoints.BreakpointAdded += OnBpAdded;
-			IdeApp.Services.DebuggingService.Breakpoints.BreakpointRemoved += OnBpRemoved;
-			IdeApp.Services.DebuggingService.Breakpoints.Changed += OnBpChanged;
-			IdeApp.Services.DebuggingService.Breakpoints.BreakpointUpdated += breakpointUpdatedHandler;
+			DebuggingService.Breakpoints.BreakpointAdded += OnBpAdded;
+			DebuggingService.Breakpoints.BreakpointRemoved += OnBpRemoved;
+			DebuggingService.Breakpoints.Changed += OnBpChanged;
+			DebuggingService.Breakpoints.BreakpointUpdated += breakpointUpdatedHandler;
 			
 			tree.RowActivated += OnRowActivated;
 			tree.KeyPressEvent += OnKeyPressed;
@@ -184,10 +184,10 @@ namespace MonoDevelop.Debugger
 		
 		public void Dispose ()
 		{
-			IdeApp.Services.DebuggingService.Breakpoints.BreakpointAdded -= OnBpAdded;
-			IdeApp.Services.DebuggingService.Breakpoints.BreakpointRemoved -= OnBpRemoved;
-			IdeApp.Services.DebuggingService.Breakpoints.Changed -= OnBpChanged;
-			IdeApp.Services.DebuggingService.Breakpoints.BreakpointUpdated -= breakpointUpdatedHandler;
+			DebuggingService.Breakpoints.BreakpointAdded -= OnBpAdded;
+			DebuggingService.Breakpoints.BreakpointRemoved -= OnBpRemoved;
+			DebuggingService.Breakpoints.Changed -= OnBpChanged;
+			DebuggingService.Breakpoints.BreakpointUpdated -= breakpointUpdatedHandler;
 		}
 
 		
@@ -217,7 +217,7 @@ namespace MonoDevelop.Debugger
 			TreeIter iter;
 			if (tree.Selection.GetSelected (out iter)) {
 				Breakpoint bp = (Breakpoint) store.GetValue (iter, (int) Columns.Breakpoint);
-				if (IdeApp.Services.DebuggingService.ShowBreakpointProperties (bp, false))
+				if (DebuggingService.ShowBreakpointProperties (bp, false))
 					UpdateDisplay ();
 			}
 		}

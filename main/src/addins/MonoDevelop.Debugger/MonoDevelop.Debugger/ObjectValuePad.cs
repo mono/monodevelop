@@ -64,10 +64,10 @@ namespace MonoDevelop.Debugger
 			scrolled.Add (tree);
 			scrolled.ShowAll ();
 			
-			IdeApp.Services.DebuggingService.CurrentFrameChanged += OnFrameChanged;
-			IdeApp.Services.DebuggingService.PausedEvent += OnDebuggerPaused;
-			IdeApp.Services.DebuggingService.ResumedEvent += OnDebuggerResumed;
-			IdeApp.Services.DebuggingService.StoppedEvent += OnDebuggerStopped;
+			DebuggingService.CurrentFrameChanged += OnFrameChanged;
+			DebuggingService.PausedEvent += OnDebuggerPaused;
+			DebuggingService.ResumedEvent += OnDebuggerResumed;
+			DebuggingService.StoppedEvent += OnDebuggerStopped;
 			
 			needsUpdate = true;
 			initialResume = true;
@@ -75,10 +75,10 @@ namespace MonoDevelop.Debugger
 
 		public void Dispose ()
 		{
-			IdeApp.Services.DebuggingService.CurrentFrameChanged -= OnFrameChanged;
-			IdeApp.Services.DebuggingService.PausedEvent -= OnDebuggerPaused;
-			IdeApp.Services.DebuggingService.ResumedEvent -= OnDebuggerResumed;
-			IdeApp.Services.DebuggingService.StoppedEvent -= OnDebuggerStopped;
+			DebuggingService.CurrentFrameChanged -= OnFrameChanged;
+			DebuggingService.PausedEvent -= OnDebuggerPaused;
+			DebuggingService.ResumedEvent -= OnDebuggerResumed;
+			DebuggingService.StoppedEvent -= OnDebuggerStopped;
 		}
 
 		public void Initialize (IPadWindow container)
@@ -96,8 +96,8 @@ namespace MonoDevelop.Debugger
 		
 		public virtual void OnUpdateList ()
 		{
-			if (IdeApp.Services.DebuggingService.CurrentFrame != null)
-				tree.Frame = IdeApp.Services.DebuggingService.CurrentFrame;
+			if (DebuggingService.CurrentFrame != null)
+				tree.Frame = DebuggingService.CurrentFrame;
 		}
 		
 		void OnFrameChanged (object s, EventArgs a)

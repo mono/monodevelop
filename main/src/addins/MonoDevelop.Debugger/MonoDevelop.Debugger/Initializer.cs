@@ -39,10 +39,10 @@ namespace MonoDevelop.Debugger
 		
 		protected override void Run ()
 		{
-			IdeApp.Services.DebuggingService.CallStackChanged += OnStackChanged;
-			IdeApp.Services.DebuggingService.CurrentFrameChanged += OnFrameChanged;
-			IdeApp.Services.DebuggingService.ExecutionLocationChanged += OnExecLocationChanged;
-			IdeApp.Services.DebuggingService.DisassemblyRequested += OnShowDisassembly;
+			DebuggingService.CallStackChanged += OnStackChanged;
+			DebuggingService.CurrentFrameChanged += OnFrameChanged;
+			DebuggingService.ExecutionLocationChanged += OnExecLocationChanged;
+			DebuggingService.DisassemblyRequested += OnShowDisassembly;
 		}
 		
 		void OnExecLocationChanged (object s, EventArgs a)
@@ -66,11 +66,11 @@ namespace MonoDevelop.Debugger
 					disassemblyCurrent = true;
 			}
 			
-			if (IdeApp.Services.DebuggingService.CurrentFrame == null)
+			if (DebuggingService.CurrentFrame == null)
 				return;
 			
-			string file = IdeApp.Services.DebuggingService.CurrentFilename;
-			int line = IdeApp.Services.DebuggingService.CurrentLineNumber;
+			string file = DebuggingService.CurrentFilename;
+			int line = DebuggingService.CurrentLineNumber;
 			
 			if (!string.IsNullOrEmpty (file) && System.IO.File.Exists (file) && line != -1) {
 				Document doc = IdeApp.Workbench.OpenDocument (file, line, 1, !disassemblyCurrent);
@@ -100,14 +100,14 @@ namespace MonoDevelop.Debugger
 		
 		void SetSourceCodeFrame ()
 		{
-			Backtrace bt = IdeApp.Services.DebuggingService.CurrentCallStack;
+			Backtrace bt = DebuggingService.CurrentCallStack;
 			
 			if (bt != null) {
 				for (int n=0; n<bt.FrameCount; n++) {
 					StackFrame sf = bt.GetFrame (n);
 					if (!string.IsNullOrEmpty (sf.SourceLocation.Filename) && System.IO.File.Exists (sf.SourceLocation.Filename) && sf.SourceLocation.Line != -1) {
-						if (n != IdeApp.Services.DebuggingService.CurrentFrameIndex)
-							IdeApp.Services.DebuggingService.CurrentFrameIndex = n;
+						if (n != DebuggingService.CurrentFrameIndex)
+							DebuggingService.CurrentFrameIndex = n;
 						break;
 					}
 				}

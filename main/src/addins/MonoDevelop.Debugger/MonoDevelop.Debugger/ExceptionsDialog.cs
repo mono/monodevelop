@@ -1,4 +1,4 @@
-// LocalsPad.cs
+// ExceptionsDialog.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -26,33 +26,17 @@
 //
 
 using System;
-using System.Xml;
-using System.Collections.Generic;
-using Gtk;
-using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Ide.Gui;
-using Mono.Debugging.Client;
 
 namespace MonoDevelop.Debugger
 {
-	public class LocalsPad: ObjectValuePad
+	
+	
+	public partial class ExceptionsDialog : Gtk.Dialog
 	{
-		public LocalsPad()
+		
+		public ExceptionsDialog()
 		{
-			tree.AllowEditing = true;
-			tree.AllowAdding = false;
-		}
-
-		public override void OnUpdateList ()
-		{
-			base.OnUpdateList ();
-			StackFrame frame = DebuggingService.CurrentFrame;
-			if (frame != null) {
-				tree.ClearValues ();
-				foreach (ObjectValue val in frame.GetAllLocals ())
-					tree.AddValue (val);
-			}
+			this.Build();
 		}
 	}
 }

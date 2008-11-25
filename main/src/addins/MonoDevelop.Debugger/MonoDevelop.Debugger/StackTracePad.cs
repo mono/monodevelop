@@ -73,11 +73,11 @@ namespace MonoDevelop.Debugger
 			Add (tree);
 			ShowAll ();
 
-			current_backtrace = IdeApp.Services.DebuggingService.CurrentCallStack;
+			current_backtrace = DebuggingService.CurrentCallStack;
 			UpdateDisplay ();
 			
-			IdeApp.Services.DebuggingService.CallStackChanged += (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnClassStackChanged));
-			IdeApp.Services.DebuggingService.CurrentFrameChanged += (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnFrameChanged));
+			DebuggingService.CallStackChanged += (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnClassStackChanged));
+			DebuggingService.CurrentFrameChanged += (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnFrameChanged));
 			tree.RowActivated += OnRowActivated;
 		}
 		
@@ -96,7 +96,7 @@ namespace MonoDevelop.Debugger
 
 			for (int i = 0; i < current_backtrace.FrameCount; i++) {
 				string icon;
-				if (i == IdeApp.Services.DebuggingService.CurrentFrameIndex)
+				if (i == DebuggingService.CurrentFrameIndex)
 					icon = Gtk.Stock.GoForward;
 				else
 					icon = null;
@@ -131,7 +131,7 @@ namespace MonoDevelop.Debugger
 			if (store.GetIterFirst (out it)) {
 				int n=0;
 				do {
-					if (n == IdeApp.Services.DebuggingService.CurrentFrameIndex)
+					if (n == DebuggingService.CurrentFrameIndex)
 						store.SetValue (it, 0, Gtk.Stock.GoForward);
 					else
 						store.SetValue (it, 0, null);
@@ -147,13 +147,13 @@ namespace MonoDevelop.Debugger
 
 		protected void OnClassStackChanged (object o, EventArgs args)
 		{
-			current_backtrace = IdeApp.Services.DebuggingService.CurrentCallStack;
+			current_backtrace = DebuggingService.CurrentCallStack;
 			UpdateDisplay ();
 		}
 		
 		void OnRowActivated (object o, Gtk.RowActivatedArgs args)
 		{
-			IdeApp.Services.DebuggingService.CurrentFrameIndex = args.Path.Indices [0];
+			DebuggingService.CurrentFrameIndex = args.Path.Indices [0];
 		}
 
 		public Gtk.Widget Control {

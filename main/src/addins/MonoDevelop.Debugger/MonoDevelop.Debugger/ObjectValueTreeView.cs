@@ -233,6 +233,8 @@ namespace MonoDevelop.Debugger
 		
 		public void Update ()
 		{
+			DateTime t = DateTime.Now;
+			
 			state.Save ();
 			
 			store.Clear ();
@@ -250,6 +252,8 @@ namespace MonoDevelop.Debugger
 				store.AppendValues (createMsg, "", "", null, true, true, null, disabledColor, disabledColor);
 			
 			state.Load ();
+
+			Console.WriteLine ("pp object tree view update: " + (DateTime.Now - t).TotalMilliseconds);
 		}
 		
 		public void ResetChangeTracking ()
