@@ -16,7 +16,7 @@ namespace MonoDevelop.GtkCore.Dialogs
 			Spacing = 6;
 			
 			versionCombo = Gtk.ComboBox.NewText ();
-			foreach (string v in GtkCoreService.SupportedGtkVersions)
+			foreach (string v in ReferenceManager.SupportedGtkVersions)
 				versionCombo.AppendText (v);
 			versionCombo.Active = 0;
 			

@@ -1,4 +1,3 @@
-//
 // ReferenceManager.cs
 //
 // Author: Mike Kestner <mkestner@novell.com>
@@ -23,7 +22,7 @@
 // LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-//
+
 
 using System;
 using System.Collections.Generic;
@@ -182,7 +181,7 @@ namespace MonoDevelop.GtkCore {
 				project.References.Add (new ProjectReference (ReferenceType.Gac, aname));
 				changed = true;
 			}
-			updating = false;;
+			updating = false;
 			return changed;
 		}
 		
@@ -198,6 +197,7 @@ namespace MonoDevelop.GtkCore {
 		{
 			IdeApp.Workspace.ReferenceAddedToProject += OnReferenceAdded;
 			IdeApp.Workspace.ReferenceRemovedFromProject += OnReferenceRemoved;
+			Runtime.SystemAssemblyService.PackagesChanged += delegate { supported_versions = null; };
 		}
 		
 		static void OnReferenceAdded (object o, ProjectReferenceEventArgs args)
@@ -248,6 +248,34 @@ namespace MonoDevelop.GtkCore {
 				if (IsGtkReference (pref))
 					return true;
 			return false;
+		}
+
+		static List<string> supported_versions;
+		static string default_version;
+
+		public static string DefaultGtkVersion {
+			get {
+				if (SupportedGtkVersions.Count > 0 && default_version == null)
+					default_version = SupportedGtkVersions [0];
+				return default_version; 
+			}
+		}
+
+		public static List<string> SupportedGtkVersions {
+			get {
+				if (supported_versions == null) {
+					supported_versions = new List<string> ();
+					foreach (SystemPackage p in Runtime.SystemAssemblyService.GetPackages ()) {
+						if (p.Name == "gtk-sharp-2.0") {
+							supported_versions.Add (p.Version);
+							if (p.Version.StartsWith ("2.8"))
+								default_version = p.Version;
+						}
+					}
+					supported_versions.Sort ();
+				}
+				return supported_versions;
+			}
 		}
 	}	
 }

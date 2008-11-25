@@ -65,10 +65,10 @@ namespace MonoDevelop.GtkCore.Dialogs
 				Gtk.Label lbl = new Gtk.Label (GettextCatalog.GetString ("Target Gtk# version:"));
 				box.PackStart (lbl, false, false, 0);
 				comboVersions = ComboBox.NewText ();
-				foreach (string v in GtkCoreService.SupportedGtkVersions)
+				foreach (string v in ReferenceManager.SupportedGtkVersions)
 					comboVersions.AppendText (v);
 				ReferenceManager refmgr = new ReferenceManager (project as DotNetProject);
-				comboVersions.Active = Array.IndexOf (GtkCoreService.SupportedGtkVersions, refmgr.GtkPackageVersion);
+				comboVersions.Active = ReferenceManager.SupportedGtkVersions.IndexOf (refmgr.GtkPackageVersion);
 				box.PackStart (comboVersions, false, false, 0);
 				box.ShowAll ();
 				PackStart (box, false, false, 0);

@@ -33,56 +33,10 @@ using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.GtkCore
 {
-	public class GtkCoreService
-	{
-		static string[] supportedGtkVersions;
-		static string defaultGtkVersion;
-		
-		internal static void Initialize ()
-		{
-			Runtime.SystemAssemblyService.PackagesChanged += delegate {
-				supportedGtkVersions = null;
-			};
-		}
-		
-		public static string[] SupportedGtkVersions {
-			get {
-				FindSupportedGtkVersions ();
-				return supportedGtkVersions;
-			}
-		}
-		
-		public static string DefaultGtkVersion {
-			get {
-				FindSupportedGtkVersions ();
-				return defaultGtkVersion; 
-			}
-		}
-		
-		static void FindSupportedGtkVersions ()
-		{
-			if (supportedGtkVersions == null) {
-				List<string> versions = new List<string> ();
-				foreach (SystemPackage p in Runtime.SystemAssemblyService.GetPackages ()) {
-					if (p.Name == "gtk-sharp-2.0") {
-						versions.Add (p.Version);
-						if (p.Version.StartsWith ("2.8"))
-							defaultGtkVersion = p.Version;
-					}
-				}
-				versions.Sort ();
-				supportedGtkVersions = versions.ToArray ();
-				if (defaultGtkVersion == null && supportedGtkVersions.Length > 0)
-					defaultGtkVersion = supportedGtkVersions [0];
-			}
-		}
-	}
-	
 	class GtkCoreStartupCommand: CommandHandler
 	{
 		protected override void Run()
 		{
-			GtkCoreService.Initialize ();
 			ReferenceManager.Initialize ();
 		}
 	}

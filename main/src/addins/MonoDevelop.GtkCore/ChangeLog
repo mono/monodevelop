@@ -1,3 +1,14 @@
+2008-11-25  Mike Kestner <mkestner@novell.com> 
+
+	* MonoDevelop.GtkCore/GtkCoreService.cs: refactor the default and 
+	supported version checks into the ReferenceManager, with all the other
+	package and assembly code.
+	* MonoDevelop.GtkCore/ReferenceManager.cs: refactored default and 
+	supported version properties. 
+	* MonoDevelop.GtkCore/WidgetFileDescriptionTemplate.cs: use new api.
+	* MonoDevelop.GtkCore.Dialogs/GtkFeatureWidget.cs: use new api.
+	* MonoDevelop.GtkCore.Dialogs/WidgetBuilderOptionPanel.cs: use new api.
+
 2008-11-23  Mike Kestner <mkestner@novell.com> 
 
 	* *: I've typed lib/stetic/libstetic(ui) a few too many times.
