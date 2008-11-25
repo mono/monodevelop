@@ -28,8 +28,3 @@ SUBDIRS = \
 	MonoDevelop.Moonlight \
 	MonoDevelop.CodeMetrics \
 	WindowsPlatform
-
-if ENABLE_GTKSOURCEVIEW2
-SUBDIRS += MonoDevelop.SourceEditor
-endif
-

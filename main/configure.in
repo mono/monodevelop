@@ -91,7 +91,6 @@ fi
 dnl hard dependencies
 MONOADDINS_REQUIRED_VERSION=0.3
 GTKSHARP_REQUIRED_VERSION=2.8.0
-GTKSOURCEVIEW2SHARP_REQUIRED_VERSION=1.9.1
 MONODOC_REQUIRED_VERSION=1.0
 
 PKG_CHECK_MODULES(MONO_ADDINS, mono-addins >= $MONOADDINS_REQUIRED_VERSION)
@@ -138,21 +137,6 @@ fi
 
 AC_SUBST(MONO_NUNIT_LIBS)
 AM_CONDITIONAL(ENABLE_TESTS, test x$enable_tests = xyes)
-
-
-## gtksourceview2-sharp
-AC_ARG_ENABLE(gtksourceview2,
-	AC_HELP_STRING([--enable-gtksourceview2],
-		[use GtkSourceView 2 [default=no]]),
-	enable_gtksourceview2=${enableval}, enable_gtksourceview2=no)
-
-if test "x$enable_gtksourceview2" = "xyes"; then
-	PKG_CHECK_MODULES(GTKSOURCEVIEW2_SHARP, gtksourceview2-sharp >= $GTKSOURCEVIEW2SHARP_REQUIRED_VERSION)
-	AC_SUBST(GTKSOURCEVIEW2_SHARP_LIBS)
-fi
-
-AM_CONDITIONAL(ENABLE_GTKSOURCEVIEW2, test x$enable_gtksourceview2 = xyes)
-
 
 AC_ARG_ENABLE(monoextensions,
 	AC_HELP_STRING([--enable-monoextensions],
@@ -361,8 +345,6 @@ src/addins/CSharpBinding/Makefile
 src/addins/CSharpBinding/Autotools/Makefile
 src/addins/ILAsmBinding/Makefile
 src/addins/VBNetBinding/Makefile
-src/addins/MonoDevelop.SourceEditor/AssemblyInfo.cs
-src/addins/MonoDevelop.SourceEditor/Makefile
 src/addins/prj2make-sharp-lib/AssemblyInfo.cs
 src/addins/prj2make-sharp-lib/Makefile
 src/addins/WelcomePage/Makefile
@@ -412,7 +394,6 @@ echo "   * Version control support: $enable_versioncontrol"
 echo "   *   Providers:"
 echo "   *     Subversion: $enable_subversion"
 echo "   * C/C++ project support: $enable_c"
-echo "   * GtkSourceView2 Editor: $enable_gtksourceview2"
 echo "   * Platform bindings: $platform_bindings"
 echo "   * Unit tests: $enable_tests"
 echo "   * Mozilla location: $MOZILLA_HOME"

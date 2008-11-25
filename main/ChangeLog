@@ -1,3 +1,12 @@
+2008-11-25  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* main/src/addins/MonoDevelop.SourceEditor
+	* src/addins/Addins.mds:
+	* src/addins/Makefile.am:
+	* configure.in: Remove GtkSourceView-based editor from main. It's 
+	  moved to extras, since it doesn't build right now, and doesn't 
+	  offer anything more than the default editor.
+
 2008-11-24  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am: Use logging profiler when stat profiling.
