@@ -421,8 +421,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				gg += ";" + TypeGuid;
 				Item.ExtendedProperties ["ProjectTypeGuids"] = gg.ToUpper ();
 			}
-			else
-				Item.ExtendedProperties.Remove ("ProjectTypeGuids");
+//			else
+//				Item.ExtendedProperties.Remove ("ProjectTypeGuids");
 
 			// This serialize call will write data to ser.InternalItemProperties and ser.ExternalItemProperties
 			ser.Serialize (Item, Item.GetType ());

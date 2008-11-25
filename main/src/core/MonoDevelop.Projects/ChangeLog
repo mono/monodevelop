@@ -1,3 +1,9 @@
+2008-11-24  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs:
+	Temporary workaround for Bug 447811 - ProjectTypeGuids are erased
+	from MSBuild files.
+
 2008-11-24  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/CompoundType.cs:
