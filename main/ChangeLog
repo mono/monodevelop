@@ -1,3 +1,7 @@
+2008-11-24  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am: Use logging profiler when stat profiling.
+
 2008-11-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* COPYING: Add GPL v2 license.

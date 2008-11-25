@@ -86,7 +86,7 @@ run-profile: $(PROGRAM)
 	$(MD_LAUNCH) -O=inline --profile $(MD_BIN_PATH)/MonoDevelop.exe
 
 run-profile-stat: $(PROGRAM)
-	$(MD_LAUNCH) --profile=default:stat $(MD_BIN_PATH)/MonoDevelop.exe
+	$(MD_LAUNCH) --profile=logging:stat $(MD_BIN_PATH)/MonoDevelop.exe
 
 run-profile-heap: $(PROGRAM)
 	$(MD_LAUNCH) -O=inline --profile=heap:heaplog $(MD_BIN_PATH)/MonoDevelop.exe
