@@ -1,5 +1,11 @@
 2008-11-25  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* gtk-gui:
+	* gtk-gui/gui.stetic:
+	* gtk-gui/generated.cs: Add missing files.
+
+2008-11-25  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Services/ExternalTestRunner.cs: Fix bug #440929 - Exception when
 	running single test fixture that contains no tests.
 
