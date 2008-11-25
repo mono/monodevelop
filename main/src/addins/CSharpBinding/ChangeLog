@@ -1,3 +1,8 @@
+2008-11-25  Mike Krüger  <mkrueger@novell.com>
+
+	* Parser/CodeGenerator.cs: fixed 'Bug 434240 - Cannot explicitly
+	implement events'.
+
 2008-11-24  Mike Krüger  <mkrueger@novell.com>
 
 	* Gui/CSharpTextEditorCompletion.cs: fixed 'Bug 447985 - Exception

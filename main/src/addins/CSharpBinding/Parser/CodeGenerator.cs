@@ -163,7 +163,7 @@ namespace CSharpBinding.Parser
 		{
 			if (privateImplementationType != null) {
 				// Workaround for bug in the code generator. Generic private implementation types are not generated correctly when they are generic.
-				Ambience amb = new MonoDevelop.CSharpBinding.CSharpAmbience();
+				Ambience amb = new MonoDevelop.CSharpBinding.CSharpAmbience ();
 				string tn = amb.GetString (privateImplementationType, OutputFlags.IncludeGenerics | OutputFlags.UseFullName | OutputFlags.UseIntrinsicTypeNames);
 				privateImplementationType = new DomReturnType (tn);
 			}
@@ -174,21 +174,18 @@ namespace CSharpBinding.Parser
 		                                                      IEnumerable<KeyValuePair<IMember,IReturnType>> members,
 		                                                      string foldingRegionName)
 		{
-			base.ImplementMembers (ctx, cls, FixGenericImpl (ctx, members), foldingRegionName);
+			base.ImplementMembers (ctx, cls, FixGenericImpl (ctx, cls, members), foldingRegionName);
 		}
-		
+		static Ambience amb = new MonoDevelop.CSharpBinding.CSharpAmbience ();
 		// Workaround for bug in the code generator. Generic private implementation types are not generated correctly when they are generic.
-		IEnumerable<KeyValuePair<IMember,IReturnType>> FixGenericImpl (RefactorerContext ctx, IEnumerable<KeyValuePair<IMember,IReturnType>> members)
+		IEnumerable<KeyValuePair<IMember,IReturnType>> FixGenericImpl (RefactorerContext ctx, IType cls, IEnumerable<KeyValuePair<IMember,IReturnType>> members)
 		{
-			Ambience amb = null;
 			foreach (KeyValuePair<IMember,IReturnType> kvp in members) {
 				if (kvp.Value == null) {
 					yield return kvp;
 					continue;
 				}
-								
-				if (amb == null)
-					amb = new MonoDevelop.CSharpBinding.CSharpAmbience ();
+				
 				string tn = amb.GetString (kvp.Value, OutputFlags.IncludeGenerics | OutputFlags.UseFullName | OutputFlags.UseIntrinsicTypeNames);
 				yield return new KeyValuePair<IMember,IReturnType> (kvp.Key, new DomReturnType (tn));
 			}
@@ -496,6 +493,21 @@ namespace CSharpBinding.Parser
 				ops.BracingStyle = "C";
 			
 			return ops;
+		}
+		
+		protected override string GenerateCodeFromMember (CodeTypeMember member)
+		{
+			string result = base.GenerateCodeFromMember (member);
+			// workaround for Bug 434240 - Cannot explicitly implement events
+			if (member is CodeMemberEvent) {
+				if (((CodeMemberEvent)member).Type != null) {
+					result = result.Substring (0, result.Length - 1) + " {" + Environment.NewLine +
+						"\tadd { /* TODO */ }" + Environment.NewLine +
+						"\tremove { /* TODO */ }" + Environment.NewLine +
+					"}";
+				}
+			}
+			return result;
 		}
 	}
 	
@@ -1054,6 +1066,6 @@ namespace CSharpBinding.Parser
 			else
 				return fullName.Substring (i+1);
 		}
-		
+
 	}
 }
