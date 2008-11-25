@@ -39,7 +39,5 @@ namespace MonoDevelop.Ide.Gui.Search
 		}
 		
 		ITextIterator GetTextIterator ();
-		
-		string GetLineTextAtOffset (int offset);
 	}
 }

@@ -86,8 +86,6 @@ namespace MonoDevelop.Ide.Gui.Search
 		/// </remarks>
 		void MoveToEnd ();
 		
-		string ReadToEnd ();
-		
 		/// <remarks>
 		/// Rests the iterator
 		/// </remarks>
@@ -102,5 +100,9 @@ namespace MonoDevelop.Ide.Gui.Search
 		bool SupportsSearch (SearchOptions options, bool reverse);
 		
 		bool SearchNext (string text, SearchOptions options, bool reverse);
+		
+		string GetWholeDocument ();
+		
+		string GetLineText (int offset);
 	}
 }

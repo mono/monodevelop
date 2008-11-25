@@ -1,5 +1,37 @@
 2008-11-24  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide.Gui.Search/SearchProgressMonitor.cs: Improve error
+	reporting.
+
+	* MonoDevelop.Ide.Gui.Search/RegExSearchStrategy.cs: Don't recreate
+	document string for successive matches. Improved performance 12x in a
+	typical test case.
+
+	* MonoDevelop.Ide.Gui.Search/ForwardTextFileIterator.cs: Track interface
+	changes.
+
+	* MonoDevelop.Ide.Gui.Search/IDocumentInformation.cs: Move GetLineText
+	away from since it makes more sense to take it from the open file
+	than to open/close the file again (fixes file sharing conflicts).
+
+	* MonoDevelop.Ide.Gui.Search/SearchResult.cs: Capture line text.
+
+	* MonoDevelop.Ide.Gui.Search/ITextIterator.cs: Remove ReadToEnd method;
+	replace with a GetWholeDocument method that caches the string. Move
+	GetLineText here since it makes more sense to take it from the open
+	file than to open/close the file again (fixes file sharing
+	conflicts).
+
+	* MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs: Add timing
+	debug messages. Don't capture line text; take it from the result
+	object.
+
+	* MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs: Fix AddPosition's
+	handling of multiple results on a line. Improve error reporting of
+	problems caused by invalid/overlapping results.
+
+2008-11-24  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.Gui.Search/FileDocumentInformation.cs:
 	* MonoDevelop.Ide.Gui.Search/ForwardTextFileIterator.cs: Use
 	FileShare.None instead of FileShare.Read, as file sharing seems to

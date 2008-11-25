@@ -30,33 +30,13 @@ namespace MonoDevelop.Ide.Gui.Search
 {
 	public class SearchResult
 	{
-		public string FileName {
-			get;
-			internal set;
-		}
-		
-		public IDocumentInformation DocumentInformation {
-			get;
-			internal set;
-		}
-		
-		public int Position {
-			get;
-			internal set;
-		}
-		
-		public int DocumentOffset {
-			get;
-			internal set;
-		}
-
-		public int Length {
-			get;
-			internal set;
-		}
-
-		public int Line { get; internal set; }
-		public int Column {get; internal set; }
+		public string FileName { get; private set; }
+		public int    DocumentOffset { get; private set; }
+		public int    Position { get; private set; }
+		public int    Length { get; private set; }
+		public int    Line { get; private set; }
+		public int    Column {get; private set; }
+		public string LineText { get; private set; }
 		
 		public SearchResult (ITextIterator iter, int length)
 		{
@@ -65,8 +45,9 @@ namespace MonoDevelop.Ide.Gui.Search
 			Line = iter.Line + 1;
 			Column = iter.Column + 1;
 			this.Length = length;
-			this.DocumentInformation = iter.DocumentInformation;
-			this.FileName = DocumentInformation.FileName;
+			this.FileName = iter.DocumentInformation.FileName;
+			if (Line != 0)
+				this.LineText = iter.GetLineText (Position);
 		}
 
 		public virtual string TransformReplacePattern (string pattern)
@@ -76,7 +57,7 @@ namespace MonoDevelop.Ide.Gui.Search
 		
 		public override string ToString ()
 		{
-			return string.Format("[SearchResult: FileName={0}, DocumentInformation={1}, Position={2}, DocumentOffset={3}, Length={4}, Line={5}, Column={6}]", FileName, DocumentInformation, Position, DocumentOffset, Length, Line, Column);
+			return string.Format("[SearchResult: FileName={0}, Position={2}, DocumentOffset={3}, Length={4}, Line={5}, Column={6}]", FileName, Position, DocumentOffset, Length, Line, Column);
 		}
 	}
 }

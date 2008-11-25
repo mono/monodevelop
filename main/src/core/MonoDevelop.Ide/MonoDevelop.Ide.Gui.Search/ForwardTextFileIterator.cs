@@ -46,6 +46,7 @@ namespace MonoDevelop.Ide.Gui.Search
 		int line;
 		int lineStartOffset;
 		bool lineInSync;
+		string wholeDocument;
 		
 		public ForwardTextFileIterator (IDocumentInformation document, string fileName)
 		{
@@ -173,9 +174,15 @@ namespace MonoDevelop.Ide.Gui.Search
 			Position = pos;
 		}
 		
-		public string ReadToEnd ()
+		public string GetWholeDocument ()
 		{
-			return reader.ReadToEnd ();
+			if (wholeDocument == null) {
+				int oldPos = reader.Position;
+				reader.Position = 0;
+				wholeDocument = reader.ReadToEnd ();
+				reader.Position = oldPos;
+			}
+			return wholeDocument;
 		}
 		
 		public void Replace (int length, string pattern)
@@ -226,6 +233,34 @@ namespace MonoDevelop.Ide.Gui.Search
 		public bool SearchNext (string text, SearchOptions options, bool reverse)
 		{
 			throw new NotSupportedException ();
+		}
+		
+		const int CR = (int) '\n';
+		const int LF = (int) '\r';
+		
+		public string GetLineText (int offset)
+		{
+			int oldPos = Position;
+			
+			Position = offset;
+			
+			//find line start
+			int ch;
+			do {
+				ch = reader.ReadBack ();
+			} while (ch != -1 && ch != CR && ch != LF);
+			reader.Position++;
+			
+			StringBuilder sb = new StringBuilder ();
+			while (true) {
+				ch = reader.Read ();
+				if (ch == -1 || ch == CR || ch == LF)
+					break;
+				sb.Append ((char)ch);
+			}
+			
+			Position = oldPos;
+			return sb.ToString ();
 		}
 	}
 }

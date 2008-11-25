@@ -55,9 +55,8 @@ namespace MonoDevelop.Ide.Gui.Search
 		/// </remarks>
 		static void DisplaySearchResult(SearchResult result)
 		{
-			if (result.Line != -1) {
-				string text = result.DocumentInformation.GetLineTextAtOffset (result.DocumentOffset);
-				searchMonitor.ReportResult (result.FileName, result.Line, result.Column, text, result.Length);
+			if (!string.IsNullOrEmpty (result.LineText)) {
+				searchMonitor.ReportResult (result.FileName, result.Line, result.Column, result.LineText, result.Length);
 			} else {
 				string msg = GettextCatalog.GetString ("Match at offset {0}", result.DocumentOffset);
 				searchMonitor.ReportResult (result.FileName, 0, 0, msg, 0);
@@ -137,6 +136,9 @@ namespace MonoDevelop.Ide.Gui.Search
 		
 		static void ReplaceAllThread (SearchOptions searchOptions)
 		{
+			Stopwatch stopwatch = new Stopwatch ();
+			stopwatch.Start ();
+			
 			searching = true;
 			searchError = null;
 			
@@ -164,6 +166,9 @@ namespace MonoDevelop.Ide.Gui.Search
 			Application.Invoke (delegate {
 				FinishSearchInFiles ();
 			});
+			
+			stopwatch.Stop ();
+			LoggingService.LogDebug ("Search & replace completed in {0} seconds.", stopwatch.Elapsed.TotalSeconds);
 		}
 		
 		public static void FindAll()
@@ -187,6 +192,9 @@ namespace MonoDevelop.Ide.Gui.Search
 		
 		static void FindAllThread(SearchOptions searchOptions)
 		{
+			Stopwatch stopwatch = new Stopwatch ();
+			stopwatch.Start ();
+			
 			searching = true;
 			searchError = null;
 			
@@ -213,6 +221,9 @@ namespace MonoDevelop.Ide.Gui.Search
 			Application.Invoke (delegate {
 				FinishSearchInFiles ();
 			});
+			
+			stopwatch.Stop ();
+			LoggingService.LogDebug ("Search completed in {0} seconds.", stopwatch.Elapsed.TotalSeconds);
 		}
 		
 		public static void CancelSearch ()

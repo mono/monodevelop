@@ -75,10 +75,13 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 			public void AddPosition (int pos, int len)
 			{
-				for (int n=0; n < Positions.Count; n++) {
+				for (int n=0; n < Positions.Count; n+=2) {
+					if (Positions [n] == pos) {
+						throw new ArgumentException ("There is already a match at this location", "pos");
+					}
 					if (Positions [n] > pos) {
-						Positions.Insert (n, len);
 						Positions.Insert (n, pos);
+						Positions.Insert (n + 1, len);
 						return;
 					}
 				}
@@ -451,7 +454,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			
 			try {
 				path = Path.GetDirectoryName (tmpPath);
-			} catch (Exception) {}
+			} catch (IOException) {}
 
 			res = new Result ();
 			res.Text = text;
@@ -474,27 +477,26 @@ namespace MonoDevelop.Ide.Gui.Pads
 				return GLib.Markup.EscapeText (res.Text).Trim ();
 			
 			StringBuilder sb = new StringBuilder (res.Text.Length);
-			int posEnd = 0;
-			
+			int pos = 0, len = 0;
 			try {
 				for (int n = 0; n < res.Positions.Count; n += 2) {
-					int pos = res.Positions [n];
-					int len = res.Positions [n + 1];
-					sb.Append (GLib.Markup.EscapeText (res.Text.Substring (posEnd, pos)));
+					int prevPosEnd = pos + len;
+					pos = res.Positions [n];
+					len = res.Positions [n + 1];
+					sb.Append (GLib.Markup.EscapeText (res.Text.Substring (prevPosEnd, pos - prevPosEnd)));
 					sb.Append ("<span background='yellow'>");
 					sb.Append (GLib.Markup.EscapeText (res.Text.Substring (pos, len)));
 					sb.Append ("</span>");
-					posEnd = pos + len;
 				}
 				
-				if (res.Text.Length - posEnd > 0)
-					sb.Append (GLib.Markup.EscapeText (res.Text.Substring (posEnd, (res.Text.Length - posEnd))));
+				if (res.Text.Length - pos - len > 0)
+					sb.Append (GLib.Markup.EscapeText (res.Text.Substring (pos + len, (res.Text.Length - pos - len))));
 			}
 			//old implementation seemed to think that pos+len might be out of bounds,
 			//but I think catching & logging an exception's more appropriate than a range check
 			catch (Exception ex)
 			{
-				LoggingService.LogWarning ("Error escaping search result", ex);
+				LoggingService.LogWarning ("Error escaping search result '{0}' @{1}x{2};\n{3}", res.Text, pos, len, ex);
 				return GLib.Markup.EscapeText (res.Text).Trim ();
 			}
 			

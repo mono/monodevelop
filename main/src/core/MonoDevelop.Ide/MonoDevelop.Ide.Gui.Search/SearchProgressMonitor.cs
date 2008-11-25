@@ -68,7 +68,12 @@ namespace MonoDevelop.Ide.Gui.Search
 		[AsyncDispatch]
 		public void ReportResult (string fileName, int line, int column, string text, int matchLength)
 		{
-			outputPad.AddResult (fileName, line, column, text, matchLength);
+			try {
+				outputPad.AddResult (fileName, line, column, text, matchLength);
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error adding search result for file {0}:{1},{2} to result pad:\n{3}",
+				                         fileName, line, column, ex.ToString ());
+			}
 		}
 		
 		[AsyncDispatch]

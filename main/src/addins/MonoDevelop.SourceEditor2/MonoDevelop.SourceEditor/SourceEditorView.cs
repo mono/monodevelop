@@ -849,14 +849,6 @@ namespace MonoDevelop.SourceEditor
 			return new DocumentTextIterator (this, TextEditor.Caret.Offset);
 		}
 		
-		public string GetLineTextAtOffset (int offset)
-		{
-			LineSegment line = this.widget.TextEditor.Document.GetLineByOffset (offset);
-			if (line == null)
-				return null;
-			return this.widget.TextEditor.Document.GetTextAt (line);
-		}
-		
 		class DocumentTextIterator : GuiSyncObject, ITextIterator
 		{
 			SourceEditorView view;
@@ -921,16 +913,10 @@ namespace MonoDevelop.SourceEditor
 				else
 					offset = view.Document.Length - 1;
 			}
-			public string ReadToEnd ()
+			
+			public string GetWholeDocument ()
 			{
-				if (offset < initialOffset)
-					return view.Document.GetTextAt (offset, initialOffset - offset);
-				else if (initialOffset == 0)
-					return view.Document.GetTextAt (offset, view.Document.Length - offset);
-				else {
-					string s = view.Document.GetTextAt (offset, view.Document.Length - offset);
-					return s + view.Document.GetTextAt (0, initialOffset);
-				}
+				return view.Document.Text;
 			}
 					
 			[FreeDispatch]
@@ -966,6 +952,14 @@ namespace MonoDevelop.SourceEditor
 			public bool SearchNext (string text, MonoDevelop.Ide.Gui.Search.SearchOptions options, bool reverse)
 			{
 				return false;
+			}
+			
+			public string GetLineText (int offset)
+			{
+				LineSegment line = view.widget.TextEditor.Document.GetLineByOffset (offset);
+				if (line == null)
+					return null;
+				return view.widget.TextEditor.Document.GetTextAt (line);
 			}
 		}
 		#endregion

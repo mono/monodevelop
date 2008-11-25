@@ -44,15 +44,13 @@ namespace MonoDevelop.Ide.Gui.Search
 			if (!textIterator.MoveAhead(1)) return null;
 			if (regex == null) return null;
 
-			int pos = textIterator.Position;
-			string document = textIterator.ReadToEnd ();
-			textIterator.Position = pos;
+			string document = textIterator.GetWholeDocument ();
 			
-			Match m = regex.Match (document, 0);
+			Match m = regex.Match (document, textIterator.Position);
 			if (m == null || m.Index <= 0 || m.Length <= 0) {
 				return null;
 			} else {
-				if (textIterator.MoveAhead (m.Index)) {
+				if (textIterator.MoveAhead (m.Index - textIterator.Position)) {
 					return new SearchResult (textIterator, m.Length);
 				} else {
 					return null;
