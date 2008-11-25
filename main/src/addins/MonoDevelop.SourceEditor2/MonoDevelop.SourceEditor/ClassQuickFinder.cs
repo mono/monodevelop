@@ -332,7 +332,7 @@ namespace MonoDevelop.SourceEditor
 				pix = MonoDevelop.Core.Gui.Services.Resources.GetIcon (mem.StockIcon, IconSize.Menu); 
 				
 				// Add the member to the list
-				string displayName = ambience.GetString (mem, OutputFlags.ClassBrowserEntries);
+				string displayName = ambience.GetString (mem, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters);
 				memberStore.AppendValues (pix, displayName, mem);
 				
 				// Check if the current cursor position in inside this member
