@@ -84,7 +84,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		public bool Check ()
 		{
 			if (!radioBreakAlways.Active && entryCondition.Text.Length == 0) {
-				MessageService.ShowError (GettextCatalog.GetString ("Conition expression not specified"));
+				MessageService.ShowError (GettextCatalog.GetString ("Condition expression not specified"));
 				return false;
 			}
 			if (radioActionTrace.Active && entryTraceExpr.Text.Length == 0) {
