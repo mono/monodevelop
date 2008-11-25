@@ -65,6 +65,8 @@ namespace DebuggerServer
 		{
 			if (obj is TargetGenericInstanceObject)
 				return null;
+			if (!thread.CurrentFrame.Language.IsManaged)
+				return null;
 			
 			ColInfo colInfo;
 			if (colTypes.TryGetValue (obj.Type.Name, out colInfo)) {

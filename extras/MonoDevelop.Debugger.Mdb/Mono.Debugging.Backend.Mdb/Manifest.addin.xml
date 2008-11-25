@@ -9,6 +9,7 @@
 	<Dependencies>
 		<Addin id="MonoDevelop.Core" version="1.9.1"/>
 		<Addin id="MonoDevelop.Ide" version="1.9.1"/>
+		<Addin id="MonoDevelop.Debugger" version="1.9.1"/>
 	</Dependencies>
 	
 	<Extension path="/MonoDevelop/Debugging/DebuggerFactories">
