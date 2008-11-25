@@ -58,7 +58,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				store.AppendValues (it, "Full Path: " + err.AddinFile);
 				store.AppendValues (it, "Error: " + msg);
 				if (err.Exception != null) {
-					it = store.AppendValues (it, "Exception: " + err.Exception.GetType ());
+					it = store.AppendValues (it, "Exception: " + err.Exception.GetType () + ": " + err.Exception.Message);
 					store.AppendValues (it, err.Exception.StackTrace.ToString ());
 				}
 				if (err.Fatal) fatal = true;

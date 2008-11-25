@@ -42,7 +42,6 @@ using MonoDevelop.Ide.Gui.Dialogs;
 
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide.Tasks;
-using MonoDevelop.Ide.Debugging;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Gui;
@@ -264,7 +263,6 @@ namespace MonoDevelop.Ide.Gui
 	public class IdeServices
 	{
 		IconService icons;
-		DebuggingService debuggingService;
 		
 		public ResourceService Resources {
 			get { return MonoDevelop.Core.Gui.Services.Resources; }
@@ -273,14 +271,6 @@ namespace MonoDevelop.Ide.Gui
 		public IconService Icons {
 			get {
 				return MonoDevelop.Projects.Gui.Services.Icons;
-			}
-		}
-	
-		public DebuggingService DebuggingService {
-			get {
-				if (debuggingService == null)
-					debuggingService = new DebuggingService ();
-				return debuggingService;
 			}
 		}
 	

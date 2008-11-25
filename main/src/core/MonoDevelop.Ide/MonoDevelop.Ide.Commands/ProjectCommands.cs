@@ -60,9 +60,6 @@ namespace MonoDevelop.Ide.Commands
 		IncludeInDeploy,
 		Deploy,
 		ConfigurationSelector,
-		Debug,
-		DebugEntry,
-		DebugApplication,
 		Stop,
 		Clean,
 		CleanSolution,
@@ -142,82 +139,6 @@ namespace MonoDevelop.Ide.Commands
 			IBuildTarget target = IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
 			info.Enabled = target != null &&
 					!(target is Workspace) && IdeApp.ProjectOperations.CanExecute (target) &&
-					IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted;
-		}
-	}
-	
-	
-	internal class DebugHandler: CommandHandler
-	{
-		Document doc;
-		
-		protected override void Run ()
-		{
-			if (IdeApp.Services.DebuggingService.IsDebugging && !IdeApp.Services.DebuggingService.IsRunning) {
-				IdeApp.Services.DebuggingService.Resume ();
-				return;
-			}
-			
-			if (IdeApp.Workspace.IsOpen) {
-				IAsyncOperation op = IdeApp.ProjectOperations.Build (IdeApp.Workspace);
-				op.Completed += new OperationHandler (ExecuteCombine);
-			} else {
-				doc = IdeApp.Workbench.ActiveDocument;
-				if (doc != null) {
-					doc.Save ();
-					IAsyncOperation op = doc.Build ();
-					op.Completed += new OperationHandler (ExecuteFile);
-				}
-			}
-		}
-		
-		protected override void Update (CommandInfo info)
-		{
-			if (IdeApp.Services.DebuggingService.IsDebugging && !IdeApp.Services.DebuggingService.IsRunning) {
-				info.Enabled = true;
-				info.Text = GettextCatalog.GetString ("Continue");
-				return;
-			}
-
-			if (IdeApp.Workspace.IsOpen) {
-				info.Enabled = IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted &&
-					IdeApp.ProjectOperations.CanDebug (IdeApp.Workspace) && 
-						!(IdeApp.ProjectOperations.CurrentSelectedItem is Workspace);
-			} else {
-				info.Enabled = (IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.IsBuildTarget);
-			}
-		}
-		
-		void ExecuteCombine (IAsyncOperation op)
-		{
-			if (op.Success)
-				IdeApp.ProjectOperations.Debug (IdeApp.Workspace);
-		}
-		
-		void ExecuteFile (IAsyncOperation op)
-		{
-			if (op.Success)
-				doc.Debug ();
-		}
-	}
-	
-	internal class DebugEntryHandler: CommandHandler
-	{
-		protected override void Run ()
-		{
-			IBuildTarget entry = IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
-			IAsyncOperation op = IdeApp.ProjectOperations.Build (entry);
-			op.Completed += delegate {
-				if (op.Success)
-					IdeApp.ProjectOperations.Debug (entry);
-			};
-		}
-		
-		protected override void Update (CommandInfo info)
-		{
-			IBuildTarget target = IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
-			info.Enabled = target != null &&
-					!(target is Workspace) && IdeApp.ProjectOperations.CanDebug (target) &&
 					IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted;
 		}
 	}

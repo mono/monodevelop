@@ -31,7 +31,6 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.DocumentSwitcher.cs \
 	gtk-gui/MonoDevelop.Ide.ExternalTools.ExternalToolPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.AddinLoadErrorDialog.cs \
-	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.AttachToProcessDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.BreakpointPropertiesDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.CombineEntryFeatureSelector.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.EncapsulateFieldDialog.cs \
@@ -85,7 +84,6 @@ FILES =  \
 	MonoDevelop.Ide.Codons/WorkbenchContextCodon.cs \
 	MonoDevelop.Ide.Codons/WorkbenchContextCondition.cs \
 	MonoDevelop.Ide.Commands/CustomStringTagProvider.cs \
-	MonoDevelop.Ide.Commands/DebugCommands.cs \
 	MonoDevelop.Ide.Commands/EditCommands.cs \
 	MonoDevelop.Ide.Commands/FileCommands.cs \
 	MonoDevelop.Ide.Commands/FileTabCommands.cs \
@@ -98,8 +96,6 @@ FILES =  \
 	MonoDevelop.Ide.Commands/ToolsCommands.cs \
 	MonoDevelop.Ide.Commands/ViewCommands.cs \
 	MonoDevelop.Ide.Commands/WindowCommands.cs \
-	MonoDevelop.Ide.Debugging/DebugExecutionHandlerFactory.cs \
-	MonoDevelop.Ide.Debugging/DebuggingService.cs \
 	MonoDevelop.Ide.ExternalTools/ExternalTool.cs \
 	MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs \
 	MonoDevelop.Ide.ExternalTools/ExternalToolService.cs \
@@ -146,7 +142,6 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Content/TextEditorProperties.cs \
 	MonoDevelop.Ide.Gui.Dialogs/AddinLoadErrorDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/AssemblyReferencePanel.cs \
-	MonoDevelop.Ide.Gui.Dialogs/AttachToProcessDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/BreakpointPropertiesDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/CombineEntryFeatureSelector.cs \
 	MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs \

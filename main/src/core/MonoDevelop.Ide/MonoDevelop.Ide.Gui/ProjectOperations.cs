@@ -157,6 +157,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public IAsyncOperation CurrentRunOperation {
 			get { return currentRunOperation; }
+			set { currentRunOperation = value; }
 		}
 		
 		public bool IsBuilding (IBuildTarget target)
@@ -662,84 +663,6 @@ namespace MonoDevelop.Ide.Gui
 			} finally {
 				monitor.Dispose ();
 			}
-		}
-		
-		public bool CanDebug (IBuildTarget entry)
-		{
-			ExecutionContext context = new ExecutionContext (IdeApp.Services.DebuggingService.GetExecutionHandlerFactory (), IdeApp.Workbench.ProgressMonitors);
-			return CanExecute (entry, context);
-		}
-		
-		public IAsyncOperation Debug (IBuildTarget entry)
-		{
-			if (currentRunOperation != null && !currentRunOperation.IsCompleted)
-				return currentRunOperation;
-
-			string oldLayout = IdeApp.Workbench.CurrentLayout;
-			IdeApp.Workbench.CurrentLayout = "Debug";
-
-			IProgressMonitor monitor = new MessageDialogProgressMonitor ();
-			ExecutionContext context = new ExecutionContext (IdeApp.Services.DebuggingService.GetExecutionHandlerFactory (), IdeApp.Workbench.ProgressMonitors);
-			
-			DispatchService.ThreadDispatch (delegate {
-				try {
-					entry.Execute (monitor, context, IdeApp.Workspace.ActiveConfiguration);
-				} catch (Exception ex) {
-					monitor.ReportError (GettextCatalog.GetString ("Execution failed."), ex);
-				} finally {
-					monitor.Dispose ();
-				}
-				Gtk.Application.Invoke (delegate {
-					IdeApp.Workbench.CurrentLayout = oldLayout;
-				});
-			}, null);
-			
-			currentRunOperation = monitor.AsyncOperation;
-			return currentRunOperation;
-		}
-		
-		public IAsyncOperation DebugFile (string file)
-		{
-			Project tempProject = projectService.CreateSingleFileProject (file);
-			if (tempProject != null) {
-				IAsyncOperation aop = Debug (tempProject);
-				aop.Completed += delegate { tempProject.Dispose (); };
-				return aop;
-			} else {
-				MessageService.ShowError(GettextCatalog.GetString ("No runnable executable found."));
-				return NullAsyncOperation.Failure;
-			}
-		}
-		
-		public IAsyncOperation DebugApplication (string executableFile)
-		{
-			if (currentRunOperation != null && !currentRunOperation.IsCompleted) return currentRunOperation;
-			
-			string oldLayout = IdeApp.Workbench.CurrentLayout;
-			IdeApp.Workbench.CurrentLayout = "Debug";
-
-			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor ();
-
-			IAsyncOperation oper = IdeApp.Services.DebuggingService.Run (executableFile, (IConsole) monitor);
-			oper.Completed += delegate {
-				monitor.Dispose ();
-				Gtk.Application.Invoke (delegate {
-					IdeApp.Workbench.CurrentLayout = oldLayout;
-				});
-			};
-			
-			currentRunOperation = monitor.AsyncOperation;
-			return currentRunOperation;
-		}
-		
-		public IAsyncOperation AttachToProcess (IDebuggerEngine debugger, ProcessInfo proc)
-		{
-			if (currentRunOperation != null && !currentRunOperation.IsCompleted)
-				return currentRunOperation;
-			
-			currentRunOperation = IdeApp.Services.DebuggingService.AttachToProcess (debugger, proc);
-			
-			return currentRunOperation;
 		}
 		
 		public void Clean (IBuildTarget entry)

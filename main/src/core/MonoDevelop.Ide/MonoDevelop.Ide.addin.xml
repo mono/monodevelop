@@ -236,11 +236,6 @@
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
 	
-	<ExtensionPoint path="/MonoDevelop/Debugging/DebuggerFactories">
-		<Description>Debug session factories. Specified classes must implement Mono.Debugging.IDebuggerSessionFactory.</Description>
-		<ExtensionNode name="DebuggerFactory" />
-	</ExtensionPoint>
-	
 	<!-- Extensions -->
 
 	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
@@ -449,17 +444,6 @@
 				icon = "gtk-execute"
 				_description = "Run"
 				_label = "_Run" />
-		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.Debug"
-				defaultHandler = "MonoDevelop.Ide.Commands.DebugHandler"
-				icon = "gtk-execute"
-				shortcut = "Control|F5"
-				_description = "Debug"
-				_label = "_Debug" />
-		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.DebugEntry"
-				defaultHandler = "MonoDevelop.Ide.Commands.DebugEntryHandler"
-				icon = "gtk-execute"
-				_description = "Debug"
-				_label = "D_ebug" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.Clean"
 				defaultHandler = "MonoDevelop.Ide.Commands.CleanHandler"
 				_description = "Clean the selected project or solution"
@@ -794,66 +778,6 @@
 				_label = "_About" 
 				icon = "gtk-about" 
 				_description = "Show about dialog" />
-		</Category>
-				
-		<!-- DebugCommands -->
-		<Category _name = "Debug" id = "Debug">
-		
-		<Command id = "MonoDevelop.Ide.Commands.DebugCommands.DebugApplication"
-				defaultHandler = "MonoDevelop.Ide.Commands.DebugApplicationHandler"
-				_label = "Debug Application..." />
-		<Command id = "MonoDevelop.Ide.Commands.DebugCommands.AttachToProcess"
-				defaultHandler = "MonoDevelop.Ide.Commands.AttachToProcessHandler"
-				_label = "Attach to Process..." />
-		<Command id = "MonoDevelop.Ide.Commands.DebugCommands.Detach"
-				defaultHandler = "MonoDevelop.Ide.Commands.DetachFromProcessHandler"
-				_label = "Detach" />
-		<Command id = "MonoDevelop.Ide.Commands.DebugCommands.Pause"
-				defaultHandler = "MonoDevelop.Ide.Commands.PauseDebugHandler"
-				_label = "Pause"/>
-		<Command id = "MonoDevelop.Ide.Commands.DebugCommands.StepOver"
-				defaultHandler = "MonoDevelop.Ide.Commands.StepOverHandler"
-				_label = "Step Over"
-				shortcut = "F11" />
-		<Command id = "MonoDevelop.Ide.Commands.DebugCommands.StepInto"
-				defaultHandler = "MonoDevelop.Ide.Commands.StepIntoHandler"
-				_label = "Step Into"
-				shortcut = "Control|F11" />
-		<Command id = "MonoDevelop.Ide.Commands.DebugCommands.StepOut"
-				defaultHandler = "MonoDevelop.Ide.Commands.StepOutHandler"
-				_label = "Step Out"
-				shortcut = "Shift|F11" />
-		<Command id = "MonoDevelop.Ide.Commands.DebugCommands.NewBreakpoint"
-				defaultHandler = "MonoDevelop.Ide.Commands.NewBreakpointHandler"
-				_label = "New Breakpoint..."
-				icon = "md-breakpoint-new" />
-		<Command id = "MonoDevelop.Ide.Commands.DebugCommands.RemoveBreakpoint"
-				defaultHandler = "MonoDevelop.Ide.Commands.RemoveBreakpointHandler"
-				_label = "Remove Breakpoint" />
-		<Command id = "MonoDevelop.Ide.Commands.DebugCommands.ShowBreakpointProperties"
-				defaultHandler = "MonoDevelop.Ide.Commands.ShowBreakpointPropertiesHandler"
-				_label = "Breakpoint Properties" />
-		<Command id = "MonoDevelop.Ide.Commands.DebugCommands.ToggleBreakpoint"
-				_label = "Toggle Breakpoint"
-				icon = "md-breakpoint"
-				defaultHandler = "MonoDevelop.Ide.Commands.ToggleBreakpointHandler"
-				shortcut = "F9" />
-		<Command id = "MonoDevelop.Ide.Commands.DebugCommands.EnableDisableBreakpoint"
-				_label = "Enable/Disable Breakpoint"
-				defaultHandler = "MonoDevelop.Ide.Commands.EnableDisableBreakpointHandler"
-				icon = "md-breakpoint-on-off"
-				shortcut = "Control|F9" />
-		<Command id = "MonoDevelop.Ide.Commands.DebugCommands.DisableAllBreakpoints"
-				_label = "Disable All Breakpoints"
-				icon = "md-breakpoint-disable-all"
-				defaultHandler = "MonoDevelop.Ide.Commands.DisableAllBreakpointsHandler" />
-		<Command id = "MonoDevelop.Ide.Commands.DebugCommands.ClearAllBreakpoints"
-				defaultHandler = "MonoDevelop.Ide.Commands.ClearAllBreakpointsHandler"
-				icon = "md-breakpoint-remove-all"
-				_label = "Clear All Breakpoints" />
-		<Command id = "MonoDevelop.Ide.Commands.DebugCommands.ShowDisassembly"
-				_label = "Show Disassembly"
-				defaultHandler = "MonoDevelop.Ide.Commands.ShowDisassemblyHandler" />
 		</Category>
 		
 		<!-- SearchCommands -->
@@ -1514,7 +1438,6 @@
 			</ItemSet>
 			<SeparatorItem id = "ViewItemsSeparator0" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ViewList" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.DebugCommands.ShowDisassembly" />
 			<SeparatorItem id = "ViewItemsSeparator" />
 			<ItemSet id = "ViewLayouts" _label = "_Layouts">
 				<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.LayoutList" />
@@ -1585,25 +1508,10 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Clean" />
 		</ItemSet>
 
-		<ItemSet id = "Debug" _label = "_Run">
+		<ItemSet id = "Run" _label = "_Run">
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Run" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Debug" />
-			<SeparatorItem id = "Separator1" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.DebugCommands.DebugApplication" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.DebugCommands.AttachToProcess" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.DebugCommands.Detach" />
-			<SeparatorItem id = "Separator2" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.DebugCommands.Pause" />
+			<SeparatorItem id = "StopSection" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Stop" />
-			<SeparatorItem id = "Separator3" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.DebugCommands.StepOver" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.DebugCommands.StepInto" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.DebugCommands.StepOut" />
-			<SeparatorItem id = "Separator4" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.DebugCommands.ToggleBreakpoint" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.DebugCommands.EnableDisableBreakpoint" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.DebugCommands.DisableAllBreakpoints" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.DebugCommands.ClearAllBreakpoints" />
 		</ItemSet>
 
 		<ItemSet id = "Tools" _label = "_Tools">

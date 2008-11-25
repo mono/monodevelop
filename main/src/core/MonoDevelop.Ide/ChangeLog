@@ -1,3 +1,24 @@
+2008-11-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Ide.mdp:
+	* gtk-gui/objects.xml:
+	* MonoDevelop.Ide.addin.xml:
+	* MonoDevelop.Ide.Gui/Ide.cs:
+	* MonoDevelop.Ide.Gui/Document.cs:
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs:
+	* MonoDevelop.Ide.Commands/DebugCommands.cs:
+	* MonoDevelop.Ide.Commands/ProjectCommands.cs:
+	* MonoDevelop.Ide.Debugging/DebuggingService.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/AttachToProcessDialog.cs:
+	* MonoDevelop.Ide.Debugging/DebugExecutionHandlerFactory.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.AttachToProcessDialog.cs: Moved
+	all debugging stuff to MonoDevelop.Debugger.
+
+	* MonoDevelop.Ide.Gui.Dialogs/AddinLoadErrorDialog.cs: Improve error
+	message.
+
 2008-11-24  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.Gui.Search/SearchProgressMonitor.cs: Improve error

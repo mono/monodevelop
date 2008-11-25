@@ -312,11 +312,6 @@ namespace MonoDevelop.Ide.Gui
 			return IdeApp.ProjectOperations.ExecuteFile (Window.ViewContent.ContentName);
 		}
 		
-		public virtual IAsyncOperation Debug ()
-		{
-			return IdeApp.ProjectOperations.DebugFile (Window.ViewContent.ContentName);
-		}
-		
 		public void Close ()
 		{
 			Window.CloseWindow (false, true, 0);
