@@ -1,3 +1,7 @@
+2008-11-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Manifest.addin.xml: Track api changes.
+
 2008-11-05  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* configure:
