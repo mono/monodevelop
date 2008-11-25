@@ -246,6 +246,17 @@ namespace Mono.TextEditor.Vi
 					case 'P':
 						PasteBefore (false);
 						return;
+					case 's':
+						if (!Data.IsSomethingSelected)
+							RunAction (SelectionActions.FromMoveAction (CaretMoveActions.Right));
+						RunAction (ClipboardActions.Cut);
+						goto case 'i';
+					case 'S':
+						if (!Data.IsSomethingSelected)
+							RunAction (SelectionActions.LineActionFromMoveAction (CaretMoveActions.LineEnd));
+						else Data.SetSelectLines (Data.Document.OffsetToLineNumber (Data.SelectionAnchor), Data.Caret.Line);
+						RunAction (ClipboardActions.Cut);
+						goto case 'i';
 					}
 				}
 				
@@ -519,11 +530,15 @@ namespace Mono.TextEditor.Vi
 					RunAction (ClipboardActions.Copy);
 					Reset ("Yanked selection");
 					return;
+				case 's':
 				case 'c':
 					RunAction (ClipboardActions.Cut);
 					state = State.Insert;
 					Status = "-- INSERT --";
 					return;
+				case 'S':
+					Data.SetSelectLines (Data.Document.OffsetToLineNumber (Data.SelectionAnchor), Data.Caret.Line);
+					goto case 'c';
 					
 				case '>':
 					RunAction (MiscActions.IndentSelection);

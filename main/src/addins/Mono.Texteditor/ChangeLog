@@ -1,3 +1,7 @@
+2008-11-25  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* Mono.TextEditor.Vi/ViMode.cs: Implement sS.
+
 2008-11-24  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor.Highlighting/SyntaxMode.cs:
