@@ -164,8 +164,7 @@ namespace MonoDevelop.NUnit
 		bool singleTestRun;
 		Hashtable outputText = new Hashtable ();
 		Hashtable errorText = new Hashtable ();
-		
-		internal UnitTestResult SingleTestResult;
+		UnitTestResult singleTestResult;
 		
 		public LocalTestMonitor (TestContext context, ExternalTestRunner runner, UnitTest rootTest, string rootFullName, bool singleTestRun)
 		{
@@ -178,6 +177,17 @@ namespace MonoDevelop.NUnit
 		
 		public UnitTest RunningTest {
 			get { return runningTest; }
+		}
+		
+		internal UnitTestResult SingleTestResult {
+			get {
+				if (singleTestResult == null)
+					singleTestResult = new UnitTestResult ();
+				return singleTestResult;
+			}
+			set {
+				singleTestResult = value;
+			}
 		}
 		
 		void EventListener.RunStarted (Test [] tests)

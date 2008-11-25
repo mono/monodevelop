@@ -16,12 +16,14 @@ REFS =  \
 	$(MONO_ADDINS_LIBS) \
 	-r:$(top_srcdir)/src/addins/NUnit/lib/nunit.core.dll \
 	-r:$(top_srcdir)/src/addins/NUnit/lib/nunit.framework.dll \
+	-r:Mono.Posix \
 	-r:System \
 	-r:System.Xml
 
 FILES =  \
 	AssemblyInfo.cs \
 	Commands/NUnitCommands.cs \
+	gtk-gui/generated.cs \
 	Gui/CircleImage.cs \
 	Gui/NUnitAssemblyGroupConfigurationNodeBuilder.cs \
 	Gui/NUnitAssemblyGroupNodeBuilder.cs \
@@ -60,6 +62,7 @@ FILES =  \
 	Services/XmlResultsStore.cs
 
 RES =  \
+	gtk-gui/gui.stetic \
 	Gui/NUnit.Failed.png \
 	Gui/NUnit.Loading.png \
 	Gui/NUnit.None.png \
@@ -84,7 +87,7 @@ nunit.framework.dll
 SRC_NUNIT_FILES = $(addprefix $(srcdir)/lib/, $(NUNIT_FILES))
 BUILD_NUNIT_FILES = $(addprefix $(ADDIN_BUILD)/, $(NUNIT_FILES))
 
-all: $(ASSEMBLY) $(BUILD_NUNIT_FILES)
+all: $(ASSEMBLY) $(ASSEMBLY).mdb $(BUILD_NUNIT_FILES)
 
 $(ADDIN_BUILD)/%: $(srcdir)/lib/%
 	mkdir -p $(ADDIN_BUILD)
@@ -94,6 +97,7 @@ $(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) $(REFS) $(build_deps) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -target:library
 
+$(ASSEMBLY).mdb: $(ASSEMBLY)
 
 assemblydir = $(MD_ADDIN_DIR)/NUnit
 assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb $(SRC_NUNIT_FILES)

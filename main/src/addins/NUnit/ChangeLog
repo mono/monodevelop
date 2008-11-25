@@ -1,3 +1,12 @@
+2008-11-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Services/ExternalTestRunner.cs: Fix bug #440929 - Exception when
+	running single test fixture that contains no tests.
+
+	* MonoDevelop.NUnit.mdp: Added stetic file.
+
+	* Makefile.am: Fix support for makefile parallel build.
+
 2008-11-06  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am: Fix build dependencies.
