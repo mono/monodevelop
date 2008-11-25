@@ -1,3 +1,7 @@
+2008-11-25  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Gettext/RegexFileScanner.cs: Remove debug writelines.
+
 2008-11-24  Mike Kestner  <mkestner@novell.com>
 
 	* MonoDevelop.Gettext.Editor/POEditorWidget.cs: set labels on the
