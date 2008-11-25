@@ -1,6 +1,11 @@
 2008-11-25  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:
+	* MonoDevelop.XmlEditor.mdp: Add reference required for building.
+
+2008-11-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
 	* MonoDevelop.XmlEditor.mdp: Add glib dep.
 
 2008-11-18  Michael Hutchinson  <mhutchinson@novell.com>
