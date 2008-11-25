@@ -172,10 +172,10 @@ namespace MonoDevelop.SourceEditor
 			};
 			ClipbardRingUpdated += UpdateClipboardRing;
 			
-			IdeApp.Services.DebuggingService.ExecutionLocationChanged += executionLocationChanged;
-			IdeApp.Services.DebuggingService.Breakpoints.BreakpointAdded += breakpointAdded;
-			IdeApp.Services.DebuggingService.Breakpoints.BreakpointRemoved += breakpointRemoved;
-			IdeApp.Services.DebuggingService.Breakpoints.BreakpointStatusChanged += breakpointStatusChanged;
+			DebuggingService.ExecutionLocationChanged += executionLocationChanged;
+			DebuggingService.Breakpoints.BreakpointAdded += breakpointAdded;
+			DebuggingService.Breakpoints.BreakpointRemoved += breakpointRemoved;
+			DebuggingService.Breakpoints.BreakpointStatusChanged += breakpointStatusChanged;
 		}
 		
 		public override void Save (string fileName)
@@ -270,10 +270,10 @@ namespace MonoDevelop.SourceEditor
 				widget = null;
 			}
 			
-			IdeApp.Services.DebuggingService.ExecutionLocationChanged -= executionLocationChanged;
-			IdeApp.Services.DebuggingService.Breakpoints.BreakpointAdded -= breakpointAdded;
-			IdeApp.Services.DebuggingService.Breakpoints.BreakpointRemoved -= breakpointRemoved;
-			IdeApp.Services.DebuggingService.Breakpoints.BreakpointStatusChanged -= breakpointStatusChanged;
+			DebuggingService.ExecutionLocationChanged -= executionLocationChanged;
+			DebuggingService.Breakpoints.BreakpointAdded -= breakpointAdded;
+			DebuggingService.Breakpoints.BreakpointRemoved -= breakpointRemoved;
+			DebuggingService.Breakpoints.BreakpointStatusChanged -= breakpointStatusChanged;
 			
 			// This is not necessary but helps when tracking down memory leaks
 			
@@ -369,17 +369,16 @@ namespace MonoDevelop.SourceEditor
 		
 		void UpdateExecutionLocation ()
 		{
-			if (IdeApp.Services.DebuggingService != null && 
-			    IdeApp.Services.DebuggingService.IsDebugging && 
-			    !IdeApp.Services.DebuggingService.IsRunning &&
-				IdeApp.Services.DebuggingService.CurrentFilename != null &&
-			    Path.GetFullPath (IdeApp.Services.DebuggingService.CurrentFilename) == Path.GetFullPath (ContentName)
+			if (DebuggingService.IsDebugging && 
+			    !DebuggingService.IsRunning &&
+				DebuggingService.CurrentFilename != null &&
+			    Path.GetFullPath (DebuggingService.CurrentFilename) == Path.GetFullPath (ContentName)
 		    ) {
-				if (lastDebugLine == IdeApp.Services.DebuggingService.CurrentLineNumber)
+				if (lastDebugLine == DebuggingService.CurrentLineNumber)
 					return;
 				if (currentLineSegment != null)
 					widget.TextEditor.Document.RemoveMarker (currentLineSegment, currentDebugLineMarker);
-				lastDebugLine = IdeApp.Services.DebuggingService.CurrentLineNumber;
+				lastDebugLine = DebuggingService.CurrentLineNumber;
 				currentLineSegment = widget.TextEditor.Document.GetLine (lastDebugLine-1);
 				widget.TextEditor.Document.AddMarker (currentLineSegment, currentDebugLineMarker);
 				widget.TextEditor.QueueDraw ();
@@ -399,7 +398,7 @@ namespace MonoDevelop.SourceEditor
 				widget.TextEditor.Document.RemoveMarker (line, breakpointInvalidMarker);
 			}
 			breakpointSegments.Clear ();
-			foreach (Breakpoint bp in IdeApp.Services.DebuggingService.Breakpoints.GetBreakpoints ())
+			foreach (Breakpoint bp in DebuggingService.Breakpoints.GetBreakpoints ())
 				AddBreakpoint (bp);
 			widget.TextEditor.QueueDraw ();
 			
@@ -414,7 +413,7 @@ namespace MonoDevelop.SourceEditor
 				LineSegment line = widget.TextEditor.Document.GetLine (bp.Line-1);
 				if (!bp.Enabled)
 					widget.TextEditor.Document.AddMarker (line, breakpointDisabledMarker);
-				else if (bp.IsValid (IdeApp.Services.DebuggingService.DebuggerSession))
+				else if (bp.IsValid (DebuggingService.DebuggerSession))
 					widget.TextEditor.Document.AddMarker (line, breakpointMarker);
 				else
 					widget.TextEditor.Document.AddMarker (line, breakpointInvalidMarker);
@@ -962,6 +961,27 @@ namespace MonoDevelop.SourceEditor
 				return view.widget.TextEditor.Document.GetTextAt (line);
 			}
 		}
+		#endregion
+
+		#region Help
+
+		[CommandHandler (HelpCommands.Help)]
+		internal void MonodocResolver ()
+		{
+			ResolveResult res = TextEditor.GetLanguageItem (TextEditor.Caret.Offset);
+			if (res != null && res.StaticResolve) {
+				IdeApp.HelpOperations.ShowHelp ("");
+			}
+		}
+		
+		[CommandUpdateHandler (HelpCommands.Help)]
+		internal void MonodocResolverUpdate (CommandInfo cinfo)
+		{
+			ResolveResult res = TextEditor.GetLanguageItem (TextEditor.Caret.Offset);
+			if (res == null || !res.StaticResolve)
+				cinfo.Bypass = true;
+		}
+		
 		#endregion
 		
 		#region commenting and indentation

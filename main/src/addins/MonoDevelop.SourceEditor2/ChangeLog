@@ -1,3 +1,10 @@
+2008-11-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.SourceEditor/SourceEditorView.cs:
+	* MonoDevelop.SourceEditor/DebugValueTooltipProvider.cs: Track api
+	changes.
+
 2008-11-25  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/ClassQuickFinder.cs: Removed return type from

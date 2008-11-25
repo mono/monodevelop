@@ -34,6 +34,7 @@ using TextEditor = Mono.TextEditor.TextEditor;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Gui.Completion;
+using MonoDevelop.Debugger;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -43,7 +44,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public DebugValueTooltipProvider()
 		{
-			IdeApp.Services.DebuggingService.CurrentFrameChanged += delegate {
+			DebuggingService.CurrentFrameChanged += delegate {
 				// Clear the cached values every time the current frame changes
 				cachedValues.Clear ();
 			};
@@ -56,10 +57,10 @@ namespace MonoDevelop.SourceEditor
 			if (offset >= editor.Document.Length)
 				return null;
 			
-			if (!IdeApp.Services.DebuggingService.IsDebugging || IdeApp.Services.DebuggingService.IsRunning)
+			if (!DebuggingService.IsDebugging || DebuggingService.IsRunning)
 				return null;
 				
-			StackFrame frame = IdeApp.Services.DebuggingService.CurrentFrame;
+			StackFrame frame = DebuggingService.CurrentFrame;
 			if (frame == null)
 				return null;
 			
@@ -116,7 +117,7 @@ namespace MonoDevelop.SourceEditor
 			
 		public Gtk.Window CreateTooltipWindow (TextEditor editor, object item)
 		{
-			return new DebugValueWindow (editor, IdeApp.Services.DebuggingService.CurrentFrame, (ObjectValue) item);
+			return new DebugValueWindow (editor, DebuggingService.CurrentFrame, (ObjectValue) item);
 		}
 		
 		public void GetRequiredPosition (TextEditor editor, Gtk.Window tipWindow, out int requiredWidth, out double xalign)
