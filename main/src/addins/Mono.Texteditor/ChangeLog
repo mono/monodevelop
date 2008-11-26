@@ -1,3 +1,7 @@
+2008-11-25  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextEditor/TextMarker.cs: Fix end location of underline marker.
+
 2008-11-25  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* Mono.TextEditor.Vi/ViMode.cs: Implement sS.

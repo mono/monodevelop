@@ -202,7 +202,7 @@ namespace Mono.TextEditor
 		public override void Draw (TextEditor editor, Gdk.Drawable win, bool selected, int startOffset, int endOffset, int y, int startXPos, int endXPos)
 		{
 			int markerStart = LineSegment.Offset + System.Math.Max (StartCol, 0);
-			int markerEnd   = LineSegment.Offset + System.Math.Min (System.Math.Max (EndCol, LineSegment.Length), LineSegment.Length);
+			int markerEnd   = LineSegment.Offset + (EndCol < 0? LineSegment.Length : EndCol);
 			if (markerEnd < startOffset || markerStart > endOffset)
 				return;
 			
