@@ -81,7 +81,7 @@ namespace MonoDevelop.Projects.Dom.Output
 			StringBuilder result = new StringBuilder ();
 			foreach (Modifiers singleModifier in Enum.GetValues (typeof(Modifiers))) {
 				if ((m & singleModifier) == singleModifier && modifiers.ContainsKey (singleModifier)) {
-					if (result.Length > 0)
+					if (modifiers[singleModifier].Length > 0 && result.Length > 0) // don't add spaces for empty modifiers
 						result.Append (' ');
 					result.Append (modifiers[singleModifier]);
 				}

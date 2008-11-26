@@ -1,5 +1,10 @@
 2008-11-26  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Dom.Output/Ambience.cs: fixed ambience modifier
+	outputs too many spaces.
+
+2008-11-26  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Dom.Output/Ambience.cs: ambience strings now can
 	be post processed.
 
