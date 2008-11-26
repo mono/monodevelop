@@ -1,3 +1,7 @@
+2008-11-25  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Profiling.addin.xml: Track extension point changes.
+
 2008-11-06  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am: Fix build dependencies.
