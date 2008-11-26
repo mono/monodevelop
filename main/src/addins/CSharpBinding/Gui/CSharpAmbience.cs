@@ -404,7 +404,7 @@ namespace MonoDevelop.CSharpBinding
 					if (i > 0)
 						result.Append (", ");
 					if (instantiatedType != null) {
-						result.Append (instantiatedType.GenericParameters[i].AcceptVisitor (this, data));
+						result.Append (this.GetString (instantiatedType.GenericParameters[i], flags));
 					} else {
 						result.Append (NetToCSharpTypeName (type.TypeParameters[i].Name));
 					}
@@ -414,15 +414,13 @@ namespace MonoDevelop.CSharpBinding
 			}
 			
 			if (IncludeBaseTypes (flags) && type.BaseTypes.Any ()) {
-				result.Append (" : ");
 				bool first = true;
 				foreach (IReturnType baseType in type.BaseTypes) {
-					if (baseType.FullName == "System.Object")
+					if (baseType.FullName == "System.Object" || baseType.FullName == "System.Enum")
 						continue;
-					if (!first)
-						result.Append (", ");
+					result.Append (first ? " : " : ", ");
 					first = false;
-					result.Append (baseType.AcceptVisitor (this, data));	
+					result.Append (this.GetString (baseType, flags));	
 				}
 				
 			}
@@ -487,6 +485,11 @@ namespace MonoDevelop.CSharpBinding
 				result.Append ("event ");
 				if (EmitMarkup (flags))
 					result.Append ("</b>");
+			}
+			
+			if (IncludeReturnType (flags)) {
+				result.Append (GetString (evt.ReturnType, flags));
+				result.Append (" ");
 			}
 			
 			AppendExplicitInterfaces(result, evt);
