@@ -106,6 +106,22 @@ namespace MonoDevelop.Debugger
 			}
 			return false;
 		}
+
+		public static void ShowExpressionEvaluator (string expression)
+		{
+			ExpressionEvaluatorDialog dlg = new ExpressionEvaluatorDialog ();
+			if (expression != null)
+				dlg.Expression = expression;
+			dlg.Run ();
+			dlg.Destroy ();
+		}
+
+		public static void ShowExceptionsFilters ()
+		{
+			ExceptionsDialog dlg = new ExceptionsDialog ();
+			dlg.Run ();
+			dlg.Destroy ();
+		}
 		
 		static void Cleanup ()
 		{

@@ -61,7 +61,8 @@ namespace MonoDevelop.Debugger
 		NewBreakpoint,
 		RemoveBreakpoint,
 		ShowBreakpointProperties,
-		ExpressionEvaluator
+		ExpressionEvaluator,
+		SelectExceptions
 	}
 
 	internal class DebugHandler: CommandHandler
@@ -390,6 +391,27 @@ namespace MonoDevelop.Debugger
 			}
 			else
 				info.Enabled = false;
+		}
+	}
+
+	internal class ExpressionEvaluatorCommand: CommandHandler
+	{
+		protected override void Run ()
+		{
+			DebuggingService.ShowExpressionEvaluator (null);
+		}
+
+		protected override void Update (CommandInfo info)
+		{
+			info.Enabled = DebuggingService.CurrentFrame != null;
+		}
+	}
+
+	internal class SelectExceptionsCommand: CommandHandler
+	{
+		protected override void Run ()
+		{
+			DebuggingService.ShowExceptionsFilters ();
 		}
 	}
 }

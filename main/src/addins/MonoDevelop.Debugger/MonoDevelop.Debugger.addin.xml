@@ -115,6 +115,13 @@
 		<Command id = "MonoDevelop.Debugger.DebugCommands.ShowDisassembly"
 				_label = "Show Disassembly"
 				defaultHandler = "MonoDevelop.Debugger.ShowDisassemblyHandler" />
+		<Command id = "MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator"
+				_label = "Expression Evaluator"
+				shortcut = "Shift|F9"
+				defaultHandler = "MonoDevelop.Debugger.ExpressionEvaluatorCommand" />
+		<Command id = "MonoDevelop.Debugger.DebugCommands.SelectExceptions"
+				_label = "Exceptions..."
+				defaultHandler = "MonoDevelop.Debugger.SelectExceptionsCommand" />
 		</Category>
 	</Extension>
 	
@@ -124,14 +131,11 @@
 	
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Run">
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.Debug" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.Run"/>
+		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.Pause" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.Stop"/>
 		<SeparatorItem id = "MonoDevelop.Debugger.ExternalDebuggingSection" />
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.DebugApplication" />
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.AttachToProcess" />
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.Detach" />
-	</Extension>
-	
-	<Extension path = "/MonoDevelop/Ide/MainMenu/Run">
-		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.Pause" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.Stop"/>
 		<SeparatorItem id = "MonoDevelop.Debugger.SteppingSection" />
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.StepOver" />
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.StepInto" />
@@ -141,5 +145,24 @@
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.EnableDisableBreakpoint" />
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.DisableAllBreakpoints" />
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.ClearAllBreakpoints" />
+		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.SelectExceptions" />
+		<SeparatorItem id = "MonoDevelop.Debugger.ToolsSection" />
+		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Workspace">
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.DebugEntry" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.RunEntry" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Solution">
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.DebugEntry" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.RunEntry" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Project">
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.DebugEntry" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.RunEntry" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Core/ExecutionModes">
+		<Mode id="Debug" _name="Debug" class="MonoDevelop.Debugger.DebugExecutionHandlerFactory"/>
 	</Extension>
 </Addin>

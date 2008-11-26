@@ -38,6 +38,7 @@ using MonoDevelop.Projects.Gui.Completion;
 
 namespace MonoDevelop.Debugger
 {
+	[System.ComponentModel.ToolboxItem (true)]
 	public class ObjectValueTreeView: Gtk.TreeView, ICompletionWidget
 	{
 		List<string> valueNames = new List<string> ();
@@ -224,6 +225,12 @@ namespace MonoDevelop.Debugger
 		public void ClearValues ()
 		{
 			values.Clear ();
+			Update ();
+		}
+		
+		public void ClearExpressions ()
+		{
+			valueNames.Clear ();
 			Update ();
 		}
 		

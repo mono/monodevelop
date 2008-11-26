@@ -27,6 +27,7 @@ FILES =  \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.Debugger.AttachToProcessDialog.cs \
 	gtk-gui/MonoDevelop.Debugger.ExceptionsDialog.cs \
+	gtk-gui/MonoDevelop.Debugger.ExpressionEvaluatorDialog.cs \
 	MonoDevelop.Debugger/AttachToProcessDialog.cs \
 	MonoDevelop.Debugger/BreakpointPad.cs \
 	MonoDevelop.Debugger/DebugCommands.cs \
@@ -35,6 +36,7 @@ FILES =  \
 	MonoDevelop.Debugger/DebugTextMarker.cs \
 	MonoDevelop.Debugger/DisassemblyView.cs \
 	MonoDevelop.Debugger/ExceptionsDialog.cs \
+	MonoDevelop.Debugger/ExpressionEvaluatorDialog.cs \
 	MonoDevelop.Debugger/Extensions.cs \
 	MonoDevelop.Debugger/Initializer.cs \
 	MonoDevelop.Debugger/LocalsPad.cs \

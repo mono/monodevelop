@@ -1,3 +1,19 @@
+2008-11-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* gtk-gui/generated.cs:
+	* MonoDevelop.Debugger.mdp:
+	* MonoDevelop.Debugger.addin.xml:
+	* MonoDevelop.Debugger/DebugCommands.cs:
+	* MonoDevelop.Debugger/ExceptionsDialog.cs:
+	* MonoDevelop.Debugger/DebuggingService.cs:
+	* MonoDevelop.Debugger/ObjectValueTreeView.cs:
+	* gtk-gui/MonoDevelop.Debugger.ExceptionsDialog.cs:
+	* MonoDevelop.Debugger/ExpressionEvaluatorDialog.cs:
+	* gtk-gui/MonoDevelop.Debugger.ExpressionEvaluatorDialog.cs: Implemented
+	exceptions dialog and expression evaluation dialog.
+
 2008-11-25  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:

@@ -13,6 +13,40 @@ namespace MonoDevelop.Debugger {
     
     public partial class ExceptionsDialog {
         
+        private Gtk.HBox hbox1;
+        
+        private Gtk.VBox vbox4;
+        
+        private Gtk.Label label2;
+        
+        private Gtk.HBox hbox2;
+        
+        private Gtk.Image image15;
+        
+        private Gtk.Entry entryFilter;
+        
+        private Gtk.ScrolledWindow GtkScrolledWindow;
+        
+        private Gtk.TreeView treeExceptions;
+        
+        private Gtk.VBox vbox3;
+        
+        private Gtk.Label label1;
+        
+        private Gtk.Button buttonAdd;
+        
+        private Gtk.Button buttonRemove;
+        
+        private Gtk.Label label4;
+        
+        private Gtk.VBox vbox5;
+        
+        private Gtk.Label label3;
+        
+        private Gtk.ScrolledWindow GtkScrolledWindow1;
+        
+        private Gtk.TreeView treeSelected;
+        
         private Gtk.Button buttonCancel;
         
         private Gtk.Button buttonOk;
@@ -21,18 +55,190 @@ namespace MonoDevelop.Debugger {
             Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Debugger.ExceptionsDialog
             this.Name = "MonoDevelop.Debugger.ExceptionsDialog";
+            this.Title = Mono.Unix.Catalog.GetString("Exceptions");
             this.WindowPosition = ((Gtk.WindowPosition)(4));
+            this.BorderWidth = ((uint)(3));
             this.HasSeparator = false;
             // Internal child MonoDevelop.Debugger.ExceptionsDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog1_VBox";
             w1.BorderWidth = ((uint)(2));
+            // Container child dialog1_VBox.Gtk.Box+BoxChild
+            this.hbox1 = new Gtk.HBox();
+            this.hbox1.Name = "hbox1";
+            this.hbox1.Spacing = 6;
+            this.hbox1.BorderWidth = ((uint)(9));
+            // Container child hbox1.Gtk.Box+BoxChild
+            this.vbox4 = new Gtk.VBox();
+            this.vbox4.Name = "vbox4";
+            this.vbox4.Spacing = 6;
+            // Container child vbox4.Gtk.Box+BoxChild
+            this.label2 = new Gtk.Label();
+            this.label2.Name = "label2";
+            this.label2.Xalign = 0F;
+            this.label2.LabelProp = Mono.Unix.Catalog.GetString("Exceptions:");
+            this.vbox4.Add(this.label2);
+            Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.vbox4[this.label2]));
+            w2.Position = 0;
+            w2.Expand = false;
+            w2.Fill = false;
+            // Container child vbox4.Gtk.Box+BoxChild
+            this.hbox2 = new Gtk.HBox();
+            this.hbox2.Name = "hbox2";
+            this.hbox2.Spacing = 6;
+            // Container child hbox2.Gtk.Box+BoxChild
+            this.image15 = new Gtk.Image();
+            this.image15.Name = "image15";
+            this.image15.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-find", Gtk.IconSize.Menu, 16);
+            this.hbox2.Add(this.image15);
+            Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.hbox2[this.image15]));
+            w3.Position = 0;
+            w3.Expand = false;
+            w3.Fill = false;
+            // Container child hbox2.Gtk.Box+BoxChild
+            this.entryFilter = new Gtk.Entry();
+            this.entryFilter.CanFocus = true;
+            this.entryFilter.Name = "entryFilter";
+            this.entryFilter.IsEditable = true;
+            this.entryFilter.InvisibleChar = '●';
+            this.hbox2.Add(this.entryFilter);
+            Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(this.hbox2[this.entryFilter]));
+            w4.Position = 1;
+            this.vbox4.Add(this.hbox2);
+            Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.vbox4[this.hbox2]));
+            w5.Position = 1;
+            w5.Expand = false;
+            w5.Fill = false;
+            // Container child vbox4.Gtk.Box+BoxChild
+            this.GtkScrolledWindow = new Gtk.ScrolledWindow();
+            this.GtkScrolledWindow.Name = "GtkScrolledWindow";
+            this.GtkScrolledWindow.ShadowType = ((Gtk.ShadowType)(1));
+            // Container child GtkScrolledWindow.Gtk.Container+ContainerChild
+            this.treeExceptions = new Gtk.TreeView();
+            this.treeExceptions.CanFocus = true;
+            this.treeExceptions.Name = "treeExceptions";
+            this.treeExceptions.HeadersVisible = false;
+            this.treeExceptions.HeadersClickable = true;
+            this.GtkScrolledWindow.Add(this.treeExceptions);
+            this.vbox4.Add(this.GtkScrolledWindow);
+            Gtk.Box.BoxChild w7 = ((Gtk.Box.BoxChild)(this.vbox4[this.GtkScrolledWindow]));
+            w7.Position = 2;
+            this.hbox1.Add(this.vbox4);
+            Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.hbox1[this.vbox4]));
+            w8.Position = 0;
+            // Container child hbox1.Gtk.Box+BoxChild
+            this.vbox3 = new Gtk.VBox();
+            this.vbox3.Name = "vbox3";
+            this.vbox3.Spacing = 12;
+            // Container child vbox3.Gtk.Box+BoxChild
+            this.label1 = new Gtk.Label();
+            this.label1.Name = "label1";
+            this.label1.LabelProp = "";
+            this.vbox3.Add(this.label1);
+            Gtk.Box.BoxChild w9 = ((Gtk.Box.BoxChild)(this.vbox3[this.label1]));
+            w9.Position = 0;
+            // Container child vbox3.Gtk.Box+BoxChild
+            this.buttonAdd = new Gtk.Button();
+            this.buttonAdd.CanFocus = true;
+            this.buttonAdd.Name = "buttonAdd";
+            this.buttonAdd.UseUnderline = true;
+            // Container child buttonAdd.Gtk.Container+ContainerChild
+            Gtk.Alignment w10 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
+            // Container child GtkAlignment.Gtk.Container+ContainerChild
+            Gtk.HBox w11 = new Gtk.HBox();
+            w11.Spacing = 2;
+            // Container child GtkHBox.Gtk.Container+ContainerChild
+            Gtk.Image w12 = new Gtk.Image();
+            w12.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-go-forward", Gtk.IconSize.Menu, 16);
+            w11.Add(w12);
+            // Container child GtkHBox.Gtk.Container+ContainerChild
+            Gtk.Label w14 = new Gtk.Label();
+            w14.LabelProp = "";
+            w11.Add(w14);
+            w10.Add(w11);
+            this.buttonAdd.Add(w10);
+            this.vbox3.Add(this.buttonAdd);
+            Gtk.Box.BoxChild w18 = ((Gtk.Box.BoxChild)(this.vbox3[this.buttonAdd]));
+            w18.Position = 1;
+            w18.Expand = false;
+            w18.Fill = false;
+            // Container child vbox3.Gtk.Box+BoxChild
+            this.buttonRemove = new Gtk.Button();
+            this.buttonRemove.CanFocus = true;
+            this.buttonRemove.Name = "buttonRemove";
+            this.buttonRemove.UseUnderline = true;
+            // Container child buttonRemove.Gtk.Container+ContainerChild
+            Gtk.Alignment w19 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
+            // Container child GtkAlignment1.Gtk.Container+ContainerChild
+            Gtk.HBox w20 = new Gtk.HBox();
+            w20.Spacing = 2;
+            // Container child GtkHBox1.Gtk.Container+ContainerChild
+            Gtk.Image w21 = new Gtk.Image();
+            w21.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-go-back", Gtk.IconSize.Menu, 16);
+            w20.Add(w21);
+            // Container child GtkHBox1.Gtk.Container+ContainerChild
+            Gtk.Label w23 = new Gtk.Label();
+            w23.LabelProp = "";
+            w20.Add(w23);
+            w19.Add(w20);
+            this.buttonRemove.Add(w19);
+            this.vbox3.Add(this.buttonRemove);
+            Gtk.Box.BoxChild w27 = ((Gtk.Box.BoxChild)(this.vbox3[this.buttonRemove]));
+            w27.Position = 2;
+            w27.Expand = false;
+            w27.Fill = false;
+            // Container child vbox3.Gtk.Box+BoxChild
+            this.label4 = new Gtk.Label();
+            this.label4.Name = "label4";
+            this.label4.LabelProp = "";
+            this.vbox3.Add(this.label4);
+            Gtk.Box.BoxChild w28 = ((Gtk.Box.BoxChild)(this.vbox3[this.label4]));
+            w28.Position = 3;
+            this.hbox1.Add(this.vbox3);
+            Gtk.Box.BoxChild w29 = ((Gtk.Box.BoxChild)(this.hbox1[this.vbox3]));
+            w29.Position = 1;
+            w29.Expand = false;
+            w29.Fill = false;
+            // Container child hbox1.Gtk.Box+BoxChild
+            this.vbox5 = new Gtk.VBox();
+            this.vbox5.Name = "vbox5";
+            this.vbox5.Spacing = 6;
+            // Container child vbox5.Gtk.Box+BoxChild
+            this.label3 = new Gtk.Label();
+            this.label3.Name = "label3";
+            this.label3.Xalign = 0F;
+            this.label3.LabelProp = Mono.Unix.Catalog.GetString("Stop in exceptions:");
+            this.vbox5.Add(this.label3);
+            Gtk.Box.BoxChild w30 = ((Gtk.Box.BoxChild)(this.vbox5[this.label3]));
+            w30.Position = 0;
+            w30.Expand = false;
+            w30.Fill = false;
+            // Container child vbox5.Gtk.Box+BoxChild
+            this.GtkScrolledWindow1 = new Gtk.ScrolledWindow();
+            this.GtkScrolledWindow1.Name = "GtkScrolledWindow1";
+            this.GtkScrolledWindow1.ShadowType = ((Gtk.ShadowType)(1));
+            // Container child GtkScrolledWindow1.Gtk.Container+ContainerChild
+            this.treeSelected = new Gtk.TreeView();
+            this.treeSelected.CanFocus = true;
+            this.treeSelected.Name = "treeSelected";
+            this.treeSelected.HeadersVisible = false;
+            this.treeSelected.HeadersClickable = true;
+            this.GtkScrolledWindow1.Add(this.treeSelected);
+            this.vbox5.Add(this.GtkScrolledWindow1);
+            Gtk.Box.BoxChild w32 = ((Gtk.Box.BoxChild)(this.vbox5[this.GtkScrolledWindow1]));
+            w32.Position = 1;
+            this.hbox1.Add(this.vbox5);
+            Gtk.Box.BoxChild w33 = ((Gtk.Box.BoxChild)(this.hbox1[this.vbox5]));
+            w33.Position = 2;
+            w1.Add(this.hbox1);
+            Gtk.Box.BoxChild w34 = ((Gtk.Box.BoxChild)(w1[this.hbox1]));
+            w34.Position = 0;
             // Internal child MonoDevelop.Debugger.ExceptionsDialog.ActionArea
-            Gtk.HButtonBox w2 = this.ActionArea;
-            w2.Name = "dialog1_ActionArea";
-            w2.Spacing = 10;
-            w2.BorderWidth = ((uint)(5));
-            w2.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
+            Gtk.HButtonBox w35 = this.ActionArea;
+            w35.Name = "dialog1_ActionArea";
+            w35.Spacing = 6;
+            w35.BorderWidth = ((uint)(5));
+            w35.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
             this.buttonCancel = new Gtk.Button();
             this.buttonCancel.CanDefault = true;
@@ -42,9 +248,9 @@ namespace MonoDevelop.Debugger {
             this.buttonCancel.UseUnderline = true;
             this.buttonCancel.Label = "gtk-cancel";
             this.AddActionWidget(this.buttonCancel, -6);
-            Gtk.ButtonBox.ButtonBoxChild w3 = ((Gtk.ButtonBox.ButtonBoxChild)(w2[this.buttonCancel]));
-            w3.Expand = false;
-            w3.Fill = false;
+            Gtk.ButtonBox.ButtonBoxChild w36 = ((Gtk.ButtonBox.ButtonBoxChild)(w35[this.buttonCancel]));
+            w36.Expand = false;
+            w36.Fill = false;
             // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
             this.buttonOk = new Gtk.Button();
             this.buttonOk.CanDefault = true;
@@ -54,16 +260,23 @@ namespace MonoDevelop.Debugger {
             this.buttonOk.UseUnderline = true;
             this.buttonOk.Label = "gtk-ok";
             this.AddActionWidget(this.buttonOk, -5);
-            Gtk.ButtonBox.ButtonBoxChild w4 = ((Gtk.ButtonBox.ButtonBoxChild)(w2[this.buttonOk]));
-            w4.Position = 1;
-            w4.Expand = false;
-            w4.Fill = false;
+            Gtk.ButtonBox.ButtonBoxChild w37 = ((Gtk.ButtonBox.ButtonBoxChild)(w35[this.buttonOk]));
+            w37.Position = 1;
+            w37.Expand = false;
+            w37.Fill = false;
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
-            this.DefaultWidth = 400;
-            this.DefaultHeight = 300;
+            this.DefaultWidth = 910;
+            this.DefaultHeight = 451;
             this.Show();
+            this.entryFilter.Changed += new System.EventHandler(this.OnEntryFilterChanged);
+            this.entryFilter.Activated += new System.EventHandler(this.OnEntryFilterActivated);
+            this.treeExceptions.KeyPressEvent += new Gtk.KeyPressEventHandler(this.OnTreeExceptionsKeyPressEvent);
+            this.buttonAdd.Clicked += new System.EventHandler(this.OnButtonAddClicked);
+            this.buttonRemove.Clicked += new System.EventHandler(this.OnButtonRemoveClicked);
+            this.treeSelected.KeyPressEvent += new Gtk.KeyPressEventHandler(this.OnTreeSelectedKeyPressEvent);
+            this.buttonOk.Clicked += new System.EventHandler(this.OnButtonOkClicked);
         }
     }
 }
