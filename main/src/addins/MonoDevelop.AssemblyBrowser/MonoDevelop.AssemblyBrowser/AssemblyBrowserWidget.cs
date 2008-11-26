@@ -60,7 +60,7 @@ namespace MonoDevelop.AssemblyBrowser
 				return treeView;
 			}
 		}
-		
+		Mono.TextEditor.TextEditor inspectEditor = new Mono.TextEditor.TextEditor ();
 		public AssemblyBrowserWidget ()
 		{
 			this.Build();
@@ -92,14 +92,27 @@ namespace MonoDevelop.AssemblyBrowser
 			this.documentationLabel.ModifyFont (Pango.FontDescription.FromString ("Sans 12"));
 			this.documentationLabel.ModifyBg (Gtk.StateType.Normal, new Gdk.Color (255, 255, 225));
 			this.documentationLabel.Wrap = true;
-			this.inspectLabel.ModifyFont (Pango.FontDescription.FromString ("Monospace 10"));
-			this.inspectLabel.ModifyBg (Gtk.StateType.Normal, new Gdk.Color (255, 255, 250));
+			this.inspectEditor.Options = new Mono.TextEditor.TextEditorOptions ();
+			this.inspectEditor.Options.FontName = "Monospace 10";
+			this.inspectEditor.Options.ShowFoldMargin = false;
+			this.inspectEditor.Options.ShowIconMargin = false;
+			this.inspectEditor.Options.ShowInvalidLines = false;
+			this.inspectEditor.Options.ShowLineNumberMargin = false;
+			this.inspectEditor.Options.ShowSpaces = false;
+			this.inspectEditor.Options.ShowTabs = false;
+			this.inspectEditor.Options.HighlightCaretLine = true;
+			this.inspectEditor.Document.ReadOnly = true;
+			this.inspectEditor.Document.SyntaxMode = new Mono.TextEditor.Highlighting.MarkupSyntaxMode ();
+			this.scrolledwindow3.Child = inspectEditor;
+			this.scrolledwindow3.ShowAll ();
+			
+//			this.inspectLabel.ModifyBg (Gtk.StateType.Normal, new Gdk.Color (255, 255, 250));
 			
 			this.vpaned1.ExposeEvent += VPaneExpose;
 			this.hpaned1.ExposeEvent += HPaneExpose;
 			this.notebook1.SwitchPage += delegate {
 				// Hack for the switch page select all bug.
-				this.inspectLabel.Selectable = false;
+//				this.inspectLabel.Selectable = false;
 			};
 			this.notebook1.GetNthPage (0).Hide ();
 			treeView.Tree.CursorChanged += delegate {
@@ -158,14 +171,14 @@ namespace MonoDevelop.AssemblyBrowser
 					if (searchMode == SearchMode.Disassembler) {
 						this.notebook1.Page = 0;
 						int idx = DomMethodNodeBuilder.Disassemble ((DomCecilMethod)member, false).ToUpper ().IndexOf (searchEntry.Text.ToUpper ());
-						this.inspectLabel.Selectable = true;
-						this.inspectLabel.SelectRegion (idx, idx + searchEntry.Text.Length);
+//						this.inspectLabel.Selectable = true;
+//						this.inspectLabel.SelectRegion (idx, idx + searchEntry.Text.Length);
 					}
 					if (searchMode == SearchMode.Decompiler) {
 						this.notebook1.Page = 1;
 						int idx = DomMethodNodeBuilder.Decompile ((DomCecilMethod)member, false).ToUpper ().IndexOf (searchEntry.Text.ToUpper ());
-						this.inspectLabel.Selectable = true;
-						this.inspectLabel.SelectRegion (idx, idx + searchEntry.Text.Length);
+//						this.inspectLabel.Selectable = true;
+//						this.inspectLabel.SelectRegion (idx, idx + searchEntry.Text.Length);
 					}
 				}
 			};
@@ -617,22 +630,23 @@ namespace MonoDevelop.AssemblyBrowser
 				return;
 			IAssemblyBrowserNodeBuilder builder = nav.TypeNodeBuilder as IAssemblyBrowserNodeBuilder;
 			if (builder == null) {
-				this.inspectLabel.Markup = "";
+				this.inspectEditor.Document.Text = "";
 				return;
 			}
-			this.inspectLabel.Selectable = false;
+			//this.inspectLabel.Selectable = false;
 			switch (this.languageCombobox.Active) {
 			case 0:
-				this.inspectLabel.Markup = builder.GetDisassembly (nav);
+				this.inspectEditor.Document.Text = builder.GetDisassembly (nav);
 				break;
 			case 1:
-				this.inspectLabel.Markup = builder.GetDecompiledCode (nav);
+				this.inspectEditor.Document.Text = builder.GetDecompiledCode (nav);
 				break;
 			default:
-				this.inspectLabel.Markup = "Invalid combobox value: " + this.languageCombobox.Active;
+				this.inspectEditor.Document.Text = "Invalid combobox value: " + this.languageCombobox.Active;
 				break;
 			}
-			this.inspectLabel.Selectable = true;
+			this.inspectEditor.QueueDraw ();
+//			this.inspectLabel.Selectable = true;
 		}
 			
 		void CreateOutput ()

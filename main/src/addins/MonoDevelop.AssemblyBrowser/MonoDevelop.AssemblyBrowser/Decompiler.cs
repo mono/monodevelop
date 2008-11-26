@@ -707,22 +707,19 @@ namespace MonoDevelop.AssemblyBrowser
 					result.Append ("exception:" + e);
 				}
 				result.Length = 0;
-				result.AppendLine ();
 				int[] sortedKeys = new int [statements.Count];
 				statements.Keys.CopyTo (sortedKeys, 0);
 				Array.Sort (sortedKeys);
 				foreach (int k in sortedKeys) {
-					result.Append (String.Format("{0:X4}", k) + ":  ");
+				//	result.Append (String.Format("{0:X4}", k) + ":  ");
 					if (statements[k].HasLabel ()) {
-						result.Append (statements[k].Label + ": ");
-					} else {
-						result.Append ("     ");
+						result.Append (statements[k].Label + ":");
 					}
+					result.Append ("\t");
 					result.Append (statements[k].StringValue);
 					result.AppendLine ();
 				}
 			}
-			result.AppendLine ();
 			return result.ToString ();
 		}
 		

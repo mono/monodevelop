@@ -42,6 +42,7 @@ GENERATED_FILES =
 
 DEPS =  \
 	$(top_builddir)/build/bin/Mono.Cecil.dll \
+	$(top_builddir)/build/bin/Mono.TextEditor.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \

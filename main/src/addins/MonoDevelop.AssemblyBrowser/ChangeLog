@@ -1,3 +1,13 @@
+2008-11-26  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.AssemblyBrowser/Decompiler.cs:
+	* MonoDevelop.AssemblyBrowser/NamespaceBuilder.cs:
+	* MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs:
+	* MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:
+	* MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:
+	* MonoDevelop.AssemblyBrowser/DomPropertyNodeBuilder.cs: Worked on
+	assembly browser.
+
 2008-11-11  Mike Krüger  <mike@icsharpcode.net>
 
 	* MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs: removed the

@@ -53,7 +53,17 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			this.widget = widget;
 		}*/
-		
+		internal static Ambience ambience;
+
+		static DomTypeNodeBuilder ()
+		{
+			ambience = AmbienceService.GetAmbience ("text/x-csharp").Clone ();
+			ambience.PostProcess += delegate (IDomVisitable domVisitable, OutputFlags flags, ref string outString) {
+				if (domVisitable is IReturnType) {
+					outString = "<span foreground=\"blue\"><u>" + outString + "</u></span>";
+				}
+			};
+		}
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
@@ -106,7 +116,7 @@ namespace MonoDevelop.AssemblyBrowser
 			result.AppendLine ();
 		}
 		
-		string IAssemblyBrowserNodeBuilder.GetDescription (ITreeNavigator navigator)
+		public string GetDescription (ITreeNavigator navigator)
 		{
 			IType type = (IType)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
@@ -121,16 +131,17 @@ namespace MonoDevelop.AssemblyBrowser
 			return result.ToString ();
 		}
 		
-		string IAssemblyBrowserNodeBuilder.GetDisassembly (ITreeNavigator navigator)
+		public string GetDisassembly (ITreeNavigator navigator)
 		{
 			IType type = (IType)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
-			Ambience ambience = AmbienceService.GetAmbience ("text/x-csharp");
+			
 			result.Append (ambience.GetString (type, OutputFlags.AssemblyBrowserDescription));
-			result.AppendLine ();
 			bool first = true;
 			
 			if (type.ClassType == ClassType.Enum) {
+				result.Append (" {");
+				result.AppendLine ();
 				int length = result.Length;
 				foreach (IField field in type.Fields) {
 					if ((field.Modifiers & Modifiers.SpecialName) == Modifiers.SpecialName)
@@ -142,8 +153,12 @@ namespace MonoDevelop.AssemblyBrowser
 					result.AppendLine ();
 				}
 				result.Length = length;
+				result.AppendLine ();
+				result.Append ("}");
 				return result.ToString ();
 			}
+			result.AppendLine ();
+			result.Append ("{");
 			
 //			Style colorStyle = TextEditorOptions.Options.GetColorStyle (widget);
 //			ChunkStyle comments = colorStyle.GetChunkStyle ("comment");
@@ -164,11 +179,13 @@ namespace MonoDevelop.AssemblyBrowser
 				first = false;
 				result.Append ("\t");
 				result.Append (ambience.GetString (field, OutputFlags.AssemblyBrowserDescription));
+				result.Append (";");
 				result.AppendLine ();
 			}
 			first = true;
 			foreach (IEvent evt in type.Events) {
 				if (first) {
+					result.AppendLine ();
 					result.Append ("\t");
 					result.Append (commentSpan);
 					result.Append (ambience.SingleLineComment (GettextCatalog.GetString ("Events")));
@@ -178,6 +195,7 @@ namespace MonoDevelop.AssemblyBrowser
 				first = false;
 				result.Append ("\t");
 				result.Append (ambience.GetString (evt, OutputFlags.AssemblyBrowserDescription));
+				result.Append (";");
 				result.AppendLine ();
 			}
 			first = true;
@@ -195,6 +213,7 @@ namespace MonoDevelop.AssemblyBrowser
 				first = false;
 				result.Append ("\t");
 				result.Append (ambience.GetString (method, OutputFlags.AssemblyBrowserDescription));
+				result.Append (";");
 				result.AppendLine ();
 			}
 			first = true;
@@ -210,13 +229,21 @@ namespace MonoDevelop.AssemblyBrowser
 				first = false;
 				result.Append ("\t");
 				result.Append (ambience.GetString (property, OutputFlags.AssemblyBrowserDescription));
+				result.Append (" {");
+				if (property.HasGet)
+					result.Append (" get;");
+				if (property.HasSet)
+					result.Append (" set;");
+				result.Append (" }");
 				result.AppendLine ();
 			}
+			result.Append ("}");
+			result.AppendLine ();
 			return result.ToString ();
 		}
-		string IAssemblyBrowserNodeBuilder.GetDecompiledCode (ITreeNavigator navigator)
+		public string GetDecompiledCode (ITreeNavigator navigator)
 		{
-			return "";
+			return GetDisassembly (navigator);
 		}
 		#endregion
 		

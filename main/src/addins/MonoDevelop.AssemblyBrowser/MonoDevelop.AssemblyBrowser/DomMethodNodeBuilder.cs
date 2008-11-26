@@ -134,7 +134,13 @@ namespace MonoDevelop.AssemblyBrowser
 			DomCecilMethod method = navigator.DataItem as DomCecilMethod;
 			if (method == null)
 				return "";
-			return Decompile (method, true);
+			StringBuilder result = new StringBuilder ();
+			result.Append (DomTypeNodeBuilder.ambience.GetString (method, OutputFlags.AssemblyBrowserDescription));
+			result.AppendLine ();
+			result.Append ("{");result.AppendLine ();
+			result.Append (Decompile (method, true));
+			result.Append ("}");
+			return result.ToString ();
 		}
 		
 		public static string Disassemble (DomCecilMethod method, bool markup)
@@ -181,7 +187,14 @@ namespace MonoDevelop.AssemblyBrowser
 			DomCecilMethod method = navigator.DataItem as DomCecilMethod;
 			if (method == null)
 				return "";
-			return Disassemble (method, true);
+
+			NetAmbience netAmbience = new NetAmbience ();
+			StringBuilder result = new StringBuilder ();
+			result.Append (netAmbience.GetString (method, OutputFlags.AssemblyBrowserDescription));
+			result.AppendLine ();
+			result.AppendLine ();
+			result.Append (Disassemble (method, true));
+			return result.ToString ();
 		}
 		#endregion
 

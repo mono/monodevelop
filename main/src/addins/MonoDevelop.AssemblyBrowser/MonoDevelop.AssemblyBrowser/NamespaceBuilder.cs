@@ -91,27 +91,29 @@ namespace MonoDevelop.AssemblyBrowser
 			return result.ToString ();
 		}
 		
-		string IAssemblyBrowserNodeBuilder.GetDisassembly (ITreeNavigator navigator)
+		public string GetDisassembly (ITreeNavigator navigator)
 		{
 			Namespace ns = (Namespace)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
-			Ambience ambience = AmbienceService.GetAmbience ("text/x-csharp");
+			Ambience ambience = DomTypeNodeBuilder.ambience;
 			if (!String.IsNullOrEmpty (ns.Name)) {
 				result.Append (ambience.GetString (ns.Name, OutputFlags.AssemblyBrowserDescription));
 				result.AppendLine ();
 			}
+			result.Append ("{");result.AppendLine ();
 			foreach (IType type in ns.Types) {
 				if (!String.IsNullOrEmpty (ns.Name))
 					result.Append ("\t");
 				result.Append (ambience.GetString (type, OutputFlags.AssemblyBrowserDescription));
 				result.AppendLine ();
 			}
+			result.Append ("}");
 			result.AppendLine ();
 			return result.ToString ();
 		}
-		string IAssemblyBrowserNodeBuilder.GetDecompiledCode (ITreeNavigator navigator)
+		public string GetDecompiledCode (ITreeNavigator navigator)
 		{
-			return "";
+			return this.GetDisassembly (navigator);
 		}
 		#endregion
 	}

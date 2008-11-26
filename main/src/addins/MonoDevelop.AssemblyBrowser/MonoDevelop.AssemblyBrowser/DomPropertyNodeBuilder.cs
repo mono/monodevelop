@@ -103,16 +103,43 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		string IAssemblyBrowserNodeBuilder.GetDisassembly (ITreeNavigator navigator)
 		{
+			NetAmbience netAmbience = new NetAmbience ();
 			IProperty property = (IProperty)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
-			result.Append (AmbienceService.GetAmbience ("text/x-csharp").GetString (property, OutputFlags.AssemblyBrowserDescription));
+			result.Append (netAmbience.GetString (property, OutputFlags.AssemblyBrowserDescription));
+			result.AppendLine ();
+			result.AppendLine ();
+			DomCecilProperty cecilProperty = property as DomCecilProperty;
+			if (property.HasGet) {
+				result.Append ("Getter:");result.AppendLine ();
+				result.Append (DomMethodNodeBuilder.Disassemble (cecilProperty.GetMethod as DomCecilMethod, true).Replace ("\t", "\t\t"));
+			}
+			if (property.HasSet) {
+				result.Append ("Setter:");result.AppendLine ();
+				result.Append (DomMethodNodeBuilder.Disassemble (cecilProperty.SetMethod as DomCecilMethod, true).Replace ("\t", "\t\t"));
+			}
+			
 			return result.ToString ();
 		}
+		
 		string IAssemblyBrowserNodeBuilder.GetDecompiledCode (ITreeNavigator navigator)
 		{
 			IProperty property = (IProperty)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
-			result.Append (AmbienceService.GetAmbience ("text/x-csharp").GetString (property, OutputFlags.AssemblyBrowserDescription));
+			result.Append (DomTypeNodeBuilder.ambience.GetString (property, OutputFlags.AssemblyBrowserDescription));
+			result.Append ("{");result.AppendLine ();
+			DomCecilProperty cecilProperty = property as DomCecilProperty;
+			if (property.HasGet) {
+				result.Append ("\t<b>get</b> {");result.AppendLine ();
+				result.Append (DomMethodNodeBuilder.Decompile (cecilProperty.GetMethod as DomCecilMethod, true).Replace ("\t", "\t\t"));
+				result.Append ("\t}");result.AppendLine ();
+			}
+			if (property.HasSet) {
+				result.Append ("\t<b>set</b> {");result.AppendLine ();
+				result.Append (DomMethodNodeBuilder.Decompile (cecilProperty.SetMethod as DomCecilMethod, true).Replace ("\t", "\t\t"));
+				result.Append ("\t}");result.AppendLine ();
+			}
+			result.Append ("}");
 			return result.ToString ();
 		}
 		#endregion

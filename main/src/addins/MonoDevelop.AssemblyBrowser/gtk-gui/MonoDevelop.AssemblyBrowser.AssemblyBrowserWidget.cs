@@ -37,9 +37,7 @@ namespace MonoDevelop.AssemblyBrowser {
         
         private Gtk.ComboBox languageCombobox;
         
-        private Gtk.ScrolledWindow GtkScrolledWindow1;
-        
-        private Gtk.Label inspectLabel;
+        private Gtk.ScrolledWindow scrolledwindow3;
         
         private Gtk.VBox searchWidget;
         
@@ -157,30 +155,16 @@ namespace MonoDevelop.AssemblyBrowser {
             w13.Expand = false;
             w13.Fill = false;
             // Container child vboxInspect.Gtk.Box+BoxChild
-            this.GtkScrolledWindow1 = new Gtk.ScrolledWindow();
-            this.GtkScrolledWindow1.Name = "GtkScrolledWindow1";
-            this.GtkScrolledWindow1.ShadowType = ((Gtk.ShadowType)(1));
-            // Container child GtkScrolledWindow1.Gtk.Container+ContainerChild
-            Gtk.Viewport w14 = new Gtk.Viewport();
-            w14.ShadowType = ((Gtk.ShadowType)(0));
-            // Container child GtkViewport3.Gtk.Container+ContainerChild
-            this.inspectLabel = new Gtk.Label();
-            this.inspectLabel.Name = "inspectLabel";
-            this.inspectLabel.Xpad = 6;
-            this.inspectLabel.Ypad = 6;
-            this.inspectLabel.Xalign = 0F;
-            this.inspectLabel.Yalign = 0F;
-            this.inspectLabel.LabelProp = "";
-            this.inspectLabel.UseMarkup = true;
-            this.inspectLabel.Selectable = true;
-            w14.Add(this.inspectLabel);
-            this.GtkScrolledWindow1.Add(w14);
-            this.vboxInspect.Add(this.GtkScrolledWindow1);
-            Gtk.Box.BoxChild w17 = ((Gtk.Box.BoxChild)(this.vboxInspect[this.GtkScrolledWindow1]));
-            w17.Position = 1;
+            this.scrolledwindow3 = new Gtk.ScrolledWindow();
+            this.scrolledwindow3.CanFocus = true;
+            this.scrolledwindow3.Name = "scrolledwindow3";
+            this.scrolledwindow3.ShadowType = ((Gtk.ShadowType)(1));
+            this.vboxInspect.Add(this.scrolledwindow3);
+            Gtk.Box.BoxChild w14 = ((Gtk.Box.BoxChild)(this.vboxInspect[this.scrolledwindow3]));
+            w14.Position = 1;
             this.notebook1.Add(this.vboxInspect);
-            Gtk.Notebook.NotebookChild w18 = ((Gtk.Notebook.NotebookChild)(this.notebook1[this.vboxInspect]));
-            w18.Position = 1;
+            Gtk.Notebook.NotebookChild w15 = ((Gtk.Notebook.NotebookChild)(this.notebook1[this.vboxInspect]));
+            w15.Position = 1;
             // Container child notebook1.Gtk.Notebook+NotebookChild
             this.searchWidget = new Gtk.VBox();
             this.searchWidget.Name = "searchWidget";
@@ -195,10 +179,10 @@ namespace MonoDevelop.AssemblyBrowser {
             this.label4.LabelProp = Mono.Unix.Catalog.GetString("_Search:");
             this.label4.UseUnderline = true;
             this.hbox1.Add(this.label4);
-            Gtk.Box.BoxChild w19 = ((Gtk.Box.BoxChild)(this.hbox1[this.label4]));
-            w19.Position = 0;
-            w19.Expand = false;
-            w19.Fill = false;
+            Gtk.Box.BoxChild w16 = ((Gtk.Box.BoxChild)(this.hbox1[this.label4]));
+            w16.Position = 0;
+            w16.Expand = false;
+            w16.Fill = false;
             // Container child hbox1.Gtk.Box+BoxChild
             this.searchEntry = new Gtk.Entry();
             this.searchEntry.CanFocus = true;
@@ -206,31 +190,31 @@ namespace MonoDevelop.AssemblyBrowser {
             this.searchEntry.IsEditable = true;
             this.searchEntry.InvisibleChar = '●';
             this.hbox1.Add(this.searchEntry);
-            Gtk.Box.BoxChild w20 = ((Gtk.Box.BoxChild)(this.hbox1[this.searchEntry]));
-            w20.Position = 1;
+            Gtk.Box.BoxChild w17 = ((Gtk.Box.BoxChild)(this.hbox1[this.searchEntry]));
+            w17.Position = 1;
             // Container child hbox1.Gtk.Box+BoxChild
             this.label5 = new Gtk.Label();
             this.label5.Name = "label5";
             this.label5.LabelProp = Mono.Unix.Catalog.GetString("_in:");
             this.label5.UseUnderline = true;
             this.hbox1.Add(this.label5);
-            Gtk.Box.BoxChild w21 = ((Gtk.Box.BoxChild)(this.hbox1[this.label5]));
-            w21.Position = 2;
-            w21.Expand = false;
-            w21.Fill = false;
+            Gtk.Box.BoxChild w18 = ((Gtk.Box.BoxChild)(this.hbox1[this.label5]));
+            w18.Position = 2;
+            w18.Expand = false;
+            w18.Fill = false;
             // Container child hbox1.Gtk.Box+BoxChild
             this.searchInCombobox = Gtk.ComboBox.NewText();
             this.searchInCombobox.Name = "searchInCombobox";
             this.hbox1.Add(this.searchInCombobox);
-            Gtk.Box.BoxChild w22 = ((Gtk.Box.BoxChild)(this.hbox1[this.searchInCombobox]));
-            w22.Position = 3;
-            w22.Expand = false;
-            w22.Fill = false;
+            Gtk.Box.BoxChild w19 = ((Gtk.Box.BoxChild)(this.hbox1[this.searchInCombobox]));
+            w19.Position = 3;
+            w19.Expand = false;
+            w19.Fill = false;
             this.searchWidget.Add(this.hbox1);
-            Gtk.Box.BoxChild w23 = ((Gtk.Box.BoxChild)(this.searchWidget[this.hbox1]));
-            w23.Position = 0;
-            w23.Expand = false;
-            w23.Fill = false;
+            Gtk.Box.BoxChild w20 = ((Gtk.Box.BoxChild)(this.searchWidget[this.hbox1]));
+            w20.Position = 0;
+            w20.Expand = false;
+            w20.Fill = false;
             // Container child searchWidget.Gtk.Box+BoxChild
             this.scrolledwindow1 = new Gtk.ScrolledWindow();
             this.scrolledwindow1.CanFocus = true;
@@ -243,11 +227,11 @@ namespace MonoDevelop.AssemblyBrowser {
             this.searchTreeview.HeadersClickable = true;
             this.scrolledwindow1.Add(this.searchTreeview);
             this.searchWidget.Add(this.scrolledwindow1);
-            Gtk.Box.BoxChild w25 = ((Gtk.Box.BoxChild)(this.searchWidget[this.scrolledwindow1]));
-            w25.Position = 1;
+            Gtk.Box.BoxChild w22 = ((Gtk.Box.BoxChild)(this.searchWidget[this.scrolledwindow1]));
+            w22.Position = 1;
             this.notebook1.Add(this.searchWidget);
-            Gtk.Notebook.NotebookChild w26 = ((Gtk.Notebook.NotebookChild)(this.notebook1[this.searchWidget]));
-            w26.Position = 2;
+            Gtk.Notebook.NotebookChild w23 = ((Gtk.Notebook.NotebookChild)(this.notebook1[this.searchWidget]));
+            w23.Position = 2;
             this.hpaned1.Add(this.notebook1);
             this.Add(this.hpaned1);
             if ((this.Child != null)) {
