@@ -60,7 +60,17 @@ namespace MonoDevelop.Projects.Dom
 				return LookupSpecialMethod (SetMethodPrefix);
 			}
 		}
+		public override bool HasGet {
+			get {
+				return GetMethod != null;
+			}
+		}
 		
+		public override bool HasSet {
+			get {
+				return SetMethod != null;
+			}
+		}
 		
 		public DomCecilProperty (MonoDevelop.Projects.Dom.IType declaringType, bool keepDefinitions, PropertyDefinition propertyDefinition)
 		{

@@ -1,5 +1,13 @@
 2008-11-26  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Dom/DomMethod.cs:
+	* MonoDevelop.Projects.Dom/DomProperty.cs:
+	* MonoDevelop.Projects.Dom.Output/Ambience.cs:
+	* MonoDevelop.Projects.Dom/DomCecilProperty.cs: Worked on ambiences/dom
+	output.
+
+2008-11-26  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Dom.Output/Ambience.cs: fixed ambience modifier
 	outputs too many spaces.
 

@@ -74,9 +74,9 @@ namespace MonoDevelop.Projects.Dom.Output
 		protected string GetString (Modifiers m)
 		{
 			if ((m & Modifiers.ProtectedAndInternal) == Modifiers.ProtectedAndInternal)
-				return GetString (m & ~Modifiers.ProtectedAndInternal) + " " + modifiers[Modifiers.ProtectedAndInternal];
+				return (GetString (m & ~Modifiers.ProtectedAndInternal) + " " + modifiers[Modifiers.ProtectedAndInternal]).Trim ();
 			if ((m & Modifiers.ProtectedOrInternal) == Modifiers.ProtectedOrInternal)
-				return GetString (m & ~Modifiers.ProtectedOrInternal) + " " + modifiers[Modifiers.ProtectedOrInternal];
+				return (GetString (m & ~Modifiers.ProtectedOrInternal) + " " + modifiers[Modifiers.ProtectedOrInternal]).Trim ();
 			
 			StringBuilder result = new StringBuilder ();
 			foreach (Modifiers singleModifier in Enum.GetValues (typeof(Modifiers))) {

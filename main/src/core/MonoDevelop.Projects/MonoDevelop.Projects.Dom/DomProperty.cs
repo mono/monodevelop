@@ -49,17 +49,18 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public bool HasGet {
+		public virtual bool HasGet {
 			get {
 				return (PropertyModifier & PropertyModifier.HasGet) == PropertyModifier.HasGet;
 			}
 		}
 		
-		public bool HasSet {
+		public virtual bool HasSet {
 			get {
 				return (PropertyModifier & PropertyModifier.HasSet) == PropertyModifier.HasSet;
 			}
 		}
+		
 		static readonly ReadOnlyCollection<IParameter> emptyParameters = new ReadOnlyCollection<IParameter> (new IParameter [0]);
 		public virtual ReadOnlyCollection<IParameter> Parameters {
 			get {

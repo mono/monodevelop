@@ -150,7 +150,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		public bool Extends (ProjectDom dom, IType type)
 		{
-			if (!IsExtension)
+			if (dom == null || type == null || Parameters.Count == 0 || !IsExtension)
 				return false;
 			string extensionTableKey = Parameters[0].ReturnType.FullName + "/" + type.FullName;
 			lock (extensionTable) {
