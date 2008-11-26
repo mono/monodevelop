@@ -1,3 +1,8 @@
+2008-11-26  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom.Output/Ambience.cs: ambience strings now can
+	be post processed.
+
 2008-11-24  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs:

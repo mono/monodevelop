@@ -377,7 +377,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 				}
 				
 				if (!alreadyImplemented)
-					toImplement.Add (new KeyValuePair<IMember,IReturnType> (ev, null));
+					toImplement.Add (new KeyValuePair<IMember,IReturnType> (ev, needsExplicitly ? prefix : null));
 			}
 			
 			// Stub out non-implemented methods defined by @iface

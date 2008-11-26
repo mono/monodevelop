@@ -169,8 +169,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			foreach (CodeTypeMember member in members) {
 				positions.Add (pos);
 				string code = GenerateCodeFromMember (member);
-				
-				//spacing between inserted members
+					//spacing between inserted members
 				if (first)
 					first = false;
 				else
@@ -247,8 +246,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return new CodeTypeReference (type.FullName);
 		}
 		
-		public virtual IMember ImplementMember (RefactorerContext ctx, IType cls, IMember member, 
-		                                        IReturnType privateImplementationType)
+		public virtual IMember ImplementMember (RefactorerContext ctx, IType cls, IMember member, IReturnType privateImplementationType)
 		{
 			CodeTypeMember m = CreateImplementation (ctx, cls, member, privateImplementationType);
 			return AddMember (ctx, cls, m);

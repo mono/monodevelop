@@ -162,6 +162,11 @@ namespace MonoDevelop.Projects.Dom.Output
 			return str.Replace (">", "&gt;"); 
 		}
 		
+		public Ambience Clone ()
+		{
+			return (Ambience)this.MemberwiseClone ();
+		}
+		
 		public abstract string SingleLineComment (string text);
 		public abstract string GetString (string nameSpace, OutputFlags flags);
 		
@@ -178,7 +183,15 @@ namespace MonoDevelop.Projects.Dom.Output
 		{
 			if (domVisitable == null)
 				return nullString;
-			return (string)domVisitable.AcceptVisitor (OutputVisitor, flags);
+			string result = (string)domVisitable.AcceptVisitor (OutputVisitor, flags);
+			if (PostProcess != null)
+				PostProcess (domVisitable, flags, ref result);
+			return result;
 		}
+		
+		public event PostProcessString PostProcess;
+
+		
+		public delegate void PostProcessString (IDomVisitable domVisitable, OutputFlags flags, ref string outString);
 	}
 }
