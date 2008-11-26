@@ -1,5 +1,10 @@
 2008-11-25  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide.addin.xml: Remove no-longer-valid commands from 
+	  solution pad context menu.
+
+2008-11-25  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.Gui.Dialogs/BreakpointPropertiesDialog.cs: Fix typo.
 
 2008-11-25  Lluis Sanchez Gual  <lluis@novell.com>

@@ -994,7 +994,6 @@
 		</ItemSet>
 		<SeparatorItem id = "RunSeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.RunEntry" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.DebugEntry" />
 		<SeparatorItem id = "CombineBuildGroupSeparator" />
 		<ItemSet id = "CombineAddMenu" _label = "_Add" >
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddNewSolution" />
@@ -1024,7 +1023,6 @@
 		</ItemSet>
 		<SeparatorItem id = "RunSeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.RunEntry" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.DebugEntry" />
 		<SeparatorItem id = "CombineBuildGroupSeparator" />
 		<ItemSet id = "CombineAddMenu" _label = "_Add" >
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddNewProject" />
@@ -1152,7 +1150,6 @@
 		</ItemSet>
 		<SeparatorItem id = "RunSeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.RunEntry" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.DebugEntry" />
 		<SeparatorItem id = "BuildGroupSeparator" />
 		<ItemSet id = "Add" _label = "_Add">
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddNewFiles" />
