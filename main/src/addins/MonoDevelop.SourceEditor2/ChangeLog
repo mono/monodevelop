@@ -1,3 +1,10 @@
+2008-11-26  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs:
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Moved command handlers
+	to witget. Fixing Bug 448915 - Toggle Line Comment(s) not available
+	in Alpha 2.
+
 2008-11-25  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:

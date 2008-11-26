@@ -29,16 +29,24 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Gtk;
 using Mono.TextEditor;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Core;
+using MonoDevelop.Projects.Gui.Completion;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Dom.Output;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Components.Commands;
+using MonoDevelop.Projects;
+using MonoDevelop.Projects.Text;
 using MonoDevelop.Ide.Commands;
+using MonoDevelop.Debugger;
+using Mono.Debugging.Client;
+using MonoDevelop.DesignerSupport.Toolbox;
+using MonoDevelop.Core.Gui;
+
 using Document = Mono.TextEditor.Document;
+using Services = MonoDevelop.Projects.Services;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -875,6 +883,163 @@ namespace MonoDevelop.SourceEditor
 			TextEditor.GrabFocus ();
 		}
 		#endregion
+	
+		public Mono.TextEditor.Document Document {
+			get {
+				return TextEditor.Document;
+			}
+		}
+		
+		#region Help
+
+		[CommandHandler (HelpCommands.Help)]
+		internal void MonodocResolver ()
+		{
+			ResolveResult res = TextEditor.GetLanguageItem (TextEditor.Caret.Offset);
+			if (res != null && res.StaticResolve) {
+				IdeApp.HelpOperations.ShowHelp ("");
+			}
+		}
+		
+		[CommandUpdateHandler (HelpCommands.Help)]
+		internal void MonodocResolverUpdate (CommandInfo cinfo)
+		{
+			ResolveResult res = TextEditor.GetLanguageItem (TextEditor.Caret.Offset);
+			if (res == null || !res.StaticResolve)
+				cinfo.Bypass = true;
+		}
+		
+		#endregion
+		
+		#region commenting and indentation
+		[CommandUpdateHandler (EditCommands.ToggleCodeComment)]
+		protected void OnUpdateToggleComment (MonoDevelop.Components.Commands.CommandInfo info)
+		{
+			ILanguageBinding binding = Services.Languages.GetBindingPerFileName (view.ContentName);
+			info.Visible = binding != null && binding.CommentTag != null;
+		}
+		
+		[CommandHandler (EditCommands.ToggleCodeComment)]
+		public void ToggleCodeComment ()
+		{
+			bool comment = false;
+			ILanguageBinding binding = Services.Languages.GetBindingPerFileName (view.ContentName);
+			if (binding == null || binding.CommentTag == null)
+				return;
+			string commentTag = binding.CommentTag;
+			foreach (LineSegment line in this.textEditor.SelectedLines) {
+				string text = Document.GetTextAt (line);
+				string trimmedText = text.TrimStart ();
+				if (!trimmedText.StartsWith (commentTag)) {
+					comment = true;
+					break;
+				}
+			}
+			if (comment) {
+				CommentSelectedLines (commentTag);
+			} else {
+				UncommentSelectedLines (commentTag);
+			}
+		}
+		
+		void CommentSelectedLines (string commentTag)
+		{
+			int startLineNr = TextEditor.IsSomethingSelected ? Document.OffsetToLineNumber (TextEditor.SelectionRange.Offset) : TextEditor.Caret.Line;
+			int endLineNr   = TextEditor.IsSomethingSelected ? Document.OffsetToLineNumber (TextEditor.SelectionRange.EndOffset) : TextEditor.Caret.Line;
+			if (endLineNr < 0)
+				endLineNr = Document.LineCount;
+			
+			LineSegment anchorLine   = TextEditor.IsSomethingSelected ? TextEditor.Document.GetLineByOffset (TextEditor.SelectionAnchor) : null;
+			int         anchorColumn = TextEditor.IsSomethingSelected ? TextEditor.SelectionAnchor - anchorLine.Offset : -1;
+			
+			Document.BeginAtomicUndo ();
+			foreach (LineSegment line in TextEditor.SelectedLines) {
+				Document.Insert (line.Offset, commentTag);
+			}
+			if (TextEditor.IsSomethingSelected) {
+				if (TextEditor.SelectionAnchor < TextEditor.Caret.Offset) {
+					if (anchorColumn != 0) 
+						TextEditor.SelectionAnchor = System.Math.Min (anchorLine.Offset + anchorLine.EditableLength, System.Math.Max (anchorLine.Offset, TextEditor.SelectionAnchor + commentTag.Length));
+				} else {
+					if (anchorColumn != 0) {
+						TextEditor.SelectionAnchor = System.Math.Min (anchorLine.Offset + anchorLine.EditableLength, System.Math.Max (anchorLine.Offset, anchorLine.Offset + anchorColumn + commentTag.Length));
+					} else {
+						TextEditor.SelectionAnchor = anchorLine.Offset;
+					}
+				}
+			}
+			
+			if (TextEditor.Caret.Column != 0) {
+				TextEditor.Caret.PreserveSelection = true;
+				TextEditor.Caret.Column += commentTag.Length;
+				TextEditor.Caret.PreserveSelection = false;
+			}
+			
+			if (TextEditor.IsSomethingSelected) 
+				TextEditor.ExtendSelectionTo (TextEditor.Caret.Offset);
+			Document.EndAtomicUndo ();
+			Document.CommitMultipleLineUpdate (startLineNr, endLineNr);
+		}
+		
+		void UncommentSelectedLines (string commentTag)
+		{
+			int startLineNr = TextEditor.IsSomethingSelected ? Document.OffsetToLineNumber (TextEditor.SelectionRange.Offset) : TextEditor.Caret.Line;
+			int endLineNr   = TextEditor.IsSomethingSelected ? Document.OffsetToLineNumber (TextEditor.SelectionRange.EndOffset) : TextEditor.Caret.Line;
+			if (endLineNr < 0)
+				endLineNr = Document.LineCount;
+			LineSegment anchorLine   = TextEditor.IsSomethingSelected ? TextEditor.Document.GetLineByOffset (TextEditor.SelectionAnchor) : null;
+			int         anchorColumn = TextEditor.IsSomethingSelected ? TextEditor.SelectionAnchor - anchorLine.Offset : -1;
+			
+			Document.BeginAtomicUndo ();
+			int first = -1;
+			int last  = 0;
+			foreach (LineSegment line in TextEditor.SelectedLines) {
+				string text = Document.GetTextAt (line);
+				string trimmedText = text.TrimStart ();
+				int length = 0;
+				if (trimmedText.StartsWith (commentTag)) {
+					Document.Remove (line.Offset + (text.Length - trimmedText.Length), commentTag.Length);
+					length = commentTag.Length;
+				}
+				last = length;
+				if (first < 0)
+					first = last;
+			}
+			
+			if (TextEditor.IsSomethingSelected) {
+				if (TextEditor.SelectionAnchor < TextEditor.Caret.Offset) {
+					TextEditor.SelectionAnchor = System.Math.Min (anchorLine.Offset + anchorLine.EditableLength, System.Math.Max (anchorLine.Offset, TextEditor.SelectionAnchor - first));
+				} else {
+					TextEditor.SelectionAnchor = System.Math.Min (anchorLine.Offset + anchorLine.EditableLength, System.Math.Max (anchorLine.Offset, anchorLine.Offset + anchorColumn - last));
+				}
+			}
+			
+			if (TextEditor.Caret.Column != 0) {
+				TextEditor.Caret.PreserveSelection = true;
+				TextEditor.Caret.Column = System.Math.Max (0, TextEditor.Caret.Column - last);
+				TextEditor.Caret.PreserveSelection = false;
+			}
+			
+			if (TextEditor.IsSomethingSelected) 
+				TextEditor.ExtendSelectionTo (TextEditor.Caret.Offset);
+		
+			Document.EndAtomicUndo ();
+			Document.CommitMultipleLineUpdate (startLineNr, endLineNr);
+		}
+		
+		[CommandHandler (EditCommands.IndentSelection)]
+		public void IndentSelection ()
+		{
+			MiscActions.IndentSelection (TextEditor.GetTextEditorData ());
+		}
+		
+		[CommandHandler (EditCommands.UnIndentSelection)]
+		public void UnIndentSelection ()
+		{
+			MiscActions.RemoveIndentSelection (TextEditor.GetTextEditorData ());
+		}
+		#endregion
+		
 	}
 
 	class ErrorMarker
@@ -913,6 +1078,8 @@ namespace MonoDevelop.SourceEditor
 				doc.RemoveMarker (Line, marker);
 			}
 		}
+		
+		
 	}
 	
 }
