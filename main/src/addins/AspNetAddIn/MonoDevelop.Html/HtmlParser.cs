@@ -66,6 +66,8 @@ namespace MonoDevelop.Html
 				xmlParser.Parse (tr);
 				doc.XDocument = xmlParser.Nodes.GetRoot ();
 				doc.Add (xmlParser.Errors);
+				if (doc.XDocument != null)
+					doc.Add (Validate (doc.XDocument));
 			}
 			catch (Exception ex) {
 				MonoDevelop.Core.LoggingService.LogError ("Unhandled error parsing HTML document", ex);
@@ -76,6 +78,15 @@ namespace MonoDevelop.Html
 			}
 			
 			return doc;
+		}
+		
+		IEnumerable<Error> Validate (XDocument doc)
+		{
+			foreach (XNode node in doc.Nodes) {
+				if (node is XElement && !Object.ReferenceEquals (node, doc.RootElement)) {
+					yield return new Error (ErrorType.Warning, node.Region, "More than one root element");
+				}
+			}
 		}
 	}
 }

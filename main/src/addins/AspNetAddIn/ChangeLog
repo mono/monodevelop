@@ -1,3 +1,8 @@
+2008-11-25  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Html/HtmlParser.cs: Implement multiple root element
+	validation since parser no longer handles this.
+
 2008-11-19  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Improve accuracy of
