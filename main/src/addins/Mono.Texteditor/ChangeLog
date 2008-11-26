@@ -1,3 +1,8 @@
+2008-11-26  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/GutterMargin.cs: taken out line change command handler
+	in gutter margin.
+
 2008-11-25  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.TextEditor/TextMarker.cs: Fix end location of underline marker.

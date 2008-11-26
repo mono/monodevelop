@@ -43,9 +43,7 @@ namespace Mono.TextEditor
 			this.editor = editor;
 			layout = new Pango.Layout (editor.PangoContext);
 			base.cursor = new Gdk.Cursor (Gdk.CursorType.RightPtr);
-			this.editor.Document.LineChanged += delegate {
-				UpdateWidth ();
-			};
+			this.editor.Document.LineChanged += UpdateWidth;
 		}
 		
 		void CalculateWidth ()
@@ -55,7 +53,7 @@ namespace Mono.TextEditor
 			layout.GetPixelSize (out this.width, out height);
 		}
 		
-		void UpdateWidth ()
+		void UpdateWidth (object sender, LineEventArgs args)
 		{
 			int currentLineCountLog10 = (int)System.Math.Log10 (editor.Document.LineCount);
 			if (oldLineCountLog10 != currentLineCountLog10) {
@@ -130,6 +128,7 @@ namespace Mono.TextEditor
 		
 		public override void Dispose ()
 		{
+			this.editor.Document.LineChanged -= UpdateWidth;
 			layout = layout.Kill ();
 			DisposeGCs ();
 			base.Dispose ();
