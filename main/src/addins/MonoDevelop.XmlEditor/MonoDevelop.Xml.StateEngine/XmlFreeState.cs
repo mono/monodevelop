@@ -106,7 +106,10 @@ namespace MonoDevelop.Xml.StateEngine
 		{
 			if (c == '<') {
 				if (context.StateTag != FREE)
-					context.LogError ("Unexpected '<' in tag opening.");
+					context.LogError ("Incomplete tag opening; encountered unexpected '<'.",
+						new MonoDevelop.Projects.Dom.DomRegion (
+							context.LocationMinus (LengthFromOpenBracket (context) + 1),
+							context.LocationMinus (1)));
 				context.StateTag = BRACKET;
 				return null;
 			}
@@ -176,9 +179,30 @@ namespace MonoDevelop.Xml.StateEngine
 				break;
 			}
 			
-			context.LogError ("Unexpected character '" + c + "' in tag opening.");
+			context.LogError ("Incomplete tag opening; encountered unexpected character '" + c + "'.",
+				new MonoDevelop.Projects.Dom.DomRegion (
+					context.LocationMinus (LengthFromOpenBracket (context)),
+					context.Location));
+			
 			context.StateTag = FREE;
 			return null;
+		}
+		
+		static int LengthFromOpenBracket (IParseContext context)
+		{
+			switch (context.StateTag) {
+			case BRACKET:
+				return 1;
+			case BRACKET_EXCLAM:
+				return 2;
+			case COMMENT:
+				return 3;
+			case CDATA:
+			case DOCTYPE:
+				return 3 + context.KeywordBuilder.Length;
+			default:
+				return 1;
+			}
 		}
 		
 		public override XDocument CreateDocument ()
