@@ -829,20 +829,28 @@ namespace Mono.TextEditor
 				return 0;
 			
 			int lineXPos  = 0;
-			
+			SyntaxMode mode = Document.SyntaxMode != null && this.textEditor.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : SyntaxMode.Default;
+			int curColumn = 0;
 			int visibleColumn = 0;
-			for (int curColumn = 0; curColumn < column && curColumn < line.EditableLength; curColumn++) {
-				int delta;
-				if (this.Document.GetCharAt (line.Offset + curColumn) == '\t') {
-					int newColumn = GetNextTabstop (this.textEditor.GetTextEditorData (), visibleColumn);
-					delta = (newColumn - visibleColumn) * this.charWidth;
-					visibleColumn = newColumn;
-				} else {
-					delta = this.charWidth;
-					visibleColumn++;
+			foreach (Chunk chunk in mode.GetChunks (Document, this.ColorStyle, line, line.Offset, line.EditableLength)) {
+				for (int i = 0; i < chunk.Length; i++) {
+					int delta;
+					char ch = chunk.GetCharAt (Document, chunk.Offset + i);
+					if (ch == '\t') {
+						int newColumn = GetNextTabstop (this.textEditor.GetTextEditorData (), visibleColumn);
+						delta = (newColumn - visibleColumn) * this.charWidth;
+						visibleColumn = newColumn;
+					} else {
+						delta = this.charWidth;
+						visibleColumn++;
+					}
+					lineXPos += delta;
+					curColumn++;
+					if (curColumn >= column)
+						goto exit;
 				}
-				lineXPos += delta;
 			}
+		 exit:
 			if (column >= line.EditableLength)
 				lineXPos += (line.EditableLength - column + 1) * this.charWidth;
 			return lineXPos;

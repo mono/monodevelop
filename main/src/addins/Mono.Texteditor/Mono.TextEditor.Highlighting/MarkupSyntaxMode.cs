@@ -49,9 +49,15 @@ namespace Mono.TextEditor.Highlighting
 			
 			public static Tag Parse (string text)
 			{
-				return new Tag () {
-					Command = text
-				};
+				Tag result = new Tag ();
+				string[] commands = text.Split (' ', '\t');
+				result.Command = commands[0];
+				for (int i = 1; i < commands.Length; i++) {
+					string[] argument = commands[i].Split ('=');
+					if (argument.Length == 2)
+						result.Arguments[argument[0]] = argument[1].Trim ('"');
+				}
+				return result;
 			}
 		}
 
@@ -72,24 +78,36 @@ namespace Mono.TextEditor.Highlighting
 				return text [offset - this.Offset];
 			}
 		}
-			
+		static Gdk.Color ParseColor (string color)
+		{
+			Gdk.Color result = new Gdk.Color ();
+			if (!Gdk.Color.Parse (color, ref result)) 
+				throw new Exception ("Can't parse color: " + color);
+			return result;
+		}
 		static ChunkStyle GetChunkStyle (IEnumerable<Tag> tagStack)
 		{
 			ChunkStyle result = new ChunkStyle ();
 			
 			foreach (Tag tag in tagStack) {
 				//System.Console.WriteLine("'" + tag.Command + "'");
-				switch (tag.Command) {
+				switch (tag.Command.ToUpper ()) {
 				case "B":
-				case "b":
 					result.Bold = true;
 					break;
+				case "SPAN":
+					if (tag.Arguments.ContainsKey ("foreground")) 
+						result.Color = ParseColor (tag.Arguments["foreground"]);
+					if (tag.Arguments.ContainsKey ("background")) 
+						result.BackgroundColor = ParseColor (tag.Arguments["background"]);
+					break;
+				case "A":
+					result.Link = tag.Arguments["ref"];
+					break;
 				case "I":
-				case "i":
 					result.Italic = true;
 					break;
 				case "U":
-				case "u":
 					result.Underline = true;
 					break;
 				}

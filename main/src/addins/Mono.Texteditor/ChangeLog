@@ -1,5 +1,12 @@
 2008-11-26  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextViewMargin.cs:
+	* Mono.TextEditor.Highlighting/ChunkStyle.cs:
+	* Mono.TextEditor.Highlighting/MarkupSyntaxMode.cs: Worked on markup
+	syntax mode.
+
+2008-11-26  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/GutterMargin.cs: taken out line change command handler
 	in gutter margin.
 

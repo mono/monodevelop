@@ -71,6 +71,11 @@ namespace Mono.TextEditor
 			get;
 			set;
 		}
+
+		public string Link {
+			get;
+			set;
+		}
 		
 		public ChunkStyle (ChunkStyle style)
 		{
