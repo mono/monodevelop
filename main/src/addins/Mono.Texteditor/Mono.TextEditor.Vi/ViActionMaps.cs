@@ -171,6 +171,9 @@ namespace Mono.TextEditor.Vi
 				case Gdk.Key.Delete:
 				case Gdk.Key.KP_Delete:
 					return DeleteActions.Delete;
+					
+				case Gdk.Key.Insert:
+					return MiscActions.SwitchCaretMode;
 				}
 			}
 			//

@@ -1,3 +1,8 @@
+2008-11-26  Grzegorz Sobański  <silk@boktor.net>
+
+	* Mono.TextEditor.Vi/ViActionMaps.cs: handle Insert key in insert 
+	  and replace mode.
+
 2008-11-26  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextViewMargin.cs:
