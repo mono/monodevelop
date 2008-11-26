@@ -295,10 +295,14 @@ namespace Mono.TextEditor.Vi
 				return;
 
 			case State.Yank:
+				int offset = Caret.Offset;
+				bool lineyank = false;
+				
 				if (((modifier & (Gdk.ModifierType.ShiftMask | Gdk.ModifierType.ControlMask)) == 0 
 				     && key == Gdk.Key.y))
 				{
 					action = SelectionActions.LineActionFromMoveAction (CaretMoveActions.LineEnd);
+					lineyank = true;
 				} else {
 					action = ViActionMaps.GetNavCharAction ((char)unicodeKey);
 					if (action == null)
@@ -309,11 +313,14 @@ namespace Mono.TextEditor.Vi
 				
 				if (action != null) {
 					RunAction (action);
+					if (Data.IsSomethingSelected && !lineyank)
+						offset = Data.SelectionRange.Offset;
 					RunAction (ClipboardActions.Copy);
 					Reset (string.Empty);
 				} else {
 					Reset ("Unrecognised motion");
 				}
+				Caret.Offset = offset;
 				
 				return;
 				
@@ -527,8 +534,10 @@ namespace Mono.TextEditor.Vi
 					Reset ("Deleted selection");
 					return;
 				case 'y':
+					int offset = Data.SelectionRange.Offset;
 					RunAction (ClipboardActions.Copy);
 					Reset ("Yanked selection");
+					Caret.Offset = offset;
 					return;
 				case 's':
 				case 'c':

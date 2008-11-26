@@ -1,3 +1,7 @@
+2008-11-26  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* Mono.TextEditor.Vi/ViMode.cs: Match vim's post-yank caret positioning.
+
 2008-11-26  Grzegorz Sobański  <silk@boktor.net>
 
 	* Mono.TextEditor.Vi/ViActionMaps.cs: handle Insert key in insert 
