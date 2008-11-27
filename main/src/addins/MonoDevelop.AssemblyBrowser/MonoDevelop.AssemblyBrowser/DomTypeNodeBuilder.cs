@@ -60,7 +60,7 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			ambience = AmbienceService.GetAmbience ("text/x-csharp");
 			DomTypeNodeBuilder.settings = new OutputSettings (OutputFlags.AssemblyBrowserDescription);
-			DomTypeNodeBuilder.settings.PostProcess += delegate (OutputSettings settings, IDomVisitable domVisitable, ref string outString) {
+			DomTypeNodeBuilder.settings.PostProcess = delegate (IDomVisitable domVisitable, ref string outString) {
 				if (domVisitable is IReturnType)
 					outString = "<span foreground=\"blue\"><u>" + outString + "</u></span>";
 			};

@@ -1,5 +1,10 @@
 2008-11-27  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs: Changed postprocess
+	synopsis.
+
+2008-11-27  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs:
 	* MonoDevelop.AssemblyBrowser/DomFieldNodeBuilder.cs:
 	* MonoDevelop.AssemblyBrowser/DomEventNodeBuilder.cs:
