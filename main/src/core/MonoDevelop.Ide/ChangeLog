@@ -1,3 +1,7 @@
+2008-11-26  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.addin.xml: Remove double mnemonic on command label.
+
 2008-11-25  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.addin.xml: Remove no-longer-valid commands from 

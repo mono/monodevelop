@@ -685,7 +685,7 @@
 				defaultHandler = "MonoDevelop.Ide.Commands.NavigateHistory"
 				_description = "Select a point from the navigation history"/>
 		<Command id = "MonoDevelop.Ide.Commands.NavigationCommands.ClearNavigationHistory"
-				_label = "_Clear Navigation _History"
+				_label = "_Clear Navigation History"
 				defaultHandler = "MonoDevelop.Ide.Commands.ClearNavigationHistory"
 				_description = "Clear the navigation history"/>
 
