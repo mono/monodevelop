@@ -37,6 +37,7 @@ using MonoDevelop.Core;
 using MonoDevelop.AspNet.Parser.Dom;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Projects.Gui.Completion;
 using MonoDevelop.Ide.Gui;
 
@@ -469,8 +470,9 @@ namespace MonoDevelop.AspNet.Parser
 		public override string Description {
 			get {
 				if (base.Description == null && cls != null)
-					base.Description = cls.Documentation;
-				return cls.Documentation;
+					base.Description = DocumentationService.GetCodeCompletionDescription (
+						cls, AmbienceService.DefaultAmbience);
+				return base.Description;
 			}
 			set { base.Description = value;	}
 		}

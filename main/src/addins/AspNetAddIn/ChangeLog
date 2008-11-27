@@ -1,3 +1,8 @@
+2008-11-27  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AspNet.Parser/DocumentReferenceManager.cs: Use
+	DocumentationService to look up class documentation lazily.
+
 2008-11-26  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.AspNet/AspNetAppProject.cs: If project's CompileTarget
