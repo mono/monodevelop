@@ -1,3 +1,15 @@
+2008-11-26  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Dom.Output/DocumentationService.cs: Stub for
+	upcoming doc service.
+
+	* MonoDevelop.Projects.Dom.Output/Ambience.cs: Ambience should not claim
+	it's valid for all filenames. More efficient & thourough string
+	escaping. Remove unused code.
+
+	* Makefile.am:
+	* MonoDevelop.Projects.mdp: Updated.
+
 2008-11-26  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomMethod.cs:

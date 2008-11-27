@@ -43,6 +43,7 @@ FILES =  \
 	MonoDevelop.Projects.Dom.Database/SqliteUtils.cs \
 	MonoDevelop.Projects.Dom.Output/Ambience.cs \
 	MonoDevelop.Projects.Dom.Output/AmbienceService.cs \
+	MonoDevelop.Projects.Dom.Output/DocumentationService.cs \
 	MonoDevelop.Projects.Dom.Output/NetAmbience.cs \
 	MonoDevelop.Projects.Dom.Output/OutputFlags.cs \
 	MonoDevelop.Projects.Dom.Parser/AbstractParser.cs \

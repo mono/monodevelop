@@ -254,6 +254,7 @@
     <File name="MonoDevelop.Projects.Formats.MSBuild.Conditions/InvalidProjectFileException.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Formats.MSBuild.Conditions/Token.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom/DomMemberDecorator.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Dom.Output/DocumentationService.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
