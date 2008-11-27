@@ -46,6 +46,7 @@ FILES =  \
 	MonoDevelop.Projects.Dom.Output/DocumentationService.cs \
 	MonoDevelop.Projects.Dom.Output/NetAmbience.cs \
 	MonoDevelop.Projects.Dom.Output/OutputFlags.cs \
+	MonoDevelop.Projects.Dom.Output/OutputSettings.cs \
 	MonoDevelop.Projects.Dom.Parser/AbstractParser.cs \
 	MonoDevelop.Projects.Dom.Parser/AssemblyInformationEventHandler.cs \
 	MonoDevelop.Projects.Dom.Parser/CommentTasksChangedEventHandler.cs \

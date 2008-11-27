@@ -1,3 +1,10 @@
+2008-11-27  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom.Output/Ambience.cs:
+	* MonoDevelop.Projects.Dom.Output/NetAmbience.cs:
+	* MonoDevelop.Projects.Dom.Output/OutputSettings.cs: Worked on
+	ambiences.
+
 2008-11-26  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects.Dom.Output/AmbienceService.cs: Add property for

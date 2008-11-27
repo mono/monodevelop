@@ -82,16 +82,11 @@ namespace MonoDevelop.Projects.Dom.Output
 			return "// " + text;
 		}
 
-		public override string GetString (string nameSpace, OutputFlags flags)
+		public override string GetString (string nameSpace, object data)
 		{
+			OutputSettings settings = GetSettings (data);
 			StringBuilder result = new StringBuilder ();
-			if (EmitKeywords (flags)) {
-				if (EmitMarkup (flags))
-					result.Append ("<b>");
-				result.Append ("Namespace ");
-				if (EmitMarkup (flags))
-					result.Append ("</b>");
-			}
+			result.Append (settings.EmitKeyword ("Namespace"));
 			result.Append (Format (nameSpace));
 			return result.ToString ();
 		}
@@ -108,128 +103,77 @@ namespace MonoDevelop.Projects.Dom.Output
 		
 		object IDomVisitor.Visit (IProperty property, object data)
 		{
-			OutputFlags flags = (OutputFlags)data;
 			StringBuilder result = new StringBuilder ();
-			if (IncludeModifiers (flags)) {
-				if (EmitMarkup (flags))
-					result.Append ("<b>");
-				result.Append (base.GetString (property.Modifiers));
-				result.Append (" ");
-				if (EmitMarkup (flags))
-					result.Append ("</b>");
-			}
-			if (EmitKeywords (flags)) {
-				if (EmitMarkup (flags))
-					result.Append ("<b>");
-				result.Append ("Property ");
-				if (EmitMarkup (flags))
-					result.Append ("</b>");
-			}
+			OutputSettings settings = GetSettings (data);
+			result.Append (settings.EmitModifiers (base.GetString (property.Modifiers)));
+			result.Append (settings.EmitKeyword ("Property"));
 			
-			if (UseFullName (flags)) {
+			if (UseFullName (data)) {
 				result.Append (Format (property.FullName));
 			} else {
 				result.Append (Format (property.Name));
 			}
-			if (IncludeReturnType (flags)) {
-				result.Append (" : ");
-				result.Append (GetString (property.ReturnType, flags));
+			
+			if (IncludeReturnType (data)) {
+				result.Append (settings.Markup (" : "));
+				result.Append (GetString (property.ReturnType, settings));
 			}
 			return result.ToString ();
 		}
 		
 		object IDomVisitor.Visit (IField field, object data)
 		{
-			OutputFlags flags = (OutputFlags)data;
+			OutputSettings settings = GetSettings (data);
 			StringBuilder result = new StringBuilder ();
 			
-			if (IncludeModifiers (flags)) {
-				if (EmitMarkup (flags))
-					result.Append ("<b>");
-				result.Append (base.GetString (field.Modifiers));
-				result.Append (" ");
-				if (EmitMarkup (flags))
-					result.Append ("</b>");
-			}
+			result.Append (settings.EmitModifiers (base.GetString (field.Modifiers)));
+			result.Append (settings.EmitKeyword ("Field"));
 			
-			if (EmitKeywords (flags)) {
-				if (EmitMarkup (flags))
-					result.Append ("<b>");
-				result.Append ("Field ");
-				if (EmitMarkup (flags))
-					result.Append ("</b>");
-			}
-			
-			if (UseFullName (flags)) {
+			if (UseFullName (settings)) {
 				result.Append (Format (field.FullName));
 			} else {
 				result.Append (Format (field.Name));
 			}
-			if (IncludeReturnType (flags) && !field.IsLiteral) {
-				result.Append (" : ");
-				result.Append (GetString (field.ReturnType, flags));
+			
+			if (IncludeReturnType (settings) && !field.IsLiteral) {
+				result.Append (settings.Markup (" : "));
+				result.Append (GetString (field.ReturnType, settings));
 			}
 			return result.ToString ();
 		}
 		
 		object IDomVisitor.Visit (IReturnType returnType, object data)
 		{
-			OutputFlags flags = (OutputFlags)data;
-			StringBuilder result = new StringBuilder ();
-			if (UseFullName (flags)) {
-				result.Append (Format (returnType.FullName));
-			} else {
-				result.Append (Format (returnType.Name));
-			}
-			return result.ToString ();
+			return Format (UseFullName (data) ? returnType.FullName : returnType.Name);
 		}
 		
 		object IDomVisitor.Visit (IMethod method, object data)
 		{
-			OutputFlags flags = (OutputFlags)data;
+			OutputSettings settings = GetSettings (data);
 			StringBuilder result = new StringBuilder ();
 			
-			if (IncludeModifiers (flags)) {
-				if (EmitMarkup (flags))
-					result.Append ("<b>");
-				result.Append (base.GetString (method.Modifiers));
-				result.Append (" ");
-				if (EmitMarkup (flags))
-					result.Append ("</b>");
-			}
+			result.Append (settings.EmitModifiers (base.GetString (method.Modifiers)));
+			result.Append (settings.EmitKeyword (method.IsConstructor ? "Constructor" : "Method"));
 			
-			if (EmitKeywords (flags)) {
-				if (EmitMarkup (flags))
-					result.Append ("<b>");
-				
-				result.Append (method.IsConstructor ? "Constructor " : "Method ");
-				if (EmitMarkup (flags))
-					result.Append ("</b>");
-			}
+			result.Append (Format (UseFullName (settings) ? method.FullName : method.Name));
 			
-			if (UseFullName (flags)) {
-				result.Append (Format (method.FullName));
-			} else {
-				result.Append (Format (method.Name));
-			}
-			
-			if (IncludeParameters (flags)) {
-				result.Append ("(");
+			if (IncludeParameters (settings)) {
+				result.Append (settings.Markup ("("));
 				bool first = true;
 				if (method.Parameters != null) {
 					foreach (IParameter parameter in method.Parameters) {
 						if (!first)
-							result.Append (", ");
-						result.Append (GetString (parameter, flags));
+							result.Append (settings.Markup (", "));
+						result.Append (GetString (parameter, settings));
 						first = false;
 					}
 				}
-				result.Append (")");
+				result.Append (settings.Markup (")"));
 			}
 				
-			if (IncludeReturnType (flags) && !method.IsConstructor) {
-				result.Append (" : ");
-				result.Append (GetString (method.ReturnType, flags));
+			if (IncludeReturnType (settings) && !method.IsConstructor) {
+				result.Append (settings.Markup (" : "));
+				result.Append (GetString (method.ReturnType, settings));
 			}
 			
 			return result.ToString ();
@@ -237,16 +181,16 @@ namespace MonoDevelop.Projects.Dom.Output
 		
 		object IDomVisitor.Visit (IParameter parameter, object data)
 		{
-			OutputFlags flags = (OutputFlags)data;
+			OutputSettings settings = GetSettings (data);
 			StringBuilder result = new StringBuilder ();
-			if (IncludeParameterName (flags)) {
+			if (IncludeParameterName (settings)) {
 				result.Append (Format (parameter.Name));
-				if (IncludeReturnType (flags)) {
-					result.Append (" : ");
-					result.Append (GetString (parameter.ReturnType, flags));
+				if (IncludeReturnType (settings)) {
+					result.Append (settings.Markup (" : "));
+					result.Append (GetString (parameter.ReturnType, settings));
 				}				
 			} else {
-				result.Append (GetString (parameter.ReturnType, flags));
+				result.Append (GetString (parameter.ReturnType, settings));
 			}
 			return result.ToString ();
 		}
@@ -254,53 +198,39 @@ namespace MonoDevelop.Projects.Dom.Output
 		object IDomVisitor.Visit (IType type, object data)
 		{
 			InstantiatedType instantiatedType = type as InstantiatedType;
-			OutputFlags flags = (OutputFlags)data;
+			OutputSettings settings = GetSettings (data);
+			OutputFlags flags = GetFlags (data);
 			StringBuilder result = new StringBuilder ();
-			if (IncludeModifiers (flags)) {
-				if (EmitMarkup (flags))
-					result.Append ("<b>");
-				result.Append (base.GetString (type.Modifiers));
-				result.Append (" ");
-				if (EmitMarkup (flags))
-					result.Append ("</b>");
-			}
+			result.Append (settings.EmitModifiers (base.GetString (type.Modifiers)));
+			result.Append (settings.EmitKeyword (GetString (type.ClassType)));
 			
-			if (EmitKeywords (flags)) {
-				if (EmitMarkup (flags))
-					result.Append ("<b>");
-				result.Append (GetString (type.ClassType));
-				result.Append (" ");
-				if (EmitMarkup (flags))
-					result.Append ("</b>");
-			}
-						
 			result.Append (Format (type.Name));
 			
 			int parameterCount = type.TypeParameters.Count;
 			if (instantiatedType != null)
 				parameterCount = instantiatedType.GenericParameters.Count;
 			if (IncludeGenerics (flags) && parameterCount > 0) {
-				result.Append (EmitMarkup (flags) ? "&lt;" : "<");
+				result.Append (settings.Markup ("<"));
 				for (int i = 0; i < parameterCount; i++) {
 					if (i > 0)
-						result.Append (", ");
+						result.Append (settings.Markup (", "));
 					if (instantiatedType != null) {
 						result.Append (instantiatedType.GenericParameters[i].AcceptVisitor (this, data));
 					} else {
 						result.Append (type.TypeParameters[i].Name);
 					}
 				}
-				result.Append (EmitMarkup (flags) ? "&gt;" : ">");
+				result.Append (settings.Markup (">"));
 			
 			}
 			if (IncludeBaseTypes (flags) && type.BaseTypes.Any ()) {
-				result.Append (" : ");
+				result.Append (settings.Markup (" : "));
 				bool first = true;
 				foreach (IReturnType baseType in type.BaseTypes) {
 					if (baseType.FullName == "System.Object")
 						continue;
 					if (!first)
-						result.Append (", ");
+						result.Append (settings.Markup (", "));
 					first = false;
 					result.Append (baseType.AcceptVisitor (this, data));	
 				}
@@ -311,37 +241,38 @@ namespace MonoDevelop.Projects.Dom.Output
 		
 		object IDomVisitor.Visit (IAttribute attribute, object data)
 		{
-			OutputFlags flags = (OutputFlags)data;
+			OutputFlags flags = GetFlags (data);
+			OutputSettings settings = GetSettings (data);
 			StringBuilder result = new StringBuilder ();
-			result.Append ('[');
-			result.Append (GetString (attribute.AttributeType, flags));
-			result.Append ('(');
+			result.Append (settings.Markup ("["));
+			result.Append (GetString (attribute.AttributeType, settings));
+			result.Append (settings.Markup ("("));
 			bool first = true;
 			if (attribute.PositionalArguments != null) {
 				foreach (object o in attribute.PositionalArguments) {
 					if (!first)
-						result.Append (", ");
+						result.Append (settings.Markup (", "));
 					first = false;
 					if (o is string) {
-						result.Append ('"');
+						result.Append (settings.Markup ("\""));
 						result.Append (o);
-						result.Append ('"');
+						result.Append (settings.Markup ("\""));
 					} else if (o is char) {
-						result.Append ("'");
+						result.Append (settings.Markup ("\""));
 						result.Append (o);
-						result.Append ("'");
+						result.Append (settings.Markup ("\""));
 					} else
 						result.Append (o);
 				}
 			}
-			result.Append (')');
-			result.Append (']');
+			result.Append (settings.Markup (")]"));
 			return result.ToString ();
 		}
 		
 		object IDomVisitor.Visit (Namespace ns, object data)
 		{
-			return "Namespace " + ns.Name;
+			OutputSettings settings = GetSettings (data);
+			return settings.EmitKeyword ("Namespace") + ns.Name;
 		}
 		
 		object IDomVisitor.Visit (LocalVariable var, object data)
@@ -351,27 +282,12 @@ namespace MonoDevelop.Projects.Dom.Output
 		
 		object IDomVisitor.Visit (IEvent evt, object data)
 		{
-			OutputFlags flags = (OutputFlags)data;
+			OutputFlags flags = GetFlags (data);
+			OutputSettings settings = GetSettings (data);
 			StringBuilder result = new StringBuilder ();
-			if (IncludeModifiers (flags)) {
-				if (EmitMarkup (flags))
-					result.Append ("<b>");
-				result.Append (base.GetString (evt.Modifiers));
-				result.Append (" ");
-				if (EmitMarkup (flags))
-					result.Append ("</b>");
-			}
-			
-			if (EmitKeywords (flags)) {
-				if (EmitMarkup (flags))
-					result.Append ("<b>");
-				result.Append ("Event ");
-				if (EmitMarkup (flags))
-					result.Append ("</b>");
-			}
-			
+			result.Append (settings.EmitModifiers (base.GetString (evt.Modifiers)));
+			result.Append (settings.EmitKeyword ("Event"));
 			result.Append (Format (evt.Name));
-			
 			return result.ToString ();
 		}
 	}

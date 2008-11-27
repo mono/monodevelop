@@ -106,49 +106,61 @@ namespace MonoDevelop.Projects.Dom.Output
 			}
 			return result.ToString ();
 		}
+		
 		#region FlagShortcuts
-		protected static bool UseFullName (OutputFlags outputFlags)
+		protected static bool UseFullName (object settings)
 		{
+			OutputFlags outputFlags = GetFlags (settings);
 			return (outputFlags & OutputFlags.UseFullName) == OutputFlags.UseFullName;
 		}
-		protected static bool IncludeParameters (OutputFlags outputFlags)
+		protected static bool IncludeParameters (object settings)
 		{
+			OutputFlags outputFlags = GetFlags (settings);
 			return (outputFlags & OutputFlags.IncludeParameters) == OutputFlags.IncludeParameters;
 		}
-		protected static bool IncludeReturnType (OutputFlags outputFlags)
+		protected static bool IncludeReturnType (object settings)
 		{
+			OutputFlags outputFlags = GetFlags (settings);
 			return (outputFlags & OutputFlags.IncludeReturnType) == OutputFlags.IncludeReturnType;
 		}
-		protected static bool IncludeParameterName (OutputFlags outputFlags)
+		protected static bool IncludeParameterName (object settings)
 		{
+			OutputFlags outputFlags = GetFlags (settings);
 			return (outputFlags & OutputFlags.IncludeParameterName) == OutputFlags.IncludeParameterName;
 		}
-		protected static bool EmitMarkup (OutputFlags outputFlags)
+		protected static bool EmitMarkup (object settings)
 		{
+			OutputFlags outputFlags = GetFlags (settings);
 			return (outputFlags & OutputFlags.EmitMarkup) == OutputFlags.EmitMarkup;
 		}
-		protected static bool EmitKeywords (OutputFlags outputFlags)
+		protected static bool EmitKeywords (object settings)
 		{
+			OutputFlags outputFlags = GetFlags (settings);
 			return (outputFlags & OutputFlags.EmitKeywords) == OutputFlags.EmitKeywords;
 		}
-		protected static bool IncludeModifiers (OutputFlags outputFlags)
+		protected static bool IncludeModifiers (object settings)
 		{
+			OutputFlags outputFlags = GetFlags (settings);
 			return (outputFlags & OutputFlags.IncludeModifiers) == OutputFlags.IncludeModifiers;
 		}
-		protected static bool IncludeBaseTypes (OutputFlags outputFlags)
+		protected static bool IncludeBaseTypes (object settings)
 		{
+			OutputFlags outputFlags = GetFlags (settings);
 			return (outputFlags & OutputFlags.IncludeBaseTypes) == OutputFlags.IncludeBaseTypes;
 		}
-		protected static bool IncludeGenerics (OutputFlags outputFlags)
+		protected static bool IncludeGenerics (object settings)
 		{
+			OutputFlags outputFlags = GetFlags (settings);
 			return (outputFlags & OutputFlags.IncludeGenerics) == OutputFlags.IncludeGenerics;
 		}
-		protected static bool HighlightName (OutputFlags outputFlags)
+		protected static bool HighlightName (object settings)
 		{
+			OutputFlags outputFlags = GetFlags (settings);
 			return (outputFlags & OutputFlags.HighlightName) == OutputFlags.HighlightName;
 		}
-		protected static bool HideExtensionsParameter (OutputFlags outputFlags)
+		protected static bool HideExtensionsParameter (object settings)
 		{
+			OutputFlags outputFlags = GetFlags (settings);
 			return (outputFlags & OutputFlags.HideExtensionsParameter) == OutputFlags.HideExtensionsParameter;
 		}
 		#endregion
@@ -163,27 +175,32 @@ namespace MonoDevelop.Projects.Dom.Output
 			return sb.ToString (); 
 		}
 		
-		public Ambience Clone ()
+		protected static OutputFlags GetFlags (object settings)
 		{
-			return (Ambience)this.MemberwiseClone ();
+			if (settings is OutputFlags)
+				return (OutputFlags)settings;
+			return ((OutputSettings)settings).OutputFlags;
+		}
+		
+		protected static OutputSettings GetSettings (object settings)
+		{
+			if (settings is OutputFlags)
+				return new OutputSettings ((OutputFlags)settings);
+			return (OutputSettings)settings;
 		}
 		
 		public abstract string SingleLineComment (string text);
-		public abstract string GetString (string nameSpace, OutputFlags flags);
+		public abstract string GetString (string nameSpace, object settings);
 		
-		public string GetString (IDomVisitable domVisitable, OutputFlags flags)
+		public string GetString (IDomVisitable domVisitable, object settings)
 		{
 			if (domVisitable == null)
 				return nullString;
-			string result = (string)domVisitable.AcceptVisitor (OutputVisitor, flags);
-			if (PostProcess != null)
-				PostProcess (domVisitable, flags, ref result);
+			string result = (string)domVisitable.AcceptVisitor (OutputVisitor, settings);
+			if (settings is OutputSettings) 
+				((OutputSettings)settings).PostProcess ((OutputSettings)settings, domVisitable, ref result);
 			return result;
 		}
 		
-		public event PostProcessString PostProcess;
-
-		
-		public delegate void PostProcessString (IDomVisitable domVisitable, OutputFlags flags, ref string outString);
 	}
 }
