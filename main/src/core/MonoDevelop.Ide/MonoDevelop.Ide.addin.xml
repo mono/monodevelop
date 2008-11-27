@@ -1618,9 +1618,4 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileTabCommands.CopyPathName" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileTabCommands.ToggleMaximize" />
 	</Extension>
-	
-	<Extension path = "/MonoDevelop/Core/ExecutionModes">
-		<Mode id="Debug" _name="Debug" class="MonoDevelop.Ide.Debugging.DebugExecutionHandlerFactory"/>
-	</Extension>
-
 </Addin>

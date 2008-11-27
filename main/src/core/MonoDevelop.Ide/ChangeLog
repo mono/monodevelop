@@ -1,3 +1,8 @@
+2008-11-27  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.addin.xml: Remove debug execution handler since it's
+	moved to the debugger addin. Fixes exception in options dialog.
+
 2008-11-26  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.addin.xml: Remove double mnemonic on command label.
