@@ -54,14 +54,15 @@ namespace MonoDevelop.AssemblyBrowser
 			this.widget = widget;
 		}*/
 		internal static Ambience ambience;
-
+		internal static OutputSettings settings;
+		
 		static DomTypeNodeBuilder ()
 		{
-			ambience = AmbienceService.GetAmbience ("text/x-csharp").Clone ();
-			ambience.PostProcess += delegate (IDomVisitable domVisitable, OutputFlags flags, ref string outString) {
-				if (domVisitable is IReturnType) {
+			ambience = AmbienceService.GetAmbience ("text/x-csharp");
+			DomTypeNodeBuilder.settings = new OutputSettings (OutputFlags.AssemblyBrowserDescription);
+			DomTypeNodeBuilder.settings.PostProcess += delegate (OutputSettings settings, IDomVisitable domVisitable, ref string outString) {
+				if (domVisitable is IReturnType)
 					outString = "<span foreground=\"blue\"><u>" + outString + "</u></span>";
-				}
 			};
 		}
 		
@@ -136,7 +137,7 @@ namespace MonoDevelop.AssemblyBrowser
 			IType type = (IType)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
 			
-			result.Append (ambience.GetString (type, OutputFlags.AssemblyBrowserDescription));
+			result.Append (ambience.GetString (type, settings));
 			bool first = true;
 			
 			if (type.ClassType == ClassType.Enum) {
@@ -178,7 +179,7 @@ namespace MonoDevelop.AssemblyBrowser
 				}
 				first = false;
 				result.Append ("\t");
-				result.Append (ambience.GetString (field, OutputFlags.AssemblyBrowserDescription));
+				result.Append (ambience.GetString (field, settings));
 				result.Append (";");
 				result.AppendLine ();
 			}
@@ -194,7 +195,7 @@ namespace MonoDevelop.AssemblyBrowser
 				}
 				first = false;
 				result.Append ("\t");
-				result.Append (ambience.GetString (evt, OutputFlags.AssemblyBrowserDescription));
+				result.Append (ambience.GetString (evt, settings));
 				result.Append (";");
 				result.AppendLine ();
 			}
@@ -212,7 +213,7 @@ namespace MonoDevelop.AssemblyBrowser
 				}
 				first = false;
 				result.Append ("\t");
-				result.Append (ambience.GetString (method, OutputFlags.AssemblyBrowserDescription));
+				result.Append (ambience.GetString (method, settings));
 				result.Append (";");
 				result.AppendLine ();
 			}
@@ -228,7 +229,7 @@ namespace MonoDevelop.AssemblyBrowser
 				}
 				first = false;
 				result.Append ("\t");
-				result.Append (ambience.GetString (property, OutputFlags.AssemblyBrowserDescription));
+				result.Append (ambience.GetString (property, settings));
 				result.Append (" {");
 				if (property.HasGet)
 					result.Append (" get;");

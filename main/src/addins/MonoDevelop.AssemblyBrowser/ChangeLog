@@ -1,3 +1,12 @@
+2008-11-27  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs:
+	* MonoDevelop.AssemblyBrowser/DomFieldNodeBuilder.cs:
+	* MonoDevelop.AssemblyBrowser/DomEventNodeBuilder.cs:
+	* MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:
+	* MonoDevelop.AssemblyBrowser/DomPropertyNodeBuilder.cs: Worked on
+	assembly browser.
+
 2008-11-26  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.AssemblyBrowser/Decompiler.cs:

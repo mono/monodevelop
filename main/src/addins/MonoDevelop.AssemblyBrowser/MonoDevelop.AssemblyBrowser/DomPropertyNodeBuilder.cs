@@ -106,7 +106,7 @@ namespace MonoDevelop.AssemblyBrowser
 			NetAmbience netAmbience = new NetAmbience ();
 			IProperty property = (IProperty)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
-			result.Append (netAmbience.GetString (property, OutputFlags.AssemblyBrowserDescription));
+			result.Append (netAmbience.GetString (property, DomTypeNodeBuilder.settings));
 			result.AppendLine ();
 			result.AppendLine ();
 			DomCecilProperty cecilProperty = property as DomCecilProperty;
@@ -126,7 +126,7 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			IProperty property = (IProperty)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
-			result.Append (DomTypeNodeBuilder.ambience.GetString (property, OutputFlags.AssemblyBrowserDescription));
+			result.Append (DomTypeNodeBuilder.ambience.GetString (property, DomTypeNodeBuilder.settings));
 			result.Append ("{");result.AppendLine ();
 			DomCecilProperty cecilProperty = property as DomCecilProperty;
 			if (property.HasGet) {

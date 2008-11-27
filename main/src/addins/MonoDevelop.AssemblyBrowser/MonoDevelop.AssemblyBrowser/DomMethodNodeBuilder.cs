@@ -135,7 +135,7 @@ namespace MonoDevelop.AssemblyBrowser
 			if (method == null)
 				return "";
 			StringBuilder result = new StringBuilder ();
-			result.Append (DomTypeNodeBuilder.ambience.GetString (method, OutputFlags.AssemblyBrowserDescription));
+			result.Append (DomTypeNodeBuilder.ambience.GetString (method, DomTypeNodeBuilder.settings));
 			result.AppendLine ();
 			result.Append ("{");result.AppendLine ();
 			result.Append (Decompile (method, true));
@@ -190,7 +190,7 @@ namespace MonoDevelop.AssemblyBrowser
 
 			NetAmbience netAmbience = new NetAmbience ();
 			StringBuilder result = new StringBuilder ();
-			result.Append (netAmbience.GetString (method, OutputFlags.AssemblyBrowserDescription));
+			result.Append (netAmbience.GetString (method, DomTypeNodeBuilder.settings));
 			result.AppendLine ();
 			result.AppendLine ();
 			result.Append (Disassemble (method, true));

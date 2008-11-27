@@ -92,14 +92,14 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			IField field = (IField)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
-			result.Append (AmbienceService.GetAmbience ("text/x-csharp").GetString (field, OutputFlags.AssemblyBrowserDescription));
+			result.Append (DomTypeNodeBuilder.ambience.GetString (field, DomTypeNodeBuilder.settings));
 			return result.ToString ();
 		}
 		string IAssemblyBrowserNodeBuilder.GetDecompiledCode (ITreeNavigator navigator)
 		{
 			IField field = (IField)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
-			result.Append (AmbienceService.GetAmbience ("text/x-csharp").GetString (field, OutputFlags.AssemblyBrowserDescription));
+			result.Append (DomTypeNodeBuilder.ambience.GetString (field, DomTypeNodeBuilder.settings));
 			return result.ToString ();
 		}
 		#endregion

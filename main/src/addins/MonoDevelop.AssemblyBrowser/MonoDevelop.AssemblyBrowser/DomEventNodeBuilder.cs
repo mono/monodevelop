@@ -91,7 +91,7 @@ namespace MonoDevelop.AssemblyBrowser
 			IEvent evt = (IEvent)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
 			result.Append ("<span font_family=\"monospace\">");
-			result.Append (AmbienceService.GetAmbience ("text/x-csharp").GetString (evt, OutputFlags.AssemblyBrowserDescription));
+			result.Append (DomTypeNodeBuilder.ambience.GetString (evt, OutputFlags.AssemblyBrowserDescription));
 			result.Append ("</span>");
 			result.AppendLine ();
 			DomMethodNodeBuilder.PrintDeclaringType (result, navigator);
@@ -103,14 +103,14 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			IEvent evt = (IEvent)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
-			result.Append (AmbienceService.GetAmbience ("text/x-csharp").GetString (evt, OutputFlags.AssemblyBrowserDescription));
+			result.Append (DomTypeNodeBuilder.ambience.GetString (evt, DomTypeNodeBuilder.settings));
 			return result.ToString ();
 		}
 		string IAssemblyBrowserNodeBuilder.GetDecompiledCode (ITreeNavigator navigator)
 		{
 			IEvent evt = (IEvent)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
-			result.Append (AmbienceService.GetAmbience ("text/x-csharp").GetString (evt, OutputFlags.AssemblyBrowserDescription));
+			result.Append (DomTypeNodeBuilder.ambience.GetString (evt, DomTypeNodeBuilder.settings));
 			return result.ToString ();
 		}
 		#endregion
