@@ -75,6 +75,17 @@ namespace MonoDevelop.AspNet
 			get { return true; }
 		}
 		
+		protected override void OnEndLoad ()
+		{
+			base.OnEndLoad ();
+			
+			//FIX: old version of MD didn't set CompileTarget to Library for ASP.NET projects, 
+			// but implicitly assumed they were always libraries. This is not compatible with VS/MSBuild,
+			// so we automatically "upgrade" this value. 
+			if (CompileTarget != CompileTarget.Library)
+				CompileTarget = CompileTarget.Library;
+		}
+		
 		public XspParameters XspParameters {
 			get { return xspParameters; }
 		}

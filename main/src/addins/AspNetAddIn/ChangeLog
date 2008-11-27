@@ -1,3 +1,9 @@
+2008-11-26  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AspNet/AspNetAppProject.cs: If project's CompileTarget
+	isn't "Library", automatically fix it, since older versions of MD did
+	not set it correctly.
+
 2008-11-25  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Html/HtmlParser.cs: Implement multiple root element
