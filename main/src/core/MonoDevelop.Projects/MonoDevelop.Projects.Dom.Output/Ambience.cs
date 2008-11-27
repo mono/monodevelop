@@ -198,7 +198,7 @@ namespace MonoDevelop.Projects.Dom.Output
 				return nullString;
 			string result = (string)domVisitable.AcceptVisitor (OutputVisitor, settings);
 			if (settings is OutputSettings) 
-				((OutputSettings)settings).PostProcess ((OutputSettings)settings, domVisitable, ref result);
+				((OutputSettings)settings).PostProcess (domVisitable, ref result);
 			return result;
 		}
 		

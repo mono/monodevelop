@@ -39,7 +39,7 @@ namespace MonoDevelop.Projects.Dom.Output
 		public OutputSettings (OutputFlags outputFlags)
 		{
 			this.OutputFlags = outputFlags;
-			PostProcess = delegate (OutputSettings settings, IDomVisitable domVisitable, ref string outString) {
+			PostProcess = delegate (IDomVisitable domVisitable, ref string outString) {
 				
 			};
 			
@@ -118,6 +118,6 @@ namespace MonoDevelop.Projects.Dom.Output
 		public delegate string MarkupText (string text);
 		
 		public ProcessString PostProcess;
-		public delegate void ProcessString (OutputSettings settings, IDomVisitable domVisitable, ref string outString);
+		public delegate void ProcessString (IDomVisitable domVisitable, ref string outString);
 	}
 }
