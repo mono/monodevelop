@@ -94,5 +94,6 @@ namespace MonoDevelop.Projects.Dom.Output
 			}
 		}
 		
+		public static Ambience DefaultAmbience { get { return defaultAmbience; } }
 	}
 }
