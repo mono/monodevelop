@@ -1,3 +1,8 @@
+2008-11-27  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Deployment.Gui/DeployFileListWidget.cs: Null check to
+	prevent NRE.
+
 2008-11-06  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am: Fix build dependencies.

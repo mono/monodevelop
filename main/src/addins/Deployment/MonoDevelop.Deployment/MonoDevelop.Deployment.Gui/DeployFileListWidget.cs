@@ -139,7 +139,8 @@ namespace MonoDevelop.Deployment
 		
 		protected override void OnDestroyed ()
 		{
-			context.Dispose ();
+			if (context != null)
+				context.Dispose ();
 			base.OnDestroyed ();
 		}
 
