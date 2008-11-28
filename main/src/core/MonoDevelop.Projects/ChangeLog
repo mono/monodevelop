@@ -1,3 +1,9 @@
+2008-11-28  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom.Output/Ambience.cs:
+	* MonoDevelop.Projects.Dom.Output/NetAmbience.cs: added strongly typed
+	overloads for getstring.
+
 2008-11-27  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Output/Ambience.cs:

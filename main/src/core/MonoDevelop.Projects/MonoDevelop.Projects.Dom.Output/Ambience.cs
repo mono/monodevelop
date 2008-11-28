@@ -190,7 +190,12 @@ namespace MonoDevelop.Projects.Dom.Output
 		}
 		
 		public abstract string SingleLineComment (string text);
-		public abstract string GetString (string nameSpace, object settings);
+		public abstract string GetString (string nameSpace, OutputSettings settings);
+		
+		public string GetString (IDomVisitable domVisitable, OutputFlags flags)
+		{
+			return GetString (domVisitable, new OutputSettings (flags));
+		}
 		
 		public string GetString (IDomVisitable domVisitable, object settings)
 		{
