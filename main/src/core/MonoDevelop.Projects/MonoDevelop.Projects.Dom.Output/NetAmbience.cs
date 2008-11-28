@@ -82,8 +82,9 @@ namespace MonoDevelop.Projects.Dom.Output
 			return "// " + text;
 		}
 
-		public override string GetString (string nameSpace, OutputSettings settings)
+		public override string GetString (string nameSpace, object data)
 		{
+			OutputSettings settings = GetSettings (data);
 			StringBuilder result = new StringBuilder ();
 			result.Append (settings.EmitKeyword ("Namespace"));
 			result.Append (Format (nameSpace));
