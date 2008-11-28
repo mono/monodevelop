@@ -129,8 +129,9 @@ namespace MonoDevelop.CSharpBinding
 			return "// " + text;
 		}
 
-		public override string GetString (string nameSpace, OutputSettings settings)
+		public override string GetString (string nameSpace, object data)
 		{
+			OutputSettings settings = GetSettings (data);
 			StringBuilder result = new StringBuilder ();
 			result.Append (settings.EmitKeyword ("namespace"));
 			result.Append (Format (nameSpace));
