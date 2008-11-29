@@ -1,3 +1,8 @@
+2008-11-29  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/LanguageItemWindow.cs: Refactored
+	ambiences/domoutputvisitor.
+
 2008-11-26  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorView.cs:
