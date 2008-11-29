@@ -92,21 +92,69 @@ namespace MonoDevelop.Projects.Dom.Output
 			return result.ToString ();
 		}
 			
-		protected bool IncludeMarkup {
+		public bool IncludeMarkup {
 			get {
-				return (OutputFlags & OutputFlags.EmitMarkup) == OutputFlags.EmitMarkup;
+				return (OutputFlags & OutputFlags.IncludeMarkup) == OutputFlags.IncludeMarkup;
 			}
 		}
 		
-		protected bool IncludeKeywords  {
+		public bool IncludeKeywords  {
 			get {
-				return (OutputFlags & OutputFlags.EmitKeywords) == OutputFlags.EmitKeywords;
+				return (OutputFlags & OutputFlags.IncludeKeywords) == OutputFlags.IncludeKeywords;
 			}
 		}
 		
-		protected bool IncludeModifiers {
+		public bool IncludeModifiers {
 			get {
 				return (OutputFlags & OutputFlags.IncludeModifiers) == OutputFlags.IncludeModifiers;
+			}
+		}
+
+		public bool UseFullName {
+			get {
+				return (OutputFlags & OutputFlags.UseFullName) == OutputFlags.UseFullName;
+			}
+		}
+		
+		public bool IncludeParameters {
+			get {
+				return (OutputFlags & OutputFlags.IncludeParameters) == OutputFlags.IncludeParameters;
+			}
+		}
+
+		public bool IncludeReturnType {
+			get {
+				return (OutputFlags & OutputFlags.IncludeReturnType) == OutputFlags.IncludeReturnType;
+			}
+		}
+		
+		public bool IncludeParameterName {
+			get {
+				return (OutputFlags & OutputFlags.IncludeParameterName) == OutputFlags.IncludeParameterName;
+			}
+		}
+		
+		public bool IncludeBaseTypes {
+			get {
+				return (OutputFlags & OutputFlags.IncludeBaseTypes) == OutputFlags.IncludeBaseTypes;
+			}
+		}
+		
+		public bool IncludeGenerics {
+			get {
+				return (OutputFlags & OutputFlags.IncludeGenerics) == OutputFlags.IncludeGenerics;
+			}
+		}
+		
+		public bool HighlightName {
+			get {
+				return (OutputFlags & OutputFlags.HighlightName) == OutputFlags.HighlightName;
+			}
+		}
+		
+		public bool HideExtensionsParameter {
+			get {
+				return (OutputFlags & OutputFlags.HideExtensionsParameter) == OutputFlags.HideExtensionsParameter;
 			}
 		}
 		

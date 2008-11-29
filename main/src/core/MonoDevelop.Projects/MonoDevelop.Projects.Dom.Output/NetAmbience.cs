@@ -32,9 +32,9 @@ using System.Text;
 
 namespace MonoDevelop.Projects.Dom.Output
 {
-	public class NetAmbience : Ambience, IDomVisitor
+	public class NetAmbience : Ambience, IDomVisitor<OutputSettings, string>
 	{
-		protected override IDomVisitor OutputVisitor {
+		protected override IDomVisitor<OutputSettings, string> OutputVisitor {
 			get {
 				return this;
 			}
@@ -82,82 +82,78 @@ namespace MonoDevelop.Projects.Dom.Output
 			return "// " + text;
 		}
 
-		public override string GetString (string nameSpace, object data)
+		public override string GetString (string nameSpace, OutputSettings settings)
 		{
-			OutputSettings settings = GetSettings (data);
 			StringBuilder result = new StringBuilder ();
 			result.Append (settings.EmitKeyword ("Namespace"));
 			result.Append (Format (nameSpace));
 			return result.ToString ();
 		}
 		
-		object IDomVisitor.Visit (ICompilationUnit unit, object data)
+		public string Visit (ICompilationUnit unit, OutputSettings settings)
 		{
-			return "TODO";
+			return "NOT IMPLEMENTED";
 		}
 		
-		object IDomVisitor.Visit (IUsing u, object data)
+		public string Visit (IUsing u, OutputSettings settings)
 		{
-			return "TODO";
+			return "NOT IMPLEMENTED";
 		}
 		
-		object IDomVisitor.Visit (IProperty property, object data)
+		public string Visit (IProperty property, OutputSettings settings)
 		{
 			StringBuilder result = new StringBuilder ();
-			OutputSettings settings = GetSettings (data);
 			result.Append (settings.EmitModifiers (base.GetString (property.Modifiers)));
 			result.Append (settings.EmitKeyword ("Property"));
 			
-			if (UseFullName (data)) {
+			if (settings.UseFullName) {
 				result.Append (Format (property.FullName));
 			} else {
 				result.Append (Format (property.Name));
 			}
 			
-			if (IncludeReturnType (data)) {
+			if (settings.IncludeReturnType) {
 				result.Append (settings.Markup (" : "));
 				result.Append (GetString (property.ReturnType, settings));
 			}
 			return result.ToString ();
 		}
 		
-		object IDomVisitor.Visit (IField field, object data)
+		public string Visit (IField field, OutputSettings settings)
 		{
-			OutputSettings settings = GetSettings (data);
 			StringBuilder result = new StringBuilder ();
 			
 			result.Append (settings.EmitModifiers (base.GetString (field.Modifiers)));
 			result.Append (settings.EmitKeyword ("Field"));
 			
-			if (UseFullName (settings)) {
+			if (settings.UseFullName) {
 				result.Append (Format (field.FullName));
 			} else {
 				result.Append (Format (field.Name));
 			}
 			
-			if (IncludeReturnType (settings) && !field.IsLiteral) {
+			if (settings.IncludeReturnType && !field.IsLiteral) {
 				result.Append (settings.Markup (" : "));
 				result.Append (GetString (field.ReturnType, settings));
 			}
 			return result.ToString ();
 		}
 		
-		object IDomVisitor.Visit (IReturnType returnType, object data)
+		public string Visit (IReturnType returnType, OutputSettings settings)
 		{
-			return Format (UseFullName (data) ? returnType.FullName : returnType.Name);
+			return Format (settings.UseFullName ? returnType.FullName : returnType.Name);
 		}
 		
-		object IDomVisitor.Visit (IMethod method, object data)
+		public string Visit (IMethod method, OutputSettings settings)
 		{
-			OutputSettings settings = GetSettings (data);
 			StringBuilder result = new StringBuilder ();
 			
 			result.Append (settings.EmitModifiers (base.GetString (method.Modifiers)));
 			result.Append (settings.EmitKeyword (method.IsConstructor ? "Constructor" : "Method"));
 			
-			result.Append (Format (UseFullName (settings) ? method.FullName : method.Name));
+			result.Append (Format (settings.UseFullName ? method.FullName : method.Name));
 			
-			if (IncludeParameters (settings)) {
+			if (settings.IncludeParameters) {
 				result.Append (settings.Markup ("("));
 				bool first = true;
 				if (method.Parameters != null) {
@@ -171,7 +167,7 @@ namespace MonoDevelop.Projects.Dom.Output
 				result.Append (settings.Markup (")"));
 			}
 				
-			if (IncludeReturnType (settings) && !method.IsConstructor) {
+			if (settings.IncludeReturnType && !method.IsConstructor) {
 				result.Append (settings.Markup (" : "));
 				result.Append (GetString (method.ReturnType, settings));
 			}
@@ -179,13 +175,12 @@ namespace MonoDevelop.Projects.Dom.Output
 			return result.ToString ();
 		}
 		
-		object IDomVisitor.Visit (IParameter parameter, object data)
+		public string Visit (IParameter parameter, OutputSettings settings)
 		{
-			OutputSettings settings = GetSettings (data);
 			StringBuilder result = new StringBuilder ();
-			if (IncludeParameterName (settings)) {
+			if (settings.IncludeParameterName) {
 				result.Append (Format (parameter.Name));
-				if (IncludeReturnType (settings)) {
+				if (settings.IncludeReturnType) {
 					result.Append (settings.Markup (" : "));
 					result.Append (GetString (parameter.ReturnType, settings));
 				}				
@@ -195,11 +190,9 @@ namespace MonoDevelop.Projects.Dom.Output
 			return result.ToString ();
 		}
 		
-		object IDomVisitor.Visit (IType type, object data)
+		public string Visit (IType type, OutputSettings settings)
 		{
 			InstantiatedType instantiatedType = type as InstantiatedType;
-			OutputSettings settings = GetSettings (data);
-			OutputFlags flags = GetFlags (data);
 			StringBuilder result = new StringBuilder ();
 			result.Append (settings.EmitModifiers (base.GetString (type.Modifiers)));
 			result.Append (settings.EmitKeyword (GetString (type.ClassType)));
@@ -209,13 +202,13 @@ namespace MonoDevelop.Projects.Dom.Output
 			int parameterCount = type.TypeParameters.Count;
 			if (instantiatedType != null)
 				parameterCount = instantiatedType.GenericParameters.Count;
-			if (IncludeGenerics (flags) && parameterCount > 0) {
+			if (settings.IncludeGenerics && parameterCount > 0) {
 				result.Append (settings.Markup ("<"));
 				for (int i = 0; i < parameterCount; i++) {
 					if (i > 0)
 						result.Append (settings.Markup (", "));
 					if (instantiatedType != null) {
-						result.Append (instantiatedType.GenericParameters[i].AcceptVisitor (this, data));
+						result.Append (instantiatedType.GenericParameters[i].AcceptVisitor (this, settings));
 					} else {
 						result.Append (type.TypeParameters[i].Name);
 					}
@@ -223,7 +216,7 @@ namespace MonoDevelop.Projects.Dom.Output
 				result.Append (settings.Markup (">"));
 			
 			}
-			if (IncludeBaseTypes (flags) && type.BaseTypes.Any ()) {
+			if (settings.IncludeBaseTypes && type.BaseTypes.Any ()) {
 				result.Append (settings.Markup (" : "));
 				bool first = true;
 				foreach (IReturnType baseType in type.BaseTypes) {
@@ -232,17 +225,15 @@ namespace MonoDevelop.Projects.Dom.Output
 					if (!first)
 						result.Append (settings.Markup (", "));
 					first = false;
-					result.Append (baseType.AcceptVisitor (this, data));	
+					result.Append (baseType.AcceptVisitor (this, settings));
 				}
 				
 			}
 			return result.ToString ();
 		}
 		
-		object IDomVisitor.Visit (IAttribute attribute, object data)
+		public string Visit (IAttribute attribute, OutputSettings settings)
 		{
-			OutputFlags flags = GetFlags (data);
-			OutputSettings settings = GetSettings (data);
 			StringBuilder result = new StringBuilder ();
 			result.Append (settings.Markup ("["));
 			result.Append (GetString (attribute.AttributeType, settings));
@@ -269,21 +260,18 @@ namespace MonoDevelop.Projects.Dom.Output
 			return result.ToString ();
 		}
 		
-		object IDomVisitor.Visit (Namespace ns, object data)
+		public string Visit (Namespace ns, OutputSettings settings)
 		{
-			OutputSettings settings = GetSettings (data);
 			return settings.EmitKeyword ("Namespace") + ns.Name;
 		}
 		
-		object IDomVisitor.Visit (LocalVariable var, object data)
+		public string Visit (LocalVariable var, OutputSettings settings)
 		{
 			return var.Name;
 		}
 		
-		object IDomVisitor.Visit (IEvent evt, object data)
+		public string Visit (IEvent evt, OutputSettings settings)
 		{
-			OutputFlags flags = GetFlags (data);
-			OutputSettings settings = GetSettings (data);
 			StringBuilder result = new StringBuilder ();
 			result.Append (settings.EmitModifiers (base.GetString (evt.Modifiers)));
 			result.Append (settings.EmitKeyword ("Event"));

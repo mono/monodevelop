@@ -295,7 +295,7 @@ namespace MonoDevelop.Projects.Dom
 
 		#region IDomVisitable implementation 
 		
-		public virtual object AcceptVisitor (IDomVisitor visitor, object data)
+		public virtual S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
 		{
 			return member.AcceptVisitor (visitor, data);
 		}

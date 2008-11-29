@@ -124,7 +124,7 @@ namespace MonoDevelop.Projects.Dom
 			return 1;
 		}
 		
-		public override object AcceptVisitor (IDomVisitor visitor, object data)
+		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
 		{
 			return visitor.Visit (this, data);
 		}

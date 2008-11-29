@@ -123,7 +123,7 @@ namespace MonoDevelop.Projects.Dom
 			                      Location);
 		}
 
-		public object AcceptVisitor (IDomVisitor visitor, object data)
+		public S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
 		{
 			return visitor.Visit (this, data);
 		}

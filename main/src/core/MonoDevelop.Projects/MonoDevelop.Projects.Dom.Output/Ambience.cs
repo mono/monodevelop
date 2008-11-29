@@ -55,7 +55,7 @@ namespace MonoDevelop.Projects.Dom.Output
 		protected Dictionary<string, string> constructs = new Dictionary<string, string> ();
 		protected const string nullString = "null";
 		
-		protected abstract IDomVisitor OutputVisitor {
+		protected abstract IDomVisitor<OutputSettings, string> OutputVisitor {
 			get;
 		}
 		
@@ -69,7 +69,6 @@ namespace MonoDevelop.Projects.Dom.Output
 		{
 			return false;
 		}
-		
 		
 		protected string GetString (Modifiers m)
 		{
@@ -107,64 +106,6 @@ namespace MonoDevelop.Projects.Dom.Output
 			return result.ToString ();
 		}
 		
-		#region FlagShortcuts
-		protected static bool UseFullName (object settings)
-		{
-			OutputFlags outputFlags = GetFlags (settings);
-			return (outputFlags & OutputFlags.UseFullName) == OutputFlags.UseFullName;
-		}
-		protected static bool IncludeParameters (object settings)
-		{
-			OutputFlags outputFlags = GetFlags (settings);
-			return (outputFlags & OutputFlags.IncludeParameters) == OutputFlags.IncludeParameters;
-		}
-		protected static bool IncludeReturnType (object settings)
-		{
-			OutputFlags outputFlags = GetFlags (settings);
-			return (outputFlags & OutputFlags.IncludeReturnType) == OutputFlags.IncludeReturnType;
-		}
-		protected static bool IncludeParameterName (object settings)
-		{
-			OutputFlags outputFlags = GetFlags (settings);
-			return (outputFlags & OutputFlags.IncludeParameterName) == OutputFlags.IncludeParameterName;
-		}
-		protected static bool EmitMarkup (object settings)
-		{
-			OutputFlags outputFlags = GetFlags (settings);
-			return (outputFlags & OutputFlags.EmitMarkup) == OutputFlags.EmitMarkup;
-		}
-		protected static bool EmitKeywords (object settings)
-		{
-			OutputFlags outputFlags = GetFlags (settings);
-			return (outputFlags & OutputFlags.EmitKeywords) == OutputFlags.EmitKeywords;
-		}
-		protected static bool IncludeModifiers (object settings)
-		{
-			OutputFlags outputFlags = GetFlags (settings);
-			return (outputFlags & OutputFlags.IncludeModifiers) == OutputFlags.IncludeModifiers;
-		}
-		protected static bool IncludeBaseTypes (object settings)
-		{
-			OutputFlags outputFlags = GetFlags (settings);
-			return (outputFlags & OutputFlags.IncludeBaseTypes) == OutputFlags.IncludeBaseTypes;
-		}
-		protected static bool IncludeGenerics (object settings)
-		{
-			OutputFlags outputFlags = GetFlags (settings);
-			return (outputFlags & OutputFlags.IncludeGenerics) == OutputFlags.IncludeGenerics;
-		}
-		protected static bool HighlightName (object settings)
-		{
-			OutputFlags outputFlags = GetFlags (settings);
-			return (outputFlags & OutputFlags.HighlightName) == OutputFlags.HighlightName;
-		}
-		protected static bool HideExtensionsParameter (object settings)
-		{
-			OutputFlags outputFlags = GetFlags (settings);
-			return (outputFlags & OutputFlags.HideExtensionsParameter) == OutputFlags.HideExtensionsParameter;
-		}
-		#endregion
-		
 		public static string Format (string str)
 		{
 			if (String.IsNullOrEmpty (str))
@@ -190,9 +131,14 @@ namespace MonoDevelop.Projects.Dom.Output
 		}
 		
 		public abstract string SingleLineComment (string text);
-		public abstract string GetString (string nameSpace, object settings);
+		public abstract string GetString (string nameSpace, OutputSettings settings);
 		
-		public string GetString (IDomVisitable domVisitable, object settings)
+		public string GetString (string nameSpace, OutputFlags flags)
+		{
+			return GetString (nameSpace, new OutputSettings (flags));
+		}
+		
+		public string GetString (IDomVisitable domVisitable, OutputSettings settings)
 		{
 			if (domVisitable == null)
 				return nullString;
@@ -202,5 +148,9 @@ namespace MonoDevelop.Projects.Dom.Output
 			return result;
 		}
 		
+		public string GetString (IDomVisitable domVisitable, OutputFlags flags)
+		{
+			return GetString (domVisitable, new OutputSettings (flags));
+		}
 	}
 }

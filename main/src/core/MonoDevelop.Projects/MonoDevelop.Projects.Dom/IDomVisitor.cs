@@ -32,27 +32,27 @@ namespace MonoDevelop.Projects.Dom
 {
 	public interface IDomVisitable
 	{
-		object AcceptVisitor (IDomVisitor visitor, object data);
+		S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data);
 	}
 	
-	public interface IDomVisitor
+	public interface IDomVisitor<T, S>
 	{
-		object Visit (ICompilationUnit unit, object data);
+		S Visit (ICompilationUnit unit, T data);
 		
-		object Visit (IAttribute attribute, object data);
+		S Visit (IAttribute attribute, T data);
 		
-		object Visit (IType type, object data);
+		S Visit (IType type, T data);
 		
-		object Visit (IField field, object data);
-		object Visit (IMethod method, object data);
-		object Visit (IProperty property, object data);
-		object Visit (IEvent evt, object data);
+		S Visit (IField field, T data);
+		S Visit (IMethod method, T data);
+		S Visit (IProperty property, T data);
+		S Visit (IEvent evt, T data);
 		
-		object Visit (IReturnType returnType, object data);
-		object Visit (IParameter parameter, object data);
-		object Visit (IUsing u, object data);
-		object Visit (Namespace namesp, object data);
+		S Visit (IReturnType returnType, T data);
+		S Visit (IParameter parameter, T data);
+		S Visit (IUsing u, T data);
+		S Visit (Namespace namesp, T data);
 		
-		object Visit (LocalVariable var, object data);
+		S Visit (LocalVariable var, T data);
 	}
 }

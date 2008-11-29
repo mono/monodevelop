@@ -426,7 +426,7 @@ namespace MonoDevelop.Projects.Dom
 			target.AddRange (DomAttribute.Resolve (source.Attributes, typeResolver));
 		}
 		
-		public abstract object AcceptVisitor (IDomVisitor visitor, object data);
+		public abstract S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data);
 		
 	}
 }

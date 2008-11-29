@@ -39,8 +39,8 @@ namespace MonoDevelop.Projects.Dom.Output
 		IncludeReturnType        = 0x0002,
 		IncludeParameters        = 0x0004,
 		IncludeParameterName     = 0x0008,
-		EmitMarkup               = 0x0010,
-		EmitKeywords             = 0x0020,
+		IncludeMarkup            = 0x0010,
+		IncludeKeywords          = 0x0020,
 		IncludeModifiers         = 0x0040,
 		IncludeBaseTypes         = 0x0080,
 		IncludeGenerics          = 0x0100,
@@ -49,6 +49,6 @@ namespace MonoDevelop.Projects.Dom.Output
 		HideExtensionsParameter  = 0x0800,
 
 		ClassBrowserEntries        = IncludeReturnType | IncludeParameters | IncludeGenerics,
-		AssemblyBrowserDescription = IncludeGenerics | IncludeBaseTypes | IncludeReturnType | IncludeParameters | IncludeParameterName | EmitMarkup | EmitKeywords | IncludeModifiers 
+		AssemblyBrowserDescription = IncludeGenerics | IncludeBaseTypes | IncludeReturnType | IncludeParameters | IncludeParameterName | IncludeMarkup | IncludeKeywords | IncludeModifiers 
 	}
 }
