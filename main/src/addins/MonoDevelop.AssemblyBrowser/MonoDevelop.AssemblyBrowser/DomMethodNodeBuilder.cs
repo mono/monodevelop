@@ -63,7 +63,7 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			IMethod method = (IMethod)dataObject;
 			
-			label = AmbienceService.GetAmbience ("text/x-csharp").GetString (method, OutputFlags.ClassBrowserEntries  | OutputFlags.EmitMarkup);
+			label = AmbienceService.GetAmbience ("text/x-csharp").GetString (method, OutputFlags.ClassBrowserEntries  | OutputFlags.IncludeMarkup);
 			if (method.IsPrivate || method.IsInternal)
 				label = DomMethodNodeBuilder.FormatPrivate (label);
 			

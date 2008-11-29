@@ -1,3 +1,13 @@
+2008-11-29  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs:
+	* MonoDevelop.AssemblyBrowser/DomEventNodeBuilder.cs:
+	* MonoDevelop.AssemblyBrowser/DomFieldNodeBuilder.cs:
+	* MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:
+	* MonoDevelop.AssemblyBrowser/DomPropertyNodeBuilder.cs:
+	* MonoDevelop.AssemblyBrowser/DomReturnTypeNodeBuilder.cs: renamed
+	emitmarkup.
+
 2008-11-27  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs: Changed postprocess
