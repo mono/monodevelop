@@ -236,7 +236,7 @@ namespace MonoDevelop.Ide.Commands
 			Refactorer refactorer = new Refactorer (ctx, pinfo, eclass, item, null);
 			CommandInfoSet ciset = new CommandInfoSet ();
 			Ambience ambience = AmbienceService.GetAmbienceForFile (pinfo.FileName);
-			OutputFlags flags = OutputFlags.EmitMarkup;
+			OutputFlags flags = OutputFlags.IncludeMarkup;
 			if (item is IParameter) {
 				flags |= OutputFlags.IncludeParameterName;
 			} else {

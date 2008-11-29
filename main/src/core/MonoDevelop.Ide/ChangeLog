@@ -1,3 +1,12 @@
+2008-11-29  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs:
+	* MonoDevelop.Ide.Gui.Pads.ClassPad/FieldNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ClassPad/EventNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ClassPad/MethodNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ClassPad/PropertyNodeBuilder.cs: Refactored
+	ambiences/domoutputvisitor.
+
 2008-11-27  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.addin.xml: Remove debug execution handler since it's

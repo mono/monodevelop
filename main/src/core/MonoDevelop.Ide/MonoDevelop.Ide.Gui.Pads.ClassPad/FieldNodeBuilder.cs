@@ -51,7 +51,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
 			IField data = dataObject as IField;
-			label = AmbienceService.GetAmbience (data).GetString (data, OutputFlags.ClassBrowserEntries | OutputFlags.EmitMarkup);
+			label = AmbienceService.GetAmbience (data).GetString (data, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup);
 			icon = Context.GetIcon (data.StockIcon);
 		}
 	}
