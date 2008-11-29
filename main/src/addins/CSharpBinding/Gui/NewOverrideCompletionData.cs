@@ -62,7 +62,7 @@ namespace MonoDevelop.CSharpBinding
 			
 			this.indent = GetIndentString (editor, editor.CursorPosition);
 			this.Icon = member.StockIcon;
-			this.DisplayText = ambience.GetString (member, OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics | OutputFlags.EmitMarkup | OutputFlags.HideExtensionsParameter);
+			this.DisplayText = ambience.GetString (member, OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics | OutputFlags.IncludeMarkup | OutputFlags.HideExtensionsParameter);
 			this.CompletionText = member.Name;
 		}
 		

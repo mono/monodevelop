@@ -129,7 +129,7 @@ namespace MonoDevelop.CSharpBinding
 			
 			descriptionCreated = true;
 			string docMarkup = ambience.GetString (member,
-				OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName | OutputFlags.EmitMarkup
+				OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName | OutputFlags.IncludeMarkup
 				| (HideExtensionParameter ? OutputFlags.HideExtensionsParameter : OutputFlags.None));
 			if (member.IsObsolete) {
 				docMarkup += Environment.NewLine + "[Obsolete]";

@@ -53,7 +53,7 @@ namespace MonoDevelop.CSharpBinding
 			this.staticResolve = resolveResult.StaticResolve;
 			methods.AddRange (resolveResult.Methods);
 			if (resolveResult.Methods.Count > 0)
-				this.prefix = ambience.GetString (resolveResult.Methods[0].ReturnType, OutputFlags.ClassBrowserEntries | OutputFlags.EmitMarkup  | OutputFlags.IncludeGenerics) + " ";
+				this.prefix = ambience.GetString (resolveResult.Methods[0].ReturnType, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup  | OutputFlags.IncludeGenerics) + " ";
 		}
 		
 		public NRefactoryParameterDataProvider (TextEditor editor, NRefactoryResolver resolver, ThisResolveResult resolveResult)
@@ -107,7 +107,7 @@ namespace MonoDevelop.CSharpBinding
 					} else {
 						this.delegateName = type.Name;
 					}
-					this.prefix = ambience.GetString (invokeMethod.ReturnType, OutputFlags.ClassBrowserEntries | OutputFlags.EmitMarkup  | OutputFlags.IncludeGenerics) + " ";
+					this.prefix = ambience.GetString (invokeMethod.ReturnType, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.IncludeGenerics) + " ";
 					
 					methods.Add (invokeMethod);
 					return;
@@ -206,7 +206,7 @@ namespace MonoDevelop.CSharpBinding
 		
 		public string GetMethodMarkup (int overload, string[] parameterMarkup)
 		{
-			return prefix + "<b>" + (this.delegateName ?? (methods[overload].IsConstructor ? ambience.GetString (methods[overload].DeclaringType, OutputFlags.ClassBrowserEntries | OutputFlags.EmitMarkup  | OutputFlags.IncludeGenerics) : methods[overload].Name)) + "</b> (" + string.Join (", ", parameterMarkup)  + ")";
+			return prefix + "<b>" + (this.delegateName ?? (methods[overload].IsConstructor ? ambience.GetString (methods[overload].DeclaringType, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup  | OutputFlags.IncludeGenerics) : methods[overload].Name)) + "</b> (" + string.Join (", ", parameterMarkup)  + ")";
 //			return ambience.GetIntellisenseDescription (methods[overload]);
 		}
 		

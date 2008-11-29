@@ -33,7 +33,7 @@ using MonoDevelop.Projects.Dom.Output;
 
 namespace MonoDevelop.CSharpBinding
 {
-	public class CSharpAmbience : Ambience, IDomVisitor
+	public class CSharpAmbience : Ambience, IDomVisitor<OutputSettings, string>
 	{
 		const string nullString = "Null";
 		static Dictionary<string, string> netToCSharpTypes = new Dictionary<string, string> ();
@@ -65,7 +65,7 @@ namespace MonoDevelop.CSharpBinding
 			return netTypeName;
 		}
 
-		protected override IDomVisitor OutputVisitor {
+		protected override IDomVisitor<OutputSettings, string> OutputVisitor {
 			get {
 				return this;
 			}
@@ -129,31 +129,29 @@ namespace MonoDevelop.CSharpBinding
 			return "// " + text;
 		}
 
-		public override string GetString (string nameSpace, object data)
+		public override string GetString (string nameSpace, OutputSettings settings)
 		{
-			OutputSettings settings = GetSettings (data);
 			StringBuilder result = new StringBuilder ();
 			result.Append (settings.EmitKeyword ("namespace"));
 			result.Append (Format (nameSpace));
 			return result.ToString ();
 		}
 		
-		object IDomVisitor.Visit (ICompilationUnit unit, object data)
+		public string Visit (ICompilationUnit unit, OutputSettings settings)
 		{
 			return "TODO";
 		}
 		
-		object IDomVisitor.Visit (IUsing u, object data)
+		public string Visit (IUsing u, OutputSettings settings)
 		{
 			return "TODO";
 		}
 		
-		object IDomVisitor.Visit (IProperty property, object data)
+		public string Visit (IProperty property, OutputSettings settings)
 		{
-			OutputSettings settings = GetSettings (data);
 			StringBuilder result = new StringBuilder ();
 			result.Append (settings.EmitModifiers (base.GetString (property.Modifiers)));
-			if (IncludeReturnType (data)) {
+			if (settings.IncludeReturnType) {
 				result.Append (GetString (property.ReturnType, settings));
 				result.Append (settings.Markup (" "));
 			}
@@ -162,14 +160,12 @@ namespace MonoDevelop.CSharpBinding
 			return result.ToString ();
 		}
 		
-		object IDomVisitor.Visit (IField field, object data)
+		public string Visit (IField field, OutputSettings settings)
 		{
-			OutputSettings settings = GetSettings (data);
-			
 			StringBuilder result = new StringBuilder ();
 			result.Append (settings.EmitModifiers (base.GetString (field.Modifiers)));
 			
-			if (IncludeReturnType (data) && !field.IsLiteral) {
+			if (settings.IncludeReturnType && !field.IsLiteral) {
 				result.Append (GetString (field.ReturnType, settings));
 				result.Append (settings.Markup (" "));
 			}
@@ -179,20 +175,19 @@ namespace MonoDevelop.CSharpBinding
 			return result.ToString ();
 		}
 		
-		object IDomVisitor.Visit (IReturnType returnType, object data)
+		public string Visit (IReturnType returnType, OutputSettings settings)
 		{
-			OutputSettings settings = GetSettings (data);
 			StringBuilder result = new StringBuilder ();
 			if (netToCSharpTypes.ContainsKey (returnType.FullName)) {
 				result.Append (netToCSharpTypes[returnType.FullName]);
 			} else {
-				if (UseFullName (data)) {
+				if (settings.UseFullName) {
 					result.Append (Format (NormalizeTypeName (returnType.FullName)));
 				} else {
 					result.Append (Format (NormalizeTypeName (returnType.Name)));
 				}
 			}
-			if (IncludeGenerics (data)) {
+			if (settings.IncludeGenerics) {
 				if (returnType.GenericArguments != null && returnType.GenericArguments.Count > 0) {
 					result.Append (settings.Markup ("<"));
 					for (int i = 0; i < returnType.GenericArguments.Count; i++) {
@@ -223,14 +218,12 @@ namespace MonoDevelop.CSharpBinding
 			}
 		}
 		
-		object IDomVisitor.Visit (IMethod method, object data)
+		public string Visit (IMethod method, OutputSettings settings)
 		{
-			OutputSettings settings = GetSettings (data);
-			
 			StringBuilder result = new StringBuilder ();
 			result.Append (settings.EmitModifiers (base.GetString (method.Modifiers)));
 			
-			if (IncludeReturnType (data) && !method.IsConstructor && !method.IsFinalizer) {
+			if (settings.IncludeReturnType && !method.IsConstructor && !method.IsFinalizer) {
 				result.Append (GetString (method.ReturnType, settings));
 				result.Append (settings.Markup (" "));
 			}
@@ -245,7 +238,7 @@ namespace MonoDevelop.CSharpBinding
 				result.Append (Format (method.Name));
 			}
 			
-			if (IncludeGenerics (data)) {
+			if (settings.IncludeGenerics) {
 				if (method.GenericParameters.Count > 0) {
 					result.Append (settings.Markup ("<"));
 					
@@ -258,13 +251,13 @@ namespace MonoDevelop.CSharpBinding
 				}
 			}
 			
-			if (IncludeParameters (data)) {
+			if (settings.IncludeParameters) {
 				result.Append (settings.Markup ("("));
 				bool first = true;
 				
 				if (method.Parameters != null) {
 					foreach (IParameter parameter in method.Parameters) {
-						if (HideExtensionsParameter (data) && method.IsExtension && parameter == method.Parameters[0])
+						if (settings.HideExtensionsParameter && method.IsExtension && parameter == method.Parameters[0])
 							continue;
 						if (!first)
 							result.Append (settings.Markup (", "));
@@ -285,12 +278,11 @@ namespace MonoDevelop.CSharpBinding
 			return result.ToString ();
 		}
 		
-		object IDomVisitor.Visit (IParameter parameter, object data)
+		public string Visit (IParameter parameter, OutputSettings settings)
 		{
-			OutputSettings settings = GetSettings (data);
 			StringBuilder result = new StringBuilder ();
-			if (IncludeParameterName (data)) {
-				if (IncludeModifiers (data)) {
+			if (settings.IncludeParameterName) {
+				if (settings.IncludeModifiers) {
 					if (parameter.IsOut)
 						result.Append (settings.Markup ("out "));
 					if (parameter.IsRef)
@@ -299,12 +291,12 @@ namespace MonoDevelop.CSharpBinding
 						result.Append (settings.Markup ("params "));
 				}
 				
-				if (IncludeReturnType (data)) {
+				if (settings.IncludeReturnType) {
 					result.Append (GetString (parameter.ReturnType, settings));
 					result.Append (" ");
 				}
 				
-				if (HighlightName (data)) {
+				if (settings.HighlightName) {
 					result.Append (settings.Highlight (Format (parameter.Name)));
 				} else {
 					result.Append (Format (parameter.Name));
@@ -315,16 +307,15 @@ namespace MonoDevelop.CSharpBinding
 			return result.ToString ();
 		}
 		
-		object IDomVisitor.Visit (IType type, object data)
+		public string Visit (IType type, OutputSettings settings)
 		{
-			OutputSettings settings = GetSettings (data);
 			InstantiatedType instantiatedType = type as InstantiatedType;
 			
 			StringBuilder result = new StringBuilder ();
 			result.Append (settings.EmitModifiers (base.GetString (type.Modifiers)));
 			result.Append (settings.EmitKeyword (GetString (type.ClassType)));
 			
-			if (UseFullName (data)) {
+			if (settings.UseFullName) {
 				result.Append (Format (instantiatedType == null ? type.FullName : instantiatedType.UninstantiatedType.FullName));
 			} else { 
 				result.Append (Format (NormalizeTypeName (instantiatedType == null ? type.Name : instantiatedType.UninstantiatedType.Name)));
@@ -333,7 +324,7 @@ namespace MonoDevelop.CSharpBinding
 			if (instantiatedType != null)
 				parameterCount = instantiatedType.GenericParameters.Count;
 			
-			if (IncludeGenerics (data) && parameterCount > 0) {
+			if (settings.IncludeGenerics && parameterCount > 0) {
 				result.Append (settings.Markup ("<"));
 				for (int i = 0; i < parameterCount; i++) {
 					if (i > 0)
@@ -348,7 +339,7 @@ namespace MonoDevelop.CSharpBinding
 				result.Append (settings.Markup (">"));
 			}
 			
-			if (IncludeBaseTypes (data) && type.BaseTypes.Any ()) {
+			if (settings.IncludeBaseTypes && type.BaseTypes.Any ()) {
 				bool first = true;
 				foreach (IReturnType baseType in type.BaseTypes) {
 					if (baseType.FullName == "System.Object" || baseType.FullName == "System.Enum")
@@ -362,9 +353,8 @@ namespace MonoDevelop.CSharpBinding
 			return result.ToString ();
 		}
 		
-		object IDomVisitor.Visit (IAttribute attribute, object data)
+		public string Visit (IAttribute attribute, OutputSettings settings)
 		{
-			OutputSettings settings = GetSettings (data);
 			StringBuilder result = new StringBuilder ();
 			result.Append (settings.Markup ("["));
 			result.Append (GetString (attribute.AttributeType, settings));
@@ -391,25 +381,23 @@ namespace MonoDevelop.CSharpBinding
 			return result.ToString ();
 		}
 		
-		object IDomVisitor.Visit (Namespace ns, object data)
+		public string Visit (Namespace ns, OutputSettings settings)
 		{
-			OutputSettings settings = GetSettings (data);
 			return settings.EmitKeyword ("namespace") + ns.Name;
 		}
 		
-		object IDomVisitor.Visit (LocalVariable var, object data)
+		public string Visit (LocalVariable var, OutputSettings settings)
 		{
 			return var.Name;
 		}
 		
-		object IDomVisitor.Visit (IEvent evt, object data)
+		public string Visit (IEvent evt, OutputSettings settings)
 		{
-			OutputSettings settings = GetSettings (data);
 			StringBuilder result = new StringBuilder ();
 			result.Append (settings.EmitModifiers (base.GetString (evt.Modifiers)));
 			result.Append (settings.EmitKeyword ("event"));
-			if (IncludeReturnType (data)) {
-				result.Append (GetString (evt.ReturnType, data));
+			if (settings.IncludeReturnType) {
+				result.Append (GetString (evt.ReturnType, settings));
 				result.Append (settings.Markup (" "));
 			}
 			
