@@ -1,3 +1,7 @@
+2008-12-01  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Debugger.addin.xml: Fix command names.
+
 2008-11-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:

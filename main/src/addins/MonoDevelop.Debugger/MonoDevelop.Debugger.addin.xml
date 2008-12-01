@@ -151,15 +151,15 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Workspace">
-		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.DebugEntry" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.RunEntry" />
+		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.DebugEntry" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.RunEntry" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Solution">
-		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.DebugEntry" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.RunEntry" />
+		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.DebugEntry" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.RunEntry" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Project">
-		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.DebugEntry" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.RunEntry" />
+		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.DebugEntry" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.RunEntry" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/ExecutionModes">
