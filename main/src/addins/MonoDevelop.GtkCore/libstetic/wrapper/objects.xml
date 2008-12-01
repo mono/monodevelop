@@ -482,6 +482,22 @@
 	</signals>
     </object>
 
+    <object type="Gtk.ToggleButton,gtk-sharp" base-type="Gtk.Button"
+	    label="Toggle Button" icon="togglebutton.png" palette-category="widget">
+	<itemgroups>
+	    <itemgroup label="Toggle Button Properties">
+		<property name="Active" />
+		<property name="Inconsistent" />
+	    </itemgroup>
+	</itemgroups>
+	<signals>
+    	<itemgroup label="Toggle Button Signals">
+		<signal name="Toggled" />
+	    </itemgroup>
+	    <itemgroup ref="Gtk.Button" />
+	</signals>
+    </object>
+
     <object type="Gtk.CheckButton,gtk-sharp" wrapper="Stetic.Wrapper.CheckButton"
 	    label="Check Box" icon="checkbutton.png" palette-category="widget"
 	    hexpandable="true" base-type="Gtk.Container">
@@ -506,6 +522,7 @@
 	</itemgroups>
 	<signals>
 	    <itemgroup ref="Gtk.Button" />
+	    <itemgroup ref="Gtk.ToggleButton" />
 	</signals>
 	<contextmenu>
 	    <command ref="RemoveLabel" />
@@ -1061,7 +1078,6 @@
 	</itemgroups>
 	<signals>
     	<itemgroup label="Radio Button Signals">
-		<signal name="Toggled" />
 		<signal name="GroupChanged" />
 	    </itemgroup>
 	</signals>
@@ -1435,22 +1451,6 @@
 		<signal name="ScrollAdjustmentsSet" />
 		<signal name="Backspace" gtk-version="2.6"/>
 	    </itemgroup>
-	</signals>
-    </object>
-
-    <object type="Gtk.ToggleButton,gtk-sharp" base-type="Gtk.Button"
-	    label="Toggle Button" icon="togglebutton.png" palette-category="widget">
-	<itemgroups>
-	    <itemgroup label="Toggle Button Properties">
-		<property name="Active" />
-		<property name="Inconsistent" />
-	    </itemgroup>
-	</itemgroups>
-	<signals>
-    	<itemgroup label="Toggle Button Signals">
-		<signal name="Toggled" />
-	    </itemgroup>
-	    <itemgroup ref="Gtk.Button" />
 	</signals>
     </object>
 

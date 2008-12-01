@@ -1,3 +1,10 @@
+2008-12-01  Mike Kestner <mkestner@novell.com> 
+
+	* libstetic/wrapper/objects.xml: move ToggleButton ahead of CheckButton
+	and add ToggleButton signal item group to CheckButton.  Remove toggled
+	signal from RadioButton since it inherits it from CheckButton.
+	[Fixes #450237]
+
 2008-11-25  Mike Kestner <mkestner@novell.com> 
 
 	* MonoDevelop.GtkCore/GtkCoreService.cs: refactor the default and 
