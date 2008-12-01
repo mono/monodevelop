@@ -112,8 +112,10 @@ namespace DebuggerServer
 				locals.Add (val);
 			else if (frame.Method != null) {
 				TargetType t = frame.Method.GetDeclaringType (frame.Thread);
-				ValueReference vr = new TypeValueReference (frame.Thread, t);
-				locals.Add (vr.CreateObjectValue ());
+				if (t != null) {
+					ValueReference vr = new TypeValueReference (frame.Thread, t);
+					locals.Add (vr.CreateObjectValue ());
+				}
 			}
 			
 			// Parameters

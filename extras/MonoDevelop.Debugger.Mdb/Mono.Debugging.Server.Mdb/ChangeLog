@@ -1,3 +1,18 @@
+2008-12-01  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* DebuggerServer.cs: Get the exception object from the frame.
+	Language.CreateObject won't work for native language.
+
+	* BacktraceWrapper.cs: Fixed NRE. Native methods don't have a declaring
+	type.
+
+	* Makefile:
+	* Mono.Debugging.Server.Mdb.mdp: Add required ref.
+
+	* NamespaceValueReference.cs: Use system.reflection to access to the
+	mono.cecil object model. We can't use MD's Mono.Cecil here because
+	the debugger is using its own copy and conflicts.
+
 2008-11-25  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* CollectionAdaptor.cs: Add missing check. Collection adaptors are not

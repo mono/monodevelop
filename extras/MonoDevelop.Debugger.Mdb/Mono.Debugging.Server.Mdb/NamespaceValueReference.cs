@@ -26,12 +26,13 @@
 //
 
 using System;
+using System.Reflection;
+using System.Collections;
 using System.Collections.Generic;
 using Mono.Debugger;
 using Mono.Debugger.Languages;
 using MD = Mono.Debugger;
 using Mono.Debugging.Client;
-using Mono.Cecil;
 
 namespace DebuggerServer
 {
@@ -127,12 +128,15 @@ namespace DebuggerServer
 			// Child types
 			
 			List<string> types = new List<string> ();
-			Dictionary<AssemblyDefinition,AssemblyDefinition> visited = new Dictionary<AssemblyDefinition,AssemblyDefinition> ();
-			
-			MethodDefinition md = frame.Method.MethodHandle as MethodDefinition;
-			if (md != null && md.DeclaringType.Module.Assembly.Resolver != null) {
-				IAssemblyResolver resolver = md.DeclaringType.Module.Assembly.Resolver;
-				FindTypes (resolver, visited, types, md.DeclaringType.Module.Assembly);
+			HashSet<object> visited = new HashSet<object> ();
+			object methodHandle = frame.Method.MethodHandle;
+
+			if (methodHandle != null && methodHandle.GetType ().FullName == "Mono.Cecil.MethodDefinition") {
+				object declaringType = GetProp (methodHandle, "DeclaringType");
+				object module = GetProp (declaringType, "Module");
+				object assembly = GetProp (module, "Assembly");
+				object resolver = GetProp (assembly, "Resolver");
+				FindTypes (resolver, visited, types, assembly);
 			}
 			
 			foreach (string typeName in types) {
@@ -159,23 +163,34 @@ namespace DebuggerServer
 				yield return new NamespaceValueReference (frame, ns);
 		}
 		
-		public void FindTypes (IAssemblyResolver resolver, Dictionary<AssemblyDefinition,AssemblyDefinition> visited, List<string> types, AssemblyDefinition asm)
+		public void FindTypes (object resolver, HashSet<object> visited, List<string> types, object asm)
 		{
-			if (visited.ContainsKey (asm))
+			if (!visited.Add (asm))
 				return;
-			visited [asm] = asm;
 			
-			foreach (TypeDefinition tdef in asm.MainModule.Types) {
-				if (tdef.IsPublic && !tdef.IsInterface && !tdef.IsEnum && tdef.Namespace == namspace) {
-					types.Add (tdef.FullName);
+			object mainModule = GetProp (asm, "MainModule");
+			foreach (object typeDefinition in (IEnumerable) GetProp (mainModule, "Types")) {
+				bool isPublic = (bool) GetProp (typeDefinition, "IsPublic");
+				bool isInterface = (bool) GetProp (typeDefinition, "IsInterface");
+				bool isEnum = (bool) GetProp (typeDefinition, "IsEnum");
+				string typeNamespace = (string) GetProp (typeDefinition, "Namespace");
+				if (isPublic && !isInterface && !isEnum && typeNamespace == namspace) {
+					types.Add ((string) GetProp (typeDefinition, "FullName"));
 				}
 			}
-			
-			foreach (AssemblyNameReference an in asm.MainModule.AssemblyReferences) {
-				AssemblyDefinition refAsm = resolver.Resolve (an);
+
+			Type assemblyNameReferenceType = resolver.GetType ().Assembly.GetType ("Mono.Cecil.AssemblyNameReference");
+			MethodInfo resolveMet = resolver.GetType ().GetMethod ("Resolve", new Type[] { assemblyNameReferenceType });
+			foreach (object an in (IEnumerable) GetProp (mainModule, "AssemblyReferences")) {
+				object refAsm = resolveMet.Invoke (resolver, new object[] {an});
 				if (refAsm != null)
 					FindTypes (resolver, visited, types, refAsm);
 			}
+		}
+
+		static object GetProp (object obj, string name)
+		{
+			return obj.GetType ().GetProperty (name).GetValue (obj, null);
 		}
 
 		public override Mono.Debugging.Client.ObjectValue CreateObjectValue ()

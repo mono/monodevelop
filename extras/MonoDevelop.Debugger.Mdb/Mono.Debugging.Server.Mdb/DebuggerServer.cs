@@ -739,8 +739,7 @@ namespace DebuggerServer
 
 				if ((args.Type == MD.TargetEventType.UnhandledException || args.Type == MD.TargetEventType.Exception) && (args.Data is TargetAddress)) {
 					TargetAddress addr = (TargetAddress) args.Data;
-					ML.TargetObject exc = args.Frame.Language.CreateObject (args.Frame.Thread, addr);
-					targetArgs.Exception = new LiteralValueReference (args.Frame.Thread, "Exception", exc).CreateObjectValue ();
+					targetArgs.Exception = new LiteralValueReference (args.Frame.Thread, "Exception", args.Frame.ExceptionObject).CreateObjectValue ();
 				}
 
 				DispatchEvent (delegate {

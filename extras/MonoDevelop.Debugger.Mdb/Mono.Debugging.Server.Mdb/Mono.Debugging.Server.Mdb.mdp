@@ -52,7 +52,6 @@
     <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Ide, Version=0.19.0.0, Culture=neutral" />
     <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Components, Version=0.19.0.0, Culture=neutral" />
     <ProjectReference type="Gac" localcopy="True" refto="NRefactory, Version=0.0.0.0, Culture=neutral" />
-    <ProjectReference type="Gac" localcopy="True" refto="Mono.Cecil, Version=0.6.8.8607, Culture=neutral" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.TextEditor, Version=1.0.0.0, Culture=neutral" />
     <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.VersionControl, Version=0.0.0.0, Culture=neutral" />
     <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.NUnit, Version=0.0.0.0, Culture=neutral" />
@@ -73,6 +72,7 @@
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Addins, Version=0.3.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Projects.Gui, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
+    <ProjectReference type="Gac" localcopy="True" refto="System.Core, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   </References>
   <Deployment.LinuxDeployData generateScript="False" />
   <GtkDesignInfo />

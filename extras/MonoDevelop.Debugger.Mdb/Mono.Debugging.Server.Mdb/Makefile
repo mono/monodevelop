@@ -85,6 +85,7 @@ REFERENCES =  \
 	-pkg:monodevelop \
 	-pkg:monodevelop-core-addins \
 	System \
+	System.Core \
 	System.Data \
 	System.Runtime.Remoting \
 	System.Xml
