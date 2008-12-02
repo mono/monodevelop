@@ -129,10 +129,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			string itemType = globalGroup.GetPropertyValue ("ItemType");
 
 			subtypeGuids.Clear ();
-			foreach (string guid in projectTypeGuids.Split (';')) {
-				string sguid = guid.Trim ();
-				if (sguid.Length > 0 && sguid != TypeGuid)
-					subtypeGuids.Add (guid);
+			if (projectTypeGuids != null) {
+				foreach (string guid in projectTypeGuids.Split (';')) {
+					string sguid = guid.Trim ();
+					if (sguid.Length > 0 && sguid != TypeGuid)
+						subtypeGuids.Add (guid);
+				}
 			}
 			
 			Item = CreateSolutionItem (language, projectTypeGuids, itemType, itemClass);

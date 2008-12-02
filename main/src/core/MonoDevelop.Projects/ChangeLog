@@ -1,5 +1,10 @@
 2008-12-02  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs: Added
+	missing null check.
+
+2008-12-02  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs: Read
 	project type guids from the project file. Fixes bug 447811 -
 	ProjectTypeGuids are erased from MSBuild files.
