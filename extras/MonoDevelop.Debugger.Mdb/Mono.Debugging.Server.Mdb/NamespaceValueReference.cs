@@ -122,12 +122,10 @@ namespace DebuggerServer
 		{
 			List<string> list = new List<string> ();
 			
-			if (namespaces == null)
-				namespaces = frame.Method.GetNamespaces ();
-			
 			// Child types
 			
 			List<string> types = new List<string> ();
+			HashSet<string> namespaces = new HashSet<string> ();
 			HashSet<object> visited = new HashSet<object> ();
 			object methodHandle = frame.Method.MethodHandle;
 
@@ -136,7 +134,7 @@ namespace DebuggerServer
 				object module = GetProp (declaringType, "Module");
 				object assembly = GetProp (module, "Assembly");
 				object resolver = GetProp (assembly, "Resolver");
-				FindTypes (resolver, visited, types, assembly);
+				FindTypes (resolver, visited, types, namespaces, assembly);
 			}
 			
 			foreach (string typeName in types) {
@@ -146,36 +144,31 @@ namespace DebuggerServer
 			}
 			
 			// Child namespaces
-			
-			string basens = namspace + ".";
-			foreach (string ns in namespaces) {
-				if (ns.StartsWith (basens)) {
-					string subns = ns;
-					int i = subns.IndexOf ('.', basens.Length);
-					if (i != -1)
-						subns = subns.Substring (0, i);
-					if (!list.Contains (subns))
-						list.Add (subns);
-				}
-			}
-				
-			foreach (string ns in list)
+			foreach (string ns in namespaces)
 				yield return new NamespaceValueReference (frame, ns);
 		}
 		
-		public void FindTypes (object resolver, HashSet<object> visited, List<string> types, object asm)
+		public void FindTypes (object resolver, HashSet<object> visited, List<string> types, HashSet<string> namespaces, object asm)
 		{
 			if (!visited.Add (asm))
 				return;
-			
+
+			string namspaceDotted = namspace + ".";
 			object mainModule = GetProp (asm, "MainModule");
 			foreach (object typeDefinition in (IEnumerable) GetProp (mainModule, "Types")) {
 				bool isPublic = (bool) GetProp (typeDefinition, "IsPublic");
 				bool isInterface = (bool) GetProp (typeDefinition, "IsInterface");
 				bool isEnum = (bool) GetProp (typeDefinition, "IsEnum");
 				string typeNamespace = (string) GetProp (typeDefinition, "Namespace");
-				if (isPublic && !isInterface && !isEnum && typeNamespace == namspace) {
-					types.Add ((string) GetProp (typeDefinition, "FullName"));
+				if (isPublic && !isInterface && !isEnum) {
+					if (typeNamespace == namspace)
+						types.Add ((string) GetProp (typeDefinition, "FullName"));
+					else if (typeNamespace.StartsWith (namspaceDotted)) {
+						int i = typeNamespace.IndexOf ('.', namspaceDotted.Length);
+						if (i != -1)
+							typeNamespace = typeNamespace.Substring (0, i);
+						namespaces.Add (typeNamespace);
+					}
 				}
 			}
 
@@ -184,7 +177,7 @@ namespace DebuggerServer
 			foreach (object an in (IEnumerable) GetProp (mainModule, "AssemblyReferences")) {
 				object refAsm = resolveMet.Invoke (resolver, new object[] {an});
 				if (refAsm != null)
-					FindTypes (resolver, visited, types, refAsm);
+					FindTypes (resolver, visited, types, namespaces, refAsm);
 			}
 		}
 

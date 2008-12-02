@@ -1,3 +1,12 @@
+2008-12-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* BacktraceWrapper.cs:
+	* NRefactoryEvaluator.cs: There is now a new kind flag for NotSupported
+	errors. Use it.
+
+	* NamespaceValueReference.cs: Properly get child namespaces of a
+	namespace.
+
 2008-12-01  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* DebuggerServer.cs: Get the exception object from the frame.

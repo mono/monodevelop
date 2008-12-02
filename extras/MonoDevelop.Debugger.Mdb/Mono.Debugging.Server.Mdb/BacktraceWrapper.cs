@@ -138,6 +138,9 @@ namespace DebuggerServer
 					EvaluationOptions ops = new EvaluationOptions ();
 					ops.CanEvaluateMethods = evaluateMethods;
 					var = (ValueReference) Server.Instance.Evaluator.Evaluate (frames[frameIndex], exp, ops);
+				} catch (NotSupportedExpressionException ex) {
+					values [n] = ObjectValue.CreateNotSupported (exp, ex.Message, ObjectValueFlags.None);
+					continue;
 				} catch (EvaluatorException ex) {
 					values [n] = ObjectValue.CreateError (exp, ex.Message, ObjectValueFlags.None);
 					continue;
@@ -159,7 +162,7 @@ namespace DebuggerServer
 		{
 			MD.StackFrame frame = frames[frameIndex];
 			int i;
-			
+
 			if (exp [exp.Length - 1] == '.') {
 				exp = exp.Substring (0, exp.Length - 1);
 				i = 0;

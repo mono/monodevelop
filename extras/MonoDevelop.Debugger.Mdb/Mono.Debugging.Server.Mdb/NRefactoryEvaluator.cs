@@ -956,7 +956,7 @@ namespace DebuggerServer
 		
 		Exception CreateNotSupportedError ()
 		{
-			return new EvaluatorException ("Expression not supported.");
+			return new NotSupportedExpressionException ();
 		}
 		
 		public string[] GetNamespaces ()
@@ -974,5 +974,12 @@ namespace DebuggerServer
 				return name;
 			return String.Concat (nsn, ".", name);
         }
+	}
+
+	class NotSupportedExpressionException: EvaluatorException
+	{
+		public NotSupportedExpressionException (): base ("Expression not supported.")
+		{
+		}
 	}
 }
