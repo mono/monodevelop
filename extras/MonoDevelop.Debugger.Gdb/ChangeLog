@@ -1,3 +1,8 @@
+2008-12-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Debugger.mdp:
+	* MonoDevelop.Debugger.Gdb.make: Remove .pc file. It's not required.
+
 2008-11-25  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Manifest.addin.xml: Track api changes.

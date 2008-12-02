@@ -41,13 +41,7 @@ SATELLITE_ASSEMBLY_NAME=.resources.dll
 PROGRAMFILES = \
 	$(MONODEVELOP_DEBUGGER_GDB_DLL_MDB)  
 
-LINUX_PKGCONFIG = \
-	$(MONODEVELOP_DEBUGGER_GDB_PC)  
-
-
 RESGEN=resgen2
-
-MONODEVELOP_DEBUGGER_GDB_PC = $(BUILD_DIR)/monodevelop.debugger.gdb.pc
 
 FILES =  \
 	AssemblyInfo.cs \
@@ -63,9 +57,6 @@ DATA_FILES =
 
 RESOURCES = Manifest.addin.xml 
 
-EXTRAS = \
-	monodevelop.debugger.gdb.pc.in 
-
 REFERENCES =  \
 	Mono.Posix \
 	-pkg:monodevelop \
@@ -77,11 +68,6 @@ CLEANFILES = $(PROGRAMFILES) $(LINUX_PKGCONFIG)
 
 #Targets
 all-local: $(ASSEMBLY) $(PROGRAMFILES) $(LINUX_PKGCONFIG)  $(top_srcdir)/config.make
-
-
-
-$(eval $(call emit-deploy-wrapper,MONODEVELOP_DEBUGGER_GDB_PC,monodevelop.debugger.gdb.pc))
-
 
 $(eval $(call emit_resgen_targets))
 $(build_xamlg_list): %.xaml.g.cs: %.xaml
@@ -106,7 +92,6 @@ install-local: $(ASSEMBLY) $(ASSEMBLY_MDB)
 	$(call cp,$(ASSEMBLY_MDB),$(INSTALL_DIR))
 	$(call cp,$(MONODEVELOP_DEBUGGER_GDB_DLL_MDB),$(INSTALL_DIR))
 	mkdir -p '$(DESTDIR)$(libdir)/pkgconfig'
-	$(call cp,$(MONODEVELOP_DEBUGGER_GDB_PC),$(DESTDIR)$(libdir)/pkgconfig)
 	make post-install-local-hook prefix=$(prefix)
 
 uninstall-local: $(ASSEMBLY) $(ASSEMBLY_MDB)
@@ -114,5 +99,4 @@ uninstall-local: $(ASSEMBLY) $(ASSEMBLY_MDB)
 	$(call rm,$(ASSEMBLY),$(INSTALL_DIR))
 	$(call rm,$(ASSEMBLY_MDB),$(INSTALL_DIR))
 	$(call rm,$(MONODEVELOP_DEBUGGER_GDB_DLL_MDB),$(INSTALL_DIR))
-	$(call rm,$(MONODEVELOP_DEBUGGER_GDB_PC),$(DESTDIR)$(libdir)/pkgconfig)
 	make post-uninstall-local-hook prefix=$(prefix)
