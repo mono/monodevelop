@@ -1568,6 +1568,8 @@ namespace MonoDevelop.Ide.Gui.Components
 			if (args.Event.Key == Gdk.Key.Return || args.Event.Key == Gdk.Key.KP_Enter) {
 				ActivateCurrentItem ();
 				args.RetVal = true;
+			} else if (args.Event.Key == Gdk.Key.Menu) {
+				ShowPopup ();
 			}
 		}
 

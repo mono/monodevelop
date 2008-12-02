@@ -1,3 +1,8 @@
+2008-12-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs: Show the context
+	menu when pressing the menu key. Patch by Lucian0.
+
 2008-11-29  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Commands/RefactoryCommands.cs:
