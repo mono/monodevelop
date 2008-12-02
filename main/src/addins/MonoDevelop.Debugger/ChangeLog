@@ -1,3 +1,8 @@
+2008-12-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Debugger/ObjectValueTreeView.cs: Allow editing by pressing
+	F2.
+
 2008-12-01  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Debugger.addin.xml: Fix command names.

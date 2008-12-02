@@ -315,7 +315,7 @@ namespace MonoDevelop.Debugger
 				nameColor = disabledColor;
 				canEdit = false;
 			}
-			else if (val.IsError) {
+			else if (val.IsError || val.IsNotSupported) {
 				strval = val.Value;
 				int i = strval.IndexOf ('\n');
 				if (i != -1)
@@ -408,6 +408,14 @@ namespace MonoDevelop.Debugger
 				sb.Insert (0, "/" + name);
 			} while (store.IterParent (out iter, iter));
 			return sb.ToString ();
+		}
+
+		[MonoDevelop.Components.Commands.CommandHandler (MonoDevelop.Ide.Commands.EditCommands.Rename)]
+		protected void OnStartEditing ()
+		{
+			Gtk.TreeIter it;
+			if (Selection.GetSelected (out it))
+				SetCursor (store.GetPath (it), Columns[0], true);
 		}
 
 		void OnExpEditing (object s, Gtk.EditingStartedArgs args)
@@ -525,7 +533,7 @@ namespace MonoDevelop.Debugger
 				if (currentCompletionData == null && IsCompletionChar (c)) {
 					string exp = entry.Text.Substring (0, entry.CursorPosition);
 					currentCompletionData = GetCompletionData (exp);
-					if (currentCompletionData != null && currentCompletionData.Items.Count > 1) {
+					if (currentCompletionData != null) {
 						DebugCompletionDataList dataList = new DebugCompletionDataList (currentCompletionData);
 						ICodeCompletionContext ctx = ((ICompletionWidget)this).CreateCodeCompletionContext (entry.CursorPosition - currentCompletionData.ExpressionLenght);
 						CompletionWindowManager.ShowWindow (c, dataList, this, ctx, OnCompletionWindowClosed);
