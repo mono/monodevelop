@@ -4,7 +4,7 @@
        url       = "http://www.mono-project.com"
        description = "Managed Debugging Engine support for MDB"
        copyright   = "MIT X11"
-       version   = "0.1">
+       version   = "1.9.1">
 
 	<Dependencies>
 		<Addin id="MonoDevelop.Core" version="1.9.1"/>
