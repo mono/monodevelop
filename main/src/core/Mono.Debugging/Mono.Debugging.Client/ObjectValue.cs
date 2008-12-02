@@ -116,6 +116,15 @@ namespace Mono.Debugging.Client
 			return ob;
 		}
 		
+		public static ObjectValue CreateNotSupported (string name, string message, ObjectValueFlags flags)
+		{
+			ObjectValue ob = new ObjectValue ();
+			ob.flags = flags | ObjectValueFlags.NotSupported;
+			ob.value = message;
+			ob.name = name;
+			return ob;
+		}
+		
 		public static ObjectValue CreateError (string name, string message, ObjectValueFlags flags)
 		{
 			ObjectValue ob = new ObjectValue ();
@@ -258,6 +267,10 @@ namespace Mono.Debugging.Client
 		
 		public bool IsUnknown {
 			get { return HasFlag (ObjectValueFlags.Unknown); }
+		}
+		
+		public bool IsNotSupported {
+			get { return HasFlag (ObjectValueFlags.NotSupported); }
 		}
 		
 		public bool IsError {

@@ -32,11 +32,12 @@ namespace Mono.Debugging.Client
 	[Flags]
 	public enum ObjectValueFlags: uint {
 		None = 0,
-		Object = 1,
-		Array = 1 << 1,
-		Primitive = 1 << 2,
-		Unknown = 1 << 3,
-		Error = 1 << 4,
+		Object = 1,             // The value is an object
+		Array = 1 << 1,         // The value is an array
+		Primitive = 1 << 2,     // The value is a primitive value
+		Unknown = 1 << 3,       // The evaluated identifier is unknown
+		Error = 1 << 4,         // The expression evaluation returned an error
+		NotSupported = 1 << 5,  // The expression is valid but its evaluation is not supported
 		KindMask = 0x000000ff,
 		
 		Field = 1 << 8,

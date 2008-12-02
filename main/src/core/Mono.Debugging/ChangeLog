@@ -1,3 +1,11 @@
+2008-12-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Debugging.Client/ObjectValue.cs:
+	* Mono.Debugging.Client/ObjectValueFlags.cs: Added new kind of value:
+	not supported.
+
+	* Makefile.am: Fix to better support parallel building.
+
 2008-10-22  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Debugging.Client/ThreadInfo.cs: Added null check.

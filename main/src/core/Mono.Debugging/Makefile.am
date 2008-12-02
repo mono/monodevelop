@@ -40,11 +40,13 @@ FILES =  \
 
 RES = 
 
-all: $(ASSEMBLY)
+all: $(ASSEMBLY) $(ASSEMBLY).mdb
 
 $(ASSEMBLY): $(build_sources) $(build_resources)
 	mkdir -p $(ASSEMBLY_BUILD_DIR)
 	$(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library $(REFS) $(build_resources:%=/resource:%) $(build_sources)
+
+$(ASSEMBLY).mdb: $(ASSEMBLY)
 
 assemblydir = $(MD_ASSEMBLY_DIR)
 assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb
