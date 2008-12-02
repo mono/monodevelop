@@ -1,5 +1,12 @@
 2008-12-02  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Gui/StartupInfo.cs: Get the full path of provided file
+	names. Fixes bug #450999 - Version control add-in fails to work
+	properly if solution loaded using "monodevelop mysolution.mds" (run
+	from the directory containing the solution).
+
+2008-12-02  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs: Show the context
 	menu when pressing the menu key. Patch by Lucian0.
 

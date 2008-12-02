@@ -65,6 +65,7 @@ namespace MonoDevelop.Ide.Gui
 				}
 				
 				if (System.IO.File.Exists (a)) {
+					a = System.IO.Path.GetFullPath (a);
 					requestedFileList.Add (a);
 					return;
 				}
