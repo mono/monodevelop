@@ -43,6 +43,7 @@ JAVABINDING_PC = $(BUILD_DIR)/monodevelop-java.pc
 
 
 FILES =  \
+	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
 	gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs \
 	gtk-gui/JavaBinding.GlobalOptionsPanelWidget.cs \

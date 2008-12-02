@@ -38,8 +38,6 @@ RES =  \
 	gtk-gui/objects.xml \
 	MonoDevelop.AssemblyBrowser.addin.xml
 
-GENERATED_FILES =  
-
 DEPS =  \
 	$(top_builddir)/build/bin/Mono.Cecil.dll \
 	$(top_builddir)/build/bin/Mono.TextEditor.dll \

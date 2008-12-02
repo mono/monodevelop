@@ -17,6 +17,7 @@ REFS =  \
 	-r:System
 
 FILES =  \
+	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.VersionControl.Subversion.Gui.ClientCertificateDialog.cs \
 	gtk-gui/MonoDevelop.VersionControl.Subversion.Gui.ClientCertificatePasswordDialog.cs \

@@ -110,9 +110,6 @@ RES =  \
 	icons/MonoDevelop.Close.png \
 	MonoDevelop.Components.addin.xml
 
-GENERATED_FILES = \
-AssemblyInfo.cs
-
 all: $(ASSEMBLY) $(ASSEMBLY).mdb
 
 $(ASSEMBLY): $(build_sources) $(build_resources) $(top_builddir)/build/bin/MonoDevelop.Core.dll

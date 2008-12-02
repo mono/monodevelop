@@ -32,6 +32,7 @@
     <File name="gtk-gui/objects.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="WelcomePageBrowser.cs" subtype="Code" buildaction="Compile" />
     <File name="gtk-gui/MonoDevelop.WelcomePage.WelcomePageFallbackWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

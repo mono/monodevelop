@@ -49,6 +49,7 @@
     <File name="MonoDevelop.Database.Designer.addin.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="gtk-gui/objects.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="Makefile.am" subtype="Code" buildaction="Nothing" />
+    <File name="AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />

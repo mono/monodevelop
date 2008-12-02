@@ -12,6 +12,7 @@ REFS =  \
 	-r:System.Data
 
 FILES =  \
+	AssemblyInfo.cs \
 	Dialogs/NpgsqlTableEditorDialog.cs \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.Database.Sql.Npgsql.NpgsqlColumnEditorWidget.cs \

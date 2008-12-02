@@ -1,12 +1,11 @@
 
 ASSEMBLY = $(top_builddir)/build/bin/MonoDevelop.exe
 
-FILES = MonoDevelop.Startup/MonoDevelopMain.cs
+FILES =  \
+	AssemblyInfo.cs \
+	MonoDevelop.Startup/MonoDevelopMain.cs
 
-RES =            
-
-GENERATED_FILES = \
-AssemblyInfo.cs
+RES =
 
 all: $(ASSEMBLY) $(ASSEMBLY).config
 

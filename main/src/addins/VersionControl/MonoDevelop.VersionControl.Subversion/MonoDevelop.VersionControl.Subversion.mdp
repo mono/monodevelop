@@ -34,6 +34,7 @@
     <File name="MonoDevelop.VersionControl.Subversion/LibSvnClient.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.VersionControl.Subversion/SubversionNodeExtension.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.VersionControl.Subversion/Commands.cs" subtype="Code" buildaction="Compile" />
+    <File name="AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Core" />

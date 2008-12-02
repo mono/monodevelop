@@ -28,7 +28,6 @@
     <File name="Resources/EmptyPySourceFile.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="Resources/py-icon-32.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="Resources/text-x-pysrc.16x16.png" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="Resources/PyBinding.addin.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="PyBinding.Gui/PythonOptionsWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="Resources/completion.py" subtype="Code" buildaction="EmbedAsResource" />
     <File name="PyBinding.Parser/PythonParser.cs" subtype="Code" buildaction="Compile" />
@@ -59,6 +58,7 @@
     <File name="PyBinding.Gui/PythonEditorIndentation.cs" subtype="Code" buildaction="Compile" />
     <File name="PyBinding.Gui/PythonEditorOutline.cs" subtype="Code" buildaction="Compile" />
     <File name="PyBinding.Gui/PythonOptionsPanel.cs" subtype="Code" buildaction="Compile" />
+    <File name="PyBinding.addin.xml" subtype="Code" buildaction="EmbedAsResource" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

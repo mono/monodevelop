@@ -43,6 +43,7 @@ GECKOWEBBROWSER_PC = $(BUILD_DIR)/monodevelop-geckowebbrowser.pc
 
 
 FILES =  \
+	AssemblyInfo.cs \
 	GeckoWebBrowser.cs \
 	GeckoWebBrowserLoader.cs \
 	gtk-gui/generated.cs 

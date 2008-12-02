@@ -195,9 +195,6 @@ RES =  \
 	icons/workspace-32.png \
 	MonoDevelop.Core.Gui.addin.xml
 
-GENERATED_FILES = \
-AssemblyInfo.cs
-
 all: $(ASSEMBLY)
 
 $(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)

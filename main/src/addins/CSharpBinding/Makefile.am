@@ -26,6 +26,7 @@ REFS =  \
 	-r:System.Xml
 
 FILES =  \
+	AssemblyInfo.cs \
 	CSharpBindingCompilerManager.cs \
 	CSharpEnhancedCodeProvider.cs \
 	CSharpLanguageBinding.cs \

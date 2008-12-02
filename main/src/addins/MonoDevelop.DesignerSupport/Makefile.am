@@ -25,6 +25,7 @@ REFS =  \
 	-r:System.Xml
 
 FILES =  \
+	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.DesignerSupport.Toolbox.ComponentSelectorDialog.cs \
 	MonoDevelop.DesignerSupport.Projects/ComponentNodeBuilder.cs \

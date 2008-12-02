@@ -29,6 +29,7 @@
     <File name="Schema/dummy.cs" subtype="Code" buildaction="Compile" />
     <File name="Dialogs/SqliteCreateDatabaseDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="Widgets/SqliteConnectionSettingsWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System.Data, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

@@ -17,6 +17,7 @@ REFS =  \
 	-r:System.Xml
 
 FILES =  \
+	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.DeleteConfigDialog.cs \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.NewConfigurationDialog.cs \
@@ -84,9 +85,6 @@ RES =  \
 	gtk-gui/gui.stetic \
 	gtk-gui/objects.xml \
 	MonoDevelop.Projects.Gui.addin.xml
-
-GENERATED_FILES = \
-AssemblyInfo.cs
 
 all: $(ASSEMBLY)
 

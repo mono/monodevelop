@@ -12,6 +12,7 @@ REFS =  \
 	-r:System
 
 FILES =  \
+	AssemblyInfo.cs \
 	WindowsPlatform.cs
 
 RES =  \

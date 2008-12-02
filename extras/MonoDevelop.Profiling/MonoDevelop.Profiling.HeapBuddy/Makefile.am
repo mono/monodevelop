@@ -10,6 +10,7 @@ REFS =  \
 	-r:System
 
 FILES =  \
+	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
 	Gui/BacktracesNodeBuilder.cs \
 	Gui/BacktracesView.cs \

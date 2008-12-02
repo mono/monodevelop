@@ -13,6 +13,7 @@ REFS =  \
 	-r:System.Xml
 
 FILES =  \
+	AssemblyInfo.cs \
 	Codons/DataGridContentRendererCodon.cs \
 	Codons/DataGridVisualizerCodon.cs \
 	Commands/AbstractDatabaseProviderList.cs \

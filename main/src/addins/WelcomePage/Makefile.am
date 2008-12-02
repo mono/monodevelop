@@ -17,6 +17,7 @@ REFS =  \
 	-r:System.Xml
 
 FILES =  \
+	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.WelcomePage.WelcomePageFallbackWidget.cs \
 	WelcomePageBrowser.cs \

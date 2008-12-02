@@ -21,6 +21,7 @@ REFS =  \
 	-r:System.Xml
 
 FILES =  \
+	AssemblyInfo.cs \
 	MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs \
 	MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs \
 	MonoDevelop.Projects.CodeGeneration/IRefactorer.cs \
@@ -262,9 +263,6 @@ FILES =  \
 RES =  \
 	md1format.xml \
 	MonoDevelop.Projects.addin.xml 
-
-GENERATED_FILES = \
-AssemblyInfo.cs
 
 all: $(ASSEMBLY) $(ASSEMBLY).mdb
 

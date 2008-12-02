@@ -34,6 +34,7 @@ FILES =  \
 	AlterSchema/UniqueConstraintAlterSchema.cs \
 	AlterSchema/UserAlterSchema.cs \
 	AlterSchema/ViewAlterSchema.cs \
+	AssemblyInfo.cs \
 	Codons/DbFactoryCodon.cs \
 	Collections/ColumnSchemaCollection.cs \
 	Collections/ConstraintSchemaCollection.cs \

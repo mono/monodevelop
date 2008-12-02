@@ -12,6 +12,7 @@ REFS =  \
 	-r:System.Data
 
 FILES =  \
+	AssemblyInfo.cs \
 	Collections/MySqlCharacterSetSchemaCollection.cs \
 	Collections/MySqlCollationSchemaCollection.cs \
 	Dialogs/MySqlTableEditorDialog.cs \

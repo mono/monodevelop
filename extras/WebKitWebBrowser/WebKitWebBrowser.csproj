@@ -45,6 +45,7 @@
     <EmbeddedResource Include="MonoDevelop.WebBrowsers.WebKitWebBrowser.addin.xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
     <Compile Include="WebKitWebBrowser.cs" />
     <Compile Include="WebKitWebBrowserLoader.cs" />
   </ItemGroup>

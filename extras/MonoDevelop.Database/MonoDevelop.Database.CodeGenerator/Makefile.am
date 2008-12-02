@@ -14,6 +14,7 @@ REFS =  \
 	-r:System.Data
 
 FILES =  \
+	AssemblyInfo.cs \
 	Commands/ToolCommands.cs \
 	Dialogs/GenerateDataClassesDialog.cs \
 	gtk-gui/generated.cs \

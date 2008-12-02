@@ -98,9 +98,6 @@ FILES =  \
 	MonoDevelop.Core/UserException.cs \
 	MonoDevelop.Core/XmlReadHelper.cs
 
-GENERATED_FILES =  \
-		  AssemblyInfo.cs
-
 RES = MonoDevelop.Core.addin.xml                                                          
 
 REFS =  \

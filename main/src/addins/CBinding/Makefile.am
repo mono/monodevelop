@@ -22,6 +22,7 @@ REFS =  \
 	
 
 FILES =  \
+	AssemblyInfo.cs \
 	CLanguageBinding.cs \
 	Compiler/CCompiler.cs \
 	Compiler/GccCompiler.cs \

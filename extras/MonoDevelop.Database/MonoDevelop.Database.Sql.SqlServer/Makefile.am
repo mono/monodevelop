@@ -11,6 +11,7 @@ REFS =  \
 	-r:System.Data
 
 FILES =  \
+	AssemblyInfo.cs \
 	Dialogs/SqlServerTableEditorDialog.cs \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.Database.Sql.SqlServer.SqlServerColumnEditorWidget.cs \

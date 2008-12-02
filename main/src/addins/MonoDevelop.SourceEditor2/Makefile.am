@@ -35,8 +35,6 @@ FILES =  \
 	MonoDevelop.SourceEditor/SourceEditorView.cs \
 	MonoDevelop.SourceEditor/SourceEditorWidget.cs 
 
-GENERATED_FILES = 
-
 RES =  \
 	gtk-gui/gui.stetic \
 	gtk-gui/objects.xml \

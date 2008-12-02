@@ -43,6 +43,7 @@ WEBKITWEBBROWSER_PC = $(BUILD_DIR)/monodevelop-webkitwebbrowser.pc
 
 
 FILES =  \
+	AssemblyInfo.cs \
 	WebKitWebBrowser.cs \
 	WebKitWebBrowserLoader.cs
 

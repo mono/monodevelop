@@ -94,11 +94,11 @@ DATA_FILES =
 
 RESOURCES =  \
 	gtk-gui/gui.stetic \
+	PyBinding.addin.xml \
 	Resources/BasicScriptPySourceFile.xft.xml \
 	Resources/completion.py \
 	Resources/EmptyPyProject.xpt.xml \
 	Resources/EmptyPySourceFile.xft.xml \
-	Resources/PyBinding.addin.xml \
 	Resources/py-icon-32.png \
 	Resources/text-x-pysrc.16x16.png 
 

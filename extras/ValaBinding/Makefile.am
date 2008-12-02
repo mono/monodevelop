@@ -13,6 +13,7 @@ REFS =  \
 	
 
 FILES =  \
+	AssemblyInfo.cs \
 	Compiler/ICompiler.cs \
 	Compiler/ValaCompiler.cs \
 	gtk-gui/generated.cs \

@@ -45,6 +45,7 @@
     <File name="icons/java-16.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/java-22.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="md1format.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

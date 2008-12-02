@@ -27,6 +27,7 @@ REFS =  \
 	-r:System.Xml
 
 FILES =  \
+	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.AspNet.Deployment.WebDeployLaunchDialog.cs \
 	gtk-gui/MonoDevelop.AspNet.Deployment.WebDeployOptionsPanelWidget.cs \

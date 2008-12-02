@@ -26,6 +26,7 @@ REFS =  \
 	-r:System.Xml
 
 FILES =  \
+	BuildVariables.cs \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.Ide.CodeTemplates.CodeTemplatePanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.DocumentSwitcher.cs \
@@ -360,10 +361,6 @@ RES =  \
 	templates/EmptyXMLFile.xft.xml \
 	templates/GenericProject.xpt.xml \
 	templates/Workspace.xpt.xml
-
-
-GENERATED_FILES = \
-AssemblyInfo.cs
 
 OPTIONS = \
 options/DefaultEditingLayout.xml \

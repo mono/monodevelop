@@ -40,6 +40,7 @@ RES =  \
 	MonoDevelop.Database.Query.addin.xml
 
 FILES =  \
+	AssemblyInfo.cs \
 	Commands/ToolCommands.cs \
 	gtk-gui/generated.cs \
 	QueryResultView.cs \

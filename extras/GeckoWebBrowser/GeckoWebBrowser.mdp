@@ -20,6 +20,7 @@
     <File name="MonoDevelop.WebBrowsers.GeckoWebBrowser.addin.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="GeckoWebBrowserLoader.cs" subtype="Code" buildaction="Compile" />
     <File name="ChangeLog" subtype="Code" buildaction="Nothing" />
+    <File name="AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="gecko-sharp, Version=2.0.0.0, Culture=neutral, PublicKeyToken=ccf7d78a55e9f021" />

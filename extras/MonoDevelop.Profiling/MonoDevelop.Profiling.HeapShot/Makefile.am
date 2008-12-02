@@ -10,6 +10,7 @@ REFS =  \
 	-r:System
 
 FILES =  \
+	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.Profiling.HeapShot.ReferenceTreeViewer.cs \
 	Gui/HeapShotProfilingSnapshotNodeBuilder.cs \

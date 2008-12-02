@@ -1,3 +1,7 @@
+2008-12-02  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* configure.in: Remove configure-generated AssemblyInfo.cs files.
+
 2008-12-02  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* build/Makefile.am: Remove data subdir.

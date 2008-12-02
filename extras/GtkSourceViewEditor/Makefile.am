@@ -2,6 +2,7 @@ DLLNAME = MonoDevelop.SourceEditor.dll
 ASSEMBLY = $(top_builddir)/build/AddIns/$(DLLNAME)
 
 FILES =  \
+	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
 	MonoDevelop.SourceEditor.Actions/DefaultEditActions.cs \
 	MonoDevelop.SourceEditor.Actions/EditActionCollection.cs \
@@ -32,9 +33,6 @@ RES =  \
 	gtk-gui/objects.xml \
 	MonoDevelop.SourceEditor.addin.xml \
 	texteditoraddin.glade
-
-GENERATED_FILES = \
-AssemblyInfo.cs
 
 DEPS =	\
 	$(top_builddir)/build/bin/MonoDevelop.Components.dll \

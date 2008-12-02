@@ -14,6 +14,7 @@ REFS =  \
 	-r:System.Xml
 
 FILES =  \
+	AssemblyInfo.cs \
 	Commands/ConnectionManagerCommands.cs \
 	Commands/ToolbarCommands.cs \
 	ConnectionManagerPad.cs \

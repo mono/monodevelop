@@ -1,0 +1,9 @@
+namespace MonoDevelop.Ide
+{
+	internal class BuildVariables
+	{
+		public static string PackageVersion = "@PACKAGE_VERSION@";
+		public static string PackageVersionLabel = "@PACKAGE_VERSION_LABEL@";
+	}
+}
+

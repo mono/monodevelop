@@ -1,5 +1,6 @@
 
 FILES =  \
+	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.VersionControl.Dialogs.CommitDialog.cs \
 	gtk-gui/MonoDevelop.VersionControl.Dialogs.EditRepositoryDialog.cs \

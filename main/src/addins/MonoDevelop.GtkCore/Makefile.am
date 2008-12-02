@@ -26,6 +26,7 @@ REFS =  \
 	-r:System.Xml
 
 FILES =  \
+	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
 	MonoDevelop.GtkCore.Commands/GladeCommands.cs \
 	MonoDevelop.GtkCore.Dialogs/BindDesignDialog.cs \

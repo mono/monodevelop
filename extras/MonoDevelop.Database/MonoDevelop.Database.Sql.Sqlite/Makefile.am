@@ -13,6 +13,7 @@ REFS =  \
 	-r:System.Data
 
 FILES =  \
+	AssemblyInfo.cs \
 	Dialogs/SqliteCreateDatabaseDialog.cs \
 	Dialogs/SqliteDatabaseConnectionSettingsDialog.cs \
 	Dialogs/SqliteTableEditorDialog.cs \

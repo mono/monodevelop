@@ -21,6 +21,7 @@ REFS =  \
 	-r:System.Xml
 
 FILES =  \
+	AssemblyInfo.cs \
 	csproj_ver2003.cs \
 	CsprojInfo.cs \
 	MdPrjHelper.cs \
@@ -34,9 +35,6 @@ FILES =  \
 	VS2003ProjectFileFormat.cs
 
 RES = prj2make-sharp-lib.addin.xml
-
-GENERATED_FILES = \
-AssemblyInfo.cs
 
 EXTRA_DIST = $(FILES) $(RES)
 

@@ -13,6 +13,7 @@ REFS =  \
 FILES =  \
 	AbstractProfiler.cs \
 	AbstractProfilerSnapshot.cs \
+	AssemblyInfo.cs \
 	Codons/ProfilerCodon.cs \
 	Commands/AbstractProfilerList.cs \
 	Commands/PadCommands.cs \

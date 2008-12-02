@@ -13,7 +13,9 @@ REFS =  \
 	$(GTK_SHARP_LIBS) \
 	-r:System
 
-FILES = GnomePlatform.cs
+FILES =  \
+	AssemblyInfo.cs \
+	GnomePlatform.cs
 
 RES = GnomePlatform.addin.xml
 
