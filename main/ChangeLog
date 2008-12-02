@@ -1,3 +1,21 @@
+2008-12-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* build/data:
+	* configure.in:
+	* build/data/resources:
+	* build/data/Makefile.am:
+	* build/data/resources/css:
+	* build/data/resources/Makefile.am:
+	* build/data/ConversionStyleSheets:
+	* build/data/resources/css/Makefile.am:
+	* build/data/resources/css/MsdnHelp.css:
+	* build/data/resources/css/SharpDevelopStandard.css:
+	* build/data/ConversionStyleSheets/ShowChangeLog.xsl:
+	* build/data/ConversionStyleSheets/ConvertPrjx10to11.xsl:
+	* build/data/ConversionStyleSheets/ShowHowYouCanHelp.xsl:
+	* build/data/ConversionStyleSheets/ShowXmlDocumentation.xsl: Remove
+	unused stuff.
+
 2008-12-02  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* src/tools/AssemblyInfoWriter:

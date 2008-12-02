@@ -302,9 +302,6 @@ if test -z "$platform_bindings"; then
 fi
 
 AC_OUTPUT([
-build/data/Makefile
-build/data/resources/css/Makefile
-build/data/resources/Makefile
 build/Makefile
 contrib/Makefile
 contrib/Mono.Cecil/Makefile
