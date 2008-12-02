@@ -422,6 +422,39 @@ namespace MonoDevelop.SourceEditor
 			this.resolveResult = resolver.Resolve (expressionResult, new DomLocation (loc.Line + 1, loc.Column + 1));
 			return this.resolveResult;
 		}
+
+		public string GetExpression (int offset)
+		{
+			string fileName = View.ContentName;
+			if (fileName == null)
+				fileName = View.UntitledName;
+			
+			IExpressionFinder expressionFinder = ProjectDomService.GetExpressionFinder (fileName);
+			string expression = expressionFinder == null ? GetExpressionBeforeOffset (offset) : expressionFinder.FindFullExpression (Document.Text, offset).Expression;
+			if (expression == null)
+				return string.Empty;
+			else
+				return expression.Trim ();
+		}
+		
+		string GetExpressionBeforeOffset (int offset)
+		{
+			int start = offset;
+			while (start > 0 && IsIdChar (Document.GetCharAt (start)))
+				start--;
+			while (offset < Document.Length && IsIdChar (Document.GetCharAt (offset)))
+				offset++;
+			start++;
+			if (offset - start > 0 && start < Document.Length)
+				return Document.GetTextAt (start, offset - start);
+			else
+				return string.Empty;
+		}
+		
+		bool IsIdChar (char c)
+		{
+			return char.IsLetterOrDigit (c) || c == '_';
+		}
 		
 		protected override bool OnFocusOutEvent (Gdk.EventFocus evnt)
 		{

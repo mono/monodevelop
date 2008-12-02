@@ -66,21 +66,11 @@ namespace MonoDevelop.SourceEditor
 			
 			ExtensibleTextEditor ed = (ExtensibleTextEditor) editor;
 			
-			string fileName = ed.View.ContentName;
-			if (fileName == null)
-				fileName = ed.View.UntitledName;
-			
 			string expression;
-			if (ed.IsSomethingSelected && offset >= ed.SelectionRange.Offset && offset <= ed.SelectionRange.EndOffset) {
+			if (ed.IsSomethingSelected && offset >= ed.SelectionRange.Offset && offset <= ed.SelectionRange.EndOffset)
 				expression = ed.SelectedText;
-			}
-			else {
-				IExpressionFinder expressionFinder = ProjectDomService.GetExpressionFinder (fileName);
-				expression = expressionFinder == null ? GetExpressionBeforeOffset (ed, offset) : expressionFinder.FindFullExpression (editor.Document.Text, offset).Expression;
-				if (expression == null)
-					return null;
-				expression = expression.Trim ();
-			}
+			else
+				expression = ed.GetExpression (offset);
 			
 			if (expression.Length == 0)
 				return null;
@@ -90,7 +80,7 @@ namespace MonoDevelop.SourceEditor
 				val = frame.GetExpressionValue (expression, false);
 				cachedValues [expression] = val;
 			}
-			if (val != null && val.IsUnknown)
+			if (val == null || val.IsUnknown || val.IsNotSupported)
 				return null;
 			else
 				return val;

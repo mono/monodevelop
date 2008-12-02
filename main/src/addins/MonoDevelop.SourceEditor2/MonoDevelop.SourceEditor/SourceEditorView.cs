@@ -963,7 +963,30 @@ namespace MonoDevelop.SourceEditor
 		}
 		#endregion
 
+		#region commenting and indentation
+
+		[CommandHandler (MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator)]
+		protected void ShowExpressionEvaluator ()
+		{
+			string expression;
+			if (TextEditor.IsSomethingSelected)
+				expression = TextEditor.SelectedText;
+			else
+				expression = TextEditor.GetExpression (TextEditor.Caret.Offset);
+			
+			DebuggingService.ShowExpressionEvaluator (expression);
+		}
+
+		[CommandUpdateHandler (MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator)]
+		protected void UpdateShowExpressionEvaluator (CommandInfo cinfo)
+		{
+			if (DebuggingService.IsDebugging)
+				cinfo.Enabled = DebuggingService.CurrentFrame != null;
+			else
+				cinfo.Visible = false;
+		}
 		
+		#endregion
 		
 		#region ISplittable
 		public bool EnableSplitHorizontally {

@@ -1,3 +1,13 @@
+2008-12-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.SourceEditor.addin.xml:
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Added command for
+	showing the expression evaluator.
+
+	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs:
+	* MonoDevelop.SourceEditor/DebugValueTooltipProvider.cs: Factorized
+	expression finder code.
+
 2008-11-29  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/LanguageItemWindow.cs: Refactored
