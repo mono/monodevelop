@@ -53,9 +53,7 @@ namespace MonoDevelop.RegexToolkit
 			resultStore = new Gtk.TreeStore (typeof (string), typeof (string), typeof (int), typeof (int));
 			
 			FillOptionsBox ();
-			this.Destroyed += delegate {
-				HideTooltipWindow ();
-			};
+			
 			this.buttonCancel.Clicked += delegate {
 				this.Destroy ();
 			};
@@ -71,8 +69,8 @@ namespace MonoDevelop.RegexToolkit
 			this.buttonLibrary.Clicked  += delegate {
 				if (regexLib == null) {
 					regexLib = new RegexLibraryWindow ();
-				    regexLib.DestroyWithParent = true;
-				    regexLib.Parent = this;
+					regexLib.DestroyWithParent = true;
+					regexLib.Parent = this;
 					regexLib.Destroyed += delegate {
 						regexLib = null;
 					};
@@ -118,34 +116,24 @@ namespace MonoDevelop.RegexToolkit
 			elementsStore = new Gtk.TreeStore (typeof (string), typeof (string), typeof (string), typeof (string));
 			this.elementsTreeview.Model = this.elementsStore;
 			this.elementsTreeview.HeadersVisible = false;
+			this.elementsTreeview.Selection.Mode = SelectionMode.Browse;
 			this.elementsTreeview.AppendColumn (String.Empty, new CellRendererPixbuf (), "stock_id", 0);
 			cellRendText = new CellRendererText ();
 			cellRendText.Ellipsize = Pango.EllipsizeMode.End;
 			
 			this.elementsTreeview.AppendColumn ("", cellRendText, "text", 1);
+			
 			this.elementsTreeview.Selection.Changed += delegate {
 				ShowTooltipForSelectedEntry ();			
 			};
+			
 			this.LeaveNotifyEvent += delegate {
 				this.HideTooltipWindow ();
 			};
-			int ox = -1 , oy = -1;
-			this.elementsTreeview.WidgetEvent += delegate(object sender, WidgetEventArgs args) {
-				if (args.Event.Type != Gdk.EventType.MotionNotify)
-					return;
-				if (elementsTreeview.Selection.GetSelectedRows ().Length == 0)
-					return;
-				Gdk.Rectangle rect = elementsTreeview.GetCellArea (elementsTreeview.Selection.GetSelectedRows () [0], elementsTreeview.GetColumn (0));
-				int x, y;
-				this.GdkWindow.GetOrigin (out x, out y);
-				x += rect.X;
-				y += rect.Y;
-				if (this.tooltipWindow == null || ox != x || oy != y) {
-					ShowTooltipForSelectedEntry ();
-					ox = x;
-					oy = y;
-				}
-			};
+			
+			
+			this.elementsTreeview.MotionNotifyEvent += HandleMotionNotifyEvent;
+			
 			this.elementsTreeview.RowActivated += delegate (object sender, RowActivatedArgs e) {
 				Gtk.TreeIter iter;
 				if (elementsStore.GetIter (out iter, e.Path)) {
@@ -162,6 +150,27 @@ namespace MonoDevelop.RegexToolkit
 			FillElementsBox ();
 		}
 		
+		int ox = -1 , oy = -1;
+		
+		[GLib.ConnectBefore]
+		void HandleMotionNotifyEvent(object o, MotionNotifyEventArgs args)
+		{
+			TreeIter iter;
+				
+				if (!elementsTreeview.Selection.GetSelected (out iter))
+					return;
+				Gdk.Rectangle rect = elementsTreeview.GetCellArea (elementsStore.GetPath (iter), elementsTreeview.GetColumn (0));
+				int x, y;
+				this.GdkWindow.GetOrigin (out x, out y);
+				x += rect.X;
+				y += rect.Y;
+				if (this.tooltipWindow == null || ox != x || oy != y) {
+					ShowTooltipForSelectedEntry ();
+					ox = x;
+					oy = y;
+				}
+		}
+		
 		void SetFindMode (bool findMode)
 		{
 			this.notebook2.ShowTabs = !findMode;
@@ -175,7 +184,7 @@ namespace MonoDevelop.RegexToolkit
 			if (elementsTreeview.Selection.GetSelected (out iter)) {
 				string description = elementsStore.GetValue (iter, 2) as string;
 				if (!String.IsNullOrEmpty (description)) {
-					Gdk.Rectangle rect = elementsTreeview.GetCellArea (elementsTreeview.Selection.GetSelectedRows () [0], elementsTreeview.GetColumn (0));
+					Gdk.Rectangle rect = elementsTreeview.GetCellArea (elementsStore.GetPath (iter), elementsTreeview.GetColumn (0));
 					int wx, wy, wy2; 
 					elementsTreeview.TranslateCoordinates (this, rect.X, rect.Bottom, out wx, out wy);
 					elementsTreeview.TranslateCoordinates (this, rect.X, rect.Y, out wx, out wy2);
@@ -206,10 +215,13 @@ namespace MonoDevelop.RegexToolkit
 		const int tooltipXOffset = 100;
 		public void ShowTooltip (string text, int x, int y, int altY)
 		{
-			HideTooltipWindow (); 
-			tooltipWindow = new CustomTooltipWindow ();
-			tooltipWindow.TransientFor = this;
-			tooltipWindow.DestroyWithParent = true;
+			if (tooltipWindow != null) {
+				tooltipWindow.Hide ();
+			} else {
+				tooltipWindow = new CustomTooltipWindow ();
+				tooltipWindow.TransientFor = this;
+				tooltipWindow.DestroyWithParent = true;
+			}
 			tooltipWindow.Tooltip = text;
 			int ox, oy;
 			this.GdkWindow.GetOrigin (out ox, out oy);
