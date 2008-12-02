@@ -1,5 +1,9 @@
 2008-12-02  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* build/Makefile.am: Remove data subdir.
+
+2008-12-02  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* build/data:
 	* configure.in:
 	* build/data/resources:

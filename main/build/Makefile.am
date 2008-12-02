@@ -1,4 +1,3 @@
-SUBDIRS = data
 
 all:
 
