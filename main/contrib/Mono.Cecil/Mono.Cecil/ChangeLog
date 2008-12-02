@@ -1,3 +1,368 @@
+2008-06-28  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* Mono.Cecil.dll.sources
+	* Mono.Xml/MiniParser.cs:
+		Remove MiniParser as it is no more required (replaced by 
+		SmallXmlParser) and save a few KB in the binary size
+
+	* Mono.Xml/SecurityParser.cs
+	* Mono.Xml/SmallXmlParser.cs:
+		Seal non-visible classes.
+		[Found using Gendarme AvoidUnsealedUninheritedInternalClassesRule]
+
+	* Mono.Cecil.Signatures/GenericArg.cs:
+		Seal non-visible classes.
+		[Found using Gendarme AvoidUnsealedUninheritedInternalClassesRule]
+
+	* Mono.Cecil.Binary/CopyImageVisitor.cs
+	* Mono.Cecil.Binary/ImageInitializer.cs
+	* Mono.Cecil.Binary/ImageReader.cs
+	* Mono.Cecil.Binary/ImageWriter.cs
+	* Mono.Cecil.Binary/ResourceReader.cs
+	* Mono.Cecil.Binary/ResourceWriter.cs:
+		Seal non-visible classes.
+		[Found using Gendarme AvoidUnsealedUninheritedInternalClassesRule]
+
+	* Mono.Cecil.Metadata/CultureUtils.cs
+	* Mono.Cecil.Metadata/MetadataInitializer.cs
+	* Mono.Cecil.Metadata/MetadataReader.cs
+	* Mono.Cecil.Metadata/MetadataRowReader.cs
+	* Mono.Cecil.Metadata/MetadataRowWriter.cs
+	* Mono.Cecil.Metadata/MetadataTableReader.cs
+	* Mono.Cecil.Metadata/Utilities.cs:
+		Seal non-visible classes.
+		[Found using Gendarme AvoidUnsealedUninheritedInternalClassesRule]
+
+	* Mono.Cecil.Cil/CodeReader.cs
+	* Mono.Cecil.Cil/OpCodeNames.cs
+	* Mono.Cecil.Cil/CodeWriter.cs
+	* Mono.Cecil.Cil/SymbolStoreHelper.cs:
+		Seal non-visible classes.
+		[Found using Gendarme AvoidUnsealedUninheritedInternalClassesRule]
+
+	* Mono.Cecil/SecurityDeclarationReader.cs
+	* Mono.Cecil/NullReferenceImporter.cs
+	* Mono.Cecil/TableComparers.cs:
+		Seal non-visible classes.
+		[Found using Gendarme AvoidUnsealedUninheritedInternalClassesRule]
+
+	* Mono.Cecil/AssemblyNameReference.cs:
+		Use String.Length > 0 instead of comparing to String.Empty
+		[Found using Gendarme CompareWithEmptyStringEfficientlyRule]
+
+	* Mono.Cecil.Metadata/MetadataToken.cs:
+		Add a private Equals(MetadataToken) method. This allows the 
+		existing operators (== and !=) to avoid boxing, since they
+		will prefer it to the Equals(object) method.
+		[Found using Gendarme ImplementEqualsTypeRule]
+
+	* Mono.Cecil.Cil/GuidAttribute.cs:
+		Seal attribute class
+		[Found using Gendarme AvoidUnsealedConcreteAttributesRule]
+
+	* Mono.Cecil.Signatures/SignatureWriter.cs:
+		Fix typo.
+		[Found using Gendarme AvoidUnneededUnboxingRule]
+
+2008-06-06  Jb Evain  <jbevain@novell.com>
+
+	* CodeGen/cecil.xml: constrained. is of type InlineType.
+	* Mono.Cecil.Cil/OpCodes.cs: re-generate.
+
+2008-05-14  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil/ReflectionWriter.cs:
+		Only create the GenericParameterConstraint table if needed.
+		Patch by Richard Flamsholt <richard.flamsholt@gmail.com>.
+
+	* Mono.Cecil.Cil/MethodBody.cs:
+		Fix typo in switch cloning. Patch by
+		Rune Glerup <rune.glerup@gmail.com>.
+
+2008-05-06  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil.Signatures/CustomMod.cs:
+		Introduce a EmptyCustomMod static field.
+	* Mono.Cecil/ReflectionWriter.cs
+	* Mono.Cecil.Signatures/SignatureReader.cs:
+		Use EmptyCustomMod instead of instanciating
+		empty arrays of CustomMod.
+		Based on a patch by Carlo Kok <ck@remobjects.com>.
+
+	* Mono.Cecil.Metadata/MetadataRowReader.cs
+	* Mono.Cecil.Metadata/MetadataRowWriter.cs:
+		Cache row counters delegates.
+		Based on a patch by Carlo Kok <ck@remobjects.com>.
+
+	* Mono.Cecil/TypeDefinition.cs
+	* Mono.Cecil/MethodDefinition.cs
+	* Mono.Cecil/DefaultImporter.cs
+	* Mono.Cecil/ReflectionHelper.cs:
+		Restore the generic context values instead of blindly
+		overriding them. Based on a patch by Dzintars Avots.
+
+	* Mono.Cecil/MarshalSpec.cs (CloneInto): add new method
+	to clone MarshalSpec into a new container.
+
+	* Mono.Cecil/ParameterDefinition.cs (Clone):
+	* Mono.Cecil/FieldDefinition.cs (Clone):
+	Use the new MarshalSpec.CloneInto method.
+	Based on a patch by Dzintars Avots <davots@coverity.com>.
+
+	* Mono.Cecil/MethodDefinition.cs (Clone): fix cloning of
+	return types when they don't have a parameter.
+	Patch by Dzintars Avots <davots@coverity.com>.
+
+	* Mono.Cecil.Cil/CodeWriter.cs (ComputeMaxStack): compute max
+	stack more precisely. Based on a patch by Daniel Grunwald,
+	Contains code from Cecil.FlowAnalysis.
+
+	* Mono.Cecil.Cil/MethodBody.cs (Clone): make sure the
+	instruction linked list is properly constructed.
+
+2008-04-19  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Mono.Cecil.Cil/CodeReader.cs:
+	* Mono.Cecil.Cil/ISymbolReader.cs:
+		Move reading of debugging symbols where it's possible to
+		reuse the existing Hashtable (offset, Instruction) in
+		the debugging libraries. Change interface to allow
+		passing the Hashtable.
+
+2008-04-15  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Mono.Cecil.csproj
+	* Mono.Cecil.dll.sources:
+		Add Mono.Cecil.Cil/OpCodeNames.cs to the build.
+
+	* Mono.Cecil.Cil/OpCodeNames.cs
+	* Mono.Cecil.Cil/OpCode.cs
+	* Mono.Cecil.Cil/OpCodes.cs:
+		Reduce the OpCode struct size to 8 bytes (instead of 36).
+		Based on the SRE.OpCode code found in corlib.
+
+2008-04-13  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Mono.Cecil/AssemblyDefinition.cs:
+		Short circut loop when module is found.
+
+2008-04-08  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil/SecurityDeclaration.cs
+	  Mono.Cecil/SecurityDeclarationReader.cs:
+		Implement resolving of SecurityDeclarations.
+
+2008-03-31  Jb Evain  <jbevain@novell.com>
+
+	Integrate patches from Dzintars Avots <davots@coverity.com>
+
+	* Mono.Cecil/GenericParameter.cs
+	  Mono.Cecil/TypeDefinition.cs
+	  Mono.Cecil/DefaultImporter.cs
+	  Mono.Cecil/MethodDefinition.cs:
+		Fix generic parameter cloning to avoid issues when
+		the constraint reference the parameter itself.
+
+	* Mono.Cecil/MethodBody.cs (Clone): deals with switches.
+
+	* Mono.Cecil/MethodBody.cs (Clone): clone the name of
+	the local variables.
+
+2008-03-30  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Mono.Cecil/ReflectionReader.cs:
+		Avoid creating a BinaryReader+MemoryStream on LE archs for
+		GetConstant. Saves about 400KB for Gendarme.
+		Avoid a BinaryReader creation in GetConstant which saves
+		about 50KB for Gendarme.
+	* Mono.Cecil.Metadata/GuidHeap.cs:
+		Compute ideal capacity for Hashtable. Avoid memory allocation
+		if a single GUID is present (which is the case for all of
+		Mono 2.0 assemblies). Saves a whole 2KB for Gendarme ;-)
+	* Mono.Cecil.Binary/Image.cs:
+		Add internal GetSectionAtVirtualAddress to avoid creating
+		BinaryReader in some cases.
+	* Mono.Cecil.Binary/ResourceReader.cs:
+		Avoid a BinaryReader creation in SetInitialValue which saves
+		about 3000KB for Gendarme.
+
+2008-03-08  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil.Binary/CopyImageVisitor.cs:
+		Copy the cliheaders flags over the new assembly.
+		Patch by Oleksiy Gapotchenko <alex.s.gap@gmail.com>
+
+2008-03-08  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Mono.Cecil.Cil/CodeReader.cs:
+		Use one and only Hashtable for caching instructions offsets.
+		Save tons of precious memory.
+
+2008-03-08  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Mono.Cecil.Cil/OpCode.cs
+	* Mono.Cecil.Binary/RVA.cs
+	* Mono.Cecil.Binary/DataDirectory.cs:
+		Avoid boxing/unboxing when == or != operators are used.
+		Results in significant memory savings for Gendarme.
+
+2008-03-08  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil/ReflectionReader.cs:
+		Protect from malformed RIDs.
+	* Mono.Cecil/AggressiveReflectionReader.cs:
+		Create the m_events and m_properties tables
+		even if they contains 0 elements.
+
+2008-02-26  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil.Binary/ImageReader.cs:
+		Avoid throwing non desired exceptions.
+
+2008-02-25  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil/ReflectionReader.cs:
+		Avoid throwing in case a constant
+		is of type object.
+
+2008-02-19  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil/DefaultImporter.cs:
+		Add support for importing function pointers. Based on a
+		patch by Andrea Carlo Ornstein <andrea.ornstein@st.com>.
+
+	* Mono.Cecil/ModuleDefinition.cs:
+		Add a Inject(FieldDef) overload for symmetry.
+		Patch by Andrea Carlo Ornstein <andrea.ornstein@st.com>.
+
+2008-02-16  Jb Evain  <jbevain@novell.com>
+
+	* CodeGen/templates/MetadataRowReader.cs
+	  CodeGen/templates/Utilities.cs
+	  CodeGen/templates/MetadataRowWriter.cs
+	  Mono.Cecil.Metadata/MetadataRowReader.cs
+	  Mono.Cecil.Metadata/MetadataRowWriter.cs
+	  Mono.Cecil.Metadata/Utilities.cs:
+		Use a good old traditional array instead of an
+		Hashtable. Based on a patch by Carlo Kok <ck@remobjects.com>.
+
+2008-02-07  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil/BaseAssemblyResolver.cs:
+		deal with 2.1 corlib on Mono.
+
+2008-02-07  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil/MethodDefinition.cs:
+		add last Is method for semantics property.
+
+2008-02-05  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil/TypeDefinition.cs:
+		System.Enum by itself is not a value type.
+		Fix #351879.
+
+	* Mono.Cecil.Signatures/SignatureReader.cs:
+		Properly read fnptr local variables. Fix #358507.
+
+	* Mono.Cecil.Binary/DefaultImporter.cs:
+		Import modifiers and sentinels, patch from:
+		Andrea Carlo Ornstein <andrea.ornstein@st.com>
+
+2008-02-04  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil.Binary/CLIHeader.cs
+	  Mono.Cecil.Binary/ImageWriter.cs
+	  Mono.Cecil.Metadata/MetadataWriter.cs:
+		emit the proper cli header version for 1.1 and 2.0 cases.
+
+	* Mono.Cecil.Cil/CilWorker.cs: add callsite overloads.
+
+2008-01-10  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil/ReflectionHelper.cs: deal with complex arrays.
+
+2008-01-07  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil.Cil/CilWorker.cs:
+		Allow ldarg.s/ldloc.s/stloc.s to take a byte
+		instead of the actual parameter or variable. Fix #350606.
+
+2008-01-07  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil/ArrayType.cs:
+		Add a constructor with the array rank. Fix #351924.
+		Based on a patch by Rolf Kvinge <rkvinge@novell.com>.
+
+2008-01-04  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil.Cil/CilWorker.cs:
+		Allow ldarg/ldloc/stloc to take a integer
+		instead of the actual parameter or variable. Fix #350606.
+
+2008-01-04  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil/DefaultImporter.cs:
+	  Mono.Cecil/ReflectionHelper.cs:
+		Properly import nested types. Fix #351133.
+
+2008-01-03  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil/ReflectionWriter.cs:
+		Properly emit null type constants. Fix #351141.
+		Patch by Rolf Kvinge <rkvinge@novell.com>.
+
+2007-12-30  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil.Cil/CilWorker.cs:
+		Check for null arguments. Fix #350857.
+
+2007-12-21  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil/ReflectionReader.cs
+	  Mono.Cecil/AggressiveReflectionReader.cs
+	  Mono.Cecil.Signatures/SignatureReader.cs:
+		Don't crash on force resolve for nested arrays
+		in custom attributes.
+
+2007-12-17  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil/IMemberDefinition.cs: make IMemberDefinition
+	implement ICustomAttributeProvider.
+
+2007-12-15  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil.Binary/AggressiveReflectionReader.cs: protect
+	against zeroed tokens.
+
+2007-12-15  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil.Binary/ImageReader.cs: fix crash when reading
+	some non .net binaries.
+
+2007-11-22  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Mono.Cecil/SecurityDeclarationReader.cs:	Change default read
+	value to true. Fix reading 2.0 security	declaration format used by
+	MS compilers (#343553).
+
+2007-11-15	Rodrigo B. de Oliveira <rodrigobamboo@gmail.com>
+
+	* Mono.Cecil.Cil/MethodBody.cs:
+		Fixed Optimize for ldc_i4
+
+2007-11-15	Rodrigo B. de Oliveira <rodrigobamboo@gmail.com>
+
+	* Mono.Cecil.Cil/DocumentLanguage.cs
+	  Mono.Cecil.Cil/DocumentLanguageVendor.cs:
+	  	Compact Framework support by using Guid(string) if CF_2_0 is defined
+
+2007-11-01  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil/MethodReturnType.cs: based on a patch by
+	Ivan <ivanjh@gmail.com>. Fix for cloning methods with
+	marshalers on return type.
+
 2007-10-31  Jb Evain  <jbevain@novell.com>
 
 	* Mono.Cecil.Binary/ImageReader.cs: fix for the case where

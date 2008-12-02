@@ -415,7 +415,7 @@ namespace Mono.Cecil {
 		public override bool IsValueType {
 			get {
 				return m_baseType != null && (
-					this.IsEnum || m_baseType.FullName == Constants.ValueType);
+					this.IsEnum || (m_baseType.FullName == Constants.ValueType && this.FullName != Constants.Enum));
 			}
 		}
 
@@ -445,10 +445,11 @@ namespace Mono.Cecil {
 				type.Namespace,
 				type.Attributes);
 
+			TypeReference contextType = context.GenericContext.Type;
+
 			context.GenericContext.Type = nt;
 
-			foreach (GenericParameter p in type.GenericParameters)
-				nt.GenericParameters.Add (GenericParameter.Clone (p, context));
+			GenericParameter.CloneInto (type, nt, context);
 
 			if (type.BaseType != null)
 				nt.BaseType = context.Import (type.BaseType);
@@ -476,6 +477,8 @@ namespace Mono.Cecil {
 				nt.CustomAttributes.Add (CustomAttribute.Clone (ca, context));
 			foreach (SecurityDeclaration dec in type.SecurityDeclarations)
 				nt.SecurityDeclarations.Add (SecurityDeclaration.Clone (dec));
+
+			context.GenericContext.Type = contextType;
 
 			return nt;
 		}

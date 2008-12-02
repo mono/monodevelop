@@ -28,12 +28,12 @@
 
 // Inspired by the pdb2mdb tool written by Robert Jordan, thanks Robert!
 
-namespace Mono.Cecil.Mdb {
+namespace Mono.Cecil.MdbOld {
 
 	using System;
 	using System.Collections;
 
-	using Mono.CompilerServices.SymbolWriter;
+	using Mono.CompilerServices.SymbolWriterOld;
 
 	using Mono.Cecil;
 	using Mono.Cecil.Cil;
@@ -69,10 +69,7 @@ namespace Mono.Cecil.Mdb {
 			if (file != null)
 				return file;
 
-			SourceFileEntry entry = m_writer.DefineDocument (url);
-			CompileUnitEntry comp_unit = m_writer.DefineCompilationUnit (entry);
-
-			file = new SourceFile (comp_unit, entry);
+			file = new SourceFile (m_writer.DefineDocument (url));
 			m_documents [url] = file;
 			return file;
 		}
@@ -118,11 +115,12 @@ namespace Mono.Cecil.Mdb {
 
 			Populate (instructions, offsets, startRows, startCols, endRows, endCols, out file);
 
-			SourceMethodBuilder builder = m_writer.OpenMethod (file.CompilationUnit, 0, meth);
+			m_writer.OpenMethod (file, meth,
+				startRows [0], startCols [0],
+				endRows [length - 1], endCols [length - 1]);
 
 			for (int i = 0; i < length; i++)
-				builder.MarkSequencePoint (offsets [i], file.CompilationUnit.SourceFile,
-							   startRows [i], startCols [i], false);
+				m_writer.MarkSequencePoint (offsets [i], startRows [i], startCols [i]);
 
 			MarkVariables (body, variables);
 
@@ -133,7 +131,7 @@ namespace Mono.Cecil.Mdb {
 		{
 			for (int i = 0; i < body.Variables.Count; i++) {
 				VariableDefinition var = body.Variables [i];
-				m_writer.DefineLocalVariable (i, var.Name);
+				m_writer.DefineLocalVariable (i, var.Name, variables [i]);
 			}
 		}
 
@@ -143,30 +141,29 @@ namespace Mono.Cecil.Mdb {
 		}
 
 		class SourceFile : ISourceFile {
-			CompileUnitEntry comp_unit;
-			SourceFileEntry entry;
+
+			SourceFileEntry m_entry;
 
 			public SourceFileEntry Entry {
-				get { return entry; }
+				get { return m_entry; }
 			}
 
-			public CompileUnitEntry CompilationUnit {
-				get { return comp_unit; }
-			}
-
-			public SourceFile (CompileUnitEntry comp_unit, SourceFileEntry entry)
+			public SourceFile (SourceFileEntry entry)
 			{
-				this.comp_unit = comp_unit;
-				this.entry = entry;
+				m_entry = entry;
 			}
 		}
 
-		class SourceMethod : IMethodDef {
+		class SourceMethod : ISourceMethod {
 
 			MethodDefinition m_method;
 
 			public string Name {
 				get { return m_method.Name; }
+			}
+
+			public int NamespaceID {
+				get { return 0; }
 			}
 
 			public int Token {

@@ -74,10 +74,20 @@ namespace Mono.Cecil {
 			if (t.HasElementType) {
 				if (t.IsPointer)
 					return string.Concat (GetTypeSignature (t.GetElementType ()), "*");
-				else if (t.IsArray) // deal with complex arrays
-					return string.Concat (GetTypeSignature (t.GetElementType ()), "[]");
-				else if (t.IsByRef)
-					return string.Concat (GetTypeSignature (t.GetElementType ()), "&");
+				else if (t.IsArray) {
+					int rank = t.GetArrayRank ();
+					if (rank == 1)
+						return string.Concat (GetTypeSignature (t.GetElementType ()), "[]");
+
+					StringBuilder sb = new StringBuilder ();
+					sb.Append ('[');
+					for (int i = 1; i < rank; i++)
+						sb.Append (',');
+					sb.Append (']');
+
+					return string.Concat (GetTypeSignature (t.GetElementType ()), sb.ToString ());
+				} else if (t.IsByRef)
+					return string.Concat(GetTypeSignature(t.GetElementType()), "&");
 			}
 
 			if (IsGenericTypeSpec (t)) {
@@ -186,8 +196,8 @@ namespace Mono.Cecil {
 				t = (Type) s.Pop ();
 				if (t.IsPointer)
 					elementType = new PointerType (elementType);
-				else if (t.IsArray) // deal with complex arrays
-					elementType = new ArrayType (elementType);
+				else if (t.IsArray)
+					elementType = new ArrayType (elementType, t.GetArrayRank ());
 				else if (t.IsByRef)
 					elementType = new ReferenceType (elementType);
 				else if (IsGenericTypeSpec (t))
@@ -216,7 +226,11 @@ namespace Mono.Cecil {
 			}
 
 			AssemblyNameReference asm = ImportAssembly (t.Assembly);
-			type = new TypeReference (t.Name, t.Namespace, asm, t.IsValueType);
+			if (t.DeclaringType != null) {
+				type = new TypeReference (t.Name, string.Empty, asm, t.IsValueType);
+				type.DeclaringType = ImportSystemType (t.DeclaringType, context);
+			} else
+				type = new TypeReference (t.Name, t.Namespace, asm, t.IsValueType);
 
 			if (IsGenericTypeDefinition (t))
 				foreach (Type genParam in GetGenericArguments (t))
@@ -250,7 +264,7 @@ namespace Mono.Cecil {
 			SR.ParameterInfo [] parameters = meth.GetParameters ();
 			for (int i = 0; i < parameters.Length; i++) {
 				if (i > 0)
-					sb.Append (", ");
+					sb.Append (",");
 				sb.Append (GetTypeSignature (parameters [i].ParameterType));
 			}
 			sb.Append (")");
@@ -332,6 +346,9 @@ namespace Mono.Cecil {
 				foreach (Type genParam in GetGenericArguments (mb as SR.MethodInfo))
 					meth.GenericParameters.Add (new GenericParameter (genParam.Name, meth));
 
+			TypeReference contextType = context.GenericContext.Type;
+			MethodReference contextMethod = context.GenericContext.Method;
+
 			context.GenericContext.Method = meth;
 			context.GenericContext.Type = ImportSystemType (declaringTypeDef, context);
 
@@ -341,6 +358,9 @@ namespace Mono.Cecil {
 			for (int i = 0; i < parameters.Length; i++)
 				meth.Parameters.Add (new ParameterDefinition (
 					ImportSystemType (parameters [i].ParameterType, context)));
+
+			context.GenericContext.Type = contextType;
+			context.GenericContext.Method = contextMethod;
 
 			m_module.MemberReferences.Add (meth);
 			return meth;

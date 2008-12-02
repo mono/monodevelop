@@ -370,14 +370,21 @@
     <File name="Mono.Cecil.Mdb/Mono.Cecil.Mdb/MdbReader.cs" subtype="Code" buildaction="Exclude" />
     <File name="Mono.Cecil.Mdb/Mono.Cecil.Mdb/MdbWriter.cs" subtype="Code" buildaction="Exclude" />
     <File name="Mono.CompilerServices.SymbolWriter/ChangeLog" subtype="Code" buildaction="Exclude" />
-    <File name="Mono.CompilerServices.SymbolWriter/Mono.CompilerServices.SymbolWriter.dll.sources" subtype="Code" buildaction="Exclude" />
     <File name="Mono.CompilerServices.SymbolWriter/MonoSymbolFile.cs" subtype="Code" buildaction="Exclude" />
     <File name="Mono.CompilerServices.SymbolWriter/MonoSymbolTable.cs" subtype="Code" buildaction="Exclude" />
     <File name="Mono.CompilerServices.SymbolWriter/MonoSymbolWriter.cs" subtype="Code" buildaction="Exclude" />
     <File name="Mono.CompilerServices.SymbolWriter/SymbolWriterImpl.cs" subtype="Code" buildaction="Exclude" />
-    <File name="Mono.CompilerServices.SymbolWriter/Assembly/AssemblyInfo.cs" subtype="Code" buildaction="Exclude" />
-    <File name="Mono.CompilerServices.SymbolWriter/Assembly/ChangeLog" subtype="Code" buildaction="Exclude" />
+    <File name="Mono.Cecil.Mdb/Mono.Cecil.MdbOld" subtype="Directory" buildaction="Compile" />
+    <File name="Mono.Cecil.Mdb/Mono.Cecil.MdbOld/MdbFactory.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.Cecil.Mdb/Mono.Cecil.MdbOld/MdbReader.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.Cecil.Mdb/Mono.Cecil.MdbOld/MdbWriter.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.Cecil/Mono.Cecil.Cil/OpCodeNames.cs" subtype="Code" buildaction="Nothing" />
+    <File name="Mono.CompilerServices.SymbolWriterOld/MonoSymbolFile.cs" subtype="Code" buildaction="Nothing" />
+    <File name="Mono.CompilerServices.SymbolWriterOld/MonoSymbolTable.cs" subtype="Code" buildaction="Nothing" />
+    <File name="Mono.CompilerServices.SymbolWriterOld/MonoSymbolWriter.cs" subtype="Code" buildaction="Nothing" />
+    <File name="Mono.CompilerServices.SymbolWriterOld/SymbolWriterImpl.cs" subtype="Code" buildaction="Nothing" />
   </Contents>
+  <GtkDesignInfo />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" IsAutotoolsProject="True" RelativeConfigureInPath="../../">
     <BuildFilesVar />
     <DeployFilesVar />

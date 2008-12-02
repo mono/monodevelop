@@ -36,7 +36,7 @@ using System.Collections;
 using System.IO;
 using System.Diagnostics.SymbolStore;
 	
-namespace Mono.CompilerServices.SymbolWriter
+namespace Mono.CompilerServices.SymbolWriterOld
 {
 	public class SymbolWriterImpl: ISymbolWriter
 	{
@@ -115,9 +115,7 @@ namespace Mono.CompilerServices.SymbolWriter
 		{
 			SymbolDocumentWriterImpl doc = (SymbolDocumentWriterImpl) documents [url];
 			if (doc == null) {
-				SourceFileEntry entry = msw.DefineDocument (url);
-				CompileUnitEntry comp_unit = msw.DefineCompilationUnit (entry);
-				doc = new SymbolDocumentWriterImpl (comp_unit);
+				doc = new SymbolDocumentWriterImpl (msw.DefineDocument (url));
 				documents [url] = doc;
 			}
 			return doc;
@@ -157,7 +155,7 @@ namespace Mono.CompilerServices.SymbolWriter
 			int startOffset,
 			int endOffset)
 		{
-			msw.DefineLocalVariable (nextLocalIndex++, name);
+			msw.DefineLocalVariable (nextLocalIndex++, name, signature);
 		}
 		
 		public void DefineParameter (
@@ -179,13 +177,10 @@ namespace Mono.CompilerServices.SymbolWriter
 			int[] endLines,
 			int[] endColumns)
 		{
-			SymbolDocumentWriterImpl doc = (SymbolDocumentWriterImpl) document;
-			SourceFileEntry file = doc != null ? doc.Entry.SourceFile : null;
-
 			for (int n=0; n<offsets.Length; n++) {
 				if (n > 0 && offsets[n] == offsets[n-1] && lines[n] == lines[n-1] && columns[n] == columns[n-1])
 					continue;
-				msw.MarkSequencePoint (offsets[n], file, lines[n], columns[n], false);
+				msw.MarkSequencePoint (offsets[n], lines[n], columns[n]);
 			}
 		}
 		
@@ -220,11 +215,9 @@ namespace Mono.CompilerServices.SymbolWriter
 			int endLine,
 			int endColumn)
 		{
-#if FIXME
 			SourceMethodImpl sm = new SourceMethodImpl (methodName, currentToken, GetCurrentNamespace (startDoc));
 			msw.OpenMethod (startDoc as ISourceFile, sm, startLine, startColumn, endLine, endColumn);
 			methodOpened = true;
-#endif
 		}
 		
 		public void SetScopeRange (int scopeID, int startOffset, int endOffset)
@@ -282,19 +275,19 @@ namespace Mono.CompilerServices.SymbolWriter
 					namespaceStack.Push (ni);
 				}
 					
-				ni.NamespaceID = msw.DefineNamespace (ni.Name, ((ICompileUnit)doc).Entry, usings, parentId);
+				ni.NamespaceID = msw.DefineNamespace (ni.Name, ((ISourceFile)doc).Entry, usings, parentId);
 			}
 			return ni.NamespaceID;
 		}
 	}
 	
-	class SymbolDocumentWriterImpl: ISymbolDocumentWriter, ISourceFile, ICompileUnit
+	class SymbolDocumentWriterImpl: ISymbolDocumentWriter, ISourceFile
 	{
-		CompileUnitEntry comp_unit;
+		SourceFileEntry entry;
 		
-		public SymbolDocumentWriterImpl (CompileUnitEntry comp_unit)
+		public SymbolDocumentWriterImpl (SourceFileEntry e)
 		{
-			this.comp_unit = comp_unit;
+			entry = e;
 		}
 		
 		public void SetCheckSum (Guid algorithmId, byte[] checkSum)
@@ -304,17 +297,13 @@ namespace Mono.CompilerServices.SymbolWriter
 		public void SetSource (byte[] source)
 		{
 		}
-
-		SourceFileEntry ISourceFile.Entry {
-			get { return comp_unit.SourceFile; }
-		}
 		
-		public CompileUnitEntry Entry {
-			get { return comp_unit; }
+		public SourceFileEntry Entry {
+			get { return entry; }
 		}
 	}
 	
-	class SourceMethodImpl: IMethodDef
+	class SourceMethodImpl: ISourceMethod
 	{
 		string name;
 		int token;

@@ -682,7 +682,7 @@ namespace Mono.Cecil {
 			} else
 				et = GetCorrespondingType (type.FullName);
 
-			if (et == ElementType.Object)
+			if (et == ElementType.Object || et == ElementType.Type)
 				et = hc.Constant == null ?
 					ElementType.Class :
 					GetCorrespondingType (hc.Constant.GetType ().FullName);
@@ -801,7 +801,6 @@ namespace Mono.Cecil {
 
 			TablesHeap th = m_mdWriter.GetMetadataRoot ().Streams.TablesHeap;
 			GenericParamTable gpTable = m_tableWriter.GetGenericParamTable ();
-			GenericParamConstraintTable gpcTable = m_tableWriter.GetGenericParamConstraintTable ();
 
 			m_genericParamStack.Sort (TableComparers.GenericParam.Instance);
 
@@ -819,6 +818,8 @@ namespace Mono.Cecil {
 
 				if (gp.Constraints.Count == 0)
 					continue;
+
+				GenericParamConstraintTable gpcTable = m_tableWriter.GetGenericParamConstraintTable ();
 
 				foreach (TypeReference constraint in gp.Constraints) {
 					GenericParamConstraintRow gpcRow = m_rowWriter.CreateGenericParamConstraintRow (
@@ -1120,7 +1121,7 @@ namespace Mono.Cecil {
 		{
 			ModType modifier = type as ModType;
 			if (modifier == null)
-				return new CustomMod [0];
+				return CustomMod.EmptyCustomMod;
 
 			ArrayList cmods = new ArrayList ();
 			do {

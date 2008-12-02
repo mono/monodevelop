@@ -1,13 +1,10 @@
 //
-// AssemblyInfo.cs
+// MdbFactory.cs
 //
 // Author:
-//   Andreas Nahr (ClassDevelopment@A-SoftTech.com)
+//   Jb Evain (jbevain@gmail.com)
 //
-// (C) 2003 Ximian, Inc.  http://www.ximian.com
-// (C) 2004 Novell (http://www.novell.com)
-//
-
+// (C) 2006 Jb Evain
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -16,10 +13,10 @@
 // distribute, sublicense, and/or sell copies of the Software, and to
 // permit persons to whom the Software is furnished to do so, subject to
 // the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -29,24 +26,24 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
-using System.Reflection;
-using System.Runtime.InteropServices;
+namespace Mono.Cecil.MdbOld {
 
-[assembly: AssemblyVersion (Consts.FxVersion)]
+	using System;
 
-/* TODO COMPLETE INFORMATION
+	using Mono.Cecil.Cil;
 
-[assembly: AssemblyTitle ("")]
-[assembly: AssemblyDescription ("")]
+	using Mono.CompilerServices.SymbolWriterOld;
 
-[assembly: CLSCompliant (true)]
-[assembly: AssemblyFileVersion ("0.0.0.1")]
+	public class MdbFactory : ISymbolStoreFactory {
 
-[assembly: ComVisible (false)]
+		public ISymbolReader CreateReader (ModuleDefinition module, string assembly)
+		{
+			return new MdbReader (MonoSymbolFile.ReadSymbolFile (module.Assembly, assembly));
+		}
 
-*/
-
-[assembly: AssemblyDelaySign (true)]
-[assembly: AssemblyKeyFile ("../mono.pub")]
-
+		public ISymbolWriter CreateWriter (ModuleDefinition module, string assembly)
+		{
+			return new MdbWriter (module.Mvid, assembly);
+		}
+	}
+}

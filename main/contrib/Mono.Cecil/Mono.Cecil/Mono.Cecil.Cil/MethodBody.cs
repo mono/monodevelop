@@ -119,8 +119,11 @@ namespace Mono.Cecil.Cil {
 			nb.InitLocals = body.InitLocals;
 			nb.CodeSize = body.CodeSize;
 
+			CilWorker worker = nb.CilWorker;
+
 			foreach (VariableDefinition var in body.Variables)
 				nb.Variables.Add (new VariableDefinition (
+					var.Name, var.Index, parent,
 					context.Import (var.VariableType)));
 
 			foreach (Instruction instr in body.Instructions) {
@@ -160,22 +163,30 @@ namespace Mono.Cecil.Cil {
 					break;
 				case OperandType.ShortInlineBrTarget :
 				case OperandType.InlineBrTarget :
+				case OperandType.InlineSwitch :
 					break;
 				default :
 					ni.Operand = instr.Operand;
 					break;
 				}
 
-				nb.Instructions.Add (ni);
+				worker.Append (ni);
 			}
 
 			for (int i = 0; i < body.Instructions.Count; i++) {
 				Instruction instr = nb.Instructions [i];
-				if (instr.OpCode.OperandType != OperandType.ShortInlineBrTarget &&
-					instr.OpCode.OperandType != OperandType.InlineBrTarget)
-					continue;
+				Instruction oldi = body.Instructions [i];
 
-				instr.Operand = GetInstruction (body, nb, (Instruction) body.Instructions [i].Operand);
+				if (instr.OpCode.OperandType == OperandType.InlineSwitch) {
+					Instruction [] olds = (Instruction []) oldi.Operand;
+					Instruction [] targets = new Instruction [olds.Length];
+
+					for (int j = 0; j < targets.Length; j++)
+						targets [j] = GetInstruction (body, nb, olds [j]);
+
+					instr.Operand = targets;
+				} else if (instr.OpCode.OperandType == OperandType.ShortInlineBrTarget || instr.OpCode.OperandType == OperandType.InlineBrTarget)
+					instr.Operand = GetInstruction (body, nb, (Instruction) oldi.Operand);
 			}
 
 			foreach (ExceptionHandler eh in body.ExceptionHandlers) {
@@ -201,7 +212,7 @@ namespace Mono.Cecil.Cil {
 			return nb;
 		}
 
-		public void Modify ()
+		public void Simplify ()
 		{
 			foreach (Instruction i in this.Instructions) {
 				if (i.OpCode.OpCodeType != OpCodeType.Macro)
@@ -474,7 +485,7 @@ namespace Mono.Cecil.Cil {
 						Modify (instr, OpCodes.Ldc_I4_8, null);
 						break;
 					default:
-						if (i >= -128 || i < 128)
+						if (i >= -128 && i < 128)
 							Modify (instr, OpCodes.Ldc_I4_S, (sbyte) i);
 						break;
 					}

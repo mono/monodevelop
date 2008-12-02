@@ -28,7 +28,7 @@
 
 namespace Mono.Cecil.Binary {
 
-	class CopyImageVisitor : BaseImageVisitor {
+	sealed class CopyImageVisitor : BaseImageVisitor {
 
 		Image m_newImage;
 		Image m_originalImage;
@@ -43,6 +43,8 @@ namespace Mono.Cecil.Binary {
 			m_newImage = img;
 			if (m_originalImage.DebugHeader != null)
 				m_newImage.AddDebugHeader ();
+
+			m_newImage.CLIHeader.Flags = m_originalImage.CLIHeader.Flags;
 		}
 
 		public override void VisitDebugHeader (DebugHeader dbgHeader)

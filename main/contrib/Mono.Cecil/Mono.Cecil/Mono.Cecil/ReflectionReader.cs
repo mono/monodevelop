@@ -123,16 +123,25 @@ namespace Mono.Cecil {
 
 		public TypeDefinition GetTypeDefAt (uint rid)
 		{
+			if (rid > m_typeDefs.Length)
+				return null;
+
 			return m_typeDefs [rid - 1];
 		}
 
 		public TypeReference GetTypeRefAt (uint rid)
 		{
+			if (rid > m_typeRefs.Length)
+				return null;
+
 			return m_typeRefs [rid - 1];
 		}
 
 		public TypeReference GetTypeSpecAt (uint rid, GenericContext context)
 		{
+			if (rid > m_typeSpecs.Length)
+				return null;
+
 			int index = (int) rid - 1;
 			TypeReference tspec = m_typeSpecs [index];
 			if (tspec != null)
@@ -151,11 +160,17 @@ namespace Mono.Cecil {
 
 		public FieldDefinition GetFieldDefAt (uint rid)
 		{
+			if (rid > m_fields.Length)
+				return null;
+
 			return m_fields [rid - 1];
 		}
 
 		public MethodDefinition GetMethodDefAt (uint rid)
 		{
+			if (rid > m_meths.Length)
+				return null;
+
 			return m_meths [rid - 1];
 		}
 
@@ -172,8 +187,11 @@ namespace Mono.Cecil {
 
 		public MemberReference GetMemberRefAt (uint rid, GenericContext context)
 		{
+			if (rid > m_memberRefs.Length)
+				return null;
+
 			int index = (int) rid - 1;
-			MemberReference member = m_memberRefs [rid - 1];
+			MemberReference member = m_memberRefs [index];
 			if (member != null)
 				return member;
 
@@ -276,26 +294,41 @@ namespace Mono.Cecil {
 
 		public PropertyDefinition GetPropertyDefAt (uint rid)
 		{
+			if (rid > m_properties.Length)
+				return null;
+
 			return m_properties [rid - 1];
 		}
 
 		public EventDefinition GetEventDefAt (uint rid)
 		{
+			if (rid > m_events.Length)
+				return null;
+
 			return m_events [rid - 1];
 		}
 
 		public ParameterDefinition GetParamDefAt (uint rid)
 		{
+			if (rid > m_parameters.Length)
+				return null;
+
 			return m_parameters [rid - 1];
 		}
 
 		public GenericParameter GetGenericParameterAt (uint rid)
 		{
+			if (rid > m_genericParameters.Length)
+				return null;
+
 			return m_genericParameters [rid - 1];
 		}
 
 		public GenericInstanceMethod GetMethodSpecAt (uint rid, GenericContext context)
 		{
+			if (rid > m_methodSpecs.Length)
+				return null;
+
 			int index = (int) rid - 1;
 			GenericInstanceMethod gim = m_methodSpecs [index];
 			if (gim != null)
@@ -402,7 +435,7 @@ namespace Mono.Cecil {
 		public CustomAttribute GetCustomAttribute (MethodReference ctor, byte [] data, bool resolve)
 		{
 			CustomAttrib sig = m_sigReader.GetCustomAttrib (data, ctor, resolve);
-			return BuildCustomAttribute (ctor, sig);
+			return BuildCustomAttribute (ctor, data, sig);
 		}
 
 		public CustomAttribute GetCustomAttribute (MethodReference ctor, byte [] data)
@@ -824,9 +857,14 @@ namespace Mono.Cecil {
 			return GetFixedArgType (na.FixedArg);
 		}
 
-		protected CustomAttribute BuildCustomAttribute (MethodReference ctor, CustomAttrib sig)
+		protected CustomAttribute BuildCustomAttribute (MethodReference ctor, byte [] data, CustomAttrib sig)
 		{
 			CustomAttribute cattr = new CustomAttribute (ctor);
+			if (!sig.Read) {
+				cattr.Resolved = false;
+				cattr.Blob = data;
+				return cattr;
+			}
 
 			foreach (CustomAttrib.FixedArg fa in sig.FixedArgs)
 				cattr.ConstructorParameters.Add (GetFixedArgValue (fa));
@@ -1103,23 +1141,65 @@ namespace Mono.Cecil {
 				return Encoding.Unicode.GetString (constant, 0, length);
 			}
 
-			BinaryReader br = new BinaryReader (new MemoryStream (constant));
-
+			// One byte types can always be read using BitConverter. However it can't be used
+			// elsewhere since it behaves differently in Mono compared to CF on BE architectures
 			switch (elemType) {
 			case ElementType.Boolean :
-				return br.ReadByte () == 1;
+				return BitConverter.ToBoolean (constant, 0);
+			case ElementType.I1 :
+				return (sbyte) constant [0];
+			case ElementType.U1 :
+				return (byte) constant [0];
+			case ElementType.Object: // illegal, but foundable
+				return null;
+			default :
+				if (BitConverter.IsLittleEndian)
+					return GetConstantLittleEndian (elemType, constant);
+				else
+					return GetConstantBigEndian (elemType, constant);
+			}
+		}
+
+		private object GetConstantLittleEndian (ElementType elemType, byte[] constant)
+		{
+			switch (elemType) {
+			case ElementType.Char :
+				return BitConverter.ToChar (constant, 0);
+			case ElementType.I2 :
+				return BitConverter.ToInt16 (constant, 0);
+			case ElementType.I4 :
+				return BitConverter.ToInt32 (constant, 0);
+			case ElementType.I8 :
+				return BitConverter.ToInt64 (constant, 0);
+			case ElementType.U2 :
+				return BitConverter.ToUInt16 (constant, 0);
+			case ElementType.U4 :
+				return BitConverter.ToUInt32 (constant, 0);
+			case ElementType.U8 :
+				return BitConverter.ToUInt64 (constant, 0);
+			case ElementType.R4 :
+				return BitConverter.ToSingle (constant, 0);
+			case ElementType.R8 :
+				return BitConverter.ToDouble (constant, 0);
+			default:
+				throw new ReflectionException ("Non valid element in constant table");
+			}
+		}
+
+		private object GetConstantBigEndian (ElementType elemType, byte[] constant)
+		{
+			// BinaryReader always read it's data in LE format
+			// note: this could be further optimized (even without unsafe code)
+			BinaryReader br = new BinaryReader (new MemoryStream (constant));
+			switch (elemType) {
 			case ElementType.Char :
 				return (char) br.ReadUInt16 ();
-			case ElementType.I1 :
-				return br.ReadSByte ();
 			case ElementType.I2 :
 				return br.ReadInt16 ();
 			case ElementType.I4 :
 				return br.ReadInt32 ();
 			case ElementType.I8 :
 				return br.ReadInt64 ();
-			case ElementType.U1 :
-				return br.ReadByte ();
 			case ElementType.U2 :
 				return br.ReadUInt16 ();
 			case ElementType.U4 :
@@ -1130,7 +1210,7 @@ namespace Mono.Cecil {
 				return br.ReadSingle ();
 			case ElementType.R8 :
 				return br.ReadDouble ();
-			default :
+			default:
 				throw new ReflectionException ("Non valid element in constant table");
 			}
 		}
@@ -1140,6 +1220,7 @@ namespace Mono.Cecil {
 			int size = 0;
 			TypeReference fieldType = field.FieldType;
 			switch (fieldType.FullName) {
+			case Constants.Boolean:
 			case Constants.Byte:
 			case Constants.SByte:
 				size = 1;
@@ -1170,8 +1251,11 @@ namespace Mono.Cecil {
 			}
 
 			if (size > 0 && field.RVA != RVA.Zero) {
-				BinaryReader br = m_reader.MetadataReader.GetDataReader (field.RVA);
-				field.InitialValue = br == null ? new byte [size] : br.ReadBytes (size);
+				byte [] data = new byte [size];
+				Section sect = m_reader.Image.GetSectionAtVirtualAddress (field.RVA);
+				if (sect != null)
+					Buffer.BlockCopy (sect.Data, (int) (long) (field.RVA - sect.VirtualAddress), data, 0, size);
+				field.InitialValue = data;
 			} else
 				field.InitialValue = new byte [0];
 		}

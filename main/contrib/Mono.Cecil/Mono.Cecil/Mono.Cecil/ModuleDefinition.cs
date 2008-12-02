@@ -143,11 +143,6 @@ namespace Mono.Cecil {
 		{
 		}
 
-		internal ModuleDefinition (string name, AssemblyDefinition asm, StructureReader reader) :
-			this (name, asm, reader, false)
-		{
-		}
-
 		internal ModuleDefinition (string name, AssemblyDefinition asm, StructureReader reader, bool main) : base (name)
 		{
 			if (asm == null)
@@ -399,6 +394,11 @@ namespace Mono.Cecil {
 			MethodDefinition definition = ImportMethodDefinition (meth, GetContext (importer, context));
 			context.Methods.Add (definition);
 			return definition;
+		}
+
+		public FieldDefinition Inject (FieldDefinition field, TypeDefinition context)
+		{
+			return Inject (field, context, m_controller.Importer);
 		}
 
 		public FieldDefinition Inject (FieldDefinition field, TypeDefinition context, IImporter importer)

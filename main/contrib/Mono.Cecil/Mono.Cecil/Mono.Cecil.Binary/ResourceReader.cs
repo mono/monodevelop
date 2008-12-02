@@ -28,10 +28,11 @@
 
 namespace Mono.Cecil.Binary {
 
+	using System;
 	using System.IO;
 	using System.Text;
 
-	class ResourceReader {
+	sealed class ResourceReader {
 
 		Image m_img;
 		Section m_rsrc;
@@ -133,9 +134,10 @@ namespace Mono.Cecil.Binary {
 			rde.Codepage = m_reader.ReadUInt32 ();
 			rde.Reserved = m_reader.ReadUInt32 ();
 
-			BinaryReader dataReader = m_img.GetReaderAtVirtualAddress (rde.Data);
-			rde.ResourceData = dataReader.ReadBytes ((int) rde.Size);
-			dataReader.Close ();
+			Section sect = m_img.GetSectionAtVirtualAddress (rde.Data);
+			byte [] data = new byte [rde.Size];
+			Buffer.BlockCopy (sect.Data, (int)(long)(rde.Data - sect.VirtualAddress), data, 0, (int)rde.Size);
+			rde.ResourceData = data;
 
 			return rde;
 		}

@@ -26,13 +26,13 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-namespace Mono.Cecil.Mdb {
+namespace Mono.Cecil.MdbOld {
 
 	using System.Collections;
 
 	using Mono.Cecil.Cil;
 
-	using Mono.CompilerServices.SymbolWriter;
+	using Mono.CompilerServices.SymbolWriterOld;
 
 	class MdbReader : ISymbolReader {
 
@@ -69,8 +69,7 @@ namespace Mono.Cecil.Mdb {
 
 		void ReadLocalVariables (MethodEntry entry, MethodBody body)
 		{
-			LocalVariableEntry[] locals = entry.GetLocals ();
-			foreach (LocalVariableEntry loc in locals) {
+			foreach (LocalVariableEntry loc in entry.Locals) {
 				VariableDefinition var = body.Variables [loc.Index];
 				var.Name = loc.Name;
 
@@ -83,13 +82,12 @@ namespace Mono.Cecil.Mdb {
 
 		void ReadLineNumbers (MethodEntry entry, IDictionary instructions)
 		{
-			LineNumberTable lnt = entry.GetLineNumberTable ();
-			foreach (LineNumberEntry line in lnt.LineNumbers) {
+			foreach (LineNumberEntry line in entry.LineNumbers) {
 				Instruction instr = instructions [line.Offset] as Instruction;
 				if (instr == null)
 					continue;
 
-				Document doc = GetDocument (entry.CompileUnit.SourceFile);
+				Document doc = GetDocument (entry.SourceFile);
 				instr.SequencePoint = new SequencePoint (doc);
 				instr.SequencePoint.StartLine = line.Row;
 				instr.SequencePoint.EndLine = line.Row;
@@ -110,15 +108,11 @@ namespace Mono.Cecil.Mdb {
 
 		void ReadScopes (MethodEntry entry, MethodBody body, IDictionary instructions)
 		{
-			CodeBlockEntry[] blocks = entry.GetCodeBlocks ();
-			foreach (CodeBlockEntry cbe in blocks) {
-				if (cbe.BlockType != CodeBlockEntry.Type.Lexical)
-					continue;
-
+			foreach (LexicalBlockEntry scope in entry.LexicalBlocks) {
 				Scope s = new Scope ();
-				s.Start = GetInstruction (body, instructions, cbe.StartOffset);
-				s.End = GetInstruction(body, instructions, cbe.EndOffset);
-				m_scopes [entry.Index] = s;
+				s.Start = GetInstruction (body, instructions, scope.StartOffset);
+				s.End = GetInstruction(body, instructions, scope.EndOffset);
+				m_scopes [scope.Index] = s;
 
 				if (!AddScope (body, s))
 					body.Scopes.Add (s);

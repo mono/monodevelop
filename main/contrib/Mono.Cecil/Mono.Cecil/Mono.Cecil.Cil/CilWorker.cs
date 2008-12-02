@@ -57,6 +57,8 @@ namespace Mono.Cecil.Cil {
 
 		public Instruction Create (OpCode opcode, TypeReference type)
 		{
+			if (type == null)
+				throw new ArgumentNullException ("type");
 			if (opcode.OperandType != OperandType.InlineType &&
 				opcode.OperandType != OperandType.InlineTok)
 				throw new ArgumentException ("opcode");
@@ -64,17 +66,31 @@ namespace Mono.Cecil.Cil {
 			return FinalCreate (opcode, type);
 		}
 
-		public Instruction Create (OpCode opcode, MethodReference meth)
+		public Instruction Create (OpCode opcode, CallSite site)
 		{
+			if (site == null)
+				throw new ArgumentNullException ("site");
+			if (opcode.Code != Code.Calli)
+				throw new ArgumentException ("code");
+
+			return FinalCreate (opcode, site);
+		}
+
+		public Instruction Create (OpCode opcode, MethodReference method)
+		{
+			if (method == null)
+				throw new ArgumentNullException ("method");
 			if (opcode.OperandType != OperandType.InlineMethod &&
 				opcode.OperandType != OperandType.InlineTok)
 				throw new ArgumentException ("opcode");
 
-			return FinalCreate (opcode, meth);
+			return FinalCreate (opcode, method);
 		}
 
 		public Instruction Create (OpCode opcode, FieldReference field)
 		{
+			if (field == null)
+				throw new ArgumentNullException ("field");
 			if (opcode.OperandType != OperandType.InlineField &&
 				opcode.OperandType != OperandType.InlineTok)
 				throw new ArgumentException ("opcode");
@@ -84,6 +100,8 @@ namespace Mono.Cecil.Cil {
 
 		public Instruction Create (OpCode opcode, string str)
 		{
+			if (str == null)
+				throw new ArgumentNullException ("str");
 			if (opcode.OperandType != OperandType.InlineString)
 				throw new ArgumentException ("opcode");
 
@@ -101,6 +119,12 @@ namespace Mono.Cecil.Cil {
 
 		public Instruction Create (OpCode opcode, byte b)
 		{
+			if (opcode.OperandType == OperandType.ShortInlineVar)
+				return Create (opcode, m_mbody.Variables [b]);
+
+			if (opcode.OperandType == OperandType.ShortInlineParam)
+				return Create (opcode, CodeReader.GetParameter (m_mbody, b));
+
 			if (opcode.OperandType != OperandType.ShortInlineI ||
 				opcode == OpCodes.Ldc_I4_S)
 				throw new ArgumentException ("opcode");
@@ -110,6 +134,12 @@ namespace Mono.Cecil.Cil {
 
 		public Instruction Create (OpCode opcode, int i)
 		{
+			if (opcode.OperandType == OperandType.InlineVar)
+				return Create (opcode, m_mbody.Variables [i]);
+
+			if (opcode.OperandType == OperandType.InlineParam)
+				return Create (opcode, CodeReader.GetParameter (m_mbody, i));
+
 			if (opcode.OperandType != OperandType.InlineI)
 				throw new ArgumentException ("opcode");
 
@@ -142,6 +172,8 @@ namespace Mono.Cecil.Cil {
 
 		public Instruction Create (OpCode opcode, Instruction label)
 		{
+			if (label == null)
+				throw new ArgumentNullException ("label");
 			if (opcode.OperandType != OperandType.InlineBrTarget &&
 				opcode.OperandType != OperandType.ShortInlineBrTarget)
 				throw new ArgumentException ("opcode");
@@ -151,6 +183,8 @@ namespace Mono.Cecil.Cil {
 
 		public Instruction Create (OpCode opcode, Instruction [] labels)
 		{
+			if (labels == null)
+				throw new ArgumentNullException ("labels");
 			if (opcode.OperandType != OperandType.InlineSwitch)
 				throw new ArgumentException ("opcode");
 
@@ -159,6 +193,8 @@ namespace Mono.Cecil.Cil {
 
 		public Instruction Create (OpCode opcode, VariableDefinition var)
 		{
+			if (var == null)
+				throw new ArgumentNullException ("var");
 			if (opcode.OperandType != OperandType.ShortInlineVar &&
 				opcode.OperandType != OperandType.InlineVar)
 				throw new ArgumentException ("opcode");
@@ -168,6 +204,8 @@ namespace Mono.Cecil.Cil {
 
 		public Instruction Create (OpCode opcode, ParameterDefinition param)
 		{
+			if (param == null)
+				throw new ArgumentNullException ("param");
 			if (opcode.OperandType != OperandType.ShortInlineParam &&
 				opcode.OperandType != OperandType.InlineParam)
 				throw new ArgumentException ("opcode");
@@ -175,12 +213,12 @@ namespace Mono.Cecil.Cil {
 			return FinalCreate (opcode, param);
 		}
 
-		Instruction FinalCreate (OpCode opcode)
+		static Instruction FinalCreate (OpCode opcode)
 		{
 			return FinalCreate (opcode, null);
 		}
 
-		Instruction FinalCreate (OpCode opcode, object operand)
+		static Instruction FinalCreate (OpCode opcode, object operand)
 		{
 			return new Instruction (opcode, operand);
 		}
@@ -202,6 +240,13 @@ namespace Mono.Cecil.Cil {
 		public Instruction Emit (OpCode opcode, MethodReference meth)
 		{
 			Instruction instr = Create (opcode, meth);
+			Append (instr);
+			return instr;
+		}
+
+		public Instruction Emit (OpCode opcode, CallSite site)
+		{
+			Instruction instr = Create (opcode, site);
 			Append (instr);
 			return instr;
 		}

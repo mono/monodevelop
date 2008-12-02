@@ -437,6 +437,69 @@ namespace Mono.Cecil {
 
 		#endregion
 
+		#region MethodSemanticsAttributes
+		public bool IsSetter {
+			get { return (m_semAttrs & MethodSemanticsAttributes.Setter) != 0; }
+			set {
+				if (value)
+					m_semAttrs |= MethodSemanticsAttributes.Setter;
+				else
+					m_semAttrs &= ~MethodSemanticsAttributes.Setter;
+			}
+		}
+
+		public bool IsGetter {
+			get { return (m_semAttrs & MethodSemanticsAttributes.Getter) != 0; }
+			set {
+				if (value)
+					m_semAttrs |= MethodSemanticsAttributes.Getter;
+				else
+					m_semAttrs &= ~MethodSemanticsAttributes.Getter;
+			}
+		}
+
+		public bool IsOther {
+			get { return (m_semAttrs & MethodSemanticsAttributes.Other) != 0; }
+			set {
+				if (value)
+					m_semAttrs |= MethodSemanticsAttributes.Other;
+				else
+					m_semAttrs &= ~MethodSemanticsAttributes.Other;
+			}
+		}
+
+		public bool IsAddOn {
+			get { return (m_semAttrs & MethodSemanticsAttributes.AddOn) != 0; }
+			set {
+				if (value)
+					m_semAttrs |= MethodSemanticsAttributes.AddOn;
+				else
+					m_semAttrs &= ~MethodSemanticsAttributes.AddOn;
+			}
+		}
+
+		public bool IsRemoveOn {
+			get { return (m_semAttrs & MethodSemanticsAttributes.RemoveOn) != 0; }
+			set {
+				if (value)
+					m_semAttrs |= MethodSemanticsAttributes.RemoveOn;
+				else
+					m_semAttrs &= ~MethodSemanticsAttributes.RemoveOn;
+			}
+		}
+
+		public bool IsFire {
+			get { return (m_semAttrs & MethodSemanticsAttributes.Fire) != 0; }
+			set {
+				if (value)
+					m_semAttrs |= MethodSemanticsAttributes.Fire;
+				else
+					m_semAttrs &= ~MethodSemanticsAttributes.Fire;
+			}
+		}
+
+		#endregion
+
 		public bool IsConstructor {
 			get {
 				return this.IsRuntimeSpecialName && this.IsSpecialName &&
@@ -508,24 +571,22 @@ namespace Mono.Cecil {
 				meth.ExplicitThis,
 				meth.CallingConvention);
 
+			MethodReference contextMethod = context.GenericContext.Method;
+
 			context.GenericContext.Method = nm;
 
-			foreach (GenericParameter p in meth.GenericParameters)
-				nm.GenericParameters.Add (GenericParameter.Clone (p, context));
+			GenericParameter.CloneInto (meth, nm, context);
 
 			nm.ReturnType.ReturnType = context.Import (meth.ReturnType.ReturnType);
 
-			if (meth.ReturnType.HasConstant)
-				nm.ReturnType.Constant = meth.ReturnType.Constant;
-
-			if (meth.ReturnType.MarshalSpec != null)
-				nm.ReturnType.MarshalSpec = meth.ReturnType.MarshalSpec;
-
-			foreach (CustomAttribute ca in meth.ReturnType.CustomAttributes)
-				nm.ReturnType.CustomAttributes.Add (CustomAttribute.Clone (ca, context));
+			if (meth.ReturnType.Parameter != null) {
+				nm.ReturnType.Parameter = ParameterDefinition.Clone (meth.ReturnType.Parameter, context);
+				nm.ReturnType.Parameter.Method = nm;
+			}
 
 			if (meth.PInvokeInfo != null)
 				nm.PInvokeInfo = meth.PInvokeInfo; // TODO: import module ?
+
 			foreach (ParameterDefinition param in meth.Parameters)
 				nm.Parameters.Add (ParameterDefinition.Clone (param, context));
 			foreach (MethodReference ov in meth.Overrides)
@@ -537,6 +598,8 @@ namespace Mono.Cecil {
 
 			if (meth.Body != null)
 				nm.Body = MethodBody.Clone (meth.Body, nm, context);
+
+			context.GenericContext.Method = contextMethod;
 
 			return nm;
 		}

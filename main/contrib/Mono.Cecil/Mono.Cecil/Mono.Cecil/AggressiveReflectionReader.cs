@@ -124,8 +124,10 @@ namespace Mono.Cecil {
 
 		void ReadProperties ()
 		{
-			if (!m_tHeap.HasTable (PropertyTable.RId))
+			if (!m_tHeap.HasTable (PropertyTable.RId)) {
+				m_properties = new PropertyDefinition [0];
 				return;
+			}
 
 			PropertyTable propsTable = m_tableReader.GetPropertyTable ();
 			PropertyMapTable pmapTable = m_tableReader.GetPropertyMapTable ();
@@ -169,8 +171,10 @@ namespace Mono.Cecil {
 
 		void ReadEvents ()
 		{
-			if (!m_tHeap.HasTable (EventTable.RId))
+			if (!m_tHeap.HasTable (EventTable.RId)) {
+				m_events = new EventDefinition [0];
 				return;
+			}
 
 			EventTable evtTable = m_tableReader.GetEventTable ();
 			EventMapTable emapTable = m_tableReader.GetEventMapTable ();
@@ -325,13 +329,7 @@ namespace Mono.Cecil {
 					ctor = GetMemberRefAt (caRow.Type.RID, new GenericContext ()) as MethodReference;
 
 				CustomAttrib ca = m_sigReader.GetCustomAttrib (caRow.Value, ctor);
-				CustomAttribute cattr;
-				if (!ca.Read) {
-					cattr = new CustomAttribute (ctor);
-					cattr.Resolved = false;
-					cattr.Blob = m_root.Streams.BlobHeap.Read (caRow.Value);
-				} else
-					cattr = BuildCustomAttribute (ctor, ca);
+				CustomAttribute cattr = BuildCustomAttribute (ctor, m_root.Streams.BlobHeap.Read (caRow.Value), ca);
 
 				if (caRow.Parent.RID == 0)
 					continue;
@@ -419,6 +417,9 @@ namespace Mono.Cecil {
 			FieldMarshalTable fmTable = m_tableReader.GetFieldMarshalTable ();
 			for (int i = 0; i < fmTable.Rows.Count; i++) {
 				FieldMarshalRow fmRow = fmTable [i];
+
+				if (fmRow.Parent.RID == 0)
+					continue;
 
 				IHasMarshalSpec owner = null;
 				switch (fmRow.Parent.TokenType) {
