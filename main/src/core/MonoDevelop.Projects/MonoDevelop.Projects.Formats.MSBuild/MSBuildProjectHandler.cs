@@ -127,6 +127,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			string itemGuid = globalGroup.GetPropertyValue ("ProjectGuid");
 			string projectTypeGuids = globalGroup.GetPropertyValue ("ProjectTypeGuids");
 			string itemType = globalGroup.GetPropertyValue ("ItemType");
+
+			subtypeGuids.Clear ();
+			foreach (string guid in projectTypeGuids.Split (';')) {
+				string sguid = guid.Trim ();
+				if (sguid.Length > 0 && sguid != TypeGuid)
+					subtypeGuids.Add (guid);
+			}
 			
 			Item = CreateSolutionItem (language, projectTypeGuids, itemType, itemClass);
 
@@ -409,7 +416,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				DataType dt = MSBuildProjectService.DataContext.GetConfigurationDataType (Item.GetType ());
 				SetGroupProperty (globalGroup, "ItemType", dt.Name, false);
 			}
-			
+
 			Item.ExtendedProperties ["ProjectGuid"] = Item.ItemId;
 			if (subtypeGuids.Count > 0) {
 				string gg = "";
@@ -421,8 +428,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				gg += ";" + TypeGuid;
 				Item.ExtendedProperties ["ProjectTypeGuids"] = gg.ToUpper ();
 			}
-//			else
-//				Item.ExtendedProperties.Remove ("ProjectTypeGuids");
+			else
+				Item.ExtendedProperties.Remove ("ProjectTypeGuids");
 
 			// This serialize call will write data to ser.InternalItemProperties and ser.ExternalItemProperties
 			ser.Serialize (Item, Item.GetType ());
