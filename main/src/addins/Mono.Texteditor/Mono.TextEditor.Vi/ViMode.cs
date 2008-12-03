@@ -431,7 +431,9 @@ namespace Mono.TextEditor.Vi
 				
 			case State.WriteChar:
 				if (unicodeKey != 0) {
+					int   roffset = Data.SelectionRange.Offset;
 					InsertCharacter ((char) unicodeKey);
+					Caret.Offset = roffset;
 					Reset (string.Empty);
 				} else {
 					Reset ("Keystroke was not a character");
@@ -618,11 +620,11 @@ namespace Mono.TextEditor.Vi
 					// Inline paste
 					if (data.IsSomethingSelected) 
 						RunAction (ClipboardActions.Cut);
-					else if (Caret.Offset < data.Document.GetLine (Caret.Line).EndOffset)
+					else if (data.Caret.Offset < data.Document.GetLine (data.Caret.Line).EndOffset)
 						RunAction (CaretMoveActions.Right);
-					int offset = Caret.Offset;
+					int offset = data.Caret.Offset;
 					data.InsertAtCaret (contents);
-					Caret.Offset = offset;
+					data.Caret.Offset = offset;
 				}
 			});
 		}
