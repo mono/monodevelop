@@ -1,3 +1,10 @@
+2008-12-03  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AspNet.addin.xml: Move options panels to more appropriate
+	categories.
+
+	* gtk-gui/gui.stetic: Flush.
+
 2008-12-02  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am:
