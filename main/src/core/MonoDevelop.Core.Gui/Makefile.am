@@ -63,7 +63,6 @@ FILES =  \
 	MonoDevelop.Core.Gui/GuiSyncContext.cs \
 	MonoDevelop.Core.Gui/GuiSyncObject.cs \
 	MonoDevelop.Core.Gui/IMementoCapable.cs \
-	MonoDevelop.Core.Gui/ITextBufferStrategy.cs \
 	MonoDevelop.Core.Gui/MessageService.cs \
 	MonoDevelop.Core.Gui/PixbufList.cs \
 	MonoDevelop.Core.Gui/PlatformService.cs \

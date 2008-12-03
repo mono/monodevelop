@@ -84,7 +84,6 @@
     <File name="MonoDevelop.Core.Gui.Dialogs/ErrorDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Core.Gui.Dialogs/TreeViewOptions.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Core.Gui.Dialogs/ProgressDialog.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Core.Gui/ITextBufferStrategy.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Core.Gui.Components/MenuButtonEntry.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Core.Gui.ProgressMonitoring/MessageDialogProgressMonitor.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Core.Gui.Codons/StockIconCodon.cs" subtype="Code" buildaction="Compile" />

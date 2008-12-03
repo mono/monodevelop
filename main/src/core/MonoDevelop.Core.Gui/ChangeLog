@@ -1,5 +1,13 @@
 2008-12-02  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Core.Gui/ResourceService.cs: Add licence header.
+
+	* Makefile.am:
+	* MonoDevelop.Core.Gui.mdp:
+	* MonoDevelop.Core.Gui/ITextBufferStrategy.cs: Remove unused GPL file.
+
+2008-12-02  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Core.Gui.mdp: Fix Makefile integration for AssemblyInfo.cs
 	files.
