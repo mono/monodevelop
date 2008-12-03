@@ -26,6 +26,7 @@ REFS =  \
 	-r:System.Xml
 
 FILES =  \
+	AssemblyInfo.cs \
 	BuildVariables.cs \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.Ide.CodeTemplates.CodeTemplatePanelWidget.cs \

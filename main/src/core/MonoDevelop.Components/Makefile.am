@@ -13,6 +13,7 @@ REFS =  \
 	-r:System.Xml
 
 FILES =  \
+	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
 	MonoDevelop.Components.Chart/Axis.cs \
 	MonoDevelop.Components.Chart/AxisDimension.cs \

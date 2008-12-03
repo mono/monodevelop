@@ -2,6 +2,7 @@
 ASSEMBLY = $(top_builddir)/build/bin/MonoDevelop.Core.dll
 
 FILES =  \
+	AssemblyInfo.cs \
 	MonoDevelop.Core.AddIns/ApplicationExtensionNode.cs \
 	MonoDevelop.Core.AddIns/AssemblyExtensionNode.cs \
 	MonoDevelop.Core.AddIns/ExecutionHandlerCodon.cs \

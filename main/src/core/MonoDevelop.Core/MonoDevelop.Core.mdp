@@ -125,9 +125,6 @@
   </References>
   <GtkDesignInfo />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">
-    <ExcludedFiles>
-      <File>AssemblyInfo.cs</File>
-    </ExcludedFiles>
     <BuildFilesVar Sync="True" Name="FILES" />
     <DeployFilesVar />
     <ResourcesVar Sync="True" Name="RES" />

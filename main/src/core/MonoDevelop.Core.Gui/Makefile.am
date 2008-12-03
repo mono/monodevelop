@@ -19,6 +19,7 @@ REFS =  \
 	-r:System.Xml
 
 FILES =  \
+	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.Core.Gui.Dialogs.MultiTaskProgressDialog.cs \
 	gtk-gui/MonoDevelop.Core.Gui.Dialogs.OptionsDialog.cs \
