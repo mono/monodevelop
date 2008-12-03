@@ -50,6 +50,8 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		public TypeUpdateInformation UpdateFromParseInfo (ICompilationUnit cu)
 		{
+			if (cu == null)
+				return new TypeUpdateInformation ();
 			// TODO dom Get tag comments
 //			UpdateTagComments (cu.TagComments, file);
 			List<IType> resolved;

@@ -1,3 +1,8 @@
+2008-12-03  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom.Serialization/SimpleCodeCompletionDatabase.cs:
+	fixed 'Bug 455892 - Crash when closing tabs'.
+
 2008-12-02  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am:
