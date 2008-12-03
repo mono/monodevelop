@@ -1,4 +1,4 @@
-//  TreeViewOptions.cs
+//  ResourceService.cs
 //
 //  This file was derived from a file from #Develop. 
 //
