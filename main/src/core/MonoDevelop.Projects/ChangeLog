@@ -1,6 +1,14 @@
 2008-12-02  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am:
+	* MonoDevelop.Projects.mdp:
+	* MonoDevelop.Projects.Dom.Parser/ParseInformation.cs:
+	* MonoDevelop.Projects.Dom.Parser/ParseInformationEventHandler.cs:
+	Remove unused GPLed files.
+
+2008-12-02  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
 	* AssemblyInfo.cs:
 	* AssemblyInfo.cs.in:
 	* MonoDevelop.Projects.mdp: Add AssemblyInfo.cs files that are

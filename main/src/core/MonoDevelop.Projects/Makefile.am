@@ -55,8 +55,6 @@ FILES =  \
 	MonoDevelop.Projects.Dom.Parser/IParserDatabase.cs \
 	MonoDevelop.Projects.Dom.Parser/IResolver.cs \
 	MonoDevelop.Projects.Dom.Parser/ITypeNameResolver.cs \
-	MonoDevelop.Projects.Dom.Parser/ParseInformation.cs \
-	MonoDevelop.Projects.Dom.Parser/ParseInformationEventHandler.cs \
 	MonoDevelop.Projects.Dom.Parser/ProjectDom.cs \
 	MonoDevelop.Projects.Dom.Parser/ProjectDomEventArgs.cs \
 	MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs \

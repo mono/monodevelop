@@ -233,9 +233,7 @@
     <File name="MonoDevelop.Projects.Dom.Serialization/IParserService.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom.Serialization/ClassInformationEventHandler.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom.Parser/IParserDatabase.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects.Dom.Parser/ParseInformation.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom.Parser/CommentTasksChangedEventHandler.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects.Dom.Parser/ParseInformationEventHandler.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom.Parser/AssemblyInformationEventHandler.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom.Parser/ITypeNameResolver.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom.Parser/TypeNameResolver.cs" subtype="Code" buildaction="Compile" />
