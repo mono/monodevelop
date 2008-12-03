@@ -131,7 +131,8 @@
 		<Condition id="ItemType" value="MonoDevelop.AspNet.AspNetAppProject">
 			<Section id = "MonoDevelop.AspNet.Deployment"
 			             _label = "Web Deployment Targets"
-			             class = "MonoDevelop.AspNet.Deployment.WebDeployOptionsPanel"/>
+			             class = "MonoDevelop.AspNet.Deployment.WebDeployOptionsPanel"
+			             fill = "true" />
 		</Condition>
 	</Extension>
 	
