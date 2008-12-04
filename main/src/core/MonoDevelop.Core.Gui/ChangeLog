@@ -1,3 +1,8 @@
+2008-12-04  Mike Kestner  <mkestner@novell.com>
+
+	* MonoDevelop.Core.Gui/DesktopApplication.cs : add a ctor. used by
+	the new gio-based GnomePlatform code.
+
 2008-12-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Gui.ProgressMonitoring/BaseProgressMonitor.cs:

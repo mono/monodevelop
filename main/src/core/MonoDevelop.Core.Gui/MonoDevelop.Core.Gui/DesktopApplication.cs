@@ -41,6 +41,13 @@ namespace MonoDevelop.Core.Gui
 		string displayName;
 		string command;
 		
+		public DesktopApplication (string id, string displayName, string command)
+		{
+			this.id = id;
+			this.displayName = displayName;
+			this.command = command;
+		}
+
 		public string DisplayName {
 			get { return displayName; }
 		}
