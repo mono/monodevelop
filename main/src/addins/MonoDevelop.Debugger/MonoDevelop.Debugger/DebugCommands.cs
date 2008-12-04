@@ -125,9 +125,14 @@ namespace MonoDevelop.Debugger
 		{
 			if (DebuggingService.IsDebugging && !DebuggingService.IsRunning) {
 				info.Enabled = true;
-				info.Text = GettextCatalog.GetString ("Continue");
+				info.Text = GettextCatalog.GetString ("_Continue");
 				return;
 			}
+
+			// If there are no debugger installed, this command will not debug, it will
+			// just run, so the label has to be changed accordingly.
+			if (!DebuggingService.IsDebuggingSupported)
+				info.Text = GettextCatalog.GetString ("_Run");
 
 			if (IdeApp.Workspace.IsOpen) {
 				info.Enabled = IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted &&
@@ -187,6 +192,7 @@ namespace MonoDevelop.Debugger
 		protected override void Update (CommandInfo info)
 		{
 			info.Enabled = IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted;
+			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.DebugFile);
 		}
 	}
 	
@@ -208,6 +214,7 @@ namespace MonoDevelop.Debugger
 		protected override void Update (CommandInfo info)
 		{
 			info.Enabled = IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted;
+			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Attaching);
 		}
 	}
 	
@@ -222,8 +229,8 @@ namespace MonoDevelop.Debugger
 		
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = DebuggingService.IsDebugging &&
-				DebuggingService.DebuggerSession.AttachedToProcess;
+			info.Enabled = DebuggingService.IsDebugging && DebuggingService.DebuggerSession.AttachedToProcess;
+			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Attaching);
 		}
 	}
 	
@@ -237,6 +244,7 @@ namespace MonoDevelop.Debugger
 		protected override void Update (CommandInfo info)
 		{
 			info.Enabled = DebuggingService.IsDebugging && !DebuggingService.IsRunning;
+			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Stepping);
 		}
 	}
 
@@ -250,6 +258,7 @@ namespace MonoDevelop.Debugger
 		protected override void Update (CommandInfo info)
 		{
 			info.Enabled = DebuggingService.IsDebugging && !DebuggingService.IsRunning;
+			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Stepping);
 		}
 	}
 	
@@ -263,6 +272,7 @@ namespace MonoDevelop.Debugger
 		protected override void Update (CommandInfo info)
 		{
 			info.Enabled = DebuggingService.IsDebugging && !DebuggingService.IsRunning;
+			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Stepping);
 		}
 	}
 	
@@ -276,6 +286,7 @@ namespace MonoDevelop.Debugger
 		protected override void Update (CommandInfo info)
 		{
 			info.Enabled = DebuggingService.IsRunning;
+			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Pause);
 		}
 	}
 	
@@ -284,6 +295,11 @@ namespace MonoDevelop.Debugger
 		protected override void Run ()
 		{
 			DebuggingService.Breakpoints.Clear ();
+		}
+		
+		protected override void Update (CommandInfo info)
+		{
+			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
 		}
 	}
 	
@@ -298,6 +314,7 @@ namespace MonoDevelop.Debugger
 		
 		protected override void Update (CommandInfo info)
 		{
+			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
 			info.Enabled = IdeApp.Workbench.ActiveDocument != null && 
 					IdeApp.Workbench.ActiveDocument.TextEditor != null &&
 					IdeApp.Workbench.ActiveDocument.FileName != null;
@@ -318,6 +335,7 @@ namespace MonoDevelop.Debugger
 		
 		protected override void Update (CommandInfo info)
 		{
+			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
 			if (IdeApp.Workbench.ActiveDocument != null && 
 					IdeApp.Workbench.ActiveDocument.TextEditor != null &&
 					IdeApp.Workbench.ActiveDocument.FileName != null) {
@@ -337,6 +355,11 @@ namespace MonoDevelop.Debugger
 			foreach (BreakEvent bp in DebuggingService.Breakpoints)
 				bp.Enabled = false;
 		}
+		
+		protected override void Update (CommandInfo info)
+		{
+			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
+		}
 	}
 	
 	internal class ShowDisassemblyHandler: CommandHandler
@@ -344,6 +367,11 @@ namespace MonoDevelop.Debugger
 		protected override void Run ()
 		{
 			DebuggingService.ShowDisassembly ();
+		}
+		
+		protected override void Update (CommandInfo info)
+		{
+			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Disassembly);
 		}
 	}
 	
@@ -362,6 +390,7 @@ namespace MonoDevelop.Debugger
 		
 		protected override void Update (CommandInfo info)
 		{
+			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
 			if (IdeApp.Workbench.ActiveDocument != null && 
 					IdeApp.Workbench.ActiveDocument.TextEditor != null &&
 					IdeApp.Workbench.ActiveDocument.FileName != null) {
@@ -385,6 +414,7 @@ namespace MonoDevelop.Debugger
 		
 		protected override void Update (CommandInfo info)
 		{
+			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
 			if (IdeApp.Workbench.ActiveDocument != null && 
 					IdeApp.Workbench.ActiveDocument.TextEditor != null &&
 					IdeApp.Workbench.ActiveDocument.FileName != null) {
@@ -409,6 +439,7 @@ namespace MonoDevelop.Debugger
 		
 		protected override void Update (CommandInfo info)
 		{
+			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
 			if (IdeApp.Workbench.ActiveDocument != null && 
 					IdeApp.Workbench.ActiveDocument.TextEditor != null &&
 					IdeApp.Workbench.ActiveDocument.FileName != null) {
@@ -430,6 +461,7 @@ namespace MonoDevelop.Debugger
 
 		protected override void Update (CommandInfo info)
 		{
+			info.Visible = DebuggingService.IsDebuggingSupported;
 			info.Enabled = DebuggingService.CurrentFrame != null;
 		}
 	}
@@ -439,6 +471,12 @@ namespace MonoDevelop.Debugger
 		protected override void Run ()
 		{
 			DebuggingService.ShowExceptionsFilters ();
+		}
+
+		protected override void Update (CommandInfo info)
+		{
+			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Catchpoints);
+			info.Enabled = DebuggingService.CurrentFrame != null;
 		}
 	}
 }

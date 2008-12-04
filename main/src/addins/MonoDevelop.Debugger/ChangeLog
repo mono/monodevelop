@@ -1,5 +1,15 @@
 2008-12-04  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Debugger.addin.xml:
+	* MonoDevelop.Debugger/Initializer.cs:
+	* MonoDevelop.Debugger/DebugCommands.cs:
+	* MonoDevelop.Debugger/DebuggingService.cs:
+	* MonoDevelop.Debugger/AttachToProcessDialog.cs: Hide debugger commands
+	which are not supported by the installed debuggers. 
+
+2008-12-04  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Debugger.addin.xml: Updated key bindings to match VS.
 
 2008-12-04  Lluis Sanchez Gual  <lluis@novell.com>

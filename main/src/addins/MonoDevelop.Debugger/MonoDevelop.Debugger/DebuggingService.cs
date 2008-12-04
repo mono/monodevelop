@@ -33,6 +33,7 @@ using System.Collections.Generic;
 
 using MonoDevelop.Core;
 using Mono.Addins;
+using MonoDevelop.Projects;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects.Text;
@@ -105,6 +106,42 @@ namespace MonoDevelop.Debugger
 				dlg.Destroy ();
 			}
 			return false;
+		}
+
+		public static bool IsFeatureSupported (IBuildTarget target, DebuggerFeatures feature)
+		{
+			return (GetSupportedFeatures (target) & feature) != 0;
+		}
+
+		public static bool IsDebuggingSupported {
+			get {
+				return GetDebuggerEngines ().Length > 0;
+			}
+		}
+
+		public static bool IsFeatureSupported (DebuggerFeatures feature)
+		{
+			foreach (IDebuggerEngine engine in GetDebuggerEngines ())
+				if ((engine.SupportedFeatures & feature) != 0)
+					return true;
+			return false;
+		}
+
+		public static DebuggerFeatures GetSupportedFeatures (IBuildTarget target)
+		{
+			FeatureCheckerHandlerFactory fc = new FeatureCheckerHandlerFactory ();
+			ExecutionContext ctx = new ExecutionContext (fc, null);
+			target.CanExecute (ctx, IdeApp.Workspace.ActiveConfiguration);
+			return fc.SupportedFeatures;
+		}
+
+		public static DebuggerFeatures GetSupportedFeaturesForPlatform (string plaformId)
+		{
+			IDebuggerEngine engine = GetFactoryForPlatform (plaformId);
+			if (engine != null)
+				return engine.SupportedFeatures;
+			else
+				return DebuggerFeatures.None;
 		}
 
 		public static void ShowExpressionEvaluator (string expression)
@@ -509,6 +546,22 @@ namespace MonoDevelop.Debugger
 			XmlElement elem = args.Properties.GetValue<XmlElement> ("MonoDevelop.Ide.DebuggingService");
 			if (elem != null)
 				breakpoints.Load (elem);
+		}
+	}
+	
+	internal class FeatureCheckerHandlerFactory: IExecutionHandlerFactory
+	{
+		public DebuggerFeatures SupportedFeatures { get; set; }
+		
+		public bool SupportsPlatform (string platformId)
+		{
+			SupportedFeatures = DebuggingService.GetSupportedFeaturesForPlatform (platformId);
+			return SupportedFeatures != DebuggerFeatures.None;
+		}
+
+		public IExecutionHandler CreateExecutionHandler (string platformId)
+		{
+			return null;
 		}
 	}
 }

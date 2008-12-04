@@ -5,6 +5,7 @@
        url = "http://www.monodevelop.com"
        description = "Support for Debugging projects"
        copyright = "MIT X11"
+       flags = "Hidden"
        version = "1.9.1">
 
 	<Dependencies>

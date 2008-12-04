@@ -53,6 +53,8 @@ namespace MonoDevelop.Debugger
 			
 			IDebuggerEngine[] debEngines = DebuggingService.GetDebuggerEngines ();
 			foreach (IDebuggerEngine de in debEngines) {
+				if ((de.SupportedFeatures & DebuggerFeatures.Attaching) == 0)
+					continue;
 				try {
 					foreach (ProcessInfo pi in de.GetAttachablePocesses ()) {
 						List<IDebuggerEngine> engs;

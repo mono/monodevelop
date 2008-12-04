@@ -29,6 +29,7 @@ using System;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
 using Mono.Debugging.Client;
+using MonoDevelop.Ide.Commands;
 
 namespace MonoDevelop.Debugger
 {
@@ -43,6 +44,8 @@ namespace MonoDevelop.Debugger
 			DebuggingService.CurrentFrameChanged += OnFrameChanged;
 			DebuggingService.ExecutionLocationChanged += OnExecLocationChanged;
 			DebuggingService.DisassemblyRequested += OnShowDisassembly;
+
+			IdeApp.CommandService.RegisterGlobalHandler (new GlobalRunMethodHandler ());
 		}
 		
 		void OnExecLocationChanged (object s, EventArgs a)
@@ -112,6 +115,25 @@ namespace MonoDevelop.Debugger
 					}
 				}
 			}
+		}
+	}
+
+	class GlobalRunMethodHandler
+	{
+		// This handler will hide the Run menu if there are no debuggers installed.
+		
+		[CommandHandler (ProjectCommands.Run)]
+		public void OnRun ()
+		{
+		}
+
+		[CommandUpdateHandler (ProjectCommands.Run)]
+		public void OnRunUpdate (CommandInfo cinfo)
+		{
+			if (!DebuggingService.IsDebuggingSupported)
+				cinfo.Visible = false;
+			else
+				cinfo.Bypass = true;
 		}
 	}
 }
