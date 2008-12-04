@@ -49,6 +49,12 @@ namespace MonoDevelop.Debugger.Gdb
 			string ext = System.IO.Path.GetExtension (file).ToLower ();
 			return ext != ".exe" && ext != ".dll";
 		}
+
+		public DebuggerFeatures SupportedFeatures {
+			get {
+				return DebuggerFeatures.All & ~DebuggerFeatures.Catchpoints;
+			}
+		}
 		
 		public DebuggerSession CreateSession ()
 		{

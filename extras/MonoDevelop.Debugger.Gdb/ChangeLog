@@ -1,3 +1,11 @@
+2008-12-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Manifest.addin.xml: Set correct add-in category.
+
+	* GdbSession.cs:
+	* GdbSessionFactory.cs:
+	* MonoDevelop.Debugger.mdp: Track api changes.
+
 2008-12-02  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Manifest.addin.xml: Change addin version number to match
