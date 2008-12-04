@@ -1,5 +1,10 @@
 2008-12-04  Mike Kestner  <mkestner@novell.com>
 
+	* GnomePlatform.cs: still need to initialize gnomevfs for the icon
+	lookup.
+
+2008-12-04  Mike Kestner  <mkestner@novell.com>
+
 	* GnomePlatform.cs: add gio hooks.
 	* GnomePlatform.dll.config: pinvoke-fu.
 	* Gio.cs: gio-based mime lookup code.

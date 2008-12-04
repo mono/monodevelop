@@ -53,8 +53,8 @@ namespace MonoDevelop.Platform
 				useGio = true;
 			} catch (Exception ex) {
 				Console.WriteLine (ex);
-				Gnome.Vfs.Vfs.Initialize ();
 			}
+			Gnome.Vfs.Vfs.Initialize ();
 		}
 
 
