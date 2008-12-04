@@ -31,11 +31,13 @@ RES =  \
 assemblydir = $(MD_ADDIN_DIR)/BackendBindings
 assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb
 
-all: $(ASSEMBLY)
+all: $(ASSEMBLY) $(ASSEMBLY).mdb
 
 $(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) $(build_resources:%=/resource:%) $(build_sources) $(REFS) $(build_deps) -out:$@ -target:library
+
+$(ASSEMBLY).mdb: $(ASSEMBLY)
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 EXTRA_DIST = $(FILES) $(RES)
