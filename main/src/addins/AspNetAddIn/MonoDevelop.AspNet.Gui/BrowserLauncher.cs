@@ -178,6 +178,10 @@ namespace MonoDevelop.AspNet.Gui
 			get { return successful; }
 		}
 		
+		public bool SuccessWithWarnings {
+			get { return false; }
+		}
+		
 		public bool IsCompleted {
 			get { return completed; }
 			private set {

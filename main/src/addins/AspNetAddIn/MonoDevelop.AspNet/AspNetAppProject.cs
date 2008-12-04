@@ -193,7 +193,7 @@ namespace MonoDevelop.AspNet
 		
 		protected override bool OnGetCanExecute (MonoDevelop.Projects.ExecutionContext context, string configuration)
 		{
-			return true;
+			return context.ExecutionHandlerFactory.SupportsPlatform (ExecutionPlatform.Native);
 		}
 		
 		protected override void DoExecute (IProgressMonitor monitor, ExecutionContext context, string config)

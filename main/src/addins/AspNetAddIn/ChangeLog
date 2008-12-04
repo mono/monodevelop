@@ -1,5 +1,11 @@
 2008-12-04  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.AspNet/AspNetAppProject.cs: Implemented CanExecute.
+
+	* MonoDevelop.AspNet.Gui/BrowserLauncher.cs: Track api changes.
+
+2008-12-04  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Makefile.am: Make it work for parallel build.
 
 2008-12-03  Michael Hutchinson  <mhutchinson@novell.com>
