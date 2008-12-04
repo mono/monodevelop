@@ -39,13 +39,6 @@ using MonoDevelop.Projects.Extensions;
 
 namespace MonoDevelop.Projects
 {
-	
-	public enum BeforeCompileAction {
-		Nothing,
-		SaveAllFiles,
-		PromptForSave,
-	}
-	
 	public class ProjectService
 	{
 		DataContext dataContext = new DataContext ();

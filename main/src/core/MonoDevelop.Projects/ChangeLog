@@ -1,3 +1,8 @@
+2008-12-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/ProjectService.cs: Moved BeforeCompilationAction
+	enum to MD.Ide.
+
 2008-12-03  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Serialization/SimpleCodeCompletionDatabase.cs:
