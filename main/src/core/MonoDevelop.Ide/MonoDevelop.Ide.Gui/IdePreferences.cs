@@ -32,6 +32,10 @@ namespace MonoDevelop.Ide.Gui
 {
 	public class IdePreferences
 	{
+		internal IdePreferences ()
+		{
+		}
+		
 		public string DefaultProjectFileFormat {
 			get { return PropertyService.Get ("MonoDevelop.DefaultFileFormat", "MSBuild05"); }
 			set { PropertyService.Set ("MonoDevelop.DefaultFileFormat", value); }
@@ -71,5 +75,62 @@ namespace MonoDevelop.Ide.Gui
 			add { PropertyService.AddPropertyHandler ("SharpDevelop.LoadDocumentProperties", value); }
 			remove { PropertyService.RemovePropertyHandler ("SharpDevelop.LoadDocumentProperties", value); }
 		}
+
+		public bool BuildBeforeExecuting {
+			get { return PropertyService.Get ("MonoDevelop.Ide.BuildBeforeExecuting", true); }
+			set { PropertyService.Set ("MonoDevelop.Ide.BuildBeforeExecuting", value); }
+		}
+
+		public event EventHandler<PropertyChangedEventArgs> BuildBeforeExecutingChanged {
+			add { PropertyService.AddPropertyHandler ("MonoDevelop.Ide.BuildBeforeExecuting", value); }
+			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.Ide.BuildBeforeExecuting", value); }
+		}
+
+		public bool ShowOutputPadWhenBuildStarts {
+			get { return PropertyService.Get ("MonoDevelop.Ide.ShowOutputWindowAtBuild", true); }
+			set { PropertyService.Set ("MonoDevelop.Ide.ShowOutputWindowAtBuild", value); }
+		}
+
+		public event EventHandler<PropertyChangedEventArgs> ShowOutputPadWhenBuildStartsChanged {
+			add { PropertyService.AddPropertyHandler ("MonoDevelop.Ide.ShowOutputWindowAtBuild", value); }
+			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.Ide.ShowOutputWindowAtBuild", value); }
+		}
+
+		public bool ShowErrorsPadAfterBuild {
+			get { return PropertyService.Get ("MonoDevelop.Ide.ShowTaskListAfterBuild", true); }
+			set { PropertyService.Set ("MonoDevelop.Ide.ShowTaskListAfterBuild", value); }
+		}
+
+		public event EventHandler<PropertyChangedEventArgs> ShowErrorsPadAfterBuildChanged {
+			add { PropertyService.AddPropertyHandler ("MonoDevelop.Ide.ShowTaskListAfterBuild", value); }
+			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.Ide.ShowTaskListAfterBuild", value); }
+		}
+
+		public BeforeCompileAction BeforeBuildSaveAction {
+			get { return PropertyService.Get ("MonoDevelop.Ide.BeforeCompileAction", BeforeCompileAction.SaveAllFiles); }
+			set { PropertyService.Set ("MonoDevelop.Ide.BeforeCompileAction", value); }
+		}
+
+		public event EventHandler<PropertyChangedEventArgs> BeforeBuildSaveActionChanged {
+			add { PropertyService.AddPropertyHandler ("MonoDevelop.Ide.BeforeCompileAction", value); }
+			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.Ide.BeforeCompileAction", value); }
+		}
+
+		public bool RunWithWarnings {
+			get { return PropertyService.Get ("MonoDevelop.Ide.RunWithWarnings", true); }
+			set { PropertyService.Set ("MonoDevelop.Ide.RunWithWarnings", value); }
+		}
+
+		public event EventHandler<PropertyChangedEventArgs> RunWithWarningsChanged {
+			add { PropertyService.AddPropertyHandler ("MonoDevelop.Ide.RunWithWarnings", value); }
+			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.Ide.RunWithWarnings", value); }
+		}
 	}
+	
+	public enum BeforeCompileAction {
+		Nothing,
+		SaveAllFiles,
+		PromptForSave,
+	}
+	
 }

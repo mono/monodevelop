@@ -2,11 +2,12 @@
 <stetic-interface>
   <configuration>
     <images-root-path>..</images-root-path>
-    <target-gtk-version>2.8.3</target-gtk-version>
+    <target-gtk-version>2.10</target-gtk-version>
   </configuration>
   <import>
     <widget-library name="../../../../build/bin/MonoDevelop.Dock.dll" />
     <widget-library name="../../../../build/bin/MonoDevelop.Components.dll" />
+    <widget-library name="../../../../build/bin/MonoDevelop.Core.Gui.dll" />
     <widget-library name="../../../../build/bin/MonoDevelop.Projects.Gui.dll" />
     <widget-library name="Mono.Addins.Gui, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <widget-library name="../../../../build/bin/MonoDevelop.Ide.dll" internal="true" />
@@ -2768,7 +2769,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget" design-size="314 212">
+  <widget class="Gtk.Bin" id="MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget" design-size="334 226">
     <property name="MemberName" />
     <property name="GeneratePublic">False</property>
     <child>
@@ -2806,6 +2807,38 @@
           </packing>
         </child>
         <child>
+          <widget class="Gtk.CheckButton" id="buildBeforeRunCheckBox">
+            <property name="MemberName" />
+            <property name="CanFocus">True</property>
+            <property name="Label" translatable="yes">Build solution before running</property>
+            <property name="DrawIndicator">True</property>
+            <property name="HasLabel">True</property>
+            <property name="UseUnderline">True</property>
+          </widget>
+          <packing>
+            <property name="Position">2</property>
+            <property name="AutoSize">True</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.CheckButton" id="runWithWarningsCheckBox">
+            <property name="MemberName" />
+            <property name="CanFocus">True</property>
+            <property name="Label" translatable="yes">Run solution if build completed with warnings</property>
+            <property name="DrawIndicator">True</property>
+            <property name="HasLabel">True</property>
+            <property name="UseUnderline">True</property>
+          </widget>
+          <packing>
+            <property name="Position">3</property>
+            <property name="AutoSize">True</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
+        <child>
           <widget class="Gtk.Label" id="buildAndRunOptionsLabel">
             <property name="MemberName" />
             <property name="Xalign">0</property>
@@ -2814,7 +2847,7 @@
             <property name="UseMarkup">True</property>
           </widget>
           <packing>
-            <property name="Position">2</property>
+            <property name="Position">4</property>
             <property name="AutoSize">False</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>
@@ -2901,7 +2934,7 @@
             </child>
           </widget>
           <packing>
-            <property name="Position">3</property>
+            <property name="Position">5</property>
             <property name="AutoSize">False</property>
           </packing>
         </child>

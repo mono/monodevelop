@@ -1,3 +1,18 @@
+2008-12-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* gtk-gui/objects.xml:
+	* MonoDevelop.Ide.Gui/IdePreferences.cs:
+	* MonoDevelop.Ide.Commands/ProjectCommands.cs:
+	* MonoDevelop.Ide.Gui.OptionPanels/BuildPanel.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs: Added
+	BuildBeforeRun and RunWithWarnings options.
+
+	* MonoDevelop.Ide.Gui/ProgressMonitors.cs:
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Use new api for getting
+	preferences.
+
 2008-12-03  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs:

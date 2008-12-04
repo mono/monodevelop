@@ -82,13 +82,20 @@ namespace MonoDevelop.Ide.Commands
 				IdeApp.ProjectOperations.CurrentRunOperation.WaitForCompleted ();
 			} 
 			if (IdeApp.Workspace.IsOpen) {
-				IAsyncOperation op = IdeApp.ProjectOperations.Build (IdeApp.Workspace);
-				op.Completed += new OperationHandler (ExecuteCombine);
+				if (IdeApp.Preferences.BuildBeforeExecuting) {
+					IAsyncOperation op = IdeApp.ProjectOperations.Build (IdeApp.Workspace);
+					op.Completed += ExecuteCombine;
+				} else
+					IdeApp.ProjectOperations.Execute (IdeApp.Workspace);
 			} else {
 				doc = IdeApp.Workbench.ActiveDocument;
 				if (doc != null) {
-					IAsyncOperation op = doc.Build ();
-					op.Completed += new OperationHandler (ExecuteFile);
+					if (IdeApp.Preferences.BuildBeforeExecuting) {
+						IAsyncOperation op = doc.Build ();
+						op.Completed += ExecuteFile;
+					} else {
+						doc.Run ();
+					}
 				}
 			}
 		}
@@ -100,7 +107,6 @@ namespace MonoDevelop.Ide.Commands
 				if (!IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted) {
 					info.Text = GettextCatalog.GetString ("_Run again");
 				}
-
 				info.Enabled = !(IdeApp.ProjectOperations.CurrentSelectedItem is Workspace) && IdeApp.ProjectOperations.CanExecute (IdeApp.Workspace);
 			} else {
 				info.Enabled = (IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.IsBuildTarget);
@@ -109,13 +115,16 @@ namespace MonoDevelop.Ide.Commands
 		
 		void ExecuteCombine (IAsyncOperation op)
 		{
+			if (op.SuccessWithWarnings && !IdeApp.Preferences.RunWithWarnings)
+				return;
 			if (op.Success)
-				// FIXME: check RunWithWarnings
 				IdeApp.ProjectOperations.Execute (IdeApp.Workspace);
 		}
 		
 		void ExecuteFile (IAsyncOperation op)
 		{
+			if (op.SuccessWithWarnings && !IdeApp.Preferences.RunWithWarnings)
+				return;
 			if (op.Success)
 				doc.Run ();
 		}
@@ -127,11 +136,16 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Run ()
 		{
 			IBuildTarget entry = IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
-			IAsyncOperation op = IdeApp.ProjectOperations.Build (entry);
-			op.Completed += delegate {
-				if (op.Success)
-					IdeApp.ProjectOperations.Execute (entry);
-			};
+			if (IdeApp.Preferences.BuildBeforeExecuting) {
+				IAsyncOperation op = IdeApp.ProjectOperations.Build (entry);
+				op.Completed += delegate {
+					if (op.SuccessWithWarnings && !IdeApp.Preferences.RunWithWarnings)
+						return;
+					if (op.Success)
+						IdeApp.ProjectOperations.Execute (entry);
+				};
+			} else
+				IdeApp.ProjectOperations.Execute (entry);
 		}
 		
 		protected override void Update (CommandInfo info)

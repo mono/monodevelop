@@ -773,7 +773,7 @@ namespace MonoDevelop.Ide.Gui
 
 		void DoBeforeCompileAction ()
 		{
-			BeforeCompileAction action = (BeforeCompileAction)PropertyService.Get("SharpDevelop.Services.DefaultParserService.BeforeCompileAction", BeforeCompileAction.SaveAllFiles);
+			BeforeCompileAction action = IdeApp.Preferences.BeforeBuildSaveAction;
 			
 			switch (action) {
 				case BeforeCompileAction.Nothing:
@@ -846,7 +846,7 @@ namespace MonoDevelop.Ide.Gui
 			if (tasks != null && tasks.Length > 0) {
 				try {
 					Pad errorsPad = IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ErrorListPad> ();
-					if ((bool) PropertyService.Get ("SharpDevelop.ShowTaskListAfterBuild", true)) {
+					if (IdeApp.Preferences.ShowErrorsPadAfterBuild) {
 						errorsPad.Visible = true;
 						errorsPad.BringToFront ();
 					}

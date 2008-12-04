@@ -1,35 +1,34 @@
-//  BuildPanel.cs
+// BuildPanel.cs
 //
-//  This file was derived from a file from #Develop. 
+// Author:
+//   Lluis Sanchez Gual <lluis@novell.com>
 //
-//  Copyright (C) 2001-2007 Mike Krüger <mkrueger@novell.com>
-// 
-//  This program is free software; you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation; either version 2 of the License, or
-//  (at your option) any later version.
-// 
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-//  GNU General Public License for more details.
-//  
-//  You should have received a copy of the GNU General Public License
-//  along with this program; if not, write to the Free Software
-//  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// Copyright (c) 2008 Novell, Inc (http://www.novell.com)
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+//
+//
+
 
 using System;
-using System.IO;
-using System.Collections;
-
-using MonoDevelop.Core.Gui.Components;
-using MonoDevelop.Core.Gui.Dialogs;
-using MonoDevelop.Core;
-using Mono.Addins;
-using MonoDevelop.Projects;
-
 using Gtk;
-using MonoDevelop.Components;
+using MonoDevelop.Core.Gui.Dialogs;
 
 namespace MonoDevelop.Ide.Gui.OptionPanels
 {
@@ -53,42 +52,29 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		public BuildPanelWidget ()
 		{
 			Build ();
-			
-		        //
-		        // getting internationalized strings
-		        //
-			// FIXME i8n the following line
-			//
-			// reading properties
-			//
-			BeforeCompileAction action = (BeforeCompileAction) PropertyService.Get(
-				"SharpDevelop.Services.DefaultParserService.BeforeCompileAction", 
-				BeforeCompileAction.SaveAllFiles);
-			saveChangesRadioButton.Active = action.Equals(BeforeCompileAction.SaveAllFiles);
-			promptChangesRadioButton.Active = action.Equals(BeforeCompileAction.PromptForSave);
-			noSaveRadioButton.Active = action.Equals(BeforeCompileAction.Nothing);
-			showTaskListCheckBox.Active = (bool)PropertyService.Get(
-				"SharpDevelop.ShowTaskListAfterBuild", true);
-			showOutputCheckBox.Active = (bool)PropertyService.Get(
-				"SharpDevelop.ShowOutputWindowAtBuild", true);
+			BeforeCompileAction action = IdeApp.Preferences.BeforeBuildSaveAction;
+			saveChangesRadioButton.Active = action == BeforeCompileAction.SaveAllFiles;
+			promptChangesRadioButton.Active = action == BeforeCompileAction.PromptForSave;
+			noSaveRadioButton.Active = action == BeforeCompileAction.Nothing;
+			showTaskListCheckBox.Active = IdeApp.Preferences.ShowErrorsPadAfterBuild;
+			showOutputCheckBox.Active = IdeApp.Preferences.ShowOutputPadWhenBuildStarts;
+			runWithWarningsCheckBox.Active = IdeApp.Preferences.RunWithWarnings;
+			buildBeforeRunCheckBox.Active = IdeApp.Preferences.BuildBeforeExecuting;
 		}
 		
 		public void Store ()
 		{
-			// set properties
-			if (saveChangesRadioButton.Active) {
-				PropertyService.Set("SharpDevelop.Services.DefaultParserService.BeforeCompileAction", 
-						BeforeCompileAction.SaveAllFiles);
-			} else if (promptChangesRadioButton.Active) {
-				PropertyService.Set("SharpDevelop.Services.DefaultParserService.BeforeCompileAction", 
-						BeforeCompileAction.PromptForSave);
-			} else if (noSaveRadioButton.Active) {
-				PropertyService.Set("SharpDevelop.Services.DefaultParserService.BeforeCompileAction", 
-						BeforeCompileAction.Nothing);
-			}
+			IdeApp.Preferences.ShowErrorsPadAfterBuild = showTaskListCheckBox.Active;
+			IdeApp.Preferences.ShowOutputPadWhenBuildStarts = showOutputCheckBox.Active;
+			IdeApp.Preferences.RunWithWarnings = runWithWarningsCheckBox.Active;
+			IdeApp.Preferences.BuildBeforeExecuting = buildBeforeRunCheckBox.Active;
 			
-			PropertyService.Set("SharpDevelop.ShowTaskListAfterBuild", showTaskListCheckBox.Active);
-			PropertyService.Set("SharpDevelop.ShowOutputWindowAtBuild", showOutputCheckBox.Active);
+			if (saveChangesRadioButton.Active)
+				IdeApp.Preferences.BeforeBuildSaveAction = BeforeCompileAction.SaveAllFiles;
+			else if (promptChangesRadioButton.Active)
+				IdeApp.Preferences.BeforeBuildSaveAction = BeforeCompileAction.PromptForSave;
+			else if (noSaveRadioButton.Active)
+				IdeApp.Preferences.BeforeBuildSaveAction = BeforeCompileAction.Nothing;
 		}
 	}
 }
