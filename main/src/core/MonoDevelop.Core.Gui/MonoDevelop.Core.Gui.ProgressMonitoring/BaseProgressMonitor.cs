@@ -201,6 +201,12 @@ namespace MonoDevelop.Core.Gui.ProgressMonitoring
 			get { return errorsMessages.Count == 0; }
 		}
 		
+		[FreeDispatch]
+		bool IAsyncOperation.SuccessWithWarnings {
+			[FreeDispatch]
+			get { return errorsMessages.Count == 0 && warningMessages.Count > 0; }
+		}
+		
 		public bool IsCompleted {
 			[FreeDispatch]
 			get { return !progressTracker.InProgress; }
