@@ -164,6 +164,10 @@ namespace MonoDevelop.Core.ProgressMonitoring
 			get { return !error; }
 		}
 		
+		bool IAsyncOperation.SuccessWithWarnings {
+			get { return !error && warnings != null; }
+		}
+		
 		public event OperationHandler Completed {
 			add {
 				bool alreadyCompleted = false;

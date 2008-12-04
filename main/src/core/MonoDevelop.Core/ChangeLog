@@ -1,3 +1,12 @@
+2008-12-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core/IAsyncOperation.cs:
+	* MonoDevelop.Core.Execution/ProcessWrapper.cs:
+	* MonoDevelop.Core.ProgressMonitoring/NullAsyncOperation.cs:
+	* MonoDevelop.Core.ProgressMonitoring/NullProgressMonitor.cs:
+	* MonoDevelop.Core.ProgressMonitoring/AggregatedProgressMonitor.cs:
+	Implement new SuccessWithWarnings property.
+
 2008-12-03  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am: Make it work for parallel builds.

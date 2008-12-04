@@ -33,12 +33,13 @@ namespace MonoDevelop.Core.ProgressMonitoring
 {
 	public class NullAsyncOperation: IAsyncOperation
 	{
-		public static NullAsyncOperation Success = new NullAsyncOperation (true);
-		public static NullAsyncOperation Failure = new NullAsyncOperation (false);
+		public static NullAsyncOperation Success = new NullAsyncOperation (true, false);
+		public static NullAsyncOperation Failure = new NullAsyncOperation (false, false);
 		
 		bool success;
+		bool warnings;
 		
-		private NullAsyncOperation (bool success)
+		private NullAsyncOperation (bool success, bool warnings)
 		{
 			this.success = success;
 		}
@@ -57,6 +58,10 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		
 		bool IAsyncOperation.Success {
 			get { return success; }
+		}
+		
+		bool IAsyncOperation.SuccessWithWarnings {
+			get { return success && warnings; }
 		}
 		
 		public event OperationHandler Completed {

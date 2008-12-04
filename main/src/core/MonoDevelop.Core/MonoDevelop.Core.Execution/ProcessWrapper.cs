@@ -190,6 +190,10 @@ namespace MonoDevelop.Core.Execution
 			get { return done ? ExitCode == 0 : false; }
 		}
 		
+		bool IAsyncOperation.SuccessWithWarnings {
+			get { return false; }
+		}
+		
 		bool IAsyncOperation.IsCompleted {
 			get { return done; }
 		}

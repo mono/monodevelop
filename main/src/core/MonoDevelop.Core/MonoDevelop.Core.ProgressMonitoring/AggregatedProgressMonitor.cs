@@ -204,6 +204,10 @@ namespace MonoDevelop.Core.ProgressMonitoring
 			get { return masterMonitor.AsyncOperation.Success; }
 		}
 		
+		bool IAsyncOperation.SuccessWithWarnings { 
+			get { return masterMonitor.AsyncOperation.SuccessWithWarnings; }
+		}
+		
 		public event MonitorHandler CancelRequested {
 			add { masterMonitor.CancelRequested += value; }
 			remove { masterMonitor.CancelRequested -= value; }

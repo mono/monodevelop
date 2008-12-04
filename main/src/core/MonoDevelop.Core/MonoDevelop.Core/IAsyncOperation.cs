@@ -39,6 +39,7 @@ namespace MonoDevelop.Core
 		void WaitForCompleted ();
 		bool IsCompleted { get; }
 		bool Success { get; }
+		bool SuccessWithWarnings { get; }
 
 		event OperationHandler Completed;
 	}
