@@ -36,5 +36,6 @@ namespace Mono.Debugging.Client
 		bool CanDebugFile (string file);
 		ProcessInfo[] GetAttachablePocesses ();
 		DebuggerSession CreateSession ();
+		DebuggerFeatures SupportedFeatures { get; }
 	}
 }

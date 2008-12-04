@@ -86,11 +86,6 @@ namespace Mono.Debugging.Client
 			}
 		}
 
-		public bool SupportsFeature (DebuggerFeatures features)
-		{
-			return (OnGetSupportedFeatures () & features) == features;
-		}
-		
 		public BreakpointStore Breakpoints {
 			get {
 				lock (slock) {
@@ -648,8 +643,6 @@ namespace Mono.Debugging.Client
 		
 		protected abstract Backtrace OnGetThreadBacktrace (int processId, int threadId);
 
-		protected abstract DebuggerFeatures OnGetSupportedFeatures ();
-		
 		protected virtual AssemblyLine[] OnDisassembleFile (string file)
 		{
 			return null;

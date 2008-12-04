@@ -1,3 +1,10 @@
+2008-12-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Debugging.Client/DebuggerSession.cs:
+	* Mono.Debugging.Client/IDebuggerEngine.cs:
+	* Mono.Debugging.Client/DebuggerFeatures.cs: Improved support for
+	checking debugger features.
+
 2008-12-02  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Debugging.Client/ObjectValue.cs:
