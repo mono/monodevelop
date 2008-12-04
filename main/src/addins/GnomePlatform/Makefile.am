@@ -20,7 +20,7 @@ FILES =  \
 RES = GnomePlatform.addin.xml
 
 if ENABLE_GNOMEPLATFORM
-all: $(ASSEMBLY)
+all: $(ASSEMBLY) $(ASSEMBLY).mdb
 else
 all:
 endif
@@ -28,6 +28,8 @@ endif
 $(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) $(REFS) $(build_deps) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -target:library
+
+$(ASSEMBLY).mdb: $(ASSEMBLY)
 
 if ENABLE_GNOMEPLATFORM
 assemblydir = $(MD_ADDIN_DIR)/GnomePlatform
