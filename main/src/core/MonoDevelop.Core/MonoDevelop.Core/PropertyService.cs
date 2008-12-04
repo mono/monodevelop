@@ -70,8 +70,10 @@ namespace MonoDevelop.Core
 		static PropertyService ()
 		{
 			if (!LoadProperties (Path.Combine (ConfigPath, FileName))) {
-				if (!LoadProperties (Path.Combine (DataPath, FileName))) 
+				if (!LoadProperties (Path.Combine (DataPath, FileName))) {
 					properties = new Properties ();
+					properties.Set ("MonoDevelop.Core.FirstRun", true);
+				}
 			}
 			properties.PropertyChanged += delegate(object sender, PropertyChangedEventArgs args) {
 				if (PropertyChanged != null)
