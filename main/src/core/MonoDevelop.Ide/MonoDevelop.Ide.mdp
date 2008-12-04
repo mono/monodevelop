@@ -349,6 +349,7 @@
     <File name="AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Dialogs/ProgressMonitorResultDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="gtk-gui/MonoDevelop.Ide.Gui.Dialogs.ProgressMonitorResultDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="options/KeyBindingSchemeMonoDevelop2.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="BuildVariables.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>

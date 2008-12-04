@@ -696,6 +696,24 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
+		public bool CanExecuteFile (string file)
+		{
+			ExecutionContext context = new ExecutionContext (new DefaultExecutionHandlerFactory (), IdeApp.Workbench.ProgressMonitors);
+			return CanExecuteFile (file, context);
+		}
+		
+		public bool CanExecuteFile (string file, ExecutionContext context)
+		{
+			Project tempProject = projectService.CreateSingleFileProject (file);
+			if (tempProject != null) {
+				bool res = CanExecute (tempProject, context);
+				tempProject.Dispose ();
+				return res;
+			}
+			else
+				return false;
+		}
+		
 		public IAsyncOperation ExecuteFile (string file, ExecutionContext context)
 		{
 			Project tempProject = projectService.CreateSingleFileProject (file);

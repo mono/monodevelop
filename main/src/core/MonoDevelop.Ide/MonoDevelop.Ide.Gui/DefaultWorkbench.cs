@@ -40,6 +40,7 @@ using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Codons;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.Components.Commands;
 
 using GLib;
 
@@ -347,7 +348,14 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (padContentCollection.Contains (content))
 				return;
-			
+
+			if (content.HasId) {
+				ActionCommand cmd = new ActionCommand ("Pad|" + content.PadId, GettextCatalog.GetString (content.Label), null);
+				cmd.DefaultHandler = new PadActivationHandler (this, content);
+				cmd.Category = GettextCatalog.GetString ("View");
+				cmd.Description = GettextCatalog.GetString ("Show {0}", cmd.Text);
+				IdeApp.CommandService.RegisterCommand (cmd);
+			}
 			padContentCollection.Add (content);
 			
 			if (layout != null) {
@@ -360,6 +368,11 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void RemovePad (PadCodon codon)
 		{
+			if (codon.HasId) {
+				Command cmd = IdeApp.CommandService.GetCommand (codon.Id);
+				if (cmd != null)
+					IdeApp.CommandService.UnregisterCommand (cmd);
+			}
 			padContentCollection.Remove (codon);
 			
 			if (layout != null)
@@ -655,7 +668,7 @@ namespace MonoDevelop.Ide.Gui
 			AddinManager.AddExtensionNodeHandler (viewContentPath, OnExtensionChanged);
 			initializing = false;
 		}
-		
+
 		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
 		{
 			// Handle Tab+Control == NextWindow, Tab+Shift+Control == PrevWindow commands.
@@ -762,6 +775,23 @@ namespace MonoDevelop.Ide.Gui
 		}
 
 		public event EventHandler ContextChanged;
+	}
+
+	class PadActivationHandler: CommandHandler
+	{
+		PadCodon pad;
+		DefaultWorkbench wb;
+		
+		public PadActivationHandler (DefaultWorkbench wb, PadCodon pad)
+		{
+			this.pad = pad;
+			this.wb = wb;
+		}
+		
+		protected override void Run ()
+		{
+			wb.BringToFront (pad);
+		}
 	}
 }
 

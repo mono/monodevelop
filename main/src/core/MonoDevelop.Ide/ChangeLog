@@ -1,3 +1,34 @@
+2008-12-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs:
+	* MonoDevelop.Ide.Commands/ViewCommands.cs: Register a command for each
+	pad which activates the pad. This allows defining shortcuts for
+	switching between pads.
+
+	* gtk-gui/gui.stetic:
+	* gtk-gui/objects.xml:
+	* MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel.cs: Improved
+	conflict checking. Show the name of the current scheme if there
+	aren't custom binding definitions.
+
+	* options/KeyBindingSchemeEmacs.xml:
+	* options/KeyBindingSchemeVisualStudio.xml: Fixed bindings.
+
+	* Makefile.am:
+	* MonoDevelop.Ide.mdp:
+	* MonoDevelop.Ide.addin.xml:
+	* options/KeyBindingSchemeMonoDevelop2.xml: Added key bindings for MD
+	2.0.
+
+	* MonoDevelop.Ide.Gui/Ide.cs:
+	* options/MonoDevelopProperties.xml: Added properties for checking if MD
+	is running for the first time after install or after an upgrade.
+
+	* MonoDevelop.Ide.Gui/Document.cs:
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Added methods for checking
+	if a file can be executed.
+
 2008-12-02  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am:

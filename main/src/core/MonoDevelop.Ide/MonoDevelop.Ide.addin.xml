@@ -442,8 +442,8 @@
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.RunEntry"
 				defaultHandler = "MonoDevelop.Ide.Commands.RunEntryHandler"
 				icon = "gtk-execute"
-				_description = "Run"
-				_label = "_Run" />
+				_description = "Run current project"
+				_label = "_Run Item" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.Clean"
 				defaultHandler = "MonoDevelop.Ide.Commands.CleanHandler"
 				_description = "Clean the selected project or solution"
@@ -805,11 +805,11 @@
 				shortcut = "Control|Shift|G" />
 
 		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.EmacsFindNext"
-				_label = "Find _Next" 
+				_label = "Find _Next (Emacs behavior)" 
 				icon = "md-find-next-icon" 
 				_description = "Search forwards for the same text with emacs behavior"/>
 		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.EmacsFindPrevious"
-				_label = "Find _Previous" 
+				_label = "Find _Previous (Emacs behavior)" 
 				_description = "Search backwards for the same tex twith emacs behavior"/>
 
 		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.FindNextSelection"
@@ -980,9 +980,10 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/KeyBindingSchemes">
-		<Scheme _name = "GNU/Emacs" resource="KeyBindingSchemeEmacs.xml"/>
-		<Scheme _name = "Visual Studio" resource="KeyBindingSchemeVisualStudio.xml"/>
-		<Scheme _name = "MonoDevelop 1.0" resource="KeyBindingSchemeMonoDevelop1.xml"/>
+		<Scheme id="Emacs" _name = "GNU/Emacs" resource="KeyBindingSchemeEmacs.xml"/>
+		<Scheme id="VS05" _name = "Visual Studio" resource="KeyBindingSchemeVisualStudio.xml"/>
+		<Scheme id="MD1" _name = "MonoDevelop 1.0" resource="KeyBindingSchemeMonoDevelop1.xml"/>
+		<Scheme id="MD2" _name = "MonoDevelop 2.0" resource="KeyBindingSchemeMonoDevelop2.xml"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Workspace">

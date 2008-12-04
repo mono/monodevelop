@@ -55,6 +55,9 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		bool accelComplete = false;
 		TreeStore keyStore;
 		string mode;
+		KeyBindingSet currentBindings;
+		bool internalUpdate;
+		List<KeyBindingScheme> schemes;
 		
 		public KeyBindingsPanel ()
 		{
@@ -87,35 +90,40 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				UpdateWarningLabel ();
 			};
 			updateButton.Clicked += new EventHandler (OnUpdateButtonClick);
+
+			currentBindings = KeyBindingService.CurrentKeyBindingSet.Clone ();
+
+			schemes = new List<KeyBindingScheme> (KeyBindingService.Schemes);
+			schemeCombo.AppendText (GettextCatalog.GetString ("Custom"));
 			
-			schemeCombo.AppendText (GettextCatalog.GetString ("Current"));
-			foreach (string s in KeyBindingService.SchemeNames)
-				schemeCombo.AppendText (s);
-			
-			schemeCombo.Active = 0;
-			schemeCombo.Changed += new EventHandler (OnKeyBindingSchemeChanged);
+			foreach (KeyBindingScheme s in schemes)
+				schemeCombo.AppendText (s.Name);
+
+			SelectCurrentScheme ();
+			schemeCombo.Changed += OnKeyBindingSchemeChanged;
+		}
+
+		void SelectCurrentScheme ()
+		{
+			try {
+				internalUpdate = true;
+				for (int n=0; n<schemes.Count; n++) {
+					KeyBindingScheme s = schemes [n];
+					if (currentBindings.Equals (s.GetKeyBindingSet ())) {
+						schemeCombo.Active = n + 1;
+						return;
+					}
+				}
+				schemeCombo.Active = 0;
+			} finally {
+				internalUpdate = false;
+			}
 		}
 		
 		public void ApplyChanges ()
 		{
-			TreeModel model = (TreeModel) keyStore;
-			Command command;
-			TreeIter iter;
-			
-			if (!model.GetIterFirst (out iter))
-				return;
-
-			KeyBindingService.ResetCurrent ();
-			do {
-				TreeIter citer;
-				model.IterChildren (out citer, iter);
-				do {
-					command = (Command) model.GetValue (citer, commandCol);
-					command.AccelKey = (string) model.GetValue (citer, bindingCol);
-					KeyBindingService.StoreBinding (command);
-				} while (model.IterNext (ref citer));
-			} while (model.IterNext (ref iter));
-			
+			KeyBindingService.ResetCurrent (currentBindings);
+			IdeApp.CommandService.LoadUserBindings ();
 			KeyBindingService.SaveCurrentBindings ();
 		}
 
@@ -172,47 +180,40 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				TreeIter icat = categories [cmd.Category];
 				keyStore.AppendValues (icat, cmd, label, cmd.AccelKey != null ? cmd.AccelKey : String.Empty, cmd.Description, (int) Pango.Weight.Normal, cmd.Icon, true);
 			}
+			UpdateGlobalWarningLabel ();
 			return this;
 		}
 		
 		void OnKeyBindingSchemeChanged (object sender, EventArgs e)
 		{
-			TreeModel model = (TreeModel) keyStore;
-			ComboBox combo = (ComboBox) sender;
+			if (internalUpdate)
+				return;
+
+			if (schemeCombo.Active == 0)
+				return;
+			
 			Command command;
 			string binding;
 			TreeIter iter;
 			
-			if (!model.GetIterFirst (out iter))
+			if (!keyStore.GetIterFirst (out iter))
 				return;
 			
-			if (combo.Active > 0) {
-				// Load a key binding template
-				KeyBindingService.LoadScheme (combo.ActiveText);
-				
+			// Load a key binding template
+			KeyBindingScheme scheme = KeyBindingService.GetSchemeByName (schemeCombo.ActiveText);
+			currentBindings = scheme.GetKeyBindingSet ().Clone ();
+			
+			do {
+				TreeIter citer;
+				keyStore.IterChildren (out citer, iter);
 				do {
-					TreeIter citer;
-					model.IterChildren (out citer, iter);
-					do {
-						command = (Command) model.GetValue (citer, commandCol);
-						binding = KeyBindingService.SchemeBinding (command);
-						model.SetValue (citer, bindingCol, binding);
-					} while (model.IterNext (ref citer));
-				} while (model.IterNext (ref iter));
-				
-				KeyBindingService.UnloadScheme ();
-			} else {
-				// Restore back to current settings...
-				
-				do {
-					TreeIter citer;
-					model.IterChildren (out citer, iter);
-					do {
-						command = (Command) model.GetValue (citer, commandCol);
-						model.SetValue (citer, bindingCol, command.AccelKey != null ? command.AccelKey : String.Empty);
-					} while (model.IterNext (ref citer));
-				} while (model.IterNext (ref iter));
-			}
+					command = (Command) keyStore.GetValue (citer, commandCol);
+					binding = currentBindings.GetBinding (command);
+					keyStore.SetValue (citer, bindingCol, binding);
+				} while (keyStore.IterNext (ref citer));
+			} while (keyStore.IterNext (ref iter));
+
+			UpdateGlobalWarningLabel ();
 		}
 		
 		void OnKeysTreeViewSelectionChange (object sender, EventArgs e)
@@ -294,11 +295,69 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		void OnUpdateButtonClick (object sender, EventArgs e)
 		{
 			TreeSelection sel = keyTreeView.Selection;
-			TreeModel model;
 			TreeIter iter;
 			
-			if (sel.GetSelected (out model, out iter) && model.GetValue (iter, commandCol) != null)
-				keyStore.SetValue (iter, bindingCol, accelEntry.Text);
+			if (sel.GetSelected (out iter)) {
+				Command cmd = (Command) keyStore.GetValue (iter, commandCol);
+				if (cmd != null) {
+					keyStore.SetValue (iter, bindingCol, accelEntry.Text);
+					currentBindings.SetBinding (cmd, accelEntry.Text);
+					SelectCurrentScheme ();
+				}
+			}
+			UpdateGlobalWarningLabel ();
+		}
+
+		void UpdateGlobalWarningLabel ()
+		{
+			KeyBindingConflict[] conflicts = currentBindings.CheckKeyBindingConflicts (IdeApp.CommandService.GetCommands ());
+			if (conflicts.Length == 0) {
+				globalWarningBox.Hide ();
+				return;
+			}
+			globalWarningBox.Show ();
+			conflicButton.MenuCreator = delegate {
+				Menu menu = new Menu ();
+				foreach (KeyBindingConflict conf in conflicts) {
+					if (menu.Children.Length > 0) {
+						SeparatorMenuItem it = new SeparatorMenuItem ();
+						it.Show ();
+						menu.Insert (it, -1);
+					}
+					foreach (Command cmd in conf.Commands) {
+						string txt = currentBindings.GetBinding (cmd) + " - " + cmd.Text;
+						MenuItem item = new MenuItem (txt);
+						Command localCmd = cmd;
+						item.Activated += delegate {
+							SelectCommand (localCmd);
+						};
+						item.Show ();
+						menu.Insert (item, -1);
+					}
+				}
+				return menu;
+			};
+		}
+
+		void SelectCommand (Command cmd)
+		{
+			TreeIter iter;
+			if (!keyStore.GetIterFirst (out iter))
+				return;
+			do {
+				TreeIter citer;
+				keyStore.IterChildren (out citer, iter);
+				do {
+					Command command = (Command) keyStore.GetValue (citer, commandCol);
+					if (command == cmd) {
+						TreePath path = keyStore.GetPath (citer);
+						keyTreeView.ExpandToPath (path);
+						keyTreeView.Selection.SelectPath (path);
+						keyTreeView.ScrollToCell (path, keyTreeView.Columns[0], true, 0.5f, 0f);
+						return;
+					}
+				} while (keyStore.IterNext (ref citer));
+			} while (keyStore.IterNext (ref iter));
 		}
 
 		void UpdateWarningLabel ()

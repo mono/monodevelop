@@ -311,6 +311,11 @@ namespace MonoDevelop.Ide.Gui
 		{
 			return IdeApp.ProjectOperations.ExecuteFile (Window.ViewContent.ContentName);
 		}
+
+		public virtual bool CanRun ()
+		{
+			return IdeApp.ProjectOperations.CanExecuteFile (Window.ViewContent.ContentName);
+		}
 		
 		public void Close ()
 		{

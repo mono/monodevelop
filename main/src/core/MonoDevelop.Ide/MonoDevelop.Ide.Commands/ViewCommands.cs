@@ -166,6 +166,9 @@ namespace MonoDevelop.Ide.Commands
 				cmd.Icon = pad.Icon;
 				cmd.UseMarkup = true;
 				cmd.Description = GettextCatalog.GetString ("Show {0}", pad.Title);
+				Command c = IdeApp.CommandService.GetActionCommand ("Pad|" + pad.InternalContent.PadId);
+				if (c != null)
+					cmd.AccelKey = c.AccelKey;
 				
 				// Insert before the submenus
 				int n = ciset.Count-1;

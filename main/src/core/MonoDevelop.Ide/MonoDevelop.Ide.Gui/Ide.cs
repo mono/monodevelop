@@ -58,6 +58,10 @@ namespace MonoDevelop.Ide.Gui
 		static IdeServices ideServices;
 		static RootWorkspace workspace;
 		static IdePreferences preferences;
+
+		static bool isInitialRun;
+		static bool isInitialRunAfterUpgrade;
+		static string upgradedFromVersion;
 		
 		public static event ExitEventHandler Exiting;
 		public static event EventHandler Exited;
@@ -100,6 +104,21 @@ namespace MonoDevelop.Ide.Gui
 				return isInitialized;
 			}
 		}
+
+		// Returns true if MD is running for the first time after installing
+		public static bool IsInitialRun {
+			get { return isInitialRun; }
+		}
+		
+		// Returns true if MD is running for the first time after being upgraded from a previous version
+		public static bool IsInitialRunAfterUpgrade {
+			get { return isInitialRunAfterUpgrade; }
+		}
+		
+		// If IsInitialRunAfterUpgrade is true, returns the previous version
+		public static string UpgradedFromVersion {
+			get { return upgradedFromVersion; }
+		}
 		
 		public static void Initialize (IProgressMonitor monitor)
 		{
@@ -113,7 +132,10 @@ namespace MonoDevelop.Ide.Gui
 			commandService = new CommandManager ();
 			ideServices = new IdeServices ();
 			preferences = new IdePreferences ();
-			
+
+			KeyBindingService.LoadBindingsFromExtensionPath ("/MonoDevelop/Ide/KeyBindingSchemes");
+			KeyBindingService.LoadCurrentBindings ("MD2");
+
 			commandService.CommandError += delegate (object sender, CommandErrorArgs args) {
 				MessageService.ShowException (args.Exception, args.ErrorMessage);
 			};
@@ -123,7 +145,6 @@ namespace MonoDevelop.Ide.Gui
 			monitor.BeginTask (GettextCatalog.GetString("Loading Workbench"), 5);
 			
 			commandService.LoadCommands ("/MonoDevelop/Ide/Commands");
-			commandService.LoadKeyBindingSchemes ("/MonoDevelop/Ide/KeyBindingSchemes");
 			monitor.Step (1);
 
 			workbench.Initialize (monitor);
@@ -162,7 +183,41 @@ namespace MonoDevelop.Ide.Gui
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/StartupHandlers", OnExtensionChanged);
 			monitor.EndTask ();
 
+			// Set initial run flags
+
+			if (PropertyService.Get("MonoDevelop.Core.FirstRun", false)) {
+				isInitialRun = true;
+				PropertyService.Set ("MonoDevelop.Core.FirstRun", false);
+				PropertyService.Set ("MonoDevelop.Core.LastRunVersion", BuildVariables.PackageVersion);
+				PropertyService.SaveProperties ();
+			}
+
+			string lastVersion = PropertyService.Get ("MonoDevelop.Core.LastRunVersion", "1.9.1");
+			if (lastVersion != BuildVariables.PackageVersion && !isInitialRun) {
+				isInitialRunAfterUpgrade = true;
+				upgradedFromVersion = lastVersion;
+			}
+			
+			// The ide is now initialized
+
 			isInitialized = true;
+			
+			if (isInitialRun) {
+				try {
+					OnInitialRun ();
+				} catch (Exception e) {
+					LoggingService.LogError ("Error found while initializing the IDE", e);
+				}
+			}
+
+			if (isInitialRunAfterUpgrade) {
+				try {
+					OnUpgraded (upgradedFromVersion);
+				} catch (Exception e) {
+					LoggingService.LogError ("Error found while initializing the IDE", e);
+				}
+			}
+			
 			if (Initialized != null)
 				Initialized (null, EventArgs.Empty);
 			
@@ -257,6 +312,14 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (Exited != null)
 				Exited (null, EventArgs.Empty);
+		}
+
+		static void OnInitialRun ()
+		{
+		}
+
+		static void OnUpgraded (string previousVersion)
+		{
 		}
 	}
 	
