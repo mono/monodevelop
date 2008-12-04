@@ -53,8 +53,8 @@
 		<Command id = "MonoDevelop.Debugger.DebugCommands.DebugEntry"
 				defaultHandler = "MonoDevelop.Debugger.DebugEntryHandler"
 				icon = "gtk-execute"
-				_description = "Debug"
-				_label = "D_ebug" />
+				_description = "Debug current project"
+				_label = "D_ebug Item" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/Commands">
@@ -71,6 +71,7 @@
 				_label = "Detach" />
 		<Command id = "MonoDevelop.Debugger.DebugCommands.Pause"
 				defaultHandler = "MonoDevelop.Debugger.PauseDebugHandler"
+				shortcut = "Control|Break"
 				_label = "Pause"/>
 		<Command id = "MonoDevelop.Debugger.DebugCommands.StepOver"
 				defaultHandler = "MonoDevelop.Debugger.StepOverHandler"

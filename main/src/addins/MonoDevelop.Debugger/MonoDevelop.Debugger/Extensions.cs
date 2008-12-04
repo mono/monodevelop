@@ -63,6 +63,12 @@ namespace MonoDevelop.Debugger
 			return op;
 		}
 		
+		public static bool CanDebugFile (this ProjectOperations opers, string file)
+		{
+			ExecutionContext context = new ExecutionContext (DebuggingService.GetExecutionHandlerFactory (), IdeApp.Workbench.ProgressMonitors);
+			return opers.CanExecuteFile (file, context);
+		}
+		
 		public static IAsyncOperation DebugFile (this ProjectOperations opers, string file)
 		{
 			ExecutionContext context = new ExecutionContext (DebuggingService.GetExecutionHandlerFactory (), IdeApp.Workbench.ProgressMonitors);
@@ -104,6 +110,11 @@ namespace MonoDevelop.Debugger
 		public static IAsyncOperation Debug (this Document doc)
 		{
 			return IdeApp.ProjectOperations.DebugFile (doc.FileName);
+		}
+
+		public static bool CanDebug (this Document doc)
+		{
+			return IdeApp.ProjectOperations.CanDebugFile (doc.FileName);
 		}
 	}
 }

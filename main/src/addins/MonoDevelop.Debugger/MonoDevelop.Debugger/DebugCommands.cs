@@ -67,26 +67,58 @@ namespace MonoDevelop.Debugger
 
 	internal class DebugHandler: CommandHandler
 	{
-		Document doc;
-		
 		protected override void Run ()
 		{
 			if (DebuggingService.IsDebugging && !DebuggingService.IsRunning) {
 				DebuggingService.Resume ();
 				return;
 			}
+
+			if (!IdeApp.Preferences.BuildBeforeExecuting) {
+				if (IdeApp.Workspace.IsOpen)
+					ExecuteWorkspace ();
+				else
+					ExecuteDocument (IdeApp.Workbench.ActiveDocument);
+				return;
+			}
 			
 			if (IdeApp.Workspace.IsOpen) {
 				IAsyncOperation op = IdeApp.ProjectOperations.Build (IdeApp.Workspace);
-				op.Completed += new OperationHandler (ExecuteCombine);
+				op.Completed += delegate {
+					if (op.SuccessWithWarnings && !IdeApp.Preferences.RunWithWarnings)
+						return;
+					if (op.Success)
+						ExecuteWorkspace ();
+				};
 			} else {
-				doc = IdeApp.Workbench.ActiveDocument;
+				Document doc = IdeApp.Workbench.ActiveDocument;
 				if (doc != null) {
 					doc.Save ();
 					IAsyncOperation op = doc.Build ();
-					op.Completed += new OperationHandler (ExecuteFile);
+					op.Completed += delegate {
+						if (op.SuccessWithWarnings && !IdeApp.Preferences.RunWithWarnings)
+							return;
+						if (op.Success)
+							ExecuteDocument (doc);
+					};
 				}
 			}
+		}
+
+		void ExecuteWorkspace ()
+		{
+			if (IdeApp.ProjectOperations.CanDebug (IdeApp.Workspace))
+				IdeApp.ProjectOperations.Debug (IdeApp.Workspace);
+			else
+				IdeApp.ProjectOperations.Execute (IdeApp.Workspace);
+		}
+
+		void ExecuteDocument (Document doc)
+		{
+			if (doc.CanDebug ())
+				doc.Debug ();
+			else
+				doc.Run ();
 		}
 		
 		protected override void Update (CommandInfo info)
@@ -99,23 +131,13 @@ namespace MonoDevelop.Debugger
 
 			if (IdeApp.Workspace.IsOpen) {
 				info.Enabled = IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted &&
-					IdeApp.ProjectOperations.CanDebug (IdeApp.Workspace) && 
-						!(IdeApp.ProjectOperations.CurrentSelectedItem is Workspace);
+					(IdeApp.ProjectOperations.CanDebug (IdeApp.Workspace) ||
+					 IdeApp.ProjectOperations.CanExecute (IdeApp.Workspace)) &&
+					!(IdeApp.ProjectOperations.CurrentSelectedItem is Workspace);
 			} else {
-				info.Enabled = (IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.IsBuildTarget);
+				Document doc = IdeApp.Workbench.ActiveDocument;
+				info.Enabled = (doc != null && doc.IsBuildTarget) && (doc.CanRun () || doc.CanDebug ());
 			}
-		}
-		
-		void ExecuteCombine (IAsyncOperation op)
-		{
-			if (op.Success)
-				IdeApp.ProjectOperations.Debug (IdeApp.Workspace);
-		}
-		
-		void ExecuteFile (IAsyncOperation op)
-		{
-			if (op.Success)
-				doc.Debug ();
 		}
 	}
 	
@@ -124,11 +146,16 @@ namespace MonoDevelop.Debugger
 		protected override void Run ()
 		{
 			IBuildTarget entry = IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
-			IAsyncOperation op = IdeApp.ProjectOperations.Build (entry);
-			op.Completed += delegate {
-				if (op.Success)
-					IdeApp.ProjectOperations.Debug (entry);
-			};
+			if (IdeApp.Preferences.BuildBeforeExecuting) {
+				IAsyncOperation op = IdeApp.ProjectOperations.Build (entry);
+				op.Completed += delegate {
+					if (op.SuccessWithWarnings && !IdeApp.Preferences.RunWithWarnings)
+						return;
+					if (op.Success)
+						IdeApp.ProjectOperations.Debug (entry);
+				};
+			} else
+				IdeApp.ProjectOperations.Debug (entry);
 		}
 		
 		protected override void Update (CommandInfo info)

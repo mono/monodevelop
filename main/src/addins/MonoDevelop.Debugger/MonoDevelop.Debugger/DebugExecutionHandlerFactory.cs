@@ -107,6 +107,10 @@ namespace MonoDevelop.Debugger
 			get { return true; }
 		}
 
+		public bool SuccessWithWarnings {
+			get { return true; }
+		}
+
 		void OnStopDebug (object sender, EventArgs args)
 		{
 			lock (this) {
