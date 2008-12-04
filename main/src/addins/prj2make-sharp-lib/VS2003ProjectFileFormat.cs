@@ -149,7 +149,7 @@ namespace MonoDevelop.Prj2Make
 			return solution;
 		}
 		
-		internal static DotNetProject ImportCsproj (string fileName)
+		internal DotNetProject ImportCsproj (string fileName)
 		{
 			DotNetProject project = null;
 			SlnMaker slnmaker = new SlnMaker ();
