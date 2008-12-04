@@ -95,7 +95,7 @@ ADDIN_BUILD = $(top_builddir)/build/AddIns/VersionControl
 DLL = $(ADDIN_BUILD)/MonoDevelop.VersionControl.dll
 
 if ENABLE_VERSIONCONTROL
-all: $(DLL)
+all: $(DLL) $(DLL).mdb
 else
 all:
 endif
@@ -108,6 +108,8 @@ endif
 $(DLL): $(build_sources) $(build_resources) $(DEPS)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) -target:library -out:$@ $(REFS) $(build_deps) $(build_sources) $(build_resources:%=/resource:%)
+
+$(DLL).mdb: $(DLL)
 
 CLEANFILES = $(DLL) $(DLL).mdb
 

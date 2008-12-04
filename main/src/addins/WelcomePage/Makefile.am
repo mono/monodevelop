@@ -42,7 +42,7 @@ DATA_FILES =  \
 
 DATA_FILE_BUILD = $(addprefix $(ADDIN_BUILD)/, $(DATA_FILES))
 
-all: $(ASSEMBLY) $(DATA_FILE_BUILD)
+all: $(ASSEMBLY) $(ASSEMBLY).mdb $(DATA_FILE_BUILD)
 
 $(DATA_FILE_BUILD): $(srcdir)/$(notdir $@)
 	mkdir -p $(ADDIN_BUILD)
@@ -51,6 +51,8 @@ $(DATA_FILE_BUILD): $(srcdir)/$(notdir $@)
 $(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) $(REFS) $(build_deps) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -target:library
+
+$(ASSEMBLY).mdb: $(ASSEMBLY)
 
 assemblydir = $(MD_ADDIN_DIR)/WelcomePage
 assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb $(DATA_FILES)

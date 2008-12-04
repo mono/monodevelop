@@ -106,7 +106,7 @@ RES =  \
 	SyntaxModes/VBNetSyntaxMode.xml \
 	SyntaxModes/XmlSyntaxMode.xml
 
-all: $(ASSEMBLY)
+all: $(ASSEMBLY) $(ASSEMBLY).mdb
 
 $(ADDIN_BUILD)/%: $(srcdir)/lib/%
 	mkdir -p $(ADDIN_BUILD)
@@ -115,6 +115,8 @@ $(ADDIN_BUILD)/%: $(srcdir)/lib/%
 $(ASSEMBLY): $(build_sources) $(build_resources)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) $(REFS) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -target:library
+
+$(ASSEMBLY).mdb: $(ASSEMBLY)
 
 assemblydir = $(MD_ASSEMBLY_DIR)
 assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb

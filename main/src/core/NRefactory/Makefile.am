@@ -81,10 +81,12 @@ FILES =  \
 	Project/Src/Visitors/ToVBNetRenameConflictingVariables.cs \
 	Project/Src/Visitors/VBNetConstructsConvertVisitor.cs
 
-all: $(ASSEMBLY)
+all: $(ASSEMBLY) $(ASSEMBLY).mdb
 
 $(ASSEMBLY): $(build_sources)
 	$(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library $(REFS) $(build_sources)
+
+$(ASSEMBLY).mdb: $(ASSEMBLY)
 
 assemblydir = $(MD_ASSEMBLY_DIR)
 assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb

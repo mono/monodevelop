@@ -1,3 +1,7 @@
+2008-12-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am: Make it work for parallel build.
+
 2008-11-18  Mike Krüger  <mkrueger@novell.com>
 
 	* Project/Src/Lexer/CSharp/ConditionalCompilation.cs: made conditional

@@ -12,7 +12,7 @@ ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoDeveloperExtensions
 ASSEMBLY = $(ADDIN_BUILD)/MonoDeveloperExtensions_nunit.dll
 
 if ENABLE_MONOEXTENSIONS
-all: $(ASSEMBLY)
+all: $(ASSEMBLY) $(ASSEMBLY).mdb
 else
 all:
 endif
@@ -20,6 +20,8 @@ endif
 $(ASSEMBLY): $(build_sources)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) -target:library -out:$@ $(build_sources) $(REFS)
+
+$(ASSEMBLY).mdb: $(ASSEMBLY)
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 

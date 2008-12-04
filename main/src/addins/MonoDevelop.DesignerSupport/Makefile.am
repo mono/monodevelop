@@ -114,12 +114,14 @@ RES =  \
 	icons/toolbox-pad-16.png \
 	MonoDevelop.DesignerSupport.addin.xml
 
-all: $(ASSEMBLY)
+all: $(ASSEMBLY) $(ASSEMBLY).mdb
 
 $(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library $(REFS) $(build_deps) \
 		$(build_resources:%=/resource:%) $(build_sources)
+
+$(ASSEMBLY).mdb: $(ASSEMBLY)
 
 assemblydir = $(MD_ADDIN_DIR)/MonoDevelop.DesignerSupport
 assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb

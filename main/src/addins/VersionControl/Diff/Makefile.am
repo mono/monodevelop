@@ -18,11 +18,13 @@ $(ASSEMBLY): $(build_sources)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) $(build_sources) $(REFS) -out:$@ -target:library
 
+$(ASSEMBLY).mdb: $(ASSEMBLY)
+
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 EXTRA_DIST = $(FILES)
 
 if ENABLE_VERSIONCONTROL
-all: $(ASSEMBLY)
+all: $(ASSEMBLY) $(ASSEMBLY).mdb
 else
 all:
 endif

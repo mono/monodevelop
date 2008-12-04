@@ -37,7 +37,7 @@ RES =  \
 	gtk-gui/gui.stetic
 
 if ENABLE_VERSIONCONTROL
-all: $(ASSEMBLY) 
+all: $(ASSEMBLY) $(ASSEMBLY).mdb
 else
   all:
 endif
@@ -45,6 +45,8 @@ endif
 $(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) $(REFS) $(build_deps) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -target:library
+
+$(ASSEMBLY).mdb: $(ASSEMBLY)
 
 if ENABLE_VERSIONCONTROL
 assemblydir = $(MD_ADDIN_DIR)/ChangeLogAddIn

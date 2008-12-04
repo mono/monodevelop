@@ -19,7 +19,7 @@ RES =  \
 	MacPlatform.addin.xml
 
 if ENABLE_MACPLATFORM
-all: $(ASSEMBLY)
+all: $(ASSEMBLY) $(ASSEMBLY).mdb
 else
 all:
 endif
@@ -27,6 +27,8 @@ endif
 $(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) $(REFS) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -target:library
+
+$(ASSEMBLY).mdb: $(ASSEMBLY)
 
 if ENABLE_MACPLATFORM
 assemblydir = $(MD_ADDIN_DIR)/MacPlatform

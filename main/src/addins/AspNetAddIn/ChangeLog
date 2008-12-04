@@ -1,3 +1,7 @@
+2008-12-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am: Make it work for parallel build.
+
 2008-12-03  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.AspNet.addin.xml: Set correct packing for Web deployment

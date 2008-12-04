@@ -28,7 +28,7 @@ ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoDeveloperExtensions
 ASSEMBLY = $(ADDIN_BUILD)/MonoDeveloperExtensions.dll
 
 if ENABLE_MONOEXTENSIONS
-all: $(ASSEMBLY)
+all: $(ASSEMBLY) $(ASSEMBLY).mdb
 else
 all:
 endif
@@ -36,6 +36,8 @@ endif
 $(ASSEMBLY): $(build_sources) $(srcdir)/$(GLADEFILE) $(build_resources) $(DEPS)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) -target:library -out:$@ $(build_resources:%=/resource:%) $(build_sources) $(REFS) $(build_deps)
+
+$(ASSEMBLY).mdb: $(ASSEMBLY)
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 

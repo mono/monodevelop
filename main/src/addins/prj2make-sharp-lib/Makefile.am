@@ -38,11 +38,13 @@ RES = prj2make-sharp-lib.addin.xml
 
 EXTRA_DIST = $(FILES) $(RES)
 
-all: $(ASSEMBLY)
+all: $(ASSEMBLY) $(ASSEMBLY).mdb
 
 $(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) -out:$@ -target:library $(build_resources:%=/resource:%) $(build_sources) $(REFS) $(build_deps)
+
+$(ASSEMBLY).mdb: $(ASSEMBLY)
 
 assemblydir = $(MD_ADDIN_DIR)/MonoDevelop.MsVisualStudio
 assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb

@@ -37,12 +37,14 @@ RES =  \
 	gtk-gui/objects.xml \
 	MonoDevelop.CodeMetrics.addin.xml 
 
-all: $(ASSEMBLY)
+all: $(ASSEMBLY) $(ASSEMBLY).mdb
 
 $(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library $(REFS) $(build_deps) \
 		$(build_resources:%=/resource:%) $(build_sources)
+
+$(ASSEMBLY).mdb: $(ASSEMBLY)
 
 assemblydir = $(MD_ADDIN_DIR)/MonoDevelop.CodeMetrics
 assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb

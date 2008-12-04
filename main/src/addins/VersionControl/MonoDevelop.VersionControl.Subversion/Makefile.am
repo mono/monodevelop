@@ -44,11 +44,13 @@ $(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) -unsafe $(build_sources) $(REFS) $(build_deps) $(build_resources:%=/resource:%) -out:$@ -target:library
 
+$(ASSEMBLY).mdb: $(ASSEMBLY)
+
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 EXTRA_DIST = $(FILES) $(RES)
 
 if ENABLE_SUBVERSION
-all: $(ASSEMBLY)
+all: $(ASSEMBLY) $(ASSEMBLY).mdb
 else
 all:
 endif

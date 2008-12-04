@@ -45,7 +45,7 @@ DATA_FILES = \
 
 DATA_FILE_BUILD = $(addprefix $(ADDIN_BUILD)/, $(notdir $(DATA_FILES)))
 
-all: $(ASSEMBLY) $(DATA_FILE_BUILD)
+all: $(ASSEMBLY) $(ASSEMBLY).mdb $(DATA_FILE_BUILD)
 
 $(DATA_FILE_BUILD): $(srcdir)/$(subst $(ADDIN_BUILD),, $@)
 	mkdir -p $(ADDIN_BUILD)
@@ -55,6 +55,8 @@ $(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library $(REFS) $(build_deps) \
 		$(build_resources:%=/resource:%) $(build_sources)
+
+$(ASSEMBLY).mdb: $(ASSEMBLY)
 
 check: all
 

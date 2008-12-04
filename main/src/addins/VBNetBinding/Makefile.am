@@ -55,13 +55,15 @@ RES =  \
 	templates/VBGtkSharp2Project.xpt.xml \
 	VBNetBinding.addin.xml
 
-all: $(ASSEMBLY)
+all: $(ASSEMBLY) $(ASSEMBLY).mdb
 
 $(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) -out:$@ -target:library $(REFS) $(build_deps) \
 		$(build_resources:%=/resource:%) \
 		$(build_sources)
+
+$(ASSEMBLY).mdb: $(ASSEMBLY)
 
 vbnetbindinglibdir = $(MD_ADDIN_DIR)/BackendBindings
 vbnetbindinglib_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb
