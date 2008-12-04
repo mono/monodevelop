@@ -4,6 +4,7 @@
        url       = "http://www.mono-project.com"
        description = "Managed Debugging Engine support for MDB"
        copyright   = "MIT X11"
+       category = "Debugging"
        version   = "1.9.1">
 
 	<Dependencies>

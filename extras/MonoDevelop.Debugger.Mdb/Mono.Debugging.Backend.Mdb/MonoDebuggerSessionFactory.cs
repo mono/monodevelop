@@ -49,6 +49,15 @@ namespace Mono.Debugging.Backend.Mdb
 			string ext = System.IO.Path.GetExtension (file).ToLower ();
 			return ext == ".exe" || ext == ".dll";
 		}
+
+		public DebuggerFeatures SupportedFeatures {
+			get {
+				return DebuggerFeatures.All & ~(
+				     DebuggerFeatures.ConditionalBreakpoints |
+				     DebuggerFeatures.Tracepoints |
+				     DebuggerFeatures.Attaching);
+			}
+		}
 		
 		public DebuggerSession CreateSession ()
 		{

@@ -161,10 +161,5 @@ namespace Mono.Debugging.Backend.Mdb
 			if (lastTrace != null)
 				UpdateLastTraceValue (handle, lastTrace);
 		}
-
-		protected override DebuggerFeatures OnGetSupportedFeatures ()
-		{
-			return DebuggerFeatures.Catchpoints;
-		}
 	}
 }
