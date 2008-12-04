@@ -1,5 +1,9 @@
 2008-12-04  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Debugger.addin.xml: Updated key bindings to match VS.
+
+2008-12-04  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Debugger.addin.xml: Changed default label of debug command
 	for projects since to avoid it being confused with the global debug
 	command in the key bindings panel.

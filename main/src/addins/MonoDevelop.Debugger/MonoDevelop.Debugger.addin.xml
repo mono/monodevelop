@@ -47,7 +47,7 @@
 		<Command id = "MonoDevelop.Debugger.DebugCommands.Debug"
 				defaultHandler = "MonoDevelop.Debugger.DebugHandler"
 				icon = "gtk-execute"
-				shortcut = "Control|F5"
+				shortcut = "F5"
 				_description = "Debug"
 				_label = "_Debug" />
 		<Command id = "MonoDevelop.Debugger.DebugCommands.DebugEntry"
@@ -76,11 +76,11 @@
 		<Command id = "MonoDevelop.Debugger.DebugCommands.StepOver"
 				defaultHandler = "MonoDevelop.Debugger.StepOverHandler"
 				_label = "Step Over"
-				shortcut = "F11" />
+				shortcut = "F10" />
 		<Command id = "MonoDevelop.Debugger.DebugCommands.StepInto"
 				defaultHandler = "MonoDevelop.Debugger.StepIntoHandler"
 				_label = "Step Into"
-				shortcut = "Control|F11" />
+				shortcut = "F11" />
 		<Command id = "MonoDevelop.Debugger.DebugCommands.StepOut"
 				defaultHandler = "MonoDevelop.Debugger.StepOutHandler"
 				_label = "Step Out"
