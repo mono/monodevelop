@@ -83,7 +83,7 @@ namespace MonoDevelop.Components.Commands
 		{
 			KeyBindingService.LoadBindingsFromExtensionPath (addinPath);
 		}
-		
+
 		void OnExtensionChange (object s, ExtensionNodeEventArgs args)
 		{
 			if (args.Change == ExtensionChange.Add) {
@@ -275,7 +275,7 @@ namespace MonoDevelop.Components.Commands
 		
 		public void RegisterCommand (Command cmd)
 		{
-			KeyBindingService.LoadDefaultBinding (cmd);
+			KeyBindingService.StoreDefaultBinding (cmd);
 			KeyBindingService.LoadBinding (cmd);
 			
 			cmds[cmd.Id] = cmd;
@@ -286,6 +286,12 @@ namespace MonoDevelop.Components.Commands
 		{
 			bindings.UnregisterCommand (cmd);
 			cmds.Remove (cmd.Id);
+		}
+
+		public void LoadUserBindings ()
+		{
+			foreach (Command cmd in cmds.Values)
+				KeyBindingService.LoadBinding (cmd);
 		}
 		
 		public void RegisterGlobalHandler (object handler)

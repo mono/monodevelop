@@ -68,7 +68,9 @@ FILES =  \
 	MonoDevelop.Components.Commands/ICommandUserItem.cs \
 	MonoDevelop.Components.Commands/IMultiCastCommandRouter.cs \
 	MonoDevelop.Components.Commands/KeyBindingManager.cs \
+	MonoDevelop.Components.Commands/KeyBindingScheme.cs \
 	MonoDevelop.Components.Commands/KeyBindingService.cs \
+	MonoDevelop.Components.Commands/KeyBindingSet.cs \
 	MonoDevelop.Components.Commands/LinkCommandEntry.cs \
 	MonoDevelop.Components.Commands/LocalCommandEntry.cs \
 	MonoDevelop.Components.Commands/MenuToolButton.cs \

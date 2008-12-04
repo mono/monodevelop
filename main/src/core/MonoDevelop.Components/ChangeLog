@@ -1,3 +1,18 @@
+2008-12-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Components.mdp:
+	* MonoDevelop.Components.Commands/KeyBindingSet.cs:
+	* MonoDevelop.Components.Commands/CommandManager.cs:
+	* MonoDevelop.Components.Commands/KeyBindingScheme.cs:
+	* MonoDevelop.Components.Commands/KeyBindingService.cs:
+	* MonoDevelop.Components.Commands.ExtensionNodes/SchemeExtensionNode.cs:
+	Moved some of the logic for handling key bindings into the new
+	KeyBindingSet class. It makes it easier to work with schemes.
+
+	* MonoDevelop.Components.Commands/ActionCommand.cs: Allow setting a
+	specific default handler instance.
+
 2008-12-02  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am:

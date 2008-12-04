@@ -74,35 +74,39 @@ namespace MonoDevelop.Components.Commands
 			}
 		}
 
+		public CommandHandler DefaultHandler {
+			get { return defaultHandler; }
+			set { defaultHandler = value; }
+		}
+
 		public virtual bool DispatchCommand (object dataItem)
 		{
-			if (defaultHandlerType == null)
-				return false;
-			
-			if (defaultHandler == null)
+			if (defaultHandler == null) {
+				if (defaultHandlerType == null)
+					return false;
 				defaultHandler = (CommandHandler) Activator.CreateInstance (defaultHandlerType);
-			
+			}			
 			defaultHandler.Run (dataItem);
 			return true;
 		}
 
 		public virtual void UpdateCommandInfo (CommandInfo info)
 		{
-			if (defaultHandlerType == null) {
-				info.Enabled = false;
-				if (!DisabledVisible)
-					info.Visible = false;
-			} else {
-				if (defaultHandler == null)
-					defaultHandler = (CommandHandler) Activator.CreateInstance (defaultHandlerType);
-					
-				if (commandArray) {
-					info.ArrayInfo = new CommandArrayInfo (info);
-					defaultHandler.Update (info.ArrayInfo);
+			if (defaultHandler == null) {
+				if (defaultHandlerType == null) {
+					info.Enabled = false;
+					if (!DisabledVisible)
+						info.Visible = false;
+					return;
 				}
-				else
-					defaultHandler.Update (info);
+				defaultHandler = (CommandHandler) Activator.CreateInstance (defaultHandlerType);
 			}
+			if (commandArray) {
+				info.ArrayInfo = new CommandArrayInfo (info);
+				defaultHandler.Update (info.ArrayInfo);
+			}
+			else
+				defaultHandler.Update (info);
 		}
 	}
 }

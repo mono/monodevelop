@@ -28,10 +28,12 @@
 using System;
 using System.IO;
 using Mono.Addins;
+using System.Xml;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Components.Commands.ExtensionNodes
 {
-	internal class SchemeExtensionNode: ExtensionNode
+	internal class SchemeExtensionNode: ExtensionNode, KeyBindingScheme
 	{
 		[NodeAttribute ("_name", "Name of the key bindings scheme", Localizable=true)]
 		string name;
@@ -41,6 +43,8 @@ namespace MonoDevelop.Components.Commands.ExtensionNodes
 
 		[NodeAttribute ("resource", "Name of the resource containing the key bindings file.")]
 		string resource;
+
+		KeyBindingSet cachedSet;
 		
 		public string Name {
 			get { return name ?? Id; }
@@ -65,6 +69,31 @@ namespace MonoDevelop.Components.Commands.ExtensionNodes
 			if (!string.IsNullOrEmpty (resource))
 				return Addin.GetResource (resource, true);
 			throw new InvalidOperationException ("File or resource name not specified");
+		}
+
+		public KeyBindingSet GetKeyBindingSet ()
+		{
+			if (cachedSet != null)
+				return cachedSet;
+			
+			XmlTextReader reader = null;
+			Stream stream;
+			
+			try {
+				stream = GetKeyBindingsSchemeStream ();
+				if (stream != null) {
+					reader = new XmlTextReader (stream);
+					cachedSet = new KeyBindingSet (KeyBindingService.DefaultKeyBindingSet);
+					cachedSet.LoadScheme (reader, Id);
+					return cachedSet;
+				}
+			} catch (Exception e) {
+				LoggingService.LogError (e.ToString ());
+			} finally {
+				if (reader != null)
+					reader.Close ();
+			}
+			return null;
 		}
 	}
 }
