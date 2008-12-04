@@ -1,3 +1,7 @@
+2008-12-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am: Make it work for parallel builds.
+
 2008-12-02  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am:
