@@ -44,7 +44,8 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		bool IDisplayBinding.CanCreateContentForFile (string fileName)
 		{
-			return false;
+			string ext = Path.GetExtension (fileName).ToLower ();
+			return ext == ".exe" || ext == ".dll";
 		}
 		
 		IViewContent IDisplayBinding.CreateContentForFile (string fileName)
