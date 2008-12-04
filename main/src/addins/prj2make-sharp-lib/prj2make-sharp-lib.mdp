@@ -15,13 +15,8 @@
   </Configurations>
   <Contents>
     <File name="MsPrjHelper.cs" subtype="Code" buildaction="Compile" />
-    <File name="PrjHelper.cs" subtype="Code" buildaction="Compile" />
-    <File name="MdPrjHelper.cs" subtype="Code" buildaction="Compile" />
     <File name="CsprojInfo.cs" subtype="Code" buildaction="Compile" />
-    <File name="PrjxInfo.cs" subtype="Code" buildaction="Compile" />
     <File name="pkgconfiginvoker.cs" subtype="Code" buildaction="Compile" />
-    <File name="sharp_d_cmbx.cs" subtype="Code" buildaction="Compile" />
-    <File name="sharp_d_prjx.cs" subtype="Code" buildaction="Compile" />
     <File name="csproj_ver2003.cs" subtype="Code" buildaction="Compile" />
     <File name="prj2make-sharp-lib.addin.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="MSBuildProjectServiceExtension.cs" subtype="Code" buildaction="Compile" />
@@ -46,6 +41,8 @@
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Components" />
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Projects.Gui" />
     <ProjectReference type="Project" localcopy="False" refto="NRefactory" />
+    <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
   </References>
   <GtkDesignInfo />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">

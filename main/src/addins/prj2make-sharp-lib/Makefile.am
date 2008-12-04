@@ -15,6 +15,7 @@ DEPS =  \
 	$(top_builddir)/build/bin/NRefactory.dll
 
 REFS =  \
+	$(GTK_SHARP_LIBS) \
 	$(MONO_ADDINS_LIBS) \
 	-r:Mono.Posix \
 	-r:System \
@@ -24,14 +25,9 @@ FILES =  \
 	AssemblyInfo.cs \
 	csproj_ver2003.cs \
 	CsprojInfo.cs \
-	MdPrjHelper.cs \
 	MSBuildProjectServiceExtension.cs \
 	MsPrjHelper.cs \
 	pkgconfiginvoker.cs \
-	PrjHelper.cs \
-	PrjxInfo.cs \
-	sharp_d_cmbx.cs \
-	sharp_d_prjx.cs \
 	VS2003ProjectFileFormat.cs
 
 RES = prj2make-sharp-lib.addin.xml

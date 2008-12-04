@@ -6,11 +6,11 @@ using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Serialization;
 
-using MonoDevelop.Prj2Make.Schema.Prjx;
 using MonoDevelop.Prj2Make.Schema.Csproj;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui;
 
 using CSharpBinding;
 
@@ -22,7 +22,6 @@ namespace MonoDevelop.Prj2Make
 		Hashtable projNameInfo = new Hashtable();
 		Hashtable projGuidInfo = new Hashtable();
 		private string prjxFileName;
-		private string cmbxFileName;
 		private string m_strSlnVer;
 		private string m_strCsprojVer;
 		private bool m_bIsUnix;
@@ -69,13 +68,6 @@ namespace MonoDevelop.Prj2Make
 		public string PrjxFileName {
 			get { return prjxFileName; }
 		}
-
-		// Shuld contain the file name 
-		// of the most resent cmbx generation
-		public string CmbxFileName {
-			get { return cmbxFileName; }
-		}
-
 
 		// Default constructor
 		public SlnMaker()
@@ -174,293 +166,12 @@ namespace MonoDevelop.Prj2Make
 			}
 		}
     
-		public string MsSlnHelper(bool isUnixMode, bool isMcsMode, bool isSln, string slnFile, IProgressMonitor monitor)
-		{
-			bool noCommonTargets = false;
-			bool noProjectTargets = false;
-			bool noFlags = false;
-			StringBuilder MakefileBuilder = new StringBuilder();
-    
-			m_bIsUnix = isUnixMode;
-			m_bIsMcs = isMcsMode;
-			
-			if(m_bIsUnix == true && m_bIsMcs == true)
-			{
-				m_bIsUsingLib = true;
-			}
-
-			if (m_bIsUnix)
-			{
-				slash = "/";
-			}
-			else
-			{
-				slash = "\\";
-			}
-    		
-    		string origDir = Directory.GetCurrentDirectory();
-			try
-			{
-				string d = Path.GetDirectoryName(slnFile);
-				if (d != "")
-					Directory.SetCurrentDirectory(d);
-
-				if (isSln == true) 
-				{
-					// Get the sln file version
-					m_strSlnVer = GetSlnFileVersion(slnFile);
-
-					// We invoke the ParseSolution 
-					// by passing the file obtained
-					ParseSolution (slnFile, monitor);
-				} 
-				else 
-				{
-					// Get the Csproj version
-					m_strCsprojVer = GetCsprojFileVersion(slnFile);
-
-					// We invoke the ParseMsCsProj 
-					// by passing the file obtained 
-					ParseMsCsProj (slnFile);
-				}
-    
-				if (!noFlags)
-				{
-					if (m_bIsUnix) // gmake
-					{
-						MakefileBuilder.Append("ifndef TARGET\n");
-						MakefileBuilder.Append("\tTARGET=./bin/Debug\n");        				
-						MakefileBuilder.Append("else\n");
-						MakefileBuilder.Append("\tTARGET=./bin/$(TARGET)\n");
-						MakefileBuilder.Append("endif\n\n");
-           				
-						if (this.m_bIsMcs == false)
-						{
-							MakefileBuilder.Append("MCS=csc\n");
-							MakefileBuilder.Append("MCSFLAGS=-nologo\n\n");
-							MakefileBuilder.Append("ifdef (RELEASE)\n");
-							MakefileBuilder.Append("\tMCSFLAGS=$(MCSFLAGS) -optimize+ -d:TRACE\n");
-							MakefileBuilder.Append("else\n");
-							MakefileBuilder.Append("\tMCSFLAGS=$(MCSFLAGS) -debug+ -d:TRACE,DEBUG\n");
-							MakefileBuilder.Append("endif\n");
-						}
-						else
-						{
-							MakefileBuilder.Append("MCS=mcs\n");
-							MakefileBuilder.Append("ifndef (RELEASE)\n");
-							MakefileBuilder.Append("\tMCSFLAGS=-debug --stacktrace\n");
-							MakefileBuilder.Append("endif\n");
-							// Define and add the information used in the -lib: arguments passed to the
-							// compiler to assist in finding non-fullyqualified assembly references.
-							if(m_bIsMcs == true)
-							{
-								string strlibDir = PkgConfigInvoker.GetPkgVariableValue("mono", "libdir");
-
-								if (strlibDir != null)
-								{
-			    					MakefileBuilder.AppendFormat("LIBS=-lib:{0} -lib:{1}\n\n", 
-										Path.Combine(strlibDir.TrimEnd(), "mono/1.0"),
-										Path.Combine(strlibDir.TrimEnd(), "mono/gtk-sharp")
-									);
-								}							
-							}
-						}        		
-					}
-					else // nmake
-					{
-						MakefileBuilder.Append("!if !defined (TARGET)\n");
-						MakefileBuilder.Append("TARGET=.\\bin\\Debug\n");        				
-						MakefileBuilder.Append("!else\n");
-						MakefileBuilder.Append("TARGET=.\\bin\\$(TARGET)\n");
-						MakefileBuilder.Append("!endif\n\n");
-           				
-						if (m_bIsMcs == false)
-						{
-							MakefileBuilder.Append("MCS=csc\n");
-							MakefileBuilder.Append("MCSFLAGS=-nologo\n\n");
-							MakefileBuilder.Append("!if !defined(RELEASE)\n");
-							MakefileBuilder.Append("MCSFLAGS=$(MCSFLAGS) -optimize+ -d:TRACE\n");
-							MakefileBuilder.Append("!else\n");
-							MakefileBuilder.Append("MCSFLAGS=$(MCSFLAGS) -debug+ -d:TRACE,DEBUG\n");
-							MakefileBuilder.Append("!endif\n");
-						}
-						else
-						{
-							MakefileBuilder.Append("MCS=mcs\n");
-							MakefileBuilder.Append("!if !defined(RELEASE)\n");
-							MakefileBuilder.Append("MCSFLAGS=-debug --stacktrace\n");
-							MakefileBuilder.Append("!endif\n");
-						}    				
-					}
-    
-					MakefileBuilder.Append("\n");
-				}
-				else
-				{
-					MakefileBuilder.Append("!if !defined(MCS)\n");
-					MakefileBuilder.Append("!error You must provide MCS when making\n");
-					MakefileBuilder.Append("!endif\n\n");
-				}
-    
-				foreach (CsprojInfo pi in projNameInfo.Values)
-				{
-					MakefileBuilder.AppendFormat("{0}=$(TARGET){1}{2}\n", pi.makename_ext, slash, pi.assembly_name);
-					MakefileBuilder.AppendFormat("{0}_PDB=$(TARGET){1}{2}\n", pi.makename, slash, pi.assembly_name.Replace(".dll",".pdb"));
-					MakefileBuilder.AppendFormat("{0}_SRC={1}\n", pi.makename, pi.src);
-					MakefileBuilder.AppendFormat("{0}_RES={1}\n\n", pi.makename, pi.res);
-				}
-    
-				foreach (CsprojInfo pi in projNameInfo.Values)
-				{
-					string refs = "";
-					string deps = "";
-    					
-					foreach (MonoDevelop.Prj2Make.Schema.Csproj.Reference rf in pi.Proyecto.CSHARP.Build.References)
-					{
-						if(rf.Package == null || rf.Package.CompareTo("") == 0)
-						{
-							// Add space in between references as
-							// it becomes necessary
-							if (refs != "")
-								refs += " ";
-
-							string assemblyName = rf.AssemblyName;
-
-							// HACK - under Unix filenames are case sensitive
-							// Under Windows there's no agreement on Xml vs XML ;-)    					
-							if (0 == String.Compare(assemblyName, "System.Xml", true))
-							{
-								assemblyName = "System.Xml";
-							}
-							refs += "-r:" + assemblyName + ".dll";
-						}
-						else
-						{
-							try
-							{
-								CsprojInfo pi2 = (CsprojInfo)projGuidInfo[rf.Project];
-
-								if (refs != "")
-									refs += " ";
-
-								if (deps != "")
-									deps += " ";
-
-								refs += "-r:$(" + pi2.makename_ext + ")";
-								deps += "$(" + pi2.makename_ext + ")";
-							}
-							catch(System.NullReferenceException)
-							{
-								refs += String.Format("-r:{0}.dll", rf.Name);
-								deps += String.Format("# Missing dependency project {1} ID:{0}?", rf.Project, 
-									rf.Name);
-								Console.WriteLine(String.Format(
-									"Warning: The project {0}, ID: {1} may be required and appears missing.",
-									rf.Name, rf.Project)
-									);
-							}
-						}
-					}
-    
-					MakefileBuilder.AppendFormat("$({0}): $({1}_SRC) {2}\n", pi.makename_ext, pi.makename, deps);
-    		
-					if (isUnixMode)
-					{
-						MakefileBuilder.Append("\t-mkdir -p $(TARGET)\n");
-					}
-					else
-					{
-						MakefileBuilder.Append("\t-md $(TARGET)\n");
-					}
-
-					// Test to see if any configuratino has the Allow unsafe blocks on
-					if(pi.AllowUnsafeCode == true ) {
-						MakefileBuilder.Append(" -unsafe");
-					}
-
-					// Test for LIBS usage
-					if(m_bIsUsingLib == true) {
-	    				MakefileBuilder.Append(" $(LIBS)");
-					}
-
-					MakefileBuilder.AppendFormat(" {2}{3} -out:$({0}) $({1}_RES) $({1}_SRC)\n", 
-							pi.makename_ext, pi.makename, refs, pi.switches);
-            								
-					MakefileBuilder.Append("\n");
-				}
-    
-				if (!noCommonTargets)
-				{
-					MakefileBuilder.Append("\n");
-					MakefileBuilder.Append("# common targets\n\n");
-					MakefileBuilder.Append("all:\t");
-    
-					bool first = true;
-    
-					foreach (CsprojInfo pi in projNameInfo.Values)
-					{
-						if (!first)
-						{
-							MakefileBuilder.Append(" \\\n\t");
-						}
-						MakefileBuilder.AppendFormat("$({0})", pi.makename_ext);
-						first = false;
-					}
-					MakefileBuilder.Append("\n\n");
-    
-					MakefileBuilder.Append("clean:\n");
-    
-					foreach (CsprojInfo pi in projNameInfo.Values)
-					{
-						if (isUnixMode)
-						{
-							MakefileBuilder.AppendFormat("\t-rm -f \"$({0})\" 2> /dev/null\n", pi.makename_ext);
-							MakefileBuilder.AppendFormat("\t-rm -f \"$({0}_PDB)\" 2> /dev/null\n", pi.makename);
-						}
-						else
-						{
-							MakefileBuilder.AppendFormat("\t-del \"$({0})\" 2> nul\n", pi.makename_ext);
-							MakefileBuilder.AppendFormat("\t-del \"$({0}_PDB)\" 2> nul\n", pi.makename);
-						}
-					}
-					MakefileBuilder.Append("\n");
-				}
-    
-				if (!noProjectTargets)
-				{
-					MakefileBuilder.Append("\n");
-					MakefileBuilder.Append("# project names as targets\n\n");
-					foreach (CsprojInfo pi in projNameInfo.Values)
-					{
-						MakefileBuilder.AppendFormat("{0}: $({1})\n", pi.name, pi.makename_ext);
-					}
-				}
-    			
-				return MakefileBuilder.ToString();
-			}
-			catch (Exception e)
-			{
-				Console.WriteLine("EXCEPTION: {0}\n", e);
-				return "";
-			}
-			finally
-			{
-				Directory.SetCurrentDirectory(origDir);
-			}
-		}
-		
-		public string CreatePrjxFromCsproj (string csprojFileName, IProgressMonitor monitor)
-		{
-			DotNetProject project = CreatePrjxFromCsproj (csprojFileName, monitor, true);
-			return project.FileName;
-		}
-
-		public DotNetProject CreatePrjxFromCsproj (string csprojFileName, IProgressMonitor monitor, bool save)
+		public DotNetProject CreatePrjxFromCsproj (string csprojFileName, IProgressMonitor monitor)
 		{
 			try {
 				MonoDevelop.Prj2Make.Schema.Csproj.VisualStudioProject csprojObj = null;
 				
-				monitor.BeginTask (GettextCatalog.GetString ("Importing project: ") + csprojFileName, 5);
+				monitor.BeginTask (GettextCatalog.GetString ("Importing project: ") + csprojFileName, 4);
 				
 				DotNetProject prjxObj = new DotNetProject ("C#", null, null);
 				
@@ -502,9 +213,6 @@ namespace MonoDevelop.Prj2Make
 						));
 				}
 				monitor.Step (1);
-				if (save)
-					prjxObj.Save (monitor);
-				monitor.Step (1);
 				return prjxObj;
 
 			} catch (Exception ex) {
@@ -515,19 +223,9 @@ namespace MonoDevelop.Prj2Make
 			}
 		}
 
-		public string MsSlnToCmbxHelper (string slnFileName, IProgressMonitor monitor)
-		{
-			Solution c = MsSlnToCmbxHelper (slnFileName, monitor, true);
-			return c.FileName;
-		}
-
-		public Solution MsSlnToCmbxHelper (string slnFileName, IProgressMonitor monitor, bool save)
+		public Solution MsSlnToCmbxHelper (string slnFileName, IProgressMonitor monitor)
 		{
 			Solution solution = new Solution();
-			cmbxFileName = String.Format ("{0}.mds",
-				Path.Combine(Path.GetDirectoryName(slnFileName),
-				Path.GetFileNameWithoutExtension(slnFileName))
-				);
 			
 			monitor.BeginTask (GettextCatalog.GetString ("Importing solution"), 2);
 			try
@@ -546,30 +244,20 @@ namespace MonoDevelop.Prj2Make
 						monitor.ReportWarning (GettextCatalog.GetString ("Project file not found: ") + pi.csprojpath);
 						continue;
 					}
-					DotNetProject prj = CreatePrjxFromCsproj (mappedPath, monitor, save);
+					DotNetProject prj = CreatePrjxFromCsproj (mappedPath, monitor);
 					if (prj == null)
 						return null;
 
 					monitor.Step (1);
-					if (save) {
-						string prjName = prj.FileName;
-						if (prjName != null)
-							solution.RootFolder.AddItem (monitor, prjName);
-						else
-							return null;
-					} else {
-						solution.RootFolder.Items.Add (prj);
-					}
+					solution.RootFolder.Items.Add (prj);
 					monitor.Step (1);
 				}
 				
 				monitor.EndTask ();
 				monitor.Step (1);
 
-				solution.FileName = cmbxFileName;
-				if (save)
-					solution.Save (cmbxFileName, monitor);
-
+				solution.SetLocation (Path.GetDirectoryName (slnFileName), Path.GetFileNameWithoutExtension(slnFileName));
+				
 				monitor.Step (1);
 				return solution;
 			}

@@ -1,5 +1,20 @@
 2008-12-04  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* PrjxInfo.cs:
+	* Makefile.am:
+	* PrjHelper.cs:
+	* MsPrjHelper.cs:
+	* MdPrjHelper.cs:
+	* sharp_d_prjx.cs:
+	* sharp_d_cmbx.cs:
+	* prj2make-sharp-lib.mdp:
+	* VS2003ProjectFileFormat.cs: Removed a bunch of unused code and fixed
+	some issues with the importer. Fixes bug #450209 - Unable to load
+	SharpSSH VS 2003 project: "Object reference not set to an instance of
+	an object".
+
+2008-12-04  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Makefile.am: Make it work for parallel build.
 
 2008-12-02  Michael Hutchinson  <mhutchinson@novell.com>
