@@ -304,6 +304,10 @@ namespace MonoDevelop.NUnit
 			get { return success; }
 		}
 
+		public bool SuccessWithWarnings {
+			get { return false; }
+		}
+
 		public event OperationHandler Completed;
 		
 		public event TestHandler CancelRequested {
