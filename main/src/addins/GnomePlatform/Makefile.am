@@ -15,6 +15,7 @@ REFS =  \
 
 FILES =  \
 	AssemblyInfo.cs \
+	Gio.cs \
 	GnomePlatform.cs
 
 RES = GnomePlatform.addin.xml
@@ -25,6 +26,13 @@ else
 all:
 endif
 
+dll_config = GnomePlatform.dll.config
+build_dll_config = $(ADDIN_BUILD)/$(dll_config)
+
+$(build_dll_config): $(srcdir)/$(dll_config)
+	mkdir -p $(ADDIN_BUILD)
+	cp $(srcdir)/$(dll_config) $@
+
 $(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) $(REFS) $(build_deps) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -target:library
@@ -33,10 +41,10 @@ $(ASSEMBLY).mdb: $(ASSEMBLY)
 
 if ENABLE_GNOMEPLATFORM
 assemblydir = $(MD_ADDIN_DIR)/GnomePlatform
-assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb
+assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb $(build_dll_config)
 endif
 
-CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
-EXTRA_DIST = $(FILES) $(RES)
+CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(build_dll_config)
+EXTRA_DIST = $(FILES) $(RES) $(dll_config)
 
 include $(top_srcdir)/Makefile.include

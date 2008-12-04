@@ -37,17 +37,32 @@ using MonoDevelop.Core.Gui;
 using Gnome;
 using Gnome.Vfs;
 
+
 namespace MonoDevelop.Platform
 {
 	public class GnomePlatform : PlatformService
 	{
+		static bool useGio;
+
 		Gnome.ThumbnailFactory thumbnailFactory = new Gnome.ThumbnailFactory (Gnome.ThumbnailSize.Normal);
 
-		static GnomePlatform () {
-			Gnome.Vfs.Vfs.Initialize ();
+		static GnomePlatform ()
+		{
+			try {
+				Gio.GetDefaultForType ("text/plain");
+				useGio = true;
+			} catch (Exception ex) {
+				Console.WriteLine (ex);
+				Gnome.Vfs.Vfs.Initialize ();
+			}
 		}
 
-		public override DesktopApplication GetDefaultApplication (string mimeType) {
+
+		public override DesktopApplication GetDefaultApplication (string mimeType)
+		{
+			if (useGio)
+				return Gio.GetDefaultForType (mimeType);
+
 			MimeApplication app = Mime.GetDefaultApplication (mimeType);
 			if (app != null)
 				return (DesktopApplication) Marshal.PtrToStructure (app.Handle, typeof(DesktopApplication));
@@ -55,9 +70,14 @@ namespace MonoDevelop.Platform
 				return new DesktopApplication ();
 		}
 		
-		public override DesktopApplication [] GetAllApplications (string mimeType) {
-			MimeApplication[] apps = Mime.GetAllApplications (mimeType);
+		public override DesktopApplication [] GetAllApplications (string mimeType)
+		{
+			Console.WriteLine ("GetAllApplications: " + useGio);
+			if (useGio)
+				return Gio.GetAllForType (mimeType);
+
 			ArrayList list = new ArrayList ();
+			MimeApplication[] apps = Mime.GetAllApplications (mimeType);
 			foreach (MimeApplication app in apps) {
 				DesktopApplication dap = (DesktopApplication) Marshal.PtrToStructure (app.Handle, typeof(DesktopApplication));
 				list.Add (dap);
@@ -67,12 +87,18 @@ namespace MonoDevelop.Platform
 
 		protected override string OnGetMimeTypeDescription (string mt)
 		{
-			return Mime.GetDescription (mt);
+			if (useGio)
+				return Gio.GetMimeTypeDescription (mt);
+			else
+				return Mime.GetDescription (mt);
 		}
 
 		protected override string OnGetMimeTypeForUri (string uri)
 		{
-			return uri != null ? Gnome.Vfs.MimeType.GetMimeTypeForUri (ConvertFileNameToVFS (uri)) : null;
+			if (useGio)
+				return Gio.GetMimeTypeForUri (uri);
+			else
+				return uri != null ? Gnome.Vfs.MimeType.GetMimeTypeForUri (ConvertFileNameToVFS (uri)) : null;
 		}
 		
 		protected override bool OnGetMimeTypeIsText (string mimeType)
