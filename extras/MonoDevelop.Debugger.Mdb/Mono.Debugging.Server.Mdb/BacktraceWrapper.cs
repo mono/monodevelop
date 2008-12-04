@@ -170,14 +170,15 @@ namespace DebuggerServer
 					ValueReference vr = null;
 					try {
 						vr = Server.Instance.Evaluator.Evaluate (frame, exp.Substring (i), null);
-					} catch {
-					}
-					if (vr != null) {
-						DL.CompletionData data = new DL.CompletionData ();
-						foreach (ValueReference cv in vr.GetChildReferences ())
-							data.Items.Add (new CompletionItem (cv.Name, cv.Flags));
-						data.ExpressionLenght = 0;
-						return data;
+						if (vr != null) {
+							DL.CompletionData data = new DL.CompletionData ();
+							foreach (ValueReference cv in vr.GetChildReferences ())
+								data.Items.Add (new CompletionItem (cv.Name, cv.Flags));
+							data.ExpressionLenght = 0;
+							return data;
+						}
+					} catch (Exception ex) {
+						Console.WriteLine (ex);
 					}
 					i++;
 				}

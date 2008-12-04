@@ -1,3 +1,11 @@
+2008-12-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* DebuggerServer.cs: Properly set the working directory.
+
+	* BacktraceWrapper.cs: Add a missing try/catch.
+
+	* TypeValueReference.cs: Improve reliability.
+
 2008-12-02  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* BacktraceWrapper.cs:

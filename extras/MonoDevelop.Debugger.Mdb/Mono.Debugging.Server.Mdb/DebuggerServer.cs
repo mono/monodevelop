@@ -85,6 +85,8 @@ namespace DebuggerServer
 				};
 
 				DebuggerOptions options = DebuggerOptions.ParseCommandLine (new string[] { startInfo.Command } );
+				options.WorkingDirectory = startInfo.WorkingDirectory;
+				Environment.CurrentDirectory = startInfo.WorkingDirectory;
 				options.StopInMain = false;
 				
 				if (!string.IsNullOrEmpty (startInfo.Arguments))
@@ -94,7 +96,6 @@ namespace DebuggerServer
 					foreach (KeyValuePair<string,string> env in startInfo.EnvironmentVariables)
 						options.SetEnvironment (env.Key, env.Value);
 				}
-				
 				session = new MD.DebuggerSession (config, options, "main", null);
 				
 				debugger.Run(session);

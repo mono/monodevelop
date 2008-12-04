@@ -46,6 +46,9 @@ namespace DebuggerServer
 				this.name = type.Name.Substring (i+1);
 			else
 				this.name = type.Name;
+
+			// Make sure the type is initialized
+			ObjectUtil.GetTypeOf (Thread.CurrentFrame, type);
 		}
 		
 		public override TargetObject Value {
@@ -115,8 +118,14 @@ namespace DebuggerServer
 		
 		public override IEnumerable<ValueReference> GetChildReferences ()
 		{
-			foreach (ValueReference val in Util.GetMembers (Thread, type, null))
-				yield return val;
+			try {
+				IEnumerable<ValueReference> rr = Util.GetMembers (Thread, type, null);
+				return rr;
+			} catch (Exception ex) {
+				Console.WriteLine (ex);
+				Server.Instance.WriteDebuggerOutput (ex.Message);
+				return new ValueReference [0];
+			}
 		}
 	}
 }
