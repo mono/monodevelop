@@ -57,6 +57,10 @@ namespace MonoDevelop.Profiling
 			get { return done ? ExitCode == 0 : false; }
 		}
 		
+		public bool SuccessWithWarnings {
+			get { return false; }
+		}
+		
 		public bool IsCompleted {
 			get { return done; }
 		}
