@@ -1,5 +1,9 @@
 2008-12-04  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.addin.xml: F5 is now for debug.
+
+2008-12-04  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* gtk-gui/gui.stetic:
 	* gtk-gui/objects.xml:
 	* MonoDevelop.Ide.Gui/IdePreferences.cs:

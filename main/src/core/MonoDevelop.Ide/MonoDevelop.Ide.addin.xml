@@ -436,7 +436,7 @@
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.Run"
 				defaultHandler = "MonoDevelop.Ide.Commands.RunHandler"
 				icon = "gtk-execute"
-				shortcut = "F5"
+				shortcut = "Control|F5"
 				_description = "Run"
 				_label = "_Run" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.RunEntry"
