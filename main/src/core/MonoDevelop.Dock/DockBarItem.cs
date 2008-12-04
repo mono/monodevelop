@@ -126,13 +126,7 @@ namespace MonoDevelop.Components.Docking
 			GLib.Timeout.Add (200, delegate {
 				// Using a small delay because AutoShow uses an animation and setting focus may
 				// not work until the item is visible
-				it.Widget.ChildFocus (DirectionType.TabForward);
-
-				// Make sure focus is not given to internal children
-				Container c = ((Window)it.Widget.Toplevel).Focus.Parent as Container;
-				if (c.Children.Length == 0)
-					((Window)it.Widget.Toplevel).Focus = c;
-				
+				it.SetFocus ();
 				ScheduleAutoHide (false);
 				return false;
 			});

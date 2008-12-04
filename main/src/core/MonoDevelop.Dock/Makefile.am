@@ -42,7 +42,7 @@ FILES =  \
 	PlaceholderWindow.cs \
 	TabStrip.cs
 
-all: $(ASSEMBLY)
+all: $(ASSEMBLY) $(ASSEMBLY).mdb
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 EXTRA_DIST = $(FILES) $(RES)
@@ -50,6 +50,8 @@ EXTRA_DIST = $(FILES) $(RES)
 $(ASSEMBLY): $(build_sources) $(build_resources)
 	mkdir -p $(top_builddir)/build/bin/
 	$(CSC) $(CSC_FLAGS) -out:$@ -target:library $(build_sources) $(build_resources:%=/resource:%) $(REFS)
+
+$(ASSEMBLY).mdb: $(ASSEMBLY)
 
 include $(top_srcdir)/Makefile.include
 

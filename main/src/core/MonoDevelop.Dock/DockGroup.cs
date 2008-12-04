@@ -653,7 +653,7 @@ namespace MonoDevelop.Components.Docking
 				}
 			}
 			if (it.Visible)
-				it.Widget.ChildFocus (DirectionType.TabForward);
+				it.SetFocus ();
 		}
 
 		internal bool IsSelectedPage (DockItem it)

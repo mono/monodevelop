@@ -1,3 +1,11 @@
+2008-12-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* DockItem.cs:
+	* DockGroup.cs:
+	* DockBarItem.cs: Focusing fixes.
+
+	* Makefile.am: Make it work for parallel build.
+
 2008-10-31  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* DockBarItem.cs: Improved dock item focusing. Close autohide panels

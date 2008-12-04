@@ -221,6 +221,20 @@ namespace MonoDevelop.Components.Docking
 			else
 				frame.Present (this);
 		}
+
+		internal void SetFocus ()
+		{
+			Widget.ChildFocus (DirectionType.TabForward);
+
+			Window win = Widget.Toplevel as Gtk.Window;
+			if (win == null)
+				return;
+			
+			// Make sure focus is not given to internal children
+			Container c = win.Focus.Parent as Container;
+			if (c.Children.Length == 0)
+				win.Focus = c;
+		}
 		
 		internal void UpdateVisibleStatus ()
 		{
