@@ -7,7 +7,7 @@ FILES =  \
 
 RES =
 
-all: $(ASSEMBLY) $(ASSEMBLY).config
+all: $(ASSEMBLY) $(ASSEMBLY).mdb $(ASSEMBLY).config
 
 DEPS =  \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
@@ -23,6 +23,8 @@ $(ASSEMBLY).config: $(ASSEMBLY) $(srcdir)/app.config
 
 $(ASSEMBLY).addins: $(ASSEMBLY) $(srcdir)/MonoDevelop.exe.addins
 	cp $(srcdir)/MonoDevelop.exe.addins $(ASSEMBLY).addins
+	
+$(ASSEMBLY).mdb: $(ASSEMBLY)
 	
 assemblydir = $(MD_ASSEMBLY_DIR)
 assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb $(ASSEMBLY).config $(ASSEMBLY).addins
