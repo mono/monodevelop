@@ -1,3 +1,9 @@
+2008-12-05  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextEditor.Vi/ViMode.cs: Implement Y, based on patch by Grzegorz
+	Sobański. Closes Bug 449293 - [PATCH] ViMode - implement Y. Also fix
+	NREs when pasting an empty clipboard.
+
 2008-12-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am: Make it work for parallel build.

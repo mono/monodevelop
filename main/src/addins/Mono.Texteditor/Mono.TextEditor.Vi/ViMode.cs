@@ -180,6 +180,11 @@ namespace Mono.TextEditor.Vi
 						Status = "y";
 						state = State.Yank;
 						return;
+
+					case 'Y':
+						state = State.Yank;
+						HandleKeypress (Gdk.Key.y, (int)'y', Gdk.ModifierType.None);
+						return;
 						
 					case 'O':
 						RunAction (ViActions.NewLineAbove);
@@ -594,6 +599,8 @@ namespace Mono.TextEditor.Vi
 			
 			Gtk.Clipboard.Get (ClipboardActions.CopyOperation.CLIPBOARD_ATOM).RequestText 
 				(delegate (Gtk.Clipboard cb, string contents) {
+				if (contents == null)
+					return;
 				if (contents.EndsWith ("\r") || contents.EndsWith ("\n")) {
 					// Line mode paste
 					if (data.IsSomethingSelected) {
@@ -639,6 +646,8 @@ namespace Mono.TextEditor.Vi
 			
 			Gtk.Clipboard.Get (ClipboardActions.CopyOperation.CLIPBOARD_ATOM).RequestText 
 				(delegate (Gtk.Clipboard cb, string contents) {
+				if (contents == null)
+					return;
 				if (contents.EndsWith ("\r") || contents.EndsWith ("\n")) {
 					// Line mode paste
 					if (data.IsSomethingSelected) {
