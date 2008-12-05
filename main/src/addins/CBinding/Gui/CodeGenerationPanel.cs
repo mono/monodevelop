@@ -123,7 +123,7 @@ namespace CBinding
 			foreach (string libPath in configuration.LibPaths)
 				libPathStore.AppendValues (libPath);
 			
-			libPathStore.Clear ();
+			includePathStore.Clear ();
 			foreach (string includePath in configuration.Includes)
 				includePathStore.AppendValues (includePath);
 		}

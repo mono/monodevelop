@@ -1,3 +1,8 @@
+2008-12-12  Mitchell Wheeler  <mitchell.wheeler@gmail.com>
+
+	* Gui/CodeGenerationPanel.cs: Fixed typo causing include directories to be
+	duplicated when switching between configurations.
+
 2008-12-02  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am:
