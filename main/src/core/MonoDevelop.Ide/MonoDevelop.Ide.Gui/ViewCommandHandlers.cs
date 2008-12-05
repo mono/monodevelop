@@ -113,7 +113,7 @@ namespace MonoDevelop.Ide.Gui
 		protected void OnReloadFile ()
 		{
 			if (MessageService.GenericAlert (MonoDevelop.Core.Gui.Stock.Warning,
-			                                GettextCatalog.GetString ("Revert unsaved changes to document '{0}'?", Path.GetFileName (doc.Title)),
+			                                GettextCatalog.GetString ("Revert unsaved changes to document '{0}'?", Path.GetFileName (doc.Name)),
 			                                GettextCatalog.GetString ("All changes made to the document will be permanently lost."), 0, AlertButton.Cancel, AlertButton.Revert) == AlertButton.Revert)
 				doc.Reload ();
 		}

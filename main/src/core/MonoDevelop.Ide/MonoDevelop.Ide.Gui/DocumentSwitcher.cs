@@ -68,7 +68,7 @@ namespace MonoDevelop.Ide
 			MonoDevelop.Ide.Gui.Document document = SelectedDocument;
 			if (document != null) {
 				ShowType (MonoDevelop.Ide.Gui.IdeApp.Services.Resources.GetBitmap (string.IsNullOrEmpty (document.Window.ViewContent.StockIconId) ? MonoDevelop.Core.Gui.Stock.MiscFiles : document.Window.ViewContent.StockIconId, Gtk.IconSize.Dialog),
-				          System.IO.Path.GetFileName (document.Title),
+				          System.IO.Path.GetFileName (document.Name),
 				          document.Window.DocumentType,
 				          document.FileName);
 			}

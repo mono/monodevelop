@@ -1,3 +1,23 @@
+2008-12-05  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui/DocumentSwitcher.cs:
+	* MonoDevelop.Ide.Commands/EditCommands.cs:
+	* MonoDevelop.Ide.Gui/ViewCommandHandlers.cs:
+	* MonoDevelop.Ide.Commands/ProjectCommands.cs:
+	* MonoDevelop.Ide.Commands/CustomStringTagProvider.cs:
+	* MonoDevelop.Ide.Gui.Search/AllOpenDocumentIterator.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectSolutionPad.cs: Track api
+	changes.
+
+	* MonoDevelop.Ide.Gui.Dialogs/GoToDialog.cs: Only search in open
+	documents which are files.
+
+	* MonoDevelop.Ide.Gui/Document.cs: Reduced the properties returning
+	names to two: FileName, which returns the file name if the document
+	is a phisical file, and Name, which always returns a name (even if it
+	is not a file or unsaved file).
+
 2008-12-04  Andrés G. Aragoneses  <aaragoneses@novell.com>
 
 	* MonoDevelop.Ide.Gui/Document.cs:

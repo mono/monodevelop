@@ -200,12 +200,12 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			
 			ArrayList filesToSave = new ArrayList ();
 			foreach (Document doc in IdeApp.Workbench.Documents) {
-				if (doc.IsDirty) {
-					if (doc.FileName == source || doc.FileName.StartsWith (source + Path.DirectorySeparatorChar)) {
+				if (doc.IsDirty && doc.IsFile) {
+					if (doc.Name == source || doc.Name.StartsWith (source + Path.DirectorySeparatorChar)) {
 						filesToSave.Add (doc);
 					} else if (groupedChildren != null) {
 						foreach (ProjectFile f in groupedChildren)
-							if (doc.FileName == f.Name)
+							if (doc.Name == f.Name)
 								filesToSave.Add (doc);
 					}
 				}
@@ -215,7 +215,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				StringBuilder sb = new StringBuilder ();
 				foreach (Document doc in filesToSave) {
 					if (sb.Length > 0) sb.Append (",\n");
-					sb.Append (Path.GetFileName (doc.FileName));
+					sb.Append (Path.GetFileName (doc.Name));
 				}
 				
 				string question;

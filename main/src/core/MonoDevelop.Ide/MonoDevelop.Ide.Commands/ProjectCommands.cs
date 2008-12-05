@@ -190,7 +190,7 @@ namespace MonoDevelop.Ide.Commands
 			} else {
 				if (IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.IsBuildTarget) {
 					info.Enabled = IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted;
-					string file = Path.GetFileName (IdeApp.Workbench.ActiveDocument.FileName);
+					string file = Path.GetFileName (IdeApp.Workbench.ActiveDocument.Name);
 					info.Text = GettextCatalog.GetString ("B_uild {0}", file);
 					info.Description = GettextCatalog.GetString ("Build {0}", file);
 				} else {
@@ -229,7 +229,7 @@ namespace MonoDevelop.Ide.Commands
 			} else {
 				if (IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.IsBuildTarget) {
 					info.Enabled = IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted;
-					string file = Path.GetFileName (IdeApp.Workbench.ActiveDocument.FileName);
+					string file = Path.GetFileName (IdeApp.Workbench.ActiveDocument.Name);
 					info.Text = GettextCatalog.GetString ("R_ebuild {0}", file);
 					info.Description = GettextCatalog.GetString ("Rebuild {0}", file);
 				} else {

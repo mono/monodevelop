@@ -207,16 +207,16 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Run ()
 		{
 			Document doc = IdeApp.Workbench.ActiveDocument;
-			ILanguageBinding lang = MonoDevelop.Projects.Services.Languages.GetBindingPerFileName (doc.FileName);
-			string header = MonoDevelop.Ide.StandardHeaders.StandardHeaderService.GetHeader (lang.Language, doc.FileName);
+			ILanguageBinding lang = MonoDevelop.Projects.Services.Languages.GetBindingPerFileName (doc.Name);
+			string header = MonoDevelop.Ide.StandardHeaders.StandardHeaderService.GetHeader (lang.Language, doc.Name);
 			doc.TextEditor.InsertText (0, header + "\n");
 		}
 		
 		protected override void Update (CommandInfo info)
 		{
 			Document doc = IdeApp.Workbench.ActiveDocument;
-			if (doc != null && doc.FileName != null && doc.TextEditor != null) {
-				ILanguageBinding lang = MonoDevelop.Projects.Services.Languages.GetBindingPerFileName (doc.FileName);
+			if (doc != null && doc.Name != null && doc.TextEditor != null) {
+				ILanguageBinding lang = MonoDevelop.Projects.Services.Languages.GetBindingPerFileName (doc.Name);
 				info.Enabled = lang != null;
 			} else
 				info.Enabled = false;

@@ -340,15 +340,17 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				lock (matchLock) {
 					toMatch = matchString;
 				}
-				
-				if (searchFiles) {
-					CheckFile (doc.FileName, toMatch);
-				} else {
-					ICompilationUnit info = doc.CompilationUnit;
-					if(info != null) {
-						foreach (IType c in info.Types) {
-							if (!searchCycleActive) return;
-							CheckType (c, toMatch);
+
+				if (doc.IsFile) {
+					if (searchFiles) {
+						CheckFile (doc.Name, toMatch);
+					} else {
+						ICompilationUnit info = doc.CompilationUnit;
+						if(info != null) {
+							foreach (IType c in info.Types) {
+								if (!searchCycleActive) return;
+								CheckType (c, toMatch);
+							}
 						}
 					}
 				}

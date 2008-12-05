@@ -75,7 +75,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			if (doc != null && doc.Project != null) {
 				string file = doc.FileName;
 				if (file != null) {
-					ProjectFile pf = doc.Project.Files.GetFile (doc.FileName);
+					ProjectFile pf = doc.Project.Files.GetFile (file);
 					if (pf != null) {
 						ITreeNavigator nav = treeView.GetNodeAtObject (pf, true);
 						if (nav != null) {

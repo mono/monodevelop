@@ -93,10 +93,13 @@ namespace MonoDevelop.Ide.Gui
 			if (IdeApp.Workspace != null)
 				IdeApp.Workspace.ItemRemovedFromSolution += OnEntryRemoved;
 		}
-		
+
 		public string FileName {
 			get { return Window.ViewContent.IsFile ? Window.ViewContent.ContentName : null;	}
-			set { Window.ViewContent.ContentName = value; }
+		}
+
+		public bool IsFile {
+			get { return Window.ViewContent.IsFile; }
 		}
 		
 		public bool IsDirty {
@@ -125,16 +128,7 @@ namespace MonoDevelop.Ide.Gui
 			get { return window.ActiveViewContent; }
 		}
 		
-		public string UntitledName {
-			get { return Window.ViewContent.UntitledName; }
-			set { Window.ViewContent.UntitledName = value; }
-		}
-		
-		public bool IsUntitled {
-			get { return Window.ViewContent.IsUntitled; }
-		}
-		
-		public string Title {
+		public string Name {
 			get {
 				IViewContent view = Window.ViewContent;
 				return view.IsUntitled ? view.UntitledName : view.ContentName;
@@ -471,7 +465,7 @@ namespace MonoDevelop.Ide.Gui
 				if (closed)
 					return false;
 				parsing = false;
-				string currentParseFile = FileName ?? this.UntitledName;
+				string currentParseFile = Name;
 				string currentParseText = TextEditor.Text;
 				Project curentParseProject = Project;
 				

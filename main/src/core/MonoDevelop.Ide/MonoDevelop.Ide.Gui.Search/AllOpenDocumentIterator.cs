@@ -47,15 +47,9 @@ namespace MonoDevelop.Ide.Gui.Search
 		
 		public string CurrentFileName {
 			get {
-				if (!SearchReplaceUtilities.IsTextAreaSelected) {
+				if (!SearchReplaceUtilities.IsTextAreaSelected)
 					return null;
-				}
-				
-				if (IdeApp.Workbench.ActiveDocument.FileName == null) {
-					return IdeApp.Workbench.ActiveDocument.Window.ViewContent.UntitledName;
-				}
-				
-				return IdeApp.Workbench.ActiveDocument.FileName;
+				return IdeApp.Workbench.ActiveDocument.Name;
 			}
 		}
 		
