@@ -1,5 +1,13 @@
 2008-12-04  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects/CustomCommandExtension.cs: Don't run the
+	after-build custom command if the build failed. Fixes bug #456239 -
+	After Build Custom Command firing when build fails.
+
+	* MonoDevelop.Projects/DotNetProject.cs: Fix null ref.
+
+2008-12-04  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects/ProjectService.cs: Moved BeforeCompilationAction
 	enum to MD.Ide.
 

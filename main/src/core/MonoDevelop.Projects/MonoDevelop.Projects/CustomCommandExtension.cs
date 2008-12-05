@@ -45,7 +45,7 @@ namespace MonoDevelop.Projects
 			
 			BuildResult res = base.Build (monitor, entry, configuration);
 			
-			if (conf != null && !monitor.IsCancelRequested)
+			if (conf != null && !monitor.IsCancelRequested && !res.Failed)
 				conf.CustomCommands.ExecuteCommand (monitor, entry, CustomCommandType.AfterBuild, configuration);
 				                                    
 			return res;
