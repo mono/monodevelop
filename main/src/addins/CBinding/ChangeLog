@@ -1,3 +1,7 @@
+2008-12-05  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Gui/CTextEditorExtension.cs: Track api changes.
+
 2008-12-12  Mitchell Wheeler  <mitchell.wheeler@gmail.com>
 
 	* Gui/CodeGenerationPanel.cs: Fixed typo causing include directories to be

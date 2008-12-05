@@ -78,9 +78,9 @@ namespace MonoDevelop.XmlEditor.Gui
 
 		public override bool ExtendsEditor (MonoDevelop.Ide.Gui.Document doc, IEditableTextBuffer editor)
 		{
-			string title = doc.Title;
+			string title = doc.Name;
 			foreach (string ext in SupportedExtensions )
-				if (doc.Title.EndsWith (ext))
+				if (title.EndsWith (ext))
 					return true;
 			return false;
 		}
@@ -324,7 +324,7 @@ namespace MonoDevelop.XmlEditor.Gui
 			
 			if (forced && Tracker.Engine.CurrentState is XmlFreeState) {
 				CompletionDataList list = new CompletionDataList ();
-				MonoDevelop.Ide.CodeTemplates.CodeTemplateService.AddCompletionDataForFileName (Document.Title, list);
+				MonoDevelop.Ide.CodeTemplates.CodeTemplateService.AddCompletionDataForFileName (Document.Name, list);
 				return list.Count > 0? list : null;
 			}
 			

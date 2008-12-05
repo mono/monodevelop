@@ -75,7 +75,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 		
 		public override bool ExtendsEditor (MonoDevelop.Ide.Gui.Document doc, IEditableTextBuffer editor)
 		{
-			return System.IO.Path.GetExtension (doc.Title) == ".cs";
+			return System.IO.Path.GetExtension (doc.Name) == ".cs";
 		}
 		
 		#region Sharing the tracker
@@ -148,7 +148,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			}
 			return result;
 		}
-
+		
 		public override ICompletionDataList HandleCodeCompletion (ICodeCompletionContext completionContext, char completionChar, ref int triggerWordLength)
 		{
 		try {

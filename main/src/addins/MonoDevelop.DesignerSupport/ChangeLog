@@ -1,5 +1,10 @@
 2008-12-05  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.DesignerSupport/ClassOutlineTextEditorExtension.cs: Track
+	api changes.
+
+2008-12-05  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.DesignerSupport.addin.xml: Hide/protect add-ins.
 
 2008-12-04  Lluis Sanchez Gual  <lluis@novell.com>

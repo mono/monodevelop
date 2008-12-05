@@ -47,7 +47,7 @@ namespace MonoDevelop.XmlEditor
 		{
 			if (doc == null)
 				return false;
-			return IsFileNameHandled (string.IsNullOrEmpty (doc.FileName)? doc.Title : doc.FileName );
+			return IsFileNameHandled (doc.Name);
 		}
 		
 		public override void Initialize ()
@@ -286,13 +286,13 @@ namespace MonoDevelop.XmlEditor
 		/// Updates the default schema association since the schema may have been added.
 		void UserSchemaAdded (object source, EventArgs e)
 		{	
-			SetDefaultSchema (Document.Title);
+			SetDefaultSchema (Document.Name);
 		}
 		
 		// Updates the default schema association since the schema may have been removed.
 		void UserSchemaRemoved (object source, EventArgs e)
 		{
-			SetDefaultSchema (Document.Title);
+			SetDefaultSchema (Document.Name);
 		}
 		
 		void XmlEditorPropertyChanged (object sender, PropertyChangedEventArgs args)
@@ -305,9 +305,9 @@ namespace MonoDevelop.XmlEditor
 				showSchemaAnnotation = XmlEditorAddInOptions.ShowSchemaAnnotation;
 				break;
 			default:
-				string extension = System.IO.Path.GetExtension (Document.Title).ToLower ();
+				string extension = System.IO.Path.GetExtension (Document.Name).ToLower ();
 				if (args.Key == extension) {
-					SetDefaultSchema (Document.Title);
+					SetDefaultSchema (Document.Name);
 				} else {
 					LoggingService.LogError ("Unhandled property change in XmlTextEditorExtension: " + args.Key);
 				}
@@ -319,7 +319,7 @@ namespace MonoDevelop.XmlEditor
 		{
 			showSchemaAnnotation = XmlEditorAddInOptions.ShowSchemaAnnotation;
 			autoCompleteElements = XmlEditorAddInOptions.AutoCompleteElements;
-			SetDefaultSchema (Document.Title);
+			SetDefaultSchema (Document.Name);
 		}
 		
 		#endregion

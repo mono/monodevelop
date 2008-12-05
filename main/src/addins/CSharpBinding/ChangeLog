@@ -1,3 +1,8 @@
+2008-12-05  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Gui/CSharpTextEditorCompletion.cs:
+	* Gui/CSharpTextEditorIndentation.cs: Track api changes.
+
 2008-12-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Gui/MemberCompletionData.cs: Use full names in the description of the

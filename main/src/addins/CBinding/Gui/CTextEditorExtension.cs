@@ -74,8 +74,8 @@ namespace CBinding
 		
 		public override bool ExtendsEditor (Document doc, IEditableTextBuffer editor)
 		{
-			return (CProject.IsHeaderFile (doc.Title) || 
-			        (0 <= Array.IndexOf(CProject.SourceExtensions, Path.GetExtension(doc.Title).ToUpper ())));
+			return (CProject.IsHeaderFile (doc.Name) || 
+			        (0 <= Array.IndexOf(CProject.SourceExtensions, Path.GetExtension(doc.Name).ToUpper ())));
 		}
 		
 		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
