@@ -1,3 +1,9 @@
+2008-12-05  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectService.cs: Don't
+	try to resolve paths beyond the root directory. E.g.
+	/aa/bb/../../../..
+
 2008-12-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/CustomCommandExtension.cs: Don't run the

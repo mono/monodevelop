@@ -215,6 +215,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					string[] entries;
 
 					if (names [n] == ".."){
+						if (part == "/")
+							return ""; // Can go further back. It's not an existing file
 						part = Path.GetFullPath (part + "/..");
 						continue;
 					}
