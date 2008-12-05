@@ -59,8 +59,8 @@ namespace MonoDevelop.ValaBinding
 		
 		public override bool ExtendsEditor (Document doc, IEditableTextBuffer editor)
 		{
-			return (Path.GetExtension (doc.Title).ToUpper () == ".VALA"   ||
-			        Path.GetExtension (doc.Title).ToUpper () == ".VAPI" );
+			return (Path.GetExtension (doc.Name).ToUpper () == ".VALA"   ||
+			        Path.GetExtension (doc.Name).ToUpper () == ".VAPI" );
 		}
 		
 		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
