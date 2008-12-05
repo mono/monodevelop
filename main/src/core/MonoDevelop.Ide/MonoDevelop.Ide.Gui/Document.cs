@@ -95,7 +95,7 @@ namespace MonoDevelop.Ide.Gui
 		}
 		
 		public string FileName {
-			get { return Window.ViewContent.ContentName; }
+			get { return Window.ViewContent.IsFile ? Window.ViewContent.ContentName : null;	}
 			set { Window.ViewContent.ContentName = value; }
 		}
 		

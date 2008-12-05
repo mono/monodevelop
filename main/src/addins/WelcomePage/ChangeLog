@@ -1,3 +1,7 @@
+2008-12-04  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* WelcomePageView.cs: Fix for bug#456670.
+
 2008-12-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am: Make it work for parallel build.

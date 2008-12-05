@@ -1,3 +1,9 @@
+2008-12-04  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* MonoDevelop.Ide.Gui/Document.cs:
+	* MonoDevelop.Ide.Gui.Search/CurrentProjectDocumentIterator.cs: Fix for
+	bug#456670.
+
 2008-12-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.addin.xml: F5 is now for debug.

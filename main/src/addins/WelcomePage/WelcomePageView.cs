@@ -65,6 +65,11 @@ namespace MonoDevelop.WelcomePage
 		{
 		}
 
+		public override bool IsFile
+		{
+			get { return false; }
+		}
+		
 		public WelcomePageView () : base ()
 		{
 			this.ContentName = GettextCatalog.GetString ("Welcome");

@@ -52,14 +52,18 @@ namespace MonoDevelop.Ide.Gui.Search
 		public override void Reset() 
 		{
 			files.Clear();
-			Document document = IdeApp.Workbench.ActiveDocument;
-			if (IdeApp.Workspace.IsOpen && document != null) {
+			Document document;
+			if (IdeApp.Workspace.IsOpen && 
+			   ((document = IdeApp.Workbench.ActiveDocument) != null) &&
+			   //FIXME: when document.FileName == null, maybe it's interesting to pick the file selected on the project pad...
+			   (document.FileName != null)) {
 				Project theProject = IdeApp.Workspace.GetProjectContainingFile (document.FileName);
 				projectName = theProject.Name;
 				foreach (ProjectFile file in theProject.Files)
 					if (file.Subtype == Subtype.Code)
 						files.Add(file.Name);
 			} else {
+				//FIXME: it may be interesting to show a warning dialog/message to the user in this case
 				projectName = GettextCatalog.GetString ("(none selected)");
 			}
 			
