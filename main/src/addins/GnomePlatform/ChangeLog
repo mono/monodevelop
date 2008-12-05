@@ -1,3 +1,7 @@
+2008-12-05  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* GnomePlatform.addin.xml: Hide/protect add-ins.
+
 2008-12-04  Mike Kestner  <mkestner@novell.com>
 
 	* GnomePlatform.cs: still need to initialize gnomevfs for the icon

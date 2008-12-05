@@ -6,6 +6,7 @@
        url         = "http://monodevelop.com/"
        description = "GNOME Platform Support for MonoDevelop"
        category    = "MonoDevelop Core"
+       flags       = "CantUninstall,CantDisable"
        version     = "1.9.1">
 	
 	<Runtime>

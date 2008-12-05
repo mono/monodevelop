@@ -6,6 +6,7 @@
        url         = "http://www.monodevelop.com/"
        description = "Supporting services and pads for visual design tools."
 	   category    = "MonoDevelop Core"
+       flags = "Hidden"
        version     = "1.9.1">
 	
 	<Runtime>
