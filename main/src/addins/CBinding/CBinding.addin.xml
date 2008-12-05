@@ -72,6 +72,9 @@
 		<MimeType id="text/x-c++src" icon="md-cpp-file" isText="true">
 			<File pattern="*.cpp" />
 		</MimeType>
+		<MimeType id="text/x-c++hdr" icon="md-h-file" isText="true">
+			<File pattern="*.hpp" />
+		</MimeType>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/ProjectBindings">
