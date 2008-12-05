@@ -608,23 +608,22 @@ namespace MonoDevelop.AspNet.Gui
 					return false;
 				}
 				
-				if (expr.Value is bool)
+				if (expr.Value is bool) {
 					childrenAsProperties = (bool) expr.Value;
-				else
-					defaultProperty = (string) expr.Value;
+				} else {
+					//TODO: implement this
+					LoggingService.LogWarning ("ASP.NET completion does not yet handle ParseChildrenAttribute (Type)");
+					return false;
+				}
 			}
 			
 			if (att.PositionalArguments.Count > 1) {
 				System.CodeDom.CodePrimitiveExpression expr = att.PositionalArguments[1] as System.CodeDom.CodePrimitiveExpression;
-				if (expr == null) {
+				if (expr == null || !(expr.Value is string)) {
 					LoggingService.LogWarning ("Unknown expression '{0}' in IAttribute parameter", att.PositionalArguments[1]);
 					return false;
 				}
-				
-				if (expr.Value is bool)
-					childrenAsProperties = (bool) expr.Value;
-				else
-					defaultProperty = (string) expr.Value;
+				defaultProperty = (string) expr.Value;
 			}
 			
 			if (att.NamedArguments.Count > 0) {
@@ -645,6 +644,11 @@ namespace MonoDevelop.AspNet.Gui
 						return false;
 					}
 					defaultProperty = (string) expr.Value;
+				}
+				if (att.NamedArguments.ContainsKey ("ChildControlType")) {
+					//TODO: implement this
+					LoggingService.LogWarning ("ASP.NET completion does not yet handle ParseChildrenAttribute (Type)");
+					return false;
 				}
 			}
 			

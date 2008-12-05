@@ -1,3 +1,8 @@
+2008-12-05  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Add TODO markers for
+	ParseChildrenAttribute.ChildControlType support.
+
 2008-12-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.AspNet/AspNetAppProject.cs: Implemented CanExecute.
