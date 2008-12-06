@@ -267,6 +267,16 @@ namespace Mono.TextEditor.Vi
 						Status = "g";
 						state = State.G;
 						return;
+						
+					case 'H':
+						Caret.Line = System.Math.Max (0, Editor.VisualToDocumentLocation (0, Editor.LineHeight - 1).Line);
+						return;
+					case 'L':
+						int line = Editor.VisualToDocumentLocation (0, Editor.Allocation.Height - Editor.LineHeight * 2 - 2).Line;
+						if (line < 0)
+							line = Document.LineCount - 1;
+						Caret.Line = line;
+						return;
 					}
 					
 					
