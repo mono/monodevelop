@@ -1,5 +1,14 @@
 2008-12-05  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Ignore
+	PersistChildrenAttribute, as it does more harm than good. It's
+	essentially the opposite of ParseChildrenAttribute, but it's often
+	incorrectly set, whereas ParseChildrenAttribute is almost invariably
+	correct. Also, assume that any property tagged with a
+	TemplateContainerAttribute has an InnerProperty persistence mode.
+
+2008-12-05  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Add TODO markers for
 	ParseChildrenAttribute.ChildControlType support.
 

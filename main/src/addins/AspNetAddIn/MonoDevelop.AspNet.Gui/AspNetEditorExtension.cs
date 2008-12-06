@@ -172,7 +172,7 @@ namespace MonoDevelop.AspNet.Gui
 				defaultProp = null;
 			
 			//parent permits child controls directly
-			if (!childrenAsProperties && ShouldPersistChildren (controlClass))
+			if (!childrenAsProperties)
 			{
 				AddAspBeginExpressions (list, AspDocument);
 				list.AddRange (AspDocument.ReferenceManager.GetControlCompletionData ());
@@ -588,6 +588,10 @@ namespace MonoDevelop.AspNet.Gui
 					
 					return (System.Web.UI.PersistenceMode) expr.Value;
 				}
+				else if (att.Name == "System.Web.UI.TemplateContainerAttribute")
+				{
+					return System.Web.UI.PersistenceMode.InnerProperty;
+				}
 			}
 			return System.Web.UI.PersistenceMode.Attribute;
 		}
@@ -653,18 +657,6 @@ namespace MonoDevelop.AspNet.Gui
 			}
 			
 			return childrenAsProperties;
-		}
-		
-		static bool ShouldPersistChildren (IType type)
-		{
-			IAttribute att = GetAttributes (type, "System.Web.UI.PersistChildrenAttribute").FirstOrDefault ();
-			
-			if (att != null && att.PositionalArguments.Count > 0) {
-				System.CodeDom.CodePrimitiveExpression expr = att.PositionalArguments[0] as System.CodeDom.CodePrimitiveExpression;
-				if (expr != null && expr.Value is bool)
-					return (bool) expr.Value;
-			}
-			return true;
 		}
 		
 		static IEnumerable<IAttribute> GetAttributes (IType type, string attName)
