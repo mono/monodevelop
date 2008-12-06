@@ -262,7 +262,14 @@ namespace Mono.TextEditor.Vi
 						else Data.SetSelectLines (Data.Document.OffsetToLineNumber (Data.SelectionAnchor), Data.Caret.Line);
 						RunAction (ClipboardActions.Cut);
 						goto case 'i';
+						
+					case 'g':
+						Status = "g";
+						state = State.G;
+						return;
 					}
+					
+					
 				}
 				
 				action = ViActionMaps.GetNavCharAction ((char)unicodeKey);
@@ -486,6 +493,18 @@ namespace Mono.TextEditor.Vi
 					Reset ("Unrecognised motion");
 				}
 				return;
+
+			case State.G:
+				if (((modifier & (Gdk.ModifierType.ControlMask)) == 0)) {
+					switch ((char)unicodeKey) {
+					case 'g':
+						Caret.Offset = 0;
+						Reset ("");
+						return;
+					}
+				}
+				Reset ("Unknown command");
+				return;
 			}
 		}
 
@@ -695,7 +714,8 @@ namespace Mono.TextEditor.Vi
 			WriteChar,
 			Change,
 			Indent,
-			Unindent
+			Unindent,
+			G,
 		}
 	}
 }
