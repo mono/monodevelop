@@ -100,6 +100,7 @@ FILES =  \
 	MonoDevelop.Components/GladeWidgetExtract.cs \
 	MonoDevelop.Components/IconView.cs \
 	MonoDevelop.Components/InvisibleFrame.cs \
+	MonoDevelop.Components/ListView.cs \
 	MonoDevelop.Components/MenuButton.cs \
 	MonoDevelop.Components/Navbar.cs \
 	MonoDevelop.Components/NotebookButtonBar.cs \
