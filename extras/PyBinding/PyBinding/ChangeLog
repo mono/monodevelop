@@ -1,3 +1,8 @@
+2008-12-08  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* PyBinding.Gui/PythonEditorIndentation.cs: Track API changes (fixes
+	build).
+
 2008-12-02  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile:
