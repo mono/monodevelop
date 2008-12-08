@@ -250,7 +250,13 @@ namespace MonoDevelop.Debugger
 				session = CreateDebugSessionForFile (startInfo.Command);
 			
 			SetupSession ();
-			session.Run (startInfo);
+
+			try {
+				session.Run (startInfo);
+			} catch {
+				Cleanup ();
+				throw;
+			}
 		}
 		
 		static void SetupSession ()
