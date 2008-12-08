@@ -1,5 +1,11 @@
 2008-12-08  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Debugger/DebuggingService.cs: When cleaning up the
+	session, dispose it as last step, since it may be slow, and it might
+	delay all other cleanup operations.
+
+2008-12-08  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Debugger/DebuggingService.cs: If something goes wrong when
 	starting the debugger, cleanup the session.
 

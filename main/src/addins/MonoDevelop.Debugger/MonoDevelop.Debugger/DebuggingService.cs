@@ -170,10 +170,9 @@ namespace MonoDevelop.Debugger
 			if (StoppedEvent != null)
 				StoppedEvent (null, new EventArgs ());
 
-			if (session != null) {
-				session.Dispose ();
-				session = null;
-			}
+			// Dispose the session at the end, since it may take a while.
+			DebuggerSession oldSession = session;
+			session = null;
 			
 			if (console != null) {
 				console.Dispose ();
@@ -185,6 +184,9 @@ namespace MonoDevelop.Debugger
 				NotifyCurrentFrameChanged ();
 				NotifyLocationChanged ();
 			});
+			
+			if (oldSession != null)
+				oldSession.Dispose ();
 		}
 
 		public static bool IsDebugging {
