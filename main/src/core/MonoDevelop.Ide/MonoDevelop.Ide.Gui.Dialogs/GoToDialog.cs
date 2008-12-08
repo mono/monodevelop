@@ -277,7 +277,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				// Get the list of files. If the parttern is a refinement of the previous
 				// one, use the list filtered in the previous search.
 				List<string> allFiles;
-				if (previousPattern != null && toMatch.StartsWith (previousPattern))
+				if (previousPattern != null && toMatch.StartsWith (previousPattern) && filteredFiles != null)
 					allFiles = filteredFiles;
 				else if (files == null)
 					allFiles = files = GetFiles ();
@@ -297,7 +297,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				// Get the list of types. If the parttern is a refinement of the previous
 				// one, use the list filtered in the previous search.
 				List<IType> allTypes;
-				if (previousPattern != null && toMatch.StartsWith (previousPattern))
+				if (previousPattern != null && toMatch.StartsWith (previousPattern) && filteredTypes != null)
 					allTypes = filteredTypes;
 				else if (types == null)
 					allTypes = types = GetTypes ();
@@ -690,6 +690,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			: base (name, plainText, fullName, rank)
 		{
 			this.icon = type.StockIcon;
+			this.type = type;
 		}
 
 		public override string File {

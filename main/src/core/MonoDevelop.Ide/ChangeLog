@@ -1,5 +1,10 @@
 2008-12-08  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Gui.Dialogs/GoToDialog.cs: Added some missing null
+	checks and fields initializations.
+
+2008-12-08  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Makefile.am:
 	* gtk-gui/gui.stetic:
 	* MonoDevelop.Ide.mdp:
