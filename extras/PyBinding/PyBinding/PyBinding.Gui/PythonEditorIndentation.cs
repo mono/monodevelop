@@ -38,7 +38,7 @@ namespace PyBinding.Gui
 	{
 		public override bool ExtendsEditor (Document doc, IEditableTextBuffer editor)
 		{
-			return !String.IsNullOrEmpty (doc.Name) && Path.GetExtension (doc.Title) == ".py";
+			return !String.IsNullOrEmpty (doc.Name) && Path.GetExtension (doc.Name) == ".py";
 		}
 		
 		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)

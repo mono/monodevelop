@@ -1,5 +1,13 @@
 2008-12-08  Andrés G. Aragoneses  <aaragoneses@novell.com>
 
+	* PyBinding.Gui/PythonEditorIndentation.cs: Completing r121006 (track
+	API changes to fix the build).
+
+	* PyBinding.Gui/PythonEditorOutline.cs: Completing r121006 (track API
+	changes to fix the build). Spaces to tabs.
+
+2008-12-08  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
 	* PyBinding.Gui/PythonEditorIndentation.cs: Track API changes (fixes
 	build).
 
