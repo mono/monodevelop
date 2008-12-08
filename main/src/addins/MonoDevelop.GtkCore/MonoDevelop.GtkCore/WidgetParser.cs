@@ -50,14 +50,13 @@ namespace MonoDevelop.GtkCore
 			this.ctx = ctx;
 		}
 		
-		public Dictionary<string, IType> ToolboxItems {
-			get {
-				Dictionary<string, IType> tb_items = new Dictionary<string, IType> ();
-				foreach (IType cls in ctx.Types)
-					if (IsToolboxWidget (cls))
-						tb_items [cls.FullName] = cls;
-				return tb_items;
-			}
+		public Dictionary<string, IType> GetToolboxItems ()
+		{
+			Dictionary<string, IType> tb_items = new Dictionary<string, IType> ();
+			foreach (IType cls in ctx.Types)
+				if (IsToolboxWidget (cls))
+					tb_items [cls.FullName] = cls;
+			return tb_items;
 		}
 
 		public void CollectMembers (IType cls, bool inherited, string topType, ListDictionary properties, ListDictionary events)

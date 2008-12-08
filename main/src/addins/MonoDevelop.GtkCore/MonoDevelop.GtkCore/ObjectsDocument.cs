@@ -106,7 +106,7 @@ namespace MonoDevelop.GtkCore
 
 		void InsertToolboxItemAttributes (WidgetParser parser, CodeRefactorer cref)
 		{
-			Dictionary<string, IType> tb_items = parser.ToolboxItems;
+			Dictionary<string, IType> tb_items = parser.GetToolboxItems ();
 			foreach (string clsname in ObjectNames) {
 				if (tb_items.ContainsKey (clsname))
 					continue;
@@ -134,7 +134,7 @@ namespace MonoDevelop.GtkCore
 				return;
 
 			StringCollection tb_names = new StringCollection ();
-			foreach (IType cls in parser.ToolboxItems.Values) {
+			foreach (IType cls in parser.GetToolboxItems().Values) {
 				UpdateClass (parser, stetic, cls, null);
 				tb_names.Add (cls.FullName);
 			}
