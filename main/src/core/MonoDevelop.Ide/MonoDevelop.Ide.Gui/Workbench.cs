@@ -147,11 +147,10 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public Document GetDocument (string fileName)
+		public Document GetDocument (string name)
 		{
-			fileName = FileService.GetFullPath (fileName);
 			foreach (Document doc in documents) {
-				if (FileService.GetFullPath (doc.FileName) == fileName)
+				if (FileService.GetFullPath (doc.Name) == name)
 					return doc;
 			}
 			return null;
