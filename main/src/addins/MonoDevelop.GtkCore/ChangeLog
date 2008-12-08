@@ -1,5 +1,9 @@
 2008-12-07  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.GtkCore/WidgetParser.cs: Optimized GetToolboxItems.
+
+2008-12-07  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.GtkCore/WidgetParser.cs:
 	* MonoDevelop.GtkCore/ObjectsDocument.cs: Getting the list of widgets is
 	an expensive operation. It shouldn't be a property.

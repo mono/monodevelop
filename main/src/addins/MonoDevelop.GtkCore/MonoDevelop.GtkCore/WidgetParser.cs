@@ -53,9 +53,15 @@ namespace MonoDevelop.GtkCore
 		public Dictionary<string, IType> GetToolboxItems ()
 		{
 			Dictionary<string, IType> tb_items = new Dictionary<string, IType> ();
-			foreach (IType cls in ctx.Types)
-				if (IsToolboxWidget (cls))
-					tb_items [cls.FullName] = cls;
+
+			IType wt = ctx.GetType ("Gtk.Widget", true);
+			if (wt != null) {
+				foreach (IType t in ctx.GetSubclasses (wt, false)) {
+					if (IsToolboxWidget (t))
+						tb_items [t.FullName] = t;
+				}
+			}
+			
 			return tb_items;
 		}
 
@@ -164,7 +170,7 @@ namespace MonoDevelop.GtkCore
 		
 		public bool IsToolboxWidget (IType cls)
 		{
-			if (!cls.IsPublic || !IsWidget (ctx, cls))
+			if (!cls.IsPublic)
 				return false;
 
 			foreach (IAttribute at in cls.Attributes) {
@@ -197,18 +203,6 @@ namespace MonoDevelop.GtkCore
 			return false;
 		}
 		
-		bool IsWidget (ProjectDom ctx, IType cls)
-		{
-			foreach (IReturnType bt in cls.BaseTypes) {
-				if (bt.FullName == "Gtk.Widget")
-					return true;
-				IType bcls = ctx.GetType (bt);
-				if (bcls != null && bcls.ClassType != ClassType.Interface)
-					return IsWidget (ctx, bcls);
-			}
-			return false;
-		}
-
 		static string[] supported_types = new string[] {
 			"System.Boolean",
 			"System.Char",
