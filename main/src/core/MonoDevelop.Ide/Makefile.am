@@ -19,6 +19,7 @@ REFS =  \
 	-r:Mono.GetOptions \
 	-r:Mono.Posix \
 	-r:System \
+	-r:System.Core \
 	-r:System.Data \
 	-r:System.Drawing \
 	-r:System.Runtime.Remoting \

@@ -21,9 +21,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
         
         private Gtk.ToggleButton toggleTypes;
         
-        private Gtk.ScrolledWindow scrolledwindow2;
-        
-        private Gtk.TreeView tree;
+        private Gtk.ScrolledWindow scrolledwindow;
         
         private Gtk.HBox hbox2;
         
@@ -88,19 +86,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             w4.Expand = false;
             w4.Fill = false;
             // Container child vbox2.Gtk.Box+BoxChild
-            this.scrolledwindow2 = new Gtk.ScrolledWindow();
-            this.scrolledwindow2.CanFocus = true;
-            this.scrolledwindow2.Name = "scrolledwindow2";
-            this.scrolledwindow2.ShadowType = ((Gtk.ShadowType)(3));
-            // Container child scrolledwindow2.Gtk.Container+ContainerChild
-            this.tree = new Gtk.TreeView();
-            this.tree.CanFocus = true;
-            this.tree.Name = "tree";
-            this.tree.HeadersClickable = true;
-            this.scrolledwindow2.Add(this.tree);
-            this.vbox2.Add(this.scrolledwindow2);
-            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.vbox2[this.scrolledwindow2]));
-            w6.Position = 1;
+            this.scrolledwindow = new Gtk.ScrolledWindow();
+            this.scrolledwindow.CanFocus = true;
+            this.scrolledwindow.Name = "scrolledwindow";
+            this.scrolledwindow.ShadowType = ((Gtk.ShadowType)(3));
+            this.vbox2.Add(this.scrolledwindow);
+            Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.vbox2[this.scrolledwindow]));
+            w5.Position = 1;
             // Container child vbox2.Gtk.Box+BoxChild
             this.hbox2 = new Gtk.HBox();
             this.hbox2.Name = "hbox2";
@@ -111,10 +103,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.label1.LabelProp = Mono.Unix.Catalog.GetString("_Name:");
             this.label1.UseUnderline = true;
             this.hbox2.Add(this.label1);
-            Gtk.Box.BoxChild w7 = ((Gtk.Box.BoxChild)(this.hbox2[this.label1]));
-            w7.Position = 0;
-            w7.Expand = false;
-            w7.Fill = false;
+            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.hbox2[this.label1]));
+            w6.Position = 0;
+            w6.Expand = false;
+            w6.Fill = false;
             // Container child hbox2.Gtk.Box+BoxChild
             this.matchEntry = new Gtk.Entry();
             this.matchEntry.CanFocus = true;
@@ -122,23 +114,23 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.matchEntry.IsEditable = true;
             this.matchEntry.InvisibleChar = '●';
             this.hbox2.Add(this.matchEntry);
-            Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.hbox2[this.matchEntry]));
-            w8.Position = 1;
+            Gtk.Box.BoxChild w7 = ((Gtk.Box.BoxChild)(this.hbox2[this.matchEntry]));
+            w7.Position = 1;
             this.vbox2.Add(this.hbox2);
-            Gtk.Box.BoxChild w9 = ((Gtk.Box.BoxChild)(this.vbox2[this.hbox2]));
-            w9.Position = 2;
-            w9.Expand = false;
-            w9.Fill = false;
+            Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.vbox2[this.hbox2]));
+            w8.Position = 2;
+            w8.Expand = false;
+            w8.Fill = false;
             w1.Add(this.vbox2);
-            Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(w1[this.vbox2]));
-            w10.Position = 0;
+            Gtk.Box.BoxChild w9 = ((Gtk.Box.BoxChild)(w1[this.vbox2]));
+            w9.Position = 0;
             // Internal child MonoDevelop.Ide.Gui.Dialogs.GoToDialog.ActionArea
-            Gtk.HButtonBox w11 = this.ActionArea;
-            w11.Events = ((Gdk.EventMask)(256));
-            w11.Name = "MonoDevelop.Ide.GoToDialog_ActionArea";
-            w11.Spacing = 6;
-            w11.BorderWidth = ((uint)(5));
-            w11.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
+            Gtk.HButtonBox w10 = this.ActionArea;
+            w10.Events = ((Gdk.EventMask)(256));
+            w10.Name = "MonoDevelop.Ide.GoToDialog_ActionArea";
+            w10.Spacing = 6;
+            w10.BorderWidth = ((uint)(5));
+            w10.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child MonoDevelop.Ide.GoToDialog_ActionArea.Gtk.ButtonBox+ButtonBoxChild
             this.cancelButton = new Gtk.Button();
             this.cancelButton.CanDefault = true;
@@ -148,9 +140,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.cancelButton.UseUnderline = true;
             this.cancelButton.Label = "gtk-cancel";
             this.AddActionWidget(this.cancelButton, -6);
-            Gtk.ButtonBox.ButtonBoxChild w12 = ((Gtk.ButtonBox.ButtonBoxChild)(w11[this.cancelButton]));
-            w12.Expand = false;
-            w12.Fill = false;
+            Gtk.ButtonBox.ButtonBoxChild w11 = ((Gtk.ButtonBox.ButtonBoxChild)(w10[this.cancelButton]));
+            w11.Expand = false;
+            w11.Fill = false;
             // Container child MonoDevelop.Ide.GoToDialog_ActionArea.Gtk.ButtonBox+ButtonBoxChild
             this.openButton = new Gtk.Button();
             this.openButton.CanDefault = true;
@@ -160,10 +152,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.openButton.UseUnderline = true;
             this.openButton.Label = "gtk-open";
             this.AddActionWidget(this.openButton, 0);
-            Gtk.ButtonBox.ButtonBoxChild w13 = ((Gtk.ButtonBox.ButtonBoxChild)(w11[this.openButton]));
-            w13.Position = 1;
-            w13.Expand = false;
-            w13.Fill = false;
+            Gtk.ButtonBox.ButtonBoxChild w12 = ((Gtk.ButtonBox.ButtonBoxChild)(w10[this.openButton]));
+            w12.Position = 1;
+            w12.Expand = false;
+            w12.Fill = false;
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
@@ -173,7 +165,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.Shown += new System.EventHandler(this.HandleShown);
             this.toggleFiles.Clicked += new System.EventHandler(this.OnToggleFilesClicked);
             this.toggleTypes.Clicked += new System.EventHandler(this.OnToggleTypesClicked);
-            this.tree.RowActivated += new Gtk.RowActivatedHandler(this.HandleRowActivate);
             this.matchEntry.KeyPressEvent += new Gtk.KeyPressEventHandler(this.HandleKeyPress);
             this.matchEntry.Changed += new System.EventHandler(this.HandleEntryChanged);
             this.matchEntry.Activated += new System.EventHandler(this.HandleEntryActivate);

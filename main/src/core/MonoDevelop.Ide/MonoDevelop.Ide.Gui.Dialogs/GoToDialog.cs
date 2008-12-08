@@ -31,6 +31,7 @@
 //
 
 using System;
+using System.Text;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -41,24 +42,16 @@ using MonoDevelop.Projects;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Core.Gui;
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
 	public partial class GoToDialog : Gtk.Dialog
 	{
-		const int COL_ICON = 0;
-		const int COL_FILE = 1;
-		const int COL_PATH = 2;
-		const int COL_FILEPATH = 3;
-		const int COL_LINE = 4;
-		const int COL_COLUMN = 5;
-		
-		Dictionary<string, Pixbuf> icons;
-		int cellHeight;
-		
-		ListStore list;
-		TreeModelSort model;
+		ListView list;
+		ResultsDataSource currentResults;
+		Dictionary<string, Pixbuf> icons = new Dictionary<string, Pixbuf> ();
 		
 		object matchLock;
 		string matchString;
@@ -72,8 +65,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		bool searchFiles;
 		bool updating;
 		bool userSelecting;
-		
-		ArrayList searchResult = new ArrayList ();
 		
 		string filename;
 		int fileLine;
@@ -115,8 +106,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			matchLock = new object ();
 			matchString = String.Empty;
 			
-			icons = new Dictionary<string, Pixbuf> ();
-			
 			Build ();
 			SetupTreeView ();
 			matchEntry.GrabFocus ();
@@ -138,44 +127,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		private void SetupTreeView ()
 		{
-			list = new ListStore (typeof (Pixbuf),
-				typeof (string),
-				typeof (string),
-				typeof (string),
-				typeof (int),
-				typeof (int));
-			
-			model = new TreeModelSort (list);
-			tree.Model = model;
-			
-			TreeViewColumn typeFileColumn = new TreeViewColumn ();
-			typeFileColumn.Resizable = true;
-			typeFileColumn.Title = GettextCatalog.GetString ("Name");			
-			CellRendererPixbuf crPix = new CellRendererPixbuf ();
-			typeFileColumn.PackStart (crPix, false);
-			typeFileColumn.AddAttribute (crPix, "pixbuf", COL_ICON);			
-			CellRendererText crText = new CellRendererText ();
-			typeFileColumn.PackStart (crText, true);
-			typeFileColumn.AddAttribute (crText, "text", COL_FILE);						
-			tree.AppendColumn (typeFileColumn);
-			
-			TreeViewColumn pathColumn = new TreeViewColumn ();
-			pathColumn.Resizable = true;
-			pathColumn.Title = GettextCatalog.GetString ("Full name");
-			crText = new CellRendererText ();
-			
-			pathColumn.PackStart (crText, true);
-			pathColumn.AddAttribute (crText, "text", COL_PATH);			
-			tree.AppendColumn (pathColumn);
-			model.SetSortColumnId (COL_FILE, SortType.Ascending);
-			model.ChangeSortColumn ();
-			cellHeight = 29;
-			tree.Selection.Changed += OnSelectionChanged;
-		}
-		
-		void OnSelectionChanged (object ob, EventArgs args)
-		{
-			openButton.Sensitive = tree.Selection.CountSelectedRows () > 0;
+			list = new ListView ();
+			currentResults = new ResultsDataSource ();
+			list.DataSource = currentResults;
+			list.Show ();
+			list.ItemActivated += HandleOpen;
+			scrolledwindow.Add (list);
 		}
 		
 		protected void HandleShown (object sender, System.EventArgs e)
@@ -193,11 +150,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			OpenFile ();
 		}
 		
-		protected virtual void HandleRowActivate (object o, RowActivatedArgs args)
-		{
-			OpenFile ();
-		}
-		
 		protected virtual void HandleEntryActivate (object o, EventArgs args)
 		{
 			OpenFile ();
@@ -205,15 +157,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		private void OpenFile ()
 		{
-			TreeModel model;
-			TreeIter iter;
-			
-			TreeSelection sel = tree.Selection;
-			if (sel.GetSelected (out model, out iter)) {
-				object o = model.GetValue (iter, COL_FILEPATH);
-				Filename = o as string;
-				fileLine = (int) model.GetValue (iter, COL_LINE);
-				fileCol = (int) model.GetValue (iter, COL_COLUMN);
+			if (list.Selection != -1) {
+				SearchResult res = currentResults [list.Selection];
+				Filename = res.File;
+				fileLine = res.Row;
+				fileCol = res.Column;
 				Respond (ResponseType.Ok);
 			} else {
 				Filename = String.Empty;
@@ -266,18 +214,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			lock (matchLock) {
 				matchString = toMatch;
 			}
-			
-			lock (searchResult) {
-				// Clean the results list
-				searchResult.Clear ();
-			}
 
-			// Queuing this seems to prevent things getting
-			// added from queued events after the clear.
-			if (list != null) {
-				DispatchService.GuiDispatch (list.Clear);
-			}
-			
 			if (searchThread == null) {
 				// Create the handle the search thread will wait on when there is nothing to do
 				searchThreadWait = new AutoResetEvent (false);
@@ -320,163 +257,347 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			searchThreadWait = null;
 			searchThread = null;
 		}
+
+		List<string> files;
+		List<IType> types;
+		List<string> filteredFiles;
+		List<IType> filteredTypes;
+		string previousPattern;
 		
 		void SearchThreadCycle ()
 		{
 			// This is the inner thread worker; it actually does the searching
 			// Any where we enter loop, a check is added to see if the search
 			// should be aborted entirely so we can return to the wait handle
-			
-			foreach (Document doc in IdeApp.Workbench.Documents) {
-				if (!searchCycleActive) return;
+
+			ResultsDataSource results = new ResultsDataSource ();
+			string toMatch = matchString;
+
+			if (searchFiles) {
+				// Get the list of files. If the parttern is a refinement of the previous
+				// one, use the list filtered in the previous search.
+				List<string> allFiles;
+				if (previousPattern != null && toMatch.StartsWith (previousPattern))
+					allFiles = filteredFiles;
+				else if (files == null)
+					allFiles = files = GetFiles ();
+				else
+					allFiles = files;
+
+				List<string> newFilteredFiles = new List<string> ();
+				foreach (string file in allFiles) {
+					if (!searchCycleActive) return;
+					if (CheckFile (results, file, toMatch))
+						newFilteredFiles.Add (file);
+				}
+				previousPattern = toMatch;
+				filteredFiles = newFilteredFiles;
+			}
+			else {
+				// Get the list of types. If the parttern is a refinement of the previous
+				// one, use the list filtered in the previous search.
+				List<IType> allTypes;
+				if (previousPattern != null && toMatch.StartsWith (previousPattern))
+					allTypes = filteredTypes;
+				else if (types == null)
+					allTypes = types = GetTypes ();
+				else
+					allTypes = types;
 				
+				List<IType> newFilteredTypes = new List<IType> ();
+				foreach (IType type in types) {
+					if (!searchCycleActive) return;
+					if (CheckType (results, type, toMatch))
+						newFilteredTypes.Add (type);
+				}
+				previousPattern = toMatch;
+				filteredTypes = newFilteredTypes;
+			}
+
+			results.FixDuplicateNames ();
+			
+			results.Sort (delegate (SearchResult o1, SearchResult o2) {
+				return o1.PlainText.CompareTo (o2.PlainText);
+			});
+			
+			int best = results.IndexOf (results.BestResult);
+			if (best == -1)
+				best = 0;
+
+			Application.Invoke (delegate {
+				list.DataSource = results;
+				currentResults = results;
+				list.Selection = best;
+				list.CenterViewToSelection ();
+			});
+		}
+
+		List<string> GetFiles ()
+		{
+			List<string> list = new List<string> ();
+			foreach (Document doc in IdeApp.Workbench.Documents) {
 				// We only want to check it here if it's not part
 				// of the open combine.  Otherwise, it will get
 				// checked down below.
-				if(doc.Project != null)
-					continue;
-				
-				string toMatch;
-				lock (matchLock) {
-					toMatch = matchString;
-				}
+				if (doc.Project == null && doc.IsFile)
+					list.Add (doc.Name);
+			}
+			
+			ReadOnlyCollection<Project> projects = IdeApp.Workspace.GetAllProjects ();
 
-				if (doc.IsFile) {
-					if (searchFiles) {
-						CheckFile (doc.Name, toMatch);
-					} else {
-						ICompilationUnit info = doc.CompilationUnit;
-						if(info != null) {
-							foreach (IType c in info.Types) {
-								if (!searchCycleActive) return;
-								CheckType (c, toMatch);
-							}
+			foreach (Project p in projects) {
+				foreach (ProjectFile file in p.Files) {
+					list.Add (file.FilePath);
+				}
+			}
+			return list;
+		}
+		
+		List<IType> GetTypes ()
+		{
+			List<IType> list = new List<IType> ();
+			foreach (Document doc in IdeApp.Workbench.Documents) {
+				// We only want to check it here if it's not part
+				// of the open combine.  Otherwise, it will get
+				// checked down below.
+				if (doc.Project == null && doc.IsFile) {
+					ICompilationUnit info = doc.CompilationUnit;
+					if (info != null) {
+						foreach (IType c in info.Types) {
+							list.Add (c);
 						}
 					}
 				}
 			}
 			
 			ReadOnlyCollection<Project> projects = IdeApp.Workspace.GetAllProjects ();
-			if (projects.Count < 1)
-				return;
 
-			foreach (SolutionItem entry in projects) {
-				if (!searchCycleActive) return;
-				
-				Project p = entry as Project;
-				if (p == null)
-					continue;
-				
-				string toMatch;
-				lock (matchLock) {
-					toMatch = matchString;
-				}
-				
-				if (searchFiles) {
-					ProjectFileCollection files = p.Files;
-					if (files.Count < 1)
-						continue;
-
-					foreach (ProjectFile file in files) {
-						if (!searchCycleActive) return;
-						CheckFile (file.FilePath, toMatch);
-					}
-				} else {
-
-					foreach (IType c in ProjectDomService.GetProjectDom (p).Types) {
-						if (!searchCycleActive) return;
-						CheckType (c, toMatch);
-					}
+			foreach (Project p in projects) {
+				foreach (IType c in ProjectDomService.GetProjectDom (p).Types) {
+					list.Add (c);
 				}
 			}
+			return list;
+		}
+
+		void AddType (IType c, List<IType> list)
+		{
+			list.Add (c);
+			foreach (IType ct in c.InnerTypes)
+				AddType (ct, list);
 		}
 		
-		void CheckFile (string path, string toMatch)
+		bool CheckFile (ResultsDataSource results, string path, string toMatch)
 		{
-			string name = System.IO.Path.GetFileName (path);
-			if (toMatch.Length > 0 && !name.ToLower ().Contains (toMatch))
-				return;
+			string result;
+			int rank;
+			string fullName = System.IO.Path.GetFileName (path);
+			if (!MatchName (fullName, toMatch, out result, out rank)) {
+				fullName = path;
+				if (!MatchName (path, toMatch, out result, out rank))
+					return false;
+			}
+
+			string dirName = System.IO.Path.GetFileName (System.IO.Path.GetDirectoryName (path));
+			results.AddResult (new FileSearchResult (result, fullName, dirName, path, rank));
+			return true;
+		}
+		
+		bool CheckType (ResultsDataSource results, IType c, string toMatch)
+		{
+			string result;
+			int rank;
+			string fullName = c.Name;
+			if (!MatchName (fullName, toMatch, out result, out rank)) {
+				fullName = c.FullName;
+				if (!MatchName (fullName, toMatch, out result, out rank))
+					return false;
+			}
+
+			results.AddResult (new TypeSearchResult (c, result, fullName, c.FullName, rank));
+			return true;
+		}
+
+		bool MatchName (string name, string toMatch, out string matchedString, out int matchRank)
+		{
+			if (toMatch.Length == 0) {
+				matchedString = GLib.Markup.EscapeText (name);
+				matchRank = int.MinValue;
+				return true;
+			}
+			MatchLane lane = MatchString (name, toMatch);
+			if (lane != null) {
+				StringBuilder sb = new StringBuilder ();
+				int lastPos = 0;
+				for (int n=0; n <= lane.Index; n++) {
+					int pos = lane.Positions [n];
+					int len = lane.Lengths [n];
+					if (pos - lastPos > 0)
+						sb.Append (GLib.Markup.EscapeText (name.Substring (lastPos, pos - lastPos)));
+					sb.Append ("<b>");
+					sb.Append (GLib.Markup.EscapeText (name.Substring (pos, len)));
+					sb.Append ("</b>");
+					lastPos = pos + len;
+				}
+				if (lastPos < name.Length)
+					sb.Append (GLib.Markup.EscapeText (name.Substring (lastPos, name.Length - lastPos)));
+				matchedString = sb.ToString ();
+				matchRank = -(lane.Positions [0] + (name.Length - toMatch.Length));
+				return true;
+			}
+			
+			matchedString = null;
+			matchRank = int.MinValue;
+			return false;
+		}
+
+		MatchLane MatchString (string text, string toMatch)
+		{
+			if (text.Length < toMatch.Length)
+				return null;
+			
+			List<MatchLane> matchLanes = null;
+			bool lastWasSeparator = false;
+			int tn = 0;
+			
+			while (tn < text.Length) {
+				char ct = text [tn];
+	
+				// Keep the lane count in a var because new lanes don't have to be updated
+				// until the next iteration
+				int laneCount = matchLanes != null ? matchLanes.Count : 0;
+				
+				char cm = toMatch [0]; 
+				if (char.ToLower (ct) == char.ToLower (cm)) {
+					if (matchLanes == null)
+						matchLanes = new List<MatchLane> ();
+					matchLanes.Add (new MatchLane (MatchMode.Substring, tn, text.Length - tn));
+					if (toMatch.Length == 1)
+						return matchLanes[0];
+					if (char.IsUpper (ct) || lastWasSeparator)
+						matchLanes.Add (new MatchLane (MatchMode.Acronim, tn, text.Length - tn));
+				}
 					
-			string icon = Services.Icons.GetImageForFile (path);
-			AddItem (icon, name, path, path, -1, -1);
-		}
-		
-		void CheckType (IType c, string toMatch)
-		{
-			if (toMatch.Length > 0 && !c.FullName.ToLower ().Contains (toMatch))
-				return;
-			
-			if (c.BodyRegion.IsEmpty)
-				return;
-			
-			AddItem (c.StockIcon, c.Name, c.FullName, c.CompilationUnit.FileName, 
-				c.Location.Line, c.Location.Column);
+				for (int n=0; n<laneCount; n++) {
+					MatchLane lane = matchLanes [n];
+					if (lane == null)
+						continue;
+					cm = toMatch [lane.MatchIndex]; 
+					bool match = char.ToLower (ct) == char.ToLower (cm);
+					bool wordStartMatch = match && (tn == 0 || char.IsUpper (ct) || lastWasSeparator);
+	
+					if (lane.MatchMode == MatchMode.Substring) {
+						if (wordStartMatch) {
+							// Possible acronym match after a substring. Start a new lane.
+							MatchLane newLane = lane.Clone ();
+							newLane.MatchMode = MatchMode.Acronim;
+							newLane.Index++;
+							newLane.Positions [newLane.Index] = tn;
+							newLane.Lengths [newLane.Index] = 1;
+							newLane.MatchIndex++;
+							matchLanes.Add (newLane);
+						}
+						if (match) {
+							// Maybe it is a false substring start, so add a new lane to keep
+							// track of the old lane
+							MatchLane newLane = lane.Clone ();
+							newLane.MatchMode = MatchMode.Acronim;
+							matchLanes.Add (newLane);
+	
+							// Update the current lane
+							lane.Lengths [lane.Index]++;
+							lane.MatchIndex++;
+						} else {
+							if (lane.Lengths [lane.Index] > 1)
+								lane.MatchMode = MatchMode.Acronim;
+							else
+								matchLanes [n] = null; // Kill the lane
+						}
+					}
+					else if (lane.MatchMode == MatchMode.Acronim) {
+						if (match && lane.Positions [lane.Index] == tn - 1) {
+							// Possible substring match after an acronim. Start a new lane.
+							MatchLane newLane = lane.Clone ();
+							newLane.MatchMode = MatchMode.Substring;
+							newLane.Index++;
+							newLane.Positions [newLane.Index] = tn;
+							newLane.Lengths [newLane.Index] = 1;
+							newLane.MatchIndex++;
+							matchLanes.Add (newLane);
+							if (newLane.MatchIndex == toMatch.Length)
+								return newLane;
+						}
+						if (wordStartMatch || (match && char.IsPunctuation (cm))) {
+							// Maybe it is a false acronym start, so add a new lane to keep
+							// track of the old lane
+							MatchLane newLane = lane.Clone ();
+							matchLanes.Add (newLane);
+	
+							// Update the current lane
+							lane.Index++;
+							lane.Positions [lane.Index] = tn;
+							lane.Lengths [lane.Index] = 1;
+							lane.MatchIndex++;
+						}
+					}
+					if (lane.MatchIndex == toMatch.Length)
+						return lane;
+				}
+				lastWasSeparator = (ct == '.' || ct == '_' || ct == '-' || ct == ' ' || ct == '/' || ct == '\\');
+				tn++;
+			}
+			return null;
 		}
 
-		void AddItem (params object[] data)
+		enum MatchMode
 		{
-			// Add the result to the results list, and asychronously call the
-			// AddItemGui method which will be in charge of adding them to the tree.
-			
-			lock (searchResult) {
-				searchResult.Add (data);
-				if (searchResult.Count == 1)
-					GLib.Idle.Add (AddItemGui);
+			Substring,
+			Acronim
+		}
+
+		class MatchLane
+		{
+			public int[] Positions;
+			public int[] Lengths;
+			public MatchMode MatchMode;
+			public int Index;
+			public int MatchIndex;
+	
+			public MatchLane ()
+			{
+			}
+	
+			public MatchLane (MatchMode mode, int pos, int len)
+			{
+				MatchMode = mode;
+				Positions = new int [len];
+				Lengths = new int [len];
+				Positions [0] = pos;
+				Lengths [0] = 1;
+				Index = 0;
+				MatchIndex = 1;
+			}
+	
+			public MatchLane Clone ()
+			{
+				MatchLane lane = new MatchLane ();
+				lane.Positions = (int[]) Positions.Clone ();
+				lane.Lengths = (int[]) Lengths.Clone ();
+				lane.MatchMode = MatchMode;
+				lane.MatchIndex = MatchIndex;
+				lane.Index = Index;
+				return lane;
 			}
 		}
-		
-		bool AddItemGui ()
+
+		public Pixbuf GetIcon (string id)
 		{
-			// Add items to the tree. Do it in blocks of 50, to avoid freezing
-			// the GUI when there are a lot of items to add.
-			
-			lock (searchResult) {
-				int max = Math.Min (50, searchResult.Count);
-				for (int n=0; n<max; n++) {
-					object[] data = (object[]) searchResult [n];
-					Pixbuf icon = GetIcon ((string)data[0]);
-					data[0] = icon;
-					list.AppendValues (data);
-				}
-				SelectFirstItem ();
-				searchResult.RemoveRange (0, max);
-				return searchResult.Count > 0;
-			}
-		}
-		
-		void SelectFirstItem ()
-		{
-			TreeIter iter;
-			
-			// Don't select if something is already selected
-			if (userSelecting && tree.Selection.GetSelected (out iter)) {
-				tree.ScrollToCell (model.GetPath (iter), tree.Columns[0],false, 0f, 0f);
-				return;
-			}
-			
-			// Select the first thing in the list.
-			if(model.GetIterFirst (out iter))
-				Select (iter);
-		}
-		
-		private Pixbuf GetIcon (string id)
-		{
-			if (!icons.ContainsKey (id)) {
-				IconSize size = IconSize.Menu;
-				Pixbuf icon = tree.RenderIcon (id, size, String.Empty); 
+			Gdk.Pixbuf icon;
+			if (!icons.TryGetValue (id, out icon)) {
+				icon = IdeApp.Services.Resources.GetBitmap (id, IconSize.Menu);
 				icons.Add (id, icon);
 			}
-			return icons [id];
-		}
-
-		private void Select (TreeIter iter)
-		{
-			if ( tree.Selection == null )
-				return;
-			
-			tree.Selection.SelectIter (iter);
-			TreePath path = model.GetPath (iter);
-			tree.ScrollToCell (path, null, false, 0, 0);
+			return icon;
 		}
 		
 		protected virtual void HandleKeyPress (object o, 
@@ -485,91 +606,26 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			// Up and down move the tree selection up and down
 			// for rapid selection changes.
 			Gdk.EventKey key = args.Event;
-			int page = (int)(tree.VisibleRect.Height / cellHeight);
 			switch (key.Key) {
 			case Gdk.Key.Page_Down:
-				MoveSelectionDown (page);
+				list.Selection += list.VisibleRows;
 				args.RetVal = true;
 				break;
 			case Gdk.Key.Page_Up:
-				MoveSelectionUp (page);
+				list.Selection -= list.VisibleRows;
 				args.RetVal = true;
 				break;
 			case Gdk.Key.Up:
-				MoveSelectionUp (1);
+				list.Selection--;
 				args.RetVal = true;
 				break;
 			case Gdk.Key.Down:
-				MoveSelectionDown (1);
+				list.Selection++;
 				args.RetVal = true;
 				break;
 			}
 		}
 		
-		void MoveSelectionUp (int n)
-		{
-			TreeSelection sel = tree.Selection;
-			TreeIter iter;
-			
-			if (!sel.GetSelected (out iter))
-				return;
-			
-			TreePath path = model.GetPath (iter);
-			while (--n > 0 && path.Prev ()) 
-				;
-			
-			if (path.Prev ()) {
-				// Go to the previous node.
-				if (model.GetIter (out iter, path))
-					Select (iter);
-				userSelecting = true;
-			} else {
-				SelectFirstNode();
-			}
-		}
-		
-		void SelectLastNode ()
-		{
-			TreeSelection sel = tree.Selection;
-			TreeIter iter;
-			
-			if (!sel.GetSelected (out iter))
-				return;
-			while (model.IterNext (ref iter)) {
-				Select (iter);
-			}
-			userSelecting = true;
-		}
-
-		void SelectFirstNode()
-		{
-			TreeSelection sel = tree.Selection;
-			TreeIter iter;
-			
-			if (!sel.GetSelected (out iter))
-				return;
-			if (model.GetIterFirst (out iter))
-				Select (iter);
-			userSelecting = true;
-		}
-		
-		void MoveSelectionDown (int n)
-		{
-			TreeSelection sel = tree.Selection;
-			TreeIter iter;
-			
-			if (!sel.GetSelected (out iter))
-				return;
-			
-			TreePath path = model.GetPath (iter);
-			while (n-- > 0)
-				path.Next ();
-			if (model.GetIter (out iter, path))
-				Select (iter);
-			else 
-				SelectLastNode ();
-			userSelecting = true;
-		}
 		
 		void UpdateList ()
 		{
@@ -595,6 +651,145 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				return;
 			this.SearchFiles = false;
 			matchEntry.GrabFocus ();
+		}
+	}
+
+	abstract class SearchResult
+	{
+		public SearchResult (string name, string plainText, string fullName, int rank)
+		{
+			Text = name;
+			FullName = fullName;
+			Rank = rank;
+			PlainText = plainText;
+		}
+		
+		public string Text;
+		public string PlainText;
+		public string FullName;
+		public int Rank;
+		
+		public virtual int Row {
+			get { return -1; }
+		}
+		
+		public virtual int Column {
+			get { return -1; }
+		}
+		
+		public abstract string File { get; }
+		public abstract Gdk.Pixbuf Icon { get; }
+	}
+
+	class TypeSearchResult: SearchResult
+	{
+		string icon;
+		IType type;
+		
+		public TypeSearchResult (IType type, string name, string plainText, string fullName, int rank)
+			: base (name, plainText, fullName, rank)
+		{
+			this.icon = type.StockIcon;
+		}
+
+		public override string File {
+			get { return type.CompilationUnit.FileName; }
+		}
+
+		public override Gdk.Pixbuf Icon {
+			get {
+				return IdeApp.Services.Resources.GetBitmap (icon, IconSize.Menu);
+			}
+		}
+		
+		public override int Row {
+			get { return type.BodyRegion.Start.Line; }
+		}
+		
+		public override int Column {
+			get { return type.BodyRegion.Start.Column; }
+		}
+
+	}
+
+	class FileSearchResult: SearchResult
+	{
+		string file;
+		
+		public FileSearchResult (string name, string plainText, string fullName, string file, int rank)
+			: base (name, plainText, fullName, rank)
+		{
+			this.file = file;
+		}
+
+		public override string File {
+			get {
+				return file;
+			}
+		}
+
+
+		public override Gdk.Pixbuf Icon {
+			get {
+				return IdeApp.Services.PlatformService.GetPixbufForFile (file, IconSize.Menu);
+			}
+		}
+
+	}
+	
+	class ResultsDataSource: List<SearchResult>, IListViewDataSource
+	{
+		SearchResult bestResult;
+		int bestRank = int.MinValue;
+		Dictionary<string,bool> names = new Dictionary<string,bool> ();
+
+		public string GetText (int n)
+		{
+			return this [n].Text;
+		}
+
+		public Pixbuf GetIcon (int n)
+		{
+			return this [n].Icon;
+		}
+		
+		public bool UseMarkup (int n)
+		{
+			return true;
+		}
+				
+		public int ItemCount {
+			get {
+				return Count;
+			}
+		}
+
+		public SearchResult BestResult {
+			get {
+				return bestResult;
+			}
+		}
+
+		public void AddResult (SearchResult res)
+		{
+			Add (res);
+			if (names.ContainsKey (res.Text))
+				names [res.Text] = true;
+			else
+				names.Add (res.Text, false);
+			if (res.Rank > bestRank) {
+				bestResult = res;
+				bestRank = res.Rank;
+			}
+		}
+
+		public void FixDuplicateNames ()
+		{
+			foreach (SearchResult res in this) {
+				bool dup = names [res.Text];
+				if (dup)
+					res.Text += " [" + res.FullName + "]";
+			}
 		}
 	}
 }
