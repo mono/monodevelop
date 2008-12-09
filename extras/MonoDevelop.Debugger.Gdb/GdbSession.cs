@@ -110,6 +110,8 @@ namespace MonoDevelop.Debugger.Gdb
 				// Initialize the terminal
 				RunCommand ("-inferior-tty-set", tty);
 				RunCommand ("-file-exec-and-symbols", startInfo.Command);
+
+				RunCommand ("-environment-directory", startInfo.WorkingDirectory);
 				
 				// Set inferior arguments
 				if (!string.IsNullOrEmpty (startInfo.Arguments))
@@ -262,7 +264,10 @@ namespace MonoDevelop.Debugger.Gdb
 						if (!bp.BreakIfConditionChanges)
 							extraCmd += " -c " + bp.ConditionExpression;
 					}
+					RunCommand ("-environment-directory", Path.GetDirectoryName (bp.FileName));
 					GdbCommandResult res = RunCommand ("-break-insert", extraCmd.Trim (), bp.FileName + ":" + bp.Line);
+					if (CommandStatus.Error == res.Status)
+						res = RunCommand ("-break-insert", extraCmd.Trim (), Path.GetFileName (bp.FileName) + ":" + bp.Line);
 					int bh = res.GetObject ("bkpt").GetInt ("number");
 					if (!activate)
 						RunCommand ("-break-disable", bh.ToString ());

@@ -1,3 +1,7 @@
+2008-12-09  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* GdbSession.cs: Fallback to relative source file path.
+
 2008-12-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Manifest.addin.xml: Set correct add-in category.
