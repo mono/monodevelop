@@ -71,7 +71,7 @@ namespace MonoDevelop.Projects
 			}
 			set {
 				if (string.IsNullOrEmpty (fileName))
-					SetLocation (".", value);
+					SetLocation ("", value);
 				else {
 					string dir = Path.GetDirectoryName (fileName);
 					string ext = Path.GetExtension (fileName);

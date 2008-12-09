@@ -1,3 +1,23 @@
+2008-12-09  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/WorkspaceItem.cs: Properly set the default file
+	name when setting the name.
+
+	* MonoDevelop.Projects/ProjectService.cs: Fix invalid check.
+
+	* MonoDevelop.Projects.Formats.MSBuild/SlnData.cs:
+	* MonoDevelop.Projects.Formats.MSBuild/SlnFileFormat.cs:
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildHandler.cs:
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProject.cs:
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildFileFormat.cs:
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs: Added
+	more information about Visual Studio versions. There are several
+	version numbers: product version (VS release), tools version (msbuild
+	tools version), and sln version. Now versions are properly saved
+	according to the file format. Fixes bug #431726.
+
+	* MonoDevelop.Projects.addin.xml: Registered VS 2010 format.
+
 2008-12-05  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectService.cs: Don't

@@ -35,7 +35,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 {
 	class SlnData
 	{
-		string headerComment;
+		string headerComment = "# MonoDevelop";
 		string versionString;
 		Dictionary<SolutionConfiguration, string> configStrings;
 		List<string> globalExtra; // unused GlobalSections
@@ -44,15 +44,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		List<string> unknownProjects;
 		Dictionary<string, SolutionEntityItem> projectsByGuidTable;
 
-		public void UpdateVersion (string productVersion)
+		public void UpdateVersion (MSBuildFileFormat format)
 		{
-			if (productVersion == MSBuildFileFormatVS05.Version) {
-				versionString = "9.00";
-				headerComment = "# Visual Studio 2005";
-			} else {
-				versionString = "10.00";
-				headerComment = "# Visual Studio 2008";
-			}
+			versionString = format.SlnVersion;
+			headerComment = "# " + format.ProductDescription;
 		}
 
 		// Eg. "# Visual C# Express 2008"

@@ -433,6 +433,19 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			else
 				Item.ExtendedProperties.Remove ("ProjectTypeGuids");
 
+			string productVersion = (string) Item.ExtendedProperties ["ProductVersion"];
+			if (productVersion == null) {
+				Item.ExtendedProperties ["ProductVersion"] = ProductVersion;
+				productVersion = ProductVersion;
+			}
+
+			Item.ExtendedProperties ["SchemaVersion"] = "2.0";
+			
+			if (ToolsVersion != "2.0")
+				msproject.ToolsVersion = ToolsVersion;
+			else
+				msproject.ToolsVersion = string.Empty;
+			
 			// This serialize call will write data to ser.InternalItemProperties and ser.ExternalItemProperties
 			ser.Serialize (Item, Item.GetType ());
 			
@@ -470,14 +483,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					else if (debugType != "none" && debugType != "pdbonly")
 						cp.ExtendedProperties ["DebugType"] = "none";
 				}
-			}
-			
-			Item.ExtendedProperties ["SchemaVersion"] = "2.0";
-			
-			string productVersion = (string) Item.ExtendedProperties ["ProductVersion"];
-			if (productVersion == null) {
-				Item.ExtendedProperties ["ProductVersion"] = MSBuildFileFormatVS05.Version;
-				productVersion = MSBuildFileFormatVS05.Version;
 			}
 			
 			if (!string.IsNullOrEmpty (assemblyName))

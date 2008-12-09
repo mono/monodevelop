@@ -104,6 +104,16 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			set { doc.DocumentElement.SetAttribute ("DefaultTargets", value); }
 		}
 		
+		public string ToolsVersion {
+			get { return doc.DocumentElement.GetAttribute ("ToolsVersion"); }
+			set {
+				if (!string.IsNullOrEmpty (value))
+					doc.DocumentElement.SetAttribute ("ToolsVersion", value);
+				else
+					doc.DocumentElement.RemoveAttribute ("ToolsVersion");
+			}
+		}
+		
 		public void AddNewImport (string name, string condition)
 		{
 			XmlElement elem = doc.CreateElement (null, "Import", MSBuildProject.Schema);

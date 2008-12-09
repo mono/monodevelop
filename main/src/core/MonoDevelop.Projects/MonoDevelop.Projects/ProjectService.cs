@@ -183,7 +183,7 @@ namespace MonoDevelop.Projects
 			if (item == null)
 				throw new InvalidOperationException ("Invalid file format: " + file);
 			
-			if (item.FileFormat != null)
+			if (item.FileFormat == null)
 				item.ConvertToFormat (format, false);
 
 			return item;

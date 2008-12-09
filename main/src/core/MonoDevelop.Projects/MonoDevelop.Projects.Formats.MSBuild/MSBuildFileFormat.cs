@@ -26,6 +26,7 @@
 //
 
 using System;
+using System.Xml;
 using System.Collections.Generic;
 using System.IO;
 using MonoDevelop.Projects.Extensions;
@@ -36,10 +37,16 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 	{
 		SlnFileFormat slnFileFormat = new SlnFileFormat ();
 		string productVersion;
+		string toolsVersion;
+		string slnVersion;
+		string productDescription;
 		
-		public MSBuildFileFormat (string productVersion)
+		public MSBuildFileFormat (string productVersion, string toolsVersion, string slnVersion, string productDescription)
 		{
 			this.productVersion = productVersion;
+			this.toolsVersion = toolsVersion;
+			this.slnVersion = slnVersion;
+			this.productDescription = productDescription;
 		}
 		
 		public string Name {
@@ -50,8 +57,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public string GetValidFormatName (object obj, string fileName)
 		{
-			if (slnFileFormat.CanWriteFile (obj, productVersion))
-				return slnFileFormat.GetValidFormatName (obj, fileName, productVersion);
+			if (slnFileFormat.CanWriteFile (obj, this))
+				return slnFileFormat.GetValidFormatName (obj, fileName, this);
 			else {
 				ItemTypeNode node = MSBuildProjectService.FindHandlerForItem ((SolutionEntityItem)obj);
 				if (node != null)
@@ -63,18 +70,20 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public bool CanReadFile (string file, Type expectedType)
 		{
-			if (expectedType.IsAssignableFrom (typeof(Solution)) && slnFileFormat.CanReadFile (file, productVersion))
+			if (expectedType.IsAssignableFrom (typeof(Solution)) && slnFileFormat.CanReadFile (file, this))
 				return true;
 			else if (expectedType.IsAssignableFrom (typeof(SolutionEntityItem))) {
 				ItemTypeNode node = MSBuildProjectService.FindHandlerForFile (file);
-				return node != null;
+				if (node == null)
+					return false;
+				return toolsVersion == ReadToolsVersion (file);
 			}
 			return false;
 		}
 
 		public bool CanWriteFile (object obj)
 		{
-			if (slnFileFormat.CanWriteFile (obj, productVersion))
+			if (slnFileFormat.CanWriteFile (obj, this))
 				return true;
 			else if (obj is SolutionEntityItem) {
 				ItemTypeNode node = MSBuildProjectService.FindHandlerForItem ((SolutionEntityItem)obj);
@@ -85,21 +94,22 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public void WriteFile (string file, object obj, MonoDevelop.Core.IProgressMonitor monitor)
 		{
-			if (slnFileFormat.CanWriteFile (obj, productVersion)) {
-				slnFileFormat.WriteFile (file, obj, productVersion, monitor);
+			if (slnFileFormat.CanWriteFile (obj, this)) {
+				slnFileFormat.WriteFile (file, obj, this, monitor);
 			} else {
 				SolutionEntityItem item = (SolutionEntityItem) obj;
 				if (!(item.ItemHandler is MSBuildProjectHandler))
 					MSBuildProjectService.InitializeItemHandler (item);
 				MSBuildProjectHandler handler = (MSBuildProjectHandler) item.ItemHandler;
+				handler.SetTargetVersion (productVersion, toolsVersion);
 				handler.Save (monitor);
 			}
 		}
 
 		public object ReadFile (string file, Type expectedType, MonoDevelop.Core.IProgressMonitor monitor)
 		{
-			if (slnFileFormat.CanReadFile (file, productVersion))
-				return slnFileFormat.ReadFile (file, productVersion, monitor);
+			if (slnFileFormat.CanReadFile (file, this))
+				return slnFileFormat.ReadFile (file, this, monitor);
 			else
 				return MSBuildProjectService.LoadItem (monitor, file, null, null);
 		}
@@ -117,26 +127,72 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			if (obj == null)
 				return;
+			
+			MSBuildHandler handler;
 			SolutionItem item = obj as SolutionItem;
-			if (item != null && (item.GetItemHandler() is MSBuildHandler)) {
-				item.ExtendedProperties ["ProductVersion"] = productVersion;
-				return;
+			if (item != null) {
+				handler = item.GetItemHandler() as MSBuildHandler;
+				if (handler != null) {
+					handler.SetTargetVersion (productVersion, toolsVersion);
+					return;
+				}
 			}
 			
-			item.ExtendedProperties ["ProductVersion"] = productVersion;
 			MSBuildProjectService.InitializeItemHandler (item);
+			handler = (MSBuildHandler) item.ItemHandler;
+			handler.SetTargetVersion (productVersion, toolsVersion);
 		}
 		
 		public bool SupportsMixedFormats {
 			get { return false; }
+		}
+
+		public string ToolsVersion {
+			get {
+				return toolsVersion;
+			}
+		}
+
+		public string SlnVersion {
+			get {
+				return slnVersion;
+			}
+		}
+
+		public string ProductVersion {
+			get {
+				return productVersion;
+			}
+		}
+
+		public string ProductDescription {
+			get {
+				return productDescription;
+			}
+		}
+
+		string ReadToolsVersion (string file)
+		{
+			try {
+				using (XmlTextReader tr = new XmlTextReader (new StreamReader (file))) {
+					if (tr.MoveToElement ())
+						return tr.GetAttribute ("ToolsVersion");
+				}
+			} catch {
+				// Ignore
+			}
+			return string.Empty;
 		}
 	}
 	
 	class MSBuildFileFormatVS05: MSBuildFileFormat
 	{
 		public const string Version = "8.0.50727";
+		public const string ToolsVersion = "2.0";
+		public const string SlnVersion = "9.00";
+		public const string ProductComment = "Visual Studio 2005";
 		
-		public MSBuildFileFormatVS05 (): base (Version)
+		public MSBuildFileFormatVS05 (): base (Version, ToolsVersion, SlnVersion, ProductComment)
 		{
 		}
 	}
@@ -144,8 +200,23 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 	class MSBuildFileFormatVS08: MSBuildFileFormat
 	{
 		public const string Version = "9.0.21022";
+		public const string ToolsVersion = "3.5";
+		public const string SlnVersion = "10.00";
+		public const string ProductComment = "Visual Studio 2008";
 		
-		public MSBuildFileFormatVS08 (): base (Version)
+		public MSBuildFileFormatVS08 (): base (Version, ToolsVersion, SlnVersion, ProductComment)
+		{
+		}
+	}
+	
+	class MSBuildFileFormatVS10: MSBuildFileFormat
+	{
+		public const string Version = "10.0.0";
+		public const string ToolsVersion = "4.0";
+		public const string SlnVersion = "11.00";
+		public const string ProductComment = "Visual Studio 2010";
+		
+		public MSBuildFileFormatVS10 (): base (Version, ToolsVersion, SlnVersion, ProductComment)
 		{
 		}
 	}
