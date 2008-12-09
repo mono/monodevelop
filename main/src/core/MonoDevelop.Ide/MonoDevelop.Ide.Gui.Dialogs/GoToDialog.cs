@@ -162,6 +162,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				Filename = res.File;
 				fileLine = res.Row;
 				fileCol = res.Column;
+				if (fileLine == -1) {
+					int i = matchEntry.Text.LastIndexOf (':');
+					if (i != -1) {
+						if (!int.TryParse (matchEntry.Text.Substring (i+1), out fileLine))
+							fileLine = -1;
+					}
+				}
 				Respond (ResponseType.Ok);
 			} else {
 				Filename = String.Empty;
@@ -272,6 +279,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 
 			ResultsDataSource results = new ResultsDataSource ();
 			string toMatch = matchString;
+			int i = toMatch.IndexOf (':');
+			if (i != -1)
+				toMatch = toMatch.Substring (0,i);
 
 			if (searchFiles) {
 				// Get the list of files. If the parttern is a refinement of the previous
