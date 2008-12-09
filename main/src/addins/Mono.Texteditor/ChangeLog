@@ -1,5 +1,11 @@
 2008-12-08  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Mono.TextEditor.Vi/ViMode.cs: Implement J, M.
+
+	* Mono.TextEditor.Vi/ViActions.cs: Add a Join action.
+
+2008-12-08  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* gtk-gui/objects.xml: Updated.
 
 	* Mono.TextEditor.Vi/ViMode.cs: When selection is changed independently

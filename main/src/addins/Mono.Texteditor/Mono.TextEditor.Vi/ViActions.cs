@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Text;
 
 namespace Mono.TextEditor.Vi
 {
@@ -97,6 +98,41 @@ namespace Mono.TextEditor.Vi
 			LineSegment currentLine = data.Document.GetLine (data.Caret.Line - 1);
 			data.Caret.Offset = currentLine.Offset + currentLine.EditableLength;
 			MiscActions.InsertNewLine (data);
+		}
+		
+		public static void Join (TextEditorData data)
+		{
+			int startLine, endLine, startOffset, length, lastSpaceOffset;
+			
+			if (data.IsSomethingSelected) {
+				startLine = data.Document.OffsetToLineNumber (data.SelectionRange.Offset);
+				endLine = data.Document.OffsetToLineNumber (data.SelectionRange.EndOffset - 1);
+			} else {
+				startLine = endLine = data.Caret.Line;
+			}
+			
+			//single-line joins
+			if (endLine == startLine)
+				endLine++;
+			
+			if (endLine >= data.Document.LineCount)
+				return;
+			
+			LineSegment seg = data.Document.GetLine (startLine);
+			startOffset = seg.Offset;
+			StringBuilder sb = new StringBuilder (data.Document.GetTextAt (seg).TrimEnd ());
+			lastSpaceOffset = startOffset + sb.Length;
+			
+			for (int i = startLine + 1; i <= endLine; i++) {
+				seg = data.Document.GetLine (i);
+				lastSpaceOffset = startOffset + sb.Length;
+				sb.Append (" ");
+				sb.Append (data.Document.GetTextAt (seg).Trim ());
+			}
+			length = (seg.Offset - startOffset) + seg.EditableLength;
+			
+			data.Document.Replace (startOffset, length, sb.ToString ());
+			data.Caret.Offset = lastSpaceOffset;
 		}
 	}
 }
