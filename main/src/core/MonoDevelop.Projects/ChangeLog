@@ -1,5 +1,11 @@
 2008-12-09  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects/BuildTool.cs: Use the default configuration if
+	none is specified. Fixes bug #449441 - 'mdtool -f:<sln_file>' fails
+	to compile applications.
+
+2008-12-09  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects/WorkspaceItem.cs: Properly set the default file
 	name when setting the name.
 

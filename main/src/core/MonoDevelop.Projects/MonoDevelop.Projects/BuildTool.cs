@@ -41,7 +41,7 @@ namespace MonoDevelop.Projects
 		bool help;
 		string file;
 		string project;
-		string config = ProjectService.DefaultConfiguration;
+		string config = null;
 		string command = ProjectService.BuildTarget;
 		
 		public int Run (string[] arguments)
@@ -110,6 +110,10 @@ namespace MonoDevelop.Projects
 					return 1;
 				}
 			}
+
+			IConfigurationTarget configTarget = item as IConfigurationTarget;
+			if (config == null && configTarget != null)
+				config = configTarget.DefaultConfigurationId;
 			
 			monitor = new ConsoleProgressMonitor ();
 			BuildResult res = item.RunTarget (monitor, command, config);
