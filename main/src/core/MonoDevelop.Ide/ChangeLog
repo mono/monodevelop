@@ -1,5 +1,9 @@
 2008-12-09  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.mdp: Don't require a specific version of Mono.Addins.
+
+2008-12-09  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui.Dialogs/GoToDialog.cs: If a number is specified
 	just after the file name, use that as target line number.
 

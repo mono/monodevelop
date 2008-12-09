@@ -1,3 +1,7 @@
+2008-12-09  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* PyBinding.mdp: Don't require a specific version of Mono.Addins.
+
 2008-12-08  Andrés G. Aragoneses  <aaragoneses@novell.com>
 
 	* PyBinding.Gui/PythonEditorIndentation.cs: Completing r121006 (track

@@ -1,3 +1,8 @@
+2008-12-09  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.GtkCore.mdp: Don't require a specific version of
+	Mono.Addins.
+
 2008-12-07  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.GtkCore/WidgetParser.cs: Optimized GetToolboxItems.

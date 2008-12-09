@@ -1,5 +1,10 @@
 2008-12-09  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects.mdp: Don't require a specific version of
+	Mono.Addins.
+
+2008-12-09  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* md1format.xml:
 	* MonoDevelop.Projects/ProjectReference.cs:
 	* MonoDevelop.Projects.Formats.MD1/MD1DotNetProjectHandler.cs:

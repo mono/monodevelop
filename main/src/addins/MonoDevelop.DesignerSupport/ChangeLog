@@ -1,5 +1,10 @@
 2008-12-09  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.DesignerSupport.mdp: Don't require a specific version of
+	Mono.Addins.
+
+2008-12-09  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:
 	Allow setting the SpecificVersion flag.
 

@@ -1,3 +1,8 @@
+2008-12-09  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Debugging.Server.Mdb.mdp: Don't require a specific version of
+	Mono.Addins.
+
 2008-12-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* DebuggerServer.cs: Properly set the working directory.

@@ -1,3 +1,8 @@
+2008-12-09  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Gui.mdp: Don't require a specific version of
+	Mono.Addins.
+
 2008-12-04  Mike Kestner  <mkestner@novell.com>
 
 	* MonoDevelop.Core.Gui/DesktopApplication.cs : add a ctor. used by
