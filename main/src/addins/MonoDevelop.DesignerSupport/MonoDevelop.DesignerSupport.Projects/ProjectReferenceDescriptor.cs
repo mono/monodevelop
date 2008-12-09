@@ -125,5 +125,20 @@ namespace MonoDevelop.DesignerSupport.Projects
 			get { return pref.LocalCopy; }
 			set { pref.LocalCopy = value; }
 		}
+		
+		[Category ("Build")]
+		[DisplayName ("Specific Version")]
+		[Description ("Require a specific version of the assembly. A warning will be issued if the specific version is not found in the system.")]
+		public bool SpecificVersion {
+			get { return pref.SpecificVersion; }
+			set { pref.SpecificVersion = value; }
+		}
+		
+		protected override bool IsReadOnly (string propertyName)
+		{
+			if (propertyName == "SpecificVersion" && (pref.ReferenceType == ReferenceType.Project || pref.ReferenceType == ReferenceType.Custom))
+				return true;
+			return false;
+		}
 	}
 }
