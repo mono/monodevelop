@@ -81,6 +81,7 @@
 	<DataItem class = "MonoDevelop.Projects.ProjectReference" customDataItem="MonoDevelop.Projects.Formats.MD1.MD1CustomDataItem">
 		<ItemProperty member="referenceType" name="type" />
 		<ItemProperty member="localCopy" name="localcopy" />
+		<ItemProperty member="SpecificVersion" name="specificVersion" defaultValue="True"/>
 	</DataItem>
 	<DataItem class = "MonoDevelop.Projects.SolutionConfiguration">
 	</DataItem>

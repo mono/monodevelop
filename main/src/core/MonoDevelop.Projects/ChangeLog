@@ -1,5 +1,13 @@
 2008-12-09  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* md1format.xml:
+	* MonoDevelop.Projects/ProjectReference.cs:
+	* MonoDevelop.Projects.Formats.MD1/MD1DotNetProjectHandler.cs:
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs: Added
+	support for SpecificVersion flag.
+
+2008-12-09  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects/BuildTool.cs: Use the default configuration if
 	none is specified. Fixes bug #449441 - 'mdtool -f:<sln_file>' fails
 	to compile applications.

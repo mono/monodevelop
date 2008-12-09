@@ -254,6 +254,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						pref = new ProjectReference (ReferenceType.Gac, asm);
 					}
 					pref.Condition = buildItem.Condition;
+					pref.SpecificVersion = buildItem.GetMetadata ("SpecificVersion") != "False";
 					ReadBuildItemMetadata (ser, buildItem, pref, typeof(ProjectReference));
 					dotNetProject.References.Add (pref);
 				}
@@ -576,7 +577,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						if (asm == null)
 							asm = Path.GetFileNameWithoutExtension (pref.Reference);
 						buildItem = refgrp.AddNewItem ("Reference", asm);
-						buildItem.SetMetadata ("SpecificVersion", "False");
+						if (!pref.SpecificVersion)
+							buildItem.SetMetadata ("SpecificVersion", "False");
 						buildItem.SetMetadata ("HintPath", MSBuildProjectService.ToMSBuildPath (project.BaseDirectory, pref.Reference));
 						if (!pref.LocalCopy)
 							buildItem.SetMetadata ("Private", "False");
@@ -591,6 +593,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						if (refgrp == null)
 							refgrp = FindItemGroup (msproject, "Reference");
 						buildItem = refgrp.AddNewItem ("Reference", include);
+						if (!pref.SpecificVersion)
+							buildItem.SetMetadata ("SpecificVersion", "False");
 					}
 					else if (pref.ReferenceType == ReferenceType.Project) {
 						Project refProj = project.ParentSolution.FindProjectByName (pref.Reference);

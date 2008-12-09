@@ -60,6 +60,8 @@ namespace MonoDevelop.Projects
 		// The loadedReference stores the reference initially loaded,
 		// so it can be saved again.
 		string loadedReference;
+
+		bool specificVersion = true;
 		
 		bool localCopy = true;
 		
@@ -75,6 +77,8 @@ namespace MonoDevelop.Projects
 		
 		public ProjectReference(ReferenceType referenceType, string reference)
 		{
+			if (referenceType == ReferenceType.Assembly)
+				specificVersion = false;
 			this.referenceType = referenceType;
 			this.reference     = reference;
 			UpdateGacReference ();
@@ -142,6 +146,15 @@ namespace MonoDevelop.Projects
 		}
 
 		internal string Condition { get; set; }
+
+		public bool SpecificVersion {
+			get {
+				return specificVersion;
+			}
+			set {
+				specificVersion = value;
+			}
+		}
 		
 		/// <summary>
 		/// Returns the file name to an assembly, regardless of what 
