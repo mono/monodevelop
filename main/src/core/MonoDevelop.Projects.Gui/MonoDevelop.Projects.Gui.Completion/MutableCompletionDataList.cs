@@ -45,8 +45,6 @@ namespace MonoDevelop.Projects.Gui.Completion
 	{
 		public ProjectDomCompletionDataList ()
 		{
-			ProjectDomService.ParseOperationStarted += HandleParseOperationStarted;
-			ProjectDomService.ParseOperationFinished += HandleParseOperationFinished;
 		}
 
 		void HandleParseOperationStarted (object sender, EventArgs e)
@@ -61,23 +59,49 @@ namespace MonoDevelop.Projects.Gui.Completion
 		
 		#region IMutableCompletionDataList implementation 
 		
-		public event EventHandler Changing;
-		public event EventHandler Changed;
+		EventHandler changing;
+		EventHandler changed;
+		
+		public event EventHandler Changing {
+			add {
+				if (changing == null)
+					ProjectDomService.ParseOperationStarted += HandleParseOperationStarted;
+				changing += value;
+			}
+			remove {
+				changing -= value;
+				if (changing == null)
+					ProjectDomService.ParseOperationStarted -= HandleParseOperationStarted;
+			}
+		}
+		
+		public event EventHandler Changed {
+			add {
+				if (changing == null)
+					ProjectDomService.ParseOperationFinished += HandleParseOperationFinished;
+				changing += value;
+			}
+			remove {
+				changing -= value;
+				if (changing == null)
+					ProjectDomService.ParseOperationFinished -= HandleParseOperationFinished;
+			}
+		}
 		
 		public bool IsChanging {
 			get { return ProjectDomService.IsParsing; }
 		}
 		
-		protected void OnChanging ()
+		protected virtual void OnChanging ()
 		{
-			if (Changing != null)
-				Changing (this, EventArgs.Empty);
+			if (changing != null)
+				Gtk.Application.Invoke (changing);
 		}
 		
-		protected void OnChanged ()
+		protected virtual void OnChanged ()
 		{
-			if (Changed != null)
-				Changed (this, EventArgs.Empty);
+			if (changed != null)
+				Gtk.Application.Invoke (changed);
 		}
 		
 		#endregion 
@@ -96,8 +120,10 @@ namespace MonoDevelop.Projects.Gui.Completion
 		{
 			if (!disposed) {
 				disposed = true;
-				ProjectDomService.ParseOperationStarted -= HandleParseOperationStarted;
-				ProjectDomService.ParseOperationFinished -= HandleParseOperationFinished;
+				if (changing != null)
+					ProjectDomService.ParseOperationStarted -= HandleParseOperationStarted;
+				if (changed != null)
+					ProjectDomService.ParseOperationFinished -= HandleParseOperationFinished;
 			}
 		}
 		
