@@ -1167,6 +1167,7 @@ namespace Mono.TextEditor
 		public event EventHandler SelectionChanged;
 		protected virtual void OnSelectionChanged (EventArgs args)
 		{
+			CurrentMode.InternalSelectionChanged (this, textEditorData);
 			if (SelectionChanged != null) 
 				SelectionChanged (this, args);
 		}

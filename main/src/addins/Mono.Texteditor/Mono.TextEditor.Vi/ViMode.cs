@@ -102,6 +102,16 @@ namespace Mono.TextEditor.Vi
 			}
 		}
 		
+		protected override void SelectionChanged ()
+		{
+			if (Data.IsSomethingSelected) {
+				state = ViEditMode.State.Visual;
+				Status = "-- VISUAL --";
+			} else {
+				Reset ("");
+			}
+		}
+		
 		void ResetEditorState (TextEditorData data)
 		{
 			data.ClearSelection ();

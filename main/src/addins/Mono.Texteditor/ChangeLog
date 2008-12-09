@@ -1,3 +1,14 @@
+2008-12-08  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* gtk-gui/objects.xml: Updated.
+
+	* Mono.TextEditor.Vi/ViMode.cs: When selection is changed independently
+	of the vi edit mode, switch into visual mode automatically.
+
+	* Mono.TextEditor/EditMode.cs:
+	* Mono.TextEditor/TextEditor.cs: Pass selection change events through to
+	the edit mode.
+
 2008-12-05  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.TextEditor.Vi/ViMode.cs: Implement H, L.

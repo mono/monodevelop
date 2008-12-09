@@ -53,6 +53,23 @@ namespace Mono.TextEditor
 			this.editor = null;
 		}
 		
+		internal virtual void InternalSelectionChanged (TextEditor editor, TextEditorData data)
+		{
+			// only trigger SelectionChanged when event is a result of external stimuli, i.e. when 
+			// not already running HandleKeypress
+			if (this.editor == null) {
+				this.editor = editor; 
+				this.textEditorData = data;
+				SelectionChanged ();
+				this.textEditorData = null;
+				this.editor = null;
+			}
+		}
+		
+		protected virtual void SelectionChanged ()
+		{
+		}
+		
 		protected Caret Caret { get { return textEditorData.Caret; } }
 		protected Document Document { get { return textEditorData.Document; } }
 		protected TextEditor Editor { get { return editor; } }
