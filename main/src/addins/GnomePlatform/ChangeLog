@@ -1,3 +1,10 @@
+2008-12-09  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* GnomePlatform.mdp: Fix project file.
+
+	* GnomePlatform.cs: Remove unused code.
+
 2008-12-05  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* GnomePlatform.addin.xml: Hide/protect add-ins.

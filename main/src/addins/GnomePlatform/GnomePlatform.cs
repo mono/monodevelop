@@ -173,15 +173,5 @@ namespace MonoDevelop.Platform
 			result = result.Replace ("?", "%3F");
 			return result;
 		}		
-		
-		Gdk.Pixbuf GetGnomeIcon (string name, Gtk.IconSize size)
-		{
-			try {
-				return Gtk.IconTheme.Default.LoadIcon (name, 16, (Gtk.IconLookupFlags) 0);
-			}
-			catch {
-				return null;
-			}
-		}
 	}
 }
