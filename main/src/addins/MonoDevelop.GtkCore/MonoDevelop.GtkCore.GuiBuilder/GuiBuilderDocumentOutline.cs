@@ -36,11 +36,11 @@ using MonoDevelop.DesignerSupport.PropertyGrid;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
-	internal class GuiBuilderDocumentOutline: MonoDevelop.Components.InvisibleFrame, ICustomPropertyPadProvider
+	internal class GuiBuilderDocumentOutline: Alignment, ICustomPropertyPadProvider
 	{
 		static GuiBuilderDocumentOutline instance;
 		
-		GuiBuilderDocumentOutline ()
+		GuiBuilderDocumentOutline () : base (0, 0, 1, 1)
 		{
 			BorderWidth = 0;
 			GuiBuilderService.SteticApp.WidgetTreeWidget.BorderWidth = 0;

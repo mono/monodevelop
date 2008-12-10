@@ -1,3 +1,8 @@
+2008-12-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderDocumentOutline.cs: Use an
+	Alignment as the concrete Bin instead of custom InvisibleFrame.
+
 2008-12-09  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.GtkCore.mdp: Don't require a specific version of
