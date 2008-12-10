@@ -34,9 +34,8 @@ namespace PyBinding.Gui
 	{
 		public override bool ExtendsEditor (Document doc, IEditableTextBuffer editor)
 		{
-			PythonLanguageBinding binding = 
-			  MonoDevelop.Projects.Services.Languages.GetBindingPerFileName (doc.FileName)
-			  as PythonLanguageBinding;
+			PythonLanguageBinding binding = MonoDevelop.Projects.Services.Languages.GetBindingPerFileName (doc.Name)
+				as PythonLanguageBinding;
 			return binding != null;
 		}
 	}

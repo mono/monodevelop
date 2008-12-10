@@ -46,9 +46,9 @@ namespace PyBinding.Gui
 
 		public override bool ExtendsEditor (Document doc, IEditableTextBuffer editor)
 		{
-			if (doc == null || String.IsNullOrEmpty (doc.FileName))
+			if (doc == null || String.IsNullOrEmpty (doc.Name))
 				return false;
-			return Path.GetExtension (doc.FileName) == ".py";
+			return Path.GetExtension (doc.Name) == ".py";
 		}
 
 		public override ICompletionDataList HandleCodeCompletion (ICodeCompletionContext completionContext, char completionChar)

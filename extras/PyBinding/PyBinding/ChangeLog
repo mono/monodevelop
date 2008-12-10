@@ -1,3 +1,9 @@
+2008-12-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* PyBinding.Gui/PythonEditorOutline.cs:
+	* PyBinding.Gui/PythonEditorCompletion.cs: Bind to doc name instead of
+	filename, so they work with unsaved files.
+
 2008-12-09  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* PyBinding.mdp: Don't require a specific version of Mono.Addins.
