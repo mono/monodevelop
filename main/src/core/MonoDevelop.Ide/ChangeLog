@@ -1,3 +1,9 @@
+2008-12-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Gui/Document.cs: GetContent should look in the
+	ActiveViewContent (which may be a secondary view), not the
+	ViewContent (which is the primary view, even if it's not active).
+
 2008-12-09  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.mdp: Don't require a specific version of Mono.Addins.

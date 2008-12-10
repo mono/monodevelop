@@ -66,7 +66,7 @@ namespace MonoDevelop.Ide.Gui
 		public object GetContent (Type type)
 		{
 			//check whether the ViewContent can return the type directly
-			object ret = Window.ViewContent.GetContent (type);
+			object ret = Window.ActiveViewContent.GetContent (type);
 			if (ret != null)
 				return ret;
 			
