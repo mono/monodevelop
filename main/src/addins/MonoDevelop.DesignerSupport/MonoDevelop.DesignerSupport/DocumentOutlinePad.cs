@@ -36,12 +36,13 @@ namespace MonoDevelop.DesignerSupport
 	
 	public class DocumentOutlinePad : AbstractPadContent
 	{
-		MonoDevelop.Components.InvisibleFrame box;
+		Gtk.Alignment box;
 		IOutlinedDocument currentOutlineDoc;
+		Document currentDoc;
 		
 		public DocumentOutlinePad ()
 		{
-			box = new MonoDevelop.Components.InvisibleFrame ();
+			box = new Gtk.Alignment (0, 0, 1, 1);
 			box.BorderWidth = 0;
 			SetEmptyWidget ();
 			box.ShowAll ();
@@ -51,30 +52,51 @@ namespace MonoDevelop.DesignerSupport
 		{
 			base.Initialize (window);
 			IdeApp.Workbench.ActiveDocumentChanged += DocumentChangedHandler;
+			CurrentDoc = IdeApp.Workbench.ActiveDocument;
 			Update ();
 		}
 		
 		public override void Dispose ()
 		{
 			IdeApp.Workbench.ActiveDocumentChanged -= DocumentChangedHandler;
+			CurrentDoc = null;
+			ReleaseDoc ();
 			base.Dispose ();
+		}
+		
+		Document CurrentDoc {
+			get { return currentDoc; }
+			set {
+				if (value == currentDoc)
+					return;
+				if (currentDoc != null)
+					currentDoc.ViewChanged -= ViewChangedHandler;
+				currentDoc = value;
+				if (currentDoc != null)
+					currentDoc.ViewChanged += ViewChangedHandler;
+			}
 		}
 		
 		public override Gtk.Widget Control {
 			get { return box; }
 		}
 		
+		void ViewChangedHandler (object sender, EventArgs args)
+		{
+			Update ();
+		}
+		
 		void DocumentChangedHandler (object sender, EventArgs args)
 		{
+			CurrentDoc = IdeApp.Workbench.ActiveDocument;
 			Update ();
 		}
 				
 		void Update ()
 		{
-			Document doc = IdeApp.Workbench.ActiveDocument;
 			IOutlinedDocument outlineDoc = null;
-			if (doc != null)
-				outlineDoc = doc.GetContent<IOutlinedDocument> ();
+			if (CurrentDoc != null)
+				outlineDoc = CurrentDoc.GetContent<IOutlinedDocument> ();
 			if (currentOutlineDoc == outlineDoc)
 				return;
 			
@@ -93,7 +115,11 @@ namespace MonoDevelop.DesignerSupport
 			Gtk.Widget c = box.Child;
 			if (c != null)
 				box.Remove (c);
-			
+			ReleaseDoc ();
+		}
+		
+		void ReleaseDoc ()
+		{
 			if (currentOutlineDoc != null)
 				currentOutlineDoc.ReleaseOutlineWidget ();
 			currentOutlineDoc = null;

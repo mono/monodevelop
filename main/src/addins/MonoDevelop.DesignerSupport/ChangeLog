@@ -1,3 +1,10 @@
+2008-12-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.DesignerSupport/DocumentOutlinePad.cs: Track changes in
+	the active view as well as the active document. Fixes Bug 450238 -
+	Document outline should show source when in source view. Alsouse
+	Alignment widget instead of custom InvisibleFrame.
+
 2008-12-09  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.DesignerSupport.mdp: Don't require a specific version of
