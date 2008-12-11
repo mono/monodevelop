@@ -7872,7 +7872,7 @@ msgstr "Empaquetando proyecto"
 #: ../src/addins/Deployment/MonoDevelop.Deployment/templates/PackagingProject.xpt.xml:6
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/PackagingFeature.cs:12
 msgid "Packaging"
-msgstr "Empaquetando"
+msgstr "Empaquetado"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/templates/PackagingProject.xpt.xml:8
 msgid "Create a project which can generate packages for a solution"
