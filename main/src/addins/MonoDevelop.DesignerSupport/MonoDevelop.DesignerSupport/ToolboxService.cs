@@ -582,7 +582,7 @@ namespace MonoDevelop.DesignerSupport
 			
 			// Look for new assemblies
 			
-			foreach (string filePath in Runtime.SystemAssemblyService.GetAssemblyPaths (ClrVersion.Default)) {
+			foreach (string filePath in Runtime.SystemAssemblyService.GetAssemblyPaths ()) {
 				if (!files.Contains (filePath)) {
 					ComponentIndexFile c = new ComponentIndexFile (filePath);
 					index.Files.Add (c);

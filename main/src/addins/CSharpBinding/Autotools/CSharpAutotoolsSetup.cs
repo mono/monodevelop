@@ -16,7 +16,7 @@ namespace CSharpBinding.Autotools
 			if ( !this.CanDeploy ( project ) || dp == null)
 				throw new Exception ( "Not a deployable project." );
 			
-			switch (dp.ClrVersion) {
+			switch (dp.TargetFramework.ClrVersion) {
 			case ClrVersion.Net_1_1:
 				return "mcs";
 			case ClrVersion.Net_2_0:
@@ -24,7 +24,7 @@ namespace CSharpBinding.Autotools
 			case ClrVersion.Clr_2_1:
 				return "smcs";
 			default:
-				throw new Exception ("Cannot handle unknown runtime version ClrVersion.'" + dp.ClrVersion.ToString () + "'.");
+				throw new Exception ("Cannot handle unknown runtime version ClrVersion.'" + dp.TargetFramework.ClrVersion.ToString () + "'.");
 			}
 		}
 

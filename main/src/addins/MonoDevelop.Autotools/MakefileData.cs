@@ -1123,7 +1123,7 @@ namespace MonoDevelop.Autotools
 			if (fullname == null)
 				return null;
 
-			fullname = Runtime.SystemAssemblyService.GetAssemblyNameForVersion (fullname, project.ClrVersion);
+			fullname = Runtime.SystemAssemblyService.GetAssemblyNameForVersion (fullname, project.TargetFramework);
 			if (fullname == null)
 				return null;
 

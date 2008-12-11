@@ -1,3 +1,7 @@
+2008-12-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoMakefileFormat.cs: Track API changes.
+
 2008-12-09  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDeveloperExtensions.mdp: Don't require a specific version of

@@ -1,3 +1,8 @@
+2008-12-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Moonlight/MoonlightProject.cs:
+	* MonoDevelop.Moonlight/MoonlightEditorExtension.cs: Track API changes.
+
 2008-12-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am: Make it work for parallel build.

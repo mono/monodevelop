@@ -223,6 +223,11 @@ namespace MonoDevelop.Prj2Make
 		public bool SupportsMixedFormats {
 			get { return false; }
 		}
+
+		public IEnumerable<string> GetCompatibilityWarnings (object obj)
+		{
+			yield break;
+		}
 	}
 
 	enum TargetConvert

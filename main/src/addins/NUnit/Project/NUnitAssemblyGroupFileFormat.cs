@@ -112,6 +112,10 @@ namespace MonoDevelop.NUnit
 			get { return false; }
 		}
 
+		public IEnumerable<string> GetCompatibilityWarnings (object obj)
+		{
+			yield break;
+		}
 	}
 }
 

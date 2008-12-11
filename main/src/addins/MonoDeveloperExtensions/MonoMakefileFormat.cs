@@ -190,6 +190,10 @@ namespace MonoDeveloper
 		public bool SupportsMixedFormats {
 			get { return false; }
 		}
-
+		
+		public IEnumerable<string> GetCompatibilityWarnings (object obj)
+		{
+			yield break;
+		}
 	}
 }

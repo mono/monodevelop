@@ -362,8 +362,7 @@ namespace MonoDevelop.AspNet.Gui
 			list.Add ("%--", "md-literal", GettextCatalog.GetString ("ASP.NET server-side comment"));
 			
 			//valid on 2.0 runtime only
-			if (doc.Project == null || doc.Project.ClrVersion == ClrVersion.Net_2_0
-			    || doc.Project.ClrVersion == ClrVersion.Default) {
+			if (doc.Project == null || doc.Project.TargetFramework.ClrVersion == ClrVersion.Net_2_0) {
 				list.Add ("%$", "md-literal", GettextCatalog.GetString ("ASP.NET resource expression"));
 			}
 		}

@@ -226,7 +226,7 @@ namespace CSharpBinding
 			
 			string compilerName;
 			try {
-				compilerName = GetCompilerName (configuration.ClrVersion);
+				compilerName = GetCompilerName (configuration.TargetFramework.ClrVersion);
 			} catch (Exception e) {
 				string message = "Could not obtain a C# compiler";
 				monitor.ReportError (message, e);

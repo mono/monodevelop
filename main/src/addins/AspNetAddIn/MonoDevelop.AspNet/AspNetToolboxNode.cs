@@ -144,8 +144,8 @@ namespace MonoDevelop.AspNet
 		{
 			ClrVersion clrVersion = ClrVersion.Net_2_0;
 			MonoDevelop.Projects.DotNetProject dnp = project as MonoDevelop.Projects.DotNetProject;
-			if (dnp != null && dnp.ClrVersion != ClrVersion.Default)
-				clrVersion = dnp.ClrVersion;
+			if (dnp != null && dnp.TargetFramework.ClrVersion != ClrVersion.Default)
+				clrVersion = dnp.TargetFramework.ClrVersion;
 			
 			bool allow = false;
 			foreach (ToolboxItemFilterAttribute tbfa in ItemFilters) {

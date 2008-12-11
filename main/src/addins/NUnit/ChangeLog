@@ -1,3 +1,7 @@
+2008-12-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Project/NUnitAssemblyGroupFileFormat.cs: Track API changes.
+
 2008-12-09  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.NUnit.mdp: Don't require a specific version of

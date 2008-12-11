@@ -528,7 +528,7 @@ namespace MonoDevelop.AspNet
 		{
 			List<string> notPresent = new List<string> ();
 			
-			if (ClrVersion == MonoDevelop.Core.ClrVersion.Net_2_0)
+			if (TargetFramework.ClrVersion == MonoDevelop.Core.ClrVersion.Net_2_0)
 				foreach (string dir in specialDirs20)
 					if (Files.GetFile (Path.Combine (BaseDirectory, dir)) == null)
 						notPresent.Add (dir);

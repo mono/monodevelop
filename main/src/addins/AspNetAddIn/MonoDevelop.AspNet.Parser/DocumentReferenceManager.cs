@@ -75,7 +75,7 @@ namespace MonoDevelop.AspNet.Parser
 			
 			if (0 == string.Compare (tagPrefix, "asp", StringComparison.OrdinalIgnoreCase))
 				return WebTypeManager.SystemWebControlLookup (tagName,
-				    doc.Project == null? MonoDevelop.Core.ClrVersion.Default : doc.Project.ClrVersion);
+				    doc.Project == null? MonoDevelop.Core.TargetFramework.Default : doc.Project.TargetFramework);
 			
 			foreach (RegisterDirective directive in pageRefsList) {
 				AssemblyRegisterDirective ard = directive as AssemblyRegisterDirective;

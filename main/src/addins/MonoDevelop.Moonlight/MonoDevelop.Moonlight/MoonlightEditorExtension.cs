@@ -57,7 +57,7 @@ namespace MonoDevelop.Moonlight
 		{
 			return ProjectDomService.GetAssemblyDom (
 				MonoDevelop.Core.Runtime.SystemAssemblyService.GetAssemblyNameForVersion (
-					"System.Windows", GetProjectClrVersion (project)));
+					"System.Windows", GetProjectTargetFramework (project)));
 		}
 		
 		public static IEnumerable<IType> ListControlClasses (ProjectDom database, string namespac)
@@ -163,9 +163,9 @@ namespace MonoDevelop.Moonlight
 					list.Add (t.Name, Gtk.Stock.GoForward, t.Documentation);
 		}
 		
-		static MonoDevelop.Core.ClrVersion GetProjectClrVersion (MoonlightProject project)
+		static MonoDevelop.Core.TargetFramework GetProjectTargetFramework (MoonlightProject project)
 		{
-			return project == null? MonoDevelop.Core.ClrVersion.Default : project.ClrVersion;
+			return project == null? MonoDevelop.Core.TargetFramework.Default : project.TargetFramework;
 		}
 		
 		protected override void GetAttributeCompletions (CompletionDataList list, IAttributedXObject attributedOb, 

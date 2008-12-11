@@ -144,7 +144,7 @@ namespace MonoDevelop.Autotools
 				{
 					string resgen = "resgen";
 					if (System.Environment.Version.Major >= 2) {
-						switch (dotnetProject.ClrVersion) {
+						switch (dotnetProject.TargetFramework.ClrVersion) {
 							case ClrVersion.Net_2_0: resgen = "resgen2"; break;
 							case ClrVersion.Net_1_1: resgen = "resgen1"; break;
 						}
@@ -417,7 +417,7 @@ namespace MonoDevelop.Autotools
 					conf_vars.Append ( "\nendif\n\n" );
 				}
 
-				conf_vars.AppendFormat ("AL={0}\n", (dotnetProject.ClrVersion == ClrVersion.Net_2_0) ? "al2" : "al");
+				conf_vars.AppendFormat ("AL={0}\n", (dotnetProject.TargetFramework.ClrVersion == ClrVersion.Net_2_0) ? "al2" : "al");
 				conf_vars.AppendFormat ("SATELLITE_ASSEMBLY_NAME=$(notdir $(basename $(ASSEMBLY))).resources.dll\n");
 
 				foreach (KeyValuePair<string, DeployFileData> pair in allDeployVars) {

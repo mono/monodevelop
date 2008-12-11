@@ -101,7 +101,7 @@ namespace MonoDevelop.Moonlight
 		void Init ()
 		{
 			//set parameters to ones required for Moonlight build
-			ClrVersion = MonoDevelop.Core.ClrVersion.Clr_2_1;
+			TargetFramework = Runtime.SystemAssemblyService.GetTargetFramework ("v2.1");
 		}
 		
 		public override SolutionItemConfiguration CreateConfiguration (string name)

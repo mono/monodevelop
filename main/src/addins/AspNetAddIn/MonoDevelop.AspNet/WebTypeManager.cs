@@ -55,7 +55,7 @@ namespace MonoDevelop.AspNet
 				return GetMachineRegisteredTypeName (project, tagPrefix, tagName);
 			
 			//global control registration not possible in ASP.NET 1.1
-			if (project.ClrVersion == MonoDevelop.Core.ClrVersion.Net_1_1)
+			if (project.TargetFramework.ClrVersion == MonoDevelop.Core.ClrVersion.Net_1_1)
 				return null;
 			
 			//read the web.config files at each level
@@ -220,16 +220,16 @@ namespace MonoDevelop.AspNet
 		
 		#region Control type lookups
 		
-		public static string SystemWebControlLookup (string tagName, MonoDevelop.Core.ClrVersion clrVersion)
+		public static string SystemWebControlLookup (string tagName, MonoDevelop.Core.TargetFramework targetFramework)
 		{
-			ProjectDom database = GetSystemWebAssemblyContext (clrVersion);
+			ProjectDom database = GetSystemWebAssemblyContext (targetFramework);
 			IType cls = database.GetType ("System.Web.UI.WebControls." + tagName, false, false);
 			return cls != null? cls.FullName : null;
 		}
 		
-		static ProjectDom GetSystemWebAssemblyContext (MonoDevelop.Core.ClrVersion clrVersion)
+		static ProjectDom GetSystemWebAssemblyContext (MonoDevelop.Core.TargetFramework targetFramework)
 		{
-			string assem = MonoDevelop.Core.Runtime.SystemAssemblyService.GetAssemblyNameForVersion ("System.Web", clrVersion);
+			string assem = MonoDevelop.Core.Runtime.SystemAssemblyService.GetAssemblyNameForVersion ("System.Web", targetFramework);
 			return MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetAssemblyDom (assem);
 		}
 		
@@ -243,7 +243,7 @@ namespace MonoDevelop.AspNet
 		{
 			assem = MonoDevelop.Core.Runtime.SystemAssemblyService.GetAssemblyNameForVersion (
 					assem,
-					GetProjectClrVersion (project));
+					GetProjectTargetFramework (project));
 			ProjectDom database = MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetAssemblyDom (assem);
 			if (database == null)
 				return null;
@@ -255,16 +255,16 @@ namespace MonoDevelop.AspNet
 		
 		#region System type listings
 		
-		static MonoDevelop.Core.ClrVersion GetProjectClrVersion (AspNetAppProject project)
+		static MonoDevelop.Core.TargetFramework GetProjectTargetFramework (AspNetAppProject project)
 		{
-			return project == null? MonoDevelop.Core.ClrVersion.Default : project.ClrVersion;
+			return project == null? null : project.TargetFramework;
 		}
 		
 		public static ProjectDom GetSystemWebDom (AspNetAppProject project)
 		{
 			return MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetAssemblyDom (
 				MonoDevelop.Core.Runtime.SystemAssemblyService.GetAssemblyNameForVersion (
-					"System.Web", GetProjectClrVersion (project)));
+					"System.Web", GetProjectTargetFramework (project)));
 		}
 		
 		public static IEnumerable<IType> ListSystemControlClasses (IType baseType, AspNetAppProject project)
@@ -273,7 +273,7 @@ namespace MonoDevelop.AspNet
 				baseType,
 				MonoDevelop.Core.Runtime.SystemAssemblyService.GetAssemblyNameForVersion (
 					"System.Web",
-					GetProjectClrVersion (project)),
+					GetProjectTargetFramework (project)),
 				"System.Web.UI.WebControls");
 		}
 		
@@ -284,7 +284,7 @@ namespace MonoDevelop.AspNet
 				baseType,
 				MonoDevelop.Core.Runtime.SystemAssemblyService.GetAssemblyNameForVersion (
 					assem,
-					GetProjectClrVersion (project)),
+					GetProjectTargetFramework (project)),
 				namespac);
 		}
 		
@@ -326,7 +326,7 @@ namespace MonoDevelop.AspNet
 				else if (project != null)
 					database = MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetProjectDom (project);
 				else
-					database = GetSystemWebAssemblyContext (MonoDevelop.Core.ClrVersion.Default);
+					database = GetSystemWebAssemblyContext (MonoDevelop.Core.TargetFramework.Default);
 //FIXME				
 //ctx.UpdateDatabase ();
 				

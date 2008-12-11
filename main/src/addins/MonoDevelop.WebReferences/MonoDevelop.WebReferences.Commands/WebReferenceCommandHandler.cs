@@ -25,7 +25,7 @@ namespace MonoDevelop.WebReferences.Commands
 			DotNetProject project = CurrentNode.GetParentDataItem (typeof(DotNetProject), true) as DotNetProject;
 			
 			// Check and switch the runtime environment for the current project
-			if (project.ClrVersion == ClrVersion.Net_1_1)
+			if (project.TargetFramework.Id == "v1.1")
 			{
 				string question = "The current runtime environment for your project is set to version 1.0.";
 				question += "Web Service is not supported in this version.";
@@ -33,7 +33,7 @@ namespace MonoDevelop.WebReferences.Commands
 				
 				AlertButton switchButton = new AlertButton ("_Switch to .NET2"); 
 				if (MessageService.AskQuestion(question, AlertButton.Cancel, switchButton) == switchButton)
-					project.ClrVersion = ClrVersion.Net_2_0;					
+					project.TargetFramework = Runtime.SystemAssemblyService.GetTargetFramework ("v2.0");					
 				else
 					return;
 			}
