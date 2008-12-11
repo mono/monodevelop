@@ -288,7 +288,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				return;
 			ITreeBuilder tb = Context.GetTreeBuilder (e.SolutionItem);
 			if (tb != null) {
-				if (e.Hint == "BaseDirectory")
+				if (e.Hint == "BaseDirectory" || e.Hint == "TargetFramework")
 					tb.UpdateAll ();
 				else
 					tb.Update ();

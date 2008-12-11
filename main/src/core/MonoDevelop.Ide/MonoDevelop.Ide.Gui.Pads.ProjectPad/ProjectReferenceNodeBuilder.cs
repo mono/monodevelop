@@ -78,7 +78,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					label = pref.Reference;
 					break;
 			}
-			
+
+			if (!pref.IsValid)
+				label = "<span color='red'>" + label + "</span>";
 			icon = Context.GetIcon (Stock.Reference);
 		}
 	}

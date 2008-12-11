@@ -599,7 +599,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public bool SelectProjectReferences (ProjectReferenceCollection references, ClrVersion targetVersion)
+		public bool SelectProjectReferences (ProjectReferenceCollection references, TargetFramework targetVersion)
 		{
 			try {
 				if (selDialog == null)

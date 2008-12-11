@@ -31,7 +31,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 	internal class GacReferencePanel : VBox, IReferencePanel
 	{
 		SelectReferenceDialog selectDialog;
-		ClrVersion version;
+		TargetFramework version;
 
 		ListStore store;
 		TreeView treeView;
@@ -79,7 +79,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			BorderWidth = 6;
 		}
 		
-		public void SetClrVersion (ClrVersion version)
+		public void SetTargetFramework (TargetFramework version)
 		{
 			this.version = version;
 		}

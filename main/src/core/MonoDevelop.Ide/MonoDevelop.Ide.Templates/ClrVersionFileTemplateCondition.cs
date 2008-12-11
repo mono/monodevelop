@@ -65,19 +65,20 @@ namespace MonoDevelop.Ide.Templates
 			
 			DotNetProject dnp = proj as DotNetProject;
 			if (dnp != null) {
+				ClrVersion pver = dnp.TargetFramework.ClrVersion;
 				switch (condition) {
 				case ClrVersionCondition.Equal:
-					return (dnp.ClrVersion == clrVersion);
+					return (pver == clrVersion);
 				case ClrVersionCondition.NotEqual:
-					return (dnp.ClrVersion != clrVersion);
+					return (pver != clrVersion);
 				case ClrVersionCondition.GreaterThan:
-					return (dnp.ClrVersion > clrVersion);
+					return (pver > clrVersion);
 				case ClrVersionCondition.GreaterThanOrEqual:
-					return (dnp.ClrVersion >= clrVersion);
+					return (pver >= clrVersion);
 				case ClrVersionCondition.LessThan:
-					return (dnp.ClrVersion < clrVersion);
+					return (pver < clrVersion);
 				case ClrVersionCondition.LessThanOrEqual:
-					return (dnp.ClrVersion <= clrVersion);							
+					return (pver <= clrVersion);							
 				}
 			}
 			

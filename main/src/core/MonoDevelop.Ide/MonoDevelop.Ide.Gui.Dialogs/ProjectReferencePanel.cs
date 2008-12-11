@@ -78,7 +78,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			BorderWidth = 6;
 		}
 
-		public void SetProject (Project configureProject)
+		public void SetProject (DotNetProject configureProject)
 		{
 			store.Clear ();
 			PopulateListView (configureProject);
@@ -127,7 +127,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			return String.Compare (s1, s2, true);
 		}
 		
-		void PopulateListView (Project configureProject)
+		void PopulateListView (DotNetProject configureProject)
 		{
 			Solution openSolution = configureProject.ParentSolution;
 			
@@ -141,11 +141,15 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 				if (projectEntry == configureProject) {
 					continue;
 				}
-				
-				if (projectEntry is DotNetProject &&
-				    ProjectReferencesProject ((DotNetProject)projectEntry, configureProject.Name)) {
-					circDeps = true;
-					continue;
+
+				DotNetProject netProject = projectEntry as DotNetProject;
+				if (netProject != null) {
+					if (ProjectReferencesProject (netProject, configureProject.Name)) {
+						circDeps = true;
+						continue;
+					}
+				    if (!configureProject.TargetFramework.IsCompatibleWithFramework (netProject.TargetFramework.Id))
+						continue;
 				}
 
 				string iconName = Services.Icons.GetImageForProjectType (projectEntry.ProjectType);
