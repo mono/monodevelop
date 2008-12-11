@@ -1,3 +1,8 @@
+2008-12-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/RuntimeOptionsPanel.cs:
+	Implemented support for the new TargetFramework model.
+
 2008-12-09  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Gui.mdp: Don't require a specific version of

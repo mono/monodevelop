@@ -63,7 +63,6 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 	partial class RuntimeOptionsPanelWidget : Gtk.Bin 
 	{
 		DotNetProject project;
-		IEnumerable<ItemConfiguration> configurations;
 		ArrayList supportedVersions = new ArrayList (); 
 
 		public RuntimeOptionsPanelWidget (DotNetProject project, IEnumerable<ItemConfiguration> configurations)
@@ -71,31 +70,19 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			Build ();
 			
 			this.project = project;
-			this.configurations = configurations;
 			if (project != null) {
 				// Get the list of available versions, and add only those supported by the target language.
-				ClrVersion[] langSupported = project.SupportedClrVersions;
-				foreach (ClrVersion ver in Runtime.SystemAssemblyService.GetSupportedClrVersions ()) {
-					if (Array.IndexOf (langSupported, ver) == -1)
-						continue;
-					string desc;
-					switch (ver) {
-					case ClrVersion.Net_1_1:
-						desc = "Mono/.NET 1.1 Profile";
-						break;
-					case ClrVersion.Net_2_0:
-						desc = "Mono/.NET 2.0 Profile";
-						break;
-					case ClrVersion.Clr_2_1:
-						desc = "Moonlight/Silverlight 2.0";
-						break;
-					default:
-						throw new Exception ("Unknown ClrVersion '" + ver.ToString () + "'");
+				foreach (TargetFramework fx in Runtime.SystemAssemblyService.GetTargetFrameworks ()) {
+					if (fx != project.TargetFramework) {
+						if (!fx.IsSupported)
+							continue;
+						if (!project.SupportsFramework (fx))
+							continue;
 					}
-					runtimeVersionCombo.AppendText (desc);
-					if (project.ClrVersion == ver)
+					runtimeVersionCombo.AppendText (fx.Name);
+					if (project.TargetFramework == fx)
 		 				runtimeVersionCombo.Active = supportedVersions.Count;
-					supportedVersions.Add (ver);
+					supportedVersions.Add (fx);
 				}
 				if (supportedVersions.Count <= 1)
 					Sensitive = false;
@@ -108,9 +95,9 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 		{	
 			if (project == null || runtimeVersionCombo.Active == -1)
 				return;
-			project.ClrVersion = (ClrVersion) supportedVersions [runtimeVersionCombo.Active];
-			foreach (DotNetProjectConfiguration conf in configurations)
-				conf.ClrVersion = project.ClrVersion;
+			TargetFramework fx = (TargetFramework) supportedVersions [runtimeVersionCombo.Active];
+			if (project.TargetFramework != fx)
+				project.TargetFramework = fx;
 		}
 	}
 }
