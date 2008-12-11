@@ -1,5 +1,9 @@
 2008-12-11  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Core/SystemAssemblyService.cs: Nullref fixes.
+
+2008-12-11  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Makefile.am:
 	* frameworks.xml:
 	* MonoDevelop.Core.mdp:

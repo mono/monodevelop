@@ -136,15 +136,15 @@ namespace MonoDevelop.Core
 			Initialize ();
 			
 			List<string> list = new List<string> ();
-			if (!fx.IsSupported)
+			if (fx != null && !fx.IsSupported)
 				return list;
 			
 			foreach (KeyValuePair<string, SystemPackage> e in assemblyPathToPackage) {
 				SystemPackage pkg = e.Value;
 				if (pkg.IsFrameworkPackage) {
-					if (fx.IsExtensionOfFramework (pkg.TargetFramework))
+					if (fx != null && fx.IsExtensionOfFramework (pkg.TargetFramework))
 						list.Add (e.Key);
-				} else if (fx.IsCompatibleWithFramework (pkg.TargetFramework))
+				} else if (fx == null || fx.IsCompatibleWithFramework (pkg.TargetFramework))
 					list.Add (e.Key);
 			}
 			return list;
