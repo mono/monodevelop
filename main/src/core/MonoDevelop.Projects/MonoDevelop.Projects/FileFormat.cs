@@ -26,6 +26,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 using MonoDevelop.Projects.Extensions;
 
 namespace MonoDevelop.Projects
@@ -51,6 +52,12 @@ namespace MonoDevelop.Projects
 		public string GetValidFileName (object obj, string fileName)
 		{
 			return format.GetValidFormatName (obj, fileName);
+		}
+		
+		public IEnumerable<string> GetCompatibilityWarnings (object obj)
+		{
+			IEnumerable<string> res = format.GetCompatibilityWarnings (obj);
+			return res ?? new string [0];
 		}
 		
 		internal IFileFormat Format {

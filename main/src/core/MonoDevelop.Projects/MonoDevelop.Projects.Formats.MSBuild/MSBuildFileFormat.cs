@@ -27,8 +27,10 @@
 
 using System;
 using System.Xml;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using MonoDevelop.Core;
 using MonoDevelop.Projects.Extensions;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
@@ -40,13 +42,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		string toolsVersion;
 		string slnVersion;
 		string productDescription;
+		string[] frameworkVersions;
 		
-		public MSBuildFileFormat (string productVersion, string toolsVersion, string slnVersion, string productDescription)
+		public MSBuildFileFormat (string productVersion, string toolsVersion, string slnVersion, string productDescription, string[] frameworkVersions)
 		{
 			this.productVersion = productVersion;
 			this.toolsVersion = toolsVersion;
 			this.slnVersion = slnVersion;
 			this.productDescription = productDescription;
+			this.frameworkVersions = frameworkVersions;
 		}
 		
 		public string Name {
@@ -101,7 +105,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				if (!(item.ItemHandler is MSBuildProjectHandler))
 					MSBuildProjectService.InitializeItemHandler (item);
 				MSBuildProjectHandler handler = (MSBuildProjectHandler) item.ItemHandler;
-				handler.SetTargetVersion (productVersion, toolsVersion);
+				handler.SetTargetFormat (this);
 				handler.Save (monitor);
 			}
 		}
@@ -133,14 +137,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (item != null) {
 				handler = item.GetItemHandler() as MSBuildHandler;
 				if (handler != null) {
-					handler.SetTargetVersion (productVersion, toolsVersion);
+					handler.SetTargetFormat (this);
 					return;
 				}
 			}
 			
 			MSBuildProjectService.InitializeItemHandler (item);
 			handler = (MSBuildHandler) item.ItemHandler;
-			handler.SetTargetVersion (productVersion, toolsVersion);
+			handler.SetTargetFormat (this);
 		}
 		
 		public bool SupportsMixedFormats {
@@ -171,6 +175,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 
+		public string[] FrameworkVersions {
+			get {
+				return frameworkVersions;
+			}
+		}
+
 		string ReadToolsVersion (string file)
 		{
 			try {
@@ -183,16 +193,24 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 			return string.Empty;
 		}
+
+		public virtual IEnumerable<string> GetCompatibilityWarnings (object obj)
+		{
+			DotNetProject prj = obj as DotNetProject;
+			if (!((IList)frameworkVersions).Contains (prj.TargetFramework.Id))
+				yield return GettextCatalog.GetString ("The project '{0}' is being saved using the file format '{1}', but this version of Visual Studio does not support the framework that the project is targetting ({2})", prj.Name, productDescription, prj.TargetFramework.Name);
+		}
 	}
 	
 	class MSBuildFileFormatVS05: MSBuildFileFormat
 	{
 		public const string Version = "8.0.50727";
-		public const string ToolsVersion = "2.0";
-		public const string SlnVersion = "9.00";
-		public const string ProductComment = "Visual Studio 2005";
+		const string toolsVersion = "2.0";
+		const string slnVersion = "9.00";
+		const string productComment = "Visual Studio 2005";
+		static string[] frameworkVersions = { "2.0" };
 		
-		public MSBuildFileFormatVS05 (): base (Version, ToolsVersion, SlnVersion, ProductComment)
+		public MSBuildFileFormatVS05 (): base (Version, toolsVersion, slnVersion, productComment, frameworkVersions)
 		{
 		}
 	}
@@ -200,11 +218,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 	class MSBuildFileFormatVS08: MSBuildFileFormat
 	{
 		public const string Version = "9.0.21022";
-		public const string ToolsVersion = "3.5";
-		public const string SlnVersion = "10.00";
-		public const string ProductComment = "Visual Studio 2008";
+		const string toolsVersion = "3.5";
+		const string slnVersion = "10.00";
+		const string productComment = "Visual Studio 2008";
+		static string[] frameworkVersions = { "2.0", "3.0", "3.5" };
 		
-		public MSBuildFileFormatVS08 (): base (Version, ToolsVersion, SlnVersion, ProductComment)
+		public MSBuildFileFormatVS08 (): base (Version, toolsVersion, slnVersion, productComment, frameworkVersions)
 		{
 		}
 	}
@@ -212,11 +231,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 	class MSBuildFileFormatVS10: MSBuildFileFormat
 	{
 		public const string Version = "10.0.0";
-		public const string ToolsVersion = "4.0";
-		public const string SlnVersion = "11.00";
-		public const string ProductComment = "Visual Studio 2010";
+		const string toolsVersion = "4.0";
+		const string slnVersion = "11.00";
+		const string productComment = "Visual Studio 2010";
+		static string[] frameworkVersions = { "2.0", "3.0", "3.5", "4.0" };
 		
-		public MSBuildFileFormatVS10 (): base (Version, ToolsVersion, SlnVersion, ProductComment)
+		public MSBuildFileFormatVS10 (): base (Version, toolsVersion, slnVersion, productComment, frameworkVersions)
 		{
 		}
 	}

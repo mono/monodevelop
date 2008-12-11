@@ -1,3 +1,34 @@
+2008-12-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* md1format.xml:
+	* MonoDevelop.Projects/DotNetProject.cs:
+	* MonoDevelop.Projects/ProjectService.cs:
+	* MonoDevelop.Projects/DotNetProjectConfiguration.cs:
+	* MonoDevelop.Projects.Formats.MD1/MD1CustomDataItem.cs:
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProject.cs:
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildHandler.cs:
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildFileFormat.cs:
+	* MonoDevelop.Projects.Formats.MD1/MD1DotNetProjectHandler.cs:
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectService.cs:
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs:
+	Implemented support for the new TargetFramework model.
+
+	* MonoDevelop.Projects/FileFormat.cs:
+	* MonoDevelop.Projects.Extensions/IFileFormat.cs:
+	* MonoDevelop.Projects.Formats.MD1/MD1FileFormat.cs: Added new
+	GetCompatibilityWarnings which can return a list of warnings to show
+	when trying to convert a solution to a format.
+
+	* MonoDevelop.Projects/ProjectReference.cs: Added new IsValid property
+	which returns false if the reference is not valid for the current
+	project (e.g. it may no be available for the project's framework).
+
+	* MonoDevelop.Projects.Dom/DomType.cs: Fix warning.
+
+	* MonoDevelop.Projects.Dom.Serialization/SimpleCodeCompletionDatabase.cs:
+	* MonoDevelop.Projects.Dom.Serialization/ProjectCodeCompletionDatabase.cs:
+	Track api changes.
+
 2008-12-09  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.mdp: Don't require a specific version of

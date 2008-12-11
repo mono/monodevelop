@@ -42,7 +42,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 	{
 		Project project;
 		bool initialFileCheck;
-		ClrVersion lastVersion = ClrVersion.Default;
+		string lastVersion;
 		int parseCount;
 		
 		public ProjectCodeCompletionDatabase (Project project, ParserDatabase pdb): base (pdb)
@@ -178,7 +178,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			DotNetProject prj = project as DotNetProject;
 			if (prj == null) return false;
 			
-			if (prj.ClrVersion == lastVersion)
+			if (prj.TargetFramework.Id == lastVersion)
 				return false;
 
 			// Look for an existing mscorlib reference
@@ -192,7 +192,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			
 			// Gets the name and version of the mscorlib assembly required by the project
 			string requiredRefUri = "Assembly:";
-			requiredRefUri += Runtime.SystemAssemblyService.GetAssemblyNameForVersion (typeof(object).Assembly.GetName().ToString(), prj.ClrVersion);
+			requiredRefUri += Runtime.SystemAssemblyService.GetAssemblyNameForVersion (typeof(object).Assembly.GetName().ToString(), prj.TargetFramework);
 			
 			// Replace the old reference if the target version has changed
 			if (currentRefUri != null) {

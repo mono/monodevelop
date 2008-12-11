@@ -56,8 +56,8 @@ namespace MonoDevelop.Projects.Dom
 		{
 			if (DeclaringType != null) 
 				return DeclaringType.FullName + "." + Name;
-			return !String.IsNullOrEmpty (Namespace) ? Namespace + "." + Name : Name;
 			base.fullNameIsDirty = false;
+			return !String.IsNullOrEmpty (Namespace) ? Namespace + "." + Name : Name;
 		}
 		
 		protected void SetName (string fullName)

@@ -53,7 +53,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					Services.ProjectService.InitializeDataContext (dataContext);
 					foreach (ItemMember prop in MSBuildProjectHandler.ExtendedMSBuildProperties) {
 						ItemProperty iprop = new ItemProperty (prop.Name, prop.Type);
-						iprop.IsExternal = false;
+						iprop.IsExternal = prop.IsExternal;
 						dataContext.RegisterProperty (prop.DeclaringType, iprop);
 					}
 				}

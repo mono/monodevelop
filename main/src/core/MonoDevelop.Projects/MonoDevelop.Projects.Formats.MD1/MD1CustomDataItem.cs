@@ -52,8 +52,8 @@ namespace MonoDevelop.Projects.Formats.MD1
 				}
 			}
 			else if (obj is SolutionEntityItem) {
-				if (obj is DotNetProject) {
-					DotNetProject project = obj as DotNetProject;
+				DotNetProject project = obj as DotNetProject;
+				if (project != null) {
 					foreach (DotNetProjectConfiguration config in project.Configurations)
 						config.ExtendedProperties ["Build/target"] = project.CompileTarget.ToString ();
 				}
@@ -67,6 +67,8 @@ namespace MonoDevelop.Projects.Formats.MD1
 							confItem.ItemData.Add (new DataValue ("active", item.ParentSolution.DefaultConfigurationId));
 					}
 				}
+				if (project != null)
+					data.Add (new DataValue ("targetFramework", project.TargetFramework.Id));
 				return data;
 			}
 			else if (obj is ProjectReference) {
@@ -112,6 +114,21 @@ namespace MonoDevelop.Projects.Formats.MD1
 				}
 				DotNetProject np = obj as DotNetProject;
 				if (np != null) {
+					// Import the framework version
+					string fx = null;
+					DataValue vfx = data["targetFramework"] as DataValue;
+					if (vfx != null)
+						fx = vfx.Value;
+					else {
+						vfx = data ["clr-version"] as DataValue;
+						if (vfx != null && vfx.Value == "Net_2_0")
+							fx = "2.0";
+						else if (vfx != null && vfx.Value == "Net_1_1")
+							fx = "1.1";
+					}
+					if (!string.IsNullOrEmpty (fx))
+						np.TargetFramework = Runtime.SystemAssemblyService.GetTargetFramework (fx);
+
 					// Get the compile target from one of the configurations
 					if (np.Configurations.Count > 0)
 						np.CompileTarget = (CompileTarget) Enum.Parse (typeof(CompileTarget), (string) np.Configurations [0].ExtendedProperties ["Build/target"]);

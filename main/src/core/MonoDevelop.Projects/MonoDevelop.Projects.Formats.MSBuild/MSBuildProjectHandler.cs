@@ -192,7 +192,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			
 			if (item is DotNetProject) {
 				DotNetProject p = (DotNetProject) item;
-				p.ClrVersion = ClrVersion.Net_2_0;
+				p.TargetFramework = Services.ProjectService.DefaultTargetFramework;
 			}
 			return item;
 		}
@@ -228,7 +228,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 			
 			string assemblyName = null;
-			string frameworkVersion = "v2.0";
+			string frameworkVersion = "2.0";
 			
 			// Read project references
 			
@@ -273,7 +273,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				// Get the common assembly name
 				assemblyName = globalGroup.GetPropertyValue ("AssemblyName");
 				frameworkVersion = globalGroup.GetPropertyValue ("TargetFrameworkVersion");
-				dotNetProject.ClrVersion = GetClrVersion (frameworkVersion);
+				if (frameworkVersion != null && frameworkVersion.StartsWith ("v"))
+					frameworkVersion = frameworkVersion.Substring (1);
+				if (!string.IsNullOrEmpty (frameworkVersion))
+					dotNetProject.TargetFramework = Runtime.SystemAssemblyService.GetTargetFramework (frameworkVersion);
 			}
 			
 			// Read configurations
@@ -316,11 +319,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					
 					if (!string.IsNullOrEmpty (assemblyName) && string.IsNullOrEmpty (dpc.OutputAssembly))
 						dpc.OutputAssembly = assemblyName;
-
-					string fw = (string) dpc.ExtendedProperties ["TargetFrameworkVersion"];
-					if (fw == null)
-						fw = frameworkVersion;
-					dpc.ClrVersion = GetClrVersion (fw);
 				}
 			}
 			
@@ -335,6 +333,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				globalData.ItemData.AddRange (data.ItemData);
 			}
 			ser.Deserialize (Item, globalData);
+
+			// Final initializations
+
+			string fx = Item.ExtendedProperties ["InternalTargetFrameworkVersion"] as string;
+			if (fx != null && dotNetProject != null) {
+				dotNetProject.TargetFramework = Runtime.SystemAssemblyService.GetTargetFramework (fx);
+				Item.ExtendedProperties.Remove ("InternalTargetFrameworkVersion");
+			}
 			
 			Item.NeedsReload = false;
 		}
@@ -389,6 +395,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			ser.SerializationContext.BaseFile = eitem.FileName;
 			ser.SerializationContext.ProgressMonitor = monitor;
 			
+			Project project = Item as Project;
+			DotNetProject dotNetProject = Item as DotNetProject;
+			
 			MSBuildProject msproject = new MSBuildProject ();
 			if (fileContent != null) {
 				msproject.LoadXml (fileContent);
@@ -436,17 +445,34 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 			string productVersion = (string) Item.ExtendedProperties ["ProductVersion"];
 			if (productVersion == null) {
-				Item.ExtendedProperties ["ProductVersion"] = ProductVersion;
-				productVersion = ProductVersion;
+				Item.ExtendedProperties ["ProductVersion"] = TargetFormat.ProductVersion;
+				productVersion = TargetFormat.ProductVersion;
 			}
 
 			Item.ExtendedProperties ["SchemaVersion"] = "2.0";
 			
-			if (ToolsVersion != "2.0")
-				msproject.ToolsVersion = ToolsVersion;
+			if (TargetFormat.ToolsVersion != "2.0")
+				msproject.ToolsVersion = TargetFormat.ToolsVersion;
 			else
 				msproject.ToolsVersion = string.Empty;
+
 			
+			string targetFramework = null;
+			IList supportedFrameworks = TargetFormat.FrameworkVersions;;
+			
+			if (dotNetProject != null) {
+
+				targetFramework = dotNetProject.TargetFramework.Id;
+
+				// If the file format does not support this framework version, store the highest version
+				// supported in the TargetFrameworkVersion property and the real one in the extended properties
+				if (!supportedFrameworks.Contains (targetFramework)) {
+					dotNetProject.ExtendedProperties ["InternalTargetFrameworkVersion"] = targetFramework;
+					targetFramework = FindClosestSupportedVersion (targetFramework);
+				} else
+					dotNetProject.ExtendedProperties.Remove ("InternalTargetFrameworkVersion");
+			}
+
 			// This serialize call will write data to ser.InternalItemProperties and ser.ExternalItemProperties
 			ser.Serialize (Item, Item.GetType ());
 			
@@ -458,7 +484,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			// Find a common assembly name for all configurations
 			
 			string assemblyName = null;
-			string clrVersion = null;
 			
 			foreach (SolutionItemConfiguration conf in eitem.Configurations) {
 				DotNetProjectConfiguration cp = conf as MonoDevelop.Projects.DotNetProjectConfiguration;
@@ -467,11 +492,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						assemblyName = cp.OutputAssembly;
 					else if (assemblyName != cp.OutputAssembly)
 						assemblyName = string.Empty;
-					
-					if (clrVersion == null)
-						clrVersion = GetFrameworkVersion (cp.ClrVersion);
-					else if (clrVersion != GetFrameworkVersion (cp.ClrVersion))
-						clrVersion = string.Empty;
 					
 					if (newProject)
 						cp.ExtendedProperties ["ErrorReport"] = "prompt";
@@ -490,15 +510,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				SetGroupProperty (globalGroup, "AssemblyName", assemblyName, false);
 			else
 				globalGroup.RemoveProperty ("AssemblyName");
-
-			if (!string.IsNullOrEmpty (clrVersion)) {
-				// When using the VS05 format, only write the framework version if it is not 2.0
-				if (productVersion != MSBuildFileFormatVS05.Version || clrVersion != "v2.0")
-					SetGroupProperty (globalGroup, "TargetFrameworkVersion", clrVersion, false);
-				else
-					globalGroup.RemoveProperty ("TargetFrameworkVersion");
-			} else
-				globalGroup.RemoveProperty ("TargetFrameworkVersion");
 			
 			// Configurations
 
@@ -514,12 +525,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				}
 				
 				DotNetProjectConfiguration netConfig = conf as DotNetProjectConfiguration;
-				if (netConfig != null) {
-					if (string.IsNullOrEmpty (clrVersion))
-						netConfig.ExtendedProperties ["TargetFrameworkVersion"] = GetFrameworkVersion (netConfig.ClrVersion);
-					else
-						netConfig.ExtendedProperties.Remove ("TargetFrameworkVersion");
-				}
 				
 				DataItem ditem = (DataItem) ser.Serialize (conf);
 				
@@ -546,10 +551,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				UnmergeBaseConfiguration (configData, propGroup, conf.Name, conf.Platform);
 			}
 			
-			Project project = Item as Project;
-			DotNetProject dotNetProject = Item as DotNetProject;
-			
 			if (dotNetProject != null) {
+
+				// If the format only supports one fx version, there is no need to store it
+				if (supportedFrameworks.Count > 1)
+					SetGroupProperty (globalGroup, "TargetFrameworkVersion", "v" + targetFramework, false);
+				else
+					globalGroup.RemoveProperty ("TargetFrameworkVersion");
+				
 				// Remove all references and add the new ones
 				
 				MSBuildItemGroup refgrp = null;
@@ -586,7 +595,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					else if (pref.ReferenceType == ReferenceType.Gac) {
 						string include = pref.Reference;
 						SystemPackage sp = Runtime.SystemAssemblyService.GetPackageFromFullName (include);
-						if (sp != null && sp.IsCorePackage) {
+						if (sp != null && sp.IsFrameworkPackage) {
 							int i = include.IndexOf (',');
 							include = include.Substring (0, i).Trim ();
 						}
@@ -595,6 +604,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						buildItem = refgrp.AddNewItem ("Reference", include);
 						if (!pref.SpecificVersion)
 							buildItem.SetMetadata ("SpecificVersion", "False");
+						SystemPackage pkg = Runtime.SystemAssemblyService.GetPackageFromFullName (pref.Reference);
+						if (pkg != null && pkg.IsFrameworkPackage && supportedFrameworks.Contains (pkg.TargetFramework) && pkg.TargetFramework != "2.0" && supportedFrameworks.Count > 1) {
+							TargetFramework fx = Runtime.SystemAssemblyService.GetTargetFramework (pkg.TargetFramework);
+							buildItem.SetMetadata ("RequiredTargetFramework", fx.Id);
+						}
 					}
 					else if (pref.ReferenceType == ReferenceType.Project) {
 						Project refProj = project.ParentSolution.FindProjectByName (pref.Reference);
@@ -701,7 +715,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				StringWriter sw = new StringWriter ();
 				XmlConfigurationWriter.DefaultWriter.Write (new XmlTextWriter (sw), extendedData);
 				msproject.SetProjectExtensions ("MonoDevelop", sw.ToString ());
-			}
+			} else
+				msproject.RemoveProjectExtensions ("MonoDevelop");
 			
 			msproject.Save (eitem.FileName);
 		}
@@ -928,6 +943,16 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				platform = "AnyCPU";
 			return " '$(Configuration)|$(Platform)' == '" + config + "|" + platform + "' ";
 		}
+
+		string FindClosestSupportedVersion (string version)
+		{
+			foreach (string supv in TargetFormat.FrameworkVersions) {
+				TargetFramework fx = Runtime.SystemAssemblyService.GetTargetFramework (supv);
+				if (fx.IsCompatibleWithFramework (version))
+					return fx.Id;
+			}
+			return TargetFormat.FrameworkVersions [TargetFormat.FrameworkVersions.Length - 1];
+		}
 		
 		string GetXmlString (DataNode node)
 		{
@@ -951,30 +976,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 		
-		ClrVersion GetClrVersion (string frameworkVersion)
-		{
-			switch (frameworkVersion) {
-				case "v1.1": return ClrVersion.Net_1_1;
-				case "v2.0": return ClrVersion.Net_2_0;
-				case "v3.0": return ClrVersion.Net_2_0;
-				//note: mapping to CLR 2.1 (Silverlight CoreCLR) is overridden by the moonlight project type.
-				// the "version" is still 3.5.
-				case "v3.5": return ClrVersion.Net_2_0;
-			}
-			return ClrVersion.Net_2_0;
-		}
-		
-		string GetFrameworkVersion (ClrVersion version)
-		{
-			switch (version) {
-				case ClrVersion.Net_1_1: return "v1.1";
-				case ClrVersion.Net_2_0: return "v2.0";
-				case ClrVersion.Clr_2_1: return "v3.5";
-				case ClrVersion.Default: return GetFrameworkVersion (Runtime.SystemAssemblyService.CurrentClrVersion);
-			}
-			return null;
-		}
-		
 		internal virtual MSBuildSerializer CreateSerializer ()
 		{
 			return new MSBuildSerializer (EntityItem.FileName);
@@ -988,6 +989,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			"DebugSymbols","DebugType","Optimize","OutputPath","DefineConstants","ErrorReport","WarningLevel",
 		    "TreatWarningsAsErrors","DocumentationFile"
 		);
+
+		// Those are properties which are dynamically set by this file format
 		
 		internal static readonly ItemMember[] ExtendedMSBuildProperties = new ItemMember [] {
 			new ItemMember (typeof(Project), "ProductVersion"),
@@ -998,6 +1001,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			new ItemMember (typeof(DotNetProjectConfiguration), "ErrorReport"),
 			new ItemMember (typeof(DotNetProjectConfiguration), "TargetFrameworkVersion"),
 			new ItemMember (typeof(ProjectReference), "RequiredTargetFramework"),
+			new ItemMember (typeof(Project), "InternalTargetFrameworkVersion", true),
 		};
 	}
 	

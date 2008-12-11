@@ -42,7 +42,6 @@ namespace MonoDevelop.Projects
 	public class DotNetProject : Project
 	{
 		string language;
-		ClrVersion clrVersion = ClrVersion.Default;
 		bool usePartialTypes = true;
 		Ambience ambience;
 		
@@ -131,58 +130,83 @@ namespace MonoDevelop.Projects
 				NotifyModified ("UseParentDirectoryAsNamespace");
 			}
 		}
+
+		string targetFrameworkVersion;
+		TargetFramework targetFramework;
 		
-		public ClrVersion ClrVersion {
+		public TargetFramework TargetFramework {
 			get {
-				if (clrVersion == ClrVersion.Default)
-					ClrVersion = ClrVersion.Default;
-				return clrVersion;
+				if (targetFramework == null) {
+					if (targetFrameworkVersion != null)
+						targetFramework = Runtime.SystemAssemblyService.GetTargetFramework (targetFrameworkVersion);
+					if (targetFramework == null)
+						TargetFramework = Services.ProjectService.DefaultTargetFramework;
+				}
+				return targetFramework;
 			}
 			set {
-				ClrVersion validValue = GetValidClrVersion (value);
-				if (clrVersion == validValue || validValue == ClrVersion.Default)
+				TargetFramework validValue = GetValidFrameworkVersion (value);
+				if (targetFramework == null && validValue == null)
+					targetFramework = Services.ProjectService.DefaultTargetFramework;
+				if (targetFramework == validValue || validValue == null)
 					return;
-				clrVersion = validValue;
-				
-				// Propagate the clr version to configurations. We don't support
-				// per-project clr versions right now, but we might support it
-				// in the future.
-				foreach (DotNetProjectConfiguration conf in Configurations)
-					conf.ClrVersion = clrVersion;
-				
+				targetFramework = validValue;
+				targetFrameworkVersion = validValue.Id;
 				UpdateSystemReferences ();
-				NotifyModified ("ClrVersion");
+				NotifyModified ("TargetFramework");
 			}
+		}
+
+		public virtual bool SupportsFramework (TargetFramework framework)
+		{
+			ClrVersion[] versions = SupportedClrVersions;
+			if (versions != null && versions.Length > 0 && framework != null) {
+				foreach (ClrVersion v in versions) {
+					if (v == framework.ClrVersion)
+						return true;
+				}
+			}
+			return false;
 		}
 		
 		//if possible, find a ClrVersion that the language binding can handle
-		ClrVersion GetValidClrVersion (ClrVersion suggestion)
+		TargetFramework GetValidFrameworkVersion (TargetFramework suggestion)
 		{
-			if (suggestion == ClrVersion.Default) {
-				if (languageBinding == null)
-					return ClrVersion.Default;
+			if (suggestion == null) {
+				if (LanguageBinding == null)
+					return null;
 				else
-					suggestion = ClrVersion.Net_2_0;
+					suggestion = Services.ProjectService.DefaultTargetFramework;
 			}
-			
+
 			ClrVersion[] versions = SupportedClrVersions;
 			if (versions != null && versions.Length > 0) {
 				foreach (ClrVersion v in versions) {
-					if (v == suggestion) {
+					if (v == suggestion.ClrVersion)
 						return suggestion;
+				}
+				TargetFramework oneSupported = null;
+				foreach (ClrVersion v in versions) {
+					foreach (TargetFramework f in Runtime.SystemAssemblyService.GetTargetFrameworks ()) {
+						if (f.ClrVersion == v) {
+							if (f.IsSupported)
+								return f;
+							else if (oneSupported == null)
+								oneSupported = f;
+						}
 					}
 				}
-				
-				return versions[0];
+				if (oneSupported != null)
+					return oneSupported;
 			}
 			
-			return suggestion;
+			return null;
 		}
 		
 		public virtual ClrVersion[] SupportedClrVersions {
 			get {
-				if (languageBinding != null)
-					return languageBinding.GetSupportedClrVersions ();
+				if (LanguageBinding != null)
+					return LanguageBinding.GetSupportedClrVersions ();
 				return null;
 			}
 		}
@@ -261,9 +285,9 @@ namespace MonoDevelop.Projects
 		
 		public virtual bool SupportsPartialTypes {
 			get {
-				if (languageBinding == null)
+				if (LanguageBinding == null)
 					return false;
-				System.CodeDom.Compiler.CodeDomProvider provider = languageBinding.GetCodeDomProvider ();
+				System.CodeDom.Compiler.CodeDomProvider provider = LanguageBinding.GetCodeDomProvider ();
 				if (provider == null)
 					return false;
 				return provider.Supports ( System.CodeDom.Compiler.GeneratorSupport.PartialTypes);
@@ -402,8 +426,9 @@ namespace MonoDevelop.Projects
 		
 		protected internal override void OnSave (IProgressMonitor monitor)
 		{
-			//make sure clr version is sorted out before saving
-			ClrVersion v = this.ClrVersion;
+			// Make sure the fx version is sorted out before saving
+			// to avoid changes in project references while saving 
+			TargetFramework v = this.TargetFramework;
 			base.OnSave (monitor);
 		}
 
@@ -418,8 +443,8 @@ namespace MonoDevelop.Projects
 			DotNetProjectConfiguration conf = new DotNetProjectConfiguration (name);
 			conf.OutputDirectory = Path.Combine ("bin", name);
 			conf.OutputAssembly  = Name;
-			if (languageBinding != null)
-				conf.CompilationParameters = languageBinding.CreateCompilationParameters (null);
+			if (LanguageBinding != null)
+				conf.CompilationParameters = LanguageBinding.CreateCompilationParameters (null);
 			return conf;
 		}
 
@@ -492,9 +517,9 @@ namespace MonoDevelop.Projects
 
 		public override bool IsCompileable(string fileName)
 		{
-			if (languageBinding == null)
+			if (LanguageBinding == null)
 				return false;
-			return languageBinding.IsSourceCodeFile (fileName);
+			return LanguageBinding.IsSourceCodeFile (fileName);
 		}
 		
 		public virtual string GetDefaultNamespace (string fileName)
@@ -541,12 +566,19 @@ namespace MonoDevelop.Projects
 			
 			foreach (ProjectReference pref in References) {
 				if (pref.ReferenceType == ReferenceType.Gac) {
-					string newRef = Runtime.SystemAssemblyService.GetAssemblyNameForVersion (pref.Reference, this.ClrVersion);
-					if (newRef == null)
+					string newRef = Runtime.SystemAssemblyService.GetAssemblyNameForVersion (pref.Reference, this.TargetFramework);
+					if (newRef == null) {
+						// re-add the reference. It will be shown as invalid.
 						toDelete.Add (pref);
+						toAdd.Add (new ProjectReference (ReferenceType.Gac, pref.Reference));
+					}
 					else if (newRef != pref.Reference) {
 						toDelete.Add (pref);
 						toAdd.Add (new ProjectReference (ReferenceType.Gac, newRef));
+					}
+					else if (!pref.IsValid) {
+						toDelete.Add (pref);
+						toAdd.Add (new ProjectReference (ReferenceType.Gac, pref.Reference));
 					}
 				}
 			}

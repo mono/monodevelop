@@ -214,6 +214,17 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 			sec.InnerXml = value;
 		}
+
+		public void RemoveProjectExtensions (string section)
+		{
+			XmlElement elem = doc.DocumentElement.SelectSingleNode ("tns:ProjectExtensions/tns:" + section, XmlNamespaceManager) as XmlElement;
+			if (elem != null) {
+				XmlElement parent = (XmlElement) elem.ParentNode;
+				parent.RemoveChild (elem);
+				if (!parent.HasChildNodes)
+					parent.ParentNode.RemoveChild (parent);
+			}
+		}
 		
 		public void RemoveItem (MSBuildItem item)
 		{

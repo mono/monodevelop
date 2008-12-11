@@ -84,6 +84,10 @@ namespace MonoDevelop.Projects
 		internal ProjectServiceExtension ExtensionChain {
 			get { return extensionChain; }
 		}
+
+		public TargetFramework DefaultTargetFramework {
+			get { return Runtime.SystemAssemblyService.GetTargetFramework ("2.0"); }
+		}
 		
 		public string DefaultFileFormatId {
 			get { return defaultFormat.Id; }

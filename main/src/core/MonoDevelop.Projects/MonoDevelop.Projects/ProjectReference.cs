@@ -45,12 +45,10 @@ namespace MonoDevelop.Projects
 	public class ProjectReference : ICloneable, IExtendedDataItem
 	{
 		Hashtable extendedProperties;
-		
 		ReferenceType referenceType;
-		
 		DotNetProject ownerProject;
-		
 		string reference = String.Empty;
+		bool localCopy = true;
 		
 		// A project may reference assemblies which are not available
 		// in the system where it is opened. For example, opening
@@ -60,10 +58,8 @@ namespace MonoDevelop.Projects
 		// The loadedReference stores the reference initially loaded,
 		// so it can be saved again.
 		string loadedReference;
-
 		bool specificVersion = true;
-		
-		bool localCopy = true;
+		bool notFound;
 		
 		public ProjectReference ()
 		{
@@ -155,6 +151,34 @@ namespace MonoDevelop.Projects
 				specificVersion = value;
 			}
 		}
+
+		public bool IsValid {
+			get {
+				if (ReferenceType == ReferenceType.Gac) {
+					if (notFound)
+						return false;
+					if (!IsExactVersion && SpecificVersion)
+						return false;
+				} else if (ReferenceType == ReferenceType.Project) {
+					if (ownerProject != null && ownerProject.ParentSolution != null) {
+						DotNetProject p = ownerProject.ParentSolution.FindProjectByName (reference) as DotNetProject;
+						if (p != null)
+							return ownerProject.TargetFramework.IsCompatibleWithFramework (p.TargetFramework.Id);
+					}
+				}
+				return true;
+			}
+		}
+		
+		public bool IsExactVersion {
+			get {
+				if (ReferenceType == ReferenceType.Gac) {
+					if (StoredReference != Reference && !Reference.StartsWith (StoredReference + ","))
+						return false;
+				}
+				return true;
+			}
+		}
 		
 		/// <summary>
 		/// Returns the file name to an assembly, regardless of what 
@@ -195,11 +219,13 @@ namespace MonoDevelop.Projects
 		void UpdateGacReference ()
 		{
 			if (referenceType == ReferenceType.Gac) {
+				notFound = false;
 				string cref = Runtime.SystemAssemblyService.FindInstalledAssembly (reference);
 				if (ownerProject != null) {
 					if (cref == null)
 						cref = reference;
-					cref = Runtime.SystemAssemblyService.GetAssemblyNameForVersion (cref, ownerProject.ClrVersion);
+					cref = Runtime.SystemAssemblyService.GetAssemblyNameForVersion (cref, ownerProject.TargetFramework);
+					notFound = (cref == null);
 				}
 				if (cref != null && cref != reference) {
 					if (loadedReference == null) {

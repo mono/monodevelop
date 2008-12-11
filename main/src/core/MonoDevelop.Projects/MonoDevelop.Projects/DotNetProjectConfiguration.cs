@@ -45,8 +45,6 @@ namespace MonoDevelop.Projects
 		[ItemProperty ("AssemblyName")]
 		string assembly;
 		
-		MonoDevelop.Core.ClrVersion clrVersion = MonoDevelop.Core.ClrVersion.Net_2_0;
-		
 		[ItemProperty ("CodeGeneration", FallbackType=typeof(UnknownCompilationParameters))]
 		ICloneable compilationParameters;
 		
@@ -75,9 +73,20 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
+		public MonoDevelop.Core.TargetFramework TargetFramework {
+			get {
+				DotNetProject prj = ParentItem as DotNetProject;
+				if (prj != null)
+					return prj.TargetFramework;
+				else
+					return Services.ProjectService.DefaultTargetFramework;
+			}
+		}
+		
 		public MonoDevelop.Core.ClrVersion ClrVersion {
-			get { return (clrVersion == MonoDevelop.Core.ClrVersion.Default) ? MonoDevelop.Core.ClrVersion.Net_1_1 : clrVersion; }
-			set { clrVersion = value; }
+			get {
+				return TargetFramework.ClrVersion;
+			}
 		}
 		
 		public ICloneable CompilationParameters {
@@ -107,7 +116,8 @@ namespace MonoDevelop.Projects
 			
 			assembly = conf.assembly;
 			sourcePath = conf.sourcePath;
-			clrVersion = conf.clrVersion;
+			if (ParentItem == null)
+				SetParentItem (conf.ParentItem);
 			compilationParameters = conf.compilationParameters != null ? (ICloneable)conf.compilationParameters.Clone () : null;
 		}
 		

@@ -42,8 +42,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		string typeGuid;
 		string id;
 		string[] slnProjectContent;
-		string toolsVersion;
-		string productVersion;
+		MSBuildFileFormat targetFormat;
 		
 		public MSBuildHandler (string typeGuid, string itemId)
 		{
@@ -84,28 +83,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			set { id = value; }
 		}
 
-		public string ToolsVersion {
+		internal MSBuildFileFormat TargetFormat {
 			get {
-				return toolsVersion;
-			}
-			set {
-				toolsVersion = value;
+				return targetFormat;
 			}
 		}
 
-		public string ProductVersion {
-			get {
-				return productVersion;
-			}
-			set {
-				productVersion = value;
-			}
-		}
-
-		public void SetTargetVersion (string productVersion, string toolsVersion)
+		internal void SetTargetFormat (MSBuildFileFormat targetFormat)
 		{
-			this.productVersion = productVersion;
-			this.toolsVersion = toolsVersion;
+			this.targetFormat = targetFormat;
 		}
 
 		public virtual BuildResult RunTarget (IProgressMonitor monitor, string target, string configuration)

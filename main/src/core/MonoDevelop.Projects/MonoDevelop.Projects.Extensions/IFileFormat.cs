@@ -49,5 +49,9 @@ namespace MonoDevelop.Projects.Extensions
 		List<string> GetItemFiles (object obj);
 		
 		bool SupportsMixedFormats { get; }
+
+		// Returns a list of warnings to show to the user about compatibility issues
+		// that may arise when exporting the object to this format.
+		IEnumerable<string> GetCompatibilityWarnings (object obj);
 	}
 }

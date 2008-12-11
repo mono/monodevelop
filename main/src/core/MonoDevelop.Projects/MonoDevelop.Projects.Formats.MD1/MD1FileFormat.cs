@@ -281,7 +281,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 			DataSerializer serializer = new DataSerializer (MD1ProjectService.DataContext, file);
 			ICombineReader combineReader = null;
 			
-			if (version == "2.0")
+			if (version == "2.0" || version == "2.1")
 				combineReader = new CombineReaderV2 (serializer, monitor, typeof(Solution));
 			
 			try {
@@ -312,7 +312,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 				
 				monitor.BeginTask (GettextCatalog.GetString ("Loading project: {0}", fileName), 1);
 				
-				if (version == "2.0") {
+				if (version == "2.0" || version == "2.1") {
 					projectReader = new ProjectReaderV2 (serializer);
 					return projectReader.ReadProject (reader);
 				}
@@ -357,6 +357,11 @@ namespace MonoDevelop.Projects.Formats.MD1
 			SolutionItem item = obj as SolutionItem;
 			if (item != null)
 				MD1ProjectService.InitializeHandler (item);
+		}
+
+		public IEnumerable<string> GetCompatibilityWarnings (object obj)
+		{
+			yield break;
 		}
 	}
 }

@@ -119,6 +119,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 			BuildResult refres = null;
 			
 			foreach (ProjectReference pr in project.References) {
+				
 				if (pr.ReferenceType == ReferenceType.Project) {
 					// Ignore non-dotnet projects
 					Project p = project.ParentSolution != null ? project.ParentSolution.FindProjectByName (pr.Reference) : null;
@@ -132,10 +133,16 @@ namespace MonoDevelop.Projects.Formats.MD1
 						monitor.ReportWarning (msg);
 						refres.AddWarning (msg);
 					}
-				} else if (pr.StoredReference != pr.Reference && !pr.Reference.StartsWith (pr.StoredReference + ",") && pr.SpecificVersion) {
+				}
+				
+				if (!pr.IsValid) {
 					if (refres == null)
 						refres = new BuildResult ();
-					string msg = GettextCatalog.GetString ("Reference '{0}' not found on system. Using '{1} instead.", pr.StoredReference, pr.Reference);
+					string msg;
+					if (!pr.IsExactVersion && pr.SpecificVersion)
+						msg = GettextCatalog.GetString ("Reference '{0}' not found on system. Using '{1} instead.", pr.StoredReference, pr.Reference);
+					else
+						msg = GettextCatalog.GetString ("The reference '{0}' is not valid for the target framework of the project.", pr.StoredReference, pr.Reference);
 					monitor.ReportWarning (msg);
 					refres.AddWarning (msg);
 				}
@@ -203,7 +210,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 			
 			string resgen = "resgen";
 			if (System.Environment.Version.Major >= 2) {
-				switch (configuration.ClrVersion) {
+				switch (configuration.TargetFramework.ClrVersion) {
 					case ClrVersion.Net_2_0: resgen = "resgen2"; break;
 					case ClrVersion.Net_1_1: resgen = "resgen1"; break;
 				}
@@ -243,7 +250,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 				projectFiles.Remove (finfo);
 			}
 
-			string al = configuration.ClrVersion == ClrVersion.Net_2_0 ? "al2" : "al";
+			string al = configuration.TargetFramework.ClrVersion == ClrVersion.Net_2_0 ? "al2" : "al";
 			CompilerError err = GenerateSatelliteAssemblies (resourcesByCulture, configuration.OutputDirectory, al, Path.GetFileNameWithoutExtension (configuration.OutputAssembly), monitor);
 			if (err != null) {
 				CompilerResults cr = new CompilerResults (new TempFileCollection ());
