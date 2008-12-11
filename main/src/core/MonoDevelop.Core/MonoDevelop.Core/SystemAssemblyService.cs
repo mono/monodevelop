@@ -230,6 +230,12 @@ namespace MonoDevelop.Core
 				return locator.Locate (assemblyName);
 			}
 		}
+
+		public bool AssemblyIsInGac (string aname)
+		{
+			string gf = GetGacFile (aname);
+			return gf != null && File.Exists (gf);
+		}
 		
 		string FindAssembly (string aname, string baseDirectory)
 		{
@@ -248,6 +254,14 @@ namespace MonoDevelop.Core
 			if (File.Exists (file))
 				return file;
 			
+			string gf = GetGacFile (aname);
+			if (File.Exists (gf))
+				return gf;
+			return null;
+		}
+		
+		string GetGacFile (string aname)
+		{
 			// Look for the assembly in the GAC.
 			// WARNING: this is a hack, but there isn't right now a better
 			// way of doing it
@@ -257,14 +271,6 @@ namespace MonoDevelop.Core
 			gacDir = Path.GetDirectoryName (gacDir);
 			gacDir = Path.GetDirectoryName (gacDir);
 			
-			string gf = GetGacFile (gacDir, aname);
-			if (File.Exists (gf))
-				return gf;
-			return null;
-		}
-		
-		string GetGacFile (string gacDir, string aname)
-		{
 			string[] parts = aname.Split (',');
 			if (parts.Length != 4) return null;
 			string name = parts[0].Trim ();

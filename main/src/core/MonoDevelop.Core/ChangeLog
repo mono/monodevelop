@@ -1,5 +1,10 @@
 2008-12-11  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Core/SystemAssemblyService.cs: Added method for checking
+	if an assembly is in the gac.
+
+2008-12-11  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Core/SystemAssemblyService.cs: Nullref fixes.
 
 2008-12-11  Lluis Sanchez Gual  <lluis@novell.com>
