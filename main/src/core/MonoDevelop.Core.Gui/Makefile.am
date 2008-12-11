@@ -21,6 +21,7 @@ REFS =  \
 FILES =  \
 	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
+	gtk-gui/MonoDevelop.Core.Gui.Dialogs.MultiMessageDialog.cs \
 	gtk-gui/MonoDevelop.Core.Gui.Dialogs.MultiTaskProgressDialog.cs \
 	gtk-gui/MonoDevelop.Core.Gui.Dialogs.OptionsDialog.cs \
 	MonoDevelop.Core.Gui.Codons/DialogPanelCodon.cs \
@@ -36,6 +37,7 @@ FILES =  \
 	MonoDevelop.Core.Gui.Dialogs/IDialogPanel.cs \
 	MonoDevelop.Core.Gui.Dialogs/IDialogPanelDescriptor.cs \
 	MonoDevelop.Core.Gui.Dialogs/IOptionsPanel.cs \
+	MonoDevelop.Core.Gui.Dialogs/MultiMessageDialog.cs \
 	MonoDevelop.Core.Gui.Dialogs/MultiTaskProgressDialog.cs \
 	MonoDevelop.Core.Gui.Dialogs/OptionsDialog.cs \
 	MonoDevelop.Core.Gui.Dialogs/OptionsPanel.cs \

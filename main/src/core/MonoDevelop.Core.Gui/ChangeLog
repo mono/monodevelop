@@ -1,3 +1,12 @@
+2008-12-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Core.Gui.mdp:
+	* MonoDevelop.Core.Gui.Dialogs/MultiMessageDialog.cs:
+	* gtk-gui/MonoDevelop.Core.Gui.Dialogs.MultiMessageDialog.cs: Added
+	dialog which allows showing multiple messages at once.
+
 2008-12-09  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Gui.mdp: Don't require a specific version of
