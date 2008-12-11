@@ -31,12 +31,14 @@
 using System;
 using System.Threading;
 using System.IO;
+using System.Xml;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.AddIns;
+using MonoDevelop.Core.Serialization;
 using Mono.Addins;
 
 namespace MonoDevelop.Core
@@ -47,19 +49,12 @@ namespace MonoDevelop.Core
 		Dictionary<string, string> assemblyFullNameToPath = new Dictionary<string, string> ();
 		Dictionary<string, SystemPackage> packagesHash = new Dictionary<string, SystemPackage> ();
 		List<SystemPackage> packages = new List<SystemPackage> ();
+		List<TargetFramework> frameworks;
+		HashSet<string> corePackages = new HashSet<string> ();
 		
 		object initLock = new object ();
 		bool initialized;
 		bool reportedPkgConfigNotFound = false;
-		
-		ClrVersion currentVersion;
-		ClrVersion[] supportedVersions = new ClrVersion [] {};
-		
-		public ClrVersion CurrentClrVersion {
-			get {
-				return currentVersion;
-			}
-		}
 		
 		public event EventHandler PackagesChanged;
 
@@ -71,9 +66,19 @@ namespace MonoDevelop.Core
 			t.Start ();
 		}
 		
-		public ClrVersion[] GetSupportedClrVersions ()
+		public IEnumerable<TargetFramework> GetTargetFrameworks ()
 		{
-			return supportedVersions;
+			return frameworks;
+		}
+
+		public TargetFramework GetTargetFramework (string id)
+		{
+			foreach (TargetFramework fx in frameworks)
+				if (fx.Id == id)
+					return fx;
+			TargetFramework f = new TargetFramework (id);
+			frameworks.Add (f);
+			return f;
 		}
 
 		public ICollection<string> GetAssemblyFullNames ()
@@ -81,7 +86,7 @@ namespace MonoDevelop.Core
 			return assemblyFullNameToPath.Keys;
 		}
 		
-		public SystemPackage RegisterPackage (string name, string version, string description, ClrVersion targetVersion, string gacRoot, params string[] assemblyFiles)
+		public SystemPackage RegisterPackage (string name, string version, string description, string targetVersion, string gacRoot, params string[] assemblyFiles)
 		{
 			SystemPackage p = new SystemPackage ();
 			foreach (string asm in assemblyFiles)
@@ -108,25 +113,39 @@ namespace MonoDevelop.Core
 				PackagesChanged (this, EventArgs.Empty);
 		}
 		
-		public ICollection<SystemPackage> GetPackages ()
+		public IEnumerable<SystemPackage> GetPackages (TargetFramework fx)
 		{
-			return packages;
+			foreach (SystemPackage pkg in packages) {
+				if (pkg.IsFrameworkPackage) {
+					if (pkg.TargetFramework == fx.Id)
+						yield return pkg;
+				}
+				else if (fx.IsCompatibleWithFramework (pkg.TargetFramework))
+					yield return pkg;
+			}
 		}
 
+		public ICollection GetAssemblyPaths ()
+		{
+			return GetAssemblyPaths (null);
+		}
+		
 		// Returns the list of installed assemblies for the given runtime version.
-		public ICollection GetAssemblyPaths (ClrVersion clrVersion)
+		public ICollection GetAssemblyPaths (TargetFramework fx)
 		{
 			Initialize ();
 			
-			if (clrVersion == ClrVersion.Default)
-				clrVersion = currentVersion;
-
 			List<string> list = new List<string> ();
+			if (!fx.IsSupported)
+				return list;
+			
 			foreach (KeyValuePair<string, SystemPackage> e in assemblyPathToPackage) {
-				SystemPackage pkg = (SystemPackage) e.Value;
-				if (pkg.TargetVersion != ClrVersion.Default && pkg.TargetVersion != clrVersion)
-					continue;
-				list.Add (e.Key);
+				SystemPackage pkg = e.Value;
+				if (pkg.IsFrameworkPackage) {
+					if (fx.IsExtensionOfFramework (pkg.TargetFramework))
+						list.Add (e.Key);
+				} else if (fx.IsCompatibleWithFramework (pkg.TargetFramework))
+					list.Add (e.Key);
 			}
 			return list;
 		}
@@ -268,19 +287,32 @@ namespace MonoDevelop.Core
 		
 		// Given the full name of an assembly, returns the corresponding full assembly name
 		// in the specified target CLR version, or null if it doesn't exist in that version.
-		public string GetAssemblyNameForVersion (string fullName, ClrVersion targetVersion)
+		public string GetAssemblyNameForVersion (string fullName, TargetFramework fx)
 		{
 			Initialize ();
 
 			fullName = NormalizeAsmName (fullName);
 			SystemPackage package = GetPackageFromFullName (fullName);
-			if (package == null || !package.IsCorePackage || package.TargetVersion == targetVersion)
+			
+			if (package == null)
 				return fullName;
 			
+			if (!package.IsFrameworkPackage) {
+				// Return null if the package is not compatible with the requested version
+				if (fx.IsCompatibleWithFramework (package.TargetFramework))
+					return fullName;
+				else
+					return null;
+			}
+			if (fx.IsExtensionOfFramework (package.TargetFramework))
+				return fullName;
+
+			// We have to find a core package which contains whits assembly
 			string fname = Path.GetFileName ((string) assemblyFullNameToPath [fullName]);
+			
 			foreach (KeyValuePair<string, string> pair in assemblyFullNameToPath) {
 				SystemPackage rpack = (SystemPackage) assemblyPathToPackage [pair.Value];
-				if (rpack.IsCorePackage && rpack.TargetVersion == targetVersion && Path.GetFileName (pair.Value) == fname)
+				if (rpack.IsFrameworkPackage && fx.IsExtensionOfFramework (rpack.TargetFramework) && Path.GetFileName (pair.Value) == fname)
 					return pair.Key;
 			}
 			return null;
@@ -333,23 +365,19 @@ namespace MonoDevelop.Core
 			
 			if (Environment.Version.Major == 1) {
 				versionDir = "1.0";
-				currentVersion = ClrVersion.Net_1_1;
 			} else {
 				versionDir = "2.0";
-				currentVersion = ClrVersion.Net_2_0;
 			}
 
 			//Pull up assemblies from the installed mono system.
 			string prefix = Path.GetDirectoryName (typeof (int).Assembly.Location);
 
-			if (prefix.IndexOf ( Path.Combine("mono", versionDir)) == -1)
+			if (prefix.IndexOf (Path.Combine("mono", versionDir)) == -1)
 				prefix = Path.Combine (prefix, "mono");
 			else
 				prefix = Path.GetDirectoryName (prefix);
 			
-			RegisterSystemAssemblies (prefix, "1.0", ClrVersion.Net_1_1);
-			RegisterSystemAssemblies (prefix, "2.0", ClrVersion.Net_2_0);
-			RegisterSystemAssemblies (prefix, "2.1", ClrVersion.Clr_2_1);
+			CreateFrameworks (prefix);
 			
 			string search_dirs = Environment.GetEnvironmentVariable ("PKG_CONFIG_PATH");
 			string libpath = Environment.GetEnvironmentVariable ("PKG_CONFIG_LIBPATH");
@@ -403,7 +431,7 @@ namespace MonoDevelop.Core
 			PackageExtensionNode node = (PackageExtensionNode) args.ExtensionNode;
 			if (args.Change == ExtensionChange.Add) {
 				if (GetPackage (node.Name, node.Version) == null)
-					RegisterPackage (node.Name, node.Version, node.Name, node.TargetClrVersion, node.GacRoot, node.Assemblies);
+					RegisterPackage (node.Name, node.Version, node.Name, node.TargetFrameworkVersion, node.GacRoot, node.Assemblies);
 			}
 			else {
 				SystemPackage p = GetPackage (node.Name, node.Version);
@@ -412,39 +440,106 @@ namespace MonoDevelop.Core
 			}
 		}
 
-		void RegisterSystemAssemblies (string prefix, string version, ClrVersion ver)
+		void CreateFrameworks (string prefix)
 		{
-			foreach (ClrVersion v in supportedVersions)
-				if (v == ver)
-					return;
+			using (Stream s = AddinManager.CurrentAddin.GetResource ("frameworks.xml")) {
+				XmlTextReader reader = new XmlTextReader (s);
+				XmlDataSerializer ser = new XmlDataSerializer (new DataContext ());
+				frameworks = (List<TargetFramework>) ser.Deserialize (reader, typeof(List<TargetFramework>));
+			}
+
+			// Find framework realtions
+			foreach (TargetFramework fx in frameworks)
+				BuildFrameworkRelations (fx);
 			
+			foreach (TargetFramework fx in frameworks) {
+				// A framework is installed if the assemblies directory exists and the first
+				// assembly of the list exists.
+				string dir = Path.Combine (prefix, fx.AssembliesDir);
+				if (Directory.Exists (dir)) {
+					string firstAsm = Path.Combine (dir, fx.Assemblies [0]) + ".dll";
+					if (File.Exists (firstAsm)) {
+						fx.IsSupported = true;
+						RegisterSystemAssemblies (prefix, fx);
+					}
+				}
+				if (!string.IsNullOrEmpty (fx.Package))
+					corePackages.Add (fx.Package);
+			}
+		}
+
+		void BuildFrameworkRelations (TargetFramework fx)
+		{
+			if (fx.RelationsBuilt)
+				return;
+			
+			fx.ExtendedFrameworks.Add (fx.Id);
+			fx.CompatibleFrameworks.Add (fx.Id);
+			
+			if (!string.IsNullOrEmpty (fx.CompatibleWithFramework)) {
+				TargetFramework compatFx = GetTargetFramework (fx.CompatibleWithFramework);
+				BuildFrameworkRelations (compatFx);
+				List<string> allAsm = new List<string> (fx.Assemblies);
+				allAsm.AddRange (compatFx.Assemblies);
+				fx.Assemblies = allAsm.ToArray ();
+				fx.CompatibleFrameworks.AddRange (compatFx.CompatibleFrameworks);
+			}
+			else if (!string.IsNullOrEmpty (fx.ExtendsFramework)) {
+				TargetFramework compatFx = GetTargetFramework (fx.ExtendsFramework);
+				BuildFrameworkRelations (compatFx);
+				fx.CompatibleFrameworks.AddRange (compatFx.CompatibleFrameworks);
+				fx.ExtendedFrameworks.AddRange (compatFx.ExtendedFrameworks);
+			}
+			
+			// Find subsets of this framework
+			foreach (TargetFramework sfx in frameworks) {
+				if (sfx.SubsetOfFramework == fx.Id)
+					fx.CompatibleFrameworks.Add (sfx.Id);
+			}
+			
+			fx.RelationsBuilt = true;
+		}
+
+		void RegisterSystemAssemblies (string prefix, TargetFramework fx)
+		{
 			SystemPackage package = new SystemPackage ();
 			List<string> list = new List<string> ();
 			
-			string dir = Path.Combine (prefix, version);
-			if(!Directory.Exists(dir)) {
+			string dir = Path.Combine (prefix, fx.AssembliesDir);
+			if (!Directory.Exists(dir))
 				return;
+
+			foreach (string assembly in fx.Assemblies) {
+				string file = Path.Combine (dir, assembly) + ".dll";
+				if (File.Exists (file))
+					AddAssembly (file, package);
 			}
 
-			foreach (string assembly in Directory.GetFiles (dir, "*.dll")) {
-				AddAssembly (assembly, package);
-				list.Add (assembly);
+			// Include files from extended frameworks but don't register them,
+			// since they belong to another package
+			foreach (string fxid in fx.ExtendedFrameworks) {
+				TargetFramework compFx = GetTargetFramework (fxid);
+				dir = Path.Combine (prefix, compFx.AssembliesDir);
+				if (!Directory.Exists(dir))
+					continue;
+				foreach (string assembly in compFx.Assemblies) {
+					string file = Path.Combine (dir, assembly) + ".dll";
+					if (File.Exists (file))
+						list.Add (file);
+				}
 			}
 
-			package.Initialize ("mono", version, "The Mono runtime", list.ToArray (), ver, null, false);
+			package.Initialize (fx.Package ?? "mono", fx.Id, fx.Name, list.ToArray (), fx.Id, null, false);
+			package.IsFrameworkPackage = true;
+			package.IsCorePackage = string.IsNullOrEmpty (fx.Package);
 			packages.Add (package);
-			
-			ClrVersion[] newArr = new ClrVersion[supportedVersions.Length + 1];
-			supportedVersions.CopyTo (newArr, 0);
-			newArr [newArr.Length - 1] = ver;
-			supportedVersions = newArr;
 		}
-		
+
 		private void ParsePCFile (string pcfile)
 		{
 			// Don't register the package twice
 			string pname = Path.GetFileNameWithoutExtension (pcfile);
-			if (packagesHash.ContainsKey (pname))
+			if (packagesHash.ContainsKey (pname) || corePackages.Contains (pname))
 				return;
 
 			List<string> fullassemblies = null;
@@ -481,7 +576,7 @@ namespace MonoDevelop.Core
 				AddAssembly (assembly, package);
 			}
 
-			package.Initialize (pname, version, desc, fullassemblies.ToArray (), ClrVersion.Default, null, false);
+			package.Initialize (pname, version, desc, fullassemblies.ToArray (), null, null, false);
 			packages.Add (package);
 			packagesHash [pname] = package;
 		}

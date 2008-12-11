@@ -96,10 +96,13 @@ FILES =  \
 	MonoDevelop.Core/StringParserService.cs \
 	MonoDevelop.Core/SystemAssemblyService.cs \
 	MonoDevelop.Core/SystemPackage.cs \
+	MonoDevelop.Core/TargetFramework.cs \
 	MonoDevelop.Core/UserException.cs \
 	MonoDevelop.Core/XmlReadHelper.cs
 
-RES = MonoDevelop.Core.addin.xml                                                          
+RES =  \
+	frameworks.xml \
+	MonoDevelop.Core.addin.xml                                                          
 
 REFS =  \
 	$(MONO_ADDINS_LIBS) \
@@ -107,6 +110,7 @@ REFS =  \
 	-r:ICSharpCode.SharpZipLib \
 	-r:Mono.Posix \
 	-r:System \
+	-r:System.Core \
 	-r:System.Runtime.Remoting \
 	-r:System.Xml
 

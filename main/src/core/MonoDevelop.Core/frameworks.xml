@@ -1,0 +1,170 @@
+<FrameworkList>
+	<TargetFramework id="1.1" _name="Mono / .NET 1.1" clrVersion="Net_1_1">
+		<AssembliesDir>1.0</AssembliesDir>
+		<Assemblies>
+			<!-- The first assembly is used to check if the framework is installed -->
+			<Assembly>System</Assembly>
+			<Assembly>Accessibility</Assembly>
+			<Assembly>cscompmgd</Assembly>
+			<Assembly>Culture</Assembly>
+			<Assembly>CustomMarshalers</Assembly>
+			<Assembly>Microsoft.Build.Engine</Assembly>
+			<Assembly>Microsoft.Build.Framework</Assembly>
+			<Assembly>Microsoft.Build.Tasks</Assembly>
+			<Assembly>Microsoft.Build.Utilities</Assembly>
+			<Assembly>Microsoft.JScript</Assembly>
+			<Assembly>Microsoft.VisualBasic.Compatibility.Data</Assembly>
+			<Assembly>Microsoft.VisualBasic.Compatibility</Assembly>
+			<Assembly>Microsoft.VisualBasic</Assembly>
+			<Assembly>Microsoft.VisualBasic.Vsa</Assembly>
+			<Assembly>Microsoft.VisualC</Assembly>
+			<Assembly>Microsoft.Vsa</Assembly>
+			<Assembly>Microsoft.Vsa.Vb.CodeDOMProcessor</Assembly>
+			<Assembly>Mono.Data</Assembly>
+			<Assembly>Mono.Data.Sqlite</Assembly>
+			<Assembly>Mono.Data.SqliteClient</Assembly>
+			<Assembly>Mono.Data.SybaseClient</Assembly>
+			<Assembly>Mono.Data.Tds</Assembly>
+			<Assembly>Mono.Data.TdsClient</Assembly>
+			<Assembly>Mono.GetOptions</Assembly>
+			<Assembly>Mono.Posix</Assembly>
+			<Assembly>Mono.Security</Assembly>
+			<Assembly>Mono.WebBrowser</Assembly>
+			<Assembly>Mono.Cairo</Assembly>
+			<Assembly>Mono.CompilerServices.SymbolWriter</Assembly>
+			<Assembly>Mono.Http</Assembly>
+			<Assembly>Mono.Mozilla</Assembly>
+			<Assembly>Mono.Security.Win32</Assembly>
+			<Assembly>Mono.WebServer</Assembly>
+			<Assembly>Novell.Directory.Ldap</Assembly>
+			<Assembly>Npgsql</Assembly>
+			<Assembly>System.Configuration.Install</Assembly>
+			<Assembly>System.Data</Assembly>
+			<Assembly>System.Data.OracleClient</Assembly>
+			<Assembly>System.Data.SqlXml</Assembly>
+			<Assembly>System.Deployment</Assembly>
+			<Assembly>System.Design</Assembly>
+			<Assembly>System.DirectoryServices</Assembly>
+			<Assembly>System.DirectoryServices.Protocols</Assembly>
+			<Assembly>System.Drawing.Design</Assembly>
+			<Assembly>System.Drawing</Assembly>
+			<Assembly>System.EnterpriseServices</Assembly>
+			<Assembly>System.EnterpriseServices.Thunk</Assembly>
+			<Assembly>System.EnterpriseServices.Wrapper</Assembly>
+			<Assembly>System.Management</Assembly>
+			<Assembly>System.Messaging</Assembly>
+			<Assembly>System.Runtime.Remoting</Assembly>
+			<Assembly>System.Runtime.Serialization.Formatters.Soap</Assembly>
+			<Assembly>System.Security</Assembly>
+			<Assembly>System.ServiceProcess</Assembly>
+			<Assembly>System.Web</Assembly>
+			<Assembly>System.Web.Mobile</Assembly>
+			<Assembly>System.Web.RegularExpressions</Assembly>
+			<Assembly>System.Web.Services</Assembly>
+			<Assembly>System.Windows.Forms</Assembly>
+			<Assembly>System.Xml</Assembly>
+		</Assemblies>
+	</TargetFramework>
+	
+	<TargetFramework id="2.0" _name="Mono / .NET 2.0" clrVersion="Net_2_0">
+		<CompatibleWithFramework>1.1</CompatibleWithFramework>
+		<AssembliesDir>2.0</AssembliesDir>
+		<Assemblies>
+			<!-- The first assembly is used to check if the framework is installed -->
+			<Assembly>System.Configuration</Assembly>
+			<Assembly>System.Deployment</Assembly>
+			<Assembly>System.DirectoryServices.Protocols</Assembly>
+			<Assembly>System.EnterpriseServices.Thunk</Assembly>
+			<Assembly>System.EnterpriseServices.Wrapper</Assembly>
+			<Assembly>System.Transactions</Assembly>
+			<Assembly>Microsoft.VisualBasic.Compatibility.Data</Assembly>
+			<Assembly>Microsoft.VisualBasic.Compatibility</Assembly>
+			<Assembly>Culture</Assembly>
+		</Assemblies>
+	</TargetFramework>
+	
+	<TargetFramework id="3.0" _name="Mono / .NET 3.0" clrVersion="Net_2_0">
+		<ExtendsFramework>2.0</ExtendsFramework>
+		<AssembliesDir>3.0</AssembliesDir>
+		<Package>olive</Package>
+		<Assemblies>
+			<!-- The first assembly is used to check if the framework is installed -->
+			<Assembly>System.Workflow.Runtime</Assembly>
+			<Assembly>PresentationBuildTasks</Assembly>
+			<Assembly>PresentationCore</Assembly>
+			<Assembly>PresentationUI</Assembly>
+			<Assembly>PresentationFramework.Aero</Assembly>
+			<Assembly>PresentationFramework.Classic</Assembly>
+			<Assembly>PresentationFramework</Assembly>
+			<Assembly>PresentationFramework.Luna</Assembly>
+			<Assembly>PresentationFramework.Royale</Assembly>
+			<Assembly>ReachFramework</Assembly>
+			<Assembly>System.IdentityModel</Assembly>
+			<Assembly>System.IdentityModel.Selectors</Assembly>
+			<Assembly>System.IO.Log</Assembly>
+			<Assembly>System.Printing</Assembly>
+			<Assembly>System.Runtime.Serialization</Assembly>
+			<Assembly>System.ServiceModel</Assembly>
+			<Assembly>System.Speech</Assembly>
+			<Assembly>System.Workflow.Activities</Assembly>
+			<Assembly>System.Workflow.ComponentModel</Assembly>
+			<Assembly>UIAutomationClient</Assembly>
+			<Assembly>UIAutomationClientsideProviders</Assembly>
+			<Assembly>UIAutomationProvider</Assembly>
+			<Assembly>UIAutomationTypes</Assembly>
+			<Assembly>WindowsBase</Assembly>
+			<Assembly>WindowsFormsIntegration</Assembly>
+		</Assemblies>
+	</TargetFramework>
+	
+	<TargetFramework id="3.5" _name="Mono / .NET 3.5" clrVersion="Net_2_0">
+		<ExtendsFramework>3.0</ExtendsFramework>
+		<AssembliesDir>2.0</AssembliesDir>
+		<Assemblies>
+			<!-- The first assembly is used to check if the framework is installed -->
+			<Assembly>System.Core</Assembly>
+			<Assembly>System.AddIn.Contract</Assembly>
+			<Assembly>System.AddIn</Assembly>
+			<Assembly>System.ComponentModel.DataAnnotations</Assembly>
+			<Assembly>System.Data.DataSetExtensions</Assembly>
+			<Assembly>System.Data.Entity.Design</Assembly>
+			<Assembly>System.Data.Entity</Assembly>
+			<Assembly>System.Data.Linq</Assembly>
+			<Assembly>System.Data.Services.Client</Assembly>
+			<Assembly>System.Data.Services.Design</Assembly>
+			<Assembly>System.Data.Services</Assembly>
+			<Assembly>System.DirectoryServices.AccountManagement</Assembly>
+			<Assembly>System.Management.Instrumentation</Assembly>
+			<Assembly>System.Net</Assembly>
+			<Assembly>System.ServiceModel.Web</Assembly>
+			<Assembly>System.Web.Abstractions</Assembly>
+			<Assembly>System.Web.DynamicData.Design</Assembly>
+			<Assembly>System.Web.DynamicData</Assembly>
+			<Assembly>System.Web.Entity.Design</Assembly>
+			<Assembly>System.Web.Entity</Assembly>
+			<Assembly>System.Web.Extensions.Design</Assembly>
+			<Assembly>System.Web.Extensions</Assembly>
+			<Assembly>System.Web.Routing</Assembly>
+			<Assembly>System.Windows.Presentation</Assembly>
+			<Assembly>System.WorkflowServices</Assembly>
+			<Assembly>System.Xml.Linq</Assembly>
+		</Assemblies>
+	</TargetFramework>
+	
+	<TargetFramework id="2.1" _name="Moonlight / Silverlight 2.0" clrVersion="Clr_2_1">
+		<AssembliesDir>2.1</AssembliesDir>
+		<SubsetOfFramework>3.5</SubsetOfFramework>
+		<Assemblies>
+			<!-- The first assembly is used to check if the framework is installed -->
+			<Assembly>System</Assembly>
+			<Assembly>System.Core</Assembly>
+			<Assembly>System.Net</Assembly>
+			<Assembly>System.Runtime.Serialization</Assembly>
+			<Assembly>System.ServiceModel</Assembly>
+			<Assembly>System.ServiceModel.Web</Assembly>
+			<Assembly>System.Windows</Assembly>
+			<Assembly>System.Windows.Browser</Assembly>
+			<Assembly>System.Xml</Assembly>
+		</Assemblies>
+	</TargetFramework>
+</FrameworkList>

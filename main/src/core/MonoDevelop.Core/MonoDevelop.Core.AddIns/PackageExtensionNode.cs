@@ -43,6 +43,9 @@ namespace MonoDevelop.Core.AddIns
 		[NodeAttribute ("version", Required=true)]
 		string version;
 		
+		[NodeAttribute ("targetFramework")]
+		string fxVersion;
+		
 		[NodeAttribute("clrVersion")]
 		ClrVersion clrVersion = ClrVersion.Default;
 		
@@ -73,8 +76,17 @@ namespace MonoDevelop.Core.AddIns
 			get { return version; }
 		}
 		
-		public ClrVersion TargetClrVersion {
-			get { return clrVersion; }
+		public string TargetFrameworkVersion {
+			get {
+				if (fxVersion != null)
+					return fxVersion;
+				else if (clrVersion == ClrVersion.Net_1_1)
+					return "1.1";
+				else if (clrVersion == ClrVersion.Net_2_0)
+					return "2.0";
+				else
+					return null;
+			}
 		}
 		
 		public string GacRoot {

@@ -1,3 +1,17 @@
+2008-12-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* frameworks.xml:
+	* MonoDevelop.Core.mdp:
+	* MonoDevelop.Core/SystemPackage.cs:
+	* MonoDevelop.Core/TargetFramework.cs:
+	* MonoDevelop.Core/SystemAssemblyService.cs:
+	* MonoDevelop.Core.AddIns/PackageExtensionNode.cs:
+	* MonoDevelop.Core.Serialization/ISerializationAttributeProvider.cs:
+	Implemented support for multiple frameworks in SystemAssemblyService.
+	Until now it was supporting multiple CLRs, but this model did not fit
+	very well with the Visual Studio model.
+
 2008-12-09  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.mdp: Don't require a specific version of Mono.Addins.

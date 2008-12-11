@@ -113,6 +113,8 @@
     <File name="MonoDevelop.Core.Collections/Set.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Core.Collections/ReadOnlyDictionary.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Core/Gettext.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core/TargetFramework.cs" subtype="Code" buildaction="Compile" />
+    <File name="frameworks.xml" subtype="Code" buildaction="EmbedAsResource" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
@@ -122,6 +124,7 @@
     <ProjectReference type="Gac" localcopy="False" refto="ICSharpCode.SharpZipLib, Version=2.84.0.0, Culture=neutral, PublicKeyToken=1b03e6acf1164f73" />
     <ProjectReference type="Gac" localcopy="True" specificVersion="False" refto="Mono.Addins, Version=0.3.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <ProjectReference type="Gac" localcopy="True" specificVersion="False" refto="Mono.Addins.Setup, Version=0.3.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
+    <ProjectReference type="Gac" localcopy="True" refto="System.Core, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   </References>
   <GtkDesignInfo />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">
