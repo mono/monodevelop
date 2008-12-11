@@ -31,6 +31,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using MonoDevelop.Core.Gui;
+using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Core.Gui.ProgressMonitoring;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Dialogs;
@@ -113,7 +114,7 @@ namespace MonoDevelop.Ide.Gui
 				base.OnCompleted ();
 				
 				if (showErrorDialogs) {
-					ProgressMonitorResultDialog resultDialog = new ProgressMonitorResultDialog ();
+					MultiMessageDialog resultDialog = new MultiMessageDialog ();
 					foreach (string m in Errors)
 						resultDialog.AddError (m);
 					foreach (string m in Warnings)

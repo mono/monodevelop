@@ -1,5 +1,15 @@
 2008-12-11  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Ide.mdp:
+	* MonoDevelop.Ide.Gui/StatusProgressMonitor.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/ProgressMonitorResultDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.ProgressMonitorResultDialog.cs:
+	Moved dialog for showing multiple messages at once to MD.Core.Gui.
+
+2008-12-11  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui/ProjectOperations.cs:
 	* MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs:
 	* MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs:
