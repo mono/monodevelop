@@ -229,11 +229,13 @@ namespace MonoDevelop.Components.Docking
 			Window win = Widget.Toplevel as Gtk.Window;
 			if (win == null)
 				return;
-			
+
 			// Make sure focus is not given to internal children
-			Container c = win.Focus.Parent as Container;
-			if (c.Children.Length == 0)
-				win.Focus = c;
+			if (win.Focus != null) {
+				Container c = win.Focus.Parent as Container;
+				if (c.Children.Length == 0)
+					win.Focus = c;
+			}
 		}
 		
 		internal void UpdateVisibleStatus ()

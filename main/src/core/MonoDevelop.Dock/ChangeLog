@@ -1,3 +1,7 @@
+2008-12-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* DockItem.cs: Added missing null check.
+
 2008-12-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* DockItem.cs:
