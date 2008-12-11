@@ -444,11 +444,15 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					fname = info.SteticGeneratedFile;
 				else
 					fname = Path.Combine (basePath, unit.Name) + ext;
-				StreamWriter fileStream = new StreamWriter (fname);
+				StringWriter sw = new StringWriter ();
 				try {
-					provider.GenerateCodeFromCompileUnit (unit, fileStream, new CodeGeneratorOptions ());
+					provider.GenerateCodeFromCompileUnit (unit, sw, new CodeGeneratorOptions ());
+					// Remove the runtime version number from the file. It may generate unnecessary
+					// version control changes when upgrading the mono version.
+					string content = sw.ToString ();
+					content = content.Replace ("Mono Runtime Version: " + Environment.Version, "");
+					File.WriteAllText (fname, content);
 				} finally {
-					fileStream.Close ();
 					FileService.NotifyFileChanged (fname);
 				}
 			}
