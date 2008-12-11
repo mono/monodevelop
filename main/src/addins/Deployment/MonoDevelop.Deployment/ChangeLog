@@ -1,3 +1,8 @@
+2008-12-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Deployment.mdp: No specific version of Mono.Addins is
+	required.
+
 2008-12-05  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Deployment.addin.xml: Hide/protect add-ins.
