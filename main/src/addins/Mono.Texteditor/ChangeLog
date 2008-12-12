@@ -1,6 +1,11 @@
 2008-12-12  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:
+	* Mono.TextEditor.mdp: Remove duplicate ref.
+
+2008-12-12  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
 	* Mono.TextEditor.mdp: All projects now require fx 3.5.
 
 2008-12-08  Michael Hutchinson  <mhutchinson@novell.com>
