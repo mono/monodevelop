@@ -1,4 +1,4 @@
-<Project name="MonoDevelop.Projects.Gui" fileversion="2.0" language="C#" UseParentDirectoryAsNamespace="True" clr-version="Net_2_0" ctype="DotNetProject">
+<Project name="MonoDevelop.Projects.Gui" fileversion="2.0" language="C#" UseParentDirectoryAsNamespace="True" clr-version="Net_2_0" targetFramework="3.5" ctype="DotNetProject">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
       <Output directory="../../../build/bin" assembly="MonoDevelop.Projects.Gui" />
