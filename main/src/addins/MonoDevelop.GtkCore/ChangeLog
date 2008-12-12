@@ -1,5 +1,10 @@
 2008-12-12  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.GtkCore/WidgetParser.cs: Properly search for subclasses of
+	Gtk.Widget.
+
+2008-12-12  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.GtkCore.mdp:
 	* libsteticui/libsteticui.mdp: All projects now require fx 3.5.
 

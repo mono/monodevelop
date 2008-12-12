@@ -56,8 +56,8 @@ namespace MonoDevelop.GtkCore
 
 			IType wt = ctx.GetType ("Gtk.Widget", true);
 			if (wt != null) {
-				foreach (IType t in ctx.GetSubclasses (wt, false)) {
-					if (IsToolboxWidget (t))
+				foreach (IType t in ctx.GetSubclasses (wt, true)) {
+					if (t.SourceProjectDom == ctx && IsToolboxWidget (t))
 						tb_items [t.FullName] = t;
 				}
 			}
