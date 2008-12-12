@@ -1,3 +1,7 @@
+2008-12-12  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Startup.mdp: Set correct target framework.
+
 2008-12-09  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Startup.mdp: Don't require a specific version of
