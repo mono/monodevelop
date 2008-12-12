@@ -67,8 +67,10 @@ namespace MonoDevelop.Projects.Formats.MD1
 							confItem.ItemData.Add (new DataValue ("active", item.ParentSolution.DefaultConfigurationId));
 					}
 				}
-				if (project != null)
+				if (project != null) {
+					data.Extract ("targetFramework");
 					data.Add (new DataValue ("targetFramework", project.TargetFramework.Id));
+				}
 				return data;
 			}
 			else if (obj is ProjectReference) {
