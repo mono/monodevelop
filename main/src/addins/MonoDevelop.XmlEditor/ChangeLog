@@ -1,3 +1,9 @@
+2008-12-12  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.XmlEditor.mdp:
+	* Tests/MonoDevelop.XmlEditor.Tests.mdp: All projects now require fx
+	3.5.
+
 2008-12-09  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.XmlEditor.mdp: Don't require a specific version of

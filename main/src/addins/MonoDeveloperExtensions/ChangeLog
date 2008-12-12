@@ -1,3 +1,8 @@
+2008-12-12  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* NUnit/NUnit.mdp:
+	* MonoDeveloperExtensions.mdp: All projects now require fx 3.5.
+
 2008-12-11  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoMakefileFormat.cs: Track API changes.

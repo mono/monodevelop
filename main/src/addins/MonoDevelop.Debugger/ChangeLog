@@ -1,3 +1,7 @@
+2008-12-12  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Debugger.mdp: All projects now require fx 3.5.
+
 2008-12-08  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Debugger/DebuggingService.cs: When cleaning up the

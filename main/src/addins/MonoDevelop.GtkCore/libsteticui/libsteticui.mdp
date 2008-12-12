@@ -1,4 +1,4 @@
-<Project name="libsteticui" fileversion="2.0" language="C#" clr-version="Net_2_0" ctype="DotNetProject">
+<Project name="libsteticui" fileversion="2.0" language="C#" clr-version="Net_2_0" targetFramework="2.0" ctype="DotNetProject">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
       <Output directory="../../../../build/AddIns/MonoDevelop.GtkCore" assembly="libsteticui.dll" />

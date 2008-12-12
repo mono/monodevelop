@@ -1,3 +1,7 @@
+2008-12-12  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Moonlight.mdp: All projects now require fx 3.5.
+
 2008-12-11  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Moonlight/MoonlightProject.cs:

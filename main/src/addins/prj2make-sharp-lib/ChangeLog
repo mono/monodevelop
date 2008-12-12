@@ -1,3 +1,7 @@
+2008-12-12  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* prj2make-sharp-lib.mdp: All projects now require fx 3.5.
+
 2008-12-11  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* VS2003ProjectFileFormat.cs: Track API changes.

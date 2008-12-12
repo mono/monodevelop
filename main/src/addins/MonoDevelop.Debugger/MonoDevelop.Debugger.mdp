@@ -1,4 +1,4 @@
-<Project name="MonoDevelop.Debugger" fileversion="2.0" language="C#" clr-version="Net_2_0" ctype="DotNetProject">
+<Project name="MonoDevelop.Debugger" fileversion="2.0" language="C#" clr-version="Net_2_0" targetFramework="3.5" ctype="DotNetProject">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
       <Output directory="../../../build/AddIns/MonoDevelop.Debugger" assembly="MonoDevelop.Debugger" />
