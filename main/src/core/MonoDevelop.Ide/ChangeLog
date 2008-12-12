@@ -1,5 +1,41 @@
 2008-12-12  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* gtk-gui/objects.xml:
+	* MonoDevelop.Ide.mdp:
+	* gtk-gui/generated.cs:
+	* gtk-gui/MonoDevelop.Ide.DocumentSwitcher.cs:
+	* gtk-gui/MonoDevelop.Ide.SelectEncodingsDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.GoToDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewFileDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.OverridesImplementsDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewLayoutDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.RenameItemDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.IncludeFilesDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.ExportProjectDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.ReplaceInFilesDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.AddinLoadErrorDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.FeatureSelectorDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TasksPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.SelectReferenceDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AddInsPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.EncapsulateFieldDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.StandardHeaders.StandardHeaderPanel.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.LoadSavePanelWidget.cs:
+	* gtk-gui/MonoDevelop.Ide.ExternalTools.ExternalToolPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Ide.CodeTemplates.CodeTemplatePanelWidget.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.BreakpointPropertiesDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.StandardHeaders.NewHeaderTemplateDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.CombineEntryFeatureSelector.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.CodeGenerationPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.cs:
+	Flush.
+
+2008-12-12  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.mdp: Set correct target framework.
 
 2008-12-11  Lluis Sanchez Gual  <lluis@novell.com>
