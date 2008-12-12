@@ -4,6 +4,7 @@
 		<Assemblies>
 			<!-- The first assembly is used to check if the framework is installed -->
 			<Assembly>System</Assembly>
+			<Assembly>ICSharpCode.SharpZipLib</Assembly>
 			<Assembly>Accessibility</Assembly>
 			<Assembly>cscompmgd</Assembly>
 			<Assembly>Culture</Assembly>

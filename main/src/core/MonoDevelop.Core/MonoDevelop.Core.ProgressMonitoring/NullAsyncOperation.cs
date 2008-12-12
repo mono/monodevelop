@@ -42,6 +42,7 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		private NullAsyncOperation (bool success, bool warnings)
 		{
 			this.success = success;
+			this.warnings = warnings;
 		}
 		
 		public void Cancel ()

@@ -1,3 +1,14 @@
+2008-12-12  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* frameworks.xml: Add missing lib.
+
+	* Makefile.am:
+	* MonoDevelop.Core.mdp:
+	* MonoDevelop.Core/PropertyService.cs:
+	* MonoDevelop.Core/SystemAssemblyService.cs:
+	* MonoDevelop.Core.ProgressMonitoring/NullAsyncOperation.cs: No more
+	warnings.
+
 2008-12-11  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core/SystemAssemblyService.cs: Added method for checking

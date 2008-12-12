@@ -343,7 +343,7 @@ namespace MonoDevelop.Core
 			}
 		}
 		
-		new void Initialize ()
+		void Initialize ()
 		{
 			lock (initLock) {
 				while (!initialized)
@@ -713,7 +713,9 @@ namespace MonoDevelop.Core
 			}
 			if (asm == null) {
 				try {
+#pragma warning disable 612
 					asm = Assembly.LoadWithPartialName (assemblyName);
+#pragma warning restore 612
 				} catch {}
 			}
 			if (asm == null)
@@ -730,7 +732,9 @@ namespace MonoDevelop.Core
 			}
 			if (asm == null) {
 				try {
+#pragma warning disable 612
 					asm = Assembly.LoadWithPartialName (assemblyName);
+#pragma warning restore 612
 				} catch {}
 			}
 			
