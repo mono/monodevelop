@@ -1,5 +1,9 @@
 2008-12-11  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects.mdp: No more warnings.
+
+2008-12-11  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Projects.mdp:
 	* MonoDevelop.Projects/Project.cs:
