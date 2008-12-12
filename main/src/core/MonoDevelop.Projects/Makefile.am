@@ -265,7 +265,7 @@ RES =  \
 all: $(ASSEMBLY) $(ASSEMBLY).mdb
 
 $(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
-	$(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library $(REFS) $(build_deps) $(build_resources:%=/resource:%) $(build_sources) \
+	$(CSC) $(CSC_FLAGS) -warnaserror -debug -out:$@ -target:library $(REFS) $(build_deps) $(build_resources:%=/resource:%) $(build_sources) \
 	&& cp $(CONFIG) $(top_builddir)/build/bin
 	
 $(ASSEMBLY).mdb: $(ASSEMBLY)

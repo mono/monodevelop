@@ -40,6 +40,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 		public AssemblyInformationEventArgs (string assemblyFile, string assemblyName)
 		{
 			this.assemblyFile = assemblyFile;
+			this.assemblyName = assemblyName;
 		}
 		
 		public string AssemblyFile {

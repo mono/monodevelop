@@ -26,7 +26,6 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -122,7 +121,11 @@ namespace MonoDevelop.Projects
 				ConfigurationRemoved (this, new ConfigurationEventArgs (null, conf));
 		}
 		
+#pragma warning disable 67
+		// MCS mistakenly reports a warning for those events
 		public event ConfigurationEventHandler ConfigurationAdded;
 		public event ConfigurationEventHandler ConfigurationRemoved;
+#pragma warning restore 67
 	}
 }
+

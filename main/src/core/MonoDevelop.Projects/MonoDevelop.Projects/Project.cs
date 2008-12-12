@@ -376,8 +376,6 @@ namespace MonoDevelop.Projects
 		
 		protected virtual void PopulateSupportFileList (FileCopySet list, string solutionConfiguration)
 		{
-			ProjectConfiguration config = GetActiveConfiguration (solutionConfiguration) as ProjectConfiguration;
-			
 			foreach (ProjectFile pf in Files) {
 				if (pf.CopyToOutputDirectory == FileCopyMode.None)
 					continue;

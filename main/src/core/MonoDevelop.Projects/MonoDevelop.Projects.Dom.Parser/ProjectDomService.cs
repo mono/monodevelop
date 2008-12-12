@@ -61,7 +61,6 @@ namespace MonoDevelop.Projects.Dom.Parser
 		class ParsingCacheEntry
 		{
 			   public ParsedDocument ParseInformation;
-			   public string FileName;
 			   public DateTime AccessTime;
 		}
 		
@@ -384,7 +383,6 @@ namespace MonoDevelop.Projects.Dom.Parser
 		public static void UnloadAssembly (string assemblyName)
 		{
 			string name = "Assembly:" + Runtime.SystemAssemblyService.GetAssemblyFullName (assemblyName);
-			ProjectDom dom = GetDom (name);
 			UnrefDom (name);
 		}
 		

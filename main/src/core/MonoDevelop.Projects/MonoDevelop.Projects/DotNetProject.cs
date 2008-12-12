@@ -136,12 +136,7 @@ namespace MonoDevelop.Projects
 		
 		public TargetFramework TargetFramework {
 			get {
-				if (targetFramework == null) {
-					if (targetFrameworkVersion != null)
-						targetFramework = Runtime.SystemAssemblyService.GetTargetFramework (targetFrameworkVersion);
-					if (targetFramework == null)
-						TargetFramework = Services.ProjectService.DefaultTargetFramework;
-				}
+				SetDefaultFramework ();
 				return targetFramework;
 			}
 			set {
@@ -154,6 +149,16 @@ namespace MonoDevelop.Projects
 				targetFrameworkVersion = validValue.Id;
 				UpdateSystemReferences ();
 				NotifyModified ("TargetFramework");
+			}
+		}
+
+		void SetDefaultFramework ()
+		{
+			if (targetFramework == null) {
+				if (targetFrameworkVersion != null)
+					targetFramework = Runtime.SystemAssemblyService.GetTargetFramework (targetFrameworkVersion);
+				if (targetFramework == null)
+					TargetFramework = Services.ProjectService.DefaultTargetFramework;
 			}
 		}
 
@@ -428,7 +433,7 @@ namespace MonoDevelop.Projects
 		{
 			// Make sure the fx version is sorted out before saving
 			// to avoid changes in project references while saving 
-			TargetFramework v = this.TargetFramework;
+			SetDefaultFramework ();
 			base.OnSave (monitor);
 		}
 

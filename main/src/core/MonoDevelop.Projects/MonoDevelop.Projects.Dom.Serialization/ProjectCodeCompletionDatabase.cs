@@ -42,7 +42,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 	{
 		Project project;
 		bool initialFileCheck;
-		string lastVersion;
+		string lastVersion = null;
 		int parseCount;
 		
 		public ProjectCodeCompletionDatabase (Project project, ParserDatabase pdb): base (pdb)

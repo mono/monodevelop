@@ -1,5 +1,23 @@
 2008-12-11  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Makefile.am:
+	* MonoDevelop.Projects.mdp:
+	* MonoDevelop.Projects/Project.cs:
+	* MonoDevelop.Projects.Dom/DomType.cs:
+	* MonoDevelop.Projects/DotNetProject.cs:
+	* MonoDevelop.Projects.Dom/DomReturnType.cs:
+	* MonoDevelop.Projects.Dom/ParsedDocument.cs:
+	* MonoDevelop.Projects/ItemConfigurationCollection.cs:
+	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs:
+	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs:
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs:
+	* MonoDevelop.Projects.Formats.MD1/MD1DotNetProjectHandler.cs:
+	* MonoDevelop.Projects.Dom.Parser/AssemblyInformationEventHandler.cs:
+	* MonoDevelop.Projects.Dom.Serialization/ProjectCodeCompletionDatabase.cs:
+	No more warnings in MD.Projects.
+
+2008-12-11  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* md1format.xml:
 	* MonoDevelop.Projects/DotNetProject.cs:
 	* MonoDevelop.Projects/ProjectService.cs:

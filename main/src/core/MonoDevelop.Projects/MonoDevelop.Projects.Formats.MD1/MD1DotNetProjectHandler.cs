@@ -206,8 +206,6 @@ namespace MonoDevelop.Projects.Formats.MD1
 		// and sets @projectFiles to a cloned collection minus such resource files.
 		private BuildResult BuildResources (DotNetProjectConfiguration configuration, ref ProjectFileCollection projectFiles, IProgressMonitor monitor)
 		{
-			DotNetProject project = Project;
-			
 			string resgen = "resgen";
 			if (System.Environment.Version.Major >= 2) {
 				switch (configuration.TargetFramework.ClrVersion) {

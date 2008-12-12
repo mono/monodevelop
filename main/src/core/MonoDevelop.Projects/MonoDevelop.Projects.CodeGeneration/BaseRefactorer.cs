@@ -535,7 +535,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 		public virtual IMember EncapsulateField (RefactorerContext ctx, IType cls, IField field, string propName, MemberAttributes attr, bool generateSetter)
 		{
 			// If the field isn't already private/protected/internal, we'll need to fix it to be
-			if (true || field.IsPublic || (!field.IsPrivate && !field.IsProtectedOrInternal)) {
+			if (field.IsPublic || (!field.IsPrivate && !field.IsProtectedOrInternal) || true) {
 				IEditableTextFile file = null;
 				int pos = -1;
 				

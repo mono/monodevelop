@@ -346,10 +346,10 @@ namespace MonoDevelop.Projects.Dom
 		
 		static bool IsInsideMember (this DomRegion region, IType cl)
 		{
-			if (region == null || cl == null || !cl.BodyRegion.Contains (region.Start))
+			if (region.IsEmpty || cl == null || !cl.BodyRegion.Contains (region.Start))
 				return false;
 			foreach (IMember member in cl.Members) {
-				if (member.BodyRegion == null)
+				if (member.BodyRegion.IsEmpty)
 					continue;
 				if (member.BodyRegion.Contains (region.Start) && member.BodyRegion.Contains (region.End)) 
 					return true;

@@ -100,7 +100,6 @@ namespace MonoDevelop.Projects.Dom
 	{
 		static readonly int[] zeroDimensions = new int[0];
 		static readonly int[] oneDimensions = new int[] { 1 };
-		string name;
 		
 		List<IReturnTypePart> parts = new List<IReturnTypePart> ();
 		
@@ -130,7 +129,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public new string Name {
+		public string Name {
 			get {
 				Debug.Assert (parts.Count > 0);
 				return parts[parts.Count - 1].Name;
@@ -141,13 +140,13 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public new ReadOnlyCollection<IReturnType> GenericArguments {
+		public ReadOnlyCollection<IReturnType> GenericArguments {
 			get {
 				Debug.Assert (parts.Count > 0);
 				return parts[parts.Count - 1].GenericArguments;
 			}
 		}
-		public new void AddTypeParameter (IReturnType type)
+		public void AddTypeParameter (IReturnType type)
 		{
 			Debug.Assert (parts.Count > 0);
 			parts[parts.Count - 1].AddTypeParameter (type);
@@ -292,7 +291,7 @@ namespace MonoDevelop.Projects.Dom
 					return false;
 			}
 
-			return name == type.name &&
+			return Name == type.Name &&
 				nspace == type.nspace &&
 				pointerNestingLevel == type.pointerNestingLevel &&
 				Modifiers == type.Modifiers;

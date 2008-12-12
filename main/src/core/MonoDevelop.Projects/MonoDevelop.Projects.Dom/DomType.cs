@@ -698,7 +698,6 @@ namespace MonoDevelop.Projects.Dom
 		{
 			if (type == null || callingType == null)
 				return false;
-			bool includeProtected = false;
 			foreach (IType t in dom.GetInheritanceTree (type)) {
 				if (t.FullName == callingType.FullName)
 					return true;
@@ -712,6 +711,13 @@ namespace MonoDevelop.Projects.Dom
 				return false;
 			return Equals ((IType)obj);
 		}
+
+		public override int GetHashCode ()
+		{
+			IType a = this is InstantiatedType ? ((InstantiatedType)this).UninstantiatedType : this;
+			return a.ToString ().GetHashCode ();
+		}
+
 		
 		public bool Equals (IType other)
 		{

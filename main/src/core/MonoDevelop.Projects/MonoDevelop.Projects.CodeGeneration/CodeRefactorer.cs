@@ -360,7 +360,6 @@ namespace MonoDevelop.Projects.CodeGeneration
 			
 			List<KeyValuePair<IMember,IReturnType>> toImplement = new List<KeyValuePair<IMember,IReturnType>> ();
 			
-			ProjectDom ctx = GetParserContext (klass);
 			prefix = new DomReturnType (iface);
 			
 			// Stub out non-implemented events defined by @iface
