@@ -1,3 +1,11 @@
+2008-12-12  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* UnitTests.mdp: Fix target framework and some references.
+
+	* MonoDevelop.CSharpBinding/CodeCompletionAccessibleTests.cs: Set
+	correct base class.
+
 2008-11-24  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharpBinding/ParameterCompletionTests.cs: added unit test
