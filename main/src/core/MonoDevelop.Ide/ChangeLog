@@ -1,3 +1,9 @@
+2008-12-12  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Gui/Document.cs: Type the ActiveView property, and
+	expose the PrimaryView. Make GetContent<T> fall back to the primary
+	view if it's not the active view.
+
 2008-12-12  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/objects.xml:

@@ -70,6 +70,14 @@ namespace MonoDevelop.Ide.Gui
 			if (ret != null)
 				return ret;
 			
+			//check the primary viewcontent
+			//not sure if this is the right thing to do, but things depend on this behaviour
+			if (Window.ViewContent != Window.ActiveViewContent) {
+				ret = Window.ViewContent.GetContent (type);
+				if (ret != null)
+					return ret;
+			}
+			
 			//no, so look through the TexteditorExtensions as well
 			TextEditorExtension nextExtension = editorExtension;
 			while (nextExtension != null) {
@@ -124,8 +132,12 @@ namespace MonoDevelop.Ide.Gui
 			window.SelectWindow ();
 		}
 		
-		public object ActiveView {
+		public IBaseViewContent ActiveView {
 			get { return window.ActiveViewContent; }
+		}
+		
+		public IViewContent PrimaryView {
+			get { return window.ViewContent; }
 		}
 		
 		public string Name {
