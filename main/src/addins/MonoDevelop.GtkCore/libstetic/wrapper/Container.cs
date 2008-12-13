@@ -663,12 +663,21 @@ namespace Stetic.Wrapper
 		
 		internal void GenerateTooltip (GeneratorContext ctx, Widget widget)
 		{
+			if (WidgetUtils.CompareVersions (Project.TargetGtkVersion, "2.12") <= 0) {
+				ctx.Statements.Add (
+					new CodeAssignStatement (
+						new CodePropertyReferenceExpression (ctx.WidgetMap.GetWidgetExp (widget), "TooltipMarkup"),
+						new CodePrimitiveExpression (widget.Tooltip)
+					)
+				);
+				return;
+			}
+ 
 			if (generatedTooltips == null) {
 				string tid = ctx.NewId ();
+				Type t = typeof(Gtk.Widget).Assembly.GetType ("Gtk.Tooltips");
 				CodeVariableDeclarationStatement vardec = new CodeVariableDeclarationStatement (
-					typeof(Gtk.Tooltips),
-					tid,
-					new CodeObjectCreateExpression (typeof(Gtk.Tooltips))
+					t, tid, new CodeObjectCreateExpression (t)
 				);
 				ctx.Statements.Add (vardec);
 				generatedTooltips = new CodeVariableReferenceExpression (tid);

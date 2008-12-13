@@ -1,3 +1,8 @@
+2008-12-13  Mike Kestner <mkestner@novell.com> 
+
+	* libstetic/wrapper/Container.cs: generate tooltips based on the target
+	version, using the new Tooltip API for >= 2.12.  Fixes #372015.
+
 2008-12-12  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.GtkCore/WidgetParser.cs: Properly search for subclasses of
