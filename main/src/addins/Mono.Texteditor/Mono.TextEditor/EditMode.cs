@@ -117,6 +117,19 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		protected void RunActions (Action<TextEditorData> action1, Action<TextEditorData> action2)
+		{
+			try {
+				Document.BeginAtomicUndo ();
+				action1 (this.textEditorData);
+				action2 (this.textEditorData);
+				Document.EndAtomicUndo ();
+			} catch (Exception e) {
+				Console.WriteLine ("Error while executing actions " + action1.ToString () + 
+				                   " & " + action2.ToString () + ": " + e);
+			}
+		}
+		
 		public static int GetKeyCode (Gdk.Key key)
 		{
 			return (int)key;

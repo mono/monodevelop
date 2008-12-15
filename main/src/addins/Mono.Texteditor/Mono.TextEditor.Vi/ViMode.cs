@@ -112,6 +112,19 @@ namespace Mono.TextEditor.Vi
 			}
 		}
 		
+		void CheckVisualMode ()
+		{
+			if (state == ViEditMode.State.Visual || state == ViEditMode.State.Visual) {
+				if (!Data.IsSomethingSelected)
+					state = ViEditMode.State.Normal;
+			} else {
+				if (Data.IsSomethingSelected) {
+					state = ViEditMode.State.Visual;
+					Status = "-- VISUAL --";
+				}
+			}
+		}
+		
 		void ResetEditorState (TextEditorData data)
 		{
 			data.ClearSelection ();
@@ -217,25 +230,25 @@ namespace Mono.TextEditor.Vi
 					case 'x':
 						Status = string.Empty;
 						if (!Data.IsSomethingSelected)
-							RunAction (SelectionActions.FromMoveAction (CaretMoveActions.Right));
-						RunAction (ClipboardActions.Cut);
+							RunActions (SelectionActions.FromMoveAction (CaretMoveActions.Right), ClipboardActions.Cut);
+						else
+							RunAction (ClipboardActions.Cut);
 						return;
 						
 					case 'X':
 						Status = string.Empty;
 						if (!Data.IsSomethingSelected && 0 < Caret.Offset)
-							RunAction (SelectionActions.FromMoveAction (CaretMoveActions.Left));
-						RunAction (ClipboardActions.Cut);
+							RunActions (SelectionActions.FromMoveAction (CaretMoveActions.Left), ClipboardActions.Cut);
+						else
+							RunAction (ClipboardActions.Cut);
 						return;
 						
 					case 'D':
-						RunAction (SelectionActions.FromMoveAction (CaretMoveActions.LineEnd));
-						RunAction (ClipboardActions.Cut);
+						RunActions (SelectionActions.FromMoveAction (CaretMoveActions.LineEnd), ClipboardActions.Cut);
 						return;
 						
 					case 'C':
-						RunAction (SelectionActions.FromMoveAction (CaretMoveActions.LineEnd));
-						RunAction (ClipboardActions.Cut);
+						RunActions (SelectionActions.FromMoveAction (CaretMoveActions.LineEnd), ClipboardActions.Cut);
 						goto case 'i';
 						
 					case '>':
@@ -310,6 +323,8 @@ namespace Mono.TextEditor.Vi
 				if (action != null)
 					RunAction (action);
 				
+				//undo/redo may leave MD with a selection mode without activating visual mode
+				CheckVisualMode ();
 				return;
 				
 			case State.Delete:
@@ -326,8 +341,7 @@ namespace Mono.TextEditor.Vi
 				}
 				
 				if (action != null) {
-					RunAction (action);
-					RunAction (ClipboardActions.Cut);
+					RunActions (action, ClipboardActions.Cut);
 					Reset ("");
 				} else {
 					Reset ("Unrecognised motion");
@@ -380,9 +394,8 @@ namespace Mono.TextEditor.Vi
 				}
 				
 				if (action != null) {
-					RunAction (action);
-					RunAction (ClipboardActions.Cut);
-					Reset ("--INSERT");
+					RunActions (action, ClipboardActions.Cut);
+					Reset ("-- INSERT --");
 					state = State.Insert;
 				} else {
 					Reset ("Unrecognised motion");
@@ -494,8 +507,7 @@ namespace Mono.TextEditor.Vi
 					action = ViActionMaps.GetDirectionKeyAction (key, modifier);
 				
 				if (action != null) {
-					RunAction (SelectionActions.FromMoveAction (action));
-					RunAction (MiscActions.IndentSelection);
+					RunActions (SelectionActions.FromMoveAction (action), MiscActions.IndentSelection);
 					Reset ("");
 				} else {
 					Reset ("Unrecognised motion");
@@ -515,8 +527,7 @@ namespace Mono.TextEditor.Vi
 					action = ViActionMaps.GetDirectionKeyAction (key, modifier);
 				
 				if (action != null) {
-					RunAction (SelectionActions.FromMoveAction (action));
-					RunAction (MiscActions.RemoveIndentSelection);
+					RunActions (SelectionActions.FromMoveAction (action), MiscActions.RemoveIndentSelection);
 					Reset ("");
 				} else {
 					Reset ("Unrecognised motion");

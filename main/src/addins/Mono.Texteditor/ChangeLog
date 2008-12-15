@@ -1,5 +1,15 @@
 2008-12-15  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Mono.TextEditor.Vi/ViMode.cs: Fix some actions that're made up of
+	sub-actions so that they take place in one atomic undo instead of
+	multiple undos. Tweaks to make auto-visual mode work better with
+	undo/redo.
+
+	* Mono.TextEditor/EditMode.cs: Add utility method for executing two
+	actions in one atomic undo.
+
+2008-12-15  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Mono.TextEditor/TextEditorData.cs: The selectionRange field should be
 	set to null when the selection's length is 0. Makes
 	IsSomethingSelected work correctly.
