@@ -301,7 +301,10 @@ namespace Mono.TextEditor
 			set {
 				if (!Segment.Equals (this.selectionRange, value))  {
 					OnSelectionChanging (new TextEditorDataEventArgs (this));
-					selectionRange = value;
+					if (value == null || value.Length == 0)
+						selectionRange = null;
+					else
+						selectionRange = value;
 					OnSelectionChanged (EventArgs.Empty);
 				}
 			}
