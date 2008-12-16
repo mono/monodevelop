@@ -240,55 +240,61 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			if (monitor != null) monitor.BeginTask ("Parsing file: " + Path.GetFileName (fileName), 1);
 			
 			try {
-				ParsedDocument parserInfo = ProjectDomService.Parse (this.project,
-				                                                         fileName,
-				                                                         null,
-				                                                         delegate () { return File.ReadAllText (fileName); });
-				if (parserInfo != null) {
-					lock (rwlock) {
-						TypeUpdateInformation res = UpdateFromParseInfo (parserInfo.CompilationUnit, fileName);
-						if (res != null) 
-							ProjectDomService.NotifyTypeUpdate (project, fileName, res);
-					}
-				}
+				ProjectDomService.Parse (this.project,
+				                         fileName,
+				                         null,
+				                         delegate () { return File.ReadAllText (fileName); });
+				// The call to ProjectDomService.Parse will call UpdateFromParseInfo when done
 			} finally {
 				if (monitor != null) monitor.EndTask ();
 			}
 		}
+
+		public override void UpdateDatabase ()
+		{
+			int lastCount;
+			totalUnresolvedCount = int.MaxValue;
+
+			do {
+				// Keep trying updating the db while types are being resolved
+				lastCount = totalUnresolvedCount;
+				totalUnresolvedCount = 0;
+				base.UpdateDatabase ();
+			}
+			while (totalUnresolvedCount != 0 && totalUnresolvedCount < lastCount);
+		}
+		
+		int totalUnresolvedCount;
 		
 		public TypeUpdateInformation UpdateFromParseInfo (ICompilationUnit parserInfo, string fileName)
 		{
-			ICompilationUnit cu = parserInfo;
-
-			List<IType> resolved;
-			
-			bool allResolved = ResolveTypes (cu, cu.Types, out resolved);
-			TypeUpdateInformation res = UpdateTypeInformation (resolved, parserInfo.FileName);
-			
-			FileEntry file = files [fileName] as FileEntry;
-			if (file != null) {
-				// TODO: TagComments
-//				if (file.CommentTasks != parserInfo.TagComments)
-//				{
-//					file.CommentTasks = parserInfo.TagComments;
-//					parserDatabase.UpdatedCommentTasks (file);
-//				}
+			lock (rwlock) {
+				ICompilationUnit cu = parserInfo;
+	
+				List<IType> resolved;
 				
+				int unresolvedCount = ResolveTypes (cu, cu.Types, out resolved);
+				totalUnresolvedCount += unresolvedCount;
 				
-				if (!allResolved) {
-					if (file.ParseErrorRetries > 0) {
-						file.ParseErrorRetries--;
+				TypeUpdateInformation res = UpdateTypeInformation (resolved, parserInfo.FileName);
+				
+				FileEntry file = files [fileName] as FileEntry;
+				if (file != null) {
+					if (unresolvedCount > 0) {
+						if (file.ParseErrorRetries > 0) {
+							file.ParseErrorRetries--;
+						}
+						else
+							file.ParseErrorRetries = 3;
 					}
 					else
-						file.ParseErrorRetries = 3;
+						file.ParseErrorRetries = 0;
 				}
-				else
-					file.ParseErrorRetries = 0;
+				
+				if ((++parseCount % MAX_ACTIVE_COUNT) == 0)
+					Flush ();
+				return res;
 			}
-			
-			if ((++parseCount % MAX_ACTIVE_COUNT) == 0)
-				Flush ();
-			return res;
 		}
 		
 		protected override void OnFileRemoved (string fileName, TypeUpdateInformation classInfo)

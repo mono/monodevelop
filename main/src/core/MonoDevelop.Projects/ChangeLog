@@ -1,3 +1,28 @@
+2008-12-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs:
+	* MonoDevelop.Projects.Dom.Serialization/ProjectCodeCompletionDatabase.cs:
+	Fixed some issues raised by unit tests.
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs: Removed the
+	lastUpdateSize cache because it is not 100% reliable and it is
+	problematic when we want to force a file reparse (e.g. to resolve
+	types which were unresolved in previous parsings).
+
+	* MonoDevelop.Projects.Dom/DomType.cs: Little optimization.
+
+	* MonoDevelop.Projects.mdp: Updated.
+
+	* MonoDevelop.Projects.Dom.Serialization/ParserDatabase.cs:
+	* MonoDevelop.Projects.Dom.Serialization/DatabaseProjectDom.cs:
+	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs: Many
+	fixes in GetSubclasses. It now supports inner types and generic types
+	much better. All covered by unit tests.
+
+	* MonoDevelop.Projects.Dom.Serialization/NamespaceEntry.cs: Moved
+	GetName to ParserDatabase since it is now being used in other
+	classes.
+
 2008-12-12  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Formats.MD1/MD1CustomDataItem.cs: Avoid

@@ -34,6 +34,7 @@ using System.IO;
 using System.Collections;
 using System.Collections.Specialized;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 
@@ -48,7 +49,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 	{
 		static protected readonly int MAX_ACTIVE_COUNT = 100;
 		static protected readonly int MIN_ACTIVE_COUNT = 10;
-		static protected readonly int FORMAT_VERSION   = 57;
+		static protected readonly int FORMAT_VERSION   = 58;
 		
 		NamespaceEntry rootNamespace;
 		protected ArrayList references;
@@ -241,7 +242,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			return new FileStream (tempDataFile, FileMode.Open, FileAccess.ReadWrite, FileShare.Read);
 		}
 		
-		protected bool ResolveTypes (ICompilationUnit unit, IList<IType> types, out List<IType> result)
+		protected int ResolveTypes (ICompilationUnit unit, IList<IType> types, out List<IType> result)
 		{
 			return ProjectDomService.ResolveTypes (SourceProjectDom, unit, types, out result);
 		}
@@ -461,35 +462,12 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		public IType GetClass (string typeName, IList<IReturnType> genericArguments, bool caseSensitive)
 		{
-			int genericArgumentCount = genericArguments != null ? genericArguments.Count : 0;
+			int genericArgumentCount = ExtractGenericArgCount (ref typeName);
+			if (genericArguments != null)
+				genericArgumentCount = genericArguments.Count;
+
 			lock (rwlock)
 			{
-				if (genericArgumentCount > 0) {
-					foreach (ClassEntry entry in this.GetAllClasses()) {
-						string nsName = entry.NamespaceRef != null ? entry.NamespaceRef.FullName : null;
-						string name   = String.IsNullOrEmpty (nsName) ? entry.Name : nsName + "." + entry.Name;
-						if (name == typeName && entry.TypeParameterCount == genericArguments.Count) {
-							IType result = GetClass (entry);
-							if (result.TypeParameters.Count == genericArguments.Count)
-								return DomType.CreateInstantiatedGenericType (result, genericArguments);
-						}
-					}
-					IType templateClass = GetClass (typeName, null, caseSensitive);
-					if (templateClass == null)
-						return null;
-
-					if (templateClass.TypeParameters == null || (templateClass.TypeParameters.Count != genericArguments.Count))
-						return null;
-			
-					string tname = DomType.GetInstantiatedTypeName (templateClass.FullName, genericArguments);
-					IType res = (IType) instantiatedGenericTypes [tname];
-					if (res == null) {
-						res = DomType.CreateInstantiatedGenericType (templateClass, genericArguments);
-						instantiatedGenericTypes [tname] = res;
-					}
-					return res;
-				}
-				
 				// It may be an instantiated generic type 
 				IType igt = (IType) instantiatedGenericTypes [typeName];
 				if (igt != null)
@@ -500,35 +478,63 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				
 				NamespaceEntry nst;
 				int nextPos;
+
+				IType result;
 				
 				if (GetBestNamespaceEntry (path, len, false, caseSensitive, out nst, out nextPos)) 
 				{
 					ClassEntry ce = nst.GetClass (path[len], genericArgumentCount, caseSensitive);
 					if (ce == null) return null;
-					return GetClass (ce);
+					result = GetClass (ce);
 				}
 				else
 				{
 					// It may be an inner class
-					ClassEntry ce = nst.GetClass (path[nextPos++], genericArgumentCount, caseSensitive);
+					string nextName = path[nextPos++];
+					int partArgsCount = ExtractGenericArgCount (ref nextName);
+					ClassEntry ce = nst.GetClass (nextName, partArgsCount, caseSensitive);
 					if (ce == null) return null;
 					
 					len++;	// Now include class name
 					IType c = GetClass (ce);
 					
 					while (nextPos < len) {
-						IType nextc = null;
-						foreach (IType innerc  in c.InnerTypes)  {
-							if (string.Compare (innerc.Name, path[nextPos], !caseSensitive) == 0)
-								nextc = innerc;
-						}
+						string name = path[nextPos];
+						partArgsCount = nextPos == len-1 ? genericArgumentCount : ExtractGenericArgCount (ref name);
+						IType nextc = FindInnerType (c, name, partArgsCount, caseSensitive);
 						if (nextc == null) return null;
 						c = nextc;
 						nextPos++;
 					}
-					return c;
+					result = c;
+				}
+				if (genericArguments != null)
+					return DomType.CreateInstantiatedGenericType (result, genericArguments);
+				else
+					return result;
+			}
+		}
+
+		IType FindInnerType (IType outerType, string name, int typeArgCount, bool caseSensitive)
+		{
+			foreach (IType innerc in outerType.InnerTypes)  {
+				if (string.Compare (innerc.Name, name, !caseSensitive) == 0 && innerc.TypeParameters.Count == typeArgCount)
+					return innerc;
+			}
+			return null;
+		}
+
+		int ExtractGenericArgCount (ref string name)
+		{
+			int i = name.LastIndexOf ('`');
+			if (i != -1) {
+				int typeParams;
+				if (int.TryParse (name.Substring (i + 1), out typeParams)) {
+					name = name.Substring (0, i);
+					return typeParams;
 				}
 			}
+			return 0;
 		}
 		
 		internal IType GetClass (ClassEntry ce)
@@ -541,12 +547,30 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			return result;
 		}
 		
-		public IEnumerable GetSubclasses (string fullName, int genericArgumentCount, IList<string> namespaces)
+		public IEnumerable<IType> GetSubclasses (IType btype, IList<string> namespaces)
 		{
-			ArrayList nsubs = (ArrayList) unresolvedSubclassTable [fullName];
+			InstantiatedType itype = btype as InstantiatedType;
+			if (itype != null) {
+				foreach (IType t in GetSubclassesInternal (itype.UninstantiatedType, namespaces)) {
+					IType sub = GetCompatibleSubclass (itype, t);
+					if (sub != null)
+						yield return sub;
+				}
+			} else {
+				// We don't support getting the subclasses of generic non-instantiated types.
+				if (btype.TypeParameters.Count > 0)
+					yield break;
+				foreach (IType t in GetSubclassesInternal (btype, namespaces))
+					yield return t;
+			}
+		}
+		
+		IEnumerable<IType> GetSubclassesInternal (IType btype, IList<string> namespaces)
+		{
+			ArrayList nsubs = (ArrayList) unresolvedSubclassTable [ParserDatabase.GetDecoratedName (btype)];
 			ArrayList csubs = null;
 			
-			ClassEntry ce = FindClassEntry (fullName, genericArgumentCount);
+			ClassEntry ce = FindClassEntry (btype.FullName, btype.TypeParameters.Count);
 			if (ce != null)
 				csubs = ce.Subclasses;
 
@@ -557,26 +581,73 @@ namespace MonoDevelop.Projects.Dom.Serialization
 					if (ob is ClassEntry) {
 						string ns = ((ClassEntry) ob).NamespaceRef.FullName;
 						if (namespaces == null || namespaces.Contains (ns)) {
-							if (genericArgumentCount >= 0 && ((ClassEntry)ob).TypeParameterCount != genericArgumentCount)
-								continue;
 							IType t = GetClass ((ClassEntry)ob);
-							if (t.FullName != fullName)
+							if (t != null && t != btype)
 								yield return t;
 						}
 					}
 					else {
 						// It's a full class name
 						IType cls = this.GetClass ((string)ob, null, true);
-						
 						if (cls != null && (namespaces == null || namespaces.Contains (cls.Namespace))) {
-							if (genericArgumentCount >= 0 && cls.TypeParameters.Count != genericArgumentCount)
-								continue;
-							if (cls.FullName != fullName)
+							if (cls != btype)
 								yield return cls;
 						}
 					}
 				}
 			}
+		}
+
+		IType GetCompatibleSubclass (InstantiatedType baseType, IType subType)
+		{
+			// No generic type inferring involved
+			if (subType.TypeParameters.Count == 0 && baseType.GenericParameters.Count == 0)
+				return subType;
+
+			// The subclass is compatible and can be returned if all type parameters
+			// can be inferred from the base class
+
+			// Find the IReturnType that is relating the subtype with the base type
+
+			IReturnType baseRetType = null;
+			foreach (IReturnType rt in subType.BaseTypes) {
+				if (rt.FullName == baseType.UninstantiatedType.FullName && rt.GenericArguments.Count == baseType.GenericParameters.Count) {
+					baseRetType = rt;
+					break;
+				}
+			}
+			if (baseRetType == null)
+				return null; // Something went wrong. Not compatible.
+
+			ReadOnlyCollection<IReturnType> bparams = baseRetType.GenericArguments;
+			bool[] paramsMatched = new bool [bparams.Count];
+			
+			List<IReturnType> args = new List<IReturnType> ();
+			foreach (TypeParameter par in subType.TypeParameters) {
+				int pos = -1;
+				for (int n=0; n < bparams.Count; n++) {
+					string pname = bparams [n].FullName;
+					if (par.Name == pname) {
+						paramsMatched [n] = true;
+						pos = n;
+						break;
+					}
+				}
+				if (pos != -1)
+					args.Add (baseType.GenericParameters [pos]);
+				else
+					return null; // Something went wrong. Not compatible.
+			}
+
+			// Parameter which are instantiated must match the ones in the
+			// instantiated base class
+			for (int n=0; n < bparams.Count; n++) {
+				if (paramsMatched [n])
+					continue;
+				if (!bparams [n].Equals (baseType.GenericParameters [n]))
+					return null;
+			}
+			return DomType.CreateInstantiatedGenericType (subType, args);
 		}
 		
 		void OnPropertyUpdated (object sender, PropertyChangedEventArgs e)
@@ -694,7 +765,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			}
 		}
 		
-		public void UpdateDatabase ()
+		public virtual void UpdateDatabase ()
 		{
 			ArrayList list = GetModifiedFileEntries ();
 			foreach (FileEntry file in list)
@@ -968,10 +1039,11 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		{
 			// If this type is registered in the unresolved subclass table, now those subclasses
 			// can properly be assigned.
-			ArrayList subs = (ArrayList) unresolvedSubclassTable [ce.Class.FullName];
+			string name = ParserDatabase.GetDecoratedName (ce);
+			ArrayList subs = (ArrayList) unresolvedSubclassTable [name];
 			if (subs != null) {
 				ce.Subclasses = subs;
-				unresolvedSubclassTable.Remove (ce.Class.FullName);
+				unresolvedSubclassTable.Remove (name);
 			}
 		}
 		
@@ -980,7 +1052,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			// Called when a ClassEntry is removed. If there are registered subclass, add them
 			// to the unresolved subclass table
 			if (ce.Subclasses != null)
-				unresolvedSubclassTable [ce.Class.FullName] = ce.Subclasses;
+				unresolvedSubclassTable [ParserDatabase.GetDecoratedName (ce)] = ce.Subclasses;
 		}
 
 		IEnumerable<IReturnType> GetAllBaseTypes (IType type)
@@ -990,14 +1062,49 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			foreach (IReturnType rt in type.ImplementedInterfaces)
 				yield return rt;
 		}
+
+		bool IsValidGenericSubclass (IType subType, IReturnType baseType)
+		{
+			// Subclass relations between generic types are only useful if we can infer
+			// an instantiated subtype from a given instantiated base type
+			// Examples of valid subclasses: 
+			//    class Sub<T>: Base<T> { }
+			//    class Sub<T1,T2>: Base<T1,T2> { }
+			//    class Sub<T>: Base<T,T> { }
+			//    class Sub<T>: Base<T,string> { }
+			//    class Sub<A,B>: Base<B,A> { }
+			// Examples of invalid subclasses: 
+			//    class Sub<T>: Base { }
+			//    class Sub<T,S>: Base<T> { }
+			//    class Sub<T1,T2>: Base<T1, string> { }
+			//    class Sub<T>: Base<string> { }
+			
+			if (baseType.GenericArguments.Count > 0) {
+				if (subType.TypeParameters.Count == 0)
+					return true;
+				if (subType.TypeParameters.Count > baseType.GenericArguments.Count)
+					return false;
+				List<string> pars = new List<string> ();
+				foreach (TypeParameter tpar in subType.TypeParameters)
+					pars.Add (tpar.Name);
+				foreach (IReturnType rt in baseType.GenericArguments)
+					pars.Remove (rt.FullName);
+				if (pars.Count > 0)
+					return false;
+			} else if (subType.TypeParameters.Count != 0)
+				return false;
+			return true;
+		}
 		
 		void AddSubclassReferences (ClassEntry ce)
 		{
 			foreach (IReturnType type in GetAllBaseTypes (ce.Class)) {
-				string bt = type.FullName;
+				string bt = ParserDatabase.GetDecoratedName (type);
 				if (bt == "System.Object")
 					continue;
-				ClassEntry sup = FindClassEntry (bt, type.GenericArguments.Count);
+				if (!IsValidGenericSubclass (ce.Class, type))
+					continue;
+				ClassEntry sup = FindClassEntry (type.FullName, type.GenericArguments.Count);
 				if (sup != null)
 					sup.RegisterSubclass (ce);
 				else {
@@ -1016,15 +1123,17 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		void AddInnerSubclassReferences (IType cls)
 		{
 			foreach (IReturnType type in GetAllBaseTypes (cls)) {
-				string bt = type.FullName;
+				string bt = ParserDatabase.GetDecoratedName (type);
 				if (bt == "System.Object")
+					continue;
+				if (!IsValidGenericSubclass (cls, type))
 					continue;
 				ArrayList subs = (ArrayList) unresolvedSubclassTable [bt];
 				if (subs == null) {
 					subs = new ArrayList ();
 					unresolvedSubclassTable [bt] = subs;
 				}
-				subs.Add (cls.FullName);
+				subs.Add (ParserDatabase.GetDecoratedName (cls));
 			}
 			foreach (IType ic in cls.InnerTypes)
 				AddInnerSubclassReferences (ic);
@@ -1037,11 +1146,11 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				if (sup != null)
 					sup.UnregisterSubclass (ce);
 					
-				ArrayList subs = (ArrayList) unresolvedSubclassTable [type.FullName];
+				ArrayList subs = (ArrayList) unresolvedSubclassTable [ParserDatabase.GetDecoratedName (type)];
 				if (subs != null) {
 					subs.Remove (ce);
 					if (subs.Count == 0)
-						unresolvedSubclassTable.Remove (type.FullName);
+						unresolvedSubclassTable.Remove (ParserDatabase.GetDecoratedName (type));
 				}
 			}
 			foreach (IType cls in ce.Class.InnerTypes)
@@ -1051,9 +1160,9 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		void RemoveInnerSubclassReferences (IType cls)
 		{
 			foreach (IReturnType type in GetAllBaseTypes (cls)) {
-				ArrayList subs = (ArrayList) unresolvedSubclassTable [type.FullName];
+				ArrayList subs = (ArrayList) unresolvedSubclassTable [ParserDatabase.GetDecoratedName (type)];
 				if (subs != null)
-					subs.Remove (type.FullName);
+					subs.Remove (ParserDatabase.GetDecoratedName (cls));
 			}
 			foreach (IType ic in cls.InnerTypes)
 				RemoveInnerSubclassReferences (ic);

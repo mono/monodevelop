@@ -100,17 +100,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		public override IEnumerable<IType> GetSubclasses (IType type, bool searchDeep, IList<string> namespaces)
 		{
-			IType underlyingType = type;
-			if (type is InstantiatedType) 
-				underlyingType = ((InstantiatedType)type).UninstantiatedType;
-			
-			List<IType> result = new List<IType> (dbProvider.GetSubclassesTree (database, underlyingType, searchDeep, namespaces));
-			if (type is InstantiatedType) {
-				for (int i = 0; i < result.Count; i++) {
-					result[i] = DomType.CreateInstantiatedGenericType (result[i], ((InstantiatedType)type).GenericParameters);
-				}
-			}
-			return result;
+			return dbProvider.GetSubclassesTree (database, type, searchDeep, namespaces);
 		}
 		
 		internal override IEnumerable<string> OnGetReferences ()
@@ -124,6 +114,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			database.Write ();
 			if (!database.Disposed)
 				database.Dispose ();
+			base.Unload ();
 		}
 
 		internal override void OnProjectReferenceAdded (ProjectReference pref)
@@ -168,9 +159,21 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			return dbProvider.GetClass (database, typeName, genericArguments, deepSearchReferences, caseSensitive);
 		}
 
-		public override void ForceUpdate()
+		public override IType GetType (string typeName, int genericArgumentsCount, bool deepSearchReferences, bool caseSensitive)
+		{
+			if (genericArgumentsCount > 0)
+				typeName += "`" + genericArgumentsCount;
+			return dbProvider.GetClass (database, typeName, null, deepSearchReferences, caseSensitive);
+		}
+
+		public override void ForceUpdate ()
 		{
 			database.UpdateDatabase ();
+		}
+
+		public override string ToString ()
+		{
+			return string.Format("[DatabaseProjectDom: {0}]", System.IO.Path.GetFileName (Database.DataFile));
 		}
 
 	}

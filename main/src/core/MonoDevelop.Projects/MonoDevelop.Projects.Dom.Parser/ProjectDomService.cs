@@ -77,7 +77,6 @@ namespace MonoDevelop.Projects.Dom.Parser
 			public ProjectDom Database;
 		}
 
-		static Dictionary<string,int> lastUpdateSize = new Dictionary<string,int>();
 		static Dictionary<string,ParsingCacheEntry> parsings = new Dictionary<string,ParsingCacheEntry> ();
 		
 		static Queue<ParsingJob> parseQueue = new Queue<ParsingJob>();
@@ -96,7 +95,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 				try {
 					helpTree = RootTree.LoadTree ();
 				} catch (Exception ex) {
-					LoggingService.LogError ("Monodoc documentation tree could not be loaded.", ex);
+					if (!(ex is ThreadAbortException) && !(ex.InnerException is ThreadAbortException))
+						LoggingService.LogError ("Monodoc documentation tree could not be loaded.", ex);
 				}
 			});
 			
@@ -401,6 +401,14 @@ namespace MonoDevelop.Projects.Dom.Parser
 				Solution solution = (Solution) item;
 				foreach (Project project in solution.GetAllProjects ())
 					Load (project);
+				// Refresh the references of all projects. This is necessary because
+				// some project may have been loaded before the projects their reference,
+				// in which case those references are not properly registered.
+				foreach (Project project in solution.GetAllProjects ()) {
+					ProjectDom dom = GetProjectDom (project);
+					if (dom != null)
+						dom.UpdateReferences ();
+				}
 				solution.SolutionItemAdded += OnSolutionItemAdded;
 				solution.SolutionItemRemoved += OnSolutionItemRemoved;
 			}
@@ -580,11 +588,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 					}
 				}
 			}
-			if (db != null) {
-				foreach (ProjectDom dom in db.References)
-					UnrefDom (dom.Uri);
+			if (db != null)
 				db.Unload ();
-			}
 			return true;
 		}
 		
@@ -798,43 +803,35 @@ namespace MonoDevelop.Projects.Dom.Parser
 				} else
 					fileContent = getContent ();
 
-				int contentHash = fileContent.GetHashCode ();
-				
-				int lastSize;
-				if (!lastUpdateSize.TryGetValue (fileName, out lastSize) || lastSize != contentHash) {
-					parseInformation = DoParseFile (fileName, fileContent);
-					if (parseInformation == null)
-						return null;
-					// don't update project dom with incorrect parse informations, they may not contain all
-					// information.
-					if (projects != null && projects.Length > 0 && parseInformation.CompilationUnit != null)
-						SetSourceProject (parseInformation.CompilationUnit, GetProjectDom (projects [0]));
-					if (!parseInformation.HasErrors &&
-					    (parseInformation.Flags & ParsedDocumentFlags.NonSerializable) == 0) {
-						if (projects != null && projects.Length > 0) {
-							foreach (Project project in projects) {
-								ProjectDom db = GetProjectDom (project);
-								if (db != null) {
-									try {
-										db.UpdateTagComments (fileName, parseInformation.TagComments);
-										UpdatedCommentTasks (fileName, parseInformation.TagComments);
-										TypeUpdateInformation res = db.UpdateFromParseInfo (parseInformation.CompilationUnit);
-										if (res != null)
-											NotifyTypeUpdate (project, fileName, res);
-									} catch (Exception) { }
-								}
+				parseInformation = DoParseFile (fileName, fileContent);
+				if (parseInformation == null)
+					return null;
+				// don't update project dom with incorrect parse informations, they may not contain all
+				// information.
+				if (projects != null && projects.Length > 0 && parseInformation.CompilationUnit != null)
+					SetSourceProject (parseInformation.CompilationUnit, GetProjectDom (projects [0]));
+				if (!parseInformation.HasErrors &&
+				    (parseInformation.Flags & ParsedDocumentFlags.NonSerializable) == 0) {
+					if (projects != null && projects.Length > 0) {
+						foreach (Project project in projects) {
+							ProjectDom db = GetProjectDom (project);
+							if (db != null) {
+								try {
+									db.UpdateTagComments (fileName, parseInformation.TagComments);
+									TypeUpdateInformation res = db.UpdateFromParseInfo (parseInformation.CompilationUnit);
+									if (res != null)
+										NotifyTypeUpdate (project, fileName, res);
+									UpdatedCommentTasks (fileName, parseInformation.TagComments);
+								} catch (Exception) { }
 							}
-						} else {
-							ProjectDom db = GetFileDom (fileName);
-							db.UpdateFromParseInfo (parseInformation.CompilationUnit);
 						}
+					} else {
+						ProjectDom db = GetFileDom (fileName);
+						db.UpdateFromParseInfo (parseInformation.CompilationUnit);
 					}
-					
-					lastUpdateSize[fileName] = contentHash;
-					return parseInformation;
-				} else {
-					return GetCachedParseInformation (fileName);
 				}
+				
+				return parseInformation;
 			} catch (Exception e) {
 				LoggingService.LogError (e.ToString ());
 				return null;
@@ -949,28 +946,28 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 		}
 		
-		internal static bool ResolveTypes (ProjectDom db, ICompilationUnit unit, IList<IType> types, out List<IType> result)
+		internal static int ResolveTypes (ProjectDom db, ICompilationUnit unit, IList<IType> types, out List<IType> result)
 		{
 			CompilationUnitTypeResolver tr = new CompilationUnitTypeResolver (db, unit);
 			
-			bool allResolved = true;
+			int unresolvedCount = 0;
 			result = new List<IType> ();
 			foreach (IType c in types) {
 				tr.CallingClass = c;
-				tr.AllResolved = true;
+				tr.UnresolvedCount = 0;
 				DomType rc = DomType.Resolve (c, tr);
 				
-				if (tr.AllResolved && c.FullName != "System.Object") {
+				if (tr.UnresolvedCount == 0 && c.FullName != "System.Object") {
 					// If the class has no base classes, make sure it subclasses System.Object
 					if (rc.BaseType == null)
 						rc.BaseType = new DomReturnType ("System.Object");
 				}
 				
 				result.Add (rc);
-				allResolved = allResolved && tr.AllResolved;
+				unresolvedCount += tr.UnresolvedCount;
 			}
 				
-			return allResolved;
+			return unresolvedCount;
 		}
 
 		internal static void StartParseOperation ()
@@ -1035,7 +1032,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 		public IType CallingClass;
 		ProjectDom db;
 		ICompilationUnit unit;
-		bool allResolved;
+		int unresolvedCount;
 		
 		public CompilationUnitTypeResolver (ProjectDom db, ICompilationUnit unit)
 		{
@@ -1045,9 +1042,12 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		public IReturnType Resolve (IReturnType type)
 		{
-			IType c = db.SearchType (new SearchTypeRequest (unit, CallingClass, type.FullName));
+			string name = type.FullName;
+			if (type.GenericArguments.Count > 0)
+				name += "`" + type.GenericArguments.Count;
+			IType c = db.SearchType (new SearchTypeRequest (unit, CallingClass, name));
 			if (c == null) {
-				allResolved = false;
+				unresolvedCount++;
 				return db.GetSharedReturnType (type);
 			}
 
@@ -1068,10 +1068,10 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return db.GetSharedReturnType (rt);
 		}
 		
-		public bool AllResolved
+		public int UnresolvedCount
 		{
-			get { return allResolved; }
-			set { allResolved = value; }
+			get { return unresolvedCount; }
+			set { unresolvedCount = value; }
 		}
 	}
 	

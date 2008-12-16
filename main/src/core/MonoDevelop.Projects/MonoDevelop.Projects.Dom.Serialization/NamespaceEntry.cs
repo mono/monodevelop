@@ -103,7 +103,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		public ClassEntry GetClass (string name, int genericArgumentCount, bool caseSensitive)
 		{
-			string fullName = GetName (name, genericArgumentCount);
+			string fullName = ParserDatabase.GetDecoratedName (name, genericArgumentCount);
 			ClassEntry ne = contents[fullName] as ClassEntry;
 			if (ne != null || caseSensitive) return ne;
 			
@@ -118,20 +118,10 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			if (contents_ci != null)
 				contents_ci [value.name] = value;
 		}
-		internal static string GetName (string name, int genericArgumentCount)
-		{
-			if (genericArgumentCount <= 0)
-				return name;
-			return name + "~" + genericArgumentCount;
-		}
-		internal static string GetName (ClassEntry entry)
-		{
-			return GetName (entry.Name, entry.TypeParameterCount);
-		}
 		
 		public void Add (ClassEntry value)
 		{
-			string name = GetName (value);
+			string name = ParserDatabase.GetDecoratedName (value);
 			
 			contents [name] = value;
 			if (contents_ci != null)
@@ -146,7 +136,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		public void Remove (ClassEntry entry)
 		{
-			contents.Remove (GetName (entry));
+			contents.Remove (ParserDatabase.GetDecoratedName (entry));
 			contents_ci = null;
 		}
 		

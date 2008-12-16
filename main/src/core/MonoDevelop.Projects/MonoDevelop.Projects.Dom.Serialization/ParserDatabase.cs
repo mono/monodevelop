@@ -302,50 +302,71 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		public IEnumerable<IType> GetSubclassesTree (SerializationCodeCompletionDatabase db,
 		                                             IType cls,
-		                                             bool searchDeep, 
+		                                             bool deepSearchReferences, 
 		                                             IList<string> namespaces)
 		{
-			string fn = cls.FullName;
-			
-			if (fn == "System.Object") {
+			if (cls.FullName == "System.Object") {
 				// Just return all classes
-				if (db != null) {
-					foreach (IType dsub in db.GetClassList (true, namespaces))
-						yield return dsub;
+				foreach (IType dsub in db.GetClassList (true, namespaces))
+					yield return dsub;
+				if (deepSearchReferences) {
 					foreach (ReferenceEntry re in db.References) {
 						SerializationCodeCompletionDatabase cdb = GetDatabase (re.Uri);
 						if (cdb == null) continue;
-						
-						foreach (IType dsub in cdb.GetClassList (true, namespaces))
+						foreach (IType dsub in GetSubclassesTree (db, cls, true, namespaces))
 							yield return dsub;
 					}
 				}
-				yield break;
 			}
+			else {
+				var visited = new Dictionary<SerializationCodeCompletionDatabase, HashSet<IType>> ();
+				SearchSubclasses (visited, cls, namespaces, db);
+	
+				if (deepSearchReferences) {
+					foreach (HashSet<IType> list in visited.Values)
+						foreach (IType t in list)
+							yield return t;
+				} else {
+					HashSet<IType> list = visited [db];
+					foreach (IType t in list)
+						yield return t;
+				}
+			}
+		}
+
+		HashSet<IType> SearchSubclasses (Dictionary<SerializationCodeCompletionDatabase, HashSet<IType>> visited, IType btype, IList<string> namespaces, SerializationCodeCompletionDatabase db)
+		{
+			HashSet<IType> types;
+			if (visited.TryGetValue (db, out types))
+				return types;
+
+			types = new HashSet<IType> (GetSubclassesTree (db, btype, namespaces));
+			visited [db] = types;
+
+			// For each reference, get the list of subclasses implemented in that reference,
+			// then look for subclasses of any of those in the current db
+
+			// A project can only have subclasses of classes implemented in assemblies it references
 			
-			if (db != null) {
-				// Look for subclasses in all databases
-				foreach (IType dsub in db.GetSubclasses (fn, cls.TypeParameters.Count, namespaces)) {
-					yield return dsub;
-					foreach (IType sub in GetSubclassesTree (db, dsub, searchDeep, namespaces))
-						yield return sub;
+			foreach (ReferenceEntry re in db.References) {
+				SerializationCodeCompletionDatabase cdb = GetDatabase (re.Uri);
+				if (cdb != null && cdb != db) {
+					HashSet<IType> refTypes = SearchSubclasses (visited, btype, namespaces, cdb);
+					foreach (IType t in refTypes)
+						foreach (IType st in GetSubclassesTree (db, t, namespaces))
+							types.Add (st);
 				}
-				
-				if (!searchDeep)
-					yield break;
-				
-				foreach (ReferenceEntry re in db.References)
-				{
-					SerializationCodeCompletionDatabase cdb = GetDatabase (re.Uri);
-					if (cdb == null) continue;
-					
-					foreach (IType dsub in cdb.GetSubclasses (fn, cls.TypeParameters.Count, namespaces)) {
-						yield return dsub;
-						foreach (IType sub in GetSubclassesTree (db, dsub, searchDeep, namespaces)) {
-							yield return sub;
-						}
-					}
-				}
+			}
+
+			return types;
+		}
+
+		IEnumerable<IType> GetSubclassesTree (SerializationCodeCompletionDatabase db, IType btype, IList<string> namespaces)
+		{
+			foreach (IType dsub in db.GetSubclasses (btype, namespaces)) {
+				yield return dsub;
+				foreach (IType sub in GetSubclassesTree (db, dsub, namespaces))
+					yield return sub;
 			}
 		}
 		
@@ -359,6 +380,28 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		}
 		
 #endregion
+
+		internal static string GetDecoratedName (string name, int genericArgumentCount)
+		{
+			if (genericArgumentCount <= 0)
+				return name;
+			return name + "`" + genericArgumentCount;
+		}
+		
+		internal static string GetDecoratedName (ClassEntry entry)
+		{
+			return GetDecoratedName (entry.Name, entry.TypeParameterCount);
+		}
+
+		internal static string GetDecoratedName (IType type)
+		{
+			return GetDecoratedName (type.FullName, type.TypeParameters.Count);
+		}
+
+		internal static string GetDecoratedName (IReturnType type)
+		{
+			return GetDecoratedName (type.FullName, type.GenericArguments.Count);
+		}
 
 		
 		////////////////////////////////////

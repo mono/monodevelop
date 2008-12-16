@@ -35,7 +35,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 {
 	public abstract class ProjectDom
 	{	
-		protected List<ProjectDom> references = new List<ProjectDom> ();
+		protected List<ProjectDom> references;
 		
 		public Project Project;
 		internal int ReferenceCount;
@@ -69,6 +69,22 @@ namespace MonoDevelop.Projects.Dom.Parser
 		// and this method will ensure that everything is up-to-date.
 		public virtual void ForceUpdate ()
 		{
+			ForceUpdate (false);
+		}
+		
+		public void ForceUpdate (bool updateReferences)
+		{
+			HashSet<ProjectDom> visited = new HashSet<ProjectDom> ();
+			ForceUpdateRec (visited);
+		}
+
+		void ForceUpdateRec (HashSet<ProjectDom> visited)
+		{
+			if (!visited.Add (this))
+				return;
+			foreach (ProjectDom dom in References)
+				dom.ForceUpdateRec (visited);
+			ForceUpdate ();
 		}
 		
 		public virtual IEnumerable<IType> GetTypes (string fileName)
@@ -81,7 +97,11 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		public IEnumerable<IType> GetInheritanceTree (IType type)
 		{
-			Dictionary<string, bool> alreadyTaken = new Dictionary<string, bool> ();
+			type = ResolveType (type);
+			if (type == null)
+				yield break;
+			
+			HashSet<string> alreadyTaken = new HashSet<string> ();
 			Stack<IType> types = new Stack<IType> ();
 			types.Push (type);
 			while (types.Count > 0) {
@@ -90,21 +110,33 @@ namespace MonoDevelop.Projects.Dom.Parser
 					continue;
 				
 				string fullName = DomType.GetNetFullName (cur);
-				if (alreadyTaken.ContainsKey (fullName))
+				Console.WriteLine ("ppbt1: " + fullName);
+				if (!alreadyTaken.Add (fullName))
 					continue;
-				alreadyTaken[fullName] = true;
 				
 				yield return cur;
 				
 				foreach (IReturnType baseType in cur.BaseTypes) {
-					IType resolvedType = this.SearchType (new SearchTypeRequest (cur.CompilationUnit, baseType));
+					IType resolvedType = GetType (baseType);
 					if (resolvedType != null)
-						types.Push (DomType.CreateInstantiatedGenericType (resolvedType, baseType.GenericArguments));
+						types.Push (resolvedType);
+					else
+						Console.WriteLine ("pp???: " + baseType);
 				}
-				
+
+				Console.WriteLine ("ppbt2: " + cur.BaseType);
 				if (cur.BaseType == null && cur.FullName != "System.Object") 
 					types.Push (this.GetType (DomReturnType.Object));
 			}
+		}
+
+		public IType ResolveType (IType type)
+		{
+			if (type.SourceProjectDom == null) {
+				InstantiatedType itype = type as InstantiatedType;
+				return SearchType (type.FullName, null, type.CompilationUnit, itype != null ? itype.GenericParameters : null);
+			}
+			return type;
 		}
 		
 		public virtual IType SearchType (SearchTypeRequest request)
@@ -112,7 +144,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return SearchType (request.Name, request.CallingType, request.CurrentCompilationUnit, request.GenericParameters);
 		}
 		
-		internal IType SearchType (string name, IType callingClass, ICompilationUnit unit, List<IReturnType> genericParameters)
+		internal IType SearchType (string name, IType callingClass, ICompilationUnit unit, IList<IReturnType> genericParameters)
 		{
 			// TODO dom check generic parameter count
 			
@@ -236,6 +268,15 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return null;
 		}
 		
+		void GetNamespaceContentsRec (List<IMember> result, HashSet<ProjectDom> visited, IEnumerable<string> subNamespaces, bool caseSensitive)
+		{
+			if (!visited.Add (this))
+				return;
+			GetNamespaceContentsInternal (result, subNamespaces, caseSensitive);
+			foreach (ProjectDom reference in References)
+				reference.GetNamespaceContentsRec (result, visited, subNamespaces, caseSensitive);
+		}
+		
 		internal virtual void GetNamespaceContentsInternal (List<IMember> result, IEnumerable<string> subNamespaces, bool caseSensitive)
 		{
 			foreach (IType type in Types) {
@@ -267,12 +308,10 @@ namespace MonoDevelop.Projects.Dom.Parser
 		{
 			List<IMember> result = new List<IMember> ();
 			HashSet<string> uniqueNamespaces = new HashSet<string> (subNamespaces);
-			GetNamespaceContentsInternal (result, uniqueNamespaces, caseSensitive);
-			if (includeReferences) {
-				foreach (ProjectDom reference in references) {
-					reference.GetNamespaceContentsInternal (result, uniqueNamespaces, caseSensitive);
-				}
-			}
+			if (includeReferences)
+				GetNamespaceContentsRec (result, new HashSet<ProjectDom> (), uniqueNamespaces, caseSensitive);
+			else
+				GetNamespaceContentsInternal (result, uniqueNamespaces, caseSensitive);
 			return result;
 		}
 		
@@ -357,8 +396,13 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return GetType (typeName, null, deepSearchReferences, caseSensitive);
 		}
 		
+		public IType GetType (string typeName, int genericArgumentsCount, bool deepSearchReferences)
+		{
+			return GetType (typeName, genericArgumentsCount, deepSearchReferences, true);
+		}
+		
 		public abstract IType GetType (string typeName, IList<IReturnType> genericArguments, bool deepSearchReferences, bool caseSensitive);
-
+		public abstract IType GetType (string typeName, int genericArgumentsCount, bool deepSearchReferences, bool caseSensitive);
 		
 		internal virtual TypeUpdateInformation UpdateFromParseInfo (ICompilationUnit unit)
 		{
@@ -367,6 +411,10 @@ namespace MonoDevelop.Projects.Dom.Parser
 
 		internal virtual void Unload ()
 		{
+			if (references != null) {
+				foreach (ProjectDom dom in references)
+					ProjectDomService.UnrefDom (dom.Uri);
+			}
 		}
 		
 		internal void FireLoaded ()
@@ -407,14 +455,14 @@ namespace MonoDevelop.Projects.Dom.Parser
 		internal virtual void OnProjectReferenceAdded (ProjectReference pref)
 		{
 			ProjectDom dom = ProjectDomService.GetDom (pref.Reference, true);
-			if (dom != null)
+			if (dom != null && references != null)
 				this.references.Add (dom);	
 		}
 
 		internal virtual void OnProjectReferenceRemoved (ProjectReference pref)
 		{
 			ProjectDom dom = ProjectDomService.GetDom (pref.Reference);
-			if (dom != null) {
+			if (dom != null && references != null) {
 				this.references.Remove (dom);
 				ProjectDomService.UnrefDom (dom.Uri); 
 			}
@@ -459,6 +507,12 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return null;
 		}
 
+		public override IType GetType (string typeName, int genericArgumentsCount, bool deepSearchReferences, bool caseSensitive)
+		{
+			return GetType (typeName, null, deepSearchReferences, caseSensitive);
+		}
+
+
 		public override IEnumerable<IType> Types {
 			get {
 				foreach (ICompilationUnit unit in units) {
@@ -488,6 +542,12 @@ namespace MonoDevelop.Projects.Dom.Parser
 		{
 			return null;
 		}
+
+		public override IType GetType (string typeName, int genericArgumentsCount, bool deepSearchReferences, bool caseSensitive)
+		{
+			return null;
+		}
+
 
 		public override IEnumerable<IType> Types {
 			get {

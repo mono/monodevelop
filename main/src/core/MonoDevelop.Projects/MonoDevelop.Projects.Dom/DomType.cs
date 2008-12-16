@@ -707,6 +707,8 @@ namespace MonoDevelop.Projects.Dom
 		
 		public override bool Equals(object obj)
 		{
+			if (object.ReferenceEquals (this, obj))
+				return true;
 			if (!(obj is IType))
 				return false;
 			return Equals ((IType)obj);
