@@ -48,6 +48,7 @@ FILES =  \
 	MonoDevelop.CSharpBinding/TestViewContent.cs \
 	MonoDevelop.CSharpBinding/TestWorkbenchWindow.cs \
 	MonoDevelop.CSharpBinding/TopLevelTests.cs \
+	MonoDevelop.Projects/CompletionDatabaseTests.cs \
 	MonoDevelop.Projects/DomCompilationUnitTests.cs \
 	MonoDevelop.Projects/DomPersistenceTests.cs \
 	MonoDevelop.Projects/LocalCopyTests.cs \

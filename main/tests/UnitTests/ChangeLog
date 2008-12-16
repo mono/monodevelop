@@ -1,3 +1,10 @@
+2008-12-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* UnitTests.mdp:
+	* MonoDevelop.Projects/CompletionDatabaseTests.cs: Added new tests for
+	the code completion database.
+
 2008-12-12  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:

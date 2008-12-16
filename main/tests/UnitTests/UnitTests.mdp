@@ -50,6 +50,7 @@
     <File name="MonoDevelop.Xml.StateEngine/TestParser.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.CSharpBinding/CodeCompletionAccessibleTests.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.CSharpBinding/CodeCompletionCSharpTests.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects/CompletionDatabaseTests.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

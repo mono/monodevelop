@@ -1,3 +1,35 @@
+2008-12-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* generated-console-project/TestProject.mdp:
+	* generated-console-project/TestProject.csproj:
+	* nested-solutions-mdp/console-project/console-project.mdp:
+	* nested-solutions-mdp/nested-solution1/library1/library1.mdp:
+	* nested-solutions-mdp/nested-solution1/library2/library2.mdp:
+	* csharp-console-mdp/csharp-console-mdp/csharp-console-mdp.mdp:
+	* nested-solutions-mdp/nested-solution2/console-project2/console-project2.mdp:
+	* nested-solutions-mdp/nested-solution2/nested-solution3/library4/library4.mdp:
+	* nested-solutions-mdp/nested-solution2/nested-solution3/library3/library3.mdp:
+	* test-configuration-merging/TestConfigurationMerging/TestConfigurationMerging.csproj:
+	* test-configuration-merging/TestConfigurationMerging/TestConfigurationMergingSaved.csproj:
+	Track changes done in the serialization format.
+
+	* completion-db-test/Library1/MyClass.cs:
+	* completion-db-test/Library2/MyClass.cs:
+	* completion-db-test/CompletionDbTest.sln:
+	* completion-db-test/Library1/Library1.csproj:
+	* completion-db-test/Library2/AssemblyInfo.cs:
+	* completion-db-test/Library1/AssemblyInfo.cs:
+	* completion-db-test/CompletionDbTest/Main.cs:
+	* completion-db-test/Library2/Library2.csproj:
+	* completion-db-test/Library2/SharedNamespace.cs:
+	* completion-db-test/Library1/SharedNamespace.cs:
+	* completion-db-test/Library2/GenericSubclassing.cs:
+	* completion-db-test/Library1/GenericSubclassing.cs:
+	* completion-db-test/CompletionDbTest/AssemblyInfo.cs:
+	* completion-db-test/CompletionDbTest/SharedNamespace.cs:
+	* completion-db-test/CompletionDbTest/CompletionDbTest.csproj: Added new
+	tests for the code completion database.
+
 2008-10-31  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* resources-tester/ResourcesTester/Subfolder/FormFile2.Designer.cs: Fix

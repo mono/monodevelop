@@ -3,6 +3,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{DC577202-654B-4FDB-95C7-8CC5DDF6D32D}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>TestProject</RootNamespace>
