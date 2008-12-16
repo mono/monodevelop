@@ -1,5 +1,9 @@
 2008-12-16  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: Remove debug code.
+
+2008-12-16  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs:
 	* MonoDevelop.Projects.Dom.Serialization/ProjectCodeCompletionDatabase.cs:
 	Fixed some issues raised by unit tests.

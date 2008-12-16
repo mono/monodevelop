@@ -110,7 +110,6 @@ namespace MonoDevelop.Projects.Dom.Parser
 					continue;
 				
 				string fullName = DomType.GetNetFullName (cur);
-				Console.WriteLine ("ppbt1: " + fullName);
 				if (!alreadyTaken.Add (fullName))
 					continue;
 				
@@ -120,11 +119,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 					IType resolvedType = GetType (baseType);
 					if (resolvedType != null)
 						types.Push (resolvedType);
-					else
-						Console.WriteLine ("pp???: " + baseType);
 				}
 
-				Console.WriteLine ("ppbt2: " + cur.BaseType);
 				if (cur.BaseType == null && cur.FullName != "System.Object") 
 					types.Push (this.GetType (DomReturnType.Object));
 			}
