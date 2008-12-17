@@ -1,5 +1,10 @@
 2008-12-17  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects.Dom.Serialization/ParserDatabase.cs: Added
+	workaround for a mono bug.
+
+2008-12-17  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects.Dom.Serialization/ParserDatabase.cs: Fix infinite
 	loop when searching subclasses of System.Object.
 

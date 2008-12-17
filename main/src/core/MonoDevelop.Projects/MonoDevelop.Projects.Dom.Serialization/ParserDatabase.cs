@@ -318,8 +318,11 @@ namespace MonoDevelop.Projects.Dom.Serialization
 	
 				if (deepSearchReferences) {
 					List<IType> types = new List<IType> ();
-					foreach (HashSet<IType> list in visited.Values)
-						types.AddRange (list);
+					foreach (HashSet<IType> list in visited.Values) {
+						// Don't use AddRange here. It won't work due to a bug in mono (#459816).
+						foreach (IType tt in list)
+							types.Add (tt);
+					}
 					return types;
 				} else {
 					return visited [db];
