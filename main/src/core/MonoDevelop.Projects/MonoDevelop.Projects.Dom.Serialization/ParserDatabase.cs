@@ -307,29 +307,36 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		{
 			if (cls.FullName == "System.Object") {
 				// Just return all classes
-				foreach (IType dsub in db.GetClassList (true, namespaces))
-					yield return dsub;
-				if (deepSearchReferences) {
-					foreach (ReferenceEntry re in db.References) {
-						SerializationCodeCompletionDatabase cdb = GetDatabase (re.Uri);
-						if (cdb == null) continue;
-						foreach (IType dsub in GetSubclassesTree (db, cls, true, namespaces))
-							yield return dsub;
-					}
-				}
+				if (!deepSearchReferences)
+					return db.GetClassList (true, namespaces);
+				else
+					return GetAllClassesRec (new HashSet<SerializationCodeCompletionDatabase> (), db, namespaces);
 			}
 			else {
 				var visited = new Dictionary<SerializationCodeCompletionDatabase, HashSet<IType>> ();
 				SearchSubclasses (visited, cls, namespaces, db);
 	
 				if (deepSearchReferences) {
+					List<IType> types = new List<IType> ();
 					foreach (HashSet<IType> list in visited.Values)
-						foreach (IType t in list)
-							yield return t;
+						types.AddRange (list);
+					return types;
 				} else {
-					HashSet<IType> list = visited [db];
-					foreach (IType t in list)
-						yield return t;
+					return visited [db];
+				}
+			}
+		}
+
+		IEnumerable<IType> GetAllClassesRec (HashSet<SerializationCodeCompletionDatabase> visited, SerializationCodeCompletionDatabase db, IList<string> namespaces)
+		{
+			if (visited.Add (db)) {
+				foreach (IType dsub in db.GetClassList (true, namespaces))
+					yield return dsub;
+				foreach (ReferenceEntry re in db.References) {
+					SerializationCodeCompletionDatabase cdb = GetDatabase (re.Uri);
+					if (cdb == null) continue;
+					foreach (IType dsub in GetAllClassesRec (visited, cdb, namespaces))
+						yield return dsub;
 				}
 			}
 		}

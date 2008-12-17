@@ -1,3 +1,8 @@
+2008-12-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Dom.Serialization/ParserDatabase.cs: Fix infinite
+	loop when searching subclasses of System.Object.
+
 2008-12-16  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: Remove debug code.
