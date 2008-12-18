@@ -55,7 +55,7 @@ namespace MonoDevelop.Projects.Dom
 		{
 		}
 		
-		public DomRegion (int startLine, int startColumn, int endLine, int endColumn)
+		public DomRegion (int startLine, int startColumn, int endLine, int endColumn) : this ()
 		{
 			this.Start = new DomLocation (startLine, startColumn);
 			this.End   = new DomLocation (endLine, endColumn);

@@ -55,7 +55,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public DomLocation (int line, int column)
+		public DomLocation (int line, int column) : this ()
 		{
 			this.Line   = line;
 			this.Column = column;

@@ -1,3 +1,9 @@
+2008-12-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Dom/DomRegion.cs:
+	* MonoDevelop.Projects.Dom/DomLocation.cs: Fix build for recent mcs
+	versions.
+
 2008-12-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Dom.Serialization/ParserDatabase.cs: Added
