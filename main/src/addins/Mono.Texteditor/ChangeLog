@@ -1,3 +1,8 @@
+2008-12-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.TextEditor/DocumentLocation.cs: Fix build for recent mcs
+	versions.
+
 2008-12-15  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.TextEditor.Vi/ViMode.cs: Fix some actions that're made up of

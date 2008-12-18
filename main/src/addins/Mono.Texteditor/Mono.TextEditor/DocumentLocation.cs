@@ -42,7 +42,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public DocumentLocation (int line, int column)
+		public DocumentLocation (int line, int column) : this ()
 		{
 			this.Line = line;
 			this.Column = column;
