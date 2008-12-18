@@ -1,3 +1,9 @@
+2008-12-18  Mike Kestner <mkestner@novell.com> 
+
+	* libstetic/editor/Flags.cs : fix cs0030 under new mcs.
+	* libstetic/editor/FlagsSelectionDialog.cs : fix cs0030 under new mcs.
+	* libstetic/editor/ResponseId.cs : fix cs0030 under new mcs.
+
 2008-12-13  Mike Kestner <mkestner@novell.com> 
 
 	* libstetic/wrapper/Container.cs: generate tooltips based on the target

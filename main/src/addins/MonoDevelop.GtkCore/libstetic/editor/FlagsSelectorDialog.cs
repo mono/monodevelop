@@ -39,7 +39,7 @@ namespace Stetic.Editor
 				EnumValue eval = enumDesc[value];
 				if (eval.Label == "")
 					continue;
-				uint val = (uint) (int) eval.Value;
+				uint val = (uint) Convert.ToInt32 (eval.Value);
 				store.AppendValues (((flags & val) != 0), eval.Label, val);
 			}
 		}
