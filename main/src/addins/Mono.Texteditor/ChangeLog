@@ -1,3 +1,10 @@
+2008-12-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.TextEditor/TextEditorOptions.cs: Cache the font description once
+	created.
+
+	* gtk-gui/objects.xml: Updated.
+
 2008-12-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.TextEditor/DocumentLocation.cs: Fix build for recent mcs

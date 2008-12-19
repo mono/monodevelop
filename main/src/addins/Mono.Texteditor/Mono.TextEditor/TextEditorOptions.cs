@@ -67,6 +67,7 @@ namespace Mono.TextEditor
 		bool allowTabsAfterNonTabs = true;
 		string fontName = DEFAULT_FONT;
 		string colorStyle = "Default";
+		Pango.FontDescription font;
 		
 		double zoom = 1.0;
 		IWordFindStrategy wordFindStrategy = new EmacsWordFindStrategy (true);
@@ -77,6 +78,7 @@ namespace Mono.TextEditor
 			}
 			set {
 				zoom = value;
+				font = null;
 				OnChanged (EventArgs.Empty);
 			}
 		}
@@ -303,6 +305,7 @@ namespace Mono.TextEditor
 			}
 			set {
 				if (fontName != value) {
+					font = null;
 					fontName = !String.IsNullOrEmpty (value) ? value : DEFAULT_FONT;
 					OnChanged (EventArgs.Empty);
 				}
@@ -323,17 +326,18 @@ namespace Mono.TextEditor
 		
 		public Pango.FontDescription Font {
 			get {
-				Pango.FontDescription result = null;
-				try {
-					result = Pango.FontDescription.FromString (FontName);
-				} catch {
-					Console.WriteLine ("Could not load font: {0}", FontName);
+				if (font == null) {
+					try {
+						font = Pango.FontDescription.FromString (FontName);
+					} catch {
+						Console.WriteLine ("Could not load font: {0}", FontName);
+					}
+					if (font == null || String.IsNullOrEmpty (font.Family))
+						font = Pango.FontDescription.FromString (DEFAULT_FONT);
+					if (font != null)
+						font.Size = (int)(font.Size * Zoom);
 				}
-				if (result == null || String.IsNullOrEmpty (result.Family))
-					result = Pango.FontDescription.FromString (DEFAULT_FONT);
-				if (result != null)
-					result.Size = (int)(result.Size * Zoom);
-				return result;
+				return font;
 			}
 		}
 		
