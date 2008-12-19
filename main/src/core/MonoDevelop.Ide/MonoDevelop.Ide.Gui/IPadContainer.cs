@@ -42,6 +42,7 @@ namespace MonoDevelop.Ide.Gui
 		string Title { get; set; }
 		string Icon { get; set; }
 		bool Visible { get; set; }
+		bool ContentVisible { get; }
 		bool Sticky { get; set; }
 		IPadContent Content { get; }
 		
@@ -49,6 +50,8 @@ namespace MonoDevelop.Ide.Gui
 		
 		event EventHandler PadShown;
 		event EventHandler PadHidden;
+		event EventHandler PadContentShown;
+		event EventHandler PadContentHidden;
 		event EventHandler PadDestroyed;
 	}
 	
@@ -129,6 +132,10 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
+		public bool ContentVisible {
+			get { return layout.IsContentVisible (codon); }
+		}
+		
 		public bool Sticky {
 			get {
 				return layout.IsSticky (codon);
@@ -169,6 +176,18 @@ namespace MonoDevelop.Ide.Gui
 				PadHidden (this, EventArgs.Empty);
 		}
 		
+		internal void NotifyContentShown ()
+		{
+			if (PadContentShown != null)
+				PadContentShown (this, EventArgs.Empty);
+		}
+		
+		internal void NotifyContentHidden ()
+		{
+			if (PadContentHidden != null)
+				PadContentHidden (this, EventArgs.Empty);
+		}
+		
 		internal void NotifyDestroyed ()
 		{
 			if (PadDestroyed != null)
@@ -177,6 +196,8 @@ namespace MonoDevelop.Ide.Gui
 		
 		public event EventHandler PadShown;
 		public event EventHandler PadHidden;
+		public event EventHandler PadContentShown;
+		public event EventHandler PadContentHidden;
 		public event EventHandler PadDestroyed;
 		
 		internal event EventHandler TitleChanged;

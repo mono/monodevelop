@@ -389,7 +389,7 @@ namespace MonoDevelop.Ide.Gui
 						if (it != null)
 							it.Visible = true;
 					}
-					it.Present ();
+					it.Present (false);
 				}
 			} catch (Exception ex) {
 				LoggingService.LogError (ex.ToString ());
@@ -492,6 +492,13 @@ namespace MonoDevelop.Ide.Gui
 					window.NotifyHidden ();
 			};
 			
+			item.ContentVisibleChanged += delegate {
+				if (item.ContentVisible)
+					window.NotifyContentShown ();
+				else
+					window.NotifyContentHidden ();
+			};
+			
 			if (!activePadCollection.Contains (padCodon))
 				activePadCollection.Add (padCodon);
 		}
@@ -551,6 +558,14 @@ namespace MonoDevelop.Ide.Gui
 			return false;
 		}
 		
+		public bool IsContentVisible (PadCodon padContent)
+		{
+			DockItem item = GetDockItem (padContent);
+			if (item != null)
+				return item.ContentVisible;
+			return false;
+		}
+		
 		public void HidePad (PadCodon padContent)
 		{
 			DockItem item = GetDockItem (padContent);
@@ -562,7 +577,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			DockItem item = GetDockItem (padContent);
 			if (item != null)
-				item.Present ();
+				item.Present (true);
 		}
 		
 		public bool IsSticky (PadCodon padContent)

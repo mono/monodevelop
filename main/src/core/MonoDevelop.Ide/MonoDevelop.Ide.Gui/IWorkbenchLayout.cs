@@ -97,6 +97,7 @@ namespace MonoDevelop.Ide.Gui
 		/// returns true, if padContent is visible;
 		/// </summary>
 		bool IsVisible(PadCodon padContent);
+		bool IsContentVisible(PadCodon padContent);
 		
 		bool IsSticky (PadCodon padContent);
 
