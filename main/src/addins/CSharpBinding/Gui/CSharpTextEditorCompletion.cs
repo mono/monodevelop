@@ -445,7 +445,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 		
 		public override IParameterDataProvider HandleParameterCompletion (ICodeCompletionContext completionContext, char completionChar)
 		{
-			if (dom == null)
+			if (dom == null || completionChar != '(')
 				return null;
 			
 			if (stateTracker.Engine.IsInsideDocLineComment || stateTracker.Engine.IsInsideOrdinaryCommentOrString)

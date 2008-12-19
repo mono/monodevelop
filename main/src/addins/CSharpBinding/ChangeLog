@@ -1,3 +1,16 @@
+2008-12-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Gui/CSharpTextEditorCompletion.cs: Optimized. Do nothing in
+	HandleParameterCompletion unless the char is going to trigger a
+	parameter completion.
+
+	* md1format.xml: Added missing property.
+
+	* CSharpBindingCompilerManager.cs: Improve error message when an
+	assembly is not found.
+
+	* gtk-gui/gui.stetic: Update.
+
 2008-12-12  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* CSharpBinding.mdp:

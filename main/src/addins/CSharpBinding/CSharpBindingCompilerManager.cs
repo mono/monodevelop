@@ -333,7 +333,8 @@ namespace CSharpBinding
 						continue;
 					}
 
-					if (curLine.StartsWith ("Unhandled Exception: System.TypeLoadException")) {
+					if (curLine.StartsWith ("Unhandled Exception: System.TypeLoadException") || 
+					    curLine.StartsWith ("Unhandled Exception: System.IO.FileNotFoundException")) {
 						cr.Errors.Clear ();
 						typeLoadException = true;
 					}

@@ -6,7 +6,7 @@
 		<ItemProperty member="optimize" name="optimize"/>
 		<ItemProperty member="unsafecode" name="unsafecodeallowed"/>
 		<ItemProperty member="generateOverflowChecks" name="generateoverflowchecks"/>
-		<ItemProperty member="mainclass" name="mainclass"/>
+		<ItemProperty member="mainclass" name="mainclass" defaultValue=""/>
 		<ItemProperty member="definesymbols" name="definesymbols" defaultValue="" />
 		<ItemProperty member="generateXmlDocumentation" name="generatexmldocumentation"/>
 		<ItemProperty member="win32Icon" name="win32Icon" defaultValue="" />
@@ -14,5 +14,6 @@
 		<ItemProperty member="codePage" name="codepage" defaultValue="0"/>
 		<ItemProperty member="additionalArgs" name="additionalargs" defaultValue="" />
 		<ItemProperty member="langVersion" name="langversion" defaultValue="Default"/>
+		<ItemProperty member="treatWarningsAsErrors" name="warningsAsErrors" defaultValue="False"/>
 	</DataItem>
 </SerializationMap>
