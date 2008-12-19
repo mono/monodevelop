@@ -1,3 +1,9 @@
+2008-12-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Debugger.mdp: Updated.
+
+	* GdbBacktrace.cs: Track api changes.
+
 2008-12-09  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* GdbSession.cs: Fallback to relative source file path.

@@ -83,7 +83,7 @@ namespace MonoDevelop.Debugger.Gdb
 			return frames.ToArray ();
 		}
 
-		public ObjectValue[] GetLocalVariables (int frameIndex)
+		public ObjectValue[] GetLocalVariables (int frameIndex, int timeOut)
 		{
 			List<ObjectValue> values = new List<ObjectValue> ();
 			SelectFrame (frameIndex);
@@ -95,7 +95,7 @@ namespace MonoDevelop.Debugger.Gdb
 			return values.ToArray ();
 		}
 
-		public ObjectValue[] GetParameters (int frameIndex)
+		public ObjectValue[] GetParameters (int frameIndex, int timeOut)
 		{
 			List<ObjectValue> values = new List<ObjectValue> ();
 			SelectFrame (frameIndex);
@@ -106,20 +106,20 @@ namespace MonoDevelop.Debugger.Gdb
 			return values.ToArray ();
 		}
 
-		public ObjectValue GetThisReference (int frameIndex)
+		public ObjectValue GetThisReference (int frameIndex, int timeOut)
 		{
 			return null;
 		}
 		
-		public ObjectValue[] GetAllLocals (int frameIndex)
+		public ObjectValue[] GetAllLocals (int frameIndex, int timeOut)
 		{
 			List<ObjectValue> locals = new List<ObjectValue> ();
-			locals.AddRange (GetParameters (frameIndex));
-			locals.AddRange (GetLocalVariables (frameIndex));
+			locals.AddRange (GetParameters (frameIndex, timeOut));
+			locals.AddRange (GetLocalVariables (frameIndex, timeOut));
 			return locals.ToArray ();
 		}
 
-		public ObjectValue[] GetExpressionValues (int frameIndex, string[] expressions, bool evaluateMethods)
+		public ObjectValue[] GetExpressionValues (int frameIndex, string[] expressions, bool evaluateMethods, int timeOut)
 		{
 			List<ObjectValue> values = new List<ObjectValue> ();
 			SelectFrame (frameIndex);
