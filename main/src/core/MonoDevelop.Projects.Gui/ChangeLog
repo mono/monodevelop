@@ -1,3 +1,15 @@
+2008-12-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Projects.Gui.mdp:
+	* MonoDevelop.Projects.Gui.Completion/TooltipWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/DeclarationViewWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/ParameterInformationWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/WindowTransparencyDecorator.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.RunOptionsPanelWidget.cs:
+	Moved TooltipWindow to MD.Components.
+
 2008-12-12  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/generated.cs:

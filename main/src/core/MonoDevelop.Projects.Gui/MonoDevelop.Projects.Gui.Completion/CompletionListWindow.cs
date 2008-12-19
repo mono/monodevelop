@@ -32,6 +32,7 @@ using Gtk;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Projects.Gui.Completion
 {

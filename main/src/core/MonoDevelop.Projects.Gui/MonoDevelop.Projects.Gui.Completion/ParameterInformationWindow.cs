@@ -30,6 +30,7 @@ using System;
 using System.Text;
 using MonoDevelop.Core;
 using Gtk;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Projects.Gui.Completion
 {

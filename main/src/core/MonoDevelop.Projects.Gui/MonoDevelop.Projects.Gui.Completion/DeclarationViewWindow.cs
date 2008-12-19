@@ -21,6 +21,7 @@
 using System;
 using System.Reflection;
 using System.Collections;
+using MonoDevelop.Components;
 
 using Gtk;
 
