@@ -44,6 +44,8 @@ namespace MonoDevelop.Debugger
 		List<string> valueNames = new List<string> ();
 		Dictionary<string,string> oldValues = new Dictionary<string,string> ();
 		List<ObjectValue> values = new List<ObjectValue> ();
+		Dictionary<ObjectValue,TreeIter> nodes = new Dictionary<ObjectValue, TreeIter> (); 
+		Dictionary<string,ObjectValue> cachedValues = new Dictionary<string,ObjectValue> ();
 		TreeStore store;
 		TreeViewState state;
 		string createMsg;
@@ -51,6 +53,8 @@ namespace MonoDevelop.Debugger
 		bool allowEditing;
 		bool compact;
 		StackFrame frame;
+		ObjectValue[] lastEvaluatedValues;
+		bool disposed;
 		
 		CellRendererText crtExp;
 		CellRendererText crtValue;
@@ -132,6 +136,13 @@ namespace MonoDevelop.Debugger
 			
 			createMsg = GettextCatalog.GetString ("Click here to add a new watch");
 		}
+
+		protected override void OnDestroyed ()
+		{
+			base.OnDestroyed ();
+			disposed = true;
+		}
+
 		
 		public StackFrame Frame {
 			get {
@@ -159,7 +170,7 @@ namespace MonoDevelop.Debugger
 			}
 			set {
 				allowAdding = value;
-				Update ();
+				Refresh ();
 			}
 		}
 		
@@ -169,7 +180,7 @@ namespace MonoDevelop.Debugger
 			}
 			set {
 				allowEditing = value;
-				Update ();
+				Refresh ();
 			}
 		}
 		
@@ -195,37 +206,37 @@ namespace MonoDevelop.Debugger
 		public void AddExpression (string exp)
 		{
 			valueNames.Add (exp);
-			Update ();
+			Refresh ();
 		}
 		
 		public void AddExpressions (IEnumerable<string> exps)
 		{
 			valueNames.AddRange (exps);
-			Update ();
+			Refresh ();
 		}
 		
 		public void RemoveExpression (string exp)
 		{
 			valueNames.Remove (exp);
-			Update ();
+			Refresh ();
 		}
 		
 		public void AddValue (ObjectValue value)
 		{
 			values.Add (value);
-			Update ();
+			Refresh ();
 		}
 		
 		public void RemoveValue (ObjectValue value)
 		{
 			values.Remove (value);
-			Update ();
+			Refresh ();
 		}
 		
 		public void ClearValues ()
 		{
 			values.Clear ();
-			Update ();
+			Refresh ();
 		}
 		
 		public void ClearExpressions ()
@@ -240,12 +251,22 @@ namespace MonoDevelop.Debugger
 		
 		public void Update ()
 		{
+			cachedValues.Clear ();
+			Refresh ();
+		}
+		
+		public void Refresh ()
+		{
 			DateTime t = DateTime.Now;
+
+			foreach (ObjectValue val in nodes.Keys)
+				UnregisterValue (val);
+			nodes.Clear ();
 			
 			state.Save ();
 			
 			store.Clear ();
-			
+
 			foreach (ObjectValue val in values)
 				AppendValue (TreeIter.Zero, null, val);
 			
@@ -261,6 +282,45 @@ namespace MonoDevelop.Debugger
 			state.Load ();
 
 			Console.WriteLine ("pp object tree view update: " + (DateTime.Now - t).TotalMilliseconds);
+		}
+
+		void RegisterValue (ObjectValue val, TreeIter it)
+		{
+			if (val.IsEvaluating) {
+				nodes [val] = it;
+				val.ValueChanged += OnValueUpdated;
+			}
+		}
+
+		void UnregisterValue (ObjectValue val)
+		{
+			if (val.IsEvaluating)
+				val.ValueChanged -= OnValueUpdated;
+		}
+
+		void OnValueUpdated (object o, EventArgs a)
+		{
+			Application.Invoke (delegate {
+				if (disposed)
+					return;
+				ObjectValue val = (ObjectValue) o;
+				val.ValueChanged -= OnValueUpdated;
+				TreeIter it;
+				if (FindValue (val, out it)) {
+					TreeIter cit;
+					while (store.IterChildren (out cit, it))
+						store.Remove (ref cit);
+					TreeIter parent;
+					if (!store.IterParent (out parent, it))
+						parent = TreeIter.Zero;
+					SetValues (parent, it, val.Name, val);
+				}
+			});
+		}
+
+		bool FindValue (ObjectValue val, out TreeIter it)
+		{
+			return nodes.TryGetValue (val, out it);
 		}
 		
 		public void ResetChangeTracking ()
@@ -293,6 +353,17 @@ namespace MonoDevelop.Debugger
 		
 		void AppendValue (TreeIter parent, string name, ObjectValue val)
 		{
+			TreeIter it;
+			if (parent.Equals (TreeIter.Zero))
+				it = store.AppendNode ();
+			else
+				it = store.AppendNode (parent);
+			SetValues (parent, it, name, val);
+			RegisterValue (val, it);
+		}
+		
+		void SetValues (TreeIter parent, TreeIter it, string name, ObjectValue val)
+		{
 			string strval;
 			bool canEdit;
 			string nameColor = null;
@@ -300,9 +371,11 @@ namespace MonoDevelop.Debugger
 			
 			if (name == null)
 				name = val.Name;
+
+			bool hasParent = !parent.Equals (TreeIter.Zero);
 			
 			string valPath;
-			if (parent.Equals (TreeIter.Zero))
+			if (!hasParent)
 				valPath = "/" + name;
 			else
 				valPath = GetIterPath (parent) + "/" + name;
@@ -323,6 +396,11 @@ namespace MonoDevelop.Debugger
 				valueColor = errorColor;
 				canEdit = false;
 			}
+			else if (val.IsEvaluating) {
+				strval = GettextCatalog.GetString ("Evaluating...");
+				valueColor = disabledColor;
+				canEdit = false;
+			}
 			else {
 				canEdit = val.IsPrimitive && !val.IsReadOnly && allowEditing;
 				strval = val.Value != null ? val.Value.ToString () : "(null)";
@@ -332,16 +410,22 @@ namespace MonoDevelop.Debugger
 
 			string icon = GetIcon (val.Flags);
 
-			TreeIter it;
-			if (parent.Equals (TreeIter.Zero))
-				it = store.AppendValues (name, strval, val.TypeName, val, !val.HasChildren, allowAdding, canEdit, icon, nameColor, valueColor);
-			else
-				it = store.AppendValues (parent, name, strval, val.TypeName, val, !val.HasChildren, false, canEdit, icon, nameColor, valueColor);
+			store.SetValue (it, NameCol, name);
+			store.SetValue (it, ValueCol, strval);
+			store.SetValue (it, TypeCol, val.TypeName);
+			store.SetValue (it, ObjectCol, val);
+			store.SetValue (it, ExpandedCol, !val.HasChildren);
+			store.SetValue (it, NameEditableCol, !hasParent && allowAdding);
+			store.SetValue (it, ValueEditableCol, canEdit);
+			store.SetValue (it, IconCol, icon);
+			store.SetValue (it, NameColorCol, nameColor);
+			store.SetValue (it, ValueColorCol, valueColor);
 			
 			if (val.HasChildren) {
 				// Add dummy node
 				it = store.AppendValues (it, "", "", "", null, true);
 			}
+			
 		}
 		
 		internal static string GetIcon (ObjectValueFlags flags)
@@ -439,7 +523,7 @@ namespace MonoDevelop.Debugger
 			if (store.GetValue (it, ObjectCol) == null) {
 				if (args.NewText.Length > 0) {
 					valueNames.Add (args.NewText);
-					Update ();
+					Refresh ();
 				}
 			} else {
 				string exp = (string) store.GetValue (it, NameCol);
@@ -450,7 +534,7 @@ namespace MonoDevelop.Debugger
 					valueNames [i] = args.NewText;
 				else
 					valueNames.RemoveAt (i);
-				Update ();
+				Refresh ();
 			}
 		}
 		
@@ -635,14 +719,35 @@ namespace MonoDevelop.Debugger
 
 		ObjectValue[] GetValues (string[] names)
 		{
-			if (frame != null)
-				return frame.GetExpressionValues (names, true);
-			else {
-				ObjectValue[] vals = new ObjectValue [names.Length];
-				for (int n=0; n<vals.Length; n++)
-					vals [n] = ObjectValue.CreateUnknown (names [n]);
-				return vals;
+			ObjectValue[] values = new ObjectValue [names.Length];
+			List<string> list = new List<string> ();
+			
+			for (int n=0; n<names.Length; n++) {
+				ObjectValue val;
+				if (cachedValues.TryGetValue (names [n], out val))
+					values [n] = val;
+				else
+					list.Add (names[n]);
 			}
+
+			ObjectValue[] qvalues;
+			if (frame != null)
+				qvalues = frame.GetExpressionValues (names, true, 1000);
+			else {
+				qvalues = new ObjectValue [names.Length];
+				for (int n=0; n<qvalues.Length; n++)
+					qvalues [n] = ObjectValue.CreateUnknown (names [n]);
+			}
+
+			int kv = 0;
+			for (int n=0; n<values.Length; n++) {
+				if (values [n] == null) {
+					values [n] = qvalues [kv++];
+					cachedValues [names[n]] = values [n];
+				}
+			}
+			
+			return values;
 		}
 		
 		Mono.Debugging.Client.CompletionData GetCompletionData (string exp)

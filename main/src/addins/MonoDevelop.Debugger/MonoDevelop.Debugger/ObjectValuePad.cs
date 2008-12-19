@@ -43,6 +43,7 @@ namespace MonoDevelop.Debugger
 		bool needsUpdate;
 		IPadWindow container;
 		bool initialResume;
+		StackFrame lastFrame;
 		
 		public Gtk.Widget Control {
 			get {
@@ -84,7 +85,7 @@ namespace MonoDevelop.Debugger
 		public void Initialize (IPadWindow container)
 		{
 			this.container = container;
-			container.PadShown += delegate {
+			container.PadContentShown += delegate {
 				if (needsUpdate)
 					OnUpdateList ();
 			};
@@ -96,13 +97,15 @@ namespace MonoDevelop.Debugger
 		
 		public virtual void OnUpdateList ()
 		{
-			if (DebuggingService.CurrentFrame != null)
+			needsUpdate = false;
+			if (DebuggingService.CurrentFrame != null && DebuggingService.CurrentFrame != lastFrame)
 				tree.Frame = DebuggingService.CurrentFrame;
+			lastFrame = DebuggingService.CurrentFrame;
 		}
 		
 		void OnFrameChanged (object s, EventArgs a)
 		{
-			if (container != null && container.Visible)
+			if (container != null && container.ContentVisible)
 				OnUpdateList ();
 			else
 				needsUpdate = true;

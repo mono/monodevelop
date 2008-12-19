@@ -23,6 +23,8 @@ namespace MonoDevelop.Debugger
 
 		Gtk.TreeView tree;
 		Gtk.TreeStore store;
+		bool needsUpdate;
+		IPadWindow window;
 
 		public StackTracePad ()
 		{
@@ -83,12 +85,26 @@ namespace MonoDevelop.Debugger
 		
 		void IPadContent.Initialize (IPadWindow window)
 		{
+			this.window = window;
 			window.Title = "Call Stack";
 			window.Icon = Stock.OutputIcon;
+			window.PadContentShown += delegate {
+				if (needsUpdate)
+					Update ();
+			};
 		}
 
 		public void UpdateDisplay ()
 		{
+			if (window != null && window.ContentVisible)
+				Update ();
+			else
+				needsUpdate = true;
+		}
+		
+		void Update ()
+		{
+			needsUpdate = false;
 			store.Clear ();
 
 			if (current_backtrace == null)
