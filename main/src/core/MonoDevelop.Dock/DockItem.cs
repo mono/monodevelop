@@ -53,11 +53,13 @@ namespace MonoDevelop.Components.Docking
 		Gtk.Window floatingWindow;
 		DockBarItem dockBarItem;
 		bool lastVisibleStatus;
+		bool lastContentVisibleStatus;
 		bool gettingContent;
 		bool isPositionMarker;
 		bool stickyVisible;
 		
 		public event EventHandler VisibleChanged;
+		public event EventHandler ContentVisibleChanged;
 		public event EventHandler ContentRequired;
 		
 		internal DockItem (DockFrame frame, string id)
@@ -128,6 +130,15 @@ namespace MonoDevelop.Components.Docking
 						}
 					}
 					widget.UpdateContent ();
+					widget.Shown += delegate {
+						UpdateContentVisibleStatus ();
+					};
+					widget.Hidden += delegate {
+						UpdateContentVisibleStatus ();
+					};
+					widget.ParentSet += delegate {
+						UpdateContentVisibleStatus ();
+					};
 				}
 				return widget;
 			}
@@ -214,12 +225,20 @@ namespace MonoDevelop.Components.Docking
 			}
 		}
 		
-		public void Present ()
+		public void Present (bool giveFocus)
 		{
 			if (dockBarItem != null)
-				dockBarItem.Present ();
+				dockBarItem.Present (giveFocus);
 			else
-				frame.Present (this);
+				frame.Present (this, giveFocus);
+		}
+
+		public bool ContentVisible {
+			get {
+				if (widget == null)
+					return false;
+				return widget.Parent != null && widget.Visible;
+			}
 		}
 
 		internal void SetFocus ()
@@ -245,6 +264,17 @@ namespace MonoDevelop.Components.Docking
 				lastVisibleStatus = vis;
 				if (VisibleChanged != null)
 					VisibleChanged (this, EventArgs.Empty);
+			}
+			UpdateContentVisibleStatus ();
+		}
+		
+		internal void UpdateContentVisibleStatus ()
+		{
+			bool vis = ContentVisible;
+			if (vis != lastContentVisibleStatus) {
+				lastContentVisibleStatus = vis;
+				if (ContentVisibleChanged != null)
+					ContentVisibleChanged (this, EventArgs.Empty);
 			}
 		}
 		

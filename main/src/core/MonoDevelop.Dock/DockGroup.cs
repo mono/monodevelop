@@ -639,7 +639,7 @@ namespace MonoDevelop.Components.Docking
 			}
 		}
 		
-		internal void Present (DockItem it)
+		internal void Present (DockItem it, bool giveFocus)
 		{
 			if (type == DockGroupType.Tabbed) {
 				for (int n=0; n<VisibleObjects.Count; n++) {
@@ -652,7 +652,7 @@ namespace MonoDevelop.Components.Docking
 					}
 				}
 			}
-			if (it.Visible)
+			if (giveFocus && it.Visible)
 				it.SetFocus ();
 		}
 

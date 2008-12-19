@@ -115,7 +115,7 @@ namespace MonoDevelop.Components.Docking
 			RelayoutWidgets ();
 
 			foreach (DockItem it in sickyOnTop)
-				it.Present ();
+				it.Present (false);
 		}
 		
 		public void StoreAllocation ()

@@ -1,3 +1,18 @@
+2008-12-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Dock.mdp: Updated.
+
+	* DockFrame.cs:
+	* DockGroup.cs:
+	* DockBarItem.cs:
+	* DockContainer.cs: Giving focus when presenting a dock item is now
+	optional.
+
+	* DockItem.cs: Added new ContentVisible property, which is true when the
+	content is currently displayed. E.g. if an item is docked in a
+	notebook, and it is not the active tab, Visible will be true, but
+	ContentVisible will be false.
+
 2008-12-11  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* DockItem.cs: Added missing null check.

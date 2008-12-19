@@ -120,16 +120,18 @@ namespace MonoDevelop.Components.Docking
 			return res;
 		}
 
-		public void Present ()
+		public void Present (bool giveFocus)
 		{
 			AutoShow ();
-			GLib.Timeout.Add (200, delegate {
-				// Using a small delay because AutoShow uses an animation and setting focus may
-				// not work until the item is visible
-				it.SetFocus ();
-				ScheduleAutoHide (false);
-				return false;
-			});
+			if (giveFocus) {
+				GLib.Timeout.Add (200, delegate {
+					// Using a small delay because AutoShow uses an animation and setting focus may
+					// not work until the item is visible
+					it.SetFocus ();
+					ScheduleAutoHide (false);
+					return false;
+				});
+			}
 		}
 
 		void AutoShow ()

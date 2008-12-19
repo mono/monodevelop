@@ -309,13 +309,13 @@ namespace MonoDevelop.Components.Docking
 			dockBarRight.UpdateTitle (item);
 		}
 		
-		internal void Present (DockItem item)
+		internal void Present (DockItem item, bool giveFocus)
 		{
 			DockGroupItem gitem = container.FindDockGroupItem (item.Id);
 			if (gitem == null)
 				return;
 			
-			gitem.ParentGroup.Present (item);
+			gitem.ParentGroup.Present (item, giveFocus);
 		}
 		
 		internal bool GetVisible (DockItem item)
