@@ -34,25 +34,25 @@ namespace DebuggerServer
 {
 	public abstract class ExpressionEvaluator
 	{
-		public abstract ValueReference Evaluate (StackFrame frame, string exp, EvaluationOptions options);
+		public abstract ValueReference Evaluate (EvaluationContext ctx, string exp, EvaluationOptions options);
 		
-		public string TargetObjectToString (Thread thread, TargetObject obj)
+		public string TargetObjectToString (EvaluationContext ctx, TargetObject obj)
 		{
-			object res = TargetObjectToObject (thread, obj);
+			object res = TargetObjectToObject (ctx, obj);
 			if (res == null)
 				return null;
 			else
 				return res.ToString ();
 		}
 		
-		public string TargetObjectToExpression (Thread thread, TargetObject obj)
+		public string TargetObjectToExpression (EvaluationContext ctx, TargetObject obj)
 		{
-			return ToExpression (TargetObjectToObject (thread, obj));
+			return ToExpression (TargetObjectToObject (ctx, obj));
 		}
 		
-		public virtual object TargetObjectToObject (Thread thread, TargetObject obj)
+		public virtual object TargetObjectToObject (EvaluationContext ctx, TargetObject obj)
 		{
-			obj = ObjectUtil.GetRealObject (thread, obj);
+			obj = ObjectUtil.GetRealObject (ctx, obj);
 			
 			switch (obj.Kind) {
 				case Mono.Debugger.Languages.TargetObjectKind.Array:
@@ -61,7 +61,7 @@ namespace DebuggerServer
 						return null;
 					StringBuilder tn = new StringBuilder (arr.Type.ElementType.Name);
 					tn.Append ("[");
-					TargetArrayBounds ab = arr.GetArrayBounds (thread);
+					TargetArrayBounds ab = arr.GetArrayBounds (ctx.Thread);
 					if (ab.IsMultiDimensional) {
 						for (int n=0; n<ab.Rank; n++) {
 							if (n>0)
@@ -78,17 +78,17 @@ namespace DebuggerServer
 				case TargetObjectKind.GenericInstance:
 				case TargetObjectKind.Struct:
 				case TargetObjectKind.Class:
-					TypeDisplayData tdata = ObjectUtil.GetTypeDisplayData (thread.CurrentFrame, obj.Type);
+					TypeDisplayData tdata = ObjectUtil.GetTypeDisplayData (ctx, obj.Type);
 					TargetStructObject co = obj as TargetStructObject;
 					if (co == null)
 						return null;
 					if (co.TypeName == "System.Decimal")
-						return new LiteralExp (ObjectUtil.CallToString (thread, co));
+						return new LiteralExp (ObjectUtil.CallToString (ctx, co));
 					if (tdata.ValueDisplayString != null)
-						return new LiteralExp (ObjectUtil.EvaluateDisplayString (thread.CurrentFrame, co, tdata.ValueDisplayString));
+						return new LiteralExp (ObjectUtil.EvaluateDisplayString (ctx, co, tdata.ValueDisplayString));
 					
 					// Try using a collection adaptor
-					CollectionAdaptor col = CollectionAdaptor.CreateAdaptor (thread, co);
+					CollectionAdaptor col = CollectionAdaptor.CreateAdaptor (ctx, co);
 					if (col != null)
 						return new LiteralExp (ArrayElementGroup.GetArrayDescription (col.GetBounds ()));
 					
@@ -99,19 +99,19 @@ namespace DebuggerServer
 					
 				case TargetObjectKind.Enum:
 					TargetEnumObject eob = (TargetEnumObject) obj;
-					return new LiteralExp (TargetObjectToString (thread, eob.GetValue (thread)));
+					return new LiteralExp (TargetObjectToString (ctx, eob.GetValue (ctx.Thread)));
 					
 				case TargetObjectKind.Fundamental:
 					TargetFundamentalObject fob = obj as TargetFundamentalObject;
 					if (fob == null)
 						return "null";
-					return fob.GetObject (thread);
+					return fob.GetObject (ctx.Thread);
 					
 				case TargetObjectKind.Pointer:
 					if (IntPtr.Size < 8)
-						return new IntPtr ((int)obj.GetAddress (thread).Address);
+						return new IntPtr ((int)obj.GetAddress (ctx.Thread).Address);
 					else
-						return new IntPtr (obj.GetAddress (thread).Address);
+						return new IntPtr (obj.GetAddress (ctx.Thread).Address);
 					
 				case TargetObjectKind.Object:
 					TargetObjectObject oob = obj as TargetObjectObject;

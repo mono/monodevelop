@@ -39,7 +39,7 @@ namespace DebuggerServer
 		TargetType type;
 		TargetObject obj;
 		
-		public NullValueReference (Thread thread, TargetType type): base (thread)
+		public NullValueReference (EvaluationContext ctx, TargetType type): base (ctx)
 		{
 			this.type = type;
 		}
@@ -47,7 +47,7 @@ namespace DebuggerServer
 		public override TargetObject Value {
 			get {
 				if (obj == null)
-					obj = Thread.CurrentFrame.Language.CreateNullObject (Thread, type);
+					obj = Context.Frame.Language.CreateNullObject (Context.Thread, type);
 				return obj;
 			}
 			set {
@@ -79,9 +79,8 @@ namespace DebuggerServer
 			}
 		}
 
-		public override ObjectValue CreateObjectValue ()
+		protected override ObjectValue OnCreateObjectValue ()
 		{
-			Connect ();
 			return Mono.Debugging.Client.ObjectValue.CreateObject (null, new ObjectPath (Name), Type.Name, "null", Flags, null);
 		}
 		

@@ -38,6 +38,14 @@ namespace DebuggerServer
 		DateTime lastBreakEventUpdate = DateTime.Now;
 		Dictionary<int, ST.WaitCallback> breakUpdates = new Dictionary<int,ST.WaitCallback> ();
 		bool breakUpdateEventsQueued;
+		
+		AsyncEvaluationTracker asyncEvaluationTracker;
+		RuntimeInvokeManager invokeManager;
+
+		public const int DefaultAsyncSwitchTimeout = 60;
+		public const int DefaultEvaluationTimeout = 1000;
+		public const int DefaultChildEvaluationTimeout = 5000;
+		
 		const int BreakEventUpdateNotifyDelay = 500;
 
 		public DebuggerServer (IDebuggerController dc)
@@ -51,6 +59,9 @@ namespace DebuggerServer
 			ST.Thread t = new ST.Thread ((ST.ThreadStart)EventDispatcher);
 			t.IsBackground = true;
 			t.Start ();
+
+			invokeManager = new RuntimeInvokeManager ();
+			asyncEvaluationTracker = new AsyncEvaluationTracker ();
 		}
 		
 		public override object InitializeLifetimeService ()
@@ -60,6 +71,12 @@ namespace DebuggerServer
 		
 		public ExpressionEvaluator Evaluator {
 			get { return evaluator; }
+		}
+
+		public AsyncEvaluationTracker AsyncEvaluationTracker {
+			get {
+				return asyncEvaluationTracker;
+			}
 		}
 
 		#region IDebugger Members
@@ -128,6 +145,7 @@ namespace DebuggerServer
 		
 		public void Detach ()
 		{
+			CancelRuntimeInvokes ();
 			RunWhenStopped (delegate {
 				try {
 					debugger.Detach ();
@@ -141,6 +159,7 @@ namespace DebuggerServer
 
 		public void Stop ()
 		{
+			CancelRuntimeInvokes ();
 			QueueTask (delegate {
 				if (internalInterruptionRequested) {
 					// Stop already internally requested. By resetting the flag, the interruption
@@ -154,43 +173,66 @@ namespace DebuggerServer
 
 		public void Exit ()
 		{
+			CancelRuntimeInvokes ();
 			ResetTaskQueue ();
 			debugger.Kill ();
 			running = false;
 		}
 
+		int ncc = 0;
 		public void NextLine ()
 		{
-			running = true;
+			if (running)
+				throw new InvalidOperationException ("Target already running");
+			OnStartRunning ();
 			guiManager.StepOver (activeThread);
 		}
 
 		public void StepLine ()
 		{
-			running = true;
+			if (running)
+				throw new InvalidOperationException ("Target already running");
+			OnStartRunning ();
 			guiManager.StepInto (activeThread);
 		}
 
 		public void StepInstruction ()
 		{
-			running = true;
+			if (running)
+				throw new InvalidOperationException ("Target already running");
+			OnStartRunning ();
 			activeThread.StepInstruction ();
 		}
 
 		public void NextInstruction ()
 		{
-			running = true;
+			if (running)
+				throw new InvalidOperationException ("Target already running");
+			OnStartRunning ();
 			activeThread.NextInstruction ();
 		}
 
 		public void Finish ()
 		{
-			running = true;
+			if (running)
+				throw new InvalidOperationException ("Target already running");
+			OnStartRunning ();
 			guiManager.StepOut (activeThread);
+		}
+
+		public void Continue ()
+		{
+			if (running)
+				throw new InvalidOperationException ("Target already running");
+			OnStartRunning ();
+			QueueTask (delegate {
+				guiManager.Continue (activeThread);
+			});
 		}
 
 		public int InsertBreakEvent (DL.BreakEvent be, bool enable)
 		{
+			CancelRuntimeInvokes ();
 			DL.Breakpoint bp = be as DL.Breakpoint;
 			MD.Event ev = null;
 			
@@ -225,9 +267,10 @@ namespace DebuggerServer
 						                    
 			if (bp != null && !running && activeThread.CurrentFrame != null && !string.IsNullOrEmpty (bp.ConditionExpression) && bp.BreakIfConditionChanges) {
 				// Initial expression evaluation
-				ML.TargetObject ob = EvaluateExp (activeThread.CurrentFrame, bp.ConditionExpression);
+				EvaluationContext ctx = new EvaluationContext (activeThread, activeThread.CurrentFrame, -1);
+				ML.TargetObject ob = EvaluateExp (ctx, bp.ConditionExpression);
 				if (ob != null)
-					lastConditionValue [ev.Index] = evaluator.TargetObjectToExpression (activeThread, ob);
+					lastConditionValue [ev.Index] = evaluator.TargetObjectToExpression (ctx, ob);
 			}
 			
 			events [ev.Index] = be;
@@ -236,6 +279,7 @@ namespace DebuggerServer
 		
 		public void RemoveBreakEvent (int handle)
 		{
+			CancelRuntimeInvokes ();
 			RunWhenStopped (delegate {
 				try {
 					Event ev = session.GetEvent (handle);
@@ -249,6 +293,7 @@ namespace DebuggerServer
 		
 		public void EnableBreakEvent (int handle, bool enable)
 		{
+			CancelRuntimeInvokes ();
 			RunWhenStopped (delegate {
 				Event ev = session.GetEvent (handle);
 				if (enable)
@@ -284,14 +329,15 @@ namespace DebuggerServer
 				});
 				return false;
 			}
-			
+
+			EvaluationContext ctx = new EvaluationContext (frame.Thread, frame, -1);
 			DL.Breakpoint bp = be as DL.Breakpoint;
 			if (bp != null && !string.IsNullOrEmpty (bp.ConditionExpression)) {
-				ML.TargetObject val = EvaluateExp (frame, bp.ConditionExpression);
+				ML.TargetObject val = EvaluateExp (ctx, bp.ConditionExpression);
 				if (val == null)
 					return false;
 				if (bp.BreakIfConditionChanges) {
-					string current = evaluator.TargetObjectToExpression (frame.Thread, val);
+					string current = evaluator.TargetObjectToExpression (ctx, val);
 					string last;
 					bool found = lastConditionValue.TryGetValue (eventHandle, out last);
 					lastConditionValue [eventHandle] = current;
@@ -315,9 +361,9 @@ namespace DebuggerServer
 				case HitAction.PrintExpression:
 					if (string.IsNullOrEmpty (be.TraceExpression) || frame == null)
 						return false;
-					ML.TargetObject val = EvaluateExp (frame, be.TraceExpression);
+					ML.TargetObject val = EvaluateExp (ctx, be.TraceExpression);
 					if (val != null) {
-						string str = evaluator.TargetObjectToString (frame.Thread, val);
+						string str = evaluator.TargetObjectToString (ctx, val);
 						DispatchEvent (delegate {
 							controller.OnTargetOutput (false, str + "\n");
 							NotifyBreakEventUpdate (eventHandle, -1, str);
@@ -328,13 +374,13 @@ namespace DebuggerServer
 			return false;
 		}
 		
-		ML.TargetObject EvaluateExp (MD.StackFrame frame, string exp)
+		ML.TargetObject EvaluateExp (EvaluationContext ctx, string exp)
 		{
 			ValueReference var;
 			try {
 				EvaluationOptions ops = new EvaluationOptions ();
 				ops.CanEvaluateMethods = true;
-				var = (ValueReference) Server.Instance.Evaluator.Evaluate (frame, exp, ops);
+				var = (ValueReference) Server.Instance.Evaluator.Evaluate (ctx, exp, ops);
 				return var.Value;
 			} catch {
 				return null;
@@ -377,14 +423,6 @@ namespace DebuggerServer
 			}
 			if (notify)
 				controller.UpdateBreakpoint (eventHandle, hitCount, lastTrace);
-		}
-
-		public void Continue ()
-		{
-			QueueTask (delegate {
-				running = true;
-				guiManager.Continue (activeThread);
-			});
 		}
 
 		public ThreadInfo[] GetThreads (int processId)
@@ -456,6 +494,8 @@ namespace DebuggerServer
 
 		public AssemblyLine[] DisassembleFile (string file)
 		{
+			CancelRuntimeInvokes ();
+			
 			// Not working yet
 			return null;
 			
@@ -508,17 +548,13 @@ namespace DebuggerServer
 				Console.WriteLine (ex);
 		}
 		
-		public ML.TargetObject RuntimeInvoke (MD.Thread thread, ML.TargetFunctionType function,
+		public ML.TargetObject RuntimeInvoke (EvaluationContext ctx, ML.TargetFunctionType function,
 							  ML.TargetStructObject object_argument,
 							  params ML.TargetObject[] param_objects)
 		{
-			MD.RuntimeInvokeResult res = thread.RuntimeInvoke (function, object_argument, param_objects, true, false);
-			res.Wait ();
-			if (res.ExceptionMessage != null)
-				throw new Exception (res.ExceptionMessage);
-			return res.ReturnObject;
+			return invokeManager.Invoke (ctx, function, object_argument, param_objects);
 		}
-		
+
 		DL.Backtrace CreateBacktrace (MD.Thread thread)
 		{
 			List<MD.StackFrame> frames = new List<MD.StackFrame> ();
@@ -638,7 +674,7 @@ namespace DebuggerServer
 		
 		void LogEvent (MD.TargetEventArgs args)
 		{
-			Console.WriteLine ("Server OnTargetEvent: {0} stopped:{1} data:{2} internal:{3} queue:{4} thread:{5}", args.Type, args.IsStopped, args.Data, internalInterruptionRequested, stoppedWorkQueue.Count, args.Frame != null ? args.Frame.Thread : null);
+			Console.WriteLine ("Server OnTargetEvent: {0} stopped:{1} data:{2} internal:{3} queue:{4} thread:{5} running:{6}", args.Type, args.IsStopped, args.Data, internalInterruptionRequested, stoppedWorkQueue.Count, args.Frame != null ? args.Frame.Thread : null, running);
 		}
 
 		private void OnTargetEvent (MD.Thread thread, MD.TargetEventArgs args)
@@ -658,6 +694,7 @@ namespace DebuggerServer
 					args.Type != MD.TargetEventType.TargetRunning;
 				
 				if (isStop) {
+					
 					lock (debugger) {
 						// The process was stopped, but not as a result of the internal stop request.
 						// Reset the internal request flag, in order to avoid the process to be
@@ -697,7 +734,7 @@ namespace DebuggerServer
 					NotifyTargetEvent (thread, args);
 
 			} catch (Exception e) {
-				Console.WriteLine ("*** DS.OnTargetEvent, exception : {0}", e.ToString ());
+				Console.WriteLine ("*** DS.OnTargetEvent1, exception : {0}", e.ToString ());
 			}
 		}
 		
@@ -725,11 +762,8 @@ namespace DebuggerServer
 					default:
 						return;
 				}
-				
-				running = false;
-				
-				// Dispose all previous remote objects
-				RemoteFrameObject.DisconnectAll ();
+
+				OnCleanFrameData ();
 				
 				DL.TargetEventArgs targetArgs = new DL.TargetEventArgs (type);
 
@@ -739,16 +773,43 @@ namespace DebuggerServer
 				}
 
 				if ((args.Type == MD.TargetEventType.UnhandledException || args.Type == MD.TargetEventType.Exception) && (args.Data is TargetAddress)) {
-					TargetAddress addr = (TargetAddress) args.Data;
-					targetArgs.Exception = new LiteralValueReference (args.Frame.Thread, "Exception", args.Frame.ExceptionObject).CreateObjectValue ();
+					EvaluationContext ctx = new EvaluationContext (args.Frame.Thread, args.Frame, -1);
+					targetArgs.Exception = new LiteralValueReference (ctx, "Exception", args.Frame.ExceptionObject).CreateObjectValue ();
 				}
+
+				running = false;
 
 				DispatchEvent (delegate {
 					controller.OnTargetEvent (targetArgs);
 				});
 			} catch (Exception e) {
-				Console.WriteLine ("*** DS.OnTargetEvent, exception : {0}", e.ToString ());
+				Console.WriteLine ("*** DS.OnTargetEvent2, exception : {0}", e.ToString ());
 			}
+		}
+
+		void OnStartRunning ()
+		{
+			OnCleanFrameData ();
+			running = true;
+		}
+
+		void OnCleanFrameData ()
+		{
+			// Dispose all previous remote objects
+			RemoteFrameObject.DisconnectAll ();
+			CancelRuntimeInvokes ();
+		}
+
+		public void CancelRuntimeInvokes ()
+		{
+			asyncEvaluationTracker.Stop ();
+			invokeManager.AbortAll ();
+			asyncEvaluationTracker.WaitForStopped ();
+		}
+		
+		public void WaitRuntimeInvokes ()
+		{
+			invokeManager.WaitForAll ();
 		}
 		
 		private void OnProcessCreatedEvent (MD.Debugger debugger, MD.Process process)

@@ -38,14 +38,12 @@ namespace DebuggerServer
 {
 	public class NamespaceValueReference: ValueReference
 	{
-		MD.StackFrame frame;
 		string name;
 		string namspace;
 		string[] namespaces;
 		
-		public NamespaceValueReference (MD.StackFrame frame, string name): base (frame.Thread)
+		public NamespaceValueReference (EvaluationContext ctx, string name): base (ctx)
 		{
-			this.frame = frame;
 			this.namspace = name;
 			int i = namspace.LastIndexOf ('.');
 			if (i != -1)
@@ -95,16 +93,16 @@ namespace DebuggerServer
 		{
 			string newNs = namspace + "." + name;
 			
-			TargetType t = frame.Language.LookupType (newNs);
+			TargetType t = Context.Frame.Language.LookupType (newNs);
 			if (t != null)
-				return new TypeValueReference (frame.Thread, t);
+				return new TypeValueReference (Context, t);
 				
 			if (namespaces == null)
-				namespaces = frame.Method.GetNamespaces ();
+				namespaces = Context.Frame.Method.GetNamespaces ();
 			
 			foreach (string ns in namespaces) {
 				if (ns == newNs || ns.StartsWith (newNs + "."))
-					return new NamespaceValueReference (frame, newNs);
+					return new NamespaceValueReference (Context, newNs);
 			}
 			return null;
 		}
@@ -120,14 +118,12 @@ namespace DebuggerServer
 		
 		public override IEnumerable<ValueReference> GetChildReferences ()
 		{
-			List<string> list = new List<string> ();
-			
 			// Child types
 			
 			List<string> types = new List<string> ();
 			HashSet<string> namespaces = new HashSet<string> ();
 			HashSet<object> visited = new HashSet<object> ();
-			object methodHandle = frame.Method.MethodHandle;
+			object methodHandle = Context.Frame.Method.MethodHandle;
 
 			if (methodHandle != null && methodHandle.GetType ().FullName == "Mono.Cecil.MethodDefinition") {
 				object declaringType = GetProp (methodHandle, "DeclaringType");
@@ -138,14 +134,14 @@ namespace DebuggerServer
 			}
 			
 			foreach (string typeName in types) {
-				TargetType tt = frame.Language.LookupType (typeName);
+				TargetType tt = Context.Frame.Language.LookupType (typeName);
 				if (tt != null)
-					yield return new TypeValueReference (frame.Thread, tt);
+					yield return new TypeValueReference (Context, tt);
 			}
 			
 			// Child namespaces
 			foreach (string ns in namespaces)
-				yield return new NamespaceValueReference (frame, ns);
+				yield return new NamespaceValueReference (Context, ns);
 		}
 		
 		public void FindTypes (object resolver, HashSet<object> visited, List<string> types, HashSet<string> namespaces, object asm)
@@ -186,9 +182,8 @@ namespace DebuggerServer
 			return obj.GetType ().GetProperty (name).GetValue (obj, null);
 		}
 
-		public override Mono.Debugging.Client.ObjectValue CreateObjectValue ()
+		protected override Mono.Debugging.Client.ObjectValue OnCreateObjectValue ()
 		{
-			Connect ();
 			return Mono.Debugging.Client.ObjectValue.CreateObject (this, new ObjectPath (Name), "<namespace>", namspace, Flags, null);
 		}
 

@@ -39,24 +39,24 @@ namespace DebuggerServer
 {
 	public static class Util
 	{
-		public static ObjectValue CreateObjectValue (MD.Thread thread, IObjectValueSource source, ObjectPath path, TargetObject obj, ObjectValueFlags flags)
+		public static ObjectValue CreateObjectValue (EvaluationContext ctx, IObjectValueSource source, ObjectPath path, TargetObject obj, ObjectValueFlags flags)
 		{
 			try {
-				return CreateObjectValueImpl (thread, source, path, obj, flags);
+				return CreateObjectValueImpl (ctx, source, path, obj, flags);
 			} catch (Exception ex) {
 				Console.WriteLine (ex);
 				return ObjectValue.CreateError (path.LastName, ex.Message, flags);
 			}
 		}
 		
-		static ObjectValue CreateObjectValueImpl (MD.Thread thread, IObjectValueSource source, ObjectPath path, TargetObject obj, ObjectValueFlags flags)
+		static ObjectValue CreateObjectValueImpl (EvaluationContext ctx, IObjectValueSource source, ObjectPath path, TargetObject obj, ObjectValueFlags flags)
 		{
-			obj = ObjectUtil.GetRealObject (thread, obj);
+			obj = ObjectUtil.GetRealObject (ctx, obj);
 			
 			if (obj == null)
 				return ObjectValue.CreateObject (null, path, "", null, flags | ObjectValueFlags.ReadOnly, null);
 
-			if (obj.HasAddress && obj.GetAddress (thread).IsNull)
+			if (obj.HasAddress && obj.GetAddress (ctx.Thread).IsNull)
 				return ObjectValue.CreateObject (null, path, obj.TypeName, "(null)", flags, null);
 			
 			switch (obj.Kind) {
@@ -64,7 +64,7 @@ namespace DebuggerServer
 				case TargetObjectKind.Struct:
 				case TargetObjectKind.GenericInstance:
 				case TargetObjectKind.Class:
-					TypeDisplayData tdata = ObjectUtil.GetTypeDisplayData (thread.CurrentFrame, obj.Type);
+					TypeDisplayData tdata = ObjectUtil.GetTypeDisplayData (ctx, obj.Type);
 					
 					TargetStructObject co = obj as TargetStructObject;
 					if (co == null)
@@ -72,19 +72,19 @@ namespace DebuggerServer
 					else {
 						string tvalue;
 						if (!string.IsNullOrEmpty (tdata.ValueDisplayString))
-							tvalue = ObjectUtil.EvaluateDisplayString (thread.CurrentFrame, co, tdata.ValueDisplayString);
+							tvalue = ObjectUtil.EvaluateDisplayString (ctx, co, tdata.ValueDisplayString);
 						else
-							tvalue = Server.Instance.Evaluator.TargetObjectToExpression (thread, obj);
+							tvalue = Server.Instance.Evaluator.TargetObjectToExpression (ctx, obj);
 						
 						string tname;
 						if (!string.IsNullOrEmpty (tdata.TypeDisplayString))
-							tname = ObjectUtil.EvaluateDisplayString (thread.CurrentFrame, co, tdata.TypeDisplayString);
+							tname = ObjectUtil.EvaluateDisplayString (ctx, co, tdata.TypeDisplayString);
 						else
 							tname = obj.TypeName;
 						
 						ObjectValue val = ObjectValue.CreateObject (source, path, tname, tvalue, flags, null);
 						if (!string.IsNullOrEmpty (tdata.NameDisplayString))
-							val.Name = ObjectUtil.EvaluateDisplayString (thread.CurrentFrame, co, tdata.NameDisplayString);
+							val.Name = ObjectUtil.EvaluateDisplayString (ctx, co, tdata.NameDisplayString);
 						return val;
 					}
 					
@@ -93,35 +93,36 @@ namespace DebuggerServer
 					if (oob == null)
 						return ObjectValue.CreateUnknown (path.LastName);
 					else
-						return ObjectValue.CreateObject (source, path, obj.TypeName, Server.Instance.Evaluator.TargetObjectToExpression (thread, obj), flags, null);
+						return ObjectValue.CreateObject (source, path, obj.TypeName, Server.Instance.Evaluator.TargetObjectToExpression (ctx, obj), flags, null);
 					
 				case TargetObjectKind.Array:
-					return ObjectValue.CreateObject (source, path, obj.TypeName, Server.Instance.Evaluator.TargetObjectToExpression (thread, obj), flags, null);
+					return ObjectValue.CreateObject (source, path, obj.TypeName, Server.Instance.Evaluator.TargetObjectToExpression (ctx, obj), flags, null);
 					
 				case TargetObjectKind.Fundamental:
 					TargetFundamentalObject fob = (TargetFundamentalObject) obj;
-					return ObjectValue.CreatePrimitive (source, path, obj.TypeName, Server.Instance.Evaluator.TargetObjectToExpression (thread, fob), flags);
+					return ObjectValue.CreatePrimitive (source, path, obj.TypeName, Server.Instance.Evaluator.TargetObjectToExpression (ctx, fob), flags);
 					
 				case TargetObjectKind.Enum:
+					Console.WriteLine ("pp ??? ENUM: " + obj.GetType ());
 					TargetEnumObject enumobj = (TargetEnumObject) obj;
-					return CreateObjectValue (thread, source, path, enumobj.GetValue (thread), flags);
+					return CreateObjectValue (ctx, source, path, enumobj.GetValue (ctx.Thread), flags);
 					
 				case TargetObjectKind.Pointer:
-					return ObjectValue.CreateObject (source, path, obj.TypeName, Server.Instance.Evaluator.TargetObjectToExpression (thread, obj), flags, null);
+					return ObjectValue.CreateObject (source, path, obj.TypeName, Server.Instance.Evaluator.TargetObjectToExpression (ctx, obj), flags, null);
 					
 				default:
 					return ObjectValue.CreateError (path.LastName, "Unknown value type: " + obj.Kind, flags);
 			}
 		}
 		
-		public static ObjectValue[] GetObjectValueChildren (MD.Thread thread, TargetObject obj, int firstItemIndex, int count)
+		public static ObjectValue[] GetObjectValueChildren (EvaluationContext ctx, TargetObject obj, int firstItemIndex, int count)
 		{
-			return GetObjectValueChildren (thread, obj, firstItemIndex, count, true);
+			return GetObjectValueChildren (ctx, obj, firstItemIndex, count, true);
 		}
 		
-		public static ObjectValue[] GetObjectValueChildren (MD.Thread thread, TargetObject obj, int firstItemIndex, int count, bool dereferenceProxy)
+		public static ObjectValue[] GetObjectValueChildren (EvaluationContext ctx, TargetObject obj, int firstItemIndex, int count, bool dereferenceProxy)
 		{
-			obj = ObjectUtil.GetRealObject (thread, obj);
+			obj = ObjectUtil.GetRealObject (ctx, obj);
 			
 			switch (obj.Kind)
 			{
@@ -131,46 +132,44 @@ namespace DebuggerServer
 					if (arr == null)
 						return new ObjectValue [0];
 					
-					ArrayElementGroup agroup = new ArrayElementGroup (thread, new ArrayAdaptor (thread, arr));
+					ArrayElementGroup agroup = new ArrayElementGroup (ctx, new ArrayAdaptor (ctx, arr));
 					return agroup.GetChildren ();
 				}
 				case TargetObjectKind.GenericInstance:
 				case TargetObjectKind.Struct:
 				case TargetObjectKind.Class: {
 					// If there is a proxy, it has to show the members of the proxy
-					TargetObject proxy = dereferenceProxy ? ObjectUtil.GetProxyObject (thread.CurrentFrame, obj) : obj;
+					TargetObject proxy = dereferenceProxy ? ObjectUtil.GetProxyObject (ctx, obj) : obj;
 					TargetStructObject co = (TargetStructObject) proxy;
-					TypeDisplayData tdata = ObjectUtil.GetTypeDisplayData (thread.CurrentFrame, proxy.Type);
+					TypeDisplayData tdata = ObjectUtil.GetTypeDisplayData (ctx, proxy.Type);
 					List<ObjectValue> values = new List<ObjectValue> ();
 					ReqMemberAccess access = tdata.IsProxyType ? ReqMemberAccess.Public : ReqMemberAccess.Auto;
-					foreach (ValueReference val in GetMembers (thread, co.Type, co, access)) {
+					foreach (ValueReference val in GetMembers (ctx, co.Type, co, access)) {
 						try {
 							DebuggerBrowsableState state = tdata.GetMemberBrowsableState (val.Name);
 							if (state == DebuggerBrowsableState.Never)
 								continue;
-							
-							TargetObject ob = val.Value;
-							if (ob == null) {
-								if (state != DebuggerBrowsableState.RootHidden)
-									values.Add (ObjectValue.CreateNullObject (val.Name, val.Type.Name, val.Flags));
+
+							if (state == DebuggerBrowsableState.RootHidden) {
+								TargetObject ob = val.Value;
+								if (ob != null)
+									values.AddRange (Util.GetObjectValueChildren (ctx, ob, -1, -1));
 							}
 							else {
-								if (state != DebuggerBrowsableState.RootHidden)
-									values.Add (val.CreateObjectValue ());
-								else
-									values.AddRange (Util.GetObjectValueChildren (thread, ob, -1, -1));
+								values.Add (val.CreateObjectValue (true));
 							}
+							
 						} catch (Exception ex) {
 							Server.Instance.WriteDebuggerError (ex);
 							values.Add (ObjectValue.CreateError (null, new ObjectPath (val.Name), val.Type.Name, ex.Message, val.Flags));
 						}
 					}
 					if (tdata.IsProxyType) {
-						values.Add (RawViewSource.CreateRawView (thread, obj));
+						values.Add (RawViewSource.CreateRawView (ctx, obj));
 					} else {
-						CollectionAdaptor col = CollectionAdaptor.CreateAdaptor (thread, co);
+						CollectionAdaptor col = CollectionAdaptor.CreateAdaptor (ctx, co);
 						if (col != null) {
-							ArrayElementGroup agroup = new ArrayElementGroup (thread, col);
+							ArrayElementGroup agroup = new ArrayElementGroup (ctx, col);
 							ObjectValue val = ObjectValue.CreateObject (null, new ObjectPath ("Raw View"), "", "", ObjectValueFlags.ReadOnly, values.ToArray ());
 							values = new List<ObjectValue> ();
 							values.Add (val);
@@ -184,8 +183,8 @@ namespace DebuggerServer
 				
 				case TargetObjectKind.Pointer:
 					TargetPointerObject pobj = (TargetPointerObject) obj;
-					TargetObject defob = pobj.GetDereferencedObject (thread);
-					LiteralValueReference pval = new LiteralValueReference (thread, "*", defob);
+					TargetObject defob = pobj.GetDereferencedObject (ctx.Thread);
+					LiteralValueReference pval = new LiteralValueReference (ctx, "*", defob);
 					return new ObjectValue [] {pval.CreateObjectValue () };
 				default:
 					return new ObjectValue [0];
@@ -218,38 +217,38 @@ namespace DebuggerServer
 			throw new InvalidOperationException ("Value '" + value + "' can't be converted to type '" + type.Name + "'");
 		}
 		
-		public static IEnumerable<ValueReference> GetMembers (MD.Thread thread, TargetType t, TargetStructObject co)
+		public static IEnumerable<ValueReference> GetMembers (EvaluationContext ctx, TargetType t, TargetStructObject co)
 		{
-			return GetMembers (thread, t, co, ReqMemberAccess.Auto);
+			return GetMembers (ctx, t, co, ReqMemberAccess.Auto);
 		}
 		
-		public static IEnumerable<ValueReference> GetMembers (MD.Thread thread, TargetType t, TargetStructObject co, ReqMemberAccess access)
+		public static IEnumerable<ValueReference> GetMembers (EvaluationContext ctx, TargetType t, TargetStructObject co, ReqMemberAccess access)
 		{
-			foreach (MemberReference mem in ObjectUtil.GetTypeMembers (thread, t, co==null, true, true, false, access)) {
+			foreach (MemberReference mem in ObjectUtil.GetTypeMembers (ctx, t, co==null, true, true, false, access)) {
 				if (mem.Member is TargetFieldInfo) {
 					TargetFieldInfo field = (TargetFieldInfo) mem.Member;
-					yield return new FieldReference (thread, co, mem.DeclaringType, field);
+					yield return new FieldReference (ctx, co, mem.DeclaringType, field);
 				}
 				if (mem.Member is TargetPropertyInfo) {
 					TargetPropertyInfo prop = (TargetPropertyInfo) mem.Member;
 					if (prop.CanRead && (prop.Getter.ParameterTypes == null || prop.Getter.ParameterTypes.Length == 0))
-						yield return new PropertyReference (thread, prop, co);
+						yield return new PropertyReference (ctx, prop, co);
 				}
 			}
 		}
 		
-		public static IEnumerable<VariableReference> GetLocalVariables (MD.StackFrame frame)
+		public static IEnumerable<VariableReference> GetLocalVariables (EvaluationContext ctx)
 		{
-			foreach (TargetVariable var in frame.Method.GetLocalVariables (frame.Thread)) {
-				yield return new VariableReference (frame, var, ObjectValueFlags.Variable);
+			foreach (TargetVariable var in ctx.Frame.Method.GetLocalVariables (ctx.Thread)) {
+				yield return new VariableReference (ctx, var, ObjectValueFlags.Variable);
 			}
 		}
 		
-		public static IEnumerable<VariableReference> GetParameters (MD.StackFrame frame)
+		public static IEnumerable<VariableReference> GetParameters (EvaluationContext ctx)
 		{
-			if (frame.Method != null) {
-				foreach (TargetVariable var in frame.Method.GetParameters (frame.Thread))
-					yield return new VariableReference (frame, var, ObjectValueFlags.Parameter);
+			if (ctx.Frame.Method != null) {
+				foreach (TargetVariable var in ctx.Frame.Method.GetParameters (ctx.Thread))
+					yield return new VariableReference (ctx, var, ObjectValueFlags.Parameter);
 			}
 		}
 		

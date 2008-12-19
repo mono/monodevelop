@@ -40,14 +40,14 @@ namespace DebuggerServer
 		object objValue;
 		bool objLiteral;
 		
-		public LiteralValueReference (Thread thread, string name, TargetObject value): base (thread)
+		public LiteralValueReference (EvaluationContext ctx, string name, TargetObject value): base (ctx)
 		{
 			this.name = name;
-			this.value = ObjectUtil.GetRealObject (thread, value);
+			this.value = ObjectUtil.GetRealObject (ctx, value);
 			this.type = value.Type;
 		}
 
-		public LiteralValueReference (Thread thread, string name, object value): base (thread)
+		public LiteralValueReference (EvaluationContext ctx, string name, object value): base (ctx)
 		{
 			this.name = name;
 			this.objValue = value;
@@ -67,9 +67,9 @@ namespace DebuggerServer
 			get {
 				if (value == null && objLiteral) {
 					if (objValue == null)
-						value = ObjectUtil.GetRealObject (Thread, Thread.CurrentFrame.Language.CreateNullObject (Thread, null));
+						value = ObjectUtil.GetRealObject (Context, Context.Frame.Language.CreateNullObject (Context.Thread, null));
 					else
-						value = ObjectUtil.GetRealObject (Thread, Thread.CurrentFrame.Language.CreateInstance (Thread, objValue));
+						value = ObjectUtil.GetRealObject (Context, Context.Frame.Language.CreateInstance (Context.Thread, objValue));
 				}
 				return value;
 			}

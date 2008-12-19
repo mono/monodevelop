@@ -1,4 +1,4 @@
-<Project name="Mono.Debugging.Backend.Mdb" fileversion="2.0" language="C#" DefaultNamespace="Mono.Debugging.Backend.Mdb" clr-version="Net_2_0" ctype="DotNetProject">
+<Project name="Mono.Debugging.Backend.Mdb" fileversion="2.0" language="C#" DefaultNamespace="Mono.Debugging.Backend.Mdb" clr-version="Net_2_0" targetFramework="2.0" ctype="DotNetProject">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
       <Output directory="../build" assembly="DebuggerClient" />

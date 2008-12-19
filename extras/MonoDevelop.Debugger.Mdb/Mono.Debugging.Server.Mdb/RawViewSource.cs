@@ -36,24 +36,24 @@ namespace DebuggerServer
 	public class RawViewSource: RemoteFrameObject, IObjectValueSource
 	{
 		TargetObject obj;
-		Thread thread;
+		EvaluationContext ctx;
 		
-		public RawViewSource (Thread thread, TargetObject obj)
+		public RawViewSource (EvaluationContext ctx, TargetObject obj)
 		{
-			this.thread = thread;
+			this.ctx = ctx;
 			this.obj = obj;
 		}
 		
-		public static ObjectValue CreateRawView (Thread thread, TargetObject obj)
+		public static ObjectValue CreateRawView (EvaluationContext ctx, TargetObject obj)
 		{
-			RawViewSource src = new RawViewSource (thread, obj);
+			RawViewSource src = new RawViewSource (ctx, obj);
 			src.Connect ();
 			return ObjectValue.CreateObject (src, new ObjectPath ("Raw View"), "", "", ObjectValueFlags.ReadOnly, null);
 		}
 		
 		public ObjectValue[] GetChildren (ObjectPath path, int index, int count)
 		{
-			return Util.GetObjectValueChildren (thread, obj, index, count, false);
+			return Util.GetObjectValueChildren (ctx, obj, index, count, false);
 		}
 		
 		public string SetValue (ObjectPath path, string value)

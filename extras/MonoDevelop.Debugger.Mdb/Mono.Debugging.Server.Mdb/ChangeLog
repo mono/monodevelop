@@ -1,3 +1,41 @@
+2008-12-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* TimedEvaluator.cs:
+	* ValueReference.cs:
+	* DebuggerServer.cs:
+	* BacktraceWrapper.cs:
+	* TimeOutException.cs:
+	* RemoteFrameObject.cs:
+	* RuntimeInvokeManager.cs:
+	* AsyncEvaluationTracker.cs: Implemented support for async evaluation of
+	expressions.
+
+	* Util.cs:
+	* Convert.cs:
+	* ObjectUtil.cs:
+	* ArrayAdaptor.cs:
+	* RawViewSource.cs:
+	* FieldReference.cs:
+	* EvaluationContext.cs:
+	* PropertyReference.cs:
+	* CollectionAdaptor.cs:
+	* ArrayElementGroup.cs:
+	* VariableReference.cs:
+	* TypeValueReference.cs:
+	* NullValueReference.cs:
+	* ArrayValueReference.cs:
+	* NRefactoryEvaluator.cs:
+	* ExpressionEvaluator.cs:
+	* IndexerValueReference.cs:
+	* LiteralValueReference.cs:
+	* NamespaceValueReference.cs: Use the new EvaluationContext class to get
+	the current frame or thread. Thread.CurrentFrame will not give the
+	original frame if some runtime invocation has been done since the
+	debugger stopped.
+
+	* Makefile:
+	* Mono.Debugging.Server.Mdb.mdp: Added new files.
+
 2008-12-09  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Debugging.Server.Mdb.mdp: Don't require a specific version of

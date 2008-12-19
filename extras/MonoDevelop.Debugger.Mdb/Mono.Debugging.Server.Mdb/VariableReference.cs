@@ -35,24 +35,23 @@ namespace DebuggerServer
 	public class VariableReference: ValueReference
 	{
 		TargetVariable var;
-		StackFrame frame;
 		DC.ObjectValueFlags flags;
 		
-		public VariableReference (StackFrame frame, TargetVariable var, DC.ObjectValueFlags flags): base (frame.Thread)
+		public VariableReference (EvaluationContext ctx, TargetVariable var, DC.ObjectValueFlags flags): base (ctx)
 		{
 			this.flags = flags;
 			this.var = var;
-			this.frame = frame;
 			if (!var.CanWrite)
 				flags |= DC.ObjectValueFlags.ReadOnly;
 		}
 		
 		public override TargetObject Value {
 			get {
-				return ObjectUtil.GetRealObject (Thread, var.GetObject (frame));
+				TargetObject val = var.GetObject (Context.Frame);
+				return ObjectUtil.GetRealObject (Context, val);
 			}
 			set {
-				var.SetObject (frame, value);
+				var.SetObject (Context.Frame, value);
 			}
 		}
 		

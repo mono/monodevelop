@@ -48,10 +48,12 @@ FILES =  \
 	ArrayElementGroup.cs \
 	ArrayValueReference.cs \
 	AssemblyInfo.cs \
+	AsyncEvaluationTracker.cs \
 	BacktraceWrapper.cs \
 	CollectionAdaptor.cs \
 	Convert.cs \
 	DebuggerServer.cs \
+	EvaluationContext.cs \
 	ExpressionEvaluator.cs \
 	FieldReference.cs \
 	ICollectionAdaptor.cs \
@@ -64,7 +66,10 @@ FILES =  \
 	PropertyReference.cs \
 	RawViewSource.cs \
 	RemoteFrameObject.cs \
+	RuntimeInvokeManager.cs \
 	Server.cs \
+	TimedEvaluator.cs \
+	TimeOutException.cs \
 	TypeValueReference.cs \
 	Util.cs \
 	ValueReference.cs \

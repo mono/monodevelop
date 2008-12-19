@@ -1,4 +1,4 @@
-// RemoteFrameObject.cs
+// TimeOutException.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -26,46 +26,13 @@
 //
 
 using System;
-using System.Collections.Generic;
 
 namespace DebuggerServer
 {
-	public class RemoteFrameObject: MarshalByRefObject
+	public class TimeOutException: EvaluatorException
 	{
-		static List<RemoteFrameObject> connectedValues = new List<RemoteFrameObject> ();
-		
-		bool connected;
-		
-		public void Connect ()
+		public TimeOutException (): base ("Timed out.")
 		{
-			// Registers the value reference. Once a remote reference of this object
-			// is created, it will never be released, until DisconnectAll is called,
-			// which is done every time the current backtrace changes
-			
-			lock (connectedValues) {
-				if (!connected) {
-					connectedValues.Add (this);
-					connected = true;
-				}
-			}
-		}
-		
-		public static void DisconnectAll ()
-		{
-			lock (connectedValues) {
-				foreach (RemoteFrameObject val in connectedValues) {
-					System.Runtime.Remoting.RemotingServices.Disconnect (val);
-					IDisposable disp = val as IDisposable;
-					if (disp != null)
-						disp.Dispose ();
-				}
-				connectedValues.Clear ();
-			}
-		}
-		
-		public override object InitializeLifetimeService ()
-		{
-			return null;
 		}
 	}
 }

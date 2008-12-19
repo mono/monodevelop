@@ -38,7 +38,7 @@ namespace DebuggerServer
 		TargetFieldInfo field;
 		TargetStructObject thisobj;
 		
-		public FieldReference (Thread thread, TargetStructObject thisobj, TargetStructType type, TargetFieldInfo field): base (thread)
+		public FieldReference (EvaluationContext ctx, TargetStructObject thisobj, TargetStructType type, TargetFieldInfo field): base (ctx)
 		{
 			this.type = type;
 			this.field = field;
@@ -55,13 +55,13 @@ namespace DebuggerServer
 		public override TargetObject Value {
 			get {
 				if (field.HasConstValue)
-					return Thread.CurrentFrame.Language.CreateInstance (Thread, field.ConstValue);
-				TargetClass cls = type.GetClass (Thread);
-				return ObjectUtil.GetRealObject (Thread, cls.GetField (Thread, thisobj, field));
+					return Context.Frame.Language.CreateInstance (Context.Thread, field.ConstValue);
+				TargetClass cls = type.GetClass (Context.Thread);
+				return ObjectUtil.GetRealObject (Context, cls.GetField (Context.Thread, thisobj, field));
 			}
 			set {
-				TargetClass cls = type.GetClass (Thread);
-				cls.SetField (Thread, thisobj, field, value);
+				TargetClass cls = type.GetClass (Context.Thread);
+				cls.SetField (Context.Thread, thisobj, field, value);
 			}
 		}
 		

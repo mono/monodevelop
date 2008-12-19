@@ -1,4 +1,4 @@
-<Project name="Mono.Debugging.Server.Mdb" fileversion="2.0" language="C#" DefaultNamespace="DebuggerServer" clr-version="Net_2_0" ctype="DotNetProject">
+<Project name="Mono.Debugging.Server.Mdb" fileversion="2.0" language="C#" DefaultNamespace="DebuggerServer" clr-version="Net_2_0" targetFramework="2.0" ctype="DotNetProject">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
       <Output directory="../build" assembly="DebuggerServer" />
@@ -40,6 +40,11 @@
     <File name="IndexerValueReference.cs" subtype="Code" buildaction="Compile" />
     <File name="ObjectUtil.cs" subtype="Code" buildaction="Compile" />
     <File name="RawViewSource.cs" subtype="Code" buildaction="Compile" />
+    <File name="TimedEvaluator.cs" subtype="Code" buildaction="Compile" />
+    <File name="AsyncEvaluationTracker.cs" subtype="Code" buildaction="Compile" />
+    <File name="EvaluationContext.cs" subtype="Code" buildaction="Compile" />
+    <File name="TimeOutException.cs" subtype="Code" buildaction="Compile" />
+    <File name="RuntimeInvokeManager.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
@@ -72,7 +77,8 @@
     <ProjectReference type="Gac" localcopy="True" specificVersion="False" refto="Mono.Addins, Version=0.3.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Projects.Gui, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
-    <ProjectReference type="Gac" localcopy="True" refto="System.Core, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <ProjectReference type="Gac" localcopy="True" refto="Mono.Cecil, Version=0.6.8.8607, Culture=neutral, PublicKeyToken=null" />
+    <ProjectReference type="Assembly" localcopy="True" specificVersion="False" refto="System.Core" />
   </References>
   <Deployment.LinuxDeployData generateScript="False" />
   <GtkDesignInfo />

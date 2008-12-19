@@ -36,7 +36,7 @@ namespace DebuggerServer
 {
 	public class CollectionAdaptor: RemoteFrameObject, ICollectionAdaptor, IObjectValueSource
 	{
-		Thread thread;
+		EvaluationContext ctx;
 		TargetStructObject obj;
 		
 		TargetPropertyInfo indexerProp;
@@ -54,18 +54,20 @@ namespace DebuggerServer
 		bool done;
 		string currentObjType;
 		
-		public CollectionAdaptor (Thread thread, TargetStructObject obj, TargetPropertyInfo indexerProp)
+		public CollectionAdaptor (EvaluationContext ctx, TargetStructObject obj, TargetPropertyInfo indexerProp)
 		{
-			this.thread = thread;
+			this.ctx = ctx;
 			this.indexerProp = indexerProp;
 			this.obj = obj;
 		}
 		
-		public static CollectionAdaptor CreateAdaptor (Thread thread, TargetStructObject obj)
+		public static CollectionAdaptor CreateAdaptor (EvaluationContext ctx, TargetStructObject obj)
 		{
-			if (obj is TargetGenericInstanceObject)
+			// Disabled for now since it is not stable
+			return null;
+/*			if (obj is TargetGenericInstanceObject)
 				return null;
-			if (!thread.CurrentFrame.Language.IsManaged)
+			if (!ctx.Frame.Language.IsManaged)
 				return null;
 			
 			ColInfo colInfo;
@@ -74,12 +76,12 @@ namespace DebuggerServer
 					return null;
 			}
 			else {
-				if (!ObjectUtil.IsInstanceOfType (thread, "System.Collections.ICollection", obj)) {
+				if (!ObjectUtil.IsInstanceOfType (ctx, "System.Collections.ICollection", obj)) {
 					colTypes [obj.Type.Name] = null;
 					return null;
 				}
 				colInfo = new ColInfo ();
-				foreach (MemberReference mem in ObjectUtil.GetTypeMembers (thread, obj.Type, false, false, true, true, ReqMemberAccess.All)) {
+				foreach (MemberReference mem in ObjectUtil.GetTypeMembers (ctx, obj.Type, false, false, true, true, ReqMemberAccess.All)) {
 					if (mem.Member.IsStatic)
 						continue;
 					if (mem.Member is TargetPropertyInfo) {
@@ -94,25 +96,26 @@ namespace DebuggerServer
 			
 			if (colInfo.IndexerProp != null) {
 				colTypes [obj.Type.Name] = colInfo;
-				return new CollectionAdaptor (thread, obj, colInfo.IndexerProp);
+				return new CollectionAdaptor (ctx, obj, colInfo.IndexerProp);
 			}
 			else {
 				colTypes [obj.Type.Name] = null;
 				return null;
 			}
+			*/
 		}
 		
 		public TargetArrayBounds GetBounds ()
 		{
 			if (bounds == null) {
-				TargetObject ob = ObjectUtil.GetPropertyValue (thread, "Count", obj);
-				ob = ObjectUtil.GetRealObject (thread, ob);
+				TargetObject ob = ObjectUtil.GetPropertyValue (ctx, "Count", obj);
+				ob = ObjectUtil.GetRealObject (ctx, ob);
 				TargetFundamentalObject fob = ob as TargetFundamentalObject;
 				int count;
 				if (fob == null)
 					count = 0;
 				else
-					count = Convert.ToInt32 (fob.GetObject (thread));
+					count = Convert.ToInt32 (fob.GetObject (ctx.Thread));
 				bounds = TargetArrayBounds.MakeSimpleArray (count);
 			}
 			return bounds;
@@ -125,19 +128,19 @@ namespace DebuggerServer
 			if (idx >= items.Count) {
 				if (enumerator == null) {
 					// call GetEnumerator
-					enumerator = ObjectUtil.CallMethod (thread, "GetEnumerator", obj);
+					enumerator = ObjectUtil.CallMethod (ctx, "GetEnumerator", obj);
 				}
 			}
 			
 			while (bounds.Length > items.Count && !done) {
 				// call MoveNext
-				TargetObject eob = ObjectUtil.GetRealObject (thread, ObjectUtil.CallMethod (thread, "MoveNext", enumerator));
+				TargetObject eob = ObjectUtil.GetRealObject (ctx, ObjectUtil.CallMethod (ctx, "MoveNext", enumerator));
 				TargetFundamentalObject res = eob as TargetFundamentalObject;
 				if (res == null) {
 					done = true;
-				} else if ((bool) res.GetObject (thread)) {
+				} else if ((bool) res.GetObject (ctx.Thread)) {
 					// call Current
-					TargetObject current = ObjectUtil.GetPropertyValue (thread, "Current", enumerator);
+					TargetObject current = ObjectUtil.GetPropertyValue (ctx, "Current", enumerator);
 					items.Add (current);
 				}
 			}
@@ -150,7 +153,7 @@ namespace DebuggerServer
 		
 		bool CheckDictionary (TargetObject currentObj)
 		{
-			currentObj = ObjectUtil.GetRealObject (thread, currentObj);
+			currentObj = ObjectUtil.GetRealObject (ctx, currentObj);
 			
 			if (currentObj.Type.Name == "System.Collections.DictionaryEntry" || currentObj.Type.Name.StartsWith ("KeyValuePair")) {
 				// If the object type changes, we can handle it as a dictionary entry
@@ -170,32 +173,32 @@ namespace DebuggerServer
 			
 			if (telem != null && CheckDictionary (telem)) {
 				string sidx = indices[0].ToString ();
-				TargetObject key = ObjectUtil.GetPropertyValue (thread, "Key", telem);
-				TargetObject value = ObjectUtil.GetPropertyValue (thread, "Value", telem);
-				key = ObjectUtil.GetRealObject (thread, key);
-				value = ObjectUtil.GetRealObject (thread, value);
-				string val = "{[" + Server.Instance.Evaluator.TargetObjectToExpression (thread, key) + ", " + Server.Instance.Evaluator.TargetObjectToExpression (thread, value) + "]}";
+				TargetObject key = ObjectUtil.GetPropertyValue (ctx, "Key", telem);
+				TargetObject value = ObjectUtil.GetPropertyValue (ctx, "Value", telem);
+				key = ObjectUtil.GetRealObject (ctx, key);
+				value = ObjectUtil.GetRealObject (ctx, value);
+				string val = "{[" + Server.Instance.Evaluator.TargetObjectToExpression (ctx, key) + ", " + Server.Instance.Evaluator.TargetObjectToExpression (ctx, value) + "]}";
 				ObjectValueFlags setFlags = indexerProp.CanWrite ? ObjectValueFlags.None : ObjectValueFlags.ReadOnly;
-				ObjectValue vkey = Util.CreateObjectValue (thread, this, new ObjectPath (sidx).Append ("key"), key, ObjectValueFlags.ReadOnly | ObjectValueFlags.Property);
-				ObjectValue vvalue = Util.CreateObjectValue (thread, this, new ObjectPath (sidx).Append ("val"), value, setFlags | ObjectValueFlags.Property);
+				ObjectValue vkey = Util.CreateObjectValue (ctx, this, new ObjectPath (sidx).Append ("key"), key, ObjectValueFlags.ReadOnly | ObjectValueFlags.Property);
+				ObjectValue vvalue = Util.CreateObjectValue (ctx, this, new ObjectPath (sidx).Append ("val"), value, setFlags | ObjectValueFlags.Property);
 				
 				Connect ();
 				return ObjectValue.CreateObject (null, new ObjectPath (sidx), elem.Type.Name, val, ObjectValueFlags.ReadOnly, new ObjectValue [] { vkey, vvalue });
 			}
 			else
-				return Util.CreateObjectValue (thread, grp, path, elem, ObjectValueFlags.ArrayElement);
+				return Util.CreateObjectValue (ctx, grp, path, elem, ObjectValueFlags.ArrayElement);
 		}
 		
 		public void SetElement (int[] indices, TargetObject val)
 		{
-			TargetFundamentalObject ind = thread.CurrentFrame.Language.CreateInstance (thread, indices [0]);
+			TargetFundamentalObject ind = ctx.Frame.Language.CreateInstance (ctx.Thread, indices [0]);
 			TargetFundamentalType ft = indexerProp.Setter.ParameterTypes [0] as TargetFundamentalType;
 			if (ft == null)
 				return;
-			TargetObject newInd = TargetObjectConvert.ExplicitFundamentalConversion (thread.CurrentFrame, ind, ft);
+			TargetObject newInd = TargetObjectConvert.ExplicitFundamentalConversion (ctx, ind, ft);
 			if (newInd == null)
 				return;
-			ObjectUtil.SetPropertyValue (thread, null, obj, val, newInd);
+			ObjectUtil.SetPropertyValue (ctx, null, obj, val, newInd);
 		}
 		
 		
@@ -215,11 +218,11 @@ namespace DebuggerServer
 				return new ObjectValue [0];
 			
 			if (path[1] == "key") {
-				TargetObject key = ObjectUtil.GetPropertyValue (thread, "Key", elem);
-				return Util.GetObjectValueChildren (thread, key, index, count);
+				TargetObject key = ObjectUtil.GetPropertyValue (ctx, "Key", elem);
+				return Util.GetObjectValueChildren (ctx, key, index, count);
 			} else {
-				TargetObject value = ObjectUtil.GetPropertyValue (thread, "Value", elem);
-				return Util.GetObjectValueChildren (thread, value, index, count);
+				TargetObject value = ObjectUtil.GetPropertyValue (ctx, "Value", elem);
+				return Util.GetObjectValueChildren (ctx, value, index, count);
 			}
 		}
 		
@@ -230,7 +233,7 @@ namespace DebuggerServer
 			if (elem == null || path [1] != "value")
 				return value;
 			
-			TargetObject key = ObjectUtil.GetPropertyValue (thread, "Key", elem);
+			TargetObject key = ObjectUtil.GetPropertyValue (ctx, "Key", elem);
 			
 			TargetObject val;
 			try {
@@ -238,18 +241,18 @@ namespace DebuggerServer
 				EvaluationOptions ops = new EvaluationOptions ();
 				ops.ExpectedType = elemType;
 				ops.CanEvaluateMethods = true;
-				ValueReference var = Server.Instance.Evaluator.Evaluate (thread.CurrentFrame, value, ops);
+				ValueReference var = Server.Instance.Evaluator.Evaluate (ctx, value, ops);
 				val = var.Value;
-				val = TargetObjectConvert.Cast (thread.CurrentFrame, val, elemType);
-				ObjectUtil.SetPropertyValue (thread, null, obj, val, key);
+				val = TargetObjectConvert.Cast (ctx, val, elemType);
+				ObjectUtil.SetPropertyValue (ctx, null, obj, val, key);
 			} catch (Exception ex) {
 				Server.Instance.WriteDebuggerError (ex);
 				return value;
 			}
 			
 			try {
-				val = ObjectUtil.GetPropertyValue (thread, null, obj, key);
-				return Server.Instance.Evaluator.TargetObjectToExpression (thread, val);
+				val = ObjectUtil.GetPropertyValue (ctx, null, obj, key);
+				return Server.Instance.Evaluator.TargetObjectToExpression (ctx, val);
 			} catch (Exception ex) {
 				Server.Instance.WriteDebuggerError (ex);
 				return value;

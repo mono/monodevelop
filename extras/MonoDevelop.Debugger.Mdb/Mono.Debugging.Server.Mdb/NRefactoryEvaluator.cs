@@ -41,25 +41,25 @@ namespace DebuggerServer
 {
 	public class NRefactoryEvaluator: ExpressionEvaluator
 	{
-		public override ValueReference Evaluate (StackFrame frame, string exp, EvaluationOptions options)
+		public override ValueReference Evaluate (EvaluationContext ctx, string exp, EvaluationOptions options)
 		{
 			StringReader codeStream = new StringReader (exp);
 			IParser parser = ParserFactory.CreateParser (SupportedLanguage.CSharp, codeStream);
 			Expression expObj = parser.ParseExpression ();
-			EvaluatorVisitor ev = new EvaluatorVisitor (frame, exp, options);
+			EvaluatorVisitor ev = new EvaluatorVisitor (ctx, exp, options);
 			return (ValueReference) expObj.AcceptVisitor (ev, null);
 		}
 	}
 	
 	class EvaluatorVisitor: AbstractAstVisitor
 	{
-		StackFrame frame;
+		EvaluationContext ctx;
 		string name;
 		EvaluationOptions options;
 		
-		public EvaluatorVisitor (StackFrame frame, string name, EvaluationOptions options)
+		public EvaluatorVisitor (EvaluationContext ctx, string name, EvaluationOptions options)
 		{
-			this.frame = frame;
+			this.ctx = ctx;
 			this.name = name;
 			this.options = options;
 		}
@@ -91,14 +91,14 @@ namespace DebuggerServer
 					throw CreateNotSupportedError ();
 			}
 			
-			return new LiteralValueReference (frame.Thread, name, val);
+			return new LiteralValueReference (ctx, name, val);
 		}
 		
 		public override object VisitTypeReference (ICSharpCode.NRefactory.Ast.TypeReference typeReference, object data)
 		{
-			TargetType type = frame.Language.LookupType (typeReference.SystemType);
+			TargetType type = ctx.Frame.Language.LookupType (typeReference.SystemType);
 			if (type != null)
-				return new TypeValueReference (frame.Thread, type);
+				return new TypeValueReference (ctx, type);
 			else
 				throw CreateParseError ("Unknown type: " + typeReference.Type);
 		}
@@ -110,19 +110,19 @@ namespace DebuggerServer
 
 		public override object VisitTypeOfExpression (ICSharpCode.NRefactory.Ast.TypeOfExpression typeOfExpression, object data)
 		{
-			TargetObject ob = ObjectUtil.GetTypeOf (frame, typeOfExpression.TypeReference.SystemType);
+			TargetObject ob = ObjectUtil.GetTypeOf (ctx, typeOfExpression.TypeReference.SystemType);
 			if (ob != null)
-				return new LiteralValueReference (frame.Thread, typeOfExpression.TypeReference.SystemType, ob);
+				return new LiteralValueReference (ctx, typeOfExpression.TypeReference.SystemType, ob);
 			else
 				throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitThisReferenceExpression (ICSharpCode.NRefactory.Ast.ThisReferenceExpression thisReferenceExpression, object data)
 		{
-			if (frame.Method != null && frame.Method.HasThis) {
+			if (ctx.Frame.Method != null && ctx.Frame.Method.HasThis) {
 				DC.ObjectValueFlags flags = DC.ObjectValueFlags.Field | DC.ObjectValueFlags.ReadOnly;
-				TargetVariable var = frame.Method.GetThis (frame.Thread);
-				return new VariableReference (frame, var, flags);
+				TargetVariable var = ctx.Frame.Method.GetThis (ctx.Thread);
+				return new VariableReference (ctx, var, flags);
 			}
 			else
 				throw CreateParseError ("'this' reference not available in static methods");
@@ -131,11 +131,11 @@ namespace DebuggerServer
 		public override object VisitPrimitiveExpression (ICSharpCode.NRefactory.Ast.PrimitiveExpression primitiveExpression, object data)
 		{
 			if (primitiveExpression.Value != null)
-				return new LiteralValueReference (frame.Thread, name, primitiveExpression.Value);
+				return new LiteralValueReference (ctx, name, primitiveExpression.Value);
 			else if (options.ExpectedType != null)
-				return new NullValueReference (frame.Thread, options.ExpectedType);
+				return new NullValueReference (ctx, options.ExpectedType);
 			else
-				return new NullValueReference (frame.Thread, frame.Language.ObjectType);
+				return new NullValueReference (ctx, ctx.Frame.Language.ObjectType);
 		}
 		
 		public override object VisitParenthesizedExpression (ICSharpCode.NRefactory.Ast.ParenthesizedExpression parenthesizedExpression, object data)
@@ -184,10 +184,10 @@ namespace DebuggerServer
 			TargetStructType type = null;
 			
 			if (target == null) {
-				if (frame.Method != null) {
-					type = frame.Method.GetDeclaringType (frame.Thread);
+				if (ctx.Frame.Method != null) {
+					type = ctx.Frame.Method.GetDeclaringType (ctx.Frame.Thread);
 					allowStatic = true;
-					allowInstance = frame.Method.HasThis;
+					allowInstance = ctx.Frame.Method.HasThis;
 				}
 			} else if (target is TypeValueReference) {
 				TypeValueReference tv = (TypeValueReference) target;
@@ -206,12 +206,12 @@ namespace DebuggerServer
 			
 			TargetFunctionType method = OverloadResolve (methodName, type, argtypes, allowInstance, allowStatic);
 
-			TargetMethodSignature sig = method.GetSignature (frame.Thread);
+			TargetMethodSignature sig = method.GetSignature (ctx.Thread);
 
 			TargetObject[] objs = new TargetObject [args.Length];
 			for (int i = 0; i < args.Length; i++) {
 				objs [i] = TargetObjectConvert.ImplicitConversionRequired (
-					frame.Thread, args [i], sig.ParameterTypes [i]);
+					ctx, args [i], sig.ParameterTypes [i]);
 			}
 
 			TargetStructObject thisobj = null;
@@ -219,21 +219,21 @@ namespace DebuggerServer
 			if (!method.IsStatic) {
 				if (target != null)
 					thisobj = target.Value as TargetStructObject;
-				else if (frame.Method.HasThis) {
-					TargetVariable var = frame.Method.GetThis (frame.Thread);
-					thisobj = (TargetStructObject) var.GetObject (frame);
+				else if (ctx.Frame.Method.HasThis) {
+					TargetVariable var = ctx.Frame.Method.GetThis (ctx.Thread);
+					thisobj = (TargetStructObject) var.GetObject (ctx.Frame);
 				}
 			}
 			
-			TargetObject obj = Server.Instance.RuntimeInvoke (frame.Thread, method, thisobj, objs);
-			return new LiteralValueReference (frame.Thread, name, obj);
+			TargetObject obj = Server.Instance.RuntimeInvoke (ctx, method, thisobj, objs);
+			return new LiteralValueReference (ctx, name, obj);
 		}
 		
 		public TargetFunctionType OverloadResolve (string methodName, TargetStructType type, TargetType[] argtypes, bool allowInstance, bool allowStatic)
 		{
 			List<TargetFunctionType> candidates = new List<TargetFunctionType> ();
 
-			foreach (MemberReference mem in ObjectUtil.GetTypeMembers (frame.Thread, type, false, false, false, true, ReqMemberAccess.All)) {
+			foreach (MemberReference mem in ObjectUtil.GetTypeMembers (ctx, type, false, false, false, true, ReqMemberAccess.All)) {
 				TargetMethodInfo met = (TargetMethodInfo) mem.Member;
 				if (met.Name == methodName && met.Type.ParameterTypes.Length == argtypes.Length && (met.IsStatic && allowStatic || !met.IsStatic && allowInstance))
 					candidates.Add (met.Type);
@@ -262,7 +262,7 @@ namespace DebuggerServer
 
 		public bool IsApplicable (TargetFunctionType method, TargetType[] types, out string error)
 		{
-			TargetMethodSignature sig = method.GetSignature (frame.Thread);
+			TargetMethodSignature sig = method.GetSignature (ctx.Thread);
 
 			for (int i = 0; i < types.Length; i++) {
 				TargetType param_type = sig.ParameterTypes [i];
@@ -270,7 +270,7 @@ namespace DebuggerServer
 				if (param_type == types [i])
 					continue;
 
-				if (TargetObjectConvert.ImplicitConversionExists (frame.Thread, types [i], param_type))
+				if (TargetObjectConvert.ImplicitConversionExists (ctx, types [i], param_type))
 					continue;
 
 				error = String.Format (
@@ -318,12 +318,12 @@ namespace DebuggerServer
 					ValueReference vi = (ValueReference) indexerExpression.Indexes [n].AcceptVisitor (this, data);
 					indexes [n] = (int) Convert.ChangeType (vi.ObjectValue, typeof(int));
 				}
-				return new ArrayValueReference (frame.Thread, arr, indexes);
+				return new ArrayValueReference (ctx, arr, indexes);
 			}
 			
 			if (indexerExpression.Indexes.Count == 1) {
 				ValueReference vi = (ValueReference) indexerExpression.Indexes [0].AcceptVisitor (this, data);
-				IndexerValueReference idx = IndexerValueReference.CreateIndexerValueReference (frame.Thread, ob, vi.Value);
+				IndexerValueReference idx = IndexerValueReference.CreateIndexerValueReference (ctx, ob, vi.Value);
 				if (idx != null)
 					return idx;
 			}
@@ -337,65 +337,65 @@ namespace DebuggerServer
 			
 			// Look in variables
 			
-			foreach (TargetVariable var in frame.Method.GetLocalVariables (frame.Thread)) {
+			foreach (TargetVariable var in ctx.Frame.Method.GetLocalVariables (ctx.Thread)) {
 				if (var.Name == name)
-					return new VariableReference (frame, var, DC.ObjectValueFlags.Variable);
+					return new VariableReference (ctx, var, DC.ObjectValueFlags.Variable);
 			}
 			
 			// Look in parameters
 			
-			foreach (TargetVariable var in frame.Method.GetParameters (frame.Thread))
+			foreach (TargetVariable var in ctx.Frame.Method.GetParameters (ctx.Thread))
 				if (var.Name == name)
-					return new VariableReference (frame, var, DC.ObjectValueFlags.Parameter);
+					return new VariableReference (ctx, var, DC.ObjectValueFlags.Parameter);
 			
 			// Look in fields and properties
 			
 			TargetStructObject thisobj = null;
 			
-			if (frame.Method.HasThis) {
-				TargetObject ob = frame.Method.GetThis (frame.Thread).GetObject (frame);
-				thisobj = ObjectUtil.GetRealObject (frame.Thread, ob) as TargetStructObject;
+			if (ctx.Frame.Method.HasThis) {
+				TargetObject ob = ctx.Frame.Method.GetThis (ctx.Thread).GetObject (ctx.Frame);
+				thisobj = ObjectUtil.GetRealObject (ctx, ob) as TargetStructObject;
 			}
 			
-			TargetStructType type = frame.Method.GetDeclaringType (frame.Thread);
+			TargetStructType type = ctx.Frame.Method.GetDeclaringType (ctx.Thread);
 			
-			foreach (MemberReference mem in ObjectUtil.GetTypeMembers (frame.Thread, type, thisobj==null, true, true, false, ReqMemberAccess.All)) {
+			foreach (MemberReference mem in ObjectUtil.GetTypeMembers (ctx, type, thisobj==null, true, true, false, ReqMemberAccess.All)) {
 				if (mem.Member.Name != name)
 					continue;
 				if (mem.Member is TargetFieldInfo) {
 					TargetFieldInfo field = (TargetFieldInfo) mem.Member;
-					return new FieldReference (frame.Thread, thisobj, mem.DeclaringType, field);
+					return new FieldReference (ctx, thisobj, mem.DeclaringType, field);
 				}
 				if (mem.Member is TargetPropertyInfo) {
 					TargetPropertyInfo prop = (TargetPropertyInfo) mem.Member;
 					if (prop.CanRead)
-						return new PropertyReference (frame.Thread, prop, thisobj);
+						return new PropertyReference (ctx, prop, thisobj);
 				}
 			}
 			
 			// Look in types
 			
-			TargetType vtype = frame.Language.LookupType (name);
+			TargetType vtype = ctx.Frame.Language.LookupType (name);
 			if (vtype != null)
-				return new TypeValueReference (frame.Thread, vtype);
+				return new TypeValueReference (ctx, vtype);
 			
-			if (frame.Method != null && frame.Method.HasLineNumbers) {
-				string[] namespaces = frame.Method.GetNamespaces ();
+			if (ctx.Frame.Method != null && ctx.Frame.Method.HasLineNumbers) {
+				string[] namespaces = ctx.Frame.Method.GetNamespaces ();
 				
 				if (namespaces != null) {
 					// Look in types from included namespaces
 				
 					foreach (string ns in namespaces) {
-						vtype = frame.Language.LookupType (ns + "." + name);
+						vtype = ctx.Frame.Language.LookupType (ns + "." + name);
 						if (vtype != null)
-							return new TypeValueReference (frame.Thread, vtype);
+							return new TypeValueReference (ctx, vtype);
 					}
 				
 					// Look in namespaces
 				
 					foreach (string ns in namespaces) {
 						if (ns == name || ns.StartsWith (name + "."))
-							return new NamespaceValueReference (frame, name);
+							return new NamespaceValueReference (ctx, name);
 					}
 				}
 			}
@@ -433,10 +433,10 @@ namespace DebuggerServer
 			TypeValueReference type = castExpression.CastTo.AcceptVisitor (this, data) as TypeValueReference;
 			if (type == null)
 				throw CreateParseError ("Invalid cast type.");
-			TargetObject ob = TargetObjectConvert.Cast (frame, val.Value, type.Type);
+			TargetObject ob = TargetObjectConvert.Cast (ctx, val.Value, type.Type);
 			if (ob == null) {
 				if (castExpression.CastType == CastType.TryCast)
-					return new NullValueReference (frame.Thread, type.Type);
+					return new NullValueReference (ctx, type.Type);
 				else
 					throw CreateParseError ("Invalid cast.");
 			}
@@ -465,25 +465,25 @@ namespace DebuggerServer
 			ValueReference right = (ValueReference) binaryOperatorExpression.Right.AcceptVisitor (this, data);
 
 			if (binaryOperatorExpression.Op == BinaryOperatorType.Add || binaryOperatorExpression.Op == BinaryOperatorType.Concat) {
-				if (left.Type == frame.Language.StringType || right.Type == frame.Language.StringType)
-					return new LiteralValueReference (frame.Thread, name, left.CallToString () + right.CallToString ());
+				if (left.Type == ctx.Frame.Language.StringType || right.Type == ctx.Frame.Language.StringType)
+					return new LiteralValueReference (ctx, name, left.CallToString () + right.CallToString ());
 			}
 
 			object val1 = left.ObjectValue;
 			object val2 = right.ObjectValue;
 			
 			if ((binaryOperatorExpression.Op == BinaryOperatorType.ExclusiveOr) && (val1 is bool) && !(val2 is bool))
-				return new LiteralValueReference (frame.Thread, name, (bool)val1 ^ (bool)val2);
+				return new LiteralValueReference (ctx, name, (bool)val1 ^ (bool)val2);
 			
 			switch (binaryOperatorExpression.Op) {
 				case BinaryOperatorType.Equality:
-					return new LiteralValueReference (frame.Thread, name, val1.Equals (val2));
+					return new LiteralValueReference (ctx, name, val1.Equals (val2));
 				case BinaryOperatorType.InEquality:
-					return new LiteralValueReference (frame.Thread, name, !val1.Equals (val2));
+					return new LiteralValueReference (ctx, name, !val1.Equals (val2));
 				case BinaryOperatorType.ReferenceEquality:
-					return new LiteralValueReference (frame.Thread, name, val1 == val2);
+					return new LiteralValueReference (ctx, name, val1 == val2);
 				case BinaryOperatorType.ReferenceInequality:
-					return new LiteralValueReference (frame.Thread, name, val1 != val2);
+					return new LiteralValueReference (ctx, name, val1 != val2);
 				case BinaryOperatorType.Concat:
 					throw CreateParseError ("Invalid binary operator.");
 			}
@@ -514,7 +514,7 @@ namespace DebuggerServer
 			
 			if (!(res is bool))
 				res = (long) Convert.ChangeType (res, GetCommonType (v1, v2));
-			return new LiteralValueReference (frame.Thread, name, res);
+			return new LiteralValueReference (ctx, name, res);
 		}
 		
 		Type GetCommonType (object v1, object v2)
@@ -538,13 +538,13 @@ namespace DebuggerServer
 		
 		public override object VisitBaseReferenceExpression (ICSharpCode.NRefactory.Ast.BaseReferenceExpression baseReferenceExpression, object data)
 		{
-			if (frame.Method != null && frame.Method.HasThis) {
-				TargetVariable var = frame.Method.GetThis (frame.Thread);
-				TargetClassObject ob = (TargetClassObject) var.GetObject (frame);
-				TargetObject baseob = ob.GetParentObject (frame.Thread);
+			if (ctx.Frame.Method != null && ctx.Frame.Method.HasThis) {
+				TargetVariable var = ctx.Frame.Method.GetThis (ctx.Thread);
+				TargetClassObject ob = (TargetClassObject) var.GetObject (ctx.Frame);
+				TargetObject baseob = ob.GetParentObject (ctx.Thread);
 				if (baseob == null)
 					throw CreateParseError ("'base' reference not available.");
-				return new LiteralValueReference (frame.Thread, name, baseob);
+				return new LiteralValueReference (ctx, name, baseob);
 			}
 			else
 				throw CreateParseError ("'base' reference not available in static methods.");
@@ -961,7 +961,7 @@ namespace DebuggerServer
 		
 		public string[] GetNamespaces ()
 		{
-			Method method = frame.Method;
+			Method method = ctx.Frame.Method;
 			if ((method == null) || !method.HasLineNumbers)
 				return null;
 

@@ -38,7 +38,7 @@ namespace DebuggerServer
 		TargetArrayObject arr;
 		int[] indices;
 		
-		public ArrayValueReference (Thread thread, TargetArrayObject arr, int[] indices): base (thread)
+		public ArrayValueReference (EvaluationContext ctx, TargetArrayObject arr, int[] indices): base (ctx)
 		{
 			this.arr = arr;
 			this.indices = indices;
@@ -46,10 +46,10 @@ namespace DebuggerServer
 
 		public override TargetObject Value {
 			get {
-				return ObjectUtil.GetRealObject (Thread, arr.GetElement (Thread, indices));
+				return ObjectUtil.GetRealObject (Context, arr.GetElement (Context.Thread, indices));
 			}
 			set {
-				arr.SetElement (Thread, indices, value);
+				arr.SetElement (Context.Thread, indices, value);
 			}
 		}
 		

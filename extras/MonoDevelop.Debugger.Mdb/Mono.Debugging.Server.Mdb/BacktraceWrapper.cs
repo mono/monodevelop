@@ -11,15 +11,21 @@ using Mono.Debugger.Languages;
 
 namespace DebuggerServer
 {
-	class BacktraceWrapper: RemoteFrameObject, IBacktrace
+	class BacktraceWrapper: RemoteFrameObject, IBacktrace, IDisposable
 	{
 		MD.StackFrame[] frames;
 		DissassemblyBuffer[] disBuffers;
+		bool disposed;
 	       
 		public BacktraceWrapper (MD.StackFrame[] frames)
 		{
 			this.frames = frames;
 			Connect ();
+		}
+
+		public void Dispose ()
+		{
+			disposed = true;
 		}
 	       
 		public int FrameCount {
@@ -28,6 +34,8 @@ namespace DebuggerServer
 	       
 		public DL.StackFrame[] GetStackFrames (int firstIndex, int lastIndex)
 		{
+			CheckDisposed ();
+			
 			//FIXME: validate indices
 
 			List<DL.StackFrame> list = new List<DL.StackFrame> ();
@@ -62,23 +70,32 @@ namespace DebuggerServer
 			
 			return list.ToArray ();
 		}
-		
-		public ObjectValue[] GetLocalVariables (int frameIndex)
+
+		EvaluationContext GetEvaluationContext (int frameIndex, int timeout)
 		{
+			CheckDisposed ();
+			if (timeout == -1)
+				timeout = DebuggerServer.DefaultEvaluationTimeout;
 			MD.StackFrame frame = frames [frameIndex];
+			return new EvaluationContext (frame.Thread, frame, timeout);
+		}
+		
+		public ObjectValue[] GetLocalVariables (int frameIndex, int timeout)
+		{
+			EvaluationContext ctx = GetEvaluationContext (frameIndex, timeout);
 			List<ObjectValue> vars = new List<ObjectValue> ();
-			foreach (VariableReference vref in Util.GetLocalVariables (frame))
-				vars.Add (vref.CreateObjectValue ());
+			foreach (VariableReference vref in Util.GetLocalVariables (ctx))
+				vars.Add (vref.CreateObjectValue (true));
 			return vars.ToArray ();
 		}
 		
-		public ObjectValue[] GetParameters (int frameIndex)
+		public ObjectValue[] GetParameters (int frameIndex, int timeout)
 		{
 			try {
-				MD.StackFrame frame = frames [frameIndex];
+				EvaluationContext ctx = GetEvaluationContext (frameIndex, timeout);
 				List<ObjectValue> vars = new List<ObjectValue> ();
-				foreach (VariableReference vref in Util.GetParameters (frame)) {
-					vars.Add (vref.CreateObjectValue ());
+				foreach (VariableReference vref in Util.GetParameters (ctx)) {
+					vars.Add (vref.CreateObjectValue (true));
 				}
 				return vars.ToArray ();
 			} catch {
@@ -86,81 +103,83 @@ namespace DebuggerServer
 			}
 		}
 		
-		public ObjectValue GetThisReference (int frameIndex)
+		public ObjectValue GetThisReference (int frameIndex, int timeout)
 		{
-			MD.StackFrame frame = frames [frameIndex];
-			if (frame.Method != null && frame.Method.HasThis) {
+			EvaluationContext ctx = GetEvaluationContext (frameIndex, timeout);
+			if (ctx.Frame.Method != null && ctx.Frame.Method.HasThis) {
 				ObjectValueFlags flags = ObjectValueFlags.Field | ObjectValueFlags.ReadOnly;
-				TargetVariable var = frame.Method.GetThis (frame.Thread);
-				VariableReference vref = new VariableReference (frame, var, flags);
+				TargetVariable var = ctx.Frame.Method.GetThis (ctx.Thread);
+				VariableReference vref = new VariableReference (ctx, var, flags);
 				return vref.CreateObjectValue ();
 			}
 			else
 				return null;
 		}
 		
-		public ObjectValue[] GetAllLocals (int frameIndex)
+		public ObjectValue[] GetAllLocals (int frameIndex, int timeout)
 		{
-			MD.StackFrame frame = frames [frameIndex];
+			EvaluationContext ctx = GetEvaluationContext (frameIndex, timeout);
 			
 			List<ObjectValue> locals = new List<ObjectValue> ();
 			
 			// 'This' reference, or a reference to the type if the method is static
 			
-			ObjectValue val = GetThisReference (frameIndex);
+			ObjectValue val = GetThisReference (frameIndex, timeout);
 			if (val != null)
 				locals.Add (val);
-			else if (frame.Method != null) {
-				TargetType t = frame.Method.GetDeclaringType (frame.Thread);
+			else if (ctx.Frame.Method != null) {
+				TargetType t = ctx.Frame.Method.GetDeclaringType (ctx.Thread);
 				if (t != null) {
-					ValueReference vr = new TypeValueReference (frame.Thread, t);
-					locals.Add (vr.CreateObjectValue ());
+					ValueReference vr = new TypeValueReference (ctx, t);
+					locals.Add (vr.CreateObjectValue (true));
 				}
 			}
 			
 			// Parameters
-			locals.AddRange (GetParameters (frameIndex));
+			locals.AddRange (GetParameters (frameIndex, timeout));
 			
 			// Local variables
-			locals.AddRange (GetLocalVariables (frameIndex));
+			locals.AddRange (GetLocalVariables (frameIndex, timeout));
 			
 			return locals.ToArray ();
 		}
 		
-		public ObjectValue[] GetExpressionValues (int frameIndex, string[] expressions, bool evaluateMethods)
+		public ObjectValue[] GetExpressionValues (int frameIndex, string[] expressions, bool evaluateMethods, int timeout)
 		{
+			EvaluationContext ctx = GetEvaluationContext (frameIndex, timeout);
 			ObjectValue[] values = new ObjectValue [expressions.Length];
 			for (int n=0; n<values.Length; n++) {
 				string exp = expressions[n];
-				
-				ValueReference var;
-				try {
-					EvaluationOptions ops = new EvaluationOptions ();
-					ops.CanEvaluateMethods = evaluateMethods;
-					var = (ValueReference) Server.Instance.Evaluator.Evaluate (frames[frameIndex], exp, ops);
-				} catch (NotSupportedExpressionException ex) {
-					values [n] = ObjectValue.CreateNotSupported (exp, ex.Message, ObjectValueFlags.None);
-					continue;
-				} catch (EvaluatorException ex) {
-					values [n] = ObjectValue.CreateError (exp, ex.Message, ObjectValueFlags.None);
-					continue;
-				} catch (Exception ex) {
-					Server.Instance.WriteDebuggerError (ex);
-					values [n] = ObjectValue.CreateUnknown (exp);
-					continue;
-				}
-				
-				if (var != null)
-					values [n] = var.CreateObjectValue ();
-				else
-					values [n] = ObjectValue.CreateUnknown (exp);
+				values[n] = Server.Instance.AsyncEvaluationTracker.Run (exp, ObjectValueFlags.Literal, delegate {
+					return GetExpressionValue (ctx, exp, evaluateMethods);
+				});
 			}
 			return values;
 		}
 		
+		ObjectValue GetExpressionValue (EvaluationContext ctx, string exp, bool evaluateMethods)
+		{
+			try {
+				EvaluationOptions ops = new EvaluationOptions ();
+				ops.CanEvaluateMethods = evaluateMethods;
+				ValueReference var = (ValueReference) Server.Instance.Evaluator.Evaluate (ctx, exp, ops);
+				if (var != null)
+					return var.CreateObjectValue ();
+				else
+					return ObjectValue.CreateUnknown (exp);
+			} catch (NotSupportedExpressionException ex) {
+				return ObjectValue.CreateNotSupported (exp, ex.Message, ObjectValueFlags.None);
+			} catch (EvaluatorException ex) {
+				return ObjectValue.CreateError (exp, ex.Message, ObjectValueFlags.None);
+			} catch (Exception ex) {
+				Server.Instance.WriteDebuggerError (ex);
+				return ObjectValue.CreateUnknown (exp);
+			}
+		}
+		
 		public CompletionData GetExpressionCompletionData (int frameIndex, string exp)
 		{
-			MD.StackFrame frame = frames[frameIndex];
+			EvaluationContext ctx = GetEvaluationContext (frameIndex, -1);
 			int i;
 
 			if (exp [exp.Length - 1] == '.') {
@@ -169,7 +188,7 @@ namespace DebuggerServer
 				while (i < exp.Length) {
 					ValueReference vr = null;
 					try {
-						vr = Server.Instance.Evaluator.Evaluate (frame, exp.Substring (i), null);
+						vr = Server.Instance.Evaluator.Evaluate (ctx, exp.Substring (i), null);
 						if (vr != null) {
 							DL.CompletionData data = new DL.CompletionData ();
 							foreach (ValueReference cv in vr.GetChildReferences ())
@@ -201,13 +220,13 @@ namespace DebuggerServer
 				
 				// Local variables
 				
-				foreach (ValueReference vc in Util.GetLocalVariables (frame))
+				foreach (ValueReference vc in Util.GetLocalVariables (ctx))
 					if (vc.Name.StartsWith (partialWord))
 						data.Items.Add (new CompletionItem (vc.Name, vc.Flags));
 				
 				// Parameters
 				
-				foreach (ValueReference vc in Util.GetParameters (frame))
+				foreach (ValueReference vc in Util.GetParameters (ctx))
 					if (vc.Name.StartsWith (partialWord))
 						data.Items.Add (new CompletionItem (vc.Name, vc.Flags));
 				
@@ -215,15 +234,15 @@ namespace DebuggerServer
 				
 				TargetStructObject thisobj = null;
 				
-				if (frame.Method.HasThis) {
-					TargetObject ob = frame.Method.GetThis (frame.Thread).GetObject (frame);
-					thisobj = ObjectUtil.GetRealObject (frame.Thread, ob) as TargetStructObject;
+				if (ctx.Frame.Method.HasThis) {
+					TargetObject ob = ctx.Frame.Method.GetThis (ctx.Thread).GetObject (ctx.Frame);
+					thisobj = ObjectUtil.GetRealObject (ctx, ob) as TargetStructObject;
 					data.Items.Add (new CompletionItem ("this", DL.ObjectValueFlags.Field | DL.ObjectValueFlags.ReadOnly));
 				}
 				
-				TargetStructType type = frame.Method.GetDeclaringType (frame.Thread);
+				TargetStructType type = ctx.Frame.Method.GetDeclaringType (ctx.Thread);
 				
-				foreach (ValueReference vc in Util.GetMembers (frame.Thread, type, thisobj))
+				foreach (ValueReference vc in Util.GetMembers (ctx, type, thisobj))
 					if (vc.Name.StartsWith (partialWord))
 						data.Items.Add (new CompletionItem (vc.Name, vc.Flags));
 				
@@ -235,6 +254,7 @@ namespace DebuggerServer
 	
 		public AssemblyLine[] Disassemble (int frameIndex, int firstLine, int count)
 		{
+			CheckDisposed ();
 			if (disBuffers == null)
 				disBuffers = new MdbDissassemblyBuffer [frames.Length];
 			
@@ -246,6 +266,12 @@ namespace DebuggerServer
 			}
 			
 			return buffer.GetLines (firstLine, firstLine + count - 1);
+		}
+
+		void CheckDisposed ()
+		{
+			if (disposed)
+				throw new InvalidOperationException ("Invalid stack frame");
 		}
 	}
 	

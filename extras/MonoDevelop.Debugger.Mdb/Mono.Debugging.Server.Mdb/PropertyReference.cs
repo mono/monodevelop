@@ -37,7 +37,7 @@ namespace DebuggerServer
 		TargetPropertyInfo prop;
 		TargetStructObject thisobj;
 		
-		public PropertyReference (Thread thread, TargetPropertyInfo prop, TargetStructObject thisobj): base (thread)
+		public PropertyReference (EvaluationContext ctx, TargetPropertyInfo prop, TargetStructObject thisobj): base (ctx)
 		{
 			this.prop = prop;
 			if (!prop.IsStatic)
@@ -52,10 +52,10 @@ namespace DebuggerServer
 		
 		public override TargetObject Value {
 			get {
-				return ObjectUtil.GetRealObject (Thread, Server.Instance.RuntimeInvoke (Thread, prop.Getter, thisobj, new TargetObject[0]));
+				return ObjectUtil.GetRealObject (Context, Server.Instance.RuntimeInvoke (Context, prop.Getter, thisobj, new TargetObject[0]));
 			}
 			set {
-				Server.Instance.RuntimeInvoke (Thread, prop.Setter, thisobj, new TargetObject[] { value });
+				Server.Instance.RuntimeInvoke (Context, prop.Setter, thisobj, new TargetObject[] { value });
 			}
 		}
 		

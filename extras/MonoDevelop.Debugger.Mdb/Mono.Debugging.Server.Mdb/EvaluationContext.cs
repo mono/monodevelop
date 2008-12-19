@@ -1,4 +1,4 @@
-// RemoteFrameObject.cs
+// EvaluationContext.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -26,46 +26,39 @@
 //
 
 using System;
-using System.Collections.Generic;
+using Mono.Debugger;
 
 namespace DebuggerServer
 {
-	public class RemoteFrameObject: MarshalByRefObject
+	public class EvaluationContext
 	{
-		static List<RemoteFrameObject> connectedValues = new List<RemoteFrameObject> ();
+		Thread thread;
+		StackFrame frame;
+		int timeout;
 		
-		bool connected;
-		
-		public void Connect ()
-		{
-			// Registers the value reference. Once a remote reference of this object
-			// is created, it will never be released, until DisconnectAll is called,
-			// which is done every time the current backtrace changes
-			
-			lock (connectedValues) {
-				if (!connected) {
-					connectedValues.Add (this);
-					connected = true;
-				}
+		public Thread Thread {
+			get {
+				return thread;
 			}
 		}
 		
-		public static void DisconnectAll ()
-		{
-			lock (connectedValues) {
-				foreach (RemoteFrameObject val in connectedValues) {
-					System.Runtime.Remoting.RemotingServices.Disconnect (val);
-					IDisposable disp = val as IDisposable;
-					if (disp != null)
-						disp.Dispose ();
-				}
-				connectedValues.Clear ();
+		public StackFrame Frame {
+			get {
+				return frame;
+			}
+		}
+
+		public int Timeout {
+			get {
+				return timeout;
 			}
 		}
 		
-		public override object InitializeLifetimeService ()
+		public EvaluationContext (Thread thread, StackFrame frame, int timeout)
 		{
-			return null;
+			this.thread = thread;
+			this.frame = frame;
+			this.timeout = timeout;
 		}
 	}
 }

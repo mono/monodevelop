@@ -37,7 +37,7 @@ namespace DebuggerServer
 {
 	public class ArrayElementGroup: RemoteFrameObject, IObjectValueSource
 	{
-		Thread thread;
+		EvaluationContext ctx;
 		int[] baseIndices;
 		int firstIndex;
 		int lastIndex;
@@ -46,20 +46,20 @@ namespace DebuggerServer
 		
 		const int MaxChildCount = 150;
 		
-		public ArrayElementGroup (Thread thread, ICollectionAdaptor array)
-			: this (thread, array, new int [0])
+		public ArrayElementGroup (EvaluationContext ctx, ICollectionAdaptor array)
+			: this (ctx, array, new int [0])
 		{
 		}
 		
-		public ArrayElementGroup (Thread thread, ICollectionAdaptor array, int[] baseIndices)
-			: this (thread, array, baseIndices, 0, -1)
+		public ArrayElementGroup (EvaluationContext ctx, ICollectionAdaptor array, int[] baseIndices)
+			: this (ctx, array, baseIndices, 0, -1)
 		{
 		}
 		
-		public ArrayElementGroup (Thread thread, ICollectionAdaptor array, int[] baseIndices, int firstIndex, int lastIndex)
+		public ArrayElementGroup (EvaluationContext ctx, ICollectionAdaptor array, int[] baseIndices, int firstIndex, int lastIndex)
 		{
 			this.array = array;
-			this.thread = thread;
+			this.ctx = ctx;
 			this.bounds = array.GetBounds ();
 			this.baseIndices = baseIndices;
 			this.firstIndex = firstIndex;
@@ -103,7 +103,7 @@ namespace DebuggerServer
 				// Looking for children of an array element
 				int[] idx = StringToIndices (path [1]);
 				TargetObject obj = array.GetElement (idx);
-				return Util.GetObjectValueChildren (thread, obj, firstItemIndex, count);
+				return Util.GetObjectValueChildren (ctx, obj, firstItemIndex, count);
 			}
 			
 			int lowerBound;
@@ -186,7 +186,7 @@ namespace DebuggerServer
 					if (index > upperBound)
 						val = ObjectValue.CreateUnknown ("");
 					else {
-						ArrayElementGroup grp = new ArrayElementGroup (thread, array, curIndex);
+						ArrayElementGroup grp = new ArrayElementGroup (ctx, array, curIndex);
 						val = grp.CreateObjectValue ();
 					}
 					list.Add (val);
@@ -204,7 +204,7 @@ namespace DebuggerServer
 				int i = 0;
 				List<ObjectValue> list = new List<ObjectValue> ();
 				while (i < len) {
-					ArrayElementGroup grp = new ArrayElementGroup (thread, array, baseIndices, i, i+div-1);
+					ArrayElementGroup grp = new ArrayElementGroup (ctx, array, baseIndices, i, i+div-1);
 					list.Add (grp.CreateObjectValue ());
 					i += div;
 				}
@@ -263,15 +263,15 @@ namespace DebuggerServer
 				EvaluationOptions ops = new EvaluationOptions ();
 				ops.ExpectedType = array.ElementType;
 				ops.CanEvaluateMethods = true;
-				ValueReference var = Server.Instance.Evaluator.Evaluate (thread.CurrentFrame, value, ops);
+				ValueReference var = Server.Instance.Evaluator.Evaluate (ctx, value, ops);
 				val = var.Value;
-				val = TargetObjectConvert.Cast (thread.CurrentFrame, val, array.ElementType);
+				val = TargetObjectConvert.Cast (ctx, val, array.ElementType);
 				array.SetElement (idx, val);
 			} catch {
 				val = array.GetElement (idx);
 			}
 			try {
-				return Server.Instance.Evaluator.TargetObjectToExpression (thread, val);
+				return Server.Instance.Evaluator.TargetObjectToExpression (ctx, val);
 			} catch (Exception ex) {
 				Server.Instance.WriteDebuggerError (ex);
 				return "? (" + ex.Message + ")";

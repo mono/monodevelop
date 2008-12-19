@@ -39,21 +39,21 @@ namespace DebuggerServer
 		TargetStructObject target;
 		TargetObject index;
 		
-		public IndexerValueReference (Thread thread, TargetStructObject target, TargetObject index, TargetPropertyInfo indexerProp): base (thread)
+		public IndexerValueReference (EvaluationContext ctx, TargetStructObject target, TargetObject index, TargetPropertyInfo indexerProp): base (ctx)
 		{
 			this.indexer = indexerProp;
 			this.target = target;
 			this.index = index;
 		}
 		
-		public static IndexerValueReference CreateIndexerValueReference (Thread thread, TargetObject target, TargetObject index)
+		public static IndexerValueReference CreateIndexerValueReference (EvaluationContext ctx, TargetObject target, TargetObject index)
 		{
 			TargetStructObject sob = target as TargetStructObject;
 			if (sob == null)
 				return null;
 			
 			TargetPropertyInfo indexerProp = null;
-			foreach (MemberReference mem in ObjectUtil.GetTypeMembers (thread, target.Type, false, false, true, true, ReqMemberAccess.All)) {
+			foreach (MemberReference mem in ObjectUtil.GetTypeMembers (ctx, target.Type, false, false, true, true, ReqMemberAccess.All)) {
 				if (mem.Member.IsStatic)
 					continue;
 				if (mem.Member is TargetPropertyInfo) {
@@ -65,19 +65,19 @@ namespace DebuggerServer
 				}
 			}
 			if (indexerProp != null)
-				return new IndexerValueReference (thread, sob, index, indexerProp);
+				return new IndexerValueReference (ctx, sob, index, indexerProp);
 			else
 				return null;
 		}
 		
 		public override TargetObject Value {
 			get {
-				return ObjectUtil.GetRealObject (Thread, Server.Instance.RuntimeInvoke (Thread, indexer.Getter, target, new TargetObject [] {index}));
+				return ObjectUtil.GetRealObject (Context, Server.Instance.RuntimeInvoke (Context, indexer.Getter, target, new TargetObject [] {index}));
 			}
 			set {
-				TargetObject cindex = TargetObjectConvert.Cast (Thread.CurrentFrame, index, indexer.Setter.ParameterTypes [0]);
-				TargetObject cvalue = TargetObjectConvert.Cast (Thread.CurrentFrame, value, indexer.Setter.ParameterTypes [1]);
-				Server.Instance.RuntimeInvoke (Thread, indexer.Setter, target, new TargetObject [] {cindex, cvalue});
+				TargetObject cindex = TargetObjectConvert.Cast (Context, index, indexer.Setter.ParameterTypes [0]);
+				TargetObject cvalue = TargetObjectConvert.Cast (Context, value, indexer.Setter.ParameterTypes [1]);
+				Server.Instance.RuntimeInvoke (Context, indexer.Setter, target, new TargetObject [] {cindex, cvalue});
 			}
 		}
 
@@ -94,7 +94,7 @@ namespace DebuggerServer
 		
 		public override string Name {
 			get {
-				return "[" + Server.Instance.Evaluator.TargetObjectToExpression (Thread, index) + "]";
+				return "[" + Server.Instance.Evaluator.TargetObjectToExpression (Context, index) + "]";
 			}
 		}
 

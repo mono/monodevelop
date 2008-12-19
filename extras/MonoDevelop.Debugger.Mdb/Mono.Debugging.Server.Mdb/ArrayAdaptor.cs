@@ -35,27 +35,27 @@ namespace DebuggerServer
 	class ArrayAdaptor: ICollectionAdaptor
 	{
 		TargetArrayObject array;
-		Thread thread;
+		EvaluationContext ctx;
 		
-		public ArrayAdaptor (Thread thread, TargetArrayObject array)
+		public ArrayAdaptor (EvaluationContext ctx, TargetArrayObject array)
 		{
-			this.thread = thread;
+			this.ctx = ctx;
 			this.array = array;
 		}
 		
 		public TargetArrayBounds GetBounds ()
 		{
-			return array.GetArrayBounds (thread);
+			return array.GetArrayBounds (ctx.Thread);
 		}
 		
 		public TargetObject GetElement (int[] indices)
 		{
-			return array.GetElement (thread, indices);
+			return array.GetElement (ctx.Thread, indices);
 		}
 		
 		public void SetElement (int[] indices, TargetObject val)
 		{
-			array.SetElement (thread, indices, val);
+			array.SetElement (ctx.Thread, indices, val);
 		}
 		
 		public TargetType ElementType {
@@ -66,8 +66,8 @@ namespace DebuggerServer
 		
 		public ObjectValue CreateElementValue (ArrayElementGroup grp, ObjectPath path, int[] indices)
 		{
-			TargetObject elem = array.GetElement (thread, indices);
-			return Util.CreateObjectValue (thread, grp, path, elem, ObjectValueFlags.ArrayElement);
+			TargetObject elem = array.GetElement (ctx.Thread, indices);
+			return Util.CreateObjectValue (ctx, grp, path, elem, ObjectValueFlags.ArrayElement);
 		}
 	}
 }
