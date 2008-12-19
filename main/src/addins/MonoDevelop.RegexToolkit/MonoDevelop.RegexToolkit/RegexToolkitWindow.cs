@@ -235,7 +235,7 @@ namespace MonoDevelop.RegexToolkit
 			tooltipWindow.ShowAll ();
 		}
 			
-		public class CustomTooltipWindow : MonoDevelop.Projects.Gui.Completion.TooltipWindow
+		public class CustomTooltipWindow : MonoDevelop.Components.TooltipWindow
 		{
 			string tooltip;
 			public string Tooltip {

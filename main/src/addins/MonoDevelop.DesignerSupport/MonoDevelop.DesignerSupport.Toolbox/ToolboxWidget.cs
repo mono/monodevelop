@@ -762,7 +762,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 		}
 		
-		class CustomTooltipWindow : MonoDevelop.Projects.Gui.Completion.TooltipWindow
+		class CustomTooltipWindow : MonoDevelop.Components.TooltipWindow
 		{
 			string tooltip;
 			public string Tooltip {

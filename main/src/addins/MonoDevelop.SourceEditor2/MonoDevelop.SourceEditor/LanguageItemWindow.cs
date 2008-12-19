@@ -38,7 +38,7 @@ using MonoDevelop.Projects.Dom.Parser;
 
 namespace MonoDevelop.SourceEditor
 {
-	public class LanguageItemWindow: MonoDevelop.Projects.Gui.Completion.TooltipWindow
+	public class LanguageItemWindow: MonoDevelop.Components.TooltipWindow
 	{
 		static OutputFlags WindowConversionFlags = OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName | OutputFlags.IncludeKeywords | OutputFlags.IncludeMarkup | OutputFlags.UseFullName;
 		

@@ -1,14 +1,2 @@
 <objects attr-sync="on">
-  <object type="MonoDevelop.Gettext.POEditorWidget" palette-category="widget" allow-children="false" base-type="Gtk.Bin">
-    <itemgroups>
-      <itemgroup label="POEditorWidget Properties">
-        <property name="POFileName" />
-      </itemgroup>
-    </itemgroups>
-    <signals />
-  </object>
-  <object type="MonoDevelop.Gettext.GettextFeatureWidget" palette-category="widget" allow-children="false" base-type="Gtk.Bin">
-    <itemgroups />
-    <signals />
-  </object>
 </objects>

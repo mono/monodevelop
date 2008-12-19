@@ -1,3 +1,7 @@
+2008-12-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/objects.xml: TooltipWindow has been moved to MD.Components.
+
 2008-12-12  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Gettext.mdp: All projects now require fx 3.5.

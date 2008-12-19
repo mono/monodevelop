@@ -28,7 +28,7 @@
 using System;
 using Mono.Debugging.Client;
 using MonoDevelop.Debugger;
-using MonoDevelop.Projects.Gui.Completion;
+using MonoDevelop.Components;
 using Gtk;
 using Mono.TextEditor;
 
