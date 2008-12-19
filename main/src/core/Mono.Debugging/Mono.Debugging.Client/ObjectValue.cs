@@ -42,7 +42,14 @@ namespace Mono.Debugging.Client
 		string typeName;
 		ObjectValueFlags flags;
 		IObjectValueSource source;
+		IObjectValueUpdater updater;
 		List<ObjectValue> children;
+
+		[NonSerialized]
+		UpdateCallback updateCallback;
+		
+		[NonSerialized]
+		EventHandler valueChanged;
 		
 		static ObjectValue Create (IObjectValueSource source, ObjectPath path, string typeName)
 		{
@@ -134,6 +141,15 @@ namespace Mono.Debugging.Client
 			return ob;
 		}
 		
+		public static ObjectValue CreateEvaluating (IObjectValueUpdater updater, ObjectPath path, ObjectValueFlags flags)
+		{
+			ObjectValue ob = Create (null, path, null);
+			ob.updater = updater;
+			ob.path = path;
+			ob.flags = flags | ObjectValueFlags.Evaluating;
+			return ob;
+		}
+		
 		public ObjectValueFlags Flags {
 			get { return flags; }
 		}
@@ -167,6 +183,8 @@ namespace Mono.Debugging.Client
 		
 		public bool HasChildren {
 			get {
+				if (IsEvaluating)
+					return false;
 				if (children != null)
 					return children.Count > 0;
 				else if (source == null)
@@ -184,11 +202,15 @@ namespace Mono.Debugging.Client
 		{
 			if (IsArray)
 				throw new InvalidOperationException ("Object is an array.");
+			if (IsEvaluating)
+				return null;
 			
 			if (children == null) {
 				children = new List<ObjectValue> ();
 				try {
-					children.AddRange (source.GetChildren (path, -1, -1));
+					ObjectValue[] cs = source.GetChildren (path, -1, -1);
+					ConnectCallbacks (cs);
+					children.AddRange (cs);
 				} catch (Exception ex) {
 					children = null;
 					return CreateError ("", ex.Message, ObjectValueFlags.ReadOnly);
@@ -202,6 +224,9 @@ namespace Mono.Debugging.Client
 		
 		public ObjectValue[] GetAllChildren ()
 		{
+			if (IsEvaluating)
+				return new ObjectValue[0];
+			
 			if (IsArray) {
 				GetArrayItem (arrayCount - 1);
 				return children.ToArray ();
@@ -209,7 +234,9 @@ namespace Mono.Debugging.Client
 				if (children == null) {
 					children = new List<ObjectValue> ();
 					try {
-						children.AddRange (source.GetChildren (path, -1, -1));
+						ObjectValue[] cs = source.GetChildren (path, -1, -1);
+						ConnectCallbacks (cs);
+						children.AddRange (cs);
 					} catch (Exception ex) {
 						children.Add (CreateError ("", ex.Message, ObjectValueFlags.ReadOnly));
 					}
@@ -222,7 +249,7 @@ namespace Mono.Debugging.Client
 		{
 			if (!IsArray)
 				throw new InvalidOperationException ("Object is not an array.");
-			if (index >= arrayCount || index < 0)
+			if (index >= arrayCount || index < 0 || IsEvaluating)
 				throw new IndexOutOfRangeException ();
 			
 			if (children == null)
@@ -233,6 +260,7 @@ namespace Mono.Debugging.Client
 				nc = nc - children.Count;
 				try {
 					ObjectValue[] items = source.GetChildren (path, children.Count, nc);
+					ConnectCallbacks (items);
 					children.AddRange (items);
 				} catch (Exception ex) {
 					return CreateError ("", ex.Message, ObjectValueFlags.ArrayElement | ObjectValueFlags.ReadOnly);
@@ -245,6 +273,8 @@ namespace Mono.Debugging.Client
 			get {
 				if (!IsArray)
 					throw new InvalidOperationException ("Object is not an array.");
+				if (IsEvaluating)
+					return 0;
 				return arrayCount; 
 			}
 		}
@@ -277,9 +307,109 @@ namespace Mono.Debugging.Client
 			get { return HasFlag (ObjectValueFlags.Error); }
 		}
 		
+		public bool IsEvaluating {
+			get { return HasFlag (ObjectValueFlags.Evaluating); }
+		}
+		
 		public bool HasFlag (ObjectValueFlags flag)
 		{
 			return (flags & flag) != 0;
+		}
+
+		public event EventHandler ValueChanged {
+			add {
+				lock (this) {
+					if (IsEvaluating)
+						valueChanged += value;
+					else if (valueChanged != null)
+						valueChanged (this, EventArgs.Empty);
+				}
+			}
+			remove {
+				lock (this) {
+					valueChanged -= value;
+				}
+			}
+		}
+
+		internal IObjectValueUpdater Updater {
+			get { return updater; }
+		}
+
+		internal void UpdateFrom (ObjectValue val)
+		{
+			lock (this) {
+				arrayCount = val.arrayCount;
+				if (val.name != null)
+					name = val.name;
+				value = val.value;
+				typeName = val.typeName;
+				flags = val.flags;
+				source = val.source;
+				children = val.children;
+				path = val.path;
+				if (valueChanged != null)
+					valueChanged (this, EventArgs.Empty);
+			}
+		}
+
+		internal UpdateCallback GetUpdateCallback ()
+		{
+			if (IsEvaluating) {
+				if (updateCallback == null)
+					updateCallback = new UpdateCallback (new UpdateCallbackProxy (this), path);
+				return updateCallback;
+			} else
+				return null;
+		}
+
+		~ObjectValue ()
+		{
+			if (updateCallback != null)
+				System.Runtime.Remoting.RemotingServices.Disconnect ((UpdateCallbackProxy)updateCallback.Callback);
+		}
+		
+		internal static void ConnectCallbacks (params ObjectValue[] values)
+		{
+			Dictionary<IObjectValueUpdater, List<UpdateCallback>> callbacks = null;
+			foreach (ObjectValue val in values) {
+				UpdateCallback cb = val.GetUpdateCallback ();
+				if (cb != null) {
+					if (callbacks == null)
+						callbacks = new Dictionary<IObjectValueUpdater, List<UpdateCallback>> ();
+					List<UpdateCallback> list;
+					if (!callbacks.TryGetValue (val.Updater, out list)) {
+						list = new List<UpdateCallback> ();
+						callbacks [val.Updater] = list;
+					}
+					list.Add (cb);
+				}
+			}
+			if (callbacks != null) {
+				// Do the callback connection in a background thread
+				System.Threading.ThreadPool.QueueUserWorkItem (delegate {
+					foreach (KeyValuePair<IObjectValueUpdater, List<UpdateCallback>> cbs in callbacks) {
+						cbs.Key.RegisterUpdateCallbacks (cbs.Value.ToArray ());
+					}
+				});
+			}
+		}
+	}
+
+	class UpdateCallbackProxy: MarshalByRefObject, IObjectValueUpdateCallback
+	{
+		WeakReference valRef;
+		
+		public void UpdateValue (ObjectValue newValue)
+		{
+			ObjectValue val = valRef.Target as ObjectValue;
+			if (val != null)
+				val.UpdateFrom (newValue);
+		}
+		
+		public UpdateCallbackProxy (ObjectValue val)
+		{
+			valRef = new WeakReference (val);
 		}
 	}
 }

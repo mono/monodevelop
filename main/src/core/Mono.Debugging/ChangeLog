@@ -1,3 +1,16 @@
+2008-12-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* Mono.Debugging.mdp:
+	* Mono.Debugging.Client/StackFrame.cs:
+	* Mono.Debugging.Backend/IBacktrace.cs:
+	* Mono.Debugging.Client/ObjectValue.cs:
+	* Mono.Debugging.Backend/UpdateCallback.cs:
+	* Mono.Debugging.Client/ObjectValueFlags.cs:
+	* Mono.Debugging.Backend/IObjectValueUpdater.cs:
+	* Mono.Debugging.Backend/IObjectValueUpdateCallback.cs: Added support
+	for asynchronus evaluation of expressions, with support for timeouts.
+
 2008-12-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Debugging.Client/DebuggerSession.cs:

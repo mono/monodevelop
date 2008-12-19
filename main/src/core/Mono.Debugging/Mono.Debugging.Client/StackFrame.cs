@@ -55,32 +55,74 @@ namespace Mono.Debugging.Client
 		
 		public ObjectValue[] GetLocalVariables ()
 		{
-			return sourceBacktrace.GetLocalVariables (index);
+			return GetLocalVariables (-1);
+		}
+		
+		public ObjectValue[] GetLocalVariables (int timeout)
+		{
+			ObjectValue[] values = sourceBacktrace.GetLocalVariables (index, timeout);
+			ObjectValue.ConnectCallbacks (values);
+			return values;
 		}
 		
 		public ObjectValue[] GetParameters ()
 		{
-			return sourceBacktrace.GetParameters (index);
+			return GetParameters (-1);
+		}
+		
+		public ObjectValue[] GetParameters (int timeout)
+		{
+			Console.WriteLine ("pp: " + Environment.StackTrace);
+			ObjectValue[] values = sourceBacktrace.GetParameters (index, timeout);
+			ObjectValue.ConnectCallbacks (values);
+			return values;
 		}
 		
 		public ObjectValue[] GetAllLocals ()
 		{
-			return sourceBacktrace.GetAllLocals (index);
+			return GetAllLocals (-1);
+		}
+		
+		public ObjectValue[] GetAllLocals (int timeout)
+		{
+			ObjectValue[] values = sourceBacktrace.GetAllLocals (index, timeout);
+			ObjectValue.ConnectCallbacks (values);
+			return values;
 		}
 		
 		public ObjectValue GetThisReference ()
 		{
-			return sourceBacktrace.GetThisReference (index);
+			return GetThisReference (-1);
+		}
+		
+		public ObjectValue GetThisReference (int timeout)
+		{
+			ObjectValue value = sourceBacktrace.GetThisReference (index, timeout);
+			ObjectValue.ConnectCallbacks (value);
+			return value;
 		}
 		
 		public ObjectValue[] GetExpressionValues (string[] expressions, bool evaluateMethods)
 		{
-			return sourceBacktrace.GetExpressionValues (index, expressions, evaluateMethods);
+			return GetExpressionValues (expressions, evaluateMethods, -1);
+		}
+		
+		public ObjectValue[] GetExpressionValues (string[] expressions, bool evaluateMethods, int timeout)
+		{
+			ObjectValue[] values = sourceBacktrace.GetExpressionValues (index, expressions, evaluateMethods, timeout);
+			ObjectValue.ConnectCallbacks (values);
+			return values;
 		}
 		
 		public ObjectValue GetExpressionValue (string expression, bool evaluateMethods)
 		{
-			ObjectValue[] values = sourceBacktrace.GetExpressionValues (index, new string[] { expression }, evaluateMethods);
+			return GetExpressionValue (expression, evaluateMethods, -1);
+		}
+		
+		public ObjectValue GetExpressionValue (string expression, bool evaluateMethods, int timeout)
+		{
+			ObjectValue[] values = sourceBacktrace.GetExpressionValues (index, new string[] { expression }, evaluateMethods, timeout);
+			ObjectValue.ConnectCallbacks (values);
 			return values [0];
 		}
 		

@@ -1,4 +1,4 @@
-<Project name="Mono.Debugging" fileversion="2.0" language="C#" clr-version="Net_2_0" ctype="DotNetProject">
+<Project name="Mono.Debugging" fileversion="2.0" language="C#" clr-version="Net_2_0" targetFramework="2.0" ctype="DotNetProject">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
       <Output directory="../../../build/bin" assembly="Mono.Debugging" />
@@ -43,6 +43,9 @@
     <File name="Mono.Debugging.Client/CatchpointEventArgs.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.Debugging.Client/BreakEventArgs.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.Debugging.Client/DebuggerFeatures.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.Debugging.Backend/IObjectValueUpdater.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.Debugging.Backend/IObjectValueUpdateCallback.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.Debugging.Backend/UpdateCallback.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

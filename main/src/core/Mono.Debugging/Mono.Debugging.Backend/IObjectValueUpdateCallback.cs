@@ -1,4 +1,4 @@
-// ObjectValueKind.cs
+// IObjectValueUpdateCallback.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -26,41 +26,12 @@
 //
 
 using System;
+using Mono.Debugging.Client;
 
-namespace Mono.Debugging.Client
+namespace Mono.Debugging.Backend
 {
-	[Flags]
-	public enum ObjectValueFlags: uint {
-		None = 0,
-		Object = 1,             // The value is an object
-		Array = 1 << 1,         // The value is an array
-		Primitive = 1 << 2,     // The value is a primitive value
-		Unknown = 1 << 3,       // The evaluated identifier is unknown
-		Error = 1 << 4,         // The expression evaluation returned an error
-		NotSupported = 1 << 5,  // The expression is valid but its evaluation is not supported
-		Evaluating = 1 << 6,    // The expression is being evaluated. The value will be updated when done.
-		KindMask = 0x000000ff,
-		
-		Field = 1 << 8,
-		Property = 1 << 9,
-		Parameter = 1 << 10,
-		Variable = 1 << 11,
-		ArrayElement = 1 << 12,
-		Method = 1 << 13,
-		Literal = 1 << 14,
-		Type = 1 << 15,
-		Namespace = 1 << 16,
-		OriginMask = 0x0001ff00,
-		
-		Global = 1 << 17,	// For fields, it means static
-		ReadOnly = 1 << 18,
-		
-		// For field and property
-		Public = 1 << 24,
-		Protected = 1 << 25,
-		Internal = 1 << 26,
-		Private = 1 << 27,
-		InternalProtected = Internal | Protected,
-		AccessMask = Public | Protected | Internal | Private
+	internal interface IObjectValueUpdateCallback
+	{
+		void UpdateValue (ObjectValue newValue);
 	}
 }

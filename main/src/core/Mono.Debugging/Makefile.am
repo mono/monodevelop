@@ -12,6 +12,9 @@ FILES =  \
 	Mono.Debugging.Backend/IBacktrace.cs \
 	Mono.Debugging.Backend/IDebuggerSessionFrontend.cs \
 	Mono.Debugging.Backend/IObjectValueSource.cs \
+	Mono.Debugging.Backend/IObjectValueUpdateCallback.cs \
+	Mono.Debugging.Backend/IObjectValueUpdater.cs \
+	Mono.Debugging.Backend/UpdateCallback.cs \
 	Mono.Debugging.Client/AssemblyLine.cs \
 	Mono.Debugging.Client/Backtrace.cs \
 	Mono.Debugging.Client/BreakEvent.cs \
