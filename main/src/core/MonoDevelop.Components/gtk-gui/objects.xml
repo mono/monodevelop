@@ -1,4 +1,17 @@
 <objects attr-sync="on">
+  <object type="MonoDevelop.Components.FixedWidthWrapLabel" palette-category="MonoDevelop.Components" allow-children="false" base-type="Gtk.Widget">
+    <itemgroups>
+      <itemgroup label="FixedWidthWrapLabel Properties">
+        <property name="MaxWidth" />
+        <property name="Markup" />
+        <property name="Text" />
+        <property name="Indent" />
+        <property name="BreakOnPunctuation" />
+        <property name="BreakOnCamelCasing" />
+      </itemgroup>
+    </itemgroups>
+    <signals />
+  </object>
   <object type="MonoDevelop.Components.MenuButton" palette-category="MonoDevelop.Components" allow-children="false" base-type="Gtk.Button">
     <itemgroups>
       <itemgroup label="MenuButton Properties">
@@ -8,9 +21,14 @@
     </itemgroups>
     <signals />
   </object>
-  <object type="MonoDevelop.Components.NotebookButtonBar" palette-category="MonoDevelop.Components" allow-children="false" base-type="Gtk.Toolbar">
+  <object type="MonoDevelop.Components.IconView" palette-category="MonoDevelop.Components" allow-children="false" base-type="Gtk.ScrolledWindow">
     <itemgroups />
-    <signals />
+    <signals>
+      <itemgroup label="IconView Signals">
+        <signal name="IconSelected" />
+        <signal name="IconDoubleClicked" />
+      </itemgroup>
+    </signals>
   </object>
   <object type="MonoDevelop.Components.FolderEntry" palette-category="MonoDevelop.Components" allow-children="false" base-type="Gtk.HBox">
     <itemgroups>
@@ -26,19 +44,6 @@
       </itemgroup>
     </signals>
   </object>
-  <object type="MonoDevelop.Components.FixedWidthWrapLabel" palette-category="MonoDevelop.Components" allow-children="false" base-type="Gtk.Widget">
-    <itemgroups>
-      <itemgroup label="FixedWidthWrapLabel Properties">
-        <property name="MaxWidth" />
-        <property name="Markup" />
-        <property name="Text" />
-        <property name="Indent" />
-        <property name="BreakOnPunctuation" />
-        <property name="BreakOnCamelCasing" />
-      </itemgroup>
-    </itemgroups>
-    <signals />
-  </object>
   <object type="MonoDevelop.Components.FileEntry" palette-category="MonoDevelop.Components" allow-children="false" base-type="Gtk.HBox">
     <itemgroups>
       <itemgroup label="BaseFileEntry Properties">
@@ -53,12 +58,22 @@
       </itemgroup>
     </signals>
   </object>
-  <object type="MonoDevelop.Components.IconView" palette-category="MonoDevelop.Components" allow-children="false" base-type="Gtk.ScrolledWindow">
+  <object type="MonoDevelop.Components.NotebookButtonBar" palette-category="MonoDevelop.Components" allow-children="false" base-type="Gtk.Toolbar">
     <itemgroups />
+    <signals />
+  </object>
+  <object type="MonoDevelop.Components.ListView" palette-category="General" allow-children="false" base-type="Gtk.DrawingArea">
+    <itemgroups>
+      <itemgroup label="ListView Properties">
+        <property name="Selection" />
+        <property name="SelectionDisabled" />
+        <property name="Page" />
+      </itemgroup>
+    </itemgroups>
     <signals>
-      <itemgroup label="IconView Signals">
-        <signal name="IconSelected" />
-        <signal name="IconDoubleClicked" />
+      <itemgroup label="ListView Signals">
+        <signal name="SelectionChanged" />
+        <signal name="ItemActivated" />
       </itemgroup>
     </signals>
   </object>

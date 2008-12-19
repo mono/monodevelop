@@ -9,6 +9,7 @@ REFS =  \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	-r:Mono.Posix \
 	-r:System \
+	-r:System.Core \
 	-r:System.Drawing \
 	-r:System.Xml
 
@@ -105,8 +106,10 @@ FILES =  \
 	MonoDevelop.Components/Navbar.cs \
 	MonoDevelop.Components/NotebookButtonBar.cs \
 	MonoDevelop.Components/TabLabel.cs \
+	MonoDevelop.Components/TooltipWindow.cs \
 	MonoDevelop.Components/TreeViewCellContainer.cs \
-	MonoDevelop.Components/TreeViewState.cs
+	MonoDevelop.Components/TreeViewState.cs \
+	MonoDevelop.Components/WindowTransparencyDecorator.cs
 
 RES =  \
 	gtk-gui/gui.stetic \
