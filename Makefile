@@ -45,3 +45,6 @@ test:
 
 check-addins:
 	cd main && make check-addins
+
+app-dir:
+	cd main && make app-dir

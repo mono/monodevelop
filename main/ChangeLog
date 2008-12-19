@@ -1,3 +1,8 @@
+2008-12-19  Rusty Howell <rhowell@novell.com>
+
+	* Added 'make app-dir' as target to create OSX .app
+	* Added resources files for .app
+
 2008-12-02  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* configure.in: Remove configure-generated AssemblyInfo.cs files.

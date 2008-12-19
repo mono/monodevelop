@@ -97,6 +97,14 @@ check-addins:
 test:
 	cd tests/UnitTests && make test fixture=$(fixture)
 
+app-dir: all
+	cd build && make app-dir
+#mkdir -p $(MAC_APP_DIR)/Contents/{MacOS,Resources}
+#mkdir -p $(MAC_APP_LIB_DIR)
+#cp -a build/AddIns $(MAC_APP_LIB_DIR)
+#cp -a build/data $(MAC_APP_LIB_DIR)
+#cp -a build/bin $(MAC_APP_LIB_DIR)
+
 # we can't use the variables that are conditionally defined
 EXTRA_DIST = $(bin_SCRIPTS) $(desktop_DATA) $(pixmap_DATA) \
 	monodevelop.xml $(pkgconfig_in_files)
