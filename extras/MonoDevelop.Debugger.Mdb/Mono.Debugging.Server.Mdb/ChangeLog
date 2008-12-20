@@ -1,3 +1,7 @@
+2008-12-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* TimedEvaluator.cs: Fix build for old mono versions.
+
 2008-12-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* TimedEvaluator.cs:

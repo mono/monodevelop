@@ -87,7 +87,7 @@ namespace DebuggerServer
 			task.RunningEvent.WaitOne ();
 			
 			lock (task) {
-				if (!task.RunFinishedEvent.WaitOne (runTimeout)) {
+				if (!task.RunFinishedEvent.WaitOne (runTimeout, false)) {
 					task.TimedOut = true;
 					return false;
 				} else {
