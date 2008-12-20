@@ -11,7 +11,7 @@
 	<key>CFBundleIdentifier</key>
 	<string>com.ximian.monodevelop</string>
 	<key>CFBundleInfoDictionaryVersion</key>
-	<string>@VERSION@</string>
+	<string>@ASSEMBLY_VERSION@</string>
 	<key>CFBundleName</key>
 	<string>MonoDevelop</string>
 	<key>CFBundlePackageType</key>

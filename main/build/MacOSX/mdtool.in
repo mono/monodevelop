@@ -1,6 +1,8 @@
 #!/bin/sh
 
 # Author: Marc Christensen (mchristensen@novell.com)
+OSX_VERSION=$(uname -r | cut -f1 -d.)
+MONO=`which mono`
 
 reWrite() {
     ret=""
@@ -33,24 +35,37 @@ fi
 
 eval set -- `reWrite "$@"`
 
+ARGS=
+
 case x$1 in
 	x--profile)
 		shift
-		exec -a "mdtool" /tmp/build_deps/bin/mono --profile $MD_BIN_PATH/mdrun.exe "$@"
-		exit 0
+		ARGS=--profile
+		#exec -a "mdtool" $MONO --profile $MD_BIN_PATH/mdrun.exe "$@"
+		#exit 0
 		;;
 	x--debug)
 		shift
 		export MONODEVELOP_DISPATCH_DEBUG=yes
-		exec -a "mdtool" /tmp/build_deps/bin/mono --debug $MD_BIN_PATH/mdrun.exe "$@"
-		exit 0
+		ARGS=--debug
+		#exec -a "mdtool" $MONO --debug $MD_BIN_PATH/mdrun.exe "$@"
+		#exit 0
 		;;
 	x--trace)
 		shift
-		exec -a "mdtool" /tmp/build_deps/bin/mono --trace $MD_BIN_PATH/mdrun.exe "$@"
-		exit 0;
+		ARGS=--trace
+		#exec -a "mdtool" $MONO --trace $MD_BIN_PATH/mdrun.exe "$@"
+		#exit 0;
 		;;
 esac
 
-exec /tmp/build_deps/bin/mono $MD_BIN_PATH/mdrun.exe "$@"
+if [ OSX_VERSION -lt 9 ]; then  # OSX 10.4 or earlier
+	$MONO $ASSEMBLY "$@"
+else  # OSX 10.5
+	exec -a $MONO $MD_BIN_PATH/mdrun.exe "$@"
+fi
+
+
+
+
 
