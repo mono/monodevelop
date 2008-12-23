@@ -1,3 +1,10 @@
+2008-12-24  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Gui/CSharpTextEditorCompletion.cs:
+	* Gui/NRefactoryParameterDataProvider.cs: Optimize
+	GetParameterCompletionCommandOffset. It was a cause of important
+	slowdowns in the editor when pressing return.
+
 2008-12-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Gui/CSharpTextEditorCompletion.cs: Optimized. Do nothing in

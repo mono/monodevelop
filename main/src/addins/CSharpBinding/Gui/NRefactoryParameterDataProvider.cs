@@ -153,10 +153,10 @@ namespace MonoDevelop.CSharpBinding
 		
 		public int GetCurrentParameterIndex (ICodeCompletionContext ctx)
 		{
-			return GetCurrentParameterIndex (editor, ctx.TriggerOffset);
+			return GetCurrentParameterIndex (editor, ctx.TriggerOffset, 0);
 		}
 		
-		internal static int GetCurrentParameterIndex (TextEditor editor, int offset)
+		internal static int GetCurrentParameterIndex (TextEditor editor, int offset, int memberStart)
 		{
 			int cursor = editor.CursorPosition;
 			int i = offset;
@@ -167,7 +167,7 @@ namespace MonoDevelop.CSharpBinding
 				return 0;
 			
 			CSharpIndentEngine engine = new CSharpIndentEngine ();
-			int index = 1;
+			int index = memberStart + 1;
 			do {
 				char c = editor.GetCharAt (i - 1);
 				

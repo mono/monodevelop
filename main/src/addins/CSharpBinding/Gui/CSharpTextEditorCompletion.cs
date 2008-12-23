@@ -425,14 +425,66 @@ namespace MonoDevelop.CSharpBinding.Gui
 			}
 			return null;
 		}
+
+		int GetMemberStartPosition (IMember mem)
+		{
+			if (mem is IField)
+				return Editor.GetPositionFromLineColumn (mem.Location.Line, mem.Location.Column);
+			else if (mem != null)
+				return Editor.GetPositionFromLineColumn (mem.BodyRegion.Start.Line, mem.BodyRegion.Start.Column);
+			else
+				return 0;
+		}
+
+		IMember GetMemberAtPosition (int pos)
+		{
+			int lin, col;
+			Editor.GetLineColumnFromPosition (pos, out lin, out col);
+			if (Document.ParsedDocument != null) {
+				foreach (IType t in Document.ParsedDocument.CompilationUnit.Types) {
+					if (t.BodyRegion.Contains (lin, col)) {
+						IMember mem = GetMemberAtPosition (t, lin, col);
+						if (mem != null)
+							return mem;
+						else
+							return t;
+					}
+				}
+			}
+			return null;
+		}
+		
+		IMember GetMemberAtPosition (IType t, int lin, int col)
+		{
+			foreach (IMember mem in t.Members) {
+				if (mem.BodyRegion.Contains (lin, col)) {
+					if (mem is IType) {
+						IMember tm = GetMemberAtPosition ((IType)mem, lin, col);
+						if (tm != null)
+							return tm;
+					}
+					return mem;
+				}
+				else if (mem is IField && ((IField)mem).Location.Line == lin)
+					return mem;
+			}
+			return null;
+		}
 		
 		public override bool GetParameterCompletionCommandOffset (out int cpos)
 		{
+			// Start calculating the parameter offset from the beginning of the
+			// current member, instead of the beginning of the file. 
 			cpos = Editor.CursorPosition - 1;
-			while (cpos > 0) {
+			IMember mem = GetMemberAtPosition (cpos);
+			if (mem == null || (mem is IType))
+				return false;
+			int startPos = GetMemberStartPosition (mem);
+			
+			while (cpos > startPos) {
 				char c = Editor.GetCharAt (cpos);
 				if (c == '(') {
-					int p = NRefactoryParameterDataProvider.GetCurrentParameterIndex (Editor, cpos + 1);
+					int p = NRefactoryParameterDataProvider.GetCurrentParameterIndex (Editor, cpos + 1, startPos);
 					if (p != -1) {
 						cpos++;
 						return true;
