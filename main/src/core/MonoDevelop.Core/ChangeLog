@@ -1,3 +1,10 @@
+2008-12-24  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.mdp: Updated.
+
+	* MonoDevelop.Core/FileService.cs: Added method for checking validity of
+	paths.
+
 2008-12-12  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* frameworks.xml: Add missing lib.

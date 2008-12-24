@@ -280,9 +280,24 @@ namespace MonoDevelop.Core
 			return Path.GetFullPath (Path.Combine (baseDirectoryPath, relPath));
 		}
 		
+		public static bool IsValidPath (string fileName)
+		{
+			if (String.IsNullOrEmpty (fileName) || fileName.Trim() == string.Empty) 
+				return false;
+			if (fileName.IndexOfAny (Path.GetInvalidPathChars ()) >= 0)
+				return false;
+			if(fileName.IndexOfAny("$#@!%^&*?|'\";:}{".ToCharArray()) > -1)
+				return false;
+			return true;
+		}
+
 		public static bool IsValidFileName (string fileName)
 		{
-			if (String.IsNullOrEmpty (fileName) || fileName.IndexOfAny (Path.GetInvalidPathChars ()) >= 0)
+			if (String.IsNullOrEmpty (fileName) || fileName.Trim() == string.Empty) 
+				return false;
+			if (fileName.IndexOfAny (Path.GetInvalidPathChars ()) >= 0)
+				return false;
+			if(fileName.IndexOfAny("$#@!%^&*/?\\|'\";:}{".ToCharArray()) > -1)
 				return false;
 			return true;
 		}
