@@ -311,9 +311,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		public override void RenameItem (string newName)
 		{
-			if (newName.IndexOfAny (new char [] { '\'', '(', ')', '"', '{', '}', '|' } ) != -1) {
-				MessageService.ShowError (GettextCatalog.GetString (
-					"Project name may not contain any of the following characters: {0}", "', (, ), \", {, }, |"));
+			if (!FileService.IsValidFileName(newName)) {
+				MessageService.ShowError (GettextCatalog.GetString ("Illegal project name.\nOnly use letters, digits, space, '.' or '_'."));
 				return;
 			}
 			

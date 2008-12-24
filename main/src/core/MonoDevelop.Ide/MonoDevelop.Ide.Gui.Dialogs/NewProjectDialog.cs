@@ -381,16 +381,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 
 			if(solution.Equals("")) solution = name; //This was empty when adding after first combine
 			
-			//The one below seemed to be failing sometimes.
-			if(solution.IndexOfAny("$#@!%^&*/?\\|'\";:}{".ToCharArray()) > -1) {
-				MessageService.ShowError (GettextCatalog.GetString ("Illegal project name.\nOnly use letters, digits, space, '.' or '_'."));
-				return false;
-			}
-
-			if ((solution != null && solution.Trim () != "" 
-				&& (!FileService.IsValidFileName (solution) || solution.IndexOf(System.IO.Path.DirectorySeparatorChar) >= 0)) ||
-			    !FileService.IsValidFileName(name)     || name.IndexOf(System.IO.Path.DirectorySeparatorChar) >= 0 ||
-			    !FileService.IsValidFileName(location)) {
+			if (
+				!FileService.IsValidFileName (solution) || 
+			    	!FileService.IsValidFileName(name) ||
+				!FileService.IsValidPath(location))
+			{
 				MessageService.ShowError (GettextCatalog.GetString ("Illegal project name.\nOnly use letters, digits, space, '.' or '_'."));
 				return false;
 			}
