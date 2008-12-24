@@ -190,7 +190,7 @@
 
 	<Extension path = "/MonoDevelop/Deployment/DeployPlatforms">
 		<DeployPlatform id="Linux" _label="Linux" />
-		<DeployPlatform id="Windows" _label="Windows" />
+		<DeployPlatform id="Windows" _label="Microsoft Windows" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/ProjectFeatures">
