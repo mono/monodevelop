@@ -92,7 +92,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 				return false;
 			}
 
-			if (!FileService.IsValidFileName (outputPathEntry.Path)) {
+			if (!FileService.IsValidPath (outputPathEntry.Path)) {
 				MessageService.ShowError (GettextCatalog.GetString ("Invalid output directory specified"));
 				return false;
 			}
