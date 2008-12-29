@@ -1,5 +1,9 @@
 2008-12-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* md1format.xml: Sync with VBCompilerParameters.
+
+2008-12-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* Project/VBCompilerParameters.cs:
 	* Gui/CodeGenerationPanelWidget.cs: Remove compiler parameters which
 	aren't applicable to any vb compiler. Added MyType compiler
