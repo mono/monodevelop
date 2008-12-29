@@ -27,12 +27,6 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;
 
 namespace VBBinding {
-	
-	public enum VBCompiler {
-		Vbc,
-		Mbas
-	};
-	
 	/// <summary>
 	/// This class handles project specific compiler parameters
 	/// </summary>
@@ -41,19 +35,11 @@ namespace VBBinding {
 		[ItemProperty("Compilerversion")]
 		string vbCompilerVersion = String.Empty;
 		
-		VBCompiler vbCompiler = VBCompiler.Mbas;
-		
-		[ItemProperty("WarningLevel", DefaultValue=4)]
-		int  warninglevel = 4;
-		
 		[ItemProperty("NoWarn")]
 		string noWarnings = String.Empty;
 		
 		[ItemProperty("Optimize", DefaultValue=false)]
 		bool optimize = false;
-		
-		[ItemProperty("AllowUnsafeBlocks", DefaultValue=false)]
-		bool unsafecode = false;
 		
 		[ItemProperty("RemoveIntegerChecks", DefaultValue=false)]
 		bool generateOverflowChecks = false;
@@ -85,14 +71,8 @@ namespace VBBinding {
 		[ItemProperty("additionalParameters")]
 		string additionalParameters = String.Empty;
 		
-		[ProjectPathItemProperty("VBDOC-outputfile")]
-		string outputfile = String.Empty;
-		
-		[ItemProperty("VBDOC-filestoparse")]
-		string filestoparse = String.Empty;
-		
-		[ItemProperty("VBDOC-commentprefix")]
-		string commentprefix = "'";
+		[ItemProperty("MyType")]
+		string mytype = "";
 		
 		public object Clone ()
 		{
@@ -109,15 +89,6 @@ namespace VBBinding {
 			}
 		} 
 		
-		public VBCompiler VBCompiler {
-			get {
-				return vbCompiler;
-			}
-			set {
-				vbCompiler = value;
-			}
-		}
-		
 		public bool GenerateOverflowChecks
 		{
 			get {
@@ -128,12 +99,12 @@ namespace VBBinding {
 			}
 		}
 		
-		public bool UnsafeCode {
+		public string MyType {
 			get {
-				return unsafecode;
+				return mytype;
 			}
 			set {
-				unsafecode = value;
+				mytype = value;
 			}
 		}
 		
@@ -143,16 +114,6 @@ namespace VBBinding {
 			}
 			set {
 				generateXmlDocumentation = value;
-			}
-		}
-		
-		
-		public int WarningLevel {
-			get {
-				return warninglevel;
-			}
-			set {
-				warninglevel = value;
 			}
 		}
 		
@@ -236,36 +197,6 @@ namespace VBBinding {
 			}
 		}
 		
-		public string VBDOCOutputFile
-		{
-			get {
-				return outputfile;
-			}
-			set {
-				outputfile = value;
-			}
-		}
-		
-		public string[] VBDOCFiles
-		{
-			get {
-				return filestoparse.Split(';');
-			}
-			set {
-				filestoparse = System.String.Join(";", value);
-			}
-		}
-		
-		public string VBDOCCommentPrefix
-		{
-			get {
-				return commentprefix;
-			}
-			set {
-				commentprefix = value;
-			}
-		}
-
 		public string AdditionalParameters {
 			get {
 				return additionalParameters;

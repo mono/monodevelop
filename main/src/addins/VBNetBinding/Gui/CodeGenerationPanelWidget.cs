@@ -86,11 +86,9 @@ namespace MonoDevelop.VBNetBinding
 			mainClassEntry.Entry.Text = parameters.MainClass;
 			
 			generateOverflowChecksCheckButton.Active = parameters.GenerateOverflowChecks;
-			allowUnsafeCodeCheckButton.Active = parameters.UnsafeCode;
 			enableOptimizationCheckButton.Active = parameters.Optimize;
 			
 			warningsAsErrorsCheckButton.Active = !config.RunWithWarnings;
-			warningLevelSpinButton.Value = parameters.WarningLevel;
 			additionalArgsEntry.Text = parameters.AdditionalParameters;
 		}
 		
@@ -100,11 +98,9 @@ namespace MonoDevelop.VBNetBinding
 			parameters.MainClass = mainClassEntry.Entry.Text;
 			
 			parameters.GenerateOverflowChecks = generateOverflowChecksCheckButton.Active;
-			parameters.UnsafeCode = allowUnsafeCodeCheckButton.Active;
 			parameters.Optimize = enableOptimizationCheckButton.Active;
 			
 			config.RunWithWarnings = !warningsAsErrorsCheckButton.Active;
-			parameters.WarningLevel = (int)warningLevelSpinButton.Value;
 			parameters.AdditionalParameters = additionalArgsEntry.Text;
 		}
 		

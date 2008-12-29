@@ -1,3 +1,10 @@
+2008-12-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Project/VBCompilerParameters.cs:
+	* Gui/CodeGenerationPanelWidget.cs: Remove compiler parameters which
+	aren't applicable to any vb compiler. Added MyType compiler
+	parameter.
+
 2008-12-12  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* VBNetBinding.mdp: All projects now require fx 3.5.
