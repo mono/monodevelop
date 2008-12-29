@@ -1,5 +1,16 @@
 2008-12-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* FormattingStrategy:
+	* Parser/SharpDevelopTree:
+	* Parser/SharpDevelopTree/Class.cs:
+	* Parser/SharpDevelopTree/ReturnType.cs:
+	* Parser/SharpDevelopTree/Constructor.cs:
+	* FormattingStrategy/VBFormattingStrategy.cs:
+	* Parser/SharpDevelopTree/CompilationUnit.cs: Deleted unused/empty
+	files.
+
+2008-12-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* VBNetBinding.mdp: Updated.
 
 2008-12-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
