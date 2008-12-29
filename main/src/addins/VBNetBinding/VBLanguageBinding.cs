@@ -31,7 +31,6 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.CodeGeneration;
-using VBBinding.Parser;
 
 namespace VBBinding
 {
