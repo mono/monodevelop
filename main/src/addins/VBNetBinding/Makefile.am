@@ -26,15 +26,6 @@ FILES =  \
 	Gui/CodeGenerationPanel.cs \
 	Gui/CodeGenerationPanelWidget.cs \
 	Parser/DomParser.cs \
-	Parser/ExpressionFinder.cs \
-	Parser/Parser.cs \
-	Parser/Resolver.cs \
-	Parser/SharpDevelopTree/Class.cs \
-	Parser/SharpDevelopTree/CompilationUnit.cs \
-	Parser/SharpDevelopTree/Constructor.cs \
-	Parser/SharpDevelopTree/ReturnType.cs \
-	Parser/TypeVisitor.cs \
-	Parser/VBNetVisitor.cs \
 	Project/VBCompilerParameters.cs \
 	Project/VBNetResourceIdBuilder.cs \
 	VBAmbience.cs \

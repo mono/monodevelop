@@ -1,5 +1,14 @@
 2008-12-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* Makefile.am:
+	* Parser/Parser.cs:
+	* Parser/Resolver.cs:
+	* Parser/TypeVisitor.cs:
+	* Parser/VBNetVisitor.cs:
+	* Parser/ExpressionFinder.cs: Delete unused/commented out files.
+
+2008-12-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* SharpRefactoryVB:
 	* SharpRefactoryVB/src:
 	* SharpRefactoryVB/src/Lexer:
