@@ -45,13 +45,11 @@ FILES =  \
 	MonoDevelop.Xml.StateEngine/XmlParsedDocument.cs \
 	MonoDevelop.Xml.StateEngine/XmlProcessingInstructionState.cs \
 	MonoDevelop.Xml.StateEngine/XmlTagState.cs \
-	MonoDevelop.XmlEditor.Completion/ClosingBracketCompletionDataProvider.cs \
 	MonoDevelop.XmlEditor.Completion/EmptyXmlCompletionProvider.cs \
 	MonoDevelop.XmlEditor.Completion/ILazilyLoadedProvider.cs \
 	MonoDevelop.XmlEditor.Completion/IXmlCompletionProvider.cs \
 	MonoDevelop.XmlEditor.Completion/XmlCompletionData.cs \
 	MonoDevelop.XmlEditor.Completion/XmlCompletionDataCollection.cs \
-	MonoDevelop.XmlEditor.Completion/XmlCompletionDataProvider.cs \
 	MonoDevelop.XmlEditor.Completion/XmlMultipleClosingTagCompletionData.cs \
 	MonoDevelop.XmlEditor.Completion/XmlSchemaCompletionData.cs \
 	MonoDevelop.XmlEditor.Completion/XmlSchemaCompletionDataCollection.cs \
@@ -65,6 +63,7 @@ FILES =  \
 	MonoDevelop.XmlEditor/EncodedStringWriter.cs \
 	MonoDevelop.XmlEditor/QualifiedName.cs \
 	MonoDevelop.XmlEditor/QualifiedNameCollection.cs \
+	MonoDevelop.XmlEditor/XmlDocumentParser.cs \
 	MonoDevelop.XmlEditor/XmlEditorAddInOptions.cs \
 	MonoDevelop.XmlEditor/XmlEditorService.cs \
 	MonoDevelop.XmlEditor/XmlElementPath.cs \

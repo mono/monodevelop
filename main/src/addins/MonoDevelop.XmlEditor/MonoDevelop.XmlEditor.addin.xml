@@ -135,4 +135,8 @@
 	<Extension path = "/MonoDevelop/Core/StockIcons">
 		<StockIcon stockid = "MonoDevelop.XmlEditor.XPathQueryPad" resource = "XPathQueryPad.png" />
 	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/DomParser">
+		<Class class = "MonoDevelop.XmlEditor.XmlDocumentParser" id = "XmlParser" />
+	</Extension>
 </Addin>

@@ -1,5 +1,25 @@
 2008-12-29  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.XmlEditor.addin.xml:
+	* MonoDevelop.XmlEditor/XmlDocumentParser.cs: Added a parser for XML
+	files. Enables folding and error underlining.
+
+	* Makefile.am:
+	* MonoDevelop.XmlEditor.mdp: Updated.
+
+	* MonoDevelop.XmlEditor/SourceViewTextIterator.cs:
+	* MonoDevelop.XmlEditor.Completion/XmlCompletionDataProvider.cs:
+	* MonoDevelop.XmlEditor.Completion/ClosingBracketCompletionDataProvider.cs:
+	Removed, no longer used.
+
+	* MonoDevelop.XmlEditor/XmlTextEditorExtension.cs: Port to subclass the
+	BaseXmlEditorExtension instead of the custom XML parser. Improves
+	completion and triggering, and adds outline and path bar support.
+	There may be a few minor regressions in namespace resolution and the
+	goto schema command, and performance needs work.
+
+2008-12-29  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.XmlEditor.Gui/BaseXmlEditorExtension.cs: Moved
 	outline-building code from MoonlightEditorExtension to be the default
 	implementation in BaseXmlEditorExtension, since it works with any
