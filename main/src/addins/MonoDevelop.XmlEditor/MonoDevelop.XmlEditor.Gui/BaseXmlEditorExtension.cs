@@ -228,6 +228,7 @@ namespace MonoDevelop.XmlEditor.Gui
 					if (AutoCompleteClosingTags) {
 						buf.BeginAtomicUndo ();
 						buf.InsertText (buf.CursorPosition, tag);
+						buf.CursorPosition -= tag.Length;
 						buf.EndAtomicUndo ();
 						return null;
 					} else {

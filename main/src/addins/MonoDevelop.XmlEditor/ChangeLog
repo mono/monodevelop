@@ -1,5 +1,10 @@
 2008-12-29  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.XmlEditor.Gui/BaseXmlEditorExtension.cs: Fix cursor
+	position after autocompleting end tags.
+
+2008-12-29  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.XmlEditor.addin.xml:
 	* MonoDevelop.XmlEditor/XmlDocumentParser.cs: Added a parser for XML
 	files. Enables folding and error underlining.
