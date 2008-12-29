@@ -18,15 +18,6 @@
     <File name="VBAmbience.cs" subtype="Code" buildaction="Compile" />
     <File name="VBBindingCompilerServices.cs" subtype="Code" buildaction="Compile" />
     <File name="VBLanguageBinding.cs" subtype="Code" buildaction="Compile" />
-    <File name="Parser/ExpressionFinder.cs" subtype="Code" buildaction="Compile" />
-    <File name="Parser/Parser.cs" subtype="Code" buildaction="Compile" />
-    <File name="Parser/Resolver.cs" subtype="Code" buildaction="Compile" />
-    <File name="Parser/TypeVisitor.cs" subtype="Code" buildaction="Compile" />
-    <File name="Parser/VBNetVisitor.cs" subtype="Code" buildaction="Compile" />
-    <File name="Parser/SharpDevelopTree/Class.cs" subtype="Code" buildaction="Compile" />
-    <File name="Parser/SharpDevelopTree/CompilationUnit.cs" subtype="Code" buildaction="Compile" />
-    <File name="Parser/SharpDevelopTree/Constructor.cs" subtype="Code" buildaction="Compile" />
-    <File name="Parser/SharpDevelopTree/ReturnType.cs" subtype="Code" buildaction="Compile" />
     <File name="Project/VBCompilerParameters.cs" subtype="Code" buildaction="Compile" />
     <File name="templates/EmptyVBFile.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="templates/EmptyVBProject.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
@@ -58,12 +49,12 @@
     <ProjectReference type="Project" localcopy="False" refto="NRefactory" />
     <ProjectReference type="Gac" localcopy="True" refto="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <ProjectReference type="Gac" localcopy="True" specificVersion="False" refto="Mono.Addins, Version=0.3.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
-    <ProjectReference type="Gac" localcopy="True" refto="pango-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="True" refto="atk-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Projects.Gui" />
+    <ProjectReference type="Gac" localcopy="True" refto="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
   </References>
   <GtkDesignInfo />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">

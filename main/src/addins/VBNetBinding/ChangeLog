@@ -1,5 +1,9 @@
 2008-12-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* VBNetBinding.mdp: Updated.
+
+2008-12-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* Makefile.am:
 	* Parser/Parser.cs:
 	* Parser/Resolver.cs:
