@@ -175,6 +175,8 @@ namespace MonoDevelop.XmlEditor.Gui
 		protected virtual void OnDocTypeChanged ()
 		{
 		}
+		
+		protected bool AutoCompleteClosingTags { get; set; }
 
 		#region Code completion
 
@@ -206,7 +208,7 @@ namespace MonoDevelop.XmlEditor.Gui
 		protected virtual ICompletionDataList HandleCodeCompletion (
 		    CodeCompletionContext completionContext, bool forced, ref int triggerWordLength)
 		{
-			ITextBuffer buf = this.Buffer;
+			IEditableTextBuffer buf = this.EditableBuffer;
 
 			// completionChar may be a space even if the current char isn't, when ctrl-space is fired t
 			DomLocation currentLocation = new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset);
@@ -222,10 +224,17 @@ namespace MonoDevelop.XmlEditor.Gui
 				//get name of current node in document that's being ended
 				XElement el = tracker.Engine.Nodes.Peek () as XElement;
 				if (el != null && el.Region.End >= currentLocation && !el.IsClosed && el.IsNamed) {
-					CompletionDataList cp = new CompletionDataList ();
-					cp.Add (new MonoDevelop.XmlEditor.Completion.XmlTagCompletionData (
-					        String.Concat ("</", el.Name.FullName, ">"), 0, true));
-					return cp;
+					string tag = String.Concat ("</", el.Name.FullName, ">");
+					if (AutoCompleteClosingTags) {
+						buf.BeginAtomicUndo ();
+						buf.InsertText (buf.CursorPosition, tag);
+						buf.EndAtomicUndo ();
+						return null;
+					} else {
+						CompletionDataList cp = new CompletionDataList ();
+						cp.Add (new XmlTagCompletionData (tag, 0, true));
+						return cp;
+					}
 				}
 				return null;
 			}
@@ -235,6 +244,31 @@ namespace MonoDevelop.XmlEditor.Gui
 				CompletionDataList list = new CompletionDataList ();
 				GetElementCompletions (list);
 				return list.Count > 0? list : null;
+			}
+			
+			//entity completion
+			if (currentChar == '&' && (tracker.Engine.CurrentState is XmlFreeState ||
+			                           tracker.Engine.CurrentState is XmlAttributeValueState))
+			{
+				CompletionDataList list = new CompletionDataList ();
+				
+				//todo: need to tweak semicolon insertion
+				list.Add ("apos").Description = "'";
+				list.Add ("quot").Description = "\"";
+				list.Add ("lt").Description = "<";
+				list.Add ("gt").Description = ">";
+				list.Add ("amp").Description = "&";
+				
+				//not sure about these "completions". they're more like
+				//shortcuts than completions but they're pretty useful
+				list.Add ("'").CompletionText = "apos;";
+				list.Add ("\"").CompletionText = "quot;";
+				list.Add ("<").CompletionText = "lt;";
+				list.Add (">").CompletionText = "gt;";
+				list.Add ("&").CompletionText = "amp;";
+				
+				GetEntityCompletions (list);
+				return list;
 			}
 			
 			//doctype completion
@@ -343,6 +377,10 @@ namespace MonoDevelop.XmlEditor.Gui
 		protected virtual void GetAttributeValueCompletions (CompletionDataList list,
 		                                                     IAttributedXObject attributedOb,
 		                                                     XAttribute att)
+		{
+		}
+		
+		protected virtual void GetEntityCompletions (CompletionDataList list)
 		{
 		}
 		
@@ -525,25 +563,53 @@ namespace MonoDevelop.XmlEditor.Gui
 				PathChanged (this, new DocumentPathChangedEventArgs (oldPath, oldSelectedIndex));
 		}
 		
-		XName GetCompleteName ()
+		protected XName GetCompleteName ()
 		{
 			Debug.Assert (this.tracker.Engine.CurrentState is XmlNameState);
 			
-			int pos = this.tracker.Engine.Position;
+			int end = this.tracker.Engine.Position;
+			int start = end - this.tracker.Engine.CurrentStateLength;
+			int mid = -1;
 			
-			//hoist this as it may not be cheap to evaluate (P/Invoke), but won't be changing during the loop
-			int textLen = Editor.TextLength;
+			int limit = Math.Min (Editor.TextLength, end + 35);
 			
 			//try to find the end of the name, but don't go too far
-			for (int len = 0; pos < textLen && len < 30; pos++, len++) {
-				char c = Editor.GetCharAt (pos);
-				if (!char.IsLetterOrDigit (c) && c != ':' && c != '_')
+			for (; end < limit; end++) {
+				char c = Editor.GetCharAt (end);
+				
+				if (c == ':') {
+					if (mid == -1)
+						mid = end - 1;
+					else
+						break;
+				} else if (!XmlChar.IsNameChar (c))
 					break;
 			}
 			
-			return new XName (Editor.GetText (this.tracker.Engine.Position - this.tracker.Engine.CurrentStateLength, pos));
+			if (mid > 0) {
+				return new XName (Editor.GetText (start, mid), Editor.GetText (mid, end));
+			} else {
+				return new XName (Editor.GetText (start, end));
+			}
 		}
-		
+		/*
+		protected XNode GetFullNode ()
+		{
+			Parser p = (Parser) ((ICloneable)this.tracker.Engine).Clone ();
+			
+			//run the parser until the tag's closed, or we move to its sibling or parent
+			if (node != null) {
+				while (node.NextSibling == null &&
+					treeParser.Position < textLen && treeParser.Nodes.Peek () != ob.Parent)
+				{
+					char c = Editor.GetCharAt (treeParser.Position);
+					treeParser.Push (c);
+					if (el != null && el.IsClosed && el.ClosingTag.IsComplete)
+						break;
+				}
+			}
+		}
+		*/
 		List<XObject> GetCurrentPath ()
 		{
 			if (this.tracker == null)
@@ -636,10 +702,15 @@ namespace MonoDevelop.XmlEditor.Gui
 		
 		protected virtual void InitializeOutlineColumns (Gtk.TreeView outlineTree)
 		{
+			Gtk.CellRendererText crt = new Gtk.CellRendererText ();
+			crt.Xpad = 0;
+			crt.Ypad = 0;
+			outlineTree.AppendColumn ("Node", crt, new Gtk.TreeCellDataFunc (outlineTreeDataFunc));
 		}
 		
 		protected virtual void OutlineSelectionChanged (object selection)
 		{
+			SelectNode ((XNode)selection);
 		}
 		
 		void RefreshOutline ()
@@ -659,6 +730,10 @@ namespace MonoDevelop.XmlEditor.Gui
 		
 		protected virtual void RefillOutlineStore (ParsedDocument doc, Gtk.TreeStore store)
 		{
+			XDocument xdoc = ((XmlParsedDocument)doc).XDocument;
+			if (xdoc == null)
+				return;
+			BuildTreeChildren (store, Gtk.TreeIter.Zero, xdoc);
 		}
 		
 		void refillOutlineStore ()
@@ -694,6 +769,42 @@ namespace MonoDevelop.XmlEditor.Gui
 			outlineTreeView = null;
 		}
 		
+		static void BuildTreeChildren (Gtk.TreeStore store, Gtk.TreeIter parent, XContainer p)
+		{
+			foreach (XNode n in p.Nodes) {
+				Gtk.TreeIter childIter;
+				if (!parent.Equals (Gtk.TreeIter.Zero))
+					childIter = store.AppendValues (parent, n);
+				else
+					childIter = store.AppendValues (n);
+				
+				XContainer c = n as XContainer;
+				if (c != null && c.FirstChild != null)
+					BuildTreeChildren (store, childIter, c);
+			}
+		}
+		
+		void outlineTreeDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		{
+			Gtk.CellRendererText txtRenderer = (Gtk.CellRendererText) cell;
+			XNode n = (XNode) model.GetValue (iter, 0);
+			txtRenderer.Text = n.FriendlyPathRepresentation;
+		}
+		
+		public void SelectNode (XNode n)
+		{
+			MonoDevelop.Projects.Dom.DomRegion region = n.Region;
+			
+			XElement el = n as XElement;
+			if (el != null && el.IsClosed && el.ClosingTag.Region.End > region.End) {
+				region.End = el.ClosingTag.Region.End;
+			}
+			
+			int s = Editor.GetPositionFromLineColumn (region.Start.Line, region.Start.Column);
+			int e = Editor.GetPositionFromLineColumn (region.End.Line, region.End.Column);
+			if (e > s && s > -1)
+				Editor.Select (s, e);
+		}		
 		#endregion
 	}
 }
