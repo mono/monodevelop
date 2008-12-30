@@ -709,6 +709,7 @@ namespace MonoDevelop.Ide.Gui
 				ignorePageSwitch = true;
 				IWorkbenchWindow w = ActiveWorkbenchwindow;
 				tabControl.RemovePage (pageNum);
+				ignorePageSwitch = false;
 				if (w != ActiveWorkbenchwindow)
 					ActiveMdiChanged (null, null);
 			} finally {
