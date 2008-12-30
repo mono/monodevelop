@@ -1,2 +1,10 @@
 <objects attr-sync="on">
+  <object type="MonoDevelop.VBNetBinding.ProjectOptionsPanelWidget" palette-category="General" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups />
+    <signals />
+  </object>
+  <object type="MonoDevelop.VBNetBinding.ConfigurationOptionsPanelWidget" palette-category="General" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups />
+    <signals />
+  </object>
 </objects>

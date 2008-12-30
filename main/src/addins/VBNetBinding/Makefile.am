@@ -16,19 +16,23 @@ REFS =  \
 	$(MONO_ADDINS_LIBS) \
 	-r:Mono.Posix \
 	-r:System \
+	-r:System.Core \
 	-r:System.Drawing \
 	-r:System.Xml
 
 FILES =  \
 	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
-	gtk-gui/MonoDevelop.VBNetBinding.CodeGenerationPanelWidget.cs \
-	Gui/CodeGenerationPanel.cs \
-	Gui/CodeGenerationPanelWidget.cs \
+	gtk-gui/MonoDevelop.VBNetBinding.ConfigurationOptionsPanelWidget.cs \
+	gtk-gui/MonoDevelop.VBNetBinding.ProjectOptionsPanelWidget.cs \
+	Gui/ConfigurationOptionsPanel.cs \
+	Gui/ConfigurationOptionsPanelWidget.cs \
+	Gui/ProjectOptionsPanel.cs \
+	Gui/ProjectOptionsPanelWidget.cs \
 	Parser/DomParser.cs \
 	Project/VBCompilerParameters.cs \
 	Project/VBNetResourceIdBuilder.cs \
-	VBAmbience.cs \
+	ProjectExtensions.cs \
 	VBBindingCompilerServices.cs \
 	VBCodeGenerator.cs \
 	VBLanguageBinding.cs

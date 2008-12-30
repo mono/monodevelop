@@ -33,7 +33,7 @@ using System.Text;
 using MonoDevelop.Projects.Extensions;
 using MonoDevelop.Projects.Formats.MSBuild;
 
-namespace VBBinding
+namespace MonoDevelop.VBNetBinding
 {
 	class VBNetResourceIdBuilder : IResourceHandler
 	{

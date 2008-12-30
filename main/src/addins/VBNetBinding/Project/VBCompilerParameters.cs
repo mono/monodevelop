@@ -2,7 +2,12 @@
 //
 //  This file was derived from a file from #Develop. 
 //
+//  Authors:
+//    Markus Palme <MarkusPalme@gmx.de>
+//    Rolf Bjarne Kvinge <RKvinge@novell.com>
+//
 //  Copyright (C) 2001-2007 Markus Palme <MarkusPalme@gmx.de>
+//  Copyright (C) 2008 Novell, Inc. (http://www.novell.com)
 // 
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -19,191 +24,145 @@
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
 using System;
-using System.Xml;
-using System.Diagnostics;
 using System.ComponentModel;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;
 
-namespace VBBinding {
-	/// <summary>
-	/// This class handles project specific compiler parameters
-	/// </summary>
+namespace MonoDevelop.VBNetBinding {
 	public class VBCompilerParameters: ICloneable
 	{
-		[ItemProperty("Compilerversion")]
-		string vbCompilerVersion = String.Empty;
+		//
+		// Project level properties:
+		// - StartupObject <string>
+		// - RootNamespace <string>
+		// - FileAlignment <int>
+		// - MyType <string> WindowsForms | Windows | Console | WebControl
+		// - TargetFrameworkversion <string> v2.0 | v3.0 | v3.5
+		// - OptionExplicit <string> On | Off
+		// - OptionCompare <string> Binary | Text
+		// - OptionStrict <string> On | Off
+		// - OptionInfer <string> On | Off
+		// - ApplicationIcon <string>
+		//
+		// Configuration level properties:
+		// - DebugSymbols <bool>
+		// - DefineDebug <bool>
+		// - DefineTrace <bool>
+		// - DebugType <string> full | pdbonly | none
+		// - DocumentationFile <string>
+		// - NoWarn <string> comma separated list of numbers
+		// - WarningsAsErrors <string> comma separated list of numbers
+		// - TreatWarningsAsErrors <bool>
+		// - WarningLevel <int> if 0, disable warnings.
+		// - Optimize <bool>
+		// - DefineConstants <string>
+		// - RemoveIntegerChecks <bool>
+		//
+
+		[ItemProperty ("DefineDebug")]
+		bool defineDebug = false;
+
+		[ItemProperty ("DefineTrace")]
+		bool defineTrace = false;
 		
-		[ItemProperty("NoWarn")]
-		string noWarnings = String.Empty;
+		[ItemProperty ("DebugType", DefaultValue="full")]
+		string debugType = "full";
 		
-		[ItemProperty("Optimize", DefaultValue=false)]
+		[ItemProperty ("DocumentationFile")]
+		string documentationFile = string.Empty;
+		
+		[ItemProperty ("NoWarn")]
+		string noWarnings = string.Empty;
+		
+		[ItemProperty ("WarningsAsErrors")]
+		string warningsAsErrors = string.Empty;
+		
+		[ItemProperty ("TreatWarningsAsErrors")]
+		bool treatWarningsAsErrors = false;
+
+		[ItemProperty ("WarningLevel", DefaultValue=1)]
+		int warningLevel = 1; // 0: disable warnings, 1: enable warnings
+		
+		[ItemProperty ("Optimize", DefaultValue=false)]
 		bool optimize = false;
-		
-		[ItemProperty("RemoveIntegerChecks", DefaultValue=false)]
-		bool generateOverflowChecks = false;
-		
-		[ItemProperty("StartupObject")]
-		string mainclass = null;
-		
-		[ItemProperty("DefineConstants", DefaultValue="")]
+
+		[ItemProperty ("DefineConstants", DefaultValue="")]
 		string definesymbols = String.Empty;
 		
-		[ItemProperty("generatexmldocumentation")]
-		bool generateXmlDocumentation = false;
-		
-		[ItemProperty("OptionExplicit", DefaultValue=true)]
-		bool optionExplicit = true;
-		
-		[ItemProperty("OptionStrict", DefaultValue=false)]
-		bool optionStrict = false;
-		
-		[ProjectPathItemProperty("ApplicationIcon")]
-		string win32Icon = String.Empty;
-		
-		[ProjectPathItemProperty("Win32Resource")]
-		string win32Resource = String.Empty;
+		[ItemProperty ("RemoveIntegerChecks", DefaultValue=false)]
+		bool generateOverflowChecks = false;
 
-		[ItemProperty("imports")]
-		string imports = String.Empty;
+		// MD-only properties
 		
-		[ItemProperty("additionalParameters")]
+		[ItemProperty ("AdditionalParameters")]
 		string additionalParameters = String.Empty;
 		
-		[ItemProperty("MyType")]
-		string mytype = "";
+		public bool DefineDebug {
+			get { return defineDebug; }
+			set { defineDebug = value; }
+		}
+
+		public bool DefineTrace {
+			get { return defineTrace; }
+			set { defineTrace = value; }
+		}
+
+		public string DebugType {
+			get { return debugType; }
+			set { debugType = value; }
+		}
+
+		public string DocumentationFile {
+			get { return documentationFile; }
+			set { documentationFile = value; }
+		}
+
+		public string NoWarn {
+			get { return noWarnings; }
+			set { noWarnings = value; }
+		}
+
+		public string WarningsAsErrors {
+			get { return warningsAsErrors; }
+			set { warningsAsErrors = value; }
+		}
+
+		public bool TreatWarningsAsErrors {
+			get { return treatWarningsAsErrors; }
+			set { treatWarningsAsErrors = value; }
+		}
+
+		public bool Optimize {
+			get { return optimize; }
+			set { optimize = value; }
+		}
+
+		public string DefineConstants {
+			get { return definesymbols; }
+			set { definesymbols = value; }
+		}
+
+		public bool RemoveIntegerChecks {
+			get { return generateOverflowChecks; }
+			set { generateOverflowChecks = value; }
+		}
+
+		public bool WarningsDisabled {
+			get { return warningLevel == 0; }
+			set { warningLevel = value ? 0 : 1; }
+		}
 		
+		// MD-only properties
+		
+		public string AdditionalParameters {
+			get { return additionalParameters; }
+			set { additionalParameters = value; }
+		}
+
 		public object Clone ()
 		{
 			return MemberwiseClone ();
-		}
-		
-		public string VBCompilerVersion
-		{
-			get {
-				return vbCompilerVersion;
-			}
-			set {
-				vbCompilerVersion = value;
-			}
-		} 
-		
-		public bool GenerateOverflowChecks
-		{
-			get {
-				return generateOverflowChecks;
-			}
-			set {
-				generateOverflowChecks = value;
-			}
-		}
-		
-		public string MyType {
-			get {
-				return mytype;
-			}
-			set {
-				mytype = value;
-			}
-		}
-		
-		public bool GenerateXmlDocumentation {
-			get {
-				return generateXmlDocumentation;
-			}
-			set {
-				generateXmlDocumentation = value;
-			}
-		}
-		
-		public string Imports
-		{
-			get {
-				return imports;
-			}
-			set {
-				imports = value;
-			}
-		}
-		
-		public string Win32Icon
-		{
-			get {
-				return win32Icon;
-			}
-			set {
-				win32Icon = value;
-			}
-		}
-		
-		public string Win32Resource
-		{
-			get {
-				return win32Resource;
-			}
-			set {
-				win32Resource = value;
-			}
-		}
-
-		public string DefineSymbols
-		{
-			get {
-				return definesymbols;
-			}
-			set {
-				definesymbols = value;
-			}
-		}
-		
-		public bool Optimize
-		{
-			get {
-				return optimize;
-			}
-			set {
-				optimize = value;
-			}
-		}
-		
-		public string MainClass
-		{
-			get {
-				return mainclass;
-			}
-			set {
-				mainclass = value;
-			}
-		}
-		
-		public bool OptionExplicit
-		{
-			get {
-				return optionExplicit;
-			}
-			set {
-				optionExplicit = value;
-			}
-		}
-		
-		public bool OptionStrict
-		{
-			get {
-				return optionStrict;
-			}
-			set {
-				optionStrict = value;
-			}
-		}
-		
-		public string AdditionalParameters {
-			get {
-				return additionalParameters;
-			}
-			set {
-				additionalParameters = value;
-			}
 		}
 	}
 }

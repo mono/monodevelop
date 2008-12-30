@@ -32,7 +32,7 @@ using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.CodeGeneration;
 
-namespace VBBinding
+namespace MonoDevelop.VBNetBinding
 {
 	public class VBLanguageBinding : IDotNetLanguageBinding
 	{
@@ -50,8 +50,7 @@ namespace VBBinding
 		
 		public bool IsSourceCodeFile (string fileName)
 		{
-			Debug.Assert(compilerServices != null);
-			return compilerServices.CanCompile(fileName);
+			return Path.GetExtension(fileName) == ".vb";
 		}
 		
 		public BuildResult Compile (ProjectFileCollection projectFiles, ProjectReferenceCollection references, DotNetProjectConfiguration configuration, IProgressMonitor monitor)
@@ -100,7 +99,7 @@ namespace VBBinding
 			[Obsolete ("Use CodeDomProvider class")]
 			public override ICodeGenerator CreateGenerator ()
 			{
-				return new VBBinding.VBCodeGenerator ();
+				return new VBCodeGenerator ();
 			}
 		}
 	}

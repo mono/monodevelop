@@ -1,3 +1,54 @@
+2008-12-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* VBAmbience.cs: Deleted (unused).
+
+	* Gui/CodeGenerationPanel.cs:
+	* Gui/CodeGenerationPanelWidget.cs:
+	* gtk-gui/MonoDevelop.VBNetBinding.CodeGenerationPanelWidget.cs:
+	Deleted, replaced with new widgets.
+
+	* Gui/VBCompilerPanel.cs:
+	* Gui/ChooseRuntimePanel.cs:
+	* Gui/GuiMessageRecipient.cs:
+	* Gui/TextEditorOptionsPanel.cs:
+	* Gui/VBDocConfigurationPanel.cs: Delete unused dialogs.
+
+	* Makefile.am:
+	* md1format.xml:
+	* VBNetBinding.mdp: Updated.
+
+	* gtk-gui/gui.stetic:
+	* VBCodeGenerator.cs:
+	* gtk-gui/objects.xml:
+	* gtk-gui/generated.cs:
+	* ProjectExtensions.cs:
+	* VBLanguageBinding.cs:
+	* VBNetBinding.addin.xml:
+	* Gui/ProjectOptionsPanel.cs:
+	* VBBindingCompilerServices.cs:
+	* Project/VBCompilerParameters.cs:
+	* Gui/ConfigurationOptionsPanel.cs:
+	* Gui/ProjectOptionsPanelWidget.cs:
+	* Project/VBNetResourceIdBuilder.cs:
+	* Gui/ConfigurationOptionsPanelWidget.cs:
+	* gtk-gui/MonoDevelop.VBNetBinding.ProjectOptionsPanelWidget.cs:
+	* gtk-gui/MonoDevelop.VBNetBinding.ConfigurationOptionsPanelWidget.cs:
+	
+	Major overhaul:
+	- Added two new dialogs, one for project-specific options and one
+      for configuration-specific options. All other dialogs	have been 
+	  removed.
+	- Fixed (de)serialization of project-specific options, they are now
+	  correctly passed to the compiler (optionstrict|explicit|compare|
+	  infer + a few more).
+	- We're passing a lot more options to the compiler (-define:_MyType,
+	  -optimize, -optioninfer, -optionstrict, -codepage , -rootnamespace,
+	  -define:DEBUG/TRACE, -doc, -removeintchecks, -imports).
+	- Warnings emitted by the compiler are correctly detected as warnings
+	  instead of errors.
+	- Unified namespace to MonoDevelop.VBNetBinding (there was a mix 
+	  between VBBInding, MonoDevelop.VBBinding and MonoDevelop.VBNetBinding).
+
 2008-12-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* FormattingStrategy:

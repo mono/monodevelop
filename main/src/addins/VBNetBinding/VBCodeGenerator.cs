@@ -53,7 +53,7 @@ using System.IO;
 using System.Reflection;
 using System.Collections;
 
-namespace VBBinding
+namespace MonoDevelop.VBNetBinding
 {
 	class VBCodeGenerator : CodeGenerator
 	{

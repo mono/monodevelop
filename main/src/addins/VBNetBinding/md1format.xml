@@ -1,17 +1,16 @@
 <SerializationMap>
-	<DataItem class = "VBBinding.VBCompilerParameters">
+	<DataItem class = "MonoDevelop.VBNetBinding.VBCompilerParameters">
 		<ItemProperty member="noWarnings" name="nowarn"/>
 		<ItemProperty member="optimize" name="optimize"/>
 		<ItemProperty member="generateOverflowChecks" name="generateoverflowchecks"/>
-		<ItemProperty member="mainclass" name="mainclass"/>
 		<ItemProperty member="definesymbols" name="definesymbols" />
-		<ItemProperty member="generateXmlDocumentation" name="generatexmldocumentation"/>
-		<itemProperty member="optionExplicit" name="optionExplicit" />
-		<ItemProperty member="optionStrict" name="optionStrict" />
-		<ItemProperty member="win32Icon" name="win32Icon" />
-		<ItemProperty member="win32Resource" name="win32Resource"/>
 		<ItemProperty member="additionalParameters" name="additionalParameters" />
-		<ItemProperty member="imports" name="imports" />
-		<ItemProperty member="mytype" name="mytype" />
+		<ItemProperty member="defineDebug" name="defineDebug" />
+		<ItemProperty member="defineTrace" name="defineTrace" />
+		<ItemProperty member="debugType" name="debugType" />
+		<ItemProperty member="documentationFile" name="documentationFile" />
+		<ItemProperty member="warningsAsErrors" name="warningsAsErrors" />
+		<ItemProperyt member="treatWarningsAsErrors" name="treatWarningsAsErrors" />
+		<ItemProperty member="warningLevel" name="warningLevel" />
 	</DataItem>
 </SerializationMap>
