@@ -41,6 +41,9 @@ namespace MonoDevelop.Projects.Extensions
 		[NodeAttribute("type", true, Description="Full name of the property type")]
 		string propType;
 		
+		[NodeAttribute("external", false, Description="Set to true if the property is an extension")]
+		bool external = true;
+		
 		Type type;
 		
 		public Type PropertyType {
@@ -53,6 +56,12 @@ namespace MonoDevelop.Projects.Extensions
 		
 		public string PropertyName {
 			get { return propName; }
+		}
+
+		public bool External {
+			get {
+				return external;
+			}
 		}
 	}
 	

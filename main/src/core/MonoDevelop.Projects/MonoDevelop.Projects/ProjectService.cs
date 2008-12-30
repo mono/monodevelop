@@ -473,7 +473,7 @@ namespace MonoDevelop.Projects
 			}
 			foreach (ItemPropertyCodon cls in AddinManager.GetExtensionNodes (ExtendedPropertiesExtensionPath)) {
 				if (cls.Class != null && cls.PropertyType != null)
-					ctx.RegisterProperty (cls.Class, cls.PropertyName, cls.PropertyType);
+					ctx.RegisterProperty (cls.Class, cls.PropertyName, cls.PropertyType, cls.External);
 			}
 		}
 

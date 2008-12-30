@@ -1,3 +1,9 @@
+2008-12-30  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/ProjectService.cs:
+	* MonoDevelop.Projects.Extensions/ItemPropertyCodon.cs: Allow
+	registering new properties which are not external.
+
 2008-12-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomRegion.cs:
