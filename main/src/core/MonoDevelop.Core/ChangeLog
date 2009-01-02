@@ -1,3 +1,7 @@
+2009-01-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core/FileService.cs: Fix logic for IsInvalidFileName.
+
 2008-12-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Serialization/DataContext.cs: Allow registering new
