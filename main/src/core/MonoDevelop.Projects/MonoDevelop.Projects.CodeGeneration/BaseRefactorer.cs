@@ -272,6 +272,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 		                                               IReturnType privateImplementationType)
 		{
 			CodeTypeMember m;
+			
 			bool is_interface_method = member.DeclaringType.ClassType == ClassType.Interface;
 			bool isIndexer = false;
 			if (member is IEvent) {
@@ -395,15 +396,29 @@ namespace MonoDevelop.Projects.CodeGeneration
 				} 
 			} else {
 				return null;
-			}			
+			}
 			m.Name = isIndexer ? "Item" : member.Name;
 			if ((m.Attributes & MemberAttributes.ScopeMask) != MemberAttributes.Override)
 				// Mark final if not overriding
 				m.Attributes = (m.Attributes & ~MemberAttributes.ScopeMask) | MemberAttributes.Final;
-
-			if (privateImplementationType == null)
-				m.Attributes = (m.Attributes & ~MemberAttributes.AccessMask) | MemberAttributes.Public;
 			
+			if (member.DeclaringType != null && member.DeclaringType.ClassType == ClassType.Interface) {
+				m.Attributes = (m.Attributes & ~MemberAttributes.AccessMask) | MemberAttributes.Public;
+			} else {
+				if (member.IsPublic) {
+					m.Attributes = (m.Attributes & ~MemberAttributes.AccessMask) | MemberAttributes.Public;
+				} else if (member.IsPrivate) {
+					m.Attributes = (m.Attributes & ~MemberAttributes.AccessMask) | MemberAttributes.Private;
+				} else if (member.IsProtectedOrInternal) {
+					m.Attributes = (m.Attributes & ~MemberAttributes.AccessMask) | MemberAttributes.FamilyOrAssembly;
+				} else if (member.IsProtectedAndInternal) {
+					m.Attributes = (m.Attributes & ~MemberAttributes.AccessMask) | MemberAttributes.FamilyOrAssembly;
+				} else if (member.IsInternal) {
+					m.Attributes = (m.Attributes & ~MemberAttributes.AccessMask) | MemberAttributes.Assembly;
+				} else if (member.IsProtected) {
+					m.Attributes = (m.Attributes & ~MemberAttributes.AccessMask) | MemberAttributes.Family;
+				}
+			}
 			return m;
 		}
 		

@@ -1,3 +1,8 @@
+2009-01-02  Full Name  <Email Address>
+
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs: fixed 'Bug
+	460232 - Override/Implement doesn't work'.
+
 2008-12-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/ProjectService.cs:
