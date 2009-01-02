@@ -1,3 +1,8 @@
+2009-01-02  Full Name  <Email Address>
+
+	* MonoDevelop.Ide.Gui/DocumentSwitcher.cs: fixed "Bug 462848 -
+	Monodevelop crash when Alt-Tab with Welcome page opened".
+
 2009-01-02  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui/Document.cs:

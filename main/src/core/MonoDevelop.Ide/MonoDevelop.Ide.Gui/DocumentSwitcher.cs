@@ -251,7 +251,7 @@ namespace MonoDevelop.Ide
 			this.labelTitle.Markup = "<span size=\"xx-large\" weight=\"bold\">" +title + "</span>";
 			this.labelType.Markup =  "<span size=\"small\">" +type + "</span>";
 			string name = fileName;
-			if (name.Length > 40) {
+			if (!String.IsNullOrEmpty (name) && name.Length > 40) {
 				name = "..." + fileName.Substring (name.Length - 40);
 			}
 			this.labelFileName.Text = name;
