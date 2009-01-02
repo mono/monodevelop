@@ -1,3 +1,17 @@
+2009-01-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui/Document.cs:
+	* MonoDevelop.Ide.Gui/Workbench.cs:
+	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:
+	* MonoDevelop.Ide.Gui.OptionPanels/LoadSavePanel.cs:
+	* MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs: Use
+	IsValidFilePath instead of IsValidFileName when checking a path.
+
 2008-12-30  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Fix overzealous suppression

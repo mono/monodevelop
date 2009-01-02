@@ -255,7 +255,7 @@ namespace MonoDevelop.Ide.Gui
 				}
 			}
 		
-			if (!FileService.IsValidFileName (filename)) {
+			if (!FileService.IsValidPath (filename)) {
 				MessageService.ShowMessage (GettextCatalog.GetString ("File name {0} is invalid", filename));
 				return;
 			}

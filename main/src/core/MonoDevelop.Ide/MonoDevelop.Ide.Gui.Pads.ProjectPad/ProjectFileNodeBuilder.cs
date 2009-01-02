@@ -146,7 +146,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			
 			if (oldPath != newPath) {
 				try {
-					if (FileService.IsValidFileName (newPath)) {
+					if (FileService.IsValidPath (newPath)) {
 						FileService.RenameFile (oldPath, newName);
 						IdeApp.Workspace.Save();
 					}

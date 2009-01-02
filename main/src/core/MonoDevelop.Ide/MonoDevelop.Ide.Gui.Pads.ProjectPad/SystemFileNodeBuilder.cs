@@ -106,7 +106,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			string newname = Path.Combine (Path.GetDirectoryName (oldname), newName);
 			if (oldname != newname) {
 				try {
-					if (FileService.IsValidFileName (newname)) {
+					if (FileService.IsValidPath (newname)) {
 						FileService.RenameFile (oldname, newName);
 					}
 				} catch (System.IO.IOException) {   // assume duplicate file

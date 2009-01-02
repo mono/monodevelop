@@ -382,8 +382,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			if(solution.Equals("")) solution = name; //This was empty when adding after first combine
 			
 			if (
-				!FileService.IsValidFileName (solution) || 
-			    	!FileService.IsValidFileName(name) ||
+				!FileService.IsValidPath (solution) || 
+			    !FileService.IsValidFileName(name) ||
 				!FileService.IsValidPath(location))
 			{
 				MessageService.ShowError (GettextCatalog.GetString ("Illegal project name.\nOnly use letters, digits, space, '.' or '_'."));

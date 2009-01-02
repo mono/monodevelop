@@ -630,7 +630,7 @@ namespace MonoDevelop.Ide.Gui
 				if (!fileName.StartsWith ("http://"))
 					fileName = System.IO.Path.GetFullPath (fileName);
 				
-				//Debug.Assert(FileService.IsValidFileName(fileName));
+				//Debug.Assert(FileService.IsValidPath(fileName));
 				if (FileService.IsDirectory (fileName)) {
 					monitor.ReportError (GettextCatalog.GetString ("{0} is a directory", fileName), null);
 					return;

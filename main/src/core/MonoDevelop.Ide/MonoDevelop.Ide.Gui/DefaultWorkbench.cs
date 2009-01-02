@@ -411,7 +411,7 @@ namespace MonoDevelop.Ide.Gui
 				string fileName = content.ContentName.Substring(3).Replace('/', '.').Replace('\\', '.').Replace(System.IO.Path.DirectorySeparatorChar, '.');
 				string fullFileName = directory + System.IO.Path.DirectorySeparatorChar + fileName;
 				// check the file name length because it could be more than the maximum length of a file name
-				if (FileService.IsValidFileName(fullFileName) && File.Exists(fullFileName)) {
+				if (FileService.IsValidPath(fullFileName) && File.Exists(fullFileName)) {
 					return Properties.Load (fullFileName);
 				}
 			}

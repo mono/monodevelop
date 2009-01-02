@@ -157,7 +157,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			if (oldFoldername != newFoldername) {
 				try {
 					
-					if (FileService.IsValidFileName (newFoldername)) {
+					if (FileService.IsValidPath (newFoldername)) {
 						FileService.RenameDirectory (oldFoldername, newName);
 						if (folder.Project != null)
 							IdeApp.ProjectOperations.Save (folder.Project);

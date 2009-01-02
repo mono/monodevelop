@@ -334,7 +334,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					return false;
 				}
 
-				if (!FileService.IsValidFileName(directoryName)) {
+				if (!FileService.IsValidPath(directoryName)) {
 					MessageService.ShowError (GettextCatalog.GetString ("Invalid directory name: {0}", directoryName));
 					return false;
 				}

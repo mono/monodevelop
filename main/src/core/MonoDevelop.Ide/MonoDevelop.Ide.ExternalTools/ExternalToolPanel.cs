@@ -333,12 +333,12 @@ namespace MonoDevelop.Ide.ExternalTools
 				do {
 					// loop through items in the tree
 					ExternalTool tool = toolListBox.Model.GetValue (current, 1) as ExternalTool;
-					if (!FileService.IsValidFileName (tool.Command)) {
+					if (!FileService.IsValidPath (tool.Command)) {
 						MessageService.ShowError (String.Format(GettextCatalog.GetString ("The command of tool \"{0}\" is invalid."), tool.MenuCommand));
 						return false;
 					}
 					
-					if ((tool.InitialDirectory != "") && !FileService.IsValidFileName (tool.InitialDirectory)) {
+					if ((tool.InitialDirectory != "") && !FileService.IsValidPath (tool.InitialDirectory)) {
 						MessageService.ShowError (String.Format(GettextCatalog.GetString ("The working directory of tool \"{0}\" is invalid.") ,tool.MenuCommand));
 						return false;
 					}
