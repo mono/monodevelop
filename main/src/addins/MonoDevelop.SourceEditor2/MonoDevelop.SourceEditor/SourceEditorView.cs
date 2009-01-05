@@ -845,7 +845,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public ITextIterator GetTextIterator ()
 		{
-			return new DocumentTextIterator (this, TextEditor.Caret.Offset);
+			return new DocumentTextIterator (this, 0);
 		}
 		
 		class DocumentTextIterator : GuiSyncObject, ITextIterator
@@ -923,8 +923,11 @@ namespace MonoDevelop.SourceEditor
 			{
 				offset = this.initialOffset;
 			}
+			
 			public void Replace (int length, string pattern)
 			{
+				if (view.TextEditor.IsSomethingSelected)
+					view.TextEditor.ClearSelection ();
 				view.Document.Replace (offset, length, pattern);
 			}
 			
