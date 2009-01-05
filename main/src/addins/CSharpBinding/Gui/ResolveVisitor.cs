@@ -167,19 +167,23 @@ namespace MonoDevelop.CSharpBinding
 			if (indexerExpression.Indexes == null || indexerExpression.Indexes.Count == 0)
 				return null;
 			ResolveResult result = Resolve (indexerExpression.TargetObject);
+			
 			if (result.ResolvedType != null && result.ResolvedType.ArrayDimensions > 0)
 				return CreateResult (result.ResolvedType.FullName);
 			IType resolvedType = resolver.Dom.GetType (result.ResolvedType);
 			if (resolvedType != null) {
 				foreach (IType curType in resolver.Dom.GetInheritanceTree (resolvedType)) {
 					foreach (IProperty property in curType.Properties) {
+						//System.Console.WriteLine(property);
 						if (property.IsIndexer)
 							return CreateResult (property.ReturnType);
 					}
 				}
 			}
-			if (result.ResolvedType != null && result.ResolvedType.GenericArguments.Count > 0)
-				return result.ResolvedType.GenericArguments[0];
+			if (result.ResolvedType != null && result.ResolvedType.GenericArguments.Count > 0) {
+				//System.Console.WriteLine("genArg:" + result.ResolvedType.GenericArguments[0]);
+				return CreateResult (result.ResolvedType.GenericArguments[0]);
+			}
 			return result;
 		}
 		
