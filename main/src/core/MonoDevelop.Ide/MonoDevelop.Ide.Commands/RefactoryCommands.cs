@@ -142,16 +142,40 @@ namespace MonoDevelop.Ide.Commands
 				else
 					eclass = (IType) item;
 			}
-			
 			while (item != null) {
 				CommandInfo ci;
-				
+
+				// case: clicked on base in "constructor" - so pointing to the base constructor using argument count
+				// not 100% correct, but it's the fastest thing to do.
+				if (resolveResult is BaseResolveResult && eitem is IMethod && ((IMethod)eitem).IsConstructor) {
+					IType type = item as IType;
+					IMethod baseConstructor = null;
+					int idx1 = id.Expression.IndexOf ('(');
+					int idx2 = id.Expression.IndexOf (')');
+					int paramCount = 0;
+					if (idx1 > 0 && idx2 > 0) {
+						if (idx2 - idx1 > 1)
+							paramCount++;
+						for (int i=idx1; i < idx2; i++) {
+							if (id.Expression[i] == ',') 
+								paramCount++;
+						}
+					}
+					foreach (IMethod m in type.Methods) {
+						if (m.IsConstructor && m.Parameters.Count == paramCount)
+							baseConstructor = m;
+					}
+					if (baseConstructor != null && (ci = BuildRefactoryMenuForItem (ctx, doc.CompilationUnit, null, baseConstructor, true)) != null) {
+						ainfo.Add (ci, null);
+						added = true;
+					}
+				}
+			
 				// Add the selected item
 				if ((ci = BuildRefactoryMenuForItem (ctx, doc.CompilationUnit, eclass, item, IsModifiable (item))) != null) {
 					ainfo.Add (ci, null);
 					added = true;
 				}
-				
 				if (item is IParameter) {
 					// Add the encompasing method for the previous item in the menu
 					item = ((IParameter) item).DeclaringMember;
@@ -160,6 +184,7 @@ namespace MonoDevelop.Ide.Commands
 						added = true;
 					}
 				}
+				
 				
 				if (item is IMember && !(eitem != null && eitem is IMember)) {
 					// Add the encompasing class for the previous item in the menu
