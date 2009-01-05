@@ -483,9 +483,11 @@ namespace MonoDevelop.Ide.Gui.Pads
 					int prevPosEnd = pos + len;
 					pos = res.Positions [n];
 					len = res.Positions [n + 1];
-					sb.Append (GLib.Markup.EscapeText (res.Text.Substring (prevPosEnd, pos - prevPosEnd)));
+					if (pos - prevPosEnd > 0)
+						sb.Append (GLib.Markup.EscapeText (res.Text.Substring (prevPosEnd, Math.Min (pos - prevPosEnd, res.Text.Length - prevPosEnd))));
 					sb.Append ("<span background='yellow'>");
-					sb.Append (GLib.Markup.EscapeText (res.Text.Substring (pos, len)));
+					if (len > 0)
+						sb.Append (GLib.Markup.EscapeText (res.Text.Substring (pos, Math.Min (len, res.Text.Length - pos))));
 					sb.Append ("</span>");
 				}
 				

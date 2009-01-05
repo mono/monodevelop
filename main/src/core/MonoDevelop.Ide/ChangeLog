@@ -1,5 +1,14 @@
 2009-01-05  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Gui.Search/DefaultFind.cs:
+	* MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs:
+	* MonoDevelop.Ide.Gui.Search/SearchOptions.cs:
+	* MonoDevelop.Ide.Gui.Search/KMPSearchStrategy.cs:
+	* MonoDevelop.Ide.Gui.Search/BruteForceSearchStrategy.cs: Fixed 'Bug
+	456429 - Search and replace broken again'.
+
+2009-01-05  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: worked on "Bug 456372 -
 	Exception in refactoring of a class name from missed reference".
 

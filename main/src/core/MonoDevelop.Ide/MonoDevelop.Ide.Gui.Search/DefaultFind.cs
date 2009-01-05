@@ -118,6 +118,7 @@ namespace MonoDevelop.Ide.Gui.Search
 						// create new iterator, if document changed or search direction has changed.
 						info = documentIterator.Current;
 						textIterator = info.GetTextIterator ();
+						textIterator.Position = 0;
 						reverseSearchMap = null;
 						lastResultPos = -1;
 						if (reverse)
