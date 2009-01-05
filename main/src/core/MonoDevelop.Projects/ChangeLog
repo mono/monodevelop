@@ -1,4 +1,9 @@
-2009-01-02  Full Name  <Email Address>
+2009-01-05  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: Fixed unit test for bug
+	444110.
+
+2009-01-02  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs: fixed 'Bug
 	460232 - Override/Implement doesn't work'.

@@ -130,7 +130,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 		{
 			if (type.SourceProjectDom == null) {
 				InstantiatedType itype = type as InstantiatedType;
-				return SearchType (type.FullName, null, type.CompilationUnit, itype != null ? itype.GenericParameters : null);
+				type = SearchType (type.FullName, null, type.CompilationUnit, itype != null ? itype.GenericParameters : null) ?? type;
 			}
 			return type;
 		}
