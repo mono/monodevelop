@@ -65,121 +65,118 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Update (CommandArrayInfo ainfo)
 		{
 			Document doc = IdeApp.Workbench.ActiveDocument;
-			if (doc != null && doc.FileName != null && IdeApp.ProjectOperations.CurrentSelectedSolution != null) {
-				ITextBuffer editor = IdeApp.Workbench.ActiveDocument.GetContent <ITextBuffer>();
-				if (editor != null) {
-					bool added = false;
-					int line, column;
-					
-					editor.GetLineColumnFromPosition (editor.CursorPosition, out line, out column);
-					ICompilationUnit pinfo;
-					ProjectDom ctx;
-					if (doc.Project != null) {
-						ctx = ProjectDomService.GetProjectDom (doc.Project);
-						pinfo = doc.CompilationUnit;
-					} else {
-						ctx = ProjectDom.Empty;
-						pinfo = doc.CompilationUnit;
-					}
-					if (ctx == null)
-						return;
-					// Look for an identifier at the cursor position
-					
-					IParser parser = ProjectDomService.GetParserByFileName (editor.Name);
-					if (parser == null)
-						return;
-					ExpressionResult id = new ExpressionResult (editor.SelectedText);
-					if (id.Expression.Length == 0) {
-						IExpressionFinder finder = parser.CreateExpressionFinder (ctx);
-						if (finder == null)
-							return;
-						id = finder.FindFullExpression (editor.Text, editor.CursorPosition);
-						if (id == null) return;
-					}
-					IResolver resolver = parser.CreateResolver (ctx, doc, editor.Name);
-					ResolveResult resolveResult = resolver.Resolve (id, new DomLocation (line, column));
-					
-					IDomVisitable item = null;
-					IMember eitem = resolveResult != null ? (resolveResult.CallingMember ?? resolveResult.CallingType) : null;
-					if (resolveResult is ParameterResolveResult) {
-						item = ((ParameterResolveResult)resolveResult).Parameter;
-					} else if (resolveResult is LocalVariableResolveResult) {
-						item = ((LocalVariableResolveResult)resolveResult).LocalVariable;
-						//s.Append (ambience.GetString (((LocalVariableResolveResult)result).ResolvedType, WindowConversionFlags));
-					} else if (resolveResult is MemberResolveResult) {
-						item = ((MemberResolveResult)resolveResult).ResolvedMember;
-						if (item == null && ((MemberResolveResult)resolveResult).ResolvedType != null) {
-							item = ctx.GetType (((MemberResolveResult)resolveResult).ResolvedType);
-						}
-					} else if (resolveResult is MethodResolveResult) {
-						item = ((MethodResolveResult)resolveResult).MostLikelyMethod;
-						if (item == null && ((MethodResolveResult)resolveResult).ResolvedType != null) {
-							item = ctx.GetType (((MethodResolveResult)resolveResult).ResolvedType);
-						}
-					} else if (resolveResult is BaseResolveResult) {
-						item = ctx.GetType (((BaseResolveResult)resolveResult).ResolvedType);
-					} else if (resolveResult is ThisResolveResult) {
-						item = ctx.GetType (((ThisResolveResult)resolveResult).ResolvedType);
-					}
-					string itemName = null;
-					if (item is IMember)
-						itemName = ((IMember)item).Name;
-
- 					if (item != null && eitem != null && 
-					    (eitem == item || (eitem.Name == itemName && !(eitem is IProperty) && !(eitem is IMethod)))) {
-						// If this occurs, then @item is either its own enclosing item, in
-						// which case, we don't want to show it twice, or it is the base-class
-						// version of @eitem, in which case we don't want to show the base-class
-						// @item, we'd rather show the item the user /actually/ requested, @eitem.
-						item = eitem;
-						eitem = null;
-					}
-					
-					IType eclass = null;
-					
-					if (item is IType) {
-						if (((IType) item).ClassType == ClassType.Interface)
-							eclass = FindEnclosingClass (ctx, editor.Name, line, column);
-						else
-							eclass = (IType) item;
-					}
-					
-					while (item != null) {
-						CommandInfo ci;
-						
-						// Add the selected item
-						if ((ci = BuildRefactoryMenuForItem (ctx, pinfo, eclass, item, IsModifiable (item))) != null) {
-							ainfo.Add (ci, null);
-							added = true;
-						}
-						
-						if (item is IParameter) {
-							// Add the encompasing method for the previous item in the menu
-							item = ((IParameter) item).DeclaringMember;
-							if (item != null && (ci = BuildRefactoryMenuForItem (ctx, pinfo, null, item, true)) != null) {
-								ainfo.Add (ci, null);
-								added = true;
-							}
-						}
-						
-						if (item is IMember && !(eitem != null && eitem is IMember)) {
-							// Add the encompasing class for the previous item in the menu
-							item = ((IMember) item).DeclaringType;
-							if (item != null && (ci = BuildRefactoryMenuForItem (ctx, pinfo, null, item, IsModifiable (item))) != null) {
-								ainfo.Add (ci, null);
-								added = true;
-							}
-						}
-						
-						item = eitem;
-						eitem = null;
-						eclass = null;
-					}
-					
-					if (added)
-						ainfo.AddSeparator ();
-				}
+			if (doc == null || doc.FileName == null || IdeApp.ProjectOperations.CurrentSelectedSolution == null)
+				return;
+			
+			ITextBuffer editor = doc.GetContent <ITextBuffer> ();
+			if (editor == null)
+				return;
+			
+			bool added = false;
+			int line, column;
+			
+			editor.GetLineColumnFromPosition (editor.CursorPosition, out line, out column);
+			ProjectDom ctx = doc.Project != null ? ProjectDomService.GetProjectDom (doc.Project) : ProjectDom.Empty;
+			if (ctx == null)
+				return;
+			
+			// Look for an identifier at the cursor position
+			IParser parser = ProjectDomService.GetParserByFileName (editor.Name);
+			if (parser == null)
+				return;
+			ExpressionResult id = new ExpressionResult (editor.SelectedText);
+			if (String.IsNullOrEmpty (id.Expression)) {
+				IExpressionFinder finder = parser.CreateExpressionFinder (ctx);
+				if (finder == null)
+					return;
+				id = finder.FindFullExpression (editor.Text, editor.CursorPosition);
+				if (id == null) 
+					return;
 			}
+			IResolver resolver = parser.CreateResolver (ctx, doc, editor.Name);
+			if (resolver == null)
+				return;
+			ResolveResult resolveResult = resolver.Resolve (id, new DomLocation (line, column));
+			
+			IDomVisitable item = null;
+			IMember eitem = resolveResult != null ? (resolveResult.CallingMember ?? resolveResult.CallingType) : null;
+			if (resolveResult is ParameterResolveResult) {
+				item = ((ParameterResolveResult)resolveResult).Parameter;
+			} else if (resolveResult is LocalVariableResolveResult) {
+				item = ((LocalVariableResolveResult)resolveResult).LocalVariable;
+				//s.Append (ambience.GetString (((LocalVariableResolveResult)result).ResolvedType, WindowConversionFlags));
+			} else if (resolveResult is MemberResolveResult) {
+				item = ((MemberResolveResult)resolveResult).ResolvedMember;
+				if (item == null && ((MemberResolveResult)resolveResult).ResolvedType != null) {
+					item = ctx.GetType (((MemberResolveResult)resolveResult).ResolvedType);
+				}
+			} else if (resolveResult is MethodResolveResult) {
+				item = ((MethodResolveResult)resolveResult).MostLikelyMethod;
+				if (item == null && ((MethodResolveResult)resolveResult).ResolvedType != null) {
+					item = ctx.GetType (((MethodResolveResult)resolveResult).ResolvedType);
+				}
+			} else if (resolveResult is BaseResolveResult) {
+				item = ctx.GetType (((BaseResolveResult)resolveResult).ResolvedType);
+			} else if (resolveResult is ThisResolveResult) {
+				item = ctx.GetType (((ThisResolveResult)resolveResult).ResolvedType);
+			}
+			string itemName = null;
+			if (item is IMember)
+				itemName = ((IMember)item).Name;
+			
+			if (item != null && eitem != null && 
+			    (eitem == item || (eitem.Name == itemName && !(eitem is IProperty) && !(eitem is IMethod)))) {
+				// If this occurs, then @item is either its own enclosing item, in
+				// which case, we don't want to show it twice, or it is the base-class
+				// version of @eitem, in which case we don't want to show the base-class
+				// @item, we'd rather show the item the user /actually/ requested, @eitem.
+				item = eitem;
+				eitem = null;
+			}
+			
+			IType eclass = null;
+			
+			if (item is IType) {
+				if (((IType) item).ClassType == ClassType.Interface)
+					eclass = FindEnclosingClass (ctx, editor.Name, line, column);
+				else
+					eclass = (IType) item;
+			}
+			
+			while (item != null) {
+				CommandInfo ci;
+				
+				// Add the selected item
+				if ((ci = BuildRefactoryMenuForItem (ctx, doc.CompilationUnit, eclass, item, IsModifiable (item))) != null) {
+					ainfo.Add (ci, null);
+					added = true;
+				}
+				
+				if (item is IParameter) {
+					// Add the encompasing method for the previous item in the menu
+					item = ((IParameter) item).DeclaringMember;
+					if (item != null && (ci = BuildRefactoryMenuForItem (ctx, doc.CompilationUnit, null, item, true)) != null) {
+						ainfo.Add (ci, null);
+						added = true;
+					}
+				}
+				
+				if (item is IMember && !(eitem != null && eitem is IMember)) {
+					// Add the encompasing class for the previous item in the menu
+					item = ((IMember) item).DeclaringType;
+					if (item != null && (ci = BuildRefactoryMenuForItem (ctx, doc.CompilationUnit, null, item, IsModifiable (item))) != null) {
+						ainfo.Add (ci, null);
+						added = true;
+					}
+				}
+				
+				item = eitem;
+				eitem = null;
+				eclass = null;
+			}
+			
+			if (added)
+				ainfo.AddSeparator ();
 		}
 
 		bool IsModifiable (IDomVisitable member)
