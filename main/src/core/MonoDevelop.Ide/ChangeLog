@@ -3,7 +3,7 @@
 	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: worked on "Bug 456372 -
 	Exception in refactoring of a class name from missed reference".
 
-2009-01-02  Full Name  <Email Address>
+2009-01-02  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Gui/DocumentSwitcher.cs: fixed "Bug 462848 -
 	Monodevelop crash when Alt-Tab with Welcome page opened".
