@@ -1,3 +1,8 @@
+2009-01-05  Full Name  <Email Address>
+
+	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: Added test for
+	'Bug 460234 - Invalid options shown when typing 'override''.
+
 2008-12-16  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:

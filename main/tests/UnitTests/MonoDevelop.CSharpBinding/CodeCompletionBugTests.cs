@@ -72,6 +72,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 			sev.GetLineColumnFromPosition (sev.CursorPosition, out line, out column);
 			ctx.TriggerLine = line;
 			ctx.TriggerLineOffset = column;
+			System.Console.WriteLine(textEditorCompletion);
 			return textEditorCompletion.HandleCodeCompletion (ctx, text[cursorPosition - 1] , ref triggerWordLength) as CompletionDataList;
 		}
 
@@ -914,6 +915,35 @@ namespace CCTests
 			Assert.IsNotNull (provider, "provider not found.");
 			Assert.AreEqual (1, provider.Count);
 			Assert.IsNotNull (provider.Find ("TestField"), "field 'TestField' not found.");
+		}
+		
+		/// <summary>
+		/// Bug 460234 - Invalid options shown when typing 'override'
+		/// </summary>
+		[Test()]
+		public void TestBug460234 ()
+		{
+			CompletionDataList provider = CreateProvider (
+@"
+namespace System {
+	public class Object
+	{
+		public virtual int GetHashCode ()
+		{
+		}
+		protected virtual void Finalize ()
+		{
+		}
+	}
+}
+public class TestMe : System.Object
+{
+	override $
+}");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.AreEqual (1, provider.Count);
+			Assert.IsNull (provider.Find ("Finalize"), "method 'Finalize' found, but shouldn't.");
+			Assert.IsNotNull (provider.Find ("GetHashCode"), "method 'GetHashCode' not found.");
 		}
 
 		
