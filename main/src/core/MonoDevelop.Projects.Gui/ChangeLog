@@ -1,3 +1,8 @@
+2009-01-05  Full Name  <Email Address>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionDataList.cs: fixed Find
+	in completiondatalist for unit tests.
+
 2008-12-25  Eric Butler  <eric@extremeboredom.net>
 	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs:
 	Fix output path validation.

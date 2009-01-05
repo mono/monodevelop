@@ -84,7 +84,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		public ICompletionData Find (string name)
 		{
 			foreach (ICompletionData datum in this)
-				if (datum.DisplayText == name)
+				if (datum.CompletionText == name)
 					return datum;
 			return null;
 		}
