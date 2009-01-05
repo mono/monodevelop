@@ -955,8 +955,11 @@ namespace MonoDevelop.CSharpBinding.Gui
 					//System.Console.WriteLine ("scan:" + m);
 					if (m.IsSpecialName || m.IsInternal && searchType.SourceProject != Document.Project)
 						continue;
-					
 					if ((isInterface || m.IsVirtual || m.IsAbstract) && !m.IsSealed && (includeOverriden || !type.HasOverriden (m))) {
+						// filter out the "Finalize" methods, because finalizers should be done with destructors.
+						if (m is IMethod && m.Name == "Finalize")
+							continue;
+					
 						//System.Console.WriteLine("add");
 						NewOverrideCompletionData data = new NewOverrideCompletionData (Editor, declarationBegin, type.CompilationUnit, type, m);
 						string text = CompletionDataCollector.ambience.GetString (m, OutputFlags.ClassBrowserEntries);
@@ -968,6 +971,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 								break;
 							}
 						}
+						
 						if (!foundMember && !alreadyInserted.ContainsKey (text)) {
 							alreadyInserted[text] = true;
 							completionList.Add (data);
