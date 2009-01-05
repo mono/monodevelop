@@ -1,4 +1,8 @@
-2009-01-05  Full Name  <Email Address>
+2009-01-05  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/ResolveVisitor.cs: Fixed anonymous class unit test.
+
+2009-01-05  Mike Krüger  <mkrueger@novell.com>
 
 	* Gui/CSharpTextEditorCompletion.cs: fixed "Bug 460234 - Invalid options
 	shown when typing 'override'".
