@@ -139,14 +139,17 @@ namespace MonoDevelop.Projects.Dom
 			} else {
 				this.name = methodDefinition.Name;
 			}
-			
+			foreach (GenericParameter param in methodDefinition.GenericParameters) {
+				AddGenericParameter (DomCecilMethod.GetReturnType (param));
+			}
+				
 			AddAttributes (this, methodDefinition.CustomAttributes);
 			base.Modifiers  = DomCecilType.GetModifiers (methodDefinition);
 			base.returnType = DomCecilMethod.GetReturnType (methodDefinition.ReturnType.ReturnType);
 			foreach (ParameterDefinition paramDef in methodDefinition.Parameters) {
 				Add (new DomCecilParameter (paramDef));
 			}
-
+			
 			if (this.IsStatic) {
 				foreach (IAttribute attr in this.Attributes) {
 					if (attr.Name == "System.Runtime.CompilerServices.ExtensionAttribute") {

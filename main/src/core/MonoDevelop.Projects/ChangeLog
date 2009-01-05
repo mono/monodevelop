@@ -1,5 +1,10 @@
 2009-01-05  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Dom/DomCecilMethod.cs: fixed 'Bug 444112 -
+	Generic parameters missing in code completion (reopened)'
+
+2009-01-05  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: Fixed unit test for bug
 	444110.
 
