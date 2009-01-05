@@ -1,4 +1,4 @@
-2009-01-05  Full Name  <Email Address>
+2009-01-05  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Gui.Completion/CompletionDataList.cs: fixed Find
 	in completiondatalist for unit tests.
