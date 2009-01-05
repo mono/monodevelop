@@ -64,6 +64,9 @@ namespace MonoDevelop.ValaBinding
 		
 		[ItemProperty ("DefineSymbols")]
 		private string define_symbols = string.Empty;
+
+		[ItemProperty ("EnableMultithreading")]
+		private bool enable_multithreading = false;
 		
 		public object Clone ()
 		{
@@ -98,6 +101,11 @@ namespace MonoDevelop.ValaBinding
 		public string DefineSymbols {
 			get { return define_symbols; }
 			set { define_symbols = value; }
+		}
+
+		public bool EnableMultithreading {
+			get { return enable_multithreading; }
+			set { enable_multithreading = value; }
 		}
 	}
 }

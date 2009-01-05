@@ -1,3 +1,9 @@
+2009-01-05  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* Gui/CodeGenerationPanel.cs: 
+	* Compiler/ValaCompiler.cs: 
+	* Project/ValaCompilationParameters.cs: Add support for valac --thread flag.
+
 2008-12-09  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* ValaBinding.mdp: Don't require a specific version of Mono.Addins.

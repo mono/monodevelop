@@ -82,6 +82,8 @@ namespace MonoDevelop.ValaBinding
 			}
 			
 			warningsAsErrorsCheckBox.Active = compilationParameters.WarningsAsErrors;
+			threadingCheckbox.Sensitive = (config.CompileTarget == CompileTarget.Bin);
+			threadingCheckbox.Active = (threadingCheckbox.Sensitive && compilationParameters.EnableMultithreading);
 			
 			optimizationSpinButton.Value = compilationParameters.OptimizationLevel;
 			
@@ -172,15 +174,16 @@ namespace MonoDevelop.ValaBinding
 			
 			compilationParameters.OptimizationLevel = (int)optimizationSpinButton.Value;
 			
-			switch (targetComboBox.ActiveText)
+			switch (targetComboBox.Active)
 			{
-			case "Executable":
+			case 0:
 				configuration.CompileTarget = ValaBinding.CompileTarget.Bin;
+				compilationParameters.EnableMultithreading = threadingCheckbox.Active;
 				break;
-			case "Static Library":
+			case 1:
 				configuration.CompileTarget = ValaBinding.CompileTarget.StaticLibrary;
 				break;
-			case "Shared Object":
+			case 2:
 				configuration.CompileTarget = ValaBinding.CompileTarget.SharedLibrary;
 				break;
 			}
@@ -252,6 +255,15 @@ namespace MonoDevelop.ValaBinding
 		protected virtual void OnIncludePathEntryActivated (object sender, System.EventArgs e)
 		{
 			OnIncludePathAdded (this, new EventArgs ());
+		}
+
+		/// <summary>
+		/// Set sensitivity and activity of multithreading checkbox on target change
+		/// </summary>
+		protected virtual void OnTargetComboBoxChanged (object sender, System.EventArgs e)
+		{
+			threadingCheckbox.Sensitive = (0 == targetComboBox.Active);
+			threadingCheckbox.Active = (threadingCheckbox.Active && threadingCheckbox.Sensitive);
 		}
 	}
 	

@@ -189,8 +189,15 @@ namespace MonoDevelop.ValaBinding
 			if (configuration.DebugMode)
 				args.Add ("-g");
 
-			if (configuration.CompileTarget == ValaBinding.CompileTarget.SharedLibrary) {
+			switch (configuration.CompileTarget) {
+			case ValaBinding.CompileTarget.Bin:
+				if (cp.EnableMultithreading) {
+					args.Add ("--thread");
+				}
+				break;
+			case ValaBinding.CompileTarget.SharedLibrary:
 				args.Add (string.Format ("--Xcc=\"-shared\" --Xcc=\"-fPIC\" --Xcc=\"-I'{0}'\" --library \"{1}\"", configuration.OutputDirectory, configuration.Output));
+				break;
 			}
 
 // Valac will get these sooner or later			

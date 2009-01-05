@@ -2,13 +2,24 @@
 <stetic-interface>
   <configuration>
     <images-root-path>..</images-root-path>
-    <target-gtk-version>2.10.4</target-gtk-version>
+    <target-gtk-version>2.8</target-gtk-version>
   </configuration>
   <import>
-    <widget-library name="MonoDevelop.Projects.Gui, Version=1.9.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Core.Gui, Version=1.9.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Deployment, Version=1.0.0.0, Culture=neutral" />
-    <widget-library name="../../../../build/AddIns/BackendBindings/MonoDevelop.ValaBinding.dll" internal="true" />
+    <widget-library name="MonoDevelop.Core.Gui, Version=1.9.1.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Deployment, Version=1.9.1.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Ide, Version=1.9.1.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Components, Version=1.9.1.0, Culture=neutral" />
+    <widget-library name="Mono.TextEditor, Version=1.0.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.VersionControl, Version=1.9.1.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.XmlEditor, Version=1.9.1.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Gettext, Version=1.9.1.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Deployment.Linux, Version=1.9.1.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.VBNetBinding, Version=1.9.1.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.CBinding, Version=1.9.1.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.CSharpBinding, Version=1.9.1.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Autotools, Version=1.9.1.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Projects.Gui, Version=1.9.1.0, Culture=neutral" />
+    <widget-library name="../build/MonoDevelop.ValaBinding.dll" internal="true" />
   </import>
   <widget class="Gtk.Bin" id="MonoDevelop.ValaBinding.CodeGenerationPanel" design-size="611 396">
     <property name="MemberName" />
@@ -16,7 +27,7 @@
       <widget class="Gtk.Notebook" id="notebook1">
         <property name="MemberName" />
         <property name="CanFocus">True</property>
-        <property name="CurrentPage">2</property>
+        <property name="CurrentPage">0</property>
         <child>
           <widget class="Gtk.VBox" id="vbox6">
             <property name="MemberName" />
@@ -24,19 +35,40 @@
             <child>
               <widget class="Gtk.Table" id="table1">
                 <property name="MemberName" />
-                <property name="NRows">3</property>
+                <property name="NRows">4</property>
                 <property name="NColumns">2</property>
                 <property name="RowSpacing">5</property>
                 <property name="ColumnSpacing">5</property>
                 <property name="BorderWidth">2</property>
                 <child>
-                  <widget class="Gtk.Label" id="label4">
+                  <widget class="Gtk.Label" id="label10">
                     <property name="MemberName" />
                     <property name="Xpad">10</property>
                     <property name="Xalign">0</property>
                     <property name="LabelProp" translatable="yes">Warning Level:</property>
                   </widget>
                   <packing>
+                    <property name="AutoSize">True</property>
+                    <property name="XOptions">Fill</property>
+                    <property name="YOptions">Fill</property>
+                    <property name="XExpand">False</property>
+                    <property name="XFill">True</property>
+                    <property name="XShrink">False</property>
+                    <property name="YExpand">False</property>
+                    <property name="YFill">True</property>
+                    <property name="YShrink">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="Gtk.Label" id="label4">
+                    <property name="MemberName" />
+                    <property name="Xpad">10</property>
+                    <property name="Xalign">0</property>
+                    <property name="LabelProp" translatable="yes">Multithreading:</property>
+                  </widget>
+                  <packing>
+                    <property name="TopAttach">3</property>
+                    <property name="BottomAttach">4</property>
                     <property name="AutoSize">True</property>
                     <property name="XOptions">Fill</property>
                     <property name="YOptions">Fill</property>
@@ -124,10 +156,36 @@
                     <property name="Items" translatable="yes">Executable
 Static Library
 Shared Object</property>
+                    <signal name="Changed" handler="OnTargetComboBoxChanged" />
                   </widget>
                   <packing>
                     <property name="TopAttach">2</property>
                     <property name="BottomAttach">3</property>
+                    <property name="LeftAttach">1</property>
+                    <property name="RightAttach">2</property>
+                    <property name="AutoSize">True</property>
+                    <property name="XOptions">Fill</property>
+                    <property name="YOptions">Fill</property>
+                    <property name="XExpand">False</property>
+                    <property name="XFill">True</property>
+                    <property name="XShrink">False</property>
+                    <property name="YExpand">False</property>
+                    <property name="YFill">True</property>
+                    <property name="YShrink">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="Gtk.CheckButton" id="threadingCheckbox">
+                    <property name="MemberName">threadingCheckbox</property>
+                    <property name="CanFocus">True</property>
+                    <property name="Label" translatable="yes">Enable multithreading</property>
+                    <property name="DrawIndicator">True</property>
+                    <property name="HasLabel">True</property>
+                    <property name="UseUnderline">True</property>
+                  </widget>
+                  <packing>
+                    <property name="TopAttach">3</property>
+                    <property name="BottomAttach">4</property>
                     <property name="LeftAttach">1</property>
                     <property name="RightAttach">2</property>
                     <property name="AutoSize">True</property>
