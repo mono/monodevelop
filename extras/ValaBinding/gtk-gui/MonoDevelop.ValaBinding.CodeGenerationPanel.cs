@@ -301,7 +301,7 @@ namespace MonoDevelop.ValaBinding {
             // Container child hbox1.Gtk.Box+BoxChild
             this.defineSymbolsTextEntry = new Gtk.Entry();
             Gtk.Tooltips w15 = new Gtk.Tooltips();
-            w15.SetTip(this.defineSymbolsTextEntry, "A space seperated list of symbols to define.", "A space seperated list of symbols to define.");
+            w15.SetTip(this.defineSymbolsTextEntry, "A space-separated list of symbols to define.", "A space-separated list of symbols to define.");
             this.defineSymbolsTextEntry.CanFocus = true;
             this.defineSymbolsTextEntry.Name = "defineSymbolsTextEntry";
             this.defineSymbolsTextEntry.IsEditable = true;
@@ -346,7 +346,7 @@ namespace MonoDevelop.ValaBinding {
             this.scrolledwindow4.ShadowType = ((Gtk.ShadowType)(1));
             // Container child scrolledwindow4.Gtk.Container+ContainerChild
             this.extraCompilerTextView = new Gtk.TextView();
-            w15.SetTip(this.extraCompilerTextView, "A newline seperated list of extra options to send to the compiler.\nOne option can be in more than one line.\nExample:\n\t`pkg-config\n\t--cflags\n\tcairo`", "A newline seperated list of extra options to send to the compiler.\nOne option can be in more than one line.\nExample:\n\t`pkg-config\n\t--cflags\n\tcairo`");
+            w15.SetTip(this.extraCompilerTextView, "A newline-separated list of extra options to send to the compiler.\nOne option can be in more than one line.\nExample:\n\t`--pkg\n\tcairo`", "A newline-separated list of extra options to send to the compiler.\nOne option can be in more than one line.\nExample:\n\t`--pkg\n\tcairo`");
             this.extraCompilerTextView.CanFocus = true;
             this.extraCompilerTextView.Name = "extraCompilerTextView";
             this.scrolledwindow4.Add(this.extraCompilerTextView);
