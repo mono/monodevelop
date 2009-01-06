@@ -946,6 +946,33 @@ public class TestMe : System.Object
 			Assert.IsNotNull (provider.Find ("GetHashCode"), "method 'GetHashCode' not found.");
 		}
 
+		/// <summary>
+		/// Bug 457003 - code completion shows variables out of scope
+		/// </summary>
+		[Test()]
+		public void TestBug457003 ()
+		{
+			CompletionDataList provider = CreateProvider (
+@"
+class A
+{
+	public void Test ()
+	{
+		if (true) {
+			A st = null;
+		}
+		
+		if (true) {
+			int i = 0;
+			st.$
+		}
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsTrue (provider.Count == 0, "variable 'st' found, but shouldn't.");
+		}
+
 		
 		[TestFixtureSetUp] 
 		public void SetUp()
