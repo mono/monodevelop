@@ -128,11 +128,9 @@ namespace Mono.TextEditor.Highlighting
 		
 		static void AddFlags (HashSet<string> hashSet, string flags)
 		{
-			System.Console.WriteLine("flag:" + flags);
 			if (String.IsNullOrEmpty (flags))
 				return;
 			foreach (string flag in flags.Split(',', ';')) {
-				System.Console.WriteLine("Add flag:" + flag);
 				hashSet.Add (flags.Trim ());
 			}
 		}
