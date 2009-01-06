@@ -1,5 +1,11 @@
 2009-01-06  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor.Highlighting/SyntaxMode.cs:
+	* Mono.TextEditor.Highlighting/SyntaxModeService.cs: fixed 'Bug 458159 -
+	crash when editing javascript'.
+
+2009-01-06  Mike Krüger  <mkrueger@novell.com>
+
 	* SyntaxModes/ChangeLogSyntaxMode.xml:
 	* Mono.TextEditor.Highlighting/Span.cs:
 	* Mono.TextEditor.Highlighting/SyntaxMode.cs:

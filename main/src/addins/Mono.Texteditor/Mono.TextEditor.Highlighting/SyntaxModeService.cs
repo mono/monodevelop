@@ -152,7 +152,7 @@ namespace Mono.TextEditor.Highlighting
 				if (curSpan != null && !String.IsNullOrEmpty (curSpan.End)) {
 					if (!String.IsNullOrEmpty (curSpan.Escape) && offset + 1 < end && endOffset == 0 && doc.GetCharAt (offset + 1) == curSpan.End[0]) {
 						bool match = true;
-						for (int j = 0; j < curSpan.Escape.Length; j++) {
+						for (int j = 0; j < curSpan.Escape.Length && offset + j < doc.Length; j++) {
 							if (doc.GetCharAt (offset + j) != curSpan.Escape[j]) {
 								match = false;
 								break;
@@ -276,7 +276,7 @@ namespace Mono.TextEditor.Highlighting
 					if (curSpan != null && !String.IsNullOrEmpty (curSpan.End)) {
 						if (!String.IsNullOrEmpty (curSpan.Escape) && offset + 1 < end && endOffset == 0 && doc.GetCharAt (offset + 1) == curSpan.End[0]) {
 							bool match = true;
-							for (int j = 0; j < curSpan.Escape.Length; j++) {
+							for (int j = 0; j < curSpan.Escape.Length && offset + j < doc.Length; j++) {
 								if (doc.GetCharAt (offset + j) != curSpan.Escape[j]) {
 									match = false;
 									break;

@@ -249,7 +249,7 @@ namespace Mono.TextEditor.Highlighting
 					if (curSpan != null && !String.IsNullOrEmpty (curSpan.End)) {
 						if (!String.IsNullOrEmpty (curSpan.Escape) && i + 1 < maxEnd && endOffset == 0) {
 							bool match = true;
-							for (int j = 0; j < curSpan.Escape.Length; j++) {
+							for (int j = 0; j < curSpan.Escape.Length && i + j < maxEnd; j++) {
 								if (doc.GetCharAt (i + j) != curSpan.Escape[j]) {
 									match = false;
 									break;
