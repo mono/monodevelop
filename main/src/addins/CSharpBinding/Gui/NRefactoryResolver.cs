@@ -219,12 +219,13 @@ namespace MonoDevelop.CSharpBinding
 // System.Console.WriteLine("AddAccessibleCodeCompletionData in " + context);
 			if (context != ExpressionContext.Global) {
 				AddContentsFromClassAndMembers (context, completionList);
-			
+				
 				if (lookupTableVisitor != null && lookupTableVisitor.Variables != null) {
 					foreach (KeyValuePair<string, List<LocalLookupVariable>> pair in lookupTableVisitor.Variables) {
 						if (pair.Value != null && pair.Value.Count > 0) {
 							foreach (LocalLookupVariable v in pair.Value) {
-								completionList.Add (pair.Key, "md-literal");
+								if (new DomLocation (v.StartPos.Line, v.StartPos.Column) <= this.resolvePosition && new DomLocation (v.EndPos.Line, v.EndPos.Column) >= this.resolvePosition)
+									completionList.Add (pair.Key, "md-literal");
 							}
 						}
 					}
@@ -467,7 +468,8 @@ namespace MonoDevelop.CSharpBinding
 			foreach (KeyValuePair<string, List<LocalLookupVariable>> pair in this.lookupTableVisitor.Variables) {
 				if (identifier == pair.Key) {
 					LocalLookupVariable var = pair.Value[pair.Value.Count - 1];
-					
+					if (new DomLocation (var.StartPos.Line, var.StartPos.Column) > this.resolvePosition || new DomLocation (var.EndPos.Line, var.EndPos.Column) < this.resolvePosition)
+						continue;
 					IReturnType varType = null;
 					IReturnType varTypeUnresolved = null;
 					if ((var.TypeRef == null || var.TypeRef.Type == "var" || var.TypeRef.IsNull)) {
