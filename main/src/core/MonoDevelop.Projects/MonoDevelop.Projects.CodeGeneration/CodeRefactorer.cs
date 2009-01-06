@@ -297,6 +297,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 		                                              string foldingRegionName)
 		{
 			RefactorerContext gctx = GetGeneratorContext (cls);
+			cls = GetUpdatedClass (gctx, cls);
 			IRefactorer gen = GetGeneratorForClass (cls);
 			gen.ImplementMembers (gctx, cls, members, foldingRegionName);
 			gctx.Save ();
@@ -354,6 +355,8 @@ namespace MonoDevelop.Projects.CodeGeneration
 		public IType ImplementInterface (ICompilationUnit pinfo, IType klass, IType iface, bool explicitly, IType declaringClass, IReturnType hintReturnType)
 		{
 			RefactorerContext gctx = GetGeneratorContext (klass);
+			klass = GetUpdatedClass (gctx, klass);
+			
 			bool alreadyImplemented;
 			IReturnType prefix = null;
 			
