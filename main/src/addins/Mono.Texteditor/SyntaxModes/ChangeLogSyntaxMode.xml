@@ -32,7 +32,7 @@
 	</Span>
 	
 	<Span color = "comment" rule="Comment" tagColor="preprocessor">
-		<Begin>*</Begin>
+		<Begin flags="firstNonWs">* </Begin>
 		<End>:</End>
 	</Span>	
 	

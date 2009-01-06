@@ -196,6 +196,15 @@ namespace Mono.TextEditor.Highlighting
 								break;
 							}
 						}
+						if (!mismatch && span.BeginFlags.Contains ("firstNonWs")) {
+							LineSegment line = doc.GetLineByOffset (offset);
+							for (int k = line.Offset; k < offset; k++) {
+								if (!Char.IsWhiteSpace (doc.GetCharAt (k))) {
+									mismatch = true;
+									break;
+								}
+							}
+						}
 						
 						if (!mismatch) {
 							spanStack.Push (span);
@@ -310,6 +319,15 @@ namespace Mono.TextEditor.Highlighting
 								if (offset + j >= doc.Length || span.Begin [j] != doc.GetCharAt (offset + j)) {
 									mismatch = true;
 									break;
+								}
+							}
+							if (!mismatch && span.BeginFlags.Contains ("firstNonWs")) {
+								LineSegment line = doc.GetLineByOffset (offset);
+								for (int k = line.Offset; k < offset; k++) {
+									if (!Char.IsWhiteSpace (doc.GetCharAt (k))) {
+										mismatch = true;
+										break;
+									}
 								}
 							}
 							

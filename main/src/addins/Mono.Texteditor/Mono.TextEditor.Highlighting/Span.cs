@@ -26,6 +26,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Xml;
 
@@ -37,7 +38,10 @@ namespace Mono.TextEditor.Highlighting
 		string tagColor;
 		string rule;
 		string begin;
+		HashSet<string> beginFlags = new HashSet<string> ();
+		
 		string end;
+		HashSet<string> endFlags = new HashSet<string> ();
 		string constraint;
 		string nextColor;
 		string escape;
@@ -104,10 +108,33 @@ namespace Mono.TextEditor.Highlighting
 				return nextColor;
 			}
 		}
+
+		public HashSet<string> EndFlags {
+			get {
+				return endFlags;
+			}
+		}
+
+		public HashSet<string> BeginFlags {
+			get {
+				return beginFlags;
+			}
+		}
 		
 		public override string ToString ()
 		{
 			return String.Format ("[Span: Color={0}, Rule={1}, Begin={2}, End={3}, Escape={4}, stopAtEol={5}]", color, rule, begin, end, String.IsNullOrEmpty (escape) ? "not set" : "'" + escape +"'", stopAtEol);
+		}
+		
+		static void AddFlags (HashSet<string> hashSet, string flags)
+		{
+			System.Console.WriteLine("flag:" + flags);
+			if (String.IsNullOrEmpty (flags))
+				return;
+			foreach (string flag in flags.Split(',', ';')) {
+				System.Console.WriteLine("Add flag:" + flag);
+				hashSet.Add (flags.Trim ());
+			}
 		}
 		
 		public static Span Read (XmlReader reader)
@@ -126,6 +153,7 @@ namespace Mono.TextEditor.Highlighting
 			if (!String.IsNullOrEmpty (stopateol)) {
 				result.stopAtEol = Boolean.Parse (stopateol);
 			}
+			
 			if (reader.LocalName == AltNode) {
 				result.begin     = reader.ReadElementString ();
 				result.stopAtEol = true;
@@ -133,9 +161,11 @@ namespace Mono.TextEditor.Highlighting
 				XmlReadHelper.ReadList (reader, Node, delegate () {
 					switch (reader.LocalName) {
 					case "Begin":
+						AddFlags (result.BeginFlags, reader.GetAttribute ("flags"));
 						result.begin = reader.ReadElementString ();
 						return true;
 					case "End":
+						AddFlags (result.EndFlags, reader.GetAttribute ("flags"));
 						result.end = reader.ReadElementString ();
 						return true;
 					}

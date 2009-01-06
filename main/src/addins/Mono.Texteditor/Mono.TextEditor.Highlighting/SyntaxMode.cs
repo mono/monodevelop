@@ -306,7 +306,14 @@ namespace Mono.TextEditor.Highlighting
 									break;
 								}
 							}
-							
+							if (!mismatch && span.BeginFlags.Contains ("firstNonWs")) {
+								for (int k = line.Offset; k < i; k++) {
+									if (!Char.IsWhiteSpace (doc.GetCharAt (k))) {
+										mismatch = true;
+										break;
+									}
+								}
+							}
 							if (!mismatch) {
 								spanStack.Push (span);
 //								curChunk.Length -= span.Begin.Length - 1;
