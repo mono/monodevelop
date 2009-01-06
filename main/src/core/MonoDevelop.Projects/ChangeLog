@@ -1,5 +1,10 @@
 2009-01-06  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Dom/ResolveResult.cs: fixed 'Bug 457237 - code
+	completion doesn't show static methods when setting global variable'.
+
+2009-01-06  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs: fixed "Bug
 	456579 - implement interface on inner class adds methods to outer
 	class".

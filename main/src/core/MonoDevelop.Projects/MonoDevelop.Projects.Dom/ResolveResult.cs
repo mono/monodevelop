@@ -210,7 +210,7 @@ namespace MonoDevelop.Projects.Dom
 			if (type is InstantiatedType) 
 				genericParameters = ((InstantiatedType)type).GenericParameters;*/
 
-			bool includeProtected = DomType.IncludeProtected (dom, type, callingMember.DeclaringType);
+			bool includeProtected = callingMember != null ? DomType.IncludeProtected (dom, type, callingMember.DeclaringType) : false;
 			
 			
 			foreach (IType curType in dom.GetInheritanceTree (type)) {
