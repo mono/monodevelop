@@ -1,5 +1,11 @@
 2009-01-06  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Dom/ResolveResult.cs:
+	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: fixed 'Bug 459682 -
+	Static methods/properties don't show up in subclasses'.
+
+2009-01-06  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Dom/ResolveResult.cs: fixed 'Bug 457237 - code
 	completion doesn't show static methods when setting global variable'.
 
