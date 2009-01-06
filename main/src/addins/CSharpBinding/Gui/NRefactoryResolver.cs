@@ -224,7 +224,7 @@ namespace MonoDevelop.CSharpBinding
 					foreach (KeyValuePair<string, List<LocalLookupVariable>> pair in lookupTableVisitor.Variables) {
 						if (pair.Value != null && pair.Value.Count > 0) {
 							foreach (LocalLookupVariable v in pair.Value) {
-								if (new DomLocation (v.StartPos.Line, v.StartPos.Column) <= this.resolvePosition && new DomLocation (v.EndPos.Line, v.EndPos.Column) >= this.resolvePosition)
+								if (new DomLocation (CallingMember.Location.Line +v.StartPos.Line - 2, v.StartPos.Column) <= this.resolvePosition && (v.EndPos.IsEmpty || new DomLocation (CallingMember.Location.Line + v.EndPos.Line - 2, v.EndPos.Column) >= this.resolvePosition))
 									completionList.Add (pair.Key, "md-literal");
 							}
 						}
@@ -469,8 +469,9 @@ namespace MonoDevelop.CSharpBinding
 			ResolveResult result = null;
 			foreach (KeyValuePair<string, List<LocalLookupVariable>> pair in this.lookupTableVisitor.Variables) {
 				if (identifier == pair.Key) {
+					
 					LocalLookupVariable var = pair.Value[pair.Value.Count - 1];
-					if (new DomLocation (var.StartPos.Line, var.StartPos.Column) > this.resolvePosition || new DomLocation (var.EndPos.Line, var.EndPos.Column) < this.resolvePosition)
+					if (new DomLocation (CallingMember.Location.Line + var.StartPos.Line - 2, var.StartPos.Column) > this.resolvePosition || (!var.EndPos.IsEmpty && new DomLocation (CallingMember.Location.Line + var.EndPos.Line - 2, var.EndPos.Column) < this.resolvePosition))
 						continue;
 					IReturnType varType = null;
 					IReturnType varTypeUnresolved = null;
