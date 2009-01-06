@@ -972,6 +972,28 @@ class A
 			Assert.IsNotNull (provider, "provider not found.");
 			Assert.IsTrue (provider.Count == 0, "variable 'st' found, but shouldn't.");
 		}
+		
+		/// <summary>
+		/// Bug 457237 - code completion doesn't show static methods when setting global variable
+		/// </summary>
+		[Test()]
+		public void TestBug457237 ()
+		{
+			CompletionDataList provider = CreateProvider (
+@"
+class Test
+{
+	public static double Val = 0.5;
+}
+
+class Test2
+{
+	double dd = Test.$
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.Find ("Val"), "field 'Val' not found.");
+		}
 
 		
 		[TestFixtureSetUp] 
