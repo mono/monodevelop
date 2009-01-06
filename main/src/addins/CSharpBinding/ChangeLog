@@ -1,5 +1,10 @@
 2009-01-06  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/NRefactoryResolver.cs: fixed 'Bug 457237 - code completion doesn't
+	show static methods when setting global variable'.
+
+2009-01-06  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/NRefactoryResolver.cs: fixed 'Bug 457003 - code completion shows
 	variables out of scope'.
 

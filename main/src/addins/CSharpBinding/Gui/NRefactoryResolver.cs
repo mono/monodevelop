@@ -328,28 +328,30 @@ namespace MonoDevelop.CSharpBinding
 		{
 			this.SetupResolver (resolvePosition);
 			ResolveVisitor visitor = new ResolveVisitor (this);
-			//System.Console.WriteLine("expressionResult:" + expressionResult);
+		//	System.Console.WriteLine("expressionResult:" + expressionResult);
 			
 			if (expressionResult != null && expressionResult.ExpressionContext != null && expressionResult.ExpressionContext.IsObjectCreation) {
 				TypeReference typeRef = ParseTypeReference (expressionResult);
 				if (typeRef != null) {
 					if (dom.NamespaceExists (typeRef.Type)) {
-						//System.Console.WriteLine("namespace resolve result");
+//						System.Console.WriteLine("namespace resolve result");
 						return new NamespaceResolveResult (typeRef.Type);
 					}
-					//System.Console.WriteLine("type reference resolve result");
+//					System.Console.WriteLine("type reference resolve result");
 					return visitor.CreateResult (ConvertTypeReference (typeRef));
 				}
 			}
 			expr = ParseExpression (expressionResult);
-			//System.Console.WriteLine("parsed expression:" + expr);
+//			System.Console.WriteLine("parsed expression:" + expr);
 			if (expr == null) {
-				//System.Console.WriteLine("Can't parse expression");
+//				System.Console.WriteLine("Can't parse expression");
 				return null;
 			}
 			
 			ResolveResult result = visitor.Resolve (expr);
-			//System.Console.WriteLine("result:" + result);
+			if (CallingMember == null && result != null)
+				result.StaticResolve = true;
+//			System.Console.WriteLine("result:" + result);
 			return result;
 		}
 		
