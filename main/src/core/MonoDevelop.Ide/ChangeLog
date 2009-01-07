@@ -1,3 +1,9 @@
+2009-01-07  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs:
+	* MonoDevelop.Ide.Gui.Content/ITextEditorResolver.cs: Worked on on the
+	fly type resolving.
+
 2009-01-05  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: fixed "Bug 443771 - Go

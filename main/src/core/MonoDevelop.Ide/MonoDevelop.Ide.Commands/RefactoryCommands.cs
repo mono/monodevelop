@@ -61,25 +61,12 @@ namespace MonoDevelop.Ide.Commands
 			if (del != null)
 				del ();
 		}
-		
-		protected override void Update (CommandArrayInfo ainfo)
+		ResolveResult GetResolveResult (Document doc, ITextBuffer editor)
 		{
-			Document doc = IdeApp.Workbench.ActiveDocument;
-			if (doc == null || doc.FileName == null || IdeApp.ProjectOperations.CurrentSelectedSolution == null)
-				return;
-			
-			ITextBuffer editor = doc.GetContent <ITextBuffer> ();
-			if (editor == null)
-				return;
-			
-			bool added = false;
-			int line, column;
-			
-			editor.GetLineColumnFromPosition (editor.CursorPosition, out line, out column);
-			ProjectDom ctx = doc.Project != null ? ProjectDomService.GetProjectDom (doc.Project) : ProjectDom.Empty;
-			if (ctx == null)
-				return;
-			
+			ITextEditorResolver textEditorResolver = doc.GetContent <ITextEditorResolver> ();
+			if (textEditorResolver != null)
+				return textEditorResolver.GetLanguageItem (editor.CursorPosition);
+			/* Fallback (currently not needed)
 			// Look for an identifier at the cursor position
 			IParser parser = ProjectDomService.GetParserByFileName (editor.Name);
 			if (parser == null)
@@ -96,8 +83,29 @@ namespace MonoDevelop.Ide.Commands
 			IResolver resolver = parser.CreateResolver (ctx, doc, editor.Name);
 			if (resolver == null)
 				return;
-			ResolveResult resolveResult = resolver.Resolve (id, new DomLocation (line, column));
+			return resolver.Resolve (id, new DomLocation (line, column));
+			 **/
+			return null;
+		}
+		
 			
+		protected override void Update (CommandArrayInfo ainfo)
+		{
+			Document doc = IdeApp.Workbench.ActiveDocument;
+			if (doc == null || doc.FileName == null || IdeApp.ProjectOperations.CurrentSelectedSolution == null)
+				return;
+			
+			ITextBuffer editor = doc.GetContent <ITextBuffer> ();
+			if (editor == null)
+				return;
+			
+			bool added = false;
+			int line, column;
+			editor.GetLineColumnFromPosition (editor.CursorPosition, out line, out column);
+			ProjectDom ctx = doc.Project != null ? ProjectDomService.GetProjectDom (doc.Project) : ProjectDom.Empty;
+			if (ctx == null)
+				return;
+			ResolveResult resolveResult = GetResolveResult (doc, editor);
 			IDomVisitable item = null;
 			IMember eitem = resolveResult != null ? (resolveResult.CallingMember ?? resolveResult.CallingType) : null;
 			if (resolveResult is ParameterResolveResult) {
@@ -150,14 +158,14 @@ namespace MonoDevelop.Ide.Commands
 				if (resolveResult is BaseResolveResult && eitem is IMethod && ((IMethod)eitem).IsConstructor) {
 					IType type = item as IType;
 					IMethod baseConstructor = null;
-					int idx1 = id.Expression.IndexOf ('(');
-					int idx2 = id.Expression.IndexOf (')');
+					int idx1 = resolveResult.ResolvedExpression.IndexOf ('(');
+					int idx2 = resolveResult.ResolvedExpression.IndexOf (')');
 					int paramCount = 0;
 					if (idx1 > 0 && idx2 > 0) {
 						if (idx2 - idx1 > 1)
 							paramCount++;
 						for (int i=idx1; i < idx2; i++) {
-							if (id.Expression[i] == ',') 
+							if (resolveResult.ResolvedExpression[i] == ',') 
 								paramCount++;
 						}
 					}
