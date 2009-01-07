@@ -1,5 +1,9 @@
 2009-01-07  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/NRefactoryResolver.cs: Worked on on the fly type resolving.
+
+2009-01-07  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/CSharpAmbience.cs: fixed "Bug 463783 - Method Navigator does not
 	show indexer parameters".
 
