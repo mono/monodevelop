@@ -56,7 +56,7 @@ namespace MonoDevelop.SourceEditor
 {	
 	public class SourceEditorView : AbstractViewContent, IExtensibleTextEditor, IBookmarkBuffer, IClipboardHandler, 
 		ICompletionWidget, IDocumentInformation, ISplittable, IFoldable, IToolboxDynamicProvider, 
-		ICustomFilteringToolboxConsumer, IZoomable
+		ICustomFilteringToolboxConsumer, IZoomable, ITextEditorResolver
 #if GNOME_PRINT
 		, IPrintable
 #endif
@@ -1424,6 +1424,16 @@ namespace MonoDevelop.SourceEditor
 		{
 			SourceEditorOptions.Options.ZoomReset ();
 		}
+
+		#region ITextEditorResolver implementation 
+		
+		public ResolveResult GetLanguageItem (int offset)
+		{
+			return this.SourceEditorWidget.TextEditor.GetLanguageItem (offset);
+		}
+		
+		#endregion 
+		
 		#endregion
 	}
 } 
