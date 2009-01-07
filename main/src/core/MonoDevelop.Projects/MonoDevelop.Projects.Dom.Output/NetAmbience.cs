@@ -112,6 +112,17 @@ namespace MonoDevelop.Projects.Dom.Output
 				result.Append (Format (property.Name));
 			}
 			
+			if (settings.IncludeParameters && property.Parameters.Count > 0) {
+				result.Append (settings.Markup ("("));
+				bool first = true;
+				foreach (IParameter parameter in property.Parameters) {
+					if (!first)
+						result.Append (settings.Markup (", "));
+					result.Append (GetString (parameter, settings));
+					first = false;
+				}
+				result.Append (settings.Markup (")"));
+			}
 			if (settings.IncludeReturnType) {
 				result.Append (settings.Markup (" : "));
 				result.Append (GetString (property.ReturnType, settings));
