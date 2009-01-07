@@ -29,6 +29,7 @@ using System;
 using System.IO;
 
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui;
@@ -50,8 +51,8 @@ namespace MonoDevelop.ChangeLogAddIn
 			Document document = GetActiveChangeLogDocument();
 			if (document == null) return;
 			
-			InsertHeader(document);
-			InsertEntry(document);					
+			if (InsertHeader(document))
+				InsertEntry(document);					
 		}
 
 		protected override void Update(CommandInfo info)
@@ -106,13 +107,21 @@ namespace MonoDevelop.ChangeLogAddIn
 	        }
 		}
 		
-		private void InsertHeader(Document document)
+		private bool InsertHeader(Document document)
 		{
 			IEditableTextBuffer textBuffer = document.GetContent<IEditableTextBuffer>();					
-			if (textBuffer == null) return;
+			if (textBuffer == null) return false;
 		
-			string name = PropertyService.Get("ChangeLogAddIn.Name", "Full Name");
-			string email = PropertyService.Get("ChangeLogAddIn.Email", "Email Address");
+			string name = PropertyService.Get("ChangeLogAddIn.Name", string.Empty);
+			string email = PropertyService.Get("ChangeLogAddIn.Email", string.Empty);
+			
+			if (string.IsNullOrEmpty (name) || string.IsNullOrEmpty (email)) {
+				string title = GettextCatalog.GetString ("ChangeLog entries can't be generated");
+				string detail = GettextCatalog.GetString ("The name or e-mail of the user has not been configured.");
+				MessageService.ShowError (title, detail);
+				return false;
+			}
+			
 			string date = DateTime.Now.ToString("yyyy-MM-dd");
 			string text = date + "  " + name + "  <" + email + ">" 
 			    + Environment.NewLine + Environment.NewLine;
@@ -125,6 +134,7 @@ namespace MonoDevelop.ChangeLogAddIn
             
             if (line != text)
     			textBuffer.InsertText(0, text);			
+    			return true;
         }
         
         private int GetHeaderEndPosition(Document document)

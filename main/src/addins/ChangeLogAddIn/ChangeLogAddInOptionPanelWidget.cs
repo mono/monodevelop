@@ -39,8 +39,8 @@ namespace MonoDevelop.ChangeLogAddIn
 		
 		public void LoadPanelContents()
 		{
-			nameEntry.Text = PropertyService.Get ("ChangeLogAddIn.Name", GettextCatalog.GetString("Full Name"));
-			emailEntry.Text = PropertyService.Get ("ChangeLogAddIn.Email", GettextCatalog.GetString("Email Address"));
+			nameEntry.Text = PropertyService.Get ("ChangeLogAddIn.Name", string.Empty);
+			emailEntry.Text = PropertyService.Get ("ChangeLogAddIn.Email", string.Empty);
 			integrationCheck.Active = PropertyService.Get ("ChangeLogAddIn.VersionControlIntegration", true);
 		}
 		
