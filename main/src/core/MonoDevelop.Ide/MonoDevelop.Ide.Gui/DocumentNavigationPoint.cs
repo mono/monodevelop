@@ -1,10 +1,10 @@
 // 
-// FileNavigationPoint.cs
+// DocumentNavigationPoint.cs
 // 
 // Author:
 //   Michael Hutchinson <mhutchinson@novell.com>
 // 
-// Copyright (C) 2008 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2009 Novell, Inc (http://www.novell.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -32,53 +32,67 @@ namespace MonoDevelop.Ide.Gui
 {
 	
 	
-	public class FileNavigationPoint : NavigationPoint
+	public class DocumentNavigationPoint : NavigationPoint
 	{
+		Document doc;
 		string fileName;
-		string fragment;
 		
-		public FileNavigationPoint (string fileName)
-			: this (fileName, string.Empty)
+		public DocumentNavigationPoint (Document doc)
 		{
+			this.doc = doc;
+			doc.Closed += HandleClosed;
 		}
-		
-		public FileNavigationPoint (string fileName, string fragment)
+
+		void HandleClosed (object sender, EventArgs e)
 		{
-			this.fileName = fileName;
-			this.fragment = fragment;
-		}
-		
-		public string FileName {
-			get { return fileName; }
-			internal set { fileName = value; }
-		}
-		
-		public override string DisplayName {
-			get { return System.IO.Path.GetFileName (fileName); }
+			doc.Closed -= HandleClosed;
+			fileName = doc.FileName;
+			if (fileName == null)
+				RemoveSelfFromHistory ();
+			doc = null;
 		}
 		
 		public override string Tooltip {
-			get { return fragment; }
+			get { return doc != null? doc.Name : fileName; }
 		}
 		
-		protected virtual string Snippet {
-			set { fragment = value; }
+		string FileName {
+			get { return doc != null? doc.FileName : fileName; }
 		}
 		
-		protected override void DoShow ()
+		protected Document Document {
+			get { return doc; }
+		}
+		
+		protected override Document DoShow ()
 		{
-			IdeApp.Workbench.OpenDocument (fileName, true);
+			if (doc != null) {
+				doc.Select ();
+				return doc;
+			} else {
+				return IdeApp.Workbench.OpenDocument (fileName, true);
+			}
+		}
+		
+		public override string DisplayName {
+			get {
+				return System.IO.Path.GetFileName (doc != null? doc.Name : fileName);
+			}
 		}
 		
 		public override bool Equals (object o)
 		{
-			FileNavigationPoint fp = o as FileNavigationPoint;
-			return fp != null && fp.fileName == fileName;
+			DocumentNavigationPoint dp = o as DocumentNavigationPoint;
+			return dp != null && ((doc != null && doc == dp.doc) || (FileName != null && FileName == dp.FileName));
 		}
 		
-//		public bool Transient {
-//			get { return transient; }
-//			set { transient = value; }
-//		}
+		internal bool HandleRenameEvent (string oldName, string newName)
+		{
+			if (doc == null && oldName == fileName) {
+				fileName = newName;
+				return true;
+			}
+			return false;
+		}
 	}
 }

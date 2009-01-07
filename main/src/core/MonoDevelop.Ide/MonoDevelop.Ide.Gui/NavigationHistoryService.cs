@@ -127,26 +127,31 @@ namespace MonoDevelop.Ide.Gui
 		
 		static NavigationPoint GetNavPointForActiveDoc ()
 		{
-			if (IdeApp.Workbench.ActiveDocument == null)
+			return GetNavPointForDoc (IdeApp.Workbench.ActiveDocument);
+		}
+		
+		static NavigationPoint GetNavPointForDoc (Document doc)
+		{
+			if (doc == null)
 				return null;
 			
 			NavigationPoint point = null;
 			
-			INavigable navigable = IdeApp.Workbench.ActiveDocument.GetContent<INavigable> ();
+			INavigable navigable = doc.GetContent<INavigable> ();
 			if (navigable != null) {
 				point = navigable.BuildNavigationPoint ();
 				if (point != null)
 					return point;
 			}
 			
-			IEditableTextBuffer editBuf = IdeApp.Workbench.ActiveDocument.GetContent <IEditableTextBuffer> ();
+			IEditableTextBuffer editBuf = doc.GetContent<IEditableTextBuffer> ();
 			if (editBuf != null) {
-				point = new TextFileNavigationPoint (editBuf);
+				point = new TextFileNavigationPoint (doc, editBuf);
 				if (point != null)
 					return point;
 			}
 			
-			return new FileNavigationPoint (IdeApp.Workbench.ActiveDocument.FileName);
+			return new DocumentNavigationPoint (doc);
 		}
 		
 		#region Navigation
@@ -213,6 +218,11 @@ namespace MonoDevelop.Ide.Gui
 			NavigationPoint current = history.Current;
 			history.Clear ();
 			history.AddPoint (current);
+		}
+		
+		internal static void Remove (NavigationPoint point)
+		{
+			history.Remove (point);
 		}
 		
 		public static event EventHandler HistoryChanged;
@@ -308,11 +318,13 @@ namespace MonoDevelop.Ide.Gui
 		
 		static void FileRenamed (object sender, MonoDevelop.Projects.ProjectFileRenamedEventArgs args)
 		{
+			bool changed = false;
 			foreach (NavigationPoint point in history) {
-				FileNavigationPoint fp = point as FileNavigationPoint;
-				if (fp != null && fp.FileName == args.OldName)
-					fp.FileName = args.NewName;
+				DocumentNavigationPoint dp = point as DocumentNavigationPoint;
+				changed &= (dp != null && dp.HandleRenameEvent (args.OldName, args.NewName));
 			}
+			if (changed)
+				OnHistoryChanged ();
 		}
 		
 		#endregion
@@ -332,7 +344,7 @@ namespace MonoDevelop.Ide.Gui
 			DoShow ();
 		}
 		
-		protected abstract void DoShow ();
+		protected abstract Document DoShow ();
 		
 		// used for fuzzy matching to decide whether to replace an existing nav point
 		// e.g if user just moves around a little, we don't want to add too many points
@@ -349,7 +361,11 @@ namespace MonoDevelop.Ide.Gui
 		{
 			return string.Format ("[NavigationPoint {0}]", DisplayName);
 		}
-
+		
+		protected void RemoveSelfFromHistory ()
+		{
+			NavigationHistoryService.Remove (this);
+		}
 	}
 	
 	//the list may only contain reference types, because it uses reference equality to ensure
@@ -439,6 +455,52 @@ namespace MonoDevelop.Ide.Gui
 			
 			//as soon as another point is added, the forward history becomes invalid
 			forward.Clear ();
+		}
+		
+		//used for editing out items that are no longer valid
+		public void Remove (T point)
+		{
+			if (object.ReferenceEquals (current, point)) {
+				current = null;
+				//remove the next node if the node we removed was between identical nodes
+				if (back.Last != null && forward.First != null && object.Equals (back.Last.Value, forward.First.Value))
+					forward.Remove (forward.First);
+				return;
+			}
+			
+			LinkedListNode<T> node = back.Last;
+			while (node != null) {
+				if (object.ReferenceEquals (node.Value, point)) {
+					LinkedListNode<T> next = node.Previous;
+					back.Remove (node);
+					
+					//remove the next node if the node we removed was between identical nodes
+					if (next != null) {
+						T compareTo = next.Next != null? next.Next.Value : current;
+						if (object.Equals (compareTo, next.Value))
+							back.Remove (next);
+					}
+					return;
+				}
+				node = node.Previous;
+			}
+			
+			node = forward.First;
+			while (node != null) {
+				if (object.ReferenceEquals (node.Value, point)) {
+					LinkedListNode<T> next = node.Next;
+					forward.Remove (node);
+					
+					//remove the next node if the node we removed was between identical nodes
+					if (next != null) {
+						T compareTo = next.Previous != null? next.Previous.Value : current;
+						if (object.Equals (compareTo, next.Value))
+							forward.Remove (next);
+					}
+					return;
+				}
+				node = node.Next;
+			}
 		}
 		
 		public IList<T> GetList (int desiredLength)

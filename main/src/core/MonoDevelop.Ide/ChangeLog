@@ -1,3 +1,12 @@
+2009-01-07  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Ide.Gui/FileNavigationPoint.cs:
+	* MonoDevelop.Ide.Gui/TextFileNavigationPoint.cs:
+	* MonoDevelop.Ide.Gui/DocumentNavigationPoint.cs:
+	* MonoDevelop.Ide.Gui/NavigationHistoryService.cs: Track Name/FileName
+	changes. Handle untitled documents correctly.
+
 2009-01-07  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs: Don't use

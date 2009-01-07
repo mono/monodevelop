@@ -27,26 +27,22 @@
 //
 
 using System;
+using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.Ide.Gui
 {
 	
-	public class TextFileNavigationPoint : FileNavigationPoint
+	public class TextFileNavigationPoint : DocumentNavigationPoint
 	{
 		int line;
+		string snippet;
 		
-		public TextFileNavigationPoint (MonoDevelop.Ide.Gui.Content.IEditableTextBuffer buffer)
-			: base (buffer.Name, null)
+		public TextFileNavigationPoint (Document doc, IEditableTextBuffer buffer)
+			: base (doc)
 		{
 			int col;
 			buffer.GetLineColumnFromPosition (buffer.CursorPosition, out line, out col);
 			UpdateSnippet (buffer);
-		}
-		
-		public TextFileNavigationPoint (string fileName, int line, string fragment)
-			: base (fileName, fragment)
-		{
-			this.line = line;
 		}
 		
 		public int Line {
@@ -55,13 +51,23 @@ namespace MonoDevelop.Ide.Gui
 		
 		public override string DisplayName {
 			get {
-				return string.Format ("{0} : {1}", System.IO.Path.GetFileName (FileName), Line);
+				return string.Format ("{0} : {1}", base.DisplayName, Line);
 			}
 		}
 		
-		protected override void DoShow ()
+		public override string Tooltip {
+			get { return snippet; }
+		}
+
+		protected override Document DoShow ()
 		{
-			IdeApp.Workbench.OpenDocument (FileName, Math.Max (line, 1), 1, true);
+			Document doc = base.DoShow ();
+			if (doc != null) {
+				IEditableTextBuffer buf = doc.GetContent<IEditableTextBuffer> ();
+				if (buf != null)
+					buf.SetCaretTo (Math.Max (line, 1), 1);
+			}
+			return doc;
 		}
 		
 		public void UpdateLine (int line, MonoDevelop.Ide.Gui.Content.IEditableTextBuffer buffer)
@@ -105,7 +111,7 @@ namespace MonoDevelop.Ide.Gui
 					fragment.AppendLine ();
 			}
 			
-			Snippet = fragment.ToString ();
+			snippet = fragment.ToString ();
 		}
 		
 		int GetIndentLength (string line)
