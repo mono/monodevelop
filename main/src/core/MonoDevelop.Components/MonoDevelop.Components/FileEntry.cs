@@ -53,8 +53,9 @@ namespace MonoDevelop.Components {
 			int response = fd.Run ();
 			
 			if (response == (int) ResponseType.Ok) {
+				string file = fd.Filename;
 				fd.Destroy ();
-				return fd.Filename;
+				return file;
 			}
 
 			fd.Destroy ();			

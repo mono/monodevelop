@@ -1,3 +1,9 @@
+2009-01-07  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Components/FileEntry.cs: Get the selected file before
+	destroying the selector dialog. Fixes bug #461702 - Browsing for a
+	strong name file does not work.
+
 2008-12-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:
