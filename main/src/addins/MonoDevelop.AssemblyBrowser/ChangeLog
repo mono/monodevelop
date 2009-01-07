@@ -1,3 +1,8 @@
+2009-01-07  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs: Added support
+	for generic help urls.
+
 2008-12-12  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.AssemblyBrowser.mdp: All projects now require fx 3.5.

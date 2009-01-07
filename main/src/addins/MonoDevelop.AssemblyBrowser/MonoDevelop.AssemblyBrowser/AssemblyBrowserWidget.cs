@@ -202,9 +202,14 @@ namespace MonoDevelop.AssemblyBrowser
 			
 		static bool SkipChildren (ITreeNavigator nav, string helpUrl)
 		{
-			if (nav.DataItem is IType && !helpUrl.Contains ((nav.DataItem as IType).FullName)) 
+			string strippedUrl = helpUrl;
+			int idx = strippedUrl.IndexOf ('~');
+			if (idx > 0) 
+				strippedUrl = strippedUrl.Substring (0, idx);
+			
+			if (nav.DataItem is IType && !strippedUrl.Contains ((nav.DataItem as IType).FullName)) 
 				return true;
-			if (nav.DataItem is Namespace && !helpUrl.Contains (((Namespace)nav.DataItem).Name))
+			if (nav.DataItem is Namespace && !strippedUrl.Contains (((Namespace)nav.DataItem).Name))
 				return true;
 			return false;
 		}
