@@ -1,3 +1,9 @@
+2009-01-07  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Services/ExternalTestRunner.cs: Fix bug #461415 - NUnit addin's path
+	handling does not account for inherited tests. Patch by Brian
+	Anderson.
+
 2008-12-12  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.NUnit.mdp: All projects now require fx 3.5.

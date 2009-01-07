@@ -131,9 +131,13 @@ namespace MonoDevelop.NUnit
 		{
 			TestInfo ti = new TestInfo ();
 			ti.Name = test.Name;
-			int i = test.FullName.LastIndexOf ('.');
-			if (i != -1)
-				ti.PathName = test.FullName.Substring (0,i);
+
+			// Trim short name from end of full name to get the path
+			string testNameWithDelimiter = "." + test.Name;
+			if (test.FullName.EndsWith (testNameWithDelimiter)) {
+				int pathLength = test.FullName.Length - testNameWithDelimiter.Length;
+				ti.PathName = test.FullName.Substring(0, pathLength );
+			}
 			else
 				ti.PathName = null;
 				
@@ -297,17 +301,24 @@ namespace MonoDevelop.NUnit
 			if (testPath == "")
 				return t;
 
-			string[] path = testPath.Split ('.');
-			foreach (string part in path) {
-				UnitTestGroup group = t as UnitTestGroup;
-				if (group == null)
-					return null;
-				
-				t = group.Tests [part];
-				if (t == null)
-					return null;
+			UnitTestGroup group = t as UnitTestGroup;
+			if (group == null)
+				return null;
+
+			UnitTest returnTest = group.Tests [testPath];
+			if (returnTest != null)
+				return returnTest;
+
+			string[] paths = testPath.Split (new char[] {'.'}, 2);
+			if (paths.Length == 2) {
+				string nextPathSection = paths[0];
+				string nextTestCandidate = paths[1];
+
+				UnitTest childTest = group.Tests [nextPathSection];
+				if (childTest != null)
+					return FindTest (childTest, nextTestCandidate);
 			}
-			return t;
+			return null;
 		}
 		
 		public UnitTestResult GetLocalTestResult (TestResult t)
