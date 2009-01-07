@@ -48,6 +48,7 @@ namespace MonoDevelop.ChangeLogAddIn
 		bool notConfigured;
 		Dictionary<string,ChangeLogEntry> entries;
 		int unknownFileCount;
+		int uncommentedCount;
 		
 		public CommitDialogExtensionWidget()
 		{
@@ -112,16 +113,21 @@ namespace MonoDevelop.ChangeLogAddIn
 			
 			optionsButton.Visible = true;
 			logButton.Label = GettextCatalog.GetString ("Details...");
+			string warning = "";
+			if (uncommentedCount > 0) {
+				string fc = GettextCatalog.GetString ("There are {0} files without a comment.\nThe ChangeLog entry for those files will not be generated.", uncommentedCount);
+				warning = "<b><span foreground='red'>" + fc + "</span></b>\n";
+			}
 			if (unknownFileCount > 0) {
 				string fc = GettextCatalog.GetPluralString ("{0} ChangeLog file not found. Some changes will not be logged.","{0} ChangeLog files not found. Some changes will not be logged.", unknownFileCount, unknownFileCount);
-				msgLabel.Markup = "<b><span foreground='red'>" + fc + "</span></b>";
+				msgLabel.Markup = warning + "<b><span foreground='red'>" + fc + "</span></b>";
 				pathLabel.Text = GettextCatalog.GetString ("Click on the 'Details' button for more info.");
 			} else if (entries.Count == 1) {
-				msgLabel.Markup = "<b>" + GettextCatalog.GetString ("The following ChangeLog file will be updated:") + "</b>";
+				msgLabel.Markup = warning + "<b>" + GettextCatalog.GetString ("The following ChangeLog file will be updated:") + "</b>";
 				foreach (ChangeLogEntry e in entries.Values)
 					pathLabel.Text = e.File;
 			} else {
-				msgLabel.Markup = "<b>" + GettextCatalog.GetString ("{0} ChangeLog files will be updated.", entries.Count) + "</b>";
+				msgLabel.Markup = warning + "<b>" + GettextCatalog.GetString ("{0} ChangeLog files will be updated.", entries.Count) + "</b>";
 				pathLabel.Text = GettextCatalog.GetString ("Click on the 'Details' button for more info.");
 			}
 			notConfigured = false;
@@ -230,6 +236,8 @@ namespace MonoDevelop.ChangeLogAddIn
 					logf = System.IO.Path.GetDirectoryName (item.LocalPath);
 					logf = System.IO.Path.Combine (logf, "ChangeLog");
 				}
+				if (string.IsNullOrEmpty (item.Comment) && !item.IsDirectory)
+					uncommentedCount++;
 				
 				ChangeLogEntry entry;
 				if (!entries.TryGetValue (logf, out entry)) {

@@ -1,5 +1,10 @@
 2009-01-07  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* CommitDialogExtensionWidget.cs: Show a warning if there are some files
+	without a comment.
+
+2009-01-07  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* ChangeLogAddIn.cs:
 	* gtk-gui/gui.stetic:
 	* gtk-gui/generated.cs:
