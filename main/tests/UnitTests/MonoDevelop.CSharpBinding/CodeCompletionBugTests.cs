@@ -995,6 +995,28 @@ class Test2
 			Assert.IsNotNull (provider.Find ("Val"), "field 'Val' not found.");
 		}
 
+		/// <summary>
+		/// Bug 459682 - Static methods/properties don't show up in subclasses
+		/// </summary>
+		[Test()]
+		public void TestBug459682 ()
+		{
+			CompletionDataList provider = CreateProvider (
+@"public class BaseC
+{
+	public static int TESTER;
+}
+public class Child : BaseC
+{
+	public Child()
+	{
+		Child.$
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.Find ("TESTER"), "field 'TESTER' not found.");
+		}
 		
 		[TestFixtureSetUp] 
 		public void SetUp()
