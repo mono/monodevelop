@@ -43,6 +43,15 @@ namespace MonoDevelop.Projects.Dom
 			set;
 		}
 		
+		public override string HelpUrl {
+			get {
+				IType type = UninstantiatedType;
+				if (type != null)
+					return type.HelpUrl;
+				return base.HelpUrl;
+			}
+		}
+		
 		public InstantiatedType()
 		{
 		}

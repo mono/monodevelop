@@ -224,7 +224,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		public override string HelpUrl {
 			get {
-				return "T:" + this.FullName;
+				return "T:" + GetNetFullName (this);
 			}
 		}
 		
