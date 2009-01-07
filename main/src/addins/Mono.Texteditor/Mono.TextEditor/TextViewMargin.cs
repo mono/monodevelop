@@ -1145,6 +1145,8 @@ namespace Mono.TextEditor
 				visualXPos = xp + (int)margin.textEditor.HAdjustment.Value;
 			 restart:
 				foreach (FoldSegment folding in foldings) {
+					if (!folding.IsFolded)
+						continue;
 					int foldOffset = folding.StartLine.Offset + folding.Column;
 					if (foldOffset < offset)
 						continue;
@@ -1181,6 +1183,7 @@ namespace Mono.TextEditor
 					chunks = mode.GetChunks (margin.Document, margin.textEditor.ColorStyle, line, offset, line.Offset + line.EditableLength - offset);
 					ConsumeChunks ();
 				}
+				
 				measureLayout.Dispose ();
 				return new DocumentLocation (lineNumber, column);
 			}
