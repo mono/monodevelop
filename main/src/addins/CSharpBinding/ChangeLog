@@ -1,3 +1,8 @@
+2009-01-07  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/CSharpAmbience.cs: fixed "Bug 463783 - Method Navigator does not
+	show indexer parameters".
+
 2009-01-06  Mike Krüger  <mkrueger@novell.com>
 
 	* Gui/NRefactoryResolver.cs: Corrected variable scope.

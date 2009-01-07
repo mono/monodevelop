@@ -157,9 +157,31 @@ namespace MonoDevelop.CSharpBinding
 			}
 			AppendExplicitInterfaces(result, property);
 			result.Append (Format (property.Name));
+			if (settings.IncludeParameters && property.Parameters.Count > 0) {
+				result.Append (settings.Markup ("["));
+				bool first = true;
+				foreach (IParameter parameter in property.Parameters) {
+					if (!first)
+						result.Append (settings.Markup (", "));
+					AppendParameter (settings, result, parameter);
+					first = false;
+				}
+				result.Append (settings.Markup ("]"));
+			}
 			return result.ToString ();
 		}
 		
+		void AppendParameter (OutputSettings settings, StringBuilder result, IParameter parameter)
+		{
+			if (parameter.IsOut) {
+				result.Append (settings.Markup ("out "));
+			} else if (parameter.IsRef) {
+				result.Append (settings.Markup ("ref "));
+			} else if (parameter.IsParams) {
+				result.Append (settings.Markup ("params "));
+			}
+			result.Append (GetString (parameter, settings));
+		}
 		public string Visit (IField field, OutputSettings settings)
 		{
 			StringBuilder result = new StringBuilder ();
@@ -261,14 +283,7 @@ namespace MonoDevelop.CSharpBinding
 							continue;
 						if (!first)
 							result.Append (settings.Markup (", "));
-						if (parameter.IsOut) {
-							result.Append (settings.Markup ("out "));
-						} else if (parameter.IsRef) {
-							result.Append (settings.Markup ("ref "));
-						} else if (parameter.IsParams) {
-							result.Append (settings.Markup ("params "));
-						}
-						result.Append (GetString (parameter, settings));
+						AppendParameter (settings, result, parameter);
 						first = false;
 					}
 				}
