@@ -59,6 +59,11 @@ namespace MonoDevelop.Projects.Dom
 			get;
 			set;
 		}
+
+		public string ResolvedExpression {
+			get;
+			set;
+		}
 		
 		public ResolveResult () : this (false)
 		{
