@@ -344,7 +344,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					return false;
 				}
 				
-				if (!FileService.IsValidFileName(fileMask) || fileMask.IndexOf('\\') >= 0) {
+				if (fileMask.IndexOf('\\') >= 0) {
 					MessageService.ShowError (GettextCatalog.GetString ("Invalid file mask: {0}", fileMask));
 					return false;
 				}

@@ -1,3 +1,9 @@
+2009-01-07  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs: Don't use
+	IsValidFileName to check the file name since it will fail if the name
+	contains wildcards.
+
 2009-01-07  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Commands/RefactoryCommands.cs:
