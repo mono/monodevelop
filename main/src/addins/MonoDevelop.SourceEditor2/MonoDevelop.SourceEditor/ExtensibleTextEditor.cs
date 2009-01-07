@@ -420,26 +420,31 @@ namespace MonoDevelop.SourceEditor
 			this.resolveResult = resolver.Resolve (expressionResult, new DomLocation (loc.Line + 1, loc.Column + 1));
 			
 			if (this.resolveResult == null || String.IsNullOrEmpty (this.resolveResult.ResolvedType.Name)) {
-				int j = Document.LocationToOffset (expressionResult.Region.End.Line - 1, expressionResult.Region.End.Column - 1);
-				int bracket = 0;
-				for (int i = j; i < Document.Length; i++) {
-					char ch = Document.GetCharAt (i);
-					if (Char.IsWhiteSpace (ch))
-						continue;
-					if (ch == '<') {
-						bracket++;
-					} else if (ch == '>') {
-						bracket--;
-						if (bracket == 0) {
-							expressionResult.Expression += Document.GetTextBetween (j, i + 1);
-							expressionResult.ExpressionContext = ExpressionContext.ObjectCreation;
-							System.Console.WriteLine(expressionResult);
-							this.resolveResult = resolver.Resolve (expressionResult, new DomLocation (loc.Line + 1, loc.Column + 1));
-							break;
+				if (expressionResult.ExpressionContext == ExpressionContext.Attribute) {
+					expressionResult.Expression += "Attribute";
+					expressionResult.ExpressionContext = ExpressionContext.ObjectCreation;
+					this.resolveResult = resolver.Resolve (expressionResult, new DomLocation (loc.Line + 1, loc.Column + 1));
+				} else {
+					int j = Document.LocationToOffset (expressionResult.Region.End.Line - 1, expressionResult.Region.End.Column - 1);
+					int bracket = 0;
+					for (int i = j; i >= 0 && i < Document.Length; i++) {
+						char ch = Document.GetCharAt (i);
+						if (Char.IsWhiteSpace (ch))
+							continue;
+						if (ch == '<') {
+							bracket++;
+						} else if (ch == '>') {
+							bracket--;
+							if (bracket == 0) {
+								expressionResult.Expression += Document.GetTextBetween (j, i + 1);
+								expressionResult.ExpressionContext = ExpressionContext.ObjectCreation;
+								this.resolveResult = resolver.Resolve (expressionResult, new DomLocation (loc.Line + 1, loc.Column + 1));
+								break;
+							}
+						} else {
+							if (bracket == 0)
+								break;
 						}
-					} else {
-						if (bracket == 0)
-							break;
 					}
 				}
 			}
