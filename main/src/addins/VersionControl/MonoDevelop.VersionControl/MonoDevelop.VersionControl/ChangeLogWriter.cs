@@ -84,6 +84,9 @@ namespace MonoDevelop.VersionControl
 		
 		public override string ToString ()
 		{
+			if (messages.Count == 0)
+				return string.Empty;
+				
 			StringBuilder builder = new StringBuilder ();
 			
 			if (MessageStyle == ChangeLogMessageStyle.ChangeLogEntry) {

@@ -1,3 +1,10 @@
+2009-01-07  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.VersionControl/ChangeLogWriter.cs: If there are no
+	changelog entries, generate an empty message (don't include the
+	headers). Fixes bug #375668 - If no text is entered for any changed
+	file, an entry with only name and e-mail is added to the ChangeLog.
+
 2008-12-12  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.VersionControl.mdp: All projects now require fx 3.5.
