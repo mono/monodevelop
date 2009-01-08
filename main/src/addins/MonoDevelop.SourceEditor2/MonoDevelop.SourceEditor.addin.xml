@@ -98,13 +98,13 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.ToggleBookmark" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.ClearBookmarks" />
 		<SeparatorItem id = "Separator1" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.DebugCommands.NewBreakpoint" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.DebugCommands.RemoveBreakpoint" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.DebugCommands.ToggleBreakpoint" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.DebugCommands.EnableDisableBreakpoint" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.DebugCommands.DisableAllBreakpoints" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.DebugCommands.ClearAllBreakpoints" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.DebugCommands.ShowBreakpointProperties" />
+		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.NewBreakpoint" />
+		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.RemoveBreakpoint" />
+		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.ToggleBreakpoint" />
+		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.EnableDisableBreakpoint" />
+		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.DisableAllBreakpoints" />
+		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.ClearAllBreakpoints" />
+		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.ShowBreakpointProperties" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/TextEditor">

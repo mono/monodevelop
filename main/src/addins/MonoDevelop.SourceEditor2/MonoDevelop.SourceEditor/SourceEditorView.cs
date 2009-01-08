@@ -465,6 +465,10 @@ namespace MonoDevelop.SourceEditor
 				TextEditor.Caret.Column = 1;
 				IdeApp.CommandService.ShowContextMenu ("/MonoDevelop/SourceEditor2/IconContextMenu/Editor");
 			}
+			else if (args.Button == 1) {
+				if (!string.IsNullOrEmpty (this.Document.FileName))
+					DebuggingService.Breakpoints.Toggle (this.Document.FileName, args.LineNumber + 1);
+			}
 		}
 		
 		#region IExtensibleTextEditor
