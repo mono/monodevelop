@@ -1,3 +1,8 @@
+2009-01-08  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: Fixed possible null
+	ref. exception.
+
 2009-01-07  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: fixed 'Bug 463881 -

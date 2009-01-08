@@ -419,7 +419,7 @@ namespace MonoDevelop.SourceEditor
 			DocumentLocation loc = Document.OffsetToLocation (offset);
 			this.resolveResult = resolver.Resolve (expressionResult, new DomLocation (loc.Line + 1, loc.Column + 1));
 			
-			if (this.resolveResult == null || String.IsNullOrEmpty (this.resolveResult.ResolvedType.Name)) {
+			if (this.resolveResult == null || this.resolveResult.ResolvedType == null || String.IsNullOrEmpty (this.resolveResult.ResolvedType.Name)) {
 				if (expressionResult.ExpressionContext == ExpressionContext.Attribute) {
 					expressionResult.Expression += "Attribute";
 					expressionResult.ExpressionContext = ExpressionContext.ObjectCreation;
