@@ -479,7 +479,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (fileContent == null)
 				ser.InternalItemProperties.ItemData.Sort (globalConfigOrder);
 			
-			WritePropertyGroupMetadata (globalGroup, ser.InternalItemProperties.ItemData, Item, ser);
+			WritePropertyGroupMetadata (globalGroup, ser.InternalItemProperties.ItemData, ser, Item);
 			
 			// Find a common assembly name for all configurations
 			
@@ -543,7 +543,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				if (newConf)
 					ditem.ItemData.Sort (configOrder);
 				
-				WritePropertyGroupMetadata (propGroup, ditem.ItemData, conf, ser);
+				WritePropertyGroupMetadata (propGroup, ditem.ItemData, ser, conf, netConfig != null ? netConfig.CompilationParameters : null);
 				
 				if (!string.IsNullOrEmpty (assemblyName))
 					propGroup.RemoveProperty ("AssemblyName");
@@ -785,12 +785,17 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return ditem;
 		}
 		
-		void WritePropertyGroupMetadata (MSBuildPropertyGroup propGroup, DataCollection itemData, object itemToReplace, MSBuildSerializer ser)
+		void WritePropertyGroupMetadata (MSBuildPropertyGroup propGroup, DataCollection itemData, MSBuildSerializer ser, params object[] itemsToReplace)
 		{
 			var notWrittenProps = new HashSet<string> ();
-			ClassDataType dt = (ClassDataType) ser.DataContext.GetConfigurationDataType (itemToReplace.GetType ());
-			foreach (ItemProperty prop in dt.GetProperties (ser.SerializationContext, itemToReplace))
-				notWrittenProps.Add (prop.Name);
+			
+			foreach (object ob in itemsToReplace) {
+				if (ob == null)
+					continue;
+				ClassDataType dt = (ClassDataType) ser.DataContext.GetConfigurationDataType (ob.GetType ());
+				foreach (ItemProperty prop in dt.GetProperties (ser.SerializationContext, ob))
+					notWrittenProps.Add (prop.Name);
+			}
 	
 			foreach (DataNode node in itemData) {
 				notWrittenProps.Remove (node.Name);
