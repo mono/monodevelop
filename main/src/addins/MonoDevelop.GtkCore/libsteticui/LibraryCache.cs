@@ -311,7 +311,12 @@ namespace Stetic {
 			foreach (CustomAttribute attr in tdef.CustomAttributes) {
 				switch (attr.Constructor.DeclaringType.FullName) {
 				case "System.ComponentModel.ToolboxItemAttribute":
-					attr.Resolve ();
+					try {
+						attr.Resolve ();
+					} catch {
+						// Ignore
+						return null;
+					}
 					if (attr.ConstructorParameters.Count > 0) {
 						object param = attr.ConstructorParameters [0];
 						if (param == null)
@@ -328,7 +333,12 @@ namespace Stetic {
 					}
 					break;
 				case "System.ComponentModel.CategoryAttribute":
-					attr.Resolve ();
+					try {
+						attr.Resolve ();
+					} catch {
+						// Ignore
+						return null;
+					}
 					if (attr.ConstructorParameters.Count > 0) {
 						object param = attr.ConstructorParameters [0];
 						if (param.GetType () == typeof (string))
@@ -341,8 +351,13 @@ namespace Stetic {
 
 			}
 
-			if (info == null && tdef.BaseType != null)
-				info = GetToolboxItemInfo (resolver, resolver.Resolve (tdef.BaseType));
+			if (info == null && tdef.BaseType != null) {
+				try {
+					info = GetToolboxItemInfo (resolver, resolver.Resolve (tdef.BaseType));
+				} catch {
+					// Ignore assembly resolution errors
+				}
+			}
 
 			if (info != null)
 				info.PaletteCategory = category;
@@ -498,7 +513,7 @@ namespace Stetic {
 		void AddObjects (XmlDocument doc, AssemblyResolver resolver, AssemblyDefinition adef)
 		{
 			foreach (TypeDefinition tdef in adef.MainModule.Types) {
-				if (tdef.IsNotPublic || tdef.IsAbstract || !tdef.IsClass) 
+				if (tdef.IsAbstract || !tdef.IsClass) 
 					continue;
 
 				ToolboxItemInfo tbinfo = GetToolboxItemInfo (resolver, tdef);
@@ -510,6 +525,8 @@ namespace Stetic {
 				elem.SetAttribute ("allow-children", "false");
 				elem.SetAttribute ("base-type", tbinfo.BaseType);
 				elem.SetAttribute ("palette-category", tbinfo.PaletteCategory);
+				if (tdef.IsNotPublic)
+					elem.SetAttribute ("internal", "true");
 				doc.DocumentElement.AppendChild (elem);
 				AddProperties (tdef, elem);
 				AddEvents (tdef, elem);

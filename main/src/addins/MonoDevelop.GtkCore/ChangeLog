@@ -1,3 +1,10 @@
+2009-01-08  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* libsteticui/LibraryCache.cs: Don't ignore internal classes when
+	looking for widgets. If a widget is internal, set the "internal" flag
+	to true. Don't abort AddObjects if there is an assembly resolution
+	error.
+
 2009-01-08  Mike Kestner <mkestner@novell.com> 
 
 	* libsteticui/LibraryCache.cs : delay cache directory creation until
