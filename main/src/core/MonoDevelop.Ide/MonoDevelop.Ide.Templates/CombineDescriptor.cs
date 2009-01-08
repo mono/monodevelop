@@ -139,6 +139,7 @@ namespace MonoDevelop.Ide.Templates
 						case "Project":
 							combineDescriptor.entryDescriptors.Add (ProjectDescriptor.CreateProjectDescriptor((XmlElement)node));
 							break;
+						case "Solution":
 						case "Combine":
 							combineDescriptor.entryDescriptors.Add (CreateCombineDescriptor((XmlElement)node));
 							break;

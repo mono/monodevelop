@@ -249,12 +249,8 @@ namespace MonoDevelop.Ide
 		{
 //			this.imageType.Pixbuf  = image;
 			this.labelTitle.Markup = "<span size=\"xx-large\" weight=\"bold\">" +title + "</span>";
-			this.labelType.Markup =  "<span size=\"small\">" +type + "</span>";
-			string name = fileName;
-			if (!String.IsNullOrEmpty (name) && name.Length > 40) {
-				name = "..." + fileName.Substring (name.Length - 40);
-			}
-			this.labelFileName.Text = name;
+			this.labelType.Markup =  "<span size=\"small\">" +type + " </span>";
+			this.labelFileName.Text = fileName;
 		}
 		
 		void FillLists ()

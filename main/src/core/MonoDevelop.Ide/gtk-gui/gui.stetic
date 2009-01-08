@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <stetic-interface>
   <configuration>
     <images-root-path>..</images-root-path>
@@ -5647,7 +5647,6 @@ Months</property>
                   <widget class="Gtk.Label" id="labelTitle">
                     <property name="MemberName" />
                     <property name="Xalign">0</property>
-                    <property name="LabelProp" translatable="yes" />
                   </widget>
                   <packing>
                     <property name="Position">0</property>
@@ -5660,7 +5659,6 @@ Months</property>
                   <widget class="Gtk.Label" id="labelType">
                     <property name="MemberName" />
                     <property name="Xalign">0</property>
-                    <property name="LabelProp" translatable="yes" />
                   </widget>
                   <packing>
                     <property name="Position">1</property>
@@ -5690,7 +5688,6 @@ Months</property>
             <child>
               <widget class="Gtk.Table" id="table1">
                 <property name="MemberName" />
-                <property name="NRows">1</property>
                 <property name="NColumns">2</property>
                 <property name="Homogeneous">True</property>
                 <property name="RowSpacing">6</property>
@@ -5831,7 +5828,7 @@ Months</property>
         <child>
           <widget class="Gtk.Label" id="labelFileName">
             <property name="MemberName" />
-            <property name="LabelProp" translatable="yes" />
+            <property name="Ellipsize">Start</property>
           </widget>
           <packing>
             <property name="PackType">End</property>

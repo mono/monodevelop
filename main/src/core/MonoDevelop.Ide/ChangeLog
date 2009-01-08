@@ -1,3 +1,12 @@
+2009-01-08  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Ide.Gui/DocumentSwitcher.cs: Let gtk+ ellipsize the file
+	name.
+
+	* MonoDevelop.Ide.Templates/CombineDescriptor.cs: Allow using "Solution"
+	instead of "Combine" in solution templates.
+
 2009-01-07  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am:
