@@ -1,5 +1,10 @@
 2009-01-08  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects/Project.cs: Unsubscribe the file changed event
+	when disposing.
+
+2009-01-08  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs: When
 	saving  configuration, make sure that old compilation parameters are
 	deleted. Fixes bug #461105 - Reverting C# language version to Default
