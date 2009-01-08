@@ -1,3 +1,8 @@
+2009-01-08  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core/SystemAssemblyService.cs: In GetAssemblyLocation,
+	added fast path for mscorlib.
+
 2009-01-02  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core/FileService.cs: Fix logic for IsInvalidFileName.

@@ -218,13 +218,13 @@ namespace MonoDevelop.Core
 			if (assemblyFullNameToPath.TryGetValue (assemblyName, out path))
 				return path;
 
-			if (assemblyName == "mscorlib")
+			if (assemblyName == "mscorlib" || assemblyName.StartsWith ("mscorlib,"))
 				return typeof(object).Assembly.Location;
 			
 			path = FindAssembly (assemblyName, AppDomain.CurrentDomain.BaseDirectory);
 			if (path != null)
 				return path;
-
+			
 			AssemblyLocator locator = (AssemblyLocator) Runtime.ProcessService.CreateExternalProcessObject (typeof(AssemblyLocator), true);
 			using (locator) {
 				return locator.Locate (assemblyName);
