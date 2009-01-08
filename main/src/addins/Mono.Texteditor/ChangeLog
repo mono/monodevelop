@@ -1,3 +1,8 @@
+2009-01-08  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.TextEditor/TextEditor.cs: Don't add/remove bookmarks when
+	clicking on the icon bar. It will now add/remove breakpoints.
+
 2009-01-07  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextViewMargin.cs: fixed Bug 459732 - Cursor placed in

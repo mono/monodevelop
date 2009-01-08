@@ -259,8 +259,6 @@ namespace Mono.TextEditor
 			this.textEditorData.SelectionChanged += TextEditorDataSelectionChanged; 
 			Document.DocumentUpdated += DocumentUpdatedHandler;
 			
-			iconMargin.ButtonPressed += OnIconMarginPressed;
-			
 			this.textEditorData.Options = TextEditorOptions.Options;
 			this.textEditorData.Options.Changed += OptionsChanged;
 			
@@ -407,23 +405,6 @@ namespace Mono.TextEditor
 			}
 			SetAdjustments (Allocation);
 			this.QueueDraw ();
-		}
-		
-		void OnIconMarginPressed (object s, MarginMouseEventArgs args)
-		{
-			if (args.Type != Gdk.EventType.ButtonPress)
-				return;
-			
-			int lineNumber = Document.VisualToLogicalLine ((int)((args.Y + VAdjustment.Value) / LineHeight));
-			if (lineNumber >= Document.LineCount)
-				return;
-			
-			LineSegment lineSegment = Document.GetLine (lineNumber);
-			if (args.Button == 1) {
-				lineSegment.IsBookmarked = !lineSegment.IsBookmarked;
-				Document.RequestUpdate (new LineUpdate (lineNumber));
-				Document.CommitDocumentUpdate ();
-			}
 		}
 		
 		protected override void OnDestroyed ()
