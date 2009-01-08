@@ -1,3 +1,8 @@
+2009-01-08  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* libsteticui/CecilWidgetLibrary.cs: Don't try to resolve full assembly
+	paths.
+
 2008-12-18  Mike Kestner <mkestner@novell.com> 
 
 	* libstetic/editor/Flags.cs : fix cs0030 under new mcs.

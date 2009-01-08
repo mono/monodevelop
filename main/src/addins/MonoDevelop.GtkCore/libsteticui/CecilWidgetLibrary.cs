@@ -53,7 +53,9 @@ namespace Stetic
 			name = path;
 			this.resolver = resolver;
 
-			if (resolver != null)
+			if (System.IO.File.Exists (path))
+				filename = System.IO.Path.GetFullPath (path);
+			else if (resolver != null)
 				filename = resolver.Resolve (path, null);
 			
 			if (filename == null)
