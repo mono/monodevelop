@@ -1,3 +1,8 @@
+2009-01-08  Mike Kestner <mkestner@novell.com> 
+
+	* libsteticui/LibraryCache.cs : delay cache directory creation until
+	files are going to be written to it.
+
 2009-01-08  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* libsteticui/CecilWidgetLibrary.cs: Don't try to resolve full assembly

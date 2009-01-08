@@ -49,12 +49,7 @@ namespace Stetic {
 			XmlDocument objects;
 
 			string CacheDirectory {
-				get { 
-					string path = Path.Combine (dir, Guid.ToString ()); 
-					if (!Directory.Exists (path))
-						Directory.CreateDirectory (path);
-					return path;
-				}
+				get { return Path.Combine (dir, Guid.ToString ()); }
 			}
 
 			[XmlAttribute]
@@ -145,6 +140,9 @@ namespace Stetic {
 						System.IO.File.Delete (GuiPath);
 					return;
 				}
+				if (!Directory.Exists (CacheDirectory))
+					Directory.CreateDirectory (CacheDirectory);
+
 				using (Stream stream = System.IO.File.Create (GuiPath))
 					gui.Save (stream);
 			}
@@ -156,6 +154,10 @@ namespace Stetic {
 						System.IO.File.Delete (ObjectsPath);
 					return;
 				}
+
+				if (!Directory.Exists (CacheDirectory))
+					Directory.CreateDirectory (CacheDirectory);
+
 				using (Stream stream = System.IO.File.Create (ObjectsPath))
 					objects.Save (stream);
 			}
