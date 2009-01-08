@@ -1,5 +1,10 @@
 2009-01-08  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Gui/RootWorkspace.cs: Dispose workspace items when
+	closing them.
+
+2009-01-08  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* gtk-gui/gui.stetic:
 	* MonoDevelop.Ide.Gui/DocumentSwitcher.cs: Let gtk+ ellipsize the file
 	name.
