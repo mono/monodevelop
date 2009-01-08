@@ -1,3 +1,13 @@
+2009-01-08  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Gui/CSharpTextEditorCompletion.cs: Fix warning.
+
+	* md1format.xml:
+	* Project/CSharpCompilerParameters.cs: Store the LangVersion string
+	using the msbuild format. For MD1, use the old format. Fixes bug
+	#461104 - Setting C# language version on project does not parse in
+	VS.Net 2008.
+
 2009-01-07  Mike Krüger  <mkrueger@novell.com>
 
 	* Gui/NRefactoryResolver.cs: Worked on on the fly type resolving.

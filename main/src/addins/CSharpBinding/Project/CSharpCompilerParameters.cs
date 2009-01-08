@@ -77,8 +77,8 @@ namespace CSharpBinding
 		[ItemProperty ("additionalargs", DefaultValue = "")]
 		string additionalArgs = string.Empty;
 		
-		[ItemProperty ("LangVersion", DefaultValue = LangVersion.Default)]
-		LangVersion langVersion = LangVersion.Default;
+		[ItemProperty ("LangVersion", DefaultValue = "Default")]
+		string langVersion = "Default";
 		
 		[ItemProperty ("NoStdLib", DefaultValue = false)]
 		bool noStdLib;
@@ -129,8 +129,13 @@ namespace CSharpBinding
 		}
 		
 		public LangVersion LangVersion {
-			get { return langVersion; }
-			set { langVersion = value; }
+			get {
+				string val = langVersion.ToString ().Replace ('-','_'); 
+				return (LangVersion) Enum.Parse (typeof(LangVersion), val); 
+			}
+			set {
+				langVersion = value.ToString ().Replace ('_','-'); 
+			}
 		}
 
 #region Code Generation

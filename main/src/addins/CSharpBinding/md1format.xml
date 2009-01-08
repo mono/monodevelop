@@ -13,7 +13,7 @@
 		<ItemProperty member="win32Resource" name="win32Resource" defaultValue="" />
 		<ItemProperty member="codePage" name="codepage" defaultValue="0"/>
 		<ItemProperty member="additionalArgs" name="additionalargs" defaultValue="" />
-		<ItemProperty member="langVersion" name="langversion" defaultValue="Default"/>
+		<ItemProperty member="LangVersion" name="langversion" defaultValue="Default"/>
 		<ItemProperty member="treatWarningsAsErrors" name="warningsAsErrors" defaultValue="False"/>
 	</DataItem>
 </SerializationMap>
