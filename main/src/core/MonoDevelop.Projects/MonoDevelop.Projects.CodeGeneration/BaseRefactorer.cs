@@ -100,7 +100,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return null;
 		}
 		
-		public virtual MemberReferenceCollection FindClassReferences (RefactorerContext ctx, string file, IType cls)
+		public virtual IEnumerable<MemberReference> FindClassReferences (RefactorerContext ctx, string file, IType cls)
 		{
 			return null;
 		}
@@ -523,7 +523,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return FindGeneratedMember (ctx, file, cls, memberInfo, member.Location.Line);
 		}
 		
-		public virtual MemberReferenceCollection FindMemberReferences (RefactorerContext ctx, string fileName, IType cls, IMember member)
+		public virtual IEnumerable<MemberReference> FindMemberReferences (RefactorerContext ctx, string fileName, IType cls, IMember member)
 		{
 			if (member is IField)
 				return FindFieldReferences (ctx, fileName, cls, (IField) member);
@@ -616,7 +616,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return null;
 		}
 		
-		protected virtual MemberReferenceCollection FindMethodReferences (RefactorerContext ctx, string fileName, IType cls, IMethod method)
+		protected virtual IEnumerable<MemberReference> FindMethodReferences (RefactorerContext ctx, string fileName, IType cls, IMethod method)
 		{
 			return null;
 		}
@@ -629,7 +629,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return null;
 		}
 		
-		protected virtual MemberReferenceCollection FindFieldReferences (RefactorerContext ctx, string fileName, IType cls, IField field)
+		protected virtual IEnumerable<MemberReference> FindFieldReferences (RefactorerContext ctx, string fileName, IType cls, IField field)
 		{
 			return null;
 		}
@@ -642,7 +642,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return null;
 		}
 		
-		protected virtual MemberReferenceCollection FindPropertyReferences (RefactorerContext ctx, string fileName, IType cls, IProperty property)
+		protected virtual IEnumerable<MemberReference> FindPropertyReferences (RefactorerContext ctx, string fileName, IType cls, IProperty property)
 		{
 			return null;
 		}
@@ -654,7 +654,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return null;
 		}
 		
-		protected virtual MemberReferenceCollection FindEventReferences (RefactorerContext ctx, string fileName, IType cls, IEvent evnt)
+		protected virtual IEnumerable<MemberReference> FindEventReferences (RefactorerContext ctx, string fileName, IType cls, IEvent evnt)
 		{
 			return null;
 		}
@@ -684,7 +684,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return true;
 		}
 
-		public virtual MemberReferenceCollection FindVariableReferences (RefactorerContext ctx, string fileName, LocalVariable var)
+		public virtual IEnumerable<MemberReference> FindVariableReferences (RefactorerContext ctx, string fileName, LocalVariable var)
 		{
 			return null;
 		}
@@ -736,7 +736,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return true;
 		}
 
-		public virtual MemberReferenceCollection FindParameterReferences (RefactorerContext ctx, string fileName, IParameter param)
+		public virtual IEnumerable<MemberReference> FindParameterReferences (RefactorerContext ctx, string fileName, IParameter param)
 		{
 			return null;
 		}

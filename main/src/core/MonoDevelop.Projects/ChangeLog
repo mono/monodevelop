@@ -1,3 +1,12 @@
+2009-01-09  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom/IDomVisitor.cs:
+	* MonoDevelop.Projects.CodeGeneration/IRefactorer.cs:
+	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs:
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs: Worked on
+	refactoring code/fixing Bug 456576 - refactor: rename field is not
+	working.
+
 2009-01-08  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/Project.cs: Unsubscribe the file changed event

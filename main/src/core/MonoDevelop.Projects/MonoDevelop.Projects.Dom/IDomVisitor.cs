@@ -55,4 +55,81 @@ namespace MonoDevelop.Projects.Dom
 		
 		S Visit (LocalVariable var, T data);
 	}
+
+	public abstract class AbstractDomVistitor<T, S> : IDomVisitor<T, S>
+	{
+		public virtual S Visit (ICompilationUnit unit, T data)
+		{
+			if (unit != null) {
+				foreach (IUsing u in unit.Usings) 
+					u.AcceptVisitor (this, data);
+				foreach (IType type in unit.Types) 
+					type.AcceptVisitor (this, data);
+			}
+			return default(S);
+		}
+		
+		public virtual S Visit (IAttribute attribute, T data)
+		{
+			return default(S);
+		}
+		
+		public virtual S Visit (IType type, T data)
+		{
+	//		foreach (IMember member in type.Members)
+	//			member.AcceptVisitor (this, data);
+			return default(S);
+		}
+		
+		public virtual S Visit (IField field, T data)
+		{
+			return default(S);
+		}
+		
+		public virtual S Visit (IMethod method, T data)
+		{
+			foreach (IParameter param in method.Parameters) {
+				param.AcceptVisitor (this, data);
+			}
+			return default(S);
+		}
+		
+		public virtual S Visit (IProperty property, T data)
+		{
+			foreach (IParameter param in property.Parameters) {
+				param.AcceptVisitor (this, data);
+			}
+			return default(S);
+		}
+		
+		public virtual S Visit (IEvent evt, T data)
+		{
+			return default(S);
+		}
+		
+		public virtual S Visit (IReturnType returnType, T data)
+		{
+			return default(S);
+		}
+		
+		public virtual S Visit (IParameter parameter, T data)
+		{
+			return default(S);
+		}
+		
+		public virtual S Visit (IUsing u, T data)
+		{
+			return default(S);
+		}
+		
+		public virtual S Visit (Namespace namesp, T data)
+		{
+			return default(S);
+		}
+		
+		public virtual S Visit (LocalVariable var, T data)
+		{
+			return default(S);
+		}
+	}
 }

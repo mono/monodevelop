@@ -43,7 +43,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 
 		IType CreateClass (RefactorerContext ctx, string directory, string namspace, CodeTypeDeclaration type);
 		IType RenameClass (RefactorerContext ctx, IType cls, string newName);
-		MemberReferenceCollection FindClassReferences (RefactorerContext ctx, string fileName, IType cls);
+		IEnumerable<MemberReference> FindClassReferences (RefactorerContext ctx, string fileName, IType cls);
 		
 		IMember AddMember (RefactorerContext ctx, IType cls, CodeTypeMember memberInfo);
 		IMember ImplementMember (RefactorerContext ctx, IType cls, IMember member, IReturnType privateImplementationType);
@@ -61,13 +61,13 @@ namespace MonoDevelop.Projects.CodeGeneration
 		void RemoveMember (RefactorerContext ctx, IType cls, IMember member);
 		IMember RenameMember (RefactorerContext ctx, IType cls, IMember member, string newName);
 		IMember ReplaceMember (RefactorerContext ctx, IType cls, IMember oldMember, CodeTypeMember memberInfo);
-		MemberReferenceCollection FindMemberReferences (RefactorerContext ctx, string fileName, IType cls, IMember member);
+		IEnumerable<MemberReference> FindMemberReferences (RefactorerContext ctx, string fileName, IType cls, IMember member);
 		
 		bool RenameVariable (RefactorerContext ctx, LocalVariable var, string newName);
-		MemberReferenceCollection FindVariableReferences (RefactorerContext ctx, string fileName, LocalVariable var);
+		IEnumerable<MemberReference> FindVariableReferences (RefactorerContext ctx, string fileName, LocalVariable var);
 		
 		bool RenameParameter (RefactorerContext ctx, IParameter param, string newName);
-		MemberReferenceCollection FindParameterReferences (RefactorerContext ctx, string fileName, IParameter param);
+		IEnumerable<MemberReference> FindParameterReferences (RefactorerContext ctx, string fileName, IParameter param);
 		
 		IMember EncapsulateField (RefactorerContext ctx, IType cls, IField field, string propName, MemberAttributes attr, bool generateSetter);
 		
@@ -95,6 +95,11 @@ namespace MonoDevelop.Projects.CodeGeneration
 			this.textLine = textLine;
 			if (textLine == null || textLine.Length == 0)
 				textLine = name;
+		}
+		
+		public void SetContext (RefactorerContext rctx)
+		{
+			this.rctx = rctx;
 		}
 		
 		public int Position {

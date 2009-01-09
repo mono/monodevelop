@@ -762,7 +762,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 		public void Refactor (IProgressMonitor monitor, RefactorerContext rctx, IRefactorer r, string fileName)
 		{
 			try {
-				MemberReferenceCollection refs = r.FindClassReferences (rctx, fileName, cls);
+				IEnumerable<MemberReference> refs = r.FindClassReferences (rctx, fileName, cls);
 				if (refs != null)
 					references.AddRange (refs);
 			} catch (Exception ex) {
@@ -787,7 +787,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 		public void Refactor (IProgressMonitor monitor, RefactorerContext rctx, IRefactorer r, string fileName)
 		{
 			try {
-				MemberReferenceCollection refs = r.FindMemberReferences (rctx, fileName, cls, member);
+				IEnumerable<MemberReference> refs = r.FindMemberReferences (rctx, fileName, cls, member);
 				if (refs != null)
 					references.AddRange (refs);
 			} catch (Exception ex) {
@@ -810,7 +810,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 		public void Refactor (IProgressMonitor monitor, RefactorerContext rctx, IRefactorer r, string fileName)
 		{
 			try {
-				MemberReferenceCollection refs = r.FindVariableReferences (rctx, fileName, var);
+				IEnumerable<MemberReference> refs = r.FindVariableReferences (rctx, fileName, var);
 				if (refs != null)
 					references.AddRange (refs);
 			} catch (Exception ex) {
@@ -833,7 +833,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 		public void Refactor (IProgressMonitor monitor, RefactorerContext rctx, IRefactorer r, string fileName)
 		{
 			try {
-				MemberReferenceCollection refs = r.FindParameterReferences (rctx, fileName, param);
+				IEnumerable<MemberReference> refs = r.FindParameterReferences (rctx, fileName, param);
 				if (refs != null)
 					references.AddRange (refs);
 			} catch (Exception ex) {
