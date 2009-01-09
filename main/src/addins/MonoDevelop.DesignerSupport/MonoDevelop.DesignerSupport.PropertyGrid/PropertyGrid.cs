@@ -125,6 +125,7 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 			AddPropertyTab (new EventPropertyTab ());
 
 			base.PackEnd (vpaned);
+			base.FocusChain = new Gtk.Widget [] { vpaned };
 			
 			helpButton.Active = ShowHelp = MonoDevelop.Core.PropertyService.Get<bool> (PROP_HELP_KEY, true);
 			

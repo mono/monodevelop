@@ -115,6 +115,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			
 			scrolledWindow = new ScrolledWindow ();
 			base.PackEnd (scrolledWindow, true, true, 0);
+			base.FocusChain = new Gtk.Widget [] { scrolledWindow };
 			
 			//Initialise self
 			scrolledWindow.ShadowType = ShadowType.None;

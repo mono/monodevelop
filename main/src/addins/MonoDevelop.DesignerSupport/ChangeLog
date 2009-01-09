@@ -1,3 +1,9 @@
+2009-01-09  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:
+	* MonoDevelop.DesignerSupport.PropertyGrid/PropertyGrid.cs: Make sure
+	the list is the first widget to be focused when presenting the pad.
+
 2008-12-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.DesignerSupport.Toolbox/ToolboxWidget.cs: TooltipWindow
