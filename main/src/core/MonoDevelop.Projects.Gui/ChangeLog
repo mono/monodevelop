@@ -1,3 +1,9 @@
+2009-01-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs: Use
+	ordinal string compare for sorting the list, as it's an order of
+	magnitude faster. Makes code completion more responsive.
+
 2009-01-05  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Gui.Completion/CompletionDataList.cs: fixed Find

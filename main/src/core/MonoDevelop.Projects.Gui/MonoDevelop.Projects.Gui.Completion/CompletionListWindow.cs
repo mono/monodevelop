@@ -197,9 +197,12 @@ namespace MonoDevelop.Projects.Gui.Completion
 			
 			this.Style = completionWidget.GtkStyle;
 			
+			//sort, sinking obsolete items to the bottoms
+			//the string comparison is ordinal as that makes it an order of magnitude faster, which 
+			//which makes completion triggering noticeably more responsive
 			completionDataList.Sort ((ICompletionData a, ICompletionData b) => 
 				((a.DisplayFlags & DisplayFlags.Obsolete) == (b.DisplayFlags & DisplayFlags.Obsolete))
-					? string.Compare (a.DisplayText, b.DisplayText, true)
+					? StringComparer.OrdinalIgnoreCase.Compare (a.DisplayText, b.DisplayText)
 					: (a.DisplayFlags & DisplayFlags.Obsolete) != 0? 1 : -1);
 			
 			DataProvider = this;
