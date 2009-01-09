@@ -388,7 +388,7 @@ namespace MonoDevelop.CSharpBinding
 			IType resolvedType = dom.SearchType (new SearchTypeRequest (unit, type));
 			//System.Console.WriteLine(type +" resolved to: " +resolvedType);
 			if (resolvedType != null) {
-				result = new DomReturnType (DomType.CreateInstantiatedGenericType (resolvedType, type.GenericArguments));
+				result = new DomReturnType (dom.CreateInstantiatedGenericType (resolvedType, type.GenericArguments));
 				result.ArrayDimensions = type.ArrayDimensions;
 				for (int i = 0; i < result.ArrayDimensions; i++) {
 					result.SetDimension (i, type.GetDimension (i));
