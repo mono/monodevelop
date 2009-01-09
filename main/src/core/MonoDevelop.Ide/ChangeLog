@@ -1,5 +1,12 @@
 2009-01-09  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Gui/Workbench.cs: When opening a document, if
+	BringToFront is requested, make sure the main window has the focus.
+	Fixes bug #464891 - Double clicking on error in Floating Error List
+	doesn't focus IDE preventing keyboard interaction.
+
+2009-01-09  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui/DocumentSwitcher.cs: BringToFront already gives
 	focus to the pad, there is no need anymore to explicitly do it.
 

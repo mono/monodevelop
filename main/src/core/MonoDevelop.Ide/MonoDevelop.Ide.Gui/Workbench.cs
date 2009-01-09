@@ -370,6 +370,7 @@ namespace MonoDevelop.Ide.Gui
 					if (bringToFront) {
 						doc.Select ();
 						doc.Window.SwitchView (vcIndex);
+						RootWindow.Present ();
 					}
 					
 					IEditableTextBuffer ipos = (IEditableTextBuffer) vcFound.GetContent (typeof(IEditableTextBuffer));
@@ -408,6 +409,8 @@ namespace MonoDevelop.Ide.Gui
 		public Document OpenDocument (IViewContent content, bool bringToFront)
 		{
 			workbench.ShowView (content, bringToFront);
+			if (bringToFront)
+				RootWindow.Present ();
 			return WrapDocument (content.WorkbenchWindow);
 		}
 		
@@ -656,6 +659,7 @@ namespace MonoDevelop.Ide.Gui
 				foreach (Document doc in Documents) {
 					if (doc.FileName == fileName) {
 						if (oFileInfo.BringToFront) {
+							RootWindow.Present ();
 							doc.Select ();
 							IEditableTextBuffer ipos = doc.GetContent <IEditableTextBuffer> ();
 							if (oFileInfo.Line != -1 && ipos != null) {
