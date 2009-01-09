@@ -400,6 +400,8 @@ namespace MonoDevelop.Ide.Gui
 			if (openFileInfo.NewContent != null) {
 				Document doc = WrapDocument (openFileInfo.NewContent.WorkbenchWindow);
 				NavigationHistoryService.LogActiveDocument ();
+				if (bringToFront)
+					RootWindow.Present ();
 				return doc;
 			} else {
 				return null;
@@ -659,7 +661,6 @@ namespace MonoDevelop.Ide.Gui
 				foreach (Document doc in Documents) {
 					if (doc.FileName == fileName) {
 						if (oFileInfo.BringToFront) {
-							RootWindow.Present ();
 							doc.Select ();
 							IEditableTextBuffer ipos = doc.GetContent <IEditableTextBuffer> ();
 							if (oFileInfo.Line != -1 && ipos != null) {
