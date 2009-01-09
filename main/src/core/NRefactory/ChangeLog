@@ -1,6 +1,11 @@
 2009-01-09  Mike Krüger  <mkrueger@novell.com>
 
 	* Project/Src/Parser/CSharp/cs.ATG:
+	* Project/Src/Parser/CSharp/Parser.cs: Corrected parameter position.
+
+2009-01-09  Mike Krüger  <mkrueger@novell.com>
+
+	* Project/Src/Parser/CSharp/cs.ATG:
 	* Project/Src/Parser/CSharp/Parser.cs: Corrected destructor start
 	location.
 

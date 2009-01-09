@@ -927,39 +927,39 @@ templates);
 	}
 
 	void TypeParameterList(
-#line  2326 "Frames/cs.ATG" 
+#line  2328 "Frames/cs.ATG" 
 List<TemplateDefinition> templates) {
 
-#line  2328 "Frames/cs.ATG" 
+#line  2330 "Frames/cs.ATG" 
 		AttributeSection section;
 		List<AttributeSection> attributes = new List<AttributeSection>();
 		
 		Expect(23);
 		while (la.kind == 18) {
 			AttributeSection(
-#line  2332 "Frames/cs.ATG" 
+#line  2334 "Frames/cs.ATG" 
 out section);
 
-#line  2332 "Frames/cs.ATG" 
+#line  2334 "Frames/cs.ATG" 
 			attributes.Add(section); 
 		}
 		Identifier();
 
-#line  2333 "Frames/cs.ATG" 
+#line  2335 "Frames/cs.ATG" 
 		templates.Add(new TemplateDefinition(t.val, attributes)); 
 		while (la.kind == 14) {
 			lexer.NextToken();
 			while (la.kind == 18) {
 				AttributeSection(
-#line  2334 "Frames/cs.ATG" 
+#line  2336 "Frames/cs.ATG" 
 out section);
 
-#line  2334 "Frames/cs.ATG" 
+#line  2336 "Frames/cs.ATG" 
 				attributes.Add(section); 
 			}
 			Identifier();
 
-#line  2335 "Frames/cs.ATG" 
+#line  2337 "Frames/cs.ATG" 
 			templates.Add(new TemplateDefinition(t.val, attributes)); 
 		}
 		Expect(22);
@@ -992,22 +992,22 @@ out typeRef, false);
 	}
 
 	void TypeParameterConstraintsClause(
-#line  2339 "Frames/cs.ATG" 
+#line  2341 "Frames/cs.ATG" 
 List<TemplateDefinition> templates) {
 
-#line  2340 "Frames/cs.ATG" 
+#line  2342 "Frames/cs.ATG" 
 		string name = ""; TypeReference type; 
 		Expect(127);
 		Identifier();
 
-#line  2343 "Frames/cs.ATG" 
+#line  2345 "Frames/cs.ATG" 
 		name = t.val; 
 		Expect(9);
 		TypeParameterConstraintsClauseBase(
-#line  2345 "Frames/cs.ATG" 
+#line  2347 "Frames/cs.ATG" 
 out type);
 
-#line  2346 "Frames/cs.ATG" 
+#line  2348 "Frames/cs.ATG" 
 		TemplateDefinition td = null;
 		foreach (TemplateDefinition d in templates) {
 			if (d.Name == name) {
@@ -1020,10 +1020,10 @@ out type);
 		while (la.kind == 14) {
 			lexer.NextToken();
 			TypeParameterConstraintsClauseBase(
-#line  2355 "Frames/cs.ATG" 
+#line  2357 "Frames/cs.ATG" 
 out type);
 
-#line  2356 "Frames/cs.ATG" 
+#line  2358 "Frames/cs.ATG" 
 			td = null;
 			foreach (TemplateDefinition d in templates) {
 				if (d.Name == name) {
@@ -1349,12 +1349,12 @@ out r, canBeUnbound);
 			lexer.NextToken();
 
 #line  698 "Frames/cs.ATG" 
-			typeRef = new TypeReference("object"); 
+			typeRef = new TypeReference("object"); typeRef.StartLocation = t.Location; 
 		} else if (la.kind == 108) {
 			lexer.NextToken();
 
 #line  699 "Frames/cs.ATG" 
-			typeRef = new TypeReference("string"); 
+			typeRef = new TypeReference("string"); typeRef.StartLocation = t.Location; 
 		} else SynErr(159);
 	}
 
@@ -1366,26 +1366,27 @@ out TypeReference typeRef, bool canBeUnbound) {
 		List<TypeReference> typeArguments = null;
 		string alias = null;
 		string qualident;
+		Location start = la.Location;
 		
 		if (
-#line  2275 "Frames/cs.ATG" 
+#line  2276 "Frames/cs.ATG" 
 IdentAndDoubleColon()) {
 			Identifier();
 
-#line  2276 "Frames/cs.ATG" 
+#line  2277 "Frames/cs.ATG" 
 			alias = t.val; 
 			Expect(10);
 		}
 		Qualident(
-#line  2279 "Frames/cs.ATG" 
+#line  2280 "Frames/cs.ATG" 
 out qualident);
 		if (la.kind == 23) {
 			TypeArgumentList(
-#line  2280 "Frames/cs.ATG" 
+#line  2281 "Frames/cs.ATG" 
 out typeArguments, canBeUnbound);
 		}
 
-#line  2282 "Frames/cs.ATG" 
+#line  2283 "Frames/cs.ATG" 
 		if (alias == null) {
 		typeRef = new TypeReference(qualident, typeArguments);
 		} else if (alias == "global") {
@@ -1396,24 +1397,27 @@ out typeArguments, canBeUnbound);
 		}
 		
 		while (
-#line  2291 "Frames/cs.ATG" 
+#line  2292 "Frames/cs.ATG" 
 DotAndIdent()) {
 			Expect(15);
 
-#line  2292 "Frames/cs.ATG" 
+#line  2293 "Frames/cs.ATG" 
 			typeArguments = null; 
 			Qualident(
-#line  2293 "Frames/cs.ATG" 
+#line  2294 "Frames/cs.ATG" 
 out qualident);
 			if (la.kind == 23) {
 				TypeArgumentList(
-#line  2294 "Frames/cs.ATG" 
+#line  2295 "Frames/cs.ATG" 
 out typeArguments, canBeUnbound);
 			}
 
-#line  2295 "Frames/cs.ATG" 
+#line  2296 "Frames/cs.ATG" 
 			typeRef = new InnerClassTypeReference(typeRef, qualident, typeArguments); 
 		}
+
+#line  2298 "Frames/cs.ATG" 
+		typeRef.StartLocation = start; 
 	}
 
 	void MemberModifiers(
@@ -2540,14 +2544,14 @@ out name);
 	}
 
 	void NullableQuestionMark(
-#line  2300 "Frames/cs.ATG" 
+#line  2302 "Frames/cs.ATG" 
 ref TypeReference typeRef) {
 
-#line  2301 "Frames/cs.ATG" 
+#line  2303 "Frames/cs.ATG" 
 		List<TypeReference> typeArguments = new List<TypeReference>(1); 
 		Expect(12);
 
-#line  2305 "Frames/cs.ATG" 
+#line  2307 "Frames/cs.ATG" 
 		if (typeRef != null) typeArguments.Add(typeRef);
 		typeRef = new TypeReference("System.Nullable", typeArguments);
 		
@@ -2560,7 +2564,7 @@ out ParameterDeclarationExpression p) {
 #line  652 "Frames/cs.ATG" 
 		TypeReference type;
 		ParameterModifiers mod = ParameterModifiers.In;
-		Location start = t.Location;
+		Location start = la.Location;
 		
 		if (la.kind == 93 || la.kind == 100) {
 			if (la.kind == 100) {
@@ -4724,24 +4728,24 @@ out expr);
 	}
 
 	void QueryExpression(
-#line  2376 "Frames/cs.ATG" 
+#line  2378 "Frames/cs.ATG" 
 out Expression outExpr) {
 
-#line  2377 "Frames/cs.ATG" 
+#line  2379 "Frames/cs.ATG" 
 		QueryExpression q = new QueryExpression(); outExpr = q; q.StartLocation = la.Location; 
 		QueryExpressionFromClause fromClause;
 		
 		QueryExpressionFromClause(
-#line  2381 "Frames/cs.ATG" 
+#line  2383 "Frames/cs.ATG" 
 out fromClause);
 
-#line  2381 "Frames/cs.ATG" 
+#line  2383 "Frames/cs.ATG" 
 		q.FromClause = fromClause; 
 		QueryExpressionBody(
-#line  2382 "Frames/cs.ATG" 
+#line  2384 "Frames/cs.ATG" 
 q);
 
-#line  2383 "Frames/cs.ATG" 
+#line  2385 "Frames/cs.ATG" 
 		q.EndLocation = t.EndLocation; 
 	}
 
@@ -4765,40 +4769,40 @@ lambda);
 	}
 
 	void TypeArgumentList(
-#line  2310 "Frames/cs.ATG" 
+#line  2312 "Frames/cs.ATG" 
 out List<TypeReference> types, bool canBeUnbound) {
 
-#line  2312 "Frames/cs.ATG" 
+#line  2314 "Frames/cs.ATG" 
 		types = new List<TypeReference>();
 		TypeReference type = null;
 		
 		Expect(23);
 		if (
-#line  2317 "Frames/cs.ATG" 
+#line  2319 "Frames/cs.ATG" 
 canBeUnbound && (la.kind == Tokens.GreaterThan || la.kind == Tokens.Comma)) {
 
-#line  2318 "Frames/cs.ATG" 
+#line  2320 "Frames/cs.ATG" 
 			types.Add(TypeReference.Null); 
 			while (la.kind == 14) {
 				lexer.NextToken();
 
-#line  2319 "Frames/cs.ATG" 
+#line  2321 "Frames/cs.ATG" 
 				types.Add(TypeReference.Null); 
 			}
 		} else if (StartOf(10)) {
 			Type(
-#line  2320 "Frames/cs.ATG" 
+#line  2322 "Frames/cs.ATG" 
 out type);
 
-#line  2320 "Frames/cs.ATG" 
+#line  2322 "Frames/cs.ATG" 
 			if (type != null) { types.Add(type); } 
 			while (la.kind == 14) {
 				lexer.NextToken();
 				Type(
-#line  2321 "Frames/cs.ATG" 
+#line  2323 "Frames/cs.ATG" 
 out type);
 
-#line  2321 "Frames/cs.ATG" 
+#line  2323 "Frames/cs.ATG" 
 				if (type != null) { types.Add(type); } 
 			}
 		} else SynErr(211);
@@ -5503,59 +5507,59 @@ out expr);
 	}
 
 	void TypeParameterConstraintsClauseBase(
-#line  2367 "Frames/cs.ATG" 
+#line  2369 "Frames/cs.ATG" 
 out TypeReference type) {
 
-#line  2368 "Frames/cs.ATG" 
+#line  2370 "Frames/cs.ATG" 
 		TypeReference t; type = null; 
 		if (la.kind == 109) {
 			lexer.NextToken();
 
-#line  2370 "Frames/cs.ATG" 
+#line  2372 "Frames/cs.ATG" 
 			type = TypeReference.StructConstraint; 
 		} else if (la.kind == 59) {
 			lexer.NextToken();
 
-#line  2371 "Frames/cs.ATG" 
+#line  2373 "Frames/cs.ATG" 
 			type = TypeReference.ClassConstraint; 
 		} else if (la.kind == 89) {
 			lexer.NextToken();
 			Expect(20);
 			Expect(21);
 
-#line  2372 "Frames/cs.ATG" 
+#line  2374 "Frames/cs.ATG" 
 			type = TypeReference.NewConstraint; 
 		} else if (StartOf(10)) {
 			Type(
-#line  2373 "Frames/cs.ATG" 
+#line  2375 "Frames/cs.ATG" 
 out t);
 
-#line  2373 "Frames/cs.ATG" 
+#line  2375 "Frames/cs.ATG" 
 			type = t; 
 		} else SynErr(218);
 	}
 
 	void QueryExpressionFromClause(
-#line  2386 "Frames/cs.ATG" 
+#line  2388 "Frames/cs.ATG" 
 out QueryExpressionFromClause fc) {
 
-#line  2387 "Frames/cs.ATG" 
+#line  2389 "Frames/cs.ATG" 
 		fc = new QueryExpressionFromClause(); fc.StartLocation = la.Location; 
 		
 		Expect(137);
 		QueryExpressionFromOrJoinClause(
-#line  2391 "Frames/cs.ATG" 
+#line  2393 "Frames/cs.ATG" 
 fc);
 
-#line  2392 "Frames/cs.ATG" 
+#line  2394 "Frames/cs.ATG" 
 		fc.EndLocation = t.EndLocation; 
 	}
 
 	void QueryExpressionBody(
-#line  2422 "Frames/cs.ATG" 
+#line  2424 "Frames/cs.ATG" 
 QueryExpression q) {
 
-#line  2423 "Frames/cs.ATG" 
+#line  2425 "Frames/cs.ATG" 
 		QueryExpressionFromClause fromClause;     QueryExpressionWhereClause whereClause;
 		QueryExpressionLetClause letClause;       QueryExpressionJoinClause joinClause;
 		QueryExpressionOrderClause orderClause;
@@ -5565,302 +5569,302 @@ QueryExpression q) {
 		while (StartOf(39)) {
 			if (la.kind == 137) {
 				QueryExpressionFromClause(
-#line  2430 "Frames/cs.ATG" 
+#line  2432 "Frames/cs.ATG" 
 out fromClause);
 
-#line  2430 "Frames/cs.ATG" 
+#line  2432 "Frames/cs.ATG" 
 				SafeAdd<QueryExpressionClause>(q, q.MiddleClauses, fromClause); 
 			} else if (la.kind == 127) {
 				QueryExpressionWhereClause(
-#line  2431 "Frames/cs.ATG" 
+#line  2433 "Frames/cs.ATG" 
 out whereClause);
 
-#line  2431 "Frames/cs.ATG" 
+#line  2433 "Frames/cs.ATG" 
 				SafeAdd<QueryExpressionClause>(q, q.MiddleClauses, whereClause); 
 			} else if (la.kind == 141) {
 				QueryExpressionLetClause(
-#line  2432 "Frames/cs.ATG" 
+#line  2434 "Frames/cs.ATG" 
 out letClause);
 
-#line  2432 "Frames/cs.ATG" 
+#line  2434 "Frames/cs.ATG" 
 				SafeAdd<QueryExpressionClause>(q, q.MiddleClauses, letClause); 
 			} else if (la.kind == 142) {
 				QueryExpressionJoinClause(
-#line  2433 "Frames/cs.ATG" 
+#line  2435 "Frames/cs.ATG" 
 out joinClause);
 
-#line  2433 "Frames/cs.ATG" 
+#line  2435 "Frames/cs.ATG" 
 				SafeAdd<QueryExpressionClause>(q, q.MiddleClauses, joinClause); 
 			} else {
 				QueryExpressionOrderByClause(
-#line  2434 "Frames/cs.ATG" 
+#line  2436 "Frames/cs.ATG" 
 out orderClause);
 
-#line  2434 "Frames/cs.ATG" 
+#line  2436 "Frames/cs.ATG" 
 				SafeAdd<QueryExpressionClause>(q, q.MiddleClauses, orderClause); 
 			}
 		}
 		if (la.kind == 133) {
 			QueryExpressionSelectClause(
-#line  2436 "Frames/cs.ATG" 
+#line  2438 "Frames/cs.ATG" 
 out selectClause);
 
-#line  2436 "Frames/cs.ATG" 
+#line  2438 "Frames/cs.ATG" 
 			q.SelectOrGroupClause = selectClause; 
 		} else if (la.kind == 134) {
 			QueryExpressionGroupClause(
-#line  2437 "Frames/cs.ATG" 
+#line  2439 "Frames/cs.ATG" 
 out groupClause);
 
-#line  2437 "Frames/cs.ATG" 
+#line  2439 "Frames/cs.ATG" 
 			q.SelectOrGroupClause = groupClause; 
 		} else SynErr(219);
 		if (la.kind == 136) {
 			QueryExpressionIntoClause(
-#line  2439 "Frames/cs.ATG" 
+#line  2441 "Frames/cs.ATG" 
 out intoClause);
 
-#line  2439 "Frames/cs.ATG" 
+#line  2441 "Frames/cs.ATG" 
 			q.IntoClause = intoClause; 
 		}
 	}
 
 	void QueryExpressionFromOrJoinClause(
-#line  2412 "Frames/cs.ATG" 
+#line  2414 "Frames/cs.ATG" 
 QueryExpressionFromOrJoinClause fjc) {
 
-#line  2413 "Frames/cs.ATG" 
+#line  2415 "Frames/cs.ATG" 
 		TypeReference type; Expression expr; 
 
-#line  2415 "Frames/cs.ATG" 
+#line  2417 "Frames/cs.ATG" 
 		fjc.Type = null; 
 		if (
-#line  2416 "Frames/cs.ATG" 
+#line  2418 "Frames/cs.ATG" 
 IsLocalVarDecl()) {
 			Type(
-#line  2416 "Frames/cs.ATG" 
+#line  2418 "Frames/cs.ATG" 
 out type);
 
-#line  2416 "Frames/cs.ATG" 
+#line  2418 "Frames/cs.ATG" 
 			fjc.Type = type; 
 		}
 		Identifier();
 
-#line  2417 "Frames/cs.ATG" 
+#line  2419 "Frames/cs.ATG" 
 		fjc.Identifier = t.val; 
 		Expect(81);
 		Expr(
-#line  2419 "Frames/cs.ATG" 
+#line  2421 "Frames/cs.ATG" 
 out expr);
 
-#line  2419 "Frames/cs.ATG" 
+#line  2421 "Frames/cs.ATG" 
 		fjc.InExpression = expr; 
 	}
 
 	void QueryExpressionJoinClause(
-#line  2395 "Frames/cs.ATG" 
+#line  2397 "Frames/cs.ATG" 
 out QueryExpressionJoinClause jc) {
 
-#line  2396 "Frames/cs.ATG" 
+#line  2398 "Frames/cs.ATG" 
 		jc = new QueryExpressionJoinClause(); jc.StartLocation = la.Location; 
 		Expression expr;
 		
 		Expect(142);
 		QueryExpressionFromOrJoinClause(
-#line  2401 "Frames/cs.ATG" 
+#line  2403 "Frames/cs.ATG" 
 jc);
 		Expect(143);
 		Expr(
-#line  2403 "Frames/cs.ATG" 
+#line  2405 "Frames/cs.ATG" 
 out expr);
 
-#line  2403 "Frames/cs.ATG" 
+#line  2405 "Frames/cs.ATG" 
 		jc.OnExpression = expr; 
 		Expect(144);
 		Expr(
-#line  2405 "Frames/cs.ATG" 
+#line  2407 "Frames/cs.ATG" 
 out expr);
 
-#line  2405 "Frames/cs.ATG" 
+#line  2407 "Frames/cs.ATG" 
 		jc.EqualsExpression = expr; 
 		if (la.kind == 136) {
 			lexer.NextToken();
 			Identifier();
 
-#line  2407 "Frames/cs.ATG" 
+#line  2409 "Frames/cs.ATG" 
 			jc.IntoIdentifier = t.val; 
 		}
 
-#line  2409 "Frames/cs.ATG" 
+#line  2411 "Frames/cs.ATG" 
 		jc.EndLocation = t.EndLocation; 
 	}
 
 	void QueryExpressionWhereClause(
-#line  2442 "Frames/cs.ATG" 
+#line  2444 "Frames/cs.ATG" 
 out QueryExpressionWhereClause wc) {
 
-#line  2443 "Frames/cs.ATG" 
+#line  2445 "Frames/cs.ATG" 
 		Expression expr; wc = new QueryExpressionWhereClause(); wc.StartLocation = la.Location; 
 		Expect(127);
 		Expr(
-#line  2446 "Frames/cs.ATG" 
+#line  2448 "Frames/cs.ATG" 
 out expr);
 
-#line  2446 "Frames/cs.ATG" 
+#line  2448 "Frames/cs.ATG" 
 		wc.Condition = expr; 
 
-#line  2447 "Frames/cs.ATG" 
+#line  2449 "Frames/cs.ATG" 
 		wc.EndLocation = t.EndLocation; 
 	}
 
 	void QueryExpressionLetClause(
-#line  2450 "Frames/cs.ATG" 
+#line  2452 "Frames/cs.ATG" 
 out QueryExpressionLetClause wc) {
 
-#line  2451 "Frames/cs.ATG" 
+#line  2453 "Frames/cs.ATG" 
 		Expression expr; wc = new QueryExpressionLetClause(); wc.StartLocation = la.Location; 
 		Expect(141);
 		Identifier();
 
-#line  2454 "Frames/cs.ATG" 
+#line  2456 "Frames/cs.ATG" 
 		wc.Identifier = t.val; 
 		Expect(3);
 		Expr(
-#line  2456 "Frames/cs.ATG" 
+#line  2458 "Frames/cs.ATG" 
 out expr);
 
-#line  2456 "Frames/cs.ATG" 
+#line  2458 "Frames/cs.ATG" 
 		wc.Expression = expr; 
 
-#line  2457 "Frames/cs.ATG" 
+#line  2459 "Frames/cs.ATG" 
 		wc.EndLocation = t.EndLocation; 
 	}
 
 	void QueryExpressionOrderByClause(
-#line  2460 "Frames/cs.ATG" 
+#line  2462 "Frames/cs.ATG" 
 out QueryExpressionOrderClause oc) {
 
-#line  2461 "Frames/cs.ATG" 
+#line  2463 "Frames/cs.ATG" 
 		QueryExpressionOrdering ordering; oc = new QueryExpressionOrderClause(); oc.StartLocation = la.Location; 
 		Expect(140);
 		QueryExpressionOrdering(
-#line  2464 "Frames/cs.ATG" 
+#line  2466 "Frames/cs.ATG" 
 out ordering);
 
-#line  2464 "Frames/cs.ATG" 
+#line  2466 "Frames/cs.ATG" 
 		SafeAdd(oc, oc.Orderings, ordering); 
 		while (la.kind == 14) {
 			lexer.NextToken();
 			QueryExpressionOrdering(
-#line  2466 "Frames/cs.ATG" 
+#line  2468 "Frames/cs.ATG" 
 out ordering);
 
-#line  2466 "Frames/cs.ATG" 
+#line  2468 "Frames/cs.ATG" 
 			SafeAdd(oc, oc.Orderings, ordering); 
 		}
 
-#line  2468 "Frames/cs.ATG" 
+#line  2470 "Frames/cs.ATG" 
 		oc.EndLocation = t.EndLocation; 
 	}
 
 	void QueryExpressionSelectClause(
-#line  2481 "Frames/cs.ATG" 
+#line  2483 "Frames/cs.ATG" 
 out QueryExpressionSelectClause sc) {
 
-#line  2482 "Frames/cs.ATG" 
+#line  2484 "Frames/cs.ATG" 
 		Expression expr; sc = new QueryExpressionSelectClause(); sc.StartLocation = la.Location; 
 		Expect(133);
 		Expr(
-#line  2485 "Frames/cs.ATG" 
+#line  2487 "Frames/cs.ATG" 
 out expr);
 
-#line  2485 "Frames/cs.ATG" 
+#line  2487 "Frames/cs.ATG" 
 		sc.Projection = expr; 
 
-#line  2486 "Frames/cs.ATG" 
+#line  2488 "Frames/cs.ATG" 
 		sc.EndLocation = t.EndLocation; 
 	}
 
 	void QueryExpressionGroupClause(
-#line  2489 "Frames/cs.ATG" 
+#line  2491 "Frames/cs.ATG" 
 out QueryExpressionGroupClause gc) {
 
-#line  2490 "Frames/cs.ATG" 
+#line  2492 "Frames/cs.ATG" 
 		Expression expr; gc = new QueryExpressionGroupClause(); gc.StartLocation = la.Location; 
 		Expect(134);
 		Expr(
-#line  2493 "Frames/cs.ATG" 
+#line  2495 "Frames/cs.ATG" 
 out expr);
 
-#line  2493 "Frames/cs.ATG" 
+#line  2495 "Frames/cs.ATG" 
 		gc.Projection = expr; 
 		Expect(135);
 		Expr(
-#line  2495 "Frames/cs.ATG" 
+#line  2497 "Frames/cs.ATG" 
 out expr);
 
-#line  2495 "Frames/cs.ATG" 
+#line  2497 "Frames/cs.ATG" 
 		gc.GroupBy = expr; 
 
-#line  2496 "Frames/cs.ATG" 
+#line  2498 "Frames/cs.ATG" 
 		gc.EndLocation = t.EndLocation; 
 	}
 
 	void QueryExpressionIntoClause(
-#line  2499 "Frames/cs.ATG" 
+#line  2501 "Frames/cs.ATG" 
 out QueryExpressionIntoClause ic) {
 
-#line  2500 "Frames/cs.ATG" 
+#line  2502 "Frames/cs.ATG" 
 		ic = new QueryExpressionIntoClause(); ic.StartLocation = la.Location; 
 		Expect(136);
 		Identifier();
 
-#line  2503 "Frames/cs.ATG" 
+#line  2505 "Frames/cs.ATG" 
 		ic.IntoIdentifier = t.val; 
 
-#line  2504 "Frames/cs.ATG" 
+#line  2506 "Frames/cs.ATG" 
 		ic.ContinuedQuery = new QueryExpression(); 
 
-#line  2505 "Frames/cs.ATG" 
+#line  2507 "Frames/cs.ATG" 
 		ic.ContinuedQuery.StartLocation = la.Location; 
 		QueryExpressionBody(
-#line  2506 "Frames/cs.ATG" 
+#line  2508 "Frames/cs.ATG" 
 ic.ContinuedQuery);
 
-#line  2507 "Frames/cs.ATG" 
+#line  2509 "Frames/cs.ATG" 
 		ic.ContinuedQuery.EndLocation = t.EndLocation; 
 
-#line  2508 "Frames/cs.ATG" 
+#line  2510 "Frames/cs.ATG" 
 		ic.EndLocation = t.EndLocation; 
 	}
 
 	void QueryExpressionOrdering(
-#line  2471 "Frames/cs.ATG" 
+#line  2473 "Frames/cs.ATG" 
 out QueryExpressionOrdering ordering) {
 
-#line  2472 "Frames/cs.ATG" 
+#line  2474 "Frames/cs.ATG" 
 		Expression expr; ordering = new QueryExpressionOrdering(); ordering.StartLocation = la.Location; 
 		Expr(
-#line  2474 "Frames/cs.ATG" 
+#line  2476 "Frames/cs.ATG" 
 out expr);
 
-#line  2474 "Frames/cs.ATG" 
+#line  2476 "Frames/cs.ATG" 
 		ordering.Criteria = expr; 
 		if (la.kind == 138 || la.kind == 139) {
 			if (la.kind == 138) {
 				lexer.NextToken();
 
-#line  2475 "Frames/cs.ATG" 
+#line  2477 "Frames/cs.ATG" 
 				ordering.Direction = QueryExpressionOrderingDirection.Ascending; 
 			} else {
 				lexer.NextToken();
 
-#line  2476 "Frames/cs.ATG" 
+#line  2478 "Frames/cs.ATG" 
 				ordering.Direction = QueryExpressionOrderingDirection.Descending; 
 			}
 		}
 
-#line  2478 "Frames/cs.ATG" 
+#line  2480 "Frames/cs.ATG" 
 		ordering.EndLocation = t.EndLocation; 
 	}
 

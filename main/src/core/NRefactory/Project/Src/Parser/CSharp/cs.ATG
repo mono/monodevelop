@@ -651,7 +651,7 @@ FixedParameter<out ParameterDeclarationExpression p>
 (.
 	TypeReference type;
 	ParameterModifiers mod = ParameterModifiers.In;
-	Location start = t.Location;
+	Location start = la.Location;
 .)
 =
 	[
@@ -695,8 +695,8 @@ ClassType<out TypeReference typeRef, bool canBeUnbound>
 (. TypeReference r; typeRef = null; .)
 =
 	TypeName<out r, canBeUnbound> (. typeRef = r; .)
-	| "object"                    (. typeRef = new TypeReference("object"); .)
-	| "string"                    (. typeRef = new TypeReference("string"); .)
+	| "object"                    (. typeRef = new TypeReference("object"); typeRef.StartLocation = t.Location; .)
+	| "string"                    (. typeRef = new TypeReference("string"); typeRef.StartLocation = t.Location; .)
 .
 
 IntegralType<out string name>          (. name = ""; .)
@@ -2270,6 +2270,7 @@ TypeName<out TypeReference typeRef, bool canBeUnbound>
 (.	List<TypeReference> typeArguments = null;
 	string alias = null;
 	string qualident;
+	Location start = la.Location;
 .)
 =
 	[ IF (IdentAndDoubleColon())
@@ -2294,6 +2295,7 @@ TypeName<out TypeReference typeRef, bool canBeUnbound>
 		[TypeArgumentList<out typeArguments, canBeUnbound>]
 		(. typeRef = new InnerClassTypeReference(typeRef, qualident, typeArguments); .)
 	}
+	(. typeRef.StartLocation = start; .)
 .
 
 
