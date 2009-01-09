@@ -37,6 +37,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		bool AutoCompleteUniqueMatch { get; }
 		string DefaultCompletionString { get; }
 		void Sort (Comparison<ICompletionData> comparison);
+		void Sort (IComparer<ICompletionData> comparison);
 	}
 	
 	public class CompletionDataList : List<ICompletionData>, ICompletionDataList

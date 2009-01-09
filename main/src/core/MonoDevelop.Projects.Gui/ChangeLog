@@ -1,5 +1,15 @@
 2009-01-09  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs: Use an
+	IComparer object instead of a Comparison delegate, since delegate
+	invocations are an order of magnitude slower than virtual method
+	calls. Speeds up sort substantially.
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionDataList.cs: Add
+	IComparer sort overload.
+
+2009-01-09  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Process the enter
 	key normally when there list has disabled selection. If the list has
 	a selection, continue to interpret it only as a commit command.

@@ -190,6 +190,16 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 		}
 		
+		class DataItemComparer : IComparer<ICompletionData>
+		{
+			public int Compare (ICompletionData a, ICompletionData b)
+			{
+				return ((a.DisplayFlags & DisplayFlags.Obsolete) == (b.DisplayFlags & DisplayFlags.Obsolete))
+					? StringComparer.OrdinalIgnoreCase.Compare (a.DisplayText, b.DisplayText)
+					: (a.DisplayFlags & DisplayFlags.Obsolete) != 0? 1 : -1;
+			}
+		}
+		
 		bool FillList ()
 		{
 			if ((completionDataList.Count == 0) && !IsChanging)
@@ -200,10 +210,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			//sort, sinking obsolete items to the bottoms
 			//the string comparison is ordinal as that makes it an order of magnitude faster, which 
 			//which makes completion triggering noticeably more responsive
-			completionDataList.Sort ((ICompletionData a, ICompletionData b) => 
-				((a.DisplayFlags & DisplayFlags.Obsolete) == (b.DisplayFlags & DisplayFlags.Obsolete))
-					? StringComparer.OrdinalIgnoreCase.Compare (a.DisplayText, b.DisplayText)
-					: (a.DisplayFlags & DisplayFlags.Obsolete) != 0? 1 : -1);
+			completionDataList.Sort (new DataItemComparer ());
 			
 			DataProvider = this;
 
