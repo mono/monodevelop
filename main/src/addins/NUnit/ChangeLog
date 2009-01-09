@@ -1,3 +1,9 @@
+2009-01-09  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Gui/TestPad.cs:
+	* Gui/TestResultsPad.cs: Make sure the tree view is the first widget to
+	be focused when presenting the pad.
+
 2009-01-07  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Services/ExternalTestRunner.cs: Fix bug #461415 - NUnit addin's path

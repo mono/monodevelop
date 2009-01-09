@@ -126,6 +126,7 @@ namespace MonoDevelop.NUnit
 			topToolbar.Insert (buttonStop, -1);
 			
 			vbox.PackEnd (base.Control, true, true, 0);
+			vbox.FocusChain = new Gtk.Widget [] { base.Control };
 			
 			paned.Pack1 (vbox, true, true);
 			

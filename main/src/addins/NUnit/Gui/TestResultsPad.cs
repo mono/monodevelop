@@ -160,6 +160,7 @@ namespace MonoDevelop.NUnit
 			
 			book = new HPaned ();
 			panel.PackStart (book, true, true, 0);
+			panel.FocusChain = new Gtk.Widget [] { book };
 			
 			// Failures tree
 			failuresTreeView = new TreeView ();
