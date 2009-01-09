@@ -67,10 +67,6 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		string tempDataFile;
 		DatabaseProjectDom sourceProjectDom;
 		
-		// This table is a cache of instantiated generic types. It is not stored
-		// in disk, it's created under demand when a specific type is requested.
-		Hashtable instantiatedGenericTypes = new Hashtable ();
-		
 		// This table stores type->subclasses relations for types which are not
 		// known in this database. For example, types declared in other databases.
 		// For known types, the type->subclasses relation is stored in the corresponding
@@ -158,7 +154,6 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				references = new ArrayList ();
 				headers = new Hashtable ();
 				unresolvedSubclassTable = new Hashtable ();
-				instantiatedGenericTypes = new Hashtable ();
 			
 				CloseReader ();
 
@@ -468,11 +463,6 @@ namespace MonoDevelop.Projects.Dom.Serialization
 
 			lock (rwlock)
 			{
-				// It may be an instantiated generic type 
-				IType igt = (IType) instantiatedGenericTypes [typeName];
-				if (igt != null)
-					return igt;
-				
 				string[] path = typeName.Split ('.');
 				int len = path.Length - 1;
 				
@@ -509,7 +499,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 					result = c;
 				}
 				if (genericArguments != null)
-					return DomType.CreateInstantiatedGenericType (result, genericArguments);
+					return sourceProjectDom.CreateInstantiatedGenericType (result, genericArguments);
 				else
 					return result;
 			}
@@ -647,7 +637,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				if (!bparams [n].Equals (baseType.GenericParameters [n]))
 					return null;
 			}
-			return DomType.CreateInstantiatedGenericType (subType, args);
+			return sourceProjectDom.CreateInstantiatedGenericType (subType, args);
 		}
 		
 		void OnPropertyUpdated (object sender, PropertyChangedEventArgs e)

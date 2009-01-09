@@ -36,6 +36,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 	public abstract class ProjectDom
 	{	
 		protected List<ProjectDom> references;
+		Dictionary<string, IType> instantiatedTypeCache = new Dictionary<string, IType> ();
 		
 		public Project Project;
 		internal int ReferenceCount;
@@ -359,7 +360,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			if (returnType.Type != null)  {
 				if (returnType.GenericArguments == null || returnType.GenericArguments.Count == 0)
 					return returnType.Type;
-				return DomType.CreateInstantiatedGenericType (returnType.Type, returnType.GenericArguments);
+				return CreateInstantiatedGenericType (returnType.Type, returnType.GenericArguments);
 			}
 			return GetType (returnType.FullName, returnType.GenericArguments, true, true);
 		}
@@ -463,6 +464,21 @@ namespace MonoDevelop.Projects.Dom.Parser
 				this.references.Remove (dom);
 				ProjectDomService.UnrefDom (dom.Uri); 
 			}
+		}
+		
+		public IType CreateInstantiatedGenericType (IType type, IList<IReturnType> genericArguments)
+		{
+			if (type is InstantiatedType)
+				return type;
+			
+			string name = DomType.GetInstantiatedTypeName (type.Name, genericArguments);
+			IType gtype;
+			if (instantiatedTypeCache.TryGetValue (name, out gtype))
+				return gtype;
+			
+			gtype = DomType.CreateInstantiatedGenericTypeInternal (type, genericArguments);
+			instantiatedTypeCache [name] = gtype;
+			return gtype;
 		}
 
 		// This method has to check all modified files and start parsing jobs if needed

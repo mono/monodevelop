@@ -550,8 +550,11 @@ namespace MonoDevelop.Projects.Dom
 			return type.FullName + "~" + type.TypeParameters.Count;
 		}
 		
-		public static IType CreateInstantiatedGenericType (IType type, IList<IReturnType> genericArguments)
+		internal static IType CreateInstantiatedGenericTypeInternal (IType type, IList<IReturnType> genericArguments)
 		{
+			// This method is now internal. The public one has been moved to ProjectDom, which take cares of caching
+			// instantiated generic types.
+			
 			if (type is InstantiatedType)
 				return type;
 			string name = GetInstantiatedTypeName (type.Name, genericArguments);
