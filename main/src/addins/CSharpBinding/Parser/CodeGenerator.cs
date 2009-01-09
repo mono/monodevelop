@@ -190,15 +190,21 @@ namespace CSharpBinding.Parser
 				yield return new KeyValuePair<IMember,IReturnType> (kvp.Key, new DomReturnType (tn));
 			}
 		}
-		
-		public override MemberReferenceCollection FindClassReferences (RefactorerContext ctx, string fileName, IType cls)
+		static void SetContext (IEnumerable<MemberReference> references, RefactorerContext ctx)
+		{
+			foreach (MemberReference r in references) {
+				r.SetContext (ctx);
+			}
+		}
+		public override IEnumerable<MemberReference> FindClassReferences (RefactorerContext ctx, string fileName, IType cls)
 		{
 			IEditableTextFile file = ctx.GetFile (fileName);
 			NRefactoryResolver resolver = new NRefactoryResolver (ctx.ParserContext, cls.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, null, fileName);
-			MemberReferenceCollection refs = new MemberReferenceCollection ();
-			MemberRefactoryVisitor visitor = new MemberRefactoryVisitor (ctx, resolver, cls, cls, refs);
-			visitor.Visit (ctx.ParserContext, file);
-			return refs;
+			
+			FindMemberAstVisitor visitor = new FindMemberAstVisitor (resolver, file, cls);
+			visitor.RunVisitor ();
+			SetContext (visitor.FoundReferences, ctx);
+			return visitor.FoundReferences;
 		}
 		
 		protected override int GetVariableNamePosition (IEditableTextFile file, LocalVariable var)
@@ -421,49 +427,44 @@ namespace CSharpBinding.Parser
 			return new DomRegion (lineBegin, colBegin, lineEnd, colEnd);
 		}
 		static NRefactoryParser parser = new NRefactoryParser ();
-		public override MemberReferenceCollection FindMemberReferences (RefactorerContext ctx, string fileName, IType cls, IMember member)
+		public override IEnumerable<MemberReference> FindMemberReferences (RefactorerContext ctx, string fileName, IType cls, IMember member)
 		{
 			ParsedDocument parsedDocument = parser.Parse (fileName);
 			
 			NRefactoryResolver resolver = new NRefactoryResolver (ctx.ParserContext, parsedDocument.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, null, fileName);
 			resolver.SetupParsedCompilationUnit (parser.LastUnit);
 			resolver.CallingMember = member;
-			MemberReferenceCollection refs = new MemberReferenceCollection ();
-			MemberRefactoryVisitor visitor = new MemberRefactoryVisitor (ctx, resolver, cls, member, refs);
-			IEditableTextFile file = ctx.GetFile (fileName);
-			visitor.Visit (ctx.ParserContext, file, parser.LastUnit);
-			return refs;
+			FindMemberAstVisitor visitor = new FindMemberAstVisitor (resolver, ctx.GetFile (fileName), member);
+			visitor.RunVisitor ();
+			SetContext (visitor.FoundReferences, ctx);
+			return visitor.FoundReferences;
 		}
 
-		public override MemberReferenceCollection FindVariableReferences (RefactorerContext ctx, string fileName, LocalVariable var)
+		public override IEnumerable<MemberReference> FindVariableReferences (RefactorerContext ctx, string fileName, LocalVariable var)
 		{
 			//System.Console.WriteLine("Find variable references !!!");
 //			ParsedDocument parsedDocument = ProjectDomService.ParseFile (fileName);
 			NRefactoryResolver resolver = new NRefactoryResolver (ctx.ParserContext, var.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, null, fileName);
 			resolver.CallingMember = var.DeclaringMember;
 			
-			MemberReferenceCollection refs = new MemberReferenceCollection ();
-			MemberRefactoryVisitor visitor = new MemberRefactoryVisitor (ctx, resolver, var.DeclaringMember.DeclaringType, var, refs);
-			
-			IEditableTextFile file = ctx.GetFile (fileName);
-			visitor.Visit (ctx.ParserContext, file);
-			return refs;
+			FindMemberAstVisitor visitor = new FindMemberAstVisitor (resolver, ctx.GetFile (fileName), var);
+			visitor.RunVisitor ();
+			SetContext (visitor.FoundReferences, ctx);
+			return visitor.FoundReferences;
 		}
 		
-		public override MemberReferenceCollection FindParameterReferences (RefactorerContext ctx, string fileName, IParameter param)
+		public override IEnumerable<MemberReference> FindParameterReferences (RefactorerContext ctx, string fileName, IParameter param)
 		{
 //			System.Console.WriteLine("Find parameter references !!!");
 			IMember member = param.DeclaringMember;
 			NRefactoryResolver resolver = new NRefactoryResolver (ctx.ParserContext, param.DeclaringMember.DeclaringType.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, null, fileName);
 			
 			resolver.CallingMember = param.DeclaringMember;
-			MemberReferenceCollection refs = new MemberReferenceCollection ();
-			MemberRefactoryVisitor visitor = new MemberRefactoryVisitor (ctx, resolver, member.DeclaringType, param, refs);
 			
-			IEditableTextFile file = ctx.GetFile (fileName);
-			visitor.Visit (ctx.ParserContext, file);
-			
-			return refs;
+			FindMemberAstVisitor visitor = new FindMemberAstVisitor (resolver, ctx.GetFile (fileName), param);
+			visitor.RunVisitor ();
+			SetContext (visitor.FoundReferences, ctx);
+			return visitor.FoundReferences;
 		}
 		
 		public override int AddFoldingRegion (RefactorerContext ctx, IType cls, string regionName)
@@ -510,8 +511,9 @@ namespace CSharpBinding.Parser
 			return result;
 		}
 	}
-	
-	class MemberRefactoryVisitor: AbstractAstVisitor {
+/* Moved & Simplified to: FindMemberAstVisitors	
+	class MemberRefactoryVisitor: AbstractAstVisitor
+	{
 		MemberReferenceCollection references;
 		ICSharpCode.NRefactory.Ast.CompilationUnit fileCompilationUnit;
 		IEditableTextFile file;
@@ -521,6 +523,8 @@ namespace CSharpBinding.Parser
 		NRefactoryResolver resolver;
 		Hashtable unique;
 		string memberName;
+		Stack<TypeDeclaration> typeStack = new Stack<TypeDeclaration> ();
+		
 		public MemberRefactoryVisitor (RefactorerContext ctx, NRefactoryResolver resolver, IType declaringType, IDomVisitable member, MemberReferenceCollection references)
 		{
 			unique = new Hashtable ();
@@ -671,14 +675,23 @@ namespace CSharpBinding.Parser
 				int line = fieldDeclaration.StartLocation.Y;
 				int col = fieldDeclaration.StartLocation.X;
 				ResolveResult resolveResult = resolver.ResolveIdentifier (type, new DomLocation (line, col));
+				
 				IReturnType cls = resolveResult != null ? resolveResult.ResolvedType : null;
 				
-				if (cls != null && cls.FullName == ((IType) member).FullName) {
+				if (cls != null && cls.FullName == ((IType)member).FullName) {
 					//Debug ("adding FieldDeclaration", cls.FullName, fieldDeclaration);
 					AddUniqueReference (line, col, cls.FullName);
 				}
 			}
-			
+			if (member is IField) {
+				if (typeStack.Peek ().Name  == ((IField)member).DeclaringType.FullName) {
+					foreach (VariableDeclaration variable in fieldDeclaration.Fields) {
+						if (variable.Name == memberName) {
+							AddUniqueReference (variable.StartLocation.Y, variable.StartLocation.X, memberName);
+						}
+					}
+				}
+			}
 			return base.VisitFieldDeclaration (fieldDeclaration, data);
 		}
 		
@@ -732,7 +745,7 @@ namespace CSharpBinding.Parser
 		{
 			//System.Console.WriteLine("VisitMethodDeclaration " + methodDeclaration);
 			// find override references.
-			if (member is IMethod && /*(methodDeclaration.Modifier & ICSharpCode.NRefactory.Ast.Modifiers.Override) == ICSharpCode.NRefactory.Ast.Modifiers.Override && */methodDeclaration.Name == memberName) {
+			if (member is IMethod && methodDeclaration.Name == memberName) {
 				MethodResolveResult mrr = resolver.ResolveIdentifier (memberName, new DomLocation (methodDeclaration.StartLocation.Y, methodDeclaration.StartLocation.X)) as MethodResolveResult;
 				if (mrr != null) {
 					IMethod m = mrr.MostLikelyMethod;
@@ -766,11 +779,6 @@ namespace CSharpBinding.Parser
 							AddUniqueReference (invokeExp.StartLocation.Y, invokeExp.StartLocation.X, memberName);	
 					}
 				}
-				/*IType cls = resolveResult != null ? this.ctx.ParserContext.GetType (resolveResult.ResolvedType) : null;
-				if (cls == null || IsExpectedClass (cls)) {
-					//Debug ("adding InvocationExpression", member.Name, invokeExp);
-					
-				}*/
 			}
 			
 			return base.VisitInvocationExpression (invokeExp, data);
@@ -794,6 +802,7 @@ namespace CSharpBinding.Parser
 				int col = idExp.StartLocation.X;
 				
 				ResolveResult result = resolver.ResolveIdentifier (idExp.Identifier, new DomLocation (line, col));
+				
 				if (member is IType) {
 					IMember item = result != null ? ((MemberResolveResult)result).ResolvedMember : null;
 					if (item == null || item is IType && ((IType) item).FullName == ((IType)member).FullName) {
@@ -1008,8 +1017,10 @@ namespace CSharpBinding.Parser
 					}
 				}
 			}
-			
-			return base.VisitTypeDeclaration (typeDeclaration, data);
+			typeStack.Push (typeDeclaration);
+			object result =  base.VisitTypeDeclaration (typeDeclaration, data);
+			typeStack.Pop ();
+			return result; 
 		}
 		
 		MemberReference CreateReference (int line, int col, string name)
@@ -1068,4 +1079,5 @@ namespace CSharpBinding.Parser
 		}
 
 	}
+*/
 }

@@ -400,6 +400,7 @@ namespace MonoDevelop.CSharpBinding
 			{
 				DomParameter result = new DomParameter ();
 				result.Name               = pde.ParameterName;
+				result.Location           = ConvertLocation (pde.StartLocation);
 				result.DeclaringMember    = declaringMember;
 				result.ReturnType         = ConvertReturnType (pde.TypeReference);
 				result.ParameterModifiers = ConvertParameterModifiers (pde.ParamModifier);

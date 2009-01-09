@@ -570,7 +570,7 @@ namespace MonoDevelop.CSharpBinding
 				}
 			}
 			
-			IType searchedType = dom.SearchType (new SearchTypeRequest (unit, -1, -1, identifier));
+			IType searchedType = dom.SearchType (new SearchTypeRequest (unit, this.resolvePosition.Line, this.resolvePosition.Column, identifier));
 			if (searchedType != null) {
 				result = new MemberResolveResult (null, true);
 				result.UnresolvedType = result.ResolvedType = new DomReturnType (searchedType);

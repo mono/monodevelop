@@ -52,6 +52,7 @@ FILES =  \
 	Gui/NRefactoryResolver.cs \
 	Gui/ResolveVisitor.cs \
 	Parser/CodeGenerator.cs \
+	Parser/FindMemberAstVisitor.cs \
 	Parser/mcs/cs-parser.cs \
 	Parser/mcs/dom.cs \
 	Parser/mcs/External/CryptoConvert.cs \

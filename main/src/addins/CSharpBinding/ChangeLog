@@ -1,3 +1,11 @@
+2009-01-09  Mike Krüger  <mkrueger@novell.com>
+
+	* Parser/CodeGenerator.cs:
+	* Gui/NRefactoryResolver.cs:
+	* Parser/NRefactoryParser.cs:
+	* Parser/FindMemberAstVisitor.cs: Worked on refactoring code/fixing Bug
+	456576 - refactor: rename field is not working.
+
 2009-01-08  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Gui/CSharpTextEditorCompletion.cs: Fix warning.
