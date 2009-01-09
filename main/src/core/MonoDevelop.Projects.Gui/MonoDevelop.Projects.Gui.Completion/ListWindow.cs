@@ -242,8 +242,9 @@ namespace MonoDevelop.Projects.Gui.Completion
 				case Gdk.Key.ISO_Enter:
 				case Gdk.Key.Key_3270_Enter:
 				case Gdk.Key.KP_Enter:
-					return KeyAction.Complete | KeyAction.Ignore | KeyAction.CloseWindow;
-					
+					return (list.SelectionDisabled? KeyAction.Process : (KeyAction.Complete | KeyAction.Ignore))
+						| KeyAction.CloseWindow;
+				
 				case Gdk.Key.Escape:
 					return KeyAction.CloseWindow | KeyAction.Ignore;
 				

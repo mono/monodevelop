@@ -1,5 +1,12 @@
 2009-01-09  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Process the enter
+	key normally when there list has disabled selection. If the list has
+	a selection, continue to interpret it only as a commit command.
+	Matches VS behaviour.
+
+2009-01-09  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs: Use
 	ordinal string compare for sorting the list, as it's an order of
 	magnitude faster. Makes code completion more responsive.
