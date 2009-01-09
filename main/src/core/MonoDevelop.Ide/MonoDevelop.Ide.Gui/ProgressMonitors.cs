@@ -139,8 +139,11 @@ namespace MonoDevelop.Ide.Gui
 			string newPadId = "OutputPad - " + title + " - " + instanceCount;
 			string basePadId = "OutputPad - " + title + " - 0";
 			
-			if (instanceCount > 0)
+			if (instanceCount > 0) {
+				// Translate the title before adding the count
+				title = GettextCatalog.GetString (title);
 				title += " (" + (instanceCount+1) + ")";
+			}
 
 			if (show)
 				pad = IdeApp.Workbench.ShowPad (monitorPad, newPadId, title, basePadId + "/Center Bottom", icon);

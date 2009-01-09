@@ -1,3 +1,11 @@
+2009-01-09  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui/DocumentSwitcher.cs: BringToFront already gives
+	focus to the pad, there is no need anymore to explicitly do it.
+
+	* MonoDevelop.Ide.Gui/ProgressMonitors.cs: Properly translate the title
+	of dynamically created pads.
+
 2009-01-08  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui/RootWorkspace.cs: Dispose workspace items when

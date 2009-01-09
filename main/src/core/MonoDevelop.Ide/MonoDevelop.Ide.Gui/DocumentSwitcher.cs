@@ -315,13 +315,8 @@ namespace MonoDevelop.Ide
 					doc.Select ();
 				} else {
 					Pad pad = SelectedPad;
-					if (pad != null) {
+					if (pad != null)
 						pad.BringToFront ();
-						GLib.Timeout.Add (100, delegate {
-							pad.Window.Content.Control.GrabFocus ();
-							return false;
-						});
-					}
 				}
 				ret = base.OnKeyReleaseEvent (evnt);
 				this.Destroy ();
