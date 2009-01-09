@@ -401,7 +401,7 @@ namespace Stetic
 		public void AddWidgetLibrary (string assemblyPath, bool isInternal)
 		{
 			reloadRequested = false;
-			ProjectBackend.AddWidgetLibrary (assemblyPath);
+			ProjectBackend.AddWidgetLibrary (assemblyPath, isInternal);
 			app.UpdateWidgetLibraries (false, false);
 			if (!reloadRequested)
 				ProjectBackend.Reload ();

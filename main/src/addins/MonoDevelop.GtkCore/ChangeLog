@@ -1,3 +1,8 @@
+2009-01-09  Mike Kestner <mkestner@novell.com> 
+
+	* libsteticui/Project.cs: forward isInternal to the backend in
+	AddWidgetLibrary.
+
 2009-01-08  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* libsteticui/LibraryCache.cs: Don't ignore internal classes when
