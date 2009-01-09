@@ -1,5 +1,10 @@
 2009-01-05  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
+	* ValaBinding.sln:
+	* ValaBinding.csproj: Add MSBuild project files.
+
+2009-01-05  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
 	* gtk-gui/gui.stetic: Tooltip cleanup.
 
 2009-01-05  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>

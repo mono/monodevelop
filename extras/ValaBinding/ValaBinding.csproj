@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{99F79E57-DCF6-4233-ABF1-A920A228A7D4}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AssemblyName>MonoDevelop.ValaBinding</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>build</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <StartupObject />
+    <ApplicationIcon>.</ApplicationIcon>
+    <AssemblyKeyFile>.</AssemblyKeyFile>
+    <ConsolePause>false</ConsolePause>
+    <Execution>
+      <Execution clr-version="Net_2_0" xmlns="" />
+    </Execution>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>build</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <StartupObject />
+    <ApplicationIcon>.</ApplicationIcon>
+    <AssemblyKeyFile>.</AssemblyKeyFile>
+    <ConsolePause>false</ConsolePause>
+    <Execution>
+      <Execution clr-version="Net_2_0" xmlns="" />
+    </Execution>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Mono.Posix" />
+    <Reference Include="Mono.Addins, Version=0.3.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="MonoDevelop.Core, Version=1.9.1.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.Projects, Version=1.9.1.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.Core.Gui, Version=1.9.1.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.Deployment, Version=1.9.1.0, Culture=neutral" />
+    <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="MonoDevelop.Ide, Version=1.9.1.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.Components, Version=1.9.1.0, Culture=neutral" />
+    <Reference Include="NRefactory, Version=0.0.0.0, Culture=neutral" />
+    <Reference Include="Mono.Cecil, Version=0.6.8.8607, Culture=neutral" />
+    <Reference Include="Mono.TextEditor, Version=1.0.0.0, Culture=neutral" />
+    <Reference Include="Mono.Debugging, Version=0.0.0.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.VersionControl, Version=1.9.1.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.NUnit, Version=1.9.1.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.XmlEditor, Version=1.9.1.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.AspNet, Version=1.9.1.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.Gettext, Version=1.9.1.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.Deployment.Linux, Version=1.9.1.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.GtkCore, Version=1.9.1.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.DesignerSupport, Version=1.9.1.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.VBNetBinding, Version=1.9.1.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.CBinding, Version=1.9.1.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.CSharpBinding, Version=1.9.1.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.Autotools, Version=1.9.1.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.Projects.Gui, Version=1.9.1.0, Culture=neutral" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Makefile.am" />
+    <None Include="ChangeLog" />
+    <None Include="README" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="ValaBinding.addin.xml" />
+    <EmbeddedResource Include="templates\EmptyValaProject.xpt.xml">
+      <LogicalName>EmptyValaProject.xpt.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\EmptyValaSourceFile.xft.xml">
+      <LogicalName>EmptyValaSourceFile.xft.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="gtk-gui\gui.stetic">
+      <LogicalName>gui.stetic</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\Icons.16x16.PrivateUnion">
+      <LogicalName>Icons.16x16.PrivateUnion</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\Icons.16x16.ProtectedUnion">
+      <LogicalName>Icons.16x16.ProtectedUnion</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\Icons.16x16.Union">
+      <LogicalName>Icons.16x16.Union</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\Icons.16x16.ProjectReference">
+      <LogicalName>Icons.16x16.ProjectReference</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\ConsoleValaProject.xpt.xml">
+      <LogicalName>ConsoleValaProject.xpt.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="gtk-gui\objects.xml">
+      <LogicalName>objects.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\text-x-vala.16x16.png">
+      <LogicalName>text-x-vala.16x16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\text-x-vala.24x24.png">
+      <LogicalName>text-x-vala.24x24.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\text-x-vala.32x32.png">
+      <LogicalName>text-x-vala.32x32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\text-x-vala.48x48.png">
+      <LogicalName>text-x-vala.48x48.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\vala-icon-32.png">
+      <LogicalName>vala-icon-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\SharedLibraryValaProject.xpt.xml">
+      <LogicalName>SharedLibraryValaProject.xpt.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\ValaTestFixture.xpt.xml">
+      <LogicalName>ValaTestFixture.xpt.xml</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Project\ValaCompilationParameters.cs" />
+    <Compile Include="Project\ValaProject.cs" />
+    <Compile Include="Project\ValaProjectBinding.cs" />
+    <Compile Include="Project\ValaProjectConfiguration.cs" />
+    <Compile Include="gtk-gui\generated.cs" />
+    <Compile Include="Gui\CodeGenerationPanel.cs" />
+    <Compile Include="Compiler\ValaCompiler.cs" />
+    <Compile Include="Gui\AddLibraryDialog.cs" />
+    <Compile Include="Compiler\ICompiler.cs" />
+    <Compile Include="Gui\AddPathDialog.cs" />
+    <Compile Include="Project\ProjectPackageCollection.cs" />
+    <Compile Include="ValaLanguageBinding.cs" />
+    <Compile Include="Project\ProjectPackage.cs" />
+    <Compile Include="Project\ProjectPackageEventArgs.cs" />
+    <Compile Include="Gui\OutputOptionsPanel.cs" />
+    <Compile Include="Project\ValaProjectServiceExtension.cs" />
+    <Compile Include="Gui\GeneralOptionsPanel.cs" />
+    <Compile Include="Parser\Class.cs" />
+    <Compile Include="Parser\Enumeration.cs" />
+    <Compile Include="Parser\Enumerator.cs" />
+    <Compile Include="Parser\Function.cs" />
+    <Compile Include="Parser\LanguageItem.cs" />
+    <Compile Include="Parser\Macro.cs" />
+    <Compile Include="Parser\Member.cs" />
+    <Compile Include="Parser\Namespace.cs" />
+    <Compile Include="Parser\ProjectInformation.cs" />
+    <Compile Include="Parser\ProjectInformationManager.cs" />
+    <Compile Include="Parser\Structure.cs" />
+    <Compile Include="Parser\Tag.cs" />
+    <Compile Include="Parser\TagDatabaseManager.cs" />
+    <Compile Include="Parser\Typedef.cs" />
+    <Compile Include="Parser\Union.cs" />
+    <Compile Include="Parser\Variable.cs" />
+    <Compile Include="Gui\ValaTextEditorExtension.cs" />
+    <Compile Include="Gui\DataProvider.cs" />
+    <Compile Include="Parser\Local.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.ValaBinding.AddLibraryDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.ValaBinding.CodeGenerationPanel.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.ValaBinding.AddPathDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.ValaBinding.GeneralOptionsPanel.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.ValaBinding.OutputOptionsPanel.cs" />
+    <Compile Include="Navigation\ClassNodeBuilder.cs" />
+    <Compile Include="Navigation\ClassPadEventArgs.cs" />
+    <Compile Include="Navigation\EnumerationNodeBuilder.cs" />
+    <Compile Include="Navigation\EnumeratorNodeBuilder.cs" />
+    <Compile Include="Navigation\FunctionNodeBuilder.cs" />
+    <Compile Include="Navigation\GlobalsNodeBuilder.cs" />
+    <Compile Include="Navigation\LanguageItemCommandHandler.cs" />
+    <Compile Include="Navigation\LanguageItemEventArgs.cs" />
+    <Compile Include="Navigation\MacroDefinitionsNodeBuilder.cs" />
+    <Compile Include="Navigation\MacroNodeBuilder.cs" />
+    <Compile Include="Navigation\MemberNodeBuilder.cs" />
+    <Compile Include="Navigation\NamespaceNodeBuilder.cs" />
+    <Compile Include="Navigation\ProjectNodeBuilderExtension.cs" />
+    <Compile Include="Navigation\StructureNodeBuilder.cs" />
+    <Compile Include="Navigation\TypedefNodeBuilder.cs" />
+    <Compile Include="Navigation\UnionNodeBuilder.cs" />
+    <Compile Include="Navigation\VariableNodeBuilder.cs" />
+    <Compile Include="ProjectPad\ProjectReferencesExtension.cs" />
+    <Compile Include="Gui\EditPackagesDialog.cs" />
+    <Compile Include="Gui\PackageDetails.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.ValaBinding.EditPackagesDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.ValaBinding.PackageDetails.cs" />
+    <Compile Include="ProjectPad\ProjectPackageNodeBuilder.cs" />
+    <Compile Include="ProjectPad\ProjectPackagesFolderNodeBuilder.cs" />
+    <Compile Include="ProjectPad\ProjectNodeExtension.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ProjectExtensions>
+    <MonoDevelop>
+      <Properties xmlns="">
+        <Deployment.LinuxDeployData scriptName="valabinding" />
+        <GtkDesignInfo />
+        <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="Makefile.am" SyncReferences="true" IsAutotoolsProject="true" RelativeConfigureInPath=".">
+          <BuildFilesVar Sync="true" Name="FILES" />
+          <DeployFilesVar />
+          <ResourcesVar Sync="true" Name="RES" />
+          <OthersVar />
+          <GacRefVar Sync="true" Name="REFS" Prefix="-r:" />
+          <AsmRefVar Sync="true" Name="REFS" Prefix="-r:" />
+          <ProjectRefVar Sync="true" Name="REFS" Prefix="-r:" />
+        </MonoDevelop.Autotools.MakefileInfo>
+      </Properties>
+    </MonoDevelop>
+  </ProjectExtensions>
+</Project>
