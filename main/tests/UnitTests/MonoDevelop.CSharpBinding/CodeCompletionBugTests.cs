@@ -72,7 +72,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 			sev.GetLineColumnFromPosition (sev.CursorPosition, out line, out column);
 			ctx.TriggerLine = line;
 			ctx.TriggerLineOffset = column;
-			System.Console.WriteLine(textEditorCompletion);
+			
 			return textEditorCompletion.HandleCodeCompletion (ctx, text[cursorPosition - 1] , ref triggerWordLength) as CompletionDataList;
 		}
 

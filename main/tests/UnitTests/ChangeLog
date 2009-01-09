@@ -1,3 +1,9 @@
+2009-01-09  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs:
+	* MonoDevelop.CSharpBinding/FindMemberVisitorTests.cs: Added unit tests
+	for the refactoring layer.
+
 2009-01-07  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: Added test for

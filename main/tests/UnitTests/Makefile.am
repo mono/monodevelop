@@ -43,6 +43,7 @@ FILES =  \
 	MonoDevelop.CSharpBinding/CodeCompletionCSharp3Tests.cs \
 	MonoDevelop.CSharpBinding/CodeCompletionCSharpTests.cs \
 	MonoDevelop.CSharpBinding/CodeCompletionOperatorTests.cs \
+	MonoDevelop.CSharpBinding/FindMemberVisitorTests.cs \
 	MonoDevelop.CSharpBinding/MemberTests.cs \
 	MonoDevelop.CSharpBinding/ParameterCompletionTests.cs \
 	MonoDevelop.CSharpBinding/TestViewContent.cs \
