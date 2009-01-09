@@ -1047,8 +1047,8 @@ ClassMemberDecl<ModifierList m, List<AttributeSection> attributes>
 (. Statement stmt = null; .)
 =
 	StructMemberDecl<m, attributes>
-	| /*--- destructor declaration: */ (. m.Check(Modifiers.Destructors); Location startPos = t.Location; .)
-	"~" Identifier                     (. DestructorDeclaration d = new DestructorDeclaration(t.val, m.Modifier, attributes); 
+	| /*--- destructor declaration: */ (. m.Check(Modifiers.Destructors); .)
+	"~" (. Location startPos = t.Location; .) Identifier                     (. DestructorDeclaration d = new DestructorDeclaration(t.val, m.Modifier, attributes); 
 	                                      d.Modifier = m.Modifier;
 	                                      d.StartLocation = m.GetDeclarationLocation(startPos);
 	                                   .)

@@ -1550,8 +1550,11 @@ m, attributes);
 		} else if (la.kind == 27) {
 
 #line  1050 "Frames/cs.ATG" 
-			m.Check(Modifiers.Destructors); Location startPos = t.Location; 
+			m.Check(Modifiers.Destructors); 
 			lexer.NextToken();
+
+#line  1051 "Frames/cs.ATG" 
+			Location startPos = t.Location; 
 			Identifier();
 
 #line  1051 "Frames/cs.ATG" 
