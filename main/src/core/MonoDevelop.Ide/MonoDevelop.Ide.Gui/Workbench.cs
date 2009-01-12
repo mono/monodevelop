@@ -875,10 +875,15 @@ namespace MonoDevelop.Ide.Gui
 				fileInfo.ProgressMonitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not be opened.", fileName), ex);
 				return;
 			}
-
+			// content got re-used
+			if (newContent.WorkbenchWindow != null) {
+				newContent.WorkbenchWindow.SelectWindow ();
+				fileInfo.NewContent = newContent;
+				return;
+			}
 			if (project != null)
 				newContent.Project = project;
-
+			
 			workbench.ShowView (newContent, fileInfo.BringToFront);
 			IdeApp.Workbench.DisplayBindings.AttachSubWindows(newContent.WorkbenchWindow);
 			newContent.WorkbenchWindow.DocumentType = binding.DisplayName;

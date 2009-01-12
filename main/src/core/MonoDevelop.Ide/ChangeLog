@@ -1,3 +1,8 @@
+2009-01-12  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui/Workbench.cs: Added support for reusable view
+	contents.
+
 2009-01-09  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui/Workbench.cs: Improved fix of bug #464891.
