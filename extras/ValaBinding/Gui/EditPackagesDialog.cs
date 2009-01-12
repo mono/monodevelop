@@ -169,21 +169,26 @@ namespace MonoDevelop.ValaBinding
 						if (!IsValidPackage (f.FullName)) { 
 							continue;
 						}
-						
-						ProjectPackage package = new ProjectPackage (f.FullName);
-						
-						packages.Add (package);
-						
-						string name = package.Name;
-						string version = package.Version;
-						bool inProject = selectedPackages.Contains (package);
-						
-						if (!IsPackageInStore (normalPackageListStore, name, version, NormalPackageNameID, NormalPackageVersionID)) {
-							normalPackageListStore.AppendValues (inProject, name, version);
-						
-							if (inProject)
-								selectedPackageListStore.AppendValues (name, version);
-						}
+
+						string packagename = f.FullName;
+
+						GLib.Idle.Add (delegate {
+							ProjectPackage package = new ProjectPackage (packagename);
+							
+							packages.Add (package);
+							
+							string name = package.Name;
+							string version = package.Version;
+							bool inProject = selectedPackages.Contains (package);
+							
+							if (!IsPackageInStore (normalPackageListStore, name, version, NormalPackageNameID, NormalPackageVersionID)) {
+								normalPackageListStore.AppendValues (inProject, name, version);
+							
+								if (inProject)
+									selectedPackageListStore.AppendValues (name, version);
+							}
+							return false;
+						});
 					}
 				}
 			}

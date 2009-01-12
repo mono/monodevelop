@@ -1,5 +1,9 @@
 2009-01-12  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
+	* Gui/EditPackagesDialog.cs: Move package list population into idle handler.
+
+2009-01-12  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
 	* Project/ProjectPackage.cs:
 	* Project/ProjectPackageCollection.cs: Use relative path 
 	for project package references.
