@@ -60,7 +60,9 @@ namespace MonoDevelop.Projects
 				"ClassLibrary4.dll.mdb",
 				"VSLocalCopyTest.exe",
 				"VSLocalCopyTest.exe.mdb",
-				"TextFile1.txt"
+				"TextFile1.txt",
+				"folder/baz.txt",
+				"foo/bar.txt",
 			});
 			
 			//FIXME: all of these should have mdb files in release mode.
@@ -70,7 +72,9 @@ namespace MonoDevelop.Projects
 				"ClassLibrary2.dll",
 				"ClassLibrary4.dll",
 				"VSLocalCopyTest.exe",
-				"TextFile1.txt"
+				"TextFile1.txt",
+				"folder/baz.txt",
+				"foo/bar.txt",
 			});
 			
 			AssertOutputFiles (sol, "ClassLibrary1", "Debug", new string[] {
@@ -79,14 +83,16 @@ namespace MonoDevelop.Projects
 				"ClassLibrary2.dll",
 				"ClassLibrary2.dll.mdb",
 				"TextFile1.txt",
-				"TextFile2.txt"
+				"TextFile2.txt",
+				"foo/bar.txt",
 			});
 			
 			AssertOutputFiles (sol, "ClassLibrary1", "Release", new string[] {
 				"ClassLibrary1.dll",
 				"ClassLibrary2.dll",
 				"TextFile1.txt",
-				"TextFile2.txt"
+				"TextFile2.txt",
+				"foo/bar.txt",
 			});
 			
 			AssertOutputFiles (sol, "ClassLibrary2", "Debug", new string[] {
@@ -143,16 +149,27 @@ namespace MonoDevelop.Projects
 		{
 			string directory = Path.GetDirectoryName (project.GetOutputFileName (configuration));
 			Assert.IsFalse (string.IsNullOrEmpty (directory), "Project '{0} has no output directory", project);
-			List<string> files = new List<string> (Directory.GetFiles (directory));
+			List<string> files = new List<string> (Directory.GetFiles (directory, "*", SearchOption.AllDirectories));
 			
 			for (int i = 0; i < files.Count; i++)
-				files[i] = Path.GetFileName (files[i]);
+				files[i] = files[i].Substring (directory.Length + 1);
 			
 			foreach (string expectedFile in expectedFiles)
 				Assert.IsTrue (files.Remove (expectedFile), "Did not find file '{0}' in '{1}'",
 				               expectedFile, directory);
 			
-			Assert.IsTrue (files.Count == 0, "There are unexpected files in the directory {0}", directory);
+			Assert.IsTrue (files.Count == 0, "There are unexpected files in the directory {0}: {1}", directory, Join (files));
+		}
+		
+		static string Join (List<string> list)
+		{
+			if (list.Count < 1)
+				return String.Empty;
+			string [] arr = new string [list.Count + list.Count - 1];
+			string comma = ", ";
+			for (int i = 0; i < arr.Length; i++)
+				arr[i] = (i % 2 == 0)? list [i / 2] : comma;
+			return String.Concat (arr);
 		}
 		
 		static void AssertCleanBuild (Solution sol, string configuration)

@@ -1,3 +1,14 @@
+2009-01-12  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* vs-local-copy/ClassLibrary1/foo:
+	* vs-local-copy/VSLocalCopyTest/folder:
+	* vs-local-copy/ClassLibrary1/foo/bar.txt:
+	* vs-local-copy/VSLocalCopyTest/folder/baz.txt:
+	* vs-local-copy/ClassLibrary1/ClassLibrary1.csproj:
+	* vs-local-copy/VSLocalCopyTest/VSLocalCopyTest.csproj: Update
+	local-copy test to make sure paths are included. Covers "Bug 459311 -
+	Copying files to output directory in MonoDevelop".
+
 2008-12-16  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* generated-console-project/TestProject.mdp:
