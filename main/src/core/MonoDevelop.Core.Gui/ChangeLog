@@ -1,3 +1,8 @@
+2009-01-12  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Core.Gui.addin.xml: Registered exe/dll mime type (for
+	assembly browser).
+
 2008-12-12  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Gui.mdp: Set correct target framework.
