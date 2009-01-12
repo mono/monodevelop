@@ -47,10 +47,18 @@ namespace MonoDevelop.AssemblyBrowser
 			string ext = Path.GetExtension (fileName).ToLower ();
 			return ext == ".exe" || ext == ".dll";
 		}
+		AssemblyBrowserViewContent viewContent = null;
+		
+		AssemblyBrowserViewContent GetViewContent ()
+		{
+			if (viewContent == null || viewContent.IsDisposed)
+				viewContent = new AssemblyBrowserViewContent();
+			return viewContent;
+		}
 		
 		IViewContent IDisplayBinding.CreateContentForFile (string fileName)
 		{
-			return new AssemblyBrowserViewContent ();
+			return GetViewContent ();
 		}
 		
 		bool IDisplayBinding.CanCreateContentForMimeType (string mimeType)
@@ -60,7 +68,7 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		IViewContent IDisplayBinding.CreateContentForMimeType (string mimeType, System.IO.Stream content)
 		{
-			return new AssemblyBrowserViewContent ();
+			return GetViewContent ();
 		}
 	}
 }

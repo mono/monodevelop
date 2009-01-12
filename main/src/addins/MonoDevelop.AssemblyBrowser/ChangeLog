@@ -1,3 +1,9 @@
+2009-01-12  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.AssemblyBrowser/DisplayBinding.cs:
+	* MonoDevelop.AssemblyBrowser/AssemblyBrowserView.cs: Only "one" browser
+	now can be open.
+
 2009-01-07  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs: Added support

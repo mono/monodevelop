@@ -47,13 +47,25 @@ namespace MonoDevelop.AssemblyBrowser
 		public AssemblyBrowserViewContent()
 		{
 			widget = new AssemblyBrowserWidget ();
+			IsDisposed = false;
 		}
 		
 		public override void Load (string fileName)
 		{
-			this.ContentName = System.IO.Path.GetFileName (fileName);
+			this.ContentName = MonoDevelop.Core.GettextCatalog.GetString ("Assembly Browser");
 			widget.AddReference (fileName);
 		}
+		
+		public bool IsDisposed {
+			get;
+			private set;
+		}
+		public override void Dispose ()
+		{
+			IsDisposed = true;
+			base.Dispose ();
+		}
+
 
 		#region IUrlHandler implementation 
 		
