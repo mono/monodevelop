@@ -381,7 +381,7 @@ namespace MonoDevelop.Projects
 				if (pf.CopyToOutputDirectory == FileCopyMode.None)
 					continue;
 				
-				list.Add (pf.FilePath, pf.CopyToOutputDirectory == FileCopyMode.PreserveNewest);
+				list.Add (pf.FilePath, pf.CopyToOutputDirectory == FileCopyMode.PreserveNewest, pf.RelativePath);
 			}
 		}
 		

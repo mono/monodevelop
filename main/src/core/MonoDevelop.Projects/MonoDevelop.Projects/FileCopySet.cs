@@ -58,9 +58,6 @@ namespace MonoDevelop.Projects
 		
 		public bool Add (string sourcePath, bool copyOnlyIfNewer, string targetName)
 		{
-			if (Path.GetFileName (targetName) != targetName)
-				throw new ArgumentException ("The target name must not contain a path");
-			
 			//don't add duplicates
 			if (files.ContainsKey (targetName))
 				return false;
