@@ -1,3 +1,9 @@
+2009-01-12  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Pads.ClassPad/ClassNodeBuilder.cs: Added missing
+	markup flag. Patch by Szczepan Holyszewski. Fixes bug #465197 -
+	Semi-garbage labels of generic class nodes in Classes tree.
+
 2009-01-12  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Gui/Workbench.cs: Added support for reusable view
