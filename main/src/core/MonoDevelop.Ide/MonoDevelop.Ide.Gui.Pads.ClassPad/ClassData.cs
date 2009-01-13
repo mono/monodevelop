@@ -55,6 +55,12 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			get { return project; }
 		}
 		
+		internal void UpdateFrom (ClassData cd)
+		{
+			cls = cd.cls;
+			project = cd.project;
+		}
+		
 		public override bool Equals (object ob)
 		{
 			ClassData other = ob as ClassData;

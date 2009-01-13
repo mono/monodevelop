@@ -116,12 +116,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			ClassData classData = dataObject as ClassData;
-			return 	classData.Class.InnerTypeCount > 0 ||
-					classData.Class.MethodCount > 0 ||
-					classData.Class.PropertyCount > 0 ||
-					classData.Class.FieldCount > 0 ||
-					classData.Class.EventCount > 0;
+			// Checking if a class has member is expensive since it requires loading the whole
+			// info from the db, so we always return true here. After all 99% of classes will have members
+			return true;
 		}
 		
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)

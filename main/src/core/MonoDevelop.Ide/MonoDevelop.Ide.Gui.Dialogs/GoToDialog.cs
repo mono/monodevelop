@@ -325,10 +325,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			}
 
 			results.FixDuplicateNames ();
-			
-			results.Sort (delegate (SearchResult o1, SearchResult o2) {
-				return o1.PlainText.CompareTo (o2.PlainText);
-			});
+
+			results.Sort (new DataItemComparer ());
 			
 			int best = results.IndexOf (results.BestResult);
 			if (best == -1)
@@ -341,7 +339,15 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				list.CenterViewToSelection ();
 			});
 		}
-
+		
+		class DataItemComparer : IComparer<SearchResult>
+		{
+			public int Compare (SearchResult o1, SearchResult o2)
+			{
+				return String.CompareOrdinal (o1.PlainText, o2.PlainText);
+			}
+		}
+		
 		List<string> GetFiles ()
 		{
 			List<string> list = new List<string> ();

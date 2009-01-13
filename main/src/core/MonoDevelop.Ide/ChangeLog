@@ -1,3 +1,15 @@
+2009-01-13  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Dialogs/GoToDialog.cs: Use a faster comparer when
+	sorting the results.
+
+	* MonoDevelop.Ide.Gui.Pads.ClassPad/ClassData.cs:
+	* MonoDevelop.Ide.Gui.Pads.ClassPad/ClassNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ClassPad/ProjectNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ClassPad/NamespaceNodeBuilder.cs:
+	Optimizations. Don't update the whole project tree when a file
+	changes. Instead, locate the class that has changed and update it.
+
 2009-01-12  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.Pads.ClassPad/ClassNodeBuilder.cs: Added missing
