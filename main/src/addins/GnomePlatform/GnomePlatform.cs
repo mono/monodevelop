@@ -72,7 +72,6 @@ namespace MonoDevelop.Platform
 		
 		public override DesktopApplication [] GetAllApplications (string mimeType)
 		{
-			Console.WriteLine ("GetAllApplications: " + useGio);
 			if (useGio)
 				return Gio.GetAllForType (mimeType);
 
