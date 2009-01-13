@@ -62,6 +62,28 @@ namespace Mono.TextEditor.Highlighting
 			return new ChunkParser (doc, style, this, line).GetChunks (offset, length);
 		}
 		
+		public string GetTextWithoutMarkup (Document doc, Style style, int offset, int length)
+		{
+			StringBuilder result = new StringBuilder ();
+			
+			int curOffset = offset;
+			int endOffset =  offset + length;
+			
+			while (curOffset < endOffset) {
+				LineSegment curLine = doc.GetLineByOffset (curOffset);
+				Chunk[] chunks = GetChunks (doc, style, curLine, curOffset, System.Math.Min (endOffset - curOffset, curLine.EndOffset - curLine.DelimiterLength - curOffset));
+				foreach (Chunk chunk in chunks) {
+					for (int i = 0; i < chunk.Length; i++) {
+						result.Append (chunk.GetCharAt (doc, chunk.Offset + i));
+					}
+				}
+				curOffset += curLine.Length;
+				if (curOffset < endOffset)
+					result.AppendLine ();
+			}
+			return result.ToString ();
+		}
+		
 		public string GetMarkup (Document doc, TextEditorOptions options, Style style, int offset, int length, bool removeIndent)
 		{
 			int curOffset = offset;
@@ -90,12 +112,26 @@ namespace Mono.TextEditor.Highlighting
 					if (chunk.Style.Italic)
 						result.Append(" style=\"italic\"");
 					result.Append(">");
-					string text = doc.GetTextAt (chunk);
-					text = text.Replace ("&", "&amp;");
-					text = text.Replace ("<", "&lt;");
-					text = text.Replace (">", "&gt;");
-					text = text.Replace ("\t", new string (' ', options.TabSize));
-					result.Append(text);
+					for (int i = 0; i < chunk.Length; i++) {
+						char ch = chunk.GetCharAt (doc, chunk.Offset + i);
+						switch (ch) {
+						case '&':
+							result.Append ("&amp;");
+							break;
+						case '<':
+							result.Append ("&lt;");
+							break;
+						case '>':
+							result.Append ("&gt;");
+							break;
+						case '\t':
+							result.Append (new string (' ', options.TabSize));
+							break;
+						default:
+							result.Append (ch);
+							break;
+						}
+					}
 					result.Append("</span>");
 				}
 				curOffset = line.EndOffset;

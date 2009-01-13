@@ -155,7 +155,7 @@ namespace Mono.TextEditor
 								appendSpace = true;
 							}
 							for (int i = start; i < end; i++) {
-								char ch = doc.GetCharAt (i);
+								char ch = chunk.GetCharAt (doc, i);
 								if (appendSpace && ch != '\t') {
 									rtfText.Append (' ');
 									appendSpace = false;
@@ -244,7 +244,9 @@ namespace Mono.TextEditor
 				}
 				if (segment != null && data != null && data.Document != null) {
 					copiedDocument = new Document ();
-					copiedDocument.Text = segment != null && segment.Length > 0 ? data.Document.GetTextAt (segment) : "";
+					
+					
+					copiedDocument.Text = segment != null && segment.Length > 0 ? data.Document.SyntaxMode.GetTextWithoutMarkup (data.Document, data.ColorStyle, segment.Offset, segment.Length) : "";
 					this.docStyle = data.ColorStyle;
 					this.options  = data.Options;
 					this.mode = data.Document.SyntaxMode != null && data.Options.EnableSyntaxHighlighting ? data.Document.SyntaxMode : Mono.TextEditor.Highlighting.SyntaxMode.Default;

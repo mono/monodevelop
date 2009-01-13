@@ -1,3 +1,9 @@
+2009-01-13  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/ClipboardActions.cs:
+	* Mono.TextEditor.Highlighting/SyntaxMode.cs: Worked on copy operation
+	with markup syntax mode.
+
 2009-01-08  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.TextEditor/TextEditor.cs: Don't add/remove bookmarks when
