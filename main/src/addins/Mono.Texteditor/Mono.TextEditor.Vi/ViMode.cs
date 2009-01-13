@@ -56,8 +56,11 @@ namespace Mono.TextEditor.Vi
 					
 				int line;
 				if (int.TryParse (command.Substring (1), out line)) {
-					if (line <= 0 || line > Data.Document.LineCount) {
+					if (line < 0 || line > Data.Document.LineCount) {
 						return "Invalid line number.";
+					} else if (line == 0) {
+						RunAction (CaretMoveActions.ToDocumentStart);
+						return "Jumped to beginning of document.";
 					}
 					
 					Data.Caret.Line = line - 1;
@@ -80,6 +83,13 @@ namespace Mono.TextEditor.Vi
 						break;
 		
 					return RegexReplace (match);
+					
+				case '$':
+					if (command.Length == 2) {
+						RunAction (CaretMoveActions.ToDocumentEnd);
+						return "Jumped to end of document.";
+					}
+					break;	
 				}
 				break;
 
@@ -147,7 +157,6 @@ namespace Mono.TextEditor.Vi
 				return;
 			}
 			
-		//	int keyCode;
 			Action<TextEditorData> action;
 			
 			switch (state) {
@@ -309,6 +318,10 @@ namespace Mono.TextEditor.Vi
 							line = Document.LineCount - 1;
 						Caret.Line = line;
 						return;
+						
+					case '~':
+						RunAction (ViActions.ToggleCase);
+						return;
 					}
 					
 					
@@ -429,6 +442,9 @@ namespace Mono.TextEditor.Vi
 				if (action == null) {
 					action = ViActionMaps.GetDirectionKeyAction (key, modifier);
 				}
+				if (action == null) {
+					action = ViActionMaps.GetCommandCharAction ((char)unicodeKey);
+				}
 				if (action != null) {
 					RunAction (SelectionActions.LineActionFromMoveAction (action));
 					return;
@@ -449,6 +465,9 @@ namespace Mono.TextEditor.Vi
 				action = ViActionMaps.GetNavCharAction ((char)unicodeKey);
 				if (action == null) {
 					action = ViActionMaps.GetDirectionKeyAction (key, modifier);
+				}
+				if (action == null) {
+					action = ViActionMaps.GetCommandCharAction ((char)unicodeKey);
 				}
 				if (action != null) {
 					RunAction (SelectionActions.FromMoveAction (action));
@@ -632,6 +651,11 @@ namespace Mono.TextEditor.Vi
 					break;
 				case 'J':
 					RunAction (ViActions.Join);
+					Reset ("");
+					return;
+					
+				case '~':
+					RunAction (ViActions.ToggleCase);
 					Reset ("");
 					return;
 				}

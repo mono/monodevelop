@@ -134,5 +134,34 @@ namespace Mono.TextEditor.Vi
 			data.Document.Replace (startOffset, length, sb.ToString ());
 			data.Caret.Offset = lastSpaceOffset;
 		}
+		
+		public static void ToggleCase (TextEditorData data)
+		{
+			if (data.IsSomethingSelected) {
+				if (!data.CanEditSelection)
+					return;
+				
+				StringBuilder sb = new StringBuilder (data.SelectedText);
+				for (int i = 0; i < sb.Length; i++) {
+					char ch = sb[i];
+					if (Char.IsLower (ch))
+						sb[i] = Char.ToUpper (ch);
+					else if (Char.IsUpper (ch))
+						sb[i] = Char.ToLower (ch);
+				}
+				data.Document.Replace (data.SelectionRange.Offset, data.SelectionRange.Length, sb.ToString ());
+			}
+			else if (data.CanEdit (data.Caret.Line)) {
+				char ch = data.Document.GetCharAt (data.Caret.Offset);
+				if (Char.IsLower (ch))
+					ch = Char.ToUpper (ch);
+				else if (Char.IsUpper (ch))
+					ch = Char.ToLower (ch);
+				data.Document.Replace (data.Caret.Offset, 1, new string (ch, 1));
+				LineSegment seg = data.Document.GetLine (data.Caret.Line);
+				if (data.Caret.Column < seg.EditableLength - 1)
+					data.Caret.Offset++;
+			}
+		}
 	}
 }

@@ -1,3 +1,10 @@
+2009-01-13  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextEditor.Vi/ViActions.cs: Add a ToggleCase action.
+
+	* Mono.TextEditor.Vi/ViMode.cs: Implement ~, :$, :0. Make u work while
+	there's a selection.
+
 2009-01-13  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/ClipboardActions.cs:
