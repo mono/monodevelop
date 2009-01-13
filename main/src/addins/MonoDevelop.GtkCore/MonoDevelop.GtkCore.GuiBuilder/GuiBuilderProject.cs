@@ -100,6 +100,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			gproject.WidgetAdded += OnAddWidget;
 			gproject.WidgetRemoved += OnRemoveWidget;
 			gproject.ActionGroupsChanged += OnGroupsChanged;
+			project.FileAddedToProject += OnFileAdded;
 			project.FileRemovedFromProject += OnFileRemoved;
 			project.ReferenceAddedToProject += OnReferenceAdded;
 			project.ReferenceRemovedFromProject += OnReferenceRemoved;
@@ -138,6 +139,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				gproject = null;
 			}
 			if (project != null) {
+				project.FileAddedToProject -= OnFileAdded;
 				project.FileRemovedFromProject -= OnFileRemoved;
 				project.ReferenceAddedToProject -= OnReferenceAdded;
 				project.ReferenceRemovedFromProject -= OnReferenceRemoved;
@@ -312,6 +314,27 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 		}
 		
+		void OnFileAdded (object sender, ProjectFileEventArgs args)
+		{
+			ParsedDocument doc = ProjectDomService.GetParsedDocument (args.ProjectFile.Name);
+			if (doc == null || doc.CompilationUnit == null)
+				return;
+
+			string dir = Path.Combine (Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData), "stetic"), "deleted-designs");
+			if (!Directory.Exists (dir) || Directory.GetFiles (dir).Length == 0)
+				return;
+
+			foreach (IType t in doc.CompilationUnit.Types) {
+				string path = Path.Combine (dir, t.FullName + ".xml");
+				if (!System.IO.File.Exists (path))
+					continue;
+				XmlDocument xmldoc = new XmlDocument ();
+				xmldoc.Load (path);
+				AddNewComponent (xmldoc.DocumentElement);
+				System.IO.File.Delete (path);
+			}
+		}
+
 		void OnFileRemoved (object sender, ProjectFileEventArgs args)
 		{
 			ArrayList toDelete = new ArrayList ();

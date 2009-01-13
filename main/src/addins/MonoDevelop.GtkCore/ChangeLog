@@ -1,5 +1,12 @@
 2009-01-13  Mike Kestner <mkestner@novell.com> 
 
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs: adds a
+	FileAddedToProject handler which scans the file for classes and
+	checks the deleted-designs cache for matches to restore to the
+	project.
+
+2009-01-13  Mike Kestner <mkestner@novell.com> 
+
 	* libsteticui/ProjectBackend.cs (RemoveWidget): export the widget
 	to a deleted-designs dir for later recovery if necessary. Should
 	also decide on some cleanup mechanism to remove old designs and
