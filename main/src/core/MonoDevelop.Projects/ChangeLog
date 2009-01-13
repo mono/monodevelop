@@ -1,5 +1,12 @@
 2009-01-12  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Projects/DotNetProject.cs: Allow setting invalid
+	(!library) compile target for library projects while loading. Fixes
+	"Bug 459502 - Impossible to load ASP.NET projects created with MD
+	1.0".
+
+2009-01-12  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Projects/Project.cs:
 	* MonoDevelop.Projects/FileCopySet.cs: Make CopyToOutputDirectory files
 	include the project-relative path. Fixes "Bug 459311 - Copying files

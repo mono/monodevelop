@@ -109,7 +109,7 @@ namespace MonoDevelop.Projects
 		public CompileTarget CompileTarget {
 			get { return compileTarget; }
 			set {
-				if (IsLibraryBasedProjectType && value != CompileTarget.Library)
+				if (!Loading && IsLibraryBasedProjectType && value != CompileTarget.Library)
 					throw new InvalidOperationException ("CompileTarget cannot be changed on library-based project type.");
 				compileTarget = value;
 			}
