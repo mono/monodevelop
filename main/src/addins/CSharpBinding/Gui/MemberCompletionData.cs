@@ -47,7 +47,7 @@ namespace MonoDevelop.CSharpBinding
 		bool descriptionCreated = false;
 		
 		string description, completionString;
-		string text;
+		string displayText;
 		
 		Dictionary<string, ICompletionData> overloads;
 		
@@ -64,7 +64,11 @@ namespace MonoDevelop.CSharpBinding
 		}
 		
 		public string DisplayText {
-			get { return text; }
+			get {
+				if (displayText == null)
+					displayText = ambience.GetString (member, flags);
+				return displayText; 
+			}
 		}
 		
 		public string Icon {
@@ -84,8 +88,8 @@ namespace MonoDevelop.CSharpBinding
 		
 		public MemberCompletionData (IMember member, OutputFlags flags)
 		{
+			this.flags = flags;
 			this.member = member;
-			this.text = ambience.GetString (member, flags);
 			this.completionString = ambience.GetString (member, flags | OutputFlags.IncludeGenerics);
 			DisplayFlags = DisplayFlags.DescriptionHasMarkup;
 			if (member.IsObsolete)

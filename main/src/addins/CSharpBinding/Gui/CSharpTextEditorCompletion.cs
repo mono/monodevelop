@@ -33,6 +33,7 @@ using System.Text;
 using System.Xml;
 using System.Linq;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Collections;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.CodeTemplates;
@@ -776,12 +777,14 @@ namespace MonoDevelop.CSharpBinding.Gui
 		public class CompletionDataCollector
 		{
 			Dictionary<string, MemberCompletionData> data = new Dictionary<string, MemberCompletionData> ();
-			Dictionary<string, bool> namespaces = new Dictionary<string,bool> ();
+			HashSet<string> namespaces = new HashSet<string> ();
+			HashSet<string> namespacesInScope = new HashSet<string> ();
 			internal static CSharpAmbience ambience = new CSharpAmbience ();
 			ProjectDom dom;
 			ICompilationUnit unit;
 			DomLocation location;
 			TextEditor editor;
+			bool prefixIsAlias;
 			
 			string namePrefix = "";
 			public string NamePrefix {
@@ -789,7 +792,19 @@ namespace MonoDevelop.CSharpBinding.Gui
 					return namePrefix;
 				}
 				set {
-					namePrefix = value ?? "";
+					namePrefix = value != null ? value.Trim () : string.Empty;
+					
+					// Check if the name prefix is a type/namespace alias, in which case
+					// we don't have to show full names
+					prefixIsAlias = false;
+					foreach (IUsing u in unit.Usings) {
+						foreach (KeyValuePair<string, IReturnType> alias in u.Aliases) {
+							if (alias.Key == namePrefix || alias.Key + "::" == namePrefix) {
+								prefixIsAlias = true;
+								break;
+							}
+						}
+					}
 				}
 			}
 			public bool FullyQualify { get; set; }
@@ -811,36 +826,28 @@ namespace MonoDevelop.CSharpBinding.Gui
 				this.unit = unit;
 				this.location = location;
 				this.FullyQualify = false;
+
+				// Get a list of all namespaces in scope
+				foreach (IUsing u in unit.Usings) {
+					if (!u.IsFromNamespace || u.Region.Contains (location)) {
+						foreach (string ns in u.Namespaces)
+							namespacesInScope.Add (ns);
+					}
+				}
 			}
 			
 			public ICompletionData AddCompletionData (CompletionDataList completionList, object obj)
 			{
 				Namespace ns = obj as Namespace;
 				if (ns != null) {
-					if (namespaces.ContainsKey(ns.Name))
+					if (!namespaces.Add (ns.Name))
 						return null;
-					namespaces[ns.Name] = true;
 					return completionList.Add (ns.Name, ns.StockIcon, ns.Documentation);
 				}
 				IReturnType rt = obj as IReturnType;
 				if (rt != null) {
 					OutputFlags flags = OutputFlags.ClassBrowserEntries;
-					bool foundNamespace = false;
-					foreach (IUsing u in unit.Usings) {
-						foreach (string n in u.Namespaces) {
-							if (n == rt.Namespace) {
-								foundNamespace = true;
-								break;
-							}
-						}
-						foreach (KeyValuePair<string, IReturnType> alias in u.Aliases) {
-							if (alias.Key == namePrefix.Trim () || alias.Key + "::" == namePrefix.Trim ()) {
-								foundNamespace = true;
-								break;
-							}
-						}
-						
-					}
+					bool foundNamespace = IsNamespaceInScope (rt.Namespace);
 					if (FullyQualify || !foundNamespace && (NamePrefix.Length == 0 || !rt.Namespace.StartsWith (NamePrefix)) && !rt.Namespace.EndsWith ("." + NamePrefix))
 						flags |= OutputFlags.UseFullName;
 					
@@ -851,32 +858,18 @@ namespace MonoDevelop.CSharpBinding.Gui
 					OutputFlags flags = OutputFlags.IncludeGenerics;
 					if (member is IType) {
 						IType type = member as IType;
-						bool foundType = false;
-						foreach (IUsing u in unit.Usings) {
-							if (!u.IsFromNamespace || u.Region.Contains (location)) {
-								foreach (string n in u.Namespaces) {
-									if (type.Namespace == n)
-										foundType = true;
-								}
-							}
-							foreach (KeyValuePair<string, IReturnType> alias in u.Aliases) {
-									if (alias.Key == namePrefix.Trim () || alias.Key + "::" == namePrefix.Trim ()) {
-									foundType = true;
-									break;
-								}
-							}
-						}
-						
-						if (!foundType && (NamePrefix.Length == 0 || !type.Namespace.StartsWith (NamePrefix)) && !type.Namespace.EndsWith ("." + NamePrefix) && type.DeclaringType == null) {
+						bool foundType = IsNamespaceInScope (type.Namespace);
+						if (!foundType && (NamePrefix.Length == 0 || !type.Namespace.StartsWith (NamePrefix)) && !type.Namespace.EndsWith ("." + NamePrefix) && type.DeclaringType == null)
 							flags |= OutputFlags.UseFullName;
-						}
 					}
 					MemberCompletionData newData = new MemberCompletionData (member, flags);
 					newData.HideExtensionParameter = HideExtensionParameter;
-					string memberKey = ambience.GetString (member, OutputFlags.IncludeGenerics);
-					if (data.ContainsKey (memberKey)) {
-						data [memberKey].AddOverload (newData);
-					} else {
+					string memberKey = newData.CompletionText;
+					
+					MemberCompletionData existingData;
+					if (data.TryGetValue (memberKey, out existingData))
+						existingData.AddOverload (newData);
+					else {
 						completionList.Add (newData);
 						data [memberKey] = newData;
 					}
@@ -884,6 +877,15 @@ namespace MonoDevelop.CSharpBinding.Gui
 				}
 				return null;
 			}
+		
+			bool IsNamespaceInScope (string ns)
+			{
+				if (prefixIsAlias)
+					return true;
+				else
+					return namespacesInScope.Contains (ns);
+			}
+			
 		}
 		
 		ICompletionDataList CreateCompletionData (DomLocation location, ResolveResult resolveResult, 

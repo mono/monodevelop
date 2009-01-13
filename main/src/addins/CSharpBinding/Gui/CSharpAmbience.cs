@@ -326,18 +326,26 @@ namespace MonoDevelop.CSharpBinding
 		{
 			InstantiatedType instantiatedType = type as InstantiatedType;
 			
-			StringBuilder result = new StringBuilder ();
-			result.Append (settings.EmitModifiers (base.GetString (type.Modifiers)));
-			result.Append (settings.EmitKeyword (GetString (type.ClassType)));
+			string modifiers = settings.EmitModifiers (base.GetString (type.Modifiers));
+			string keyword = settings.EmitKeyword (GetString (type.ClassType));
 			
-			if (settings.UseFullName) {
-				result.Append (Format (instantiatedType == null ? type.FullName : instantiatedType.UninstantiatedType.FullName));
-			} else { 
-				result.Append (Format (NormalizeTypeName (instantiatedType == null ? type.Name : instantiatedType.UninstantiatedType.Name)));
-			}
+			string name;
+			if (settings.UseFullName)
+				name = Format (instantiatedType == null ? type.FullName : instantiatedType.UninstantiatedType.FullName);
+			else 
+				name = Format (NormalizeTypeName (instantiatedType == null ? type.Name : instantiatedType.UninstantiatedType.Name));
+			
 			int parameterCount = type.TypeParameters.Count;
 			if (instantiatedType != null)
 				parameterCount = instantiatedType.GenericParameters.Count;
+			
+			if (modifiers.Length == 0 && keyword.Length == 0 && (!settings.IncludeGenerics || parameterCount == 0) && (!settings.IncludeBaseTypes || !type.BaseTypes.Any ()))
+				return name;
+			
+			StringBuilder result = new StringBuilder ();
+			result.Append (modifiers);
+			result.Append (keyword);
+			result.Append (name);
 			
 			if (settings.IncludeGenerics && parameterCount > 0) {
 				result.Append (settings.Markup ("<"));
