@@ -382,8 +382,11 @@ namespace MonoDevelop.SourceEditor
 		void ResetUnderlineChangement ()
 		{
 			if (errors.Count > 0) {
-				foreach (ErrorMarker error in this.errors.Values) {
-					error.RemoveFromLine (this.TextEditor.Document);
+				Document doc = this.TextEditor != null ? this.TextEditor.Document : null;
+				if (doc != null) {
+					foreach (ErrorMarker error in this.errors.Values) {
+						error.RemoveFromLine (doc);
+					}
 				}
 				errors.Clear ();
 			}

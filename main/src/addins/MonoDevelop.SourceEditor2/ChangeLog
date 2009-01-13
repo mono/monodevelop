@@ -1,3 +1,8 @@
+2009-01-13  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: fixed possible null
+	reference.
+
 2009-01-08  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.SourceEditor.addin.xml: Track changes in command names.
