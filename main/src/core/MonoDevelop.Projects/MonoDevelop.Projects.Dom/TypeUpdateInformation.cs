@@ -58,6 +58,7 @@ namespace MonoDevelop.Projects.Dom
 	
 	public class TypeUpdateInformationEventArgs : EventArgs
 	{
+		Project project;
 		TypeUpdateInformation typeUpdateInformation;
 		
 		public MonoDevelop.Projects.Dom.TypeUpdateInformation TypeUpdateInformation {
@@ -66,10 +67,14 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public TypeUpdateInformationEventArgs (TypeUpdateInformation typeUpdateInformation)
+		public TypeUpdateInformationEventArgs (Project project, TypeUpdateInformation typeUpdateInformation)
 		{
+			this.project = project;
 			this.typeUpdateInformation = typeUpdateInformation;
 		}
 		
+		public Project Project {
+			get { return project; }
+		}
 	}
 }

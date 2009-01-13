@@ -1,3 +1,15 @@
+2009-01-13  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Dom/TypeUpdateInformation.cs:
+	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs: Provide the
+	project reference when in the TypesUpdated event.
+
+	* MonoDevelop.Projects.Dom.Output/OutputSettings.cs: Avoid using
+	delegates when not really necessary.
+
+	* MonoDevelop.Projects.Dom.Output/Ambience.cs: Optimized.
+	GetString(Modifiers) now stores results in a cached.
+
 2009-01-12  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects/DotNetProject.cs: Allow setting invalid

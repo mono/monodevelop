@@ -49,6 +49,9 @@ namespace MonoDevelop.Projects.Dom.Output
 			}
 		}
 		
+		Dictionary<Modifiers, string> cachedModifiers = new Dictionary<Modifiers, string> ();
+		Dictionary<ParameterModifiers, string> cachedParameterModifiers = new Dictionary<ParameterModifiers, string> ();
+		
 		protected Dictionary<Modifiers, string> modifiers = new Dictionary<Modifiers, string> ();
 		protected Dictionary<ClassType, string> classTypes = new Dictionary<ClassType, string> ();
 		protected Dictionary<ParameterModifiers, string> parameterModifiers = new Dictionary<ParameterModifiers, string> ();
@@ -72,29 +75,43 @@ namespace MonoDevelop.Projects.Dom.Output
 		
 		protected string GetString (Modifiers m)
 		{
-			if ((m & Modifiers.ProtectedAndInternal) == Modifiers.ProtectedAndInternal)
-				return (GetString (m & ~Modifiers.ProtectedAndInternal) + " " + modifiers[Modifiers.ProtectedAndInternal]).Trim ();
-			if ((m & Modifiers.ProtectedOrInternal) == Modifiers.ProtectedOrInternal)
-				return (GetString (m & ~Modifiers.ProtectedOrInternal) + " " + modifiers[Modifiers.ProtectedOrInternal]).Trim ();
+			string res;
+			if (cachedModifiers.TryGetValue (m, out res))
+				return res;
 			
-			StringBuilder result = new StringBuilder ();
-			foreach (Modifiers singleModifier in Enum.GetValues (typeof(Modifiers))) {
-				if ((m & singleModifier) == singleModifier && modifiers.ContainsKey (singleModifier)) {
-					if (modifiers[singleModifier].Length > 0 && result.Length > 0) // don't add spaces for empty modifiers
-						result.Append (' ');
-					result.Append (modifiers[singleModifier]);
+			if ((m & Modifiers.ProtectedAndInternal) == Modifiers.ProtectedAndInternal)
+				res = (GetString (m & ~Modifiers.ProtectedAndInternal) + " " + modifiers[Modifiers.ProtectedAndInternal]).Trim ();
+			else if ((m & Modifiers.ProtectedOrInternal) == Modifiers.ProtectedOrInternal)
+				res = (GetString (m & ~Modifiers.ProtectedOrInternal) + " " + modifiers[Modifiers.ProtectedOrInternal]).Trim ();
+			else {
+				StringBuilder result = new StringBuilder ();
+				foreach (Modifiers singleModifier in Enum.GetValues (typeof(Modifiers))) {
+					if ((m & singleModifier) == singleModifier && modifiers.ContainsKey (singleModifier)) {
+						if (modifiers[singleModifier].Length > 0 && result.Length > 0) // don't add spaces for empty modifiers
+							result.Append (' ');
+						result.Append (modifiers[singleModifier]);
+					}
 				}
+				res = result.ToString ();
 			}
-			return result.ToString ();
+			return cachedModifiers [m] = res;
 		}
 		
 		protected string GetString (ClassType classType)
 		{
-			return classTypes.ContainsKey(classType) ? classTypes[classType] : "";
+			string res;
+			if (classTypes.TryGetValue (classType, out res))
+				return res;
+			else
+				return string.Empty;
 		}
 		
 		protected string GetString (ParameterModifiers m)
 		{
+			string res;
+			if (cachedParameterModifiers.TryGetValue (m, out res))
+				return res;
+			
 			StringBuilder result = new StringBuilder ();
 			foreach (ParameterModifiers singleModifier in Enum.GetValues (typeof(ParameterModifiers))) {
 				if ((m & singleModifier) == singleModifier && parameterModifiers.ContainsKey (singleModifier)) {
@@ -103,7 +120,7 @@ namespace MonoDevelop.Projects.Dom.Output
 					result.Append (parameterModifiers[singleModifier]);
 				}
 			}
-			return result.ToString ();
+			return cachedParameterModifiers [m] = result.ToString ();
 		}
 		
 		public static string Format (string str)

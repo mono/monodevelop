@@ -1012,7 +1012,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 		public static void NotifyTypeUpdate (Project project, string fileName, TypeUpdateInformation info)
 		{
 			if (TypesUpdated != null)
-				TypesUpdated (null, new TypeUpdateInformationEventArgs (info));
+				TypesUpdated (null, new TypeUpdateInformationEventArgs (project, info));
 		}
 		
 		public static event EventHandler<TypeUpdateInformationEventArgs> TypesUpdated;

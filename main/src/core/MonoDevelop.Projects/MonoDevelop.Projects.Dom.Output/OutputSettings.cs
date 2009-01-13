@@ -39,35 +39,48 @@ namespace MonoDevelop.Projects.Dom.Output
 		public OutputSettings (OutputFlags outputFlags)
 		{
 			this.OutputFlags = outputFlags;
-			PostProcess = delegate (IDomVisitable domVisitable, ref string outString) {
-				
-			};
-			
-			EmitModifiers = delegate (string text) {
-				if (!IncludeModifiers)
-					return "";
-				if (IncludeMarkup)
-					return "<b>" + PangoFormat (text) + "</b> ";
-				return text + " ";
-			};
-			
-			EmitKeyword = delegate (string text) {
-				if (!IncludeKeywords)
-					return "";
-				if (IncludeMarkup)
-					return "<b>" + PangoFormat (text) + "</b> ";
-				return text + " ";
-			};
-			
-			Highlight = delegate (string text) {
-				if (IncludeMarkup)
-					return "<b>" + PangoFormat (text) + "</b> ";
-				return text;
-			};
-			
-			Markup = delegate (string text) {
-				return IncludeMarkup ? PangoFormat (text) : text;
-			};
+		}
+		
+		public string Markup (string text)
+		{
+			return IncludeMarkup ? PangoFormat (text) : text;
+		}
+		
+		public string EmitModifiers (string text)
+		{
+			if (EmitModifiersCallback != null)
+				return EmitModifiersCallback (text);
+			if (!IncludeModifiers)
+				return string.Empty;
+			if (IncludeMarkup)
+				return "<b>" + PangoFormat (text) + "</b> ";
+			return text + " ";
+		}
+		
+		public string EmitKeyword (string text)
+		{
+			if (EmitKeywordCallback != null)
+				return EmitKeywordCallback (text);
+			if (!IncludeKeywords)
+				return "";
+			if (IncludeMarkup)
+				return "<b>" + PangoFormat (text) + "</b> ";
+			return text + " ";
+		}
+		
+		public string Highlight (string text)
+		{
+			if (HighlightCallback != null)
+				return HighlightCallback (text);
+			if (IncludeMarkup)
+				return "<b>" + PangoFormat (text) + "</b> ";
+			return text;
+		}
+		
+		public void PostProcess (IDomVisitable domVisitable, ref string outString)
+		{
+			if (PostProcessCallback != null)
+				PostProcessCallback (domVisitable, ref outString);
 		}
 		
 		static string PangoFormat (string input)
@@ -158,14 +171,14 @@ namespace MonoDevelop.Projects.Dom.Output
 			}
 		}
 		
-		public MarkupText EmitModifiers;
-		public MarkupText EmitKeyword;
-		public MarkupText Markup;
-		public MarkupText Highlight;
+		public MarkupText EmitModifiersCallback;
+		public MarkupText EmitKeywordCallback;
+		public MarkupText MarkupCallback;
+		public MarkupText HighlightCallback;
 		
 		public delegate string MarkupText (string text);
 		
-		public ProcessString PostProcess;
+		public ProcessString PostProcessCallback;
 		public delegate void ProcessString (IDomVisitable domVisitable, ref string outString);
 	}
 }
