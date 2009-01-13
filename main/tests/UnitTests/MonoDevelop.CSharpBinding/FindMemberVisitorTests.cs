@@ -321,6 +321,46 @@ namespace SomethingDifferent
 }
 ");
 		}
+
+			/*
+		[Test()]
+		public void FindEventReferences ()
+		{
+			RunTest (
+@"class TestClass {
+	delegate void TestEventDelegate ();
+
+	public event TestEventDelegate $@MyEvent;
+
+	TestClass ()
+	{
+		@MyEvent += TestMe;
+	}
+	
+	void TestMe()
+	{
+	}
+}
+
+
+class OuterTest : TestClass
+{
+	void Test ()
+	{
+		@MyEvent -= TestMe;
+	}
+}
+
+namespace SomethingDifferent
+{
+	class Test
+	{
+		public event TestClass.TestEventDelegate MyEvent;
+	}
+}
+");
+		}
+		*/
 		
 		[Test()]
 		public void FindMethodReferences ()
