@@ -1,3 +1,15 @@
+2009-01-13  Mike Kestner <mkestner@novell.com> 
+
+	* libsteticui/ProjectBackend.cs (RemoveWidget): export the widget
+	to a deleted-designs dir for later recovery if necessary. Should
+	also decide on some cleanup mechanism to remove old designs and
+	automate recovery in the move case if possible.  Or we can wait for
+	1wpf which should solve the move case more cleanly.
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs: reenable
+	OnFileRemovedFromProject handler.  Revamp to use a ParseDocument of
+	the removed file to scan for removed classes to kill.
+	[Fixes #366392]
+
 2009-01-09  Mike Kestner <mkestner@novell.com> 
 
 	* libsteticui/Project.cs: forward isInternal to the backend in

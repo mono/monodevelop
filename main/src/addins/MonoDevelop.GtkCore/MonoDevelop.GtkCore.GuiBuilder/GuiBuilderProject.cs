@@ -314,18 +314,21 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		void OnFileRemoved (object sender, ProjectFileEventArgs args)
 		{
-			// Disable for now since it may have issues when moving files.
-			
-/*			ArrayList toDelete = new ArrayList ();
+			ArrayList toDelete = new ArrayList ();
 
-			foreach (GuiBuilderWindow win in formInfos) {
-				if (win.SourceCodeFile == args.ProjectFile.Name)
+			ParsedDocument doc = ProjectDomService.GetParsedDocument (args.ProjectFile.Name);
+			if (doc == null || doc.CompilationUnit == null)
+				return;
+
+			foreach (IType t in doc.CompilationUnit.Types) {
+				GuiBuilderWindow win = GetWindowForClass (t.FullName);
+				if (win != null)
 					toDelete.Add (win);
 			}
 			
 			foreach (GuiBuilderWindow win in toDelete)
 				Remove (win);
-*/		}
+		}
 
 		void OnGroupsChanged (object s, EventArgs a)
 		{

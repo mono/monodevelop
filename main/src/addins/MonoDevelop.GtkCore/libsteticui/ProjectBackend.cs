@@ -577,6 +577,18 @@ namespace Stetic {
 			if (frontend != null)
 				frontend.NotifyWidgetRemoved (data.Name);
 		
+			XmlElement elem;
+			if (data.Widget != null)
+				elem = Stetic.WidgetUtils.ExportWidget (data.Widget);
+			else
+				elem = (XmlElement) data.XmlData.Clone ();
+			XmlDocument doc = new XmlDocument ();
+			XmlNode node = doc.ImportNode (elem, true);
+			doc.AppendChild (node);
+			string dir = Path.Combine (Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData), "stetic"), "deleted-designs");
+			if (!Directory.Exists (dir))
+				Directory.CreateDirectory (dir);
+			doc.Save (Path.Combine (dir, name + ".xml"));
 			topLevels.Remove (data);
 			if (data.Widget != null)
 				data.Widget.Destroy ();
