@@ -2,7 +2,7 @@
 <stetic-interface>
   <configuration>
     <images-root-path>..</images-root-path>
-    <target-gtk-version>2.10</target-gtk-version>
+    <target-gtk-version>2.12</target-gtk-version>
   </configuration>
   <import>
     <widget-library name="../../../../build/bin/MonoDevelop.Ide.dll" />
@@ -20,52 +20,16 @@
         <property name="CanFocus">True</property>
         <property name="Position">185</property>
         <child>
-          <widget class="Gtk.VPaned" id="vpaned1">
+          <widget class="Gtk.ScrolledWindow" id="scrolledwindow2">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="Position">367</property>
+            <property name="ShadowType">In</property>
             <child>
-              <widget class="Gtk.ScrolledWindow" id="scrolledwindow2">
+              <widget class="Gtk.Viewport" id="GtkViewport1">
                 <property name="MemberName" />
-                <property name="CanFocus">True</property>
-                <property name="ShadowType">In</property>
+                <property name="ShadowType">None</property>
                 <child>
-                  <widget class="Gtk.Viewport" id="GtkViewport1">
-                    <property name="MemberName" />
-                    <property name="ShadowType">None</property>
-                    <child>
-                      <placeholder />
-                    </child>
-                  </widget>
-                </child>
-              </widget>
-              <packing>
-                <property name="Resize">False</property>
-              </packing>
-            </child>
-            <child>
-              <widget class="Gtk.ScrolledWindow" id="GtkScrolledWindow">
-                <property name="MemberName" />
-                <property name="ShadowType">In</property>
-                <child>
-                  <widget class="Gtk.Viewport" id="GtkViewport2">
-                    <property name="MemberName" />
-                    <property name="ShadowType">None</property>
-                    <child>
-                      <widget class="Gtk.Label" id="descriptionLabel">
-                        <property name="MemberName" />
-                        <property name="ShowScrollbars">True</property>
-                        <property name="Xpad">6</property>
-                        <property name="Ypad">6</property>
-                        <property name="Xalign">0</property>
-                        <property name="Yalign">0</property>
-                        <property name="LabelProp" translatable="yes" />
-                        <property name="UseMarkup">True</property>
-                        <property name="MnemonicWidget">titleTextBox</property>
-                        <property name="Selectable">True</property>
-                      </widget>
-                    </child>
-                  </widget>
+                  <placeholder />
                 </child>
               </widget>
             </child>
@@ -95,7 +59,6 @@
                         <property name="Ypad">6</property>
                         <property name="Xalign">0</property>
                         <property name="Yalign">0</property>
-                        <property name="LabelProp" translatable="yes" />
                         <property name="UseMarkup">True</property>
                         <property name="MnemonicWidget">titleTextBox</property>
                         <property name="Selectable">True</property>
@@ -248,7 +211,6 @@
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
                         <property name="ShowScrollbars">True</property>
-                        <property name="HeadersClickable">True</property>
                       </widget>
                     </child>
                   </widget>

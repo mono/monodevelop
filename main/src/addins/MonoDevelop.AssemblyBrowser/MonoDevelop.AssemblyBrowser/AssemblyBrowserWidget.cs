@@ -88,7 +88,7 @@ namespace MonoDevelop.AssemblyBrowser
 			scrolledwindow2.AddWithViewport (treeView);
 			scrolledwindow2.ShowAll ();
 			
-			this.descriptionLabel.ModifyFont (Pango.FontDescription.FromString ("Sans 9"));
+//			this.descriptionLabel.ModifyFont (Pango.FontDescription.FromString ("Sans 9"));
 			this.documentationLabel.ModifyFont (Pango.FontDescription.FromString ("Sans 12"));
 			this.documentationLabel.ModifyBg (Gtk.StateType.Normal, new Gdk.Color (255, 255, 225));
 			this.documentationLabel.Wrap = true;
@@ -103,12 +103,16 @@ namespace MonoDevelop.AssemblyBrowser
 			this.inspectEditor.Options.HighlightCaretLine = true;
 			this.inspectEditor.Document.ReadOnly = true;
 			this.inspectEditor.Document.SyntaxMode = new Mono.TextEditor.Highlighting.MarkupSyntaxMode ();
+			this.inspectEditor.LinkRequest += delegate (object sender, Mono.TextEditor.LinkEventArgs args) {
+				System.Console.WriteLine("'"+ args.Link +"'");
+				this.Open (args.Link);
+			};
 			this.scrolledwindow3.Child = inspectEditor;
 			this.scrolledwindow3.ShowAll ();
 			
 //			this.inspectLabel.ModifyBg (Gtk.StateType.Normal, new Gdk.Color (255, 255, 250));
 			
-			this.vpaned1.ExposeEvent += VPaneExpose;
+//			this.vpaned1.ExposeEvent += VPaneExpose;
 			this.hpaned1.ExposeEvent += HPaneExpose;
 			this.notebook1.SwitchPage += delegate {
 				// Hack for the switch page select all bug.
@@ -675,25 +679,25 @@ namespace MonoDevelop.AssemblyBrowser
 					}
 				}
 				this.documentationLabel.Markup = documentation;
-				IAssemblyBrowserNodeBuilder builder = nav.TypeNodeBuilder as IAssemblyBrowserNodeBuilder;
+/*				IAssemblyBrowserNodeBuilder builder = nav.TypeNodeBuilder as IAssemblyBrowserNodeBuilder;
 				if (builder != null) {
 					this.descriptionLabel.Markup  = builder.GetDescription (nav);
 				} else {
 					this.descriptionLabel.Markup = "";
-				}
+				}*/
 				
 			}
 			FillInspectLabel ();
 		}
 			
-		int oldSize = -1;
+		/*int oldSize = -1;
 		void VPaneExpose (object sender, Gtk.ExposeEventArgs args)
 		{
 			int size = this.vpaned1.Allocation.Height - 96;
 			if (size == oldSize)
 				return;
 			this.vpaned1.Position = oldSize = size;
-		}
+		}*/
 		int oldSize2 = -1;
 		void HPaneExpose (object sender, Gtk.ExposeEventArgs args)
 		{

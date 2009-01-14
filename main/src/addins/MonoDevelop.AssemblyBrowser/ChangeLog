@@ -1,3 +1,10 @@
+2009-01-14  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs:
+	* MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:
+	* gtk-gui/MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget.cs: Added
+	link support (Loading of referenced links still missing).
+
 2009-01-13  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs: Track api changes.

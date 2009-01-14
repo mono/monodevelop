@@ -62,7 +62,7 @@ namespace MonoDevelop.AssemblyBrowser
 			DomTypeNodeBuilder.settings = new OutputSettings (OutputFlags.AssemblyBrowserDescription);
 			DomTypeNodeBuilder.settings.PostProcessCallback = delegate (IDomVisitable domVisitable, ref string outString) {
 				if (domVisitable is IReturnType)
-					outString = "<span foreground=\"blue\"><u>" + outString + "</u></span>";
+					outString = "<span foreground=\"blue\"><u><a ref=\"T:" + ((IReturnType)domVisitable).FullName + "\">" + outString + "</a></u></span>";
 			};
 		}
 		
