@@ -774,7 +774,6 @@ namespace Mono.TextEditor
 			if (args.LineSegment == null)
 				return "";
 			DocumentLocation loc = VisualToDocumentLocation (args.X, args.Y);
-			System.Console.WriteLine(loc);
 			int offset = Document.LocationToOffset (loc);
 			Chunk[] chunks = Document.SyntaxMode.GetChunks (Document, ColorStyle, 
 			                                                args.LineSegment, 
