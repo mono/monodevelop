@@ -78,8 +78,6 @@ namespace MonoDevelop.AssemblyBrowser
 						int idx2 = outString.IndexOf (' ', idx);
 						if (idx2 < 0)
 							idx2 = outString.Length;
-						System.Console.WriteLine(idx);
-						System.Console.WriteLine(idx2);
 						outString = outString.Substring (0, idx) +
 							        "<span foreground=\"blue\"><u><a ref=\"T:" + ((IType)domVisitable).FullName + "\">" + outString.Substring (idx, idx2 - idx) + "</a></u></span>" + 
 								    outString.Substring (idx2);

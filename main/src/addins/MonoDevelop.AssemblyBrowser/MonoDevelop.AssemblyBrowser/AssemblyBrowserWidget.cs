@@ -104,7 +104,6 @@ namespace MonoDevelop.AssemblyBrowser
 			this.inspectEditor.Document.ReadOnly = true;
 			this.inspectEditor.Document.SyntaxMode = new Mono.TextEditor.Highlighting.MarkupSyntaxMode ();
 			this.inspectEditor.LinkRequest += delegate (object sender, Mono.TextEditor.LinkEventArgs args) {
-				System.Console.WriteLine("'"+ args.Link +"'");
 				this.Open (args.Link);
 			};
 			this.scrolledwindow3.Child = inspectEditor;
@@ -711,6 +710,20 @@ namespace MonoDevelop.AssemblyBrowser
 		public void Open (string url)
 		{
 			ITreeNavigator nav = SearchMember (url);
+			if (nav == null) {
+				foreach (DomCecilCompilationUnit definition in definitions.ToArray ()) {
+					foreach (AssemblyNameReference assemblyNameReference in definition.AssemblyDefinition.MainModule.AssemblyReferences) {
+						string realAssemblyName;
+						string assemblyFile;
+						string name;
+						if (MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetAssemblyInfo (assemblyNameReference.FullName, out realAssemblyName, out assemblyFile, out name)) {
+							if (System.IO.File.Exists (assemblyFile))
+								AddReference (assemblyFile);
+						}
+					}
+				}
+				nav = SearchMember (url);
+			}
 			if (nav != null) {
 				nav.ExpandToNode ();
 				nav.Selected = true;

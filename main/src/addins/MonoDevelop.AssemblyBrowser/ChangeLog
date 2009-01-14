@@ -1,5 +1,11 @@
 2009-01-14  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs:
+	* MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs: Added loading of
+	references when clicking on types that are not loaded.
+
+2009-01-14  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.AssemblyBrowser/NamespaceBuilder.cs:
 	* MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs:
 	* MonoDevelop.AssemblyBrowser/ReferenceNodeBuilder.cs:
