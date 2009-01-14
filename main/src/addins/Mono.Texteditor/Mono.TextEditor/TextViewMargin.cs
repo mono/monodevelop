@@ -771,7 +771,7 @@ namespace Mono.TextEditor
 		
 		string GetLink (MarginMouseEventArgs args)
 		{
-			if (args.LineSegment == null)
+			if (args.LineSegment == null || Document.SyntaxMode == null)
 				return "";
 			DocumentLocation loc = VisualToDocumentLocation (args.X, args.Y);
 			int offset = Document.LocationToOffset (loc);

@@ -1,3 +1,8 @@
+2009-01-14  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextEditor/TextViewMargin.cs: Fix NRE on docs without
+	highlighting.
+
 2009-01-14  Mike Krüger  <mkrueger@novell.com>
 
 	* Styles/C64Style.xml:
