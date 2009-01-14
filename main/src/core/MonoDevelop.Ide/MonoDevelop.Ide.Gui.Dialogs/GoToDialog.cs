@@ -363,7 +363,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 
 			foreach (Project p in projects) {
 				foreach (ProjectFile file in p.Files) {
-					list.Add (p.GetRelativeChildPath (file.FilePath));
+					list.Add (file.FilePath);
 				}
 			}
 			return list;
