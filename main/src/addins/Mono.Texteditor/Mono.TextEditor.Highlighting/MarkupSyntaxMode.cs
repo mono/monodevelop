@@ -79,6 +79,7 @@ namespace Mono.TextEditor.Highlighting
 				return text [offset - this.Offset];
 			}
 		}
+		/*
 		static Gdk.Color ParseColor (string color)
 		{
 			Gdk.Color result = new Gdk.Color ();
@@ -86,7 +87,8 @@ namespace Mono.TextEditor.Highlighting
 				throw new Exception ("Can't parse color: " + color);
 			return result;
 		}
-		static ChunkStyle GetChunkStyle (IEnumerable<Tag> tagStack)
+		*/
+		static ChunkStyle GetChunkStyle (Style style, IEnumerable<Tag> tagStack)
 		{
 			ChunkStyle result = new ChunkStyle ();
 			
@@ -97,10 +99,20 @@ namespace Mono.TextEditor.Highlighting
 					result.Bold = true;
 					break;
 				case "SPAN":
+					if (tag.Arguments.ContainsKey ("style")) {
+						ChunkStyle chunkStyle =  style.GetChunkStyle (tag.Arguments["style"]);
+						if (chunkStyle != null) {
+							result.Color = chunkStyle.Color;
+							result.Bold = chunkStyle.Bold;
+							result.Italic = chunkStyle.Italic;
+						} else {
+							throw new Exception ("Style " + tag.Arguments["style"] + " not found.");
+						}
+					}
 					if (tag.Arguments.ContainsKey ("foreground")) 
-						result.Color = ParseColor (tag.Arguments["foreground"]);
+						result.Color = style.GetColorFromString (tag.Arguments["foreground"]);
 					if (tag.Arguments.ContainsKey ("background")) 
-						result.BackgroundColor = ParseColor (tag.Arguments["background"]);
+						result.BackgroundColor = style.GetColorFromString (tag.Arguments["background"]);
 					break;
 				case "A":
 					result.Link = tag.Arguments["ref"];
@@ -152,7 +164,7 @@ namespace Mono.TextEditor.Highlighting
 				case '<':
 					curChunk.Length = i - curChunk.Offset;
 					if (curChunk.Length > 0) {
-						curChunk.Style = GetChunkStyle (tagStack);
+						curChunk.Style = GetChunkStyle (style, tagStack);
 						result.Add (curChunk);
 						curChunk = new Chunk (i, 0, null);
 					}
@@ -168,19 +180,19 @@ namespace Mono.TextEditor.Highlighting
 						string specialText = doc.GetTextBetween (specialBegin + 1, i);
 						curChunk.Length = specialBegin - curChunk.Offset;
 						if (curChunk.Length > 0) {
-							curChunk.Style = GetChunkStyle (tagStack);
+							curChunk.Style = GetChunkStyle (style, tagStack);
 							result.Add (curChunk);
 							curChunk = new Chunk (i, 0, null);
 						}
 						switch (specialText) {
 						case "lt": 
-							result.Add (new TextChunk (GetChunkStyle (tagStack), specialBegin, "<"));
+							result.Add (new TextChunk (GetChunkStyle (style, tagStack), specialBegin, "<"));
 							break;
 						case "gt": 
-							result.Add (new TextChunk (GetChunkStyle (tagStack), specialBegin, ">"));
+							result.Add (new TextChunk (GetChunkStyle (style, tagStack), specialBegin, ">"));
 							break;
 						case "amp": 
-							result.Add (new TextChunk (GetChunkStyle (tagStack), specialBegin, "&"));
+							result.Add (new TextChunk (GetChunkStyle (style, tagStack), specialBegin, "&"));
 							break;
 						}
 						curChunk.Offset = i + 1;
@@ -204,7 +216,7 @@ namespace Mono.TextEditor.Highlighting
 			}
 			curChunk.Length = endOffset - curChunk.Offset;
 			if (curChunk.Length > 0) {
-				curChunk.Style = GetChunkStyle (tagStack);
+				curChunk.Style = GetChunkStyle (style, tagStack);
 				result.Add (curChunk);
 			}
 				

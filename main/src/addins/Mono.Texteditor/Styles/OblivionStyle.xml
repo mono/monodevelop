@@ -98,6 +98,8 @@
 	<Style name="literal" color="butter2"/>
 	<Style name="punctuation" color="butter2"/>
 	
+	<Style name="link" color="butter2"/>
+	
 	<Style name="kw:access" color="plum1" weight="bold" />
 	<Style name="kw:operator" color="plum1" weight="bold"/>
 	<Style name="kw:selection" color="white" weight="bold"/>

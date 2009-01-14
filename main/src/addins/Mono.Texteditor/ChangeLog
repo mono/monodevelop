@@ -1,5 +1,16 @@
 2009-01-14  Mike Krüger  <mkrueger@novell.com>
 
+	* Styles/C64Style.xml:
+	* Styles/BrownStyle.xml:
+	* Styles/OblivionStyle.xml:
+	* Styles/TangoLightStyle.xml:
+	* Styles/VisualStudioStyle.xml:
+	* Mono.TextEditor.Highlighting/Style.cs:
+	* Mono.TextEditor.Highlighting/MarkupSyntaxMode.cs: Added link color
+	support & markup can now re-use style defined colors
+
+2009-01-14  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor.Highlighting/SyntaxMode.cs:
 	* Mono.TextEditor.Highlighting/MarkupSyntaxMode.cs: fixed cut & paste
 	issue.

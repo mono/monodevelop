@@ -73,6 +73,8 @@
 	<Style name="selectedBackground" color="human_highlight"/>
 	<Style name="selectedForeground" color="black"/>
 	
+	<Style name="link" color="blue"/>
+	
 	<Style name="lineMarker" color="accent_yellow_highlight"/>
 	<Style name="ruler" color="accent_blue_highlight"/>
 	<Style name="whitespaces" color="human"/>

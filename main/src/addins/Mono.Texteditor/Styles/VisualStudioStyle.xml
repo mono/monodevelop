@@ -71,6 +71,8 @@
 	<Style name="todocomment" color="comment-green" weight="italic" />
 	<Style name="commentkw" color="comment-green" weight="bold" />
 	<Style name="commenttag" color="comment-green"/>
+
+	<Style name="link" color="skyblue"/>
 	
 	<Style name="digit" color="black"/>
 	<Style name="literal" color="#a31515"/>

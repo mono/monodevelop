@@ -60,6 +60,8 @@
 	<Style name="todocomment" weight="italic" color="white"/>
 	<Style name="commentkw" weight="bold" color="white"/>
 	<Style name="commenttag" color="white"/>
+
+	<Style name="link" color="blue"/>
 	
 	<Style name="digit" color="white"/>
 	<Style name="literal" color="white"/>

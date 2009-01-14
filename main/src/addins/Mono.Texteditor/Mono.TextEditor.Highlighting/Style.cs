@@ -406,6 +406,8 @@ namespace Mono.TextEditor.Highlighting
 			SetStyle ("digit", new Mono.TextEditor.ChunkStyle (new Gdk.Color (255, 0, 255), false, false));
 			SetStyle ("literal", new Mono.TextEditor.ChunkStyle (new Gdk.Color (255, 0, 255), false, false));
 			SetStyle ("punctuation", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0, 0), false, false));
+
+			SetStyle ("link", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0, 255), false, false));
 			
 			SetStyle ("kw:access", new Mono.TextEditor.ChunkStyle (new Gdk.Color (165,  42,  42), true, false));
 			SetStyle ("kw:operator", new Mono.TextEditor.ChunkStyle (new Gdk.Color (165,  42,  42), true, false));
@@ -503,15 +505,19 @@ namespace Mono.TextEditor.Highlighting
 			return true;
 		}
 		
-		Gdk.Color GetColorFromString (string colorString)
+		public Gdk.Color GetColorFromString (string colorString)
 		{
 			if (customPalette.ContainsKey (colorString))
 				return this.GetColorFromString (customPalette[colorString]);
 			
+			if (colors.ContainsKey (colorString)) 
+				return ((IColorDefinition)colors[colorString]).Color;
+			if (styleLookupTable.ContainsKey (colorString)) 
+				return styles[styleLookupTable[colorString]].Color;
+			
 			Gdk.Color result = new Color ();
-			if (!Gdk.Color.Parse (colorString, ref result)) {
+			if (!Gdk.Color.Parse (colorString, ref result)) 
 				throw new Exception ("Can't parse color: " + colorString);
-			}
 			return result;
 		}
 		
