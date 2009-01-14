@@ -1,3 +1,8 @@
+2009-01-14  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs: Added missing
+	nullref check.
+
 2009-01-13  Mike Kestner <mkestner@novell.com> 
 
 	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs: adds a

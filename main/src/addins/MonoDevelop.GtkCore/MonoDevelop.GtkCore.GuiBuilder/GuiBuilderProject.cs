@@ -558,7 +558,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				needsSave = true;
 			}
 
-			internalLibs = new string [] { project.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration) };
+			string outLib = project.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration);
+			if (!string.IsNullOrEmpty (outLib))
+				internalLibs = new string [] { outLib };
+			else
+				internalLibs = new string [0];
 
 			string[] newLibs = (string[]) libs.ToArray (typeof(string));
 			
