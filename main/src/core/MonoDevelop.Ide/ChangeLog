@@ -1,3 +1,8 @@
+2009-01-14  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Dialogs/GoToDialog.cs: Show relative paths in the
+	file list.
+
 2009-01-13  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.Dialogs/GoToDialog.cs: Use a faster comparer when
