@@ -69,6 +69,8 @@ namespace MonoDevelop.AssemblyBrowser
 			foreach (TypeDefinition type in moduleDefinition.Types) {
 				if (publicOnly && (type.Attributes & TypeAttributes.Public) != TypeAttributes.Public)
 					continue;
+				if ((type.Attributes & TypeAttributes.NestedPrivate) == TypeAttributes.NestedPrivate)
+					continue;
 				if (!namespaces.ContainsKey (type.Namespace))
 					namespaces [type.Namespace] = new Namespace (type.Namespace);
 				namespaces [type.Namespace].Types.Add (new DomCecilType (true, true, type));

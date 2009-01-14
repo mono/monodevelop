@@ -56,7 +56,7 @@ namespace MonoDevelop.AssemblyBrowser
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
 			Namespace ns = (Namespace)dataObject;
-			label = ns.Name;
+			label = GLib.Markup.EscapeText (ns.Name);
 			icon = Context.GetIcon (Stock.NameSpace);
 		}
 		
@@ -99,16 +99,18 @@ namespace MonoDevelop.AssemblyBrowser
 			if (!String.IsNullOrEmpty (ns.Name)) {
 				result.Append (ambience.GetString (ns.Name, OutputFlags.AssemblyBrowserDescription));
 				result.AppendLine ();
+				result.Append ("{");result.AppendLine ();
 			}
-			result.Append ("{");result.AppendLine ();
 			foreach (IType type in ns.Types) {
 				if (!String.IsNullOrEmpty (ns.Name))
 					result.Append ("\t");
 				result.Append (ambience.GetString (type, OutputFlags.AssemblyBrowserDescription));
 				result.AppendLine ();
 			}
-			result.Append ("}");
-			result.AppendLine ();
+			if (!String.IsNullOrEmpty (ns.Name)) {
+				result.Append ("}");
+				result.AppendLine ();
+			}
 			return result.ToString ();
 		}
 		public string GetDecompiledCode (ITreeNavigator navigator)
