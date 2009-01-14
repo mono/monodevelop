@@ -497,6 +497,11 @@ namespace MonoDevelop.Autotools
 				@"(^\s*(?<file>.*)\((?<line>\d*){1}(,(?<column>\d*[\+]*))?\)(:|)\s+)*(?=BCE)(?<number>.*?):\s(?<message>.*)",
 				@"(^\s*(?<file>.*)\((?<line>\d*){1}(,(?<column>\d*[\+]*))?\)(:|)\s+)*(?=BCW)(?<number>.*?):\sWARNING:\s(?<message>.*)"
 			};
+
+			compilerMessageRegex ["Vala"] = new string [] {
+				@"^\s*(?<file>.*):(?<line>\d*)\.(?<column>\d*)-\d*\.\d*: error: (?<message>.*)",
+				@"^\s*(?<file>.*):(?<line>\d*)\.(?<column>\d*)-\d*\.\d*: warning: (?<message>.*)"
+			};
 		}
 
 		void InitBuildVars ()
