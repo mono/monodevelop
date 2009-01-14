@@ -331,13 +331,20 @@ namespace MonoDevelop.AspNet
 			}
 			
 			UpdateWebConfigRefs ();
-
+			
 			base.OnReferenceAddedToProject (e);
 		}
 		
 		protected override void OnReferenceRemovedFromProject (ProjectReferenceEventArgs e)
 		{
+			//short-circuit if the project is being deserialised
+			if (Loading) {
+				base.OnReferenceAddedToProject (e);
+				return;
+			}
+			
 			UpdateWebConfigRefs ();
+			
 			base.OnReferenceRemovedFromProject (e);
 		}
 		

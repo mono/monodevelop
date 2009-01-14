@@ -1,3 +1,9 @@
+2009-01-14  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AspNet/AspNetAppProject.cs: Don't try to update web.config
+	when references are removed during project loading. Fixes "Bug 465852
+	- MonoDevelop 2.0 (trunk) does not load ASP.NET projects from 1.0."
+
 2008-12-12  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AspNetAddIn.mdp: All projects now require fx 3.5.
