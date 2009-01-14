@@ -41,11 +41,11 @@ namespace MonoDevelop.AssemblyBrowser
 {
 	public class ReferenceFolderNodeBuilder : TypeNodeBuilder
 	{
-		AssemblyBrowserWidget widget;
+//		AssemblyBrowserWidget widget;
 		
 		public ReferenceFolderNodeBuilder (AssemblyBrowserWidget widget)
 		{
-			this.widget = widget;
+//			this.widget = widget;
 		}
 		
 		public override Type NodeDataType {
@@ -68,7 +68,7 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			ReferenceFolder referenceFolder = (ReferenceFolder)dataObject;
 			foreach (AssemblyNameReference assemblyNameReference in referenceFolder.ModuleDefinition.AssemblyReferences) {
-				AssemblyDefinition assembly = null;
+//				AssemblyDefinition assembly = null;
 				try {
 					string realAssemblyName;
 					string assemblyFile;
@@ -82,7 +82,7 @@ namespace MonoDevelop.AssemblyBrowser
 					} else {
 						ctx.AddChild (new Error (MonoDevelop.Core.GettextCatalog.GetString ("Can't find:") + assemblyNameReference.FullName));
 					}
-				} catch (Exception e) {
+				} catch (Exception) {
 				//	ctx.AddChild (new Error (MonoDevelop.Core.GettextCatalog.GetString ("Error while loading:") + assemblyNameReference.FullName + "/" + e.Message));
 				}
 			}

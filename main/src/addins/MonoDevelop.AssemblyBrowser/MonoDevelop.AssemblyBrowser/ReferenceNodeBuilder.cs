@@ -83,7 +83,8 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			ReferenceNodeBuilder nodeBuilder = CurrentNode.TypeNodeBuilder as ReferenceNodeBuilder;
 			Reference reference = (Reference)CurrentNode.DataItem;
-			AssemblyDefinition definition = nodeBuilder.Widget.AddReference (reference.FileName);
+//			AssemblyDefinition definition = 
+			nodeBuilder.Widget.AddReference (reference.FileName);
 			nodeBuilder.Widget.SelectAssembly (reference.FileName);
 		}
 	}	

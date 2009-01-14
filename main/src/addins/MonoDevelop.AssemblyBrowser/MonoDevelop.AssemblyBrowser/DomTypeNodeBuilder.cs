@@ -63,6 +63,29 @@ namespace MonoDevelop.AssemblyBrowser
 			DomTypeNodeBuilder.settings.PostProcessCallback = delegate (IDomVisitable domVisitable, ref string outString) {
 				if (domVisitable is IReturnType)
 					outString = "<span foreground=\"blue\"><u><a ref=\"T:" + ((IReturnType)domVisitable).FullName + "\">" + outString + "</a></u></span>";
+				if (domVisitable is IType) {
+					int idx = outString.IndexOf ("class");
+					if (idx < 0)
+						idx = outString.IndexOf ("interface");
+					if (idx < 0)
+						idx = outString.IndexOf ("struct");
+					if (idx < 0)
+						idx = outString.IndexOf ("enum");
+					if (idx < 0)
+						idx = outString.IndexOf ("delegate");
+					if (idx >= 0) {
+						idx = outString.IndexOf (' ', idx) + 1;
+						int idx2 = outString.IndexOf (' ', idx);
+						if (idx2 < 0)
+							idx2 = outString.Length;
+						System.Console.WriteLine(idx);
+						System.Console.WriteLine(idx2);
+						outString = outString.Substring (0, idx) +
+							        "<span foreground=\"blue\"><u><a ref=\"T:" + ((IType)domVisitable).FullName + "\">" + outString.Substring (idx, idx2 - idx) + "</a></u></span>" + 
+								    outString.Substring (idx2);
+					}
+				}
+					
 			};
 		}
 		

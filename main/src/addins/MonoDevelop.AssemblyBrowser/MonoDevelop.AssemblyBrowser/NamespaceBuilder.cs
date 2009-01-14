@@ -104,7 +104,7 @@ namespace MonoDevelop.AssemblyBrowser
 			foreach (IType type in ns.Types) {
 				if (!String.IsNullOrEmpty (ns.Name))
 					result.Append ("\t");
-				result.Append (ambience.GetString (type, OutputFlags.AssemblyBrowserDescription));
+				result.Append (ambience.GetString (type, DomTypeNodeBuilder.settings));
 				result.AppendLine ();
 			}
 			if (!String.IsNullOrEmpty (ns.Name)) {

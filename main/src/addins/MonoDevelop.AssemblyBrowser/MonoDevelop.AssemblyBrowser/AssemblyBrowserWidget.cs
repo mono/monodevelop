@@ -174,13 +174,13 @@ namespace MonoDevelop.AssemblyBrowser
 					}
 					if (searchMode == SearchMode.Disassembler) {
 						this.notebook1.Page = 0;
-						int idx = DomMethodNodeBuilder.Disassemble ((DomCecilMethod)member, false).ToUpper ().IndexOf (searchEntry.Text.ToUpper ());
+//						int idx = DomMethodNodeBuilder.Disassemble ((DomCecilMethod)member, false).ToUpper ().IndexOf (searchEntry.Text.ToUpper ());
 //						this.inspectLabel.Selectable = true;
 //						this.inspectLabel.SelectRegion (idx, idx + searchEntry.Text.Length);
 					}
 					if (searchMode == SearchMode.Decompiler) {
 						this.notebook1.Page = 1;
-						int idx = DomMethodNodeBuilder.Decompile ((DomCecilMethod)member, false).ToUpper ().IndexOf (searchEntry.Text.ToUpper ());
+//						int idx = DomMethodNodeBuilder.Decompile ((DomCecilMethod)member, false).ToUpper ().IndexOf (searchEntry.Text.ToUpper ());
 //						this.inspectLabel.Selectable = true;
 //						this.inspectLabel.SelectRegion (idx, idx + searchEntry.Text.Length);
 					}
