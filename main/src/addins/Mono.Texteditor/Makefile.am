@@ -63,6 +63,7 @@ FILES =  \
 	Mono.TextEditor/LineSegment.cs \
 	Mono.TextEditor/LineSegmentTree.cs \
 	Mono.TextEditor/LineSplitter.cs \
+	Mono.TextEditor/LinkEventArgs.cs \
 	Mono.TextEditor/Margin.cs \
 	Mono.TextEditor/RedBlackTree.cs \
 	Mono.TextEditor/ReplaceEventArgs.cs \

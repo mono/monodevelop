@@ -1,3 +1,10 @@
+2009-01-14  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/LinkEventArgs.cs:
+	* Mono.TextEditor/TextViewMargin.cs:
+	* Mono.TextEditor.Highlighting/Span.cs: Added link support.
+
 2009-01-13  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.TextEditor.Vi/ViActions.cs: Add a ToggleCase action.

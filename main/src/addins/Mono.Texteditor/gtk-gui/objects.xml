@@ -13,6 +13,7 @@
     <signals>
       <itemgroup label="TextEditor Signals">
         <signal name="SelectionChanged" />
+        <signal name="LinkRequest" />
       </itemgroup>
     </signals>
   </object>

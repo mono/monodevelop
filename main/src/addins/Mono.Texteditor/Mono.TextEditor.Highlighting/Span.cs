@@ -131,7 +131,7 @@ namespace Mono.TextEditor.Highlighting
 			if (String.IsNullOrEmpty (flags))
 				return;
 			foreach (string flag in flags.Split(',', ';')) {
-				hashSet.Add (flags.Trim ());
+				hashSet.Add (flag.Trim ());
 			}
 		}
 		

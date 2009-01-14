@@ -114,10 +114,11 @@ namespace Mono.TextEditor
 			Caret.PositionChanged += CaretPositionChanged;
 			textEditor.Document.TextReplaced += UpdateBracketHighlighting;
 			Caret.PositionChanged += UpdateBracketHighlighting;
-			base.cursor = new Gdk.Cursor (Gdk.CursorType.Xterm);
+			base.cursor = xtermCursor;
 			Document.LineChanged += CheckLongestLine;
 		}
-		
+		Gdk.Cursor xtermCursor = new Gdk.Cursor (Gdk.CursorType.Xterm);
+		Gdk.Cursor arrowCursor = new Gdk.Cursor (Gdk.CursorType.Arrow);
 		internal void Initialize ()
 		{
 			foreach (LineSegment line in Document.Lines) 
@@ -624,7 +625,13 @@ namespace Mono.TextEditor
 			int anchor         = textEditor.SelectionAnchor;
 			int oldOffset      = textEditor.Caret.Offset;
 			if (args.Button == 1 || args.Button == 2) {
+				string link = GetLink (args);
+				if (!String.IsNullOrEmpty (link)) {
+					textEditor.FireLinkEvent (link);
+					return;
+				}
 				clickLocation = VisualToDocumentLocation (args.X, args.Y);
+				
 				if (!textEditor.IsSomethingSelected) {
 					textEditor.SelectionAnchorLocation = clickLocation;
 				}
@@ -762,11 +769,31 @@ namespace Mono.TextEditor
 			previewWindow.ShowAll ();
 		}
 		
+		string GetLink (MarginMouseEventArgs args)
+		{
+			if (args.LineSegment == null)
+				return "";
+			DocumentLocation loc = VisualToDocumentLocation (args.X, args.Y);
+			System.Console.WriteLine(loc);
+			int offset = Document.LocationToOffset (loc);
+			Chunk[] chunks = Document.SyntaxMode.GetChunks (Document, ColorStyle, 
+			                                                args.LineSegment, 
+			                                                args.LineSegment.Offset, 
+			                                                args.LineSegment.EditableLength);
+			foreach (Chunk chunk in chunks) {
+				if (chunk.Offset <= offset && offset < chunk.EndOffset) {
+					return chunk.Style.Link;
+				}
+			}
+			return null;
+		}
+		
 		internal protected override void MouseHover (MarginMouseEventArgs args)
 		{
 			base.MouseHover (args);
 			
 			if (args.Button != 1) {
+				// folding marker 
 				int lineNr = args.LineNumber;
 				foreach (KeyValuePair<Rectangle, FoldSegment> shownFolding in GetFoldRectangles (lineNr)) {
 					if (shownFolding.Key.Contains (args.X + this.XOffset, args.Y)) {
@@ -775,6 +802,12 @@ namespace Mono.TextEditor
 					}
 				}
 				ShowTooltip (null, Gdk.Rectangle.Zero);
+				string link = GetLink (args);
+				if (!String.IsNullOrEmpty (link)) {
+					base.cursor = arrowCursor;
+				} else {
+					base.cursor = xtermCursor;
+				}
 				return;
 			}
 			if (inSelectionDrag) {
@@ -1120,7 +1153,7 @@ namespace Mono.TextEditor
 						int nextXPosition = xPos + delta;
 						if (nextXPosition >= visualXPos) {
 							if (!IsNearX1 (visualXPos, xPos, nextXPosition))
-								column++;
+								column = o - line.Offset + 1;
 							done = true;
 							return;
 						}

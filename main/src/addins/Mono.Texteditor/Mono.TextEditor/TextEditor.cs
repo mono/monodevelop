@@ -1386,5 +1386,13 @@ namespace Mono.TextEditor
 		}
 		
 		#endregion
+
+		internal void FireLinkEvent (string link)
+		{
+			if (LinkRequest != null)
+				LinkRequest (this, new LinkEventArgs (link));
+		}
+		
+		public event EventHandler<LinkEventArgs> LinkRequest;
 	}
 }
