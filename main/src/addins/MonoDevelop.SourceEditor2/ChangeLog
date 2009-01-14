@@ -1,3 +1,8 @@
+2009-01-14  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: fixed "Bug 465222 -
+	"Insert matching brace" - no newlines please!".
+
 2009-01-13  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: fixed possible null

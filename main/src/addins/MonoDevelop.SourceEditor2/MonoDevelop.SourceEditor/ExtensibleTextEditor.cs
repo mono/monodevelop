@@ -289,13 +289,24 @@ namespace MonoDevelop.SourceEditor
 			
 			// insert template when space is typed (currently disabled - it's annoying).
 			bool templateInserted = false; //!inStringOrComment && (evnt.Key == Gdk.Key.space) && DoInsertTemplate ();
-			
+			bool returnBetweenBraces = 
+				evnt.Key == Gdk.Key.Return
+				&& (evnt.State & (Gdk.ModifierType.ControlMask | Gdk.ModifierType.ShiftMask)) == Gdk.ModifierType.None
+				&& Caret.Offset > 0
+				&& Document.GetCharAt (Caret.Offset - 1) == '{'
+				&& Document.GetCharAt (Caret.Offset)     == '}'
+				&& !inStringOrComment;
+			int initialOffset = Caret.Offset;
 			if (extension != null) {
 				if (ExtensionKeyPress (evnt.Key, ch, evnt.State)) 
 					result = base.OnIMProcessedKeyPressEvent (evnt, ch);
 			} else {
 				result = base.OnIMProcessedKeyPressEvent (evnt, ch);
 			}
+			if (returnBetweenBraces) {
+				Caret.Offset = initialOffset;
+				ExtensionKeyPress (Gdk.Key.Return, (char)0, Gdk.ModifierType.None);
+			}			
 /* auto insert templates IS annoying !!!
 			// auto insert templates
 			if (!templateInserted &&
@@ -321,33 +332,9 @@ namespace MonoDevelop.SourceEditor
 					}
 				}
 				if (count > 0) {
-					switch (ch) {
-					case '{':
-						if (extension != null) {
-							int offset = Caret.Offset;
-							ExtensionKeyPress (Gdk.Key.Return, (char)0, Gdk.ModifierType.None);
-							ExtensionKeyPress (Gdk.Key.braceright, '}', Gdk.ModifierType.None);
-							Caret.Offset = offset;
-							ExtensionKeyPress (Gdk.Key.Return, (char)0, Gdk.ModifierType.None);
-						} else {
-							result = base.OnIMProcessedKeyPressEvent (evnt, ch);
-							base.SimulateKeyPress (Gdk.Key.Return, 0, Gdk.ModifierType.None);
-							Document.Insert (Caret.Offset, "}");
-						} 
-						break;
-					case '[':
-						Document.Insert (Caret.Offset, "]");
-						break;
-					case '(':
-						Document.Insert (Caret.Offset, ")");
-						break;
-					case '\'':
-						Document.Insert (Caret.Offset, "'");
-						break;
-					case '"':
-						Document.Insert (Caret.Offset, "\"");
-						break;
-					}
+					string openBrackets = "{[('\"";
+					if (openBrackets.Contains (ch.ToString()))
+						Document.Insert (Caret.Offset, closingBrace.ToString());
 				}
 			}
 			Document.EndAtomicUndo ();
