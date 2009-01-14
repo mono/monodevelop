@@ -66,7 +66,7 @@ PKGCONFIG_PREFIX="${PKGCONFIG_PREFIX%%/pkg-config}/.."
 
 MD_PKG_CONFIG_PATH=""
 for D in "$PREFIX/.." "$MONO_PREFIX" "$PKGCONFIG_PREFIX" '/usr/local' '/usr'; do
-	for PKGDIR in "$D/../lib/pkgconfig" "$D/../lib64/pkgconfig" "$D/../share/pkgconfig"; do
+	for PKGDIR in "$D/lib/pkgconfig" "$D/lib64/pkgconfig" "$D/share/pkgconfig"; do
 		if [ -d "$PKGDIR" ]; then MD_PKG_CONFIG_PATH="$MD_PKG_CONFIG_PATH:$PKGDIR"; fi
 	done
 done

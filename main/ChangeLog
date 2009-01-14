@@ -1,3 +1,10 @@
+2009-01-13  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* monodevelop.in: Fix pkgconfig paths. Thanks to Vadim Chekan for this.
+
+	* mdtool.in: Fix pkgconfig paths. Use /bin/bash, as sh doesn't
+	necessarily support exec -a.
+
 2008-12-19  Rusty Howell <rhowell@novell.com>
 
 	* Added 'make app-dir' as target to create OSX .app
