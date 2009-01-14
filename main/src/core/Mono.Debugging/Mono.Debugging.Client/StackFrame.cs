@@ -72,7 +72,6 @@ namespace Mono.Debugging.Client
 		
 		public ObjectValue[] GetParameters (int timeout)
 		{
-			Console.WriteLine ("pp: " + Environment.StackTrace);
 			ObjectValue[] values = sourceBacktrace.GetParameters (index, timeout);
 			ObjectValue.ConnectCallbacks (values);
 			return values;

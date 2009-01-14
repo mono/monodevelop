@@ -1,3 +1,7 @@
+2009-01-14  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.Debugging.Client/StackFrame.cs: Remove Console.WriteLine noise.
+
 2008-12-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:
