@@ -48,7 +48,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 		int lastConfigSelection = -1;
 		int lastPlatformSelection = -1;
 		
-		public ConfigurationData ConfigurationData {
+		internal ConfigurationData ConfigurationData {
 			get { return dialog.ConfigurationData; }
 		}
 		

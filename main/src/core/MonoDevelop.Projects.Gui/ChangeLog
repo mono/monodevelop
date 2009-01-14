@@ -1,3 +1,11 @@
+2009-01-14  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs/MultiConfigItemOptionsPanel.cs:
+	* MonoDevelop.Projects.Gui.Dialogs/MultiConfigItemOptionsDialog.cs:
+	Store configuration rename operations, and update the parent solution
+	when required. Fixes bug #465150 - Configuration names & mappings not
+	updating when changed.
+
 2009-01-09  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs: Use an

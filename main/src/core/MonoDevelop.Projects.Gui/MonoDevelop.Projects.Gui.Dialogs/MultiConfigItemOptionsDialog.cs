@@ -74,7 +74,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 			base.ApplyChanges ();
 			
 			if (configData != null)
-				configData.Update ();
+				configData.Update (ModifiedObjects);
 		}
 
 
@@ -97,11 +97,18 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 		}
 	}
 	
-	public class ConfigurationData
+	class ConfigurationData
 	{
 		ItemConfigurationCollection<ItemConfiguration> configurations = new ItemConfigurationCollection<ItemConfiguration> ();
 		IConfigurationTarget entry;
 		List<ConfigurationData> children = new List<ConfigurationData> ();
+		List<RenameData> renameData = new List<RenameData> ();
+		
+		class RenameData
+		{
+			public string OldName;
+			public string NewName;
+		}
 		
 		internal ConfigurationData (IConfigurationTarget obj)
 		{
@@ -135,7 +142,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 			}
 		}
 		
-		public void Update ()
+		public void Update (HashSet<object> modifiedObjects)
 		{
 			foreach (ItemConfiguration conf in configurations) {
 				ItemConfiguration old = entry.Configurations [conf.Id];
@@ -155,7 +162,24 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 				entry.Configurations.Remove (conf);
 				
 			foreach (ConfigurationData data in children)
-				data.Update ();
+				data.Update (modifiedObjects);
+
+			// If configurations have been renamed, update the references in the solution
+			SolutionEntityItem item = entry as SolutionEntityItem;
+			if (item != null && renameData.Count > 0) {
+				Solution sol = item.ParentSolution;
+				if (sol != null) {
+					foreach (RenameData rd in renameData) {
+						foreach (SolutionConfiguration sc in sol.Configurations) {
+							SolutionConfigurationEntry sce = sc.GetEntryForItem (item);
+							if (sce != null && sce.ItemConfiguration == rd.OldName) {
+								sce.ItemConfiguration = rd.NewName;
+								modifiedObjects.Add (sol);
+							}
+						}
+					}
+				}
+			}
 		}
 		
 		public ItemConfiguration AddConfiguration (string name, string sourceName, bool createChildConfigurations)
@@ -202,14 +226,11 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 		
 		public void RenameConfiguration (string oldName, string newName, bool renameChildConfigurations)
 		{
+			renameData.Add (new RenameData { OldName = oldName, NewName = newName });
+			
 			ItemConfiguration cc = configurations [oldName];
 			if (cc != null) {
-				ItemConfiguration nc = entry.CreateConfiguration (newName);
-				nc.CopyFrom (cc);
-				configurations.Remove (oldName);
-				configurations.Add (nc);
-				if (ConfigurationsChanged != null)
-					ConfigurationsChanged (this, null);
+				cc.Name = newName;
 			}
 			if (renameChildConfigurations) {
 				foreach (ConfigurationData data in children)
