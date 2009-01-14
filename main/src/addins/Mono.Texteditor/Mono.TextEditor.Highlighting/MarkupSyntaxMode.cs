@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Mono.TextEditor.Highlighting
 {
@@ -113,6 +114,28 @@ namespace Mono.TextEditor.Highlighting
 				}
 			}
 			return result;
+		}
+		
+		public override string GetTextWithoutMarkup (Document doc, Style style, int offset, int length)
+		{
+			StringBuilder result = new StringBuilder ();
+			
+			int curOffset = offset;
+			int endOffset =  offset + length;
+			
+			while (curOffset < endOffset) {
+				LineSegment curLine = doc.GetLineByOffset (curOffset);
+				Chunk[] chunks = GetChunks (doc, style, curLine, curOffset, System.Math.Min (endOffset - curOffset, curLine.EndOffset - curOffset));
+				foreach (Chunk chunk in chunks) {
+					for (int i = 0; i < chunk.Length; i++) {
+						result.Append (chunk.GetCharAt (doc, chunk.Offset + i));
+					}
+				}
+				curOffset += curLine.Length;
+				if (curOffset < endOffset)
+					result.AppendLine ();
+			}
+			return result.ToString ();
 		}
 		
 		public override Chunk[] GetChunks (Document doc, Style style, LineSegment line, int offset, int length)

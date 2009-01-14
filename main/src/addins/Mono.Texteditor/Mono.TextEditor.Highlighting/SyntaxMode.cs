@@ -62,26 +62,9 @@ namespace Mono.TextEditor.Highlighting
 			return new ChunkParser (doc, style, this, line).GetChunks (offset, length);
 		}
 		
-		public string GetTextWithoutMarkup (Document doc, Style style, int offset, int length)
+		public virtual string GetTextWithoutMarkup (Document doc, Style style, int offset, int length)
 		{
-			StringBuilder result = new StringBuilder ();
-			
-			int curOffset = offset;
-			int endOffset =  offset + length;
-			
-			while (curOffset < endOffset) {
-				LineSegment curLine = doc.GetLineByOffset (curOffset);
-				Chunk[] chunks = GetChunks (doc, style, curLine, curOffset, System.Math.Min (endOffset - curOffset, curLine.EndOffset - curLine.DelimiterLength - curOffset));
-				foreach (Chunk chunk in chunks) {
-					for (int i = 0; i < chunk.Length; i++) {
-						result.Append (chunk.GetCharAt (doc, chunk.Offset + i));
-					}
-				}
-				curOffset += curLine.Length;
-				if (curOffset < endOffset)
-					result.AppendLine ();
-			}
-			return result.ToString ();
+			return doc.GetTextAt (offset, length);
 		}
 		
 		public string GetMarkup (Document doc, TextEditorOptions options, Style style, int offset, int length, bool removeIndent)

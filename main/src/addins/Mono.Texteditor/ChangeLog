@@ -1,5 +1,11 @@
 2009-01-14  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor.Highlighting/SyntaxMode.cs:
+	* Mono.TextEditor.Highlighting/MarkupSyntaxMode.cs: fixed cut & paste
+	issue.
+
+2009-01-14  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextEditor.cs:
 	* Mono.TextEditor/LinkEventArgs.cs:
 	* Mono.TextEditor/TextViewMargin.cs:
