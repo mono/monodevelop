@@ -41,6 +41,7 @@ namespace MonoDevelop.Core.Gui.Dialogs
 		object mainDataObject;
 		string extensionPath;
 		ExtensionContext extensionContext;
+		HashSet<object> modifiedObjects = new HashSet<object> ();
 		
 		public object DataObject {
 			get {
@@ -52,6 +53,10 @@ namespace MonoDevelop.Core.Gui.Dialogs
 			get {
 				return extensionContext;
 			}
+		}
+		
+		public HashSet<object> ModifiedObjects {
+			get { return modifiedObjects; }
 		}
 		
 		public OptionsDialog (string extensionPath): this (null, null, extensionPath)
@@ -193,6 +198,9 @@ namespace MonoDevelop.Core.Gui.Dialogs
 				
 				// Now save
 				ApplyChanges ();
+				
+				if (DataObject != null)
+					modifiedObjects.Add (DataObject);
 			}
 			base.OnResponse (resp);
 			DetachWidgets ();

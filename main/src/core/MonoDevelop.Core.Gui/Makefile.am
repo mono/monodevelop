@@ -15,6 +15,7 @@ REFS =  \
 	-r:ICSharpCode.SharpZipLib \
 	-r:Mono.Posix \
 	-r:System \
+	-r:System.Core \
 	-r:System.Drawing \
 	-r:System.Xml
 
