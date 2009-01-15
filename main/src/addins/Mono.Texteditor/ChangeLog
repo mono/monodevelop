@@ -1,5 +1,9 @@
 2009-01-15  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextViewMargin.cs: Made GetLink method more robust.
+
+2009-01-15  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor.Highlighting/MarkupSyntaxMode.cs: Markup syntax mode
 	now takes default color from style.
 

@@ -771,17 +771,21 @@ namespace Mono.TextEditor
 		
 		string GetLink (MarginMouseEventArgs args)
 		{
-			if (args.LineSegment == null || Document.SyntaxMode == null)
-				return "";
-			DocumentLocation loc = VisualToDocumentLocation (args.X, args.Y);
-			int offset = Document.LocationToOffset (loc);
-			Chunk[] chunks = Document.SyntaxMode.GetChunks (Document, ColorStyle, 
-			                                                args.LineSegment, 
-			                                                args.LineSegment.Offset, 
-			                                                args.LineSegment.EditableLength);
-			foreach (Chunk chunk in chunks) {
-				if (chunk.Offset <= offset && offset < chunk.EndOffset) {
-					return chunk.Style.Link;
+			LineSegment                        line  = args.LineSegment;
+			Mono.TextEditor.Highlighting.Style style = ColorStyle;
+			Document                           doc   = Document;
+			if (doc == null)
+				return null;
+			SyntaxMode                         mode  = doc.SyntaxMode;
+			if (line == null || style == null || mode == null)
+				return null;
+			
+			Chunk[] chunks = mode.GetChunks (Document, style, line, line.Offset, line.EditableLength);
+			if (chunks != null) {
+				int offset = Document.LocationToOffset (VisualToDocumentLocation (args.X, args.Y));
+				foreach (Chunk chunk in chunks) {
+					if (chunk.Offset <= offset && offset < chunk.EndOffset) 
+						return chunk.Style != null ? chunk.Style.Link : null;
 				}
 			}
 			return null;
