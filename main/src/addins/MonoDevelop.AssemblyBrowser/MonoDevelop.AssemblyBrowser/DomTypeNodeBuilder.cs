@@ -232,7 +232,25 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 			first = true;
 			foreach (IMethod method in type.Methods) {
-				if ((method.Modifiers & Modifiers.SpecialName) == Modifiers.SpecialName)
+				if (!method.IsConstructor)
+					continue;
+				if (first) {
+					result.AppendLine ();
+					result.Append ("\t");
+					result.Append (commentSpan);
+					result.Append (ambience.SingleLineComment (GettextCatalog.GetString ("Constructors")));
+					result.Append ("</span>");
+					result.AppendLine ();
+				}
+				first = false;
+				result.Append ("\t");
+				result.Append (ambience.GetString (method, settings));
+				result.Append ("<span style=\"default\">;</span>");
+				result.AppendLine ();
+			}
+			first = true;
+			foreach (IMethod method in type.Methods) {
+				if ((method.Modifiers & Modifiers.SpecialName) == Modifiers.SpecialName || method.IsConstructor)
 					continue;
 				if (first) {
 					result.AppendLine ();

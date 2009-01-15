@@ -106,6 +106,7 @@ namespace MonoDevelop.AssemblyBrowser
 			result.Append (DomTypeNodeBuilder.ambience.GetString (evt, DomTypeNodeBuilder.settings));
 			return result.ToString ();
 		}
+		
 		string IAssemblyBrowserNodeBuilder.GetDecompiledCode (ITreeNavigator navigator)
 		{
 			IEvent evt = (IEvent)navigator.DataItem;

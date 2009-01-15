@@ -1,5 +1,11 @@
 2009-01-15  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs:
+	* MonoDevelop.AssemblyBrowser/DomEventNodeBuilder.cs: Show constructors
+	in type view.
+
+2009-01-15  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.AssemblyBrowser/Decompiler.cs:
 	* MonoDevelop.AssemblyBrowser/NamespaceBuilder.cs:
 	* MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs:
