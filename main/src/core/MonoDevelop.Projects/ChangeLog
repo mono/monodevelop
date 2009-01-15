@@ -1,3 +1,8 @@
+2009-01-15  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom.Output/OutputSettings.cs: Added some markup
+	features for ambiences.
+
 2009-01-13  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Dom/TypeUpdateInformation.cs:

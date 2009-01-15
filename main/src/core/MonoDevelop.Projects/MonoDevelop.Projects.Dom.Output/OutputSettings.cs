@@ -43,15 +43,26 @@ namespace MonoDevelop.Projects.Dom.Output
 		
 		public string Markup (string text)
 		{
+			if (MarkupCallback != null)
+				return MarkupCallback (text);
+			return IncludeMarkup ? PangoFormat (text) : text;
+		}
+
+		public string EmitName (IDomVisitable domVisitable, string text)
+		{
+			if (EmitNameCallback != null) {
+				EmitNameCallback (domVisitable, ref text);
+				return text;
+			}
 			return IncludeMarkup ? PangoFormat (text) : text;
 		}
 		
 		public string EmitModifiers (string text)
 		{
-			if (EmitModifiersCallback != null)
-				return EmitModifiersCallback (text);
 			if (!IncludeModifiers)
 				return string.Empty;
+			if (EmitModifiersCallback != null)
+				return EmitModifiersCallback (text + " ");
 			if (IncludeMarkup)
 				return "<b>" + PangoFormat (text) + "</b> ";
 			return text + " ";
@@ -175,6 +186,7 @@ namespace MonoDevelop.Projects.Dom.Output
 		public MarkupText EmitKeywordCallback;
 		public MarkupText MarkupCallback;
 		public MarkupText HighlightCallback;
+		public ProcessString EmitNameCallback;
 		
 		public delegate string MarkupText (string text);
 		
