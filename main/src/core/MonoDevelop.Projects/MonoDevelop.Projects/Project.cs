@@ -380,8 +380,8 @@ namespace MonoDevelop.Projects
 			foreach (ProjectFile pf in Files) {
 				if (pf.CopyToOutputDirectory == FileCopyMode.None)
 					continue;
-				
-				list.Add (pf.FilePath, pf.CopyToOutputDirectory == FileCopyMode.PreserveNewest, pf.RelativePath);
+				string outpath = pf.IsExternalToProject? Path.GetFileName (pf.Name) : pf.RelativePath;
+				list.Add (pf.FilePath, pf.CopyToOutputDirectory == FileCopyMode.PreserveNewest, outpath);
 			}
 		}
 		
