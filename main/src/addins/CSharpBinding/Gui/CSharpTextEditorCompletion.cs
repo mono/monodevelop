@@ -163,6 +163,8 @@ namespace MonoDevelop.CSharpBinding.Gui
 			switch (completionChar) {
 			case ':':
 			case '.':
+				if (stateTracker.Engine.IsInsideDocLineComment || stateTracker.Engine.IsInsideOrdinaryCommentOrString)
+					return null;
 				result = FindExpression (dom, completionContext);
 				if (result == null || result.Expression == null)
 					return null;
@@ -217,6 +219,8 @@ namespace MonoDevelop.CSharpBinding.Gui
 				}
 				return null;
 			case '[':
+				if (stateTracker.Engine.IsInsideDocLineComment || stateTracker.Engine.IsInsideOrdinaryCommentOrString)
+					return null;
 				result = FindExpression (dom, completionContext);
 				if (result.ExpressionContext == ExpressionContext.Attribute)
 					return CreateCtrlSpaceCompletionData (completionContext, result);
@@ -226,6 +230,8 @@ namespace MonoDevelop.CSharpBinding.Gui
 					return GetXmlDocumentationCompletionData ();
 				return null;
 			case '(':
+				if (stateTracker.Engine.IsInsideDocLineComment || stateTracker.Engine.IsInsideOrdinaryCommentOrString)
+					return null;
 				result = FindExpression (dom, completionContext, -1);
 				if (result == null || result.Expression == null)
 					return null;
@@ -306,6 +312,8 @@ namespace MonoDevelop.CSharpBinding.Gui
 				}
 				return null;
 			case ' ':
+				if (stateTracker.Engine.IsInsideDocLineComment || stateTracker.Engine.IsInsideOrdinaryCommentOrString)
+					return null;
 				result = FindExpression (dom, completionContext);
 				if (result == null)
 					return null;
@@ -343,6 +351,8 @@ namespace MonoDevelop.CSharpBinding.Gui
 					return null;
 				case "+=":
 				case "-=":
+					if (stateTracker.Engine.IsInsideDocLineComment || stateTracker.Engine.IsInsideOrdinaryCommentOrString)
+						return null;
 					result = FindExpression (dom, completionContext,  i - completionContext.TriggerOffset - 1);
 					resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (dom, Document.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, Editor, Document.FileName);
 					resolveResult = resolver.Resolve (result, location);
