@@ -156,7 +156,7 @@ namespace MonoDevelop.CSharpBinding
 				result.Append (settings.Markup (" "));
 			}
 			AppendExplicitInterfaces(result, property);
-			result.Append (Format (property.Name));
+			result.Append (settings.EmitName (property, Format (property.Name)));
 			if (settings.IncludeParameters && property.Parameters.Count > 0) {
 				result.Append (settings.Markup ("["));
 				bool first = true;
@@ -174,11 +174,14 @@ namespace MonoDevelop.CSharpBinding
 		void AppendParameter (OutputSettings settings, StringBuilder result, IParameter parameter)
 		{
 			if (parameter.IsOut) {
-				result.Append (settings.Markup ("out "));
+				result.Append (settings.Markup ("out"));
+				result.Append (settings.Markup (" "));
 			} else if (parameter.IsRef) {
-				result.Append (settings.Markup ("ref "));
+				result.Append (settings.Markup ("ref"));
+				result.Append (settings.Markup (" "));
 			} else if (parameter.IsParams) {
-				result.Append (settings.Markup ("params "));
+				result.Append (settings.Markup ("params"));
+				result.Append (settings.Markup (" "));
 			}
 			result.Append (GetString (parameter, settings));
 		}
@@ -192,7 +195,7 @@ namespace MonoDevelop.CSharpBinding
 				result.Append (settings.Markup (" "));
 			}
 			
-			result.Append (Format (field.Name));
+			result.Append (settings.EmitName (field, Format (field.Name)));
 			
 			return result.ToString ();
 		}
@@ -201,12 +204,12 @@ namespace MonoDevelop.CSharpBinding
 		{
 			StringBuilder result = new StringBuilder ();
 			if (netToCSharpTypes.ContainsKey (returnType.FullName)) {
-				result.Append (netToCSharpTypes[returnType.FullName]);
+				result.Append (settings.EmitName (returnType, netToCSharpTypes[returnType.FullName]));
 			} else {
 				if (settings.UseFullName) {
-					result.Append (Format (NormalizeTypeName (returnType.FullName)));
+					result.Append (settings.EmitName (returnType, Format (NormalizeTypeName (returnType.FullName))));
 				} else {
-					result.Append (Format (NormalizeTypeName (returnType.Name)));
+					result.Append (settings.EmitName (returnType, Format (NormalizeTypeName (returnType.Name))));
 				}
 			}
 			if (settings.IncludeGenerics) {
@@ -252,12 +255,11 @@ namespace MonoDevelop.CSharpBinding
 			AppendExplicitInterfaces (result, method);
 			
 			if (method.IsConstructor) {
-				result.Append (Format (method.DeclaringType.Name));
+				result.Append (settings.EmitName (method, Format (method.DeclaringType.Name)));
 			} else if (method.IsFinalizer) {
-				result.Append (settings.Markup ("~"));
-				result.Append (Format (method.DeclaringType.Name));
+				result.Append (settings.EmitName (method, settings.Markup ("~") + Format (method.DeclaringType.Name)));
 			} else {
-				result.Append (Format (method.Name));
+				result.Append (settings.EmitName (method, Format (method.Name)));
 			}
 			
 			if (settings.IncludeGenerics) {
@@ -298,12 +300,18 @@ namespace MonoDevelop.CSharpBinding
 			StringBuilder result = new StringBuilder ();
 			if (settings.IncludeParameterName) {
 				if (settings.IncludeModifiers) {
-					if (parameter.IsOut)
-						result.Append (settings.Markup ("out "));
-					if (parameter.IsRef)
-						result.Append (settings.Markup ("ref "));
-					if (parameter.IsParams)
-						result.Append (settings.Markup ("params "));
+					if (parameter.IsOut) {
+						result.Append (settings.EmitKeyword ("out"));
+						result.Append (settings.Markup (" "));
+					}
+					if (parameter.IsRef) {
+						result.Append (settings.EmitKeyword ("ref"));
+						result.Append (settings.Markup (" "));
+					}
+					if (parameter.IsParams) {
+						result.Append (settings.EmitKeyword ("params"));
+						result.Append (settings.Markup (" "));
+					}
 				}
 				
 				if (settings.IncludeReturnType) {
@@ -312,9 +320,9 @@ namespace MonoDevelop.CSharpBinding
 				}
 				
 				if (settings.HighlightName) {
-					result.Append (settings.Highlight (Format (parameter.Name)));
+					result.Append (settings.EmitName (parameter, settings.Highlight (Format (parameter.Name))));
 				} else {
-					result.Append (Format (parameter.Name));
+					result.Append (settings.EmitName (parameter, Format (parameter.Name)));
 				}
 			} else {
 				result.Append (GetString (parameter.ReturnType, settings));
@@ -345,7 +353,8 @@ namespace MonoDevelop.CSharpBinding
 			StringBuilder result = new StringBuilder ();
 			result.Append (modifiers);
 			result.Append (keyword);
-			result.Append (name);
+			result.Append (settings.Markup (" "));
+			result.Append (settings.EmitName (type, name));
 			
 			if (settings.IncludeGenerics && parameterCount > 0) {
 				result.Append (settings.Markup ("<"));
@@ -406,12 +415,12 @@ namespace MonoDevelop.CSharpBinding
 		
 		public string Visit (Namespace ns, OutputSettings settings)
 		{
-			return settings.EmitKeyword ("namespace") + ns.Name;
+			return settings.EmitKeyword ("namespace") + " " + settings.EmitName (ns, ns.Name);
 		}
 		
 		public string Visit (LocalVariable var, OutputSettings settings)
 		{
-			return var.Name;
+			return settings.EmitName (var, var.Name);
 		}
 		
 		public string Visit (IEvent evt, OutputSettings settings)
@@ -425,7 +434,7 @@ namespace MonoDevelop.CSharpBinding
 			}
 			
 			AppendExplicitInterfaces(result, evt);
-			result.Append (Format (evt.Name));
+			result.Append (settings.EmitName (evt, Format (evt.Name)));
 			
 			return result.ToString ();
 		}

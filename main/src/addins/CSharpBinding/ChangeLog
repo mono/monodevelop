@@ -1,5 +1,9 @@
 2009-01-15  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/CSharpAmbience.cs: worked on csharpambience markup.
+
+2009-01-15  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/CSharpTextEditorCompletion.cs: fixed 'Bug 466149 - Code completion
 	activates inside a string.'.
 
