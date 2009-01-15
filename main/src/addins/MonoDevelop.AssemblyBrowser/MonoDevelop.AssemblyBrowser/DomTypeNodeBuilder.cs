@@ -38,6 +38,7 @@ using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Gui.Components;
+using Mono.TextEditor.Highlighting;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -55,35 +56,45 @@ namespace MonoDevelop.AssemblyBrowser
 		}*/
 		internal static Ambience ambience;
 		internal static OutputSettings settings;
+		static SyntaxMode mode = SyntaxModeService.GetSyntaxMode ("text/x-csharp");
+
+		internal static string MarkupKeyword (string text)
+		{
+			foreach (Keywords words in mode.Keywords) {
+				foreach (string word in words.Words) {
+					if (word == text) {
+						return "<span style=\"" + words.Color +  "\">" + text + "</span>";
+					}
+				}
+			}
+			return text;
+		}
 		
 		static DomTypeNodeBuilder ()
 		{
 			ambience = AmbienceService.GetAmbience ("text/x-csharp");
 			DomTypeNodeBuilder.settings = new OutputSettings (OutputFlags.AssemblyBrowserDescription);
-			DomTypeNodeBuilder.settings.PostProcessCallback = delegate (IDomVisitable domVisitable, ref string outString) {
-				if (domVisitable is IReturnType)
-					outString = "<span foreground=\"blue\"><u><a ref=\"T:" + ((IReturnType)domVisitable).FullName + "\">" + outString + "</a></u></span>";
+			
+			DomTypeNodeBuilder.settings.MarkupCallback += delegate (string text) {
+				return "<span style=\"default\">" + text + "</span>";
+			};
+			DomTypeNodeBuilder.settings.EmitModifiersCallback = delegate (string text) {
+				return "<span style=\"kw:modifiers\">" + text + "</span>";
+			};
+			DomTypeNodeBuilder.settings.EmitKeywordCallback = delegate (string text) {
+				return MarkupKeyword (text);
+			};
+			DomTypeNodeBuilder.settings.EmitNameCallback = delegate (IDomVisitable domVisitable, ref string outString) {
 				if (domVisitable is IType) {
-					int idx = outString.IndexOf ("class");
-					if (idx < 0)
-						idx = outString.IndexOf ("interface");
-					if (idx < 0)
-						idx = outString.IndexOf ("struct");
-					if (idx < 0)
-						idx = outString.IndexOf ("enum");
-					if (idx < 0)
-						idx = outString.IndexOf ("delegate");
-					if (idx >= 0) {
-						idx = outString.IndexOf (' ', idx) + 1;
-						int idx2 = outString.IndexOf (' ', idx);
-						if (idx2 < 0)
-							idx2 = outString.Length;
-						outString = outString.Substring (0, idx) +
-							        "<span foreground=\"blue\"><u><a ref=\"T:" + ((IType)domVisitable).FullName + "\">" + outString.Substring (idx, idx2 - idx) + "</a></u></span>" + 
-								    outString.Substring (idx2);
-					}
+					outString = "<span style=\"link\"><u><a ref=\"T:" + ((IType)domVisitable).FullName + "\">" + outString + "</a></u></span>";
+				} else {
+					outString = "<span style=\"default\">" + outString + "</span>";
 				}
-					
+			};
+			DomTypeNodeBuilder.settings.PostProcessCallback = delegate (IDomVisitable domVisitable, ref string outString) {
+				if (domVisitable is IReturnType) {
+					outString = "<span style=\"link\"><u><a ref=\"T:" + ((IReturnType)domVisitable).FullName + "\">" + outString + "</a></u></span>";
+				}
 			};
 		}
 		
@@ -107,7 +118,6 @@ namespace MonoDevelop.AssemblyBrowser
 			IType type = (IType)dataObject;
 			ctx.AddChild (new BaseTypeFolder (type));
 			bool publicOnly = ctx.Options ["PublicApiOnly"];
-			System.Console.WriteLine("Build Child nodes:  " + publicOnly);
 			foreach (object o in type.Members) {
 				IMember member = o as IMember;
 				if (member != null) {
@@ -162,31 +172,31 @@ namespace MonoDevelop.AssemblyBrowser
 			bool first = true;
 			
 			if (type.ClassType == ClassType.Enum) {
-				result.Append (" {");
+				result.Append ("<span style=\"default\"> {</span>");
+				result.Append ("");
 				result.AppendLine ();
 				int length = result.Length;
 				foreach (IField field in type.Fields) {
 					if ((field.Modifiers & Modifiers.SpecialName) == Modifiers.SpecialName)
 						continue;
-					result.Append ("\t");
+					result.Append ("<span style=\"default\"> \t");
 					result.Append (field.Name);
 					length = result.Length;
-					result.Append (",");
+					result.Append (",</span>");
 					result.AppendLine ();
 				}
 				result.Length = length;
 				result.AppendLine ();
-				result.Append ("}");
+				result.Append ("<span style=\"default\">}</span>");
 				return result.ToString ();
 			}
 			result.AppendLine ();
-			result.Append ("{");
+			result.Append ("<span style=\"default\">{</span>");
 			
 //			Style colorStyle = TextEditorOptions.Options.GetColorStyle (widget);
 //			ChunkStyle comments = colorStyle.GetChunkStyle ("comment");
 //			string commentSpan = String.Format ("<span foreground=\"#{0:X6}\">", comments.Color.Pixel);
-			
-			string commentSpan = "<span foreground=\"#666666\">";
+			string commentSpan = "<span style=\"comment\">";
 			foreach (IField field in type.Fields) {
 				if ((field.Modifiers & Modifiers.SpecialName) == Modifiers.SpecialName)
 					continue;
@@ -201,7 +211,7 @@ namespace MonoDevelop.AssemblyBrowser
 				first = false;
 				result.Append ("\t");
 				result.Append (ambience.GetString (field, settings));
-				result.Append (";");
+				result.Append ("<span style=\"default\">;</span>");
 				result.AppendLine ();
 			}
 			first = true;
@@ -217,7 +227,7 @@ namespace MonoDevelop.AssemblyBrowser
 				first = false;
 				result.Append ("\t");
 				result.Append (ambience.GetString (evt, settings));
-				result.Append (";");
+				result.Append ("<span style=\"default\">;</span>");
 				result.AppendLine ();
 			}
 			first = true;
@@ -235,7 +245,7 @@ namespace MonoDevelop.AssemblyBrowser
 				first = false;
 				result.Append ("\t");
 				result.Append (ambience.GetString (method, settings));
-				result.Append (";");
+				result.Append ("<span style=\"default\">;</span>");
 				result.AppendLine ();
 			}
 			first = true;
@@ -251,15 +261,16 @@ namespace MonoDevelop.AssemblyBrowser
 				first = false;
 				result.Append ("\t");
 				result.Append (ambience.GetString (property, settings));
-				result.Append (" {");
+				result.Append (" <span style=\"default\">{</span>");
 				if (property.HasGet)
-					result.Append (" get;");
+					result.Append (" <span style=\"kw:properties\">get</span><span style=\"default\">;</span>");
 				if (property.HasSet)
-					result.Append (" set;");
-				result.Append (" }");
+					result.Append (" <span style=\"kw:properties\">set</span><span style=\"default\">;</span>");
+				result.Append (" <span style=\"default\">}</span>");
 				result.AppendLine ();
 			}
-			result.Append ("}");
+			result.Append ("<span style=\"default\">}</span>");
+			
 			result.AppendLine ();
 			return result.ToString ();
 		}

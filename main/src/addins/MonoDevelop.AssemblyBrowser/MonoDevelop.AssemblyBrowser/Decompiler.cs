@@ -585,7 +585,8 @@ namespace MonoDevelop.AssemblyBrowser
 						current.Line = instruction.Offset;
 						name = instruction.Operand.ToString ();
 						StringBuilder str = new StringBuilder ();
-						str.Append ("new ");
+						str.Append (DomTypeNodeBuilder.MarkupKeyword ("new"));
+						str.Append (" ");
 						str.Append (name);
 						str.Append ("[");
 						str.Append (stack.Pop ().StringValue);
@@ -615,10 +616,10 @@ namespace MonoDevelop.AssemblyBrowser
 							}
 						}
 						str.Append (")");
-						stack.Push (new Operand ("new " + str));
+						stack.Push (new Operand (DomTypeNodeBuilder.MarkupKeyword ("new") + " " + str));
 						break;
 					case Code.Throw:
-						current.StringValue = "throw "+ stack.Pop ().StringValue + ";";
+						current.StringValue = DomTypeNodeBuilder.MarkupKeyword ("throw") +" "+ stack.Pop ().StringValue + ";";
 						SetStatement (current);
 						current = new Statement ();
 						break;
@@ -670,10 +671,10 @@ namespace MonoDevelop.AssemblyBrowser
 							s.Label = label;
 							statements.Add (target, s);
 						}
-						name  = "goto " + label + ";";
+						name  = DomTypeNodeBuilder.MarkupKeyword ("goto") + " " + label + ";";
 						if (instruction.OpCode.Code != Code.Br && instruction.OpCode.Code != Code.Br_S && instruction.OpCode.Code != Code.Leave && instruction.OpCode.Code != Code.Leave_S) {
 							string not = (instruction.OpCode.Code == Code.Brfalse || instruction.OpCode.Code == Code.Brfalse_S) ? "!" : "";
-							name = "if (" + not + stack.Pop ().StringValue + ") " + name;
+							name = DomTypeNodeBuilder.MarkupKeyword ("if") + " (" + not + stack.Pop ().StringValue + ") " + name;
 						}
 						current.StringValue = name;
 						SetStatement (current);
@@ -681,19 +682,19 @@ namespace MonoDevelop.AssemblyBrowser
 						break;
 					case Code.Ret:
 						if (method.ReturnType.Name != "Void") {
-							current.StringValue = ("return " + stack.Pop ().StringValue + ";");
+							current.StringValue = (DomTypeNodeBuilder.MarkupKeyword ("return") + " " + stack.Pop ().StringValue + ";");
 							SetStatement (current);
 							current = new Statement ();
 						} else {
 							current.Line = instruction.Offset;
-							current.StringValue = ("return;");
+							current.StringValue = (DomTypeNodeBuilder.MarkupKeyword ("return") + ";");
 							SetStatement (current);
 							current = new Statement ();
 						}
 						break;
 					case Code.Sizeof: 
 						name = instruction.Operand.ToString ();
-						stack.Push (new Operand ("sizeof (" + name + ")", OperationType.Unary));
+						stack.Push (new Operand (DomTypeNodeBuilder.MarkupKeyword ("sizeof") + " (" + name + ")", OperationType.Unary));
 						break;
 					default:
 						current.Line = instruction.Offset;

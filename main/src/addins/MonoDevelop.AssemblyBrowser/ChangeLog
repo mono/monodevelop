@@ -1,3 +1,14 @@
+2009-01-15  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.AssemblyBrowser/Decompiler.cs:
+	* MonoDevelop.AssemblyBrowser/NamespaceBuilder.cs:
+	* MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs:
+	* MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:
+	* MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs: Worked on
+	assembly browser output now looks like syntax highlighting &
+	clickable types. (fixing Bug 456306 - "Assembly Browser: types should
+	be clickable.")
+
 2009-01-14  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs:

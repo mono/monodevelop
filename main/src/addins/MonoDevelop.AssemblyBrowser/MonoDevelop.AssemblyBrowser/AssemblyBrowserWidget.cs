@@ -101,6 +101,11 @@ namespace MonoDevelop.AssemblyBrowser
 			this.inspectEditor.Options.ShowSpaces = false;
 			this.inspectEditor.Options.ShowTabs = false;
 			this.inspectEditor.Options.HighlightCaretLine = true;
+			this.inspectEditor.Options.ColorScheme = PropertyService.Get ("ColorScheme", "Default");
+			PropertyService.PropertyChanged += delegate(object sender, PropertyChangedEventArgs e) {
+				if (e.Key == "ColorScheme")
+					this.inspectEditor.Options.ColorScheme = PropertyService.Get ("ColorScheme", "Default");
+			};
 			this.inspectEditor.Document.ReadOnly = true;
 			this.inspectEditor.Document.SyntaxMode = new Mono.TextEditor.Highlighting.MarkupSyntaxMode ();
 			this.inspectEditor.LinkRequest += delegate (object sender, Mono.TextEditor.LinkEventArgs args) {

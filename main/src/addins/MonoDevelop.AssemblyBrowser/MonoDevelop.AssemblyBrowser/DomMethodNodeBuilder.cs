@@ -122,7 +122,7 @@ namespace MonoDevelop.AssemblyBrowser
 			StringBuilder result = new StringBuilder ();
 			try {
 				string decompiledCode = new Decompiler().Decompile (method);
-				result.Append (Ambience.Format (decompiledCode));
+				result.Append (decompiledCode);
 			} catch (Exception e) {
 				result.Append ("got exception while decompilation: \n" + e);
 			}

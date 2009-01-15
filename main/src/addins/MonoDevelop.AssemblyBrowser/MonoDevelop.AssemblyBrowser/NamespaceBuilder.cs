@@ -97,9 +97,13 @@ namespace MonoDevelop.AssemblyBrowser
 			StringBuilder result = new StringBuilder ();
 			Ambience ambience = DomTypeNodeBuilder.ambience;
 			if (!String.IsNullOrEmpty (ns.Name)) {
-				result.Append (ambience.GetString (ns.Name, OutputFlags.AssemblyBrowserDescription));
+				
+				result.Append ("<span style=\"kw:namespaces\">namespace</span> ");
+				result.Append ("<span style=\"default\">");
+				result.Append (ns.Name);
+				result.Append ("</span>");
 				result.AppendLine ();
-				result.Append ("{");result.AppendLine ();
+				result.Append ("<span style=\"default\">{</span>");result.AppendLine ();
 			}
 			foreach (IType type in ns.Types) {
 				if (!String.IsNullOrEmpty (ns.Name))
@@ -108,7 +112,7 @@ namespace MonoDevelop.AssemblyBrowser
 				result.AppendLine ();
 			}
 			if (!String.IsNullOrEmpty (ns.Name)) {
-				result.Append ("}");
+				result.Append ("<span style=\"default\">}</span>");
 				result.AppendLine ();
 			}
 			return result.ToString ();
