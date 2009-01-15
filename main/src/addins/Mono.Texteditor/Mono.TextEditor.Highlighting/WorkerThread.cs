@@ -53,14 +53,16 @@ namespace Mono.TextEditor
 				}
 			}
 		}
-		Thread thread;
+//		Thread thread;
 		
 		public void Start ()
 		{
+			ThreadPool.QueueUserWorkItem (new WaitCallback (Run));
+/*
 			thread = new Thread (new ThreadStart (Run));
 			thread.Priority = ThreadPriority.Lowest;
 			thread.IsBackground = true;
-			thread.Start ();
+			thread.Start ();*/
 		}
 		
 		public void Stop ()
@@ -72,8 +74,13 @@ namespace Mono.TextEditor
 		
 		public void WaitForFinish ()
 		{
-			if (thread != null && !IsStopped)
-				thread.Join (500);
+			int i = 0;
+			while (i < 100 && !IsStopped) {
+				Thread.Sleep (10);
+				i++;
+			}
+			//if (thread != null && !IsStopped)
+			//	thread.Join (500);
 		}
 		
 		void SetStopped ()
@@ -85,7 +92,7 @@ namespace Mono.TextEditor
 		
 		protected abstract void InnerRun ();
 		
-		void Run ()
+		void Run (object stateInfo)
 		{
 			try {
 				while (!IsStopping) {

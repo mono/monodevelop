@@ -1,5 +1,10 @@
 2009-01-15  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor.Highlighting/WorkerThread.cs: worker threads are now
+	using thread pools.
+
+2009-01-15  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextViewMargin.cs: Made GetLink method more robust.
 
 2009-01-15  Mike Krüger  <mkrueger@novell.com>
