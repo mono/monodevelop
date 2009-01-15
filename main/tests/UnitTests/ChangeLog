@@ -1,3 +1,7 @@
+2009-01-15  Mike Krüger  <mkrueger@novell.com>
+
+	* UnitTests.mdp: unit tests are now working again.
+
 2009-01-13  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharpBinding/FindMemberVisitorTests.cs: added find event

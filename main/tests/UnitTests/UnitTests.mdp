@@ -54,13 +54,13 @@
     <File name="MonoDevelop.CSharpBinding/FindMemberVisitorTests.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
-    <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <ProjectReference type="Gac" localcopy="False" specificVersion="False" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Projects" />
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Core" />
-    <ProjectReference type="Gac" localcopy="True" refto="nunit.core, Version=2.2.0.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77" />
-    <ProjectReference type="Gac" localcopy="True" refto="nunit.framework, Version=2.2.0.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77" />
-    <ProjectReference type="Gac" localcopy="True" refto="nunit.util, Version=2.2.0.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77" />
-    <ProjectReference type="Gac" localcopy="True" refto="System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <ProjectReference type="Gac" localcopy="False" specificVersion="False" refto="nunit.core, Version=2.2.0.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77" />
+    <ProjectReference type="Gac" localcopy="False" specificVersion="False" refto="nunit.framework, Version=2.2.0.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77" />
+    <ProjectReference type="Gac" localcopy="False" specificVersion="False" refto="nunit.util, Version=2.2.0.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77" />
+    <ProjectReference type="Gac" localcopy="False" specificVersion="False" refto="System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Deployment" />
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Autotools" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.CSharpBinding" />
@@ -68,11 +68,11 @@
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Ide" />
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Projects.Gui" />
     <ProjectReference type="Project" localcopy="False" refto="NRefactory" />
-    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.XmlEditor" />
+    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.XmlEditor" />
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.AspNet" />
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Components" />
-    <ProjectReference type="Gac" localcopy="True" refto="gtk-dotnet, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="True" refto="System.Core, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <ProjectReference type="Gac" localcopy="False" specificVersion="False" refto="gtk-dotnet, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="False" specificVersion="False" refto="System.Core, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   </References>
   <GtkDesignInfo />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" ExecuteTargetName="test" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../..">
