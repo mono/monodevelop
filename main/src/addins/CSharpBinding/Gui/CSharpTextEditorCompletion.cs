@@ -402,7 +402,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				}
 				return HandleKeywordCompletion (completionContext, result, i, token);
 			default:
-				if (Char.IsLetter (completionChar) && TextEditorProperties.EnableAutoCodeCompletion
+				if ((Char.IsLetter (completionChar) || completionChar == '_') && TextEditorProperties.EnableAutoCodeCompletion
 					    && !stateTracker.Engine.IsInsideDocLineComment
 					    && !stateTracker.Engine.IsInsideOrdinaryCommentOrString)
 				{
