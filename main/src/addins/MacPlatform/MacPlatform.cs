@@ -69,7 +69,7 @@ namespace MonoDevelop.Platform
 		}
 
 		public override string DefaultMonospaceFont {
-			get { return "Lucida Grade 14"; }
+			get { return "Lucida Grande 14"; }
 		}
 		
 		public override string Name {

@@ -1,3 +1,7 @@
+2009-01-15  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MacPlatform.cs: Fix spelling of default font's name.
+
 2008-12-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am: Make it work for parallel build.
