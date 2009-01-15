@@ -300,13 +300,17 @@ namespace MonoDevelop.SourceEditor
 			if (extension != null) {
 				if (ExtensionKeyPress (evnt.Key, ch, evnt.State)) 
 					result = base.OnIMProcessedKeyPressEvent (evnt, ch);
+				if (returnBetweenBraces) {
+					Caret.Offset = initialOffset;
+					ExtensionKeyPress (Gdk.Key.Return, (char)0, Gdk.ModifierType.None);
+				}			
 			} else {
 				result = base.OnIMProcessedKeyPressEvent (evnt, ch);
+				if (returnBetweenBraces) {
+					Caret.Offset = initialOffset;
+					base.SimulateKeyPress (Gdk.Key.Return, 0, Gdk.ModifierType.None);
+				}
 			}
-			if (returnBetweenBraces) {
-				Caret.Offset = initialOffset;
-				ExtensionKeyPress (Gdk.Key.Return, (char)0, Gdk.ModifierType.None);
-			}			
 /* auto insert templates IS annoying !!!
 			// auto insert templates
 			if (!templateInserted &&
