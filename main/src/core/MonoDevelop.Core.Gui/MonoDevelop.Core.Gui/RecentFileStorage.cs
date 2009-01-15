@@ -54,7 +54,7 @@ namespace MonoDevelop.Core.Gui
 		static readonly string RecentFileFullPath = Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.Personal), FileName);
 				
 		FileSystemWatcher watcher;
-        ReaderWriterLock readerWriterLock = new ReaderWriterLock();
+		object writerLock = new object ();
 		
 		public RecentFileStorage()
 		{
@@ -74,7 +74,7 @@ namespace MonoDevelop.Core.Gui
 			OnRecentFilesChanged (EventArgs.Empty);
 		}
 		
-		int lockLevel = 0;
+	/*	int lockLevel = 0;
 		bool IsLocked {
 			get {
 				return lockLevel > 0;
@@ -98,14 +98,15 @@ namespace MonoDevelop.Core.Gui
 				readerWriterLock.ReleaseWriterLock ();
 				watcher.EnableRaisingEvents = true;
 			}
-		}
+		}*/
 		
 		delegate bool RecentItemPredicate (RecentItem item);
 		delegate void RecentItemOperation (RecentItem item);
 		void FilterOut (RecentItemPredicate pred)
 		{
-			ObtainLock ();
-			try {
+			//ObtainLock ();
+			lock (writerLock) {
+				//try {
 				bool filteredSomething = false;
 				List<RecentItem> store = ReadStore (0);
 				if (store != null) {
@@ -120,14 +121,16 @@ namespace MonoDevelop.Core.Gui
 					if (filteredSomething) 
 						WriteStore (store);
 				}
-			} finally {
+			/*} finally {
 				ReleaseLock ();
+			}*/
 			}
 		}
 		void RunOperation (bool writeBack, RecentItemOperation operation)
 		{
-			ObtainLock ();
-			try {
+			lock (writerLock) {
+			/*ObtainLock ();
+			try {*/
 				List<RecentItem> store = ReadStore (0);
 				if (store != null) {
 					for (int i = 0; i < store.Count; ++i) 
@@ -135,8 +138,9 @@ namespace MonoDevelop.Core.Gui
 					if (writeBack) 
 						WriteStore (store);
 				}
-			} finally {
+			/*} finally {
 				ReleaseLock ();
+			}*/
 			}
 		}
 		
@@ -202,7 +206,7 @@ namespace MonoDevelop.Core.Gui
 		
 		void CheckLimit (string group, int limit)
 		{
-			Debug.Assert (IsLocked);
+			//Debug.Assert (IsLocked);
 			RecentItem[] items = GetItemsInGroup (group);
 			for (int i = limit; i < items.Length; i++)
 				this.RemoveItem (items[i]);
@@ -210,8 +214,9 @@ namespace MonoDevelop.Core.Gui
 		
 		public void AddWithLimit (RecentItem item, string group, int limit)
 		{
-			ObtainLock ();
-			try {
+			lock (writerLock) {
+			/*ObtainLock ();
+			try {*/
 				RemoveItem (item.Uri);
 				List<RecentItem> store = ReadStore (0);
 				if (store != null) {
@@ -219,14 +224,15 @@ namespace MonoDevelop.Core.Gui
 					WriteStore (store);
 					CheckLimit (group, limit);
 				}
-			} finally {
+			/*} finally {
 				ReleaseLock ();
+			}*/
 			}
 		}
 		const int MAX_TRIES = 5;
 		List<RecentItem> ReadStore (int numberOfTry)
 		{
-			Debug.Assert (IsLocked);
+			//Debug.Assert (IsLocked);
 			List<RecentItem> result = new List<RecentItem> ();
 			if (!File.Exists (RecentFileStorage.RecentFileFullPath))
 				return result;
@@ -262,7 +268,7 @@ namespace MonoDevelop.Core.Gui
 		static Encoding utf8WithoutByteOrderMark = new UTF8Encoding (false);
 		void WriteStore (List<RecentItem> items)
 		{
-			Debug.Assert (IsLocked);
+			//Debug.Assert (IsLocked);
 			items.Sort ();
 			if (items.Count > MaxRecentItemsCount)
 				items.RemoveRange (MaxRecentItemsCount, items.Count - MaxRecentItemsCount);

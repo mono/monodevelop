@@ -1,3 +1,8 @@
+2009-01-15  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Core.Gui/RecentFileStorage.cs: fixed 'Bug 466238 -
+	RecentFileStorage is extremely wasteful of threads'.
+
 2009-01-14  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:
