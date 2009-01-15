@@ -1,3 +1,8 @@
+2009-01-15  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/CSharpTextEditorCompletion.cs: Added 'Bug 466063 - Missing keyword
+	'global' from code completion'.
+
 2009-01-13  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Gui/MemberCompletionData.cs:

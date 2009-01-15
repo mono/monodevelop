@@ -1100,6 +1100,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				AddNRefactoryKeywords (result, ICSharpCode.NRefactory.Parser.CSharp.Tokens.InterfaceLevel);
 				resolver.AddAccessibleCodeCompletionData (expressionResult.ExpressionContext, result);
 			} else if (expressionResult.ExpressionContext == ExpressionContext.MethodBody) {
+				result.Add ("global", "md-literal");
 				AddNRefactoryKeywords (result, ICSharpCode.NRefactory.Parser.CSharp.Tokens.StatementStart);
 				AddPrimitiveTypes (result);
 				resolver.AddAccessibleCodeCompletionData (expressionResult.ExpressionContext, result);
@@ -1136,6 +1137,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				result.Add ("remove", "md-literal");
 			} //else if (expressionResult.ExpressionContext == ExpressionContext.FullyQualifiedType) {} 
 			else if (expressionResult.ExpressionContext == ExpressionContext.Default) {
+				result.Add ("global", "md-literal");
 				AddPrimitiveTypes (result);
 				AddNRefactoryKeywords (result, ICSharpCode.NRefactory.Parser.CSharp.Tokens.ExpressionStart);
 				AddNRefactoryKeywords (result, ICSharpCode.NRefactory.Parser.CSharp.Tokens.ExpressionContent);
@@ -1144,6 +1146,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				AddNRefactoryKeywords (result, ICSharpCode.NRefactory.Parser.CSharp.Tokens.GlobalLevel);
 				CodeTemplateService.AddCompletionDataForExtension (".cs", result);
 			} else {
+				result.Add ("global", "md-literal");
 				AddPrimitiveTypes (result);
 				resolver.AddAccessibleCodeCompletionData (expressionResult.ExpressionContext, result);
 			}
