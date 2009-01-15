@@ -1,3 +1,7 @@
+2009-01-15  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* JavaLanguageBinding.cs: Fix warning (duplicate using statement).
+
 2008-12-09  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* JavaBinding.mdp: Don't require a specific version of Mono.Addins.

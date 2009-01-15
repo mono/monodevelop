@@ -32,7 +32,6 @@ using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.CodeGeneration;
 
 namespace JavaBinding
