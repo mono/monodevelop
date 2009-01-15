@@ -1,3 +1,9 @@
+2009-01-15  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Gui/ProjectConfigurationPropertyPanel.cs: Remove unused parameter.
+
+	* JavaBinding.mdp: Updated.
+
 2009-01-15  Andrés G. Aragoneses  <aaragoneses@novell.com>
 
 	* JavaLanguageBinding.cs: Fix warning (duplicate using statement).

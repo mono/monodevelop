@@ -34,7 +34,7 @@ namespace JavaBinding
 		
 		public override Widget CreatePanelWidget()
 		{
-			return (widget = new CodeGenerationPanelWidget (ConfigurationData));
+			return (widget = new CodeGenerationPanelWidget ());
 		}
 		
 		public override void LoadConfigData ()
@@ -54,7 +54,7 @@ namespace JavaBinding
 		DotNetProjectConfiguration configuration;
 		DotNetProject project;
 		
-		public CodeGenerationPanelWidget (ConfigurationData configData)
+		public CodeGenerationPanelWidget ()
 		{	
 			Build ();
 			
