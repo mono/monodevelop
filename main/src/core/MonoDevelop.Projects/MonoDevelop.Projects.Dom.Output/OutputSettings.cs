@@ -54,7 +54,7 @@ namespace MonoDevelop.Projects.Dom.Output
 				EmitNameCallback (domVisitable, ref text);
 				return text;
 			}
-			return IncludeMarkup ? PangoFormat (text) : text;
+			return text;
 		}
 		
 		public string EmitModifiers (string text)

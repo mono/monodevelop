@@ -1,5 +1,9 @@
 2009-01-15  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Dom.Output/OutputSettings.cs: fixed markup bug.
+
+2009-01-15  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Dom.Output/OutputSettings.cs: Added some markup
 	features for ambiences.
 
