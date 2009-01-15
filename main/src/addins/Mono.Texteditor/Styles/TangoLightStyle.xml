@@ -91,7 +91,7 @@
 	<Style name="commentkw" color="chameleon3" weight="bold" />
 	<Style name="commenttag" color="chameleon3"/>
 	
-	<Style name="link" color="skyblue3"/>
+	<Style name="link" color="blue"/>
 	
 	<Style name="digit" color="plum2"/>
 	<Style name="literal" color="plum2"/>

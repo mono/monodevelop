@@ -1,3 +1,8 @@
+2009-01-15  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor.Highlighting/MarkupSyntaxMode.cs: Markup syntax mode
+	now takes default color from style.
+
 2009-01-14  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.TextEditor/TextViewMargin.cs: Fix NRE on docs without
