@@ -83,7 +83,7 @@ namespace MonoDevelop.CSharpBinding
 			result.CallingMember = resolver.CallingMember;
 			result.ResolvedType = type;
 			result.UnresolvedType = type;
-			if (unit != null && resolver.Dom != null && type != null) {
+			if (unit != null && resolver.Dom != null && type != null && type.Type == null) {
 				SearchTypeRequest req = new SearchTypeRequest (unit, type);
 				req.CallingType = resolver.CallingType;
 				IType searchedType = resolver.Dom.SearchType (req);
@@ -430,10 +430,9 @@ namespace MonoDevelop.CSharpBinding
 				string fullName = namespaceResult.Namespace + "." + fieldReferenceExpression.FieldName;
 				if (resolver.Dom.NamespaceExists (fullName, true))
 					return new NamespaceResolveResult (fullName);
-				
 				IType type = resolver.Dom.GetType (fullName);
 				if (type != null) {
-					result = CreateResult (fullName);
+					result = CreateResult (this.resolver.Unit, new DomReturnType (type));
 					result.StaticResolve = true;
 					return result;
 				}

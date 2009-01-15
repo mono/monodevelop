@@ -1,5 +1,10 @@
 2009-01-15  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/ResolveVisitor.cs: fixed 'Bug 466337 - Incorrect intelisense for
+	class attribute'.
+
+2009-01-15  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/CSharpTextEditorCompletion.cs: fixed "Bug 466329 - Autocomplete
 	doesn't activate with "_"".
 
