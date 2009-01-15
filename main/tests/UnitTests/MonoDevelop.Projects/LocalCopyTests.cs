@@ -63,6 +63,8 @@ namespace MonoDevelop.Projects
 				"TextFile1.txt",
 				"folder/baz.txt",
 				"foo/bar.txt",
+				"quux.txt",
+				"VSLocalCopyTest.exe.config",
 			});
 			
 			//FIXME: all of these should have mdb files in release mode.
@@ -75,6 +77,8 @@ namespace MonoDevelop.Projects
 				"TextFile1.txt",
 				"folder/baz.txt",
 				"foo/bar.txt",
+				"quux.txt",
+				"VSLocalCopyTest.exe.config",
 			});
 			
 			AssertOutputFiles (sol, "ClassLibrary1", "Debug", new string[] {

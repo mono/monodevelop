@@ -1,3 +1,8 @@
+2009-01-15  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects/LocalCopyTests.cs: Test local-copy of external
+	files. Patch from Sam Chuparkoff.
+
 2009-01-15  Mike Krüger  <mkrueger@novell.com>
 
 	* UnitTests.mdp: unit tests are now working again.
