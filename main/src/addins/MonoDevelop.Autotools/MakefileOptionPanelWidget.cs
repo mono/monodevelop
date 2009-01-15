@@ -859,7 +859,7 @@ namespace MonoDevelop.Autotools
 		{
 			if (cbBuildTarget.Sensitive && cbBuildTarget.Active) {
 				BuildTargetName.Sensitive = true;
-				BuildTargetName.Text = "all";
+				BuildTargetName.Text = string.IsNullOrEmpty(data.BuildTargetName)? "all": data.BuildTargetName;
 			} else {
 				BuildTargetName.Sensitive = false;
 				BuildTargetName.Text = "";
@@ -870,7 +870,7 @@ namespace MonoDevelop.Autotools
 		{
 			if (cbRunTarget.Sensitive && cbRunTarget.Active) {
 				ExecuteTargetName.Sensitive = true;
-				ExecuteTargetName.Text = "run";
+				ExecuteTargetName.Text = string.IsNullOrEmpty(data.ExecuteTargetName)? "run": data.ExecuteTargetName;
 			} else {
 				ExecuteTargetName.Sensitive = false;
 				ExecuteTargetName.Text = "";
@@ -881,7 +881,7 @@ namespace MonoDevelop.Autotools
 		{
 			if (cbCleanTarget.Sensitive && cbCleanTarget.Active) {
 				CleanTargetName.Sensitive = true;
-				CleanTargetName.Text = "clean";
+				CleanTargetName.Text = string.IsNullOrEmpty(data.CleanTargetName)? "clean": data.CleanTargetName;
 			} else {
 				CleanTargetName.Sensitive = false;
 				CleanTargetName.Text = "";

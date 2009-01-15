@@ -1,3 +1,7 @@
+2009-01-15  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* MakefileOptionPanelWidget.cs: Don't overwrite saved targets.
+
 2009-01-14  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* MakefileData.cs: Add vala error regexes.
