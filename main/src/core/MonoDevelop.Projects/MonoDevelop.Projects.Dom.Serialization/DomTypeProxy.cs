@@ -75,7 +75,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		public override string ToString ()
 		{
-			return String.Format ("[DomTypeProxy: Entry={0}]", this.entry);
+			return String.Format ("[DomTypeProxy: Entry={0}, WrappedType={1}]", this.entry, this.WrappedType);
 		}
 		
 		public override string Name {
@@ -311,7 +311,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		bool HasContent (ContentFlags cf)
 		{
-			return (entry.ContentFlags & cf) != 0 && WrappedType != null;
+			return WrappedType != null || (entry.ContentFlags & cf) != 0;
 		}
 	}
 }
