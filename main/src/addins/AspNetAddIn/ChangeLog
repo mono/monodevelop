@@ -1,5 +1,10 @@
 2009-01-16  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.AspNet.Deployment/AspNetDeployServiceExtension.cs: Deploy
+	all files marked as "Content" rather than all ASP.NET files.
+
+2009-01-16  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.AspNet/AspNetAppProject.cs: Add JavaScript to WebSubType.
 
 2009-01-16  Michael Hutchinson  <mhutchinson@novell.com>
