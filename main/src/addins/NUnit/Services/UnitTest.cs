@@ -301,6 +301,17 @@ namespace MonoDevelop.NUnit
 			get { return ownerSolutionItem; }
 		}
 		
+		public IWorkspaceObject OwnerObject {
+			get {
+				if (ownerSolutionItem != null)
+					return ownerSolutionItem;
+				else if (parent != null)
+					return parent.OwnerObject;
+				else
+					return null;
+			}
+		}
+		
 		internal string StoreRelativeName {
 			get {
 				if (resultsStore != null || Parent == null)

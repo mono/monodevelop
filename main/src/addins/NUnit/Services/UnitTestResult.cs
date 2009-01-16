@@ -34,6 +34,7 @@ using System.Globalization;
 
 namespace MonoDevelop.NUnit
 {
+	[Serializable]
 	public class UnitTestResult
 	{
 		DateTime testDate;

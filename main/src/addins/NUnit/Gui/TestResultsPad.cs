@@ -454,7 +454,7 @@ namespace MonoDevelop.NUnit
 		SourceCodeLocation GetSourceCodeLocation (UnitTest test, string stackTrace)
 		{
 			if (!String.IsNullOrEmpty (stackTrace)) {
-				Match match = Regex.Match (stackTrace, @"\sin\s(.*?):(\d+)", RegexOptions.Multiline);
+				Match match = Regex.Match (stackTrace, @"\s*?at\s(?!NUnit\.Framework).*?\sin\s(.*?):(\d+)", RegexOptions.Multiline);
 				while (match.Success) {
 					try	{
 						int line = Int32.Parse (match.Groups[2].Value);
@@ -546,13 +546,14 @@ namespace MonoDevelop.NUnit
 			}
 			
 			string msg = GettextCatalog.GetString ("Running {0} ...", test.FullName);
-			TextIter it = outputView.Buffer.GetIterAtMark (outputView.Buffer.InsertMark);
+			TextIter it = outputView.Buffer.EndIter;
 			outIters [test] = it.Offset;
-			outputView.Buffer.InsertWithTags (ref it, msg + "\n", bold);
+			outputView.Buffer.InsertWithTags (ref it, msg, bold);
+			outputView.Buffer.Insert (ref it, "\n");
 			if (result.ConsoleOutput != null)
-				outputView.Buffer.InsertAtCursor (result.ConsoleOutput);
+				outputView.Buffer.Insert (ref it, result.ConsoleOutput);
 			if (result.ConsoleError != null)
-				outputView.Buffer.InsertAtCursor (result.ConsoleError);
+				outputView.Buffer.Insert (ref it, result.ConsoleError);
 			outputView.ScrollMarkOnscreen (outputView.Buffer.InsertMark);
 		}
 		

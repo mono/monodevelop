@@ -31,6 +31,7 @@ using System;
 using System.Reflection;
 using System.IO;
 using System.Collections;
+using System.Collections.Generic;
 
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
@@ -119,6 +120,21 @@ namespace MonoDevelop.NUnit
 		
 		protected override string TestInfoCachePath {
 			get { return Path.Combine (resultsPath, storeId + ".test-cache"); }
+		}
+		
+		protected override IEnumerable<string> SupportAssemblies {
+			get {
+				// Referenced assemblies which are not in the gac and which are not localy copied have to be preloaded
+				DotNetProject project = base.OwnerSolutionItem as DotNetProject;
+				if (project != null) {
+					foreach (ProjectReference pr in project.References) {
+						if (pr.ReferenceType != ReferenceType.Gac && !pr.LocalCopy) {
+							foreach (string file in pr.GetReferencedFileNames (IdeApp.Workspace.ActiveConfiguration))
+								yield return file;
+						}
+					}
+				}
+			}
 		}
 	}
 }

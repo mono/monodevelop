@@ -31,12 +31,15 @@ using System;
 using System.Reflection;
 using System.IO;
 using System.Collections;
+using System.Collections.Generic;
 using System.Threading;
 using System.Runtime.Serialization.Formatters.Binary;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using NUnit.Core;
+using NUnit.Core.Filters;
+using MonoDevelop.NUnit.External;
 
 namespace MonoDevelop.NUnit
 {
@@ -47,7 +50,7 @@ namespace MonoDevelop.NUnit
 		TestInfoCache testInfoCache = new TestInfoCache ();
 		bool cacheLoaded;
 		
-		static Queue loadQueue = new Queue ();
+		static Queue<LoadData> loadQueue = new Queue<LoadData> ();
 		static bool loaderRunning;
 		
 		public NUnitAssemblyTestSuite (string name): base (name)
@@ -108,7 +111,7 @@ namespace MonoDevelop.NUnit
 				if (Status == TestStatus.Loading)
 					return;
 					
-				TestInfo ti = testInfoCache.GetInfo (AssemblyPath);
+				NunitTestInfo ti = testInfoCache.GetInfo (AssemblyPath);
 				if (ti != null) {
 					FillTests (ti);
 					return;
@@ -128,6 +131,7 @@ namespace MonoDevelop.NUnit
 			ld.Path = AssemblyPath;
 			ld.TestInfoCachePath = cacheLoaded ? null : TestInfoCachePath;
 			ld.Callback = new WaitCallback (AsyncCreateTests);
+			ld.SupportAssemblies = new List<string> (SupportAssemblies);
 			
 			AsyncLoadTest (ld);
 
@@ -175,10 +179,10 @@ namespace MonoDevelop.NUnit
 			}
 		}
 		
-		void FillTests (TestInfo ti)
+		void FillTests (NunitTestInfo ti)
 		{
 			if (ti.Tests == null) return;
-			foreach (TestInfo test in ti.Tests) {
+			foreach (NunitTestInfo test in ti.Tests) {
 				if (test.Tests != null)
 					Tests.Add (new NUnitTestSuite (this, test));
 				else
@@ -223,7 +227,7 @@ namespace MonoDevelop.NUnit
 
 					if (ld.TestInfoCachePath != null && File.Exists (ld.TestInfoCachePath)) {
 						ld.InfoCache = TestInfoCache.Read (ld.TestInfoCachePath);
-						TestInfo info = ld.InfoCache.GetInfo (ld.Path);
+						NunitTestInfo info = ld.InfoCache.GetInfo (ld.Path);
 						if (info != null) {
 							ld.Info = info;
 							ld.Callback (ld);
@@ -239,7 +243,7 @@ namespace MonoDevelop.NUnit
 				try {
 					if (File.Exists (ld.Path)) {
 						runner = (ExternalTestRunner) Runtime.ProcessService.CreateExternalProcessObject (typeof(ExternalTestRunner), false);
-						ld.Info = runner.GetTestInfo (ld.Path);
+						ld.Info = runner.GetTestInfo (ld.Path, ld.SupportAssemblies);
 					}
 				} catch (Exception ex) {
 					ld.Error = ex;
@@ -268,16 +272,18 @@ namespace MonoDevelop.NUnit
 			ExternalTestRunner runner = (ExternalTestRunner) Runtime.ProcessService.CreateExternalProcessObject (typeof(ExternalTestRunner), false);
 			LocalTestMonitor localMonitor = new LocalTestMonitor (testContext, runner, test, suiteName, testName != null);
 			
-			IFilter filter = null;
+			ITestFilter filter = null;
 			
 			if (testName != null) {
-				filter = new TestNameFilter (testName);
+				filter = new TestNameFilter (suiteName + "." + testName);
 			} else {
 				NUnitCategoryOptions categoryOptions = (NUnitCategoryOptions) test.GetOptions (typeof(NUnitCategoryOptions));
 				if (categoryOptions.EnableFilter && categoryOptions.Categories.Count > 0) {
 					string[] cats = new string [categoryOptions.Categories.Count];
 					categoryOptions.Categories.CopyTo (cats, 0);
-					filter = new CategoryFilter (cats, categoryOptions.Exclude);
+					filter = new CategoryFilter (cats);
+					if (categoryOptions.Exclude)
+						filter = new NotFilter (filter);
 				}
 			}
 			
@@ -289,11 +295,9 @@ namespace MonoDevelop.NUnit
 			UnitTestResult result;
 			
 			try {
-				TestResult res = runner.Run (localMonitor, filter, AssemblyPath, suiteName);
+				result = runner.Run (localMonitor, filter, AssemblyPath, suiteName, new List<string> (SupportAssemblies));
 				if (testName != null)
 					result = localMonitor.SingleTestResult;
-				else
-					result = localMonitor.GetLocalTestResult (res);
 			} catch (Exception ex) {
 				LoggingService.LogError (ex.ToString ());
 				if (localMonitor.RunningTest != null) {
@@ -326,6 +330,10 @@ namespace MonoDevelop.NUnit
 			get;
 		}
 		
+		protected virtual IEnumerable<string> SupportAssemblies {
+			get { yield break; }
+		}
+		
 		// File where cached test info for this test suite will be saved
 		// Returns null by default which means that test info will not be saved.
 		protected virtual string TestInfoCachePath {
@@ -337,9 +345,10 @@ namespace MonoDevelop.NUnit
 			public string Path;
 			public string TestInfoCachePath;
 			public Exception Error;
-			public TestInfo Info;
+			public NunitTestInfo Info;
 			public TestInfoCache InfoCache;
 			public WaitCallback Callback;
+			public List<string> SupportAssemblies;
 		}
 		
 		class RunData
@@ -371,7 +380,7 @@ namespace MonoDevelop.NUnit
 			[NonSerialized]
 			bool modified;
 			
-			public void SetInfo (string path, TestInfo info)
+			public void SetInfo (string path, NunitTestInfo info)
 			{
 				if (File.Exists (path)) {
 					CachedTestInfo cti = new CachedTestInfo ();
@@ -382,7 +391,7 @@ namespace MonoDevelop.NUnit
 				}
 			}
 			
-			public TestInfo GetInfo (string path)
+			public NunitTestInfo GetInfo (string path)
 			{
 				CachedTestInfo cti = (CachedTestInfo) table [path];
 				if (cti != null && File.Exists (path) && File.GetLastWriteTime (path) == cti.LastWriteTime)
@@ -420,33 +429,7 @@ namespace MonoDevelop.NUnit
 		class CachedTestInfo
 		{
 			public DateTime LastWriteTime;
-			public TestInfo Info;
-		}
-		
-		[Serializable]
-		public class TestNameFilter: IFilter
-		{
-			string name;
-			
-			public TestNameFilter (string name)
-			{
-				this.name = name;
-			}
-			
-			public bool Pass (TestSuite suite)
-			{
-				return true;
-			}
-			
-			public bool Pass (TestCase test)
-			{
-				return test.Name == name;
-			}
-
-			public bool Exclude
-			{
-				get { return false; }
-			}
+			public NunitTestInfo Info;
 		}
 	}
 }

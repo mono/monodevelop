@@ -1,8 +1,10 @@
+SUBDIRS = NUnitRunner .
 
 ADDIN_BUILD = $(top_builddir)/build/AddIns/NUnit
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.NUnit.dll
 
 DEPS =  \
+	$(top_builddir)/build/AddIns/NUnit/NUnitRunner.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
@@ -15,7 +17,9 @@ REFS =  \
 	$(GTK_SHARP_LIBS) \
 	$(MONO_ADDINS_LIBS) \
 	-r:$(top_srcdir)/src/addins/NUnit/lib/nunit.core.dll \
+	-r:$(top_srcdir)/src/addins/NUnit/lib/nunit.core.interfaces.dll \
 	-r:$(top_srcdir)/src/addins/NUnit/lib/nunit.framework.dll \
+	-r:$(top_srcdir)/src/addins/NUnit/lib/nunit.util.dll \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Xml
@@ -82,7 +86,9 @@ RES =  \
 
 NUNIT_FILES = \
 nunit.core.dll \
-nunit.framework.dll
+nunit.framework.dll \
+nunit.core.interfaces.dll \
+nunit.util.dll
 
 SRC_NUNIT_FILES = $(addprefix $(srcdir)/lib/, $(NUNIT_FILES))
 BUILD_NUNIT_FILES = $(addprefix $(ADDIN_BUILD)/, $(NUNIT_FILES))

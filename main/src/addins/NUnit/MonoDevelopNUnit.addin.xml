@@ -11,7 +11,9 @@
 	<Runtime>
 		<Import assembly="MonoDevelop.NUnit.dll" />
 		<Import assembly="nunit.core.dll" />
+		<Import assembly="nunit.core.interfaces.dll" />
 		<Import assembly="nunit.framework.dll" />
+		<Import assembly="nunit.util.dll" />
 	</Runtime>
 	
 	<Dependencies>
@@ -66,8 +68,9 @@
 	<!-- Extensions -->
 
 	<Extension path="/MonoDevelop/Core/SupportPackages">
-		<Package name="nunit" version="2.2.9.0" clrVersion="Default">
+		<Package name="nunit" version="2.4.8.0" clrVersion="Default">
 			<Assembly file="nunit.core.dll" />
+			<Assembly file="nunit.core.interfaces.dll" />
 			<Assembly file="nunit.framework.dll" />
 		</Package>
 	</Extension>

@@ -32,6 +32,7 @@ using System.Collections;
 
 using MonoDevelop.Core;
 using NUnit.Core;
+using MonoDevelop.NUnit.External;
 
 namespace MonoDevelop.NUnit
 {
@@ -40,7 +41,7 @@ namespace MonoDevelop.NUnit
 		NUnitAssemblyTestSuite rootSuite;
 		string className;
 		
-		public NUnitTestCase (NUnitAssemblyTestSuite rootSuite, TestInfo tinfo): base (tinfo.Name)
+		public NUnitTestCase (NUnitAssemblyTestSuite rootSuite, NunitTestInfo tinfo): base (tinfo.Name)
 		{
 			className = tinfo.PathName;
 			this.rootSuite = rootSuite;

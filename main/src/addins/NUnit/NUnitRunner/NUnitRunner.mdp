@@ -1,0 +1,36 @@
+<Project name="NUnitRunner" fileversion="2.0" language="C#" targetFramework="2.0" ctype="DotNetProject">
+  <Configurations active="Debug">
+    <Configuration name="Debug" ctype="DotNetProjectConfiguration">
+      <Output directory="../../../../build/AddIns/NUnit" assembly="NUnitRunner" />
+      <Build debugmode="True" target="Library" />
+      <Execution runwithwarnings="True" consolepause="False" runtime="MsNet" />
+      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="False" unsafecodeallowed="False" generateoverflowchecks="False" definesymbols="DEBUG" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+    </Configuration>
+    <Configuration name="Release" ctype="DotNetProjectConfiguration">
+      <Output directory="bin/Release" assembly="NUnitRunner" />
+      <Build debugmode="False" target="Library" />
+      <Execution runwithwarnings="True" consolepause="False" runtime="MsNet" />
+      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="False" unsafecodeallowed="False" generateoverflowchecks="False" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+    </Configuration>
+  </Configurations>
+  <Contents>
+    <File name="NUnitTestRunner.cs" subtype="Code" buildaction="Compile" />
+  </Contents>
+  <References>
+    <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <ProjectReference type="Gac" localcopy="True" refto="System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <ProjectReference type="Assembly" localcopy="True" specificVersion="False" refto="../lib/nunit.core.dll" />
+    <ProjectReference type="Assembly" localcopy="True" specificVersion="False" refto="../lib/nunit.framework.dll" />
+    <ProjectReference type="Assembly" localcopy="True" specificVersion="False" refto="../lib/nunit.core.interfaces.dll" />
+  </References>
+  <GtkDesignInfo />
+  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../..">
+    <BuildFilesVar Sync="True" Name="FILES" />
+    <DeployFilesVar />
+    <ResourcesVar />
+    <OthersVar />
+    <GacRefVar Sync="True" Name="REFS" Prefix="-r:" />
+    <AsmRefVar Sync="True" Name="REFS" Prefix="-r:" />
+    <ProjectRefVar Sync="True" Name="REFS" Prefix="-r:" />
+  </MonoDevelop.Autotools.MakefileInfo>
+</Project>

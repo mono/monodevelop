@@ -1,3 +1,31 @@
+2009-01-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* lib/nunit.util.dll:
+	* lib/nunit.core.dll:
+	* lib/nunit.framework.dll:
+	* MonoDevelopNUnit.addin.xml:
+	* lib/nunit.core.interfaces.dll: Update to latest NUnit.
+
+	* NUnitRunner:
+	* Services/UnitTest.cs:
+	* NUnitRunner/Makefile.am:
+	* Services/NUnitTestCase.cs:
+	* Services/NUnitTestSuite.cs:
+	* Services/UnitTestResult.cs:
+	* NUnitRunner/NUnitRunner.mdp:
+	* Services/ExternalTestRunner.cs:
+	* NUnitRunner/NUnitTestRunner.cs:
+	* Services/NUnitProjectTestSuite.cs:
+	* Services/NUnitAssemblyTestSuite.cs: Changed the way tests are run.
+	Tests are now run in a separate appdomain to avoid conflicts of the
+	tested assembly with MD.
+
+	* Gui/TestResultsPad.cs: Ignore NUnit stack frames when looking for the
+	source of a test failure. Fix some issues with the output pad.
+
+	* Makefile.am:
+	* MonoDevelop.NUnit.mdp: Updated.
+
 2009-01-09  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Gui/TestPad.cs:

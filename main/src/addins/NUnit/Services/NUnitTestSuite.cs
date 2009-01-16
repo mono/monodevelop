@@ -32,16 +32,17 @@ using System.IO;
 using System.Collections;
 using MonoDevelop.Core;
 using NUnit.Core;
+using MonoDevelop.NUnit.External;
 
 namespace MonoDevelop.NUnit
 {
 	class NUnitTestSuite: UnitTestGroup
 	{
-		TestInfo testInfo;
+		NunitTestInfo testInfo;
 		NUnitAssemblyTestSuite rootSuite;
 		string fullName;
 		
-		public NUnitTestSuite (NUnitAssemblyTestSuite rootSuite, TestInfo tinfo): base (tinfo.Name)
+		public NUnitTestSuite (NUnitAssemblyTestSuite rootSuite, NunitTestInfo tinfo): base (tinfo.Name)
 		{
 			fullName = tinfo.PathName != null && tinfo.PathName.Length > 0 ? tinfo.PathName + "." + tinfo.Name : tinfo.Name;
 			this.testInfo = tinfo;
@@ -62,7 +63,7 @@ namespace MonoDevelop.NUnit
 			if (testInfo.Tests == null)
 				return;
 			
-			foreach (TestInfo test in testInfo.Tests) {
+			foreach (NunitTestInfo test in testInfo.Tests) {
 				if (test.Tests != null)
 					Tests.Add (new NUnitTestSuite (rootSuite, test));
 				else

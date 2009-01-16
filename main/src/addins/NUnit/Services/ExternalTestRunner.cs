@@ -31,294 +31,116 @@ using System;
 using System.Reflection;
 using System.IO;
 using System.Collections;
+using System.Collections.Generic;
 using System.Threading;
+using System.Text;
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using NUnit.Core;
+using NUnit.Util;
 using NF = NUnit.Framework;
+using NC = NUnit.Core;
 
-namespace MonoDevelop.NUnit
+namespace MonoDevelop.NUnit.External
 {
-	[AddinDependency ("MonoDevelop.Projects")]
 	class ExternalTestRunner: RemoteProcessObject
 	{
-		string assemblyName;
-		StringWriter stdout = new StringWriter ();
-		StringWriter stderr = new StringWriter ();
+		NUnitTestRunner runner;
 		
-		public TestResult Run (EventListener listener, IFilter filter, string path, string suiteName)
+		public UnitTestResult Run (IRemoteEventListener listener, ITestFilter filter, string path, string suiteName, List<string> supportAssemblies)
 		{
-			TestSuite rootTS = LoadTestSuite (path, suiteName);
-			if (rootTS == null)
-				throw new Exception ("Test suite '" + suiteName + "' not found.");
-
-			// Force the loading of the NUnit.Framework assembly.
-			// It's needed since that dll is not located in the test dll directory.
-			typeof(NF.Assert).ToString ();
-
-			TextWriter origStdout = Console.Out;
-			TextWriter origStderr = Console.Error;
-			Console.SetOut (stdout);
-			Console.SetError (stderr);
+			NUnitTestRunner runner = GetRunner (path);
+			EventListenerWrapper listenerWrapper = listener != null ? new EventListenerWrapper (listener) : null;
 			
-			string cdir = Environment.CurrentDirectory;
-			Environment.CurrentDirectory = Path.GetDirectoryName (path);
-			
-			try {
-				return rootTS.Run (listener, filter);
-			} finally {
-				Environment.CurrentDirectory = cdir;
-				Console.SetOut (origStdout);
-				Console.SetError (origStderr);
-			}
+			TestResult res = runner.Run (listenerWrapper, filter, path, suiteName, supportAssemblies);
+			return listenerWrapper.GetLocalTestResult (res);
 		}
 		
-		public string ResetTestConsoleOutput ()
+		public NunitTestInfo GetTestInfo (string path, List<string> supportAssemblies)
 		{
-			string s = stdout.ToString ();
-			stdout = new StringWriter ();
-			Console.SetOut (stdout);
-			return s;
-		}
-			
-		public string ResetTestConsoleError ()
-		{
-			string s = stderr.ToString ();
-			stderr = new StringWriter ();
-			Console.SetError (stderr);
-			return s;
-		}
-			
-		TestSuite LoadTestSuite (string path, string fullName)
-		{
-			ResolveEventHandler reh = new ResolveEventHandler (TryLoad);
-			AppDomain.CurrentDomain.AssemblyResolve += reh;
-			assemblyName = path;
-
-			try {
-				if (fullName != "")
-					return new TestSuiteBuilder ().Build (path, fullName);
-				else
-					return new TestSuiteBuilder ().Build (path);
-			} finally {
-				AppDomain.CurrentDomain.AssemblyResolve -= reh;
-			}
-		}
-
-		Assembly TryLoad (object sender, ResolveEventArgs args)
-		{
-			try {
-				// NUnit2 uses Assembly.Load on the filename without extension.
-				// This is done just to allow loading from a full path name.
-				return Assembly.LoadFrom (assemblyName);
-			} catch { }
-
-			return null;
+			NUnitTestRunner runner = GetRunner (path);
+			return runner.GetTestInfo (path, supportAssemblies);
 		}
 		
-		public TestInfo GetTestInfo (string path)
+		NUnitTestRunner GetRunner (string assemblyPath)
 		{
-			// Force the loading of the NUnit.Framework assembly.
-			// It's needed since that dll is not located in the test dll directory.
-			typeof(NF.Assert).ToString ();
-
-			TestSuite rootTS = LoadTestSuite (path, "");
-			return BuildTestInfo (rootTS);
-		}
-		
-		TestInfo BuildTestInfo (Test test)
-		{
-			TestInfo ti = new TestInfo ();
-			ti.Name = test.Name;
-
-			// Trim short name from end of full name to get the path
-			string testNameWithDelimiter = "." + test.Name;
-			if (test.FullName.EndsWith (testNameWithDelimiter)) {
-				int pathLength = test.FullName.Length - testNameWithDelimiter.Length;
-				ti.PathName = test.FullName.Substring(0, pathLength );
-			}
-			else
-				ti.PathName = null;
-				
-			if (test.Tests != null && test.Tests.Count > 0) {
-				ti.Tests = new TestInfo [test.Tests.Count];
-				for (int n=0; n<test.Tests.Count; n++)
-					ti.Tests [n] = BuildTestInfo ((Test)test.Tests [n]);
-			}
-			return ti;
+			TestPackage package = new TestPackage (assemblyPath);
+			package.Settings ["ShadowCopyFiles"] = false;
+			DomainManager dm = new DomainManager ();
+			AppDomain domain = dm.CreateDomain (package);
+			string asm = Path.Combine (Path.GetDirectoryName (GetType ().Assembly.Location), "NUnitRunner.dll");
+			runner = (NUnitTestRunner) domain.CreateInstanceFromAndUnwrap (asm, "MonoDevelop.NUnit.External.NUnitTestRunner");
+			runner.Initialize (typeof(NF.Assert).Assembly.Location, typeof(NC.Test).Assembly.Location);
+			return runner;
 		}
 	}
 	
-	[Serializable]
-	class TestInfo
+	class EventListenerWrapper: MarshalByRefObject, EventListener
 	{
-		public string Name;
-		public string PathName;
-		public TestInfo[] Tests;
-	}
-	
-	class LocalTestMonitor: MarshalByRefObject, EventListener
-	{
-		TestContext context;
-		UnitTest rootTest;
-		string rootFullName;
-		ExternalTestRunner runner;
-		UnitTest runningTest;
-		bool singleTestRun;
-		Hashtable outputText = new Hashtable ();
-		Hashtable errorText = new Hashtable ();
-		UnitTestResult singleTestResult;
+		IRemoteEventListener wrapped;
+		StringBuilder consoleOutput;
+		StringBuilder consoleError;
 		
-		public LocalTestMonitor (TestContext context, ExternalTestRunner runner, UnitTest rootTest, string rootFullName, bool singleTestRun)
+		public EventListenerWrapper (IRemoteEventListener wrapped)
 		{
-			this.runner = runner;
-			this.rootFullName = rootFullName;
-			this.rootTest = rootTest;
-			this.context = context;
-			this.singleTestRun = singleTestRun;
+			this.wrapped = wrapped;
 		}
 		
-		public UnitTest RunningTest {
-			get { return runningTest; }
+		public void RunFinished (Exception exception)
+		{
 		}
 		
-		internal UnitTestResult SingleTestResult {
-			get {
-				if (singleTestResult == null)
-					singleTestResult = new UnitTestResult ();
-				return singleTestResult;
-			}
-			set {
-				singleTestResult = value;
-			}
+		public void RunFinished (TestResult results)
+		{
 		}
 		
-		void EventListener.RunStarted (Test [] tests)
+		public void RunStarted (string name, int testCount)
 		{
 		}
-
-		void EventListener.RunFinished (TestResult [] results)
+		
+		public void SuiteFinished (TestSuiteResult result)
 		{
+			wrapped.SuiteFinished (GetTestName (result.Test.TestName), GetLocalTestResult (result));
 		}
-
-		void EventListener.UnhandledException (Exception exception)
+		
+		public void SuiteStarted (TestName suite)
 		{
+			wrapped.SuiteStarted (GetTestName (suite));
 		}
-
-		void EventListener.RunFinished (Exception exc)
+		
+		public void TestFinished (TestCaseResult result)
 		{
-		}
-
-		void EventListener.TestStarted (TestCase testCase)
-		{
-			if (singleTestRun)
-				return;
-			
-			UnitTest t = GetLocalTest (testCase);
-			if (t == null)
-				return;
-			
-			runningTest = t;
-			context.Monitor.BeginTest (t);
-			t.Status = TestStatus.Running;
-		}
-			
-		void EventListener.TestFinished (TestCaseResult result)
-		{
-			outputText [result] = runner.ResetTestConsoleOutput ();
-			errorText [result] = runner.ResetTestConsoleError ();
-			
-			if (singleTestRun) {
-				SingleTestResult = GetLocalTestResult (result);
-				return;
-			}
-			
-			UnitTest t = GetLocalTest ((Test) result.Test);
-			if (t == null)
-				return;
-			
-			UnitTestResult res = GetLocalTestResult (result);
-			if (res == null)
-				return;
-			
-			t.RegisterResult (context, res);
-			context.Monitor.EndTest (t, res);
-			t.Status = TestStatus.Ready;
-			runningTest = null;
-		}
-
-		void EventListener.SuiteStarted (TestSuite suite)
-		{
-			if (singleTestRun)
-				return;
-			
-			UnitTest t = GetLocalTest (suite);
-			if (t == null)
-				return;
-			
-			t.Status = TestStatus.Running;
-			context.Monitor.BeginTest (t);
-		}
-
-		void EventListener.SuiteFinished (TestSuiteResult result)
-		{
-			if (singleTestRun)
-				return;
-			
-			UnitTest t = GetLocalTest ((Test) result.Test);
-			if (t == null)
-				return;
-			
-			UnitTestResult res = GetLocalTestResult (result);
-			t.RegisterResult (context, res);
-			t.Status = TestStatus.Ready;
-			context.Monitor.EndTest (t, res);
+			wrapped.TestFinished (GetTestName (result.Test.TestName), GetLocalTestResult (result));
 		}
 		
 		public void TestOutput (TestOutput testOutput)
 		{
-		}
-
-
-		UnitTest GetLocalTest (Test t)
-		{
-			if (t == null) return null;
-			if (t.Parent == null) return rootTest;
-			
-			string fn = t.FullName;
-			string sname = fn;
-			if (sname.StartsWith (rootFullName)) {
-				sname = sname.Substring (rootFullName.Length);
-			}
-			if (sname.StartsWith (".")) sname = sname.Substring (1);
-			UnitTest tt = FindTest (rootTest, sname);
-			return tt;
+			if (consoleOutput == null)
+				return;
+			else if (testOutput.Type == TestOutputType.Out)
+				consoleOutput.Append (testOutput.Text);
+			else
+				consoleError.Append (testOutput.Text);
 		}
 		
-		UnitTest FindTest (UnitTest t, string testPath)
+		public void TestStarted (TestName testCase)
 		{
-			if (testPath == "")
-				return t;
-
-			UnitTestGroup group = t as UnitTestGroup;
-			if (group == null)
-				return null;
-
-			UnitTest returnTest = group.Tests [testPath];
-			if (returnTest != null)
-				return returnTest;
-
-			string[] paths = testPath.Split (new char[] {'.'}, 2);
-			if (paths.Length == 2) {
-				string nextPathSection = paths[0];
-				string nextTestCandidate = paths[1];
-
-				UnitTest childTest = group.Tests [nextPathSection];
-				if (childTest != null)
-					return FindTest (childTest, nextTestCandidate);
-			}
+			wrapped.TestStarted (GetTestName (testCase));
+			consoleOutput = new StringBuilder ();
+			consoleError = new StringBuilder ();
+		}
+		
+		public override object InitializeLifetimeService ()
+		{
 			return null;
+		}
+		
+		public string GetTestName (TestName t)
+		{
+			if (t == null)
+				return null;
+			return t.FullName;
 		}
 		
 		public UnitTestResult GetLocalTestResult (TestResult t)
@@ -355,11 +177,16 @@ namespace MonoDevelop.NUnit
 			res.Message = t.Message;
 			res.StackTrace = t.StackTrace;
 			res.Time = TimeSpan.FromSeconds (t.Time);
-			res.ConsoleOutput = (string) outputText [t];
-			res.ConsoleError = (string) errorText [t];
+			
+			if (consoleOutput != null) {
+				res.ConsoleOutput = consoleOutput.ToString ();
+				res.ConsoleError = consoleError.ToString ();
+				consoleOutput = null;
+				consoleError = null;
+			}
 			
 			return res;
-		}
+		}		
 		
 		void CountResults (TestSuiteResult ts, ref int s, ref int f, ref int i)
 		{
@@ -378,6 +205,147 @@ namespace MonoDevelop.NUnit
 					CountResults ((TestSuiteResult) t, ref s, ref f, ref i);
 				}
 			}
+		}
+		
+		public void UnhandledException (Exception exception)
+		{
+		}
+	}
+	
+	interface IRemoteEventListener
+	{
+		void TestStarted (string testCase);
+		void TestFinished (string test, UnitTestResult result);
+		void SuiteStarted (string suite);
+		void SuiteFinished (string suite, UnitTestResult result);
+	}
+	
+	class LocalTestMonitor: MarshalByRefObject, IRemoteEventListener
+	{
+		TestContext context;
+		UnitTest rootTest;
+		string rootFullName;
+		UnitTest runningTest;
+		bool singleTestRun;
+		UnitTestResult singleTestResult;
+		
+		public LocalTestMonitor (TestContext context, ExternalTestRunner runner, UnitTest rootTest, string rootFullName, bool singleTestRun)
+		{
+			this.rootFullName = rootFullName;
+			this.rootTest = rootTest;
+			this.context = context;
+			this.singleTestRun = singleTestRun;
+		}
+		
+		public UnitTest RunningTest {
+			get { return runningTest; }
+		}
+		
+		internal UnitTestResult SingleTestResult {
+			get {
+				if (singleTestResult == null)
+					singleTestResult = new UnitTestResult ();
+				return singleTestResult;
+			}
+			set {
+				singleTestResult = value;
+			}
+		}
+		
+		void IRemoteEventListener.TestStarted (string testCase)
+		{
+			if (singleTestRun)
+				return;
+			
+			UnitTest t = GetLocalTest (testCase);
+			if (t == null)
+				return;
+			
+			runningTest = t;
+			context.Monitor.BeginTest (t);
+			t.Status = TestStatus.Running;
+		}
+			
+		void IRemoteEventListener.TestFinished (string test, UnitTestResult result)
+		{
+			if (singleTestRun) {
+				SingleTestResult = result;
+				return;
+			}
+			
+			UnitTest t = GetLocalTest (test);
+			if (t == null)
+				return;
+			
+			t.RegisterResult (context, result);
+			context.Monitor.EndTest (t, result);
+			t.Status = TestStatus.Ready;
+			runningTest = null;
+		}
+
+		void IRemoteEventListener.SuiteStarted (string suite)
+		{
+			if (singleTestRun)
+				return;
+			
+			UnitTest t = GetLocalTest (suite);
+			if (t == null)
+				return;
+			
+			t.Status = TestStatus.Running;
+			context.Monitor.BeginTest (t);
+		}
+
+		void IRemoteEventListener.SuiteFinished (string suite, UnitTestResult result)
+		{
+			if (singleTestRun)
+				return;
+			
+			UnitTest t = GetLocalTest (suite);
+			if (t == null)
+				return;
+			
+			t.RegisterResult (context, result);
+			t.Status = TestStatus.Ready;
+			context.Monitor.EndTest (t, result);
+		}
+		
+		UnitTest GetLocalTest (string sname)
+		{
+			if (sname == null) return null;
+			if (sname == "<root>") return rootTest;
+			
+			if (sname.StartsWith (rootFullName)) {
+				sname = sname.Substring (rootFullName.Length);
+			}
+			if (sname.StartsWith (".")) sname = sname.Substring (1);
+			UnitTest tt = FindTest (rootTest, sname);
+			return tt;
+		}
+		
+		UnitTest FindTest (UnitTest t, string testPath)
+		{
+			if (testPath == "")
+				return t;
+
+			UnitTestGroup group = t as UnitTestGroup;
+			if (group == null)
+				return null;
+
+			UnitTest returnTest = group.Tests [testPath];
+			if (returnTest != null)
+				return returnTest;
+
+			string[] paths = testPath.Split (new char[] {'.'}, 2);
+			if (paths.Length == 2) {
+				string nextPathSection = paths[0];
+				string nextTestCandidate = paths[1];
+
+				UnitTest childTest = group.Tests [nextPathSection];
+				if (childTest != null)
+					return FindTest (childTest, nextTestCandidate);
+			}
+			return null;
 		}
 	}	
 }
