@@ -289,10 +289,11 @@ namespace MonoDevelop.SourceEditor
 			
 			// insert template when space is typed (currently disabled - it's annoying).
 			bool templateInserted = false; //!inStringOrComment && (evnt.Key == Gdk.Key.space) && DoInsertTemplate ();
-			bool returnBetweenBraces = 
+			bool returnBetweenBraces =
 				evnt.Key == Gdk.Key.Return
 				&& (evnt.State & (Gdk.ModifierType.ControlMask | Gdk.ModifierType.ShiftMask)) == Gdk.ModifierType.None
 				&& Caret.Offset > 0
+				&& Caret.Offset < Document.Length
 				&& Document.GetCharAt (Caret.Offset - 1) == '{'
 				&& Document.GetCharAt (Caret.Offset)     == '}'
 				&& !inStringOrComment;
