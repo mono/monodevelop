@@ -1,3 +1,7 @@
+2009-01-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* configure.in: Added new NUnitRunner project.
+
 2009-01-13  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* monodevelop.in: Fix pkgconfig paths. Thanks to Vadim Chekan for this.
