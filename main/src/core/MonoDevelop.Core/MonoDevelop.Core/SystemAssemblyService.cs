@@ -365,6 +365,94 @@ namespace MonoDevelop.Core
 			}
 		}
 		
+		static string GetMDInstallPrefix ()
+		{
+			string location = System.Reflection.Assembly.GetExecutingAssembly ().Location;
+			location = Path.GetDirectoryName (location);
+			// MD is located at $prefix/lib/monodevelop/bin
+			// adding "../../.." should give us $prefix
+			string prefix = Path.Combine (Path.Combine (Path.Combine (location, ".."), ".."), "..");
+			//normalise it
+			return Path.GetFullPath (prefix);
+		}
+		
+		
+		//returns the install prefixes of monodevelop, mono and pkgconfig, and the prefixes /usr and /local
+		static IEnumerable<string> GetSystemPkgConfigDirs ()
+		{
+			yield return GetMDInstallPrefix ();
+			
+			string[] paths = Environment.GetEnvironmentVariable ("PATH").Split (Path.PathSeparator);
+			if (paths != null && paths.Length > 0) {
+				foreach (string prog in new string [] { "mono", "pkgconfig" }) {
+					foreach (string path in paths) {
+						if (path == null)
+							continue;
+						
+						string file = Path.Combine (path, prog);
+						try {
+							if (!File.Exists (file))
+								continue;
+						} catch (IOException ex) {
+							LoggingService.LogError ("Error checking for file '" + file + "'.", ex);
+						}
+						yield return Path.GetFullPath (Path.Combine (path, ".."));		             	   
+					}
+				}
+				
+			}
+		}
+		
+		static IEnumerable<string> GetUnfilteredPkgConfigDirs ()
+		{
+			string envDirs = Environment.GetEnvironmentVariable ("PKG_CONFIG_PATH");
+			if (!String.IsNullOrEmpty (envDirs))
+				foreach (string dir in envDirs.Split (Path.PathSeparator))
+					yield return dir;
+			
+			string[] suffixes = new string [] {
+				Path.Combine ("lib", "pkgconfig"),
+				Path.Combine ("lib64", "pkgconfig"),
+				Path.Combine ("share", "pkgconfig"),
+			};
+			
+			string libDir= Environment.GetEnvironmentVariable ("PKG_CONFIG_LIBDIR");
+			if (!String.IsNullOrEmpty (libDir))
+				foreach (string dir in libDir.Split (Path.PathSeparator))
+					yield return dir;
+			else
+				foreach (string prefix in GetSystemPkgConfigDirs ())
+					foreach (string suffix in suffixes)
+						yield return Path.Combine (prefix, suffix);
+		}
+		
+		static IEnumerable<string> GetPkgConfigDirs ()
+		{
+			HashSet<string> set = new HashSet<string> ();
+			foreach (string s in GetUnfilteredPkgConfigDirs ()) {
+				if (set.Contains (s))
+					continue;
+				set.Add (s);
+				try {
+					if (!Directory.Exists (s))
+						continue;
+				} catch (IOException ex) {
+					LoggingService.LogError ("Error checking for directory '" + s + "'.", ex);
+				}
+				yield return s;
+			}
+		}
+		
+		
+		string[] _pkgConfigDirs;
+		string[] PkgConfigDirs {
+			get {
+				if (_pkgConfigDirs == null)
+					_pkgConfigDirs = System.Linq.Enumerable.ToArray (GetPkgConfigDirs ());
+				return _pkgConfigDirs;
+			}
+		}
+		
 		void RunInitialization ()
 		{
 			string versionDir;
@@ -385,45 +473,13 @@ namespace MonoDevelop.Core
 			
 			CreateFrameworks (prefix);
 			
-			string search_dirs = Environment.GetEnvironmentVariable ("PKG_CONFIG_PATH");
-			string libpath = Environment.GetEnvironmentVariable ("PKG_CONFIG_LIBPATH");
-
-			if (String.IsNullOrEmpty (libpath)) {
-				string path_dirs = Environment.GetEnvironmentVariable ("PATH");
-				foreach (string pathdir in path_dirs.Split (Path.PathSeparator)) {
-					if (pathdir == null)
-						continue;
-					if (File.Exists (pathdir + Path.DirectorySeparatorChar + "pkg-config")) {
-						libpath = Path.Combine(pathdir,"..");
-						libpath = Path.Combine(libpath,"lib");
-						libpath = Path.Combine(libpath,"pkgconfig");
-						break;
-					}
-				}
-			}
-			search_dirs += Path.PathSeparator + libpath;
-			if (search_dirs != null && search_dirs.Length > 0) {
-				List<string> scanDirs = new List<string> ();
-				foreach (string potentialDir in search_dirs.Split (Path.PathSeparator)) {
+			foreach (string pcdir in PkgConfigDirs) {
+				foreach (string pcfile in Directory.GetFiles (pcdir, "*.pc")) {
 					try {
-						string absPotentialDir = Path.GetFullPath (potentialDir);
-						if (!scanDirs.Contains (absPotentialDir))
-							scanDirs.Add (absPotentialDir);
-					} catch {}
-				}
-				foreach (string pcdir in scanDirs) {
-					if (pcdir == null)
-						continue;
-	
-					if (Directory.Exists (pcdir)) {
-						foreach (string pcfile in Directory.GetFiles (pcdir, "*.pc")) {
-							try {
-								ParsePCFile (pcfile);
-							}
-							catch (Exception ex) {
-								LoggingService.LogError ("Could not parse file '" + pcfile + "'", ex);
-							}
-						}
+						ParsePCFile (pcfile);
+					}
+					catch (Exception ex) {
+						LoggingService.LogError ("Could not parse file '" + pcfile + "'", ex);
 					}
 				}
 			}
@@ -658,6 +714,7 @@ namespace MonoDevelop.Core
 			ProcessStartInfo psi = new ProcessStartInfo ("pkg-config");
 			psi.RedirectStandardOutput = true;
 			psi.UseShellExecute = false;
+			psi.EnvironmentVariables["PKG_CONFIG_PATH"] = string.Join (new string (Path.PathSeparator, 1), PkgConfigDirs);
 			psi.Arguments = String.Format ("--variable={0} {1}", var, pcfile);
 			Process p = new Process ();
 			p.StartInfo = psi;

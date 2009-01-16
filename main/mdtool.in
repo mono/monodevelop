@@ -5,28 +5,6 @@ PREFIX="${0%%/mdtool}/.."
 
 MD_FORCE_DEBUG=yes
 
-### SYNCH BLOCK: any changes to this block should be kept in sync with the one in Makefile.include and monodevelop.in
-MONO_PREFIX=`which mono`
-MONO_PREFIX="${MONO_PREFIX%%/mono}/.."
-PKGCONFIG_PREFIX=`which pkg-config`
-PKGCONFIG_PREFIX="${PKGCONFIG_PREFIX%%/pkg-config}/.."
-
-MD_PKG_CONFIG_PATH=""
-for D in "$PREFIX/.." "$MONO_PREFIX" "$PKGCONFIG_PREFIX" '/usr/local' '/usr'; do
-	for PKGDIR in "$D/lib/pkgconfig" "$D/lib64/pkgconfig" "$D/share/pkgconfig"; do
-		if [ -d "$PKGDIR" ]; then MD_PKG_CONFIG_PATH="$MD_PKG_CONFIG_PATH:$PKGDIR"; fi
-	done
-done
-### END BLOCK
-
-if [ -n $PKG_CONFIG_PATH ]; then
-	export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:$MD_PKG_CONFIG_PATH
-else
-	export PKG_CONFIG_PATH=$MD_PKG_CONFIG_PATH
-fi
-
-ARGS=""
-
 for arg in $*; do 
 case x$arg in
 	x--profile*)

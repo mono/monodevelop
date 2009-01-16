@@ -3,9 +3,6 @@ build_sources = $(addprefix $(srcdir)/, $(FILES)) $(GENERATED_FILES)
 build_resources = $(addprefix $(srcdir)/, $(RES))
 build_test_sources = $(addprefix $(srcdir)/, $(TESTFILES)) $(GENERATED_FILES)
 
-### SYNCH BLOCK: any changes to this line should be kept in sync with the corresponding block in monodevelop.in and mdtool.in
-MD_PKG_CONFIG_PATH=$(gtksharp_prefix)/lib/pkgconfig/:/usr/lib/pkgconfig/:/usr/local/lib/pkgconfig/:/usr/share/pkgconfig/:/usr/local/share/pkgconfig/$(shell if test -d /usr/lib64; then echo ":/usr/lib64/pkgconfig/:/usr/local/lib64/pkgconfig/"; fi)
-### END BLOCK
 
 # workaroundfor lack of abs_top_builddir variable in automake < 1.10. Will break if mdtool isn't 
 # launched from top_srcdir (i.e. where this script is located)
@@ -16,7 +13,6 @@ MD_BIN_PATH=$(abs_top_builddir)/build/bin
 MD_LAUNCH_SETUP= \
 	MONODEVELOP_LOCALE_PATH=$(abs_top_builddir)/build/locale \
 	MONO_ADDINS_REGISTRY=$(MD_BIN_PATH) MOZILLA_FIVE_HOME=$(MOZILLA_HOME) \
-	LD_LIBRARY_PATH=`echo "$(LD_LIBRARY_PATH):$(MOZILLA_HOME)" | sed 's/^://g'` \
-	PKG_CONFIG_PATH=`echo "$(PKG_CONFIG_PATH):$(MD_PKG_CONFIG_PATH)" | sed 's/^://g'`
+	LD_LIBRARY_PATH=`echo "$(LD_LIBRARY_PATH):$(MOZILLA_HOME)" | sed 's/^://g'`d
 
 MDTOOL_RUN=$(MD_LAUNCH_SETUP) exec -a "mdtool" $(RUNTIME) --debug $(MD_BIN_PATH)/mdrun.exe

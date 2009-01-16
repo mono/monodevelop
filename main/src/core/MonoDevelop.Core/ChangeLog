@@ -1,3 +1,9 @@
+2009-01-16  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Core/SystemAssemblyService.cs: Handle PKG_CONFIG_LIBDIR.
+	If it's not set, sniff for the install prefixes of MD, Mono and
+	pkg-config and the associated pkgconfig directories.
+
 2009-01-08  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core/SystemAssemblyService.cs: In GetAssemblyLocation,
