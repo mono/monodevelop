@@ -296,7 +296,7 @@ namespace MonoDevelop.AspNet
 			case "asax":
 				return WebSubtype.Global;
 			case "gif":
-				case "png":
+			case "png":
 			case "jpg":
 				return WebSubtype.WebImage;
 			case "skin":
@@ -309,6 +309,12 @@ namespace MonoDevelop.AspNet
 				return WebSubtype.Axd;
 			case "sitemap":
 				return WebSubtype.Sitemap;
+			case "css":
+				return WebSubtype.Css;
+			case "xhtml":
+			case "html":
+			case "htm":
+				return WebSubtype.Html;
 			default:
 				return WebSubtype.None;
 			}
@@ -582,6 +588,8 @@ namespace MonoDevelop.AspNet
 		Global,
 		Config,
 		Axd,
+		Css,
+		Html,
 	}
 	
 	
