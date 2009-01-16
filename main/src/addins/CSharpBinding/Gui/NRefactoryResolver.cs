@@ -186,13 +186,15 @@ namespace MonoDevelop.CSharpBinding
 				AddParameterList (completionList, property.Parameters);
 			if (CallingType == null)
 				return;
+			IType callingType = CallingType is InstantiatedType ? ((InstantiatedType)CallingType).UninstantiatedType : CallingType;
 			bool isInStatic = CallingMember != null ? CallingMember.IsStatic : false;
-			
-			if (CallingType.TypeParameters != null) {
-				foreach (TypeParameter parameter in CallingType.TypeParameters) {
+
+			if (CallingMember == null || !CallingMember.IsStatic) {
+				foreach (TypeParameter parameter in callingType.TypeParameters) {
 					completionList.Add (parameter.Name, "md-literal");
 				}
 			}
+			
 			if (CallingMember != null) {
 				MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col
 					= new MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector (
