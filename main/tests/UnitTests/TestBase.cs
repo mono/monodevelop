@@ -33,11 +33,16 @@ namespace UnitTests
 {
 	public class TestBase
 	{
+		static bool firstRun = true;
+		
 		[TestFixtureSetUp]
 		public virtual void Setup ()
 		{
 			Runtime.Initialize (true);
-			//Util.ClearTmpDir ();
+			if (firstRun) {
+				firstRun = false;
+				Util.ClearTmpDir ();
+			}
 		}
 		
 		[TestFixtureTearDown]

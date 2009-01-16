@@ -74,7 +74,7 @@ test: all
 	if test -n "$(fixture)"; then \
 		fp="/fixture=$(fixture)"; \
 	fi; \
-	$(MD_LAUNCH_SETUP) MONO_PATH=$(top_builddir)/build/AddIns/BackendBindings:$(top_builddir)/build/AddIns/MonoDevelop.XmlEditor:$(top_builddir)/build/AddIns/MonoDevelop.AspNet mono --debug $(NUNIT_CONSOLE) /noshadow $(top_builddir)/build/bin/UnitTests.dll $$fp
+	$(MD_LAUNCH_SETUP) MONO_PATH=$(top_builddir)/build/AddIns/BackendBindings:$(top_builddir)/build/AddIns/MonoDevelop.XmlEditor:$(top_builddir)/build/AddIns/MonoDevelop.AspNet mono --debug $(NUNIT_CONSOLE) -noshadow $(top_builddir)/build/bin/UnitTests.dll $$fp
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 EXTRA_DIST = $(FILES) $(RES)

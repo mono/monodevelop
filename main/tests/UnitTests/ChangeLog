@@ -1,3 +1,9 @@
+2009-01-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am: Use correct noshadow option.
+
+	* TestBase.cs: Delete the temp dir when a test run starts.
+
 2009-01-16  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharpBinding/FindMemberVisitorTests.cs: Added some tests.
