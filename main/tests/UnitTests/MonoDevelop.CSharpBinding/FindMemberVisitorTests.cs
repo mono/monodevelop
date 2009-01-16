@@ -486,6 +486,51 @@ int b)
 }
 ");
 		}
+		/*
+		[Test()]
+		public void FindInterfaceMethodReferences ()
+		{
+			RunTest (
+@"
+public interface ITest {
+    void $@doSomething(double par);
+}
+
+public abstract class AbstractTest: ITest {
+    public abstract void @doSomething(double par); // Not renamed!!
+}
+
+public class ConcreteTest: AbstractTest {
+    public override void @doSomething(double par)
+    {
+		base.@doSomething(par);
+    }
+}
+");
+		}
+		
+		[Test()]
+		public void FindOverridenMethodReferences ()
+		{
+			RunTest (
+@"
+public class BaseTest
+{
+	public virtual void $@MyMethod()
+	{
+		@MyMethod ();
+	}
+}
+
+public class Test : BaseTest
+{
+	public override void @MyMethod()
+	{
+		@MyMethod ();
+	}
+}
+");
+		}*/
 
 	}
 }
