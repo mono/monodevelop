@@ -1,5 +1,10 @@
 2009-01-16  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Makefile.am:
+	* UnitTests.mdp: Update references.
+
+2009-01-16  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Makefile.am: Use correct noshadow option.
 
 	* TestBase.cs: Delete the temp dir when a test run starts.

@@ -9,8 +9,8 @@ NUNIT_CONSOLE = `pkg-config --variable=libdir mono-nunit`/mono/2.0/nunit-console
 FIXTURE = /fixture=$(fixture)
 
 REFS =  \
+	$(GTK_SHARP_LIBS) \
 	$(MONO_NUNIT_LIBS) \
-	-pkg:gtk-dotnet-2.0 \
 	-r:../../build/AddIns/BackendBindings/MonoDevelop.CSharpBinding.dll \
 	-r:../../build/AddIns/MonoDevelop.AspNet/MonoDevelop.AspNet.dll \
 	-r:../../build/AddIns/MonoDevelop.Autotools/MonoDevelop.Autotools.dll \
