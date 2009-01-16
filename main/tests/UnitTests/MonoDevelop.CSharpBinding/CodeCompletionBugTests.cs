@@ -1018,6 +1018,27 @@ public class Child : BaseC
 			Assert.IsNotNull (provider.Find ("TESTER"), "field 'TESTER' not found.");
 		}
 		
+		/// <summary>
+		/// Bug 466692 - Missing completion for return/break keywords after yield
+		/// </summary>
+		[Test()]
+		public void TestBug466692 ()
+		{
+			CompletionDataList provider = CreateProvider (
+@"
+public class TestMe 
+{
+	public int Test ()
+	{
+		yield $
+	}
+}");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.AreEqual (2, provider.Count);
+			Assert.IsNotNull (provider.Find ("break"), "keyword 'break' not found");
+			Assert.IsNotNull (provider.Find ("return"), "keyword 'return' not found");
+		}
+
 		[TestFixtureSetUp] 
 		public void SetUp()
 		{

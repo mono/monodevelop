@@ -1,3 +1,9 @@
+2009-01-16  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: Added test for
+	"Bug 466692 - Missing completion for return/break keywords after
+	yield".
+
 2009-01-15  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects/LocalCopyTests.cs: Test local-copy of external
