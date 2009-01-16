@@ -274,8 +274,7 @@ namespace Mono.TextEditor
 			}
 			
 			data.Document.Insert (data.Caret.Offset, newLine);
-			data.Caret.Column = caretColumnOffset;
-			data.Caret.Line++;
+			data.Caret.Location = new DocumentLocation (data.Caret.Line + 1, caretColumnOffset);
 			data.Document.EndAtomicUndo ();
 		}
 		

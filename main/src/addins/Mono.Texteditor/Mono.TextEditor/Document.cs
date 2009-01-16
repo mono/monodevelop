@@ -179,7 +179,7 @@ namespace Mono.TextEditor
 			OnTextReplacing (args);
 			lock (syncObject) {
 				int endOffset = offset + count;
-				foldSegments = new List<FoldSegment> (foldSegments.Where (s => (s.Offset < offset || s.Offset >= endOffset) && (s.EndOffset < offset || s.EndOffset >= endOffset)));
+				foldSegments = new List<FoldSegment> (foldSegments.Where (s => (s.Offset < offset || s.Offset >= endOffset) && (s.EndOffset <= offset || s.EndOffset >= endOffset)));
 			}
 			if (!isInUndo) {
 				UndoOperation operation = new UndoOperation (args, GetTextAt (offset, count));

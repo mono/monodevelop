@@ -1,3 +1,9 @@
+2009-01-16  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/Document.cs:
+	* Mono.TextEditor/DefaultEditActions.cs: fixed "Bug 433777 -
+	Auto-expanding is a little aggressive".
+
 2009-01-15  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor.Highlighting/WorkerThread.cs: worker threads are now
