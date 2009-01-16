@@ -1,5 +1,10 @@
 2009-01-16  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharpBinding/CodeCompletionAccessibleTests.cs: Added
+	generic parameter unit tests.
+
+2009-01-16  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: Added test for
 	"Bug 466692 - Missing completion for return/break keywords after
 	yield".

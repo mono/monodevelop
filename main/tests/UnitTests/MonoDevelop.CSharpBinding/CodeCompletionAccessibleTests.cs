@@ -246,6 +246,56 @@ class Test2
 			Assert.IsNotNull (provider, "provider == null");
 			Assert.IsNull (provider.Find ("Test"), "method 'Test' found, but shouldn't.");
 		}
+
+		[Test()]
+		public void TestGenericParameter ()
+		{
+			CompletionDataList provider = CodeCompletionBugTests.CreateCtrlSpaceProvider (
+@"
+class Foo<T>
+{
+	public $
+}
+");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("T"), "generic parameter 'T' not found");
+		}
+		
+		[Test()]
+		public void TestGenericParameterB ()
+		{
+			CompletionDataList provider = CodeCompletionBugTests.CreateCtrlSpaceProvider (
+@"
+class Foo<T>
+{
+	public void Bar<TValue> ()
+	{
+		$
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("T"), "generic parameter 'T' not found");
+			Assert.IsNotNull (provider.Find ("TValue"), "generic parameter 'TValue' found");
+		}
+		
+		[Test()]
+		public void TestGenericParameterC ()
+		{
+			CompletionDataList provider = CodeCompletionBugTests.CreateCtrlSpaceProvider (
+@"
+class Foo<T>
+{
+	public static void Bar<TValue> ()
+	{
+		$
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNull (provider.Find ("T"), "generic parameter 'T' found, but shouldn't");
+			Assert.IsNotNull (provider.Find ("TValue"), "generic parameter 'TValue' found");
+		}
 		
 	}
 }
