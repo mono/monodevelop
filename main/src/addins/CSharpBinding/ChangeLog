@@ -1,3 +1,8 @@
+2009-01-16  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/CSharpTextEditorCompletion.cs: Fixed 'Bug 466692 - Missing
+	completion for return/break keywords after yield'.
+
 2009-01-15  Mike Krüger  <mkrueger@novell.com>
 
 	* Gui/ResolveVisitor.cs: fixed 'Bug 466337 - Incorrect intelisense for

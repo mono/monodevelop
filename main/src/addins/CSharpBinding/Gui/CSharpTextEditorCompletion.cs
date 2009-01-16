@@ -596,7 +596,6 @@ namespace MonoDevelop.CSharpBinding.Gui
 					return null;
 				return CreateCompletionData (location, new NamespaceResolveResult (""), result, null);
 			case "namespace":
-				
 				result.ExpressionContext = ExpressionContext.NamespaceNameExcepted;
 				return CreateCompletionData (location, new NamespaceResolveResult (""), result, null);
 			case "case":
@@ -713,6 +712,12 @@ namespace MonoDevelop.CSharpBinding.Gui
 				if (stateTracker.Engine.IsInsidePreprocessorDirective) 
 					return GetDefineCompletionData ();
 				return null;
+			case "yield":
+				CompletionDataList yieldDataList = new CompletionDataList ();
+				yieldDataList.DefaultCompletionString = "return";
+				yieldDataList.Add ("break", "md-literal");
+				yieldDataList.Add ("return", "md-literal");
+				return yieldDataList;
 			}
 			return null;
 		}
