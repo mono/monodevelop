@@ -1,5 +1,10 @@
 2009-01-16  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs: fixed possible exception as modifing
+	Offset is not always allowed on an unknown segment.
+
+2009-01-16  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/Document.cs:
 	* Mono.TextEditor/DefaultEditActions.cs: fixed "Bug 433777 -
 	Auto-expanding is a little aggressive".

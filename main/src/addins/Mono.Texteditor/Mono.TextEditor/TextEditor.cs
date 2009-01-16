@@ -685,7 +685,7 @@ namespace Mono.TextEditor
 				if (CanEdit (dragCaretPos.Line)) {
 					int offset = Caret.Offset;
 					if (selection != null && selection.Offset >= offset)
-						selection.Offset += selection_data.Text.Length;
+						selection = new Segment (selection.Offset + selection_data.Text.Length, selection.Length);
 					Document.Insert (offset, selection_data.Text);
 					Caret.Offset = offset + selection_data.Text.Length;
 					SelectionRange = new Segment (offset, selection_data.Text.Length);
