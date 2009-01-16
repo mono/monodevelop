@@ -321,8 +321,7 @@ namespace SomethingDifferent
 }
 ");
 		}
-
-			/*
+		
 		[Test()]
 		public void FindEventReferences ()
 		{
@@ -360,7 +359,6 @@ namespace SomethingDifferent
 }
 ");
 		}
-		*/
 		
 		[Test()]
 		public void FindMethodReferences ()
