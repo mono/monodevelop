@@ -1,7 +1,6 @@
 <Combine name="Addins" fileversion="2.0">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="CombineConfiguration">
-      <Entry build="True" name="MonoDevelop.NUnit" configuration="Debug" />
       <Entry build="True" name="ILAsmBinding" configuration="Debug" />
       <Entry build="True" name="VersionControl" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.GtkCore" configuration="Debug" />
@@ -27,9 +26,9 @@
       <Entry build="True" name="MonoDevelop.Moonlight" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.XmlEditor" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.Debugger" configuration="Debug" />
+      <Entry build="True" name="MonoDevelop.NUnit" configuration="Debug" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
-      <Entry build="True" name="MonoDevelop.NUnit" configuration="Release" />
       <Entry build="True" name="ILAsmBinding" configuration="Release" />
       <Entry build="True" name="VersionControl" configuration="Release" />
       <Entry build="True" name="MonoDevelop.GtkCore" configuration="Release" />
@@ -55,10 +54,10 @@
       <Entry build="True" name="MonoDevelop.Moonlight" configuration="Release" />
       <Entry build="True" name="MonoDevelop.XmlEditor" configuration="Release" />
       <Entry build="True" name="MonoDevelop.Debugger" configuration="Release" />
+      <Entry build="True" name="MonoDevelop.NUnit" configuration="Release" />
     </Configuration>
   </Configurations>
-  <StartMode startupentry="MonoDevelop.NUnit" single="True">
-    <Execute type="None" entry="MonoDevelop.NUnit" />
+  <StartMode startupentry="ILAsmBinding" single="True">
     <Execute type="None" entry="ILAsmBinding" />
     <Execute type="None" entry="VersionControl" />
     <Execute type="None" entry="MonoDevelop.GtkCore" />
@@ -84,9 +83,9 @@
     <Execute type="None" entry="MonoDevelop.Moonlight" />
     <Execute type="None" entry="MonoDevelop.XmlEditor" />
     <Execute type="None" entry="MonoDevelop.Debugger" />
+    <Execute type="None" entry="MonoDevelop.NUnit" />
   </StartMode>
   <Entries>
-    <Entry filename="NUnit/MonoDevelop.NUnit.mdp" />
     <Entry filename="ILAsmBinding/ILAsmBinding.mdp" />
     <Entry filename="VersionControl/VersionControl.mds" />
     <Entry filename="MonoDevelop.GtkCore/MonoDevelop.GtkCore.mds" />
@@ -112,5 +111,6 @@
     <Entry filename="MonoDevelop.Moonlight/MonoDevelop.Moonlight.mdp" />
     <Entry filename="MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.mds" />
     <Entry filename="MonoDevelop.Debugger/MonoDevelop.Debugger.mdp" />
+    <Entry filename="NUnit/MonoDevelop.NUnit.mds" />
   </Entries>
 </Combine>

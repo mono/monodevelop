@@ -1,0 +1,20 @@
+<Combine name="MonoDevelop.NUnit" fileversion="2.0">
+  <Configurations active="Debug">
+    <Configuration name="Debug" ctype="CombineConfiguration">
+      <Entry build="True" name="MonoDevelop.NUnit" configuration="Debug" />
+      <Entry build="True" name="NUnitRunner" configuration="Debug" />
+    </Configuration>
+    <Configuration name="Release" ctype="CombineConfiguration">
+      <Entry build="True" name="MonoDevelop.NUnit" configuration="Release" />
+      <Entry build="True" name="NUnitRunner" configuration="Release" />
+    </Configuration>
+  </Configurations>
+  <StartMode startupentry="MonoDevelop.NUnit" single="True">
+    <Execute type="None" entry="MonoDevelop.NUnit" />
+    <Execute type="None" entry="NUnitRunner" />
+  </StartMode>
+  <Entries>
+    <Entry filename="MonoDevelop.NUnit.mdp" />
+    <Entry filename="NUnitRunner/NUnitRunner.mdp" />
+  </Entries>
+</Combine>

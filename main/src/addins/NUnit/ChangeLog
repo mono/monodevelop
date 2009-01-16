@@ -1,5 +1,9 @@
 2009-01-16  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.NUnit.mds: Added new NUnitRunner project.
+
+2009-01-16  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* lib/nunit.util.dll:
 	* lib/nunit.core.dll:
 	* lib/nunit.framework.dll:
