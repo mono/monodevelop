@@ -1,5 +1,9 @@
 2009-01-16  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.AspNet/AspNetAppProject.cs: Add JavaScript to WebSubType.
+
+2009-01-16  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.AspNet/AspNetAppProject.cs: Add css, xhtml, html, htm to
 	the WebSubTypes enum. This means that their default build action is
 	"Content", so they get deployed by default. Should fix "Bug 466855 -

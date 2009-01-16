@@ -315,6 +315,8 @@ namespace MonoDevelop.AspNet
 			case "html":
 			case "htm":
 				return WebSubtype.Html;
+			case "js":
+				return WebSubtype.JavaScript;
 			default:
 				return WebSubtype.None;
 			}
@@ -590,6 +592,7 @@ namespace MonoDevelop.AspNet
 		Axd,
 		Css,
 		Html,
+		JavaScript,
 	}
 	
 	
