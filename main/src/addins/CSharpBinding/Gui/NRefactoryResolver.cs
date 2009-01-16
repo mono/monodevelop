@@ -485,8 +485,12 @@ namespace MonoDevelop.CSharpBinding
 					if ((var.TypeRef == null || var.TypeRef.Type == "var" || var.TypeRef.IsNull)) {
 						if (var.ParentLambdaExpression != null)  {
 							ResolveResult lambdaResolve = ResolveLambda (visitor, var.ParentLambdaExpression);
-							varType           = lambdaResolve.ResolvedType;
-							varTypeUnresolved = lambdaResolve.UnresolvedType;
+							if (lambdaResolve != null) {
+								varType           = lambdaResolve.ResolvedType;
+								varTypeUnresolved = lambdaResolve.UnresolvedType;
+							} else {
+								varType = varTypeUnresolved = DomReturnType.Void;
+							}
 						}
 						if (var.Initializer != null) {
 							ResolveResult initializerResolve = visitor.Resolve (var.Initializer);
