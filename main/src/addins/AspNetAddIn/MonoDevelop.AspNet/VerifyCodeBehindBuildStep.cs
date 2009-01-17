@@ -91,7 +91,7 @@ namespace MonoDevelop.AspNet
 			//go over all the files generating members where necessary
 			foreach (ProjectFile file in aspProject.Files)
 			{
-				WebSubtype type = AspNetAppProject.DetermineWebSubtype (Path.GetExtension (file.FilePath));
+				WebSubtype type = AspNetAppProject.DetermineWebSubtype (file.FilePath);
 				if (type != WebSubtype.WebForm && type != WebSubtype.WebControl && type != WebSubtype.MasterPage)
 						continue;
 				

@@ -35,9 +35,7 @@
 				<FileTemplateReference TemplateID="GlobalAsax-CodeBehind" name="Global.asax" />
 				<FileTemplateReference TemplateID="WebConfig-Application" name="web.config" />
 				
-				<AspNetFile name="Default.aspx"
-				            DefaultExtension=".aspx"
-				            BuildAction="FileCopy">
+				<AspNetFile name="Default.aspx" DefaultExtension=".aspx">
 					<FileText>
 						<![CDATA[<%@ Page Language="${AspNetLanguage}" Inherits="${Namespace}.${Name}" %>
 ${Doctype}

@@ -19,7 +19,7 @@
 	
 	<!-- Template Content -->
 	<TemplateFiles>
-		<AspNetFile name="${Name}.aspx" DefaultExtension=".aspx" BuildAction="FileCopy" >
+		<AspNetFile name="${Name}.aspx" DefaultExtension=".aspx">
 			<FileText>
 				<![CDATA[<%@ Page Language="${AspNetLanguage}" Inherits="${Namespace}.${Name}" %>
 ${Doctype}

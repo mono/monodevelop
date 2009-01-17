@@ -15,7 +15,7 @@
 	
 	<!-- Template Content -->
 	<TemplateFiles>
-		<AspNetFile name="${Name}.ashx" BuildAction="FileCopy">
+		<AspNetFile name="${Name}.ashx">
 			<FileText>
 <![CDATA[<%@ WebHandler Language="${AspNetLanguage}" Class="${Namespace}.${Name}" %>
 ${CodeRegion:script1}

@@ -20,7 +20,7 @@
 
 	<!-- Template Content -->
 	<TemplateFiles>
-		<AspNetFile name="Global.asax" BuildAction="FileCopy">
+		<AspNetFile name="Global.asax">
 			<FileText>
 <![CDATA[<%@ Application Language="${AspNetLanguage}" %>
 <script runat="server">

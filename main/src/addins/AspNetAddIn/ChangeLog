@@ -1,5 +1,35 @@
 2009-01-16  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.AspNet/AspNetAppProject.cs:
+	* MonoDevelop.AspNet/AspNetAppProjectBinding.cs:
+	* MonoDevelop.AspNet/VerifyCodeBehindBuildStep.cs:
+	* MonoDevelop.AspNet.Parser/AspNetParsedDocument.cs:
+	* MonoDevelop.AspNet.MD1Serialization/MD1AspNetCustomDataItem.cs: Track
+	DetermineWebSubtype API.
+
+	* Templates/WebForm-Empty.xft.xml:
+	* Templates/WebApplication.xpt.xml:
+	* Templates/WebControl-Empty.xft.xml:
+	* Templates/WebHandler-Empty.xft.xml:
+	* Templates/GlobalAsax-Empty.xft.xml:
+	* Templates/WebService-Empty.xft.xml:
+	* Templates/MasterPage-Empty.xft.xml:
+	* Templates/WebConfig-SubDir.xft.xml:
+	* Templates/WebForm-CodeBehind.xft.xml:
+	* Templates/WebConfig-Application.xft.xml:
+	* Templates/MasterPage-CodeBehind.xft.xml:
+	* Templates/WebHandler-CodeBehind.xft.xml:
+	* Templates/WebService-CodeBehind.xft.xml:
+	* Templates/GlobalAsax-CodeBehind.xft.xml:
+	* Templates/WebControl-CodeBehind.xft.xml:
+	* Templates/WebForm-CodeBehindNonPartial.xft.xml:
+	* Templates/MasterPage-CodeBehindNonPartial.xft.xml:
+	* Templates/WebControl-CodeBehindNonPartial.xft.xml: Don't explicitly
+	set a build action, since it was wrong for MSBuild files, and the
+	default works fine.
+
+2009-01-16  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.AspNet.Deployment/AspNetDeployServiceExtension.cs: Deploy
 	all files marked as "Content" rather than all ASP.NET files.
 

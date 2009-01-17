@@ -21,7 +21,7 @@
 
 	<!-- Template Content -->
 	<TemplateFiles>
-		<AspNetFile name="web.config" BuildAction="FileCopy">
+		<AspNetFile name="web.config">
 			<FileText>
 <![CDATA[<?xml version="1.0" ?>
 <!--

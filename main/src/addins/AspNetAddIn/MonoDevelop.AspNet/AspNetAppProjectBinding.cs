@@ -75,7 +75,7 @@ namespace MonoDevelop.AspNet
 
 		public bool CanCreateSingleFileProject (string sourceFile)
 		{
-			WebSubtype type = AspNetAppProject.DetermineWebSubtype (Path.GetExtension (sourceFile));
+			WebSubtype type = AspNetAppProject.DetermineWebSubtype (sourceFile);
 			
 			return ((type == WebSubtype.WebForm)
 			           || (type == WebSubtype.WebHandler)

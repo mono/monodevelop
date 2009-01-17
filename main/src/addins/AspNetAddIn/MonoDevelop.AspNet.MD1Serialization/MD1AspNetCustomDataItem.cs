@@ -63,8 +63,7 @@ namespace MonoDevelop.AspNet.MD1Serialization
 					DataValue name = file ["name"] as DataValue;
 					if (action != null && name != null && action.Value == "Content")
 					{
-						WebSubtype type = AspNetAppProject.DetermineWebSubtype (
-							System.IO.Path.GetExtension (name.Value));
+						WebSubtype type = AspNetAppProject.DetermineWebSubtype (name.Value);
 						if (type != WebSubtype.None && type != WebSubtype.Code) {
 							file.Extract ("copyToOutputDirectory");
 							int index = file.ItemData.IndexOf (action);

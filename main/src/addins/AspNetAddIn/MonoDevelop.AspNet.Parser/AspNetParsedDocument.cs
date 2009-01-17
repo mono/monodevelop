@@ -40,7 +40,7 @@ namespace MonoDevelop.AspNet.Parser
 		public AspNetParsedDocument (string fileName) : base (fileName)
 		{
 			Flags |= ParsedDocumentFlags.NonSerializable;
-			Type = AspNetAppProject.DetermineWebSubtype (System.IO.Path.GetExtension (fileName));
+			Type = AspNetAppProject.DetermineWebSubtype (fileName);
 		}
 		
 		public PageInfo PageInfo { get; set; }

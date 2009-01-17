@@ -19,7 +19,7 @@
 	
 	<!-- Template Content -->
 	<TemplateFiles>
-		<AspNetFile name="${Name}.master" BuildAction="FileCopy">
+		<AspNetFile name="${Name}.master">
 			<FileText>
 				<![CDATA[<%@ Master Language="${AspNetLanguage}"%>
 ${Doctype}

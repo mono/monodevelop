@@ -271,12 +271,14 @@ namespace MonoDevelop.AspNet
 		{
 			if (LanguageBinding != null && LanguageBinding.IsSourceCodeFile (file.FilePath))
 				return WebSubtype.Code;
-			
-			return DetermineWebSubtype (System.IO.Path.GetExtension (file.Name));
+			return DetermineWebSubtype (file.Name);
 		}
 		
-		public static WebSubtype DetermineWebSubtype (string extension)
+		public static WebSubtype DetermineWebSubtype (string fileName)
 		{
+			string extension = System.IO.Path.GetExtension (fileName);
+			if (extension == null)
+				return WebSubtype.None;
 			extension = extension.ToLower ().TrimStart ('.');
 			
 			//NOTE: No way to identify WebSubtype.Code from here
@@ -526,6 +528,7 @@ namespace MonoDevelop.AspNet
 		
 		public override string GetDefaultBuildAction (string fileName)
 		{
+			
 			WebSubtype type = DetermineWebSubtype (fileName);
 			if (type == WebSubtype.Code)
 				return BuildAction.Compile;
