@@ -1,3 +1,19 @@
+2009-01-16  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Ide.mdp: Updated.
+
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Ide.Gui/RootWorkspace.cs:
+	* MonoDevelop.Ide.Gui/UserInformation.cs:
+	* MonoDevelop.Ide.Gui.OptionPanels/UserInformationPanel.cs:
+	* MonoDevelop.Ide.Gui.OptionPanels/GlobalUserInformationPanel.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.UserInformationPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.GlobalUserInformationPanelWidget.cs:
+	Added panels and a mechanism for storing user information (name,
+	email) globally or per-solution. Panels not visible yet, as nothing
+	uses the information.
+
 2009-01-14  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.Dialogs/GoToDialog.cs: Revert last change, the

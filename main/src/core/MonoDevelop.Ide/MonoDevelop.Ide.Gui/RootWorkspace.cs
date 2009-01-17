@@ -172,6 +172,12 @@ namespace MonoDevelop.Ide.Gui
 			return props;
 		}
 		
+		public UserInformation GetUserInformation (Solution solution)
+		{
+			UserInformation info = GetUserPreferences (solution).GetValue<UserInformation> ("UserInfo");
+			return info ?? UserInformation.Default;
+		}
+		
 #region Model queries
 		
 		public SolutionEntityItem FindSolutionItem (string fileName)
