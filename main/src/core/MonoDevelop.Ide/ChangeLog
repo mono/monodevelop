@@ -1,5 +1,16 @@
 2009-01-16  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide.addin.xml: Add user info panels and refactory
+	commands, currently commented out.
+
+	* MonoDevelop.Ide.Gui/UserInformation.cs:
+	* MonoDevelop.Ide.Gui.OptionPanels/UserInformationPanel.cs: Tidy.
+
+	* MonoDevelop.Ide.Gui/RootWorkspace.cs: Fix custom user prefs storage;
+	it was discarding all custom data at load time.
+
+2009-01-16  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Ide.mdp: Updated.
 

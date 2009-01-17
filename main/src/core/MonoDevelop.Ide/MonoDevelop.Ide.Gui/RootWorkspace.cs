@@ -603,6 +603,7 @@ namespace MonoDevelop.Ide.Gui
 				XmlDataSerializer ser = new XmlDataSerializer (new DataContext ());
 				ser.SerializationContext.BaseFile = preferencesFileName;
 				props = (PropertyBag) ser.Deserialize (reader, typeof(PropertyBag));
+				userPrefs [item] = props;
 			} catch (Exception e) {
 				LoggingService.LogError ("Exception while loading user solution preferences.", e);
 				return;

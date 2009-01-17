@@ -34,7 +34,7 @@ using MonoDevelop.Core.Serialization;
 namespace MonoDevelop.Ide.Gui
 {
 	[DataItem]
-	public class UserInformation
+	public sealed class UserInformation
 	{
 		
 		internal UserInformation (string name, string email)

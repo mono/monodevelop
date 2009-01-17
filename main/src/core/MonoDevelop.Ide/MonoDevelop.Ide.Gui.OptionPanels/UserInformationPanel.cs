@@ -39,9 +39,8 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		
 		public override Gtk.Widget CreatePanelWidget ()
 		{
-			widget = new UserInformationPanelWidget ();
-			widget.Set (IdeApp.Workspace.GetUserPreferences (solution).GetValue<UserInformation> ("UserInfo"));
-			return widget;
+			UserInformation info = IdeApp.Workspace.GetUserPreferences (solution).GetValue<UserInformation> ("UserInfo");
+			return widget = new UserInformationPanelWidget (info);
 		}
 
 		public override void ApplyChanges ()
@@ -67,13 +66,10 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 	{
 		UserInformation info;
 		
-		public UserInformationPanelWidget()
+		public UserInformationPanelWidget (UserInformation info)
 		{
 			this.Build();
-		}
-		
-		public void Set (UserInformation info)
-		{
+			
 			this.info = info;
 			checkCustom.Active = (info != null);
 			UseDefaultToggled (this, EventArgs.Empty);
@@ -95,6 +91,8 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			} else {
 				infoTable.Sensitive = false;
 				info = new UserInformation (nameEntry.Text, emailEntry.Text);
+				if (String.IsNullOrEmpty (info.Name) && String.IsNullOrEmpty (info.Email))
+					info = null;
 				nameEntry.Text = UserInformation.Default.Name ?? "";
 				emailEntry.Text = UserInformation.Default.Email ?? "";
 			}
