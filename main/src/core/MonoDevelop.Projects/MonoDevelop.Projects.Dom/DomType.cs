@@ -312,7 +312,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		public override string ToString ()
 		{
-			return String.Format ("[DomType: FullName={0}, #TypeArguments={2}, #Members={1}]", this.FullName, this.members.Count, TypeParameters.Count);
+			return String.Format ("[DomType: FullName={0}, #TypeArguments={2}, #Members={1}]", this.FullName, this.Members.Count (), TypeParameters.Count);
 		}
 		
 		bool IsEqual (ReadOnlyCollection<IParameter> c1, ReadOnlyCollection<IParameter> c2)

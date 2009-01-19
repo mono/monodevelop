@@ -498,7 +498,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 					}
 					result = c;
 				}
-				if (genericArguments != null)
+				if (genericArguments != null && genericArguments.Count > 0)
 					return sourceProjectDom.CreateInstantiatedGenericType (result, genericArguments);
 				else
 					return result;

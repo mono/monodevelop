@@ -176,7 +176,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		public override IEnumerable<IMethod> Methods {
 			get {
-				if (HasContent (ContentFlags.HasMethods) | HasContent (ContentFlags.HasConstructors))
+				if (HasContent (ContentFlags.HasMethods) || HasContent (ContentFlags.HasConstructors))
 					return WrappedType.Methods;
 				return new IMethod [0];
 			}

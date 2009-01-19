@@ -1,5 +1,17 @@
 2009-01-19  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects.Dom/DomType.cs: In ToString, get the correct
+	member count.
+
+	* MonoDevelop.Projects.Dom.Serialization/DomTypeProxy.cs: Use correct
+	binary operator for logic or.
+
+	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs: Make
+	sure instantiated types are created only for generic types. Should
+	fix bug #467410.
+
+2009-01-19  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects.Formats.MSBuild/MSBuildFileFormat.cs: Fixed
 	ReadToolsVersion. The version number wasn't properly read.
 
