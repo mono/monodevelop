@@ -146,6 +146,7 @@ namespace MonoDevelop.NUnit.External
 		public UnitTestResult GetLocalTestResult (TestResult t)
 		{
 			UnitTestResult res = new UnitTestResult ();
+			res.Message = t.Message;
 			
 			if (t is TestSuiteResult) {
 				int s=0, f=0, i=0;
@@ -172,9 +173,18 @@ namespace MonoDevelop.NUnit.External
 					res.Status = ResultStatus.Success;
 					res.TotalSuccess = 1;
 				}
-			}
 			
-			res.Message = t.Message;
+				if (string.IsNullOrEmpty (res.Message)) {
+					if (t.IsFailure)
+						res.Message = GettextCatalog.GetString ("Test failed");
+					else if (!t.Executed)
+						res.Message = GettextCatalog.GetString ("Test ignored");
+					else {
+						res.Message = GettextCatalog.GetString ("Test successful") + "\n\n";
+						res.Message += GettextCatalog.GetString ("Execution time: {0:0.00}ms", t.Time);
+					}
+				}
+			}
 			res.StackTrace = t.StackTrace;
 			res.Time = TimeSpan.FromSeconds (t.Time);
 			

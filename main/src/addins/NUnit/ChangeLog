@@ -1,5 +1,18 @@
 2009-01-19  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Services/ExternalTestRunner.cs: Add a default test result message when
+	none is provided.
+
+	* Gui/TestResultsPad.cs:
+	* Gui/TestNodeBuilder.cs:
+	* Services/UnitTestResult.cs: When jumping to the test source code, if
+	the test failed, jump to the line of the failure.
+
+	* templates/NUnitTestClass.xft.xml: Add references to NUnit when adding
+	a test fixture to a project.
+
+2009-01-19  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Gui/TestPad.cs:
 	* Services/NUnitService.cs:
 	* Commands/NUnitCommands.cs:

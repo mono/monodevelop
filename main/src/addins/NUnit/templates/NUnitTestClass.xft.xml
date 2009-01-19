@@ -11,6 +11,8 @@
 	
 	<TemplateFiles>
 		<CodeDomFile>
+			<AssemblyReference>nunit.core</AssemblyReference>
+			<AssemblyReference>nunit.framework</AssemblyReference>
 			<CompileUnit>
 				<Namespaces>
 					<Namespace Name="">

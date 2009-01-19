@@ -31,6 +31,7 @@ using System.IO;
 using System.Collections;
 using System.Xml.Serialization;
 using System.Globalization;
+using System.Text.RegularExpressions;
 
 namespace MonoDevelop.NUnit
 {
@@ -145,6 +146,22 @@ namespace MonoDevelop.NUnit
 		public string ConsoleError {
 			get { return cerror; }
 			set { cerror = value; }
+		}
+		
+		public SourceCodeLocation GetFailureLocation ()
+		{
+			if (!String.IsNullOrEmpty (stackTrace)) {
+				Match match = Regex.Match (stackTrace, @"\s*?at\s(?!NUnit\.Framework).*?\sin\s(.*?):(\d+)", RegexOptions.Multiline);
+				while (match.Success) {
+					try	{
+						int line = Int32.Parse (match.Groups[2].Value);
+						return new SourceCodeLocation (match.Groups[1].Value, line, 1);
+					} catch (Exception) {
+					}
+					match = match.NextMatch ();
+				}
+			}
+			return null;
 		}
 	}
 }

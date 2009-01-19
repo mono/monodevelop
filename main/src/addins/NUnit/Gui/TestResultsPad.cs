@@ -437,9 +437,12 @@ namespace MonoDevelop.NUnit
 			UnitTest test = GetSelectedTest ();
 			if (test == null)
 				return;
+			SourceCodeLocation loc = null;
 			UnitTestResult res = test.GetLastResult ();
-			string stack = res != null ? res.StackTrace : null;
-			SourceCodeLocation loc = GetSourceCodeLocation (test, stack);
+			if (res != null && res.IsFailure)
+				loc = res.GetFailureLocation ();
+			if (loc == null)
+				loc = test.SourceCodeLocation;
 			if (loc != null)
 				IdeApp.Workbench.OpenDocument (loc.FileName, loc.Line, loc.Column, true);
 		}
@@ -449,22 +452,6 @@ namespace MonoDevelop.NUnit
 		{
 			UnitTest test = GetSelectedTest ();
 			info.Enabled = test != null && test.SourceCodeLocation != null;
-		}
-		
-		SourceCodeLocation GetSourceCodeLocation (UnitTest test, string stackTrace)
-		{
-			if (!String.IsNullOrEmpty (stackTrace)) {
-				Match match = Regex.Match (stackTrace, @"\s*?at\s(?!NUnit\.Framework).*?\sin\s(.*?):(\d+)", RegexOptions.Multiline);
-				while (match.Success) {
-					try	{
-						int line = Int32.Parse (match.Groups[2].Value);
-						return new SourceCodeLocation (match.Groups[1].Value, line, 1);
-					} catch (Exception) {
-					}
-					match = match.NextMatch ();
-				}
-			}
-			return test.SourceCodeLocation;
 		}
 		
 		UnitTest GetSelectedTest ()
