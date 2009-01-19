@@ -499,8 +499,8 @@ namespace MonoDevelop.Autotools
 			};
 
 			compilerMessageRegex ["Vala"] = new string [] {
-				@"^\s*(?<file>.*):(?<line>\d*)\.(?<column>\d*)-\d*\.\d*: error: (?<message>.*)",
-				@"^\s*(?<file>.*):(?<line>\d*)\.(?<column>\d*)-\d*\.\d*: warning: (?<message>.*)"
+				@"((^\s*(?<file>.*):(?<line>\d*)\.(?<column>\d*)-\d*\.\d*: error: (?<message>.*))|(^\s*(?<file>[^:]*):(?<line>\d*){1}(:(?<column>\d*))?\s*:\s*error\s*:\s(?<message>.*)))",
+				@"((^\s*(?<file>.*):(?<line>\d*)\.(?<column>\d*)-\d*\.\d*: warning: (?<message>.*))|(^\s*(?<file>[^:]*):(?<line>\d*){1}(:(?<column>\d*))?\s*:\s*warning\s*:\s(?<message>.*)))"
 			};
 		}
 
