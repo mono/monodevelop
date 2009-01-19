@@ -1,3 +1,13 @@
+2009-01-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs: In file
+	templates, allow specifying assembly references required for building
+	the file. Those references will be added to the project when adding
+	the file template.
+
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: If the solution has been
+	modified when changing the project options, save it.
+
 2009-01-16  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.addin.xml: Add user info panels and refactory

@@ -30,6 +30,7 @@ using System;
 using System.IO;
 using System.Xml;
 using System.Collections;
+using System.Collections.Generic;
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
@@ -49,6 +50,7 @@ namespace MonoDevelop.Ide.Templates
 		bool addStandardHeader = false;
 		string dependsOn;
 		string buildAction;
+		List<string> references = new List<string> ();
 		
 		public override void Load (XmlElement filenode)
 		{
@@ -78,6 +80,12 @@ namespace MonoDevelop.Ide.Templates
 				} catch (FormatException) {
 					throw new InvalidOperationException ("Invalid value for AddStandardHeader in template.");
 				}
+			}
+			
+			foreach (XmlElement elem in filenode.SelectNodes ("AssemblyReference")) {
+				string aref = elem.InnerText.Trim ();
+				if (!string.IsNullOrEmpty (aref))
+					references.Add (aref);
 			}
 		}
 		
@@ -113,9 +121,36 @@ namespace MonoDevelop.Ide.Templates
 					projectFile.DependsOn = parsedDepName;
 				}
 				project.AddFile (projectFile);
+				
+				DotNetProject netProject = project as DotNetProject;
+				if (netProject != null) {
+					// Add required references
+					foreach (string aref in references) {
+						string res = Runtime.SystemAssemblyService.GetAssemblyFullName (aref);
+						res = Runtime.SystemAssemblyService.GetAssemblyNameForVersion (res, netProject.TargetFramework);
+						if (!ContainsReference (netProject, res))
+							netProject.References.Add (new ProjectReference (ReferenceType.Gac, aref));
+					}
+				}
+				
 				return projectFile;
 			} else
 				return null;
+		}
+		
+		bool ContainsReference (DotNetProject project, string aref)
+		{
+			string aname;
+			int i = aref.IndexOf (',');
+			if (i == -1)
+				aname = aref;
+			else
+				aname = aref.Substring (0, i);
+			foreach (ProjectReference pr in project.References) {
+				if (pr.ReferenceType == ReferenceType.Gac && (pr.Reference == aref || pr.Reference.StartsWith (aref + ",")))
+					return true;
+			}
+			return false;
 		}
 		
 		public override void Show ()

@@ -398,6 +398,12 @@ namespace MonoDevelop.Ide.Gui
 					
 					if (optionsDialog.Run() == (int)Gtk.ResponseType.Ok) {
 						selectedProject.SetNeedsBuilding (true);
+						foreach (object ob in optionsDialog.ModifiedObjects) {
+							if (ob is Solution) {
+								Save ((Solution)ob);
+								return;
+							}
+						}
 						Save (selectedProject);
 					}
 				} finally {
