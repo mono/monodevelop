@@ -99,8 +99,7 @@ namespace MonoDevelop.Components
 		{
 			if (Selection > RowCount)
 				Selection = RowCount - 1;
-			CalcVisibleRows ();
-			UpdateAdjustments ();
+			UpdatePage (false);
 			QueueDraw ();
 		}
 		
@@ -152,6 +151,8 @@ namespace MonoDevelop.Components
 				page = 0;
 				return;
 			}
+
+			CalcVisibleRows ();
 			
 			if (selection < page || selection >= page + VisibleRows) {
 				if (centerRow) {
@@ -165,7 +166,6 @@ namespace MonoDevelop.Components
 				if (page < 0) page = 0;
 			}
 			
-			CalcVisibleRows ();
 			UpdateAdjustments ();
 			
 			if (vAdjustement != null)
@@ -197,8 +197,7 @@ namespace MonoDevelop.Components
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
 		{
 			base.OnSizeAllocated (allocation);
-			CalcVisibleRows ();
-			UpdateAdjustments ();
+			UpdatePage (false);
 		}
 
 
@@ -227,8 +226,7 @@ namespace MonoDevelop.Components
 		void HandleVerValueChanged (object sender, EventArgs e)
 		{
 			page = (int) vAdjustement.Value;
-			CalcVisibleRows ();
-			UpdateAdjustments ();
+			UpdatePage (false);
 			QueueDraw ();
 		}
 

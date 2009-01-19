@@ -1,3 +1,9 @@
+2009-01-19  Zach Lute  <zach.lute@gmail.com>
+
+	* MonoDevelop.Components/ListView.cs: The ListView page should now be
+	updated when necessary.  Fixes first item in Go To Dialog not
+	displaying correctly.
+
 2009-01-07  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Components/FileEntry.cs: Get the selected file before
