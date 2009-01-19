@@ -1,3 +1,14 @@
+2009-01-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: In GetInheritanceTree
+	there is no need to resolve base types, since the type being queried
+	is already resolved, so all types it references are also resolved.
+	Added method for removing instantiated generic types from the cache.
+
+	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs: When
+	a generic type is updated, remove all instances of that type from the
+	instantiated type cache.
+
 2009-01-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomType.cs: In ToString, get the correct

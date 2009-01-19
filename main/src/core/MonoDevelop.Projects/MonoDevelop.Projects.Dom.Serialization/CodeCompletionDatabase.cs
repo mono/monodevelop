@@ -961,6 +961,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 							ce.LastGetTime = currentGetTime++;
 							newFileClasses.Add (ce);
 							res.Modified.Add (ce.Class);
+							SourceProjectDom.ResetInstantiatedTypes (ce.Class);
 						} else {
 							// Database class not found in the new class list, it has to be deleted
 							IType c = ce.Class;
@@ -981,6 +982,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 								res.Removed.Add (c);
 								ce.NamespaceRef.Remove (ce);
 							}
+							SourceProjectDom.ResetInstantiatedTypes (c);
 						}
 					}
 				}

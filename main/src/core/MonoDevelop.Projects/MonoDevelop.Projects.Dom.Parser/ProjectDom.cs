@@ -117,8 +117,9 @@ namespace MonoDevelop.Projects.Dom.Parser
 				yield return cur;
 				
 				foreach (IReturnType baseType in cur.BaseTypes) {
-					IType resolvedType = SearchType (new SearchTypeRequest (cur.CompilationUnit, baseType));
-					//IType resolvedType = GetType (baseType);
+					// There is no need to resolve baseType here, since 'cur' is an already resolved
+					// type, so all types it references are already resolved too
+					IType resolvedType = GetType (baseType);
 					if (resolvedType != null)
 						types.Push (resolvedType);
 				}
@@ -471,14 +472,31 @@ namespace MonoDevelop.Projects.Dom.Parser
 			if (type is InstantiatedType)
 				return type;
 			
-			string name = DomType.GetInstantiatedTypeName (type.Name, genericArguments);
-			IType gtype;
-			if (instantiatedTypeCache.TryGetValue (name, out gtype))
-				return gtype;
+			string name = DomType.GetInstantiatedTypeName (type.FullName, genericArguments);
 			
-			gtype = DomType.CreateInstantiatedGenericTypeInternal (type, genericArguments);
-			instantiatedTypeCache [name] = gtype;
-			return gtype;
+			lock (instantiatedTypeCache) {
+				IType gtype;
+				if (instantiatedTypeCache.TryGetValue (name, out gtype))
+					return gtype;
+				
+				gtype = DomType.CreateInstantiatedGenericTypeInternal (type, genericArguments);
+				instantiatedTypeCache [name] = gtype;
+				return gtype;
+			}
+		}
+		
+		internal void ResetInstantiatedTypes (IType type)
+		{
+			string typePrefix = type.FullName + "[";
+			lock (instantiatedTypeCache) {
+				var toDelete = new List<string> ();
+				foreach (string tname in instantiatedTypeCache.Keys) {
+					if (tname.StartsWith (typePrefix))
+						toDelete.Add (tname);
+				}
+				foreach (string td in toDelete)
+					instantiatedTypeCache.Remove (td);
+			}
 		}
 
 		// This method has to check all modified files and start parsing jobs if needed
