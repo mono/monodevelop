@@ -41,6 +41,7 @@ FILES =  \
 	MonoDevelop.Core.Logging/LogLevel.cs \
 	MonoDevelop.Core.ProgressMonitoring/AggregatedOperationMonitor.cs \
 	MonoDevelop.Core.ProgressMonitoring/AggregatedProgressMonitor.cs \
+	MonoDevelop.Core.ProgressMonitoring/AsyncOperation.cs \
 	MonoDevelop.Core.ProgressMonitoring/ConsoleProgressMonitor.cs \
 	MonoDevelop.Core.ProgressMonitoring/ConsoleProgressStatus.cs \
 	MonoDevelop.Core.ProgressMonitoring/FilteredProgressMonitor.cs \
