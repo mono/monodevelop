@@ -71,7 +71,7 @@
     <File name="gtk-gui/generated.cs" subtype="Code" buildaction="Compile" />
     <File name="Services/UnitTestResult.cs" subtype="Code" buildaction="Compile" />
     <File name="Services/UnitTestStatus.cs" subtype="Code" buildaction="Compile" />
-    <File name="lib" subtype="Directory" buildaction="Compile" />
+    <File name="Services/NUnitProjectServiceExtension.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Assembly" localcopy="True" refto="lib/nunit.core.dll" />

@@ -32,11 +32,15 @@ using Gtk;
 
 using MonoDevelop.Core;
 using MonoDevelop.Components;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.NUnit.Commands
 {
 	public enum TestCommands
 	{
+		RunAllTests,
 		RunTest,
 		ShowTestCode,
 		SelectTestInTree,
@@ -57,5 +61,28 @@ namespace MonoDevelop.NUnit.Commands
 	public enum NUnitProjectCommands
 	{
 		AddAssembly
+	}
+	
+	class RunAllTestsHandler: CommandHandler
+	{
+		protected override void Run ()
+		{
+			IWorkspaceObject ob = IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
+			if (ob != null) {
+				UnitTest test = NUnitService.Instance.FindRootTest (ob);
+				if (test != null)
+					NUnitService.Instance.RunTest (test);
+			}
+		}
+		
+		protected override void Update (CommandInfo info)
+		{
+			IWorkspaceObject ob = IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
+			if (ob != null) {
+				UnitTest test = NUnitService.Instance.FindRootTest (ob);
+				info.Enabled = (test != null);
+			} else
+				info.Enabled = false;
+		}
 	}
 }

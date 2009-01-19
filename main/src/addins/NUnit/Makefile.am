@@ -49,6 +49,7 @@ FILES =  \
 	Services/ITestProvider.cs \
 	Services/NUnitAssemblyTestSuite.cs \
 	Services/NUnitOptions.cs \
+	Services/NUnitProjectServiceExtension.cs \
 	Services/NUnitProjectTestSuite.cs \
 	Services/NUnitService.cs \
 	Services/NUnitTestCase.cs \

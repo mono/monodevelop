@@ -28,11 +28,12 @@
 
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace MonoDevelop.NUnit
 {
-	public class UnitTestCollection: CollectionBase
+	public class UnitTestCollection: Collection<UnitTest>
 	{
 		UnitTest owner;
 		
@@ -45,41 +46,45 @@ namespace MonoDevelop.NUnit
 		{
 		}
 		
-		public new UnitTest this [int n] {
-			get { return (UnitTest) List [n]; }
-		}
-		
-		public new UnitTest this [string name] {
+		public UnitTest this [string name] {
 			get {
-				for (int n=0; n<List.Count; n++)
-					if (((UnitTest)List [n]).Name == name)
-						return (UnitTest) List [n];
+				for (int n=0; n<Items.Count; n++)
+					if (Items [n].Name == name)
+						return Items [n];
 				return null;
 			}
 		}
 		
-		public void Add (UnitTest test)
-		{
-			((IList)this).Add (test);
-		}
-		
-		public void CopyTo (UnitTest[] array, int index)
-		{
-			List.CopyTo (array, index);
-		}
-		
-		protected override void OnInsert (int index, object value)
+		protected override void SetItem (int index, UnitTest item)
 		{
 			if (owner != null)
-				((UnitTest)value).SetParent (owner);
+				this[index].SetParent (null);
+			base.SetItem (index, item);
+			if (owner != null)
+				item.SetParent (owner);
 		}
 		
-		protected override void OnSet (int index, object oldValue, object newValue)
+		protected override void RemoveItem (int index)
+		{
+			if (owner != null)
+				this [index].SetParent (null);
+			base.RemoveItem(index);
+		}
+
+		protected override void InsertItem (int index, UnitTest item)
+		{
+			base.InsertItem(index, item);
+			if (owner != null)
+				item.SetParent (owner);
+		}
+
+		protected override void ClearItems ()
 		{
 			if (owner != null) {
-				((UnitTest)oldValue).SetParent (null);
-				((UnitTest)newValue).SetParent (owner);
+				foreach (UnitTest t in this)
+					t.SetParent (null);
 			}
+			base.ClearItems();
 		}
 	}
 }

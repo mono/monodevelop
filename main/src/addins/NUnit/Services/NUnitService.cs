@@ -33,6 +33,7 @@ using System.Collections.Generic;
 using System.Threading;
 
 using MonoDevelop.Core;
+using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Dialogs;
 using Mono.Addins;
@@ -104,6 +105,41 @@ namespace MonoDevelop.NUnit
 		
 		public IAsyncOperation RunTest (UnitTest test)
 		{
+			return RunTest (test, IdeApp.Preferences.BuildBeforeExecuting);
+		}
+		
+		public IAsyncOperation RunTest (UnitTest test, bool buildOwnerObject)
+		{
+			if (buildOwnerObject) {
+				IBuildTarget bt = test.OwnerObject as IBuildTarget;
+				if (bt != null && bt.NeedsBuilding (IdeApp.Workspace.ActiveConfiguration)) {
+					if (!IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted) {
+						MonoDevelop.Ide.Commands.StopHandler.StopBuildOperations ();
+						IdeApp.ProjectOperations.CurrentRunOperation.WaitForCompleted ();
+					}
+	
+					AsyncOperation retOper = new AsyncOperation ();
+					
+					IAsyncOperation op = IdeApp.ProjectOperations.Build (bt);
+					retOper.TrackOperation (op, false);
+						
+					op.Completed += delegate {
+						GLib.Timeout.Add (50, delegate {
+							if (op.Success) {
+								test = SearchTest (test.FullName);
+								if (test != null)
+									retOper.TrackOperation (RunTest (test, false), true);
+								else
+									retOper.SetCompleted (false);
+							}
+							return false;
+						});
+					};
+					
+					return retOper;
+				}
+			}
+			
 			Pad resultsPad = IdeApp.Workbench.GetPad <TestResultsPad>();
 			if (resultsPad == null) {
 				resultsPad = IdeApp.Workbench.ShowPad (new TestResultsPad (), "MonoDevelop.NUnit.TestResultsPad", GettextCatalog.GetString ("Test results"), "Bottom", "md-solution");
@@ -138,6 +174,26 @@ namespace MonoDevelop.NUnit
 					UnitTest result = SearchTest (t, fullName);
 					if (result != null)
 						return result;
+				}
+			}
+			return null;
+		}
+		
+		public UnitTest FindRootTest (IWorkspaceObject item)
+		{
+			return FindRootTest (RootTests, item);
+		}
+		
+		public UnitTest FindRootTest (IEnumerable<UnitTest> tests, IWorkspaceObject item)
+		{
+			foreach (UnitTest t in tests) {
+				if (t.OwnerObject == item)
+					return t;
+				UnitTestGroup tg = t as UnitTestGroup;
+				if (tg != null) {
+					UnitTest ct = FindRootTest (tg.Tests, item);
+					if (ct != null)
+						return ct;
 				}
 			}
 			return null;

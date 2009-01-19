@@ -36,6 +36,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
+using MonoDevelop.Projects;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.NUnit.Commands;
 using MonoDevelop.Ide.Gui.Components;
@@ -440,29 +441,15 @@ namespace MonoDevelop.NUnit
 			UnitTest test = nav.DataItem as UnitTest;
 			if (test == null)
 				return;
-			string fullName = test.FullName;
 			TestSession.ResetResult (test.RootTest);
+			
+			this.buttonRun.Sensitive = false;
+			this.buttonRunAll.Sensitive = false;
+			this.buttonStop.Sensitive = true;
+			
 			IdeApp.Workbench.GetPad<TestPad> ().BringToFront ();
-			if (IdeApp.Workspace.IsOpen) {
-				if (!IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted) {
-					MonoDevelop.Ide.Commands.StopHandler.StopBuildOperations ();
-					IdeApp.ProjectOperations.CurrentRunOperation.WaitForCompleted ();
-				} 
-				IAsyncOperation op = IdeApp.ProjectOperations.Build (IdeApp.Workspace);
-				op.Completed += delegate {
-					GLib.Timeout.Add (50, delegate {
-						test = testService.SearchTest (fullName);
-						if (test == null)
-							return false;
-						runningTestOperation = testService.RunTest (test);
-						runningTestOperation.Completed += (OperationHandler) DispatchService.GuiDispatch (new OperationHandler (TestSessionCompleted));
-						this.buttonRun.Sensitive = false;
-						this.buttonRunAll.Sensitive = false;
-						this.buttonStop.Sensitive = true;
-						return false;
-					});
-				};
-			} 
+			runningTestOperation = testService.RunTest (test);
+			runningTestOperation.Completed += (OperationHandler) DispatchService.GuiDispatch (new OperationHandler (TestSessionCompleted));
 		}
 		
 		void OnRunAllClicked (object sender, EventArgs args)

@@ -97,6 +97,11 @@
 	
 	<Extension path = "/MonoDevelop/Ide/Commands">
 		<Category _name = "NUnit" id = "NUnit">
+		<Command id = "MonoDevelop.NUnit.Commands.TestCommands.RunAllTests" 
+			_label = "Run Unit Tests"
+			_description="Runs all tests of the current selected project."
+			shortcut="Control|T"
+			defaultHandler="MonoDevelop.NUnit.Commands.RunAllTestsHandler"/>
 		<Command id = "MonoDevelop.NUnit.Commands.TestCommands.RunTest" _label = "Run Test" />
 		<Command id = "MonoDevelop.NUnit.Commands.TestCommands.ShowTestCode" _label = "Show test source code" />
 		<Command id = "MonoDevelop.NUnit.Commands.TestCommands.SelectTestInTree" _label = "Select test in tree" />
@@ -112,6 +117,10 @@
 		</Category>
 	</Extension>
 
+	<Extension path = "/MonoDevelop/Ide/MainMenu/Run">
+		<CommandItem id = "MonoDevelop.NUnit.Commands.TestCommands.RunAllTests" />
+	</Extension>
+	
 	<Extension path = "/MonoDevelop/NUnit/ContextMenu/ProjectPad/NUnitAssemblyGroup">
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
 	</Extension>
@@ -180,6 +189,10 @@
   
 	<Extension path = "/MonoDevelop/Core/StockIcons">
 		<StockIcon stockid = "nunit-pad-icon" resource = "nunit.png" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions">
+		<Class class = "MonoDevelop.NUnit.NUnitProjectServiceExtension" />
 	</Extension>
 
 </Addin>

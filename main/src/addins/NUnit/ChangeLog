@@ -1,3 +1,17 @@
+2009-01-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Gui/TestPad.cs:
+	* Services/NUnitService.cs:
+	* Commands/NUnitCommands.cs:
+	* MonoDevelopNUnit.addin.xml:
+	* Services/UnitTestCollection.cs: Added command for running the tests.
+
+	* Makefile.am:
+	* MonoDevelop.NUnit.mdp:
+	* Services/NUnitProjectServiceExtension.cs: When the project is a nunit
+	library and there are no custom execution commands, run the tests
+	when clicking on the Run option.
+
 2009-01-16  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.NUnit.mds: Added new NUnitRunner project.
