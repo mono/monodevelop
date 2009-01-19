@@ -185,7 +185,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			try {
 				using (XmlTextReader tr = new XmlTextReader (new StreamReader (file))) {
-					if (tr.MoveToElement ())
+					if (tr.MoveToContent () == XmlNodeType.Element)
 						return tr.GetAttribute ("ToolsVersion");
 				}
 			} catch {
