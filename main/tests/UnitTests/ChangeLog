@@ -1,3 +1,7 @@
+2009-01-20  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor.Tests/FoldingTests.cs: Added folding unit tests.
+
 2009-01-16  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:

@@ -52,6 +52,7 @@
     <File name="MonoDevelop.CSharpBinding/CodeCompletionCSharpTests.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects/CompletionDatabaseTests.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.CSharpBinding/FindMemberVisitorTests.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.TextEditor.Tests/FoldingTests.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" specificVersion="False" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
@@ -72,7 +73,10 @@
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.AspNet" />
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Components" />
     <ProjectReference type="Gac" localcopy="True" refto="System.Core, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-    <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
   </References>
   <GtkDesignInfo />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" ExecuteTargetName="test" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../..">
