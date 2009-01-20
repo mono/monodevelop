@@ -386,7 +386,7 @@ namespace MonoDevelop.Projects.Dom
 	
 	public class BaseResolveResult : ResolveResult
 	{
-		class BaseMemberDecorator : DomMemberDecorator
+		internal class BaseMemberDecorator : DomMemberDecorator
 		{
 			IType fakeDeclaringType;
 			public override IType DeclaringType {

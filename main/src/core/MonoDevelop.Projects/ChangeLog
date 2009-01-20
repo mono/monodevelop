@@ -1,3 +1,9 @@
+2009-01-20  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom/ResolveResult.cs:
+	* MonoDevelop.Projects.Dom/AbstractMember.cs: fixed "Bug 467409 - Bad
+	code completion options".
+
 2009-01-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: In GetInheritanceTree
