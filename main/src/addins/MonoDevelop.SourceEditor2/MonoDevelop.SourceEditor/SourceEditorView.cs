@@ -905,6 +905,8 @@ namespace MonoDevelop.SourceEditor
 			
 			public bool MoveAhead (int numChars)
 			{
+				if (view.Document.Length == 0)
+					return false;
 				bool result = offset < initialOffset ? (offset + numChars < initialOffset) : (offset + numChars < initialOffset + view.Document.Length);
 				offset = (offset + numChars) % view.Document.Length;
 				return result;
