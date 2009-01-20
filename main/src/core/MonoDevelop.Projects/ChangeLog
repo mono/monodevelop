@@ -1,3 +1,9 @@
+2009-01-20  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects/PropertyBag.cs: Avoid doubly serialising nodes
+	that have not been accessed and lazily deserialised. Prevents user
+	data loss.
+
 2009-01-20  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/ResolveResult.cs:

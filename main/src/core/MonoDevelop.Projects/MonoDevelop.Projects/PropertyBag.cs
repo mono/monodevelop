@@ -120,7 +120,9 @@ namespace MonoDevelop.Projects
 					xit.ItemData.Add (sr.Read ((XmlElement)entry.Value));
 					val = xit;
 				}
-				else {
+				else if (entry.Value is DataNode) {
+					val = (DataNode) entry.Value;
+				} else {
 					val = handler.SerializationContext.Serializer.Serialize (entry.Value, typeof(object));
 				}
 				val.Name = entry.Key;
