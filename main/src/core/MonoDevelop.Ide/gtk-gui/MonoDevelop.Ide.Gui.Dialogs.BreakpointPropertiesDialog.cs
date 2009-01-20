@@ -178,7 +178,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.label6 = new Gtk.Label();
             this.label6.WidthRequest = 12;
             this.label6.Name = "label6";
-            this.label6.LabelProp = "";
             this.table1.Add(this.label6);
             Gtk.Table.TableChild w8 = ((Gtk.Table.TableChild)(this.table1[this.label6]));
             w8.XOptions = ((Gtk.AttachOptions)(4));
@@ -207,7 +206,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.label14 = new Gtk.Label();
             this.label14.WidthRequest = 12;
             this.label14.Name = "label14";
-            this.label14.LabelProp = "";
             this.hbox4.Add(this.label14);
             Gtk.Box.BoxChild w11 = ((Gtk.Box.BoxChild)(this.hbox4[this.label14]));
             w11.Position = 0;
@@ -261,7 +259,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.label15 = new Gtk.Label();
             this.label15.WidthRequest = 12;
             this.label15.Name = "label15";
-            this.label15.LabelProp = "";
             this.boxCondition.Add(this.label15);
             Gtk.Box.BoxChild w15 = ((Gtk.Box.BoxChild)(this.boxCondition[this.label15]));
             w15.Position = 0;
@@ -356,7 +353,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.label10 = new Gtk.Label();
             this.label10.WidthRequest = 12;
             this.label10.Name = "label10";
-            this.label10.LabelProp = "";
             this.hbox2.Add(this.label10);
             Gtk.Box.BoxChild w26 = ((Gtk.Box.BoxChild)(this.hbox2[this.label10]));
             w26.Position = 0;
@@ -409,7 +405,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.label13 = new Gtk.Label();
             this.label13.WidthRequest = 12;
             this.label13.Name = "label13";
-            this.label13.LabelProp = "";
             this.boxTraceExpression.Add(this.label13);
             Gtk.Box.BoxChild w30 = ((Gtk.Box.BoxChild)(this.boxTraceExpression[this.label13]));
             w30.Position = 0;

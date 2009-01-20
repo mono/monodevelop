@@ -88,7 +88,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.IncludeFileListView.Name = "IncludeFileListView";
             this.IncludeFileListView.HeadersVisible = false;
             this.IncludeFileListView.RulesHint = true;
-            this.IncludeFileListView.HeadersClickable = true;
             this.scrolledwindow9.Add(this.IncludeFileListView);
             this.vbox62.Add(this.scrolledwindow9);
             Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(this.vbox62[this.scrolledwindow9]));

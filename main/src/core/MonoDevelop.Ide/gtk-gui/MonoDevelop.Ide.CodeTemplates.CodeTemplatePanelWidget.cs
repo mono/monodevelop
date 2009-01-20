@@ -136,7 +136,6 @@ namespace MonoDevelop.Ide.CodeTemplates {
             // Container child scrolledwindow3.Gtk.Container+ContainerChild
             this.templateListView = new Gtk.TreeView();
             this.templateListView.Name = "templateListView";
-            this.templateListView.HeadersClickable = true;
             this.scrolledwindow3.Add(this.templateListView);
             this.hbox9.Add(this.scrolledwindow3);
             Gtk.Box.BoxChild w9 = ((Gtk.Box.BoxChild)(this.hbox9[this.scrolledwindow3]));

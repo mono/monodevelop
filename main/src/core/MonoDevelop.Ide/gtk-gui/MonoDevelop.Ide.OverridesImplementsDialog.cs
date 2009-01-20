@@ -55,7 +55,6 @@ namespace MonoDevelop.Ide {
             this.treeview = new Gtk.TreeView();
             this.treeview.CanFocus = true;
             this.treeview.Name = "treeview";
-            this.treeview.HeadersClickable = true;
             this.GtkScrolledWindow.Add(this.treeview);
             this.vbox2.Add(this.GtkScrolledWindow);
             Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.vbox2[this.GtkScrolledWindow]));

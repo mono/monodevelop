@@ -1,3 +1,23 @@
+2009-01-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* gtk-gui/objects.xml:
+	* gtk-gui/MonoDevelop.Ide.SelectEncodingsDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewFileDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.OverridesImplementsDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.IncludeFilesDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.ExportProjectDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.AddinLoadErrorDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TasksPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.SelectReferenceDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.EncapsulateFieldDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AddInsPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Ide.CodeTemplates.CodeTemplatePanelWidget.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.BreakpointPropertiesDialog.cs:
+	Updated.
+
 2009-01-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs: In file

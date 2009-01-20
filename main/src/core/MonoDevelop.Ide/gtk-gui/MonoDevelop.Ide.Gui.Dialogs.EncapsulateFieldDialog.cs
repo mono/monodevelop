@@ -74,7 +74,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.treeview = new Gtk.TreeView();
             this.treeview.CanFocus = true;
             this.treeview.Name = "treeview";
-            this.treeview.HeadersClickable = true;
             this.GtkScrolledWindow.Add(this.treeview);
             this.vbox.Add(this.GtkScrolledWindow);
             Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.vbox[this.GtkScrolledWindow]));
@@ -151,6 +150,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.radioUpdateExternal = new Gtk.RadioButton(Mono.Unix.Catalog.GetString("_External"));
             this.radioUpdateExternal.CanFocus = true;
             this.radioUpdateExternal.Name = "radioUpdateExternal";
+            this.radioUpdateExternal.Active = true;
             this.radioUpdateExternal.DrawIndicator = true;
             this.radioUpdateExternal.UseUnderline = true;
             this.radioUpdateExternal.Group = new GLib.SList(System.IntPtr.Zero);
@@ -194,7 +194,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             // Container child hbox2.Gtk.Box+BoxChild
             this.labelError = new Gtk.Label();
             this.labelError.Name = "labelError";
-            this.labelError.LabelProp = "";
             this.hbox2.Add(this.labelError);
             Gtk.Box.BoxChild w15 = ((Gtk.Box.BoxChild)(this.hbox2[this.labelError]));
             w15.Position = 1;

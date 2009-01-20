@@ -118,7 +118,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             // Container child scrolledwindow2.Gtk.Container+ContainerChild
             this.ReferencesTreeView = new Gtk.TreeView();
             this.ReferencesTreeView.Name = "ReferencesTreeView";
-            this.ReferencesTreeView.HeadersClickable = true;
             this.scrolledwindow2.Add(this.ReferencesTreeView);
             this.hbox4.Add(this.scrolledwindow2);
             Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.hbox4[this.scrolledwindow2]));

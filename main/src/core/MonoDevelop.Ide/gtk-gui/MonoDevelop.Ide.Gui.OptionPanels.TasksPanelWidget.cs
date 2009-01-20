@@ -104,7 +104,6 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             this.tokensTreeView = new Gtk.TreeView();
             this.tokensTreeView.Name = "tokensTreeView";
             this.tokensTreeView.HeadersVisible = false;
-            this.tokensTreeView.HeadersClickable = true;
             this.scrolledwindow3.Add(this.tokensTreeView);
             this.vbox7.Add(this.scrolledwindow3);
             Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.vbox7[this.scrolledwindow3]));

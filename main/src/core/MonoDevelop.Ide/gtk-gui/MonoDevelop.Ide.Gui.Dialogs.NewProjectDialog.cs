@@ -141,7 +141,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.lst_template_types = new Gtk.TreeView();
             this.lst_template_types.Name = "lst_template_types";
             this.lst_template_types.HeadersVisible = false;
-            this.lst_template_types.HeadersClickable = true;
             this.scrolledwindow1.Add(this.lst_template_types);
             this.hbox_template.Add(this.scrolledwindow1);
             Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(this.hbox_template[this.scrolledwindow1]));

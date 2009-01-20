@@ -89,7 +89,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.errorTree = new Gtk.TreeView();
             this.errorTree.Name = "errorTree";
             this.errorTree.HeadersVisible = false;
-            this.errorTree.HeadersClickable = true;
             this.scrolledwindow1.Add(this.errorTree);
             this.vbox4.Add(this.scrolledwindow1);
             Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.vbox4[this.scrolledwindow1]));

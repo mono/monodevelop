@@ -113,7 +113,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.labelNewFormat = new Gtk.Label();
             this.labelNewFormat.Name = "labelNewFormat";
             this.labelNewFormat.Xalign = 0F;
-            this.labelNewFormat.LabelProp = "";
             this.table1.Add(this.labelNewFormat);
             Gtk.Table.TableChild w7 = ((Gtk.Table.TableChild)(this.table1[this.labelNewFormat]));
             w7.LeftAttach = ((uint)(1));
