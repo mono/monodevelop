@@ -200,7 +200,25 @@ class Test2 : Test
 			Assert.IsNotNull (provider, "provider == null");
 			Assert.IsNotNull (provider.Find ("Test"), "method 'Test' not found.");
 		}
-		
+
+		[Test()]
+		public void TestBasePrivateMemberAccess ()
+		{
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
+testClass + @"
+class Test : TestClass
+{
+	void Test ()
+	{
+		base.$
+	}
+}");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNull (provider.Find ("PrivField"), "field 'PrivField' found, but shouldn't.");
+			Assert.IsNull (provider.Find ("PrivProperty"), "property 'PrivProperty' found, but shouldn't.");
+			Assert.IsNull (provider.Find ("PrivMethod"), "method 'PrivMethod' found, but shouldn't.");
+			
+		}
 		[Test()]
 		public void TestBaseProtectedMemberAccess ()
 		{
@@ -223,7 +241,24 @@ class Test2 : Test
 			Assert.IsNotNull (provider, "provider == null");
 			Assert.IsNotNull (provider.Find ("Test"), "method 'Test' not found.");
 		}
-		
+		[Test()]
+		public void TestBasePublicMemberAccess ()
+		{
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
+testClass + @"
+class Test : TestClass
+{
+	void Test ()
+	{
+		base.$
+	}
+}");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("PubField"), "field 'PubField' not found.");
+			Assert.IsNotNull (provider.Find ("PubProperty"), "property 'PubProperty' not found.");
+			Assert.IsNotNull (provider.Find ("PubMethod"), "method 'PubMethod' not found.");
+			
+		}
 		[Test()]
 		public void TestProtectedMemberAccess2 ()
 		{
