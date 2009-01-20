@@ -50,7 +50,6 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
             // Container child scrolledwindow12.Gtk.Container+ContainerChild
             this.configsList = new Gtk.TreeView();
             this.configsList.Name = "configsList";
-            this.configsList.HeadersClickable = true;
             this.scrolledwindow12.Add(this.configsList);
             this.hbox61.Add(this.scrolledwindow12);
             Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.hbox61[this.scrolledwindow12]));

@@ -91,7 +91,6 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
             this.label55 = new Gtk.Label();
             this.label55.WidthRequest = 18;
             this.label55.Name = "label55";
-            this.label55.LabelProp = "";
             this.hbox29.Add(this.label55);
             Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.hbox29[this.label55]));
             w2.Position = 0;
@@ -228,7 +227,6 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
             this.label49 = new Gtk.Label();
             this.label49.WidthRequest = 18;
             this.label49.Name = "label49";
-            this.label49.LabelProp = "";
             this.hbox26.Add(this.label49);
             Gtk.Box.BoxChild w16 = ((Gtk.Box.BoxChild)(this.hbox26[this.label49]));
             w16.Position = 0;
@@ -257,7 +255,6 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
             this.label50 = new Gtk.Label();
             this.label50.WidthRequest = 18;
             this.label50.Name = "label50";
-            this.label50.LabelProp = "";
             this.hbox27.Add(this.label50);
             Gtk.Box.BoxChild w19 = ((Gtk.Box.BoxChild)(this.hbox27[this.label50]));
             w19.Position = 0;

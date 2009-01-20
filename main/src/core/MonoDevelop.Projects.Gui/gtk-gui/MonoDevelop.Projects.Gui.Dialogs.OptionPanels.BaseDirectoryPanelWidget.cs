@@ -53,7 +53,6 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
             this.label2 = new Gtk.Label();
             this.label2.WidthRequest = 12;
             this.label2.Name = "label2";
-            this.label2.LabelProp = "";
             this.hbox1.Add(this.label2);
             Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.hbox1[this.label2]));
             w2.Position = 0;

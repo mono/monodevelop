@@ -1,3 +1,13 @@
+2009-01-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.OutputOptionsPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.BaseDirectoryPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.StartupOptionsPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.GeneralProjectOptionsWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineConfigurationPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineEntryConfigurationsPanelWidget.cs:
+	Updated.
+
 2009-01-14  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Gui.Dialogs/MultiConfigItemOptionsPanel.cs:
