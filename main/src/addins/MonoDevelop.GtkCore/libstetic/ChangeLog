@@ -1,3 +1,7 @@
+2009-01-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* wrapper/objects.xml: Added some defaults.
+
 2008-12-12  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* libstetic.mdp: All projects now require fx 3.5.

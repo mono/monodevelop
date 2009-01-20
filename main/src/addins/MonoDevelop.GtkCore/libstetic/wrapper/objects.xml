@@ -873,7 +873,7 @@
 	    label="Label" icon="label.png" palette-category="widget" base-type="Gtk.Misc">
 	<itemgroups>
 	    <itemgroup label="Label Properties">
-		<property name="LabelProp" init-with-name="true" translatable="true" />
+		<property name="LabelProp" init-with-name="true" translatable="true" default=""/>
 		<property name="UseMarkup" />
 		<property name="UseUnderline" />
 		<property name="Wrap" />
@@ -1522,7 +1522,7 @@
 		<property name="RulesHint" />
 		<property name="SearchColumn" min="-1"/>
 		<property name="Model" />
-		<property name="HeadersClickable" gtk-version="2.6" />
+		<property name="HeadersClickable" gtk-version="2.6" default="true"/>
 		<property name="HoverSelection" gtk-version="2.6" />
 		<property name="HoverExpand" gtk-version="2.6" />
 	    </itemgroup>
