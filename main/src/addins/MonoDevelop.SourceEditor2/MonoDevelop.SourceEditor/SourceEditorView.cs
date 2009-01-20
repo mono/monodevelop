@@ -860,17 +860,22 @@ namespace MonoDevelop.SourceEditor
 			public DocumentTextIterator (SourceEditorView view, int offset)
 			{
 				this.view = view;
-				this.initialOffset = this.offset = offset;
+				this.initialOffset = offset;
+				this.offset = -1;
 			}
 
 			public char Current {
 				get {
+					if (offset == -1)
+						throw new InvalidOperationException ();
 					return view.Document.GetCharAt (offset);
 				}
 			}
 			public int Position {
 				[FreeDispatch]
 				get {
+					if (offset == -1)
+						throw new InvalidOperationException ();
 					return offset;
 				}
 				[FreeDispatch]
@@ -881,6 +886,8 @@ namespace MonoDevelop.SourceEditor
 			public int Line { 
 				[FreeDispatch]
 				get {
+					if (offset == -1)
+						throw new InvalidOperationException ();
 					return view.Document.OffsetToLineNumber (offset);
 				}
 			}
@@ -888,18 +895,24 @@ namespace MonoDevelop.SourceEditor
 			public int Column {
 				[FreeDispatch]
 				get {
+					if (offset == -1)
+						throw new InvalidOperationException ();
 					return view.Document.OffsetToLocation (offset).Column;
 				}
 			}
 			
 			public int DocumentOffset { 
 				get {
+					if (offset == -1)
+						throw new InvalidOperationException ();
 					return offset;
 				}
 			}
 			
 			public char GetCharRelative (int offset)
 			{
+				if (offset == -1)
+					throw new InvalidOperationException ();
 				return view.Document.GetCharAt (this.offset + offset);
 			}
 			
@@ -907,6 +920,10 @@ namespace MonoDevelop.SourceEditor
 			{
 				if (view.Document.Length == 0)
 					return false;
+				if (offset == -1) {
+					offset = initialOffset;
+					return true;
+				}
 				bool result = offset < initialOffset ? (offset + numChars < initialOffset) : (offset + numChars < initialOffset + view.Document.Length);
 				offset = (offset + numChars) % view.Document.Length;
 				return result;
@@ -927,11 +944,13 @@ namespace MonoDevelop.SourceEditor
 			[FreeDispatch]
 			public void Reset()
 			{
-				offset = this.initialOffset;
+				offset = -1;
 			}
 			
 			public void Replace (int length, string pattern)
 			{
+				if (offset == -1)
+					throw new InvalidOperationException ();
 				if (view.TextEditor.IsSomethingSelected)
 					view.TextEditor.ClearSelection ();
 				view.Document.Replace (offset, length, pattern);

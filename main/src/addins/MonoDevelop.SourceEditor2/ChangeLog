@@ -1,5 +1,11 @@
 2009-01-20  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: In DocumentTextIterator,
+	the first call to MoveAhead must initialize the offset. Fixes bug
+	#460627 - Find In Files doesn't find all matches.
+
+2009-01-20  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Fixed issue with 0
 	length documents.
 
