@@ -75,7 +75,6 @@ namespace Mono.TextEditor
 		public int CompareTo (object obj)
 		{
 			FoldSegment segment = (FoldSegment)obj;
-			
 			return this.Offset != segment.Offset ? this.Offset.CompareTo (segment.Offset) : 0;
 		}
 	}

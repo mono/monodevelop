@@ -175,13 +175,23 @@ namespace Mono.TextEditor
 			
 			if (line < editor.Document.LineCount) {
 				LineSegment lineSegment = editor.Document.GetLine (line);
-				IEnumerable<FoldSegment> startFoldings      = editor.Document.GetStartFoldings (lineSegment);
-				IEnumerable<FoldSegment> containingFoldings = editor.Document.GetFoldingContaining (lineSegment);
-				IEnumerable<FoldSegment> endFoldings        = editor.Document.GetEndFoldings (lineSegment);
+				List<FoldSegment> startFoldings      = new List<FoldSegment> ();
+				List<FoldSegment> containingFoldings = new List<FoldSegment> ();
+				List<FoldSegment> endFoldings        = new List<FoldSegment> ();
 				
-				bool isFoldStart  = startFoldings.Any ();
-				bool isContaining = containingFoldings.Any ();
-				bool isFoldEnd    = endFoldings.Any ();
+				foreach (FoldSegment segment in editor.Document.GetFoldingContaining (lineSegment)) {
+					if (segment.StartLine.Offset == lineSegment.Offset) {
+						startFoldings.Add (segment);
+					} else if (segment.EndLine.Offset == lineSegment.Offset) {
+						endFoldings.Add (segment);
+					} else {
+						containingFoldings.Add (segment);
+					}
+				}
+				
+				bool isFoldStart  = startFoldings.Count > 0;
+				bool isContaining = containingFoldings.Count > 0;
+				bool isFoldEnd    = endFoldings.Count > 0;
 				
 				bool isStartSelected      = IsMouseHover (startFoldings);
 				bool isContainingSelected = IsMouseHover (containingFoldings);

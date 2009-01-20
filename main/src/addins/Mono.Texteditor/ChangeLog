@@ -1,3 +1,10 @@
+2009-01-20  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/Document.cs:
+	* Mono.TextEditor/FoldSegment.cs:
+	* Mono.TextEditor/FoldMarkerMargin.cs: Folding now uses a tree instead
+	of a list (should speed up folding in files with many foldings).
+
 2009-01-16  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/Document.cs: optimized folding performace.
