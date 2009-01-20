@@ -1038,6 +1038,38 @@ public class TestMe
 			Assert.IsNotNull (provider.Find ("break"), "keyword 'break' not found");
 			Assert.IsNotNull (provider.Find ("return"), "keyword 'return' not found");
 		}
+		
+		/// <summary>
+		/// Bug 467507 - No completion of base members inside explicit events
+		/// </summary>
+		[Test()]
+		public void TestBug467507 ()
+		{
+			CompletionDataList provider = CreateCtrlSpaceProvider (
+@"
+using System;
+
+class Test
+{
+	public void TestMe ()
+	{
+	}
+	
+	public event EventHandler TestEvent {
+		add {
+			$
+		}
+		remove {
+			
+		}
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			
+			Assert.IsNotNull (provider.Find ("TestMe"), "method 'TestMe' not found");
+			Assert.IsNotNull (provider.Find ("value"), "keyword 'value' not found");
+		}
 
 		[TestFixtureSetUp] 
 		public void SetUp()
