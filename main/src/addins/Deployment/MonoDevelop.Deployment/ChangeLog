@@ -1,3 +1,26 @@
+2009-01-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* gtk-gui/objects.xml:
+	* gtk-gui/generated.cs:
+	* MonoDevelop.Deployment.mdp:
+	* gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:
+	* gtk-gui/MonoDevelop.Deployment.FileReplaceDialog.cs:
+	* gtk-gui/MonoDevelop.Deployment.Gui.InstallDialog.cs:
+	* gtk-gui/MonoDevelop.Deployment.DeployFileListWidget.cs:
+	* gtk-gui/MonoDevelop.Deployment.Gui.EditPackageDialog.cs:
+	* gtk-gui/MonoDevelop.Deployment.Gui.EntrySelectionTree.cs:
+	* gtk-gui/MonoDevelop.Deployment.Gui.SourcesZipEditorWidget.cs:
+	* gtk-gui/MonoDevelop.Deployment.Gui.PackagingFeatureWidget.cs:
+	* gtk-gui/MonoDevelop.Deployment.Gui.BinariesZipEditorWidget.cs:
+	* gtk-gui/MonoDevelop.Deployment.Gui.CommandDeployEditorWidget.cs:
+	* gtk-gui/MonoDevelop.Deployment.Gui.FileCopyConfigurationSelector.cs:
+	* gtk-gui/MonoDevelop.Deployment.Gui.LocalFileCopyConfigurationEditorWidget.cs:
+	* gtk-gui/MonoDevelop.Deployment.Gui.SshFuseFileCopyConfigurationEditorWidget.cs:
+	Updated generated code and removed objects.xml, which is not required
+	anymore.
+
 2008-12-24  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Deployment.addin.xml: Fix label.

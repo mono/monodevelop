@@ -98,7 +98,6 @@ FILES =  \
 
 RES =  \
 	gtk-gui/gui.stetic \
-	gtk-gui/objects.xml \
 	icons/package-x-generic.png \
 	icons/packaging-16.png \
 	icons/packaging-32.png \
