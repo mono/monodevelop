@@ -139,7 +139,7 @@ namespace MonoDevelop.CSharpBinding
 			
 			if (callingType != null) {
 				foreach (IMember member in callingType.Members) {
-					if (!(member is IMethod || member is IProperty))
+					if (!(member is IMethod || member is IProperty || member is IEvent))
 						continue;
 					if (member.Location.Line == resolvePosition.Line || member.BodyRegion.Contains (resolvePosition)) {
 						callingMember = member;
@@ -150,9 +150,11 @@ namespace MonoDevelop.CSharpBinding
 				if (typeFromDatabase != null)
 					callingType = typeFromDatabase;
 			}
+			//System.Console.WriteLine("CallingMember: " + callingMember);
 			if (callingMember != null && !setupLookupTableVisitor ) {
 				
 				string wrapper = CreateWrapperClassForMember (callingMember);
+				//System.Console.WriteLine("wrapper:" + wrapper);
 				ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (lang, new StringReader (wrapper));
 				parser.Parse ();
 				memberCompilationUnit = parser.CompilationUnit;

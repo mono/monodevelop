@@ -666,6 +666,19 @@ namespace MonoDevelop.CSharpBinding
 				evt.Location  = ConvertLocation (eventDeclaration.StartLocation);
 				evt.Modifiers  = ConvertModifiers (eventDeclaration.Modifier);
 				evt.ReturnType = ConvertReturnType (eventDeclaration.TypeReference);
+				evt.BodyRegion = ConvertRegion (eventDeclaration.BodyStart, eventDeclaration.BodyEnd);
+				if (eventDeclaration.AddRegion != null && !eventDeclaration.AddRegion.IsNull) {
+					DomMethod addMethod = new DomMethod ();
+					addMethod.Name = "add";
+					addMethod.BodyRegion = ConvertRegion (eventDeclaration.AddRegion.StartLocation, eventDeclaration.AddRegion.EndLocation); 
+					evt.AddMethod = addMethod;
+				}
+				if (eventDeclaration.RemoveRegion != null && !eventDeclaration.RemoveRegion.IsNull) {
+					DomMethod removeMethod = new DomMethod ();
+					removeMethod.Name = "remove";
+					removeMethod.BodyRegion = ConvertRegion (eventDeclaration.RemoveRegion.StartLocation, eventDeclaration.RemoveRegion.EndLocation); 
+					evt.RemoveMethod = removeMethod;
+				}
 				AddAttributes (evt, eventDeclaration.Attributes);
 				AddExplicitInterfaces (evt, eventDeclaration.InterfaceImplementations);
 				evt.DeclaringType = typeStack.Peek ();
