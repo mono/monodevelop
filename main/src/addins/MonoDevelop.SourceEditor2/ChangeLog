@@ -1,5 +1,22 @@
 2009-01-20  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* gtk-gui/gui.stetic:
+	* gtk-gui/generated.cs:
+	* gtk-gui/MonoDevelop.SourceEditor.GotoLineNumberWidget.cs:
+	* gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs:
+	* gtk-gui/MonoDevelop.SourceEditor.OptionPanels.MarkerPanel.cs:
+	* gtk-gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:
+	* gtk-gui/MonoDevelop.SourceEditor.OptionPanels.HighlightingPanel.cs:
+	* gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs:
+	Updated.
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Implemented SearchNext
+	in the document interator. Fixes a performance issue (the default
+	implementations makes multiple calls to MoveAhead, which go through
+	all the remoting chaing).
+
+2009-01-20  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: In DocumentTextIterator,
 	the first call to MoveAhead must initialize the offset. Fixes bug
 	#460627 - Find In Files doesn't find all matches.

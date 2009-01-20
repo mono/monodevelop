@@ -856,6 +856,8 @@ namespace MonoDevelop.SourceEditor
 		{
 			SourceEditorView view;
 			int initialOffset, offset;
+			BasicSearchEngine sarchEngine;
+			bool wrapped;
 			
 			public DocumentTextIterator (SourceEditorView view, int offset)
 			{
@@ -972,13 +974,40 @@ namespace MonoDevelop.SourceEditor
 			[FreeDispatch]
 			public bool SupportsSearch (MonoDevelop.Ide.Gui.Search.SearchOptions options, bool reverse)
 			{
-				return false;
+				return options.SearchStrategyType == SearchStrategyType.Normal;
 			}
 			
 			[FreeDispatch]
 			public bool SearchNext (string text, MonoDevelop.Ide.Gui.Search.SearchOptions options, bool reverse)
 			{
-				return false;
+				if (offset == -1) {
+					sarchEngine = new BasicSearchEngine ();
+					sarchEngine.Document = view.TextEditor.Document;
+					SearchRequest req = new SearchRequest ();
+					req.SearchPattern = options.SearchPattern;
+					req.CaseSensitive = !options.IgnoreCase;
+					req.WholeWordOnly = options.SearchWholeWordOnly;
+					sarchEngine.SearchRequest = req;
+					offset = initialOffset;
+					wrapped = false;
+				}
+				Mono.TextEditor.SearchResult res;
+				if (!reverse)
+					res = sarchEngine.SearchForward (offset);
+				else
+					res = sarchEngine.SearchBackward (offset);
+				
+				if (res != null) {
+					if (res.SearchWrapped)
+						wrapped = true;
+					if (wrapped && offset >= initialOffset)
+						return false;
+					offset = res.Offset;
+					return true;
+				}
+				else
+					return false;
+					
 			}
 			
 			public string GetLineText (int offset)
