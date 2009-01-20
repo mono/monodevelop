@@ -472,32 +472,19 @@ namespace Mono.TextEditor
 				return searchEngine;
 			}
 			set {
-				value.TextEditorData = this;
+				value.Document = document;
+				value.SearchRequest = SearchRequest;
 				searchEngine = value;
 			}
 		}
 		
-		bool isCaseSensitive = true;
-		bool isWholeWordOnly = false;
+		SearchRequest currentSearchRequest;
 		
-		public bool IsCaseSensitive {
+		public SearchRequest SearchRequest {
 			get {
-				return isCaseSensitive;
-			}
-			set {
-				isCaseSensitive = value;
-				searchEngine.CompilePattern ();
-			}
-		}
-		
-		public bool IsWholeWordOnly {
-			get {
-				return isWholeWordOnly;
-			}
-			
-			set {
-				isWholeWordOnly = value;
-				searchEngine.CompilePattern ();
+				if (currentSearchRequest == null)
+					currentSearchRequest = new SearchRequest ();
+				return currentSearchRequest;
 			}
 		}
 		

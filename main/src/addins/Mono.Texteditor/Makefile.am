@@ -67,6 +67,7 @@ FILES =  \
 	Mono.TextEditor/Margin.cs \
 	Mono.TextEditor/RedBlackTree.cs \
 	Mono.TextEditor/ReplaceEventArgs.cs \
+	Mono.TextEditor/SearchRequest.cs \
 	Mono.TextEditor/SearchResult.cs \
 	Mono.TextEditor/Segment.cs \
 	Mono.TextEditor/SelectionActions.cs \

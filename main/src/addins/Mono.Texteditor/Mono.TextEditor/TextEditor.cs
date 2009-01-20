@@ -1160,10 +1160,10 @@ namespace Mono.TextEditor
 		
 		public string SearchPattern {
 			get {
-				return this.textEditorData.SearchEngine.SearchPattern;
+				return this.textEditorData.SearchRequest.SearchPattern;
 			}
 			set {
-				this.textEditorData.SearchEngine.SearchPattern = value;
+				this.textEditorData.SearchRequest.SearchPattern = value;
 				this.QueueDraw ();
 			}
 		}
@@ -1192,20 +1192,20 @@ namespace Mono.TextEditor
 		}
 		public bool IsCaseSensitive {
 			get {
-				return this.textEditorData.IsCaseSensitive;
+				return this.textEditorData.SearchRequest.CaseSensitive;
 			}
 			set {
-				this.textEditorData.IsCaseSensitive = value;
+				this.textEditorData.SearchRequest.CaseSensitive = value;
 			}
 		}
 		
 		public bool IsWholeWordOnly {
 			get {
-				return this.textEditorData.IsWholeWordOnly;
+				return this.textEditorData.SearchRequest.WholeWordOnly;
 			}
 			
 			set {
-				this.textEditorData.IsWholeWordOnly = value;
+				this.textEditorData.SearchRequest.WholeWordOnly = value;
 			}
 		}
 		

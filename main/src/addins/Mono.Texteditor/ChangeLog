@@ -1,3 +1,14 @@
+2009-01-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* Mono.TextEditor.mdp:
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/ISearchEngine.cs:
+	* Mono.TextEditor/SearchRequest.cs:
+	* Mono.TextEditor/TextEditorData.cs: Moved search parameters to a new
+	SearchRequest class, this allows creating a search engine independent
+	from the one provided by TextEditor.
+
 2009-01-20  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/Document.cs:
