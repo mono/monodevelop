@@ -26,6 +26,7 @@
 //
 
 using System;
+using System.IO;
 using System.Collections.Generic;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Dom;
@@ -254,10 +255,8 @@ namespace MonoDevelop.Projects
 			IType type = mainProject.GetType ("CompletionDbTest.CustomWidget1", false);
 			
 			List<string> types = new List<string> ();
-			foreach (IType t in mainProject.GetInheritanceTree (type)) {
+			foreach (IType t in mainProject.GetInheritanceTree (type))
 				types.Add (t.FullName);
-				Console.WriteLine ("pp11: " + t.FullName);
-			}
 			
 			Assert.IsTrue (types.Contains ("CompletionDbTest.CustomWidget1"));
 			Assert.IsTrue (types.Contains ("Library1.CBin"));
@@ -474,6 +473,58 @@ namespace MonoDevelop.Projects
 				return t.FullName;
 			else
 				return t.FullName + "`" + t.TypeParameters.Count;
+		}
+
+/*		[Test]
+		public void GetObjectSubclasses ()
+		{
+			IType type = mainProject.GetType ("System.Object", true);
+			Assert.IsNotNull (type);
+
+			List<string> types = new List<string> ();
+			foreach (IType t in mainProject.GetSubclasses (type, true))
+				types.Add (t.FullName);
+		}
+*/
+		
+		[Test]
+		public void RewriteGenericType ()
+		{
+			// Check that the instantiated type cache is properly invalidated
+			// when a generic type changes.
+			
+			List<IReturnType> args = new List<IReturnType> ();
+			args.Add (new DomReturnType ("System.Int32"));
+			IType type = mainProject.GetType ("CompletionDbTest.GenericRewrite", args);
+			Assert.IsNotNull (type);
+			Assert.IsTrue (type is InstantiatedType);
+			Assert.IsTrue (type.FieldCount == 1);
+			
+			string newText = @"
+				using System;
+				
+				namespace CompletionDbTest
+				{
+					public class GenericRewrite<T>
+					{
+						public int aa;
+						public int bb;
+					}
+				}
+			";
+			
+			// Added this delay to make sure the write time of the file changes
+			System.Threading.Thread.Sleep (1200);
+			
+			string file = mainProject.Project.GetAbsoluteChildPath ("GenericRewrite.cs");
+			File.WriteAllText (file, newText);
+			
+			mainProject.ForceUpdate ();
+			
+			type = mainProject.GetType ("CompletionDbTest.GenericRewrite", args);
+			Assert.IsNotNull (type);
+			Assert.IsTrue (type is InstantiatedType);
+			Assert.IsTrue (type.FieldCount == 2);
 		}
 	}
 }

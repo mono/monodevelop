@@ -1,5 +1,9 @@
 2009-01-20  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects/CompletionDatabaseTests.cs: Added new test.
+
+2009-01-20  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Mono.TextEditor.Tests/SearchTests.cs: Track api changes.
 
 2009-01-20  Mike Krüger  <mkrueger@novell.com>

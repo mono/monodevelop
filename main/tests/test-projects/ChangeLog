@@ -1,3 +1,9 @@
+2009-01-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* completion-db-test/CompletionDbTest/GenericRewrite.cs:
+	* completion-db-test/CompletionDbTest/CompletionDbTest.csproj: Added new
+	test.
+
 2009-01-15  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* vs-local-copy/solution-folder:
