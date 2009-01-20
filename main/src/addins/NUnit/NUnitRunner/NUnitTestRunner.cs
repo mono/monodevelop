@@ -62,7 +62,10 @@ namespace MonoDevelop.NUnit.External
 				filter = TestFilter.Empty;
 			
 			RemoteTestRunner tr = new RemoteTestRunner ();
-			tr.Load (new TestPackage (path));
+			TestPackage package = new TestPackage (path);
+			if (!string.IsNullOrEmpty (suiteName))
+				package.TestName = suiteName;
+			tr.Load (package);
 			return tr.Run (listener, filter);
 		}
 		

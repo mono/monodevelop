@@ -1,3 +1,8 @@
+2009-01-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* NUnitRunner/NUnitTestRunner.cs: Make sure that only the provided test
+	suite is executed.
+
 2009-01-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Services/ExternalTestRunner.cs: Add a default test result message when
