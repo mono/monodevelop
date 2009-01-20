@@ -39,7 +39,7 @@ namespace Mono.TextEditor.Tests
 		{
 			TextEditorData data = new Mono.TextEditor.TextEditorData  ();
 			data.Document.Text = @"ababab";
-			data.SearchEngine.SearchPattern = "ab";
+			data.SearchEngine.SearchRequest.SearchPattern = "ab";
 			SearchResult result = data.SearchForward (0);
 			Assert.AreEqual (0, result.Offset);
 			Assert.AreEqual (2, result.EndOffset);
@@ -66,7 +66,7 @@ namespace Mono.TextEditor.Tests
 		{
 			TextEditorData data = new Mono.TextEditor.TextEditorData  ();
 			data.Document.Text = @"ababab";
-			data.SearchEngine.SearchPattern = "ab";
+			data.SearchEngine.SearchRequest.SearchPattern = "ab";
 			SearchResult result = data.SearchBackward (0);
 			Assert.AreEqual (4, result.Offset);
 			Assert.AreEqual (6, result.EndOffset);
@@ -88,7 +88,7 @@ namespace Mono.TextEditor.Tests
 		{
 			TextEditorData data = new Mono.TextEditor.TextEditorData  ();
 			data.Document.Text = @"ababab";
-			data.SearchEngine.SearchPattern = "ab";
+			data.SearchEngine.SearchRequest.SearchPattern = "ab";
 			
 			data.Caret.Offset = 0;
 			SearchResult result = data.FindNext ();
@@ -129,7 +129,7 @@ namespace Mono.TextEditor.Tests
 		{
 			TextEditorData data = new Mono.TextEditor.TextEditorData  ();
 			data.Document.Text = @"ababab";
-			data.SearchEngine.SearchPattern = "ab";
+			data.SearchEngine.SearchRequest.SearchPattern = "ab";
 			
 			data.Caret.Offset = 0;
 			SearchResult result = data.FindPrevious ();
