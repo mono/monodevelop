@@ -36,16 +36,23 @@ namespace MonoDevelop.VersionControl
 		
 		public string GenerateGlobalComment (int maxColumns)
 		{
-			return GeneratePathComment (basePath, items, ChangeLogMessageStyle.CommitMessage, null, null);
+			return GeneratePathComment (basePath, items, ChangeLogMessageStyle.CommitMessage, null);
 		}
 		
 		public string GeneratePathComment (string path, IEnumerable<ChangeSetItem> items, 
-			ChangeLogMessageStyle messageStyle, string name, string email)
+			ChangeLogMessageStyle messageStyle, MonoDevelop.Ide.Gui.UserInformation userInfo)
 		{
 			ChangeLogWriter writer = new ChangeLogWriter (path);
 			writer.MessageStyle = messageStyle;
-			writer.FullName = name;
-			writer.EmailAddress = email;
+			
+			if (userInfo != null) {
+				writer.FullName = userInfo.Name;
+				writer.EmailAddress = userInfo.Email;
+				if (string.IsNullOrEmpty (writer.FullName))
+					writer.FullName = MonoDevelop.Ide.Gui.UserInformation.Default.Name;
+				if (string.IsNullOrEmpty (writer.EmailAddress))
+					writer.EmailAddress = MonoDevelop.Ide.Gui.UserInformation.Default.Email;
+			}
 			
 			foreach (ChangeSetItem item in items) {
 				writer.AddFile (item.Comment, item.LocalPath);

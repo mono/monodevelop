@@ -1,3 +1,7 @@
+2009-01-21  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.VersionControl/ChangeSet.cs: Use UserInformation API.
+
 2009-01-07  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.VersionControl/ChangeLogWriter.cs: If there are no
