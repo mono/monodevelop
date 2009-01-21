@@ -1,5 +1,10 @@
 2009-01-21  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Projects.Dom/DomType.cs: Use a (faster) ordinal compare
+	when searching for members.
+
+2009-01-21  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Projects/Solution.cs:
 	* MonoDevelop.Projects/SolutionItem.cs: Add Policies properties to
 	Solution and SolutionItem.
