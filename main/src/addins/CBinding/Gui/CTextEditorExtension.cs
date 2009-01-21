@@ -96,7 +96,18 @@ namespace CBinding
 						char finalChar = '\0';
 						char nextChar = '\0';
 						string indent = String.Empty;
-						
+						if (!String.IsNullOrEmpty (Editor.SelectedText)) {
+							System.Console.WriteLine("---");
+							System.Console.WriteLine(Editor.CursorPosition);
+							int cursorPos = Editor.SelectionStartPosition;
+							Editor.DeleteText (Editor.SelectionStartPosition, Editor.SelectionEndPosition - Editor.SelectionStartPosition);
+							Editor.CursorPosition = cursorPos;
+							System.Console.WriteLine(Editor.CursorPosition);
+							Editor.GetLineColumnFromPosition (Editor.CursorPosition, out line, out column);	
+							lineText = Editor.GetLineText (line);
+							lineCursorIndex = (Editor.CursorPosition - lineBegins) - 1;
+							System.Console.WriteLine(Editor.CursorPosition);
+						}
 						if(lineText.Length > 0)
 						{
 							if(lineCursorIndex > 0)

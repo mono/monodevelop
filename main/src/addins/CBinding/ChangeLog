@@ -1,3 +1,8 @@
+2009-01-21  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/CTextEditorExtension.cs: fixed bug 'Bug 467553 - Enter key doesn't
+	delete selected text'.
+
 2008-12-12  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* CBinding.mdp:
