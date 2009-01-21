@@ -25,7 +25,6 @@ FILES =  \
 	CommitDialogExtensionWidget.cs \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.ChangeLogAddIn.AddLogEntryDialog.cs \
-	gtk-gui/MonoDevelop.ChangeLogAddIn.ChangeLogAddInOptionPanelWidget.cs \
 	gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs \
 	ProjectOptionPanel.cs \
 	ProjectOptionPanelWidget.cs

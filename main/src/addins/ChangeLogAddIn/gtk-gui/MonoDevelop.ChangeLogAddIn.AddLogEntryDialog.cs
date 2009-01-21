@@ -251,7 +251,7 @@ namespace MonoDevelop.ChangeLogAddIn {
             Gtk.HButtonBox w22 = this.ActionArea;
             w22.Events = ((Gdk.EventMask)(256));
             w22.Name = "ChangeLogAddIn.AddLogEntryDialog_ActionArea";
-            w22.Spacing = 10;
+            w22.Spacing = 6;
             w22.BorderWidth = ((uint)(5));
             w22.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child ChangeLogAddIn.AddLogEntryDialog_ActionArea.Gtk.ButtonBox+ButtonBoxChild
