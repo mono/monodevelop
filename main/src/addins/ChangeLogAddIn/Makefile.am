@@ -20,9 +20,7 @@ FILES =  \
 	AddLogEntryDialog.cs \
 	AssemblyInfo.cs \
 	ChangeLogAddIn.cs \
-	ChangeLogAddInOptionPanelWidget.cs \
-	ChangeLogAddInOptionsPanel.cs \
-	ChangeLogData.cs \
+	ChangeLogPolicy.cs \
 	ChangeLogService.cs \
 	CommitDialogExtensionWidget.cs \
 	gtk-gui/generated.cs \

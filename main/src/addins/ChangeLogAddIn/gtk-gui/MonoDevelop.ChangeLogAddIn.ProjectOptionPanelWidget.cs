@@ -11,15 +11,9 @@
 namespace MonoDevelop.ChangeLogAddIn {
     
     
-    public partial class ProjectOptionPanelWidget {
+    internal partial class ProjectOptionPanelWidget {
         
         private Gtk.VBox vbox2;
-        
-        private Gtk.Label label1;
-        
-        private Gtk.RadioButton parentRadioButton;
-        
-        private Gtk.Label label4;
         
         private Gtk.RadioButton noneRadioButton;
         
@@ -37,6 +31,16 @@ namespace MonoDevelop.ChangeLogAddIn {
         
         private Gtk.Label label7;
         
+        private Gtk.Alignment alignment1;
+        
+        private Gtk.Alignment alignment2;
+        
+        private Gtk.CheckButton checkVersionControl;
+        
+        private Gtk.Alignment alignment3;
+        
+        private Gtk.CheckButton checkRequireOnCommit;
+        
         protected virtual void Build() {
             Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget
@@ -47,42 +51,12 @@ namespace MonoDevelop.ChangeLogAddIn {
             this.vbox2.Name = "vbox2";
             this.vbox2.Spacing = 6;
             // Container child vbox2.Gtk.Box+BoxChild
-            this.label1 = new Gtk.Label();
-            this.label1.Name = "label1";
-            this.label1.Xalign = 0F;
-            this.label1.LabelProp = Mono.Unix.Catalog.GetString("Select the ChangeLog policy that applies for this project:");
-            this.vbox2.Add(this.label1);
-            Gtk.Box.BoxChild w1 = ((Gtk.Box.BoxChild)(this.vbox2[this.label1]));
-            w1.Position = 0;
-            w1.Expand = false;
-            w1.Fill = false;
-            // Container child vbox2.Gtk.Box+BoxChild
-            this.parentRadioButton = new Gtk.RadioButton(Mono.Unix.Catalog.GetString("radiobutton2"));
-            this.parentRadioButton.CanFocus = true;
-            this.parentRadioButton.Name = "parentRadioButton";
-            this.parentRadioButton.Active = true;
-            this.parentRadioButton.DrawIndicator = true;
-            this.parentRadioButton.UseUnderline = true;
-            this.parentRadioButton.Group = new GLib.SList(System.IntPtr.Zero);
-            this.parentRadioButton.Remove(this.parentRadioButton.Child);
-            // Container child parentRadioButton.Gtk.Container+ContainerChild
-            this.label4 = new Gtk.Label();
-            this.label4.Name = "label4";
-            this.label4.LabelProp = Mono.Unix.Catalog.GetString("<b>Use parent solution policy</b>\nApply the policy specified in the parent solution.");
-            this.label4.UseMarkup = true;
-            this.parentRadioButton.Add(this.label4);
-            this.vbox2.Add(this.parentRadioButton);
-            Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.vbox2[this.parentRadioButton]));
-            w3.Position = 1;
-            w3.Expand = false;
-            w3.Fill = false;
-            // Container child vbox2.Gtk.Box+BoxChild
             this.noneRadioButton = new Gtk.RadioButton(Mono.Unix.Catalog.GetString("radiobutton1"));
             this.noneRadioButton.CanFocus = true;
             this.noneRadioButton.Name = "noneRadioButton";
             this.noneRadioButton.DrawIndicator = true;
             this.noneRadioButton.UseUnderline = true;
-            this.noneRadioButton.Group = this.parentRadioButton.Group;
+            this.noneRadioButton.Group = new GLib.SList(System.IntPtr.Zero);
             this.noneRadioButton.Remove(this.noneRadioButton.Child);
             // Container child noneRadioButton.Gtk.Container+ContainerChild
             this.label3 = new Gtk.Label();
@@ -91,17 +65,17 @@ namespace MonoDevelop.ChangeLogAddIn {
             this.label3.UseMarkup = true;
             this.noneRadioButton.Add(this.label3);
             this.vbox2.Add(this.noneRadioButton);
-            Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.vbox2[this.noneRadioButton]));
-            w5.Position = 2;
-            w5.Expand = false;
-            w5.Fill = false;
+            Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.vbox2[this.noneRadioButton]));
+            w2.Position = 0;
+            w2.Expand = false;
+            w2.Fill = false;
             // Container child vbox2.Gtk.Box+BoxChild
             this.nearestRadioButton = new Gtk.RadioButton(Mono.Unix.Catalog.GetString("Custom policy"));
             this.nearestRadioButton.CanFocus = true;
             this.nearestRadioButton.Name = "nearestRadioButton";
             this.nearestRadioButton.DrawIndicator = true;
             this.nearestRadioButton.UseUnderline = true;
-            this.nearestRadioButton.Group = this.parentRadioButton.Group;
+            this.nearestRadioButton.Group = this.noneRadioButton.Group;
             this.nearestRadioButton.Remove(this.nearestRadioButton.Child);
             // Container child nearestRadioButton.Gtk.Container+ContainerChild
             this.label5 = new Gtk.Label();
@@ -112,17 +86,17 @@ namespace MonoDevelop.ChangeLogAddIn {
             this.label5.Wrap = true;
             this.nearestRadioButton.Add(this.label5);
             this.vbox2.Add(this.nearestRadioButton);
-            Gtk.Box.BoxChild w7 = ((Gtk.Box.BoxChild)(this.vbox2[this.nearestRadioButton]));
-            w7.Position = 3;
-            w7.Expand = false;
-            w7.Fill = false;
+            Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(this.vbox2[this.nearestRadioButton]));
+            w4.Position = 1;
+            w4.Expand = false;
+            w4.Fill = false;
             // Container child vbox2.Gtk.Box+BoxChild
             this.oneChangeLogInProjectRootDirectoryRadioButton = new Gtk.RadioButton(Mono.Unix.Catalog.GetString("One ChangeLog in the project root directory"));
             this.oneChangeLogInProjectRootDirectoryRadioButton.CanFocus = true;
             this.oneChangeLogInProjectRootDirectoryRadioButton.Name = "oneChangeLogInProjectRootDirectoryRadioButton";
             this.oneChangeLogInProjectRootDirectoryRadioButton.DrawIndicator = true;
             this.oneChangeLogInProjectRootDirectoryRadioButton.UseUnderline = true;
-            this.oneChangeLogInProjectRootDirectoryRadioButton.Group = this.parentRadioButton.Group;
+            this.oneChangeLogInProjectRootDirectoryRadioButton.Group = this.noneRadioButton.Group;
             this.oneChangeLogInProjectRootDirectoryRadioButton.Remove(this.oneChangeLogInProjectRootDirectoryRadioButton.Child);
             // Container child oneChangeLogInProjectRootDirectoryRadioButton.Gtk.Container+ContainerChild
             this.label6 = new Gtk.Label();
@@ -133,17 +107,17 @@ namespace MonoDevelop.ChangeLogAddIn {
             this.label6.Wrap = true;
             this.oneChangeLogInProjectRootDirectoryRadioButton.Add(this.label6);
             this.vbox2.Add(this.oneChangeLogInProjectRootDirectoryRadioButton);
-            Gtk.Box.BoxChild w9 = ((Gtk.Box.BoxChild)(this.vbox2[this.oneChangeLogInProjectRootDirectoryRadioButton]));
-            w9.Position = 4;
-            w9.Expand = false;
-            w9.Fill = false;
+            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.vbox2[this.oneChangeLogInProjectRootDirectoryRadioButton]));
+            w6.Position = 2;
+            w6.Expand = false;
+            w6.Fill = false;
             // Container child vbox2.Gtk.Box+BoxChild
             this.oneChangeLogInEachDirectoryRadioButton = new Gtk.RadioButton(Mono.Unix.Catalog.GetString("One ChangeLog in each directory"));
             this.oneChangeLogInEachDirectoryRadioButton.CanFocus = true;
             this.oneChangeLogInEachDirectoryRadioButton.Name = "oneChangeLogInEachDirectoryRadioButton";
             this.oneChangeLogInEachDirectoryRadioButton.DrawIndicator = true;
             this.oneChangeLogInEachDirectoryRadioButton.UseUnderline = true;
-            this.oneChangeLogInEachDirectoryRadioButton.Group = this.parentRadioButton.Group;
+            this.oneChangeLogInEachDirectoryRadioButton.Group = this.noneRadioButton.Group;
             this.oneChangeLogInEachDirectoryRadioButton.Remove(this.oneChangeLogInEachDirectoryRadioButton.Child);
             // Container child oneChangeLogInEachDirectoryRadioButton.Gtk.Container+ContainerChild
             this.label7 = new Gtk.Label();
@@ -154,15 +128,60 @@ namespace MonoDevelop.ChangeLogAddIn {
             this.label7.Wrap = true;
             this.oneChangeLogInEachDirectoryRadioButton.Add(this.label7);
             this.vbox2.Add(this.oneChangeLogInEachDirectoryRadioButton);
-            Gtk.Box.BoxChild w11 = ((Gtk.Box.BoxChild)(this.vbox2[this.oneChangeLogInEachDirectoryRadioButton]));
-            w11.Position = 5;
+            Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.vbox2[this.oneChangeLogInEachDirectoryRadioButton]));
+            w8.Position = 3;
+            w8.Expand = false;
+            w8.Fill = false;
+            // Container child vbox2.Gtk.Box+BoxChild
+            this.alignment1 = new Gtk.Alignment(0.5F, 0.5F, 1F, 1F);
+            this.alignment1.Name = "alignment1";
+            // Container child alignment1.Gtk.Container+ContainerChild
+            this.alignment2 = new Gtk.Alignment(0F, 0F, 1F, 1F);
+            this.alignment2.Name = "alignment2";
+            this.alignment2.TopPadding = ((uint)(18));
+            // Container child alignment2.Gtk.Container+ContainerChild
+            this.checkVersionControl = new Gtk.CheckButton();
+            this.checkVersionControl.CanFocus = true;
+            this.checkVersionControl.Name = "checkVersionControl";
+            this.checkVersionControl.Label = Mono.Unix.Catalog.GetString("Integrate with _version control");
+            this.checkVersionControl.DrawIndicator = true;
+            this.checkVersionControl.UseUnderline = true;
+            this.alignment2.Add(this.checkVersionControl);
+            this.alignment1.Add(this.alignment2);
+            this.vbox2.Add(this.alignment1);
+            Gtk.Box.BoxChild w11 = ((Gtk.Box.BoxChild)(this.vbox2[this.alignment1]));
+            w11.Position = 4;
             w11.Expand = false;
             w11.Fill = false;
+            // Container child vbox2.Gtk.Box+BoxChild
+            this.alignment3 = new Gtk.Alignment(0F, 0F, 1F, 1F);
+            this.alignment3.Name = "alignment3";
+            this.alignment3.LeftPadding = ((uint)(24));
+            // Container child alignment3.Gtk.Container+ContainerChild
+            this.checkRequireOnCommit = new Gtk.CheckButton();
+            this.checkRequireOnCommit.CanFocus = true;
+            this.checkRequireOnCommit.Name = "checkRequireOnCommit";
+            this.checkRequireOnCommit.Label = Mono.Unix.Catalog.GetString("_Require ChangeLog entries for all files when committing");
+            this.checkRequireOnCommit.DrawIndicator = true;
+            this.checkRequireOnCommit.UseUnderline = true;
+            this.alignment3.Add(this.checkRequireOnCommit);
+            this.vbox2.Add(this.alignment3);
+            Gtk.Box.BoxChild w13 = ((Gtk.Box.BoxChild)(this.vbox2[this.alignment3]));
+            w13.PackType = ((Gtk.PackType)(1));
+            w13.Position = 6;
+            w13.Expand = false;
+            w13.Fill = false;
             this.Add(this.vbox2);
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
             this.Show();
+            this.noneRadioButton.Toggled += new System.EventHandler(this.ValueChanged);
+            this.nearestRadioButton.Toggled += new System.EventHandler(this.ValueChanged);
+            this.oneChangeLogInProjectRootDirectoryRadioButton.Toggled += new System.EventHandler(this.ValueChanged);
+            this.oneChangeLogInEachDirectoryRadioButton.Toggled += new System.EventHandler(this.ValueChanged);
+            this.checkVersionControl.Toggled += new System.EventHandler(this.ValueChanged);
+            this.checkRequireOnCommit.Toggled += new System.EventHandler(this.ValueChanged);
         }
     }
 }

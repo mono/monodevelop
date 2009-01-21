@@ -1,3 +1,28 @@
+2009-01-21  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* ChangeLogPolicy.cs:
+	* ChangeLogService.cs:
+	* ProjectOptionPanel.cs:
+	* ProjectOptionPanelWidget.cs:
+	* gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs: Move
+	ChangeLog integration options to the policies storage.
+
+	* ChangeLogData.cs:
+	* ChangeLogAddInOptionsPanel.cs:
+	* ChangeLogAddInOptionPanelWidget.cs: Unused; remove.
+
+	* ChangeLogAddIn.cs: Use UserInformation API. Fix error on insertion of
+	entries into new/empty ChangeLogs.  Fix spaces->tabs formatting.
+
+	* ChangeLogAddIn.addin.xml: Remove old data types and panels, and
+	register ChangeLogPolicy type as a policy.
+
+	* Makefile.am:
+	* ChangeLogAddIn.mdp: Updated.
+
+	* CommitDialogExtensionWidget.cs: Use UserInformation API.
+
 2009-01-07  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* CommitDialogExtensionWidget.cs: Show a warning if there are some files

@@ -98,11 +98,8 @@ namespace MonoDevelop.ChangeLogAddIn
 		{
 			if (!IntegrationEnabled)
 				Remove (box);
-
-			string name = PropertyService.Get ("ChangeLogAddIn.Name", string.Empty);
-			string email = PropertyService.Get ("ChangeLogAddIn.Email", string.Empty);
 			
-			if (string.IsNullOrEmpty (name) || string.IsNullOrEmpty (email)) {
+			if (!UserInformation.Default.IsValid) {
 				msgLabel.Markup = "<b><span foreground='red'>" + GettextCatalog.GetString ("ChangeLog entries can't be generated.") + "</span></b>";
 				pathLabel.Text = GettextCatalog.GetString ("The name or e-mail of the user has not been configured.");
 				logButton.Label = GettextCatalog.GetString ("Configure user data");
@@ -256,17 +253,34 @@ namespace MonoDevelop.ChangeLogAddIn
 			}
 			
 			foreach (ChangeLogEntry entry in entries.Values) {
+				
+				//find the parent solution for a file
+				MonoDevelop.Projects.Solution sol = null;
+				foreach (ChangeSetItem item in entry.Items) {
+					if (item.IsDirectory)
+						continue;
+					MonoDevelop.Projects.Project p = IdeApp.Workspace.GetProjectContainingFile (item.LocalPath);
+					if (p != null) {
+						sol = p.ParentSolution;
+						break;
+					}
+				}
+				
+				UserInformation userInfo;
+				if (sol != null)
+					userInfo = IdeApp.Workspace.GetUserInformation (sol);
+				else
+					userInfo = UserInformation.Default;
+				
 				entry.Message = cset.GeneratePathComment (entry.File, entry.Items, 
-					ChangeLogMessageStyle.ChangeLogEntry, 
-					PropertyService.Get ("ChangeLogAddIn.Name", string.Empty),
-					PropertyService.Get ("ChangeLogAddIn.Email", string.Empty));
+					ChangeLogMessageStyle.ChangeLogEntry, userInfo);
 			}
 		}
 		
 		void OnClickButton (object s, EventArgs args)
 		{
 			if (notConfigured) {
-				IdeApp.Workbench.ShowGlobalPreferencesDialog (Toplevel as Gtk.Window, "ChangeLogAddInOptions");
+				IdeApp.Workbench.ShowGlobalPreferencesDialog (Toplevel as Gtk.Window, "GeneralUserInfo");
 				UpdateStatus ();
 				GenerateLogEntries ();
 				return;
@@ -280,7 +294,7 @@ namespace MonoDevelop.ChangeLogAddIn
 		
 		void OnClickOptions (object s, EventArgs args)
 		{
-			IdeApp.Workbench.ShowGlobalPreferencesDialog (Toplevel as Gtk.Window, "ChangeLogAddInOptions");
+			IdeApp.Workbench.ShowGlobalPreferencesDialog (Toplevel as Gtk.Window, "GeneralUserInfo");
 			UpdateStatus ();
 			GenerateLogEntries ();
 		}

@@ -35,20 +35,6 @@ namespace MonoDevelop.ChangeLogAddIn
 {
 	public static class ChangeLogService
 	{
-		public static ChangeLogData GetChangeLogData (SolutionItem entry)
-		{
-			ChangeLogData changeLogData = entry.ExtendedProperties ["MonoDevelop.ChangeLogAddIn.ChangeLogInfo"] as ChangeLogData;			
-			if (changeLogData == null) {
-				changeLogData = entry.ExtendedProperties ["Temp.MonoDevelop.ChangeLogAddIn.ChangeLogInfo"] as ChangeLogData;			
-				if (changeLogData == null) {
-					changeLogData = new ChangeLogData (entry);
-					entry.ExtendedProperties ["Temp.MonoDevelop.ChangeLogAddIn.ChangeLogInfo"] = changeLogData;
-				}
-			}
-			changeLogData.Bind (entry);
-			return changeLogData;
-		}
-		
 		// Returns the path of the ChangeLog where changes of the provided file have to be logged.
 		// Returns null if no ChangeLog could be found.
 		// Returns an empty string if changes don't have to be logged.
@@ -83,20 +69,14 @@ namespace MonoDevelop.ChangeLogAddIn
 			
 			baseCommitPath = FileService.GetFullPath (baseCommitPath);
 			
-			ChangeLogData changeLogData = GetChangeLogData (entry);
+			ChangeLogPolicy policy = entry.Policies.Get<ChangeLogPolicy> ();
 			
-			SolutionItem parent = entry;
-			while (changeLogData.Policy == ChangeLogPolicy.UseParentPolicy) {
-				parent = parent.ParentFolder;
-				changeLogData = GetChangeLogData (parent);
-			}
-			
-			switch (changeLogData.Policy)
+			switch (policy.UpdateMode)
 			{
-				case ChangeLogPolicy.NoChangeLog:
+				case ChangeLogUpdateMode.None:
 					return string.Empty;
 					
-				case ChangeLogPolicy.UpdateNearestChangeLog: {
+				case ChangeLogUpdateMode.Nearest: {
 					string dir = FileService.GetFullPath (Path.GetDirectoryName (file));
 					
 					do {
@@ -109,15 +89,15 @@ namespace MonoDevelop.ChangeLogAddIn
 					return null;
 				}
 					
-				case ChangeLogPolicy.OneChangeLogInProjectRootDirectory:				
+				case ChangeLogUpdateMode.ProjectRoot:				
 					return Path.Combine (entry.BaseDirectory, "ChangeLog");
 					
-				case ChangeLogPolicy.OneChangeLogInEachDirectory:
+				case ChangeLogUpdateMode.Directory:
 					string dir = Path.GetDirectoryName (file);
 					return Path.Combine (dir, "ChangeLog");
 
 				default:
-					LoggingService.LogError ("Could not handle ChangeLogPolicy: " + changeLogData.Policy);
+					LoggingService.LogError ("Could not handle ChangeLogUpdateMode: " + policy.UpdateMode);
 					return null;
 			}                                                     	
 		}	
