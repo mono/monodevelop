@@ -131,6 +131,18 @@ namespace MonoDevelop.CSharpBinding
 			}
 		}
 		
+		static IMember GetMemberAt (IType type, DomLocation location)
+		{
+			foreach (IMember member in type.Members) {
+				if (!(member is IMethod || member is IProperty || member is IEvent))
+					continue;
+				if (member.Location.Line == location.Line || member.BodyRegion.Contains (location)) {
+					return member;
+				}
+			}
+			return null;
+		}
+		
 		internal void SetupResolver (DomLocation resolvePosition)
 		{
 			this.resolvePosition = resolvePosition;
@@ -138,13 +150,11 @@ namespace MonoDevelop.CSharpBinding
 			callingType = GetTypeAtCursor (unit, fileName, resolvePosition);
 			
 			if (callingType != null) {
-				foreach (IMember member in callingType.Members) {
-					if (!(member is IMethod || member is IProperty || member is IEvent))
-						continue;
-					if (member.Location.Line == resolvePosition.Line || member.BodyRegion.Contains (resolvePosition)) {
-						callingMember = member;
-						break;
-					}
+				callingMember = GetMemberAt (callingType, resolvePosition);
+				if (callingMember == null) {
+					DomLocation posAbove = resolvePosition;
+					posAbove.Line--;
+					callingMember = GetMemberAt (callingType, posAbove);
 				}
 				IType typeFromDatabase = dom.GetType (callingType.FullName, new DomReturnType (callingType).GenericArguments);
 				if (typeFromDatabase != null)
@@ -624,8 +634,13 @@ namespace MonoDevelop.CSharpBinding
 			StringBuilder result = new StringBuilder ();
 			int startLine = member.Location.Line;
 			int endLine   = member.Location.Line;
-			if (!member.BodyRegion.IsEmpty)
-				endLine = member.BodyRegion.End.Line;
+			if (!member.BodyRegion.IsEmpty) {
+				endLine = member.BodyRegion.End.Line + 1;
+				int col, maxLine;
+				editor.GetLineColumnFromPosition (editor.TextLength - 1, out col, out maxLine);
+				endLine = System.Math.Max (endLine, maxLine);
+			}
+			
 			result.Append ("class Wrapper {");
 			if (editor != null) {
 				result.Append (this.editor.GetText (this.editor.GetPositionFromLineColumn (startLine, 0),
