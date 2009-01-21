@@ -68,11 +68,9 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			// TODO msbuild Move to build panel?
 			if (project is DotNetProject) {
 				projectDefaultNamespaceEntry.Text = ((DotNetProject)project).DefaultNamespace;
-				parentDirectoryNamespaceCheckButton.Active = ((DotNetProject)project).UseParentDirectoryAsNamespace;
 			} else {
 				defaultNamespaceLabel.Visible = false;
 				projectDefaultNamespaceEntry.Visible = false;
-				parentDirectoryNamespaceCheckButton.Visible = false;
 			}
 			
 			switch (project.NewFileSearch) 
@@ -92,9 +90,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			}
 			
 			newFilesOnLoadCheckButton.Clicked += new EventHandler(AutoLoadCheckBoxCheckedChangeEvent);
-			parentDirectoryNamespaceCheckButton.Clicked += new EventHandler(ParentDirectoryNamespaceCheckButtonChangeEvent);
 			AutoLoadCheckBoxCheckedChangeEvent(null, null);
-			ParentDirectoryNamespaceCheckButtonChangeEvent(null, null);
 		}			
 
 		void AutoLoadCheckBoxCheckedChangeEvent(object sender, EventArgs e)
@@ -105,18 +101,12 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			}
 		}
 		
-		void ParentDirectoryNamespaceCheckButtonChangeEvent(object sender, EventArgs e)
-		{
-			projectDefaultNamespaceEntry.Sensitive = !parentDirectoryNamespaceCheckButton.Active;
-		}
-
 		public void  Store ()
 		{
 			project.Name                          = projectNameEntry.Text;
 			project.Description                   = projectDescriptionTextView.Buffer.Text;
 			if (project is DotNetProject) {
 				((DotNetProject)project).DefaultNamespace = projectDefaultNamespaceEntry.Text;
-				((DotNetProject)project).UseParentDirectoryAsNamespace = parentDirectoryNamespaceCheckButton.Active;
 			}
 			
 			if (newFilesOnLoadCheckButton.Active) {

@@ -1,3 +1,26 @@
+2009-01-21  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.addin.xml:
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/NamespaceSynchronisationPanel.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.NamespaceSynchronisationPanelWidget.cs:
+	Implement a panel for editing DotNetNamingPolicy policies.
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Projects.Gui.mdp: Updated.
+
+	* MonoDevelop.Projects.Gui.Dialogs/PolicyOptionsPanel.cs: Add an
+	abstract ItemOptionsPanel for editing policies which handles
+	selecting named policies, parent policy, etc.
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/GeneralProjectOptions.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.GeneralProjectOptionsWidget.cs:
+	Remove unused setting.
+
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.RunOptionsPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.StartupOptionsPanelWidget.cs:
+	Flush.
+
 2009-01-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.OutputOptionsPanelWidget.cs:

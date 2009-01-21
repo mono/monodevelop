@@ -75,11 +75,14 @@
     <File name="MonoDevelop.Projects.Gui.Dialogs.OptionPanels/RunOptionsPanel.cs" subtype="Code" buildaction="Compile" />
     <File name="gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.RunOptionsPanelWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Gui.Dialogs.OptionPanels/EnvVarList.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Gui.Dialogs/PolicyOptionsPanel.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Gui.Completion/ICompletionData.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Gui.Completion/CompletionData.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Gui.Completion/CompletionDataList.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Gui.Completion/MutableCompletionDataList.cs" subtype="Code" buildaction="Compile" />
     <File name="AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Gui.Dialogs.OptionPanels/NamespaceSynchronisationPanel.cs" subtype="Code" buildaction="Compile" />
+    <File name="gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.NamespaceSynchronisationPanelWidget.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
@@ -90,12 +93,12 @@
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Core.Gui" />
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Projects" />
     <ProjectReference type="Gac" localcopy="True" specificVersion="False" refto="Mono.Addins, Version=0.3.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
+    <ProjectReference type="Gac" localcopy="True" refto="System.Core, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
     <ProjectReference type="Gac" localcopy="True" refto="glib-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="True" refto="System.Core, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   </References>
   <GtkDesignInfo gettextClass="MonoDevelop.Core.GettextCatalog" />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">
