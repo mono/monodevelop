@@ -1,3 +1,8 @@
+2009-01-21  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AspNet.Gui/BaseHtmlEditorExtension.cs: Remove closing tag
+	completion as the base class handles it now.
+
 2009-01-16  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.AspNet/AspNetAppProject.cs:
