@@ -192,10 +192,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			int index = 0;
 			switch (searchOptions.SearchStrategyType) {
 				case SearchStrategyType.Normal:
+					break;
 				case SearchStrategyType.Wildcard:
+					useSpecialSearchStrategyCheckBox.Active = true;
 					break;
 				case SearchStrategyType.RegEx:
 					searchWholeWordOnlyCheckBox.Sensitive = false;
+					useSpecialSearchStrategyCheckBox.Active = true;
 					index = 1;
 					break;
 			}
@@ -212,6 +215,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			}
 			
 			searchLocationComboBox.Active = index;
+			searchWholeWordOnlyCheckBox.Active = searchOptions.SearchWholeWordOnly;
+			ignoreCaseCheckBox.Active = !searchOptions.IgnoreCase;
 			
 			directoryTextBox.Text = searchOptions.SearchDirectory;
 			fileMaskTextBox.Text = searchOptions.FileMask;

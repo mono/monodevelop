@@ -1,3 +1,14 @@
+2009-01-21  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/NRefactoryResolver.cs:
+	* Gui/CSharpTextEditorCompletion.cs: fixed 'Bug 464788 - Variable shows
+	up twice in completion list.'.
+
+2009-01-21  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/NRefactoryResolver.cs: fixed 'Bug 464787 - completion doesn't
+	update fast enough'.
+
 2009-01-20  Mike Krüger  <mkrueger@novell.com>
 
 	* Gui/NRefactoryResolver.cs:

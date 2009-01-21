@@ -794,6 +794,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			Dictionary<string, MemberCompletionData> data = new Dictionary<string, MemberCompletionData> ();
 			HashSet<string> namespaces = new HashSet<string> ();
 			HashSet<string> namespacesInScope = new HashSet<string> ();
+			HashSet<string> stringTable = new HashSet<string> ();
 			internal static CSharpAmbience ambience = new CSharpAmbience ();
 			ProjectDom dom;
 			ICompilationUnit unit;
@@ -889,6 +890,13 @@ namespace MonoDevelop.CSharpBinding.Gui
 						data [memberKey] = newData;
 					}
 					return newData;
+				}
+				if (obj is string) {
+					string str = (string)obj;
+					if (stringTable.Contains (str))
+						return null;
+					stringTable.Add (str);
+					return completionList.Add (str, "md-literal");
 				}
 				return null;
 			}
