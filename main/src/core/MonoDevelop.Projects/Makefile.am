@@ -140,6 +140,8 @@ FILES =  \
 	MonoDevelop.Projects.Extensions/ItemPropertyCodon.cs \
 	MonoDevelop.Projects.Extensions/ItemTypeNode.cs \
 	MonoDevelop.Projects.Extensions/LanguageBindingCodon.cs \
+	MonoDevelop.Projects.Extensions/PolicyNode.cs \
+	MonoDevelop.Projects.Extensions/PolicySetNode.cs \
 	MonoDevelop.Projects.Extensions/ProjectBindingCodon.cs \
 	MonoDevelop.Projects.Extensions/ProjectExtensionUtil.cs \
 	MonoDevelop.Projects.Extensions/SerlializationMapNode.cs \
@@ -177,6 +179,10 @@ FILES =  \
 	MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectService.cs \
 	MonoDevelop.Projects.Formats.MSBuild/SlnData.cs \
 	MonoDevelop.Projects.Formats.MSBuild/SlnFileFormat.cs \
+	MonoDevelop.Projects.Policies/DotNetNamingPolicy.cs \
+	MonoDevelop.Projects.Policies/PolicyBag.cs \
+	MonoDevelop.Projects.Policies/PolicyService.cs \
+	MonoDevelop.Projects.Policies/PolicySet.cs \
 	MonoDevelop.Projects.Text/IEditableTextFile.cs \
 	MonoDevelop.Projects.Text/ITextFile.cs \
 	MonoDevelop.Projects.Text/ITextFileProvider.cs \

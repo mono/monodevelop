@@ -1,3 +1,33 @@
+2009-01-21  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects/Solution.cs:
+	* MonoDevelop.Projects/SolutionItem.cs: Add Policies properties to
+	Solution and SolutionItem.
+
+	* MonoDevelop.Projects/DotNetProject.cs: Use new DotNetNamingPolicy for
+	default namespaces of new files. Implement support for hierachical
+	directory-based namespaces, and for using the default namespace as a
+	prefix.
+
+	* MonoDevelop.Projects.Policies: Added.
+
+	* MonoDevelop.Projects.Policies/PolicyBag.cs:
+	* MonoDevelop.Projects.Policies/PolicySet.cs:
+	* MonoDevelop.Projects.Policies/PolicyService.cs: Implement cascading
+	per-project policy infrastructure with sets of named policies.
+
+	* MonoDevelop.Projects.Policies/DotNetNamingPolicy.cs: Add a policy type
+	for defining directory-namespace relations and resource naming
+	styles.
+
+	* MonoDevelop.Projects.addin.xml:
+	* MonoDevelop.Projects.Extensions/PolicyNode.cs:
+	* MonoDevelop.Projects.Extensions/PolicySetNode.cs: Added new policy and
+	policy type extension points.
+
+	* Makefile.am:
+	* MonoDevelop.Projects.mdp: Updated.
+
 2009-01-20  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects/PropertyBag.cs: Avoid doubly serialising nodes

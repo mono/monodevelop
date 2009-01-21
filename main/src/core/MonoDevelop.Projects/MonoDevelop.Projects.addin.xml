@@ -77,6 +77,17 @@
 		<ExtensionNode name="Class"/>
 	</ExtensionPoint>
 	
+	<ExtensionPoint path = "/MonoDevelop/ProjectModel/PolicyTypes" name = "Policy types">
+		<Description>Types for per-project policies language binding. These types must be serializable.</Description>
+		<ExtensionNode name="PolicyType" type="MonoDevelop.Projects.Extensions.DataTypeCodon" />
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/MonoDevelop/ProjectModel/PolicySets" name = "Named policy sets">
+		<ExtensionNode name="PolicySet" type="MonoDevelop.Projects.Extensions.PolicySetNode" >
+			<ExtensionNode name="Policies" type="MonoDevelop.Projects.Extensions.PolicyResourceNode" />
+		</ExtensionNode>
+	</ExtensionPoint>
+	
 	<!-- Extensions -->
 
 	<Extension path = "/MonoDevelop/Core/Applications">
@@ -126,5 +137,15 @@
 	
 	<Extension path = "/MonoDevelop/ProjectModel/MD1SerializationMaps">
 		<SerializationMap resource="md1format.xml" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/PolicyTypes" >
+		<PolicyType id="DotNetNamingPolicy" class="MonoDevelop.Projects.Policies.DotNetNamingPolicy" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/PolicySets" >
+		<PolicySet id="MonoDevelop" _name="MonoDevelop">
+			<Policies resource="" />
+		</PolicySet>
 	</Extension>
 </Addin>

@@ -35,6 +35,7 @@ using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Projects.Dom.Output;
+using MonoDevelop.Projects.Policies;
 
 namespace MonoDevelop.Projects
 {
@@ -519,7 +520,7 @@ namespace MonoDevelop.Projects
 			return col;
 		}
 
-
+		
 		public override bool IsCompileable(string fileName)
 		{
 			if (LanguageBinding == null)
@@ -529,21 +530,56 @@ namespace MonoDevelop.Projects
 		
 		public virtual string GetDefaultNamespace (string fileName)
 		{
-			if (UseParentDirectoryAsNamespace) {
+			DotNetNamingPolicy pol = Policies.Get<DotNetNamingPolicy> ();
+			
+			string root = null;
+			string dirNamespc = null;
+			
+			string dirname = Path.GetDirectoryName (fileName);
+			if (!String.IsNullOrEmpty (dirname)) {
 				try {
-					DirectoryInfo directory = new DirectoryInfo (Path.GetDirectoryName (fileName));
-					if (directory != null) {
-						string potential = SanitisePotentialNamespace (directory.Name);
-						if (potential != null)
-							return potential;
+					switch (pol.DirectoryNamespaceAssociation) {
+					case DirectoryNamespaceAssociation.PrefixedFlat:
+						root = DefaultNamespace;
+						goto case DirectoryNamespaceAssociation.Flat;
+					case DirectoryNamespaceAssociation.Flat:
+						DirectoryInfo directory = new DirectoryInfo (dirname);
+						if (directory != null)
+							dirNamespc = SanitisePotentialNamespace (directory.Name);
+						break;
+						
+					case DirectoryNamespaceAssociation.PrefixedHierarchical:
+						root = DefaultNamespace;
+						goto case DirectoryNamespaceAssociation.Hierarchical;
+					case DirectoryNamespaceAssociation.Hierarchical:
+						directory = new DirectoryInfo (dirname);
+						if (directory != null)
+							dirNamespc = SanitisePotentialNamespace (GetHierarchicalNamespace (directory));
+						break;
 					}
-				} catch {}
+				} catch (IOException ex) {
+					LoggingService.LogError ("Could not determine namespace for file '" + fileName + "'", ex);
+				}
+				
 			}
 			
+			if (dirNamespc != null && root == null)
+				return dirNamespc;
+			if (dirNamespc != null && root != null)
+				return root + "." + dirNamespc;
 			if (!string.IsNullOrEmpty (DefaultNamespace))
 				return DefaultNamespace;
-			
 			return SanitisePotentialNamespace (Name) ?? "Application";
+		}
+		
+		string GetHierarchicalNamespace (DirectoryInfo info)
+		{
+			StringBuilder sb = new StringBuilder (GetRelativeChildPath (info.FullName));
+			for (int i = 0; i < sb.Length; i++) {
+				if (sb[i] == Path.DirectorySeparatorChar)
+					sb[i] = '.';
+			}
+			return sb.ToString ();
 		}
 		
 		string SanitisePotentialNamespace (string potential)
