@@ -100,6 +100,8 @@ namespace MonoDevelop.DesignerSupport
 			if (currentOutlineDoc == outlineDoc)
 				return;
 			
+			ReleaseDoc ();
+			
 			Gtk.Widget newWidget = null;
 			if (outlineDoc != null)
 				newWidget = outlineDoc.GetOutlineWidget ();
@@ -108,14 +110,6 @@ namespace MonoDevelop.DesignerSupport
 			else
 				SetWidget (newWidget);
 			currentOutlineDoc = outlineDoc;
-		}
-		
-		void Clear ()
-		{
-			Gtk.Widget c = box.Child;
-			if (c != null)
-				box.Remove (c);
-			ReleaseDoc ();
 		}
 		
 		void ReleaseDoc ()
@@ -135,7 +129,9 @@ namespace MonoDevelop.DesignerSupport
 		
 		void SetWidget (Gtk.Widget widget)
 		{
-			Clear ();
+			Gtk.Widget c = box.Child;
+			if (c != null)
+				box.Remove (c);
 			box.Add (widget);
 			widget.Show ();
 			box.Show ();
