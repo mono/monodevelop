@@ -1,5 +1,10 @@
 2009-01-21  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs: Fix
+	NRE.
+
+2009-01-21  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs:
 	Specially handle SolutionItem.Policies, since the default MSBuild
 	serialisation ignores it.

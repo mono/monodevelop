@@ -720,7 +720,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			DataItem extendedData = ser.ExternalItemProperties;
 			
 			DataCollection polColl = ((ICustomDataItem)Item.Policies).Serialize (null);
-			if (polColl.Count > 0) {
+			if (polColl != null && polColl.Count > 0) {
 				DataItem polItem = new DataItem ();
 				polItem.Name = "Policies";
 				polItem.ItemData = polColl;
