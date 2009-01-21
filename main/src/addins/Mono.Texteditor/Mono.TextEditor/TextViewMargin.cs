@@ -139,10 +139,12 @@ namespace Mono.TextEditor
 				textEditor.ScrollToCaret ();
 				if (args.Location.Line != Caret.Line) {
 					caretBlink = false;
-					textEditor.RedrawLine (args.Location.Line);
+					if (!textEditor.IsSomethingSelected)
+						textEditor.RedrawLine (args.Location.Line);
 				}
 				caretBlink = true;
-				textEditor.RedrawLine (Caret.Line);
+				if (!textEditor.IsSomethingSelected)
+					textEditor.RedrawLine (Caret.Line);
 			}
 		}
 		

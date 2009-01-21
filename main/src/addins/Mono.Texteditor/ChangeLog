@@ -1,3 +1,9 @@
+2009-01-21  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/TextViewMargin.cs: Optimized text editor drawing when
+	selection is changed.
+
 2009-01-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:

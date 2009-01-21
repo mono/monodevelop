@@ -298,6 +298,7 @@ namespace Mono.TextEditor
 			int endLine      = selection != null ? Document.OffsetToLineNumber (selection.EndOffset) : -1;
 			int oldStartLine = oldSelection != null ? Document.OffsetToLineNumber (oldSelection.Offset) : -1;
 			int oldEndLine   = oldSelection != null ? Document.OffsetToLineNumber (oldSelection.EndOffset) : -1;
+			
 			if (endLine < 0 && startLine >=0)
 				endLine = Document.LineCount;
 			if (oldEndLine < 0 && oldStartLine >=0)
@@ -313,6 +314,13 @@ namespace Mono.TextEditor
 				} else if (endLine != oldEndLine) {
 					from = endLine;
 					to   = oldEndLine;
+				} else if (startLine == oldStartLine && endLine == oldEndLine)  {
+					if (selection.Offset == oldSelection.Offset) {
+						this.RedrawLine (endLine);
+					} else {
+						this.RedrawLine (startLine);
+					}
+					from = to = -1;
 				}
 			} else {
 				if (selection == null) {
@@ -323,9 +331,11 @@ namespace Mono.TextEditor
 					to = endLine;
 				} 
 			}
-			oldSelection = selection != null ? new Segment (selection.Offset, selection.Length) : null;
-			this.RedrawLines (System.Math.Max (0, System.Math.Min (from, to) - 1), 
-			                  System.Math.Max (from, to));
+			if (from >= 0 && to >= 0) {
+				oldSelection = selection != null ? new Segment (selection.Offset, selection.Length) : null;
+				this.RedrawLines (System.Math.Max (0, System.Math.Min (from, to) - 1),
+				                  System.Math.Max (from, to));
+			}
 			OnSelectionChanged (EventArgs.Empty);
 		}
 		
@@ -1005,6 +1015,7 @@ namespace Mono.TextEditor
 		{
 			if (this.isDisposed)
 				return true;
+			
 			lock (disposeLock) {
 				int lastVisibleLine = Document.LogicalToVisualLine (Document.LineCount - 1);
 				if (oldRequest != lastVisibleLine) {
