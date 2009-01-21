@@ -1,5 +1,10 @@
 2009-01-21  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Core.addin.xml: Update copyright. Remove unnecessary
+	assembly import.
+
+2009-01-21  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Core.Serialization/XmlDataSerializer.cs: Allow
 	XmlDataSerializer to wrap an existing DataSerializer instead of
 	creating one in the constructor.
