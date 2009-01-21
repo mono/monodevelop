@@ -878,7 +878,6 @@
 				defaultHandler = "MonoDevelop.Ide.Commands.CurrentRefactoryOperationsHandler"
 				type="array"
 				_label = "Refactory Operations" /> 
-		<!--
 		<Command id = "MonoDevelop.Ide.Commands.RefactoryCommands.GotoDefinition"
 				defaultHandler = "MonoDevelop.Ide.Commands.GotoDefinitionHandler"
 				_label = "Go to _definition" 
@@ -890,7 +889,6 @@
 				_label = "Find _references" 
 				_description = "Find all references to the symbol under the caret"
 				shortcut = "Shift|F12" />
-		-->
 		</Category>
 				
 		<!-- TextEditorCommands -->
@@ -1282,9 +1280,7 @@
 			<Section id = "AddIns" _label = "Add-ins" icon="md-addin" class = "MonoDevelop.Ide.Gui.OptionPanels.AddInsOptionsPanel" />
 			<Section id = "TaskList" _label = "Task List" icon="md-task-list-icon" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.TasksOptionsPanel" />
 			<Section id = "ExternalTools" _label = "External Tools" fill="true" class = "MonoDevelop.Ide.ExternalTools.ExternalToolPane" />
-			<!--
 			<Section id = "GeneralUserInfo" _label = "User Information" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.GlobalUserInformationPanel" />
-			-->
 		</Section>
 
 		<Section id = "Coding" _label = "Coding">
@@ -1302,13 +1298,11 @@
 		<Section id = "Other" _label = "Other" />
 	</Extension>
 
-	<!--
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Common">
 		<Condition id="ItemType" value="Solution">
 			<Section id = "UserInfo" _label = "User Information" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.UserInformationPanel" />
 		</Condition>
 	</Extension>
-	-->
 
 	<Extension path = "/MonoDevelop/Ide/ProjectFileFilters">
 		<FileFilter id = "Combine"

@@ -1,3 +1,13 @@
+2009-01-21  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.addin.xml: Enable UserInformation panels.
+
+	* MonoDevelop.Ide.Gui/RootWorkspace.cs: Add a GetUserInformation
+	overload for getting user information from a project.
+
+	* MonoDevelop.Ide.Gui/UserInformation.cs: Add IsValid convenience
+	property.
+
 2009-01-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/gui.stetic:

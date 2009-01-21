@@ -53,11 +53,17 @@ namespace MonoDevelop.Ide.Gui
 		[ItemProperty]
 		public string Email { get; private set; }
 		
-		internal static UserInformation Default {
+		public static UserInformation Default {
 			get {
 				string name = GetValueOrMigrate<string> ("User.Name", "ChangeLogAddIn.Name") ?? Environment.UserName;
 				string email = GetValueOrMigrate<string> ("User.Email", "ChangeLogAddIn.Email");
 				return new UserInformation (name, email);
+			}
+		}
+		
+		public bool IsValid {
+			get {
+				return !String.IsNullOrEmpty (Name) && !String.IsNullOrEmpty (Email);
 			}
 		}
 		

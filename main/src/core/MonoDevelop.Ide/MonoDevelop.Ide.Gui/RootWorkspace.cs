@@ -172,8 +172,17 @@ namespace MonoDevelop.Ide.Gui
 			return props;
 		}
 		
+		public UserInformation GetUserInformation  (SolutionItem item)
+		{
+			if (item != null)
+				return GetUserInformation (item.ParentSolution);
+			return UserInformation.Default;
+		}
+		
 		public UserInformation GetUserInformation (Solution solution)
 		{
+			if (solution == null)
+				return UserInformation.Default;
 			UserInformation info = GetUserPreferences (solution).GetValue<UserInformation> ("UserInfo");
 			return info ?? UserInformation.Default;
 		}
