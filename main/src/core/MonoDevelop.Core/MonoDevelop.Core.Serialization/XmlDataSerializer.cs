@@ -37,9 +37,13 @@ namespace MonoDevelop.Core.Serialization
 	{
 		DataSerializer serializer;
 		
-		public XmlDataSerializer (DataContext ctx)
+		public XmlDataSerializer (DataContext ctx) : this (new DataSerializer (ctx))
+		{	
+		}
+		
+		public XmlDataSerializer (DataSerializer serializer)
 		{
-			serializer = new DataSerializer (ctx);
+			this.serializer = serializer;
 		}
 		
 		public void Serialize (TextWriter writer, object obj)
