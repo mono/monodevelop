@@ -1,5 +1,13 @@
 2009-01-21  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.AspNet/AspNetAppProject.cs: Execute xsp in the project's
+	BaseDirectory, not the SourceDirectory, since the bin directory is
+	already assumed to be in BaseDirectory, and SourceDirectory seems to
+	be obsolete. Fixes running ASP.NET csproj projects in certain
+	circumstances.
+
+2009-01-21  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.AspNet.Gui/BaseHtmlEditorExtension.cs: Remove closing tag
 	completion as the base class handles it now.
 

@@ -229,7 +229,7 @@ namespace MonoDevelop.AspNet
 				if (configuration.DebugMode)
 					envVars ["MONO_OPTIONS"] = "--debug";
 				
-				IProcessAsyncOperation op = handler.Execute (xspVersion, XspParameters.GetXspParameters (), configuration.SourceDirectory, envVars, console);
+				IProcessAsyncOperation op = handler.Execute (xspVersion, XspParameters.GetXspParameters (), BaseDirectory, envVars, console);
 				operationMonitor.AddOperation (op); //handles cancellation
 				
 				//launch a separate thread to detect the running server and launch a web browser
