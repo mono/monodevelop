@@ -53,7 +53,11 @@ namespace MonoDevelop.Gettext
 		
 		public IViewContent CreateContentForFile (string fileName)
 		{
-			return new Editor.CatalogEditorView (fileName);
+			foreach (TranslationProject tp in IdeApp.Workspace.GetAllSolutionItems<TranslationProject>  ())
+				if (tp.BaseDirectory == Path.GetDirectoryName (fileName))
+					return new Editor.CatalogEditorView (tp, fileName);
+			
+			return new Editor.CatalogEditorView (null, fileName);
 		}
 		
 		public IViewContent CreateContentForMimeType (string mimeType, Stream content)

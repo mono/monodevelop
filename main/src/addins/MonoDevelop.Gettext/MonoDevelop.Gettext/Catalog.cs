@@ -48,6 +48,7 @@ namespace MonoDevelop.Gettext
 		string originalNewLine = Environment.NewLine;
 		bool isDirty;
 		int nplurals = 0;
+		TranslationProject parentProj;
 		
 		public bool IsDirty {
 			get { return this.isDirty; }
@@ -96,13 +97,14 @@ namespace MonoDevelop.Gettext
 		/// <summary>
 		/// Creates empty catalog
 		/// </summary>
-		public Catalog ()
+		public Catalog (TranslationProject project)
 		{
+			parentProj = project;
 			entriesDict = new Dictionary<string, CatalogEntry> ();
 			entriesList = new List<CatalogEntry> ();
 			deletedEntriesList = new List<CatalogDeletedEntry> ();
 			isOk = true;
-			this.CreateNewHeaders ();
+			this.CreateNewHeaders (project);
 		}
 		
 		
@@ -207,7 +209,7 @@ namespace MonoDevelop.Gettext
 			// Load the .po file:
 			bool finished = false;
 			try {
-				CharsetInfoFinder charsetFinder = new CharsetInfoFinder (poFile);
+				CharsetInfoFinder charsetFinder = new CharsetInfoFinder (parentProj, poFile);
 				charsetFinder.Parse ();
 				Charset = charsetFinder.Charset;
 				originalNewLine = charsetFinder.NewLine;
@@ -377,7 +379,7 @@ namespace MonoDevelop.Gettext
 			if (! isOk)
 				return false;
 
-			Catalog newCat = new Catalog ();
+			Catalog newCat = new Catalog (parentProj);
 			newCat.Load (mon, potFile);
 
 			if (!newCat.IsOk)
@@ -646,7 +648,7 @@ namespace MonoDevelop.Gettext
 			bool succ = process.ExitCode == 0;
 			if (succ)
 			{
-				Catalog c = new Catalog ();
+				Catalog c = new Catalog (parentProj);
 				c.Load (mon, tmp3);
 				Clear ();
 				Append (c);
@@ -707,15 +709,16 @@ namespace MonoDevelop.Gettext
 					  Comment = String.Empty;
 		
 		// Creates new, empty header. Sets Charset to something meaningful ("UTF-8", currently).
-		void CreateNewHeaders ()
+		void CreateNewHeaders (TranslationProject project)
 		{
 			RevisionDate = CreationDate = Catalog.GetDateTimeRfc822Format ();
 			
 			Language = Country = Project = Team = TeamEmail = "";
 			
 			Charset = "utf-8";
-			Translator = PropertyService.Get<string> ("ChangeLogAddIn.Name");
-			TranslatorEmail = PropertyService.Get<string> ("ChangeLogAddIn.Email");
+			MonoDevelop.Ide.Gui.UserInformation userInfo = MonoDevelop.Ide.Gui.IdeApp.Workspace.GetUserInformation (project);       
+			Translator = userInfo.Name;
+			TranslatorEmail = userInfo.Email;
 			
 			//dt.SourceCodeCharset = String.Empty;
 			UpdateHeaderDict ();

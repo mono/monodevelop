@@ -50,6 +50,7 @@ namespace MonoDevelop.Gettext
 	[System.ComponentModel.ToolboxItem(true)]
 	public partial class POEditorWidget : Gtk.Bin
 	{
+		TranslationProject project;
 		CatalogHeadersWidget headersEditor;
 		ListStore store;
 		ListStore foundInStore;
@@ -92,8 +93,9 @@ namespace MonoDevelop.Gettext
 		}
 		
 		internal static readonly Gdk.Color errorColor = new Gdk.Color (210, 32, 32);
-		public POEditorWidget ()
+		public POEditorWidget (TranslationProject project)
 		{
+			this.project = project;
 			this.Build();
 			this.headersEditor = new CatalogHeadersWidget ();
 			this.notebookPages.AppendPage (headersEditor, new Gtk.Label ());
@@ -394,7 +396,7 @@ namespace MonoDevelop.Gettext
 //		
 		void Reload ()
 		{
-			Catalog newCatalog = new Catalog();
+			Catalog newCatalog = new Catalog(project);
 			newCatalog.Load (null, catalog.FileName);
 			this.Catalog = newCatalog;
 		}

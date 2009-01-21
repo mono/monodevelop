@@ -345,10 +345,13 @@ namespace MonoDevelop.Gettext
 	internal class CharsetInfoFinder : CatalogParser
 	{
 		string charset;
+		TranslationProject project;
 		
 		// Expecting iso-8859-1 encoding
-		public CharsetInfoFinder (string poFile) : base (poFile, Encoding.GetEncoding ("iso-8859-1"))
+		public CharsetInfoFinder (TranslationProject project, string poFile)
+			: base (poFile, Encoding.GetEncoding ("iso-8859-1"))
 		{
+			this.project = project;
 			charset = "iso-8859-1";
 		}
 		
@@ -365,7 +368,7 @@ namespace MonoDevelop.Gettext
 		{
 			if (String.IsNullOrEmpty (msgid)) {
 				// gettext header:
-				Catalog headers = new Catalog ();
+				Catalog headers = new Catalog (project);
 				headers.ParseHeaderString (translations[0]);
 				charset = headers.Charset;
 				if (charset == "CHARSET")
