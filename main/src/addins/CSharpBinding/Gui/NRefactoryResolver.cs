@@ -230,7 +230,7 @@ namespace MonoDevelop.CSharpBinding
 		static readonly IReturnType attributeType = new DomReturnType ("System.Attribute");
 		public void AddAccessibleCodeCompletionData (ExpressionContext context, CompletionDataList completionList)
 		{
-// System.Console.WriteLine("AddAccessibleCodeCompletionData in " + context);
+			MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col = new MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector ( this.editor, dom, unit, new DomLocation (editor.CursorLine - 1, editor.CursorColumn - 1));
 			if (context != ExpressionContext.Global) {
 				AddContentsFromClassAndMembers (context, completionList);
 				
@@ -238,8 +238,8 @@ namespace MonoDevelop.CSharpBinding
 					foreach (KeyValuePair<string, List<LocalLookupVariable>> pair in lookupTableVisitor.Variables) {
 						if (pair.Value != null && pair.Value.Count > 0) {
 							foreach (LocalLookupVariable v in pair.Value) {
-								if (new DomLocation (CallingMember.Location.Line +v.StartPos.Line - 2, v.StartPos.Column) <= this.resolvePosition && (v.EndPos.IsEmpty || new DomLocation (CallingMember.Location.Line + v.EndPos.Line - 2, v.EndPos.Column) >= this.resolvePosition))
-									completionList.Add (pair.Key, "md-literal");
+								if (new DomLocation (CallingMember.Location.Line + v.StartPos.Line - 2, v.StartPos.Column) <= this.resolvePosition && (v.EndPos.IsEmpty || new DomLocation (CallingMember.Location.Line + v.EndPos.Line - 2, v.EndPos.Column) >= this.resolvePosition))
+									col.AddCompletionData (completionList, pair.Key);
 							}
 						}
 					}
@@ -248,11 +248,11 @@ namespace MonoDevelop.CSharpBinding
 				if (CallingMember is IProperty) {
 					IProperty property = (IProperty)callingMember;
 					if (property.HasSet && editor != null && property.SetRegion.Contains (resolvePosition.Line, editor.CursorColumn)) 
-						completionList.Add ("value", "md-literal");
+						col.AddCompletionData (completionList, "value");
 				}
 			
 				if (CallingMember is IEvent) 
-					completionList.Add ("value", "md-literal");
+					col.AddCompletionData (completionList, "value");
 			}
 			
 			List<string> namespaceList = new List<string> ();
@@ -267,7 +267,6 @@ namespace MonoDevelop.CSharpBinding
 					}
 				}
 				
-				MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col = new MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector ( this.editor, dom, unit, new DomLocation (editor.CursorLine - 1, editor.CursorColumn - 1));
 				foreach (object o in dom.GetNamespaceContents (namespaceList, true, true)) {
 					if (context.FilterEntry (o))
 						continue;
