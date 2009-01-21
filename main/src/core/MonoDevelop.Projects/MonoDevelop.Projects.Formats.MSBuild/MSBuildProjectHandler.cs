@@ -330,6 +330,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (!string.IsNullOrEmpty (extendedData)) {
 				StringReader sr = new StringReader (extendedData);
 				DataItem data = (DataItem) XmlConfigurationReader.DefaultReader.Read (new XmlTextReader (sr));
+				
+				DataItem policies = data.Extract ("Policies") as DataItem;
+				if (policies != null && policies.HasItemData) {
+					MonoDevelop.Projects.Policies.PolicyBag bag = new MonoDevelop.Projects.Policies.PolicyBag ();
+					((ICustomDataItem)bag).Deserialize (null, policies.ItemData);
+					Item.Policies = bag;
+				}
+				
 				globalData.ItemData.AddRange (data.ItemData);
 			}
 			ser.Deserialize (Item, globalData);
@@ -710,6 +718,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 			
 			DataItem extendedData = ser.ExternalItemProperties;
+			
+			DataCollection polColl = ((ICustomDataItem)Item.Policies).Serialize (null);
+			if (polColl.Count > 0) {
+				DataItem polItem = new DataItem ();
+				polItem.Name = "Policies";
+				polItem.ItemData = polColl;
+				extendedData.ItemData.Add (polItem);
+			}
+			
 			if (extendedData.HasItemData) {
 				extendedData.Name = "Properties";
 				StringWriter sw = new StringWriter ();
