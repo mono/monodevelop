@@ -143,6 +143,7 @@
 	<Extension path = "/MonoDevelop/ProjectModel/ExtendedProperties">
 		<ItemProperty class = "MonoDevelop.Projects.Project"
 		              name = "GtkDesignInfo"
+		              skipEmpty = "True"
 		              type = "MonoDevelop.GtkCore.GtkDesignInfo" />
 	</Extension>
 	
