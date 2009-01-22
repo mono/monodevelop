@@ -44,6 +44,9 @@ namespace MonoDevelop.Projects.Extensions
 		[NodeAttribute("external", false, Description="Set to true if the property is an extension")]
 		bool external = true;
 		
+		[NodeAttribute("skipEmpty", false, Description="Set to true if empty elements don't have to be serialized")]
+		bool skipEmpty;
+		
 		Type type;
 		
 		public Type PropertyType {
@@ -61,6 +64,12 @@ namespace MonoDevelop.Projects.Extensions
 		public bool External {
 			get {
 				return external;
+			}
+		}
+
+		public bool SkipEmpty {
+			get {
+				return skipEmpty;
 			}
 		}
 	}

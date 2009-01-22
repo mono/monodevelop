@@ -112,5 +112,7 @@ namespace MonoDevelop.Core.Serialization
 				isExternal = value;
 			}
 		}
+		
+		public bool SkipEmpty { get; set; }
 	}
 }

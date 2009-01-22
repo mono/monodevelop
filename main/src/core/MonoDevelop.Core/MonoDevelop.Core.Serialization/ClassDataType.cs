@@ -117,6 +117,7 @@ namespace MonoDevelop.Core.Serialization
 			prop.ExpandedCollection = Context.AttributeProvider.IsDefined (member, typeof(ExpandedCollectionAttribute), true);
 			prop.DefaultValue = at.DefaultValue;
 			prop.IsExternal = at.IsExternal;
+			prop.SkipEmpty = at.SkipEmpty;
 
 			if (prop.ExpandedCollection) {
 				ICollectionHandler handler = Context.GetCollectionHandler (memberType);
@@ -325,9 +326,6 @@ namespace MonoDevelop.Core.Serialization
 				else {
 					DataNode data = prop.Serialize (serCtx, obj, val);
 					if (data == null)
-						continue;
-					// Don't write empty collections
-					if (data is DataItem && !((DataItem)data).HasItemData && prop.DataType is CollectionDataType)
 						continue;
 					col.Add (data);
 				}

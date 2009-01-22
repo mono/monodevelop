@@ -89,10 +89,10 @@ namespace MonoDevelop.Core.Serialization
 		
 		public void RegisterProperty (Type targetType, string name, Type propertyType)
 		{
-			RegisterProperty (targetType, name, propertyType, true);
+			RegisterProperty (targetType, name, propertyType, true, false);
 		}
 		
-		public void RegisterProperty (Type targetType, string name, Type propertyType, bool isExternal)
+		public void RegisterProperty (Type targetType, string name, Type propertyType, bool isExternal, bool skipEmpty)
 		{
 			if (!typeof(IExtendedDataItem).IsAssignableFrom (targetType))
 				throw new InvalidOperationException ("The type '" + targetType + "' does not implement the IExtendedDataItem interface and cannot be extended with new properties");
@@ -101,6 +101,7 @@ namespace MonoDevelop.Core.Serialization
 			ItemProperty prop = new ItemProperty (name, propertyType);
 			prop.Unsorted = true;
 			prop.IsExternal = isExternal;
+			prop.SkipEmpty = skipEmpty;
 			ctype.AddProperty (prop);
 		}
 		

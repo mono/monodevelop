@@ -135,6 +135,8 @@ namespace MonoDevelop.Core.Serialization
 			set { CheckReadOnly (); dataType = value; }
 		}
 		
+		public bool SkipEmpty { get; set; }
+		
 		public bool IsExtendedProperty (Type forType)
 		{
 			if (member == null)
@@ -243,7 +245,13 @@ namespace MonoDevelop.Core.Serialization
 		internal DataNode OnSerialize (SerializationContext serCtx, object value)
 		{
 			DataNode data = dataType.Serialize (serCtx, mapData, value);
-			if (data != null) data.Name = SingleName;
+			
+			if (data != null) {
+				// Don't write empty collections or empty objects with the SkipEmpty flag
+				if (data is DataItem && !((DataItem)data).HasItemData && (DataType is CollectionDataType || SkipEmpty))
+					return null;
+				data.Name = SingleName;
+			}
 			return data;
 		}
 		
