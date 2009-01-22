@@ -1,5 +1,16 @@
 2009-01-22  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects.Dom.Serialization/DomPersistence.cs: Limit the
+	amout of objects that can be read as part of a collection. Avoids
+	huge memory consumptions in case of file corruption.
+
+	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
+	Properly look for registered ClassEntry when updating the database
+	after parsing. There was an issue with generic partial types. Fixes
+	bug #468412 - MD corrupts pidb files.
+
+2009-01-22  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects/ProjectService.cs:
 	* MonoDevelop.Projects.Extensions/ItemPropertyCodon.cs:
 	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs: Added

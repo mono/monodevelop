@@ -332,6 +332,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 							len = (int)buffer.Position;
 						}
 						
+						bw.Flush ();
 						ce.Position = tmpStream.Position;
 						bw.Write (len);
 						bw.Write (data, 0, len);
@@ -352,7 +353,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 					
 					tmpStream.Position = indexOffsetPos;
 					bw.Write (indexOffset);
-
+					
 					// Save to file
 					
 					dataFileStream.SetLength (0);
@@ -997,8 +998,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 						IType c = CopyClass (newClasses[n]);
 						
 						// A ClassEntry may already exist if part of the class is defined in another file
-						string name = c.TypeParameters.Count == 0 ? c.Name : c.Name + "~" + c.TypeParameters.Count;
-						ClassEntry ce = newNss[n].GetClass (name, c.TypeParameters.Count , true);
+						ClassEntry ce = newNss[n].GetClass (c.Name, c.TypeParameters.Count , true);
 						if (ce != null) {
 							// The entry exists, just update it
 							if (ce.Class == null) ce.Class = ReadClass (ce);
