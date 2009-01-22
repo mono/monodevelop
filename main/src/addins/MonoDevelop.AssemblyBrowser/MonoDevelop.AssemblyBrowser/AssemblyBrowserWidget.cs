@@ -102,10 +102,7 @@ namespace MonoDevelop.AssemblyBrowser
 			this.inspectEditor.Options.ShowTabs = false;
 			this.inspectEditor.Options.HighlightCaretLine = true;
 			this.inspectEditor.Options.ColorScheme = PropertyService.Get ("ColorScheme", "Default");
-			PropertyService.PropertyChanged += delegate(object sender, PropertyChangedEventArgs e) {
-				if (e.Key == "ColorScheme")
-					this.inspectEditor.Options.ColorScheme = PropertyService.Get ("ColorScheme", "Default");
-			};
+			PropertyService.PropertyChanged += HandlePropertyChanged;
 			this.inspectEditor.Document.ReadOnly = true;
 			this.inspectEditor.Document.SyntaxMode = new Mono.TextEditor.Highlighting.MarkupSyntaxMode ();
 			this.inspectEditor.LinkRequest += delegate (object sender, Mono.TextEditor.LinkEventArgs args) {
@@ -190,6 +187,18 @@ namespace MonoDevelop.AssemblyBrowser
 					}
 				}
 			};
+		}
+		
+		public override void Dispose ()
+		{
+			PropertyService.PropertyChanged -= HandlePropertyChanged;
+			base.Dispose ();
+		}
+
+		void HandlePropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			if (e.Key == "ColorScheme")
+				this.inspectEditor.Options.ColorScheme = PropertyService.Get ("ColorScheme", "Default");
 		}
 		
 		ITreeNavigator SearchMember (IMember member)

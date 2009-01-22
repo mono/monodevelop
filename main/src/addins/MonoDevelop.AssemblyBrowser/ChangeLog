@@ -1,3 +1,8 @@
+2009-01-22  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs: Remove property
+	changed event handler on dispose.
+
 2009-01-15  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs:
