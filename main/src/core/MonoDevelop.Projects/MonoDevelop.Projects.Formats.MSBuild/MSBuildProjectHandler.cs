@@ -1064,7 +1064,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		protected override DataNode OnSerializeProperty (ItemProperty prop, SerializationContext serCtx, object instance, object value)
 		{
 			DataNode data = base.OnSerializeProperty (prop, serCtx, instance, value);
-			if (instance is SolutionEntityItem) {
+			if (instance is SolutionEntityItem && data != null) {
 				if (prop.IsExternal)
 					ExternalItemProperties.ItemData.Add (data);
 				else
