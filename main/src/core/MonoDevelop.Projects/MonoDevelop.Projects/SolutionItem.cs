@@ -49,7 +49,7 @@ namespace MonoDevelop.Projects
 		
 		Hashtable extendedProperties;
 		
-		[ItemProperty ("Policies", IsExternal = true)]
+		[ItemProperty ("Policies", IsExternal = true, SkipEmpty = true)]
 		MonoDevelop.Projects.Policies.PolicyBag policies;
 		
 		public SolutionItem()
