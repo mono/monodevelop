@@ -23,31 +23,24 @@ namespace Stetic.Wrapper {
 		}
 
 
-		string items = "";
-		string[] item = new string[0];
+		string[] items = new string[0];
 		bool textCombo;
 
-		public string Items {
-			get {
-				return items;
-			}
+		public string[] Items {
+			get { return items; }
 			set {
-				while (value.EndsWith ("\n"))
-					value = value.Substring (0, value.Length - 1);
-
 				Gtk.ComboBox combobox = (Gtk.ComboBox)Wrapped;
-				string[] newitem = value.Split ('\n');
 				int active = combobox.Active;
 
 				int row = 0, oi = 0, ni = 0;
-				while (oi < item.Length && ni < newitem.Length) {
-					if (item[oi] == newitem[ni]) {
+				while (oi < items.Length && ni < value.Length) {
+					if (items [oi] == value [ni]) {
 						oi++;
 						ni++;
 						row++;
-					} else if (ni < newitem.Length - 1 &&
-						   item[oi] == newitem[ni + 1]) {
-						combobox.InsertText (row++, newitem[ni++]);
+					} else if (ni < value.Length - 1 &&
+						   items [oi] == value [ni + 1]) {
+						combobox.InsertText (row++, value [ni++]);
 						if (active > row)
 							active++;
 					} else {
@@ -58,16 +51,15 @@ namespace Stetic.Wrapper {
 					}
 				}
 
-				while (oi < item.Length) {
+				while (oi < items.Length) {
 					combobox.RemoveText (row);
 					oi++;
 				}
 
-				while (ni < newitem.Length)
-					combobox.InsertText (row++, newitem[ni++]);
+				while (ni < value.Length)
+					combobox.InsertText (row++, value [ni++]);
 
 				items = value;
-				item = newitem;
 				combobox.Active = active;
 
 				EmitNotify ("Items");
@@ -93,7 +85,7 @@ namespace Stetic.Wrapper {
 		internal protected override void GenerateBuildCode (GeneratorContext ctx, CodeExpression var)
 		{
 			if (textCombo && Items != null && Items.Length > 0) {
-				foreach (string str in item) {
+				foreach (string str in Items) {
 					ctx.Statements.Add (new CodeMethodInvokeExpression (
 						var,
 						"AppendText",
