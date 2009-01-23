@@ -17,6 +17,7 @@
 	<Dependencies>
 		<Addin id="Core" version="1.9.1"/>
 		<Addin id="Core.Gui" version="1.9.1"/>
+		<Addin id="Projects" version="1.9.1"/>
 		<Addin id="Projects.Gui" version="1.9.1"/>
 		<Addin id="Components" version="1.9.1"/>
 	</Dependencies>
@@ -1302,6 +1303,11 @@
 		<Condition id="ItemType" value="Solution">
 			<Section id = "UserInfo" _label = "User Information" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.UserInformationPanel" />
 		</Condition>
+		<Section id = "ProjectStandardHeader" _label = "Standard Header" fill="true" class = "MonoDevelop.Ide.StandardHeader.StandardHeaderPolicyPanel" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/PolicyTypes" >
+		<PolicyType id="StandardHeaderPolicy" class="MonoDevelop.Ide.StandardHeader.StandardHeaderPolicy" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/ProjectFileFilters">
