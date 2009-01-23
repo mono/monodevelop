@@ -389,7 +389,10 @@ namespace MonoDevelop.CSharpBinding
 		{
 			StringBuilder result = new StringBuilder ();
 			result.Append (settings.Markup ("["));
-			result.Append (GetString (attribute.AttributeType, settings));
+			string attrName = GetString (attribute.AttributeType, settings);
+			if (attrName.EndsWith ("Attribute"))
+				attrName = attrName.Substring (0, attrName.Length - "Attribute".Length);
+			result.Append (attrName);
 			result.Append (settings.Markup ("("));
 			bool first = true;
 			if (attribute.PositionalArguments != null) {

@@ -167,7 +167,7 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			IType type = (IType)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
-			
+			result.Append (DomMethodNodeBuilder.GetAttributes (type.Attributes));
 			result.Append (ambience.GetString (type, settings));
 			bool first = true;
 			

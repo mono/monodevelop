@@ -30,6 +30,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 using Gtk;
 
@@ -46,13 +47,9 @@ namespace MonoDevelop.SourceEditor
 		bool handlingParseEvent = false;
 		ParsedDocument parsedDocument;
 		
-		ListStore classStore;
-		ListStore memberStore;
-		ListStore regionStore;
-		
-		ComboBox classCombo = new ComboBox ();
-		ComboBox membersCombo = new ComboBox ();
-		ComboBox regionCombo = new ComboBox ();
+		DropDownBox typeCombo = new DropDownBox ();
+		DropDownBox membersCombo = new DropDownBox ();
+		DropDownBox regionCombo = new DropDownBox ();
 		
 		SourceEditorWidget editor;
 		
@@ -62,70 +59,29 @@ namespace MonoDevelop.SourceEditor
 		{
 			this.editor = editor;
 			
-			// Setup the columns and column renders for the comboboxes
-			CellRendererPixbuf pixr = new CellRendererPixbuf ();
-			pixr.Ypad = 0;
-			classCombo.PackStart (pixr, false);
-			classCombo.AddAttribute (pixr, "pixbuf", 0);
-			CellRenderer colr = new CellRendererText();
-			colr.Ypad = 0;
-			classCombo.PackStart (colr, true);
-			classCombo.AddAttribute (colr, "text", 1);
-			
-			pixr = new CellRendererPixbuf ();
-			pixr.Ypad = 0;
-			
-			membersCombo.PackStart (pixr, false);
-			membersCombo.AddAttribute (pixr, "pixbuf", 0);
-			colr = new CellRendererText ();
-			colr.Ypad = 0;
-			membersCombo.PackStart (colr, true);
-			membersCombo.AddAttribute (colr, "text", 1);
-			
-			regionCombo.PackStart (pixr, false);
-			regionCombo.AddAttribute (pixr, "pixbuf", 0);
-			colr = new CellRendererText ();
-			colr.Ypad = 0;
-			regionCombo.PackStart (colr, true);
-			regionCombo.AddAttribute (colr, "text", 1);
-			
-			// Pack the controls into the editorbar just below the file name tabs.
-//			EventBox tbox = new EventBox ();
-//			tbox.Add (classCombo);
-//			classBrowser.PackStart(tbox, true, true, 0);
-//			tbox = new EventBox ();
-//			tbox.Add (membersCombo);
-//			classBrowser.PackStart (tbox, true, true, 0);
-			
-			// Set up the data stores for the comboboxes
-			classStore = new ListStore(typeof(Gdk.Pixbuf), typeof(string), typeof(IType));
-			classCombo.Model = classStore;	
-			classCombo.Changed += new EventHandler (ClassChanged);
-			tips.SetTip (classCombo, GettextCatalog.GetString ("Type list"), null);
-			
-			memberStore = new ListStore(typeof(Gdk.Pixbuf), typeof(string), typeof(IMember));
-			memberStore.SetSortColumnId (1, Gtk.SortType.Ascending);
-			membersCombo.Model = memberStore;
-			membersCombo.Changed += new EventHandler (MemberChanged);
-			tips.SetTip (membersCombo, GettextCatalog.GetString ("Member list"), null);
-			
-			regionStore = new ListStore(typeof(Gdk.Pixbuf), typeof(string), typeof(DomRegion));
-			regionCombo.Model = regionStore;	
-			regionCombo.Changed += new EventHandler (RegionChanged);
-			tips.SetTip (regionCombo, GettextCatalog.GetString ("Region list"), null);
-			
-			this.PackStart (classCombo);
+			typeCombo.DataProvider = new TypeDataProvider (this);
+			typeCombo.ItemSet += TypeChanged;
+			UpdateTypeComboTip (null);
+			this.PackStart (typeCombo);
+
+			membersCombo.DataProvider = new MemberDataProvider (this);
+			membersCombo.ItemSet += MemberChanged;
+			UpdateMemberComboTip (null);
 			this.PackStart (membersCombo);
+			
+			regionCombo.DataProvider = new RegionDataProvider (this);
+			regionCombo.ItemSet += RegionChanged;
+			UpdateRegionComboTip (null);
 			this.PackStart (regionCombo);
 			
-			this.FocusChain = new Widget[] { classCombo, membersCombo, regionCombo };
+			this.FocusChain = new Widget[] { typeCombo, membersCombo, regionCombo };
 			
 			this.ShowAll ();
 		}
 		
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
 		{
-			classCombo.WidthRequest   = allocation.Width * 2 / 6 - 6;
+			typeCombo.WidthRequest   = allocation.Width * 2 / 6 - 6;
 			membersCombo.WidthRequest = allocation.Width * 3 / 6 - 6;
 			regionCombo.WidthRequest  = allocation.Width / 6;
 			
@@ -138,45 +94,11 @@ namespace MonoDevelop.SourceEditor
 			if (parsedDocument == null) {
 				return;
 			}
-			
-			// Find the selected class
-			
-			KeyValuePair<IType, int> c = SearchClass (line);
-			IType classFound = c.Key;
-			
 			loadingMembers = true;
 			try {
 				UpdateRegionCombo (line, column);
-				if (classFound == null) {
-					classCombo.Active = -1;
-					membersCombo.Active = -1;
-					memberStore.Clear ();
-					this.UpdateClassComboTip (null);
-					this.UpdateMemberComboTip (null);
-					return;
-				}
-				
-				TreeIter iter;
-				if (c.Value != classCombo.Active) {
-					classCombo.Active = c.Value; 
-					BindMemberCombo (classFound);
-					return;
-				}
-				
-				// Find the member
-				if (!memberStore.GetIterFirst (out iter))
-					return;
-				do {
-					IMember mem = (IMember) memberStore.GetValue (iter, 2);
-					if (IsMemberSelected (mem, line, column)) {
-						membersCombo.SetActiveIter (iter);
-						this.UpdateMemberComboTip (mem);
-						return;
-					}
-				}
-				while (memberStore.IterNext (ref iter));
-				membersCombo.Active = -1;
-				this.UpdateMemberComboTip (null);
+				IType foundType = UpdateTypeCombo (line, column);
+				UpdateMemberCombo (foundType, line, column);
 			} finally {
 				loadingMembers = false;
 			}
@@ -206,254 +128,177 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (!this.IsRealized)
 				return false;
-			
-			loadingMembers = true;
-			
-			try {
-				// Clear down all our local stores.
-				classStore.Clear();				
-				
-				// check the IParseInformation member variable to see if we could get ParseInformation for the 
-				// current docuement. If not we can't display class and member info so hide the browser bar.
-				if (parsedDocument == null || parsedDocument.CompilationUnit == null) {
-//					classBrowser.Visible = false;
-					return false;
-				}
-				
-				ReadOnlyCollection<IType> cls = parsedDocument.CompilationUnit.Types;
-				// if we've got this far then we have valid parse info - but if we have not classes the not much point
-				// in displaying the browser bar
-				if (cls.Count == 0) {
-//					classBrowser.Visible = false;
-					return false;
-				}
-				
-//				classBrowser.Visible = true;
-				List<IMember> classes = new List<IMember> ();
-				foreach (IType c in cls)
-					classes.Add (c);
-				classes.Sort (new LanguageItemComparer ());
-				foreach (IType c in classes)
-					Add (c, string.Empty);
-				
-				int line = editor.TextEditor.Caret.Line + 1;
-				int column = editor.TextEditor.Caret.Column + 1;
-				
-				KeyValuePair<IType, int> ckvp = SearchClass (line);
-				
-				IType foundClass = ckvp.Key;
-				if (foundClass != null) {
-					// found the right class. Now need right method
-					classCombo.Active = ckvp.Value;
-					BindMemberCombo (foundClass);
-				} else {
-					// Sometimes there might be no classes e.g. AssemblyInfo.cs
-					classCombo.Active = -1;
-					this.UpdateClassComboTip ( null);
-				}
-				
-				BindRegionCombo ();
-				UpdateRegionCombo (line, column);
-			} finally {
-				handlingParseEvent = false;
-				loadingMembers = false;
-			}
+			UpdatePosition (editor.TextEditor.Caret.Line + 1, editor.TextEditor.Caret.Column + 1);
+			handlingParseEvent = false;
 			// return false to stop the GLib.Timeout
 			return false;
 		}
 		
+#region RegionDataProvider
+		class RegionDataProvider : DropDownBoxListWindow.IListDataProvider
+		{
+			ClassQuickFinder parent;
+			
+			public RegionDataProvider (ClassQuickFinder parent)
+			{
+				this.parent = parent;
+			}
+			
+			public int IconCount {
+				get {
+					if (parent.parsedDocument == null)
+						return 0;
+					return parent.parsedDocument.UserRegions.Count ();
+				}
+			}
+			
+			public void Reset ()
+			{
+				
+			}
+			
+			public string GetText (int n)
+			{
+				if (parent.parsedDocument == null)
+					return "";
+				return parent.parsedDocument.UserRegions.ElementAt (n).Name; //GettextCatalog.GetString ("Region {0}", parent.parsedDocument.UserRegions.ElementAt (n).Name);
+			}
+			
+			public Gdk.Pixbuf GetIcon (int n)
+			{
+				return MonoDevelop.Core.Gui.Services.Resources.GetIcon (Gtk.Stock.Add, IconSize.Menu);
+			}
+			
+			public object GetTag (int n)
+			{
+				if (parent.parsedDocument == null)
+					return null;
+				return parent.parsedDocument.UserRegions.ElementAt (n);
+			}
+		}
+		
 		void UpdateRegionCombo (int line, int column)
 		{
-			int regionNumber = 0;
-			if (parsedDocument != null && parsedDocument.UserRegions != null) {
-				foreach (FoldingRegion region in parsedDocument.UserRegions) {
-					if (region.Region.Start.Line <= line && line <= region.Region.End.Line) {
-						regionCombo.Active = regionNumber;
-						tips.SetTip (regionCombo, GettextCatalog.GetString ("Region {0}", region.Name), null);
-						return;
-					}
-					regionNumber++;
-				}
-			}
-			tips.SetTip (regionCombo, GettextCatalog.GetString ("Region list"), null);
-			regionCombo.Active = -1;
-		}
-		
-		void BindRegionCombo ()
-		{
-			regionCombo.Model = null;
-			regionStore.Clear ();
-			if (parsedDocument == null || parsedDocument.UserRegions == null) 
+			if (parsedDocument == null)
 				return;
+			bool hasRegions = false;
 			foreach (FoldingRegion region in parsedDocument.UserRegions) {
-				regionStore.AppendValues (
-					MonoDevelop.Core.Gui.Services.Resources.GetIcon (Gtk.Stock.Add, IconSize.Menu), 
-					region.Name, 
-					region.Region);
-			}
-			//bool isVisible = cu.FoldingRegions.Count > 0; 
-			regionCombo.Model = regionStore;
-		}
-		
-		void BindMemberCombo (IType c)
-		{
-			int position = 0;
-			int activeIndex = -1;
-			
-			// find out where the current cursor position is and set the combos.
-			int line   = editor.TextEditor.Caret.Line + 1;
-			int column = editor.TextEditor.Caret.Column + 1;
-			this.UpdateClassComboTip (c);
-			membersCombo.Changed -= new EventHandler (MemberChanged);
-			// Clear down all our local stores.
-			
-			membersCombo.Model = null;
-			memberStore.Clear();
-			this.UpdateMemberComboTip (null);
-				
-			//HybridDictionary methodMap = new HybridDictionary();
-			
-			Gdk.Pixbuf pix;
-			
-			List<IMember> members = new List<IMember> ();
-			foreach (IMember item in c.Methods)
-				 members.Add (item);
-			foreach (IMember item in c.Properties)
-				 members.Add (item);
-			foreach (IMember item in c.Fields)
-				 members.Add (item);
-			members.Sort (new LanguageItemComparer ());
-			
-			// Add items to the member drop down 
-			
-			Ambience ambience = editor.Ambience;
-			
-			foreach (IMember mem in members) {
-				pix = MonoDevelop.Core.Gui.Services.Resources.GetIcon (mem.StockIcon, IconSize.Menu); 
-				
-				// Add the member to the list
-				string displayName = ambience.GetString (mem, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters);
-				memberStore.AppendValues (pix, displayName, mem);
-				
-				// Check if the current cursor position in inside this member
-				if (IsMemberSelected (mem, line, column)) {
-					this.UpdateMemberComboTip (mem);
-					activeIndex = position;
-				}
-				
-				position++;
-			}
-			membersCombo.Model = memberStore;
-			
-			// set active the method the cursor is in
-			membersCombo.Active = activeIndex;
-			membersCombo.Changed += new EventHandler (MemberChanged);
-		}
-		
-		void MemberChanged (object sender, EventArgs e)
-		{
-			if (loadingMembers)
-				return;
-
-			Gtk.TreeIter iter;
-			if (membersCombo.GetActiveIter (out iter)) {	    
-				// Find the IMember object in our list store by name from the member combo
-				IMember member = (IMember) memberStore.GetValue (iter, 2);
-				int line = member.Location.Line;
-				
-				// If we can, we navigate to the line location of the IMember.
-				JumpTo (Math.Max (1, line), 1);
-			}
-		}
-		
-		void ClassChanged(object sender, EventArgs e)
-		{
-			if (loadingMembers)
-				return;
-			
-			Gtk.TreeIter iter;
-			if (classCombo.GetActiveIter(out iter)) {
-				IType selectedClass = (IType)classStore.GetValue(iter, 2);
-				int line = selectedClass.Location.Line;
-				
-				// If we can, we navigate to the line location of the IMember.
-				JumpTo (Math.Max (1, line), 1);
-				
-				// check that selected "class" isn't a delegate
-				if (selectedClass.ClassType == ClassType.Delegate) {
-					memberStore.Clear();
-				} else {
-					BindMemberCombo(selectedClass);
+				hasRegions = true;
+				if (region.Region.Start.Line <= line && line <= region.Region.End.Line) {
+					if (regionCombo.CurrentItem == region)
+						return;
+					regionCombo.SetItem (region.Name, //GettextCatalog.GetString ("Region {0}", region.Name),
+					                     MonoDevelop.Core.Gui.Services.Resources.GetIcon (Gtk.Stock.Add, IconSize.Menu),
+					                     region);
+					UpdateRegionComboTip (region);
+					return;
 				}
 			}
+			regionCombo.Sensitive = hasRegions;
+			if (regionCombo.CurrentItem != null) {
+				regionCombo.SetItem ("", null, null);
+				UpdateRegionComboTip (null);
+			}
+		}
+		
+		void UpdateRegionComboTip (FoldingRegion region)
+		{
+			if (region == null) {
+				tips.SetTip (regionCombo, GettextCatalog.GetString ("Region list"), null);
+				return;
+			}
+			tips.SetTip (regionCombo, GettextCatalog.GetString ("Region {0}", region.Name), null);
 		}
 		
 		void RegionChanged (object sender, EventArgs e)
 		{
-			if (loadingMembers)
+			if (loadingMembers || regionCombo.CurrentItem == null)
 				return;
 			
-			Gtk.TreeIter iter;
-			if (regionCombo.GetActiveIter (out iter)) {
-				DomRegion selectedRegion = (DomRegion)regionStore.GetValue (iter, 2);
-				
-				// If we can, we navigate to the line location of the IMember.
-				int line = Math.Max (1, selectedRegion.Start.Line);
-				JumpTo (Math.Max (1, line), 1);
-			}
+			FoldingRegion selectedRegion = (FoldingRegion)this.regionCombo.CurrentItem;
+			
+			// If we can, we navigate to the line location of the IMember.
+			int line = Math.Max (1, selectedRegion.Region.Start.Line);
+			JumpTo (Math.Max (1, line), 1);
 		}
-		
-		void JumpTo (int line, int column)
-		{
-			MonoDevelop.Ide.Gui.Content.IExtensibleTextEditor extEditor = 
-				MonoDevelop.Ide.Gui.IdeApp.Workbench.ActiveDocument.GetContent
-					<MonoDevelop.Ide.Gui.Content.IExtensibleTextEditor> ();
-			if (extEditor != null)
-				extEditor.SetCaretTo (Math.Max (1, line), column);
-		}
-		
-		void Add (IType c, string prefix)
-		{
-			Ambience ambience = editor.Ambience;
-			Gdk.Pixbuf pix = MonoDevelop.Core.Gui.Services.Resources.GetIcon (c.StockIcon, IconSize.Menu);
-			string name = prefix + ambience.GetString (c, OutputFlags.ClassBrowserEntries);
-			classStore.AppendValues (pix, name, c);
+#endregion
 
-			foreach (IType inner in c.InnerTypes)
-				Add (inner, name + ".");
-		}
-		
-		KeyValuePair<IType, int> SearchClass (int line)
+#region MemberDataProvider
+		class MemberDataProvider : DropDownBoxListWindow.IListDataProvider
 		{
-			TreeIter iter;
-			int i = 0, foundIndex = 0;
-			IType result = null;
-			if (classStore.GetIterFirst (out iter)) {
-				do {
-					IType c = (IType)classStore.GetValue (iter, 2);
-					if (c.BodyRegion.Start.Line <= line && line <= c.BodyRegion.End.Line)	{
-						if (result == null || result.BodyRegion.Start.Line <= c.BodyRegion.Start.Line) {
-							result = c;
-							foundIndex = i;
-						}
-					}
-					i++;
-				} while (classStore.IterNext (ref iter));
+			ClassQuickFinder parent;
+			List<IMember> memberList = new List<IMember> ();
+			public MemberDataProvider (ClassQuickFinder parent)
+			{
+				this.parent = parent;
 			}
-			return new KeyValuePair<IType, int> (result, foundIndex);
+			
+			public void Reset ()
+			{
+				memberList.Clear ();
+				IType type = parent.typeCombo.CurrentItem as IType;
+				if (type == null)
+					return;
+				memberList.AddRange (type.Members);
+			}
+			
+			public int IconCount {
+				get {
+					return memberList.Count;
+				}
+			}
+			
+			public string GetText (int n)
+			{
+				return parent.editor.Ambience.GetString (memberList[n], OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters);
+			}
+			
+			public Gdk.Pixbuf GetIcon (int n)
+			{
+				return MonoDevelop.Core.Gui.Services.Resources.GetIcon (memberList[n].StockIcon, IconSize.Menu);
+			}
+			
+			public object GetTag (int n)
+			{
+				return memberList[n];
+			}
 		}
 		
-		void UpdateClassComboTip (IMember it)
+		void UpdateMemberCombo (IType parent, int line, int column)
 		{
-			if (it != null) {
-				Ambience ambience = editor.Ambience;
-				string txt = ambience.GetString (it, OutputFlags.ClassBrowserEntries);
-				tips.SetTip (this.classCombo, txt, txt);
+			if (parent == null || parent.ClassType == ClassType.Delegate) {
+				membersCombo.Sensitive = false;
 			} else {
-				tips.SetTip (classCombo, GettextCatalog.GetString ("Type list"), null);
+				membersCombo.Sensitive = true;
+				foreach (IMember member in parent.Members) {
+					if (member.Location.Line == line || member.BodyRegion.Contains (line, column)) {
+						if (membersCombo.CurrentItem == member)
+							return;
+						membersCombo.SetItem (editor.Ambience.GetString (member, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters),
+						                      MonoDevelop.Core.Gui.Services.Resources.GetIcon (member.StockIcon, IconSize.Menu),
+						                      member);
+						UpdateMemberComboTip (member);
+						return;
+					}
+				}
+			}
+			if (membersCombo.CurrentItem != null) {
+				membersCombo.SetItem ("", null, null);
+				UpdateMemberComboTip (null);
 			}
 		}
 		
+		void MemberChanged (object sender, EventArgs e)
+		{
+			if (loadingMembers || membersCombo.CurrentItem == null)
+				return;
+			IMember member = (IMember)membersCombo.CurrentItem;
+			int line = member.Location.Line;
+			
+			// If we can, we navigate to the line location of the IMember.
+			JumpTo (Math.Max (1, line), 1);
+			UpdateMemberComboTip (member);
+		}
 		void UpdateMemberComboTip (IMember it)
 		{
 			if (it != null) {
@@ -464,6 +309,106 @@ namespace MonoDevelop.SourceEditor
 				tips.SetTip (membersCombo, GettextCatalog.GetString ("Member list"), null);
 			}
 		}
+		
+#endregion
+
+#region TypeDataProvider
+		class TypeDataProvider : DropDownBoxListWindow.IListDataProvider
+		{
+			ClassQuickFinder parent;
+			List<IType> typeList = new List<IType> ();
+			
+			public TypeDataProvider (ClassQuickFinder parent)
+			{
+				this.parent = parent;
+			}
+			
+			public void Reset ()
+			{
+				typeList.Clear ();
+				if (parent.parsedDocument == null || parent.parsedDocument.CompilationUnit == null)
+					return;
+				Stack<IType> types = new Stack<IType> (parent.parsedDocument.CompilationUnit.Types);
+				while (types.Count > 0) {
+					IType type = types.Pop ();
+					typeList.Add (type);
+					foreach (IType innerType in type.InnerTypes)
+						types.Push (innerType);
+				}
+			}
+			
+			public int IconCount {
+				get {
+					return typeList.Count;
+				}
+			}
+			
+			public string GetText (int n)
+			{
+				return parent.editor.Ambience.GetString (typeList[n], OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters);
+			}
+			
+			public Gdk.Pixbuf GetIcon (int n)
+			{
+				return MonoDevelop.Core.Gui.Services.Resources.GetIcon (typeList[n].StockIcon, IconSize.Menu);
+			}
+			
+			public object GetTag (int n)
+			{
+				return typeList[n];
+			}
+		}
+		
+		IType UpdateTypeCombo (int line, int column)
+		{
+			IType c = parsedDocument.CompilationUnit.GetTypeAt (line, column);
+			if (typeCombo.CurrentItem == c)
+				return c;
+			if (c == null) {
+				typeCombo.SetItem ("", null, null);
+			} else {
+				typeCombo.SetItem (editor.Ambience.GetString (c, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters),
+				                   MonoDevelop.Core.Gui.Services.Resources.GetIcon (c.StockIcon, IconSize.Menu),
+				                   c);
+				
+			}
+			UpdateTypeComboTip (c);
+			return c;
+		}
+		
+		void TypeChanged (object sender, EventArgs e)
+		{
+			if (loadingMembers || typeCombo.CurrentItem == null)
+				return;
+			
+			IType selectedClass = (IType)typeCombo.CurrentItem;
+			System.Console.WriteLine(selectedClass  +  "/" + selectedClass.Location);
+			int line = selectedClass.Location.Line;
+			UpdateTypeComboTip (selectedClass);
+			
+			// If we can, we navigate to the line location of the IMember.
+			JumpTo (Math.Max (1, line), 1);
+		}
+		void UpdateTypeComboTip (IMember it)
+		{
+			if (it != null) {
+				Ambience ambience = editor.Ambience;
+				string txt = ambience.GetString (it, OutputFlags.ClassBrowserEntries);
+				tips.SetTip (this.typeCombo, txt, txt);
+			} else {
+				tips.SetTip (typeCombo, GettextCatalog.GetString ("Type list"), null);
+			}
+		}
+#endregion
+		void JumpTo (int line, int column)
+		{
+			MonoDevelop.Ide.Gui.Content.IExtensibleTextEditor extEditor = 
+				MonoDevelop.Ide.Gui.IdeApp.Workbench.ActiveDocument.GetContent
+					<MonoDevelop.Ide.Gui.Content.IExtensibleTextEditor> ();
+			if (extEditor != null)
+				extEditor.SetCaretTo (Math.Max (1, line), column);
+		}
+		
 		
 		bool IsMemberSelected (IMember mem, int line, int column)
 		{
@@ -488,12 +433,8 @@ namespace MonoDevelop.SourceEditor
 		
 		protected override void OnDestroyed ()
 		{
-			if (editor != null) {
+			if (editor != null) 
 				editor = null;
-				classCombo.Changed -= ClassChanged;
-				membersCombo.Changed -= MemberChanged;
-				regionCombo.Changed -= RegionChanged;
-			}
 		
 			base.OnDestroyed ();
 		}

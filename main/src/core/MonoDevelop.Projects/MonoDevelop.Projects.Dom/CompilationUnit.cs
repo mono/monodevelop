@@ -87,6 +87,21 @@ namespace MonoDevelop.Projects.Dom
 			return null;
 		}
 		
+		static IType GetTypeAt (IEnumerable<IType> types, int line, int column)
+		{
+			foreach (IType type in types) {
+				if (type.Location.Line == line || type.BodyRegion.Contains (line, column)) {
+					IType innerType = GetTypeAt (type.InnerTypes, line, column);
+					return innerType ?? type;
+				}
+			}
+			return null;
+		}
+		public IType GetTypeAt (int line, int column)
+		{
+			return GetTypeAt (types, line, column);
+		}
+		
 		public virtual void Dispose ()
 		{
 		}

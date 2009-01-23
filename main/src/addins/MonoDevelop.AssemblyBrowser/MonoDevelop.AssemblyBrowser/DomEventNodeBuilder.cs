@@ -111,7 +111,9 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			IEvent evt = (IEvent)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
+			result.Append (DomMethodNodeBuilder.GetAttributes (evt.Attributes));
 			result.Append (DomTypeNodeBuilder.ambience.GetString (evt, DomTypeNodeBuilder.settings));
+			result.Append (";");
 			return result.ToString ();
 		}
 		#endregion

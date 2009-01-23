@@ -1,3 +1,13 @@
+2009-01-23  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/DropDownBox.cs:
+	* MonoDevelop.SourceEditor/ClassQuickFinder.cs:
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs:
+	* MonoDevelop.SourceEditor/DropDownBoxListWindow.cs: Optimized the quick
+	class browser, update was too expensive speed wise.
+The quick class
+	browser dropdown is now a custom control.
+
 2009-01-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/gui.stetic:

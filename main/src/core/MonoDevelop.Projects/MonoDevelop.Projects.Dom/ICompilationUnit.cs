@@ -51,6 +51,7 @@ namespace MonoDevelop.Projects.Dom
 		}
 		
 		IType GetType (string fullName, int genericParameterCount);
+		IType GetTypeAt (int line, int column);
 		void GetNamespaceContents (List<IMember> list, string subNameSpace, bool caseSensitive);
 	}
 }
