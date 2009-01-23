@@ -246,10 +246,10 @@ namespace Mono.TextEditor
 					copiedDocument = new Document ();
 					
 					
-					copiedDocument.Text = segment != null && segment.Length > 0 ? data.Document.SyntaxMode.GetTextWithoutMarkup (data.Document, data.ColorStyle, segment.Offset, segment.Length) : "";
 					this.docStyle = data.ColorStyle;
 					this.options  = data.Options;
 					this.mode = data.Document.SyntaxMode != null && data.Options.EnableSyntaxHighlighting ? data.Document.SyntaxMode : Mono.TextEditor.Highlighting.SyntaxMode.Default;
+					copiedDocument.Text = segment != null && segment.Length > 0 ? this.mode.GetTextWithoutMarkup (data.Document, data.ColorStyle, segment.Offset, segment.Length) : "";
 					
 					LineSegment line    = data.Document.GetLineByOffset (segment.Offset);
 					Stack<Span> spanStack = line.StartSpan != null ? new Stack<Span> (line.StartSpan) : new Stack<Span> ();
