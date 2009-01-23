@@ -129,9 +129,8 @@ namespace MonoDevelop.SourceEditor
 		
 		public void PopulateClassCombo ()
 		{
-			if (classBrowser != null && this.parsedDocument != null) {
+			if (classBrowser != null && this.parsedDocument != null)
 				classBrowser.UpdateCompilationUnit (this.parsedDocument);
-			}
 		}
 		
 		public Ambience Ambience {
