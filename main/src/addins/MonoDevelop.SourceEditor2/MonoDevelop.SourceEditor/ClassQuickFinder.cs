@@ -91,7 +91,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public void UpdatePosition (int line, int column)
 		{
-			if (parsedDocument == null) {
+			if (parsedDocument == null || parsedDocument.CompilationUnit == null) {
 				return;
 			}
 			loadingMembers = true;

@@ -95,6 +95,8 @@ namespace MonoDevelop.SourceEditor
 		public bool ShowClassBrowser {
 			get { return shouldShowclassBrowser; }
 			set {
+				if (shouldShowclassBrowser == value)
+					return;
 				shouldShowclassBrowser = value;
 				UpdateClassBrowserVisibility ();
 			}
@@ -103,6 +105,8 @@ namespace MonoDevelop.SourceEditor
 		bool CanShowClassBrowser {
 			get { return canShowClassBrowser; }
 			set {
+				if (canShowClassBrowser == value)
+					return;
 				canShowClassBrowser = value;
 				UpdateClassBrowserVisibility ();
 			}
@@ -129,8 +133,10 @@ namespace MonoDevelop.SourceEditor
 		
 		public void PopulateClassCombo ()
 		{
-			if (classBrowser != null && this.parsedDocument != null)
-				classBrowser.UpdateCompilationUnit (this.parsedDocument);
+			if (classBrowser == null || !CanShowClassBrowser)
+				return;
+			
+			classBrowser.UpdateCompilationUnit (this.parsedDocument);
 		}
 		
 		public Ambience Ambience {
@@ -335,6 +341,8 @@ namespace MonoDevelop.SourceEditor
 			}
 			set {
 				this.parsedDocument = value;
+				CanShowClassBrowser = value != null && value.CompilationUnit != null;
+				
 				lock (syncObject) {
 					StopParseInfoThread ();
 					if (parsedDocument != null) {

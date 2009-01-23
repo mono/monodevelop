@@ -1,11 +1,20 @@
+2009-01-23  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs:
+	* MonoDevelop.SourceEditor/ClassQuickFinder.cs: Don't crash when 
+	showing the quick finder for files with a parsed document but a 
+	no compilation unit. Fixes "Bug 468925 - MD crashes when opening / 
+	clicking in web.config file".
+	
+	In such cases, also hide the quick finder to save space.
+
 2009-01-23  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/DropDownBox.cs:
 	* MonoDevelop.SourceEditor/ClassQuickFinder.cs:
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs:
 	* MonoDevelop.SourceEditor/DropDownBoxListWindow.cs: Optimized the quick
-	class browser, update was too expensive speed wise.
-The quick class
+	class browser, update was too expensive speed wise. The quick class
 	browser dropdown is now a custom control.
 
 2009-01-20  Lluis Sanchez Gual  <lluis@novell.com>
