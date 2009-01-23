@@ -110,7 +110,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			for (int n=0; n<arrayDimensions; n++)
 				dims [n] = reader.ReadInt32 ();
 			
-			uint arguments  = reader.ReadUInt32 ();
+			uint arguments  = ReadUInt (reader, 1000);
 			List<IReturnType> parameters = new List<IReturnType> ();
 			
 			while (arguments-- > 0) {
@@ -149,7 +149,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		{
 			DomMethod result = new DomMethod ();
 			ReadMemberInformation (reader, nameTable, result);
-			uint explicitInterfaces = reader.ReadUInt32 ();
+			uint explicitInterfaces = ReadUInt (reader, 500);
 			while (explicitInterfaces-- > 0) {
 				result.AddExplicitInterface (ReadReturnType (reader, nameTable));
 			}
@@ -159,11 +159,11 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			result.MethodModifier = (MethodModifier)reader.ReadInt32 ();
 			
 				
-			uint arguments = reader.ReadUInt32 ();
+			uint arguments = ReadUInt (reader, 5000);
 			while (arguments-- > 0) {
 				result.Add (ReadParameter (reader, nameTable));
 			}
-			arguments = reader.ReadUInt32 ();
+			arguments = ReadUInt (reader, 500);
 			while (arguments-- > 0) {
 				result.AddGenericParameter (ReadReturnType (reader, nameTable));
 			}
@@ -189,8 +189,6 @@ namespace MonoDevelop.Projects.Dom.Serialization
 					Write (writer, nameTable, param);
 				}
 			}
-			
-			
 
 			writer.Write (method.GenericParameters.Count);
 			foreach (IReturnType genArg in method.GenericParameters) {
@@ -223,7 +221,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		{
 			DomProperty result = new DomProperty ();
 			ReadMemberInformation (reader, nameTable, result);
-			uint explicitInterfaces = reader.ReadUInt32 ();
+			uint explicitInterfaces = ReadUInt (reader, 500);
 			while (explicitInterfaces-- > 0) {
 				result.AddExplicitInterface (ReadReturnType (reader, nameTable));
 			}
@@ -280,7 +278,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		public static DomType ReadType (BinaryReader reader, INameDecoder nameTable)
 		{
-			uint typeCount = reader.ReadUInt32();
+			uint typeCount = ReadUInt (reader, 1000);
 			if (typeCount > 1) {
 				CompoundType compoundResult = new CompoundType ();
 				while (typeCount-- > 0) {
@@ -303,7 +301,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			result.BaseType  = ReadReturnType (reader, nameTable);
 			
 			// implemented interfaces
-			long count = reader.ReadUInt32 ();
+			long count = ReadUInt (reader, 5000);
 //			if (verbose) System.Console.WriteLine("impl. interfaces:" + count);
 			while (count-- > 0) {
 				result.AddInterfaceImplementation (ReadReturnType (reader, nameTable));
@@ -311,7 +309,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			
 			// innerTypes
 //			if (verbose) System.Console.WriteLine("pos:" + reader.BaseStream.Position);
-			count = reader.ReadUInt32 ();
+			count = ReadUInt (reader, 10000);
 //			if (verbose) System.Console.WriteLine("inner types:" + count);
 			while (count-- > 0) {
 				DomType innerType = ReadType (reader, nameTable);
@@ -321,7 +319,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			
 			// fields
 //			if (verbose) System.Console.WriteLine("pos:" + reader.BaseStream.Position);
-			count = reader.ReadUInt32 ();
+			count = ReadUInt (reader, 10000);
 //			if (verbose) System.Console.WriteLine("fields:" + count);
 			while (count-- > 0) {
 				DomField field = ReadField (reader, nameTable);
@@ -331,7 +329,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			
 			// methods
 //			if (verbose) System.Console.WriteLine("pos:" + reader.BaseStream.Position);
-			count = reader.ReadUInt32 ();
+			count = ReadUInt (reader, 10000);
 //			if (verbose) System.Console.WriteLine("methods:" + count);
 			while (count-- > 0) {
 				DomMethod method = ReadMethod (reader, nameTable);
@@ -341,7 +339,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			
 			// properties
 //			if (verbose) System.Console.WriteLine("pos:" + reader.BaseStream.Position);
-			count = reader.ReadUInt32 ();
+			count = ReadUInt (reader, 10000);
 //			if (verbose) System.Console.WriteLine("properties:" + count);
 			while (count-- > 0) {
 				DomProperty property = ReadProperty (reader, nameTable);
@@ -351,7 +349,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			
 			// events
 //			if (verbose) System.Console.WriteLine("pos:" + reader.BaseStream.Position);
-			count = reader.ReadUInt32 ();
+			count = ReadUInt (reader, 10000);
 //			if (verbose) System.Console.WriteLine("events:" + count);
 			while (count-- > 0) {
 				DomEvent evt = ReadEvent (reader, nameTable);
@@ -360,7 +358,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			}
 			
 			// type parameters
-			count = reader.ReadUInt32 ();
+			count = ReadUInt (reader, 500);
 			while (count-- > 0) {
 				TypeParameter tp = ReadTypeParameter (reader, nameTable);
 				result.AddTypeParameter (tp);
@@ -371,17 +369,14 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		public static void Write (BinaryWriter writer, INameEncoder nameTable, IType type)
 		{
 			Debug.Assert (type != null);
-	//		System.Console.WriteLine("write:" + type);
-	//		System.Console.WriteLine(Environment.StackTrace);
-			if (type is CompoundType) {
+			if (type is CompoundType && ((CompoundType)type).PartsCount > 1) {
 				CompoundType compoundType = type as CompoundType;
 				writer.Write ((uint)compoundType.PartsCount);
 				foreach (IType part in compoundType.Parts)
 					Write (writer, nameTable, part);
+				return;
 			}
 			
-//			bool verbose  = type.Name == "CopyDelegate";
-//			if (verbose) Console.WriteLine (type.GetType ());
 			writer.Write ((uint)1);
 			WriteMemberInformation (writer, nameTable, type);
 			Write (writer, nameTable, type.BodyRegion);
@@ -439,13 +434,13 @@ namespace MonoDevelop.Projects.Dom.Serialization
 
 			// Constraints
 			
-			uint count = reader.ReadUInt32 ();
+			uint count = ReadUInt (reader, 1000);
 			while (count-- > 0)
 				tp.AddConstraint (ReadReturnType (reader, nameTable));
 
 			// Attributes
 			
-			count = reader.ReadUInt32 ();
+			count = ReadUInt (reader, 1000);
 			while (count-- > 0)
 				tp.AddAttribute (ReadAttribute (reader, nameTable));
 
@@ -523,7 +518,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			member.Modifiers     = (Modifiers)reader.ReadUInt32();
 			member.Location      = ReadLocation (reader, nameTable);
 			
-			uint count = reader.ReadUInt32 ();
+			uint count = ReadUInt (reader, 1000);
 			while (count-- > 0)
 				member.Add (ReadAttribute (reader, nameTable));
 		}
@@ -549,6 +544,14 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				return null;
 			
 			return nameTable.GetStringValue (id);
+		}
+		
+		static uint ReadUInt (BinaryReader reader, int maxValue)
+		{
+			uint res = reader.ReadUInt32 ();
+			if (res > maxValue)
+				throw new InvalidOperationException ("Invalid integer value");
+			return res;
 		}
 		
 		

@@ -1,3 +1,14 @@
+2009-01-22  Mike Kestner <mkestner@novell.com> 
+
+	* libstetic/editor/StringArray.cs: display "(Collection)" in the
+	label instead of a joined list on \n which displays garbage chars.
+	This approach is consistent with another very popular IDE. ;-)
+	* libstetic/wrapper/objects.xml: use Editor.StringArray for the Items
+	property of ComboBox.
+	* libstetic/wrapper/ComboBox.cs: switch Items to a string[].  Luckily
+	this is backwards compat since we currently saved string[] as a newline
+	join of the member strings.  [Fixes #405396]
+
 2009-01-22  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.GtkCore.addin.xml: Don't serialize the GtkDesignInfo
