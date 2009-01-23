@@ -426,6 +426,7 @@ namespace MonoDevelop.CSharpBinding
 				                                               ConvertLocation (delegateDeclaration.StartLocation),
 				                                               ConvertReturnType (delegateDeclaration.ReturnType),
 				                                               parameter);
+				delegateType.Location = ConvertLocation (delegateDeclaration.StartLocation);
 				delegateType.Modifiers  = ConvertModifiers (delegateDeclaration.Modifier);
 				AddAttributes (delegateType, delegateDeclaration.Attributes);
 				
