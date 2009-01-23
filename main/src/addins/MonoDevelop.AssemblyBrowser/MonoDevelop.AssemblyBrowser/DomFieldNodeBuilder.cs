@@ -99,7 +99,9 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			IField field = (IField)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
+			result.Append (DomMethodNodeBuilder.GetAttributes (field.Attributes));
 			result.Append (DomTypeNodeBuilder.ambience.GetString (field, DomTypeNodeBuilder.settings));
+			result.Append (";");
 			return result.ToString ();
 		}
 		#endregion

@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.Text;
 
 using Mono.Cecil;
@@ -129,12 +130,27 @@ namespace MonoDevelop.AssemblyBrowser
 			return result.ToString ();
 		}
 		
+		internal static string GetAttributes (IEnumerable<IAttribute> attributes)
+		{
+			StringBuilder result = new StringBuilder ();
+			foreach (IAttribute attr in attributes) {
+				if (result.Length > 0)
+					result.AppendLine ();
+				result.Append (AmbienceService.GetAmbience ("text/x-csharp").GetString (attr, OutputFlags.AssemblyBrowserDescription));
+			}
+			if (result.Length > 0)
+				result.AppendLine ();
+			return result.ToString ();
+		}
+		
 		public string GetDecompiledCode (ITreeNavigator navigator)
 		{
 			DomCecilMethod method = navigator.DataItem as DomCecilMethod;
 			if (method == null)
 				return "";
+			
 			StringBuilder result = new StringBuilder ();
+			result.Append (GetAttributes (method.Attributes));
 			result.Append (DomTypeNodeBuilder.ambience.GetString (method, DomTypeNodeBuilder.settings));
 			result.AppendLine ();
 			result.Append ("{");result.AppendLine ();

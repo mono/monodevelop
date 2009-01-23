@@ -126,6 +126,7 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			IProperty property = (IProperty)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
+			result.Append (DomMethodNodeBuilder.GetAttributes (property.Attributes));
 			result.Append (DomTypeNodeBuilder.ambience.GetString (property, DomTypeNodeBuilder.settings));
 			result.Append ("{");result.AppendLine ();
 			DomCecilProperty cecilProperty = property as DomCecilProperty;

@@ -1,3 +1,12 @@
+2009-01-23  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs:
+	* MonoDevelop.AssemblyBrowser/DomFieldNodeBuilder.cs:
+	* MonoDevelop.AssemblyBrowser/DomEventNodeBuilder.cs:
+	* MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:
+	* MonoDevelop.AssemblyBrowser/DomPropertyNodeBuilder.cs: Assembly
+	browser now shows custom attributes.
+
 2009-01-22  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs: Remove property
