@@ -51,8 +51,8 @@ namespace MonoDevelop.Projects.Policies
 		
 		static PolicyService ()
 		{
-			AddinManager.AddExtensionNodeHandler (SET_EXT_POINT, HandlePolicySetUpdated);
 			AddinManager.AddExtensionNodeHandler (TYPE_EXT_POINT, HandlePolicyTypeUpdated);
+			AddinManager.AddExtensionNodeHandler (SET_EXT_POINT, HandlePolicySetUpdated);
 		}
 		
 		static void HandlePolicySetUpdated (object sender, ExtensionNodeEventArgs args)
@@ -108,12 +108,12 @@ namespace MonoDevelop.Projects.Policies
 			}
 		}		
 		
-		internal static IEnumerable<DataNode> RawDeserializeXml (System.IO.StreamReader reader)
+		internal static System.Collections.IEnumerable RawDeserializeXml (System.IO.StreamReader reader)
 		{
 			var xr = System.Xml.XmlReader.Create (reader);
 			XmlConfigurationReader configReader = XmlConfigurationReader.DefaultReader;
 			while (!xr.EOF)
-				yield return configReader.Read (xr);
+				yield return RawDeserialize (configReader.Read (xr));
 		}
 		
 		internal static object RawDeserialize (DataNode data)
@@ -294,7 +294,8 @@ namespace MonoDevelop.Projects.Policies
 		{
 			foreach (PolicySet s in sets)
 				if (s.Has<T>())
-					yield return s;		}
+					yield return s;
+		}
 		
 		public static T GetDefaultPolicy<T> () where T : new ()
 		{

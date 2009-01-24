@@ -62,7 +62,7 @@ namespace MonoDevelop.Projects.Policies
 		{
 			object o;
 			policies.TryGetValue (t, out o);
-			return t;
+			return o;
 		}
 		
 		public T Get<T> () where T : class, IEquatable<T>

@@ -36,6 +36,7 @@ namespace MonoDevelop.Projects.Extensions
 {
 	
 	[ExtensionNode (Description="A named set of defined policies")]
+	[ExtensionNodeChild (typeof (PolicyResourceNode), "Policies")]
 	class PolicySetNode : ExtensionNode
 	{
 		PolicySet polSet;
@@ -63,6 +64,10 @@ namespace MonoDevelop.Projects.Extensions
 			get {
 				if (polSet == null) {
 					polSet = new PolicySet (Id, MonoDevelop.Core.GettextCatalog.GetString (name));
+					foreach (PolicyResourceNode res in ChildNodes) {
+						using (System.IO.StreamReader reader = res.GetStream ())
+							polSet.AddSerializedPolicies (reader);
+					}
 				}
 				return polSet;
 			}

@@ -1,3 +1,18 @@
+2009-01-23  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Policies/PolicySet.cs: Return the policy, not its
+	type.
+
+	* MonoDevelop.Projects.Policies/PolicyService.cs: Properly deserialise
+	the data nodes from names policies. Load type registrations before
+	named sets, so the named sets can deserialise.
+
+	* MonoDevelop.Projects.addin.xml: Comment out test node.
+
+	* MonoDevelop.Projects.mdp: Updated.
+
+	* MonoDevelop.Projects.Extensions/PolicySetNode.cs: Load child nodes.
+
 2009-01-23  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/CompilationUnit.cs:
