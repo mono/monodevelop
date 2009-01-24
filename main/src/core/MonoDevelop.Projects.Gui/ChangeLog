@@ -1,3 +1,8 @@
+2009-01-23  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs/PolicyOptionsPanel.cs: Add named
+	policies to the list store correctly.
+
 2009-01-21  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects.Gui.addin.xml:

@@ -109,7 +109,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 			
 			bool added = false;
 			foreach (PolicySet set in PolicyService.GetPolicySets<T> ()) {
-				store.AppendValues (set.Name);
+				store.AppendValues (set.Name, set);
 				added = true;
 			}
 			
