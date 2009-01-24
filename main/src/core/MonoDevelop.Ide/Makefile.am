@@ -353,6 +353,7 @@ RES =  \
 	icons/text-editor-16.png \
 	icons/text-editor-22.png \
 	MonoDevelop.Ide.addin.xml \
+	MonoDevelop.Ide.StandardHeader/MITX11LicencePolicy.xml \
 	MonoDevelop.Ide.StandardHeader/StandardHeaderTemplates.xml \
 	options/KeyBindingSchemeEmacs.xml \
 	options/KeyBindingSchemeMonoDevelop1.xml \

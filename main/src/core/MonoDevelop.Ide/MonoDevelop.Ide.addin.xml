@@ -1309,6 +1309,12 @@
 	<Extension path = "/MonoDevelop/ProjectModel/PolicyTypes" >
 		<PolicyType id="StandardHeaderPolicy" class="MonoDevelop.Ide.StandardHeader.StandardHeaderPolicy" />
 	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/PolicySets" >
+		<PolicySet id="mitx11" _name="MIT/X11">
+			<Policies resource="MITX11LicencePolicy.xml" />
+		</PolicySet>
+	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/ProjectFileFilters">
 		<FileFilter id = "Combine"

@@ -1,6 +1,18 @@
 2009-01-23  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am:
+	* MonoDevelop.Ide.mdp: Updated.
+
+	* MonoDevelop.Ide.addin.xml:
+	* MonoDevelop.Ide.StandardHeader/MITX11LicencePolicy.xml: Add a named
+	policy for MIT/X11 licenses.
+
+	* MonoDevelop.Ide.StandardHeader/StandardHeaderPanel.cs: Remove
+	unnecessary toolbox attributes.
+
+2009-01-23  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
 	* gtk-gui/gui.stetic:
 	* MonoDevelop.Ide.mdp:
 	* MonoDevelop.Ide.addin.xml:
