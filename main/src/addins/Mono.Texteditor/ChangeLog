@@ -1,3 +1,9 @@
+2009-01-24  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextViewMargin.cs:
+	* Mono.TextEditor.Highlighting/SyntaxMode.cs: Optimized text editor
+	drawing for very large chunks.
+
 2009-01-23  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/ClipboardActions.cs: fixed 'Bug 468808 - Cannot

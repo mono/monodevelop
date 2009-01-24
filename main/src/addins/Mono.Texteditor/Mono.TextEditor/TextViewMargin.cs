@@ -281,10 +281,11 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		void DrawLinePart (Gdk.Drawable win, LineSegment line, int offset, int length, ref int xPos, int y)
+		void DrawLinePart (Gdk.Drawable win, LineSegment line, int offset, int length, ref int xPos, int y, int maxX)
 		{
 			SyntaxMode mode = Document.SyntaxMode != null && textEditor.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : SyntaxMode.Default;
 			Chunk[] chunks = mode.GetChunks (Document, textEditor.ColorStyle, line, offset, length);
+			
 			int selectionStart = -1;
 			int selectionEnd   = -1;
 			if (textEditor.IsSomethingSelected) {
@@ -293,8 +294,9 @@ namespace Mono.TextEditor
 				selectionEnd   = segment.EndOffset;
 			}
 			int visibleColumn = 0;
-			
 			foreach (Chunk chunk in chunks) {
+				if (xPos >= maxX)
+					break;
 				if (chunk.Offset >= selectionStart && chunk.EndOffset <= selectionEnd) {
 					DrawStyledText (win, line, true, chunk, ref visibleColumn, ref xPos, y, chunk.Offset, chunk.EndOffset);
 				} else if (chunk.Offset >= selectionStart && chunk.Offset < selectionEnd && chunk.EndOffset > selectionEnd) {
@@ -310,7 +312,6 @@ namespace Mono.TextEditor
 				} else 
 					DrawStyledText (win, line, false, chunk, ref visibleColumn, ref xPos, y, chunk.Offset, chunk.EndOffset);
 			}
-			
 			if (Caret.Offset == offset + length) 
 				SetVisibleCaretPosition (win, ' ', xPos, y);
 		}
@@ -1043,7 +1044,7 @@ namespace Mono.TextEditor
 //					win.DrawLayout (gc, xPos, y, layout);
 //					layout.GetPixelSize (out width, out height);
 					
-					DrawLinePart (win, line, offset, foldOffset - offset, ref xPos, y);
+					DrawLinePart (win, line, offset, foldOffset - offset, ref xPos, y, area.Right);
 //					xPos += width;
 					offset = folding.EndLine.Offset + folding.EndColumn;
 					
@@ -1078,7 +1079,7 @@ namespace Mono.TextEditor
 			
 			// Draw remaining line
 			if (line.EndOffset - offset > 0)
-				DrawLinePart (win, line, offset, line.Offset + line.EditableLength - offset, ref xPos, y);
+				DrawLinePart (win, line, offset, line.Offset + line.EditableLength - offset, ref xPos, y, area.Right);
 			
 			bool isEolSelected = textEditor.IsSomethingSelected && textEditor.SelectionRange.Contains (line.Offset + line.EditableLength);
 			
