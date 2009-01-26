@@ -44,9 +44,9 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 
-		public ReadOnlyCollection<string> Words {
+		public IEnumerable<string> Words {
 			get {
-				return words.AsReadOnly ();
+				return words;
 			}
 		}
 

@@ -979,9 +979,9 @@ namespace Mono.TextEditor
 		#region Update logic
 		List<DocumentUpdateRequest> updateRequests = new List<DocumentUpdateRequest> ();
 		
-		public ReadOnlyCollection<DocumentUpdateRequest> UpdateRequests {
+		public IEnumerable<DocumentUpdateRequest> UpdateRequests {
 			get {
-				return updateRequests.AsReadOnly ();
+				return updateRequests;
 			}
 		}
 		// Use CanEdit (int lineNumber) instead for getting a request

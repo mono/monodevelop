@@ -51,21 +51,26 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 		
-		public ReadOnlyCollection<Keywords> Keywords {
+		public IEnumerable<Keywords> Keywords {
 			get {
-				return keywords.AsReadOnly ();
+				return keywords;
 			}
 		}
 		
-		public ReadOnlyCollection<Span> Spans {
+		public IEnumerable<Span> Spans {
 			get {
-				return spans.AsReadOnly ();
+				return spans;
 			}
 		}
 		
-		public ReadOnlyCollection<Match> Matches {
+		public IEnumerable<Match> Matches {
 			get {
-				return this.matches.AsReadOnly ();
+				return this.matches;
+			}
+		}
+		public bool HasMatches {
+			get {
+				return this.matches.Count > 0;
 			}
 		}
 

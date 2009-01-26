@@ -47,9 +47,9 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 		
-		public ReadOnlyCollection<Rule> Rules {
+		public IEnumerable<Rule> Rules {
 			get {
-				return rules.AsReadOnly ();
+				return rules;
 			}
 		}
 		
@@ -372,7 +372,7 @@ namespace Mono.TextEditor.Highlighting
 					}
 					
 					// HACK: Add '&& (Char.IsDigit (ch) || ch == '.')' for extra speedup
-					if (!isNoKeyword && wordOffset == 0) {
+					if (!isNoKeyword && wordOffset == 0 && curRule.HasMatches && (Char.IsDigit (ch) || ch == '.')) {
 						Match foundMatch = null;
 						int   foundMatchLength = -1;
 						string matchStr = str.Substring (textOffset);
