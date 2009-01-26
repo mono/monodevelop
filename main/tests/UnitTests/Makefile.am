@@ -19,6 +19,7 @@ REFS =  \
 	-r:../../build/bin/Mono.TextEditor.dll \
 	-r:../../build/bin/MonoDevelop.Components.dll \
 	-r:../../build/bin/MonoDevelop.Core.dll \
+	-r:../../build/bin/MonoDevelop.Core.Gui.dll \
 	-r:../../build/bin/MonoDevelop.Ide.dll \
 	-r:../../build/bin/MonoDevelop.Projects.dll \
 	-r:../../build/bin/MonoDevelop.Projects.Gui.dll \

@@ -1,3 +1,26 @@
+2009-01-27  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/CompletionDatabaseTests.cs: Added unit tests for
+	checking generic constraints.
+
+	* Makefile.am:
+	* UnitTests.mdp: Updated.
+
+	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs:
+	* MonoDevelop.CSharpBinding/CodeCompletionCSharpTests.cs:
+	* MonoDevelop.CSharpBinding/CodeCompletionCSharp3Tests.cs:
+	* MonoDevelop.CSharpBinding/CodeCompletionOperatorTests.cs:
+	* MonoDevelop.CSharpBinding/CodeCompletionAccessibleTests.cs: Use the
+	real database backed ProjectDom, instead of SimpleProjectDom. Tests
+	are more reliable in this way. However, this requires some changes.
+	The ProjectDom database is only updated when a file is parsed without
+	errors. Many of the code snippets used in the unit tests are not
+	fully parseable because they contain code partially completed (e.g.
+	like "blah. "). The solution is to enclose all that partial code
+	inside $ signs. So now $ has a different meaning. Instead of the
+	cursor position, it means 'code written before triggering code
+	completion'.
+
 2009-01-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/CompletionDatabaseTests.cs: Added new test.
