@@ -136,7 +136,7 @@ namespace Mono.TextEditor
 			}
 			if (ReadNonFloatEnd(text, ref i))
 				return i - matchOffset;
-			if (text[i] == '.') {
+			if (i < text.Length && text[i] == '.') {
 				i++;
 				if (!Char.IsDigit (text[i]))
 					return -1;
