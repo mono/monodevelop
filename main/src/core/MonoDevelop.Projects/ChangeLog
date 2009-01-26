@@ -1,3 +1,8 @@
+2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs: Replace a
+	Console.WriteLine with a logging service call.
+
 2009-01-23  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects.Policies/PolicySet.cs: Return the policy, not its
