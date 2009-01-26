@@ -1,3 +1,7 @@
+2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile: Add distclean target.
+
 2008-06-12  Aaron Bockover  <abock@gnome.org>
 
 	* configure: Support CONFIG_SITE (BNC #350629)
