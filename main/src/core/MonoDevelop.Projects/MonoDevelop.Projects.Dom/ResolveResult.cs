@@ -219,7 +219,6 @@ namespace MonoDevelop.Projects.Dom
 			
 			
 			foreach (IType curType in dom.GetInheritanceTree (type)) {
-			//	System.Console.WriteLine("cur Type:" + curType);
 				if (curType.ClassType == ClassType.Interface && type.ClassType != ClassType.Interface)
 					continue;
 				if (accessibleStaticTypes != null) {
@@ -404,7 +403,7 @@ namespace MonoDevelop.Projects.Dom
 		{
 			List<object> result = new List<object> ();
 			if (CallingMember != null && !CallingMember.IsStatic) {
-				IType baseType = dom.SearchType (new SearchTypeRequest (CallingType.CompilationUnit, CallingType.BaseType ?? DomReturnType.Object));
+				IType baseType = dom.SearchType (new SearchTypeRequest (CallingType.CompilationUnit, CallingType.BaseType ?? DomReturnType.Object, CallingType));
 				MemberResolveResult.AddType (dom, result, baseType, new BaseMemberDecorator (CallingMember, baseType), StaticResolve);
 			}
 			return result;

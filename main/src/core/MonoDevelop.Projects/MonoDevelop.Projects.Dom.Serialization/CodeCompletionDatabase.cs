@@ -49,7 +49,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 	{
 		static protected readonly int MAX_ACTIVE_COUNT = 100;
 		static protected readonly int MIN_ACTIVE_COUNT = 10;
-		static protected readonly int FORMAT_VERSION   = 58;
+		static protected readonly int FORMAT_VERSION   = 59;
 		
 		NamespaceEntry rootNamespace;
 		protected ArrayList references;
@@ -430,6 +430,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				
 				DomType cls = DomPersistence.ReadType (datareader, pdb.DefaultNameDecoder);
 				cls.SourceProjectDom = SourceProjectDom;
+				cls.Resolved = true;
 				return cls;
 			}
 		}
@@ -492,7 +493,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 					while (nextPos < len) {
 						string name = path[nextPos];
 						partArgsCount = nextPos == len-1 ? genericArgumentCount : ExtractGenericArgCount (ref name);
-						IType nextc = FindInnerType (c, name, partArgsCount, caseSensitive);
+						IType nextc = SourceProjectDom.FindInnerType (c, name, partArgsCount, caseSensitive);
 						if (nextc == null) return null;
 						c = nextc;
 						nextPos++;
@@ -505,16 +506,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 					return result;
 			}
 		}
-
-		IType FindInnerType (IType outerType, string name, int typeArgCount, bool caseSensitive)
-		{
-			foreach (IType innerc in outerType.InnerTypes)  {
-				if (string.Compare (innerc.Name, name, !caseSensitive) == 0 && innerc.TypeParameters.Count == typeArgCount)
-					return innerc;
-			}
-			return null;
-		}
-
+		
 		int ExtractGenericArgCount (ref string name)
 		{
 			int i = name.LastIndexOf ('`');
@@ -535,6 +527,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				return ce.Class;
 			DomTypeProxy result = new DomTypeProxy (this, ce);
 			result.SourceProjectDom = this.SourceProjectDom;
+			result.Resolved = true;
 			return result;
 		}
 		
@@ -616,9 +609,10 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			List<IReturnType> args = new List<IReturnType> ();
 			foreach (TypeParameter par in subType.TypeParameters) {
 				int pos = -1;
+				string parTypeName = subType.FullName + "." + par.Name;
 				for (int n=0; n < bparams.Count; n++) {
 					string pname = bparams [n].FullName;
-					if (par.Name == pname) {
+					if (parTypeName == pname) {
 						paramsMatched [n] = true;
 						pos = n;
 						break;
@@ -1078,7 +1072,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 					return false;
 				List<string> pars = new List<string> ();
 				foreach (TypeParameter tpar in subType.TypeParameters)
-					pars.Add (tpar.Name);
+					pars.Add (subType.FullName + "." + tpar.Name);
 				foreach (IReturnType rt in baseType.GenericArguments)
 					pars.Remove (rt.FullName);
 				if (pars.Count > 0)
@@ -1303,6 +1297,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				writer.Close ();
 				reader.Close ();
 				result.SourceProjectDom = cls.SourceProjectDom;
+				result.Resolved = true;
 				return result;
 			}
 		}

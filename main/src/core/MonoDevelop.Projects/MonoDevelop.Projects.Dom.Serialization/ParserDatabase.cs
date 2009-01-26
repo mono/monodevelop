@@ -410,7 +410,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 
 		internal static string GetDecoratedName (IReturnType type)
 		{
-			return GetDecoratedName (type.FullName, type.GenericArguments.Count);
+			return ((DomReturnType)type).DecoratedFullName;
 		}
 
 		

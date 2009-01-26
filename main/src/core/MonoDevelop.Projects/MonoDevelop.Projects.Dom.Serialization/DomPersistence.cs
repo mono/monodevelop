@@ -100,26 +100,29 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			if (ReadNull (reader))
 				return null;
 			
-			string name       = ReadString (reader, nameTable);
-			int  pointerNesting = reader.ReadInt32 ();
-			bool isNullable = reader.ReadBoolean ();
-			bool isByRef = reader.ReadBoolean ();
+			string ns = ReadString (reader, nameTable);
+			List<IReturnTypePart> parts = new List<IReturnTypePart> ();
+			
+			uint partCount = ReadUInt (reader, 500);
+			while (partCount-- > 0) {
+				ReturnTypePart part = new ReturnTypePart ();
+				parts.Add (part);
+				part.Name = ReadString (reader, nameTable);
+				uint arguments  = ReadUInt (reader, 1000);
+				while (arguments-- > 0)
+					part.AddTypeParameter (ReadReturnType (reader, nameTable));
+			}
+			
+			DomReturnType result = new DomReturnType (ns, parts);
+			result.PointerNestingLevel = reader.ReadInt32 ();
+			result.IsNullable = reader.ReadBoolean ();
+			result.IsByRef = reader.ReadBoolean ();
 			
 			int  arrayDimensions = reader.ReadInt32 ();
 			int[] dims = new int [arrayDimensions];
 			for (int n=0; n<arrayDimensions; n++)
 				dims [n] = reader.ReadInt32 ();
 			
-			uint arguments  = ReadUInt (reader, 1000);
-			List<IReturnType> parameters = new List<IReturnType> ();
-			
-			while (arguments-- > 0) {
-				parameters.Add (ReadReturnType (reader, nameTable));
-			}
-			
-			DomReturnType result = new DomReturnType (name, isNullable, parameters);
-			result.PointerNestingLevel = pointerNesting;
-			result.IsByRef = isByRef;
 			result.SetDimensions (dims);
 			return result;
 		}
@@ -128,21 +131,20 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		{
 			if (WriteNull (writer, returnType))
 				return;
-			WriteString (returnType.FullName, writer, nameTable);
+			WriteString (returnType.Namespace, writer, nameTable);
+			writer.Write ((uint) returnType.Parts.Count);
+			foreach (ReturnTypePart part in returnType.Parts) {
+				WriteString (part.Name, writer, nameTable);
+				writer.Write ((uint) part.GenericArguments.Count);
+				foreach (IReturnType rtp in part.GenericArguments)
+					Write (writer, nameTable, rtp);
+			}
 			writer.Write (returnType.PointerNestingLevel);
 			writer.Write (returnType.IsNullable);
 			writer.Write (returnType.IsByRef);
 			writer.Write (returnType.ArrayDimensions);
 			for (int n=0; n<returnType.ArrayDimensions; n++)
 				writer.Write (returnType.GetDimension (n));
-			if (returnType.GenericArguments == null) {
-				writer.Write ((uint)0);
-				return;
-			}
-			writer.Write ((uint)returnType.GenericArguments.Count);
-			foreach (IReturnType param in returnType.GenericArguments) {
-				Write (writer, nameTable, param);
-			}
 		}
 		
 		public static DomMethod ReadMethod (BinaryReader reader, INameDecoder nameTable)

@@ -82,10 +82,16 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			// Once the first modification check is done, change detection
 			// is done through project events
 			
-			if (initialFileCheck) {
-				base.CheckModifiedFiles ();
-				initialFileCheck = false;
-			}
+			base.CheckModifiedFiles ();
+			initialFileCheck = false;
+		}
+		
+		protected override bool IsFileModified (FileEntry file)
+		{
+			if (initialFileCheck)
+				return file.IsModified;
+			else
+				return file.ParseErrorRetries > 0;
 		}
 		
 		void OnFileChanged (object sender, ProjectFileEventArgs args)
@@ -284,11 +290,18 @@ namespace MonoDevelop.Projects.Dom.Serialization
 						if (file.ParseErrorRetries > 0) {
 							file.ParseErrorRetries--;
 						}
-						else
+						else {
 							file.ParseErrorRetries = 3;
+							
+							// Enqueue the file for quickly reparse. Types can't be resolved most probably because
+							// the file that implements them is not yet parsed.
+							file.InParseQueue = false;
+							QueueParseJob (file);
+						}
 					}
-					else
+					else {
 						file.ParseErrorRetries = 0;
+					}
 				}
 				
 				if ((++parseCount % MAX_ACTIVE_COUNT) == 0)

@@ -108,13 +108,21 @@ namespace MonoDevelop.Projects.Dom
 		//	this.genericParameterCount = -1;
 		}
 		
-		public SearchTypeRequest (ICompilationUnit currentCompilationUnit, IReturnType rtype)
+		public SearchTypeRequest (ICompilationUnit currentCompilationUnit, IReturnType rtype, IType callingType)
 		{
 			this.currentCompilationUnit = currentCompilationUnit;
+			this.callingType = callingType;
 			this.caretLine   = -1;
 			this.caretColumn = -1;
 			if (rtype != null) {
-				this.name              = rtype.FullName;
+				name = rtype.Namespace;
+				foreach (ReturnTypePart rpart in rtype.Parts) {
+					if (name.Length > 0)
+						name += ".";
+					name += rpart.Name;
+					if (rpart.GenericArguments.Count > 0)
+						name += "`" + rpart.GenericArguments.Count;
+				}
 				this.genericParameters = new List<IReturnType> (rtype.GenericArguments);
 			}
 		}

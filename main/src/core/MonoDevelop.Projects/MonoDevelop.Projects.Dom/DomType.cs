@@ -54,9 +54,9 @@ namespace MonoDevelop.Projects.Dom
 		
 		protected override string CalculateFullName ()
 		{
+			base.fullNameIsDirty = false;
 			if (DeclaringType != null) 
 				return DeclaringType.FullName + "." + Name;
-			base.fullNameIsDirty = false;
 			return !String.IsNullOrEmpty (Namespace) ? Namespace + "." + Name : Name;
 		}
 		
@@ -72,10 +72,12 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
+		internal bool Resolved { get; set; }
+		
 		public virtual string Namespace {
 			get {
 				if (DeclaringType != null) 
-					return DeclaringType.FullName;
+					return DeclaringType.Namespace;
 				return nameSpace ?? "";
 			}
 			set {
@@ -561,20 +563,24 @@ namespace MonoDevelop.Projects.Dom
 			GenericTypeInstanceResolver resolver = new GenericTypeInstanceResolver ();
 			if (genericArguments != null) {
 				for (int i = 0; i < type.TypeParameters.Count && i < genericArguments.Count; i++)
-					resolver.Add (type.TypeParameters[i].Name, genericArguments[i]);
+					resolver.Add (type.FullName + "." + type.TypeParameters[i].Name, genericArguments[i]);
 			}
 			InstantiatedType result = (InstantiatedType)Resolve (new InstantiatedType (), type, resolver);
 			if (result.typeParameters != null)
 				result.typeParameters.Clear ();
 			result.Name = name;
 			result.SourceProjectDom = type.SourceProjectDom;
+			result.Resolved = (type is DomType) ? ((DomType)type).Resolved : false;
 			result.GenericParameters = genericArguments;
 			result.UninstantiatedType = type;
+			result.DeclaringType = type.DeclaringType;
 			return result;
 		}
 		
 		class GenericTypeInstanceResolver: ITypeResolver
 		{
+			public IType ContextType { get; set; }
+			
 			public Dictionary<string, IReturnType> typeTable = new Dictionary<string,IReturnType> ();
 			
 			public void Add (string name, IReturnType type)
@@ -615,15 +621,17 @@ namespace MonoDevelop.Projects.Dom
 		
 		static DomType Resolve (DomType result, IType type, ITypeResolver typeResolver)
 		{
+			IType oldContextType = typeResolver.ContextType;
+			typeResolver.ContextType = type;
 			
 			AbstractMember.Resolve (type, result, typeResolver);
 			result.CompilationUnit = type.CompilationUnit;
 			result.Name          = type.Name;
 			result.Namespace     = type.Namespace;
 			result.ClassType     = type.ClassType;
-			foreach (TypeParameter param in type.TypeParameters) {
-				result.AddTypeParameter (param);
-			}
+			
+			foreach (TypeParameter param in type.TypeParameters)
+				result.AddTypeParameter (TypeParameter.Resolve (param, typeResolver));
 			
 			if (type.BaseType != null)
 				result.baseType = DomReturnType.Resolve (type.BaseType, typeResolver);
@@ -650,6 +658,7 @@ namespace MonoDevelop.Projects.Dom
 				result.Add (DomEvent.Resolve (evt, typeResolver));
 			}
 			
+			typeResolver.ContextType = oldContextType;
 			return result;
 		}
 		

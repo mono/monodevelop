@@ -247,17 +247,19 @@ namespace MonoDevelop.Projects.Dom
 		public static IMethod Resolve (IMethod source, ITypeResolver typeResolver)
 		{
 			DomMethod result = new DomMethod ();
+			
+			if (source.GenericParameters != null && source.GenericParameters.Count > 0) {
+				typeResolver = new MethodTypeParamsResolved (typeResolver, source.GenericParameters);
+				foreach (IReturnType returnType in source.GenericParameters) {
+					result.AddGenericParameter (DomReturnType.Resolve (returnType, typeResolver));
+				}
+			}
+			
 			AbstractMember.Resolve (source, result, typeResolver);
 			result.MethodModifier = source.MethodModifier;
 			if (source.Parameters != null) {
 				foreach (IParameter parameter in source.Parameters)
 					result.Add (DomParameter.Resolve (parameter, typeResolver));
-			}
-			
-			if (source.GenericParameters != null && source.GenericParameters.Count > 0) {
-				foreach (IReturnType returnType in source.GenericParameters) {
-					result.AddGenericParameter (DomReturnType.Resolve (returnType, typeResolver));
-				}
 			}
 			
 			return result;
@@ -278,6 +280,32 @@ namespace MonoDevelop.Projects.Dom
 		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
 		{
 			return visitor.Visit (this, data);
+		}
+	}
+	
+	class MethodTypeParamsResolved: ITypeResolver
+	{
+		ITypeResolver typeResolver;
+		ReadOnlyCollection<IReturnType> types;
+		
+		public IType ContextType {
+			get { return typeResolver.ContextType; }
+			set { typeResolver.ContextType = value; }
+		}
+		
+		public MethodTypeParamsResolved (ITypeResolver typeResolver, ReadOnlyCollection<IReturnType> types)
+		{
+			this.typeResolver = typeResolver;
+			this.types = types;
+		}
+		
+		public IReturnType Resolve (IReturnType type)
+		{
+			foreach (IReturnType t in types) {
+				if (t.FullName == type.FullName)
+					return type;
+			}
+			return typeResolver.Resolve (type);
 		}
 	}
 }
