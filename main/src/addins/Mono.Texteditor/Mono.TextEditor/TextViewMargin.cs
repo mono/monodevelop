@@ -308,7 +308,6 @@ namespace Mono.TextEditor
 		void DrawLinePart (Gdk.Drawable win, LineSegment line, int offset, int length, ref int xPos, int y, int maxX)
 		{
 			SyntaxMode mode = Document.SyntaxMode != null && textEditor.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : SyntaxMode.Default;
-			Chunk[] chunks = mode.GetChunks (Document, textEditor.ColorStyle, line, offset, length);
 			
 			int selectionStart = -1;
 			int selectionEnd   = -1;
@@ -318,7 +317,7 @@ namespace Mono.TextEditor
 				selectionEnd   = segment.EndOffset;
 			}
 			int visibleColumn = 0;
-			foreach (Chunk chunk in chunks) {
+			for (Chunk chunk = mode.GetChunks (Document, textEditor.ColorStyle, line, offset, length); chunk != null; chunk = chunk.Next) {
 				if (xPos >= maxX)
 					break;
 				if (chunk.Offset >= selectionStart && chunk.EndOffset <= selectionEnd) {
@@ -799,10 +798,10 @@ namespace Mono.TextEditor
 			if (line == null || style == null || mode == null)
 				return null;
 			
-			Chunk[] chunks = mode.GetChunks (Document, style, line, line.Offset, line.EditableLength);
-			if (chunks != null) {
+			Chunk chunk = mode.GetChunks (Document, style, line, line.Offset, line.EditableLength);
+			if (chunk != null) {
 				int offset = Document.LocationToOffset (VisualToDocumentLocation (args.X, args.Y));
-				foreach (Chunk chunk in chunks) {
+				for (; chunk != null; chunk = chunk.Next) {
 					if (chunk.Offset <= offset && offset < chunk.EndOffset) 
 						return chunk.Style != null ? chunk.Style.Link : null;
 				}
@@ -887,7 +886,7 @@ namespace Mono.TextEditor
 			SyntaxMode mode = Document.SyntaxMode != null && this.textEditor.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : SyntaxMode.Default;
 			int curColumn = 0;
 			int visibleColumn = 0;
-			foreach (Chunk chunk in mode.GetChunks (Document, this.ColorStyle, line, line.Offset, line.EditableLength)) {
+			for (Chunk chunk = mode.GetChunks (Document, this.ColorStyle, line, line.Offset, line.EditableLength); chunk != null; chunk = chunk.Next) {
 				for (int i = 0; i < chunk.Length; i++) {
 					int delta;
 					char ch = chunk.GetCharAt (Document, chunk.Offset + i);
@@ -1143,12 +1142,12 @@ namespace Mono.TextEditor
 //				lineArea = new Gdk.Rectangle (margin.XOffset, y, margin.textEditor.Allocation.Width - margin.XOffset, margin.LineHeight);
 			}
 			
-			Chunk[] chunks;
+			Chunk chunks;
 			void ConsumeChunks ()
 			{
-				foreach (Chunk chunk in chunks) {
-					for (int o = chunk.Offset; o < chunk.EndOffset; o++) {
-						char ch = chunk.GetCharAt (margin.Document, o);
+				for (;chunks != null; chunks = chunks.Next) {
+					for (int o = chunks.Offset; o < chunks.EndOffset; o++) {
+						char ch = chunks.GetCharAt (margin.Document, o);
 						int delta = 0;
 						if (ch == '\t') {
 							int newColumn = GetNextTabstop (margin.textEditor.GetTextEditorData (), visibleColumn);
@@ -1158,8 +1157,8 @@ namespace Mono.TextEditor
 							delta = margin.charWidth;
 							visibleColumn++;
 						} else {
-							measureLayout.FontDescription.Weight = chunk.Style.GetWeight (margin.DefaultWeight);
-							measureLayout.FontDescription.Style =  chunk.Style.GetStyle (margin.DefaultStyle);
+							measureLayout.FontDescription.Weight = chunks.Style.GetWeight (margin.DefaultWeight);
+							measureLayout.FontDescription.Style =  chunks.Style.GetStyle (margin.DefaultStyle);
 							
 							measureLayout.SetText (ch.ToString ());
 							int height;

@@ -57,7 +57,7 @@ namespace Mono.TextEditor.Highlighting
 		{
 		}
 		
-		public virtual Chunk[] GetChunks (Document doc, Style style, LineSegment line, int offset, int length)
+		public virtual Chunk GetChunks (Document doc, Style style, LineSegment line, int offset, int length)
 		{
 			return new ChunkParser (doc, style, this, line).GetChunks (offset, length);
 		}
@@ -82,8 +82,7 @@ namespace Mono.TextEditor.Highlighting
 			while (curOffset < offset + length && curOffset < doc.Length) {
 				LineSegment line = doc.GetLineByOffset (curOffset);
 				int toOffset = System.Math.Min (line.Offset + line.EditableLength, offset + length);
-				Chunk[] chunks = GetChunks (doc, style, line, curOffset, toOffset - curOffset);
-				foreach (Chunk chunk in chunks) {
+				for (Chunk chunk = GetChunks (doc, style, line, curOffset, toOffset - curOffset); chunk != null; chunk = chunk.Next) {
 					result.Append("<span foreground=\"");
 					result.Append(String.Format ("#{0:X2}{1:X2}{2:X2}", 
 					                             chunk.Style.Color.Red   >> 8,
@@ -152,16 +151,22 @@ namespace Mono.TextEditor.Highlighting
 				defaultStyle = new Mono.TextEditor.ChunkStyle (style.Default);
 			}
 			
+			Chunk startChunk;
+			Chunk endChunk;
 			void AddRealChunk (Chunk chunk)
 			{
 				const int MaxChunkLength = 80;
 				int divisor = chunk.Length / MaxChunkLength;
 				int reminder = chunk.Length % MaxChunkLength;
+				if (startChunk == null)
+					endChunk = startChunk = chunk;
 				for (int i = 0; i < divisor; i++) {
-					result.Add (new Chunk (chunk.Offset + i * MaxChunkLength, MaxChunkLength, chunk.Style));
+					endChunk = endChunk.Next = new Chunk (chunk.Offset + i * MaxChunkLength, MaxChunkLength, chunk.Style);
 				}
-				if (reminder > 0) 
-					result.Add (new Chunk (chunk.Offset + divisor * MaxChunkLength, reminder, chunk.Style));
+				if (reminder > 0) {
+					endChunk = endChunk.Next = new Chunk (chunk.Offset + divisor * MaxChunkLength, reminder, chunk.Style);
+				}
+				endChunk.Next = null;
 			}
 			
 			void AddChunk (ref Chunk curChunk, int length, ChunkStyle style)
@@ -252,13 +257,14 @@ namespace Mono.TextEditor.Highlighting
 			}
 			
 			int wordOffset =  0; 
-			
+
 			Chunk curChunk;
 			int maxEnd;
 			
-			public virtual Chunk[] GetChunks (int offset, int length)
+			public virtual Chunk GetChunks (int offset, int length)
 			{
 				curRule = mode;
+				startChunk = null;
 				this.ruleStart = offset;
 				spanStack = line.StartSpan != null ? new Stack<Span> (line.StartSpan) : new Stack<Span> ();
 				SyntaxModeService.ScanSpans (doc, curRule, spanStack, line.Offset, offset);
@@ -329,7 +335,9 @@ namespace Mono.TextEditor.Highlighting
 					}
 					if (spanTree != null && spanTree.ContainsKey (ch)) {
 						bool found = false;
-						foreach (Span span in spanTree[ch]) {
+						List<Span> spanList = spanTree[ch];
+						for (int l = 0; l < spanList.Count; l++) {
+							Span span = spanList[l];
 							bool mismatch = false;
 							for (int j = 1; j < span.Begin.Length; j++) {
 								if (i + j >= doc.Length || span.Begin [j] != doc.GetCharAt (i + j)) {
@@ -415,7 +423,7 @@ namespace Mono.TextEditor.Highlighting
 					AddRealChunk (curChunk);
 				
 				SetSpan (maxEnd);
-				return result.ToArray ();
+				return startChunk;
 			}
 		}
 		

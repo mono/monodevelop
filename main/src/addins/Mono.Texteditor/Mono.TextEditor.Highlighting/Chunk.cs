@@ -41,9 +41,15 @@ namespace Mono.TextEditor
 				style = value;
 			}
 		}
+
+		public Chunk Next {
+			get;
+			set;
+		}
 		
 		public Chunk ()
 		{
+			Next = null;
 		}
 		
 		public Chunk (int offset, int length, ChunkStyle style) : base (offset, length)

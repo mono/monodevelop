@@ -1,5 +1,15 @@
 2009-01-26  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextViewMargin.cs:
+	* Mono.TextEditor/ClipboardActions.cs:
+	* Mono.TextEditor.Highlighting/Chunk.cs:
+	* Mono.TextEditor.Highlighting/SyntaxMode.cs:
+	* Mono.TextEditor.Highlighting/MarkupSyntaxMode.cs: Reduced memory
+	footprint. Chunks are now represented as a primitve list instead of
+	creating a collection object for each chunk request.
+
+2009-01-26  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextViewMargin.cs: set clip region.
 
 2009-01-26  Mike Krüger  <mkrueger@novell.com>
