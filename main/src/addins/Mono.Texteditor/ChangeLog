@@ -1,5 +1,17 @@
 2009-01-26  Mike Krüger  <mkrueger@novell.com>
 
+	* SyntaxModes/CSyntaxMode.xml:
+	* SyntaxModes/XmlSyntaxMode.xml:
+	* SyntaxModes/JavaSyntaxMode.xml:
+	* SyntaxModes/ValaSyntaxMode.xml:
+	* SyntaxModes/CSharpSyntaxMode.xml:
+	* SyntaxModes/JavascriptSyntaxMode.xml:
+	* Mono.TextEditor.Highlighting/Match.cs:
+	* Mono.TextEditor.Highlighting/SyntaxMode.cs: Hard coded the number
+	regular expression for speed up.
+
+2009-01-26  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/Document.cs:
 	* Mono.TextEditor/LineSegment.cs:
 	* Mono.TextEditor/TextViewMargin.cs:

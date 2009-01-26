@@ -41,9 +41,7 @@
 		<End>&apos;</End>
 	</Span>
 	
-	<Match color = "literal">\d+(U|u|L|l|UL|Ul|uL|ul|LU|Lu|lU|lu)?</Match>
-	<Match color = "literal">0[xX][a-fA-F\d]+(U|u|L|l|UL|Ul|uL|ul|LU|Lu|lU|lu)?</Match>
-	<Match color = "literal">\d+(\.\d+)?([eE][+-]\d+)?[FfDdMm]?</Match>
+	<Match color = "literal">CSharpNumber</Match>
 	
 	<Keywords color = "kw:access">
 		<Word>this</Word>

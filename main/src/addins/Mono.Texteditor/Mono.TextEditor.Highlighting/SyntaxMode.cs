@@ -371,18 +371,14 @@ namespace Mono.TextEditor.Highlighting
 						isNoKeyword = false;
 					}
 					
-					// HACK: Add '&& (Char.IsDigit (ch) || ch == '.')' for extra speedup
-					if (!isNoKeyword && wordOffset == 0 && curRule.HasMatches && (Char.IsDigit (ch) || ch == '.')) {
+					if (!isNoKeyword && wordOffset == 0 && curRule.HasMatches) {
 						Match foundMatch = null;
-						int   foundMatchLength = -1;
-						string matchStr = str.Substring (textOffset);
+						int   foundMatchLength = 0;
 						foreach (Match ruleMatch in curRule.Matches) {
-							System.Text.RegularExpressions.Match match = ruleMatch.Regex.Match (matchStr);
-							if (match.Success) {
-								if (foundMatch == null || foundMatchLength < match.Length) {
-									foundMatch = ruleMatch;
-									foundMatchLength = match.Length;
-								}
+							int matchLength = ruleMatch.TryMatch (str, textOffset);
+							if (foundMatchLength < matchLength) {
+								foundMatch = ruleMatch;
+								foundMatchLength = matchLength;
 							}
 						}
 						if (foundMatch != null) {
