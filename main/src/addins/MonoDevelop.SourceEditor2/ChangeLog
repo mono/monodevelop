@@ -1,5 +1,11 @@
 2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Use MD's TextFile API
+	for loading and saving files, because it handles encodings, and does
+	"safer" writes.
+
+2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.SourceEditor/ClassQuickFinder.cs: Use a faster sort - the
 	one used in the completion list.
 
