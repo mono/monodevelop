@@ -1,3 +1,9 @@
+2009-01-27  Ankit Jain  <jankit@novell.com>
+
+	Fix bug #352703.
+	* CSharpBindingCompilerManager.cs (Compile): Format define symbols list
+	to be semi-colon separated.
+
 2009-01-26  Mike Krüger  <mkrueger@novell.com>
 
 	* Gui/NRefactoryResolver.cs: Handled invalid endpos.
