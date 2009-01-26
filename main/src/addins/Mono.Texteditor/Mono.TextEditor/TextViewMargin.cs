@@ -215,8 +215,10 @@ namespace Mono.TextEditor
 			Gdk.GC result = null;
 			// color.Pixel doesn't work
 			ulong colorId = (ulong)color.Red * (1 << 32) + (ulong)color.Blue * (1 << 16) + (ulong)color.Green;
-			if (gcDictionary.TryGetValue (colorId, out result))
+			if (gcDictionary.TryGetValue (colorId, out result)) {
+				result.ClipRectangle = clipRectangle;
 				return result;
+			}
 			result = new Gdk.GC (textEditor.GdkWindow);
 			result.RgbFgColor = color;
 			gcDictionary.Add (colorId, result);
@@ -999,7 +1001,7 @@ namespace Mono.TextEditor
 		
 		List<ISegment> selectedRegions = new List<ISegment> ();
 		Gdk.Color      defaultBgColor;
-		
+		Gdk.Rectangle  clipRectangle;
 		internal protected override void Draw (Gdk.Drawable win, Gdk.Rectangle area, int lineNr, int x, int y)
 		{
 //			int visibleLine = y / this.LineHeight;
@@ -1007,7 +1009,8 @@ namespace Mono.TextEditor
 			layout.Alignment = Pango.Alignment.Left;
 			LineSegment line = lineNr < Document.LineCount ? Document.GetLine (lineNr) : null;
 			int xStart = System.Math.Max (area.X, XOffset);
-//			gc.ClipRectangle = new Gdk.Rectangle (xStart, y, area.Right - xStart, LineHeight);
+			//gc.ClipRectangle =
+			clipRectangle = new Gdk.Rectangle (xStart, y, area.Right - xStart, LineHeight);
 			
 			if (textEditor.Options.HighlightCaretLine && Caret.Line == lineNr) {
 				defaultBgColor = ColorStyle.LineMarker;

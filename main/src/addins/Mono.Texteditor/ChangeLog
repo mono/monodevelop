@@ -1,5 +1,9 @@
 2009-01-26  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextViewMargin.cs: set clip region.
+
+2009-01-26  Mike Krüger  <mkrueger@novell.com>
+
 	* SyntaxModes/CSyntaxMode.xml:
 	* SyntaxModes/XmlSyntaxMode.xml:
 	* SyntaxModes/JavaSyntaxMode.xml:
