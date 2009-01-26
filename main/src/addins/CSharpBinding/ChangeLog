@@ -1,3 +1,7 @@
+2009-01-26  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/NRefactoryResolver.cs: Handled invalid endpos.
+
 2009-01-23  Mike Krüger  <mkrueger@novell.com>
 
 	* Parser/NRefactoryParser.cs: Corrected delegate location.
