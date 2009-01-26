@@ -224,7 +224,7 @@ namespace MonoDevelop.SourceEditor
 #endregion
 
 #region MemberDataProvider
-		class MemberDataProvider : DropDownBoxListWindow.IListDataProvider
+		class MemberDataProvider : DropDownBoxListWindow.IListDataProvider, System.Collections.Generic.IComparer<IMember>
 		{
 			ClassQuickFinder parent;
 			List<IMember> memberList = new List<IMember> ();
@@ -240,14 +240,7 @@ namespace MonoDevelop.SourceEditor
 				if (type == null)
 					return;
 				memberList.AddRange (type.Members);
-				memberList.Sort (CompareMembers);
-			}
-			
-			int CompareMembers (IMember x, IMember y)
-			{
-				string nameX = parent.editor.Ambience.GetString (x, OutputFlags.None).ToUpper ();
-				string nameY = parent.editor.Ambience.GetString (y, OutputFlags.None).ToUpper ();
-				return nameX.CompareTo (nameY);
+				memberList.Sort (this);
 			}
 			
 			public int IconCount {
@@ -269,6 +262,13 @@ namespace MonoDevelop.SourceEditor
 			public object GetTag (int n)
 			{
 				return memberList[n];
+			}
+			
+			int System.Collections.Generic.IComparer<IMember>.Compare (IMember x, IMember y)
+			{
+				string nameX = parent.editor.Ambience.GetString (x, OutputFlags.None);
+				string nameY = parent.editor.Ambience.GetString (y, OutputFlags.None);
+				return String.Compare (nameX, nameY, StringComparison.OrdinalIgnoreCase);
 			}
 		}
 		
@@ -321,7 +321,7 @@ namespace MonoDevelop.SourceEditor
 #endregion
 
 #region TypeDataProvider
-		class TypeDataProvider : DropDownBoxListWindow.IListDataProvider
+		class TypeDataProvider : DropDownBoxListWindow.IListDataProvider, System.Collections.Generic.IComparer<IType>
 		{
 			ClassQuickFinder parent;
 			List<IType> typeList = new List<IType> ();
@@ -343,12 +343,7 @@ namespace MonoDevelop.SourceEditor
 					foreach (IType innerType in type.InnerTypes)
 						types.Push (innerType);
 				}
-				typeList.Sort (CompareTypes);
-			}
-			
-			static int CompareTypes (IType x, IType y)
-			{
-				return x.Name.ToUpper ().CompareTo (y.Name.ToUpper ());
+				typeList.Sort (this);
 			}
 			
 			public int IconCount {
@@ -371,7 +366,13 @@ namespace MonoDevelop.SourceEditor
 			{
 				return typeList[n];
 			}
+			
+			int System.Collections.Generic.IComparer<IType>.Compare (IType x, IType y)
+			{
+				return String.Compare (x.Name, y.Name, StringComparison.OrdinalIgnoreCase);
+			}
 		}
+		
 		
 		IType UpdateTypeCombo (int line, int column)
 		{

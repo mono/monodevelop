@@ -1,3 +1,8 @@
+2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.SourceEditor/ClassQuickFinder.cs: Use a faster sort - the
+	one used in the completion list.
+
 2009-01-24  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/ClassQuickFinder.cs: Type & member list is
