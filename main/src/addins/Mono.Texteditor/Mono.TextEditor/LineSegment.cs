@@ -45,9 +45,9 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public ReadOnlyCollection<TextMarker> Markers {
+		public IEnumerable<TextMarker> Markers {
 			get {
-				return markers != null ? markers.AsReadOnly () : null;
+				return markers != null ? markers : null;
 			}
 		}
 				

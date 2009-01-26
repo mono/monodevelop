@@ -130,8 +130,7 @@ namespace Mono.TextEditor
 				int curColor  = -1;
 				do {
 					line = iter.Current;
-					Chunk[] chunks = mode.GetChunks (doc, style, line, line.Offset, line.Offset + line.EditableLength);
-					foreach (Chunk chunk in chunks) {
+					for (Chunk chunk = mode.GetChunks (doc, style, line, line.Offset, line.Offset + line.EditableLength); chunk != null; chunk = chunk.Next) {
 						int start = System.Math.Max (selection.Offset, chunk.Offset);
 						int end   = System.Math.Min (chunk.EndOffset, selection.EndOffset);
 						if (start < end) {

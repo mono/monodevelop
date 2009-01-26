@@ -642,8 +642,10 @@ namespace MonoDevelop.CSharpBinding
 			
 			result.Append ("class Wrapper {");
 			if (editor != null) {
-				result.Append (this.editor.GetText (this.editor.GetPositionFromLineColumn (startLine, 0),
-				                                    this.editor.GetPositionFromLineColumn (endLine, this.editor.GetLineLength (endLine))));
+				int endPos = this.editor.GetPositionFromLineColumn (endLine, this.editor.GetLineLength (endLine));
+				if (endPos < 0)
+					endPos = this.editor.TextLength;
+				result.Append (this.editor.GetText (this.editor.GetPositionFromLineColumn (startLine, 0), endPos));
 			} else {
 				Mono.TextEditor.Document doc = new Mono.TextEditor.Document ();
 				doc.Text = File.ReadAllText (fileName) ?? "";

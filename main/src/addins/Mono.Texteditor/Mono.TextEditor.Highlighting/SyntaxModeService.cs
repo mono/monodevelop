@@ -142,7 +142,7 @@ namespace Mono.TextEditor.Highlighting
 		
 		public static void ScanSpans (Document doc, Rule rule, Stack<Span> spanStack, int start, int end)
 		{
-			Dictionary<char, List<Span>> spanTree = rule != null ? rule.spanStarts : null;
+			Dictionary<char, Span[]> spanTree = rule != null ? rule.spanStarts : null;
 			int endOffset = 0;
 			end = System.Math.Min (end, doc.Length);
 			Span curSpan = spanStack.Count > 0 ? spanStack.Peek () : null;
@@ -259,7 +259,7 @@ namespace Mono.TextEditor.Highlighting
 			
 			protected void ScanSpansThreaded (Document doc, Rule rule, Stack<Span> spanStack, int start, int end)
 			{
-				Dictionary<char, List<Span>> spanTree = rule != null ? rule.spanStarts : null;
+				Dictionary<char, Span[]> spanTree = rule != null ? rule.spanStarts : null;
 				int endOffset = 0;
 				end = System.Math.Min (end, doc.Length);
 				Span curSpan = spanStack.Count > 0 ? spanStack.Peek () : null;

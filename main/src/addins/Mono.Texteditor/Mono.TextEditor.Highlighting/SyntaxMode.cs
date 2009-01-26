@@ -47,9 +47,9 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 		
-		public ReadOnlyCollection<Rule> Rules {
+		public IEnumerable<Rule> Rules {
 			get {
-				return rules.AsReadOnly ();
+				return rules;
 			}
 		}
 		
@@ -57,7 +57,7 @@ namespace Mono.TextEditor.Highlighting
 		{
 		}
 		
-		public virtual Chunk[] GetChunks (Document doc, Style style, LineSegment line, int offset, int length)
+		public virtual Chunk GetChunks (Document doc, Style style, LineSegment line, int offset, int length)
 		{
 			return new ChunkParser (doc, style, this, line).GetChunks (offset, length);
 		}
@@ -82,8 +82,7 @@ namespace Mono.TextEditor.Highlighting
 			while (curOffset < offset + length && curOffset < doc.Length) {
 				LineSegment line = doc.GetLineByOffset (curOffset);
 				int toOffset = System.Math.Min (line.Offset + line.EditableLength, offset + length);
-				Chunk[] chunks = GetChunks (doc, style, line, curOffset, toOffset - curOffset);
-				foreach (Chunk chunk in chunks) {
+				for (Chunk chunk = GetChunks (doc, style, line, curOffset, toOffset - curOffset); chunk != null; chunk = chunk.Next) {
 					result.Append("<span foreground=\"");
 					result.Append(String.Format ("#{0:X2}{1:X2}{2:X2}", 
 					                             chunk.Style.Color.Red   >> 8,
@@ -137,7 +136,7 @@ namespace Mono.TextEditor.Highlighting
 			readonly ChunkStyle defaultStyle;
 			List<Chunk> result = new List<Chunk> ();
 			Dictionary<char, Rule.Pair<Keywords, object>> tree;
-			Dictionary<char, List<Span>> spanTree;
+			Dictionary<char, Span[]> spanTree;
 			Rule.Pair<Keywords, object> pair     = null;
 			
 			Span curSpan;
@@ -152,15 +151,38 @@ namespace Mono.TextEditor.Highlighting
 				defaultStyle = new Mono.TextEditor.ChunkStyle (style.Default);
 			}
 			
+			Chunk startChunk = null;
+			Chunk endChunk;
+			void AddRealChunk (Chunk chunk)
+			{
+				const int MaxChunkLength = 80;
+				int divisor = chunk.Length / MaxChunkLength;
+				int reminder = chunk.Length % MaxChunkLength;
+				for (int i = 0; i < divisor; i++) {
+					Chunk newChunk = new Chunk (chunk.Offset + i * MaxChunkLength, MaxChunkLength, chunk.Style);
+					if (startChunk == null)
+						startChunk = endChunk = newChunk;
+					else 
+						endChunk = endChunk.Next = newChunk;
+				}
+				if (reminder > 0) {
+					Chunk newChunk = new Chunk (chunk.Offset + divisor * MaxChunkLength, reminder, chunk.Style);
+					if (startChunk == null)
+						startChunk = endChunk = newChunk;
+					else 
+						endChunk = endChunk.Next = newChunk;
+				}
+			}
+			
 			void AddChunk (ref Chunk curChunk, int length, ChunkStyle style)
 			{
 				if (curChunk.Length > 0) {
-					result.Add (curChunk);
+					AddRealChunk (curChunk);
 					curChunk = new Chunk (curChunk.EndOffset, 0, defaultStyle);
 				}
 				curChunk.Style = style;
 				curChunk.Length = length;
-				result.Add (curChunk);
+				AddRealChunk (curChunk);
 				curChunk = new Chunk (curChunk.EndOffset, 0, defaultStyle);
 				curChunk.Style = GetSpanStyle ();
 			}
@@ -240,13 +262,14 @@ namespace Mono.TextEditor.Highlighting
 			}
 			
 			int wordOffset =  0; 
-			
+
 			Chunk curChunk;
 			int maxEnd;
 			
-			public virtual Chunk[] GetChunks (int offset, int length)
+			public virtual Chunk GetChunks (int offset, int length)
 			{
 				curRule = mode;
+				startChunk = null;
 				this.ruleStart = offset;
 				spanStack = line.StartSpan != null ? new Stack<Span> (line.StartSpan) : new Stack<Span> ();
 				SyntaxModeService.ScanSpans (doc, curRule, spanStack, line.Offset, offset);
@@ -317,7 +340,9 @@ namespace Mono.TextEditor.Highlighting
 					}
 					if (spanTree != null && spanTree.ContainsKey (ch)) {
 						bool found = false;
-						foreach (Span span in spanTree[ch]) {
+						Span[] spanList = spanTree[ch];
+						for (int l = 0; l < spanList.Length; l++) {
+							Span span = spanList[l];
 							bool mismatch = false;
 							for (int j = 1; j < span.Begin.Length; j++) {
 								if (i + j >= doc.Length || span.Begin [j] != doc.GetCharAt (i + j)) {
@@ -359,18 +384,14 @@ namespace Mono.TextEditor.Highlighting
 						isNoKeyword = false;
 					}
 					
-					// HACK: Add '&& (Char.IsDigit (ch) || ch == '.')' for extra speedup
-					if (!isNoKeyword && wordOffset == 0) {
+					if (!isNoKeyword && wordOffset == 0 && curRule.HasMatches) {
 						Match foundMatch = null;
-						int   foundMatchLength = -1;
-						string matchStr = str.Substring (textOffset);
+						int   foundMatchLength = 0;
 						foreach (Match ruleMatch in curRule.Matches) {
-							System.Text.RegularExpressions.Match match = ruleMatch.Regex.Match (matchStr);
-							if (match.Success) {
-								if (foundMatch == null || foundMatchLength < match.Length) {
-									foundMatch = ruleMatch;
-									foundMatchLength = match.Length;
-								}
+							int matchLength = ruleMatch.TryMatch (str, textOffset);
+							if (foundMatchLength < matchLength) {
+								foundMatch = ruleMatch;
+								foundMatchLength = matchLength;
 							}
 						}
 						if (foundMatch != null) {
@@ -404,10 +425,10 @@ namespace Mono.TextEditor.Highlighting
 				}
 				
 				if (curChunk.Length > 0) 
-					result.Add (curChunk);
+					AddRealChunk (curChunk);
 				
 				SetSpan (maxEnd);
-				return result.ToArray ();
+				return startChunk;
 			}
 		}
 		
@@ -468,6 +489,7 @@ namespace Mono.TextEditor.Highlighting
 		new public static SyntaxMode Read (XmlReader reader)
 		{
 			SyntaxMode result = new SyntaxMode ();
+			List<Match> matches = new List<Match> ();
 			XmlReadHelper.ReadList (reader, Node, delegate () {
 				switch (reader.LocalName) {
 				case Node:
@@ -482,8 +504,9 @@ namespace Mono.TextEditor.Highlighting
 					result.rules.Add (Rule.Read (reader));
 					return true;
 				}
-				return result.ReadNode (reader);
+				return result.ReadNode (reader, matches);
 			});
+			result.matches = matches.ToArray ();
 			result.SetupSpanTree ();
 			result.SetupParseTree ();
 			return result;

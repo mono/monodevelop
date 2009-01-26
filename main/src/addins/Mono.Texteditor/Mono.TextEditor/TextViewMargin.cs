@@ -182,8 +182,7 @@ namespace Mono.TextEditor
 		internal protected override void OptionsChanged ()
 		{
 			DisposeGCs ();
-			gc = new Gdk.GC (textEditor.GdkWindow);
-			caretGc = new Gdk.GC (textEditor.GdkWindow);
+			
 			tabMarker.FontDescription = 
 			spaceMarker.FontDescription = 
 			eolMarker.FontDescription = 
@@ -197,9 +196,33 @@ namespace Mono.TextEditor
 		
 		void DisposeGCs ()
 		{
+			System.Console.WriteLine("DisposeGCs");
 			ShowTooltip (null, Gdk.Rectangle.Zero);
-			gc = gc.Kill ();
-			caretGc = caretGc.Kill ();
+			//gc = gc.Kill ();
+			foreach (Gdk.GC gc in gcDictionary.Values) {
+				gc.Kill ();
+			}
+			gcDictionary.Clear ();
+		}
+		//Gdk.GC gc = null;
+		Dictionary<ulong, Gdk.GC> gcDictionary = new Dictionary<ulong, Gdk.GC> ();
+		Gdk.GC GetGC (Color color)
+		{
+			/*if (gc == null)
+				gc = new Gdk.GC (textEditor.GdkWindow);
+			gc.RgbFgColor = color;
+			return gc;*/
+			Gdk.GC result = null;
+			// color.Pixel doesn't work
+			ulong colorId = (ulong)color.Red * (1 << 32) + (ulong)color.Blue * (1 << 16) + (ulong)color.Green;
+			if (gcDictionary.TryGetValue (colorId, out result)) {
+				result.ClipRectangle = clipRectangle;
+				return result;
+			}
+			result = new Gdk.GC (textEditor.GdkWindow);
+			result.RgbFgColor = color;
+			gcDictionary.Add (colorId, result);
+			return result;
 		}
 		
 		public override void Dispose ()
@@ -266,25 +289,26 @@ namespace Mono.TextEditor
 				return;
 			if (Settings.Default.CursorBlink && (!Caret.IsVisible || !caretBlink)) 
 				return;
-			caretGc.RgbFgColor = ColorStyle.Caret;
+			
 			if (Caret.IsInInsertMode) {
 				if (caretX < this.XOffset)
 					return;
-				win.DrawLine (caretGc, caretX, caretY, caretX, caretY + LineHeight);
+				clipRectangle = new Gdk.Rectangle (caretX, caretY, 1, LineHeight);
+				win.DrawLine (GetGC (ColorStyle.Caret), caretX, caretY, caretX, caretY + LineHeight);
 			} else {
 				if (caretX + this.charWidth < this.XOffset)
 					return;
-				win.DrawRectangle (caretGc, true, new Gdk.Rectangle (caretX, caretY, this.charWidth, LineHeight));
+				clipRectangle = new Gdk.Rectangle (caretX, caretY, this.charWidth, LineHeight);
+				win.DrawRectangle (GetGC (ColorStyle.Caret), true, new Gdk.Rectangle (caretX, caretY, this.charWidth, LineHeight));
 				layout.SetText (caretChar.ToString ());
-				caretGc.RgbFgColor = ColorStyle.CaretForeground;
-				win.DrawLayout (caretGc, caretX, caretY, layout);
+				win.DrawLayout (GetGC (ColorStyle.CaretForeground), caretX, caretY, layout);
 			}
 		}
 		
-		void DrawLinePart (Gdk.Drawable win, LineSegment line, int offset, int length, ref int xPos, int y)
+		void DrawLinePart (Gdk.Drawable win, LineSegment line, int offset, int length, ref int xPos, int y, int maxX)
 		{
 			SyntaxMode mode = Document.SyntaxMode != null && textEditor.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : SyntaxMode.Default;
-			Chunk[] chunks = mode.GetChunks (Document, textEditor.ColorStyle, line, offset, length);
+			
 			int selectionStart = -1;
 			int selectionEnd   = -1;
 			if (textEditor.IsSomethingSelected) {
@@ -293,8 +317,9 @@ namespace Mono.TextEditor
 				selectionEnd   = segment.EndOffset;
 			}
 			int visibleColumn = 0;
-			
-			foreach (Chunk chunk in chunks) {
+			for (Chunk chunk = mode.GetChunks (Document, textEditor.ColorStyle, line, offset, length); chunk != null; chunk = chunk.Next) {
+				if (xPos >= maxX)
+					break;
 				if (chunk.Offset >= selectionStart && chunk.EndOffset <= selectionEnd) {
 					DrawStyledText (win, line, true, chunk, ref visibleColumn, ref xPos, y, chunk.Offset, chunk.EndOffset);
 				} else if (chunk.Offset >= selectionStart && chunk.Offset < selectionEnd && chunk.EndOffset > selectionEnd) {
@@ -307,10 +332,10 @@ namespace Mono.TextEditor
 					DrawStyledText (win, line, false, chunk, ref visibleColumn, ref xPos, y, chunk.Offset, selectionStart);
 					DrawStyledText (win, line, true, chunk, ref visibleColumn, ref xPos, y, selectionStart, selectionEnd);
 					DrawStyledText (win, line, false, chunk, ref visibleColumn, ref xPos, y, selectionEnd, chunk.EndOffset);
-				} else 
+				} else {
 					DrawStyledText (win, line, false, chunk, ref visibleColumn, ref xPos, y, chunk.Offset, chunk.EndOffset);
+				}
 			}
-			
 			if (Caret.Offset == offset + length) 
 				SetVisibleCaretPosition (win, ' ', xPos, y);
 		}
@@ -322,7 +347,6 @@ namespace Mono.TextEditor
 			bool drawBg   = true;
 			int oldxPos = xPos;
 			int startOffset = curOffset - wordBuilder.Length;
-				
 			if (line.Markers != null) {
 				foreach (TextMarker marker in line.Markers)  {
 					IBackgroundMarker bgMarker = marker as IBackgroundMarker;
@@ -358,7 +382,7 @@ namespace Mono.TextEditor
 					s = offset - startOffset;
 					if (s < wordBuilder.Length) {
 						Gdk.Color bgc = style.TransparentBackround ? defaultBgColor : style.BackgroundColor;
-						DrawText (win, text.Substring (s, wordBuilder.Length - s), style.Color, drawBg, bgc, ref xPos, y);
+						DrawText (win, s > 0 ? text.Substring (s, wordBuilder.Length - s) : text, style.Color, drawBg, bgc, ref xPos, y);
 					}
 				}
 			}
@@ -373,10 +397,11 @@ namespace Mono.TextEditor
 		
 		ISegment GetFirstSearchResult (int startOffset, int endOffset)
 		{
-			if (startOffset < endOffset) {
+			if (startOffset < endOffset && this.selectedRegions.Count > 0) {
 				ISegment region = new Segment (startOffset, endOffset - startOffset);
 				foreach (ISegment segment in this.selectedRegions) {
-					if (segment.Contains (startOffset) || segment.Contains (endOffset) || 
+					if (segment.Contains (startOffset) || 
+					    segment.Contains (endOffset) ||
 					    region.Contains (segment)) {
 						return segment;
 					}
@@ -454,14 +479,10 @@ namespace Mono.TextEditor
 						width = cWidth;
 						if (drawBg) {
 							Gdk.Rectangle bracketMatch = new Gdk.Rectangle (xPos, y, cWidth - 1, cHeight - 1);
-							gc.RgbFgColor = selected ? this.ColorStyle.SelectedBg : this.ColorStyle.BracketHighlightBg;
-							win.DrawRectangle (gc, true, bracketMatch);
-							gc.RgbFgColor = this.ColorStyle.BracketHighlightRectangle;
-							win.DrawRectangle (gc, false, bracketMatch);
+							win.DrawRectangle (GetGC (selected ? this.ColorStyle.SelectedBg : this.ColorStyle.BracketHighlightBg), true, bracketMatch);
+							win.DrawRectangle (GetGC (this.ColorStyle.BracketHighlightRectangle), false, bracketMatch);
 						}
-						
-						gc.RgbFgColor = selected ? ColorStyle.SelectedFg : style.Color;
-						win.DrawLayout (gc, xPos, y, layout);
+						win.DrawLayout (GetGC (selected ? ColorStyle.SelectedFg : style.Color), xPos, y, layout);
 					}
 					if (line.Markers != null) {
 						foreach (TextMarker marker in line.Markers) {
@@ -566,33 +587,28 @@ namespace Mono.TextEditor
 			if (drawBg) 
 				DrawRectangleWithRuler (win, this.XOffset, new Gdk.Rectangle (xPos, y, width, height), backgroundColor);
 			
-			gc.RgbFgColor = foreColor;
-			win.DrawLayout (gc, xPos, y, layout);
+			win.DrawLayout (GetGC (foreColor), xPos, y, layout);
 			xPos += width;
 		}
 		
 		void DrawEolMarker (Gdk.Drawable win, bool selected, int xPos, int y)
 		{
-			gc.RgbFgColor = selected ? ColorStyle.SelectedFg : ColorStyle.WhitespaceMarker;
-			win.DrawLayout (gc, xPos, y, eolMarker);
+			win.DrawLayout (GetGC (selected ? ColorStyle.SelectedFg : ColorStyle.WhitespaceMarker), xPos, y, eolMarker);
 		}
 		
 		void DrawSpaceMarker (Gdk.Drawable win, bool selected, int xPos, int y)
 		{
-			gc.RgbFgColor = selected ? ColorStyle.SelectedFg : ColorStyle.WhitespaceMarker;
-			win.DrawLayout (gc, xPos, y, spaceMarker);
+			win.DrawLayout (GetGC (selected ? ColorStyle.SelectedFg : ColorStyle.WhitespaceMarker), xPos, y, spaceMarker);
 		}
 		
 		void DrawTabMarker (Gdk.Drawable win, bool selected, int xPos, int y)
 		{
-			gc.RgbFgColor = selected ? ColorStyle.SelectedFg : ColorStyle.WhitespaceMarker;
-			win.DrawLayout (gc, xPos, y, tabMarker);
+			win.DrawLayout (GetGC (selected ? ColorStyle.SelectedFg : ColorStyle.WhitespaceMarker), xPos, y, tabMarker);
 		}
 		
 		void DrawInvalidLineMarker (Gdk.Drawable win, int x, int y)
 		{
-			gc.RgbFgColor = ColorStyle.InvalidLineMarker;
-			win.DrawLayout (gc, x, y, invalidLineMarker);
+			win.DrawLayout (GetGC (ColorStyle.InvalidLineMarker), x, y, invalidLineMarker);
 		}
 		
 		Gdk.Color GetBackgroundColor (int offset, bool selected, ChunkStyle style)
@@ -782,10 +798,10 @@ namespace Mono.TextEditor
 			if (line == null || style == null || mode == null)
 				return null;
 			
-			Chunk[] chunks = mode.GetChunks (Document, style, line, line.Offset, line.EditableLength);
-			if (chunks != null) {
+			Chunk chunk = mode.GetChunks (Document, style, line, line.Offset, line.EditableLength);
+			if (chunk != null) {
 				int offset = Document.LocationToOffset (VisualToDocumentLocation (args.X, args.Y));
-				foreach (Chunk chunk in chunks) {
+				for (; chunk != null; chunk = chunk.Next) {
 					if (chunk.Offset <= offset && offset < chunk.EndOffset) 
 						return chunk.Style != null ? chunk.Style.Link : null;
 				}
@@ -870,7 +886,7 @@ namespace Mono.TextEditor
 			SyntaxMode mode = Document.SyntaxMode != null && this.textEditor.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : SyntaxMode.Default;
 			int curColumn = 0;
 			int visibleColumn = 0;
-			foreach (Chunk chunk in mode.GetChunks (Document, this.ColorStyle, line, line.Offset, line.EditableLength)) {
+			for (Chunk chunk = mode.GetChunks (Document, this.ColorStyle, line, line.Offset, line.EditableLength); chunk != null; chunk = chunk.Next) {
 				for (int i = 0; i < chunk.Length; i++) {
 					int delta;
 					char ch = chunk.GetCharAt (Document, chunk.Offset + i);
@@ -923,15 +939,14 @@ namespace Mono.TextEditor
 			                  (byte)(((byte)color.Blue * 19) / 20));
 		}
 		
-		Gdk.GC gc, caretGc;
 		void DrawRectangleWithRuler (Gdk.Drawable win, int x, Gdk.Rectangle area, Gdk.Color color)
 		{
-			gc.RgbFgColor = color;
+			Gdk.GC gc = GetGC (color);
 			if (textEditor.Options.ShowRuler) {
 				int divider = System.Math.Max (area.Left, System.Math.Min (x + rulerX, area.Right));
 				if (divider < area.Right) {
 					win.DrawRectangle (gc, true, new Rectangle (area.X, area.Y, divider - area.X, area.Height));
-					gc.RgbFgColor = DimColor (color);
+					gc = GetGC (DimColor (color));
 					win.DrawRectangle (gc, true, new Rectangle (divider, area.Y, area.Right - divider, area.Height));
 					return;
 				}
@@ -988,7 +1003,7 @@ namespace Mono.TextEditor
 		
 		List<ISegment> selectedRegions = new List<ISegment> ();
 		Gdk.Color      defaultBgColor;
-		
+		Gdk.Rectangle  clipRectangle;
 		internal protected override void Draw (Gdk.Drawable win, Gdk.Rectangle area, int lineNr, int x, int y)
 		{
 //			int visibleLine = y / this.LineHeight;
@@ -996,7 +1011,8 @@ namespace Mono.TextEditor
 			layout.Alignment = Pango.Alignment.Left;
 			LineSegment line = lineNr < Document.LineCount ? Document.GetLine (lineNr) : null;
 			int xStart = System.Math.Max (area.X, XOffset);
-			gc.ClipRectangle = new Gdk.Rectangle (xStart, y, area.Right - xStart, LineHeight);
+			//gc.ClipRectangle =
+			clipRectangle = new Gdk.Rectangle (xStart, y, area.Right - xStart, LineHeight);
 			
 			if (textEditor.Options.HighlightCaretLine && Caret.Line == lineNr) {
 				defaultBgColor = ColorStyle.LineMarker;
@@ -1014,8 +1030,7 @@ namespace Mono.TextEditor
 					DrawInvalidLineMarker (win, xPos, y);
 				}
 				if (textEditor.Options.ShowRuler) { // warning: code duplication, look at the method end.
-					gc.RgbFgColor = ColorStyle.Ruler;
-					win.DrawLine (gc, x + rulerX, y, x + rulerX, y + LineHeight); 
+					win.DrawLine (GetGC (ColorStyle.Ruler), x + rulerX, y, x + rulerX, y + LineHeight); 
 				}
 				return;
 			}
@@ -1043,21 +1058,17 @@ namespace Mono.TextEditor
 //					win.DrawLayout (gc, xPos, y, layout);
 //					layout.GetPixelSize (out width, out height);
 					
-					DrawLinePart (win, line, offset, foldOffset - offset, ref xPos, y);
+					DrawLinePart (win, line, offset, foldOffset - offset, ref xPos, y, area.Right);
 //					xPos += width;
 					offset = folding.EndLine.Offset + folding.EndColumn;
 					
 					layout.SetText (folding.Description);
 					layout.GetPixelSize (out width, out height);
 					bool isFoldingSelected = textEditor.IsSomethingSelected && textEditor.SelectionRange.Contains (folding);
-					gc.RgbFgColor = isFoldingSelected ? ColorStyle.SelectedBg : defaultBgColor;
 					Rectangle foldingRectangle = new Rectangle (xPos, y, width - 1, this.LineHeight - 1);
-					win.DrawRectangle (gc, true, foldingRectangle);
-					gc.RgbFgColor = isFoldingSelected ? ColorStyle.SelectedFg : ColorStyle.FoldLine;
-					win.DrawRectangle (gc, false, foldingRectangle);
-					
-					gc.RgbFgColor = isFoldingSelected ? ColorStyle.SelectedFg : ColorStyle.FoldLine;
-					win.DrawLayout (gc, xPos, y, layout);
+					win.DrawRectangle (GetGC (isFoldingSelected ? ColorStyle.SelectedBg : defaultBgColor), true, foldingRectangle);
+					win.DrawRectangle (GetGC (isFoldingSelected ? ColorStyle.SelectedFg : ColorStyle.FoldLine), false, foldingRectangle);
+					win.DrawLayout (GetGC (isFoldingSelected ? ColorStyle.SelectedFg : ColorStyle.FoldLine), xPos, y, layout);
 					if (caretOffset == foldOffset)
 						SetVisibleCaretPosition (win, folding.Description[0], xPos, y);
 					
@@ -1078,7 +1089,7 @@ namespace Mono.TextEditor
 			
 			// Draw remaining line
 			if (line.EndOffset - offset > 0)
-				DrawLinePart (win, line, offset, line.Offset + line.EditableLength - offset, ref xPos, y);
+				DrawLinePart (win, line, offset, line.Offset + line.EditableLength - offset, ref xPos, y, area.Right);
 			
 			bool isEolSelected = textEditor.IsSomethingSelected && textEditor.SelectionRange.Contains (line.Offset + line.EditableLength);
 			
@@ -1090,8 +1101,7 @@ namespace Mono.TextEditor
 				DrawEolMarker (win, isEolSelected, xPos, y);
 			
 			if (textEditor.Options.ShowRuler) { // warning: code duplication, scroll up.
-				gc.RgbFgColor = ColorStyle.Ruler;
-				win.DrawLine (gc, x + rulerX, y, x + rulerX, y + LineHeight); 
+				win.DrawLine (GetGC (ColorStyle.Ruler), x + rulerX, y, x + rulerX, y + LineHeight); 
 			}
 			
 			if (caretOffset == line.Offset + line.EditableLength)
@@ -1132,12 +1142,12 @@ namespace Mono.TextEditor
 //				lineArea = new Gdk.Rectangle (margin.XOffset, y, margin.textEditor.Allocation.Width - margin.XOffset, margin.LineHeight);
 			}
 			
-			Chunk[] chunks;
+			Chunk chunks;
 			void ConsumeChunks ()
 			{
-				foreach (Chunk chunk in chunks) {
-					for (int o = chunk.Offset; o < chunk.EndOffset; o++) {
-						char ch = chunk.GetCharAt (margin.Document, o);
+				for (;chunks != null; chunks = chunks.Next) {
+					for (int o = chunks.Offset; o < chunks.EndOffset; o++) {
+						char ch = chunks.GetCharAt (margin.Document, o);
 						int delta = 0;
 						if (ch == '\t') {
 							int newColumn = GetNextTabstop (margin.textEditor.GetTextEditorData (), visibleColumn);
@@ -1147,8 +1157,8 @@ namespace Mono.TextEditor
 							delta = margin.charWidth;
 							visibleColumn++;
 						} else {
-							measureLayout.FontDescription.Weight = chunk.Style.GetWeight (margin.DefaultWeight);
-							measureLayout.FontDescription.Style =  chunk.Style.GetStyle (margin.DefaultStyle);
+							measureLayout.FontDescription.Weight = chunks.Style.GetWeight (margin.DefaultWeight);
+							measureLayout.FontDescription.Style =  chunks.Style.GetStyle (margin.DefaultStyle);
 							
 							measureLayout.SetText (ch.ToString ());
 							int height;

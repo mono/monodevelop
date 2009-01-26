@@ -240,6 +240,14 @@ namespace MonoDevelop.SourceEditor
 				if (type == null)
 					return;
 				memberList.AddRange (type.Members);
+				memberList.Sort (CompareMembers);
+			}
+			
+			int CompareMembers (IMember x, IMember y)
+			{
+				string nameX = parent.editor.Ambience.GetString (x, OutputFlags.None).ToUpper ();
+				string nameY = parent.editor.Ambience.GetString (y, OutputFlags.None).ToUpper ();
+				return nameX.CompareTo (nameY);
 			}
 			
 			public int IconCount {
@@ -335,6 +343,12 @@ namespace MonoDevelop.SourceEditor
 					foreach (IType innerType in type.InnerTypes)
 						types.Push (innerType);
 				}
+				typeList.Sort (CompareTypes);
+			}
+			
+			static int CompareTypes (IType x, IType y)
+			{
+				return x.Name.ToUpper ().CompareTo (y.Name.ToUpper ());
 			}
 			
 			public int IconCount {
