@@ -78,7 +78,7 @@ namespace MonoDevelop.CSharpBinding
 			if (resolveResult.CallingType != null) {
 				IType resolvedType = resolver.Dom.GetType (resolveResult.ResolvedType);
 				foreach (IReturnType rt in resolveResult.CallingType.BaseTypes) {
-					IType baseType = resolver.Dom.SearchType (new SearchTypeRequest (resolver.Unit, rt));
+					IType baseType = resolver.Dom.SearchType (new SearchTypeRequest (resolver.Unit, rt, resolver.CallingType));
 					bool includeProtected = DomType.IncludeProtected (resolver.Dom, baseType, resolvedType);
 					
 					if (baseType != null) {

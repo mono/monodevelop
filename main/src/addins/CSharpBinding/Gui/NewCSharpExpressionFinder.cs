@@ -44,7 +44,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			this.projectContent = projectContent;
 		}
 		
-		public ExpressionContext FindExactContextForNewCompletion(TextEditor editor, ICompilationUnit unit, string fileName)
+		public ExpressionContext FindExactContextForNewCompletion(TextEditor editor, ICompilationUnit unit, string fileName, IType callingType)
 		{
 			// find expression on left hand side of the assignment
 			string documentToCursor = editor.GetText (0, editor.CursorPosition);
@@ -74,7 +74,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			if (firstExprs.Expression != null) {
 				IReturnType unresolvedReturnType = NRefactoryResolver.ParseReturnType (firstExprs);
 				if (unresolvedReturnType != null) {
-					IType resolvedType = projectContent.SearchType (new SearchTypeRequest (unit, unresolvedReturnType));
+					IType resolvedType = projectContent.SearchType (new SearchTypeRequest (unit, unresolvedReturnType, callingType));
 					return ExpressionContext.TypeDerivingFrom (resolvedType != null ? new DomReturnType (resolvedType) : null, unresolvedReturnType, true);
 				}
 				

@@ -156,9 +156,7 @@ namespace MonoDevelop.CSharpBinding
 					posAbove.Line--;
 					callingMember = GetMemberAt (callingType, posAbove);
 				}
-				IType typeFromDatabase = dom.GetType (callingType.FullName, new DomReturnType (callingType).GenericArguments);
-				if (typeFromDatabase != null)
-					callingType = typeFromDatabase;
+				callingType = dom.ResolveType (callingType);
 			}
 			//System.Console.WriteLine("CallingMember: " + callingMember);
 			if (callingMember != null && !setupLookupTableVisitor ) {
@@ -398,10 +396,10 @@ namespace MonoDevelop.CSharpBinding
 
 		bool TryResolve (ICompilationUnit unit, IReturnType type, out DomReturnType result)
 		{
-			IType resolvedType = dom.SearchType (new SearchTypeRequest (unit, type));
+			IType resolvedType = dom.SearchType (new SearchTypeRequest (unit, type, callingType));
 			//System.Console.WriteLine(type +" resolved to: " +resolvedType);
 			if (resolvedType != null) {
-				result = new DomReturnType (dom.CreateInstantiatedGenericType (resolvedType, type.GenericArguments));
+				result = new DomReturnType (resolvedType);
 				result.ArrayDimensions = type.ArrayDimensions;
 				for (int i = 0; i < result.ArrayDimensions; i++) {
 					result.SetDimension (i, type.GetDimension (i));

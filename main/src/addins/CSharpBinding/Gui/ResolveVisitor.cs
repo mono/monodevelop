@@ -84,7 +84,7 @@ namespace MonoDevelop.CSharpBinding
 			result.ResolvedType = type;
 			result.UnresolvedType = type;
 			if (unit != null && resolver.Dom != null && type != null && type.Type == null) {
-				SearchTypeRequest req = new SearchTypeRequest (unit, type);
+				SearchTypeRequest req = new SearchTypeRequest (unit, type, resolver.CallingType);
 				req.CallingType = resolver.CallingType;
 				IType searchedType = resolver.Dom.SearchType (req);
 				if (searchedType != null)
@@ -388,7 +388,7 @@ namespace MonoDevelop.CSharpBinding
 			if (resolver.CallingType != null) {
 				IType type = null;
 				if (resolver.CallingType.BaseType != null) 
-					type = this.resolver.Dom.SearchType (new SearchTypeRequest (resolver.Unit, resolver.CallingType.BaseType));
+					type = this.resolver.Dom.SearchType (new SearchTypeRequest (resolver.Unit, resolver.CallingType.BaseType, resolver.CallingType));
 				result.UnresolvedType = result.ResolvedType  = type != null ? new DomReturnType (type) : DomReturnType.Object;
 			}
 			return result;
@@ -479,10 +479,6 @@ namespace MonoDevelop.CSharpBinding
 							result.StaticResolve = true;
 						} else {
 							IType searchType = resolver.Dom.GetType (member[0].ReturnType);
-							if (searchType == null)
-								searchType = resolver.Dom.SearchType (new SearchTypeRequest (member[0].DeclaringType.CompilationUnit, member[0].ReturnType));
-							if (searchType == null)
-								searchType = resolver.Dom.SearchType (new SearchTypeRequest (this.resolver.Unit, member[0].ReturnType));
 							result = CreateResult (member[0].DeclaringType.CompilationUnit, searchType != null ? new DomReturnType (searchType) : DomReturnType.Void);
 							((MemberResolveResult)result).ResolvedMember = member[0];
 						}

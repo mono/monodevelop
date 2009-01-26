@@ -1,3 +1,15 @@
+2009-01-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Gui/ResolveVisitor.cs:
+	* Gui/NRefactoryResolver.cs:
+	* Parser/NRefactoryParser.cs:
+	* Gui/NewCSharpExpressionFinder.cs:
+	* Gui/CSharpTextEditorCompletion.cs:
+	* Gui/NRefactoryParameterDataProvider.cs: Provide the calling class in
+	all type queries. It is required to resolve generic arguments.
+
+	* CSharpBinding.mdp: Updated.
+
 2009-01-27  Ankit Jain  <jankit@novell.com>
 
 	Fix bug #352703.
