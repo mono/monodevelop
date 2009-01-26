@@ -136,7 +136,7 @@ namespace Mono.TextEditor.Highlighting
 			readonly ChunkStyle defaultStyle;
 			List<Chunk> result = new List<Chunk> ();
 			Dictionary<char, Rule.Pair<Keywords, object>> tree;
-			Dictionary<char, List<Span>> spanTree;
+			Dictionary<char, Span[]> spanTree;
 			Rule.Pair<Keywords, object> pair     = null;
 			
 			Span curSpan;
@@ -335,8 +335,8 @@ namespace Mono.TextEditor.Highlighting
 					}
 					if (spanTree != null && spanTree.ContainsKey (ch)) {
 						bool found = false;
-						List<Span> spanList = spanTree[ch];
-						for (int l = 0; l < spanList.Count; l++) {
+						Span[] spanList = spanTree[ch];
+						for (int l = 0; l < spanList.Length; l++) {
 							Span span = spanList[l];
 							bool mismatch = false;
 							for (int j = 1; j < span.Begin.Length; j++) {
@@ -484,6 +484,7 @@ namespace Mono.TextEditor.Highlighting
 		new public static SyntaxMode Read (XmlReader reader)
 		{
 			SyntaxMode result = new SyntaxMode ();
+			List<Match> matches = new List<Match> ();
 			XmlReadHelper.ReadList (reader, Node, delegate () {
 				switch (reader.LocalName) {
 				case Node:
@@ -498,8 +499,9 @@ namespace Mono.TextEditor.Highlighting
 					result.rules.Add (Rule.Read (reader));
 					return true;
 				}
-				return result.ReadNode (reader);
+				return result.ReadNode (reader, matches);
 			});
+			result.matches = matches.ToArray ();
 			result.SetupSpanTree ();
 			result.SetupParseTree ();
 			return result;

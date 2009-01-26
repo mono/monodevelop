@@ -40,7 +40,7 @@ namespace Mono.TextEditor.Highlighting
 		
 		protected List<Keywords> keywords = new List<Keywords> ();
 		protected List<Span> spans = new List<Span> ();
-		protected List<Match> matches = new List<Match> ();
+		protected Match[] matches = new Match[0];
 		protected List<Marker> prevMarker = new List<Marker> ();
 		
 		public List<SemanticRule> SemanticRules = new List<SemanticRule> ();
@@ -63,14 +63,14 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 		
-		public IEnumerable<Match> Matches {
+		public Match[] Matches {
 			get {
 				return this.matches;
 			}
 		}
 		public bool HasMatches {
 			get {
-				return this.matches.Count > 0;
+				return this.matches.Length > 0;
 			}
 		}
 
@@ -95,11 +95,11 @@ namespace Mono.TextEditor.Highlighting
 			return String.Format ("[Rule: Name={0}, #Keywords={1}]", name, keywords.Count);
 		}
 		
-		protected bool ReadNode (XmlReader reader)
+		protected bool ReadNode (XmlReader reader, List<Match> matchList)
 		{
 			switch (reader.LocalName) {
 			case Match.Node:
-				this.matches.Add (Match.Read (reader));
+				matchList.Add (Match.Read (reader));
 				return true;
 			case Span.Node:
 			case Span.AltNode:
@@ -131,22 +131,27 @@ namespace Mono.TextEditor.Highlighting
 				return String.Format ("[Pair: o1={0}, o2={1}]", o1, o2);
 			}
 		}
-		public Dictionary<char, List<Span>>             spanStarts = new Dictionary<char, List<Span>> ();
+		public Dictionary<char, Span[]>             spanStarts = new Dictionary<char, Span[]> ();
 		public Dictionary<char, Pair<Keywords, object>> parseTree  = new Dictionary<char, Pair<Keywords, object>> ();
 		
 		protected void SetupSpanTree ()
 		{
+			Dictionary<char, List<Span>> tree = new Dictionary<char, List<Span>> ();
 			foreach (Span span in this.spans) {
-				Dictionary<char, List<Span>> tree = spanStarts;
 				//List<Span> list = null;
 				char start = span.Begin[0];
 				if (!tree.ContainsKey (start))
 					tree.Add (start, new List<Span> ());
 				tree[start].Add (span);
 			}
+			
+			spanStarts.Clear ();
+			foreach (KeyValuePair<char, List<Span>> spans in tree) {
+				spanStarts[spans.Key] = spans.Value.ToArray ();
+			}
 		}
 		
-		void AddToÞarseTree (string key, Keywords value)
+		void AddToParseTree (string key, Keywords value)
 		{
 			Dictionary<char, Pair<Keywords, object>> tree = parseTree;
 			Pair<Keywords, object> pair = null;
@@ -162,7 +167,7 @@ namespace Mono.TextEditor.Highlighting
 		
 		void AddWord (Keywords kw, string word, int i)
 		{
-			AddToÞarseTree (word, kw);
+			AddToParseTree (word, kw);
 			char[] chars = word.ToCharArray ();
 			
 			if (i < word.Length) {
@@ -181,7 +186,7 @@ namespace Mono.TextEditor.Highlighting
 					if (kw.Ignorecase) {
 						AddWord (kw, word.ToLowerInvariant (), 0);
 					} else {
-						AddToÞarseTree (word, kw);
+						AddToParseTree (word, kw);
 					}
 				}
 			}
@@ -193,13 +198,15 @@ namespace Mono.TextEditor.Highlighting
 			Rule result = new Rule ();
 			result.name         = reader.GetAttribute ("name");
 			result.defaultColor = reader.GetAttribute ("color");
+			List<Match> matches = new List<Match> ();
 			XmlReadHelper.ReadList (reader, Node, delegate () {
 				switch (reader.LocalName) {
 				case Node:
 					return true;
 				}
-				return result.ReadNode (reader);
+				return result.ReadNode (reader, matches);
 			});
+			result.matches = matches.ToArray ();
 			result.SetupSpanTree ();
 			result.SetupParseTree ();
 			return result;

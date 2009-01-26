@@ -1,5 +1,12 @@
 2009-01-26  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor.Highlighting/Rule.cs:
+	* Mono.TextEditor.Highlighting/SyntaxMode.cs:
+	* Mono.TextEditor.Highlighting/SyntaxModeService.cs: Reduced memory
+	consumption of syntax highlighting parser.
+
+2009-01-26  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextViewMargin.cs:
 	* Mono.TextEditor/ClipboardActions.cs:
 	* Mono.TextEditor.Highlighting/Chunk.cs:
