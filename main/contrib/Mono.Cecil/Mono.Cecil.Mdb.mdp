@@ -1,4 +1,4 @@
-<Project name="Mono.Cecil.Mdb" fileversion="2.0" newfilesearch="OnLoad" language="C#" clr-version="Net_1_1" ctype="DotNetProject">
+<Project name="Mono.Cecil.Mdb" fileversion="2.0" newfilesearch="OnLoad" language="C#" clr-version="Net_1_1" targetFramework="1.1" ctype="DotNetProject">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
       <Output directory="../../build/bin" assemblyKeyFile="." assembly="Mono.Cecil.Mdb" />
@@ -383,7 +383,6 @@
     <File name="Mono.Cecil.Mdb/Mono.Cecil.MdbOld/MdbReader.cs" subtype="Code" buildaction="Nothing" />
     <File name="Mono.Cecil.Mdb/Mono.Cecil.MdbOld/MdbWriter.cs" subtype="Code" buildaction="Nothing" />
   </Contents>
-  <GtkDesignInfo />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" IsAutotoolsProject="True" RelativeConfigureInPath="../../">
     <BuildFilesVar />
     <DeployFilesVar />

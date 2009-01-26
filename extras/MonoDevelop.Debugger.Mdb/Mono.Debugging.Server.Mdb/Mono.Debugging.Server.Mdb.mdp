@@ -81,7 +81,6 @@
     <ProjectReference type="Assembly" localcopy="True" specificVersion="False" refto="System.Core" />
   </References>
   <Deployment.LinuxDeployData generateScript="False" />
-  <GtkDesignInfo />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile" SyncReferences="True">
     <BuildFilesVar Sync="True" Name="FILES" />
     <DeployFilesVar />

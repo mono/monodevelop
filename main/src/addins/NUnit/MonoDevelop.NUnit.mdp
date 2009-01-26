@@ -95,7 +95,6 @@
     <ProjectReference type="Assembly" localcopy="True" specificVersion="False" refto="lib/nunit.core.interfaces.dll" />
     <ProjectReference type="Assembly" localcopy="True" specificVersion="False" refto="lib/nunit.util.dll" />
   </References>
-  <GtkDesignInfo />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">
     <BuildFilesVar Sync="True" Name="FILES" />
     <DeployFilesVar />

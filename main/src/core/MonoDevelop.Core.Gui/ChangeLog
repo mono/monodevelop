@@ -1,5 +1,9 @@
 2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Core.Gui.mdp: Flush project format changes.
+
+2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Core.Gui.Dialogs/OptionsDialog.cs: Add a hack to work 
 	around broken themes that attach themes to *Panel* widget names.
 

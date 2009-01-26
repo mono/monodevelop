@@ -1,3 +1,9 @@
+2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* CSharpBinding.mdp:
+	* gtk-gui/gui.stetic:
+	* Autotools/Autotools.mdp: Flush project format changes.
+
 2009-01-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Gui/ResolveVisitor.cs:

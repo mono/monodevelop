@@ -1,3 +1,7 @@
+2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Core.mdp: Flush project format changes.
+
 2009-01-22  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Serialization/DataContext.cs:

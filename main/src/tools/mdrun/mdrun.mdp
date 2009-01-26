@@ -23,5 +23,4 @@
     <ProjectReference type="Gac" localcopy="True" specificVersion="False" refto="Mono.Addins.Setup, Version=0.3.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
   </References>
   <Deployment.LinuxDeployData scriptName="mdrun" />
-  <GtkDesignInfo />
 </Project>

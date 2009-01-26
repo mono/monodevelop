@@ -1,3 +1,9 @@
+2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.NUnit.mds:
+	* MonoDevelop.NUnit.mdp:
+	* NUnitRunner/NUnitRunner.mdp: Flush project format changes.
+
 2009-01-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* NUnitRunner/NUnitTestRunner.cs: Make sure that only the provided test

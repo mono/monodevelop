@@ -1,3 +1,7 @@
+2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.mdp: Flush project format changes.
+
 2009-01-21  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs: Fix bug #460162 -

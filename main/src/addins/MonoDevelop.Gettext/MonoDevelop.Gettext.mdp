@@ -91,7 +91,6 @@
     <ProjectReference type="Project" localcopy="True" refto="Mono.TextEditor" />
   </References>
   <Deployment.LinuxDeployData scriptName="monodevelop.gettext" generatePcFile="False" />
-  <GtkDesignInfo />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">
     <BuildFilesVar Sync="True" Name="FILES" />
     <DeployFilesVar />

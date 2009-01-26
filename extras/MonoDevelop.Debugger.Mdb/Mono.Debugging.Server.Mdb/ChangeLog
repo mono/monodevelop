@@ -1,3 +1,7 @@
+2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.Debugging.Server.Mdb.mdp: Flush project format changes.
+
 2008-12-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* TimedEvaluator.cs: Fix build for old mono versions.

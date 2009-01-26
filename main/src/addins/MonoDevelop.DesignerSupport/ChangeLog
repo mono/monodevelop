@@ -1,3 +1,7 @@
+2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.DesignerSupport.mdp: Flush project format changes.
+
 2009-01-09  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:

@@ -1,3 +1,7 @@
+2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* BooBinding.mdp: Flush project format changes.
+
 2008-12-09  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* BooBinding.mdp: Don't require a specific version of Mono.Addins.

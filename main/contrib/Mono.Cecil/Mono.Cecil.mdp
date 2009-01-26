@@ -1,4 +1,4 @@
-<Project name="Mono.Cecil" fileversion="2.0" newfilesearch="OnLoad" language="C#" clr-version="Net_1_1" ctype="DotNetProject">
+<Project name="Mono.Cecil" fileversion="2.0" newfilesearch="OnLoad" language="C#" clr-version="Net_1_1" targetFramework="1.1" ctype="DotNetProject">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
       <Output directory="../../build/bin" assemblyKeyFile="." assembly="Mono.Cecil" />
@@ -384,7 +384,6 @@
     <File name="Mono.CompilerServices.SymbolWriterOld/MonoSymbolWriter.cs" subtype="Code" buildaction="Nothing" />
     <File name="Mono.CompilerServices.SymbolWriterOld/SymbolWriterImpl.cs" subtype="Code" buildaction="Nothing" />
   </Contents>
-  <GtkDesignInfo />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" IsAutotoolsProject="True" RelativeConfigureInPath="../../">
     <BuildFilesVar />
     <DeployFilesVar />

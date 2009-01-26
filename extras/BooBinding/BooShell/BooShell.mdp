@@ -1,4 +1,4 @@
-<Project name="BooShell" fileversion="2.0" language="Boo" clr-version="Net_2_0" UsePartialTypes="False" ctype="DotNetProject">
+<Project name="BooShell" fileversion="2.0" language="Boo" UsePartialTypes="False" clr-version="Net_2_0" targetFramework="2.0" ctype="DotNetProject">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
       <Output directory="../build" assembly="BooShell" />

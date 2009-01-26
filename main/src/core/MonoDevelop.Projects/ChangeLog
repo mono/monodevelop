@@ -1,3 +1,7 @@
+2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.mdp: Flush project format changes.
+
 2009-01-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: Improve support for
