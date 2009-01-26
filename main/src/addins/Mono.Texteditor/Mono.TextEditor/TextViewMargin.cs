@@ -289,13 +289,16 @@ namespace Mono.TextEditor
 				return;
 			if (Settings.Default.CursorBlink && (!Caret.IsVisible || !caretBlink)) 
 				return;
+			
 			if (Caret.IsInInsertMode) {
 				if (caretX < this.XOffset)
 					return;
+				clipRectangle = new Gdk.Rectangle (caretX, caretY, 1, LineHeight);
 				win.DrawLine (GetGC (ColorStyle.Caret), caretX, caretY, caretX, caretY + LineHeight);
 			} else {
 				if (caretX + this.charWidth < this.XOffset)
 					return;
+				clipRectangle = new Gdk.Rectangle (caretX, caretY, this.charWidth, LineHeight);
 				win.DrawRectangle (GetGC (ColorStyle.Caret), true, new Gdk.Rectangle (caretX, caretY, this.charWidth, LineHeight));
 				layout.SetText (caretChar.ToString ());
 				win.DrawLayout (GetGC (ColorStyle.CaretForeground), caretX, caretY, layout);
