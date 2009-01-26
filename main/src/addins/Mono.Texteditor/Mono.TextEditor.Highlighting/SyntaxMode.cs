@@ -151,22 +151,27 @@ namespace Mono.TextEditor.Highlighting
 				defaultStyle = new Mono.TextEditor.ChunkStyle (style.Default);
 			}
 			
-			Chunk startChunk;
+			Chunk startChunk = null;
 			Chunk endChunk;
 			void AddRealChunk (Chunk chunk)
 			{
 				const int MaxChunkLength = 80;
 				int divisor = chunk.Length / MaxChunkLength;
 				int reminder = chunk.Length % MaxChunkLength;
-				if (startChunk == null)
-					endChunk = startChunk = chunk;
 				for (int i = 0; i < divisor; i++) {
-					endChunk = endChunk.Next = new Chunk (chunk.Offset + i * MaxChunkLength, MaxChunkLength, chunk.Style);
+					Chunk newChunk = new Chunk (chunk.Offset + i * MaxChunkLength, MaxChunkLength, chunk.Style);
+					if (startChunk == null)
+						startChunk = endChunk = newChunk;
+					else 
+						endChunk = endChunk.Next = newChunk;
 				}
 				if (reminder > 0) {
-					endChunk = endChunk.Next = new Chunk (chunk.Offset + divisor * MaxChunkLength, reminder, chunk.Style);
+					Chunk newChunk = new Chunk (chunk.Offset + divisor * MaxChunkLength, reminder, chunk.Style);
+					if (startChunk == null)
+						startChunk = endChunk = newChunk;
+					else 
+						endChunk = endChunk.Next = newChunk;
 				}
-				endChunk.Next = null;
 			}
 			
 			void AddChunk (ref Chunk curChunk, int length, ChunkStyle style)
