@@ -339,8 +339,12 @@ namespace MonoDevelop.Core.Gui.Dialogs
 			List<PanelInstance> tabPanels = new List<PanelInstance> ();
 			
 			foreach (PanelInstance pi in page.Panels) {
-				if (pi.Widget == null)
+				if (pi.Widget == null) {
 					pi.Widget = pi.Panel.CreatePanelWidget ();
+					//HACK: work around bug 469427 - broken themes match on widget names
+					if (pi.Widget.Name.IndexOf ("Panel") > 0)
+						pi.Widget.Name = pi.Widget.Name.Replace ("Panel", "_");
+				}
 				else if (pi.Widget.Parent != null)
 					((Gtk.Container) pi.Widget.Parent).Remove (pi.Widget);
 					
