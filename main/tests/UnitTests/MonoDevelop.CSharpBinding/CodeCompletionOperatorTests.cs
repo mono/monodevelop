@@ -66,7 +66,7 @@ class TestClass
 	{
 		A a = new A ();
 		A b = new A ();
-		(a + b).$
+		$(a + b).$
 	}
 }");
 			Assert.IsNotNull (provider);
@@ -98,7 +98,7 @@ class TestClass
 	{
 		A a = new A ();
 		A b = new A ();
-		(a - b).$
+		$(a - b).$
 	}
 }");
 			Assert.IsNotNull (provider);
@@ -130,7 +130,7 @@ class TestClass
 	{
 		A a = new A ();
 		A b = new A ();
-		(a * b).$
+		$(a * b).$
 	}
 }");
 			Assert.IsNotNull (provider);
@@ -162,7 +162,7 @@ class TestClass
 	{
 		A a = new A ();
 		A b = new A ();
-		(a / b).$
+		$(a / b).$
 	}
 }");
 			Assert.IsNotNull (provider);
@@ -194,7 +194,7 @@ class TestClass
 	{
 		A a = new A ();
 		A b = new A ();
-		(a % b).$
+		$(a % b).$
 	}
 }");
 			Assert.IsNotNull (provider);
@@ -226,7 +226,7 @@ class TestClass
 	{
 		A a = new A ();
 		A b = new A ();
-		(a & b).$
+		$(a & b).$
 	}
 }");
 			Assert.IsNotNull (provider);
@@ -258,7 +258,7 @@ class TestClass
 	{
 		A a = new A ();
 		A b = new A ();
-		(a | b).$
+		$(a | b).$
 	}
 }");
 			Assert.IsNotNull (provider);
@@ -290,7 +290,7 @@ class TestClass
 	{
 		A a = new A ();
 		A b = new A ();
-		(a ^ b).$
+		$(a ^ b).$
 	}
 }");
 			Assert.IsNotNull (provider);
@@ -322,7 +322,7 @@ class TestClass
 	{
 		A a = new A ();
 		A b = new A ();
-		(a << b).$
+		$(a << b).$
 	}
 }");
 			Assert.IsNotNull (provider);
@@ -354,7 +354,7 @@ class TestClass
 	{
 		A a = new A ();
 		A b = new A ();
-		(a >> b).$
+		$(a >> b).$
 	}
 }");
 			Assert.IsNotNull (provider);
@@ -386,7 +386,7 @@ class TestClass
 	{
 		A a = new A ();
 		A b = new A ();
-		(a > b).$
+		$(a > b).$
 	}
 }");
 			Assert.IsNotNull (provider);
@@ -418,7 +418,7 @@ class TestClass
 	{
 		A a = new A ();
 		A b = new A ();
-		(a >= b).$
+		$(a >= b).$
 	}
 }");
 			Assert.IsNotNull (provider);
@@ -450,7 +450,7 @@ class TestClass
 	{
 		A a = new A ();
 		A b = new A ();
-		(a == b).$
+		$(a == b).$
 	}
 }");
 			Assert.IsNotNull (provider);
@@ -482,7 +482,7 @@ class TestClass
 	{
 		A a = new A ();
 		A b = new A ();
-		(a != b).$
+		$(a != b).$
 	}
 }");
 			Assert.IsNotNull (provider);
@@ -514,7 +514,7 @@ class TestClass
 	{
 		A a = new A ();
 		A b = new A ();
-		(a < b).$
+		$(a < b).$
 	}
 }");
 			Assert.IsNotNull (provider);
@@ -546,7 +546,7 @@ class TestClass
 	{
 		A a = new A ();
 		A b = new A ();
-		(a <= b).$
+		$(a <= b).$
 	}
 }");
 			Assert.IsNotNull (provider);
@@ -577,7 +577,7 @@ class TestClass
 	public void Test ()
 	{
 		A a = new A ();
-		(+a).$
+		$(+a).$
 	}
 }");
 			Assert.IsNotNull (provider);
@@ -608,7 +608,7 @@ class TestClass
 	public void Test ()
 	{
 		A a = new A ();
-		(-a).$
+		$(-a).$
 	}
 }");
 			Assert.IsNotNull (provider);
@@ -639,7 +639,7 @@ class TestClass
 	public void Test ()
 	{
 		A a = new A ();
-		(!a).$
+		$(!a).$
 	}
 }");
 			Assert.IsNotNull (provider);
@@ -670,7 +670,7 @@ class TestClass
 	public void Test ()
 	{
 		A a = new A ();
-		(~a).$
+		$(~a).$
 	}
 }");
 			Assert.IsNotNull (provider);

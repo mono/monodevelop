@@ -51,7 +51,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 	}
 }
 
-using $
+$using $
 ");
 			Assert.IsNotNull (provider, "provider == null");
 			Assert.IsNotNull (provider.Find ("Test"), "namespace 'Test' not found.");
@@ -66,7 +66,7 @@ using $
 	void Test ()
 	{
 		Test t;
-		t.$
+		$t.$
 	}
 }");
 			Assert.IsNotNull (provider, "provider == null");
@@ -81,7 +81,7 @@ using $
 {
 	void Test ()
 	{
-		new Test ().$
+		$new Test ().$
 	}
 }");
 			Assert.IsNotNull (provider, "provider == null");
@@ -97,7 +97,7 @@ using $
 	void Test ()
 	{
 		object o;
-		((Test)o).$
+		$((Test)o).$
 	}
 }");
 			Assert.IsNotNull (provider, "provider == null");
@@ -112,7 +112,7 @@ using $
 {
 	void Test ()
 	{
-		this.$
+		$this.$
 	}
 }");
 			Assert.IsNotNull (provider, "provider == null");
@@ -135,7 +135,7 @@ class Test2 : Test
 {
 	void Test2 ()
 	{
-		base.$
+		$base.$
 	}
 }");
 			Assert.IsNotNull (provider, "provider == null");
@@ -153,7 +153,7 @@ class Test
 	void Test ()
 	{
 		Test a, b;
-		(1 == 1 ? a : b).$
+		$(1 == 1 ? a : b).$
 	}
 }");
 			Assert.IsNotNull (provider, "provider == null");
@@ -170,7 +170,7 @@ class Test
 	void Test ()
 	{
 		Test[] a;
-		a[0].$
+		$a[0].$
 	}
 }");
 			Assert.IsNotNull (provider, "provider == null");
@@ -188,7 +188,7 @@ class Test
 	
 	void Test ()
 	{
-		GetTest ().$
+		$GetTest ().$
 	}
 }");
 			Assert.IsNotNull (provider, "provider == null");
@@ -204,7 +204,7 @@ class Test
 {
 	void Test ()
 	{
-		(this).$
+		$(this).$
 	}
 }");
 			Assert.IsNotNull (provider, "provider == null");
@@ -221,7 +221,7 @@ class Test
 	void Test ()
 	{
 		foreach (Test t in notExist)
-			t.$
+			$t.$;
 	}
 }");
 			Assert.IsNotNull (provider, "provider == null");
@@ -245,7 +245,7 @@ class Test
 	void Test ()
 	{
 		AClass a;
-		a.TestMethod().$
+		$a.TestMethod().$
 	}
 }");
 			Assert.IsNotNull (provider, "provider == null");
@@ -267,7 +267,7 @@ class Test
 	void Test ()
 	{
 		AClass a;
-		a.TestField.$
+		$a.TestField.$
 	}
 }");
 			Assert.IsNotNull (provider, "provider == null");
@@ -289,7 +289,7 @@ class Test
 	void Test ()
 	{
 		AClass a;
-		a.TestProperty.$
+		$a.TestProperty.$
 	}
 }");
 			Assert.IsNotNull (provider, "provider == null");

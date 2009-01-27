@@ -77,11 +77,12 @@ public class TestClass
 @"
 	void TestMethod () 
 	{
-		this.$
+		$this.$
 	}
 }");
 			Assert.IsNotNull (provider, "provider == null");
-			Assert.AreEqual (10, provider.Count); // TestMethod is the 10.
+			Assert.AreEqual (15, provider.Count); // TestMethod is the 10.
+			CodeCompletionBugTests.CheckProtectedObjectMembers (provider); // 5 from System.Object
 			Assert.IsNotNull (provider.Find ("PubField"));
 			Assert.IsNotNull (provider.Find ("PubProperty"));
 			Assert.IsNotNull (provider.Find ("PubMethod"));
@@ -102,11 +103,12 @@ public class TestClass
 @"
 	void TestMethod () 
 	{
-		TestClass.$
+		$TestClass.$
 	}
 }");
 			Assert.IsNotNull (provider, "provider == null");
-			Assert.AreEqual (9, provider.Count);
+			Assert.AreEqual (11, provider.Count);
+			CodeCompletionBugTests.CheckStaticObjectMembers (provider); // 2 from System.Object
 			Assert.IsNotNull (provider.Find ("PubStaticField"));
 			Assert.IsNotNull (provider.Find ("PubStaticProperty"));
 			Assert.IsNotNull (provider.Find ("PubStaticMethod"));
@@ -129,11 +131,12 @@ class AClass {
 	void TestMethod () 
 	{
 		TestClass c;
-		c.$ 
+		$c.$ 
 	}
 }");
 			Assert.IsNotNull (provider, "provider == null");
-			Assert.AreEqual (3, provider.Count);
+			Assert.AreEqual (7, provider.Count);
+			CodeCompletionBugTests.CheckObjectMembers (provider);
 			Assert.IsNotNull (provider.Find ("PubField"));
 			Assert.IsNotNull (provider.Find ("PubProperty"));
 			Assert.IsNotNull (provider.Find ("PubMethod"));
@@ -147,11 +150,12 @@ class AClass {
 class AClass {
 	void TestMethod () 
 	{
-		TestClass.$ 
+		$TestClass.$ 
 	}
 }");
 			Assert.IsNotNull (provider, "provider == null");
-			Assert.AreEqual (3, provider.Count);
+			Assert.AreEqual (5, provider.Count);
+			CodeCompletionBugTests.CheckStaticObjectMembers (provider); // 2 members
 			Assert.IsNotNull (provider.Find ("PubStaticField"));
 			Assert.IsNotNull (provider.Find ("PubStaticProperty"));
 			Assert.IsNotNull (provider.Find ("PubStaticMethod"));
@@ -165,11 +169,12 @@ class AClass {
 class AClass : TestClass {
 	void TestMethod () 
 	{
-		this.$ 
+		$this.$ 
 	}
 }");
 			Assert.IsNotNull (provider, "provider == null");
-			Assert.AreEqual (7, provider.Count); // TestMethod is 7.
+			Assert.AreEqual (12, provider.Count); // TestMethod is 7 + 5 from object.
+			CodeCompletionBugTests.CheckProtectedObjectMembers (provider);
 			Assert.IsNotNull (provider.Find ("PubField"));
 			Assert.IsNotNull (provider.Find ("PubProperty"));
 			Assert.IsNotNull (provider.Find ("PubMethod"));
@@ -194,7 +199,7 @@ class Test2 : Test
 {
 	void Test2 ()
 	{
-		this.$
+		$this.$
 	}
 }");
 			Assert.IsNotNull (provider, "provider == null");
@@ -210,7 +215,7 @@ class Test : TestClass
 {
 	void Test ()
 	{
-		base.$
+		$base.$
 	}
 }");
 			Assert.IsNotNull (provider, "provider == null");
@@ -235,7 +240,7 @@ class Test2 : Test
 {
 	void Test2 ()
 	{
-		base.$
+		$base.$
 	}
 }");
 			Assert.IsNotNull (provider, "provider == null");
@@ -250,10 +255,11 @@ class Test : TestClass
 {
 	void Test ()
 	{
-		base.$
+		$base.$
 	}
-}");
+} }");
 			Assert.IsNotNull (provider, "provider == null");
+			CodeCompletionBugTests.CheckObjectMembers (provider);
 			Assert.IsNotNull (provider.Find ("PubField"), "field 'PubField' not found.");
 			Assert.IsNotNull (provider.Find ("PubProperty"), "property 'PubProperty' not found.");
 			Assert.IsNotNull (provider.Find ("PubMethod"), "method 'PubMethod' not found.");
@@ -275,7 +281,7 @@ class Test2
 {
 	void Test2 ()
 	{
-		(new Test ()).$
+		$(new Test ()).$
 	}
 }");
 			Assert.IsNotNull (provider, "provider == null");
@@ -289,7 +295,7 @@ class Test2
 @"
 class Foo<T>
 {
-	public $
+	$public $
 }
 ");
 			Assert.IsNotNull (provider, "provider == null");

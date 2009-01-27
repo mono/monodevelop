@@ -526,5 +526,201 @@ namespace MonoDevelop.Projects
 			Assert.IsTrue (type is InstantiatedType);
 			Assert.IsTrue (type.FieldCount == 2);
 		}
+		
+		[Test]
+		public void GenericConstraintTest_Class ()
+		{
+			IType type = mainProject.GetType ("CompletionDbTest.GenericConstraintTest1", 1, false);
+			Assert.IsNotNull (type);
+			Assert.AreEqual ("CompletionDbTest.GenericConstraintTest1", type.FullName);
+			Assert.AreEqual (1, type.TypeParameters.Count);
+			Assert.AreEqual (1, type.FieldCount);
+			
+			List<IField> fs = new List<IField> (type.Fields);
+			IReturnType rt = fs [0].ReturnType;
+			
+			IType fieldType = mainProject.GetType (rt);
+			Console.WriteLine ("pprt: " + rt);
+			Assert.IsNotNull (fieldType);
+			Assert.AreEqual ("T", fieldType.Name);
+			
+			List<string> types = new List<string> ();
+			foreach (IType t in mainProject.GetInheritanceTree (fieldType))
+				types.Add (t.FullName);
+			
+			Assert.IsTrue (types.Contains ("CompletionDbTest.GenericConstraintTest1.T"));
+			Assert.IsTrue (types.Contains ("System.Object"));
+			Assert.AreEqual (2, types.Count);
+		}
+		
+		[Test]
+		public void GenericConstraintTest_Struct ()
+		{
+			IType type = mainProject.GetType ("CompletionDbTest.GenericConstraintTest2", 1, false);
+			Assert.IsNotNull (type);
+			Assert.AreEqual ("CompletionDbTest.GenericConstraintTest2", type.FullName);
+			Assert.AreEqual (1, type.TypeParameters.Count);
+			Assert.AreEqual (1, type.FieldCount);
+			
+			List<IField> fs = new List<IField> (type.Fields);
+			IReturnType rt = fs [0].ReturnType;
+			
+			IType fieldType = mainProject.GetType (rt);
+			Assert.IsNotNull (fieldType);
+			Assert.AreEqual ("T", fieldType.Name);
+			
+			List<string> types = new List<string> ();
+			foreach (IType t in mainProject.GetInheritanceTree (fieldType))
+				types.Add (t.FullName);
+			
+			Assert.IsTrue (types.Contains ("CompletionDbTest.GenericConstraintTest2.T"));
+			Assert.IsTrue (types.Contains ("System.ValueType"));
+			Assert.IsTrue (types.Contains ("System.Object"));
+			Assert.AreEqual (3, types.Count);
+		}
+		
+		[Test]
+		public void GenericConstraintTest_New ()
+		{
+			IType type = mainProject.GetType ("CompletionDbTest.GenericConstraintTest3", 1, false);
+			Assert.IsNotNull (type);
+			Assert.AreEqual ("CompletionDbTest.GenericConstraintTest3", type.FullName);
+			Assert.AreEqual (1, type.TypeParameters.Count);
+			Assert.AreEqual (1, type.FieldCount);
+			
+			List<IField> fs = new List<IField> (type.Fields);
+			IReturnType rt = fs [0].ReturnType;
+			
+			IType fieldType = mainProject.GetType (rt);
+			Assert.IsNotNull (fieldType);
+			Assert.AreEqual ("T", fieldType.Name);
+			
+			List<string> types = new List<string> ();
+			foreach (IType t in mainProject.GetInheritanceTree (fieldType))
+				types.Add (t.FullName);
+			
+			Assert.IsTrue (types.Contains ("CompletionDbTest.GenericConstraintTest3.T"));
+			Assert.IsTrue (types.Contains ("System.Object"));
+			Assert.AreEqual (2, types.Count);
+		}
+		
+		[Test]
+		public void GenericConstraintTest_WithBase ()
+		{
+			IType type = mainProject.GetType ("CompletionDbTest.GenericConstraintTest4", 2, false);
+			Assert.IsNotNull (type);
+			Assert.AreEqual ("CompletionDbTest.GenericConstraintTest4", type.FullName);
+			Assert.AreEqual (2, type.TypeParameters.Count);
+			Assert.AreEqual (2, type.FieldCount);
+			
+			// First field
+			
+			List<IField> fs = new List<IField> (type.Fields);
+			IReturnType rt = fs [0].ReturnType;
+			
+			IType fieldType = mainProject.GetType (rt);
+			Assert.IsNotNull (fieldType);
+			Assert.AreEqual ("T", fieldType.Name);
+			
+			List<string> types = new List<string> ();
+			foreach (IType t in mainProject.GetInheritanceTree (fieldType))
+				types.Add (t.FullName);
+			
+			Assert.IsTrue (types.Contains ("CompletionDbTest.GenericConstraintTest4.T"));
+			Assert.IsTrue (types.Contains ("Library1.CBin"));
+			Assert.IsTrue (types.Contains ("Library2.CWidget"));
+			Assert.IsTrue (types.Contains ("System.Object"));
+			Assert.AreEqual (4, types.Count);
+			
+			// Second field
+			
+			rt = fs [1].ReturnType;
+			
+			fieldType = mainProject.GetType (rt);
+			Assert.IsNotNull (fieldType);
+			Assert.AreEqual ("U", fieldType.Name);
+			
+			types = new List<string> ();
+			foreach (IType t in mainProject.GetInheritanceTree (fieldType))
+				types.Add (t.FullName);
+			
+			Assert.IsTrue (types.Contains ("CompletionDbTest.GenericConstraintTest4.U"));
+			Assert.IsTrue (types.Contains ("CompletionDbTest.GenericConstraintTest4.T"));
+			Assert.IsTrue (types.Contains ("Library1.CBin"));
+			Assert.IsTrue (types.Contains ("Library2.CWidget"));
+			Assert.IsTrue (types.Contains ("System.Object"));
+			Assert.AreEqual (5, types.Count);
+		}
+		
+		[Test]
+		public void GenericConstraintTest_WithWrongBase ()
+		{
+			IType type = mainProject.GetType ("CompletionDbTest.GenericConstraintTest5", 2, false);
+			Assert.IsNotNull (type);
+			Assert.AreEqual ("CompletionDbTest.GenericConstraintTest5", type.FullName);
+			Assert.AreEqual (2, type.TypeParameters.Count);
+			Assert.AreEqual (2, type.FieldCount);
+			
+			// First field
+			
+			List<IField> fs = new List<IField> (type.Fields);
+			IReturnType rt = fs [0].ReturnType;
+			
+			IType fieldType = mainProject.GetType (rt);
+			Assert.IsNotNull (fieldType);
+			Assert.AreEqual ("T", fieldType.Name);
+			
+			List<string> types = new List<string> ();
+			foreach (IType t in mainProject.GetInheritanceTree (fieldType))
+				types.Add (t.FullName);
+			
+			Assert.IsTrue (types.Contains ("CompletionDbTest.GenericConstraintTest5.T"));
+			Assert.IsTrue (types.Contains ("System.Object"));
+			Assert.AreEqual (4, types.Count);
+			
+			// Second field
+			
+			rt = fs [1].ReturnType;
+			
+			fieldType = mainProject.GetType (rt);
+			Assert.IsNotNull (fieldType);
+			Assert.AreEqual ("U", fieldType.Name);
+			
+			types = new List<string> ();
+			foreach (IType t in mainProject.GetInheritanceTree (fieldType))
+				types.Add (t.FullName);
+			
+			Assert.IsTrue (types.Contains ("CompletionDbTest.GenericConstraintTest5.U"));
+			Assert.IsTrue (types.Contains ("System.Object"));
+			Assert.AreEqual (2, types.Count);
+		}		
+		
+		[Test]
+		public void GenericConstraintTest_ClassAndInterface ()
+		{
+			IType type = mainProject.GetType ("CompletionDbTest.GenericConstraintTest6", 1, false);
+			Assert.IsNotNull (type);
+			Assert.AreEqual ("CompletionDbTest.GenericConstraintTest6", type.FullName);
+			Assert.AreEqual (1, type.TypeParameters.Count);
+			Assert.AreEqual (1, type.FieldCount);
+			
+			List<IField> fs = new List<IField> (type.Fields);
+			IReturnType rt = fs [0].ReturnType;
+			
+			IType fieldType = mainProject.GetType (rt);
+			Assert.IsNotNull (fieldType);
+			Assert.AreEqual ("T", fieldType.Name);
+			
+			List<string> types = new List<string> ();
+			foreach (IType t in mainProject.GetInheritanceTree (fieldType))
+				types.Add (t.FullName);
+			
+			Assert.IsTrue (types.Contains ("CompletionDbTest.GenericConstraintTest6.T"));
+			Assert.IsTrue (types.Contains ("Library1.CBin"));
+			Assert.IsTrue (types.Contains ("Library2.CWidget"));
+			Assert.IsTrue (types.Contains ("System.ICloneable"));
+			Assert.IsTrue (types.Contains ("System.Object"));
+			Assert.AreEqual (5, types.Count);
+		}
 	}
 }

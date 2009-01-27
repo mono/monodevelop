@@ -87,7 +87,7 @@ class Program
 	static void Main (string[] args)
 	{
 		var t = new Test ();
-		t.$
+		$t.$
 	}
 }
 ");
@@ -114,7 +114,7 @@ class Program
 	{
 		var t = new Test[] {};
 		foreach (var loopVar in t) {
-			loopVar.$
+			$loopVar.$
 		}
 	}
 }
@@ -133,7 +133,7 @@ class Program
 	static void Main (string[] args)
 	{
 		var t = new { TestInt = 6, TestChar='e', TestString =""Test""};
-		t.$
+		$t.$
 	}
 }
 ");
