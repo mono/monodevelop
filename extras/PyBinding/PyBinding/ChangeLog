@@ -1,3 +1,7 @@
+2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* PyBinding.mdp: Flush project format changes.
+
 2008-12-09  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* PyBinding.Gui/PythonEditorOutline.cs:

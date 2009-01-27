@@ -1,3 +1,7 @@
+2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Profiling.mdp: Flush project format changes.
+
 2008-12-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* DummyProcessAsyncOperation.cs: Track api changes.

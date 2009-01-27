@@ -1,3 +1,7 @@
+2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Debugger.mdp: Flush project format changes.
+
 2008-12-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Debugger.mdp: Updated.
