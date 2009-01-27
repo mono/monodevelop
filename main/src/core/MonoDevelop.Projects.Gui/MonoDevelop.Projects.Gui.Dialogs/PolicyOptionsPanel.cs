@@ -75,8 +75,11 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 			FillPolicies ();
 			policyCombo.Active = 0;
 			
-			vbox.PackEnd (CreatePanelWidget (), true, true, 0);
-			
+			Widget child = CreatePanelWidget ();
+			//HACK: work around bug 469427 - broken themes match on widget names
+			if (child.Name.IndexOf ("Panel") > 0)
+				child.Name = child.Name.Replace ("Panel", "_");
+			vbox.PackEnd (child, true, true, 0);
 			
 			LoadFrom (bag.Get<T> ());
 			loading = false;

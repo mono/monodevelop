@@ -1,5 +1,10 @@
 2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Projects.Gui.Dialogs/PolicyOptionsPanel.cs: Work around
+	bug 469427 - broken themes match on *Panel* widget names.
+
+2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Projects.Gui.Dialogs/MultiConfigItemOptionsPanel.cs:
 	Add a hack to work around broken themes that attach themes to *Panel* 
 	widget names.
