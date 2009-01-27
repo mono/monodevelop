@@ -223,11 +223,8 @@ namespace MonoDevelop.CSharpBinding
 				result.CallingType   = resolver.CallingType;
 				result.CallingMember = resolver.CallingMember;
 				return result;
-			} else {
-				return CreateResult (objectCreateExpression.CreateType);
 			}
-			return null;
-		
+			return CreateResult (objectCreateExpression.CreateType);
 		}
 
 		static string GetOperatorName (BinaryOperatorType type)
@@ -401,33 +398,33 @@ namespace MonoDevelop.CSharpBinding
 			return result;
 		}
 		
-		public override object VisitMemberReferenceExpression(MemberReferenceExpression fieldReferenceExpression, object data)
+		public override object VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression, object data)
 		{
-			if (fieldReferenceExpression == null) {
+			if (memberReferenceExpression == null) {
 				return null;
 			}
 			ResolveResult result;
-			if (String.IsNullOrEmpty (fieldReferenceExpression.FieldName)) {
-				if (fieldReferenceExpression.TargetObject is TypeReferenceExpression) {
-					result = CreateResult (((TypeReferenceExpression)fieldReferenceExpression.TargetObject).TypeReference);
+			if (String.IsNullOrEmpty (memberReferenceExpression.MemberName)) {
+				if (memberReferenceExpression.TargetObject is TypeReferenceExpression) {
+					result = CreateResult (((TypeReferenceExpression)memberReferenceExpression.TargetObject).TypeReference);
 					result.StaticResolve = true;
 					return result;
 				}
-//				if (fieldReferenceExpression.TargetObject is ThisReferenceExpression) {
-//					result = CreateResult (((TypeReferenceExpression)fieldReferenceExpression.TargetObject).TypeReference);
+//				if (memberReferenceExpression.TargetObject is ThisReferenceExpression) {
+//					result = CreateResult (((TypeReferenceExpression)memberReferenceExpression.TargetObject).TypeReference);
 //					result.StaticResolve = true;
 //					return result;
 //				}
 
-//				return fieldReferenceExpression.TargetObject.AcceptVisitor(this, data);
+//				return memberReferenceExpression.TargetObject.AcceptVisitor(this, data);
 			}
-			result = fieldReferenceExpression.TargetObject.AcceptVisitor(this, data) as ResolveResult;
+			result = memberReferenceExpression.TargetObject.AcceptVisitor(this, data) as ResolveResult;
 			
 			NamespaceResolveResult namespaceResult = result as NamespaceResolveResult;
 			if (namespaceResult != null) {
-				if (String.IsNullOrEmpty (fieldReferenceExpression.FieldName))
+				if (String.IsNullOrEmpty (memberReferenceExpression.MemberName))
 					return namespaceResult;
-				string fullName = namespaceResult.Namespace + "." + fieldReferenceExpression.FieldName;
+				string fullName = namespaceResult.Namespace + "." + memberReferenceExpression.MemberName;
 				if (resolver.Dom.NamespaceExists (fullName, true))
 					return new NamespaceResolveResult (fullName);
 				IType type = resolver.Dom.GetType (fullName);
@@ -446,10 +443,10 @@ namespace MonoDevelop.CSharpBinding
 					List<IType> accessibleExtTypes = DomType.GetAccessibleExtensionTypes (resolver.Dom, resolver.Unit);
 					foreach (IType curType in resolver.Dom.GetInheritanceTree (type)) {
 						foreach (IMethod method in curType.GetExtensionMethods (accessibleExtTypes)) {
-							if (method.Name == fieldReferenceExpression.FieldName) 
+							if (method.Name == memberReferenceExpression.MemberName) 
 								member.Add (method);
 						}
-						member.AddRange (curType.SearchMember (fieldReferenceExpression.FieldName, true));
+						member.AddRange (curType.SearchMember (memberReferenceExpression.MemberName, true));
 					}
 					
 					if (member.Count > 0) {

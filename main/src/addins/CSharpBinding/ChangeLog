@@ -1,5 +1,91 @@
 2009-01-27  Mike Krüger  <mkrueger@novell.com>
 
+	* Parser/mcs:
+	* Makefile.am:
+	* Parser/mcs/mcs:
+	* CSharpBinding.mdp:
+	* Parser/mcs/dom.cs:
+	* gtk-gui/gui.stetic:
+	* Parser/mcs/mcs/PLAN:
+	* Parser/mcs/mcs/TODO:
+	* Parser/mcs/External:
+	* Parser/mcs/mcs/NOTES:
+	* gtk-gui/generated.cs:
+	* Parser/mcs/mcs/OTODO:
+	* Parser/mcs/mcs/README:
+	* Gui/ResolveVisitor.cs:
+	* Parser/mcs/mcs/doc.cs:
+	* Parser/mcs/mcs/linq.cs:
+	* Parser/mcs/mcs/mcs.sln:
+	* Parser/mcs/mcs/enum.cs:
+	* Parser/mcs/mcs/decl.cs:
+	* Parser/mcs/mcs/const.cs:
+	* Parser/mcs/mcs/OPTIMIZE:
+	* Parser/mcs/mcs/cfold.cs:
+	* Parser/mcs/mcs/ecore.cs:
+	* Parser/mcs/mcs/Makefile:
+	* Parser/mcs/cs-parser.cs:
+	* Parser/CodeGenerator.cs:
+	* Parser/mcs/mcs/gmcs.sln:
+	* Parser/mcs/mcs/class.cs:
+	* Parser/mcs/mcs/assign.cs:
+	* Parser/mcs/mcs/ChangeLog:
+	* Parser/mcs/mcs/driver.cs:
+	* Parser/mcs/mcs/lambda.cs:
+	* Parser/mcs/mcs/report.cs:
+	* Parser/mcs/mcs/support.cs:
+	* Parser/mcs/mcs/codegen.cs:
+	* Parser/mcs/mcs/generic.cs:
+	* Gui/NRefactoryResolver.cs:
+	* Parser/mcs/mcs/convert.cs:
+	* Parser/mcs/mcs/pending.cs:
+	* Parser/mcs/mcs/literal.cs:
+	* Parser/mcs/mcs/mcs.csproj:
+	* Parser/mcs/mcs/constant.cs:
+	* Parser/mcs/mcs/nullable.cs:
+	* Parser/mcs/mcs/gmcs.csproj:
+	* Parser/mcs/mcs/delegate.cs:
+	* Parser/mcs/mcs/location.cs:
+	* Parser/mcs/mcs/lambda.todo:
+	* Parser/mcs/mcs/parameter.cs:
+	* Parser/mcs/mcs/compiler.doc:
+	* Parser/mcs/mcs/modifiers.cs:
+	* Parser/mcs/mcs/namespace.cs:
+	* Parser/mcs/mcs/anonymous.cs:
+	* Parser/mcs/mcs/statement.cs:
+	* Parser/mcs/mcs/iterators.cs:
+	* Parser/mcs/mcs/attribute.cs:
+	* Parser/mcs/mcs/roottypes.cs:
+	* Parser/mcs/mcs/expression.cs:
+	* Parser/mcs/mcs/cs-parser.jay:
+	* Parser/mcs/mcs/generic-mcs.cs:
+	* Parser/mcs/mcs/mcs.exe.config:
+	* Parser/mcs/mcs/typemanager.cs:
+	* Parser/mcs/mcs/rootcontext.cs:
+	* Parser/mcs/mcs/flowanalysis.cs:
+	* Parser/mcs/mcs/symbolwriter.cs:
+	* Parser/mcs/mcs/gmcs.exe.config:
+	* Parser/mcs/mcs/cs-tokenizer.cs:
+	* Parser/mcs/mcs/mcs.exe.sources:
+	* Parser/mcs/mcs/AssemblyInfo.cs:
+	* Parser/mcs/mcs/gmcs.exe.sources:
+	* Parser/mcs/mcs/doc-bootstrap.cs:
+	* Parser/mcs/mcs/smcs.exe.sources:
+	* Gui/CSharpTextEditorCompletion.cs:
+	* Gui/CSharpTextEditorIndentation.cs:
+	* Parser/mcs/mcs/smcs.exe.sources-xml:
+	* Parser/mcs/External/CryptoConvert.cs:
+	* Parser/mcs/External/MonoSymbolFile.cs:
+	* Gui/NRefactoryParameterDataProvider.cs:
+	* Parser/mcs/External/MonoSymbolTable.cs:
+	* Parser/mcs/External/MonoSymbolWriter.cs:
+	* gtk-gui/CSharpBinding.FormattingPanelWidget.cs:
+	* gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs:
+	* gtk-gui/CSharpBinding.CompilerOptionsPanelWidget.cs: Removed unused
+	code. Fixed compiler warnings.
+
+2009-01-27  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/CSharpAmbience.cs: Fixed an unneccessary space printing before for
 	type names (affected code completion as well).
 
