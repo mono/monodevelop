@@ -197,7 +197,7 @@ namespace MonoDevelop.CSharpBinding
 			if (CallingType == null)
 				return;
 			IType callingType = CallingType is InstantiatedType ? ((InstantiatedType)CallingType).UninstantiatedType : CallingType;
-			bool isInStatic = CallingMember != null ? CallingMember.IsStatic : false;
+			//bool isInStatic = CallingMember != null ? CallingMember.IsStatic : false;
 
 			if (CallingMember == null || !CallingMember.IsStatic) {
 				foreach (TypeParameter parameter in callingType.TypeParameters) {
@@ -206,11 +206,7 @@ namespace MonoDevelop.CSharpBinding
 			}
 			
 			if (CallingMember != null) {
-				MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col
-					= new MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector (
-						this.editor, dom, unit,
-						new DomLocation (editor.CursorLine - 1, editor.CursorColumn - 1));
-				
+				MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col = new MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector (unit, new DomLocation (editor.CursorLine - 1, editor.CursorColumn - 1));
 				bool includeProtected = DomType.IncludeProtected (dom, CallingType, CallingMember.DeclaringType);
 				foreach (IType type in dom.GetInheritanceTree (CallingType)) {
 					foreach (IMember member in type.Members) {
@@ -228,7 +224,7 @@ namespace MonoDevelop.CSharpBinding
 		static readonly IReturnType attributeType = new DomReturnType ("System.Attribute");
 		public void AddAccessibleCodeCompletionData (ExpressionContext context, CompletionDataList completionList)
 		{
-			MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col = new MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector ( this.editor, dom, unit, new DomLocation (editor.CursorLine - 1, editor.CursorColumn - 1));
+			MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col = new MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector (unit, new DomLocation (editor.CursorLine - 1, editor.CursorColumn - 1));
 			if (context != ExpressionContext.Global) {
 				AddContentsFromClassAndMembers (context, completionList);
 				

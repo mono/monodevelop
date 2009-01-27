@@ -41,15 +41,15 @@ namespace MonoDevelop.SourceEditor
 {
 	class HighlightPropertiesRule : SemanticRule
 	{
-		ProjectDom GetParserContext (Mono.TextEditor.Document document)
-		{
-			Project project = IdeApp.ProjectOperations.CurrentSelectedProject;
-			if (project != null)
-				return ProjectDomService.GetProjectDom (project);
-			return ProjectDom.Empty;
-		}
+//		ProjectDom GetParserContext (Mono.TextEditor.Document document)
+//		{
+//			Project project = IdeApp.ProjectOperations.CurrentSelectedProject;
+//			if (project != null)
+//				return ProjectDomService.GetProjectDom (project);
+//			return ProjectDom.Empty;
+//		}
 		
-		string expression;
+	//	string expression;
 		IMember GetLanguageItem (Mono.TextEditor.Document document, int offset)
 		{
 			return null;

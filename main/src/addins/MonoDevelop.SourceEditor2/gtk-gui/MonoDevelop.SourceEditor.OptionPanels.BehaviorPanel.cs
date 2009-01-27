@@ -156,6 +156,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels {
             w7.Fill = false;
             // Container child hbox1.Gtk.Box+BoxChild
             this.indentationCombobox = Gtk.ComboBox.NewText();
+            this.indentationCombobox.AppendText("");
             this.indentationCombobox.Name = "indentationCombobox";
             this.hbox1.Add(this.indentationCombobox);
             Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.hbox1[this.indentationCombobox]));
@@ -287,6 +288,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels {
             w20.Fill = false;
             // Container child hbox3.Gtk.Box+BoxChild
             this.controlLeftRightCombobox = Gtk.ComboBox.NewText();
+            this.controlLeftRightCombobox.AppendText("");
             this.controlLeftRightCombobox.Name = "controlLeftRightCombobox";
             this.hbox3.Add(this.controlLeftRightCombobox);
             Gtk.Box.BoxChild w21 = ((Gtk.Box.BoxChild)(this.hbox3[this.controlLeftRightCombobox]));

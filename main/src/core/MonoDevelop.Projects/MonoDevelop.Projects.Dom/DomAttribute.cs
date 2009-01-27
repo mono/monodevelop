@@ -86,32 +86,6 @@ namespace MonoDevelop.Projects.Dom
 			namedArguments [name] = exp;
 		}
 		
-		public static IAttribute Resolve (IAttribute source, ITypeResolver typeResolver)
-		{
-			DomAttribute result = new DomAttribute ();
-			result.Name            = source.Name;
-			result.Region          = source.Region;
-			result.AttributeTarget = source.AttributeTarget;
-			result.AttributeType   = source.AttributeType;
-
-			if (source.PositionalArguments.Count > 0)
-				result.positionalArguments = new List<CodeExpression> (source.PositionalArguments);
-			if (source.NamedArguments.Count > 0)
-				result.namedArguments = new Dictionary<string, CodeExpression> (source.NamedArguments);
-			return result;
-		}
-		
-		public static List<IAttribute> Resolve (IEnumerable<IAttribute> source, ITypeResolver typeResolver)
-		{
-			if (source == null)
-				return null;
-			List<IAttribute> result = new List<IAttribute> ();
-			foreach (IAttribute attr in source) {
-				result.Add (Resolve (attr, typeResolver));
-			}
-			return result;
-		}
-		
 		public S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
 		{
 			return visitor.Visit (this, data);

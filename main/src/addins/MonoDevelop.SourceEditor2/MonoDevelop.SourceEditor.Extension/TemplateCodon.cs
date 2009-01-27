@@ -41,6 +41,11 @@ namespace MonoDevelop.SourceEditor.Extension
 		[NodeAttribute("file", "Name of the file where the template is stored.")]
 		string file;
 		
+		public TemplateCodon ()
+		{
+			resource = file = null;
+		}
+		
 		public XmlTextReader Open ()
 		{
 			Stream stream;

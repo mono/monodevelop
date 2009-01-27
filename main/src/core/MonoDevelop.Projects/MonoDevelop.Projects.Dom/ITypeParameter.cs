@@ -1,4 +1,4 @@
-// Main.cs
+// ITypeParameter.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -24,93 +24,24 @@
 // THE SOFTWARE.
 //
 //
+
 using System;
-using Library1;
+using System.Collections.Generic;
 
-namespace CompletionDbTest
+namespace MonoDevelop.Projects.Dom
 {
-	class MainClass
+	public interface ITypeParameter
 	{
-		public static void Main(string[] args)
-		{
-			Console.WriteLine("Hello World!");
-			PartialTest t;
-		}
-	}
+		string Name { get; }
 
-	public class SomeGeneric<T>
-	{
-		public T Run (T val)
-		{
-			return val;
-		}
-	}
+		IEnumerable<IAttribute> Attributes { get; }
 
-	public class CustomWidget1: CBin, ISimple
-	{
-	}
-
-	public class CustomWidget2: SomeContainer.CInnerWidget, Library2.IObject
-	{
-	}
-	
-#region Generic types with constraints
-	
-	public class GenericConstraintTest0<T>
-	{
-		T field;
-	}
-	
-	public class GenericConstraintTest1<T> where T:class
-	{
-		T field;
-	}
-	
-	public class GenericConstraintTest2<T> where T:struct
-	{
-		T field;
-	}
-	
-	public class GenericConstraintTest3<T> where T:new ()
-	{
-		T field;
-	}
-	
-	public class GenericConstraintTest4<T,U>
-		where T:CBin
-		where U:T
-	{
-		T field1;
-		U field2;
+		IList<IReturnType> Constraints { get; }
 		
-		void Run ()
-		{
-		}
-	}
-	
-	// This is wrong
-	public class GenericConstraintTest5<T,U>
-		where T:U
-		where U:T
-	{
-		T field1;
-		U field2;
+		bool ConstructorRequired { get; }
 		
-		void Run ()
-		{
-		}
-	}
-	
-	public class GenericConstraintTest6<T> where T:CBin, ICloneable
-	{
-		T field;
+		bool ClassRequired { get; }
 		
-		void Run ()
-		{
-		}
+		bool ValueTypeRequired { get; }
 	}
-	
-#endregion
-	
 }
-

@@ -86,7 +86,7 @@ namespace MonoDevelop.SourceEditor
 				return val;
 		}
 		
-		string GetExpressionBeforeOffset (TextEditor editor, int offset)
+		/*string GetExpressionBeforeOffset (TextEditor editor, int offset)
 		{
 			int start = offset;
 			while (start > 0 && IsIdChar (editor.Document.GetCharAt (start)))
@@ -98,7 +98,7 @@ namespace MonoDevelop.SourceEditor
 				return editor.Document.GetTextAt (start, offset - start);
 			else
 				return string.Empty;
-		}
+		}*/
 		
 		public static bool IsIdChar (char c)
 		{

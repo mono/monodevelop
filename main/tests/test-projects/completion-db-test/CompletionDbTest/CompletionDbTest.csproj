@@ -34,6 +34,8 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="SharedNamespace.cs" />
     <Compile Include="GenericRewrite.cs" />
+    <Compile Include="PartialTest1.cs" />
+    <Compile Include="PartialTest2.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -41,5 +43,13 @@
       <Project>{728501FB-8FE6-4838-B475-FC377AECA606}</Project>
       <Name>Library1</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Replacements/" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Replacements\GenericRewrite.cs" />
+    <None Include="Replacements\EmptyFile.cs" />
+    <None Include="Replacements\PartialTest2.cs" />
   </ItemGroup>
 </Project>

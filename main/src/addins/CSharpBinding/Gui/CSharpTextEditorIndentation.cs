@@ -259,12 +259,6 @@ namespace MonoDevelop.CSharpBinding.Gui
 				Editor.Select (pos, pos);
 			}
 		}
-		
-		static string GetLineWhiteSpace (string line)
-		{
-			int trimmedLength = line.TrimStart ().Length;
-			return line.Substring (0, line.Length - trimmedLength);
-		}
-		
+	
 	}
 }

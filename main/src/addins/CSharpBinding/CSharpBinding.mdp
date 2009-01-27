@@ -4,7 +4,7 @@
       <Output directory="../../../build/AddIns/BackendBindings/" assemblyKeyFile="." assembly="MonoDevelop.CSharpBinding" />
       <Build debugmode="True" target="Library" />
       <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
-      <CodeGeneration compiler="Mcs" warninglevel="3" optimize="False" unsafecodeallowed="False" generateoverflowchecks="True" definesymbols="GMCS_SOURCE" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="False" unsafecodeallowed="False" generateoverflowchecks="True" definesymbols="GMCS_SOURCE" generatexmldocumentation="False" warningsAsErrors="True" ctype="CSharpCompilerParameters" />
     </Configuration>
     <Configuration name="Release" ctype="DotNetProjectConfiguration">
       <Output directory="../../../build/AddIns/BackendBindings/" assemblyKeyFile="." assembly="MonoDevelop.CSharpBinding" />
@@ -45,50 +45,6 @@
     <File name="Gui/CompilerOptionsPanelWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="templates/AssemblyInfo.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="md1format.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="Parser/mcs/cs-parser.cs" subtype="Code" buildaction="Compile" />
-    <File name="Parser/mcs/cs-parser.jay" subtype="Code" buildaction="Nothing" />
-    <File name="Parser/mcs/generic-mcs.cs" subtype="Code" buildaction="Nothing" />
-    <File name="Parser/mcs/External/CryptoConvert.cs" subtype="Code" buildaction="Compile" />
-    <File name="Parser/mcs/External/MonoSymbolFile.cs" subtype="Code" buildaction="Compile" />
-    <File name="Parser/mcs/External/MonoSymbolTable.cs" subtype="Code" buildaction="Compile" />
-    <File name="Parser/mcs/External/MonoSymbolWriter.cs" subtype="Code" buildaction="Compile" />
-    <File name="Parser/mcs/dom.cs" subtype="Code" buildaction="Compile" />
-    <File name="Parser/mcs/mcs/anonymous.cs" subtype="Code" buildaction="Compile" />
-    <File name="Parser/mcs/mcs/assign.cs" subtype="Code" buildaction="Compile" />
-    <File name="Parser/mcs/mcs/attribute.cs" subtype="Code" buildaction="Compile" />
-    <File name="Parser/mcs/mcs/cfold.cs" subtype="Code" buildaction="Compile" />
-    <File name="Parser/mcs/mcs/class.cs" subtype="Code" buildaction="Compile" />
-    <File name="Parser/mcs/mcs/codegen.cs" subtype="Code" buildaction="Compile" />
-    <File name="Parser/mcs/mcs/const.cs" subtype="Code" buildaction="Compile" />
-    <File name="Parser/mcs/mcs/constant.cs" subtype="Code" buildaction="Compile" />
-    <File name="Parser/mcs/mcs/convert.cs" subtype="Code" buildaction="Compile" />
-    <File name="Parser/mcs/mcs/cs-tokenizer.cs" subtype="Code" buildaction="Compile" />
-    <File name="Parser/mcs/mcs/decl.cs" subtype="Code" buildaction="Compile" />
-    <File name="Parser/mcs/mcs/delegate.cs" subtype="Code" buildaction="Compile" />
-    <File name="Parser/mcs/mcs/doc.cs" subtype="Code" buildaction="Compile" />
-    <File name="Parser/mcs/mcs/driver.cs" subtype="Code" buildaction="Compile" />
-    <File name="Parser/mcs/mcs/ecore.cs" subtype="Code" buildaction="Compile" />
-    <File name="Parser/mcs/mcs/enum.cs" subtype="Code" buildaction="Compile" />
-    <File name="Parser/mcs/mcs/expression.cs" subtype="Code" buildaction="Compile" />
-    <File name="Parser/mcs/mcs/flowanalysis.cs" subtype="Code" buildaction="Compile" />
-    <File name="Parser/mcs/mcs/generic.cs" subtype="Code" buildaction="Compile" />
-    <File name="Parser/mcs/mcs/iterators.cs" subtype="Code" buildaction="Compile" />
-    <File name="Parser/mcs/mcs/lambda.cs" subtype="Code" buildaction="Compile" />
-    <File name="Parser/mcs/mcs/linq.cs" subtype="Code" buildaction="Compile" />
-    <File name="Parser/mcs/mcs/literal.cs" subtype="Code" buildaction="Compile" />
-    <File name="Parser/mcs/mcs/location.cs" subtype="Code" buildaction="Compile" />
-    <File name="Parser/mcs/mcs/modifiers.cs" subtype="Code" buildaction="Compile" />
-    <File name="Parser/mcs/mcs/namespace.cs" subtype="Code" buildaction="Compile" />
-    <File name="Parser/mcs/mcs/nullable.cs" subtype="Code" buildaction="Compile" />
-    <File name="Parser/mcs/mcs/parameter.cs" subtype="Code" buildaction="Compile" />
-    <File name="Parser/mcs/mcs/pending.cs" subtype="Code" buildaction="Compile" />
-    <File name="Parser/mcs/mcs/report.cs" subtype="Code" buildaction="Compile" />
-    <File name="Parser/mcs/mcs/rootcontext.cs" subtype="Code" buildaction="Compile" />
-    <File name="Parser/mcs/mcs/roottypes.cs" subtype="Code" buildaction="Compile" />
-    <File name="Parser/mcs/mcs/statement.cs" subtype="Code" buildaction="Compile" />
-    <File name="Parser/mcs/mcs/support.cs" subtype="Code" buildaction="Compile" />
-    <File name="Parser/mcs/mcs/symbolwriter.cs" subtype="Code" buildaction="Compile" />
-    <File name="Parser/mcs/mcs/typemanager.cs" subtype="Code" buildaction="Compile" />
     <File name="Project/CSharpResourceIdBuilder.cs" subtype="Code" buildaction="Compile" />
     <File name="Gui/CSharpTextEditorCompletion.cs" subtype="Code" buildaction="Compile" />
     <File name="Gui/NRefactoryResolver.cs" subtype="Code" buildaction="Compile" />
@@ -120,11 +76,11 @@
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Ide" />
     <ProjectReference type="Project" localcopy="True" refto="Mono.TextEditor" />
     <ProjectReference type="Gac" localcopy="True" refto="System.Core, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-    <ProjectReference type="Gac" localcopy="True" refto="glib-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="True" refto="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="True" refto="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
   </References>
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">
     <BuildFilesVar Sync="True" Name="FILES" />

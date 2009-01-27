@@ -1,5 +1,57 @@
 2009-01-27  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects.Dom/CompoundType.cs:
+	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
+	Fixed issue with partial classes defined in the same file.
+	Reimplemented CopyClass using CopyDomVisitor.
+
+2009-01-27  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Dom/InstantiatedParameterType.cs: Avoid cyclic
+	references in type constraints.
+
+	* MonoDevelop.Projects.Dom/TypeParameter.cs:
+	* MonoDevelop.Projects.Dom/CopyDomVisitor.cs:
+	* MonoDevelop.Projects.Dom/ITypeParameter.cs:
+	* MonoDevelop.Projects.Dom.Serialization/DomPersistence.cs:
+	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
+	Added flags to TypeParameter for handling the class, struct and new()
+	constraints.
+
+2009-01-27  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Projects.mdp:
+	* MonoDevelop.Projects.Dom/IType.cs:
+	* MonoDevelop.Projects.Dom/DomType.cs:
+	* MonoDevelop.Projects.Dom/DomEvent.cs:
+	* MonoDevelop.Projects.Dom/DomField.cs:
+	* MonoDevelop.Projects.Dom/DomMethod.cs:
+	* MonoDevelop.Projects.Dom/IReturnType.cs:
+	* MonoDevelop.Projects.Dom/DomProperty.cs:
+	* MonoDevelop.Projects.Dom/DomAttribute.cs:
+	* MonoDevelop.Projects.Dom/DomParameter.cs:
+	* MonoDevelop.Projects.Dom/TypeParameter.cs:
+	* MonoDevelop.Projects.Dom/DomReturnType.cs:
+	* MonoDevelop.Projects.Dom/CopyDomVisitor.cs:
+	* MonoDevelop.Projects.Dom/ITypeParameter.cs:
+	* MonoDevelop.Projects.Dom/AbstractMember.cs:
+	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs:
+	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs:
+	* MonoDevelop.Projects.Dom/InstantiatedParameterType.cs:
+	* MonoDevelop.Projects.Dom.Serialization/DomTypeProxy.cs:
+	* MonoDevelop.Projects.Dom.Parser/TypeResolverVisitor.cs: Replaced
+	ITypeResolver by the IDomVisitor infrastructure.
+
+2009-01-27  Ankit Jain  <jankit@novell.com>
+
+	* MonoDevelop.Projects.Formats.MD1/MD1DotNetProjectHandler.cs
+	(IsResgenRequired): File must be a .resx
+	* Monodevelop.Projects/DotNetProject.cs (CheckNeedsBuild): Check only
+	resx files for resgen.
+
+2009-01-27  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects.Formats.MSBuild/SlnFileFormat.cs: Properly encode
 	and decode strings when serializing values. Fixes bug #469142.
 

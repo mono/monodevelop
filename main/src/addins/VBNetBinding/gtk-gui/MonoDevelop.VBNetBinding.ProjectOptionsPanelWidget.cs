@@ -114,7 +114,6 @@ namespace MonoDevelop.VBNetBinding {
             this.label76 = new Gtk.Label();
             this.label76.WidthRequest = 18;
             this.label76.Name = "label76";
-            this.label76.LabelProp = "";
             this.hbox2.Add(this.label76);
             Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.hbox2[this.label76]));
             w2.Position = 0;
@@ -362,7 +361,6 @@ namespace MonoDevelop.VBNetBinding {
             this.treeview1 = new Gtk.TreeView();
             this.treeview1.CanFocus = true;
             this.treeview1.Name = "treeview1";
-            this.treeview1.HeadersClickable = true;
             this.GtkScrolledWindow.Add(this.treeview1);
             this.table3.Add(this.GtkScrolledWindow);
             Gtk.Table.TableChild w26 = ((Gtk.Table.TableChild)(this.table3[this.GtkScrolledWindow]));
@@ -396,7 +394,6 @@ namespace MonoDevelop.VBNetBinding {
             // Container child vbox1.Gtk.Box+BoxChild
             this.label10 = new Gtk.Label();
             this.label10.Name = "label10";
-            this.label10.LabelProp = "";
             this.vbox1.Add(this.label10);
             Gtk.Box.BoxChild w29 = ((Gtk.Box.BoxChild)(this.vbox1[this.label10]));
             w29.Position = 1;

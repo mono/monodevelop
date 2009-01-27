@@ -69,7 +69,7 @@ namespace CSharpBinding.Parser
 		{
 			return csharpProvider;
 		}
-		CSharpAmbience ambience = new CSharpAmbience ();
+		
 		public override string ConvertToLanguageTypeName (string netTypeName)
 		{
 			return CSharpAmbience.NetToCSharpTypeName (netTypeName);
@@ -456,7 +456,7 @@ namespace CSharpBinding.Parser
 		public override IEnumerable<MemberReference> FindParameterReferences (RefactorerContext ctx, string fileName, IParameter param)
 		{
 //			System.Console.WriteLine("Find parameter references !!!");
-			IMember member = param.DeclaringMember;
+			//IMember member = param.DeclaringMember;
 			NRefactoryResolver resolver = new NRefactoryResolver (ctx.ParserContext, param.DeclaringMember.DeclaringType.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, null, fileName);
 			
 			resolver.CallingMember = param.DeclaringMember;

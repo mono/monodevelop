@@ -49,7 +49,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 	{
 		static protected readonly int MAX_ACTIVE_COUNT = 100;
 		static protected readonly int MIN_ACTIVE_COUNT = 10;
-		static protected readonly int FORMAT_VERSION   = 59;
+		static protected readonly int FORMAT_VERSION   = 60;
 		
 		NamespaceEntry rootNamespace;
 		protected ArrayList references;
@@ -939,7 +939,10 @@ namespace MonoDevelop.Projects.Dom.Serialization
 						for (int n=0; n<newClasses.Count && newClass == null; n++) {
 							IType uc = newClasses [n];
 							if (uc.Name == ce.Name  && uc.TypeParameters.Count == ce.TypeParameterCount && newNss[n] == ce.NamespaceRef) {
-								newClass = uc;
+								if (newClass == null)
+									newClass = uc;
+								else
+									newClass = CompoundType.Merge (newClass, uc);
 								added[n] = true;
 							}
 						}
@@ -950,7 +953,11 @@ namespace MonoDevelop.Projects.Dom.Serialization
 								ce.Class = ReadClass (ce);
 							RemoveSubclassReferences (ce);
 							
-							ce.Class = CompoundType.Merge (ce.Class, CopyClass (newClass));
+							IType tp = CompoundType.RemoveFile (ce.Class, fileName);
+							if (tp != null)
+								ce.Class = CompoundType.Merge (tp, CopyClass (newClass));
+							else
+								ce.Class = CopyClass (newClass);
 							AddSubclassReferences (ce);
 							
 							ce.LastGetTime = currentGetTime++;
@@ -1287,19 +1294,8 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		IType CopyClass (IType cls)
 		{
-			using (MemoryStream memoryStream = new MemoryStream ()) {
-				BinaryWriter writer = new BinaryWriter (memoryStream);
-				DomPersistence.Write(writer, pdb.DefaultNameEncoder, cls);
-				writer.Flush ();
-				memoryStream.Position = 0;
-				BinaryReader reader = new BinaryReader (memoryStream);
-				DomType result = DomPersistence.ReadType (reader, pdb.DefaultNameDecoder);
-				writer.Close ();
-				reader.Close ();
-				result.SourceProjectDom = cls.SourceProjectDom;
-				result.Resolved = true;
-				return result;
-			}
+			CopyDomVisitor<object> copier = new CopyDomVisitor<object> ();
+			return (IType) copier.Visit (cls, null);
 		}
 		
 		bool GetBestNamespaceEntry (string[] path, int length, bool createPath, bool caseSensitive, out NamespaceEntry lastEntry, out int numMatched)

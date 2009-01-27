@@ -60,12 +60,12 @@ namespace MonoDevelop.Projects.Dom
 			if (typeParameters != null) 
 				this.genericArguments = new List<IReturnType> (typeParameters);
 		}
-		public ReturnTypePart (string baseName, string name, IEnumerable<TypeParameter> typeParameters)
+		public ReturnTypePart (string baseName, string name, IEnumerable<ITypeParameter> typeParameters)
 		{
 			this.Name = name;
 			if (typeParameters != null) {
 				this.genericArguments = new List<IReturnType> ();
-				foreach (TypeParameter para in typeParameters) {
+				foreach (ITypeParameter para in typeParameters) {
 					this.genericArguments.Add (new DomReturnType (baseName + "." + para.Name));
 				}
 			}
@@ -414,11 +414,6 @@ namespace MonoDevelop.Projects.Dom
 		public S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
 		{
 			return visitor.Visit (this, data);
-		}
-		
-		public static IReturnType Resolve (IReturnType source, ITypeResolver resolver)
-		{
-			return source != null ? resolver.Resolve (source) : null;
 		}
 		
 		public override string ToString ()

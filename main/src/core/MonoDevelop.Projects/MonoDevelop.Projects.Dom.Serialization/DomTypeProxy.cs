@@ -144,11 +144,11 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		}
 		
 		
-		public override ReadOnlyCollection<TypeParameter> TypeParameters {
+		public override ReadOnlyCollection<ITypeParameter> TypeParameters {
 			get {
 				if (HasContent (ContentFlags.HasGenericParams))
 					return WrappedType.TypeParameters;
-				return new ReadOnlyCollection<TypeParameter> (new TypeParameter[0]);
+				return new ReadOnlyCollection<ITypeParameter> (new TypeParameter[0]);
 			}
 		}
 		

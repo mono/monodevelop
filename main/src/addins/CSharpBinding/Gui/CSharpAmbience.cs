@@ -353,7 +353,8 @@ namespace MonoDevelop.CSharpBinding
 			StringBuilder result = new StringBuilder ();
 			result.Append (modifiers);
 			result.Append (keyword);
-			result.Append (settings.Markup (" "));
+			if (result.Length > 0)
+				result.Append (settings.Markup (" "));
 			result.Append (settings.EmitName (type, name));
 			
 			if (settings.IncludeGenerics && parameterCount > 0) {

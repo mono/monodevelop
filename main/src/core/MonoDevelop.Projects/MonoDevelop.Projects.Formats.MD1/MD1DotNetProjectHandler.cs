@@ -385,6 +385,9 @@ namespace MonoDevelop.Projects.Formats.MD1
 		// by the resx is newer than the .resources file
 		public static bool IsResgenRequired (string resx_filename)
 		{
+			if (String.Compare (Path.GetExtension (resx_filename), ".resx", true) != 0)
+				throw new ArgumentException (".resx file expected", "resx_filename");
+
 			string resources_filename = Path.ChangeExtension (resx_filename, ".resources");
 
 			if (IsFileNewerThan (resx_filename, resources_filename))

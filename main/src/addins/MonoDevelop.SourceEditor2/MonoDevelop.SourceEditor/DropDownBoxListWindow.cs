@@ -166,7 +166,7 @@ namespace MonoDevelop.SourceEditor
 			int page = 0;
 			int visibleRows = -1;
 			int rowHeight;
-			bool buttonPressed;
+		//	bool buttonPressed;
 			bool disableSelection;
 	
 			public event EventHandler SelectionChanged;
@@ -265,37 +265,28 @@ namespace MonoDevelop.SourceEditor
 			protected override bool OnButtonPressEvent (Gdk.EventButton e)
 			{
 				Selection = GetRowByPosition ((int) e.Y);
-				if (e.Type == Gdk.EventType.TwoButtonPress) {
+				if (e.Type == Gdk.EventType.ButtonPress) {
 					OnSelectItem (EventArgs.Empty);
 					Destroy ();
 				}
-				buttonPressed = true;
+				//buttonPressed = true;
 				return base.OnButtonPressEvent (e);
 			}
 			
 			protected override bool OnButtonReleaseEvent (Gdk.EventButton e)
 			{
-				buttonPressed = false;
+				//buttonPressed = false;
 				return base.OnButtonReleaseEvent (e);
 			}
 			
 			protected override bool OnMotionNotifyEvent (Gdk.EventMotion e)
 			{
-				if (!buttonPressed)
-					return base.OnMotionNotifyEvent (e);
-				
 				int winWidth, winHeight;
 				this.GdkWindow.GetSize (out winWidth, out winHeight);
 				
-		/*		int ypos = (int) e.Y;
-				if (ypos < 0) {
-				}
-				else if (ypos >= winHeight) {
-				}
-				else
-		*/			Selection = GetRowByPosition ((int) e.Y);
+				Selection = GetRowByPosition ((int) e.Y);
 				
-				return true;
+				return base.OnMotionNotifyEvent (e);
 			}
 	
 			protected override bool OnExposeEvent (Gdk.EventExpose args)

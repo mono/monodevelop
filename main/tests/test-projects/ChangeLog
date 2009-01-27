@@ -1,3 +1,20 @@
+2009-01-27  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* completion-db-test/CompletionDbTest/Main.cs:
+	* completion-db-test/Library2/SharedNamespace.cs:
+	* completion-db-test/CompletionDbTest/Replacements:
+	* completion-db-test/CompletionDbTest/PartialTest2.cs:
+	* completion-db-test/CompletionDbTest/PartialTest1.cs:
+	* completion-db-test/CompletionDbTest/CompletionDbTest.csproj:
+	* completion-db-test/CompletionDbTest/Replacements/EmptyFile.cs:
+	* completion-db-test/CompletionDbTest/Replacements/PartialTest2.cs:
+	* completion-db-test/CompletionDbTest/Replacements/GenericRewrite.cs:
+	Added replacement files, to be used to simulate changes in files.
+
+2009-01-27  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* completion-db-test/CompletionDbTest/Main.cs: Updated tests.
+
 2009-01-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* completion-db-test/CompletionDbTest/GenericRewrite.cs:

@@ -339,15 +339,8 @@ namespace MonoDevelop.Ide.Gui
 			closed = true;
 			ClearTasks ();
 			
-			// Parse the file when the document is closed. In this way if the document
-			// is closed without saving the changes, the saved compilation unit
-			// information will be restored
 			string currentParseFile = FileName;
 			Project curentParseProject = Project;
-			System.Threading.ThreadPool.QueueUserWorkItem (delegate {
-				// Don't access Document properties from the thread
-				ProjectDomService.Parse (curentParseProject, currentParseFile, IdeApp.Services.PlatformService.GetMimeTypeForUri (currentParseFile));
-			});
 			
 			if (window is SdiWorkspaceWindow)
 				((SdiWorkspaceWindow)window).DetachFromPathedDocument ();
@@ -355,13 +348,29 @@ namespace MonoDevelop.Ide.Gui
 			window.ActiveViewContentChanged -= OnActiveViewContentChanged;
 			if (IdeApp.Workspace != null)
 				IdeApp.Workspace.ItemRemovedFromSolution -= OnEntryRemoved;
-			OnClosed (a);
+			
+			try {
+				OnClosed (a);
+			} catch (Exception ex) {
+				LoggingService.LogError ("Exception while calling OnClosed.", ex);
+			}
 			
 			while (editorExtension != null) {
-				editorExtension.Dispose ();
+				try {
+					editorExtension.Dispose ();
+				} catch (Exception ex) {
+					LoggingService.LogError ("Exception while disposing extension:" + editorExtension, ex);
+				}
 				editorExtension = editorExtension.Next as TextEditorExtension;
 			}
 			
+			// Parse the file when the document is closed. In this way if the document
+			// is closed without saving the changes, the saved compilation unit
+			// information will be restored
+			System.Threading.ThreadPool.QueueUserWorkItem (delegate {
+				// Don't access Document properties from the thread
+				ProjectDomService.Parse (curentParseProject, currentParseFile, IdeApp.Services.PlatformService.GetMimeTypeForUri (currentParseFile));
+			});
 		}
 #region document tasks
 		List<Task> tasks = new List<Task> ();

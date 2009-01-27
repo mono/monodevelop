@@ -43,13 +43,13 @@ namespace MonoDevelop.CSharpBinding
 		TextEditor editor;
 		List<IMethod> methods = new List<IMethod> ();
 		CSharpAmbience ambience = new CSharpAmbience ();
-		NRefactoryResolver resolver;
+		
 		bool staticResolve = false;
 		
 		public NRefactoryParameterDataProvider (TextEditor editor, NRefactoryResolver resolver, MethodResolveResult resolveResult)
 		{
 			this.editor = editor;
-			this.resolver = resolver;
+			
 			this.staticResolve = resolveResult.StaticResolve;
 			methods.AddRange (resolveResult.Methods);
 			if (resolveResult.Methods.Count > 0)
@@ -59,7 +59,6 @@ namespace MonoDevelop.CSharpBinding
 		public NRefactoryParameterDataProvider (TextEditor editor, NRefactoryResolver resolver, ThisResolveResult resolveResult)
 		{
 			this.editor = editor;
-			this.resolver = resolver;
 			if (resolveResult.CallingType != null) {
 				bool includeProtected = true;
 				foreach (IMethod method in resolveResult.CallingType.Methods) {
@@ -74,7 +73,6 @@ namespace MonoDevelop.CSharpBinding
 		public NRefactoryParameterDataProvider (TextEditor editor, NRefactoryResolver resolver, BaseResolveResult resolveResult)
 		{
 			this.editor = editor;
-			this.resolver = resolver;
 			if (resolveResult.CallingType != null) {
 				IType resolvedType = resolver.Dom.GetType (resolveResult.ResolvedType);
 				foreach (IReturnType rt in resolveResult.CallingType.BaseTypes) {
@@ -97,7 +95,6 @@ namespace MonoDevelop.CSharpBinding
 		public NRefactoryParameterDataProvider (TextEditor editor, NRefactoryResolver resolver, IType type)
 		{
 			this.editor = editor;
-			this.resolver = resolver;
 			
 			if (type != null) {
 				if (type.ClassType == ClassType.Delegate) {
@@ -139,10 +136,9 @@ namespace MonoDevelop.CSharpBinding
 		
  		string delegateName = null;
 		string prefix = null;
-		public NRefactoryParameterDataProvider (TextEditor editor, NRefactoryResolver resolver, string delegateName, IType type)
+		public NRefactoryParameterDataProvider (TextEditor editor, string delegateName, IType type)
 		{
 			this.editor = editor;
-			this.resolver = resolver;
 			this.delegateName = delegateName;
 			if (type != null) {
 				methods.Add (ExtractInvokeMethod (type));

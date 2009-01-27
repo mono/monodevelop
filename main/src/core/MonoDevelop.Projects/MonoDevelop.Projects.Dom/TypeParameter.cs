@@ -31,7 +31,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Projects.Dom
 {
-	public class TypeParameter
+	public class TypeParameter: ITypeParameter
 	{
 		string name;
 		public string Name {
@@ -39,6 +39,12 @@ namespace MonoDevelop.Projects.Dom
 				return name;
 			}
 		}
+		
+		public bool ConstructorRequired { get; set; }
+		
+		public bool ClassRequired { get; set; }
+		
+		public bool ValueTypeRequired { get; set; }
 
 		List<IAttribute> attributes = null;
 		static readonly IAttribute[] emptyAttributes = new IAttribute[0];
@@ -77,15 +83,6 @@ namespace MonoDevelop.Projects.Dom
 			if (attributes == null)
 				attributes = new List<IAttribute> ();
 			attributes.Add (attr);
-		}
-		
-		public static TypeParameter Resolve (TypeParameter type, ITypeResolver typeResolver)
-		{
-			TypeParameter tp = new TypeParameter (type.name);
-			tp.attributes = type.attributes;
-			foreach (IReturnType rt in type.Constraints)
-				tp.AddConstraint (typeResolver.Resolve (rt));
-			return tp;
 		}
 	}
 }

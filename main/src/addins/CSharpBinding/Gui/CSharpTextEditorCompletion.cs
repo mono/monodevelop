@@ -251,7 +251,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 							}
 						}
 					}
-					CompletionDataCollector col = new CompletionDataCollector (Editor, dom, Document.CompilationUnit, location);
+					CompletionDataCollector col = new CompletionDataCollector (Document.CompilationUnit, location);
 					foreach (object o in dom.GetNamespaceContents (namespaceList, true, true)) {
 						col.AddCompletionData (completionList, o);
 					}
@@ -339,7 +339,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 						IType resolvedType = dom.GetType (resolveResult.ResolvedType);
 						if (resolvedType != null && resolvedType.ClassType == ClassType.Enum) {
 							CompletionDataList completionList = new ProjectDomCompletionDataList ();
-							CompletionDataCollector cdc = new CompletionDataCollector (Editor, dom, Document.CompilationUnit, location);
+							CompletionDataCollector cdc = new CompletionDataCollector (Document.CompilationUnit, location);
 							cdc.AddCompletionData (completionList, resolvedType);
 							
 	//						foreach (IField field in resolvedType.Fields) {
@@ -368,7 +368,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 						if (delegateType == null || delegateType.ClassType != ClassType.Delegate)
 							return null;
 						CompletionDataList completionList = new ProjectDomCompletionDataList ();
-						CompletionDataCollector cdc = new CompletionDataCollector (Editor, dom, Document.CompilationUnit, location);
+						CompletionDataCollector cdc = new CompletionDataCollector (Document.CompilationUnit, location);
 						IType declaringType = resolver.CallingType;
 						if (Document.LastErrorFreeParsedDocument != null) {
 							declaringType = Document.LastErrorFreeParsedDocument.CompilationUnit.GetType (declaringType.FullName, declaringType.TypeParameters.Count);
@@ -517,7 +517,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			if (result == null)
 				return null;
 			
-			DomLocation location = new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset - 2);
+			//DomLocation location = new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset - 2);
 			NRefactoryResolver resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (dom, Document.CompilationUnit,
 			                                                                                ICSharpCode.NRefactory.SupportedLanguage.CSharp,
 			                                                                                Editor,
@@ -561,7 +561,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 					}
 					IType resolvedType = dom.SearchType (new SearchTypeRequest (resolver.Unit, resolveResult.ResolvedType, resolver.CallingType));
 					if (resolvedType != null && resolvedType.ClassType == ClassType.Delegate) {
-						return new NRefactoryParameterDataProvider (Editor, resolver, result.Expression, resolvedType);
+						return new NRefactoryParameterDataProvider (Editor, result.Expression, resolvedType);
 					}
 				}
 				break;
@@ -607,7 +607,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 					IType cls = NRefactoryResolver.GetTypeAtCursor (Document.CompilationUnit, Document.FileName, new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
 					CompletionDataList completionList = new ProjectDomCompletionDataList ();
 					List<string> namespaceList = GetUsedNamespaces ();
-					MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col = new MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector (Editor, dom, Document.CompilationUnit, location);
+					MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col = new MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector (Document.CompilationUnit, location);
 					foreach (object o in dom.GetNamespaceContents (namespaceList, true, true)) {
 						if (cls != null && o is IType && ((IType)o).Name == cls.Name) {
 							continue;
@@ -641,7 +641,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				ResolveResult resolveResult = resolver.Resolve (expressionResult, new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
 				if (resolveResult != null && resolveResult.ResolvedType != null) {
 					CompletionDataList completionList = new ProjectDomCompletionDataList ();
-					CompletionDataCollector col = new CompletionDataCollector (Editor, dom, Document.CompilationUnit, location);
+					CompletionDataCollector col = new CompletionDataCollector (Document.CompilationUnit, location);
 					IType foundType = dom.SearchType (new SearchTypeRequest (resolver.Unit, resolveResult.ResolvedType, resolver.CallingType));
 					if (foundType != null) {
 						foreach (IType type in dom.GetSubclasses (foundType)) {
@@ -801,10 +801,10 @@ namespace MonoDevelop.CSharpBinding.Gui
 			HashSet<string> namespacesInScope = new HashSet<string> ();
 			HashSet<string> stringTable = new HashSet<string> ();
 			internal static CSharpAmbience ambience = new CSharpAmbience ();
-			ProjectDom dom;
+		
 			ICompilationUnit unit;
-			DomLocation location;
-			TextEditor editor;
+			
+			
 			bool prefixIsAlias;
 			
 			string namePrefix = "";
@@ -840,12 +840,9 @@ namespace MonoDevelop.CSharpBinding.Gui
 				}
 			}
 			
-			public CompletionDataCollector (TextEditor editor, ProjectDom dom, ICompilationUnit unit, DomLocation location)
+			public CompletionDataCollector (ICompilationUnit unit, DomLocation location)
 			{
-				this.editor = editor;
-				this.dom  = dom;
 				this.unit = unit;
-				this.location = location;
 				this.FullyQualify = false;
 
 				// Get a list of all namespaces in scope
@@ -928,7 +925,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			if (dom == null)
 				return null;
 			IEnumerable<object> objects = resolveResult.CreateResolveResult (dom, resolver != null ? resolver.CallingMember : null);
-			CompletionDataCollector col = new CompletionDataCollector (Editor, dom, Document.CompilationUnit, location);
+			CompletionDataCollector col = new CompletionDataCollector (Document.CompilationUnit, location);
 			col.HideExtensionParameter = !resolveResult.StaticResolve;
 			col.NamePrefix = expressionResult.Expression;
 			
@@ -1023,9 +1020,9 @@ namespace MonoDevelop.CSharpBinding.Gui
 			CompletionDataList result = new ProjectDomCompletionDataList ();
 			
 			
-			ExpressionContext.TypeExpressionContext tce = context as ExpressionContext.TypeExpressionContext;
+		//	ExpressionContext.TypeExpressionContext tce = context as ExpressionContext.TypeExpressionContext;
 			
-			CompletionDataCollector col = new CompletionDataCollector (Editor, dom, Document.CompilationUnit, location);
+			CompletionDataCollector col = new CompletionDataCollector (Document.CompilationUnit, location);
 			IType type = null;
 			if (returnType != null) 
 				type = dom.GetType (returnType);
@@ -1205,7 +1202,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			ResolveResult resolveResult = resolver.ResolveExpression (switchFinder.SwitchStatement.SwitchExpression, location);
 			IType type = dom.GetType (resolveResult.ResolvedType);
 			if (type != null && type.ClassType == ClassType.Enum) {
-				CompletionDataCollector cdc = new CompletionDataCollector (Editor, dom, Document.CompilationUnit, location);
+				CompletionDataCollector cdc = new CompletionDataCollector (Document.CompilationUnit, location);
 				cdc.AddCompletionData (result, type);
 			}
 			return result;
@@ -1213,7 +1210,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 		
 		class SwitchFinder : ICSharpCode.NRefactory.Visitors.AbstractAstVisitor
 		{
-			ICSharpCode.NRefactory.Location location;
+			
 			ICSharpCode.NRefactory.Ast.SwitchStatement switchStatement = null;
 			
 			public ICSharpCode.NRefactory.Ast.SwitchStatement SwitchStatement {
@@ -1224,7 +1221,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			
 			public SwitchFinder (DomLocation location)
 			{
-				this.location = new ICSharpCode.NRefactory.Location (location.Column, location.Line);
+				//this.location = new ICSharpCode.NRefactory.Location (location.Column, location.Line);
 			}
 			
 			public override object VisitSwitchStatement (ICSharpCode.NRefactory.Ast.SwitchStatement switchStatement, object data)
@@ -1284,12 +1281,6 @@ namespace MonoDevelop.CSharpBinding.Gui
 		#endregion
 		
 		#region Xml Comments
-		bool IsInsideDocumentationComment (int cursor)
-		{
-			int lin, col;
-			Editor.GetLineColumnFromPosition (cursor, out lin, out col);
-			return Editor.GetLineText (lin).Trim ().StartsWith ("///");
-		}
 		
 		bool IsInsideClassBody (IType insideClass, int line, int column)
 		{

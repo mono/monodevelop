@@ -1,3 +1,8 @@
+2009-01-27  Mike Krüger  <mkrueger@novell.com>
+
+	* CBinding.addin.xml: fixed "Bug 468416 - *.h aren't colorized as c++
+	headers".
+
 2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* CBinding.mdp: Flush project format changes.

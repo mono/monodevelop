@@ -347,7 +347,15 @@ namespace MonoDevelop.CSharpBinding
 					TypeParameter parameter = new TypeParameter (template.Name);
 					newType.AddTypeParameter (parameter);
 					foreach (ICSharpCode.NRefactory.Ast.TypeReference typeRef in template.Bases) {
-						parameter.AddConstraint (ConvertReturnType (typeRef));
+						DomReturnType rt = ConvertReturnType (typeRef);
+						if (rt.FullName == "constraint: struct")
+							parameter.ValueTypeRequired = true;
+						else if (rt.FullName == "constraint: class")
+							parameter.ClassRequired = true;
+						else if (rt.FullName == "constraint: new")
+							parameter.ConstructorRequired = true;
+						else
+							parameter.AddConstraint (rt);
 					}
 				}
 				

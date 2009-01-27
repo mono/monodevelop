@@ -69,7 +69,7 @@ namespace MonoDevelop.Projects.Dom
 			get;
 		}
 		
-		ReadOnlyCollection<TypeParameter> TypeParameters {
+		ReadOnlyCollection<ITypeParameter> TypeParameters {
 			get;
 		}
 		

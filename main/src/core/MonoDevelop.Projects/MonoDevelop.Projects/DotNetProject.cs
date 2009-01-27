@@ -472,6 +472,7 @@ namespace MonoDevelop.Projects
 
 			foreach (ProjectFile file in Files) {
 				if (file.BuildAction == BuildAction.EmbeddedResource &&
+					String.Compare (Path.GetExtension (file.FilePath), ".resx", true) == 0 &&
 					MD1DotNetProjectHandler.IsResgenRequired (file.FilePath)) {
 					return true;
 				}

@@ -727,7 +727,6 @@ namespace Mono.TextEditor
 			public int VisualToLogicalLine (Document doc, int visualLineNumber)
 			{
 				int result = visualLineNumber;
-				int lastFoldingEnd = 0;
 				LineSegment line = doc.GetLine (result);
 				if (line == null)
 					return result;

@@ -25,6 +25,8 @@
 //
 //
 
+using System;
+
 namespace SharedNamespace1
 {
 	public class E

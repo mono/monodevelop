@@ -57,8 +57,6 @@ namespace MonoDevelop.SourceEditor
 			if (':' != command[0] || 2 > command.Length)
 				return base.RunExCommand (command);
 
-			string message = string.Empty;
-
 			switch (command[1]) {
 			case 'w':
 				if (2 < command.Length) { 

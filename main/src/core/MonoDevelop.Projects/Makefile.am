@@ -59,6 +59,7 @@ FILES =  \
 	MonoDevelop.Projects.Dom.Parser/ProjectDomEventArgs.cs \
 	MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs \
 	MonoDevelop.Projects.Dom.Parser/TypeNameResolver.cs \
+	MonoDevelop.Projects.Dom.Parser/TypeResolverVisitor.cs \
 	MonoDevelop.Projects.Dom.Serialization/AssemblyCodeCompletionDatabase.cs \
 	MonoDevelop.Projects.Dom.Serialization/ClassEntry.cs \
 	MonoDevelop.Projects.Dom.Serialization/ClassInformationEventHandler.cs \
@@ -80,6 +81,7 @@ FILES =  \
 	MonoDevelop.Projects.Dom/CompilationUnit.cs \
 	MonoDevelop.Projects.Dom/CompoundType.cs \
 	MonoDevelop.Projects.Dom/ConditionalRegion.cs \
+	MonoDevelop.Projects.Dom/CopyDomVisitor.cs \
 	MonoDevelop.Projects.Dom/DomAttribute.cs \
 	MonoDevelop.Projects.Dom/DomCecilAttribute.cs \
 	MonoDevelop.Projects.Dom/DomCecilCompilationUnit.cs \
@@ -118,6 +120,7 @@ FILES =  \
 	MonoDevelop.Projects.Dom/IProperty.cs \
 	MonoDevelop.Projects.Dom/IReturnType.cs \
 	MonoDevelop.Projects.Dom/IType.cs \
+	MonoDevelop.Projects.Dom/ITypeParameter.cs \
 	MonoDevelop.Projects.Dom/IUsing.cs \
 	MonoDevelop.Projects.Dom/LocalVariable.cs \
 	MonoDevelop.Projects.Dom/Modifiers.cs \
