@@ -1,3 +1,8 @@
+2009-01-27  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Formats.MSBuild/SlnFileFormat.cs: Properly encode
+	and decode strings when serializing values. Fixes bug #469142.
+
 2009-01-27  Ankit Jain  <jankit@novell.com>
 
 	Fix bug #325200.
