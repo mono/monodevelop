@@ -1,5 +1,12 @@
 2009-01-27  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects/CompletionDatabaseTests.cs: Added test for
+	partial classes.
+
+	* UnitTests.mdp: Updated.
+
+2009-01-27  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects/CompletionDatabaseTests.cs: Updated tests.
 
 2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>

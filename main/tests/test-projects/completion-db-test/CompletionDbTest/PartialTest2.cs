@@ -1,4 +1,4 @@
-// Main.cs
+// PartialTest2.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -24,93 +24,30 @@
 // THE SOFTWARE.
 //
 //
+
 using System;
-using Library1;
 
 namespace CompletionDbTest
 {
-	class MainClass
+	[Obsolete]
+	public partial class PartialTest
 	{
-		public static void Main(string[] args)
-		{
-			Console.WriteLine("Hello World!");
-			PartialTest t;
+		public string Field1;
+		public string Property1 { get { return ""; } }
+		public event EventHandler Event1;
+		public void Method1 () { }
+		public class Inner1 {
 		}
 	}
 
-	public class SomeGeneric<T>
+	[Serializable]
+	public partial class PartialTest: ICloneable
 	{
-		public T Run (T val)
-		{
-			return val;
+		public string Field2;
+		public string Property2 { get { return ""; } }
+		public event EventHandler Event2;
+		public void Method2 () { }
+		public class Inner2 {
 		}
 	}
-
-	public class CustomWidget1: CBin, ISimple
-	{
-	}
-
-	public class CustomWidget2: SomeContainer.CInnerWidget, Library2.IObject
-	{
-	}
-	
-#region Generic types with constraints
-	
-	public class GenericConstraintTest0<T>
-	{
-		T field;
-	}
-	
-	public class GenericConstraintTest1<T> where T:class
-	{
-		T field;
-	}
-	
-	public class GenericConstraintTest2<T> where T:struct
-	{
-		T field;
-	}
-	
-	public class GenericConstraintTest3<T> where T:new ()
-	{
-		T field;
-	}
-	
-	public class GenericConstraintTest4<T,U>
-		where T:CBin
-		where U:T
-	{
-		T field1;
-		U field2;
-		
-		void Run ()
-		{
-		}
-	}
-	
-	// This is wrong
-	public class GenericConstraintTest5<T,U>
-		where T:U
-		where U:T
-	{
-		T field1;
-		U field2;
-		
-		void Run ()
-		{
-		}
-	}
-	
-	public class GenericConstraintTest6<T> where T:CBin, ICloneable
-	{
-		T field;
-		
-		void Run ()
-		{
-		}
-	}
-	
-#endregion
-	
 }
-

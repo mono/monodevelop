@@ -68,6 +68,14 @@ namespace MonoDevelop.Projects
 			ProjectDomService.Unload (solution);
 			base.TearDown ();
 		}
+		
+		void ReplaceFile (string targetRelativePath, string sourceRelativePath)
+		{
+			string tfile = mainProject.Project.GetAbsoluteChildPath (targetRelativePath);
+			string sfile = mainProject.Project.GetAbsoluteChildPath (sourceRelativePath);
+			File.Copy (sfile, tfile, true);
+			ProjectDomService.Parse (tfile, null, null);
+		}
 
 		[Test]
 		public void References ()
@@ -500,26 +508,7 @@ namespace MonoDevelop.Projects
 			Assert.IsTrue (type is InstantiatedType);
 			Assert.IsTrue (type.FieldCount == 1);
 			
-			string newText = @"
-				using System;
-				
-				namespace CompletionDbTest
-				{
-					public class GenericRewrite<T>
-					{
-						public int aa;
-						public int bb;
-					}
-				}
-			";
-			
-			// Added this delay to make sure the write time of the file changes
-			System.Threading.Thread.Sleep (1200);
-			
-			string file = mainProject.Project.GetAbsoluteChildPath ("GenericRewrite.cs");
-			File.WriteAllText (file, newText);
-			
-			mainProject.ForceUpdate ();
+			ReplaceFile ("GenericRewrite.cs", "Replacements/GenericRewrite.cs");
 			
 			type = mainProject.GetType ("CompletionDbTest.GenericRewrite", args);
 			Assert.IsNotNull (type);
@@ -720,6 +709,79 @@ namespace MonoDevelop.Projects
 			Assert.IsTrue (types.Contains ("System.ICloneable"));
 			Assert.IsTrue (types.Contains ("System.Object"));
 			Assert.AreEqual (5, types.Count);
+		}
+		
+		[Test]
+		public void PartialClass ()
+		{
+			IType type = mainProject.GetType ("CompletionDbTest.PartialTest");
+			Assert.IsNotNull (type);
+			Assert.AreEqual ("CompletionDbTest.PartialTest", type.FullName);
+			
+			List<string> members = new List<string> ();
+			foreach (IMember mem in type.Members)
+				members.Add (mem.Name);
+			
+			Assert.AreEqual (15, members.Count);
+			Assert.IsTrue (members.Contains ("Field1"));
+			Assert.IsTrue (members.Contains ("Property1"));
+			Assert.IsTrue (members.Contains ("Event1"));
+			Assert.IsTrue (members.Contains ("Method1"));
+			Assert.IsTrue (members.Contains ("Inner1"));
+			Assert.IsTrue (members.Contains ("Field2"));
+			Assert.IsTrue (members.Contains ("Property2"));
+			Assert.IsTrue (members.Contains ("Event2"));
+			Assert.IsTrue (members.Contains ("Method2"));
+			Assert.IsTrue (members.Contains ("Inner2"));
+			Assert.IsTrue (members.Contains ("Field3"));
+			Assert.IsTrue (members.Contains ("Property3"));
+			Assert.IsTrue (members.Contains ("Event3"));
+			Assert.IsTrue (members.Contains ("Method3"));
+			Assert.IsTrue (members.Contains ("Inner3"));
+			
+			ReplaceFile ("PartialTest2.cs", "Replacements/PartialTest2.cs");
+			
+			type = mainProject.GetType ("CompletionDbTest.PartialTest");
+			Assert.IsNotNull (type);
+			Assert.AreEqual ("CompletionDbTest.PartialTest", type.FullName);
+			
+			members = new List<string> ();
+			foreach (IMember mem in type.Members)
+				members.Add (mem.Name);
+			
+			Assert.AreEqual (10, members.Count);
+			Assert.IsTrue (members.Contains ("Field2"));
+			Assert.IsTrue (members.Contains ("Property2"));
+			Assert.IsTrue (members.Contains ("Event2"));
+			Assert.IsTrue (members.Contains ("Method2"));
+			Assert.IsTrue (members.Contains ("Inner2"));
+			Assert.IsTrue (members.Contains ("Field3"));
+			Assert.IsTrue (members.Contains ("Property3"));
+			Assert.IsTrue (members.Contains ("Event3"));
+			Assert.IsTrue (members.Contains ("Method3"));
+			Assert.IsTrue (members.Contains ("Inner3"));
+			
+			ReplaceFile ("PartialTest2.cs", "Replacements/EmptyFile.cs");
+			
+			type = mainProject.GetType ("CompletionDbTest.PartialTest");
+			Assert.IsNotNull (type);
+			Assert.AreEqual ("CompletionDbTest.PartialTest", type.FullName);
+			
+			members = new List<string> ();
+			foreach (IMember mem in type.Members)
+				members.Add (mem.Name);
+			
+			Assert.AreEqual (5, members.Count);
+			Assert.IsTrue (members.Contains ("Field3"));
+			Assert.IsTrue (members.Contains ("Property3"));
+			Assert.IsTrue (members.Contains ("Event3"));
+			Assert.IsTrue (members.Contains ("Method3"));
+			Assert.IsTrue (members.Contains ("Inner3"));
+			
+			ReplaceFile ("PartialTest1.cs", "Replacements/EmptyFile.cs");
+			
+			type = mainProject.GetType ("CompletionDbTest.PartialTest");
+			Assert.IsNull (type);
 		}
 	}
 }
