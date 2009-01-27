@@ -170,6 +170,14 @@ namespace MonoDevelop.Projects.Dom.Parser
 			if (c != null)
 				return c;
 
+			// Maybe an inner type?
+			if (callingClass != null) {
+				IType t = ResolveType (callingClass);
+				c = FindInnerType (t, name.Split ('.'), 0, genericParameters != null ? genericParameters.Count : 0, true);
+				if (c != null)
+					return c;
+			}
+			
 			// If the name matches an alias, try using the alias first.
 			if (unit != null) {
 				IReturnType ualias = FindAlias (name, unit.Usings);
@@ -440,6 +448,35 @@ namespace MonoDevelop.Projects.Dom.Parser
 		public abstract IType GetType (string typeName, IList<IReturnType> genericArguments, bool deepSearchReferences, bool caseSensitive);
 		public abstract IType GetType (string typeName, int genericArgumentsCount, bool deepSearchReferences, bool caseSensitive);
 
+		internal IType FindInnerType (IType outerType, string[] names, int firstIndex, int finalTypeArgCount, bool caseSensitive)
+		{
+			int nextPos = firstIndex;
+			int len = names.Length;
+			IType c = outerType;
+			while (nextPos < len) {
+				string name = names[nextPos];
+				int partArgsCount = nextPos == len-1 ? finalTypeArgCount : ExtractGenericArgCount (ref name);
+				IType nextc = FindInnerType (c, name, partArgsCount, caseSensitive);
+				if (nextc == null) return null;
+				c = nextc;
+				nextPos++;
+			}
+			return c;
+		}
+		
+		internal static int ExtractGenericArgCount (ref string name)
+		{
+			int i = name.LastIndexOf ('`');
+			if (i != -1) {
+				int typeParams;
+				if (int.TryParse (name.Substring (i + 1), out typeParams)) {
+					name = name.Substring (0, i);
+					return typeParams;
+				}
+			}
+			return 0;
+		}
+		
 		internal IType FindInnerType (IType outerType, string name, int typeArgCount, bool caseSensitive)
 		{
 			foreach (IType innerc in outerType.InnerTypes)  {
