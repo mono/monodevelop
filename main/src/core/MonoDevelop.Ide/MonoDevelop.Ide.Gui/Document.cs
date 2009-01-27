@@ -358,7 +358,11 @@ namespace MonoDevelop.Ide.Gui
 			OnClosed (a);
 			
 			while (editorExtension != null) {
-				editorExtension.Dispose ();
+				try {
+					editorExtension.Dispose ();
+				} catch (Exception ex) {
+					LoggingService.LogError ("Exception while disposing extension:" + editorExtension, ex);
+				}
 				editorExtension = editorExtension.Next as TextEditorExtension;
 			}
 			

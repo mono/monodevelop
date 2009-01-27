@@ -1,3 +1,8 @@
+2009-01-27  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui/Document.cs: Handled exception on text editor
+	extension dispose.
+
 2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.mdp: Flush project format changes.
