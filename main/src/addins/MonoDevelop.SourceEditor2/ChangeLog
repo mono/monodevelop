@@ -1,5 +1,10 @@
 2009-01-27  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/DropDownBoxListWindow.cs: Changed the
+	behavior of the quick class browser dropdown.
+
+2009-01-27  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor.mdp:
 	* MonoDevelop.SourceEditor/IdeViMode.cs:
 	* MonoDevelop.SourceEditor/ClassQuickFinder.cs:
