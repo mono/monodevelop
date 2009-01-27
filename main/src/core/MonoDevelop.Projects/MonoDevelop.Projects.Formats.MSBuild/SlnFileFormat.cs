@@ -336,14 +336,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			
 			if (node is DataValue) {
 				DataValue val = (DataValue) node;
-				string value = val.Value;
-				if (value.Length > 0) {
-					// Strings starting with space or tab must be surrounded by a quote
-					char fc = value [0];
-					char lc = value [value.Length - 1];
-				    if (fc == ' ' || fc == '\t' || fc == '"' || fc == '$' || lc == ' ' || lc == '\t' || lc == '"')
-						value = "\"" + value + "\"";
-				}
+				string value = EncodeString (val.Value);
 				sw.WriteLine ("\t\t" + newPrefix + " = " + value);
 			}
 			else {
@@ -354,6 +347,67 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				foreach (DataNode cn in it.ItemData)
 					WriteDataNode (sw, newPrefix, cn, ref id);
 			}
+		}
+		
+		string EncodeString (string val)
+		{
+			if (val.Length == 0)
+				return val;
+			
+			int i = val.IndexOfAny (new char[] {'\n','\r','\t'});
+			if (i != -1 || val [0] == '@') {
+				StringBuilder sb = new StringBuilder ();
+				if (i != -1) {
+					int fi = val.IndexOf ('\\');
+					if (fi != -1 && fi < i) i = fi;
+					sb.Append (val.Substring (0,i));
+				} else
+					i = 0;
+				for (int n = i; n < val.Length; n++) {
+					char c = val [n];
+					if (c == '\r')
+						sb.Append (@"\r");
+					else if (c == '\n')
+						sb.Append (@"\n");
+					else if (c == '\t')
+						sb.Append (@"\t");
+					else if (c == '\\')
+						sb.Append (@"\\");
+					else
+						sb.Append (c);
+				}
+				val = "@" + sb.ToString ();
+			}
+			char fc = val [0];
+			char lc = val [val.Length - 1];
+		    if (fc == ' ' || fc == '"' || fc == '$' || lc == ' ')
+				val = "\"" + val + "\"";
+			return val;
+		}
+		
+		string DecodeString (string val)
+		{
+			val = val.Trim (' ', '\t');
+			if (val.Length == 0)
+				return val;
+			if (val [0] == '\"')
+				val = val.Substring (1, val.Length - 2);
+			if (val [0] == '@') {
+				StringBuilder sb = new StringBuilder (val.Length);
+				for (int n = 1; n < val.Length; n++) {
+					char c = val [n];
+					if (c == '\\') {
+						c = val [++n];
+						if (c == 'r') c = '\r';
+						else if (c == 'n') c = '\n';
+						else if (c == 't') c = '\t';
+					}
+					sb.Append (c);
+				}
+				return sb.ToString ();
+			}
+			else
+				return val;
 		}
 		
 		DataItem ReadDataItem (Section sec, List<string> lines)
@@ -417,8 +471,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				item.ItemData.Add (child);
 			}
 			else {
-				if (value.StartsWith ("\""))
-					value = value.Substring (1, value.Length - 2);
+				value = DecodeString (value);
 				DataValue val = new DataValue (name, value);
 				item.ItemData.Add (val);
 				lineNum++;
