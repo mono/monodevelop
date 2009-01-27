@@ -61,9 +61,9 @@ namespace Mono.TextEditor
 
 		public virtual int TryMatch (string text, int matchOffset)
 		{
-			System.Text.RegularExpressions.Match match = regex.Match (text, matchOffset);
-//			string matchStr = text.Substring (matchOffset);
-//			System.Text.RegularExpressions.Match match = regex.Match (matchStr);
+//			System.Text.RegularExpressions.Match match = regex.Match (text, matchOffset);
+			string matchStr = text.Substring (matchOffset);
+			System.Text.RegularExpressions.Match match = regex.Match (matchStr);
 			
 			if (match.Success)
 				return match.Length;

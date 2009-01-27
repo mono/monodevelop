@@ -144,7 +144,6 @@ namespace Mono.TextEditor.Highlighting
 		public override Chunk GetChunks (Document doc, Style style, LineSegment line, int offset, int length)
 		{
 			int endOffset = System.Math.Min (offset + length, doc.Length);
-			List<Chunk> result = new List<Chunk> ();
 			Stack<Tag> tagStack = new Stack<Tag> ();
 			Chunk curChunk = new Chunk (offset, 0, new ChunkStyle ());
 			Chunk startChunk = curChunk;

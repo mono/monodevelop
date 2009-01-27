@@ -59,6 +59,7 @@
 		<Begin>&lt;</Begin>
 		<End>&gt;</End>
 	</Span>
+	
 	<Rule name = "Comment">
 	</Rule>
 	
