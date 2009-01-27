@@ -66,13 +66,14 @@
 		<MimeType id="text/x-csrc" icon="md-c-file" isText="true">
 			<File pattern="*.c" />
 		</MimeType>
-		<MimeType id="text/x-chdr" icon="md-h-file" isText="true">
+<!--		<MimeType id="text/x-chdr" icon="md-h-file" isText="true">
 			<File pattern="*.h" />
-		</MimeType>
+		</MimeType>-->
 		<MimeType id="text/x-c++src" icon="md-cpp-file" isText="true">
 			<File pattern="*.cpp" />
 		</MimeType>
 		<MimeType id="text/x-c++hdr" icon="md-h-file" isText="true">
+			<File pattern="*.h" />
 			<File pattern="*.hpp" />
 		</MimeType>
 	</Extension>
