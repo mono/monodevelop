@@ -90,14 +90,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		public void AddPart (IType part)
 		{
-			for (int n=0; n<parts.Count; n++) {
-				if (parts [n].CompilationUnit != null && part.CompilationUnit != null && parts [n].CompilationUnit.FileName == part.CompilationUnit.FileName) {
-					parts [n] = part;
-					Update ();
-					return;
-				}
-			}
-			this.parts.Add (part);
+			parts.Add (part);
 			Update ();
 		}
 		
@@ -113,7 +106,10 @@ namespace MonoDevelop.Projects.Dom
 			}
 			if (parts.Count == 1)
 				return parts[0];
-			return this;
+			else if (parts.Count == 0)
+				return null;
+			else
+				return this;
 		}
 		
 		void Update ()
@@ -166,8 +162,6 @@ namespace MonoDevelop.Projects.Dom
 				((CompoundType)type1).AddPart (type2);
 				return type1;
 			}
-			if (type1.CompilationUnit != null && type2.CompilationUnit != null && type1.CompilationUnit.FileName == type2.CompilationUnit.FileName)
-				return type2;
 			CompoundType result = new CompoundType ();
 			result.AddPart (type1);
 			result.AddPart (type2);

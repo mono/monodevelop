@@ -1,5 +1,12 @@
 2009-01-27  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects.Dom/CompoundType.cs:
+	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
+	Fixed issue with partial classes defined in the same file.
+	Reimplemented CopyClass using CopyDomVisitor.
+
+2009-01-27  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects.Dom/InstantiatedParameterType.cs: Avoid cyclic
 	references in type constraints.
 
