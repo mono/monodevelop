@@ -1,3 +1,7 @@
+2009-01-27  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* PyBinding.mdp: Update target framework.
+
 2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* PyBinding.mdp: Flush project format changes.
