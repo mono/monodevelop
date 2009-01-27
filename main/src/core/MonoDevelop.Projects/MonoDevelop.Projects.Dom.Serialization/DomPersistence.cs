@@ -433,6 +433,16 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		{
 			string name = ReadString (reader, nameTable);
 			TypeParameter tp = new TypeParameter (name);
+			
+			// Flags
+			
+			byte f = reader.ReadByte ();
+			if ((f & 1) != 0)
+				tp.ClassRequired = true;
+			if ((f & 2) != 0)
+				tp.ValueTypeRequired = true;
+			if ((f & 4) != 0)
+				tp.ConstructorRequired = true;
 
 			// Constraints
 			
@@ -453,6 +463,17 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		{
 			WriteString (typeParameter.Name, writer, nameTable);
 
+			// Flags
+			
+			byte f = 0;
+			if (typeParameter.ClassRequired)
+				f |= 1;
+			if (typeParameter.ValueTypeRequired)
+				f |= 2;
+			if (typeParameter.ConstructorRequired)
+				f |= 4;
+			writer.Write (f);
+			
 			// Constraints
 			
 			writer.Write (typeParameter.Constraints.Count ());

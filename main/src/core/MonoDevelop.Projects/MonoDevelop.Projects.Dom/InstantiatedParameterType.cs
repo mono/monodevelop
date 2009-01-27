@@ -26,6 +26,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Dom.Output;
 
@@ -43,26 +44,52 @@ namespace MonoDevelop.Projects.Dom
 			Location = outerType.Location;
 			DeclaringType = outerType;
 			
+			if (tp.ValueTypeRequired)
+				BaseType = new DomReturnType ("System.ValueType");
+			
 			foreach (IReturnType rt in tp.Constraints) {
-				if (rt.FullName == "constraint: struct")
-					BaseType = new DomReturnType ("System.ValueType");
-				else if (rt.FullName == "constraint: class")
-					BaseType = DomReturnType.Object;
-				else if (rt.FullName == "constraint: new")
+				if (FindCyclicReference (new HashSet<ITypeParameter> () { tp }, outerType, ((DomReturnType)rt).DecoratedFullName))
 					continue;
-				else {
-					if (BaseType == null) {
-						BaseType = rt;
-						IType bt = dom.GetType (rt);
-						if (bt != null && bt.ClassType == ClassType.Interface)
-							ClassType = ClassType.Interface;
-					}
-					else
-						AddInterfaceImplementation (rt);
+				if (BaseType == null) {
+					BaseType = rt;
+					IType bt = dom.GetType (rt);
+					if (bt != null && bt.ClassType == ClassType.Interface)
+						ClassType = ClassType.Interface;
 				}
+				else
+					AddInterfaceImplementation (rt);
 			}
 			if (BaseType == null)
 				BaseType = DomReturnType.Object;
+		}
+
+		bool FindCyclicReference (HashSet<ITypeParameter> visited, IType outerType, string sourceParamName)
+		{
+			// Normalize the param name
+			if (sourceParamName.StartsWith (((DomType)outerType).DecoratedFullName + "."))
+				sourceParamName = sourceParamName.Substring (sourceParamName.LastIndexOf ('.') + 1);
+			else if (sourceParamName.IndexOf ('.') != -1)
+				return false;
+			
+			ITypeParameter targetParam = null;
+			foreach (ITypeParameter tp in outerType.TypeParameters) {
+				if (tp.Name == sourceParamName) {
+					targetParam = tp;
+					break;
+				}
+			}
+			
+			if (targetParam == null)
+				return false;
+			
+			if (!visited.Add (targetParam))
+				return true;
+			
+			foreach (IReturnType rt in targetParam.Constraints) {
+				if (FindCyclicReference (visited, outerType, ((DomReturnType)rt).DecoratedFullName))
+					return true;
+			}
+			return false;
 		}
 	}
 }

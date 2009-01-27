@@ -37,5 +37,11 @@ namespace MonoDevelop.Projects.Dom
 		IEnumerable<IAttribute> Attributes { get; }
 
 		IList<IReturnType> Constraints { get; }
+		
+		bool ConstructorRequired { get; }
+		
+		bool ClassRequired { get; }
+		
+		bool ValueTypeRequired { get; }
 	}
 }

@@ -39,6 +39,12 @@ namespace MonoDevelop.Projects.Dom
 				return name;
 			}
 		}
+		
+		public bool ConstructorRequired { get; set; }
+		
+		public bool ClassRequired { get; set; }
+		
+		public bool ValueTypeRequired { get; set; }
 
 		List<IAttribute> attributes = null;
 		static readonly IAttribute[] emptyAttributes = new IAttribute[0];
