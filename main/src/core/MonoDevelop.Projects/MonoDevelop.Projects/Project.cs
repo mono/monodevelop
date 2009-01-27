@@ -454,8 +454,10 @@ namespace MonoDevelop.Projects
 		
 		protected internal override bool OnGetNeedsBuilding (string solutionConfiguration)
 		{
-			if (!isDirty)
-				CheckNeedsBuild (solutionConfiguration);
+			if (!isDirty) {
+				if (CheckNeedsBuild (solutionConfiguration))
+					SetDirty ();
+			}
 			return isDirty;
 		}
 		
@@ -470,33 +472,29 @@ namespace MonoDevelop.Projects
 				isDirty = true;
 		}
 		
-		protected virtual void CheckNeedsBuild (string solutionConfiguration)
+		protected virtual bool CheckNeedsBuild (string solutionConfiguration)
 		{
 			DateTime tim = GetLastBuildTime (solutionConfiguration);
-			if (tim == DateTime.MinValue) {
-				SetDirty ();
-				return;
-			}
+			if (tim == DateTime.MinValue)
+				return true;
 			
 			foreach (ProjectFile file in Files) {
 				if (file.BuildAction == BuildAction.Content || file.BuildAction == BuildAction.None)
 					continue;
 				try {
-					if (File.GetLastWriteTime (file.FilePath) > tim) {
-						SetDirty ();
-						return;
-					}
+					if (File.GetLastWriteTime (file.FilePath) > tim)
+						return true;
 				} catch (IOException) {
 					// Ignore.
 				}
 			}
 			
 			foreach (SolutionItem pref in GetReferencedItems (solutionConfiguration)) {
-				if (pref.GetLastBuildTime (solutionConfiguration) > tim || pref.NeedsBuilding (solutionConfiguration)) {
-					SetDirty ();
-					return;
-				}
+				if (pref.GetLastBuildTime (solutionConfiguration) > tim || pref.NeedsBuilding (solutionConfiguration))
+					return true;
 			}
+
+			return false;
 		}
 		
 		internal protected override DateTime OnGetLastBuildTime (string solutionConfiguration)

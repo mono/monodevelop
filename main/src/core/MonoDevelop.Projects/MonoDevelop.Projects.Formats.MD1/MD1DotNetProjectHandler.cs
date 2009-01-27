@@ -32,9 +32,11 @@ using System.Globalization;
 using System.Collections.Generic;
 using System.CodeDom.Compiler;
 using System.Text.RegularExpressions;
+using System.Xml;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Projects.Extensions;
+using MonoDevelop.Projects.Formats.MSBuild;
 using Microsoft.Build.BuildEngine;
 	
 namespace MonoDevelop.Projects.Formats.MD1
@@ -314,10 +316,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 			if (String.Compare (Path.GetExtension (fname), ".resx", true) != 0)
 				return null;
 
-			//Check whether resgen required
-			FileInfo finfo_resx = new FileInfo (fname);
-			FileInfo finfo_resources = new FileInfo (Path.ChangeExtension (fname, ".resources"));
-			if (finfo_resx.LastWriteTime < finfo_resources.LastWriteTime) {
+			if (!IsResgenRequired (fname)) {
 				fname = Path.ChangeExtension (fname, ".resources");
 				return null;
 			}
@@ -380,6 +379,69 @@ namespace MonoDevelop.Projects.Formats.MD1
 			}
 
 			return null;
+		}
+
+		// true if the resx file or any file referenced
+		// by the resx is newer than the .resources file
+		public static bool IsResgenRequired (string resx_filename)
+		{
+			string resources_filename = Path.ChangeExtension (resx_filename, ".resources");
+
+			if (IsFileNewerThan (resx_filename, resources_filename))
+				return true;
+
+			XmlTextReader xr = null;
+			try {
+				// look for
+				// <data type="System.Resources.ResXFileRef, System.Windows.Forms" ..>
+				//   <value>... filename;.. </value>
+				// </data>
+				xr = new XmlTextReader (resx_filename);
+				string basepath = Path.GetDirectoryName (resx_filename);
+				while (xr.Read ()) {
+					if (xr.NodeType != XmlNodeType.Element ||
+						String.Compare (xr.LocalName, "data") != 0)
+						continue;
+
+					string type = xr.GetAttribute ("type");
+					if (String.IsNullOrEmpty (type))
+						continue;
+
+					if (String.Compare (type, "System.Resources.ResXFileRef, System.Windows.Forms") != 0)
+						continue;
+
+					xr.ReadToDescendant ("value");
+					if (xr.NodeType != XmlNodeType.Element)
+						continue;
+
+					string value = xr.ReadElementContentAsString ();
+
+					string [] parts = value.Split (';');
+					if (parts.Length > 0) {
+						string referenced_filename = MSBuildProjectService.FromMSBuildPath (
+								String.Empty, Path.Combine (basepath, parts [0]).Trim ());
+						if (File.Exists (referenced_filename) &&
+							IsFileNewerThan (referenced_filename, resources_filename))
+							return true;
+					}
+				}
+			} catch (XmlException) {
+				// Ignore xml errors, let resgen handle it
+				return true;
+			} finally {
+				if (xr != null)
+					xr.Close ();
+			}
+
+			return false;
+		}
+
+		// true if first is newer than second
+		static bool IsFileNewerThan (string first, string second)
+		{
+			FileInfo finfo_first = new FileInfo (first);
+			FileInfo finfo_second = new FileInfo (second);
+			return finfo_first.LastWriteTime > finfo_second.LastWriteTime;
 		}
 
 		CompilerError GenerateSatelliteAssemblies (Dictionary<string, string> resourcesByCulture, string outputDir, string al, string defaultns, IProgressMonitor monitor)

@@ -1,3 +1,17 @@
+2009-01-27  Ankit Jain  <jankit@novell.com>
+
+	Fix bug #325200.
+	* MonoDevelop.Projects.Formats.MD1/MD1DotNetProjectHandler.cs
+	(GetResourceId): Use the new IsResgenRequired method.
+	(IsResgenRequired): New. Checks the resx and the files referenced by the
+	resx.
+	(IsFileNewerThan): New.
+	* Monodevelop.Projects/Project.cs (CheckNeedsBuild): Change return type
+	from 'void' to 'bool'. Don't change 'isDirty' state here.
+	(OnGetNeedsBuilding): Set isDirty if required.
+	* Monodevelop.Projects/DotNetProject.cs (CheckNeedsBuild): Override and
+	check resx files with IsResgenRequired method.
+
 2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects.mdp: Flush project format changes.
