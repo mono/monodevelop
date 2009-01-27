@@ -196,7 +196,6 @@ namespace Mono.TextEditor
 		
 		void DisposeGCs ()
 		{
-			System.Console.WriteLine("DisposeGCs");
 			ShowTooltip (null, Gdk.Rectangle.Zero);
 			//gc = gc.Kill ();
 			foreach (Gdk.GC gc in gcDictionary.Values) {
