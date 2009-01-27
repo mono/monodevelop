@@ -82,19 +82,6 @@ namespace MonoDevelop.Projects.Dom
 			this.ReturnType = returnType;
 		}
 		
-		public static IEvent Resolve (IEvent source, ITypeResolver typeResolver)
-		{
-			DomEvent result = new DomEvent ();
-			AbstractMember.Resolve (source, result, typeResolver);
-			if (source.AddMethod != null)
-				result.addMethod = DomMethod.Resolve (source.AddMethod, typeResolver);
-			if (source.RemoveMethod != null)
-				result.removeMethod = DomMethod.Resolve (source.RemoveMethod, typeResolver);
-			if (source.RaiseMethod != null)
-				result.raiseMethod = DomMethod.Resolve (source.RaiseMethod, typeResolver);
-			return result;
-		}
-		
 		public override string HelpUrl {
 			get {
 				return "F:" + this.FullName;

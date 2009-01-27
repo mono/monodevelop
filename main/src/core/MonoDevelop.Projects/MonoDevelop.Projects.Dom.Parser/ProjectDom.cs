@@ -231,7 +231,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 		{
 			foreach (TypeParameter tp in callingClass.TypeParameters) {
 				if (tp.Name == name)
-					return new InstantiatedParameterType (callingClass, tp);
+					return CreateInstantiatedParameterType (callingClass, tp);
 			}
 			if (callingClass.DeclaringType != null)
 				return FindGenericParameter (cu, callingClass.DeclaringType, name);
@@ -451,7 +451,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			if (typeArgCount == 0) {
 				foreach (TypeParameter tp in outerType.TypeParameters) {
 					if (string.Compare (tp.Name, name, !caseSensitive) == 0)
-						return new InstantiatedParameterType (outerType, tp);
+						return CreateInstantiatedParameterType (outerType, tp);
 				}
 			}
 			return null;
@@ -537,6 +537,11 @@ namespace MonoDevelop.Projects.Dom.Parser
 				instantiatedTypeCache [name] = gtype;
 				return gtype;
 			}
+		}
+		
+		public IType CreateInstantiatedParameterType (IType outerType, TypeParameter tp)
+		{
+			return new InstantiatedParameterType (this, outerType, tp);
 		}
 		
 		internal void ResetInstantiatedTypes (IType type)

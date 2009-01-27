@@ -41,10 +41,10 @@ namespace MonoDevelop.Projects.Dom
 		protected ICompilationUnit compilationUnit;
 		protected IReturnType baseType;
 		
-		static readonly ReadOnlyCollection<TypeParameter> emptyParamList = new List<TypeParameter> ().AsReadOnly ();
+		static readonly ReadOnlyCollection<ITypeParameter> emptyParamList = new List<ITypeParameter> ().AsReadOnly ();
 		static readonly ReadOnlyCollection<IReturnType> emptyTypeList = new List<IReturnType> ().AsReadOnly ();
 		
-		List<TypeParameter> typeParameters      = null;
+		List<ITypeParameter> typeParameters      = null;
 		List<IMember> members                   = new List<IMember> ();
 		List<IReturnType> implementedInterfaces = null;
 		
@@ -60,6 +60,19 @@ namespace MonoDevelop.Projects.Dom
 			return !String.IsNullOrEmpty (Namespace) ? Namespace + "." + Name : Name;
 		}
 		
+		public string DecoratedFullName {
+			get {
+				string res;
+				if (DeclaringType != null)
+					res = ((DomType)DeclaringType).DecoratedFullName + "." + Name;
+				else
+					res = FullName;
+				if (TypeParameters.Count > 0)
+					return res + "`" + TypeParameters.Count;
+				else
+					return res;
+			}
+		}
 		protected void SetName (string fullName)
 		{
 			int idx = fullName.LastIndexOf ('.');
@@ -150,7 +163,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public virtual ReadOnlyCollection<TypeParameter> TypeParameters {
+		public virtual ReadOnlyCollection<ITypeParameter> TypeParameters {
 			get {
 				return typeParameters != null ? typeParameters.AsReadOnly () : emptyParamList;
 			}
@@ -482,6 +495,22 @@ namespace MonoDevelop.Projects.Dom
 			this.members.Add (member);
 		}
 		
+		public void Add (IMember member)
+		{
+			if (member is IField)
+				Add ((IField) member);
+			else if (member is IMethod)
+				Add ((IMethod) member);
+			else if (member is IProperty)
+				Add ((IProperty) member);
+			else if (member is IEvent)
+				Add ((IEvent) member);
+			else if (member is IType)
+				Add ((IType) member);
+			else
+				throw new InvalidOperationException ();
+		}
+		
 		protected void ClearInterfaceImplementations ()
 		{
 			if (implementedInterfaces != null)
@@ -508,17 +537,17 @@ namespace MonoDevelop.Projects.Dom
 				typeParameters.Clear ();
 		}
 		
-		public void AddTypeParameter (TypeParameter parameter)
+		public void AddTypeParameter (ITypeParameter parameter)
 		{
 			if (typeParameters == null)
-				typeParameters = new List<TypeParameter> ();
+				typeParameters = new List<ITypeParameter> ();
 			typeParameters.Add (parameter);
 		}
-		public void AddTypeParameter (IEnumerable<TypeParameter> parameters)
+		public void AddTypeParameter (IEnumerable<ITypeParameter> parameters)
 		{
 			if (parameters == null)
 				return;
-			foreach (TypeParameter parameter in parameters) {
+			foreach (ITypeParameter parameter in parameters) {
 				AddTypeParameter (parameter);
 			}
 		}
@@ -562,10 +591,11 @@ namespace MonoDevelop.Projects.Dom
 			string name = GetInstantiatedTypeName (type.Name, genericArguments);
 			GenericTypeInstanceResolver resolver = new GenericTypeInstanceResolver ();
 			if (genericArguments != null) {
+				string fullTypeName = ((DomType)type).DecoratedFullName;
 				for (int i = 0; i < type.TypeParameters.Count && i < genericArguments.Count; i++)
-					resolver.Add (type.FullName + "." + type.TypeParameters[i].Name, genericArguments[i]);
+					resolver.Add (fullTypeName + "." + type.TypeParameters[i].Name, genericArguments[i]);
 			}
-			InstantiatedType result = (InstantiatedType)Resolve (new InstantiatedType (), type, resolver);
+			InstantiatedType result = (InstantiatedType) type.AcceptVisitor (resolver, type);
 			if (result.typeParameters != null)
 				result.typeParameters.Clear ();
 			result.Name = name;
@@ -577,10 +607,8 @@ namespace MonoDevelop.Projects.Dom
 			return result;
 		}
 		
-		class GenericTypeInstanceResolver: ITypeResolver
+		class GenericTypeInstanceResolver: CopyDomVisitor<IType>
 		{
-			public IType ContextType { get; set; }
-			
 			public Dictionary<string, IReturnType> typeTable = new Dictionary<string,IReturnType> ();
 			
 			public void Add (string name, IReturnType type)
@@ -588,78 +616,25 @@ namespace MonoDevelop.Projects.Dom
 				typeTable.Add (name, type);
 			}
 			
-			public IReturnType Resolve (IReturnType type)
+			public override IDomVisitable Visit (IReturnType type, IType typeToInstantiate)
 			{
-				IReturnType copyFrom = type;
+				DomReturnType copyFrom = (DomReturnType) type;
 				
-				if (typeTable.ContainsKey (type.FullName)) {
-					if (type.ArrayDimensions == 0 && (type.GenericArguments == null || type.GenericArguments.Count == 0))
-						return typeTable [type.FullName];
-					copyFrom = typeTable [type.FullName];
+				IReturnType res;
+				if (typeTable.TryGetValue (copyFrom.DecoratedFullName, out res)) {
+					if (type.ArrayDimensions == 0 && type.GenericArguments.Count == 0)
+						return res;
 				}
-				
-				DomReturnType result = new DomReturnType ();
-				result.Name      = copyFrom.Name;
-				result.Namespace = copyFrom.Namespace;
-				result.Type       = copyFrom.Type;
-				result.PointerNestingLevel = copyFrom.PointerNestingLevel;
-				result.IsNullable = copyFrom.IsNullable;
-				result.ArrayDimensions = type.ArrayDimensions;
-				for (int n=0; n< type.ArrayDimensions; n++)
-					result.SetDimension (n, type.GetDimension (n));
-				foreach (IReturnType param in copyFrom.GenericArguments) {
-					result.AddTypeParameter (Resolve (param));
-				}
-				return result;
-			}
-		}
-		
-		public static DomType Resolve (IType type, ITypeResolver typeResolver)
-		{
-			return Resolve (new DomType (), type, typeResolver);
-		}
-		
-		static DomType Resolve (DomType result, IType type, ITypeResolver typeResolver)
-		{
-			IType oldContextType = typeResolver.ContextType;
-			typeResolver.ContextType = type;
-			
-			AbstractMember.Resolve (type, result, typeResolver);
-			result.CompilationUnit = type.CompilationUnit;
-			result.Name          = type.Name;
-			result.Namespace     = type.Namespace;
-			result.ClassType     = type.ClassType;
-			
-			foreach (TypeParameter param in type.TypeParameters)
-				result.AddTypeParameter (TypeParameter.Resolve (param, typeResolver));
-			
-			if (type.BaseType != null)
-				result.baseType = DomReturnType.Resolve (type.BaseType, typeResolver);
-			
-			if (type.ImplementedInterfaces != null) {
-				foreach (IReturnType iface in type.ImplementedInterfaces) {
-					result.AddInterfaceImplementation (DomReturnType.Resolve (iface, typeResolver));
-				}
+				return base.Visit (type, typeToInstantiate);
 			}
 			
-			foreach (IType innerType in type.InnerTypes) {
-				result.Add (Resolve (innerType, typeResolver));
+			protected override DomType CreateInstance (IType type, IType typeToInstantiate)
+			{
+				if (type == typeToInstantiate)
+					return new InstantiatedType ();
+				else
+					return base.CreateInstance (type, typeToInstantiate);
 			}
-			foreach (IField field in type.Fields) {
-				result.Add (DomField.Resolve (field, typeResolver));
-			}
-			foreach (IProperty property in type.Properties) {
-				result.Add (DomProperty.Resolve (property, typeResolver));
-			}
-			foreach (IMethod method in type.Methods) {
-				result.Add (DomMethod.Resolve (method, typeResolver));
-			}
-			foreach (IEvent evt in type.Events) {
-				result.Add (DomEvent.Resolve (evt, typeResolver));
-			}
-			
-			typeResolver.ContextType = oldContextType;
-			return result;
 		}
 		
 		/// <summary>
@@ -739,7 +714,6 @@ namespace MonoDevelop.Projects.Dom
 			IType b = other is InstantiatedType ? ((InstantiatedType)other).UninstantiatedType : other;
 			return a.TypeParameters.Count == b.TypeParameters.Count && a.FullName == b.FullName;
 		}
-		
 	}
 	
 	internal sealed class Stock 

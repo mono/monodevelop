@@ -417,18 +417,6 @@ namespace MonoDevelop.Projects.Dom
 			return null;
 		}
 		
-		public static void Resolve (IMember source, AbstractMember target, ITypeResolver typeResolver)
-		{
-			target.Name           = source.Name;
-			target.Documentation  = source.Documentation;
-			target.Modifiers      = source.Modifiers;
-			target.ReturnType     = DomReturnType.Resolve (source.ReturnType, typeResolver);
-			target.Location       = source.Location;
-			target.BodyRegion     = source.BodyRegion;
-			target.explicitInterfaces = new List<IReturnType> (source.ExplicitInterfaces.Select ( x => DomReturnType.Resolve (x, typeResolver)));
-			target.AddRange (DomAttribute.Resolve (source.Attributes, typeResolver));
-		}
-		
 		public abstract S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data);
 		
 	}

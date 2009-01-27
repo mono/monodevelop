@@ -1,4 +1,4 @@
-// InstantiatedParameterType.cs
+// ITypeParameter.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -26,43 +26,16 @@
 //
 
 using System;
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.Dom.Output;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Projects.Dom
 {
-	internal class InstantiatedParameterType: DomType
+	public interface ITypeParameter
 	{
-		public InstantiatedParameterType (ProjectDom dom, IType outerType, TypeParameter tp)
-		{
-			compilationUnit = outerType.CompilationUnit;
-			ClassType = ClassType.Class;
-			Modifiers = Modifiers.Public;
-			Name = tp.Name;
-			Namespace = outerType.Namespace;
-			Location = outerType.Location;
-			DeclaringType = outerType;
-			
-			foreach (IReturnType rt in tp.Constraints) {
-				if (rt.FullName == "constraint: struct")
-					BaseType = new DomReturnType ("System.ValueType");
-				else if (rt.FullName == "constraint: class")
-					BaseType = DomReturnType.Object;
-				else if (rt.FullName == "constraint: new")
-					continue;
-				else {
-					if (BaseType == null) {
-						BaseType = rt;
-						IType bt = dom.GetType (rt);
-						if (bt != null && bt.ClassType == ClassType.Interface)
-							ClassType = ClassType.Interface;
-					}
-					else
-						AddInterfaceImplementation (rt);
-				}
-			}
-			if (BaseType == null)
-				BaseType = DomReturnType.Object;
-		}
+		string Name { get; }
+
+		IEnumerable<IAttribute> Attributes { get; }
+
+		IList<IReturnType> Constraints { get; }
 	}
 }

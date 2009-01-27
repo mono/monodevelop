@@ -1,3 +1,28 @@
+2009-01-27  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Projects.mdp:
+	* MonoDevelop.Projects.Dom/IType.cs:
+	* MonoDevelop.Projects.Dom/DomType.cs:
+	* MonoDevelop.Projects.Dom/DomEvent.cs:
+	* MonoDevelop.Projects.Dom/DomField.cs:
+	* MonoDevelop.Projects.Dom/DomMethod.cs:
+	* MonoDevelop.Projects.Dom/IReturnType.cs:
+	* MonoDevelop.Projects.Dom/DomProperty.cs:
+	* MonoDevelop.Projects.Dom/DomAttribute.cs:
+	* MonoDevelop.Projects.Dom/DomParameter.cs:
+	* MonoDevelop.Projects.Dom/TypeParameter.cs:
+	* MonoDevelop.Projects.Dom/DomReturnType.cs:
+	* MonoDevelop.Projects.Dom/CopyDomVisitor.cs:
+	* MonoDevelop.Projects.Dom/ITypeParameter.cs:
+	* MonoDevelop.Projects.Dom/AbstractMember.cs:
+	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs:
+	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs:
+	* MonoDevelop.Projects.Dom/InstantiatedParameterType.cs:
+	* MonoDevelop.Projects.Dom.Serialization/DomTypeProxy.cs:
+	* MonoDevelop.Projects.Dom.Parser/TypeResolverVisitor.cs: Replaced
+	ITypeResolver by the IDomVisitor infrastructure.
+
 2009-01-27  Ankit Jain  <jankit@novell.com>
 
 	* MonoDevelop.Projects.Formats.MD1/MD1DotNetProjectHandler.cs

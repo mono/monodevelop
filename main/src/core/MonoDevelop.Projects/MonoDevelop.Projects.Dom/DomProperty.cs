@@ -145,16 +145,6 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public static IProperty Resolve (IProperty source, ITypeResolver typeResolver)
-		{
-			DomProperty result = new DomProperty ();
-			AbstractMember.Resolve (source, result, typeResolver);
-			result.PropertyModifier = source.PropertyModifier;
-			result.GetRegion = source.GetRegion;
-			result.SetRegion = source.SetRegion;
-			return result;
-		}
-		
 		public override string ToString ()
 		{
 			return string.Format ("[DomProperty:Name={0}, Modifiers={1}, ReturnType={2}, Location={3}, PropertyModifier={4}, GetRegion={5}, SetRegion={6}, ExplicitInterfaces={7}]",

@@ -74,13 +74,6 @@ namespace MonoDevelop.Projects.Dom
 		}
 		
 		
-		public static IField Resolve (IField source, ITypeResolver typeResolver)
-		{
-			DomField result       = new DomField ();
-			AbstractMember.Resolve (source, result, typeResolver);
-			return result;
-		}
-		
 		public override int CompareTo (object obj)
 		{
 			if (obj is IMethod)

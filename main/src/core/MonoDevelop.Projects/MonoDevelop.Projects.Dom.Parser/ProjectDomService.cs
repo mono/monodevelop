@@ -950,13 +950,13 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		internal static int ResolveTypes (ProjectDom db, ICompilationUnit unit, IList<IType> types, out List<IType> result)
 		{
-			CompilationUnitTypeResolver tr = new CompilationUnitTypeResolver (db, unit);
+			TypeResolverVisitor tr = new TypeResolverVisitor (db, unit);
 			
 			int unresolvedCount = 0;
 			result = new List<IType> ();
 			foreach (IType c in types) {
 				tr.UnresolvedCount = 0;
-				DomType rc = DomType.Resolve (c, tr);
+				DomType rc = (DomType)c.AcceptVisitor (tr, null);
 				rc.Resolved = true;
 				
 				if (tr.UnresolvedCount == 0 && c.FullName != "System.Object") {
@@ -1026,73 +1026,6 @@ namespace MonoDevelop.Projects.Dom.Parser
 		public static bool GetAssemblyInfo (string assemblyName, out string realAssemblyName, out string assemblyFile, out string name)
 		{
 			return MonoDevelop.Projects.Dom.Serialization.AssemblyCodeCompletionDatabase.GetAssemblyInfo (assemblyName, out realAssemblyName, out assemblyFile, out name);
-		}
-	}
-	
-	class CompilationUnitTypeResolver: ITypeResolver
-	{
-		public IType ContextType { get; set; }
-		ProjectDom db;
-		ICompilationUnit unit;
-		int unresolvedCount;
-		
-		public CompilationUnitTypeResolver (ProjectDom db, ICompilationUnit unit)
-		{
-			this.db = db;
-			this.unit = unit;
-		}
-		
-		public IReturnType Resolve (IReturnType type)
-		{
-			IReturnTypePart firstPart = type.Parts [0];
-			string name = type.Namespace.Length > 0 ? type.Namespace + "." + firstPart.Name : firstPart.Name;
-			if (firstPart.GenericArguments.Count > 0)
-				name += "`" + firstPart.GenericArguments.Count;
-			IType c = db.SearchType (new SearchTypeRequest (unit, ContextType, name));
-			if (c == null) {
-				unresolvedCount++;
-				return db.GetSharedReturnType (type);
-			}
-
-			List<IReturnTypePart> parts = new List<IReturnTypePart> (type.Parts.Count);
-			IType curType = c.DeclaringType;
-			while (curType != null) {
-				ReturnTypePart newPart = new ReturnTypePart {Name = curType.Name};
-				for (int n=curType.TypeParameters.Count - 1; n >= 0; n--)
-					newPart.AddTypeParameter (new DomReturnType ("?"));
-				parts.Insert (0, newPart);
-				curType = curType.DeclaringType;
-			}
-			
-			foreach (ReturnTypePart part in type.Parts) {
-				ReturnTypePart newPart = new ReturnTypePart ();
-				newPart.Name = part.Name;
-				foreach (IReturnType ga in part.GenericArguments)
-					newPart.AddTypeParameter (DomReturnType.Resolve (ga, this));
-				parts.Add (newPart);
-			}
-			
-			DomReturnType rt = new DomReturnType (c.Namespace, parts);
-			
-			// Make sure the whole type is resolved
-			if (parts.Count > 1 && db.SearchType (new SearchTypeRequest (unit, rt, ContextType)) == null) {
-				unresolvedCount++;
-				return db.GetSharedReturnType (type);
-			}
-			
-			rt.PointerNestingLevel = type.PointerNestingLevel;
-			rt.IsNullable = type.IsNullable;
-			rt.ArrayDimensions = type.ArrayDimensions;
-			for (int n=0; n<type.ArrayDimensions; n++)
-				rt.SetDimension (n, type.GetDimension (n));
-			
-			return db.GetSharedReturnType (rt);
-		}
-		
-		public int UnresolvedCount
-		{
-			get { return unresolvedCount; }
-			set { unresolvedCount = value; }
 		}
 	}
 	
