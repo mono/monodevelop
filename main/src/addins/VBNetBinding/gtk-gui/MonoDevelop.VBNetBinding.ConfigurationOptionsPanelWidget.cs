@@ -111,7 +111,6 @@ namespace MonoDevelop.VBNetBinding {
             this.label76 = new Gtk.Label();
             this.label76.WidthRequest = 18;
             this.label76.Name = "label76";
-            this.label76.LabelProp = "";
             this.hbox1.Add(this.label76);
             Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.hbox1[this.label76]));
             w2.Position = 0;
@@ -239,7 +238,6 @@ namespace MonoDevelop.VBNetBinding {
             this.label77 = new Gtk.Label();
             this.label77.WidthRequest = 18;
             this.label77.Name = "label77";
-            this.label77.LabelProp = "";
             this.hbox2.Add(this.label77);
             Gtk.Box.BoxChild w14 = ((Gtk.Box.BoxChild)(this.hbox2[this.label77]));
             w14.Position = 0;
@@ -350,7 +348,6 @@ namespace MonoDevelop.VBNetBinding {
             this.label79 = new Gtk.Label();
             this.label79.WidthRequest = 18;
             this.label79.Name = "label79";
-            this.label79.LabelProp = "";
             this.hbox4.Add(this.label79);
             Gtk.Box.BoxChild w24 = ((Gtk.Box.BoxChild)(this.hbox4[this.label79]));
             w24.Position = 0;

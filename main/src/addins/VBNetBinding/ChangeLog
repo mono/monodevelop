@@ -1,3 +1,11 @@
+2009-01-27  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* VBNetBinding.mdp:
+	* gtk-gui/objects.xml:
+	* gtk-gui/MonoDevelop.VBNetBinding.ProjectOptionsPanelWidget.cs:
+	* gtk-gui/MonoDevelop.VBNetBinding.ConfigurationOptionsPanelWidget.cs:
+	Flush.
+
 2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* VBNetBinding.mdp: Flush project format changes.
