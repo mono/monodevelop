@@ -1,5 +1,9 @@
 2009-01-27  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor.mdp: treat warnings as errors.
+
+2009-01-27  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/Document.cs:
 	* SyntaxModes/XmlSyntaxMode.xml: fixed "Bug 469628 - XML attribute
 	highlighting broken"
