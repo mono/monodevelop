@@ -1,3 +1,10 @@
+2009-01-27  Ankit Jain  <jankit@novell.com>
+
+	* MonoDevelop.Projects.Formats.MD1/MD1DotNetProjectHandler.cs
+	(IsResgenRequired): File must be a .resx
+	* Monodevelop.Projects/DotNetProject.cs (CheckNeedsBuild): Check only
+	resx files for resgen.
+
 2009-01-27  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Formats.MSBuild/SlnFileFormat.cs: Properly encode
