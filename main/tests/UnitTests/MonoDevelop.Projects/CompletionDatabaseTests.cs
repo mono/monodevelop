@@ -540,7 +540,6 @@ namespace MonoDevelop.Projects
 			IReturnType rt = fs [0].ReturnType;
 			
 			IType fieldType = mainProject.GetType (rt);
-			Console.WriteLine ("pprt: " + rt);
 			Assert.IsNotNull (fieldType);
 			Assert.AreEqual ("T", fieldType.Name);
 			
@@ -676,7 +675,7 @@ namespace MonoDevelop.Projects
 			
 			Assert.IsTrue (types.Contains ("CompletionDbTest.GenericConstraintTest5.T"));
 			Assert.IsTrue (types.Contains ("System.Object"));
-			Assert.AreEqual (4, types.Count);
+			Assert.AreEqual (2, types.Count);
 			
 			// Second field
 			
