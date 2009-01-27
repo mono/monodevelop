@@ -1,3 +1,9 @@
+2009-01-27  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* ChangeLogService.cs:
+	* CommitDialogExtensionWidget.cs: Implement support for per-project
+	policies VcsIntegration.RequireEntry/Enabled/None.
+
 2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* ChangeLogAddIn.mdp: Flush project format changes.

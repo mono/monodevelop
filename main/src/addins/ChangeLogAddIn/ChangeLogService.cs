@@ -38,38 +38,42 @@ namespace MonoDevelop.ChangeLogAddIn
 		// Returns the path of the ChangeLog where changes of the provided file have to be logged.
 		// Returns null if no ChangeLog could be found.
 		// Returns an empty string if changes don't have to be logged.
-		public static string GetChangeLogForFile (string baseCommitPath, string file)
+		public static string GetChangeLogForFile (string baseCommitPath, string file, out SolutionItem parentEntry, out ChangeLogPolicy policy)
 		{
+			parentEntry = null;
+			policy = null;
 			if (!IdeApp.Workspace.IsOpen)
 				return null;
 			
 			// Find the project that contains the file. If none is found
 			// find a combine entry at the file location
-			SolutionItem entry = null;
 			string bestPath = null;
 			file = FileService.GetFullPath (file);
 			
 			foreach (SolutionItem e in IdeApp.Workspace.GetAllSolutionItems ()) {
 				if (e is Project && ((Project)e).Files.GetFile (file) != null) {
-					entry = e;
+					parentEntry = e;
 					break;
 				}
 				string epath = FileService.GetFullPath (e.BaseDirectory) + Path.DirectorySeparatorChar;
 				if (file.StartsWith (epath) && (bestPath == null || bestPath.Length < epath.Length)) {
 					bestPath = epath;
-					entry = e;
+					parentEntry = e;
 				}
 			}
 			
-			if (entry == null)
+			if (parentEntry == null)
 				return null;
 			
+			policy = parentEntry.Policies.Get<ChangeLogPolicy> ();
+			
 			if (baseCommitPath == null)
-				baseCommitPath = entry.ParentSolution.BaseDirectory;
+				baseCommitPath = parentEntry.ParentSolution.BaseDirectory;
 			
 			baseCommitPath = FileService.GetFullPath (baseCommitPath);
 			
-			ChangeLogPolicy policy = entry.Policies.Get<ChangeLogPolicy> ();
+			if (policy.VcsIntegration == VcsIntegration.None)
+				return "";
 			
 			switch (policy.UpdateMode)
 			{
@@ -90,7 +94,7 @@ namespace MonoDevelop.ChangeLogAddIn
 				}
 					
 				case ChangeLogUpdateMode.ProjectRoot:				
-					return Path.Combine (entry.BaseDirectory, "ChangeLog");
+					return Path.Combine (parentEntry.BaseDirectory, "ChangeLog");
 					
 				case ChangeLogUpdateMode.Directory:
 					string dir = Path.GetDirectoryName (file);
@@ -101,5 +105,12 @@ namespace MonoDevelop.ChangeLogAddIn
 					return null;
 			}                                                     	
 		}	
+		
+		public static string GetChangeLogForFile (string baseCommitPath, string file)
+		{
+			SolutionItem parentEntry;
+			ChangeLogPolicy policy;
+			return GetChangeLogForFile (baseCommitPath, file, out parentEntry, out policy);
+		}
 	}
 }

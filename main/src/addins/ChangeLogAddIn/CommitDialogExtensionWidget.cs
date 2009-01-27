@@ -49,12 +49,11 @@ namespace MonoDevelop.ChangeLogAddIn
 		Dictionary<string,ChangeLogEntry> entries;
 		int unknownFileCount;
 		int uncommentedCount;
+		bool requireComment;
+		bool enabled;
 		
 		public CommitDialogExtensionWidget()
-		{
-			if (!IntegrationEnabled)
-				return;
-				
+		{	
 			Add (box);
 			box.PackStart (vbox, true, true, 0);
 			
@@ -73,15 +72,8 @@ namespace MonoDevelop.ChangeLogAddIn
 			haux.PackStart (optionsButton, false, false, 0);
 		}
 		
-		public static bool IntegrationEnabled {
-			get { return PropertyService.Get ("ChangeLogAddIn.VersionControlIntegration", true); }
-		}
-		
 		public override void Initialize (ChangeSet cset)
-		{
-			if (!IntegrationEnabled)
-				return;
-				
+		{	
 			this.cset = cset;
 			msgLabel = new Label ();
 			pathLabel = new Label ();
@@ -89,15 +81,20 @@ namespace MonoDevelop.ChangeLogAddIn
 			pathLabel.Xalign = 0;
 			vbox.PackStart (msgLabel, false, false, 0);
 			vbox.PackStart (pathLabel, false, false, 3);
-			ShowAll ();
+			
 			GenerateLogEntries ();
-			UpdateStatus ();
+			if (enabled) {
+				ShowAll ();
+				UpdateStatus ();
+			}
 		}
 		
 		void UpdateStatus ()
 		{
-			if (!IntegrationEnabled)
+			if (!enabled)
 				Remove (box);
+			
+			AllowCommit = !requireComment;
 			
 			if (!UserInformation.Default.IsValid) {
 				msgLabel.Markup = "<b><span foreground='red'>" + GettextCatalog.GetString ("ChangeLog entries can't be generated.") + "</span></b>";
@@ -113,6 +110,8 @@ namespace MonoDevelop.ChangeLogAddIn
 			string warning = "";
 			if (uncommentedCount > 0) {
 				string fc = GettextCatalog.GetString ("There are {0} files without a comment.\nThe ChangeLog entry for those files will not be generated.", uncommentedCount);
+				if (requireComment)
+					fc += "\n" + GettextCatalog.GetString ("Some of the projects require that files have comments when they are committed.");
 				warning = "<b><span foreground='red'>" + fc + "</span></b>\n";
 			}
 			if (unknownFileCount > 0) {
@@ -132,7 +131,7 @@ namespace MonoDevelop.ChangeLogAddIn
 		
 		public override bool OnBeginCommit (ChangeSet changeSet)
 		{
-			if (!IntegrationEnabled)
+			if (!enabled)
 				return true;
 
 			try {
@@ -207,7 +206,7 @@ namespace MonoDevelop.ChangeLogAddIn
 		
 		public override void OnEndCommit (ChangeSet changeSet, bool success)
 		{
-			if (!IntegrationEnabled)
+			if (!enabled)
 				return;
 				
 			if (!success)
@@ -220,12 +219,19 @@ namespace MonoDevelop.ChangeLogAddIn
 		{
 			entries = new Dictionary<string,ChangeLogEntry> ();
 			unknownFileCount = 0;
+			enabled = false;
+			requireComment = false;
 			
 			foreach (ChangeSetItem item in cset.Items) {
-				string logf = ChangeLogService.GetChangeLogForFile (cset.BaseLocalPath, item.LocalPath);
+				MonoDevelop.Projects.SolutionItem parentItem;
+				ChangeLogPolicy policy;
+				string logf = ChangeLogService.GetChangeLogForFile (cset.BaseLocalPath, item.LocalPath,
+				                                                    out parentItem, out policy);
+				
 				if (logf == string.Empty)
 					continue;
 				
+				enabled = true;
 				bool cantGenerate = false;
 				
 				if (logf == null) {
@@ -233,12 +239,17 @@ namespace MonoDevelop.ChangeLogAddIn
 					logf = System.IO.Path.GetDirectoryName (item.LocalPath);
 					logf = System.IO.Path.Combine (logf, "ChangeLog");
 				}
-				if (string.IsNullOrEmpty (item.Comment) && !item.IsDirectory)
+				
+				if (string.IsNullOrEmpty (item.Comment) && !item.IsDirectory) {
 					uncommentedCount++;
+					if (policy != null && policy.VcsIntegration == VcsIntegration.RequireEntry)
+						requireComment = true;
+				}
 				
 				ChangeLogEntry entry;
 				if (!entries.TryGetValue (logf, out entry)) {
 					entry = new ChangeLogEntry ();
+					entry.UserInformation = MonoDevelop.Ide.Gui.IdeApp.Workspace.GetUserInformation (parentItem);
 					entry.CantGenerate = cantGenerate;
 					entry.File = logf;
 					if (cantGenerate)
@@ -253,27 +264,8 @@ namespace MonoDevelop.ChangeLogAddIn
 			}
 			
 			foreach (ChangeLogEntry entry in entries.Values) {
-				
-				//find the parent solution for a file
-				MonoDevelop.Projects.Solution sol = null;
-				foreach (ChangeSetItem item in entry.Items) {
-					if (item.IsDirectory)
-						continue;
-					MonoDevelop.Projects.Project p = IdeApp.Workspace.GetProjectContainingFile (item.LocalPath);
-					if (p != null) {
-						sol = p.ParentSolution;
-						break;
-					}
-				}
-				
-				UserInformation userInfo;
-				if (sol != null)
-					userInfo = IdeApp.Workspace.GetUserInformation (sol);
-				else
-					userInfo = UserInformation.Default;
-				
 				entry.Message = cset.GeneratePathComment (entry.File, entry.Items, 
-					ChangeLogMessageStyle.ChangeLogEntry, userInfo);
+					ChangeLogMessageStyle.ChangeLogEntry, entry.UserInformation);
 			}
 		}
 		
@@ -308,5 +300,6 @@ namespace MonoDevelop.ChangeLogAddIn
 		public bool CantGenerate;
 		public bool IsNew;
 		public List<ChangeSetItem> Items = new List<ChangeSetItem> ();
+		public UserInformation UserInformation;
 	}
 }
