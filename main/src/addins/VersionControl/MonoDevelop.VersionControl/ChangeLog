@@ -1,3 +1,11 @@
+2009-01-27  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.VersionControl.Dialogs/CommitDialog.cs:
+	* MonoDevelop.VersionControl/CommitDialogExtension.cs: Add a property
+	for CommitDialogExtensions to disallow committing.
+
+	* gtk-gui/gui.stetic: Updated.
+
 2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.VersionControl.mdp: Flush project format changes.
