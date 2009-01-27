@@ -1,3 +1,18 @@
+2009-01-27  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor.mdp:
+	* MonoDevelop.SourceEditor/IdeViMode.cs:
+	* MonoDevelop.SourceEditor/ClassQuickFinder.cs:
+	* MonoDevelop.SourceEditor/SourceEditorView.cs:
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs:
+	* MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs:
+	* MonoDevelop.SourceEditor.Extension/TemplateCodon.cs:
+	* MonoDevelop.SourceEditor/DebugValueTooltipProvider.cs:
+	* gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs:
+	* MonoDevelop.SourceEditor/HighlightPropertiesSemanticRule.cs:
+	* gtk-gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs: Fixed
+	compiler warnings.
+
 2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Use MD's TextFile API

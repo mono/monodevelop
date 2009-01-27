@@ -53,8 +53,6 @@ namespace MonoDevelop.SourceEditor
 		
 		SourceEditorWidget editor;
 		
-		Tooltips tips = new Tooltips ();
-		
 		public ClassQuickFinder (SourceEditorWidget editor)
 		{
 			this.editor = editor;
@@ -204,10 +202,10 @@ namespace MonoDevelop.SourceEditor
 		void UpdateRegionComboTip (FoldingRegion region)
 		{
 			if (region == null) {
-				tips.SetTip (regionCombo, GettextCatalog.GetString ("Region list"), null);
+				regionCombo.TooltipText = GettextCatalog.GetString ("Region list");
 				return;
 			}
-			tips.SetTip (regionCombo, GettextCatalog.GetString ("Region {0}", region.Name), null);
+			regionCombo.TooltipText = GettextCatalog.GetString ("Region {0}", region.Name);
 		}
 		
 		void RegionChanged (object sender, EventArgs e)
@@ -312,9 +310,9 @@ namespace MonoDevelop.SourceEditor
 			if (it != null) {
 				Ambience ambience = editor.Ambience;
 				string txt = ambience.GetString (it, OutputFlags.ClassBrowserEntries);
-				tips.SetTip (this.membersCombo, txt, txt);
+				this.membersCombo.TooltipText = txt;
 			} else {
-				tips.SetTip (membersCombo, GettextCatalog.GetString ("Member list"), null);
+				membersCombo.TooltipText = GettextCatalog.GetString ("Member list");
 			}
 		}
 		
@@ -409,9 +407,9 @@ namespace MonoDevelop.SourceEditor
 			if (it != null) {
 				Ambience ambience = editor.Ambience;
 				string txt = ambience.GetString (it, OutputFlags.ClassBrowserEntries);
-				tips.SetTip (this.typeCombo, txt, txt);
+				this.typeCombo.TooltipText = txt;
 			} else {
-				tips.SetTip (typeCombo, GettextCatalog.GetString ("Type list"), null);
+				typeCombo.TooltipText = GettextCatalog.GetString ("Type list");
 			}
 		}
 #endregion
@@ -423,28 +421,6 @@ namespace MonoDevelop.SourceEditor
 			if (extEditor != null)
 				extEditor.SetCaretTo (Math.Max (1, line), column);
 		}
-		
-		
-		bool IsMemberSelected (IMember mem, int line, int column)
-		{
-			if (mem is IMethod) {
-				IMethod method = (IMethod) mem;
-				return (method.BodyRegion.Start.Line <= line && line <= method.BodyRegion.End.Line || 
-				       (method.BodyRegion.Start.Line == line && 0 == method.BodyRegion.End.Line));
-			} else if (mem is IProperty) {
-				IProperty property = (IProperty) mem;
-				return (property.BodyRegion.Start.Line <= line && line <= property.BodyRegion.End.Line);
-			}
-			
-			return (mem.Location.Line <= line && line <= mem.Location.Line);
-		}
-		
-//		public void GetLineColumnFromPosition (int position, out int line, out int column)
-//		{
-//			DocumentLocation location = TextEditor.Document.OffsetToLocation (posititon);
-//			line = location.Line + 1;
-//			column = location.Column + 1;
-//		}
 		
 		protected override void OnDestroyed ()
 		{

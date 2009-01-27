@@ -290,7 +290,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public ProjectDom GetParserContext ()
 		{
-			Project project = IdeApp.ProjectOperations.CurrentSelectedProject;
+			//Project project = IdeApp.ProjectOperations.CurrentSelectedProject;
 			if (Project != null)
 				return ProjectDomService.GetProjectDom (Project);
 			return ProjectDom.Empty;
@@ -1420,8 +1420,8 @@ namespace MonoDevelop.SourceEditor
 				return false;
 			
 			string filename = this.IsUntitled ? UntitledName : ContentName;
-			int i = filename.LastIndexOf ('.');
-			string ext = i < 0? null : filename.Substring (i + 1);
+			//int i = filename.LastIndexOf ('.');
+			//string ext = i < 0? null : filename.Substring (i + 1);
 			
 			return textNode.IsCompatibleWith (filename, this.Project);
 		}

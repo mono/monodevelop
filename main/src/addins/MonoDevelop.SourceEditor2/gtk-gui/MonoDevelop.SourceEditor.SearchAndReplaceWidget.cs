@@ -173,6 +173,7 @@ namespace MonoDevelop.SourceEditor {
             w30.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table.Gtk.Table+TableChild
             this.entryReplace = Gtk.ComboBoxEntry.NewText();
+            this.entryReplace.AppendText("");
             this.entryReplace.Name = "entryReplace";
             this.table.Add(this.entryReplace);
             Gtk.Table.TableChild w31 = ((Gtk.Table.TableChild)(this.table[this.entryReplace]));
@@ -185,6 +186,7 @@ namespace MonoDevelop.SourceEditor {
             w31.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table.Gtk.Table+TableChild
             this.entrySearch = Gtk.ComboBoxEntry.NewText();
+            this.entrySearch.AppendText("");
             this.entrySearch.Name = "entrySearch";
             this.table.Add(this.entrySearch);
             Gtk.Table.TableChild w32 = ((Gtk.Table.TableChild)(this.table[this.entrySearch]));

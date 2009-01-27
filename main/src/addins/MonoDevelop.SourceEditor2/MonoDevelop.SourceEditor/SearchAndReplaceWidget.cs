@@ -414,10 +414,10 @@ But I leave it in in the case I've missed something. Mike
 			widget.SetSearchOptions ();
 		}
 		
-		void UpdateSearchPattern (object sender, EventArgs args)
-		{
-			entrySearch.Entry.Text = searchPattern;
-		}
+//		void UpdateSearchPattern (object sender, EventArgs args)
+//		{
+//			entrySearch.Entry.Text = searchPattern;
+//		}
 		
 		string oldPattern;
 		void UpdateSearchEntry ()

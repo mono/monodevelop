@@ -239,7 +239,7 @@ namespace MonoDevelop.SourceEditor
 		FoldSegment AddMarker (List<FoldSegment> foldSegments, string text, DomRegion region, FoldingType type)
 		{
 			Document document = textEditorData.Document;
-			if (region == null || document == null || region.Start.Line <= 0 || region.End.Line <= 0
+			if (document == null || region.Start.Line <= 0 || region.End.Line <= 0
 			    || region.Start.Line >= document.LineCount || region.End.Line >= document.LineCount)
 			{
 				return null;
