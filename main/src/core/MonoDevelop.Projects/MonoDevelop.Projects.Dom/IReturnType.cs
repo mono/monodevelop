@@ -106,5 +106,6 @@ namespace MonoDevelop.Projects.Dom
 	public interface ITypeResolver
 	{
 		IReturnType Resolve (IReturnType type);
+		IType ContextType { get; set; }
 	}
 }

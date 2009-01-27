@@ -11,10 +11,7 @@ namespace Stetic.Editor
 		protected override string GetValueText ()
 		{
 			string[] val = (string[]) Value;
-			if (val == null)
-				return "";
-			
-			return string.Join (", ", val);
+			return  val == null ? string.Empty : "(Collection)";
 		}
 		
 		protected override IPropertyEditor CreateEditor (Gdk.Rectangle cell_area, Gtk.StateType state)
@@ -93,10 +90,7 @@ namespace Stetic.Editor
 		
 		void UpdateLabel ()
 		{
-			if (strings != null)
-				label.Text = string.Join (", ", strings);
-			else
-				label.Text = "";
+			label.Text = strings != null ? "(Collection)" : System.String.Empty;
 		}
 
 		public event EventHandler ValueChanged;	

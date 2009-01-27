@@ -164,6 +164,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			ProjectDom pctx = GetParserContext (cls);
 			List<IType> visited = new List<IType> ();
 
+			cls = pctx.ResolveType (cls);
 			FindOverridables (pctx, cls, cls, classMembers, interfaceMembers, visited, includeOverridenClassMembers, includeOverridenInterfaceMembers);
 		}
 
@@ -176,7 +177,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			
 			foreach (IReturnType rt in cls.BaseTypes)
 			{
-				IType baseCls = pctx.SearchType (new SearchTypeRequest (cls.CompilationUnit, rt));
+				IType baseCls = pctx.GetType (rt);
 				
 				if (baseCls == null)
 					continue;

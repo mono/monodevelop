@@ -1,3 +1,7 @@
+2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* NRefactory.mdp: Flush project format changes.
+
 2009-01-09  Mike Krüger  <mkrueger@novell.com>
 
 	* Project/Src/Parser/CSharp/cs.ATG:

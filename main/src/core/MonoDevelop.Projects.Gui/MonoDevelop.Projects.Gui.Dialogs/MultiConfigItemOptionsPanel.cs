@@ -120,7 +120,13 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 			platformCombo.Changed += OnConfigChanged;
 			
 			bool oldMixed = allowMixedConfigurations;
-			cbox.PackStart (CreatePanelWidget (), true, true, 0);
+			Gtk.Widget child = CreatePanelWidget ();
+			
+			//HACK: work around bug 469427 - broken themes match on widget names
+			if (child.Name.IndexOf ("Panel") > 0)
+				child.Name = child.Name.Replace ("Panel", "_");
+			
+			cbox.PackStart (child, true, true, 0);
 			
 			if (allowMixedConfigurations != oldMixed) {
 				// If mixed mode has changed, update the configuration list

@@ -36,6 +36,7 @@ using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Projects.Policies;
+using MonoDevelop.Projects.Formats.MD1;
 
 namespace MonoDevelop.Projects
 {
@@ -464,6 +465,21 @@ namespace MonoDevelop.Projects
 				return null;
 		}
 		
+		protected override bool CheckNeedsBuild (string solutionConfiguration)
+		{
+			if (base.CheckNeedsBuild (solutionConfiguration))
+				return true;
+
+			foreach (ProjectFile file in Files) {
+				if (file.BuildAction == BuildAction.EmbeddedResource &&
+					MD1DotNetProjectHandler.IsResgenRequired (file.FilePath)) {
+					return true;
+				}
+			}
+
+			return false;
+		}
+
 		protected override void DoExecute (IProgressMonitor monitor, ExecutionContext context, string config)
 		{
 			DotNetProjectConfiguration configuration = (DotNetProjectConfiguration) GetConfiguration (config);

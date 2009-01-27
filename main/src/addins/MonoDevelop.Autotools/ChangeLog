@@ -1,3 +1,7 @@
+2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Autotools.mdp: Flush project format changes.
+
 2009-01-19  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* MakefileData.cs: Update vala error regex to catch gcc errors as well.

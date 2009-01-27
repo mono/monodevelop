@@ -51,7 +51,6 @@
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core.Gui" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Ide" />
   </References>
-  <GtkDesignInfo />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../..">
     <BuildFilesVar Sync="True" Name="FILES" />
     <DeployFilesVar />

@@ -1,3 +1,7 @@
+2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* libstetic.mdp: Flush project format changes.
+
 2009-01-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* wrapper/objects.xml: Added some defaults.

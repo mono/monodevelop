@@ -822,7 +822,9 @@ namespace MonoDevelop.Projects.Dom.Parser
 									if (res != null)
 										NotifyTypeUpdate (project, fileName, res);
 									UpdatedCommentTasks (fileName, parseInformation.TagComments);
-								} catch (Exception) { }
+								} catch (Exception e) {
+									LoggingService.LogError (e.ToString ());
+								}
 							}
 						}
 					} else {
@@ -953,9 +955,9 @@ namespace MonoDevelop.Projects.Dom.Parser
 			int unresolvedCount = 0;
 			result = new List<IType> ();
 			foreach (IType c in types) {
-				tr.CallingClass = c;
 				tr.UnresolvedCount = 0;
 				DomType rc = DomType.Resolve (c, tr);
+				rc.Resolved = true;
 				
 				if (tr.UnresolvedCount == 0 && c.FullName != "System.Object") {
 					// If the class has no base classes, make sure it subclasses System.Object
@@ -1029,7 +1031,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 	
 	class CompilationUnitTypeResolver: ITypeResolver
 	{
-		public IType CallingClass;
+		public IType ContextType { get; set; }
 		ProjectDom db;
 		ICompilationUnit unit;
 		int unresolvedCount;
@@ -1042,25 +1044,44 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		public IReturnType Resolve (IReturnType type)
 		{
-			string name = type.FullName;
-			if (type.GenericArguments.Count > 0)
-				name += "`" + type.GenericArguments.Count;
-			IType c = db.SearchType (new SearchTypeRequest (unit, CallingClass, name));
+			IReturnTypePart firstPart = type.Parts [0];
+			string name = type.Namespace.Length > 0 ? type.Namespace + "." + firstPart.Name : firstPart.Name;
+			if (firstPart.GenericArguments.Count > 0)
+				name += "`" + firstPart.GenericArguments.Count;
+			IType c = db.SearchType (new SearchTypeRequest (unit, ContextType, name));
 			if (c == null) {
 				unresolvedCount++;
 				return db.GetSharedReturnType (type);
 			}
 
-			List<IReturnType> genericArgs = null;
-			if (type.GenericArguments != null && type.GenericArguments.Count > 0) {
-				genericArgs = new List<IReturnType>();
-				foreach (IReturnType ga in type.GenericArguments) {
-					genericArgs.Add (DomReturnType.Resolve (ga, this));
-				}
+			List<IReturnTypePart> parts = new List<IReturnTypePart> (type.Parts.Count);
+			IType curType = c.DeclaringType;
+			while (curType != null) {
+				ReturnTypePart newPart = new ReturnTypePart {Name = curType.Name};
+				for (int n=curType.TypeParameters.Count - 1; n >= 0; n--)
+					newPart.AddTypeParameter (new DomReturnType ("?"));
+				parts.Insert (0, newPart);
+				curType = curType.DeclaringType;
 			}
 			
-			DomReturnType rt = new DomReturnType (c.FullName, false, genericArgs);
+			foreach (ReturnTypePart part in type.Parts) {
+				ReturnTypePart newPart = new ReturnTypePart ();
+				newPart.Name = part.Name;
+				foreach (IReturnType ga in part.GenericArguments)
+					newPart.AddTypeParameter (DomReturnType.Resolve (ga, this));
+				parts.Add (newPart);
+			}
+			
+			DomReturnType rt = new DomReturnType (c.Namespace, parts);
+			
+			// Make sure the whole type is resolved
+			if (parts.Count > 1 && db.SearchType (new SearchTypeRequest (unit, rt, ContextType)) == null) {
+				unresolvedCount++;
+				return db.GetSharedReturnType (type);
+			}
+			
 			rt.PointerNestingLevel = type.PointerNestingLevel;
+			rt.IsNullable = type.IsNullable;
 			rt.ArrayDimensions = type.ArrayDimensions;
 			for (int n=0; n<type.ArrayDimensions; n++)
 				rt.SetDimension (n, type.GetDimension (n));

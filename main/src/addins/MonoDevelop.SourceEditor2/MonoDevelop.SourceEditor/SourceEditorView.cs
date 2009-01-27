@@ -204,7 +204,7 @@ namespace MonoDevelop.SourceEditor
 			
 			isInWrite = true;
 			try {
-				File.WriteAllText (fileName, Document.Text);
+				MonoDevelop.Projects.Text.TextFile.WriteFile (fileName, Document.Text, encoding);
 				lastSaveTime = File.GetLastWriteTime (fileName);
 			} finally {
 				isInWrite = false;
@@ -238,7 +238,7 @@ namespace MonoDevelop.SourceEditor
 			
 			Document.MimeType = IdeApp.Services.PlatformService.GetMimeTypeForUri (fileName);
 			widget.SetMime (Document.MimeType);
-			Document.Text = File.ReadAllText (fileName);
+			Document.Text = MonoDevelop.Projects.Text.TextFile.ReadFile (fileName, encoding).Text;
 			ContentName = fileName;
 			widget.ParsedDocument = ProjectDomService.GetParsedDocument (fileName);
 //			InitializeFormatter ();

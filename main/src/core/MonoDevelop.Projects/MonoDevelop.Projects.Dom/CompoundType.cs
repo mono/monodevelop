@@ -124,6 +124,8 @@ namespace MonoDevelop.Projects.Dom
 			this.Name      = parts[0].Name;
 			this.Namespace = parts[0].Namespace;
 			this.SourceProjectDom = parts[0].SourceProjectDom;
+			if (parts[0] is DomType)
+				this.Resolved = ((DomType)parts[0]).Resolved;
 			this.ClearTypeParameter ();
 			this.AddTypeParameter (parts[0].TypeParameters);
 			

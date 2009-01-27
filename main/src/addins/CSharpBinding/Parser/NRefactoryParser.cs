@@ -598,6 +598,9 @@ namespace MonoDevelop.CSharpBinding
 					field.Location  = ConvertLocation (fieldDeclaration.StartLocation);
 					field.Modifiers  = ConvertModifiers (fieldDeclaration.Modifier);
 					field.ReturnType = ConvertReturnType (fieldDeclaration.TypeReference);
+					// Enum fields have an empty type.
+					if (field.ReturnType != null && string.IsNullOrEmpty (field.ReturnType.FullName))
+						field.ReturnType = null;
 					AddAttributes (field, fieldDeclaration.Attributes);
 					field.DeclaringType = typeStack.Peek ();
 					if (field.DeclaringType.ClassType == ClassType.Enum) {

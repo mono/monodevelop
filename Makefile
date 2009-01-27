@@ -29,6 +29,10 @@ install: install-recursive
 uninstall: uninstall-recursive
 distcheck: distcheck-recursive
 
+distclean: distclean-recursive
+	rm -rf config.make local-config
+	
+
 dist: dist-recursive
 	mkdir -p tarballs
 	for t in $(SUBDIRS); do \

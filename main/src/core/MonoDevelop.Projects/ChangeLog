@@ -1,3 +1,71 @@
+2009-01-27  Ankit Jain  <jankit@novell.com>
+
+	Fix bug #325200.
+	* MonoDevelop.Projects.Formats.MD1/MD1DotNetProjectHandler.cs
+	(GetResourceId): Use the new IsResgenRequired method.
+	(IsResgenRequired): New. Checks the resx and the files referenced by the
+	resx.
+	(IsFileNewerThan): New.
+	* Monodevelop.Projects/Project.cs (CheckNeedsBuild): Change return type
+	from 'void' to 'bool'. Don't change 'isDirty' state here.
+	(OnGetNeedsBuilding): Set isDirty if required.
+	* Monodevelop.Projects/DotNetProject.cs (CheckNeedsBuild): Override and
+	check resx files with IsResgenRequired method.
+
+2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.mdp: Flush project format changes.
+
+2009-01-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: Improve support for
+	generic arguments by properly resolving constraints.
+
+	* MonoDevelop.Projects.Dom/CompoundType.cs:
+	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs:
+	* MonoDevelop.Projects.Dom.Serialization/ParserDatabase.cs:
+	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
+	Properly resolve IReturnType objects composed by several parts.
+
+	* MonoDevelop.Projects.Dom/ResolveResult.cs: Provide the calling class
+	when querying types.
+
+	* MonoDevelop.Projects.Dom/DomType.cs:
+	* MonoDevelop.Projects.Dom/IReturnType.cs:
+	* MonoDevelop.Projects.Dom/TypeParameter.cs: Added Resolved flag, used
+	by the parser service to know whether a type is already resolved or
+	not. ITypeResolver now has a ContextType property which always has a
+	reference to the enclosing type. Properly resolved contraint types.
+
+	* MonoDevelop.Projects.Dom/DomReturnType.cs: Fixes to better support
+	IReturnType objects with several parts.
+
+	* MonoDevelop.Projects.Dom/InstantiatedParameterType.cs: New class used
+	to represent a generic argument. When the generic argument has a
+	constraint, it is used as a base class, so code completion will show
+	the correct members when the type is used in a method.
+
+	* MonoDevelop.Projects.Dom/SearchTypeRequest.cs: Require a reference to
+	the calling class when resolving an IReturnType.
+
+	* MonoDevelop.Projects.Dom/DomMethod.cs: Properly resolve generic
+	arguments defined by generic methods.
+
+	* Makefile.am:
+	* MonoDevelop.Projects.mdp: Updated.
+
+	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs: In
+	FindOverridables, resolve the main class at the begining, to make
+	sure all referenced types are properly resolved.
+
+	* MonoDevelop.Projects.Dom.Serialization/ProjectCodeCompletionDatabase.cs:
+	When all classes in file can't be fully resolved, make sure the file
+	is parsed again even if it is not modified.
+
+	* MonoDevelop.Projects.Dom.Serialization/DomPersistence.cs: Properly
+	save IReturnType objects composed by several parts. Bumped database
+	version because of this.
+
 2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs: Replace a

@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using MonoDevelop.Projects;
@@ -131,9 +132,15 @@ namespace MonoDevelop.Projects.Dom.Parser
 
 		public IType ResolveType (IType type)
 		{
-			if (type.SourceProjectDom == null) {
+			if (!((DomType)type).Resolved) {
 				InstantiatedType itype = type as InstantiatedType;
-				type = SearchType (type.FullName, null, type.CompilationUnit, itype != null ? itype.GenericParameters : null) ?? type;
+				IType rtype;
+				if (itype == null)
+					rtype = GetType (type.FullName, type.TypeParameters.Count, true, true);
+				else
+					rtype = GetType (itype.UninstantiatedType.FullName, itype.GenericParameters, true, true);
+				if (rtype != null)
+					return rtype;
 			}
 			return type;
 		}
@@ -149,8 +156,16 @@ namespace MonoDevelop.Projects.Dom.Parser
 			
 			if (name == null || name == String.Empty)
 				return null;
-				
+			
 			IType c;
+			// It may be one of the generic parameters in the calling class
+			if (callingClass != null && (genericParameters == null || genericParameters.Count == 0)) {
+				c = FindGenericParameter (unit, ResolveType (callingClass), name);
+				if (c != null)
+					return c;
+			}
+
+			// A known type?
 			c = GetType (name, genericParameters, false, true);
 			if (c != null)
 				return c;
@@ -171,20 +186,13 @@ namespace MonoDevelop.Projects.Dom.Parser
 			// Check it now.
 
 			if (callingClass != null) {
-				string fullname = callingClass.FullName;
-				string[] namespaces = fullname.Split(new char[] {'.'});
-				string curnamespace = "";
-				int i = 0;
-				
-				do {
-					curnamespace += namespaces[i] + '.';
-					c = GetType (curnamespace + name, genericParameters, false, true);
-					if (c != null) {
+				string[] namespaces = callingClass.FullName.Split ('.');
+				for (int n = namespaces.Length - 1; n >= 0; n--) {
+					string curnamespace = string.Join (".", namespaces, 0, n);
+					c = GetType (curnamespace + "." + name, genericParameters, false, true);
+					if (c != null)
 						return c;
-					}
-					i++;
 				}
-				while (i < namespaces.Length);
 			}
 			
 			// Now try to find the class using the included namespaces
@@ -219,7 +227,19 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return null;
 		}
 		
-		public IType SearchType (IUsing iusing, string partitialTypeName, IList<IReturnType> genericArguments, bool caseSensitive)
+		IType FindGenericParameter (ICompilationUnit cu, IType callingClass, string name)
+		{
+			foreach (TypeParameter tp in callingClass.TypeParameters) {
+				if (tp.Name == name)
+					return new InstantiatedParameterType (callingClass, tp);
+			}
+			if (callingClass.DeclaringType != null)
+				return FindGenericParameter (cu, callingClass.DeclaringType, name);
+			else
+				return null;
+		}
+		
+		IType SearchType (IUsing iusing, string partitialTypeName, IList<IReturnType> genericArguments, bool caseSensitive)
 		{
 			IType c = GetType (partitialTypeName, genericArguments, false, caseSensitive);
 			if (c != null) {
@@ -363,7 +383,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 					return returnType.Type;
 				return CreateInstantiatedGenericType (returnType.Type, returnType.GenericArguments);
 			}
-			return GetType (returnType.FullName, returnType.GenericArguments, true, true);
+			return GetType (((DomReturnType)returnType).DecoratedFullName, returnType.GenericArguments, true, true);
 		}
 		
 		public IType GetType (IReturnType returnType, bool searchDeep)
@@ -371,8 +391,25 @@ namespace MonoDevelop.Projects.Dom.Parser
 			if (returnType == null)
 				return null;
 			if (returnType.Type != null)
-				return returnType.Type ;
-			return GetType (returnType.FullName, returnType.GenericArguments, searchDeep, true);
+				return returnType.Type;
+			if (returnType.Parts.Count == 1)
+				return GetType (returnType.FullName, returnType.GenericArguments, searchDeep, true);
+			else {
+				IReturnTypePart part = returnType.Parts [0];
+				string name = returnType.Namespace.Length > 0 ? returnType.Namespace + "." + part.Name : part.Name;
+				IType ptype = GetType (name, part.GenericArguments, searchDeep, true);
+				if (ptype == null)
+					return null;
+				for (int n=1; n<returnType.Parts.Count; n++) {
+					part = returnType.Parts [n];
+					ptype = FindInnerType (ptype, part.Name, part.GenericArguments.Count, true);
+					if (ptype == null)
+						return null;
+					if (part.GenericArguments.Count > 0)
+						ptype = CreateInstantiatedGenericType (ptype, part.GenericArguments);
+				}
+				return ptype;
+			}
 		}
 		
 		public IType GetType (string typeName)
@@ -402,6 +439,23 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		public abstract IType GetType (string typeName, IList<IReturnType> genericArguments, bool deepSearchReferences, bool caseSensitive);
 		public abstract IType GetType (string typeName, int genericArgumentsCount, bool deepSearchReferences, bool caseSensitive);
+
+		internal IType FindInnerType (IType outerType, string name, int typeArgCount, bool caseSensitive)
+		{
+			foreach (IType innerc in outerType.InnerTypes)  {
+				if (string.Compare (innerc.Name, name, !caseSensitive) == 0 && innerc.TypeParameters.Count == typeArgCount) {
+					return innerc;
+				}
+			}
+			// Check type parameters
+			if (typeArgCount == 0) {
+				foreach (TypeParameter tp in outerType.TypeParameters) {
+					if (string.Compare (tp.Name, name, !caseSensitive) == 0)
+						return new InstantiatedParameterType (outerType, tp);
+				}
+			}
+			return null;
+		}
 		
 		internal virtual TypeUpdateInformation UpdateFromParseInfo (ICompilationUnit unit)
 		{
@@ -523,6 +577,9 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		public override IType GetType (string typeName, IList<IReturnType> genericArguments, bool deepSearchReferences, bool caseSensitive)
 		{
+			int i = typeName.IndexOf ('`');
+			if (i != -1)
+				typeName = typeName.Substring (0, i);
 			Stack<IType> typeStack = new Stack<IType> ();
 			foreach (IType curType in Types) {
 				typeStack.Push (curType);

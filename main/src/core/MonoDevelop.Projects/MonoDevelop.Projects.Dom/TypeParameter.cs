@@ -78,5 +78,14 @@ namespace MonoDevelop.Projects.Dom
 				attributes = new List<IAttribute> ();
 			attributes.Add (attr);
 		}
+		
+		public static TypeParameter Resolve (TypeParameter type, ITypeResolver typeResolver)
+		{
+			TypeParameter tp = new TypeParameter (type.name);
+			tp.attributes = type.attributes;
+			foreach (IReturnType rt in type.Constraints)
+				tp.AddConstraint (typeResolver.Resolve (rt));
+			return tp;
+		}
 	}
 }

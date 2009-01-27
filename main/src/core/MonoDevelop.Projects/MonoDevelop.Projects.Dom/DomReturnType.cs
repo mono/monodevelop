@@ -60,13 +60,13 @@ namespace MonoDevelop.Projects.Dom
 			if (typeParameters != null) 
 				this.genericArguments = new List<IReturnType> (typeParameters);
 		}
-		public ReturnTypePart (string name, IEnumerable<TypeParameter> typeParameters)
+		public ReturnTypePart (string baseName, string name, IEnumerable<TypeParameter> typeParameters)
 		{
 			this.Name = name;
 			if (typeParameters != null) {
 				this.genericArguments = new List<IReturnType> ();
 				foreach (TypeParameter para in typeParameters) {
-					this.genericArguments.Add (new DomReturnType (para.Name));
+					this.genericArguments.Add (new DomReturnType (baseName + "." + para.Name));
 				}
 			}
 		}
@@ -159,7 +159,31 @@ namespace MonoDevelop.Projects.Dom
 		
 		public string FullName {
 			get {
-				return !String.IsNullOrEmpty (nspace) ? nspace + "." + Name : Name;
+				if (Parts.Count == 1)
+					return !String.IsNullOrEmpty (nspace) ? nspace + "." + Name : Name;
+				else {
+					string fn = nspace;
+					foreach (ReturnTypePart part in Parts) {
+						if (fn.Length > 0)
+							fn += ".";
+						fn += part.Name;
+					}
+					return fn;
+				}
+			}
+		}
+		
+		public string DecoratedFullName {
+			get {
+				string dname = Namespace;
+				foreach (ReturnTypePart rpart in Parts) {
+					if (dname.Length > 0)
+						dname += ".";
+					dname += rpart.Name;
+					if (rpart.GenericArguments.Count > 0)
+						dname += "`" + rpart.GenericArguments.Count;
+				}
+				return dname;
 			}
 		}
 		
@@ -255,6 +279,12 @@ namespace MonoDevelop.Projects.Dom
 			this.parts.Add (new ReturnTypePart ());
 		}
 		
+		internal DomReturnType (string ns, List<IReturnTypePart> parts)
+		{
+			this.nspace = ns;
+			this.parts = parts;
+		}
+		
 		public DomReturnType (IType type)
 		{
 			if (type == null)
@@ -266,9 +296,8 @@ namespace MonoDevelop.Projects.Dom
 				if (curType is InstantiatedType) {
 					InstantiatedType instType = (InstantiatedType)curType;
 					this.parts.Insert (0, new ReturnTypePart (instType.UninstantiatedType.Name, instType.GenericParameters));
-				} else { 
-					this.parts.Insert (0, new ReturnTypePart (curType.Name, curType.TypeParameters));
-				}
+				} else
+					this.parts.Insert (0, new ReturnTypePart (curType.FullName, curType.Name, curType.TypeParameters));
 				curType = curType.DeclaringType;
 			} while (curType != null);
 		}

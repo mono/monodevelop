@@ -1,3 +1,7 @@
+2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* CBinding.mdp: Flush project format changes.
+
 2009-01-21  Mike Krüger  <mkrueger@novell.com>
 
 	* Gui/CTextEditorExtension.cs: fixed bug 'Bug 467553 - Enter key doesn't

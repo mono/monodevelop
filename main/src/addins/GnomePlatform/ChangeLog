@@ -1,3 +1,7 @@
+2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* GnomePlatform.mdp: Flush project format changes.
+
 2008-12-12  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* GnomePlatform.mdp: All projects now require fx 3.5.

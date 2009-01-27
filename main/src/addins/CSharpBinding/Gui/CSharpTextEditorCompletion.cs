@@ -364,7 +364,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 						if (evt == null)
 							return null;
 						
-						IType delegateType = dom.SearchType (new SearchTypeRequest (resolver.Unit, evt.ReturnType));
+						IType delegateType = dom.SearchType (new SearchTypeRequest (resolver.Unit, evt.ReturnType, resolver.CallingType));
 						if (delegateType == null || delegateType.ClassType != ClassType.Delegate)
 							return null;
 						CompletionDataList completionList = new ProjectDomCompletionDataList ();
@@ -517,22 +517,23 @@ namespace MonoDevelop.CSharpBinding.Gui
 			if (result == null)
 				return null;
 			
-			if (result.ExpressionContext is ExpressionContext.TypeExpressionContext)
-				result.ExpressionContext = new NewCSharpExpressionFinder (dom).FindExactContextForNewCompletion(Editor, Document.CompilationUnit, Document.FileName) ?? result.ExpressionContext;
-			
 			DomLocation location = new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset - 2);
 			NRefactoryResolver resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (dom, Document.CompilationUnit,
 			                                                                                ICSharpCode.NRefactory.SupportedLanguage.CSharp,
 			                                                                                Editor,
 			                                                                                Document.FileName);
+			
+			if (result.ExpressionContext is ExpressionContext.TypeExpressionContext)
+				result.ExpressionContext = new NewCSharpExpressionFinder (dom).FindExactContextForNewCompletion(Editor, Document.CompilationUnit, Document.FileName, resolver.CallingType) ?? result.ExpressionContext;
+			
 			switch (completionChar) {
 			case '(':
 				ResolveResult resolveResult = resolver.Resolve (result, new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
 				if (result.ExpressionContext == ExpressionContext.Attribute) {
 					IReturnType returnType = resolveResult.ResolvedType;
-					IType type = dom.SearchType (new SearchTypeRequest (resolver.Unit, returnType));
+					IType type = dom.SearchType (new SearchTypeRequest (resolver.Unit, returnType, resolver.CallingType));
 					if (type == null) 
-						type = dom.SearchType (new SearchTypeRequest (resolver.Unit, new DomReturnType (result.Expression.Trim () + "Attribute")));
+						type = dom.SearchType (new SearchTypeRequest (resolver.Unit, new DomReturnType (result.Expression.Trim () + "Attribute"), resolver.CallingType));
 					if (type != null && returnType != null && returnType.GenericArguments != null)
 						type = dom.CreateInstantiatedGenericType (type, returnType.GenericArguments);
 					return new NRefactoryParameterDataProvider (Editor, resolver, type);
@@ -544,7 +545,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 					if (result.ExpressionContext is ExpressionContext.TypeExpressionContext) {
 						IReturnType returnType = resolveResult.ResolvedType ?? ((ExpressionContext.TypeExpressionContext)result.ExpressionContext).Type;
 						
-						IType type = dom.SearchType (new SearchTypeRequest (resolver.Unit, returnType));
+						IType type = dom.SearchType (new SearchTypeRequest (resolver.Unit, returnType, resolver.CallingType));
 						if (type != null && returnType.GenericArguments != null)
 							type = dom.CreateInstantiatedGenericType (type, returnType.GenericArguments);
 						return new NRefactoryParameterDataProvider (Editor, resolver, type);
@@ -558,7 +559,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 						if (resolveResult is BaseResolveResult)
 							return new NRefactoryParameterDataProvider (Editor, resolver, resolveResult as BaseResolveResult);
 					}
-					IType resolvedType = dom.SearchType (new SearchTypeRequest (resolver.Unit, resolveResult.ResolvedType));
+					IType resolvedType = dom.SearchType (new SearchTypeRequest (resolver.Unit, resolveResult.ResolvedType, resolver.CallingType));
 					if (resolvedType != null && resolvedType.ClassType == ClassType.Delegate) {
 						return new NRefactoryParameterDataProvider (Editor, resolver, result.Expression, resolvedType);
 					}
@@ -641,10 +642,13 @@ namespace MonoDevelop.CSharpBinding.Gui
 				if (resolveResult != null && resolveResult.ResolvedType != null) {
 					CompletionDataList completionList = new ProjectDomCompletionDataList ();
 					CompletionDataCollector col = new CompletionDataCollector (Editor, dom, Document.CompilationUnit, location);
-					foreach (IType type in dom.GetSubclasses (dom.SearchType (new SearchTypeRequest (resolver.Unit, resolveResult.ResolvedType)))) {
-						if (type.IsSpecialName || type.Name.StartsWith ("<"))
-							continue;
-						col.AddCompletionData (completionList, type);
+					IType foundType = dom.SearchType (new SearchTypeRequest (resolver.Unit, resolveResult.ResolvedType, resolver.CallingType));
+					if (foundType != null) {
+						foreach (IType type in dom.GetSubclasses (foundType)) {
+							if (type.IsSpecialName || type.Name.StartsWith ("<"))
+								continue;
+							col.AddCompletionData (completionList, type);
+						}
 					}
 					List<string> namespaceList = new List<string> ();
 					namespaceList.Add ("");
@@ -692,7 +696,8 @@ namespace MonoDevelop.CSharpBinding.Gui
 				}
 				return null;
 			case "new":
-				ExpressionContext exactContext = new NewCSharpExpressionFinder (dom).FindExactContextForNewCompletion (Editor, Document.CompilationUnit, Document.FileName);
+				IType callingType = NRefactoryResolver.GetTypeAtCursor (Document.CompilationUnit, Document.FileName, new DomLocation (Editor.CursorLine, Editor.CursorColumn));
+				ExpressionContext exactContext = new NewCSharpExpressionFinder (dom).FindExactContextForNewCompletion (Editor, Document.CompilationUnit, Document.FileName, callingType);
 				if (exactContext is ExpressionContext.TypeExpressionContext)
 					return CreateTypeCompletionData (location, exactContext, ((ExpressionContext.TypeExpressionContext)exactContext).Type, ((ExpressionContext.TypeExpressionContext)exactContext).UnresolvedType);
 				if (exactContext == null) {
@@ -950,7 +955,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 		{
 			if (curType == null)
 				return;
-			IType searchType = dom.SearchType (new SearchTypeRequest (Document.CompilationUnit, curType));
+			IType searchType = dom.SearchType (new SearchTypeRequest (Document.CompilationUnit, curType, type));
 			//System.Console.WriteLine("Add Virtuals for:" + searchType + " / " + curType);
 			if (searchType == null)
 				return;
@@ -1025,7 +1030,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			if (returnType != null) 
 				type = dom.GetType (returnType);
 			if (type == null)
-				type = dom.SearchType (new SearchTypeRequest (Document.CompilationUnit, returnTypeUnresolved));
+				type = dom.SearchType (new SearchTypeRequest (Document.CompilationUnit, returnTypeUnresolved, null));
 			if (type == null || !(type.IsAbstract || type.ClassType == ClassType.Interface)) {
 				if (returnTypeUnresolved != null) {
 					col.FullyQualify = true;

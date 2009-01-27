@@ -306,7 +306,8 @@ namespace Stetic.Wrapper
 		
 		public void Remove (ActionTreeNode node)
 		{
-			List.Remove (node);
+			if (List.Contains (node))
+				List.Remove (node);
 		}
 		
 		public ActionTreeNode this [int n] {

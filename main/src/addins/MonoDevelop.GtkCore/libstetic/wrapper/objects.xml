@@ -628,7 +628,7 @@
 		      description="Checked if the combo box displays a list of strings" />
 		<property name="Items" translatable="true" label="Items" glade-name="items"
 			  description="The items to display in the Combo Box, one per line"
-			  editor="Stetic.Editor.Text">
+			  editor="Stetic.Editor.StringArray">
 		    <disabled-if name="IsTextCombo" value="false" />
 		</property>
 		<property name="Active" min="-1"/>

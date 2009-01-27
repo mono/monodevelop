@@ -160,7 +160,13 @@ namespace CSharpBinding
 			}
 			
 			if (compilerparameters.DefineSymbols.Length > 0) {
-				writer.WriteLine("/define:" + '"' + compilerparameters.DefineSymbols + '"');
+				string define_str = String.Join (";",
+							compilerparameters.DefineSymbols.Split (
+								new char [] {',', ' ', ';'},
+								StringSplitOptions.RemoveEmptyEntries));
+
+				if (define_str.Length > 0)
+					writer.WriteLine("/define:\"" + define_str + '"');
 			}
 
 			CompileTarget ctarget = configuration.CompileTarget;

@@ -1,3 +1,7 @@
+2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* mdrun.mdp: Flush project format changes.
+
 2008-12-12  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* mdrun.mdp: Fix target framework.
