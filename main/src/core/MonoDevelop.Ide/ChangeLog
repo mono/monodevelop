@@ -1,5 +1,10 @@
 2009-01-27  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Gui/Document.cs: worked on bug "Bug 469629 - NREs
+	caused by null document in TextEditorExtension".
+
+2009-01-27  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.Gui/Document.cs: Handled exception on text editor
 	extension dispose.
 
