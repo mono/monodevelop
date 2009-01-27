@@ -1,5 +1,11 @@
 2009-01-27  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor.mdp: removed treat warnings as errors
+
+	* MonoDevelop.SourceEditor/ClassQuickFinder.cs: (Revert revision 124646)
+
+2009-01-27  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/DropDownBoxListWindow.cs: Changed the
 	behavior of the quick class browser dropdown.
 
