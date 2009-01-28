@@ -309,6 +309,13 @@ namespace Mono.TextEditor
 			protected UndoOperation()
 			{
 			}
+
+			public virtual bool ChangedLine (LineSegment line)
+			{
+				if (Args == null)
+					return false;
+				return line.Contains (Args.Offset);
+			}
 			
 			public UndoOperation (ReplaceEventArgs args, string text)
 			{
@@ -385,6 +392,15 @@ namespace Mono.TextEditor
 					operations = null;
 				}
 				base.Dispose ();
+			}
+			
+			public override bool ChangedLine (LineSegment line)
+			{
+				foreach (UndoOperation op in Operations) {
+					if (op.ChangedLine (line))
+						return true;
+				}
+				return false;
 			}
 			
 			public void Add (UndoOperation operation)
@@ -464,6 +480,32 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		public enum LineState {
+			Unchanged,
+			Dirty,
+			Changed
+		}
+		
+		public LineState GetLineState (int lineNumber)
+		{
+			LineSegment line = GetLine (lineNumber);
+			if (line == null)
+				return LineState.Unchanged;
+			foreach (UndoOperation op in undoStack) {
+				if (op.ChangedLine (line)) {
+					if (savePoint != null) {
+						foreach (UndoOperation savedUndo in savePoint) {
+							if (op == savedUndo)
+								return LineState.Changed;
+						}
+					}
+					return LineState.Dirty;
+				}
+			}
+			return LineState.Unchanged;
+		}
+		
+		
 		/// <summary>
 		/// Marks the document not dirty at this point (should be called after save).
 		/// </summary>
@@ -473,6 +515,7 @@ namespace Mono.TextEditor
 			if (undoStack.Count > 0 && undoStack.Peek () is KeyboardStackUndo)
 				((KeyboardStackUndo)undoStack.Peek ()).IsClosed = true;
 			savePoint = undoStack.ToArray ();
+			this.CommitUpdateAll ();
 		}
 		
 		public void OptimizeTypedUndo ()
