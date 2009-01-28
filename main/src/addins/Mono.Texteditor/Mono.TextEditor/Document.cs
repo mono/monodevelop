@@ -323,7 +323,7 @@ namespace Mono.TextEditor
 				if (args != null) {
 					this.startLine = this.endLine = doc.OffsetToLineNumber (args.Offset);
 					if (!String.IsNullOrEmpty (args.Value))
-						this.endLine = doc.OffsetToLineNumber (args.Offset + args.Value.Length);
+						this.endLine = startLine + LineSplitter.CountLines (args.Value);
 				}
 				this.args = args;
 				this.text = text;
@@ -494,9 +494,6 @@ namespace Mono.TextEditor
 		
 		public LineState GetLineState (int lineNumber)
 		{
-			LineSegment line = GetLine (lineNumber);
-			if (line == null)
-				return LineState.Unchanged;
 			foreach (UndoOperation op in undoStack) {
 				if (op.ChangedLine (lineNumber)) {
 					if (savePoint != null) {

@@ -1,5 +1,10 @@
 2009-01-28  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/Document.cs:
+	* Mono.TextEditor/LineSplitter.cs: Worked on line changed markers.
+
+2009-01-28  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/Document.cs: Optimized line changed markers a bit.
 
 2009-01-28  Mike Krüger  <mkrueger@novell.com>
