@@ -184,7 +184,7 @@ namespace Mono.TextEditor
 				                                                               (s.EndOffset <= offset || s.EndOffset >= endOffset)));
 			}*/
 			if (!isInUndo) {
-				UndoOperation operation = new UndoOperation (args, GetTextAt (offset, count));
+				UndoOperation operation = new UndoOperation (this, args, GetTextAt (offset, count));
 				if (currentAtomicOperation != null) {
 					currentAtomicOperation.Add (operation);
 				} else {
@@ -296,6 +296,7 @@ namespace Mono.TextEditor
 		{
 			ReplaceEventArgs args;
 			string text;
+			int startLine, endLine;
 			public virtual string Text {
 				get {
 					return text;
@@ -310,15 +311,20 @@ namespace Mono.TextEditor
 			{
 			}
 
-			public virtual bool ChangedLine (LineSegment line)
+			public virtual bool ChangedLine (int lineNumber)
 			{
 				if (Args == null)
 					return false;
-				return line.Contains (Args.Offset);
+				return startLine <= lineNumber && lineNumber <= endLine; //line.Contains (Args.Offset);
 			}
 			
-			public UndoOperation (ReplaceEventArgs args, string text)
+			public UndoOperation (Document doc, ReplaceEventArgs args, string text)
 			{
+				if (args != null) {
+					this.startLine = this.endLine = doc.OffsetToLineNumber (args.Offset);
+					if (!String.IsNullOrEmpty (args.Value))
+						this.endLine = doc.OffsetToLineNumber (args.Offset + args.Value.Length);
+				}
 				this.args = args;
 				this.text = text;
 			}
@@ -394,7 +400,7 @@ namespace Mono.TextEditor
 				base.Dispose ();
 			}
 			
-			public override bool ChangedLine (LineSegment line)
+			public override bool ChangedLine (int line)
 			{
 				foreach (UndoOperation op in Operations) {
 					if (op.ChangedLine (line))
@@ -492,7 +498,7 @@ namespace Mono.TextEditor
 			if (line == null)
 				return LineState.Unchanged;
 			foreach (UndoOperation op in undoStack) {
-				if (op.ChangedLine (line)) {
+				if (op.ChangedLine (lineNumber)) {
 					if (savePoint != null) {
 						foreach (UndoOperation savedUndo in savePoint) {
 							if (op == savedUndo)

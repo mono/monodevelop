@@ -1,5 +1,9 @@
 2009-01-28  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/Document.cs: Optimized line changed markers a bit.
+
+2009-01-28  Mike Krüger  <mkrueger@novell.com>
+
 	* gtk-gui/objects.xml:
 	* Styles/OblivionStyle.xml:
 	* Styles/TangoLightStyle.xml:
