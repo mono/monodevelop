@@ -275,8 +275,6 @@ namespace Mono.TextEditor
 		
 		void SetVisibleCaretPosition (Gdk.Drawable win, char ch, int x, int y)
 		{
-			System.Console.WriteLine("set caret to: " + x);
-			System.Console.WriteLine(Environment.StackTrace);
 			caretChar = ch;
 			caretX    = x;
 			caretY    = y;
