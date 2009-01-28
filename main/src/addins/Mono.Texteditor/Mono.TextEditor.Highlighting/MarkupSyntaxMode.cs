@@ -211,7 +211,7 @@ namespace Mono.TextEditor.Highlighting
 				curChunk.Style = GetChunkStyle (style, tagStack);
 				endChunk = endChunk.Next = curChunk;
 			}
-			endChunk.Next = null;
+				
 			return startChunk;
 		}
 	}

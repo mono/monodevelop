@@ -182,35 +182,35 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 	}
 	
 	
-		class DefaultPropertyEditor: Gtk.Entry, IPropertyEditor
+	class DefaultPropertyEditor: Gtk.Entry, IPropertyEditor
+	{
+		PropertyDescriptor property;
+		
+		public void Initialize (EditSession session)
 		{
-			PropertyDescriptor property;
-			
-			public void Initialize (EditSession session)
-			{
-				this.property = session.Property;
+			this.property = session.Property;
+		}
+		
+		public object Value {
+			get { 
+				return Convert.ChangeType (Text, property.PropertyType); 
 			}
-			
-			public object Value {
-				get { 
-					return property.Converter.ConvertFromString (Text); 
-				}
-				set {
-					if (value == null)
-						Text = string.Empty;
-					else
-						Text = property.Converter.ConvertToString (value); 
-				}
+			set {
+				if (value == null)
+					Text = "";
+				else
+					Text = Convert.ToString (value); 
 			}
-			
-			protected override void OnChanged ()
-			{
-				base.OnChanged ();
-				if (ValueChanged != null)
-					ValueChanged (this, EventArgs.Empty);
-			}
-	
-			public event EventHandler ValueChanged;
+		}
+		
+		protected override void OnChanged ()
+		{
+			base.OnChanged ();
+			if (ValueChanged != null)
+				ValueChanged (this, EventArgs.Empty);
+		}
+
+		public event EventHandler ValueChanged;
 	}
 	
 	public class EditSession : ITypeDescriptorContext

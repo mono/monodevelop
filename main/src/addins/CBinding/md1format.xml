@@ -4,7 +4,6 @@
 		<ItemProperty member="language" />
 		<ItemProperty member="target" name="Target"/>
 		<ItemProperty member="Packages" />
-		<ItemProperty member="Packages" scope="*" name="Package" valueType="CBinding.Package" />
 	</DataItem>
 	<DataItem class = "CBinding.CProjectConfiguration">
 		<ItemProperty member="output" name="Output/output"/>

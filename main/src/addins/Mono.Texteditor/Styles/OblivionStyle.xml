@@ -79,8 +79,6 @@
 	<Style name="foldBg" color="black"/>
 	<Style name="foldLineHighlighted" color="aluminium2"/>
 	<Style name="foldToggleMarker" color="aluminium1"/>
-	<Style name="lineChangedBg" color="chameleon2"/>
-	<Style name="lineDirtyBg" color="butter2"/>
 	
 	<Style name="bracketHighlightRectangle" color="aluminium4"/>
 	<Style name="bracketHighlightBg" color="aluminium6"/>

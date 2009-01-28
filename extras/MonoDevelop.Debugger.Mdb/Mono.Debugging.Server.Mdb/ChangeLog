@@ -1,7 +1,3 @@
-2009-01-27  Lluis Sanchez Gual  <lluis@novell.com>
-
-	* Mono.Debugging.Server.Mdb.mdp: Fix target framework.
-
 2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.Debugging.Server.Mdb.mdp: Flush project format changes.

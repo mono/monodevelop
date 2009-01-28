@@ -1,17 +1,5 @@
 2009-01-27  Lluis Sanchez Gual  <lluis@novell.com>
 
-	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: Fix issue when
-	resolving inner types.
-
-	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs:
-	* MonoDevelop.Projects.Dom.Serialization/ProjectCodeCompletionDatabase.cs:
-	Fix some issues with the file parsing queue.
-
-	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
-	Reuse FindInnerType from ProjectDom.
-
-2009-01-27  Lluis Sanchez Gual  <lluis@novell.com>
-
 	* MonoDevelop.Projects.Dom/CompoundType.cs:
 	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
 	Fixed issue with partial classes defined in the same file.

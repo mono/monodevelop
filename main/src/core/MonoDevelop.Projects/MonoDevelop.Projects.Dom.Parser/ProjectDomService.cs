@@ -72,7 +72,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		class ParsingJob
 		{
-			public string File;
+			public object Data;
 			public JobCallback ParseCallback;
 			public ProjectDom Database;
 		}
@@ -80,7 +80,6 @@ namespace MonoDevelop.Projects.Dom.Parser
 		static Dictionary<string,ParsingCacheEntry> parsings = new Dictionary<string,ParsingCacheEntry> ();
 		
 		static Queue<ParsingJob> parseQueue = new Queue<ParsingJob>();
-		static Dictionary<string,ParsingJob> parseQueueIndex = new Dictionary<string,ParsingJob>();
 		static object parseQueueLock = new object ();
 		static AutoResetEvent parseEvent = new AutoResetEvent (false);
 		
@@ -391,30 +390,27 @@ namespace MonoDevelop.Projects.Dom.Parser
 		{
 			if (IncLoadCount (item) != 1)
 				return;
-			
-			lock (databases) {
-				if (item is Workspace) {
-					Workspace ws = (Workspace) item;
-					foreach (WorkspaceItem it in ws.Items)
-						Load (it);
-					ws.ItemAdded += OnWorkspaceItemAdded;
-					ws.ItemRemoved += OnWorkspaceItemRemoved;
+			if (item is Workspace) {
+				Workspace ws = (Workspace) item;
+				foreach (WorkspaceItem it in ws.Items)
+					Load (it);
+				ws.ItemAdded += OnWorkspaceItemAdded;
+				ws.ItemRemoved += OnWorkspaceItemRemoved;
+			}
+			else if (item is Solution) {
+				Solution solution = (Solution) item;
+				foreach (Project project in solution.GetAllProjects ())
+					Load (project);
+				// Refresh the references of all projects. This is necessary because
+				// some project may have been loaded before the projects their reference,
+				// in which case those references are not properly registered.
+				foreach (Project project in solution.GetAllProjects ()) {
+					ProjectDom dom = GetProjectDom (project);
+					if (dom != null)
+						dom.UpdateReferences ();
 				}
-				else if (item is Solution) {
-					Solution solution = (Solution) item;
-					foreach (Project project in solution.GetAllProjects ())
-						Load (project);
-					// Refresh the references of all projects. This is necessary because
-					// some project may have been loaded before the projects their reference,
-					// in which case those references are not properly registered.
-					foreach (Project project in solution.GetAllProjects ()) {
-						ProjectDom dom = GetProjectDom (project);
-						if (dom != null)
-							dom.UpdateReferences ();
-					}
-					solution.SolutionItemAdded += OnSolutionItemAdded;
-					solution.SolutionItemRemoved += OnSolutionItemRemoved;
-				}
+				solution.SolutionItemAdded += OnSolutionItemAdded;
+				solution.SolutionItemRemoved += OnSolutionItemRemoved;
 			}
 		}
 		
@@ -582,8 +578,14 @@ namespace MonoDevelop.Projects.Dom.Parser
 					foreach (string u in uris)
 						databases.Remove (u);
 					
-					// Delete all pending parse jobs for this database
-					RemoveParseJobs (db);
+					lock (parseQueueLock) {
+						// Delete all pending parse jobs for this database
+						Queue<ParsingJob> newQueue = new Queue<ParsingJob> ();
+						foreach (ParsingJob pj in parseQueue)
+							if (pj.Database != db)
+								newQueue.Enqueue (pj);
+						parseQueue = newQueue;
+					}
 				}
 			}
 			if (db != null)
@@ -640,71 +642,16 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 		}
 		
-		internal static int PendingJobCount {
-			get {
-				lock (parseQueueLock) {
-					return parseQueueIndex.Count;
-				}
-			}
-		}
-		
-		internal static void QueueParseJob (ProjectDom db, JobCallback callback, string file)
+		internal static void QueueParseJob (ProjectDom db, JobCallback callback, object data)
 		{
 			ParsingJob job = new ParsingJob ();
 			job.ParseCallback = callback;
-			job.File = file;
+			job.Data = data;
 			job.Database = db;
 			lock (parseQueueLock)
 			{
-				RemoveParseJob (file);
-				parseQueueIndex [file] = job;
 				parseQueue.Enqueue (job);
 				parseEvent.Set ();
-			}
-		}
-		
-		static bool WaitForParseJob (int timeout)
-		{
-			return parseEvent.WaitOne (5000, true);
-		}
-		
-		static ParsingJob DequeueParseJob ()
-		{
-			lock (parseQueueLock)
-			{
-				while (parseQueue.Count > 0) {
-					ParsingJob job = parseQueue.Dequeue ();
-					if (job.ParseCallback != null) {
-						parseQueueIndex.Remove (job.File);
-						return job;
-					}
-				}
-				return null;
-			}
-		}
-		
-		static void RemoveParseJob (string file)
-		{
-			lock (parseQueueLock)
-			{
-				ParsingJob job;
-				if (parseQueueIndex.TryGetValue (file, out job)) {
-					job.ParseCallback = null;
-					parseQueueIndex.Remove (file);
-				}
-			}
-		}
-		
-		static void RemoveParseJobs (ProjectDom dom)
-		{
-			lock (parseQueueLock)
-			{
-				foreach (ParsingJob pj in parseQueue) {
-					if (pj.Database == dom) {
-						pj.ParseCallback = null;
-						parseQueueIndex.Remove (pj.File);
-					}
-				}
 			}
 		}
 		
@@ -725,7 +672,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			try {
 				while (trackingFileChanges)
 				{
-					if (!WaitForParseJob (5000))
+					if (!parseEvent.WaitOne (5000, true))
 						CheckModifiedFiles ();
 					else if (trackingFileChanges)
 						ConsumeParsingQueue ();
@@ -787,7 +734,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 				
 				if (readydb == null)
 					readydb = bestdb;
-				
+					
 				readydb.CheckModifiedFiles ();
 				list.Remove (readydb);
 				done.Add (readydb);
@@ -807,11 +754,16 @@ namespace MonoDevelop.Projects.Dom.Parser
 						monitor.BeginTask ("Generating database", 0);
 					}
 					
-					ParsingJob job = DequeueParseJob ();
+					ParsingJob job = null;
+					lock (parseQueueLock)
+					{
+						if (parseQueue.Count > 0)
+							job = (ParsingJob) parseQueue.Dequeue ();
+					}
 					
 					if (job != null) {
 						try {
-							job.ParseCallback (job.File, monitor);
+							job.ParseCallback (job.Data, monitor);
 							if (job.Database != null)
 								dbsToFlush.Add (job.Database);
 						} catch (Exception ex) {
@@ -821,7 +773,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 						}
 					}
 					
-					pending = PendingJobCount;
+					lock (parseQueueLock)
+						pending = parseQueue.Count;
 					
 				}
 				while (pending > 0);
@@ -850,9 +803,6 @@ namespace MonoDevelop.Projects.Dom.Parser
 				} else
 					fileContent = getContent ();
 
-				// Remove any pending jobs for this file
-				RemoveParseJob (fileName);
-				
 				parseInformation = DoParseFile (fileName, fileContent);
 				if (parseInformation == null)
 					return null;
@@ -1093,7 +1043,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 	}
 		
 	public delegate string ContentDelegate ();
-	public delegate void JobCallback (string file, IProgressMonitor monitor);
+	public delegate void JobCallback (object data, IProgressMonitor monitor);
 	
 	public interface IProgressMonitorFactory
 	{

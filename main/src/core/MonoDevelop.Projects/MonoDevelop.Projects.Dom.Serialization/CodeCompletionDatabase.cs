@@ -459,7 +459,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		public IType GetClass (string typeName, IList<IReturnType> genericArguments, bool caseSensitive)
 		{
-			int genericArgumentCount = ProjectDom.ExtractGenericArgCount (ref typeName);
+			int genericArgumentCount = ExtractGenericArgCount (ref typeName);
 			if (genericArguments != null)
 				genericArgumentCount = genericArguments.Count;
 
@@ -483,17 +483,41 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				{
 					// It may be an inner class
 					string nextName = path[nextPos++];
-					int partArgsCount = ProjectDom.ExtractGenericArgCount (ref nextName);
+					int partArgsCount = ExtractGenericArgCount (ref nextName);
 					ClassEntry ce = nst.GetClass (nextName, partArgsCount, caseSensitive);
 					if (ce == null) return null;
 					
-					result = SourceProjectDom.FindInnerType (GetClass (ce), path, nextPos, genericArgumentCount, caseSensitive);
+					len++;	// Now include class name
+					IType c = GetClass (ce);
+					
+					while (nextPos < len) {
+						string name = path[nextPos];
+						partArgsCount = nextPos == len-1 ? genericArgumentCount : ExtractGenericArgCount (ref name);
+						IType nextc = SourceProjectDom.FindInnerType (c, name, partArgsCount, caseSensitive);
+						if (nextc == null) return null;
+						c = nextc;
+						nextPos++;
+					}
+					result = c;
 				}
 				if (genericArguments != null && genericArguments.Count > 0)
 					return sourceProjectDom.CreateInstantiatedGenericType (result, genericArguments);
 				else
 					return result;
 			}
+		}
+		
+		int ExtractGenericArgCount (ref string name)
+		{
+			int i = name.LastIndexOf ('`');
+			if (i != -1) {
+				int typeParams;
+				if (int.TryParse (name.Substring (i + 1), out typeParams)) {
+					name = name.Substring (0, i);
+					return typeParams;
+				}
+			}
+			return 0;
 		}
 		
 		internal IType GetClass (ClassEntry ce)

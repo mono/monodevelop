@@ -106,12 +106,6 @@ namespace Mono.TextEditor
 			
 			foldToggleMarkerGC = new Gdk.GC (editor.GdkWindow);
 			foldToggleMarkerGC.RgbFgColor = editor.ColorStyle.FoldToggleMarker;
-
-			lineStateChangedGC = new Gdk.GC (editor.GdkWindow);
-			lineStateChangedGC.RgbFgColor = new Gdk.Color (108, 226, 108);
-			
-			lineStateDirtyGC = new Gdk.GC (editor.GdkWindow);
-			lineStateDirtyGC.RgbFgColor = new Gdk.Color (255, 238, 98);
 			
 			layout.FontDescription = editor.Options.Font;
 			layout.SetText ("!");
@@ -122,7 +116,7 @@ namespace Mono.TextEditor
 		}
 		
 		Gdk.GC foldBgGC, foldLineGC, foldLineHighlightedGC, foldToggleMarkerGC;
-		Gdk.GC lineStateChangedGC, lineStateDirtyGC;
+		
 		public override void Dispose ()
 		{
 			layout = layout.Kill ();
@@ -135,8 +129,6 @@ namespace Mono.TextEditor
 			foldLineGC = foldLineGC.Kill ();
 			foldLineHighlightedGC = foldLineHighlightedGC.Kill ();
 			foldToggleMarkerGC = foldToggleMarkerGC.Kill ();
-			lineStateChangedGC = lineStateChangedGC.Kill ();
-			lineStateDirtyGC = lineStateDirtyGC.Kill ();
 		}
 		
 		void DrawFoldSegment (Gdk.Drawable win, int x, int y, bool isOpen, bool isSelected)
@@ -178,17 +170,7 @@ namespace Mono.TextEditor
 			foldSegmentSize -= (foldSegmentSize) % 2;
 			
 			Gdk.Rectangle drawArea = new Gdk.Rectangle (x, y, Width, editor.LineHeight);
-			Document.LineState state = editor.Document.GetLineState (line);
-			
-			if (state == Document.LineState.Changed) {
-				win.DrawRectangle (lineStateChangedGC, true, x , y, 4, editor.LineHeight);
-				win.DrawRectangle (foldBgGC, true, x + 3 , y, Width, editor.LineHeight);
-			} else if (state == Document.LineState.Dirty) {
-				win.DrawRectangle (lineStateDirtyGC, true, x , y, 4, editor.LineHeight);
-				win.DrawRectangle (foldBgGC, true, x + 3 , y, Width, editor.LineHeight);
-			} else {
-				win.DrawRectangle (foldBgGC, true, drawArea);
-			}
+			win.DrawRectangle (foldBgGC, true, drawArea);
 			DrawDashedVLine (win, x, drawArea.Top, drawArea.Bottom);
 			
 			if (line < editor.Document.LineCount) {

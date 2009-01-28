@@ -270,7 +270,7 @@ namespace Mono.TextEditor
 		}
 		
 		char caretChar; 
-		internal int  caretX;
+		int  caretX;
 		int  caretY;
 		
 		void SetVisibleCaretPosition (Gdk.Drawable win, char ch, int x, int y)
@@ -335,8 +335,8 @@ namespace Mono.TextEditor
 					DrawStyledText (win, line, false, chunk, ref visibleColumn, ref xPos, y, chunk.Offset, chunk.EndOffset);
 				}
 			}
-		//	if (Caret.Offset == offset + length) 
-		//		SetVisibleCaretPosition (win, ' ', xPos, y);
+			if (Caret.Offset == offset + length) 
+				SetVisibleCaretPosition (win, ' ', xPos, y);
 		}
 		
 		StringBuilder wordBuilder = new StringBuilder ();

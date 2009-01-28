@@ -784,40 +784,5 @@ namespace Mono.TextEditor.Vi
 			Unindent,
 			G,
 		}
-		
-		public class ViKeyPress
-		{
-			public ViKeyPress (Gdk.Key key, uint unicodeKey, Gdk.ModifierType modifier)
-			{
-				this.Key = key;
-				this.UnicodeKey = unicodeKey;
-				this.Modifier = modifier;
-			}
-			
-			public Gdk.Key Key { get; set; }
-			public uint UnicodeKey { get; set; }
-			public Gdk.ModifierType Modifier { get; set; }
-		}
-		
-		//note: if a text operator is repeated, it's actually the range that's repeated
-		//i.e. 2d$ is equivalent to d2$
-		
-		//possible operations:
-		// selection + operator
-		// selection + command
-		// motion
-		// command
-		// repeat + motion
-		// operator + textobject
-		// operator + repeat + textobject
-		// repeat + operator + textobject (implicitly converted to above)
-		// repeat + repeatable command
-		//
-		// and of course text motions can be considered to be text objects relative to the cursor position
-		
-		delegate void ViCommand (TextEditorData data);
-		delegate void ViOperator (TextEditorData data, Segment range);
-		delegate Segment ViTextObject (TextEditorData data, int times);
-		delegate void ViMotion (TextEditorData data, int times);
 	}
 }

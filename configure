@@ -150,7 +150,7 @@ configure_packages ()
 			exit 1
 		fi
 		pushd $path > /dev/null
-		PKG_CONFIG_PATH="$localconf:$PKG_CONFIG_PATH" $sct --prefix="$prefix" $ops || exit 1
+		PKG_CONFIG_PATH=$localconf:$PKG_CONFIG_PATH $sct --prefix=$prefix $ops || exit 1
 		popd > /dev/null
 		create_local_config $path
 		packages="$packages $path"

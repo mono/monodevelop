@@ -64,37 +64,6 @@ namespace MonoDevelop.AspNet.Parser
 						pe.IsWarning? ErrorType.Warning : ErrorType.Error,
 						pe.Line, pe.Column, pe.Message));
 				
-				
-				//			
-//			string className = cu.PageInfo.InheritedClass;
-//			if (string.IsNullOrEmpty (className))
-//				return cu;
-//			
-//			DefaultClass cls = new DefaultClass (cu);
-//			cls.Modifiers &= ModifierEnum.Public;
-//			cls.BodyRegion = new DefaultRegion (0, 0);
-//			cls.BodyRegion.FileName = doc.FilePath;
-//			
-//			//name the class and namespace
-//			int namespaceSplit = className.LastIndexOf ('.');
-//			string namespaceName = null;
-//			if (namespaceSplit > -1) {
-//				cls.Namespace = className.Substring (0, namespaceSplit);
-//				cls.Name = className.Substring (namespaceSplit + 1);
-//			} else {
-//				cls.Name = className;
-//			}
-//			
-//			foreach (System.CodeDom.CodeMemberField field in doc.MemberList.Members.Values) {
-//				DefaultField f = new DefaultField ();
-//				f.Name = field.Name;
-//				f.Modifiers &= ModifierEnum.Protected;
-//				f.ReturnType = new DefaultReturnType (field.Type.BaseType);
-//				cls.Fields.Add (f);
-//			}
-//			
-//			cu.Classes.Add (cls);
-				
 				return result;
 			}
 		}

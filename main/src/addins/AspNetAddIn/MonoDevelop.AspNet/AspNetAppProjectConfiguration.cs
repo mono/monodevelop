@@ -44,10 +44,38 @@ namespace MonoDevelop.AspNet
 		[ItemProperty ("AspNet/DisableCodeBehindGeneration", DefaultValue = false)]
 		bool disableCodeBehindGeneration = false;
 		
+		[ItemProperty ("AspNet/nonStandardOutputDirectory", DefaultValue = false)]
+		bool nonStandardOutputDirectory = false;
+		
 		public bool DisableCodeBehindGeneration {
 			get { return disableCodeBehindGeneration; }
 			set { disableCodeBehindGeneration = value; }
 		}
+		
+		#region //override behaviour of base class to make sure things compile to the right places
+		
+		string GetStandardOutputDirectory ()
+		{
+			if (ParentItem != null && ParentItem.BaseDirectory != null) {
+				return System.IO.Path.Combine (ParentItem.BaseDirectory, "bin");
+			} else {
+				return "bin";
+			}
+		}
+		
+		public override string OutputDirectory {
+			get {
+				if (nonStandardOutputDirectory)
+					return base.OutputDirectory;
+				else
+					return GetStandardOutputDirectory ();
+			}
+			set {
+				base.OutputDirectory = value;
+			}
+		}
+		
+		#endregion
 		
 	}
 }

@@ -90,8 +90,6 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors {
 
 			values = System.Enum.GetValues (prop.PropertyType);
 			
-			//FIXME: The checkboxes are all getting squashed together due to an incorrect height request calculation
-			/*
 			if (values.Length < 6) 
 			{
 				Gtk.VBox vbox = new Gtk.VBox (true, 3);
@@ -115,7 +113,7 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors {
 				frame.ShowAll ();
 				PackStart (frame, true, true, 0);
 			} 
-			else */
+			else 
 			{
 				flagsLabel = new Gtk.Entry ();
 				flagsLabel.IsEditable = false;
