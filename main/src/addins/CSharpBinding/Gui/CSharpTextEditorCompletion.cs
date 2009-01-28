@@ -332,7 +332,6 @@ namespace MonoDevelop.CSharpBinding.Gui
 				case "=":
 				case "==":
 					result = FindExpression (dom, completionContext,  i - completionContext.TriggerOffset - 1);
-					System.Console.WriteLine(result.Expression);
 					resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (dom, Document.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, Editor, Document.FileName);
 					resolveResult = resolver.Resolve (result, location);
 					if (resolveResult != null) {
