@@ -154,8 +154,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 			
 			T pol = GetPolicy ();
 			
-			IEnumerator<PolicySet> en = PolicyService.GetMatchingSets<T> (pol).GetEnumerator ();
-			PolicySet s = en.MoveNext ()? en.Current : null;
+			PolicySet s = PolicyService.GetMatchingSet<T> (pol);
 			
 			TreeIter iter;
 			int i = 0;
