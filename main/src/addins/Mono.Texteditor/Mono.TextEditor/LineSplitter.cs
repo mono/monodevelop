@@ -146,7 +146,7 @@ namespace Mono.TextEditor
 			return lines.OffsetToLineNumber (offset);
 		}
 		
-		Segment FindDelimiter (string text, int startOffset) 
+		static Segment FindDelimiter (string text, int startOffset) 
 		{
 			for (int i = startOffset; i < text.Length; i++) {
 				switch (text[i]) {
@@ -157,6 +157,17 @@ namespace Mono.TextEditor
 				}
 			}
 			return null;
+		}
+		internal static int CountLines (string text)
+		{
+			int textOffset = 0;
+			int result = 0;
+			ISegment delimiter;
+			while ((delimiter = FindDelimiter (text, textOffset)) != null) {
+				result++;
+				textOffset = delimiter.EndOffset;
+			}
+			return result;
 		}
 	}
 }

@@ -184,7 +184,7 @@ namespace Mono.TextEditor
 				                                                               (s.EndOffset <= offset || s.EndOffset >= endOffset)));
 			}*/
 			if (!isInUndo) {
-				UndoOperation operation = new UndoOperation (args, GetTextAt (offset, count));
+				UndoOperation operation = new UndoOperation (this, args, GetTextAt (offset, count));
 				if (currentAtomicOperation != null) {
 					currentAtomicOperation.Add (operation);
 				} else {
@@ -296,6 +296,7 @@ namespace Mono.TextEditor
 		{
 			ReplaceEventArgs args;
 			string text;
+			int startLine, endLine;
 			public virtual string Text {
 				get {
 					return text;
@@ -309,9 +310,21 @@ namespace Mono.TextEditor
 			protected UndoOperation()
 			{
 			}
-			
-			public UndoOperation (ReplaceEventArgs args, string text)
+
+			public virtual bool ChangedLine (int lineNumber)
 			{
+				if (Args == null)
+					return false;
+				return startLine <= lineNumber && lineNumber <= endLine; //line.Contains (Args.Offset);
+			}
+			
+			public UndoOperation (Document doc, ReplaceEventArgs args, string text)
+			{
+				if (args != null) {
+					this.startLine = this.endLine = doc.OffsetToLineNumber (args.Offset);
+					if (!String.IsNullOrEmpty (args.Value))
+						this.endLine = startLine + LineSplitter.CountLines (args.Value);
+				}
 				this.args = args;
 				this.text = text;
 			}
@@ -385,6 +398,15 @@ namespace Mono.TextEditor
 					operations = null;
 				}
 				base.Dispose ();
+			}
+			
+			public override bool ChangedLine (int line)
+			{
+				foreach (UndoOperation op in Operations) {
+					if (op.ChangedLine (line))
+						return true;
+				}
+				return false;
 			}
 			
 			public void Add (UndoOperation operation)
@@ -464,6 +486,29 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		public enum LineState {
+			Unchanged,
+			Dirty,
+			Changed
+		}
+		
+		public LineState GetLineState (int lineNumber)
+		{
+			foreach (UndoOperation op in undoStack) {
+				if (op.ChangedLine (lineNumber)) {
+					if (savePoint != null) {
+						foreach (UndoOperation savedUndo in savePoint) {
+							if (op == savedUndo)
+								return LineState.Changed;
+						}
+					}
+					return LineState.Dirty;
+				}
+			}
+			return LineState.Unchanged;
+		}
+		
+		
 		/// <summary>
 		/// Marks the document not dirty at this point (should be called after save).
 		/// </summary>
@@ -473,6 +518,7 @@ namespace Mono.TextEditor
 			if (undoStack.Count > 0 && undoStack.Peek () is KeyboardStackUndo)
 				((KeyboardStackUndo)undoStack.Peek ()).IsClosed = true;
 			savePoint = undoStack.ToArray ();
+			this.CommitUpdateAll ();
 		}
 		
 		public void OptimizeTypedUndo ()

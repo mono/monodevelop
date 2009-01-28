@@ -1,3 +1,28 @@
+2009-01-28  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/Document.cs:
+	* Mono.TextEditor/LineSplitter.cs: Worked on line changed markers.
+
+2009-01-28  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/Document.cs: Optimized line changed markers a bit.
+
+2009-01-28  Mike Krüger  <mkrueger@novell.com>
+
+	* gtk-gui/objects.xml:
+	* Styles/OblivionStyle.xml:
+	* Styles/TangoLightStyle.xml:
+	* Mono.TextEditor/Document.cs:
+	* Mono.TextEditor/TextViewMargin.cs:
+	* Mono.TextEditor/FoldMarkerMargin.cs:
+	* Mono.TextEditor.Highlighting/Style.cs: Added line dirty/changed
+	markers.
+
+2009-01-28  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor.Highlighting/MarkupSyntaxMode.cs: fixed 'Bug 469928 -
+	Text editor in assembly browser hung randomly'.
+
 2009-01-27  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor.mdp: treat warnings as errors.

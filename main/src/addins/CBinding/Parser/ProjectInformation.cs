@@ -83,6 +83,7 @@ namespace CBinding.Parser
 			enumerators.Clear ();
 			unions.Clear ();
 			typedefs.Clear ();
+			is_filled = false;
 			locals.Clear ();
 		}
 		
@@ -211,6 +212,79 @@ namespace CBinding.Parser
 		public bool IsFilled {
 			get { return is_filled; }
 			set { is_filled = value; }
+		}
+		
+		public void AddTag (Tag tag, string ctags_output)
+		{
+			switch (tag.Kind)
+			{
+			case TagKind.Class:
+				Class c = new Class (tag, Project, ctags_output);
+				if (!Classes.Contains (c))
+					Classes.Add (c);
+				break;
+			case TagKind.Enumeration:
+				Enumeration e = new Enumeration (tag, Project, ctags_output);
+				if (!Enumerations.Contains (e))
+					Enumerations.Add (e);
+				break;
+			case TagKind.Enumerator:
+				Enumerator en= new Enumerator (tag, Project, ctags_output);
+				if (!Enumerators.Contains (en))
+					Enumerators.Add (en);
+				break;
+			case TagKind.ExternalVariable:
+				break;
+			case TagKind.Function:
+				Function f = new Function (tag, Project, ctags_output);
+				if (!Functions.Contains (f))
+					Functions.Add (f);
+				break;
+			case TagKind.Local:
+				break;
+			case TagKind.Macro:
+				Macro m = new Macro (tag, Project);
+				if (!Macros.Contains (m))
+					Macros.Add (m);
+				break;
+			case TagKind.Member:
+				Member me = new Member (tag, Project, ctags_output);
+				if (!Members.Contains (me))
+					Members.Add (me);
+				break;
+			case TagKind.Namespace:
+				Namespace n = new Namespace (tag, Project, ctags_output);
+				if (!Namespaces.Contains (n))
+					Namespaces.Add (n);
+				break;
+			case TagKind.Prototype:
+				Function fu = new Function (tag, Project, ctags_output);
+				if (!Functions.Contains (fu))
+					Functions.Add (fu);
+				break;
+			case TagKind.Structure:
+				Structure s = new Structure (tag, Project, ctags_output);
+				if (!Structures.Contains (s))
+					Structures.Add (s);
+				break;
+			case TagKind.Typedef:
+				Typedef t = new Typedef (tag, Project, ctags_output);
+				if (!Typedefs.Contains (t))
+					Typedefs.Add (t);
+				break;
+			case TagKind.Union:
+				Union u = new Union (tag, Project, ctags_output);
+				if (!Unions.Contains (u))
+					Unions.Add (u);
+				break;
+			case TagKind.Variable:
+				Variable v = new Variable (tag, Project);
+				if (!Variables.Contains (v))
+					Variables.Add (v);
+				break;
+			default:
+				break;
+			}
 		}
 	}
 

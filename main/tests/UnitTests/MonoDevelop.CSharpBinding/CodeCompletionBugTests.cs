@@ -62,7 +62,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 			if (endPos == -1)
 				parsedText = editorText = text.Substring (0, cursorPosition) + text.Substring (cursorPosition + 1);
 			else {
-				parsedText = text.Substring (0, cursorPosition) + text.Substring (endPos + 1);
+				parsedText = text.Substring (0, cursorPosition) + new string (' ', endPos - cursorPosition) + text.Substring (endPos + 1);
 				editorText = text.Substring (0, cursorPosition) + text.Substring (cursorPosition + 1, endPos - cursorPosition - 1) + text.Substring (endPos + 1);
 				cursorPosition = endPos - 1; 
 			}

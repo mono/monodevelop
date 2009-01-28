@@ -81,6 +81,8 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/Editor">
+		<CommandItem id = "MonoDevelop.Ide.Commands.RefactoryCommands.GotoDefinition" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.RefactoryCommands.FindReferences" />
 		<CommandItem id = "MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.RefactoryCommands.CurrentRefactoryOperations" />
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator" />

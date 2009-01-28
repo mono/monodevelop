@@ -243,8 +243,6 @@ namespace CBinding.Parser
 					files.Add (newFileInfo);
 					FillFileInformation (newFileInfo);
 				}
-				
-				contains = false;
 			}
 		}
 		
@@ -296,6 +294,8 @@ namespace CBinding.Parser
 				ctags_output = reader.ReadToEnd ();
 			}
 			
+			fileInfo.Clear ();
+			
 			using (StringReader reader = new StringReader (ctags_output)) {
 				while ((tagEntry = reader.ReadLine ()) != null) {
 					if (tagEntry.StartsWith ("!_")) continue;
@@ -303,7 +303,7 @@ namespace CBinding.Parser
 					Tag tag = ParseTag (tagEntry);
 					
 					if (tag != null)
-						AddInfo (fileInfo, tag, ctags_output);
+						fileInfo.AddTag (tag, ctags_output);
 				}
 			}
 			
@@ -396,8 +396,10 @@ namespace CBinding.Parser
 			}
 			
 			ProjectInformation info = ProjectInformationManager.Instance.Get (project);
+			
+			
 			string tagEntry;
-
+			
 			using (StringReader reader = new StringReader (ctags_output)) {
 				while ((tagEntry = reader.ReadLine ()) != null) {
 					if (tagEntry.StartsWith ("!_")) continue;
@@ -405,7 +407,7 @@ namespace CBinding.Parser
 					Tag tag = ParseTag (tagEntry);
 					
 					if (tag != null)
-						AddInfo (info, tag, ctags_output);
+						info.AddTag (tag, ctags_output);
 				}
 			}			
 			

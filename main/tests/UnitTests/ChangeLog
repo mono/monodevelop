@@ -1,3 +1,8 @@
+2009-01-28  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: fixed bug in the
+	test suite.
+
 2009-01-27  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/CompletionDatabaseTests.cs: Added test for

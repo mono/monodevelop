@@ -153,6 +153,7 @@ namespace MonoDevelop.AspNet
 			
 			conf.Name = name;
 			conf.CompilationParameters = LanguageBinding.CreateCompilationParameters (null);			
+			conf.OutputDirectory = "bin";
 			return conf;
 		}
 		

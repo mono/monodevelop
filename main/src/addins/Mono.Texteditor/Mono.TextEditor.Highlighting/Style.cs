@@ -120,6 +120,20 @@ namespace Mono.TextEditor.Highlighting
 				return GetColorFromDefinition (FoldBgString);
 			}
 		}
+		
+		public const string LineChangedBgString = "lineChangedBg";
+		public virtual Color LineChangedBg {
+			get {
+				return GetColorFromDefinition (LineChangedBgString);
+			}
+		}
+		
+		public const string LineDirtyBgString = "lineDirtyBg";
+		public virtual Color LineDirtyBg {
+			get {
+				return GetColorFromDefinition (LineDirtyBgString);
+			}
+		}
 
 		public const string BackgroundString = "background";
 		public virtual Color Background {
@@ -360,6 +374,9 @@ namespace Mono.TextEditor.Highlighting
 			colors[FoldLineHighlightedString] = new ReferencedColorDefinition (this, LineNumberFgHighlightedString);
 			colors[FoldToggleMarkerString]    = new ReferencedColorDefinition (this, DefaultString);
 			
+			colors[LineDirtyBgString]         = new ColorDefinition (new Gdk.Color (255, 238, 98));
+			colors[LineChangedBgString]       = new ColorDefinition (new Gdk.Color (108, 226, 108));
+			
 			colors[SelectedBgString] = new ColorDefinition (new Gdk.Color (96, 87, 210));
 			colors[SelectedFgString] = new ReferencedColorDefinition (this, BackgroundString);
 			
@@ -473,6 +490,8 @@ namespace Mono.TextEditor.Highlighting
 			case FoldLineString:
 			case FoldLineHighlightedString:
 			case FoldBgString:
+			case LineDirtyBgString:
+			case LineChangedBgString:
 			case BackgroundString:
 			case SelectedBgString:
 			case SelectedFgString:

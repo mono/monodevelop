@@ -77,7 +77,7 @@ namespace CBinding
 		[ItemProperty("Target")]
 		CBinding.CompileTarget target = CBinding.CompileTarget.Bin;
 		
-    	private ProjectPackageCollection packages = new ProjectPackageCollection ();
+		private ProjectPackageCollection packages = new ProjectPackageCollection ();
 		
 		public event ProjectPackageEventHandler PackageAddedToProject;
 		public event ProjectPackageEventHandler PackageRemovedFromProject;
@@ -396,7 +396,8 @@ namespace CBinding
 		}
 		
 		[Browsable(false)]
-		[ItemProperty ("Packages")]
+		[ItemProperty ("Packages")] //should we set IsExternal=true?
+		[ItemProperty ("Package", ValueType=typeof(Package), Scope="*")]
 		public ProjectPackageCollection Packages {
 			get { return packages; }
 			set {
