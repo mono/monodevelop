@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 using Gtk;
 using System.Linq;
 
@@ -153,7 +154,9 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 			
 			T pol = GetPolicy ();
 			
-			PolicySet s = PolicyService.GetMatchingSets<T> (pol).SingleOrDefault ();
+			IEnumerator<PolicySet> en = PolicyService.GetMatchingSets<T> (pol).GetEnumerator ();
+			PolicySet s = en.MoveNext ()? en.Current : null;
+			
 			TreeIter iter;
 			int i = 0;
 			if (s != null && store.GetIterFirst (out iter)) {
