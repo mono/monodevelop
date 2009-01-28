@@ -1,3 +1,8 @@
+2009-01-28  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor.Highlighting/MarkupSyntaxMode.cs: fixed 'Bug 469928 -
+	Text editor in assembly browser hung randomly'.
+
 2009-01-27  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor.mdp: treat warnings as errors.
