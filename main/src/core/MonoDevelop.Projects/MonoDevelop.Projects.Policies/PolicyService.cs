@@ -311,6 +311,14 @@ namespace MonoDevelop.Projects.Policies
 			}
 		}
 		
-		
+		public static PolicySet GetMatchingSet<T> (T policy) where T : class, IEquatable<T>
+		{
+			foreach (PolicySet ps in sets) {
+				IEquatable<T> match = ps.Get<T> () as IEquatable<T>;
+				if (match != null && match.Equals (policy))
+					return ps;
+			}
+			return null;
+		}
 	}
 }
