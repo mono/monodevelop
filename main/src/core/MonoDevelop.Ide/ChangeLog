@@ -1,3 +1,8 @@
+2009-01-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Commands/CustomStringTagProvider.cs: Track api
+	changes.
+
 2009-01-27  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Gui/Document.cs: worked on bug "Bug 469629 - NREs

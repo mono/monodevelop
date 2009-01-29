@@ -70,7 +70,7 @@ namespace MonoDevelop.Ide.Commands
 			return String.Empty;
 		}
 		
-		public string Convert(string tag)
+		public string Convert(string tag, string format)
 		{
 			switch (tag.ToUpper ()) {
 				case "ITEMPATH":
