@@ -113,8 +113,15 @@ namespace MonoDevelop.AspNet
 				if (parsedDocument == null || parsedDocument.Document == null)
 					continue;
 				
+				string className = parsedDocument.PageInfo.InheritedClass;
+				
+				//initialising this list may generate more errors so we do it here
+				MemberListVisitor memberList = null;
+				if (!string.IsNullOrEmpty (className))
+					memberList = parsedDocument.Document.MemberList;
+				
 				//log errors
-				if (parsedDocument.HasErrors) {
+				if (parsedDocument.Document.ParseErrors.Count > 0) {
 					foreach (Exception e in parsedDocument.Document.ParseErrors) {
 						CodeBehindWarning cbw;
 						ErrorInFileException eife = e as ErrorInFileException;
@@ -129,7 +136,6 @@ namespace MonoDevelop.AspNet
 					}
 				}
 				
-				string className = parsedDocument.PageInfo.InheritedClass;
 				if (string.IsNullOrEmpty (className))
 					continue;
 				
@@ -153,7 +159,7 @@ namespace MonoDevelop.AspNet
 				}
 				
 				//add fields for each control in the page
-				foreach (System.CodeDom.CodeMemberField member in parsedDocument.Document.MemberList.Members.Values)
+				foreach (System.CodeDom.CodeMemberField member in memberList.Members.Values)
 					typeDecl.Members.Add (member);
 				
 				System.CodeDom.Compiler.CodeGeneratorOptions options = new System.CodeDom.Compiler.CodeGeneratorOptions ();

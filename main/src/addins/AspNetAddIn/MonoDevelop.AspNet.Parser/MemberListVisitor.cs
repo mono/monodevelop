@@ -60,24 +60,31 @@ namespace MonoDevelop.AspNet.Parser
 			if (id == null)
 				return;
 			
-			if (members.ContainsKey (id))
-				throw new ParserException (node.Location, GettextCatalog.GetString ("Tag ID must be unique within the document: '{0}'.", id));
+			if (members.ContainsKey (id)) {
+				doc.ParseErrors.Add (new ParserException (node.Location, GettextCatalog.GetString ("Tag ID must be unique within the document: '{0}'.", id)));
+				return;
+			}
 			
 			string [] s = node.TagName.Split (':');
 			string prefix = (s.Length == 1)? "" : s[0];
 			string name = (s.Length == 1)? s[0] : s[1];
-			if (s.Length > 2)
-				throw new ParserException (node.Location, GettextCatalog.GetString ("Malformed tag name: '{0}'.", node.TagName));
+			if (s.Length > 2) {
+				doc.ParseErrors.Add (new ParserException (node.Location, GettextCatalog.GetString ("Malformed tag name: '{0}'.", node.TagName)));
+				return;
+			}
 			
 			string typeName = null;
 			try {
 				typeName = doc.ReferenceManager.GetTypeName (prefix, name, node.Attributes ["type"] as string);
 			} catch (Exception e) {
-				throw new ParserException (node.Location, e.ToString ());
+				doc.ParseErrors.Add (new ParserException (node.Location, "Unknown parser error:" + e.ToString ()));
+				return;
 			}
 			
-			if (typeName == null)
-				throw new ParserException (node.Location, GettextCatalog.GetString ("The tag type '{0}{1}{2}' has not been registered.", prefix, string.IsNullOrEmpty(prefix)? string.Empty:":", name));
+			if (typeName == null) {
+				doc.ParseErrors.Add (new ParserException (node.Location, GettextCatalog.GetString ("The tag type '{0}{1}{2}' has not been registered.", prefix, string.IsNullOrEmpty(prefix)? string.Empty:":", name)));
+				return;
+			}
 			
 			CodeTypeReference ctRef = new CodeTypeReference (typeName);
 			CodeMemberField member = new CodeMemberField (ctRef, id);

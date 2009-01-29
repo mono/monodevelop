@@ -73,9 +73,12 @@ namespace MonoDevelop.AspNet.Parser
 			if (tagPrefix == null || tagPrefix.Length < 1)
 				return WebTypeManager.HtmlControlLookup (tagName, htmlTypeAttribute);
 			
-			if (0 == string.Compare (tagPrefix, "asp", StringComparison.OrdinalIgnoreCase))
-				return WebTypeManager.SystemWebControlLookup (tagName,
+			if (0 == string.Compare (tagPrefix, "asp", StringComparison.OrdinalIgnoreCase)) {
+				string systemType = WebTypeManager.SystemWebControlLookup (tagName,
 				    doc.Project == null? MonoDevelop.Core.TargetFramework.Default : doc.Project.TargetFramework);
+				if (!string.IsNullOrEmpty (systemType))
+					return systemType;
+			}
 			
 			foreach (RegisterDirective directive in pageRefsList) {
 				AssemblyRegisterDirective ard = directive as AssemblyRegisterDirective;
@@ -147,14 +150,14 @@ namespace MonoDevelop.AspNet.Parser
 				return null;
 			
 			IType type = null;
-			if (0 == string.Compare (tagPrefix, "asp", StringComparison.InvariantCultureIgnoreCase)) {
+			if (0 == string.Compare (tagPrefix, "asp", StringComparison.OrdinalIgnoreCase)) {
 				type = WebTypeManager.AssemblyTypeLookup (doc.Project, "System.Web", "System.Web.UI.WebControls", tagName);
 				if (type != null)
 					return type;
 			}
 			
 			foreach (RegisterDirective rd in pageRefsList) {
-				if (string.Compare (rd.TagPrefix, tagPrefix, StringComparison.InvariantCultureIgnoreCase) != 0)
+				if (string.Compare (rd.TagPrefix, tagPrefix, StringComparison.OrdinalIgnoreCase) != 0)
 					continue;
 				
 				AssemblyRegisterDirective ard = rd as AssemblyRegisterDirective;
@@ -166,7 +169,7 @@ namespace MonoDevelop.AspNet.Parser
 				}
 				
 				ControlRegisterDirective crd = rd as ControlRegisterDirective;
-				if (crd != null && string.Compare (crd.TagName, tagName, StringComparison.InvariantCultureIgnoreCase) != 0) {
+				if (crd != null && string.Compare (crd.TagName, tagName, StringComparison.OrdinalIgnoreCase) != 0) {
 					//FIXME: return the codebehind class's IType
 					type = WebTypeManager.AssemblyTypeLookup (doc.Project, "System.Web", "System.Web.UI", "UserControl");
 					if (type == null)
@@ -203,7 +206,7 @@ namespace MonoDevelop.AspNet.Parser
 		IEnumerable<RegisterDirective> GetDirectivesForPrefix (string prefix)
 		{
 			foreach (RegisterDirective rd in pageRefsList)
-				if (string.Equals (rd.TagPrefix, prefix, StringComparison.InvariantCultureIgnoreCase))
+				if (string.Equals (rd.TagPrefix, prefix, StringComparison.OrdinalIgnoreCase))
 					yield return rd;
 		}
 		

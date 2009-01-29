@@ -65,7 +65,7 @@ namespace MonoDevelop.AspNet
 			while (dir != null && dir.FullName != projectRootParent) {
 				string configPath =  Path.Combine (dir.FullName, "web.config");
 				if (File.Exists (configPath)) {
-					string fullName = GetFullTypeNameFromConfig (configPath, tagPrefix, tagName);
+					string fullName = GetFullTypeNameFromConfig (project, configPath, tagPrefix, tagName);
 					if (fullName != null)
 						return fullName;
 				}
@@ -92,7 +92,7 @@ namespace MonoDevelop.AspNet
 			return null;
 		}
 		
-		static string GetFullTypeNameFromConfig (string configFile, string tagPrefix, string tagName)
+		static string GetFullTypeNameFromConfig (AspNetAppProject project, string configFile, string tagPrefix, string tagName)
 		{
 			XmlTextReader reader = null;
 			try {
@@ -117,7 +117,7 @@ namespace MonoDevelop.AspNet
 							if (reader.MoveToAttribute ("namespace")) {
 								string _namespace = reader.Value;
 								string _assembly = reader.MoveToAttribute ("assembly")? reader.Value : null;
-								string fullName = AssemblyTypeNameLookup (null, _assembly, _namespace, tagName);
+								string fullName = AssemblyTypeNameLookup (project, _assembly, _namespace, tagName);
 								if (fullName != null)
 									return fullName;
 							}
@@ -257,7 +257,7 @@ namespace MonoDevelop.AspNet
 		
 		static MonoDevelop.Core.TargetFramework GetProjectTargetFramework (AspNetAppProject project)
 		{
-			return project == null? null : project.TargetFramework;
+			return project == null? MonoDevelop.Core.TargetFramework.Default : project.TargetFramework;
 		}
 		
 		public static ProjectDom GetSystemWebDom (AspNetAppProject project)
@@ -415,6 +415,7 @@ namespace MonoDevelop.AspNet
 		
 		#endregion
 		
+		//N.B. web.config and machine.config can add/remove items to this list
 		static void AddDefaultImportedNamespaces (System.Collections.Generic.Dictionary<string, object> list)
 		{
 			//see http://msdn.microsoft.com/en-us/library/eb44kack.aspx
