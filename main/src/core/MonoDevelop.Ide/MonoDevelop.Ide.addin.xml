@@ -879,6 +879,7 @@
 				defaultHandler = "MonoDevelop.Ide.Commands.CurrentRefactoryOperationsHandler"
 				type="array"
 				_label = "Refactory Operations" /> 
+		<!--
 		<Command id = "MonoDevelop.Ide.Commands.RefactoryCommands.GotoDefinition"
 				defaultHandler = "MonoDevelop.Ide.Commands.GotoDefinitionHandler"
 				_label = "Go to _definition" 
@@ -890,6 +891,7 @@
 				_label = "Find _references" 
 				_description = "Find all references to the symbol under the caret"
 				shortcut = "Shift|F12" />
+		-->
 		</Category>
 				
 		<!-- TextEditorCommands -->
