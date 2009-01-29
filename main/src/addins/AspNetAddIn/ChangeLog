@@ -1,3 +1,12 @@
+2009-01-29  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* AspNetAddIn.mdp:
+	* MonoDevelop.AspNet/ProjectRegisteredControls.cs: Add a class to load
+	and cache control registrations from web.config files. It's intended
+	to be bound to the AspNetAppProject, for documents to look to for
+	completion and resolving types.
+
 2009-01-21  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.AspNet/AspNetAppProject.cs: Execute xsp in the project's
