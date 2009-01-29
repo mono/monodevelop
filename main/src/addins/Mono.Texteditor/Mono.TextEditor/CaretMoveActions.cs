@@ -86,7 +86,12 @@ namespace Mono.TextEditor
 			}
 			if (data.Caret.Column < line.EditableLength || data.Caret.AllowCaretBehindLineEnd) {
 				if (data.Caret.Column >= line.EditableLength) {
-					data.Caret.Column = data.GetNextVirtualColumn (data.Caret.Line, data.Caret.Column);
+					int nextColumn = data.GetNextVirtualColumn (data.Caret.Line, data.Caret.Column);
+					if (data.Caret.Column != nextColumn) {
+						data.Caret.Column = nextColumn;
+					} else {
+						data.Caret.Location = new DocumentLocation (data.Caret.Line + 1, 0);
+					}
 				} else {
 					data.Caret.Column++;
 				}

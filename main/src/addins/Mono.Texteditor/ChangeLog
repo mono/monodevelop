@@ -1,5 +1,11 @@
 2009-01-29  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditorData.cs:
+	* Mono.TextEditor/CaretMoveActions.cs: Encapsulated virtual space
+	management.
+
+2009-01-29  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/Document.cs: Worked on line changed markers.
 
 2009-01-29  Mike Krüger  <mkrueger@novell.com>
