@@ -73,9 +73,12 @@ namespace MonoDevelop.AspNet.Parser
 			if (tagPrefix == null || tagPrefix.Length < 1)
 				return WebTypeManager.HtmlControlLookup (tagName, htmlTypeAttribute);
 			
-			if (0 == string.Compare (tagPrefix, "asp", StringComparison.OrdinalIgnoreCase))
-				return WebTypeManager.SystemWebControlLookup (tagName,
+			if (0 == string.Compare (tagPrefix, "asp", StringComparison.OrdinalIgnoreCase)) {
+				string systemType = WebTypeManager.SystemWebControlLookup (tagName,
 				    doc.Project == null? MonoDevelop.Core.TargetFramework.Default : doc.Project.TargetFramework);
+				if (!string.IsNullOrEmpty (systemType))
+					return systemType;
+			}
 			
 			foreach (RegisterDirective directive in pageRefsList) {
 				AssemblyRegisterDirective ard = directive as AssemblyRegisterDirective;

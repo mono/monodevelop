@@ -1,5 +1,12 @@
 2009-01-28  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.AspNet.Parser/DocumentReferenceManager.cs: If the 
+	special-casing of the asp prefix to System.Web.dll fails to resolve 
+	the type, do a full lookup. Fixes the asp prefix with other controls, 
+	as is common with e.g. System.Web.Extensions.
+
+2009-01-28  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.AspNet.Parser/MemberListVisitor.cs: Log type resolution 
 	errors to the document's error list.
 
