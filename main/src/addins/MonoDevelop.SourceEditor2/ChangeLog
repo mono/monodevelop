@@ -1,3 +1,8 @@
+2009-01-29  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: handled possible
+	null reference exception.
+
 2009-01-27  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor.mdp: removed treat warnings as errors

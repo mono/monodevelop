@@ -31,7 +31,6 @@
 			<Assembly>Mono.Posix</Assembly>
 			<Assembly>Mono.Security</Assembly>
 			<Assembly>Mono.WebBrowser</Assembly>
-			<Assembly>Mono.Cairo</Assembly>
 			<Assembly>Mono.CompilerServices.SymbolWriter</Assembly>
 			<Assembly>Mono.Http</Assembly>
 			<Assembly>Mono.Mozilla</Assembly>

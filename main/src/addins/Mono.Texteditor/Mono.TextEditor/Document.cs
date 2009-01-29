@@ -183,8 +183,9 @@ namespace Mono.TextEditor
 				foldSegments = new List<FoldSegment> (foldSegments.Where (s => (s.Offset < offset || s.Offset >= endOffset) && 
 				                                                               (s.EndOffset <= offset || s.EndOffset >= endOffset)));
 			}*/
+			UndoOperation operation = null;
 			if (!isInUndo) {
-				UndoOperation operation = new UndoOperation (this, args, GetTextAt (offset, count));
+				operation = new UndoOperation (args, GetTextAt (offset, count));
 				if (currentAtomicOperation != null) {
 					currentAtomicOperation.Add (operation);
 				} else {
@@ -202,6 +203,8 @@ namespace Mono.TextEditor
 			OnTextReplaced (args);
 			splitter.TextReplaced (this, args);
 			
+			if (operation != null)
+				operation.Setup (this, args);
 			if (this.syntaxMode != null)
 				Mono.TextEditor.Highlighting.SyntaxModeService.StartUpdate (this, this.syntaxMode, offset, value != null ? offset + value.Length : offset + count);
 			if (oldLineCount != LineCount)
@@ -294,9 +297,10 @@ namespace Mono.TextEditor
 		#region Undo/Redo operations
 		public class UndoOperation : IDisposable
 		{
+			Document doc;
 			ReplaceEventArgs args;
 			string text;
-			int startLine, endLine;
+			int startOffset, length;
 			public virtual string Text {
 				get {
 					return text;
@@ -311,27 +315,54 @@ namespace Mono.TextEditor
 			{
 			}
 
-			public virtual bool ChangedLine (int lineNumber)
+			public virtual bool ChangedLine (LineSegment line)
 			{
-				if (Args == null)
+				if (Args == null || line == null)
 					return false;
-				return startLine <= lineNumber && lineNumber <= endLine; //line.Contains (Args.Offset);
+				return startOffset <= line.Offset - line.DelimiterLength && line.Offset <= startOffset + length 
+						|| line.Offset - line.DelimiterLength <= startOffset && startOffset <= line.Offset + line.EditableLength
+						;
+					; //line.Contains (Args.Offset);
 			}
 			
-			public UndoOperation (Document doc, ReplaceEventArgs args, string text)
+			public UndoOperation (ReplaceEventArgs args, string text)
 			{
-				if (args != null) {
-					this.startLine = this.endLine = doc.OffsetToLineNumber (args.Offset);
-					if (!String.IsNullOrEmpty (args.Value))
-						this.endLine = startLine + LineSplitter.CountLines (args.Value);
-				}
 				this.args = args;
 				this.text = text;
+			}
+			static int GetDelta (ReplaceEventArgs args)
+			{
+				int result = -args.Count;
+				if (!String.IsNullOrEmpty (args.Value))
+					result += args.Value.Length;
+				return result;
+			}
+			internal void Setup (Document doc, ReplaceEventArgs args)
+			{
+				this.doc = doc;
+				doc.TextReplaced += TextReplaced;
+				if (args != null) {
+					this.startOffset = args.Offset;
+					if (!String.IsNullOrEmpty (args.Value))
+						this.length  = args.Value.Length;
+				}
+			}
+			void TextReplaced (object sender, ReplaceEventArgs args)
+			{
+				if (args.Offset < startOffset) {
+					startOffset = System.Math.Max (startOffset + GetDelta(args), args.Offset);
+				} else if (args.Offset < startOffset + length) {
+					length = System.Math.Max (length + GetDelta(args), startOffset - args.Offset);
+				}
 			}
 			
 			public virtual void Dispose ()
 			{
 				args = null;
+				if (doc != null) {
+					doc.TextReplaced -= TextReplaced;
+					doc = null;
+				}
 				if (Disposed != null) 
 					Disposed (this, EventArgs.Empty);
 			}
@@ -400,7 +431,7 @@ namespace Mono.TextEditor
 				base.Dispose ();
 			}
 			
-			public override bool ChangedLine (int line)
+			public override bool ChangedLine (LineSegment line)
 			{
 				foreach (UndoOperation op in Operations) {
 					if (op.ChangedLine (line))
@@ -494,8 +525,9 @@ namespace Mono.TextEditor
 		
 		public LineState GetLineState (int lineNumber)
 		{
+			LineSegment line = GetLine (lineNumber);
 			foreach (UndoOperation op in undoStack) {
-				if (op.ChangedLine (lineNumber)) {
+				if (op.ChangedLine (line)) {
 					if (savePoint != null) {
 						foreach (UndoOperation savedUndo in savePoint) {
 							if (op == savedUndo)

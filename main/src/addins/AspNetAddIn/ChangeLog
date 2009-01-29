@@ -7,6 +7,30 @@
 	to be bound to the AspNetAppProject, for documents to look to for
 	completion and resolving types.
 
+2009-01-28  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AspNet/WebTypeManager.cs: Don't pass a null 
+	TargetFramework to SystemAssemblySevice, or it explodes. Propagate 
+	project info to the web.config handler so that it can resolve 
+	assemblies with the correct TargetFramework.
+
+2009-01-28  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AspNet.Parser/DocumentReferenceManager.cs: If the 
+	special-casing of the asp prefix to System.Web.dll fails to resolve 
+	the type, do a full lookup. Fixes the asp prefix with other controls, 
+	as is common with e.g. System.Web.Extensions.
+
+2009-01-28  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AspNet.Parser/MemberListVisitor.cs: Log type resolution 
+	errors to the document's error list.
+
+	* MonoDevelop.AspNet/VerifyCodeBehindBuildStep.cs: Make sure the 
+	member list is initialised before outputting errors, so that type 
+	resolution errors show up in the error pad. Treat them as warnings 
+	until we can be 100% sure that they're not mistakes on MD's part.
+
 2009-01-21  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.AspNet/AspNetAppProject.cs: Execute xsp in the project's

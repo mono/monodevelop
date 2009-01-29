@@ -574,7 +574,57 @@ namespace Mono.TextEditor
 			Document.EndAtomicUndo ();
 			return result;
 		}
-		
 		#endregion
+		
+#region VirtualSpace Manager
+		IVirtualSpaceManager virtualSpaceManager = null;
+		public IVirtualSpaceManager VirtualSpaceManager {
+			get {
+				if (virtualSpaceManager == null)
+					virtualSpaceManager = new DefaultVirtualSpaceManager (this.document);
+				return virtualSpaceManager;
+			}
+			set {
+				virtualSpaceManager = value;
+			}
+		}
+		public interface IVirtualSpaceManager
+		{
+			string GetVirtualSpaces (int lineNumber, int column);
+			int GetNextVirtualColumn (int lineNumber, int column);
+		}
+		
+		class DefaultVirtualSpaceManager : IVirtualSpaceManager
+		{
+			Document doc;
+			public DefaultVirtualSpaceManager (Document doc)
+			{
+				this.doc = doc;
+			}
+			public string GetVirtualSpaces (int lineNumber, int column)
+			{
+				LineSegment line = doc.GetLine (lineNumber);
+				if (line == null)
+					return "";
+				int count = column - line.EditableLength;
+				return new string (' ', System.Math.Max (0, count));
+			}
+			
+			public int GetNextVirtualColumn (int lineNumber, int column)
+			{
+				return column + 1;
+			}
+		}
+		
+		public string GetVirtualSpaces (int lineNumber, int column)
+		{
+			return VirtualSpaceManager.GetVirtualSpaces (lineNumber, column);
+		}
+		
+		public int GetNextVirtualColumn (int lineNumber, int column)
+		{
+			return VirtualSpaceManager.GetNextVirtualColumn (lineNumber, column);
+		}
+#endregion
 	}
 }

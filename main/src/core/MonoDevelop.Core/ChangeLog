@@ -3,6 +3,11 @@
 	* MonoDevelop.Core/StringParserService.cs: Add support for formatting
 	strings in tags.
 
+2009-01-28  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* frameworks.xml: Remove Mono.Cairo from the framework since it has its
+	own package.
+
 2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Core.mdp: Flush project format changes.
