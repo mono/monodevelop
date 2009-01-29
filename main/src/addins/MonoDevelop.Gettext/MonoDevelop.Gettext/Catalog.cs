@@ -716,7 +716,7 @@ namespace MonoDevelop.Gettext
 			Language = Country = Project = Team = TeamEmail = "";
 			
 			Charset = "utf-8";
-			MonoDevelop.Ide.Gui.UserInformation userInfo = MonoDevelop.Ide.Gui.IdeApp.Workspace.GetUserInformation (project);       
+			MonoDevelop.Ide.Gui.AuthorInformation userInfo = MonoDevelop.Ide.Gui.IdeApp.Workspace.GetAuthorInformation (project);       
 			Translator = userInfo.Name;
 			TranslatorEmail = userInfo.Email;
 			

@@ -96,7 +96,7 @@ namespace MonoDevelop.ChangeLogAddIn
 			
 			AllowCommit = !requireComment;
 			
-			if (!UserInformation.Default.IsValid) {
+			if (!AuthorInformation.Default.IsValid) {
 				msgLabel.Markup = "<b><span foreground='red'>" + GettextCatalog.GetString ("ChangeLog entries can't be generated.") + "</span></b>";
 				pathLabel.Text = GettextCatalog.GetString ("The name or e-mail of the user has not been configured.");
 				logButton.Label = GettextCatalog.GetString ("Configure user data");
@@ -249,7 +249,7 @@ namespace MonoDevelop.ChangeLogAddIn
 				ChangeLogEntry entry;
 				if (!entries.TryGetValue (logf, out entry)) {
 					entry = new ChangeLogEntry ();
-					entry.UserInformation = MonoDevelop.Ide.Gui.IdeApp.Workspace.GetUserInformation (parentItem);
+					entry.AuthorInformation = MonoDevelop.Ide.Gui.IdeApp.Workspace.GetAuthorInformation (parentItem);
 					entry.MessageStyle = ChangeLogService.GetMessageStyle (parentItem);
 					entry.CantGenerate = cantGenerate;
 					entry.File = logf;
@@ -271,14 +271,14 @@ namespace MonoDevelop.ChangeLogAddIn
 			foreach (ChangeLogEntry entry in entries.Values) {
 				format.Style = entry.MessageStyle;
 				entry.Message = cset.GeneratePathComment (entry.File, entry.Items, 
-					format, entry.UserInformation);
+					format, entry.AuthorInformation);
 			}
 		}
 		
 		void OnClickButton (object s, EventArgs args)
 		{
 			if (notConfigured) {
-				IdeApp.Workbench.ShowGlobalPreferencesDialog (Toplevel as Gtk.Window, "GeneralUserInfo");
+				IdeApp.Workbench.ShowGlobalPreferencesDialog (Toplevel as Gtk.Window, "GeneralAuthorInfo");
 				UpdateStatus ();
 				GenerateLogEntries ();
 				return;
@@ -292,7 +292,7 @@ namespace MonoDevelop.ChangeLogAddIn
 		
 		void OnClickOptions (object s, EventArgs args)
 		{
-			IdeApp.Workbench.ShowGlobalPreferencesDialog (Toplevel as Gtk.Window, "GeneralUserInfo");
+			IdeApp.Workbench.ShowGlobalPreferencesDialog (Toplevel as Gtk.Window, "GeneralAuthorInfo");
 			UpdateStatus ();
 			GenerateLogEntries ();
 		}
@@ -306,7 +306,7 @@ namespace MonoDevelop.ChangeLogAddIn
 		public bool CantGenerate;
 		public bool IsNew;
 		public List<ChangeSetItem> Items = new List<ChangeSetItem> ();
-		public UserInformation UserInformation;
+		public AuthorInformation AuthorInformation;
 		public CommitMessageStyle MessageStyle;
 	}
 }

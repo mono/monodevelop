@@ -49,14 +49,14 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.SelectReferenceDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AddInsPanelWidget.cs \
+	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AuthorInformationPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.CodeGenerationPanelWidget.cs \
-	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.GlobalUserInformationPanelWidget.cs \
+	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.GlobalAuthorInformationPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.LoadSavePanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TasksPanelWidget.cs \
-	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.UserInformationPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.OverridesImplementsDialog.cs \
 	gtk-gui/MonoDevelop.Ide.SelectEncodingsDialog.cs \
 	gtk-gui/MonoDevelop.Ide.StandardHeader.StandardHeaderPolicyPanelWidget.cs \
@@ -172,14 +172,14 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Dialogs/SplashScreen.cs \
 	MonoDevelop.Ide.Gui.Dialogs/TipOfTheDay.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/AddInsOptionsPanel.cs \
+	MonoDevelop.Ide.Gui.OptionPanels/AuthorInformationPanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/BuildPanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/CodeGenerationPanel.cs \
-	MonoDevelop.Ide.Gui.OptionPanels/GlobalUserInformationPanel.cs \
+	MonoDevelop.Ide.Gui.OptionPanels/GlobalAuthorInformationPanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/IDEStyleOptionsPanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/LoadSavePanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/TasksOptionsPanel.cs \
-	MonoDevelop.Ide.Gui.OptionPanels/UserInformationPanel.cs \
 	MonoDevelop.Ide.Gui.Pads.ClassPad/ClassBrowserPad.cs \
 	MonoDevelop.Ide.Gui.Pads.ClassPad/ClassBrowserPadWidget.cs \
 	MonoDevelop.Ide.Gui.Pads.ClassPad/ClassData.cs \
@@ -255,6 +255,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui/AbstractViewContent.cs \
 	MonoDevelop.Ide.Gui/AddEntryEventHandler.cs \
 	MonoDevelop.Ide.Gui/AddinUpdateHandler.cs \
+	MonoDevelop.Ide.Gui/AuthorInformation.cs \
 	MonoDevelop.Ide.Gui/BackgroundProgressMonitor.cs \
 	MonoDevelop.Ide.Gui/ConfigurationComboBox.cs \
 	MonoDevelop.Ide.Gui/DefaultDisplayBinding.cs \
@@ -296,7 +297,6 @@ FILES =  \
 	MonoDevelop.Ide.Gui/TextFileNavigationPoint.cs \
 	MonoDevelop.Ide.Gui/TipOfTheDayStartupHandler.cs \
 	MonoDevelop.Ide.Gui/ToolbarComboBox.cs \
-	MonoDevelop.Ide.Gui/UserInformation.cs \
 	MonoDevelop.Ide.Gui/ViewCommandHandlers.cs \
 	MonoDevelop.Ide.Gui/ViewContentEventHandler.cs \
 	MonoDevelop.Ide.Gui/Workbench.cs \

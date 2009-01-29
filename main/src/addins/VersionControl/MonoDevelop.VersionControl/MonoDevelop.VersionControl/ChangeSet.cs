@@ -40,7 +40,7 @@ namespace MonoDevelop.VersionControl
 		}
 		
 		public string GeneratePathComment (string path, IEnumerable<ChangeSetItem> items, 
-			CommitMessageFormat messageFormat, MonoDevelop.Ide.Gui.UserInformation userInfo)
+			CommitMessageFormat messageFormat, MonoDevelop.Ide.Gui.AuthorInformation userInfo)
 		{
 			ChangeLogWriter writer = new ChangeLogWriter (path, userInfo);
 			writer.MessageFormat = messageFormat;

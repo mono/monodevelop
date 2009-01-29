@@ -77,7 +77,7 @@ namespace MonoDevelop.ChangeLogAddIn
 			else if (parent.ConfiguredSolution != null)
 				item = parent.ConfiguredSolution.RootFolder;
 			
-			messageWidget.Load (format, IdeApp.Workspace.GetUserInformation (item));
+			messageWidget.Load (format, IdeApp.Workspace.GetAuthorInformation (item));
 		}
 		
 		public ChangeLogPolicy GetPolicy ()

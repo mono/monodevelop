@@ -34,7 +34,7 @@ namespace MonoDevelop.VersionControl
 	public partial class CommitMessageStylePanelWidget : Gtk.Bin
 	{
 		CommitMessageFormat format;
-		UserInformation uinfo;
+		AuthorInformation uinfo;
 		bool updating;
 		
 		public event EventHandler Changed;
@@ -51,7 +51,7 @@ namespace MonoDevelop.VersionControl
 			font.Dispose ();
 		}
 		
-		public void Load (CommitMessageFormat format, UserInformation uinfo)
+		public void Load (CommitMessageFormat format, AuthorInformation uinfo)
 		{
 			updating = true;
 			this.format = format;

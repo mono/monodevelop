@@ -67,11 +67,11 @@ namespace MonoDevelop.VersionControl
 		{
 			format.Style = new CommitMessageStyle ();
 			format.Style.CopyFrom (policy.CommitMessageStyle);
-			UserInformation uinfo;
+			AuthorInformation uinfo;
 			if (ConfiguredSolutionItem != null)
-				uinfo = IdeApp.Workspace.GetUserInformation (ConfiguredSolutionItem);
+				uinfo = IdeApp.Workspace.GetAuthorInformation (ConfiguredSolutionItem);
 			else
-				uinfo = IdeApp.Workspace.GetUserInformation (ConfiguredSolution);
+				uinfo = IdeApp.Workspace.GetAuthorInformation (ConfiguredSolution);
 			widget.Load (format, uinfo);
 		}
 	}

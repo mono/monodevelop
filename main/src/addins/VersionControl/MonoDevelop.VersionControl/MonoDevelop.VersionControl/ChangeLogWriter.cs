@@ -40,9 +40,9 @@ namespace MonoDevelop.VersionControl
 	{
 		private Dictionary<string, List<string>> messages = new Dictionary<string, List<string>> ();
 		private string changelog_path;
-		UserInformation uinfo;
+		AuthorInformation uinfo;
 	
-		public ChangeLogWriter (string path, UserInformation uinfo)
+		public ChangeLogWriter (string path, AuthorInformation uinfo)
 		{
 			changelog_path = Path.GetDirectoryName (path);
 			this.uinfo = uinfo;
@@ -89,7 +89,7 @@ namespace MonoDevelop.VersionControl
 			CommitMessageStyle message_style = MessageFormat.Style;
 			
 			if (message_style.Header.Length > 0) {
-				string [,] tags = new string[,] { {"UserName", uinfo.Name}, {"UserEmail", uinfo.Email} };
+				string [,] tags = new string[,] { {"AuthorName", uinfo.Name}, {"AuthorEmail", uinfo.Email} };
 				builder.Append (StringParserService.Parse (message_style.Header, tags));
 			}
 			

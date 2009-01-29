@@ -350,14 +350,14 @@
     <File name="BuildVariables.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui/DocumentNavigationPoint.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Content/ITextEditorResolver.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Gui.OptionPanels/UserInformationPanel.cs" subtype="Code" buildaction="Compile" />
-    <File name="gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.UserInformationPanelWidget.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Gui/UserInformation.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Gui.OptionPanels/GlobalUserInformationPanel.cs" subtype="Code" buildaction="Compile" />
-    <File name="gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.GlobalUserInformationPanelWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Gui.OptionPanels/AuthorInformationPanel.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Gui/AuthorInformation.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Gui.OptionPanels/GlobalAuthorInformationPanel.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.StandardHeader/StandardHeaderPolicyPanel.cs" subtype="Code" buildaction="Compile" />
     <File name="gtk-gui/MonoDevelop.Ide.StandardHeader.StandardHeaderPolicyPanelWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.StandardHeader/MITX11LicencePolicy.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AuthorInformationPanelWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.GlobalAuthorInformationPanelWidget.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

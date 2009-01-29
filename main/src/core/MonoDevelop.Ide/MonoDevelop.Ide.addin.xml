@@ -1283,7 +1283,7 @@
 			<Section id = "AddIns" _label = "Add-ins" icon="md-addin" class = "MonoDevelop.Ide.Gui.OptionPanels.AddInsOptionsPanel" />
 			<Section id = "TaskList" _label = "Task List" icon="md-task-list-icon" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.TasksOptionsPanel" />
 			<Section id = "ExternalTools" _label = "External Tools" fill="true" class = "MonoDevelop.Ide.ExternalTools.ExternalToolPane" />
-			<Section id = "GeneralUserInfo" _label = "User Information" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.GlobalUserInformationPanel" />
+			<Section id = "GeneralAuthorInfo" _label = "Author Information" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.GlobalAuthorInformationPanel" />
 		</Section>
 
 		<Section id = "Coding" _label = "Coding">
@@ -1303,7 +1303,7 @@
 
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Common">
 		<Condition id="ItemType" value="Solution">
-			<Section id = "UserInfo" _label = "User Information" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.UserInformationPanel" />
+			<Section id = "AuthorInfo" _label = "Author Information" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.AuthorInformationPanel" />
 		</Condition>
 		<Section id = "ProjectStandardHeader" _label = "Standard Header" fill="true" class = "MonoDevelop.Ide.StandardHeader.StandardHeaderPolicyPanel" />
 	</Extension>

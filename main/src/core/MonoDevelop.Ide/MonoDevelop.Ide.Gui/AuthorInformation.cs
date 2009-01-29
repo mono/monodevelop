@@ -1,5 +1,5 @@
 // 
-// UserInformation.cs
+// AuthorInformation.cs
 // 
 // Author:
 //   Michael Hutchinson <mhutchinson@novell.com>
@@ -34,16 +34,17 @@ using MonoDevelop.Core.Serialization;
 namespace MonoDevelop.Ide.Gui
 {
 	[DataItem]
-	public sealed class UserInformation
+	public sealed class AuthorInformation
 	{
 		
-		internal UserInformation (string name, string email)
+		internal AuthorInformation (string name, string email, string copyright)
 		{
 			this.Name = name;
 			this.Email = email;
+			this.Copyright = copyright;
 		}
 		
-		internal UserInformation ()
+		internal AuthorInformation ()
 		{
 		}
 		
@@ -53,11 +54,15 @@ namespace MonoDevelop.Ide.Gui
 		[ItemProperty]
 		public string Email { get; private set; }
 		
-		public static UserInformation Default {
+		[ItemProperty]
+		public string Copyright { get; private set; }
+		
+		public static AuthorInformation Default {
 			get {
-				string name = GetValueOrMigrate<string> ("User.Name", "ChangeLogAddIn.Name") ?? Environment.UserName;
-				string email = GetValueOrMigrate<string> ("User.Email", "ChangeLogAddIn.Email");
-				return new UserInformation (name, email);
+				string name = GetValueOrMigrate<string> ("Author.Name", "ChangeLogAddIn.Name") ?? Environment.UserName;
+				string email = GetValueOrMigrate<string> ("Author.Email", "ChangeLogAddIn.Email");
+				string copyright = PropertyService.Get<string> (name, name);
+				return new AuthorInformation (name, email, copyright);
 			}
 		}
 		

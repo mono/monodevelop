@@ -1,3 +1,14 @@
+2009-01-29  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.VersionControl/ChangeSet.cs:
+	* MonoDevelop.VersionControl/ChangeLogWriter.cs:
+	* MonoDevelop.VersionControl.Dialogs/VersionControlPolicyPanel.cs:
+	* MonoDevelop.VersionControl.Dialogs/CommitMessageStylePanelWidget.cs:
+	Rename UserInformation to AuthorInformation, and change other strings
+	correspondingly.
+
+	* MonoDevelop.VersionControl.mdp: Updated.
+
 2009-01-29  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:

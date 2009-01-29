@@ -1,3 +1,26 @@
+2009-01-29  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Ide.mdp:
+	* MonoDevelop.Ide.addin.xml:
+	* MonoDevelop.Ide.Gui/RootWorkspace.cs:
+	* MonoDevelop.Ide.Gui/UserInformation.cs:
+	* MonoDevelop.Ide.Gui/AuthorInformation.cs:
+	* MonoDevelop.Ide.StandardHeader/MITX11LicencePolicy.xml:
+	* MonoDevelop.Ide.Gui.OptionPanels/UserInformationPanel.cs:
+	* MonoDevelop.Ide.Gui.OptionPanels/AuthorInformationPanel.cs:
+	* MonoDevelop.Ide.Gui.OptionPanels/GlobalUserInformationPanel.cs:
+	* MonoDevelop.Ide.Gui.OptionPanels/GlobalAuthorInformationPanel.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.UserInformationPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AuthorInformationPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.GlobalUserInformationPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.GlobalAuthorInformationPanelWidget.cs:
+	Rename UserInformation to AuthorInformation, and change other strings
+	correspondingly. Add Copyright holder string to AuthorInformation.
+
+	* gtk-gui/objects.xml: Updated.
+
 2009-01-29  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Commands/CustomStringTagProvider.cs: Track api

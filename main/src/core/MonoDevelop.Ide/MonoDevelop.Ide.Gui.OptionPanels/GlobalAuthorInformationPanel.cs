@@ -1,5 +1,5 @@
 // 
-// GlobalUserInformationPanelWidget.cs
+// GlobalAuthorInformationPanelWidget.cs
 // 
 // Author:
 //   Michael Hutchinson <mhutchinson@novell.com>
@@ -32,13 +32,13 @@ using MonoDevelop.Core.Gui.Dialogs;
 
 namespace MonoDevelop.Ide.Gui.OptionPanels
 {
-	class GlobalUserInformationPanel : OptionsPanel
+	class GlobalAuthorInformationPanel : OptionsPanel
 	{
-		GlobalUserInformationPanelWidget widget;
+		GlobalAuthorInformationPanelWidget widget;
 		
 		public override Gtk.Widget CreatePanelWidget ()
 		{
-			return widget = new GlobalUserInformationPanelWidget ();
+			return widget = new GlobalAuthorInformationPanelWidget ();
 		}
 
 		public override void ApplyChanges ()
@@ -47,21 +47,23 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		}
 	}
 	
-	partial class GlobalUserInformationPanelWidget : Gtk.Bin
+	partial class GlobalAuthorInformationPanelWidget : Gtk.Bin
 	{
 		
-		public GlobalUserInformationPanelWidget()
+		public GlobalAuthorInformationPanelWidget()
 		{
 			this.Build ();
 			
-			nameEntry.Text = UserInformation.Default.Name ?? "";
-			emailEntry.Text = UserInformation.Default.Email ?? "";
+			nameEntry.Text = AuthorInformation.Default.Name ?? "";
+			emailEntry.Text = AuthorInformation.Default.Email ?? "";
+			copyrightEntry.Text = AuthorInformation.Default.Copyright ?? "";
 		}
 		
 		public void Save ()
 		{
-			PropertyService.Set ("User.Name", UserInformation.Default.Name);
-			PropertyService.Set ("User.Email", UserInformation.Default.Email);
+			PropertyService.Set ("Author.Name", AuthorInformation.Default.Name);
+			PropertyService.Set ("Author.Email", AuthorInformation.Default.Email);
+			PropertyService.Set ("Author.Copyright", AuthorInformation.Default.Copyright);
 		}
 	}
 }
