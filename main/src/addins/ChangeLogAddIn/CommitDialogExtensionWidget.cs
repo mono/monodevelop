@@ -250,6 +250,7 @@ namespace MonoDevelop.ChangeLogAddIn
 				if (!entries.TryGetValue (logf, out entry)) {
 					entry = new ChangeLogEntry ();
 					entry.UserInformation = MonoDevelop.Ide.Gui.IdeApp.Workspace.GetUserInformation (parentItem);
+					entry.MessageStyle = ChangeLogService.GetMessageStyle (parentItem);
 					entry.CantGenerate = cantGenerate;
 					entry.File = logf;
 					if (cantGenerate)
@@ -263,9 +264,14 @@ namespace MonoDevelop.ChangeLogAddIn
 				entry.Items.Add (item);
 			}
 			
+			CommitMessageFormat format = new CommitMessageFormat ();
+			format.TabsAsSpaces = false;
+			format.TabWidth = 8;
+			format.MaxColumns = 70;
 			foreach (ChangeLogEntry entry in entries.Values) {
+				format.Style = entry.MessageStyle;
 				entry.Message = cset.GeneratePathComment (entry.File, entry.Items, 
-					ChangeLogMessageStyle.ChangeLogEntry, entry.UserInformation);
+					format, entry.UserInformation);
 			}
 		}
 		
@@ -301,5 +307,6 @@ namespace MonoDevelop.ChangeLogAddIn
 		public bool IsNew;
 		public List<ChangeSetItem> Items = new List<ChangeSetItem> ();
 		public UserInformation UserInformation;
+		public CommitMessageStyle MessageStyle;
 	}
 }

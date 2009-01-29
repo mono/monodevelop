@@ -1,3 +1,17 @@
+2009-01-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* Policies.xml:
+	* gtk-gui/gui.stetic:
+	* ChangeLogPolicy.cs:
+	* ChangeLogAddIn.mdp:
+	* ChangeLogService.cs:
+	* ChangeLogAddIn.addin.xml:
+	* ProjectOptionPanelWidget.cs:
+	* CommitDialogExtensionWidget.cs:
+	* gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs: Added
+	message style to changelog policy
+
 2009-01-27  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* ChangeLogService.cs:

@@ -35,17 +35,21 @@
 		<CommandItem id="MonoDevelop.ChangeLogAddIn.ChangeLogCommands.InsertEntry" insertafter="Separator5"/>
 	</Extension>
 
-	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Common">
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/VersionControl">
 		<ComplexCondition>
 			<Or>
 				<Condition id="ItemType" value="SolutionItem" />
 				<Condition id="ItemType" value="Solution" />
 			</Or>
-			<Section id = "ChangeLogIntegration" _label = "ChangeLog Integration" class="MonoDevelop.ChangeLogAddIn.ProjectOptionPanel" />
+			<Section id = "ChangeLogIntegration" _label = "ChangeLog Integration" fill="true" class="MonoDevelop.ChangeLogAddIn.ProjectOptionPanel" />
 		</ComplexCondition>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/PolicyTypes" >
 		<PolicyType id="ChangeLogPolicy" class="MonoDevelop.ChangeLogAddIn.ChangeLogPolicy" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/PolicySets/Mono" >
+		<Policies resource="Policies.xml"/>
 	</Extension>
 </Addin>

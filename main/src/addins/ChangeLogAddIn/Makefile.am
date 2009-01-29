@@ -31,7 +31,8 @@ FILES =  \
 
 RES =  \
 	ChangeLogAddIn.addin.xml \
-	gtk-gui/gui.stetic
+	gtk-gui/gui.stetic \
+	Policies.xml
 
 if ENABLE_VERSIONCONTROL
 all: $(ASSEMBLY) $(ASSEMBLY).mdb

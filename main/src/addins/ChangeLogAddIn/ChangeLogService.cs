@@ -30,6 +30,7 @@ using System.IO;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
+using MonoDevelop.VersionControl;
 
 namespace MonoDevelop.ChangeLogAddIn
 {
@@ -111,6 +112,12 @@ namespace MonoDevelop.ChangeLogAddIn
 			SolutionItem parentEntry;
 			ChangeLogPolicy policy;
 			return GetChangeLogForFile (baseCommitPath, file, out parentEntry, out policy);
+		}
+		
+		public static CommitMessageStyle GetMessageStyle (SolutionItem item)
+		{
+			ChangeLogPolicy policy = item.Policies.Get<ChangeLogPolicy> ();
+			return policy.MessageStyle;
 		}
 	}
 }

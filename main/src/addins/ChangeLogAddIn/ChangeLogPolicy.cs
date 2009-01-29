@@ -30,6 +30,7 @@ using System;
 
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects.Policies;
+using MonoDevelop.VersionControl;
 
 namespace MonoDevelop.ChangeLogAddIn
 {
@@ -37,11 +38,13 @@ namespace MonoDevelop.ChangeLogAddIn
 	[DataItem ("ChangeLogPolicy")]
 	public sealed class ChangeLogPolicy : IEquatable<ChangeLogPolicy>
 	{
+		CommitMessageStyle messageStyle;
 		
-		public ChangeLogPolicy (ChangeLogUpdateMode mode, VcsIntegration vcsIntegration)
+		public ChangeLogPolicy (ChangeLogUpdateMode mode, VcsIntegration vcsIntegration, CommitMessageStyle messageStyle)
 		{
 			VcsIntegration = vcsIntegration;
 			UpdateMode = mode;
+			this.messageStyle = messageStyle;
 		}
 		
 		public ChangeLogPolicy ()
@@ -55,10 +58,26 @@ namespace MonoDevelop.ChangeLogAddIn
 		
 		[ItemProperty]
 		public VcsIntegration VcsIntegration { get; private set; }
-
+		
+		[ItemProperty]
+		public CommitMessageStyle MessageStyle {
+			get {
+				if (messageStyle == null) {
+					messageStyle = new CommitMessageStyle ();
+					messageStyle.Header = "${Date:yyyy/MM/dd}  ${UserName}  <${UserEmail}>\n\n";
+					messageStyle.Indent = "\t";
+				}
+				return messageStyle; 
+			}
+			set { messageStyle = value; }
+		}
+		
 		public bool Equals (ChangeLogPolicy other)
 		{
-			return other != null && other.VcsIntegration == VcsIntegration && other.UpdateMode == UpdateMode;
+			return other != null && 
+				   MessageStyle.Equals (other.MessageStyle) &&
+				   other.VcsIntegration == VcsIntegration && 
+				   other.UpdateMode == UpdateMode;
 		}
 	}
 	

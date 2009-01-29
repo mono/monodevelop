@@ -26,13 +26,17 @@
 //
 
 using System;
+using MonoDevelop.Core;
 using MonoDevelop.Projects;
+using MonoDevelop.VersionControl;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.ChangeLogAddIn
 {	
 	partial class ProjectOptionPanelWidget : Gtk.Bin
 	{
 		ProjectOptionPanel parent;
+		CommitMessageStyle style;
 		
 		public ProjectOptionPanelWidget (ProjectOptionPanel parent)
 		{
@@ -59,6 +63,21 @@ namespace MonoDevelop.ChangeLogAddIn
 			
 			this.checkVersionControl.Active = policy.VcsIntegration != VcsIntegration.None;
 			this.checkRequireOnCommit.Active = policy.VcsIntegration == VcsIntegration.RequireEntry;
+			
+			style = new CommitMessageStyle ();
+			style.CopyFrom (policy.MessageStyle);
+			
+			CommitMessageFormat format = new CommitMessageFormat ();
+			format.MaxColumns = 70;
+			format.Style = style;
+			
+			SolutionItem item = null;
+			if (parent.ConfiguredSolutionItem != null)
+				item = parent.ConfiguredSolutionItem;
+			else if (parent.ConfiguredSolution != null)
+				item = parent.ConfiguredSolution.RootFolder;
+			
+			messageWidget.Load (format, IdeApp.Workspace.GetUserInformation (item));
 		}
 		
 		public ChangeLogPolicy GetPolicy ()
@@ -78,7 +97,7 @@ namespace MonoDevelop.ChangeLogAddIn
 					vcs = VcsIntegration.RequireEntry;
 			}
 			
-			return new ChangeLogPolicy (mode, vcs);
+			return new ChangeLogPolicy (mode, vcs, style);
 		}
 
 		protected virtual void ValueChanged (object sender, System.EventArgs e)
@@ -86,7 +105,11 @@ namespace MonoDevelop.ChangeLogAddIn
 			//update sensitivity
 			checkVersionControl.Sensitive = !noneRadioButton.Active;
 			checkRequireOnCommit.Sensitive = (checkVersionControl.Sensitive && checkVersionControl.Active);
-			
+			parent.UpdateSelectedNamedPolicy ();
+		}
+
+		protected virtual void OnMessageWidgetChanged (object sender, System.EventArgs e)
+		{
 			parent.UpdateSelectedNamedPolicy ();
 		}
 	}

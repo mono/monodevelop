@@ -13,6 +13,8 @@ namespace MonoDevelop.ChangeLogAddIn {
     
     internal partial class ProjectOptionPanelWidget {
         
+        private Gtk.Notebook notebook1;
+        
         private Gtk.VBox vbox2;
         
         private Gtk.RadioButton noneRadioButton;
@@ -41,20 +43,33 @@ namespace MonoDevelop.ChangeLogAddIn {
         
         private Gtk.CheckButton checkRequireOnCommit;
         
+        private Gtk.Label label1;
+        
+        private Gtk.VBox vbox1;
+        
+        private MonoDevelop.VersionControl.CommitMessageStylePanelWidget messageWidget;
+        
+        private Gtk.Label label2;
+        
         protected virtual void Build() {
             Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget
             Stetic.BinContainer.Attach(this);
             this.Name = "MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget";
             // Container child MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.Gtk.Container+ContainerChild
+            this.notebook1 = new Gtk.Notebook();
+            this.notebook1.CanFocus = true;
+            this.notebook1.Name = "notebook1";
+            this.notebook1.CurrentPage = 1;
+            // Container child notebook1.Gtk.Notebook+NotebookChild
             this.vbox2 = new Gtk.VBox();
             this.vbox2.Name = "vbox2";
             this.vbox2.Spacing = 6;
+            this.vbox2.BorderWidth = ((uint)(6));
             // Container child vbox2.Gtk.Box+BoxChild
             this.noneRadioButton = new Gtk.RadioButton(Mono.Unix.Catalog.GetString("radiobutton1"));
             this.noneRadioButton.CanFocus = true;
             this.noneRadioButton.Name = "noneRadioButton";
-            this.noneRadioButton.Active = true;
             this.noneRadioButton.DrawIndicator = true;
             this.noneRadioButton.UseUnderline = true;
             this.noneRadioButton.Group = new GLib.SList(System.IntPtr.Zero);
@@ -172,7 +187,35 @@ namespace MonoDevelop.ChangeLogAddIn {
             w13.Position = 6;
             w13.Expand = false;
             w13.Fill = false;
-            this.Add(this.vbox2);
+            this.notebook1.Add(this.vbox2);
+            // Notebook tab
+            this.label1 = new Gtk.Label();
+            this.label1.Name = "label1";
+            this.label1.LabelProp = Mono.Unix.Catalog.GetString("ChangLog Generation");
+            this.notebook1.SetTabLabel(this.vbox2, this.label1);
+            this.label1.ShowAll();
+            // Container child notebook1.Gtk.Notebook+NotebookChild
+            this.vbox1 = new Gtk.VBox();
+            this.vbox1.Name = "vbox1";
+            this.vbox1.Spacing = 6;
+            this.vbox1.BorderWidth = ((uint)(9));
+            // Container child vbox1.Gtk.Box+BoxChild
+            this.messageWidget = new MonoDevelop.VersionControl.CommitMessageStylePanelWidget();
+            this.messageWidget.Events = ((Gdk.EventMask)(256));
+            this.messageWidget.Name = "messageWidget";
+            this.vbox1.Add(this.messageWidget);
+            Gtk.Box.BoxChild w15 = ((Gtk.Box.BoxChild)(this.vbox1[this.messageWidget]));
+            w15.Position = 0;
+            this.notebook1.Add(this.vbox1);
+            Gtk.Notebook.NotebookChild w16 = ((Gtk.Notebook.NotebookChild)(this.notebook1[this.vbox1]));
+            w16.Position = 1;
+            // Notebook tab
+            this.label2 = new Gtk.Label();
+            this.label2.Name = "label2";
+            this.label2.LabelProp = Mono.Unix.Catalog.GetString("Message Style");
+            this.notebook1.SetTabLabel(this.vbox1, this.label2);
+            this.label2.ShowAll();
+            this.Add(this.notebook1);
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
@@ -183,6 +226,7 @@ namespace MonoDevelop.ChangeLogAddIn {
             this.oneChangeLogInEachDirectoryRadioButton.Toggled += new System.EventHandler(this.ValueChanged);
             this.checkVersionControl.Toggled += new System.EventHandler(this.ValueChanged);
             this.checkRequireOnCommit.Toggled += new System.EventHandler(this.ValueChanged);
+            this.messageWidget.Changed += new System.EventHandler(this.OnMessageWidgetChanged);
         }
     }
 }
