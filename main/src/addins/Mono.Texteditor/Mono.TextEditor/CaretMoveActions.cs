@@ -84,8 +84,12 @@ namespace Mono.TextEditor
 				data.Caret.Location = data.Document.OffsetToLocation (segment.EndLine.Offset + segment.EndColumn); 
 				return;
 			}
-			if (data.Caret.Column < line.EditableLength) {
-				data.Caret.Column++;
+			if (data.Caret.Column < line.EditableLength || data.Caret.AllowCaretBehindLineEnd) {
+				if (data.Caret.Column >= line.EditableLength) {
+					data.Caret.Column = data.GetNextVirtualColumn (data.Caret.Line, data.Caret.Column);
+				} else {
+					data.Caret.Column++;
+				}
 			} else if (data.Caret.Line + 1 < data.Document.LineCount) {
 				data.Caret.Location = new DocumentLocation (data.Caret.Line + 1, 0);
 			}

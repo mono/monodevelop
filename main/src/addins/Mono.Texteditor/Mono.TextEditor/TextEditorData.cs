@@ -575,6 +575,19 @@ namespace Mono.TextEditor
 			return result;
 		}
 		
+		public string GetVirtualSpaces (int lineNumber, int column)
+		{
+			LineSegment line = Document.GetLine (lineNumber);
+			if (line == null)
+				return "";
+			int count = column - line.EditableLength;
+			return new string (' ', System.Math.Max (0, count));
+		}
+		
+		public int GetNextVirtualColumn (int lineNumber, int column)
+		{
+			return column + 1;
+		}
 		#endregion
 	}
 }

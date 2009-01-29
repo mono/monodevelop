@@ -89,8 +89,8 @@ namespace Mono.TextEditor
 					LineSegment line = document.GetLine (Line);
 					if (line != null)
 						result = line.Offset;
+					result += System.Math.Min (Column, line.EditableLength);
 				}
-				result += Column;
 				return result;
 			}
 			set {
@@ -136,11 +136,17 @@ namespace Mono.TextEditor
 				isVisible = value;
 			}
 		}
+
+		public bool AllowCaretBehindLineEnd {
+			get;
+			set;
+		}
 		
 		public Caret (TextEditorData editor, Document document)
 		{
 			this.editor = editor;
 			this.document = document;
+			AllowCaretBehindLineEnd = false;
 		}
 		
 		public void Dispose ()
@@ -152,14 +158,17 @@ namespace Mono.TextEditor
 		{
 			if (this.Line >= this.document.LineCount) 
 				this.Line = this.document.LineCount - 1;
-			LineSegment curLine = this.document.GetLine (this.Line);
-			this.Column = System.Math.Min (curLine.EditableLength, System.Math.Max (0, this.Column));
+			if (!AllowCaretBehindLineEnd) {
+				LineSegment curLine = this.document.GetLine (this.Line);
+				this.Column = System.Math.Min (curLine.EditableLength, System.Math.Max (0, this.Column));
+			}
 		}
 		
 		void SetDesiredColumn ()
 		{
 			LineSegment curLine = this.document.GetLine (this.Line);
-			this.Column = System.Math.Min (curLine.EditableLength, System.Math.Max (0, this.Column));
+			if (!AllowCaretBehindLineEnd)
+				this.Column = System.Math.Min (curLine.EditableLength, System.Math.Max (0, this.Column));
 			this.desiredColumn = curLine.GetVisualColumn (editor, document, this.Column);
 		}
 		

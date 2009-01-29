@@ -1,5 +1,15 @@
 2009-01-29  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/Caret.cs:
+	* Mono.TextEditor/EditMode.cs:
+	* Mono.TextEditor/TextViewMargin.cs:
+	* Mono.TextEditor/TextEditorData.cs:
+	* Mono.TextEditor/CaretMoveActions.cs:
+	* Mono.TextEditor/ClipboardActions.cs: Added support for caret behind
+	eol
+
+2009-01-29  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/Document.cs: worked on line changed markers.
 
 2009-01-28  Mike Krüger  <mkrueger@novell.com>

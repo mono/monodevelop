@@ -1103,8 +1103,31 @@ namespace Mono.TextEditor
 				win.DrawLine (GetGC (ColorStyle.Ruler), x + rulerX, y, x + rulerX, y + LineHeight); 
 			}
 			
-			if (caretOffset == line.Offset + line.EditableLength)
-				SetVisibleCaretPosition (win, textEditor.Options.ShowEolMarkers ? eolMarkerChar : ' ', xPos, y);
+			if (Caret.Line == lineNr && Caret.Column > line.EditableLength) {
+				string virtualText = textEditor.GetTextEditorData ().GetVirtualSpaces (Caret.Line, Caret.Column);
+				int visibleColumn = line.EditableLength;
+				for (int i = 0; i < virtualText.Length; i++) {
+					if (virtualText[i] != '\t') {
+						layout.SetText (virtualText[i].ToString ());
+						layout.GetPixelSize (out width, out height);
+						if (textEditor.Options.ShowSpaces) 
+							DrawSpaceMarker (win, isEolSelected, xPos, y);
+						xPos += width;
+						visibleColumn++;
+					} else {
+						int newColumn = GetNextTabstop (this.textEditor.GetTextEditorData (), visibleColumn);
+						int delta = GetNextVisualTab (xPos - this.XOffset + (int)this.textEditor.HAdjustment.Value) - xPos - (int)this.textEditor.HAdjustment.Value + this.XOffset;
+						if (textEditor.Options.ShowTabs) 
+							DrawTabMarker (win, isEolSelected, xPos, y);
+						xPos += delta;
+						visibleColumn = newColumn;
+					}
+				}
+				SetVisibleCaretPosition (win, ' ', xPos, y);
+			} else {
+				if (caretOffset == line.Offset + line.EditableLength)
+					SetVisibleCaretPosition (win, textEditor.Options.ShowEolMarkers ? eolMarkerChar : ' ', xPos, y);
+			}
 		}
 		
 		internal protected override void MouseLeft ()
