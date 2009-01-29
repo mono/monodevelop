@@ -276,6 +276,8 @@ namespace MonoDevelop.SourceEditor
 			
 			bool inStringOrComment = false;
 			LineSegment line = Document.GetLine (Caret.Line);
+			if (line == null)
+				return true;
 			Stack<Span> stack = line.StartSpan != null ? new Stack<Span> (line.StartSpan) : new Stack<Span> ();
 			SyntaxModeService.ScanSpans (Document, Document.SyntaxMode, stack, line.Offset, Caret.Offset);
 			foreach (Span span in stack) {
