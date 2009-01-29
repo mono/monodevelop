@@ -1,5 +1,9 @@
 2009-01-29  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/Document.cs: Worked on line changed markers.
+
+2009-01-29  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/Caret.cs:
 	* Mono.TextEditor/EditMode.cs:
 	* Mono.TextEditor/TextViewMargin.cs:
