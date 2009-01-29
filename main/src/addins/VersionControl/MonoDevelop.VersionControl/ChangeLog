@@ -1,3 +1,25 @@
+2009-01-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* Policies.xml:
+	* gtk-gui/gui.stetic:
+	* gtk-gui/objects.xml:
+	* gtk-gui/generated.cs:
+	* VersionControl.addin.xml:
+	* MonoDevelop.VersionControl.mdp:
+	* MonoDevelop.VersionControl/ChangeSet.cs:
+	* MonoDevelop.VersionControl/ChangeLogWriter.cs:
+	* MonoDevelop.VersionControl/CommitMessageStyle.cs:
+	* MonoDevelop.VersionControl/CommitMessageFormat.cs:
+	* MonoDevelop.VersionControl/VersionControlPolicy.cs:
+	* MonoDevelop.VersionControl.Dialogs/CommitDialog.cs:
+	* MonoDevelop.VersionControl/VersionControlService.cs:
+	* MonoDevelop.VersionControl.Dialogs/VersionControlPolicyPanel.cs:
+	* MonoDevelop.VersionControl.Dialogs/CommitMessageStylePanelWidget.cs:
+	* gtk-gui/MonoDevelop.VersionControl.CommitMessageStylePanelWidget.cs:
+	Added version control policy, which allows setting the commit message
+	style.
+
 2009-01-27  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.VersionControl.Dialogs/CommitDialog.cs:

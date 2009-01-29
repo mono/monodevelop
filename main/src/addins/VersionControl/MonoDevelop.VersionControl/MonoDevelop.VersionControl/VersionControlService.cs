@@ -11,6 +11,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects;
+using MonoDevelop.Projects.Policies;
 using MonoDevelop.Core.Serialization;
 using Mono.Addins;
 
@@ -590,6 +591,47 @@ namespace MonoDevelop.VersionControl
 			} finally {
 				tw.Close ();
 			}
+		}
+		
+		public static CommitMessageFormat GetCommitMessageFormat (SolutionItem item)
+		{
+			CommitMessageFormat format = new CommitMessageFormat ();
+			format.Style = item.Policies.Get<VersionControlPolicy> ().CommitMessageStyle;
+			return format;
+		}
+		
+		public static CommitMessageFormat GetCommitMessageFormat (ChangeSet cset)
+		{
+			// If all files belong to a project, use that project's policy. If not, use the solution policy
+			Project project = null;
+			bool sameProject = true;
+			foreach (ChangeSetItem item in cset.Items) {
+				if (project != null) {
+					if (project.Files.GetFile (item.LocalPath) == null) {
+						// Not all files belong to the same project
+						sameProject = false;
+						break;
+					}
+				} else {
+					project = IdeApp.Workspace.GetProjectContainingFile (item.LocalPath);
+				}
+			}
+			CommitMessageStyle style;
+			
+			if (project != null) {
+				VersionControlPolicy policy;
+				if (sameProject)
+					policy = project.Policies.Get<VersionControlPolicy> ();
+				else
+					policy = project.ParentSolution.Policies.Get<VersionControlPolicy> ();
+				style = policy.CommitMessageStyle;
+			}
+			else
+				style = new CommitMessageStyle ();
+			
+			CommitMessageFormat format = new CommitMessageFormat ();
+			format.Style = style;
+			return format;
 		}
 	}
 	

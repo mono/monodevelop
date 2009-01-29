@@ -74,7 +74,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			}
 			
 			if (changeSet.GlobalComment.Length == 0)
-				Message = changeSet.GenerateGlobalComment (70);
+				Message = changeSet.GenerateGlobalComment (VersionControlService.GetCommitMessageFormat (changeSet));
 			else
 				Message = changeSet.GlobalComment;
 				

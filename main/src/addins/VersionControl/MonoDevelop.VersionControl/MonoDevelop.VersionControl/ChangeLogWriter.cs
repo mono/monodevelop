@@ -30,25 +30,22 @@ using System;
 using System.IO;
 using System.Text;
 using System.Collections.Generic;
+using MonoDevelop.Ide.Gui;
 
 using MonoDevelop.Core;
 
 namespace MonoDevelop.VersionControl
 {
-	public enum ChangeLogMessageStyle
-	{
-		ChangeLogEntry,
-		CommitMessage
-	}
-
-	public class ChangeLogWriter
+	class ChangeLogWriter
 	{
 		private Dictionary<string, List<string>> messages = new Dictionary<string, List<string>> ();
 		private string changelog_path;
+		UserInformation uinfo;
 	
-		public ChangeLogWriter (string path)
+		public ChangeLogWriter (string path, UserInformation uinfo)
 		{
 			changelog_path = Path.GetDirectoryName (path);
+			this.uinfo = uinfo;
 		}
 	
 		public void AddFile (string message, string path)
@@ -89,111 +86,107 @@ namespace MonoDevelop.VersionControl
 				
 			StringBuilder builder = new StringBuilder ();
 			
-			if (MessageStyle == ChangeLogMessageStyle.ChangeLogEntry) {
-				builder.AppendFormat ("{0}  {1}  <{2}>", 
-					DateTime.Now.ToString ("yyyy-MM-dd"), 
-					FullName, EmailAddress);
-				builder.AppendLine ();
-				builder.AppendLine ();
-				
-				if (messages.Count == 0) {
-					builder.Append ('\t');
-					builder.AppendLine ();
-					builder.AppendLine ();
-				}
-			} else if (messages.Count == 0) {
-				return String.Empty;
+			CommitMessageStyle message_style = MessageFormat.Style;
+			
+			if (message_style.Header.Length > 0) {
+				string [,] tags = new string[,] { {"UserName", uinfo.Name}, {"UserEmail", uinfo.Email} };
+				builder.Append (StringParserService.Parse (message_style.Header, tags));
 			}
 			
-			string lead_indent = MessageStyle == ChangeLogMessageStyle.ChangeLogEntry ? "\t" : string.Empty;
-			string wrap_indent = MessageStyle == ChangeLogMessageStyle.ChangeLogEntry ? "\t" : "  ";
 			int m_i = 0;
 			
 			foreach (KeyValuePair<string, List<string>> message in messages) {
 				List<string> paths = message.Value;
 				paths.Sort ((a, b) => a.Length.CompareTo (b.Length));
 				
+				StringBuilder sb = new StringBuilder ();
 				for (int i = 0, n = paths.Count; i < n; i++) {
-					if (i < n - 1) {
-						builder.Append (lead_indent);
-						builder.AppendFormat ("* {0}:", message.Value[i]);
-						builder.AppendLine ();
-						continue;
-					}
-					
-					builder.Append (lead_indent);
-					builder.Append ("* ");
-					WrapAlign (builder, string.Format ("{0}: {1}", paths[i], message.Key), 70, wrap_indent, 1, true);
-					
-					if (m_i++ < messages.Count - 1) {
-						builder.AppendLine ();
-						builder.AppendLine ();
-					}
+					if (i == 0)
+						sb.Append (message_style.FirstFilePrefix);
+					else
+						sb.Append (message_style.FileSeparator);
+					sb.Append (paths [i]);
 				}
-			}
-			
-			if (MessageStyle == ChangeLogMessageStyle.ChangeLogEntry) {
-				builder.AppendLine ();
-				builder.AppendLine ();
+				sb.Append (message_style.LastFilePostfix);
+				sb.Append (message.Key);
+				string files = sb.ToString ();
+				int e = files.LastIndexOf ('\n');
+				
+				string fileListEnd;
+				if (e != -1) {
+					string fileList = files.Substring (0, e);
+					fileListEnd = files.Substring (e + 1);
+					fileList = message_style.Indent + fileList.Replace ("\n", "\n" + message_style.Indent);
+					builder.Append (fileList).AppendLine ();
+				} else
+					fileListEnd = files;
+				
+				builder.Append (FormatText (fileListEnd, message_style.Indent, 0, message_style.LineAlign, MessageFormat.MaxColumns, MessageFormat.TabWidth, MessageFormat.TabsAsSpaces));
+				
+				if (m_i++ < messages.Count - 1) {
+					builder.AppendLine ();
+					for (int n=0; n < message_style.InterMessageLines; n++)
+						builder.AppendLine ();
+				}
 			}
 			
 			return builder.ToString ();
 		}
 		
-		// Adapted from Hyena.CommandLine.Layout (Banshee)
-		private static StringBuilder WrapAlign (StringBuilder builder, string str, int width, 
-			string indent, int align, bool last)
+		static string FormatText (string text, string indentString, int initialLeftMargin, int leftMargin, int maxCols, int tabWidth, bool tabsAsSpaces)
 		{
-			bool did_wrap = false;
+			if (text == "")
+				return "";
 			
-			for (int i = 0, b = 0; i < str.Length; i++, b++) {
-				if (str[i] == ' ') {
-					int word_length = 0;
-					for (int j = i + 1; j < str.Length && str[j] != ' '; word_length++, j++);
-					
-					if (b + word_length >= width) {
-						builder.AppendLine ();
-						for (int k = 0; k < align; k++) {
-							builder.Append (indent);
-						}
-						b = 0;
-						did_wrap = true;
-						continue;
+			int indentWidth = 0;
+			foreach (char c in indentString) {
+				if (c == '\t') indentWidth += tabWidth;
+				else indentWidth++;
+			}
+			
+			int n = 0;
+			int margin = initialLeftMargin;
+			
+			StringBuilder outs = new StringBuilder ();
+			
+			while (n < text.Length)
+			{
+				int col = margin + indentWidth;
+				int lastWhite = -1;
+				int sn = n;
+				bool forcedLineBreak = false;
+				while ((col < maxCols || lastWhite==-1) && n < text.Length) {
+					if (char.IsWhiteSpace (text[n]))
+						lastWhite = n;
+					if (text[n] == '\n') {
+						lastWhite = n;
+						n++;
+						forcedLineBreak = true;
+						break;
 					}
+					col++;
+					n++;
 				}
 				
-				builder.Append (str[i]);
+				if ((lastWhite == -1 || col < maxCols) && !forcedLineBreak)
+					lastWhite = n;
+				else if (col >= maxCols)
+					n = lastWhite + 1;
+				
+				string line = text.Substring (sn, lastWhite - sn);
+				if (line.Length > 0 || n < text.Length) {
+					if (outs.Length > 0) outs.Append ('\n');
+					outs.Append (indentString + new String (' ', margin) + line);
+				}
+				margin = leftMargin;
 			}
-			
-			if (did_wrap && !last) {
-				builder.AppendLine ();
-			}
-			
-			return builder;
+			if (tabsAsSpaces)
+				outs.Replace ("\t", new string (' ', tabWidth));
+			return outs.ToString ();
 		}
 		
-		private bool skip_empty = true;
-		public bool SkipEmpty {
-			get { return skip_empty; }
-			set { skip_empty = value; }
-		}
+		public bool SkipEmpty { get; set; }
 		
-		private string full_name;
-		public string FullName {
-			get { return full_name; }
-			set { full_name = value; }
-		}
-		
-		private string email_address;
-		public string EmailAddress {
-			get { return email_address; }
-			set { email_address = value; }
-		}
-		
-		private ChangeLogMessageStyle message_style;
-		public ChangeLogMessageStyle MessageStyle {
-			get { return message_style; }
-			set { message_style = value; }
-		}
+		public CommitMessageFormat MessageFormat { get; set; }
 	}
 }

@@ -2,13 +2,16 @@
 FILES =  \
 	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
+	gtk-gui/MonoDevelop.VersionControl.CommitMessageStylePanelWidget.cs \
 	gtk-gui/MonoDevelop.VersionControl.Dialogs.CommitDialog.cs \
 	gtk-gui/MonoDevelop.VersionControl.Dialogs.EditRepositoryDialog.cs \
 	gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs \
 	gtk-gui/MonoDevelop.VersionControl.UrlBasedRepositoryEditor.cs \
 	MonoDevelop.VersionControl.Dialogs/CommitDialog.cs \
+	MonoDevelop.VersionControl.Dialogs/CommitMessageStylePanelWidget.cs \
 	MonoDevelop.VersionControl.Dialogs/EditRepositoryDialog.cs \
 	MonoDevelop.VersionControl.Dialogs/SelectRepositoryDialog.cs \
+	MonoDevelop.VersionControl.Dialogs/VersionControlPolicyPanel.cs \
 	MonoDevelop.VersionControl.Views/CellRendererDiff.cs \
 	MonoDevelop.VersionControl.Views/DiffView.cs \
 	MonoDevelop.VersionControl.Views/LogView.cs \
@@ -22,6 +25,8 @@ FILES =  \
 	MonoDevelop.VersionControl/CommitCommand.cs \
 	MonoDevelop.VersionControl/CommitDialogExtension.cs \
 	MonoDevelop.VersionControl/CommitEventHandler.cs \
+	MonoDevelop.VersionControl/CommitMessageFormat.cs \
+	MonoDevelop.VersionControl/CommitMessageStyle.cs \
 	MonoDevelop.VersionControl/FileUpdateEventHandler.cs \
 	MonoDevelop.VersionControl/LockCommand.cs \
 	MonoDevelop.VersionControl/PublishCommand.cs \
@@ -41,6 +46,7 @@ FILES =  \
 	MonoDevelop.VersionControl/VersionControlItem.cs \
 	MonoDevelop.VersionControl/VersionControlItemList.cs \
 	MonoDevelop.VersionControl/VersionControlNodeExtension.cs \
+	MonoDevelop.VersionControl/VersionControlPolicy.cs \
 	MonoDevelop.VersionControl/VersionControlService.cs \
 	MonoDevelop.VersionControl/VersionControlSystem.cs \
 	MonoDevelop.VersionControl/VersionInfo.cs \
@@ -53,7 +59,8 @@ DEPS =  \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
-	$(top_builddir)/build/bin/MonoDevelop.Projects.dll
+	$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll
 
 REFS =  \
 	$(GLIB_SHARP_LIBS) \
@@ -67,7 +74,6 @@ REFS =  \
 
 RES =  \
 	comment.png \
-	gtk-gui/objects.xml \
 	menu_add.png \
 	menu_commit.png \
 	menu_diff.png \
@@ -87,6 +93,7 @@ RES =  \
 	overlay_removed.png \
 	overlay_unlocked.png \
 	overlay_unversioned.png \
+	Policies.xml \
 	repository.png \
 	VersionControl.addin.xml
 
