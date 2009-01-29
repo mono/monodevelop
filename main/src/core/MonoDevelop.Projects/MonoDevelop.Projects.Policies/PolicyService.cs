@@ -112,8 +112,10 @@ namespace MonoDevelop.Projects.Policies
 		{
 			var xr = System.Xml.XmlReader.Create (reader);
 			XmlConfigurationReader configReader = XmlConfigurationReader.DefaultReader;
-			while (!xr.EOF)
+			while (!xr.EOF) {
 				yield return RawDeserialize (configReader.Read (xr));
+				xr.MoveToContent ();
+			}
 		}
 		
 		internal static object RawDeserialize (DataNode data)
@@ -228,7 +230,7 @@ namespace MonoDevelop.Projects.Policies
 					baseline.ItemData.Remove (baselineNode);
 					baseline.ItemData.Add (node);
 				} else {
-					ApplyOverlay ((DataItem)baselineNode, (DataValue)node);
+					ApplyOverlay ((DataItem)baselineNode, (DataItem)node);
 				}
 			}
 		}

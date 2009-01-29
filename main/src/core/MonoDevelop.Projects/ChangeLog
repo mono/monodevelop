@@ -1,5 +1,13 @@
 2009-01-29  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects.Policies/PolicyService.cs: Fix incorrect cast.
+	When reading policy sets, ensure the reader is properly positioned
+	when checking for EOF.
+
+	* MonoDevelop.Projects.addin.xml: Added default Mono policy.
+
+2009-01-29  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects.Policies/PolicyService.cs: Added GetMatchingSet.
 
 2009-01-27  Lluis Sanchez Gual  <lluis@novell.com>

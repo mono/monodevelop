@@ -144,7 +144,7 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/PolicySets" >
-		<PolicySet id="MonoDevelop" _name="MonoDevelop">
+		<PolicySet id="Mono" _name="Mono">
 		<!--	<Policies resource="" /> -->
 		</PolicySet>
 	</Extension>
