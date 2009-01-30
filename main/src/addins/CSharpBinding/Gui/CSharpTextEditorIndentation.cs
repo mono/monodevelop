@@ -81,7 +81,6 @@ namespace MonoDevelop.CSharpBinding.Gui
 			public string GetVirtualSpaces (int lineNumber, int column)
 			{
 				string indent = GetIndent (lineNumber, column);
-				System.Console.WriteLine(column);
 				if (column == indent.Length)
 					return indent;
 				return "";
@@ -95,10 +94,8 @@ namespace MonoDevelop.CSharpBinding.Gui
 			
 			public int GetNextVirtualColumn (int lineNumber, int column)
 			{
-				System.Console.WriteLine("col:" + column + "lin:" + lineNumber);
 				if (column == 0) {
 					int result = GetIndent (lineNumber, column).Length;
-					System.Console.WriteLine("res:" + result);
 					return result;
 				}
 				return column;
