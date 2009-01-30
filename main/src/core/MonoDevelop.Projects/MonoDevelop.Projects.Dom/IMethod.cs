@@ -63,7 +63,7 @@ namespace MonoDevelop.Projects.Dom
 			get;
 		}
 		
-		ReadOnlyCollection<IReturnType> GenericParameters {
+		ReadOnlyCollection<ITypeParameter> TypeParameters {
 			get;
 		}
 		

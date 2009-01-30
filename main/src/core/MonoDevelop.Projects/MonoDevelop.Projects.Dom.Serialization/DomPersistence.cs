@@ -167,7 +167,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			}
 			arguments = ReadUInt (reader, 500);
 			while (arguments-- > 0) {
-				result.AddGenericParameter (ReadReturnType (reader, nameTable));
+				result.AddTypeParameter (ReadTypeParameter (reader, nameTable));
 			}
 			return result;
 		}
@@ -192,8 +192,8 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				}
 			}
 
-			writer.Write (method.GenericParameters.Count);
-			foreach (IReturnType genArg in method.GenericParameters) {
+			writer.Write (method.TypeParameters.Count);
+			foreach (ITypeParameter genArg in method.TypeParameters) {
 				Write (writer, nameTable, genArg);
 			}
 		}
@@ -459,7 +459,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			return tp;
 		}
 		
-		public static void Write (BinaryWriter writer, INameEncoder nameTable, TypeParameter typeParameter)
+		public static void Write (BinaryWriter writer, INameEncoder nameTable, ITypeParameter typeParameter)
 		{
 			WriteString (typeParameter.Name, writer, nameTable);
 

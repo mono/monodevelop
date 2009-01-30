@@ -38,10 +38,10 @@ namespace MonoDevelop.Projects.Dom
 	public class DomMethod : AbstractMember, IMethod
 	{
 		protected List<IParameter> parameters = null;
-		protected List<IReturnType> genericParameters = null;
+		protected List<ITypeParameter> genericParameters = null;
 
 		static readonly ReadOnlyCollection<IParameter> emptyParameters = new ReadOnlyCollection<IParameter> (new IParameter [0]);
-		static readonly ReadOnlyCollection<IReturnType> emptyGenericParameters = new ReadOnlyCollection<IReturnType> (new IReturnType [0]);
+		static readonly ReadOnlyCollection<ITypeParameter> emptyGenericParameters = new ReadOnlyCollection<ITypeParameter> (new ITypeParameter [0]);
 
 		public MethodModifier MethodModifier {
 			get;
@@ -72,7 +72,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public ReadOnlyCollection<IReturnType> GenericParameters {
+		public ReadOnlyCollection<ITypeParameter> TypeParameters {
 			get {
 				return genericParameters != null ? genericParameters.AsReadOnly () : emptyGenericParameters;
 			}
@@ -193,10 +193,10 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public void AddGenericParameter (IReturnType genPara)
+		public void AddTypeParameter (ITypeParameter genPara)
 		{
 			if (genericParameters == null) 
-				genericParameters = new List<IReturnType> ();
+				genericParameters = new List<ITypeParameter> ();
 			genericParameters.Add (genPara);
 		}
 		
@@ -246,11 +246,11 @@ namespace MonoDevelop.Projects.Dom
 		
 		public override string ToString ()
 		{
-			return string.Format ("[DomMethod:Name={0}, Modifiers={1}, #Parameters={2}, #GenParameters={3}, ReturnType={4}, Location={5}]",
+			return string.Format ("[DomMethod:Name={0}, Modifiers={1}, #Parameters={2}, #TypeParameters={3}, ReturnType={4}, Location={5}]",
 			                      Name,
 			                      Modifiers,
 			                      Parameters.Count,
-			                      GenericParameters.Count,
+			                      TypeParameters.Count,
 			                      ReturnType,
 			                      Location);
 		}

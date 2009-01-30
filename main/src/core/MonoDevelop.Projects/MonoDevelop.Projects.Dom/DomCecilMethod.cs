@@ -140,7 +140,10 @@ namespace MonoDevelop.Projects.Dom
 				this.name = methodDefinition.Name;
 			}
 			foreach (GenericParameter param in methodDefinition.GenericParameters) {
-				AddGenericParameter (DomCecilMethod.GetReturnType (param));
+				TypeParameter tp = new TypeParameter (param.FullName);
+				foreach (TypeReference tr in param.Constraints)
+					tp.AddConstraint (DomCecilMethod.GetReturnType (tr));
+				AddTypeParameter (tp);
 			}
 				
 			AddAttributes (this, methodDefinition.CustomAttributes);

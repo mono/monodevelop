@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 using MonoDevelop.Projects.Dom;
 using Mono.Cecil;
 
@@ -82,7 +83,6 @@ namespace MonoDevelop.Projects.Dom
 				return null;
 			DomCecilCompilationUnit result = new DomCecilCompilationUnit (keepDefinitions, loadInternals, AssemblyFactory.GetAssembly (fileName));
 			result.fileName = fileName;
-			System.GC.Collect ();
 			return result;
 		}
 		
@@ -97,6 +97,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		void AddModuleDefinition (bool keepDefinitions, bool loadInternal, ModuleDefinition moduleDefinition)
 		{
+			InstantiatedParamResolver resolver = new InstantiatedParamResolver ();
 			foreach (TypeDefinition type in moduleDefinition.Types) {
 				// filter nested types, they're handled in DomCecilType.
 				if ((type.Attributes & TypeAttributes.NestedPublic) == TypeAttributes.NestedPublic ||
@@ -111,7 +112,45 @@ namespace MonoDevelop.Projects.Dom
 //					System.Console.WriteLine(type.Attributes + "/" + DomCecilType.GetModifiers (type.Attributes) + "/" + IsInternal (DomCecilType.GetModifiers (type.Attributes)));
 				DomCecilType loadType = new DomCecilType (keepDefinitions, loadInternal, type);
 				
-				Add (loadType);
+				Add ((IType)resolver.Visit (loadType, null));
+			}
+		}
+		
+		class InstantiatedParamResolver: CopyDomVisitor<object>
+		{
+			Dictionary<string, IType> argTypes;
+			
+			public override IDomVisitable Visit (IType type, object data)
+			{
+				if (type.TypeParameters.Count > 0) {
+					var oldTypes = argTypes;
+					if (oldTypes != null)
+						argTypes = new Dictionary<string, IType> (oldTypes);
+					else
+						argTypes = new Dictionary<string, IType> ();
+					
+					foreach (TypeParameter p in type.TypeParameters)
+						argTypes [p.Name] = type;
+					
+					IDomVisitable res = base.Visit (type, data);
+					argTypes = oldTypes;
+					return res;
+				} else
+					return base.Visit (type, data);
+				
+			}
+			
+			public override IDomVisitable Visit (IReturnType type, object data)
+			{
+				if (argTypes != null) {
+					IType res;
+					if (argTypes.TryGetValue (type.FullName, out res)) {
+						DomReturnType rt = new DomReturnType (res);
+						rt.Parts.Add (new ReturnTypePart (type.FullName, null));
+						return rt;
+					}
+				}
+				return base.Visit (type, data);
 			}
 		}
 	}

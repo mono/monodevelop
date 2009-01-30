@@ -382,6 +382,16 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		public abstract IEnumerable<IType> GetSubclasses (IType type, bool searchDeep, IList<string> namespaces);
 		
+		public IType GetArrayType (IReturnType elementType)
+		{
+			// Create a fake class which sublcasses System.Array and implements IList<T>
+			DomType t = new DomType (elementType.FullName + "[]");
+			t.BaseType = new DomReturnType ("System.Array");
+			DomReturnType listType = new DomReturnType ("System.Collections.Generic.IList", false, new IReturnType [] { elementType });
+			t.AddInterfaceImplementation (listType);
+			return t;
+		}
+		
 		public IType GetType (IReturnType returnType)
 		{
 			if (returnType == null)

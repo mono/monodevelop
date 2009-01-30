@@ -42,7 +42,7 @@ namespace MonoDevelop.Projects.Dom
 				newUnit.Add ((IUsing) u.AcceptVisitor (this, data));
 			foreach (IAttribute a in unit.Attributes)
 				newUnit.Add ((IAttribute) a.AcceptVisitor (this, data));
-			foreach (IType t in unit.Attributes)
+			foreach (IType t in unit.Types)
 				newUnit.Add ((IType) t.AcceptVisitor (this, data));
 			return newUnit;
 		}
@@ -112,8 +112,8 @@ namespace MonoDevelop.Projects.Dom
 			DomMethod result = CreateInstance (source, data);
 			Visit (source, result, data);
 			
-			foreach (IReturnType returnType in source.GenericParameters)
-				result.AddGenericParameter ((IReturnType) returnType.AcceptVisitor (this, data));
+			foreach (ITypeParameter tp in source.TypeParameters)
+				result.AddTypeParameter (Visit (tp, data));
 			
 			result.MethodModifier = source.MethodModifier;
 			if (source.Parameters != null) {

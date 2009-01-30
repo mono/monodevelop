@@ -289,10 +289,9 @@ namespace MonoDevelop.Projects.CodeGeneration
 				IMethod method = (IMethod) member;
 				m = mMethod;
 
-				if (method.GenericParameters != null) {
-					foreach (IReturnType param in method.GenericParameters)
-						mMethod.TypeParameters.Add (param.FullName);
-				}
+				foreach (ITypeParameter param in method.TypeParameters)
+					mMethod.TypeParameters.Add (param.Name);
+
 				if (!is_interface_method)
 					mMethod.Attributes = MemberAttributes.Override;
 				
