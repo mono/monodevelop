@@ -37,7 +37,6 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 
 using Mono.TextEditor;
-using MonoDevelop.Ide.StandardHeaders;
 
 namespace MonoDevelop.CodeMetrics
 {
@@ -48,7 +47,7 @@ namespace MonoDevelop.CodeMetrics
 		List<string> files = new List<string> ();
 		TreeStore store = new TreeStore (typeof (string), // file name
 		                                 typeof (string), // line count (real lines)
-		                                 typeof (string),  // license
+		     //                            typeof (string),  // license
 		                                 typeof (int) // line count number
 		                                 );
 		
@@ -71,11 +70,11 @@ namespace MonoDevelop.CodeMetrics
 			col.SortIndicator = true;
 			col.SortColumnId = 3;
 			treeviewMetrics.AppendColumn (col);
-			
+			/*
 			col = new TreeViewColumn (GettextCatalog.GetString ("License"), new CellRendererText (), "text", 2);
 			col.SortIndicator = true;
 			col.SortColumnId = 2;
-			treeviewMetrics.AppendColumn (col);
+			treeviewMetrics.AppendColumn (col);*/
 			this.treeviewMetrics.RowActivated += delegate {
 				Gtk.TreeIter selectedIter;
 				if (treeviewMetrics.Selection.GetSelected (out selectedIter)) {
@@ -87,8 +86,8 @@ namespace MonoDevelop.CodeMetrics
 		
 		class MetricsWorkerThread : WorkerThread
 		{
-			Dictionary<string, Mono.TextEditor.Document> headers = new Dictionary<string, Mono.TextEditor.Document> ();
-			int longestHeader = -1;
+			//Dictionary<string, Mono.TextEditor.Document> headers = new Dictionary<string, Mono.TextEditor.Document> ();
+			//int longestHeader = -1;
 				
 			CodeMetricsWidget widget;
 			
@@ -96,12 +95,12 @@ namespace MonoDevelop.CodeMetrics
 			public MetricsWorkerThread (CodeMetricsWidget widget)
 			{
 				this.widget = widget;
-				foreach (KeyValuePair<string, string> header in StandardHeaderService.HeaderTemplates) {
+			/*	foreach (KeyValuePair<string, string> header in StandardHeaderService.HeaderTemplates) {
 					Mono.TextEditor.Document newDoc = new Mono.TextEditor.Document ();
 					newDoc.Text = header.Value;
 					headers[header.Key] = newDoc;
 					longestHeader = Math.Max (longestHeader, header.Value.Length);
-				}
+				}i*/
 			//	num = new int [longestHeader, longestHeader];
 			}
 			/* real lcs takes too long, but we can fake it.
@@ -162,7 +161,7 @@ namespace MonoDevelop.CodeMetrics
 			}
 			
 			string last = null;
-			
+			/*
 			string GetLicense (Mono.TextEditor.Document document)
 			{
 				string result = GettextCatalog.GetString ("Unknown");
@@ -191,7 +190,7 @@ namespace MonoDevelop.CodeMetrics
 				}
 				return result;
 			}
-			Dictionary<string, int> licenseStats = new Dictionary<string,int> ();
+			Dictionary<string, int> licenseStats = new Dictionary<string,int> (); */
 			protected override void InnerRun ()
 			{
 				ulong totalLines = 0, totalRealLines = 0, totalCommentedLines = 0;
@@ -220,41 +219,41 @@ namespace MonoDevelop.CodeMetrics
 						if (text.Length > 0 && !isComment)
 							realLines++;
 					}
-					string license = GetLicense (doc);
-					if (!licenseStats.ContainsKey (license))
-						licenseStats [license] = 0;
+			//		string license = GetLicense (doc);
+			//		if (!licenseStats.ContainsKey (license))
+			//			licenseStats [license] = 0;
 					totalLines     += (ulong)doc.LineCount;
 					totalRealLines += (ulong)realLines;
-					licenseStats[license]++;
+			//		licenseStats[license]++;
 					DispatchService.GuiSyncDispatch (delegate {
 						MonoDevelop.Ide.Gui.IdeApp.Workbench.StatusBar.SetProgressFraction (i / (double)widget.files.Count);
 						widget.store.AppendValues (file,
 						                           doc.LineCount + "(" + realLines + ")",
-						                           license,
+						                         //  license,
 						                           doc.LineCount);
 					});
 				}
 				DispatchService.GuiSyncDispatch (delegate {
 					IdeApp.Workbench.StatusBar.EndProgress ();
-					widget.ShowResults (totalLines, totalRealLines, totalCommentedLines, licenseStats);
+					widget.ShowResults (totalLines, totalRealLines, totalCommentedLines);//, licenseStats);
 				});
 				base.Stop ();
 			}
 				
 		}
 		
-		public void ShowResults (ulong lines, ulong realLines, ulong commentedLines, Dictionary<string, int> licenseStats)
+		public void ShowResults (ulong lines, ulong realLines, ulong commentedLines)//, Dictionary<string, int> licenseStats)
 		{
 			textviewReport.Buffer.Text = GettextCatalog.GetString ("Results:"); 
 			textviewReport.Buffer.Text += Environment.NewLine; 
-			textviewReport.Buffer.Text += GettextCatalog.GetString ("lines: {0} (real:{1}), commented:{2} ({3:0.00}%), blank:{4} ({5:0.00}%))",
+			textviewReport.Buffer.Text += GettextCatalog.GetString ("lines: {0} (real:{1}), commented:{2} ({3:0.00}%), blank:{4} ({5:0.00}%)",
 			                                                       lines,
 			                                                       realLines,
 			                                                       commentedLines,
-			                                                       commentedLines * 100.0 / lines,
+			                                                       Percent (commentedLines, lines),
 			                                                       lines - realLines - commentedLines,
-			                                                       (lines - realLines - commentedLines) * 100.0 / lines);
-			textviewReport.Buffer.Text += Environment.NewLine; 
+			                                                       Percent (lines - realLines - commentedLines, lines));
+			textviewReport.Buffer.Text += Environment.NewLine; /*
 			textviewReport.Buffer.Text += Environment.NewLine; 
 			textviewReport.Buffer.Text += GettextCatalog.GetString ("Licenses:"); 
 			textviewReport.Buffer.Text += Environment.NewLine; 
@@ -266,7 +265,14 @@ namespace MonoDevelop.CodeMetrics
 				                                              license.Value,
 				                                              license.Value * 100.0 / this.files.Count); 
 				textviewReport.Buffer.Text += Environment.NewLine; 
-			}
+			}*/
+		}
+		
+		double Percent (ulong a, ulong b)
+		{
+			if (b == 0)
+				return 0.0;
+			return (a * 100.0) / b;
 		}
 		
 		public void Run ()
