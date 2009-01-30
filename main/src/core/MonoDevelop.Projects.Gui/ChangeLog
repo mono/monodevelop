@@ -1,5 +1,10 @@
 2009-01-30  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Projects.Gui.Dialogs/PolicyOptionsPanel.cs: Display named
+	policies list when editing policy sets.
+
+2009-01-30  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Projects.Gui.addin.xml: Add extension point for defaul
 	policies panels. Add the .NET naming panel to this extension point.
 

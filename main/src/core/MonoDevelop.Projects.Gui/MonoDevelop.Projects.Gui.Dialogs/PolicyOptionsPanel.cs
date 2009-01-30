@@ -54,20 +54,10 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 		
 		Widget IOptionsPanel.CreatePanelWidget ()
 		{
-			if (polSet != null) {
-				Widget w = CreatePanelWidget ();
-				LoadFrom (polSet.Get<T> () ?? new T ());
-				return w;
-			}
-			else
-				return GetPolicyBagWidget ();
-		}
-			
-		Widget GetPolicyBagWidget ()
-		{
 			HBox hbox = new HBox (false, 6);
 			Label label = new Label ();
-			label.MarkupWithMnemonic = "<b>" + PolicyTitleWithMnemonic + ":</b>";
+			string displayName = polSet != null? GettextCatalog.GetString ("_Policy") : PolicyTitleWithMnemonic;
+			label.MarkupWithMnemonic = "<b>" + displayName + ":</b>";
 			hbox.PackStart (label, false, false, 0);
 			
 			store = new ListStore (typeof (string), typeof (PolicySet));
@@ -94,10 +84,10 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 				child.Name = child.Name.Replace ("Panel", "_");
 			vbox.PackEnd (child, true, true, 0);
 			
-			LoadFrom (bag.Get<T> ());
+			LoadFrom (GetCurrentValue ());
 			loading = false;
 			
-			if (!bag.IsRoot && !bag.Has<T> ()) {
+			if (!IsRoot && !bag.Has<T> ()) {
 				//in this case "parent" is always first in the list
 				policyCombo.Active = 0;
 			} else {
@@ -116,9 +106,17 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 			return vbox;
 		}
 		
+		T GetCurrentValue ()
+		{
+			if (polSet != null)
+				return polSet.Get<T> () ?? new T ();
+			else
+				return bag.Get<T> ();
+		}	
+		
 		void FillPolicies ()
 		{
-			if (!bag.IsRoot) {
+			if (!IsRoot) {
 				store.AppendValues (GettextCatalog.GetString ("Parent Policy"), null);
 				store.AppendValues ("--", null);
 			}
@@ -139,7 +137,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 		{
 			int active = policyCombo.Active;
 			
-			if (active == 0 && !bag.IsRoot)
+			if (active == 0 && !IsRoot)
 				return bag.Owner.ParentFolder.Policies.Get<T> ();
 			
 			TreeIter iter;
@@ -191,8 +189,14 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 			return bag != null || polSet != null;
 		}
 		
+		bool IsRoot {
+			get {
+				return polSet != null || bag.IsRoot;
+			}
+		}
+			
 		bool UseParentPolicy {
-			get { return !bag.IsRoot && policyCombo.Active == 0; }
+			get { return !IsRoot && policyCombo.Active == 0; }
 		}
 		
 		protected abstract void LoadFrom (T policy);
