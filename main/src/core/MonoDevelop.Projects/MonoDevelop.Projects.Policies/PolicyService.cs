@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 
@@ -49,10 +50,16 @@ namespace MonoDevelop.Projects.Policies
 		static Dictionary<string, Type> policyNames = new Dictionary<string, Type> ();
 		static Dictionary<Type, string> policyTypes = new Dictionary<Type, string> ();
 		
+		static PolicySet defaultPolicies;
+		
 		static PolicyService ()
 		{
 			AddinManager.AddExtensionNodeHandler (TYPE_EXT_POINT, HandlePolicyTypeUpdated);
 			AddinManager.AddExtensionNodeHandler (SET_EXT_POINT, HandlePolicySetUpdated);
+			MonoDevelop.Core.Runtime.ShuttingDown += delegate {
+				SaveDefaultPolicies ();
+			};
+			LoadDefaultPolicies ();
 		}
 		
 		static void HandlePolicySetUpdated (object sender, ExtensionNodeEventArgs args)
@@ -111,6 +118,11 @@ namespace MonoDevelop.Projects.Policies
 		internal static System.Collections.IEnumerable RawDeserializeXml (System.IO.StreamReader reader)
 		{
 			var xr = System.Xml.XmlReader.Create (reader);
+			xr.MoveToContent ();
+			if (xr.IsStartElement ("PolicySet")) {
+				xr.Skip ();
+				xr.MoveToContent ();
+			}
 			XmlConfigurationReader configReader = XmlConfigurationReader.DefaultReader;
 			while (!xr.EOF) {
 				yield return RawDeserialize (configReader.Read (xr));
@@ -299,11 +311,6 @@ namespace MonoDevelop.Projects.Policies
 					yield return s;
 		}
 		
-		public static T GetDefaultPolicy<T> () where T : new ()
-		{
-			return new T ();
-		}
-		
 		public static IEnumerable<PolicySet> GetMatchingSets<T> (T policy) where T : class, IEquatable<T>
 		{
 			foreach (PolicySet ps in sets) {
@@ -322,5 +329,126 @@ namespace MonoDevelop.Projects.Policies
 			}
 			return null;
 		}
+		
+		static string DefaultPoliciesPath {
+			get {
+				return Path.Combine (PropertyService.ConfigPath, "DefaultPolicies.xml");
+			}
+		}
+		
+		public static T GetDefaultPolicy<T> () where T : class, IEquatable<T>, new ()
+		{
+			return defaultPolicies.Get<T> () ?? new T ();
+		}
+		
+		public static void SetDefaultPolicy<T> (T value) where T : class, IEquatable<T>, new ()
+		{
+			defaultPolicies.Set<T> (value);
+		}
+		
+		public static void SaveDefaultPolicies ()
+		{
+			ParanoidSave (DefaultPoliciesPath, "default policies", delegate (StreamWriter writer) {
+				defaultPolicies.SaveToFile (writer);
+			});
+		}	
+		
+		static void LoadDefaultPolicies ()
+		{
+			defaultPolicies = new PolicySet (null, null);
+			ParanoidLoad (DefaultPoliciesPath, "default policies", delegate (StreamReader reader) {
+				defaultPolicies.LoadFromFile (reader);
+			});
+		}
+		
+		#region Paranoid load /save
+		
+		static bool ParanoidLoad (string fileName, string friendlyName, Action<StreamReader> read)
+		{
+			StreamReader reader = null;
+			
+			try {
+				if (File.Exists (fileName)) {
+					reader = new StreamReader (fileName, System.Text.Encoding.UTF8);
+					read (reader);
+					return true;
+				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error loading {0} file '{1}':\n{2}", friendlyName, fileName, ex);
+			}
+			finally {
+				if (reader != null) {
+					reader.Close ();
+					reader = null;
+				}
+			}
+			
+			//if it failed and a backup file exists, try that instead
+			string backupFile = fileName + ".previous";
+			try {
+				if (File.Exists (backupFile)) {
+					reader = new StreamReader (backupFile, System.Text.Encoding.UTF8);
+					read (reader);
+					return true;
+				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error loading {0} backup file '{1}':\n{2}", friendlyName, backupFile, ex);
+			}
+			finally {
+				if (reader != null)
+					reader.Close ();
+			}
+			
+			return false;
+		}
+		
+		static bool ParanoidSave (string fileName, string friendlyName, Action<StreamWriter> write)
+		{
+			string backupFileName = fileName + ".previous";
+			string dir = Path.GetDirectoryName (fileName);
+			string tempFileName = Path.Combine (dir, ".#" + Path.GetFileName (fileName));
+			
+			try {
+				if (!Directory.Exists (dir)) {
+					Directory.CreateDirectory (dir);
+				}
+			} catch (IOException ex) {
+				LoggingService.LogError ("Error creating directory '{0}' for {1} file\n{2}", dir, friendlyName, ex);
+				return false;
+			}
+			
+			//make a copy of the current file
+			try {
+				if (File.Exists (fileName)) {
+					File.Copy (fileName, backupFileName, true);
+				}
+			} catch (IOException ex) {
+				LoggingService.LogError ("Error copying {0} file '{1}' to backup\n{2}", friendlyName, fileName, ex);
+			}
+			
+			//write out the new state to a temp file
+			StreamWriter writer = null;
+			try {
+				
+				writer = new StreamWriter (tempFileName, false, System.Text.Encoding.UTF8);
+				write (writer);
+				
+				//write was successful (no exception)
+				//so move the file to the real location, overwriting the old file
+				//(NOTE: File.Move doesn't overwrite existing files, so using Mono.Unix)
+				Mono.Unix.Native.Syscall.rename (tempFileName, fileName);
+				return true;
+			}
+			catch (Exception ex) {
+				LoggingService.LogError ("Error writing {0} file '{1}'\n{2}", friendlyName, tempFileName, ex);
+			}
+			finally {
+				if (writer != null)
+					writer.Close ();
+			}
+			return false;
+		}
+		
+		#endregion
 	}
 }

@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Xml;
 
 using MonoDevelop.Core.Serialization;
 
@@ -70,6 +71,16 @@ namespace MonoDevelop.Projects.Policies
 			return Get (typeof (T)) as T;
 		}
 		
+		internal void Set<T> (T value) where T : class, IEquatable<T>
+		{
+			policies[typeof (T)] = value;
+		}
+		
+		internal void Set (object value)
+		{
+			policies[value.GetType ()] = value;
+		}
+		
 		public string Name { get; private set; }
 		public string Id { get; private set; }
 		
@@ -80,7 +91,7 @@ namespace MonoDevelop.Projects.Policies
 				if (policies.ContainsKey (t))
 					throw new InvalidOperationException ("Cannot add second policy of type '" +  
 					                                     t.ToString () + "' to policy set '" + Id + "'");
-				policies.Add (policy.GetType (), policy);
+				Set (policy);
 			}
 		}
 		
@@ -90,6 +101,23 @@ namespace MonoDevelop.Projects.Policies
 			// full deserialisation
 			foreach (object policy in PolicyService.RawDeserializeXml (reader))
 				policies.Remove (policy.GetType ());
+		}
+		
+		internal void SaveToFile (StreamWriter writer)
+		{
+			using (XmlWriter xw = new XmlTextWriter (writer)) {
+				xw.WriteStartDocument ();
+				xw.WriteStartElement ("PolicySet");
+				foreach (object o in policies.Values)
+					XmlConfigurationWriter.DefaultWriter.Write (xw, PolicyService.RawSerialize (o));
+				xw.WriteEndElement ();
+			}
+		}
+		
+		internal void LoadFromFile (StreamReader reader)
+		{
+			policies.Clear ();
+			AddSerializedPolicies (reader);
 		}
 	}
 }

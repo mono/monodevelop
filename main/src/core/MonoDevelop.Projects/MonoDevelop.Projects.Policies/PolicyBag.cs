@@ -58,7 +58,7 @@ namespace MonoDevelop.Projects.Policies
 			get { return policies == null || policies.Count == 0; }
 		}
 		
-		public T Get<T> () where T : new ()
+		public T Get<T> () where T : class, IEquatable<T>, new ()
 		{
 			if (policies != null) {
 				object policy;
