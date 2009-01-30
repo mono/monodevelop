@@ -90,7 +90,7 @@ namespace Mono.TextEditor
 			if (!char.IsControl (ch) && textEditorData.CanEdit (Caret.Line)) {
 				LineSegment line = Document.GetLine (Caret.Line);
 				if (Caret.IsInInsertMode || Caret.Column >= line.EditableLength) {
-					string text = textEditorData.GetVirtualSpaces (Caret.Line, Caret.Column) + ch.ToString();
+					string text = Caret.Column > line.EditableLength ? textEditorData.GetVirtualSpaces (Caret.Line, Caret.Column) + ch.ToString() : ch.ToString();
 					int offset = Caret.Offset;
 					Document.Insert (Caret.Offset, text);
 					Caret.Offset = offset + text.Length - 1;

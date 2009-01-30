@@ -349,7 +349,7 @@ namespace Mono.TextEditor
 			if (!data.CanEditSelection)
 				return;
 			LineSegment line = data.Document.GetLine (data.Caret.Line);
-			if (data.Caret.Column >= line.EditableLength) {
+			if (data.Caret.Column > line.EditableLength) {
 				int offset = data.Caret.Offset;
 				string text = data.GetVirtualSpaces (data.Caret.Line, data.Caret.Column);
 				data.Document.Insert (data.Caret.Offset, text);
