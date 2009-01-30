@@ -91,6 +91,7 @@ namespace Mono.TextEditor
 						data.Caret.Column = nextColumn;
 					} else {
 						data.Caret.Location = new DocumentLocation (data.Caret.Line + 1, 0);
+						data.Caret.CheckCaretPosition ();
 					}
 				} else {
 					data.Caret.Column++;
@@ -196,8 +197,13 @@ namespace Mono.TextEditor
 			}
 			if (segment != null) 
 				newLocation = data.Document.OffsetToLocation (segment.EndLine.Offset + segment.EndColumn); 
-			if (newLocation != data.Caret.Location) 
+			if (newLocation != data.Caret.Location) {
 				data.Caret.Location = newLocation;
+			} else if (data.Caret.AllowCaretBehindLineEnd) {
+				int nextColumn = data.GetNextVirtualColumn (data.Caret.Line, data.Caret.Column);
+				if (nextColumn != data.Caret.Column)
+					data.Caret.Column = nextColumn;
+			}
 			
 		}
 		
