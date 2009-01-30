@@ -461,7 +461,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void ShowGlobalPreferencesDialog (Gtk.Window parentWindow)
 		{
-			ShowGlobalPreferencesDialog (null, null);
+			ShowGlobalPreferencesDialog (parentWindow, null);
 		}
 		
 		public void ShowGlobalPreferencesDialog (Gtk.Window parentWindow, string panelId)
@@ -479,6 +479,30 @@ namespace MonoDevelop.Ide.Gui
 					ops.SelectPanel (panelId);
 				if (ops.Run () == (int) Gtk.ResponseType.Ok) {
 					PropertyService.SaveProperties ();
+				}
+			} finally {
+				ops.Destroy ();
+			}
+		}
+		
+		public void ShowDefaultPoliciesDialog (Gtk.Window parentWindow)
+		{
+			ShowDefaultPoliciesDialog (parentWindow, null);
+		}
+		
+		public void ShowDefaultPoliciesDialog (Gtk.Window parentWindow, string panelId)
+		{
+			if (parentWindow == null)
+				parentWindow = IdeApp.Workbench.RootWindow;
+
+			MonoDevelop.Projects.Gui.Dialogs.DefaultPolicyOptionsDialog ops
+				= new MonoDevelop.Projects.Gui.Dialogs.DefaultPolicyOptionsDialog (parentWindow);
+
+			try {
+				if (panelId != null)
+					ops.SelectPanel (panelId);
+				if (ops.Run () == (int) Gtk.ResponseType.Ok) {
+					MonoDevelop.Projects.Policies.PolicyService.SaveDefaultPolicies ();
 				}
 			} finally {
 				ops.Destroy ();

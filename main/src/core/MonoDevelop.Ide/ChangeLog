@@ -1,3 +1,13 @@
+2009-01-30  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.addin.xml: Register standard header policy panel as a
+	default policy panel. Add command for showing default policies
+	dialog.
+
+	* MonoDevelop.Ide.Gui/Workbench.cs:
+	* MonoDevelop.Ide.Commands/EditCommands.cs: Add command for showing
+	default policies dialog.
+
 2009-01-29  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am:

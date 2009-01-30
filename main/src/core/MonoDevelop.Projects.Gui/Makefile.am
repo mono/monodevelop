@@ -69,6 +69,7 @@ FILES =  \
 	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/SolutionItemConfigurationsPanel.cs \
 	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/StartupOptionsPanel.cs \
 	MonoDevelop.Projects.Gui.Dialogs/CombineOptionsDialog.cs \
+	MonoDevelop.Projects.Gui.Dialogs/DefaultPolicyOptionsDialog.cs \
 	MonoDevelop.Projects.Gui.Dialogs/DeleteConfigDialog.cs \
 	MonoDevelop.Projects.Gui.Dialogs/ItemOptionsDialog.cs \
 	MonoDevelop.Projects.Gui.Dialogs/ItemOptionsPanel.cs \

@@ -40,6 +40,7 @@ namespace MonoDevelop.Projects.Policies
 	public class PolicySet
 	{
 		Dictionary<Type, object> policies = new Dictionary<Type, object> ();
+		bool isFromFile;
 		
 		internal PolicySet (string id, string name)
 		{
@@ -71,13 +72,17 @@ namespace MonoDevelop.Projects.Policies
 			return Get (typeof (T)) as T;
 		}
 		
-		internal void Set<T> (T value) where T : class, IEquatable<T>
+		public void Set<T> (T value) where T : class, IEquatable<T>
 		{
+			if (!isFromFile)
+				throw new InvalidOperationException ("Cannot modify fixed policy sets");
 			policies[typeof (T)] = value;
 		}
 		
-		internal void Set (object value)
+		public void Set (object value)
 		{
+			if (!isFromFile)
+				throw new InvalidOperationException ("Cannot modify fixed policy sets");
 			policies[value.GetType ()] = value;
 		}
 		
@@ -91,7 +96,7 @@ namespace MonoDevelop.Projects.Policies
 				if (policies.ContainsKey (t))
 					throw new InvalidOperationException ("Cannot add second policy of type '" +  
 					                                     t.ToString () + "' to policy set '" + Id + "'");
-				Set (policy);
+				policies[policy.GetType ()] = policy;
 			}
 		}
 		
@@ -118,6 +123,7 @@ namespace MonoDevelop.Projects.Policies
 		{
 			policies.Clear ();
 			AddSerializedPolicies (reader);
+			isFromFile = true;
 		}
 	}
 }

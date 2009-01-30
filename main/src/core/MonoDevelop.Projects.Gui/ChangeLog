@@ -1,5 +1,19 @@
 2009-01-30  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Projects.Gui.addin.xml: Add extension point for defaul
+	policies panels. Add the .NET naming panel to this extension point.
+
+	* Makefile.am:
+	* MonoDevelop.Projects.Gui.mdp: Updated.
+
+	* MonoDevelop.Projects.Gui.Dialogs/DefaultPolicyOptionsDialog.cs: Add a
+	dialog for editing default policies.
+
+	* MonoDevelop.Projects.Gui.Dialogs/PolicyOptionsPanel.cs: Add support
+	for editing policy sets.
+
+2009-01-30  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/NamespaceSynchronisationPanel.cs:
 	Disable GUI for resource style names as it's not implemented yet.
 	Comment out cosmetic properties not available in GTK 2.8.

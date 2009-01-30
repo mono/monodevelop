@@ -54,6 +54,7 @@ namespace MonoDevelop.Ide.Commands
 		JoinWithNextLine,
 		WordCount,
 		MonodevelopPreferences,
+		DefaultPolicies,
 		InsertStandardHeader,
 		
 		ToggleFolding,
@@ -66,6 +67,14 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Run ()
 		{
 			IdeApp.Workbench.ShowGlobalPreferencesDialog (null);
+		}
+	}
+	
+	internal class DefaultPoliciesHandler: CommandHandler
+	{
+		protected override void Run ()
+		{
+			IdeApp.Workbench.ShowDefaultPoliciesDialog (null);
 		}
 	}
 	

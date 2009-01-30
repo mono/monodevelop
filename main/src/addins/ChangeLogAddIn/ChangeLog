@@ -1,3 +1,8 @@
+2009-01-30  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* ChangeLogAddIn.addin.xml: Register policy panel as a default policy
+	panel.
+
 2009-01-29  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Policies.xml:

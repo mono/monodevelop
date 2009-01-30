@@ -118,15 +118,15 @@ namespace MonoDevelop.Projects.Policies
 		internal static System.Collections.IEnumerable RawDeserializeXml (System.IO.StreamReader reader)
 		{
 			var xr = System.Xml.XmlReader.Create (reader);
-			xr.MoveToContent ();
-			if (xr.IsStartElement ("PolicySet")) {
-				xr.Skip ();
-				xr.MoveToContent ();
-			}
 			XmlConfigurationReader configReader = XmlConfigurationReader.DefaultReader;
-			while (!xr.EOF) {
-				yield return RawDeserialize (configReader.Read (xr));
-				xr.MoveToContent ();
+			while (!xr.EOF && xr.MoveToContent () != System.Xml.XmlNodeType.None) {
+				DataNode node = configReader.Read (xr);
+				if (node.Name == "PolicySet" && node is DataItem) {
+					foreach (DataNode child in ((DataItem)node).ItemData)
+						yield return RawDeserialize (child);
+				} else {
+					yield return RawDeserialize (node);
+				}
 			}
 		}
 		
@@ -344,6 +344,11 @@ namespace MonoDevelop.Projects.Policies
 		public static void SetDefaultPolicy<T> (T value) where T : class, IEquatable<T>, new ()
 		{
 			defaultPolicies.Set<T> (value);
+		}
+		
+		public static PolicySet GetUserDefaultPolicySet ()
+		{
+			return defaultPolicies;
 		}
 		
 		public static void SaveDefaultPolicies ()

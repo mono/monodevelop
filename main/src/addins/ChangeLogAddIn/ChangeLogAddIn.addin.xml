@@ -45,6 +45,10 @@
 		</ComplexCondition>
 	</Extension>
 	
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/DefaultPolicyPanels/VersionControl">
+		<Section id = "DefaultChangeLogIntegration" _label = "ChangeLog Integration" fill="true" class="MonoDevelop.ChangeLogAddIn.ProjectOptionPanel" />
+	</Extension>
+	
 	<Extension path = "/MonoDevelop/ProjectModel/PolicyTypes" >
 		<PolicyType id="ChangeLogPolicy" class="MonoDevelop.ChangeLogAddIn.ChangeLogPolicy" />
 	</Extension>

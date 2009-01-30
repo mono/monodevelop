@@ -1,3 +1,14 @@
+2009-01-30  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Extensions/PolicySetNode.cs: Better error
+	reporting.
+
+	* MonoDevelop.Projects.Policies/PolicyService.cs: Fix deserialisation of
+	sets with multiple policies. Add accessor for the default policy set.
+
+	* MonoDevelop.Projects.Policies/PolicySet.cs: Tweak setter
+	accessibility.
+
 2009-01-29  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects.Policies/PolicyBag.cs:

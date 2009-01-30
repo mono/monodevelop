@@ -45,6 +45,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 		ComboBox policyCombo;
 		ListStore store;
 		PolicyBag bag;
+		PolicySet polSet;
 		bool loading = true;
 		
 		public PolicyOptionsPanel ()
@@ -52,6 +53,17 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 		}
 		
 		Widget IOptionsPanel.CreatePanelWidget ()
+		{
+			if (polSet != null) {
+				Widget w = CreatePanelWidget ();
+				LoadFrom (polSet.Get<T> () ?? new T ());
+				return w;
+			}
+			else
+				return GetPolicyBagWidget ();
+		}
+			
+		Widget GetPolicyBagWidget ()
 		{
 			HBox hbox = new HBox (false, 6);
 			Label label = new Label ();
@@ -176,7 +188,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 		
 		public override bool IsVisible ()
 		{
-			return bag != null;
+			return bag != null || polSet != null;
 		}
 		
 		bool UseParentPolicy {
@@ -190,17 +202,22 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 		{
 			base.Initialize (dialog, dataObject);
 			SolutionItem si = dataObject as SolutionItem;
-			if (si != null) {
-				bag = si.Policies;
-			} else {
-				Solution sol = dataObject as Solution;
-				if (sol != null)
-					bag = sol.Policies;
+			if (dataObject is SolutionItem) {
+				bag = ((SolutionItem)dataObject).Policies;
+			} else if (dataObject is Solution) {
+				bag = ((Solution)dataObject).Policies;
+			} else if (dataObject is PolicySet) {
+				polSet = ((PolicySet)dataObject);
 			}
 		}
 		
 		public override void ApplyChanges ()
 		{
+			if (polSet != null) {
+				polSet.Set<T> (GetPolicy ());
+				return;
+			}
+			
 			if (UseParentPolicy) {
 				bag.Remove<T> ();
 			} else {
