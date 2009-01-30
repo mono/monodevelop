@@ -110,10 +110,11 @@ namespace MonoDevelop.Projects.Policies
 		internal void SaveToFile (StreamWriter writer)
 		{
 			using (XmlWriter xw = new XmlTextWriter (writer)) {
+				xw.Settings.Indent = true;
 				xw.WriteStartDocument ();
 				xw.WriteStartElement ("PolicySet");
 				foreach (object o in policies.Values)
-					XmlConfigurationWriter.DefaultWriter.Write (xw, PolicyService.RawSerialize (o));
+					XmlConfigurationWriter.DefaultWriter.Write (xw, PolicyService.DiffSerialize (o));
 				xw.WriteEndElement ();
 			}
 		}
@@ -121,7 +122,14 @@ namespace MonoDevelop.Projects.Policies
 		internal void LoadFromFile (StreamReader reader)
 		{
 			policies.Clear ();
-			AddSerializedPolicies (reader);
+			//note: can't use AddSerializedPolicies as we want diff serialisation
+			foreach (object policy in PolicyService.DiffDeserializeXml (reader)) {
+				Type t = policy.GetType ();
+				if (policies.ContainsKey (t))
+					throw new InvalidOperationException ("Cannot add second policy of type '" +  
+					                                     t.ToString () + "' to policy set '" + Id + "'");
+				policies[policy.GetType ()] = policy;
+			}
 		}
 		
 		internal bool IsReadOnly { get; set; }

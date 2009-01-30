@@ -132,6 +132,21 @@ namespace MonoDevelop.Projects.Policies
 			}
 		}
 		
+		internal static System.Collections.IEnumerable DiffDeserializeXml (System.IO.StreamReader reader)
+		{
+			var xr = System.Xml.XmlReader.Create (reader);
+			XmlConfigurationReader configReader = XmlConfigurationReader.DefaultReader;
+			while (!xr.EOF && xr.MoveToContent () != System.Xml.XmlNodeType.None) {
+				DataNode node = configReader.Read (xr);
+				if (node.Name == "PolicySet" && node is DataItem) {
+					foreach (DataNode child in ((DataItem)node).ItemData)
+						yield return DiffDeserialize (child);
+				} else {
+					yield return DiffDeserialize (node);
+				}
+			}
+		}
+		
 		internal static object RawDeserialize (DataNode data)
 		{
 			Type t = GetRegisteredType (data.Name);

@@ -1,6 +1,12 @@
 2009-01-30  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects.Policies/PolicySet.cs:
+	* MonoDevelop.Projects.Policies/PolicyService.cs: Use diff serialisation
+	for user policy sets.
+
+2009-01-30  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Policies/PolicySet.cs:
 	* MonoDevelop.Projects.Policies/PolicyService.cs: Better readonly checks
 	on PolicySet.
 
