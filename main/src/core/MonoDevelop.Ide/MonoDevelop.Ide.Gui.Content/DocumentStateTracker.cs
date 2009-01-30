@@ -77,18 +77,22 @@ namespace MonoDevelop.Ide.Gui.Content
 				currentEngine.Reset ();
 			}
 		}
+		public void UpdateEngine ()
+		{
+			UpdateEngine (editor.CursorPosition);
+		}
 		
 		//Makes sure that the smart indent engine's cursor has caught up with the 
 		//text editor's cursor.
 		//The engine can take some time to parse the file, and we need it to be snappy
 		//so we keep a stack of old engines (they're fairly lightweight) that we can clone
 		//in order to quickly catch up.
-		public void UpdateEngine ()
+		public void UpdateEngine (int position)
 		{
 			//bigger buffer means fewer saved stacks needed
 			const int BUFFER_SIZE = 2000;
 			
-			int position = editor.CursorPosition;
+			
 			ConsoleWrite ("moving backwards if currentEngine.Position {0} > position {1}", currentEngine.Position, position);
 			
 			if (currentEngine.Position == position) {

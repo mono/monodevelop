@@ -3,4 +3,8 @@
     <itemgroups />
     <signals />
   </object>
+  <object type="MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel" palette-category="MonoDevelop.Ide" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups />
+    <signals />
+  </object>
 </objects>

@@ -1,3 +1,8 @@
+2009-01-30  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui.Content/DocumentStateTracker.cs: State tracker can
+	now be updated to custom positions.
+
 2009-01-27  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Gui/Document.cs: worked on bug "Bug 469629 - NREs
