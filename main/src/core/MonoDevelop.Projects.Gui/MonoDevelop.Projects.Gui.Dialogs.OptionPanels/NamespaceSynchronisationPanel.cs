@@ -73,6 +73,9 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			
 			this.Build ();
 			
+			//FIXME: implement the feature this maps to. See bug #470860 for partial patch
+			checkVSStyleResourceNames.Visible = false;
+			
 			checkAssociateNamespacesDirectories.Toggled += UpdateNamespaceSensitivity;
 			UpdateNamespaceSensitivity (null, EventArgs.Empty);
 			
@@ -82,8 +85,11 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			
 			previewStore = new TreeStore (typeof (Gdk.Pixbuf), typeof (String), typeof (String));
 			previewTree = new TreeView (previewStore);
-			previewTree.ShowExpanders = false;
-			previewTree.LevelIndentation = 24;
+			
+			//Cosmetic, not available in GTK+ 2.8
+			//previewTree.ShowExpanders = false;
+			//previewTree.LevelIndentation = 24;
+			
 			previewTree.CanFocus = false;
 			previewFrame.CanFocus = false;
 			namespaceAssociationBox.FocusChain = new Widget[] { checkDefaultAsRoot, hbox1 };

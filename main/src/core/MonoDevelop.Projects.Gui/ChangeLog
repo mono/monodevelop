@@ -1,3 +1,9 @@
+2009-01-30  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/NamespaceSynchronisationPanel.cs:
+	Disable GUI for resource style names as it's not implemented yet.
+	Comment out cosmetic properties not available in GTK 2.8.
+
 2009-01-29  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Gui.Dialogs/PolicyOptionsPanel.cs: Workaround for
