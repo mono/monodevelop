@@ -344,19 +344,8 @@ namespace MonoDevelop.CSharpBinding
 				AddAttributes (newType, typeDeclaration.Attributes);
 				
 				foreach (ICSharpCode.NRefactory.Ast.TemplateDefinition template in typeDeclaration.Templates) {
-					TypeParameter parameter = new TypeParameter (template.Name);
+					TypeParameter parameter = ConvertTemplateDefinition (template);
 					newType.AddTypeParameter (parameter);
-					foreach (ICSharpCode.NRefactory.Ast.TypeReference typeRef in template.Bases) {
-						DomReturnType rt = ConvertReturnType (typeRef);
-						if (rt.FullName == "constraint: struct")
-							parameter.ValueTypeRequired = true;
-						else if (rt.FullName == "constraint: class")
-							parameter.ClassRequired = true;
-						else if (rt.FullName == "constraint: new")
-							parameter.ConstructorRequired = true;
-						else
-							parameter.AddConstraint (rt);
-					}
 				}
 				
 				if (typeDeclaration.BaseTypes != null) {
@@ -377,6 +366,23 @@ namespace MonoDevelop.CSharpBinding
 				typeStack.Pop ();
 				
 				return null;
+			}
+
+			TypeParameter ConvertTemplateDefinition (ICSharpCode.NRefactory.Ast.TemplateDefinition template)
+			{
+				TypeParameter parameter = new TypeParameter (template.Name);
+				foreach (ICSharpCode.NRefactory.Ast.TypeReference typeRef in template.Bases) {
+					DomReturnType rt = ConvertReturnType (typeRef);
+					if (rt.FullName == "constraint: struct")
+						parameter.ValueTypeRequired = true;
+					else if (rt.FullName == "constraint: class")
+						parameter.ClassRequired = true;
+					else if (rt.FullName == "constraint: new")
+						parameter.ConstructorRequired = true;
+					else
+						parameter.AddConstraint (rt);
+				}
+				return parameter;
 			}
 
 			void AddType (DomType type)
@@ -478,8 +484,9 @@ namespace MonoDevelop.CSharpBinding
 				AddExplicitInterfaces (method, methodDeclaration.InterfaceImplementations);
 				
 				if (methodDeclaration.Templates != null && methodDeclaration.Templates.Count > 0) {
-					foreach (ICSharpCode.NRefactory.Ast.TemplateDefinition td in methodDeclaration.Templates) {
-						method.AddGenericParameter (new DomReturnType (td.Name));
+					foreach (ICSharpCode.NRefactory.Ast.TemplateDefinition template in methodDeclaration.Templates) {
+						TypeParameter parameter = ConvertTemplateDefinition (template);
+						method.AddTypeParameter (parameter);
 					}
 				}
 				method.DeclaringType = typeStack.Peek ();
@@ -589,7 +596,7 @@ namespace MonoDevelop.CSharpBinding
 				
 				if (operatorDeclaration.Templates != null && operatorDeclaration.Templates.Count > 0) {
 					foreach (ICSharpCode.NRefactory.Ast.TemplateDefinition td in operatorDeclaration.Templates) {
-						method.AddGenericParameter (new DomReturnType (td.Name));
+						method.AddTypeParameter (ConvertTemplateDefinition (td));
 					}
 				}
 				method.DeclaringType = typeStack.Peek ();
