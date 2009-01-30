@@ -41,7 +41,7 @@ namespace Mono.TextEditor
 {
 	[System.ComponentModel.Category("Mono.TextEditor")]
 	[System.ComponentModel.ToolboxItem(true)]
-	public class TextEditor : Gtk.DrawingArea
+	public class TextEditor : Gtk.DrawingArea, ITextEditorDataProvider
 	{
 		TextEditorData textEditorData;
 		
@@ -1405,5 +1405,10 @@ namespace Mono.TextEditor
 		}
 		
 		public event EventHandler<LinkEventArgs> LinkRequest;
+	}
+	
+	public interface ITextEditorDataProvider
+	{
+		TextEditorData GetTextEditorData ();
 	}
 }
