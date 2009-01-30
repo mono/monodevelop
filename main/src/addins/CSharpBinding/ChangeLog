@@ -1,3 +1,8 @@
+2009-01-30  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/CSharpTextEditorIndentation.cs: Added virtual spaces based on
+	indentation level.
+
 2009-01-27  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Parser/NRefactoryParser.cs: Track api changes.
