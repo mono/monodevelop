@@ -66,7 +66,9 @@ namespace MonoDevelop.Projects.Policies
 		{
 			switch (args.Change) {
 			case ExtensionChange.Add:
-				sets.Add (((PolicySetNode) args.ExtensionNode).Set);
+				PolicySet set = ((PolicySetNode) args.ExtensionNode).Set;
+				set.IsReadOnly = true;
+				sets.Add (set);
 				break;
 			case ExtensionChange.Remove:
 				sets.Remove (((PolicySetNode) args.ExtensionNode).Set);

@@ -40,7 +40,6 @@ namespace MonoDevelop.Projects.Policies
 	public class PolicySet
 	{
 		Dictionary<Type, object> policies = new Dictionary<Type, object> ();
-		bool isFromFile;
 		
 		internal PolicySet (string id, string name)
 		{
@@ -74,14 +73,14 @@ namespace MonoDevelop.Projects.Policies
 		
 		public void Set<T> (T value) where T : class, IEquatable<T>
 		{
-			if (!isFromFile)
+			if (IsReadOnly)
 				throw new InvalidOperationException ("Cannot modify fixed policy sets");
 			policies[typeof (T)] = value;
 		}
 		
 		public void Set (object value)
 		{
-			if (!isFromFile)
+			if (IsReadOnly)
 				throw new InvalidOperationException ("Cannot modify fixed policy sets");
 			policies[value.GetType ()] = value;
 		}
@@ -123,7 +122,8 @@ namespace MonoDevelop.Projects.Policies
 		{
 			policies.Clear ();
 			AddSerializedPolicies (reader);
-			isFromFile = true;
 		}
+		
+		internal bool IsReadOnly { get; set; }
 	}
 }
