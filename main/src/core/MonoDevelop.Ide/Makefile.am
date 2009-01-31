@@ -331,7 +331,6 @@ FILES =  \
 
 RES =  \
 	gtk-gui/gui.stetic \
-	gtk-gui/objects.xml \
 	icons/AboutImage.png \
 	icons/Icons.16x16.LinkOverlay.png \
 	icons/keyboard-shortcuts-16.png \
