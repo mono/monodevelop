@@ -18,6 +18,7 @@
 	    <Addin id="Core" version="1.9.1"/>
 	    <Addin id="Core.Gui" version="1.9.1"/>
 		<Addin id="Projects" version="1.9.1"/>
+		<Addin id="Projects.Gui" version="1.9.1"/>
 	    <Addin id="Ide" version="1.9.1"/>
 	</Dependencies>
 	
@@ -225,6 +226,32 @@
 		<CommandItem id = "MonoDevelop.VersionControl.Commands.Lock" type="MonoDevelop.VersionControl.AddinCommandHandler"/>
 		<CommandItem id = "MonoDevelop.VersionControl.Commands.Unlock" type="MonoDevelop.VersionControl.AddinCommandHandler"/>
 		<SeparatorItem id = "CommandSeparator3" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels">
+		<Section id="VersionControl" _label="Version Control">
+			<ComplexCondition>
+				<Or>
+					<Condition id="ItemType" value="SolutionItem" />
+					<Condition id="ItemType" value="Solution" />
+				</Or>
+				<Section id = "VersionControlGeneral" _label = "Commit Message Style" fill="true" class="MonoDevelop.VersionControl.VersionControlPolicyPanel" />
+			</ComplexCondition>
+		</Section>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/DefaultPolicyPanels">
+		<Section id="VersionControl" _label="Version Control">
+			<Section id = "VersionControlGeneral" _label = "Commit Message Style" fill="true" class="MonoDevelop.VersionControl.VersionControlPolicyPanel" />
+		</Section>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/PolicyTypes" >
+		<PolicyType id="VersionControlPolicy" class="MonoDevelop.VersionControl.VersionControlPolicy" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/PolicySets/Mono" >
+		<Policies resource="Policies.xml"/>
 	</Extension>
 </Addin>
 	

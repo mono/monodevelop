@@ -1,5 +1,5 @@
 // 
-// UserInformationPanelWidget.cs
+// AuthorInformationPanelWidget.cs
 // 
 // Author:
 //   Michael Hutchinson <mhutchinson@novell.com>
@@ -32,21 +32,21 @@ using MonoDevelop.Projects.Gui.Dialogs;
 
 namespace MonoDevelop.Ide.Gui.OptionPanels
 {
-	class UserInformationPanel : ItemOptionsPanel
+	class AuthorInformationPanel : ItemOptionsPanel
 	{
-		UserInformationPanelWidget widget;
+		AuthorInformationPanelWidget widget;
 		Solution solution;
 		
 		public override Gtk.Widget CreatePanelWidget ()
 		{
-			UserInformation info = IdeApp.Workspace.GetUserPreferences (solution).GetValue<UserInformation> ("UserInfo");
-			return widget = new UserInformationPanelWidget (info);
+			AuthorInformation info = IdeApp.Workspace.GetUserPreferences (solution).GetValue<AuthorInformation> ("AuthorInfo");
+			return widget = new AuthorInformationPanelWidget (info);
 		}
 
 		public override void ApplyChanges ()
 		{
 			if (solution != null)
-			 	IdeApp.Workspace.GetUserPreferences (solution).SetValue<UserInformation> ("UserInfo", widget.Get ());
+			 	IdeApp.Workspace.GetUserPreferences (solution).SetValue<AuthorInformation> ("AuthorInfo", widget.Get ());
 		}
 
 		public override void Initialize (MonoDevelop.Core.Gui.Dialogs.OptionsDialog dialog, object dataObject)
@@ -62,11 +62,11 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 	}
 	
 	
-	partial class UserInformationPanelWidget : Gtk.Bin
+	partial class AuthorInformationPanelWidget : Gtk.Bin
 	{
-		UserInformation info;
+		AuthorInformation info;
 		
-		public UserInformationPanelWidget (UserInformation info)
+		public AuthorInformationPanelWidget (AuthorInformation info)
 		{
 			this.Build();
 			
@@ -75,9 +75,9 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			UseDefaultToggled (this, EventArgs.Empty);
 		}
 		
-		public UserInformation Get ()
+		public AuthorInformation Get ()
 		{
-			return checkCustom.Active? new UserInformation (nameEntry.Text, emailEntry.Text) : null;
+			return checkCustom.Active? new AuthorInformation (nameEntry.Text, emailEntry.Text, copyrightEntry.Text) : null;
 		}
 
 		void UseDefaultToggled (object sender, System.EventArgs e)
@@ -87,14 +87,16 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				if (info != null) {
 					nameEntry.Text = info.Name ?? "";
 					emailEntry.Text = info.Email ?? "";
+					copyrightEntry.Text = info.Copyright ?? "";
 				}
 			} else {
 				infoTable.Sensitive = false;
-				info = new UserInformation (nameEntry.Text, emailEntry.Text);
+				info = new AuthorInformation (nameEntry.Text, emailEntry.Text, copyrightEntry.Text);
 				if (String.IsNullOrEmpty (info.Name) && String.IsNullOrEmpty (info.Email))
 					info = null;
-				nameEntry.Text = UserInformation.Default.Name ?? "";
-				emailEntry.Text = UserInformation.Default.Email ?? "";
+				nameEntry.Text = AuthorInformation.Default.Name ?? "";
+				emailEntry.Text = AuthorInformation.Default.Email ?? "";
+				copyrightEntry.Text = AuthorInformation.Default.Copyright ?? "";
 			}
 		}
 	}

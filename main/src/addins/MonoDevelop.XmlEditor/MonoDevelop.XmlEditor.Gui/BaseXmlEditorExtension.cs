@@ -244,6 +244,7 @@ namespace MonoDevelop.XmlEditor.Gui
 			if (currentChar == '<' && tracker.Engine.CurrentState is XmlFreeState) {
 				CompletionDataList list = new CompletionDataList ();
 				GetElementCompletions (list);
+				AddCloseTag (list, Tracker.Engine.Nodes);
 				return list.Count > 0? list : null;
 			}
 			

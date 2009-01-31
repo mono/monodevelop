@@ -415,6 +415,7 @@ namespace MonoDevelop.AspNet
 		
 		#endregion
 		
+		//N.B. web.config and machine.config can add/remove items to this list
 		static void AddDefaultImportedNamespaces (System.Collections.Generic.Dictionary<string, object> list)
 		{
 			//see http://msdn.microsoft.com/en-us/library/eb44kack.aspx

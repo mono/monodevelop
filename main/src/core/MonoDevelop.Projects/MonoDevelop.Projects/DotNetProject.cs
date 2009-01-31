@@ -35,6 +35,7 @@ using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Projects.Dom.Output;
+using MonoDevelop.Projects.Policies;
 using MonoDevelop.Projects.Formats.MD1;
 
 namespace MonoDevelop.Projects
@@ -48,9 +49,6 @@ namespace MonoDevelop.Projects
 		
 		[ItemProperty ("OutputType")]
 		CompileTarget compileTarget;
-		
-		[ItemProperty ("UseParentDirectoryAsNamespace", DefaultValue=false)]
-		bool useParentDirectoryAsNamespace = false;
 		
 		IDotNetLanguageBinding languageBinding;
 
@@ -121,14 +119,6 @@ namespace MonoDevelop.Projects
 			set {
 				defaultNamespace = value;
 				NotifyModified ("DefaultNamespace");
-			}
-		}
-		
-		public bool UseParentDirectoryAsNamespace {
-			get { return useParentDirectoryAsNamespace; }
-			set { 
-				useParentDirectoryAsNamespace = value; 
-				NotifyModified ("UseParentDirectoryAsNamespace");
 			}
 		}
 
@@ -536,7 +526,7 @@ namespace MonoDevelop.Projects
 			return col;
 		}
 
-
+		
 		public override bool IsCompileable(string fileName)
 		{
 			if (LanguageBinding == null)
@@ -546,21 +536,60 @@ namespace MonoDevelop.Projects
 		
 		public virtual string GetDefaultNamespace (string fileName)
 		{
-			if (UseParentDirectoryAsNamespace) {
-				try {
-					DirectoryInfo directory = new DirectoryInfo (Path.GetDirectoryName (fileName));
-					if (directory != null) {
-						string potential = SanitisePotentialNamespace (directory.Name);
-						if (potential != null)
-							return potential;
-					}
-				} catch {}
+			DotNetNamingPolicy pol = Policies.Get<DotNetNamingPolicy> ();
+			
+			string root = null;
+			string dirNamespc = null;
+			string defaultNmspc = !string.IsNullOrEmpty (DefaultNamespace)
+				? DefaultNamespace
+				: SanitisePotentialNamespace (Name) ?? "Application";
+			
+			string dirname = Path.GetDirectoryName (fileName);
+			string relativeDirname = null;
+			if (!String.IsNullOrEmpty (dirname)) {
+				relativeDirname = GetRelativeChildPath (dirname);
+				if (string.IsNullOrEmpty (relativeDirname) || relativeDirname.StartsWith (".."))
+					relativeDirname = null;		
 			}
 			
-			if (!string.IsNullOrEmpty (DefaultNamespace))
-				return DefaultNamespace;
+			if (relativeDirname != null) {
+				try {
+					switch (pol.DirectoryNamespaceAssociation) {
+					case DirectoryNamespaceAssociation.PrefixedFlat:
+						root = defaultNmspc;
+						goto case DirectoryNamespaceAssociation.Flat;
+					case DirectoryNamespaceAssociation.Flat:
+						dirNamespc = SanitisePotentialNamespace (relativeDirname);
+						break;
+						
+					case DirectoryNamespaceAssociation.PrefixedHierarchical:
+						root = defaultNmspc;
+						goto case DirectoryNamespaceAssociation.Hierarchical;
+					case DirectoryNamespaceAssociation.Hierarchical:
+						dirNamespc = SanitisePotentialNamespace (GetHierarchicalNamespace (relativeDirname));
+						break;
+					}
+				} catch (IOException ex) {
+					LoggingService.LogError ("Could not determine namespace for file '" + fileName + "'", ex);
+				}
+				
+			}
 			
-			return SanitisePotentialNamespace (Name) ?? "Application";
+			if (dirNamespc != null && root == null)
+				return dirNamespc;
+			if (dirNamespc != null && root != null)
+				return root + "." + dirNamespc;
+			return defaultNmspc;
+		}
+		
+		string GetHierarchicalNamespace (string relativePath)
+		{
+			StringBuilder sb = new StringBuilder (relativePath);
+			for (int i = 0; i < sb.Length; i++) {
+				if (sb[i] == Path.DirectorySeparatorChar)
+					sb[i] = '.';
+			}
+			return sb.ToString ();
 		}
 		
 		string SanitisePotentialNamespace (string potential)

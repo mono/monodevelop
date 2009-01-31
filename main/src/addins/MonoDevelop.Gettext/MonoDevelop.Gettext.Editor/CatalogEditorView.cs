@@ -39,11 +39,13 @@ namespace MonoDevelop.Gettext.Editor
 {
 	internal class CatalogEditorView : AbstractViewContent
 	{
-		Catalog catalog = new Catalog ();
-		POEditorWidget poEditorWidget = new POEditorWidget ();
+		Catalog catalog;
+		POEditorWidget poEditorWidget;
 		
-		public CatalogEditorView (string poFile)
+		public CatalogEditorView (TranslationProject project, string poFile)
 		{
+			Catalog catalog = new Catalog (project);
+			POEditorWidget poEditorWidget = new POEditorWidget (project);
 			catalog.DirtyChanged += delegate (object sender, EventArgs args) {
 				IsDirty = catalog.IsDirty;
 				if (sender is CatalogEntry)

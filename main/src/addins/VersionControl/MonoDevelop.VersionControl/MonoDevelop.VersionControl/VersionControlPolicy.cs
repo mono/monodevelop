@@ -1,9 +1,9 @@
-// ChangeLogAddInOptionPanel.cs
+// VersionControlPolicy.cs
 //
 // Author:
-//   Jacob Ilsø Christensen
+//   Lluis Sanchez Gual <lluis@novell.com>
 //
-// Copyright (C) 2006  Jacob Ilsø Christensen
+// Copyright (c) 2008 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,27 +25,27 @@
 //
 //
 
-using Gtk;
+using System;
+using MonoDevelop.Projects;
+using MonoDevelop.Core.Serialization;
 
-using MonoDevelop.Core;
-using MonoDevelop.Core.Gui.Dialogs;
-
-namespace MonoDevelop.ChangeLogAddIn
+namespace MonoDevelop.VersionControl
 {
-	public class ChangeLogAddInOptionPanel : OptionsPanel
+	[DataItem ("VersionControlPolicy")]
+	public class VersionControlPolicy: IEquatable<VersionControlPolicy>
 	{
-		ChangeLogAddInOptionPanelWidget widget;
-		
-		public override Widget CreatePanelWidget ()
+		public VersionControlPolicy()
 		{
-			widget = new ChangeLogAddInOptionPanelWidget ();
-			widget.LoadPanelContents ();
-			return widget;
+			this.CommitMessageStyle = new CommitMessageStyle ();
+			this.CommitMessageStyle.LineAlign = 2;
 		}
+
+		[ItemProperty]
+		public CommitMessageStyle CommitMessageStyle { get; set; }
 		
-		public override void ApplyChanges ()
+		public bool Equals (VersionControlPolicy other)
 		{
-			widget.StorePanelContents ();
+			return CommitMessageStyle.Equals (other.CommitMessageStyle);
 		}
 	}
 }

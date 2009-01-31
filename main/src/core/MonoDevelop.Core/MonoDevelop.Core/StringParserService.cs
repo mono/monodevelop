@@ -41,7 +41,7 @@ namespace MonoDevelop.Core
 		static Dictionary<string, string> properties = new Dictionary<string, string> ();
 		static Dictionary<string, GenerateString> stringGenerators = new Dictionary<string, GenerateString> ();
 		
-		delegate string GenerateString (string tag);
+		delegate string GenerateString (string tag, string format);
 		
 		public static Dictionary<string, string> Properties {
 			get {
@@ -51,15 +51,27 @@ namespace MonoDevelop.Core
 		
 		static StringParserService ()
 		{
-			stringGenerators.Add ("DATE", delegate (string tag) { return DateTime.Today.ToShortDateString (); });
-			stringGenerators.Add ("YEAR", delegate (string tag) { return DateTime.Today.Year.ToString (); });
-			stringGenerators.Add ("MONTH", delegate (string tag) { return DateTime.Today.Month.ToString (); });
-			stringGenerators.Add ("DAY", delegate (string tag) { return DateTime.Today.Day.ToString (); });
-			stringGenerators.Add ("TIME", delegate (string tag) { return DateTime.Now.ToShortTimeString (); });
-			stringGenerators.Add ("HOUR", delegate (string tag) { return DateTime.Now.Hour.ToString (); });
-			stringGenerators.Add ("MINUTE", delegate (string tag) { return DateTime.Now.Minute.ToString (); });
-			stringGenerators.Add ("SECOND", delegate (string tag) { return DateTime.Now.Second.ToString (); });
-			stringGenerators.Add ("USER", delegate (string tag) { return Environment.UserName; });
+			stringGenerators.Add ("DATE", delegate (string tag, string format) {
+				if (format.Length == 0)
+					return DateTime.Today.ToShortDateString ();
+				else
+					return DateTime.Today.ToString (format);
+			}
+			);
+			stringGenerators.Add ("TIME", delegate (string tag, string format) {
+				if (format.Length == 0)
+					return DateTime.Now.ToShortTimeString (); 
+				else
+					return DateTime.Now.ToString (format);
+			});
+			
+			stringGenerators.Add ("YEAR", delegate (string tag, string format) { return DateTime.Today.Year.ToString (format); });
+			stringGenerators.Add ("MONTH", delegate (string tag, string format) { return DateTime.Today.Month.ToString (format); });
+			stringGenerators.Add ("DAY", delegate (string tag, string format) { return DateTime.Today.Day.ToString (format); });
+			stringGenerators.Add ("HOUR", delegate (string tag, string format) { return DateTime.Now.Hour.ToString (format); });
+			stringGenerators.Add ("MINUTE", delegate (string tag, string format) { return DateTime.Now.Minute.ToString (format); });
+			stringGenerators.Add ("SECOND", delegate (string tag, string format) { return DateTime.Now.Second.ToString (format); });
+			stringGenerators.Add ("USER", delegate (string tag, string format) { return Environment.UserName; });
 		}
 		
 		public static string Parse (string input)
@@ -76,8 +88,8 @@ namespace MonoDevelop.Core
 		public static void RegisterStringTagProvider (IStringTagProvider tagProvider)
 		{
 			foreach (string providedTag in tagProvider.Tags) { 
-				stringGenerators [providedTag.ToUpper ()] = delegate (string tag) {
-					return tagProvider.Convert (tag);
+				stringGenerators [providedTag.ToUpper ()] = delegate (string tag, string format) {
+					return tagProvider.Convert (tag, format);
 				};
 			}
 		}
@@ -95,24 +107,29 @@ namespace MonoDevelop.Core
 				return properties [tag.ToUpper ()];
 		
 			GenerateString genString;
-			if (stringGenerators.TryGetValue (tag.ToUpper (), out genString))
-				return genString (tag);
+			string tname, tformat;
+			int n = tag.IndexOf (':');
+			if (n != -1) {
+				tname = tag.Substring (0, n);
+				tformat = tag.Substring (n + 1);
+			} else {
+				tname = tag;
+				tformat = string.Empty;
+			}
+
+			if (stringGenerators.TryGetValue (tname.ToUpper (), out genString))
+				return genString (tname, tformat);
 			
-			int idx = tag.IndexOf (':');
-			if (idx > 0) {
-				string descriptor = tag.Substring (0, idx);
-				string value      = tag.Substring (idx + 1);
-				switch (descriptor.ToUpper()) {
+			if (tformat.Length > 0) {
+				switch (tname.ToUpper()) {
 				case "ENV":
 					foreach (DictionaryEntry variable in Environment.GetEnvironmentVariables ()) {
-						if (variable.Key.ToString ().ToUpper () == value.ToUpper ())
+						if (variable.Key.ToString ().ToUpper () == tformat.ToUpper ())
 							return variable.Value.ToString ();
 					}
 					break;
 				case "PROPERTY":
-					return PropertyService.Get<string> (value);
-				default:
-					throw new Exception (String.Format ("Descriptor '{0}' unknown. Valid is 'env', 'property'.", descriptor));
+					return PropertyService.Get<string> (tformat);
 				}
 			}
 			return null;
@@ -149,7 +166,7 @@ namespace MonoDevelop.Core
 			IEnumerable<string> Tags {
 				get;
 			}
-			string Convert (string tag);
+			string Convert (string tag, string format);
 		}
 	}
 }

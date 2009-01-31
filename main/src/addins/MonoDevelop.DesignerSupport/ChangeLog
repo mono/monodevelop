@@ -2,6 +2,11 @@
 
 	* MonoDevelop.DesignerSupport.mdp: Flush project format changes.
 
+2009-01-21  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.DesignerSupport/DocumentOutlinePad.cs: Clean up widget
+	management.
+
 2009-01-09  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:

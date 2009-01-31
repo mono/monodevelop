@@ -317,8 +317,9 @@ namespace MonoDevelop.Projects.Dom
 		public List<IMember> SearchMember (string name, bool caseSensitive)
 		{
 			List<IMember> result = new List<IMember> ();
+			StringComparison comp = caseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
 			foreach (IMember member in this.Members) {
-				if (0 == String.Compare (name, member.Name, caseSensitive ? StringComparison.InvariantCulture : StringComparison.InvariantCultureIgnoreCase)) {
+				if (0 == String.Compare (name, member.Name, comp)) {
 					result.Add (member);
 				}
 			}

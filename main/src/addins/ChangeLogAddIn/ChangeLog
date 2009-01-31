@@ -1,6 +1,75 @@
+2009-01-30  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* ChangeLogAddIn.addin.xml: Register policy panel as a default policy
+	panel.
+
+2009-01-29  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Policies.xml:
+	* ChangeLogAddIn.cs:
+	* ChangeLogPolicy.cs:
+	* ProjectOptionPanelWidget.cs:
+	* CommitDialogExtensionWidget.cs: Rename UserInformation to
+	AuthorInformation, and change other strings correspondingly.
+
+2009-01-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* Policies.xml:
+	* gtk-gui/gui.stetic:
+	* ChangeLogPolicy.cs:
+	* ChangeLogAddIn.mdp:
+	* ChangeLogService.cs:
+	* ChangeLogAddIn.addin.xml:
+	* ProjectOptionPanelWidget.cs:
+	* CommitDialogExtensionWidget.cs:
+	* gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs: Added
+	message style to changelog policy
+
+2009-01-27  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* ChangeLogService.cs:
+	* CommitDialogExtensionWidget.cs: Implement support for per-project
+	policies VcsIntegration.RequireEntry/Enabled/None.
+
 2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* ChangeLogAddIn.mdp: Flush project format changes.
+
+2009-01-21  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* ChangeLogAddIn.mdp:
+	* gtk-gui/gui.stetic:
+	* gtk-gui/MonoDevelop.ChangeLogAddIn.AddLogEntryDialog.cs:
+	* gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:
+	* gtk-gui/MonoDevelop.ChangeLogAddIn.ChangeLogAddInOptionPanelWidget.cs:
+	Removed unused panel widget.
+
+2009-01-21  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* ChangeLogPolicy.cs:
+	* ChangeLogService.cs:
+	* ProjectOptionPanel.cs:
+	* ProjectOptionPanelWidget.cs:
+	* gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs: Move
+	ChangeLog integration options to the policies storage.
+
+	* ChangeLogData.cs:
+	* ChangeLogAddInOptionsPanel.cs:
+	* ChangeLogAddInOptionPanelWidget.cs: Unused; remove.
+
+	* ChangeLogAddIn.cs: Use UserInformation API. Fix error on insertion of
+	entries into new/empty ChangeLogs.  Fix spaces->tabs formatting.
+
+	* ChangeLogAddIn.addin.xml: Remove old data types and panels, and
+	register ChangeLogPolicy type as a policy.
+
+	* Makefile.am:
+	* ChangeLogAddIn.mdp: Updated.
+
+	* CommitDialogExtensionWidget.cs: Use UserInformation API.
 
 2009-01-07  Lluis Sanchez Gual  <lluis@novell.com>
 

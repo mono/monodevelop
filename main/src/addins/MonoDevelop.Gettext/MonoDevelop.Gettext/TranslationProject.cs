@@ -239,7 +239,7 @@ namespace MonoDevelop.Gettext
 		{
 			IFileScanner[] scanners = TranslationService.GetFileScanners ();
 			
-			Catalog catalog = new Catalog ();
+			Catalog catalog = new Catalog (this);
 			List<Project> projects = new List<Project> ();
 			foreach (Project p in ParentSolution.GetAllProjects ()) {
 				if (IsIncluded (p))
@@ -324,7 +324,7 @@ namespace MonoDevelop.Gettext
 		{
 			foreach (Translation translation in this.Translations) {
 				string poFileName  = translation.PoFile;
-				Catalog catalog = new Catalog ();
+				Catalog catalog = new Catalog (this);
 				catalog.Load (new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor (), poFileName);
 				CatalogEntry entry = catalog.FindItem (msgstr);
 				if (entry != null) {

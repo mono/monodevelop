@@ -58,7 +58,7 @@ namespace MonoDevelop.Ide.Templates
 			get { return name;}
 		}
 		
-		public override bool AddToProject (Project project, string language, string directory, string entryName)
+		public override bool AddToProject (SolutionItem policyParent, Project project, string language, string directory, string entryName)
 		{
 			string[,] customTags = new string[,] {
 				{"ProjectName", project.Name},
@@ -69,7 +69,7 @@ namespace MonoDevelop.Ide.Templates
 			string substName = MonoDevelop.Core.StringParserService.Parse (this.name, customTags);
 			
 			foreach (FileDescriptionTemplate fdt in innerTemplate.Files) {
-				if (!fdt.AddToProject (project, language, directory, substName))
+				if (!fdt.AddToProject (policyParent, project, language, directory, substName))
 					return false;
 			}
 			return true;

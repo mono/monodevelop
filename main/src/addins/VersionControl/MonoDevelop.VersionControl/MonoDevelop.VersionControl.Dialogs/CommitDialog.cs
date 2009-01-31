@@ -57,7 +57,9 @@ namespace MonoDevelop.VersionControl.Dialogs
 				vboxExtensions.PackEnd (ext, false, false, 0);
 				ext.Initialize (changeSet);
 				extensions.Add (ext);
+				ext.AllowCommitChanged += HandleAllowCommitChanged;
 			}
+			HandleAllowCommitChanged (null, null);
 
 			foreach (ChangeSetItem info in changeSet.Items) {
 				Gdk.Pixbuf statusicon = VersionControlService.LoadIconForStatus (info.Status);
@@ -72,11 +74,19 @@ namespace MonoDevelop.VersionControl.Dialogs
 			}
 			
 			if (changeSet.GlobalComment.Length == 0)
-				Message = changeSet.GenerateGlobalComment (70);
+				Message = changeSet.GenerateGlobalComment (VersionControlService.GetCommitMessageFormat (changeSet));
 			else
 				Message = changeSet.GlobalComment;
 				
 			textview.Buffer.Changed += OnTextChanged;
+		}
+
+		void HandleAllowCommitChanged (object sender, EventArgs e)
+		{
+			bool allowCommit = true;
+			foreach (CommitDialogExtension ext in extensions)
+				allowCommit &= ext.AllowCommit;
+			SetResponseSensitive (Gtk.ResponseType.Ok, allowCommit);
 		}
 		
 		protected override void OnResponse (Gtk.ResponseType type)

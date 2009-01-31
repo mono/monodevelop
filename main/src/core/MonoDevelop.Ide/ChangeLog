@@ -1,7 +1,107 @@
+2009-01-30  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Ide.mdp:
+	* MonoDevelop.Ide.addin.xml:
+	* MonoDevelop.Ide.StandardHeader/GPL3LicencePolicy.xml:
+	* MonoDevelop.Ide.StandardHeader/GPL2LicencePolicy.xml:
+	* MonoDevelop.Ide.StandardHeader/NewBSDLicencePolicy.xml:
+	* MonoDevelop.Ide.StandardHeader/LGPL2-1LicencePolicy.xml:
+	* MonoDevelop.Ide.StandardHeader/Apache2LicencePolicy.xml:
+	* MonoDevelop.Ide.StandardHeader/StandardHeaderTemplates.xml: Transfer
+	stock license standard headers to the new policy system.
+
+2009-01-30  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Ide.mdp:
+	* gtk-gui/objects.xml: Objects.xml file is empty and unnecessary so
+	remove it.
+
+2009-01-30  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* gtk-gui/gui.stetic: Stetic did something odd to the widget file.
+	Hopefully this restores it.
+
+2009-01-30  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Templates/FileTemplate.cs:
+	* MonoDevelop.Ide.Templates/ProjectTemplate.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs:
+	* MonoDevelop.Ide.Templates/ProjectDescriptor.cs:
+	* MonoDevelop.Ide.Templates/CombineDescriptor.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:
+	* MonoDevelop.Ide.Templates/FileTemplateReference.cs:
+	* MonoDevelop.Ide.Templates/SolutionItemDescriptor.cs:
+	* MonoDevelop.Ide.Templates/ISolutionItemDescriptor.cs:
+	* MonoDevelop.Ide.Templates/FileDescriptionTemplate.cs:
+	* MonoDevelop.Ide.StandardHeader/StandardHeaderService.cs:
+	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:
+	* MonoDevelop.Ide.Templates/ResourceFileDescriptionTemplate.cs:
+	* MonoDevelop.Ide.Templates/CodeTranslationFileDescriptionTemplate.cs:
+	Propagate a policy parent SolutionItem through project/file creation
+	so that policies can always be resolved correctly.
+
+2009-01-30  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Ide.mdp:
+	* MonoDevelop.Ide.addin.xml:
+	* MonoDevelop.Ide.StandardHeader/StandardHeaderPanel.cs:
+	* MonoDevelop.Ide.StandardHeader/NewHeaderTemplateDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.StandardHeaders.StandardHeaderPanel.cs:
+	* gtk-gui/MonoDevelop.Ide.StandardHeaders.NewHeaderTemplateDialog.cs:
+	Remove old standard header panels.
+
+	* MonoDevelop.Ide.StandardHeader/StandardHeaderService.cs: Use the
+	standard headers policy.
+
+	* MonoDevelop.Ide.Commands/EditCommands.cs:
+	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs: Track API.
+
+2009-01-30  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.addin.xml: Register standard header policy panel as a
+	default policy panel. Add command for showing default policies
+	dialog.
+
+	* MonoDevelop.Ide.Gui/Workbench.cs:
+	* MonoDevelop.Ide.Commands/EditCommands.cs: Add command for showing
+	default policies dialog.
+
 2009-01-30  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Gui.Content/DocumentStateTracker.cs: State tracker can
 	now be updated to custom positions.
+
+2009-01-29  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Ide.mdp:
+	* MonoDevelop.Ide.addin.xml:
+	* MonoDevelop.Ide.Gui/RootWorkspace.cs:
+	* MonoDevelop.Ide.Gui/UserInformation.cs:
+	* MonoDevelop.Ide.Gui/AuthorInformation.cs:
+	* MonoDevelop.Ide.StandardHeader/MITX11LicencePolicy.xml:
+	* MonoDevelop.Ide.Gui.OptionPanels/UserInformationPanel.cs:
+	* MonoDevelop.Ide.Gui.OptionPanels/AuthorInformationPanel.cs:
+	* MonoDevelop.Ide.Gui.OptionPanels/GlobalUserInformationPanel.cs:
+	* MonoDevelop.Ide.Gui.OptionPanels/GlobalAuthorInformationPanel.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.UserInformationPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AuthorInformationPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.GlobalUserInformationPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.GlobalAuthorInformationPanelWidget.cs:
+	Rename UserInformation to AuthorInformation, and change other strings
+	correspondingly. Add Copyright holder string to AuthorInformation.
+
+	* gtk-gui/objects.xml: Updated.
+
+2009-01-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Commands/CustomStringTagProvider.cs: Track api
+	changes.
 
 2009-01-27  Mike Krüger  <mkrueger@novell.com>
 
@@ -17,10 +117,42 @@
 
 	* MonoDevelop.Ide.mdp: Flush project format changes.
 
+2009-01-23  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Ide.mdp: Updated.
+
+	* MonoDevelop.Ide.addin.xml:
+	* MonoDevelop.Ide.StandardHeader/MITX11LicencePolicy.xml: Add a named
+	policy for MIT/X11 licenses.
+
+	* MonoDevelop.Ide.StandardHeader/StandardHeaderPanel.cs: Remove
+	unnecessary toolbox attributes.
+
+2009-01-23  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Ide.mdp:
+	* MonoDevelop.Ide.addin.xml:
+	* MonoDevelop.Ide.StandardHeader/StandardHeaderPolicyPanel.cs:
+	* gtk-gui/MonoDevelop.Ide.StandardHeader.StandardHeaderPolicyPanelWidget.cs:
+	Add a policy and a panel for per-solution/project standard headers.
+
 2009-01-21  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs: Fix bug #460162 -
 	Find In Files dialog doesn't retain settings
+
+2009-01-21  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.addin.xml: Enable UserInformation panels.
+
+	* MonoDevelop.Ide.Gui/RootWorkspace.cs: Add a GetUserInformation
+	overload for getting user information from a project.
+
+	* MonoDevelop.Ide.Gui/UserInformation.cs: Add IsValid convenience
+	property.
 
 2009-01-20  Lluis Sanchez Gual  <lluis@novell.com>
 

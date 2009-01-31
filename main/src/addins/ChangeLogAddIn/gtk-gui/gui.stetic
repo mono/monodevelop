@@ -64,7 +64,6 @@
                             <property name="MemberName" />
                             <property name="CanFocus">True</property>
                             <property name="HeadersVisible">False</property>
-                            <property name="HeadersClickable">True</property>
                           </widget>
                         </child>
                       </widget>
@@ -266,7 +265,7 @@
       <widget class="Gtk.HButtonBox" id="ChangeLogAddIn.AddLogEntryDialog_ActionArea">
         <property name="MemberName" />
         <property name="Events">ButtonPressMask</property>
-        <property name="Spacing">10</property>
+        <property name="Spacing">6</property>
         <property name="BorderWidth">5</property>
         <property name="Size">2</property>
         <property name="LayoutStyle">End</property>
@@ -306,299 +305,227 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.ChangeLogAddIn.ChangeLogAddInOptionPanelWidget" design-size="516 250">
+  <widget class="Gtk.Bin" id="MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget" design-size="542 406">
     <property name="MemberName" />
-    <property name="Events">ButtonPressMask</property>
+    <property name="GeneratePublic">False</property>
     <child>
-      <widget class="Gtk.VBox" id="vbox2">
+      <widget class="Gtk.Notebook" id="notebook1">
         <property name="MemberName" />
-        <property name="Spacing">6</property>
+        <property name="CanFocus">True</property>
+        <property name="CurrentPage">1</property>
         <child>
-          <widget class="Gtk.Label" id="label1">
+          <widget class="Gtk.VBox" id="vbox2">
             <property name="MemberName" />
-            <property name="Xalign">0</property>
-            <property name="LabelProp" translatable="yes">Specify personal information used in ChangeLog entries</property>
-          </widget>
-          <packing>
-            <property name="Position">0</property>
-            <property name="AutoSize">True</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
-          </packing>
-        </child>
-        <child>
-          <widget class="Gtk.Table" id="table1">
-            <property name="MemberName" />
-            <property name="NRows">2</property>
-            <property name="NColumns">2</property>
-            <property name="RowSpacing">6</property>
-            <property name="ColumnSpacing">6</property>
+            <property name="Spacing">6</property>
+            <property name="BorderWidth">6</property>
             <child>
-              <widget class="Gtk.Entry" id="emailEntry">
+              <widget class="Gtk.RadioButton" id="noneRadioButton">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="IsEditable">True</property>
-                <property name="InvisibleChar">●</property>
-              </widget>
-              <packing>
-                <property name="TopAttach">1</property>
-                <property name="BottomAttach">2</property>
-                <property name="LeftAttach">1</property>
-                <property name="RightAttach">2</property>
-                <property name="AutoSize">True</property>
-                <property name="YOptions">Fill</property>
-                <property name="XExpand">True</property>
-                <property name="XFill">True</property>
-                <property name="XShrink">False</property>
-                <property name="YExpand">False</property>
-                <property name="YFill">True</property>
-                <property name="YShrink">False</property>
-              </packing>
-            </child>
-            <child>
-              <widget class="Gtk.Label" id="label2">
-                <property name="MemberName" />
-                <property name="Xalign">0</property>
-                <property name="LabelProp" translatable="yes">Full Name:</property>
-              </widget>
-              <packing>
-                <property name="AutoSize">False</property>
-                <property name="XOptions">Fill</property>
-                <property name="YOptions">Fill</property>
-                <property name="XExpand">False</property>
-                <property name="XFill">True</property>
-                <property name="XShrink">False</property>
-                <property name="YExpand">False</property>
-                <property name="YFill">True</property>
-                <property name="YShrink">False</property>
-              </packing>
-            </child>
-            <child>
-              <widget class="Gtk.Label" id="label3">
-                <property name="MemberName" />
-                <property name="Xalign">0</property>
-                <property name="LabelProp" translatable="yes">Email Address:</property>
-              </widget>
-              <packing>
-                <property name="TopAttach">1</property>
-                <property name="BottomAttach">2</property>
-                <property name="AutoSize">True</property>
-                <property name="XOptions">Fill</property>
-                <property name="YOptions">Fill</property>
-                <property name="XExpand">False</property>
-                <property name="XFill">True</property>
-                <property name="XShrink">False</property>
-                <property name="YExpand">False</property>
-                <property name="YFill">True</property>
-                <property name="YShrink">False</property>
-              </packing>
-            </child>
-            <child>
-              <widget class="Gtk.Entry" id="nameEntry">
-                <property name="MemberName" />
-                <property name="CanFocus">True</property>
-                <property name="IsEditable">True</property>
-                <property name="InvisibleChar">●</property>
-              </widget>
-              <packing>
-                <property name="LeftAttach">1</property>
-                <property name="RightAttach">2</property>
-                <property name="AutoSize">True</property>
-                <property name="YOptions">Fill</property>
-                <property name="XExpand">True</property>
-                <property name="XFill">True</property>
-                <property name="XShrink">False</property>
-                <property name="YExpand">False</property>
-                <property name="YFill">True</property>
-                <property name="YShrink">False</property>
-              </packing>
-            </child>
-          </widget>
-          <packing>
-            <property name="Position">1</property>
-            <property name="AutoSize">True</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
-          </packing>
-        </child>
-        <child>
-          <widget class="Gtk.HSeparator" id="hseparator1">
-            <property name="MemberName" />
-          </widget>
-          <packing>
-            <property name="Position">2</property>
-            <property name="AutoSize">True</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
-          </packing>
-        </child>
-        <child>
-          <widget class="Gtk.CheckButton" id="integrationCheck">
-            <property name="MemberName" />
-            <property name="CanFocus">True</property>
-            <property name="Label" translatable="yes">Enable ChangeLog integration with Version Control</property>
-            <property name="DrawIndicator">True</property>
-            <property name="HasLabel">True</property>
-            <property name="UseUnderline">True</property>
-          </widget>
-          <packing>
-            <property name="Position">3</property>
-            <property name="AutoSize">True</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
-          </packing>
-        </child>
-      </widget>
-    </child>
-  </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget" design-size="524 338">
-    <property name="MemberName" />
-    <child>
-      <widget class="Gtk.VBox" id="vbox2">
-        <property name="MemberName" />
-        <property name="Spacing">6</property>
-        <child>
-          <widget class="Gtk.Label" id="label1">
-            <property name="MemberName" />
-            <property name="Xalign">0</property>
-            <property name="LabelProp" translatable="yes">Select the ChangeLog policy that applies for this project:</property>
-          </widget>
-          <packing>
-            <property name="Position">0</property>
-            <property name="AutoSize">True</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
-          </packing>
-        </child>
-        <child>
-          <widget class="Gtk.RadioButton" id="parentRadioButton">
-            <property name="MemberName" />
-            <property name="CanFocus">True</property>
-            <property name="Label" translatable="yes">radiobutton2</property>
-            <property name="DrawIndicator">True</property>
-            <property name="HasLabel">False</property>
-            <property name="UseUnderline">True</property>
-            <property name="Group">group1</property>
-            <child>
-              <widget class="Gtk.Label" id="label4">
-                <property name="MemberName" />
-                <property name="LabelProp" translatable="yes">&lt;b&gt;Use parent solution policy&lt;/b&gt;
-Apply the policy specified in the parent solution.</property>
-                <property name="UseMarkup">True</property>
-              </widget>
-            </child>
-          </widget>
-          <packing>
-            <property name="Position">1</property>
-            <property name="AutoSize">True</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
-          </packing>
-        </child>
-        <child>
-          <widget class="Gtk.RadioButton" id="noneRadioButton">
-            <property name="MemberName" />
-            <property name="CanFocus">True</property>
-            <property name="Label" translatable="yes">radiobutton1</property>
-            <property name="DrawIndicator">True</property>
-            <property name="HasLabel">False</property>
-            <property name="UseUnderline">True</property>
-            <property name="Group">group1</property>
-            <child>
-              <widget class="Gtk.Label" id="label3">
-                <property name="MemberName" />
-                <property name="LabelProp" translatable="yes">&lt;b&gt;Disable ChangeLog support&lt;/b&gt;
+                <property name="Label" translatable="yes">radiobutton1</property>
+                <property name="DrawIndicator">True</property>
+                <property name="HasLabel">False</property>
+                <property name="UseUnderline">True</property>
+                <property name="Group">group1</property>
+                <signal name="Toggled" handler="ValueChanged" />
+                <child>
+                  <widget class="Gtk.Label" id="label3">
+                    <property name="MemberName" />
+                    <property name="LabelProp" translatable="yes">&lt;b&gt;Disable ChangeLog support&lt;/b&gt;
 No ChangeLog entries will be generated for this project.</property>
-                <property name="UseMarkup">True</property>
+                    <property name="UseMarkup">True</property>
+                  </widget>
+                </child>
               </widget>
+              <packing>
+                <property name="Position">0</property>
+                <property name="AutoSize">True</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
             </child>
-          </widget>
-          <packing>
-            <property name="Position">2</property>
-            <property name="AutoSize">True</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
-          </packing>
-        </child>
-        <child>
-          <widget class="Gtk.RadioButton" id="nearestRadioButton">
-            <property name="MemberName" />
-            <property name="CanFocus">True</property>
-            <property name="Label" translatable="yes">Custom policy</property>
-            <property name="DrawIndicator">True</property>
-            <property name="HasLabel">False</property>
-            <property name="UseUnderline">True</property>
-            <property name="Group">group1</property>
             <child>
-              <widget class="Gtk.Label" id="label5">
+              <widget class="Gtk.RadioButton" id="nearestRadioButton">
                 <property name="MemberName" />
-                <property name="WidthRequest">500</property>
-                <property name="LabelProp" translatable="yes">&lt;b&gt;Update nearest ChangeLog&lt;/b&gt;
+                <property name="CanFocus">True</property>
+                <property name="Label" translatable="yes">Custom policy</property>
+                <property name="DrawIndicator">True</property>
+                <property name="HasLabel">False</property>
+                <property name="UseUnderline">True</property>
+                <property name="Group">group1</property>
+                <signal name="Toggled" handler="ValueChanged" />
+                <child>
+                  <widget class="Gtk.Label" id="label5">
+                    <property name="MemberName" />
+                    <property name="WidthRequest">500</property>
+                    <property name="LabelProp" translatable="yes">&lt;b&gt;Update nearest ChangeLog&lt;/b&gt;
 The nearest ChangeLog file in the directory hierarchy will be updated (below the commit directory). If none is found, a warning message will be shown. ChangeLog files will never be automatically created.</property>
-                <property name="UseMarkup">True</property>
-                <property name="Wrap">True</property>
+                    <property name="UseMarkup">True</property>
+                    <property name="Wrap">True</property>
+                  </widget>
+                </child>
               </widget>
+              <packing>
+                <property name="Position">1</property>
+                <property name="AutoSize">True</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
             </child>
-          </widget>
-          <packing>
-            <property name="Position">3</property>
-            <property name="AutoSize">True</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
-          </packing>
-        </child>
-        <child>
-          <widget class="Gtk.RadioButton" id="oneChangeLogInProjectRootDirectoryRadioButton">
-            <property name="MemberName" />
-            <property name="CanFocus">True</property>
-            <property name="Label" translatable="yes">One ChangeLog in the project root directory</property>
-            <property name="DrawIndicator">True</property>
-            <property name="HasLabel">False</property>
-            <property name="UseUnderline">True</property>
-            <property name="Group">group1</property>
             <child>
-              <widget class="Gtk.Label" id="label6">
+              <widget class="Gtk.RadioButton" id="oneChangeLogInProjectRootDirectoryRadioButton">
                 <property name="MemberName" />
-                <property name="WidthRequest">500</property>
-                <property name="LabelProp" translatable="yes">&lt;b&gt;Single project ChangeLog&lt;/b&gt;
+                <property name="CanFocus">True</property>
+                <property name="Label" translatable="yes">One ChangeLog in the project root directory</property>
+                <property name="DrawIndicator">True</property>
+                <property name="HasLabel">False</property>
+                <property name="UseUnderline">True</property>
+                <property name="Group">group1</property>
+                <signal name="Toggled" handler="ValueChanged" />
+                <child>
+                  <widget class="Gtk.Label" id="label6">
+                    <property name="MemberName" />
+                    <property name="WidthRequest">500</property>
+                    <property name="LabelProp" translatable="yes">&lt;b&gt;Single project ChangeLog&lt;/b&gt;
 All changes done in the project files will be logged in a single ChangeLog file, located at the project root directory. The ChangeLog file will be created if it doesn't exist.</property>
-                <property name="UseMarkup">True</property>
-                <property name="Wrap">True</property>
+                    <property name="UseMarkup">True</property>
+                    <property name="Wrap">True</property>
+                  </widget>
+                </child>
               </widget>
+              <packing>
+                <property name="Position">2</property>
+                <property name="AutoSize">True</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.RadioButton" id="oneChangeLogInEachDirectoryRadioButton">
+                <property name="MemberName" />
+                <property name="CanFocus">True</property>
+                <property name="Label" translatable="yes">One ChangeLog in each directory</property>
+                <property name="DrawIndicator">True</property>
+                <property name="HasLabel">False</property>
+                <property name="UseUnderline">True</property>
+                <property name="Group">group1</property>
+                <signal name="Toggled" handler="ValueChanged" />
+                <child>
+                  <widget class="Gtk.Label" id="label7">
+                    <property name="MemberName" />
+                    <property name="WidthRequest">500</property>
+                    <property name="LabelProp" translatable="yes">&lt;b&gt;One ChangeLog in each directory&lt;/b&gt;
+File changes will be logged in a ChangeLog located at the file's directory. The ChangeLog file will be created if it doesn't exist.</property>
+                    <property name="UseMarkup">True</property>
+                    <property name="Wrap">True</property>
+                  </widget>
+                </child>
+              </widget>
+              <packing>
+                <property name="Position">3</property>
+                <property name="AutoSize">True</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.Alignment" id="alignment1">
+                <property name="MemberName" />
+                <child>
+                  <widget class="Gtk.Alignment" id="alignment2">
+                    <property name="MemberName" />
+                    <property name="Xalign">0</property>
+                    <property name="Yalign">0</property>
+                    <property name="TopPadding">18</property>
+                    <child>
+                      <widget class="Gtk.CheckButton" id="checkVersionControl">
+                        <property name="MemberName" />
+                        <property name="CanFocus">True</property>
+                        <property name="Label" translatable="yes">Integrate with _version control</property>
+                        <property name="DrawIndicator">True</property>
+                        <property name="HasLabel">True</property>
+                        <property name="UseUnderline">True</property>
+                        <signal name="Toggled" handler="ValueChanged" />
+                      </widget>
+                    </child>
+                  </widget>
+                </child>
+              </widget>
+              <packing>
+                <property name="Position">4</property>
+                <property name="AutoSize">True</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
+            </child>
+            <child>
+              <placeholder />
+            </child>
+            <child>
+              <widget class="Gtk.Alignment" id="alignment3">
+                <property name="MemberName" />
+                <property name="Xalign">0</property>
+                <property name="Yalign">0</property>
+                <property name="LeftPadding">24</property>
+                <child>
+                  <widget class="Gtk.CheckButton" id="checkRequireOnCommit">
+                    <property name="MemberName" />
+                    <property name="CanFocus">True</property>
+                    <property name="Label" translatable="yes">_Require ChangeLog entries for all files when committing</property>
+                    <property name="DrawIndicator">True</property>
+                    <property name="HasLabel">True</property>
+                    <property name="UseUnderline">True</property>
+                    <signal name="Toggled" handler="ValueChanged" />
+                  </widget>
+                </child>
+              </widget>
+              <packing>
+                <property name="PackType">End</property>
+                <property name="Position">6</property>
+                <property name="AutoSize">True</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
             </child>
           </widget>
+        </child>
+        <child>
+          <widget class="Gtk.Label" id="label1">
+            <property name="MemberName" />
+            <property name="LabelProp" translatable="yes">ChangLog Generation</property>
+          </widget>
           <packing>
-            <property name="Position">4</property>
-            <property name="AutoSize">True</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
+            <property name="type">tab</property>
           </packing>
         </child>
         <child>
-          <widget class="Gtk.RadioButton" id="oneChangeLogInEachDirectoryRadioButton">
+          <widget class="Gtk.VBox" id="vbox1">
             <property name="MemberName" />
-            <property name="CanFocus">True</property>
-            <property name="Label" translatable="yes">One ChangeLog in each directory</property>
-            <property name="DrawIndicator">True</property>
-            <property name="HasLabel">False</property>
-            <property name="UseUnderline">True</property>
-            <property name="Group">group1</property>
+            <property name="Spacing">6</property>
+            <property name="BorderWidth">9</property>
             <child>
-              <widget class="Gtk.Label" id="label7">
+              <widget class="MonoDevelop.VersionControl.CommitMessageStylePanelWidget" id="messageWidget">
                 <property name="MemberName" />
-                <property name="WidthRequest">500</property>
-                <property name="LabelProp" translatable="yes">&lt;b&gt;One ChangeLog in each directory&lt;/b&gt;
-File changes will be logged in a ChangeLog located at the file's directory. The ChangeLog file will be created if it doesn't exist.</property>
-                <property name="UseMarkup">True</property>
-                <property name="Wrap">True</property>
+                <property name="Events">ButtonPressMask</property>
+                <signal name="Changed" handler="OnMessageWidgetChanged" />
               </widget>
+              <packing>
+                <property name="Position">0</property>
+                <property name="AutoSize">False</property>
+              </packing>
             </child>
           </widget>
           <packing>
-            <property name="Position">5</property>
-            <property name="AutoSize">True</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
+            <property name="Position">1</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.Label" id="label2">
+            <property name="MemberName" />
+            <property name="LabelProp" translatable="yes">Message Style</property>
+          </widget>
+          <packing>
+            <property name="type">tab</property>
           </packing>
         </child>
       </widget>

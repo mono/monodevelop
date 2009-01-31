@@ -20,21 +20,19 @@ FILES =  \
 	AddLogEntryDialog.cs \
 	AssemblyInfo.cs \
 	ChangeLogAddIn.cs \
-	ChangeLogAddInOptionPanelWidget.cs \
-	ChangeLogAddInOptionsPanel.cs \
-	ChangeLogData.cs \
+	ChangeLogPolicy.cs \
 	ChangeLogService.cs \
 	CommitDialogExtensionWidget.cs \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.ChangeLogAddIn.AddLogEntryDialog.cs \
-	gtk-gui/MonoDevelop.ChangeLogAddIn.ChangeLogAddInOptionPanelWidget.cs \
 	gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs \
 	ProjectOptionPanel.cs \
 	ProjectOptionPanelWidget.cs
 
 RES =  \
 	ChangeLogAddIn.addin.xml \
-	gtk-gui/gui.stetic
+	gtk-gui/gui.stetic \
+	Policies.xml
 
 if ENABLE_VERSIONCONTROL
 all: $(ASSEMBLY) $(ASSEMBLY).mdb

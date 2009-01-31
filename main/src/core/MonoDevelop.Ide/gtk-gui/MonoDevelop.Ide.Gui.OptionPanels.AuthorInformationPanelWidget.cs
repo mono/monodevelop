@@ -11,7 +11,7 @@
 namespace MonoDevelop.Ide.Gui.OptionPanels {
     
     
-    internal partial class UserInformationPanelWidget {
+    internal partial class AuthorInformationPanelWidget {
         
         private Gtk.VBox vbox1;
         
@@ -21,20 +21,24 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
         
         private Gtk.Table infoTable;
         
+        private Gtk.Entry copyrightEntry;
+        
         private Gtk.Entry emailEntry;
         
         private Gtk.Label label2;
         
         private Gtk.Label label3;
         
+        private Gtk.Label label4;
+        
         private Gtk.Entry nameEntry;
         
         protected virtual void Build() {
             Stetic.Gui.Initialize(this);
-            // Widget MonoDevelop.Ide.Gui.OptionPanels.UserInformationPanelWidget
+            // Widget MonoDevelop.Ide.Gui.OptionPanels.AuthorInformationPanelWidget
             Stetic.BinContainer.Attach(this);
-            this.Name = "MonoDevelop.Ide.Gui.OptionPanels.UserInformationPanelWidget";
-            // Container child MonoDevelop.Ide.Gui.OptionPanels.UserInformationPanelWidget.Gtk.Container+ContainerChild
+            this.Name = "MonoDevelop.Ide.Gui.OptionPanels.AuthorInformationPanelWidget";
+            // Container child MonoDevelop.Ide.Gui.OptionPanels.AuthorInformationPanelWidget.Gtk.Container+ContainerChild
             this.vbox1 = new Gtk.VBox();
             this.vbox1.Name = "vbox1";
             this.vbox1.Spacing = 6;
@@ -42,7 +46,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             this.checkCustom = new Gtk.CheckButton();
             this.checkCustom.CanFocus = true;
             this.checkCustom.Name = "checkCustom";
-            this.checkCustom.Label = Mono.Unix.Catalog.GetString("_Use custom user information for this solution");
+            this.checkCustom.Label = Mono.Unix.Catalog.GetString("_Use custom author information for this solution");
             this.checkCustom.DrawIndicator = true;
             this.checkCustom.UseUnderline = true;
             this.vbox1.Add(this.checkCustom);
@@ -55,10 +59,23 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             this.alignment1.Name = "alignment1";
             this.alignment1.LeftPadding = ((uint)(24));
             // Container child alignment1.Gtk.Container+ContainerChild
-            this.infoTable = new Gtk.Table(((uint)(2)), ((uint)(2)), false);
+            this.infoTable = new Gtk.Table(((uint)(3)), ((uint)(2)), false);
             this.infoTable.Name = "infoTable";
             this.infoTable.RowSpacing = ((uint)(6));
             this.infoTable.ColumnSpacing = ((uint)(6));
+            // Container child infoTable.Gtk.Table+TableChild
+            this.copyrightEntry = new Gtk.Entry();
+            this.copyrightEntry.CanFocus = true;
+            this.copyrightEntry.Name = "copyrightEntry";
+            this.copyrightEntry.IsEditable = true;
+            this.copyrightEntry.InvisibleChar = '●';
+            this.infoTable.Add(this.copyrightEntry);
+            Gtk.Table.TableChild w2 = ((Gtk.Table.TableChild)(this.infoTable[this.copyrightEntry]));
+            w2.TopAttach = ((uint)(2));
+            w2.BottomAttach = ((uint)(3));
+            w2.LeftAttach = ((uint)(1));
+            w2.RightAttach = ((uint)(2));
+            w2.YOptions = ((Gtk.AttachOptions)(4));
             // Container child infoTable.Gtk.Table+TableChild
             this.emailEntry = new Gtk.Entry();
             this.emailEntry.CanFocus = true;
@@ -66,12 +83,12 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             this.emailEntry.IsEditable = true;
             this.emailEntry.InvisibleChar = '●';
             this.infoTable.Add(this.emailEntry);
-            Gtk.Table.TableChild w2 = ((Gtk.Table.TableChild)(this.infoTable[this.emailEntry]));
-            w2.TopAttach = ((uint)(1));
-            w2.BottomAttach = ((uint)(2));
-            w2.LeftAttach = ((uint)(1));
-            w2.RightAttach = ((uint)(2));
-            w2.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w3 = ((Gtk.Table.TableChild)(this.infoTable[this.emailEntry]));
+            w3.TopAttach = ((uint)(1));
+            w3.BottomAttach = ((uint)(2));
+            w3.LeftAttach = ((uint)(1));
+            w3.RightAttach = ((uint)(2));
+            w3.YOptions = ((Gtk.AttachOptions)(4));
             // Container child infoTable.Gtk.Table+TableChild
             this.label2 = new Gtk.Label();
             this.label2.Name = "label2";
@@ -79,21 +96,33 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             this.label2.LabelProp = Mono.Unix.Catalog.GetString("_Name:");
             this.label2.UseUnderline = true;
             this.infoTable.Add(this.label2);
-            Gtk.Table.TableChild w3 = ((Gtk.Table.TableChild)(this.infoTable[this.label2]));
-            w3.XOptions = ((Gtk.AttachOptions)(4));
-            w3.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w4 = ((Gtk.Table.TableChild)(this.infoTable[this.label2]));
+            w4.XOptions = ((Gtk.AttachOptions)(4));
+            w4.YOptions = ((Gtk.AttachOptions)(4));
             // Container child infoTable.Gtk.Table+TableChild
             this.label3 = new Gtk.Label();
             this.label3.Name = "label3";
             this.label3.Xalign = 0F;
-            this.label3.LabelProp = Mono.Unix.Catalog.GetString("_Email:");
+            this.label3.LabelProp = Mono.Unix.Catalog.GetString("_Copyright:");
             this.label3.UseUnderline = true;
             this.infoTable.Add(this.label3);
-            Gtk.Table.TableChild w4 = ((Gtk.Table.TableChild)(this.infoTable[this.label3]));
-            w4.TopAttach = ((uint)(1));
-            w4.BottomAttach = ((uint)(2));
-            w4.XOptions = ((Gtk.AttachOptions)(4));
-            w4.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w5 = ((Gtk.Table.TableChild)(this.infoTable[this.label3]));
+            w5.TopAttach = ((uint)(2));
+            w5.BottomAttach = ((uint)(3));
+            w5.XOptions = ((Gtk.AttachOptions)(4));
+            w5.YOptions = ((Gtk.AttachOptions)(4));
+            // Container child infoTable.Gtk.Table+TableChild
+            this.label4 = new Gtk.Label();
+            this.label4.Name = "label4";
+            this.label4.Xalign = 0F;
+            this.label4.LabelProp = Mono.Unix.Catalog.GetString("_Email:");
+            this.label4.UseUnderline = true;
+            this.infoTable.Add(this.label4);
+            Gtk.Table.TableChild w6 = ((Gtk.Table.TableChild)(this.infoTable[this.label4]));
+            w6.TopAttach = ((uint)(1));
+            w6.BottomAttach = ((uint)(2));
+            w6.XOptions = ((Gtk.AttachOptions)(4));
+            w6.YOptions = ((Gtk.AttachOptions)(4));
             // Container child infoTable.Gtk.Table+TableChild
             this.nameEntry = new Gtk.Entry();
             this.nameEntry.CanFocus = true;
@@ -101,16 +130,16 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             this.nameEntry.IsEditable = true;
             this.nameEntry.InvisibleChar = '●';
             this.infoTable.Add(this.nameEntry);
-            Gtk.Table.TableChild w5 = ((Gtk.Table.TableChild)(this.infoTable[this.nameEntry]));
-            w5.LeftAttach = ((uint)(1));
-            w5.RightAttach = ((uint)(2));
-            w5.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w7 = ((Gtk.Table.TableChild)(this.infoTable[this.nameEntry]));
+            w7.LeftAttach = ((uint)(1));
+            w7.RightAttach = ((uint)(2));
+            w7.YOptions = ((Gtk.AttachOptions)(4));
             this.alignment1.Add(this.infoTable);
             this.vbox1.Add(this.alignment1);
-            Gtk.Box.BoxChild w7 = ((Gtk.Box.BoxChild)(this.vbox1[this.alignment1]));
-            w7.Position = 2;
-            w7.Expand = false;
-            w7.Fill = false;
+            Gtk.Box.BoxChild w9 = ((Gtk.Box.BoxChild)(this.vbox1[this.alignment1]));
+            w9.Position = 2;
+            w9.Expand = false;
+            w9.Fill = false;
             this.Add(this.vbox1);
             if ((this.Child != null)) {
                 this.Child.ShowAll();

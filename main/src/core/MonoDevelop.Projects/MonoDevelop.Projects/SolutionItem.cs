@@ -49,6 +49,9 @@ namespace MonoDevelop.Projects
 		
 		Hashtable extendedProperties;
 		
+		[ItemProperty ("Policies", IsExternal = true, SkipEmpty = true)]
+		MonoDevelop.Projects.Policies.PolicyBag policies;
+		
 		public SolutionItem()
 		{
 			ProjectExtensionUtil.LoadControl (this);
@@ -135,6 +138,21 @@ namespace MonoDevelop.Projects
 		
 		public IDictionary ExtendedProperties {
 			get { return InternalGetExtendedProperties; }
+		}
+		
+		public MonoDevelop.Projects.Policies.PolicyBag Policies {
+			get {
+				//newly created (i.e. not deserialised) SolutionItems may have a null PolicyBag
+				if (policies == null)
+					policies = new MonoDevelop.Projects.Policies.PolicyBag ();
+				//this is the easiest reliable place to associate a deserialised Policybag with its owner
+				policies.Owner = this;
+				return policies;
+			}
+			//setter so that a solution can deserialise the PropertyBag on its RootFolder
+			internal set {
+				policies = value;
+			}
 		}
 		
 		public SolutionFolder ParentFolder {

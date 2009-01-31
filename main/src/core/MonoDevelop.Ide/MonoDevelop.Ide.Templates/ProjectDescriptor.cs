@@ -89,7 +89,7 @@ namespace MonoDevelop.Ide.Templates
 			return Services.ProjectService.CreateProject (projectType, projectCreateInformation, projectOptions);
 		}
 
-		public void InitializeItem (ProjectCreateInformation projectCreateInformation, string defaultLanguage, SolutionEntityItem item)
+		public void InitializeItem (SolutionItem policyParent, ProjectCreateInformation projectCreateInformation, string defaultLanguage, SolutionEntityItem item)
 		{
 			Project_ project = item as Project_;
 			
@@ -119,7 +119,7 @@ namespace MonoDevelop.Ide.Templates
 					throw new InvalidOperationException ("Only single-file templates can be used to generate resource files");
 
 				try {
-					string fileName = singleFile.SaveFile (project, defaultLanguage, project.BaseDirectory, null);
+					string fileName = singleFile.SaveFile (policyParent, project, defaultLanguage, project.BaseDirectory, null);
 
 					ProjectFile resource = new ProjectFile (fileName);
 					resource.BuildAction = BuildAction.EmbeddedResource;
@@ -134,7 +134,7 @@ namespace MonoDevelop.Ide.Templates
 			// Add Files
 			foreach (FileDescriptionTemplate file in files) {
 				try {
-					file.AddToProject (project, defaultLanguage, project.BaseDirectory, null);
+					file.AddToProject (policyParent, project, defaultLanguage, project.BaseDirectory, null);
 				} catch (Exception ex) {
 					string err = GettextCatalog.GetString ("File {0} could not be written.", file.Name);
 					LoggingService.LogError (err, ex);

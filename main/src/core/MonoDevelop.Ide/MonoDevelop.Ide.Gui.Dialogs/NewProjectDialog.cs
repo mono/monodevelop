@@ -420,7 +420,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 				if (newSolution)
 					newItem = item.CreateWorkspaceItem (cinfo);
 				else
-					newItem = item.CreateProject (cinfo);
+					newItem = item.CreateProject (parentFolder, cinfo);
 			} catch (Exception ex) {
 				MessageService.ShowException (ex, GettextCatalog.GetString ("The project could not be created"));
 				return false;

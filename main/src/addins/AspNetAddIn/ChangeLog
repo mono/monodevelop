@@ -1,3 +1,18 @@
+2009-01-30  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AspNet/AspNetFileDescriptionTemplate.cs: Propagate a
+	policy parent SolutionItem through project/file creation so that
+	policies can always be resolved correctly.
+
+2009-01-29  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* AspNetAddIn.mdp:
+	* MonoDevelop.AspNet/ProjectRegisteredControls.cs: Add a class to load
+	and cache control registrations from web.config files. It's intended
+	to be bound to the AspNetAppProject, for documents to look to for
+	completion and resolving types.
+
 2009-01-28  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.AspNet/WebTypeManager.cs: Don't pass a null 
@@ -21,6 +36,19 @@
 	member list is initialised before outputting errors, so that type 
 	resolution errors show up in the error pad. Treat them as warnings 
 	until we can be 100% sure that they're not mistakes on MD's part.
+
+2009-01-21  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AspNet/AspNetAppProject.cs: Execute xsp in the project's
+	BaseDirectory, not the SourceDirectory, since the bin directory is
+	already assumed to be in BaseDirectory, and SourceDirectory seems to
+	be obsolete. Fixes running ASP.NET csproj projects in certain
+	circumstances.
+
+2009-01-21  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AspNet.Gui/BaseHtmlEditorExtension.cs: Remove closing tag
+	completion as the base class handles it now.
 
 2009-01-16  Michael Hutchinson  <mhutchinson@novell.com>
 

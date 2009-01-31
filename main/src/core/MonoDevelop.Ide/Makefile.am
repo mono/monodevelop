@@ -49,18 +49,17 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.SelectReferenceDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AddInsPanelWidget.cs \
+	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AuthorInformationPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.CodeGenerationPanelWidget.cs \
-	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.GlobalUserInformationPanelWidget.cs \
+	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.GlobalAuthorInformationPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.LoadSavePanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TasksPanelWidget.cs \
-	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.UserInformationPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.OverridesImplementsDialog.cs \
 	gtk-gui/MonoDevelop.Ide.SelectEncodingsDialog.cs \
-	gtk-gui/MonoDevelop.Ide.StandardHeaders.NewHeaderTemplateDialog.cs \
-	gtk-gui/MonoDevelop.Ide.StandardHeaders.StandardHeaderPanel.cs \
+	gtk-gui/MonoDevelop.Ide.StandardHeader.StandardHeaderPolicyPanelWidget.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplateGroup.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplatePanel.cs \
@@ -171,14 +170,14 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Dialogs/SplashScreen.cs \
 	MonoDevelop.Ide.Gui.Dialogs/TipOfTheDay.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/AddInsOptionsPanel.cs \
+	MonoDevelop.Ide.Gui.OptionPanels/AuthorInformationPanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/BuildPanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/CodeGenerationPanel.cs \
-	MonoDevelop.Ide.Gui.OptionPanels/GlobalUserInformationPanel.cs \
+	MonoDevelop.Ide.Gui.OptionPanels/GlobalAuthorInformationPanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/IDEStyleOptionsPanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/LoadSavePanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/TasksOptionsPanel.cs \
-	MonoDevelop.Ide.Gui.OptionPanels/UserInformationPanel.cs \
 	MonoDevelop.Ide.Gui.Pads.ClassPad/ClassBrowserPad.cs \
 	MonoDevelop.Ide.Gui.Pads.ClassPad/ClassBrowserPadWidget.cs \
 	MonoDevelop.Ide.Gui.Pads.ClassPad/ClassData.cs \
@@ -254,6 +253,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui/AbstractViewContent.cs \
 	MonoDevelop.Ide.Gui/AddEntryEventHandler.cs \
 	MonoDevelop.Ide.Gui/AddinUpdateHandler.cs \
+	MonoDevelop.Ide.Gui/AuthorInformation.cs \
 	MonoDevelop.Ide.Gui/BackgroundProgressMonitor.cs \
 	MonoDevelop.Ide.Gui/ConfigurationComboBox.cs \
 	MonoDevelop.Ide.Gui/DefaultDisplayBinding.cs \
@@ -295,13 +295,11 @@ FILES =  \
 	MonoDevelop.Ide.Gui/TextFileNavigationPoint.cs \
 	MonoDevelop.Ide.Gui/TipOfTheDayStartupHandler.cs \
 	MonoDevelop.Ide.Gui/ToolbarComboBox.cs \
-	MonoDevelop.Ide.Gui/UserInformation.cs \
 	MonoDevelop.Ide.Gui/ViewCommandHandlers.cs \
 	MonoDevelop.Ide.Gui/ViewContentEventHandler.cs \
 	MonoDevelop.Ide.Gui/Workbench.cs \
 	MonoDevelop.Ide.Gui/WorkbenchMemento.cs \
-	MonoDevelop.Ide.StandardHeader/NewHeaderTemplateDialog.cs \
-	MonoDevelop.Ide.StandardHeader/StandardHeaderPanel.cs \
+	MonoDevelop.Ide.StandardHeader/StandardHeaderPolicyPanel.cs \
 	MonoDevelop.Ide.StandardHeader/StandardHeaderService.cs \
 	MonoDevelop.Ide.Tasks/CommentTasksView.cs \
 	MonoDevelop.Ide.Tasks/ITaskListView.cs \
@@ -333,7 +331,6 @@ FILES =  \
 
 RES =  \
 	gtk-gui/gui.stetic \
-	gtk-gui/objects.xml \
 	icons/AboutImage.png \
 	icons/Icons.16x16.LinkOverlay.png \
 	icons/keyboard-shortcuts-16.png \
@@ -351,7 +348,12 @@ RES =  \
 	icons/text-editor-16.png \
 	icons/text-editor-22.png \
 	MonoDevelop.Ide.addin.xml \
-	MonoDevelop.Ide.StandardHeader/StandardHeaderTemplates.xml \
+	MonoDevelop.Ide.StandardHeader/Apache2LicencePolicy.xml \
+	MonoDevelop.Ide.StandardHeader/GPL2LicencePolicy.xml \
+	MonoDevelop.Ide.StandardHeader/GPL3LicencePolicy.xml \
+	MonoDevelop.Ide.StandardHeader/LGPL2-1LicencePolicy.xml \
+	MonoDevelop.Ide.StandardHeader/MITX11LicencePolicy.xml \
+	MonoDevelop.Ide.StandardHeader/NewBSDLicencePolicy.xml \
 	options/KeyBindingSchemeEmacs.xml \
 	options/KeyBindingSchemeMonoDevelop1.xml \
 	options/KeyBindingSchemeMonoDevelop2.xml \

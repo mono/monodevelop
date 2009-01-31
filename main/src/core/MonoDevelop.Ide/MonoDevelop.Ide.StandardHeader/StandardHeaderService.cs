@@ -3,8 +3,9 @@
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
+//   Michael Hutchinson <mhutchinson@novell.com>
 //
-// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2007, 2009 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -36,73 +37,11 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
 
-namespace MonoDevelop.Ide.StandardHeaders
+namespace MonoDevelop.Ide.StandardHeader
 {
 	public static class StandardHeaderService
 	{
-		const string version          = "1.1";
-		const string templateFileName = "StandardHeader.xml";
-		
-		static string header;
-		static bool   generateComments = true;
-		static bool   emitStandardHeader = true;
-		
-		static List<KeyValuePair<string, string>> headerTemplates = new List<KeyValuePair<string, string>> ();
-		static List<KeyValuePair<string, string>> customTemplates = new List<KeyValuePair<string, string>> ();
-		
-		public static ReadOnlyCollection<KeyValuePair<string, string>> HeaderTemplates {
-			get {
-				return headerTemplates.AsReadOnly ();
-			}
-		}
-		
-		public static ReadOnlyCollection<KeyValuePair<string, string>> CustomTemplates {
-			get {
-				return customTemplates.AsReadOnly ();
-			}
-		}
-		
-		public static string Header {
-			get { 
-				return header; 
-			}
-			set {
-				if (header != value) {
-					header = value;
-				}
-			}
-		}
-		
-		public static bool GenerateComments {
-			get {
-				return generateComments;
-			}
-			set {
-				if (generateComments != value) {
-					generateComments = value;
-				}
-			}
-		}
-		
-		public static bool EmitStandardHeader {
-			get {
-				return emitStandardHeader;
-			}
-			set {
-				if (emitStandardHeader != value) {
-					emitStandardHeader = value;
-				}
-			}
-		}
-		
-		
-		
-		static string ConfigLocation {
-			get {
-				return Path.Combine (PropertyService.ConfigPath, templateFileName);
-			}
-		}
-		
+	
 		static string GetComment (string language)
 		{
 			LanguageBindingService languageBindingService = MonoDevelop.Projects.Services.Languages;
@@ -112,20 +51,33 @@ namespace MonoDevelop.Ide.StandardHeaders
 			return null;
 		}
 		
-		public static string GetHeader (string language, string fileName)
+		public static string GetHeader (SolutionItem policyParent, string language, string fileName, bool newFile)
 		{
-			if (String.IsNullOrEmpty (Header) || GetComment (language) == null) {
-				return "";
-			}
-			StringBuilder result = new StringBuilder ();
+			StandardHeaderPolicy policy = policyParent != null
+				? policyParent.Policies.Get<StandardHeaderPolicy> ()
+				: MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<StandardHeaderPolicy> ();
+			AuthorInformation authorInfo = IdeApp.Workspace.GetAuthorInformation (policyParent);
 			
-			char ch = Environment.NewLine.ToCharArray () [0];
-			string[] lines = Header.Split (ch);
+			return GetHeader (authorInfo, policy, language, fileName, newFile);
+		}
+		
+		public static string GetHeader (AuthorInformation authorInfo, StandardHeaderPolicy policy,
+		                                string language, string fileName, bool newFile)
+		{
+			string comment = GetComment (language);
+			if (comment == null)
+				return "";
+				
+			if (string.IsNullOrEmpty (policy.Text) || (newFile && !policy.IncludeInNewFiles))
+				return "";
+			
+			StringBuilder result = new StringBuilder (policy.Text.Length);
+			string[] lines = policy.Text.Split ('\n');
 			foreach (string line in lines) {
-				if (generateComments)
-					result.Append (GetComment (language));
+				result.Append (comment);
 				result.Append (line);
-				result.Append (Environment.NewLine);
+				// the text editor should take care of conversions to preferred newline char
+				result.Append ('\n');
 			}
 			
 			return StringParserService.Parse (result.ToString(), new string[,] { 
@@ -133,153 +85,10 @@ namespace MonoDevelop.Ide.StandardHeaders
 				{ "FileNameWithoutExtension", Path.GetFileNameWithoutExtension (fileName) }, 
 				{ "Directory", Path.GetDirectoryName (fileName) }, 
 				{ "FullFileName", fileName },
-			
+				{ "AuthorName", authorInfo.Name },
+				{ "AuthorEmail", authorInfo.Email },
+				{ "CopyrightHolder", authorInfo.Copyright },
 			});
 		}
-		
-		static void LoadHeaderTemplates ()
-		{
-			Stream stream = typeof (StandardHeaderService).Assembly.GetManifestResourceStream ("StandardHeaderTemplates.xml");
-			if (stream != null) {
-				XmlTextReader reader = new XmlTextReader (stream);
-				try {
-					while (reader.Read ()) {
-						if (reader.IsStartElement ()) {
-							switch (reader.LocalName) {
-							case HeaderNode:
-								string name   = reader.GetAttribute (NameAttribute);
-								string header = reader.ReadString ();
-								headerTemplates.Add (new KeyValuePair<string, string> (name, header));
-								break;
-							}
-						}
-					}
-				} finally {
-					reader.Close ();
-				}
-			}
-		}
-		
-		static StandardHeaderService ()
-		{
-			try {
-				LoadHeaderTemplates ();
-				
-				if (File.Exists (ConfigLocation)) {
-					if (Load (ConfigLocation))
-						return;
-				}
-				string file = Path.Combine (Path.Combine (PropertyService.DataPath, "options"), templateFileName);
-				if (File.Exists (file))
-					Load (file);
-			} catch (Exception ex) {
-				LoggingService.LogError (ex.ToString ());
-			}
-		}
-		
-		public static void RemoveTemplate (string name)
-		{
-			for (int i = 0; i < customTemplates.Count; ++i) {
-				Console.WriteLine (customTemplates[i].Key + " -- " + name + " : " + (customTemplates[i].Key == name));
-				if (customTemplates[i].Key == name) {
-					customTemplates.RemoveAt (i);
-					i--;
-					continue;
-				}
-			}
-		}
-		
-		public static void AddTemplate (string name, string header)
-		{
-			customTemplates.Add (new KeyValuePair<string, string> (name, header));
-		}
-		
-		public static void CommitChanges ()
-		{
-			Save (ConfigLocation);
-		}
-		
-#region I/O
-		const string Node             = "StandardHeader";
-		const string HeaderNode       = "Header";
-		const string NameAttribute    = "_name";
-		const string VersionAttribute = "version";
-		const string GenerateCommentsAttribute = "generateComments";
-		const string EmitStandardHeaderAttribute = "emitStandardHeader";
-		
-		static bool Load (string fileName)
-		{
-			customTemplates.Clear ();
-			XmlReader reader = null;
-			try {
-				reader = XmlTextReader.Create (fileName);
-				while (reader.Read ()) {
-					if (reader.IsStartElement ()) {
-						switch (reader.LocalName) {
-						case Node:
-							if (!String.IsNullOrEmpty (reader.GetAttribute (GenerateCommentsAttribute)))
-								generateComments = Boolean.Parse (reader.GetAttribute (GenerateCommentsAttribute));
-							
-							if (!String.IsNullOrEmpty (reader.GetAttribute (EmitStandardHeaderAttribute)))
-								emitStandardHeader = Boolean.Parse (reader.GetAttribute (EmitStandardHeaderAttribute));
-							
-							string fileVersion = reader.GetAttribute (VersionAttribute);
-							if (fileVersion != version) 
-								return false;
-							break;
-						case HeaderNode:
-							string name       = reader.GetAttribute (NameAttribute);
-							string headerText = reader.ReadString ();
-							
-							if (String.IsNullOrEmpty (name)) {
-								// Default header
-								header = headerText;
-							} else {
-								customTemplates.Add (new KeyValuePair<string, string> (name, headerText));
-							}
-							
-							break;
-						}
-					}
-				}
-			} catch (Exception e) {
-				LoggingService.LogError (e.ToString ());
-			} finally {
-				if (reader != null)
-					reader.Close ();
-			}
-			return true;
-		}
-		
-		static void Save (string fileName)
-		{
-			Stream stream = new FileStream (fileName, FileMode.Create);
-			XmlWriter writer = new XmlTextWriter (stream, Encoding.UTF8);
-			try {
-				writer.Settings.Indent = true;
-				writer.WriteStartElement (Node);
-				writer.WriteAttributeString (VersionAttribute, version);
-				writer.WriteAttributeString (GenerateCommentsAttribute, generateComments.ToString ());
-				writer.WriteAttributeString (EmitStandardHeaderAttribute, emitStandardHeader.ToString ());
-				
-				
-				writer.WriteStartElement (HeaderNode);
-				writer.WriteString (header);
-				writer.WriteEndElement (); // HeaderNode
-				
-				foreach (KeyValuePair<string, string> template in customTemplates) { 
-					writer.WriteStartElement (HeaderNode);
-					writer.WriteAttributeString (NameAttribute, template.Key);
-					writer.WriteString (template.Value);
-					writer.WriteEndElement (); // HeaderNode
-				}
-				
-				writer.WriteEndElement (); // Node
-			} finally {
-				writer.Close ();
-				stream.Close ();
-			}
-		}
-#endregion
 	}
 }

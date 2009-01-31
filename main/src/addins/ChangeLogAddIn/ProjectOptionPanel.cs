@@ -30,27 +30,33 @@ using Gtk;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Gui.Dialogs;
 using MonoDevelop.Core;
+using MonoDevelop.Projects.Policies;
 
 namespace MonoDevelop.ChangeLogAddIn
 {		
-	public class ProjectOptionPanel : ItemOptionsPanel
+	public class ProjectOptionPanel : PolicyOptionsPanel<ChangeLogPolicy>
 	{
 		ProjectOptionPanelWidget widget;
 		
 		public override Widget CreatePanelWidget ()
 		{
-			SolutionItem it;
-			if (DataObject is Solution)
-				it = ((Solution)DataObject).RootFolder;
-			else
-				it = (SolutionItem) DataObject;
-			widget = new ProjectOptionPanelWidget (it);
-			return widget;
+			return widget = new ProjectOptionPanelWidget (this);
 		}
 		
-		public override void ApplyChanges()
-		{			
-			widget.Store ();
+		protected override string PolicyTitleWithMnemonic {
+			get {
+				return GettextCatalog.GetString ("ChangeLog _Policy");
+			}
+		}
+		
+		protected override ChangeLogPolicy GetPolicy ()
+		{
+			return widget.GetPolicy ();
+		}
+		
+		protected override void LoadFrom (ChangeLogPolicy policy)
+		{
+			widget.LoadFrom (policy);
 		}
 	}
 }

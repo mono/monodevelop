@@ -1,5 +1,5 @@
 // 
-// UserInformation.cs
+// GlobalAuthorInformationPanelWidget.cs
 // 
 // Author:
 //   Michael Hutchinson <mhutchinson@novell.com>
@@ -27,52 +27,43 @@
 //
 
 using System;
-
 using MonoDevelop.Core;
-using MonoDevelop.Core.Serialization;
+using MonoDevelop.Core.Gui.Dialogs;
 
-namespace MonoDevelop.Ide.Gui
+namespace MonoDevelop.Ide.Gui.OptionPanels
 {
-	[DataItem]
-	public sealed class UserInformation
+	class GlobalAuthorInformationPanel : OptionsPanel
+	{
+		GlobalAuthorInformationPanelWidget widget;
+		
+		public override Gtk.Widget CreatePanelWidget ()
+		{
+			return widget = new GlobalAuthorInformationPanelWidget ();
+		}
+
+		public override void ApplyChanges ()
+		{
+			widget.Save ();
+		}
+	}
+	
+	partial class GlobalAuthorInformationPanelWidget : Gtk.Bin
 	{
 		
-		internal UserInformation (string name, string email)
+		public GlobalAuthorInformationPanelWidget()
 		{
-			this.Name = name;
-			this.Email = email;
-		}
-		
-		internal UserInformation ()
-		{
-		}
-		
-		[ItemProperty]
-		public string Name { get; private set; }
-		
-		[ItemProperty]
-		public string Email { get; private set; }
-		
-		internal static UserInformation Default {
-			get {
-				string name = GetValueOrMigrate<string> ("User.Name", "ChangeLogAddIn.Name") ?? Environment.UserName;
-				string email = GetValueOrMigrate<string> ("User.Email", "ChangeLogAddIn.Email");
-				return new UserInformation (name, email);
-			}
-		}
-		
-		static T GetValueOrMigrate<T> (string name, string oldName)
-		{
-			T val = PropertyService.Get<T> (name);
-			if (val != null)
-				return val;
+			this.Build ();
 			
-			val = PropertyService.Get<T> (oldName);
-			if (val != null) {
-				PropertyService.Set (oldName, null);
-				PropertyService.Set (name, val);
-			}
-			return val;
+			nameEntry.Text = AuthorInformation.Default.Name ?? "";
+			emailEntry.Text = AuthorInformation.Default.Email ?? "";
+			copyrightEntry.Text = AuthorInformation.Default.Copyright ?? "";
+		}
+		
+		public void Save ()
+		{
+			PropertyService.Set ("Author.Name", AuthorInformation.Default.Name);
+			PropertyService.Set ("Author.Email", AuthorInformation.Default.Email);
+			PropertyService.Set ("Author.Copyright", AuthorInformation.Default.Copyright);
 		}
 	}
 }

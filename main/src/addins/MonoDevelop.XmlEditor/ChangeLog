@@ -2,6 +2,11 @@
 
 	* MonoDevelop.XmlEditor.mdp: Flush project format changes.
 
+2009-01-21  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.XmlEditor.Gui/BaseXmlEditorExtension.cs: Add closing tag
+	completion to all XML docs.
+
 2009-01-06  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am: Don't define DEBUG, as heavy use of Debug.Assert was

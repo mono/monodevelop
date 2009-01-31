@@ -1,9 +1,9 @@
-// ChangeLogAddInOptionPanelWidget.cs
+// CommitMessageFormat.cs
 //
 // Author:
-//   Jacob Ilsø Christensen
+//   Lluis Sanchez Gual <lluis@novell.com>
 //
-// Copyright (C) 2006  Jacob Ilsø Christensen
+// Copyright (c) 2008 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -26,30 +26,23 @@
 //
 
 using System;
-using MonoDevelop.Core;
 
-namespace MonoDevelop.ChangeLogAddIn
+namespace MonoDevelop.VersionControl
 {
-	public partial class ChangeLogAddInOptionPanelWidget : Gtk.Bin
+	public class CommitMessageFormat
 	{
-		public ChangeLogAddInOptionPanelWidget()
+		public CommitMessageFormat ()
 		{
-			Build ();
+			MaxColumns = 70;
+			TabWidth = 8;
 		}
 		
-		public void LoadPanelContents()
-		{
-			nameEntry.Text = PropertyService.Get ("ChangeLogAddIn.Name", string.Empty);
-			emailEntry.Text = PropertyService.Get ("ChangeLogAddIn.Email", string.Empty);
-			integrationCheck.Active = PropertyService.Get ("ChangeLogAddIn.VersionControlIntegration", true);
-		}
+		public CommitMessageStyle Style { get; set; }
 		
-		public void StorePanelContents()
-		{
-			PropertyService.Set("ChangeLogAddIn.Name", nameEntry.Text);
-			PropertyService.Set("ChangeLogAddIn.Email", emailEntry.Text);
-			PropertyService.Set("ChangeLogAddIn.VersionControlIntegration", integrationCheck.Active);
-			PropertyService.SaveProperties ();
-		}
+		public int MaxColumns { get; set; }
+		
+		public int TabWidth { get; set; }
+		
+		public bool TabsAsSpaces { get; set; }
 	}
 }

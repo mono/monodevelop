@@ -110,6 +110,7 @@ FILES =  \
 	MonoDevelop.AspNet/CodeBehind.cs \
 	MonoDevelop.AspNet/IAspNetLanguageBinding.cs \
 	MonoDevelop.AspNet/ProjectFolderNodeBuilderExtension.cs \
+	MonoDevelop.AspNet/ProjectRegisteredControls.cs \
 	MonoDevelop.AspNet/VerifyCodeBehindBuildStep.cs \
 	MonoDevelop.AspNet/WebTypeManager.cs \
 	MonoDevelop.AspNet/XspParameters.cs \

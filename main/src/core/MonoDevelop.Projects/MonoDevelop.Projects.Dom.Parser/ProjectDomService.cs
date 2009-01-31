@@ -272,7 +272,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 				try {
 					return System.IO.File.ReadAllText (fileName);
 				} catch (Exception e) {
-					System.Console.WriteLine (e);
+					LoggingService.LogError ("Error reading file {0} for ProjectDomService: {1}", fileName, e);
 					return "";
 				}
 			});

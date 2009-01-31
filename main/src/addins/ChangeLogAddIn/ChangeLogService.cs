@@ -30,73 +30,58 @@ using System.IO;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
+using MonoDevelop.VersionControl;
 
 namespace MonoDevelop.ChangeLogAddIn
 {
 	public static class ChangeLogService
 	{
-		public static ChangeLogData GetChangeLogData (SolutionItem entry)
-		{
-			ChangeLogData changeLogData = entry.ExtendedProperties ["MonoDevelop.ChangeLogAddIn.ChangeLogInfo"] as ChangeLogData;			
-			if (changeLogData == null) {
-				changeLogData = entry.ExtendedProperties ["Temp.MonoDevelop.ChangeLogAddIn.ChangeLogInfo"] as ChangeLogData;			
-				if (changeLogData == null) {
-					changeLogData = new ChangeLogData (entry);
-					entry.ExtendedProperties ["Temp.MonoDevelop.ChangeLogAddIn.ChangeLogInfo"] = changeLogData;
-				}
-			}
-			changeLogData.Bind (entry);
-			return changeLogData;
-		}
-		
 		// Returns the path of the ChangeLog where changes of the provided file have to be logged.
 		// Returns null if no ChangeLog could be found.
 		// Returns an empty string if changes don't have to be logged.
-		public static string GetChangeLogForFile (string baseCommitPath, string file)
+		public static string GetChangeLogForFile (string baseCommitPath, string file, out SolutionItem parentEntry, out ChangeLogPolicy policy)
 		{
+			parentEntry = null;
+			policy = null;
 			if (!IdeApp.Workspace.IsOpen)
 				return null;
 			
 			// Find the project that contains the file. If none is found
 			// find a combine entry at the file location
-			SolutionItem entry = null;
 			string bestPath = null;
 			file = FileService.GetFullPath (file);
 			
 			foreach (SolutionItem e in IdeApp.Workspace.GetAllSolutionItems ()) {
 				if (e is Project && ((Project)e).Files.GetFile (file) != null) {
-					entry = e;
+					parentEntry = e;
 					break;
 				}
 				string epath = FileService.GetFullPath (e.BaseDirectory) + Path.DirectorySeparatorChar;
 				if (file.StartsWith (epath) && (bestPath == null || bestPath.Length < epath.Length)) {
 					bestPath = epath;
-					entry = e;
+					parentEntry = e;
 				}
 			}
 			
-			if (entry == null)
+			if (parentEntry == null)
 				return null;
 			
+			policy = parentEntry.Policies.Get<ChangeLogPolicy> ();
+			
 			if (baseCommitPath == null)
-				baseCommitPath = entry.ParentSolution.BaseDirectory;
+				baseCommitPath = parentEntry.ParentSolution.BaseDirectory;
 			
 			baseCommitPath = FileService.GetFullPath (baseCommitPath);
 			
-			ChangeLogData changeLogData = GetChangeLogData (entry);
+			if (policy.VcsIntegration == VcsIntegration.None)
+				return "";
 			
-			SolutionItem parent = entry;
-			while (changeLogData.Policy == ChangeLogPolicy.UseParentPolicy) {
-				parent = parent.ParentFolder;
-				changeLogData = GetChangeLogData (parent);
-			}
-			
-			switch (changeLogData.Policy)
+			switch (policy.UpdateMode)
 			{
-				case ChangeLogPolicy.NoChangeLog:
+				case ChangeLogUpdateMode.None:
 					return string.Empty;
 					
-				case ChangeLogPolicy.UpdateNearestChangeLog: {
+				case ChangeLogUpdateMode.Nearest: {
 					string dir = FileService.GetFullPath (Path.GetDirectoryName (file));
 					
 					do {
@@ -109,17 +94,30 @@ namespace MonoDevelop.ChangeLogAddIn
 					return null;
 				}
 					
-				case ChangeLogPolicy.OneChangeLogInProjectRootDirectory:				
-					return Path.Combine (entry.BaseDirectory, "ChangeLog");
+				case ChangeLogUpdateMode.ProjectRoot:				
+					return Path.Combine (parentEntry.BaseDirectory, "ChangeLog");
 					
-				case ChangeLogPolicy.OneChangeLogInEachDirectory:
+				case ChangeLogUpdateMode.Directory:
 					string dir = Path.GetDirectoryName (file);
 					return Path.Combine (dir, "ChangeLog");
 
 				default:
-					LoggingService.LogError ("Could not handle ChangeLogPolicy: " + changeLogData.Policy);
+					LoggingService.LogError ("Could not handle ChangeLogUpdateMode: " + policy.UpdateMode);
 					return null;
 			}                                                     	
 		}	
+		
+		public static string GetChangeLogForFile (string baseCommitPath, string file)
+		{
+			SolutionItem parentEntry;
+			ChangeLogPolicy policy;
+			return GetChangeLogForFile (baseCommitPath, file, out parentEntry, out policy);
+		}
+		
+		public static CommitMessageStyle GetMessageStyle (SolutionItem item)
+		{
+			ChangeLogPolicy policy = item.Policies.Get<ChangeLogPolicy> ();
+			return policy.MessageStyle;
+		}
 	}
 }

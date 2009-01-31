@@ -77,7 +77,7 @@ namespace MonoDevelop.GtkCore
 			return (project is DotNetProject) && GtkDesignInfo.SupportsRefactoring (project as DotNetProject);
 		}
 		
-		public override bool AddToProject (Project project, string language, string directory, string name)
+		public override bool AddToProject (SolutionItem policyParent, Project project, string language, string directory, string name)
 		{
 			if (!GtkDesignInfo.SupportsDesigner (project)) {
 				ReferenceManager mgr = new ReferenceManager (project as DotNetProject);
@@ -88,8 +88,8 @@ namespace MonoDevelop.GtkCore
 				
 			GuiBuilderProject gproject = info.GuiBuilderProject;
 			
-			string fileName = fileTemplate.GetFileName (project, language, directory, name);
-			fileTemplate.AddToProject (project, language, directory, name);
+			string fileName = fileTemplate.GetFileName (policyParent, project, language, directory, name);
+			fileTemplate.AddToProject (policyParent, project, language, directory, name);
 
 			ProjectDomService.Parse (project, fileName, null);
 			

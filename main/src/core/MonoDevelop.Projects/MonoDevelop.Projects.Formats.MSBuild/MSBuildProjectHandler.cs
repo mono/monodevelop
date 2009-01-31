@@ -1032,8 +1032,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				if (prop.Name == "References")
 					return false;
 			}
-			if (instance is SolutionEntityItem)
+			if (instance is SolutionEntityItem) {
+				if (prop.Name == "Policies")
+					return true;
 				return prop.IsExtendedProperty (typeof(SolutionEntityItem));
+			}
 			if (instance is ProjectFile)
 				return prop.IsExtendedProperty (typeof(ProjectFile));
 			if (instance is ProjectReference)

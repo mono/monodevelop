@@ -25,6 +25,12 @@
 		</ConditionType>
 	</ExtensionPoint>
 	
+	<ExtensionPoint path = "/MonoDevelop/ProjectModel/Gui/DefaultPolicyPanels" name = "Default policy panels">
+		<Description>Panels for editing default policies. Must derive from PolicyOptionsPanel. 
+		Should be the same policy panel registered for ItemOptionPanels.</Description>
+		<ExtensionNodeSet id="MonoDevelop.Core.Gui.OptionsDialogSection"/>
+	</ExtensionPoint>
+	
 	<ExtensionPoint path = "/MonoDevelop/ProjectModel/Gui/Icons" name="Project service icons">
 		<ExtensionNode name="Icon" type="MonoDevelop.Projects.Gui.IconCodon"/>
 	</ExtensionPoint>
@@ -55,6 +61,9 @@
 			<Condition id="ItemType" value="Solution">
 				<Section id = "StartupOptionsPanel" _label = "Startup Project" fill = "true" class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.StartupOptionsPanel"/>
 			</Condition>
+			<Section id="DotNetNamingPolicies" _label=".NET Naming Policies">
+				<Panel id = "NamespaceSynchronisationPanel" class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.NamespaceSynchronisationPanel" />
+			</Section>
 		</Section>
 		<Section id="Build" _label="Build">
 			<Section id="General" _label="General" icon="md-build-combine">
@@ -84,6 +93,12 @@
 					<Panel id = "RunOptionsPanel" _label = "Run" fill = "true" class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.RunOptionsPanel"/>
 				</Condition>
 			</Section>
+		</Section>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/DefaultPolicyPanels">
+		<Section id="DefaultDotNetNamingPolicies" _label=".NET Naming Policies">
+			<Panel id = "NamespaceSynchronisationPanel" class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.NamespaceSynchronisationPanel" />
 		</Section>
 	</Extension>
 </Addin>

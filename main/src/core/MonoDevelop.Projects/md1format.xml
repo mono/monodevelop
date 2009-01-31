@@ -7,6 +7,7 @@
 		<ItemProperty member="CombineConfigurations" name="Configurations" />
 		<ItemMember name="StartMode" type="MonoDevelop.Projects.Formats.MD1.CombineStartupMode"/>
 		<ItemProperty member="StartMode" name="StartMode" />
+		<ItemProperty member="Policies" />
 	</DataItem>
 	<DataItem class = "MonoDevelop.Projects.SolutionFolder" name="SolutionFolder">
 		<ItemProperty member="name" />
@@ -15,6 +16,9 @@
 		<ItemProperty member="CombineConfigurations" name="Configurations" />
 		<ItemMember name="StartMode" type="MonoDevelop.Projects.Formats.MD1.CombineStartupMode"/>
 		<ItemProperty member="StartMode" name="StartMode" />
+	</DataItem>
+	<DataItem class = "MonoDevelop.Projects.SolutionItem">
+		<ItemProperty member="Policies" />
 	</DataItem>
 	<DataItem class = "MonoDevelop.Projects.SolutionEntityItem" name="CombineEntry" customDataItem="MonoDevelop.Projects.Formats.MD1.MD1CustomDataItem">
 		<ItemProperty member="release_version" name = "releaseversion"/>

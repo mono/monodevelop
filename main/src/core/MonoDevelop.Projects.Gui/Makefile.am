@@ -30,6 +30,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanelWidget.cs \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandWidget.cs \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.GeneralProjectOptionsWidget.cs \
+	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.NamespaceSynchronisationPanelWidget.cs \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.OutputOptionsPanelWidget.cs \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.RunOptionsPanelWidget.cs \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.RuntimeOptionsPanelWidget.cs \
@@ -61,18 +62,21 @@ FILES =  \
 	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/EnvVarList.cs \
 	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/GeneralProjectOptions.cs \
 	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/ItemTypeCondition.cs \
+	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/NamespaceSynchronisationPanel.cs \
 	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs \
 	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/RunOptionsPanel.cs \
 	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/RuntimeOptionsPanel.cs \
 	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/SolutionItemConfigurationsPanel.cs \
 	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/StartupOptionsPanel.cs \
 	MonoDevelop.Projects.Gui.Dialogs/CombineOptionsDialog.cs \
+	MonoDevelop.Projects.Gui.Dialogs/DefaultPolicyOptionsDialog.cs \
 	MonoDevelop.Projects.Gui.Dialogs/DeleteConfigDialog.cs \
 	MonoDevelop.Projects.Gui.Dialogs/ItemOptionsDialog.cs \
 	MonoDevelop.Projects.Gui.Dialogs/ItemOptionsPanel.cs \
 	MonoDevelop.Projects.Gui.Dialogs/MultiConfigItemOptionsDialog.cs \
 	MonoDevelop.Projects.Gui.Dialogs/MultiConfigItemOptionsPanel.cs \
 	MonoDevelop.Projects.Gui.Dialogs/NewConfigurationDialog.cs \
+	MonoDevelop.Projects.Gui.Dialogs/PolicyOptionsPanel.cs \
 	MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs \
 	MonoDevelop.Projects.Gui.Dialogs/RenameConfigDialog.cs \
 	MonoDevelop.Projects.Gui/IconCodon.cs \

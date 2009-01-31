@@ -54,6 +54,7 @@ namespace MonoDevelop.Ide.Commands
 		JoinWithNextLine,
 		WordCount,
 		MonodevelopPreferences,
+		DefaultPolicies,
 		InsertStandardHeader,
 		
 		ToggleFolding,
@@ -66,6 +67,14 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Run ()
 		{
 			IdeApp.Workbench.ShowGlobalPreferencesDialog (null);
+		}
+	}
+	
+	internal class DefaultPoliciesHandler: CommandHandler
+	{
+		protected override void Run ()
+		{
+			IdeApp.Workbench.ShowDefaultPoliciesDialog (null);
 		}
 	}
 	
@@ -208,7 +217,7 @@ namespace MonoDevelop.Ide.Commands
 		{
 			Document doc = IdeApp.Workbench.ActiveDocument;
 			ILanguageBinding lang = MonoDevelop.Projects.Services.Languages.GetBindingPerFileName (doc.Name);
-			string header = MonoDevelop.Ide.StandardHeaders.StandardHeaderService.GetHeader (lang.Language, doc.Name);
+			string header = MonoDevelop.Ide.StandardHeader.StandardHeaderService.GetHeader (doc.Project, lang.Language, doc.Name, false);
 			doc.TextEditor.InsertText (0, header + "\n");
 		}
 		

@@ -34,18 +34,16 @@ namespace MonoDevelop.VersionControl
 			get { return items.Count (item => !string.IsNullOrEmpty (item.Comment)); }
 		}
 		
-		public string GenerateGlobalComment (int maxColumns)
+		public string GenerateGlobalComment (CommitMessageFormat format)
 		{
-			return GeneratePathComment (basePath, items, ChangeLogMessageStyle.CommitMessage, null, null);
+			return GeneratePathComment (basePath, items, format, null);
 		}
 		
 		public string GeneratePathComment (string path, IEnumerable<ChangeSetItem> items, 
-			ChangeLogMessageStyle messageStyle, string name, string email)
+			CommitMessageFormat messageFormat, MonoDevelop.Ide.Gui.AuthorInformation userInfo)
 		{
-			ChangeLogWriter writer = new ChangeLogWriter (path);
-			writer.MessageStyle = messageStyle;
-			writer.FullName = name;
-			writer.EmailAddress = email;
+			ChangeLogWriter writer = new ChangeLogWriter (path, userInfo);
+			writer.MessageFormat = messageFormat;
 			
 			foreach (ChangeSetItem item in items) {
 				writer.AddFile (item.Comment, item.LocalPath);

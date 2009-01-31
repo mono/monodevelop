@@ -1,10 +1,10 @@
 // 
-// GlobalUserInformationPanelWidget.cs
+// PolicyNode.cs
 // 
 // Author:
 //   Michael Hutchinson <mhutchinson@novell.com>
 // 
-// Copyright (C) 2009 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2008 Novell, Inc (http://www.novell.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -27,41 +27,21 @@
 //
 
 using System;
-using MonoDevelop.Core;
-using MonoDevelop.Core.Gui.Dialogs;
+using System.IO;
+using Mono.Addins;
 
-namespace MonoDevelop.Ide.Gui.OptionPanels
+namespace MonoDevelop.Projects.Extensions
 {
-	class GlobalUserInformationPanel : OptionsPanel
-	{
-		GlobalUserInformationPanelWidget widget;
-		
-		public override Gtk.Widget CreatePanelWidget ()
-		{
-			return widget = new GlobalUserInformationPanelWidget ();
-		}
-
-		public override void ApplyChanges ()
-		{
-			widget.Save ();
-		}
-	}
 	
-	partial class GlobalUserInformationPanelWidget : Gtk.Bin
+	class PolicyResourceNode : ExtensionNode
 	{
 		
-		public GlobalUserInformationPanelWidget()
-		{
-			this.Build ();
-			
-			nameEntry.Text = UserInformation.Default.Name ?? "";
-			emailEntry.Text = UserInformation.Default.Email ?? "";
-		}
+		[NodeAttribute]
+		protected string resource;
 		
-		public void Save ()
+		public StreamReader GetStream ()
 		{
-			PropertyService.Set ("User.Name", UserInformation.Default.Name);
-			PropertyService.Set ("User.Email", UserInformation.Default.Email);
+			return new StreamReader (Addin.GetResource (resource, true));
 		}
 	}
 }

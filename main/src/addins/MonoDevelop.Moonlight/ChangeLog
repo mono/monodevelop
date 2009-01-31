@@ -2,6 +2,11 @@
 
 	* MonoDevelop.Moonlight.mdp: Flush project format changes.
 
+2009-01-21  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Moonlight.addin.xml: Make sure Moonlight parser takes
+	precedence over XML parser.
+
 2008-12-29  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Moonlight/MoonlightEditorExtension.cs: Moved

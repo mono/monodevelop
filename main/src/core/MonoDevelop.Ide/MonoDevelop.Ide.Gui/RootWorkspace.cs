@@ -172,10 +172,19 @@ namespace MonoDevelop.Ide.Gui
 			return props;
 		}
 		
-		public UserInformation GetUserInformation (Solution solution)
+		public AuthorInformation GetAuthorInformation  (SolutionItem item)
 		{
-			UserInformation info = GetUserPreferences (solution).GetValue<UserInformation> ("UserInfo");
-			return info ?? UserInformation.Default;
+			if (item != null)
+				return GetAuthorInformation (item.ParentSolution);
+			return AuthorInformation.Default;
+		}
+		
+		public AuthorInformation GetAuthorInformation (Solution solution)
+		{
+			if (solution == null)
+				return AuthorInformation.Default;
+			AuthorInformation info = GetUserPreferences (solution).GetValue<AuthorInformation> ("AuthorInfo");
+			return info ?? AuthorInformation.Default;
 		}
 		
 #region Model queries

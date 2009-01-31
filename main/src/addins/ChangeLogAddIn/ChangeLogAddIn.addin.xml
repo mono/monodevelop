@@ -35,24 +35,25 @@
 		<CommandItem id="MonoDevelop.ChangeLogAddIn.ChangeLogCommands.InsertEntry" insertafter="Separator5"/>
 	</Extension>
 
-	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/VersionControl">
-		<Section id = "ChangeLogAddInOptions" _label = "ChangeLog Add-in" class = "MonoDevelop.ChangeLogAddIn.ChangeLogAddInOptionPanel" />
-	</Extension>
-	
-	<Extension path = "/MonoDevelop/ProjectModel/ExtendedProperties">
-		<ItemProperty class = "MonoDevelop.Projects.SolutionItem"
-			name = "MonoDevelop.ChangeLogAddIn.ChangeLogInfo" type = "MonoDevelop.ChangeLogAddIn.ChangeLogData" />
-		<ItemProperty class = "MonoDevelop.Projects.Solution"
-			name = "MonoDevelop.ChangeLogAddIn.ChangeLogInfo" type = "MonoDevelop.ChangeLogAddIn.ChangeLogData" />
-	</Extension>
-	
-	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Common">
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/VersionControl">
 		<ComplexCondition>
 			<Or>
 				<Condition id="ItemType" value="SolutionItem" />
 				<Condition id="ItemType" value="Solution" />
 			</Or>
-			<Section id = "ChangeLogIntegration" _label = "ChangeLog Integration" class="MonoDevelop.ChangeLogAddIn.ProjectOptionPanel" />
+			<Section id = "ChangeLogIntegration" _label = "ChangeLog Integration" fill="true" class="MonoDevelop.ChangeLogAddIn.ProjectOptionPanel" />
 		</ComplexCondition>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/DefaultPolicyPanels/VersionControl">
+		<Section id = "DefaultChangeLogIntegration" _label = "ChangeLog Integration" fill="true" class="MonoDevelop.ChangeLogAddIn.ProjectOptionPanel" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/PolicyTypes" >
+		<PolicyType id="ChangeLogPolicy" class="MonoDevelop.ChangeLogAddIn.ChangeLogPolicy" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/PolicySets/Mono" >
+		<Policies resource="Policies.xml"/>
 	</Extension>
 </Addin>

@@ -36,7 +36,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.StandardHeaders;
+using MonoDevelop.Ide.StandardHeader;
 
 namespace MonoDevelop.Ide.Templates
 {
@@ -98,25 +98,25 @@ namespace MonoDevelop.Ide.Templates
 			set { addStandardHeader = value; }
 		}
 		
-		public sealed override bool AddToProject (Project project, string language, string directory, string name)
+		public sealed override bool AddToProject (SolutionItem policyParent, Project project, string language, string directory, string name)
 		{
-			return AddFileToProject (project, language, directory, name) != null;
+			return AddFileToProject (policyParent, project, language, directory, name) != null;
 		}
 		
-		public ProjectFile AddFileToProject (Project project, string language, string directory, string name)
+		public ProjectFile AddFileToProject (SolutionItem policyParent, Project project, string language, string directory, string name)
 		{
-			generatedFile = GetFileName (project, language, directory, name);
+			generatedFile = GetFileName (policyParent, project, language, directory, name);
 			if (project != null && project.IsFileInProject (generatedFile))
 				throw new UserException (GettextCatalog.GetString ("The file '{0}' already exists in the project.", Path.GetFileName (generatedFile)));
 			
-			generatedFile = SaveFile (project, language, directory, name);
+			generatedFile = SaveFile (policyParent, project, language, directory, name);
 			if (generatedFile != null) {		
 				string buildAction = this.buildAction ?? project.GetDefaultBuildAction (generatedFile);
 				ProjectFile projectFile = new ProjectFile (generatedFile, buildAction);
 				
 				if (!string.IsNullOrEmpty (dependsOn)) {
 					Hashtable tags = new Hashtable ();
-					ModifyTags (project, language, null, generatedFile, ref tags);
+					ModifyTags (policyParent, project, language, null, generatedFile, ref tags);
 					string parsedDepName = StringParserService.Parse (dependsOn, HashtableToStringArray (tags));
 					projectFile.DependsOn = parsedDepName;
 				}
@@ -161,9 +161,9 @@ namespace MonoDevelop.Ide.Templates
 		
 		// Creates a file and saves it to disk. Returns the path to the new file
 		// All parameters are optional (can be null)
-		public string SaveFile (Project project, string language, string baseDirectory, string entryName)
+		public string SaveFile (SolutionItem policyParent, Project project, string language, string baseDirectory, string entryName)
 		{
-			string file = GetFileName (project, language, baseDirectory, entryName);
+			string file = GetFileName (policyParent, project, language, baseDirectory, entryName);
 			
 			if (File.Exists (file)) {
 				if (!MessageService.Confirm (GettextCatalog.GetString ("File already exists"),
@@ -176,7 +176,7 @@ namespace MonoDevelop.Ide.Templates
 			if (!Directory.Exists (Path.GetDirectoryName (file)))
 				Directory.CreateDirectory (Path.GetDirectoryName (file));
 					
-			Stream stream = CreateFile (project, language, file);
+			Stream stream = CreateFile (policyParent, project, language, file);
 			
 			byte[] buffer = new byte [2048];
 			int nr;
@@ -195,7 +195,7 @@ namespace MonoDevelop.Ide.Templates
 		
 		// Returns the name of the file that this template generates.
 		// All parameters are optional (can be null)
-		public virtual string GetFileName (Project project, string language, string baseDirectory, string entryName)
+		public virtual string GetFileName (SolutionItem policyParent, Project project, string language, string baseDirectory, string entryName)
 		{
 			if (string.IsNullOrEmpty (entryName) && !string.IsNullOrEmpty (defaultName))
 				entryName = defaultName;
@@ -205,7 +205,7 @@ namespace MonoDevelop.Ide.Templates
 			//substitute tags
 			if ((name != null) && (name.Length > 0)) {
 				Hashtable tags = new Hashtable ();
-				ModifyTags (project, language, entryName ?? name, null, ref tags);
+				ModifyTags (policyParent, project, language, entryName ?? name, null, ref tags);
 				fileName = StringParserService.Parse (name, HashtableToStringArray (tags));
 			}
 			
@@ -231,22 +231,22 @@ namespace MonoDevelop.Ide.Templates
 		
 		// Returns a stream with the content of the file.
 		// project and language parameters are optional
-		public virtual Stream CreateFile (Project project, string language, string fileName)
+		public virtual Stream CreateFile (SolutionItem policyParent, Project project, string language, string fileName)
 		{
 			
 			if (project != null && project.IsFileInProject (fileName))
 				throw new UserException (GettextCatalog.GetString ("The file '{0}' already exists in the project.", Path.GetFileName (fileName)));
 			
 			Hashtable tags = new Hashtable ();
-			ModifyTags (project, language, null, fileName, ref tags);
+			ModifyTags (policyParent, project, language, null, fileName, ref tags);
 			
 			string content = CreateContent (language);
 			content = StringParserService.Parse (content, HashtableToStringArray (tags));
 			
 			MemoryStream ms = new MemoryStream ();
 			byte[] data;
-			if (StandardHeaderService.EmitStandardHeader && AddStandardHeader) { 
-				string header = StandardHeaderService.GetHeader (language, fileName); 
+			if (AddStandardHeader) {
+				string header = StandardHeaderService.GetHeader (policyParent, language, fileName, true); 
 				data = System.Text.Encoding.UTF8.GetBytes (header);
 				ms.Write (data, 0, data.Length);
 			}
@@ -270,7 +270,7 @@ namespace MonoDevelop.Ide.Templates
 		// We supply defaults whenever it is possible, to avoid having unsubstituted tags. However,
 		// do not substitute blanks when a sensible default cannot be guessed, because they result
 		//in less obvious errors.
-		public virtual void ModifyTags (Project project, string language, string identifier, string fileName, ref Hashtable tags)
+		public virtual void ModifyTags (SolutionItem policyParent, Project project, string language, string identifier, string fileName, ref Hashtable tags)
 		{
 			DotNetProject netProject = project as DotNetProject;
 			string languageExtension = "";

@@ -17,6 +17,7 @@
 	<Dependencies>
 		<Addin id="Core" version="1.9.1"/>
 		<Addin id="Core.Gui" version="1.9.1"/>
+		<Addin id="Projects" version="1.9.1"/>
 		<Addin id="Projects.Gui" version="1.9.1"/>
 		<Addin id="Components" version="1.9.1"/>
 	</Dependencies>
@@ -340,6 +341,10 @@
 				_label = "Pr_eferences"
 				icon = "gtk-preferences"
 				_description = "Show MonoDevelop preferences window" />
+		<Command id = "MonoDevelop.Ide.Commands.EditCommands.DefaultPolicies"
+				defaultHandler = "MonoDevelop.Ide.Commands.DefaultPoliciesHandler"
+				_label = "Default Po_licies"
+				_description = "Edit the default policies that are applied to new projects" />
 		<Command id = "MonoDevelop.Ide.Commands.EditCommands.InsertStandardHeader"
 				_label = "_Insert Standard Header" 
 				defaultHandler = "MonoDevelop.Ide.Commands.InsertStandardHeaderHandler"
@@ -1282,14 +1287,11 @@
 			<Section id = "AddIns" _label = "Add-ins" icon="md-addin" class = "MonoDevelop.Ide.Gui.OptionPanels.AddInsOptionsPanel" />
 			<Section id = "TaskList" _label = "Task List" icon="md-task-list-icon" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.TasksOptionsPanel" />
 			<Section id = "ExternalTools" _label = "External Tools" fill="true" class = "MonoDevelop.Ide.ExternalTools.ExternalToolPane" />
-			<!--
-			<Section id = "GeneralUserInfo" _label = "User Information" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.GlobalUserInformationPanel" />
-			-->
+			<Section id = "GeneralAuthorInfo" _label = "Author Information" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.GlobalAuthorInformationPanel" />
 		</Section>
 
 		<Section id = "Coding" _label = "Coding">
 			<Section id = "CodeGeneration" _label = "Code Generation" class = "MonoDevelop.Ide.Gui.OptionPanels.CodeGenerationPanel" />
-			<Section id = "EditStandardHeaders" _label = "Standard Header" fill="true" class = "MonoDevelop.Ide.StandardHeaders.StandardHeaderPanel" />
 			<Section id = "CodeTemplates" _label = "Code Templates" fill="true" class = "MonoDevelop.Ide.CodeTemplates.CodeTemplatePane"/>
 		</Section>
 
@@ -1302,13 +1304,41 @@
 		<Section id = "Other" _label = "Other" />
 	</Extension>
 
-	<!--
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Common">
 		<Condition id="ItemType" value="Solution">
-			<Section id = "UserInfo" _label = "User Information" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.UserInformationPanel" />
+			<Section id = "AuthorInfo" _label = "Author Information" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.AuthorInformationPanel" />
 		</Condition>
+		<Section id = "ProjectStandardHeader" _label = "Standard Header" fill="true" class = "MonoDevelop.Ide.StandardHeader.StandardHeaderPolicyPanel" />
 	</Extension>
-	-->
+	
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/DefaultPolicyPanels">
+		<Section id = "DefaultStandardHeader" _label = "Standard Header" fill="true" class = "MonoDevelop.Ide.StandardHeader.StandardHeaderPolicyPanel" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/PolicyTypes" >
+		<PolicyType id="StandardHeaderPolicy" class="MonoDevelop.Ide.StandardHeader.StandardHeaderPolicy" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/PolicySets" >
+		<PolicySet id="MITX11License" _name="MIT/X11 License">
+			<Policies resource="MITX11LicencePolicy.xml" />
+		</PolicySet>
+		<PolicySet id="NewBSDLicense" _name="New BSD License">
+			<Policies resource="NewBSDLicencePolicy.xml" />
+		</PolicySet>
+		<PolicySet id="Apache2License" _name="Apache 2.0 License">
+			<Policies resource="Apache2LicencePolicy.xml" />
+		</PolicySet>
+		<PolicySet id="LGPLv2License" _name="LGPL 2.1 License">
+			<Policies resource="GPL3LicencePolicy.xml" />
+		</PolicySet>
+		<PolicySet id="GPLv2License" _name="GPL 2 License">
+			<Policies resource="GPL2LicencePolicy.xml" />
+		</PolicySet>
+		<PolicySet id="GPLv3License" _name="GPL 3 License">
+			<Policies resource="GPL3LicencePolicy.xml" />
+		</PolicySet>
+	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/ProjectFileFilters">
 		<FileFilter id = "Combine"
@@ -1451,6 +1481,7 @@
 			
 			<SeparatorItem id = "optionssep5" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.MonodevelopPreferences" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.DefaultPolicies" />
 		</ItemSet>
 		
 		<ItemSet id = "View" _label = "_View">

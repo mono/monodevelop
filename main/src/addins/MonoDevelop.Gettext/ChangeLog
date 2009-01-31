@@ -1,6 +1,21 @@
+2009-01-29  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Gettext/Catalog.cs: Rename UserInformation to
+	AuthorInformation, and change other strings correspondingly.
+
 2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Gettext.mdp: Flush project format changes.
+
+2009-01-21  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Gettext/Catalog.cs:
+	* MonoDevelop.Gettext/CatalogParser.cs:
+	* MonoDevelop.Gettext/TranslationProject.cs:
+	* MonoDevelop.Gettext.Editor/POEditorWidget.cs:
+	* MonoDevelop.Gettext.Editor/CatalogEditorView.cs:
+	* MonoDevelop.Gettext.Editor/GettextEditorDisplayBinding.cs: Use the
+	UserInformation API, which requires a parent SolutionItem.
 
 2008-12-19  Lluis Sanchez Gual  <lluis@novell.com>
 

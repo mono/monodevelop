@@ -1,3 +1,9 @@
+2009-01-30  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.CodeMetrics/CodeMetricsWidget.cs: Comment out license
+	detection, as standard headers are not guaranteed to be licenses.
+	Also, standard header API has changed.
+
 2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* gtk-gui/gui.stetic:

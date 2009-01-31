@@ -47,7 +47,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
             this.vbox69.Name = "vbox69";
             this.vbox69.Spacing = 6;
             // Container child vbox69.Gtk.Box+BoxChild
-            this.table10 = new Gtk.Table(((uint)(1)), ((uint)(2)), false);
+            this.table10 = new Gtk.Table(((uint)(3)), ((uint)(2)), false);
             this.table10.Name = "table10";
             this.table10.RowSpacing = ((uint)(6));
             this.table10.ColumnSpacing = ((uint)(6));

@@ -104,7 +104,6 @@ namespace MonoDevelop.AspNet.Gui
 			XName parentName = GetParentElementName (0);
 			AddHtmlTagCompletionData (list, Schema, parentName.ToLower ());
 			AddMiscBeginTags (list);
-			AddCloseTag (list, Tracker.Engine.Nodes);
 			
 			//FIXME: don't show this after any elements
 			if (string.IsNullOrEmpty (DocType))

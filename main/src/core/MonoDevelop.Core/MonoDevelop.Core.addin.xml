@@ -2,17 +2,13 @@
        namespace   = "MonoDevelop"
        name        = "MonoDevelop Runtime"
        author      = "Lluis Sanchez, Todd Berman, John Luke, Mike Krueger"
-       copyright   = "GPL"
+       copyright   = "MIT/X11"
        url         = "http://www.monodevelop.com"
        description = "Provides the core services of the MonoDevelop platform"
        category    = "MonoDevelop Core"
        isroot      = "true"
        version     = "1.9.1"
        compatVersion = "1.9.1">
-
-	<Runtime>
-		<Import assembly="../bin/MonoDevelop.Core.dll"/>
-	</Runtime>
 
 	<ExtensionPoint path = "/MonoDevelop/Core/ExecutionModes" name = "Execution modes">
 		<Description>Execution modes such as default, debug, profiler, etc.</Description>

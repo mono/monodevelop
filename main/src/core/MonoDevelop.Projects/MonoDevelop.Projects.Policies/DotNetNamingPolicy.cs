@@ -1,11 +1,11 @@
-//
-// NewHeaderTemplateDialog.cs
-//
+// 
+// NamingPolicy.cs
+// 
 // Author:
-//   Mike Krüger <mkrueger@novell.com>
-//
-// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
-//
+//   Michael Hutchinson <mhutchinson@novell.com>
+// 
+// Copyright (C) 2008 Novell, Inc (http://www.novell.com)
+// 
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
 // "Software"), to deal in the Software without restriction, including
@@ -27,27 +27,43 @@
 //
 
 using System;
+using MonoDevelop.Core.Serialization;
 
-namespace MonoDevelop.Ide.StandardHeaders
+namespace MonoDevelop.Projects.Policies
 {
-	internal partial class NewHeaderTemplateDialog : Gtk.Dialog
+	
+	[DataItem ("DotNetNamingPolicy")]
+	public class DotNetNamingPolicy : IEquatable<DotNetNamingPolicy>
 	{
-		public string HeaderName {
-			get {
-				return this.nameEntry.Text;
-			}
-			set {
-				this.nameEntry.Text = value;
-			}
+		public DotNetNamingPolicy ()
+		{
 		}
 		
-		public NewHeaderTemplateDialog()
+		public DotNetNamingPolicy (DirectoryNamespaceAssociation association, bool vsStyleResourceNames)
 		{
-			this.Build();
-			buttonOk.Sensitive = false;
-			this.nameEntry.Changed += delegate {
-				buttonOk.Sensitive = !string.IsNullOrEmpty (HeaderName);
-			};
+			this.DirectoryNamespaceAssociation = association;
+			this.VSStyleResourceNames = vsStyleResourceNames;
 		}
+		
+		[ItemProperty]
+		public DirectoryNamespaceAssociation DirectoryNamespaceAssociation { get; private set; }
+		
+		[ItemProperty]
+		public bool VSStyleResourceNames { get; private set; }
+		
+		public bool Equals (DotNetNamingPolicy other)
+		{
+			return other != null && other.DirectoryNamespaceAssociation == DirectoryNamespaceAssociation
+				&& other.VSStyleResourceNames == VSStyleResourceNames;
+		}
+	}
+	
+	public enum DirectoryNamespaceAssociation
+	{
+		None = 0,
+		Flat,
+		Hierarchical,
+		PrefixedFlat,
+		PrefixedHierarchical
 	}
 }

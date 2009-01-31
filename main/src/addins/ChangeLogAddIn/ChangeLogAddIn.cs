@@ -65,7 +65,7 @@ namespace MonoDevelop.ChangeLogAddIn
 				info.Enabled = false;
 		}
 
-        private string GetSelectedFile()
+		private string GetSelectedFile()
 		{
 			if (IdeApp.Workbench.ActiveDocument != null) {
 				string fn = IdeApp.Workbench.ActiveDocument.FileName;
@@ -90,32 +90,31 @@ namespace MonoDevelop.ChangeLogAddIn
 			string changeLogFileNameDirectory = Path.GetDirectoryName(changeLogFileName);
 			string selectedFileName = GetSelectedFile();
 			string selectedFileNameDirectory = Path.GetDirectoryName(selectedFileName);
-	
-	        int pos = GetHeaderEndPosition(document);
-	        
-			if (selectedFileNameDirectory.StartsWith(changeLogFileNameDirectory)) {
+			
+			int pos = GetHeaderEndPosition (document);
+			if (pos > 0 && selectedFileNameDirectory.StartsWith(changeLogFileNameDirectory)) {
 				string text = "\t* " 
-				    + selectedFileName.Substring(changeLogFileNameDirectory.Length + 1) + ": "
+					+ selectedFileName.Substring(changeLogFileNameDirectory.Length + 1) + ": "
 					+ Environment.NewLine + Environment.NewLine;
-				textBuffer.InsertText(pos+2, text);
+				int insertPos = Math.Min (pos + 2, textBuffer.Length);
+				textBuffer.InsertText (insertPos, text);
 				
-				pos += text.Length;
-                textBuffer.Select(pos, pos);
-			    textBuffer.CursorPosition = pos;
-			    
-			    document.Select();	    
-	        }
+				insertPos += text.Length;
+				textBuffer.Select (insertPos, insertPos);
+				textBuffer.CursorPosition = insertPos;
+				
+				document.Select ();
+			}
 		}
 		
-		private bool InsertHeader(Document document)
+		private bool InsertHeader (Document document)
 		{
 			IEditableTextBuffer textBuffer = document.GetContent<IEditableTextBuffer>();					
 			if (textBuffer == null) return false;
-		
-			string name = PropertyService.Get("ChangeLogAddIn.Name", string.Empty);
-			string email = PropertyService.Get("ChangeLogAddIn.Email", string.Empty);
 			
-			if (string.IsNullOrEmpty (name) || string.IsNullOrEmpty (email)) {
+			AuthorInformation userInfo = IdeApp.Workspace.GetAuthorInformation (document.Project);
+			
+			if (!userInfo.IsValid) {
 				string title = GettextCatalog.GetString ("ChangeLog entries can't be generated");
 				string detail = GettextCatalog.GetString ("The name or e-mail of the user has not been configured.");
 				MessageService.ShowError (title, detail);
@@ -123,31 +122,27 @@ namespace MonoDevelop.ChangeLogAddIn
 			}
 			
 			string date = DateTime.Now.ToString("yyyy-MM-dd");
-			string text = date + "  " + name + "  <" + email + ">" 
+			string text = date + "  " + userInfo.Name + "  <" + userInfo.Email + ">" 
 			    + Environment.NewLine + Environment.NewLine;
 
-            // Read the first line and compare it with the header: if they are
-            // the same don't insert a new header.
-            
-            int pos = GetHeaderEndPosition(document);
-            string line = textBuffer.GetText(0, pos+2);
-            
-            if (line != text)
-    			textBuffer.InsertText(0, text);			
-    			return true;
-        }
+			// Read the first line and compare it with the header: if they are
+			// the same don't insert a new header.
+			int pos = GetHeaderEndPosition(document);
+			if (pos < 0 || (pos + 2 > textBuffer.Length) || textBuffer.GetText (0, pos + 2) != text)
+				textBuffer.InsertText (0, text);
+			return true;
+		}
         
-        private int GetHeaderEndPosition(Document document)
-        {
+		private int GetHeaderEndPosition(Document document)
+		{
 			IEditableTextBuffer textBuffer = document.GetContent<IEditableTextBuffer>();					
 			if (textBuffer == null) return 0;
 			
 			// This is less than optimal, we simply read 1024 chars hoping to
 			// find a newline there: if we don't find it we just return 0.
-            string text = textBuffer.GetText(0, Math.Min(textBuffer.Length-1, 1023));
-            int pos = text.IndexOf(Environment.NewLine + Environment.NewLine);
-            return pos >= 0 ? pos : 0;
-        }
+			string text = textBuffer.GetText (0, Math.Min (textBuffer.Length, 1023));
+			return text.IndexOf (Environment.NewLine + Environment.NewLine);
+		}
         
 		private Document GetActiveChangeLogDocument()
 		{

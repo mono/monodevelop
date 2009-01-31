@@ -255,6 +255,12 @@
     <File name="MonoDevelop.Projects.Dom.Output/DocumentationService.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom.Output/OutputSettings.cs" subtype="Code" buildaction="Compile" />
     <File name="AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Policies/PolicyBag.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Policies/PolicyService.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Policies/PolicySet.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Policies/DotNetNamingPolicy.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Extensions/PolicySetNode.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Extensions/PolicyNode.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom/InstantiatedParameterType.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom/CopyDomVisitor.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom/ITypeParameter.cs" subtype="Code" buildaction="Compile" />

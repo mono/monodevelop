@@ -35,6 +35,6 @@ namespace MonoDevelop.Ide.Templates
 	internal interface ISolutionItemDescriptor
 	{
 		SolutionEntityItem CreateItem (ProjectCreateInformation projectCreateInformation, string defaultLanguage);
-		void InitializeItem (ProjectCreateInformation projectCreateInformation, string defaultLanguage, SolutionEntityItem item);
+		void InitializeItem (SolutionItem policyParent, ProjectCreateInformation projectCreateInformation, string defaultLanguage, SolutionEntityItem item);
 	}
 }

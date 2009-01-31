@@ -26,59 +26,91 @@
 //
 
 using System;
+using MonoDevelop.Core;
 using MonoDevelop.Projects;
+using MonoDevelop.VersionControl;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.ChangeLogAddIn
 {	
-	public partial class ProjectOptionPanelWidget : Gtk.Bin
-	{		
-		ChangeLogData changeLogData;
+	partial class ProjectOptionPanelWidget : Gtk.Bin
+	{
+		ProjectOptionPanel parent;
+		CommitMessageStyle style;
 		
-		public ProjectOptionPanelWidget (SolutionItem entry)
+		public ProjectOptionPanelWidget (ProjectOptionPanel parent)
 		{
-			this.Build();
-			
-			changeLogData = ChangeLogService.GetChangeLogData (entry);
-			
-			if (entry.ParentFolder == null)
-				parentRadioButton.Sensitive = false;
-			
-			switch (changeLogData.Policy)
-			{
-				case ChangeLogPolicy.NoChangeLog:
-					noneRadioButton.Active = true;				
-					break;
-				case ChangeLogPolicy.UseParentPolicy:
-					parentRadioButton.Active = true;				
-					break;
-				case ChangeLogPolicy.UpdateNearestChangeLog:
-					nearestRadioButton.Active = true;				
-					break;
-				case ChangeLogPolicy.OneChangeLogInProjectRootDirectory:
-					oneChangeLogInProjectRootDirectoryRadioButton.Active = true;				
-					break;
-				case ChangeLogPolicy.OneChangeLogInEachDirectory:
-					oneChangeLogInEachDirectoryRadioButton.Active = true;				
-					break;
-			}									
+			this.parent = parent;
+			this.Build ();
 		}
 		
-		public void Store ()
+		public void LoadFrom (ChangeLogPolicy policy)
 		{
-			if (noneRadioButton.Active)
-				changeLogData.Policy =  ChangeLogPolicy.NoChangeLog;
+			switch (policy.UpdateMode) {
+			case ChangeLogUpdateMode.None:
+				noneRadioButton.Active = true;				
+				break;
+			case ChangeLogUpdateMode.Nearest:
+				nearestRadioButton.Active = true;				
+				break;
+			case ChangeLogUpdateMode.ProjectRoot:
+				oneChangeLogInProjectRootDirectoryRadioButton.Active = true;				
+				break;
+			case ChangeLogUpdateMode.Directory:
+				oneChangeLogInEachDirectoryRadioButton.Active = true;				
+				break;
+			}
 			
-			if (parentRadioButton.Active)
-				changeLogData.Policy =  ChangeLogPolicy.UseParentPolicy;
+			this.checkVersionControl.Active = policy.VcsIntegration != VcsIntegration.None;
+			this.checkRequireOnCommit.Active = policy.VcsIntegration == VcsIntegration.RequireEntry;
 			
+			style = new CommitMessageStyle ();
+			style.CopyFrom (policy.MessageStyle);
+			
+			CommitMessageFormat format = new CommitMessageFormat ();
+			format.MaxColumns = 70;
+			format.Style = style;
+			
+			SolutionItem item = null;
+			if (parent.ConfiguredSolutionItem != null)
+				item = parent.ConfiguredSolutionItem;
+			else if (parent.ConfiguredSolution != null)
+				item = parent.ConfiguredSolution.RootFolder;
+			
+			messageWidget.Load (format, IdeApp.Workspace.GetAuthorInformation (item));
+		}
+		
+		public ChangeLogPolicy GetPolicy ()
+		{
+			ChangeLogUpdateMode mode = ChangeLogUpdateMode.None;
 			if (nearestRadioButton.Active)
-				changeLogData.Policy =  ChangeLogPolicy.UpdateNearestChangeLog;
+				mode =  ChangeLogUpdateMode.Nearest;
+			else if (oneChangeLogInProjectRootDirectoryRadioButton.Active)
+				mode = ChangeLogUpdateMode.ProjectRoot;
+			else if (oneChangeLogInEachDirectoryRadioButton.Active)
+				mode = ChangeLogUpdateMode.Directory;
 			
-			if (oneChangeLogInProjectRootDirectoryRadioButton.Active)
-				changeLogData.Policy = ChangeLogPolicy.OneChangeLogInProjectRootDirectory;
+			VcsIntegration vcs = VcsIntegration.None;
+			if (checkVersionControl.Active) {
+				vcs = VcsIntegration.Enabled;
+				if (checkRequireOnCommit.Active)
+					vcs = VcsIntegration.RequireEntry;
+			}
 			
-			if (oneChangeLogInEachDirectoryRadioButton.Active)
-				changeLogData.Policy = ChangeLogPolicy.OneChangeLogInEachDirectory;
+			return new ChangeLogPolicy (mode, vcs, style);
+		}
+
+		protected virtual void ValueChanged (object sender, System.EventArgs e)
+		{
+			//update sensitivity
+			checkVersionControl.Sensitive = !noneRadioButton.Active;
+			checkRequireOnCommit.Sensitive = (checkVersionControl.Sensitive && checkVersionControl.Active);
+			parent.UpdateSelectedNamedPolicy ();
+		}
+
+		protected virtual void OnMessageWidgetChanged (object sender, System.EventArgs e)
+		{
+			parent.UpdateSelectedNamedPolicy ();
 		}
 	}
 }
