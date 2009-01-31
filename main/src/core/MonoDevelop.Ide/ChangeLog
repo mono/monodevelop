@@ -2,6 +2,19 @@
 
 	* Makefile.am:
 	* MonoDevelop.Ide.mdp:
+	* MonoDevelop.Ide.addin.xml:
+	* MonoDevelop.Ide.StandardHeader/GPL3LicencePolicy.xml:
+	* MonoDevelop.Ide.StandardHeader/GPL2LicencePolicy.xml:
+	* MonoDevelop.Ide.StandardHeader/NewBSDLicencePolicy.xml:
+	* MonoDevelop.Ide.StandardHeader/LGPL2-1LicencePolicy.xml:
+	* MonoDevelop.Ide.StandardHeader/Apache2LicencePolicy.xml:
+	* MonoDevelop.Ide.StandardHeader/StandardHeaderTemplates.xml: Transfer
+	stock license standard headers to the new policy system.
+
+2009-01-30  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Ide.mdp:
 	* gtk-gui/objects.xml: Objects.xml file is empty and unnecessary so
 	remove it.
 

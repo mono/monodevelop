@@ -348,8 +348,12 @@ RES =  \
 	icons/text-editor-16.png \
 	icons/text-editor-22.png \
 	MonoDevelop.Ide.addin.xml \
+	MonoDevelop.Ide.StandardHeader/Apache2LicencePolicy.xml \
+	MonoDevelop.Ide.StandardHeader/GPL2LicencePolicy.xml \
+	MonoDevelop.Ide.StandardHeader/GPL3LicencePolicy.xml \
+	MonoDevelop.Ide.StandardHeader/LGPL2-1LicencePolicy.xml \
 	MonoDevelop.Ide.StandardHeader/MITX11LicencePolicy.xml \
-	MonoDevelop.Ide.StandardHeader/StandardHeaderTemplates.xml \
+	MonoDevelop.Ide.StandardHeader/NewBSDLicencePolicy.xml \
 	options/KeyBindingSchemeEmacs.xml \
 	options/KeyBindingSchemeMonoDevelop1.xml \
 	options/KeyBindingSchemeMonoDevelop2.xml \

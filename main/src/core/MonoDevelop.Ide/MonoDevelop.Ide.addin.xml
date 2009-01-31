@@ -1320,8 +1320,23 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/PolicySets" >
-		<PolicySet id="mitx11" _name="MIT/X11">
+		<PolicySet id="MITX11License" _name="MIT/X11 License">
 			<Policies resource="MITX11LicencePolicy.xml" />
+		</PolicySet>
+		<PolicySet id="NewBSDLicense" _name="New BSD License">
+			<Policies resource="NewBSDLicencePolicy.xml" />
+		</PolicySet>
+		<PolicySet id="Apache2License" _name="Apache 2.0 License">
+			<Policies resource="Apache2LicencePolicy.xml" />
+		</PolicySet>
+		<PolicySet id="LGPLv2License" _name="LGPL 2.1 License">
+			<Policies resource="GPL3LicencePolicy.xml" />
+		</PolicySet>
+		<PolicySet id="GPLv2License" _name="GPL 2 License">
+			<Policies resource="GPL2LicencePolicy.xml" />
+		</PolicySet>
+		<PolicySet id="GPLv3License" _name="GPL 3 License">
+			<Policies resource="GPL3LicencePolicy.xml" />
 		</PolicySet>
 	</Extension>
 
