@@ -60,8 +60,6 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.OverridesImplementsDialog.cs \
 	gtk-gui/MonoDevelop.Ide.SelectEncodingsDialog.cs \
 	gtk-gui/MonoDevelop.Ide.StandardHeader.StandardHeaderPolicyPanelWidget.cs \
-	gtk-gui/MonoDevelop.Ide.StandardHeaders.NewHeaderTemplateDialog.cs \
-	gtk-gui/MonoDevelop.Ide.StandardHeaders.StandardHeaderPanel.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplateGroup.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplatePanel.cs \
@@ -301,8 +299,6 @@ FILES =  \
 	MonoDevelop.Ide.Gui/ViewContentEventHandler.cs \
 	MonoDevelop.Ide.Gui/Workbench.cs \
 	MonoDevelop.Ide.Gui/WorkbenchMemento.cs \
-	MonoDevelop.Ide.StandardHeader/NewHeaderTemplateDialog.cs \
-	MonoDevelop.Ide.StandardHeader/StandardHeaderPanel.cs \
 	MonoDevelop.Ide.StandardHeader/StandardHeaderPolicyPanel.cs \
 	MonoDevelop.Ide.StandardHeader/StandardHeaderService.cs \
 	MonoDevelop.Ide.Tasks/CommentTasksView.cs \

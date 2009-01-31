@@ -217,7 +217,7 @@ namespace MonoDevelop.Ide.Commands
 		{
 			Document doc = IdeApp.Workbench.ActiveDocument;
 			ILanguageBinding lang = MonoDevelop.Projects.Services.Languages.GetBindingPerFileName (doc.Name);
-			string header = MonoDevelop.Ide.StandardHeaders.StandardHeaderService.GetHeader (lang.Language, doc.Name);
+			string header = MonoDevelop.Ide.StandardHeader.StandardHeaderService.GetHeader (doc.Project, lang.Language, doc.Name, false);
 			doc.TextEditor.InsertText (0, header + "\n");
 		}
 		

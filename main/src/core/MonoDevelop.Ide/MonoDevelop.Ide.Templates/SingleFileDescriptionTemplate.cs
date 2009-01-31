@@ -36,7 +36,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.StandardHeaders;
+using MonoDevelop.Ide.StandardHeader;
 
 namespace MonoDevelop.Ide.Templates
 {
@@ -245,8 +245,8 @@ namespace MonoDevelop.Ide.Templates
 			
 			MemoryStream ms = new MemoryStream ();
 			byte[] data;
-			if (StandardHeaderService.EmitStandardHeader && AddStandardHeader) { 
-				string header = StandardHeaderService.GetHeader (language, fileName); 
+			if (AddStandardHeader) {
+				string header = StandardHeaderService.GetHeader (project, language, fileName, true); 
 				data = System.Text.Encoding.UTF8.GetBytes (header);
 				ms.Write (data, 0, data.Length);
 			}

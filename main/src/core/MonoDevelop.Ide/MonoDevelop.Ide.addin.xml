@@ -1292,7 +1292,6 @@
 
 		<Section id = "Coding" _label = "Coding">
 			<Section id = "CodeGeneration" _label = "Code Generation" class = "MonoDevelop.Ide.Gui.OptionPanels.CodeGenerationPanel" />
-			<Section id = "EditStandardHeaders" _label = "Standard Header" fill="true" class = "MonoDevelop.Ide.StandardHeaders.StandardHeaderPanel" />
 			<Section id = "CodeTemplates" _label = "Code Templates" fill="true" class = "MonoDevelop.Ide.CodeTemplates.CodeTemplatePane"/>
 		</Section>
 

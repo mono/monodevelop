@@ -1,5 +1,23 @@
 2009-01-30  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Ide.mdp:
+	* MonoDevelop.Ide.addin.xml:
+	* MonoDevelop.Ide.StandardHeader/StandardHeaderPanel.cs:
+	* MonoDevelop.Ide.StandardHeader/NewHeaderTemplateDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.StandardHeaders.StandardHeaderPanel.cs:
+	* gtk-gui/MonoDevelop.Ide.StandardHeaders.NewHeaderTemplateDialog.cs:
+	Remove old standard header panels.
+
+	* MonoDevelop.Ide.StandardHeader/StandardHeaderService.cs: Use the
+	standard headers policy.
+
+	* MonoDevelop.Ide.Commands/EditCommands.cs:
+	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs: Track API.
+
+2009-01-30  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.addin.xml: Register standard header policy panel as a
 	default policy panel. Add command for showing default policies
 	dialog.
