@@ -174,6 +174,10 @@ namespace MonoDevelop.Core.Serialization
 							if (val.Length > 0)
 								itemAtt.IsExternal = bool.Parse (val);
 							
+							val = att.GetAttribute ("skipEmpty");
+							if (val.Length > 0)
+								itemAtt.SkipEmpty = bool.Parse (val);
+							
 							map.AddMemberAttribute (mi, itemAtt);
 						}
 						else if (att.Name == "ExpandedCollection")

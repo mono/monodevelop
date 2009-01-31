@@ -1,3 +1,8 @@
+2009/01/30  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* md1format.xml: Skip policies node when it's empty. Removed
+	  unused useParentDirectoryAsNamespace mapping.
+
 2009-01-30  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects/DotNetProject.cs: Fix default namespaces for

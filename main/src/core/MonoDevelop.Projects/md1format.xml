@@ -18,7 +18,7 @@
 		<ItemProperty member="StartMode" name="StartMode" />
 	</DataItem>
 	<DataItem class = "MonoDevelop.Projects.SolutionItem">
-		<ItemProperty member="Policies" />
+		<ItemProperty member="Policies" skipEmpty="true" />
 	</DataItem>
 	<DataItem class = "MonoDevelop.Projects.SolutionEntityItem" name="CombineEntry" customDataItem="MonoDevelop.Projects.Formats.MD1.MD1CustomDataItem">
 		<ItemProperty member="release_version" name = "releaseversion"/>
@@ -37,7 +37,6 @@
 		<ItemProperty member="language" />
 		<ItemProperty member="UsePartialTypes" defaultValue="true"/>
 		<ItemProperty member="defaultNamespace" name="DefaultNamespace" defaultValue="" />
-		<ItemProperty member="useParentDirectoryAsNamespace" name="UseParentDirectoryAsNamespace" defaultValue="false" />
 		<ItemProperty member="References" name="References" />
 	</DataItem>
 	<DataItem class = "MonoDevelop.Projects.DotNetProjectConfiguration">
