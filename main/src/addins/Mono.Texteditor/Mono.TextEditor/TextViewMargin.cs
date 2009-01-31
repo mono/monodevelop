@@ -647,7 +647,12 @@ namespace Mono.TextEditor
 					textEditor.FireLinkEvent (link);
 					return;
 				}
-				clickLocation = VisualToDocumentLocation (args.X, args.Y);
+				VisualLocationTranslator trans =new VisualLocationTranslator (this, args.X, args.Y);
+				clickLocation = trans.VisualToDocumentLocation (args.X, args.Y);
+				if (!trans.WasInLine) {
+					int nextColumn = this.textEditor.GetTextEditorData ().GetNextVirtualColumn (clickLocation.Line, clickLocation.Column);
+					clickLocation.Column = nextColumn;
+				}
 				
 				if (!textEditor.IsSomethingSelected) {
 					textEditor.SelectionAnchorLocation = clickLocation;
@@ -1153,7 +1158,10 @@ namespace Mono.TextEditor
 			SyntaxMode mode;
 			Pango.Layout measureLayout;
 			bool done = false;
-			
+			public bool WasInLine {
+				get;
+				set;
+			}
 			public VisualLocationTranslator (TextViewMargin margin, int xp, int yp)
 			{
 				this.margin = margin;
@@ -1253,7 +1261,7 @@ namespace Mono.TextEditor
 					chunks = mode.GetChunks (margin.Document, margin.textEditor.ColorStyle, line, offset, line.Offset + line.EditableLength - offset);
 					ConsumeChunks ();
 				}
-				
+				WasInLine = xPos >= visualXPos;
 				measureLayout.Dispose ();
 				return new DocumentLocation (lineNumber, column);
 			}
@@ -1261,7 +1269,7 @@ namespace Mono.TextEditor
 		
 		public DocumentLocation VisualToDocumentLocation (int xp, int yp)
 		{
-			return new VisualLocationTranslator (this, xp, yp).VisualToDocumentLocation (xp, yp);
+						return new VisualLocationTranslator (this, xp, yp).VisualToDocumentLocation (xp, yp);
 		}
 		
 		static bool IsNearX1 (int pos, int x1, int x2)

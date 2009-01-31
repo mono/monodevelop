@@ -56,7 +56,7 @@ namespace MonoDevelop.SourceEditor
 {	
 	public class SourceEditorView : AbstractViewContent, IExtensibleTextEditor, IBookmarkBuffer, IClipboardHandler, 
 		ICompletionWidget, IDocumentInformation, ISplittable, IFoldable, IToolboxDynamicProvider, 
-		ICustomFilteringToolboxConsumer, IZoomable, ITextEditorResolver
+		ICustomFilteringToolboxConsumer, IZoomable, ITextEditorResolver, Mono.TextEditor.ITextEditorDataProvider
 #if GNOME_PRINT
 		, IPrintable
 #endif
@@ -1489,5 +1489,9 @@ namespace MonoDevelop.SourceEditor
 		#endregion 
 		
 		#endregion
+		public Mono.TextEditor.TextEditorData GetTextEditorData ()
+		{
+			return TextEditor.GetTextEditorData ();
+		}
 	}
 } 

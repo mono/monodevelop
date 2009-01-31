@@ -440,7 +440,7 @@ namespace MonoDevelop.CSharpBinding
 					ResolveResult resolveResult = resolver.ResolveExpression (invokeExp.TargetObject, new DomLocation (invokeExp.StartLocation.Y, invokeExp.StartLocation.X));
 					if (resolveResult is MethodResolveResult) {
 						MethodResolveResult mrr = (MethodResolveResult)resolveResult;
-						if (mrr.MostLikelyMethod.FullName == method.FullName && mrr.MostLikelyMethod.GenericParameters.Count == method.GenericParameters.Count) {
+						if (mrr.MostLikelyMethod.FullName == method.FullName && mrr.MostLikelyMethod.TypeParameters.Count == method.TypeParameters.Count) {
 							int line, column;
 							if (SearchText (searchedMemberName, invokeExp.StartLocation.Line, invokeExp.StartLocation.Column, out line, out column))
 								AddUniqueReference (line, column, searchedMemberName);

@@ -26,6 +26,9 @@
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Ide" />
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Components" />
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Projects.Gui" />
+    <ProjectReference type="Project" localcopy="False" refto="Mono.TextEditor" />
+
+
     <ProjectReference type="Project" localcopy="False" refto="NRefactory" />
   </References>
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../..">

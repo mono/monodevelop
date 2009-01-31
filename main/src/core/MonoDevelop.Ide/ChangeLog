@@ -70,6 +70,11 @@
 	* MonoDevelop.Ide.Commands/EditCommands.cs: Add command for showing
 	default policies dialog.
 
+2009-01-30  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui.Content/DocumentStateTracker.cs: State tracker can
+	now be updated to custom positions.
+
 2009-01-29  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am:

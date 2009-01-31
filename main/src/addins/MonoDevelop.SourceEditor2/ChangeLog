@@ -1,3 +1,8 @@
+2009-01-30  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Implemented
+	texteditordataprovider.
+
 2009-01-29  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: handled possible

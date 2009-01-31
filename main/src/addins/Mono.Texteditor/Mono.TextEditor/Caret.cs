@@ -167,6 +167,8 @@ namespace Mono.TextEditor
 		void SetDesiredColumn ()
 		{
 			LineSegment curLine = this.document.GetLine (this.Line);
+			if (curLine == null)
+				return;
 			if (!AllowCaretBehindLineEnd)
 				this.Column = System.Math.Min (curLine.EditableLength, System.Math.Max (0, this.Column));
 			this.desiredColumn = curLine.GetVisualColumn (editor, document, this.Column);

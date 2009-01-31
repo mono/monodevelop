@@ -3,6 +3,7 @@ FILES = CSharpAutotoolsSetup.cs
 DEPS =  \
 	$(top_builddir)/build/AddIns/BackendBindings/MonoDevelop.CSharpBinding.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.Autotools/MonoDevelop.Autotools.dll \
+	$(top_builddir)/build/bin/Mono.TextEditor.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \

@@ -60,8 +60,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 		public override IDomVisitable Visit (IReturnType type, IType contextType)
 		{
 			if (currentMethod != null) {
-				foreach (IReturnType t in currentMethod.GenericParameters) {
-					if (t.FullName == type.FullName)
+				foreach (ITypeParameter t in currentMethod.TypeParameters) {
+					if (t.Name == type.Name)
 						return type;
 				}
 			}

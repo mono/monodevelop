@@ -6,6 +6,7 @@ DEPS =  \
 	$(top_builddir)/build/AddIns/BackendBindings/MonoDevelop.CSharpBinding.dll \
 	$(top_builddir)/build/AddIns/BackendBindings/MonoDevelop.VBNetBinding.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.dll \
+	$(top_builddir)/build/bin/Mono.TextEditor.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \

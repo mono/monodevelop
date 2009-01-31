@@ -1,3 +1,19 @@
+2009-01-30  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextEditor.cs: implemented ITextEditorDataProvider.
+
+2009-01-30  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/EditMode.cs:
+	* Mono.TextEditor/ClipboardActions.cs: Fixed virtual positions.
+
+2009-01-30  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/Caret.cs:
+	* Mono.TextEditor/TextViewMargin.cs:
+	* Mono.TextEditor/CaretMoveActions.cs: Added click support for caret
+	beyond eol.
+
 2009-01-29  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextEditorData.cs:

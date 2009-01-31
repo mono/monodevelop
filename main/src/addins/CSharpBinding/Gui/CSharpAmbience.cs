@@ -263,13 +263,19 @@ namespace MonoDevelop.CSharpBinding
 			}
 			
 			if (settings.IncludeGenerics) {
-				if (method.GenericParameters.Count > 0) {
+				if (method.TypeParameters.Count > 0) {
 					result.Append (settings.Markup ("<"));
+					InstantiatedMethod instantiatedMethod = method as InstantiatedMethod;
 					
-					for (int i = 0; i < method.GenericParameters.Count; i++) {
+					for (int i = 0; i < method.TypeParameters.Count; i++) {
 						if (i > 0)
 							result.Append (settings.Markup (", "));
-						result.Append (GetString (method.GenericParameters[i], settings));
+						if (instantiatedMethod != null) {
+							result.Append (this.GetString (instantiatedMethod.GenericParameters[i], settings));
+						} else {
+							result.Append (NetToCSharpTypeName (method.TypeParameters[i].Name));
+						}
+						
 					}
 					result.Append (settings.Markup (">"));
 				}

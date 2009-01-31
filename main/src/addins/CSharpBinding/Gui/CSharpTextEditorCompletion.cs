@@ -1175,9 +1175,9 @@ namespace MonoDevelop.CSharpBinding.Gui
 				resolver.AddAccessibleCodeCompletionData (expressionResult.ExpressionContext, result);
 			}
 			
-			if (resolver.CallingMember is IMethod && ((IMethod)resolver.CallingMember).GenericParameters != null) {
-				foreach (IReturnType returnType in ((IMethod)resolver.CallingMember).GenericParameters) {
-					result.Add (returnType.Name, "md-literal");
+			if (resolver.CallingMember is IMethod) {
+				foreach (ITypeParameter tp in ((IMethod)resolver.CallingMember).TypeParameters) {
+					result.Add (tp.Name, "md-literal");
 				}
 			}
 			return result;

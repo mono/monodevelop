@@ -217,15 +217,13 @@ namespace MonoDevelop.Projects.Dom
 
 			bool includeProtected = callingMember != null ? DomType.IncludeProtected (dom, type, callingMember.DeclaringType) : false;
 			
-			
 			foreach (IType curType in dom.GetInheritanceTree (type)) {
+				if (accessibleStaticTypes != null) {
+					foreach (IMethod extensionMethod in curType.GetExtensionMethods (accessibleStaticTypes))
+						result.Add (extensionMethod);
+				}
 				if (curType.ClassType == ClassType.Interface && type.ClassType != ClassType.Interface)
 					continue;
-				if (accessibleStaticTypes != null) {
-					foreach (IMethod extensionMethod in curType.GetExtensionMethods (accessibleStaticTypes)) {
-						result.Add (extensionMethod);
-					}
-				}
 				foreach (IMember member in curType.Members) {
 					if (callingMember != null && !member.IsAccessibleFrom (dom, type, callingMember, includeProtected))
 						continue;
@@ -249,9 +247,7 @@ namespace MonoDevelop.Projects.Dom
 			if (returnType == null || returnType.FullName == "System.Void")
 				return;
 			if (returnType.ArrayDimensions > 0) {
-				AddType (dom, result, dom.GetType ("System.Array", null, true, true), callingMember, showStatic);
-				DomReturnType arrType = new DomReturnType (returnType.ToInvariantString ());
-				AddType (dom, result, dom.GetType ("System.Collections.Generic.IList", new IReturnType [] { arrType }, true, true), callingMember, showStatic);
+				AddType (dom, result, dom.GetArrayType (returnType), callingMember, showStatic);
 				return;
 			}
 			IType type = dom.GetType (returnType);
@@ -294,7 +290,7 @@ namespace MonoDevelop.Projects.Dom
 					return null;
 				IMethod result = methods [0];
 				foreach (IMethod method in methods) {
-					if (method.GenericParameters.Count == genericArguments.Count) {
+					if (method.TypeParameters.Count == genericArguments.Count) {
 					 	if (method.Parameters.Count == arguments.Count) {
 					 		bool match = true;
 					 		for (int i = 0; i < method.Parameters.Count; i++) {

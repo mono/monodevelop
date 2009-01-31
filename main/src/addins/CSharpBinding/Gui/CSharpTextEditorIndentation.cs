@@ -60,6 +60,46 @@ namespace MonoDevelop.CSharpBinding.Gui
 		{
 			base.Initialize ();
 			InitTracker ();
+			Mono.TextEditor.ITextEditorDataProvider view = this.Document.ActiveView as Mono.TextEditor.ITextEditorDataProvider;
+			if (view != null) {
+				view.GetTextEditorData ().VirtualSpaceManager = new IndentVirtualSpaceManager (view.GetTextEditorData (), new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (), Editor));
+				view.GetTextEditorData ().Caret.AllowCaretBehindLineEnd = true;
+			}
+		}
+		
+		class IndentVirtualSpaceManager : Mono.TextEditor.TextEditorData.IVirtualSpaceManager
+		{
+			Mono.TextEditor.TextEditorData data;
+			DocumentStateTracker<CSharpIndentEngine> stateTracker;
+			
+			public IndentVirtualSpaceManager (Mono.TextEditor.TextEditorData data, DocumentStateTracker<CSharpIndentEngine> stateTracker)
+			{
+				this.data = data;
+				this.stateTracker = stateTracker;
+			}
+					
+			public string GetVirtualSpaces (int lineNumber, int column)
+			{
+				string indent = GetIndent (lineNumber, column);
+				if (column == indent.Length)
+					return indent;
+				return "";
+			}
+			
+			string GetIndent (int lineNumber, int column)
+			{
+				stateTracker.UpdateEngine (data.Document.LocationToOffset (lineNumber, column));
+				return stateTracker.Engine.NewLineIndent;
+			}
+			
+			public int GetNextVirtualColumn (int lineNumber, int column)
+			{
+				if (column == 0) {
+					int result = GetIndent (lineNumber, column).Length;
+					return result;
+				}
+				return column;
+			}
 		}
 		
 		public override bool ExtendsEditor (MonoDevelop.Ide.Gui.Document doc, IEditableTextBuffer editor)

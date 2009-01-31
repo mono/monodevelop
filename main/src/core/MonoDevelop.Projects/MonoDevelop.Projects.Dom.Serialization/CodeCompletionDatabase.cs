@@ -49,7 +49,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 	{
 		static protected readonly int MAX_ACTIVE_COUNT = 100;
 		static protected readonly int MIN_ACTIVE_COUNT = 10;
-		static protected readonly int FORMAT_VERSION   = 60;
+		static protected readonly int FORMAT_VERSION   = 62;
 		
 		NamespaceEntry rootNamespace;
 		protected ArrayList references;
@@ -489,7 +489,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 					
 					result = SourceProjectDom.FindInnerType (GetClass (ce), path, nextPos, genericArgumentCount, caseSensitive);
 				}
-				if (genericArguments != null && genericArguments.Count > 0)
+				if (result != null && genericArguments != null && genericArguments.Count > 0)
 					return sourceProjectDom.CreateInstantiatedGenericType (result, genericArguments);
 				else
 					return result;

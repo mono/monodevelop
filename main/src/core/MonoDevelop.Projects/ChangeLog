@@ -9,6 +9,30 @@
 	* MonoDevelop.Projects.Policies/PolicyService.cs: Use diff serialisation
 	for user policy sets.
 
+2009-01-30  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Dom/IMethod.cs:
+	* MonoDevelop.Projects.Dom/DomMethod.cs:
+	* MonoDevelop.Projects.Dom/CopyDomVisitor.cs:
+	* MonoDevelop.Projects.Dom/DomCecilMethod.cs:
+	* MonoDevelop.Projects.Dom/InstantiatedMethod.cs:
+	* MonoDevelop.Projects.Dom/DomCecilCompilationUnit.cs:
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs:
+	* MonoDevelop.Projects.Dom.Parser/TypeResolverVisitor.cs:
+	* MonoDevelop.Projects.Dom.Serialization/DomPersistence.cs:
+	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
+	Added support for generic constraints in methods.
+
+	* MonoDevelop.Projects.Dom/ResolveResult.cs:
+	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: When getting members of
+	a class, include extension methods for the interfaces that the class
+	implements. Don't explicitly add IList when resolving an array type.
+	This is not needed anymore due to the previous change and the new
+	GetArrayType method.
+
+	* Makefile.am:
+	* MonoDevelop.Projects.mdp: Updated.
+
 2009-01-30  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects.Policies/PolicySet.cs:
