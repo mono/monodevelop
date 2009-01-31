@@ -50,9 +50,6 @@ namespace MonoDevelop.Projects
 		[ItemProperty ("OutputType")]
 		CompileTarget compileTarget;
 		
-		[ItemProperty ("UseParentDirectoryAsNamespace", DefaultValue=false)]
-		bool useParentDirectoryAsNamespace = false;
-		
 		IDotNetLanguageBinding languageBinding;
 
 		protected ProjectReferenceCollection projectReferences;
@@ -122,14 +119,6 @@ namespace MonoDevelop.Projects
 			set {
 				defaultNamespace = value;
 				NotifyModified ("DefaultNamespace");
-			}
-		}
-		
-		public bool UseParentDirectoryAsNamespace {
-			get { return useParentDirectoryAsNamespace; }
-			set { 
-				useParentDirectoryAsNamespace = value; 
-				NotifyModified ("UseParentDirectoryAsNamespace");
 			}
 		}
 
@@ -551,27 +540,33 @@ namespace MonoDevelop.Projects
 			
 			string root = null;
 			string dirNamespc = null;
+			string defaultNmspc = !string.IsNullOrEmpty (DefaultNamespace)
+				? DefaultNamespace
+				: SanitisePotentialNamespace (Name) ?? "Application";
 			
 			string dirname = Path.GetDirectoryName (fileName);
+			string relativeDirname = null;
 			if (!String.IsNullOrEmpty (dirname)) {
+				relativeDirname = GetRelativeChildPath (dirname);
+				if (string.IsNullOrEmpty (relativeDirname) || relativeDirname.StartsWith (".."))
+					relativeDirname = null;		
+			}
+			
+			if (relativeDirname != null) {
 				try {
 					switch (pol.DirectoryNamespaceAssociation) {
 					case DirectoryNamespaceAssociation.PrefixedFlat:
-						root = DefaultNamespace;
+						root = defaultNmspc;
 						goto case DirectoryNamespaceAssociation.Flat;
 					case DirectoryNamespaceAssociation.Flat:
-						DirectoryInfo directory = new DirectoryInfo (dirname);
-						if (directory != null)
-							dirNamespc = SanitisePotentialNamespace (directory.Name);
+						dirNamespc = SanitisePotentialNamespace (relativeDirname);
 						break;
 						
 					case DirectoryNamespaceAssociation.PrefixedHierarchical:
-						root = DefaultNamespace;
+						root = defaultNmspc;
 						goto case DirectoryNamespaceAssociation.Hierarchical;
 					case DirectoryNamespaceAssociation.Hierarchical:
-						directory = new DirectoryInfo (dirname);
-						if (directory != null)
-							dirNamespc = SanitisePotentialNamespace (GetHierarchicalNamespace (directory));
+						dirNamespc = SanitisePotentialNamespace (GetHierarchicalNamespace (relativeDirname));
 						break;
 					}
 				} catch (IOException ex) {
@@ -584,14 +579,12 @@ namespace MonoDevelop.Projects
 				return dirNamespc;
 			if (dirNamespc != null && root != null)
 				return root + "." + dirNamespc;
-			if (!string.IsNullOrEmpty (DefaultNamespace))
-				return DefaultNamespace;
-			return SanitisePotentialNamespace (Name) ?? "Application";
+			return defaultNmspc;
 		}
 		
-		string GetHierarchicalNamespace (DirectoryInfo info)
+		string GetHierarchicalNamespace (string relativePath)
 		{
-			StringBuilder sb = new StringBuilder (GetRelativeChildPath (info.FullName));
+			StringBuilder sb = new StringBuilder (relativePath);
 			for (int i = 0; i < sb.Length; i++) {
 				if (sb[i] == Path.DirectorySeparatorChar)
 					sb[i] = '.';

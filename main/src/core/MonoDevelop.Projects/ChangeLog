@@ -1,5 +1,10 @@
 2009-01-30  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Projects/DotNetProject.cs: Fix default namespaces for
+	project's root directories. Remove unused properties.
+
+2009-01-30  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Projects.Policies/PolicySet.cs:
 	* MonoDevelop.Projects.Policies/PolicyService.cs: Use diff serialisation
 	for user policy sets.
