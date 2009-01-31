@@ -51,20 +51,25 @@ namespace MonoDevelop.Ide.StandardHeader
 			return null;
 		}
 		
-		public static string GetHeader (Project parentProject, string language, string fileName, bool newFile)
+		public static string GetHeader (SolutionItem policyParent, string language, string fileName, bool newFile)
+		{
+			StandardHeaderPolicy policy = policyParent != null
+				? policyParent.Policies.Get<StandardHeaderPolicy> ()
+				: MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<StandardHeaderPolicy> ();
+			AuthorInformation authorInfo = IdeApp.Workspace.GetAuthorInformation (policyParent);
+			
+			return GetHeader (authorInfo, policy, language, fileName, newFile);
+		}
+		
+		public static string GetHeader (AuthorInformation authorInfo, StandardHeaderPolicy policy,
+		                                string language, string fileName, bool newFile)
 		{
 			string comment = GetComment (language);
 			if (comment == null)
 				return "";
-			
-			StandardHeaderPolicy policy = parentProject != null
-				? parentProject.Policies.Get<StandardHeaderPolicy> ()
-				: MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<StandardHeaderPolicy> ();
 				
 			if (string.IsNullOrEmpty (policy.Text) || (newFile && !policy.IncludeInNewFiles))
 				return "";
-			
-			AuthorInformation authorInfo = IdeApp.Workspace.GetAuthorInformation (parentProject);
 			
 			StringBuilder result = new StringBuilder (policy.Text.Length);
 			string[] lines = policy.Text.Split ('\n');
@@ -83,7 +88,6 @@ namespace MonoDevelop.Ide.StandardHeader
 				{ "AuthorName", authorInfo.Name },
 				{ "AuthorEmail", authorInfo.Email },
 				{ "CopyrightHolder", authorInfo.Copyright },
-				{ "ProjectName", parentProject == null? "" : parentProject.Name }
 			});
 		}
 	}

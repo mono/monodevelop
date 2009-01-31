@@ -1,5 +1,24 @@
 2009-01-30  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide.Templates/FileTemplate.cs:
+	* MonoDevelop.Ide.Templates/ProjectTemplate.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs:
+	* MonoDevelop.Ide.Templates/ProjectDescriptor.cs:
+	* MonoDevelop.Ide.Templates/CombineDescriptor.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:
+	* MonoDevelop.Ide.Templates/FileTemplateReference.cs:
+	* MonoDevelop.Ide.Templates/SolutionItemDescriptor.cs:
+	* MonoDevelop.Ide.Templates/ISolutionItemDescriptor.cs:
+	* MonoDevelop.Ide.Templates/FileDescriptionTemplate.cs:
+	* MonoDevelop.Ide.StandardHeader/StandardHeaderService.cs:
+	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:
+	* MonoDevelop.Ide.Templates/ResourceFileDescriptionTemplate.cs:
+	* MonoDevelop.Ide.Templates/CodeTranslationFileDescriptionTemplate.cs:
+	Propagate a policy parent SolutionItem through project/file creation
+	so that policies can always be resolved correctly.
+
+2009-01-30  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Makefile.am:
 	* gtk-gui/gui.stetic:
 	* MonoDevelop.Ide.mdp:

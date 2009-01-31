@@ -433,7 +433,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				}
 				
 				try {
-					if (!item.Create (project, path, titem.Language, nameEntry.Text))
+					if (!item.Create (project, project, path, titem.Language, nameEntry.Text))
 						return;
 				} catch (Exception ex) {
 					MessageService.ShowException (ex);

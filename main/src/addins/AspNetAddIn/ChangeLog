@@ -1,3 +1,9 @@
+2009-01-30  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AspNet/AspNetFileDescriptionTemplate.cs: Propagate a
+	policy parent SolutionItem through project/file creation so that
+	policies can always be resolved correctly.
+
 2009-01-29  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am:

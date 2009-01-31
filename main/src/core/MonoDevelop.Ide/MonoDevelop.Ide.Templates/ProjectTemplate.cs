@@ -261,7 +261,7 @@ namespace MonoDevelop.Ide.Templates
 			return item;
 		}
 		
-		public SolutionEntityItem CreateProject (ProjectCreateInformation projectCreateInformation)
+		public SolutionEntityItem CreateProject (SolutionItem policyParent, ProjectCreateInformation projectCreateInformation)
 		{
 			this.projectCreateInformation = projectCreateInformation;
 			
@@ -273,7 +273,7 @@ namespace MonoDevelop.Ide.Templates
 
 			lastCombine = null;
 			SolutionEntityItem it = entries[0].CreateItem (projectCreateInformation, this.languagename);
-			entries[0].InitializeItem (projectCreateInformation, this.languagename, it);
+			entries[0].InitializeItem (policyParent, projectCreateInformation, this.languagename, it);
 			return it;
 		}
 		

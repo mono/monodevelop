@@ -94,7 +94,7 @@ namespace MonoDevelop.AspNet
 			return content;
 		}
 		
-		public override void ModifyTags (Project project, string language, string identifier, string fileName, ref Hashtable tags)
+		public override void ModifyTags (SolutionItem policyParent, Project project, string language, string identifier, string fileName, ref Hashtable tags)
 		{
 			tags ["Doctype"] = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">";
 			
@@ -120,7 +120,7 @@ namespace MonoDevelop.AspNet
 			}
 			tags ["AspNetLanguage"] = languageCode;
 			
-			base.ModifyTags (project, language, identifier, fileName, ref tags);
+			base.ModifyTags (policyParent, project, language, identifier, fileName, ref tags);
 			
 			//nothing after this point is relevant to tag substitution for filenames,
 			//and some will even crash, so drop out now
@@ -133,9 +133,9 @@ namespace MonoDevelop.AspNet
 					(CodeTranslationFileDescriptionTemplate) codeAreas [regionName];
 				
 				//makes CodeTranslationFile's internal name substitition easier
-				templ.GetFileName (project, language, project == null? null :project.BaseDirectory, (string) tags ["Name"]);
+				templ.GetFileName (policyParent, project, language, project == null? null :project.BaseDirectory, (string) tags ["Name"]);
 				
-				Stream stream = templ.CreateFile (project, language, fileName);
+				Stream stream = templ.CreateFile (policyParent, project, language, fileName);
 				StreamReader reader = new StreamReader (stream);
 				tags ["CodeRegion:"+regionName] = reader.ReadToEnd ();
 				reader.Close ();

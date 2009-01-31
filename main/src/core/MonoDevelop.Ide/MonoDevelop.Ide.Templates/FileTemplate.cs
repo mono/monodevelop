@@ -291,7 +291,7 @@ namespace MonoDevelop.Ide.Templates
 			return null;
 		}
 		
-		public virtual bool Create (Project project, string directory, string language, string name)
+		public virtual bool Create (SolutionItem policyParent, Project project, string directory, string language, string name)
 		{
 			if (WizardPath != null) {
 				//Properties customizer = new Properties();
@@ -304,7 +304,7 @@ namespace MonoDevelop.Ide.Templates
 				return false;
 			} else {
 				foreach (FileDescriptionTemplate newfile in Files)
-					if (!CreateFile (newfile, project, directory, language, name))
+					if (!CreateFile (newfile, policyParent, project, directory, language, name))
 						return false;
 				return true;
 			}
@@ -323,10 +323,10 @@ namespace MonoDevelop.Ide.Templates
 			return valid;
 		}
 		
-		protected virtual bool CreateFile (FileDescriptionTemplate newfile, Project project, string directory, string language, string name)
+		protected virtual bool CreateFile (FileDescriptionTemplate newfile, SolutionItem policyParent, Project project, string directory, string language, string name)
 		{
 			if (project != null) {
-				if (newfile.AddToProject (project, language, directory, name)) {
+				if (newfile.AddToProject (policyParent, project, language, directory, name)) {
 					newfile.Show ();
 					return true;
 				}
@@ -336,14 +336,14 @@ namespace MonoDevelop.Ide.Templates
 					throw new InvalidOperationException ("Single file template expected");
 				
 				if (directory != null) {
-					string fileName = singleFile.SaveFile (project, language, directory, name);
+					string fileName = singleFile.SaveFile (policyParent, project, language, directory, name);
 					if (fileName != null) {
 						IdeApp.Workbench.OpenDocument (fileName);
 						return true;
 					}
 				} else {
-					string fileName = singleFile.GetFileName (project, language, directory, name);
-					Stream stream = singleFile.CreateFile (project, language, fileName);
+					string fileName = singleFile.GetFileName (policyParent, project, language, directory, name);
+					Stream stream = singleFile.CreateFile (policyParent, project, language, fileName);
 				
 					// Guess the mime type of the new file
 					string fn = Path.GetTempFileName ();

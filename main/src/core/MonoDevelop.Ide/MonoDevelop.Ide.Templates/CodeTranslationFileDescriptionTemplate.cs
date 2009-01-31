@@ -131,13 +131,13 @@ namespace MonoDevelop.Ide.Templates
 			return txt.Substring (i+1);
 		}
 		
-		public override void ModifyTags (Project project, string language, string identifier, string fileName, ref Hashtable tags)
+		public override void ModifyTags (SolutionItem policyParent, Project project, string language, string identifier, string fileName, ref Hashtable tags)
 		{
 			//prevent parser breakage from missing tags, which SingleFile only provides for DotNetProject
 			//if ((project as DotNetProject) == null)
 			//	throw new InvalidOperationException ("CodeTranslationFileDescriptionTemplate can only be used with a DotNetProject");
 			
-			base.ModifyTags (project, language, identifier, fileName, ref tags);
+			base.ModifyTags (policyParent, project, language, identifier, fileName, ref tags);
 			
 			//swap out the escaped keyword identifiers for the target language with the source language
 			//CodeDOM should take care of handling it for the target language

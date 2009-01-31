@@ -80,7 +80,7 @@ namespace MonoDevelop.Ide.Templates
 			return item;
 		}
 		
-		public void InitializeItem (ProjectCreateInformation projectCreateInformation, string defaultLanguage, SolutionEntityItem item)
+		public void InitializeItem (SolutionItem policyParent, ProjectCreateInformation projectCreateInformation, string defaultLanguage, SolutionEntityItem item)
 		{
 		}
 		
