@@ -1,5 +1,10 @@
 2009-01-30  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* gtk-gui/gui.stetic: Stetic did something odd to the widget file.
+	Hopefully this restores it.
+
+2009-01-30  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.Templates/FileTemplate.cs:
 	* MonoDevelop.Ide.Templates/ProjectTemplate.cs:
 	* MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs:
