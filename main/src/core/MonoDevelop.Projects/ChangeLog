@@ -1,3 +1,18 @@
+2009/02/01  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Policies/PolicySet.cs: Add policy
+	  change event.
+
+	* MonoDevelop.Projects.Policies/PolicyChangedEventArgs.cs:
+	  EventArgs for policy change events.
+
+	* MonoDevelop.Projects.Policies/PolicyBag.cs: Add policy
+	  change event, and a mechanism for propagating change events
+	  to children.
+
+	* Makefile.am:
+	* MonoDevelop.Projects.mdp: Updated.
+
 2009/01/30  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* md1format.xml: Skip policies node when it's empty. Removed

@@ -71,11 +71,21 @@ namespace MonoDevelop.Projects.Policies
 				return Owner.ParentFolder.Policies.Get<T> ();
 		}
 		
+		T DirectGet<T> () where T : class, IEquatable<T>, new ()
+		{
+			if (policies != null) {
+				object policy;
+				if (policies.TryGetValue (typeof(T), out policy))
+					return (T) policy;
+			}
+			return null;
+		}
+		
 		public bool IsRoot {
 			get { return Owner.ParentFolder == null; }
 		}
 		
-		public void Set<T> (T value)
+		public void Set<T> (T value) where T : class, IEquatable<T>, new ()
 		{
 			if (value == null) {
 				Remove<T> ();
@@ -83,13 +93,23 @@ namespace MonoDevelop.Projects.Policies
 			}
 			if (policies == null)
 				policies = new Dictionary<Type, object> ();
+			
+			T oldVal = DirectGet<T> ();
+			if (oldVal != null && oldVal.Equals (value))
+				return;
+			
 			policies[typeof(T)] = value;
+			OnPolicyChanged (typeof(T), value);
 		}
 		
-		public bool Remove<T> ()
+		public bool Remove<T> () where T : class, IEquatable<T>, new ()
 		{
 			if (policies != null) {
 				bool ret = policies.Remove (typeof (T));
+				if (!ret)
+					return ret;
+				
+				OnPolicyChanged (typeof (T), Get<T> ());
 				if (policies.Count == 0)
 					policies = null;
 				return ret;
@@ -99,7 +119,12 @@ namespace MonoDevelop.Projects.Policies
 		
 		public bool Has<T> ()
 		{
-			return IsRoot || (policies != null && policies.ContainsKey (typeof (T)));
+			return Has (typeof (T));
+		}
+		
+		public bool Has (Type type)
+		{
+			return IsRoot || (policies != null && policies.ContainsKey (type));
 		}
 		
 		DataCollection ICustomDataItem.Serialize (ITypeSerializer handler)
@@ -124,5 +149,24 @@ namespace MonoDevelop.Projects.Policies
 				policies.Add (pol.GetType (), pol);
 			}
 		}
+		
+		internal void PropagatePolicyChangeEvent (PolicyChangedEventArgs args)
+		{
+			if (PolicyChanged != null)
+				PolicyChanged (this, args);
+			SolutionFolder solFol = Owner as SolutionFolder;
+			if (solFol != null)
+				foreach (SolutionItem item in solFol.Items)
+					if (!item.Policies.Has (args.PolicyType))
+						item.Policies.PropagatePolicyChangeEvent (args);
+		}
+		
+		protected void OnPolicyChanged (Type policyType, object policy)
+		{
+			PropagatePolicyChangeEvent (new PolicyChangedEventArgs (policyType, policy));
+		}
+		
+		public event EventHandler<PolicyChangedEventArgs> PolicyChanged;
 	}
+	
 }

@@ -186,6 +186,7 @@ FILES =  \
 	MonoDevelop.Projects.Formats.MSBuild/SlnFileFormat.cs \
 	MonoDevelop.Projects.Policies/DotNetNamingPolicy.cs \
 	MonoDevelop.Projects.Policies/PolicyBag.cs \
+	MonoDevelop.Projects.Policies/PolicyChangedEventArgs.cs \
 	MonoDevelop.Projects.Policies/PolicyService.cs \
 	MonoDevelop.Projects.Policies/PolicySet.cs \
 	MonoDevelop.Projects.Text/IEditableTextFile.cs \

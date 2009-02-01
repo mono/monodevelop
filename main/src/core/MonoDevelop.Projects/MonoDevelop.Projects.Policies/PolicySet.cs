@@ -75,14 +75,27 @@ namespace MonoDevelop.Projects.Policies
 		{
 			if (IsReadOnly)
 				throw new InvalidOperationException ("Cannot modify fixed policy sets");
+			
+			T oldVal = Get<T> ();
+			if (oldVal != null && oldVal.Equals (value))
+				return;
+			
 			policies[typeof (T)] = value;
+			OnPolicyChanged (typeof (T), value);
 		}
 		
 		public void Set (object value)
 		{
 			if (IsReadOnly)
 				throw new InvalidOperationException ("Cannot modify fixed policy sets");
-			policies[value.GetType ()] = value;
+			
+			Type t = value.GetType ();
+			object oldVal = Get (t);
+			if (oldVal != null && oldVal.Equals (value))
+				return;
+			
+			policies[t] = value;
+			OnPolicyChanged (t, value);
 		}
 		
 		public string Name { get; private set; }
@@ -133,5 +146,13 @@ namespace MonoDevelop.Projects.Policies
 		}
 		
 		internal bool IsReadOnly { get; set; }
+		
+		protected void OnPolicyChanged (Type policyType, object policy)
+		{
+			if (PolicyChanged != null)
+				PolicyChanged (this, new PolicyChangedEventArgs (policyType, policy));
+		}
+		
+		public event EventHandler<PolicyChangedEventArgs> PolicyChanged;
 	}
 }
