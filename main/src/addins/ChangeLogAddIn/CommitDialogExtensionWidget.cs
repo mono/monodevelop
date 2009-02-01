@@ -268,6 +268,7 @@ namespace MonoDevelop.ChangeLogAddIn
 			format.TabsAsSpaces = false;
 			format.TabWidth = 8;
 			format.MaxColumns = 70;
+			format.AppendNewlines = 2;
 			foreach (ChangeLogEntry entry in entries.Values) {
 				format.Style = entry.MessageStyle;
 				entry.Message = cset.GeneratePathComment (entry.File, entry.Items, 

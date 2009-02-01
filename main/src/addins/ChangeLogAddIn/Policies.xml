@@ -1,3 +1,3 @@
 <ChangeLogPolicy id="Mono" UpdateMode="Directory" VcsIntegration="Enabled">
-	<MessageStyle Header="${Date:yyyy/MM/dd}  ${AuthorName}  &lt;${AuthorEmail}&gt;&#xA;&#xA;" Indent="&#x9;" FirstFilePrefix="* " FileSeparator=":&#xA;* " LastFilePostfix=": " LineAlign="2" InterMessageLines="1" />
+	<MessageStyle Header="${Date:yyyy-MM-dd}  ${AuthorName}  &lt;${AuthorEmail}&gt;&#xA;&#xA;" Indent="&#x9;" FirstFilePrefix="* " FileSeparator=":&#xA;* " LastFilePostfix=": " LineAlign="2" InterMessageLines="1" />
 </ChangeLogPolicy>

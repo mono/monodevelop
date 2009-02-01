@@ -130,6 +130,9 @@ namespace MonoDevelop.VersionControl
 				}
 			}
 			
+			for (int i = 0; i < MessageFormat.AppendNewlines; i++)
+				builder.AppendLine ();
+			
 			return builder.ToString ();
 		}
 		

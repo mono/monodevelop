@@ -1,3 +1,9 @@
+2009-02-01  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.VersionControl/ChangeLogWriter.cs:
+	* MonoDevelop.VersionControl/CommitMessageFormat.cs: Add
+	  mechanism for appending newlines to the message.
+
 2009-01-30  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* VersionControl.addin.xml: Register policy panel as a default policy

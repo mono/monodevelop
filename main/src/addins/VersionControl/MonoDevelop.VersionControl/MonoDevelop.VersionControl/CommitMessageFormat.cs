@@ -44,5 +44,7 @@ namespace MonoDevelop.VersionControl
 		public int TabWidth { get; set; }
 		
 		public bool TabsAsSpaces { get; set; }
+		
+		public int AppendNewlines { get; set; }
 	}
 }
