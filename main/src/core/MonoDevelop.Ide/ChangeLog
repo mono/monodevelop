@@ -1,3 +1,11 @@
+2009/02/01  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Gui.OptionPanels/GlobalAuthorInformationPanel.cs:
+	  Store default author info correctly.
+
+	* MonoDevelop.Ide.Gui/AuthorInformation.cs: Load copyright
+	  value correctly.
+
 2009-01-30  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am:

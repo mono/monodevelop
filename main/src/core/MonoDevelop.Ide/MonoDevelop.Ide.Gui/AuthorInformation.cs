@@ -61,7 +61,7 @@ namespace MonoDevelop.Ide.Gui
 			get {
 				string name = GetValueOrMigrate<string> ("Author.Name", "ChangeLogAddIn.Name") ?? Environment.UserName;
 				string email = GetValueOrMigrate<string> ("Author.Email", "ChangeLogAddIn.Email");
-				string copyright = PropertyService.Get<string> (name, name);
+				string copyright = PropertyService.Get<string> ("Author.Copyright", name);
 				return new AuthorInformation (name, email, copyright);
 			}
 		}

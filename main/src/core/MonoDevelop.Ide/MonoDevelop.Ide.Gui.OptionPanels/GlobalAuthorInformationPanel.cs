@@ -61,9 +61,9 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		
 		public void Save ()
 		{
-			PropertyService.Set ("Author.Name", AuthorInformation.Default.Name);
-			PropertyService.Set ("Author.Email", AuthorInformation.Default.Email);
-			PropertyService.Set ("Author.Copyright", AuthorInformation.Default.Copyright);
+			PropertyService.Set ("Author.Name", nameEntry.Text);
+			PropertyService.Set ("Author.Email", emailEntry.Text);
+			PropertyService.Set ("Author.Copyright", copyrightEntry.Text);
 		}
 	}
 }
