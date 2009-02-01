@@ -1,3 +1,9 @@
+2009-02-01  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am: Track changes in MD's assembly handling.
+	  Mono.Cairo is no longer considered to be a "system"
+	  assembly.
+
 2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.DesignerSupport.mdp: Flush project format changes.
