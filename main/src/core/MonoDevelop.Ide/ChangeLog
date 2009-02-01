@@ -22,6 +22,12 @@
 	* MonoDevelop.Ide.Gui/AuthorInformation.cs: Load copyright
 	  value correctly.
 
+2009-01-31  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* MonoDevelop.Ide/MonoDevelop.Ide.Debugging:
+	* MonoDevelop.Ide/MonoDevelop.Ide.WindowSwitcher: Removed empty
+	unused folders.
+
 2009-01-30  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am:
