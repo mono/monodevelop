@@ -59,29 +59,33 @@ namespace MonoDevelop.SourceEditor
 		
 	}
 	
-	public class SourceEditorOptions : TextEditorOptions
+	internal class DefaultSourceEditorOptions : TextEditorOptions, ISourceEditorOptions
 	{
-		public new static SourceEditorOptions Options {
-			get {
-				return (SourceEditorOptions)TextEditorOptions.Options;
-			}
+		static DefaultSourceEditorOptions instance;
+		static TextStylePolicy defaultPolicy;
+		static bool inited;
+		
+		public static DefaultSourceEditorOptions Instance {
+			get { return instance; }
 		}
 		
-		static SourceEditorOptions ()
+		static DefaultSourceEditorOptions ()
 		{
 			Init ();
 		}
 		
-		static bool initialized = false;
-		
 		public static void Init ()
 		{
-			if (initialized) 
+			if (inited)
 				return;
-			Mono.TextEditor.TextEditorOptions.Options = new SourceEditorOptions ();
-			initialized = true;
-			Mono.TextEditor.TextEditorOptions.Options.Changed += delegate {
-				if (SourceEditorOptions.Options.EnableSemanticHighlighting) {
+			inited = true;
+			
+			TextStylePolicy policy = MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy> ();
+			instance = new DefaultSourceEditorOptions (policy);
+			MonoDevelop.Projects.Policies.PolicyService.GetUserDefaultPolicySet ().PolicyChanged += instance.HandlePolicyChanged;
+			
+			Mono.TextEditor.TextEditorOptions.DefaultOptions.Changed += delegate {
+				if (Instance.EnableSemanticHighlighting) {
 					SyntaxModeService.GetSyntaxMode ("text/x-csharp").AddSemanticRule (new HighlightPropertiesRule ());
 				} else {
 					SyntaxModeService.GetSyntaxMode ("text/x-csharp").RemoveSemanticRule (typeof (HighlightPropertiesRule));
@@ -89,20 +93,38 @@ namespace MonoDevelop.SourceEditor
 			};
 			
 		}
-		
-		public SourceEditorOptions ()
+
+		void HandlePolicyChanged (object sender, MonoDevelop.Projects.Policies.PolicyChangedEventArgs args)
 		{
-			GetOptions (this, EventArgs.Empty);
-			PropertyService.PropertyChanged += GetOptions;
+			TextStylePolicy pol = args.Policy as TextStylePolicy;
+				if (pol != null)
+					UpdateStylePolicy (pol);
+		}
+		
+		DefaultSourceEditorOptions (MonoDevelop.Ide.Gui.Content.TextStylePolicy currentPolicy)
+		{
+			GetPreferences (this, EventArgs.Empty);
+			UpdateStylePolicy (currentPolicy);
+			PropertyService.PropertyChanged += GetPreferences;
 		}
 		
 		public override void Dispose()
 		{
-			PropertyService.PropertyChanged -= GetOptions;
+			PropertyService.PropertyChanged -= GetPreferences;
 		}
 		
-		void GetOptions (object sender, EventArgs args)
+		void UpdateStylePolicy (MonoDevelop.Ide.Gui.Content.TextStylePolicy currentPolicy)
 		{
+			base.TabsToSpaces          = currentPolicy.TabsToSpaces; // PropertyService.Get ("TabsToSpaces", false);
+			base.IndentationSize       = currentPolicy.TabWidth; //PropertyService.Get ("TabIndent", 4);
+			base.RulerColumn           = currentPolicy.FileWidth; //PropertyService.Get ("RulerColumn", 80);
+			base.AllowTabsAfterNonTabs = !currentPolicy.NoTabsAfterNonTabs; //PropertyService.Get ("AllowTabsAfterNonTabs", true);
+			base.RemoveTrailingWhitespaces = currentPolicy.RemoveTrailingWhitespace; //PropertyService.Get ("RemoveTrailingWhitespaces", true);
+		}
+		
+		void GetPreferences (object sender, EventArgs args)
+		{
+			this.tabIsReindent         = PropertyService.Get ("TabIsReindent", false);
 			this.enableSemanticHighlighting = PropertyService.Get ("EnableSemanticHighlighting", false);
 //			this.autoInsertTemplates        = PropertyService.Get ("AutoInsertTemplates", false);
 			this.autoInsertMatchingBracket  = PropertyService.Get ("AutoInsertMatchingBracket", false);
@@ -111,9 +133,6 @@ namespace MonoDevelop.SourceEditor
 			this.underlineErrors            = PropertyService.Get ("UnderlineErrors", true);
 			this.indentStyle                = PropertyService.Get ("IndentStyle", MonoDevelop.Ide.Gui.Content.IndentStyle.Smart);
 			this.editorFontType             = PropertyService.Get ("EditorFontType", MonoDevelop.SourceEditor.EditorFontType.DefaultMonospace);
-			this.tabIsReindent              = PropertyService.Get ("TabIsReindent", false);
-			base.TabsToSpaces          = PropertyService.Get ("TabsToSpaces", false);
-			base.IndentationSize       = PropertyService.Get ("TabIndent", 4);
 			base.ShowLineNumberMargin  = PropertyService.Get ("ShowLineNumberMargin", true);
 			base.ShowFoldMargin        = PropertyService.Get ("ShowFoldMargin", true);
 			base.ShowInvalidLines      = PropertyService.Get ("ShowInvalidLines", true);
@@ -123,14 +142,11 @@ namespace MonoDevelop.SourceEditor
 			base.ShowSpaces            = PropertyService.Get ("ShowSpaces", false);
 			base.EnableSyntaxHighlighting = PropertyService.Get ("EnableSyntaxHighlighting", true);
 			base.HighlightMatchingBracket = PropertyService.Get ("HighlightMatchingBracket", true);
-			base.RulerColumn              = PropertyService.Get ("RulerColumn", 80);
 			base.ShowRuler                = PropertyService.Get ("ShowRuler", false);
 			base.FontName                 = PropertyService.Get ("FontName", "Mono 10");
 			base.ColorScheme               =  PropertyService.Get ("ColorScheme", "Default");
 			this.defaultRegionsFolding      =  PropertyService.Get ("DefaultRegionsFolding", false);
 			this.defaultCommentFolding      =  PropertyService.Get ("DefaultCommentFolding", true);
-			base.RemoveTrailingWhitespaces = PropertyService.Get ("RemoveTrailingWhitespaces", true);
-			base.AllowTabsAfterNonTabs = PropertyService.Get ("AllowTabsAfterNonTabs", true);
 			this.useViModes = PropertyService.Get ("UseViModes", false);
 			this.enableAutoCodeCompletion = PropertyService.Get ("EnableAutoCodeCompletion", true);
 			
@@ -307,6 +323,20 @@ namespace MonoDevelop.SourceEditor
 		
 		#endregion
 		
+		bool useViModes = false;
+		public bool UseViModes {
+			get {
+				return useViModes;
+			}
+			set {
+				if (useViModes == value)
+					return;
+				useViModes = value;
+				PropertyService.Set ("UseViModes", value);
+				OnChanged (EventArgs.Empty);
+			}
+		}
+		
 		#region old options
 		ControlLeftRightMode controlLeftRightMode = ControlLeftRightMode.MonoDevelop;
 		public ControlLeftRightMode ControlLeftRightMode {
@@ -319,20 +349,6 @@ namespace MonoDevelop.SourceEditor
 					PropertyService.Set ("ControlLeftRightMode", value.ToString ());
 					SetWordFindStrategy ();
 				}
-			}
-		}
-		
-		bool useViModes = false;
-		public bool UseViModes {
-			get {
-				return useViModes;
-			}
-			set {
-				if (useViModes == value)
-					return;
-				useViModes = value;
-				PropertyService.Set ("UseViModes", value);
-				OnChanged (EventArgs.Empty);
 			}
 		}
 		

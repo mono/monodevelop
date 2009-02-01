@@ -27,6 +27,7 @@ FILES =  \
 	MonoDevelop.SourceEditor/GotoLineNumberWidget.cs \
 	MonoDevelop.SourceEditor/HighlightPropertiesSemanticRule.cs \
 	MonoDevelop.SourceEditor/IdeViMode.cs \
+	MonoDevelop.SourceEditor/ISourceEditorOptions.cs \
 	MonoDevelop.SourceEditor/LanguageItemTooltipProvider.cs \
 	MonoDevelop.SourceEditor/LanguageItemWindow.cs \
 	MonoDevelop.SourceEditor/MarkerOperationsHandler.cs \
@@ -35,7 +36,8 @@ FILES =  \
 	MonoDevelop.SourceEditor/SourceEditorDisplayBinding.cs \
 	MonoDevelop.SourceEditor/SourceEditorOptions.cs \
 	MonoDevelop.SourceEditor/SourceEditorView.cs \
-	MonoDevelop.SourceEditor/SourceEditorWidget.cs 
+	MonoDevelop.SourceEditor/SourceEditorWidget.cs \
+	MonoDevelop.SourceEditor/StyledSourceEditorOptions.cs 
 
 RES =  \
 	gtk-gui/gui.stetic \

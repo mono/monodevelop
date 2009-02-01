@@ -1,5 +1,53 @@
 2009-02-01  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.SourceEditor.OptionPanels/MarkerPanel.cs:
+	* MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:
+	* MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs:
+	*
+	  MonoDevelop.SourceEditor.OptionPanels/GeneralOptionsPanel.cs:
+	  Remove proeprties that have been moved to text style
+	  policies. Track SourceEditorOptions API changes.
+
+	* gtk-gui/gui.stetic:
+	* gtk-gui/MonoDevelop.SourceEditor.OptionPanels.MarkerPanel.cs:
+	* gtk-gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:
+	*
+	  gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs:
+	  Remove proeprties that have been moved to text style
+	  policies.
+
+	* Makefile.am:
+	* MonoDevelop.SourceEditor.mdp: Updated.
+
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Track
+	  SourceEditorOptions API changes. Make the split editor use
+	  same StyledSourceEditorOptions object as its companion.
+
+	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: Track
+	  SourceEditorOptions API changes. Use
+	  StyledSourceEditorOptions options object.
+
+	* MonoDevelop.SourceEditor/SourceEditorOptions.cs: Use
+	  settings from default TextStylePolicy.
+
+	* MonoDevelop.SourceEditor/EditActions.cs:
+	* MonoDevelop.SourceEditor/SourceEditorDisplayBinding.cs:
+	  Track SourceEditorOptions API changes.
+
+	* MonoDevelop.SourceEditor/ISourceEditorOptions.cs: Extract
+	  ISourceEditorOptions interface from ISourceEditorOptions.
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Track
+	  SourceEditorOptions API changes. Propagate project change
+	  events to the child editor's StyledSourceEditorOptions.
+
+	* MonoDevelop.SourceEditor/StyledSourceEditorOptions.cs:
+	  Implement an ISourceEditorOptions for ExtensibleTextEditor
+	  to use, which merges the default SourceEditorOptions and an
+	  attached Project's TextStylePolicy.
+
+2009-02-01  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Makefile.am: Track changes in MD's assembly handling.
 	  Mono.Cairo is no longer considered to be a "system"
 	  assembly.

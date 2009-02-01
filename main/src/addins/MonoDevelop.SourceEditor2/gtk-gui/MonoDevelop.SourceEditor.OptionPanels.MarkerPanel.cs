@@ -29,11 +29,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels {
         
         private Gtk.CheckButton highlightCurrentLineCheckbutton;
         
-        private Gtk.HBox hbox1;
-        
         private Gtk.CheckButton showRulerCheckbutton;
-        
-        private Gtk.SpinButton rulerColSpinbutton;
         
         private Gtk.Label GtkLabel10;
         
@@ -126,45 +122,23 @@ namespace MonoDevelop.SourceEditor.OptionPanels {
             w5.Expand = false;
             w5.Fill = false;
             // Container child vbox3.Gtk.Box+BoxChild
-            this.hbox1 = new Gtk.HBox();
-            this.hbox1.Name = "hbox1";
-            this.hbox1.Spacing = 6;
-            // Container child hbox1.Gtk.Box+BoxChild
             this.showRulerCheckbutton = new Gtk.CheckButton();
             this.showRulerCheckbutton.CanFocus = true;
             this.showRulerCheckbutton.Name = "showRulerCheckbutton";
-            this.showRulerCheckbutton.Label = Mono.Unix.Catalog.GetString("Show _column ruler, at column:");
+            this.showRulerCheckbutton.Label = Mono.Unix.Catalog.GetString("Show _column ruler");
             this.showRulerCheckbutton.DrawIndicator = true;
             this.showRulerCheckbutton.UseUnderline = true;
-            this.hbox1.Add(this.showRulerCheckbutton);
-            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.hbox1[this.showRulerCheckbutton]));
-            w6.Position = 0;
+            this.vbox3.Add(this.showRulerCheckbutton);
+            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.vbox3[this.showRulerCheckbutton]));
+            w6.Position = 4;
             w6.Expand = false;
             w6.Fill = false;
-            // Container child hbox1.Gtk.Box+BoxChild
-            this.rulerColSpinbutton = new Gtk.SpinButton(0, 1024, 1);
-            this.rulerColSpinbutton.CanFocus = true;
-            this.rulerColSpinbutton.Name = "rulerColSpinbutton";
-            this.rulerColSpinbutton.Adjustment.PageIncrement = 10;
-            this.rulerColSpinbutton.ClimbRate = 1;
-            this.rulerColSpinbutton.Numeric = true;
-            this.rulerColSpinbutton.Value = 80;
-            this.hbox1.Add(this.rulerColSpinbutton);
-            Gtk.Box.BoxChild w7 = ((Gtk.Box.BoxChild)(this.hbox1[this.rulerColSpinbutton]));
-            w7.Position = 1;
-            w7.Expand = false;
-            w7.Fill = false;
-            this.vbox3.Add(this.hbox1);
-            Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.vbox3[this.hbox1]));
-            w8.Position = 4;
-            w8.Expand = false;
-            w8.Fill = false;
             this.alignment1.Add(this.vbox3);
             this.vbox1.Add(this.alignment1);
-            Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(this.vbox1[this.alignment1]));
-            w10.Position = 1;
-            w10.Expand = false;
-            w10.Fill = false;
+            Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.vbox1[this.alignment1]));
+            w8.Position = 1;
+            w8.Expand = false;
+            w8.Fill = false;
             // Container child vbox1.Gtk.Box+BoxChild
             this.GtkLabel10 = new Gtk.Label();
             this.GtkLabel10.Name = "GtkLabel10";
@@ -172,10 +146,10 @@ namespace MonoDevelop.SourceEditor.OptionPanels {
             this.GtkLabel10.LabelProp = Mono.Unix.Catalog.GetString("<b>Whitespace Markers</b>");
             this.GtkLabel10.UseMarkup = true;
             this.vbox1.Add(this.GtkLabel10);
-            Gtk.Box.BoxChild w11 = ((Gtk.Box.BoxChild)(this.vbox1[this.GtkLabel10]));
-            w11.Position = 2;
-            w11.Expand = false;
-            w11.Fill = false;
+            Gtk.Box.BoxChild w9 = ((Gtk.Box.BoxChild)(this.vbox1[this.GtkLabel10]));
+            w9.Position = 2;
+            w9.Expand = false;
+            w9.Fill = false;
             // Container child vbox1.Gtk.Box+BoxChild
             this.GtkAlignment = new Gtk.Alignment(0F, 0F, 1F, 1F);
             this.GtkAlignment.Name = "GtkAlignment";
@@ -192,10 +166,10 @@ namespace MonoDevelop.SourceEditor.OptionPanels {
             this.showInvLinesCheckbutton.DrawIndicator = true;
             this.showInvLinesCheckbutton.UseUnderline = true;
             this.vbox2.Add(this.showInvLinesCheckbutton);
-            Gtk.Box.BoxChild w12 = ((Gtk.Box.BoxChild)(this.vbox2[this.showInvLinesCheckbutton]));
-            w12.Position = 0;
-            w12.Expand = false;
-            w12.Fill = false;
+            Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(this.vbox2[this.showInvLinesCheckbutton]));
+            w10.Position = 0;
+            w10.Expand = false;
+            w10.Fill = false;
             // Container child vbox2.Gtk.Box+BoxChild
             this.showSpacesCheckbutton = new Gtk.CheckButton();
             this.showSpacesCheckbutton.CanFocus = true;
@@ -204,10 +178,10 @@ namespace MonoDevelop.SourceEditor.OptionPanels {
             this.showSpacesCheckbutton.DrawIndicator = true;
             this.showSpacesCheckbutton.UseUnderline = true;
             this.vbox2.Add(this.showSpacesCheckbutton);
-            Gtk.Box.BoxChild w13 = ((Gtk.Box.BoxChild)(this.vbox2[this.showSpacesCheckbutton]));
-            w13.Position = 1;
-            w13.Expand = false;
-            w13.Fill = false;
+            Gtk.Box.BoxChild w11 = ((Gtk.Box.BoxChild)(this.vbox2[this.showSpacesCheckbutton]));
+            w11.Position = 1;
+            w11.Expand = false;
+            w11.Fill = false;
             // Container child vbox2.Gtk.Box+BoxChild
             this.showTabsCheckbutton = new Gtk.CheckButton();
             this.showTabsCheckbutton.CanFocus = true;
@@ -216,10 +190,10 @@ namespace MonoDevelop.SourceEditor.OptionPanels {
             this.showTabsCheckbutton.DrawIndicator = true;
             this.showTabsCheckbutton.UseUnderline = true;
             this.vbox2.Add(this.showTabsCheckbutton);
-            Gtk.Box.BoxChild w14 = ((Gtk.Box.BoxChild)(this.vbox2[this.showTabsCheckbutton]));
-            w14.Position = 2;
-            w14.Expand = false;
-            w14.Fill = false;
+            Gtk.Box.BoxChild w12 = ((Gtk.Box.BoxChild)(this.vbox2[this.showTabsCheckbutton]));
+            w12.Position = 2;
+            w12.Expand = false;
+            w12.Fill = false;
             // Container child vbox2.Gtk.Box+BoxChild
             this.showEolCheckbutton = new Gtk.CheckButton();
             this.showEolCheckbutton.CanFocus = true;
@@ -228,16 +202,16 @@ namespace MonoDevelop.SourceEditor.OptionPanels {
             this.showEolCheckbutton.DrawIndicator = true;
             this.showEolCheckbutton.UseUnderline = true;
             this.vbox2.Add(this.showEolCheckbutton);
-            Gtk.Box.BoxChild w15 = ((Gtk.Box.BoxChild)(this.vbox2[this.showEolCheckbutton]));
+            Gtk.Box.BoxChild w13 = ((Gtk.Box.BoxChild)(this.vbox2[this.showEolCheckbutton]));
+            w13.Position = 3;
+            w13.Expand = false;
+            w13.Fill = false;
+            this.GtkAlignment.Add(this.vbox2);
+            this.vbox1.Add(this.GtkAlignment);
+            Gtk.Box.BoxChild w15 = ((Gtk.Box.BoxChild)(this.vbox1[this.GtkAlignment]));
             w15.Position = 3;
             w15.Expand = false;
             w15.Fill = false;
-            this.GtkAlignment.Add(this.vbox2);
-            this.vbox1.Add(this.GtkAlignment);
-            Gtk.Box.BoxChild w17 = ((Gtk.Box.BoxChild)(this.vbox1[this.GtkAlignment]));
-            w17.Position = 3;
-            w17.Expand = false;
-            w17.Fill = false;
             this.Add(this.vbox1);
             if ((this.Child != null)) {
                 this.Child.ShowAll();

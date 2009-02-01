@@ -57,6 +57,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.LoadSavePanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TasksPanelWidget.cs \
+	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TextStylePolicyPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.OverridesImplementsDialog.cs \
 	gtk-gui/MonoDevelop.Ide.SelectEncodingsDialog.cs \
 	gtk-gui/MonoDevelop.Ide.StandardHeader.StandardHeaderPolicyPanelWidget.cs \
@@ -144,6 +145,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Content/IZoomable.cs \
 	MonoDevelop.Ide.Gui.Content/TextEditorExtension.cs \
 	MonoDevelop.Ide.Gui.Content/TextEditorProperties.cs \
+	MonoDevelop.Ide.Gui.Content/TextStylePolicy.cs \
 	MonoDevelop.Ide.Gui.Dialogs/AddinLoadErrorDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/AssemblyReferencePanel.cs \
 	MonoDevelop.Ide.Gui.Dialogs/BreakpointPropertiesDialog.cs \
@@ -178,6 +180,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/LoadSavePanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/TasksOptionsPanel.cs \
+	MonoDevelop.Ide.Gui.OptionPanels/TextStylePolicyPanel.cs \
 	MonoDevelop.Ide.Gui.Pads.ClassPad/ClassBrowserPad.cs \
 	MonoDevelop.Ide.Gui.Pads.ClassPad/ClassBrowserPadWidget.cs \
 	MonoDevelop.Ide.Gui.Pads.ClassPad/ClassData.cs \

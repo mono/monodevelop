@@ -196,7 +196,7 @@ namespace MonoDevelop.SourceEditor
 			
 			UpdateLineCol ();
 			ProjectDomService.ParsedDocumentUpdated += OnParseInformationChanged;
-//			this.IsClassBrowserVisible = SourceEditorOptions.Options.EnableQuickFinder;
+//			this.IsClassBrowserVisible = this.widget.TextEditor.Options.EnableQuickFinder;
 
 		}
 
@@ -266,7 +266,7 @@ namespace MonoDevelop.SourceEditor
 			protected override void InnerRun ()
 			{
 				try {
-					if (SourceEditorOptions.Options.ShowFoldMargin && widget.parsedDocument != null) {
+					if (this.widget.TextEditor.Options.ShowFoldMargin && widget.parsedDocument != null) {
 						List<FoldSegment> foldSegments = new List<FoldSegment> ();
 						
 						foreach (FoldingRegion region in widget.parsedDocument.GenerateFolds ()) {
@@ -284,15 +284,15 @@ namespace MonoDevelop.SourceEditor
 								break;
 							case FoldType.UserRegion:
 								type = FoldingType.Region;
-								setFolded = SourceEditorOptions.Options.DefaultRegionsFolding;
+								setFolded = this.widget.TextEditor.Options.DefaultRegionsFolding;
 								folded = true;
 								break;
 							case FoldType.Comment:
-								setFolded = SourceEditorOptions.Options.DefaultCommentFolding;
+								setFolded = this.widget.TextEditor.Options.DefaultCommentFolding;
 								folded = true;
 								break;
 							case FoldType.CommentInsideMember:
-								setFolded = SourceEditorOptions.Options.DefaultCommentFolding;
+								setFolded = this.widget.TextEditor.Options.DefaultCommentFolding;
 								folded = false;
 								break;
 							case FoldType.Undefined:
@@ -363,7 +363,7 @@ namespace MonoDevelop.SourceEditor
 		
 		void UpdateAutocorTimer ()
 		{
-			if (!SourceEditorOptions.Options.UnderlineErrors)
+			if (!this.TextEditor.Options.UnderlineErrors)
 				return;
 			uint timeout = 900;
 			if (resetTimerStarted) {
@@ -526,7 +526,7 @@ namespace MonoDevelop.SourceEditor
 			secondsw = new ScrolledWindow ();
 			secondsw.ShadowType = ShadowType.In;
 			secondsw.ButtonPressEvent += PrepareEvent;
-			this.splittedTextEditor = new MonoDevelop.SourceEditor.ExtensibleTextEditor (view, textEditor.Document);
+			this.splittedTextEditor = new MonoDevelop.SourceEditor.ExtensibleTextEditor (view, this.textEditor.Options, textEditor.Document);
 			this.splittedTextEditor.Extension = textEditor.Extension;
 			this.splittedTextEditor.Caret.ModeChanged += delegate {
 				this.UpdateLineCol ();

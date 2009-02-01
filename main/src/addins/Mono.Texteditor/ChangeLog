@@ -1,5 +1,23 @@
 2009-02-01  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Makefile.am:
+	* Mono.TextEditor.mdp: Updated.
+
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/TextEditorData.cs:
+	* Mono.TextEditor.Highlighting/SyntaxMode.cs: Use the
+	  read-only ITextEditorOptions interface to avoid accidental
+	  modification.
+
+	* Mono.TextEditor/TextEditorOptions.cs: Implement
+	  ITextEditorOptions. Rename the "Options" instance to
+	  "DefaultOptions" and make it read-only.
+
+	* Mono.TextEditor/ITextEditorOptions.cs: Read-only interface
+	  ITextEditorOptions extracted from TextEditorOptions.
+
+2009-02-01  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Makefile.am: Track changes in MD's assembly handling.
 	  Mono.Cairo is no longer considered to be a "system"
 	  assembly.

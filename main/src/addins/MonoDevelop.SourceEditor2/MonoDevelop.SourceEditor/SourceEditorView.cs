@@ -108,6 +108,17 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
+		public override Project Project {
+			get {
+				return base.Project;
+			}
+			set {
+				if (value != base.Project)
+					((StyledSourceEditorOptions)SourceEditorWidget.TextEditor.Options).UpdateStyleParent (value);
+				base.Project = value;
+			}
+		}
+			
 		public override string TabPageLabel {
 			get { return GettextCatalog.GetString ("Source"); }
 		}
@@ -1222,7 +1233,7 @@ namespace MonoDevelop.SourceEditor
 			linesPerPage -= 2;
 			totalPages = Document.LineCount / linesPerPage;
 			xPos = marginLeft;
-			string fontName = SourceEditorOptions.Options.FontName;
+			string fontName = this.TextEditor.Options.FontName;
 			Gnome.Font font =  Gnome.Font.FindClosestFromFullName (fontName);
 			if (font == null) {
 				LoggingService.LogError ("Can't find font: '" + fontName + "', trying default." );
@@ -1250,7 +1261,7 @@ namespace MonoDevelop.SourceEditor
 				Chunk[] chunks = Document.SyntaxMode.GetChunks (Document, TextEditor.ColorStyle, line, line.Offset, line.Length);
 				foreach (Chunk chunk in chunks) {
 					string text = Document.GetTextAt (chunk);
-					text = text.Replace ("\t", new string (' ', TextEditorOptions.Options.TabSize));
+					text = text.Replace ("\t", new string (' ', this.TextEditor.Options.TabSize));
 					gpc.SetRgbColor (chunk.Style.Color.Red / (double)ushort.MaxValue, 
 					                 chunk.Style.Color.Green / (double)ushort.MaxValue, 
 					                 chunk.Style.Color.Blue / (double)ushort.MaxValue);
@@ -1448,35 +1459,35 @@ namespace MonoDevelop.SourceEditor
 		#region IZoomable
 		bool IZoomable.EnableZoomIn {
 			get {
-				return SourceEditorOptions.Options.CanZoomIn;
+				return this.TextEditor.Options.CanZoomIn;
 			}
 		}
 		
 		bool IZoomable.EnableZoomOut {
 			get {
-				return SourceEditorOptions.Options.CanZoomOut;
+				return this.TextEditor.Options.CanZoomOut;
 			}
 		}
 		
 		bool IZoomable.EnableZoomReset {
 			get {
-				return SourceEditorOptions.Options.CanResetZoom;
+				return this.TextEditor.Options.CanResetZoom;
 			}
 		}
 		
 		void IZoomable.ZoomIn ()
 		{
-			SourceEditorOptions.Options.ZoomIn ();
+			this.TextEditor.Options.ZoomIn ();
 		}
 		
 		void IZoomable.ZoomOut ()
 		{
-			SourceEditorOptions.Options.ZoomOut ();
+			this.TextEditor.Options.ZoomOut ();
 		}
 		
 		void IZoomable.ZoomReset ()
 		{
-			SourceEditorOptions.Options.ZoomReset ();
+			this.TextEditor.Options.ZoomReset ();
 		}
 
 		#region ITextEditorResolver implementation 

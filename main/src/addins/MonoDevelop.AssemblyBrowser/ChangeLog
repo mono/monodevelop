@@ -1,3 +1,8 @@
+2009-02-01  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs: Track
+	  TextEditorOptions API changes.
+
 2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* gtk-gui/gui.stetic:

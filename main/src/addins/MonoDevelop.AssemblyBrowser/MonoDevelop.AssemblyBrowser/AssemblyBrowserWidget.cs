@@ -80,9 +80,9 @@ namespace MonoDevelop.AssemblyBrowser
 				new DomPropertyNodeBuilder (),
 				new BaseTypeFolderNodeBuilder (),
 				new DomReturnTypeNodeBuilder (),
-				new ReferenceNodeBuilder (this)
+				new ReferenceNodeBuilder (this),
 				}, new TreePadOption [] {
-					new TreePadOption ("PublicApiOnly", GettextCatalog.GetString ("Show public members only"), PropertyService.Get ("AssemblyBrowser.ShowPublicOnly", true))
+					new TreePadOption ("PublicApiOnly", GettextCatalog.GetString ("Show public members only"), PropertyService.Get ("AssemblyBrowser.ShowPublicOnly", true)),
 				});
 			
 			scrolledwindow2.AddWithViewport (treeView);
@@ -92,16 +92,19 @@ namespace MonoDevelop.AssemblyBrowser
 			this.documentationLabel.ModifyFont (Pango.FontDescription.FromString ("Sans 12"));
 			this.documentationLabel.ModifyBg (Gtk.StateType.Normal, new Gdk.Color (255, 255, 225));
 			this.documentationLabel.Wrap = true;
-			this.inspectEditor.Options = new Mono.TextEditor.TextEditorOptions ();
-			this.inspectEditor.Options.FontName = "Monospace 10";
-			this.inspectEditor.Options.ShowFoldMargin = false;
-			this.inspectEditor.Options.ShowIconMargin = false;
-			this.inspectEditor.Options.ShowInvalidLines = false;
-			this.inspectEditor.Options.ShowLineNumberMargin = false;
-			this.inspectEditor.Options.ShowSpaces = false;
-			this.inspectEditor.Options.ShowTabs = false;
-			this.inspectEditor.Options.HighlightCaretLine = true;
-			this.inspectEditor.Options.ColorScheme = PropertyService.Get ("ColorScheme", "Default");
+			
+			Mono.TextEditor.TextEditorOptions options = new Mono.TextEditor.TextEditorOptions ();
+			options.FontName = "Monospace 10";
+			options.ShowFoldMargin = false;
+			options.ShowIconMargin = false;
+			options.ShowInvalidLines = false;
+			options.ShowLineNumberMargin = false;
+			options.ShowSpaces = false;
+			options.ShowTabs = false;
+			options.HighlightCaretLine = true;
+			options.ColorScheme = PropertyService.Get ("ColorScheme", "Default");
+			this.inspectEditor.Options = options;
+			
 			PropertyService.PropertyChanged += HandlePropertyChanged;
 			this.inspectEditor.Document.ReadOnly = true;
 			this.inspectEditor.Document.SyntaxMode = new Mono.TextEditor.Highlighting.MarkupSyntaxMode ();
@@ -198,7 +201,7 @@ namespace MonoDevelop.AssemblyBrowser
 		void HandlePropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.Key == "ColorScheme")
-				this.inspectEditor.Options.ColorScheme = PropertyService.Get ("ColorScheme", "Default");
+				((Mono.TextEditor.TextEditorOptions)this.inspectEditor.Options).ColorScheme = PropertyService.Get ("ColorScheme", "Default");
 		}
 		
 		ITreeNavigator SearchMember (IMember member)

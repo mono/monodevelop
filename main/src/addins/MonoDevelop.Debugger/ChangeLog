@@ -1,5 +1,10 @@
 2009-02-01  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Debugger/DisassemblyView.cs: Track
+	  TextEditorOptions API changes.
+
+2009-02-01  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Makefile.am: Track changes in MD's assembly handling.
 	  Mono.Cairo is no longer considered to be a "system"
 	  assembly.

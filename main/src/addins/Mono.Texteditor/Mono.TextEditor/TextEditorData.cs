@@ -31,7 +31,7 @@ namespace Mono.TextEditor
 {
 	public class TextEditorData : IDisposable
 	{
-		TextEditorOptions options;
+		ITextEditorOptions options;
 		Document   document; 
 		Caret      caret;
 		
@@ -57,11 +57,11 @@ namespace Mono.TextEditor
 		
 		public TextEditorData () : this (new Document ())
 		{
-			options = new TextEditorOptions ();
 		}
 		
 		public TextEditorData (Document doc)
 		{
+			options = TextEditorOptions.DefaultOptions;
 			Document = doc;
 			this.SearchEngine = new BasicSearchEngine ();
 			SelectionChanging += HandleSelectionChanging;
@@ -80,7 +80,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public TextEditorOptions Options {
+		public ITextEditorOptions Options {
 			get {
 				return options;
 			}

@@ -57,6 +57,7 @@ FILES =  \
 	Mono.TextEditor/IconMargin.cs \
 	Mono.TextEditor/ISearchEngine.cs \
 	Mono.TextEditor/ISegment.cs \
+	Mono.TextEditor/ITextEditorOptions.cs \
 	Mono.TextEditor/ITooltipProvider.cs \
 	Mono.TextEditor/IWordFindStrategy.cs \
 	Mono.TextEditor/LineEventArgs.cs \

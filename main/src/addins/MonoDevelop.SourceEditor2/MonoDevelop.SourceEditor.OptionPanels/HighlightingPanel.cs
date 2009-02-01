@@ -56,8 +56,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		{
 			this.addButton.Clicked    += AddColorScheme;
 			this.removeButton.Clicked += RemoveColorScheme;
-			this.enableHighlightingCheckbutton.Active = SourceEditorOptions.Options.EnableSyntaxHighlighting;
-			this.enableSemanticHighlightingCheckbutton.Active = SourceEditorOptions.Options.EnableSemanticHighlighting;
+			this.enableHighlightingCheckbutton.Active = DefaultSourceEditorOptions.Instance.EnableSyntaxHighlighting;
+			this.enableSemanticHighlightingCheckbutton.Active = DefaultSourceEditorOptions.Instance.EnableSemanticHighlighting;
 			this.enableHighlightingCheckbutton.Toggled += EnableHighlightingCheckbuttonToggled;
 			EnableHighlightingCheckbuttonToggled (this, EventArgs.Empty);
 			ShowStyles ();
@@ -71,7 +71,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			foreach (string styleName in SyntaxModeService.Styles) {
 				Mono.TextEditor.Highlighting.Style style = SyntaxModeService.GetColorStyle (null, styleName);
 				TreeIter iter = styleStore.AppendValues (GetMarkup (GettextCatalog.GetString (style.Name), GettextCatalog.GetString (style.Description)), style.Name);
-				if (style.Name == SourceEditorOptions.Options.ColorScheme)
+				if (style.Name == DefaultSourceEditorOptions.Instance.ColorScheme)
 					selectedIter = iter;
 			}
 			styleTreeview.Selection.SelectIter (selectedIter); 
@@ -126,11 +126,11 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		
 		public virtual void ApplyChanges ()
 		{
-			SourceEditorOptions.Options.EnableSyntaxHighlighting = this.enableHighlightingCheckbutton.Active;
-			SourceEditorOptions.Options.EnableSemanticHighlighting = this.enableSemanticHighlightingCheckbutton.Active;
+			DefaultSourceEditorOptions.Instance.EnableSyntaxHighlighting = this.enableHighlightingCheckbutton.Active;
+			DefaultSourceEditorOptions.Instance.EnableSemanticHighlighting = this.enableSemanticHighlightingCheckbutton.Active;
 			TreeIter selectedIter;
 			if (styleTreeview.Selection.GetSelected (out selectedIter)) {
-				SourceEditorOptions.Options.ColorScheme = (string)this.styleStore.GetValue (selectedIter, 1);
+				DefaultSourceEditorOptions.Instance.ColorScheme = (string)this.styleStore.GetValue (selectedIter, 1);
 			}
 		}
 

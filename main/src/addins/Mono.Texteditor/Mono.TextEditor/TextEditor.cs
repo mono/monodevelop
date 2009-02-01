@@ -106,7 +106,7 @@ namespace Mono.TextEditor
 			return imContextMenuItem;
 		}
 		
-		public TextEditorOptions Options {
+		public ITextEditorOptions Options {
 			get {
 				return textEditorData.Options;
 			}
@@ -221,11 +221,16 @@ namespace Mono.TextEditor
 		}
 		
 		public TextEditor (Document doc)
-			: this (doc, new SimpleEditMode ())
+			: this (doc, null)
 		{
 		}
 		
-		public TextEditor (Document doc, EditMode initialMode)
+		public TextEditor (Document doc, ITextEditorOptions options)
+			: this (doc, options, new SimpleEditMode ())
+		{
+		}
+		
+		public TextEditor (Document doc, ITextEditorOptions options, EditMode initialMode)
 		{
 			textEditorData = new TextEditorData (doc);
 			doc.TextReplaced += OnDocumentStateChanged;
@@ -259,7 +264,7 @@ namespace Mono.TextEditor
 			this.textEditorData.SelectionChanged += TextEditorDataSelectionChanged; 
 			Document.DocumentUpdated += DocumentUpdatedHandler;
 			
-			this.textEditorData.Options = TextEditorOptions.Options;
+			this.textEditorData.Options = options ?? TextEditorOptions.DefaultOptions;
 			this.textEditorData.Options.Changed += OptionsChanged;
 			
 			

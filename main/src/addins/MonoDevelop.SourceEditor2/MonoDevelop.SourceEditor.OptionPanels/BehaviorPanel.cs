@@ -46,31 +46,23 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		
 		public virtual Gtk.Widget CreatePanelWidget ()
 		{
-//			this.autoInsertTemplateCheckbutton.Active  = SourceEditorOptions.Options.AutoInsertTemplates;
-			this.convertTabsToSpacesCheckbutton.Active = SourceEditorOptions.Options.TabsToSpaces;
-			this.autoInsertBraceCheckbutton.Active = SourceEditorOptions.Options.AutoInsertMatchingBracket;
-			this.tabAsReindentCheckbutton.Active = SourceEditorOptions.Options.TabIsReindent;
-			this.indentationCombobox.Active = (int)SourceEditorOptions.Options.IndentStyle;
-			this.indentAndTabSizeSpinbutton.Value = SourceEditorOptions.Options.TabSize;
-			this.removeTrailingWhitespacesCheckbutton.Active  = SourceEditorOptions.Options.RemoveTrailingWhitespaces;
-			this.tabsAfterNonTabsCheckbutton.Active  = SourceEditorOptions.Options.AllowTabsAfterNonTabs;
-			this.controlLeftRightCombobox.Active  = (int)SourceEditorOptions.Options.ControlLeftRightMode;
-			this.useViModesCheck.Active = SourceEditorOptions.Options.UseViModes;
+//			this.autoInsertTemplateCheckbutton.Active  = DefaultSourceEditorOptions.Options.AutoInsertTemplates;
+			this.autoInsertBraceCheckbutton.Active = DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket;
+			this.tabAsReindentCheckbutton.Active = DefaultSourceEditorOptions.Instance.TabIsReindent;
+			this.indentationCombobox.Active = (int)DefaultSourceEditorOptions.Instance.IndentStyle;
+			this.controlLeftRightCombobox.Active  = (int)DefaultSourceEditorOptions.Instance.ControlLeftRightMode;
+			this.useViModesCheck.Active = DefaultSourceEditorOptions.Instance.UseViModes;
 			return this;
 		}
 		
 		public virtual void ApplyChanges ()
 		{
-			//SourceEditorOptions.Options.AutoInsertTemplates = this.autoInsertTemplateCheckbutton.Active;
-			SourceEditorOptions.Options.TabsToSpaces = this.convertTabsToSpacesCheckbutton.Active;
-			SourceEditorOptions.Options.AutoInsertMatchingBracket = this.autoInsertBraceCheckbutton.Active;
-			SourceEditorOptions.Options.IndentStyle = (MonoDevelop.Ide.Gui.Content.IndentStyle)this.indentationCombobox.Active;
-			SourceEditorOptions.Options.TabSize = (int)this.indentAndTabSizeSpinbutton.Value;
-			SourceEditorOptions.Options.TabIsReindent = this.tabAsReindentCheckbutton.Active;
-			SourceEditorOptions.Options.RemoveTrailingWhitespaces = this.removeTrailingWhitespacesCheckbutton.Active;
-			SourceEditorOptions.Options.AllowTabsAfterNonTabs = this.tabsAfterNonTabsCheckbutton.Active;
-			SourceEditorOptions.Options.ControlLeftRightMode = (ControlLeftRightMode)this.controlLeftRightCombobox.Active;
-			SourceEditorOptions.Options.UseViModes = this.useViModesCheck.Active;
+			//DefaultSourceEditorOptions.Options.AutoInsertTemplates = this.autoInsertTemplateCheckbutton.Active;
+			DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket = this.autoInsertBraceCheckbutton.Active;
+			DefaultSourceEditorOptions.Instance.IndentStyle = (MonoDevelop.Ide.Gui.Content.IndentStyle)this.indentationCombobox.Active;
+			DefaultSourceEditorOptions.Instance.TabIsReindent = this.tabAsReindentCheckbutton.Active;
+			DefaultSourceEditorOptions.Instance.ControlLeftRightMode = (ControlLeftRightMode)this.controlLeftRightCombobox.Active;
+			DefaultSourceEditorOptions.Instance.UseViModes = this.useViModesCheck.Active;
 		}
 
 		public void Initialize (OptionsDialog dialog, object dataObject)

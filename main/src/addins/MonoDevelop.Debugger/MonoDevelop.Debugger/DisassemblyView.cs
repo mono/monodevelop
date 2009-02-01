@@ -64,7 +64,7 @@ namespace MonoDevelop.Debugger
 			editor.Document.ReadOnly = true;
 			
 			TextEditorOptions options = new TextEditorOptions ();
-			options.CopyFrom (TextEditorOptions.Options);
+			options.CopyFrom (TextEditorOptions.DefaultOptions);
 			options.ShowEolMarkers = false;
 			options.ShowInvalidLines = false;
 			options.ShowLineNumberMargin = false;

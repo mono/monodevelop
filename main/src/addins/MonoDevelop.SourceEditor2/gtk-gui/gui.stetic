@@ -10,6 +10,7 @@
     <widget-library name="../../../../build/bin/MonoDevelop.Components.dll" />
     <widget-library name="../../../../build/bin/MonoDevelop.Projects.Gui.dll" />
     <widget-library name="../../../../build/bin/MonoDevelop.Core.Gui.dll" />
+    <widget-library name="../../../../build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.Debugger/MonoDevelop.Debugger.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.SourceEditor2.dll" internal="true" />
   </import>
@@ -396,43 +397,13 @@
                   </packing>
                 </child>
                 <child>
-                  <widget class="Gtk.HBox" id="hbox1">
+                  <widget class="Gtk.CheckButton" id="showRulerCheckbutton">
                     <property name="MemberName" />
-                    <property name="Spacing">6</property>
-                    <child>
-                      <widget class="Gtk.CheckButton" id="showRulerCheckbutton">
-                        <property name="MemberName" />
-                        <property name="CanFocus">True</property>
-                        <property name="Label" translatable="yes">Show _column ruler, at column:</property>
-                        <property name="DrawIndicator">True</property>
-                        <property name="HasLabel">True</property>
-                        <property name="UseUnderline">True</property>
-                      </widget>
-                      <packing>
-                        <property name="Position">0</property>
-                        <property name="AutoSize">False</property>
-                        <property name="Expand">False</property>
-                        <property name="Fill">False</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <widget class="Gtk.SpinButton" id="rulerColSpinbutton">
-                        <property name="MemberName" />
-                        <property name="CanFocus">True</property>
-                        <property name="Upper">1024</property>
-                        <property name="PageIncrement">10</property>
-                        <property name="StepIncrement">1</property>
-                        <property name="ClimbRate">1</property>
-                        <property name="Numeric">True</property>
-                        <property name="Value">80</property>
-                      </widget>
-                      <packing>
-                        <property name="Position">1</property>
-                        <property name="AutoSize">True</property>
-                        <property name="Expand">False</property>
-                        <property name="Fill">False</property>
-                      </packing>
-                    </child>
+                    <property name="CanFocus">True</property>
+                    <property name="Label" translatable="yes">Show _column ruler</property>
+                    <property name="DrawIndicator">True</property>
+                    <property name="HasLabel">True</property>
+                    <property name="UseUnderline">True</property>
                   </widget>
                   <packing>
                     <property name="Position">4</property>
@@ -599,22 +570,6 @@
                     <property name="Fill">False</property>
                   </packing>
                 </child>
-                <child>
-                  <widget class="Gtk.CheckButton" id="removeTrailingWhitespacesCheckbutton">
-                    <property name="MemberName" />
-                    <property name="CanFocus">True</property>
-                    <property name="Label" translatable="yes">_Remove trailing whitespace</property>
-                    <property name="DrawIndicator">True</property>
-                    <property name="HasLabel">True</property>
-                    <property name="UseUnderline">True</property>
-                  </widget>
-                  <packing>
-                    <property name="Position">1</property>
-                    <property name="AutoSize">True</property>
-                    <property name="Expand">False</property>
-                    <property name="Fill">False</property>
-                  </packing>
-                </child>
               </widget>
             </child>
           </widget>
@@ -688,64 +643,6 @@
                   </packing>
                 </child>
                 <child>
-                  <widget class="Gtk.HBox" id="hbox2">
-                    <property name="MemberName" />
-                    <property name="Spacing">6</property>
-                    <child>
-                      <widget class="Gtk.Label" id="label3">
-                        <property name="MemberName" />
-                        <property name="LabelProp" translatable="yes">_Tab width:</property>
-                        <property name="UseUnderline">True</property>
-                      </widget>
-                      <packing>
-                        <property name="Position">0</property>
-                        <property name="AutoSize">True</property>
-                        <property name="Expand">False</property>
-                        <property name="Fill">False</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <widget class="Gtk.SpinButton" id="indentAndTabSizeSpinbutton">
-                        <property name="MemberName" />
-                        <property name="CanFocus">True</property>
-                        <property name="Upper">100</property>
-                        <property name="PageIncrement">10</property>
-                        <property name="StepIncrement">1</property>
-                        <property name="ClimbRate">1</property>
-                        <property name="Numeric">True</property>
-                      </widget>
-                      <packing>
-                        <property name="Position">1</property>
-                        <property name="AutoSize">True</property>
-                        <property name="Expand">False</property>
-                        <property name="Fill">False</property>
-                      </packing>
-                    </child>
-                  </widget>
-                  <packing>
-                    <property name="Position">1</property>
-                    <property name="AutoSize">True</property>
-                    <property name="Expand">False</property>
-                    <property name="Fill">False</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="Gtk.CheckButton" id="convertTabsToSpacesCheckbutton">
-                    <property name="MemberName" />
-                    <property name="CanFocus">True</property>
-                    <property name="Label" translatable="yes">_Convert tabs to spaces</property>
-                    <property name="DrawIndicator">True</property>
-                    <property name="HasLabel">True</property>
-                    <property name="UseUnderline">True</property>
-                  </widget>
-                  <packing>
-                    <property name="Position">2</property>
-                    <property name="AutoSize">True</property>
-                    <property name="Expand">False</property>
-                    <property name="Fill">False</property>
-                  </packing>
-                </child>
-                <child>
                   <widget class="Gtk.CheckButton" id="tabAsReindentCheckbutton">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
@@ -755,23 +652,7 @@
                     <property name="UseUnderline">True</property>
                   </widget>
                   <packing>
-                    <property name="Position">3</property>
-                    <property name="AutoSize">True</property>
-                    <property name="Expand">False</property>
-                    <property name="Fill">False</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="Gtk.CheckButton" id="tabsAfterNonTabsCheckbutton">
-                    <property name="MemberName" />
-                    <property name="CanFocus">True</property>
-                    <property name="Label" translatable="yes">_Allow tabs after non tabs</property>
-                    <property name="DrawIndicator">True</property>
-                    <property name="HasLabel">True</property>
-                    <property name="UseUnderline">True</property>
-                  </widget>
-                  <packing>
-                    <property name="Position">4</property>
+                    <property name="Position">1</property>
                     <property name="AutoSize">True</property>
                     <property name="Expand">False</property>
                     <property name="Fill">False</property>
@@ -990,7 +871,6 @@
                             <property name="CanFocus">True</property>
                             <property name="ShowScrollbars">True</property>
                             <property name="HeadersVisible">False</property>
-                            <property name="HeadersClickable">True</property>
                           </widget>
                         </child>
                       </widget>

@@ -30,18 +30,14 @@ using Mono.TextEditor.Highlighting;
 
 namespace Mono.TextEditor
 {
-	public class TextEditorOptions : IDisposable
+	public class TextEditorOptions : ITextEditorOptions
 	{
 		public const string DEFAULT_FONT = "Mono 10";
 		static TextEditorOptions options = new TextEditorOptions ();
 		
-		public static TextEditorOptions Options {
+		public static TextEditorOptions DefaultOptions {
 			get {
 				return options;
-			}
-			set {
-				Debug.Assert (value != null);
-				options = value;
 			}
 		}
 		

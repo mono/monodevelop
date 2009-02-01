@@ -67,7 +67,7 @@ namespace Mono.TextEditor.Highlighting
 			return doc.GetTextAt (offset, length);
 		}
 		
-		public string GetMarkup (Document doc, TextEditorOptions options, Style style, int offset, int length, bool removeIndent)
+		public string GetMarkup (Document doc, ITextEditorOptions options, Style style, int offset, int length, bool removeIndent)
 		{
 			int curOffset = offset;
 			int indentLength = int.MaxValue;

@@ -39,31 +39,29 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		
 		public virtual Gtk.Widget CreatePanelWidget ()
 		{
-			this.showLineNumbersCheckbutton.Active = SourceEditorOptions.Options.ShowLineNumberMargin;
-			this.underlineErrorsCheckbutton.Active = SourceEditorOptions.Options.UnderlineErrors;
-			this.highlightMatchingBracketCheckbutton.Active = SourceEditorOptions.Options.HighlightMatchingBracket;
-			this.highlightCurrentLineCheckbutton.Active = SourceEditorOptions.Options.HighlightCaretLine;
-			this.showRulerCheckbutton.Active = SourceEditorOptions.Options.ShowRuler;
-			this.rulerColSpinbutton.Value = SourceEditorOptions.Options.RulerColumn;
-			this.showInvLinesCheckbutton.Active = SourceEditorOptions.Options.ShowInvalidLines;
-			this.showSpacesCheckbutton.Active = SourceEditorOptions.Options.ShowSpaces;
-			this.showTabsCheckbutton.Active = SourceEditorOptions.Options.ShowTabs;
-			this.showEolCheckbutton.Active = SourceEditorOptions.Options.ShowEolMarkers;
+			this.showLineNumbersCheckbutton.Active = DefaultSourceEditorOptions.Instance.ShowLineNumberMargin;
+			this.underlineErrorsCheckbutton.Active = DefaultSourceEditorOptions.Instance.UnderlineErrors;
+			this.highlightMatchingBracketCheckbutton.Active = DefaultSourceEditorOptions.Instance.HighlightMatchingBracket;
+			this.highlightCurrentLineCheckbutton.Active = DefaultSourceEditorOptions.Instance.HighlightCaretLine;
+			this.showRulerCheckbutton.Active = DefaultSourceEditorOptions.Instance.ShowRuler;
+			this.showInvLinesCheckbutton.Active = DefaultSourceEditorOptions.Instance.ShowInvalidLines;
+			this.showSpacesCheckbutton.Active = DefaultSourceEditorOptions.Instance.ShowSpaces;
+			this.showTabsCheckbutton.Active = DefaultSourceEditorOptions.Instance.ShowTabs;
+			this.showEolCheckbutton.Active = DefaultSourceEditorOptions.Instance.ShowEolMarkers;
 			return this;
 		}
 		
 		public virtual void ApplyChanges ()
 		{
-			SourceEditorOptions.Options.ShowLineNumberMargin = this.showLineNumbersCheckbutton.Active;
-			SourceEditorOptions.Options.UnderlineErrors = this.underlineErrorsCheckbutton.Active;
-			SourceEditorOptions.Options.HighlightMatchingBracket = this.highlightMatchingBracketCheckbutton.Active;
-			SourceEditorOptions.Options.HighlightCaretLine = this.highlightCurrentLineCheckbutton.Active;
-			SourceEditorOptions.Options.ShowRuler = this.showRulerCheckbutton.Active;
-			SourceEditorOptions.Options.RulerColumn = (int)this.rulerColSpinbutton.Value;
-			SourceEditorOptions.Options.ShowInvalidLines = this.showInvLinesCheckbutton.Active;
-			SourceEditorOptions.Options.ShowSpaces = this.showSpacesCheckbutton.Active;
-			SourceEditorOptions.Options.ShowTabs = this.showTabsCheckbutton.Active;
-			SourceEditorOptions.Options.ShowEolMarkers = this.showEolCheckbutton.Active;
+			DefaultSourceEditorOptions.Instance.ShowLineNumberMargin = this.showLineNumbersCheckbutton.Active;
+			DefaultSourceEditorOptions.Instance.UnderlineErrors = this.underlineErrorsCheckbutton.Active;
+			DefaultSourceEditorOptions.Instance.HighlightMatchingBracket = this.highlightMatchingBracketCheckbutton.Active;
+			DefaultSourceEditorOptions.Instance.HighlightCaretLine = this.highlightCurrentLineCheckbutton.Active;
+			DefaultSourceEditorOptions.Instance.ShowRuler = this.showRulerCheckbutton.Active;
+			DefaultSourceEditorOptions.Instance.ShowInvalidLines = this.showInvLinesCheckbutton.Active;
+			DefaultSourceEditorOptions.Instance.ShowSpaces = this.showSpacesCheckbutton.Active;
+			DefaultSourceEditorOptions.Instance.ShowTabs = this.showTabsCheckbutton.Active;
+			DefaultSourceEditorOptions.Instance.ShowEolMarkers = this.showEolCheckbutton.Active;
 		}
 
 		public void Initialize (OptionsDialog dialog, object dataObject)

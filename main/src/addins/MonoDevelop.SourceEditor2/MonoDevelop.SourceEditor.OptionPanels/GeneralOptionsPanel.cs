@@ -51,15 +51,15 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		
 		public virtual Gtk.Widget CreatePanelWidget ()
 		{
-			this.codeCompletioncheckbutton.Active = SourceEditorOptions.Options.EnableCodeCompletion;
-			this.quickFinderCheckbutton.Active    = SourceEditorOptions.Options.EnableQuickFinder;
-			this.foldingCheckbutton.Active        = SourceEditorOptions.Options.ShowFoldMargin;
-			this.foldregionsCheckbutton.Active    = SourceEditorOptions.Options.DefaultRegionsFolding;
-			this.foldCommentsCheckbutton.Active   = SourceEditorOptions.Options.DefaultCommentFolding;
-			this.autoCodeCompletionCheckbutton.Active    = SourceEditorOptions.Options.EnableAutoCodeCompletion;
-			this.radiobutton1.Active              = SourceEditorOptions.Options.EditorFontType == EditorFontType.DefaultMonospace;
-			this.radiobutton2.Active              = SourceEditorOptions.Options.EditorFontType == EditorFontType.UserSpecified;
-			this.fontselection.FontName           = SourceEditorOptions.Options.FontName;
+			this.codeCompletioncheckbutton.Active = DefaultSourceEditorOptions.Instance.EnableCodeCompletion;
+			this.quickFinderCheckbutton.Active    = DefaultSourceEditorOptions.Instance.EnableQuickFinder;
+			this.foldingCheckbutton.Active        = DefaultSourceEditorOptions.Instance.ShowFoldMargin;
+			this.foldregionsCheckbutton.Active    = DefaultSourceEditorOptions.Instance.DefaultRegionsFolding;
+			this.foldCommentsCheckbutton.Active   = DefaultSourceEditorOptions.Instance.DefaultCommentFolding;
+			this.autoCodeCompletionCheckbutton.Active    = DefaultSourceEditorOptions.Instance.EnableAutoCodeCompletion;
+			this.radiobutton1.Active              = DefaultSourceEditorOptions.Instance.EditorFontType == EditorFontType.DefaultMonospace;
+			this.radiobutton2.Active              = DefaultSourceEditorOptions.Instance.EditorFontType == EditorFontType.UserSpecified;
+			this.fontselection.FontName           = DefaultSourceEditorOptions.Instance.FontName;
 			CheckFontSelection (this, EventArgs.Empty);
 			HandleCodeCompletioncheckbuttonToggled (this, EventArgs.Empty);
 			return this;
@@ -67,14 +67,14 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		
 		public virtual void ApplyChanges ()
 		{
-			SourceEditorOptions.Options.EnableCodeCompletion = this.codeCompletioncheckbutton.Active;
-			SourceEditorOptions.Options.EnableQuickFinder    = this.quickFinderCheckbutton.Active;
-			SourceEditorOptions.Options.ShowFoldMargin       = this.foldingCheckbutton.Active;
-			SourceEditorOptions.Options.EditorFontType       = this.radiobutton1.Active ? EditorFontType.DefaultMonospace : EditorFontType.UserSpecified;
-			SourceEditorOptions.Options.FontName             = this.fontselection.FontName;
-			SourceEditorOptions.Options.DefaultRegionsFolding = this.foldregionsCheckbutton.Active;
-			SourceEditorOptions.Options.DefaultCommentFolding = this.foldCommentsCheckbutton.Active;
-			SourceEditorOptions.Options.EnableAutoCodeCompletion = this.autoCodeCompletionCheckbutton.Active;
+			DefaultSourceEditorOptions.Instance.EnableCodeCompletion = this.codeCompletioncheckbutton.Active;
+			DefaultSourceEditorOptions.Instance.EnableQuickFinder    = this.quickFinderCheckbutton.Active;
+			DefaultSourceEditorOptions.Instance.ShowFoldMargin       = this.foldingCheckbutton.Active;
+			DefaultSourceEditorOptions.Instance.EditorFontType       = this.radiobutton1.Active ? EditorFontType.DefaultMonospace : EditorFontType.UserSpecified;
+			DefaultSourceEditorOptions.Instance.FontName             = this.fontselection.FontName;
+			DefaultSourceEditorOptions.Instance.DefaultRegionsFolding = this.foldregionsCheckbutton.Active;
+			DefaultSourceEditorOptions.Instance.DefaultCommentFolding = this.foldCommentsCheckbutton.Active;
+			DefaultSourceEditorOptions.Instance.EnableAutoCodeCompletion = this.autoCodeCompletionCheckbutton.Active;
 		}
 
 		public void Initialize (OptionsDialog dialog, object dataObject)

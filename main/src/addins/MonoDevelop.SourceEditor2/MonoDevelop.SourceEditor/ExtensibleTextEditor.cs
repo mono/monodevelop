@@ -62,13 +62,19 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		public ExtensibleTextEditor (SourceEditorView view, Mono.TextEditor.Document doc) : base (doc, null)
+		public new ISourceEditorOptions Options {
+			get { return (ISourceEditorOptions)base.Options; }
+		}
+		
+		public ExtensibleTextEditor (SourceEditorView view, ISourceEditorOptions options, Mono.TextEditor.Document doc) : base (doc, null)
 		{
+			base.Options = options;
 			Initialize (view);
 		}
 		
 		public ExtensibleTextEditor (SourceEditorView view)
 		{
+			base.Options = new StyledSourceEditorOptions (view.Project);
 			Initialize (view);
 		}
 		
@@ -80,6 +86,7 @@ namespace MonoDevelop.SourceEditor
 			get { return errors; }
 			set { errors = value; }
 		}
+		
 		void Initialize (SourceEditorView view)
 		{
 			this.view = view;
@@ -112,7 +119,7 @@ namespace MonoDevelop.SourceEditor
 		
 		void UpdateEditMode ()
 		{
-			if (SourceEditorOptions.Options.UseViModes) {
+			if (Options.UseViModes) {
 				if (!(CurrentMode is IdeViMode))
 					CurrentMode = new IdeViMode (this);
 			} else {
@@ -167,8 +174,8 @@ namespace MonoDevelop.SourceEditor
 		protected override void OptionsChanged (object sender, EventArgs args)
 		{
 			if (view.Control != null) {
-				((SourceEditorWidget)view.Control).ShowClassBrowser = SourceEditorOptions.Options.EnableQuickFinder;
-				if (!SourceEditorOptions.Options.ShowFoldMargin)
+				((SourceEditorWidget)view.Control).ShowClassBrowser = Options.EnableQuickFinder;
+				if (!Options.ShowFoldMargin)
 					this.Document.ClearFoldSegments ();
 			}
 			UpdateEditMode ();
@@ -317,7 +324,7 @@ namespace MonoDevelop.SourceEditor
 /* auto insert templates IS annoying !!!
 			// auto insert templates
 			if (!templateInserted &&
-			    SourceEditorOptions.Options.AutoInsertTemplates && 
+			    Options.AutoInsertTemplates && 
 			    ch != '\0' && // don't auto insert templates for control keys
 			    IsTemplateKnown () // only insert templates when there is a 100% match (ex.: scw vs. scwl)
 			    ) {
@@ -328,7 +335,7 @@ namespace MonoDevelop.SourceEditor
 				return true;
 			}
 				
-			if (SourceEditorOptions.Options.AutoInsertMatchingBracket && !inStringOrComment && MonoDevelop.Ide.Gui.TextEditor.IsOpenBrace (ch)) {
+			if (Options.AutoInsertMatchingBracket && !inStringOrComment && MonoDevelop.Ide.Gui.TextEditor.IsOpenBrace (ch)) {
 				char closingBrace = MonoDevelop.Ide.Gui.TextEditor.GetMatchingBrace (ch);
 				int count = 0;
 				foreach (char curCh in TextWithoutCommentsAndStrings) {

@@ -1,3 +1,19 @@
+2009-02-01  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Gui.Content/TextStylePolicy.cs: Add a
+	  policy object for text styles.
+
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Ide.Gui.OptionPanels/TextStylePolicyPanel.cs:
+	*
+	  gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TextStylePolicyPanelWidget.cs:
+	  Add a panel for editing TextStylePolicy objects.
+
+	* MonoDevelop.Ide.addin.xml: Register TextStylePolicy panels.
+
+	* Makefile.am:
+	* MonoDevelop.Ide.mdp: Updated.
+
 2009/02/01  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.Gui.OptionPanels/GlobalAuthorInformationPanel.cs:

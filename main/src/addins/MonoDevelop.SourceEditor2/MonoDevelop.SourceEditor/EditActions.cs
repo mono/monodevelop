@@ -86,7 +86,7 @@ namespace MonoDevelop.SourceEditor
 		
 		static void RemoveCharBeforCaret (TextEditorData data)
 		{
-			if (SourceEditorOptions.Options.AutoInsertMatchingBracket) {
+			if (((ISourceEditorOptions)data.Options).AutoInsertMatchingBracket) {
 				char ch = data.Document.GetCharAt (data.Caret.Offset - 1);
 				int idx = open.IndexOf (ch);
 				
