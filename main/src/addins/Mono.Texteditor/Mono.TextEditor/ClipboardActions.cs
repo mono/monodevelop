@@ -112,10 +112,10 @@ namespace Mono.TextEditor
 	
 			public Document copiedDocument;
 			public Mono.TextEditor.Highlighting.Style docStyle;
-			TextEditorOptions options;
+			ITextEditorOptions options;
 			Mono.TextEditor.Highlighting.SyntaxMode mode;
 			
-			static string GenerateRtf (Document doc, Mono.TextEditor.Highlighting.SyntaxMode mode, Mono.TextEditor.Highlighting.Style style, TextEditorOptions options)
+			static string GenerateRtf (Document doc, Mono.TextEditor.Highlighting.SyntaxMode mode, Mono.TextEditor.Highlighting.Style style, ITextEditorOptions options)
 			{
 				StringBuilder rtfText = new StringBuilder ();
 				List<Gdk.Color> colorList = new List<Gdk.Color> ();

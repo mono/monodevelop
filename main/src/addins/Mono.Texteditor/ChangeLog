@@ -1,5 +1,10 @@
 2009-02-01  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Mono.TextEditor/ClipboardActions.cs: Track
+	  TextEditorOptions API.
+
+2009-02-01  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Makefile.am:
 	* Mono.TextEditor.mdp: Updated.
 
