@@ -71,6 +71,10 @@ namespace MonoDevelop.Ide.StandardHeader
 			if (string.IsNullOrEmpty (policy.Text) || (newFile && !policy.IncludeInNewFiles))
 				return "";
 			
+			//make sure there's a space between the comment char and the license text
+			if (comment.Length > 0 && !char.IsWhiteSpace (comment[comment.Length -1]))
+				comment = comment + " ";
+			
 			StringBuilder result = new StringBuilder (policy.Text.Length);
 			string[] lines = policy.Text.Split ('\n');
 			foreach (string line in lines) {

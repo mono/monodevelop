@@ -1,5 +1,9 @@
 2009-02-01  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide.StandardHeader/StandardHeaderService.cs:
+	  Add space between the comment (//) and the licence text.
+2009-02-01  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.Gui.Content/TextStylePolicy.cs: Add a
 	  policy object for text styles.
 
