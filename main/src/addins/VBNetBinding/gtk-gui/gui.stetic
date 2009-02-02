@@ -2,7 +2,7 @@
 <stetic-interface>
   <configuration>
     <images-root-path>..</images-root-path>
-    <target-gtk-version>2.10</target-gtk-version>
+    <target-gtk-version>2.8.3</target-gtk-version>
   </configuration>
   <import>
     <widget-library name="../../../../build/bin/MonoDevelop.Core.Gui.dll" />
@@ -628,7 +628,6 @@
               <widget class="Gtk.Label" id="label76">
                 <property name="MemberName" />
                 <property name="WidthRequest">18</property>
-                <property name="LabelProp" translatable="yes" />
               </widget>
               <packing>
                 <property name="Position">0</property>
@@ -850,7 +849,6 @@
               <widget class="Gtk.Label" id="label77">
                 <property name="MemberName" />
                 <property name="WidthRequest">18</property>
-                <property name="LabelProp" translatable="yes" />
               </widget>
               <packing>
                 <property name="Position">0</property>
@@ -1031,7 +1029,6 @@
               <widget class="Gtk.Label" id="label79">
                 <property name="MemberName" />
                 <property name="WidthRequest">18</property>
-                <property name="LabelProp" translatable="yes" />
               </widget>
               <packing>
                 <property name="Position">0</property>
