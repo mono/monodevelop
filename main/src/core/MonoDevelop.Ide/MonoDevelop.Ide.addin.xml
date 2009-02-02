@@ -1308,6 +1308,9 @@
 		<Condition id="ItemType" value="Solution">
 			<Section id = "AuthorInfo" _label = "Author Information" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.AuthorInformationPanel" />
 		</Condition>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/SourceCode">
 		<Section id = "ProjectStandardHeader" _label = "Standard Header" fill="true" class = "MonoDevelop.Ide.StandardHeader.StandardHeaderPolicyPanel" />
 		<Section id = "ProjectTextStylePolicy" _label = "Text Style" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.TextStylePolicyPanel" />
 	</Extension>
