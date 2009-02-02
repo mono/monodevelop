@@ -335,8 +335,30 @@ class Foo<T>
 ");
 			Assert.IsNotNull (provider, "provider == null");
 			Assert.IsNull (provider.Find ("T"), "generic parameter 'T' found, but shouldn't");
-			Assert.IsNotNull (provider.Find ("TValue"), "generic parameter 'TValue' found");
+			Assert.IsNotNull (provider.Find ("TValue"), "generic parameter 'TValue' not found");
 		}
 		
+		[Test()]
+		public void TestInheritedInnerClasses ()
+		{
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
+@"
+public class A {
+	public class B {
+		public void MethodB () 
+		{
+		}
+	}
+}
+public class C : A 
+{
+	public override void MethodA (B something)
+	{
+		$something.$
+	}
+}");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("MethodB"), "method 'MethodB' not found");
+		}
 	}
 }

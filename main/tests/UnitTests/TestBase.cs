@@ -42,6 +42,7 @@ namespace UnitTests
 			if (firstRun) {
 				firstRun = false;
 				Util.ClearTmpDir ();
+				Gtk.Application.Init ();
 			}
 		}
 		

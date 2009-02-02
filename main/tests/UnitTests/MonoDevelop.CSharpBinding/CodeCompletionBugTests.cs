@@ -1094,12 +1094,5 @@ class Test
 			Assert.IsNotNull (provider.Find ("TestMe"), "method 'TestMe' not found");
 			Assert.IsNotNull (provider.Find ("value"), "keyword 'value' not found");
 		}
-
-		[TestFixtureSetUp] 
-		public void SetUp()
-		{
-			Gtk.Application.Init ();
-		}
-		
 	}
 }
