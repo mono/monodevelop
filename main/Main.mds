@@ -1,4 +1,11 @@
 <Combine name="Main" fileversion="2.0" outputpath="build/bin/" MakePkgConfig="False" MakeLibPC="True">
+  <Policies>
+    <DotNetNamingPolicy DirectoryNamespaceAssociation="Flat" VSStyleResourceNames="False" />
+    <StandardHeader inheritsSet="MITX11License" />
+    <TextStylePolicy FileWidth="120" TabWidth="4" TabsToSpaces="False" NoTabsAfterNonTabs="False" RemoveTrailingWhitespace="False" />
+    <VersionControlPolicy inheritsSet="Mono" />
+    <ChangeLogPolicy UpdateMode="ProjectRoot" inheritsSet="Mono" />
+  </Policies>
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="CombineConfiguration">
       <Entry build="True" name="Core" configuration="Debug" />

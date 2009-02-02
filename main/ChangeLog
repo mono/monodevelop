@@ -1,3 +1,7 @@
+2009-02-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Main.mds: Set MD policies.
+
 2009/02/01  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* configure.in: Add a hack for the Mono-cairo pkg-config
