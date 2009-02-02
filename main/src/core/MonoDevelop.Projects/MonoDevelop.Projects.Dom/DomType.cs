@@ -374,6 +374,9 @@ namespace MonoDevelop.Projects.Dom
 		{
 			if (type == null)
 				return false;
+			if (this.SourceProjectDom == null) {
+				throw new NullReferenceException ("SourceProjectDom not set for type :" + this +" - IsBaseType not allowed. StackTrace:" + Environment.StackTrace);
+			}
 			Stack<IReturnType> typeStack = new Stack<IReturnType> ();
 			Dictionary<string, bool> alreadyTaken = new Dictionary<string, bool> ();
 			typeStack.Push (new DomReturnType (this));

@@ -153,7 +153,6 @@ namespace MonoDevelop.Projects.Dom.Parser
 		internal IType SearchType (string name, IType callingClass, ICompilationUnit unit, IList<IReturnType> genericParameters)
 		{
 			// TODO dom check generic parameter count
-			
 			if (name == null || name == String.Empty)
 				return null;
 			
@@ -173,9 +172,11 @@ namespace MonoDevelop.Projects.Dom.Parser
 			// Maybe an inner type?
 			if (callingClass != null) {
 				IType t = ResolveType (callingClass);
-				c = FindInnerType (t, name.Split ('.'), 0, genericParameters != null ? genericParameters.Count : 0, true);
-				if (c != null)
-					return c;
+				foreach (IType inheritedType in GetInheritanceTree (t)) {
+					c = FindInnerType (inheritedType, name.Split ('.'), 0, genericParameters != null ? genericParameters.Count : 0, true);
+					if (c != null)
+						return c;
+				}
 			}
 			
 			// If the name matches an alias, try using the alias first.
