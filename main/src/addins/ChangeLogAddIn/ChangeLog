@@ -1,5 +1,10 @@
 2009-02-01  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* ChangeLogPolicy.cs: Change default date formatting from
+	  yy/MM/dd to yyyy-MM-dd.
+
+2009-02-01  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Policies.xml: Use - instead of / in Mono date format.
 
 	* CommitDialogExtensionWidget.cs: Appned 2 newlines to

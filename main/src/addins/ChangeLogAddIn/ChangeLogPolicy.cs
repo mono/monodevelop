@@ -64,7 +64,7 @@ namespace MonoDevelop.ChangeLogAddIn
 			get {
 				if (messageStyle == null) {
 					messageStyle = new CommitMessageStyle ();
-					messageStyle.Header = "${Date:yyyy/MM/dd}  ${AuthorName}  <${AuthorEmail}>\n\n";
+					messageStyle.Header = "${Date:yyyy-MM-dd}  ${AuthorName}  <${AuthorEmail}>\n\n";
 					messageStyle.Indent = "\t";
 				}
 				return messageStyle; 
