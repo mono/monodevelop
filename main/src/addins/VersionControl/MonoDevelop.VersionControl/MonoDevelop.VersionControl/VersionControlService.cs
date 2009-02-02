@@ -600,7 +600,7 @@ namespace MonoDevelop.VersionControl
 			return format;
 		}
 		
-		public static CommitMessageFormat GetCommitMessageFormat (ChangeSet cset)
+		public static CommitMessageFormat GetCommitMessageFormat (ChangeSet cset, out AuthorInformation authorInfo)
 		{
 			// If all files belong to a project, use that project's policy. If not, use the solution policy
 			Project project = null;
@@ -626,11 +626,15 @@ namespace MonoDevelop.VersionControl
 					policy = project.ParentSolution.Policies.Get<VersionControlPolicy> ();
 				style = policy.CommitMessageStyle;
 			}
-			else
-				style = new CommitMessageStyle ();
+			else {
+				style = PolicyService.GetDefaultPolicy<CommitMessageStyle> ();
+			}
+			
+			authorInfo = IdeApp.Workspace.GetAuthorInformation (project);
 			
 			CommitMessageFormat format = new CommitMessageFormat ();
 			format.Style = style;
+			
 			return format;
 		}
 	}

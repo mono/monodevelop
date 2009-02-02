@@ -31,7 +31,7 @@ using MonoDevelop.Core.Serialization;
 namespace MonoDevelop.VersionControl
 {
 	[DataItem ("CommitMessageStyle")]
-	public class CommitMessageStyle
+	public class CommitMessageStyle : IEquatable<CommitMessageStyle>
 	{
 		public CommitMessageStyle ()
 		{

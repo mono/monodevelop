@@ -73,8 +73,11 @@ namespace MonoDevelop.VersionControl.Dialogs
 				selected.Add (info.LocalPath);
 			}
 			
-			if (changeSet.GlobalComment.Length == 0)
-				Message = changeSet.GenerateGlobalComment (VersionControlService.GetCommitMessageFormat (changeSet));
+			if (changeSet.GlobalComment.Length == 0) {
+				AuthorInformation aInfo;
+				CommitMessageFormat fmt = VersionControlService.GetCommitMessageFormat (changeSet, out aInfo);
+				Message = changeSet.GenerateGlobalComment (fmt, aInfo);
+			}
 			else
 				Message = changeSet.GlobalComment;
 				

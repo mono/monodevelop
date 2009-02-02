@@ -34,9 +34,9 @@ namespace MonoDevelop.VersionControl
 			get { return items.Count (item => !string.IsNullOrEmpty (item.Comment)); }
 		}
 		
-		public string GenerateGlobalComment (CommitMessageFormat format)
+		public string GenerateGlobalComment (CommitMessageFormat format, MonoDevelop.Ide.Gui.AuthorInformation userInfo)
 		{
-			return GeneratePathComment (basePath, items, format, null);
+			return GeneratePathComment (basePath, items, format, userInfo);
 		}
 		
 		public string GeneratePathComment (string path, IEnumerable<ChangeSetItem> items, 
