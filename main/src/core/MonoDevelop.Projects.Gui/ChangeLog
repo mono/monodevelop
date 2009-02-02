@@ -1,3 +1,9 @@
+2009-02-02  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs/PolicyOptionsPanel.cs:
+	  Workaround for GTK#/mcs delegate issue. Hopefully fixes Bug
+	  471482 - Unhandled exception with Standard Header policy.
+
 2009-02-02  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/objects.xml: Flush.

@@ -94,16 +94,19 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 				UpdateSelectedNamedPolicy ();
 			}
 			
-			policyCombo.Changed += delegate {
-				T selected = GetSelectedPolicy ();
-				if (selected != null) {
-					loading = true;
-					LoadFrom (selected);
-					loading = false;
-				}
-			};
+			policyCombo.Changed += HandlePolicyComboChanged;
 			
 			return vbox;
+		}
+
+		void HandlePolicyComboChanged (object sender, EventArgs e)
+		{
+			T selected = GetSelectedPolicy ();
+			if (selected != null) {
+				loading = true;
+				LoadFrom (selected);
+				loading = false;
+			}
 		}
 		
 		T GetCurrentValue ()
