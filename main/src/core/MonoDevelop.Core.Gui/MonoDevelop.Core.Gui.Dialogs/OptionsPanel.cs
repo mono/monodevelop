@@ -59,7 +59,7 @@ namespace MonoDevelop.Core.Gui.Dialogs
 			get { return dlg; }
 		}
 		
-		protected object DataObject {
+		public object DataObject {
 			get { return dataObject; }
 		}
 	}
