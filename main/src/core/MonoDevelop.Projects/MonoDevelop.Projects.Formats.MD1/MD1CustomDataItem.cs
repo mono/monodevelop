@@ -38,18 +38,21 @@ namespace MonoDevelop.Projects.Formats.MD1
 		{
 			if (obj is ProjectFile) {
 				ProjectFile pf = (ProjectFile) obj;
+				DataCollection data = handler.Serialize (obj);
 				
 				//Map the Content build action to the old FileCopy action if CopyToOutputDirectory is set
 				if (pf.BuildAction == BuildAction.Content && pf.CopyToOutputDirectory != FileCopyMode.None) {
-					DataCollection data = handler.Serialize (obj);
 					DataValue value = data ["buildaction"] as DataValue;
 					if (value != null) {
 						data.Remove (value);
 						data.Add (new DataValue ("buildaction", "FileCopy"));
 						data.Extract ("copyToOutputDirectory");
 					}
-					return data;
 				}
+				// Don't store the resource id if it matches the default.
+				if (pf.ResourceId != Path.GetFileName (pf.FilePath))
+					data.Add (new DataValue ("resource_id", pf.ResourceId));
+				return data;
 			}
 			else if (obj is SolutionEntityItem) {
 				DotNetProject project = obj as DotNetProject;
@@ -99,9 +102,14 @@ namespace MonoDevelop.Projects.Formats.MD1
 				DataValue value = data ["buildaction"] as DataValue;
 				bool isFileCopy = value != null && value.Value == "FileCopy";
 				
+				DataValue resourceId = data.Extract ("resource_id") as DataValue;
+				
 				handler.Deserialize (obj, data);
 				if (isFileCopy)
 					pf.CopyToOutputDirectory = FileCopyMode.Always;
+				
+				if (resourceId != null)
+					pf.ResourceId = resourceId.Value;
 			}
 			else if (obj is SolutionEntityItem) {
 				DataValue ac = null;

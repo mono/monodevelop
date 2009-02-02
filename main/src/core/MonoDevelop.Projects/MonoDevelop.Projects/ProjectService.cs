@@ -453,16 +453,6 @@ namespace MonoDevelop.Projects
 			return formatManager.GetFileFormats (filename, typeof(WorkspaceItem)).Length > 0;
 		}
 		
-		public string GetDefaultResourceId (ProjectFile pf)
-		{
-			if (pf.Project != null) {
-				IResourceHandler handler = pf.Project.ItemHandler as IResourceHandler;
-				if (handler != null)
-					return handler.GetDefaultResourceId (pf);
-			}
-			return Path.GetFileName (pf.Name);
-		}
-		
 		internal void InitializeDataContext (DataContext ctx)
 		{
 			foreach (DataTypeCodon dtc in AddinManager.GetExtensionNodes (SerializableClassesExtensionPath)) {

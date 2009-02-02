@@ -1,3 +1,8 @@
+2009-02-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.addin.xml: Moved namig panel to a
+	  new Source Code section.
+
 2009-01-30  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects.Gui.Dialogs/PolicyOptionsPanel.cs: Display named

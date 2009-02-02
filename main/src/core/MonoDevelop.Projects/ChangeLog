@@ -1,3 +1,19 @@
+2009-02-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* md1format.xml:
+	* MonoDevelop.Projects/Project.cs:
+	* MonoDevelop.Projects/ProjectFile.cs:
+	* MonoDevelop.Projects/DotNetProject.cs:
+	* MonoDevelop.Projects/ProjectService.cs:
+	* MonoDevelop.Projects.Policies/DotNetNamingPolicy.cs:
+	* MonoDevelop.Projects.Extensions/DotNetProjectNode.cs:
+	* MonoDevelop.Projects.Formats.MD1/MD1CustomDataItem.cs:
+	* MonoDevelop.Projects.Extensions/ISolutionItemHandler.cs:
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs:
+	*
+	  MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectService.cs:
+	  Add support for resource naming policies.
+
 2009-02-01  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects.Policies/PolicyChangedEventArgs.cs:

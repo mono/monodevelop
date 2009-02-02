@@ -28,6 +28,7 @@ using System.Collections;
 using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
+using MonoDevelop.Projects.Extensions;
 
 namespace MonoDevelop.Projects
 {
@@ -290,9 +291,8 @@ namespace MonoDevelop.Projects
 
 		public string ResourceId {
 			get {
-				if ((resourceId == null || resourceId.Length == 0) && project != null)
-					return Services.ProjectService.GetDefaultResourceId (this);
-
+				if (string.IsNullOrEmpty (resourceId) && project is DotNetProject)
+					return ((DotNetProject)project).ResourceHandler.GetDefaultResourceId (this);
 				return resourceId;
 			}
 			set {
@@ -300,7 +300,14 @@ namespace MonoDevelop.Projects
 				OnChanged ();
 			}
 		}
-
+		
+		internal string GetResourceId (IResourceHandler resourceHandler)
+		{
+			if (string.IsNullOrEmpty (resourceId))
+				return resourceHandler.GetDefaultResourceId (this);
+			return resourceId;
+		}
+		
 		public bool IsExternalToProject {
 			get {
 				return project != null && !Path.GetFullPath (Name).StartsWith (project.BaseDirectory);

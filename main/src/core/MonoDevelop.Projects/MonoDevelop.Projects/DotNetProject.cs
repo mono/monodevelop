@@ -37,6 +37,8 @@ using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Projects.Policies;
 using MonoDevelop.Projects.Formats.MD1;
+using MonoDevelop.Projects.Extensions;
+using MonoDevelop.Projects.Formats.MSBuild;
 
 namespace MonoDevelop.Projects
 {
@@ -119,6 +121,23 @@ namespace MonoDevelop.Projects
 			set {
 				defaultNamespace = value;
 				NotifyModified ("DefaultNamespace");
+			}
+		}
+		
+		IResourceHandler resourceHandler;
+		
+		public IResourceHandler ResourceHandler {
+			get {
+				if (resourceHandler == null) {
+					DotNetNamingPolicy pol = Policies.Get<DotNetNamingPolicy> ();
+					if (pol.ResourceNamePolicy == ResourceNamePolicy.FileFormatDefault)
+						resourceHandler = ItemHandler as IResourceHandler;
+					else if (pol.ResourceNamePolicy == ResourceNamePolicy.MSBuild)
+						resourceHandler = MSBuildProjectService.GetResourceHandlerForItem (this);
+					if (resourceHandler == null)
+						resourceHandler = DefaultResourceHandler.Instance;
+				}
+				return resourceHandler;
 			}
 		}
 
@@ -649,6 +668,61 @@ namespace MonoDevelop.Projects
 		protected override IList<string> GetCommonBuildActions () 
 		{
 			return BuildAction.DotNetCommonActions;
+		}
+		
+		internal override void SetItemHandler (ISolutionItemHandler handler)
+		{
+			if (ProjectExtensionUtil.GetItemHandler (this) == null) {
+				// Initial assignment of the item handler
+				base.SetItemHandler (handler);
+				return;
+			}
+			IResourceHandler rh = ResourceHandler;
+			
+			base.SetItemHandler (handler);
+			resourceHandler = null;
+			// A change in the file format may imply a change in the resource naming policy.
+			// Make sure that the resource Id don't change.
+			MigrateResourceIds (rh, ResourceHandler);
+		}
+		
+		protected override void OnEndLoad ()
+		{
+			IResourceHandler handler = ItemHandler as IResourceHandler;
+			if (handler != null)
+				MigrateResourceIds (handler, ResourceHandler);
+
+			base.OnEndLoad ();
+		}
+		
+		public void UpdateResourceHandler (bool keepOldIds)
+		{
+			IResourceHandler oldHandler = resourceHandler;
+			resourceHandler = null;
+			if (keepOldIds && oldHandler != null)
+				MigrateResourceIds (oldHandler, ResourceHandler);
+		}
+		
+		void MigrateResourceIds (IResourceHandler oldHandler, IResourceHandler newHandler)
+		{
+			if (oldHandler.GetType () != newHandler.GetType ()) {
+				// If the file format has a default resource handler different from the one
+				// choosen for this project, then all resource ids must be converted
+				foreach (ProjectFile file in Files) {
+					string oldId = file.GetResourceId (oldHandler);
+					string newId = file.GetResourceId (newHandler);
+					string newDefault = newHandler.GetDefaultResourceId (file);
+					if (oldId != newId) {
+						if (newDefault == oldId)
+							file.ResourceId = null;
+						else
+							file.ResourceId = oldId;
+					} else {
+						if (newDefault == oldId)
+							file.ResourceId = null;
+					}
+				}
+			}
 		}
 	}
 }

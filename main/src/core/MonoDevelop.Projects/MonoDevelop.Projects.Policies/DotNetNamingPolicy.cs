@@ -28,33 +28,50 @@
 
 using System;
 using MonoDevelop.Core.Serialization;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Projects.Policies
 {
-	
 	[DataItem ("DotNetNamingPolicy")]
 	public class DotNetNamingPolicy : IEquatable<DotNetNamingPolicy>
 	{
 		public DotNetNamingPolicy ()
 		{
+			this.ResourceNamePolicy = ResourceNamePolicy.FileFormatDefault;
 		}
 		
-		public DotNetNamingPolicy (DirectoryNamespaceAssociation association, bool vsStyleResourceNames)
+		public DotNetNamingPolicy (DirectoryNamespaceAssociation association, ResourceNamePolicy resourceNamePolicy)
 		{
 			this.DirectoryNamespaceAssociation = association;
-			this.VSStyleResourceNames = vsStyleResourceNames;
+			this.ResourceNamePolicy = resourceNamePolicy;
 		}
 		
 		[ItemProperty]
 		public DirectoryNamespaceAssociation DirectoryNamespaceAssociation { get; private set; }
 		
 		[ItemProperty]
-		public bool VSStyleResourceNames { get; private set; }
+		public ResourceNamePolicy ResourceNamePolicy { get; private set; }
 		
 		public bool Equals (DotNetNamingPolicy other)
 		{
 			return other != null && other.DirectoryNamespaceAssociation == DirectoryNamespaceAssociation
-				&& other.VSStyleResourceNames == VSStyleResourceNames;
+				&& other.ResourceNamePolicy == ResourceNamePolicy;
+		}
+		
+		internal static ResourceNamePolicy GetDefaultResourceNamePolicy (object ob)
+		{
+			FileFormat format = null;
+			if (ob is SolutionEntityItem)
+				format = ((SolutionEntityItem)ob).FileFormat;
+			else if (ob is SolutionItem)
+				format = ((SolutionItem)ob).ParentSolution.FileFormat;
+			else if (ob is Solution)
+				format = ((Solution)ob).FileFormat;
+			
+			if (format != null && format.Name.StartsWith ("MSBuild"))
+				return ResourceNamePolicy.MSBuild;
+			else
+				return ResourceNamePolicy.FileName;
 		}
 	}
 	
@@ -65,5 +82,12 @@ namespace MonoDevelop.Projects.Policies
 		Hierarchical,
 		PrefixedFlat,
 		PrefixedHierarchical
+	}
+	
+	public enum ResourceNamePolicy
+	{
+		FileFormatDefault,
+		FileName,
+		MSBuild
 	}
 }

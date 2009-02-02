@@ -73,7 +73,6 @@
 		<ItemProperty member="subtype" name="subtype"/>
 		<ItemProperty member="buildaction" name="buildaction" serializationDataType="MonoDevelop.Projects.Formats.MD1.BuildActionDataType" />
 		<ItemProperty member="dependsOn" name="dependson" defaultValue=""/>
-		<ItemProperty member="resourceId" name="resource_id" defaultValue=""/>
 		<ItemProperty member="copyToOutputDirectory" name="copyToOutputDirectory" defaultValue="None"/>
 		<ItemProperty member="visible" name="visible" defaultValue="true"/>
 		<ItemProperty member="contentType" name="contentType" defaultValue=""/>

@@ -536,27 +536,6 @@ namespace MonoDevelop.Projects
 			}
 			return col;
 		}
-		
-		internal override void SetItemHandler (ISolutionItemHandler handler)
-		{
-			// The new handler may have different defaults for resource ids. To ensure
-			// the existing ids don't change, we need to explicitely set them after the
-			// format change.
-			
-			Dictionary<ProjectFile,string> rids = new Dictionary<ProjectFile,string> ();
-			foreach (ProjectFile p in Files) {
-				if (p.BuildAction == BuildAction.EmbeddedResource)
-					rids [p] = p.ResourceId;
-			}
-			
-			base.SetItemHandler (handler);
-			
-			foreach (KeyValuePair<ProjectFile,string> entry in rids) {
-				if (entry.Key.ResourceId != entry.Value)
-					entry.Key.ResourceId = entry.Value;
-			}
-		}
-
 
  		internal void NotifyFileChangedInProject (ProjectFile file)
 		{

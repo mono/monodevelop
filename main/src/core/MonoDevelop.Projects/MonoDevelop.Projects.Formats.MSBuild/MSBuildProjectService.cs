@@ -82,6 +82,16 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return null;
 		}
 		
+		internal static IResourceHandler GetResourceHandlerForItem (DotNetProject project)
+		{
+			foreach (ItemTypeNode node in GetItemTypeNodes ()) {
+				DotNetProjectNode pNode = node as DotNetProjectNode;
+				if (pNode != null && pNode.CanHandleItem (project))
+					return pNode.GetResourceHandler ();
+			}
+			return new MSBuildResourceHandler ();
+		}
+		
 		internal static MSBuildProjectHandler GetItemHandler (SolutionEntityItem item)
 		{
 			MSBuildProjectHandler handler = item.ItemHandler as MSBuildProjectHandler;
@@ -246,35 +256,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 
-		public static string GetDefaultResourceId (ProjectFile file)
-		{
-			string fname = file.RelativePath;
-			if (file.IsExternalToProject)
-				fname = Path.GetFileName (fname);
-			else
-				fname = FileService.NormalizeRelativePath (fname);
-
-			if (String.Compare (Path.GetExtension (fname), ".resx", true) == 0) {
-				fname = Path.ChangeExtension (fname, ".resources");
-			} else {
-				string only_filename, culture, extn;
-				if (MSBuildProjectService.TrySplitResourceName (fname, out only_filename, out culture, out extn)) {
-					//remove the culture from fname
-					//foo.it.bmp -> foo.bmp
-					fname = only_filename + "." + extn;
-				}
-			}
-
-			string rname = fname.Replace ('/', '.');
-			
-			DotNetProject dp = file.Project as DotNetProject;
-
-			if (dp == null || String.IsNullOrEmpty (dp.DefaultNamespace))
-				return rname;
-			else
-				return dp.DefaultNamespace + "." + rname;
-		}
-		
 		//Given a filename like foo.it.resx, splits it into - foo, it, resx
 		//Returns true only if a valid culture is found
 		//Note: hand-written as this can get called lotsa times
@@ -354,6 +335,40 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		protected override object OnDeserialize (SerializationContext serCtx, object mapData, DataNode data)
 		{
 			return ((DataValue)data).Value == "true";
+		}
+	}
+	
+	public class MSBuildResourceHandler: IResourceHandler
+	{
+		public static MSBuildResourceHandler Instance = new MSBuildResourceHandler ();
+		
+		public virtual string GetDefaultResourceId (ProjectFile file)
+		{
+			string fname = file.RelativePath;
+			if (file.IsExternalToProject)
+				fname = Path.GetFileName (fname);
+			else
+				fname = FileService.NormalizeRelativePath (fname);
+
+			if (String.Compare (Path.GetExtension (fname), ".resx", true) == 0) {
+				fname = Path.ChangeExtension (fname, ".resources");
+			} else {
+				string only_filename, culture, extn;
+				if (MSBuildProjectService.TrySplitResourceName (fname, out only_filename, out culture, out extn)) {
+					//remove the culture from fname
+					//foo.it.bmp -> foo.bmp
+					fname = only_filename + "." + extn;
+				}
+			}
+
+			string rname = fname.Replace ('/', '.');
+			
+			DotNetProject dp = file.Project as DotNetProject;
+
+			if (dp == null || String.IsNullOrEmpty (dp.DefaultNamespace))
+				return rname;
+			else
+				return dp.DefaultNamespace + "." + rname;
 		}
 	}
 }

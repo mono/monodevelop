@@ -60,13 +60,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 
-		public IResourceHandler CustomResourceHandler {
-			get {
-				return customResourceHandler;
-			}
-			set {
-				customResourceHandler = value;
-			}
+		public void SetCustomResourceHandler (IResourceHandler value)
+		{
+			customResourceHandler = value;
 		}
 
 		public List<string> SubtypeGuids {
@@ -92,12 +88,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		
 		public string GetDefaultResourceId (ProjectFile file)
 		{
-			if (customResourceHandler != null) {
-				string res = customResourceHandler.GetDefaultResourceId (file);
-				if (!string.IsNullOrEmpty (res))
-					return res;
-			}
-			return MSBuildProjectService.GetDefaultResourceId (file);
+			if (customResourceHandler != null)
+				return customResourceHandler.GetDefaultResourceId (file);
+			else
+				return MSBuildResourceHandler.Instance.GetDefaultResourceId (file);
 		}
 		
 		public string EncodePath (string path, string oldPath)
@@ -691,11 +685,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					}
 					
 					if (file.BuildAction == BuildAction.EmbeddedResource) {
-						//Emit LogicalName if we are writing elements for a Non-MSBuildProject,
-						//  (eg. when converting a gtk-sharp project, it might depend on non-vs
-						//  style resource naming )
-						//Or when the resourceId is different from the default one
-						if (Services.ProjectService.GetDefaultResourceId (file) != file.ResourceId)
+						//Emit LogicalName only when it does not match the default Id
+						if (GetDefaultResourceId (file) != file.ResourceId)
 							buildItem.SetMetadata ("LogicalName", file.ResourceId);
 					}
 				}
