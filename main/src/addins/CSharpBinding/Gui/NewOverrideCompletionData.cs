@@ -68,30 +68,30 @@ namespace MonoDevelop.CSharpBinding
 		
 		public void InsertCompletionText (ICompletionWidget widget, ICodeCompletionContext context)
 		{
-			editor.DeleteText (declarationBegin, editor.CursorPosition - declarationBegin);
 			string mod = GetModifiers (member);
-			
+			StringBuilder sb = new StringBuilder ();
 			if (insertPrivate && String.IsNullOrEmpty (mod)) {
-				editor.InsertText (editor.CursorPosition, "private ");
+				sb.Append ("private ");
 			} else {
-				editor.InsertText (editor.CursorPosition, mod);
+				sb.Append (mod);
 			}
 			
 			if (insertSealed)
-				editor.InsertText (editor.CursorPosition, "sealed ");
+				sb.Append ("sealed ");
 				
 			if (member.DeclaringType.ClassType != ClassType.Interface && (member.IsVirtual || member.IsAbstract))
-				editor.InsertText (editor.CursorPosition, "override ");
+				sb.Append ("override ");
 				
 			if (member is IMethod) {
-				InsertMethod (member as IMethod);
-				return;
+				InsertMethod (sb, member as IMethod);
+			} else if (member is IProperty) {
+				InsertProperty (sb, member as IProperty);
 			}
-			if (member is IProperty) {
-				InsertProperty (member as IProperty);
-				return;
-			}
-			editor.InsertText (editor.CursorPosition, member.Name);
+			
+			editor.DeleteText (declarationBegin, editor.CursorPosition - declarationBegin);
+			editor.InsertText (declarationBegin, sb.ToString ());
+			editor.CursorPosition = declarationBegin + sb.Length;
+			
 		}
 		
 		internal static string GetIndentString (TextEditor editor, int pos)
@@ -181,9 +181,8 @@ namespace MonoDevelop.CSharpBinding
 			return false;
 		}
 		
-		void InsertMethod (IMethod method)
+		void InsertMethod (StringBuilder sb, IMethod method)
 		{
-			StringBuilder sb = new StringBuilder ();
 			sb.Append (ambience.GetString (method.ReturnType, OutputFlags.ClassBrowserEntries));
 			sb.Append (" ");
 			sb.Append (method.Name);
@@ -255,9 +254,8 @@ namespace MonoDevelop.CSharpBinding
 				sb.AppendLine ("}");
 			}
 		}
-		void InsertProperty (IProperty property)
+		void InsertProperty (StringBuilder sb, IProperty property)
 		{
-			StringBuilder sb = new StringBuilder ();
 			sb.Append (ambience.GetString (property, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName));
 			sb.AppendLine (" {");
 			GeneratePropertyBody (sb, property);
