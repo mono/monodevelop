@@ -205,7 +205,6 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 		public override void Initialize (MonoDevelop.Core.Gui.Dialogs.OptionsDialog dialog, object dataObject)
 		{
 			base.Initialize (dialog, dataObject);
-			SolutionItem si = dataObject as SolutionItem;
 			if (dataObject is SolutionItem) {
 				bag = ((SolutionItem)dataObject).Policies;
 			} else if (dataObject is Solution) {

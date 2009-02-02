@@ -29,6 +29,8 @@
 using System;
 using Gtk;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Projects;
 using MonoDevelop.Projects.Gui.Dialogs;
 using MonoDevelop.Projects.Policies;
 
@@ -38,6 +40,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 	class NamespaceSynchronisationPanel : PolicyOptionsPanel<DotNetNamingPolicy>
 	{
 		NamespaceSynchronisationPanelWidget widget;
+		bool migrateIds;
 		
 		public override Widget CreatePanelWidget ()
 		{
@@ -59,6 +62,41 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 		{
 			return widget.GetPolicy ();
 		}
+		
+		public override bool ValidateChanges ()
+		{
+			if (widget.ResourceNamingChanged) {
+				string msg = GettextCatalog.GetString ("The resource naming policy has changed");
+				string detail = "Changing the resource naming policy may cause run-time errors if the code using resources is not properly updated. There are two options:\n\n";
+				detail += GettextCatalog.GetString ("Update all resource identifiers to match the new policy. This will require changes in the source code that references resources using the old policy. Identifiers explicitly set using the file properties pad won't be changed.\n\n");
+				detail += "Keep curent resource identifiers. It doesn't require source code changes. Resources added from now on will use the new policy)";
+				AlertButton update = new AlertButton ("Update Identifiers");
+				AlertButton keep = new AlertButton ("Keep Current Identifiers");
+				AlertButton res = MessageService.AskQuestion (msg, detail, AlertButton.Cancel, update, keep);
+				if (res == AlertButton.Cancel)
+					return false;
+				migrateIds = res == keep;
+			}
+			return base.ValidateChanges ();
+		}
+		
+		public override void ApplyChanges ()
+		{
+			base.ApplyChanges ();
+			
+			if (widget.ResourceNamingChanged) {
+				if (ConfiguredProject is DotNetProject) {
+					((DotNetProject)ConfiguredProject).UpdateResourceHandler (migrateIds);
+				} else if (DataObject is SolutionFolder) {
+					foreach (DotNetProject prj in ((SolutionFolder)DataObject).GetAllItems<DotNetProject> ())
+						prj.UpdateResourceHandler (migrateIds);
+				} else if (ConfiguredSolution != null) {
+					foreach (DotNetProject prj in ConfiguredSolution.GetAllSolutionItems<DotNetProject> ())
+						prj.UpdateResourceHandler (migrateIds);
+				}
+			}
+		}
+
 	}
 	
 	partial class NamespaceSynchronisationPanelWidget : Gtk.Bin
@@ -66,15 +104,19 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 		NamespaceSynchronisationPanel panel;
 		TreeStore previewStore;
 		TreeView previewTree;
+		bool resourceNamingChanged;
+		bool initialResourceNaming;
+		bool firstLoad = true;
+		
+		public bool ResourceNamingChanged {
+			get { return resourceNamingChanged; }
+		}
 		
 		public NamespaceSynchronisationPanelWidget (NamespaceSynchronisationPanel panel)
 		{
 			this.panel = panel;
 			
 			this.Build ();
-			
-			//FIXME: implement the feature this maps to. See bug #470860 for partial patch
-			checkVSStyleResourceNames.Visible = false;
 			
 			checkAssociateNamespacesDirectories.Toggled += UpdateNamespaceSensitivity;
 			UpdateNamespaceSensitivity (null, EventArgs.Empty);
@@ -121,7 +163,24 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 				|| policy.DirectoryNamespaceAssociation == DirectoryNamespaceAssociation.PrefixedHierarchical;
 			radioHierarch.Active = policy.DirectoryNamespaceAssociation == DirectoryNamespaceAssociation.Hierarchical
 				|| policy.DirectoryNamespaceAssociation == DirectoryNamespaceAssociation.PrefixedHierarchical;
-			checkVSStyleResourceNames.Active = policy.VSStyleResourceNames;
+			
+			if (policy.ResourceNamePolicy == ResourceNamePolicy.FileFormatDefault) {
+				FileFormat format;
+				if (panel.ConfiguredSolutionItem != null)
+					format = panel.ConfiguredSolutionItem.FileFormat;
+				if (panel.DataObject is SolutionItem)
+					format = ((SolutionItem)panel.DataObject).ParentSolution.FileFormat;
+				else
+					format = panel.ConfiguredSolution.FileFormat;
+				checkVSStyleResourceNames.Active = format.Name.StartsWith ("MSBuild");
+			}
+			else
+				checkVSStyleResourceNames.Active = policy.ResourceNamePolicy == ResourceNamePolicy.MSBuild;
+			
+			if (firstLoad) {
+				initialResourceNaming = checkVSStyleResourceNames.Active;
+				firstLoad = false;
+			}
 		}
 		
 		public DotNetNamingPolicy GetPolicy ()
@@ -144,7 +203,8 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 				
 			}
 			
-			return new DotNetNamingPolicy (assoc, checkVSStyleResourceNames.Active);
+			ResourceNamePolicy rn = checkVSStyleResourceNames.Active ? ResourceNamePolicy.MSBuild : ResourceNamePolicy.FileName;
+			return new DotNetNamingPolicy (assoc, rn);
 		}
 		
 		[GLib.ConnectBefore]
@@ -188,6 +248,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 
 		protected virtual void UpdatePolicyNameList (object sender, System.EventArgs e)
 		{
+			resourceNamingChanged = checkVSStyleResourceNames.Active != initialResourceNaming;
 			panel.UpdateSelectedNamedPolicy ();
 		}
 	}

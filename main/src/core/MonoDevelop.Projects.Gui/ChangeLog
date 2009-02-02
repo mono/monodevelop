@@ -1,5 +1,14 @@
 2009-02-02  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects.Gui.Dialogs/PolicyOptionsPanel.cs: Fix
+	  warning.
+
+	*
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/NamespaceSynchronisationPanel.cs:
+	  Added support for resource naming policy.
+
+2009-02-02  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects.Gui.addin.xml: Moved namig panel to a
 	  new Source Code section.
 
