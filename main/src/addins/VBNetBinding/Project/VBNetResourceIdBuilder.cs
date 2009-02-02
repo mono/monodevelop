@@ -35,12 +35,12 @@ using MonoDevelop.Projects.Formats.MSBuild;
 
 namespace MonoDevelop.VBNetBinding
 {
-	class VBNetResourceIdBuilder : IResourceHandler
+	class VBNetResourceIdBuilder : MSBuildResourceHandler
 	{
-		public string GetDefaultResourceId (ProjectFile pf)
+		public override string GetDefaultResourceId (ProjectFile pf)
 		{
 			if (String.IsNullOrEmpty (pf.DependsOn))
-				return MSBuildProjectService.GetDefaultResourceId (pf);
+				return base.GetDefaultResourceId (pf);
 
 			string ns = null;
 			string classname = null;
@@ -70,7 +70,7 @@ namespace MonoDevelop.VBNetBinding
 				}
 
 				if (classname == null)
-					return MSBuildProjectService.GetDefaultResourceId (pf);
+					return base.GetDefaultResourceId (pf);
 
 				string culture, extn, only_filename;
 				if (MSBuildProjectService.TrySplitResourceName (pf.RelativePath, out only_filename, out culture, out extn))

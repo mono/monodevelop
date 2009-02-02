@@ -1,3 +1,7 @@
+2009-02-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Project/VBNetResourceIdBuilder.cs: Track api changes.
+
 2009-01-27  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* VBNetBinding.mdp:
