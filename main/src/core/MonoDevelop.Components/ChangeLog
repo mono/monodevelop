@@ -1,3 +1,7 @@
+2009-02-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/generated.cs: Flush.
+
 2009-01-19  Zach Lute  <zach.lute@gmail.com>
 
 	* MonoDevelop.Components/ListView.cs: The ListView page should now be

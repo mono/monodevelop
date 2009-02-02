@@ -1,5 +1,9 @@
 2009-02-02  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* gtk-gui/objects.xml: Flush.
+
+2009-02-02  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects.Gui.Dialogs/PolicyOptionsPanel.cs: Fix
 	  warning.
 
