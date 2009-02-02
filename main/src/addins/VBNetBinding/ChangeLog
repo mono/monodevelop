@@ -1,3 +1,7 @@
+2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/gui.stetic: Flush.
+
 2009-02-02  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Project/VBNetResourceIdBuilder.cs: Track api changes.

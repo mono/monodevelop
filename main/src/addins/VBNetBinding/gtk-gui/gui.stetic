@@ -2,7 +2,7 @@
 <stetic-interface>
   <configuration>
     <images-root-path>..</images-root-path>
-    <target-gtk-version>2.12</target-gtk-version>
+    <target-gtk-version>2.10</target-gtk-version>
   </configuration>
   <import>
     <widget-library name="../../../../build/bin/MonoDevelop.Core.Gui.dll" />
@@ -11,7 +11,7 @@
     <widget-library name="../../../../build/bin/MonoDevelop.Projects.Gui.dll" />
     <widget-library name="../../../../build/AddIns/BackendBindings/MonoDevelop.VBNetBinding.dll" internal="true" />
   </import>
-  <widget class="Gtk.Bin" id="MonoDevelop.VBNetBinding.ProjectOptionsPanelWidget" design-size="359 374">
+  <widget class="Gtk.Bin" id="MonoDevelop.VBNetBinding.ProjectOptionsPanelWidget" design-size="366 378">
     <property name="MemberName" />
     <property name="Visible">False</property>
     <child>
@@ -45,7 +45,6 @@
                   <widget class="Gtk.Label" id="label76">
                     <property name="MemberName" />
                     <property name="WidthRequest">18</property>
-                    <property name="LabelProp" translatable="yes" />
                   </widget>
                   <packing>
                     <property name="Position">0</property>
@@ -501,7 +500,6 @@
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
                     <property name="ShowScrollbars">True</property>
-                    <property name="HeadersClickable">True</property>
                   </widget>
                 </child>
               </widget>
@@ -560,7 +558,6 @@
                 <child>
                   <widget class="Gtk.Label" id="label10">
                     <property name="MemberName" />
-                    <property name="LabelProp" translatable="yes" />
                   </widget>
                   <packing>
                     <property name="Position">1</property>
