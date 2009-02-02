@@ -1,3 +1,11 @@
+2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/gui.stetic: Flush.
+
+	*
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/NamespaceSynchronisationPanel.cs:
+	  Fix crash when editing the default policy.
+
 2009-02-02  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects.Gui.Dialogs/PolicyOptionsPanel.cs:

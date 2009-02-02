@@ -65,7 +65,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 		
 		public override bool ValidateChanges ()
 		{
-			if (widget.ResourceNamingChanged) {
+			if (ConfiguredSolution != null && widget.ResourceNamingChanged) {
 				string msg = GettextCatalog.GetString ("The resource naming policy has changed");
 				string detail = "Changing the resource naming policy may cause run-time errors if the code using resources is not properly updated. There are two options:\n\n";
 				detail += GettextCatalog.GetString ("Update all resource identifiers to match the new policy. This will require changes in the source code that references resources using the old policy. Identifiers explicitly set using the file properties pad won't be changed.\n\n");
@@ -165,14 +165,18 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 				|| policy.DirectoryNamespaceAssociation == DirectoryNamespaceAssociation.PrefixedHierarchical;
 			
 			if (policy.ResourceNamePolicy == ResourceNamePolicy.FileFormatDefault) {
-				FileFormat format;
+				FileFormat format = null;
 				if (panel.ConfiguredSolutionItem != null)
 					format = panel.ConfiguredSolutionItem.FileFormat;
-				if (panel.DataObject is SolutionItem)
+				else if (panel.DataObject is SolutionItem)
 					format = ((SolutionItem)panel.DataObject).ParentSolution.FileFormat;
-				else
+				else if (panel.ConfiguredSolution != null)
 					format = panel.ConfiguredSolution.FileFormat;
-				checkVSStyleResourceNames.Active = format.Name.StartsWith ("MSBuild");
+
+				if (format != null)
+					checkVSStyleResourceNames.Active = format.Name.StartsWith ("MSBuild");
+				else
+					checkVSStyleResourceNames.Inconsistent = true;
 			}
 			else
 				checkVSStyleResourceNames.Active = policy.ResourceNamePolicy == ResourceNamePolicy.MSBuild;
@@ -248,7 +252,8 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 
 		protected virtual void UpdatePolicyNameList (object sender, System.EventArgs e)
 		{
-			resourceNamingChanged = checkVSStyleResourceNames.Active != initialResourceNaming;
+			resourceNamingChanged = checkVSStyleResourceNames.Active != initialResourceNaming || checkVSStyleResourceNames.Inconsistent;
+			checkVSStyleResourceNames.Inconsistent = false;
 			panel.UpdateSelectedNamedPolicy ();
 		}
 	}
