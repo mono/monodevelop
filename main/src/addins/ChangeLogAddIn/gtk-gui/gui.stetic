@@ -312,7 +312,7 @@
       <widget class="Gtk.Notebook" id="notebook1">
         <property name="MemberName" />
         <property name="CanFocus">True</property>
-        <property name="CurrentPage">1</property>
+        <property name="CurrentPage">0</property>
         <child>
           <widget class="Gtk.VBox" id="vbox2">
             <property name="MemberName" />
@@ -323,6 +323,7 @@
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
                 <property name="Label" translatable="yes">radiobutton1</property>
+                <property name="Active">True</property>
                 <property name="DrawIndicator">True</property>
                 <property name="HasLabel">False</property>
                 <property name="UseUnderline">True</property>
@@ -492,7 +493,7 @@ File changes will be logged in a ChangeLog located at the file's directory. The 
         <child>
           <widget class="Gtk.Label" id="label1">
             <property name="MemberName" />
-            <property name="LabelProp" translatable="yes">ChangLog Generation</property>
+            <property name="LabelProp" translatable="yes">ChangeLog Generation</property>
           </widget>
           <packing>
             <property name="type">tab</property>

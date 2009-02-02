@@ -1,3 +1,9 @@
+2009-02-02    <>
+
+	* gtk-gui/gui.stetic:
+	* gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs: Fix
+	typo.
+
 2009-02-01  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* ChangeLogPolicy.cs: Change default date formatting from

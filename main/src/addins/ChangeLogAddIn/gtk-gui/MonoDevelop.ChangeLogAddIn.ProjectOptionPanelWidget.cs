@@ -60,7 +60,7 @@ namespace MonoDevelop.ChangeLogAddIn {
             this.notebook1 = new Gtk.Notebook();
             this.notebook1.CanFocus = true;
             this.notebook1.Name = "notebook1";
-            this.notebook1.CurrentPage = 1;
+            this.notebook1.CurrentPage = 0;
             // Container child notebook1.Gtk.Notebook+NotebookChild
             this.vbox2 = new Gtk.VBox();
             this.vbox2.Name = "vbox2";
@@ -191,7 +191,7 @@ namespace MonoDevelop.ChangeLogAddIn {
             // Notebook tab
             this.label1 = new Gtk.Label();
             this.label1.Name = "label1";
-            this.label1.LabelProp = Mono.Unix.Catalog.GetString("ChangLog Generation");
+            this.label1.LabelProp = Mono.Unix.Catalog.GetString("ChangeLog Generation");
             this.notebook1.SetTabLabel(this.vbox2, this.label1);
             this.label1.ShowAll();
             // Container child notebook1.Gtk.Notebook+NotebookChild
