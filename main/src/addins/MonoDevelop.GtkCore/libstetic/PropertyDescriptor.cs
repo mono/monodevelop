@@ -201,7 +201,7 @@ namespace Stetic {
 			if (typeConverter != null && typeConverter.CanConvertTo (typeof(string)))
 				return typeConverter.ConvertToString (value);
 			else if (PropertyType == typeof(string[]))
-				return string.Join ("\n", (string[])value);
+				return value == null ? string.Empty : string.Join ("\n", (string[])value);
 			else if (PropertyType == typeof(DateTime))
 				return ((DateTime)value).Ticks.ToString ();
 			else if (PropertyType == typeof(TimeSpan))

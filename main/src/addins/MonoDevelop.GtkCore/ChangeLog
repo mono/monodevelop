@@ -1,5 +1,10 @@
 2009-02-02  Mike Kestner <mkestner@novell.com> 
 
+	* libstetic/PropertyDescriptor.cs: null guard the ValueToString
+	formatting for string arrays.
+
+2009-02-02  Mike Kestner <mkestner@novell.com> 
+
 	* libstetic/PropertyDescriptor.cs: handle empty string lists
 	* libstetic/wrapper/ComboBox.cs: some more null guarding for Items.
 	[Fixes #471244]
