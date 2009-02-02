@@ -1,3 +1,12 @@
+2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/MonoDevelop.VersionControl.Dialogs.CommitDialog.cs:
+	* gtk-gui/MonoDevelop.VersionControl.UrlBasedRepositoryEditor.cs:
+	* gtk-gui/MonoDevelop.VersionControl.Dialogs.EditRepositoryDialog.cs:
+	*
+	  gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:
+	  Flush.
+
 2009-02-02  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.VersionControl/ChangeSet.cs: Fix for Bug 469828
