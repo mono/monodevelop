@@ -1,3 +1,9 @@
+2009-02-02  Mike Kestner <mkestner@novell.com> 
+
+	* libstetic/PropertyDescriptor.cs: handle empty string lists
+	* libstetic/wrapper/ComboBox.cs: some more null guarding for Items.
+	[Fixes #471244]
+
 2009-01-30  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.GtkCore/WidgetFileDescriptionTemplate.cs: Propagate a

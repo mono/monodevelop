@@ -33,7 +33,7 @@ namespace Stetic.Wrapper {
 				int active = combobox.Active;
 
 				int row = 0, oi = 0, ni = 0;
-				while (oi < items.Length && ni < value.Length) {
+				while (value != null && oi < items.Length && ni < value.Length) {
 					if (items [oi] == value [ni]) {
 						oi++;
 						ni++;
@@ -56,10 +56,10 @@ namespace Stetic.Wrapper {
 					oi++;
 				}
 
-				while (ni < value.Length)
+				while (value != null && ni < value.Length)
 					combobox.InsertText (row++, value [ni++]);
 
-				items = value;
+				items = value == null ? new string [0] : value;
 				combobox.Active = active;
 
 				EmitNotify ("Items");

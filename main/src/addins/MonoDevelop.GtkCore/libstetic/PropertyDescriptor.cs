@@ -179,7 +179,7 @@ namespace Stetic {
 			else if (PropertyType == typeof(ImageInfo))
 				return ImageInfo.FromString (value);
 			else if (PropertyType == typeof(string[]))
-				return value.Split ('\n');
+				return string.IsNullOrEmpty (value) ? null : value.Split ('\n');
 			else if (PropertyType == typeof(DateTime))
 				return new DateTime (long.Parse (value));
 			else if (PropertyType == typeof(TimeSpan))
