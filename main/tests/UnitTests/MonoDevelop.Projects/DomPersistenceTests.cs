@@ -152,7 +152,7 @@ namespace MonoDevelop.Projects.DomTests
 			input.Name      = "Test";
 			input.MethodModifier = MethodModifier.IsConstructor;
 			input.Add (new DomParameter (input, "par1", DomReturnType.Void));
-			input.AddGenericParameter (new DomReturnType ("T"));
+			input.AddTypeParameter (new TypeParameter ("T"));
 			MemoryStream ms = new MemoryStream ();
 			BinaryWriter writer = new BinaryWriter (ms);
 			DomPersistence.Write (writer, DefaultNameEncoder, input);
@@ -163,8 +163,8 @@ namespace MonoDevelop.Projects.DomTests
 			Assert.AreEqual (true, result.IsConstructor);
 			Assert.AreEqual ("par1", result.Parameters [0].Name);
 			Assert.AreEqual ("Void", result.Parameters [0].ReturnType.Name);
-			Assert.AreEqual (1, result.GenericParameters.Count);
-			Assert.AreEqual ("T", result.GenericParameters [0].Name);
+			Assert.AreEqual (1, result.TypeParameters.Count);
+			Assert.AreEqual ("T", result.TypeParameters [0].Name);
 		}
 		
 		[Test()]
