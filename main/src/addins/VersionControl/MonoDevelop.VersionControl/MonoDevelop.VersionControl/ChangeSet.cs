@@ -18,6 +18,12 @@ namespace MonoDevelop.VersionControl
 		internal protected ChangeSet (Repository repo, string basePath)
 		{
 			this.repo = repo;
+			
+			//make sure the base path has a trailign slash, or ChangeLogWriter's
+			//GetDirectoryName call on it will take us up a directory
+			if (basePath[basePath.Length -1] != System.IO.Path.DirectorySeparatorChar)
+				basePath = basePath + System.IO.Path.DirectorySeparatorChar;
+			
 			this.basePath = basePath;
 		}
 		

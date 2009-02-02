@@ -1,5 +1,11 @@
 2009-02-02  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.VersionControl/ChangeSet.cs: Fix for Bug 469828
+	  - SVN: the local path of the checkout directory get into
+	  the log message.
+
+2009-02-02  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.VersionControl/ChangeSet.cs:
 	* MonoDevelop.VersionControl/CommitMessageStyle.cs:
 	* MonoDevelop.VersionControl.Dialogs/CommitDialog.cs:
