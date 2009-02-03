@@ -92,7 +92,7 @@ namespace MonoDevelop.AspNet.Parser
 				
 				ControlRegisterDirective crd = directive as ControlRegisterDirective;
 				if (crd != null && crd.TagPrefix == tagPrefix) {
-					string fullName =  WebTypeManager.GetControlTypeName (doc.FilePath, crd.Src);
+					string fullName =  WebTypeManager.GetUserControlTypeName (doc.Project, doc.FilePath, crd.Src);
 					if (fullName != null)
 						return fullName;
 				}
@@ -100,7 +100,6 @@ namespace MonoDevelop.AspNet.Parser
 			
 			string globalLookup = WebTypeManager.GetRegisteredTypeName (doc.Project, 
 			    System.IO.Path.GetDirectoryName (doc.FilePath), tagPrefix, tagName);
-			
 			
 			//returns null if type not found
 			return globalLookup;
@@ -141,7 +140,11 @@ namespace MonoDevelop.AspNet.Parser
 				}
 			}
 			
-			//FIXME: return controls from web.config
+			//return controls from web.config
+			string webDirectory = System.IO.Path.GetDirectoryName (doc.FilePath);
+			foreach (CompletionData cd in WebTypeManager.GetRegisteredTypeCompletionData (doc.Project, webDirectory, baseType)) {
+				yield return cd;
+			}
 		}
 		
 		public IType GetControlType (string tagPrefix, string tagName)
@@ -170,17 +173,15 @@ namespace MonoDevelop.AspNet.Parser
 				
 				ControlRegisterDirective crd = rd as ControlRegisterDirective;
 				if (crd != null && string.Compare (crd.TagName, tagName, StringComparison.OrdinalIgnoreCase) != 0) {
-					//FIXME: return the codebehind class's IType
-					type = WebTypeManager.AssemblyTypeLookup (doc.Project, "System.Web", "System.Web.UI", "UserControl");
-					if (type == null)
-						LoggingService.LogWarning ("Could not obtain IType for System.Web.UI.WebControls.WebControl");
-					return type;
-				
+					return WebTypeManager.GetUserControlType (doc.Project, crd.Src, System.IO.Path.GetDirectoryName (doc.FilePath));
 				}	
 			}
 			
-			//FIXME: return controls from web.config
-			return null;
+			IType globalLookup = WebTypeManager.GetRegisteredType (doc.Project, 
+			    System.IO.Path.GetDirectoryName (doc.FilePath), tagPrefix, tagName);
+			
+			//returns null if type not found
+			return globalLookup;
 		}
 		
 		public string GetTagPrefix (IType control)
@@ -196,7 +197,7 @@ namespace MonoDevelop.AspNet.Parser
 					return ard.TagPrefix;
 			}
 			
-			string globalPrefix = WebTypeManager.GetControlPrefix (doc.Project, control);
+			string globalPrefix = WebTypeManager.GetControlPrefix (doc.Project, System.IO.Path.GetDirectoryName (doc.FilePath), control);
 			if (globalPrefix != null)
 				return globalPrefix;
 			

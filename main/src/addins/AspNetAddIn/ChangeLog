@@ -1,5 +1,15 @@
 2009-02-03  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.AspNet/WebTypeManager.cs:
+	* MonoDevelop.AspNet/ProjectRegisteredControls.cs:
+	* MonoDevelop.AspNet.Parser/DocumentReferenceManager.cs:
+	  Implement full type lookup and listing mechanisms for
+	  controls registered in web.config. Enables full code
+	  completion for these controls. Fixes "Bug 470488 - Controls
+	  registered in web.config do not have code completion".
+
+2009-02-03  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.AspNet/AspNetAppProject.cs: Add a
 	  ControlRegistrationCache to the project to cache web.config
 	  control registrations.

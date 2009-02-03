@@ -123,6 +123,28 @@ namespace MonoDevelop.AspNet
 		public string Source { get; set; }
 		public string ConfigFile { get; set; }
 		
+		public bool IsAssembly {
+			get {
+				return !string.IsNullOrEmpty (Assembly) && !String.IsNullOrEmpty (TagPrefix) && !string.IsNullOrEmpty (Namespace);
+			}
+		}
+		
+		public bool IsUserControl {
+			get {
+				return !string.IsNullOrEmpty (TagName) && !String.IsNullOrEmpty (TagPrefix) && !string.IsNullOrEmpty (Source);
+			}
+		}
+		
+		public bool PrefixMatches (string prefix)
+		{
+			 return 0 == string.Compare (TagPrefix, prefix, StringComparison.InvariantCultureIgnoreCase);
+		}
+		
+		public bool NameMatches (string name)
+		{
+			 return 0 == string.Compare (TagName, name, StringComparison.InvariantCultureIgnoreCase);
+		}
+		
 		public RegistrationInfo (string configFile, string tagPrefix, string _namespace, string assembly, string tagName, string src)
 		{
 			ConfigFile = configFile;

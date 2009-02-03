@@ -37,8 +37,10 @@ using System.Linq;
 using System.Configuration;
 using System.Web.Configuration;
 
+using MonoDevelop.Core;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Projects.Gui.Completion;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 
@@ -48,11 +50,20 @@ namespace MonoDevelop.AspNet
 	
 	public static class WebTypeManager
 	{
-	
+		
+		//NOTE: we can't just fall through to GetRegisteredType, as we may be able to determine  usercontrols
 		public static string GetRegisteredTypeName (AspNetAppProject project, string webDirectory, string tagPrefix, string tagName)
 		{
+			IType t = GetRegisteredType (project, webDirectory, tagPrefix, tagName);
+			if (t != null)
+				return t.FullName;
+			return null;		
+		}
+		
+		public static IType GetRegisteredType (AspNetAppProject project, string webDirectory, string tagPrefix, string tagName)
+		{
 			if (project == null)
-				return GetMachineRegisteredTypeName (project, tagPrefix, tagName);
+				return GetMachineRegisteredType (project, tagPrefix, tagName);
 			
 			//global control registration not possible in ASP.NET 1.1
 			if (project.TargetFramework.ClrVersion == MonoDevelop.Core.ClrVersion.Net_1_1)
@@ -61,24 +72,63 @@ namespace MonoDevelop.AspNet
 			//read the web.config files at each level
 			//look up a level if a result not found until we hit the project root
 			foreach (RegistrationInfo info in project.ControlRegistrationCache.GetInfosForPath (webDirectory)) {
-				if (info.TagPrefix == tagPrefix) {
-					if (!string.IsNullOrEmpty (info.Namespace)) {
-						string fullName = AssemblyTypeNameLookup (project, info.Assembly, info.Namespace, tagName);
-						if (fullName != null)
-								return fullName;
+				if (info.PrefixMatches (tagPrefix)) {
+					if (info.IsAssembly) {
+						IType type = AssemblyTypeLookup (project, info.Assembly, info.Namespace, tagName);
+						if (type != null)
+								return type;
 					}
-					if (!string.IsNullOrEmpty (info.Source) && 0 == string.Compare (info.TagName, tagName, StringComparison.InvariantCultureIgnoreCase)) {
-						string fullName = GetControlTypeName (info.Source, Path.GetDirectoryName (info.ConfigFile));
-						if (fullName != null)
-								return fullName;
+					if (info.IsUserControl && info.NameMatches (tagName)) {
+						IType type = GetUserControlType (project, info.Source, Path.GetDirectoryName (info.ConfigFile));
+						if (type != null)
+								return type;
 					}
 				}
 			}
 			
-			return GetMachineRegisteredTypeName (project, tagPrefix, tagName);
+			return GetMachineRegisteredType (project, tagPrefix, tagName);
+		}
+		
+		public static IEnumerable<CompletionData> GetRegisteredTypeCompletionData (AspNetAppProject project, string webDirectory, IType baseType)
+		{
+			if (project == null) {
+				foreach (CompletionData cd in GetMachineRegisteredTypeCompletionData (project, baseType))
+					yield return cd;
+				yield break;
+			}	
+			
+			//global control registration not possible in ASP.NET 1.1
+			if (project.TargetFramework.ClrVersion == MonoDevelop.Core.ClrVersion.Net_1_1)
+				yield break;
+			
+			//read the web.config files at each level
+			//look up a level if a result not found until we hit the project root
+			foreach (RegistrationInfo info in project.ControlRegistrationCache.GetInfosForPath (webDirectory)) {
+				if (info.IsAssembly) {
+					foreach (IType t in ListControlClasses (project, baseType, info.Assembly, info.Namespace))
+						yield return new MonoDevelop.AspNet.Parser.AspTagCompletionData (info.TagPrefix + ":", t);
+				}
+				else if (info.IsUserControl) {
+					//TODO: resolve docs
+					//IType t = GetUserControlType (project, info.Source, Path.GetDirectoryName (info.ConfigFile));
+					//if (t != null)
+					yield return new CompletionData (info.TagPrefix + ":" + info.TagName, Gtk.Stock.GoForward);
+				}
+			}
+			
+			foreach (CompletionData cd in GetMachineRegisteredTypeCompletionData (project, baseType))
+				yield return cd;
 		}
 		
 		public static string GetMachineRegisteredTypeName (AspNetAppProject project, string tagPrefix, string tagName)
+		{
+			IType t = GetMachineRegisteredType (project, tagPrefix, tagName);
+			if (t != null)
+				return t.FullName;
+			return null;			
+		}
+		
+		public static IType GetMachineRegisteredType (AspNetAppProject project, string tagPrefix, string tagName)
 		{
 			//check in machine.config
 			Configuration config = ConfigurationManager.OpenMachineConfiguration ();
@@ -87,12 +137,25 @@ namespace MonoDevelop.AspNet
 			foreach (TagPrefixInfo tpxInfo in pages.Controls) {
 				if (tpxInfo.TagPrefix != tagPrefix)
 					continue;
-				string fullName = AssemblyTypeNameLookup (project, tagName, tpxInfo.Namespace, tpxInfo.Assembly);
-				if (fullName != null)
-					return fullName;
+				IType type = AssemblyTypeLookup (project, tagName, tpxInfo.Namespace, tpxInfo.Assembly);
+				if (type != null)
+					return type;
 				//user controls don't make sense in machine.config; ignore them
 			}
 			return null;
+		}
+		
+		public static IEnumerable<MonoDevelop.Projects.Gui.Completion.CompletionData>
+			GetMachineRegisteredTypeCompletionData (AspNetAppProject project, IType baseType)
+		{
+			Configuration config = ConfigurationManager.OpenMachineConfiguration ();
+			PagesSection pages = (PagesSection) config.GetSection ("system.web/pages");
+			
+			foreach (TagPrefixInfo tpxInfo in pages.Controls) {
+				if (!String.IsNullOrEmpty (tpxInfo.Namespace) && !String.IsNullOrEmpty (tpxInfo.Assembly) && !string.IsNullOrEmpty (tpxInfo.TagPrefix))
+					foreach (IType type in ListControlClasses (project, baseType, tpxInfo.Assembly, tpxInfo.Namespace))
+						yield return new MonoDevelop.AspNet.Parser.AspTagCompletionData (tpxInfo.TagPrefix, type);
+			}
 		}
 		
 		#region HTML type lookups
@@ -291,14 +354,21 @@ namespace MonoDevelop.AspNet
 			return cls;
 		}
 		
-		public static string GetControlPrefix (AspNetAppProject project, IType control)
+		public static string GetControlPrefix (AspNetAppProject project, string webDirectory, IType control)
 		{
 			if (control.Namespace == "System.Web.UI.WebControls")
 				return "asp";
 			else if (control.Namespace == "System.Web.UI.HtmlControls")
 				return string.Empty;
 			
-			//todo: look in web.config etc
+			//todo: handle user controls, and check assembly names properly
+			foreach (RegistrationInfo info in project.ControlRegistrationCache.GetInfosForPath (webDirectory)) {
+				if (info.IsAssembly && info.Namespace == control.Namespace && 
+				    TypeLookup (project, control.Name, control.Namespace, info.Assembly) != null)
+				{
+					return info.TagPrefix;
+				}
+			}
 			
 			//machine.config
 			Configuration config = ConfigurationManager.OpenMachineConfiguration ();
@@ -311,12 +381,23 @@ namespace MonoDevelop.AspNet
 			return null;
 		}
 		
-		public static string GetControlTypeName (string fileName, string relativeToPath)
+		public static string GetUserControlTypeName (AspNetAppProject project, string fileName, string relativeToPath)
+		{
+			IType type = GetUserControlType (project, fileName, relativeToPath);
+			if (type != null)
+				return type.FullName;
+			return null;		
+		}
+		
+		public static IType GetUserControlType (AspNetAppProject project, string fileName, string relativeToPath)
 		{
 			//FIXME: actually look up the type
 			//or maybe it's not necessary, as the compilers can't handle the types because
 			//they're only generated when the UserControl is hit.
-			return "System.Web.UI.UserControl";
+			IType type = AssemblyTypeLookup (project, "System.Web", "System.Web.UI", "UserControl");
+			if (type == null)
+				LoggingService.LogWarning ("Could not obtain IType for System.Web.UI.WebControls.WebControl");
+			return type;
 		}
 		
 		#region Global control registration tracking
