@@ -1,5 +1,9 @@
 2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* prj2make-sharp-lib.mdp: Fix target gtk# version.
+
+2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* prj2make-sharp-lib.mdp: Flush.
 
 2009-01-30  Mike Krüger  <mkrueger@novell.com>

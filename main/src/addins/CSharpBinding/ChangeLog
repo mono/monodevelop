@@ -1,6 +1,11 @@
 2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* CSharpBinding.mdp:
+	* gtk-gui/gui.stetic: Fix target gtk# version.
+
+2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* CSharpBinding.mdp:
 	* gtk-gui/CSharpBinding.CompilerOptionsPanelWidget.cs:
 	  Updated.
 
