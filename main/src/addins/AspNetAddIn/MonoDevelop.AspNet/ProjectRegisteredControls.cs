@@ -29,7 +29,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Web.Configuration;
 using System.Xml;
 
 namespace MonoDevelop.AspNet
@@ -45,12 +44,12 @@ namespace MonoDevelop.AspNet
 			this.project = project;
 		}
 		
-		public IList<TagPrefixInfo> GetInfosForPath (string webDirectory)
+		public IList<RegistrationInfo> GetInfosForPath (string webDirectory)
 		{
-			List<TagPrefixInfo> infos = new List<TagPrefixInfo> ();
+			List<RegistrationInfo> infos = new List<RegistrationInfo> ();
 			DirectoryInfo dir = new DirectoryInfo (webDirectory);
 			string projectRootParent = new DirectoryInfo (project.BaseDirectory).Parent.FullName;
-			while (dir != null && dir.FullName.Length < projectRootParent.Length && dir.FullName != projectRootParent)
+			while (dir != null && dir.FullName.Length > projectRootParent.Length && dir.FullName != projectRootParent)
 			{
 				string configPath = Path.Combine (dir.FullName, "web.config");
 				try {
@@ -66,7 +65,7 @@ namespace MonoDevelop.AspNet
 			return infos;
 		}
 		
-		IEnumerable<TagPrefixInfo> GetInfosForFile (string filename)
+		IEnumerable<RegistrationInfo> GetInfosForFile (string filename)
 		{
 			WebConfig cached;
 			DateTime lastWriteUtc = File.GetLastWriteTimeUtc (filename);
@@ -79,9 +78,9 @@ namespace MonoDevelop.AspNet
 			return cached.Infos;
 		}
 		
-		TagPrefixInfo[] LoadWebConfig (string configFile)
+		RegistrationInfo[] LoadWebConfig (string configFile)
 		{
-			List<TagPrefixInfo> list = new List<TagPrefixInfo> ();
+			List<RegistrationInfo> list = new List<RegistrationInfo> ();
 			using (XmlTextReader reader = new XmlTextReader (configFile))
 			{
 				reader.WhitespaceHandling = WhitespaceHandling.None;
@@ -92,13 +91,15 @@ namespace MonoDevelop.AspNet
 					&& reader.ReadToDescendant ("controls") && reader.NodeType == XmlNodeType.Element
 				    && reader.ReadToDescendant ("add") && reader.NodeType == XmlNodeType.Element) {
 					do {
-						list.Add (new TagPrefixInfo (
+						list.Add (new RegistrationInfo (
+							configFile,
 							reader.GetAttribute ("tagPrefix"),
 							reader.GetAttribute ("namespace"),
 							reader.GetAttribute ("assembly"),
 							reader.GetAttribute ("tagName"),
 							reader.GetAttribute ("src")
 						));
+						//Console.WriteLine (list[list.Count -1]);
 					} while (reader.ReadToNextSibling ("add"));
 				}
 			}
@@ -109,7 +110,34 @@ namespace MonoDevelop.AspNet
 		class WebConfig
 		{
 			public DateTime LastWriteUtc;
-			public TagPrefixInfo[] Infos;
+			public RegistrationInfo[] Infos;
 		}
+	}
+	
+	class RegistrationInfo
+	{
+		public string TagPrefix { get; set; }
+		public string Namespace { get; set; }
+		public string Assembly { get; set; }
+		public string TagName { get; set; }
+		public string Source { get; set; }
+		public string ConfigFile { get; set; }
+		
+		public RegistrationInfo (string configFile, string tagPrefix, string _namespace, string assembly, string tagName, string src)
+		{
+			ConfigFile = configFile;
+			TagPrefix = tagPrefix;
+			Namespace = _namespace;
+			Assembly = assembly;
+			TagName = tagName;
+			Source = src;
+		}
+		
+		public override string ToString ()
+		{
+			return string.Format("[RegistrationInfo: TagPrefix={0}, Namespace={1}, Assembly={2}, TagName={3}, Source={4}, ConfigFile={5}]",
+			                     TagPrefix, Namespace, Assembly, TagName, Source, ConfigFile);
+		}
+
 	}
 }

@@ -65,6 +65,8 @@ namespace MonoDevelop.AspNet
 		[ItemProperty ("Target", ValueType=typeof(WebDeployTarget), Scope="*")]
 		protected WebDeployTargetCollection webDeployTargets = new WebDeployTargetCollection ();
 		
+		ProjectRegisteredControls controlRegistrationCache;
+		
 		#region properties
 		
 		public override string ProjectType {
@@ -103,6 +105,15 @@ namespace MonoDevelop.AspNet
 		
 		public WebDeployTargetCollection WebDeployTargets {
 			get { return webDeployTargets; }
+		}
+		
+		internal ProjectRegisteredControls ControlRegistrationCache {
+			get {
+				if (controlRegistrationCache == null)
+					controlRegistrationCache = new ProjectRegisteredControls (this);
+				
+				return controlRegistrationCache;
+			}
 		}
 		
 		public override ClrVersion[] SupportedClrVersions {

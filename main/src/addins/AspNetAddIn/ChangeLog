@@ -1,3 +1,16 @@
+2009-02-03  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AspNet/AspNetAppProject.cs: Add a
+	  ControlRegistrationCache to the project to cache web.config
+	  control registrations.
+
+	* MonoDevelop.AspNet/ProjectRegisteredControls.cs: Use a
+	  custom class for encapsulating registration info instead of
+	  TagPrefixInfo, so we can attach extra data.
+
+	* MonoDevelop.AspNet/WebTypeManager.cs: Use project's
+	  ControlRegistrationCache for type lookups.
+
 2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:

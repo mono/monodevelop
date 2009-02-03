@@ -60,16 +60,19 @@ namespace MonoDevelop.AspNet
 			
 			//read the web.config files at each level
 			//look up a level if a result not found until we hit the project root
-			DirectoryInfo dir = new DirectoryInfo (webDirectory);
-			string projectRootParent = new DirectoryInfo (project.BaseDirectory).Parent.FullName;
-			while (dir != null && dir.FullName != projectRootParent) {
-				string configPath =  Path.Combine (dir.FullName, "web.config");
-				if (File.Exists (configPath)) {
-					string fullName = GetFullTypeNameFromConfig (project, configPath, tagPrefix, tagName);
-					if (fullName != null)
-						return fullName;
+			foreach (RegistrationInfo info in project.ControlRegistrationCache.GetInfosForPath (webDirectory)) {
+				if (info.TagPrefix == tagPrefix) {
+					if (!string.IsNullOrEmpty (info.Namespace)) {
+						string fullName = AssemblyTypeNameLookup (project, info.Assembly, info.Namespace, tagName);
+						if (fullName != null)
+								return fullName;
+					}
+					if (!string.IsNullOrEmpty (info.Source) && 0 == string.Compare (info.TagName, tagName, StringComparison.InvariantCultureIgnoreCase)) {
+						string fullName = GetControlTypeName (info.Source, Path.GetDirectoryName (info.ConfigFile));
+						if (fullName != null)
+								return fullName;
+					}
 				}
-				dir = dir.Parent;
 			}
 			
 			return GetMachineRegisteredTypeName (project, tagPrefix, tagName);
@@ -88,56 +91,6 @@ namespace MonoDevelop.AspNet
 				if (fullName != null)
 					return fullName;
 				//user controls don't make sense in machine.config; ignore them
-			}
-			return null;
-		}
-		
-		static string GetFullTypeNameFromConfig (AspNetAppProject project, string configFile, string tagPrefix, string tagName)
-		{
-			XmlTextReader reader = null;
-			try {
-				//load the document from the text editor if it's open, else from the file
-				IEditableTextFile textFile = MonoDevelop.DesignerSupport.OpenDocumentFileProvider.Instance.GetEditableTextFile (configFile);
-				if (textFile != null)
-					reader = new XmlTextReader (textFile.Text, XmlNodeType.Document, null);
-				else
-					reader = new XmlTextReader (configFile);
-				reader.WhitespaceHandling = WhitespaceHandling.None;
-				
-				reader.MoveToContent();
-				if (reader.Name == "configuration"
-				    && reader.ReadToDescendant ("system.web") && reader.NodeType == XmlNodeType.Element
-				    && reader.ReadToDescendant ("pages") && reader.NodeType == XmlNodeType.Element
-					&& reader.ReadToDescendant ("controls") && reader.NodeType == XmlNodeType.Element
-				    && reader.ReadToDescendant ("add") && reader.NodeType == XmlNodeType.Element) {
-					do {
-						//check the tag prefix matches
-						if (reader.MoveToAttribute ("tagPrefix") && reader.Value == tagPrefix) {
-							//look up tags in assemblies
-							if (reader.MoveToAttribute ("namespace")) {
-								string _namespace = reader.Value;
-								string _assembly = reader.MoveToAttribute ("assembly")? reader.Value : null;
-								string fullName = AssemblyTypeNameLookup (project, _assembly, _namespace, tagName);
-								if (fullName != null)
-									return fullName;
-							}
-							
-							//look up tag in user controls
-							if (reader.MoveToAttribute ("tagName") && reader.Value == tagName
-							    && reader.MoveToAttribute ("src") && !string.IsNullOrEmpty (reader.Value)) {
-								string src = reader.Value;
-								string fullName = GetControlTypeName (src, Path.GetDirectoryName (configFile));
-								if (fullName != null) {
-									return fullName;
-								}
-							}
-						}
-					} while (reader.ReadToNextSibling ("add"));
-				}
-			} catch (XmlException) {
-			} finally {
-				if (reader!= null)
-					reader.Close ();
 			}
 			return null;
 		}
@@ -327,8 +280,6 @@ namespace MonoDevelop.AspNet
 					database = MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetProjectDom (project);
 				else
 					database = GetSystemWebAssemblyContext (MonoDevelop.Core.TargetFramework.Default);
-//FIXME				
-//ctx.UpdateDatabase ();
 				
 				if (database == null) {
 					MonoDevelop.Core.LoggingService.LogError ("WebTypeManager could not obtain a type database.");
