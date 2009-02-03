@@ -1,5 +1,12 @@
 2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
 
+	*
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/NamespaceSynchronisationPanel.cs:
+	  Show resource policy checkbox as inconsistent if a policy
+	  has not been yet chosen.
+
+2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* gtk-gui/gui.stetic: Flush.
 
 	*

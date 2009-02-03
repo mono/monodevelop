@@ -164,20 +164,8 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			radioHierarch.Active = policy.DirectoryNamespaceAssociation == DirectoryNamespaceAssociation.Hierarchical
 				|| policy.DirectoryNamespaceAssociation == DirectoryNamespaceAssociation.PrefixedHierarchical;
 			
-			if (policy.ResourceNamePolicy == ResourceNamePolicy.FileFormatDefault) {
-				FileFormat format = null;
-				if (panel.ConfiguredSolutionItem != null)
-					format = panel.ConfiguredSolutionItem.FileFormat;
-				else if (panel.DataObject is SolutionItem)
-					format = ((SolutionItem)panel.DataObject).ParentSolution.FileFormat;
-				else if (panel.ConfiguredSolution != null)
-					format = panel.ConfiguredSolution.FileFormat;
-
-				if (format != null)
-					checkVSStyleResourceNames.Active = format.Name.StartsWith ("MSBuild");
-				else
-					checkVSStyleResourceNames.Inconsistent = true;
-			}
+			if (policy.ResourceNamePolicy == ResourceNamePolicy.FileFormatDefault)
+				checkVSStyleResourceNames.Inconsistent = true;
 			else
 				checkVSStyleResourceNames.Active = policy.ResourceNamePolicy == ResourceNamePolicy.MSBuild;
 			
