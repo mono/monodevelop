@@ -1,3 +1,11 @@
+2009/02/03  Lluis Sanchez Gual  <lluis@novell.com>
+
+ * gtk-gui/generated.cs:
+ * MonoDevelop.CodeAnalysis.mdp:
+ * gtk-gui/MonoDevelop.CodeAnalysis.ViolationWidget.cs:
+ * gtk-gui/MonoDevelop.CodeAnalysis.ProjectOptionsPanelWidget.cs:
+   Flush.
+
 2008-11-05  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.CodeAnalysis.addin.xml: Bump MD version.

@@ -1,4 +1,5 @@
 <Combine name="MonoDevelop.CodeAnalysis" fileversion="2.0">
+  <Policies />
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="CombineConfiguration">
       <Entry build="True" name="MonoDevelop.CodeAnalysis.Gendarme" configuration="Debug" />
