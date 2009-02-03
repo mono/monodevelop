@@ -17,7 +17,7 @@ namespace MonoDevelop.XmlEditor.Completion
 	/// Holds the text for  namespace, child element or attribute 
 	/// autocomplete (intellisense).
 	/// </summary>
-	public class XmlCompletionData : IActionCompletionData
+	public class XmlCompletionData : ICompletionData
 	{
 		string text;
 		DataType dataType = DataType.XmlElement;
@@ -68,7 +68,15 @@ namespace MonoDevelop.XmlEditor.Completion
 		}
 		
 		public string CompletionText {
-			get { return text; }
+			get {
+					if ((dataType == DataType.XmlElement) || (dataType == DataType.XmlAttributeValue))
+						return text;
+					if (dataType == DataType.NamespaceUri)
+						return String.Concat("\"", text, "\"");
+					
+					// Move caret in the middle of the attribute quotes.
+					return String.Concat (text, "=\"|\"");
+			}
 		}
 		
 		/// <summary>
@@ -83,26 +91,5 @@ namespace MonoDevelop.XmlEditor.Completion
 			get { return DisplayFlags.None; }
 		}
 		
-		public void InsertCompletionText (ICompletionWidget widget, ICodeCompletionContext completionContext)
-		{
-			MonoDevelop.Ide.Gui.Content.IEditableTextBuffer buf = widget as MonoDevelop.Ide.Gui.Content.IEditableTextBuffer;
-			if (buf != null) {
-				buf.BeginAtomicUndo ();
-				buf.DeleteText (completionContext.TriggerOffset, buf.CursorPosition - completionContext.TriggerOffset);
-				if ((dataType == DataType.XmlElement) || (dataType == DataType.XmlAttributeValue)) {
-					buf.InsertText (buf.CursorPosition, text);
-				} else if (dataType == DataType.NamespaceUri) {
-					buf.InsertText (buf.CursorPosition,String.Concat("\"", text, "\""));					
-				} else {
-					// Insert an attribute.
-					buf.InsertText (buf.CursorPosition,String.Concat(text, "=\"\""));
-					
-					// Move caret into the middle of the attribute quotes.
-					buf.CursorPosition--;
-					buf.Select (buf.CursorPosition, buf.CursorPosition);
-				}
-				buf.EndAtomicUndo ();
-			}
-		}		
 	}
 }

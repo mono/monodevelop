@@ -1,3 +1,10 @@
+2009-02-02  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.XmlEditor.Completion/XmlCompletionData.cs:
+	  Don't use an IActionCompletionData, just generate the
+	  completion text as needed and use | as a caret marker.
+	  Fixes Bug 471681 - xml tag completion not working.
+
 2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.XmlEditor.mdp: Flush project format changes.
