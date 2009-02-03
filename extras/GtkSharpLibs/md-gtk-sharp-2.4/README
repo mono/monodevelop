@@ -1,5 +1,0 @@
-The Makefile in this directory generates a MonoDevelop add-in that adds
-support for GTK# 2.4.
-
-WARNING: the generation of the add-in will fail if you have any GTK# version
-installed in the GAC. To properly build it, uninstall GTK# and run make.

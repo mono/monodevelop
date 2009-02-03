@@ -1,7 +1,0 @@
-2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
-
-	* MacPlatform/AssemblyInfo.cs:
-	* WindowsPlatform/AssemblyInfo.cs:
-	* MacPlatform/MacPlatform.addin.xml:
-	* WindowsPlatform/WindowsPlatform.addin.xml: Bump MD version.
-
