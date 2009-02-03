@@ -1,5 +1,11 @@
 2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Makefile.am:
+	* gtk-gui/objects.xml:
+	* Mono.TextEditor.mdp: Updated references.
+
+2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* gtk-gui/generated.cs: Flush.
 
 2009-02-01  Michael Hutchinson  <mhutchinson@novell.com>
