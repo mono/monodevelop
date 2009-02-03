@@ -1,3 +1,12 @@
+2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/generated.cs:
+	* MonoDevelop.XmlEditor.mdp:
+	* gtk-gui/MonoDevelop.XmlEditor.Gui.XmlSchemasPanelWidget.cs:
+	*
+	  gtk-gui/MonoDevelop.XmlEditor.Gui.XmlEditorOptionsPanelWidget.cs:
+	  Flush.
+
 2009-02-02  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.XmlEditor.Completion/XmlCompletionData.cs:
