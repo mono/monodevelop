@@ -1,3 +1,15 @@
+2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs:
+	* gtk-gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:
+	*
+	  gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs:
+	  Flush.
+
+	* Makefile.am:
+	* MonoDevelop.SourceEditor.mdp: Fixed assembly references.
+
 2009-02-02  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Set caret
