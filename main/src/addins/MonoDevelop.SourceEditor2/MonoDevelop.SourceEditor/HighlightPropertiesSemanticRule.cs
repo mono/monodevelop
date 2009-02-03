@@ -75,7 +75,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public override void Analyze (Mono.TextEditor.Document doc, LineSegment line, List<Chunk> chunks, int startOffset, int endOffset)
 		{
-			for (int j = 0; j < chunks.Count; j++) {
+		/*	for (int j = 0; j < chunks.Count; j++) {
 				Chunk chunk = chunks[j];
 				if (chunk.Style.Color.Pixel != 0)
 					continue;
@@ -107,7 +107,7 @@ namespace MonoDevelop.SourceEditor
 						chunk.Length = propertyChunk.Offset - chunk.Offset;
 					}
 				}
-			}
+			}*/
 		}
 	}
 }

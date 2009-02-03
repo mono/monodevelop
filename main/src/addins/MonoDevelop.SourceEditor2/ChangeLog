@@ -1,3 +1,9 @@
+2009-02-03  Mike Krüger  <mkrueger@novell.com>
+
+	*
+	  MonoDevelop.SourceEditor/HighlightPropertiesSemanticRule.cs:
+	  Commented out some non functional code.
+
 2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:
