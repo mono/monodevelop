@@ -1,5 +1,9 @@
 2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.addin.xml: Added Report Bug link.
+
+2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* AssemblyInfo.cs:
 	* MonoDevelop.Ide.addin.xml: Bump MD version.
 
