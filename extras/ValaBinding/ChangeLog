@@ -1,3 +1,15 @@
+2009/02/03  Lluis Sanchez Gual  <lluis@novell.com>
+
+ * ValaBinding.mds:
+ * gtk-gui/generated.cs:
+ * gtk-gui/MonoDevelop.ValaBinding.AddPathDialog.cs:
+ * gtk-gui/MonoDevelop.ValaBinding.PackageDetails.cs:
+ * gtk-gui/MonoDevelop.ValaBinding.AddLibraryDialog.cs:
+ * gtk-gui/MonoDevelop.ValaBinding.EditPackagesDialog.cs:
+ * gtk-gui/MonoDevelop.ValaBinding.OutputOptionsPanel.cs:
+ * gtk-gui/MonoDevelop.ValaBinding.CodeGenerationPanel.cs:
+ * gtk-gui/MonoDevelop.ValaBinding.GeneralOptionsPanel.cs: Flush.
+
 2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* ValaBinding.mdp: Flush project format changes.
