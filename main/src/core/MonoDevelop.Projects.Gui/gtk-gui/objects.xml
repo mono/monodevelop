@@ -1,6 +1,0 @@
-<objects attr-sync="on">
-  <object type="MonoDevelop.Projects.Gui.Dialogs.OptionPanels.EnvVarList" palette-category="MonoDevelop.Projects.Gui" allow-children="false" base-type="Gtk.ScrolledWindow">
-    <itemgroups />
-    <signals />
-  </object>
-</objects>
