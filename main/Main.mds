@@ -1,6 +1,6 @@
 <Combine name="Main" fileversion="2.0" outputpath="build/bin/" MakePkgConfig="False" MakeLibPC="True">
   <Policies>
-    <DotNetNamingPolicy DirectoryNamespaceAssociation="Flat" VSStyleResourceNames="False" />
+    <DotNetNamingPolicy DirectoryNamespaceAssociation="Flat" ResourceNamePolicy="FileName" />
     <StandardHeader inheritsSet="MITX11License" />
     <TextStylePolicy FileWidth="120" TabWidth="4" TabsToSpaces="False" NoTabsAfterNonTabs="False" RemoveTrailingWhitespace="False" />
     <VersionControlPolicy inheritsSet="Mono" />

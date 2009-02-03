@@ -1,3 +1,7 @@
+2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Main.mds: Set resource naming policy.
+
 2009-02-02  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Main.mds: Set MD policies.
