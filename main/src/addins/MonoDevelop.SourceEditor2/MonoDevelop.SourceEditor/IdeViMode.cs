@@ -48,7 +48,7 @@ namespace MonoDevelop.SourceEditor
 			get { return base.Status; }
 			protected set {
 				base.Status = value;
-				IdeApp.Workbench.StatusBar.ShowMessage (GLib.Markup.EscapeText (value));
+				IdeApp.Workbench.StatusBar.ShowMessage (value);
 			}
 		}
 		

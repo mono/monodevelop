@@ -118,26 +118,38 @@ namespace MonoDevelop.Ide
 		
 		public void ShowMessage (string message)
 		{
-			DispatchService.AssertGuiThread ();
-			if (currentStatusImage != null) {
-				statusBox.Remove (currentStatusImage);
-				currentStatusImage = null;
-			}
-			statusLabel.Markup = !String.IsNullOrEmpty (message) ? " " + message.Replace ("\n", " ") : "";
+			ShowMessage (null, message, false);
+		}
+		
+		public void ShowMessage (string message, bool isMarkup)
+		{
+			ShowMessage (null, message, isMarkup);
 		}
 		
 		public void ShowMessage (Image image, string message)
+		{
+			ShowMessage (image, message, false);
+		}
+		
+		void ShowMessage (Image image, string message, bool isMarkup)
 		{
 			DispatchService.AssertGuiThread ();
 			if (currentStatusImage != image) {
 				if (currentStatusImage != null) 
 					statusBox.Remove (currentStatusImage);
 				currentStatusImage = image;
-				statusBox.PackStart (image, false, false, 3);
-				image.Show ();
+				if (image != null) {
+					statusBox.PackStart (image, false, false, 3);
+					image.Show ();
+				}
 			}
 			
-			statusLabel.Markup = !String.IsNullOrEmpty (message) ? " " + message.Replace ("\n", " ") : "";
+			string txt = !String.IsNullOrEmpty (message) ? " " + message.Replace ("\n", " ") : "";
+			if (isMarkup) {
+				statusLabel.Markup = txt;
+			} else {
+				statusLabel.Text = txt;
+			}
 		}
 		
 		public StatusIcon ShowStatusIcon (Gdk.Pixbuf image)

@@ -1,3 +1,11 @@
+2009-02-03  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs: Don't expect
+	  markup in status bar messages by default.
+
+	* MonoDevelop.Ide.Gui/StatusProgressMonitor.cs: Remove
+	  unnecessary markup escaping.
+
 2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.addin.xml: Added Report Bug link.
