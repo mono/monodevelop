@@ -1,3 +1,7 @@
+2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* CustomMakefile.cs: Make some regex static.
+
 2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Autotools.mdp: Flush project format changes.

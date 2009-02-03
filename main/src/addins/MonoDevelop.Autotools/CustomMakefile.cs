@@ -91,7 +91,7 @@ namespace MonoDevelop.Autotools
 			get {
 				if (varRegex == null)
 					varRegex = new Regex(@"[.|\n]*^(?<varname>[a-zA-Z_0-9]*)((?<sep>[ \t]*:?=[ \t]*$)|((?<sep>\s*:?=\s*)" +
-						multilineMatch + "))", RegexOptions.Multiline);
+						multilineMatch + "))", RegexOptions.Multiline | RegexOptions.Compiled);
 				return varRegex;
 			}
 		}
@@ -164,13 +164,19 @@ namespace MonoDevelop.Autotools
 				varToValuesDict [varname] = list;
 			}
 		}
+		
+		static Dictionary<string,Regex> targetExps = new Dictionary<string, Regex> ();
 	
 		public string GetTarget (string var)
 		{
 			//FIXME: //FILES = \
 			//\tabc.cs ---> the \t is not a must.. and there can be multiple \t's
-			Regex targetExp = new Regex(@"[.|\n]*^" + var + @"(?<sep>\s*:\s*)" + multilineMatch + @"\t" + multilineMatch, 
-				RegexOptions.Multiline);
+			Regex targetExp;
+			if (!targetExps.TryGetValue (var, out targetExp)) {
+				targetExp = new Regex(@"[.|\n]*^" + var + @"(?<sep>\s*:\s*)" + multilineMatch + @"\t" + multilineMatch, 
+				                      RegexOptions.Multiline | RegexOptions.Compiled);
+				targetExps [var] = targetExp;
+			}
 			return GetValue (var, targetExp);
 		}
 		
@@ -211,11 +217,16 @@ namespace MonoDevelop.Autotools
 			VarToValuesDict [var].Clear ();
 		}
 
+		static Dictionary<string,Regex> varExps = new Dictionary<string, Regex> ();
+		
 		void SaveVariable (string var)
 		{
-			//FIXME: Make this static
-			Regex varExp = new Regex(@"[.|\n]*^(?<var>" + var + @"((?<sep>\s*:?=\s*\n)|((?<sep>\s*:?=\s*)" + multilineMatch + ")))", 
-				RegexOptions.Multiline);
+			Regex varExp;
+			if (!varExps.TryGetValue (var, out varExp)) {
+				varExp = new Regex(@"[.|\n]*^(?<var>" + var + @"((?<sep>\s*:?=\s*\n)|((?<sep>\s*:?=\s*)" + multilineMatch + ")))", 
+				                         RegexOptions.Multiline | RegexOptions.Compiled);
+				varExps [var] = varExp;
+			}
 			
 			Match match = varExp.Match (content);
 			if (!match.Success) 
