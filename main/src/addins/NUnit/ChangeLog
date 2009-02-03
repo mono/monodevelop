@@ -1,3 +1,7 @@
+2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.NUnit.mdp: Flush.
+
 2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.NUnit.mds:

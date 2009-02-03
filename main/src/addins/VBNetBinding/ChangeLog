@@ -1,5 +1,9 @@
 2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* VBNetBinding.mdp: Flush.
+
+2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* VBNetBinding.mdp:
 	* gtk-gui/gui.stetic: Set correct gtk# version.
 
