@@ -1,5 +1,9 @@
 2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* WelcomePageContent.xml: Added Report Bug link.
+
+2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* AssemblyInfo.cs:
 	* WelcomePage.addin.xml: Bump MD version.
 
