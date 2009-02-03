@@ -1,3 +1,9 @@
+2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* frameworks.xml: Put Mono.Cairo back to the core mono
+	  package, since the runtime remaps that assembly version to
+	  the running mscorlib version.
+
 2009/01/30  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Core.Serialization/XmlMapAttributeProvider.cs:
