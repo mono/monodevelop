@@ -4,6 +4,6 @@ using System.Reflection;
 
 [assembly: AssemblyProduct ("MonoDevelop")]
 [assembly: AssemblyTitle ("NUnit support")]
-[assembly: AssemblyCopyright ("GPL")]
-[assembly: AssemblyVersion ("1.9.1")]
 [assembly: AssemblyDescription ("Integrates NUnit into the MonoDevelop IDE.")]
+[assembly: AssemblyVersion ("1.9.2")]
+[assembly: AssemblyCopyright ("GPL")]

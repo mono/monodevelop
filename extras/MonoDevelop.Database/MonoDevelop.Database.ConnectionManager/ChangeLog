@@ -1,5 +1,10 @@
 2009/02/03  Lluis Sanchez Gual  <lluis@novell.com>
 
+ * AssemblyInfo.cs:
+ * MonoDevelop.Database.ConnectionManager.addin.xml: Bump MD version.
+
+2009/02/03  Lluis Sanchez Gual  <lluis@novell.com>
+
  * NodeBuilders/UserNodeBuilder.cs:
  * NodeBuilders/ViewNodeBuilder.cs:
  * NodeBuilders/TableNodeBuilder.cs:

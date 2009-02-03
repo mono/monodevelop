@@ -4,6 +4,6 @@ using System.Reflection;
 
 [assembly: AssemblyProduct ("MonoDevelop")]
 [assembly: AssemblyTitle ("MonoDevelop Gui Services")]
-[assembly: AssemblyCopyright ("GPL")]
-[assembly: AssemblyVersion ("1.9.1")]
 [assembly: AssemblyDescription ("Provides basic GUI services")]
+[assembly: AssemblyVersion ("1.9.2")]
+[assembly: AssemblyCopyright ("GPL")]

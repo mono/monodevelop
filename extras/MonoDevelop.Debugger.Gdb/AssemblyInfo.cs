@@ -4,6 +4,6 @@ using System.Reflection;
 
 [assembly: AssemblyProduct ("MonoDevelop")]
 [assembly: AssemblyTitle ("GDB support for Mono.Debugging")]
-[assembly: AssemblyCopyright ("MIT X11")]
-[assembly: AssemblyVersion ("1.9.1")]
 [assembly: AssemblyDescription ("GNU Debugger support for Mono.Debugging")]
+[assembly: AssemblyVersion ("1.9.2")]
+[assembly: AssemblyCopyright ("MIT X11")]

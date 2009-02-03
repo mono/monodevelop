@@ -7,8 +7,8 @@
        description = "Provides the core services of the MonoDevelop platform"
        category    = "MonoDevelop Core"
        isroot      = "true"
-       version     = "1.9.1"
-       compatVersion = "1.9.1">
+       version     = "1.9.2"
+       compatVersion = "1.9.2">
 
 	<ExtensionPoint path = "/MonoDevelop/Core/ExecutionModes" name = "Execution modes">
 		<Description>Execution modes such as default, debug, profiler, etc.</Description>

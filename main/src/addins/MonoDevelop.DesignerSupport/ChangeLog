@@ -1,5 +1,10 @@
 2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* AssemblyInfo.cs:
+	* MonoDevelop.DesignerSupport.addin.xml: Bump MD version.
+
+2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.DesignerSupport.mdp: Use the system Mono.Cairo.
 

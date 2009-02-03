@@ -4,6 +4,6 @@ using System.Reflection;
 
 [assembly: AssemblyProduct ("MonoDevelop")]
 [assembly: AssemblyTitle ("Deployment Services for Linux")]
-[assembly: AssemblyCopyright ("MIT X11")]
-[assembly: AssemblyVersion ("1.9.1")]
 [assembly: AssemblyDescription ("Provides basic deployment services for Linux")]
+[assembly: AssemblyVersion ("1.9.2")]
+[assembly: AssemblyCopyright ("MIT X11")]

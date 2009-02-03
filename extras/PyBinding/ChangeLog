@@ -1,5 +1,9 @@
 2009/02/03  Lluis Sanchez Gual  <lluis@novell.com>
 
+ * configure: Bump MD version.
+
+2009/02/03  Lluis Sanchez Gual  <lluis@novell.com>
+
  * PyBinding.mds: Flush.
 
 2008-11-05  Lluis Sanchez Gual  <lluis@novell.com>

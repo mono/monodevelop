@@ -4,6 +4,6 @@ using System.Reflection;
 
 [assembly: AssemblyProduct ("MonoDevelop")]
 [assembly: AssemblyTitle ("XML Editor")]
-[assembly: AssemblyCopyright ("LGPL")]
-[assembly: AssemblyVersion ("1.9.1")]
 [assembly: AssemblyDescription ("XML Editor")]
+[assembly: AssemblyVersion ("1.9.2")]
+[assembly: AssemblyCopyright ("LGPL")]

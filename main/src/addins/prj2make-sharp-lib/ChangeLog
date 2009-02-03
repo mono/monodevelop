@@ -1,5 +1,10 @@
 2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* AssemblyInfo.cs:
+	* prj2make-sharp-lib.addin.xml: Bump MD version.
+
+2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* prj2make-sharp-lib.mdp: Fix target gtk# version.
 
 2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>

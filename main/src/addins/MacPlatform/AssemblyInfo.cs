@@ -4,6 +4,6 @@ using System.Reflection;
 
 [assembly: AssemblyProduct ("MonoDevelop")]
 [assembly: AssemblyTitle ("MonoDevelop Mac Platform Support")]
-[assembly: AssemblyCopyright ("MIT X11")]
-[assembly: AssemblyVersion ("1.9.1")]
 [assembly: AssemblyDescription ("Mac Platform Support for MonoDevelop")]
+[assembly: AssemblyVersion ("1.9.2")]
+[assembly: AssemblyCopyright ("MIT X11")]

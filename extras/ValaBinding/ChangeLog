@@ -1,5 +1,11 @@
 2009/02/03  Lluis Sanchez Gual  <lluis@novell.com>
 
+ * configure.in:
+ * AssemblyInfo.cs:
+ * ValaBinding.addin.xml: Bump MD version.
+
+2009/02/03  Lluis Sanchez Gual  <lluis@novell.com>
+
  * ValaBinding.mds:
  * gtk-gui/generated.cs:
  * gtk-gui/MonoDevelop.ValaBinding.AddPathDialog.cs:

@@ -1,5 +1,10 @@
 2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* AssemblyInfo.cs:
+	* MonoDevelop.Core.addin.xml: Bump MD version.
+
+2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* frameworks.xml: Put Mono.Cairo back to the core mono
 	  package, since the runtime remaps that assembly version to
 	  the running mscorlib version.

@@ -1,5 +1,10 @@
 2009/02/03  Lluis Sanchez Gual  <lluis@novell.com>
 
+ * AssemblyInfo.cs:
+ * PyBinding.addin.xml: Bump MD version.
+
+2009/02/03  Lluis Sanchez Gual  <lluis@novell.com>
+
  * PyBinding.mdp:
  * gtk-gui/generated.cs:
  * gtk-gui/PyBinding.Gui.PythonOptionsWidget.cs: Flush.

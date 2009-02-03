@@ -1,5 +1,10 @@
 2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* AssemblyInfo.cs:
+	* MonoDevelop.Deployment.Linux.addin.xml: Bump MD version.
+
+2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* gtk-gui/generated.cs:
 	* gtk-gui/MonoDevelop.Deployment.Linux.DesktopPanelWidget.cs:
 	* gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:

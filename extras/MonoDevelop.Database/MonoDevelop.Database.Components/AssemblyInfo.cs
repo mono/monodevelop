@@ -4,6 +4,6 @@ using System.Reflection;
 
 [assembly: AssemblyProduct ("MonoDevelop")]
 [assembly: AssemblyTitle ("MonoDevelop Database Components")]
-[assembly: AssemblyCopyright ("MIT X11")]
-[assembly: AssemblyVersion ("1.9.1")]
 [assembly: AssemblyDescription ("Database Components Module")]
+[assembly: AssemblyVersion ("1.9.2")]
+[assembly: AssemblyCopyright ("MIT X11")]

@@ -1,5 +1,10 @@
 2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* AssemblyInfo.cs:
+	* MonoDevelop.Ide.addin.xml: Bump MD version.
+
+2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.mdp: Flush.
 
 2009-02-02  Lluis Sanchez Gual  <lluis@novell.com>

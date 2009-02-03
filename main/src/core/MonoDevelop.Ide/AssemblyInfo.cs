@@ -4,6 +4,6 @@ using System.Reflection;
 
 [assembly: AssemblyProduct ("MonoDevelop")]
 [assembly: AssemblyTitle ("MonoDevelop Ide")]
-[assembly: AssemblyCopyright ("GPL")]
-[assembly: AssemblyVersion ("1.9.1")]
 [assembly: AssemblyDescription ("The MonoDevelop IDE application.")]
+[assembly: AssemblyVersion ("1.9.2")]
+[assembly: AssemblyCopyright ("GPL")]

@@ -4,6 +4,6 @@ using System.Reflection;
 
 [assembly: AssemblyProduct ("MonoDevelop")]
 [assembly: AssemblyTitle ("MonoDevelop Profiling Addin")]
-[assembly: AssemblyCopyright ("MIT X11")]
-[assembly: AssemblyVersion ("0.2.0")]
 [assembly: AssemblyDescription ("MonoDevelop Profiling Addin")]
+[assembly: AssemblyVersion ("0.2.0")]
+[assembly: AssemblyCopyright ("MIT X11")]

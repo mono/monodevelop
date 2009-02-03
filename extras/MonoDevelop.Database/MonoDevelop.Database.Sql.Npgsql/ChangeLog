@@ -1,5 +1,10 @@
 2009/02/03  Lluis Sanchez Gual  <lluis@novell.com>
 
+ * AssemblyInfo.cs:
+ * MonoDevelop.Database.Sql.Npgsql.addin.xml: Bump MD version.
+
+2009/02/03  Lluis Sanchez Gual  <lluis@novell.com>
+
  * gtk-gui/generated.cs:
  * gtk-gui/MonoDevelop.Database.Sql.Npgsql.NpgsqlColumnEditorWidget.cs:
  *

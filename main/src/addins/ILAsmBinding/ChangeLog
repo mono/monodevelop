@@ -1,3 +1,8 @@
+2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AssemblyInfo.cs:
+	* ILAsmBinding.addin.xml: Bump MD version.
+
 2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* ILAsmBinding.mdp: Flush project format changes.

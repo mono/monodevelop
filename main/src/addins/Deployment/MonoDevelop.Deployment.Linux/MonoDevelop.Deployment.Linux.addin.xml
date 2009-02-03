@@ -6,20 +6,20 @@
        url         = "http://www.monodevelop.com"
        description = "Provides basic deployment services for Linux"
 	   category    = "Deployment"
-       version     = "1.9.1"
-       compatVersion = "1.9.1">
+       version     = "1.9.2"
+       compatVersion = "1.9.2">
 
 	<Runtime>
 		<Import assembly="MonoDevelop.Deployment.Linux.dll"/>
 	</Runtime>
 
 	<Dependencies>
-		<Addin id="Core" version="1.9.1"/>
-		<Addin id="Core.Gui" version="1.9.1"/>
-		<Addin id="Projects" version="1.9.1"/>
-		<Addin id="Projects.Gui" version="1.9.1"/>
-		<Addin id="Ide" version="1.9.1"/>
-		<Addin id="Deployment" version="1.9.1"/>
+		<Addin id="Core" version="1.9.2"/>
+		<Addin id="Core.Gui" version="1.9.2"/>
+		<Addin id="Projects" version="1.9.2"/>
+		<Addin id="Projects.Gui" version="1.9.2"/>
+		<Addin id="Ide" version="1.9.2"/>
+		<Addin id="Deployment" version="1.9.2"/>
 	</Dependencies>
 
 	<Extension path = "/MonoDevelop/Ide/Commands">

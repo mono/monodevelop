@@ -1,3 +1,8 @@
+2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AssemblyInfo.cs:
+	* MonoDevelop.GtkCore.addin.xml: Bump MD version.
+
 2009-02-02  Mike Kestner <mkestner@novell.com> 
 
 	* libstetic/PropertyDescriptor.cs: null guard the ValueToString

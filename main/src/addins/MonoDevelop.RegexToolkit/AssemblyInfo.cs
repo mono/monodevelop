@@ -4,6 +4,6 @@ using System.Reflection;
 
 [assembly: AssemblyProduct ("MonoDevelop")]
 [assembly: AssemblyTitle ("Regex Toolkit")]
-[assembly: AssemblyCopyright ("X11")]
-[assembly: AssemblyVersion ("1.9.1")]
 [assembly: AssemblyDescription ("Provides a testing workbench for regular expressions")]
+[assembly: AssemblyVersion ("1.9.2")]
+[assembly: AssemblyCopyright ("X11")]

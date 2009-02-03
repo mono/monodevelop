@@ -1,10 +1,10 @@
 #!/bin/bash
-VERSION=1.9.1
+VERSION=1.9.2
 PACKAGE=aspnetedit
 prefix=/usr/local
 config=DEBUG
 configurations=" RELEASE DEBUG"
-required_packages=" mono-addins;0.3 monodevelop-core-addins;1.9.1 gecko-sharp-2.0;0.10 gtk-sharp-2.0;2.8.3 monodevelop;1.9.1"
+required_packages=" mono-addins;0.3 monodevelop-core-addins;1.9.2 gecko-sharp-2.0;0.10 gtk-sharp-2.0;2.8.3 monodevelop;1.9.2"
 
 usage ()
 {

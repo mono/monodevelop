@@ -1,5 +1,10 @@
 2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* AssemblyInfo.cs:
+	* MonoDevelop.SourceEditor.addin.xml: Bump MD version.
+
+2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* gtk-gui/gui.stetic:
 	* gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs:
 	* gtk-gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:

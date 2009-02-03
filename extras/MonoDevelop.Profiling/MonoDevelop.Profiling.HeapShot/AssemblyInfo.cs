@@ -4,6 +4,6 @@ using System.Reflection;
 
 [assembly: AssemblyProduct ("MonoDevelop")]
 [assembly: AssemblyTitle ("HeapShot Profiler Add-in")]
-[assembly: AssemblyCopyright ("MIT X11")]
-[assembly: AssemblyVersion ("0.2.0")]
 [assembly: AssemblyDescription ("HeapShot Profiler Add-in")]
+[assembly: AssemblyVersion ("0.2.0")]
+[assembly: AssemblyCopyright ("MIT X11")]

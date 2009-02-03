@@ -6,10 +6,10 @@
        url         = "http://www.monodevelop.com"
        description = "Mozilla Web Browser component using GeckoSharp and GtkMozEmbed"
        category    = "Platform Support"
-       version     = "1.9.1">
+       version     = "1.9.2">
 
 	<Dependencies>
-		<Addin id = "Core.Gui" version = "1.9.1"/>
+		<Addin id = "Core.Gui" version = "1.9.2"/>
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/Core/WebBrowsers">

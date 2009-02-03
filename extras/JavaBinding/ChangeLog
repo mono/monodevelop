@@ -1,5 +1,11 @@
 2009/02/03  Lluis Sanchez Gual  <lluis@novell.com>
 
+ * configure:
+ * AssemblyInfo.cs:
+ * JavaBinding.addin.xml: Bump MD version.
+
+2009/02/03  Lluis Sanchez Gual  <lluis@novell.com>
+
  * JavaBinding.mds:
  * gtk-gui/gui.stetic:
  * gtk-gui/generated.cs:

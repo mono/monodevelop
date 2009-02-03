@@ -4,5 +4,5 @@ using System.Reflection;
 
 [assembly: AssemblyProduct ("MonoDevelop")]
 [assembly: AssemblyTitle ("MonoDevelop Components")]
+[assembly: AssemblyVersion ("1.9.2")]
 [assembly: AssemblyCopyright ("GPL")]
-[assembly: AssemblyVersion ("1.9.1")]

@@ -1,3 +1,8 @@
+2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AssemblyInfo.cs:
+	* CBinding.addin.xml: Bump MD version.
+
 2009-01-27  Mike Krüger  <mkrueger@novell.com>
 
 	* CBinding.addin.xml: fixed "Bug 468416 - *.h aren't colorized as c++

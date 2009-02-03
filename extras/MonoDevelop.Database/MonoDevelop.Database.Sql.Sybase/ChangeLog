@@ -1,3 +1,8 @@
+2009/02/03  Lluis Sanchez Gual  <lluis@novell.com>
+
+ * AssemblyInfo.cs:
+ * MonoDevelop.Database.Sql.Sybase.addin.xml: Bump MD version.
+
 2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Database.Sql.Sybase.mdp: Flush project format changes.

@@ -6,7 +6,7 @@
 	   url         = "http://salmonsalvo.net/"
 	   description = "Welcome Page for MonoDevelop"
 	   category    = "MonoDevelop Core"	   
-       version     = "1.9.1">
+       version     = "1.9.2">
 	
 	<Runtime>
 		<Import assembly="WelcomePage.dll"/>
@@ -16,10 +16,10 @@
 	</Runtime>
 
 	<Dependencies>
-	    <Addin id="Core" version="1.9.1"/>
-	    <Addin id="Core.Gui" version="1.9.1"/>
-	    <Addin id="Projects" version="1.9.1"/>
-		<Addin id="Ide" version="1.9.1"/>
+	    <Addin id="Core" version="1.9.2"/>
+	    <Addin id="Core.Gui" version="1.9.2"/>
+	    <Addin id="Projects" version="1.9.2"/>
+		<Addin id="Ide" version="1.9.2"/>
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/Ide/Commands">

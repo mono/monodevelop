@@ -6,15 +6,15 @@
        url         = ""
        description = "Provides an assembly browser for the MonoDevelop"
        category    = "MonoDevelop Core"
-       version     = "1.9.1">
+       version     = "1.9.2">
 	
 	<Runtime>
 		<Import assembly="MonoDevelop.AssemblyBrowser.dll"/>
 	</Runtime>
 	
 	<Dependencies>
-	    <Addin id="Core" version="1.9.1"/>
-		<Addin id="Ide" version="1.9.1"/>
+	    <Addin id="Core" version="1.9.2"/>
+		<Addin id="Ide" version="1.9.2"/>
 	</Dependencies>
 	
 	<!-- Extension points -->

@@ -1,5 +1,10 @@
 2009/02/03  Lluis Sanchez Gual  <lluis@novell.com>
 
+ * AssemblyInfo.cs:
+ * MonoDevelop.Database.Components.addin.xml: Bump MD version.
+
+2009/02/03  Lluis Sanchez Gual  <lluis@novell.com>
+
  * gtk-gui/gui.stetic:
  * gtk-gui/objects.xml:
  * gtk-gui/generated.cs:

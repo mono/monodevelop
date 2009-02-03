@@ -6,14 +6,14 @@
        url         = "http://www.monodevelop.com/"
        description = "CSharp Language Binding"
 	   category    = "Language bindings"
-       version     = "1.9.1">
+       version     = "1.9.2">
 	
 	<Dependencies>
-	    <Addin id="Core" version="1.9.1"/>
-	    <Addin id="Core.Gui" version="1.9.1"/>
-    	<Addin id="Projects" version="1.9.1"/>
-		<Addin id="Projects.Gui" version="1.9.1"/>
-		<Addin id="Ide" version="1.9.1"/>
+	    <Addin id="Core" version="1.9.2"/>
+	    <Addin id="Core.Gui" version="1.9.2"/>
+    	<Addin id="Projects" version="1.9.2"/>
+		<Addin id="Projects.Gui" version="1.9.2"/>
+		<Addin id="Ide" version="1.9.2"/>
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
@@ -132,7 +132,7 @@
 	        <Import assembly="MonoDevelop.CSharpBinding.Autotools.dll"/>
 	    </Runtime>
 		<Dependencies>
-			<Addin id="Autotools" version="1.9.1"/>
+			<Addin id="Autotools" version="1.9.2"/>
 		</Dependencies>
 		<Extension path = "/MonoDevelop/Autotools/SimpleSetups">
 			<Class class="CSharpBinding.Autotools.CSharpAutotoolsSetup" />

@@ -4,6 +4,6 @@ using System.Reflection;
 
 [assembly: AssemblyProduct ("MonoDevelop")]
 [assembly: AssemblyTitle ("Add-in Authoring")]
-[assembly: AssemblyCopyright ("MIT X11")]
-[assembly: AssemblyVersion ("1.9.0")]
 [assembly: AssemblyDescription ("This add-in provides utilities for creating Mono.Addins based libraries and applications")]
+[assembly: AssemblyVersion ("1.9.0")]
+[assembly: AssemblyCopyright ("MIT X11")]
