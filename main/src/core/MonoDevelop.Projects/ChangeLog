@@ -1,5 +1,10 @@
 2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects.Dom/CopyDomVisitor.cs: Propagate
+	  source project dom when copying types.
+
+2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* AssemblyInfo.cs:
 	* MonoDevelop.Projects.addin.xml: Bump MD version.
 
