@@ -1,3 +1,7 @@
+2009-02-03  David Makovský (Yakeen)  <yakeen@sannyas-on.net>
+
+	* MonoDevelop.Ide.addin.xml: fixed typo
+
 2009-02-03  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs: Don't expect
