@@ -1,3 +1,15 @@
+2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/generated.cs:
+	* gtk-gui/MonoDevelop.AspNet.Gui.XspOptionsPanelWidget.cs:
+	* gtk-gui/MonoDevelop.AspNet.Deployment.WebTargetEditor.cs:
+	* gtk-gui/MonoDevelop.AspNet.Deployment.WebDeployTargetEditor.cs:
+	* gtk-gui/MonoDevelop.AspNet.Deployment.WebDeployLaunchDialog.cs:
+	* gtk-gui/MonoDevelop.AspNet.Gui.AspNetConfigurationPanelWidget.cs:
+	*
+	  gtk-gui/MonoDevelop.AspNet.Deployment.WebDeployOptionsPanelWidget.cs:
+	  Flush.
+
 2009-01-30  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.AspNet/AspNetFileDescriptionTemplate.cs: Propagate a
