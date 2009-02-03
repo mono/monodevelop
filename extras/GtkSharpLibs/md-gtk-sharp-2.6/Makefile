@@ -1,7 +1,7 @@
-ADDIN_VERSION=2.6.0.21
-CORE_ADDIN_VERSION=1.9.0
+ADDIN_VERSION=2.6.0.23
+CORE_ADDIN_VERSION=1.9.1
 TARGET_VERSION=2.6
-POLICY_VERSION=2.4 2.6 2.8 2.10
+POLICY_VERSION=2.4 2.6 2.8 2.10 2.12 2.14 2.16 2.18
 GTK_VERSION=2.6.0
 
 GTK_TARBALL=gtk-sharp-$(GTK_VERSION).tar.gz
@@ -37,7 +37,7 @@ clean:
 	rm -rf $(FILES) $(dir $(LIBS)) $(ADDIN_FILE) $(GTK_TARBALL) $(GTK_DIR) gconf files lib
 
 $(GTK_TARBALL):
-	wget http://go-mono.com/sources/gtk-sharp-2.0/$(GTK_TARBALL)
+	wget http://go-mono.com/sources/gtk-sharp/$(GTK_TARBALL)
 	rm -rf $(GTK_DIR)
 	tar xvfz $(GTK_TARBALL)
 
