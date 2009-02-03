@@ -128,7 +128,6 @@ namespace CSharpBinding {
             this.hbox6.Spacing = 6;
             // Container child hbox6.Gtk.Box+BoxChild
             this.codepageEntry = Gtk.ComboBoxEntry.NewText();
-            this.codepageEntry.AppendText("");
             this.codepageEntry.Name = "codepageEntry";
             this.hbox6.Add(this.codepageEntry);
             Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.hbox6[this.codepageEntry]));
@@ -269,7 +268,6 @@ namespace CSharpBinding {
             w19.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table2.Gtk.Table+TableChild
             this.langVerCombo = Gtk.ComboBox.NewText();
-            this.langVerCombo.AppendText("");
             this.langVerCombo.Name = "langVerCombo";
             this.table2.Add(this.langVerCombo);
             Gtk.Table.TableChild w20 = ((Gtk.Table.TableChild)(this.table2[this.langVerCombo]));
