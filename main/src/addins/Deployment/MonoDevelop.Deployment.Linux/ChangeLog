@@ -1,3 +1,13 @@
+2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/generated.cs:
+	* gtk-gui/MonoDevelop.Deployment.Linux.DesktopPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:
+	* gtk-gui/MonoDevelop.Deployment.Linux.BasicOptionPanelWidget.cs:
+	*
+	  gtk-gui/MonoDevelop.Deployment.Linux.MenuCategorySelectorDialog.cs:
+	  Flush.
+
 2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Deployment.Linux.mdp: Flush project format changes.

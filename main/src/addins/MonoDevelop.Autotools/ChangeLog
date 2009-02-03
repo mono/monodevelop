@@ -1,5 +1,15 @@
 2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* gtk-gui/generated.cs:
+	* gtk-gui/MonoDevelop.Autotools.GenerateMakefilesDialog.cs:
+	* gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:
+	*
+	  gtk-gui/MonoDevelop.Autotools.MakefileIntegrationFeatureWidget.cs:
+	  Flush.
+
+2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* CustomMakefile.cs: Make some regex static.
 
 2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
