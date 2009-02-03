@@ -60,11 +60,11 @@ namespace MonoDevelop.CSharpBinding.Gui
 		{
 			base.Initialize ();
 			InitTracker ();
-			Mono.TextEditor.ITextEditorDataProvider view = this.Document.ActiveView as Mono.TextEditor.ITextEditorDataProvider;
+/*			Mono.TextEditor.ITextEditorDataProvider view = this.Document.ActiveView as Mono.TextEditor.ITextEditorDataProvider;
 			if (view != null) {
 				view.GetTextEditorData ().VirtualSpaceManager = new IndentVirtualSpaceManager (view.GetTextEditorData (), new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (), Editor));
 				view.GetTextEditorData ().Caret.AllowCaretBehindLineEnd = true;
-			}
+			}*/
 		}
 		
 		class IndentVirtualSpaceManager : Mono.TextEditor.TextEditorData.IVirtualSpaceManager
