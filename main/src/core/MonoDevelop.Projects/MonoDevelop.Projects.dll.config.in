@@ -1,3 +1,0 @@
-<configuration>
-  <dllmap dll="libglib-2.0-0.dll" target="libglib-2.0@LIB_PREFIX@.0@LIB_SUFFIX@" />
-</configuration>
