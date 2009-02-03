@@ -98,12 +98,12 @@ namespace MonoDevelop.AssemblyBrowser
 			Ambience ambience = DomTypeNodeBuilder.ambience;
 			if (!String.IsNullOrEmpty (ns.Name)) {
 				
-				result.Append ("<span style=\"kw:namespaces\">namespace</span> ");
-				result.Append ("<span style=\"default\">");
+				result.Append ("<span style=\"keyword.namespace\">namespace</span> ");
+				result.Append ("<span style=\"text\">");
 				result.Append (ns.Name);
 				result.Append ("</span>");
 				result.AppendLine ();
-				result.Append ("<span style=\"default\">{</span>");result.AppendLine ();
+				result.Append ("<span style=\"text\">{</span>");result.AppendLine ();
 			}
 			foreach (IType type in ns.Types) {
 				if (!String.IsNullOrEmpty (ns.Name))
@@ -112,7 +112,7 @@ namespace MonoDevelop.AssemblyBrowser
 				result.AppendLine ();
 			}
 			if (!String.IsNullOrEmpty (ns.Name)) {
-				result.Append ("<span style=\"default\">}</span>");
+				result.Append ("<span style=\"text\">}</span>");
 				result.AppendLine ();
 			}
 			return result.ToString ();

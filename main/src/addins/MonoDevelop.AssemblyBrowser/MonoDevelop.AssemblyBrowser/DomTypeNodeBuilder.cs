@@ -76,24 +76,24 @@ namespace MonoDevelop.AssemblyBrowser
 			DomTypeNodeBuilder.settings = new OutputSettings (OutputFlags.AssemblyBrowserDescription);
 			
 			DomTypeNodeBuilder.settings.MarkupCallback += delegate (string text) {
-				return "<span style=\"default\">" + text + "</span>";
+				return "<span style=\"text\">" + text + "</span>";
 			};
 			DomTypeNodeBuilder.settings.EmitModifiersCallback = delegate (string text) {
-				return "<span style=\"kw:modifiers\">" + text + "</span>";
+				return "<span style=\"keyword.modifier\">" + text + "</span>";
 			};
 			DomTypeNodeBuilder.settings.EmitKeywordCallback = delegate (string text) {
 				return MarkupKeyword (text);
 			};
 			DomTypeNodeBuilder.settings.EmitNameCallback = delegate (IDomVisitable domVisitable, ref string outString) {
 				if (domVisitable is IType) {
-					outString = "<span style=\"link\"><u><a ref=\"T:" + ((IType)domVisitable).FullName + "\">" + outString + "</a></u></span>";
+					outString = "<span style=\"text.link\"><u><a ref=\"T:" + ((IType)domVisitable).FullName + "\">" + outString + "</a></u></span>";
 				} else {
-					outString = "<span style=\"default\">" + outString + "</span>";
+					outString = "<span style=\"text\">" + outString + "</span>";
 				}
 			};
 			DomTypeNodeBuilder.settings.PostProcessCallback = delegate (IDomVisitable domVisitable, ref string outString) {
 				if (domVisitable is IReturnType) {
-					outString = "<span style=\"link\"><u><a ref=\"T:" + ((IReturnType)domVisitable).FullName + "\">" + outString + "</a></u></span>";
+					outString = "<span style=\"text.link\"><u><a ref=\"T:" + ((IReturnType)domVisitable).FullName + "\">" + outString + "</a></u></span>";
 				}
 			};
 		}
@@ -172,14 +172,14 @@ namespace MonoDevelop.AssemblyBrowser
 			bool first = true;
 			
 			if (type.ClassType == ClassType.Enum) {
-				result.Append ("<span style=\"default\"> {</span>");
+				result.Append ("<span style=\"text\"> {</span>");
 				result.Append ("");
 				result.AppendLine ();
 				int length = result.Length;
 				foreach (IField field in type.Fields) {
 					if ((field.Modifiers & Modifiers.SpecialName) == Modifiers.SpecialName)
 						continue;
-					result.Append ("<span style=\"default\"> \t");
+					result.Append ("<span style=\"text\"> \t");
 					result.Append (field.Name);
 					length = result.Length;
 					result.Append (",</span>");
@@ -187,11 +187,11 @@ namespace MonoDevelop.AssemblyBrowser
 				}
 				result.Length = length;
 				result.AppendLine ();
-				result.Append ("<span style=\"default\">}</span>");
+				result.Append ("<span style=\"text\">}</span>");
 				return result.ToString ();
 			}
 			result.AppendLine ();
-			result.Append ("<span style=\"default\">{</span>");
+			result.Append ("<span style=\"text\">{</span>");
 			
 //			Style colorStyle = TextEditorOptions.Options.GetColorStyle (widget);
 //			ChunkStyle comments = colorStyle.GetChunkStyle ("comment");
@@ -211,7 +211,7 @@ namespace MonoDevelop.AssemblyBrowser
 				first = false;
 				result.Append ("\t");
 				result.Append (ambience.GetString (field, settings));
-				result.Append ("<span style=\"default\">;</span>");
+				result.Append ("<span style=\"text\">;</span>");
 				result.AppendLine ();
 			}
 			first = true;
@@ -227,7 +227,7 @@ namespace MonoDevelop.AssemblyBrowser
 				first = false;
 				result.Append ("\t");
 				result.Append (ambience.GetString (evt, settings));
-				result.Append ("<span style=\"default\">;</span>");
+				result.Append ("<span style=\"text\">;</span>");
 				result.AppendLine ();
 			}
 			first = true;
@@ -245,7 +245,7 @@ namespace MonoDevelop.AssemblyBrowser
 				first = false;
 				result.Append ("\t");
 				result.Append (ambience.GetString (method, settings));
-				result.Append ("<span style=\"default\">;</span>");
+				result.Append ("<span style=\"text\">;</span>");
 				result.AppendLine ();
 			}
 			first = true;
@@ -263,7 +263,7 @@ namespace MonoDevelop.AssemblyBrowser
 				first = false;
 				result.Append ("\t");
 				result.Append (ambience.GetString (method, settings));
-				result.Append ("<span style=\"default\">;</span>");
+				result.Append ("<span style=\"text\">;</span>");
 				result.AppendLine ();
 			}
 			first = true;
@@ -279,15 +279,15 @@ namespace MonoDevelop.AssemblyBrowser
 				first = false;
 				result.Append ("\t");
 				result.Append (ambience.GetString (property, settings));
-				result.Append (" <span style=\"default\">{</span>");
+				result.Append (" <span style=\"text\">{</span>");
 				if (property.HasGet)
-					result.Append (" <span style=\"kw:properties\">get</span><span style=\"default\">;</span>");
+					result.Append (" <span style=\"keyword.property\">get</span><span style=\"text\">;</span>");
 				if (property.HasSet)
-					result.Append (" <span style=\"kw:properties\">set</span><span style=\"default\">;</span>");
-				result.Append (" <span style=\"default\">}</span>");
+					result.Append (" <span style=\"keyword.property\">set</span><span style=\"text\">;</span>");
+				result.Append (" <span style=\"text\">}</span>");
 				result.AppendLine ();
 			}
-			result.Append ("<span style=\"default\">}</span>");
+			result.Append ("<span style=\"text\">}</span>");
 			
 			result.AppendLine ();
 			return result.ToString ();
