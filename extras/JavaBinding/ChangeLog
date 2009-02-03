@@ -1,3 +1,11 @@
+2009/02/03  Lluis Sanchez Gual  <lluis@novell.com>
+
+ * JavaBinding.mds:
+ * gtk-gui/gui.stetic:
+ * gtk-gui/generated.cs:
+ * gtk-gui/JavaBinding.GlobalOptionsPanelWidget.cs:
+ * gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs: Flush.
+
 2009-01-15  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Gui/ProjectConfigurationPropertyPanel.cs: Remove unused parameter.

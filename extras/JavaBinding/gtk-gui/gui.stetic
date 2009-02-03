@@ -2,13 +2,15 @@
 <stetic-interface>
   <configuration>
     <images-root-path>..</images-root-path>
-    <target-gtk-version>2.8.3</target-gtk-version>
+    <target-gtk-version>2.8</target-gtk-version>
   </configuration>
   <import>
-    <widget-library name="MonoDevelop.Components, Version=0.19.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Ide, Version=0.19.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Projects.Gui, Version=0.19.0.0, Culture=neutral" />
-    <widget-library name="Mono.TextEditor, Version=1.0.3020.20447, Culture=neutral" />
+    <widget-library name="MonoDevelop.Components, Version=1.9.1.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Core.Gui, Version=1.9.1.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Ide, Version=1.9.1.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Projects.Gui, Version=1.9.1.0, Culture=neutral" />
+    <widget-library name="Mono.TextEditor, Version=1.0.0.0, Culture=neutral" />
+    <widget-library name="../build/JavaBinding.dll" internal="true" />
   </import>
   <widget class="Gtk.Bin" id="JavaBinding.CodeGenerationPanelWidget" design-size="600 410">
     <property name="MemberName" />
@@ -38,7 +40,6 @@
               <widget class="Gtk.Label" id="label81">
                 <property name="MemberName" />
                 <property name="WidthRequest">18</property>
-                <property name="LabelProp" translatable="yes" />
               </widget>
               <packing>
                 <property name="Position">0</property>
@@ -278,7 +279,6 @@
               <widget class="Gtk.Label" id="label93">
                 <property name="MemberName" />
                 <property name="WidthRequest">18</property>
-                <property name="LabelProp" translatable="yes" />
               </widget>
               <packing>
                 <property name="Position">0</property>
@@ -298,6 +298,7 @@
                       <widget class="Gtk.RadioButton" id="compilerGcjButton">
                         <property name="MemberName" />
                         <property name="Label" translatable="yes">gcj</property>
+                        <property name="Active">True</property>
                         <property name="DrawIndicator">True</property>
                         <property name="HasLabel">True</property>
                         <property name="UseUnderline">True</property>
@@ -388,7 +389,6 @@
                       <widget class="Gtk.Label" id="label72">
                         <property name="MemberName" />
                         <property name="WidthRequest">18</property>
-                        <property name="LabelProp" translatable="yes" />
                       </widget>
                       <packing>
                         <property name="Position">0</property>
@@ -475,7 +475,6 @@
                       <widget class="Gtk.Label" id="label95">
                         <property name="MemberName" />
                         <property name="WidthRequest">18</property>
-                        <property name="LabelProp" translatable="yes" />
                       </widget>
                       <packing>
                         <property name="Position">0</property>
