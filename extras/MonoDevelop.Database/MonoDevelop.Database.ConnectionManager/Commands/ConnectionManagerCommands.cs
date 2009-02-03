@@ -53,7 +53,6 @@ namespace MonoDevelop.Database.ConnectionManager
 		SelectAll,
 		SelectColumns,
 		EmptyTable,
-		Rename,
 		RenameDatabase,
 
 		CreateTable,

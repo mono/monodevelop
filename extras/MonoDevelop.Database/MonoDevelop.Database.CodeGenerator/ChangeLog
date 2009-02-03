@@ -1,3 +1,11 @@
+2009/02/03  Lluis Sanchez Gual  <lluis@novell.com>
+
+ * gtk-gui/generated.cs:
+ * Dialogs/GenerateDataClassesDialog.cs:
+ *
+   gtk-gui/MonoDevelop.Database.CodeGenerator.GenerateDataClassesDialog.cs:
+   Flush.
+
 2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Database.CodeGenerator.mdp: Flush project format changes.

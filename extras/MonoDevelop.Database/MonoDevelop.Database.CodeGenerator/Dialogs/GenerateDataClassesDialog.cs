@@ -36,6 +36,8 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Database.CodeGenerator
 {
+	[System.ComponentModel.Category("MonoDevelop.Database.CodeGenerator")]
+	[System.ComponentModel.ToolboxItem(true)]
 	public partial class GenerateDataClassesDialog : Gtk.Dialog
 	{
 		private DatabaseConnectionContextComboBox comboDatabase;

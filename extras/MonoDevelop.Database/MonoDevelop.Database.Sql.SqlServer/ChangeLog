@@ -1,3 +1,11 @@
+2009/02/03  Lluis Sanchez Gual  <lluis@novell.com>
+
+ * gtk-gui/generated.cs:
+ * gtk-gui/MonoDevelop.Database.Sql.SqlServer.SqlServerColumnEditorWidget.cs:
+ *
+   gtk-gui/MonoDevelop.Database.Sql.SqlServer.SqlServerCreateDatabaseWidget.cs:
+   Flush.
+
 2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Database.Sql.SqlServer.mdp: Flush project format changes.

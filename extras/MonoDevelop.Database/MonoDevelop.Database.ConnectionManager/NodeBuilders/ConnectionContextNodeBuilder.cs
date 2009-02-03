@@ -278,7 +278,7 @@ namespace MonoDevelop.Database.ConnectionManager
 			//info.Enabled = context.DbFactory.IsActionSupported ("Database", SchemaActions.Alter);
 		}
 		
-		[CommandHandler (ConnectionManagerCommands.RenameDatabase)]
+		[CommandHandler (MonoDevelop.Ide.Commands.EditCommands.Rename)]
 		protected void OnRenameDatabase ()
 		{
 			//TODO: show a dialog, since inline tree renaming for this node renames the custom name

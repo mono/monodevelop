@@ -1,2 +1,46 @@
 <objects attr-sync="on">
+  <object type="MonoDevelop.Database.Components.SelectTableWidget" palette-category="MonoDevelop.Database.Components" allow-children="false" base-type="Gtk.ScrolledWindow">
+    <itemgroups>
+      <itemgroup label="SelectTableWidget Properties">
+        <property name="SingleCheck" />
+      </itemgroup>
+    </itemgroups>
+    <signals>
+      <itemgroup label="SelectTableWidget Signals">
+        <signal name="TableToggled" />
+      </itemgroup>
+    </signals>
+  </object>
+  <object type="MonoDevelop.Database.Components.SelectSchemaWidget" palette-category="MonoDevelop.Database.Components" allow-children="false" base-type="Gtk.ScrolledWindow">
+    <itemgroups />
+    <signals />
+  </object>
+  <object type="MonoDevelop.Database.Components.DatabaseConnectionContextComboBox" palette-category="widget" allow-children="false" base-type="Gtk.ComboBox">
+    <itemgroups />
+    <signals />
+  </object>
+  <object type="MonoDevelop.Database.Components.ColumnMappingWidget" palette-category="widget" allow-children="false" base-type="Gtk.ScrolledWindow">
+    <itemgroups />
+    <signals />
+  </object>
+  <object type="MonoDevelop.Database.Components.SelectColumnWidget" palette-category="widget" allow-children="false" base-type="Gtk.ScrolledWindow">
+    <itemgroups>
+      <itemgroup label="SelectColumnWidget Properties">
+        <property name="SingleCheck" />
+      </itemgroup>
+    </itemgroups>
+    <signals>
+      <itemgroup label="SelectColumnWidget Signals">
+        <signal name="ColumnToggled" />
+      </itemgroup>
+    </signals>
+  </object>
+  <object type="MonoDevelop.Database.Components.TableMappingWidget" palette-category="MonoDevelop.Database.Components" allow-children="false" base-type="Gtk.ScrolledWindow">
+    <itemgroups />
+    <signals />
+  </object>
+  <object type="MonoDevelop.Database.Components.ProjectDirectoryComboBox" palette-category="widget" allow-children="false" base-type="Gtk.ComboBox">
+    <itemgroups />
+    <signals />
+  </object>
 </objects>

@@ -202,9 +202,6 @@
 		<Command id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.Query"
 			_label = "Query"
 			icon = "md-db-execute"/>
-		<Command id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.Rename"
-			_label = "Re_name"
-			shortcut = "F2"/>
 		<!--
 		<Command id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.RenameDatabase"
 			_label = "Rename Database">
@@ -297,7 +294,7 @@
 		<CommandItem id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.ConnectConnection"/>
 		<CommandItem id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.DisconnectConnection"/>
 		<SeparatorItem id = "DisconnectSeparator"/>
-		<CommandItem id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.Rename"/>
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Rename"/>
 		<!--<CommandItem id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.RenameDatabase"/>-->
 		<CommandItem id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.EditConnection"/>
 		<CommandItem id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.RemoveConnection"/>
@@ -346,7 +343,7 @@
 		<CommandItem id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.SelectAll"/>
 		<CommandItem id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.SelectColumns"/>
 		<SeparatorItem id = "SelectSeparator" />
-		<CommandItem id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.Rename"/>
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Rename"/>
 		<CommandItem id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.AlterTable"/>
 		<CommandItem id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.EmptyTable"/>
 		<CommandItem id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.DropTable"/>
@@ -357,7 +354,7 @@
 	<Extension path = "/MonoDevelop/Database/ContextMenu/ConnectionManagerPad/ViewNode">
 		<CommandItem id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.SelectAll"/>
 		<SeparatorItem id = "SelectSeparator" />
-		<CommandItem id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.Rename"/>
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Rename"/>
 		<CommandItem id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.AlterView"/>
 		<CommandItem id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.DropView"/>
 		<SeparatorItem id = "RefreshSeparator" />
@@ -365,7 +362,7 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Database/ContextMenu/ConnectionManagerPad/ProcedureNode">
-		<CommandItem id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.Rename"/>
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Rename"/>
 		<CommandItem id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.AlterProcedure"/>
 		<CommandItem id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.DropProcedure"/>
 		<SeparatorItem id = "RefreshSeparator" />
@@ -373,7 +370,7 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Database/ContextMenu/ConnectionManagerPad/UserNode">
-		<CommandItem id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.Rename"/>
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Rename"/>
 		<CommandItem id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.AlterUser"/>
 		<CommandItem id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.DropUser"/>
 		<SeparatorItem id = "RefreshSeparator" />
@@ -381,7 +378,7 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Database/ContextMenu/ConnectionManagerPad/TriggerNode">
-		<CommandItem id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.Rename"/>
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Rename"/>
 		<CommandItem id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.AlterTrigger"/>
 		<CommandItem id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.DropTrigger"/>
 		<SeparatorItem id = "RefreshSeparator" />
@@ -389,7 +386,7 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Database/ContextMenu/ConnectionManagerPad/ConstraintNode">
-		<CommandItem id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.Rename"/>
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Rename"/>
 		<CommandItem id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.AlterConstraint"/>
 		<CommandItem id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.DropConstraint"/>
 		<SeparatorItem id = "RefreshSeparator" />

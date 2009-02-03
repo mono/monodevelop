@@ -1,3 +1,16 @@
+2009/02/03  Lluis Sanchez Gual  <lluis@novell.com>
+
+ * NodeBuilders/UserNodeBuilder.cs:
+ * NodeBuilders/ViewNodeBuilder.cs:
+ * NodeBuilders/TableNodeBuilder.cs:
+ * NodeBuilders/ProcedureNodeBuilder.cs:
+ * Commands/ConnectionManagerCommands.cs:
+ * NodeBuilders/ConnectionContextNodeBuilder.cs:
+ * MonoDevelop.Database.ConnectionManager.addin.xml: Reuse existing
+   rename command.
+
+ * gtk-gui/generated.cs: Flush.
+
 2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Database.ConnectionManager.mdp: Flush project format

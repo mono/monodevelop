@@ -328,7 +328,7 @@ namespace MonoDevelop.Database.ConnectionManager
 //			provider.AlterTable (node.Table);
 		}
 		
-		[CommandHandler (ConnectionManagerCommands.Rename)]
+		[CommandHandler (MonoDevelop.Ide.Commands.EditCommands.Rename)]
 		protected void OnRenameTable ()
 		{
 			Tree.StartLabelEdit ();
@@ -341,7 +341,7 @@ namespace MonoDevelop.Database.ConnectionManager
 			info.Enabled = node.ConnectionContext.SchemaProvider.IsSchemaActionSupported (SQL.SchemaType.Table, SchemaActions.Drop);
 		}
 		
-		[CommandUpdateHandler (ConnectionManagerCommands.Rename)]
+		[CommandUpdateHandler (MonoDevelop.Ide.Commands.EditCommands.Rename)]
 		protected void OnUpdateRenameTable (CommandInfo info)
 		{
 			BaseNode node = (BaseNode)CurrentNode.DataItem;

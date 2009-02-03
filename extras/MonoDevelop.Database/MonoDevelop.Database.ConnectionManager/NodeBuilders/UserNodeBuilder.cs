@@ -185,7 +185,7 @@ namespace MonoDevelop.Database.ConnectionManager
 			OnRefreshParent ();
 		}
 		
-		[CommandHandler (ConnectionManagerCommands.Rename)]
+		[CommandHandler (MonoDevelop.Ide.Commands.EditCommands.Rename)]
 		protected void OnRenameUser ()
 		{
 			Tree.StartLabelEdit ();
@@ -198,7 +198,7 @@ namespace MonoDevelop.Database.ConnectionManager
 			info.Enabled = node.ConnectionContext.SchemaProvider.IsSchemaActionSupported (SchemaType.User, SchemaActions.Drop);
 		}
 		
-		[CommandUpdateHandler (ConnectionManagerCommands.Rename)]
+		[CommandUpdateHandler (MonoDevelop.Ide.Commands.EditCommands.Rename)]
 		protected void OnUpdateRenameUser (CommandInfo info)
 		{
 			BaseNode node = (BaseNode)CurrentNode.DataItem;

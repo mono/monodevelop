@@ -1,3 +1,19 @@
+2009/02/03  Lluis Sanchez Gual  <lluis@novell.com>
+
+ * gtk-gui/gui.stetic:
+ * gtk-gui/objects.xml:
+ * gtk-gui/generated.cs:
+ * gtk-gui/MonoDevelop.Database.Components.DataGrid.cs:
+ * gtk-gui/MonoDevelop.Database.Components.WaitDialog.cs:
+ * gtk-gui/MonoDevelop.Database.Components.ShowTextDialog.cs:
+ * gtk-gui/MonoDevelop.Database.Components.ShowImageDialog.cs:
+ * gtk-gui/MonoDevelop.Database.Components.SqlEditorWidget.cs:
+ * gtk-gui/MonoDevelop.Database.Components.SelectColumnDialog.cs:
+ * gtk-gui/MonoDevelop.Database.Components.ConnectionSettingsWidget.cs:
+ *
+   gtk-gui/MonoDevelop.Database.Components.DatabaseConnectionSettingsDialog.cs:
+   Flush.
+
 2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Database.Components.mdp: Flush project format changes.
