@@ -116,7 +116,11 @@ namespace MonoDevelop.ChangeLogAddIn
 		
 		public static CommitMessageStyle GetMessageStyle (SolutionItem item)
 		{
-			ChangeLogPolicy policy = item.Policies.Get<ChangeLogPolicy> ();
+			ChangeLogPolicy policy;
+			if (item != null)
+				policy = item.Policies.Get<ChangeLogPolicy> ();
+			else
+				policy = new ChangeLogPolicy ();
 			return policy.MessageStyle;
 		}
 	}
