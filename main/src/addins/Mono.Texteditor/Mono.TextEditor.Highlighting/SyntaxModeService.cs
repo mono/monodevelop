@@ -90,7 +90,7 @@ namespace Mono.TextEditor.Highlighting
 				throw new System.ArgumentException ("Style " + name + " not found", "name");
 			XmlTextReader reader = styleLookup [name].Open ();
 			try {
-				styles [name] = Style.Read (reader);
+				styles [name] = Style.LoadFrom (reader);
 			} finally {
 				reader.Close ();
 			}

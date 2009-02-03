@@ -1,3 +1,11 @@
+2009-02-03  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextEditor.Highlighting/Style.cs:
+	* Mono.TextEditor.Highlighting/DefaultStyle.cs:
+	* Mono.TextEditor.Highlighting/SyntaxModeService.cs:
+	  Implement namespace-like fallbacks for colours and chunk
+	  styles.
+
 2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:

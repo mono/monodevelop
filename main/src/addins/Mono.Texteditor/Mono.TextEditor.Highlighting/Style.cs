@@ -38,9 +38,7 @@ namespace Mono.TextEditor.Highlighting
 		string description;
 		
 		Dictionary<string, IColorDefinition> colors = new Dictionary<string, IColorDefinition> ();
-		
-		List<ChunkStyle>        styles           = new List<Mono.TextEditor.ChunkStyle> ();
-		Dictionary<string, int> styleLookupTable = new Dictionary<string, int> (); 
+		Dictionary<string, ChunkStyle> styleLookupTable = new Dictionary<string, ChunkStyle> (); 
 		Dictionary<string, string> customPalette = new Dictionary<string, string> (); 
 		
 		public Color GetColorFromDefinition (string colorName)
@@ -48,8 +46,27 @@ namespace Mono.TextEditor.Highlighting
 			IColorDefinition definition;
 			if (colors.TryGetValue (colorName, out definition))
 				return definition.Color;
-			return new Gdk.Color (0, 0, 0); 
+			
+			int dotIndex = colorName.LastIndexOf ('.');
+			string fallbackName = colorName;
+			while (dotIndex > 1) {
+				fallbackName = fallbackName.Substring (0, dotIndex);
+				if (colors.TryGetValue (fallbackName, out definition)) {
+					colors[colorName] = definition;
+					Console.WriteLine ("Color {0} fell back to {1}", colorName, fallbackName);
+					return definition.Color;
+				}
+				dotIndex = fallbackName.LastIndexOf ('.');
+			}
+			
+			Console.WriteLine ("Color {0} fell back to default", colorName);
+			if (colors.TryGetValue (DefaultString, out definition))
+				return definition.Color;
+			
+			return new Gdk.Color (0, 0, 0);
 		}
+		
+		#region Named colors
 		
 		public const string DefaultString = "text";
 		public virtual Color Default {
@@ -338,6 +355,8 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 		
+		#endregion
+		
 		public string Name {
 			get {
 				return name;
@@ -357,7 +376,7 @@ namespace Mono.TextEditor.Highlighting
 			                        (double)color.Blue / ushort.MaxValue);
 		}
 		
-		public Style ()
+		protected Style ()
 		{
 			colors[DefaultString] = new ColorDefinition (new Gdk.Color (0, 0, 0));
 			colors[BackgroundString] = new ColorDefinition (new Gdk.Color (255, 255, 255));
@@ -416,7 +435,10 @@ namespace Mono.TextEditor.Highlighting
 			
 			colors[ErrorUnderlineString] = new ColorDefinition (new Gdk.Color (255, 0, 0));
 			colors[WarningUnderlineString] = new ColorDefinition (new Gdk.Color (30, 30, 255));
-			
+		}
+		
+		protected void PopulateDefaults ()
+		{
 			SetStyle ("text", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0, 0), false, false));
 			SetStyle ("text.punctuation", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0, 0), false, false));
 			SetStyle ("text.link", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0, 255), false, false));
@@ -468,21 +490,39 @@ namespace Mono.TextEditor.Highlighting
 		
 		void SetStyle (string name, ChunkStyle style)
 		{
-			if (!styleLookupTable.ContainsKey (name)) {
-				styleLookupTable.Add (name, styles.Count);
-				styles.Add (style);
-			} else {
-				styles[styleLookupTable[name]] = style;
+			styleLookupTable[name] = style;
+		}
+		
+		public ChunkStyle GetDefaultChunkStyle ()
+		{
+			ChunkStyle style;
+			if (!styleLookupTable.TryGetValue (DefaultString, out style)) {
+				style = new ChunkStyle (GetColorFromDefinition (DefaultString));
+				styleLookupTable[DefaultString] = style;
 			}
+			return style;
 		}
 		
 		public ChunkStyle GetChunkStyle (string name)
 		{
-			if (!styleLookupTable.ContainsKey (name)) {
-				System.Console.WriteLine("Chunk style " + name + " not found.");
-				return null;
+			ChunkStyle style;
+			if (styleLookupTable.TryGetValue (name, out style))
+				return style;
+			
+			int dotIndex = name.LastIndexOf ('.');
+			string fallbackName = name;
+			while (dotIndex > 1) {
+				fallbackName = fallbackName.Substring (0, dotIndex);
+				if (styleLookupTable.TryGetValue (fallbackName, out style)) {
+					styleLookupTable[name] = style;
+					Console.WriteLine ("Chunk style {0} fell back to {1}", name, fallbackName);
+					return style;
+				}
+				dotIndex = fallbackName.LastIndexOf ('.');
 			}
-			return this.styles [styleLookupTable[name]];
+			
+			Console.WriteLine ("Chunk style {0} fell back to default", name);
+			return GetDefaultChunkStyle ();
 		}
 		
 		public void SetChunkStyle (string name, string weight, string value)
@@ -549,7 +589,7 @@ namespace Mono.TextEditor.Highlighting
 			if (colors.ContainsKey (colorString)) 
 				return ((IColorDefinition)colors[colorString]).Color;
 			if (styleLookupTable.ContainsKey (colorString)) 
-				return styles[styleLookupTable[colorString]].Color;
+				return styleLookupTable[colorString].Color;
 			
 			Gdk.Color result = new Color ();
 			if (!Gdk.Color.Parse (colorString, ref result)) 
@@ -571,7 +611,7 @@ namespace Mono.TextEditor.Highlighting
 		
 		public const string NameAttribute = "name";
 		
-		public static void ReadStyleTree (XmlReader reader, Style result, string curName, string curWeight, string curColor)
+		static void ReadStyleTree (XmlReader reader, Style result, string curName, string curWeight, string curColor)
 		{
 			string name   = reader.GetAttribute ("name"); 
 			string weight = reader.GetAttribute ("weight") ?? curWeight;
@@ -599,7 +639,7 @@ namespace Mono.TextEditor.Highlighting
 			});
 		}
 		
-		public static Style Read (XmlReader reader)
+		public static Style LoadFrom (XmlReader reader)
 		{
 			Style result = new Style ();
 			XmlReadHelper.ReadList (reader, "EditorStyle", delegate () {

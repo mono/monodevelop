@@ -139,6 +139,7 @@ namespace Mono.TextEditor.Highlighting
 		Widget widget;
 		public DefaultStyle (Widget widget)
 		{
+			this.PopulateDefaults ();
 			this.widget = widget;
 		}
 	}
