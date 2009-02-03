@@ -1,3 +1,8 @@
+2009-02-02  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Set caret
+	  position correctly after a completion insertion.
+
 2009-02-01  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.SourceEditor.OptionPanels/MarkerPanel.cs:

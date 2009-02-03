@@ -839,7 +839,7 @@ namespace MonoDevelop.SourceEditor
 			int length = String.IsNullOrEmpty (partial_word) ? 0 : partial_word.Length;
 			
 			this.widget.TextEditor.Document.Replace (ctx.TriggerOffset, length, complete_word);
-			this.widget.TextEditor.Caret.Offset = ctx.TriggerOffset + complete_word.Length; //offset + idx;
+			this.widget.TextEditor.Caret.Offset = ctx.TriggerOffset + idx;
 		}
 		
 		void FireCompletionContextChanged ()
