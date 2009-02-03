@@ -52,6 +52,13 @@ namespace Mono.TextEditor.Highlighting
 		{
 		}
 		
+		public virtual bool GetIsValid (Style style)
+		{
+			return (string.IsNullOrEmpty (color) || style.GetChunkStyle (color) != null) && 
+			        (string.IsNullOrEmpty (tagColor) || style.GetChunkStyle (tagColor) != null) && 
+			        (string.IsNullOrEmpty (nextColor) || style.GetChunkStyle (nextColor) != null);
+		}
+		
 		public const string Node    = "Span";
 		public const string AltNode = "EolSpan";
 		

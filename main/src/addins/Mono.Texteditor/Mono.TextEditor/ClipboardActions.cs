@@ -133,21 +133,22 @@ namespace Mono.TextEditor
 					for (Chunk chunk = mode.GetChunks (doc, style, line, line.Offset, line.Offset + line.EditableLength); chunk != null; chunk = chunk.Next) {
 						int start = System.Math.Max (selection.Offset, chunk.Offset);
 						int end   = System.Math.Min (chunk.EndOffset, selection.EndOffset);
+						ChunkStyle chunkStyle = chunk.GetChunkStyle (style);
 						if (start < end) {
 							bool appendSpace = false;
-							if (isBold != chunk.Style.Bold) {
-								rtfText.Append (chunk.Style.Bold ? @"\b" : @"\b0");
-								isBold = chunk.Style.Bold;
+							if (isBold != chunkStyle.Bold) {
+								rtfText.Append (chunkStyle.Bold ? @"\b" : @"\b0");
+								isBold = chunkStyle.Bold;
 								appendSpace = true;
 							}
-							if (isItalic != chunk.Style.Italic) {
-								rtfText.Append (chunk.Style.Italic ? @"\i" : @"\i0");
-								isItalic = chunk.Style.Italic;
+							if (isItalic != chunkStyle.Italic) {
+								rtfText.Append (chunkStyle.Italic ? @"\i" : @"\i0");
+								isItalic = chunkStyle.Italic;
 								appendSpace = true;
 							}
-							if (!colorList.Contains (chunk.Style.Color)) 
-								colorList.Add (chunk.Style.Color);
-							int color = colorList.IndexOf (chunk.Style.Color);
+							if (!colorList.Contains (chunkStyle.Color)) 
+								colorList.Add (chunkStyle.Color);
+							int color = colorList.IndexOf (chunkStyle.Color);
 							if (curColor != color) {
 								curColor = color;
 								rtfText.Append (@"\cf" + (curColor + 1));

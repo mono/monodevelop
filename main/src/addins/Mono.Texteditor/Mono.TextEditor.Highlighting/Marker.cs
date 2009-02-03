@@ -50,7 +50,11 @@ namespace Mono.TextEditor.Highlighting
 		
 		public Marker ()
 		{
-			
+		}
+		
+		public virtual bool GetIsValid (Style style)
+		{
+			return style.GetChunkStyle (color) != null;
 		}
 		
 		public const string PrevMarker = "PrevMarker";

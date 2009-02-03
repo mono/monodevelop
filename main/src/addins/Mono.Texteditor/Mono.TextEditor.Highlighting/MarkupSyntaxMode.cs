@@ -66,16 +66,34 @@ namespace Mono.TextEditor.Highlighting
 		{
 			string text;
 			
-			public TextChunk (ChunkStyle style, int offset, string text)
+			public ChunkStyle ChunkStyle {
+				get;
+				set;
+			}
+			
+			public override ChunkStyle GetChunkStyle (Style style)
 			{
-				this.text = text;
+				return ChunkStyle;
+			}
+			
+			public TextChunk (ChunkStyle style, int offset)
+			{
 				this.Offset = offset;
+				this.ChunkStyle = style;
+			}
+			
+			public TextChunk (ChunkStyle style, int offset, string text) : this (style, offset)
+			{
+				if (text == null)
+					throw new ArgumentNullException ("text");
+				this.text = text;
 				this.Length = text.Length;
-				this.Style = style;
 			}
 			
 			public override char GetCharAt (Document doc, int offset)
 			{
+				if (string.IsNullOrEmpty (text))
+					return base.GetCharAt (doc, offset);
 				return text [offset - this.Offset];
 			}
 		}
@@ -145,7 +163,7 @@ namespace Mono.TextEditor.Highlighting
 		{
 			int endOffset = System.Math.Min (offset + length, doc.Length);
 			Stack<Tag> tagStack = new Stack<Tag> ();
-			Chunk curChunk = new Chunk (offset, 0, new ChunkStyle ());
+			TextChunk curChunk = new TextChunk (new ChunkStyle (), offset);
 			Chunk startChunk = curChunk;
 			Chunk endChunk = curChunk;
 			bool inTag = true, inSpecial = false;
@@ -156,9 +174,9 @@ namespace Mono.TextEditor.Highlighting
 				case '<':
 					curChunk.Length = i - curChunk.Offset;
 					if (curChunk.Length > 0) {
-						curChunk.Style = GetChunkStyle (style, tagStack);
+						curChunk.ChunkStyle = GetChunkStyle (style, tagStack);
 						endChunk = endChunk.Next = curChunk;
-						curChunk = new Chunk (i, 0, null);
+						curChunk = new TextChunk (new ChunkStyle (), offset);
 					}
 					tagBegin = i;
 					inTag = true;
@@ -172,9 +190,9 @@ namespace Mono.TextEditor.Highlighting
 						string specialText = doc.GetTextBetween (specialBegin + 1, i);
 						curChunk.Length = specialBegin - curChunk.Offset;
 						if (curChunk.Length > 0) {
-							curChunk.Style = GetChunkStyle (style, tagStack);
+							curChunk.ChunkStyle = GetChunkStyle (style, tagStack);
 							endChunk = endChunk.Next = curChunk;
-							curChunk = new Chunk (i, 0, null);
+							curChunk = new TextChunk (new ChunkStyle (), offset);
 						}
 						switch (specialText) {
 						case "lt":
@@ -208,7 +226,7 @@ namespace Mono.TextEditor.Highlighting
 			}
 			curChunk.Length = endOffset - curChunk.Offset;
 			if (curChunk.Length > 0) {
-				curChunk.Style = GetChunkStyle (style, tagStack);
+				curChunk.ChunkStyle = GetChunkStyle (style, tagStack);
 				endChunk = endChunk.Next = curChunk;
 			}
 			endChunk.Next = null;

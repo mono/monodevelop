@@ -31,64 +31,64 @@
 		<End>*/</End>
 	</Span>
 	
-	<Span color = "literal" stopateol = "true" escape="\">
+	<Span color = "string" stopateol = "true" escape="\">
 		<Begin>"</Begin>
 		<End>"</End>
 	</Span>
 
-	<Span color = "literal" stopateol = "true" escape="\">
+	<Span color = "string" stopateol = "true" escape="\">
 		<Begin>&apos;</Begin>
 		<End>&apos;</End>
 	</Span>
 	
-	<Match color = "literal">CSharpNumber</Match>
+	<Match color = "string">CSharpNumber</Match>
 	
-	<Keywords color = "kw:access">
+	<Keywords color = "keyword.access">
 		<Word>this</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:operator">
+	<Keywords color = "keyword.operator">
 		<Word>new</Word>
 		<Word>typeof</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:selection">
+	<Keywords color = "keyword.selection">
 		<Word>else</Word>
 		<Word>if</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:iteration">
+	<Keywords color = "keyword.iteration">
 		<Word>do</Word>
 		<Word>for</Word>
 		<Word>while</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:jump">
+	<Keywords color = "keyword.jump">
 		<Word>break</Word>
 		<Word>continue</Word>
 		<Word>return</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:exceptions">
+	<Keywords color = "keyword.exceptions">
 		<Word>try</Word>
 		<Word>throw</Word>
 		<Word>catch</Word>
 		<Word>finally</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:literals">
+	<Keywords color = "constant.language">
 		<Word>true</Word>
 		<Word>false</Word>
 		<Word>null</Word>
 	</Keywords>
 		
-	<Keywords color = "kw:types">
+	<Keywords color = "keyword.type">
 		<Word>var</Word>
 		<Word>function</Word>
 	</Keywords>
 	
 	<Rule name = "Comment">
-		<Keywords color="todocomment" ignorecase="True">
+		<Keywords color="comment.keyword.todo" ignorecase="True">
 			<Word>TODO</Word>
 			<Word>FIXME</Word>
 			<Word>HACK</Word>

@@ -63,6 +63,15 @@ namespace Mono.TextEditor.Highlighting
 		{
 		}
 		
+		public virtual bool GetIsValid (Style style)
+		{
+			if (style.GetChunkStyle (color) == null) {
+				System.Console.WriteLine("color:" + color + " not found.");
+				return false;
+			}
+			return true;
+		}
+		
 		public const string Node = "Keywords";
 		
 		public static Keywords Read (XmlReader reader)

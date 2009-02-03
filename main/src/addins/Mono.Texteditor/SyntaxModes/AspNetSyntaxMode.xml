@@ -25,13 +25,13 @@
  
 <SyntaxMode name = "Asp.Net" mimeTypes="application/x-aspx;application/x-ashx;application/x-ascx;application/x-master-page">
 	<!-- directives -->
-	<Span color = "kw:literals" rule = "InTag">
+	<Span color = "constant.language" rule = "InTag">
 		<Begin>&lt;%@</Begin>
 		<End>%&gt;</End>
 	</Span>
 	
 	<!-- expressions -->
-	<Span color = "kw:literals" constraint="!@" >
+	<Span color = "constant.language" constraint="!@" >
 		<Begin>&lt;%</Begin>
 		<End>%&gt;</End>
 	</Span>
@@ -42,51 +42,51 @@
 	</Span>
 	
 	<!-- entities -->
-	<Span color = "preprocessor">
+	<Span color = "text.preprocessor">
 		<Begin>&amp;</Begin>
 		<End>;</End>
 	</Span>
 	
-	<Span tagColor = "kw:declarations" color = "markup" rule = "InTag">
+	<Span tagColor = "keyword.declaration" color = "text.markup" rule = "InTag">
 		<Begin>&lt;!DOCTYPE</Begin>
 		<End>&gt;</End>
 	</Span>
 	
 	<!-- CDATA section -->
-	<Span tagColor = "kw:declarations" color="default">
+	<Span tagColor = "keyword.declaration" color="text">
 		<Begin>&lt;![CDATA[</Begin>
 		<End>]]&gt;</End>
 	</Span>
 	
 	<!-- processing instructions -->
-	<Span tagColor = "kw:declarations" color = "markup" rule = "InTag">
+	<Span tagColor = "keyword.declaration" color = "text.markup" rule = "InTag">
 		<Begin>&lt;?</Begin>
 		<End>?&gt;</End>
 	</Span>
 	
 	<!-- tags -->
-	<Span color = "markup" rule = "InTag" constraint="!!" >
+	<Span color = "text.markup" rule = "InTag" constraint="!!" >
 		<Begin>&lt;</Begin>
 		<End>&gt;</End>
 	</Span>
 	
 	<!-- tag definitions -->
 	<Rule name = "InTag">
-		<Span color = "literal" rule="InLiteral">
+		<Span color = "string" rule="InLiteral">
 			<Begin>&quot;</Begin>
 			<End>&quot;</End>
 		</Span>
 		
-		<Span color = "literal" rule="InLiteral">
+		<Span color = "string" rule="InLiteral">
 			<Begin>&apos;</Begin>
 			<End>&apos;</End>
 		</Span>
 		
 		<!-- attributes -->
-		<Match color = "kw:types">[A-Za-z0-9_]+(:[A-Za-z0-9_]+)?[\s\n\r]*=</Match>
+		<Match color = "keyword.type">[A-Za-z0-9_]+(:[A-Za-z0-9_]+)?[\s\n\r]*=</Match>
 		
 		<!-- expressions -->
-		<Span color = "kw:literals" constraint="!@" >
+		<Span color = "constant.language" constraint="!@" >
 			<Begin>&lt;%</Begin>
 			<End>%&gt;</End>
 		</Span>
@@ -94,13 +94,13 @@
 	
 	<Rule name = "InLiteral">
 		<!-- entities -->
-		<Span color = "preprocessor">
+		<Span color = "text.preprocessor">
 			<Begin>&amp;</Begin>
 			<End>;</End>
 		</Span>
 		
 		<!-- expressions -->
-		<Span color = "kw:literals" constraint="!@" >
+		<Span color = "constant.language" constraint="!@" >
 			<Begin>&lt;%</Begin>
 			<End>%&gt;</End>
 		</Span>

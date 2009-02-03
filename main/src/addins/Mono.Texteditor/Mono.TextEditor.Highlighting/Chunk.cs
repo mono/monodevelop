@@ -26,23 +26,23 @@
 //
 
 using System;
+using Mono.TextEditor.Highlighting;
 
 namespace Mono.TextEditor
 {
 	public class Chunk : Segment
 	{
-		ChunkStyle style;
-
-		public ChunkStyle Style {
-			get {
-				return style;
-			}
-			set {
-				style = value;
-			}
+		public virtual ChunkStyle GetChunkStyle (Style style)
+		{
+			return style.GetChunkStyle (Style);
 		}
 
 		public Chunk Next {
+			get;
+			set;
+		}
+		
+		public string Style {
 			get;
 			set;
 		}
@@ -52,9 +52,9 @@ namespace Mono.TextEditor
 			Next = null;
 		}
 		
-		public Chunk (int offset, int length, ChunkStyle style) : base (offset, length)
+		public Chunk (int offset, int length, string styleName) : base (offset, length)
 		{
-			this.style = style;
+			this.Style = styleName;
 		}
 
 		public virtual char GetCharAt (Document doc, int offset)

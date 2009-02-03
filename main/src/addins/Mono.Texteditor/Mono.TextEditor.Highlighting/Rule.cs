@@ -45,6 +45,35 @@ namespace Mono.TextEditor.Highlighting
 		
 		public List<SemanticRule> SemanticRules = new List<SemanticRule> ();
 		
+		public virtual bool GetIsValid (Style style)
+		{
+			foreach (Keywords keyword in keywords) {
+				if (!keyword.GetIsValid (style)) {
+					System.Console.WriteLine (keyword + " failed.");
+					return false;
+				}
+			}
+			foreach (Span span in spans) {
+				if (!span.GetIsValid (style)) {
+					System.Console.WriteLine (span + " failed.");
+					return false;
+				}
+			}
+			foreach (Match match in matches) {
+				if (!match.GetIsValid (style)) {
+					System.Console.WriteLine (match + " failed.");
+					return false;
+				}
+			}
+			foreach (Marker marker in prevMarker) {
+				if (!marker.GetIsValid (style)) {
+					System.Console.WriteLine (marker + " failed.");
+					return false;
+				}
+			}
+			return true;
+		}
+		
 		public string Name {
 			get {
 				return name;

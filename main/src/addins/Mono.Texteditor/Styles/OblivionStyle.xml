@@ -52,76 +52,101 @@
 	<Color name="aluminium4" value="#888a85"/>
 	<Color name="aluminium5" value="#555753"/>
 	<Color name="aluminium6" value="#2e3436"/>
-  <Color name="aluminium7" value="#111111"/>
+	<Color name="aluminium7" value="#111111"/>
 	
 	<!-- environment -->
-	<Style name="default" color="aluminium2"/>
+	<Style name="text" color="aluminium2"/>
+	<Style name="text.background" color="aluminium6"/>
+	<Style name="text.background.selection" color="aluminium4"/>
+	<Style name="text.background.searchresult" color="aluminium5"/>
+	<Style name="text.selection" color="aluminium1"/>
+	<Style name="text.link" color="butter2"/>
+	
 	<Style name="caret" color="aluminium2"/>
-	<Style name="caretForeground" color="aluminium6"/>
-	<Style name="background" color="aluminium6"/>
-	<Style name="selectedBackground" color="aluminium4"/>
-	<Style name="selectedForeground" color="aluminium1"/>
-	<Style name="searchTextBg" color="aluminium5"/>
+	<Style name="caret.foreground" color="aluminium6"/>
 	
-	<Style name="lineMarker" color="aluminium6"/>
-	<Style name="ruler" color="aluminium5"/>
-	<Style name="whitespaces" color="aluminium3"/>
-	<Style name="invalidLines" color="orange1"/>
-
-	<Style name="lineNumber" color="aluminium5"/>
-	<Style name="lineNumberHighlighted" color="aluminium3"/>
-	<Style name="lineNumberBg" color="aluminium7"/>
+	<Style name="marker.line" color="aluminium6"/>
+	<Style name="marker.line.changed" color="chameleon2"/>
+	<Style name="marker.line.dirty" color="butter2"/>
 	
-	<Style name="iconBar" color="aluminium7"/>
-	<Style name="iconBarSeperator" color="aluminium6"/>
-
-	<Style name="foldLine" color="aluminium3"/>
-	<Style name="foldBg" color="black"/>
-	<Style name="foldLineHighlighted" color="aluminium2"/>
-	<Style name="foldToggleMarker" color="aluminium1"/>
-	<Style name="lineChangedBg" color="chameleon2"/>
-	<Style name="lineDirtyBg" color="butter2"/>
+	<Style name="marker.ruler" color="aluminium5"/>
+	<Style name="marker.whitespace" color="aluminium3"/>
+	<Style name="marker.invalidline" color="orange1"/>
+	<Style name="marker.bracket" color="aluminium4"/>
+	<Style name="marker.bracket.background" color="aluminium6"/>
+	<Style name="marker.bookmark.color1" color="aluminium1"/>
+	<Style name="marker.bookmark.color2" color="aluminium4"/>
 	
-	<Style name="bracketHighlightRectangle" color="aluminium4"/>
-	<Style name="bracketHighlightBg" color="aluminium6"/>
+	<!-- TODO: override defaults
+	<Style name="marker.underline" color="red"/>
+	<Style name="marker.underline.error" color="red"/>
+	<Style name="marker.underline.warning" color="yellow"/>
+	
+	<Style name="marker.breakpoint.color1" color=""/>
+	<Style name="marker.breakpoint.color2" color=""/>
+	<Style name="marker.breakpoint.foreground" color=""/>
+	<Style name="marker.breakpoint.background" color=""/>
+	<Style name="marker.breakpoint.disabled.background" color=""/>
+	<Style name="marker.breakpoint.invalid.background" color=""/>
+	<Style name="marker.breakpoint.invalid.color1" color=""/>
+	<Style name="marker.breakpoint.invalid.border" color=""/>
+	
+	<Style name="marker.debug.currentline.foreground" color=""/>
+	<Style name="marker.debug.currentline.background" color=""/>
+	<Style name="marker.debug.currentline.color1" color=""/>
+	<Style name="marker.debug.currentline.color2" color=""/>
+	<Style name="marker.debug.currentline.border" color=""/>
+	-->
+	<Style name="linenumber" color="aluminium5"/>
+	<Style name="linenumber.highlight" color="aluminium3"/>
+	<Style name="linenumber.background" color="aluminium7"/>
+	
+	<Style name="iconbar" color="aluminium7"/>
+	<Style name="iconbar.separator" color="aluminium6"/>
 
-	<Style name="bookmarkColor1" color="aluminium1"/>
-	<Style name="bookmarkColor2" color="aluminium4"/>
-
-
+	<Style name="fold" color="aluminium3"/>
+	<Style name="fold.background" color="black"/>
+	<Style name="fold.highlight" color="aluminium2"/>
+	<Style name="fold.togglemarker" color="aluminium1"/>
+	
 	<!-- highlighting -->
 	<Style name="comment" color="aluminium4"/>
-	<Style name="altcomment" color="aluminium4"/>
-	<Style name="todocomment" color="aluminium4" weight="italic" />
-	<Style name="commentkw" color="aluminium4" weight="bold" />
-	<Style name="commenttag" color="aluminium4"/>
+	<Style name="comment.keyword.todo" color="aluminium4" weight="italic" />
+	<Style name="comment.keyword" color="aluminium4" weight="bold" />
+	<Style name="comment.tag" color="aluminium4"/>
 	
-	<Style name="digit" color="butter2"/>
-	<Style name="literal" color="butter2"/>
-	<Style name="punctuation" color="butter2"/>
+	<Style name="text.literal" color="butter2"/>
+	<Style name="text.punctuation" color="butter2"/>
+	<Style name="text.preprocessor" color="skyblue1" weight="italic"/>
+	<Style name="text.preprocessor.keyword" color="skyblue1" weight="bold"/>
+	<Style name="text.markup" color="skyblue1"/>
+	<Style name="text.markup.tag" color="skyblue1"/>
 	
-	<Style name="link" color="butter2"/>
+	<Style name="constant" color="butter2"/>
+	<Style name="constant.digit" color="butter2"/>
+	<Style name="constant.language" color="orange3"/>
+	<Style name="constant.language.void" color="plum1" weight="bold"/>
 	
-	<Style name="kw:access" color="plum1" weight="bold" />
-	<Style name="kw:operator" color="plum1" weight="bold"/>
-	<Style name="kw:selection" color="white" weight="bold"/>
-	<Style name="kw:iteration" color="plum1" weight="bold"/>
-	<Style name="kw:jump" color="plum1" weight="bold"/>
-	<Style name="kw:context" color="white" weight="bold"/>
-	<Style name="kw:exceptions" color="white" weight="bold"/>
-	<Style name="kw:literals" color="orange3"/>
-	<Style name="kw:modifiers" color="plum1" weight="bold"/>
-	<Style name="kw:types" color="chameleon1" weight="bold"/>
-	<Style name="kw:namespaces" color="plum1" weight="bold"/>
-	<Style name="kw:properties" color="plum1" weight="bold"/>
-	<Style name="kw:declarations" color="plum1" weight="bold"/>
-	<Style name="kw:parameter" color="white" weight="bold"/>
-	<Style name="kw:operatordecl" color="plum1" weight="bold"/>
-	<Style name="kw:misc" color="white" weight="bold"/>
-	<Style name="kw:void" color="plum1" weight="bold"/>
+	<Style name="string" color="butter2"/>
+	<Style name="string.single" color="butter2"/>
+	<Style name="string.double" color="butter2"/>
+	<Style name="string.other" color="butter2"/>
 	
-	<Style name="preprocessor" color="skyblue1" weight="italic"/>
-	<Style name="preprocessorkw" color="skyblue1" weight="bold"/>
+	<Style name="keyword.access" color="plum1" weight="bold" />
+	<Style name="keyword.operator" color="plum1" weight="bold"/>
+	<Style name="keyword.selection" color="white" weight="bold"/>
+	<Style name="keyword.iteration" color="plum1" weight="bold"/>
+	<Style name="keyword.jump" color="plum1" weight="bold"/>
+	<Style name="keyword.context" color="white" weight="bold"/>
+	<Style name="keyword.exceptions" color="white" weight="bold"/>
 	
-	<Style name="markup" color="skyblue1"/>
+	<Style name="keyword.modifier" color="plum1" weight="bold"/>
+	<Style name="keyword.type" color="chameleon1" weight="bold"/>
+	<Style name="keyword.namespace" color="plum1" weight="bold"/>
+	<Style name="keyword.property" color="plum1" weight="bold"/>
+	<Style name="keyword.declaration" color="plum1" weight="bold"/>
+	<Style name="keyword.parameter" color="white" weight="bold"/>
+	<Style name="keyword.operator.declaration" color="plum1" weight="bold"/>
+	<Style name="keyword.misc" color="white" weight="bold"/>
+	
 </EditorStyle>

@@ -29,7 +29,7 @@ using System;
 using System.Text.RegularExpressions;
 using System.Xml;
 
-namespace Mono.TextEditor
+namespace Mono.TextEditor.Highlighting
 {
 	public class Match
 	{
@@ -52,6 +52,10 @@ namespace Mono.TextEditor
 			get {
 				return regex;
 			}
+		}
+		public virtual bool GetIsValid (Style style)
+		{
+			return style.GetChunkStyle (color) != null;
 		}
 		
 		public override string ToString ()
@@ -113,6 +117,11 @@ namespace Mono.TextEditor
 				return true;
 			}
 			return false;
+		}
+		
+		public override bool GetIsValid (Style style)
+		{
+			return true;
 		}
 		
 		public override int TryMatch (string text, int matchOffset)

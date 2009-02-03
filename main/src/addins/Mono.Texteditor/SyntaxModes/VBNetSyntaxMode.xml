@@ -25,27 +25,27 @@
  
 <SyntaxMode name = "Visual Basic.NET" mimeTypes="text/x-vb">
 
-	<EolSpan color = "preprocessor" rule="PreProcessor">#</EolSpan>
+	<EolSpan color = "text.preprocessor" rule="text.preprocessor">#</EolSpan>
 	<EolSpan color = "comment" rule="Comment">'</EolSpan>
 	<EolSpan color = "comment" rule="Comment">REM</EolSpan>
 	
-	<Span color = "comment" rule="Comment" tagColor="commenttag">
+	<Span color = "comment" rule="Comment" tagColor="comment.tag">
 		<Begin>/*</Begin>
 		<End>*/</End>
 	</Span>
 	
-	<Span color = "literal" rule="String" stopateol = "true" escape="\">
+	<Span color = "string" rule="String" stopateol = "true" escape="\">
 		<Begin>"</Begin>
 		<End>"</End>
 	</Span>
 	
-	<Keywords color = "kw:access" ignorecase="True">
+	<Keywords color = "keyword.access" ignorecase="True">
 		<Word>Me</Word>
 		<Word>MyBase</Word>
 		<Word>MyClass</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:operator" ignorecase="True">
+	<Keywords color = "keyword.operator" ignorecase="True">
 		<Word>AddressOf</Word>
 		<Word>And</Word>
 		<Word>AndAlso</Word>
@@ -60,7 +60,7 @@
 		<Word>Xor</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:selection" ignorecase="True">
+	<Keywords color = "keyword.selection" ignorecase="True">
 		<Word>If</Word>
 		<Word>Then</Word>
 		<Word>Else</Word>
@@ -71,7 +71,7 @@
 		<Word>Case</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:iteration" ignorecase="True">
+	<Keywords color = "keyword.iteration" ignorecase="True">
 		<Word>For</Word>
 		<Word>To</Word>
 		<Word>Step</Word>
@@ -88,7 +88,7 @@
 		<Word>Wend</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:jump" ignorecase="True">
+	<Keywords color = "keyword.jump" ignorecase="True">
 		<Word>GoTo</Word>
 		<Word>GoSub</Word>
 		<Word>Call</Word>
@@ -97,7 +97,7 @@
 		<Word>Return</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:context" ignorecase="True">
+	<Keywords color = "keyword.context" ignorecase="True">
 		<Word>Resume</Word>
 		<Word>AddHandler</Word>
 		<Word>RemoveHandler</Word>
@@ -108,7 +108,7 @@
 		<Word>Erase</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:exceptions" ignorecase="True">
+	<Keywords color = "keyword.exceptions" ignorecase="True">
 		<Word>Try</Word>
 		<Word>Catch</Word>
 		<Word>When</Word>
@@ -122,13 +122,13 @@
 		<Word>Exit</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:literals" ignorecase="True">
+	<Keywords color = "constant.language" ignorecase="True">
 		<Word>False</Word>
 		<Word>Nothing</Word>
 		<Word>True</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:modifiers" ignorecase="True">
+	<Keywords color = "keyword.modifier" ignorecase="True">
 		<Word>Friend</Word>
 		<Word>Private</Word>
 		<Word>Protected</Word>
@@ -157,7 +157,7 @@
 				
 	</Keywords>
 	
-	<Keywords color = "kw:types" ignorecase="True">
+	<Keywords color = "keyword.type" ignorecase="True">
 		<Word>Boolean</Word>
 		<Word>Byte</Word>
 		<Word>Char</Word>
@@ -178,12 +178,12 @@
 	</Keywords>
 	
 	
-	<Keywords color = "kw:namespaces" ignorecase="True">
+	<Keywords color = "keyword.namespace" ignorecase="True">
 		<Word>Namespace</Word>
 		<Word>Imports</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:properties" ignorecase="True">		<Word>Sub</Word>
+	<Keywords color = "keyword.property" ignorecase="True">		<Word>Sub</Word>
 		<Word>Function</Word>
 		<Word>Handles</Word>
 		<Word>Declare</Word>
@@ -196,7 +196,7 @@
 		<Word>Event</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:declarations" ignorecase="True">
+	<Keywords color = "keyword.declaration" ignorecase="True">
 		<Word>Class</Word>
 		<Word>Implements</Word>
 		<Word>Inherits</Word>
@@ -207,7 +207,7 @@
 		<Word>Enum</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:parameter" ignorecase="True">
+	<Keywords color = "keyword.parameter" ignorecase="True">
 		<Word>ByRef</Word>
 		<Word>ByVal</Word>
 		<Word>Optional</Word>
@@ -215,7 +215,7 @@
 	</Keywords>
 	
 	
-	<Keywords color = "kw:operatordecl" ignorecase="True">
+	<Keywords color = "keyword.operator.declaration" ignorecase="True">
 		<Word>Ansi</Word>
 		<Word>Auto</Word>
 		<Word>Unicode</Word>
@@ -223,7 +223,7 @@
 		<Word>Until</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:misc" ignorecase="True">
+	<Keywords color = "keyword.misc" ignorecase="True">
 		<Word>As</Word>
 		<Word>Of</Word>
 		<Word>New</Word>
@@ -252,8 +252,8 @@
 		<Word>TypeOf</Word>
 	</Keywords>
 
-	<Rule name = "PreProcessor">
-		<Keywords color="preprocessorkw" ignorecase="True">
+	<Rule name = "text.preprocessor">
+		<Keywords color="text.preprocessor.keyword" ignorecase="True">
 			<Word>const</Word>
 			<Word>if</Word>
 			<Word>else</Word>
@@ -266,7 +266,7 @@
 	</Rule>
 	
 	<Rule name = "Comment">
-		<Keywords color="todocomment" ignorecase="True">
+		<Keywords color="comment.keyword.todo" ignorecase="True">
 			<Word>TODO</Word>
 			<Word>FIXME</Word>
 			<Word>HACK</Word>

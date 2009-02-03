@@ -35,7 +35,7 @@
 	<Color name="aluminium6" value="#2e3436"/>
 	
 	<!-- environment -->
-	<Style name="default" color="black"/>
+	<Style name="text" color="black"/>
 	<Style name="caret" color="black"/>
 	<Style name="caretForeground" color="white"/>
 	<Style name="background" color="white"/>
@@ -67,39 +67,38 @@
 	
 	<!-- highlighting -->
 	<Style name="comment" color="comment-green"/>
-	<Style name="altcomment" color="comment-green"/>
-	<Style name="todocomment" color="comment-green" weight="italic" />
-	<Style name="commentkw" color="comment-green" weight="bold" />
-	<Style name="commenttag" color="comment-green"/>
+	<Style name="comment.keyword.todo" color="comment-green" weight="italic" />
+	<Style name="comment.keyword" color="comment-green" weight="bold" />
+	<Style name="comment.tag" color="comment-green"/>
 
 	<Style name="link" color="skyblue"/>
 	
 	<Style name="digit" color="black"/>
-	<Style name="literal" color="#a31515"/>
+	<Style name="string" color="#a31515"/>
 	<Style name="punctuation" color="black"/>
 	
-	<Style name="kw:namespaces" color="blue"/>
-	<Style name="kw:properties" color="blue"/>
-	<Style name="kw:modifiers" color="blue"/>
-	<Style name="kw:types" color="blue"/>
-	<Style name="kw:void" color="blue"/>
-	<Style name="kw:declarations" color="blue"/>
+	<Style name="keyword.namespace" color="blue"/>
+	<Style name="keyword.property" color="blue"/>
+	<Style name="keyword.modifier" color="blue"/>
+	<Style name="keyword.type" color="blue"/>
+	<Style name="constant.language.void" color="blue"/>
+	<Style name="keyword.declaration" color="blue"/>
 	
-	<Style name="kw:access" color="blue" weight="bold"/>
+	<Style name="keyword.access" color="blue" weight="bold"/>
 	
-	<Style name="kw:operator" color="blue"/>
-	<Style name="kw:selection" color="blue"/>
-	<Style name="kw:iteration" color="blue"/>
-	<Style name="kw:jump" color="blue"/>
-	<Style name="kw:context" color="blue"/>
-	<Style name="kw:exceptions" color="blue"/>
-	<Style name="kw:literals" color="blue"/>
-	<Style name="kw:parameter" color="blue"/>
-	<Style name="kw:operatordecl" color="blue"/>
-	<Style name="kw:misc" color="blue"/>
+	<Style name="keyword.operator" color="blue"/>
+	<Style name="keyword.selection" color="blue"/>
+	<Style name="keyword.iteration" color="blue"/>
+	<Style name="keyword.jump" color="blue"/>
+	<Style name="keyword.context" color="blue"/>
+	<Style name="keyword.exceptions" color="blue"/>
+	<Style name="constant.language" color="blue"/>
+	<Style name="keyword.parameter" color="blue"/>
+	<Style name="keyword.operator.declaration" color="blue"/>
+	<Style name="keyword.misc" color="blue"/>
 	
-	<Style name="preprocessor" color="purple"/>
-	<Style name="preprocessorkw" color="purple"/>
+	<Style name="text.preprocessor" color="purple"/>
+	<Style name="text.preprocessor.keyword" color="purple"/>
 	
-	<Style name="markup" color="skyblue"/>
+	<Style name="text.markup" color="skyblue"/>
 </EditorStyle>

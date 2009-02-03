@@ -24,69 +24,106 @@
  THE SOFTWARE. -->
  <EditorStyle name="C64" _description="A Style style that uses the old Commodore 64 Styles">
 
-	<Style name="default" color="#97A0EF"/>
+	<Style name="text" color="#97A0EF"/>
+	<Style name="text.background" color="#3F3FDF"/>
+	<Style name="text.background.selection" color="#000000"/>
+	<Style name="text.background.searchresult" color="yellow"/>
+	
+	<Style name="text.selection" color="#FFFFFF"/>
+	<Style name="text.link" color="blue"/>
+	
 	<Style name="caret" color="#97A0EF"/>
-	<Style name="caretForeground" color="#3F3FDF"/>
-	<Style name="background" color="#3F3FDF"/>
-	<Style name="selectedBackground" color="#000000"/>
-	<Style name="selectedForeground" color="#FFFFFF"/>
+	<Style name="caret.foreground" color="#3F3FDF"/>
 	
-	<Style name="lineMarker" color="#0088FF"/>
-	<Style name="ruler" color="#CC44CC"/>
-	<Style name="whitespaces" color="#AAFFEE"/>
-	<Style name="invalidLines" color="#880000"/>
-
-	<Style name="lineNumber" color="#97A0EF"/>
-	<Style name="lineNumberHighlighted" color="#97A0EF"/>
-	<Style name="lineNumberBg" color="#3F3FDF"/>
+	<Style name="marker.line" color="#0088FF"/>
+	<Style name="marker.line.changed" color="yellow"/>	
+	<Style name="marker.line.dirty" color="green"/>	
 	
-	<Style name="iconBar" color="#3F3FDF"/>
-	<Style name="iconBarSeperator" color="#97A0EF"/>
-
-	<Style name="foldLine" color="#97A0EF"/>
-	<Style name="foldBg" color="#3F3FDF"/>
-	<Style name="foldLineHighlighted" color="#FFFFFF"/>
-	<Style name="foldToggleMarker" color="#97A0EF"/>
-
-	<Style name="bracketHighlightRectangle" color="#97A0EF"/>
-	<Style name="bracketHighlightBg" color="#3F3FDF"/>
+	<Style name="marker.ruler" color="#CC44CC"/>
+	<Style name="marker.whitespace" color="#AAFFEE"/>
+	<Style name="marker.invalidline" color="#880000"/>
+	<Style name="marker.bracket" color="#97A0EF"/>
+	<Style name="marker.bracket.background" color="#3F3FDF"/>
+	<Style name="marker.bookmark.color1" color="#FFFFFF"/>
+	<Style name="marker.bookmark.color2" color="#3F3FDF"/>
 	
-	<Style name="bookmarkColor1" color="#FFFFFF"/>
-	<Style name="bookmarkColor2" color="#3F3FDF"/>
+<!-- TODO: override defaults
+	<Style name="marker.underline" color="red"/>
+	<Style name="marker.underline.error" color="red"/>
+	<Style name="marker.underline.warning" color="yellow"/>
+	
+	<Style name="marker.breakpoint.color1" color=""/>
+	<Style name="marker.breakpoint.color2" color=""/>
+	<Style name="marker.breakpoint.foreground" color=""/>
+	<Style name="marker.breakpoint.background" color=""/>
+	<Style name="marker.breakpoint.disabled.background" color=""/>
+	<Style name="marker.breakpoint.invalid.background" color=""/>
+	<Style name="marker.breakpoint.invalid.color1" color=""/>
+	<Style name="marker.breakpoint.invalid.border" color=""/>
+	
+	<Style name="marker.debug.currentline.foreground" color=""/>
+	<Style name="marker.debug.currentline.background" color=""/>
+	<Style name="marker.debug.currentline.color1" color=""/>
+	<Style name="marker.debug.currentline.color2" color=""/>
+	<Style name="marker.debug.currentline.border" color=""/>
+	-->
+		
+	<Style name="linenumber" color="#97A0EF"/>
+	<Style name="linenumber.highlight" color="#97A0EF"/>
+	<Style name="linenumber.background" color="#3F3FDF"/>
+	
+	<Style name="iconbar" color="#3F3FDF"/>
+	<Style name="iconbar.separator" color="#97A0EF"/>
 
+	<Style name="fold" color="#97A0EF"/>
+	<Style name="fold.background" color="#3F3FDF"/>
+	<Style name="fold.highlight" color="#FFFFFF"/>
+	<Style name="fold.togglemarker" color="#97A0EF"/>
+	
 	<!-- highlighting -->
 	<Style name="comment" color="white"/>
-	<Style name="altcomment" color="white"/>
-	<Style name="todocomment" weight="italic" color="white"/>
-	<Style name="commentkw" weight="bold" color="white"/>
-	<Style name="commenttag" color="white"/>
-
-	<Style name="link" color="blue"/>
+	<Style name="comment.tag" color="white"/>	
+	<Style name="comment.line" color="white"/>
+	<Style name="comment.tag.line" color="white"/>	
+	<Style name="comment.block" color="white"/>
+	<Style name="comment.tag.block" color="white"/>	
+	<Style name="comment.doc" color="white"/>
+	<Style name="comment.tag.doc" color="white"/>	
+	<Style name="comment.keyword" color="white" weight="bold"/>	
+	<Style name="comment.keyword.todo" color="white" weight="italic"/>
 	
-	<Style name="digit" color="white"/>
-	<Style name="literal" color="white"/>
-	<Style name="punctuation" color="white"/>
+	<Style name="text.literal" color="white"/>
+	<Style name="text.punctuation" color="white"/>
+	<Style name="text.preprocessor" color="white"/>
+	<Style name="text.preprocessor.keyword" weight="bold" color="white"/>
+	<Style name="text.markup" color="white"/>
+	<Style name="text.markup" color="white"/>
+	<Style name="text.markup.tag" color="white"/>
+		
+	<Style name="constant" color="white"/>
+	<Style name="constant.digit" color="white"/>
+	<Style name="constant.language" color="white"/>
+	<Style name="constant.language.void" color="white" weight="bold"/>
 	
-	<Style name="kw:access" weight="bold" color="white"/>
-	<Style name="kw:operator" weight="bold" color="white"/>
-	<Style name="kw:selection" weight="bold" color="white"/>
-	<Style name="kw:iteration" weight="bold" color="white"/>
-	<Style name="kw:jump" weight="bold" color="white"/>
-	<Style name="kw:context" weight="bold" color="white"/>
-	<Style name="kw:exceptions" weight="bold" color="white"/>
-	<Style name="kw:literals" weight="bold" color="white"/>
-	<Style name="kw:modifiers" weight="bold" color="white"/>
-	<Style name="kw:types" weight="bold" color="white"/>
-	<Style name="kw:namespaces" weight="bold" color="white"/>
-	<Style name="kw:properties" weight="bold" color="white"/>
-	<Style name="kw:declarations" weight="bold" color="white"/>
-	<Style name="kw:parameter" weight="bold" color="white"/>
-	<Style name="kw:operatordecl" weight="bold" color="white"/>
-	<Style name="kw:misc" weight="bold" color="white"/>
-	<Style name="kw:void" weight="bold" color="white"/>
+	<Style name="string" color="white"/>
+	<Style name="string.single" color="white"/>
+	<Style name="string.double" color="white"/>
+	<Style name="string.other" color="white"/>
 	
-	<Style name="preprocessor" color="white"/>
-	<Style name="preprocessorkw" weight="bold" color="white"/>
+	<Style name="keyword.access" weight="bold" color="white"/>
+	<Style name="keyword.operator" weight="bold" color="white"/>
+	<Style name="keyword.selection" weight="bold" color="white"/>
+	<Style name="keyword.iteration" weight="bold" color="white"/>
+	<Style name="keyword.jump" weight="bold" color="white"/>
+	<Style name="keyword.context" weight="bold" color="white"/>
+	<Style name="keyword.exceptions" weight="bold" color="white"/>
+	<Style name="keyword.modifier" weight="bold" color="white"/>
+	<Style name="keyword.type" weight="bold" color="white"/>
+	<Style name="keyword.namespace" weight="bold" color="white"/>
+	<Style name="keyword.property" weight="bold" color="white"/>
+	<Style name="keyword.declaration" weight="bold" color="white"/>
+	<Style name="keyword.parameter" weight="bold" color="white"/>
+	<Style name="keyword.operator.declaration" weight="bold" color="white"/>
+	<Style name="keyword.misc" weight="bold" color="white"/>
 	
-	<Style name="markup" color="white"/>
 </EditorStyle>

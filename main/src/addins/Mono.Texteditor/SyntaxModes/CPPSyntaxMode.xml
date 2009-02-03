@@ -26,12 +26,12 @@
 <SyntaxMode name = "C++" mimeTypes="text/x-c++src;text/x-c++hdr" extends="text/x-csrc">
 	<EolSpan color = "comment" rule="Comment">//</EolSpan>
 	
-	<Keywords color = "kw:access">
+	<Keywords color = "keyword.access">
 		<Word>this</Word>
 		<Word>base</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:operator">
+	<Keywords color = "keyword.operator">
 		<Word>new</Word>
 		<Word>delete</Word>
 		
@@ -46,33 +46,33 @@
 		<Word>typename</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:exceptions">
+	<Keywords color = "keyword.exceptions">
 		<Word>try</Word>
 		<Word>throw</Word>
 		<Word>catch</Word>
 		<Word>finally</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:namespaces">
+	<Keywords color = "keyword.namespace">
 		<Word>namespace</Word>
 		<Word>using</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:selection">
+	<Keywords color = "keyword.selection">
 	</Keywords>
 	
-	<Keywords color = "kw:iteration">
+	<Keywords color = "keyword.iteration">
 	</Keywords>
 	
-	<Keywords color = "kw:jump">
+	<Keywords color = "keyword.jump">
 	</Keywords>
 	
-	<Keywords color = "kw:literals">
+	<Keywords color = "constant.language">
 		<Word>true</Word>
 		<Word>false</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:modifiers">
+	<Keywords color = "keyword.modifier">
 		<Word>private</Word>
 		<Word>protected</Word>
 		<Word>public</Word>
@@ -86,23 +86,23 @@
 		<Word>mutable</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:types">
+	<Keywords color = "keyword.type">
 	</Keywords>
 	
-	<Keywords color = "kw:void">
+	<Keywords color = "constant.language.void">
 		<Word>void</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:declarations">
+	<Keywords color = "keyword.declaration">
 		<Word>class</Word>
 		<Word>template</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:operatordecl">
+	<Keywords color = "keyword.operator.declaration">
 		<Word>operator</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:misc">
+	<Keywords color = "keyword.misc">
 	</Keywords>
 	
 </SyntaxMode>

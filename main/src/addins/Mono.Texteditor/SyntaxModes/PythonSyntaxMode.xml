@@ -25,36 +25,36 @@
  
 <SyntaxMode name = "Python" mimeTypes="text/x-python">
 	
-	<EolSpan color = "comment" rule="Comment" tagColor="commenttag">#</EolSpan>
+	<EolSpan color = "comment" rule="Comment" tagColor="comment.tag">#</EolSpan>
 	
 	
-	<Span color = "markup" rule="Comment">
+	<Span color = "text.markup" rule="Comment">
 		<Begin>"""</Begin>
 		<End>"""</End>
 	</Span>
 	
-	<Span color = "markup" rule="Comment">
+	<Span color = "text.markup" rule="Comment">
 		<Begin>'''</Begin>
 		<End>'''</End>
 	</Span>
 	
-	<Span color = "literal" rule="String" stopateol = "true" constraint='!"!"' escape="\">
+	<Span color = "string" rule="String" stopateol = "true" constraint='!"!"' escape="\">
 		<Begin>"</Begin>
 		<End>"</End>
 	</Span>
 	
-	<Span color = "literal" rule="String" stopateol = "true" constraint="!'!'" escape="\">
+	<Span color = "string" rule="String" stopateol = "true" constraint="!'!'" escape="\">
 		<Begin>'</Begin>
 		<End>'</End>
 	</Span>
 	
-	<Keywords color = "kw:access">
+	<Keywords color = "keyword.access">
 	</Keywords>
 	
-	<Keywords color = "kw:operator">
+	<Keywords color = "keyword.operator">
 	</Keywords>
 	
-	<Keywords color = "kw:selection">
+	<Keywords color = "keyword.selection">
 		<Word>and</Word>
 		<Word>assert</Word>
 		<Word>break</Word>
@@ -85,10 +85,10 @@
 		<Word>with</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:iteration">
+	<Keywords color = "keyword.iteration">
 	</Keywords>
 	
-	<Keywords color = "kw:jump">
+	<Keywords color = "keyword.jump">
 		<Word>abs</Word>
 		<Word>all</Word>
 		<Word>any</Word>
@@ -163,13 +163,13 @@
 		<Word>zip</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:context">
+	<Keywords color = "keyword.context">
 		<Word>False</Word>
 		<Word>None</Word>
 		<Word>True</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:exceptions">
+	<Keywords color = "keyword.exceptions">
 		<Word>ArithmeticError</Word>
 		<Word>AssertionError</Word>
 		<Word>AttributeError</Word>
@@ -217,13 +217,13 @@
 		<Word>FutureWarning</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:literals">
+	<Keywords color = "constant.language">
 	</Keywords>
 	
-	<Keywords color = "kw:modifiers">
+	<Keywords color = "keyword.modifier">
 	</Keywords>
 	
-	<Keywords color = "kw:types">
+	<Keywords color = "keyword.type">
 		<Word>BufferType</Word>
 		<Word>BuiltinFunctionType</Word>
 		<Word>BuiltinMethodType</Word>
@@ -259,27 +259,27 @@
 		<Word>XRangeType</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:void">
+	<Keywords color = "constant.language.void">
 	</Keywords>
 	
-	<Keywords color = "kw:namespaces">
+	<Keywords color = "keyword.namespace">
 		<Word>import</Word>
 		<Word>from</Word>
 		<Word>as</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:properties">	</Keywords>
+	<Keywords color = "keyword.property">	</Keywords>
 	
-	<Keywords color = "kw:declarations">
+	<Keywords color = "keyword.declaration">
 	</Keywords>
 	
-	<Keywords color = "kw:parameter">
+	<Keywords color = "keyword.parameter">
 	</Keywords>
 	
-	<Keywords color = "kw:operatordecl">
+	<Keywords color = "keyword.operator.declaration">
 	</Keywords>
 	
-	<Keywords color = "kw:misc">
+	<Keywords color = "keyword.misc">
 		<Word>__abs__</Word>
 		<Word>__add__</Word>
 		<Word>__all__</Word>
@@ -369,7 +369,7 @@
 	</Keywords>
 
 	<Rule name = "Comment">
-		<Keywords color="todocomment" ignorecase="True">
+		<Keywords color="comment.keyword.todo" ignorecase="True">
 			<Word>TODO</Word>
 			<Word>FIXME</Word>
 			<Word>HACK</Word>

@@ -433,7 +433,7 @@ namespace Mono.TextEditor
 			int caretOffset = Caret.Offset;
 			int drawCaretAt = -1;
 			wordBuilder.Length = 0;
-			ChunkStyle style = chunk.Style;
+			ChunkStyle style = chunk.GetChunkStyle (textEditor.GetTextEditorData ().ColorStyle);
 			if (line.Markers != null) {
 				foreach (TextMarker marker in line.Markers)
 					style = marker.GetStyle (style);
@@ -446,11 +446,11 @@ namespace Mono.TextEditor
 				line.AddMarker (underlineMarker);
 			}
 			
-			Pango.Weight requestedWeight = chunk.Style.GetWeight (DefaultWeight);
+			Pango.Weight requestedWeight = style.GetWeight (DefaultWeight);
 			if (layout.FontDescription.Weight != requestedWeight)
 				layout.FontDescription.Weight = requestedWeight;
 			
-			Pango.Style requestedStyle = chunk.Style.GetStyle (DefaultStyle);
+			Pango.Style requestedStyle = style.GetStyle (DefaultStyle);
 			if (layout.FontDescription.Style != requestedStyle)
 				layout.FontDescription.Style = requestedStyle;
 				
@@ -807,7 +807,7 @@ namespace Mono.TextEditor
 				int offset = Document.LocationToOffset (VisualToDocumentLocation (args.X, args.Y));
 				for (; chunk != null; chunk = chunk.Next) {
 					if (chunk.Offset <= offset && offset < chunk.EndOffset) 
-						return chunk.Style != null ? chunk.Style.Link : null;
+						return chunk.Style != null ? chunk.GetChunkStyle (style).Link : null;
 				}
 			}
 			return null;
@@ -1187,8 +1187,9 @@ namespace Mono.TextEditor
 							delta = margin.charWidth;
 							visibleColumn++;
 						} else {
-							measureLayout.FontDescription.Weight = chunks.Style.GetWeight (margin.DefaultWeight);
-							measureLayout.FontDescription.Style =  chunks.Style.GetStyle (margin.DefaultStyle);
+							ChunkStyle style = chunks.GetChunkStyle (margin.ColorStyle);
+							measureLayout.FontDescription.Weight = style.GetWeight (margin.DefaultWeight);
+							measureLayout.FontDescription.Style =  style.GetStyle (margin.DefaultStyle);
 							
 							measureLayout.SetText (ch.ToString ());
 							int height;

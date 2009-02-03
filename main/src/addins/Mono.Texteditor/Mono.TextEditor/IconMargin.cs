@@ -34,7 +34,7 @@ namespace Mono.TextEditor
 	public class IconMargin : Margin
 	{
 		TextEditor editor;
-		Gdk.GC backgroundGC, seperatorGC;
+		Gdk.GC backgroundGC, separatorGC;
 		Pango.Layout layout;
 		int marginWidth = 18;
 		
@@ -59,7 +59,7 @@ namespace Mono.TextEditor
 		void DisposeGCs ()
 		{
 			backgroundGC = backgroundGC.Kill ();
-			seperatorGC  = seperatorGC.Kill ();
+			separatorGC  = separatorGC.Kill ();
 		}
 		
 		internal protected override void OptionsChanged ()
@@ -68,8 +68,8 @@ namespace Mono.TextEditor
 			backgroundGC = new Gdk.GC (editor.GdkWindow);
 			backgroundGC.RgbFgColor = editor.ColorStyle.IconBarBg;
 			
-			seperatorGC = new Gdk.GC (editor.GdkWindow);
-			seperatorGC.RgbFgColor = editor.ColorStyle.IconBarSeperator;
+			separatorGC = new Gdk.GC (editor.GdkWindow);
+			separatorGC.RgbFgColor = editor.ColorStyle.IconBarSeperator;
 			
 			layout.FontDescription = editor.Options.Font;
 			layout.SetText ("!");
@@ -110,7 +110,7 @@ namespace Mono.TextEditor
 			Gdk.Rectangle drawArea = new Gdk.Rectangle (x, y, Width, editor.LineHeight);
 			
 			win.DrawRectangle (backgroundGC, true, drawArea);
-			win.DrawLine (seperatorGC, x + Width - 1, drawArea.Top, x + Width - 1, drawArea.Bottom);
+			win.DrawLine (separatorGC, x + Width - 1, drawArea.Top, x + Width - 1, drawArea.Bottom);
 			
 			if (line < editor.Document.LineCount) {
 				LineSegment lineSegment = editor.Document.GetLine (line);

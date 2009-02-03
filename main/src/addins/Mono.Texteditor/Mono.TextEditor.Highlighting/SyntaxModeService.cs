@@ -76,13 +76,13 @@ namespace Mono.TextEditor.Highlighting
 			}
 			return null;
 		}
+		
 		public static IXmlProvider GetProvider (Style style)
 		{
 			if (styleLookup.ContainsKey (style.Name)) 
 				return styleLookup[style.Name];
 			return null;
 		}
-		
 		
 		static void LoadStyle (string name)
 		{
@@ -121,6 +121,30 @@ namespace Mono.TextEditor.Highlighting
 				return GetSyntaxMode (mimeType);
 			}
 			return null;
+		}
+		
+		public static void ValidateAllSyntaxModes ()
+		{
+			foreach (string mime in new List<string> (syntaxModeLookup.Keys)) {
+				GetSyntaxMode (mime);
+			}
+			syntaxModeLookup.Clear ();
+			foreach (string style in new List<string> (styleLookup.Keys)) {
+				GetColorStyle (null, style);
+			}
+			styleLookup.Clear ();
+			
+			foreach (KeyValuePair<string, Style> style in styles) {
+				HashSet<SyntaxMode> checkedModes = new HashSet<SyntaxMode> ();
+				foreach (KeyValuePair<string, SyntaxMode> mode in syntaxModes) {
+					if (checkedModes.Contains (mode.Value))
+						continue;
+					if (!mode.Value.Validate (style.Value)) {
+						System.Console.WriteLine(mode.Key + " failed to validate against:" + style.Key);
+					}
+					checkedModes.Add (mode.Value);
+				}
+			}
 		}
 		
 		public static void Remove (Style style)
@@ -555,7 +579,7 @@ namespace Mono.TextEditor.Highlighting
 			LoadStylesAndModes (typeof (SyntaxModeService).Assembly);
 			SyntaxModeService.GetSyntaxMode ("text/x-csharp").AddSemanticRule ("Comment", new HighlightUrlSemanticRule ("comment"));
 			SyntaxModeService.GetSyntaxMode ("text/x-csharp").AddSemanticRule ("XmlDocumentation", new HighlightUrlSemanticRule ("comment"));
-			SyntaxModeService.GetSyntaxMode ("text/x-csharp").AddSemanticRule ("String", new HighlightUrlSemanticRule ("literal"));
+			SyntaxModeService.GetSyntaxMode ("text/x-csharp").AddSemanticRule ("String", new HighlightUrlSemanticRule ("string"));
 		}
 
 	}

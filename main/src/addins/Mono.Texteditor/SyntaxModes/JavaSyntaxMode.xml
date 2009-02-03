@@ -30,29 +30,29 @@
 		<End>*/</End>
 	</Span>
 	
-	<Span color = "literal" rule = "String" stopateol = "true" escape="\">
+	<Span color = "string" rule = "String" stopateol = "true" escape="\">
 		<Begin>"</Begin>
 		<End>"</End>
 	</Span>
 
-	<Span color = "literal" stopateol = "true" escape="\">
+	<Span color = "string" stopateol = "true" escape="\">
 		<Begin>&apos;</Begin>
 		<End>&apos;</End>
 	</Span>
 	
-	<Match color = "literal">CSharpNumber</Match>
+	<Match color = "string">CSharpNumber</Match>
 	
-	<Keywords color = "kw:access">
+	<Keywords color = "keyword.access">
 		<Word>this</Word>
 		<Word>super</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:operator">
+	<Keywords color = "keyword.operator">
 		<Word>new</Word>
 		<Word>instanceof</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:selection">
+	<Keywords color = "keyword.selection">
 		<Word>else</Word>
 		<Word>if</Word>
 		<Word>switch</Word>
@@ -60,33 +60,33 @@
 		<Word>default</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:iteration">
+	<Keywords color = "keyword.iteration">
 		<Word>do</Word>
 		<Word>for</Word>
 		<Word>while</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:jump">
+	<Keywords color = "keyword.jump">
 		<Word>break</Word>
 		<Word>continue</Word>
 		<Word>goto</Word>
 		<Word>return</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:exceptions">
+	<Keywords color = "keyword.exceptions">
 		<Word>try</Word>
 		<Word>throw</Word>
 		<Word>catch</Word>
 		<Word>finally</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:literals">
+	<Keywords color = "constant.language">
 		<Word>true</Word>
 		<Word>false</Word>
 		<Word>null</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:modifiers">
+	<Keywords color = "keyword.modifier">
 		<Word>abstract</Word>
 		<Word>const</Word>
 		<Word>static</Word>
@@ -106,7 +106,7 @@
 		<Word>internal</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:types">
+	<Keywords color = "keyword.type">
 		<Word>boolean</Word>
 		<Word>byte</Word>
 		<Word>char</Word>
@@ -119,28 +119,28 @@
 		<Word>object</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:void">
+	<Keywords color = "constant.language.void">
 		<Word>void</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:namespaces">
+	<Keywords color = "keyword.namespace">
 		<Word>package</Word>
 		<Word>import</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:declarations">
+	<Keywords color = "keyword.declaration">
 		<Word>class</Word>
 		<Word>interface</Word>
 	</Keywords>
 
 	<Rule name = "Comment">
-		<Keywords color="todocomment" ignorecase="True">
+		<Keywords color="comment.keyword.todo" ignorecase="True">
 			<Word>TODO</Word>
 			<Word>FIXME</Word>
 			<Word>HACK</Word>
 			<Word>UNDONE</Word>
 		</Keywords>	
-		<Keywords color="commentkw" ignorecase="True">
+		<Keywords color="comment.keyword" ignorecase="True">
 			<Word>@author</Word>
 			<Word>@deprecated</Word>
 			<Word>@return</Word>

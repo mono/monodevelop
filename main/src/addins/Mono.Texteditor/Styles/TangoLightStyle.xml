@@ -53,74 +53,102 @@
 	<Color name="aluminium5" value="#555753"/>
 	<Color name="aluminium6" value="#2e3436"/>
 	
-	<!-- environment -->
-	<Style name="default" color="black"/>
-	<Style name="caret" color="black"/>
-	<Style name="caretForeground" color="white"/>
-	<Style name="background" color="white"/>
-	<Style name="selectedBackground" color="skyblue1"/>
-	<Style name="selectedForeground" color="aluminium1"/>
+	<!-- color styles -->
+	<Style name="text" color="black">
+		<Style name="background" color="white">
+			<Style name="selection" color="skyblue1"/>
+			<Style name="searchresult" color="yellow"/>
+		</Style>
+		<Style name="selection" color="aluminium1"/>
+		<Style name="link" color="blue"/>
+		<Style name="literal" color="plum2"/>
+		<Style name="punctuation" color="aluminium6"/>
+		<Style name="preprocessor" color="orange2">
+			<Style name="keyword" weight="bold"/>
+		</Style>
+		<Style name="markup" color="skyblue3">
+			<Style name="tag"/>
+		</Style>
+	</Style>
 	
-	<Style name="lineMarker" color="aluminium1"/>
-	<Style name="ruler" color="aluminium3"/>
-	<Style name="whitespaces" color="aluminium3"/>
-	<Style name="invalidLines" color="scarletred2"/>
+	<Style name="caret" color="black">
+		<Style name="foreground" color="white"/>
+	</Style>
+	
+	<Style name="marker">
+		<Style name="line" color="aluminium1"/>
+		<Style name="line.changed" color="chameleon2"/>
+		<Style name="line.dirty" color="butter2"/>
+	
+		<Style name="ruler" color="aluminium3"/>
+		<Style name="whitespace" color="aluminium3"/>
+		<Style name="invalidline" color="scarletred2"/>
+		<Style name="bracket" color="aluminium4"/>
+		<Style name="bracket.background" color="aluminium1"/>
+		<Style name="bookmark.color1" color="white"/>
+		<Style name="bookmark.color2" color="skyblue1"/>
+		<Style name="underline" color="scarletred1">
+			<Style name="error" color="scarletred1"/>
+			<Style name="warning" color="butter2"/>
+		</Style>
+	</Style>
 
-	<Style name="lineNumber" color="aluminium4"/>
-	<Style name="lineNumberHighlighted" color="aluminium5"/>
-	<Style name="lineNumberBg" color="white"/>
+	<Style name="linenumber" color="aluminium4"/>
+	<Style name="linenumber.highlight" color="aluminium5"/>
+	<Style name="linenumber.background" color="white"/>
 	
-	<Style name="iconBar" color="aluminium1"/>
-	<Style name="iconBarSeperator" color="aluminium3"/>
+	<Style name="iconbar" color="aluminium1"/>
+	<Style name="iconbar.separator" color="aluminium3"/>
 
-	<Style name="foldLine" color="aluminium3"/>
-	<Style name="foldBg" color="white"/>
-	<Style name="foldLineHighlighted" color="aluminium5"/>
-	<Style name="foldToggleMarker" color="black"/>
-	<Style name="lineChangedBg" color="chameleon2"/>
-	<Style name="lineDirtyBg" color="butter2"/>
+	<Style name="fold" color="aluminium3"/>
+	<Style name="fold.background" color="white"/>
+	<Style name="fold.highlight" color="aluminium5"/>
+	<Style name="fold.togglemarker" color="black"/>
 	
-	<Style name="bracketHighlightRectangle" color="aluminium4"/>
-	<Style name="bracketHighlightBg" color="aluminium1"/>
-	
-	<Style name="bookmarkColor1" color="white"/>
-	<Style name="bookmarkColor2" color="skyblue1"/>
-
-	<!-- highlighting -->
-	<Style name="comment" color="chameleon3"/>
-	<Style name="altcomment" color="chameleon3"/>
-	<Style name="todocomment" color="chameleon3" weight="italic" />
-	<Style name="commentkw" color="chameleon3" weight="bold" />
-	<Style name="commenttag" color="chameleon3"/>
-	
-	<Style name="link" color="blue"/>
-	
-	<Style name="digit" color="plum2"/>
-	<Style name="literal" color="plum2"/>
-	<Style name="punctuation" color="aluminium6"/>
-	
-	<Style name="kw:namespaces" color="plum3" weight="bold"/>
-	<Style name="kw:properties" color="skyblue3" weight="bold"/>
-	<Style name="kw:modifiers" color="plum3" weight="bold"/>
-	<Style name="kw:types" color="chameleon3" weight="bold"/>
-	<Style name="kw:void" color="chameleon3" weight="bold"/>
-	<Style name="kw:declarations" color="plum3" weight="bold"/>
+	<Style name="comment" color="chameleon3">
+		<Style name="line"/>
+		<Style name="block"/>
+		<Style name="doc"/>
+		<Style name="tag">
+			<Style name="line"/>
+			<Style name="block"/>
+			<Style name="doc"/>
+		</Style>
 		
-	<Style name="kw:access" color="black" weight="bold" />
+		<Style name="keyword" weight="bold">
+			<Style name="todo" weight="italic" />
+		</Style>
+		
+	</Style>
 	
-	<Style name="kw:operator" color="skyblue3"/>
-	<Style name="kw:selection" color="skyblue3" weight="bold"/>
-	<Style name="kw:iteration" color="skyblue3" weight="bold"/>
-	<Style name="kw:jump" color="skyblue3" weight="bold"/>
-	<Style name="kw:context" color="skyblue3" />
-	<Style name="kw:exceptions" color="scarletred3" weight="bold"/>
-	<Style name="kw:literals" color="plum2"/>
-	<Style name="kw:parameter" color="skyblue3" weight="bold"/>
-	<Style name="kw:operatordecl" color="skyblue3" weight="bold"/>
-	<Style name="kw:misc" color="skyblue3"/>
+	<Style name="constant" color="plum2">
+		<Style name="digit"/>
+		<Style name="language"/>
+		<Style name="language.void" color="chameleon3" weight="bold"/>
+	</Style>
 	
-	<Style name="preprocessor" color="orange2"/>
-	<Style name="preprocessorkw" color="orange2" weight="bold"/>
+	<Style name="string" color="plum2">
+		<Style name="single"/>
+		<Style name="double"/>
+		<Style name="other"/>
+	</Style>
 	
-	<Style name="markup" color="skyblue3"/>
+	<Style name="keyword" color="black" weight="bold">
+		<Style name="namespace" color="plum3"/>
+		<Style name="property" color="skyblue3"/>
+		<Style name="modifier" color="plum3"/>
+		<Style name="type" color="chameleon3"/>
+		<Style name="declaration" color="plum3"/>
+		<Style name="access" color="black"/>
+		<Style name="operator" color="skyblue3">
+			<Style name="declaration" color="skyblue3"/>
+		</Style>
+		<Style name="selection" color="skyblue3"/>
+		<Style name="iteration" color="skyblue3"/>
+		<Style name="jump" color="skyblue3"/>
+		<Style name="context" color="skyblue3" weight="normal"/>
+		<Style name="exceptions" color="scarletred3"/>
+		<Style name="parameter" color="skyblue3"/>
+		<Style name="misc" color="skyblue3" weight="normal"/>
+	</Style>
 </EditorStyle>

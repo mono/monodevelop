@@ -25,41 +25,41 @@
  THE SOFTWARE. -->
  
 <SyntaxMode name = "Vala" mimeTypes="text/x-vala">
-	<EolSpan color = "comment" rule="DoxDocumentation" tagColor="commenttag">///</EolSpan>
-	<EolSpan color = "comment" rule="Comment" constraint="!/" tagColor="commenttag">//</EolSpan>
+	<EolSpan color = "comment" rule="DoxDocumentation" tagColor="comment.tag">///</EolSpan>
+	<EolSpan color = "comment" rule="Comment" constraint="!/" tagColor="comment.tag">//</EolSpan>
 	
-	<Span color = "comment" rule="DoxDocumentation" tagColor="commenttag" >
+	<Span color = "comment" rule="DoxDocumentation" tagColor="comment.tag" >
 		<Begin>/**</Begin>
 		<End>*/</End>
 	</Span>
-	<Span color = "comment" rule="Comment" tagColor="commenttag" constraint="!*">
+	<Span color = "comment" rule="Comment" tagColor="comment.tag" constraint="!*">
 		<Begin>/*</Begin>
 		<End>*/</End>
 	</Span>
 
-	<Span color = "literal" rule="String" stopateol = "true" escape="\">
+	<Span color = "string" rule="String" stopateol = "true" escape="\">
 		<Begin>"</Begin>
 		<End>"</End>
 	</Span>
 
-	<Span color = "literal" rule="String" stopateol = "true" escape="\">
+	<Span color = "string" rule="String" stopateol = "true" escape="\">
 		<Begin>&apos;</Begin>
 		<End>&apos;</End>
 	</Span>
 	
-	<Match color = "literal">CSharpNumber</Match>
+	<Match color = "string">CSharpNumber</Match>
 	
-	<Keywords color = "kw:access">
+	<Keywords color = "keyword.access">
 		<Word>this</Word>
 		<Word>base</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:operator">
+	<Keywords color = "keyword.operator">
 		<Word>as</Word>
 		<Word>new</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:selection">
+	<Keywords color = "keyword.selection">
 		<Word>else</Word>
 		<Word>if</Word>
 		<Word>switch</Word>
@@ -67,7 +67,7 @@
 		<Word>default</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:iteration">
+	<Keywords color = "keyword.iteration">
 		<Word>do</Word>
 		<Word>for</Word>
 		<Word>foreach</Word>
@@ -75,27 +75,27 @@
 		<Word>while</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:jump">
+	<Keywords color = "keyword.jump">
 		<Word>break</Word>
 		<Word>continue</Word>
 		<Word>goto</Word>
 		<Word>return</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:exceptions">
+	<Keywords color = "keyword.exceptions">
 		<Word>try</Word>
 		<Word>throw</Word>
 		<Word>catch</Word>
 		<Word>finally</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:literals">
+	<Keywords color = "constant.language">
 		<Word>true</Word>
 		<Word>false</Word>
 		<Word>null</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:modifiers">
+	<Keywords color = "keyword.modifier">
 		<Word>abstract</Word>
 		<Word>const</Word>
 		<Word>extern</Word>
@@ -110,7 +110,7 @@
 		<Word>construct</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:types">
+	<Keywords color = "keyword.type">
 		<Word>bool</Word>
 		<Word>char</Word>
 		<Word>double</Word>
@@ -126,22 +126,22 @@
 		<Word>string</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:void">
+	<Keywords color = "constant.language.void">
 		<Word>void</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:namespaces">
+	<Keywords color = "keyword.namespace">
 		<Word>namespace</Word>
 		<Word>using</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:properties">		
+	<Keywords color = "keyword.property">		
 		<Word>get</Word>
 		<Word>set</Word>
 		<Word>value</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:declarations">
+	<Keywords color = "keyword.declaration">
 		<Word>class</Word>
 		<Word>interface</Word>
 		<Word>delegate</Word>
@@ -149,14 +149,14 @@
 		<Word>struct</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:parameter">
+	<Keywords color = "keyword.parameter">
 		<Word>ref</Word>
 		<Word>out</Word>
 	</Keywords>
 	
 	
 	<Rule name = "Comment">
-		<Keywords color="todocomment" ignorecase="True">
+		<Keywords color="comment.keyword.todo" ignorecase="True">
 			<Word>TODO</Word>
 			<Word>FIXME</Word>
 			<Word>HACK</Word>
@@ -168,11 +168,11 @@
 	</Rule>
 	
 	<Rule name = "DoxDocumentation">
-		<Span color = "literal" stopateol = "true" escape="\">
+		<Span color = "string" stopateol = "true" escape="\">
 			<Begin>"</Begin>
 			<End>"</End>
 		</Span>
-		<Keywords color="commentkw">
+		<Keywords color="comment.keyword">
 			<Word>c</Word>
 			<Word>code</Word>
 			<Word>example</Word>

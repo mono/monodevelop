@@ -25,38 +25,38 @@
  
 <SyntaxMode name = "C#" mimeTypes="text/x-csharp">
 
-	<EolSpan color = "preprocessor" rule="PreProcessor">#</EolSpan>
-	<EolSpan color = "comment" rule="XmlDocumentation" tagColor="commenttag">///</EolSpan>
-	<EolSpan color = "comment" rule="Comment" tagColor="commenttag">//</EolSpan>
+	<EolSpan color = "text.preprocessor" rule="text.preprocessor">#</EolSpan>
+	<EolSpan color = "comment.doc" rule="XmlDocumentation" tagColor="comment.tag.doc">///</EolSpan>
+	<EolSpan color = "comment.line" rule="Comment" tagColor="comment.tag.line">//</EolSpan>
 	
-	<Span color = "comment" rule="Comment" tagColor="commenttag">
+	<Span color = "comment.block" rule="Comment" tagColor="comment.tag.block">
 		<Begin>/*</Begin>
 		<End>*/</End>
 	</Span>
 	
-	<Span color = "literal" rule="String" stopateol = "false" escape='""'>
+	<Span color = "string.other" rule="String" stopateol = "false" escape='""'>
 		<Begin>@"</Begin>
 		<End>"</End>
 	</Span>
 
-	<Span color = "literal" rule="String" stopateol = "true" escape="\">
+	<Span color = "string.double" rule="String" stopateol = "true" escape="\">
 		<Begin>"</Begin>
 		<End>"</End>
 	</Span>
 
-	<Span color = "literal" rule="String" stopateol = "true" escape="\">
+	<Span color = "string.single" rule="String" stopateol = "true" escape="\">
 		<Begin>&apos;</Begin>
 		<End>&apos;</End>
 	</Span>
 	
-	<Match color = "literal">CSharpNumber</Match>
+	<Match color = "constant.digit">CSharpNumber</Match>
 	
-	<Keywords color = "kw:access">
+	<Keywords color = "keyword.access">
 		<Word>this</Word>
 		<Word>base</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:operator">
+	<Keywords color = "keyword.operator">
 		<Word>as</Word>
 		<Word>is</Word>
 		<Word>new</Word>
@@ -65,7 +65,7 @@
 		<Word>stackalloc</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:selection">
+	<Keywords color = "keyword.selection">
 		<Word>else</Word>
 		<Word>if</Word>
 		<Word>switch</Word>
@@ -73,7 +73,7 @@
 		<Word>default</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:iteration">
+	<Keywords color = "keyword.iteration">
 		<Word>do</Word>
 		<Word>for</Word>
 		<Word>foreach</Word>
@@ -81,34 +81,34 @@
 		<Word>while</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:jump">
+	<Keywords color = "keyword.jump">
 		<Word>break</Word>
 		<Word>continue</Word>
 		<Word>goto</Word>
 		<Word>return</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:context">
+	<Keywords color = "keyword.context">
 		<Word>yield</Word>
 		<Word>partial</Word>
 		<Word>global</Word>
 		<Word>where</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:exceptions">
+	<Keywords color = "keyword.exceptions">
 		<Word>try</Word>
 		<Word>throw</Word>
 		<Word>catch</Word>
 		<Word>finally</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:literals">
+	<Keywords color = "constant.language">
 		<Word>true</Word>
 		<Word>false</Word>
 		<Word>null</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:modifiers">
+	<Keywords color = "keyword.modifier">
 		<Word>abstract</Word>
 		<Word>const</Word>
 		<Word>event</Word>
@@ -126,7 +126,7 @@
 		<Word>internal</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:types">
+	<Keywords color = "keyword.type">
 		<Word>bool</Word>
 		<Word>byte</Word>
 		<Word>char</Word>
@@ -146,43 +146,43 @@
 		<Word>string</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:void">
+	<Keywords color = "constant.language.void">
 		<Word>void</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:namespaces">
+	<Keywords color = "keyword.namespace">
 		<Word>namespace</Word>
 		<Word>using</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:properties">		<Word>get</Word>
+	<Keywords color = "keyword.property">		<Word>get</Word>
 		<Word>set</Word>
 		<Word>add</Word>
 		<Word>remove</Word>
 		<Word>value</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:declarations">
+	<Keywords color = "keyword.declaration">
 		<Word>class</Word>
 		<Word>interface</Word>
 		<Word>delegate</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:parameter">
+	<Keywords color = "keyword.parameter">
 		<Word>params</Word>
 		<Word>ref</Word>
 		<Word>out</Word>
 	</Keywords>
 	
 	
-	<Keywords color = "kw:operatordecl">
+	<Keywords color = "keyword.operator.declaration">
 		<Word>explicit</Word>
 		<Word>implicit</Word>
 		
 		<Word>operator</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:misc">
+	<Keywords color = "keyword.misc">
 		<Word>checked</Word>
 		<Word>unchecked</Word>
 		<Word>fixed</Word>
@@ -190,8 +190,8 @@
 		<Word>lock</Word>
 	</Keywords>
 
-	<Rule name = "PreProcessor">
-		<Keywords color="preprocessorkw">
+	<Rule name = "text.preprocessor">
+		<Keywords color="text.preprocessor.keyword">
 			<Word>if</Word>
 			<Word>else</Word>
 			<Word>elif</Word>
@@ -208,7 +208,7 @@
 	</Rule>
 	
 	<Rule name = "Comment">
-		<Keywords color="todocomment" ignorecase="True">
+		<Keywords color="comment.keyword.todo" ignorecase="True">
 			<Word>TODO</Word>
 			<Word>FIXME</Word>
 			<Word>HACK</Word>
@@ -227,11 +227,11 @@
 	</Rule>
 
 	<Rule name = "XmlDocumentationTag">
-		<Span color = "literal" stopateol = "true" escape="\" rule="String" >
+		<Span color = "string" stopateol = "true" escape="\" rule="String" >
 			<Begin>"</Begin>
 			<End>"</End>
 		</Span>
-		<Keywords color="commentkw">
+		<Keywords color="comment.keyword">
 			<Word>c</Word>
 			<Word>code</Word>
 			<Word>example</Word>

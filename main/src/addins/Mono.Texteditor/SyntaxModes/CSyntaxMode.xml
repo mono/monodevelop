@@ -25,36 +25,36 @@
  
 <SyntaxMode name = "C" mimeTypes="text/x-csrc;text/x-chdr">
 	
-	<Span color = "comment" rule="Comment" tagColor="commenttag">
+	<Span color = "comment" rule="Comment" tagColor="comment.tag">
 		<Begin>#if 0</Begin>
 		<End>#endif</End>
 	</Span>
 	
-	<EolSpan color = "preprocessor" rule="PreProcessor">#</EolSpan>
+	<EolSpan color = "text.preprocessor" rule="text.preprocessor">#</EolSpan>
 	<EolSpan color = "comment" rule="Comment">//</EolSpan>
 	
-	<Span color = "comment" rule="Comment" tagColor="commenttag">
+	<Span color = "comment" rule="Comment" tagColor="comment.tag">
 		<Begin>/*</Begin>
 		<End>*/</End>
 	</Span>
 	
-	<Span color = "literal" rule="String" stopateol = "true" escape="\">
+	<Span color = "string" rule="String" stopateol = "true" escape="\">
 		<Begin>"</Begin>
 		<End>"</End>
 	</Span>
 	
-	<Span color = "literal" rule="String" stopateol = "true" escape="\">
+	<Span color = "string" rule="String" stopateol = "true" escape="\">
 		<Begin>&apos;</Begin>
 		<End>&apos;</End>
 	</Span>
 	
-	<Match color = "literal">CSharpNumber</Match>
+	<Match color = "string">CSharpNumber</Match>
 	
-	<Keywords color = "kw:operator">
+	<Keywords color = "keyword.operator">
 		<Word>sizeof</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:selection">
+	<Keywords color = "keyword.selection">
 		<Word>else</Word>
 		<Word>if</Word>
 		<Word>switch</Word>
@@ -62,26 +62,26 @@
 		<Word>default</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:iteration">
+	<Keywords color = "keyword.iteration">
 		<Word>do</Word>
 		<Word>for</Word>
 		<Word>while</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:jump">
+	<Keywords color = "keyword.jump">
 		<Word>break</Word>
 		<Word>continue</Word>
 		<Word>goto</Word>
 		<Word>return</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:literals">
+	<Keywords color = "constant.language">
 		<Word>true</Word>
 		<Word>false</Word>
 		<Word>NULL</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:modifiers">
+	<Keywords color = "keyword.modifier">
 		<Word>const</Word>
 		<Word>extern</Word>
 		<Word>static</Word>
@@ -90,7 +90,7 @@
 		<Word>register</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:types">
+	<Keywords color = "keyword.type">
 		<Word>bool</Word>
 		<Word>char</Word>
 		
@@ -105,18 +105,18 @@
 		<Word>unsigned</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:void">
+	<Keywords color = "constant.language.void">
 		<Word>void</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:declarations">
+	<Keywords color = "keyword.declaration">
 		<Word>enum</Word>
 		<Word>struct</Word>
 		<Word>union</Word>
 		<Word>typedef</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:misc">
+	<Keywords color = "keyword.misc">
 		<Word>asm</Word>
 		<Word>auto</Word>
 		<Word>_Bool</Word>
@@ -125,8 +125,8 @@
 		<Word>_Imaginary</Word>
 	</Keywords>
 
-	<Rule name = "PreProcessor">
-		<Keywords color="preprocessorkw">
+	<Rule name = "text.preprocessor">
+		<Keywords color="text.preprocessor.keyword">
 			<Word>if</Word>
 			<Word>ifn</Word>
 			<Word>else</Word>
@@ -139,7 +139,7 @@
 	</Rule>
 	
 	<Rule name = "Comment">
-		<Keywords color="todocomment" ignorecase="True">
+		<Keywords color="comment.keyword.todo" ignorecase="True">
 			<Word>TODO</Word>
 			<Word>FIXME</Word>
 			<Word>HACK</Word>

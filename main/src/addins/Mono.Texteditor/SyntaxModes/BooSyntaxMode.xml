@@ -25,41 +25,41 @@
  
 <SyntaxMode name = "Boo" mimeTypes="text/x-boo">
 
-	<EolSpan color = "comment" rule="Comment" tagColor="commenttag">#</EolSpan>
-	<EolSpan color = "comment" rule="Comment" tagColor="commenttag">//</EolSpan>
+	<EolSpan color = "comment" rule="Comment" tagColor="comment.tag">#</EolSpan>
+	<EolSpan color = "comment" rule="Comment" tagColor="comment.tag">//</EolSpan>
 	
-	<Span color = "comment" rule="Comment" tagColor="commenttag">
+	<Span color = "comment" rule="Comment" tagColor="comment.tag">
 		<Begin>/*</Begin>
 		<End>*/</End>
 	</Span>
 	
 
-	<Span color = "literal" rule="String" stopateol = "true" escape="\">
+	<Span color = "string" rule="String" stopateol = "true" escape="\">
 		<Begin>"</Begin>
 		<End>"</End>
 	</Span>
 	
-	<Span color = "literal" rule="String" stopateol = "true" escape="\">
+	<Span color = "string" rule="String" stopateol = "true" escape="\">
 		<Begin>'</Begin>
 		<End>'</End>
 	</Span>
 
-	<Span color = "literal" rule="String" stopateol = "false" escape='"'>
+	<Span color = "string" rule="String" stopateol = "false" escape='"'>
 		<Begin>@@/</Begin>
 		<End>/</End>
 	</Span>
 
-	<Span color = "literal" rule="String" stopateol = "true" escape="\">
+	<Span color = "string" rule="String" stopateol = "true" escape="\">
 		<Begin>@/</Begin>
 		<End>/</End>
 	</Span>
 
-	<Keywords color = "kw:access">
+	<Keywords color = "keyword.access">
 		<Word>self</Word>
 		<Word>super</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:operator">
+	<Keywords color = "keyword.operator">
 		<Word>is</Word>		<Word>isa</Word>
 		<Word>and</Word>
 		<Word>or</Word>
@@ -67,7 +67,7 @@
 		
 		<Word>as</Word>		<Word>cast</Word>	</Keywords>
 	
-	<Keywords color = "kw:selection">
+	<Keywords color = "keyword.selection">
 		<Word>else</Word>
 		<Word>elif</Word>
 		<Word>if</Word>
@@ -76,20 +76,20 @@
 		<Word>unless</Word>		<Word>otherwise</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:iteration">
+	<Keywords color = "keyword.iteration">
 		<Word>for</Word>
 		<Word>in</Word>
 		<Word>while</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:jump">
+	<Keywords color = "keyword.jump">
 		<Word>break</Word>
 		<Word>continue</Word>		<Word>goto</Word>
 		<Word>return</Word>
 		<Word>yield</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:context">
+	<Keywords color = "keyword.context">
 		<Word>pass</Word>
 
 		<Word>assert</Word>
@@ -107,7 +107,7 @@
 		<Word>__switch__</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:exceptions">
+	<Keywords color = "keyword.exceptions">
 		<Word>try</Word>
 		<Word>raise</Word>
 		<Word>ensure</Word>
@@ -116,14 +116,14 @@
 		<Word>success</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:literals">
+	<Keywords color = "constant.language">
 		<Word>true</Word>
 		<Word>false</Word>
 		<Word>null</Word>
 		<Word>ast</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:modifiers">
+	<Keywords color = "keyword.modifier">
 		<Word>override</Word>
 		<Word>static</Word>
 
@@ -142,7 +142,7 @@
 
 	</Keywords>
 	
-	<Keywords color = "kw:types">
+	<Keywords color = "keyword.type">
 		<Word>bool</Word>
 		<Word>byte</Word>
 		<Word>sbyte</Word>
@@ -175,28 +175,28 @@
 		<Word>of</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:void">
+	<Keywords color = "constant.language.void">
 		<Word>void</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:namespaces">
+	<Keywords color = "keyword.namespace">
 		<Word>namespace</Word>
 		<Word>import</Word>
 		<Word>from</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:properties">		<Word>get</Word>
+	<Keywords color = "keyword.property">		<Word>get</Word>
 		<Word>set</Word>
 		<Word>value</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:declarations">
+	<Keywords color = "keyword.declaration">
 		<Word>class</Word>
 		<Word>interface</Word>
 		<Word>delegate</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:parameter">
+	<Keywords color = "keyword.parameter">
 		<Word>params</Word>
 		<Word>ref</Word>
 		<Word>out</Word>
@@ -208,14 +208,14 @@
 		<Word>event</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:operatordecl">
+	<Keywords color = "keyword.operator.declaration">
 		<Word>explicit</Word>
 		<Word>implicit</Word>
 		
 		<Word>operator</Word>
 	</Keywords>
 	
-	<Keywords color = "kw:misc">
+	<Keywords color = "keyword.misc">
 		<Word>checked</Word>
 		<Word>unchecked</Word>
 		<Word>fixed</Word>
@@ -231,7 +231,7 @@
 	</Keywords>
 
 	<Rule name = "Comment">
-		<Keywords color="todocomment" ignorecase="True">
+		<Keywords color="comment.keyword.todo" ignorecase="True">
 			<Word>TODO</Word>
 			<Word>FIXME</Word>
 			<Word>HACK</Word>

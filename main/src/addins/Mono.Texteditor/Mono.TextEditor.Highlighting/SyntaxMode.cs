@@ -57,6 +57,19 @@ namespace Mono.TextEditor.Highlighting
 		{
 		}
 		
+		public bool Validate (Style style)
+		{
+			if (!GetIsValid (style)) {
+				return false;
+			}
+			foreach (Rule rule in Rules) {
+				if (!rule.GetIsValid (style)) {
+					return false;
+				}
+			}
+			return true;
+		}
+		
 		public virtual Chunk GetChunks (Document doc, Style style, LineSegment line, int offset, int length)
 		{
 			return new ChunkParser (doc, style, this, line).GetChunks (offset, length);
@@ -84,14 +97,15 @@ namespace Mono.TextEditor.Highlighting
 				int toOffset = System.Math.Min (line.Offset + line.EditableLength, offset + length);
 				for (Chunk chunk = GetChunks (doc, style, line, curOffset, toOffset - curOffset); chunk != null; chunk = chunk.Next) {
 					result.Append("<span foreground=\"");
+					ChunkStyle chunkStyle = chunk.GetChunkStyle (style);
 					result.Append(String.Format ("#{0:X2}{1:X2}{2:X2}", 
-					                             chunk.Style.Color.Red   >> 8,
-					                             chunk.Style.Color.Green >> 8,
-					                             chunk.Style.Color.Blue  >> 8));
+					                             chunkStyle.Color.Red   >> 8,
+					                             chunkStyle.Color.Green >> 8,
+					                             chunkStyle.Color.Blue  >> 8));
 					result.Append("\"");
-					if (chunk.Style.Bold)
+					if (chunkStyle.Bold)
 						result.Append(" weight=\"bold\"");
-					if (chunk.Style.Italic)
+					if (chunkStyle.Italic)
 						result.Append(" style=\"italic\"");
 					result.Append(">");
 					for (int i = 0; i < chunk.Length; i++) {
@@ -129,11 +143,11 @@ namespace Mono.TextEditor.Highlighting
 		{
 			Rule curRule;
 			SyntaxMode mode;
-			Style style;
+			//Style style;
 			Stack<Span> spanStack;
 			Document doc;
 			LineSegment line;
-			readonly ChunkStyle defaultStyle;
+			readonly string defaultStyle = "text";
 			List<Chunk> result = new List<Chunk> ();
 			Dictionary<char, Rule.Pair<Keywords, object>> tree;
 			Dictionary<char, Span[]> spanTree;
@@ -145,10 +159,9 @@ namespace Mono.TextEditor.Highlighting
 			public ChunkParser (Document doc, Style style, SyntaxMode mode, LineSegment line)
 			{
 				this.doc  = doc;
-				this.style = style;
+			//	this.style = style;
 				this.mode = mode;
 				this.line = line;
-				defaultStyle = new Mono.TextEditor.ChunkStyle (style.Default);
 			}
 			
 			Chunk startChunk = null;
@@ -174,7 +187,7 @@ namespace Mono.TextEditor.Highlighting
 				}
 			}
 			
-			void AddChunk (ref Chunk curChunk, int length, ChunkStyle style)
+			void AddChunk (ref Chunk curChunk, int length, string style)
 			{
 				if (curChunk.Length > 0) {
 					AddRealChunk (curChunk);
@@ -187,36 +200,31 @@ namespace Mono.TextEditor.Highlighting
 				curChunk.Style = GetSpanStyle ();
 			}
 			
-			ChunkStyle GetChunkStyleColor (string topColor)
+			string GetChunkStyleColor (string topColor)
 			{
-				ChunkStyle result ;
-				if (!String.IsNullOrEmpty (topColor)) {
-					result = style.GetChunkStyle (topColor);
-				} else {
-					if (String.IsNullOrEmpty (spanStack.Peek ().Color)) {
-						Span span = spanStack.Pop ();
-						result = GetChunkStyleColor (topColor);
-						spanStack.Push (span);
-						return result;
-					}
-					
-					result = spanStack.Count > 0 ? style.GetChunkStyle (spanStack.Peek ().Color) : defaultStyle;
+				if (!String.IsNullOrEmpty (topColor)) 
+					return topColor;
+				if (String.IsNullOrEmpty (spanStack.Peek ().Color)) {
+					Span span = spanStack.Pop ();
+					string result = GetChunkStyleColor (topColor);
+					spanStack.Push (span);
+					return result;
 				}
-				return result;
+				return spanStack.Count > 0 ? spanStack.Peek ().Color : defaultStyle;
 			}
 			
-			ChunkStyle GetSpanStyle ()
+			string GetSpanStyle ()
 			{
 				if (spanStack.Count == 0)
 					return defaultStyle;
 				if (String.IsNullOrEmpty (spanStack.Peek ().Color)) {
 					Span span = spanStack.Pop ();
-					ChunkStyle result = GetSpanStyle ();
+					string result = GetSpanStyle ();
 					spanStack.Push (span);
 					return result;
 				}
 				
-				return style.GetChunkStyle (spanStack.Peek ().Color);
+				return spanStack.Peek ().Color;
 			}
 			
 			void SetTree ()
@@ -317,7 +325,7 @@ namespace Mono.TextEditor.Highlighting
 							endOffset++;
 							if (endOffset >= curSpan.End.Length) {
 								curChunk.Length -= curSpan.End.Length - 1;
-								AddChunk (ref curChunk, curSpan.End.Length, !String.IsNullOrEmpty (curSpan.TagColor) ? style.GetChunkStyle (curSpan.TagColor) : GetSpanStyle ());
+								AddChunk (ref curChunk, curSpan.End.Length, !String.IsNullOrEmpty (curSpan.TagColor) ? curSpan.TagColor : GetSpanStyle ());
 								spanStack.Pop ();
 								SetSpan (i);
 								SetTree ();
@@ -362,12 +370,12 @@ namespace Mono.TextEditor.Highlighting
 								spanStack.Push (span);
 //								curChunk.Length -= span.Begin.Length - 1;
 								
-								AddChunk (ref curChunk, span.Begin.Length, !String.IsNullOrEmpty (span.TagColor) ? style.GetChunkStyle (span.TagColor) : GetSpanStyle ());
+								AddChunk (ref curChunk, span.Begin.Length, !String.IsNullOrEmpty (span.TagColor) ? span.TagColor : GetSpanStyle ());
 								SetSpan (i);
 								endOffset = 0;
 								SetTree ();
 								if (!String.IsNullOrEmpty (span.NextColor))
-									curChunk.Style = style.GetChunkStyle (span.NextColor);
+									curChunk.Style = span.NextColor;
 								i += span.Begin.Length - 1;
 								found = true; 
 								break;

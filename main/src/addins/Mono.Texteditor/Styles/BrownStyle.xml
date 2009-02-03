@@ -66,72 +66,106 @@
 	<Color name="accent_dark_violet"       value="#6600cc"/>
 	
 	<!-- environment -->
-	<Style name="default" color="black"/>
+	<Style name="text" color="black"/>
+	<Style name="text.background" color="white"/>
+	<Style name="text.background.selection" color="black"/>
+	<Style name="text.background.searchresult" color="yellow"/>
+	
+	<Style name="text.selection" color="human_highlight"/>
+	<Style name="text.link" color="blue"/>
+	
 	<Style name="caret" color="black"/>
-	<Style name="caretForeground" color="white"/>
-	<Style name="background" color="white"/>
-	<Style name="selectedBackground" color="human_highlight"/>
-	<Style name="selectedForeground" color="black"/>
+	<Style name="caret.foreground" color="white"/>
 	
-	<Style name="link" color="blue"/>
+	<Style name="marker.line" color="accent_yellow_highlight"/>
+	<Style name="marker.line.changed" color="yellow"/>	
+	<Style name="marker.line.dirty" color="accent_yellow_highlight"/>	
 	
-	<Style name="lineMarker" color="accent_yellow_highlight"/>
-	<Style name="ruler" color="accent_blue_highlight"/>
-	<Style name="whitespaces" color="human"/>
-	<Style name="invalidLines" color="accent_red_base"/>
-
-	<Style name="lineNumber" color="human"/>
-	<Style name="lineNumberHighlighted" color="human_base"/>
-	<Style name="lineNumberBg" color="white"/>
+	<Style name="marker.ruler" color="accent_blue_highlight"/>
+	<Style name="marker.whitespace" color="human"/>
+	<Style name="marker.invalidline" color="accent_red_base"/>
+	<Style name="marker.bracket" color="environmental_blue_medium"/>
+	<Style name="marker.bracket.background" color="environmental_blue_highlight"/>
+	<Style name="marker.bookmark.color1" color="human_highlight"/>
+	<Style name="marker.bookmark.color2" color="human_base"/>
 	
-	<Style name="iconBar" color="human_highlight"/>
-	<Style name="iconBarSeperator" color="human_base"/>
-
-	<Style name="foldLine" color="human"/>
-	<Style name="foldBg" color="white"/>
-	<Style name="foldLineHighlighted" color="environmental_shadow"/>
-	<Style name="foldToggleMarker" color="black"/>
+<!-- TODO: override defaults
+	<Style name="marker.underline" color="red"/>
+	<Style name="marker.underline.error" color="red"/>
+	<Style name="marker.underline.warning" color="yellow"/>
 	
-	<Style name="bracketHighlightRectangle" color="environmental_blue_medium"/>
-	<Style name="bracketHighlightBg" color="environmental_blue_highlight"/>
+	<Style name="marker.breakpoint.color1" color=""/>
+	<Style name="marker.breakpoint.color2" color=""/>
+	<Style name="marker.breakpoint.foreground" color=""/>
+	<Style name="marker.breakpoint.background" color=""/>
+	<Style name="marker.breakpoint.disabled.background" color=""/>
+	<Style name="marker.breakpoint.invalid.background" color=""/>
+	<Style name="marker.breakpoint.invalid.color1" color=""/>
+	<Style name="marker.breakpoint.invalid.border" color=""/>
+	
+	<Style name="marker.debug.currentline.foreground" color=""/>
+	<Style name="marker.debug.currentline.background" color=""/>
+	<Style name="marker.debug.currentline.color1" color=""/>
+	<Style name="marker.debug.currentline.color2" color=""/>
+	<Style name="marker.debug.currentline.border" color=""/>
+	-->
+		
+	<Style name="linenumber" color="human"/>
+	<Style name="linenumber.highlight" color="human_base"/>
+	<Style name="linenumber.background" color="white"/>
+	
+	<Style name="iconbar" color="human_highlight"/>
+	<Style name="iconbar.separator" color="human_base"/>
 
-	<Style name="bookmarkColor1" color="human_highlight"/>
-	<Style name="bookmarkColor2" color="human_base"/>
-
+	<Style name="fold" color="human"/>
+	<Style name="fold.background" color="white"/>
+	<Style name="fold.highlight" color="environmental_shadow"/>
+	<Style name="fold.togglemarker" color="black"/>
+	
 	<!-- highlighting -->
 	<Style name="comment" color="accent_green_base"/>
-	<Style name="altcomment" color="accent_green_base"/>
-	<Style name="todocomment" color="accent_green_base" weight="italic" />
-	<Style name="commentkw" color="accent_green_base" weight="bold" />
-	<Style name="commenttag" color="accent_green_base"/>
+	<Style name="comment.tag" color="accent_green_base"/>	
+	<Style name="comment.line" color="accent_green_base"/>
+	<Style name="comment.tag.line" color="accent_green_base"/>	
+	<Style name="comment.block" color="accent_green_base"/>
+	<Style name="comment.tag.block" color="accent_green_base"/>	
+	<Style name="comment.doc" color="accent_green_base"/>
+	<Style name="comment.tag.doc" color="accent_green_base"/>	
+	<Style name="comment.keyword" color="accent_green_base" weight="bold"/>	
+	<Style name="comment.keyword.todo" color="accent_green_base" weight="italic"/>		
 	
-	<Style name="digit" color="accent_magenta"/>
-	<Style name="literal" color="accent_magenta"/>
-	<Style name="punctuation" color="accent_magenta"/>
+	<Style name="text.literal" color="accent_magenta"/>
+	<Style name="text.punctuation" color="accent_magenta"/>
+	<Style name="text.preprocessor" color="environmental_blue_base"/>
+	<Style name="text.preprocessor.keyword" color="environmental_blue_base" weight="bold"/>
+	<Style name="text.markup" color="accent_blue_base"/>
+	<Style name="text.markup.tag" color="accent_blue_shadow"/>
 	
-	<Style name="kw:namespaces" color="accent_green_base" weight="bold"/>
-	<Style name="kw:properties" color="accent_blue_base" weight="bold"/>
-	<Style name="kw:modifiers" color="accent_red" weight="bold"/>
-	<Style name="kw:types" color="accent_deep_red" weight="bold"/>
-	<Style name="kw:void" color="accent_red" weight="bold"/>
-	<Style name="kw:declarations" color="accent_blue_shadow" weight="bold"/>
-		
-	<Style name="kw:access" color="black" weight="bold" />
+	<Style name="constant" color="accent_magenta"/>
+	<Style name="constant.digit" color="accent_magenta"/>
+	<Style name="constant.language" color="accent_magenta"/>
+	<Style name="constant.language.void" color="accent_red" weight="bold"/>
 	
-	<Style name="kw:operator" color="accent_dark_violet"/>
-	<Style name="kw:selection" color="orange_base" weight="bold"/>
-	<Style name="kw:iteration" color="orange_base" weight="bold"/>
-	<Style name="kw:jump" color="orange_base" weight="bold"/>
-	<Style name="kw:context" color="orange_base" />
-	<Style name="kw:exceptions" color="accent_orange" weight="bold"/>
-	<Style name="kw:literals" color="accent_magenta"/>
-	<Style name="kw:parameter" color="orange_base" weight="bold"/>
-	<Style name="kw:operatordecl" color="orange_base" weight="bold"/>
-	<Style name="kw:misc" color="orange_base"/>
+	<Style name="string" color="accent_magenta"/>
+	<Style name="string.single" color="accent_magenta"/>
+	<Style name="string.double" color="accent_magenta"/>
+	<Style name="string.other" color="accent_magenta"/>
 	
-	<Style name="preprocessor" color="environmental_blue_base"/>
-	<Style name="preprocessorkw" color="environmental_blue_base" weight="bold"/>
-	
-	<Style name="markup" color="accent_blue_base"/>
-	<Style name="markupTag" color="accent_blue_shadow"/>
+	<Style name="keyword" color="black" weight="bold" />
+	<Style name="keyword.access" color="black" weight="bold" />
+	<Style name="keyword.namespace" color="accent_green_base" weight="bold"/>
+	<Style name="keyword.property" color="accent_blue_base" weight="bold"/>
+	<Style name="keyword.modifier" color="accent_red" weight="bold"/>
+	<Style name="keyword.type" color="accent_deep_red" weight="bold"/>
+	<Style name="keyword.declaration" color="accent_blue_shadow" weight="bold"/>
+	<Style name="keyword.access" color="black" weight="bold" />
+	<Style name="keyword.operator" color="accent_dark_violet"/>
+	<Style name="keyword.operator.declaration" color="orange_base" weight="bold"/>
+	<Style name="keyword.selection" color="orange_base" weight="bold"/>
+	<Style name="keyword.iteration" color="orange_base" weight="bold"/>
+	<Style name="keyword.jump" color="orange_base" weight="bold"/>
+	<Style name="keyword.context" color="orange_base" />
+	<Style name="keyword.exceptions" color="accent_orange" weight="bold"/>
+	<Style name="keyword.parameter" color="orange_base" weight="bold"/>
+	<Style name="keyword.misc" color="orange_base"/>
 </EditorStyle>
