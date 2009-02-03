@@ -1,3 +1,14 @@
+2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/generated.cs:
+	* gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs:
+	* gtk-gui/MonoDevelop.Gettext.GettextFeatureWidget.cs:
+	* gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs:
+	* gtk-gui/MonoDevelop.Gettext.TranslationProjectOptionsDialog.cs:
+	*
+	  gtk-gui/MonoDevelop.Gettext.Translator.LanguageChooserDialog.cs:
+	  Flush.
+
 2009-01-29  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Gettext/Catalog.cs: Rename UserInformation to
