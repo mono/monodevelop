@@ -1,3 +1,8 @@
+2009-02-03  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile: Re-run configure when it changes.
+	* configure: Update version number.
+
 2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile: Add distclean target.

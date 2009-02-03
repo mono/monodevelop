@@ -1,5 +1,5 @@
 #!/bin/bash
-VERSION=0.17
+VERSION=1.9.2
 profile=default
 
 prefix=NONE
