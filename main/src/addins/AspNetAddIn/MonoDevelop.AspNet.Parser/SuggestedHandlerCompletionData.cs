@@ -40,14 +40,14 @@ namespace MonoDevelop.AspNet.Parser
 	
 	public class SuggestedHandlerCompletionData : IActionCompletionData
 	{
-		SolutionItem entry;
+		Project project;
 		CodeMemberMethod methodInfo;
 		IType codeBehindClass;
 		IType codeBehindClassPart;
 		
-		public SuggestedHandlerCompletionData (SolutionItem entry, CodeMemberMethod methodInfo, IType codeBehindClass, IType codeBehindClassPart)
+		public SuggestedHandlerCompletionData (Project project, CodeMemberMethod methodInfo, IType codeBehindClass, IType codeBehindClassPart)
 		{
-			this.entry = entry;
+			this.project = project;
 			this.methodInfo = methodInfo;
 			this.codeBehindClass = codeBehindClass;
 			this.codeBehindClassPart = codeBehindClassPart;
@@ -91,10 +91,10 @@ namespace MonoDevelop.AspNet.Parser
 			}
 			
 			//generate the codebehind method
-			if (codeBehindClassPart != null)
-				BindingService.AddMemberToClass (entry, codeBehindClass, codeBehindClassPart, methodInfo, false);
+			if (codeBehindClassPart != null && project != null)
+				BindingService.AddMemberToClass (project, codeBehindClass, codeBehindClassPart, methodInfo, false);
 			else
-				BindingService.AddMemberToClass (entry, codeBehindClass, codeBehindClass, methodInfo, false);
+				BindingService.AddMemberToClass (project, codeBehindClass, codeBehindClass, methodInfo, false);
 		}	
 	}
 }

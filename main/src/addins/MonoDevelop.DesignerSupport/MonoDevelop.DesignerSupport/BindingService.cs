@@ -51,12 +51,6 @@ namespace MonoDevelop.DesignerSupport
 		//TODO: currently case-sensitive, so some languages may not like this
 		const bool ignoreCase = false;
 		
-		public static IMember GetCompatibleMemberInClass (IType cls, CodeTypeMember member)
-		{
-			ProjectDom ctx = ProjectDomService.GetProjectDom ((MonoDevelop.Projects.Project) cls.SourceProject);
-			return GetCompatibleMemberInClass (ctx, cls, member);
-		}
-		
 		public static IMember GetCompatibleMemberInClass (ProjectDom ctx, IType cls, CodeTypeMember member)
 		{
 			//check for identical property names
@@ -144,7 +138,7 @@ namespace MonoDevelop.DesignerSupport
 			return false;
 		}
 		
-		public static IMember AddMemberToClass (SolutionItem entry, IType cls, IType specificPartToAffect, CodeTypeMember member, bool throwIfExists)
+		public static IMember AddMemberToClass (Project project, IType cls, IType specificPartToAffect, CodeTypeMember member, bool throwIfExists)
 		{
 			bool isChildClass = false;
 			foreach (IType c in cls.Parts)
@@ -153,10 +147,11 @@ namespace MonoDevelop.DesignerSupport
 			if (!isChildClass)
 				throw new ArgumentException ("Class specificPartToAffect is not a part of class cls");
 			
-			IMember existingMember = GetCompatibleMemberInClass (cls, member);
+			ProjectDom dom = ProjectDomService.GetProjectDom (project);
+			IMember existingMember = GetCompatibleMemberInClass (dom, cls, member);
 			
 			if (existingMember == null)
-				return GetCodeGenerator (entry).AddMember (specificPartToAffect, member);
+				return GetCodeGenerator (project).AddMember (specificPartToAffect, member);
 			
 			if (throwIfExists)
 				throw new MemberExistsException (cls.Name, member, MemberType.Method, existingMember.BodyRegion, cls.CompilationUnit.FileName);
@@ -164,9 +159,9 @@ namespace MonoDevelop.DesignerSupport
 			return existingMember;
 		}
 		
-		public static CodeRefactorer GetCodeGenerator (SolutionItem entry)
+		public static CodeRefactorer GetCodeGenerator (Project project)
 		{			
-			CodeRefactorer cr = new CodeRefactorer (entry.ParentSolution);
+			CodeRefactorer cr = new CodeRefactorer (project.ParentSolution);
 			cr.TextFileProvider = OpenDocumentFileProvider.Instance;
 			return cr;
 		}
@@ -246,7 +241,7 @@ namespace MonoDevelop.DesignerSupport
 		
 		
 		//opens the code view with the desired method, creating it if it doesn't already exist
-		public static void CreateAndShowMember (SolutionItem project, IType cls, IType specificPartToAffect, CodeTypeMember member)
+		public static void CreateAndShowMember (Project project, IType cls, IType specificPartToAffect, CodeTypeMember member)
 		{
 			//only adds the method if it doesn't already exist
 			IMember mem = AddMemberToClass (project, cls, specificPartToAffect, member, false);

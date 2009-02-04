@@ -1,3 +1,9 @@
+2009-02-03  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.DesignerSupport/BindingService.cs: Require a
+	  parent project for several methods, since getting it from
+	  the IType was unreliable.
+
 2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:
