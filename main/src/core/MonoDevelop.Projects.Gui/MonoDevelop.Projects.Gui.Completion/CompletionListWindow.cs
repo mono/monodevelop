@@ -332,8 +332,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 					foreach (ICompletionData oData in overloadedData.GetOverloads ()) {
 						bool oDataHasMarkup = (oData.DisplayFlags & DisplayFlags.DescriptionHasMarkup) != 0;
 						declarationviewwindow.AddOverload (oDataHasMarkup
-							? GLib.Markup.EscapeText (oData.Description)
-							: oData.Description);
+							? oData.Description
+							: GLib.Markup.EscapeText (oData.Description));
 					}
 				}
 			}
