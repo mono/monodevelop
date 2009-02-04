@@ -1,3 +1,13 @@
+2009-02-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* UnitTests.mdp:
+	* MonoDevelop.Projects/TextFormatterTests.cs: Added tests for
+	  TextFormatter.
+
+	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: New
+	  test.
+
 2009-02-04  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: added

@@ -1096,6 +1096,37 @@ class Test
 		}
 		
 		/// <summary>
+		/// Bug 444643 - Extension methods don't show up on array types
+		/// </summary>
+		[Test()]
+		public void TestBug444643 ()
+		{
+			CompletionDataList provider = CreateCtrlSpaceProvider (
+@"
+using System;
+using System.Collections.Generic;
+
+	static class ExtensionTest
+	{
+		public static bool TestExt<T> (this IList<T> list, T val)
+		{
+			return true;
+		}
+	}
+	
+	class MainClass
+	{
+		public static void Main(string[] args)
+		{
+			$args.$
+		}
+	}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.Find ("TestExt<T>"), "method 'TestExt' not found");
+		}
+		
+		/// <summary>
 		/// Bug 471935 - Code completion window not showing in MD1CustomDataItem.cs
 		/// </summary>
 		[Test()]
