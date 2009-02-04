@@ -1200,11 +1200,11 @@ namespace Mono.TextEditor
 						if (nextXPosition >= visualXPos) {
 //							System.Console.WriteLine("near:" + IsNearX1 (visualXPos, xPos, nextXPosition));
 							if (!IsNearX1 (visualXPos, xPos, nextXPosition))
-								column = o - line.Offset;
+								column++;
 							done = true;
 							return;
 						}
-						column = o - line.Offset;
+						column++;
 						xPos = nextXPosition;
 					}
 				}
