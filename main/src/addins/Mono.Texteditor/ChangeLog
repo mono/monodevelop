@@ -1,3 +1,9 @@
+2009-02-04  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextEditor.Vi/ViMode.cs: When the selection changes
+	  externally and there's no selection, only reset the state if
+	  the current state is Visual.
+
 2009-02-04  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextViewMargin.cs: Worked on visual ->

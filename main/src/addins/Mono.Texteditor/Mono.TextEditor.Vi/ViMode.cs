@@ -117,7 +117,7 @@ namespace Mono.TextEditor.Vi
 			if (Data.IsSomethingSelected) {
 				state = ViEditMode.State.Visual;
 				Status = "-- VISUAL --";
-			} else {
+			} else if (state == State.Visual && !Data.IsSomethingSelected) {
 				Reset ("");
 			}
 		}
