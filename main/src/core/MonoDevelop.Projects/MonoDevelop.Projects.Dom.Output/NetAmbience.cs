@@ -215,13 +215,15 @@ namespace MonoDevelop.Projects.Dom.Output
 				parameterCount = instantiatedType.GenericParameters.Count;
 			if (settings.IncludeGenerics && parameterCount > 0) {
 				result.Append (settings.Markup ("<"));
-				for (int i = 0; i < parameterCount; i++) {
-					if (i > 0)
-						result.Append (settings.Markup (", "));
-					if (instantiatedType != null) {
-						result.Append (instantiatedType.GenericParameters[i].AcceptVisitor (this, settings));
-					} else {
-						result.Append (type.TypeParameters[i].Name);
+				if (!settings.HideGenericParameterNames) {
+					for (int i = 0; i < parameterCount; i++) {
+						if (i > 0)
+							result.Append (settings.Markup (", "));
+						if (instantiatedType != null) {
+							result.Append (instantiatedType.GenericParameters[i].AcceptVisitor (this, settings));
+						} else {
+							result.Append (type.TypeParameters[i].Name);
+						}
 					}
 				}
 				result.Append (settings.Markup (">"));

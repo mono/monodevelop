@@ -215,10 +215,12 @@ namespace MonoDevelop.CSharpBinding
 			if (settings.IncludeGenerics) {
 				if (returnType.GenericArguments != null && returnType.GenericArguments.Count > 0) {
 					result.Append (settings.Markup ("<"));
-					for (int i = 0; i < returnType.GenericArguments.Count; i++) {
-						if (i > 0)
-							result.Append (settings.Markup (", "));
-						result.Append (GetString (returnType.GenericArguments[i], settings));
+					if (!settings.HideGenericParameterNames) {
+						for (int i = 0; i < returnType.GenericArguments.Count; i++) {
+							if (i > 0)
+								result.Append (settings.Markup (", "));
+							result.Append (GetString (returnType.GenericArguments[i], settings));
+						}
 					}
 					result.Append (settings.Markup (">"));
 				}
@@ -265,17 +267,19 @@ namespace MonoDevelop.CSharpBinding
 			if (settings.IncludeGenerics) {
 				if (method.TypeParameters.Count > 0) {
 					result.Append (settings.Markup ("<"));
-					InstantiatedMethod instantiatedMethod = method as InstantiatedMethod;
 					
-					for (int i = 0; i < method.TypeParameters.Count; i++) {
-						if (i > 0)
-							result.Append (settings.Markup (", "));
-						if (instantiatedMethod != null) {
-							result.Append (this.GetString (instantiatedMethod.GenericParameters[i], settings));
-						} else {
-							result.Append (NetToCSharpTypeName (method.TypeParameters[i].Name));
-						}
+					if (!settings.HideGenericParameterNames) {
+						InstantiatedMethod instantiatedMethod = method as InstantiatedMethod;
 						
+						for (int i = 0; i < method.TypeParameters.Count; i++) {
+							if (i > 0)
+								result.Append (settings.Markup (", "));
+							if (instantiatedMethod != null) {
+								result.Append (this.GetString (instantiatedMethod.GenericParameters[i], settings));
+							} else {
+								result.Append (NetToCSharpTypeName (method.TypeParameters[i].Name));
+							}
+						}
 					}
 					result.Append (settings.Markup (">"));
 				}
@@ -365,15 +369,16 @@ namespace MonoDevelop.CSharpBinding
 			
 			if (settings.IncludeGenerics && parameterCount > 0) {
 				result.Append (settings.Markup ("<"));
-				for (int i = 0; i < parameterCount; i++) {
-					if (i > 0)
-						result.Append (settings.Markup (", "));
-					if (instantiatedType != null) {
-						result.Append (this.GetString (instantiatedType.GenericParameters[i], settings));
-					} else {
-						result.Append (NetToCSharpTypeName (type.TypeParameters[i].Name));
+				if (!settings.HideGenericParameterNames) {
+					for (int i = 0; i < parameterCount; i++) {
+						if (i > 0)
+							result.Append (settings.Markup (", "));
+						if (instantiatedType != null) {
+							result.Append (this.GetString (instantiatedType.GenericParameters[i], settings));
+						} else {
+							result.Append (NetToCSharpTypeName (type.TypeParameters[i].Name));
+						}
 					}
-					
 				}
 				result.Append (settings.Markup (">"));
 			}

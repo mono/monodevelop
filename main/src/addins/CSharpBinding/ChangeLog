@@ -1,3 +1,8 @@
+2009-02-04  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Gui/CSharpAmbience.cs: Handle HideGenericParameterNames
+	  flag.
+
 2009-02-04  Mike Krüger  <mkrueger@novell.com>
 
 	* Gui/ResolveVisitor.cs: fixed "Bug 466719 - Code completion

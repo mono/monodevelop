@@ -182,6 +182,12 @@ namespace MonoDevelop.Projects.Dom.Output
 			}
 		}
 		
+		public bool HideGenericParameterNames {
+			get {
+				return (OutputFlags & OutputFlags.HideGenericParameterNames) != 0;
+			}
+		}
+		
 		public MarkupText EmitModifiersCallback;
 		public MarkupText EmitKeywordCallback;
 		public MarkupText MarkupCallback;
