@@ -393,9 +393,23 @@ namespace MonoDevelop.CSharpBinding
 		
 		public override object VisitTypeReferenceExpression(TypeReferenceExpression typeReferenceExpression, object data)
 		{
-			ResolveResult result = resolver.ResolveIdentifier (this, typeReferenceExpression.TypeReference.Type) ?? CreateResult (typeReferenceExpression.TypeReference);
-			result.StaticResolve = true;
-			return result;
+			string[] types = typeReferenceExpression.TypeReference.Type.Split ('.');
+			if (types == null || types.Length == 0)
+				return null;
+			if (types.Length == 1) {
+				ResolveResult result = resolver.ResolveIdentifier (this, typeReferenceExpression.TypeReference.Type);
+				if (result == null) 
+					result = CreateResult (typeReferenceExpression.TypeReference);
+				result.StaticResolve = true;
+				return result;
+			}
+			Expression expr = new IdentifierExpression (types[0]);
+			for (int i = 1; i < types.Length; i++) {
+				if (types[i] != "?")
+					expr = new MemberReferenceExpression (expr, types[i]);
+			}
+			
+			return expr.AcceptVisitor (this, data);
 		}
 		
 		public override object VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression, object data)
