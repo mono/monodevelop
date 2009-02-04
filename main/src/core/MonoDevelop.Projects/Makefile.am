@@ -196,6 +196,7 @@ FILES =  \
 	MonoDevelop.Projects.Text/TextFile.cs \
 	MonoDevelop.Projects.Text/TextFileReader.cs \
 	MonoDevelop.Projects.Text/TextFileService.cs \
+	MonoDevelop.Projects.Text/TextFormatter.cs \
 	MonoDevelop.Projects.Utility/DiffUtility.cs \
 	MonoDevelop.Projects/AbstractProjectConfiguration.cs \
 	MonoDevelop.Projects/BuildAction.cs \

@@ -1,3 +1,8 @@
+2009-02-04  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/NRefactoryResolver.cs: fixed 'Bug 471935 - Code
+	  completion window not showing in MD1CustomDataItem.cs'.
+
 2009-02-03  Mike Krüger  <mkrueger@novell.com>
 
 	* Gui/CSharpTextEditorIndentation.cs: disabled caret beyond

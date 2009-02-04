@@ -1,3 +1,19 @@
+2009-02-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Projects.mdp:
+	* MonoDevelop.Projects.Text/TextFormatter.cs: Added new
+	  TextFormatter class.
+
+2009-02-04  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom/DomCecilType.cs:
+	* MonoDevelop.Projects.Dom/DomCecilMethod.cs:
+	*
+	  MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
+	  fixed 'Bug 469998 - Nested classes contained in inherited
+	  class function poorly in code completion'.
+
 2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Dom/CopyDomVisitor.cs: Propagate
