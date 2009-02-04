@@ -1,3 +1,9 @@
+2009-02-04  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: added
+	  test for 'Bug 471935 - Code completion window not showing
+	  in MD1CustomDataItem.cs'.
+
 2009-01-28  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: fixed bug in the

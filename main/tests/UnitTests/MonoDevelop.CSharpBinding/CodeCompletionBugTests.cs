@@ -1094,5 +1094,34 @@ class Test
 			Assert.IsNotNull (provider.Find ("TestMe"), "method 'TestMe' not found");
 			Assert.IsNotNull (provider.Find ("value"), "keyword 'value' not found");
 		}
+		
+		/// <summary>
+		/// Bug 471935 - Code completion window not showing in MD1CustomDataItem.cs
+		/// </summary>
+		[Test()]
+		public void TestBug471935 ()
+		{
+			CompletionDataList provider = CreateCtrlSpaceProvider (
+@"
+public class AClass
+{
+	public AClass Test ()
+	{
+		if (true) {
+			AClass data;
+			$data.$
+			return data;
+		} else if (false) {
+			AClass data;
+			return data;
+		}
+		return null;
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			
+			Assert.IsNotNull (provider.Find ("Test"), "method 'Test' not found");
+		}
 	}
 }
