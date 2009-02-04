@@ -581,15 +581,15 @@ namespace MonoDevelop.XmlEditor.Gui
 				
 				if (c == ':') {
 					if (mid == -1)
-						mid = end - 1;
+						mid = end;
 					else
 						break;
 				} else if (!XmlChar.IsNameChar (c))
 					break;
 			}
 			
-			if (mid > 0) {
-				return new XName (Editor.GetText (start, mid), Editor.GetText (mid, end));
+			if (mid > 0 && end > mid + 1) {
+				return new XName (Editor.GetText (start, mid), Editor.GetText (mid + 1, end));
 			} else {
 				return new XName (Editor.GetText (start, end));
 			}
