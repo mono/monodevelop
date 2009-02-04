@@ -1,3 +1,8 @@
+2009-02-04  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextViewMargin.cs: Worked on visual ->
+	  document translation.
+
 2009-02-03  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.TextEditor.Highlighting/Style.cs:

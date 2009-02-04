@@ -647,12 +647,12 @@ namespace Mono.TextEditor
 					textEditor.FireLinkEvent (link);
 					return;
 				}
-				VisualLocationTranslator trans =new VisualLocationTranslator (this, args.X, args.Y);
+				VisualLocationTranslator trans = new VisualLocationTranslator (this, args.X, args.Y);
 				clickLocation = trans.VisualToDocumentLocation (args.X, args.Y);
-				if (!trans.WasInLine) {
+/*				if (!column = o - line.Offset;trans.WasInLine) {
 					int nextColumn = this.textEditor.GetTextEditorData ().GetNextVirtualColumn (clickLocation.Line, clickLocation.Column);
 					clickLocation.Column = nextColumn;
-				}
+				}*/
 				
 				if (!textEditor.IsSomethingSelected) {
 					textEditor.SelectionAnchorLocation = clickLocation;
@@ -1146,11 +1146,7 @@ namespace Mono.TextEditor
 			TextViewMargin margin;
 			int lineNumber;
 			LineSegment line;
-//			int xStart;
-//			int y;
-//			Gdk.Rectangle lineArea;
 			int width;
-//			int height;
 			int xPos = 0;
 			int column = 0;
 			int visibleColumn = 0;
@@ -1158,18 +1154,17 @@ namespace Mono.TextEditor
 			SyntaxMode mode;
 			Pango.Layout measureLayout;
 			bool done = false;
+			
 			public bool WasInLine {
 				get;
 				set;
 			}
+			
 			public VisualLocationTranslator (TextViewMargin margin, int xp, int yp)
 			{
 				this.margin = margin;
 				lineNumber = System.Math.Min (margin.Document.VisualToLogicalLine ((int)(yp + margin.textEditor.VAdjustment.Value) / margin.LineHeight), margin.Document.LineCount - 1);
 				line = lineNumber < margin.Document.LineCount ? margin.Document.GetLine (lineNumber) : null;
-//				xStart = margin.XOffset;
-//				y      = (int)(margin.Document.LogicalToVisualLine (lineNumber) * margin.LineHeight - margin.textEditor.VAdjustment.Value);
-//				lineArea = new Gdk.Rectangle (margin.XOffset, y, margin.textEditor.Allocation.Width - margin.XOffset, margin.LineHeight);
 			}
 			
 			Chunk chunks;
@@ -1178,6 +1173,7 @@ namespace Mono.TextEditor
 				for (;chunks != null; chunks = chunks.Next) {
 					for (int o = chunks.Offset; o < chunks.EndOffset; o++) {
 						char ch = chunks.GetCharAt (margin.Document, o);
+						
 						int delta = 0;
 						if (ch == '\t') {
 							int newColumn = GetNextTabstop (margin.textEditor.GetTextEditorData (), visibleColumn);
@@ -1190,7 +1186,6 @@ namespace Mono.TextEditor
 							ChunkStyle style = chunks.GetChunkStyle (margin.ColorStyle);
 							measureLayout.FontDescription.Weight = style.GetWeight (margin.DefaultWeight);
 							measureLayout.FontDescription.Style =  style.GetStyle (margin.DefaultStyle);
-							
 							measureLayout.SetText (ch.ToString ());
 							int height;
 							measureLayout.GetPixelSize (out delta, out height);
@@ -1198,13 +1193,12 @@ namespace Mono.TextEditor
 						}
 						int nextXPosition = xPos + delta;
 						if (nextXPosition >= visualXPos) {
-//							System.Console.WriteLine("near:" + IsNearX1 (visualXPos, xPos, nextXPosition));
-							if (!IsNearX1 (visualXPos, xPos, nextXPosition))
-								column++;
+							if (!IsNearX1 (visualXPos, xPos, nextXPosition)) 
+								column = o - line.Offset + 1;
 							done = true;
 							return;
 						}
-						column++;
+						column = o - line.Offset + 1;
 						xPos = nextXPosition;
 					}
 				}
@@ -1222,6 +1216,7 @@ namespace Mono.TextEditor
 				int offset = line.Offset;
 //				int caretOffset = margin.Caret.Offset;
 //				int index, trailing;
+				column = 0;
 				visualXPos = xp + (int)margin.textEditor.HAdjustment.Value;
 			 restart:
 				foreach (FoldSegment folding in foldings) {
@@ -1265,6 +1260,7 @@ namespace Mono.TextEditor
 				}
 				WasInLine = xPos >= visualXPos;
 				measureLayout.Dispose ();
+				System.Console.WriteLine("col:" + column);
 				return new DocumentLocation (lineNumber, column);
 			}
 		}
