@@ -1,3 +1,9 @@
+2009-02-05  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildFileFormat.cs:
+	  Assume 2.0 if no tools version is specified in the msbuild
+	  file. Fixes bug 470713 - trouble opening .csproj files.
+
 2009-02-04  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects.Dom.Output/NetAmbience.cs: Handle
