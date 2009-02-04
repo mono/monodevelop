@@ -1198,12 +1198,13 @@ namespace Mono.TextEditor
 						}
 						int nextXPosition = xPos + delta;
 						if (nextXPosition >= visualXPos) {
+//							System.Console.WriteLine("near:" + IsNearX1 (visualXPos, xPos, nextXPosition));
 							if (!IsNearX1 (visualXPos, xPos, nextXPosition))
-								column = o - line.Offset + 1;
+								column = o - line.Offset;
 							done = true;
 							return;
 						}
-						column = o - line.Offset + 1;
+						column = o - line.Offset;
 						xPos = nextXPosition;
 					}
 				}
@@ -1270,7 +1271,7 @@ namespace Mono.TextEditor
 		
 		public DocumentLocation VisualToDocumentLocation (int xp, int yp)
 		{
-						return new VisualLocationTranslator (this, xp, yp).VisualToDocumentLocation (xp, yp);
+			return new VisualLocationTranslator (this, xp, yp).VisualToDocumentLocation (xp, yp);
 		}
 		
 		static bool IsNearX1 (int pos, int x1, int x2)
