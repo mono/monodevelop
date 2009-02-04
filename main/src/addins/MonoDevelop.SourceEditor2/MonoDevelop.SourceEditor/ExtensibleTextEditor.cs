@@ -418,34 +418,40 @@ namespace MonoDevelop.SourceEditor
 			if (expressionResult == null)
 				return null;
 			DocumentLocation loc = Document.OffsetToLocation (offset);
+			string savedExpression = null;
+			
+			if (expressionResult.ExpressionContext == ExpressionContext.Attribute) {
+				savedExpression = expressionResult.Expression;
+				expressionResult.Expression += "Attribute";
+				expressionResult.ExpressionContext = ExpressionContext.ObjectCreation;
+			} 
 			this.resolveResult = resolver.Resolve (expressionResult, new DomLocation (loc.Line + 1, loc.Column + 1));
 			
+			if (savedExpression != null && this.resolveResult == null) {
+				expressionResult.Expression = savedExpression;
+				this.resolveResult = resolver.Resolve (expressionResult, new DomLocation (loc.Line + 1, loc.Column + 1));
+			}
+			
 			if (this.resolveResult == null || this.resolveResult.ResolvedType == null || String.IsNullOrEmpty (this.resolveResult.ResolvedType.Name)) {
-				if (expressionResult.ExpressionContext == ExpressionContext.Attribute) {
-					expressionResult.Expression += "Attribute";
-					expressionResult.ExpressionContext = ExpressionContext.ObjectCreation;
-					this.resolveResult = resolver.Resolve (expressionResult, new DomLocation (loc.Line + 1, loc.Column + 1));
-				} else {
-					int j = Document.LocationToOffset (expressionResult.Region.End.Line - 1, expressionResult.Region.End.Column - 1);
-					int bracket = 0;
-					for (int i = j; i >= 0 && i < Document.Length; i++) {
-						char ch = Document.GetCharAt (i);
-						if (Char.IsWhiteSpace (ch))
-							continue;
-						if (ch == '<') {
-							bracket++;
-						} else if (ch == '>') {
-							bracket--;
-							if (bracket == 0) {
-								expressionResult.Expression += Document.GetTextBetween (j, i + 1);
-								expressionResult.ExpressionContext = ExpressionContext.ObjectCreation;
-								this.resolveResult = resolver.Resolve (expressionResult, new DomLocation (loc.Line + 1, loc.Column + 1));
-								break;
-							}
-						} else {
-							if (bracket == 0)
-								break;
+				int j = Document.LocationToOffset (expressionResult.Region.End.Line - 1, expressionResult.Region.End.Column - 1);
+				int bracket = 0;
+				for (int i = j; i >= 0 && i < Document.Length; i++) {
+					char ch = Document.GetCharAt (i);
+					if (Char.IsWhiteSpace (ch))
+						continue;
+					if (ch == '<') {
+						bracket++;
+					} else if (ch == '>') {
+						bracket--;
+						if (bracket == 0) {
+							expressionResult.Expression += Document.GetTextBetween (j, i + 1);
+							expressionResult.ExpressionContext = ExpressionContext.ObjectCreation;
+							this.resolveResult = resolver.Resolve (expressionResult, new DomLocation (loc.Line + 1, loc.Column + 1));
+							break;
 						}
+					} else {
+						if (bracket == 0)
+							break;
 					}
 				}
 			}
