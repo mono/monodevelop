@@ -31,6 +31,7 @@ using System.IO;
 using System.Text;
 using System.Collections.Generic;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Projects.Text;
 
 using MonoDevelop.Core;
 
@@ -83,109 +84,68 @@ namespace MonoDevelop.VersionControl
 		{
 			if (messages.Count == 0)
 				return string.Empty;
-				
-			StringBuilder builder = new StringBuilder ();
-			
+
 			CommitMessageStyle message_style = MessageFormat.Style;
+			
+			TextFormatter formatter = new TextFormatter ();
+			formatter.MaxColumns = MessageFormat.MaxColumns;
+			formatter.TabWidth = MessageFormat.TabWidth;
+			formatter.TabsAsSpaces = MessageFormat.TabsAsSpaces;
 			
 			if (message_style.Header.Length > 0) {
 				string [,] tags = new string[,] { {"AuthorName", uinfo.Name}, {"AuthorEmail", uinfo.Email} };
-				builder.Append (StringParserService.Parse (message_style.Header, tags));
+				formatter.Append (StringParserService.Parse (message_style.Header, tags));
 			}
 			
+			formatter.IndentString = message_style.Indent;
+			
 			int m_i = 0;
+			
+			string fileSeparator1 = message_style.FileSeparator;
+			string fileSeparator2 = string.Empty;
+			
+			int si = message_style.FileSeparator.IndexOf ('\n');
+			if (si != -1 && si < message_style.FileSeparator.Length - 1) {
+				fileSeparator1 = message_style.FileSeparator.Substring (0, si + 1);
+				fileSeparator2 = message_style.FileSeparator.Substring (si + 1);
+			}
+			
+			formatter.Wrap = WrappingType.Word;
+			formatter.LeftMargin = message_style.LineAlign;
+			formatter.ParagraphStartMargin = 0;
 			
 			foreach (KeyValuePair<string, List<string>> message in messages) {
 				List<string> paths = message.Value;
 				paths.Sort ((a, b) => a.Length.CompareTo (b.Length));
 				
-				StringBuilder sb = new StringBuilder ();
+				formatter.BeginWord ();
+				
+				formatter.Append (message_style.FirstFilePrefix);
 				for (int i = 0, n = paths.Count; i < n; i++) {
-					if (i == 0)
-						sb.Append (message_style.FirstFilePrefix);
-					else
-						sb.Append (message_style.FileSeparator);
-					sb.Append (paths [i]);
+					if (i > 0) {
+						formatter.Append (fileSeparator1);
+						formatter.EndWord ();
+						formatter.BeginWord ();
+						formatter.Append (fileSeparator2);
+					}
+					formatter.Append (paths [i]);
 				}
-				sb.Append (message_style.LastFilePostfix);
-				sb.Append (message.Key);
-				string files = sb.ToString ();
-				int e = files.LastIndexOf ('\n');
 				
-				string fileListEnd;
-				if (e != -1) {
-					string fileList = files.Substring (0, e);
-					fileListEnd = files.Substring (e + 1);
-					fileList = message_style.Indent + fileList.Replace ("\n", "\n" + message_style.Indent);
-					builder.Append (fileList).AppendLine ();
-				} else
-					fileListEnd = files;
-				
-				builder.Append (FormatText (fileListEnd, message_style.Indent, 0, message_style.LineAlign, MessageFormat.MaxColumns, MessageFormat.TabWidth, MessageFormat.TabsAsSpaces));
+				formatter.Append (message_style.LastFilePostfix);
+				formatter.EndWord ();
+				formatter.Append (message.Key);
 				
 				if (m_i++ < messages.Count - 1) {
-					builder.AppendLine ();
+					formatter.AppendLine ();
 					for (int n=0; n < message_style.InterMessageLines; n++)
-						builder.AppendLine ();
+						formatter.AppendLine ();
 				}
 			}
 			
 			for (int i = 0; i < MessageFormat.AppendNewlines; i++)
-				builder.AppendLine ();
+				formatter.AppendLine ();
 			
-			return builder.ToString ();
-		}
-		
-		static string FormatText (string text, string indentString, int initialLeftMargin, int leftMargin, int maxCols, int tabWidth, bool tabsAsSpaces)
-		{
-			if (text == "")
-				return "";
-			
-			int indentWidth = 0;
-			foreach (char c in indentString) {
-				if (c == '\t') indentWidth += tabWidth;
-				else indentWidth++;
-			}
-			
-			int n = 0;
-			int margin = initialLeftMargin;
-			
-			StringBuilder outs = new StringBuilder ();
-			
-			while (n < text.Length)
-			{
-				int col = margin + indentWidth;
-				int lastWhite = -1;
-				int sn = n;
-				bool forcedLineBreak = false;
-				while ((col < maxCols || lastWhite==-1) && n < text.Length) {
-					if (char.IsWhiteSpace (text[n]))
-						lastWhite = n;
-					if (text[n] == '\n') {
-						lastWhite = n;
-						n++;
-						forcedLineBreak = true;
-						break;
-					}
-					col++;
-					n++;
-				}
-				
-				if ((lastWhite == -1 || col < maxCols) && !forcedLineBreak)
-					lastWhite = n;
-				else if (col >= maxCols)
-					n = lastWhite + 1;
-				
-				string line = text.Substring (sn, lastWhite - sn);
-				if (line.Length > 0 || n < text.Length) {
-					if (outs.Length > 0) outs.Append ('\n');
-					outs.Append (indentString + new String (' ', margin) + line);
-				}
-				margin = leftMargin;
-			}
-			if (tabsAsSpaces)
-				outs.Replace ("\t", new string (' ', tabWidth));
-			return outs.ToString ();
+			return formatter.ToString ();
 		}
 		
 		public bool SkipEmpty { get; set; }
