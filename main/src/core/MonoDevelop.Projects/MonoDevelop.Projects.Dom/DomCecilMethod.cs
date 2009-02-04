@@ -83,7 +83,7 @@ namespace MonoDevelop.Projects.Dom
 		{
 			if (typeReference == null)
 				return new DomReturnType (DomReturnType.Void.ToInvariantString ());
-
+			
 			if (typeReference is Mono.Cecil.GenericInstanceType) {
 				Mono.Cecil.GenericInstanceType genType = (Mono.Cecil.GenericInstanceType)typeReference;
 				DomReturnType result = GetReturnType (genType.ElementType);

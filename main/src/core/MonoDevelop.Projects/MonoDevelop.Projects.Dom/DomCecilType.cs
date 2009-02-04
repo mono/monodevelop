@@ -69,7 +69,9 @@ namespace MonoDevelop.Projects.Dom
 		
 		public static string RemoveGenericParamSuffix (string name)
 		{
+			name = name.Replace ('/', '.'); // nested classes are represented as A/Nested and in the dom it's just A.Nested
 			int idx = name.IndexOf('`');
+			
 			if (idx > 0)
 				return name.Substring (0, idx);
 			return name;
