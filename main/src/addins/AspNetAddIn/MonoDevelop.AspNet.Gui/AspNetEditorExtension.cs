@@ -112,7 +112,8 @@ namespace MonoDevelop.AspNet.Gui
 			
 			//simple completion for ASP.NET expressions
 			if (Tracker.Engine.CurrentState is AspNetExpressionState
-			    && previousChar == ' ' && char.IsLetter (currentChar))
+			    && ((previousChar == ' ' && char.IsLetter (currentChar))
+			        || (currentChar == ' ' && forced)))
 			{
 				AspNetExpression expr = Tracker.Engine.Nodes.Peek () as AspNetExpression;
 				CompletionDataList list = HandleExpressionCompletion (expr);

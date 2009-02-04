@@ -106,7 +106,6 @@ namespace MonoDevelop.AspNet.StateEngine
 			}
 			else if (context.StateTag == BRACKET_PERCENT) {
 				switch (c) {
-				
 				case '@': //DIRECTIVE <%@
 					return DirectiveState;
 				
@@ -118,6 +117,7 @@ namespace MonoDevelop.AspNet.StateEngine
 				case '#': //DATABINDING EXPRESSION <%#
 				case '$': //RESOURCE EXPRESSION <%$
 				default:  // RENDER BLOCK
+					rollback = "";
 					return ExpressionState;
 				}
 			}

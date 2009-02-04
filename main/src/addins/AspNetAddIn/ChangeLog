@@ -1,5 +1,14 @@
 2009-02-03  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Allow
+	  forced completion for fields/properties in expressions.
+
+	* MonoDevelop.AspNet.StateEngine/AspNetFreeState.cs: Add
+	  rollback so that expressions can be differentiated. Fixes
+	  field/property completion in expressions.
+
+2009-02-03  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.AspNet.Parser/SuggestedHandlerCompletionData.cs:
 	  Track BindingService API. Fixes event completion bugs.
 
