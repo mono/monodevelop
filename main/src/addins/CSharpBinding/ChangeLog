@@ -1,5 +1,10 @@
 2009-02-04  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/CSharpTextEditorCompletion.cs: fixed "Bug 469910 -
+	  Incorrect type resolution on attributes".
+
+2009-02-04  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/NRefactoryResolver.cs: fixed 'Bug 471935 - Code
 	  completion window not showing in MD1CustomDataItem.cs'.
 

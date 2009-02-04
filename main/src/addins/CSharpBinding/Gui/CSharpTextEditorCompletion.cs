@@ -530,9 +530,9 @@ namespace MonoDevelop.CSharpBinding.Gui
 				ResolveResult resolveResult = resolver.Resolve (result, new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
 				if (result.ExpressionContext == ExpressionContext.Attribute) {
 					IReturnType returnType = resolveResult.ResolvedType;
-					IType type = dom.SearchType (new SearchTypeRequest (resolver.Unit, returnType, resolver.CallingType));
+					IType type = dom.SearchType (new SearchTypeRequest (resolver.Unit, new DomReturnType (result.Expression.Trim () + "Attribute"), resolver.CallingType));
 					if (type == null) 
-						type = dom.SearchType (new SearchTypeRequest (resolver.Unit, new DomReturnType (result.Expression.Trim () + "Attribute"), resolver.CallingType));
+						type = dom.SearchType (new SearchTypeRequest (resolver.Unit, returnType, resolver.CallingType));
 					if (type != null && returnType != null && returnType.GenericArguments != null)
 						type = dom.CreateInstantiatedGenericType (type, returnType.GenericArguments);
 					return new NRefactoryParameterDataProvider (Editor, resolver, type);
