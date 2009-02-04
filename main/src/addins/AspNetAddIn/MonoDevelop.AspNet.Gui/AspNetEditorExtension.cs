@@ -455,14 +455,14 @@ namespace MonoDevelop.AspNet.Gui
 				foreach (IEvent ev in GetAllEvents (projectDatabase, controlClass)) {
 					if (ev.Name == eventName) {
 						System.CodeDom.CodeMemberMethod domMethod = 
-							BindingService.MDDomToCodeDomMethod (ev, projectDatabase);
+							BindingService.MDDomToCodeDomMethod (projectDatabase, ev);
 						if (domMethod == null)
 							return;
 						
-						foreach (string meth 
-						    in BindingService.GetCompatibleMethodsInClass (codeBehindClass, domMethod))
+						foreach (IMethod meth 
+						    in BindingService.GetCompatibleMethodsInClass (projectDatabase, codeBehindClass, ev))
 						{
-							list.Add (meth, "md-method",
+							list.Add (meth.Name, "md-method",
 							    GettextCatalog.GetString ("A compatible method in the CodeBehind class"));
 						}
 						

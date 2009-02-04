@@ -1,3 +1,10 @@
+2009-02-04  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.DesignerSupport/BindingService.cs: Improve
+	  method matching; it now finds methods with broader parameter
+	  types. Tweak event/method matching API. Use ordinal string
+	  compares.
+
 2009-02-03  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.DesignerSupport/BindingService.cs: Require a

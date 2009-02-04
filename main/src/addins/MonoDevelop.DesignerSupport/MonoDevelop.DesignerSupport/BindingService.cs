@@ -55,7 +55,7 @@ namespace MonoDevelop.DesignerSupport
 		{
 			//check for identical property names
 			foreach (IProperty prop in cls.Properties) {
-				if (string.Compare (prop.Name, member.Name, ignoreCase) == 0) {
+				if (string.Compare (prop.Name, member.Name, StringComparison.OrdinalIgnoreCase) == 0) {
 					EnsureClassExists (ctx, prop.ReturnType.FullName, GetValidRegion (prop));
 					CodeMemberProperty memProp = member as CodeMemberProperty;
 					if (memProp == null || !IsTypeCompatible (ctx, prop.ReturnType.FullName, memProp.Type.BaseType))
@@ -66,7 +66,7 @@ namespace MonoDevelop.DesignerSupport
 				
 			//check for identical method names
 			foreach (IMethod meth in cls.Methods) {
-				if (string.Compare (meth.Name, member.Name, ignoreCase) == 0) {
+				if (string.Compare (meth.Name, member.Name, StringComparison.OrdinalIgnoreCase) == 0) {
 					EnsureClassExists (ctx, meth.ReturnType.FullName, GetValidRegion (meth));
 					CodeMemberMethod memMeth = member as CodeMemberMethod;
 					if (memMeth == null || !IsTypeCompatible (ctx, meth.ReturnType.FullName, memMeth.ReturnType.BaseType))
@@ -77,7 +77,7 @@ namespace MonoDevelop.DesignerSupport
 			
 			//check for identical event names
 			foreach (IEvent ev in cls.Events) {
-				if (string.Compare (ev.Name, member.Name, ignoreCase) == 0) {
+				if (string.Compare (ev.Name, member.Name, StringComparison.OrdinalIgnoreCase) == 0) {
 					EnsureClassExists (ctx, ev.ReturnType.FullName, GetValidRegion (ev));
 					CodeMemberEvent memEv = member as CodeMemberEvent;
 					if (memEv == null || !IsTypeCompatible (ctx, ev.ReturnType.FullName, memEv.Type.BaseType))
@@ -88,7 +88,7 @@ namespace MonoDevelop.DesignerSupport
 				
 			//check for identical field names
 			foreach (IField field in cls.Fields) {
-				if (string.Compare (field.Name, member.Name, ignoreCase) == 0) {
+				if (string.Compare (field.Name, member.Name, StringComparison.OrdinalIgnoreCase) == 0) {
 					EnsureClassExists (ctx, field.ReturnType.FullName, GetValidRegion (field));
 					CodeMemberField memField = member as CodeMemberField;
 					if (memField == null || !IsTypeCompatible (ctx, field.ReturnType.FullName, memField.Type.BaseType))
@@ -166,40 +166,59 @@ namespace MonoDevelop.DesignerSupport
 			return cr;
 		}
 		
-		//TODO: check accessibility
-		public static string[] GetCompatibleMethodsInClass (IType cls, CodeMemberMethod testMethod)
+		public static IEnumerable<IMethod> GetCompatibleMethodsInClass (ProjectDom ctx, IType cls, IEvent eve)
 		{
-			List<string> list = new List<string> ();
-			
-			foreach (IMethod method in cls.Methods) {
-				if (method.Parameters.Count != testMethod.Parameters.Count)
-					continue;
-				
-				if (method.ReturnType.FullName != testMethod.ReturnType.BaseType)
-					continue;
-				
-				//compare each parameter
-				bool mismatch = false;
-				for (int i = 0; i < testMethod.Parameters.Count; i++)
-					if (method.Parameters[i].ReturnType.FullName != testMethod.Parameters[i].Type.BaseType)
-						mismatch = true;
-				
-				if (!mismatch)
-					list.Add (method.Name);
+			IMethod eveMeth = GetMethodSignature (ctx, eve);
+			if (eveMeth == null)
+				return new IMethod[0];
+			return GetCompatibleMethodsInClass (ctx, cls, eveMeth);
+		}
+		
+		//TODO: check accessibility
+		public static IEnumerable<IMethod> GetCompatibleMethodsInClass (ProjectDom ctx, IType cls, IMethod matchMeth)
+		{
+			IList<IType>[] pars = new IList<IType>[matchMeth.Parameters.Count];
+			for (int i = 0; i < matchMeth.Parameters.Count; i++) {
+				IType t = ctx.GetType (matchMeth.Parameters[i].ReturnType, true);
+				if (t != null)
+					pars[i] = new List<IType> (ctx.GetInheritanceTree (t));
+				else
+					pars[i] = new IType[0];
 			}
 			
-			return list.ToArray ();
+			foreach (IType type in ctx.GetInheritanceTree (cls)) {
+				if (type.ClassType != ClassType.Class)
+					continue;
+				
+				foreach (IMethod method in type.Methods) {
+					if (method.IsPrivate || method.Parameters.Count != pars.Length || method.ReturnType.FullName != matchMeth.ReturnType.FullName
+					    
+					    || method.IsInternal)
+						continue;
+					
+					bool allCompatible = true;
+					
+					//compare each parameter
+					for (int i = 0; i < pars.Length; i++) {
+						bool parCompatible = false;
+						foreach (IType t in pars[i]) {
+							if (t.FullName == method.Parameters[i].ReturnType.FullName) {
+								parCompatible = true;
+								break;
+							}
+						}
+						
+						if (!parCompatible) {
+							allCompatible = false;
+							break;
+						}
+					}
+					
+					if (allCompatible)
+						yield return method;
+				}
+			}
 		}
-		
-		
-		public static string[] GetCompatibleMembersInClass (IType cls, CodeTypeMember testMember)
-		{
-			if (testMember is CodeMemberMethod)
-				return GetCompatibleMethodsInClass (cls, (CodeMemberMethod) testMember);
-			
-			return new string[0];
-		}
-		
 		
 		public static bool IdentifierExistsInClass (ProjectDom parserContext, IType cls, string identifier)
 		{
@@ -302,7 +321,7 @@ namespace MonoDevelop.DesignerSupport
 			return newMethod;
 		}
 		
-		public static System.CodeDom.CodeMemberMethod MDDomToCodeDomMethod (IEvent ev, ProjectDom context)
+		public static IMethod GetMethodSignature (ProjectDom context, IEvent ev)
 		{
 			if (ev.ReturnType == null)
 				return null;
@@ -311,8 +330,14 @@ namespace MonoDevelop.DesignerSupport
 				return null;
 			foreach (IMethod m in cls.Methods)
 				if (m.Name == "Invoke")
-					return MDDomToCodeDomMethod (m);
+					return m;
 			return null;
+		}
+		
+		public static System.CodeDom.CodeMemberMethod MDDomToCodeDomMethod (ProjectDom context, IEvent eve)
+		{
+			IMethod meth = GetMethodSignature (context, eve);
+			return meth != null? MDDomToCodeDomMethod (meth) : null;
 		}
 		
 		public static System.CodeDom.CodeMemberMethod MDDomToCodeDomMethod (IMethod mi)
