@@ -149,10 +149,10 @@ namespace Mono.TextEditor
 			
 			DisposeGCs ();
 			lineNumberBgGC = new Gdk.GC (editor.GdkWindow);
-			lineNumberBgGC.RgbFgColor = editor.ColorStyle.LineNumberBg;
+			lineNumberBgGC.RgbFgColor = editor.ColorStyle.LineNumber.BackgroundColor;
 			
 			lineNumberGC = new Gdk.GC (editor.GdkWindow);
-			lineNumberGC.RgbFgColor = editor.ColorStyle.LineNumberFg;
+			lineNumberGC.RgbFgColor = editor.ColorStyle.LineNumber.Color;
 			
 			lineNumberHighlightGC = new Gdk.GC (editor.GdkWindow);
 			lineNumberHighlightGC.RgbFgColor = editor.ColorStyle.LineNumberFgHighlighted;

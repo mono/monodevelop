@@ -96,10 +96,10 @@ namespace Mono.TextEditor
 		{
 			DisposeGCs ();
 			foldBgGC = new Gdk.GC (editor.GdkWindow);
-			foldBgGC.RgbFgColor = editor.ColorStyle.FoldBg;
+			foldBgGC.RgbFgColor = editor.ColorStyle.FoldLine.BackgroundColor;
 			
 			foldLineGC = new Gdk.GC (editor.GdkWindow);
-			foldLineGC.RgbFgColor = editor.ColorStyle.FoldLine;
+			foldLineGC.RgbFgColor = editor.ColorStyle.FoldLine.Color;
 			
 			foldLineHighlightedGC = new Gdk.GC (editor.GdkWindow);
 			foldLineHighlightedGC.RgbFgColor = editor.ColorStyle.FoldLineHighlighted;

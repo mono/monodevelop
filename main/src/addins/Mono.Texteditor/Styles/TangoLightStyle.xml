@@ -54,12 +54,11 @@
 	<Color name="aluminium6" value="#2e3436"/>
 	
 	<!-- color styles -->
-	<Style name="text" color="black">
+	<Style name="text" color="black" bgColor="white">
 		<Style name="background" color="white">
-			<Style name="selection" color="skyblue1"/>
 			<Style name="searchresult" color="yellow"/>
 		</Style>
-		<Style name="selection" color="aluminium1"/>
+		<Style name="selection" color="aluminium1" bgColor="skyblue1"/>
 		<Style name="link" color="blue"/>
 		<Style name="literal" color="plum2"/>
 		<Style name="punctuation" color="aluminium6"/>
@@ -71,9 +70,7 @@
 		</Style>
 	</Style>
 	
-	<Style name="caret" color="black">
-		<Style name="foreground" color="white"/>
-	</Style>
+	<Style name="caret" color="black" bgColor="white"/>
 	
 	<Style name="marker">
 		<Style name="line" color="aluminium1"/>
@@ -83,8 +80,8 @@
 		<Style name="ruler" color="aluminium3"/>
 		<Style name="whitespace" color="aluminium3"/>
 		<Style name="invalidline" color="scarletred2"/>
-		<Style name="bracket" color="aluminium4"/>
-		<Style name="bracket.background" color="aluminium1"/>
+		<Style name="bracket" color="aluminium4" bgColor="aluminium1"/>
+		
 		<Style name="bookmark.color1" color="white"/>
 		<Style name="bookmark.color2" color="skyblue1"/>
 		<Style name="underline" color="scarletred1">
@@ -93,15 +90,14 @@
 		</Style>
 	</Style>
 
-	<Style name="linenumber" color="aluminium4"/>
-	<Style name="linenumber.highlight" color="aluminium5"/>
-	<Style name="linenumber.background" color="white"/>
+	<Style name="linenumber" color="aluminium4" bgColor="white">
+		<Style name="highlight" color="aluminium5"/>
+	</Style>
 	
 	<Style name="iconbar" color="aluminium1"/>
 	<Style name="iconbar.separator" color="aluminium3"/>
 
-	<Style name="fold" color="aluminium3"/>
-	<Style name="fold.background" color="white"/>
+	<Style name="fold" color="aluminium3" bgColor="white"/>
 	<Style name="fold.highlight" color="aluminium5"/>
 	<Style name="fold.togglemarker" color="black"/>
 	

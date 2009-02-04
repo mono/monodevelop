@@ -28,44 +28,39 @@ using System;
 
 namespace Mono.TextEditor.Highlighting
 {
-	public interface IColorDefinition 
-	{
-		Gdk.Color Color {
-			get;
-		}
-	}
-	
-	class ColorDefinition : IColorDefinition
-	{
-		Gdk.Color color;
-		
-		public Gdk.Color Color {
-			get {
-				return color;
-			}
-		}
-		
-		public ColorDefinition (Gdk.Color color)
-		{
-			this.color = color;
-		}
-	}
-
-	class ReferencedColorDefinition : IColorDefinition
+	class ReferencedChunkStyle : ChunkStyle
 	{
 		Style style;
-		string referencedColor;
+		string referencedStyle;
 		
-		public Gdk.Color Color {
+		public override Gdk.Color Color {
 			get {
-				return style.GetColorFromDefinition (referencedColor);
+				return style.GetChunkStyle (referencedStyle).Color;
 			}
 		}
 		
-		public ReferencedColorDefinition (Style style, string referencedColor)
+		public override Gdk.Color BackgroundColor {
+			get {
+				return style.GetChunkStyle (referencedStyle).BackgroundColor;
+			}
+		}
+		
+		public override ChunkProperties ChunkProperties {
+			get {
+				return style.GetChunkStyle (referencedStyle).ChunkProperties; 
+			}
+		}
+		
+		public override string Link {
+			get {
+				return style.GetChunkStyle (referencedStyle).Link; 
+			}
+		}
+		
+		public ReferencedChunkStyle (Style style, string referencedStyle)
 		{
 			this.style           = style;
-			this.referencedColor = referencedColor;
+			this.referencedStyle = referencedStyle;
 		}
 	}
 }

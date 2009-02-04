@@ -16,12 +16,12 @@ FILES =  \
 	Mono.TextEditor.Highlighting/Chunk.cs \
 	Mono.TextEditor.Highlighting/ChunkStyle.cs \
 	Mono.TextEditor.Highlighting/DefaultStyle.cs \
-	Mono.TextEditor.Highlighting/IColorDefinition.cs \
 	Mono.TextEditor.Highlighting/IXmlProvider.cs \
 	Mono.TextEditor.Highlighting/Keywords.cs \
 	Mono.TextEditor.Highlighting/Marker.cs \
 	Mono.TextEditor.Highlighting/MarkupSyntaxMode.cs \
 	Mono.TextEditor.Highlighting/Match.cs \
+	Mono.TextEditor.Highlighting/ReferencedChunkStyle.cs \
 	Mono.TextEditor.Highlighting/Rule.cs \
 	Mono.TextEditor.Highlighting/SemanticRule.cs \
 	Mono.TextEditor.Highlighting/Span.cs \

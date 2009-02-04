@@ -124,7 +124,7 @@ namespace Mono.TextEditor
  			to   = System.Math.Max (to, editor.TextViewMargin.XOffset);
 			if (from < to) {
 				using (Gdk.GC gc = new Gdk.GC (win)) {
-					gc.RgbFgColor = selected ? editor.ColorStyle.SelectedFg : editor.ColorStyle.GetChunkStyle (style).Color;
+					gc.RgbFgColor = selected ? editor.ColorStyle.Selection.Color : editor.ColorStyle.GetChunkStyle (style).Color;
 					win.DrawLine (gc, from, y + editor.LineHeight - 1, to, y + editor.LineHeight - 1);
 				}
 			}
@@ -316,12 +316,14 @@ namespace Mono.TextEditor
 			ChunkStyle style = new ChunkStyle (baseStyle);
 			if ((includedStyles & StyleFlag.Color) != 0)
 				style.Color = Color;
-			if ((includedStyles & StyleFlag.BackgroundColor) != 0)
+			style.ChunkProperties = baseStyle.ChunkProperties;
+			
+/*			if ((includedStyles & StyleFlag.BackgroundColor) != 0)
 				style.BackgroundColor = BackgroundColor;
 			if ((includedStyles & StyleFlag.Bold) != 0)
 				style.Bold = bold;
 			if ((includedStyles & StyleFlag.Italic) != 0)
-				style.Italic = italic;
+				style.Italic = italic;*/
 			return style;
 		}
 	}

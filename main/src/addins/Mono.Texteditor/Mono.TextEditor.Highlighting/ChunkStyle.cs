@@ -28,13 +28,20 @@ using System;
 
 namespace Mono.TextEditor
 {
+	[Flags]
+	public enum ChunkProperties {
+		None = 0,
+		Bold = 1,
+		Italic = 2,
+		Underline = 4
+	}
+	
 	public class ChunkStyle
 	{
 		Gdk.Color color;
 		Gdk.Color backColor;
-		bool      transparentBackround = true;
 		
-		public Gdk.Color Color {
+		public virtual Gdk.Color Color {
 			get {
 				return color;
 			}
@@ -43,47 +50,54 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public Gdk.Color BackgroundColor {
+		public virtual Gdk.Color BackgroundColor {
 			get {
 				return backColor;
 			}
 			set {
-				backColor = value; transparentBackround = false;
+				backColor = value;
 			}
 		}
 		
 		public bool TransparentBackround {
-			get { return transparentBackround; }
-			set { transparentBackround = value; }
+			get {
+				return BackgroundColor.Equal (Gdk.Color.Zero); 
+			}
+		}
+		
+		public virtual ChunkProperties ChunkProperties {
+			get;
+			set;
 		}
 
 		public bool Bold {
-			get;
-			set;
+			get {
+				return (ChunkProperties & ChunkProperties.Bold) == ChunkProperties.Bold;
+			}
 		}
 
 		public bool Italic {
-			get;
-			set;
+			get {
+				return (ChunkProperties & ChunkProperties.Italic) == ChunkProperties.Italic;
+			}
 		}
 
-		public bool Underline {
-			get;
-			set;
+		public virtual bool Underline {
+			get {
+				return (ChunkProperties & ChunkProperties.Underline) == ChunkProperties.Underline;
+			}
 		}
 
-		public string Link {
+		public virtual string Link {
 			get;
 			set;
 		}
 		
 		public ChunkStyle (ChunkStyle style)
 		{
-			color = style.color;
-			backColor = style.backColor;
-			Bold = style.Bold;
-			Italic = style.Italic;
-			transparentBackround = style.transparentBackround;
+			Color                = style.Color;
+			BackgroundColor      = style.BackgroundColor;
+			ChunkProperties      = style.ChunkProperties;
 		}
 
 		public Pango.Style GetStyle (Pango.Style defaultStyle)
@@ -97,27 +111,29 @@ namespace Mono.TextEditor
 			return Bold ? Pango.Weight.Bold : Pango.Weight.Normal;
 		}
 		
-		public ChunkStyle () : this (new Gdk.Color (0, 0, 0), false)
+		public ChunkStyle () : this (Gdk.Color.Zero, Gdk.Color.Zero, ChunkProperties.None)
 		{
 		}
 		
-		public ChunkStyle (Gdk.Color color) : this (color, false)
+		public ChunkStyle (Gdk.Color color) : this (color, Gdk.Color.Zero, ChunkProperties.None)
 		{
 		}
 		
-		public ChunkStyle (Gdk.Color color, bool bold)
+		public ChunkStyle (Gdk.Color color, ChunkProperties chunkProperties) : this (color, Gdk.Color.Zero, chunkProperties)
 		{
-			this.color = color;
-			this.Bold  = bold;
 		}
 		
-		public ChunkStyle (Gdk.Color color, bool bold, bool italic)
+		public ChunkStyle (Gdk.Color color, Gdk.Color bgColor) : this (color, bgColor, ChunkProperties.None)
 		{
-			this.color = color;
-			this.Bold  = bold;
-			this.Italic  = italic;
 		}
-
+		
+		public ChunkStyle (Gdk.Color color, Gdk.Color bgColor, ChunkProperties chunkProperties)
+		{
+			this.Color           = color;
+			this.BackgroundColor = bgColor;
+			this.ChunkProperties = chunkProperties;
+		}
+		
 		public override string ToString ()
 		{
 			return String.Format ("[ChunkStyle: Color={0}, bold={1}]", color, Bold);

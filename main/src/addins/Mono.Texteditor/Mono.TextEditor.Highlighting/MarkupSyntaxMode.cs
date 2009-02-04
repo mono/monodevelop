@@ -101,20 +101,19 @@ namespace Mono.TextEditor.Highlighting
 		static ChunkStyle GetChunkStyle (Style style, IEnumerable<Tag> tagStack)
 		{
 			ChunkStyle result = new ChunkStyle ();
-			result.Color = style.Default;
+			result.Color = style.Default.Color;
 			foreach (Tag tag in tagStack) {
 				//System.Console.WriteLine("'" + tag.Command + "'");
 				switch (tag.Command.ToUpper ()) {
 				case "B":
-					result.Bold = true;
+					result.ChunkProperties |= ChunkProperties.Bold;
 					break;
 				case "SPAN":
 					if (tag.Arguments.ContainsKey ("style")) {
 						ChunkStyle chunkStyle =  style.GetChunkStyle (tag.Arguments["style"]);
 						if (chunkStyle != null) {
 							result.Color = chunkStyle.Color;
-							result.Bold = chunkStyle.Bold;
-							result.Italic = chunkStyle.Italic;
+							result.ChunkProperties = chunkStyle.ChunkProperties;
 						} else {
 							throw new Exception ("Style " + tag.Arguments["style"] + " not found.");
 						}
@@ -128,10 +127,10 @@ namespace Mono.TextEditor.Highlighting
 					result.Link = tag.Arguments["ref"];
 					break;
 				case "I":
-					result.Italic = true;
+					result.ChunkProperties |= ChunkProperties.Italic;
 					break;
 				case "U":
-					result.Underline = true;
+					result.ChunkProperties |= ChunkProperties.Underline;
 					break;
 				}
 			}

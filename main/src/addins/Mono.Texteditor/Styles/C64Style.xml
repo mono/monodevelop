@@ -24,16 +24,13 @@
  THE SOFTWARE. -->
  <EditorStyle name="C64" _description="A Style style that uses the old Commodore 64 Styles">
 
-	<Style name="text" color="#97A0EF"/>
-	<Style name="text.background" color="#3F3FDF"/>
-	<Style name="text.background.selection" color="#000000"/>
+	<Style name="text" color="#97A0EF" bgColor="#3F3FDF"/>
+	<Style name="text.selection" color="#FFFFFF" bgColor="#000000"/>
 	<Style name="text.background.searchresult" color="yellow"/>
 	
-	<Style name="text.selection" color="#FFFFFF"/>
 	<Style name="text.link" color="blue"/>
 	
-	<Style name="caret" color="#97A0EF"/>
-	<Style name="caret.foreground" color="#3F3FDF"/>
+	<Style name="caret" color="#97A0EF" bgColor="#3F3FDF"/>
 	
 	<Style name="marker.line" color="#0088FF"/>
 	<Style name="marker.line.changed" color="yellow"/>	
@@ -42,8 +39,8 @@
 	<Style name="marker.ruler" color="#CC44CC"/>
 	<Style name="marker.whitespace" color="#AAFFEE"/>
 	<Style name="marker.invalidline" color="#880000"/>
-	<Style name="marker.bracket" color="#97A0EF"/>
-	<Style name="marker.bracket.background" color="#3F3FDF"/>
+	<Style name="marker.bracket" color="#97A0EF" bgColor="#3F3FDF"/>
+	
 	<Style name="marker.bookmark.color1" color="#FFFFFF"/>
 	<Style name="marker.bookmark.color2" color="#3F3FDF"/>
 	
@@ -68,15 +65,13 @@
 	<Style name="marker.debug.currentline.border" color=""/>
 	-->
 		
-	<Style name="linenumber" color="#97A0EF"/>
+	<Style name="linenumber" color="#97A0EF" bgColor="#3F3FDF"/>
 	<Style name="linenumber.highlight" color="#97A0EF"/>
-	<Style name="linenumber.background" color="#3F3FDF"/>
 	
 	<Style name="iconbar" color="#3F3FDF"/>
 	<Style name="iconbar.separator" color="#97A0EF"/>
 
-	<Style name="fold" color="#97A0EF"/>
-	<Style name="fold.background" color="#3F3FDF"/>
+	<Style name="fold" color="#97A0EF" bgColor="#3F3FDF"/>
 	<Style name="fold.highlight" color="#FFFFFF"/>
 	<Style name="fold.togglemarker" color="#97A0EF"/>
 	

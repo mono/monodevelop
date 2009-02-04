@@ -55,15 +55,12 @@
 	<Color name="aluminium7" value="#111111"/>
 	
 	<!-- environment -->
-	<Style name="text" color="aluminium2"/>
-	<Style name="text.background" color="aluminium6"/>
-	<Style name="text.background.selection" color="aluminium4"/>
+	<Style name="text" color="aluminium2" bgColor="aluminium6"/>
+	<Style name="text.selection" color="aluminium1" bgColor="aluminium4"/>
 	<Style name="text.background.searchresult" color="aluminium5"/>
-	<Style name="text.selection" color="aluminium1"/>
 	<Style name="text.link" color="butter2"/>
 	
-	<Style name="caret" color="aluminium2"/>
-	<Style name="caret.foreground" color="aluminium6"/>
+	<Style name="caret" color="aluminium2" bgColor="aluminium6"/>
 	
 	<Style name="marker.line" color="aluminium6"/>
 	<Style name="marker.line.changed" color="chameleon2"/>
@@ -72,8 +69,8 @@
 	<Style name="marker.ruler" color="aluminium5"/>
 	<Style name="marker.whitespace" color="aluminium3"/>
 	<Style name="marker.invalidline" color="orange1"/>
-	<Style name="marker.bracket" color="aluminium4"/>
-	<Style name="marker.bracket.background" color="aluminium6"/>
+	<Style name="marker.bracket" color="aluminium4" bgColor="aluminium6"/>
+	
 	<Style name="marker.bookmark.color1" color="aluminium1"/>
 	<Style name="marker.bookmark.color2" color="aluminium4"/>
 	
@@ -97,15 +94,13 @@
 	<Style name="marker.debug.currentline.color2" color=""/>
 	<Style name="marker.debug.currentline.border" color=""/>
 	-->
-	<Style name="linenumber" color="aluminium5"/>
+	<Style name="linenumber" color="aluminium5" bgColor="aluminium7"/>
 	<Style name="linenumber.highlight" color="aluminium3"/>
-	<Style name="linenumber.background" color="aluminium7"/>
 	
 	<Style name="iconbar" color="aluminium7"/>
 	<Style name="iconbar.separator" color="aluminium6"/>
 
-	<Style name="fold" color="aluminium3"/>
-	<Style name="fold.background" color="black"/>
+	<Style name="fold" color="aluminium3" bgColor="black"/>
 	<Style name="fold.highlight" color="aluminium2"/>
 	<Style name="fold.togglemarker" color="aluminium1"/>
 	

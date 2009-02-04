@@ -31,30 +31,24 @@ namespace Mono.TextEditor.Highlighting
 {
 	public class DefaultStyle : Style
 	{
-		public override Color Default {
+		public override ChunkStyle Default {
 			get {
-				return widget.Style.Text (StateType.Normal);
+				return new ChunkStyle (widget.Style.Text (StateType.Normal), widget.Style.Base (StateType.Normal));
 			}
 		}
 		
-		public override Color Caret {
+		public override ChunkStyle Caret {
 			get {
-				return widget.Style.Text (StateType.Normal);
+				return Default;
 			}
 		}
 		
-		public override Color LineNumberFg {
+		public override ChunkStyle LineNumber {
 			get {
-				return new Gdk.Color (172, 168, 153);
+				return new ChunkStyle (new Gdk.Color (172, 168, 153), widget.Style.Base (StateType.Normal));
 			}
 		}
-
-		public override Color LineNumberBg {
-			get {
-				return widget.Style.Base (StateType.Normal);
-			}
-		}
-
+		
 		public override Color LineNumberFgHighlighted {
 			get {
 				return new Gdk.Color (122, 118, 103);
@@ -73,9 +67,9 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 
-		public override Color FoldLine {
+		public override ChunkStyle FoldLine {
 			get {
-				return new Gdk.Color (172, 168, 153);
+				return LineNumber;
 			}
 		}
 
@@ -84,27 +78,10 @@ namespace Mono.TextEditor.Highlighting
 				return new Gdk.Color (122, 118, 103);
 			}
 		}
-
-		public override Color FoldBg {
+		
+		public override ChunkStyle Selection {
 			get {
-				return widget.Style.Base (StateType.Normal);
-			}
-		}
-
-		public override Color Background {
-			get {
-				return widget.Style.Base (StateType.Normal);
-			}
-		}
-
-		public override Color SelectedBg {
-			get {
-				return widget.Style.Base (StateType.Selected);
-			}
-		}
-		public override Color SelectedFg {
-			get {
-				return widget.Style.Text (StateType.Selected);
+				return new ChunkStyle (widget.Style.Text (StateType.Selected), widget.Style.Base (StateType.Selected));
 			}
 		}
 

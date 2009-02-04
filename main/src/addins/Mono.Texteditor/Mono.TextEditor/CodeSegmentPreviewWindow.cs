@@ -85,7 +85,7 @@ namespace Mono.TextEditor
 			if (gc == null)
 				gc = new Gdk.GC (ev.Window);
 			
-			gc.RgbFgColor = editor.ColorStyle.Background;
+			gc.RgbFgColor = editor.ColorStyle.Default.BackgroundColor;
 			ev.Window.DrawRectangle (gc, true, ev.Area);
 			
 			if (layout == null) {
@@ -100,7 +100,7 @@ namespace Mono.TextEditor
 				                                                        true));
 			}
 			ev.Window.DrawLayout (Style.TextGC (StateType.Normal), 0, 0, layout);
-			gc.RgbFgColor = editor.ColorStyle.FoldLine;
+			gc.RgbFgColor = editor.ColorStyle.FoldLine.Color;
 			ev.Window.DrawRectangle (gc, false, 0, 0, this.Allocation.Width - 1, this.Allocation.Height - 1);
 			return true;
 		}

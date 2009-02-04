@@ -23,7 +23,7 @@
  THE SOFTWARE. -->
  <EditorStyle name="Visual Studio" _description="Microsoft Visual Studio color scheme.">
  
-	<!-- tango palette -->
+	<!-- vs.net palette -->
 	<Color name="comment-green" value="#008000"/>
 	<Color name="keyword-blue" value="#0000ff"/>
 	<Color name="skyblue" value="#204a87"/>
@@ -35,70 +35,50 @@
 	<Color name="aluminium6" value="#2e3436"/>
 	
 	<!-- environment -->
-	<Style name="text" color="black"/>
-	<Style name="caret" color="black"/>
-	<Style name="caretForeground" color="white"/>
-	<Style name="background" color="white"/>
-	<Style name="selectedBackground" color="#0a246a"/>
-	<Style name="selectedForeground" color="white"/>
+	<Style name="text" color="black" bgColor="white"/>
+	<Style name="text.selection" color="white" bgColor="#0a246a"/>
+	<Style name="text.background.searchresult" color="yellow"/>
 	
-	<Style name="lineMarker" color="aluminium1"/>
-	<Style name="ruler" color="aluminium3"/>
-	<Style name="whitespaces" color="#2b91af"/>
-	<Style name="invalidLines" color="#cc0000"/>
+	<Style name="text.link" color="skyblue"/>
 	
-	<Style name="lineNumber" color="#2b91af"/>
-	<Style name="lineNumberHighlighted" color="#2b91af"/>
-	<Style name="lineNumberBg" color="white"/>
+	<Style name="caret" color="black" bgColor="white"/>
 	
-	<Style name="iconBar" color="aluminium1"/>
-	<Style name="iconBarSeperator" color="aluminium3"/>
+	<Style name="marker.line" color="aluminium1"/>
 	
-	<Style name="foldLine" color="aluminium3"/>
-	<Style name="foldBg" color="white"/>
-	<Style name="foldLineHighlighted" color="aluminium5"/>
-	<Style name="foldToggleMarker" color="black"/>
+	<Style name="marker.ruler" color="aluminium3"/>
+	<Style name="marker.whitespace" color="#2b91af"/>
+	<Style name="marker.invalidline" color="#cc0000"/>
+	<Style name="marker.bracket" color="aluminium4" bgColor="aluminium1"/>
 	
-	<Style name="bracketHighlightRectangle" color="aluminium4"/>
-	<Style name="bracketHighlightBg" color="aluminium1"/>
+	<Style name="marker.bookmark.color1" color="black"/>
+	<Style name="marker.bookmark.color2" color="#bfd2f9"/>
 	
-	<Style name="bookmarkColor1" color="black"/>
-	<Style name="bookmarkColor2" color="#bfd2f9"/>
+	<Style name="linenumber" color="#2b91af" bgColor="white"/>
+	<Style name="linenumber.highlight" color="#2b91af"/>
+	
+	<Style name="iconbar" color="aluminium1"/>
+	<Style name="iconbar.separator" color="aluminium3"/>
+	
+	<Style name="fold" color="aluminium3" bgColor="white"/>
+	<Style name="fold.highlight" color="aluminium5"/>
+	<Style name="fold.togglemarker" color="black"/>
 	
 	<!-- highlighting -->
 	<Style name="comment" color="comment-green"/>
-	<Style name="comment.keyword.todo" color="comment-green" weight="italic" />
-	<Style name="comment.keyword" color="comment-green" weight="bold" />
-	<Style name="comment.tag" color="comment-green"/>
 
-	<Style name="link" color="skyblue"/>
-	
-	<Style name="digit" color="black"/>
-	<Style name="string" color="#a31515"/>
-	<Style name="punctuation" color="black"/>
-	
-	<Style name="keyword.namespace" color="blue"/>
-	<Style name="keyword.property" color="blue"/>
-	<Style name="keyword.modifier" color="blue"/>
-	<Style name="keyword.type" color="blue"/>
-	<Style name="constant.language.void" color="blue"/>
-	<Style name="keyword.declaration" color="blue"/>
-	
-	<Style name="keyword.access" color="blue" weight="bold"/>
-	
-	<Style name="keyword.operator" color="blue"/>
-	<Style name="keyword.selection" color="blue"/>
-	<Style name="keyword.iteration" color="blue"/>
-	<Style name="keyword.jump" color="blue"/>
-	<Style name="keyword.context" color="blue"/>
-	<Style name="keyword.exceptions" color="blue"/>
-	<Style name="constant.language" color="blue"/>
-	<Style name="keyword.parameter" color="blue"/>
-	<Style name="keyword.operator.declaration" color="blue"/>
-	<Style name="keyword.misc" color="blue"/>
-	
 	<Style name="text.preprocessor" color="purple"/>
-	<Style name="text.preprocessor.keyword" color="purple"/>
-	
 	<Style name="text.markup" color="skyblue"/>
+	
+	<Style name="constant" color="black"/>
+	<Style name="constant.language" color="keyword-blue"/>
+
+	<Style name="string" color="#a31515"/>
+	<Style name="string.single" color="#a31515"/>
+	<Style name="string.double" color="#a31515"/>
+	<Style name="string.other" color="#a31515"/>
+	
+	<Style name="keyword" color="keyword-blue">
+		<Style name="access" weight="bold"/>
+	</Style>
+	
 </EditorStyle>

@@ -410,7 +410,7 @@ namespace Mono.TextEditor
 			// When this is not set a white square is drawn when the drag widget is moved
 			// when the bg color is differs from the color style bg color (e.g. oblivion style)
 			if (this.textEditorData.ColorStyle != null) 
-				this.ModifyBg (StateType.Normal, this.textEditorData.ColorStyle.Background);
+				this.ModifyBg (StateType.Normal, this.textEditorData.ColorStyle.Default.BackgroundColor);
 			
 			iconMargin.IsVisible   = Options.ShowIconMargin;
 			gutterMargin.IsVisible     = Options.ShowLineNumberMargin;

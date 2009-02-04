@@ -66,16 +66,13 @@
 	<Color name="accent_dark_violet"       value="#6600cc"/>
 	
 	<!-- environment -->
-	<Style name="text" color="black"/>
-	<Style name="text.background" color="white"/>
-	<Style name="text.background.selection" color="black"/>
+	<Style name="text" color="black" bgColor="white"/>
+	<Style name="text.selection" color="human_highlight" bgColor="black"/>
 	<Style name="text.background.searchresult" color="yellow"/>
 	
-	<Style name="text.selection" color="human_highlight"/>
 	<Style name="text.link" color="blue"/>
 	
-	<Style name="caret" color="black"/>
-	<Style name="caret.foreground" color="white"/>
+	<Style name="caret" color="black" bgcolor="white"/>
 	
 	<Style name="marker.line" color="accent_yellow_highlight"/>
 	<Style name="marker.line.changed" color="yellow"/>	
@@ -84,8 +81,8 @@
 	<Style name="marker.ruler" color="accent_blue_highlight"/>
 	<Style name="marker.whitespace" color="human"/>
 	<Style name="marker.invalidline" color="accent_red_base"/>
-	<Style name="marker.bracket" color="environmental_blue_medium"/>
-	<Style name="marker.bracket.background" color="environmental_blue_highlight"/>
+	<Style name="marker.bracket" color="environmental_blue_medium" bgColor="environmental_blue_highlight"/>
+	
 	<Style name="marker.bookmark.color1" color="human_highlight"/>
 	<Style name="marker.bookmark.color2" color="human_base"/>
 	
@@ -110,15 +107,13 @@
 	<Style name="marker.debug.currentline.border" color=""/>
 	-->
 		
-	<Style name="linenumber" color="human"/>
+	<Style name="linenumber" color="human" bgColor="white"/>
 	<Style name="linenumber.highlight" color="human_base"/>
-	<Style name="linenumber.background" color="white"/>
 	
 	<Style name="iconbar" color="human_highlight"/>
 	<Style name="iconbar.separator" color="human_base"/>
 
-	<Style name="fold" color="human"/>
-	<Style name="fold.background" color="white"/>
+	<Style name="fold" color="human" bgColor="white"/>
 	<Style name="fold.highlight" color="environmental_shadow"/>
 	<Style name="fold.togglemarker" color="black"/>
 	
