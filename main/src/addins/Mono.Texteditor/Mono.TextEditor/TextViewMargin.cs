@@ -1260,7 +1260,6 @@ namespace Mono.TextEditor
 				}
 				WasInLine = xPos >= visualXPos;
 				measureLayout.Dispose ();
-				System.Console.WriteLine("col:" + column);
 				return new DocumentLocation (lineNumber, column);
 			}
 		}
