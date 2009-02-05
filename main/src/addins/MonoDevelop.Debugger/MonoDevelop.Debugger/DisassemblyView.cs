@@ -267,7 +267,7 @@ namespace MonoDevelop.Debugger
 			foreach (AssemblyLine li in lines) {
 				sb.AppendFormat ("0x{0:x}   {1}\n", li.Address, li.Code);
 			}
-			editor.Document.Insert (offset, sb.ToString ());
+			editor.Insert (offset, sb.ToString ());
 			editor.Document.CommitUpdateAll ();
 			if (offset == 0)
 				this.lines.InsertRange (0, lines);
