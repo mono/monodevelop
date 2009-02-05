@@ -212,7 +212,6 @@ namespace Mono.TextEditor
 			
 			if (!convertTabToSpaces && !data.Options.AllowTabsAfterNonTabs) {
 				for (int i = 1; i < data.Caret.Column; i++) {
-					System.Console.WriteLine((data.Caret.Offset - i) + " --> " + (int)data.Document.GetCharAt (data.Caret.Offset - i));
 					if (data.Document.GetCharAt (data.Caret.Offset - i) != '\t') {
 						convertTabToSpaces = true;
 						break;

@@ -141,12 +141,15 @@ namespace Mono.TextEditor
 			StringBuilder sb = new StringBuilder ();
 			if (value != null) {
 				bool convertTabs = Options.TabsToSpaces;
+				DocumentLocation loc = Document.OffsetToLocation (offset);
 				for (int i = 0; i < value.Length; i++) {
 					char ch = value[i];
 					switch (ch) {
 					case '\t':
 						if (convertTabs) {
-							sb.Append (new string (' ', Options.TabSize));
+							int tabWidth = TextViewMargin.GetNextTabstop (this, loc.Column) - loc.Column;
+							sb.Append (new string (' ', tabWidth));
+							loc.Column += tabWidth;
 						} else 
 							goto default;
 						break;
@@ -156,9 +159,12 @@ namespace Mono.TextEditor
 						goto case '\n';
 					case '\n':
 						sb.Append (EolMarker);
+						loc.Line++;
+						loc.Column = 0;
 						break;
 					default:
 						sb.Append (ch);
+						loc.Column++;
 						break;
 					}
 				}
