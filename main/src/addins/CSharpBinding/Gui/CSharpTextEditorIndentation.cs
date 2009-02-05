@@ -279,16 +279,16 @@ namespace MonoDevelop.CSharpBinding.Gui
 			    (nlwsp < line.Length && line[nlwsp] == '*')) {
 				// Possibly replace the indent
 				newIndent = ctx.ThisLineIndent;
-				
+				int newIndentLength = newIndent.Length;
 				if (newIndent != curIndent) {
 					Editor.DeleteText (pos, nlwsp);
-					Editor.InsertText (pos, newIndent);
+					newIndentLength = Editor.InsertText (pos, newIndent);
 					
 					// Engine state is now invalid
 					stateTracker.ResetEngineToPosition (pos);
 				}
 				
-				pos += newIndent.Length;
+				pos += newIndentLength;
 			} else {
 				pos += curIndent.Length;
 			}

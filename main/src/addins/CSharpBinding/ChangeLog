@@ -1,3 +1,9 @@
+2009-02-05  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/CSharpTextEditorIndentation.cs: fixed "Bug 472714 -
+	  MonoDevelop automatic indentation does not follow "Convert
+	  tabs to spaces" option".
+
 2009-02-04  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Gui/MemberCompletionData.cs: Better sorting of overloads.
