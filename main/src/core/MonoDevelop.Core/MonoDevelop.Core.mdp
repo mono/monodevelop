@@ -116,6 +116,7 @@
     <File name="MonoDevelop.Core/TargetFramework.cs" subtype="Code" buildaction="Compile" />
     <File name="frameworks.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="MonoDevelop.Core.ProgressMonitoring/AsyncOperation.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.AddIns/PackageInstalledCondition.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
