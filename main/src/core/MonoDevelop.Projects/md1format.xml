@@ -7,7 +7,7 @@
 		<ItemProperty member="CombineConfigurations" name="Configurations" />
 		<ItemMember name="StartMode" type="MonoDevelop.Projects.Formats.MD1.CombineStartupMode"/>
 		<ItemProperty member="StartMode" name="StartMode" />
-		<ItemProperty member="Policies" />
+		<ItemProperty member="Policies" skipEmpty="true" />
 	</DataItem>
 	<DataItem class = "MonoDevelop.Projects.SolutionFolder" name="SolutionFolder">
 		<ItemProperty member="name" />
