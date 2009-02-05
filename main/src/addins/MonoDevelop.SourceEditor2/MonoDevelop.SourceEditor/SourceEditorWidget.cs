@@ -964,7 +964,7 @@ namespace MonoDevelop.SourceEditor
 			
 			Document.BeginAtomicUndo ();
 			foreach (LineSegment line in TextEditor.SelectedLines) {
-				Document.Insert (line.Offset, commentTag);
+				TextEditor.Insert (line.Offset, commentTag);
 			}
 			if (TextEditor.IsSomethingSelected) {
 				if (TextEditor.SelectionAnchor < TextEditor.Caret.Offset) {
@@ -1008,7 +1008,7 @@ namespace MonoDevelop.SourceEditor
 				string trimmedText = text.TrimStart ();
 				int length = 0;
 				if (trimmedText.StartsWith (commentTag)) {
-					Document.Remove (line.Offset + (text.Length - trimmedText.Length), commentTag.Length);
+					TextEditor.Remove (line.Offset + (text.Length - trimmedText.Length), commentTag.Length);
 					length = commentTag.Length;
 				}
 				last = length;

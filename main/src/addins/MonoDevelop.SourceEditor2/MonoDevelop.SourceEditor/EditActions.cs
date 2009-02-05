@@ -94,7 +94,7 @@ namespace MonoDevelop.SourceEditor
 					int nextCharOffset = GetNextNonWsCharOffset (data, data.Caret.Offset);
 					if (nextCharOffset >= 0 && closing[idx] == data.Document.GetCharAt (nextCharOffset)) {
 						bool updateToEnd = data.Document.OffsetToLineNumber (nextCharOffset) != data.Caret.Line;
-						data.Document.Remove (data.Caret.Offset, nextCharOffset - data.Caret.Offset + 1);
+						data.Remove (data.Caret.Offset, nextCharOffset - data.Caret.Offset + 1);
 						if (updateToEnd)
 							data.Document.CommitLineToEndUpdate (data.Caret.Line);
 					}

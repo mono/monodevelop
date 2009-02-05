@@ -558,9 +558,9 @@ namespace MonoDevelop.SourceEditor
 			}
 			set {
 				TextEditor.DeleteSelectedText ();
-				Document.Insert (TextEditor.Caret.Offset, value);
-				TextEditor.SelectionRange = new Segment (TextEditor.Caret.Offset, value.Length);
-				TextEditor.Caret.Offset += value.Length; 
+				int length = TextEditor.Insert (TextEditor.Caret.Offset, value);
+				TextEditor.SelectionRange = new Segment (TextEditor.Caret.Offset, length);
+				TextEditor.Caret.Offset += length; 
 			}
 		}
 		protected virtual void OnCaretPositionSet (EventArgs args)
@@ -665,15 +665,16 @@ namespace MonoDevelop.SourceEditor
 		#endregion
 		
 		#region IEditableTextFile
-		public void InsertText (int position, string text)
+		public int InsertText (int position, string text)
 		{
-			this.widget.TextEditor.Document.Insert (position, text);
+			int length = this.widget.TextEditor.Insert (position, text);
 			if (text != null && this.widget.TextEditor.Caret.Offset >= position) 
-				this.widget.TextEditor.Caret.Offset += text.Length;
+				this.widget.TextEditor.Caret.Offset += length;
+			return length;
 		}
 		public void DeleteText (int position, int length)
 		{
-			this.widget.TextEditor.Document.Remove (position, length);
+			this.widget.TextEditor.Remove (position, length);
 			if (this.widget.TextEditor.Caret.Offset >= position) 
 				this.widget.TextEditor.Caret.Offset -= length;
 		}
@@ -838,7 +839,7 @@ namespace MonoDevelop.SourceEditor
 			}
 			int length = String.IsNullOrEmpty (partial_word) ? 0 : partial_word.Length;
 			
-			this.widget.TextEditor.Document.Replace (ctx.TriggerOffset, length, complete_word);
+			this.widget.TextEditor.Replace (ctx.TriggerOffset, length, complete_word);
 			this.widget.TextEditor.Caret.Offset = ctx.TriggerOffset + idx;
 		}
 		
@@ -966,7 +967,7 @@ namespace MonoDevelop.SourceEditor
 					throw new InvalidOperationException ();
 				if (view.TextEditor.IsSomethingSelected)
 					view.TextEditor.ClearSelection ();
-				view.Document.Replace (offset, length, pattern);
+				view.TextEditor.Replace (offset, length, pattern);
 			}
 			
 			[FreeDispatch]
@@ -993,7 +994,7 @@ namespace MonoDevelop.SourceEditor
 			{
 				if (offset == -1) {
 					sarchEngine = new BasicSearchEngine ();
-					sarchEngine.Document = view.TextEditor.Document;
+					sarchEngine.TextEditorData = view.TextEditor.GetTextEditorData ();
 					SearchRequest req = new SearchRequest ();
 					req.SearchPattern = options.SearchPattern;
 					req.CaseSensitive = !options.IgnoreCase;

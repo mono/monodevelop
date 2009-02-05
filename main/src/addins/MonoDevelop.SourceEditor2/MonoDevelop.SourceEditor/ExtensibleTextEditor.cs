@@ -348,7 +348,7 @@ namespace MonoDevelop.SourceEditor
 				if (count > 0) {
 					string openBrackets = "{[('\"";
 					if (openBrackets.Contains (ch.ToString()))
-						Document.Insert (Caret.Offset, closingBrace.ToString());
+						Insert (Caret.Offset, closingBrace.ToString());
 				}
 			}
 			Document.EndAtomicUndo ();
