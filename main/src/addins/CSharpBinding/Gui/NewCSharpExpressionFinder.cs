@@ -48,11 +48,15 @@ namespace MonoDevelop.CSharpBinding.Gui
 		{
 			// find expression on left hand side of the assignment
 			string documentToCursor = editor.GetText (0, editor.CursorPosition);
-			int pos = documentToCursor.LastIndexOf("+=");
-			if (pos <= 0)
-				pos = documentToCursor.LastIndexOf("-=");
-			if (pos <= 0)
-				pos = documentToCursor.LastIndexOf("=");
+			int pos = -1;
+			for (int i = documentToCursor.Length - 1; i >= 0; i--) {
+				if (documentToCursor [i] == '=') {
+					if (i > 0 && (documentToCursor [i - 1] == '+' || documentToCursor [i - 1] == '-'))
+						i--;
+					pos = i;
+					break;
+				}
+			}
 			if (pos <= 0)
 				return null;
 			
@@ -1127,3 +1131,22 @@ namespace MonoDevelop.CSharpBinding.Gui
 		#endregion
 	}
 }
+
+/*		public ExpressionContext FindExactContextForNewCompletion(TextEditor editor, ICompilationUnit unit, string fileName, IType callingType)
+		{
+			// find expression on left hand side of the assignment
+			string documentToCursor = editor.GetText (0, editor.CursorPosition);
+			
+			if (pos <= 0)
+				return null;
+			
+			// check if new +=/-=/= is right before "new"
+			for (int i = pos; i < editor.CursorPosition; i++) {
+				char ch = documentToCursor[i];
+				if (Char.IsWhiteSpace (ch))
+					continue;
+				
+				if (ch != '=' && ch != '+' && ch != '-' && ch != 'n' && ch != 'e' && ch != 'w')
+					return null;
+			}
+*/

@@ -229,7 +229,7 @@ namespace MonoDevelop.CSharpBinding
 				}
 				
 				if (mx is IMethod && my is IMethod) {
-					IMethod mmx = (IMethod) mx, mmy = (IMethod) my;
+					IMethod mmx = (IMethod) mx;//, mmy = (IMethod) my;
 					result = (mmx.TypeParameters.Count).CompareTo (mmx.TypeParameters.Count);
 					if (result != 0)
 						return result;

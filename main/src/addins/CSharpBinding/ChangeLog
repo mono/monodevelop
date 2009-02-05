@@ -1,5 +1,13 @@
 2009-02-05  Mike Krüger  <mkrueger@novell.com>
 
+	* gtk-gui/gui.stetic:
+	* Gui/MemberCompletionData.cs: 
+
+	* Gui/NewCSharpExpressionFinder.cs: fixed 'Bug 471937 - Code
+	  completion of 'new' showing invorrect entries'.
+
+2009-02-05  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/CSharpTextEditorIndentation.cs: fixed "Bug 472714 -
 	  MonoDevelop automatic indentation does not follow "Convert
 	  tabs to spaces" option".
