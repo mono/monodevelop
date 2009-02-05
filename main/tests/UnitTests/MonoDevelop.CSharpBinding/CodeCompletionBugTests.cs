@@ -1154,5 +1154,33 @@ public class AClass
 			
 			Assert.IsNotNull (provider.Find ("Test"), "method 'Test' not found");
 		}
+		
+		/// <summary>
+		/// Bug 471937 - Code completion of 'new' showing invorrect entries 
+		/// </summary>
+		[Test()]
+		public void TestBug471937 ()
+		{
+			CompletionDataList provider = CreateCtrlSpaceProvider (
+@"
+class B
+{
+}
+
+class A
+{
+	public void Test()
+	{
+		int i = 5;
+		i += 5;
+		$A a = new $
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			
+			Assert.IsNull (provider.Find ("B"), "class 'B' found, but shouldn'tj.");
+		}
+
 	}
 }
