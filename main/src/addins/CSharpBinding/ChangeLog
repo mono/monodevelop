@@ -1,3 +1,10 @@
+2009-02-05  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Gui/MemberCompletionData.cs: Avoid an InvalidCastException
+	  in the case where an overloads's member is not the same type
+	  as the main member. Not sure why this would happen, but it
+	  just did.
+
 2009-02-05  Mike Krüger  <mkrueger@novell.com>
 
 	* gtk-gui/gui.stetic:

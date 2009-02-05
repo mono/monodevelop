@@ -274,10 +274,10 @@ namespace MonoDevelop.CSharpBinding
 					DisplayFlags &= ~DisplayFlags.Obsolete;
 				
 				//make sure that if there are generic overloads, we show a generic signature
-				if (overload.member is IType && ((IType)member).TypeParameters.Count == 0 && ((IType)overload.member).TypeParameters.Count > 0) {
+				if (overload.member is IType && member is IType && ((IType)member).TypeParameters.Count == 0 && ((IType)overload.member).TypeParameters.Count > 0) {
 					displayText = overload.DisplayText;
 				}
-				if (overload.member is IMethod && ((IMethod)member).TypeParameters.Count == 0 && ((IMethod)overload.member).TypeParameters.Count > 0) {
+				if (overload.member is IMethod && member is IMethod && ((IMethod)member).TypeParameters.Count == 0 && ((IMethod)overload.member).TypeParameters.Count > 0) {
 					displayText = overload.DisplayText;
 				}
 			}
