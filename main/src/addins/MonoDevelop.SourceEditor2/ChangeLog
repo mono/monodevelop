@@ -1,5 +1,10 @@
 2009-02-05  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/StyledSourceEditorOptions.cs:
+	  implement missing members.
+
+2009-02-05  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/EditActions.cs:
 	* MonoDevelop.SourceEditor/SourceEditorView.cs:
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs:

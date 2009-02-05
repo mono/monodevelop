@@ -66,6 +66,18 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
+		public bool OverrideDocumentEolMarker {
+			get {
+				return DefaultSourceEditorOptions.Instance.OverrideDocumentEolMarker;
+			}
+		}
+		
+		public string DefaultEolMarker {
+			get {
+				return DefaultSourceEditorOptions.Instance.DefaultEolMarker;
+			}
+		}
+		
 		public int RulerColumn {
 			get {
 				return currentPolicy != null
