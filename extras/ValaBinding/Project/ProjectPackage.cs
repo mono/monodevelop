@@ -234,7 +234,7 @@ namespace MonoDevelop.ValaBinding
 				"/usr/local/share/pkgconfig"
 			};
 				
-			dirs.AddRange(pkg_var.Split(new char[]{System.IO.Path.PathSeparator}, StringSplitOptions.RemoveEmptyEntries));
+			if (null != pkg_var){ dirs.AddRange(pkg_var.Split(new char[]{System.IO.Path.PathSeparator}, StringSplitOptions.RemoveEmptyEntries)); }
 			
 			foreach(string dir in staticPaths) {
 				if(!dirs.Contains(dir)){ dirs.Add(dir); }
