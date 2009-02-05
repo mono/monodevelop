@@ -35,7 +35,7 @@ namespace Mono.TextEditor
 			set;
 		}
 		
-		Document Document {
+		TextEditorData TextEditorData {
 			get;
 			set;
 		}
@@ -58,14 +58,14 @@ namespace Mono.TextEditor
 	public abstract class AbstractSearchEngine : ISearchEngine
 	{
 		protected SearchRequest searchRequest;
-		protected Document document;
+		protected TextEditorData textEditorData;
 		
-		public Document Document {
+		public TextEditorData TextEditorData {
 			get {
-				return document;
+				return textEditorData;
 			}
 			set {
-				document = value;
+				textEditorData = value;
 			}
 		}
 		
@@ -138,20 +138,20 @@ namespace Mono.TextEditor
 		
 		public override SearchResult GetMatchAt (int offset)
 		{
-			if (offset + searchRequest.SearchPattern.Length <= document.Length && compiledPattern.Length > 0) {
+			if (offset + searchRequest.SearchPattern.Length <= this.textEditorData.Document.Length && compiledPattern.Length > 0) {
 				if (searchRequest.CaseSensitive) {
 					for (int i = 0; i < compiledPattern.Length; i++) {
-						if (document.GetCharAt (offset + i) != compiledPattern[i]) 
+						if (this.textEditorData.Document.GetCharAt (offset + i) != compiledPattern[i]) 
 							return null;
 					}
 				} else {
 					for (int i = 0; i < compiledPattern.Length; i++) {
-						if (System.Char.ToUpper (document.GetCharAt (offset + i)) != compiledPattern[i]) 
+						if (System.Char.ToUpper (this.textEditorData.Document.GetCharAt (offset + i)) != compiledPattern[i]) 
 							return null;
 					}
 				}
 				if (searchRequest.WholeWordOnly) {
-					if (!document.IsWholeWordAt (offset, compiledPattern.Length))
+					if (!this.textEditorData.Document.IsWholeWordAt (offset, compiledPattern.Length))
 						return null;
 				}
 				return new SearchResult (offset, compiledPattern.Length, false);
@@ -161,8 +161,8 @@ namespace Mono.TextEditor
 		
 		public override SearchResult SearchForward (int fromOffset)
 		{
-			for (int i = 0; i < document.Length - searchRequest.SearchPattern.Length; i++) {
-				int offset = (fromOffset + i) % document.Length;
+			for (int i = 0; i < this.textEditorData.Document.Length - searchRequest.SearchPattern.Length; i++) {
+				int offset = (fromOffset + i) % this.textEditorData.Document.Length;
 				if (IsMatchAt (offset))
 					return new SearchResult (offset, searchRequest.SearchPattern.Length, offset < fromOffset);
 			}
@@ -171,8 +171,8 @@ namespace Mono.TextEditor
 		
 		public override SearchResult SearchBackward (int fromOffset)
 		{
-			for (int i = 0; i < document.Length - searchRequest.SearchPattern.Length; i++) {
-				int offset = (fromOffset + document.Length * 2 - 1- i) % document.Length;
+			for (int i = 0; i < this.textEditorData.Document.Length - searchRequest.SearchPattern.Length; i++) {
+				int offset = (fromOffset + this.textEditorData.Document.Length * 2 - 1- i) % this.textEditorData.Document.Length;
 				if (IsMatchAt (offset))
 					return new SearchResult (offset, searchRequest.SearchPattern.Length, offset > fromOffset);
 			}
@@ -181,7 +181,7 @@ namespace Mono.TextEditor
 		
 		public override void Replace (SearchResult result, string pattern)
 		{
-			document.Replace (result.Offset, result.Length, pattern);
+			textEditorData.Replace (result.Offset, result.Length, pattern);
 		}
 	}
 	
@@ -214,7 +214,7 @@ namespace Mono.TextEditor
 		{
 			if (regex == null || String.IsNullOrEmpty (searchRequest.SearchPattern))
 				return null;
-			System.Text.RegularExpressions.Match match = regex.Match (document.Text, offset);
+			System.Text.RegularExpressions.Match match = regex.Match (this.textEditorData.Document.Text, offset);
 			if (match != null && match.Success && match.Index == offset) {
 				return new SearchResult (offset, match.Length, false);
 			}
@@ -225,7 +225,7 @@ namespace Mono.TextEditor
 		{
 			if (regex == null || String.IsNullOrEmpty (searchRequest.SearchPattern))
 				return null;
-			System.Text.RegularExpressions.Match match = regex.Match (document.Text, offset, length);
+			System.Text.RegularExpressions.Match match = regex.Match (this.textEditorData.Document.Text, offset, length);
 			if (match != null && match.Success && match.Index == offset) {
 				return new SearchResult (offset, match.Length, false);
 			}
@@ -236,12 +236,12 @@ namespace Mono.TextEditor
 		{
 			if (regex == null)
 				return null;
-			System.Text.RegularExpressions.Match match = regex.Match (document.Text, fromOffset);
+			System.Text.RegularExpressions.Match match = regex.Match (this.textEditorData.Document.Text, fromOffset);
 			if (match.Success) {
 				return new SearchResult (match.Index, 
 				                         match.Length, false);
 			}
-			match = regex.Match (document.Text, 0, fromOffset);
+			match = regex.Match (this.textEditorData.Document.Text, 0, fromOffset);
 			if (match.Success) {
 				return new SearchResult (match.Index, 
 				                         match.Length, true);
@@ -255,7 +255,7 @@ namespace Mono.TextEditor
 				return null;
 			System.Text.RegularExpressions.Match found = null; 
 			System.Text.RegularExpressions.Match last = null; 
-			foreach (System.Text.RegularExpressions.Match match in regex.Matches (document.Text)) {
+			foreach (System.Text.RegularExpressions.Match match in regex.Matches (this.textEditorData.Document.Text)) {
 				if (match.Index < fromOffset) {
 					found = match;
 				}
@@ -275,8 +275,8 @@ namespace Mono.TextEditor
 		
 		public override void Replace (SearchResult result, string pattern)
 		{
-			string text = document.GetTextAt (result);
-			document.Replace (result.Offset, result.Length, regex.Replace (text, pattern));
+			string text = this.textEditorData.Document.GetTextAt (result);
+			this.textEditorData.Replace (result.Offset, result.Length, regex.Replace (text, pattern));
 		}
 		
 	}

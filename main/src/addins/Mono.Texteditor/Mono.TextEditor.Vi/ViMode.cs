@@ -597,7 +597,7 @@ namespace Mono.TextEditor.Vi
 
 			try {
 				string newline = Regex.Replace (line, match.Groups["pattern"].Value, replacement, options);
-				Editor.Document.Replace (segment.Offset, line.Length, newline);
+				Editor.GetTextEditorData ().Replace (segment.Offset, line.Length, newline);
 				if (Data.IsSomethingSelected)
 					Data.ClearSelection ();
 				lastPattern = match.Groups["pattern"].Value;

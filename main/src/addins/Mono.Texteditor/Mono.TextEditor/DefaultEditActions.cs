@@ -68,7 +68,7 @@ namespace Mono.TextEditor
 				return 0;
 			char ch = data.Document.GetCharAt (line.Offset); 
 			if (ch == '\t') {
-				data.Document.Remove (line.Offset, 1);
+				data.Remove (line.Offset, 1);
 				return 1;
 			} else if (ch == ' ') {
 				int removeCount = 0;
@@ -84,7 +84,7 @@ namespace Mono.TextEditor
 						break;
 					}
 				}
-				data.Document.Remove (line.Offset, removeCount);
+				data.Remove (line.Offset, removeCount);
 				return removeCount;
 			}
 			return 0;
@@ -167,7 +167,7 @@ namespace Mono.TextEditor
 			int         anchorColumn = data.IsSomethingSelected ? data.SelectionAnchor - anchorLine.Offset : -1;
 			data.Document.BeginAtomicUndo ();
 			foreach (LineSegment line in data.SelectedLines) {
-				data.Document.Insert (line.Offset, data.Options.IndentationString);
+				data.Insert (line.Offset, data.Options.IndentationString);
 			}
 			if (data.IsSomethingSelected) {
 				if (data.SelectionAnchor < data.Caret.Offset) {
@@ -224,8 +224,8 @@ namespace Mono.TextEditor
 				int tabWidth = TextViewMargin.GetNextTabstop (data, data.Caret.Column) - data.Caret.Column;
 				indentationString = new string (' ', tabWidth);
 			}
-			data.Document.Insert (data.Caret.Offset, indentationString);
-			data.Caret.Column += indentationString.Length;
+			int length = data.Insert (data.Caret.Offset, indentationString);
+			data.Caret.Column += length;
 			data.Document.EndAtomicUndo ();
 		}
 		
@@ -258,7 +258,7 @@ namespace Mono.TextEditor
 					int offset = line.Offset + line.EditableLength - whitespaces;
 					if (data.Caret.Offset > offset)
 						data.Caret.Offset -= whitespaces;
-					data.Document.Remove (offset, whitespaces);
+					data.Remove (offset, whitespaces);
 				}
 			}
 			
@@ -273,7 +273,7 @@ namespace Mono.TextEditor
 				newLine += data.Document.GetTextBetween (line.Offset, line.Offset + i);
 			}
 			
-			data.Document.Insert (data.Caret.Offset, newLine);
+			data.Insert (data.Caret.Offset, newLine);
 			data.Caret.Location = new DocumentLocation (data.Caret.Line + 1, caretColumnOffset);
 			data.Document.EndAtomicUndo ();
 		}

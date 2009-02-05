@@ -56,7 +56,7 @@ namespace Mono.TextEditor
 			int oldLine = data.Caret.Line;
 			int offset = data.FindPrevWordOffset (data.Caret.Offset);
 			if (data.Caret.Offset != offset && data.CanEdit (oldLine) && data.CanEdit (data.Caret.Line)) {
-				data.Document.Remove (offset, data.Caret.Offset - offset);
+				data.Remove (offset, data.Caret.Offset - offset);
 				data.Caret.Offset = offset;
 				if (oldLine != data.Caret.Line)
 					data.Document.CommitLineToEndUpdate (data.Caret.Line);
@@ -68,7 +68,7 @@ namespace Mono.TextEditor
 			int oldLine = data.Caret.Line;
 			int offset = data.FindNextWordOffset (data.Caret.Offset);
 			if (data.Caret.Offset != offset && data.CanEdit (oldLine) && data.CanEdit (data.Caret.Line))  {
-				data.Document.Remove (data.Caret.Offset, offset - data.Caret.Offset);
+				data.Remove (data.Caret.Offset, offset - data.Caret.Offset);
 				data.Document.CommitLineToEndUpdate (data.Caret.Line);
 			}
 		}
@@ -78,7 +78,7 @@ namespace Mono.TextEditor
 			if (data.Document.LineCount <= 1 || !data.CanEdit (data.Caret.Line))
 				return;
 			LineSegment line = data.Document.GetLine (data.Caret.Line);
-			data.Document.Remove (line.Offset, line.Length);
+			data.Remove (line.Offset, line.Length);
 			data.Document.CommitLineToEndUpdate (data.Caret.Line);
 			data.Caret.CheckCaretPosition ();
 		}
@@ -90,10 +90,10 @@ namespace Mono.TextEditor
 			LineSegment line = data.Document.GetLine (data.Caret.Line);
 			if (data.Caret.Column == line.EditableLength) {
 				// Nothing after the cursor, delete the end-of-line sequence
-				data.Document.Remove (line.Offset + data.Caret.Column, line.Length - data.Caret.Column);
+				data.Remove (line.Offset + data.Caret.Column, line.Length - data.Caret.Column);
 			} else {
 				// Delete from cursor position to the end of the line
-				data.Document.Remove (line.Offset + data.Caret.Column, line.EditableLength - data.Caret.Column);
+				data.Remove (line.Offset + data.Caret.Column, line.EditableLength - data.Caret.Column);
 			}
 			data.Document.CommitLineUpdate (data.Caret.Line);
 		}
@@ -117,7 +117,7 @@ namespace Mono.TextEditor
 			if (data.Caret.Offset == line.Offset) {
 				LineSegment lineAbove = data.Document.GetLine (data.Caret.Line - 1);
 				data.Caret.Location = new DocumentLocation (data.Caret.Line - 1, lineAbove.EditableLength);
-				data.Document.Remove (lineAbove.EndOffset - lineAbove.DelimiterLength, lineAbove.DelimiterLength);
+				data.Remove (lineAbove.EndOffset - lineAbove.DelimiterLength, lineAbove.DelimiterLength);
 			} else {
 				removeCharBeforeCaret (data);
 			}
@@ -125,7 +125,7 @@ namespace Mono.TextEditor
 		
 		public static void RemoveCharBeforeCaret (TextEditorData data)
 		{
-			data.Document.Remove (data.Caret.Offset - 1, 1);
+			data.Remove (data.Caret.Offset - 1, 1);
 			data.Caret.Column--;
 		}
 		
@@ -142,12 +142,12 @@ namespace Mono.TextEditor
 			LineSegment line = data.Document.GetLine (data.Caret.Line);
 			if (data.Caret.Column == line.EditableLength) {
 				if (data.Caret.Line < data.Document.LineCount) { 
-					data.Document.Remove (line.EndOffset - line.DelimiterLength, line.DelimiterLength);
+					data.Remove (line.EndOffset - line.DelimiterLength, line.DelimiterLength);
 					if (line.EndOffset == data.Document.Length)
 						line.DelimiterLength = 0;
 				}
 			} else {
-				data.Document.Remove (data.Caret.Offset, 1); 
+				data.Remove (data.Caret.Offset, 1); 
 				data.Document.CommitLineUpdate (data.Caret.Line);
 			}
 		}

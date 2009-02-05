@@ -35,7 +35,7 @@ using System.Linq;
 
 namespace Mono.TextEditor
 {
-	public class Document : AbstractBuffer, IDisposable
+	public class Document : IBuffer, IDisposable
 	{
 		IBuffer      buffer;
 		LineSplitter splitter;
@@ -112,7 +112,7 @@ namespace Mono.TextEditor
 	//	public event EventHandler<LineEventArgs> LineInserted;
 		
 		
-		public override void Dispose ()
+		public void Dispose ()
 		{
 			buffer = buffer.Kill ();
 			splitter = splitter.Kill ();
@@ -133,13 +133,13 @@ namespace Mono.TextEditor
 		}
 		
 		#region Buffer implementation
-		public override int Length {
+		public int Length {
 			get {
 				return this.buffer.Length;
 			}
 		}
 		
-		public override string Text {
+		public string Text {
 			get {
 				return this.buffer.Text;
 			}
@@ -168,7 +168,17 @@ namespace Mono.TextEditor
 			return new BufferedTextReader (this.buffer);
 		}
 		
-		public override void Replace (int offset, int count, string value)
+		void IBuffer.Insert (int offset, string text)
+		{
+			((IBuffer)this).Replace (offset, 0, text);
+		}
+		
+		void IBuffer.Remove (int offset, int count)
+		{
+			((IBuffer)this).Replace (offset, count, null);
+		}
+		
+		void IBuffer.Replace (int offset, int count, string value)
 		{
 			InterruptFoldWorker ();
 //			Mono.TextEditor.Highlighting.SyntaxModeService.WaitForUpdate (true);
@@ -177,6 +187,7 @@ namespace Mono.TextEditor
 			int oldLineCount = this.LineCount;
 			ReplaceEventArgs args = new ReplaceEventArgs (offset, count, value);
 			OnTextReplacing (args);
+			value = args.Value;
 /* insert/repla
 			lock (syncObject) {
 				int endOffset = offset + count;
@@ -216,12 +227,17 @@ namespace Mono.TextEditor
 			return buffer.GetTextAt (startOffset, endOffset - startOffset);
 		}
 		
-		public override string GetTextAt (int offset, int count)
+		public string GetTextAt (int offset, int count)
 		{
 			return buffer.GetTextAt (offset, count);
 		}
 		
-		public override char GetCharAt (int offset)
+		public string GetTextAt (ISegment segment)
+		{
+			return GetTextAt (segment.Offset, segment.Length);
+		}
+		
+		public char GetCharAt (int offset)
 		{
 			return buffer.GetCharAt (offset);
 		}
@@ -370,15 +386,15 @@ namespace Mono.TextEditor
 			public virtual void Undo (Document doc)
 			{
 				if (args.Value != null && args.Value.Length > 0)
-					doc.Remove (args.Offset, args.Value.Length);
+					((IBuffer)doc).Remove (args.Offset, args.Value.Length);
 				if (!String.IsNullOrEmpty (text))
-					doc.Insert (args.Offset, text);
+					((IBuffer)doc).Insert (args.Offset, text);
 				OnUndoDone ();
 			}
 			
 			public virtual void Redo (Document doc)
 			{
-				doc.Replace (args.Offset, args.Count, args.Value);
+				((IBuffer)doc).Replace (args.Offset, args.Count, args.Value);
 				OnRedoDone ();
 			}
 			

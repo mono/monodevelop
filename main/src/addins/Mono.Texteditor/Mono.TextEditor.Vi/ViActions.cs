@@ -130,8 +130,8 @@ namespace Mono.TextEditor.Vi
 				sb.Append (data.Document.GetTextAt (seg).Trim ());
 			}
 			length = (seg.Offset - startOffset) + seg.EditableLength;
-			
-			data.Document.Replace (startOffset, length, sb.ToString ());
+			// TODO: handle conversion issues ? 
+			data.Replace (startOffset, length, sb.ToString ());
 			data.Caret.Offset = lastSpaceOffset;
 		}
 		
@@ -149,7 +149,7 @@ namespace Mono.TextEditor.Vi
 					else if (Char.IsUpper (ch))
 						sb[i] = Char.ToLower (ch);
 				}
-				data.Document.Replace (data.SelectionRange.Offset, data.SelectionRange.Length, sb.ToString ());
+				data.Replace (data.SelectionRange.Offset, data.SelectionRange.Length, sb.ToString ());
 			}
 			else if (data.CanEdit (data.Caret.Line)) {
 				char ch = data.Document.GetCharAt (data.Caret.Offset);
@@ -157,10 +157,10 @@ namespace Mono.TextEditor.Vi
 					ch = Char.ToUpper (ch);
 				else if (Char.IsUpper (ch))
 					ch = Char.ToLower (ch);
-				data.Document.Replace (data.Caret.Offset, 1, new string (ch, 1));
+				int length = data.Replace (data.Caret.Offset, 1, new string (ch, 1));
 				LineSegment seg = data.Document.GetLine (data.Caret.Line);
 				if (data.Caret.Column < seg.EditableLength - 1)
-					data.Caret.Offset++;
+					data.Caret.Offset += length;
 			}
 		}
 	}

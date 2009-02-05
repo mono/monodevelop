@@ -92,10 +92,12 @@ namespace Mono.TextEditor
 				if (Caret.IsInInsertMode || Caret.Column >= line.EditableLength) {
 					string text = Caret.Column > line.EditableLength ? textEditorData.GetVirtualSpaces (Caret.Line, Caret.Column) + ch.ToString() : ch.ToString();
 					int offset = Caret.Offset;
-					Document.Insert (Caret.Offset, text);
-					Caret.Offset = offset + text.Length - 1;
+					int length = textEditorData.Insert (Caret.Offset, text);
+					Caret.Offset = offset + length - 1;
 				} else {
-					Document.Replace (Caret.Offset, 1, ch.ToString());
+					int length = textEditorData.Replace (Caret.Offset, 1, ch.ToString());
+					if (length > 1)
+						Caret.Offset += length - 1;
 				}
 				bool autoScroll = Caret.AutoScrollToCaret;
 				Caret.Column++;

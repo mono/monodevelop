@@ -324,9 +324,8 @@ namespace Mono.TextEditor
 				
 				data.Caret.PreserveSelection = true;
 				
-				data.Document.Insert (insertionOffset, text);
 				//int oldLine = data.Caret.Line;
-				int textLength = text != null ? text.Length : 0;
+				int textLength = data.Insert (insertionOffset, text);
 				result = textLength;
 				if (data.Caret.Offset >= insertionOffset) 
 					data.Caret.Offset += textLength;
@@ -353,10 +352,9 @@ namespace Mono.TextEditor
 			if (data.Caret.Column > line.EditableLength) {
 				int offset = data.Caret.Offset;
 				string text = data.GetVirtualSpaces (data.Caret.Line, data.Caret.Column);
-				data.Document.Insert (data.Caret.Offset, text);
-				data.Caret.Offset = offset + text.Length;
+				int textLength = data.Insert (data.Caret.Offset, text);
+				data.Caret.Offset = offset + textLength;
 			}
-			
 			PasteFrom (Clipboard.Get (CopyOperation.CLIPBOARD_ATOM), data, true, data.IsSomethingSelected ? data.SelectionRange.Offset : data.Caret.Offset);
 		}
 	}

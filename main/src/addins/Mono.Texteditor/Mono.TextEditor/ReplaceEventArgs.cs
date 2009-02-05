@@ -44,7 +44,7 @@ namespace Mono.TextEditor
 		
 		public string Value {
 			get;
-			private set;
+			set;
 		}
 		
 		public ReplaceEventArgs (int offset, int count, string value)

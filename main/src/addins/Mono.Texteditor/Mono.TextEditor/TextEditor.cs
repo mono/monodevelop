@@ -659,7 +659,7 @@ namespace Mono.TextEditor
 		{
 			int offset = Caret.Offset;
 			if (CanEdit (Caret.Line)) {
-				Document.Remove (selection.Offset, selection.Length);
+				textEditorData.Remove (selection.Offset, selection.Length);
 				if (offset >= selection.Offset) {
 					Caret.PreserveSelection = true;
 					Caret.Offset = offset - selection.Length;
@@ -701,7 +701,7 @@ namespace Mono.TextEditor
 					int offset = Caret.Offset;
 					if (selection != null && selection.Offset >= offset)
 						selection = new Segment (selection.Offset + selection_data.Text.Length, selection.Length);
-					Document.Insert (offset, selection_data.Text);
+					textEditorData.Insert (offset, selection_data.Text);
 					Caret.Offset = offset + selection_data.Text.Length;
 					SelectionRange = new Segment (offset, selection_data.Text.Length);
 				}
@@ -1112,6 +1112,21 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		public int Insert (int offset, string value)
+		{
+			return textEditorData.Insert (offset, value);
+		}
+		
+		public void Remove (int offset, int count)
+		{
+			textEditorData.Remove (offset, count);
+		}
+		
+		public int Replace (int offset, int count, string value)
+		{
+			return textEditorData.Replace (offset, count, value);
+		}
+		
 		public void ClearSelection ()
 		{
 			this.textEditorData.ClearSelection ();
@@ -1247,12 +1262,12 @@ namespace Mono.TextEditor
 		
 		public bool Replace (string withPattern)
 		{
-			return textEditorData.Replace (withPattern);
+			return textEditorData.SearchReplace (withPattern);
 		}
 		
 		public int ReplaceAll (string withPattern)
 		{
-			return textEditorData.ReplaceAll (withPattern);
+			return textEditorData.SearchReplaceAll (withPattern);
 		}
 		#endregion
 	

@@ -25,6 +25,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using Gtk;
 
 namespace Mono.TextEditor
@@ -77,8 +78,27 @@ namespace Mono.TextEditor
 				caret.PositionChanged += CaretPositionChanged;
 				this.document.BeginUndo += OnBeginUndo;
 				this.document.EndUndo += OnEndUndo;
+//				this.document.TextReplacing += HandleTextReplacing;
 			}
 		}
+/*
+		void HandleTextReplacing(object sender, ReplaceEventArgs e)
+		{
+			if (Options.TabsToSpaces && !String.IsNullOrEmpty (e.Value)) {
+				StringBuilder sb = new StringBuilder ();
+				for (int i = 0; i < e.Value.Length; i++) {
+					char ch = e.Value[i];
+					if (ch == '\t') {
+						sb.Append (new string (' ', Options.TabSize));
+					} else {
+						sb.Append (ch);
+					}
+				}
+				if (Caret.Offset >= e.Offset) 
+					Caret.Offset += e.Value.Length - sb.Length;
+				e.Value = sb.ToString ();
+			}
+		}*/
 		
 		public ITextEditorOptions Options {
 			get {
@@ -105,13 +125,43 @@ namespace Mono.TextEditor
 			}
 		}
 		
+	
+		public int Insert (int offset, string value)
+		{
+			return Replace (offset, 0, value);
+		}
+		
+		public void Remove (int offset, int count)
+		{
+			Replace (offset, count, null);
+		}
+		
+		public int Replace (int offset, int count, string value)
+		{
+			if (Options.TabsToSpaces && !String.IsNullOrEmpty (value)) {
+				StringBuilder sb = new StringBuilder ();
+				for (int i = 0; i < value.Length; i++) {
+					char ch = value[i];
+					if (ch == '\t') {
+						sb.Append (new string (' ', Options.TabSize));
+					} else {
+						sb.Append (ch);
+					}
+				}
+				value = sb.ToString ();
+			}
+			
+			((IBuffer)document).Replace (offset, count, value);
+			return value != null ? value.Length : 0;
+		}
+			
 		public void InsertAtCaret (string text)
 		{
 			if (String.IsNullOrEmpty (text))
 				return;
 			Document.BeginAtomicUndo ();
-			Document.Insert (Caret.Offset, text);
-			Caret.Offset += text.Length;
+			int length = Insert (Caret.Offset, text);
+			Caret.Offset += length;
 			Document.EndAtomicUndo ();
 		}
 		
@@ -358,7 +408,7 @@ namespace Mono.TextEditor
 				if (!IsSomethingSelected)
 					return;
 				ISegment selection = this.SelectionRange;
-				Document.Replace (selection.Offset, selection.Length, value);
+				Replace (selection.Offset, selection.Length, value);
 				if (this.Caret.Offset > selection.Offset)
 					this.Caret.Offset = selection.Offset + value.Length;
 				this.SelectionRange = new Segment(selection.Offset, value.Length);
@@ -450,7 +500,7 @@ namespace Mono.TextEditor
 			bool needUpdate = Document.OffsetToLineNumber (selection.Offset) != Document.OffsetToLineNumber (selection.EndOffset);
 			if (Caret.Offset > selection.Offset)
 				Caret.Offset -= System.Math.Min (selection.Length, Caret.Offset - selection.Offset);
-			Document.Remove (selection.Offset, selection.Length);
+			Remove (selection.Offset, selection.Length);
 			if (needUpdate)
 				Document.RequestUpdate (new LineToEndUpdate (Document.OffsetToLineNumber (selection.Offset)));
 			document.EndAtomicUndo ();
@@ -472,7 +522,7 @@ namespace Mono.TextEditor
 				return searchEngine;
 			}
 			set {
-				value.Document = document;
+				value.TextEditorData = this;
 				value.SearchRequest = SearchRequest;
 				searchEngine = value;
 			}
@@ -539,7 +589,7 @@ namespace Mono.TextEditor
 			return result;
 		}
 		
-		public bool Replace (string withPattern)
+		public bool SearchReplace (string withPattern)
 		{
 			bool result = false;
 			if (this.IsSomethingSelected) {
@@ -555,7 +605,7 @@ namespace Mono.TextEditor
 			return FindNext () != null || result;
 		}
 		
-		public int ReplaceAll (string withPattern)
+		public int SearchReplaceAll (string withPattern)
 		{
 			int result = 0;
 			Document.BeginAtomicUndo ();
