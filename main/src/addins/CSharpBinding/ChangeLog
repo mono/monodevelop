@@ -1,5 +1,11 @@
 2009-02-04  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Gui/MemberCompletionData.cs: Don't auto-insert <T>. Sort
+	  overloads. Always display <> in the name when there is a
+	  generic overload.
+
+2009-02-04  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Gui/CSharpAmbience.cs: Handle HideGenericParameterNames
 	  flag.
 

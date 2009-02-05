@@ -38,7 +38,7 @@ using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.CSharpBinding
 {
-	public class MemberCompletionData : IActionCompletionData, IOverloadedCompletionData
+	public class MemberCompletionData : IOverloadedCompletionData
 	{
 		IMember member;
 		OutputFlags flags;
@@ -66,7 +66,7 @@ namespace MonoDevelop.CSharpBinding
 		public string DisplayText {
 			get {
 				if (displayText == null)
-					displayText = ambience.GetString (member, flags);
+					displayText = ambience.GetString (member, flags | OutputFlags.HideGenericParameterNames);
 				return displayText; 
 			}
 		}
@@ -90,40 +90,10 @@ namespace MonoDevelop.CSharpBinding
 		{
 			this.flags = flags;
 			this.member = member;
-			this.completionString = ambience.GetString (member, flags | OutputFlags.IncludeGenerics);
+			this.completionString = ambience.GetString (member, flags ^ OutputFlags.IncludeGenerics);
 			DisplayFlags = DisplayFlags.DescriptionHasMarkup;
 			if (member.IsObsolete)
 				DisplayFlags |= DisplayFlags.Obsolete;
-		}
-		
-		public void InsertCompletionText (ICompletionWidget widget, ICodeCompletionContext context)
-		{
-			MonoDevelop.Ide.Gui.Content.IEditableTextBuffer buf = widget as MonoDevelop.Ide.Gui.Content.IEditableTextBuffer;
-			
-			if (buf == null) {
-				LoggingService.LogError ("ICompletionWidget widget is not an IEditableTextBuffer");
-				return;
-			}
-			
-			buf.BeginAtomicUndo ();
-			buf.DeleteText (context.TriggerOffset, Math.Max (buf.CursorPosition - context.TriggerOffset, context.TriggerWordLength));
-			buf.InsertText (context.TriggerOffset, this.CompletionText);
-			buf.CursorPosition = context.TriggerOffset + this.CompletionText.Length;
-			//select any generic parameters e.g. T in <T>
-			int offset = this.CompletionText.IndexOf ('<');
-			
-			if (offset >= 0 && !(member is InstantiatedType)) {
-				int endOffset = offset + 1;
-				while (endOffset < this.CompletionText.Length) {
-					char ch = this.CompletionText[endOffset];
-					if (!Char.IsLetterOrDigit(ch) && ch != '_')
-						break;
-					endOffset++;
-				}
-				buf.CursorPosition = context.TriggerOffset + offset + 1;
-				buf.Select (buf.CursorPosition, context.TriggerOffset + endOffset);
-			}
-			buf.EndAtomicUndo ();
 		}
 		
 		void CheckDescription ()
@@ -242,15 +212,31 @@ namespace MonoDevelop.CSharpBinding
 
 		#region IOverloadedCompletionData implementation 
 		
-		public IEnumerable<ICompletionData> GetOverloads ()
+		class OverloadSorter : IComparer<ICompletionData>
 		{
-			if (overloads == null)
-				return new ICompletionData[0];
-			else
-				return overloads.Values;
+			OutputFlags flags = OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName;
+			
+			public int Compare (ICompletionData x, ICompletionData y)
+			{
+				string sx = ambience.GetString (((MemberCompletionData)x).member, flags);
+				string sy = ambience.GetString (((MemberCompletionData)y).member, flags);
+				int result = sx.Length.CompareTo (sy.Length);
+				return result == 0? string.Compare (sx, sy) : result;
+			}
 		}
 		
-		public bool HasOverloads {
+		public IEnumerable<ICompletionData> GetOverloadedData ()
+		{
+			if (overloads == null)
+				return new ICompletionData[] { this };
+			
+			List<ICompletionData> sorted = new List<ICompletionData> (overloads.Values);
+			sorted.Add (this);
+			sorted.Sort (new OverloadSorter ());
+			return sorted;
+		}
+		
+		public bool IsOverloaded {
 			get { return overloads != null; }
 		}
 		
@@ -266,6 +252,14 @@ namespace MonoDevelop.CSharpBinding
 				//if any of the overloads is obsolete, we should not mark the item obsolete
 				if (!overload.member.IsObsolete)
 					DisplayFlags &= ~DisplayFlags.Obsolete;
+				
+				//make sure that if there are generic overloads, we show a generic signature
+				if (overload.member is IType && ((IType)member).TypeParameters.Count == 0 && ((IType)overload.member).TypeParameters.Count > 0) {
+					displayText = overload.DisplayText;
+				}
+				if (overload.member is IMethod && ((IMethod)member).TypeParameters.Count == 0 && ((IMethod)overload.member).TypeParameters.Count > 0) {
+					displayText = overload.DisplayText;
+				}
 			}
 		}
 		

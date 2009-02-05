@@ -1,6 +1,17 @@
 2009-02-04  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Track IOverloadedCompletionData API. Overloads can now be
+	  sorted.
+
+	* MonoDevelop.Projects.Gui.Completion/ICompletionData.cs:
+	  Rename IOverloadedCompletionData.GetOverloads to
+	  GetOverloadedData. It now returns the "root" datum as well
+	  as the overload, so that it can sort them.
+
+2009-02-04  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
 	  Fix escaping of overload descriptions.
 
 2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>

@@ -35,8 +35,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 	
 	public interface IOverloadedCompletionData : ICompletionData
 	{
-		IEnumerable<ICompletionData> GetOverloads ();
-		bool HasOverloads { get; }
+		IEnumerable<ICompletionData> GetOverloadedData ();
+		bool IsOverloaded { get; }
 	}
 	
 	public interface ICompletionData
