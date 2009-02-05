@@ -138,12 +138,8 @@ namespace MonoDevelop.SourceEditor
 					TextChanged (this, new TextChangedEventArgs (startIndex, endIndex));
 			};
 			
-			widget.TextEditor.Document.TextReplaced += delegate {
-				this.IsDirty = Document.IsDirty;
-			};
-			
 			widget.TextEditor.Document.TextReplacing += OnTextReplacing;
-			widget.TextEditor.Document.TextReplacing += OnTextReplaced;
+			widget.TextEditor.Document.TextReplaced += OnTextReplaced;
 			widget.TextEditor.Document.ReadOnlyCheckDelegate = CheckReadOnly;
 			
 //			widget.TextEditor.Document.DocumentUpdated += delegate {
@@ -153,7 +149,7 @@ namespace MonoDevelop.SourceEditor
 			widget.TextEditor.Caret.PositionChanged += delegate {
 				FireCompletionContextChanged ();
 			};
-
+			
 			widget.TextEditor.IconMargin.ButtonPressed += OnIconButtonPress;
 			
 			widget.ShowAll ();
@@ -349,6 +345,11 @@ namespace MonoDevelop.SourceEditor
 		
 		void OnTextReplaced (object s, ReplaceEventArgs a)
 		{
+			this.IsDirty = Document.IsDirty;
+			
+			if (a.Offset != widget.TextEditor.Caret.Offset || a.Count > 1)
+				FireCompletionContextChanged ();
+			
 			DocumentLocation location = Document.OffsetToLocation (a.Offset);
 			
 			int i=0, lines=0;

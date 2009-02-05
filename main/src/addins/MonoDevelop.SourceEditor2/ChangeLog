@@ -1,5 +1,18 @@
 2009-02-05  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Fire
+	  CompletionContextChanged when buffer changed by anything
+	  other than one character inserted at the cursor position.
+	  Fixes "Bug 448911 - Typing '#region<SPC>foo' results in
+	  'region<SPC>fooon' and "Bug 435770 - Code completion window
+	  should handle document changing under it". Fix typo that
+	  caused OnTextReplaced to be subscribed to TextReplacing
+	  instead of TextReplaced; this should fix line number
+	  updating in error pad. Also combine duplicate event
+	  handlers.
+
+2009-02-05  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.SourceEditor/IdeViMode.cs: Add the tab and
 	  AdvancedBackspace actions that the SourceEditor usually adds
 	  to the edit mode. Restores deletion of matching brackets and
