@@ -1,3 +1,8 @@
+2009-02-05  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextEditor.Vi/ViMode.cs: Add a hook for subclasses to
+	  add insert actions.
+
 2009-02-05  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor.mdp: 

@@ -38,10 +38,12 @@ namespace MonoDevelop.SourceEditor
 	public class IdeViMode : Mono.TextEditor.Vi.ViEditMode
 	{
 		ExtensibleTextEditor editor;
+		TabAction tabAction;
 		
 		public IdeViMode (ExtensibleTextEditor editor)
 		{
 			this.editor = editor;
+			tabAction = new TabAction (editor);
 		}
 		
 		public override string Status {
@@ -50,6 +52,19 @@ namespace MonoDevelop.SourceEditor
 				base.Status = value;
 				IdeApp.Workbench.StatusBar.ShowMessage (value);
 			}
+		}
+		
+		protected override Action<TextEditorData> GetInsertAction (Gdk.Key key, Gdk.ModifierType modifier)
+		{
+			if (modifier == Gdk.ModifierType.None) {
+				switch (key) {
+				case Gdk.Key.BackSpace:
+					return EditActions.AdvancedBackspace;
+				case Gdk.Key.Tab:
+					return tabAction.Action;
+				}
+			}
+			return base.GetInsertAction (key, modifier);
 		}
 		
 		protected override string RunExCommand (string command)

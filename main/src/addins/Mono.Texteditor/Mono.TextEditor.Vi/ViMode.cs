@@ -37,11 +37,10 @@ namespace Mono.TextEditor.Vi
 	
 	public class ViEditMode : EditMode
 	{
-		State state;
-	//	string status;
 		bool searchBackward;
 		static string lastPattern;
 		static string lastReplacement;
+		State state;
 
 		StringBuilder commandBuffer = new StringBuilder ();
 		
@@ -148,6 +147,12 @@ namespace Mono.TextEditor.Vi
 			state = State.Normal;
 			commandBuffer.Length = 0;
 			Status = status;
+		}
+		
+		protected virtual Action<TextEditorData> GetInsertAction (Gdk.Key key, Gdk.ModifierType modifier)
+		{
+			return ViActionMaps.GetInsertKeyAction (key, modifier) ??
+				ViActionMaps.GetDirectionKeyAction (key, modifier);
 		}
 		
 		protected override void HandleKeypress (Gdk.Key key, uint unicodeKey, Gdk.ModifierType modifier)
@@ -418,9 +423,8 @@ namespace Mono.TextEditor.Vi
 				
 			case State.Insert:
 			case State.Replace:
-				action = ViActionMaps.GetInsertKeyAction (key, modifier);
-				if (action == null)
-					action = ViActionMaps.GetDirectionKeyAction (key, modifier);
+				action = GetInsertAction (key, modifier);
+				
 				
 				if (action != null)
 					RunAction (action);

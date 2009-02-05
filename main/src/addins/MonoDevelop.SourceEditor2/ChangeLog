@@ -1,3 +1,10 @@
+2009-02-05  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.SourceEditor/IdeViMode.cs: Add the tab and
+	  AdvancedBackspace actions that the SourceEditor usually adds
+	  to the edit mode. Restores deletion of matching brackets and
+	  tab-triggering of template insertion.
+
 2009-02-05  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: fixed 'Bug
