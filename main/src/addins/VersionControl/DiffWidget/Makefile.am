@@ -4,8 +4,11 @@ ASSEMBLY = $(ADDIN_BUILD)/DiffWidget.dll
 
 REFS =  \
 	$(GTK_SHARP_LIBS) \
-	-r:$(top_builddir)/build/AddIns/VersionControl/Diff.dll
-FILES = widget.cs
+	-r:$(top_builddir)/build/AddIns/VersionControl/Diff.dll \
+	-r:Mono.Posix
+FILES =  \
+	gtk-gui/generated.cs \
+	widget.cs
 
 $(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
 

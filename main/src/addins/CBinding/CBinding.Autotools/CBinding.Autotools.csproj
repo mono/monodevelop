@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{B841F25D-4F6D-4E0D-885F-212B54381F28}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AssemblyName>MonoDevelop.CBinding.Autotools</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\..\build\AddIns\BackendBindings\</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\..\build\AddIns\BackendBindings\</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\MonoDevelop.Autotools\MonoDevelop.Autotools.csproj">
+      <Project>{CFC02FEC-BDF4-40B9-94D6-35E73F76A92E}</Project>
+      <Name>MonoDevelop.Autotools</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\core\MonoDevelop.Projects\MonoDevelop.Projects.csproj">
+      <Project>{04BED15A-DDC5-48BC-A36C-3E360A0348C0}</Project>
+      <Name>MonoDevelop.Projects</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\CBinding.csproj">
+      <Project>{7B57882B-AD46-469B-84E7-06DF98D11468}</Project>
+      <Name>CBinding</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CAutotoolsSetup.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+</Project>

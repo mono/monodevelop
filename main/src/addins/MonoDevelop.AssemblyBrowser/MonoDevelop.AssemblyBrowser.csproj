@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{0EA3AD14-404A-4D3F-979B-F087E2E70C82}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AssemblyName>MonoDevelop.AssemblyBrowser</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\build\AddIns</OutputPath>
+    <DefineConstants>DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <AssemblyKeyFile>.</AssemblyKeyFile>
+    <ConsolePause>false</ConsolePause>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\build\AddIns</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Mono.Posix" />
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="glib-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
+      <Project>{7525BB88-6142-4A26-93B9-A30C6983390A}</Project>
+      <Name>MonoDevelop.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
+      <Project>{27096E7F-C91C-4AC6-B289-6897A701DF21}</Project>
+      <Name>MonoDevelop.Ide</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\core\MonoDevelop.Components\MonoDevelop.Components.csproj">
+      <Project>{3344D566-484B-4AEC-BBCF-86BC484D14B0}</Project>
+      <Name>MonoDevelop.Components</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\core\MonoDevelop.Projects.Gui\MonoDevelop.Projects.Gui.csproj">
+      <Project>{00E87426-F1BD-4B55-9B3E-7267EE93E002}</Project>
+      <Name>MonoDevelop.Projects.Gui</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\core\MonoDevelop.Core.Gui\MonoDevelop.Core.Gui.csproj">
+      <Project>{659B0888-3956-4040-BDB1-B45F6D64E7FA}</Project>
+      <Name>MonoDevelop.Core.Gui</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\contrib\Mono.Cecil\Mono.Cecil.csproj">
+      <Project>{3EC06433-F168-4C5B-A885-99CE4AB617E1}</Project>
+      <Name>Mono.Cecil</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\core\MonoDevelop.Projects\MonoDevelop.Projects.csproj">
+      <Project>{04BED15A-DDC5-48BC-A36C-3E360A0348C0}</Project>
+      <Name>MonoDevelop.Projects</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\Mono.Texteditor\Mono.TextEditor.csproj">
+      <Project>{A2329308-3751-4DBD-9A75-5F7B8B024625}</Project>
+      <Name>Mono.TextEditor</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\DisplayBinding.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\AssemblyBrowserView.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\AssemblyBrowserWidget.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\AssemblyNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\ModuleDefinitionNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\DomTypeNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\DomEventNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\DomFieldNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\DomPropertyNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\Namespace.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\NamespaceBuilder.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\ReferenceFolder.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\ResourceFolder.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\ReferenceFolderNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\ResourceFolderNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\ResourceNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\Error.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\ErrorNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\ModuleReferenceNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\BaseTypeFolder.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\BaseTypeFolderNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\DomReturnTypeNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\IAssemblyBrowserNodeBuilder.cs" />
+    <Compile Include="gtk-gui\generated.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\Decompiler.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\DomMethodNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\Reference.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\ReferenceNodeBuilder.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="gtk-gui\gui.stetic">
+      <LogicalName>gui.stetic</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="gtk-gui\objects.xml">
+      <LogicalName>objects.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.AssemblyBrowser.addin.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ChangeLog" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ProjectExtensions>
+    <MonoDevelop>
+      <Properties>
+        <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="Makefile.am" SyncReferences="true" IsAutotoolsProject="true" RelativeConfigureInPath="../../..">
+          <BuildFilesVar Sync="true" Name="FILES" />
+          <DeployFilesVar />
+          <ResourcesVar Sync="true" Name="RES" />
+          <OthersVar />
+          <GacRefVar Sync="true" Name="REFS" Prefix="-r:" />
+          <AsmRefVar Sync="true" Name="REFS" Prefix="-r:" />
+          <ProjectRefVar Sync="true" Name="DEPS" />
+        </MonoDevelop.Autotools.MakefileInfo>
+      </Properties>
+    </MonoDevelop>
+  </ProjectExtensions>
+</Project>

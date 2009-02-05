@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{183E084F-2C3B-4A6D-A8CE-6CDF3DC499AC}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AssemblyName>MonoDevelop.VersionControl.Subversion</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\..\build\AddIns\VersionControl</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>3</WarningLevel>
+    <ApplicationIcon>.</ApplicationIcon>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\..\build\AddIns\VersionControl\</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
+      <Project>{7525BB88-6142-4A26-93B9-A30C6983390A}</Project>
+      <Name>MonoDevelop.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\core\MonoDevelop.Projects\MonoDevelop.Projects.csproj">
+      <Project>{04BED15A-DDC5-48BC-A36C-3E360A0348C0}</Project>
+      <Name>MonoDevelop.Projects</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\core\MonoDevelop.Components\MonoDevelop.Components.csproj">
+      <Project>{3344D566-484B-4AEC-BBCF-86BC484D14B0}</Project>
+      <Name>MonoDevelop.Components</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\MonoDevelop.VersionControl\MonoDevelop.VersionControl.csproj">
+      <Project>{19DE0F35-D204-4FD8-A553-A19ECE05E24D}</Project>
+      <Name>MonoDevelop.VersionControl</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\core\MonoDevelop.Core.Gui\MonoDevelop.Core.Gui.csproj">
+      <Project>{659B0888-3956-4040-BDB1-B45F6D64E7FA}</Project>
+      <Name>MonoDevelop.Core.Gui</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
+      <Project>{27096E7F-C91C-4AC6-B289-6897A701DF21}</Project>
+      <Name>MonoDevelop.Ide</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Mono.Posix" />
+    <Reference Include="System" />
+    <Reference Include="glib-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="gtk-gui\generated.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Subversion\SubversionRepository.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Subversion\SubversionVersionControl.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Subversion\SvnClient.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Subversion\LibApr.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Subversion.Gui\ClientCertificateDialog.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Subversion.Gui\ClientCertificatePasswordDialog.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Subversion.Gui\SslServerTrustDialog.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Subversion.Gui\UserPasswordDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.VersionControl.Subversion.Gui.ClientCertificateDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.VersionControl.Subversion.Gui.ClientCertificatePasswordDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.VersionControl.Subversion.Gui.SslServerTrustDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.VersionControl.Subversion.Gui.UserPasswordDialog.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Subversion\LibSvnClient.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Subversion\SubversionNodeExtension.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Subversion\Commands.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Makefile.am" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="MonoDevelop.VersionControl.Subversion.addin.xml" />
+    <EmbeddedResource Include="gtk-gui\objects.xml">
+      <LogicalName>objects.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="gtk-gui\gui.stetic">
+      <LogicalName>gui.stetic</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ProjectExtensions>
+    <MonoDevelop>
+      <Properties>
+        <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="true" IsAutotoolsProject="true" RelativeConfigureInPath="../../../..">
+          <BuildFilesVar Sync="true" Name="FILES" />
+          <DeployFilesVar />
+          <ResourcesVar Sync="true" Name="RES" />
+          <OthersVar />
+          <GacRefVar Sync="true" Name="REFS" Prefix="-r:" />
+          <AsmRefVar Sync="true" Name="REFS" Prefix="-r:" />
+          <ProjectRefVar Sync="true" Name="DEPS" />
+        </MonoDevelop.Autotools.MakefileInfo>
+      </Properties>
+    </MonoDevelop>
+  </ProjectExtensions>
+</Project>

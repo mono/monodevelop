@@ -1,0 +1,6 @@
+2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* DiffWidget.mdp:
+	* DiffWidget.csproj: Migrated to MSBuild file format.
+

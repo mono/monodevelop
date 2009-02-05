@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{F0F81D55-6265-474F-BE08-CE71818181B5}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AssemblyName>DiffWidget</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\..\build\AddIns\VersionControl\</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\..\build\AddIns\VersionControl\</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Diff\Diff.csproj">
+      <Project>{7FF7B14D-BFE7-493A-9B52-B5F4CA71A2DC}</Project>
+      <Name>Diff</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="Mono.Posix" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="widget.cs" />
+    <Compile Include="gtk-gui\generated.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ProjectExtensions>
+    <MonoDevelop>
+      <Properties>
+        <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="true" IsAutotoolsProject="true" RelativeConfigureInPath="../../../..">
+          <BuildFilesVar Sync="true" Name="FILES" />
+          <DeployFilesVar />
+          <ResourcesVar />
+          <OthersVar />
+          <GacRefVar Name="REFS" Prefix="-r:" />
+          <AsmRefVar Name="REFS" Prefix="-r:" />
+          <ProjectRefVar Name="REFS" Prefix="-r:" />
+        </MonoDevelop.Autotools.MakefileInfo>
+      </Properties>
+    </MonoDevelop>
+  </ProjectExtensions>
+  <ItemGroup>
+    <EmbeddedResource Include="gtk-gui\gui.stetic">
+      <LogicalName>gui.stetic</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+</Project>

@@ -1,3 +1,8 @@
+2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.mdp:
+	* MonoDevelop.Core.csproj: Migrated to MSBuild file format.
+
 2009-02-05  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Core/SystemAssemblyService.cs: Expose some

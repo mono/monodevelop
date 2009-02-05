@@ -1,3 +1,10 @@
+2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.WebReferences.mds:
+	* MonoDevelop.WebReferences.mdp:
+	* MonoDevelop.WebReferences.csproj: Migrated to MSBuild file
+	  format.
+
 2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:

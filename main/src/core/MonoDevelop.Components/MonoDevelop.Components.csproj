@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{3344D566-484B-4AEC-BBCF-86BC484D14B0}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AssemblyName>MonoDevelop.Components</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\build\bin</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>3</WarningLevel>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\build\AddIns\</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Mono.Posix" />
+    <Reference Include="Mono.Addins, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="glade-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="glib-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MonoDevelop.Core\MonoDevelop.Core.csproj">
+      <Project>{7525BB88-6142-4A26-93B9-A30C6983390A}</Project>
+      <Name>MonoDevelop.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="icons\MonoDevelop.Close.png">
+      <LogicalName>MonoDevelop.Close.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="gtk-gui\gui.stetic">
+      <LogicalName>gui.stetic</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="gtk-gui\objects.xml">
+      <LogicalName>objects.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Components.addin.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="MonoDevelop.Components.Commands\ActionCommand.cs" />
+    <Compile Include="MonoDevelop.Components.Commands\ActionType.cs" />
+    <Compile Include="MonoDevelop.Components.Commands\Command.cs" />
+    <Compile Include="MonoDevelop.Components.Commands\CommandArrayInfo.cs" />
+    <Compile Include="MonoDevelop.Components.Commands\CommandCheckMenuItem.cs" />
+    <Compile Include="MonoDevelop.Components.Commands\CommandEntry.cs" />
+    <Compile Include="MonoDevelop.Components.Commands\CommandEntrySet.cs" />
+    <Compile Include="MonoDevelop.Components.Commands\CommandErrorHandler.cs" />
+    <Compile Include="MonoDevelop.Components.Commands\CommandFrame.cs" />
+    <Compile Include="MonoDevelop.Components.Commands\CommandHandler.cs" />
+    <Compile Include="MonoDevelop.Components.Commands\CommandHandlerAttribute.cs" />
+    <Compile Include="MonoDevelop.Components.Commands\CommandInfo.cs" />
+    <Compile Include="MonoDevelop.Components.Commands\CommandInfoSet.cs" />
+    <Compile Include="MonoDevelop.Components.Commands\CommandManager.cs" />
+    <Compile Include="MonoDevelop.Components.Commands\CommandMenu.cs" />
+    <Compile Include="MonoDevelop.Components.Commands\CommandMenuBar.cs" />
+    <Compile Include="MonoDevelop.Components.Commands\CommandMenuItem.cs" />
+    <Compile Include="MonoDevelop.Components.Commands\CommandSystemCommands.cs" />
+    <Compile Include="MonoDevelop.Components.Commands\CommandToggleToolButton.cs" />
+    <Compile Include="MonoDevelop.Components.Commands\CommandToolbar.cs" />
+    <Compile Include="MonoDevelop.Components.Commands\CommandToolButton.cs" />
+    <Compile Include="MonoDevelop.Components.Commands\CustomCommand.cs" />
+    <Compile Include="MonoDevelop.Components.Commands\CustomMenuItem.cs" />
+    <Compile Include="MonoDevelop.Components.Commands\ICommandMenuItem.cs" />
+    <Compile Include="MonoDevelop.Components.Commands\ICommandRouter.cs" />
+    <Compile Include="MonoDevelop.Components.Commands\ICommandUserItem.cs" />
+    <Compile Include="MonoDevelop.Components.Commands\LinkCommandEntry.cs" />
+    <Compile Include="MonoDevelop.Components.Commands\MenuToolButton.cs" />
+    <Compile Include="MonoDevelop.Components\DataGrid.cs" />
+    <Compile Include="MonoDevelop.Components.DockToolbars\ArrowWindow.cs" />
+    <Compile Include="MonoDevelop.Components.DockToolbars\DockedPosition.cs" />
+    <Compile Include="MonoDevelop.Components.DockToolbars\DockGrip.cs" />
+    <Compile Include="MonoDevelop.Components.DockToolbars\DockToolbar.cs" />
+    <Compile Include="MonoDevelop.Components.DockToolbars\DockToolbarFrame.cs" />
+    <Compile Include="MonoDevelop.Components.DockToolbars\DockToolbarFrameLayout.cs" />
+    <Compile Include="MonoDevelop.Components.DockToolbars\DockToolbarFrameStatus.cs" />
+    <Compile Include="MonoDevelop.Components.DockToolbars\DockToolbarPanel.cs" />
+    <Compile Include="MonoDevelop.Components.DockToolbars\DockToolbarPosition.cs" />
+    <Compile Include="MonoDevelop.Components.DockToolbars\DockToolbarStatus.cs" />
+    <Compile Include="MonoDevelop.Components.DockToolbars\FixedPanel.cs" />
+    <Compile Include="MonoDevelop.Components.DockToolbars\FloatingDock.cs" />
+    <Compile Include="MonoDevelop.Components.DockToolbars\FloatingPosition.cs" />
+    <Compile Include="MonoDevelop.Components.DockToolbars\IDockBar.cs" />
+    <Compile Include="MonoDevelop.Components.DockToolbars\PlaceholderWindow.cs" />
+    <Compile Include="MonoDevelop.Components\FileSelector.cs" />
+    <Compile Include="MonoDevelop.Components\BaseFileEntry.cs" />
+    <Compile Include="MonoDevelop.Components\FileEntry.cs" />
+    <Compile Include="MonoDevelop.Components\FolderDialog.cs" />
+    <Compile Include="MonoDevelop.Components\FolderEntry.cs" />
+    <Compile Include="MonoDevelop.Components\GladeWidgetExtract.cs" />
+    <Compile Include="MonoDevelop.Components\IconView.cs" />
+    <Compile Include="MonoDevelop.Components\Navbar.cs" />
+    <Compile Include="MonoDevelop.Components\TabLabel.cs" />
+    <Compile Include="MonoDevelop.Components.Commands\ICommandDelegatorRouter.cs" />
+    <Compile Include="MonoDevelop.Components.Commands\CommandRouterContainer.cs" />
+    <Compile Include="MonoDevelop.Components.Chart\Axis.cs" />
+    <Compile Include="MonoDevelop.Components.Chart\AxisDimension.cs" />
+    <Compile Include="MonoDevelop.Components.Chart\AxisPosition.cs" />
+    <Compile Include="MonoDevelop.Components.Chart\BasicChart.cs" />
+    <Compile Include="MonoDevelop.Components.Chart\ChartCursor.cs" />
+    <Compile Include="MonoDevelop.Components.Chart\DateTimeAxis.cs" />
+    <Compile Include="MonoDevelop.Components.Chart\IntegerAxis.cs" />
+    <Compile Include="MonoDevelop.Components.Chart\Serie.cs" />
+    <Compile Include="MonoDevelop.Components.Chart\TickEnumerator.cs" />
+    <Compile Include="MonoDevelop.Components.Commands\LocalCommandEntry.cs" />
+    <Compile Include="MonoDevelop.Components\CellRendererComboBox.cs" />
+    <Compile Include="MonoDevelop.Components\TreeViewCellContainer.cs" />
+    <Compile Include="gtk-gui\generated.cs" />
+    <Compile Include="MonoDevelop.Components.Commands\ICommandTargetVisitor.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="MonoDevelop.Components.Commands\KeyBindingManager.cs" />
+    <Compile Include="MonoDevelop.Components.Commands\KeyBindingService.cs" />
+    <Compile Include="MonoDevelop.Components.Commands.ExtensionNodes\CommandCategoryCodon.cs" />
+    <Compile Include="MonoDevelop.Components.Commands.ExtensionNodes\CommandCodon.cs" />
+    <Compile Include="MonoDevelop.Components.Commands.ExtensionNodes\CommandItemCodon.cs" />
+    <Compile Include="MonoDevelop.Components.Commands.ExtensionNodes\ItemSetCodon.cs" />
+    <Compile Include="MonoDevelop.Components.Commands.ExtensionNodes\LinkItemCodon.cs" />
+    <Compile Include="MonoDevelop.Components.Commands.ExtensionNodes\SeparatorItemCodon.cs" />
+    <Compile Include="MonoDevelop.Components.Commands.ExtensionNodes\LocalCommandItemCodon.cs" />
+    <Compile Include="MonoDevelop.Components.Commands.ExtensionNodes\SchemeExtensionNode.cs" />
+    <Compile Include="MonoDevelop.Components.Commands\CustomItem.cs" />
+    <Compile Include="MonoDevelop.Components\TreeViewState.cs" />
+    <Compile Include="MonoDevelop.Components\NotebookButtonBar.cs" />
+    <Compile Include="MonoDevelop.Components.Commands\CommandSelectedEventArgs.cs" />
+    <Compile Include="MonoDevelop.Components\MenuButton.cs" />
+    <Compile Include="MonoDevelop.Components\FixedWidthWrapLabel.cs" />
+    <Compile Include="MonoDevelop.Components\InvisibleFrame.cs" />
+    <Compile Include="MonoDevelop.Components.Commands\IMultiCastCommandRouter.cs" />
+    <Compile Include="MonoDevelop.Components.Commands\ICommandUpdateHandler.cs" />
+    <Compile Include="MonoDevelop.Components.Commands\CustomCommandUpdaterAttribute.cs" />
+    <Compile Include="MonoDevelop.Components.Commands\CustomCommandTargetAttribute.cs" />
+    <Compile Include="MonoDevelop.Components.Commands\KeyBindingScheme.cs" />
+    <Compile Include="MonoDevelop.Components.Commands\KeyBindingSet.cs" />
+    <Compile Include="MonoDevelop.Components\ListView.cs" />
+    <Compile Include="MonoDevelop.Components\TooltipWindow.cs" />
+    <Compile Include="MonoDevelop.Components\WindowTransparencyDecorator.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ChangeLog" />
+    <None Include="Makefile.am" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ProjectExtensions>
+    <MonoDevelop>
+      <Properties>
+        <GtkDesignInfo gettextClass="MonoDevelop.Core.GettextCatalog" />
+        <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="true" IsAutotoolsProject="true" RelativeConfigureInPath="../../../">
+          <BuildFilesVar Sync="true" Name="FILES" />
+          <DeployFilesVar />
+          <ResourcesVar Sync="true" Name="RES" />
+          <OthersVar />
+          <GacRefVar Sync="true" Name="REFS" Prefix="-r:" />
+          <AsmRefVar Sync="true" Name="REFS" Prefix="-r:" />
+          <ProjectRefVar Sync="true" Name="REFS" Prefix="-r:" />
+        </MonoDevelop.Autotools.MakefileInfo>
+      </Properties>
+    </MonoDevelop>
+  </ProjectExtensions>
+</Project>

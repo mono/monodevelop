@@ -1,3 +1,9 @@
+2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.mdp:
+	* MonoDevelop.Projects.csproj: Migrated to MSBuild file
+	  format.
+
 2009-02-05  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* md1format.xml: Add skipEmpty flag for Solution's policies

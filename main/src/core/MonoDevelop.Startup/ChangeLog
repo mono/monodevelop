@@ -1,3 +1,8 @@
+2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Startup.mdp:
+	* MonoDevelop.Startup.csproj: Migrated to MSBuild file format.
+
 2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs: Bump MD version.

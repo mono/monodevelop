@@ -1,3 +1,8 @@
+2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* WelcomePage.mdp:
+	* WelcomePage.csproj: Migrated to MSBuild file format.
+
 2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* WelcomePageContent.xml: Added Report Bug link.

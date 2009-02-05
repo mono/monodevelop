@@ -1,3 +1,9 @@
+2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Debugger.mdp:
+	* MonoDevelop.Debugger.csproj: Migrated to MSBuild file
+	  format.
+
 2009-02-05  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Debugger/DisassemblyView.cs: track api changes.

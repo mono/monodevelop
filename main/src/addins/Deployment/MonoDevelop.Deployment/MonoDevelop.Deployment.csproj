@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{9BC670A8-1851-40EC-9685-279F4C98433D}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AssemblyName>MonoDevelop.Deployment</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\..\build\AddIns\MonoDevelop.Deployment</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\..\build\AddIns\MonoDevelop.Deployment</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="Mono.Posix" />
+    <Reference Include="System.Xml" />
+    <Reference Include="ICSharpCode.SharpZipLib" />
+    <Reference Include="glib-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="Mono.Addins, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
+      <Project>{7525BB88-6142-4A26-93B9-A30C6983390A}</Project>
+      <Name>MonoDevelop.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\core\MonoDevelop.Core.Gui\MonoDevelop.Core.Gui.csproj">
+      <Project>{659B0888-3956-4040-BDB1-B45F6D64E7FA}</Project>
+      <Name>MonoDevelop.Core.Gui</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\core\MonoDevelop.Components\MonoDevelop.Components.csproj">
+      <Project>{3344D566-484B-4AEC-BBCF-86BC484D14B0}</Project>
+      <Name>MonoDevelop.Components</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\core\MonoDevelop.Projects\MonoDevelop.Projects.csproj">
+      <Project>{04BED15A-DDC5-48BC-A36C-3E360A0348C0}</Project>
+      <Name>MonoDevelop.Projects</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\core\MonoDevelop.Projects.Gui\MonoDevelop.Projects.Gui.csproj">
+      <Project>{00E87426-F1BD-4B55-9B3E-7267EE93E002}</Project>
+      <Name>MonoDevelop.Projects.Gui</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
+      <Project>{27096E7F-C91C-4AC6-B289-6897A701DF21}</Project>
+      <Name>MonoDevelop.Ide</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\MonoDevelop.DesignerSupport\MonoDevelop.DesignerSupport.csproj">
+      <Project>{2C24D515-4A2C-445C-8419-C09231913CFA}</Project>
+      <Name>MonoDevelop.DesignerSupport</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ChangeLog" />
+    <None Include="Makefile.am" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="MonoDevelop.Deployment\DeployService.cs" />
+    <Compile Include="MonoDevelop.Deployment\PackageBuilder.cs" />
+    <Compile Include="MonoDevelop.Deployment\FileCopyConfiguration.cs" />
+    <Compile Include="MonoDevelop.Deployment\FileCopyHandler.cs" />
+    <Compile Include="MonoDevelop.Deployment\IFileCopyHandler.cs" />
+    <Compile Include="MonoDevelop.Deployment\IFileReplacePolicy.cs" />
+    <Compile Include="MonoDevelop.Deployment\UnknownPackageBuilder.cs" />
+    <Compile Include="MonoDevelop.Deployment\UnknownFileCopyConfiguration.cs" />
+    <Compile Include="MonoDevelop.Deployment.Gui\CommandDeployEditorWidget.cs" />
+    <Compile Include="MonoDevelop.Deployment.Gui\PackageBuilderEditor.cs" />
+    <Compile Include="MonoDevelop.Deployment.Gui\DialogFileReplacePolicy.cs" />
+    <Compile Include="MonoDevelop.Deployment.Gui\FileCopyConfigurationSelector.cs" />
+    <Compile Include="MonoDevelop.Deployment.Gui\IPackageBuilderEditor.cs" />
+    <Compile Include="MonoDevelop.Deployment.Gui\IFileCopyConfigurationEditor.cs" />
+    <Compile Include="MonoDevelop.Deployment.Gui\LocalFileCopyConfigurationEditor.cs" />
+    <Compile Include="MonoDevelop.Deployment.Gui\LocalFileCopyConfigurationEditorWidget.cs" />
+    <Compile Include="gtk-gui\generated.cs" />
+    <Compile Include="MonoDevelop.Deployment.Commands\Commands.cs" />
+    <Compile Include="MonoDevelop.Deployment.Gui\DeployDialog.cs" />
+    <Compile Include="MonoDevelop.Deployment\IDeployDirectoryResolver.cs" />
+    <Compile Include="MonoDevelop.Deployment\DeployServiceExtension.cs" />
+    <Compile Include="MonoDevelop.Deployment.Gui\PropertyProvider.cs" />
+    <Compile Include="MonoDevelop.Deployment.Gui\DeployDirectoryInfoEditor.cs" />
+    <Compile Include="MonoDevelop.Deployment\DefaultDeployServiceExtension.cs" />
+    <Compile Include="MonoDevelop.Deployment\DeployFile.cs" />
+    <Compile Include="MonoDevelop.Deployment\IDeployable.cs" />
+    <Compile Include="MonoDevelop.Deployment.Targets\CommandPackageBuilder.cs" />
+    <Compile Include="MonoDevelop.Deployment.Targets\LocalFileCopyConfiguration.cs" />
+    <Compile Include="MonoDevelop.Deployment.Targets\LocalFileCopyHandler.cs" />
+    <Compile Include="MonoDevelop.Deployment.Targets\BinariesZipPackageBuilder.cs" />
+    <Compile Include="MonoDevelop.Deployment.Targets\SourcesZipPackageBuilder.cs" />
+    <Compile Include="MonoDevelop.Deployment.Gui\InstallDialog.cs" />
+    <Compile Include="MonoDevelop.Deployment\InstallResolver.cs" />
+    <Compile Include="MonoDevelop.Deployment.Gui\SourcesZipEditorWidget.cs" />
+    <Compile Include="MonoDevelop.Deployment\PackagingProject.cs" />
+    <Compile Include="MonoDevelop.Deployment.NodeBuilders\PackagingProjectNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.Deployment.NodeBuilders\PackageNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.Deployment.Gui\EntrySelectionTree.cs" />
+    <Compile Include="MonoDevelop.Deployment\Package.cs" />
+    <Compile Include="MonoDevelop.Deployment\PackageCollection.cs" />
+    <Compile Include="MonoDevelop.Deployment.Gui\DeployOperations.cs" />
+    <Compile Include="MonoDevelop.Deployment\DeployContext.cs" />
+    <Compile Include="MonoDevelop.Deployment\DeployDirectoryNodeType.cs" />
+    <Compile Include="MonoDevelop.Deployment\DeployProperties.cs" />
+    <Compile Include="MonoDevelop.Deployment.Gui\EditPackageDialog.cs" />
+    <Compile Include="MonoDevelop.Deployment\DeployPlatformNodeType.cs" />
+    <Compile Include="MonoDevelop.Deployment\TargetDirectory.cs" />
+    <Compile Include="MonoDevelop.Deployment\DeployDirectoryInfo.cs" />
+    <Compile Include="MonoDevelop.Deployment\DeployPlatformInfo.cs" />
+    <Compile Include="MonoDevelop.Deployment.Gui\DeployFileListWidget.cs" />
+    <Compile Include="MonoDevelop.Deployment.Gui\PackagingFeatureWidget.cs" />
+    <Compile Include="MonoDevelop.Deployment.Gui\PackagingFeature.cs" />
+    <Compile Include="MonoDevelop.Deployment.Gui\BinariesZipEditorWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Deployment.Gui.LocalFileCopyConfigurationEditorWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Deployment.Gui.FileCopyConfigurationSelector.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Deployment.Gui.CommandDeployEditorWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Deployment.Gui.DeployDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Deployment.Gui.InstallDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Deployment.Gui.SourcesZipEditorWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Deployment.Gui.EntrySelectionTree.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Deployment.Gui.EditPackageDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Deployment.Gui.BinariesZipEditorWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Deployment.DeployFileListWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Deployment.Gui.PackagingFeatureWidget.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="MonoDevelop.Deployment.Gui\FileReplaceDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Deployment.FileReplaceDialog.cs" />
+    <Compile Include="MonoDevelop.Deployment.Targets\BaseFuseFileCopyHandler.cs" />
+    <Compile Include="MonoDevelop.Deployment.Targets\SshFuseFileCopyHandler.cs" />
+    <Compile Include="MonoDevelop.Deployment.Targets\BaseFuseFileCopyConfiguration.cs" />
+    <Compile Include="MonoDevelop.Deployment.Gui\SshFuseFileCopyConfigurationEditorWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Deployment.Gui.SshFuseFileCopyConfigurationEditorWidget.cs" />
+    <Compile Include="MonoDevelop.Deployment.Gui\SshFuseFileCopyConfigurationEditor.cs" />
+    <Compile Include="MonoDevelop.Deployment\MD1Serializer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="gtk-gui\gui.stetic">
+      <LogicalName>gui.stetic</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-x-generic.png">
+      <LogicalName>package-x-generic.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\PackagingProject.xpt.xml">
+      <LogicalName>PackagingProject.xpt.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Deployment.addin.xml" />
+    <EmbeddedResource Include="icons\packaging-32.png">
+      <LogicalName>packaging-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\packaging-16.png">
+      <LogicalName>packaging-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="md1format.xml" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ProjectExtensions>
+    <MonoDevelop>
+      <Properties>
+        <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="true" IsAutotoolsProject="true" RelativeConfigureInPath="../../../..">
+          <BuildFilesVar Sync="true" Name="FILES" />
+          <DeployFilesVar Sync="true" Name="DATA_FILES" />
+          <ResourcesVar Sync="true" Name="RES" />
+          <OthersVar />
+          <GacRefVar Sync="true" Name="REFS" Prefix="-r:" />
+          <AsmRefVar Sync="true" Name="REFS" Prefix="-r:" />
+          <ProjectRefVar Sync="true" Name="DEPS" />
+        </MonoDevelop.Autotools.MakefileInfo>
+      </Properties>
+    </MonoDevelop>
+  </ProjectExtensions>
+</Project>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{376889B5-6504-46A1-9D18-A9E4B4A50F49}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\..\build\AddIns\MonoDeveloperExtensions\</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+    <AssemblyName>MonoDeveloperExtensions_nunit</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\..\build\AddIns\MonoDeveloperExtensions\</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+    <AssemblyName>NUnit</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MonoDeveloperExtensions.csproj">
+      <Project>{9A415695-CF80-4845-AA80-0DA26CF1E256}</Project>
+      <Name>MonoDeveloperExtensions</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
+      <Project>{7525BB88-6142-4A26-93B9-A30C6983390A}</Project>
+      <Name>MonoDevelop.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\core\MonoDevelop.Projects\MonoDevelop.Projects.csproj">
+      <Project>{04BED15A-DDC5-48BC-A36C-3E360A0348C0}</Project>
+      <Name>MonoDevelop.Projects</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\NUnit\MonoDevelop.NUnit.csproj">
+      <Project>{A7A4246D-CEC4-42DF-A3C1-C31B9F51C4EC}</Project>
+      <Name>MonoDevelop.NUnit</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="MonoTestProvider.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Makefile.am" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ProjectExtensions>
+    <MonoDevelop>
+      <Properties>
+        <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="true" IsAutotoolsProject="true" RelativeConfigureInPath="../../../..">
+          <BuildFilesVar Sync="true" Name="FILES" />
+          <DeployFilesVar />
+          <ResourcesVar />
+          <OthersVar />
+          <GacRefVar Name="REFS" Prefix="-r:" />
+          <AsmRefVar Name="REFS" Prefix="-r:" />
+          <ProjectRefVar Name="REFS" Prefix="-r:" />
+        </MonoDevelop.Autotools.MakefileInfo>
+      </Properties>
+    </MonoDevelop>
+  </ProjectExtensions>
+</Project>

@@ -1,3 +1,10 @@
+2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.XmlEditor.mds:
+	* MonoDevelop.XmlEditor.mdp:
+	* MonoDevelop.XmlEditor.csproj: Migrated to MSBuild file
+	  format.
+
 2009-02-03  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.XmlEditor.Gui/BaseXmlEditorExtension.cs: Fix

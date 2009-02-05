@@ -1,0 +1,5 @@
+2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* libsteticui.mdp:
+	* libsteticui.csproj: Migrated to MSBuild file format.
+

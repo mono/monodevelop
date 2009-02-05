@@ -1,0 +1,5 @@
+2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* CBinding.Autotools.mdp:
+	* CBinding.Autotools.csproj: Migrated to MSBuild file format.
+

@@ -1,3 +1,9 @@
+2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.TextEditor.mds:
+	* Mono.TextEditor.mdp:
+	* Mono.TextEditor.csproj: Migrated to MSBuild file format.
+
 2009-02-05  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.TextEditor.Vi/ViMode.cs: Add a hook for subclasses to

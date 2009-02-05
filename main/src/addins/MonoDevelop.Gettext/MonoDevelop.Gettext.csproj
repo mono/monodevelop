@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{ADDC9D20-83C5-4245-9B46-2C5F6642CFBC}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AssemblyName>MonoDevelop.Gettext</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\build\AddIns\MonoDevelop.Gettext</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodePage>65001</CodePage>
+    <ApplicationIcon>.</ApplicationIcon>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\build\AddIns\MonoDevelop.Gettext</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodePage>65001</CodePage>
+    <ApplicationIcon>.</ApplicationIcon>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="Mono.Posix" />
+    <Reference Include="System.Xml" />
+    <Reference Include="glib-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="Mono.Addins, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
+      <Project>{7525BB88-6142-4A26-93B9-A30C6983390A}</Project>
+      <Name>MonoDevelop.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\core\MonoDevelop.Core.Gui\MonoDevelop.Core.Gui.csproj">
+      <Project>{659B0888-3956-4040-BDB1-B45F6D64E7FA}</Project>
+      <Name>MonoDevelop.Core.Gui</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\core\MonoDevelop.Projects\MonoDevelop.Projects.csproj">
+      <Project>{04BED15A-DDC5-48BC-A36C-3E360A0348C0}</Project>
+      <Name>MonoDevelop.Projects</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\core\MonoDevelop.Projects.Gui\MonoDevelop.Projects.Gui.csproj">
+      <Project>{00E87426-F1BD-4B55-9B3E-7267EE93E002}</Project>
+      <Name>MonoDevelop.Projects.Gui</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\MonoDevelop.DesignerSupport\MonoDevelop.DesignerSupport.csproj">
+      <Project>{2C24D515-4A2C-445C-8419-C09231913CFA}</Project>
+      <Name>MonoDevelop.DesignerSupport</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\core\MonoDevelop.Components\MonoDevelop.Components.csproj">
+      <Project>{3344D566-484B-4AEC-BBCF-86BC484D14B0}</Project>
+      <Name>MonoDevelop.Components</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
+      <Project>{27096E7F-C91C-4AC6-B289-6897A701DF21}</Project>
+      <Name>MonoDevelop.Ide</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\MonoDevelop.Autotools\MonoDevelop.Autotools.csproj">
+      <Project>{CFC02FEC-BDF4-40B9-94D6-35E73F76A92E}</Project>
+      <Name>MonoDevelop.Autotools</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\Deployment\MonoDevelop.Deployment\MonoDevelop.Deployment.csproj">
+      <Project>{9BC670A8-1851-40EC-9685-279F4C98433D}</Project>
+      <Name>MonoDevelop.Deployment</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\Mono.Texteditor\Mono.TextEditor.csproj">
+      <Project>{A2329308-3751-4DBD-9A75-5F7B8B024625}</Project>
+      <Name>Mono.TextEditor</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="gtk-gui\generated.cs" />
+    <Compile Include="MonoDevelop.Gettext.Editor\CatalogEditorView.cs" />
+    <Compile Include="MonoDevelop.Gettext.Editor\GtkSpell.cs" />
+    <Compile Include="MonoDevelop.Gettext.Editor\CatalogHeadersWidget.cs" />
+    <Compile Include="Commands.cs" />
+    <Compile Include="MonoDevelop.Gettext.Translator\LanguageChooserDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Gettext.Translator.LanguageChooserDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs" />
+    <Compile Include="MonoDevelop.Gettext.Editor\GettextEditorDisplayBinding.cs" />
+    <Compile Include="MonoDevelop.Gettext\TranslationProject.cs" />
+    <Compile Include="MonoDevelop.Gettext\Translation.cs" />
+    <Compile Include="MonoDevelop.Gettext.NodeBuilders\TranslationProjectNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.Gettext.NodeBuilders\TranslationNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.Gettext\TranslationService.cs" />
+    <Compile Include="MonoDevelop.Gettext\TranslationProjectOptionsDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Gettext.TranslationProjectOptionsDialog.cs" />
+    <Compile Include="MonoDevelop.Gettext.Editor\POEditorWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Gettext.POEditorWidget.cs" />
+    <Compile Include="MonoDevelop.Gettext\Catalog.cs" />
+    <Compile Include="MonoDevelop.Gettext\CatalogEntry.cs" />
+    <Compile Include="MonoDevelop.Gettext\CatalogParser.cs" />
+    <Compile Include="MonoDevelop.Gettext\CatalogDeletedEntry.cs" />
+    <Compile Include="MonoDevelop.Gettext\IsoCodes.cs" />
+    <Compile Include="MonoDevelop.Gettext\PropertyProvider.cs" />
+    <Compile Include="MonoDevelop.Gettext\GettextFeature.cs" />
+    <Compile Include="MonoDevelop.Gettext\GettextFeatureWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Gettext.GettextFeatureWidget.cs" />
+    <Compile Include="MonoDevelop.Gettext\MakefileHandler.cs" />
+    <Compile Include="MonoDevelop.Gettext\GettextTool.cs" />
+    <Compile Include="MonoDevelop.Gettext\IFileScanner.cs" />
+    <Compile Include="MonoDevelop.Gettext\RegexFileScanner.cs" />
+    <Compile Include="MonoDevelop.Gettext.ExtensionNodes\IncludeExtensionNode.cs" />
+    <Compile Include="MonoDevelop.Gettext.ExtensionNodes\RegexScannerExtensionNode.cs" />
+    <Compile Include="MonoDevelop.Gettext.ExtensionNodes\XmlRegexScannerExtensionNode.cs" />
+    <Compile Include="MonoDevelop.Gettext.ExtensionNodes\ExcludeRegex.cs" />
+    <Compile Include="MonoDevelop.Gettext.ExtensionNodes\TransformExtensionNode.cs" />
+    <Compile Include="MonoDevelop.Gettext\StringEscaping.cs" />
+    <Compile Include="MonoDevelop.Gettext\PluralForms.cs" />
+    <Compile Include="MonoDevelop.Gettext\TranslationCollection.cs" />
+    <Compile Include="MonoDevelop.Gettext.NodeBuilders\ProjectFileNodeBuilderExtension.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="gtk-gui\gui.stetic">
+      <LogicalName>gui.stetic</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="gtk-gui\objects.xml">
+      <LogicalName>objects.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Gettext.addin.xml" />
+    <EmbeddedResource Include="icons\locale_22x22.png">
+      <LogicalName>locale_22x22.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\locale_16x16.png">
+      <LogicalName>locale_16x16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\locale_32x32.png">
+      <LogicalName>locale_32x32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\TranslationProject.xpt.xml">
+      <LogicalName>TranslationProject.xpt.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\Makefile.template">
+      <LogicalName>Makefile.template</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\Makefile.am.template">
+      <LogicalName>Makefile.am.template</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\gettext-overlay-16.png">
+      <LogicalName>gettext-overlay-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\gettext-overlay-32.png">
+      <LogicalName>gettext-overlay-32.png</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ChangeLog" />
+    <None Include="Makefile.am" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ProjectExtensions>
+    <MonoDevelop>
+      <Properties>
+        <Deployment.LinuxDeployData scriptName="monodevelop.gettext" generatePcFile="false" />
+        <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="true" IsAutotoolsProject="true" RelativeConfigureInPath="../../../">
+          <BuildFilesVar Sync="true" Name="FILES" />
+          <DeployFilesVar />
+          <ResourcesVar Sync="true" Name="RES" />
+          <OthersVar />
+          <GacRefVar Sync="true" Name="REFS" Prefix="-r:" />
+          <AsmRefVar Sync="true" Name="REFS" Prefix="-r:" />
+          <ProjectRefVar Sync="true" Name="DEPS" />
+        </MonoDevelop.Autotools.MakefileInfo>
+      </Properties>
+    </MonoDevelop>
+  </ProjectExtensions>
+</Project>

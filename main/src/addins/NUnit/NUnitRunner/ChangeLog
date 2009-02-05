@@ -1,0 +1,5 @@
+2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* NUnitRunner.mdp:
+	* NUnitRunner.csproj: Migrated to MSBuild file format.
+

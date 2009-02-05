@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{BA9020AD-A2D1-47C8-9A7C-756162C38296}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AssemblyName>MonoDevelop.Deployment.Linux</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\..\build\AddIns\MonoDevelop.Deployment</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <ApplicationIcon>.</ApplicationIcon>
+    <ConsolePause>false</ConsolePause>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\..\build\AddIns\MonoDevelop.Deployment</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
+      <Project>{7525BB88-6142-4A26-93B9-A30C6983390A}</Project>
+      <Name>MonoDevelop.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\core\MonoDevelop.Core.Gui\MonoDevelop.Core.Gui.csproj">
+      <Project>{659B0888-3956-4040-BDB1-B45F6D64E7FA}</Project>
+      <Name>MonoDevelop.Core.Gui</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\core\MonoDevelop.Projects\MonoDevelop.Projects.csproj">
+      <Project>{04BED15A-DDC5-48BC-A36C-3E360A0348C0}</Project>
+      <Name>MonoDevelop.Projects</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\core\MonoDevelop.Projects.Gui\MonoDevelop.Projects.Gui.csproj">
+      <Project>{00E87426-F1BD-4B55-9B3E-7267EE93E002}</Project>
+      <Name>MonoDevelop.Projects.Gui</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
+      <Project>{27096E7F-C91C-4AC6-B289-6897A701DF21}</Project>
+      <Name>MonoDevelop.Ide</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\core\MonoDevelop.Components\MonoDevelop.Components.csproj">
+      <Project>{3344D566-484B-4AEC-BBCF-86BC484D14B0}</Project>
+      <Name>MonoDevelop.Components</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\MonoDevelop.Deployment\MonoDevelop.Deployment.csproj">
+      <Project>{9BC670A8-1851-40EC-9685-279F4C98433D}</Project>
+      <Name>MonoDevelop.Deployment</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="Mono.Posix" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Mono.Addins, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="glib-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="gtk-gui\gui.stetic">
+      <LogicalName>gui.stetic</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="gtk-gui\objects.xml">
+      <LogicalName>objects.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Deployment.Linux\DesktopInfo.xml">
+      <LogicalName>DesktopInfo.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Deployment.Linux.addin.xml" />
+    <EmbeddedResource Include="app.desktop.xft.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="gtk-gui\generated.cs" />
+    <Compile Include="MonoDevelop.Deployment.Linux\BasicOptionPanelWidget.cs" />
+    <Compile Include="MonoDevelop.Deployment.Linux\DesktopPanelWidget.cs" />
+    <Compile Include="MonoDevelop.Deployment.Linux\DotDesktopViewWidget.cs" />
+    <Compile Include="MonoDevelop.Deployment.Linux\DotDesktopDisplayBinding.cs" />
+    <Compile Include="MonoDevelop.Deployment.Linux\DotDesktopView.cs" />
+    <Compile Include="MonoDevelop.Deployment.Linux\DesktopEntry.cs" />
+    <Compile Include="MonoDevelop.Deployment.Linux\MenuCategorySelectorDialog.cs" />
+    <Compile Include="MonoDevelop.Deployment.Linux\BasicOptionPanel.cs" />
+    <Compile Include="MonoDevelop.Deployment.Linux\LinuxDeployData.cs" />
+    <Compile Include="MonoDevelop.Deployment.Linux\LinuxDeployExtension.cs" />
+    <Compile Include="MonoDevelop.Deployment.Linux\LinuxTargetDirectory.cs" />
+    <Compile Include="MonoDevelop.Deployment.Linux\LinuxIntegrationProjectFeature.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Deployment.Linux.BasicOptionPanelWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Deployment.Linux.DesktopPanelWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Deployment.Linux.MenuCategorySelectorDialog.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="MonoDevelop.Deployment.Linux\LinuxDeploymentSetup.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Makefile.am" />
+    <None Include="ChangeLog" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ProjectExtensions>
+    <MonoDevelop>
+      <Properties>
+        <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="true" IsAutotoolsProject="true" RelativeConfigureInPath="../../../..">
+          <BuildFilesVar Sync="true" Name="FILES" />
+          <DeployFilesVar Sync="true" Name="DATA_FILES" />
+          <ResourcesVar Sync="true" Name="RES" />
+          <OthersVar />
+          <GacRefVar Sync="true" Name="REFS" Prefix="-r:" />
+          <AsmRefVar Sync="true" Name="REFS" Prefix="-r:" />
+          <ProjectRefVar Sync="true" Name="DEPS" />
+        </MonoDevelop.Autotools.MakefileInfo>
+      </Properties>
+    </MonoDevelop>
+  </ProjectExtensions>
+</Project>

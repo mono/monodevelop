@@ -1,0 +1,5 @@
+2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Autotools.mdp:
+	* Autotools.csproj: Migrated to MSBuild file format.
+
