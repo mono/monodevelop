@@ -78,27 +78,27 @@ namespace Mono.TextEditor
 				caret.PositionChanged += CaretPositionChanged;
 				this.document.BeginUndo += OnBeginUndo;
 				this.document.EndUndo += OnEndUndo;
-//				this.document.TextReplacing += HandleTextReplacing;
 			}
 		}
-/*
-		void HandleTextReplacing(object sender, ReplaceEventArgs e)
-		{
-			if (Options.TabsToSpaces && !String.IsNullOrEmpty (e.Value)) {
-				StringBuilder sb = new StringBuilder ();
-				for (int i = 0; i < e.Value.Length; i++) {
-					char ch = e.Value[i];
-					if (ch == '\t') {
-						sb.Append (new string (' ', Options.TabSize));
-					} else {
-						sb.Append (ch);
-					}
+		
+		/// <value>
+		/// The eol mark used in this document - it's taken from the first line in the document,
+		/// if no eol mark is found it's using the default (Environment.NewLine).
+		/// The value is saved, even when all lines are deleted the eol marker will still be the old eol marker.
+		/// </value>
+		string eol = null;
+		public string EolMarker {
+			get {
+				if (Options.OverrideDocumentEolMarker)
+					return Options.DefaultEolMarker;
+				if (eol == null && Document.LineCount > 0) {
+					LineSegment line = Document.GetLine (0);
+					if (line.DelimiterLength > 0) 
+						eol = Document.GetTextAt (line.EditableLength, line.DelimiterLength);
 				}
-				if (Caret.Offset >= e.Offset) 
-					Caret.Offset += e.Value.Length - sb.Length;
-				e.Value = sb.ToString ();
+				return !String.IsNullOrEmpty (eol) ? eol : Options.DefaultEolMarker;
 			}
-		}*/
+		}
 		
 		public ITextEditorOptions Options {
 			get {
@@ -138,21 +138,34 @@ namespace Mono.TextEditor
 		
 		public int Replace (int offset, int count, string value)
 		{
-			if (Options.TabsToSpaces && !String.IsNullOrEmpty (value)) {
-				StringBuilder sb = new StringBuilder ();
+			StringBuilder sb = new StringBuilder ();
+			if (value != null) {
+				bool convertTabs = Options.TabsToSpaces;
 				for (int i = 0; i < value.Length; i++) {
 					char ch = value[i];
-					if (ch == '\t') {
-						sb.Append (new string (' ', Options.TabSize));
-					} else {
+					switch (ch) {
+					case '\t':
+						if (convertTabs) {
+							sb.Append (new string (' ', Options.TabSize));
+						} else 
+							goto default;
+						break;
+					case '\r':
+						if (i + 1 < value.Length && value[i + 1] == '\n')
+							i++;
+						goto case '\n';
+					case '\n':
+						sb.Append (EolMarker);
+						break;
+					default:
 						sb.Append (ch);
+						break;
 					}
 				}
-				value = sb.ToString ();
 			}
 			
-			((IBuffer)document).Replace (offset, count, value);
-			return value != null ? value.Length : 0;
+			((IBuffer)document).Replace (offset, count, sb.ToString ());
+			return sb.Length;
 		}
 			
 		public void InsertAtCaret (string text)

@@ -40,28 +40,11 @@ namespace Mono.TextEditor
 		IBuffer      buffer;
 		LineSplitter splitter;
 		SyntaxMode   syntaxMode = null;
-		string       eol = null;
 		
 		string mimeType;
 		string fileName;
 		bool   readOnly;
 		ReadOnlyCheckDelegate readOnlyCheckDelegate;
-		
-		/// <value>
-		/// The eol mark used in this document - it's taken from the first line in the document,
-		/// if no eol mark is found it's using the default (Environment.NewLine).
-		/// The value is saved, even when all lines are deleted the eol marker will still be the old eol marker.
-		/// </value>
-		public string EolMarker {
-			get {
-				if (eol == null && splitter.LineCount > 0) {
-					LineSegment line = splitter.Get (0);
-					if (line.DelimiterLength > 0) 
-						eol = buffer.GetTextAt (line.EditableLength, line.DelimiterLength);
-				}
-				return !String.IsNullOrEmpty (eol) ? eol : Environment.NewLine;
-			}
-		}
 		
 		public string MimeType {
 			get {

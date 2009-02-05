@@ -239,7 +239,7 @@ namespace Mono.TextEditor
 				data.DeleteSelectedText ();
 			}
 			
-			string newLine = data.Document.EolMarker;
+			string newLine = data.EolMarker;
 			int caretColumnOffset = 0;
 			LineSegment line = data.Document.GetLine (data.Caret.Line);
 			

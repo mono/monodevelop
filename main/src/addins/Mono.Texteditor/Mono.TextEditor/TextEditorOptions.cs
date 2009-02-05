@@ -67,7 +67,8 @@ namespace Mono.TextEditor
 		
 		double zoom = 1.0;
 		IWordFindStrategy wordFindStrategy = new EmacsWordFindStrategy (true);
-
+		
+		
 		public double Zoom {
 			get {
 				return zoom;
@@ -115,7 +116,19 @@ namespace Mono.TextEditor
 				return this.tabsToSpaces ? new string (' ', this.TabSize) : "\t";
 			}
 		}
-		
+		public virtual bool OverrideDocumentEolMarker {
+			get;
+			set;
+		}
+		public virtual string DefaultEolMarker {
+			get;
+			set;
+		}
+		public TextEditorOptions ()
+		{
+			OverrideDocumentEolMarker = false;
+			DefaultEolMarker = Environment.NewLine;
+		}
 		public virtual IWordFindStrategy WordFindStrategy {
 			get {
 				return wordFindStrategy;
@@ -372,6 +385,8 @@ namespace Mono.TextEditor
 			FontName = other.FontName;
 			EnableSyntaxHighlighting = other.EnableSyntaxHighlighting;
 			ColorScheme = other.ColorScheme;
+			OverrideDocumentEolMarker = other.OverrideDocumentEolMarker;
+			DefaultEolMarker = other.DefaultEolMarker;
 		}
 		
 		public virtual void Dispose ()

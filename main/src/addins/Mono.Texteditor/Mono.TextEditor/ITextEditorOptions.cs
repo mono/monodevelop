@@ -59,10 +59,12 @@ namespace Mono.TextEditor
 		int RulerColumn { get; }
 		bool ShowRuler { get; }
 		bool AutoIndent { get; }
+		bool OverrideDocumentEolMarker { get; }
 		string FontName { get; }
 		bool EnableSyntaxHighlighting { get; }
 		Pango.FontDescription Font { get; }
 		string ColorScheme { get; }
+		string DefaultEolMarker { get; }
 		Style GetColorStyle (Gtk.Widget widget);
 		event EventHandler Changed;
 	}

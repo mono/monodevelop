@@ -692,7 +692,7 @@ namespace Mono.TextEditor.Vi
 					if (data.IsSomethingSelected) {
 						// Replace selection
 						RunAction (ClipboardActions.Cut);
-						data.InsertAtCaret (data.Document.EolMarker);
+						data.InsertAtCaret (data.EolMarker);
 						int offset = data.Caret.Offset;
 						data.InsertAtCaret (contents);
 						if (linemode) {
@@ -739,7 +739,7 @@ namespace Mono.TextEditor.Vi
 					if (data.IsSomethingSelected) {
 						// Replace selection
 						RunAction (ClipboardActions.Cut);
-						data.InsertAtCaret (data.Document.EolMarker);
+						data.InsertAtCaret (data.EolMarker);
 						int offset = data.Caret.Offset;
 						data.InsertAtCaret (contents);
 						if (linemode) {
