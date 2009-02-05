@@ -1,3 +1,10 @@
+2009-02-05  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Text/TextFile.cs:
+	* MonoDevelop.Projects.Text/IEditableTextFile.cs: fixed "Bug
+	  472714 - MonoDevelop automatic indentation does not follow
+	  "Convert tabs to spaces" option".
+
 2009-02-05  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Formats.MSBuild/MSBuildFileFormat.cs:

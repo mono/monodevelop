@@ -239,10 +239,11 @@ namespace MonoDevelop.Projects.Text
 			return len;
 		}
 		
-		public void InsertText (int position, string textIn)
+		public int InsertText (int position, string textIn)
 		{
 			text.Insert (position, textIn);
 			modified = true;
+			return textIn != null ? textIn.Length : 0;
 		}
 		
 		public void DeleteText (int position, int length)

@@ -37,7 +37,11 @@ namespace MonoDevelop.Projects.Text
 			set;
 		}
 		
-		void InsertText (int position, string text);
+		/// <returns>
+		/// The length of the inserted text. The real text may differ in lenth because
+		/// of some conversions (tabs -> spaces, different line ends etc.)
+		/// </returns>
+		int InsertText (int position, string text);
 		void DeleteText (int position, int length);
 	}
 }
