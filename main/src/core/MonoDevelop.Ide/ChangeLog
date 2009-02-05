@@ -1,3 +1,9 @@
+2009-02-05  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui/TextEditor.cs: fixed "Bug 472714 -
+	  MonoDevelop automatic indentation does not follow "Convert
+	  tabs to spaces" option".
+
 2009-02-03  David Makovský (Yakeen)  <yakeen@sannyas-on.net>
 
 	* MonoDevelop.Ide.addin.xml: fixed typo

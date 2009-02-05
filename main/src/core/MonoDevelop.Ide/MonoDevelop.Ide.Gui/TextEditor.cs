@@ -205,9 +205,9 @@ namespace MonoDevelop.Ide.Gui
 			textBuffer.GetLineColumnFromPosition (position, out line, out column);
 		}
 		
-		public void InsertText (int position, string text)
+		public int InsertText (int position, string text)
 		{
-			textBuffer.InsertText (position, text);
+			return textBuffer.InsertText (position, text);
 		}
 		
 		public void DeleteText (int position, int length)
