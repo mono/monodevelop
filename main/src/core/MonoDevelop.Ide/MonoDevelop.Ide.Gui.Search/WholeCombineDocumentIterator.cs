@@ -21,6 +21,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 
 using MonoDevelop.Projects;
@@ -48,22 +49,18 @@ namespace MonoDevelop.Ide.Gui.Search
 		public override void Reset() 
 		{
 			files.Clear();
+			
+			HashSet<string> added = new HashSet<string> ();
 			if (IdeApp.Workspace.IsOpen) {
-				foreach (Project p in IdeApp.Workspace.GetAllProjects ()) {
-					AddFiles (p);
+				foreach (Project project in IdeApp.Workspace.GetAllProjects ()) {
+					foreach (ProjectFile file in project.Files) {
+						if (file.Subtype == Subtype.Code && added.Add (file.Name))
+							files.Add (file.Name);
+					}
 				}
 			}
 			
 			curIndex = -1;
-		}
-		
-		void AddFiles(Project project)
-		{
-			foreach (ProjectFile file in project.Files) {
-				if (file.Subtype == Subtype.Code) {
-					files.Add(file.Name);
-				}
-			}
 		}
 	}
 }

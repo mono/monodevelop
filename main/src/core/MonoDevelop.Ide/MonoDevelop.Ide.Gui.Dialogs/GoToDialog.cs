@@ -265,7 +265,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			searchThread = null;
 		}
 
-		List<string> files;
+		IEnumerable<string> files;
 		List<IType> types;
 		List<string> filteredFiles;
 		List<IType> filteredTypes;
@@ -286,7 +286,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			if (searchFiles) {
 				// Get the list of files. If the parttern is a refinement of the previous
 				// one, use the list filtered in the previous search.
-				List<string> allFiles;
+				IEnumerable<string> allFiles;
 				if (previousPattern != null && toMatch.StartsWith (previousPattern) && filteredFiles != null)
 					allFiles = filteredFiles;
 				else if (files == null)
@@ -348,9 +348,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			}
 		}
 		
-		List<string> GetFiles ()
+		IEnumerable<string> GetFiles ()
 		{
-			List<string> list = new List<string> ();
+			HashSet<string> list = new HashSet<string> ();
 			foreach (Document doc in IdeApp.Workbench.Documents) {
 				// We only want to check it here if it's not part
 				// of the open combine.  Otherwise, it will get
