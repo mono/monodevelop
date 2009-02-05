@@ -445,12 +445,27 @@ namespace MonoDevelop.Core
 		
 		
 		string[] _pkgConfigDirs;
-		string[] PkgConfigDirs {
+		public IEnumerable<string> PkgConfigDirs {
 			get {
 				if (_pkgConfigDirs == null)
 					_pkgConfigDirs = System.Linq.Enumerable.ToArray (GetPkgConfigDirs ());
 				return _pkgConfigDirs;
 			}
+		}
+		
+		public string PkgConfigPath {
+			get {
+				return string.Join (new string (Path.PathSeparator, 1), (string[])PkgConfigDirs);
+			}
+		}
+		
+		public IEnumerable<string> GetAllPkgConfigFiles ()
+		{
+			HashSet<string> packageNames = new HashSet<string> ();
+			foreach (string pcdir in PkgConfigDirs)
+				foreach (string pcfile in Directory.GetFiles (pcdir, "*.pc"))
+					if (packageNames.Add (Path.GetFileNameWithoutExtension (pcfile)))
+						yield return pcfile;
 		}
 		
 		void RunInitialization ()
@@ -706,16 +721,17 @@ namespace MonoDevelop.Core
 			string interp = GetVariableFromPkgConfig (variable, Path.GetFileNameWithoutExtension (pcfile));
 			return ProcessPiece (piece.Replace ("${" + variable + "}", interp), pcfile);
 		}
-	
-		private string GetVariableFromPkgConfig (string var, string pcfile)
+		
+		public string RunPkgConfigCommand (string arguments)
 		{
 			if (reportedPkgConfigNotFound)
 				return string.Empty;
 			ProcessStartInfo psi = new ProcessStartInfo ("pkg-config");
 			psi.RedirectStandardOutput = true;
 			psi.UseShellExecute = false;
-			psi.EnvironmentVariables["PKG_CONFIG_PATH"] = string.Join (new string (Path.PathSeparator, 1), PkgConfigDirs);
-			psi.Arguments = String.Format ("--variable={0} {1}", var, pcfile);
+			psi.EnvironmentVariables["PKG_CONFIG_PATH"] = PkgConfigPath;
+			
+			psi.Arguments = arguments;
 			Process p = new Process ();
 			p.StartInfo = psi;
 			string ret = string.Empty;
@@ -724,14 +740,24 @@ namespace MonoDevelop.Core
 				ret = p.StandardOutput.ReadToEnd ().Trim ();
 				p.WaitForExit ();
 			} catch (System.ComponentModel.Win32Exception) {
-				LoggingService.LogError ("Could not run pkg-config to locate system assemblies.");
+				LoggingService.LogError ("Could not run pkg-config to locate system assemblies and development packages.");
 				reportedPkgConfigNotFound = true;
 			} catch (Exception ex) {
-				LoggingService.LogError ("Could not run pkg-config to locate system assemblies.", ex);
+				LoggingService.LogError ("Could not run pkg-config to locate system assemblies and development packages.", ex);
 				reportedPkgConfigNotFound = true;
 			}
 			
 			return ret ?? string.Empty;
+		}
+	
+		public string GetVariableFromPkgConfig (string var, string pcfile)
+		{
+			return RunPkgConfigCommand (String.Format ("--variable={0} {1}", var, pcfile));
+		}
+		
+		public string GetLibsFromPkgConfig (string pcfile)
+		{
+			return RunPkgConfigCommand (String.Format ("--libs {0}", pcfile));
 		}
 		
 		public AssemblyName ParseAssemblyName (string fullname)
