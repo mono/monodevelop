@@ -1,5 +1,9 @@
 2009-02-04  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Gui/MemberCompletionData.cs: Better sorting of overloads.
+
+2009-02-04  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Gui/MemberCompletionData.cs: Don't auto-insert <T>. Sort
 	  overloads. Always display <> in the name when there is a
 	  generic overload.

@@ -218,9 +218,29 @@ namespace MonoDevelop.CSharpBinding
 			
 			public int Compare (ICompletionData x, ICompletionData y)
 			{
-				string sx = ambience.GetString (((MemberCompletionData)x).member, flags);
-				string sy = ambience.GetString (((MemberCompletionData)y).member, flags);
-				int result = sx.Length.CompareTo (sy.Length);
+				IMember mx = ((MemberCompletionData)x).member;
+				IMember my = ((MemberCompletionData)y).member;
+				int result;
+				
+				if (mx is IType && my is IType) {
+					result = ((((IType)mx).TypeParameters.Count).CompareTo (((IType)my).TypeParameters.Count));
+					if (result != 0)
+						return result;
+				}
+				
+				if (mx is IMethod && my is IMethod) {
+					IMethod mmx = (IMethod) mx, mmy = (IMethod) my;
+					result = (mmx.TypeParameters.Count).CompareTo (mmx.TypeParameters.Count);
+					if (result != 0)
+						return result;
+					result = (mmx.Parameters.Count).CompareTo (mmx.Parameters.Count);
+					if (result != 0)
+						return result;
+				}
+				
+				string sx = ambience.GetString (mx, flags);
+				string sy = ambience.GetString (my, flags);
+				result = sx.Length.CompareTo (sy.Length);
 				return result == 0? string.Compare (sx, sy) : result;
 			}
 		}
