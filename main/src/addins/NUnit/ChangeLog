@@ -1,5 +1,12 @@
 2009-02-05  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelopNUnit.addin.xml: Don't register the nunit package
+	  if mono-nunit is installed and has the same version.
+
+	* gtk-gui/generated.cs: Flush.
+
+2009-02-05  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Services/UnitTestResult.cs: Getting the failure location
 	  doesn't work very well. Disable for now.
 

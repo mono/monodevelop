@@ -68,11 +68,13 @@
 	<!-- Extensions -->
 
 	<Extension path="/MonoDevelop/Core/SupportPackages">
-		<Package name="nunit" version="2.4.8.0" clrVersion="Default">
-			<Assembly file="nunit.core.dll" />
-			<Assembly file="nunit.core.interfaces.dll" />
-			<Assembly file="nunit.framework.dll" />
-		</Package>
+		<Condition id="PackageNotInstalled" name="mono-nunit" version="2.4">
+			<Package name="nunit" version="2.4" clrVersion="Default">
+				<Assembly file="nunit.core.dll" />
+				<Assembly file="nunit.core.interfaces.dll" />
+				<Assembly file="nunit.framework.dll" />
+			</Package>
+		</Condition>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/Pads">
