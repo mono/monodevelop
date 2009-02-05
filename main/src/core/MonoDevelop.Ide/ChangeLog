@@ -1,5 +1,12 @@
 2009-02-05  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs: Internal
+	  packages now show a "Provided by MD" message next to the
+	  name, to make more evident that they are not installed in
+	  the system.
+
+2009-02-05  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui.Dialogs/GoToDialog.cs: Avoid duplicates
 	  in search results. Fixes bug 470393 - Some items show up
 	  twice in go-to-file dialog.

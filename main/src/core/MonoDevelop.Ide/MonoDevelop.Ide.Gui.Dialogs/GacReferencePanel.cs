@@ -143,7 +143,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				try {
 					System.Reflection.AssemblyName an = System.Reflection.AssemblyName.GetAssemblyName (assemblyPath);
 					SystemPackage package = Runtime.SystemAssemblyService.GetPackageFromFullName (an.FullName);
-					store.AppendValues (an.Name, an.Version.ToString (), System.IO.Path.GetFileName (assemblyPath), false, an.FullName, package.Name);
+					string pn = package.Name;
+					if (package.IsInternalPackage) pn += " " + GettextCatalog.GetString ("(Provided by MonoDevelop)");
+					store.AppendValues (an.Name, an.Version.ToString (), System.IO.Path.GetFileName (assemblyPath), false, an.FullName, pn);
 				}catch {
 				}
 			}
