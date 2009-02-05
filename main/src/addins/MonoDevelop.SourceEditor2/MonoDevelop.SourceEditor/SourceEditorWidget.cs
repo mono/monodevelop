@@ -234,7 +234,6 @@ namespace MonoDevelop.SourceEditor
 		#region Error underlining
 		Dictionary<int, ErrorMarker> errors = new Dictionary<int, ErrorMarker> ();
 		uint resetTimerId;
-		bool resetTimerStarted = false;
 		
 		FoldSegment AddMarker (List<FoldSegment> foldSegments, string text, DomRegion region, FoldingType type)
 		{
@@ -365,25 +364,24 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (!this.TextEditor.Options.UnderlineErrors)
 				return;
-			uint timeout = 900;
-			if (resetTimerStarted) {
-				// Reset the timer
-				GLib.Source.Remove (resetTimerId);
-				resetTimerStarted = false;
-			} else {
-				// Start the timer for the first time
-				resetTimerStarted = true;
+			// this may be run in another thread, therefore we've to synchronize
+			// with the gtk main loop.
+			lock (this) {
+				if (resetTimerId > 0) {
+					GLib.Source.Remove (resetTimerId);
+					resetTimerId = 0;
+				}
+				const uint timeout = 900;
+				resetTimerId = GLib.Timeout.Add (timeout, delegate {
+					lock (this) { // this runs in the gtk main loop.
+						ResetUnderlineChangement ();
+						if (parsedDocument != null)
+							ParseCompilationUnit (parsedDocument);
+						resetTimerId = 0;
+					}
+					return false;
+				});
 			}
-			resetTimerId = GLib.Timeout.Add (timeout, AutocorrResetMeth);
-		}
-		
-		bool AutocorrResetMeth ()
-		{
-			ResetUnderlineChangement ();
-			if (parsedDocument != null)
-				ParseCompilationUnit (parsedDocument);
-			resetTimerStarted = false;
-			return false;
 		}
 		
 		void ResetUnderlineChangement ()
