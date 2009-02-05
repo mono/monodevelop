@@ -191,4 +191,7 @@
 		<Class class = "MonoDevelop.GtkCore.Dialogs.GtkProjectFeature" />
 	</Extension>
 
+	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/Preferences/Style">
+		<Panel _label = "GTK# Designer" class = "MonoDevelop.GtkCore.Dialogs.GtkDesignerOptionPanel" />
+	</Extension>
 </Addin>

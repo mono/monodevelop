@@ -28,9 +28,11 @@ REFS =  \
 FILES =  \
 	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
+	gtk-gui/MonoDevelop.GtkCore.Dialogs.GtkDesignerOptionsPanelWidget.cs \
 	MonoDevelop.GtkCore.Commands/GladeCommands.cs \
 	MonoDevelop.GtkCore.Dialogs/BindDesignDialog.cs \
 	MonoDevelop.GtkCore.Dialogs/ConfirmWindowDeleteDialog.cs \
+	MonoDevelop.GtkCore.Dialogs/GtkDesignerOptionsPanelWidget.cs \
 	MonoDevelop.GtkCore.Dialogs/GtkFeatureWidget.cs \
 	MonoDevelop.GtkCore.Dialogs/SelectRenamedClassDialog.cs \
 	MonoDevelop.GtkCore.Dialogs/WidgetBuilderOptionPanel.cs \

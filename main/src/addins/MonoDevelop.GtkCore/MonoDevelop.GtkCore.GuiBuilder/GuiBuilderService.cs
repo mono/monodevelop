@@ -121,7 +121,15 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			PropertyService.Set ("MonoDevelop.GtkCore.ShowNonContainerWarning", steticApp.ShowNonContainerWarning);
 			PropertyService.SaveProperties ();
 		}
-
+		
+		public static bool AutoSwitchGuiLayout {
+			get {
+				return PropertyService.Get ("MonoDevelop.GtkCore.AutoSwitchGuiLayout", false);
+			}
+			set {
+				PropertyService.Set ("MonoDevelop.GtkCore.AutoSwitchGuiLayout", value);
+			}
+		}
 		
 		public static ActionGroupView OpenActionGroup (Project project, Stetic.ActionGroupInfo group)
 		{
@@ -166,7 +174,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		static void SetDesignerLayout ()
 		{
-			if (IdeApp.Workbench.CurrentLayout != GuiBuilderLayout) {
+			if (AutoSwitchGuiLayout && IdeApp.Workbench.CurrentLayout != GuiBuilderLayout) {
 				bool exists = Array.IndexOf (IdeApp.Workbench.Layouts, GuiBuilderLayout) != -1;
 				defaultLayout = IdeApp.Workbench.CurrentLayout;
 				IdeApp.Workbench.CurrentLayout = GuiBuilderLayout;
@@ -181,7 +189,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		static void RestoreLayout ()
 		{
-			if (defaultLayout != null) {
+			if (AutoSwitchGuiLayout && defaultLayout != null) {
 				IdeApp.Workbench.CurrentLayout = defaultLayout;
 				defaultLayout = null;
 			}
