@@ -1,3 +1,7 @@
+2009-02-06  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/ResolveVisitor.cs: Fixing C#3 query expressions.
+
 2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* CSharpBinding.mds:

@@ -547,21 +547,44 @@ namespace MonoDevelop.CSharpBinding
 			return null;
 		}
 		
+		QueryExpression queryExpression = null;
 		public override object VisitQueryExpression(QueryExpression queryExpression, object data)
 		{
+			if (this.queryExpression != null) // prevent endloss loop: var n = from n select n; n.$ (doesn't make sense, but you can type this)
+				return null;
+			this.queryExpression = queryExpression;
 			IReturnType type = null;
 			QueryExpressionSelectClause selectClause = queryExpression.SelectOrGroupClause as QueryExpressionSelectClause;
 			if (selectClause != null) {
-				type = ResolveType (selectClause.Projection);
+				InvocationExpression selectInvocation = new InvocationExpression (new MemberReferenceExpression (queryExpression.FromClause.InExpression, "Select"));
+				LambdaExpression selectLambdaExpr = new LambdaExpression ();
+				selectLambdaExpr.Parent = selectInvocation;
+				selectLambdaExpr.Parameters.Add (new ParameterDeclarationExpression (null, "par"));
+				selectLambdaExpr.ExpressionBody = selectClause.Projection;
+				selectInvocation.Arguments.Add (selectLambdaExpr);
+				return CreateResult (ResolveType (selectInvocation));
 			}
-			if (type == null) {
-				QueryExpressionGroupClause groupClause = queryExpression.SelectOrGroupClause as QueryExpressionGroupClause;
-				if (groupClause != null)
-					type = new DomReturnType ("System.Linq.IGrouping", false,  new List<IReturnType> (new IReturnType[] { ResolveType(groupClause.GroupBy), ResolveType(groupClause.Projection) }));
+			
+			QueryExpressionGroupClause groupClause = queryExpression.SelectOrGroupClause as QueryExpressionGroupClause;
+			if (groupClause == null) {
+				InvocationExpression groupInvocation = new InvocationExpression (new MemberReferenceExpression (queryExpression.FromClause.InExpression, "GroupBy"));
+				
+				LambdaExpression keyLambdaExpr = new LambdaExpression ();
+				keyLambdaExpr.Parent = groupInvocation;
+				keyLambdaExpr.Parameters.Add (new ParameterDeclarationExpression (null, "par"));
+				keyLambdaExpr.ExpressionBody = groupClause.GroupBy;
+				groupInvocation.Arguments.Add (keyLambdaExpr);
+				
+				LambdaExpression elementLambdaExpr = new LambdaExpression ();
+				elementLambdaExpr.Parent = groupInvocation;
+				elementLambdaExpr.Parameters.Add (new ParameterDeclarationExpression (null, "par"));
+				elementLambdaExpr.ExpressionBody = groupClause.Projection;
+				groupInvocation.Arguments.Add (elementLambdaExpr);
+				return CreateResult (ResolveType (groupInvocation));
 			}
+			
 			if (type != null) 
 				return CreateResult (new DomReturnType("System.Collections.Generic.IEnumerable", false, new List<IReturnType> (new IReturnType[] { type })));
-			
 			return null;
 		}
 		
