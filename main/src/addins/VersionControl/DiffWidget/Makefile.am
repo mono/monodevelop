@@ -6,9 +6,7 @@ REFS =  \
 	$(GTK_SHARP_LIBS) \
 	-r:$(top_builddir)/build/AddIns/VersionControl/Diff.dll \
 	-r:Mono.Posix
-FILES =  \
-	gtk-gui/generated.cs \
-	widget.cs
+FILES = widget.cs
 
 $(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
 
