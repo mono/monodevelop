@@ -1,5 +1,13 @@
 2009-02-06  Mike Krüger  <mkrueger@novell.com>
 
+	* Makefile.am:
+	* UnitTests.csproj: 
+
+	* Mono.TextEditor.Tests/SyntaxHighlightingTests.cs: added
+	  syntax highlighting tests.
+
+2009-02-06  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: fixed
 	  unit test.
 

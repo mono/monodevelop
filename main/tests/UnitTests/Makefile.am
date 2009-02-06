@@ -39,6 +39,7 @@ FILES =  \
 	Mono.TextEditor.Tests/LineSplitterTests.cs \
 	Mono.TextEditor.Tests/SearchTests.cs \
 	Mono.TextEditor.Tests/SelectionTests.cs \
+	Mono.TextEditor.Tests/SyntaxHighlightingTests.cs \
 	Mono.TextEditor.Tests/UndoRedoTests.cs \
 	MonoDevelop.CSharpBinding/CodeCompletionAccessibleTests.cs \
 	MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs \
