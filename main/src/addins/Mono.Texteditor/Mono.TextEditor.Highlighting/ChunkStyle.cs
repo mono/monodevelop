@@ -82,7 +82,7 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public virtual bool Underline {
+		public bool Underline {
 			get {
 				return (ChunkProperties & ChunkProperties.Underline) == ChunkProperties.Underline;
 			}
@@ -136,9 +136,9 @@ namespace Mono.TextEditor
 		
 		public override string ToString ()
 		{
-			return String.Format ("[ChunkStyle: Color={0}, bold={1}]", color, Bold);
+			return string.Format("[ChunkStyle: Color={0}, BackgroundColor={1}, TransparentBackround={2}, ChunkProperties={3}, Link={4}]", Color, BackgroundColor, TransparentBackround, ChunkProperties, Link);
 		}
-
+		
 		public override int GetHashCode ()
 		{
 			return color.GetHashCode () ^ Bold.GetHashCode ();

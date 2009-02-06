@@ -96,6 +96,11 @@ namespace Mono.TextEditor.Highlighting
 					return base.GetCharAt (doc, offset);
 				return text [offset - this.Offset];
 			}
+			
+			public override string ToString ()
+			{
+				return string.Format("[TextChunk: ChunkStyle={0}]", ChunkStyle);
+			}
 		}
 		
 		static ChunkStyle GetChunkStyle (Style style, IEnumerable<Tag> tagStack)
@@ -113,7 +118,7 @@ namespace Mono.TextEditor.Highlighting
 						ChunkStyle chunkStyle =  style.GetChunkStyle (tag.Arguments["style"]);
 						if (chunkStyle != null) {
 							result.Color = chunkStyle.Color;
-							result.ChunkProperties = chunkStyle.ChunkProperties;
+							result.ChunkProperties |= chunkStyle.ChunkProperties;
 						} else {
 							throw new Exception ("Style " + tag.Arguments["style"] + " not found.");
 						}

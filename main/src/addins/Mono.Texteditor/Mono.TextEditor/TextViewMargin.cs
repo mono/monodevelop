@@ -433,7 +433,8 @@ namespace Mono.TextEditor
 			int caretOffset = Caret.Offset;
 			int drawCaretAt = -1;
 			wordBuilder.Length = 0;
-			ChunkStyle style = chunk.GetChunkStyle (textEditor.GetTextEditorData ().ColorStyle);
+			ChunkStyle style = chunk.GetChunkStyle (ColorStyle);
+			
 			if (line.Markers != null) {
 				foreach (TextMarker marker in line.Markers)
 					style = marker.GetStyle (style);
@@ -806,8 +807,10 @@ namespace Mono.TextEditor
 			if (chunk != null) {
 				int offset = Document.LocationToOffset (VisualToDocumentLocation (args.X, args.Y));
 				for (; chunk != null; chunk = chunk.Next) {
-					if (chunk.Offset <= offset && offset < chunk.EndOffset) 
-						return chunk.Style != null ? chunk.GetChunkStyle (style).Link : null;
+					if (chunk.Offset <= offset && offset < chunk.EndOffset) {
+						ChunkStyle chunkStyle = chunk.GetChunkStyle (style);
+						return chunkStyle != null ? chunkStyle.Link : null;
+					}
 				}
 			}
 			return null;
@@ -828,6 +831,7 @@ namespace Mono.TextEditor
 				}
 				ShowTooltip (null, Gdk.Rectangle.Zero);
 				string link = GetLink (args);
+				
 				if (!String.IsNullOrEmpty (link)) {
 					base.cursor = arrowCursor;
 				} else {

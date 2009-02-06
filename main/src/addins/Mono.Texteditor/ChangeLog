@@ -1,3 +1,10 @@
+2009-02-06  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextViewMargin.cs:
+	* Mono.TextEditor.Highlighting/ChunkStyle.cs:
+	* Mono.TextEditor.Highlighting/MarkupSyntaxMode.cs: Fixed link
+	  feature.
+
 2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.TextEditor.mds:
