@@ -125,6 +125,8 @@ namespace MonoDevelop.Projects.Dom
 			}
 			
 			foreach (TypeDefinition nestedType in typeDefinition.NestedTypes) {
+				if (!loadInternal && DomCecilCompilationUnit.IsInternal (DomCecilType.GetModifiers (nestedType.Attributes)))
+					continue;
 				base.Add (new DomCecilType (keepDefinitions, loadInternal, nestedType));
 			}
 			
