@@ -1,5 +1,10 @@
 2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Mono.Cecil.csproj:
+	* Mono.Cecil.Mdb.csproj: More flush.
+
+2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Mono.Cecil.mdp:
 	* Mono.Cecil.csproj:
 	* Mono.Cecil.Mdb.mdp:

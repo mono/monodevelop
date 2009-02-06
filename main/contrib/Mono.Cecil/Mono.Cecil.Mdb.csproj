@@ -395,6 +395,7 @@
     <None Include="Mono.Cecil.Mdb\Mono.Cecil.MdbOld\MdbFactory.cs" />
     <None Include="Mono.Cecil.Mdb\Mono.Cecil.MdbOld\MdbReader.cs" />
     <None Include="Mono.Cecil.Mdb\Mono.Cecil.MdbOld\MdbWriter.cs" />
+    <None Include="ChangeLog" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Mono.Cecil.Mdb\Mono.Cecil.Mdb\AssemblyInfo.cs" />

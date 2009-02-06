@@ -93,6 +93,7 @@
     <None Include="Mono.CompilerServices.SymbolWriterOld\MonoSymbolTable.cs" />
     <None Include="Mono.CompilerServices.SymbolWriterOld\MonoSymbolWriter.cs" />
     <None Include="Mono.CompilerServices.SymbolWriterOld\SymbolWriterImpl.cs" />
+    <None Include="ChangeLog" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Mono.Cecil\Mono.Cecil\AggressiveReflectionReader.cs" />
