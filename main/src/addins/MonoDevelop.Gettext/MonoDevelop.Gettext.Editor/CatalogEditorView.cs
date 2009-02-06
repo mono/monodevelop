@@ -44,8 +44,8 @@ namespace MonoDevelop.Gettext.Editor
 		
 		public CatalogEditorView (TranslationProject project, string poFile)
 		{
-			Catalog catalog = new Catalog (project);
-			POEditorWidget poEditorWidget = new POEditorWidget (project);
+			catalog = new Catalog (project);
+			poEditorWidget = new POEditorWidget (project);
 			catalog.DirtyChanged += delegate (object sender, EventArgs args) {
 				IsDirty = catalog.IsDirty;
 				if (sender is CatalogEntry)
