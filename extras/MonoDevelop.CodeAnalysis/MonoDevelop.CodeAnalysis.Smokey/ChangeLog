@@ -1,5 +1,9 @@
 2009/02/06  Lluis Sanchez Gual  <lluis@novell.com>
 
+ * MonoDevelop.CodeAnalysis.Smokey.csproj: Flush.
+
+2009/02/06  Lluis Sanchez Gual  <lluis@novell.com>
+
  * MonoDevelop.CodeAnalysis.Smokey.mdp:
  * MonoDevelop.CodeAnalysis.Smokey.csproj: Migrated to MSBuild file
    format.

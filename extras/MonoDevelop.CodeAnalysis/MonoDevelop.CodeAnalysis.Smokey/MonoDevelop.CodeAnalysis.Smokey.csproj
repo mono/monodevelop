@@ -81,6 +81,7 @@
     <Compile Include="SmokeyParser.cs" />
     <Compile Include="SmokeyRuleCache.cs" />
     <Compile Include="SmokeyAnalyzer.cs" />
+    <Compile Include="AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

@@ -12,6 +12,7 @@ REFS =  \
 	-r:System.Xml
 
 FILES =  \
+	AssemblyInfo.cs \
 	GendarmeAnalyzer.cs \
 	GendarmeRule.cs \
 	GendarmeRuleCache.cs \

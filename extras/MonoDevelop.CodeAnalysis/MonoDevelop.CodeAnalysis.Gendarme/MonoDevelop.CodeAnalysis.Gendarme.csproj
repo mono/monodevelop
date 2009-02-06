@@ -83,6 +83,7 @@
     <Compile Include="GendarmeRuleCache.cs" />
     <Compile Include="Utilities.cs" />
     <Compile Include="GendarmeAnalyzer.cs" />
+    <Compile Include="AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

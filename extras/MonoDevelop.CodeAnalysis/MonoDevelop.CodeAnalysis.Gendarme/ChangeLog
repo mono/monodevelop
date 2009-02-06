@@ -1,5 +1,10 @@
 2009/02/06  Lluis Sanchez Gual  <lluis@novell.com>
 
+ * Makefile.am:
+ * MonoDevelop.CodeAnalysis.Gendarme.csproj: Flush.
+
+2009/02/06  Lluis Sanchez Gual  <lluis@novell.com>
+
  * MonoDevelop.CodeAnalysis.Gendarme.mdp:
  * MonoDevelop.CodeAnalysis.Gendarme.csproj: Migrated to MSBuild file
    format.
