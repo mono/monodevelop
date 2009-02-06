@@ -535,16 +535,22 @@ namespace MonoDevelop.Ide.Gui
 		
 		void SearchNewFiles (Project project)
 		{
-			Console.WriteLine ("pp searching files for: " + project.Name);
 			StringCollection newFiles   = new StringCollection();
 			string[] collection = Directory.GetFiles (project.BaseDirectory, "*", SearchOption.AllDirectories);
+			
+			HashSet<string> projectFiles = new HashSet<string> ();
+			foreach (string file in project.GetItemFiles (true))
+				projectFiles.Add (file);
 
 			foreach (string sfile in collection) {
+				if (projectFiles.Contains (Path.GetFullPath (sfile)))
+					continue;
+				if (IdeApp.Services.ProjectService.IsSolutionItemFile (sfile) || IdeApp.Services.ProjectService.IsWorkspaceItemFile (sfile))
+					continue;
 				string extension = Path.GetExtension(sfile).ToUpper();
 				string file = Path.GetFileName (sfile);
 
-				if (!project.IsFileInProject(sfile) &&
-					extension != ".SCC" &&  // source safe control files -- Svante Lidmans
+				if (extension != ".SCC" &&  // source safe control files -- Svante Lidmans
 					extension != ".DLL" &&
 					extension != ".PDB" &&
 					extension != ".EXE" &&

@@ -1,3 +1,11 @@
+2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui/RootWorkspace.cs: Exclude project files
+	  when looking for new files to add to a project.
+
+	* MonoDevelop.Ide.Gui.Dialogs/IncludeFilesDialog.cs: Save the
+	  changed project only, not the whole workspace.
+
 2009-02-05  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.Gui.Content/CompletionTextEditorExtension.cs:

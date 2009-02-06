@@ -123,7 +123,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				store.IterNext(ref current);
 			}
 			
-			IdeApp.Workspace.Save ();
+			IdeApp.ProjectOperations.Save (project);
 			
 			Destroy();
 		}
