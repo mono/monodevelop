@@ -1,5 +1,9 @@
 2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDeveloperExtensions.csproj: Flush.
+
+2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDeveloperExtensions.mds:
 	* MonoDeveloperExtensions.mdp:
 	* MonoDeveloperExtensions.csproj: Migrated to MSBuild file

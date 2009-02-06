@@ -1,5 +1,9 @@
 2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* VBNetBinding.csproj: Flush.
+
+2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Makefile.am:
 	* VBNetBinding.mdp:
 	* VBNetBinding.mds:
