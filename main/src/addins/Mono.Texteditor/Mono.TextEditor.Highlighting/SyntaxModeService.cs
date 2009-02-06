@@ -123,7 +123,7 @@ namespace Mono.TextEditor.Highlighting
 			return null;
 		}
 		
-		public static void ValidateAllSyntaxModes ()
+		public static bool ValidateAllSyntaxModes ()
 		{
 			foreach (string mime in new List<string> (syntaxModeLookup.Keys)) {
 				GetSyntaxMode (mime);
@@ -133,7 +133,7 @@ namespace Mono.TextEditor.Highlighting
 				GetColorStyle (null, style);
 			}
 			styleLookup.Clear ();
-			
+			bool result = true;
 			foreach (KeyValuePair<string, Style> style in styles) {
 				HashSet<SyntaxMode> checkedModes = new HashSet<SyntaxMode> ();
 				foreach (KeyValuePair<string, SyntaxMode> mode in syntaxModes) {
@@ -141,10 +141,12 @@ namespace Mono.TextEditor.Highlighting
 						continue;
 					if (!mode.Value.Validate (style.Value)) {
 						System.Console.WriteLine(mode.Key + " failed to validate against:" + style.Key);
+						result = false;
 					}
 					checkedModes.Add (mode.Value);
 				}
 			}
+			return result;
 		}
 		
 		public static void Remove (Style style)

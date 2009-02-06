@@ -1,5 +1,10 @@
 2009-02-06  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor.Highlighting/SyntaxModeService.cs: validate
+	  now gives back an result.
+
+2009-02-06  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextViewMargin.cs:
 	* Mono.TextEditor.Highlighting/ChunkStyle.cs:
 	* Mono.TextEditor.Highlighting/MarkupSyntaxMode.cs: Fixed link
