@@ -347,8 +347,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			this.IsDirty = Document.IsDirty;
 			
-			if (a.Offset != widget.TextEditor.Caret.Offset || a.Count > 1)
-				FireCompletionContextChanged ();
+			FireCompletionContextChanged ();
 			
 			DocumentLocation location = Document.OffsetToLocation (a.Offset);
 			
