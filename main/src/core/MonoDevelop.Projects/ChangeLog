@@ -1,5 +1,10 @@
 2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects.Dom/DomType.cs: Optimized
+	  GetAccessibleExtensionTypes.
+
+2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects.mdp:
 	* MonoDevelop.Projects.csproj: Migrated to MSBuild file
 	  format.
