@@ -1,5 +1,11 @@
 2009-02-06  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor.Highlighting/Style.cs:
+	* Mono.TextEditor.Highlighting/ChunkStyle.cs: fixed "Bug
+	  473258 - Current line highlight not correctly drawn".
+
+2009-02-06  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor.Highlighting/SyntaxModeService.cs: validate
 	  now gives back an result.
 

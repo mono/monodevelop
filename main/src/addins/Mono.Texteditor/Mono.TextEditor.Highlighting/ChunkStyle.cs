@@ -33,13 +33,14 @@ namespace Mono.TextEditor
 		None = 0,
 		Bold = 1,
 		Italic = 2,
-		Underline = 4
+		Underline = 4,
+		TransparentBackground = 8
 	}
 	
 	public class ChunkStyle
 	{
 		Gdk.Color color;
-		Gdk.Color backColor;
+		Gdk.Color backColor = Gdk.Color.Zero;
 		
 		public virtual Gdk.Color Color {
 			get {
@@ -61,7 +62,7 @@ namespace Mono.TextEditor
 		
 		public bool TransparentBackround {
 			get {
-				return BackgroundColor.Equal (Gdk.Color.Zero); 
+				return (ChunkProperties & ChunkProperties.TransparentBackground) == ChunkProperties.TransparentBackground || BackgroundColor.Equal (Gdk.Color.Zero); 
 			}
 		}
 		

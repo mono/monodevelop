@@ -317,6 +317,8 @@ namespace Mono.TextEditor.Highlighting
 		protected Style ()
 		{
 			SetStyle (DefaultString, new ChunkStyle (new Gdk.Color (0, 0, 0), new Gdk.Color (255, 255, 255)));
+			GetChunkStyle (DefaultString).ChunkProperties |= ChunkProperties.TransparentBackground;
+			
 			SetStyle (CaretString, new ReferencedChunkStyle (this, DefaultString));
 
 			SetStyle (LineNumberString, new ChunkStyle (new Gdk.Color (172, 168, 153), new Gdk.Color (255, 255, 255)));
@@ -528,7 +530,7 @@ namespace Mono.TextEditor.Highlighting
 				}
 				return false;
 			});
-			
+			result.GetChunkStyle (DefaultString).ChunkProperties |= ChunkProperties.TransparentBackground;
 			return result;
 		}
 	}
