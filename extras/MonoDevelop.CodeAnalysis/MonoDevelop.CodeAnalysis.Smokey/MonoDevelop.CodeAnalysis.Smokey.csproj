@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{D2147A8C-E36C-4613-B97B-B90B3345E44B}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <newfilesearch>OnLoadAutoInsert</newfilesearch>
+    <AssemblyName>MonoDevelop.CodeAnalysis.Smokey</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\build</OutputPath>
+    <DefineConstants>DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <AssemblyKeyFile>.</AssemblyKeyFile>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\build</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="MonoDevelop.Core, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="Mono.Posix" />
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Mono.Addins, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="smokey, Version=1.2.383.0, Culture=neutral, PublicKeyToken=e73790e66f13b574">
+      <HintPath>..\dlls\smokey.exe</HintPath>
+    </Reference>
+    <Reference Include="NRefactory, Version=0.0.0.0, Culture=neutral" />
+    <Reference Include="Mono.Cecil, Version=0.6.8.8607, Culture=neutral" />
+    <Reference Include="glib-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="pango-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="atk-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gdk-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gtk-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="MonoDevelop.Core.Gui, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.Projects, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.Projects.Gui, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.Ide, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.Components, Version=1.9.2.0, Culture=neutral" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MonoDevelop.CodeAnalysis\MonoDevelop.CodeAnalysis.csproj">
+      <Project>{07C24E54-66FF-42F1-B1A1-628D389AAFDC}</Project>
+      <Name>MonoDevelop.CodeAnalysis</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="MonoDevelop.CodeAnalysis.Smokey.addin.xml" />
+    <EmbeddedResource Include="gtk-gui\gui.stetic">
+      <LogicalName>gui.stetic</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="gtk-gui\generated.cs" />
+    <Compile Include="SmokeyRule.cs" />
+    <Compile Include="SmokeyRuleLoader.cs" />
+    <Compile Include="SmokeyRunner.cs" />
+    <Compile Include="SmokeyViolation.cs" />
+    <Compile Include="SmokeyParser.cs" />
+    <Compile Include="SmokeyRuleCache.cs" />
+    <Compile Include="SmokeyAnalyzer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ChangeLog" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ProjectExtensions>
+    <MonoDevelop>
+      <Properties>
+        <GtkDesignInfo gettextClass="AddinCatalog" />
+        <MonoDevelop.Autotools.MakefileInfo RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="true" IsAutotoolsProject="true" RelativeConfigureInPath="..">
+          <BuildFilesVar Sync="true" Name="FILES" />
+          <DeployFilesVar />
+          <ResourcesVar Sync="true" Name="RES" />
+          <OthersVar />
+          <GacRefVar Sync="true" Name="REFS" Prefix="-r:" />
+          <AsmRefVar Sync="true" Name="REFS" Prefix="-r:" />
+          <ProjectRefVar Sync="true" Name="REFS" Prefix="-r:" />
+        </MonoDevelop.Autotools.MakefileInfo>
+      </Properties>
+    </MonoDevelop>
+  </ProjectExtensions>
+</Project>

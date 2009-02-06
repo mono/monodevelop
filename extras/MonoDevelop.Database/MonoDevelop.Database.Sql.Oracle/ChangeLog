@@ -1,3 +1,9 @@
+2009/02/06  Lluis Sanchez Gual  <lluis@novell.com>
+
+ * MonoDevelop.Database.Sql.Oracle.mdp:
+ * MonoDevelop.Database.Sql.Oracle.csproj: Migrated to MSBuild file
+   format.
+
 2009/02/03  Lluis Sanchez Gual  <lluis@novell.com>
 
  * AssemblyInfo.cs:

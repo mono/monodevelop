@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{B3672514-7503-4B01-B4B4-B44E87061EA2}") = "BooBinding", "BooBinding.booproj", "{70CCB542-ED79-4759-B6F3-8B9B3A21194E}"
+EndProject
+Project("{B3672514-7503-4B01-B4B4-B44E87061EA2}") = "BooShell", "BooShell\BooShell.booproj", "{87E0A9FD-8DFD-4A3D-93D7-C86F6322CCF4}"
+EndProject
+Project("{9344bdbb-3e7f-41fc-a0dd-8665d75ee146}") = "po", "po\po.mdproj", "{87BCBF97-E0B0-45A3-BB0B-369945C50B8C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{70CCB542-ED79-4759-B6F3-8B9B3A21194E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{70CCB542-ED79-4759-B6F3-8B9B3A21194E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{70CCB542-ED79-4759-B6F3-8B9B3A21194E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{70CCB542-ED79-4759-B6F3-8B9B3A21194E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{87BCBF97-E0B0-45A3-BB0B-369945C50B8C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{87BCBF97-E0B0-45A3-BB0B-369945C50B8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{87BCBF97-E0B0-45A3-BB0B-369945C50B8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{87BCBF97-E0B0-45A3-BB0B-369945C50B8C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{87E0A9FD-8DFD-4A3D-93D7-C86F6322CCF4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{87E0A9FD-8DFD-4A3D-93D7-C86F6322CCF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{87E0A9FD-8DFD-4A3D-93D7-C86F6322CCF4}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{87E0A9FD-8DFD-4A3D-93D7-C86F6322CCF4}.Release|Any CPU.Build.0 = Debug|Any CPU
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		name = BooBinding
+		version = 0.1
+		StartupItem = BooBinding.booproj
+	EndGlobalSection
+EndGlobal

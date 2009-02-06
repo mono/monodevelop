@@ -1,3 +1,9 @@
+2009/02/06  Lluis Sanchez Gual  <lluis@novell.com>
+
+ * AspNetEdit.sln:
+ * AspNetEdit.mds:
+ * AspNetEdit.csproj: Migrated to MSBuild file format.
+
 2009/02/03  Lluis Sanchez Gual  <lluis@novell.com>
 
  * configure:

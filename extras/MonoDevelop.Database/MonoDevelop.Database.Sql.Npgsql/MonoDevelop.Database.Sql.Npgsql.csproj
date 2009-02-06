@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{854F4CC1-BFDF-457E-89E0-0B7E20F1FDA3}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AssemblyName>MonoDevelop.Database.Sql.Npgsql</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\build</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\build\AddIns\MonoDevelop.Database</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="Npgsql" />
+    <Reference Include="System.Data" />
+    <Reference Include="MonoDevelop.Components, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.Core, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.Core.Gui, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.Ide, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.Projects, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="NRefactory, Version=0.0.0.0, Culture=neutral" />
+    <Reference Include="Mono.Cecil, Version=0.6.8.8607, Culture=neutral" />
+    <Reference Include="Mono.Posix" />
+    <Reference Include="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="Mono.TextEditor, Version=1.0.0.0, Culture=neutral" />
+    <Reference Include="Mono.Debugging, Version=0.0.0.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.Projects.Gui, Version=1.9.2.0, Culture=neutral" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MonoDevelop.Database.Designer\MonoDevelop.Database.Designer.csproj">
+      <Project>{8BA96BBA-D7D5-4C72-9AF1-DD816D8D958F}</Project>
+      <Name>MonoDevelop.Database.Designer</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\MonoDevelop.Database.Components\MonoDevelop.Database.Components.csproj">
+      <Project>{70E5F8DB-FB9B-41BE-A4D5-4075056C6D04}</Project>
+      <Name>MonoDevelop.Database.Components</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\MonoDevelop.Database.Sql\MonoDevelop.Database.Sql.csproj">
+      <Project>{04CA279D-CDAB-4A90-A78C-75EF8367AFD0}</Project>
+      <Name>MonoDevelop.Database.Sql</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="NpgsqlConnectionProvider.cs" />
+    <Compile Include="NpgsqlSchemaProvider.cs" />
+    <Compile Include="NpgsqlDbFactory.cs" />
+    <Compile Include="NpgsqlPooledDbConnection.cs" />
+    <Compile Include="NpgsqlDialect.cs" />
+    <Compile Include="NpgsqlGuiProvider.cs" />
+    <Compile Include="Dialogs\NpgsqlTableEditorDialog.cs" />
+    <Compile Include="Schema\dummy.cs" />
+    <Compile Include="gtk-gui\generated.cs" />
+    <Compile Include="Widgets\NpgsqlCreateDatabaseWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Database.Sql.Npgsql.NpgsqlCreateDatabaseWidget.cs" />
+    <Compile Include="Widgets\NpgsqlColumnEditorWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Database.Sql.Npgsql.NpgsqlColumnEditorWidget.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="MonoDevelop.Database.Sql.Npgsql.addin.xml" />
+    <EmbeddedResource Include="gtk-gui\gui.stetic">
+      <LogicalName>gui.stetic</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="gtk-gui\objects.xml">
+      <LogicalName>objects.xml</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Makefile.am" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ProjectExtensions>
+    <MonoDevelop>
+      <Properties>
+        <Deployment.LinuxDeployData generatePcFile="false" />
+        <GtkDesignInfo gettextClass="AddinCatalog" />
+        <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="Makefile.am" SyncReferences="true" IsAutotoolsProject="true" RelativeConfigureInPath="..">
+          <BuildFilesVar Sync="true" Name="FILES" />
+          <DeployFilesVar />
+          <ResourcesVar Sync="true" Name="RES" />
+          <OthersVar />
+          <GacRefVar Sync="true" Name="REFS" Prefix="-r:" />
+          <AsmRefVar Sync="true" Name="REFS" Prefix="-r:" />
+          <ProjectRefVar Sync="true" Name="REFS" Prefix="-r:" />
+        </MonoDevelop.Autotools.MakefileInfo>
+      </Properties>
+    </MonoDevelop>
+  </ProjectExtensions>
+</Project>

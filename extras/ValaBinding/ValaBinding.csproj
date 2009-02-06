@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.50727</ProductVersion>
+    <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{99F79E57-DCF6-4233-ABF1-A920A228A7D4}</ProjectGuid>
+    <ProjectGuid>{B94D7749-EA5C-48DD-8849-B3924A860DDC}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AssemblyName>MonoDevelop.ValaBinding</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -16,13 +17,12 @@
     <OutputPath>build</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
-    <StartupObject />
-    <ApplicationIcon>.</ApplicationIcon>
     <AssemblyKeyFile>.</AssemblyKeyFile>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <ApplicationIcon>.</ApplicationIcon>
     <ConsolePause>false</ConsolePause>
     <Execution>
-      <Execution clr-version="Net_2_0" xmlns="" />
+      <Execution clr-version="Net_2_0" />
     </Execution>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -31,50 +31,49 @@
     <OutputPath>build</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
-    <StartupObject />
-    <ApplicationIcon>.</ApplicationIcon>
     <AssemblyKeyFile>.</AssemblyKeyFile>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <ApplicationIcon>.</ApplicationIcon>
     <ConsolePause>false</ConsolePause>
     <Execution>
-      <Execution clr-version="Net_2_0" xmlns="" />
+      <Execution clr-version="Net_2_0" />
     </Execution>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="Mono.Posix" />
-    <Reference Include="Mono.Addins, Version=0.3.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
+    <Reference Include="Mono.Addins, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="MonoDevelop.Core, Version=1.9.1.0, Culture=neutral" />
-    <Reference Include="MonoDevelop.Projects, Version=1.9.1.0, Culture=neutral" />
-    <Reference Include="MonoDevelop.Core.Gui, Version=1.9.1.0, Culture=neutral" />
-    <Reference Include="MonoDevelop.Deployment, Version=1.9.1.0, Culture=neutral" />
-    <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <Reference Include="MonoDevelop.Ide, Version=1.9.1.0, Culture=neutral" />
-    <Reference Include="MonoDevelop.Components, Version=1.9.1.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.Core, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.Projects, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.Core.Gui, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.Deployment, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="glib-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="MonoDevelop.Ide, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.Components, Version=1.9.2.0, Culture=neutral" />
     <Reference Include="NRefactory, Version=0.0.0.0, Culture=neutral" />
     <Reference Include="Mono.Cecil, Version=0.6.8.8607, Culture=neutral" />
     <Reference Include="Mono.TextEditor, Version=1.0.0.0, Culture=neutral" />
     <Reference Include="Mono.Debugging, Version=0.0.0.0, Culture=neutral" />
-    <Reference Include="MonoDevelop.VersionControl, Version=1.9.1.0, Culture=neutral" />
-    <Reference Include="MonoDevelop.NUnit, Version=1.9.1.0, Culture=neutral" />
-    <Reference Include="MonoDevelop.XmlEditor, Version=1.9.1.0, Culture=neutral" />
-    <Reference Include="MonoDevelop.AspNet, Version=1.9.1.0, Culture=neutral" />
-    <Reference Include="MonoDevelop.Gettext, Version=1.9.1.0, Culture=neutral" />
-    <Reference Include="MonoDevelop.Deployment.Linux, Version=1.9.1.0, Culture=neutral" />
-    <Reference Include="MonoDevelop.GtkCore, Version=1.9.1.0, Culture=neutral" />
-    <Reference Include="MonoDevelop.DesignerSupport, Version=1.9.1.0, Culture=neutral" />
-    <Reference Include="MonoDevelop.VBNetBinding, Version=1.9.1.0, Culture=neutral" />
-    <Reference Include="MonoDevelop.CBinding, Version=1.9.1.0, Culture=neutral" />
-    <Reference Include="MonoDevelop.CSharpBinding, Version=1.9.1.0, Culture=neutral" />
-    <Reference Include="MonoDevelop.Autotools, Version=1.9.1.0, Culture=neutral" />
-    <Reference Include="MonoDevelop.Projects.Gui, Version=1.9.1.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.VersionControl, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.NUnit, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.XmlEditor, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.AspNet, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.Gettext, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.Deployment.Linux, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.GtkCore, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.DesignerSupport, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.VBNetBinding, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.CBinding, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.CSharpBinding, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.Autotools, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.Projects.Gui, Version=1.9.2.0, Culture=neutral" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -204,9 +203,8 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <MonoDevelop>
-      <Properties xmlns="">
+      <Properties>
         <Deployment.LinuxDeployData scriptName="valabinding" />
-        <GtkDesignInfo />
         <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="Makefile.am" SyncReferences="true" IsAutotoolsProject="true" RelativeConfigureInPath=".">
           <BuildFilesVar Sync="true" Name="FILES" />
           <DeployFilesVar />

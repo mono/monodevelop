@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.Debugger", "MonoDevelop.Debugger.csproj", "{FA15FC26-A7E7-4932-93B7-65FAE6D5DD33}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FA15FC26-A7E7-4932-93B7-65FAE6D5DD33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA15FC26-A7E7-4932-93B7-65FAE6D5DD33}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA15FC26-A7E7-4932-93B7-65FAE6D5DD33}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA15FC26-A7E7-4932-93B7-65FAE6D5DD33}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		name = MonoDevelop.Debugger.Gdb
+		version = 0.1
+		StartupItem = MonoDevelop.Debugger.csproj
+	EndGlobalSection
+EndGlobal

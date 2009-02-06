@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{F9A9BFBB-57DC-4143-9276-15D82083B56F}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AssemblyName>AspNetEdit</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <AssemblyKeyFile>.</AssemblyKeyFile>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System.Web" />
+    <Reference Include="System.Drawing.Design" />
+    <Reference Include="System.Design" />
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="MonoDevelop.Components, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.Core, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.Core.Gui, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.Ide, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.Projects, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="gecko-sharp, Version=2.0.0.0, Culture=neutral, PublicKeyToken=ccf7d78a55e9f021" />
+    <Reference Include="MonoDevelop.DesignerSupport, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="Mono.Addins, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Mono.Cecil, Version=0.6.8.8607, Culture=neutral" />
+    <Reference Include="MonoDevelop.AspNet, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="NRefactory, Version=0.0.0.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.VersionControl, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.NUnit, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.Gettext, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.Deployment, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.Deployment.Linux, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.GtkCore, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.VBNetBinding, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.CBinding, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.CSharpBinding, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.Autotools, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="Mono.TextEditor, Version=1.0.0.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.XmlEditor, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="Mono.Debugging, Version=0.0.0.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.Projects.Gui, Version=1.9.2.0, Culture=neutral" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="AspNetEdit.Integration\AspNetEditDisplayBinding.cs" />
+    <Compile Include="AspNetEdit.Editor.Persistence\ControlPersister.cs" />
+    <Compile Include="AspNetEdit.Editor.Persistence\DesignTimeParser.cs" />
+    <Compile Include="AspNetEdit.Editor.Persistence\HtmlParsingObject.cs" />
+    <Compile Include="AspNetEdit.Editor.Persistence\ParsingObject.cs" />
+    <Compile Include="AspNetEdit.Editor.Persistence\RootParsingObject.cs" />
+    <Compile Include="AspNetEdit.Editor.Persistence\ServerControlParsingObject.cs" />
+    <Compile Include="AspNetEdit.Editor.ComponentModel\DesignContainer.cs" />
+    <Compile Include="AspNetEdit.Editor.ComponentModel\DesignerHost.cs" />
+    <Compile Include="AspNetEdit.Editor.ComponentModel\Document.cs" />
+    <Compile Include="AspNetEdit.Editor.ComponentModel\DocumentDirective.cs" />
+    <Compile Include="AspNetEdit.Editor.ComponentModel\ExtenderListService.cs" />
+    <Compile Include="AspNetEdit.Editor.ComponentModel\MenuCommandService.cs" />
+    <Compile Include="AspNetEdit.Editor.ComponentModel\NameCreationService.cs" />
+    <Compile Include="AspNetEdit.Editor.ComponentModel\RootDesigner.cs" />
+    <Compile Include="AspNetEdit.Editor.ComponentModel\SelectionService.cs" />
+    <Compile Include="AspNetEdit.Editor.ComponentModel\TextToolboxItem.cs" />
+    <Compile Include="AspNetEdit.Editor.ComponentModel\ToolboxService.cs" />
+    <Compile Include="AspNetEdit.Editor.ComponentModel\Transaction.cs" />
+    <Compile Include="AspNetEdit.Editor.ComponentModel\TypeDescriptorFilterService.cs" />
+    <Compile Include="AspNetEdit.Editor.ComponentModel\TypeResolutionService.cs" />
+    <Compile Include="AspNetEdit.Editor.ComponentModel\WebFormPage.cs" />
+    <Compile Include="AspNetEdit.Editor.ComponentModel\WebFormReferenceManager.cs" />
+    <Compile Include="AspNetEdit.Editor.UI\PropertyGrid.cs" />
+    <Compile Include="AspNetEdit.Editor.UI\RootDesignerView.cs" />
+    <Compile Include="AspNetEdit.Integration\AspNetEditViewContent.cs" />
+    <Compile Include="AspNetEdit.Editor\EditorHost.cs" />
+    <Compile Include="AspNetEdit.Integration\EditorProcess.cs" />
+    <Compile Include="AspNetEdit.Integration\MonoDevelopProxy.cs" />
+    <Compile Include="AspNetEdit.Editor.ComponentModel\EventBindingService.cs" />
+    <Compile Include="AspNetEdit.JSCall\CommandManager.cs" />
+    <Compile Include="AspNetEdit.JSCall\InvalidJSArgumentException.cs" />
+    <Compile Include="AspNetEdit.Integration\GeckoWebBrowser.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="AspNetEdit.addin.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="chrome\install.rdf" />
+    <None Include="chrome\README" />
+    <None Include="chrome\content\aspdesigner\aspdesigner.xul" />
+    <None Include="chrome\content\aspdesigner\clipboard.js" />
+    <None Include="chrome\content\aspdesigner\constants.js" />
+    <None Include="chrome\content\aspdesigner\contents.rdf" />
+    <None Include="chrome\content\aspdesigner\editor.js" />
+    <None Include="chrome\content\aspdesigner\editorContent.css" />
+    <None Include="chrome\content\aspdesigner\JSCall.js" />
+    <None Include="chrome\content\aspdesigner\xpcom.js" />
+    <None Include="chrome\locale\en-US\aspdesigner\contents.rdf" />
+    <None Include="ChangeLog" />
+    <None Include="AspNetEdit.make" />
+    <None Include="configure" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ProjectExtensions>
+    <MonoDevelop>
+      <Properties>
+        <Deployment.LinuxDeployData generatePcFile="false" />
+        <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="AspNetEdit.make" SyncReferences="true" RelativeConfigureInPath="../../">
+          <BuildFilesVar Sync="true" Name="FILES" />
+          <DeployFilesVar />
+          <ResourcesVar Sync="true" Name="RESOURCES" />
+          <OthersVar />
+          <GacRefVar Sync="true" Name="REFERENCES" />
+          <AsmRefVar Sync="true" Name="REFERENCES" />
+          <ProjectRefVar Sync="true" Name="REFERENCES" />
+        </MonoDevelop.Autotools.MakefileInfo>
+      </Properties>
+    </MonoDevelop>
+  </ProjectExtensions>
+</Project>

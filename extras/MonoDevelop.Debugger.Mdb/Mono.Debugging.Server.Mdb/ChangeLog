@@ -1,3 +1,8 @@
+2009/02/06  Lluis Sanchez Gual  <lluis@novell.com>
+
+ * Mono.Debugging.Server.Mdb.mdp:
+ * Mono.Debugging.Server.Mdb.csproj: Migrated to MSBuild file format.
+
 2009-01-27  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Debugging.Server.Mdb.mdp: Fix target framework.

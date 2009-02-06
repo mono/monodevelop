@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{70CCB542-ED79-4759-B6F3-8B9B3A21194E}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <UsePartialTypes>false</UsePartialTypes>
+    <AssemblyName>BooBinding</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <OutputPath>build</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <ducky>false</ducky>
+    <culture />
+    <genwarnings>false</genwarnings>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <OutputPath>..\..\build\AddIns\BackendBindings\</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <ducky>false</ducky>
+    <culture />
+    <genwarnings>false</genwarnings>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Runtime.Remoting" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="Mono.Addins, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="MonoDevelop.Components, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.Core, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.Core.Gui, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.Ide, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.Projects, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.Projects.Gui, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="NRefactory, Version=0.0.0.0, Culture=neutral" />
+    <Reference Include="Mono.Cecil, Version=0.6.8.8607, Culture=neutral" />
+    <Reference Include="gtksourceview-sharp, Version=1.0.0.2, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="Boo.Lang, Version=2.0.0.0, Culture=neutral, PublicKeyToken=32c39770e9a21a67" />
+    <Reference Include="gconf-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="BooShell\BooShell.booproj">
+      <Project>{87E0A9FD-8DFD-4A3D-93D7-C86F6322CCF4}</Project>
+      <Name>BooShell</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="templates\BooGtkSharpProject.xpt.xml">
+      <LogicalName>BooGtkSharpProject.xpt.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\BooLibraryProject.xpt.xml">
+      <LogicalName>BooLibraryProject.xpt.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\BooGtkSharpWindow.xft.xml">
+      <LogicalName>BooGtkSharpWindow.xft.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\EmptyBooFile.xft.xml">
+      <LogicalName>EmptyBooFile.xft.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\EmptyBooProject.xpt.xml">
+      <LogicalName>EmptyBooProject.xpt.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\BooBinding.Base">
+      <LogicalName>BooBinding.Base</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\Boo.File.EmptyFile">
+      <LogicalName>Boo.File.EmptyFile</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\Boo.File.Form">
+      <LogicalName>Boo.File.Form</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\Boo.FileIcon">
+      <LogicalName>Boo.FileIcon</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="BooBinding.addin.xml" />
+    <EmbeddedResource Include="icons\boo-icon-32.png">
+      <LogicalName>boo-icon-32.png</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Gui\ShellTextView.boo" />
+    <Compile Include="Gui\IShellModel.boo" />
+    <Compile Include="Gui\BooShellModel.boo" />
+    <Compile Include="Gui\OptionPanels\CodeCompilationPanel.boo" />
+    <Compile Include="Gui\OptionPanels\GeneralShellPanel.boo" />
+    <Compile Include="Gui\OptionPanels\GeneralBooShellPanel.boo" />
+    <Compile Include="Project\BooCompilerParameters.boo" />
+    <Compile Include="Properties\ShellProperties.boo" />
+    <Compile Include="Properties\BooShellProperties.boo" />
+    <Compile Include="BooBindingCompilerServices.boo" />
+    <Compile Include="BooAmbience.boo" />
+    <Compile Include="BooShellPadContent.boo" />
+    <Compile Include="BooCompiler.boo" />
+    <Compile Include="BooLanguageBinding.boo" />
+    <Compile Include="Parser\BooParser.boo" />
+    <Compile Include="Parser\Resolver.boo" />
+    <Compile Include="Parser\TypeMembers.boo" />
+    <Compile Include="Parser\ExpressionFinder.boo" />
+    <Compile Include="Parser\ReturnType.boo" />
+    <Compile Include="Parser\VariableLookupVisitor.boo" />
+    <Compile Include="Parser\ExpressionTypeVisitor.boo" />
+    <Compile Include="Parser\Tree.boo" />
+    <Compile Include="Parser\Visitor.boo" />
+    <Compile Include="Gui\BooTextEditorExtension.boo" />
+  </ItemGroup>
+  <ProjectExtensions>
+    <MonoDevelop>
+      <Properties>
+        <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="BooBinding.make" RelativeConfigureInPath="../../">
+          <BuildFilesVar Sync="true" Name="FILES" />
+          <DeployFilesVar />
+          <ResourcesVar Sync="true" Name="RESOURCES" />
+          <OthersVar />
+          <GacRefVar Name="REFERENCES" />
+          <AsmRefVar Name="REFERENCES" />
+          <ProjectRefVar Name="REFERENCES" />
+          <MessageRegex Error="(^\s*(?&lt;file&gt;.*)\((?&lt;line&gt;\d*){1}(,(?&lt;column&gt;\d*[\+]*))?\)(:|)\s+)*(?=BCE)(?&lt;number&gt;.*?):\s(?&lt;message&gt;.*)" Warning="(^\s*(?&lt;file&gt;.*)\((?&lt;line&gt;\d*){1}(,(?&lt;column&gt;\d*[\+]*))?\)(:|)\s+)*(?=BCW)(?&lt;number&gt;.*?):\sWARNING:\s(?&lt;message&gt;.*)" Name="Custom" />
+        </MonoDevelop.Autotools.MakefileInfo>
+      </Properties>
+    </MonoDevelop>
+  </ProjectExtensions>
+</Project>

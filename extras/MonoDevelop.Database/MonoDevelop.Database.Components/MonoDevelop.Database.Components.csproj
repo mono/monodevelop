@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{70E5F8DB-FB9B-41BE-A4D5-4075056C6D04}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AssemblyName>MonoDevelop.Database.Components</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\build</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AssemblyKeyFile>.</AssemblyKeyFile>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\build\AddIns\MonoDevelop.Database</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="Mono.Posix" />
+    <Reference Include="System.Xml" />
+    <Reference Include="gtksourceview-sharp, Version=1.0.0.2, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="MonoDevelop.Core, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.Core.Gui, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.Ide, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.Projects, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.Components, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="NRefactory, Version=0.0.0.0, Culture=neutral" />
+    <Reference Include="Mono.Addins, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Mono.Cecil, Version=0.6.8.8607, Culture=neutral" />
+    <Reference Include="glib-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="Mono.TextEditor, Version=1.0.0.0, Culture=neutral" />
+    <Reference Include="Mono.Debugging, Version=0.0.0.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.Projects.Gui, Version=1.9.2.0, Culture=neutral" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MonoDevelop.Database.Sql\MonoDevelop.Database.Sql.csproj">
+      <Project>{04CA279D-CDAB-4A90-A78C-75EF8367AFD0}</Project>
+      <Name>MonoDevelop.Database.Sql</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="gtk-gui\gui.stetic">
+      <LogicalName>gui.stetic</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Database.Components.addin.xml" />
+    <EmbeddedResource Include="gtk-gui\objects.xml">
+      <LogicalName>objects.xml</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="gtk-gui\generated.cs" />
+    <Compile Include="Dialogs\SelectColumnDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Database.Components.SelectColumnDialog.cs" />
+    <Compile Include="Widgets\ProjectDirectoryComboBox.cs" />
+    <Compile Include="Widgets\SelectColumnWidget.cs" />
+    <Compile Include="Widgets\SelectSchemaWidget.cs" />
+    <Compile Include="Containers\SchemaContainers.cs" />
+    <Compile Include="Containers\ColumnContainer.cs" />
+    <Compile Include="Containers\ParameterContainer.cs" />
+    <Compile Include="Containers\ConditionContainer.cs" />
+    <Compile Include="Widgets\ColumnMappingWidget.cs" />
+    <Compile Include="Widgets\CellRendererTypeCombo.cs" />
+    <Compile Include="Widgets\DataGrid\DataGridColumn.cs" />
+    <Compile Include="Widgets\DataGrid\Visualizers\IDataGridVisualizer.cs" />
+    <Compile Include="Widgets\DataGrid\DataGrid.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Database.Components.DataGrid.cs" />
+    <Compile Include="Widgets\DataGrid\Renderers\IDataGridContentRenderer.cs" />
+    <Compile Include="Widgets\DataGrid\Renderers\StringContentRenderer.cs" />
+    <Compile Include="Widgets\DataGrid\Renderers\ObjectContentRenderer.cs" />
+    <Compile Include="Widgets\DataGrid\Renderers\NullContentRenderer.cs" />
+    <Compile Include="Widgets\DataGrid\Renderers\BooleanContentRenderer.cs" />
+    <Compile Include="Widgets\DataGrid\Renderers\IntegerContentRenderer.cs" />
+    <Compile Include="Widgets\DataGrid\Renderers\LongContentRenderer.cs" />
+    <Compile Include="Widgets\DataGrid\Renderers\DecimalContentRenderer.cs" />
+    <Compile Include="Widgets\DataGrid\Renderers\FloatContentRenderer.cs" />
+    <Compile Include="Widgets\DataGrid\Renderers\DoubleContentRenderer.cs" />
+    <Compile Include="Widgets\DataGrid\Renderers\ByteContentRenderer.cs" />
+    <Compile Include="Widgets\DataGrid\Renderers\BlobContentRenderer.cs" />
+    <Compile Include="Codons\DataGridContentRendererCodon.cs" />
+    <Compile Include="Dialogs\ShowImageDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Database.Components.ShowImageDialog.cs" />
+    <Compile Include="Dialogs\ShowTextDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Database.Components.ShowTextDialog.cs" />
+    <Compile Include="Dialogs\DatabaseConnectionSettingsDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Database.Components.DatabaseConnectionSettingsDialog.cs" />
+    <Compile Include="Dialogs\WaitDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Database.Components.WaitDialog.cs" />
+    <Compile Include="Widgets\DatabaseConnectionContextComboBox.cs" />
+    <Compile Include="Widgets\SqlEditorWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Database.Components.SqlEditorWidget.cs" />
+    <Compile Include="Commands\SqlEditorCommands.cs" />
+    <Compile Include="Commands\DataGridCommands.cs" />
+    <Compile Include="Widgets\SortedColumnListStore.cs" />
+    <Compile Include="Widgets\SelectTableWidget.cs" />
+    <Compile Include="Widgets\SortedTableListStore.cs" />
+    <Compile Include="Widgets\TableMappingWidget.cs" />
+    <Compile Include="Containers\TableContainer.cs" />
+    <Compile Include="ComponentHelper.cs" />
+    <Compile Include="Widgets\ConnectionSettingsWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Database.Components.ConnectionSettingsWidget.cs" />
+    <Compile Include="Commands\AbstractDatabaseProviderList.cs" />
+    <Compile Include="Widgets\DataGrid\Views\TextVisualizerView.cs" />
+    <Compile Include="Widgets\DataGrid\Views\ImageVisualizerView.cs" />
+    <Compile Include="Codons\DataGridVisualizerCodon.cs" />
+    <Compile Include="Widgets\DataGrid\Visualizers\DefaultVisualizers.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Makefile.am" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ProjectExtensions>
+    <MonoDevelop>
+      <Properties>
+        <Deployment.LinuxDeployData generatePcFile="false" />
+        <GtkDesignInfo gettextClass="AddinCatalog" />
+        <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="Makefile.am" SyncReferences="true" IsAutotoolsProject="true" RelativeConfigureInPath="..">
+          <BuildFilesVar Sync="true" Name="FILES" />
+          <DeployFilesVar />
+          <ResourcesVar Sync="true" Name="RES" />
+          <OthersVar />
+          <GacRefVar Sync="true" Name="REFS" Prefix="-r:" />
+          <AsmRefVar Sync="true" Name="REFS" Prefix="-r:" />
+          <ProjectRefVar Sync="true" Name="REFS" Prefix="-r:" />
+        </MonoDevelop.Autotools.MakefileInfo>
+      </Properties>
+    </MonoDevelop>
+  </ProjectExtensions>
+</Project>

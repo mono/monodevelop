@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{50A54FBA-D5B3-49F3-AC28-A7EE6AF145B5}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AssemblyName>JavaBinding</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>build</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>3</WarningLevel>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>build</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="MonoDevelop.Components, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.Core, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.Core.Gui, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.Ide, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.Projects, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.Projects.Gui, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="NRefactory, Version=0.0.0.0, Culture=neutral" />
+    <Reference Include="Mono.Posix" />
+    <Reference Include="Mono.Addins, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Mono.Cecil, Version=0.6.8.8607, Culture=neutral" />
+    <Reference Include="glade-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="Mono.TextEditor, Version=1.0.0.0, Culture=neutral" />
+    <Reference Include="Mono.Debugging, Version=0.0.0.0, Culture=neutral" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="templates\EmptyJavaFile.xft.xml">
+      <LogicalName>EmptyJavaFile.xft.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\EmptyJavaProject.xpt.xml">
+      <LogicalName>EmptyJavaProject.xpt.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\IkvmConsoleApplicationProject.xpt.xml">
+      <LogicalName>IkvmConsoleApplicationProject.xpt.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\IkvmGladeApplicationProject.xpt.xml">
+      <LogicalName>IkvmGladeApplicationProject.xpt.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\IkvmGnomeApplicationProject.xpt.xml">
+      <LogicalName>IkvmGnomeApplicationProject.xpt.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\IkvmGtkApplicationProject.xpt.xml">
+      <LogicalName>IkvmGtkApplicationProject.xpt.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\IkvmLibraryProject.xpt.xml">
+      <LogicalName>IkvmLibraryProject.xpt.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\JavaApplet.xft.xml">
+      <LogicalName>JavaApplet.xft.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\JavaApplicationProject.xpt.xml">
+      <LogicalName>JavaApplicationProject.xpt.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\JavaApplication.xft.xml">
+      <LogicalName>JavaApplication.xft.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\JavaConsoleApplicationProject.xpt.xml">
+      <LogicalName>JavaConsoleApplicationProject.xpt.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\JavaDialog.xft.xml">
+      <LogicalName>JavaDialog.xft.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\JavaFrame.xft.xml">
+      <LogicalName>JavaFrame.xft.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\JavaOKDialog.xft.xml">
+      <LogicalName>JavaOKDialog.xft.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\JavaPanel.xft.xml">
+      <LogicalName>JavaPanel.xft.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\Java.FileIcon">
+      <LogicalName>Java.FileIcon</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="JavaBinding.addin.xml" />
+    <EmbeddedResource Include="icons\java-icon-32.png">
+      <LogicalName>java-icon-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="gtk-gui\gui.stetic">
+      <LogicalName>gui.stetic</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\java-16.png">
+      <LogicalName>java-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\java-22.png">
+      <LogicalName>java-22.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="md1format.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Gui\ProjectConfigurationPropertyPanel.cs" />
+    <Compile Include="Gui\GlobalOptionsPanel.cs" />
+    <Compile Include="Project\JavaCompilerParameters.cs" />
+    <Compile Include="JavaCompiler.cs" />
+    <Compile Include="JavaLanguageBinding.cs" />
+    <Compile Include="gtk-gui\generated.cs" />
+    <Compile Include="gtk-gui\JavaBinding.CodeGenerationPanelWidget.cs" />
+    <Compile Include="gtk-gui\JavaBinding.GlobalOptionsPanelWidget.cs" />
+    <Compile Include="IKVMCompilerManager.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ProjectExtensions>
+    <MonoDevelop>
+      <Properties>
+        <Deployment.LinuxDeployData generatePcFile="false" />
+        <GtkDesignInfo gettextClass="Mono.Addins.AddinManager.CurrentLocalizer" />
+        <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="JavaBinding.make" SyncReferences="true" RelativeConfigureInPath="../../">
+          <BuildFilesVar Sync="true" Name="FILES" />
+          <DeployFilesVar />
+          <ResourcesVar Sync="true" Name="RESOURCES" />
+          <OthersVar />
+          <GacRefVar Sync="true" Name="REFERENCES" />
+          <AsmRefVar Sync="true" Name="REFERENCES" />
+          <ProjectRefVar Sync="true" Name="REFERENCES" />
+        </MonoDevelop.Autotools.MakefileInfo>
+      </Properties>
+    </MonoDevelop>
+  </ProjectExtensions>
+</Project>

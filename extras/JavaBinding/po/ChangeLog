@@ -1,0 +1,5 @@
+2009/02/06  Lluis Sanchez Gual  <lluis@novell.com>
+
+ * po.mdse:
+ * po.mdproj: Migrated to MSBuild file format.
+

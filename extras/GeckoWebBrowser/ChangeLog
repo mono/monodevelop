@@ -1,3 +1,12 @@
+2009/02/06  Lluis Sanchez Gual  <lluis@novell.com>
+
+ * GeckoWebBrowser.mds:
+ * GeckoWebBrowser.sln:
+ * GeckoWebBrowser.mdp:
+ * gtk-gui/generated.cs:
+ * GeckoWebBrowser.make:
+ * GeckoWebBrowser.csproj: Migrated to MSBuild file format.
+
 2009/02/03  Lluis Sanchez Gual  <lluis@novell.com>
 
  * configure:
