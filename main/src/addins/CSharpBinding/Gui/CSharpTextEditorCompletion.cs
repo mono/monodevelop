@@ -702,11 +702,15 @@ namespace MonoDevelop.CSharpBinding.Gui
 				if (exactContext == null) {
 					int j = completionContext.TriggerOffset - 4;
 					string token = GetPreviousToken (ref j, true);
+					string yieldToken = GetPreviousToken (ref j, true);
 					if (token == "return") {
 						NRefactoryResolver resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (dom, Document.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, Editor, Document.FileName);
 						resolver.SetupResolver (new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
+						IReturnType returnType = resolver.CallingMember.ReturnType;
+						if (yieldToken == "yield" && returnType.GenericArguments.Count > 0)
+							returnType = returnType.GenericArguments[0];
 						if (resolver.CallingMember != null)
-							return CreateTypeCompletionData (location, exactContext, null, resolver.CallingMember.ReturnType);
+							return CreateTypeCompletionData (location, exactContext, null, returnType);
 					}
 				}
 				
