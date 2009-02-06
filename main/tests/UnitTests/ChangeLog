@@ -1,3 +1,8 @@
+2009-02-06  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: fixed
+	  unit test.
+
 2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* UnitTests.mdp:

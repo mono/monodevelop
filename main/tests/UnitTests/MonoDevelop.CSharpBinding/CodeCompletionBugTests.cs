@@ -1123,7 +1123,7 @@ using System.Collections.Generic;
 	}
 ");
 			Assert.IsNotNull (provider, "provider not found.");
-			Assert.IsNotNull (provider.Find ("TestExt<T>"), "method 'TestExt' not found");
+			Assert.IsNotNull (provider.Find ("TestExt"), "method 'TestExt' not found");
 		}
 		
 		/// <summary>
