@@ -143,6 +143,31 @@ class Program
 			Assert.IsNotNull (provider.Find ("TestString"), "property 'TestString' not found.");
 		}
 		
+		[Test()]
+		public void TestQueryExpression ()
+		{
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
+@"
+class Program
+{
+	public void TestMethod ()
+	{
+	}
+	
+	static void Main (string[] args)
+	{
+		Program[] numbers;
+		foreach (var x in from n in numbers select n) {
+			$x.$
+		}
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("TestMethod"), "method 'Test' not found.");
+		}
+		
+		
 
 	}
 }

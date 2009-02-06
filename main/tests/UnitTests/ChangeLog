@@ -1,5 +1,10 @@
 2009-02-06  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharpBinding/CodeCompletionCSharp3Tests.cs:
+	  Adding C#3 query expression test.
+
+2009-02-06  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* UnitTests.csproj: 
 
