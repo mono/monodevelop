@@ -1,9 +1,9 @@
 FILES = NUnitTestRunner.cs
 
 REFS =  \
-	-r:../lib/nunit.core.dll \
-	-r:../lib/nunit.core.interfaces.dll \
-	-r:../lib/nunit.framework.dll \
+	-r:$(top_srcdir)/src/addins/NUnit/lib/nunit.core.dll \
+	-r:$(top_srcdir)/src/addins/NUnit/lib/nunit.core.interfaces.dll \
+	-r:$(top_srcdir)/src/addins/NUnit/lib/nunit.framework.dll \
 	-r:System \
 	-r:System.Xml
 
