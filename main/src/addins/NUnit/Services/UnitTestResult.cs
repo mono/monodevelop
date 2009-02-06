@@ -150,7 +150,7 @@ namespace MonoDevelop.NUnit
 		
 		public SourceCodeLocation GetFailureLocation ()
 		{
-			if (!String.IsNullOrEmpty (stackTrace)) {
+/*			if (!String.IsNullOrEmpty (stackTrace)) {
 				Match match = Regex.Match (stackTrace, @"\s*?at\s(?!NUnit\.Framework).*?\sin\s(.*?):(\d+)", RegexOptions.Multiline);
 				while (match.Success) {
 					try	{
@@ -161,7 +161,7 @@ namespace MonoDevelop.NUnit
 					match = match.NextMatch ();
 				}
 			}
-			return null;
+*/			return null;
 		}
 	}
 }
