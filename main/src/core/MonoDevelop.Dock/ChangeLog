@@ -1,5 +1,9 @@
 2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* DockTest.mdp: Remove unused files.
+
+2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Dock.mds:
 	* MonoDevelop.Dock.mdp:
 	* MonoDevelop.Dock.csproj: Migrated to MSBuild file format.

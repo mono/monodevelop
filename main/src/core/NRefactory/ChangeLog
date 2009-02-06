@@ -1,5 +1,9 @@
 2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* NRefactory.mdp: Remove unused files.
+
+2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* NRefactory.csproj: Migrated to MSBuild file format.
 
 2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
