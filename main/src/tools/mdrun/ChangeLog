@@ -1,3 +1,8 @@
+2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* mdrun.mdp:
+	* mdrun.csproj: Migrated to MSBuild file format.
+
 2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* mdrun.mdp: Flush project format changes.

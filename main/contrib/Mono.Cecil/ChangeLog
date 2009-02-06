@@ -1,0 +1,7 @@
+2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Cecil.mdp:
+	* Mono.Cecil.csproj:
+	* Mono.Cecil.Mdb.mdp:
+	* Mono.Cecil.Mdb.csproj: Migrated to MSBuild file format.
+
