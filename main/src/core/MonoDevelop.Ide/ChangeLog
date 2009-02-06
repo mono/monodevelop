@@ -1,3 +1,10 @@
+2009-02-05  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Gui.Content/CompletionTextEditorExtension.cs:
+	  Hide the completion window if the buffer&cursor change by
+	  more than one char while base is handling the keystroke.
+	  Hacks around C# indenter issues.
+
 2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.mdp:

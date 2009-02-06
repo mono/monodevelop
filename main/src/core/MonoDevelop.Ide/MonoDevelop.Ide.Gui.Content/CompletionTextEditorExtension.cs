@@ -66,9 +66,20 @@ namespace MonoDevelop.Ide.Gui.Content
 				autoHideCompletionWindow = false;
 			}
 			
+			int oldPos = Editor.CursorPosition;
+			int oldLen = Editor.TextLength;
+			
 			res = base.KeyPress (key, keyChar, modifier);
 			if ((modifier & Gdk.ModifierType.ControlMask) == Gdk.ModifierType.ControlMask)
 				return res;
+			
+			int posChange = Editor.CursorPosition - oldPos;
+			if (currentCompletionContext != null && (Math.Abs (posChange) > 1 || (Editor.TextLength - oldLen) != posChange)) {
+				currentCompletionContext = null;
+				CompletionWindowManager.HideWindow ();
+				ParameterInformationWindowManager.HideWindow ();
+				return res;
+			}
 
 			if (!enableCodeCompletion)
 				return res;
