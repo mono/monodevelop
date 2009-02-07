@@ -287,10 +287,10 @@ namespace Stetic {
 			return new GLib.Value (new Gtk.Adjustment (deflt, min, max, step, page_inc, page_size));
 		}
 
-		static GLib.Value ParseUnichar (string strval)
+	/*	static GLib.Value ParseUnichar (string strval)
 		{
 			return new GLib.Value (strval.Length == 1 ? (uint)strval[0] : 0U);
-		}
+		}*/
 
 		static GLib.Value ParseProperty (ParamSpec pspec, Type propType, string strval)
 		{
