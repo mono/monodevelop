@@ -38,7 +38,7 @@ namespace MonoDevelop.Components
 	{
 		int margin = 0;
 		int padding = 4;
-		int listWidth = 300;
+//		int listWidth = 300;
 		
 		Pango.Layout layout;
 		int selection = 0;
@@ -440,24 +440,23 @@ namespace MonoDevelop.Components
 		
 		void CalcVisibleRows ()
 		{
-			int winHeight = 200;
-			int lvWidth, lvHeight;
+//			int winHeight = 200;
 			int rowWidth;
 
-			lvWidth = Allocation.Width;
-			lvHeight = Allocation.Height;
+//			int lvWidth = Allocation.Width;
+			int lvHeight = Allocation.Height;
 
 			layout.GetPixelSize (out rowWidth, out rowHeight);
 			rowHeight += padding;
 			visibleRows = (lvHeight + padding - margin * 2) / rowHeight;
 			
-			int newHeight;
-			int count = RowCount;
+//			int newHeight;
+//			int count = RowCount;
 
-			if (count > this.visibleRows)
-				newHeight = (rowHeight * visibleRows) + margin * 2;
-			else
-				newHeight = (rowHeight * count) + margin * 2;
+//			if (count > this.visibleRows)
+//				newHeight = (rowHeight * visibleRows) + margin * 2;
+//			else
+//				newHeight = (rowHeight * count) + margin * 2;
 
 			if (dataProvider != null) {
 				int maxr = Math.Min (page + visibleRows, dataProvider.ItemCount);

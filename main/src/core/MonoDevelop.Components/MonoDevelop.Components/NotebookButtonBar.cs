@@ -78,11 +78,11 @@ namespace MonoDevelop.Components
 			foreach (Gtk.Widget page in notebook.Children) {
 				Gtk.Widget t = notebook.GetTabLabel (page);
 				notebook.SetTabLabel (page, new Gtk.Label (""));
-				Gtk.Widget nw;
-				if (t is Gtk.Label)
-					nw = new Gtk.Label (((Gtk.Label)t).Text);
-				else
-					nw = new Gtk.Label ("");
+//				Gtk.Widget nw;
+//				if (t is Gtk.Label)
+//					nw = new Gtk.Label (((Gtk.Label)t).Text);
+//				else
+//					nw = new Gtk.Label ("");
 				ToggleToolButton button = new ToggleToolButton ();
 				button.IsImportant = true;
 				button.LabelWidget = t;
