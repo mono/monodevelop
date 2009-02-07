@@ -183,18 +183,18 @@ namespace MonoDevelop.XmlEditor.Completion
 				return new ICompletionData[0];
 		}
 		
-		XmlElementPath CreateSimplePath (string tagName)
-		{
-			EnsureLoaded();
-			XmlElementPath path = new XmlElementPath ();
-			System.Console.WriteLine(schema.TargetNamespace);
-			foreach (XmlSchemaElement element in schema.Elements.Values) {
-				System.Console.WriteLine(element.QualifiedName.Namespace);
-			}
-				
-			path.Elements.Add (new QualifiedName (tagName, schema.TargetNamespace));
-			return path;
-		}
+//		XmlElementPath CreateSimplePath (string tagName)
+//		{
+//			EnsureLoaded();
+//			XmlElementPath path = new XmlElementPath ();
+//			System.Console.WriteLine(schema.TargetNamespace);
+//			foreach (XmlSchemaElement element in schema.Elements.Values) {
+//				System.Console.WriteLine(element.QualifiedName.Namespace);
+//			}
+//				
+//			path.Elements.Add (new QualifiedName (tagName, schema.TargetNamespace));
+//			return path;
+//		}
 		
 		#endregion
 

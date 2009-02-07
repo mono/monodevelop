@@ -39,7 +39,7 @@ namespace MonoDevelop.XmlEditor
 		XmlSchemaCompletionData defaultSchemaCompletionData;
 		string defaultNamespacePrefix;
 		
-		bool showSchemaAnnotation;
+//		bool showSchemaAnnotation;
 		
 		public XmlTextEditorExtension() : base ()
 		{
@@ -92,12 +92,12 @@ namespace MonoDevelop.XmlEditor
 		
 		#region Code completion
 		
-		IEditableTextBuffer GetBuffer ()
-		{
-			IEditableTextBuffer buf = Document.GetContent<IEditableTextBuffer> ();
-			System.Diagnostics.Debug.Assert (buf != null);
-			return buf;
-		}
+//		IEditableTextBuffer GetBuffer ()
+//		{
+//			IEditableTextBuffer buf = Document.GetContent<IEditableTextBuffer> ();
+//			System.Diagnostics.Debug.Assert (buf != null);
+//			return buf;
+//		}
 		
 		XmlElementPath GetCurrentPath ()
 		{
@@ -401,7 +401,7 @@ namespace MonoDevelop.XmlEditor
 				AutoCompleteClosingTags = XmlEditorAddInOptions.AutoCompleteElements;
 				break;
 			case "ShowSchemaAnnotation":
-				showSchemaAnnotation = XmlEditorAddInOptions.ShowSchemaAnnotation;
+//				showSchemaAnnotation = XmlEditorAddInOptions.ShowSchemaAnnotation;
 				break;
 			default:
 				string extension = System.IO.Path.GetExtension (Document.Name).ToLower ();
@@ -416,7 +416,7 @@ namespace MonoDevelop.XmlEditor
 		
 		void SetInitialValues()
 		{
-			showSchemaAnnotation = XmlEditorAddInOptions.ShowSchemaAnnotation;
+//			showSchemaAnnotation = XmlEditorAddInOptions.ShowSchemaAnnotation;
 			AutoCompleteClosingTags = XmlEditorAddInOptions.AutoCompleteElements;
 			SetDefaultSchema (Document.Name);
 		}
@@ -491,23 +491,23 @@ namespace MonoDevelop.XmlEditor
 			//FIXME: implement this
 		}
 		
-		string GetLineIndent (int line)
-		{
-			string indent = string.Empty;
-			int start = Editor.GetPositionFromLineColumn (line, 1);
-			int i = start;
-			while (i < Editor.TextLength) {
-				char c = Editor.GetCharAt (i);
-				if (c == '\n' || c == '\r')
-					break;
-				if (!char.IsWhiteSpace (c))
-					break;
-				i++;
-			}
-			if (i > 0)
-				indent = Editor.GetText (start, i);
-			return indent;
-		}
+//		string GetLineIndent (int line)
+//		{
+//			string indent = string.Empty;
+//			int start = Editor.GetPositionFromLineColumn (line, 1);
+//			int i = start;
+//			while (i < Editor.TextLength) {
+//				char c = Editor.GetCharAt (i);
+//				if (c == '\n' || c == '\r')
+//					break;
+//				if (!char.IsWhiteSpace (c))
+//					break;
+//				i++;
+//			}
+//			if (i > 0)
+//				indent = Editor.GetText (start, i);
+//			return indent;
+//		}
 		
 		//gets the indent of the line containing this position, up to the position index
 		string GetPositionIndent (int position)
