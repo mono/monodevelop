@@ -86,6 +86,11 @@ namespace MonoDevelop.Ide.Gui
 			return dp != null && ((doc != null && doc == dp.doc) || (FileName != null && FileName == dp.FileName));
 		}
 		
+		public override int GetHashCode ()
+		{
+			return base.GetHashCode ();
+		}
+		
 		internal bool HandleRenameEvent (string oldName, string newName)
 		{
 			if (doc == null && oldName == fileName) {

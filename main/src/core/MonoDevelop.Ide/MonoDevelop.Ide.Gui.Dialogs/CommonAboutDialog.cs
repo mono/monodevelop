@@ -162,12 +162,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			}
 		}
 
-		int GetTextHeight ()
-		{
-			int w, h;
-			layout.GetPixelSize (out w, out h);
-			return h;
-		}
+//		int GetTextHeight ()
+//		{
+//			int w, h;
+//			layout.GetPixelSize (out w, out h);
+//			return h;
+//		}
 		
 		private void DrawText ()
 		{

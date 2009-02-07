@@ -154,7 +154,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		
 		void OnClassInformationChanged (object sender, TypeUpdateInformationEventArgs e)
 		{
-			DateTime t = DateTime.Now;
+//			DateTime t = DateTime.Now;
 			Dictionary<object,bool> oldStatus = new Dictionary<object,bool> ();
 			List<string> namespacesToClean = new List<string> ();
 			ITreeBuilder tb = Context.GetTreeBuilder ();

@@ -303,17 +303,17 @@ namespace MonoDevelop.Ide.Gui
 		
 		static void LineCountChanged (object sender, MonoDevelop.Projects.Text.LineCountEventArgs args)
 		{
-			MonoDevelop.Projects.Text.ITextFile textFile = (MonoDevelop.Projects.Text.ITextFile) sender;
+//			MonoDevelop.Projects.Text.ITextFile textFile = (MonoDevelop.Projects.Text.ITextFile) sender;
 		}
 		
 		static void CommitCountChanges (object sender, MonoDevelop.Projects.Text.TextFileEventArgs args)
 		{
-			MonoDevelop.Projects.Text.ITextFile textFile = (MonoDevelop.Projects.Text.ITextFile) sender;
+//			MonoDevelop.Projects.Text.ITextFile textFile = (MonoDevelop.Projects.Text.ITextFile) sender;
 		}
 		
 		static void ResetCountChanges (object sender, MonoDevelop.Projects.Text.TextFileEventArgs args)
 		{
-			MonoDevelop.Projects.Text.ITextFile textFile = (MonoDevelop.Projects.Text.ITextFile) sender;
+//			MonoDevelop.Projects.Text.ITextFile textFile = (MonoDevelop.Projects.Text.ITextFile) sender;
 		}
 		
 		static void FileRenamed (object sender, MonoDevelop.Projects.ProjectFileRenamedEventArgs args)

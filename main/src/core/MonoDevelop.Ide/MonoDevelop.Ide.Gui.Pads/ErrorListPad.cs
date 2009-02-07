@@ -46,7 +46,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		ToggleToolButton errorBtn, warnBtn, msgBtn;
 		Gtk.Tooltips tips = new Gtk.Tooltips ();
 		Hashtable tasks = new Hashtable ();
-		IPadWindow window;
+//		IPadWindow window;
 		bool initializeLocation = true;
 
 		Menu menu;
@@ -78,7 +78,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 		void IPadContent.Initialize (IPadWindow window)
 		{
-			this.window = window;
+//			this.window = window;
 			window.Title = GettextCatalog.GetString ("Error List");
 			window.Icon = MonoDevelop.Core.Gui.Stock.Error;
 		}

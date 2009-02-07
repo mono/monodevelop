@@ -39,7 +39,7 @@ namespace MonoDevelop.Ide
 {
 	internal class Services
 	{
-		static IconService icons;
+//		static IconService icons;
 		static TaskService taskService;
 		
 		public static ResourceService Resources {

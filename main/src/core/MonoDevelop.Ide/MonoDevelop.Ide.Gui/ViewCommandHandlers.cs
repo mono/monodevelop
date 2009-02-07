@@ -565,31 +565,31 @@ namespace MonoDevelop.Ide.Gui
 		#region Folding
 		[CommandUpdateHandler (EditCommands.ToggleAllFoldings)]
 		[CommandUpdateHandler (EditCommands.FoldDefinitions)]
-		void UpdateFoldCommands (CommandInfo info)
+		protected void UpdateFoldCommands (CommandInfo info)
 		{
 			info.Enabled = GetContent <IFoldable> () != null;
 		}
 		
 		[CommandHandler (EditCommands.ToggleAllFoldings)]
-		void ToggleAllFoldings ()
+		protected void ToggleAllFoldings ()
 		{
 			GetContent <IFoldable> ().ToggleAllFoldings ();
 		}
 		
 		[CommandHandler (EditCommands.FoldDefinitions)]
-		void FoldDefinitions ()
+		protected void FoldDefinitions ()
 		{
 			GetContent <IFoldable> ().FoldDefinitions ();
 		}
 		
 		[CommandUpdateHandler (EditCommands.ToggleFolding)]
-		void UpdateToggleFolding (CommandInfo info)
+		protected void UpdateToggleFolding (CommandInfo info)
 		{
 			info.Enabled = GetContent <IFoldable> () != null;
 		}
 		
 		[CommandHandler (EditCommands.ToggleFolding)]
-		void ToggleFolding ()
+		protected void ToggleFolding ()
 		{
 			GetContent <IFoldable> ().ToggleFolding ();
 		}

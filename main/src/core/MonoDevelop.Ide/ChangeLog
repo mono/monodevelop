@@ -1,3 +1,22 @@
+2009-02-07  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui/Ide.cs:
+	* MonoDevelop.Ide/Services.cs:
+	* MonoDevelop.Ide.Gui/HelpViewer.cs:
+	* MonoDevelop.Ide.Gui/IdeStartup.cs:
+	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs:
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs:
+	* MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:
+	* MonoDevelop.Ide.Commands/FileCommands.cs:
+	* MonoDevelop.Ide.Gui/ViewCommandHandlers.cs:
+	* MonoDevelop.Ide.Gui/DocumentNavigationPoint.cs:
+	* MonoDevelop.Ide.Gui/NavigationHistoryService.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:
+	* MonoDevelop.Ide.Gui.Pads.ClassPad/NamespaceData.cs:
+	* MonoDevelop.Ide.Gui.Pads.ClassPad/ProjectNodeBuilder.cs:
+	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:
+	  Fixed compiler warnings.
+
 2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui/RootWorkspace.cs: Exclude project files

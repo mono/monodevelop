@@ -250,15 +250,15 @@ namespace MonoDevelop.Ide.Gui
 			if (handler != null)
 				handler.Open (member.HelpUrl);
 		}
-		string GetClassFileName (IType cls)
-		{
-			if (cls.CompilationUnit.FileName != null)
-				return cls.CompilationUnit.FileName;
-/*			if (cls.DeclaredIn is IType)
-				return GetClassFileName ((IType) cls.DeclaredIn);
-			else*/
-				return null;
-		}
+//		string GetClassFileName (IType cls)
+//		{
+//			if (cls.CompilationUnit.FileName != null)
+//				return cls.CompilationUnit.FileName;
+///*			if (cls.DeclaredIn is IType)
+//				return GetClassFileName ((IType) cls.DeclaredIn);
+//			else*/
+//				return null;
+//		}
 
 		
 		public void Export (IWorkspaceObject item)

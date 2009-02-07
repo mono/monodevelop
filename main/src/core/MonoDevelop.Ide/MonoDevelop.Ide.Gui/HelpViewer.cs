@@ -204,17 +204,17 @@ namespace MonoDevelop.Ide.Gui
 			output.Append (input.Substring (previousCaptureEndedAt));
 		}
 		
-		void WriteImage (string path, string url)
-		{
-			using (Stream s = ProjectDomService.HelpTree.GetImage (url)) {
-				using (FileStream fs = new FileStream (path, FileMode.Create)) {
-					byte[] buffer = new byte [8192];
-					int n = 0;
-					while ((n = s.Read (buffer, 0, 8192)) != 0)
-						fs.Write (buffer, 0, n);
-				}
-			}
-		}
+//		void WriteImage (string path, string url)
+//		{
+//			using (Stream s = ProjectDomService.HelpTree.GetImage (url)) {
+//				using (FileStream fs = new FileStream (path, FileMode.Create)) {
+//					byte[] buffer = new byte [8192];
+//					int n = 0;
+//					while ((n = s.Read (buffer, 0, 8192)) != 0)
+//						fs.Write (buffer, 0, n);
+//				}
+//			}
+//		}
 
 		public override void Load (string s)
 		{

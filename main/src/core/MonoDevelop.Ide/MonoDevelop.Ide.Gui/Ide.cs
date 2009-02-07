@@ -325,7 +325,7 @@ namespace MonoDevelop.Ide.Gui
 	
 	public class IdeServices
 	{
-		IconService icons;
+//		IconService icons;
 		
 		public ResourceService Resources {
 			get { return MonoDevelop.Core.Gui.Services.Resources; }

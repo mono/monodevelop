@@ -569,7 +569,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		bool parsingFile;
+//		bool parsingFile;
 		
 		void OnViewTextChanged (object sender, TextChangedEventArgs e)
 		{

@@ -151,7 +151,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			try {
 				//force initialisation
-				IconService s = MonoDevelop.Projects.Gui.Services.Icons;
+//				IconService s = MonoDevelop.Projects.Gui.Services.Icons;
 				
 				if (errorsList.Count > 0) {
 					SplashScreenForm.SplashScreen.Hide ();
