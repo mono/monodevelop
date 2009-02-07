@@ -127,7 +127,7 @@ namespace MonoDevelop.CodeMetrics
 				return num [str1.Length - 1, str2.Length - 1];
 			}*/
 			
-			int FakeLongestCommonSubstring (Mono.TextEditor.Document doc, string header)
+		/*	int FakeLongestCommonSubstring (Mono.TextEditor.Document doc, string header)
 			{
 				int lcs = 0;
 				int i = 0;
@@ -158,9 +158,9 @@ namespace MonoDevelop.CodeMetrics
 					i++;
 				}
 				return lcs;
-			}
+			}*/
 			
-			string last = null;
+			//string last = null;
 			/*
 			string GetLicense (Mono.TextEditor.Document document)
 			{

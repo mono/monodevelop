@@ -1,3 +1,8 @@
+2009-02-07  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CodeMetrics/CodeMetricsWidget.cs: fixed
+	  warnings.
+
 2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.CodeMetrics.mdp:
