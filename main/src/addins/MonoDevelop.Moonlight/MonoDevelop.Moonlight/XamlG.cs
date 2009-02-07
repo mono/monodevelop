@@ -241,16 +241,16 @@ namespace MonoDevelop.Moonlight
 			return ns;
 		}
 
-		private static string ParseTypeFromXmlns (string xmlns)
-		{
-			string type_name = null;
-			string ns = null;
-			string asm = null;
-
-			ParseXmlns (xmlns, out type_name, out ns, out asm);
-
-			return type_name;
-		}
+//		private static string ParseTypeFromXmlns (string xmlns)
+//		{
+//			string type_name = null;
+//			string ns = null;
+//			string asm = null;
+//
+//			ParseXmlns (xmlns, out type_name, out ns, out asm);
+//
+//			return type_name;
+//		}
 
 		internal static void ParseXmlns (string xmlns, out string type_name, out string ns, out string asm)
 		{

@@ -53,12 +53,12 @@ namespace MonoDevelop.Moonlight
 		
 		#region Code completion
 		
-		static ProjectDom GetMLDom (MoonlightProject project)
-		{
-			return ProjectDomService.GetAssemblyDom (
-				MonoDevelop.Core.Runtime.SystemAssemblyService.GetAssemblyNameForVersion (
-					"System.Windows", GetProjectTargetFramework (project)));
-		}
+//		static ProjectDom GetMLDom (MoonlightProject project)
+//		{
+//			return ProjectDomService.GetAssemblyDom (
+//				MonoDevelop.Core.Runtime.SystemAssemblyService.GetAssemblyNameForVersion (
+//					"System.Windows", GetProjectTargetFramework (project)));
+//		}
 		
 		public static IEnumerable<IType> ListControlClasses (ProjectDom database, string namespac)
 		{
@@ -163,10 +163,10 @@ namespace MonoDevelop.Moonlight
 					list.Add (t.Name, Gtk.Stock.GoForward, t.Documentation);
 		}
 		
-		static MonoDevelop.Core.TargetFramework GetProjectTargetFramework (MoonlightProject project)
-		{
-			return project == null? MonoDevelop.Core.TargetFramework.Default : project.TargetFramework;
-		}
+//		static MonoDevelop.Core.TargetFramework GetProjectTargetFramework (MoonlightProject project)
+//		{
+//			return project == null? MonoDevelop.Core.TargetFramework.Default : project.TargetFramework;
+//		}
 		
 		protected override void GetAttributeCompletions (CompletionDataList list, IAttributedXObject attributedOb, 
 		                                                 Dictionary<string, string> existingAtts)
