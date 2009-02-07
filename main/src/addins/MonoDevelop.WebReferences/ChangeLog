@@ -1,3 +1,10 @@
+2009-02-07  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.WebReferences/CodeGenerator.cs:
+	* MonoDevelop.WebReferences.Dialogs/WebReferenceDialog.cs:
+	* gtk-gui/MonoDevelop.WebReferences.Dialogs.WebReferenceDialog.cs:
+	  Fixed compiler warnings
+
 2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.WebReferences.mds:

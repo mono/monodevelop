@@ -118,8 +118,8 @@ namespace MonoDevelop.WebReferences
 			codeUnit.Namespaces.Add(codeNamespace);
 
 			// Setup the importer and import the service description into the code unit
-			ServiceDescriptionImporter importer = Library.ReadServiceDescriptionImporter(protocol);
-			ServiceDescriptionImportWarnings warnings = importer.Import(codeNamespace, codeUnit);
+		//	ServiceDescriptionImporter importer = Library.ReadServiceDescriptionImporter(protocol);
+		//	ServiceDescriptionImportWarnings warnings = importer.Import(codeNamespace, codeUnit);
 
 			// Add the new Constructor with Url as a paremeter
 			// Search for the class which inherit SoapHttpClientProtocol (Which is the Service Class)

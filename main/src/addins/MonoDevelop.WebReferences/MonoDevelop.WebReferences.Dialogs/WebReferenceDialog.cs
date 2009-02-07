@@ -127,7 +127,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 		private string namespacePrefix = "";
 		private DiscoveryClientProtocol selectedService;
 		private string basePath = "";
-		protected Gtk.Alignment frmBrowserAlign;
+//		protected Gtk.Alignment frmBrowserAlign;
 		#endregion
 		
 		/// <summary>Initializes a new instance of the AddWebReferenceDialog widget.</summary>
@@ -176,20 +176,20 @@ namespace MonoDevelop.WebReferences.Dialogs
 		/// <summary>Execute the event when any of the buttons on the action panel has been clicked</summary>
 		/// <param name="sender">An object that contains the sender data.</param>
 		/// <param name="e">An EventArgs object that contains the event data.</param>
-		private void Browser_URLKeyReleased (object sender, EventArgs e)
-		{
-			if (sender.Equals(btnOK) && Directory.Exists(this.ReferencePath))
-			{
-				string message = GettextCatalog.GetString ("The reference name '{0}' already exists.", this.ReferenceName);
-				MessageService.ShowWarning(message);
-				return;	
-			}
-			else
-			{
-				Respond((sender.Equals(btnOK)) ? Gtk.ResponseType.Ok : Gtk.ResponseType.Cancel);
-				Destroy();
-			}
-		}
+//		private void Browser_URLKeyReleased (object sender, EventArgs e)
+//		{
+//			if (sender.Equals(btnOK) && Directory.Exists(this.ReferencePath))
+//			{
+//				string message = GettextCatalog.GetString ("The reference name '{0}' already exists.", this.ReferenceName);
+//				MessageService.ShowWarning(message);
+//				return;	
+//			}
+//			else
+//			{
+//				Respond((sender.Equals(btnOK)) ? Gtk.ResponseType.Ok : Gtk.ResponseType.Cancel);
+//				Destroy();
+//			}
+//		}
 		
 		/// <summary>Execute the event when the Browser Go button has been clicked</summary>
 		/// <param name="sender">An object that contains the sender data.</param>
