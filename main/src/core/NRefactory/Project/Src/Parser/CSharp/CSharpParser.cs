@@ -277,7 +277,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		/* Checks whether the next sequences of tokens is a qualident *
 		 * and returns the qualident string                           */
 		/* !!! Proceeds from current peek position !!! */
-		bool IsQualident(ref Token pt, out string qualident)
+	/*	bool IsQualident(ref Token pt, out string qualident)
 		{
 			if (IsIdentifierToken(pt)) {
 				qualidentBuilder.Length = 0; qualidentBuilder.Append(pt.val);
@@ -298,7 +298,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			qualident = String.Empty;
 			return false;
 		}
-
+*/
 		/* Skips generic type extensions */
 		/* !!! Proceeds from current peek position !!! */
 
@@ -516,7 +516,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			return (la.kind == Tokens.GreaterThan && next.kind == Tokens.GreaterThan);
 		}
 
-		bool IsGenericExpression(Expression expr)
+	/*	bool IsGenericExpression(Expression expr)
 		{
 			if (expr is IdentifierExpression)
 				return ((IdentifierExpression)expr).TypeArguments.Count > 0;
@@ -524,7 +524,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 				return ((MemberReferenceExpression)expr).TypeArguments.Count > 0;
 			else
 				return false;
-		}
+		}*/
 
 		bool ShouldConvertTargetExpressionToTypeReference(Expression targetExpr)
 		{

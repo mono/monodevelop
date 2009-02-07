@@ -98,11 +98,11 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			return newType.Children;
 		}
 
-		bool LeaveBlock()
+	/*	bool LeaveBlock()
 		{
 			int peek = Peek(1).kind;
 			return Tokens.BlockSucc[la.kind] && (la.kind != Tokens.End || peek == Tokens.EOL || peek == Tokens.Colon);
-		}
+		}*/
 
 		/* True, if "." is followed by an ident */
 		bool DotAndIdentOrKw () {

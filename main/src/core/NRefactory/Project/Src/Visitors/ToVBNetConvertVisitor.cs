@@ -119,7 +119,7 @@ namespace ICSharpCode.NRefactory.Visitors
 			return null;
 		}
 		
-		static string GetMemberNameOnThisReference(Expression expr)
+	/*	static string GetMemberNameOnThisReference(Expression expr)
 		{
 			IdentifierExpression ident = expr as IdentifierExpression;
 			if (ident != null)
@@ -128,7 +128,7 @@ namespace ICSharpCode.NRefactory.Visitors
 			if (fre != null && fre.TargetObject is ThisReferenceExpression)
 				return fre.MemberName;
 			return null;
-		}
+		}*/
 		
 		public override object VisitAnonymousMethodExpression(AnonymousMethodExpression anonymousMethodExpression, object data)
 		{

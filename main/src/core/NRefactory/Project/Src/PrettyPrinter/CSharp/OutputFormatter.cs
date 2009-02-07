@@ -12,7 +12,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 {
 	public sealed class CSharpOutputFormatter : AbstractOutputFormatter
 	{
-		PrettyPrintOptions prettyPrintOptions;
+	//	PrettyPrintOptions prettyPrintOptions;
 		
 		bool          emitSemicolon  = true;
 		
@@ -27,7 +27,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public CSharpOutputFormatter(PrettyPrintOptions prettyPrintOptions) : base(prettyPrintOptions)
 		{
-			this.prettyPrintOptions = prettyPrintOptions;
+	//		this.prettyPrintOptions = prettyPrintOptions;
 		}
 		
 		public override void PrintToken(int token)

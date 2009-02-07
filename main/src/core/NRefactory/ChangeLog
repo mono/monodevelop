@@ -1,3 +1,13 @@
+2009-02-07  Mike Krüger  <mkrueger@novell.com>
+
+	* Project/Src/Lexer/LookupTable.cs:
+	* Project/Src/OperatorPrecedence.cs:
+	* Project/Src/Parser/VBNet/VBNetParser.cs:
+	* Project/Src/Parser/CSharp/CSharpParser.cs:
+	* Project/Src/Visitors/ToVBNetConvertVisitor.cs:
+	* Project/Src/PrettyPrinter/CSharp/OutputFormatter.cs: Fixed
+	  compiler warnings.
+
 2009-02-06  Mike Krüger  <mkrueger@novell.com>
 
 	* Project/Src/Parser/CSharp/cs.ATG:

@@ -35,7 +35,7 @@ namespace ICSharpCode.NRefactory
 			new BinaryOperatorType[] { BinaryOperatorType.LogicalOr, BinaryOperatorType.BitwiseOr },
 			new BinaryOperatorType[] { BinaryOperatorType.ExclusiveOr }
 		);
-		
+		/*
 		static readonly Dictionary<BinaryOperatorType, int> csharpDict = MakePrecedenceTable(
 			new BinaryOperatorType[] { BinaryOperatorType.Multiply, BinaryOperatorType.Divide, BinaryOperatorType.Modulus },
 			new BinaryOperatorType[] { BinaryOperatorType.Add, BinaryOperatorType.Subtract },
@@ -50,7 +50,7 @@ namespace ICSharpCode.NRefactory
 			new BinaryOperatorType[] { BinaryOperatorType.BitwiseOr },
 			new BinaryOperatorType[] { BinaryOperatorType.LogicalAnd, BinaryOperatorType.LogicalOr },
 			new BinaryOperatorType[] { BinaryOperatorType.NullCoalescing }
-		);
+		);*/
 		
 		// create a dictionary operator->precedence (higher value = higher precedence)
 		static Dictionary<BinaryOperatorType, int> MakePrecedenceTable(params BinaryOperatorType[][] input)
