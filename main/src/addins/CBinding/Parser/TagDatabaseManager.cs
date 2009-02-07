@@ -327,10 +327,10 @@ namespace CBinding.Parser
 				DepsInstalled = false;
 				return;
 			}
-			catch {
-				LoggingService.LogError("Unexpected error while updating parser database. Disabling C/C++ parsing.");
-				DepsInstalled = false;
-			}
+//			catch {
+//				LoggingService.LogError("Unexpected error while updating parser database. Disabling C/C++ parsing.");
+//				DepsInstalled = false;
+//			}
 		}
 		
 		public void UpdateFileTags (Project project, string filename)

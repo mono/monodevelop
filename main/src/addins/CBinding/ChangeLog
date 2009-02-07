@@ -1,3 +1,7 @@
+2009-02-07  Mike Krüger  <mkrueger@novell.com>
+
+	* Parser/TagDatabaseManager.cs: fixed compiler warnings.
+
 2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/generated.cs:
