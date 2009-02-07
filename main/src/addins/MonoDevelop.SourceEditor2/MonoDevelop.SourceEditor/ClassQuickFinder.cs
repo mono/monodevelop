@@ -425,7 +425,7 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 		
-		bool IsMemberSelected (IMember mem, int line, int column)
+/*		bool IsMemberSelected (IMember mem, int line, int column)
 		{
 			if (mem is IMethod) {
 				IMethod method = (IMethod) mem;
@@ -437,7 +437,7 @@ namespace MonoDevelop.SourceEditor
 			}
 			
 			return (mem.Location.Line <= line && line <= mem.Location.Line);
-		}
+		}*/
 		
 //		public void GetLineColumnFromPosition (int position, out int line, out int column)
 //		{

@@ -50,28 +50,28 @@ namespace MonoDevelop.SourceEditor
 //		}
 		
 	//	string expression;
-		IMember GetLanguageItem (Mono.TextEditor.Document document, int offset)
-		{
-			return null;
-/*
-			ProjectDom ctx = GetParserContext (document);
-			if (ctx == null)
-				return null;
-			
-			IExpressionFinder expressionFinder = null;
-			if (document.FileName != null)
-				expressionFinder = ProjectDomService.GetExpressionFinder (document.FileName);
-			if (expressionFinder == null)
-				return null;
-			string txt = document.Text;
-			expression = expressionFinder.FindFullExpression (txt, offset).Expression;
-			if (expression == null)
-				return null;
-			int lineNumber = document.OffsetToLineNumber (offset);
-			LineSegment line = document.GetLine (lineNumber);
-			
-			return ctx.ResolveIdentifier (expression, lineNumber + 1, line.Offset + 1, document.FileName, null);*/
-		}
+//		IMember GetLanguageItem (Mono.TextEditor.Document document, int offset)
+//		{
+//			return null;
+//
+//			ProjectDom ctx = GetParserContext (document);
+//			if (ctx == null)
+//				return null;
+//			
+//			IExpressionFinder expressionFinder = null;
+//			if (document.FileName != null)
+//				expressionFinder = ProjectDomService.GetExpressionFinder (document.FileName);
+//			if (expressionFinder == null)
+//				return null;
+//			string txt = document.Text;
+//			expression = expressionFinder.FindFullExpression (txt, offset).Expression;
+//			if (expression == null)
+//				return null;
+//			int lineNumber = document.OffsetToLineNumber (offset);
+//			LineSegment line = document.GetLine (lineNumber);
+//			
+//			return ctx.ResolveIdentifier (expression, lineNumber + 1, line.Offset + 1, document.FileName, null);
+//		}
 		
 		public override void Analyze (Mono.TextEditor.Document doc, LineSegment line, List<Chunk> chunks, int startOffset, int endOffset)
 		{

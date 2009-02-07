@@ -1,3 +1,10 @@
+2009-02-07  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/ClassQuickFinder.cs:
+	* MonoDevelop.SourceEditor/SourceEditorOptions.cs:
+	* MonoDevelop.SourceEditor/HighlightPropertiesSemanticRule.cs:
+	  Fixed compiler warnings.
+
 2009-02-05  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Remove
