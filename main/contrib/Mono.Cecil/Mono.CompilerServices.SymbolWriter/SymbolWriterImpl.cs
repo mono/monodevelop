@@ -43,8 +43,8 @@ namespace Mono.CompilerServices.SymbolWriter
 		MonoSymbolWriter msw;
 
 		int nextLocalIndex;
-		int currentToken;
-		string methodName;
+//		int currentToken;
+//		string methodName;
 		Stack namespaceStack = new Stack ();
 		bool methodOpened;
 
@@ -196,7 +196,7 @@ namespace Mono.CompilerServices.SymbolWriter
 		
 		public void OpenMethod (SymbolToken method)
 		{
-			currentToken = method.GetToken ();
+		//	currentToken = method.GetToken ();
 		}
 		
 		public void OpenNamespace (string name)
@@ -235,8 +235,8 @@ namespace Mono.CompilerServices.SymbolWriter
 		{
 			// This is a hack! but MonoSymbolWriter needs the method name
 			// and ISymbolWriter does not have any method for providing it
-			if (name == "__name")
-				methodName = System.Text.Encoding.UTF8.GetString (data);
+//			if (name == "__name")
+//				methodName = System.Text.Encoding.UTF8.GetString (data);
 		}
 		
 		public void SetUnderlyingWriter (IntPtr underlyingWriter)
@@ -264,28 +264,28 @@ namespace Mono.CompilerServices.SymbolWriter
 			ni.UsingClauses.Add (fullName);
 		}
 		
-		int GetCurrentNamespace (ISymbolDocumentWriter doc)
-		{
-			if (namespaceStack.Count == 0) {
-				OpenNamespace ("");
-			}
-
-			NamespaceInfo ni = (NamespaceInfo) namespaceStack.Peek ();
-			if (ni.NamespaceID == -1)
-			{
-				string[] usings = (string[]) ni.UsingClauses.ToArray (typeof(string));
-				
-				int parentId = 0;
-				if (namespaceStack.Count > 1) {
-					namespaceStack.Pop ();
-					parentId = ((NamespaceInfo) namespaceStack.Peek ()).NamespaceID;
-					namespaceStack.Push (ni);
-				}
-					
-				ni.NamespaceID = msw.DefineNamespace (ni.Name, ((ICompileUnit)doc).Entry, usings, parentId);
-			}
-			return ni.NamespaceID;
-		}
+//		int GetCurrentNamespace (ISymbolDocumentWriter doc)
+//		{
+//			if (namespaceStack.Count == 0) {
+//				OpenNamespace ("");
+//			}
+//
+//			NamespaceInfo ni = (NamespaceInfo) namespaceStack.Peek ();
+//			if (ni.NamespaceID == -1)
+//			{
+//				string[] usings = (string[]) ni.UsingClauses.ToArray (typeof(string));
+//				
+//				int parentId = 0;
+//				if (namespaceStack.Count > 1) {
+//					namespaceStack.Pop ();
+//					parentId = ((NamespaceInfo) namespaceStack.Peek ()).NamespaceID;
+//					namespaceStack.Push (ni);
+//				}
+//					
+//				ni.NamespaceID = msw.DefineNamespace (ni.Name, ((ICompileUnit)doc).Entry, usings, parentId);
+//			}
+//			return ni.NamespaceID;
+//		}
 	}
 	
 	class SymbolDocumentWriterImpl: ISymbolDocumentWriter, ISourceFile, ICompileUnit
