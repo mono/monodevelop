@@ -1,3 +1,7 @@
+2009-02-07  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* mdhost.csproj: Output to the correct directory.
+
 2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* mdhost.mdp:

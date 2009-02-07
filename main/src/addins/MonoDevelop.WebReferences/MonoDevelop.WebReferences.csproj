@@ -18,7 +18,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
-    <ApplicationIcon>.</ApplicationIcon>
     <ConsolePause>false</ConsolePause>
     <Execution>
       <Execution clr-version="Net_2_0" />

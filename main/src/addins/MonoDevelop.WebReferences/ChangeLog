@@ -1,3 +1,8 @@
+2009-02-07  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.WebReferences.csproj: Remove invalid
+	  ApplicationIcon value that broke the build in VS.
+
 2009-02-07  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.WebReferences/CodeGenerator.cs:
