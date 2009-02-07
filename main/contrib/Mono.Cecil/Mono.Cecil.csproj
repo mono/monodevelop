@@ -7,7 +7,6 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{3EC06433-F168-4C5B-A885-99CE4AB617E1}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <newfilesearch>OnLoad</newfilesearch>
     <AssemblyName>Mono.Cecil</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
   </PropertyGroup>
@@ -23,6 +22,7 @@
     <Execution>
       <Execution clr-version="Net_1_1" />
     </Execution>
+    <StartupObject />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -35,67 +35,15 @@
     <Execution>
       <Execution clr-version="Net_1_1" />
     </Execution>
+    <StartupObject />
   </PropertyGroup>
-  <ItemGroup>
-    <Content Include="stripnewline.sed" />
-    <Content Include="Mono.Cecil\AUTHORS" />
-    <Content Include="Mono.Cecil\Mono.Cecil.csproj" />
-    <Content Include="Mono.Cecil\Mono.Cecil.dll.sources" />
-    <Content Include="Mono.Cecil\NEWS" />
-    <Content Include="Mono.Cecil\README" />
-    <Content Include="Mono.Cecil\TODO" />
-    <Content Include="Mono.Cecil\configure" />
-    <Content Include="Mono.Cecil\default.build" />
-    <Content Include="Mono.Cecil\mono-cecil.pc.in" />
-    <Content Include="Mono.Cecil\standalone.make" />
-    <Content Include="Mono.Cecil\CodeGen\cecil-gen-attributes.rb" />
-    <Content Include="Mono.Cecil\CodeGen\cecil-gen-sources.rb" />
-    <Content Include="Mono.Cecil\CodeGen\cecil-gen-tests.rb" />
-    <Content Include="Mono.Cecil\CodeGen\cecil-gen-types.rb" />
-    <Content Include="Mono.Cecil\CodeGen\cecil-gen.rb" />
-    <Content Include="Mono.Cecil\CodeGen\cecil-mig.rb" />
-    <Content Include="Mono.Cecil\CodeGen\cecil-update-rev" />
-    <Content Include="Mono.Cecil\CodeGen\cecil.xml" />
-    <Content Include="Mono.Cecil\CodeGen\templates\BaseMetadataVisitor.cs" />
-    <Content Include="Mono.Cecil\CodeGen\templates\Code.cs" />
-    <Content Include="Mono.Cecil\CodeGen\templates\CodedIndex.cs" />
-    <Content Include="Mono.Cecil\CodeGen\templates\IMetadataVisitor.cs" />
-    <Content Include="Mono.Cecil\CodeGen\templates\IndexedCollection.cs" />
-    <Content Include="Mono.Cecil\CodeGen\templates\MetadataRowReader.cs" />
-    <Content Include="Mono.Cecil\CodeGen\templates\MetadataRowWriter.cs" />
-    <Content Include="Mono.Cecil\CodeGen\templates\MetadataTableReader.cs" />
-    <Content Include="Mono.Cecil\CodeGen\templates\MetadataTableWriter.cs" />
-    <Content Include="Mono.Cecil\CodeGen\templates\NamedCollection.cs" />
-    <Content Include="Mono.Cecil\CodeGen\templates\OpCodes.cs" />
-    <Content Include="Mono.Cecil\CodeGen\templates\Table.cs" />
-    <Content Include="Mono.Cecil\CodeGen\templates\Tests.cs" />
-    <Content Include="Mono.Cecil\CodeGen\templates\Utilities.cs" />
-    <Content Include="Mono.Cecil.Mdb\AUTHORS" />
-    <Content Include="Mono.Cecil.Mdb\ChangeLog" />
-    <Content Include="Mono.Cecil.Mdb\Mono.Cecil.Mdb.csproj" />
-    <Content Include="Mono.Cecil.Mdb\Mono.Cecil.Mdb.dll.sources" />
-    <Content Include="Mono.Cecil.Mdb\README" />
-    <Content Include="Mono.Cecil.Mdb\Mono.Cecil.Mdb\AssemblyInfo.cs" />
-    <Content Include="Mono.Cecil.Mdb\Mono.Cecil.Mdb\MdbFactory.cs" />
-    <Content Include="Mono.Cecil.Mdb\Mono.Cecil.Mdb\MdbReader.cs" />
-    <Content Include="Mono.Cecil.Mdb\Mono.Cecil.Mdb\MdbWriter.cs" />
-    <Content Include="Mono.CompilerServices.SymbolWriter\ChangeLog" />
-    <Content Include="Mono.CompilerServices.SymbolWriter\MonoSymbolFile.cs" />
-    <Content Include="Mono.CompilerServices.SymbolWriter\MonoSymbolTable.cs" />
-    <Content Include="Mono.CompilerServices.SymbolWriter\MonoSymbolWriter.cs" />
-    <Content Include="Mono.CompilerServices.SymbolWriter\SymbolWriterImpl.cs" />
-  </ItemGroup>
   <ItemGroup>
     <None Include="Mono.Cecil\ChangeLog" />
     <None Include="Mono.Cecil\Mono.Xml\ChangeLog" />
-    <None Include="Mono.Cecil\Mono.Cecil.Cil\OpCodeNames.cs" />
-    <None Include="Mono.CompilerServices.SymbolWriterOld\MonoSymbolFile.cs" />
-    <None Include="Mono.CompilerServices.SymbolWriterOld\MonoSymbolTable.cs" />
-    <None Include="Mono.CompilerServices.SymbolWriterOld\MonoSymbolWriter.cs" />
-    <None Include="Mono.CompilerServices.SymbolWriterOld\SymbolWriterImpl.cs" />
     <None Include="ChangeLog" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Mono.Cecil\Mono.Cecil.Cil\OpCodeNames.cs" />
     <Compile Include="Mono.Cecil\Mono.Cecil\AggressiveReflectionReader.cs" />
     <Compile Include="Mono.Cecil\Mono.Cecil\ArrayDimension.cs" />
     <Compile Include="Mono.Cecil\Mono.Cecil\ArrayDimensionCollection.cs" />
@@ -407,18 +355,12 @@
     <Compile Include="Mono.Cecil\Mono.Xml\MiniParser.cs" />
     <Compile Include="Mono.Cecil\Mono.Xml\SecurityParser.cs" />
     <Compile Include="Mono.Cecil\Mono.Xml\SmallXmlParser.cs" />
-    <Compile Include="Mono.Cecil.Mdb\Mono.Cecil.MdbOld\MdbFactory.cs" />
-    <Compile Include="Mono.Cecil.Mdb\Mono.Cecil.MdbOld\MdbReader.cs" />
-    <Compile Include="Mono.Cecil.Mdb\Mono.Cecil.MdbOld\MdbWriter.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Mono.Cecil.Mdb\Mono.Cecil.MdbOld/" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <MonoDevelop>
-      <Properties InternalTargetFrameworkVersion="1.1">
-        <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="./Makefile.am" IsAutotoolsProject="true" RelativeConfigureInPath="../../">
+      <Properties>
+        <MonoDevelop.Autotools.MakefileInfo RelativeMakefileName="./Makefile.am" IsAutotoolsProject="true" RelativeConfigureInPath="../../">
           <BuildFilesVar />
           <DeployFilesVar />
           <ResourcesVar />
@@ -430,4 +372,7 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
 </Project>
