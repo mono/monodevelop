@@ -295,10 +295,10 @@ namespace MonoDevelop.DesignerSupport
 			exceptionManagerHook = null;
 		}
 			
-		void OnUnhandledException (UnhandledExceptionEventArgs args)
+	/*	void OnUnhandledException (UnhandledExceptionEventArgs args)
 		{
 			HandleError ((Exception)args.ExceptionObject);
-		}
+		}*/
 		
 		#endregion
 	}

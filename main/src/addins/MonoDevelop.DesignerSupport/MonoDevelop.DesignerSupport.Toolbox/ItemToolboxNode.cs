@@ -112,13 +112,13 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				(Description.ToLower ().IndexOf (keyword, StringComparison.InvariantCultureIgnoreCase) >= 0));
 		}
 		
-		public virtual bool Equals (object o)
+		public override bool Equals (object o)
 		{
 			ItemToolboxNode node = o as ItemToolboxNode;
 			return (node != null) && (node.Name == this.Name) && (node.Category == this.Category) && (node.Description == this.Description);
 		}
 		
-		public virtual int GetHashCode ()
+		public override int GetHashCode ()
 		{
 			return (string.Empty + Name + Category + Description).GetHashCode ();
 		}

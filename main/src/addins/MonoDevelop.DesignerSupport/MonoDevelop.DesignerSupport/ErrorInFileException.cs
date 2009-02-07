@@ -41,11 +41,9 @@ namespace MonoDevelop.DesignerSupport
 		
 		public ErrorInFileException (DomRegion region, string fileName)
 		{
-			if (region != null) {
-				line = region.Start.Line;
-				column = region.Start.Column;
-				fileName = fileName;
-			}
+			this.line = region.Start.Line;
+			this.column = region.Start.Column;
+			this.fileName = fileName;
 		}
 		
 		public ErrorInFileException (string fileName, int line, int column)

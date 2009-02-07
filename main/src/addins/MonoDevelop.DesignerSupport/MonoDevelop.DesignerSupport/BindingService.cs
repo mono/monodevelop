@@ -113,7 +113,7 @@ namespace MonoDevelop.DesignerSupport
 		
 		static DomRegion GetValidRegion (IMember member)
 		{
-			if (member.BodyRegion == null || member.DeclaringType.CompilationUnit.FileName == null)
+			if (member.BodyRegion.IsEmpty || member.DeclaringType.CompilationUnit.FileName == null)
 				return member.DeclaringType.BodyRegion;
 			return member.BodyRegion;
 		}

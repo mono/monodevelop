@@ -46,7 +46,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		ToolboxService toolboxService;
 		
 		ItemToolboxNode selectedNode;
-		Hashtable expandedCategories = new Hashtable ();
+	//	Hashtable expandedCategories = new Hashtable ();
 		
 		ToolboxWidget toolboxWidget;
 		ScrolledWindow scrolledWindow;
