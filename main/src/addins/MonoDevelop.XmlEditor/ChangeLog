@@ -1,5 +1,9 @@
 2009-02-08  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.XmlEditor.csproj: Local-copy schemas.
+
+2009-02-08  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.XmlEditor.csproj: Nuke another project reference
 	  local copy.
 

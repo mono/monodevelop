@@ -188,14 +188,30 @@
     <None Include="MonoDevelop.Xml.StateEngine\XState.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="schemas\appconfig.xsd" />
-    <Content Include="schemas\MonoDevelopAddIn.xsd" />
-    <Content Include="schemas\manifest.xsd" />
-    <Content Include="schemas\nant.xsd" />
-    <Content Include="schemas\readme.txt" />
-    <Content Include="schemas\W3C-License.html" />
-    <Content Include="schemas\XMLSchema.xsd" />
-    <Content Include="schemas\xslt.xsd" />
+    <Content Include="schemas\appconfig.xsd">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="schemas\MonoDevelopAddIn.xsd">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="schemas\manifest.xsd">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="schemas\nant.xsd">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="schemas\readme.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="schemas\W3C-License.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="schemas\XMLSchema.xsd">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="schemas\xslt.xsd">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
