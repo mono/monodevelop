@@ -1,5 +1,10 @@
 2009-02-07  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Debugger.csproj: Don't require a specific
+	  version of Mono.Addins.
+
+2009-02-07  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Debugger.csproj: Flush MD's removal of newline
 	  at end of file that was introduced by manually editing with
 	  gedit.
