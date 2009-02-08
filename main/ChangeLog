@@ -1,5 +1,10 @@
 2009-02-08  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Main.sln: Move Win32 configuration to x86 because GTK# on
+	  Windows is only available in x86.
+
+2009-02-08  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Main.sln: Add new configurations for Windows and Mac, with
 	  the addins for those platforms. Exclude new Windows/Mac
 	  platform projects from the default Debug build.
