@@ -182,7 +182,7 @@
   
 	<Extension path = "/MonoDevelop/ProjectModel/FileFormats">
 		<FileFormat id="NUnitAssemblyGroupFileFormat"
-		            class="MonoDevelop.NUnit.NUnitAssemblyGroupFileFormat, MonoDevelop.NUnit"/>
+		            class="MonoDevelop.NUnit.NUnitAssemblyGroupFileFormat"/>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/NUnit/TestProviders">
