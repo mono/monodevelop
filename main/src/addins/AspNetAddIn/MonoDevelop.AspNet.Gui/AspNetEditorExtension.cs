@@ -178,7 +178,7 @@ namespace MonoDevelop.AspNet.Gui
 				AddAspBeginExpressions (list, AspDocument);
 				list.AddRange (AspDocument.ReferenceManager.GetControlCompletionData ());
 				AddMiscBeginTags (list);
-				base.AddHtmlTagCompletionData (list, Schema, new S.XName ("body"));
+				AddHtmlTagCompletionData (list, Schema, new S.XName ("body"));
 				return;
 			}
 			
@@ -219,7 +219,7 @@ namespace MonoDevelop.AspNet.Gui
 				if (property.ReturnType.FullName == "System.Web.UI.ITemplate") {
 					AddAspBeginExpressions (list, AspDocument);
 					AddMiscBeginTags (list);
-					base.AddHtmlTagCompletionData (list, Schema, new S.XName ("body"));
+					AddHtmlTagCompletionData (list, Schema, new S.XName ("body"));
 					list.AddRange (AspDocument.ReferenceManager.GetControlCompletionData ());
 					return;
 				}

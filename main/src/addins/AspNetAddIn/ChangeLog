@@ -1,3 +1,8 @@
+2009-02-07  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Remove
+	  unnecessary "base" instance access, as csc doesn't like it.
+
 2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AspNetAddIn.mdp:
