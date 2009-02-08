@@ -91,6 +91,7 @@
     <ProjectReference Include="..\..\core\MonoDevelop.Components\MonoDevelop.Components.csproj">
       <Project>{3344D566-484B-4AEC-BBCF-86BC484D14B0}</Project>
       <Name>MonoDevelop.Components</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

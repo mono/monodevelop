@@ -1,5 +1,9 @@
 2009-02-07  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* CSharpBinding.csproj: Don't local-copy other addins' dlls.
+
+2009-02-07  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Gui/CSharpTextEditorCompletion.cs: Rename a couple of
 	  variables, as csc is more picky about multiple locals with
 	  the same name in switches.

@@ -1,3 +1,8 @@
+2009-02-07  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.VersionControl.csproj: Don't local-copy other
+	  addins' dlls.
+
 2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.VersionControl.mdp:

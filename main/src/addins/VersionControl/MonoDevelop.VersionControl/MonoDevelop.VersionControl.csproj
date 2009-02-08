@@ -72,6 +72,7 @@
     <ProjectReference Include="..\..\..\core\MonoDevelop.Projects.Gui\MonoDevelop.Projects.Gui.csproj">
       <Project>{00E87426-F1BD-4B55-9B3E-7267EE93E002}</Project>
       <Name>MonoDevelop.Projects.Gui</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

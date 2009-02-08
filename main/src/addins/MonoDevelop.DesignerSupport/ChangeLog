@@ -1,3 +1,8 @@
+2009-02-07  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.DesignerSupport.csproj: Don't local-copy other
+	  addins' dlls.
+
 2009-02-07  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.DesignerSupport/BindingService.cs:
