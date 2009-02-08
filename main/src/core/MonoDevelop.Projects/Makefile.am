@@ -279,7 +279,7 @@ all: $(ASSEMBLY) $(ASSEMBLY).mdb
 
 $(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
 	$(CSC) $(CSC_FLAGS) -warnaserror -debug -out:$@ -target:library $(REFS) $(build_deps) $(build_resources:%=/resource:%) $(build_sources) \
-	&& cp $(CONFIG) $(top_builddir)/build/bin
+	&& cp $(srcdir)/$(CONFIG) $(top_builddir)/build/bin
 	
 $(ASSEMBLY).mdb: $(ASSEMBLY)
 
@@ -287,8 +287,7 @@ assemblydir = $(MD_ASSEMBLY_DIR)
 assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb $(CONFIG)
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
-DISTCLEANFILES = $(CONFIG)
 
-EXTRA_DIST = $(FILES) $(CONFIG).in $(RES)
+EXTRA_DIST = $(FILES) $(RES) $(CONFIG)
 
 include $(top_srcdir)/Makefile.include

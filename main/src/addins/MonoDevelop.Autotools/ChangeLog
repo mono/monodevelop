@@ -1,3 +1,13 @@
+2009-02-08  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Autotools.addin.xml: Move template file location
+	  to a subdirectory to match the location MSBuild and MD copy
+	  them.
+
+	* MonoDevelop.Autotools.csproj: Copy templates to output only
+	  if newer.
+
 2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Autotools.mdp:

@@ -272,14 +272,20 @@
     <None Include="ChangeLog" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Schemas\xhtml1-frameset.xsd" />
-    <Content Include="Schemas\xhtml1-strict.xsd" />
-    <Content Include="Schemas\xhtml1-transitional.xsd" />
+    <Content Include="Schemas\xhtml1-frameset.xsd">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Schemas\xhtml1-strict.xsd">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Schemas\xhtml1-transitional.xsd">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Schemas\readme.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Schemas\W3C-License.html">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

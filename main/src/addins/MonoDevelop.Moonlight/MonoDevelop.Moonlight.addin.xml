@@ -20,7 +20,7 @@
 	</Dependencies>
 	
 	<Runtime>
-		<Import file="Silverlight.js" />
+		<Import file="Templates/Silverlight.js" />
 	</Runtime>
 
 	<Extension path = "/MonoDevelop/Ide/FileTemplates">

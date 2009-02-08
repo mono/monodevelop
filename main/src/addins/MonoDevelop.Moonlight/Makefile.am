@@ -45,13 +45,13 @@ RES =  \
 DATA_FILES = \
 	Templates/Silverlight.js
 
-DATA_FILE_BUILD = $(addprefix $(ADDIN_BUILD)/, $(notdir $(DATA_FILES)))
+DATA_FILE_BUILD = $(addprefix $(ADDIN_BUILD)/Templates/, $(notdir $(DATA_FILES)))
 
 all: $(ASSEMBLY) $(ASSEMBLY).mdb $(DATA_FILE_BUILD)
 
-$(DATA_FILE_BUILD): $(srcdir)/$(subst $(ADDIN_BUILD),, $@)
-	mkdir -p $(ADDIN_BUILD)
-	cp $(srcdir)/Templates$(subst $(ADDIN_BUILD),,$@) $@
+$(DATA_FILE_BUILD): $(srcdir)$(subst $(ADDIN_BUILD),, $@)
+	mkdir -p $(ADDIN_BUILD)/Templates
+	cp $(srcdir)/$(subst $(ADDIN_BUILD),,$@) $@
 
 $(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
 	mkdir -p $(ADDIN_BUILD)

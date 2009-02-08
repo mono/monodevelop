@@ -1,5 +1,9 @@
 2009-02-08  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* UnitTests.csproj: Remove unwanted copy-to-output.
+
+2009-02-08  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* UnitTests.csproj: Fix referenced GTK# version.
 
 2009-02-08  Michael Hutchinson  <mhutchinson@novell.com>

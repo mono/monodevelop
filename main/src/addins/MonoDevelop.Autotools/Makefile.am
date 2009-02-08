@@ -74,13 +74,13 @@ DATA_FILES =  \
 	templates/package.pc.template \
 	templates/rules.make
 
-DATA_FILE_BUILD = $(addprefix $(ADDIN_BUILD)/, $(notdir $(DATA_FILES)))
+DATA_FILE_BUILD = $(addprefix $(ADDIN_BUILD)/templates/, $(notdir $(DATA_FILES)))
 
 all: $(ASSEMBLY) $(ASSEMBLY).mdb $(DATA_FILE_BUILD)
 
 $(DATA_FILE_BUILD): $(srcdir)$(subst $(ADDIN_BUILD),, $@)
-	mkdir -p $(ADDIN_BUILD)
-	cp $(srcdir)/templates$(subst $(ADDIN_BUILD),,$@) $@
+	mkdir -p $(ADDIN_BUILD)/templates
+	cp $(srcdir)/$(subst $(ADDIN_BUILD),,$@) $@
 
 $(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
 	mkdir -p $(ADDIN_BUILD)
@@ -90,6 +90,9 @@ $(ASSEMBLY).mdb: $(ASSEMBLY)
 
 assemblydir = $(MD_ADDIN_DIR)/MonoDevelop.Autotools
 assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb $(DATA_FILES)
+
+templatedir = $(assemblydir)/templates
+template_DATA = $(DATA_FILES)
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(DATA_FILE_BUILD)
 EXTRA_DIST = $(FILES) $(RES) $(DATA_FILES)

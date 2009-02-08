@@ -45,13 +45,13 @@
     <Reference Include="nunit.framework, Version=2.2.0.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77" />
     <Reference Include="nunit.util, Version=2.2.0.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77" />
     <Reference Include="glib-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
     <Reference Include="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\core\MonoDevelop.Projects\MonoDevelop.Projects.csproj">
@@ -112,10 +112,12 @@
     <ProjectReference Include="..\..\src\addins\AspNetAddIn\AspNetAddIn.csproj">
       <Project>{1CF94D07-5480-4D10-A3CD-2EBD5E87B02E}</Project>
       <Name>AspNetAddIn</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\src\addins\CSharpBinding\CSharpBinding.csproj">
       <Project>{07CC7654-27D6-421D-A64C-0FFA40456FA2}</Project>
       <Name>CSharpBinding</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -177,4 +179,7 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
+  <ItemGroup>
+    <None Include="Makefile.am" />
+  </ItemGroup>
 </Project>

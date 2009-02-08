@@ -10,12 +10,12 @@
         
 	<Runtime>
 		<Import assembly="MonoDevelop.Autotools.dll" />
-		<Import file="autogen.sh.template"/>
-		<Import file="Makefile.am.project.template"/>
-		<Import file="Makefile.include"/>
-		<Import file="configure.ac.template"/>
-		<Import file="exe.wrapper.in.template"/>
-		<Import file="expansions.m4"/>
+		<Import file="templates/autogen.sh.template"/>
+		<Import file="templates/Makefile.am.project.template"/>
+		<Import file="templates/Makefile.include"/>
+		<Import file="templates/configure.ac.template"/>
+		<Import file="templates/exe.wrapper.in.template"/>
+		<Import file="templates/expansions.m4"/>
 	</Runtime>
 
 	<Dependencies>
