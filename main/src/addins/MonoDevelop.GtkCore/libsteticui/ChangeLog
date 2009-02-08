@@ -1,3 +1,8 @@
+2009-02-07  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* libsteticui.csproj: Allow unsafe code, since Shadow.cs has
+	  unsafe code.
+
 2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* libsteticui.mdp:
