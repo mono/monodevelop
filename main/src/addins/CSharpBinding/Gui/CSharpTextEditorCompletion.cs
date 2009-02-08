@@ -318,20 +318,20 @@ namespace MonoDevelop.CSharpBinding.Gui
 				if (result == null)
 					return null;
 				
-				int i = completionContext.TriggerOffset;
-				string token = GetPreviousToken (ref i, false);
+				int tokenIndex = completionContext.TriggerOffset;
+				string token = GetPreviousToken (ref tokenIndex, false);
 				if (token == "=") {
-					int j = i;
+					int j = tokenIndex;
 					string prevToken = GetPreviousToken (ref j, false);
 					if (prevToken == "=" || prevToken == "+" || prevToken == "-") {
 						token = prevToken + token;
-						i = j;
+						tokenIndex = j;
 					}
 				}
 				switch (token) {
 				case "=":
 				case "==":
-					result = FindExpression (dom, completionContext,  i - completionContext.TriggerOffset - 1);
+					result = FindExpression (dom, completionContext, tokenIndex - completionContext.TriggerOffset - 1);
 					resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (dom, Document.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, Editor, Document.FileName);
 					resolveResult = resolver.Resolve (result, location);
 					if (resolveResult != null) {
@@ -352,7 +352,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				case "-=":
 					if (stateTracker.Engine.IsInsideDocLineComment || stateTracker.Engine.IsInsideOrdinaryCommentOrString)
 						return null;
-					result = FindExpression (dom, completionContext,  i - completionContext.TriggerOffset - 1);
+					result = FindExpression (dom, completionContext, tokenIndex - completionContext.TriggerOffset - 1);
 					resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (dom, Document.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, Editor, Document.FileName);
 					resolveResult = resolver.Resolve (result, location);
 					
@@ -399,7 +399,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 					}
 					return null;
 				}
-				return HandleKeywordCompletion (completionContext, result, i, token);
+				return HandleKeywordCompletion (completionContext, result, tokenIndex, token);
 			default:
 				if ((Char.IsLetter (completionChar) || completionChar == '_') && TextEditorProperties.EnableAutoCodeCompletion
 					    && !stateTracker.Engine.IsInsideDocLineComment
@@ -688,10 +688,10 @@ namespace MonoDevelop.CSharpBinding.Gui
 					} else
 						break;
 				}
-				IType cls = NRefactoryResolver.GetTypeAtCursor (Document.CompilationUnit, Document.FileName, new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
-				if (cls != null && (cls.ClassType == ClassType.Class || cls.ClassType == ClassType.Struct)) {
+				IType overrideCls = NRefactoryResolver.GetTypeAtCursor (Document.CompilationUnit, Document.FileName, new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
+				if (overrideCls != null && (overrideCls.ClassType == ClassType.Class || overrideCls.ClassType == ClassType.Struct)) {
 					string modifiers = Editor.GetText (firstMod, wordStart);
-					return GetOverrideCompletionData (completionContext, cls, modifiers);
+					return GetOverrideCompletionData (completionContext, overrideCls, modifiers);
 				}
 				return null;
 			case "new":
