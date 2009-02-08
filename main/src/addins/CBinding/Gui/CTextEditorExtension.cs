@@ -123,7 +123,7 @@ namespace CBinding
 						// If the next character is an closing brace, indent it appropriately.
 						if(TextEditor.IsBrace(nextChar) && !TextEditor.IsOpenBrace(nextChar))
 						{
-							int openingLine = 0;
+							int openingLine;
 							if(Editor.GetClosingBraceForLine(line, out openingLine) >= 0)
 							{
 								Editor.InsertText(Editor.CursorPosition, Editor.NewLine + GetIndent(Editor, openingLine, 0));
@@ -141,10 +141,10 @@ namespace CBinding
 						if(AllWhiteSpace(lineText.Substring(0, lineCursorIndex)) == false)
 							break;
 
-						int openingLine = 0;
-						if(Editor.GetClosingBraceForLine(line, out openingLine) >= 0)
+						int braceOpeningLine;
+						if(Editor.GetClosingBraceForLine(line, out braceOpeningLine) >= 0)
 						{
-							Editor.ReplaceLine(line, GetIndent(Editor, openingLine, 0) + "}" + lineText.Substring(lineCursorIndex));
+							Editor.ReplaceLine(line, GetIndent(Editor, braceOpeningLine, 0) + "}" + lineText.Substring(lineCursorIndex));
 							return false;
 						}
 

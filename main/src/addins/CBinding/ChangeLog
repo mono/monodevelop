@@ -1,5 +1,11 @@
 2009-02-07  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Gui/CTextEditorExtension.cs: Rename second 'openingLine'
+	  variable, as csc is more picky about multiple locals with
+	  the same name in switches.
+
+2009-02-07  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* CBinding.csproj: Flush MD's removal of newline at end of
 	  file that was introduced by manually editing with gedit.
 
