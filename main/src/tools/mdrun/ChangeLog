@@ -1,3 +1,8 @@
+2009-02-08  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* mdrun.csproj: Build mdhost and mdrun as 32-bit too on
+	  Windows.
+
 2009-02-07  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* mdrun.csproj: Flush MD's removal of newline at end of file
