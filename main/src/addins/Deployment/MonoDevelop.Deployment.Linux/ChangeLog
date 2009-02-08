@@ -1,5 +1,11 @@
 2009-02-07  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Deployment.Linux.csproj: Flush MD's removal of
+	  newline at end of file that was introduced by manually
+	  editing with gedit.
+
+2009-02-07  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Deployment.Linux.csproj: Remove invalid
 	  ApplicationIcon value that broke the build in VS.
 
