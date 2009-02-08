@@ -1,3 +1,10 @@
+2009-02-07  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.dll.config:
+	* MonoDevelop.Projects.dll.config.in: Replace generated dllmap
+	  with a multiplatform one. Removes another autotools build
+	  dependency.
+
 2009-02-06  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomCecilType.cs: private & internal

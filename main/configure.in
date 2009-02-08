@@ -319,7 +319,6 @@ src/core/NRefactory/Makefile
 src/core/Mono.Debugging/Makefile
 src/core/MonoDevelop.Core/Makefile
 src/core/MonoDevelop.Core.Gui/Makefile
-src/core/MonoDevelop.Projects/MonoDevelop.Projects.dll.config
 src/core/MonoDevelop.Projects/Makefile
 src/core/MonoDevelop.Projects.Gui/Makefile
 src/core/MonoDevelop.Ide/Makefile

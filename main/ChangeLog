@@ -1,3 +1,7 @@
+2009-02-07  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* configure.in: Remove unused file.
+
 2009-02-06  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am: Fix distcheck. Updating the mime DB is leaving even 
