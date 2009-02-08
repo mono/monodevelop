@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <stetic-interface>
   <configuration>
-    <target-gtk-version>2.8.3</target-gtk-version>
+    <target-gtk-version>2.8.5</target-gtk-version>
   </configuration>
 </stetic-interface>

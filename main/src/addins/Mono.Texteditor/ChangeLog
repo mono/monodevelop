@@ -1,3 +1,8 @@
+2009-02-07  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* Mono.TextEditor.csproj: Fix GTK# version.
+
 2009-02-06  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor.Highlighting/Style.cs:
