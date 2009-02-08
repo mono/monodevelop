@@ -49,10 +49,16 @@
     <ProjectReference Include="..\CBinding.csproj">
       <Project>{7B57882B-AD46-469B-84E7-06DF98D11468}</Project>
       <Name>CBinding</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
       <Project>{7525BB88-6142-4A26-93B9-A30C6983390A}</Project>
       <Name>MonoDevelop.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Deployment\MonoDevelop.Deployment\MonoDevelop.Deployment.csproj">
+      <Project>{9BC670A8-1851-40EC-9685-279F4C98433D}</Project>
+      <Name>MonoDevelop.Deployment</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>

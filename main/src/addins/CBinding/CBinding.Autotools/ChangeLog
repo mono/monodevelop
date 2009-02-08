@@ -1,3 +1,7 @@
+2009-02-08  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* CBinding.Autotools.csproj: More refs to keep csc happy.
+
 2009-02-07  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* CBinding.Autotools.csproj: Don't local-copy other addins'

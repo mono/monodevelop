@@ -9,6 +9,7 @@ NUNIT_CONSOLE = `pkg-config --variable=libdir mono-nunit`/mono/2.0/nunit-console
 FIXTURE = /fixture=$(fixture)
 
 REFS =  \
+	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	$(MONO_NUNIT_LIBS) \
 	-r:../../build/AddIns/BackendBindings/MonoDevelop.CSharpBinding.dll \
