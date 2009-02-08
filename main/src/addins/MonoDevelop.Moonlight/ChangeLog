@@ -1,5 +1,10 @@
 2009-02-08  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Moonlight.csproj: Exorcise more unwanted local
+	  copy.
+
+2009-02-08  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Moonlight.addin.xml: Move js file location to a
 	  subdirectory to match the location MSBuild and MD copy it.

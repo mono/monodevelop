@@ -1,3 +1,8 @@
+2009-02-08  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.XmlEditor.csproj: Exorcise more unwanted local
+	  copy.
+
 2009-02-07  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.XmlEditor/XmlTextEditorExtension.cs:
