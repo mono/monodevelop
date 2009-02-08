@@ -1,3 +1,7 @@
+2009-02-07  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.GtkCore.csproj: Remove a local-copy ref.
+
 2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.GtkCore.mds:
