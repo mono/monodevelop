@@ -1,3 +1,9 @@
+2009-02-07  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Moonlight.csproj: More explicit references to
+	  keep csc happy.
+
 2009-02-07  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Moonlight/XamlG.cs:

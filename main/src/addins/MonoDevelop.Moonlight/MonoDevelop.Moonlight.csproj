@@ -46,6 +46,7 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="glib-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -86,6 +87,10 @@
     <ProjectReference Include="..\AspNetAddIn\AspNetAddIn.csproj">
       <Project>{1CF94D07-5480-4D10-A3CD-2EBD5E87B02E}</Project>
       <Name>AspNetAddIn</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\core\MonoDevelop.Components\MonoDevelop.Components.csproj">
+      <Project>{3344D566-484B-4AEC-BBCF-86BC484D14B0}</Project>
+      <Name>MonoDevelop.Components</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

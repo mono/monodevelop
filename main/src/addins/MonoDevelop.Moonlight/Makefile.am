@@ -5,6 +5,7 @@ DEPS =  \
 	$(top_builddir)/build/AddIns/MonoDevelop.AspNet/MonoDevelop.AspNet.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
@@ -12,6 +13,7 @@ DEPS =  \
 	$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll
 
 REFS =  \
+	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	-r:Mono.Posix \
 	-r:System \
