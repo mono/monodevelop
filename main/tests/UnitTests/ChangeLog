@@ -1,5 +1,9 @@
 2009-02-08  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* UnitTests.csproj: Fix referenced GTK# version.
+
+2009-02-08  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Makefile.am:
 	* UnitTests.csproj: More refs to keep csc happy.
 
