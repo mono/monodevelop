@@ -1,3 +1,8 @@
+2009-02-07  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* ChangeLogService.cs: Rename 'dir', as csc doesn't like
+	  multiple locals with the same name in a switch.
+
 2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* ChangeLogAddIn.mds:

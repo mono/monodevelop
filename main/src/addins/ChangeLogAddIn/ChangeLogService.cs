@@ -98,8 +98,8 @@ namespace MonoDevelop.ChangeLogAddIn
 					return Path.Combine (parentEntry.BaseDirectory, "ChangeLog");
 					
 				case ChangeLogUpdateMode.Directory:
-					string dir = Path.GetDirectoryName (file);
-					return Path.Combine (dir, "ChangeLog");
+					string fileDir = Path.GetDirectoryName (file);
+					return Path.Combine (fileDir, "ChangeLog");
 
 				default:
 					LoggingService.LogError ("Could not handle ChangeLogUpdateMode: " + policy.UpdateMode);
