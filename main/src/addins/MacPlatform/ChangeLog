@@ -1,3 +1,7 @@
+2009-02-08  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MacPlatform.csproj: Add project file for MacPlatform addin.
+
 2009-01-15  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MacPlatform.cs: Fix spelling of default font's name.

@@ -1,3 +1,9 @@
+2009-02-08  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Main.sln: Add new configurations for Windows and Mac, with
+	  the addins for those platforms. Exclude new Windows/Mac
+	  platform projects from the default Debug build.
+
 2009-02-07  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* configure.in: Remove unused file.
