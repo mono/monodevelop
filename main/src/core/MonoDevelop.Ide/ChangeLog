@@ -1,3 +1,8 @@
+2009-02-07  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* BuildVariables.cs: Include in svn so that autotools isn't
+	  required to build MD.
+
 2009-02-07  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Gui/Ide.cs:
