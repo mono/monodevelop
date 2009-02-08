@@ -1,5 +1,10 @@
 2009-02-08  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* WindowsPlatform.csproj: Remove more inadvertent local
+	  copying of references.
+
+2009-02-08  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* WindowsPlatform.csproj: Add project file for WindowsPlatform
 	  addin.
 
