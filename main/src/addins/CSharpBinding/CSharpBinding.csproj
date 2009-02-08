@@ -18,12 +18,12 @@
     <DefineConstants>GMCS_SOURCE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <AssemblyKeyFile>.</AssemblyKeyFile>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
     <Execution>
       <Execution clr-version="Net_2_0" />
     </Execution>
+    <StartupObject />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -37,6 +37,7 @@
     <Execution>
       <Execution clr-version="Net_2_0" />
     </Execution>
+    <StartupObject />
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

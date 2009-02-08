@@ -1,5 +1,10 @@
 2009-02-07  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Mono.TextEditor.csproj: Don't treat warning as errors,
+	  because csc still outputs warnings for this project.
+
+2009-02-07  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* gtk-gui/gui.stetic:
 	* Mono.TextEditor.csproj: Fix GTK# version.
 

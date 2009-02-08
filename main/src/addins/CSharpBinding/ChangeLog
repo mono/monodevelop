@@ -1,3 +1,8 @@
+2009-02-07  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* CSharpBinding.csproj: Don't treat warning as errors, because
+	  csc still outputs warnings for this project.
+
 2009-02-06  Mike Krüger  <mkrueger@novell.com>
 
 	* Gui/CSharpTextEditorCompletion.cs: fixed 'Bug 472092 -

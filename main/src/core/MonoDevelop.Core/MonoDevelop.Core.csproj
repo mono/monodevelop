@@ -17,11 +17,11 @@
     <OutputPath>..\..\..\build\bin\</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
     <Execution>
       <Execution clr-version="Net_2_0" />
     </Execution>
+    <StartupObject />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -33,6 +33,7 @@
     <Execution>
       <Execution clr-version="Net_2_0" />
     </Execution>
+    <StartupObject />
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
