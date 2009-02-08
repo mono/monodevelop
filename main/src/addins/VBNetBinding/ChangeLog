@@ -1,3 +1,8 @@
+2009-02-07  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Parser/DomParser.cs: Remove unused (but invalid) namespace,
+	  as csc doesn't like it.
+
 2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* VBNetBinding.csproj: Flush.

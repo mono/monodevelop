@@ -12,7 +12,6 @@ using System.IO;
 using System.Text;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
-using Mono.CSharp;
 
 namespace MonoDevelop.VBNetBinding
 {
