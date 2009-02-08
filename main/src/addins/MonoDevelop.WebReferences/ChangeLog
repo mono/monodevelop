@@ -1,5 +1,11 @@
 2009-02-07  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Makefile.am:
+	* MonoDevelop.WebReferences.csproj: Make implicit references
+	  explicit. Csc is much pickier about these.
+
+2009-02-07  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.WebReferences.csproj: Remove invalid
 	  ApplicationIcon value that broke the build in VS.
 

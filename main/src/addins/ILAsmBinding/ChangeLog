@@ -1,3 +1,9 @@
+2009-02-07  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* ILAsmBinding.csproj: Make implicit references explicit. Csc
+	  is much pickier about these.
+
 2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* ILAsmBinding.mdp:

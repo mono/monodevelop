@@ -19,7 +19,8 @@ REFS =  \
 	$(GTK_SHARP_LIBS) \
 	$(MONO_ADDINS_LIBS) \
 	-r:System \
-	-r:System.Data
+	-r:System.Data \
+	-r:System.Xml
 
 RES = MonoDeveloperExtensions.addin.xml
 
