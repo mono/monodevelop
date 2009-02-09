@@ -45,26 +45,34 @@ fi
 
 eval set -- `reWrite "$@"`
 
+# Work around a bug in 'exec' in older versions of macosx
+OSX_VERSION=$(uname -r | cut -f1 -d.)
+if [ $OSX_VERSION -lt 9 ]; then  # If OSX version is 10.4
+   EXEC=""
+else
+   EXEC="exec -a monodevelop"
+fi
+
 cd $MD_BIN_PATH
 
 case x$1 in
 	x--profile)
 		shift
-		exec -a "monodevelop" $MONO --profile $ASSEMBLY "$@"
+		$EXEC $MONO --profile $ASSEMBLY "$@"
 		exit 0
 		;;
 	x--debug)
 		shift
 		export MONODEVELOP_DISPATCH_DEBUG=yes
-		exec -a "monodevelop"  $MONO --debug $ASSEMBLY "$@"
+		$EXEC $MONO --debug $ASSEMBLY "$@"
 		exit 0
 		;;
 	x--trace)
 		shift
-		exec -a "monodevelop"  $MONO --trace $ASSEMBLY "$@"
+		$EXEC $MONO --trace $ASSEMBLY "$@"
 		exit 0;
 		;;
 esac
 
-exec -a "monodevelop" $MONO $ASSEMBLY "$@"
+$EXEC $MONO $ASSEMBLY "$@"
 
