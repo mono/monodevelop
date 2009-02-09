@@ -1,3 +1,9 @@
+2009-02-09  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: added
+	  test for "Bug 473849 - Classes with no visible constructor
+	  shouldn't appear in "new" completion".
+
 2009-02-09  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/CompletionDatabaseTests.cs: Properly

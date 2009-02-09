@@ -1204,6 +1204,58 @@ class ATest
 			
 			Assert.IsNotNull (provider.Find ("TESTCONST"), "constant 'TESTCONST' not found.");
 		}
+		
+		/// <summary>
+		/// Bug 473849 - Classes with no visible constructor shouldn't appear in "new" completion
+		/// </summary>
+		[Test()]
+		public void TestBug473849 ()
+		{
+			CompletionDataList provider = CreateProvider (
+@"
+class TestB
+{
+	protected TestB()
+	{
+	}
+}
 
+class TestC : TestB
+{
+	internal TestC ()
+	{
+	}
+}
+
+class TestD : TestB
+{
+	public TestD ()
+	{
+	}
+}
+
+class TestE : TestD
+{
+	protected TestE ()
+	{
+	}
+}
+
+class Test : TestB
+{
+	void TestMethod ()
+	{
+		$TestB test = new $
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			
+			Assert.IsNull (provider.Find ("TestE"), "class 'TestE' found, but shouldn't.");
+			Assert.IsNotNull (provider.Find ("TestD"), "class 'TestD' not found");
+			Assert.IsNotNull (provider.Find ("TestC"), "class 'TestC' not found");
+			Assert.IsNotNull (provider.Find ("TestB"), "class 'TestB' not found");
+			Assert.IsNotNull (provider.Find ("Test"), "class 'Test' not found");
+		}
 	}
 }
