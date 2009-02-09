@@ -187,7 +187,6 @@ namespace MonoDevelop.CSharpBinding
 				
 		void AddContentsFromClassAndMembers (ExpressionContext context, CompletionDataList completionList)
 		{
-			
 			IMethod method = callingMember as IMethod;
 			if (method != null && method.Parameters != null)
 				AddParameterList (completionList, method.Parameters);
@@ -210,7 +209,7 @@ namespace MonoDevelop.CSharpBinding
 				bool includeProtected = DomType.IncludeProtected (dom, CallingType, CallingMember.DeclaringType);
 				foreach (IType type in dom.GetInheritanceTree (CallingType)) {
 					foreach (IMember member in type.Members) {
-						if (!(member is IType) && CallingMember.IsStatic && !member.IsStatic)
+						if (!(member is IType) && CallingMember.IsStatic && !(member.IsStatic || member.IsConst))
 							continue;
 						if (member.IsAccessibleFrom (dom, CallingType, CallingMember, includeProtected)) {
 							if (context.FilterEntry (member))
