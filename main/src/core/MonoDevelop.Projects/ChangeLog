@@ -1,3 +1,10 @@
+2009-02-09  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom/AbstractMember.cs: fixed little
+	  issue in IsAccessible when it's tested, if a member is
+	  accessible from a type instead of a member of the type (may
+	  happen when editing fields).
+
 2009-02-08  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am: Fix distcheck.
