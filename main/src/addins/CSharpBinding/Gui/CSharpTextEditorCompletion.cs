@@ -698,7 +698,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				IType callingType = NRefactoryResolver.GetTypeAtCursor (Document.CompilationUnit, Document.FileName, new DomLocation (Editor.CursorLine, Editor.CursorColumn));
 				ExpressionContext exactContext = new NewCSharpExpressionFinder (dom).FindExactContextForNewCompletion (Editor, Document.CompilationUnit, Document.FileName, callingType);
 				if (exactContext is ExpressionContext.TypeExpressionContext)
-					return CreateTypeCompletionData (location, exactContext, ((ExpressionContext.TypeExpressionContext)exactContext).Type, ((ExpressionContext.TypeExpressionContext)exactContext).UnresolvedType);
+					return CreateTypeCompletionData (location, callingType, exactContext, ((ExpressionContext.TypeExpressionContext)exactContext).Type, ((ExpressionContext.TypeExpressionContext)exactContext).UnresolvedType);
 				if (exactContext == null) {
 					int j = completionContext.TriggerOffset - 4;
 					string token = GetPreviousToken (ref j, true);
@@ -710,7 +710,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 						if (yieldToken == "yield" && returnType.GenericArguments.Count > 0)
 							returnType = returnType.GenericArguments[0];
 						if (resolver.CallingMember != null)
-							return CreateTypeCompletionData (location, exactContext, null, returnType);
+							return CreateTypeCompletionData (location, callingType, exactContext, null, returnType);
 					}
 				}
 				
@@ -1018,7 +1018,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			return str;
 		}
 		
-		CompletionDataList CreateTypeCompletionData (DomLocation location, ExpressionContext context, IReturnType returnType, IReturnType returnTypeUnresolved)
+		CompletionDataList CreateTypeCompletionData (DomLocation location, IType callingType, ExpressionContext context, IReturnType returnType, IReturnType returnTypeUnresolved)
 		{
 			CompletionDataList result = new ProjectDomCompletionDataList ();
 			
@@ -1033,7 +1033,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				type = dom.SearchType (new SearchTypeRequest (Document.CompilationUnit, returnTypeUnresolved, null));
 			
 			if (type == null || !(type.IsAbstract || type.ClassType == ClassType.Interface)) {
-				if (type == null || type.ConstructorCount == 0 || type.Methods.Any (c => c.IsConstructor && (c.IsPublic || c.IsInternal))) {
+				if (type == null || type.ConstructorCount == 0 || type.Methods.Any (c => c.IsConstructor && c.IsAccessibleFrom (dom, callingType, type, callingType != null && dom.GetInheritanceTree (callingType).Any (x => x.FullName == type.FullName)))) {
 					if (returnTypeUnresolved != null) {
 						col.FullyQualify = true;
 						ICompletionData unresovedCompletionData = col.AddCompletionData (result, returnTypeUnresolved);
@@ -1060,7 +1060,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 					continue;
 				
 				if (curType.ConstructorCount > 0) {
-					if (!curType.Methods.Any (c => c.IsConstructor && (c.IsPublic || c.IsInternal)))
+					if (!(curType.Methods.Any (c => c.IsConstructor && c.IsAccessibleFrom (dom, curType, callingType, callingType != null && dom.GetInheritanceTree (callingType).Any (x => x.FullName == curType.FullName)))))
 						continue;
 				}
 				
