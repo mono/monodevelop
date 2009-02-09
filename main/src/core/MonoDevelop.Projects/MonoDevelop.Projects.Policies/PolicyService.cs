@@ -111,8 +111,10 @@ namespace MonoDevelop.Projects.Policies
 		
 		static DataSerializer Serializer {
 			get {
-				if (serializer == null)
+				if (serializer == null) {
 					serializer = new DataSerializer (new DataContext ());
+					serializer.IncludeDefaultValues = true;
+				}
 				return serializer;
 			}
 		}		
@@ -249,9 +251,9 @@ namespace MonoDevelop.Projects.Policies
 			{
 				DataNode baselineNode = baseline[node.Name];
 				if (baselineNode == null)
-					throw new InvalidOperationException ("Diff node ' " + node.Name + " does not exist on " +
+					throw new InvalidOperationException ("Diff node '" + node.Name + "' does not exist on " +
 					                                     "the baseline node. It is likely that the serialised " +
-					                                     "objects have default values, which cannot safely " +
+					                                     "objects have default or null values, which cannot safely " +
 					                                     "be diff-serialised.");
 				
 				DataValue val = baselineNode as DataValue;
@@ -289,9 +291,9 @@ namespace MonoDevelop.Projects.Policies
 			{
 				DataNode overlayNode = diffNode.ItemData[node.Name];
 				if (overlayNode == null)
-					throw new InvalidOperationException ("Baseline node ' " + node.Name + " does not exist on " +
+					throw new InvalidOperationException ("Baseline node '" + node.Name + "' does not exist on " +
 					                                     "the diff node. It is likely that the serialised " +
-					                                     "objects have default values, which cannot safely " +
+					                                     "objects have default or null values, which cannot safely " +
 					                                     "be diff-serialised.");
 				
 				DataValue val = overlayNode as DataValue;

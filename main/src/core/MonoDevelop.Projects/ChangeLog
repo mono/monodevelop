@@ -1,3 +1,9 @@
+2009-02-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Policies/PolicyService.cs: Disable
+	  default values on serialiser. Improve error messages; warn
+	  about null values in policies.
+
 2009-02-09  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/AbstractMember.cs: fixed little
