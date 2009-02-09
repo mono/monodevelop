@@ -84,7 +84,7 @@ namespace Mono.TextEditor
 			base.MousePressed (args);
 			
 			LineSegment lineSegment = args.LineSegment;
-			if (lineSegment != null && lineSegment.Markers != null) {
+			if (lineSegment != null) {
 				foreach (TextMarker marker in lineSegment.Markers) {
 					if (marker is IIconBarMarker) 
 						((IIconBarMarker)marker).MousePress (args);
@@ -97,7 +97,7 @@ namespace Mono.TextEditor
 			base.MouseReleased (args);
 			
 			LineSegment lineSegment = args.LineSegment;
-			if (lineSegment != null && lineSegment.Markers != null) {
+			if (lineSegment != null) {
 				foreach (TextMarker marker in lineSegment.Markers) {
 					if (marker is IIconBarMarker) 
 						((IIconBarMarker)marker).MouseRelease (args);
@@ -115,11 +115,9 @@ namespace Mono.TextEditor
 			if (line < editor.Document.LineCount) {
 				LineSegment lineSegment = editor.Document.GetLine (line);
 				
-				if (lineSegment.Markers != null) {
-					foreach (TextMarker marker in lineSegment.Markers) {
-						if (marker is IIconBarMarker) 
-							((IIconBarMarker)marker).DrawIcon (editor, win, lineSegment, line, x, y, Width, editor.LineHeight);
-					}
+				foreach (TextMarker marker in lineSegment.Markers) {
+					if (marker is IIconBarMarker) 
+						((IIconBarMarker)marker).DrawIcon (editor, win, lineSegment, line, x, y, Width, editor.LineHeight);
 				}
 				if (DrawEvent != null) 
 					DrawEvent (this, new BookmarkMarginDrawEventArgs (editor, win, lineSegment, line, x, y));

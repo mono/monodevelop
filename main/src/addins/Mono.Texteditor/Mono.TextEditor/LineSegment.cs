@@ -34,9 +34,6 @@ namespace Mono.TextEditor
 {	
 	public class LineSegment : ISegment, IDisposable
 	{
-		int length;		
-		int delimiterLength;
-		List<TextMarker> markers = null;
 		RedBlackTree<LineSegmentTree.TreeNode>.RedBlackTreeNode treeNode;
 		
 		public RedBlackTree<LineSegmentTree.TreeNode>.RedBlackTreeIterator Iter {
@@ -45,25 +42,23 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		static IEnumerable<TextMarker> nullMarkers = new TextMarker[0];
+		List<TextMarker> markers = null;
 		public IEnumerable<TextMarker> Markers {
 			get {
-				return markers != null ? markers : null;
+				return markers ?? nullMarkers;
 			}
 		}
 				
 		public int EditableLength {
 			get {
-				return Length - delimiterLength;
+				return Length - DelimiterLength;
 			}
 		}
 		
 		public int DelimiterLength {
-			get {
-				return delimiterLength;
-			}
-			set {
-				delimiterLength = value;
-			}
+			get;
+			set;
 		}
 		
 		public int Offset {
@@ -86,12 +81,8 @@ namespace Mono.TextEditor
 		}
 
 		public int Length {
-			get {
-				return length;
-			}
-			set {
-				length = value;
-			}
+			get;
+			set;
 		}
 		
 		public int EndOffset {
@@ -128,8 +119,8 @@ namespace Mono.TextEditor
 		
 		public LineSegment (int length, int delimiterLength)
 		{
-			this.length          = length;
-			this.delimiterLength = delimiterLength;
+			this.Length          = length;
+			this.DelimiterLength = delimiterLength;
 		}
 		
 		internal void AddMarker (TextMarker marker)
@@ -226,6 +217,7 @@ namespace Mono.TextEditor
 		{
 			return Offset <= offset && offset < EndOffset;
 		}
+		
 		public bool Contains (ISegment segment)
 		{
 			return segment != null && Offset <= segment.Offset && segment.EndOffset <= EndOffset;

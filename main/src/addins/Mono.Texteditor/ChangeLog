@@ -1,5 +1,12 @@
 2009-02-09  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/IconMargin.cs:
+	* Mono.TextEditor/LineSegment.cs:
+	* Mono.TextEditor/TextViewMargin.cs: LineSegment.Markers is
+	  now always != null. Removing all unneccessary null checks.
+
+2009-02-09  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextMarker.cs: fixed style text marker.
 
 2009-02-07  Michael Hutchinson  <mhutchinson@novell.com>

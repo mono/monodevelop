@@ -346,14 +346,12 @@ namespace Mono.TextEditor
 			bool drawBg   = true;
 			int oldxPos = xPos;
 			int startOffset = curOffset - wordBuilder.Length;
-			if (line.Markers != null) {
-				foreach (TextMarker marker in line.Markers)  {
-					IBackgroundMarker bgMarker = marker as IBackgroundMarker;
-					if (bgMarker == null) 
-						continue;
-					drawBg = false;
-					drawText &= bgMarker.DrawBackground (textEditor, win, selected, startOffset, curOffset, y, oldxPos, oldxPos + xPos);
-				}
+			foreach (TextMarker marker in line.Markers)  {
+				IBackgroundMarker bgMarker = marker as IBackgroundMarker;
+				if (bgMarker == null) 
+					continue;
+				drawBg = false;
+				drawText &= bgMarker.DrawBackground (textEditor, win, selected, startOffset, curOffset, y, oldxPos, oldxPos + xPos);
 			}
 			if (drawText) {
 				string text = wordBuilder.ToString ();
@@ -385,10 +383,8 @@ namespace Mono.TextEditor
 					}
 				}
 			}
-			if (line.Markers != null) {
-				foreach (TextMarker marker in line.Markers) {
-					marker.Draw (textEditor, win, selected, startOffset, curOffset, y, oldxPos, xPos);
-				}
+			foreach (TextMarker marker in line.Markers) {
+				marker.Draw (textEditor, win, selected, startOffset, curOffset, y, oldxPos, xPos);
 			}
 			visibleColumn += wordBuilder.Length;
 			wordBuilder.Length = 0;
@@ -435,10 +431,8 @@ namespace Mono.TextEditor
 			wordBuilder.Length = 0;
 			ChunkStyle style = chunk.GetChunkStyle (ColorStyle);
 			
-			if (line.Markers != null) {
-				foreach (TextMarker marker in line.Markers)
-					style = marker.GetStyle (style);
-			}
+			foreach (TextMarker marker in line.Markers)
+				style = marker.GetStyle (style);
 			UnderlineMarker underlineMarker = null;
 			if (style.Underline) {
 				underlineMarker = new UnderlineMarker (selected ? this.ColorStyle.Selection.Color : style.Color, 
@@ -462,14 +456,12 @@ namespace Mono.TextEditor
 					
 					bool drawText = true;
 					bool drawBg   = true;
-					if (line.Markers != null) {
-						foreach (TextMarker marker in line.Markers)  {
-							IBackgroundMarker bgMarker = marker as IBackgroundMarker;
-							if (bgMarker == null) 
-								continue;
-							drawBg = false;
-							drawText &= bgMarker.DrawBackground (textEditor, win, selected, offset, offset + 1, y, xPos, xPos + charWidth);
-						}
+					foreach (TextMarker marker in line.Markers)  {
+						IBackgroundMarker bgMarker = marker as IBackgroundMarker;
+						if (bgMarker == null) 
+							continue;
+						drawBg = false;
+						drawText &= bgMarker.DrawBackground (textEditor, win, selected, offset, offset + 1, y, xPos, xPos + charWidth);
 					}
 					int width = this.charWidth;
 					if (drawText) {
@@ -484,10 +476,8 @@ namespace Mono.TextEditor
 						}
 						win.DrawLayout (GetGC (selected ? ColorStyle.Selection.Color : style.Color), xPos, y, layout);
 					}
-					if (line.Markers != null) {
-						foreach (TextMarker marker in line.Markers) {
-							marker.Draw (textEditor, win, selected, offset, offset + 1, y, xPos, xPos + charWidth);
-						}
+					foreach (TextMarker marker in line.Markers) {
+						marker.Draw (textEditor, win, selected, offset, offset + 1, y, xPos, xPos + charWidth);
 					}
 					xPos += width;
 					visibleColumn++;
@@ -495,14 +485,12 @@ namespace Mono.TextEditor
 					OutputWordBuilder (win, line, selected, style, ref visibleColumn, ref xPos, y, offset);
 					bool drawText = true;
 					bool drawBg   = true;
-					if (line.Markers != null) {
-						foreach (TextMarker marker in line.Markers)  {
-							IBackgroundMarker bgMarker = marker as IBackgroundMarker;
-							if (bgMarker == null) 
-								continue;
-							drawBg = false;
-							drawText &= bgMarker.DrawBackground (textEditor, win, selected, offset, offset + 1, y, xPos, xPos + charWidth);
-						}
+					foreach (TextMarker marker in line.Markers)  {
+						IBackgroundMarker bgMarker = marker as IBackgroundMarker;
+						if (bgMarker == null) 
+							continue;
+						drawBg = false;
+						drawText &= bgMarker.DrawBackground (textEditor, win, selected, offset, offset + 1, y, xPos, xPos + charWidth);
 					}
 					if (drawText) {
 						if (drawBg) {
@@ -515,10 +503,8 @@ namespace Mono.TextEditor
 						if (offset == caretOffset) 
 							SetVisibleCaretPosition (win, textEditor.Options.ShowSpaces ? spaceMarkerChar : ' ', xPos, y);
 					}
-					if (line.Markers != null) {
-						foreach (TextMarker marker in line.Markers) {
-							marker.Draw (textEditor, win, selected, offset, offset + 1, y, xPos, xPos + charWidth);
-						}
+					foreach (TextMarker marker in line.Markers) {
+						marker.Draw (textEditor, win, selected, offset, offset + 1, y, xPos, xPos + charWidth);
 					}
 					xPos += this.charWidth;
 					visibleColumn++;
@@ -529,14 +515,12 @@ namespace Mono.TextEditor
 					visibleColumn = newColumn;
 					bool drawText = true;
 					bool drawBg   = true;
-					if (line.Markers != null) {
-						foreach (TextMarker marker in line.Markers)  {
-							IBackgroundMarker bgMarker = marker as IBackgroundMarker;
-							if (bgMarker == null) 
-								continue;
-							drawBg = false;
-							drawText &= bgMarker.DrawBackground (textEditor, win, selected, offset, offset + 1, y, xPos, xPos + charWidth);
-						}
+					foreach (TextMarker marker in line.Markers)  {
+						IBackgroundMarker bgMarker = marker as IBackgroundMarker;
+						if (bgMarker == null) 
+							continue;
+						drawBg = false;
+						drawText &= bgMarker.DrawBackground (textEditor, win, selected, offset, offset + 1, y, xPos, xPos + charWidth);
 					}
 					if (drawText) {
 						if (drawBg)
@@ -546,10 +530,8 @@ namespace Mono.TextEditor
 						if (offset == caretOffset) 
 							SetVisibleCaretPosition (win, textEditor.Options.ShowSpaces ? tabMarkerChar : ' ', xPos, y);
 					}
-					if (line.Markers != null) {
-						foreach (TextMarker marker in line.Markers) {
-							marker.Draw (textEditor, win, selected, offset, offset + 1, y, xPos, xPos + delta);
-						}
+					foreach (TextMarker marker in line.Markers) {
+						marker.Draw (textEditor, win, selected, offset, offset + 1, y, xPos, xPos + delta);
 					}
 					xPos += delta;
 				} else {
