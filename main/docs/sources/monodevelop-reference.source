@@ -1,4 +1,7 @@
 <?xml version="1.0"?>
 <monodoc>
+  <node label="MonoDevelop IDE" name="md" parent="libraries">
+    <node label="API Reference" name="monodevelop" />
+  </node>
   <source provider="ecma" basefile="monodevelop-reference" path="monodevelop"/>
 </monodoc>

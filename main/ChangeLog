@@ -1,3 +1,10 @@
+2009-02-09  Jonathan Pryor  <jpryor@novell.com>
+
+	* docs/sources/monodevelop-extension-guide.source,
+	  docs/sources/monodevelop-reference.source: Add a /monodoc/node 
+	  element so that documentation is inserted under the appropriate
+	  "MonoDevelop IDE" node (for current/recent monodoc installs).
+
 2009-02-08  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Main.sln: Build mdhost and mdrun as 32-bit too on Windows.
