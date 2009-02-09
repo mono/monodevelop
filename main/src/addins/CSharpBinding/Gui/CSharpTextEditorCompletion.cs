@@ -1031,15 +1031,18 @@ namespace MonoDevelop.CSharpBinding.Gui
 				type = dom.GetType (returnType);
 			if (type == null)
 				type = dom.SearchType (new SearchTypeRequest (Document.CompilationUnit, returnTypeUnresolved, null));
+			
 			if (type == null || !(type.IsAbstract || type.ClassType == ClassType.Interface)) {
-				if (returnTypeUnresolved != null) {
-					col.FullyQualify = true;
-					ICompletionData unresovedCompletionData = col.AddCompletionData (result, returnTypeUnresolved);
-					col.FullyQualify = false;
-					result.DefaultCompletionString = StripGenerics (unresovedCompletionData.CompletionText);
-				} else {
-					ICompletionData unresovedCompletionData = col.AddCompletionData (result, returnType);
-					result.DefaultCompletionString = StripGenerics (unresovedCompletionData.CompletionText);
+				if (type == null || type.ConstructorCount == 0 || type.Methods.Any (c => c.IsConstructor && (c.IsPublic || c.IsInternal))) {
+					if (returnTypeUnresolved != null) {
+						col.FullyQualify = true;
+						ICompletionData unresovedCompletionData = col.AddCompletionData (result, returnTypeUnresolved);
+						col.FullyQualify = false;
+						result.DefaultCompletionString = StripGenerics (unresovedCompletionData.CompletionText);
+					} else {
+						ICompletionData unresovedCompletionData = col.AddCompletionData (result, returnType);
+						result.DefaultCompletionString = StripGenerics (unresovedCompletionData.CompletionText);
+					}
 				}
 			}
 //				if (tce != null && tce.Type != null) {
@@ -1055,6 +1058,12 @@ namespace MonoDevelop.CSharpBinding.Gui
 			foreach (IType curType in dom.GetSubclasses (type)) {
 				if (context != null && context.FilterEntry (curType))
 					continue;
+				
+				if (curType.ConstructorCount > 0) {
+					if (!curType.Methods.Any (c => c.IsConstructor && (c.IsPublic || c.IsInternal)))
+						continue;
+				}
+				
 				if (usedNamespaces.Contains (curType.Namespace)) {
 					col.AddCompletionData (result, curType);
 				} else {

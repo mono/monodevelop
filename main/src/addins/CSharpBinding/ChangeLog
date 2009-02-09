@@ -1,5 +1,11 @@
 2009-02-09  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/CSharpTextEditorCompletion.cs: fixed "Bug 473849 -
+	  Classes with no visible constructor shouldn't appear in
+	  "new" completion".
+
+2009-02-09  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/NRefactoryResolver.cs: fixed "Bug 473686 - Constants are
 	  not included in code completion".
 
