@@ -316,14 +316,17 @@ namespace Mono.TextEditor
 			ChunkStyle style = new ChunkStyle (baseStyle);
 			if ((includedStyles & StyleFlag.Color) != 0)
 				style.Color = Color;
-			style.ChunkProperties = baseStyle.ChunkProperties;
-			
-/*			if ((includedStyles & StyleFlag.BackgroundColor) != 0)
+		
+			if ((includedStyles & StyleFlag.BackgroundColor) != 0) {
+				style.ChunkProperties &= ~ChunkProperties.TransparentBackground;
 				style.BackgroundColor = BackgroundColor;
+			}
+			
 			if ((includedStyles & StyleFlag.Bold) != 0)
-				style.Bold = bold;
+				style.ChunkProperties |= ChunkProperties.Bold;
+			
 			if ((includedStyles & StyleFlag.Italic) != 0)
-				style.Italic = italic;*/
+				style.ChunkProperties |= ChunkProperties.Italic;
 			return style;
 		}
 	}
