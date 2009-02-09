@@ -1,3 +1,10 @@
+2009-02-06  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am: Fix distcheck. Updating the mime DB is leaving even 
+	  more junk.
+	* build/Makefile.am: Excludes the unfinished Mac packaging from 
+	  the build, as it was breaking make dist.
+
 2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* configure.in: Bump MD version.

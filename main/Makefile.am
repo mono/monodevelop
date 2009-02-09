@@ -119,8 +119,9 @@ include $(top_srcdir)/Makefile.include
 #
 # From BEAST (LGPL license): http://svn.gnome.org/viewvc/beast/trunk/Makefile.am
 filter_stale_uninstalled = \
-    | egrep -v '^.*/share/mime/(subclasses|globs|magic|XMLnamespaces|aliases|mime\.cache)$$' \
+    | egrep -v '^.*/share/mime/.*$$' \
     | egrep -v '^.*./share/icons/hicolor/icon-theme\.cache$$'
+    
 filter_stale_buildfiles       = | egrep -v '^./report.out$$'
 distuninstallcheck_listfiles  = find . -type f -print 		# automake-1.9 setting
 distuninstallcheck_listfiles += $(filter_stale_uninstalled)	# amend by required filtering
