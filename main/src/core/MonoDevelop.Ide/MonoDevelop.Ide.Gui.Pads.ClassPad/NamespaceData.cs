@@ -155,9 +155,11 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		public override void AddProjectContent (ITreeBuilder builder)
 		{
 			bool nestedNs = builder.Options ["NestedNamespaces"];
-//			bool publicOnly = builder.Options ["PublicApiOnly"];
+			bool publicOnly = builder.Options ["PublicApiOnly"];
 			Dictionary<string, bool> namespaces = new Dictionary<string, bool> ();
 			foreach (IType type in unit.Types) {
+				if (publicOnly && !type.IsPublic)
+					continue;
 				if (type.Namespace == FullName) {
 					builder.AddChild (new ClassData (null, type));
 					continue;

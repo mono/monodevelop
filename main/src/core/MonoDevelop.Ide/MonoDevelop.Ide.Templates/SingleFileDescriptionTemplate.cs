@@ -140,14 +140,14 @@ namespace MonoDevelop.Ide.Templates
 		
 		bool ContainsReference (DotNetProject project, string aref)
 		{
-//			string aname;
-//			int i = aref.IndexOf (',');
-//			if (i == -1)
-//				aname = aref;
-//			else
-//				aname = aref.Substring (0, i);
+			string aname;
+			int i = aref.IndexOf (',');
+			if (i == -1)
+				aname = aref;
+			else
+				aname = aref.Substring (0, i);
 			foreach (ProjectReference pr in project.References) {
-				if (pr.ReferenceType == ReferenceType.Gac && (pr.Reference == aref || pr.Reference.StartsWith (aref + ",")))
+				if (pr.ReferenceType == ReferenceType.Gac && (pr.Reference == aname || pr.Reference.StartsWith (aname + ",")))
 					return true;
 			}
 			return false;

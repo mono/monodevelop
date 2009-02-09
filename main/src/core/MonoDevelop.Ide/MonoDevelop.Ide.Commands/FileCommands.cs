@@ -286,27 +286,28 @@ namespace MonoDevelop.Ide.Commands
 			for (int i = 0; i < recentOpen.RecentProject.Length; ++i) {
 				RecentItem ri = recentOpen.RecentProject[i];
 				
-//				//getting the icon requires probing the file, so handle IO errors
-//				string icon;
-//				try {
-//					if (!File.Exists (ri.LocalPath))
-//						continue;
-//					
-//					icon = IdeApp.Services.ProjectService.FileFormats.GetFileFormats
-//						(ri.LocalPath, typeof(Solution)).Length > 0
-//							? "md-solution"
-//							: "md-workspace";
-//				}
-//				catch (IOException ex) {
-//					LoggingService.LogWarning ("Error building recent solutions list", ex);
-//					continue;
-//				}
+				//getting the icon requires probing the file, so handle IO errors
+				string icon;
+				try {
+					if (!File.Exists (ri.LocalPath))
+						continue;
+					
+					icon = IdeApp.Services.ProjectService.FileFormats.GetFileFormats
+						(ri.LocalPath, typeof(Solution)).Length > 0
+							? "md-solution"
+							: "md-workspace";
+				}
+				catch (IOException ex) {
+					LoggingService.LogWarning ("Error building recent solutions list", ex);
+					continue;
+				}
 				
 				string accelaratorKeyPrefix = i < 10 ? "_" + ((i + 1) % 10).ToString() + " " : "";
 				string label = ((ri.Private == null || ri.Private.Length < 1)
 				                ? Path.GetFileNameWithoutExtension (ri.ToString ())
 				                : ri.Private);
 				CommandInfo cmd = new CommandInfo (accelaratorKeyPrefix + label.Replace ("_", "__"));
+				cmd.Icon = icon;
 				
 				string str = GettextCatalog.GetString ("Load solution {0}", ri.ToString ());
 				if (IdeApp.Workspace.IsOpen)

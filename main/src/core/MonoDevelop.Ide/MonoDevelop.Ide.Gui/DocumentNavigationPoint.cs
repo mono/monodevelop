@@ -88,7 +88,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public override int GetHashCode ()
 		{
-			return base.GetHashCode ();
+			return (FileName != null ? FileName.GetHashCode () : 0) + (doc != null ? doc.GetHashCode () : 0);
 		}
 		
 		internal bool HandleRenameEvent (string oldName, string newName)

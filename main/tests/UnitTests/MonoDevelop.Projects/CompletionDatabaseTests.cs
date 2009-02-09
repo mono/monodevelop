@@ -39,7 +39,7 @@ namespace MonoDevelop.Projects
 	[TestFixture]
 	public class CompletionDatabaseTests: TestBase
 	{
-//		Solution solution;
+		Solution solution;
 		ProjectDom mainProject;
 		ProjectDom lib1;
 		ProjectDom lib2;
@@ -48,7 +48,7 @@ namespace MonoDevelop.Projects
 		{
 			base.Setup ();
 			string solFile = Util.GetSampleProject ("completion-db-test", "CompletionDbTest.sln");
-			Solution solution = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			solution = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			ProjectDomService.Load (solution);
 
 			Project prj;
@@ -65,7 +65,7 @@ namespace MonoDevelop.Projects
 
 		public override void TearDown ()
 		{
-//			ProjectDomService.Unload (solution);
+			ProjectDomService.Unload (solution);
 			base.TearDown ();
 		}
 		
