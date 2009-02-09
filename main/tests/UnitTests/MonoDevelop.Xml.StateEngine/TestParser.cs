@@ -50,7 +50,7 @@ namespace MonoDevelop.Xml.StateEngine
 			base.ErrorLogged += delegate (Error err) { errors.Add (err); };
 		}
 		
-		public List<Error> Errors { get { return errors; } }
+		public new List<Error> Errors { get { return errors; } }
 		
 		public void Parse (string doc, params Action[] asserts)
 		{

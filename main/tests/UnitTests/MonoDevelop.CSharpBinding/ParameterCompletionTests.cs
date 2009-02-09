@@ -66,7 +66,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 			dom.Add (doc.CompilationUnit);
 			CSharpTextEditorCompletion textEditorCompletion = new CSharpTextEditorCompletion (doc);
 			
-			int triggerWordLength = 1;
+		//	int triggerWordLength = 1;
 			CodeCompletionContext ctx = new CodeCompletionContext ();
 			ctx.TriggerOffset = sev.CursorPosition;
 			int line, column;

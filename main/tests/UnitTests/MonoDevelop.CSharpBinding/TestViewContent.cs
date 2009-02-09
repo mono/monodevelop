@@ -45,10 +45,9 @@ namespace MonoDevelop.CSharpBinding.Tests
 		{
 		}
 		
-		string name;
 		public string Name { 
 			get {
-				return name;
+				return "";
 			}
 		}
 		

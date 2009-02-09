@@ -26,6 +26,7 @@
 //
 
 using System;
+using System.Linq;
 using NUnit.Framework;
 
 namespace Mono.TextEditor.Tests
@@ -92,9 +93,7 @@ data.Document.Text =
 123456789
 123456789";
 			SetSelection (data, false);
-			int lines = 0;
-			foreach (LineSegment line in data.SelectedLines)
-				lines++;
+			int lines = data.SelectedLines.Count ();
 			Assert.AreEqual (3, lines);
 		}
 		
@@ -110,10 +109,7 @@ data.Document.Text =
 123456789
 123456789";
 			SetSelection (data, true);
-			int lines = 0;
-			foreach (LineSegment line in data.SelectedLines)
-				lines++;
-			Assert.AreEqual (3, lines);
+			Assert.AreEqual (3, data.SelectedLines.Count ());
 		}
 		
 		[Test()]
@@ -128,10 +124,7 @@ data.Document.Text =
 ]123456789
 123456789";
 			SetSelection (data, false);
-			int lines = 0;
-			foreach (LineSegment line in data.SelectedLines)
-				lines++;
-			Assert.AreEqual (3, lines);
+			Assert.AreEqual (3, data.SelectedLines.Count ());
 		}
 		
 		[Test()]
@@ -146,10 +139,7 @@ data.Document.Text =
 ]123456789
 123456789";
 			SetSelection (data, true);
-			int lines = 0;
-			foreach (LineSegment line in data.SelectedLines)
-				lines++;
-			Assert.AreEqual (3, lines);
+			Assert.AreEqual (3, data.SelectedLines.Count ());
 		}
 		
 		[Test()]
@@ -164,10 +154,7 @@ data.Document.Text =
 123456789
 123456789";
 			SetSelection (data, false);
-			int lines = 0;
-			foreach (LineSegment line in data.SelectedLines)
-				lines++;
-			Assert.AreEqual (3, lines);
+			Assert.AreEqual (3, data.SelectedLines.Count ());
 		}
 		
 		[Test()]
@@ -182,10 +169,7 @@ data.Document.Text =
 123456789
 123456789";
 			SetSelection (data, true);
-			int lines = 0;
-			foreach (LineSegment line in data.SelectedLines)
-				lines++;
-			Assert.AreEqual (3, lines);
+			Assert.AreEqual (3, data.SelectedLines.Count ());
 		}
 		
 		[Test()]

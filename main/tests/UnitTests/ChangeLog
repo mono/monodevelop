@@ -1,3 +1,13 @@
+2009-02-09  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor.Tests/SelectionTests.cs:
+	* MonoDevelop.Xml.StateEngine/TestParser.cs:
+	* MonoDevelop.CSharpBinding/TestViewContent.cs:
+	* MonoDevelop.Projects/CompletionDatabaseTests.cs:
+	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs:
+	* MonoDevelop.CSharpBinding/ParameterCompletionTests.cs: Fixed
+	  compiler warnings.
+
 2009-02-08  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* UnitTests.csproj: Remove unwanted copy-to-output.
