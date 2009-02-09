@@ -305,7 +305,7 @@ namespace MonoDevelop.Core.Serialization
 				object val = prop.GetValue (obj);
 				if (val == null)
 					continue;
-				if (val.Equals (prop.DefaultValue))
+				if (!serCtx.Serializer.IncludeDefaultValues && val.Equals (prop.DefaultValue))
 					continue;
 				
 				DataCollection col = itemCol;

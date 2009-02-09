@@ -80,6 +80,8 @@ namespace MonoDevelop.Core.Serialization
 			}
 		}
 		
+		internal bool IncludeDefaultValues { get; set; }
+		
 		public virtual void Close ()
 		{
 		}

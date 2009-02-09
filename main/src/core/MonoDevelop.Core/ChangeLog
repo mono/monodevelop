@@ -1,3 +1,11 @@
+2009-02-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Core.Serialization/ClassDataType.cs:
+	* MonoDevelop.Core.Serialization/DataSerializer.cs:
+	* MonoDevelop.Core.Serialization/SerializationContext.cs: Add
+	  a flag for including default values in the serialized
+	  output. Doesn't include nulls.
+
 2009-02-07  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Core.csproj: Don't treat warning as errors,

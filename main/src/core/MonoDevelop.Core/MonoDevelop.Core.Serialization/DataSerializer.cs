@@ -140,5 +140,10 @@ namespace MonoDevelop.Core.Serialization
 		{
 			return true;
 		}
+		
+		public bool IncludeDefaultValues {
+			get { return serializationContext.IncludeDefaultValues; }
+			set { serializationContext.IncludeDefaultValues = value; }
+		}
 	}
 }
