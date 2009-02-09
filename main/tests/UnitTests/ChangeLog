@@ -1,5 +1,11 @@
 2009-02-09  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: Added
+	  test for "Bug 473686 - Constants are not included in code
+	  completion".
+
+2009-02-09  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor.Tests/SelectionTests.cs:
 	* MonoDevelop.Xml.StateEngine/TestParser.cs:
 	* MonoDevelop.CSharpBinding/TestViewContent.cs:

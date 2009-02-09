@@ -1181,6 +1181,29 @@ class A
 			
 			Assert.IsNull (provider.Find ("B"), "class 'B' found, but shouldn'tj.");
 		}
+		
+		/// <summary>
+		/// Bug 473686 - Constants are not included in code completion
+		/// </summary>
+		[Test()]
+		public void TestBug473686 ()
+		{
+			CompletionDataList provider = CreateCtrlSpaceProvider (
+@"
+class ATest
+{
+	const int TESTCONST = 0;
+
+	static void Test()
+	{
+		$$
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			
+			Assert.IsNotNull (provider.Find ("TESTCONST"), "constant 'TESTCONST' not found.");
+		}
 
 	}
 }
