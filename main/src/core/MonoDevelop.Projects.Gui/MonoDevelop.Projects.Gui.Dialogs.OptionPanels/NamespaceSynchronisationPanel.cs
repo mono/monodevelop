@@ -105,11 +105,11 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 		TreeStore previewStore;
 		TreeView previewTree;
 		bool resourceNamingChanged;
-		bool initialResourceNaming;
+		ResourceNamePolicy initialResourceNaming;
 		bool firstLoad = true;
 		
 		public bool ResourceNamingChanged {
-			get { return resourceNamingChanged; }
+			get { return ActiveResourceNamePolicy != initialResourceNaming; }
 		}
 		
 		public NamespaceSynchronisationPanelWidget (NamespaceSynchronisationPanel panel)
@@ -164,13 +164,15 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			radioHierarch.Active = policy.DirectoryNamespaceAssociation == DirectoryNamespaceAssociation.Hierarchical
 				|| policy.DirectoryNamespaceAssociation == DirectoryNamespaceAssociation.PrefixedHierarchical;
 			
-			if (policy.ResourceNamePolicy == ResourceNamePolicy.FileFormatDefault)
+			if (policy.ResourceNamePolicy == ResourceNamePolicy.FileFormatDefault) {
 				checkVSStyleResourceNames.Inconsistent = true;
-			else
+			} else {
 				checkVSStyleResourceNames.Active = policy.ResourceNamePolicy == ResourceNamePolicy.MSBuild;
+				checkVSStyleResourceNames.Inconsistent = false;
+			}
 			
 			if (firstLoad) {
-				initialResourceNaming = checkVSStyleResourceNames.Active;
+				initialResourceNaming = policy.ResourceNamePolicy;
 				firstLoad = false;
 			}
 		}
@@ -195,14 +197,23 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 				
 			}
 			
-			ResourceNamePolicy rn = checkVSStyleResourceNames.Active ? ResourceNamePolicy.MSBuild : ResourceNamePolicy.FileName;
-			return new DotNetNamingPolicy (assoc, rn);
+			return new DotNetNamingPolicy (assoc, ActiveResourceNamePolicy);
 		}
 		
 		[GLib.ConnectBefore]
 		void SuppressClick (object o, ButtonPressEventArgs args)
 		{
 			args.RetVal = true;
+		}
+		
+		ResourceNamePolicy ActiveResourceNamePolicy {
+			get {
+				return checkVSStyleResourceNames.Inconsistent
+					? ResourceNamePolicy.FileFormatDefault
+					: (checkVSStyleResourceNames.Active
+						? ResourceNamePolicy.MSBuild
+						: ResourceNamePolicy.FileName);
+			}
 		}
 		
 		void UpdateNamespaceSensitivity (object sender, EventArgs args)
@@ -238,10 +249,11 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			UpdatePolicyNameList (null, null);
 		}
 
-		protected virtual void UpdatePolicyNameList (object sender, System.EventArgs e)
+		protected void UpdatePolicyNameList (object sender, System.EventArgs e)
 		{
-			resourceNamingChanged = checkVSStyleResourceNames.Active != initialResourceNaming || checkVSStyleResourceNames.Inconsistent;
-			checkVSStyleResourceNames.Inconsistent = false;
+			if (sender == checkVSStyleResourceNames)
+				checkVSStyleResourceNames.Inconsistent = false;
+			
 			panel.UpdateSelectedNamedPolicy ();
 		}
 	}

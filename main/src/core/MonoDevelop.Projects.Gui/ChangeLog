@@ -1,3 +1,9 @@
+2009-02-10  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/NamespaceSynchronisationPanel.cs:
+	  If resource name policy is unset, don't automatically set it
+	  to MD1 format. Only change it when the user makes a change.
+
 2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Gui.mdp:
