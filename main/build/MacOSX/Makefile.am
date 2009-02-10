@@ -15,6 +15,7 @@ MonoDevelop.dmg: MonoDevelop.app
 
 clean-local:
 	rm -rf MonoDevelop.app
+	rm -rf MonoDevelop.dmg
 
 MonoDevelop.app: 
 	mkdir -p $(MAC_APP_DIR)/Contents/{MacOS,Resources}

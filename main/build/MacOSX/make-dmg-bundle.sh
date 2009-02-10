@@ -30,11 +30,11 @@ mv $DMG_APP $MOUNT_POINT
 #find $MOUNT_POINT -type d -iregex '.*\.svn$' &>/dev/null | xargs rm -rf
 
 pushd $MOUNT_POINT &>/dev/null
-ln -s /Applications " "
+ln -s /Applications 
 popd &>/dev/null
 
-mkdir $MOUNT_POINT/.background
-cp background.png $MOUNT_POINT/.background
+mkdir -p $MOUNT_POINT/.background
+cp dmg-bg.png $MOUNT_POINT/.background
 cp DS_Store $MOUNT_POINT/.DS_Store
 cp COPYING INSTALL $MOUNT_POINT
 

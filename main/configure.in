@@ -311,6 +311,7 @@ fi
 
 AC_OUTPUT([
 build/Makefile
+build/MacOSX/Makefile
 contrib/Makefile
 contrib/Mono.Cecil/Makefile
 src/Makefile
