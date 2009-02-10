@@ -274,8 +274,10 @@ namespace MonoDevelop.Projects.Policies
 			DataValue val = diffNode as DataValue;
 			if (val != null) {
 				size += val.Name.Length;
-				if (val.Value != null)
-					size += val.Value.Length;
+				if (val.Value == null)
+					throw new InvalidOperationException ("Data node '" + val.Name + "' has null value, which cannot safely " +
+					                                     "be diff-serialised.");
+				size += val.Value.Length;
 				return diffNode;
 			} else {
 				return ExtractOverlay ((DataItem)baseline, (DataItem)diffNode, ref size);
@@ -300,8 +302,10 @@ namespace MonoDevelop.Projects.Policies
 				if (val != null) {
 					if (val.Value != ((DataValue)node).Value) {
 						size += val.Name.Length;
-						if (val.Value != null)
-							size += val.Value.Length;
+						if (val.Value == null)
+							throw new InvalidOperationException ("Data node '" + val.Name + "' has null value, which cannot safely " +
+							                                     "be diff-serialised.");
+						size += val.Value.Length;
 						newItem.ItemData.Add (val);
 					}
 				} else {
