@@ -594,7 +594,7 @@ namespace MonoDevelop.CSharpBinding
 
 			if (unit != null && unit.Usings != null) {
 				foreach (IUsing u in unit.Usings) {
-					if (u.IsFromNamespace) {
+					if (u.IsFromNamespace && u.Region.Contains (resolvePosition)) {
 						foreach (string ns in u.Namespaces) {
 							if (dom.NamespaceExists (ns + "."  + identifier, true)) {
 								result = new NamespaceResolveResult (ns + "."  + identifier);

@@ -1,5 +1,9 @@
 2009-02-10  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/NRefactoryResolver.cs: fixed small namespace access bug.
+
+2009-02-10  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/CSharpTextEditorCompletion.cs: worked on is/as
 	  completion.
 
