@@ -1,5 +1,10 @@
 2009-02-10  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: Added
+	  test for "Bug 350862 - Autocomplete bug with enums".
+
+2009-02-10  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs:
 	* MonoDevelop.CSharpBinding/ParameterCompletionTests.cs: added
 	  tests for "Bug 474199 - Code completion not working for a

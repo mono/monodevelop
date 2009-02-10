@@ -184,7 +184,6 @@ namespace ThisOne {
         }
 }");
 			Assert.IsNotNull (provider);
-			Assert.AreEqual (1, provider.Count);
 			Assert.IsNotNull (provider.Find ("Other.TheEnum"), "Other.TheEnum not found.");
 		}
 
@@ -1328,7 +1327,34 @@ class Test
 			Assert.AreEqual (1, provider.GetParameterCount(0), "Parameter 'test' should exist");
 		}
 		
-		
+		/// <summary>
+		/// Bug 350862 - Autocomplete bug with enums
+		/// </summary>
+		[Test()]
+		public void TestBug350862 ()
+		{
+			CompletionDataList provider = CreateProvider (
+@"
+public enum MyEnum {
+	A,
+	B,
+	C
+}
+
+public class Test
+{
+	MyEnum item;
+	public void Method (MyEnum val)
+	{
+		$item = $
+	}
+}
+
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			
+			Assert.IsNotNull (provider.Find ("val"), "parameter 'val' not found");
+		}
 		
 	}
 }
