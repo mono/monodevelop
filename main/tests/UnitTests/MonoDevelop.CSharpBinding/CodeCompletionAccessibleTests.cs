@@ -360,5 +360,54 @@ public class C : A
 			Assert.IsNotNull (provider, "provider == null");
 			Assert.IsNotNull (provider.Find ("MethodB"), "method 'MethodB' not found");
 		}
+		
+		[Test()]
+		public void TestNamespaceAccess ()
+		{
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
+@"
+namespace Foo.Bar {
+	class B
+	{
+	}
+}
+
+namespace Foo {
+	class Test
+	{
+		void TestMethod ()
+		{
+			$Bar.$
+		}
+	}
+}");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("B"), "class 'B' not found");
+		}
+		
+		[Test()]
+		public void TestNamespaceAccess2 ()
+		{
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
+@"
+namespace Foo.Bar {
+	class B
+	{
+	}
+}
+
+namespace FooBar {
+	using Foo;
+	class Test
+	{
+		void TestMethod ()
+		{
+			$Bar.$
+		}
+	}
+}");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNull (provider.Find ("B"), "class 'B' found, but shouldn't");
+		}
 	}
 }

@@ -1,5 +1,10 @@
 2009-02-10  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharpBinding/CodeCompletionAccessibleTests.cs:
+	  Added namespace access tests.
+
+2009-02-10  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharpBinding/CodeCompletionCSharpTests.cs:
 	  Added test case for new "as" completion context.
 
