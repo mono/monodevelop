@@ -1,3 +1,8 @@
+2009-02-10  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* libstetic.csproj: Don't build with make, since MD can build
+	  these just fine.
+
 2009-02-07  Mike Krüger  <mkrueger@novell.com>
 
 	* GladeUtils.cs: fixed compiler warning.
