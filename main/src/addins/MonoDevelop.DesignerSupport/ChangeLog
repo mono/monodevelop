@@ -1,5 +1,13 @@
 2009-02-09  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.DesignerSupport/RemoteDesignerProcess.cs:
+	  Indentation.
+
+	* MonoDevelop.DesignerSupport/BindingService.cs: Implement
+	  method for converting CodeMemberMethod to an IMethod.
+
+2009-02-09  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.DesignerSupport/RemoteDesignerProcess.cs: Revert
 	  Mike's commenting of unused method; it was in fact reflected
 	  at runtime.

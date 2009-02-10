@@ -296,7 +296,7 @@ namespace MonoDevelop.DesignerSupport
 		}
 		
 		//THIS METHOD IS NOT UNUSED; IT IS REFLECTED
-#pragma warning disable CS0169
+		#pragma warning disable CS0169
 		void OnUnhandledException (UnhandledExceptionEventArgs args)
 		{
 			HandleError ((Exception)args.ExceptionObject);

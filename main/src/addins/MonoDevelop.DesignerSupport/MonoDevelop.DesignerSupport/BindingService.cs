@@ -334,39 +334,129 @@ namespace MonoDevelop.DesignerSupport
 			return null;
 		}
 		
-		public static System.CodeDom.CodeMemberMethod MDDomToCodeDomMethod (ProjectDom context, IEvent eve)
+		//TODO: handle generics
+		public static IMethod CodeDomToMDDomMethod (CodeMemberMethod method)
+		{
+			DomMethod meth = new DomMethod ();
+			meth.Name = method.Name;
+			meth.ReturnType = new DomReturnType (method.ReturnType.BaseType);
+			meth.Modifiers = CodeDomModifiersToMDDom (method.Attributes);
+			
+			foreach (CodeParameterDeclarationExpression dec in method.Parameters) {
+				DomParameter par = new DomParameter (meth, dec.Name, new DomReturnType (dec.Type.BaseType));
+				if (dec.Direction == FieldDirection.Ref)
+					par.ParameterModifiers &= ParameterModifiers.Ref;
+				else if (dec.Direction == FieldDirection.Out)
+					par.ParameterModifiers &= ParameterModifiers.Out;
+				else
+					par.ParameterModifiers &= ParameterModifiers.In;
+				meth.Add (par);
+			}
+			
+			return meth;
+		}
+		
+		public static CodeMemberMethod MDDomToCodeDomMethod (ProjectDom context, IEvent eve)
 		{
 			IMethod meth = GetMethodSignature (context, eve);
 			return meth != null? MDDomToCodeDomMethod (meth) : null;
 		}
+		
+		static Modifiers CodeDomModifiersToMDDom (MemberAttributes modifiers)
+		{
+			Modifiers initialState = Modifiers.None;
+			
+			Modifiers AccessMask = Modifiers.ProtectedOrInternal | Modifiers.ProtectedAndInternal | Modifiers.Protected
+				| Modifiers.Internal | Modifiers.Public | Modifiers.Private;
+			
+			if ((modifiers & MemberAttributes.FamilyOrAssembly) != 0) {
+				initialState = (initialState & ~AccessMask) | Modifiers.ProtectedOrInternal;
+			}
+			else if ((modifiers & MemberAttributes.FamilyOrAssembly) != 0) {
+				initialState = (initialState & ~AccessMask) | Modifiers.ProtectedAndInternal;
+			}
+			else if ((modifiers & MemberAttributes.Family) != 0) {
+				initialState = (initialState & ~AccessMask) | Modifiers.Protected;
+			}
+			else if ((modifiers & MemberAttributes.Assembly) != 0) {
+				initialState = (initialState & ~AccessMask) | Modifiers.Internal;
+			}
+			else if ((modifiers & MemberAttributes.Public) != 0) {
+				initialState = (initialState & ~AccessMask) | Modifiers.Public;
+			}
+			else  if ((modifiers & MemberAttributes.Private) != 0) {
+				initialState = (initialState & ~AccessMask) | Modifiers.Private;
+			}
+			
+			Modifiers ScopeMask = Modifiers.Abstract | Modifiers.Final | Modifiers.Static | Modifiers.Override | Modifiers.Const;
+			
+			if ((modifiers & MemberAttributes.Abstract) != 0) {
+				initialState = (initialState & ~ScopeMask) | Modifiers.Abstract;
+			}
+			else if ((modifiers & MemberAttributes.Final) != 0) {
+				initialState = (initialState & ~ScopeMask) | Modifiers.Final;
+			}
+			else if ((modifiers & MemberAttributes.Static) != 0) {
+				initialState = (initialState & ~ScopeMask) | Modifiers.Static;
+			}
+			else if ((modifiers & MemberAttributes.Override) != 0) {
+				initialState = (initialState & ~ScopeMask) | Modifiers.Override;
+			}
+			else if ((modifiers & MemberAttributes.Const) != 0) {
+				initialState = (initialState & ~ScopeMask) | Modifiers.Const;
+			}
+			
+			return initialState;
+		}
+		
+		static MemberAttributes ApplyMDDomModifiersToCodeDom (Modifiers modifiers, MemberAttributes initialState)
+		{
+			if ((modifiers & Modifiers.ProtectedOrInternal) != 0) {
+				initialState = (initialState & ~MemberAttributes.AccessMask) | MemberAttributes.FamilyOrAssembly;
+			}
+			else if ((modifiers & Modifiers.ProtectedAndInternal) != 0) {
+				initialState = (initialState & ~MemberAttributes.AccessMask) | MemberAttributes.FamilyAndAssembly;
+			}
+			else if ((modifiers & Modifiers.Protected) != 0) {
+				initialState = (initialState & ~MemberAttributes.AccessMask) | MemberAttributes.Family;
+			}
+			else if ((modifiers & Modifiers.Internal) != 0) {
+				initialState = (initialState & ~MemberAttributes.AccessMask) | MemberAttributes.Assembly;
+			}
+			else if ((modifiers & Modifiers.Public) != 0) {
+				initialState = (initialState & ~MemberAttributes.AccessMask) | MemberAttributes.Public;
+			}
+			else  if ((modifiers & Modifiers.Private) != 0) {
+				initialState = (initialState & ~MemberAttributes.AccessMask) | MemberAttributes.Private;
+			}
+			
+			
+			if ((modifiers & Modifiers.Abstract) != 0) {
+				initialState = (initialState & ~MemberAttributes.ScopeMask) | MemberAttributes.Abstract;
+			}
+			else if ((modifiers & Modifiers.Final) != 0) {
+				initialState = (initialState & ~MemberAttributes.ScopeMask) | MemberAttributes.Final;
+			}
+			else if ((modifiers & Modifiers.Static) != 0) {
+				initialState = (initialState & ~MemberAttributes.ScopeMask) | MemberAttributes.Static;
+			}
+			else if ((modifiers & Modifiers.Override) != 0) {
+				initialState = (initialState & ~MemberAttributes.ScopeMask) | MemberAttributes.Override;
+			}
+			else if ((modifiers & Modifiers.Const) != 0) {
+				initialState = (initialState & ~MemberAttributes.ScopeMask) | MemberAttributes.Const;
+			}
+			
+			return initialState;
+		}
+		
 		
 		public static System.CodeDom.CodeMemberMethod MDDomToCodeDomMethod (IMethod mi)
 		{
 			CodeMemberMethod newMethod = new CodeMemberMethod ();
 			newMethod.Name = mi.Name;
 			newMethod.ReturnType = new System.CodeDom.CodeTypeReference (mi.ReturnType.FullName);
-			
-			newMethod.Attributes = System.CodeDom.MemberAttributes.Private;
-			switch (mi.Modifiers) {
-			case Modifiers.Internal:
-				newMethod.Attributes |= System.CodeDom.MemberAttributes.Assembly;
-				break;
-			case Modifiers.ProtectedAndInternal:
-				newMethod.Attributes |= System.CodeDom.MemberAttributes.FamilyAndAssembly;
-				break;
-			case Modifiers.Protected:
-				newMethod.Attributes |= System.CodeDom.MemberAttributes.Family;
-				break;
-			case Modifiers.ProtectedOrInternal:
-				newMethod.Attributes |= System.CodeDom.MemberAttributes.FamilyAndAssembly;
-				break;
-			case Modifiers.Public:
-				newMethod.Attributes |= System.CodeDom.MemberAttributes.Public;
-				break;
-			case Modifiers.Static:
-				newMethod.Attributes |= System.CodeDom.MemberAttributes.Static;
-				break;
-			}
+			newMethod.Attributes = ApplyMDDomModifiersToCodeDom (mi.Modifiers, newMethod.Attributes);
 			
 			foreach (IParameter p in mi.Parameters) {
 				CodeParameterDeclarationExpression newPar = new CodeParameterDeclarationExpression (p.ReturnType.FullName, p.Name);
