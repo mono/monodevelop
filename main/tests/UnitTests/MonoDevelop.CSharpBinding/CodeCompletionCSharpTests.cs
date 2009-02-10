@@ -296,6 +296,41 @@ class Test
 			Assert.IsNotNull (provider.Find ("TestProperty"), "property 'TestProperty' not found.");
 		}
 
+		[Test()]
+		public void TestAsCompletionContext ()
+		{
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
+@"
+class A
+{
+}
+
+class B
+{
+}
+
+class C : A
+{
+}
+
+class Test
+{
+	public void TestMethod (object test)
+	{
+		$A a = test as $
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("A"), "class 'A' not found.");
+			Assert.IsNotNull (provider.Find ("C"), "class 'C' not found.");
+			Assert.IsNull (provider.Find ("B"), "class 'B' found, but shouldn't.");
+			Assert.IsNull (provider.Find ("Test"), "class 'Test' found, but shouldn't.");
+		}
+		
+		
+		
+
 		
 	}
 }
