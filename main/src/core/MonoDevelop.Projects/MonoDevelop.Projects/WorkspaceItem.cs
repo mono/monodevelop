@@ -61,7 +61,6 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		[ItemProperty ("name")]
 		public virtual string Name {
 			get {
 				if (string.IsNullOrEmpty (fileName))

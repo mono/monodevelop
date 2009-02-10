@@ -1,3 +1,11 @@
+2009-02-10  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* tests/test-projects/console-project/ConsoleProject.sln:
+	* tests/test-projects/completion-db-test/CompletionDbTest.sln:
+	* tests/test-projects/generated-console-project/TestSolution.sln:
+	* tests/test-projects/test-configuration-merging/TestConfigurationMerging.sln:
+	  Remove unnecessary attribute from solutions.
+
 2009-02-09  Jonathan Pryor  <jpryor@novell.com>
 
 	* docs/sources/monodevelop-extension-guide.source,

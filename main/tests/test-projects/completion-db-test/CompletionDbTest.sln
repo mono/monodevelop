@@ -27,7 +27,6 @@ Global
 		{F0E1243E-3125-4180-AC7B-21028ED68516}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		name = CompletionDbTest
 		version = 0.1
 		StartupItem = CompletionDbTest\CompletionDbTest.csproj
 	EndGlobalSection

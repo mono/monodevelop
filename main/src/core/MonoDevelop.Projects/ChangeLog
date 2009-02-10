@@ -1,5 +1,12 @@
 2009-02-10  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Projects/WorkspaceItem.cs: Remove accidental
+	  serializization attribute that was causing solutions to be
+	  automatically renamed. Fixes "Bug 438856 - Welcome page
+	  incorrectly records recently opened solutions".
+
+2009-02-10  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Projects.Policies/PolicyService.cs: Add some
 	  more error checks to try to track down serialisation bugs.
 
