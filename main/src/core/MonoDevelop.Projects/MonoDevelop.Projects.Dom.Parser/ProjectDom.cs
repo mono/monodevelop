@@ -413,22 +413,25 @@ namespace MonoDevelop.Projects.Dom.Parser
 				return returnType.Type;
 			if (returnType.Parts.Count == 1)
 				return GetType (returnType.FullName, returnType.GenericArguments, searchDeep, true);
-			else {
-				IReturnTypePart part = returnType.Parts [0];
-				string name = returnType.Namespace.Length > 0 ? returnType.Namespace + "." + part.Name : part.Name;
-				IType ptype = GetType (name, part.GenericArguments, searchDeep, true);
+			
+			IReturnTypePart part = returnType.Parts [0];
+			string name = returnType.Namespace.Length > 0 ? returnType.Namespace + "." + part.Name : part.Name;
+			IType ptype = GetType (name, part.GenericArguments, searchDeep, true);
+			if (ptype == null)
+				return null;
+			for (int n=1; n<returnType.Parts.Count; n++) {
+				part = returnType.Parts [n];
+				foreach (IType tt in GetInheritanceTree (ptype)) {
+					ptype = FindInnerType (tt, part.Name, part.GenericArguments.Count, true);
+					if (ptype != null)
+						break;
+				}
 				if (ptype == null)
 					return null;
-				for (int n=1; n<returnType.Parts.Count; n++) {
-					part = returnType.Parts [n];
-					ptype = FindInnerType (ptype, part.Name, part.GenericArguments.Count, true);
-					if (ptype == null)
-						return null;
-					if (part.GenericArguments.Count > 0)
-						ptype = CreateInstantiatedGenericType (ptype, part.GenericArguments);
-				}
-				return ptype;
+				if (part.GenericArguments.Count > 0)
+					ptype = CreateInstantiatedGenericType (ptype, part.GenericArguments);
 			}
+			return ptype;
 		}
 		
 		public IType GetType (string typeName)

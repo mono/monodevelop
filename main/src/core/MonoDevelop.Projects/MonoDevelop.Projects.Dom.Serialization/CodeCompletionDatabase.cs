@@ -471,7 +471,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				NamespaceEntry nst;
 				int nextPos;
 
-				IType result;
+				IType result = null;
 				
 				if (GetBestNamespaceEntry (path, len, false, caseSensitive, out nst, out nextPos)) 
 				{
@@ -486,8 +486,11 @@ namespace MonoDevelop.Projects.Dom.Serialization
 					int partArgsCount = ProjectDom.ExtractGenericArgCount (ref nextName);
 					ClassEntry ce = nst.GetClass (nextName, partArgsCount, caseSensitive);
 					if (ce == null) return null;
-					
-					result = SourceProjectDom.FindInnerType (GetClass (ce), path, nextPos, genericArgumentCount, caseSensitive);
+					foreach (IType type in SourceProjectDom.GetInheritanceTree (GetClass (ce))) {
+						result = SourceProjectDom.FindInnerType (type, path, nextPos, genericArgumentCount, caseSensitive);
+						if (result != null)
+							break;
+					}
 				}
 				if (result != null && genericArguments != null && genericArguments.Count > 0)
 					return sourceProjectDom.CreateInstantiatedGenericType (result, genericArguments);
