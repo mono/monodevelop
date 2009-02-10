@@ -129,6 +129,88 @@ namespace MonoDevelop.CSharpBinding.Gui
 			return null;
 		}
 		
+		public ExpressionContext FindExactContextForAsCompletion (TextEditor editor, ICompilationUnit unit, string fileName, IType callingType)
+		{
+			// find expression on left hand side of the assignment
+			string documentToCursor = editor.GetText (0, editor.CursorPosition);
+			int pos = -1;
+			for (int i = documentToCursor.Length - 1; i >= 0; i--) {
+				char ch = documentToCursor [i];
+				if (Char.IsWhiteSpace (ch))
+					continue;
+				if (ch == '=') {
+					pos = i;
+					break;
+				}
+				if (!(Char.IsLetterOrDigit (ch) || ch == '_')) 
+					return null;
+					
+			}
+			
+			if (pos <= 0)
+				return null;
+			
+			int lastWs = pos - 1;
+			while (lastWs > 0 && Char.IsWhiteSpace (documentToCursor [lastWs]))
+				lastWs--;
+			while (lastWs > 0 && !Char.IsWhiteSpace (documentToCursor [lastWs]))
+				lastWs--;
+			ExpressionResult firstExprs = FindExpression (documentToCursor, lastWs);
+			System.Console.WriteLine(firstExprs);
+			if (firstExprs.Expression != null) {
+				IReturnType unresolvedReturnType = NRefactoryResolver.ParseReturnType (firstExprs);
+				if (unresolvedReturnType != null) {
+					IType resolvedType = projectContent.SearchType (new SearchTypeRequest (unit, unresolvedReturnType, callingType));
+					return ExpressionContext.TypeDerivingFrom (resolvedType != null ? new DomReturnType (resolvedType) : null, unresolvedReturnType, true);
+				}
+				
+			}
+			
+			ExpressionResult lhsExpr = FindExpression (documentToCursor, pos);
+			if (lhsExpr.Expression != null) {
+				NRefactoryResolver resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (projectContent, unit,
+				                                                                                ICSharpCode.NRefactory.SupportedLanguage.CSharp,
+				                                                                                editor,
+				                                                                                fileName);
+				
+				ResolveResult rr = resolver.Resolve (lhsExpr, new DomLocation (editor.CursorLine, editor.CursorColumn));
+				//ResolveResult rr = ParserService.Resolve (lhsExpr, currentLine.LineNumber, pos, editor.FileName, editor.Text);
+				
+				if (rr != null && rr.ResolvedType != null) {
+					ExpressionContext context;
+					IType c;
+/*					if (rr.ResolvedType.IsArrayReturnType) {
+						// when creating an array, all classes deriving from the array's element type are allowed
+						IReturnType elementType = rr.ResolvedType.CastToArrayReturnType().ArrayElementType;
+						c = elementType != null ? dom.GetType (elementType) : null;
+						context = ExpressionContext.TypeDerivingFrom(elementType, false);
+					} else */{
+						// when creating a normal instance, all non-abstract classes deriving from the type
+						// are allowed
+						c = projectContent.GetType (rr.ResolvedType);
+						context = ExpressionContext.TypeDerivingFrom (rr.ResolvedType, null, true);
+					}
+					if (c != null && !context.FilterEntry (c)) {
+						// Try to suggest an entry (List<int> a = new => suggest List<int>).
+						
+						string suggestedClassName = null;/*LanguageProperties.CSharp.CodeGenerator.GenerateCode(
+							CodeGenerator.ConvertType(
+								rr.ResolvedType,
+								new ClassFinder(ParserService.GetParseInformation(editor.FileName), editor.ActiveTextAreaControl.Caret.Line + 1, editor.ActiveTextAreaControl.Caret.Column + 1)
+							), "");*/
+						if (suggestedClassName != c.Name) {
+							// create an IType instance that includes the type arguments in its name
+							//context.DefaultItem = new RenamedClass (c, suggestedClassName);
+						} else {
+							context.DefaultItem = c;
+						}
+					}
+					return context;
+				}
+			}
+			return null;
+		}
+		
 		ILexer lexer;
 		Location targetPosition;
 		List<int> lineOffsets;

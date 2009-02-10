@@ -584,6 +584,20 @@ namespace MonoDevelop.CSharpBinding.Gui
 			return result;
 		}
 		
+		/// <summary>
+		/// Adds a type to completion list. If it's a simple type like System.String it adds the simple
+		/// C# type name "string" as well.
+		/// </summary>
+		static void AddAsCompletionData (CompletionDataList completionList, CompletionDataCollector col, IType type)
+		{
+			if (type == null)
+				return;
+			string netName = CSharpAmbience.NetToCSharpTypeName (type.FullName);
+			if (!string.IsNullOrEmpty (netName) && netName != type.FullName)
+				col.AddCompletionData (completionList, netName);
+			col.AddCompletionData (completionList, type);
+		}
+		
 		public ICompletionDataList HandleKeywordCompletion (ICodeCompletionContext completionContext,
 		                                                    ExpressionResult result, int wordStart, string word)
 		{
@@ -631,7 +645,8 @@ namespace MonoDevelop.CSharpBinding.Gui
 				break;
 			case "is":
 			case "as": {
-				ExpressionResult expressionResult = FindExpression (dom, completionContext, -3);
+				ExpressionResult expressionResult = FindExpression (dom, completionContext, wordStart - Editor.CursorPosition);
+				
 				NRefactoryResolver resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (dom, 
 				                                                                                Document.CompilationUnit,
 				                                                                                ICSharpCode.NRefactory.SupportedLanguage.CSharp,
@@ -641,12 +656,24 @@ namespace MonoDevelop.CSharpBinding.Gui
 				if (resolveResult != null && resolveResult.ResolvedType != null) {
 					CompletionDataList completionList = new ProjectDomCompletionDataList ();
 					CompletionDataCollector col = new CompletionDataCollector (Document.CompilationUnit, location);
-					IType foundType = dom.SearchType (new SearchTypeRequest (resolver.Unit, resolveResult.ResolvedType, resolver.CallingType));
+					IType foundType = null;
+					if (word == "as") {
+						ExpressionContext exactContext = new NewCSharpExpressionFinder (dom).FindExactContextForAsCompletion (Editor, Document.CompilationUnit, Document.FileName, resolver.CallingType);
+						if (exactContext is ExpressionContext.TypeExpressionContext) {
+							foundType = dom.SearchType (new SearchTypeRequest (resolver.Unit, ((ExpressionContext.TypeExpressionContext)exactContext).Type, resolver.CallingType));
+							
+							AddAsCompletionData (completionList, col, foundType);
+						}
+					}
+					
+					if (foundType == null) 
+						foundType = dom.SearchType (new SearchTypeRequest (resolver.Unit, resolveResult.ResolvedType, resolver.CallingType));
+					
 					if (foundType != null) {
 						foreach (IType type in dom.GetSubclasses (foundType)) {
 							if (type.IsSpecialName || type.Name.StartsWith ("<"))
 								continue;
-							col.AddCompletionData (completionList, type);
+							AddAsCompletionData (completionList, col, type);
 						}
 					}
 					List<string> namespaceList = new List<string> ();
@@ -665,10 +692,11 @@ namespace MonoDevelop.CSharpBinding.Gui
 							IType type = (IType)o;
 							if (type.ClassType != ClassType.Interface || type.IsSpecialName || type.Name.StartsWith ("<"))
 								continue;
+							if (!dom.GetInheritanceTree (foundType).Any (x => x.FullName == type.FullName))
+								continue;
 						}
 						col.AddCompletionData (completionList, o);
 					}
-					AddNRefactoryKeywords (completionList, ICSharpCode.NRefactory.Parser.CSharp.Tokens.SimpleTypeName);
 					return completionList;
 				}
 				result.ExpressionContext = ExpressionContext.Type;
@@ -1110,8 +1138,12 @@ namespace MonoDevelop.CSharpBinding.Gui
 		static void AddNRefactoryKeywords (CompletionDataList list, System.Collections.BitArray keywords)
 		{
 			for (int i = 0; i < keywords.Length; i++) {
-				if (keywords[i]) 
-					list.Add (ICSharpCode.NRefactory.Parser.CSharp.Tokens.GetTokenString (i), "md-literal");
+				if (keywords[i]) {
+					string keyword = ICSharpCode.NRefactory.Parser.CSharp.Tokens.GetTokenString (i);
+					if (keyword.IndexOf ('<') >= 0)
+						continue;
+					list.Add (keyword, "md-literal");
+				}
 			}
 		}
 		

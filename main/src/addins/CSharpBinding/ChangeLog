@@ -1,3 +1,9 @@
+2009-02-10  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/NewCSharpExpressionFinder.cs:
+	* Gui/CSharpTextEditorCompletion.cs: Added new "<Type> x = y
+	  as $" completion case.
+
 2009-02-09  Mike Krüger  <mkrueger@novell.com>
 
 	* Gui/CSharpTextEditorCompletion.cs: now using
