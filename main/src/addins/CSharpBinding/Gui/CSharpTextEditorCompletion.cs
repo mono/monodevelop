@@ -595,6 +595,16 @@ namespace MonoDevelop.CSharpBinding.Gui
 			string netName = CSharpAmbience.NetToCSharpTypeName (type.FullName);
 			if (!string.IsNullOrEmpty (netName) && netName != type.FullName)
 				col.AddCompletionData (completionList, netName);
+			
+			if (!String.IsNullOrEmpty (type.Namespace) && !col.IsNamespaceInScope (type.Namespace)) {
+				string[] ns = type.Namespace.Split ('.');
+				for (int i = 0; i < ns.Length; i++) {
+					col.AddCompletionData (completionList, new Namespace (ns[i]));
+					if (!col.IsNamespaceInScope (ns[i]))
+						return;
+				}
+			}
+			
 			col.AddCompletionData (completionList, type);
 		}
 		
@@ -694,7 +704,11 @@ namespace MonoDevelop.CSharpBinding.Gui
 								continue;
 							if (!dom.GetInheritanceTree (foundType).Any (x => x.FullName == type.FullName))
 								continue;
+							AddAsCompletionData (completionList, col, type);
+							continue;
 						}
+						if (o is Namespace)
+							continue;
 						col.AddCompletionData (completionList, o);
 					}
 					return completionList;
@@ -934,14 +948,12 @@ namespace MonoDevelop.CSharpBinding.Gui
 				return null;
 			}
 		
-			bool IsNamespaceInScope (string ns)
+			internal bool IsNamespaceInScope (string ns)
 			{
 				if (prefixIsAlias)
 					return true;
-				else
-					return namespacesInScope.Contains (ns);
+				return namespacesInScope.Contains (ns);
 			}
-			
 		}
 		
 		ICompletionDataList CreateCompletionData (DomLocation location, ResolveResult resolveResult, 

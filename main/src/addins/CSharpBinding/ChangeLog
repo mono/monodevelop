@@ -1,5 +1,10 @@
 2009-02-10  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/CSharpTextEditorCompletion.cs: worked on is/as
+	  completion.
+
+2009-02-10  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/NewCSharpExpressionFinder.cs:
 	* Gui/CSharpTextEditorCompletion.cs: Added new "<Type> x = y
 	  as $" completion case.
