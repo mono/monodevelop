@@ -8,19 +8,20 @@ ADDINS=$(MACOS)/lib/monodevelop/AddIns
 CLEANFILES = MonoDevelop.dmg
 #DISTCLEANFILES = 
 noinst_DATA = MonoDevelop.dmg
-EXTRA_DIST = COPYING INSTALL dmg-bg.png DS_Store.in MonoDevelop.dmg 
+EXTRA_DIST = COPYING dmg-bg.png DS_Store Info.plist.in INSTALL make-dmg-bundle.sh mdtool monodevelop 
 
 MonoDevelop.dmg: MonoDevelop.app
-	mkdir -p tmp/.background
-	cp -pR MonoDevelop.app tmp
-	cp DS_Store.in tmp/.DS_Store
-	cp INSTALL COPYING tmp
-	cp dmg-bg.png tmp/.background
-	ln -s /Applications tmp
+	./make-dmg-bundle.sh
+	#mkdir -p tmp/.background
+	#cp -pR MonoDevelop.app tmp
+	#cp DS_Store tmp/.DS_Store
+	#cp INSTALL COPYING tmp
+	#cp dmg-bg.png tmp/.background
+	#ln -s /Applications tmp
 	
-	hdiutil create MonoDevelop.dmg -volname "MonoDevelop" -fs HFS+ -srcfolder tmp
+	#hdiutil create MonoDevelop.dmg -volname "MonoDevelop" -fs HFS+ -srcfolder tmp
 
-	rm -rf tmp
+	#rm -rf tmp
 
 clean-local:
 	rm -rf MonoDevelop.app
@@ -36,8 +37,8 @@ MonoDevelop.app:
 
 	sed -e "s/@BUNDLE_VERSION@/$(BUNDLE_VERSION)/" -e "s/@ASSEMBLY_VERSION@/$(ASSEMBLY_VERSION)/" Info.plist.in > $(MAC_APP_DIR)/Contents/Info.plist
 	cp ../../theme-icons/Mac/monodevelop.icns $(MAC_APP_DIR)/Contents/Resources
-	cp monodevelop.in $(MACOS)/monodevelop
-	cp mdtool.in $(MACOS)/mdtool
+	cp monodevelop $(MACOS)/monodevelop
+	cp mdtool $(MACOS)/mdtool
 
 # copy monodevelop.pc and mono-addins.pc to Contents/MacOS/lib/pkgconfig
 	mkdir -p $(MACOS)/lib/pkgconfig
