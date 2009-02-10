@@ -1,3 +1,10 @@
+2009-02-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.StandardHeader/StandardHeaderPolicyPanel.cs:
+	  Don't let the text be null, as this breaks the serialiser.
+	  Fixes "Bug 473754 - In the solution policy, if the license
+	  field is empty, you cannot change save changes".
+
 2009-02-09  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui/IdeStartup.cs:

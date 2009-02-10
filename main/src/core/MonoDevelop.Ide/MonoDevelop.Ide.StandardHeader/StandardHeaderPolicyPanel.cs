@@ -87,8 +87,6 @@ namespace MonoDevelop.Ide.StandardHeader
 		public StandardHeaderPolicy GetPolicy ()
 		{
 			string text = headerText.Buffer.Text;
-			if (text.Length == 0)
-				text = null;
 			return new StandardHeaderPolicy (text, includeAutoCheck.Active);
 		}
 	}
@@ -98,7 +96,7 @@ namespace MonoDevelop.Ide.StandardHeader
 	{
 		public StandardHeaderPolicy (string text, bool includeInNewFiles)
 		{
-			this.Text = text;
+			this.Text = text ?? "";
 			this.IncludeInNewFiles = includeInNewFiles;
 		}
 		
