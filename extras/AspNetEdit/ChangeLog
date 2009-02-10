@@ -1,3 +1,7 @@
+2009-02-10  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* AspNetEdit.Integration/MonoDevelopProxy.cs: Track API.
+
 2009/02/06  Lluis Sanchez Gual  <lluis@novell.com>
 
  * AspNetEdit.sln:

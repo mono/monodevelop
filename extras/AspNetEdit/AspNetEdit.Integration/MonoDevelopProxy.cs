@@ -121,7 +121,15 @@ namespace AspNetEdit.Integration
 			if (fullClass == null)
 				return new string[0];
 			
-			return BindingService.GetCompatibleMethodsInClass (fullClass, method);
+			IMethod MDMeth = BindingService.CodeDomToMDDomMethod (method);
+			if (MDMeth == null)
+				return null;
+			
+			List<IMethod> compatMeth = new List<IMethod> (BindingService.GetCompatibleMethodsInClass (ctx, fullClass, MDMeth));
+			string[] names = new string[compatMeth.Count];
+			for (int i = 0; i < names.Length; i++)
+				names[i] = compatMeth[i].Name;
+			return names;
 		}
 		
 		public bool ShowMethod (CodeMemberMethod method)
