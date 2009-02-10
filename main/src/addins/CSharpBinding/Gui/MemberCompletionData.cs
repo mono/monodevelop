@@ -40,7 +40,7 @@ namespace MonoDevelop.CSharpBinding
 {
 	public class MemberCompletionData : IOverloadedCompletionData
 	{
-		IMember member;
+		IDomVisitable member;
 		OutputFlags flags;
 		bool hideExtensionParameter = true;
 		static CSharpAmbience ambience = new CSharpAmbience ();
@@ -72,7 +72,7 @@ namespace MonoDevelop.CSharpBinding
 		}
 		
 		public string Icon {
-			get { return member.StockIcon; }
+			get { return member is IMember ? (member as IMember).StockIcon : "md-literal"; }
 		}
 		
 		public DisplayFlags DisplayFlags { get; set; }
@@ -86,13 +86,14 @@ namespace MonoDevelop.CSharpBinding
 			}
 		}
 		
-		public MemberCompletionData (IMember member, OutputFlags flags)
+		public MemberCompletionData (IDomVisitable member, OutputFlags flags)
 		{
 			this.flags = flags;
 			this.member = member;
 			this.completionString = ambience.GetString (member, flags ^ OutputFlags.IncludeGenerics);
 			DisplayFlags = DisplayFlags.DescriptionHasMarkup;
-			if (member.IsObsolete)
+			IMember m = member as IMember;
+			if (m != null && m.IsObsolete)
 				DisplayFlags |= DisplayFlags.Obsolete;
 		}
 		
@@ -105,15 +106,17 @@ namespace MonoDevelop.CSharpBinding
 			string docMarkup = ambience.GetString (member,
 				OutputFlags.ClassBrowserEntries | OutputFlags.UseFullName | OutputFlags.IncludeParameterName | OutputFlags.IncludeMarkup
 				| (HideExtensionParameter ? OutputFlags.HideExtensionsParameter : OutputFlags.None));
-			if (member.IsObsolete) {
-				docMarkup += Environment.NewLine + "[Obsolete]";
-			}
-			XmlNode node = member.GetMonodocDocumentation ();
-			if (node != null) {
-				node = node.SelectSingleNode ("summary");
+			if (member is IMember) {
+				if ((member as IMember).IsObsolete) {
+					docMarkup += Environment.NewLine + "[Obsolete]";
+				}
+				XmlNode node = (member as IMember).GetMonodocDocumentation ();
 				if (node != null) {
-					string mdDoc = GetDocumentation (node.InnerXml);
-					docMarkup += Environment.NewLine + mdDoc;
+					node = node.SelectSingleNode ("summary");
+					if (node != null) {
+						string mdDoc = GetDocumentation (node.InnerXml);
+						docMarkup += Environment.NewLine + mdDoc;
+					}
 				}
 			}
 			description = docMarkup;
@@ -218,8 +221,8 @@ namespace MonoDevelop.CSharpBinding
 			
 			public int Compare (ICompletionData x, ICompletionData y)
 			{
-				IMember mx = ((MemberCompletionData)x).member;
-				IMember my = ((MemberCompletionData)y).member;
+				IDomVisitable mx = ((MemberCompletionData)x).member;
+				IDomVisitable my = ((MemberCompletionData)y).member;
 				int result;
 				
 				if (mx is IType && my is IType) {
@@ -259,26 +262,33 @@ namespace MonoDevelop.CSharpBinding
 		public bool IsOverloaded {
 			get { return overloads != null; }
 		}
+
+		public IDomVisitable Member {
+			get {
+				return member;
+			}
+		}
 		
 		public void AddOverload (MemberCompletionData overload)
 		{
 			if (overloads == null)
 				overloads = new Dictionary<string, ICompletionData> ();
-			
-			string memberId = overload.member.HelpUrl;
-			if (memberId != this.member.HelpUrl || !overloads.ContainsKey (memberId)) {
-				overloads[memberId] = overload;
-				
-				//if any of the overloads is obsolete, we should not mark the item obsolete
-				if (!overload.member.IsObsolete)
-					DisplayFlags &= ~DisplayFlags.Obsolete;
-				
-				//make sure that if there are generic overloads, we show a generic signature
-				if (overload.member is IType && member is IType && ((IType)member).TypeParameters.Count == 0 && ((IType)overload.member).TypeParameters.Count > 0) {
-					displayText = overload.DisplayText;
-				}
-				if (overload.member is IMethod && member is IMethod && ((IMethod)member).TypeParameters.Count == 0 && ((IMethod)overload.member).TypeParameters.Count > 0) {
-					displayText = overload.DisplayText;
+			if (overload.member is IMember && member is IMember) {
+				string memberId = (overload.member as IMember).HelpUrl;
+				if (memberId != (this.member as IMember).HelpUrl || !overloads.ContainsKey (memberId)) {
+					overloads[memberId] = overload;
+					
+					//if any of the overloads is obsolete, we should not mark the item obsolete
+					if (!(overload.member as IMember).IsObsolete)
+						DisplayFlags &= ~DisplayFlags.Obsolete;
+					
+					//make sure that if there are generic overloads, we show a generic signature
+					if (overload.member is IType && member is IType && ((IType)member).TypeParameters.Count == 0 && ((IType)overload.member).TypeParameters.Count > 0) {
+						displayText = overload.DisplayText;
+					}
+					if (overload.member is IMethod && member is IMethod && ((IMethod)member).TypeParameters.Count == 0 && ((IMethod)overload.member).TypeParameters.Count > 0) {
+						displayText = overload.DisplayText;
+					}
 				}
 			}
 		}

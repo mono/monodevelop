@@ -340,10 +340,21 @@ namespace MonoDevelop.CSharpBinding.Gui
 							CompletionDataList completionList = new ProjectDomCompletionDataList ();
 							CompletionDataCollector cdc = new CompletionDataCollector (Document.CompilationUnit, location);
 							cdc.AddCompletionData (completionList, resolvedType);
-							
-	//						foreach (IField field in resolvedType.Fields) {
-	//							cdc.AddCompletionData (completionList, field);
-	//						}
+							foreach (object o in CreateCtrlSpaceCompletionData (completionContext, result)) {
+								MemberCompletionData memberData = o as MemberCompletionData;
+								if (memberData == null || memberData.Member == null)
+									continue;
+								IReturnType returnType = null;
+								if (memberData.Member is IMember) {
+									returnType = ((IMember)memberData.Member).ReturnType;
+								} else if (memberData.Member is IParameter) {
+									returnType = ((IParameter)memberData.Member).ReturnType;
+								} else {
+									returnType = ((LocalVariable)memberData.Member).ReturnType;
+								}
+								if (returnType != null && returnType.FullName == resolvedType.FullName)
+									completionList.Add (memberData);
+							}
 							return completionList;
 						}
 					}
@@ -898,6 +909,21 @@ namespace MonoDevelop.CSharpBinding.Gui
 					}
 				}
 			}
+			MemberCompletionData AddMemberCompletionData (CompletionDataList completionList, object member, OutputFlags flags)
+			{
+				MemberCompletionData newData = new MemberCompletionData (member as IDomVisitable, flags);
+				newData.HideExtensionParameter = HideExtensionParameter;
+				string memberKey = newData.CompletionText;
+				
+				MemberCompletionData existingData;
+				if (data.TryGetValue (memberKey, out existingData)) {
+					existingData.AddOverload (newData);
+				} else {
+					completionList.Add (newData);
+					data [memberKey] = newData;
+				}
+				return newData;
+			}
 			
 			public ICompletionData AddCompletionData (CompletionDataList completionList, object obj)
 			{
@@ -925,19 +951,11 @@ namespace MonoDevelop.CSharpBinding.Gui
 						if (!foundType && (NamePrefix.Length == 0 || !type.Namespace.StartsWith (NamePrefix)) && !type.Namespace.EndsWith ("." + NamePrefix) && type.DeclaringType == null)
 							flags |= OutputFlags.UseFullName;
 					}
-					MemberCompletionData newData = new MemberCompletionData (member, flags);
-					newData.HideExtensionParameter = HideExtensionParameter;
-					string memberKey = newData.CompletionText;
-					
-					MemberCompletionData existingData;
-					if (data.TryGetValue (memberKey, out existingData))
-						existingData.AddOverload (newData);
-					else {
-						completionList.Add (newData);
-						data [memberKey] = newData;
-					}
-					return newData;
+					return AddMemberCompletionData (completionList, member, flags);
 				}
+				if (obj is IParameter || obj is LocalVariable) 
+					AddMemberCompletionData (completionList, obj, OutputFlags.IncludeParameterName);
+				
 				if (obj is string) {
 					string str = (string)obj;
 					if (stringTable.Contains (str))

@@ -178,21 +178,22 @@ namespace MonoDevelop.CSharpBinding
 			setupLookupTableVisitor = true;
 		}
 		
-		static void AddParameterList (CompletionDataList completionList, IEnumerable<IParameter> parameters)
+		static void AddParameterList (CompletionDataList completionList, MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col, IEnumerable<IParameter> parameters)
 		{
 			foreach (IParameter p in parameters) {
-				completionList.Add (p.Name, "md-literal");
+				col.AddCompletionData (completionList, p);
+//				completionList.Add (p.Name, "md-literal");
 			}
 		}
 				
-		void AddContentsFromClassAndMembers (ExpressionContext context, CompletionDataList completionList)
+		void AddContentsFromClassAndMembers (ExpressionContext context, CompletionDataList completionList, MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col)
 		{
 			IMethod method = callingMember as IMethod;
 			if (method != null && method.Parameters != null)
-				AddParameterList (completionList, method.Parameters);
+				AddParameterList (completionList, col, method.Parameters);
 			IProperty property = callingMember as IProperty;
 			if (property != null && property.Parameters != null) 
-				AddParameterList (completionList, property.Parameters);
+				AddParameterList (completionList, col, property.Parameters);
 			if (CallingType == null)
 				return;
 			IType callingType = CallingType is InstantiatedType ? ((InstantiatedType)CallingType).UninstantiatedType : CallingType;
@@ -205,7 +206,6 @@ namespace MonoDevelop.CSharpBinding
 			}
 			
 			if (CallingMember != null) {
-				MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col = new MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector (unit, new DomLocation (editor.CursorLine - 1, editor.CursorColumn - 1));
 				bool includeProtected = DomType.IncludeProtected (dom, CallingType, CallingMember.DeclaringType);
 				foreach (IType type in dom.GetInheritanceTree (CallingType)) {
 					foreach (IMember member in type.Members) {
@@ -225,14 +225,15 @@ namespace MonoDevelop.CSharpBinding
 		{
 			MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col = new MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector (unit, new DomLocation (editor.CursorLine - 1, editor.CursorColumn - 1));
 			if (context != ExpressionContext.Global) {
-				AddContentsFromClassAndMembers (context, completionList);
+				AddContentsFromClassAndMembers (context, completionList, col);
 				
 				if (lookupTableVisitor != null && lookupTableVisitor.Variables != null) {
 					foreach (KeyValuePair<string, List<LocalLookupVariable>> pair in lookupTableVisitor.Variables) {
 						if (pair.Value != null && pair.Value.Count > 0) {
 							foreach (LocalLookupVariable v in pair.Value) {
-								if (new DomLocation (CallingMember.Location.Line + v.StartPos.Line - 2, v.StartPos.Column) <= this.resolvePosition && (v.EndPos.IsEmpty || new DomLocation (CallingMember.Location.Line + v.EndPos.Line - 2, v.EndPos.Column) >= this.resolvePosition))
-									col.AddCompletionData (completionList, pair.Key);
+								if (new DomLocation (CallingMember.Location.Line + v.StartPos.Line - 2, v.StartPos.Column) <= this.resolvePosition && (v.EndPos.IsEmpty || new DomLocation (CallingMember.Location.Line + v.EndPos.Line - 2, v.EndPos.Column) >= this.resolvePosition)) {
+									col.AddCompletionData (completionList, new LocalVariable (CallingMember, pair.Key, ConvertTypeReference (v.TypeRef) , DomRegion.Empty));
+								}
 							}
 						}
 					}
