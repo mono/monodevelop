@@ -1,3 +1,8 @@
+2009-02-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.SourceEditor/StyledSourceEditorOptions.cs: Fix
+	  null ref.
+
 2009-02-08  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.SourceEditor.csproj: Remove more inadvertent

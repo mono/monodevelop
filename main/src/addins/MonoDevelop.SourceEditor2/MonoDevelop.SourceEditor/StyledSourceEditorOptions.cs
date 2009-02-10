@@ -161,7 +161,8 @@ namespace MonoDevelop.SourceEditor
 
 		void HandleDefaultsChanged (object sender, EventArgs e)
 		{
-			changed (this, EventArgs.Empty);
+			if (changed != null)
+				changed (this, EventArgs.Empty);
 		}
 		
 		public string ColorScheme {
