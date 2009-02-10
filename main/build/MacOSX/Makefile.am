@@ -8,22 +8,24 @@ ADDINS=$(MACOS)/lib/monodevelop/AddIns
 CLEANFILES = MonoDevelop.dmg
 #DISTCLEANFILES = 
 noinst_DATA = MonoDevelop.dmg
-EXTRA_DIST = COPYING INSTALL dmg-bg-png DS_Sore.in MonoDevelop.dmg 
+EXTRA_DIST = COPYING INSTALL dmg-bg.png DS_Store.in MonoDevelop.dmg 
 
 MonoDevelop.dmg: MonoDevelop.app
 	mkdir -p tmp/.background
 	cp -pR MonoDevelop.app tmp
-	cp DS_Store tmp/.DS_Store
+	cp DS_Store.in tmp/.DS_Store
 	cp INSTALL COPYING tmp
 	cp dmg-bg.png tmp/.background
+	ln -s /Applications tmp
 	
-	hdiutil create MonoDevelop.dmg -volname "MonoDevelop for OSX" -fs HFS+ -srcfolder tmp
+	hdiutil create MonoDevelop.dmg -volname "MonoDevelop" -fs HFS+ -srcfolder tmp
+
 	rm -rf tmp
 
 clean-local:
 	rm -rf MonoDevelop.app
 
-MonoDevelop.app: Makefile
+MonoDevelop.app: 
 	mkdir -p $(MAC_APP_DIR)/Contents/{MacOS,Resources}
 	mkdir -p $(MAC_APP_DIR)/Contents/MacOS/{lib,share}
 	mkdir -p $(MAC_APP_LIB_DIR)
