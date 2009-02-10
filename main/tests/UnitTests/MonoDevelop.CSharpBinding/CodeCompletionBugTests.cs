@@ -1257,5 +1257,78 @@ class Test : TestB
 			Assert.IsNotNull (provider.Find ("TestB"), "class 'TestB' not found");
 			Assert.IsNotNull (provider.Find ("Test"), "class 'Test' not found");
 		}
+		
+		/// <summary>
+		/// Bug 474199 - Code completion not working for a nested class
+		/// </summary>
+		[Test()]
+		public void TestBug474199A ()
+		{
+			CompletionDataList provider = CreateProvider (
+@"
+public class InnerTest
+{
+	public class Inner
+	{
+		public void Test()
+		{
+		}
+	}
+}
+
+public class ExtInner : InnerTest
+{
+}
+
+class Test
+{
+	public void TestMethod ()
+	{
+		var inner = new ExtInner.Inner ();
+		$inner.$
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.Find ("Test"), "method 'Test' not found");
+		}
+		
+		/// <summary>
+		/// Bug 474199 - Code completion not working for a nested class
+		/// </summary>
+		[Test()]
+		public void TestBug474199B ()
+		{
+			IParameterDataProvider provider = ParameterCompletionTests.CreateProvider (
+@"
+public class InnerTest
+{
+	public class Inner
+	{
+		public Inner(string test)
+		{
+		}
+	}
+}
+
+public class ExtInner : InnerTest
+{
+}
+
+class Test
+{
+	public void TestMethod ()
+	{
+		$new ExtInner.Inner ($
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.AreEqual (1, provider.OverloadCount, "There should be one overload");
+			Assert.AreEqual (1, provider.GetParameterCount(0), "Parameter 'test' should exist");
+		}
+		
+		
+		
 	}
 }

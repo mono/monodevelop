@@ -41,40 +41,52 @@ namespace MonoDevelop.CSharpBinding.Tests
 	[TestFixture()]
 	public class ParameterCompletionTests : UnitTests.TestBase
 	{
-		public static IParameterDataProvider CreateProvider (string text)
+		static int pcount = 0;
+		internal static IParameterDataProvider CreateProvider (string text)
 		{
+			string parsedText;
+			string editorText;
 			int cursorPosition = text.IndexOf ('$');
-			string parsedText = text.Substring (0, cursorPosition) + text.Substring (cursorPosition + 1);
+			int endPos = text.IndexOf ('$', cursorPosition + 1);
+			if (endPos == -1)
+				parsedText = editorText = text.Substring (0, cursorPosition) + text.Substring (cursorPosition + 1);
+			else {
+				parsedText = text.Substring (0, cursorPosition) + new string (' ', endPos - cursorPosition) + text.Substring (endPos + 1);
+				editorText = text.Substring (0, cursorPosition) + text.Substring (cursorPosition + 1, endPos - cursorPosition - 1) + text.Substring (endPos + 1);
+				cursorPosition = endPos - 1; 
+			}
 			
 			TestWorkbenchWindow tww = new TestWorkbenchWindow ();
 			TestViewContent sev = new TestViewContent ();
 			DotNetProject project = new DotNetProject ("C#");
-			project.FileName = "/tmp/a.csproj";
+			project.FileName = "/tmp/ap" + pcount + ".csproj";
 			
-			SimpleProjectDom dom = new SimpleProjectDom ();
-			dom.Project = project;
-			ProjectDomService.RegisterDom (dom, "Project:" + project.FileName);
+			string file = "/tmp/test-pfile-" + (pcount++) + ".cs";
+			project.AddFile (file);
+			
+			ProjectDomService.Load (project);
+//			ProjectDom dom = ProjectDomService.GetProjectDom (project);
+			ProjectDomService.Parse (project, file, null, delegate { return parsedText; });
+			ProjectDomService.Parse (project, file, null, delegate { return parsedText; });
 			
 			sev.Project = project;
-			sev.ContentName = "a.cs";
-			sev.Text = parsedText;
+			sev.ContentName = file;
+			sev.Text = editorText;
 			sev.CursorPosition = cursorPosition;
-			
 			tww.ViewContent = sev;
 			Document doc = new Document (tww);
-			doc.ParsedDocument = new NRefactoryParser ().Parse (sev.ContentName, sev.Text);
-			dom.Add (doc.CompilationUnit);
+			doc.ParsedDocument = new NRefactoryParser ().Parse (sev.ContentName, parsedText);
 			CSharpTextEditorCompletion textEditorCompletion = new CSharpTextEditorCompletion (doc);
 			
-		//	int triggerWordLength = 1;
+			int triggerWordLength = 1;
 			CodeCompletionContext ctx = new CodeCompletionContext ();
 			ctx.TriggerOffset = sev.CursorPosition;
 			int line, column;
 			sev.GetLineColumnFromPosition (sev.CursorPosition, out line, out column);
-			ctx.TriggerLineOffset = column;
 			ctx.TriggerLine = line;
-			IParameterDataProvider result =  textEditorCompletion.HandleParameterCompletion (ctx, text[cursorPosition - 1]);
-			return result;
+			ctx.TriggerLineOffset = column;
+			
+			return textEditorCompletion.HandleParameterCompletion (ctx, editorText[cursorPosition - 1]);
 		}
 		
 		/// <summary>
@@ -105,7 +117,7 @@ class AClass
 {
 	void A()
 	{
-		Test t = new Test ($
+		$Test t = new Test ($
 	}
 }");
 			Assert.IsNotNull (provider, "provider was not created.");
@@ -127,7 +139,7 @@ class Test
 
 	void A()
 	{
-		d ($
+		$d ($
 	}
 }");
 			Assert.IsNotNull (provider, "provider was not created.");
@@ -148,7 +160,7 @@ class Test
 	}
 	public static void Ext2 (this int end)
 	{
-		Ext1($
+		$Ext1($
 	}
 }");
 			Assert.IsNotNull (provider, "provider was not created.");
@@ -167,7 +179,7 @@ class Test
 {
 	void Method ()
 	{
-		A aTest = new A ($
+		$A aTest = new A ($
 	}
 }");
 			Assert.IsNotNull (provider, "provider was not created.");
@@ -192,7 +204,7 @@ class AClass
 {
 	Test A()
 	{
-		return new Test ($
+		$return new Test ($
 	}
 }");
 			Assert.IsNotNull (provider, "provider was not created.");
@@ -217,7 +229,7 @@ class TestClass
 {
 	void TestMethod ()
 	{
-		Test<int> l = new Test<int> ($
+		$Test<int> l = new Test<int> ($
 	}
 }");
 			Assert.IsNotNull (provider, "provider was not created.");
@@ -239,7 +251,7 @@ class TestClass
 	}
 }
 
-[Test ($
+$[Test ($
 class AClass
 {
 }");
@@ -272,7 +284,7 @@ class AClass
 {
 	public void Test ()
 	{
-		throw new MyException($
+		$throw new MyException($
 	}
 
 }");

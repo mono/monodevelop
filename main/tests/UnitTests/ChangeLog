@@ -1,5 +1,13 @@
 2009-02-10  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs:
+	* MonoDevelop.CSharpBinding/ParameterCompletionTests.cs: added
+	  tests for "Bug 474199 - Code completion not working for a
+	  nested class". Refactored parameter completion tests -
+	  they're now using the $...$ syntax too.
+
+2009-02-10  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharpBinding/CodeCompletionAccessibleTests.cs:
 	  Added namespace access tests.
 
