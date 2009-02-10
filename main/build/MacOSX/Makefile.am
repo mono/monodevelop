@@ -12,16 +12,6 @@ EXTRA_DIST = COPYING dmg-bg.png DS_Store Info.plist.in INSTALL make-dmg-bundle.s
 
 MonoDevelop.dmg: MonoDevelop.app
 	./make-dmg-bundle.sh
-	#mkdir -p tmp/.background
-	#cp -pR MonoDevelop.app tmp
-	#cp DS_Store tmp/.DS_Store
-	#cp INSTALL COPYING tmp
-	#cp dmg-bg.png tmp/.background
-	#ln -s /Applications tmp
-	
-	#hdiutil create MonoDevelop.dmg -volname "MonoDevelop" -fs HFS+ -srcfolder tmp
-
-	#rm -rf tmp
 
 clean-local:
 	rm -rf MonoDevelop.app

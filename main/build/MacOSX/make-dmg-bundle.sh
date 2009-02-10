@@ -36,6 +36,7 @@ popd &>/dev/null
 mkdir $MOUNT_POINT/.background
 cp background.png $MOUNT_POINT/.background
 cp DS_Store $MOUNT_POINT/.DS_Store
+cp COPYING INSTALL $MOUNT_POINT
 
 echo "Detaching from disk image..."
 hdiutil detach $MOUNT_POINT -quiet
