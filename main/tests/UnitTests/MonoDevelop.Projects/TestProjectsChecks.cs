@@ -150,6 +150,9 @@ namespace MonoDevelop.Projects
 			sol.RootFolder.Items.Add (project);
 			
 			InitializeProject (dir, project, "TestProject");
+			project.References.Add (new ProjectReference (ReferenceType.Gac, "System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
+			project.References.Add (new ProjectReference (ReferenceType.Gac, "System.Data, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
+			project.References.Add (new ProjectReference (ReferenceType.Gac, "System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
 			project.Files.Add (new ProjectFile (Path.Combine (dir, "Main.cs")));
 			project.Files.Add (new ProjectFile (Path.Combine (dir, "Resource.xml"), BuildAction.EmbeddedResource));
 			project.Files.Add (new ProjectFile (Path.Combine (dir, "Excluded.xml"), BuildAction.Content));
@@ -157,9 +160,6 @@ namespace MonoDevelop.Projects
 			pf.CopyToOutputDirectory = FileCopyMode.Always;
 			project.Files.Add (pf);
 			project.Files.Add (new ProjectFile (Path.Combine (dir, "Nothing.xml"), BuildAction.None));
-			project.References.Add (new ProjectReference (ReferenceType.Gac, "System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
-			project.References.Add (new ProjectReference (ReferenceType.Gac, "System.Data, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
-			project.References.Add (new ProjectReference (ReferenceType.Gac, "System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
 			
 			SolutionConfiguration scRelease = sol.AddConfiguration ("Release", true);
 			

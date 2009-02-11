@@ -26,6 +26,7 @@
 //
 
 using System;
+using System.IO;
 using NUnit.Framework;
 using MonoDevelop.Core;
 
@@ -38,10 +39,11 @@ namespace UnitTests
 		[TestFixtureSetUp]
 		public virtual void Setup ()
 		{
-			Runtime.Initialize (true);
 			if (firstRun) {
 				firstRun = false;
 				Util.ClearTmpDir ();
+				Environment.SetEnvironmentVariable ("XDG_CONFIG_HOME", Path.Combine (Util.TestsRootDir, "config"));
+				Runtime.Initialize (true);
 				Gtk.Application.Init ();
 			}
 		}

@@ -1,5 +1,16 @@
 2009-02-11  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects/TestProjectsChecks.cs: Order on which
+	  items are added is now important.
+
+	* TestBase.cs: Use a private home dir for the test suite to
+	  make sure that local configurations don't affect the
+	  results.
+
+	* UnitTests.csproj: Updated.
+
+2009-02-11  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: Another
 	  test for bug #470954
 
