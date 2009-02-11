@@ -103,6 +103,8 @@ namespace MonoDevelop.Core.Gui.Dialogs
 					tree.ExpandRow (store.GetPath (it), false);
 				} while (store.IterNext (ref it));
 			}
+			
+			this.DefaultResponse = Gtk.ResponseType.Ok;
 		}
 		
 		public void FillTree ()
