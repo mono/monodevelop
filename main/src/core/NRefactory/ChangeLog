@@ -1,5 +1,11 @@
 2009-02-11  Mike Krüger  <mkrueger@novell.com>
 
+	* Project/Src/Visitors/CodeDOMOutputVisitor.cs: fixed
+	  exception reported in "Bug 473894 - MD does not compile MEF
+	  p4".
+
+2009-02-11  Mike Krüger  <mkrueger@novell.com>
+
 	* Project/Src/Visitors/CodeDOMOutputVisitor.cs: fixed the
 	  exception from "Bug 473894 - MD does not compile MEF p4"
 

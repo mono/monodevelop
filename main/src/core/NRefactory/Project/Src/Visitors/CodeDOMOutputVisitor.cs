@@ -84,8 +84,9 @@ namespace ICSharpCode.NRefactory.Visitors
 			if (type == null) {
 				throw new ArgumentNullException("type");
 			}
+			// empty type case in attributes: [MyAttr(typeof(List<>))]
 			if (string.IsNullOrEmpty(type.SystemType) && string.IsNullOrEmpty (type.Type)) {
-				throw new InvalidOperationException("empty type");
+				return new CodeTypeReference ();
 			}
 			CodeTypeReference t = new CodeTypeReference (type.SystemType ?? type.Type);
 			foreach (TypeReference gt in type.GenericTypes) {
