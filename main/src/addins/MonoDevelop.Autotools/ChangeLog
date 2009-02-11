@@ -1,3 +1,11 @@
+2009-02-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AutotoolsContext.cs:
+	* SolutionDeployer.cs: Read templates from the right
+	  directory.
+
+	* MakefileData.cs: Track api changes.
+
 2009-02-08  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am:

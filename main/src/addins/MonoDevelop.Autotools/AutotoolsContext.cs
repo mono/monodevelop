@@ -36,7 +36,7 @@ namespace MonoDevelop.Autotools
 		DeployContext deployContext;
 		Hashtable deployDirs = new Hashtable ();
 		
-		string template_dir = Path.GetDirectoryName ( typeof ( AutotoolsContext ).Assembly.Location );
+		string template_dir;
 		MakefileType makefileType;
 		
 		Set<string> autoconfConfigFiles = new Set<string> ();
@@ -111,6 +111,7 @@ namespace MonoDevelop.Autotools
 		public AutotoolsContext (DeployContext deployContext, string base_directory, string[] configs, MakefileType type)
 		{
 			this.deployContext = deployContext;
+			template_dir = Path.Combine (Path.GetDirectoryName (typeof ( AutotoolsContext ).Assembly.Location), "templates");
 			base_dir = base_directory;
 			configurations = configs;
 			makefileType = type;

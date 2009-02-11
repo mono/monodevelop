@@ -77,8 +77,10 @@ namespace MonoDevelop.Autotools
 							dirty = true;
 					};
 					
-					value.ReferenceRemovedFromProject += refhandler;
-					value.ReferenceAddedToProject += refhandler;
+					if (value is DotNetProject) {
+						((DotNetProject)value).ReferenceRemovedFromProject += refhandler;
+						((DotNetProject)value).ReferenceAddedToProject += refhandler;
+					}
 
 					ProjectFileEventHandler filehandler = delegate (object sender, ProjectFileEventArgs e) {
 						MakefileVar var = null;

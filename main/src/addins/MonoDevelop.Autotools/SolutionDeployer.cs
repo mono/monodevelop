@@ -416,7 +416,8 @@ namespace MonoDevelop.Autotools
 		
 		void CreateMacros ()
 		{
-			string file = Mono.Addins.AddinManager.CurrentAddin.GetFilePath ("expansions.m4");
+			string file = Mono.Addins.AddinManager.CurrentAddin.GetFilePath ("templates");
+			file = Path.Combine (file, "expansions.m4");
 			string dest = Path.Combine (solution_dir, "expansions.m4");
 			File.Copy (file, dest, true);
 		}
