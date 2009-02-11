@@ -20,6 +20,7 @@ FILES =  \
 	MonoDevelop.SourceEditor/CompileErrorTooltipProvider.cs \
 	MonoDevelop.SourceEditor/DebugValueTooltipProvider.cs \
 	MonoDevelop.SourceEditor/DebugValueWindow.cs \
+	MonoDevelop.SourceEditor/DefaultFormatter.cs \
 	MonoDevelop.SourceEditor/DropDownBox.cs \
 	MonoDevelop.SourceEditor/DropDownBoxListWindow.cs \
 	MonoDevelop.SourceEditor/EditActions.cs \

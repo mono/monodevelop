@@ -1,5 +1,13 @@
 2009-02-11  Mike Krüger  <mkrueger@novell.com>
 
+	* Makefile.am:
+	* MonoDevelop.SourceEditor.csproj:
+	* MonoDevelop.SourceEditor.addin.xml:
+	* MonoDevelop.SourceEditor/DefaultFormatter.cs: Added default
+	  formatter that uses text policy settings.
+
+2009-02-11  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: fixed "Bug
 	  474055 - no parameters hints on first parameter when "Insert
 	  Matching Brace" is enabled".

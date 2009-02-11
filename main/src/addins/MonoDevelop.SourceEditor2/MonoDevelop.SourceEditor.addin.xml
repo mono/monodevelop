@@ -17,6 +17,7 @@
 		<Addin id="Components" version="1.9.2"/>
 		<Addin id="Ide" version="1.9.2"/>
 		<Addin id="Debugger" version="1.9.2"/>
+		<Addin id="Projects" version="1.9.2"/>
 	</Dependencies>
 
 	<!-- Extension points -->
@@ -63,6 +64,10 @@
 		<Class class="MonoDevelop.SourceEditor.DebugValueTooltipProvider" />
 		<Class class="MonoDevelop.SourceEditor.LanguageItemTooltipProvider" />
 		<Class class="MonoDevelop.SourceEditor.CompileErrorTooltipProvider" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/TextFormatters">
+		<Class class="MonoDevelop.SourceEditor.DefaultFormatter" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/Commands">

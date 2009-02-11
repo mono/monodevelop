@@ -153,6 +153,7 @@
     <Compile Include="MonoDevelop.SourceEditor\DropDownBoxListWindow.cs" />
     <Compile Include="MonoDevelop.SourceEditor\StyledSourceEditorOptions.cs" />
     <Compile Include="MonoDevelop.SourceEditor\ISourceEditorOptions.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\DefaultFormatter.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
