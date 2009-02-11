@@ -1,5 +1,10 @@
 2009-02-11  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:
+	  templates are now using formatters.
+
+2009-02-11  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:
 	* MonoDevelop.Ide.Commands/CustomStringTagProvider.cs: fixed
 	  'Bug 474094 - External Tools initial directory does not

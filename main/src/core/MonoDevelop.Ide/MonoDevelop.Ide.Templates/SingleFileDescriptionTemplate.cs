@@ -35,6 +35,7 @@ using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects;
+using MonoDevelop.Projects.Text;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.StandardHeader;
 
@@ -242,7 +243,10 @@ namespace MonoDevelop.Ide.Templates
 			
 			string content = CreateContent (language);
 			content = StringParserService.Parse (content, HashtableToStringArray (tags));
-			
+			string mime = IdeApp.Services.PlatformService.GetMimeTypeForUri (fileName);
+			IFormatter formatter = !String.IsNullOrEmpty (mime) ? TextFileService.GetFormatter (mime) : null;
+			if (formatter != null)
+				content = formatter.FormatText (policyParent, content);
 			MemoryStream ms = new MemoryStream ();
 			byte[] data;
 			if (AddStandardHeader) {
