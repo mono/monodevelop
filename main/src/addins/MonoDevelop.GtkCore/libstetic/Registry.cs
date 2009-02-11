@@ -21,8 +21,8 @@ namespace Stetic {
 
 		public static void Initialize (WidgetLibrary coreLibrary)
 		{
+			RegisterWidgetLibrary (coreLibrary);
 			coreLib = coreLibrary;
-			RegisterWidgetLibrary (coreLib);
 		}
 		
 		public static WidgetLibrary CoreWidgetLibrary {
@@ -50,6 +50,11 @@ namespace Stetic {
 			NotifyChanging ();
 			
 			try {
+				if (coreLib != null && library.Name == coreLib.Name) {
+					libraries.Remove (coreLib);
+					InternalUpdate ();
+					coreLib = library;
+				}
 				libraries.Add (library);
 				library.Load ();
 				classes.AddRange (library.AllClasses);
