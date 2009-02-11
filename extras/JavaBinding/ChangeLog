@@ -1,3 +1,9 @@
+2009-02-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* JavaLanguageBinding.cs:
+	* IKVMCompilerManager.cs: Track API changes. Use the new
+	  ProjectItem collection.
+
 2009/02/06  Lluis Sanchez Gual  <lluis@novell.com>
 
  * JavaBinding.sln: Flush.

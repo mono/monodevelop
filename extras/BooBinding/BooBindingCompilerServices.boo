@@ -37,7 +37,7 @@ public class BooBindingCompilerServices:
 	public def CanCompile (fileName as string):
 		return Path.GetExtension(fileName).ToUpper() == ".BOO"
 	
-	def Compile (projectFiles as ProjectFileCollection, references as ProjectReferenceCollection, configuration as DotNetProjectConfiguration, monitor as IProgressMonitor) as BuildResult:
+	def Compile (projectItems as ProjectItemCollection, configuration as DotNetProjectConfiguration, monitor as IProgressMonitor) as BuildResult:
 		compilerparameters = cast(BooCompilerParameters, configuration.CompilationParameters)
 		if compilerparameters is null:
 			compilerparameters = BooCompilerParameters()
@@ -53,12 +53,11 @@ public class BooBindingCompilerServices:
 		# Make sure we don't load the generated assembly at all
 		compiler.Parameters.GenerateInMemory = false
 
-		if references is not null:
-			for lib as ProjectReference in references:
-				for fileName as string in lib.GetReferencedFileNames (configuration.Id):
-					compiler.Parameters.References.Add(Assembly.LoadFile(fileName))
+		for lib as ProjectReference in projectItems.GetAll[of ProjectReference] ():
+			for fileName as string in lib.GetReferencedFileNames (configuration.Id):
+				compiler.Parameters.References.Add(Assembly.LoadFile(fileName))
 
-		for finfo as ProjectFile in projectFiles:
+		for finfo as ProjectFile in projectItems.GetAll[of ProjectFile] ():
 			if finfo.Subtype != Subtype.Directory:
 				if finfo.BuildAction == BuildAction.Compile:
 					compiler.Parameters.Input.Add(Boo.Lang.Compiler.IO.FileInput(finfo.Name))

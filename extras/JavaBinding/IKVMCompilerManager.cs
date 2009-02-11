@@ -56,7 +56,7 @@ namespace JavaBinding
 			return result.ToString ();
 		}
 		
-		public static BuildResult Compile (ProjectFileCollection projectFiles, ProjectReferenceCollection references, DotNetProjectConfiguration configuration, IProgressMonitor monitor)
+		public static BuildResult Compile (ProjectItemCollection projectItems, DotNetProjectConfiguration configuration, IProgressMonitor monitor)
 		{
 			JavaCompilerParameters parameters = (configuration.CompilationParameters as JavaCompilerParameters) ?? new JavaCompilerParameters ();
 			string outdir   = configuration.OutputDirectory;
@@ -66,7 +66,7 @@ namespace JavaBinding
 				compiler = "javac";
 			
 			StringBuilder files = new StringBuilder ();
-			foreach (ProjectFile finfo in projectFiles) {
+			foreach (ProjectFile finfo in projectItems.GetAll<ProjectFile> ()) {
 				if (finfo.Subtype != Subtype.Directory && finfo.BuildAction == BuildAction.Compile) {
 					files.Append (" \"");
 					files.Append (finfo.Name);
@@ -75,7 +75,7 @@ namespace JavaBinding
 			}
 
 			StringBuilder classpath = new StringBuilder (parameters.ClassPath);
-			AppendClasspath (classpath, GenerateReferenceStubs (monitor, configuration, parameters, references));
+			AppendClasspath (classpath, GenerateReferenceStubs (monitor, configuration, parameters, projectItems));
 			AppendClasspath (classpath, GenerateReferenceStub (monitor, configuration, new ProjectReference(ReferenceType.Gac, "mscorlib")));
 			
 			StringBuilder args = new StringBuilder ();
@@ -100,7 +100,7 @@ namespace JavaBinding
 			if (success) {
 				output = new StringWriter ();
 				error = new StringWriter ();
-				CompileToAssembly (monitor, configuration, parameters, references, output, error);
+				CompileToAssembly (monitor, configuration, parameters, projectItems, output, error);
 				ParseIkvmOutput (parameters.Compiler, error.ToString(), results);
 			}
 			
@@ -114,13 +114,11 @@ namespace JavaBinding
 			path.Append (jar);
 		}
 		
-		static string GenerateReferenceStubs (IProgressMonitor monitor, DotNetProjectConfiguration configuration, JavaCompilerParameters compilerparameters, ProjectReferenceCollection references)
+		static string GenerateReferenceStubs (IProgressMonitor monitor, DotNetProjectConfiguration configuration, JavaCompilerParameters compilerparameters, ProjectItemCollection projectItems)
 		{
 			StringBuilder result = new StringBuilder ();
-			if (references != null) {
-				foreach (ProjectReference reference in references) {
-					AppendClasspath (result, GenerateReferenceStub (monitor, configuration, reference));
-				}
+			foreach (ProjectReference reference in projectItems.GetAll<ProjectReference> ()) {
+				AppendClasspath (result, GenerateReferenceStub (monitor, configuration, reference));
 			}
 			return result.ToString ();
 		}
@@ -161,7 +159,7 @@ namespace JavaBinding
 			return "exe";
 		}
 		
-		static void CompileToAssembly (IProgressMonitor monitor, DotNetProjectConfiguration configuration, JavaCompilerParameters compilerparameters, ProjectReferenceCollection references, TextWriter output, TextWriter error)
+		static void CompileToAssembly (IProgressMonitor monitor, DotNetProjectConfiguration configuration, JavaCompilerParameters compilerparameters, ProjectItemCollection projectItems, TextWriter output, TextWriter error)
 		{
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Generating assembly ..."));
 			
@@ -185,11 +183,9 @@ namespace JavaBinding
 				args.Append (" -debug");
 			args.Append (" -srcpath:"); args.Append (configuration.SourceDirectory);
 			
-			if (references != null) {
-				foreach (ProjectReference lib in references) {
-					foreach (string fileName in lib.GetReferencedFileNames (configuration.Id)) {
-						args.Append (" -r:"); args.Append (fileName);
-					}
+			foreach (ProjectReference lib in projectItems.GetAll<ProjectReference> ()) {
+				foreach (string fileName in lib.GetReferencedFileNames (configuration.Id)) {
+					args.Append (" -r:"); args.Append (fileName);
 				}
 			}
 			
