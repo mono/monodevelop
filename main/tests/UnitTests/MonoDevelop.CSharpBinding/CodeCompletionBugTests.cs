@@ -1356,5 +1356,35 @@ public class Test
 			Assert.IsNotNull (provider.Find ("val"), "parameter 'val' not found");
 		}
 		
+		/// <summary>
+		/// Bug 470954 - using System.Windows.Forms is not honored
+		/// </summary>
+		[Test()]
+		public void TestBug470954 ()
+		{
+			CompletionDataList provider = CreateProvider (
+@"
+public class Control
+{
+	public MouseButtons MouseButtons { get; set; }
+}
+
+public enum MouseButtons {
+	Left, Right
+}
+
+public class SomeControl : Control
+{
+	public void Run ()
+	{
+		$MouseButtons m = MouseButtons.$
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			
+			Assert.IsNotNull (provider.Find ("Left"), "enum 'Left' not found");
+			Assert.IsNotNull (provider.Find ("Right"), "enum 'Right' not found");
+		}
 	}
 }
