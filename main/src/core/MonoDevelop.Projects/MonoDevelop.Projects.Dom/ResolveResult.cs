@@ -77,6 +77,50 @@ namespace MonoDevelop.Projects.Dom
 		public abstract IEnumerable<object> CreateResolveResult (ProjectDom dom, IMember callingMember);
 	}
 	
+	public class AggregatedResolveResult : ResolveResult
+	{
+		List<ResolveResult> resolveResults = new List<ResolveResult> ();
+		
+		ResolveResult PrimaryResult {
+			get {
+				if (resolveResults.Count == 0)
+					return null;
+				return resolveResults[0];
+			}
+		}
+					
+		public override IReturnType UnresolvedType {
+			get {
+				if (PrimaryResult == null)
+					return base.UnresolvedType;
+				return PrimaryResult.UnresolvedType;
+			}
+		}
+
+		
+		public override IReturnType ResolvedType {
+			get {
+				if (PrimaryResult == null)
+					return base.ResolvedType;
+				return PrimaryResult.ResolvedType;
+			}
+		}
+		
+		public AggregatedResolveResult (params ResolveResult[] results)
+		{
+			resolveResults.AddRange (results);
+		}
+		
+		public override IEnumerable<object> CreateResolveResult (ProjectDom dom, IMember callingMember)
+		{
+			foreach (ResolveResult result in resolveResults) {
+				foreach (object o in result.CreateResolveResult (dom, callingMember)) {
+					yield return o;
+				}
+			}
+		}
+	}
+	
 	public class LocalVariableResolveResult : ResolveResult
 	{
 		LocalVariable variable;

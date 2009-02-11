@@ -1,3 +1,8 @@
+2009-02-11  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom/ResolveResult.cs: fixed "Bug 470954
+	  - using System.Windows.Forms is not honored".
+
 2009-02-10  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects/WorkspaceItem.cs: Remove accidental
