@@ -30,22 +30,22 @@ using MonoDevelop.Core.Serialization;
 namespace MonoDevelop.Ide.Gui.Content
 {
 	public enum EolMarker {
-		Default, // Environment.NewLine
-		Mac,     // '\r'
-		Unix,    // '\n'
-		Windows  // '\r\n'
+		Native = 0, // Environment.NewLine
+		Mac = 1,    // '\r'
+		Unix = 2,   // '\n'
+		Windows = 3 // '\r\n'
 	}
 	
 	public sealed class TextStylePolicy : IEquatable<TextStylePolicy>
 	{
-		public TextStylePolicy (int fileWidth, int tabWidth, bool tabsToSpaces, bool noTabsAfterNonTabs, bool removeTrailingWhitespace)
+		public TextStylePolicy (int fileWidth, int tabWidth, bool tabsToSpaces, bool noTabsAfterNonTabs, bool removeTrailingWhitespace, EolMarker eolMarker)
 		{
 			FileWidth = fileWidth;
 			TabWidth = tabWidth;
 			TabsToSpaces = tabsToSpaces;
 			NoTabsAfterNonTabs = noTabsAfterNonTabs;
 			RemoveTrailingWhitespace = removeTrailingWhitespace;
-			EolMarker = EolMarker.Default;
+			EolMarker = eolMarker;
 		}
 		
 		public TextStylePolicy ()
@@ -89,7 +89,7 @@ namespace MonoDevelop.Ide.Gui.Content
 		{
 			return other != null && other.FileWidth == FileWidth && other.TabWidth == TabWidth
 				&& other.TabsToSpaces == TabsToSpaces && other.NoTabsAfterNonTabs == NoTabsAfterNonTabs
-				&& other.RemoveTrailingWhitespace == RemoveTrailingWhitespace;
+				&& other.RemoveTrailingWhitespace == RemoveTrailingWhitespace && other.EolMarker == EolMarker;
 		}
 	}
 }

@@ -68,6 +68,12 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		{
 			this.Build();
 			this.panel = panel;
+			
+			//NOTE: order corresponds to EolMarker enum values
+			lineEndingCombo.AppendText (GettextCatalog.GetString ("Native"));
+			lineEndingCombo.AppendText (GettextCatalog.GetString ("Mac"));
+			lineEndingCombo.AppendText (GettextCatalog.GetString ("Unix"));
+			lineEndingCombo.AppendText (GettextCatalog.GetString ("Windows"));
 		}
 		
 		protected virtual void UpdateState (object sender, System.EventArgs e)
@@ -82,6 +88,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			tabsToSpaceCheck.Active = policy.TabsToSpaces;
 			removeTrailingWhitespaceCheck.Active = policy.RemoveTrailingWhitespace;
 			columnWidthSpin.Value = policy.FileWidth;
+			lineEndingCombo.Active = (int) policy.EolMarker;
 		}
 		
 		public TextStylePolicy GetPolicy ()
@@ -91,7 +98,8 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				(int) tabWidthSpin.Value,
 				tabsToSpaceCheck.Active,
 				!tabsAfterNonTabsCheck.Active,
-				removeTrailingWhitespaceCheck.Active);
+				removeTrailingWhitespaceCheck.Active,
+				(EolMarker) lineEndingCombo.Active);
 		}
 	}
 }

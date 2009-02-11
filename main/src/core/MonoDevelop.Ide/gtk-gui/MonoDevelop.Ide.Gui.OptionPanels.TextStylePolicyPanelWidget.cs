@@ -23,6 +23,12 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
         
         private Gtk.Label label5;
         
+        private Gtk.HBox hbox2;
+        
+        private Gtk.Label label6;
+        
+        private Gtk.ComboBox lineEndingCombo;
+        
         private Gtk.Alignment alignment2;
         
         private Gtk.Label label3;
@@ -31,13 +37,13 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
         
         private Gtk.VBox vbox2;
         
-        private Gtk.HBox hbox2;
+        private Gtk.HBox hbox3;
         
-        private Gtk.Label label6;
+        private Gtk.Label label7;
         
         private Gtk.SpinButton tabWidthSpin;
         
-        private Gtk.Label label4;
+        private Gtk.Label label8;
         
         private Gtk.CheckButton tabsToSpaceCheck;
         
@@ -96,6 +102,33 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             w4.Expand = false;
             w4.Fill = false;
             // Container child vbox1.Gtk.Box+BoxChild
+            this.hbox2 = new Gtk.HBox();
+            this.hbox2.Name = "hbox2";
+            this.hbox2.Spacing = 6;
+            // Container child hbox2.Gtk.Box+BoxChild
+            this.label6 = new Gtk.Label();
+            this.label6.Name = "label6";
+            this.label6.LabelProp = Mono.Unix.Catalog.GetString("_Line endings:");
+            this.label6.UseUnderline = true;
+            this.hbox2.Add(this.label6);
+            Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.hbox2[this.label6]));
+            w5.Position = 0;
+            w5.Expand = false;
+            w5.Fill = false;
+            // Container child hbox2.Gtk.Box+BoxChild
+            this.lineEndingCombo = Gtk.ComboBox.NewText();
+            this.lineEndingCombo.Name = "lineEndingCombo";
+            this.hbox2.Add(this.lineEndingCombo);
+            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.hbox2[this.lineEndingCombo]));
+            w6.Position = 1;
+            w6.Expand = false;
+            w6.Fill = false;
+            this.vbox1.Add(this.hbox2);
+            Gtk.Box.BoxChild w7 = ((Gtk.Box.BoxChild)(this.vbox1[this.hbox2]));
+            w7.Position = 1;
+            w7.Expand = false;
+            w7.Fill = false;
+            // Container child vbox1.Gtk.Box+BoxChild
             this.alignment2 = new Gtk.Alignment(0.5F, 0.5F, 1F, 1F);
             this.alignment2.Name = "alignment2";
             this.alignment2.TopPadding = ((uint)(6));
@@ -107,10 +140,10 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             this.label3.UseMarkup = true;
             this.alignment2.Add(this.label3);
             this.vbox1.Add(this.alignment2);
-            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.vbox1[this.alignment2]));
-            w6.Position = 1;
-            w6.Expand = false;
-            w6.Fill = false;
+            Gtk.Box.BoxChild w9 = ((Gtk.Box.BoxChild)(this.vbox1[this.alignment2]));
+            w9.Position = 2;
+            w9.Expand = false;
+            w9.Fill = false;
             // Container child vbox1.Gtk.Box+BoxChild
             this.alignment1 = new Gtk.Alignment(0F, 0F, 1F, 1F);
             this.alignment1.Name = "alignment1";
@@ -120,20 +153,20 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             this.vbox2.Name = "vbox2";
             this.vbox2.Spacing = 6;
             // Container child vbox2.Gtk.Box+BoxChild
-            this.hbox2 = new Gtk.HBox();
-            this.hbox2.Name = "hbox2";
-            this.hbox2.Spacing = 6;
-            // Container child hbox2.Gtk.Box+BoxChild
-            this.label6 = new Gtk.Label();
-            this.label6.Name = "label6";
-            this.label6.LabelProp = Mono.Unix.Catalog.GetString("_Tab width:");
-            this.label6.UseUnderline = true;
-            this.hbox2.Add(this.label6);
-            Gtk.Box.BoxChild w7 = ((Gtk.Box.BoxChild)(this.hbox2[this.label6]));
-            w7.Position = 0;
-            w7.Expand = false;
-            w7.Fill = false;
-            // Container child hbox2.Gtk.Box+BoxChild
+            this.hbox3 = new Gtk.HBox();
+            this.hbox3.Name = "hbox3";
+            this.hbox3.Spacing = 6;
+            // Container child hbox3.Gtk.Box+BoxChild
+            this.label7 = new Gtk.Label();
+            this.label7.Name = "label7";
+            this.label7.LabelProp = Mono.Unix.Catalog.GetString("_Tab width:");
+            this.label7.UseUnderline = true;
+            this.hbox3.Add(this.label7);
+            Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(this.hbox3[this.label7]));
+            w10.Position = 0;
+            w10.Expand = false;
+            w10.Fill = false;
+            // Container child hbox3.Gtk.Box+BoxChild
             this.tabWidthSpin = new Gtk.SpinButton(1, 50, 1);
             this.tabWidthSpin.CanFocus = true;
             this.tabWidthSpin.Name = "tabWidthSpin";
@@ -141,25 +174,25 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             this.tabWidthSpin.ClimbRate = 1;
             this.tabWidthSpin.Numeric = true;
             this.tabWidthSpin.Value = 4;
-            this.hbox2.Add(this.tabWidthSpin);
-            Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.hbox2[this.tabWidthSpin]));
-            w8.Position = 1;
-            w8.Expand = false;
-            w8.Fill = false;
-            // Container child hbox2.Gtk.Box+BoxChild
-            this.label4 = new Gtk.Label();
-            this.label4.Name = "label4";
-            this.label4.LabelProp = Mono.Unix.Catalog.GetString("spaces");
-            this.hbox2.Add(this.label4);
-            Gtk.Box.BoxChild w9 = ((Gtk.Box.BoxChild)(this.hbox2[this.label4]));
-            w9.Position = 2;
-            w9.Expand = false;
-            w9.Fill = false;
-            this.vbox2.Add(this.hbox2);
-            Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(this.vbox2[this.hbox2]));
-            w10.Position = 0;
-            w10.Expand = false;
-            w10.Fill = false;
+            this.hbox3.Add(this.tabWidthSpin);
+            Gtk.Box.BoxChild w11 = ((Gtk.Box.BoxChild)(this.hbox3[this.tabWidthSpin]));
+            w11.Position = 1;
+            w11.Expand = false;
+            w11.Fill = false;
+            // Container child hbox3.Gtk.Box+BoxChild
+            this.label8 = new Gtk.Label();
+            this.label8.Name = "label8";
+            this.label8.LabelProp = Mono.Unix.Catalog.GetString("spaces");
+            this.hbox3.Add(this.label8);
+            Gtk.Box.BoxChild w12 = ((Gtk.Box.BoxChild)(this.hbox3[this.label8]));
+            w12.Position = 2;
+            w12.Expand = false;
+            w12.Fill = false;
+            this.vbox2.Add(this.hbox3);
+            Gtk.Box.BoxChild w13 = ((Gtk.Box.BoxChild)(this.vbox2[this.hbox3]));
+            w13.Position = 0;
+            w13.Expand = false;
+            w13.Fill = false;
             // Container child vbox2.Gtk.Box+BoxChild
             this.tabsToSpaceCheck = new Gtk.CheckButton();
             this.tabsToSpaceCheck.CanFocus = true;
@@ -168,10 +201,10 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             this.tabsToSpaceCheck.DrawIndicator = true;
             this.tabsToSpaceCheck.UseUnderline = true;
             this.vbox2.Add(this.tabsToSpaceCheck);
-            Gtk.Box.BoxChild w11 = ((Gtk.Box.BoxChild)(this.vbox2[this.tabsToSpaceCheck]));
-            w11.Position = 1;
-            w11.Expand = false;
-            w11.Fill = false;
+            Gtk.Box.BoxChild w14 = ((Gtk.Box.BoxChild)(this.vbox2[this.tabsToSpaceCheck]));
+            w14.Position = 1;
+            w14.Expand = false;
+            w14.Fill = false;
             // Container child vbox2.Gtk.Box+BoxChild
             this.tabsAfterNonTabsCheck = new Gtk.CheckButton();
             this.tabsAfterNonTabsCheck.CanFocus = true;
@@ -180,10 +213,10 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             this.tabsAfterNonTabsCheck.DrawIndicator = true;
             this.tabsAfterNonTabsCheck.UseUnderline = true;
             this.vbox2.Add(this.tabsAfterNonTabsCheck);
-            Gtk.Box.BoxChild w12 = ((Gtk.Box.BoxChild)(this.vbox2[this.tabsAfterNonTabsCheck]));
-            w12.Position = 2;
-            w12.Expand = false;
-            w12.Fill = false;
+            Gtk.Box.BoxChild w15 = ((Gtk.Box.BoxChild)(this.vbox2[this.tabsAfterNonTabsCheck]));
+            w15.Position = 2;
+            w15.Expand = false;
+            w15.Fill = false;
             // Container child vbox2.Gtk.Box+BoxChild
             this.removeTrailingWhitespaceCheck = new Gtk.CheckButton();
             this.removeTrailingWhitespaceCheck.CanFocus = true;
@@ -192,22 +225,24 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             this.removeTrailingWhitespaceCheck.DrawIndicator = true;
             this.removeTrailingWhitespaceCheck.UseUnderline = true;
             this.vbox2.Add(this.removeTrailingWhitespaceCheck);
-            Gtk.Box.BoxChild w13 = ((Gtk.Box.BoxChild)(this.vbox2[this.removeTrailingWhitespaceCheck]));
-            w13.Position = 3;
-            w13.Expand = false;
-            w13.Fill = false;
+            Gtk.Box.BoxChild w16 = ((Gtk.Box.BoxChild)(this.vbox2[this.removeTrailingWhitespaceCheck]));
+            w16.Position = 3;
+            w16.Expand = false;
+            w16.Fill = false;
             this.alignment1.Add(this.vbox2);
             this.vbox1.Add(this.alignment1);
-            Gtk.Box.BoxChild w15 = ((Gtk.Box.BoxChild)(this.vbox1[this.alignment1]));
-            w15.Position = 2;
-            w15.Expand = false;
-            w15.Fill = false;
+            Gtk.Box.BoxChild w18 = ((Gtk.Box.BoxChild)(this.vbox1[this.alignment1]));
+            w18.Position = 3;
+            w18.Expand = false;
+            w18.Fill = false;
             this.Add(this.vbox1);
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
+            this.label7.MnemonicWidget = this.tabWidthSpin;
             this.Hide();
             this.columnWidthSpin.ValueChanged += new System.EventHandler(this.UpdateState);
+            this.lineEndingCombo.Changed += new System.EventHandler(this.UpdateState);
             this.tabWidthSpin.ValueChanged += new System.EventHandler(this.UpdateState);
             this.tabsToSpaceCheck.Toggled += new System.EventHandler(this.UpdateState);
             this.tabsAfterNonTabsCheck.Toggled += new System.EventHandler(this.UpdateState);

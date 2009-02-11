@@ -3694,7 +3694,6 @@
                 <property name="MemberName" />
                 <property name="Upper">100</property>
                 <property name="PageIncrement">10</property>
-                <property name="PageSize">0</property>
                 <property name="StepIncrement">1</property>
                 <property name="ClimbRate">1</property>
                 <property name="Numeric">True</property>
@@ -6833,6 +6832,48 @@ Large</property>
           </packing>
         </child>
         <child>
+          <widget class="Gtk.HBox" id="hbox2">
+            <property name="MemberName" />
+            <property name="Spacing">6</property>
+            <child>
+              <widget class="Gtk.Label" id="label6">
+                <property name="MemberName" />
+                <property name="LabelProp" translatable="yes">_Line endings:</property>
+                <property name="UseUnderline">True</property>
+              </widget>
+              <packing>
+                <property name="Position">0</property>
+                <property name="AutoSize">True</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.ComboBox" id="lineEndingCombo">
+                <property name="MemberName" />
+                <property name="IsTextCombo">True</property>
+                <property name="Items" translatable="yes" />
+                <signal name="Changed" handler="UpdateState" />
+              </widget>
+              <packing>
+                <property name="Position">1</property>
+                <property name="AutoSize">True</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
+            </child>
+            <child>
+              <placeholder />
+            </child>
+          </widget>
+          <packing>
+            <property name="Position">1</property>
+            <property name="AutoSize">True</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
+        <child>
           <widget class="Gtk.Alignment" id="alignment2">
             <property name="MemberName" />
             <property name="TopPadding">6</property>
@@ -6846,7 +6887,7 @@ Large</property>
             </child>
           </widget>
           <packing>
-            <property name="Position">1</property>
+            <property name="Position">2</property>
             <property name="AutoSize">True</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>
@@ -6863,14 +6904,15 @@ Large</property>
                 <property name="MemberName" />
                 <property name="Spacing">6</property>
                 <child>
-                  <widget class="Gtk.HBox" id="hbox2">
+                  <widget class="Gtk.HBox" id="hbox3">
                     <property name="MemberName" />
                     <property name="Spacing">6</property>
                     <child>
-                      <widget class="Gtk.Label" id="label6">
+                      <widget class="Gtk.Label" id="label7">
                         <property name="MemberName" />
                         <property name="LabelProp" translatable="yes">_Tab width:</property>
                         <property name="UseUnderline">True</property>
+                        <property name="MnemonicWidget">tabWidthSpin</property>
                       </widget>
                       <packing>
                         <property name="Position">0</property>
@@ -6900,7 +6942,7 @@ Large</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="Gtk.Label" id="label4">
+                      <widget class="Gtk.Label" id="label8">
                         <property name="MemberName" />
                         <property name="LabelProp" translatable="yes">spaces</property>
                       </widget>
@@ -6974,7 +7016,7 @@ Large</property>
             </child>
           </widget>
           <packing>
-            <property name="Position">2</property>
+            <property name="Position">3</property>
             <property name="AutoSize">True</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>
