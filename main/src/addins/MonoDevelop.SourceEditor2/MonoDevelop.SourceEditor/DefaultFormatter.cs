@@ -47,9 +47,10 @@ namespace MonoDevelop.SourceEditor
 		
 		public string FormatText (SolutionItem policyParent, string input)
 		{
-			TextStylePolicy currentPolicy = policyParent.Policies.Get<TextStylePolicy> ();
-			if (currentPolicy == null)
-				return input;
+			TextStylePolicy currentPolicy = policyParent != null
+				? policyParent.Policies.Get<TextStylePolicy> ()
+				: MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy> ();
+			
 			input = input ?? "";
 			int line = 0, col = 0;
 			string eolMarker = currentPolicy.GetEolMarker ();
