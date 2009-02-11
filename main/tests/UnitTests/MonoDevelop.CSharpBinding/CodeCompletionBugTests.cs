@@ -76,7 +76,8 @@ namespace MonoDevelop.CSharpBinding.Tests
 			project.AddFile (file);
 			
 			ProjectDomService.Load (project);
-//			ProjectDom dom = ProjectDomService.GetProjectDom (project);
+			ProjectDom dom = ProjectDomService.GetProjectDom (project);
+			dom.ForceUpdate (true);
 			ProjectDomService.Parse (project, file, null, delegate { return parsedText; });
 			ProjectDomService.Parse (project, file, null, delegate { return parsedText; });
 			
@@ -1385,6 +1386,37 @@ public class SomeControl : Control
 			
 			Assert.IsNotNull (provider.Find ("Left"), "enum 'Left' not found");
 			Assert.IsNotNull (provider.Find ("Right"), "enum 'Right' not found");
+		}
+		
+		/// <summary>
+		/// Bug 470954 - using System.Windows.Forms is not honored
+		/// </summary>
+		[Test()]
+		public void TestBug470954_bis ()
+		{
+			CompletionDataList provider = CreateProvider (
+@"
+public class Control
+{
+	public string MouseButtons { get; set; }
+}
+
+public enum MouseButtons {
+	Left, Right
+}
+
+public class SomeControl : Control
+{
+	public void Run ()
+	{
+		$int m = MouseButtons.$
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			
+			Assert.IsNull (provider.Find ("Left"), "enum 'Left' found");
+			Assert.IsNull (provider.Find ("Right"), "enum 'Right' found");
 		}
 	}
 }
