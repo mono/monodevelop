@@ -757,7 +757,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 					try {
 						FileInfo fi = new FileInfo (fe.FileName);
 						fe.LastParseTime = fi.LastWriteTime;
-					} catch (Exception ex) {
+					} catch {
 						// Ignore
 					}
 				}

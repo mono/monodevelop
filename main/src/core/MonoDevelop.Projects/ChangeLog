@@ -1,5 +1,10 @@
 2009-02-11  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
+	  Fix the build.
+
+2009-02-11  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Projects.csproj:
 	* MonoDevelop.Projects/Project.cs:
