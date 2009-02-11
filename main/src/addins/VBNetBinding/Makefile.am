@@ -31,6 +31,7 @@ FILES =  \
 	Gui/ProjectOptionsPanel.cs \
 	Gui/ProjectOptionsPanelWidget.cs \
 	Parser/DomParser.cs \
+	Project/Import.cs \
 	Project/VBCompilerParameters.cs \
 	Project/VBNetResourceIdBuilder.cs \
 	ProjectExtensions.cs \

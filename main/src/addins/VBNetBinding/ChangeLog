@@ -1,3 +1,17 @@
+2009-02-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* Project/Import.cs:
+	* gtk-gui/gui.stetic:
+	* VBNetBinding.csproj:
+	* VBLanguageBinding.cs:
+	* VBNetBinding.addin.xml:
+	* VBBindingCompilerServices.cs:
+	* Gui/ProjectOptionsPanelWidget.cs:
+	* gtk-gui/MonoDevelop.VBNetBinding.ProjectOptionsPanelWidget.cs:
+	  Use the new API to properly implement support for Import
+	  items.
+
 2009-02-07  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Parser/DomParser.cs: Remove unused (but invalid) namespace,

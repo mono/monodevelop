@@ -104,6 +104,7 @@
   
 	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
 		<DataType class = "MonoDevelop.VBNetBinding.VBCompilerParameters" />
+		<DataType class = "MonoDevelop.VBNetBinding.Import" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/DomParser">

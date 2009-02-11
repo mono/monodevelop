@@ -202,7 +202,7 @@ namespace MonoDevelop.VBNetBinding {
 			return sb.ToString();
 		}
 		
-		public BuildResult Compile (ProjectFileCollection projectFiles, ProjectReferenceCollection references, DotNetProjectConfiguration configuration, IProgressMonitor monitor)
+		public BuildResult Compile (ProjectItemCollection items, DotNetProjectConfiguration configuration, IProgressMonitor monitor)
 		{
 			VBCompilerParameters compilerparameters = (VBCompilerParameters) configuration.CompilationParameters;
 			if (compilerparameters == null)
@@ -215,7 +215,7 @@ namespace MonoDevelop.VBNetBinding {
 			writer.WriteLine (GenerateOptions (configuration, compilerparameters, exe));
 
 			// Write references
-			foreach (ProjectReference lib in references) {
+			foreach (ProjectReference lib in items.GetAll<ProjectReference> ()) {
 				foreach (string fileName in lib.GetReferencedFileNames(configuration.Id)) {
 					writer.Write ("\"-r:");
 					writer.Write (fileName);
@@ -224,7 +224,7 @@ namespace MonoDevelop.VBNetBinding {
 			}
 			
 			// Write source files and embedded resources
-			foreach (ProjectFile finfo in projectFiles) {
+			foreach (ProjectFile finfo in items.GetAll<ProjectFile> ()) {
 				if (finfo.Subtype != Subtype.Directory) {
 					switch (finfo.BuildAction) {
 						case "Compile":
@@ -238,15 +238,16 @@ namespace MonoDevelop.VBNetBinding {
 
 							writer.WriteLine("\"-resource:{0},{1}\"", fname, finfo.ResourceId);
 							break;
-
-						case "Import":
-							writer.WriteLine ("-imports:{0}", Path.GetFileName (finfo.Name));
-							break;
 						
 						default:
 							continue;
 					}
 				}
+			}
+			
+			// Write source files and embedded resources
+			foreach (Import import in items.GetAll<Import> ()) {
+				writer.WriteLine ("-imports:{0}", import.Include);
 			}
 			
 			TempFileCollection tf = new TempFileCollection ();
@@ -258,8 +259,8 @@ namespace MonoDevelop.VBNetBinding {
 			
 			
 			string workingDir = ".";
-			if (projectFiles != null && projectFiles.Count > 0)
-				workingDir = projectFiles [0].Project.BaseDirectory;
+			if (configuration.ParentItem != null)
+				workingDir = configuration.ParentItem.BaseDirectory;
 			int exitCode;
 			
 			monitor.Log.WriteLine (compilerName + " " + string.Join (" ", File.ReadAllLines (responseFileName)));

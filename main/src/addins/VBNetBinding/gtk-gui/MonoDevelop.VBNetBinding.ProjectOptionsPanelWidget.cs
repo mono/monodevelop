@@ -90,7 +90,7 @@ namespace MonoDevelop.VBNetBinding {
             this.notebook3 = new Gtk.Notebook();
             this.notebook3.CanFocus = true;
             this.notebook3.Name = "notebook3";
-            this.notebook3.CurrentPage = 0;
+            this.notebook3.CurrentPage = 1;
             // Container child notebook3.Gtk.Notebook+NotebookChild
             this.vbox5 = new Gtk.VBox();
             this.vbox5.Name = "vbox5";

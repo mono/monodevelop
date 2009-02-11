@@ -103,6 +103,7 @@
     <Compile Include="Gui\ConfigurationOptionsPanelWidget.cs" />
     <Compile Include="Gui\ConfigurationOptionsPanel.cs" />
     <Compile Include="Gui\ProjectOptionsPanel.cs" />
+    <Compile Include="Project\Import.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="templates\EmptyVBFile.xft.xml">

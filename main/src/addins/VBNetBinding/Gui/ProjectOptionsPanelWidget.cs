@@ -27,6 +27,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 using Mono.Addins;
@@ -48,6 +49,7 @@ namespace MonoDevelop.VBNetBinding
 	{
 		DotNetProject project;
 		Gtk.ListStore imports = new Gtk.ListStore (typeof (String));
+		List<Import> currentImports;
 		
 		public ProjectOptionsPanelWidget (MonoDevelop.Projects.Project project)
 		{
@@ -57,6 +59,7 @@ namespace MonoDevelop.VBNetBinding
 			this.Build();
 
 			this.project = (DotNetProject) project;
+			currentImports = new List<Import> (project.Items.GetAll<Import> ());
 			
 			cr = new Gtk.CellRendererText ();
 			store = new Gtk.ListStore (typeof (string));
@@ -165,22 +168,27 @@ namespace MonoDevelop.VBNetBinding
 			this.project.SetMainClass (entryMainClass.ActiveText);
 			this.project.CompileTarget = (CompileTarget) compileTargetCombo.Active;
 			this.project.SetCodePage (cmbCodePage.Entry.Text);
+			
+			List<Import> oldImports = new List<Import> (project.Items.GetAll<Import> ());
+			foreach (Import i in oldImports)
+				project.Items.Remove (i);
+			foreach (Import i in currentImports)
+				project.Items.Add (i);
 		}
 		
 		protected virtual void OnCmdAddClicked (object sender, System.EventArgs e)
 		{
 			bool exists = false;
-			Console.WriteLine ("OnCmdAddClicked");
 			
-			foreach (ProjectFile file in project.Files) {
-				if (file.BuildAction == "Import" && System.IO.Path.GetFileName (file.FilePath) == txtImport.Text) {
+			foreach (Import import in currentImports) {
+				if (import.Include == txtImport.Text) {
 					exists = true;
 					break;
 				}
 			}
 
 			if (!exists) {
-				project.Files.Add (new ProjectFile (txtImport.Text, "Import"));
+				currentImports.Add (new Import (txtImport.Text));
 				LoadImports ();
 			}
 		}
@@ -202,9 +210,9 @@ namespace MonoDevelop.VBNetBinding
 				if (string.IsNullOrEmpty (import))
 					return;
 				
-				foreach (ProjectFile file in project.Files) {
-					if (file.BuildAction == "Import" && System.IO.Path.GetFileName (file.FilePath) == import) {
-						project.Files.Remove (file);
+				foreach (Import im in currentImports) {
+					if (im.Include == import) {
+						currentImports.Remove (im);
 						removed = true;
 						break;
 					}
@@ -223,9 +231,8 @@ namespace MonoDevelop.VBNetBinding
 		private void LoadImports ()
 		{
 			imports.Clear ();
-			foreach (ProjectFile file in project.Files) {
-				if (file.BuildAction == "Import")
-					imports.AppendValues (System.IO.Path.GetFileName (file.FilePath));
+			foreach (Import import in currentImports) {
+				imports.AppendValues (import.Include);
 			}
 		}
 	}
