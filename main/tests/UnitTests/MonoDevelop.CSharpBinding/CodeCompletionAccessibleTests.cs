@@ -409,5 +409,64 @@ namespace FooBar {
 			Assert.IsNotNull (provider, "provider == null");
 			Assert.IsNull (provider.Find ("B"), "class 'B' found, but shouldn't");
 		}
+		
+		
+		[Test()]
+		public void TestNamespaceAccess3 ()
+		{
+			CompletionDataList provider = CodeCompletionBugTests.CreateCtrlSpaceProvider (
+@"
+namespace SomeTest.TestNS {
+	class TestClass 
+	{
+		
 	}
 }
+
+namespace A {
+	using SomeTest;
+	
+	public class Program2
+	{
+		public void Main () 
+		{
+			$$
+		}
+	}
+}		
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNull (provider.Find ("TestNS"), "namespace 'TestNS' found, but shouldn't");
+		}
+		
+		[Test()]
+		public void TestNamespaceAccess4 ()
+		{
+			CompletionDataList provider = CodeCompletionBugTests.CreateCtrlSpaceProvider (
+@"
+namespace SomeTest.TestNS {
+	class TestClass 
+	{
+		
+	}
+}
+
+namespace SomeTest {
+	
+	public class Program2
+	{
+		public void Main () 
+		{
+			$$
+		}
+	}
+}		
+");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("TestNS"), "namespace 'TestNS' not found");
+		}
+	}
+}
+		
