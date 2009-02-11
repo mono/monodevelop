@@ -84,11 +84,10 @@ namespace ICSharpCode.NRefactory.Visitors
 			if (type == null) {
 				throw new ArgumentNullException("type");
 			}
-			if (string.IsNullOrEmpty(type.SystemType)) {
+			if (string.IsNullOrEmpty(type.SystemType) && string.IsNullOrEmpty (type.Type)) {
 				throw new InvalidOperationException("empty type");
 			}
-			
-			CodeTypeReference t = new CodeTypeReference(type.SystemType);
+			CodeTypeReference t = new CodeTypeReference (type.SystemType ?? type.Type);
 			foreach (TypeReference gt in type.GenericTypes) {
 				t.TypeArguments.Add(ConvType(gt));
 			}
