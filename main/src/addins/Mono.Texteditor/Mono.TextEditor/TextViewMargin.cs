@@ -888,10 +888,10 @@ namespace Mono.TextEditor
 						delta = this.charWidth;
 						visibleColumn++;
 					}
-					lineXPos += delta;
 					curColumn++;
-					if (curColumn >= column)
+					if (curColumn > column)
 						goto exit;
+					lineXPos += delta;
 				}
 			}
 		 exit:
