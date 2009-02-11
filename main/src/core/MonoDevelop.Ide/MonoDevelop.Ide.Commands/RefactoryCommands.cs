@@ -106,6 +106,8 @@ namespace MonoDevelop.Ide.Commands
 			if (ctx == null)
 				return;
 			ResolveResult resolveResult = GetResolveResult (doc, editor);
+			if (resolveResult is AggregatedResolveResult)
+				resolveResult = ((AggregatedResolveResult)resolveResult).PrimaryResult;
 			IDomVisitable item = null;
 			IMember eitem = resolveResult != null ? (resolveResult.CallingMember ?? resolveResult.CallingType) : null;
 			if (resolveResult is ParameterResolveResult) {
