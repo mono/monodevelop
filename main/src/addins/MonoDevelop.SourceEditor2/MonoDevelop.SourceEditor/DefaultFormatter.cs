@@ -39,25 +39,48 @@ namespace MonoDevelop.SourceEditor
 			return true;
 		}
 		
+		static int GetNextTabstop (int currentColumn, int tabSize)
+		{
+			int result = currentColumn + tabSize;
+			return (result / tabSize) * tabSize;
+		}
+		
 		public string FormatText (SolutionItem policyParent, string input)
 		{
 			TextStylePolicy currentPolicy = policyParent.Policies.Get<TextStylePolicy> ();
 			if (currentPolicy == null)
 				return input;
+			input = input ?? "";
+			int line = 0, col = 0;
+			string eolMarker = currentPolicy.GetEolMarker ();
 			StringBuilder result = new StringBuilder ();
+			
 			for (int i = 0; i < input.Length; i++) {
 				char ch = input[i];
-				if (ch == '\t') {
+				switch (ch) {
+				case '\t':
 					if (currentPolicy.TabsToSpaces) {
-						result.Append (new string (' ' , currentPolicy.TabWidth));
-					} else {
-						result.Append ('\t');
-					}
-				} else {
+						int tabWidth = GetNextTabstop (col, currentPolicy.TabWidth) - col;
+						result.Append (new string (' ', tabWidth));
+						col += tabWidth;
+					} else 
+						goto default;
+					break;
+				case '\r':
+					if (i + 1 < input.Length && input[i + 1] == '\n')
+						i++;
+					goto case '\n';
+				case '\n':
+					result.Append (eolMarker);
+					line++;
+					col = 0;
+					break;
+				default:
 					result.Append (ch);
+					col++;
+					break;
 				}
 			}
-			
 			return result.ToString ();
 		}
 	}
