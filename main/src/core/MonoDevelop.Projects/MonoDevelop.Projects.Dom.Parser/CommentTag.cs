@@ -46,8 +46,14 @@ namespace MonoDevelop.Projects.Dom.Parser
 				return;
 			
 			string[] tags = tagListString.Split (';');
-			for (int n=0; n<tags.Length; n++)
-				list.Add (new CommentTag (tags [n]));
+			for (int n=0; n<tags.Length; n++) {
+				string[] split = tags [n].Split (':');
+				int priority;
+				if (split.Length == 2 && int.TryParse (split[1], out priority))
+					list.Add (new CommentTag (split[0], priority));
+				else
+					MonoDevelop.Core.LoggingService.LogWarning ("Invalid tag list in CommentTagSet: '{0}'", tagListString);
+			}
 		}
 		
 		public IEnumerator<CommentTag> GetEnumerator ()
@@ -81,7 +87,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			string res = "";
 			for (int n=0; n<list.Count; n++) {
 				if (n > 0)
-					res += ":";
+					res += ";";
 				res += list [n].Tag + ":" + list [n].Priority;
 			}
 			return res;
@@ -115,17 +121,6 @@ namespace MonoDevelop.Projects.Dom.Parser
 		{
 			Tag = tag;
 			Priority = priority;
-		}
-		
-		internal CommentTag (string str)
-		{
-			int i = str.IndexOf (':');
-			if (i != -1) {
-				Tag = str.Substring (0, i);
-				Priority = int.Parse (str.Substring (i+1));
-			} else {
-				Tag = str;
-			}
 		}
 		
 		public string Tag { get; internal set; }

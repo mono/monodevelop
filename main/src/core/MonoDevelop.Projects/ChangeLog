@@ -1,3 +1,9 @@
+2009-02-11  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Dom.Parser/CommentTag.cs: Fix ;/: bug
+	  that was breaking parse DB loading. Make parse of the
+	  serialised tags more robust.
+
 2009-02-11  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
