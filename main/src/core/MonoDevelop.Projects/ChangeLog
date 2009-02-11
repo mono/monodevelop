@@ -1,5 +1,11 @@
 2009-02-11  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs: fixed
+	  "Bug 434752 - Encapsulate field, encapsulates in wrong
+	  order".
+
+2009-02-11  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Dom/ResolveResult.cs: fixed "Bug 470954
 	  - using System.Windows.Forms is not honored".
 

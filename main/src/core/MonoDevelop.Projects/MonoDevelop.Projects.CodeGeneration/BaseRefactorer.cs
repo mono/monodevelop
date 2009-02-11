@@ -108,7 +108,8 @@ namespace MonoDevelop.Projects.CodeGeneration
 		public virtual IMember AddMember (RefactorerContext ctx, IType cls, CodeTypeMember member)
 		{
 			IEditableTextFile buffer = ctx.GetFile (cls.CompilationUnit.FileName);
-			
+			// update class information,
+			cls = GetGeneratedClass (ctx, buffer, cls);
 			int pos = GetNewMemberPosition (buffer, cls, member);
 			
 			string code = GenerateCodeFromMember (member);
