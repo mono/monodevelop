@@ -70,6 +70,8 @@ namespace MonoDevelop.SourceEditor
 			StringBuilder s = new StringBuilder(150);
 			string doc = null;
 			if (result != null) {
+				if (result is AggregatedResolveResult) 
+					result = ((AggregatedResolveResult)result).PrimaryResult;
 				if (result is ParameterResolveResult) {
 					s.Append ("<small><i>");
 					s.Append (paramStr);
