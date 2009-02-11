@@ -1,3 +1,9 @@
+2009-02-11  Mike Kestner  <mkestner@novell.com>
+
+	* gtk-gui/gui.stetic: mark the treeview scroller horiz policy
+	NEVER.  [Fixes #474463] Also kill a G_WARNING for spinbutton.
+	* gtk-gui/*.cs: regen
+
 2009-02-11  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/gui.stetic:

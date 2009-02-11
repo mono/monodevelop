@@ -82,7 +82,6 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             this.valueSpin = new Gtk.SpinButton(0, 100, 1);
             this.valueSpin.Name = "valueSpin";
             this.valueSpin.Adjustment.PageIncrement = 10;
-            this.valueSpin.Adjustment.PageSize = 10;
             this.valueSpin.ClimbRate = 1;
             this.valueSpin.Numeric = true;
             this.valueSpin.Value = 1;

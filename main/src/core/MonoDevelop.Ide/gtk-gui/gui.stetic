@@ -1152,6 +1152,7 @@
             <child>
               <widget class="Gtk.ScrolledWindow" id="GtkScrolledWindow">
                 <property name="MemberName" />
+                <property name="HscrollbarPolicy">Never</property>
                 <property name="ShadowType">In</property>
                 <child>
                   <widget class="Gtk.TreeView" id="treeview">
@@ -3693,7 +3694,7 @@
                 <property name="MemberName" />
                 <property name="Upper">100</property>
                 <property name="PageIncrement">10</property>
-                <property name="PageSize">10</property>
+                <property name="PageSize">0</property>
                 <property name="StepIncrement">1</property>
                 <property name="ClimbRate">1</property>
                 <property name="Numeric">True</property>
