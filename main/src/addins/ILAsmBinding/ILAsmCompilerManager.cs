@@ -44,11 +44,11 @@ namespace ILAsmBinding
 			return Path.GetExtension (fileName).ToLower () == ".il";
 		}
 		
-		public BuildResult Compile (ProjectFileCollection projectFiles, ProjectReferenceCollection references, DotNetProjectConfiguration configuration, IProgressMonitor monitor)
+		public BuildResult Compile (ProjectItemCollection projectItems, DotNetProjectConfiguration configuration, IProgressMonitor monitor)
 		{
 			// FIXME: response file?
 			StringBuilder parameters = new StringBuilder();
-			foreach (ProjectFile finfo in projectFiles) {
+			foreach (ProjectFile finfo in projectItems.GetAll<ProjectFile> ()) {
 				if (finfo.Subtype != Subtype.Directory) {
 					if (finfo.BuildAction == "Compile" && CanCompile (finfo.Name)) {
 						parameters.Append (finfo.Name);
