@@ -62,7 +62,6 @@ namespace MonoDevelop.Ide.ExternalTools
 		}
 	}
 	
-	
 	public partial class ExternalToolPanelWidget : Gtk.Bin 
 	{
 		static string[,] argumentQuickInsertMenu = new string[,] {
@@ -83,8 +82,8 @@ namespace MonoDevelop.Ide.ExternalTools
 			{GettextCatalog.GetString ("_Project Directory"), "${ProjectDir}"},
 			{GettextCatalog.GetString ("Project file name"), "${ProjectFileName}"},
 			{"-", ""},
-			{GettextCatalog.GetString ("_Solution Directory"), "${CombineDir}"},
-			{GettextCatalog.GetString ("Solution File Name"), "${CombineFileName}"},
+			{GettextCatalog.GetString ("_Solution Directory"), "${SolutionDir}"},
+			{GettextCatalog.GetString ("Solution File Name"), "${SolutionFile}"},
 			{"-", ""},
 			{GettextCatalog.GetString ("MonoDevelop Startup Directory"), "${StartupPath}"},
 		};
@@ -97,7 +96,7 @@ namespace MonoDevelop.Ide.ExternalTools
 			{"-", ""},
 			{GettextCatalog.GetString ("_Project Directory"), "${ProjectDir}"},
 			{"-", ""},
-			{GettextCatalog.GetString ("_Solution Directory"), "${CombineDir}"},
+			{GettextCatalog.GetString ("_Solution Directory"), "${SolutionDir}"},
 			{"-", ""},
 			{GettextCatalog.GetString ("MonoDevelop Startup Directory"), "${StartupPath}"},
 		};
@@ -324,6 +323,12 @@ namespace MonoDevelop.Ide.ExternalTools
 				}
 			}
 		}
+		
+		static string FilterPath (string path)
+		{
+			System.Console.WriteLine(path + " -> " + StringParserService.Parse (path));
+			return StringParserService.Parse (path);
+		}
 
 		public bool Validate ()
 		{
@@ -333,12 +338,13 @@ namespace MonoDevelop.Ide.ExternalTools
 				do {
 					// loop through items in the tree
 					ExternalTool tool = toolListBox.Model.GetValue (current, 1) as ExternalTool;
-					if (!FileService.IsValidPath (tool.Command)) {
+					string path = FilterPath (tool.Command);
+					if (!FileService.IsValidPath (path)) {
 						MessageService.ShowError (String.Format(GettextCatalog.GetString ("The command of tool \"{0}\" is invalid."), tool.MenuCommand));
 						return false;
 					}
-					
-					if ((tool.InitialDirectory != "") && !FileService.IsValidPath (tool.InitialDirectory)) {
+					path = FilterPath (tool.InitialDirectory);
+					if ((tool.InitialDirectory != "") && !FileService.IsValidPath (path)) {
 						MessageService.ShowError (String.Format(GettextCatalog.GetString ("The working directory of tool \"{0}\" is invalid.") ,tool.MenuCommand));
 						return false;
 					}

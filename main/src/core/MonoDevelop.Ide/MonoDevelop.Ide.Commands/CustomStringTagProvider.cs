@@ -45,6 +45,7 @@ namespace MonoDevelop.Ide.Commands
 				                      "TARGETPATH", "TARGETDIR", "TARGETNAME", "TARGETEXT",
 				                      "PROJECTDIR", "PROJECTFILENAME",
 				                      "COMBINEDIR", "COMBINEFILENAME",
+				                      "SOLUTIONDIR", "SOLUTIONFILE",
 				                      "STARTUPPATH"};
 			}
 		}
@@ -136,11 +137,13 @@ namespace MonoDevelop.Ide.Commands
 					}
 					break;
 				
+				case "SOLUTIONDIR":
 				case "COMBINEDIR":
 					if (IdeApp.ProjectOperations.CurrentSelectedSolutionItem != null)
 						return Path.GetDirectoryName (IdeApp.ProjectOperations.CurrentSelectedSolutionItem.ParentSolution.FileName);
 					break;
 
+				case "SOLUTIONFILE":
 				case "COMBINEFILENAME":
 					try {
 					if (IdeApp.ProjectOperations.CurrentSelectedSolutionItem != null)
