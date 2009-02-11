@@ -87,7 +87,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			headers = new Hashtable ();
 			this.pdb = pdb;
 			
-			PropertyService.PropertyChanged += new EventHandler<PropertyChangedEventArgs> (OnPropertyUpdated);	
+			ProjectDomService.SpecialCommentTagsChanged += OnSpecialTagsChanged;	
 		}
 		
 		public virtual void Dispose ()
@@ -98,7 +98,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				File.Delete (tempDataFile);
 				tempDataFile = null;
 			}
-			PropertyService.PropertyChanged -= new EventHandler<PropertyChangedEventArgs> (OnPropertyUpdated);
+			ProjectDomService.SpecialCommentTagsChanged -= OnSpecialTagsChanged;
 			disposed = true;
 		}
 
@@ -210,8 +210,9 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			}
 			
 			// Update comments if needed...
-			PropertyChangedEventArgs args = new PropertyChangedEventArgs ("Monodevelop.TaskListTokens", LastValidTaskListTokens, PropertyService.Get ("Monodevelop.TaskListTokens", ""));
-			this.OnPropertyUpdated (null, args);
+			CommentTagSet lastTags = new CommentTagSet (LastValidTaskListTokens);
+			if (!lastTags.Equals (ProjectDomService.SpecialCommentTags))
+				OnSpecialTagsChanged (null, null);
 		}
 
 		FileStream OpenForWrite ()
@@ -272,7 +273,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				
 				modified = false;
 				headers["Version"] = FORMAT_VERSION;
-				headers["LastValidTaskListTokens"] = (string)PropertyService.Get ("Monodevelop.TaskListTokens", "");
+				headers["LastValidTaskListTokens"] = ProjectDomService.SpecialCommentTags.ToString ();
 
 				LoggingService.LogDebug ("Writing " + dataFile);
 				
@@ -614,77 +615,20 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			return sourceProjectDom.CreateInstantiatedGenericType (subType, args);
 		}
 		
-		void OnPropertyUpdated (object sender, PropertyChangedEventArgs e)
+		void OnSpecialTagsChanged (object sender, EventArgs e)
 		{
-			if (e.Key == "Monodevelop.TaskListTokens")
-			{
-				// Update LastValidTagComments
-				headers["LastValidTagComments"] = (string)e.NewValue;
-				
-				List<string> oldTokensList = new List<string> ();
-				if (e.OldValue != null)
-				{
-					string[] tokens = ((string)e.OldValue).Split (';');
-					foreach (string token in tokens)
-					{
-						int pos = token.IndexOf (':');
-						if (pos != -1)
-							oldTokensList.Add (token.Substring (0, pos));
-					}
-				}
-				List<string> newTokensList = new List<string> ();
-				if (e.NewValue != null)
-				{
-					string[] tokens = ((string)e.NewValue).Split (';');
-					foreach (string token in tokens)
-					{
-						int pos = token.IndexOf (':');
-						if (pos != -1)
-							newTokensList.Add (token.Substring (0, pos));
-					}
-				}
-				
-				// Check if tokens just reordered or are the same
-				if (oldTokensList.Count == newTokensList.Count)
-				{
-					bool tokensFound = true;
-					foreach (string token in newTokensList)
-					{	
-						if (oldTokensList.Contains (token)) continue;
-						tokensFound = false;
-						break;
-					}
-					if (tokensFound) return;
-				}
-				
-				// Check if some token(s) just removed
-				if (oldTokensList.Count >= newTokensList.Count)
-				{
-					bool newTokenFound = false;
-					foreach (string token in newTokensList)
-					{	
-						if (oldTokensList.Contains (token)) continue;
-						newTokenFound = true;
-						break;
-					}
-					if (!newTokenFound)
-					{
-						List<string> removedTokensList = new List<string> ();
-						foreach (string token in oldTokensList)
-						{	
-							if (!newTokensList.Contains (token))
-								removedTokensList.Add (token);
-						}
-						
-						// Remove them from FileEntry data
-						foreach (string token in removedTokensList)
-							RemoveSpecialCommentTag (token);
-						return;
-					}
-				}
-				
-				QueueAllFilesForParse ();
+			// Update LastValidTagComments
+			
+			string oldTokens = (string) headers["LastValidTagComments"];
+			headers["LastValidTagComments"] = ProjectDomService.SpecialCommentTags.ToString ();
+			
+			CommentTagSet oldTags = new CommentTagSet (oldTokens);
+			foreach (string tag in oldTags.GetNames ()) {
+				// Remove them from FileEntry data
+				if (!ProjectDomService.SpecialCommentTags.ContainsTag (tag))
+					RemoveSpecialCommentTag (tag);
 			}
+			QueueAllFilesForParse ();
 		}
 	
 		public IList<Tag> GetSpecialComments (string fileName)
@@ -732,8 +676,15 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		public virtual void UpdateDatabase ()
 		{
 			ArrayList list = GetModifiedFileEntries ();
-			foreach (FileEntry file in list)
+			foreach (FileEntry file in list) {
 				ParseFile (file.FileName, null);
+				try {
+					FileInfo fi = new FileInfo (file.FileName);
+					file.LastParseTime = fi.LastWriteTime;
+				} catch {
+					// Ignore
+				}
+			}
 		}
 
 		public virtual void CheckModifiedFiles ()
@@ -801,8 +752,15 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		{
 			lock (rwlock)
 			{
-				foreach (FileEntry fe in files.Values) 
+				foreach (FileEntry fe in files.Values)  {
 					ParseFile (fe.FileName, null);
+					try {
+						FileInfo fi = new FileInfo (fe.FileName);
+						fe.LastParseTime = fi.LastWriteTime;
+					} catch (Exception ex) {
+						// Ignore
+					}
+				}
 			}
 		}
 		

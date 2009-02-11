@@ -317,7 +317,12 @@
     <Compile Include="MonoDevelop.Projects.Dom\InstantiatedMethod.cs" />
     <Compile Include="MonoDevelop.Projects.Policies\PolicyChangedEventArgs.cs" />
     <Compile Include="MonoDevelop.Projects.Text\TextFormatter.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildImportAttribute.cs" />
+    <Compile Include="MonoDevelop.Projects.Dom.Parser\CommentTag.cs" />
     <Compile Include="MonoDevelop.Projects.Text\IFormatter.cs" />
+    <Compile Include="MonoDevelop.Projects\ProjectItem.cs" />
+    <Compile Include="MonoDevelop.Projects\ProjectItemCollection.cs" />
+    <Compile Include="MonoDevelop.Projects\SimpleProjectItem.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

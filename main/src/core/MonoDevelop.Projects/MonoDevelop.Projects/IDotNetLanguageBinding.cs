@@ -35,7 +35,7 @@ namespace MonoDevelop.Projects
 	/// </summary>
 	public interface IDotNetLanguageBinding: ILanguageBinding
 	{
-		BuildResult Compile (ProjectFileCollection projectFiles, ProjectReferenceCollection references, DotNetProjectConfiguration configuration, IProgressMonitor monitor);
+		BuildResult Compile (ProjectItemCollection items, DotNetProjectConfiguration configuration, IProgressMonitor monitor);
 		
 		ICloneable CreateCompilationParameters (XmlElement projectOptions);
 

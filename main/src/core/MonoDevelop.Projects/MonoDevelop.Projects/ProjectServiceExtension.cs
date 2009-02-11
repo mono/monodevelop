@@ -282,8 +282,7 @@ namespace MonoDevelop.Projects
 
 	public class BuildData
 	{
-		public ProjectFileCollection Files { get; internal set; }
-		public ProjectReferenceCollection References { get; internal set; }
+		public ProjectItemCollection Items { get; internal set; }
 		public DotNetProjectConfiguration Configuration { get; internal set; }
 	}
 }

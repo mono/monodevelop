@@ -276,8 +276,10 @@ namespace MonoDevelop.Projects
 				project.FileChangedInProject += fileChangedInProjectHandler;
 				project.FilePropertyChangedInProject += filePropertyChangedInProjectHandler;
 				project.FileRenamedInProject += fileRenamedInProjectHandler;
-				project.ReferenceRemovedFromProject += referenceRemovedFromProjectHandler;
-				project.ReferenceAddedToProject += referenceAddedToProjectHandler;
+				if (item is DotNetProject) {
+					((DotNetProject)project).ReferenceRemovedFromProject += referenceRemovedFromProjectHandler;
+					((DotNetProject)project).ReferenceAddedToProject += referenceAddedToProjectHandler;
+				}
 			}
 			else if (item is SolutionFolder)
 			{
@@ -354,8 +356,10 @@ namespace MonoDevelop.Projects
 				pce.FileChangedInProject -= fileChangedInProjectHandler;
 				pce.FilePropertyChangedInProject -= filePropertyChangedInProjectHandler;
 				pce.FileRenamedInProject -= fileRenamedInProjectHandler;
-				pce.ReferenceRemovedFromProject -= referenceRemovedFromProjectHandler;
-				pce.ReferenceAddedToProject -= referenceAddedToProjectHandler;
+				if (pce is DotNetProject) {
+					((DotNetProject)pce).ReferenceRemovedFromProject -= referenceRemovedFromProjectHandler;
+					((DotNetProject)pce).ReferenceAddedToProject -= referenceAddedToProjectHandler;
+				}
 			}
 			else if (entry is SolutionFolder) {
 				SolutionFolder cce = entry as SolutionFolder;

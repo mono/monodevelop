@@ -50,7 +50,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 					}
 				}
 				// Don't store the resource id if it matches the default.
-				if (pf.ResourceId != Path.GetFileName (pf.FilePath))
+				if (pf.BuildAction == BuildAction.EmbeddedResource && pf.ResourceId != Path.GetFileName (pf.FilePath))
 					data.Add (new DataValue ("resource_id", pf.ResourceId));
 				return data;
 			}
@@ -74,6 +74,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 					data.Extract ("targetFramework");
 					data.Add (new DataValue ("targetFramework", project.TargetFramework.Id));
 				}
+				WriteItems (handler, (SolutionEntityItem) obj, data);
 				return data;
 			}
 			else if (obj is ProjectReference) {
@@ -90,6 +91,20 @@ namespace MonoDevelop.Projects.Formats.MD1
 				return data;
 			}
 			return handler.Serialize (obj);
+		}
+		
+		void WriteItems (ITypeSerializer handler, SolutionEntityItem item, DataCollection data)
+		{
+			DataItem items = new DataItem ();
+			items.Name = "Items";
+			foreach (object it in item.Items) {
+				if (it is ProjectFile || it is ProjectReference)
+					continue; // Already handled by serializer
+				DataNode node = handler.SerializationContext.Serializer.Serialize (it, it.GetType ());
+				items.ItemData.Add (node);
+			}
+			if (items.HasItemData)
+				data.Add (items);
 		}
 		
 		public virtual void Deserialize (object obj, ITypeSerializer handler, DataCollection data)
@@ -117,6 +132,10 @@ namespace MonoDevelop.Projects.Formats.MD1
 				if (confItem != null)
 					ac = (DataValue) confItem.ItemData.Extract ("active");
 					
+				DataItem items = data.Extract ("Items") as DataItem;
+				if (items != null)
+					ReadItems (handler, (SolutionEntityItem)obj, items);
+				
 				handler.Deserialize (obj, data);
 				if (ac != null) {
 					SolutionEntityItem item = (SolutionEntityItem) obj;
@@ -157,6 +176,17 @@ namespace MonoDevelop.Projects.Formats.MD1
 				}
 			} else
 				handler.Deserialize (obj, data);
+		}
+		
+		void ReadItems (ITypeSerializer handler, SolutionEntityItem item, DataItem items)
+		{
+			foreach (DataNode node in items.ItemData) {
+				DataType dtype = handler.SerializationContext.Serializer.DataContext.GetConfigurationDataType (node.Name);
+				if (dtype != null && typeof(ProjectItem).IsAssignableFrom (dtype.ValueType)) {
+					ProjectItem it = (ProjectItem) handler.SerializationContext.Serializer.Deserialize (dtype.ValueType, node);
+					item.Items.Add (it);
+				}
+			}
 		}
 	}
 }

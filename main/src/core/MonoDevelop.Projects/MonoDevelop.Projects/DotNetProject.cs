@@ -235,7 +235,7 @@ namespace MonoDevelop.Projects
 		public DotNetProject ()
 		{
 			projectReferences = new ProjectReferenceCollection ();
-			projectReferences.SetProject (this);
+			Items.Bind (projectReferences);
 			if (IsLibraryBasedProjectType)
 				CompileTarget = CompileTarget.Library;
 		}
@@ -437,6 +437,14 @@ namespace MonoDevelop.Projects
 				}
 			}
 			return items;
+		}
+		
+		public virtual IEnumerable<string> GetReferencedAssemblies (string configuration)
+		{
+			foreach (ProjectReference pref in References) {
+				foreach (string asm in pref.GetReferencedFileNames (configuration))
+					yield return asm;
+			}
 		}
 		
 		protected internal override void OnSave (IProgressMonitor monitor)
@@ -724,5 +732,56 @@ namespace MonoDevelop.Projects
 				}
 			}
 		}
+		
+		protected internal override void OnItemAdded (object obj)
+		{
+			base.OnItemAdded (obj);
+			if (obj is ProjectReference) {
+				ProjectReference pref = (ProjectReference) obj;
+				pref.SetOwnerProject (this);
+				NotifyReferenceAddedToProject (pref);
+			}
+		}
+
+		protected internal override void OnItemRemoved (object obj)
+		{
+			base.OnItemRemoved (obj);
+			if (obj is ProjectReference) {
+				ProjectReference pref = (ProjectReference) obj;
+				pref.SetOwnerProject (null);
+				NotifyReferenceRemovedFromProject (pref);
+			}
+		}
+		
+		internal void NotifyReferenceRemovedFromProject (ProjectReference reference)
+		{
+			SetNeedsBuilding (true);
+			NotifyModified ("References");
+			OnReferenceRemovedFromProject (new ProjectReferenceEventArgs (this, reference));
+		}
+		
+		internal void NotifyReferenceAddedToProject (ProjectReference reference)
+		{
+			SetNeedsBuilding (true);
+			NotifyModified ("References");
+			OnReferenceAddedToProject (new ProjectReferenceEventArgs (this, reference));
+		}
+		
+		protected virtual void OnReferenceRemovedFromProject (ProjectReferenceEventArgs e)
+		{
+			if (ReferenceRemovedFromProject != null) {
+				ReferenceRemovedFromProject (this, e);
+			}
+		}
+		
+		protected virtual void OnReferenceAddedToProject (ProjectReferenceEventArgs e)
+		{
+			if (ReferenceAddedToProject != null) {
+				ReferenceAddedToProject (this, e);
+			}
+		}
+		
+		public event ProjectReferenceEventHandler ReferenceRemovedFromProject;
+		public event ProjectReferenceEventHandler ReferenceAddedToProject;
 	}
 }

@@ -70,6 +70,9 @@ namespace MonoDevelop.Projects
 		public Project ()
 		{
 			FileService.FileChanged += OnFileChanged;
+			projectFiles = new ProjectFileCollection ();
+			Items.Bind (projectFiles);
+			DependencyResolutionEnabled = true;
 		}
 		
 		public string Description {
@@ -84,8 +87,7 @@ namespace MonoDevelop.Projects
 		
 		public ProjectFileCollection Files {
 			get {
-				if (projectFiles != null) return projectFiles;
-				return projectFiles = new ProjectFileCollection (this);
+				return projectFiles;
 			}
 		}
 		
@@ -536,7 +538,21 @@ namespace MonoDevelop.Projects
 			}
 			return col;
 		}
-
+		
+		protected internal override void OnItemAdded (object obj)
+		{
+			base.OnItemAdded (obj);
+			if (obj is ProjectFile)
+				NotifyFileAddedToProject ((ProjectFile) obj);
+		}
+		
+		protected internal override void OnItemRemoved (object obj)
+		{
+			base.OnItemRemoved (obj);
+			if (obj is ProjectFile)
+				NotifyFileRemovedFromProject ((ProjectFile) obj);
+		}
+		
  		internal void NotifyFileChangedInProject (ProjectFile file)
 		{
 			OnFileChangedInProject (new ProjectFileEventArgs (this, file));
@@ -548,18 +564,79 @@ namespace MonoDevelop.Projects
 			OnFilePropertyChangedInProject (new ProjectFileEventArgs (this, file));
 		}
 		
-		internal void NotifyFileRemovedFromProject (ProjectFile file)
+		List<ProjectFile> unresolvedDeps;
+		
+		void NotifyFileRemovedFromProject (ProjectFile file)
 		{
+			file.SetProject (null);
+			
+			if (DependencyResolutionEnabled) {
+				if (unresolvedDeps.Contains (file))
+					unresolvedDeps.Remove (file);
+				foreach (ProjectFile f in file.DependentChildren) {
+					f.DependsOnFile = null;
+					if (!string.IsNullOrEmpty (f.DependsOn))
+						unresolvedDeps.Add (f);
+				}
+				file.DependsOnFile = null;
+			}
+			
 			SetDirty ();
 			NotifyModified ("Files");
 			OnFileRemovedFromProject (new ProjectFileEventArgs (this, file));
 		}
 		
-		internal void NotifyFileAddedToProject (ProjectFile file)
+		void NotifyFileAddedToProject (ProjectFile file)
 		{
+			if (file.Project != null)
+				throw new InvalidOperationException ("ProjectFile already belongs to a project");
+			file.SetProject (this);
+			
+			ResolveDependencies (file);
+			
 			SetDirty ();
 			NotifyModified ("Files");
 			OnFileAddedToProject (new ProjectFileEventArgs (this, file));
+		}
+		
+		internal void ResolveDependencies (ProjectFile file)
+		{
+			if (!DependencyResolutionEnabled)
+				return;
+			
+			if (!file.ResolveParent ())
+				unresolvedDeps.Add (file);
+			
+			List<ProjectFile> resolved = null;
+			foreach (ProjectFile unres in unresolvedDeps) {
+				if (string.IsNullOrEmpty (unres.DependsOn )) {
+					resolved.Add (unres);
+				}
+				if (unres.ResolveParent ()) {
+					if (resolved == null)
+						resolved = new List<ProjectFile> ();
+						resolved.Add (unres);
+				}
+			}
+			if (resolved != null)
+				foreach (ProjectFile pf in resolved)
+					unresolvedDeps.Remove (pf);
+		}
+		
+		bool DependencyResolutionEnabled {
+			set {
+				if (value) {
+					if (unresolvedDeps != null)
+						return;
+					
+					unresolvedDeps = new List<ProjectFile> ();
+					foreach (ProjectFile file in projectFiles)
+						ResolveDependencies (file);
+				} else {
+					unresolvedDeps = null;
+				}
+			}
+			get { return unresolvedDeps != null; }
 		}
 		
 		internal void NotifyFileRenamedInProject (ProjectFileRenamedEventArgs args)
@@ -567,20 +644,6 @@ namespace MonoDevelop.Projects
 			SetDirty ();
 			NotifyModified ("Files");
 			OnFileRenamedInProject (args);
-		}
-		
-		internal void NotifyReferenceRemovedFromProject (ProjectReference reference)
-		{
-			SetDirty ();
-			NotifyModified ("References");
-			OnReferenceRemovedFromProject (new ProjectReferenceEventArgs (this, reference));
-		}
-		
-		internal void NotifyReferenceAddedToProject (ProjectReference reference)
-		{
-			SetDirty ();
-			NotifyModified ("References");
-			OnReferenceAddedToProject (new ProjectReferenceEventArgs (this, reference));
 		}
 		
 		protected virtual void OnFileRemovedFromProject (ProjectFileEventArgs e)
@@ -596,20 +659,6 @@ namespace MonoDevelop.Projects
 			buildActions = null;
 			if (FileAddedToProject != null) {
 				FileAddedToProject (this, e);
-			}
-		}
-		
-		protected virtual void OnReferenceRemovedFromProject (ProjectReferenceEventArgs e)
-		{
-			if (ReferenceRemovedFromProject != null) {
-				ReferenceRemovedFromProject (this, e);
-			}
-		}
-		
-		protected virtual void OnReferenceAddedToProject (ProjectReferenceEventArgs e)
-		{
-			if (ReferenceAddedToProject != null) {
-				ReferenceAddedToProject (this, e);
 			}
 		}
 
@@ -640,8 +689,6 @@ namespace MonoDevelop.Projects
 		public event ProjectFileEventHandler FileChangedInProject;
 		public event ProjectFileEventHandler FilePropertyChangedInProject;
 		public event ProjectFileRenamedEventHandler FileRenamedInProject;
-		public event ProjectReferenceEventHandler ReferenceRemovedFromProject;
-		public event ProjectReferenceEventHandler ReferenceAddedToProject;
 	}
 	
 	public class UnknownProject: Project

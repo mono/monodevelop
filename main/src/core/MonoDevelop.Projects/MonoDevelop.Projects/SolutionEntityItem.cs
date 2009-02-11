@@ -46,6 +46,8 @@ namespace MonoDevelop.Projects
 	[DataItem (FallbackType = typeof(UnknownSolutionItem))]
 	public abstract class SolutionEntityItem : SolutionItem, IConfigurationTarget, IWorkspaceFileObject
 	{
+		ProjectItemCollection items;
+		
 		SolutionItemEventArgs thisItemArgs;
 		
 		Dictionary<string,DateTime> lastSaveTime = new Dictionary<string,DateTime> ();
@@ -66,6 +68,7 @@ namespace MonoDevelop.Projects
 		
 		public SolutionEntityItem ()
 		{
+			items = new ProjectItemCollection (this);
 			thisItemArgs = new SolutionItemEventArgs (this);
 			configurations = new SolutionItemConfigurationCollection (this);
 			configurations.ConfigurationAdded += new ConfigurationEventHandler (OnConfigurationAddedToCollection);
@@ -153,6 +156,10 @@ namespace MonoDevelop.Projects
 				NeedsReload = false;
 				NotifyModified ("FileFormat");
 			}
+		}
+		
+		public ProjectItemCollection Items {
+			get { return items; }
 		}
 		
 		void IWorkspaceFileObject.ConvertToFormat (FileFormat format, bool convertChildren)
@@ -443,6 +450,14 @@ namespace MonoDevelop.Projects
 			OnConfigurationRemoved (new ConfigurationEventArgs (this, args.Configuration));
 			if (ConfigurationsChanged != null)
 				ConfigurationsChanged (this, EventArgs.Empty);
+		}
+		
+		internal protected virtual void OnItemAdded (object obj)
+		{
+		}
+		
+		internal protected virtual void OnItemRemoved (object obj)
+		{
 		}
 		
 		protected virtual void OnDefaultConfigurationChanged (ConfigurationEventArgs args)

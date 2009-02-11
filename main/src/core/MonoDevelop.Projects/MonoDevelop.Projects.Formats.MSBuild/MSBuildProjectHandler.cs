@@ -191,13 +191,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return item;
 		}
 		
-		IEnumerable<MSBuildItem> GetAllItemsExceptMatches (MSBuildProject msproject, params string[] skip)
-		{
-			foreach (MSBuildItem buildItem in msproject.GetAllItems ())
-				if (Array.IndexOf<string> (skip, buildItem.Name) < 0)
-					yield return buildItem;
-		}
-		
 		void Load (IProgressMonitor monitor, MSBuildProject msproject)
 		{
 			MSBuildSerializer ser = CreateSerializer ();
@@ -208,62 +201,20 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			
 			Item.SetItemHandler (this);
 			
-			// Read files
-			
-			Project project = Item as Project;
-			if (project != null)
-				foreach (MSBuildItem buildItem in GetAllItemsExceptMatches (msproject , "Reference", "ProjectReference", "Folder"))
-					AddFile (ser, project, buildItem);
-			
-			// Read folders
-			foreach (MSBuildItem buildItem in msproject.GetAllItems ("Folder")) {
-				string path = MSBuildProjectService.FromMSBuildPath (project.BaseDirectory, buildItem.Include);
-				project.AddDirectory (Path.GetDirectoryName (path));
-			}
+			DotNetProject dotNetProject = Item as DotNetProject;
 			
 			string assemblyName = null;
 			string frameworkVersion = "2.0";
 			
-			// Read project references
+			// Read all items
 			
-			DotNetProject dotNetProject = Item as DotNetProject;
+			foreach (MSBuildItem buildItem in msproject.GetAllItems ()) {
+				ProjectItem it = ReadItem (ser, buildItem);
+				if (it != null)
+					((SolutionEntityItem)Item).Items.Add (it);
+			}
+			
 			if (dotNetProject != null) {
-				foreach (MSBuildItem buildItem in msproject.GetAllItems ("Reference")) {
-					ProjectReference pref;
-					if (buildItem.HasMetadata ("HintPath")) {
-						string path = MSBuildProjectService.FromMSBuildPath (dotNetProject.BaseDirectory, buildItem.GetMetadata ("HintPath"));
-						if (File.Exists (path)) {
-							pref = new ProjectReference (ReferenceType.Assembly, path);
-							pref.LocalCopy = buildItem.GetMetadata ("Private") != "False";
-						} else {
-							pref = new ProjectReference (ReferenceType.Gac, buildItem.Include);
-						}
-					} else {
-						string asm = buildItem.Include;
-						// This is a workaround for a VS bug. Looks like it is writing this assembly incorrectly
-						if (asm == "System.configuration")
-							asm = "System.Configuration";
-						else if (asm == "System.XML")
-							asm = "System.Xml";
-						pref = new ProjectReference (ReferenceType.Gac, asm);
-					}
-					pref.Condition = buildItem.Condition;
-					pref.SpecificVersion = buildItem.GetMetadata ("SpecificVersion") != "False";
-					ReadBuildItemMetadata (ser, buildItem, pref, typeof(ProjectReference));
-					dotNetProject.References.Add (pref);
-				}
-				foreach (MSBuildItem buildItem in msproject.GetAllItems ("ProjectReference")) {
-					string name = buildItem.GetMetadata ("Name");
-					// The name of the project is the first word of the string (it may contain other stuff).
-					int i = name.IndexOf (' ');
-					if (i != -1)
-						name = name.Substring (0, i);
-					ProjectReference pref = new ProjectReference (ReferenceType.Project, name);
-					pref.LocalCopy = buildItem.GetMetadata ("Private") != "False";
-					pref.Condition = buildItem.Condition;
-					dotNetProject.References.Add (pref);
-				}
-				
 				// Get the common assembly name
 				assemblyName = globalGroup.GetPropertyValue ("AssemblyName");
 				frameworkVersion = globalGroup.GetPropertyValue ("TargetFrameworkVersion");
@@ -338,7 +289,71 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			
 			Item.NeedsReload = false;
 		}
-
+		
+		ProjectItem ReadItem (MSBuildSerializer ser, MSBuildItem buildItem)
+		{
+			Project project = Item as Project;
+			DotNetProject dotNetProject = Item as DotNetProject;
+			
+			DataType dt = ser.DataContext.GetConfigurationDataType (buildItem.Name);
+			
+			if (project != null) {
+				if (buildItem.Name == "Folder") {
+					// Read folders
+					string path = MSBuildProjectService.FromMSBuildPath (project.BaseDirectory, buildItem.Include);
+					return new ProjectFile () { Name = Path.GetDirectoryName (path), Subtype = Subtype.Directory };
+				}
+				else if (buildItem.Name == "Reference" && dotNetProject != null) {
+					ProjectReference pref;
+					if (buildItem.HasMetadata ("HintPath")) {
+						string path = MSBuildProjectService.FromMSBuildPath (dotNetProject.BaseDirectory, buildItem.GetMetadata ("HintPath"));
+						if (File.Exists (path)) {
+							pref = new ProjectReference (ReferenceType.Assembly, path);
+							pref.LocalCopy = buildItem.GetMetadata ("Private") != "False";
+						} else {
+							pref = new ProjectReference (ReferenceType.Gac, buildItem.Include);
+						}
+					} else {
+						string asm = buildItem.Include;
+						// This is a workaround for a VS bug. Looks like it is writing this assembly incorrectly
+						if (asm == "System.configuration")
+							asm = "System.Configuration";
+						else if (asm == "System.XML")
+							asm = "System.Xml";
+						pref = new ProjectReference (ReferenceType.Gac, asm);
+					}
+					pref.Condition = buildItem.Condition;
+					pref.SpecificVersion = buildItem.GetMetadata ("SpecificVersion") != "False";
+					ReadBuildItemMetadata (ser, buildItem, pref, typeof(ProjectReference));
+					return pref;
+				}
+				else if (buildItem.Name == "ProjectReference" && dotNetProject != null) {
+					string name = buildItem.GetMetadata ("Name");
+					// The name of the project is the first word of the string (it may contain other stuff).
+					int i = name.IndexOf (' ');
+					if (i != -1)
+						name = name.Substring (0, i);
+					ProjectReference pref = new ProjectReference (ReferenceType.Project, name);
+					pref.LocalCopy = buildItem.GetMetadata ("Private") != "False";
+					pref.Condition = buildItem.Condition;
+					return pref;
+				}
+				else if (dt == null && !string.IsNullOrEmpty (buildItem.Include)) {
+					// Unknown item. Must be a file.
+					if (!UnsupportedItems.Contains (buildItem.Name))
+						return ReadProjectFile (ser, project, buildItem, typeof(ProjectFile));
+				}
+			}
+			
+			if (dt != null && typeof(ProjectItem).IsAssignableFrom (dt.ValueType)) {
+				ProjectItem obj = (ProjectItem) Activator.CreateInstance (dt.ValueType);
+				ReadBuildItemMetadata (ser, buildItem, obj, dt.ValueType);
+				return obj;
+			}
+			
+			return null;
+		}
+		
 		class ConfigData
 		{
 			public ConfigData (string conf, string plt, MSBuildPropertyGroup grp)
@@ -389,7 +404,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			ser.SerializationContext.BaseFile = eitem.FileName;
 			ser.SerializationContext.ProgressMonitor = monitor;
 			
-			Project project = Item as Project;
 			DotNetProject dotNetProject = Item as DotNetProject;
 			
 			MSBuildProject msproject = new MSBuildProject ();
@@ -452,7 +466,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 			
 			string targetFramework = null;
-			IList supportedFrameworks = TargetFormat.FrameworkVersions;;
+			IList supportedFrameworks = TargetFormat.FrameworkVersions;
 			
 			if (dotNetProject != null) {
 
@@ -545,6 +559,18 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				UnmergeBaseConfiguration (configData, propGroup, conf.Name, conf.Platform);
 			}
 			
+			// Remove old items
+			ArrayList list = new ArrayList ();
+			foreach (object ob in msproject.GetAllItems ())
+				list.Add (ob);
+			
+			// Add the new items
+			foreach (object ob in ((SolutionEntityItem)Item).Items)
+				SaveItem (monitor, ser, msproject, ob);
+			
+			foreach (MSBuildItem buildItem in list)
+				msproject.RemoveItem (buildItem);
+		
 			if (dotNetProject != null) {
 
 				// If the format only supports one fx version, there is no need to store it
@@ -553,148 +579,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				else
 					globalGroup.RemoveProperty ("TargetFrameworkVersion");
 				
-				// Remove all references and add the new ones
-				
-				MSBuildItemGroup refgrp = null;
-				MSBuildItemGroup prefgrp = null;
-					
-				ArrayList list = new ArrayList ();
-				foreach (object ob in msproject.GetAllItems ("Reference", "ProjectReference"))
-					list.Add (ob);
-				
-				foreach (ProjectReference pref in dotNetProject.References) {
-					MSBuildItem buildItem;
-					if (pref.ReferenceType == ReferenceType.Assembly) {
-						string asm = null;
-						if (File.Exists (pref.Reference)) {
-							try {
-								asm = AssemblyName.GetAssemblyName (pref.Reference).FullName;
-							} catch (Exception ex) {
-								string msg = string.Format ("Could not get full name for assembly '{0}'.", pref.Reference);
-								monitor.ReportWarning (msg);
-								LoggingService.LogError (msg, ex);
-							}
-						}
-						if (refgrp == null)
-							refgrp = FindItemGroup (msproject, "Reference");
-						if (asm == null)
-							asm = Path.GetFileNameWithoutExtension (pref.Reference);
-						buildItem = refgrp.AddNewItem ("Reference", asm);
-						if (!pref.SpecificVersion)
-							buildItem.SetMetadata ("SpecificVersion", "False");
-						buildItem.SetMetadata ("HintPath", MSBuildProjectService.ToMSBuildPath (project.BaseDirectory, pref.Reference));
-						if (!pref.LocalCopy)
-							buildItem.SetMetadata ("Private", "False");
-					}
-					else if (pref.ReferenceType == ReferenceType.Gac) {
-						string include = pref.Reference;
-						SystemPackage sp = Runtime.SystemAssemblyService.GetPackageFromFullName (include);
-						if (sp != null && sp.IsFrameworkPackage) {
-							int i = include.IndexOf (',');
-							include = include.Substring (0, i).Trim ();
-						}
-						if (refgrp == null)
-							refgrp = FindItemGroup (msproject, "Reference");
-						buildItem = refgrp.AddNewItem ("Reference", include);
-						if (!pref.SpecificVersion)
-							buildItem.SetMetadata ("SpecificVersion", "False");
-						SystemPackage pkg = Runtime.SystemAssemblyService.GetPackageFromFullName (pref.Reference);
-						if (pkg != null && pkg.IsFrameworkPackage && supportedFrameworks.Contains (pkg.TargetFramework) && pkg.TargetFramework != "2.0" && supportedFrameworks.Count > 1) {
-							TargetFramework fx = Runtime.SystemAssemblyService.GetTargetFramework (pkg.TargetFramework);
-							buildItem.SetMetadata ("RequiredTargetFramework", fx.Id);
-						}
-					}
-					else if (pref.ReferenceType == ReferenceType.Project) {
-						Project refProj = project.ParentSolution.FindProjectByName (pref.Reference);
-						if (refProj != null) {
-							if (prefgrp == null)
-								prefgrp = FindItemGroup (msproject, "ProjectReference");
-							buildItem = prefgrp.AddNewItem ("ProjectReference", MSBuildProjectService.ToMSBuildPath (project.BaseDirectory, refProj.FileName));
-							MSBuildProjectHandler handler = refProj.ItemHandler as MSBuildProjectHandler;
-							if (handler != null)
-								buildItem.SetMetadata ("Project", handler.Item.ItemId);
-							buildItem.SetMetadata ("Name", refProj.Name);
-							if (!pref.LocalCopy)
-								buildItem.SetMetadata ("Private", "False");
-						} else {
-							monitor.ReportWarning (GettextCatalog.GetString ("Reference to unknown project '{0}' ignored.", pref.Reference));
-							continue;
-						}
-					}
-					else {
-						buildItem = msproject.AddNewItem ("CustomReference", pref.Reference);
-					}
-					WriteBuildItemMetadata (ser, buildItem, pref);
-					buildItem.Condition = pref.Condition;
-				}
-				
-				foreach (MSBuildItem buildItem in list)
-					msproject.RemoveItem (buildItem);
 			}
-			
-			if (project != null) {
-				
-				// Remove all files and add the new ones
-				
-				ArrayList list = new ArrayList ();
-				foreach (object ob in GetAllItemsExceptMatches (msproject , "Reference", "ProjectReference"))
-					list.Add (ob);
 
-				Hashtable grps = new Hashtable ();
-				foreach (ProjectFile file in project.Files) {
-					string itemName = (file.Subtype == Subtype.Directory)? "Folder" : file.BuildAction;
-					MSBuildItemGroup fgrp = (MSBuildItemGroup) grps [itemName];
-					if (fgrp == null) {
-						fgrp = FindItemGroup (msproject, itemName);
-						grps [itemName] = fgrp;
-					}
-
-					string path = MSBuildProjectService.ToMSBuildPath (project.BaseDirectory, file.FilePath);
-					if (path.Length == 0)
-						continue;
-					
-					//directory paths must end with '/'
-					if ((file.Subtype == Subtype.Directory) && path[path.Length-1] != '/')
-						path = path + "/";
-					
-					MSBuildItem buildItem = fgrp.AddNewItem (itemName, path);
-					WriteBuildItemMetadata (ser, buildItem, file);
-					
-					if (!string.IsNullOrEmpty (file.DependsOn))
-						buildItem.SetMetadata ("DependentUpon", MSBuildProjectService.ToMSBuildPath (Path.GetDirectoryName (file.FilePath), file.DependsOn));
-					if (!string.IsNullOrEmpty (file.ContentType))
-						buildItem.SetMetadata ("SubType", file.ContentType);
-					
-					if (!string.IsNullOrEmpty (file.Generator))
-						buildItem.SetMetadata ("Generator", file.Generator);
-					else
-						buildItem.UnsetMetadata ("Generator");
-					
-					buildItem.Condition = file.Condition;
-					
-					if (file.CopyToOutputDirectory == FileCopyMode.None) {
-						buildItem.UnsetMetadata ("CopyToOutputDirectory");
-					} else {
-						buildItem.SetMetadata ("CopyToOutputDirectory", file.CopyToOutputDirectory.ToString ());
-					}
-					
-					if (!file.Visible) {
-						buildItem.SetMetadata ("Visible", "False");
-					} else {
-						buildItem.UnsetMetadata ("Visible");
-					}
-					
-					if (file.BuildAction == BuildAction.EmbeddedResource) {
-						//Emit LogicalName only when it does not match the default Id
-						if (GetDefaultResourceId (file) != file.ResourceId)
-							buildItem.SetMetadata ("LogicalName", file.ResourceId);
-					}
-				}
-				
-				foreach (MSBuildItem buildItem in list)
-					msproject.RemoveItem (buildItem);
-			}
-			
 			if (newProject) {
 				foreach (string import in TargetImports)
 					msproject.AddNewImport (import, null);
@@ -710,6 +596,132 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				msproject.RemoveProjectExtensions ("MonoDevelop");
 			
 			msproject.Save (eitem.FileName);
+		}
+		
+		void SaveItem (MonoDevelop.Core.IProgressMonitor monitor, MSBuildSerializer ser, MSBuildProject msproject, object ob)
+		{
+			if (ob is ProjectReference) {
+				SaveReference (monitor, ser, msproject, (ProjectReference) ob);
+			}
+			else if (ob is ProjectFile) {
+				SaveProjectFile (ser, msproject, (ProjectFile) ob);
+			}
+			else {
+				DataType dt = ser.DataContext.GetConfigurationDataType (ob.GetType ());
+				string itemName = dt.Name;
+				MSBuildItem buildItem = msproject.AddNewItem (itemName, "");
+				WriteBuildItemMetadata (ser, buildItem, ob);
+			}
+		}
+		
+		void SaveProjectFile (MSBuildSerializer ser, MSBuildProject msproject, ProjectFile file)
+		{
+			string itemName = (file.Subtype == Subtype.Directory)? "Folder" : file.BuildAction;
+
+			string path = MSBuildProjectService.ToMSBuildPath (Item.BaseDirectory, file.FilePath);
+			if (path.Length == 0)
+				return;
+			
+			//directory paths must end with '/'
+			if ((file.Subtype == Subtype.Directory) && path[path.Length-1] != '/')
+				path = path + "/";
+			
+			MSBuildItem buildItem = msproject.AddNewItem (itemName, path);
+			WriteBuildItemMetadata (ser, buildItem, file);
+			
+			if (!string.IsNullOrEmpty (file.DependsOn))
+				buildItem.SetMetadata ("DependentUpon", MSBuildProjectService.ToMSBuildPath (Path.GetDirectoryName (file.FilePath), file.DependsOn));
+			if (!string.IsNullOrEmpty (file.ContentType))
+				buildItem.SetMetadata ("SubType", file.ContentType);
+			
+			if (!string.IsNullOrEmpty (file.Generator))
+				buildItem.SetMetadata ("Generator", file.Generator);
+			else
+				buildItem.UnsetMetadata ("Generator");
+			
+			buildItem.Condition = file.Condition;
+			
+			if (file.CopyToOutputDirectory == FileCopyMode.None) {
+				buildItem.UnsetMetadata ("CopyToOutputDirectory");
+			} else {
+				buildItem.SetMetadata ("CopyToOutputDirectory", file.CopyToOutputDirectory.ToString ());
+			}
+			
+			if (!file.Visible) {
+				buildItem.SetMetadata ("Visible", "False");
+			} else {
+				buildItem.UnsetMetadata ("Visible");
+			}
+			
+			if (file.BuildAction == BuildAction.EmbeddedResource) {
+				//Emit LogicalName only when it does not match the default Id
+				if (GetDefaultResourceId (file) != file.ResourceId)
+					buildItem.SetMetadata ("LogicalName", file.ResourceId);
+			}
+		}
+		
+		void SaveReference (MonoDevelop.Core.IProgressMonitor monitor, MSBuildSerializer ser, MSBuildProject msproject, ProjectReference pref)
+		{
+			MSBuildItem buildItem;
+			if (pref.ReferenceType == ReferenceType.Assembly) {
+				string asm = null;
+				if (File.Exists (pref.Reference)) {
+					try {
+						asm = AssemblyName.GetAssemblyName (pref.Reference).FullName;
+					} catch (Exception ex) {
+						string msg = string.Format ("Could not get full name for assembly '{0}'.", pref.Reference);
+						monitor.ReportWarning (msg);
+						LoggingService.LogError (msg, ex);
+					}
+				}
+				if (asm == null)
+					asm = Path.GetFileNameWithoutExtension (pref.Reference);
+				buildItem = msproject.AddNewItem ("Reference", asm);
+				if (!pref.SpecificVersion)
+					buildItem.SetMetadata ("SpecificVersion", "False");
+				buildItem.SetMetadata ("HintPath", MSBuildProjectService.ToMSBuildPath (Item.BaseDirectory, pref.Reference));
+				if (!pref.LocalCopy)
+					buildItem.SetMetadata ("Private", "False");
+			}
+			else if (pref.ReferenceType == ReferenceType.Gac) {
+				string include = pref.Reference;
+				SystemPackage sp = Runtime.SystemAssemblyService.GetPackageFromFullName (include);
+				if (sp != null && sp.IsFrameworkPackage) {
+					int i = include.IndexOf (',');
+					include = include.Substring (0, i).Trim ();
+				}
+				buildItem = msproject.AddNewItem ("Reference", include);
+				if (!pref.SpecificVersion)
+					buildItem.SetMetadata ("SpecificVersion", "False");
+				SystemPackage pkg = Runtime.SystemAssemblyService.GetPackageFromFullName (pref.Reference);
+				IList supportedFrameworks = TargetFormat.FrameworkVersions;
+				if (pkg != null && pkg.IsFrameworkPackage && supportedFrameworks.Contains (pkg.TargetFramework) && pkg.TargetFramework != "2.0" && supportedFrameworks.Count > 1) {
+					TargetFramework fx = Runtime.SystemAssemblyService.GetTargetFramework (pkg.TargetFramework);
+					buildItem.SetMetadata ("RequiredTargetFramework", fx.Id);
+				}
+			}
+			else if (pref.ReferenceType == ReferenceType.Project) {
+				Project refProj = Item.ParentSolution.FindProjectByName (pref.Reference);
+				if (refProj != null) {
+					buildItem = msproject.AddNewItem ("ProjectReference", MSBuildProjectService.ToMSBuildPath (Item.BaseDirectory, refProj.FileName));
+					MSBuildProjectHandler handler = refProj.ItemHandler as MSBuildProjectHandler;
+					if (handler != null)
+						buildItem.SetMetadata ("Project", handler.Item.ItemId);
+					buildItem.SetMetadata ("Name", refProj.Name);
+					if (!pref.LocalCopy)
+						buildItem.SetMetadata ("Private", "False");
+				} else {
+					monitor.ReportWarning (GettextCatalog.GetString ("Reference to unknown project '{0}' ignored.", pref.Reference));
+					return;
+				}
+			}
+			else {
+				// Custom
+				DataType dt = ser.DataContext.GetConfigurationDataType (pref.GetType ());
+				buildItem = msproject.AddNewItem (dt.Name, pref.Reference);
+			}
+			WriteBuildItemMetadata (ser, buildItem, pref);
+			buildItem.Condition = pref.Condition;
 		}
 
 		void UnmergeBaseConfiguration (List<ConfigData> configData, MSBuildPropertyGroup propGroup, string conf, string platform)
@@ -734,7 +746,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			DataItem ditem = new DataItem ();
 			foreach (ItemProperty prop in ser.GetProperties (dataItem)) {
-				if (buildItem.HasMetadata (prop.Name)) {
+				if (prop.Name == "Include")
+					ditem.ItemData.Add (new DataValue ("Include", buildItem.Include));
+				else if (buildItem.HasMetadata (prop.Name)) {
 					string data = buildItem.GetMetadata (prop.Name);
 					ditem.ItemData.Add (GetDataNode (prop, data));
 				}
@@ -748,8 +762,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			DataItem ditem = (DataItem) ser.Serialize (dataItem, dataItem.GetType ());
 			if (ditem.HasItemData) {
 				foreach (DataNode node in ditem.ItemData) {
-					ConvertToMsbuildFormat (node);
-					buildItem.SetMetadata (node.Name, GetXmlString (node), node is DataItem);
+					if (node.Name == "Include" && node is DataValue)
+						buildItem.Include = ((DataValue) node).Value;
+					else {
+						ConvertToMsbuildFormat (node);
+						buildItem.SetMetadata (node.Name, GetXmlString (node), node is DataItem);
+					}
 				}
 			}
 		}
@@ -844,23 +862,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return null;
 		}
 		
-		MSBuildItemGroup FindItemGroup (MSBuildProject msproject, string itemName)
-		{
-			foreach (MSBuildItemGroup grp in msproject.ItemGroups) {
-				foreach (MSBuildItem it in grp.Items) {
-					if (it.Name == itemName)
-						return grp;
-				}
-			}
-			return msproject.AddNewItemGroup ();
-		}
-		
-		void AddFile (DataSerializer ser, Project project, MSBuildItem buildItem)
+		ProjectFile ReadProjectFile (DataSerializer ser, Project project, MSBuildItem buildItem, Type type)
 		{
 			string path = MSBuildProjectService.FromMSBuildPath (project.BaseDirectory, buildItem.Include);
-			ProjectFile file = new ProjectFile (path, buildItem.Name);
+			ProjectFile file = (ProjectFile) Activator.CreateInstance (type);
+			file.Name = path;
+			file.BuildAction = buildItem.Name;
 			
-			ReadBuildItemMetadata (ser, buildItem, file, typeof(ProjectFile));
+			ReadBuildItemMetadata (ser, buildItem, file, type);
 			
 			string dependentFile = buildItem.GetMetadata ("DependentUpon");
 			if (!string.IsNullOrEmpty (dependentFile)) {
@@ -899,8 +908,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				file.Generator = generator;
 			
 			file.Condition = buildItem.Condition;
-			
-			project.Files.Add (file);
+			return file;
 		}
 
 		bool ParseConfigCondition (string cond, out string config, out string platform)
@@ -998,6 +1006,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			new ItemMember (typeof(DotNetProjectConfiguration), "TargetFrameworkVersion"),
 			new ItemMember (typeof(ProjectReference), "RequiredTargetFramework"),
 			new ItemMember (typeof(Project), "InternalTargetFrameworkVersion", true),
+		};
+		
+		// Items generated by VS but which MD is not using and should be ignored
+		
+		internal static readonly IList<string> UnsupportedItems = new string[] {
+			"BootstrapperFile", "AppDesigner"
 		};
 	}
 	

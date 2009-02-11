@@ -36,6 +36,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 	{
 		public XmlDocument doc;
 		Dictionary<XmlElement,MSBuildObject> elemCache = new Dictionary<XmlElement,MSBuildObject> ();
+		Dictionary<string, MSBuildItemGroup> bestGroups;
 		
 		public const string Schema = "http://schemas.microsoft.com/developer/msbuild/2003";
 		static XmlNamespaceManager manager;
@@ -181,14 +182,32 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		
 		public MSBuildItem AddNewItem (string name, string include)
 		{
-			XmlElement elem = (XmlElement) doc.DocumentElement.SelectSingleNode ("tns:ItemGroup/" + name, XmlNamespaceManager);
-			if (elem != null) {
-				MSBuildItemGroup grp = GetItemGroup ((XmlElement) elem.ParentNode);
-				return grp.AddNewItem (name, include);
-			} else {
-				MSBuildItemGroup grp = AddNewItemGroup ();
-				return grp.AddNewItem (name, include);
+			MSBuildItemGroup grp = FindBestGroupForItem (name);
+			return grp.AddNewItem (name, include);
+		}
+		
+		MSBuildItemGroup FindBestGroupForItem (string itemName)
+		{
+			MSBuildItemGroup group;
+			
+			if (bestGroups == null)
+			    bestGroups = new Dictionary<string, MSBuildItemGroup> ();
+			else {
+				if (bestGroups.TryGetValue (itemName, out group))
+					return group;
 			}
+			
+			foreach (MSBuildItemGroup grp in ItemGroups) {
+				foreach (MSBuildItem it in grp.Items) {
+					if (it.Name == itemName) {
+						bestGroups [itemName] = grp;
+						return grp;
+					}
+				}
+			}
+			group = AddNewItemGroup ();
+			bestGroups [itemName] = group;
+			return group;
 		}
 		
 		public string GetProjectExtensions (string section)
@@ -234,6 +253,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (parent.ChildNodes.Count == 0) {
 				elemCache.Remove (parent);
 				parent.ParentNode.RemoveChild (parent);
+				bestGroups = null;
 			}
 		}
 		

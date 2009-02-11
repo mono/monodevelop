@@ -160,22 +160,17 @@ namespace MonoDevelop.Projects.Formats.MD1
 			BuildData buildData = new BuildData ();
 			ProjectParserContext ctx = new ProjectParserContext (project, conf);
 		
-			buildData.Files = new ProjectFileCollection ();
-			foreach (ProjectFile file in project.Files) {
-				if (ConditionParser.ParseAndEvaluate (file.Condition, ctx))
-					buildData.Files.Add (file);
-			}
-			buildData.References = new ProjectReferenceCollection ();
-			foreach (ProjectReference pref in project.References) {
-				if (ConditionParser.ParseAndEvaluate (pref.Condition, ctx))
-					buildData.References.Add (pref);
+			buildData.Items = new ProjectItemCollection ();
+			foreach (ProjectItem item in project.Items) {
+				if (string.IsNullOrEmpty (item.Condition) || ConditionParser.ParseAndEvaluate (item.Condition, ctx))
+					buildData.Items.Add (item);
 			}
 			buildData.Configuration = (DotNetProjectConfiguration) conf.Clone ();
 			buildData.Configuration.SetParentItem (project);
 
 			return ProjectExtensionUtil.Compile (monitor, project, buildData, delegate {
-				ProjectFileCollection files = buildData.Files;
-				BuildResult res = BuildResources (buildData.Configuration, ref files, monitor);
+				ProjectItemCollection items = buildData.Items;
+				BuildResult res = BuildResources (buildData.Configuration, ref items, monitor);
 				if (res != null)
 					return res;
 				
@@ -183,7 +178,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 				CopySupportAssemblies (supportAssemblies, configuration);
 	
 				try {
-					res = project.LanguageBinding.Compile (files, buildData.References, buildData.Configuration, monitor);
+					res = project.LanguageBinding.Compile (items, buildData.Configuration, monitor);
 					if (refres != null) {
 						refres.Append (res);
 						return refres;
@@ -205,8 +200,8 @@ namespace MonoDevelop.Projects.Formats.MD1
 		}		
 
 		// Builds the EmbedAsResource files. If any localized resources are found then builds the satellite assemblies
-		// and sets @projectFiles to a cloned collection minus such resource files.
-		private BuildResult BuildResources (DotNetProjectConfiguration configuration, ref ProjectFileCollection projectFiles, IProgressMonitor monitor)
+		// and sets @projectItems to a cloned collection minus such resource files.
+		private BuildResult BuildResources (DotNetProjectConfiguration configuration, ref ProjectItemCollection projectItems, IProgressMonitor monitor)
 		{
 			string resgen = "resgen";
 			if (System.Environment.Version.Major >= 2) {
@@ -217,7 +212,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 			}
 			bool cloned = false;
 			Dictionary<string, string> resourcesByCulture = new Dictionary<string, string> ();
-			foreach (ProjectFile finfo in projectFiles) {
+			foreach (ProjectFile finfo in projectItems.GetAll<ProjectFile> ()) {
 				if (finfo.Subtype == Subtype.Directory || finfo.BuildAction != BuildAction.EmbeddedResource)
 					continue;
 
@@ -242,12 +237,12 @@ namespace MonoDevelop.Projects.Formats.MD1
 				resourcesByCulture [culture] = cmd;
 				if (!cloned) {
 					// Clone only if required
-					ProjectFileCollection files = new ProjectFileCollection ();
-					files.AddRange (projectFiles);
-					projectFiles = files;
+					ProjectItemCollection items = new ProjectItemCollection ();
+					items.AddRange (projectItems);
+					projectItems = items;
 					cloned = true;
 				}
-				projectFiles.Remove (finfo);
+				projectItems.Remove (finfo);
 			}
 
 			string al = configuration.TargetFramework.ClrVersion == ClrVersion.Net_2_0 ? "al2" : "al";

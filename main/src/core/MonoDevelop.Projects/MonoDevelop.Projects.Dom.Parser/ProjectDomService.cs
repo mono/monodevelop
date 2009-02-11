@@ -124,16 +124,22 @@ namespace MonoDevelop.Projects.Dom.Parser
 		// the special comment tags should be moved to taskservice, but I don't want to put this
 		// in GPLed #develop code. TODO: Move this code to the taskservice, when it's MIT X11.
 		const string defaultTags = "FIXME:2;TODO:1;HACK:1;UNDONE:0";
-		public static string[] SpecialCommentTags {
+		static CommentTagSet specialCommentTags;
+		public static CommentTagSet SpecialCommentTags {
 			get {
-				string tags = PropertyService.Get ("Monodevelop.TaskListTokens", defaultTags);
-				List<string> result = new List<string> ();
-				foreach (string tag in tags.Split (';')) {
-					string[] splittedTag = tag.Split (':');
-					if (splittedTag != null && splittedTag.Length > 0) 
-						result.Add (splittedTag[0]);
+				if (specialCommentTags == null) {
+					string tags = PropertyService.Get ("Monodevelop.TaskListTokens", defaultTags);
+					specialCommentTags = new CommentTagSet (tags);
 				}
-				return result.ToArray ();
+				return specialCommentTags;
+			}
+			set {
+				if (!SpecialCommentTags.Equals (value)) {
+					specialCommentTags = value;
+					PropertyService.Set ("Monodevelop.TaskListTokens", specialCommentTags.ToString ());
+					if (SpecialCommentTagsChanged != null)
+						SpecialCommentTagsChanged (null, EventArgs.Empty);
+				}
 			}
 		}
 
@@ -444,8 +450,10 @@ namespace MonoDevelop.Projects.Dom.Parser
 		{
 			string uri = "Project:" + project.FileName;
 			if (UnrefDom (uri)) {
-				project.ReferenceAddedToProject -= OnProjectReferenceAdded;
-				project.ReferenceRemovedFromProject -= OnProjectReferenceRemoved;
+				if (project is DotNetProject) {
+					((DotNetProject)project).ReferenceAddedToProject -= OnProjectReferenceAdded;
+					((DotNetProject)project).ReferenceRemovedFromProject -= OnProjectReferenceRemoved;
+				}
 			}
 		}
 
@@ -468,8 +476,10 @@ namespace MonoDevelop.Projects.Dom.Parser
 				ProjectDom db = parserDatabase.LoadProjectDom (project);
 				RegisterDom (db, uri);
 				
-				project.ReferenceAddedToProject += OnProjectReferenceAdded;
-				project.ReferenceRemovedFromProject += OnProjectReferenceRemoved;
+				if (project is DotNetProject) {
+					((DotNetProject)project).ReferenceAddedToProject += OnProjectReferenceAdded;
+					((DotNetProject)project).ReferenceRemovedFromProject += OnProjectReferenceRemoved;
+				}
 			}
 		}
 
@@ -898,24 +908,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 				return null;
 			}
 			
-			string rawTags = (string)PropertyService.Get ("Monodevelop.TaskListTokens", "FIXME:2;TODO:1;HACK:1;UNDONE:0");
-			if (String.IsNullOrEmpty (rawTags))
-			{
-				PropertyService.Set ("Monodevelop.TaskListTokens", "FIXME:2;TODO:1;HACK:1;UNDONE:0");
-				rawTags = "FIXME:2;TODO:1;HACK:1;UNDONE:0";
-			}
-			
-			List<string> tags = new List<string> ();
-			foreach (string s in rawTags.Split (';')) {
-				string t = s;
-				int pos = s.IndexOf (':');
-				if (pos != -1)
-					t = s.Substring (0, pos);
-				t = t.Trim ();
-				if (t.Length > 0)
-					tags.Add (t);
-			}
-			parser.LexerTags = tags.ToArray ();
+			parser.LexerTags = SpecialCommentTags.GetNames ();
 			
 			ParsedDocument parserOutput = null;
 			
@@ -1070,6 +1063,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 		public static event EventHandler<TypeUpdateInformationEventArgs> TypesUpdated;
 		public static event AssemblyInformationEventHandler AssemblyInformationChanged;
 		public static event EventHandler<CommentTasksChangedEventArgs> CommentTasksChanged;
+		public static event EventHandler SpecialCommentTagsChanged;
 		public static event EventHandler ParseOperationStarted;
 		public static event EventHandler ParseOperationFinished;
 		
@@ -1099,4 +1093,5 @@ namespace MonoDevelop.Projects.Dom.Parser
 	{
 		IProgressMonitor CreateProgressMonitor ();
 	}
+	
 }

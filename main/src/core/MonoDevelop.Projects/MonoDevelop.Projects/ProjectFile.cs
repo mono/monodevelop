@@ -40,11 +40,8 @@ namespace MonoDevelop.Projects
 	/// <summary>
 	/// This class represent a file information in an IProject object.
 	/// </summary>
-	public class ProjectFile : ICloneable, IExtendedDataItem
+	public class ProjectFile : ProjectItem, ICloneable
 	{
-		Hashtable extendedProperties;
-		
-		[ProjectPathItemProperty("name")]
 		string filename;
 		
 		[ItemProperty("subtype")]	
@@ -100,14 +97,6 @@ namespace MonoDevelop.Projects
 			project = prj;
 		}
 		
-		public IDictionary ExtendedProperties {
-			get {
-				if (extendedProperties == null)
-					extendedProperties = new Hashtable ();
-				return extendedProperties;
-			}
-		}
-						
 		public string Name {
 			get {
 				return filename;
@@ -227,7 +216,7 @@ namespace MonoDevelop.Projects
 					dependsOnFile = null;
 				}
 				if (value != null && project != null)
-					project.Files.ResolveDependencies (this);
+					project.ResolveDependencies (this);
 				
 				OnChanged ();
 			}
@@ -242,8 +231,6 @@ namespace MonoDevelop.Projects
 			get { return dependentChildren != null && dependentChildren.Count > 0; }
 		}
 
-		internal string Condition { get; set; }
-		
 		public IEnumerable<ProjectFile> DependentChildren {
 			get { return ((IEnumerable<ProjectFile>)dependentChildren) ?? new ProjectFile[0]; }
 		}
@@ -291,6 +278,8 @@ namespace MonoDevelop.Projects
 
 		public string ResourceId {
 			get {
+				if (BuildAction != MonoDevelop.Projects.BuildAction.EmbeddedResource)
+					return string.Empty;
 				if (string.IsNullOrEmpty (resourceId) && project is DotNetProject)
 					return ((DotNetProject)project).ResourceHandler.GetDefaultResourceId (this);
 				return resourceId;

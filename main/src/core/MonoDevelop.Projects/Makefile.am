@@ -50,6 +50,7 @@ FILES =  \
 	MonoDevelop.Projects.Dom.Output/OutputSettings.cs \
 	MonoDevelop.Projects.Dom.Parser/AbstractParser.cs \
 	MonoDevelop.Projects.Dom.Parser/AssemblyInformationEventHandler.cs \
+	MonoDevelop.Projects.Dom.Parser/CommentTag.cs \
 	MonoDevelop.Projects.Dom.Parser/CommentTasksChangedEventHandler.cs \
 	MonoDevelop.Projects.Dom.Parser/IParser.cs \
 	MonoDevelop.Projects.Dom.Parser/IParserDatabase.cs \
@@ -179,6 +180,7 @@ FILES =  \
 	MonoDevelop.Projects.Formats.MSBuild.Conditions/Token.cs \
 	MonoDevelop.Projects.Formats.MSBuild/MSBuildFileFormat.cs \
 	MonoDevelop.Projects.Formats.MSBuild/MSBuildHandler.cs \
+	MonoDevelop.Projects.Formats.MSBuild/MSBuildImportAttribute.cs \
 	MonoDevelop.Projects.Formats.MSBuild/MSBuildProject.cs \
 	MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs \
 	MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectService.cs \
@@ -240,6 +242,8 @@ FILES =  \
 	MonoDevelop.Projects/ProjectFile.cs \
 	MonoDevelop.Projects/ProjectFileCollection.cs \
 	MonoDevelop.Projects/ProjectFileEventArgs.cs \
+	MonoDevelop.Projects/ProjectItem.cs \
+	MonoDevelop.Projects/ProjectItemCollection.cs \
 	MonoDevelop.Projects/ProjectPathItemPropertyAttribute.cs \
 	MonoDevelop.Projects/ProjectReference.cs \
 	MonoDevelop.Projects/ProjectReferenceCollection.cs \
@@ -249,6 +253,7 @@ FILES =  \
 	MonoDevelop.Projects/ProjectServiceExtension.cs \
 	MonoDevelop.Projects/ProjectsServices.cs \
 	MonoDevelop.Projects/PropertyBag.cs \
+	MonoDevelop.Projects/SimpleProjectItem.cs \
 	MonoDevelop.Projects/Solution.cs \
 	MonoDevelop.Projects/SolutionConfiguration.cs \
 	MonoDevelop.Projects/SolutionConfigurationCollection.cs \

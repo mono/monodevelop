@@ -42,10 +42,9 @@ namespace MonoDevelop.Projects
 	/// This class represent a reference information in an Project object.
 	/// </summary>
 	[DataItem (FallbackType=typeof(UnknownProjectReference))]
-	public class ProjectReference : ICloneable, IExtendedDataItem
+	public class ProjectReference : ProjectItem, ICloneable
 	{
-		Hashtable extendedProperties;
-		ReferenceType referenceType;
+		ReferenceType referenceType = ReferenceType.Custom;
 		DotNetProject ownerProject;
 		string reference = String.Empty;
 		bool localCopy = true;
@@ -84,14 +83,6 @@ namespace MonoDevelop.Projects
 		{
 			referenceType = ReferenceType.Project;
 			reference = referencedProject.Name;
-		}
-		
-		public IDictionary ExtendedProperties {
-			get {
-				if (extendedProperties == null)
-					extendedProperties = new Hashtable ();
-				return extendedProperties;
-			}
 		}
 		
 		public Project OwnerProject {
@@ -140,8 +131,6 @@ namespace MonoDevelop.Projects
 				loadedReference = value;
 			}
 		}
-
-		internal string Condition { get; set; }
 
 		public bool SpecificVersion {
 			get {
@@ -203,6 +192,7 @@ namespace MonoDevelop.Projects
 					return null;
 				
 				default:
+					Console.WriteLine ("pp: " + Reference + " " + OwnerProject.FileName);
 					throw new NotImplementedException("unknown reference type : " + ReferenceType);
 			}
 		}
@@ -255,16 +245,7 @@ namespace MonoDevelop.Projects
 		}
 	}
 	
-	public class UnknownProjectReference: ProjectReference, IExtendedDataItem
+	public class UnknownProjectReference: ProjectReference
 	{
-		Hashtable props;
-		
-		IDictionary IExtendedDataItem.ExtendedProperties {
-			get {
-				if (props == null)
-					props = new Hashtable ();
-				return props;
-			}
-		}
 	}
 }
