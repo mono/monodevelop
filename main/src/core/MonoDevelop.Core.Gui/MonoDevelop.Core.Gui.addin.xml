@@ -223,5 +223,11 @@
 			<File pattern="*.exe" />
 			<File pattern="*.dll" />
 		</MimeType>
+		<MimeType id="application/x-sln" _description="MonoDevelop/MSBuild Solution" icon="md-solution" >
+			<File pattern="*.sln" />
+		</MimeType>
+		<MimeType id="application/x-mds" _description="MonoDevelop 1.0 Solution" icon="md-solution" >
+			<File pattern="*.mds" />
+		</MimeType>
 	</Extension>
 </Addin>
