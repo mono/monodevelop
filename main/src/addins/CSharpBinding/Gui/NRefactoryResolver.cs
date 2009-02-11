@@ -519,7 +519,7 @@ namespace MonoDevelop.CSharpBinding
 					}
 				}
 			}
-			
+			IType searchedType = dom.SearchType (new SearchTypeRequest (unit, this.resolvePosition.Line, this.resolvePosition.Column, identifier));
 			if (this.callingType != null && dom != null) {
 				List<IMember> members = new List <IMember> ();
 				foreach (IType type in dom.GetInheritanceTree (callingType)) {
@@ -553,6 +553,12 @@ namespace MonoDevelop.CSharpBinding
 					}
 					result.UnresolvedType = members[0].ReturnType;
 					result.ResolvedType = ResolveType (members[0].ReturnType);
+					if (members[0] is IProperty && searchedType != null) {
+						result = new AggregatedResolveResult (result, new MemberResolveResult (null, true) {
+							UnresolvedType = new DomReturnType (searchedType),
+							ResolvedType = new DomReturnType (searchedType)
+						});
+					}
 					goto end;
 				}
 			}
@@ -581,7 +587,7 @@ namespace MonoDevelop.CSharpBinding
 				}
 			}
 			
-			IType searchedType = dom.SearchType (new SearchTypeRequest (unit, this.resolvePosition.Line, this.resolvePosition.Column, identifier));
+			
 			if (searchedType != null) {
 				result = new MemberResolveResult (null, true);
 				result.UnresolvedType = result.ResolvedType = new DomReturnType (searchedType);
