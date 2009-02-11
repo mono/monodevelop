@@ -251,19 +251,39 @@ namespace MonoDevelop.CSharpBinding
 			
 			List<string> namespaceList = new List<string> ();
 			namespaceList.Add ("");
-				
+			
+			List<string> namespaceDeclList = new List<string> ();
+			namespaceDeclList.Add ("");
 			if (unit != null) {
 				foreach (IUsing u in unit.Usings) {
-					if (u.Namespaces == null)
+					if (u.Namespaces == null) 
+						continue;
+					bool isNamespaceDecl = u.IsFromNamespace && u.Region.Contains (this.resolvePosition);
+					if (u.IsFromNamespace && !isNamespaceDecl)
 						continue;
 					foreach (string ns in u.Namespaces) {
 						namespaceList.Add (ns);
+						if (isNamespaceDecl)
+							namespaceDeclList.Add (ns);
 					}
 				}
 				
 				foreach (object o in dom.GetNamespaceContents (namespaceList, true, true)) {
 					if (context.FilterEntry (o))
 						continue;
+					if (o is Namespace) {
+						Namespace ns = o as Namespace;
+						bool skip = true;
+						foreach (string str in namespaceDeclList) {
+							if (dom.NamespaceExists (str.Length > 0 ? str + "." + ns.Name : ns.Name)) {
+								skip = false;
+								break;
+							}
+						}
+						if (skip)
+							continue;
+					}
+					
 					//IMember member = o as IMember;
 					//if (member != null && completionList.Find (member.Name) != null)
 					//	continue;
