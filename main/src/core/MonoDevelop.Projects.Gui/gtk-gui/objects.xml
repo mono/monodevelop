@@ -3,4 +3,12 @@
     <itemgroups />
     <signals />
   </object>
+  <object type="MonoDevelop.Projects.Gui.Dialogs.OptionPanels.BaseDirectoryPanelWidget" palette-category="MonoDevelop.Projects.Gui" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups>
+      <itemgroup label="BaseDirectoryPanelWidget Properties">
+        <property name="BaseDirectory" />
+      </itemgroup>
+    </itemgroups>
+    <signals />
+  </object>
 </objects>

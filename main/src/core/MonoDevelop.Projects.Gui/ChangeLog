@@ -1,3 +1,10 @@
+2009-02-11  Mike Krüger  <mkrueger@novell.com>
+
+	* gtk-gui/objects.xml: 
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  fixed "Bug 474458 - NRE on code completion".
+
 2009-02-10  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:

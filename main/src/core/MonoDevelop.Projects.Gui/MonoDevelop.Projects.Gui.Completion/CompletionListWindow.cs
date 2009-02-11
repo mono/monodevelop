@@ -259,13 +259,17 @@ namespace MonoDevelop.Projects.Gui.Completion
 				return;
 			
 			ICompletionData item = currentData ?? completionDataList[Selection];
+			if (item == null)
+				return;
 			string word = item.CompletionText;
 			IActionCompletionData ac = item as IActionCompletionData;
 			if (ac != null) {
 				ac.InsertCompletionText (completionWidget, completionContext);
 				return;
 			}
-			int replaceLen = completionContext.TriggerWordLength + PartialWord.Length - initialWordLength;
+			string partialWord = PartialWord;
+			int partialWordLength = partialWord != null ? partialWord.Length : 0;
+			int replaceLen = completionContext.TriggerWordLength + partialWordLength - initialWordLength;
 			string pword = completionWidget.GetText (completionContext.TriggerOffset, completionContext.TriggerOffset + replaceLen);
 			
 			completionWidget.SetCompletionText (completionContext, pword, word);
