@@ -81,7 +81,7 @@ namespace MonoDevelop.Projects.Dom
 	{
 		List<ResolveResult> resolveResults = new List<ResolveResult> ();
 		
-		ResolveResult PrimaryResult {
+		public ResolveResult PrimaryResult {
 			get {
 				if (resolveResults.Count == 0)
 					return null;
