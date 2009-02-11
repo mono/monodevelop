@@ -576,7 +576,7 @@ namespace MonoDevelop.CSharpBinding
 					}
 					result.UnresolvedType = members[0].ReturnType;
 					result.ResolvedType = ResolveType (members[0].ReturnType);
-					if (members[0] is IProperty && searchedType != null) {
+					if (members[0] is IProperty && searchedType != null && result.ResolvedType.FullName == searchedType.FullName) {
 						result = new AggregatedResolveResult (result, new MemberResolveResult (null, true) {
 							UnresolvedType = new DomReturnType (searchedType),
 							ResolvedType = new DomReturnType (searchedType)

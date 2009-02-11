@@ -1,5 +1,9 @@
 2009-02-11  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/NRefactoryResolver.cs: fixed test case 470954_bis
+
+2009-02-11  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/NRefactoryResolver.cs: fixed "Bug 474447 - Wrong
 	  completion of namespaces".
 
