@@ -45,7 +45,7 @@ namespace CSharpBinding
 			return Path.GetExtension(fileName).ToUpper() == ".CS";
 		}
 
-		public BuildResult Compile (ProjectFileCollection projectFiles, ProjectReferenceCollection references, DotNetProjectConfiguration configuration, IProgressMonitor monitor)
+		public BuildResult Compile (ProjectItemCollection projectItems, DotNetProjectConfiguration configuration, IProgressMonitor monitor)
 		{
 			CSharpCompilerParameters compilerparameters = (CSharpCompilerParameters) configuration.CompilationParameters;
 			if (compilerparameters == null) compilerparameters = new CSharpCompilerParameters ();
@@ -60,35 +60,33 @@ namespace CSharpBinding
 			
 			ArrayList pkg_references = new ArrayList ();
 			
-			if (references != null) {
-				foreach (ProjectReference lib in references) {
-					if ((lib.ReferenceType == ReferenceType.Project) &&
-					    (!(lib.OwnerProject.ParentSolution.FindProjectByName (lib.Reference) is DotNetProject)))
-						continue;
-					foreach (string fileName in lib.GetReferencedFileNames (configuration.Id)) {
-						switch (lib.ReferenceType) {
-						case ReferenceType.Gac:
-							SystemPackage pkg = Runtime.SystemAssemblyService.GetPackageFromFullName (lib.Reference);
-							if (pkg == null) {
-								string msg = String.Format (GettextCatalog.GetString ("{0} could not be found or is invalid."), lib.Reference);
-								monitor.ReportWarning (msg);
-								continue;
-							}
-							if (pkg.IsCorePackage) {
-								writer.WriteLine ("\"/r:" + Path.GetFileName (fileName) + "\"");
-							} else if (pkg.IsInternalPackage) {
-								writer.WriteLine ("\"/r:" + fileName + "\"");
-							} else if (!pkg_references.Contains (pkg.Name)) {
-								pkg_references.Add (pkg.Name);
-								writer.WriteLine ("\"-pkg:" + pkg.Name + "\"");
-							}
-							if (pkg.GacRoot != null && !gacRoots.Contains (pkg.GacRoot))
-								gacRoots.Add (pkg.GacRoot);
-							break;
-						default:
-							writer.WriteLine ("\"/r:" + fileName + "\"");
-							break;
+			foreach (ProjectReference lib in projectItems.GetAll <ProjectReference> ()) {
+				if ((lib.ReferenceType == ReferenceType.Project) &&
+				    (!(lib.OwnerProject.ParentSolution.FindProjectByName (lib.Reference) is DotNetProject)))
+					continue;
+				foreach (string fileName in lib.GetReferencedFileNames (configuration.Id)) {
+					switch (lib.ReferenceType) {
+					case ReferenceType.Gac:
+						SystemPackage pkg = Runtime.SystemAssemblyService.GetPackageFromFullName (lib.Reference);
+						if (pkg == null) {
+							string msg = String.Format (GettextCatalog.GetString ("{0} could not be found or is invalid."), lib.Reference);
+							monitor.ReportWarning (msg);
+							continue;
 						}
+						if (pkg.IsCorePackage) {
+							writer.WriteLine ("\"/r:" + Path.GetFileName (fileName) + "\"");
+						} else if (pkg.IsInternalPackage) {
+							writer.WriteLine ("\"/r:" + fileName + "\"");
+						} else if (!pkg_references.Contains (pkg.Name)) {
+							pkg_references.Add (pkg.Name);
+							writer.WriteLine ("\"-pkg:" + pkg.Name + "\"");
+						}
+						if (pkg.GacRoot != null && !gacRoots.Contains (pkg.GacRoot))
+							gacRoots.Add (pkg.GacRoot);
+						break;
+					default:
+						writer.WriteLine ("\"/r:" + fileName + "\"");
+						break;
 					}
 				}
 			}
@@ -192,7 +190,7 @@ namespace CSharpBinding
 					break;
 			}
 			
-			foreach (ProjectFile finfo in projectFiles) {
+			foreach (ProjectFile finfo in projectItems.GetAll<ProjectFile> ()) {
 				if (finfo.Subtype == Subtype.Directory)
 					continue;
 
@@ -245,8 +243,8 @@ namespace CSharpBinding
 			TempFileCollection tf = new TempFileCollection();
 
 			string workingDir = ".";
-			if (projectFiles != null && projectFiles.Count > 0) {
-				workingDir = projectFiles [0].Project.BaseDirectory;
+			if (configuration.ParentItem != null) {
+				workingDir = configuration.ParentItem.BaseDirectory;
 				if (workingDir == null)
 					// Dummy projects created for single files have no filename
 					// and so no BaseDirectory.

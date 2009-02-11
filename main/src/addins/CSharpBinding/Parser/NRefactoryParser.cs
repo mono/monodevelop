@@ -189,7 +189,7 @@ namespace MonoDevelop.CSharpBinding
 				parser.Errors.Error += delegate (int line, int col, string message) {
 					result.Add (new Error (ErrorType.Error, line, col, message));
 				};
-				parser.Lexer.SpecialCommentTags = ProjectDomService.SpecialCommentTags;
+				parser.Lexer.SpecialCommentTags = ProjectDomService.SpecialCommentTags.GetNames ();
 				
 				parser.Parse ();
 				
