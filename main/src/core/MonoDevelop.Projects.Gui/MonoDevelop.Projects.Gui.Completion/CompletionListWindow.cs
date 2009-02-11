@@ -84,6 +84,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		Widget parsingMessage;
 		CompletionDelegate closedDelegate;
 		int initialWordLength;
+		int previousWidth = -1, previousHeight = -1;
 		
 		const int declarationWindowMargin = 3;
 		
@@ -214,11 +215,24 @@ namespace MonoDevelop.Projects.Gui.Completion
 			
 			DataProvider = this;
 			
+			Reposition (true);
+			
+			return true;
+		}
+		
+		void Reposition (bool force)
+		{
 			int x = completionContext.TriggerXCoord - TextOffset;
 			int y = completionContext.TriggerYCoord;
 			
 			int w, h;
 			GetSize (out w, out h);
+			
+			if (!force && previousHeight != h && previousWidth != w)
+				return;
+			
+			previousHeight = h;
+			previousWidth = w;
 			
 			if ((x + w) > Screen.Width)
 				x = Screen.Width - w;
@@ -227,10 +241,16 @@ namespace MonoDevelop.Projects.Gui.Completion
 			{
 				y = y - completionContext.TriggerTextHeight - h;
 			}
-
-			Move (x, y);
 			
-			return true;
+			Move (x, y);
+		}
+		
+		//smaller lists get size reallocated after FillList, so we have to reposition them
+		//if the window size has changed since we last positioned it
+		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
+		{
+			base.OnSizeAllocated (allocation);
+			Reposition (false);
 		}
 		
 		void UpdateWord ()

@@ -1,6 +1,13 @@
 2009-02-10  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Reposition the GUI window if the allocated size changes
+	  after initial placement. Fixes "Bug 441631 - Completion
+	  window positioning is sometimes wrong".
+
+2009-02-10  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
 	  Align window's text with the trigger text.
 
 	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: If icon's
