@@ -146,7 +146,7 @@ namespace MonoDevelop.CSharpBinding
 		internal void SetupResolver (DomLocation resolvePosition)
 		{
 			this.resolvePosition = resolvePosition;
-			
+			this.resultTable.Clear ();
 			callingType = GetTypeAtCursor (unit, fileName, resolvePosition);
 			
 			if (callingType != null) {
@@ -475,10 +475,13 @@ namespace MonoDevelop.CSharpBinding
 			
 			return null;
 		}
-	
+		Dictionary<string, ResolveResult> resultTable = new Dictionary<string, ResolveResult> ();
 		public ResolveResult ResolveIdentifier (ResolveVisitor visitor, string identifier)
 		{
 			ResolveResult result = null;
+			if (resultTable.TryGetValue (identifier, out result))
+				return result;
+			resultTable[identifier] = result;
 			foreach (KeyValuePair<string, List<LocalLookupVariable>> pair in this.lookupTableVisitor.Variables) {
 				if (identifier == pair.Key) {
 					foreach (LocalLookupVariable var in pair.Value) {
@@ -623,6 +626,7 @@ namespace MonoDevelop.CSharpBinding
 				result.CallingType   = CallingType;
 				result.CallingMember = CallingMember;
 			}
+			resultTable[identifier] = result;
 			return result;
 		}
 		
