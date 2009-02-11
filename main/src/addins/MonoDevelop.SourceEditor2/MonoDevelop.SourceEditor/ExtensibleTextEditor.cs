@@ -307,13 +307,31 @@ namespace MonoDevelop.SourceEditor
 				&& Document.GetCharAt (Caret.Offset)     == '}'
 				&& !inStringOrComment;
 			int initialOffset = Caret.Offset;
+			
+			if (Options.AutoInsertMatchingBracket && !inStringOrComment && MonoDevelop.Ide.Gui.TextEditor.IsOpenBrace (ch)) {
+				char closingBrace = MonoDevelop.Ide.Gui.TextEditor.GetMatchingBrace (ch);
+				int count = 0;
+				foreach (char curCh in TextWithoutCommentsAndStrings) {
+					if (curCh == ch) {
+						count++;
+					} else if (curCh == closingBrace) {
+						count--;
+					}
+				}
+				if (count >= 0) {
+					string openBrackets = "{[('\"";
+					if (openBrackets.Contains (ch.ToString()))
+						Insert (Caret.Offset, closingBrace.ToString());
+				}
+			}
+			
 			if (extension != null) {
 				if (ExtensionKeyPress (evnt.Key, ch, evnt.State)) 
 					result = base.OnIMProcessedKeyPressEvent (evnt, ch);
 				if (returnBetweenBraces) {
 					Caret.Offset = initialOffset;
 					ExtensionKeyPress (Gdk.Key.Return, (char)0, Gdk.ModifierType.None);
-				}			
+				}
 			} else {
 				result = base.OnIMProcessedKeyPressEvent (evnt, ch);
 				if (returnBetweenBraces) {
@@ -335,22 +353,6 @@ namespace MonoDevelop.SourceEditor
 				return true;
 			}
 				
-			if (Options.AutoInsertMatchingBracket && !inStringOrComment && MonoDevelop.Ide.Gui.TextEditor.IsOpenBrace (ch)) {
-				char closingBrace = MonoDevelop.Ide.Gui.TextEditor.GetMatchingBrace (ch);
-				int count = 0;
-				foreach (char curCh in TextWithoutCommentsAndStrings) {
-					if (curCh == ch) {
-						count++;
-					} else if (curCh == closingBrace) {
-						count--;
-					}
-				}
-				if (count > 0) {
-					string openBrackets = "{[('\"";
-					if (openBrackets.Contains (ch.ToString()))
-						Insert (Caret.Offset, closingBrace.ToString());
-				}
-			}
 			Document.EndAtomicUndo ();
 			return result;
 		}

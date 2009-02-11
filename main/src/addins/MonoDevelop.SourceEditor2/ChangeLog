@@ -1,3 +1,9 @@
+2009-02-11  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: fixed "Bug
+	  474055 - no parameters hints on first parameter when "Insert
+	  Matching Brace" is enabled".
+
 2009-02-11  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.SourceEditor/StyledSourceEditorOptions.cs: Fix
