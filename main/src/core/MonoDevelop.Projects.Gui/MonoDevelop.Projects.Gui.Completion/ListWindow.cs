@@ -383,6 +383,10 @@ namespace MonoDevelop.Projects.Gui.Completion
 			this.GdkWindow.DrawRectangle (this.Style.ForegroundGC (StateType.Insensitive), false, 0, 0, winWidth-1, winHeight-1);
 			return false;
 		}		
+		
+		public int TextOffset {
+			get { return list.TextOffset + (int) this.BorderWidth; }
+		}
 	}
 
 	internal class ListWidget: Gtk.DrawingArea
@@ -530,6 +534,16 @@ namespace MonoDevelop.Projects.Gui.Completion
 			DrawList ();
 	  		return true;
 		}
+		
+		public int TextOffset {
+			get {
+				int iconWidth, iconHeight;
+				if (!Gtk.Icon.SizeLookup (Gtk.IconSize.Menu, out iconWidth, out iconHeight)) {
+					iconHeight = iconWidth = 24;
+				}
+				return iconWidth + margin + padding + 2;
+			}
+		}
 
 		void DrawList ()
 		{
@@ -551,8 +565,14 @@ namespace MonoDevelop.Projects.Gui.Completion
 					layout.SetText (win.DataProvider.GetText (page + n) ?? "<null>");
 				
 				Gdk.Pixbuf icon = win.DataProvider.GetIcon (page + n);
-				int iconHeight = icon != null? icon.Height : 24;
-				int iconWidth = icon != null? icon.Width : 24;
+				int iconHeight, iconWidth;
+				
+				if (icon != null) {
+					iconWidth = icon.Width;
+					iconHeight = icon.Height;
+				} else if (!Gtk.Icon.SizeLookup (Gtk.IconSize.Menu, out iconWidth, out iconHeight)) {
+					iconHeight = iconWidth = 24;
+				}
 				
 				int wi, he, typos, iypos;
 				layout.GetPixelSize (out wi, out he);

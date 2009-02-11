@@ -1,5 +1,15 @@
 2009-02-10  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Align window's text with the trigger text.
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: If icon's
+	  null, actually look up the size for the space. Add property
+	  for getting offset of list's text relative to the window
+	  border.
+
+2009-02-10  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/NamespaceSynchronisationPanel.cs:
 	  If resource name policy is unset, don't automatically set it
 	  to MD1 format. Only change it when the user makes a change.

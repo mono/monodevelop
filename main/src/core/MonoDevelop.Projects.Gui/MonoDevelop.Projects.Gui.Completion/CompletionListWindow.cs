@@ -213,8 +213,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 			completionDataList.Sort (new DataItemComparer ());
 			
 			DataProvider = this;
-
-			int x = completionContext.TriggerXCoord;
+			
+			int x = completionContext.TriggerXCoord - TextOffset;
 			int y = completionContext.TriggerYCoord;
 			
 			int w, h;
