@@ -27,11 +27,35 @@
 //
 
 using System;
+using System.Collections.Generic;
+using Mono.Addins;
 
 namespace MonoDevelop.Projects.Text
 {
 	public static class TextFileService
 	{
+		static List<IFormatter> formatters = new List<IFormatter>();
+		
+		static TextFileService ()
+		{
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/ProjectModel/TextFormatters", delegate(object sender, ExtensionNodeEventArgs args) {
+				switch (args.Change) {
+				case ExtensionChange.Add:
+					formatters.Add ((IFormatter) args.ExtensionObject);
+					break;
+				case ExtensionChange.Remove:
+					formatters.Remove ((IFormatter) args.ExtensionObject);
+					break;
+				}
+			});
+		}
+		
+		public static IFormatter GetFormatter (string mimeType)
+		{
+			System.Console.WriteLine("format:" + formatters.Count);
+			return formatters.Find (x => x.CanFormat (mimeType));
+		}
+		
 		public static void FireLineCountChanged (ITextFile textFile, int lineNumber, int lineCount, int column)
 		{
 			if (LineCountChanged != null)

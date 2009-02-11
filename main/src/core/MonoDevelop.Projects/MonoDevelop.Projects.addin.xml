@@ -77,6 +77,10 @@
 		<ExtensionNode name="Class"/>
 	</ExtensionPoint>
 	
+	<ExtensionPoint path = "/MonoDevelop/ProjectModel/TextFormatters" name = "Formatters">
+		<ExtensionNode name="Class"/>
+	</ExtensionPoint>
+	
 	<ExtensionPoint path = "/MonoDevelop/ProjectModel/PolicyTypes" name = "Policy types">
 		<Description>Types for per-project policies language binding. These types must be serializable.</Description>
 		<ExtensionNode name="PolicyType" type="MonoDevelop.Projects.Extensions.DataTypeCodon" />

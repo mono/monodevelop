@@ -1,5 +1,14 @@
 2009-02-11  Mike Krüger  <mkrueger@novell.com>
 
+	* Makefile.am:
+	* MonoDevelop.Projects.csproj:
+	* MonoDevelop.Projects.addin.xml:
+	* MonoDevelop.Projects.Text/IFormatter.cs:
+	* MonoDevelop.Projects.Text/TextFileService.cs: Added text
+	  formatter infrastructure.
+
+2009-02-11  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs: fixed
 	  "Bug 434752 - Encapsulate field, encapsulates in wrong
 	  order".

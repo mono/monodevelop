@@ -190,6 +190,7 @@ FILES =  \
 	MonoDevelop.Projects.Policies/PolicyService.cs \
 	MonoDevelop.Projects.Policies/PolicySet.cs \
 	MonoDevelop.Projects.Text/IEditableTextFile.cs \
+	MonoDevelop.Projects.Text/IFormatter.cs \
 	MonoDevelop.Projects.Text/ITextFile.cs \
 	MonoDevelop.Projects.Text/ITextFileProvider.cs \
 	MonoDevelop.Projects.Text/TextEncoding.cs \

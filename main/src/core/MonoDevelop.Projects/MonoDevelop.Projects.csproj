@@ -317,6 +317,7 @@
     <Compile Include="MonoDevelop.Projects.Dom\InstantiatedMethod.cs" />
     <Compile Include="MonoDevelop.Projects.Policies\PolicyChangedEventArgs.cs" />
     <Compile Include="MonoDevelop.Projects.Text\TextFormatter.cs" />
+    <Compile Include="MonoDevelop.Projects.Text\IFormatter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
