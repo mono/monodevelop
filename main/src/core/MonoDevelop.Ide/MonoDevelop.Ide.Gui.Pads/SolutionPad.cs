@@ -43,7 +43,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 		{
 			IdeApp.Workspace.WorkspaceItemOpened += OnOpenWorkspace;
 			IdeApp.Workspace.WorkspaceItemClosed += OnCloseWorkspace;
-			PropertyService.PropertyChanged += (EventHandler<PropertyChangedEventArgs>) DispatchService.GuiDispatch (new EventHandler<PropertyChangedEventArgs> (TrackPropertyChange));
 		}
 		
 		public override void Initialize (NodeBuilder[] builders, TreePadOption[] options)
@@ -51,13 +50,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 			base.Initialize (builders, options);
 			foreach (WorkspaceItem it in IdeApp.Workspace.Items)
 				treeView.AddChild (it);
-		}
-		
-		void TrackPropertyChange (object o, MonoDevelop.Core.PropertyChangedEventArgs e)
-		{
-			if (e.OldValue != e.NewValue && e.Key == "MonoDevelop.Core.Gui.ProjectBrowser.ShowExtensions") {
-				RedrawContent ();
-			}
 		}
 		
 		protected virtual void OnOpenWorkspace (object sender, WorkspaceItemEventArgs e)

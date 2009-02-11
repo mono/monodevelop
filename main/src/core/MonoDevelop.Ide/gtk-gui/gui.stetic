@@ -216,7 +216,6 @@
             <child>
               <widget class="Gtk.Table" id="table1">
                 <property name="MemberName" />
-                <property name="NRows">3</property>
                 <property name="NColumns">2</property>
                 <property name="RowSpacing">6</property>
                 <property name="ColumnSpacing">6</property>
@@ -2624,7 +2623,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.Ide.ExternalTools.ExternalToolPanelWidget" design-size="482 390">
+  <widget class="Gtk.Bin" id="MonoDevelop.Ide.ExternalTools.ExternalToolPanelWidget" design-size="482 442">
     <property name="MemberName" />
     <child>
       <widget class="Gtk.VBox" id="vbox32">
@@ -2816,22 +2815,10 @@
             <child>
               <widget class="Gtk.Table" id="table3">
                 <property name="MemberName" />
-                <property name="NRows">3</property>
+                <property name="NRows">1</property>
                 <property name="NColumns">2</property>
                 <property name="RowSpacing">6</property>
                 <property name="ColumnSpacing">4</property>
-                <child>
-                  <placeholder />
-                </child>
-                <child>
-                  <placeholder />
-                </child>
-                <child>
-                  <placeholder />
-                </child>
-                <child>
-                  <placeholder />
-                </child>
                 <child>
                   <widget class="Gtk.Button" id="argumentQuickInsertButton">
                     <property name="MemberName" />
@@ -2889,22 +2876,10 @@
             <child>
               <widget class="Gtk.Table" id="table4">
                 <property name="MemberName" />
-                <property name="NRows">3</property>
+                <property name="NRows">1</property>
                 <property name="NColumns">2</property>
                 <property name="RowSpacing">6</property>
                 <property name="ColumnSpacing">4</property>
-                <child>
-                  <placeholder />
-                </child>
-                <child>
-                  <placeholder />
-                </child>
-                <child>
-                  <placeholder />
-                </child>
-                <child>
-                  <placeholder />
-                </child>
                 <child>
                   <widget class="Gtk.Button" id="workingDirQuickInsertButton">
                     <property name="MemberName" />
@@ -3230,7 +3205,6 @@
               <widget class="Gtk.Table" id="table2">
                 <property name="MemberName" />
                 <property name="NRows">4</property>
-                <property name="NColumns">3</property>
                 <property name="RowSpacing">6</property>
                 <property name="ColumnSpacing">6</property>
                 <child>
@@ -3798,7 +3772,7 @@ Months</property>
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.Ide.Gui.OptionPanels.TasksPanelWidget">
+  <widget class="Gtk.Bin" id="MonoDevelop.Ide.Gui.OptionPanels.TasksPanelWidget" design-size="564 336">
     <property name="MemberName" />
     <property name="GeneratePublic">False</property>
     <child>
@@ -4008,7 +3982,6 @@ Months</property>
                 <child>
                   <widget class="Gtk.Table" id="table6">
                     <property name="MemberName" />
-                    <property name="NRows">3</property>
                     <property name="NColumns">2</property>
                     <property name="RowSpacing">4</property>
                     <property name="ColumnSpacing">6</property>
@@ -5317,7 +5290,7 @@ Months</property>
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Window" id="MonoDevelop.Ide.DocumentSwitcher" design-size="400 299">
+  <widget class="Gtk.Window" id="MonoDevelop.Ide.DocumentSwitcher" design-size="490 350">
     <property name="MemberName" />
     <property name="Title" translatable="yes" />
     <property name="TypeHint">Menu</property>
@@ -5381,23 +5354,11 @@ Months</property>
             <child>
               <widget class="Gtk.Table" id="table1">
                 <property name="MemberName" />
-                <property name="NRows">3</property>
+                <property name="NRows">1</property>
                 <property name="NColumns">2</property>
                 <property name="Homogeneous">True</property>
                 <property name="RowSpacing">6</property>
                 <property name="ColumnSpacing">6</property>
-                <child>
-                  <placeholder />
-                </child>
-                <child>
-                  <placeholder />
-                </child>
-                <child>
-                  <placeholder />
-                </child>
-                <child>
-                  <placeholder />
-                </child>
                 <child>
                   <widget class="Gtk.VBox" id="vbox2">
                     <property name="MemberName" />
@@ -5547,7 +5508,7 @@ Months</property>
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget" design-size="315 194">
+  <widget class="Gtk.Bin" id="MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget" design-size="315 171">
     <property name="MemberName" />
     <child>
       <widget class="Gtk.VBox" id="vbox13">
@@ -5626,21 +5587,6 @@ Large</property>
                     <property name="MemberName" />
                     <property name="Spacing">6</property>
                     <child>
-                      <widget class="Gtk.CheckButton" id="extensionButton">
-                        <property name="MemberName" />
-                        <property name="Label" translatable="yes">_Show extensions</property>
-                        <property name="DrawIndicator">True</property>
-                        <property name="HasLabel">True</property>
-                        <property name="UseUnderline">True</property>
-                      </widget>
-                      <packing>
-                        <property name="Position">0</property>
-                        <property name="AutoSize">True</property>
-                        <property name="Expand">False</property>
-                        <property name="Fill">False</property>
-                      </packing>
-                    </child>
-                    <child>
                       <widget class="Gtk.CheckButton" id="hiddenButton">
                         <property name="MemberName" />
                         <property name="Label" translatable="yes">S_how hidden files and directories</property>
@@ -5649,7 +5595,7 @@ Large</property>
                         <property name="UseUnderline">True</property>
                       </widget>
                       <packing>
-                        <property name="Position">1</property>
+                        <property name="Position">0</property>
                         <property name="AutoSize">True</property>
                         <property name="Expand">False</property>
                         <property name="Fill">False</property>
@@ -5662,7 +5608,7 @@ Large</property>
             <child>
               <widget class="Gtk.Label" id="GtkLabel7">
                 <property name="MemberName" />
-                <property name="LabelProp" translatable="yes">&lt;b&gt;Project Browser&lt;/b&gt;</property>
+                <property name="LabelProp" translatable="yes">&lt;b&gt;File Scout&lt;/b&gt;</property>
                 <property name="UseMarkup">True</property>
               </widget>
               <packing>
@@ -5919,7 +5865,6 @@ Large</property>
               <widget class="Gtk.Table" id="table1">
                 <property name="MemberName" />
                 <property name="NRows">2</property>
-                <property name="NColumns">3</property>
                 <property name="RowSpacing">6</property>
                 <property name="ColumnSpacing">6</property>
                 <child>
@@ -6490,7 +6435,6 @@ Large</property>
             <child>
               <widget class="Gtk.Table" id="infoTable">
                 <property name="MemberName" />
-                <property name="NRows">3</property>
                 <property name="NColumns">2</property>
                 <property name="RowSpacing">6</property>
                 <property name="ColumnSpacing">6</property>
@@ -6643,7 +6587,6 @@ Large</property>
     <child>
       <widget class="Gtk.Table" id="table1">
         <property name="MemberName" />
-        <property name="NRows">3</property>
         <property name="NColumns">2</property>
         <property name="RowSpacing">6</property>
         <property name="ColumnSpacing">6</property>

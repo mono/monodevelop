@@ -1,3 +1,19 @@
+2009-02-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Ide.Gui.Pads/SolutionPad.cs:
+	* MonoDevelop.Ide.Gui.OptionPanels/IDEStyleOptionsPanel.cs:
+	  Removed unused option.
+
+	* MonoDevelop.Ide.Tasks/TaskService.cs:
+	* MonoDevelop.Ide.Gui.OptionPanels/TasksOptionsPanel.cs: Use
+	  the new special comment tags api.
+
+	* gtk-gui/MonoDevelop.Ide.DocumentSwitcher.cs:
+	* gtk-gui/MonoDevelop.Ide.ExternalTools.ExternalToolPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.cs:
+	  Updated.
+
 2009-02-11  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: added

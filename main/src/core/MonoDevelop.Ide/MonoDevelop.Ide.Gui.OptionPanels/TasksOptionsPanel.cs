@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using MonoDevelop.Core;
@@ -34,6 +35,7 @@ using MonoDevelop.Core.Gui.Components;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Tasks;
+using MonoDevelop.Projects.Dom.Parser;
 using Gtk;
 
 namespace MonoDevelop.Ide.Gui.OptionPanels
@@ -41,7 +43,6 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 	
 	partial class TasksPanelWidget : Gtk.Bin
 	{	
-		string tokens;
 		ListStore tokensStore;
 		ComboBox comboPriority;
 
@@ -53,6 +54,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			foreach (TaskPriority priority in Enum.GetValues (typeof (TaskPriority)))
 				comboPriority.AppendText (Enum.GetName (typeof (TaskPriority), priority));
 			comboPriority.Changed += new EventHandler (Validate);
+			comboPriority.Show ();
 			vboxPriority.PackEnd (comboPriority, false, false, 0);
 			
 			tokensStore = new ListStore (typeof (string), typeof (int));
@@ -165,21 +167,9 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		
 		public void Load ()
 		{
-			tokens = (string)PropertyService.Get ("Monodevelop.TaskListTokens", "FIXME:2;TODO:1;HACK:1;UNDONE:0");
-			foreach (string token in tokens.Split (';'))
-			{
-				int pos = token.IndexOf (':');
-				if (pos != -1)
-				{
-					int priority;
-					if (! int.TryParse (token.Substring (pos + 1), out priority))
-						priority = 1;
-					tokensStore.AppendValues (token.Substring (0, pos), priority);
-				} else
-				{
-					tokensStore.AppendValues (token, TaskPriority.Normal);
-				}
-			}
+			foreach (CommentTag ctag in ProjectDomService.SpecialCommentTags)
+				tokensStore.AppendValues (ctag.Tag, ctag.Priority);
+			
 			colorbuttonHighPrio.Color = StringToColor ((string)PropertyService.Get ("Monodevelop.UserTasksHighPrioColor", ""));
 			colorbuttonNormalPrio.Color = StringToColor ((string)PropertyService.Get ("Monodevelop.UserTasksNormalPrioColor", ""));
 			colorbuttonLowPrio.Color = StringToColor ((string)PropertyService.Get ("Monodevelop.UserTasksLowPrioColor", ""));
@@ -187,17 +177,10 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		
 		public void Store ()
 		{
-			StringBuilder sb = new StringBuilder ();
+			List<CommentTag> tags = new List<CommentTag> ();
 			foreach (object[] row in tokensStore)
-			{
-				if (sb.Length > 0) sb.Append (';');
-				sb.Append ((string)row[0]);
-				sb.Append (':');
-				sb.Append ((int)row[1]);
-			}
-			string newTokens = sb.ToString ();
-			PropertyService.Set ("Monodevelop.TaskListTokens", newTokens);
-			
+				tags.Add (new CommentTag ((string)row[0], (int)row[1]));
+
 			PropertyService.Set ("Monodevelop.UserTasksHighPrioColor", ColorToString (colorbuttonHighPrio.Color));
 			PropertyService.Set ("Monodevelop.UserTasksNormalPrioColor", ColorToString (colorbuttonNormalPrio.Color));
 			PropertyService.Set ("Monodevelop.UserTasksLowPrioColor", ColorToString (colorbuttonLowPrio.Color));

@@ -89,7 +89,6 @@ namespace MonoDevelop.Ide.ExternalTools {
             this.toolListBox.WidthRequest = 200;
             this.toolListBox.HeightRequest = 150;
             this.toolListBox.Name = "toolListBox";
-            this.toolListBox.HeadersClickable = true;
             this.scrolledwindow4.Add(this.toolListBox);
             this.hbox21.Add(this.scrolledwindow4);
             Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.hbox21[this.scrolledwindow4]));

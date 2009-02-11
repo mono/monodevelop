@@ -69,7 +69,6 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			string name = fontButton.Style.FontDescription.ToString ();
 			
 			documentSwitcherButton.Active = PropertyService.Get ("MonoDevelop.Core.Gui.EnableDocumentSwitchDialog", true);
-			extensionButton.Active = PropertyService.Get ("MonoDevelop.Core.Gui.ProjectBrowser.ShowExtensions", true);
 			hiddenButton.Active = PropertyService.Get ("MonoDevelop.Core.Gui.FileScout.ShowHidden", false);
 			fontCheckbox.Active = PropertyService.Get ("MonoDevelop.Core.Gui.Pads.UseCustomFont", false);
 			fontButton.FontName = PropertyService.Get ("MonoDevelop.Core.Gui.Pads.CustomFont", name);
@@ -87,7 +86,6 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		
 		public void Store()
 		{
-			PropertyService.Set ("MonoDevelop.Core.Gui.ProjectBrowser.ShowExtensions", extensionButton.Active);
 			PropertyService.Set ("MonoDevelop.Core.Gui.FileScout.ShowHidden", hiddenButton.Active);
 			PropertyService.Set ("MonoDevelop.Core.Gui.Pads.UseCustomFont", fontCheckbox.Active);
 			PropertyService.Set ("MonoDevelop.Core.Gui.Pads.CustomFont", fontButton.FontName);

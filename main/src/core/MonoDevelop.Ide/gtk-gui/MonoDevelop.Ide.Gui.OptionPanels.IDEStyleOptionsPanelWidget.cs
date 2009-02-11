@@ -29,8 +29,6 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
         
         private Gtk.VBox vbox1;
         
-        private Gtk.CheckButton extensionButton;
-        
         private Gtk.CheckButton hiddenButton;
         
         private Gtk.Label GtkLabel7;
@@ -112,39 +110,28 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             this.vbox1.Name = "vbox1";
             this.vbox1.Spacing = 6;
             // Container child vbox1.Gtk.Box+BoxChild
-            this.extensionButton = new Gtk.CheckButton();
-            this.extensionButton.Name = "extensionButton";
-            this.extensionButton.Label = Mono.Unix.Catalog.GetString("_Show extensions");
-            this.extensionButton.DrawIndicator = true;
-            this.extensionButton.UseUnderline = true;
-            this.vbox1.Add(this.extensionButton);
-            Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.vbox1[this.extensionButton]));
-            w5.Position = 0;
-            w5.Expand = false;
-            w5.Fill = false;
-            // Container child vbox1.Gtk.Box+BoxChild
             this.hiddenButton = new Gtk.CheckButton();
             this.hiddenButton.Name = "hiddenButton";
             this.hiddenButton.Label = Mono.Unix.Catalog.GetString("S_how hidden files and directories");
             this.hiddenButton.DrawIndicator = true;
             this.hiddenButton.UseUnderline = true;
             this.vbox1.Add(this.hiddenButton);
-            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.vbox1[this.hiddenButton]));
-            w6.Position = 1;
-            w6.Expand = false;
-            w6.Fill = false;
+            Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.vbox1[this.hiddenButton]));
+            w5.Position = 0;
+            w5.Expand = false;
+            w5.Fill = false;
             this.GtkAlignment.Add(this.vbox1);
             this.frame1.Add(this.GtkAlignment);
             this.GtkLabel7 = new Gtk.Label();
             this.GtkLabel7.Name = "GtkLabel7";
-            this.GtkLabel7.LabelProp = Mono.Unix.Catalog.GetString("<b>Project Browser</b>");
+            this.GtkLabel7.LabelProp = Mono.Unix.Catalog.GetString("<b>File Scout</b>");
             this.GtkLabel7.UseMarkup = true;
             this.frame1.LabelWidget = this.GtkLabel7;
             this.vbox13.Add(this.frame1);
-            Gtk.Box.BoxChild w9 = ((Gtk.Box.BoxChild)(this.vbox13[this.frame1]));
-            w9.Position = 2;
-            w9.Expand = false;
-            w9.Fill = false;
+            Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.vbox13[this.frame1]));
+            w8.Position = 2;
+            w8.Expand = false;
+            w8.Fill = false;
             // Container child vbox13.Gtk.Box+BoxChild
             this.frame2 = new Gtk.Frame();
             this.frame2.Name = "frame2";
@@ -165,17 +152,17 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             this.fontCheckbox.DrawIndicator = true;
             this.fontCheckbox.UseUnderline = true;
             this.hbox2.Add(this.fontCheckbox);
-            Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(this.hbox2[this.fontCheckbox]));
-            w10.Position = 0;
-            w10.Expand = false;
+            Gtk.Box.BoxChild w9 = ((Gtk.Box.BoxChild)(this.hbox2[this.fontCheckbox]));
+            w9.Position = 0;
+            w9.Expand = false;
             // Container child hbox2.Gtk.Box+BoxChild
             this.fontButton = new Gtk.FontButton();
             this.fontButton.Name = "fontButton";
             this.hbox2.Add(this.fontButton);
-            Gtk.Box.BoxChild w11 = ((Gtk.Box.BoxChild)(this.hbox2[this.fontButton]));
-            w11.Position = 1;
-            w11.Expand = false;
-            w11.Fill = false;
+            Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(this.hbox2[this.fontButton]));
+            w10.Position = 1;
+            w10.Expand = false;
+            w10.Fill = false;
             this.GtkAlignment1.Add(this.hbox2);
             this.frame2.Add(this.GtkAlignment1);
             this.GtkLabel6 = new Gtk.Label();
@@ -184,10 +171,10 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             this.GtkLabel6.UseMarkup = true;
             this.frame2.LabelWidget = this.GtkLabel6;
             this.vbox13.Add(this.frame2);
-            Gtk.Box.BoxChild w14 = ((Gtk.Box.BoxChild)(this.vbox13[this.frame2]));
-            w14.Position = 3;
-            w14.Expand = false;
-            w14.Fill = false;
+            Gtk.Box.BoxChild w13 = ((Gtk.Box.BoxChild)(this.vbox13[this.frame2]));
+            w13.Position = 3;
+            w13.Expand = false;
+            w13.Fill = false;
             this.Add(this.vbox13);
             if ((this.Child != null)) {
                 this.Child.ShowAll();

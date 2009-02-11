@@ -50,8 +50,8 @@ namespace MonoDevelop.Ide.Tasks
 			IdeApp.Workspace.FileRenamedInProject += new ProjectFileRenamedEventHandler (ProjectFileRenamed);
 			IdeApp.Workspace.FileRemovedFromProject += new ProjectFileEventHandler (ProjectFileRemoved);
 
-			PropertyService.PropertyChanged += (EventHandler<PropertyChangedEventArgs>) DispatchService.GuiDispatch (new EventHandler<PropertyChangedEventArgs> (OnPropertyUpdated));
 			ProjectDomService.CommentTasksChanged += OnCommentTasksChanged;
+			ProjectDomService.SpecialCommentTagsChanged += OnCommentTagsChanged;
 			
 			MonoDevelop.Projects.Text.TextFileService.CommitCountChanges += delegate (object sender, MonoDevelop.Projects.Text.TextFileEventArgs args) {
 				foreach (Task task in this.Tasks) {
@@ -186,25 +186,22 @@ namespace MonoDevelop.Ide.Tasks
 			return ts;
 		}
 		
-		void OnPropertyUpdated (object sender, PropertyChangedEventArgs e)
+		void OnCommentTagsChanged (object sender, EventArgs e)
 		{
-			if (e.Key == "Monodevelop.TaskListTokens" && e.NewValue != e.OldValue)
-			{
-				ReloadPriories ();
-				// update priorities
+			ReloadPriories ();
+			// update priorities
 /* TODO:
 
-	            foreach (Project p in IdeApp.Workspace.GetAllProjects ())
-	            {
-	                IProjectParserContext pContext = IdeApp.Workspace.ParserDatabase.GetProjectParserContext (p);
-	                foreach (ProjectFile file in p.Files)
-	                {
-	                	TagCollection tags = pContext.GetFileSpecialComments (file.Name); 
-	                	if (tags !=null)
-	                		UpdateCommentTags (p.ParentSolution, file.Name, tags);
-	                }
-	        	}*/
-			}
+            foreach (Project p in IdeApp.Workspace.GetAllProjects ())
+            {
+                IProjectParserContext pContext = IdeApp.Workspace.ParserDatabase.GetProjectParserContext (p);
+                foreach (ProjectFile file in p.Files)
+                {
+                	TagCollection tags = pContext.GetFileSpecialComments (file.Name); 
+                	if (tags !=null)
+                		UpdateCommentTags (p.ParentSolution, file.Name, tags);
+                }
+        	}*/
 		}
 		
 		void ProjectFileRemoved (object sender, ProjectFileEventArgs e)
@@ -259,21 +256,8 @@ namespace MonoDevelop.Ide.Tasks
 		void ReloadPriories ()
 		{
 			priorities.Clear ();
-			string tokens = (string)PropertyService.Get ("Monodevelop.TaskListTokens", "FIXME:2;TODO:1;HACK:1;UNDONE:0");
-			foreach (string token in tokens.Split (new char[] {';'}, StringSplitOptions.RemoveEmptyEntries))
-			{
-				int pos = token.IndexOf (':');
-				if (pos != -1)
-				{
-					int priority;
-					if (! int.TryParse (token.Substring (pos + 1), out priority))
-						priority = 1;
-					priorities.Add (token.Substring (0, pos), (TaskPriority)priority);
-				} else
-				{
-					priorities.Add (token, TaskPriority.Normal);
-				}
-			}
+			foreach (CommentTag tag in ProjectDomService.SpecialCommentTags)
+				priorities.Add (tag.Tag, (TaskPriority) tag.Priority);
 		}
 		
 		public int TaskCount {
