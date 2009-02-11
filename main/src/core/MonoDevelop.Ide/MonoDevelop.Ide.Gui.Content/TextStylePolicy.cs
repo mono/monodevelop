@@ -29,7 +29,12 @@ using MonoDevelop.Core.Serialization;
 
 namespace MonoDevelop.Ide.Gui.Content
 {
-	
+	public enum EolMarker {
+		Default, // Environment.NewLine
+		Mac,     // '\r'
+		Unix,    // '\n'
+		Windows  // '\r\n'
+	}
 	
 	public sealed class TextStylePolicy : IEquatable<TextStylePolicy>
 	{
@@ -40,6 +45,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			TabsToSpaces = tabsToSpaces;
 			NoTabsAfterNonTabs = noTabsAfterNonTabs;
 			RemoveTrailingWhitespace = removeTrailingWhitespace;
+			EolMarker = EolMarker.Default;
 		}
 		
 		public TextStylePolicy ()
@@ -62,6 +68,22 @@ namespace MonoDevelop.Ide.Gui.Content
 		
 		[ItemProperty]
 		public bool RemoveTrailingWhitespace { get; private set; }
+		
+		[ItemProperty]
+		public EolMarker EolMarker { get; private set; }
+		
+		public string GetEolMarker ()
+		{
+			switch (EolMarker) {
+			case EolMarker.Mac:
+				return "\r";
+			case EolMarker.Unix:
+				return "\n";
+			case EolMarker.Windows:
+				return "\r\n";
+			}
+			return Environment.NewLine;
+		}
 		
 		public bool Equals (TextStylePolicy other)
 		{
