@@ -1,3 +1,8 @@
+2009-02-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Serialization/DataContext.cs: Added api for
+	  getting the list of registered types.
+
 2009-02-09  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Core.Serialization/ClassDataType.cs:

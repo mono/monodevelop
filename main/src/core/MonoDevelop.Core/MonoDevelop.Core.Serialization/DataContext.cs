@@ -35,7 +35,7 @@ namespace MonoDevelop.Core.Serialization
 {
 	public class DataContext
 	{
-		Hashtable configurationTypes = new Hashtable ();
+		Dictionary<Type,DataType> configurationTypes = new Dictionary<Type,DataType> ();
 		ISerializationAttributeProvider attributeProvider;
 		
 		public DataContext ()
@@ -136,6 +136,10 @@ namespace MonoDevelop.Core.Serialization
 			ctype.AddProperty (property);
 		}
 		
+		public IEnumerable<DataType> DataTypes {
+			get { return configurationTypes.Values; }
+		}
+		
 		public DataType GetConfigurationDataType (string typeName)
 		{
 			foreach (DataType dt in configurationTypes.Values)
@@ -147,11 +151,13 @@ namespace MonoDevelop.Core.Serialization
 		public DataType GetConfigurationDataType (Type type)
 		{
 			lock (configurationTypes) {
-				DataType itemType = (DataType) configurationTypes [type];
-				if (itemType != null) return itemType;
-				itemType = CreateConfigurationDataType (type);
-				configurationTypes [type] = itemType;
-				itemType.SetContext (this);
+				DataType itemType;
+				if (!configurationTypes.TryGetValue (type, out itemType)) {
+					if (itemType != null) return itemType;
+					itemType = CreateConfigurationDataType (type);
+					configurationTypes [type] = itemType;
+					itemType.SetContext (this);
+				}
 				return itemType;
 			}
 		}
