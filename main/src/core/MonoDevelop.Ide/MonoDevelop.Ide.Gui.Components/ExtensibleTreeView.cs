@@ -180,7 +180,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				text_render.FontDesc = Pango.FontDescription.FromString (name);
 			}
 			text_render.Ypad = 1;
-			PropertyService.PropertyChanged += new EventHandler<MonoDevelop.Core.PropertyChangedEventArgs> (PropertyChanged);
+			PropertyService.PropertyChanged += PropertyChanged;
 			text_render.Edited += new Gtk.EditedHandler (HandleOnEdit);
 			text_render.EditingCanceled += new EventHandler (HandleOnEditCancelled);
 			
@@ -1645,6 +1645,12 @@ namespace MonoDevelop.Ide.Gui.Components
 					node.MoveToPosition (pos);
 				}
 			}
+		}
+		
+		protected override void OnDestroyed ()
+		{
+			PropertyService.PropertyChanged -= PropertyChanged;
+			base.OnDestroyed ();
 		}
 		
 		internal class PadCheckMenuItem: Gtk.CheckMenuItem
