@@ -1,5 +1,10 @@
 2009-02-11  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Core.Gui.Components/FileBrowser.cs: Add methods
+	  for setting custom font and auto-resizing columns.
+
+2009-02-11  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Core.Gui.Dialogs/OptionsDialog.cs: Set a default
 	  response type. Fixes "Bug 324499 - Predefined Default
 	  button".

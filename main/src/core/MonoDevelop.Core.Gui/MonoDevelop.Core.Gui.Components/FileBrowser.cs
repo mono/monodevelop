@@ -447,6 +447,16 @@ namespace MonoDevelop.Core.Gui.Components
 		{
 			return !hiddenfolders.Contains (folder);
 		} 
+		
+		public void SetCustomFont (Pango.FontDescription desc)
+		{
+			text_render.FontDesc = desc;
+		}
+		
+		public void ColumnsAutosize ()
+		{
+			tv.ColumnsAutosize ();
+		}
 	}
 
 	internal class ToolbarEntry : ToolItem
