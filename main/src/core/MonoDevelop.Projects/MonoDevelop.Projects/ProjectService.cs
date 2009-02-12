@@ -645,7 +645,7 @@ namespace MonoDevelop.Projects
 				SolutionEntityItem entry = (SolutionEntityItem) item;
 				SolutionItemConfiguration conf = entry.GetConfiguration (configuration) as SolutionItemConfiguration;
 				if (conf != null && conf.CustomCommands.HasCommands (CustomCommandType.Execute))
-					return true;
+					return conf.CustomCommands.CanExecute (CustomCommandType.Execute, context, configuration);
 				return entry.OnGetCanExecute (context, configuration);
 			}
 			else if (item is WorkspaceItem) {

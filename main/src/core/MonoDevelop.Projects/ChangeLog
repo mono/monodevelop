@@ -1,3 +1,19 @@
+2009-02-12  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/CustomCommand.cs:
+	* MonoDevelop.Projects/ProjectService.cs:
+	* MonoDevelop.Projects/CustomCommandCollection.cs: Make sure
+	  the 'Execute' custom command can be executed using the
+	  provided execution context.
+
+	* MonoDevelop.Projects/CustomCommandExtension.cs: Use the
+	  default execution handler for running the
+	  After/BeforeExecute commands. The main handler is only for
+	  the debugged application.
+
+	* MonoDevelop.Projects/Project.cs: Consider the project dirty
+	  if the project file has changed. Fixes bug #473696.
+
 2009-02-12  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/AbstractMember.cs: fixed possible

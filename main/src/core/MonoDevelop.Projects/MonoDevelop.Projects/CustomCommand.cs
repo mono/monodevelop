@@ -101,6 +101,11 @@ namespace MonoDevelop.Projects
 			Execute (monitor, entry, null, configuration);
 		}
 		
+		public bool CanExecute (ExecutionContext context, string configuration)
+		{
+			return context == null || context.ExecutionHandlerFactory.SupportsPlatform ("Native");
+		}
+		
 		public void Execute (IProgressMonitor monitor, IWorkspaceObject entry, ExecutionContext context, string configuration)
 		{
 			string [,] customtags = null;
@@ -171,6 +176,7 @@ namespace MonoDevelop.Projects
 					console = context.ExternalConsoleFactory.CreateConsole (!pauseExternalConsole);
 				else
 					console = context.ConsoleFactory.CreateConsole (!pauseExternalConsole);
+
 				IExecutionHandler handler = context.ExecutionHandlerFactory.CreateExecutionHandler ("Native");
 				oper = handler.Execute (exe, args, dir, null, console);
 			}

@@ -70,5 +70,15 @@ namespace MonoDevelop.Projects
 					return true;
 			return false;
 		}
+		
+		public bool CanExecute (CustomCommandType type, ExecutionContext context, string configuration)
+		{
+			foreach (CustomCommand cmd in this) {
+				if (cmd.Type == type) {
+					return cmd.CanExecute (context, configuration);
+				}
+			}
+			return false;
+		}
 	}
 }

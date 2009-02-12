@@ -29,6 +29,7 @@
 using System;
 using MonoDevelop.Core;
 using System.CodeDom.Compiler;
+using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.Projects
 {
@@ -70,15 +71,18 @@ namespace MonoDevelop.Projects
 		{
 			SolutionItemConfiguration conf = entry.GetConfiguration (configuration) as SolutionItemConfiguration;
 			if (conf != null) {
-				conf.CustomCommands.ExecuteCommand (monitor, entry, CustomCommandType.BeforeExecute, context, configuration);
+				ExecutionContext localContext = new ExecutionContext (new DefaultExecutionHandlerFactory (), context.ConsoleFactory);
+				conf.CustomCommands.ExecuteCommand (monitor, entry, CustomCommandType.BeforeExecute, localContext, configuration);
 				if (monitor.IsCancelRequested)
 					return;
 			}
 			
 			base.Execute (monitor, entry, context, configuration);
 			
-			if (conf != null && !monitor.IsCancelRequested)
-				conf.CustomCommands.ExecuteCommand (monitor, entry, CustomCommandType.AfterExecute, context, configuration);
+			if (conf != null && !monitor.IsCancelRequested) {
+				ExecutionContext localContext = new ExecutionContext (new DefaultExecutionHandlerFactory (), context.ConsoleFactory);
+				conf.CustomCommands.ExecuteCommand (monitor, entry, CustomCommandType.AfterExecute, localContext, configuration);
+			}
 		}
 	}
 }

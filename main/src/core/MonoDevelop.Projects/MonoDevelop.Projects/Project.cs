@@ -495,6 +495,13 @@ namespace MonoDevelop.Projects
 				if (pref.GetLastBuildTime (solutionConfiguration) > tim || pref.NeedsBuilding (solutionConfiguration))
 					return true;
 			}
+			
+			try {
+				if (File.GetLastWriteTime (FileName) > tim)
+					return true;
+			} catch {
+				// Ignore
+			}
 
 			return false;
 		}
