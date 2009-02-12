@@ -44,7 +44,7 @@ namespace MonoDevelop.DesignerSupport
 	public class ClassOutlineTextEditorExtension : TextEditorExtension, IOutlinedDocument
 	{
 		ParsedDocument lastCU = null;
-		TreeView outlineTreeView;
+		MonoDevelop.Ide.Gui.Components.PadTreeView outlineTreeView;
 		TreeStore outlineTreeStore;
 		bool refreshingOutline;
 		bool disposed;
@@ -78,22 +78,22 @@ namespace MonoDevelop.DesignerSupport
 				return outlineTreeView;
 			
 			outlineTreeStore = new TreeStore (typeof(object));
-			outlineTreeView = new TreeView (outlineTreeStore);
+			outlineTreeView = new MonoDevelop.Ide.Gui.Components.PadTreeView (outlineTreeStore);
 			
 			CellRendererPixbuf pixRenderer = new CellRendererPixbuf ();
 			pixRenderer.Xpad = 0;
 			pixRenderer.Ypad = 0;
-			CellRendererText textRenderer = new CellRendererText ();
-			textRenderer.Xpad = 0;
-			textRenderer.Ypad = 0;
+			
+			outlineTreeView.TextRenderer.Xpad = 0;
+			outlineTreeView.TextRenderer.Ypad = 0;
 			
 			TreeViewColumn treeCol = new TreeViewColumn ();
 			treeCol.PackStart (pixRenderer, false);
 
 			treeCol.SetCellDataFunc (pixRenderer, new TreeCellDataFunc (OutlineTreeIconFunc));
-			treeCol.PackStart (textRenderer, true);
+			treeCol.PackStart (outlineTreeView.TextRenderer, true);
 			
-			treeCol.SetCellDataFunc (textRenderer, new TreeCellDataFunc (OutlineTreeTextFunc));
+			treeCol.SetCellDataFunc (outlineTreeView.TextRenderer, new TreeCellDataFunc (OutlineTreeTextFunc));
 			outlineTreeView.AppendColumn (treeCol);
 			
 			outlineTreeView.HeadersVisible = false;

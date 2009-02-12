@@ -56,12 +56,11 @@ namespace MonoDevelop.AspNet.Gui
 			BuildTreeChildren (store, Gtk.TreeIter.Zero, xdoc);
 		}
 		
-		protected override void InitializeOutlineColumns (Gtk.TreeView outlineTree)
+		protected override void InitializeOutlineColumns (MonoDevelop.Ide.Gui.Components.PadTreeView outlineTree)
 		{
-			Gtk.CellRendererText crt = new Gtk.CellRendererText ();
-			crt.Xpad = 0;
-			crt.Ypad = 0;
-			outlineTree.AppendColumn ("Node", crt, new Gtk.TreeCellDataFunc (outlineTreeDataFunc));
+			outlineTree.TextRenderer.Xpad = 0;
+			outlineTree.TextRenderer.Ypad = 0;
+			outlineTree.AppendColumn ("Node", outlineTree.TextRenderer, new Gtk.TreeCellDataFunc (outlineTreeDataFunc));
 		}
 		
 		protected override void OutlineSelectionChanged (object selection)

@@ -51,7 +51,7 @@ namespace MonoDevelop.XmlEditor.Gui
 		
 		string docType;
 		
-		Gtk.TreeView outlineTreeView;
+		MonoDevelop.Ide.Gui.Components.PadTreeView outlineTreeView;
 		Gtk.TreeStore outlineTreeStore;
 
 		#region Setup and teardown
@@ -675,7 +675,7 @@ namespace MonoDevelop.XmlEditor.Gui
 				return outlineTreeView;
 			
 			outlineTreeStore = new Gtk.TreeStore (typeof (object));
-			outlineTreeView = new Gtk.TreeView (outlineTreeStore);
+			outlineTreeView = new MonoDevelop.Ide.Gui.Components.PadTreeView (outlineTreeStore);
 			
 			System.Reflection.PropertyInfo prop = typeof (Gtk.TreeView).GetProperty ("EnableTreeLines");
 			if (prop != null)
@@ -702,12 +702,11 @@ namespace MonoDevelop.XmlEditor.Gui
 			return sw;
 		}
 		
-		protected virtual void InitializeOutlineColumns (Gtk.TreeView outlineTree)
+		protected virtual void InitializeOutlineColumns (MonoDevelop.Ide.Gui.Components.PadTreeView outlineTree)
 		{
-			Gtk.CellRendererText crt = new Gtk.CellRendererText ();
-			crt.Xpad = 0;
-			crt.Ypad = 0;
-			outlineTree.AppendColumn ("Node", crt, new Gtk.TreeCellDataFunc (outlineTreeDataFunc));
+			outlineTree.TextRenderer.Xpad = 0;
+			outlineTree.TextRenderer.Ypad = 0;
+			outlineTree.AppendColumn ("Node", outlineTree.TextRenderer, new Gtk.TreeCellDataFunc (outlineTreeDataFunc));
 		}
 		
 		protected virtual void OutlineSelectionChanged (object selection)

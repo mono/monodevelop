@@ -1,3 +1,8 @@
+2009-02-11  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AspNet.Gui/HtmlEditorExtension.cs:
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Track API.
+
 2009-02-08  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* AspNetAddIn.csproj: Copy schemas to output directory.
