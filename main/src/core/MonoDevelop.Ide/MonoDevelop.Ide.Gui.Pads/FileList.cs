@@ -35,6 +35,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		private Gtk.ListStore store;
 		FileListItem selectedItem = null;
 		Gtk.TreeIter selectedIter;
+		Gtk.CellRendererText textRender = new Gtk.CellRendererText ();
 		
 		public FileList ()
 		{
@@ -59,17 +60,14 @@ namespace MonoDevelop.Ide.Gui.Pads
 			name_column.PackStart (pix_render, false);
 			name_column.AddAttribute (pix_render, "pixbuf", 4);
 			
-			Gtk.CellRendererText render1 = new Gtk.CellRendererText ();
-			name_column.PackStart (render1, false);
-			name_column.AddAttribute (render1, "text", 0);
+			name_column.PackStart (textRender, false);
+			name_column.AddAttribute (textRender, "text", 0);
 			
-			Gtk.CellRendererText render2 = new Gtk.CellRendererText ();
-			size_column.PackStart (render2, false);
-			size_column.AddAttribute (render2, "text", 1);
+			size_column.PackStart (textRender, false);
+			size_column.AddAttribute (textRender, "text", 1);
 			
-			Gtk.CellRendererText render3 = new Gtk.CellRendererText ();
-			modi_column.PackStart (render3, false);
-			modi_column.AddAttribute (render3, "text", 2);
+			modi_column.PackStart (textRender, false);
+			modi_column.AddAttribute (textRender, "text", 2);
 				
 			AppendColumn(name_column);
 			AppendColumn(size_column);
@@ -214,6 +212,11 @@ namespace MonoDevelop.Ide.Gui.Pads
 				selectedItem = (FileListItem) model.GetValue (iter, 3);
 				selectedIter = iter;
 			}
+		}
+		
+		internal void SetCustomFont (Pango.FontDescription desc)
+		{
+			textRender.FontDesc = desc;
 		}
 	}
 }

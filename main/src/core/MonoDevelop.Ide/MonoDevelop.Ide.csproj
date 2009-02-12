@@ -524,6 +524,8 @@
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\TextStylePolicyPanel.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.OptionPanels.TextStylePolicyPanelWidget.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Content\TextStylePolicy.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui\PadFontChanger.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Components\PadTreeView.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

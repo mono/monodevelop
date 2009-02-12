@@ -1,5 +1,13 @@
 2009-02-11  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Makefile.am:
+	* MonoDevelop.Ide.csproj: Updated.
+
+	* MonoDevelop.Ide.Gui.Pads/FileList.cs: Expose method for
+	  setting custom font.
+
+2009-02-11  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.Gui/PadFontChanger.cs:
 	* MonoDevelop.Ide.Gui.Components/PadTreeView.cs: Utility
 	  classes for handling pad font changes.

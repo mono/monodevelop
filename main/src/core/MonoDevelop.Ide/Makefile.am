@@ -116,6 +116,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Components/NodeBuilderExtension.cs \
 	MonoDevelop.Ide.Gui.Components/NodeCommandHandler.cs \
 	MonoDevelop.Ide.Gui.Components/NodeState.cs \
+	MonoDevelop.Ide.Gui.Components/PadTreeView.cs \
 	MonoDevelop.Ide.Gui.Components/TransactedTreeBuilder.cs \
 	MonoDevelop.Ide.Gui.Components/TreeBuilder.cs \
 	MonoDevelop.Ide.Gui.Components/TreeNodeNavigator.cs \
@@ -287,6 +288,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui/NavigationHistoryService.cs \
 	MonoDevelop.Ide.Gui/OutputProgressMonitor.cs \
 	MonoDevelop.Ide.Gui/Pad.cs \
+	MonoDevelop.Ide.Gui/PadFontChanger.cs \
 	MonoDevelop.Ide.Gui/ProgressMonitors.cs \
 	MonoDevelop.Ide.Gui/ProjectOperations.cs \
 	MonoDevelop.Ide.Gui/RootWorkspace.cs \
