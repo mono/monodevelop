@@ -70,8 +70,9 @@ namespace MonoDevelop.CSharpBinding.Tests
 			set {}
 		}
 		
-		public void CloseWindow (bool force, bool fromMenu, int pageNum)
+		public bool CloseWindow (bool force, bool fromMenu, int pageNum)
 		{
+			return true;
 		}
 		
 		public void SelectWindow ()
