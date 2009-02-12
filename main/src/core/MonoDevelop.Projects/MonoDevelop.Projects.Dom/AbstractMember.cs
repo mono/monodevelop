@@ -258,12 +258,12 @@ namespace MonoDevelop.Projects.Dom
 			}
 				
 			// inner class 
-			if (member.DeclaringType.DeclaringType == DeclaringType)
+			if (member.DeclaringType != null && member.DeclaringType.DeclaringType == DeclaringType)
 				return true;
 			if (member is MonoDevelop.Projects.Dom.BaseResolveResult.BaseMemberDecorator)
 				return IsPublic | IsProtected;
 			
-			return DeclaringType.FullName == member.DeclaringType.FullName;
+			return member.DeclaringType != null && DeclaringType.FullName == member.DeclaringType.FullName;
 		}
 		
 		
