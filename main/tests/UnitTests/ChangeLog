@@ -1,3 +1,8 @@
+2009-02-12  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharpBinding/CodeCompletionAccessibleTests.cs:
+	  Added test case to document a regression bug.
+
 2009-02-11  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/TestProjectsChecks.cs: Order on which

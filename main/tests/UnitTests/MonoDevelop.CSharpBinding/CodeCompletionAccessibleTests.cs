@@ -467,6 +467,33 @@ namespace SomeTest {
 			Assert.IsNotNull (provider, "provider == null");
 			Assert.IsNotNull (provider.Find ("TestNS"), "namespace 'TestNS' not found");
 		}
+		
+		[Test()]
+		public void TestHideClassesWithPrivateConstructor ()
+		{
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
+@"
+class A
+{
+}
+
+class TestClass : A
+{
+	TestClass ()
+	{
+	}
+	
+	void TestMe ()
+	{
+		$A a = new $
+	}
+}		
+");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("A"), "class 'A' not found");
+			Assert.IsNull (provider.Find ("TestClass"), "class 'TestClass' found, but shouldn't.");
+		}
+		
 	}
 }
 		
