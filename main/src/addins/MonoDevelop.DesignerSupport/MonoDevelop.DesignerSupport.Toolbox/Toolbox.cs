@@ -56,6 +56,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		ToggleToolButton catToggleButton;
 		ToggleToolButton compactModeToggleButton;
 		Entry filterEntry;
+		MonoDevelop.Ide.Gui.PadFontChanger fontChanger;
 		
 		public Toolbox (ToolboxService toolboxService)
 		{			
@@ -110,6 +111,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			this.toolboxWidget.ActivateSelectedItem += delegate {
 				toolboxService.UseSelectedItem ();
 			};
+			
+			fontChanger = new MonoDevelop.Ide.Gui.PadFontChanger (toolboxWidget, toolboxWidget.SetCustomFont, toolboxWidget.QueueResize);
 			
 			this.toolboxWidget.ButtonReleaseEvent += OnButtonRelease;
 			
@@ -240,7 +243,15 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				Drag.SourceSet (toolboxWidget, Gdk.ModifierType.Button1Mask, targetTable, Gdk.DragAction.Copy | Gdk.DragAction.Move);
 			compactModeToggleButton.Visible = toolboxWidget.CanIconizeToolboxCategories;
 		}
-
+		
+		public override void Dispose ()
+		{
+			if (fontChanger != null) {
+				fontChanger.Dispose ();
+				fontChanger = null;
+			}
+			base.Dispose ();
+		}
 		
 		#endregion
 		

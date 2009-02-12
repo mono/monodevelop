@@ -42,6 +42,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		bool showCategories = true;
 		bool listMode       = false;
 		int mouseX, mouseY;
+		Pango.FontDescription desc;
 		
 		public bool IsListMode {
 			get {
@@ -73,6 +74,15 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				this.QueueResize ();
 				this.ScrollToSelectedItem ();
 			}
+		}
+		
+		internal void SetCustomFont (Pango.FontDescription desc)
+		{
+			this.desc = desc;
+			if (layout != null)
+				layout.FontDescription = desc;
+			if (headerLayout != null)
+				headerLayout.FontDescription = desc;
 		}
 		
 		const int spacing = 4;
@@ -135,11 +145,31 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				           EventMask.KeyPressMask | 
 					       EventMask.PointerMotionMask;
 			this.CanFocus = true;
+		}
+		
+		protected override void OnStyleSet (Gtk.Style previous_style)
+		{
+			if (this.layout != null) {
+				this.layout.Dispose ();
+				this.layout = null;
+			}
+			if (this.headerLayout != null) {
+				this.headerLayout.Dispose ();
+				this.headerLayout = null;
+			}
+			
+			base.OnStyleSet (previous_style);
 			
 			layout = new Pango.Layout (this.PangoContext);
 			headerLayout = new Pango.Layout (this.PangoContext);
-			headerLayout.FontDescription = Pango.FontDescription.FromString ("Ahafoni CLM Bold 10");
+			if (desc != null) {
+				layout.FontDescription = desc;
+				headerLayout.FontDescription = desc;
+			}
+			headerLayout.Attributes = new AttrList ();
+			headerLayout.Attributes.Insert (new Pango.AttrWeight (Pango.Weight.Bold));
 		}
+
 		
 		protected override void OnDestroyed ()
 		{
@@ -639,10 +669,17 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				foreach (Item item in category.Items) {
 					if (!item.IsVisible)
 						continue;
+					
+					layout.SetText (item.Text);
+					int x, y;
+					layout.GetPixelSize (out x, out y);
+					y = Math.Max (IconSize.Height, y) + spacing;
+					
 					xpos = spacing;
 					if (action != null)
-						action (category, item, new Gdk.Size (Allocation.Width - spacing * 2, IconSize.Height));
-					ypos += IconSize.Height + spacing;
+						action (category, item, new Gdk.Size (Allocation.Width - spacing * 2, y));
+					
+					ypos += y;
 				}
 				return;
 			}
@@ -667,9 +704,16 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 					continue;
 				xpos = spacing;
 				if (this.showCategories) {
+					
+					layout.SetText (category.Text);
+					int x, y;
+					layout.GetPixelSize (out x, out y);
+					y = Math.Max (categoryHeaderSize, y);
+					
+					
 					if (catAction != null)
-						catAction (category, new Size (this.Allocation.Width - spacing * 2, categoryHeaderSize));
-					ypos += categoryHeaderSize;
+						catAction (category, new Size (this.Allocation.Width - spacing * 2, y));
+					ypos += y;
 				} 
 				if (category.IsExpanded || !this.showCategories) {
 					IterateItems (category, ref xpos, ref  ypos, action);
