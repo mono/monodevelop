@@ -143,6 +143,8 @@
 		<StockIcon stockid = "md-protected-property" icon = "res:element-property-16.png|res:visibility-protected-16.png" size="Menu" />
 		<StockIcon stockid = "md-protected-struct" icon = "res:element-structure-16.png|res:visibility-protected-16.png" size="Menu" />
 		<StockIcon stockid = "md-reference" resource = "Icons.16x16.Reference" />
+		<StockIcon stockid = "md-warning-overlay" resource = "res:warning-overlay.png" />
+		<StockIcon stockid = "md-reference-warning" icon = "res:Icons.16x16.Reference|res:warning-overlay.png" size = "Menu"/>
 		<StockIcon stockid = "md-replace-in-files" resource = "Icons.16x16.ReplaceInFiles" />
 		<StockIcon stockid = "md-resource-file-icon" resource = "Icons.16x16.ResourceFileIcon" size = "Menu" />
 		<StockIcon stockid = "md-resource-file-icon" resource = "Icons.32x32.ResourceFileIcon" size = "Dnd" />

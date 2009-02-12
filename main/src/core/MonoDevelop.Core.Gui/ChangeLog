@@ -1,3 +1,11 @@
+2009-02-13  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* icons/warning-overlay.png:
+	* MonoDevelop.Core.Gui.csproj:
+	* MonoDevelop.Core.Gui.addin.xml: New icon for invalid
+	  references.
+
 2009-02-11  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Core.Gui.Components/FileBrowser.cs: Add methods

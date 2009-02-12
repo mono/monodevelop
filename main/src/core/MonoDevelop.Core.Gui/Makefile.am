@@ -192,6 +192,7 @@ RES =  \
 	icons/visibility-private-16.png \
 	icons/visibility-protected-16.png \
 	icons/visual-studio.png \
+	icons/warning-overlay.png \
 	icons/web-overlay-16.png \
 	icons/web-overlay-32.png \
 	icons/workspace-16.png \

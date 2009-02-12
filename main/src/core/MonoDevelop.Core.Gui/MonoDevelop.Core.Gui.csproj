@@ -418,6 +418,9 @@
     <EmbeddedResource Include="icons\empty-category-22.png">
       <LogicalName>empty-category-22.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\warning-overlay.png">
+      <LogicalName>warning-overlay.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Core.Gui.Components\FileBrowser.cs" />
