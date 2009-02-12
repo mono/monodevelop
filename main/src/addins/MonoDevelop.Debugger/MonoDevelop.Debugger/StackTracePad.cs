@@ -21,7 +21,7 @@ namespace MonoDevelop.Debugger
 	{
 		Backtrace current_backtrace;
 
-		Gtk.TreeView tree;
+		MonoDevelop.Ide.Gui.Components.PadTreeView tree;
 		Gtk.TreeStore store;
 		bool needsUpdate;
 		IPadWindow window;
@@ -32,7 +32,7 @@ namespace MonoDevelop.Debugger
 
 			store = new TreeStore (typeof(string), typeof (string), typeof(string), typeof(string), typeof(string));
 
-			tree = new TreeView (store);
+			tree = new MonoDevelop.Ide.Gui.Components.PadTreeView (store);
 			tree.RulesHint = true;
 			tree.HeadersVisible = true;
 
@@ -43,33 +43,29 @@ namespace MonoDevelop.Debugger
 			tree.AppendColumn (col);
 			
 			TreeViewColumn FrameCol = new TreeViewColumn ();
-			CellRenderer FrameRenderer = new CellRendererText ();
 			FrameCol.Title = GettextCatalog.GetString ("Name");
-			FrameCol.PackStart (FrameRenderer, true);
-			FrameCol.AddAttribute (FrameRenderer, "text", 1);
+			FrameCol.PackStart (tree.TextRenderer, true);
+			FrameCol.AddAttribute (tree.TextRenderer, "text", 1);
 			FrameCol.Resizable = true;
 			FrameCol.Alignment = 0.0f;
 			tree.AppendColumn (FrameCol);
 
 			col = new TreeViewColumn ();
 			col.Title = GettextCatalog.GetString ("File");
-			CellRenderer crt = new CellRendererText ();
-			col.PackStart (crt, false);
-			col.AddAttribute (crt, "text", 2);
+			col.PackStart (tree.TextRenderer, false);
+			col.AddAttribute (tree.TextRenderer, "text", 2);
 			tree.AppendColumn (col);
 
 			col = new TreeViewColumn ();
 			col.Title = GettextCatalog.GetString ("Language");
-			crt = new CellRendererText ();
-			col.PackStart (crt, false);
-			col.AddAttribute (crt, "text", 3);
+			col.PackStart (tree.TextRenderer, false);
+			col.AddAttribute (tree.TextRenderer, "text", 3);
 			tree.AppendColumn (col);
 
 			col = new TreeViewColumn ();
 			col.Title = GettextCatalog.GetString ("Address");
-			crt = new CellRendererText ();
-			col.PackStart (crt, false);
-			col.AddAttribute (crt, "text", 4);
+			col.PackStart (tree.TextRenderer, false);
+			col.AddAttribute (tree.TextRenderer, "text", 4);
 			tree.AppendColumn (col);
 			
 			Add (tree);

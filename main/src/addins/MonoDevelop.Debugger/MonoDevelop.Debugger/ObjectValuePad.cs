@@ -44,6 +44,7 @@ namespace MonoDevelop.Debugger
 		IPadWindow container;
 		bool initialResume;
 		StackFrame lastFrame;
+		MonoDevelop.Ide.Gui.PadFontChanger fontChanger;
 		
 		public Gtk.Widget Control {
 			get {
@@ -58,6 +59,9 @@ namespace MonoDevelop.Debugger
 			scrolled.VscrollbarPolicy = PolicyType.Automatic;
 			
 			tree = new ObjectValueTreeView ();
+			
+			fontChanger = new PadFontChanger (tree, tree.SetCustomFont, tree.QueueResize);
+			
 			tree.AllowEditing = true;
 			tree.AllowAdding = false;
 			tree.HeadersVisible = true;
@@ -76,6 +80,11 @@ namespace MonoDevelop.Debugger
 
 		public void Dispose ()
 		{
+			if (fontChanger == null)
+				return;
+			
+			fontChanger.Dispose ();
+			fontChanger = null;
 			DebuggingService.CurrentFrameChanged -= OnFrameChanged;
 			DebuggingService.PausedEvent -= OnDebuggerPaused;
 			DebuggingService.ResumedEvent -= OnDebuggerResumed;

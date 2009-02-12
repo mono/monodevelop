@@ -50,7 +50,7 @@ namespace MonoDevelop.Debugger
 {
 	public class ThreadsPad : Gtk.ScrolledWindow, IPadContent
 	{
-		Gtk.TreeView tree;
+		MonoDevelop.Ide.Gui.Components.PadTreeView tree;
 		Gtk.TreeStore store;
 		
 		TreeViewState treeViewState;
@@ -71,7 +71,7 @@ namespace MonoDevelop.Debugger
 
 			store = new TreeStore (typeof(string), typeof (string), typeof(string), typeof(object), typeof(int), typeof(string));
 
-			tree = new TreeView (store);
+			tree = new MonoDevelop.Ide.Gui.Components.PadTreeView (store);
 			tree.RulesHint = true;
 			tree.HeadersVisible = true;
 			treeViewState = new TreeViewState (tree, (int)Columns.Object);
@@ -83,11 +83,10 @@ namespace MonoDevelop.Debugger
 			tree.AppendColumn (col);
 				
 			TreeViewColumn FrameCol = new TreeViewColumn ();
-			CellRendererText frameRenderer = new CellRendererText ();
 			FrameCol.Title = GettextCatalog.GetString ("Id");
-			FrameCol.PackStart (frameRenderer, true);
-			FrameCol.AddAttribute (frameRenderer, "text", (int) Columns.Id);
-			FrameCol.AddAttribute (frameRenderer, "weight", (int) Columns.Weight);
+			FrameCol.PackStart (tree.TextRenderer, true);
+			FrameCol.AddAttribute (tree.TextRenderer, "text", (int) Columns.Id);
+			FrameCol.AddAttribute (tree.TextRenderer, "weight", (int) Columns.Weight);
 			FrameCol.Resizable = true;
 			FrameCol.Alignment = 0.0f;
 			tree.AppendColumn (FrameCol);
@@ -95,19 +94,17 @@ namespace MonoDevelop.Debugger
 			col = new TreeViewColumn ();
 			col.Title = GettextCatalog.GetString ("Name");
 			col.Resizable = true;
-			CellRenderer crt = new CellRendererText ();
-			col.PackStart (crt, false);
-			col.AddAttribute (crt, "text", (int) Columns.Name);
-			col.AddAttribute (crt, "weight", (int) Columns.Weight);
+			col.PackStart (tree.TextRenderer, false);
+			col.AddAttribute (tree.TextRenderer, "text", (int) Columns.Name);
+			col.AddAttribute (tree.TextRenderer, "weight", (int) Columns.Weight);
 			tree.AppendColumn (col);
 
 			col = new TreeViewColumn ();
 			col.Title = GettextCatalog.GetString ("Location");
 			col.Resizable = true;
-			crt = new CellRendererText ();
-			col.PackStart (crt, false);
-			col.AddAttribute (crt, "text", (int) Columns.Location);
-			col.AddAttribute (crt, "weight", (int) Columns.Weight);
+			col.PackStart (tree.TextRenderer, false);
+			col.AddAttribute (tree.TextRenderer, "text", (int) Columns.Location);
+			col.AddAttribute (tree.TextRenderer, "weight", (int) Columns.Weight);
 			tree.AppendColumn (col);
 			
 			Add (tree);

@@ -51,7 +51,7 @@ namespace MonoDevelop.Debugger
 	{
 		BreakpointStore bps;
 		
-		Gtk.TreeView tree;
+		MonoDevelop.Ide.Gui.Components.PadTreeView tree;
 		Gtk.TreeStore store;
 		VBox control;
 		ScrolledWindow sw;
@@ -116,7 +116,7 @@ namespace MonoDevelop.Debugger
 			
 			store = new TreeStore (typeof(string), typeof (bool), typeof(string), typeof(object), typeof(string), typeof(string), typeof(string), typeof(string));
 
-			tree = new TreeView (store);
+			tree = new MonoDevelop.Ide.Gui.Components.PadTreeView (store);
 			tree.RulesHint = true;
 			tree.HeadersVisible = true;
 			
@@ -136,7 +136,7 @@ namespace MonoDevelop.Debugger
 			tree.AppendColumn (col);
 			
 			TreeViewColumn FrameCol = new TreeViewColumn ();
-			CellRenderer crt = new CellRendererText ();
+			CellRenderer crt = tree.TextRenderer;
 			FrameCol.Title = GettextCatalog.GetString ("File");
 			FrameCol.PackStart (crt, true);
 			FrameCol.AddAttribute (crt, "text", (int) Columns.FileName);

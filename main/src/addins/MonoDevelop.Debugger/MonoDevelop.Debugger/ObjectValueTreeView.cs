@@ -757,6 +757,11 @@ namespace MonoDevelop.Debugger
 			else
 				return null;
 		}
+		
+		internal void SetCustomFont (Pango.FontDescription font)
+		{
+			crtExp.FontDesc = crtType.FontDesc = crtValue.FontDesc = font;
+		}
 	}
 	
 	class DebugCompletionDataList: List<ICompletionData>, ICompletionDataList

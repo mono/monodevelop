@@ -1,3 +1,11 @@
+2009-02-11  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Debugger/ThreadsPad.cs:
+	* MonoDevelop.Debugger/StackTracePad.cs:
+	* MonoDevelop.Debugger/BreakpointPad.cs:
+	* MonoDevelop.Debugger/ObjectValuePad.cs:
+	* MonoDevelop.Debugger/ObjectValueTreeView.cs: Use pad font.
+
 2009-02-07  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Debugger.csproj: Don't require a specific
