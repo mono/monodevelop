@@ -99,7 +99,7 @@ namespace MonoDevelop.Components
 		{
 			if (Selection > RowCount)
 				Selection = RowCount - 1;
-			UpdatePage (false);
+			UpdatePage (false, true);
 			QueueDraw ();
 		}
 		
@@ -118,7 +118,7 @@ namespace MonoDevelop.Components
 				if (value != selection) 
 				{
 					selection = value;
-					UpdatePage (false);
+					UpdatePage (false, true);
 					
 					if (SelectionChanged != null)
 						SelectionChanged (this, EventArgs.Empty);
@@ -145,7 +145,7 @@ namespace MonoDevelop.Components
 			get { return dataProvider != null ? dataProvider.ItemCount : 0; }
 		}
 		
-		void UpdatePage (bool centerRow)
+		void UpdatePage (bool centerRow, bool keepSelectionInView)
 		{
 			if (!IsRealized) {
 				page = 0;
@@ -157,7 +157,7 @@ namespace MonoDevelop.Components
 			if (selection < page || selection >= page + VisibleRows) {
 				if (centerRow) {
 					page = selection - (VisibleRows / 2);
-				} else {
+				} else if (keepSelectionInView) {
 					if (selection < page)
 						page = selection;
 					else
@@ -197,7 +197,7 @@ namespace MonoDevelop.Components
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
 		{
 			base.OnSizeAllocated (allocation);
-			UpdatePage (false);
+			UpdatePage (false, true);
 		}
 
 
@@ -226,7 +226,7 @@ namespace MonoDevelop.Components
 		void HandleVerValueChanged (object sender, EventArgs e)
 		{
 			page = (int) vAdjustement.Value;
-			UpdatePage (false);
+			UpdatePage (false, false);
 			QueueDraw ();
 		}
 
@@ -475,7 +475,7 @@ namespace MonoDevelop.Components
 		{
 			base.OnRealized ();
 			UpdateStyle ();
-			UpdatePage (false);
+			UpdatePage (false, true);
 		}
 		
 		void UpdateStyle ()

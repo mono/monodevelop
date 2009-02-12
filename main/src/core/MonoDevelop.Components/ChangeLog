@@ -1,3 +1,10 @@
+2009-02-12  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Components/ListView.cs: Don't force selection to
+	  stay in view when the VAdjustment is changed. Fixes "Bug
+	  470910 - Can't scroll past selected file in go-to-file
+	  dialog".
+
 2009-02-07  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Components/ListView.cs:
