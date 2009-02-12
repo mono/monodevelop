@@ -1,5 +1,9 @@
 2009-02-11  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide.Gui.Pads/FileScout.cs: Use pad font.
+
+2009-02-11  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Ide.csproj: Updated.
 

@@ -38,6 +38,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 {
 	internal class FileScout : Gtk.VPaned, IPadContent
 	{
+		PadFontChanger fontChanger;
+		
 		void IPadContent.Initialize (IPadWindow window)
 		{
 		}
@@ -79,6 +81,14 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 			Gtk.ScrolledWindow listsw = new Gtk.ScrolledWindow ();
 			listsw.Add (filelister);
+			
+			fontChanger = new PadFontChanger (listsw, delegate (Pango.FontDescription desc) {
+				filelister.SetCustomFont (desc);
+				fb.SetCustomFont (desc);
+			}, delegate () {
+				filelister.ColumnsAutosize ();
+				fb.ColumnsAutosize ();
+			});
 			
 			this.Pack1 (fb, true, true);
 			this.Pack2 (listsw, true, true);
@@ -157,5 +167,12 @@ namespace MonoDevelop.Ide.Gui.Pads
 		{
 			fb.CurrentDir = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
 		}
+		
+		public override void Dispose ()
+		{
+			fontChanger.Dispose ();
+			base.Dispose ();
+		}
+
 	}
 }
