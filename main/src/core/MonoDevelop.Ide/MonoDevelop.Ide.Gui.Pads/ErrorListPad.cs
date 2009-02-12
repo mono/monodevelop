@@ -69,6 +69,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			Line,
 			Description,
 			File,
+			Project,
 			Path,
 			Task,
 			Read,
@@ -139,9 +140,10 @@ namespace MonoDevelop.Ide.Gui.Pads
 			
 			store = new Gtk.ListStore (typeof (Gdk.Pixbuf), // image - type
 			                           typeof (bool),       // marked?
-			                           typeof (int),        // line
+			                           typeof (string),        // line
 			                           typeof (string),     // desc
 			                           typeof (string),     // file
+			                           typeof (string),     // project
 			                           typeof (string),     // path
 			                           typeof (Task),       // task
 			                           typeof (bool),       // read?
@@ -199,11 +201,11 @@ namespace MonoDevelop.Ide.Gui.Pads
 		
 		void LoadColumnsVisibility ()
 		{
-			string columns = (string)PropertyService.Get ("Monodevelop.ErrorListColumns", "TRUE;TRUE;TRUE;TRUE;TRUE;TRUE");
+			string columns = (string)PropertyService.Get ("Monodevelop.ErrorListColumns", "TRUE;TRUE;TRUE;TRUE;TRUE;TRUE;TRUE");
 			string[] tokens = columns.Split (new char[] {';'}, StringSplitOptions.RemoveEmptyEntries);
-			if (tokens.Length == 6 && view != null && view.Columns.Length == 6)
+			if (tokens.Length == 7 && view != null && view.Columns.Length == 7)
 			{
-				for (int i = 0; i < 6; i++)
+				for (int i = 0; i < 7; i++)
 				{
 					bool visible;
 					if (bool.TryParse (tokens[i], out visible))
@@ -214,12 +216,13 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 		void StoreColumnsVisibility ()
 		{
-			string columns = String.Format ("{0};{1};{2};{3};{4};{5}",
+			string columns = String.Format ("{0};{1};{2};{3};{4};{5};{6}",
 			                                view.Columns[(int)Columns.Type].Visible,
 			                                view.Columns[(int)Columns.Marked].Visible,
 			                                view.Columns[(int)Columns.Line].Visible,
 			                                view.Columns[(int)Columns.Description].Visible,
 			                                view.Columns[(int)Columns.File].Visible,
+			                                view.Columns[(int)Columns.Project].Visible,
 			                                view.Columns[(int)Columns.Path].Visible);
 			PropertyService.Set ("Monodevelop.ErrorListColumns", columns);
 		}
@@ -278,6 +281,12 @@ namespace MonoDevelop.Ide.Gui.Pads
 				columnsActions[columnFile] = (int)Columns.File;
 				group.Add (columnFile);
 
+				ToggleAction columnProject = new ToggleAction ("columnProject", GettextCatalog.GetString ("Project"),
+				                                            GettextCatalog.GetString ("Toggle visibility of Project column"), null);
+				columnProject.Toggled += new EventHandler (OnColumnVisibilityChanged);
+				columnsActions[columnProject] = (int)Columns.Project;
+				group.Add (columnProject);
+
 				ToggleAction columnPath = new ToggleAction ("columnPath", GettextCatalog.GetString ("Path"),
 				                                            GettextCatalog.GetString ("Toggle visibility of Path column"), null);
 				columnPath.Toggled += new EventHandler (OnColumnVisibilityChanged);
@@ -298,6 +307,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 					+ "<menuitem action='columnLine' />"
 					+ "<menuitem action='columnDescription' />"
 					+ "<menuitem action='columnFile' />"
+					+ "<menuitem action='columnProject' />"
 					+ "<menuitem action='columnPath' />"
 					+ "</menu>"
 					+ "</popup></ui>";
@@ -313,6 +323,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 					columnLine.Active = view.Columns[(int)Columns.Line].Visible;
 					columnDescription.Active = view.Columns[(int)Columns.Description].Visible;
 					columnFile.Active = view.Columns[(int)Columns.File].Visible;
+					columnProject.Active = view.Columns[(int)Columns.Project].Visible;
 					columnPath.Active = view.Columns[(int)Columns.Path].Visible;
 					help.Sensitive = copy.Sensitive = jump.Sensitive =
 						view.Selection != null &&
@@ -426,6 +437,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 			col = view.AppendColumn (GettextCatalog.GetString ("Description"), view.TextRenderer, "text", Columns.Description, "weight", Columns.Weight, "strikethrough", Columns.Marked);
 			col.Resizable = true;
 			col = view.AppendColumn (GettextCatalog.GetString ("File"), view.TextRenderer, "text", Columns.File, "weight", Columns.Weight);
+			col.Resizable = true;
+			col = view.AppendColumn (GettextCatalog.GetString ("Project"), view.TextRenderer, "text", Columns.Project, "weight", Columns.Weight);
 			col.Resizable = true;
 			col = view.AppendColumn (GettextCatalog.GetString ("Path"), view.TextRenderer, "text", Columns.Path, "weight", Columns.Weight);
 			col.Resizable = true;
@@ -596,15 +609,23 @@ namespace MonoDevelop.Ide.Gui.Pads
 				path = Path.GetDirectoryName(tmpPath);
 			} catch (Exception) {}
 			
+			string project;
+			if (t.OwnerItem is SolutionItem)
+				project = ((SolutionItem)t.OwnerItem).Name;
+			else
+				project = string.Empty;
+			
 			store.AppendValues (stock,
 			                    false,
-			                    t.Line,
+			                    t.Line != 0 ? t.Line.ToString () : "",
 			                    t.Description,
 			                    fileName,
+			                    project,
 			                    path,
 			                    t,
 			                    false,
-			                    (int) Pango.Weight.Bold);
+			                    (int) Pango.Weight.Bold
+			                    );
 		}
 
 		void UpdateErrorsNum () 

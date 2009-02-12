@@ -24,6 +24,8 @@ using System.CodeDom.Compiler;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.Ide.Gui.Pads.ProjectPad;
 
 namespace MonoDevelop.Ide.Tasks
 {
@@ -196,8 +198,17 @@ namespace MonoDevelop.Ide.Tasks
 		
 		public virtual void JumpToPosition()
 		{
-			if (fileName != null && fileName.Length > 0) {
+			if (!string.IsNullOrEmpty (fileName)) {
 				IdeApp.Workbench.OpenDocument (fileName, Math.Max (1, line), Math.Max (1, column), true);
+			} else if (owner != null) {
+				Pad pad = IdeApp.Workbench.GetPad<ProjectSolutionPad> ();
+				ProjectSolutionPad spad = pad.Content as ProjectSolutionPad;
+				ITreeNavigator nav = spad.TreeView.GetNodeAtObject (owner, true);
+				if (nav != null) {
+					nav.ExpandToNode ();
+					nav.Selected = true;
+					nav.Expanded = true;
+				}
 			}
 		}
 	}

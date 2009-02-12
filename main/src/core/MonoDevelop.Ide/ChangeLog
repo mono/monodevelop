@@ -1,3 +1,15 @@
+2009-02-13  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectReferenceNodeBuilder.cs:
+	  Show a warning icon when a reference is invalid.
+
+	* MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs: Show the project
+	  name in the error list.
+
+	* MonoDevelop.Ide.Tasks/Task.cs: When jumping to a task's
+	  file, if there is no file found, select the owner project in
+	  the solution pad.
+
 2009-02-12  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.Gui/DragNotebook.cs:
