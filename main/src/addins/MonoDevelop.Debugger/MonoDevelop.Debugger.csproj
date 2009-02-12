@@ -122,6 +122,15 @@
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\debug-overlay-16.png">
+      <LogicalName>debug-overlay-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\debug-overlay-22.png">
+      <LogicalName>debug-overlay-22.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\debug-overlay-32.png">
+      <LogicalName>debug-overlay-32.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

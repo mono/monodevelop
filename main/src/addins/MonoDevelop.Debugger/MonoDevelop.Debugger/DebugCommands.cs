@@ -131,8 +131,10 @@ namespace MonoDevelop.Debugger
 
 			// If there are no debugger installed, this command will not debug, it will
 			// just run, so the label has to be changed accordingly.
-			if (!DebuggingService.IsDebuggingSupported)
+			if (!DebuggingService.IsDebuggingSupported) {
 				info.Text = GettextCatalog.GetString ("_Run");
+				info.Icon = "gtk-execute";
+			}
 
 			if (IdeApp.Workspace.IsOpen) {
 				info.Enabled = IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted &&

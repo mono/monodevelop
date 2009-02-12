@@ -48,6 +48,9 @@ FILES =  \
 
 RES =  \
 	gtk-gui/gui.stetic \
+	icons/debug-overlay-16.png \
+	icons/debug-overlay-22.png \
+	icons/debug-overlay-32.png \
 	MonoDevelop.Debugger.addin.xml
 
 DATA_FILES =
