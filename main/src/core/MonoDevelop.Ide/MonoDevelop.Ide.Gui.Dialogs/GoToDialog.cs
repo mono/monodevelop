@@ -265,9 +265,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			searchThread = null;
 		}
 
-		IEnumerable<string> files;
+		IEnumerable<ProjectFile> files;
 		List<IType> types;
-		List<string> filteredFiles;
+		List<ProjectFile> filteredFiles;
 		List<IType> filteredTypes;
 		string previousPattern;
 		
@@ -286,7 +286,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			if (searchFiles) {
 				// Get the list of files. If the parttern is a refinement of the previous
 				// one, use the list filtered in the previous search.
-				IEnumerable<string> allFiles;
+				IEnumerable<ProjectFile> allFiles;
 				if (previousPattern != null && toMatch.StartsWith (previousPattern) && filteredFiles != null)
 					allFiles = filteredFiles;
 				else if (files == null)
@@ -294,8 +294,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				else
 					allFiles = files;
 
-				List<string> newFilteredFiles = new List<string> ();
-				foreach (string file in allFiles) {
+				List<ProjectFile> newFilteredFiles = new List<ProjectFile> ();
+				foreach (ProjectFile file in allFiles) {
 					if (!searchCycleActive) return;
 					if (CheckFile (results, file, toMatch))
 						newFilteredFiles.Add (file);
@@ -348,22 +348,22 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			}
 		}
 		
-		IEnumerable<string> GetFiles ()
+		IEnumerable<ProjectFile> GetFiles ()
 		{
-			HashSet<string> list = new HashSet<string> ();
+			HashSet<ProjectFile> list = new HashSet<ProjectFile> ();
 			foreach (Document doc in IdeApp.Workbench.Documents) {
 				// We only want to check it here if it's not part
 				// of the open combine.  Otherwise, it will get
 				// checked down below.
 				if (doc.Project == null && doc.IsFile)
-					list.Add (doc.Name);
+					list.Add (new ProjectFile (doc.Name));
 			}
 			
 			ReadOnlyCollection<Project> projects = IdeApp.Workspace.GetAllProjects ();
 
 			foreach (Project p in projects) {
 				foreach (ProjectFile file in p.Files) {
-					list.Add (file.FilePath);
+					list.Add (file);
 				}
 			}
 			return list;
@@ -389,9 +389,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			ReadOnlyCollection<Project> projects = IdeApp.Workspace.GetAllProjects ();
 
 			foreach (Project p in projects) {
-				foreach (IType c in ProjectDomService.GetProjectDom (p).Types) {
-					list.Add (c);
-				}
+				foreach (IType c in ProjectDomService.GetProjectDom (p).Types)
+					AddType (c, list);
 			}
 			return list;
 		}
@@ -403,20 +402,29 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				AddType (ct, list);
 		}
 		
-		bool CheckFile (ResultsDataSource results, string path, string toMatch)
+		bool CheckFile (ResultsDataSource results, ProjectFile file, string toMatch)
 		{
 			string result;
 			int rank;
+			string path = file.FilePath;
 			string fullName = System.IO.Path.GetFileName (path);
 			if (!MatchName (fullName, toMatch, out result, out rank)) {
-				fullName = path;
-				if (!MatchName (path, toMatch, out result, out rank))
+				fullName = GetRelProjectPath (file);
+				if (!MatchName (fullName, toMatch, out result, out rank))
 					return false;
 			}
 
-			string dirName = System.IO.Path.GetFileName (System.IO.Path.GetDirectoryName (path));
+			string dirName = GetRelProjectPath (file);
 			results.AddResult (new FileSearchResult (result, fullName, dirName, path, rank));
 			return true;
+		}
+		
+		string GetRelProjectPath (ProjectFile file)
+		{
+			if (file.Project != null)
+				return System.IO.Path.Combine (System.IO.Path.GetFileName (file.Project.BaseDirectory), file.RelativePath);
+			else
+				return file.FilePath;
 		}
 		
 		bool CheckType (ResultsDataSource results, IType c, string toMatch)
@@ -430,7 +438,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					return false;
 			}
 
-			results.AddResult (new TypeSearchResult (c, result, fullName, c.FullName, rank));
+			string fname = c.FullName;
+			if (c.SourceProject != null)
+				fname = c.SourceProject.Name + ", " + fname;
+			results.AddResult (new TypeSearchResult (c, result, fullName, fname, rank));
 			return true;
 		}
 
