@@ -334,7 +334,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		
 		protected override object OnDeserialize (SerializationContext serCtx, object mapData, DataNode data)
 		{
-			return ((DataValue)data).Value == "true";
+			return String.Equals (((DataValue)data).Value, "true", StringComparison.OrdinalIgnoreCase);
 		}
 	}
 	

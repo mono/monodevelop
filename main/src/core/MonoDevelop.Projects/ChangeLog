@@ -1,3 +1,8 @@
+2009-02-12  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectService.cs:
+	  Use a case-insensitive compare for bools.
+
 2009-02-12  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/CustomCommand.cs:
