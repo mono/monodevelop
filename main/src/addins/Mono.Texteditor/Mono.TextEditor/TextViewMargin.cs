@@ -871,6 +871,9 @@ namespace Mono.TextEditor
 		{
 			if (line == null || line.EditableLength == 0)
 				return 0;
+			Pango.Layout measureLayout = new Pango.Layout (textEditor.PangoContext);
+			measureLayout.Alignment = Pango.Alignment.Left;
+			measureLayout.FontDescription = textEditor.Options.Font;
 			
 			int lineXPos  = 0;
 			SyntaxMode mode = Document.SyntaxMode != null && this.textEditor.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : SyntaxMode.Default;
@@ -882,10 +885,16 @@ namespace Mono.TextEditor
 					char ch = chunk.GetCharAt (Document, chunk.Offset + i);
 					if (ch == '\t') {
 						int newColumn = GetNextTabstop (this.textEditor.GetTextEditorData (), visibleColumn);
-						delta = (newColumn - visibleColumn) * this.charWidth;
+						delta = GetNextVisualTab (lineXPos) - lineXPos;
 						visibleColumn = newColumn;
 					} else {
-						delta = this.charWidth;
+						ChunkStyle style = chunk.GetChunkStyle (ColorStyle);
+						measureLayout.FontDescription.Weight = style.GetWeight (DefaultWeight);
+						measureLayout.FontDescription.Style =  style.GetStyle (DefaultStyle);
+						measureLayout.SetText (ch.ToString ());
+						int height;
+						measureLayout.GetPixelSize (out delta, out height);
+						
 						visibleColumn++;
 					}
 					curColumn++;
@@ -895,7 +904,7 @@ namespace Mono.TextEditor
 				}
 			}
 		 exit:
-			if (column >= line.EditableLength)
+			if (column > line.EditableLength)
 				lineXPos += (line.EditableLength - column + 1) * this.charWidth;
 			return lineXPos;
 		}

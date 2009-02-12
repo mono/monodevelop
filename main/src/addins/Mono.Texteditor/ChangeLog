@@ -1,3 +1,8 @@
+2009-02-12  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextViewMargin.cs: Worked on
+	  ColumnToVisualX.
+
 2009-02-11  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextViewMargin.cs: fixed "Bug 474600 -
