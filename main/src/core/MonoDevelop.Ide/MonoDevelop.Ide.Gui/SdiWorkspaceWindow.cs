@@ -258,13 +258,13 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public void CloseWindow (bool force, bool fromMenu, int pageNum)
+		public bool CloseWindow (bool force, bool fromMenu, int pageNum)
 		{
 			WorkbenchWindowEventArgs args = new WorkbenchWindowEventArgs (force);
 			args.Cancel = false;
 			OnClosing (args);
 			if (args.Cancel)
-				return;
+				return false;
 			if (fromMenu == true) {
 				workbench.WorkbenchLayout.RemoveTab (tabControl.PageNum(this));
 			} else {
@@ -302,6 +302,7 @@ namespace MonoDevelop.Ide.Gui
 			this.tabLabel = null;
 			this.tabPage = null;
 			Destroy ();
+			return true;
 		}
 		
 		#region lazy UI element creation

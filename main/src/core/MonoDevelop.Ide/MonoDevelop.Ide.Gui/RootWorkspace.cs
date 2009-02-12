@@ -776,24 +776,33 @@ namespace MonoDevelop.Ide.Gui
 			if (projects == null)
 				return true;
 			
-			Project projectWarn = null;
+			List<Document> docs = new List<Document> ();
 			foreach (Project p in projects) {
-				if (HasOpenDocuments (p, false)) {
-					projectWarn = p;
-					break;
-				}
+				docs.AddRange (GetOpenDocuments (p, false));
 			}
 			
-			return (projectWarn == null || MessageService.Confirm (GettextCatalog.GetString ("The project '{0}' has been modified by an external application. Do you want to reload it? All project files will be closed.", projectWarn.Name), AlertButton.Reload));
+			if (docs.Count == 0)
+				return true;
+			
+			if (!MessageService.Confirm (GettextCatalog.GetString ("The project '{0}' has been modified by an external application. Do you want to reload it? All project files will be closed.", docs[0].Project.Name), AlertButton.Reload))
+				return false;
+			
+			foreach (Document doc in docs) {
+				if (!doc.Close ())
+					return false;
+			}
+			return true;
 		}
 		
-		internal bool HasOpenDocuments (Project project, bool modifiedOnly)
+		internal List<Document> GetOpenDocuments (Project project, bool modifiedOnly)
 		{
+			List<Document> docs = new List<Document> ();
 			foreach (Document doc in IdeApp.Workbench.Documents) {
-				if (doc.Project == project && (!modifiedOnly || doc.IsDirty))
-					return true;
+				if (doc.Project == project && (!modifiedOnly || doc.IsDirty)) {
+					docs.Add (doc);
+				}
 			}
-			return false;
+			return docs;
 		}
 		
 		

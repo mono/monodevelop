@@ -1,5 +1,14 @@
 2009-02-12  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Gui/Document.cs:
+	* MonoDevelop.Ide.Gui/RootWorkspace.cs:
+	* MonoDevelop.Ide.Gui/IWorkbenchWindow.cs:
+	* MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs: When a project is
+	  reloaded, close all open documents bound to that project.
+	  Fixes bug #464272.
+
+2009-02-12  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui.Dialogs/GoToDialog.cs: Add inner types
 	  to the list. Improved disambiguation string for types and
 	  files. When matching the full file name, match only the

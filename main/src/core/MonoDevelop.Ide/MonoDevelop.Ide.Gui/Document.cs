@@ -323,9 +323,9 @@ namespace MonoDevelop.Ide.Gui
 			return IdeApp.ProjectOperations.CanExecuteFile (Window.ViewContent.ContentName);
 		}
 		
-		public void Close ()
+		public bool Close ()
 		{
-			Window.CloseWindow (false, true, 0);
+			return Window.CloseWindow (false, true, 0);
 		}
 		
 		protected virtual void OnSaved (EventArgs args)
