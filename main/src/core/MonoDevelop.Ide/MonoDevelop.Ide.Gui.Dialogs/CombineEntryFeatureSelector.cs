@@ -187,5 +187,15 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				}
 			}
 		}
+		
+		protected override void OnDestroyed ()
+		{
+			if (handCursor != null) {
+				handCursor.Dispose ();
+				handCursor = null;
+			}
+			base.OnDestroyed ();
+		}
+ 
 	}
 }

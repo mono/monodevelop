@@ -48,6 +48,8 @@ namespace MonoDevelop.Components.DockToolbars
 		Hashtable layouts = new Hashtable ();
 		string currentLayout = "";
 		
+		Cursor handCursor = new Cursor (CursorType.Hand2);
+		
 		public DockToolbarFrame ()
 		{
 			vbox = new VBox ();
@@ -297,7 +299,7 @@ namespace MonoDevelop.Components.DockToolbars
 			dragBar = bar;
 			xDragDif = -x;
 			yDragDif = -y;
-			Pointer.Grab (this.GdkWindow, false, EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.PointerMotionMask, null, new Cursor (CursorType.Hand2), time);
+			Pointer.Grab (this.GdkWindow, false, EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.PointerMotionMask, null, handCursor, time);
 			if (!bar.Floating) {
 				DockToolbarPanel panel = (DockToolbarPanel) dragBar.Parent;
 				panel.StartDragBar (bar);
@@ -340,6 +342,15 @@ namespace MonoDevelop.Components.DockToolbars
 		
 		protected virtual void OnPanelClick (Gdk.EventButton e, Placement placement)
 		{
+		}
+		
+		protected override void OnDestroyed ()
+		{
+			if (handCursor != null) {
+				handCursor.Dispose ();
+				handCursor = null;
+			}
+			base.OnDestroyed ();
 		}
 	}
 }

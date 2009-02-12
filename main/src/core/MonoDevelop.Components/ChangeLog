@@ -1,5 +1,12 @@
 2009-02-12  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Components.DockToolbars/DockToolbarFrame.cs:
+	  Dispose Gdk cursors, else finalisers destroy them outside of
+	  the GUI thread and often crash MD due to X asserts resulting
+	  in _XCBUnlockDisplay errors.
+
+2009-02-12  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Components/ListView.cs: Don't force selection to
 	  stay in view when the VAdjustment is changed. Fixes "Bug
 	  470910 - Can't scroll past selected file in go-to-file

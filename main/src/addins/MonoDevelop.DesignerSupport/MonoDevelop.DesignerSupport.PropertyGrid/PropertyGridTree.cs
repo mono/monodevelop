@@ -383,6 +383,15 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 			return res;
 		}
 		
+		protected override void OnDestroyed ()
+		{
+			base.OnDestroyed ();
+			if (resizeCursor != null) {
+				resizeCursor.Dispose ();
+				resizeCursor = null;
+			}
+		}
+		
 		protected override bool OnMotionNotifyEvent (EventMotion evnt)
 		{
 			if (dragging) {

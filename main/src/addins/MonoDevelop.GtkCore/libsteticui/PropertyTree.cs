@@ -291,6 +291,16 @@ namespace Stetic
 		public virtual void Update ()
 		{
 		}
+		
+		protected override void OnDestroyed ()
+		{
+			base.OnDestroyed ();
+			if (resizeCursor != null) {
+				resizeCursor.Dispose ();
+				resizeCursor = null;
+			}
+		}
+
 	}
 	
 	class TreeGroup

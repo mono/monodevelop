@@ -226,6 +226,9 @@ namespace Mono.TextEditor
 		
 		public override void Dispose ()
 		{
+			if (arrowCursor == null)
+				return;
+			
 			if (caretBlinkTimeoutId != 0)
 				GLib.Source.Remove (caretBlinkTimeoutId);
 			
@@ -234,7 +237,11 @@ namespace Mono.TextEditor
 			Caret.PositionChanged -= UpdateBracketHighlighting;
 			Document.LineChanged -= CheckLongestLine;
 	//		Document.LineInserted -= CheckLongestLine;
-		
+			
+			arrowCursor.Dispose ();
+			xtermCursor.Dispose ();
+			arrowCursor = xtermCursor = null;
+			
 			DisposeGCs ();
 			layout = layout.Kill ();
 			tabMarker = tabMarker.Kill ();

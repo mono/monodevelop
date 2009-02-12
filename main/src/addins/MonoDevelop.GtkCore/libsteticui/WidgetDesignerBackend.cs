@@ -333,6 +333,17 @@ namespace Stetic
 			selectionBox.Show ();
 		}
 		
+		protected override void OnDestroyed ()
+		{
+			if (cursorX != null) {
+				cursorX.Dispose ();
+				cursorXY.Dispose ();
+				cursorY.Dispose ();
+				cursorX = cursorXY = cursorY = null;
+			}
+			base.OnDestroyed ();
+		}
+		
 		internal void Put (Gtk.Widget child, Gtk.Container container)
 		{
 			this.child = child;

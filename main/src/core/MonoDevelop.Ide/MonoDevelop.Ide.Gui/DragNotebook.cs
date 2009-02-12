@@ -41,6 +41,8 @@ namespace MonoDevelop.Ide.Gui
 			ButtonReleaseEvent += new ButtonReleaseEventHandler (OnButtonRelease);
 			AddEvents ((Int32) (EventMask.AllEventsMask));
 		}
+		
+		Cursor fleurCursor = new Cursor (CursorType.Fleur);
 
 		public event TabsReorderedHandler TabsReordered;
 
@@ -126,11 +128,19 @@ namespace MonoDevelop.Ide.Gui
 				Grab.Add (this);
 
 				if (!Pointer.IsGrabbed)
-					Pointer.Grab (ParentWindow, false, EventMask.Button1MotionMask | EventMask.ButtonReleaseMask, null, new Cursor (CursorType.Fleur), args.Event.Time);	
+					Pointer.Grab (ParentWindow, false, EventMask.Button1MotionMask | EventMask.ButtonReleaseMask, null, fleurCursor, args.Event.Time);	
 			}
 
 			MoveTab (FindTabAtPosition (args.Event.XRoot, args.Event.YRoot));
 		}
-
+		
+		protected override void OnDestroyed ()
+		{
+			if (fleurCursor != null) {
+				fleurCursor.Dispose ();
+				fleurCursor = null;
+			}
+			base.OnDestroyed ();
+		}
 	}
 }

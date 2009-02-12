@@ -128,6 +128,12 @@ namespace Mono.TextEditor
 		
 		public override void Dispose ()
 		{
+			if (base.cursor == null)
+				return;
+			
+			base.cursor.Dispose ();
+			base.cursor = null;
+			
 			this.editor.Document.LineChanged -= UpdateWidth;
 			layout = layout.Kill ();
 			DisposeGCs ();
