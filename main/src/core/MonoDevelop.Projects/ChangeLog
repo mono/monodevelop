@@ -1,3 +1,12 @@
+2009-02-13  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/ProjectReference.cs:
+	* MonoDevelop.Projects.Formats.MD1/MD1DotNetProjectHandler.cs:
+	  Improved error reporting when a reference is not found at
+	  build time. Fixes bug #390291 - Lack of local referenced
+	  assembly should report the affected project (and maybe
+	  should be a warning, not an error).
+
 2009-02-12  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectService.cs:

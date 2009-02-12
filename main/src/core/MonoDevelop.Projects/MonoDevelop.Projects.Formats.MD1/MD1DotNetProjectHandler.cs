@@ -119,6 +119,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 			}
 
 			BuildResult refres = null;
+			HashSet<ProjectItem> itemsToExclude = new HashSet<ProjectItem> ();
 			
 			foreach (ProjectReference pr in project.References) {
 				
@@ -141,12 +142,30 @@ namespace MonoDevelop.Projects.Formats.MD1
 					if (refres == null)
 						refres = new BuildResult ();
 					string msg;
-					if (!pr.IsExactVersion && pr.SpecificVersion)
+					if (!pr.IsExactVersion && pr.SpecificVersion) {
 						msg = GettextCatalog.GetString ("Reference '{0}' not found on system. Using '{1} instead.", pr.StoredReference, pr.Reference);
-					else
-						msg = GettextCatalog.GetString ("The reference '{0}' is not valid for the target framework of the project.", pr.StoredReference, pr.Reference);
-					monitor.ReportWarning (msg);
-					refres.AddWarning (msg);
+						monitor.ReportWarning (msg);
+						refres.AddWarning (msg);
+					}
+					else {
+						bool errorsFound = false;
+						foreach (string asm in pr.GetReferencedFileNames (configuration)) {
+							if (!File.Exists (asm)) {
+								msg = GettextCatalog.GetString ("Assembly '{0}' not found. Make sure that the assembly exists in disk. If the reference is required to build the project you may get compilation errors.", Path.GetFileNameWithoutExtension (asm));
+								refres.AddWarning (msg);
+								monitor.ReportWarning (msg);
+								errorsFound = true;
+								itemsToExclude.Add (pr);
+							}
+						}
+						msg = null;
+						if (!errorsFound) {
+							msg = GettextCatalog.GetString ("The reference '{0}' is not valid for the target framework of the project.", pr.StoredReference, pr.Reference);
+							monitor.ReportWarning (msg);
+							refres.AddWarning (msg);
+							itemsToExclude.Add (pr);
+						}
+					}
 				}
 			}
 			
@@ -162,7 +181,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 		
 			buildData.Items = new ProjectItemCollection ();
 			foreach (ProjectItem item in project.Items) {
-				if (string.IsNullOrEmpty (item.Condition) || ConditionParser.ParseAndEvaluate (item.Condition, ctx))
+				if (!itemsToExclude.Contains (item) && (string.IsNullOrEmpty (item.Condition) || ConditionParser.ParseAndEvaluate (item.Condition, ctx)))
 					buildData.Items.Add (item);
 			}
 			buildData.Configuration = (DotNetProjectConfiguration) conf.Clone ();

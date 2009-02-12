@@ -154,6 +154,8 @@ namespace MonoDevelop.Projects
 						if (p != null)
 							return ownerProject.TargetFramework.IsCompatibleWithFramework (p.TargetFramework.Id);
 					}
+				} else if (ReferenceType == ReferenceType.Assembly) {
+					return File.Exists (reference);
 				}
 				return true;
 			}
