@@ -54,7 +54,7 @@ namespace MonoDevelop.Ide.Tasks
 			Count
 		}
 
-		TreeView view;
+		MonoDevelop.Ide.Gui.Components.PadTreeView view;
 		ListStore store;
 		Hashtable tasks = new Hashtable ();
 
@@ -79,7 +79,7 @@ namespace MonoDevelop.Ide.Tasks
 				typeof (Gdk.Color),  // foreground color
 				typeof (int));       // font weight
 
-			view = new Gtk.TreeView (store);
+			view = new MonoDevelop.Ide.Gui.Components.PadTreeView (store);
 			view.RulesHint = true;
 			view.SearchColumn = (int)Columns.Description;
 			view.PopupMenu += new PopupMenuHandler (OnPopupMenu);
@@ -87,22 +87,22 @@ namespace MonoDevelop.Ide.Tasks
 			view.RowActivated += new RowActivatedHandler (OnRowActivated);
 
 			TreeViewColumn col;
-			col = view.AppendColumn (GettextCatalog.GetString ("Line"), new CellRendererText (), "text", Columns.Line, "foreground-gdk", Columns.Foreground, "weight", Columns.Bold);
+			col = view.AppendColumn (GettextCatalog.GetString ("Line"), view.TextRenderer, "text", Columns.Line, "foreground-gdk", Columns.Foreground, "weight", Columns.Bold);
 			col.Clickable = false;
 
-			col = view.AppendColumn (GettextCatalog.GetString ("Description"), new CellRendererText (), "text", Columns.Description, "foreground-gdk", Columns.Foreground, "weight", Columns.Bold);
+			col = view.AppendColumn (GettextCatalog.GetString ("Description"), view.TextRenderer, "text", Columns.Description, "foreground-gdk", Columns.Foreground, "weight", Columns.Bold);
 			col.Clickable = true;
 			col.SortColumnId = (int)Columns.Description;
 			col.Resizable = true;
 			col.Clicked += new EventHandler (Resort);
 
-			col = view.AppendColumn (GettextCatalog.GetString ("File"), new CellRendererText (), "text", Columns.File, "foreground-gdk", Columns.Foreground, "weight", Columns.Bold);
+			col = view.AppendColumn (GettextCatalog.GetString ("File"), view.TextRenderer, "text", Columns.File, "foreground-gdk", Columns.Foreground, "weight", Columns.Bold);
 			col.Clickable = true;
 			col.SortColumnId = (int)Columns.File;
 			col.Resizable = true;
 			col.Clicked += new EventHandler (Resort);
 
-			col = view.AppendColumn (GettextCatalog.GetString ("Path"), new CellRendererText (), "text", Columns.Path, "foreground-gdk", Columns.Foreground, "weight", Columns.Bold);
+			col = view.AppendColumn (GettextCatalog.GetString ("Path"), view.TextRenderer, "text", Columns.Path, "foreground-gdk", Columns.Foreground, "weight", Columns.Bold);
 			col.Clickable = true;
 			col.SortColumnId = (int)Columns.Path;
 			col.Resizable = true;

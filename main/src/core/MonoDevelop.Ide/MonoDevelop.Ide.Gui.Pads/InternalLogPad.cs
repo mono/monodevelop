@@ -52,7 +52,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 	{
 		VBox control;
 		ScrolledWindow sw;
-		Gtk.TreeView view;
+		MonoDevelop.Ide.Gui.Components.PadTreeView view;
 		ListStore store;
 		TreeModelFilter filter;
 		ToggleToolButton errorBtn, warnBtn, msgBtn, debugBtn;
@@ -197,7 +197,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			filter = new TreeModelFilter (store, null);
             filter.VisibleFunc = filterFunct;
 			
-			view = new Gtk.TreeView (new Gtk.TreeModelSort (filter));
+			view = new MonoDevelop.Ide.Gui.Components.PadTreeView (new Gtk.TreeModelSort (filter));
 			view.RulesHint = true;
 			view.PopupMenu += new PopupMenuHandler (OnPopupMenu);
 			view.ButtonPressEvent += new ButtonPressEventHandler (OnButtonPressed);
@@ -243,19 +243,16 @@ namespace MonoDevelop.Ide.Gui.Pads
 		void AddColumns ()
 		{
 			Gtk.CellRendererPixbuf iconRender = new Gtk.CellRendererPixbuf ();
-			Gtk.CellRendererText desc = new Gtk.CellRendererText ();
-			Gtk.CellRendererText time = new Gtk.CellRendererText ();
 			iconRender.Yalign = 0;
 			iconRender.Ypad = 2;
-			time.Yalign = 0;
-			desc.Yalign = 0;
+			view.TextRenderer.Yalign = 0;
 
 			TreeViewColumn col;
 			col = view.AppendColumn ("", iconRender, "pixbuf", Columns.Type);
 			col.SortColumnId = (int) Columns.TypeString;
-			col = view.AppendColumn (GettextCatalog.GetString ("Time"), time, "text", Columns.Time);
+			col = view.AppendColumn (GettextCatalog.GetString ("Time"), view.TextRenderer, "text", Columns.Time);
 			col.SortColumnId = (int) Columns.Time;
-			col = view.AppendColumn (GettextCatalog.GetString ("Description"), desc, "text", Columns.Description);
+			col = view.AppendColumn (GettextCatalog.GetString ("Description"), view.TextRenderer, "text", Columns.Description);
 			col.SortColumnId = (int) Columns.Description;
 		}
 

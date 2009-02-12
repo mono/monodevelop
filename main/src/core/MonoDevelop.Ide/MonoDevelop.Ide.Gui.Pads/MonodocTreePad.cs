@@ -42,16 +42,16 @@ namespace MonoDevelop.Ide.Gui.Pads
 	internal class HelpTree : AbstractPadContent
 	{
 		TreeStore store;
-		TreeView  tree_view;
+		MonoDevelop.Ide.Gui.Components.PadTreeView  tree_view;
 
 		ScrolledWindow scroller;
 		TreeIter root_iter;
 	
 		public HelpTree () : base (GettextCatalog.GetString ("Help"), Gtk.Stock.Help)
 		{
-			tree_view = new TreeView ();
+			tree_view = new MonoDevelop.Ide.Gui.Components.PadTreeView ();
 
-			tree_view.AppendColumn ("name_col", new CellRendererText (), "text", 0);
+			tree_view.AppendColumn ("name_col", tree_view.TextRenderer, "text", 0);
 			tree_view.RowExpanded += new Gtk.RowExpandedHandler (RowExpanded);
 			tree_view.Selection.Changed += new EventHandler (RowActivated);
 			

@@ -40,7 +40,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 	{
 		VBox control;
 		ScrolledWindow sw;
-		Gtk.TreeView view;
+		MonoDevelop.Ide.Gui.Components.PadTreeView view;
 		ListStore store;
 		TreeModelFilter filter;
 		ToggleToolButton errorBtn, warnBtn, msgBtn;
@@ -156,7 +156,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			filter = new TreeModelFilter (store, null);
             filter.VisibleFunc = filterFunct;
 			
-			view = new Gtk.TreeView (filter);
+			view = new MonoDevelop.Ide.Gui.Components.PadTreeView (filter);
 			view.RulesHint = true;
 			view.PopupMenu += new PopupMenuHandler (OnPopupMenu);
 			view.ButtonPressEvent += new ButtonPressEventHandler (OnButtonPressed);
@@ -415,22 +415,19 @@ namespace MonoDevelop.Ide.Gui.Pads
 			
 			Gtk.CellRendererToggle toggleRender = new Gtk.CellRendererToggle ();
 			toggleRender.Toggled += new ToggledHandler (ItemToggled);
-
-			Gtk.CellRendererText line = new Gtk.CellRendererText (), desc = new Gtk.CellRendererText () , path = new Gtk.CellRendererText (),
-			file = new Gtk.CellRendererText ();
-
+			
 			TreeViewColumn col;
 			col = view.AppendColumn ("!", iconRender, "pixbuf", Columns.Type);
 			col.Clickable = true;
 			col.Clicked += new EventHandler (OnResortTasks);
 			col.SortIndicator = true;
 			view.AppendColumn ("", toggleRender, "active", Columns.Marked);
-			view.AppendColumn (GettextCatalog.GetString ("Line"), line, "text", Columns.Line, "weight", Columns.Weight);
-			col = view.AppendColumn (GettextCatalog.GetString ("Description"), desc, "text", Columns.Description, "weight", Columns.Weight, "strikethrough", Columns.Marked);
+			view.AppendColumn (GettextCatalog.GetString ("Line"), view.TextRenderer, "text", Columns.Line, "weight", Columns.Weight);
+			col = view.AppendColumn (GettextCatalog.GetString ("Description"), view.TextRenderer, "text", Columns.Description, "weight", Columns.Weight, "strikethrough", Columns.Marked);
 			col.Resizable = true;
-			col = view.AppendColumn (GettextCatalog.GetString ("File"), file, "text", Columns.File, "weight", Columns.Weight);
+			col = view.AppendColumn (GettextCatalog.GetString ("File"), view.TextRenderer, "text", Columns.File, "weight", Columns.Weight);
 			col.Resizable = true;
-			col = view.AppendColumn (GettextCatalog.GetString ("Path"), path, "text", Columns.Path, "weight", Columns.Weight);
+			col = view.AppendColumn (GettextCatalog.GetString ("Path"), view.TextRenderer, "text", Columns.Path, "weight", Columns.Weight);
 			col.Resizable = true;
 		}
 		

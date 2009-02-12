@@ -56,7 +56,7 @@ namespace MonoDevelop.Ide.Tasks
 		ToolButton newButton;
 		ToolButton delButton;
 
-		TreeView view;
+		MonoDevelop.Ide.Gui.Components.PadTreeView view;
 		ListStore store;
 		
 		Gdk.Color highPrioColor, normalPrioColor, lowPrioColor;
@@ -84,7 +84,7 @@ namespace MonoDevelop.Ide.Tasks
 			
 			tips = new Tooltips ();
 			
-			view = new Gtk.TreeView (store);
+			view = new MonoDevelop.Ide.Gui.Components.PadTreeView (store);
 			view.RulesHint = true;
 			view.SearchColumn = (int)Columns.Description;
 			view.Selection.Changed += new EventHandler (SelectionChanged);
@@ -111,7 +111,7 @@ namespace MonoDevelop.Ide.Tasks
 			col.Clickable = true;
 			col.Clicked += new EventHandler (UserTaskCompletedResort);
 			
-			CellRendererText cellRendDesc = new CellRendererText ();
+			CellRendererText cellRendDesc = view.TextRenderer;
 			cellRendDesc.Editable = true;
 			cellRendDesc.Edited += new EditedHandler (UserTaskDescEdited);
 			col = view.AppendColumn (GettextCatalog.GetString ("Description"), cellRendDesc, "text", Columns.Description, "strikethrough", Columns.Completed, "foreground-gdk", Columns.Foreground, "weight", Columns.Bold);

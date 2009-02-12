@@ -38,7 +38,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 	public class SearchResultPad : IPadContent, ILocationListPad
 	{
 		ScrolledWindow sw;
-		Gtk.TreeView view;
+		MonoDevelop.Ide.Gui.Components.PadTreeView view;
 		ListStore store;
 		string basePath;
 		IAsyncOperation asyncOperation;
@@ -136,7 +136,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				typeof (int),       // read? -- use Pango weight
 				typeof (bool));       // is file
 
-			view = new Gtk.TreeView (store);
+			view = new MonoDevelop.Ide.Gui.Components.PadTreeView (store);
 			view.RulesHint = true;
 			view.PopupMenu += new PopupMenuHandler (OnPopupMenu);
 			view.ButtonPressEvent += new ButtonPressEventHandler (OnButtonPressed);
@@ -371,20 +371,17 @@ namespace MonoDevelop.Ide.Gui.Pads
 		{
 			Gtk.CellRendererPixbuf iconRender = new Gtk.CellRendererPixbuf ();
 			
-			Gtk.CellRendererText line = new Gtk.CellRendererText (), desc = new Gtk.CellRendererText () , path = new Gtk.CellRendererText (),
-			file = new Gtk.CellRendererText ();
-			
 			TreeViewColumn col;
 			col = view.AppendColumn ("", iconRender, "pixbuf", COL_TYPE);
-			col = view.AppendColumn (GettextCatalog.GetString ("Line"), line, "text", COL_LINE, "weight", COL_READ_WEIGHT, "visible", COL_ISFILE);
+			col = view.AppendColumn (GettextCatalog.GetString ("Line"), view.TextRenderer, "text", COL_LINE, "weight", COL_READ_WEIGHT, "visible", COL_ISFILE);
 			col.SortColumnId = COL_LINE;
-			col = view.AppendColumn (GettextCatalog.GetString ("File"), file, "text", COL_FILE, "weight", COL_READ_WEIGHT, "visible", COL_ISFILE);
+			col = view.AppendColumn (GettextCatalog.GetString ("File"), view.TextRenderer, "text", COL_FILE, "weight", COL_READ_WEIGHT, "visible", COL_ISFILE);
 			col.SortColumnId = COL_FILE;
 			col.Resizable = true;
-			col = view.AppendColumn (GettextCatalog.GetString ("Text"), desc, "markup", COL_DESC, "weight", COL_READ_WEIGHT);
+			col = view.AppendColumn (GettextCatalog.GetString ("Text"), view.TextRenderer, "markup", COL_DESC, "weight", COL_READ_WEIGHT);
 			col.SortColumnId = COL_DESC;
 			col.Resizable = true;
-			col = view.AppendColumn (GettextCatalog.GetString ("Path"), path, "text", COL_PATH, "weight", COL_READ_WEIGHT, "visible", COL_ISFILE);
+			col = view.AppendColumn (GettextCatalog.GetString ("Path"), view.TextRenderer, "text", COL_PATH, "weight", COL_READ_WEIGHT, "visible", COL_ISFILE);
 			col.SortColumnId = COL_FULLPATH;
 			col.Resizable = true;
 
