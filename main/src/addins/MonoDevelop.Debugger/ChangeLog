@@ -1,3 +1,12 @@
+2009-02-13  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Debugger/LocalsPad.cs:
+	* MonoDevelop.Debugger/ObjectValueTreeView.cs: Add locals all
+	  at once to the list.
+
+	* MonoDevelop.Debugger/DebugCommands.cs: Allow editing the
+	  exceptions even when the debugger is not running.
+
 2009-02-12  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* icons:

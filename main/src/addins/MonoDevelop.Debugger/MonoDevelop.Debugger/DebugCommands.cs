@@ -478,7 +478,6 @@ namespace MonoDevelop.Debugger
 		protected override void Update (CommandInfo info)
 		{
 			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Catchpoints);
-			info.Enabled = DebuggingService.CurrentFrame != null;
 		}
 	}
 }

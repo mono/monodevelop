@@ -50,8 +50,7 @@ namespace MonoDevelop.Debugger
 			StackFrame frame = DebuggingService.CurrentFrame;
 			if (frame != null) {
 				tree.ClearValues ();
-				foreach (ObjectValue val in frame.GetAllLocals ())
-					tree.AddValue (val);
+				tree.AddValues (frame.GetAllLocals ());
 			}
 		}
 	}

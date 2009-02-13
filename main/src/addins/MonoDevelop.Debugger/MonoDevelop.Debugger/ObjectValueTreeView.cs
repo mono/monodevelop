@@ -53,7 +53,6 @@ namespace MonoDevelop.Debugger
 		bool allowEditing;
 		bool compact;
 		StackFrame frame;
-		ObjectValue[] lastEvaluatedValues;
 		bool disposed;
 		
 		CellRendererText crtExp;
@@ -224,6 +223,13 @@ namespace MonoDevelop.Debugger
 		public void AddValue (ObjectValue value)
 		{
 			values.Add (value);
+			Refresh ();
+		}
+		
+		public void AddValues (IEnumerable<ObjectValue> newValues)
+		{
+			foreach (ObjectValue val in newValues)
+				values.Add (val);
 			Refresh ();
 		}
 		
