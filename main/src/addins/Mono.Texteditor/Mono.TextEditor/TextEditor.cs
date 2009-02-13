@@ -409,19 +409,33 @@ namespace Mono.TextEditor
 			// This is a hack around a problem with repainting the drag widget.
 			// When this is not set a white square is drawn when the drag widget is moved
 			// when the bg color is differs from the color style bg color (e.g. oblivion style)
-			if (this.textEditorData.ColorStyle != null) 
+			if (this.textEditorData.ColorStyle != null) {
+				styleSet = true; //prevent double call to OptionsChanged from OnStyleSet
 				this.ModifyBg (StateType.Normal, this.textEditorData.ColorStyle.Default.BackgroundColor);
+				styleSet = false;
+			}
 			
 			iconMargin.IsVisible   = Options.ShowIconMargin;
 			gutterMargin.IsVisible     = Options.ShowLineNumberMargin;
 			foldMarkerMargin.IsVisible = Options.ShowFoldMargin;
+			
 			foreach (Margin margin in this.margins) {
 				margin.OptionsChanged ();
 			}
 			SetAdjustments (Allocation);
 			this.QueueDraw ();
 		}
-		
+		bool styleSet = false;
+		protected override void OnStyleSet (Gtk.Style previous_style)
+		{
+			if (!styleSet) {
+				styleSet = true;
+				OptionsChanged (this, EventArgs.Empty);
+				styleSet = false;
+			}
+			base.OnStyleSet (previous_style);
+		}
+ 
 		protected override void OnDestroyed ()
 		{
 			base.OnDestroyed ();

@@ -1,5 +1,9 @@
 2009-02-13  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs: Handle system style changes.
+
+2009-02-13  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextViewMargin.cs: Fixed drawing issue with
 	  current line marker in color styles & syntax modes that
 	  define the same bg color than the default one for keywords.
