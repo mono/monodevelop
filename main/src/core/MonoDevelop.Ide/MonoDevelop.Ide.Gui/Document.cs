@@ -103,7 +103,11 @@ namespace MonoDevelop.Ide.Gui
 		}
 
 		public string FileName {
-			get { return Window.ViewContent.IsFile ? Window.ViewContent.ContentName : null;	}
+			get {
+				if (!Window.ViewContent.IsFile)
+					return null;
+				return Window.ViewContent.IsUntitled ? Window.ViewContent.UntitledName : Window.ViewContent.ContentName;
+			}
 		}
 
 		public bool IsFile {
@@ -481,18 +485,18 @@ namespace MonoDevelop.Ide.Gui
 				return;
 
 			parsing = true;
+			string currentParseFile = FileName;
+			string mime = IdeApp.Services.PlatformService.GetMimeTypeForUri (currentParseFile);
 			
 			GLib.Timeout.Add (ParseDelay, delegate {
 				if (closed)
 					return false;
 				parsing = false;
-				string currentParseFile = Name;
 				string currentParseText = TextEditor.Text;
 				Project curentParseProject = Project;
-				
 				System.Threading.ThreadPool.QueueUserWorkItem (delegate {
 					// Don't access Document properties from the thread
-					this.parsedDocument = ProjectDomService.Parse (curentParseProject, currentParseFile, IdeApp.Services.PlatformService.GetMimeTypeForUri (currentParseFile), currentParseText);
+					this.parsedDocument = ProjectDomService.Parse (curentParseProject, currentParseFile, mime, currentParseText);
 					if (this.parsedDocument != null && !this.parsedDocument.HasErrors)
 						this.lastErrorFreeParsedDocument = parsedDocument;
 				});
