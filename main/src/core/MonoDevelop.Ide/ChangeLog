@@ -1,5 +1,11 @@
 2009-02-13  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs: Fixed Bug
+	  447428 - About dialog is completely unreadable when using a
+	  dark theme.
+
+2009-02-13  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs: Properly refresh
 	  on line changes.
 

@@ -176,7 +176,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			int tw, maxHeight;
 			layout.GetPixelSize (out tw, out maxHeight);
 			
-			this.GdkWindow.DrawLayout (this.Style.TextGC (StateType.Normal), 0, textTop - scroll, layout);
+			this.GdkWindow.DrawLayout (this.Style.BlackGC, 0, textTop - scroll, layout);
 			this.GdkWindow.DrawPixbuf (this.Style.BackgroundGC (StateType.Normal), monoPowered, 0, 0, (w/2) - (monoPowered.Width/2), textTop - scroll + maxHeight + monoLogoSpacing, -1, -1, RgbDither.Normal,  0,  0);
 
 			if (scroll == maxHeight && scrollPause == 0)
@@ -238,7 +238,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			nb.BorderWidth = 6;
 //			nb.SetSizeRequest (440, 240);
 			this.ModifyBg (Gtk.StateType.Normal, new Gdk.Color (255, 255, 255));
-			nb.ModifyBg (Gtk.StateType.Normal, new Gdk.Color (255, 255, 255));
+//			nb.ModifyBg (Gtk.StateType.Normal, new Gdk.Color (255, 255, 255));
 			VersionInformationTabPage vinfo = new VersionInformationTabPage ();
 			
 			nb.AppendPage (new AboutMonoDevelopTabPage (), new Label (GettextCatalog.GetString ("About MonoDevelop")));
