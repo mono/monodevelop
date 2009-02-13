@@ -36,6 +36,7 @@ using Mono.Addins;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Projects.Extensions;
+using Mono.Unix;
 
 namespace MonoDevelop.Projects
 {
@@ -112,6 +113,7 @@ namespace MonoDevelop.Projects
 		
 		public SolutionEntityItem ReadSolutionItem (IProgressMonitor monitor, string file)
 		{
+			file = GetTargetFile (file);
 			return extensionChain.LoadSolutionItem (monitor, file, delegate {
 				FileFormat format;
 				SolutionEntityItem item = ReadFile (monitor, file, typeof(SolutionEntityItem), out format) as SolutionEntityItem;
@@ -162,6 +164,7 @@ namespace MonoDevelop.Projects
 		
 		public WorkspaceItem ReadWorkspaceItem (IProgressMonitor monitor, string file)
 		{
+			file = GetTargetFile (file);
 			WorkspaceItem item = ExtensionChain.LoadWorkspaceItem (monitor, file) as WorkspaceItem;
 			if (item != null)
 				item.NeedsReload = false;
@@ -241,6 +244,7 @@ namespace MonoDevelop.Projects
 		
 		public string Export (IProgressMonitor monitor, string rootSourceFile, string targetPath, FileFormat format)
 		{
+			rootSourceFile = GetTargetFile (rootSourceFile);
 			return Export (monitor, rootSourceFile, null, targetPath, format);
 		}
 		
@@ -433,6 +437,7 @@ namespace MonoDevelop.Projects
 		{
 			if (filename.StartsWith ("file://"))
 				filename = new Uri(filename).LocalPath;
+			filename = GetTargetFile (filename);
 			return ExtensionChain.IsSolutionItemFile (filename);
 		}
 		
@@ -440,6 +445,7 @@ namespace MonoDevelop.Projects
 		{
 			if (filename.StartsWith ("file://"))
 				filename = new Uri(filename).LocalPath;
+			filename = GetTargetFile (filename);
 			return ExtensionChain.IsWorkspaceItemFile (filename);
 		}
 		
@@ -532,6 +538,17 @@ namespace MonoDevelop.Projects
 			} else {
 				extensionChain.Next = defaultExtension;
 			}
+		}
+		
+		string GetTargetFile (string file)
+		{
+			try {
+				UnixSymbolicLinkInfo fi = new UnixSymbolicLinkInfo (file);
+				if (fi.IsSymbolicLink)
+					return fi.ContentsPath;
+			} catch {
+			}
+			return file;
 		}
 	}
 	

@@ -1,5 +1,12 @@
 2009-02-13  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects/ProjectService.cs: Dereference symbolic
+	  links when opening a project or solution. Fixes bug #441886
+	  - Opening a solution by it's link makes solution's root
+	  directory the same as link's.
+
+2009-02-13  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects/ProjectReference.cs:
 	* MonoDevelop.Projects.Formats.MD1/MD1DotNetProjectHandler.cs:
 	  Improved error reporting when a reference is not found at
