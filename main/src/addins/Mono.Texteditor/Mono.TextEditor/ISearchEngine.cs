@@ -138,7 +138,7 @@ namespace Mono.TextEditor
 		
 		public override SearchResult GetMatchAt (int offset)
 		{
-			if (offset + searchRequest.SearchPattern.Length <= this.textEditorData.Document.Length && compiledPattern.Length > 0) {
+			if ((!string.IsNullOrEmpty (SearchRequest.SearchPattern)) && offset + searchRequest.SearchPattern.Length <= this.textEditorData.Document.Length && compiledPattern.Length > 0) {
 				if (searchRequest.CaseSensitive) {
 					for (int i = 0; i < compiledPattern.Length; i++) {
 						if (this.textEditorData.Document.GetCharAt (offset + i) != compiledPattern[i]) 
@@ -161,21 +161,25 @@ namespace Mono.TextEditor
 		
 		public override SearchResult SearchForward (int fromOffset)
 		{
-			for (int i = 0; i < this.textEditorData.Document.Length - searchRequest.SearchPattern.Length; i++) {
-				int offset = (fromOffset + i) % this.textEditorData.Document.Length;
-				if (IsMatchAt (offset))
-					return new SearchResult (offset, searchRequest.SearchPattern.Length, offset < fromOffset);
-			}
+			if (!string.IsNullOrEmpty (SearchRequest.SearchPattern)) {
+				for (int i = 0; i < this.textEditorData.Document.Length - searchRequest.SearchPattern.Length; i++) {
+					int offset = (fromOffset + i) % this.textEditorData.Document.Length;
+					if (IsMatchAt (offset))
+						return new SearchResult (offset, searchRequest.SearchPattern.Length, offset < fromOffset);
+				}
+            }
 			return null;
 		}
 		
 		public override SearchResult SearchBackward (int fromOffset)
 		{
-			for (int i = 0; i < this.textEditorData.Document.Length - searchRequest.SearchPattern.Length; i++) {
-				int offset = (fromOffset + this.textEditorData.Document.Length * 2 - 1- i) % this.textEditorData.Document.Length;
-				if (IsMatchAt (offset))
-					return new SearchResult (offset, searchRequest.SearchPattern.Length, offset > fromOffset);
-			}
+			if (!string.IsNullOrEmpty (SearchRequest.SearchPattern)) {
+				for (int i = 0; i < this.textEditorData.Document.Length - searchRequest.SearchPattern.Length; i++) {
+					int offset = (fromOffset + this.textEditorData.Document.Length * 2 - 1- i) % this.textEditorData.Document.Length;
+					if (IsMatchAt (offset))
+						return new SearchResult (offset, searchRequest.SearchPattern.Length, offset > fromOffset);
+				}
+            }
 			return null;
 		}
 		
