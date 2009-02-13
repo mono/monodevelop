@@ -904,16 +904,16 @@ namespace MonoDevelop.SourceEditor
 		internal void MonodocResolver ()
 		{
 			ResolveResult res = TextEditor.GetLanguageItem (TextEditor.Caret.Offset);
-			if (res != null && res.StaticResolve) {
-				IdeApp.HelpOperations.ShowHelp ("");
-			}
+			string url = IdeApp.HelpOperations.GetHelpUrl (res);
+			if (url != null)
+				IdeApp.HelpOperations.ShowHelp (url);
 		}
 		
 		[CommandUpdateHandler (HelpCommands.Help)]
 		internal void MonodocResolverUpdate (CommandInfo cinfo)
 		{
 			ResolveResult res = TextEditor.GetLanguageItem (TextEditor.Caret.Offset);
-			if (res == null || !res.StaticResolve)
+			if (res == null)
 				cinfo.Bypass = true;
 		}
 		

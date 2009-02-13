@@ -1,3 +1,9 @@
+2009-02-13  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Implement F1
+	  member help. Looks like it was never implemented for
+	  SourceEditor2.
+
 2009-02-11  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.SourceEditor/DefaultFormatter.cs: Fix NRE when
