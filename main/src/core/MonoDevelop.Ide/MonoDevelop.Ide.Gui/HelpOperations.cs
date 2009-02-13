@@ -34,6 +34,8 @@ using MonoDevelop.Core.Execution;
 using System.IO;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
+using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Parser;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -117,6 +119,47 @@ namespace MonoDevelop.Ide.Gui
 				MessageService.ShowException (e);
 				useExternalMonodoc = false;
 			}
+		}
+		
+		//note: this method is very careful to check that the generated URLs exist in MonoDoc
+		//because if we send nonexistent URLS to MonoDoc, it shows empty pages
+		public string GetHelpUrl (ResolveResult result)
+		{
+			if (result == null)
+				return null;
+			
+			if (result is AggregatedResolveResult) 
+				result = ((AggregatedResolveResult)result).PrimaryResult;
+			
+			
+			if (result is NamespaceResolveResult)
+			{
+				string namespc = ((NamespaceResolveResult)result).Namespace;
+				//verify that the namespace exists in the help tree
+				//FIXME: GetHelpXml doesn't seem to work for namespaces, so forced to do full render
+				Monodoc.Node dummy;
+				if (!String.IsNullOrEmpty (namespc) && ProjectDomService.HelpTree.RenderUrl ("N:" + namespc, out dummy) != null)
+					return "N:" + namespc;
+				else return null;
+			}
+			
+			IMember member = null;
+			if (result is MethodResolveResult)
+				member = ((MethodResolveResult)result).MostLikelyMethod;
+			else if (result is MemberResolveResult)
+				member = ((MemberResolveResult)result).ResolvedMember;
+			
+			if (member != null && member.GetMonodocDocumentation () != null)
+				return member.HelpUrl;
+			
+			IReturnType type = result.ResolvedType;
+			if (type != null && !String.IsNullOrEmpty (type.FullName)) {
+				string t = "T:" + type.FullName;
+				if (ProjectDomService.HelpTree.GetHelpXml (t) != null)
+					return t;
+			}
+			
+			return null;
 		}
 	}
 }
