@@ -1,3 +1,8 @@
+2009-02-13  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/CSharpAmbience.cs: fixed type output issues in the c#
+	  ambience.
+
 2009-02-11  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* CSharpLanguageBinding.cs:

@@ -343,8 +343,8 @@ namespace MonoDevelop.CSharpBinding
 		public string Visit (IType type, OutputSettings settings)
 		{
 			InstantiatedType instantiatedType = type as InstantiatedType;
-			
-			string modifiers = settings.EmitModifiers (base.GetString (type.Modifiers));
+			string modStr = base.GetString (type.Modifiers);
+			string modifiers = !String.IsNullOrEmpty (modStr) ? settings.EmitModifiers (modStr) : "";
 			string keyword = settings.EmitKeyword (GetString (type.ClassType));
 			
 			string name;
@@ -363,7 +363,7 @@ namespace MonoDevelop.CSharpBinding
 			StringBuilder result = new StringBuilder ();
 			result.Append (modifiers);
 			result.Append (keyword);
-			if (result.Length > 0)
+			if (result.Length > 0 && !result.ToString ().EndsWith (" "))
 				result.Append (settings.Markup (" "));
 			result.Append (settings.EmitName (type, name));
 			
