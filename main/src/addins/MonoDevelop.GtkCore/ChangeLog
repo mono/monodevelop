@@ -1,3 +1,8 @@
+2009-02-13  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am: Fix build. Looks like the makefiles can't cope 
+	  with resources with IDs.
+
 2009-02-13  Mike Kestner <mkestner@novell.com> 
 
 	* Makefile.am: add template resource
