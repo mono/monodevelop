@@ -518,7 +518,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			TreeIter iter;
 			if (store.GetIterFirst (out iter)) {
 				do {
-					Task curTask = (Task)store.GetValue (iter, 6);
+					Task curTask = (Task)store.GetValue (iter, (int)Columns.Task);
 					foreach (Task task in e.Tasks) {
 						if (task == curTask) {
 							store.SetValue (iter, 2, task.Line);

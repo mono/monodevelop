@@ -1,3 +1,7 @@
+2009-02-13  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs: Fix crash.
+
 2009-02-12  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am:
