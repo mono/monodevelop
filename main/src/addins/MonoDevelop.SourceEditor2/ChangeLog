@@ -1,5 +1,10 @@
 2009-02-13  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: error
+	  underlining & folding now works on untitled files.
+
+2009-02-13  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/LanguageItemWindow.cs: Improved
 	  language item tooltip formatting.
 
