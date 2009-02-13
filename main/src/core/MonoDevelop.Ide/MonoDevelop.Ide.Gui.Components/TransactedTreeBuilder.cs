@@ -788,6 +788,7 @@ namespace MonoDevelop.Ide.Gui.Components
 						cn.Modified = false;
 						node.Reset = false;
 						CommitNode (cn);
+						tree.NotifyInserted (it, cn.DataItem);
 					}
 				}
 				if (node.Reset && !node.Filled) {

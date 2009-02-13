@@ -1,5 +1,12 @@
 2009-02-13  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Gui.Components/TransactedTreeBuilder.cs:
+	  Make sure insert callbacks are called when committing a
+	  transaction. Fixes bug 442123 - When folder is added to
+	  solution it no longer renames automatically.
+
+2009-02-13  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs: Fixed Bug
 	  447428 - About dialog is completely unreadable when using a
 	  dark theme.
