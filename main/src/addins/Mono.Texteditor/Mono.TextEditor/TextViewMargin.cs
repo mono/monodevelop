@@ -372,7 +372,7 @@ namespace Mono.TextEditor
 						// Draw text before the search result (if any)
 						if (firstSearch.Offset > offset) {
 							s = offset - startOffset;
-							Gdk.Color bgc = style.TransparentBackround ? defaultBgColor : style.BackgroundColor;
+							Gdk.Color bgc = UseDefaultBackgroundColor (style) ? defaultBgColor : style.BackgroundColor;
 							DrawText (win, text.Substring (s, firstSearch.Offset - offset), style.Color, drawBg, bgc, ref xPos, y);
 							offset += firstSearch.Offset - offset;
 						}
@@ -385,7 +385,7 @@ namespace Mono.TextEditor
 					}
 					s = offset - startOffset;
 					if (s < wordBuilder.Length) {
-						Gdk.Color bgc = style.TransparentBackround ? defaultBgColor : style.BackgroundColor;
+						Gdk.Color bgc = UseDefaultBackgroundColor (style) ? defaultBgColor : style.BackgroundColor;
 						DrawText (win, s > 0 ? text.Substring (s, wordBuilder.Length - s) : text, style.Color, drawBg, bgc, ref xPos, y);
 					}
 				}
@@ -599,17 +599,25 @@ namespace Mono.TextEditor
 		{
 			win.DrawLayout (GetGC (ColorStyle.InvalidLineMarker), x, y, invalidLineMarker);
 		}
-		
+		static uint GetPixel (Color color)
+		{
+			return (uint)color.Red << 32 |
+					(uint)color.Green << 16 |
+					(uint)color.Blue;
+		}
+		bool UseDefaultBackgroundColor (ChunkStyle style)
+		{
+			return style.TransparentBackround || GetPixel (style.BackgroundColor) == GetPixel (ColorStyle.Default.BackgroundColor);
+		}
 		Gdk.Color GetBackgroundColor (int offset, bool selected, ChunkStyle style)
 		{
 			if (selected)
 				return ColorStyle.Selection.BackgroundColor;
-			else if (IsSearchResultAt (offset))
+			if (IsSearchResultAt (offset))
 				return ColorStyle.SearchTextBg;
-			else if (style.TransparentBackround)
+			if (UseDefaultBackgroundColor (style))
 				return defaultBgColor;
-			else
-				return style.BackgroundColor;
+			return style.BackgroundColor;
 		}
 		
 		public bool inSelectionDrag = false;
