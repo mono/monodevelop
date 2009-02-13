@@ -1,5 +1,13 @@
 2009-02-13  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects/Project.cs: Don't delete files from the
+	  output directory if they were directly referenced from that
+	  directory. Fixes bug #472620 - Doing a Clean or Rebuild
+	  removes all referenced assemblies from output dir even if
+	  they aren't built.
+
+2009-02-13  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects/ProjectService.cs: Dereference symbolic
 	  links when opening a project or solution. Fixes bug #441886
 	  - Opening a solution by it's link makes solution's root

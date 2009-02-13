@@ -359,6 +359,10 @@ namespace MonoDevelop.Projects
 			foreach (FileCopySet.Item item in GetSupportFileList (solutionConfiguration)) {
 				string dest = Path.Combine (config.OutputDirectory, item.Target);
 				
+				// Ignore files which were not copied
+				if (Path.GetFullPath (dest) == Path.GetFullPath (item.Src))
+					continue;
+				
 				try {
 					if (File.Exists (dest)) {
 						FileService.DeleteFile (dest);
