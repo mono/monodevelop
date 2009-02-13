@@ -912,19 +912,35 @@ namespace MonoDevelop.Projects.CodeGeneration
 				string s = buffer.GetText (sp, ep);
 				int i = s.IndexOf ('{');
 				if (i == -1) return -1;
-				i++;
-				int pos = GetNextLine (buffer, sp + i);
 				string ind = GetLineIndent (buffer, cls.BodyRegion.Start.Line);
-				buffer.InsertText (pos, ind + "\t\n");
-				return pos + ind.Length + 1;
+				int pos = GetNextLine (buffer, sp + i + 1);
+				if (cls.BodyRegion.Start.Line == cls.BodyRegion.End.Line) {
+					buffer.InsertText (sp + i + 1, "\n" + ind + "\t");
+					pos = sp + i + ind.Length + 2;
+				} else  {
+					pos = GetNextLine (buffer, sp + i + 1);
+					buffer.InsertText (pos, ind + "\t\n");
+					pos += ind.Length + 1;
+				}
+				return pos;
 			} else {
 				IField f = null;
 				foreach (IField field in cls.Fields) {
 					f = field;
 				}
 				int pos = buffer.GetPositionFromLineColumn (f.Location.Line, f.Location.Column);
-				pos = GetNextLine (buffer, pos);
 				string ind = GetLineIndent (buffer, f.Location.Line);
+				if (cls.BodyRegion.Start.Line == cls.BodyRegion.End.Line) {
+					int sp = buffer.GetPositionFromLineColumn (cls.BodyRegion.Start.Line, cls.BodyRegion.Start.Column);
+					int ep = buffer.GetPositionFromLineColumn (cls.BodyRegion.End.Line, cls.BodyRegion.End.Column);
+					string s = buffer.GetText (sp, ep);
+					int i = s.IndexOf ('}');
+					if (i == -1) return -1;
+					buffer.InsertText (sp + i, "\n" + ind + "\t\n" + ind);
+					pos = sp + i + ind.Length + 2;
+				} else {
+					pos = GetNextLine (buffer, pos);
+				}
 				buffer.InsertText (pos, ind);
 				return pos + ind.Length;
 			}

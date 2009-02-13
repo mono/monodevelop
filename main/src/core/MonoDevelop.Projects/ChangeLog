@@ -1,3 +1,10 @@
+2009-02-13  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs: fixed
+	  "Bug 402343 - 'Implement interface' command places new
+	  members outside of the existing class body, for one-line
+	  classes)".
+
 2009-02-13  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/Project.cs: Don't delete files from the
