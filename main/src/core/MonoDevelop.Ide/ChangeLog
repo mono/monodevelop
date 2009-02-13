@@ -1,3 +1,13 @@
+2009-02-12  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Ide.csproj:
+	* MonoDevelop.Ide.Gui/HelpViewer.cs:
+	* MonoDevelop.Ide.Gui/HelpOperations.cs:
+	* MonoDevelop.Ide.Gui.Pads/MonodocTreePad.cs: Remove internal
+	  help viewer, as it is no longer maintained, and requires a
+	  browser addin.
+
 2009-02-13  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectReferenceNodeBuilder.cs:

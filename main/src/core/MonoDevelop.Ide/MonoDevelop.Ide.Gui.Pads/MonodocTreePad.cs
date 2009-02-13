@@ -111,25 +111,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				if (iter.Equals (root_iter)) return;
 
 				Node n = (Node)store.GetValue (iter, 1);
-				
-				string url = n.URL;
-				Node match;
-				string s;
-
-				if (n.tree.HelpSource != null) {
-					s = n.tree.HelpSource.GetText (url, out match);
-					if (s != null) {
-						IdeApp.HelpOperations.ShowDocs (s, match, url);
-						return;
-					}
-				}
-
-				s = ProjectDomService.HelpTree.RenderUrl (url, out match);
-				if (s != null) {
-					IdeApp.HelpOperations.ShowDocs (s, match, url);
-					return;
-				}
-				LoggingService.LogError ("MonoDocTreePad RowActivated couldn't find match");
+				IdeApp.HelpOperations.ShowHelp (n.URL);
 			}
 		}
 

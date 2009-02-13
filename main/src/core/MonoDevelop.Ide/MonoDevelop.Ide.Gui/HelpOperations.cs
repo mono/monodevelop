@@ -39,7 +39,6 @@ namespace MonoDevelop.Ide.Gui
 {
 	public class HelpOperations
 	{
-		HelpViewer helpViewer;
 		ProcessWrapper pw;
 		TextWriter outWriter;
 		TextWriter errWriter;
@@ -56,10 +55,8 @@ namespace MonoDevelop.Ide.Gui
 
 			if (useExternalMonodoc)
 				ShowHelpExternal (topic);
-			else
-				ShowHelpIntegrated (topic);
 		}
-
+		
 		void CheckExternalMonodoc ()
 		{
 			firstCall = false;
@@ -105,12 +102,9 @@ namespace MonoDevelop.Ide.Gui
 
 							MessageService.ShowError (
 								String.Format (
-								"MonoDoc exited with a exit code = {0}. Integrated help viewer will be used now.\nError : {1}", 
+								"MonoDoc exited with a exit code = {0}.", 
 								pw.ExitCode, errWriter.ToString ()));
-
 							pw = null;
-							useExternalMonodoc = false;
-							Gtk.Application.Invoke (delegate { ShowHelpIntegrated (topic); });
 						}, true);
 				}
 
@@ -123,37 +117,6 @@ namespace MonoDevelop.Ide.Gui
 				MessageService.ShowException (e);
 				useExternalMonodoc = false;
 			}
-		}
-
- 		void ShowHelpIntegrated (string topic)
- 		{
-			if (helpViewer == null) {
-				helpViewer = new HelpViewer ();
-				helpViewer.LoadUrl (topic);
-				IdeApp.Workbench.OpenDocument (helpViewer, true);		
-				helpViewer.WorkbenchWindow.Closed += new EventHandler (CloseWindowEvent);
-			} else {
-				helpViewer.LoadUrl (topic);
-				helpViewer.WorkbenchWindow.SelectWindow ();
-			}
-		}
-
-		public void ShowDocs (string text, Node matched_node, string url)
-		{
-			if (helpViewer == null) {
-				helpViewer = new HelpViewer ();
-				helpViewer.LoadNode (text, matched_node, url);
-				IdeApp.Workbench.OpenDocument (helpViewer, true);
-				helpViewer.WorkbenchWindow.Closed += new EventHandler (CloseWindowEvent);
-			} else {
-				helpViewer.LoadNode (text, matched_node, url);
-				helpViewer.WorkbenchWindow.SelectWindow ();
-			}
-		}
-
-		void CloseWindowEvent (object sender, EventArgs e)
-		{
-			helpViewer = null;
 		}
 	}
 }

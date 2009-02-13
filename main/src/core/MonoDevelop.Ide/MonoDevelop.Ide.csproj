@@ -301,7 +301,6 @@
     <Compile Include="MonoDevelop.Ide.Gui.Pads\FileList.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Pads\FileListItem.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Pads\FileScout.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\HelpViewer.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Pads\MonodocTreePad.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Pads.ProjectPad\SolutionFolderNodeBuilder.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Pads.ProjectPad\FolderNodeBuilder.cs" />
