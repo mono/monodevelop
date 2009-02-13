@@ -1,3 +1,12 @@
+2009-02-13  Mike Kestner <mkestner@novell.com> 
+
+	* Makefile.am: add template resource
+	* MonoDevelop.GtkCore.addin.xml: ditto.
+	* templates/DrawingArea.xft.xml: new DrawingArea subclass template
+	with stubs for OnExposeEvent, OnButtonPressEvent, OnSizeRequested,
+	OnSizeAllocated, and ctor. Helps speed up the development of custom
+	drawn widgets.  [Fixes #472665]
+
 2009-02-11  Mike Kestner <mkestner@novell.com> 
 
 	* libstetic/Registry.cs: account for reloading of the coreLib,

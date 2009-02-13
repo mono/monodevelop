@@ -57,6 +57,7 @@
 	
 	<Extension path = "/MonoDevelop/Ide/FileTemplates">
 		<FileTemplate id = "DialogFileTemplate" resource = "Dialog.xft.xml"/>
+		<FileTemplate id = "DrawingAreaFileTemplate" resource = "DrawingArea.xft.xml"/>
 		<FileTemplate id = "WindowFileTemplate" resource = "Window.xft.xml"/>
 		<FileTemplate id = "WidgetFileTemplate" resource = "Widget.xft.xml"/>
 		<FileTemplate id = "ActionGroupFileTemplate" resource = "ActionGroup.xft.xml"/>

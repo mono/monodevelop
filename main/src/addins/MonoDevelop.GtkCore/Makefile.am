@@ -77,6 +77,7 @@ RES =  \
 	templates/ActionGroupPartial.xft.xml \
 	templates/Dialog.xft.xml \
 	templates/DialogPartial.xft.xml \
+	templates/DrawingArea.xft.xml \
 	templates/Widget.xft.xml \
 	templates/WidgetPartial.xft.xml \
 	templates/Window.xft.xml \
