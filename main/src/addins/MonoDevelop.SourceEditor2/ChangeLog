@@ -1,3 +1,8 @@
+2009-02-13  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/LanguageItemWindow.cs: Improved
+	  language item tooltip formatting.
+
 2009-02-13  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Implement F1

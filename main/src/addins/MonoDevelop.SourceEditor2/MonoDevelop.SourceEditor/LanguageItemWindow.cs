@@ -47,6 +47,7 @@ namespace MonoDevelop.SourceEditor
 		static string fieldStr = GettextCatalog.GetString ("Field");
 		static string propertyStr = GettextCatalog.GetString ("Property");
 		static string methodStr = GettextCatalog.GetString ("Method");
+		static string typeStr = GettextCatalog.GetString ("Type");
 		static string namespaceStr = GettextCatalog.GetString ("Namespace");
 		
 		public bool IsEmpty {
@@ -59,8 +60,27 @@ namespace MonoDevelop.SourceEditor
 			if (member == null)
 				return null;
 			XmlElement node = (XmlElement)member.GetMonodocDocumentation ();
-			if (node != null) 
-				return node["summary"].InnerXml;
+			if (node != null) {
+				string innerXml = (node["summary"].InnerXml ?? "").Trim ();
+				StringBuilder sb = new StringBuilder ();
+				bool wasWhiteSpace = false;
+				for (int i = 0; i < innerXml.Length; i++) {
+					char ch = innerXml[i];
+					switch (ch) {
+					case '\n':
+					case '\r':
+						break;
+					default:
+						bool isWhiteSpace = Char.IsWhiteSpace (ch);
+						if (isWhiteSpace && wasWhiteSpace)
+							continue;
+						wasWhiteSpace = isWhiteSpace;
+						sb.Append (ch);
+						break;
+					}
+				}
+				return sb.ToString ();
+			}
 			return member.Documentation;
 		}
 		
@@ -91,7 +111,10 @@ namespace MonoDevelop.SourceEditor
 						if (returnType != null) {
 							IType type = dom.GetType (returnType);
 							if (type != null) {
-								s.Append (ambience.GetString (type, WindowConversionFlags | OutputFlags.UseFullName | OutputFlags.IncludeModifiers));
+								s.Append ("<small><i>");
+								s.Append (typeStr);
+								s.Append ("</i></small>\n");
+								s.Append (ambience.GetString (type, WindowConversionFlags | OutputFlags.UseFullName));
 								doc = GetDocumentation (type);
 							}
 						}
@@ -104,7 +127,7 @@ namespace MonoDevelop.SourceEditor
 							s.Append ("<small><i>");
 							s.Append (propertyStr);
 							s.Append ("</i></small>\n");
-						}
+						} 
 						s.Append (ambience.GetString (member, WindowConversionFlags));
 						doc = GetDocumentation (member);
 					}
@@ -112,12 +135,18 @@ namespace MonoDevelop.SourceEditor
 					s.Append ("<small><i>");
 					s.Append (namespaceStr);
 					s.Append ("</i></small>\n");
-					s.Append (((NamespaceResolveResult)result).Namespace);
+					s.Append (ambience.GetString (new Namespace (((NamespaceResolveResult)result).Namespace), WindowConversionFlags));
 				} else if (result is MethodResolveResult) {
+					MethodResolveResult mrr = (MethodResolveResult)result;
 					s.Append ("<small><i>");
 					s.Append (methodStr);
 					s.Append ("</i></small>\n");
-					s.Append (ambience.GetString (((MethodResolveResult)result).MostLikelyMethod, WindowConversionFlags));
+					s.Append (ambience.GetString (mrr.MostLikelyMethod, WindowConversionFlags));
+					if (mrr.Methods.Count > 1) {
+						int overloadCount = mrr.Methods.Count - 1;
+						s.Append (string.Format (GettextCatalog.GetPluralString (" (+{0} overload)", " (+{0} overloads)", overloadCount), overloadCount));
+					}
+					
 					doc = GetDocumentation (((MethodResolveResult)result).MostLikelyMethod);
 				} else {
 					s.Append (ambience.GetString (result.ResolvedType, WindowConversionFlags));
@@ -143,6 +172,7 @@ namespace MonoDevelop.SourceEditor
 				IsEmpty = true;
 				return;
 			}
+			
 			MonoDevelop.Components.FixedWidthWrapLabel lab = new MonoDevelop.Components.FixedWidthWrapLabel ();
 			lab.Wrap = Pango.WrapMode.WordChar;
 			lab.Indent = -20;
