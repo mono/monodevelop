@@ -95,6 +95,7 @@ culture_resource_dependencies = $(call q2s,$(BUILD_DIR)/$1/$(SATELLITE_ASSEMBLY_
 culture_resource_commandlines = $(call unesc2,cmd_line_satellite_$1 += '/embed:$(subst .resx,.resources,$2)')
 build_satellite_assembly_list = $(call q2s,$(cultures:%=$(BUILD_DIR)/%/$(SATELLITE_ASSEMBLY_NAME)))
 build_culture_res_files = $(call q2s,$(foreach res, $(culture_resources),$(call get_resource_name,$(res))))
+install_satellite_assembly_list = $(subst $(BUILD_DIR),$(DESTDIR)$(libdir)/$(PACKAGE),$(build_satellite_assembly_list))
 
 $(eval $(foreach res, $(culture_resources), $(eval $(call culture_resource_dependencies,$(call get_culture,$(call get_resource_name,$(res))),$(call get_resource_name,$(res))))))
 $(eval $(foreach res, $(culture_resources), $(eval $(call culture_resource_commandlines,$(call get_culture,$(call get_resource_name,$(res))),$(res)))))
@@ -102,3 +103,12 @@ $(eval $(foreach res, $(culture_resources), $(eval $(call culture_resource_comma
 $(build_satellite_assembly_list): $(BUILD_DIR)/%/$(SATELLITE_ASSEMBLY_NAME):
 	mkdir -p '$(@D)'
 	$(AL) -out:'$@' -culture:$* -t:lib $(cmd_line_satellite_$*)
+
+$(install_satellite_assembly_list):
+	mkdir -p '$(@D)'
+	cp $(subst $(DESTDIR)$(libdir)/$(PACKAGE), $(BUILD_DIR), $@) $@
+
+install-satellite-assemblies: $(install_satellite_assembly_list)
+	
+uninstall-satellite-assemblies:
+	rm -rf $(install_satellite_assembly_list)
