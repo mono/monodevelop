@@ -521,7 +521,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 					Task curTask = (Task)store.GetValue (iter, (int)Columns.Task);
 					foreach (Task task in e.Tasks) {
 						if (task == curTask) {
-							store.SetValue (iter, 2, task.Line);
+							store.SetValue (iter, (int)Columns.Line, task.Line != 0 ? task.Line.ToString () : "");
 						}
 					}
 					
