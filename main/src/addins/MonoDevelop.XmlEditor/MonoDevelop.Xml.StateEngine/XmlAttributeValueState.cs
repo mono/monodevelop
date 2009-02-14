@@ -59,11 +59,14 @@ namespace MonoDevelop.Xml.StateEngine
 		{
 			System.Diagnostics.Debug.Assert (((XAttribute) context.Nodes.Peek ()).Value == null);
 			
-			if (c == '<' || c == '>') {
-				//MalformedTagState handles error reporting
-				//context.LogError  ("Attribute value ended unexpectedly.");
+			if (c == '<') {
+				//the parent state should report the error
 				rollback = string.Empty;
-				return MalformedTagState;
+				return Parent;
+			} else if (c == '>' && context.KeywordBuilder.Length > 0) {
+				context.LogError  ("Attribute value ended unexpectedly.");
+				rollback = string.Empty;
+				return Parent;
 			} else if (char.IsLetterOrDigit (c) || c == '_' || c == '.') {
 				context.KeywordBuilder.Append (c);
 				return null;
@@ -91,13 +94,15 @@ namespace MonoDevelop.Xml.StateEngine
 		{
 			System.Diagnostics.Debug.Assert (((XAttribute) context.Nodes.Peek ()).Value == null);
 			
-			if (c == '<' || c == '>') {
-				//MalformedTagState handles error reporting
-				//context.LogError  ("Attribute value ended unexpectedly.");
+			if (c == '<') {
+				//the parent state should report the error
 				rollback = string.Empty;
-				return MalformedTagState;
-			} 
-			else if (c == '\'') {
+				return Parent;
+			} else if (c == '>' && context.KeywordBuilder.Length > 0) {
+				context.LogError  ("Attribute value ended unexpectedly.");
+				rollback = string.Empty;
+				return Parent;
+			} else if (c == '\'') {
 				//ending the value
 				XAttribute att = (XAttribute) context.Nodes.Peek ();
 				att.Value = context.KeywordBuilder.ToString ();
@@ -119,13 +124,15 @@ namespace MonoDevelop.Xml.StateEngine
 		{
 			System.Diagnostics.Debug.Assert (((XAttribute) context.Nodes.Peek ()).Value == null);
 			
-			if (c == '<' || c == '>') {
-				//MalformedTagState handles error reporting
-				//context.LogError  ("Attribute value ended unexpectedly.");
+			if (c == '<') {
+				//the parent state should report the error
 				rollback = string.Empty;
-				return MalformedTagState;
-			} 
-			else if (c == '"') {
+				return Parent;
+			} else if (c == '>' && context.KeywordBuilder.Length > 0) {
+				context.LogError  ("Attribute value ended unexpectedly.");
+				rollback = string.Empty;
+				return Parent;
+			} else if (c == '"') {
 				//ending the value
 				XAttribute att = (XAttribute) context.Nodes.Peek ();
 				att.Value = context.KeywordBuilder.ToString ();

@@ -69,10 +69,12 @@ namespace MonoDevelop.Xml.StateEngine
 			}
 			
 			if (c == '<') {
-				//note: MalformedTagState logs an error, so skip this
-				//context.LogError ("Unexpected '<' in tag.");
+				context.LogError ("Unexpected '<' in tag.");
+				if (element.IsNamed)
+					Close (element, context);
+				
 				rollback = string.Empty;
-				return MalformedTagState;
+				return Parent;
 			}
 			
 			Debug.Assert (!element.IsComplete);
@@ -82,29 +84,18 @@ namespace MonoDevelop.Xml.StateEngine
 					context.LogWarning ("Unexpected whitespace after '/' in self-closing tag.");
 					return null;
 				} else {
-					//note: MalformedTagState logs an error, so skip this
-					//context.LogError ("Unexpected character '" + c + "' after '/' in self-closing tag.");
-					return MalformedTagState;
+					context.LogError ("Unexpected character '" + c + "' after '/' in self-closing tag.");
+					context.Nodes.Pop ();
+					return Parent;
 				}
 			}
 			
 			//if tag closed
 			if (c == '>') {
-				//have already checked that element is not null, i.e. top of stack is our element
-				if (element.IsClosed)
-					context.Nodes.Pop ();
-				
 				if (!element.IsNamed) {
 					context.LogError ("Tag closed prematurely.");
 				} else {
-					element.End (context.Location);
-					if (context.BuildTree) {
-						XContainer container = element.IsClosed? 
-							  (XContainer) context.Nodes.Peek ()
-							: (XContainer) context.Nodes.Peek (1);
-												
-						container.AddChildNode (element);
-					}
+					Close (element, context);
 				}
 				return Parent;
 			}
@@ -126,11 +117,28 @@ namespace MonoDevelop.Xml.StateEngine
 			if (XmlChar.IsWhitespace (c))
 				return null;
 			
-			rollback = string.Empty;
-			//note: MalformedTagState logs an error, so skip this
-			//context.LogError ("Unexpected character '" + c + "' in tag.");
+			if (element.IsNamed)
+				Close (element, context);
+			context.LogError ("Unexpected character '" + c + "' in tag.");
 			
-			return MalformedTagState;
+			rollback = string.Empty;
+			return Parent;
+		}
+		
+		protected virtual void Close (XElement element, IParseContext context)
+		{
+			//have already checked that element is not null, i.e. top of stack is our element
+			if (element.IsClosed)
+				context.Nodes.Pop ();
+			
+			element.End (context.Location);
+			if (context.BuildTree) {
+				XContainer container = element.IsClosed? 
+					  (XContainer) context.Nodes.Peek ()
+					: (XContainer) context.Nodes.Peek (1);
+										
+				container.AddChildNode (element);
+			}
 		}
 	}
 }

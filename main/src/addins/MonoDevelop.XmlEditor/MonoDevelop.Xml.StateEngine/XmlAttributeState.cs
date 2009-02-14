@@ -79,12 +79,11 @@ namespace MonoDevelop.Xml.StateEngine
 			XAttribute att = context.Nodes.Peek () as XAttribute;
 			
 			if (c == '<') {
-				//MalformedTagState handles errors and cleanup
-				//context.LogError ("Attribute ended unexpectedly with '<' character.");
-				//if (att != null)
-				//	context.Nodes.Pop ();
+				//parent handles message
+				if (att != null)
+					context.Nodes.Pop ();
 				rollback = string.Empty;
-				return MalformedTagState;
+				return Parent;
 			}
 			
 			//state has just been entered
@@ -115,12 +114,11 @@ namespace MonoDevelop.Xml.StateEngine
 			}
 			
 			if (c == '>') {
-				//MalformedTagState handles errors and cleanup
-				//context.LogWarning ("Attribute ended unexpectedly with '>' character.");
-				//if (att != null)
-				//	context.Nodes.Pop ();
+				context.LogWarning ("Attribute ended unexpectedly with '>' character.");
+				if (att != null)
+					context.Nodes.Pop ();
 				rollback = string.Empty;
-				return MalformedTagState;
+				return Parent;
 			}
 			
 			if (context.StateTag == GETTINGEQ) {
@@ -143,12 +141,16 @@ namespace MonoDevelop.Xml.StateEngine
 				}
 			}
 			
-			//MalformedTagState handles errors and cleanup
-			//context.LogError ("Unexpected character '" + c + "' in attribute.");
-			//if (att != null)
-			//	context.Nodes.Pop ();
+			if (Char.IsLetterOrDigit (c) || char.IsPunctuation (c) || char.IsWhiteSpace (c)) {
+				context.LogError ("Unexpected character '" + c + "' in attribute.");
+				if (att != null)
+					context.Nodes.Pop ();
+				rollback = string.Empty;
+				return Parent;
+			}
+			
 			rollback = string.Empty;
-			return MalformedTagState;
+			return Parent;
 		}
 	}
 }
