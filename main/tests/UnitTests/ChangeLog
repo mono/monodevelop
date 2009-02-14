@@ -1,3 +1,13 @@
+2009-02-13  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* UnitTests.csproj:
+	* MonoDevelop.Xml.StateEngine/TestParser.cs:
+	* MonoDevelop.Xml.StateEngine/ParsingTests.cs:
+	* MonoDevelop.Xml.StateEngine/HtmlParsingTests.cs:
+	* MonoDevelop.Xml.StateEngine/AspNetParsingTests.cs: Add more
+	  tests.
+
 2009-02-12  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.CSharpBinding/TestWorkbenchWindow.cs: Track api

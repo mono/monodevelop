@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Ide.Gui.Content;
+using System.Linq;
 
 using NUnit.Framework;
 
@@ -39,10 +40,15 @@ namespace MonoDevelop.Xml.StateEngine
 	public class ParsingTests
 	{
 		
+		public virtual XmlFreeState CreateRootState ()
+		{
+			return new XmlFreeState ();
+		}
+		
 		[Test]
 		public void AttributeName ()
 		{
-			TestParser parser = new TestParser (new XmlFreeState());
+			TestParser parser = new TestParser (CreateRootState ());
 			parser.Parse (@"
 <doc>
 	<tag.a>
@@ -59,20 +65,40 @@ namespace MonoDevelop.Xml.StateEngine
 			parser.AssertErrorCount (0);
 		}
 		
-		[Test, Ignore ("Not working")]
-		public void IncompleteAttribute ()
+		[Test]
+		public void Attributes ()
 		{
-			TestParser parser = new TestParser (new XmlFreeState());
+			TestParser parser = new TestParser (CreateRootState ());
 			parser.Parse (@"
 <doc>
-	<tag.a att = >
-		<tag.b id='$foo' />
-	</tag.a>
+	<tag.a name=""foo"" arg=5 wibble = 6 bar.baz = 'y.ff7]' $ />
 </doc>
 ",
 				delegate {
-					parser.AssertStateIs<XmlSingleQuotedAttributeValueState> ();
-					parser.AssertPath ("//doc/tag.a/tag.b/@id");
+					parser.AssertStateIs<XmlTagState> ();
+					parser.AssertAttributes ("name", "foo", "arg", "5", "wibble", "6", "bar.baz", "y.ff7]");
+				}
+			);
+			parser.AssertEmpty ();
+			parser.AssertErrorCount (0);
+		}
+		
+		[Test, Ignore ("Not working")]
+		public void AttributeRecovery ()
+		{
+			TestParser parser = new TestParser (CreateRootState ());
+			parser.Parse (@"
+<doc>
+	<tag.a>
+		<tag.b arg='fff' sdd = sdsds= 'foo' ff $ />
+	</tag.a>
+<a><b valid/></a>
+</doc>
+",
+				delegate {
+					parser.AssertStateIs<XmlTagState> ();
+					parser.AssertAttributes ("arg", "fff", "sdd", "", "sdsds", "foo", "ff", "");
+					parser.AssertErrorCount (1);
 				}
 			);
 			parser.AssertEmpty ();
@@ -80,9 +106,38 @@ namespace MonoDevelop.Xml.StateEngine
 		}
 		
 		[Test]
+		public void IncompleteTags ()
+		{
+			TestParser parser = new TestParser (CreateRootState ());
+			parser.Parse (@"
+<doc>
+	<tag.a att >
+		<tag.b att="" >
+			<tag.c att = ' 
+				<tag.d att = >
+					<tag.e att='' att=' att = >
+						<tag.f id='$foo' />
+					</tag.e>
+				</tag.d>
+			</tag.c>
+		</tag.b>
+	</tag.a>
+</doc>
+",
+				delegate {
+					parser.AssertStateIs<XmlSingleQuotedAttributeValueState> ();
+					parser.AssertNodeDepth (9);
+					parser.AssertPath ("//doc/tag.a/tag.b/tag.c/tag.d/tag.e/tag.f/@id");
+				}
+			);
+			parser.AssertEmpty ();
+			parser.AssertErrorCount (5);
+		}
+		
+		[Test]
 		public void Unclosed ()
 		{
-			TestParser parser = new TestParser (new XmlFreeState());
+			TestParser parser = new TestParser (CreateRootState ());
 			parser.Parse (@"
 <doc>
 	<tag.a>
@@ -105,7 +160,50 @@ namespace MonoDevelop.Xml.StateEngine
 			parser.AssertErrorCount (2);
 		}
 		
+		[Test]
+		public void Misc ()
+		{
+			TestParser parser = new TestParser (CreateRootState ());
+			parser.Parse (@"
+<doc>
+	<!DOCTYPE $  >
+	<![CDATA[ ]  $ ]  ]]>
+	<!--   <foo> <bar arg=""> $  -->
+</doc>
+",
+				delegate {
+					parser.AssertStateIs<XmlDocTypeState> ();
+					parser.AssertNodeDepth (3);
+					parser.AssertPath ("//doc/<!DOCTYPE>");
+				},
+				delegate {
+					parser.AssertStateIs<XmlCDataState> ();
+					parser.AssertNodeDepth (3);
+					parser.AssertPath ("//doc/<![CDATA[ ]]>");
+				},
+				delegate {
+					parser.AssertStateIs<XmlCommentState> ();
+					parser.AssertNodeDepth (3);
+					parser.AssertPath ("//doc/<!-- -->");
+				}
+			);
+			parser.AssertEmpty ();
+			parser.AssertErrorCount (0);
+		}
 		
+		[Test]
+		public void DocTypeCapture ()
+		{
+			TestParser parser = new TestParser (CreateRootState (), true);
+			parser.Parse (@"
+		<!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.0 Strict//EN""
+""DTD/xhtml1-strict.dtd"">
+<doc><foo/></doc>");
+			parser.AssertEmpty ();
+			XDocument doc = (XDocument)parser.Nodes.Peek ();
+			Assert.IsTrue (doc.FirstChild is XDocType);
+			Assert.AreEqual (" html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"\n\"DTD/xhtml1-strict.dtd\"", ((XDocType)doc.FirstChild).Value);
+		}
 	}
 	
 }

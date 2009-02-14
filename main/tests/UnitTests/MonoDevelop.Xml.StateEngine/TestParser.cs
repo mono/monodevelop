@@ -101,32 +101,58 @@ namespace MonoDevelop.Xml.StateEngine
 		
 		public void AssertStateIs<T> () where T : State
 		{
-			Assert.IsTrue (CurrentState is T);
+			Assert.IsTrue (CurrentState is T, "Current state is {0} not {1}", CurrentState.GetType ().Name, typeof (T).Name);
 		}
 		
 		public void AssertNodeDepth (int depth)
 		{
-			Assert.AreEqual (depth, Nodes.Count);
+			Assert.AreEqual (depth, Nodes.Count, "Node depth is {0} not {1}", Nodes.Count, depth);
 		}
 		
 		public void AssertNodeIs<T> (int down)
 		{
-			Assert.IsTrue (Nodes.Peek (down) is T);
+			XObject n = Nodes.Peek (down);
+			AssertNodeDepth (down);
+			Assert.IsTrue (n is T, "Node down {0} is {1}, not {2}", down, n.GetType ().Name, typeof (T).Name);
 		}
 		
 		public void AssertNodeIs<T> ()
 		{
-			Assert.IsTrue (Nodes.Peek () is T);
+			XObject n = Nodes.Peek ();
+			Assert.IsTrue (n is T, "Node is {0}, not {1}", n.GetType ().Name, typeof (T).Name);
 		}
 		
 		public void AssertErrorCount (int count)
 		{
-			Assert.AreEqual (count, errors.Count);
+			string msg = null;
+			if (count != errors.Count) {
+				System.Text.StringBuilder sb = new System.Text.StringBuilder ();
+				foreach (Error err in Errors)
+					sb.AppendFormat ("{0}@{1}: {2}\n", err.ErrorType, err.Region, err.Message);
+				msg = sb.ToString ();
+			}
+			Assert.AreEqual (count, errors.Count, msg);
+		}
+		
+		public void AssertAttributes (params string[] nameValuePairs)
+		{
+			if ((nameValuePairs.Length % 2) != 0)
+				throw new ArgumentException ("nameValuePairs");
+			AssertNodeIs<IAttributedXObject> ();
+			IAttributedXObject obj = (IAttributedXObject) Nodes.Peek ();
+			int i = 0;
+			foreach (XAttribute att in obj.Attributes) {
+				Assert.IsTrue (i < nameValuePairs.Length);
+				Assert.AreEqual (nameValuePairs[i], att.Name.FullName);
+				Assert.AreEqual (nameValuePairs[i + 1], att.Value);
+				i += 2;
+			}
+			Assert.IsTrue (i == nameValuePairs.Length);
 		}
 		
 		public void AssertNoErrors ()
 		{
-			Assert.AreEqual (0, errors.Count);
+			AssertErrorCount (0);
 		}
 		
 		public void AssertEmpty ()

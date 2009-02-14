@@ -11,7 +11,7 @@ FIXTURE = /fixture=$(fixture)
 REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
-	$(MONO_NUNIT_LIBS) \
+	-pkg:nunit \
 	-r:../../build/AddIns/BackendBindings/MonoDevelop.CSharpBinding.dll \
 	-r:../../build/AddIns/MonoDevelop.AspNet/MonoDevelop.AspNet.dll \
 	-r:../../build/AddIns/MonoDevelop.Autotools/MonoDevelop.Autotools.dll \
@@ -67,6 +67,8 @@ FILES =  \
 	MonoDevelop.Projects/TestProjectsChecks.cs \
 	MonoDevelop.Projects/TextFormatterTests.cs \
 	MonoDevelop.Projects/WorkspaceTests.cs \
+	MonoDevelop.Xml.StateEngine/AspNetParsingTests.cs \
+	MonoDevelop.Xml.StateEngine/HtmlParsingTests.cs \
 	MonoDevelop.Xml.StateEngine/ParsingTests.cs \
 	MonoDevelop.Xml.StateEngine/TestParser.cs \
 	TestBase.cs \
