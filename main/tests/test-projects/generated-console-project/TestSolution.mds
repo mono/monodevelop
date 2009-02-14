@@ -1,4 +1,4 @@
-<Combine name="TestSolution" fileversion="2.0">
+<Combine fileversion="2.0">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="CombineConfiguration">
       <Entry build="True" name="TestProject" configuration="Debug" />

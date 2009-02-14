@@ -1,3 +1,8 @@
+2009-02-13  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* generated-console-project/TestSolution.mds: Remove unnecessary 
+	attribute that was breaking test.
+
 2009-01-27  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* completion-db-test/CompletionDbTest/Main.cs:
