@@ -11,7 +11,7 @@ FIXTURE = /fixture=$(fixture)
 REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
-	-pkg:nunit \
+	$(MONO_NUNIT_LIBS) \
 	-r:../../build/AddIns/BackendBindings/MonoDevelop.CSharpBinding.dll \
 	-r:../../build/AddIns/MonoDevelop.AspNet/MonoDevelop.AspNet.dll \
 	-r:../../build/AddIns/MonoDevelop.Autotools/MonoDevelop.Autotools.dll \

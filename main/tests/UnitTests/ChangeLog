@@ -1,5 +1,9 @@
 2009-02-13  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Makefile.am: MD broke the makefile; fix it.
+
+2009-02-13  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Makefile.am:
 	* UnitTests.csproj:
 	* MonoDevelop.Xml.StateEngine/TestParser.cs:
