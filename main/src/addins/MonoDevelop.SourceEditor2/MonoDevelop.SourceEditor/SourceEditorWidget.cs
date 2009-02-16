@@ -550,26 +550,97 @@ namespace MonoDevelop.SourceEditor
 //		}
 //		
 		HBox reloadBar = null;
+		class MessageArea : HBox
+		{
+			public MessageArea () : base (false, 8)
+			{
+				BorderWidth = 3;
+			}
+			
+			protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+			{
+				Style.PaintFlatBox (Style,
+				                    evnt.Window,
+				                    StateType.Normal,
+				                    ShadowType.Out,
+				                    evnt.Area,
+				                    this,
+				                    "tooltip",
+				                    Allocation.X + 1,
+				                    Allocation.Y + 1,
+				                    Allocation.Width - 2,
+				                    Allocation.Height - 2);
+				                    
+				return base.OnExposeEvent (evnt);
+			}	
+			
+			bool changeStyle = false;
+			protected override void OnStyleSet (Gtk.Style previous_style)
+			{
+				if (changeStyle)
+					return;
+				changeStyle = true;
+				Gtk.Window win = new LanguageItemWindow (null, null, null, null, null);
+				win.EnsureStyle ();
+				this.Style = win.Style;
+				win.Destroy ();
+				changeStyle = false;
+			}
+		}
+		
+		internal static string StrMiddleTruncate (string str, int truncLen)
+		{
+			if (str == null) 
+				return "";
+			if (str.Length <= truncLen) 
+				return str;
+			
+			string delimiter = "...";
+			int leftOffset = (truncLen - delimiter.Length) / 2;
+			int rightOffset = str.Length - truncLen + leftOffset + delimiter.Length;
+			return str.Substring (0, leftOffset) + delimiter + str.Substring (rightOffset);
+		}
+		
 		public void ShowFileChangedWarning ()
 		{
 			RemoveReloadBar ();
 			
 			if (reloadBar == null) {
-				reloadBar = new HBox ();
-				reloadBar.BorderWidth = 3;
-				Gtk.Image img = MonoDevelop.Core.Gui.Services.Resources.GetImage ("gtk-dialog-warning",
-				                                                                  IconSize.Menu);
-				reloadBar.PackStart (img, false, false, 2);
-				reloadBar.PackStart (new Gtk.Label (GettextCatalog.GetString (
-					"This file has been changed outside of MonoDevelop")), false, false, 5);
-				HBox box = new HBox ();
-				reloadBar.PackStart (box, true, true, 10);
+				reloadBar = new MessageArea ();
 				
-				Button b1 = new Button (GettextCatalog.GetString("Reload"));
+				Gtk.Image img = MonoDevelop.Core.Gui.Services.Resources.GetImage ("gtk-dialog-warning", IconSize.Dialog);
+				img.SetAlignment (0.5f, 0);
+				reloadBar.PackStart (img, false, false, 0);
+				
+				VBox labelBox = new VBox (false, 6);
+				
+				Gtk.Label l = new Gtk.Label ();
+				l.Markup = "<b>" + string.Format (GettextCatalog.GetString ("The file »{0}« has been changed outside of MonoDevelop."), StrMiddleTruncate(Document.FileName, 50)) + "</b>";
+				l.Wrap = true;
+				l.SetAlignment (0.5f, 0);
+				l.Selectable = true;
+				labelBox.PackStart (l, false, false, 5);
+				
+				l = new Gtk.Label ();
+				l.Wrap = true;
+				l.SetAlignment (0.5f, 0);
+				l.Selectable = true;
+				l.Markup = "<small>" + string.Format (GettextCatalog.GetString ("If you reload the file all modifications since last save are lost.")) +"</small>";
+				
+				labelBox.PackStart (l, false, false, 5);
+				
+				reloadBar.PackStart (labelBox, false, false, 5);
+				
+				VBox box = new VBox ();
+				reloadBar.PackEnd (box, false, false, 10);
+				
+				Button b1 = new Button (GettextCatalog.GetString("_Reload"));
+				b1.Image = MonoDevelop.Core.Gui.Services.Resources.GetImage (Gtk.Stock.Refresh, IconSize.Button);
 				box.PackStart (b1, false, false, 5);
 				b1.Clicked += new EventHandler (ClickedReload);
 				
-				Button b2 = new Button (GettextCatalog.GetString("Ignore"));
+				Button b2 = new Button (GettextCatalog.GetString("_Ignore"));
+				b2.Image = MonoDevelop.Core.Gui.Services.Resources.GetImage (Gtk.Stock.Cancel, IconSize.Button);
 				box.PackStart (b2, false, false, 5);
 				b2.Clicked += new EventHandler (ClickedIgnore);
 			}
@@ -578,6 +649,9 @@ namespace MonoDevelop.SourceEditor
 			this.PackStart (reloadBar, false, false, CHILD_PADDING);
 			this.ReorderChild (reloadBar, classBrowser != null ? 1 : 0);
 			reloadBar.ShowAll ();
+
+			reloadBar.QueueDraw ();
+			
 			view.WorkbenchWindow.ShowNotification = true;
 		}
 		

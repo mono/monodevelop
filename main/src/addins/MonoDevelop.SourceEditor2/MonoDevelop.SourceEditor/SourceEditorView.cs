@@ -1307,18 +1307,7 @@ namespace MonoDevelop.SourceEditor
 			printJob.Close ();
 		}
 		
-		static string StrMiddleTruncate (string str, int truncLen)
-		{
-			if (str == null) 
-				return "";
-			if (str.Length <= truncLen) 
-				return str;
-			
-			string delimiter = "...";
-			int leftOffset = (truncLen - delimiter.Length) / 2;
-			int rightOffset = str.Length - truncLen + leftOffset + delimiter.Length;
-			return str.Substring (0, leftOffset) + delimiter + str.Substring (rightOffset);
-		}
+		
 		#endregion
 #endif
 	

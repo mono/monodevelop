@@ -1,5 +1,14 @@
 2009-02-16  Mike Krüger  <mkrueger@novell.com>
 
+	* gtk-gui/gui.stetic: 
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs:
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Fixed "Bug
+	  395576 - If a file changes outside monodevelop environment,
+	  notification is hard to see".
+
+2009-02-16  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/LanguageItemWindow.cs:
 	* MonoDevelop.SourceEditor/LanguageItemTooltipProvider.cs:
 	* MonoDevelop.SourceEditor/CompileErrorTooltipProvider.cs:
