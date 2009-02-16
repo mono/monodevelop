@@ -135,7 +135,7 @@ namespace MonoDevelop.Ide.Commands
 				itemName = ((IMember)item).Name;
 			
 			if (item != null && eitem != null && 
-			    (eitem == item || (eitem.Name == itemName && !(eitem is IProperty) && !(eitem is IMethod)))) {
+			    (eitem.Equals (item) || (eitem.Name == itemName && !(eitem is IProperty) && !(eitem is IMethod)))) {
 				// If this occurs, then @item is either its own enclosing item, in
 				// which case, we don't want to show it twice, or it is the base-class
 				// version of @eitem, in which case we don't want to show the base-class
@@ -152,6 +152,11 @@ namespace MonoDevelop.Ide.Commands
 				else
 					eclass = (IType) item;
 			}
+			if (eitem is IMethod && ((IMethod)eitem).IsConstructor) {
+				item = eitem; 
+				eitem = null;
+			}
+				
 			while (item != null) {
 				CommandInfo ci;
 
@@ -265,6 +270,7 @@ namespace MonoDevelop.Ide.Commands
 		
 		CommandInfo BuildRefactoryMenuForItem (ProjectDom ctx, ICompilationUnit pinfo, IType eclass, IDomVisitable item, bool includeModifyCommands)
 		{
+			
 			Refactorer refactorer = new Refactorer (ctx, pinfo, eclass, item, null);
 			CommandInfoSet ciset = new CommandInfoSet ();
 			Ambience ambience = AmbienceService.GetAmbienceForFile (pinfo.FileName);
