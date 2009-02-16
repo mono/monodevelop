@@ -239,12 +239,20 @@ namespace MonoDevelop.CSharpBinding
 					AddUniqueReference (line, column, searchedMemberName);
 			}
 		}
-		
+		string CurrentTypeFullName {
+			get {
+				if (typeStack.Count == 0)
+					return null;
+				string ns = namespaceStack.Count > 0 ? String.Join (".", namespaceStack.ToArray ()) + "." : "";
+				return ns + typeStack.Peek ().Name;
+			}
+		}
 		public override object VisitConstructorDeclaration (ConstructorDeclaration constructorDeclaration, object data)
 		{
 			CheckNode (constructorDeclaration);
 			if (this.searchedMember is IType) {
-				if (constructorDeclaration.Name == this.searchedMemberName && ((IType)this.searchedMember).FullName == typeStack.Peek ().Name)
+				if (((IType)this.searchedMember).FullName == CurrentTypeFullName &&
+				    ((IType)this.searchedMember).TypeParameters.Count == typeStack.Peek ().Templates.Count)
 					AddUniqueReference (constructorDeclaration.StartLocation.Line, constructorDeclaration.StartLocation.Column, this.searchedMemberName);
 			}
 			
@@ -255,7 +263,8 @@ namespace MonoDevelop.CSharpBinding
 		{
 			CheckNode (destructorDeclaration);
 			if (this.searchedMember is IType) {
-				if (destructorDeclaration.Name == this.searchedMemberName && ((IType)this.searchedMember).FullName == typeStack.Peek ().Name)
+				if (((IType)this.searchedMember).FullName == CurrentTypeFullName && 
+				    ((IType)this.searchedMember).TypeParameters.Count == typeStack.Peek ().Templates.Count)
 					AddUniqueReference (destructorDeclaration.StartLocation.Line, destructorDeclaration.StartLocation.Column + 1, this.searchedMemberName);
 			}
 			
@@ -388,7 +397,9 @@ namespace MonoDevelop.CSharpBinding
 			if (searchedMember is IType && this.searchedMemberName == GetNameWithoutPrefix (type)) {
 				int line = typeReference.StartLocation.Y;
 				int col  = typeReference.StartLocation.X;
-				ResolveResult resolveResult = resolver.ResolveIdentifier (type, new DomLocation (line, col));
+				ExpressionResult res = new ExpressionResult ("new " + typeReference.ToString () + "()");
+				ResolveResult resolveResult = resolver.Resolve (res, new DomLocation (line, col));
+				
 				IReturnType cls = resolveResult != null ? resolveResult.ResolvedType : null;
 				if (cls == null || cls.FullName == ((IType)searchedMember).FullName) 
 					AddUniqueReference (line, col, typeReference.Type);
@@ -451,6 +462,15 @@ namespace MonoDevelop.CSharpBinding
 			
 			return base.VisitInvocationExpression (invokeExp, data);
 		}
+		Stack<string> namespaceStack = new Stack<string> ();
+		public override object VisitNamespaceDeclaration (ICSharpCode.NRefactory.Ast.NamespaceDeclaration namespaceDeclaration, object data)
+		{
+			namespaceStack.Push (namespaceDeclaration.Name);
+			object result =  base.VisitNamespaceDeclaration (namespaceDeclaration, data);
+			namespaceStack.Pop ();
+			return result;
+		}
+
 				
 	}
 }
