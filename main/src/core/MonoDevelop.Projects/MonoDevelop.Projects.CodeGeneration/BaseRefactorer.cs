@@ -503,9 +503,10 @@ namespace MonoDevelop.Projects.CodeGeneration
 			string txt = file.GetText (pos, pos + name.Length);
 			if (txt != name)
 				return null;
-			
-			file.DeleteText (pos, txt.Length);
-			file.InsertText (pos, newName);
+// Rename is done in CodeRefactorer.RenameMember. A simple text search & replace is NOT the way to rename things
+// in source code.
+//			file.DeleteText (pos, txt.Length);
+//			file.InsertText (pos, newName);
 			
 			CodeTypeMember memberInfo;
 			if (member is IField)

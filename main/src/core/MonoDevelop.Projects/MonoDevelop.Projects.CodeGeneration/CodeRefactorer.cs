@@ -462,7 +462,6 @@ namespace MonoDevelop.Projects.CodeGeneration
 				MemberReferenceCollection refs = new MemberReferenceCollection ();
 				Refactor (monitor, cls, scope, new RefactorDelegate (new RefactorFindMemberReferences (cls, member, refs).Refactor));
 				refs.RenameAll (newName);
-			
 				RefactorerContext gctx = GetGeneratorContext (cls);
 				IRefactorer gen = GetGeneratorForClass (cls);
 				IMember m = gen.RenameMember (gctx, cls, member, newName);

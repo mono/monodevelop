@@ -1,5 +1,12 @@
 2009-02-16  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs: 
+
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs: fixed
+	  "Bug 325171 - Rename fails with overloads".
+
+2009-02-16  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Dom/AbstractMember.cs: implemented
 	  equals for abstract member.
 
