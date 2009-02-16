@@ -1,5 +1,10 @@
 2009-02-16  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/CSharpAmbience.cs: Removed double space in namespace
+	  output.
+
+2009-02-16  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/NRefactoryResolver.cs:
 	* Parser/FindMemberAstVisitor.cs: Fixed bug "Bug 325171 -
 	  Rename fails with overloads".

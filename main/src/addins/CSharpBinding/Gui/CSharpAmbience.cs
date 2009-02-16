@@ -430,7 +430,7 @@ namespace MonoDevelop.CSharpBinding
 		
 		public string Visit (Namespace ns, OutputSettings settings)
 		{
-			return settings.EmitKeyword ("namespace") + " " + settings.EmitName (ns, ns.Name);
+			return settings.EmitKeyword ("namespace") + settings.EmitName (ns, ns.Name);
 		}
 		
 		public string Visit (LocalVariable var, OutputSettings settings)
