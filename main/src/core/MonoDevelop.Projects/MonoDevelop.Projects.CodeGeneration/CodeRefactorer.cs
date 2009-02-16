@@ -456,13 +456,15 @@ namespace MonoDevelop.Projects.CodeGeneration
 			}
 		}
 		
-		public IMember RenameMember (IProgressMonitor monitor, IType cls, IMember member, string newName, RefactoryScope scope)
+		IMember InnerRenameMember (IProgressMonitor monitor, IType cls, IMember member, string newName, RefactoryScope scope)
 		{
 			try {
 				MemberReferenceCollection refs = new MemberReferenceCollection ();
 				Refactor (monitor, cls, scope, new RefactorDelegate (new RefactorFindMemberReferences (cls, member, refs).Refactor));
 				refs.RenameAll (newName);
+				
 				RefactorerContext gctx = GetGeneratorContext (cls);
+				
 				IRefactorer gen = GetGeneratorForClass (cls);
 				IMember m = gen.RenameMember (gctx, cls, member, newName);
 				gctx.Save ();
@@ -471,6 +473,31 @@ namespace MonoDevelop.Projects.CodeGeneration
 				LoggingService.LogError (GettextCatalog.GetString ("Error while renaming {0} to {1}: {2}",  member, newName, e.ToString ()));
 				return null;
 			}
+		}
+		
+		public IMember RenameMember (IProgressMonitor monitor, IType cls, IMember member, string newName, RefactoryScope scope)
+		{
+			// rename overriden members
+			if (cls.ClassType == ClassType.Interface | member.IsAbstract | member.IsVirtual) {
+				foreach (IType t in cls.SourceProjectDom.GetSubclasses (cls)) {
+					foreach (IMember m in t.SearchMember (member.Name, true)) {
+						InnerRenameMember (monitor, t, m, newName, scope);
+					}
+				}
+			}
+			
+			// rename base members that are overridden as well.
+			if (member.IsOverride) {
+				foreach (IType t in cls.SourceProjectDom.GetInheritanceTree (cls)) {
+					if (t == cls)
+						continue;
+					foreach (IMember m in t.SearchMember (member.Name, true)) {
+						InnerRenameMember (monitor, t, m, newName, scope);
+					}
+				}
+			}
+			
+			return InnerRenameMember (monitor, cls, member, newName, scope);
 		}
 		
 		public MemberReferenceCollection FindMemberReferences (IProgressMonitor monitor, IType cls, IMember member, RefactoryScope scope)
