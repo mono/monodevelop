@@ -270,8 +270,10 @@ namespace MonoDevelop.Ide.Commands
 		
 		CommandInfo BuildRefactoryMenuForItem (ProjectDom ctx, ICompilationUnit pinfo, IType eclass, IDomVisitable item, bool includeModifyCommands)
 		{
-			
-			Refactorer refactorer = new Refactorer (ctx, pinfo, eclass, item, null);
+			IDomVisitable realItem = item;
+			if (item is InstantiatedType)
+				realItem = ((InstantiatedType)item).UninstantiatedType;
+			Refactorer refactorer = new Refactorer (ctx, pinfo, eclass, realItem, null);
 			CommandInfoSet ciset = new CommandInfoSet ();
 			Ambience ambience = AmbienceService.GetAmbienceForFile (pinfo.FileName);
 			OutputFlags flags = OutputFlags.IncludeMarkup;

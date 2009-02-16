@@ -1,6 +1,11 @@
 2009-02-16  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: fixed "Bug
+	  391066 - Rename not offered for generic classes".
+
+2009-02-16  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: fixed "Bug
 	  350810 - [PATCH] Duplicate entries in context menu for
 	  refactoring operations".
 
