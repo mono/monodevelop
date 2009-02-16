@@ -40,7 +40,7 @@ namespace MonoDevelop.SourceEditor
 {
 	public class LanguageItemWindow: MonoDevelop.Components.TooltipWindow
 	{
-		static OutputFlags WindowConversionFlags = OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName | OutputFlags.IncludeKeywords | OutputFlags.IncludeMarkup | OutputFlags.UseFullName;
+		OutputSettings settings;
 		
 		static string paramStr = GettextCatalog.GetString ("Parameter");
 		static string localStr = GettextCatalog.GetString ("Local variable");
@@ -54,6 +54,7 @@ namespace MonoDevelop.SourceEditor
 			get; 
 			set;
 		}
+		
 		
 		static string GetDocumentation (IMember member)
 		{
@@ -84,8 +85,25 @@ namespace MonoDevelop.SourceEditor
 			return member.Documentation;
 		}
 		
-		public LanguageItemWindow (ProjectDom dom, Ambience ambience, ResolveResult result, string errorInformations)
+		public LanguageItemWindow (ProjectDom dom, Ambience ambience, ResolveResult result, string errorInformations, ICompilationUnit unit)
 		{
+			settings = new OutputSettings (OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName | OutputFlags.IncludeKeywords | OutputFlags.IncludeMarkup | OutputFlags.UseFullName);
+			settings.EmitNameCallback = delegate (IDomVisitable domVisitable, ref string outString) {
+				// crop used namespaces.
+				if (unit != null) {
+					int len = 0;
+					foreach (IUsing u in unit.Usings) {
+						foreach (string ns in u.Namespaces) {
+							if (outString.StartsWith (ns + ".")) {
+								len = Math.Max (len, ns.Length + 1);
+							}
+						}
+					}
+					if (len > 0)
+						outString = outString.Substring (len);
+				}
+			};
+			
 			// Approximate value for usual case
 			StringBuilder s = new StringBuilder(150);
 			string doc = null;
@@ -96,12 +114,12 @@ namespace MonoDevelop.SourceEditor
 					s.Append ("<small><i>");
 					s.Append (paramStr);
 					s.Append ("</i></small>\n");
-					s.Append (ambience.GetString (((ParameterResolveResult)result).Parameter, WindowConversionFlags));
+					s.Append (ambience.GetString (((ParameterResolveResult)result).Parameter, settings));
 				} else if (result is LocalVariableResolveResult) {
 					s.Append ("<small><i>");
 					s.Append (localStr);
 					s.Append ("</i></small>\n");
-					s.Append (ambience.GetString (((LocalVariableResolveResult)result).ResolvedType, WindowConversionFlags));
+					s.Append (ambience.GetString (((LocalVariableResolveResult)result).ResolvedType, settings));
 					s.Append (" ");
 					s.Append (((LocalVariableResolveResult)result).LocalVariable.Name);
 				} else if (result is MemberResolveResult) {
@@ -114,7 +132,7 @@ namespace MonoDevelop.SourceEditor
 								s.Append ("<small><i>");
 								s.Append (typeStr);
 								s.Append ("</i></small>\n");
-								s.Append (ambience.GetString (type, WindowConversionFlags | OutputFlags.UseFullName));
+								s.Append (ambience.GetString (type, settings));
 								doc = GetDocumentation (type);
 							}
 						}
@@ -128,20 +146,20 @@ namespace MonoDevelop.SourceEditor
 							s.Append (propertyStr);
 							s.Append ("</i></small>\n");
 						} 
-						s.Append (ambience.GetString (member, WindowConversionFlags));
+						s.Append (ambience.GetString (member, settings));
 						doc = GetDocumentation (member);
 					}
 				} else if (result is NamespaceResolveResult) {
 					s.Append ("<small><i>");
 					s.Append (namespaceStr);
 					s.Append ("</i></small>\n");
-					s.Append (ambience.GetString (new Namespace (((NamespaceResolveResult)result).Namespace), WindowConversionFlags));
+					s.Append (ambience.GetString (new Namespace (((NamespaceResolveResult)result).Namespace), settings));
 				} else if (result is MethodResolveResult) {
 					MethodResolveResult mrr = (MethodResolveResult)result;
 					s.Append ("<small><i>");
 					s.Append (methodStr);
 					s.Append ("</i></small>\n");
-					s.Append (ambience.GetString (mrr.MostLikelyMethod, WindowConversionFlags));
+					s.Append (ambience.GetString (mrr.MostLikelyMethod, settings));
 					if (mrr.Methods.Count > 1) {
 						int overloadCount = mrr.Methods.Count - 1;
 						s.Append (string.Format (GettextCatalog.GetPluralString (" (+{0} overload)", " (+{0} overloads)", overloadCount), overloadCount));
@@ -149,7 +167,7 @@ namespace MonoDevelop.SourceEditor
 					
 					doc = GetDocumentation (((MethodResolveResult)result).MostLikelyMethod);
 				} else {
-					s.Append (ambience.GetString (result.ResolvedType, WindowConversionFlags));
+					s.Append (ambience.GetString (result.ResolvedType, settings));
 				}
 				
 				
