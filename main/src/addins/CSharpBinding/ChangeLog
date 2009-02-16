@@ -1,5 +1,11 @@
 2009-02-16  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/NRefactoryResolver.cs:
+	* Parser/FindMemberAstVisitor.cs: Fixed bug "Bug 325171 -
+	  Rename fails with overloads".
+
+2009-02-16  Mike Krüger  <mkrueger@novell.com>
+
 	* Parser/FindMemberAstVisitor.cs: Fixed "Bug 391066 - Rename
 	  not offered for generic classes".
 

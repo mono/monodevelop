@@ -448,10 +448,16 @@ namespace MonoDevelop.CSharpBinding
 			if (searchedMember is IMethod) {
 				IMethod method = (IMethod)searchedMember;
 				if (MightBeInvocation (invokeExp.TargetObject, method) && invokeExp.Arguments.Count == method.Parameters.Count) {
-					ResolveResult resolveResult = resolver.ResolveExpression (invokeExp.TargetObject, new DomLocation (invokeExp.StartLocation.Y, invokeExp.StartLocation.X));
+					ResolveResult resolveResult = resolver.ResolveExpression (invokeExp, new DomLocation (invokeExp.StartLocation.Y, invokeExp.StartLocation.X));
+					IMethod resolvedMethod = null;
 					if (resolveResult is MethodResolveResult) {
 						MethodResolveResult mrr = (MethodResolveResult)resolveResult;
-						if (mrr.MostLikelyMethod.FullName == method.FullName && mrr.MostLikelyMethod.TypeParameters.Count == method.TypeParameters.Count) {
+						resolvedMethod = mrr.MostLikelyMethod;
+					} else if (resolveResult is MemberResolveResult) {
+						resolvedMethod = ((MemberResolveResult)resolveResult).ResolvedMember as IMethod;
+					}
+					if (resolvedMethod != null) {
+						if (resolvedMethod.FullName == method.FullName && resolvedMethod.TypeParameters.Count == method.TypeParameters.Count) {
 							int line, column;
 							if (SearchText (searchedMemberName, invokeExp.StartLocation.Line, invokeExp.StartLocation.Column, out line, out column))
 								AddUniqueReference (line, column, searchedMemberName);
@@ -459,8 +465,8 @@ namespace MonoDevelop.CSharpBinding
 					}
 				}
 			}
-			
-			return base.VisitInvocationExpression (invokeExp, data);
+			invokeExp.Arguments.ForEach (o => o.AcceptVisitor(this, data));
+			return null;
 		}
 		Stack<string> namespaceStack = new Stack<string> ();
 		public override object VisitNamespaceDeclaration (ICSharpCode.NRefactory.Ast.NamespaceDeclaration namespaceDeclaration, object data)

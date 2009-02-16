@@ -167,12 +167,15 @@ namespace MonoDevelop.CSharpBinding
 				parser.Parse ();
 				memberCompilationUnit = parser.CompilationUnit;
 				lookupTableVisitor.VisitCompilationUnit (parser.CompilationUnit, null);
+				lookupVariableLine = CallingMember.Location.Line - 2;
 				setupLookupTableVisitor = true;
 			}
 		}
 		bool setupLookupTableVisitor = false;
+		int lookupVariableLine = 0;
 		internal void SetupParsedCompilationUnit (ICSharpCode.NRefactory.Ast.CompilationUnit unit)
 		{
+			lookupVariableLine = 0;
 			memberCompilationUnit = unit;
 			lookupTableVisitor.VisitCompilationUnit (unit, null);
 			setupLookupTableVisitor = true;
@@ -505,7 +508,7 @@ namespace MonoDevelop.CSharpBinding
 			foreach (KeyValuePair<string, List<LocalLookupVariable>> pair in this.lookupTableVisitor.Variables) {
 				if (identifier == pair.Key) {
 					foreach (LocalLookupVariable var in pair.Value) {
-						if (new DomLocation (CallingMember.Location.Line + var.StartPos.Line - 2, var.StartPos.Column) > this.resolvePosition || (!var.EndPos.IsEmpty && new DomLocation (CallingMember.Location.Line + var.EndPos.Line - 2, var.EndPos.Column) < this.resolvePosition))
+						if (new DomLocation (lookupVariableLine + var.StartPos.Line, var.StartPos.Column) > this.resolvePosition || (!var.EndPos.IsEmpty && new DomLocation (CallingMember.Location.Line + var.EndPos.Line - 2, var.EndPos.Column) < this.resolvePosition))
 							continue;
 						IReturnType varType = null;
 						IReturnType varTypeUnresolved = null;
