@@ -1,3 +1,8 @@
+2009-02-16  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom/AbstractMember.cs: implemented
+	  equals for abstract member.
+
 2009-02-13  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs: fixed

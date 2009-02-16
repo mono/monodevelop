@@ -419,5 +419,19 @@ namespace MonoDevelop.Projects.Dom
 		
 		public abstract S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data);
 		
+		public override bool Equals (object obj)
+		{
+			IMember m = obj as IMember;
+			if (m == null)
+				return false;
+			return this.Location == m.Location && this.FullName == m.FullName;
+		}
+		
+		public override int GetHashCode ()
+		{
+			return this.Location.GetHashCode () ^ this.FullName.GetHashCode ();
+		}
+
+
 	}
 }
