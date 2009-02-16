@@ -1,5 +1,13 @@
 2009-02-16  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: fixed
+	  constructor refactoring context menu.
+
+	* MonoDevelop.Ide.Gui.Dialogs/RenameItemDialog.cs: rename file
+	  option now works.
+
+2009-02-16  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: fixed "Bug
 	  391066 - Rename not offered for generic classes".
 

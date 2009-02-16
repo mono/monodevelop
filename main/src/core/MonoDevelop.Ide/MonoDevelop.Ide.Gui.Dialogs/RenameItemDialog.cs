@@ -113,11 +113,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (this.Title, null);
 			string name = entry.Text;
 			
-			if (item is IMember) {
-				IMember member = (IMember) item;
-				
-				refactorer.RenameMember (monitor, member.DeclaringType, member, name, RefactoryScope.Solution);
-			} else if (item is IType) {
+			if (item is IType) {
 				refactorer.RenameClass (monitor, (IType) item, name, RefactoryScope.Solution);
 				if (this.renameFileFlag.Active) {
 					IType cls = ((IType) item);
@@ -132,6 +128,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 						IdeApp.ProjectOperations.Save(IdeApp.ProjectOperations.CurrentSelectedProject);
 					}
 				}
+			} else if (item is IMember) {
+				IMember member = (IMember) item;
+				
+				refactorer.RenameMember (monitor, member.DeclaringType, member, name, RefactoryScope.Solution);
 			} else if (item is LocalVariable) {
 				refactorer.RenameVariable (monitor, (LocalVariable) item, name);
 			} else if (item is IParameter) {

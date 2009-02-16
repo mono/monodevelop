@@ -151,10 +151,10 @@ namespace MonoDevelop.Ide.Commands
 					eclass = FindEnclosingClass (ctx, editor.Name, line, column);
 				else
 					eclass = (IType) item;
-			}
-			if (eitem is IMethod && ((IMethod)eitem).IsConstructor) {
-				item = eitem; 
-				eitem = null;
+				if (eitem is IMethod && ((IMethod)eitem).IsConstructor) {
+					item = eitem; 
+					eitem = null;
+				}
 			}
 				
 			while (item != null) {
