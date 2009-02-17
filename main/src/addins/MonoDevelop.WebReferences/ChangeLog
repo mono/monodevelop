@@ -1,3 +1,7 @@
+2009-02-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/generated.cs: Flush.
+
 2009-02-09  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.WebReferences/CodeGenerator.cs: Properly fix
