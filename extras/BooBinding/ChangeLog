@@ -1,3 +1,8 @@
+2009-02-18  Cedric Vivier  <cedricv@neonux.com>
+
+	* BooBindingCompilerServices.boo: Fix build with boo >= 0.8.2.
+	Workaround for BOO-1167 (wrt to ProjectItemCollection constraints).
+
 2009-02-11  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* BooLanguageBinding.boo:

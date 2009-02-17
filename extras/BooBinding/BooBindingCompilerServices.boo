@@ -33,6 +33,17 @@ import MonoDevelop.Projects
 import Boo.Lang.Compiler
 import Boo.Lang.Compiler.Resources
 
+[extension] #FIXME: workaround BOO-1167
+def GetAllReferences (this as ProjectItemCollection) as ProjectReference*:
+	for item in this:
+		yield item if item isa ProjectReference
+
+[extension] #FIXME: workaround BOO-1167
+def GetAllFiles (this as ProjectItemCollection) as ProjectFile*:
+	for item in this:
+		yield item if item isa ProjectFile
+
+
 public class BooBindingCompilerServices:
 	public def CanCompile (fileName as string):
 		return Path.GetExtension(fileName).ToUpper() == ".BOO"
@@ -53,11 +64,11 @@ public class BooBindingCompilerServices:
 		# Make sure we don't load the generated assembly at all
 		compiler.Parameters.GenerateInMemory = false
 
-		for lib as ProjectReference in projectItems.GetAll[of ProjectReference] ():
+		for lib as ProjectReference in projectItems.GetAllReferences ():
 			for fileName as string in lib.GetReferencedFileNames (configuration.Id):
 				compiler.Parameters.References.Add(Assembly.LoadFile(fileName))
 
-		for finfo as ProjectFile in projectItems.GetAll[of ProjectFile] ():
+		for finfo as ProjectFile in projectItems.GetAllFiles ():
 			if finfo.Subtype != Subtype.Directory:
 				if finfo.BuildAction == BuildAction.Compile:
 					compiler.Parameters.Input.Add(Boo.Lang.Compiler.IO.FileInput(finfo.Name))
