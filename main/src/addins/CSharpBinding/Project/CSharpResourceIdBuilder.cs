@@ -42,7 +42,7 @@ namespace CSharpBinding
 	{
 		public override string GetDefaultResourceId (ProjectFile pf)
 		{
-			if (String.IsNullOrEmpty (pf.DependsOn) || !File.Exists (pf.DependsOn))
+			if (String.IsNullOrEmpty (pf.DependsOn) || !File.Exists (pf.DependsOn) || Path.GetExtension (pf.DependsOn).ToLower () != ".cs")
 				return base.GetDefaultResourceId (pf);
 
 			string ns = null;
@@ -151,7 +151,7 @@ namespace CSharpBinding
 					sr.Read ();
 					while (true) {
 						int n = sr.Peek ();
-						if (n == '\r' || n == '\n' || n == -1)
+						if (n == -1)
 							throw new Exception ("String literal not closed");
 
 						if (n == '"') {

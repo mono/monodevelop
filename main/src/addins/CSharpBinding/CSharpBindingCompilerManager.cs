@@ -67,7 +67,7 @@ namespace CSharpBinding
 				foreach (string fileName in lib.GetReferencedFileNames (configuration.Id)) {
 					switch (lib.ReferenceType) {
 					case ReferenceType.Gac:
-						SystemPackage pkg = Runtime.SystemAssemblyService.GetPackageFromFullName (lib.Reference);
+						SystemPackage pkg = lib.Package;
 						if (pkg == null) {
 							string msg = String.Format (GettextCatalog.GetString ("{0} could not be found or is invalid."), lib.Reference);
 							monitor.ReportWarning (msg);
