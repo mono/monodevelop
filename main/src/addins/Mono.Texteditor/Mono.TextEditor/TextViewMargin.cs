@@ -601,9 +601,9 @@ namespace Mono.TextEditor
 		}
 		static uint GetPixel (Color color)
 		{
-			return (uint)color.Red << 32 |
-					(uint)color.Green << 16 |
-					(uint)color.Blue;
+			return (((uint)color.Red) << 32) |
+					(((uint)color.Green) << 16) |
+					((uint)color.Blue);
 		}
 		bool UseDefaultBackgroundColor (ChunkStyle style)
 		{

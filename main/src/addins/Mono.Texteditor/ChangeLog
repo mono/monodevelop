@@ -1,5 +1,9 @@
 2009-02-17  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextViewMargin.cs: Changed GetPixel method.
+
+2009-02-17  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor.Highlighting/Style.cs: Changed color styles
 	  a bit.
 
