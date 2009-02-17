@@ -81,7 +81,7 @@ namespace MonoDevelop.Debugger
 			if (IdeApp.ProjectOperations.CurrentSelectedProject != null)
 				dom = ProjectDomService.GetProjectDom (IdeApp.ProjectOperations.CurrentSelectedProject);
 			else {
-				string asm = typeof(Uri).Assembly.FullName;
+				string asm = typeof(Uri).Assembly.Location;
 				if (!systemLoaded) {
 					ProjectDomService.LoadAssembly (asm);
 					systemLoaded = true;
@@ -126,7 +126,7 @@ namespace MonoDevelop.Debugger
 		protected override void OnDestroyed ()
 		{
 			if (systemLoaded)
-				ProjectDomService.UnloadAssembly (typeof(Uri).Assembly.FullName);
+				ProjectDomService.UnloadAssembly (typeof(Uri).Assembly.Location);
 			base.OnDestroyed ();
 		}
 
