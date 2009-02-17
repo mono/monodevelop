@@ -134,6 +134,18 @@ namespace MonoDevelop.DesignerSupport.Projects
 			set { pref.SpecificVersion = value; }
 		}
 		
+		[Category ("Reference")]
+		[DisplayName ("Package")]
+		[Description ("Package that provides this reference.")]
+		public string Package {
+			get {
+				if (pref.ReferenceType == ReferenceType.Gac && pref.Package != null)
+					return pref.Package.Name + " "  + pref.Package.Version;
+				else
+					return string.Empty;
+			}
+		}
+		
 		protected override bool IsReadOnly (string propertyName)
 		{
 			if (propertyName == "SpecificVersion" && (pref.ReferenceType == ReferenceType.Project || pref.ReferenceType == ReferenceType.Custom))

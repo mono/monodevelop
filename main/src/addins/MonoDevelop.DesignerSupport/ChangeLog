@@ -1,3 +1,11 @@
+2009-02-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.DesignerSupport/ToolboxService.cs: Track api
+	  changes.
+
+	* MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:
+	  Show the source package of the reference.
+
 2009-02-12  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.DesignerSupport.PropertyGrid/PropertyGridTree.cs:
