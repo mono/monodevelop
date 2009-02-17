@@ -720,8 +720,14 @@ namespace MonoDevelop.Ide.Gui.Pads
 			} else {
 				view.Selection.SelectIter (iter);
 				Task t =  model.GetValue (iter, (int)Columns.Task) as Task;
-				if (t == null)
+				if (t == null) {
+					file = null;
+					line = 0;
+					column = 0;
+					view.Selection.UnselectAll ();
+					DisplayTask (null);
 					return false;
+				}
 				file = t.FileName;
 				if (file == null)
 					return GetNextLocation (out file, out line, out column);
@@ -763,8 +769,14 @@ namespace MonoDevelop.Ide.Gui.Pads
 			} else {
 				view.Selection.SelectIter (prevIter);
 				Task t = view.Model.GetValue (prevIter, (int)Columns.Task) as Task;
-				if (t == null)
+				if (t == null) {
+					file = null;
+					line = 0;
+					column = 0;
+					view.Selection.UnselectAll ();
+					DisplayTask (null);
 					return false;
+				}
 				file = t.FileName;
 				if (file == null)
 					return GetPreviousLocation (out file, out line, out column);

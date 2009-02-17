@@ -1,5 +1,10 @@
 2009-02-17  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs: fixed compiler
+	  error.
+
+2009-02-17  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs: Worked on
 	  preventing InvalidCastException reported in "Bug 475797 -
 	  text corruption on screen with folding on in build 126778".
