@@ -1,5 +1,11 @@
 2009-02-17  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs: fixed
+	  "Bug 405704 - Implement implicit interface should bypass
+	  already implemented members in the base class".
+
+2009-02-17  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs: Fixed
 	  possible endless loop.
 

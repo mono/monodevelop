@@ -30,6 +30,8 @@ using System;
 using System.CodeDom;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+
 using System.Text;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Text;
@@ -371,13 +373,8 @@ namespace MonoDevelop.Projects.CodeGeneration
 				if (ev.IsSpecialName)
 					continue;
 				bool needsExplicitly = explicitly;
-				alreadyImplemented = false;
-				foreach (IEvent cev in klass.Events) {
-					if (cev.Name == ev.Name) {
-						alreadyImplemented = true;
-						break;
-					}
-				}
+				
+				alreadyImplemented = gctx.ParserContext.GetInheritanceTree (klass).Any (x => x.ClassType != ClassType.Interface && x.Events.Any (y => y.Name == ev.Name));
 				
 				if (!alreadyImplemented)
 					toImplement.Add (new KeyValuePair<IMember,IReturnType> (ev, needsExplicitly ? prefix : null));
@@ -388,14 +385,17 @@ namespace MonoDevelop.Projects.CodeGeneration
 				if (method.IsSpecialName)
 					continue;
 				bool needsExplicitly = explicitly;
-				
 				alreadyImplemented = false;
-				foreach (IMethod cmet in klass.Methods) {
-					if (cmet.Name == method.Name && Equals (cmet.Parameters, method.Parameters)) {
-						if (!needsExplicitly && !cmet.ReturnType.Equals (method.ReturnType))
-							needsExplicitly = true;
-						else
-							alreadyImplemented |= !needsExplicitly || (iface.FullName == GetExplicitPrefix (cmet.ExplicitInterfaces));
+				foreach (IType t in gctx.ParserContext.GetInheritanceTree (klass)) {
+					if (t.ClassType == ClassType.Interface)
+						continue;
+					foreach (IMethod cmet in t.Methods) {
+						if (cmet.Name == method.Name && Equals (cmet.Parameters, method.Parameters)) {
+							if (!needsExplicitly && !cmet.ReturnType.Equals (method.ReturnType))
+								needsExplicitly = true;
+							else
+								alreadyImplemented |= !needsExplicitly || (iface.FullName == GetExplicitPrefix (cmet.ExplicitInterfaces));
+						}
 					}
 				}
 				
@@ -409,15 +409,18 @@ namespace MonoDevelop.Projects.CodeGeneration
 					continue;
 				bool needsExplicitly = explicitly;
 				alreadyImplemented = false;
-				foreach (IProperty cprop in klass.Properties) {
-					if (cprop.Name == prop.Name) {
-						if (!needsExplicitly && !cprop.ReturnType.Equals (prop.ReturnType))
-							needsExplicitly = true;
-						else
-							alreadyImplemented |= !needsExplicitly || (iface.FullName == GetExplicitPrefix (cprop.ExplicitInterfaces));
+				foreach (IType t in gctx.ParserContext.GetInheritanceTree (klass)) {
+					if (t.ClassType == ClassType.Interface)
+						continue;
+					foreach (IProperty cprop in t.Properties) {
+						if (cprop.Name == prop.Name) {
+							if (!needsExplicitly && !cprop.ReturnType.Equals (prop.ReturnType))
+								needsExplicitly = true;
+							else
+								alreadyImplemented |= !needsExplicitly || (iface.FullName == GetExplicitPrefix (cprop.ExplicitInterfaces));
+						}
 					}
 				}
-
 				if (!alreadyImplemented)
 					toImplement.Add (new KeyValuePair<IMember,IReturnType> (prop, needsExplicitly ? prefix : null)); 				}
 			
