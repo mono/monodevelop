@@ -599,11 +599,11 @@ namespace Mono.TextEditor
 		{
 			win.DrawLayout (GetGC (ColorStyle.InvalidLineMarker), x, y, invalidLineMarker);
 		}
-		static uint GetPixel (Color color)
+		static ulong GetPixel (Color color)
 		{
-			return (((uint)color.Red) << 32) |
-					(((uint)color.Green) << 16) |
-					((uint)color.Blue);
+			return (((ulong)color.Red) << 32) |
+					(((ulong)color.Green) << 16) |
+					((ulong)color.Blue);
 		}
 		bool UseDefaultBackgroundColor (ChunkStyle style)
 		{
