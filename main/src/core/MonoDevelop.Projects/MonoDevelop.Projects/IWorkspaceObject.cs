@@ -36,6 +36,7 @@ namespace MonoDevelop.Projects
 	public interface IWorkspaceObject: IExtendedDataItem, IDisposable
 	{
 		string Name { get; set; }
+		string ItemDirectory { get; }
 		string BaseDirectory { get; set; }
 		void Save (IProgressMonitor monitor);
 	}

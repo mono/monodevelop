@@ -84,10 +84,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				} catch (IOException) {
 				}
 
+				string baseDir = Path.GetDirectoryName (file);
 				if (tmpfilename == String.Empty) {
-					WriteFileInternal (file, sol, format, monitor);
+					WriteFileInternal (file, sol, baseDir, format, monitor);
 				} else {
-					WriteFileInternal (tmpfilename, sol, format, monitor);
+					WriteFileInternal (tmpfilename, sol, baseDir, format, monitor);
 					File.Delete (file);
 					File.Move (tmpfilename, file);
 				}
@@ -103,9 +104,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 
-		void WriteFileInternal (string file, Solution solution, MSBuildFileFormat format, IProgressMonitor monitor)
+		void WriteFileInternal (string file, Solution solution, string baseDir, MSBuildFileFormat format, IProgressMonitor monitor)
 		{
-			string baseDir = solution.BaseDirectory;
 			SolutionFolder c = solution.RootFolder;
 			
 			using (StreamWriter sw = new StreamWriter (file, false, Encoding.UTF8)) {

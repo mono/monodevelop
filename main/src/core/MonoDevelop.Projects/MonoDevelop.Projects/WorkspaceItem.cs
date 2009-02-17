@@ -119,6 +119,10 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
+		public string ItemDirectory {
+			get { return Path.GetFullPath (Path.GetDirectoryName (FileName)); }
+		}
+		
 		protected bool Loading {
 			get { return loading > 0; }
 		}

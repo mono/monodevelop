@@ -1,6 +1,19 @@
 2009-02-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/SolutionItem.cs:
+	* MonoDevelop.Projects/WorkspaceItem.cs:
+	* MonoDevelop.Projects/IWorkspaceObject.cs: Added
+	  ItemDirectory property which returns the pysical directory
+	  where the item is located (not the one provided by the
+	  user).
+
+	* MonoDevelop.Projects.Formats.MSBuild/SlnFileFormat.cs: Use
+	  the physical base dir when saving relative project
+	  locations, not the user provided one.
+
+2009-02-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/SolutionItem.cs:
 	* MonoDevelop.Projects/SolutionFolder.cs: Fixed bug Bug 436432
 	  - Solution building breaks on first error.
 

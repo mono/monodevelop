@@ -123,6 +123,10 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
+		public string ItemDirectory {
+			get { return System.IO.Path.GetFullPath (GetDefaultBaseDirectory ()); }
+		}
+		
 		internal bool HasCustomBaseDirectory {
 			get { return baseDirectory != null; }
 		}
