@@ -1,3 +1,9 @@
+2009-02-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.GtkCore/ReferenceManager.cs:
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs: Track api
+	  changes.
+
 2009-02-13  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am: Fix build. Looks like the makefiles can't cope 

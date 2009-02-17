@@ -418,7 +418,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					asm = Runtime.SystemAssemblyService.GetAssemblyFullName (asm);
 					if (asm == null)
 						return;
-					if (Runtime.SystemAssemblyService.GetPackageFromFullName (asm) != null) {
+					if (Runtime.SystemAssemblyService.GetPackagesFromFullName (asm).Length > 0) {
 						pref = new ProjectReference (ReferenceType.Gac, asm);
 					} else {
 						asm = Runtime.SystemAssemblyService.GetAssemblyLocation (asm);

@@ -96,7 +96,9 @@ namespace MonoDevelop.GtkCore {
 				if (p.Name != "gtk-sharp-2.0" || p.Version != pkg_version)
 					continue;
 
-				string name = Runtime.SystemAssemblyService.GetAssemblyFullName (p.Assemblies[0]);
+				IEnumerator<SystemAssembly> asms = p.Assemblies.GetEnumerator ();
+				asms.MoveNext ();
+				string name = asms.Current.FullName;
 				int i = name.IndexOf (',');
 				return name.Substring (i + 1).Trim ();
 			}	
@@ -112,7 +114,9 @@ namespace MonoDevelop.GtkCore {
 				if (p.Name != "gtk-sharp-2.0")
 					continue;
 
-				string name = Runtime.SystemAssemblyService.GetAssemblyFullName (p.Assemblies[0]);
+				IEnumerator<SystemAssembly> asms = p.Assemblies.GetEnumerator ();
+				asms.MoveNext ();
+				string name = asms.Current.FullName;
 				int i = name.IndexOf (',');
 				string version = name.Substring (i + 1).Trim ();
 				if (version == assembly_version)
@@ -176,7 +180,7 @@ namespace MonoDevelop.GtkCore {
 				
 			if (!posix && info.GenerateGettext && info.GettextClass == "Mono.Unix.Catalog") {
 				// Add a reference to Mono.Posix. Use the version for the selected project's runtime version.
-				string aname = Runtime.SystemAssemblyService.FindInstalledAssembly ("Mono.Posix, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756");
+				string aname = Runtime.SystemAssemblyService.FindInstalledAssembly ("Mono.Posix, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756", null);
 				aname = Runtime.SystemAssemblyService.GetAssemblyNameForVersion (aname, project.TargetFramework);
 				project.References.Add (new ProjectReference (ReferenceType.Gac, aname));
 				changed = true;
