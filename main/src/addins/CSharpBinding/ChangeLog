@@ -1,3 +1,9 @@
+2009-02-17  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/CSharpTextEditorCompletion.cs: fixed 'Bug 434979 -
+	  Automagic insertion of XML comments doesn't work as
+	  intended'.
+
 2009-02-16  Mike Krüger  <mkrueger@novell.com>
 
 	* Gui/CSharpAmbience.cs: Removed double space in namespace

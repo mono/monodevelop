@@ -277,11 +277,39 @@ namespace MonoDevelop.CSharpBinding.Gui
 							break;
 						}
 					}
+					// check if lines above already start a doc comment
+					for (int i = completionContext.TriggerLine - 1; i >= 0; i--) {
+						string text = Editor.GetLineText (i).Trim ();
+						if (text.Length == 0)
+							continue;
+						if (text.StartsWith ("///")) {
+							startsDocComment = false;
+							break;
+						}
+						break;
+					}
+						
+					// check if following lines start a doc comment
+					for (int i = completionContext.TriggerLine + 1; i < Editor.LineCount; i++) {
+						string text = Editor.GetLineText (i);
+						if (text == null)
+							break;
+						text = text.Trim ();
+						if (text.Length == 0)
+							continue;
+						if (text.StartsWith ("///")) {
+							startsDocComment = false;
+							break;
+						}
+						break;
+					}
+					
 					if (!startsDocComment || slashes != 3)
 						break;
 					StringBuilder generatedComment = new StringBuilder ();
 					bool generateStandardComment = true;
-					IType insideClass = NRefactoryResolver.GetTypeAtCursor (Document.CompilationUnit, Document.FileName, location);
+					ParsedDocument currentParsedDocument = Document.UpdateParseDocument ();
+					IType insideClass = NRefactoryResolver.GetTypeAtCursor (currentParsedDocument.CompilationUnit, Document.FileName, location);
 					if (insideClass != null) {
 						string indent = GetLineWhiteSpace (lineText);
 						if (insideClass.ClassType == ClassType.Delegate) {
@@ -305,7 +333,8 @@ namespace MonoDevelop.CSharpBinding.Gui
 						string indent = GetLineWhiteSpace (Editor.GetLineText (completionContext.TriggerLine));
 						AppendSummary (generatedComment, indent, out newCursorOffset);
 					}
-					
+					Editor.EndAtomicUndo ();
+					Editor.BeginAtomicUndo ();
 					Editor.InsertText (cursor, generatedComment.ToString ());
 					Editor.CursorPosition = cursor + newCursorOffset;
 					return null;
