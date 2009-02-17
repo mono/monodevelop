@@ -151,7 +151,7 @@ namespace MonoDevelop.Ide.Commands
 					eclass = FindEnclosingClass (ctx, editor.Name, line, column);
 				else
 					eclass = (IType) item;
-				if (eitem is IMethod && ((IMethod)eitem).IsConstructor) {
+				if (eitem is IMethod && ((IMethod)eitem).IsConstructor && eitem.DeclaringType.Equals (item)) {
 					item = eitem; 
 					eitem = null;
 				}

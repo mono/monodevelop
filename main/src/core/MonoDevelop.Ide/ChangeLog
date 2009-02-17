@@ -1,5 +1,10 @@
 2009-02-17  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: small change
+	  to constructor refactoring menu.
+
+2009-02-17  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.Gui/TextEditor.cs: Added LineCount property.
 
 	* MonoDevelop.Ide.addin.xml: Removed ctrl+shift+u shortcut for
