@@ -1,3 +1,8 @@
+2009-02-17  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor.Highlighting/Style.cs: Changed color styles
+	  a bit.
+
 2008-02-13  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* Mono.TextEditor/ISearchEngine.cs: Fix crash on empty search.

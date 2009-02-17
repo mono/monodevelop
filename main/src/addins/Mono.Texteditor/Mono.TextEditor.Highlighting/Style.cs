@@ -188,17 +188,15 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 
-		public const string BreakpointFgString = "marker.breakpoint.foreground";
+		public const string BreakpointString = "marker.breakpoint";
 		public Color BreakpointFg {
 			get {
-				return GetColorFromDefinition (BreakpointFgString);
+				return GetChunkStyle (BreakpointString).Color;
 			}
 		}
-
-		public const string BreakpointBgString = "marker.breakpoint.background";
 		public Color BreakpointBg {
 			get {
-				return GetColorFromDefinition (BreakpointBgString);
+				return GetChunkStyle (BreakpointString).BackgroundColor;
 			}
 		}
 
@@ -216,17 +214,16 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 
-		public const string CurrentDebugLineFgString = "marker.debug.currentline.foreground";
+		public const string CurrentDebugLineString = "marker.debug.currentline";
 		public Color CurrentDebugLineFg {
 			get {
-				return GetColorFromDefinition (CurrentDebugLineFgString);
+				return GetChunkStyle (CurrentDebugLineString).Color;
 			}
 		}
 		
-		public const string CurrentDebugLineBgString = "marker.debug.currentline.background";
 		public Color CurrentDebugLineBg {
 			get {
-				return GetColorFromDefinition (CurrentDebugLineBgString);
+				return GetChunkStyle (CurrentDebugLineString).BackgroundColor;
 			}
 		}
 
@@ -342,16 +339,14 @@ namespace Mono.TextEditor.Highlighting
 			
 			SetStyle (InvalidLineMarkerString, new ChunkStyle (new Gdk.Color (210, 0, 0)));
 			
-			SetStyle (BreakpointBgString, new ChunkStyle (new Gdk.Color (125, 0, 0)));
-			SetStyle (BreakpointFgString, new ChunkStyle (new Gdk.Color (255, 255, 255)));
+			SetStyle (BreakpointString, new ChunkStyle (new Gdk.Color (255, 255, 255), new Gdk.Color (125, 0, 0)));
 			
 			SetStyle (BreakpointMarkerColor1String, new ChunkStyle (new Gdk.Color (255, 255, 255)));
 			SetStyle (BreakpointMarkerColor2String, new ChunkStyle (new Gdk.Color (125, 0, 0)));
 
 			SetStyle (DisabledBreakpointBgString, new ChunkStyle (new Gdk.Color (237, 220, 220)));
 			
-			SetStyle (CurrentDebugLineBgString, new ChunkStyle (new Gdk.Color (255, 255, 0)));
-			SetStyle (CurrentDebugLineFgString, new ChunkStyle (new Gdk.Color (0, 0, 0)));
+			SetStyle (CurrentDebugLineString, new ChunkStyle (new Gdk.Color (0, 0, 0), new Gdk.Color (255, 255, 0)));
 			
 			SetStyle (CurrentDebugLineMarkerColor1String, new ChunkStyle (new Gdk.Color (255, 255, 0)));
 			SetStyle (CurrentDebugLineMarkerColor2String, new ChunkStyle (new Gdk.Color (255, 255, 204)));
