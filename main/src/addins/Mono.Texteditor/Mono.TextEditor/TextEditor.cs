@@ -271,14 +271,31 @@ namespace Mono.TextEditor
 			Gtk.Drag.DestSet (this, DestDefaults.All, (TargetEntry[])list, DragAction.Move | DragAction.Copy);
 			
 			imContext = new IMMulticontext ();
-			imContext.UsePreedit = false;
 			imContext.Commit += IMCommit;
+			
+			imContext.UsePreedit = false; 
+			// enable for preview editor:
+//			imContext.UsePreedit = true; 
+//			imContext.PreeditStart += delegate {
+//				preeditOffset = Caret.Offset;
+//				this.textEditorData.Document.CommitLineUpdate (Caret.Line);
+//			};
+//			imContext.PreeditEnd += delegate {
+//				preeditOffset = -1;
+//				this.textEditorData.Document.CommitLineUpdate (Caret.Line);
+//			};
+//			imContext.PreeditChanged += delegate (object sender, EventArgs e) {
+//				imContext.GetPreeditString (out preeditString, out preeditAttrs, out preeditCursorPos); 
+//				this.textEditorData.Document.CommitLineUpdate (Caret.Line);
+//			};
 			Caret.PositionChanged += CaretPositionChanged;
-			
 			textViewMargin.Initialize ();
-			
 			this.Realized += OptionsChanged;
 		}
+		
+		internal int preeditCursorPos = -1, preeditOffset = -1;
+		internal string preeditString;
+		internal Pango.AttrList preeditAttrs;
 		
 		void CaretPositionChanged (object sender, DocumentLocationEventArgs args) 
 		{
@@ -339,6 +356,7 @@ namespace Mono.TextEditor
 				this.RedrawLines (System.Math.Max (0, System.Math.Min (from, to) - 1),
 				                  System.Math.Max (from, to));
 			}
+			
 			OnSelectionChanged (EventArgs.Empty);
 		}
 		

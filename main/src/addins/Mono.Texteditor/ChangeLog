@@ -2,6 +2,17 @@
 
 	* Makefile.am:
 	* Mono.TextEditor.csproj:
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/TextViewMargin.cs:
+	* Mono.TextEditor/SimpleEditMode.cs:
+	* Mono.TextEditor/DefaultEditActions.cs:
+	* Mono.TextEditor/UnicodePreviewEditMode.cs: Made the preview
+	  string more general (input method now handles it).
+
+2009-02-17  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* Mono.TextEditor.csproj:
 	* Mono.TextEditor/EditMode.cs:
 	* Mono.TextEditor/TextEditor.cs:
 	* Mono.TextEditor/SimpleEditMode.cs:

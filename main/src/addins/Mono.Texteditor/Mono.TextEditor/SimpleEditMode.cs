@@ -214,19 +214,11 @@ namespace Mono.TextEditor
 			keyBindings.Add (GetKeyCode (Gdk.Key.z, Gdk.ModifierType.ControlMask), MiscActions.Undo);
 			keyBindings.Add (GetKeyCode (Gdk.Key.z, Gdk.ModifierType.ControlMask | Gdk.ModifierType.ShiftMask), MiscActions.Redo);
 			
-			keyBindings.Add (GetKeyCode (Gdk.Key.U, Gdk.ModifierType.ControlMask | Gdk.ModifierType.ShiftMask), MiscActions.SwitchToUnicodeInputMode);
-			
 			keyBindings.Add (GetKeyCode (Gdk.Key.F2), BookmarkActions.GotoNext);
 			keyBindings.Add (GetKeyCode (Gdk.Key.F2, Gdk.ModifierType.ShiftMask), BookmarkActions.GotoPrevious);
 			
 			keyBindings.Add (GetKeyCode (Gdk.Key.b, Gdk.ModifierType.ControlMask), MiscActions.GotoMatchingBracket);
 		}
-
-// not active (feature freeze:)
-//		public override bool PreemtIM (Gdk.Key key, uint unicodeKey, Gdk.ModifierType modifier)
-//		{
-//			return GetKeyCode (Gdk.Key.U, Gdk.ModifierType.ControlMask | Gdk.ModifierType.ShiftMask) == GetKeyCode (key, modifier & (Gdk.ModifierType.ControlMask | Gdk.ModifierType.ShiftMask));
-//		}
 		
 		protected override void HandleKeypress (Gdk.Key key, uint unicodeKey, Gdk.ModifierType modifier)
 		{

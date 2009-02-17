@@ -311,6 +311,40 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		void DrawChunkPart (Gdk.Drawable win, LineSegment line, Chunk chunk, ref int visibleColumn, ref int xPos, int y, int startOffset, int endOffset, int selectionStart, int selectionEnd)
+		{
+			if (startOffset >= selectionStart && endOffset <= selectionEnd) {
+				DrawStyledText (win, line, true, chunk, ref visibleColumn, ref xPos, y, startOffset, endOffset);
+			} else if (startOffset >= selectionStart && startOffset < selectionEnd && endOffset > selectionEnd) {
+				DrawStyledText (win, line, true, chunk, ref visibleColumn, ref xPos, y, startOffset, selectionEnd);
+				DrawStyledText (win, line, false, chunk, ref visibleColumn, ref xPos, y, selectionEnd, endOffset);
+			} else if (startOffset < selectionStart && endOffset > selectionStart && endOffset <= selectionEnd) {
+				DrawStyledText (win, line, false, chunk, ref visibleColumn, ref xPos, y, startOffset, selectionStart);
+				DrawStyledText (win, line, true, chunk, ref visibleColumn, ref xPos, y, selectionStart, endOffset);
+			} else if (startOffset < selectionStart && endOffset > selectionEnd) {
+				DrawStyledText (win, line, false, chunk, ref visibleColumn, ref xPos, y, startOffset, selectionStart);
+				DrawStyledText (win, line, true, chunk, ref visibleColumn, ref xPos, y, selectionStart, selectionEnd);
+				DrawStyledText (win, line, false, chunk, ref visibleColumn, ref xPos, y, selectionEnd, endOffset);
+			} else {
+				DrawStyledText (win, line, false, chunk, ref visibleColumn, ref xPos, y, startOffset, endOffset);
+			}
+		}
+		
+		void DrawPreeditString (Gdk.Drawable win, string style, ref int xPos, int y)
+		{
+			Pango.Layout preEditLayout = new Pango.Layout (textEditor.PangoContext);
+			preEditLayout.Attributes = textEditor.preeditAttrs;
+			preEditLayout.SetText (textEditor.preeditString);
+			ChunkStyle chunkStyle = ColorStyle.GetChunkStyle (style);
+			int cWidth, cHeight;
+			preEditLayout.GetPixelSize (out cWidth, out cHeight);
+			DrawRectangleWithRuler (win, xPos, new Gdk.Rectangle (xPos, y, cWidth, cHeight), GetBackgroundColor (textEditor.preeditOffset, false, chunkStyle));
+			win.DrawLayout (GetGC (chunkStyle.Color), xPos, y, preEditLayout);
+			
+			xPos += cWidth;
+			preEditLayout.Dispose ();
+		}
+		
 		void DrawLinePart (Gdk.Drawable win, LineSegment line, int offset, int length, ref int xPos, int y, int maxX)
 		{
 			SyntaxMode mode = Document.SyntaxMode != null && textEditor.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : SyntaxMode.Default;
@@ -323,25 +357,21 @@ namespace Mono.TextEditor
 				selectionEnd   = segment.EndOffset;
 			}
 			int visibleColumn = 0;
+			string curStyle = "text";
 			for (Chunk chunk = mode.GetChunks (Document, textEditor.ColorStyle, line, offset, length); chunk != null; chunk = chunk.Next) {
 				if (xPos >= maxX)
 					break;
-				if (chunk.Offset >= selectionStart && chunk.EndOffset <= selectionEnd) {
-					DrawStyledText (win, line, true, chunk, ref visibleColumn, ref xPos, y, chunk.Offset, chunk.EndOffset);
-				} else if (chunk.Offset >= selectionStart && chunk.Offset < selectionEnd && chunk.EndOffset > selectionEnd) {
-					DrawStyledText (win, line, true, chunk, ref visibleColumn, ref xPos, y, chunk.Offset, selectionEnd);
-					DrawStyledText (win, line, false, chunk, ref visibleColumn, ref xPos, y, selectionEnd, chunk.EndOffset);
-				} else if (chunk.Offset < selectionStart && chunk.EndOffset > selectionStart && chunk.EndOffset <= selectionEnd) {
-					DrawStyledText (win, line, false, chunk, ref visibleColumn, ref xPos, y, chunk.Offset, selectionStart);
-					DrawStyledText (win, line, true, chunk, ref visibleColumn, ref xPos, y, selectionStart, chunk.EndOffset);
-				} else if (chunk.Offset < selectionStart && chunk.EndOffset > selectionEnd) {
-					DrawStyledText (win, line, false, chunk, ref visibleColumn, ref xPos, y, chunk.Offset, selectionStart);
-					DrawStyledText (win, line, true, chunk, ref visibleColumn, ref xPos, y, selectionStart, selectionEnd);
-					DrawStyledText (win, line, false, chunk, ref visibleColumn, ref xPos, y, selectionEnd, chunk.EndOffset);
+				curStyle = chunk.Style;
+				if (chunk.Contains (textEditor.preeditOffset)) {
+					DrawChunkPart (win, line, chunk, ref visibleColumn, ref xPos, y, chunk.Offset, textEditor.preeditOffset, selectionStart, selectionEnd);
+					DrawPreeditString (win, curStyle, ref xPos, y);
+					DrawChunkPart (win, line, chunk, ref visibleColumn, ref xPos, y, textEditor.preeditOffset, chunk.EndOffset, selectionStart, selectionEnd);
 				} else {
-					DrawStyledText (win, line, false, chunk, ref visibleColumn, ref xPos, y, chunk.Offset, chunk.EndOffset);
+					DrawChunkPart (win, line, chunk, ref visibleColumn, ref xPos, y, chunk.Offset, chunk.EndOffset, selectionStart, selectionEnd);
 				}
 			}
+			if (textEditor.preeditOffset == offset + length) 
+				DrawPreeditString (win, curStyle, ref xPos, y);
 		//	if (Caret.Offset == offset + length) 
 		//		SetVisibleCaretPosition (win, ' ', xPos, y);
 		}
@@ -458,6 +488,7 @@ namespace Mono.TextEditor
 				
 			for (int offset = startOffset; offset < endOffset; offset++) {
 				char ch = chunk.GetCharAt (Document, offset);
+				
 				if (textEditor.Options.HighlightMatchingBracket && offset == this.highlightBracketOffset && (!this.textEditor.IsSomethingSelected || this.textEditor.SelectionRange.Length == 0)) {
 					OutputWordBuilder (win, line, selected, style, ref visibleColumn, ref xPos, y, offset);
 					
