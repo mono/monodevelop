@@ -1,3 +1,8 @@
+2009-02-17  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs: Fixed
+	  possible endless loop.
+
 2009-02-16  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs: fixed

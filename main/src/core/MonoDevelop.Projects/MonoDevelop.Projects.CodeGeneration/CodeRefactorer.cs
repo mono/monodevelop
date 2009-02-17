@@ -428,7 +428,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			
 			klass = GetUpdatedClass (gctx, klass);
 			foreach (IType baseClass in iface.SourceProjectDom.GetInheritanceTree (iface)) {
-				if (baseClass == iface || baseClass.FullName == "System.Object")
+				if (baseClass.Equals (iface) || baseClass.FullName == "System.Object")
 					continue;
 				klass = ImplementInterface (pinfo, klass, baseClass, explicitly, declaringClass, hintReturnType);
 			}
