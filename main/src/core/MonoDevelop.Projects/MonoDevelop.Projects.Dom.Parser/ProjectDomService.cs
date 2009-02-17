@@ -377,19 +377,18 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return GetDom ("Assembly:" + assemblyName);
 		}
 		
-		public static string LoadAssembly (string assemblyName)
+		public static string LoadAssembly (string file)
 		{
-			string aname = Runtime.SystemAssemblyService.GetAssemblyFullName (assemblyName);
-			string name = "Assembly:" + aname;
+			string name = "Assembly:" + Path.GetFullPath (file);
 			if (GetDom (name, true) != null)
-				return aname;
+				return name;
 			else
 				return null;
 		}
 		
-		public static void UnloadAssembly (string assemblyName)
+		public static void UnloadAssembly (string file)
 		{
-			string name = "Assembly:" + Runtime.SystemAssemblyService.GetAssemblyFullName (assemblyName);
+			string name = "Assembly:" + Path.GetFullPath (file);
 			UnrefDom (name);
 		}
 		
@@ -510,25 +509,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 					
 					if (uri.StartsWith ("Assembly:")) {
 						string file = uri.Substring (9);
-						string realUri = uri;
-						
-						if (!File.Exists (file)) {
-							// We may be trying to load an assembly db using a partial name.
-							// In this case we get the full name to avoid database conflicts
-							string fname = Runtime.SystemAssemblyService.GetAssemblyFullName (file);
-							if (fname != null)
-								realUri = "Assembly:" + fname;
-						}
-						
-						if (databases.TryGetValue (realUri, out db)) {
-							databases [uri] = db;
-						} else {
-							ProjectDom adb;
-							db = adb = parserDatabase.LoadAssemblyDom (file);
-							RegisterDom (db, realUri);
-							if (uri != realUri)
-								databases [uri] = adb;
-						}
+						db = parserDatabase.LoadAssemblyDom (file);
+						RegisterDom (db, uri);
 					}
 				}
 				if (addReference && db != null)
@@ -1066,11 +1048,6 @@ namespace MonoDevelop.Projects.Dom.Parser
 		public static event EventHandler SpecialCommentTagsChanged;
 		public static event EventHandler ParseOperationStarted;
 		public static event EventHandler ParseOperationFinished;
-		
-		public static bool GetAssemblyInfo (string assemblyName, out string realAssemblyName, out string assemblyFile, out string name)
-		{
-			return MonoDevelop.Projects.Dom.Serialization.AssemblyCodeCompletionDatabase.GetAssemblyInfo (assemblyName, out realAssemblyName, out assemblyFile, out name);
-		}
 	}
 	
 	class InternalProgressMonitor: NullProgressMonitor

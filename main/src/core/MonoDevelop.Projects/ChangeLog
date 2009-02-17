@@ -1,3 +1,33 @@
+2009-02-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/ProjectReference.cs: Added Package
+	  property, which returns the package to which the referenced
+	  assembly belongs.
+
+	* MonoDevelop.Projects/DotNetProject.cs: Track api changes.
+	  Don't update references when setting the project framework
+	  for the first time.
+
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs:
+	  When storing references, store the package name if it is a
+	  non-gac package.
+
+	* MonoDevelop.Projects.Dom.Parser/IParserDatabase.cs:
+	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs:
+	* MonoDevelop.Projects.Dom.Serialization/ParserDatabase.cs:
+	* MonoDevelop.Projects.Dom.Serialization/SimpleCodeCompletionDatabase.cs:
+	* MonoDevelop.Projects.Dom.Serialization/ProjectCodeCompletionDatabase.cs:
+	* MonoDevelop.Projects.Dom.Serialization/AssemblyCodeCompletionDatabase.cs:
+	  Always use the assembly file name to idenify assembly code
+	  completion databases. Loading a CC database using an
+	  assembly full name as id is not supported anymore.
+
+	* MonoDevelop.Projects.Dom/AssemblyCodeCompletionDatabase.cs:
+	  Removed unused file.
+
+	* MonoDevelop.Projects.Formats.MD1/MD1DotNetProjectHandler.cs:
+	  Improve warning message.
+
 2009-02-17  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs: fixed

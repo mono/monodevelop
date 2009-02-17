@@ -152,8 +152,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				DotNetProject netProject = (DotNetProject) project;
 				foreach (ProjectReference pr in netProject.References)
 				{
-					string[] refIds = GetReferenceKeys (pr);
-					foreach (string refId in refIds) {
+					foreach (string refId in GetReferenceKeys (pr)) {
 						fs[refId] = null;
 						if (!HasReference (refId))
 							AddReference (refId);
@@ -194,7 +193,8 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			
 			// Gets the name and version of the mscorlib assembly required by the project
 			string requiredRefUri = "Assembly:";
-			requiredRefUri += Runtime.SystemAssemblyService.GetAssemblyNameForVersion (typeof(object).Assembly.GetName().ToString(), prj.TargetFramework);
+			SystemAssembly asm = Runtime.SystemAssemblyService.GetAssemblyForVersion (typeof(object).Assembly.FullName, null, prj.TargetFramework);
+			requiredRefUri += asm.Location;
 			
 			// Replace the old reference if the target version has changed
 			if (currentRefUri != null) {
@@ -212,28 +212,20 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		bool IsCorlibReference (ReferenceEntry re)
 		{
-			return re.Uri.StartsWith ("Assembly:mscorlib");
+			if (re.Uri.StartsWith ("Assembly:"))
+				return Path.GetFileNameWithoutExtension (re.Uri.Substring (9)) == "mscorlib";
+			else
+				return false;
 		}
 		
-		string[] GetReferenceKeys (ProjectReference pr)
+		IEnumerable<string> GetReferenceKeys (ProjectReference pr)
 		{
-			switch (pr.ReferenceType) {
-			case ReferenceType.Project:
+			if (pr.ReferenceType == ReferenceType.Project) {
 				Project referencedProject = project.ParentSolution.FindProjectByName (pr.Reference);
-				return new string[] { "Project:" + (referencedProject != null ? referencedProject.FileName : "null") };
-			case ReferenceType.Gac:
-				string refId = pr.Reference;
-				string ext = Path.GetExtension (refId).ToLower ();
-				if (ext == ".dll" || ext == ".exe")
-					refId = refId.Substring (0, refId.Length - 4);
-				return new string[] { "Assembly:" + refId };
-			case ReferenceType.Assembly:
-				return new string[] { "Assembly:" + pr.Reference };
-			default:
-				ArrayList list = new ArrayList ();
+				yield return "Project:" + (referencedProject != null ? referencedProject.FileName : "null");
+			} else {
 				foreach (string s in pr.GetReferencedFileNames (ProjectService.DefaultConfiguration))
-					list.Add ("Assembly:" + s);
-				return (string[]) list.ToArray (typeof(string));
+					yield return "Assembly:" + Path.GetFullPath (s);
 			}
 		}
 		

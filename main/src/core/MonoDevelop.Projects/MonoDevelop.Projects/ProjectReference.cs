@@ -59,6 +59,22 @@ namespace MonoDevelop.Projects
 		string loadedReference;
 		bool specificVersion = true;
 		bool notFound;
+		string package;
+		SystemPackage cachedPackage;
+		
+		[ItemProperty ("Package", DefaultValue="")]
+		internal string packageName {
+			get {
+				SystemPackage sp = Package;
+				if (sp != null && !sp.IsGacPackage)
+					return sp.Name;
+				else
+					return string.Empty;
+			}
+			set {
+				package = value;
+			}
+		}
 		
 		public ProjectReference ()
 		{
@@ -83,6 +99,15 @@ namespace MonoDevelop.Projects
 		{
 			referenceType = ReferenceType.Project;
 			reference = referencedProject.Name;
+		}
+		
+		public ProjectReference (SystemAssembly asm)
+		{
+			referenceType = ReferenceType.Gac;
+			reference = asm.FullName;
+			if (!asm.Package.IsGacPackage)
+				package = asm.Package.Name;
+			UpdateGacReference ();
 		}
 		
 		public Project OwnerProject {
@@ -182,7 +207,7 @@ namespace MonoDevelop.Projects
 					return reference;
 				
 				case ReferenceType.Gac:
-					string file = Runtime.SystemAssemblyService.GetAssemblyLocation (Reference);
+					string file = Runtime.SystemAssemblyService.GetAssemblyLocation (Reference, package);
 					return file == null ? reference : file;
 				case ReferenceType.Project:
 					if (ownerProject != null) {
@@ -212,11 +237,11 @@ namespace MonoDevelop.Projects
 		{
 			if (referenceType == ReferenceType.Gac) {
 				notFound = false;
-				string cref = Runtime.SystemAssemblyService.FindInstalledAssembly (reference);
+				string cref = Runtime.SystemAssemblyService.FindInstalledAssembly (reference, package);
 				if (ownerProject != null) {
 					if (cref == null)
 						cref = reference;
-					cref = Runtime.SystemAssemblyService.GetAssemblyNameForVersion (cref, ownerProject.TargetFramework);
+					cref = Runtime.SystemAssemblyService.GetAssemblyNameForVersion (cref, package, ownerProject.TargetFramework);
 					notFound = (cref == null);
 				}
 				if (cref != null && cref != reference) {
@@ -225,6 +250,32 @@ namespace MonoDevelop.Projects
 					}
 					reference = cref;
 				}
+				cachedPackage = null;
+			}
+		}
+		
+		public SystemPackage Package {
+			get {
+				if (referenceType == ReferenceType.Gac) {
+					if (cachedPackage != null)
+						return cachedPackage;
+					if (package != null)
+						return Runtime.SystemAssemblyService.GetPackage (package);
+
+					// No package is specified, get any of the registered assemblies, giving priority to gaced assemblies
+					// (because non-gac assemblies should have a package name set)
+					SystemAssembly best = null;
+					foreach (SystemAssembly asm in Runtime.SystemAssemblyService.GetAssembliesFromFullName (reference)) {
+						if (asm.Package.IsGacPackage) {
+							best = asm;
+							break;
+						} else if (best == null)
+							best = asm;
+					}
+					if (best != null)
+						return best.Package;
+				}
+				return null;
 			}
 		}
 		
@@ -238,7 +289,7 @@ namespace MonoDevelop.Projects
 			ProjectReference oref = other as ProjectReference;
 			if (oref == null) return false;
 			
-			return reference == oref.reference && referenceType == oref.referenceType;
+			return reference == oref.reference && referenceType == oref.referenceType && package == oref.package;
 		}
 		
 		public override int GetHashCode ()

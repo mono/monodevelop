@@ -33,7 +33,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 	public interface IParserDatabase
 	{
 		void Initialize ();
-		ProjectDom LoadAssemblyDom (string assemblyName);
+		ProjectDom LoadAssemblyDom (string file);
 		ProjectDom LoadSingleFileDom (string file);
 		ProjectDom LoadProjectDom (Project project);
 	}

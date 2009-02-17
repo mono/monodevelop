@@ -45,7 +45,6 @@ namespace MonoDevelop.Projects.Dom.Serialization
 	{
 		bool useExternalProcess = true;
 		string baseDir;
-		string assemblyName;
 		bool loadError;
 		bool isPackageAssembly;
 		bool parsing;
@@ -54,30 +53,28 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		// This is the package version of the assembly. It is serialized.
 		string packageVersion;
 		
-		public AssemblyCodeCompletionDatabase (string assemblyName, ParserDatabase pdb): this (assemblyName, pdb, false)
+		public AssemblyCodeCompletionDatabase (string assemblyFile, ParserDatabase pdb): this (assemblyFile, pdb, false)
 		{
 		}
 		
-		public AssemblyCodeCompletionDatabase (string assemblyName, ParserDatabase pdb, bool isTempDatabase): base (pdb)
+		public AssemblyCodeCompletionDatabase (string assemblyFile, ParserDatabase pdb, bool isTempDatabase): base (pdb)
 		{
-			string name;
-
+			this.assemblyFile = assemblyFile;
 			
-			if (!GetAssemblyInfo (assemblyName, out this.assemblyName, out assemblyFile, out name)) {
+			if (!File.Exists (assemblyFile)) {
 				loadError = true;
 				return;
 			}
 			
-			string tl = assemblyName.ToLower();
-			isPackageAssembly = tl.IndexOf (".dll") == -1 && tl.IndexOf (".exe") == -1; 
+			string name = assemblyFile.Replace(',','_').Replace(" ","").Replace(Path.DirectorySeparatorChar,'_');
 			
-			if (isPackageAssembly) {
-				SystemPackage pkg = Runtime.SystemAssemblyService.GetPackageFromFullName (this.assemblyName);
-				if (pkg != null)
-					packageVersion = pkg.Name + " " + pkg.Version;
-				else
-					isPackageAssembly = false;
+			SystemPackage package = Runtime.SystemAssemblyService.GetPackageFromPath (assemblyFile);
+			if (package != null) {
+				isPackageAssembly = true;
+				packageVersion = package.Name + " " + package.Version;
 			}
+			else
+				isPackageAssembly = false;
 
 			this.baseDir = ProjectDomService.CodeCompletionPath;
 
@@ -104,11 +101,9 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			
 			FileEntry fe = GetFile (assemblyFile);
 			if (IsFileModified (fe)) {
-				string[] refUris = ReadAssemblyReferences ();
 				// Update references to other assemblies
-				
 				Hashtable rs = new Hashtable ();
-				foreach (string uri in refUris) {
+				foreach (string uri in ReadAssemblyReferences ()) {
 					rs[uri] = null;
 					if (!HasReference (uri))
 						AddReference (uri);
@@ -132,15 +127,15 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		protected override bool IsFileModified (FileEntry file)
 		{
-			if (parsing || String.IsNullOrEmpty (assemblyName))
+			if (parsing)
 				return false;
-				
+			
 			if (!isPackageAssembly)
 				return base.IsFileModified (file);
 
 			// Don't check timestamps for packaged assemblies.
 			// Just check if the package has changed.
-			SystemPackage pkg = Runtime.SystemAssemblyService.GetPackageFromFullName (assemblyName);
+			SystemPackage pkg = Runtime.SystemAssemblyService.GetPackageFromPath (assemblyFile);
 			bool versionMismatch = pkg != null && packageVersion != pkg.Name + " " + pkg.Version;
 			return (!file.DisableParse && (versionMismatch || file.LastParseTime == DateTime.MinValue || file.ParseErrorRetries > 0));
 		}
@@ -183,7 +178,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			IProgressMonitor monitor = parentMonitor;
 			
 			// Update the package version
-			SystemPackage pkg = Runtime.SystemAssemblyService.GetPackageFromFullName (assemblyName);
+			SystemPackage pkg = Runtime.SystemAssemblyService.GetPackageFromPath (assemblyFile);
 			if (pkg != null)
 				packageVersion = pkg.Name + " " + pkg.Version;
 				
@@ -197,7 +192,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				{
 					using (DatabaseGenerator helper = GetGenerator (true))
 					{
-						string tmpDbFile = helper.GenerateDatabase (baseDir, assemblyName);
+						string tmpDbFile = helper.GenerateDatabase (baseDir, assemblyFile);
 						if (Disposed) {
 							if (tmpDbFile != null)
 								File.Delete (tmpDbFile);
@@ -246,7 +241,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 						monitor.Dispose ();
 				}
 			}
-			ProjectDomService.NotifyAssemblyInfoChange (fileName, assemblyName);
+			ProjectDomService.NotifyAssemblyInfoChange (fileName, assemblyFile);
 		}
 		
 		public bool ParseInExternalProcess
@@ -280,90 +275,31 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				return new DatabaseGenerator ();
 		}
 		
-		public static bool GetAssemblyInfo (string assemblyName, out string realAssemblyName, out string assemblyFile, out string name)
+		public IEnumerable<string> ReadAssemblyReferences ()
 		{
-			name = null;
-			assemblyFile = null;
-			realAssemblyName = null;
-			if (String.IsNullOrEmpty (assemblyName))
-				return false;
-			string ext = Path.GetExtension (assemblyName).ToLower ();
-			
-			if (ext == ".dll" || ext == ".exe") 
-			{
-				name = assemblyName.Substring (0, assemblyName.Length - 4);
-				name = name.Replace(',','_').Replace(" ","").Replace('/','_');
-				assemblyFile = assemblyName;
-			}
-			else
-			{
-				assemblyFile = Runtime.SystemAssemblyService.GetAssemblyLocation (assemblyName);
-
-				bool gotname = false;
-				if (assemblyFile != null && File.Exists (assemblyFile)) {
-					try {
-						assemblyName = AssemblyName.GetAssemblyName (assemblyFile).FullName;
-						gotname = true;
-					} catch (Exception ex) {
-						LoggingService.LogError (ex.ToString ());
-					}
-				}
-				if (!gotname) {
-					LoggingService.LogError ("Could not load assembly: " + assemblyName);
-					return false;
-				}
-				name = EncodeGacAssemblyName (assemblyName);
-			}
-			
-			realAssemblyName = assemblyName;
-			return true;
-		}
+			AssemblyDefinition asm = AssemblyFactory.GetAssemblyManifest (assemblyFile);
 		
-		public string[] ReadAssemblyReferences ()
-		{
-			try {
-				AssemblyDefinition asm = AssemblyFactory.GetAssemblyManifest (assemblyFile);
-			
-				AssemblyNameReferenceCollection names = asm.MainModule.AssemblyReferences;
-				string[] references = new string [names.Count];
-
-				for (int n=0; n<names.Count; n++)
-					references [n] = "Assembly:" + names [n].FullName;
-				return references;
-				
-			} catch (Exception ex) {
-				LoggingService.LogError (ex.ToString ());
-				return null;
+			AssemblyNameReferenceCollection names = asm.MainModule.AssemblyReferences;
+			foreach (AssemblyNameReference aname in names) {
+				string afile = Runtime.SystemAssemblyService.GetAssemblyLocation (aname.FullName);
+				if (afile != null)
+					yield return "Assembly:" + Path.GetFullPath (afile);
 			}
-		}
-		
-		static string EncodeGacAssemblyName (string assemblyName)
-		{
-			string[] assemblyPieces = assemblyName.Split(',');
-			string res = "";
-			foreach (string item in assemblyPieces) {
-				string[] pieces = item.Trim ().Split (new char[] { '=' }, 2);
-				if(pieces.Length == 1)
-					res += pieces[0];
-				else if (!(pieces[0] == "Culture" && pieces[1] != "Neutral"))
-					res += "_" + pieces[1];
-			}
-			return res;
 		}
 	}
 	
 	internal class DatabaseGenerator: RemoteProcessObject
 	{
-		public string GenerateDatabase (string baseDir, string assemblyName)
+		public string GenerateDatabase (string baseDir, string assemblyFile)
 		{
 			try {
 				Runtime.Initialize (false);
 				ParserDatabase pdb = new ParserDatabase ();
 
 				// Generate the new db in a temp file. The main process will move the file if required.
-				using (AssemblyCodeCompletionDatabase db = new AssemblyCodeCompletionDatabase (assemblyName, pdb, true)) {
+				using (AssemblyCodeCompletionDatabase db = new AssemblyCodeCompletionDatabase (assemblyFile, pdb, true)) {
 					if (db.LoadError)
-						throw new InvalidOperationException ("Could find assembly: " + assemblyName);
+						throw new InvalidOperationException ("Could find assembly: " + assemblyFile);
 					db.ParseInExternalProcess = false;
 					db.ParseAll ();
 					db.Write ();

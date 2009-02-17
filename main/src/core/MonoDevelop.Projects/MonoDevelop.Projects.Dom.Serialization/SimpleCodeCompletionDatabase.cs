@@ -44,7 +44,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			this.file = file;
 			
 			string requiredRefUri = "Assembly:";
-			requiredRefUri += Runtime.SystemAssemblyService.GetAssemblyNameForVersion (typeof(object).Assembly.GetName().ToString(), Services.ProjectService.DefaultTargetFramework);
+			requiredRefUri += Runtime.SystemAssemblyService.GetAssemblyForVersion (typeof(object).Assembly.FullName, null, Services.ProjectService.DefaultTargetFramework).Location;
 			AddReference (requiredRefUri);
 		}
 		

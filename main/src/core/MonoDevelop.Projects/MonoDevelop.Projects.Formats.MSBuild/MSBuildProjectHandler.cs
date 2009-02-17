@@ -685,15 +685,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 			else if (pref.ReferenceType == ReferenceType.Gac) {
 				string include = pref.Reference;
-				SystemPackage sp = Runtime.SystemAssemblyService.GetPackageFromFullName (include);
-				if (sp != null && sp.IsFrameworkPackage) {
+				SystemPackage pkg = pref.Package;
+				if (pkg != null && pkg.IsFrameworkPackage) {
 					int i = include.IndexOf (',');
 					include = include.Substring (0, i).Trim ();
 				}
 				buildItem = msproject.AddNewItem ("Reference", include);
 				if (!pref.SpecificVersion)
 					buildItem.SetMetadata ("SpecificVersion", "False");
-				SystemPackage pkg = Runtime.SystemAssemblyService.GetPackageFromFullName (pref.Reference);
 				IList supportedFrameworks = TargetFormat.FrameworkVersions;
 				if (pkg != null && pkg.IsFrameworkPackage && supportedFrameworks.Contains (pkg.TargetFramework) && pkg.TargetFramework != "2.0" && supportedFrameworks.Count > 1) {
 					TargetFramework fx = Runtime.SystemAssemblyService.GetTargetFramework (pkg.TargetFramework);
@@ -1045,7 +1044,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (instance is ProjectFile)
 				return prop.IsExtendedProperty (typeof(ProjectFile));
 			if (instance is ProjectReference)
-				return prop.IsExtendedProperty (typeof(ProjectReference));
+				return prop.IsExtendedProperty (typeof(ProjectReference)) || prop.Name == "Package";
 			if (instance is DotNetProjectConfiguration)
 				if (prop.Name == "CodeGeneration")
 					return false;

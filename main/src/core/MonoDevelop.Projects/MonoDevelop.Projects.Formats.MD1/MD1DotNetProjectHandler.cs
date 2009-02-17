@@ -151,7 +151,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 						bool errorsFound = false;
 						foreach (string asm in pr.GetReferencedFileNames (configuration)) {
 							if (!File.Exists (asm)) {
-								msg = GettextCatalog.GetString ("Assembly '{0}' not found. Make sure that the assembly exists in disk. If the reference is required to build the project you may get compilation errors.", Path.GetFileNameWithoutExtension (asm));
+								msg = GettextCatalog.GetString ("Assembly '{0}' not found. Make sure that the assembly exists in disk. If the reference is required to build the project you may get compilation errors.", Path.GetFileName (asm));
 								refres.AddWarning (msg);
 								monitor.ReportWarning (msg);
 								errorsFound = true;
