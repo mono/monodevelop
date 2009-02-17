@@ -435,7 +435,7 @@ namespace MonoDevelop.SourceEditor
 		
 		void OnBreakpointAdded (object s, BreakpointEventArgs args)
 		{
-			if (args.Breakpoint.FileName != Path.GetFullPath (ContentName))
+			if (ContentName == null || args.Breakpoint.FileName != Path.GetFullPath (ContentName))
 				return;
 			// Updated with a delay, to make sure it works when called as a
 			// result of inserting/removing lines before a breakpoint position
