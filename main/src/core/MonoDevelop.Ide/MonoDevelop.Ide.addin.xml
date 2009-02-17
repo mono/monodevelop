@@ -322,11 +322,9 @@
 				_label = "_Unindent Selection"
 				icon = "gtk-unindent" />
 		<Command id = "MonoDevelop.Ide.Commands.EditCommands.UppercaseSelection"
-				shortcut = "Control|Shift|U"
 				_description = "Convert the selected text to uppercase" 
 				_label = "_Uppercase Selection" />
 		<Command id = "MonoDevelop.Ide.Commands.EditCommands.LowercaseSelection"
-				shortcut = "Control|Shift|L"
 				_description = "Convert the selected text to lowercase" 
 				_label = "_Lowercase Selection" />
 		<Command id = "MonoDevelop.Ide.Commands.EditCommands.JoinWithNextLine"

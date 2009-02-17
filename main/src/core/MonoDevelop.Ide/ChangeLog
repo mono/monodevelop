@@ -1,5 +1,13 @@
 2009-02-17  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Gui/TextEditor.cs: Added LineCount property.
+
+	* MonoDevelop.Ide.addin.xml: Removed ctrl+shift+u shortcut for
+	  uppercase selection. ctrl+shift+u is used for unicode text
+	  input.
+
+2009-02-17  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.Gui/Document.cs: Added method to get an
 	  updated parsed document.
 
