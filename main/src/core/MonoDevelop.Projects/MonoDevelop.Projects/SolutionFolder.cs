@@ -561,17 +561,22 @@ namespace MonoDevelop.Projects
 				
 				BuildResult cres = new BuildResult ();
 				cres.BuildCount = 0;
+				HashSet<SolutionItem> failedItems = new HashSet<SolutionItem> ();
 				
 				foreach (SolutionItem item in allProjects) {
 					if (monitor.IsCancelRequested)
 						break;
 
-					BuildResult res = item.Build (monitor, configuration, false);
-					if (res != null)
-						cres.Append (res);
+					if (!item.ContainsReferences (failedItems, configuration)) {
+						BuildResult res = item.Build (monitor, configuration, false);
+						if (res != null) {
+							cres.Append (res);
+							if (res.ErrorCount > 0)
+								failedItems.Add (item);
+						}
+					} else
+						failedItems.Add (item);
 					monitor.Step (1);
-					if (res != null && res.ErrorCount > 0)
-						break;
 				}
 				return cres;
 			} finally {

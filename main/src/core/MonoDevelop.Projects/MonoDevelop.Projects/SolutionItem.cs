@@ -226,21 +226,31 @@ namespace MonoDevelop.Projects
 			
 			BuildResult cres = new BuildResult ();
 			cres.BuildCount = 0;
+			HashSet<SolutionItem> failedItems = new HashSet<SolutionItem> ();
 			
 			monitor.BeginTask (null, sortedReferenced.Count);
 			foreach (SolutionItem p in sortedReferenced) {
-				if (p.NeedsBuilding (solutionConfiguration)) {
+				if (p.NeedsBuilding (solutionConfiguration) && !p.ContainsReferences (failedItems, solutionConfiguration)) {
 					BuildResult res = p.Build (monitor, solutionConfiguration, false);
 					cres.Append (res);
 					if (res.ErrorCount > 0)
-						break;
-				}
+						failedItems.Add (p);
+				} else
+					failedItems.Add (p);
 				monitor.Step (1);
 				if (monitor.IsCancelRequested)
 					break;
 			}
 			monitor.EndTask ();
 			return cres;
+		}
+		
+		internal bool ContainsReferences (HashSet<SolutionItem> items, string conf)
+		{
+			foreach (SolutionItem it in GetReferencedItems (conf))
+				if (items.Contains (it))
+					return true;
+			return false;
 		}
 		
 		public DateTime GetLastBuildTime (string itemConfiguration)

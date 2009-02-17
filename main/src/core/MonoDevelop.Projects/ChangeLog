@@ -1,5 +1,11 @@
 2009-02-17  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects/SolutionItem.cs:
+	* MonoDevelop.Projects/SolutionFolder.cs: Fixed bug Bug 436432
+	  - Solution building breaks on first error.
+
+2009-02-17  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects/ProjectReference.cs: Added Package
 	  property, which returns the package to which the referenced
 	  assembly belongs.
