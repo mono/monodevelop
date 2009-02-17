@@ -85,7 +85,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				}
 			
 				if (isAssembly) {
-					selectDialog.AddReference (ReferenceType.Assembly, file);
+					selectDialog.AddReference (new ProjectReference (ReferenceType.Assembly, file));
 				} else {
 					MessageService.ShowError (GettextCatalog.GetString ("File '{0}' is not a valid .Net Assembly", file));
 				}

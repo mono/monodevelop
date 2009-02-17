@@ -92,7 +92,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			
 			if ((bool)store.GetValue (iter, 3) == false) {
 				store.SetValue (iter, 3, true);
-				selectDialog.AddReference (ReferenceType.Project, project.Name);
+				selectDialog.AddReference (new ProjectReference (project));
 				
 			} else {
 				store.SetValue (iter, 3, false);

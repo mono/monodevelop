@@ -40,7 +40,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		{
 			this.selectDialog = selectDialog;
 			
-			store = new ListStore (typeof (string), typeof (string), typeof(string), typeof(bool), typeof(string), typeof(string));
+			store = new ListStore (typeof (string), typeof (string), typeof(SystemAssembly), typeof(bool), typeof(string), typeof(string));
 			treeView = new TreeView (store);
 
 			TreeViewColumn firstColumn = new TreeViewColumn ();
@@ -113,15 +113,15 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			store.GetIterFromString (out iter, e.Path);
 			if ((bool)store.GetValue (iter, 3) == false) {
 				store.SetValue (iter, 3, true);
-				selectDialog.AddReference (ReferenceType.Gac, (string)store.GetValue (iter, 4));
-				
+				ProjectReference pr = new ProjectReference ((SystemAssembly)store.GetValue (iter, 2));
+				selectDialog.AddReference (pr);
 			} else {
 				store.SetValue (iter, 3, false);
 				selectDialog.RemoveReference (ReferenceType.Gac, (string)store.GetValue (iter, 4));
 			}
 		}
 
-		public void SignalRefChange (string refLoc, bool newstate)
+		public void SignalRefChange (ProjectReference pref, bool newstate)
 		{
 			Gtk.TreeIter looping_iter;
 			
@@ -130,7 +130,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			}
 
 			do {
-				if ((string)store.GetValue (looping_iter, 4) == refLoc) {
+				SystemAssembly asm = (SystemAssembly) store.GetValue (looping_iter, 2);
+				if (pref.Reference == asm.FullName && pref.Package == asm.Package) {
 					store.SetValue (looping_iter, 3, newstate);
 					return;
 				}
@@ -139,15 +140,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		void PrintCache()
 		{
-			foreach (string assemblyPath in Runtime.SystemAssemblyService.GetAssemblyPaths (version)) {
-				try {
-					System.Reflection.AssemblyName an = System.Reflection.AssemblyName.GetAssemblyName (assemblyPath);
-					SystemPackage package = Runtime.SystemAssemblyService.GetPackageFromFullName (an.FullName);
-					string pn = package.Name;
-					if (package.IsInternalPackage) pn += " " + GettextCatalog.GetString ("(Provided by MonoDevelop)");
-					store.AppendValues (an.Name, an.Version.ToString (), System.IO.Path.GetFileName (assemblyPath), false, an.FullName, pn);
-				}catch {
-				}
+			foreach (SystemAssembly asm in Runtime.SystemAssemblyService.GetAssemblies (version)) {
+				string pn = asm.Package.Name;
+				if (pn == "mscorlib")
+					continue;
+				if (asm.Package.IsInternalPackage) pn += " " + GettextCatalog.GetString ("(Provided by MonoDevelop)");
+				store.AppendValues (asm.Name, asm.Version, asm, false, asm.FullName, pn);
 			}
 		}
 	}

@@ -75,7 +75,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			assemblyRefPanel.SetBasePath (configureProject.BaseDirectory);
 
 			foreach (ProjectReference refInfo in configureProject.References)
-				AddReference (refInfo);
+				AppendReference (refInfo);
 
 			OnChanged (null, null);
 		}
@@ -91,12 +91,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			assemblyRefPanel.SetBasePath  (Environment.GetFolderPath (Environment.SpecialFolder.Personal));
 
 			foreach (ProjectReference refInfo in references)
-				AddReference (refInfo);
+				AppendReference (refInfo);
 
 			OnChanged (null, null);
 		}
 		
-		TreeIter AddReference (ProjectReference refInfo)
+		TreeIter AppendReference (ProjectReference refInfo)
 		{
 			switch (refInfo.ReferenceType) {
 				case ReferenceType.Assembly:
@@ -130,7 +130,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 
 		TreeIter AddGacReference (ProjectReference refInfo)
 		{
-			gacRefPanel.SignalRefChange (refInfo.Reference, true);
+			gacRefPanel.SignalRefChange (refInfo, true);
 			return refTreeStore.AppendValues (System.IO.Path.GetFileNameWithoutExtension (refInfo.Reference), GetTypeText (refInfo), refInfo.Reference, refInfo, "md-package");
 		}
 		
@@ -194,14 +194,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			refTreeStore.Remove (ref iter);
 		}
 		
-		public void AddReference (ReferenceType referenceType, string reference)
+		public void AddReference (ProjectReference pref)
 		{
-			TreeIter iter = FindReference (referenceType, reference);
+			TreeIter iter = FindReference (pref.ReferenceType, pref.Reference);
 			if (!iter.Equals (TreeIter.Zero))
 				return;
 			
-			ProjectReference tag = new ProjectReference (referenceType, reference);
-			TreeIter ni = AddReference (tag);
+			TreeIter ni = AppendReference (pref);
 			if (!ni.Equals (TreeIter.Zero))
 				ReferencesTreeView.ScrollToCell (refTreeStore.GetPath (ni), null, false, 0, 0);
 		}
@@ -227,7 +226,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			if (ReferencesTreeView.Selection.GetSelected (out mdl, out iter)) {
 				switch (((ProjectReference)refTreeStore.GetValue (iter, ProjectReferenceColumn)).ReferenceType) {
 					case ReferenceType.Gac:
-						gacRefPanel.SignalRefChange ((string)refTreeStore.GetValue (iter, LocationColumn), false);
+						gacRefPanel.SignalRefChange ((ProjectReference)refTreeStore.GetValue (iter, ProjectReferenceColumn), false);
 						break;
 					case ReferenceType.Project:
 						projectRefPanel.SignalRefChange ((string)refTreeStore.GetValue (iter, NameColumn), false);

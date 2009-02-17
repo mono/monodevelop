@@ -1,3 +1,12 @@
+2009-02-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/AssemblyReferencePanel.cs: When
+	  selecting a package reference, include the package name in
+	  the reference, so it will be stored when saving the project.
+
 2009-02-17  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: small change
