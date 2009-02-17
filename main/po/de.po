@@ -5442,14 +5442,13 @@ msgid "The resource naming policy has changed"
 msgstr ""
 
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/NamespaceSynchronisationPanel.cs:70
+#, fuzzy
 msgid ""
 "Update all resource identifiers to match the new policy. This will require "
 "changes in the source code that references resources using the old policy. "
 "Identifiers explicitly set using the file properties pad won't be changed.\n"
 "\n"
 msgstr ""
-"\n"
-"\n"
 
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/NamespaceSynchronisationPanel.cs:150
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/LanguageItemWindow.cs:50
