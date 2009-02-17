@@ -724,9 +724,9 @@ namespace MonoDevelop.Autotools
 							if (pref.ReferenceType == ReferenceType.Gac) {
 								// Store the package version required by this reference. We'll use
 								// the same version when trying to match references coming from the makefile
-								SystemPackage pkg = Runtime.SystemAssemblyService.GetPackageFromFullName (pref.StoredReference);
-								if (pkg != null)
-									requiredPackageVersions [pkg.Name] = pkg.Version;
+								SystemAssembly asm = Runtime.SystemAssemblyService.GetAssemblyFromFullName (pref.StoredReference, pref.Package != null ? pref.Package.Name : null);
+								if (asm != null && asm.Package != null)
+									requiredPackageVersions [asm.Package.Name] = asm.Package.Version;
 							}
 							// this should help normalize paths like /foo//bar/../
 							string fullpath = Path.GetFullPath (files [0]);
@@ -1048,9 +1048,13 @@ namespace MonoDevelop.Autotools
 				}
 
 				// Valid assembly, From a package, add as Gac
-				if (fullname != null && Runtime.SystemAssemblyService.GetPackageFromPath (fullpath) != null) {
-					AddNewGacReference (project, fullname, fullpath);
-					continue;
+				SystemPackage pkg = Runtime.SystemAssemblyService.GetPackageFromPath (fullpath);
+				if (fullname != null && pkg != null) {
+					SystemAssembly sa = Runtime.SystemAssemblyService.GetAssemblyFromFullName (fullname, pkg.Name);
+					if (sa != null) {
+						AddNewGacReference (project, sa);
+						continue;
+					}
 				}
 
 				//Else add to unresolved project refs, avoid repeats
@@ -1073,20 +1077,12 @@ namespace MonoDevelop.Autotools
 				return false;
 			}
 
-			foreach (string s in pkg.Assemblies) {
-				try {
-					string fullpath = Path.GetFullPath (s);
-					if (TryGetExistingGacRef (fullpath) != null)
-						continue;
+			foreach (SystemAssembly sa in pkg.Assemblies) {
+				if (TryGetExistingGacRef (sa.Location) != null)
+					continue;
 
-					//Get fullname of the assembly
-					string fullname = AssemblyName.GetAssemblyName (s).FullName;
-					AddNewGacReference (project, fullname, fullpath);
-				} catch {
-					//Ignore
-					LoggingService.LogWarning ("Invalid assembly reference ({0}) found in package {1}. Ignoring.",
-						s, pkg.Name);
-				}
+				//Get fullname of the assembly
+				AddNewGacReference (project, sa);
 			}
 
 			return true;
@@ -1101,11 +1097,11 @@ namespace MonoDevelop.Autotools
 			get {
 				if (corePackageAssemblyNames == null) {
 					corePackageAssemblyNames = new Dictionary<string, string> ();
-					foreach (string asm in Runtime.SystemAssemblyService.GetAssemblyFullNames ()) {
-						SystemPackage pkg = Runtime.SystemAssemblyService.GetPackageFromFullName (asm);
-						if (pkg != null && pkg.IsCorePackage)
-							//asm.IndexOf(,) should be > 0 as this is a fullname
-							corePackageAssemblyNames [asm.Substring (0, asm.IndexOf (',')).Trim ()] = asm;
+					foreach (SystemPackage pkg in Runtime.SystemAssemblyService.GetPackages ()) {
+						if (pkg.IsCorePackage) {
+							foreach (SystemAssembly asm in pkg.Assemblies)
+								corePackageAssemblyNames [asm.Name] = asm.FullName;
+						}
 					}
 				}
 
@@ -1130,16 +1126,15 @@ namespace MonoDevelop.Autotools
 			if (fullname == null)
 				return null;
 
-			fullname = Runtime.SystemAssemblyService.GetAssemblyNameForVersion (fullname, project.TargetFramework);
-			if (fullname == null)
+			SystemAssembly asm = Runtime.SystemAssemblyService.GetAssemblyForVersion (fullname, null, project.TargetFramework);
+			if (asm == null)
 				return null;
 
-			string fullpath = Runtime.SystemAssemblyService.GetAssemblyLocation (fullname);
-			ProjectReference pref = TryGetExistingGacRef (fullpath);
+			ProjectReference pref = TryGetExistingGacRef (asm.Location);
 			if (pref != null)
 				return pref;
 
-			return AddNewGacReference (project, fullname, fullpath);
+			return AddNewGacReference (project, asm);
 		}
 
 		ProjectReference TryGetExistingGacRef (string fullpath)
@@ -1158,11 +1153,11 @@ namespace MonoDevelop.Autotools
 			return null;
 		}
 
-		ProjectReference AddNewGacReference (DotNetProject project, string fullname, string fullpath)
+		ProjectReference AddNewGacReference (DotNetProject project, SystemAssembly sa)
 		{
-			ProjectReference pref = new ProjectReference (ReferenceType.Gac, fullname);
+			ProjectReference pref = new ProjectReference (sa);
 			project.References.Add (pref);
-			newGacRefs [fullpath] = pref;
+			newGacRefs [sa.Location] = pref;
 
 			return pref;
 		}
@@ -1497,7 +1492,7 @@ namespace MonoDevelop.Autotools
 			//Gac ref can be a full name OR a path!
 			//FIXME: Use GetReferencedFileName and GetPackageFromPath ?
 			string fullname = pr.Reference;
-			SystemPackage pkg = Runtime.SystemAssemblyService.GetPackageFromFullName (pr.Reference);
+			SystemPackage pkg = pr.Package;
 			if (pkg == null) {
 				//reference could be a path
 				pkg = Runtime.SystemAssemblyService.GetPackageFromPath (Path.GetFullPath (pr.Reference));
@@ -1540,9 +1535,9 @@ namespace MonoDevelop.Autotools
 						//Warn only if UseAutotools
 						string msg = GettextCatalog.GetString (
 							"A reference to the pkg-config package '{0}' is being emitted to the Makefile, " +
-							"because at least one assembly from the package is used in the project. However, " +
+							"because at least one assembly from the package is used in the project '{1}'. However, " +
 							"this dependency is not specified in the configure.in file, so you might need to " +
-							"add it to ensure that the project builds successfully on other systems.", pkg.Name);
+							"add it to ensure that the project builds successfully on other systems.", pkg.Name, pr.OwnerProject.Name);
 						LoggingService.LogWarning (msg);
 						monitor.ReportWarning (msg);
 					}

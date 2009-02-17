@@ -500,7 +500,7 @@ namespace MonoDevelop.Autotools
 				if (reference.ReferenceType == ReferenceType.Gac) 
 				{
 					// Get pkg-config keys
-					SystemPackage pkg = Runtime.SystemAssemblyService.GetPackageFromFullName (reference.Reference);
+					SystemPackage pkg = reference.Package;
 					if (pkg != null && !pkg.IsCorePackage) 
 					{
 						if ( pkgs.Contains(pkg) ) continue;

@@ -1,3 +1,8 @@
+2009-02-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MakefileData.cs:
+	* SimpleProjectMakefileHandler.cs: Track api changes.
+
 2009-02-13  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* templates/configure.ac.template: Fix for bug #465118 -
