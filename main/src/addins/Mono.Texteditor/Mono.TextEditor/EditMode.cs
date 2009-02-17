@@ -46,7 +46,7 @@ namespace Mono.TextEditor
 			this.editor = editor; 
 			this.textEditorData = data;
 			
-			HandleKeypress (key, unicodeKey, modifier);
+			HandleKeypress (key, unicodeKey, modifier & (Gdk.ModifierType.ControlMask | Gdk.ModifierType.ShiftMask));
 			
 			//make sure that nothing funny goes on when the mode should have finished
 			this.textEditorData = null;
@@ -110,7 +110,9 @@ namespace Mono.TextEditor
 			Document.EndAtomicUndo ();
 			Document.OptimizeTypedUndo ();
 		}
-		
+		public virtual void RemovedFromTextEditor ()
+		{
+		}
 		protected void RunAction (Action<TextEditorData> action)
 		{
 			try {
@@ -133,6 +135,11 @@ namespace Mono.TextEditor
 				Console.WriteLine ("Error while executing actions " + action1.ToString () + 
 				                   " & " + action2.ToString () + ": " + e);
 			}
+		}
+		
+		public virtual bool PreemtIM (Gdk.Key key, uint unicodeKey, Gdk.ModifierType modifier)
+		{
+			return false;
 		}
 		
 		public static int GetKeyCode (Gdk.Key key)

@@ -91,8 +91,6 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		protected EditMode CurrentMode { get; set; }
-		
 		protected IMMulticontext IMContext {
 			get { return imContext; }
 		}
@@ -235,7 +233,7 @@ namespace Mono.TextEditor
 			textEditorData = new TextEditorData (doc);
 			doc.TextReplaced += OnDocumentStateChanged;
 			
-			CurrentMode = initialMode;
+			textEditorData.CurrentMode = initialMode;
 			
 //			this.Events = EventMask.AllEventsMask;
 			this.Events = EventMask.PointerMotionMask | 
@@ -548,7 +546,7 @@ namespace Mono.TextEditor
 		{
 			if ((modifier & Gdk.ModifierType.ControlMask) == Gdk.ModifierType.ControlMask) 
 				unicodeKey = 0;
-			
+			System.Console.WriteLine("Mode:" + CurrentMode);
 			CurrentMode.InternalHandleKeypress (this, textEditorData, key, unicodeKey, modifier);
 			textViewMargin.ResetCaretBlink ();
 		}
@@ -572,9 +570,8 @@ namespace Mono.TextEditor
 		protected override bool OnKeyPressEvent (Gdk.EventKey evt)
 		{
 			char ch = (char)Gdk.Keyval.ToUnicode (evt.KeyValue);
-			
-			if (CurrentMode.WantsToPreemptIM) {
-				ResetIMContext ();
+			if (CurrentMode.WantsToPreemptIM || CurrentMode.PreemtIM (evt.Key, ch, evt.State)) {
+				ResetIMContext ();	
 				SimulateKeyPress (evt.Key, ch, evt.State);
 				return true;
 			}
@@ -1063,6 +1060,15 @@ namespace Mono.TextEditor
 		public Mono.TextEditor.Highlighting.Style ColorStyle {
 			get {
 				return this.textEditorData.ColorStyle;
+			}
+		}
+		
+		public EditMode CurrentMode {
+			get {
+				return this.textEditorData.CurrentMode;
+			}
+			set {
+				this.textEditorData.CurrentMode = value;
 			}
 		}
 		

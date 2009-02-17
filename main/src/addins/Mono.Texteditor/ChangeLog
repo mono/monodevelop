@@ -1,5 +1,17 @@
 2009-02-17  Mike Krüger  <mkrueger@novell.com>
 
+	* Makefile.am:
+	* Mono.TextEditor.csproj:
+	* Mono.TextEditor/EditMode.cs:
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/SimpleEditMode.cs:
+	* Mono.TextEditor/TextEditorData.cs:
+	* Mono.TextEditor/DefaultEditActions.cs:
+	* Mono.TextEditor/UnicodePreviewEditMode.cs: Worked on unicode
+	  preview (but disabled it).
+
+2009-02-17  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextViewMargin.cs: Fixed text editor line
 	  marker bug.
 

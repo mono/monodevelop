@@ -55,6 +55,18 @@ namespace Mono.TextEditor
 				vadjustment = value;
 			}
 		}
+		EditMode currentMode = null;
+		public EditMode CurrentMode {
+			get {
+				return this.currentMode;
+			}
+			set {
+				EditMode oldMode = this.currentMode;
+				this.currentMode = value;
+				if (oldMode != null)
+					oldMode.RemovedFromTextEditor ();
+			}
+		}
 		
 		public TextEditorData () : this (new Document ())
 		{

@@ -293,6 +293,11 @@ namespace Mono.TextEditor
 		{
 			data.Document.Redo ();
 		}
+
+		public static void SwitchToUnicodeInputMode (TextEditorData data)
+		{
+			new UnicodePreviewEditMode ().AttachUnicodeEditMode (data);
+		}
 	}
 	
 }
