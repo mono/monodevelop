@@ -1,5 +1,10 @@
 2009-02-17  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Core/SystemAssemblyService.cs: Added some logic
+	  for automatically checking if a package is GACed or not.
+
+2009-02-17  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* frameworks.xml: Added mscorlib to frameworks.
 	  System.Deployment belongs to 2.0.
 

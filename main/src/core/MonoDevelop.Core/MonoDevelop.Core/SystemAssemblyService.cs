@@ -684,6 +684,7 @@ namespace MonoDevelop.Core
 			string version = "";
 			string desc = "";
 			bool gacPackage = true;
+			bool gacPackageSet = false;
 			
 			SystemPackage package = new SystemPackage ();
 			
@@ -713,18 +714,43 @@ namespace MonoDevelop.Core
 					else if (var == "gacpackage") {
 						value = value.ToLower ();
 						gacPackage = value == "yes" || value == "true";
+						gacPackageSet = true;
 					}
 				}
 			}
 	
 			if (fullassemblies == null)
 				return;
+			
+			string pcDir = Path.GetDirectoryName (pcfile);
+			string monoPrefix = Path.GetDirectoryName (Path.GetDirectoryName (pcDir));
+			monoPrefix = Path.GetFullPath (monoPrefix + Path.DirectorySeparatorChar + "lib" + Path.DirectorySeparatorChar + "mono" + Path.DirectorySeparatorChar);
 
 			List<SystemAssembly> list = new List<SystemAssembly> ();
 			foreach (string assembly in fullassemblies) {
-				list.Add (AddAssembly (assembly, package));
+				string asm;
+				if (Path.IsPathRooted (assembly))
+					asm = Path.GetFullPath (assembly);
+				else {
+					if (Path.GetDirectoryName (assembly).Length == 0) {
+						// Simple reference such as -r:System.Web. The assembly must be in the gac
+						if (!gacPackageSet) {
+							gacPackageSet = true;
+							gacPackage = true;
+						}
+						asm = assembly;
+					} else {
+						asm = Path.GetFullPath (Path.Combine (pcDir, assembly));
+					}
+				}
+				list.Add (AddAssembly (asm, package));
+				if (!gacPackageSet && !asm.StartsWith (monoPrefix)) {
+					// Assembly installed outside $(prefix)/lib/mono. It is most likely not a gac package.
+					gacPackageSet = true;
+					gacPackage = false;
+				}
 			}
-
+			
 			package.Initialize (pname, version, desc, list, null, null, false, gacPackage);
 			packages.Add (package);
 			packagesHash [pname] = package;
