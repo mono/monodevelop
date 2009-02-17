@@ -1,5 +1,10 @@
 2009-02-17  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Gui/Document.cs: Added method to get an
+	  updated parsed document.
+
+2009-02-17  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs: fixed compiler
 	  error.
 

@@ -474,7 +474,30 @@ namespace MonoDevelop.Ide.Gui
 			if (window is SdiWorkspaceWindow)
 				((SdiWorkspaceWindow)window).AttachToPathedDocument (GetContent<MonoDevelop.Ide.Gui.Content.IPathedDocument> ());
 		}
-
+		
+		/// <summary>
+		/// This method can take some time to finish. It's not threaded
+		/// </summary>
+		/// <returns>
+		/// A <see cref="ParsedDocument"/> that contains the current dom.
+		/// </returns>
+		public ParsedDocument UpdateParseDocument ()
+		{
+			parsing = true;
+			try {
+				string currentParseFile = FileName;
+				string mime = IdeApp.Services.PlatformService.GetMimeTypeForUri (currentParseFile);
+				string currentParseText = TextEditor.Text;
+					Project curentParseProject = Project;
+				this.parsedDocument = ProjectDomService.Parse (curentParseProject, currentParseFile, mime, currentParseText);
+				if (this.parsedDocument != null && !this.parsedDocument.HasErrors)
+					this.lastErrorFreeParsedDocument = parsedDocument;
+			} finally {
+				parsing = false;
+			}
+			return this.parsedDocument;
+		}
+		
 		void OnDocumentChanged (object o, EventArgs a)
 		{
 			// Don't directly parse the document because doing it at every key press is
