@@ -33,6 +33,7 @@ using System.Collections.Generic;
 using System.Threading;
 
 using MonoDevelop.Core;
+using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Dialogs;
@@ -103,12 +104,12 @@ namespace MonoDevelop.NUnit
 			}
 		}
 		
-		public IAsyncOperation RunTest (UnitTest test)
+		public IAsyncOperation RunTest (UnitTest test, IExecutionHandlerFactory context)
 		{
-			return RunTest (test, IdeApp.Preferences.BuildBeforeExecuting);
+			return RunTest (test, context, IdeApp.Preferences.BuildBeforeExecuting);
 		}
 		
-		public IAsyncOperation RunTest (UnitTest test, bool buildOwnerObject)
+		public IAsyncOperation RunTest (UnitTest test, IExecutionHandlerFactory context, bool buildOwnerObject)
 		{
 			if (buildOwnerObject) {
 				IBuildTarget bt = test.OwnerObject as IBuildTarget;
@@ -128,7 +129,7 @@ namespace MonoDevelop.NUnit
 							if (op.Success) {
 								test = SearchTest (test.FullName);
 								if (test != null)
-									retOper.TrackOperation (RunTest (test, false), true);
+									retOper.TrackOperation (RunTest (test, context, false), true);
 								else
 									retOper.SetCompleted (false);
 							}
@@ -146,7 +147,7 @@ namespace MonoDevelop.NUnit
 			}
 			
 			resultsPad.BringToFront ();
-			TestSession session = new TestSession (test, (TestResultsPad) resultsPad.Content);
+			TestSession session = new TestSession (test, context, (TestResultsPad) resultsPad.Content);
 			session.Start ();
 			return session;
 		}
@@ -258,10 +259,12 @@ namespace MonoDevelop.NUnit
 		Thread runThread;
 		bool success;
 		ManualResetEvent waitEvent;
+		IExecutionHandlerFactory context;
 		
-		public TestSession (UnitTest test, TestResultsPad resultsPad)
+		public TestSession (UnitTest test, IExecutionHandlerFactory context, TestResultsPad resultsPad)
 		{
 			this.test = test;
+			this.context = context;
 			this.monitor = new TestMonitor (resultsPad);
 		}
 		
@@ -277,7 +280,7 @@ namespace MonoDevelop.NUnit
 			try {
 				ResetResult (test);
 				monitor.InitializeTestRun (test);
-				TestContext ctx = new TestContext (monitor, DateTime.Now);
+				TestContext ctx = new TestContext (monitor, context, DateTime.Now);
 				test.Run (ctx);
 				test.SaveResults ();
 				success = true;

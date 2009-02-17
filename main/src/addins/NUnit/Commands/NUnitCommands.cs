@@ -42,6 +42,7 @@ namespace MonoDevelop.NUnit.Commands
 	{
 		RunAllTests,
 		RunTest,
+		RunTestWith,
 		ShowTestCode,
 		SelectTestInTree,
 		ShowTestDetails
@@ -71,7 +72,7 @@ namespace MonoDevelop.NUnit.Commands
 			if (ob != null) {
 				UnitTest test = NUnitService.Instance.FindRootTest (ob);
 				if (test != null)
-					NUnitService.Instance.RunTest (test);
+					NUnitService.Instance.RunTest (test, null);
 			}
 		}
 		

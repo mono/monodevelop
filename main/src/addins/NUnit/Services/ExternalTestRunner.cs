@@ -116,8 +116,10 @@ namespace MonoDevelop.NUnit.External
 		
 		public void TestOutput (TestOutput testOutput)
 		{
-			if (consoleOutput == null)
+			if (consoleOutput == null) {
+				Console.WriteLine (testOutput.Text);
 				return;
+			}
 			else if (testOutput.Type == TestOutputType.Out)
 				consoleOutput.Append (testOutput.Text);
 			else
@@ -238,6 +240,7 @@ namespace MonoDevelop.NUnit.External
 		UnitTest runningTest;
 		bool singleTestRun;
 		UnitTestResult singleTestResult;
+		public bool Canceled;
 		
 		public LocalTestMonitor (TestContext context, ExternalTestRunner runner, UnitTest rootTest, string rootFullName, bool singleTestRun)
 		{
@@ -264,7 +267,7 @@ namespace MonoDevelop.NUnit.External
 		
 		void IRemoteEventListener.TestStarted (string testCase)
 		{
-			if (singleTestRun)
+			if (singleTestRun || Canceled)
 				return;
 			
 			UnitTest t = GetLocalTest (testCase);
@@ -278,6 +281,8 @@ namespace MonoDevelop.NUnit.External
 			
 		void IRemoteEventListener.TestFinished (string test, UnitTestResult result)
 		{
+			if (Canceled)
+				return;
 			if (singleTestRun) {
 				SingleTestResult = result;
 				return;
@@ -295,7 +300,7 @@ namespace MonoDevelop.NUnit.External
 
 		void IRemoteEventListener.SuiteStarted (string suite)
 		{
-			if (singleTestRun)
+			if (singleTestRun || Canceled)
 				return;
 			
 			UnitTest t = GetLocalTest (suite);
@@ -308,7 +313,7 @@ namespace MonoDevelop.NUnit.External
 
 		void IRemoteEventListener.SuiteFinished (string suite, UnitTestResult result)
 		{
-			if (singleTestRun)
+			if (singleTestRun || Canceled)
 				return;
 			
 			UnitTest t = GetLocalTest (suite);

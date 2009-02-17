@@ -26,6 +26,8 @@
 //
 
 using System;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Projects;
 
@@ -39,12 +41,19 @@ namespace MonoDevelop.NUnit
 				// It is executable by default
 				base.Execute(monitor, item, context, configuration);
 				return;
-			} else if (item is IWorkspaceObject && context.ExecutionHandlerFactory is DefaultExecutionHandlerFactory) {
+			} else if (item is IWorkspaceObject) {
 				UnitTest test = NUnitService.Instance.FindRootTest ((IWorkspaceObject)item);
 				if (test != null) {
-					Gtk.Application.Invoke (delegate {
-						NUnitService.Instance.RunTest (test, false);
+					IAsyncOperation oper = null;
+					DispatchService.GuiSyncDispatch (delegate {
+						oper = NUnitService.Instance.RunTest (test, context.ExecutionHandlerFactory, false);
 					});
+					if (oper != null) {
+						monitor.CancelRequested += delegate {
+							oper.Cancel ();
+						};
+						oper.WaitForCompleted ();
+					}
 				}
 			}
 		}
@@ -54,9 +63,9 @@ namespace MonoDevelop.NUnit
 			// We check for DefaultExecutionHandlerFactory because the tests can't run using any other execution mode
 			
 			bool res = base.CanExecute (item, context, configuration);
-			if (!res && (item is IWorkspaceObject) && context.ExecutionHandlerFactory is DefaultExecutionHandlerFactory) {
+			if (!res && (item is IWorkspaceObject)) {
 				UnitTest test = NUnitService.Instance.FindRootTest ((IWorkspaceObject)item);
-				return (test != null);
+				return (test != null) && test.CanRun (context.ExecutionHandlerFactory);
 			} else
 				return res;
 		}

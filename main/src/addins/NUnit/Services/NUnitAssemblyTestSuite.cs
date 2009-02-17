@@ -37,6 +37,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Execution;
 using NUnit.Core;
 using NUnit.Core.Filters;
 using MonoDevelop.NUnit.External;
@@ -267,9 +268,14 @@ namespace MonoDevelop.NUnit
 			return RunUnitTest (this, "", null, testContext);
 		}
 		
+		protected override bool OnCanRun (MonoDevelop.Core.Execution.IExecutionHandlerFactory executionContext)
+		{
+			return Runtime.ProcessService.IsValidForRemoteHosting (executionContext);
+		}
+		
 		internal UnitTestResult RunUnitTest (UnitTest test, string suiteName, string testName, TestContext testContext)
 		{
-			ExternalTestRunner runner = (ExternalTestRunner) Runtime.ProcessService.CreateExternalProcessObject (typeof(ExternalTestRunner), false);
+			ExternalTestRunner runner = (ExternalTestRunner) Runtime.ProcessService.CreateExternalProcessObject (typeof(ExternalTestRunner), testContext.ExecutionContext);
 			LocalTestMonitor localMonitor = new LocalTestMonitor (testContext, runner, test, suiteName, testName != null);
 			
 			ITestFilter filter = null;
@@ -290,6 +296,7 @@ namespace MonoDevelop.NUnit
 			RunData rd = new RunData ();
 			rd.Runner = runner;
 			rd.Test = this;
+			rd.LocalMonitor = localMonitor;
 			testContext.Monitor.CancelRequested += new TestHandler (rd.Cancel);
 			
 			UnitTestResult result;
@@ -355,10 +362,12 @@ namespace MonoDevelop.NUnit
 		{
 			public ExternalTestRunner Runner;
 			public UnitTest Test;
+			public LocalTestMonitor LocalMonitor;
 			
 			public void Cancel ()
 			{
-				Runner.Dispose ();
+				LocalMonitor.Canceled = true;
+				Runtime.ProcessService.DisposeExternalProcessObject (Runner, 100);
 				ClearRunningStatus (Test);
 			}
 			

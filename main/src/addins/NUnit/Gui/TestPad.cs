@@ -33,6 +33,7 @@ using Gtk;
 using Gdk;
 
 using MonoDevelop.Core;
+using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
@@ -407,7 +408,7 @@ namespace MonoDevelop.NUnit
 		[CommandHandler (TestCommands.RunTest)]
 		protected void OnRunTest ()
 		{
-			RunSelectedTest ();
+			RunSelectedTest (null);
 		}
 		
 		[CommandUpdateHandler (TestCommands.RunTest)]
@@ -416,10 +417,31 @@ namespace MonoDevelop.NUnit
 			info.Enabled = runningTestOperation == null;
 		}
 		
+		[CommandHandler (TestCommands.RunTestWith)]
+		protected void OnRunTest (object data)
+		{
+			IExecutionMode mode = (IExecutionMode) data;
+			RunSelectedTest (mode.HandlerFactory);
+		}
+		
+		[CommandUpdateHandler (TestCommands.RunTestWith)]
+		protected void OnUpdateRunTest (CommandArrayInfo info)
+		{
+			UnitTest test = GetSelectedTest ();
+			if (test != null) {
+				foreach (IExecutionMode mode in Runtime.ProcessService.GetExecutionModes ()) {
+					if (mode != Runtime.ProcessService.DefaultExecutionMode && test.CanRun (mode.HandlerFactory)) {
+						CommandInfo ci = new CommandInfo (mode.Name);
+						info.Add (ci, mode);
+					}
+				}
+			}
+		}
+		
 		public TestPad ()
 		{
 			base.TreeView.CurrentItemActivated += delegate {
-				RunSelectedTest ();
+				RunSelectedTest (null);
 			};
 		}
 		
@@ -431,10 +453,18 @@ namespace MonoDevelop.NUnit
 		
 		void OnRunClicked (object sender, EventArgs args)
 		{
-			RunSelectedTest ();
+			RunSelectedTest (null);
+		}
+			
+		UnitTest GetSelectedTest ()
+		{
+			ITreeNavigator nav = TreeView.GetSelectedNode ();
+			if (nav == null)
+				return null;
+			return nav.DataItem as UnitTest;
 		}
 		
-		void RunTest (ITreeNavigator nav)
+		void RunTest (ITreeNavigator nav, IExecutionHandlerFactory mode)
 		{
 			if (nav == null)
 				return;
@@ -448,18 +478,18 @@ namespace MonoDevelop.NUnit
 			this.buttonStop.Sensitive = true;
 			
 			IdeApp.Workbench.GetPad<TestPad> ().BringToFront ();
-			runningTestOperation = testService.RunTest (test);
+			runningTestOperation = testService.RunTest (test, mode);
 			runningTestOperation.Completed += (OperationHandler) DispatchService.GuiDispatch (new OperationHandler (TestSessionCompleted));
 		}
 		
 		void OnRunAllClicked (object sender, EventArgs args)
 		{
-			RunTest (TreeView.GetRootNode ());
+			RunTest (TreeView.GetRootNode (), null);
 		}
 		
-		void RunSelectedTest ()
+		void RunSelectedTest (IExecutionHandlerFactory mode)
 		{
-			RunTest (TreeView.GetSelectedNode ());
+			RunTest (TreeView.GetSelectedNode (), mode);
 		}
 		
 		void TestSessionCompleted (IAsyncOperation op)

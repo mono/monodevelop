@@ -1,3 +1,18 @@
+2009-02-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Gui/TestPad.cs:
+	* Services/UnitTest.cs:
+	* Gui/TestResultsPad.cs:
+	* Services/TestContext.cs:
+	* Services/NUnitService.cs:
+	* Commands/NUnitCommands.cs:
+	* MonoDevelopNUnit.addin.xml:
+	* Services/ExternalTestRunner.cs:
+	* Services/NUnitAssemblyTestSuite.cs:
+	* Services/NUnitProjectServiceExtension.cs: Added support for
+	  running unit tests using a special execution mode (for
+	  example, using the debugger).
+
 2009-02-08  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelopNUnit.addin.xml: Don't partially assembly-qualify

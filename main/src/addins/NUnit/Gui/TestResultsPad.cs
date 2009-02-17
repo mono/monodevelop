@@ -376,17 +376,15 @@ namespace MonoDevelop.NUnit
 		
 		void OnStopClicked (object sender, EventArgs args)
 		{
-			if (running) {
+			if (running)
 				Cancel ();
-				failuresStore.AppendValues (CircleImage.Failure, GettextCatalog.GetString ("Test execution cancelled."), null);
-			}
 		}
 		
 		void OnRunClicked (object sender, EventArgs args)
 		{
 			if (rootTest == null)
 				return;
-			NUnitService.Instance.RunTest (rootTest);
+			NUnitService.Instance.RunTest (rootTest, null);
 		}
 		
 		void OnPopupMenu (object o, Gtk.ButtonReleaseEventArgs args)
@@ -588,7 +586,12 @@ namespace MonoDevelop.NUnit
 		
 		public void Cancel ()
 		{
+			if (cancel)
+				return;
 			cancel = true;
+			Gtk.Application.Invoke (delegate {
+				failuresStore.AppendValues (CircleImage.Failure, GettextCatalog.GetString ("Test execution cancelled."), null);
+			});
 			if (CancelRequested != null)
 				CancelRequested ();
 		}

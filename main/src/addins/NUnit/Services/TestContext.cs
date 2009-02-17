@@ -27,7 +27,10 @@
 //
 
 using System;
+using System.IO;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Execution;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.NUnit
 {
@@ -36,10 +39,14 @@ namespace MonoDevelop.NUnit
 		ITestProgressMonitor monitor;
 		DateTime testDate;
 		object contextData;
+		IExecutionHandlerFactory executionContext;
 		
-		public TestContext (ITestProgressMonitor monitor, DateTime testDate)
+		public TestContext (ITestProgressMonitor monitor, IExecutionHandlerFactory executionContext, DateTime testDate)
 		{
 			this.monitor = monitor;
+			if (executionContext == null)
+				executionContext = Runtime.ProcessService.DefaultExecutionMode.HandlerFactory;
+			this.executionContext = executionContext;
 			// Round to seconds
 			this.testDate = new DateTime ((testDate.Ticks / TimeSpan.TicksPerSecond) * TimeSpan.TicksPerSecond);
 		}
@@ -55,6 +62,10 @@ namespace MonoDevelop.NUnit
 		public object ContextData {
 			get { return contextData; }
 			set { contextData = value; }
+		}
+		
+		public IExecutionHandlerFactory ExecutionContext {
+			get { return executionContext; }
 		}
 	}
 }

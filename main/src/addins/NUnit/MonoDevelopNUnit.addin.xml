@@ -104,6 +104,10 @@
 			_description="Runs all tests of the current selected project."
 			shortcut="Control|T"
 			defaultHandler="MonoDevelop.NUnit.Commands.RunAllTestsHandler"/>
+		<Command id = "MonoDevelop.NUnit.Commands.TestCommands.RunTestWith" 
+			_label = "Run With"
+			type="array"
+			_description="Runs tests using a special execution mode."/>
 		<Command id = "MonoDevelop.NUnit.Commands.TestCommands.RunTest" _label = "Run Test" />
 		<Command id = "MonoDevelop.NUnit.Commands.TestCommands.ShowTestCode" _label = "Show test source code" />
 		<Command id = "MonoDevelop.NUnit.Commands.TestCommands.SelectTestInTree" _label = "Select test in tree" />
@@ -137,6 +141,7 @@
 
 	<Extension path = "/MonoDevelop/NUnit/ContextMenu/TestPad">
 		<CommandItem id = "MonoDevelop.NUnit.Commands.TestCommands.RunTest" />
+		<CommandItem id = "MonoDevelop.NUnit.Commands.TestCommands.RunTestWith" />
 		<CommandItem id = "MonoDevelop.NUnit.Commands.TestCommands.ShowTestCode" />
 		<CommandItem id = "MonoDevelop.NUnit.Commands.TestCommands.ShowTestDetails" />
 		<SeparatorItem id = "s1" />

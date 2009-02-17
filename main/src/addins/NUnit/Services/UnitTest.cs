@@ -33,6 +33,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;
+using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.NUnit
 {
@@ -343,7 +344,19 @@ namespace MonoDevelop.NUnit
 			return res;
 		}
 		
+		public bool CanRun (IExecutionHandlerFactory executionContext)
+		{
+			if (executionContext == null)
+				executionContext = Runtime.ProcessService.DefaultExecutionMode.HandlerFactory;
+			return OnCanRun (executionContext);
+		}
+		
 		protected abstract UnitTestResult OnRun (TestContext testContext);
+		
+		protected virtual bool OnCanRun (IExecutionHandlerFactory executionContext)
+		{
+			return true;
+		}
 		
 		public void RegisterResult (TestContext context, UnitTestResult result)
 		{

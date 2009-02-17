@@ -18,11 +18,11 @@ $(ASSEMBLY): $(build_sources)
 
 $(ASSEMBLY).mdb: $(ASSEMBLY)
 
+assemblydir = $(MD_ADDIN_DIR)/NUnit
+assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb
+
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 
 EXTRA_DIST = $(FILES)
 
 include $(top_srcdir)/Makefile.include
-
-assemblydir = $(MD_ADDIN_DIR)/NUnit
-assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb
