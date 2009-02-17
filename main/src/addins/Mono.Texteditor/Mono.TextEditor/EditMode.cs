@@ -137,7 +137,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public virtual bool PreemtIM (Gdk.Key key, uint unicodeKey, Gdk.ModifierType modifier)
+		public virtual bool PreemptIM (Gdk.Key key, uint unicodeKey, Gdk.ModifierType modifier)
 		{
 			return false;
 		}

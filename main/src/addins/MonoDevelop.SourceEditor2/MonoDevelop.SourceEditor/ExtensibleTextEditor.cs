@@ -204,10 +204,10 @@ namespace MonoDevelop.SourceEditor
 			return base.OnKeyPressEvent (evnt);
 		}
 		
-		bool ExtensionKeyPress (Gdk.Key key, char ch, Gdk.ModifierType state)
+		bool ExtensionKeyPress (Gdk.Key key, uint ch, Gdk.ModifierType state)
 		{
 			try {
-				return extension.KeyPress (key, ch, state);
+				return extension.KeyPress (key, (char)ch, state);
 			} catch (Exception ex) {
 				ReportExtensionError (ex);
 			}
@@ -261,15 +261,15 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 			
-		protected override bool OnIMProcessedKeyPressEvent (Gdk.EventKey evnt, char ch)
+		protected override bool OnIMProcessedKeyPressEvent (Gdk.Key key, uint ch, Gdk.ModifierType state)
 		{
 			bool result = true;
-			if (evnt.Key == Gdk.Key.Escape) {
+			if (key == Gdk.Key.Escape) {
 				bool b;
 				if (extension != null)
-					b = ExtensionKeyPress (evnt.Key, ch, evnt.State);
+					b = ExtensionKeyPress (key, ch, state);
 				else
-					b = base.OnIMProcessedKeyPressEvent (evnt, ch);
+					b = base.OnIMProcessedKeyPressEvent (key, ch, state);
 				if (b) {
 					view.SourceEditorWidget.RemoveSearchWidget ();
 					return true;
@@ -297,10 +297,10 @@ namespace MonoDevelop.SourceEditor
 			Document.BeginAtomicUndo ();
 			
 			// insert template when space is typed (currently disabled - it's annoying).
-			bool templateInserted = false; //!inStringOrComment && (evnt.Key == Gdk.Key.space) && DoInsertTemplate ();
+			bool templateInserted = false; //!inStringOrComment && (key == Gdk.Key.space) && DoInsertTemplate ();
 			bool returnBetweenBraces =
-				evnt.Key == Gdk.Key.Return
-				&& (evnt.State & (Gdk.ModifierType.ControlMask | Gdk.ModifierType.ShiftMask)) == Gdk.ModifierType.None
+				key == Gdk.Key.Return
+				&& (state & (Gdk.ModifierType.ControlMask | Gdk.ModifierType.ShiftMask)) == Gdk.ModifierType.None
 				&& Caret.Offset > 0
 				&& Caret.Offset < Document.Length
 				&& Document.GetCharAt (Caret.Offset - 1) == '{'
@@ -308,8 +308,8 @@ namespace MonoDevelop.SourceEditor
 				&& !inStringOrComment;
 			int initialOffset = Caret.Offset;
 			
-			if (Options.AutoInsertMatchingBracket && !inStringOrComment && MonoDevelop.Ide.Gui.TextEditor.IsOpenBrace (ch)) {
-				char closingBrace = MonoDevelop.Ide.Gui.TextEditor.GetMatchingBrace (ch);
+			if (Options.AutoInsertMatchingBracket && !inStringOrComment && MonoDevelop.Ide.Gui.TextEditor.IsOpenBrace ((char)ch)) {
+				char closingBrace = MonoDevelop.Ide.Gui.TextEditor.GetMatchingBrace ((char)ch);
 				int count = 0;
 				foreach (char curCh in TextWithoutCommentsAndStrings) {
 					if (curCh == ch) {
@@ -326,14 +326,14 @@ namespace MonoDevelop.SourceEditor
 			}
 			
 			if (extension != null) {
-				if (ExtensionKeyPress (evnt.Key, ch, evnt.State)) 
-					result = base.OnIMProcessedKeyPressEvent (evnt, ch);
+				if (ExtensionKeyPress (key, ch, state)) 
+					result = base.OnIMProcessedKeyPressEvent (key, ch, state);
 				if (returnBetweenBraces) {
 					Caret.Offset = initialOffset;
 					ExtensionKeyPress (Gdk.Key.Return, (char)0, Gdk.ModifierType.None);
 				}
 			} else {
-				result = base.OnIMProcessedKeyPressEvent (evnt, ch);
+				result = base.OnIMProcessedKeyPressEvent (key, ch, state);
 				if (returnBetweenBraces) {
 					Caret.Offset = initialOffset;
 					base.SimulateKeyPress (Gdk.Key.Return, 0, Gdk.ModifierType.None);

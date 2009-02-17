@@ -369,9 +369,20 @@ namespace Mono.TextEditor
 		void IMCommit (object sender, Gtk.CommitArgs ca)
 		{
 			try {
-				if (IsRealized && IsFocus)
-					foreach (char ch in ca.Str)
-						OnIMProcessedKeyPressEvent (lastIMEvent, ch);
+				if (IsRealized && IsFocus) {
+					//FIXME: this, if anywhere, is where we should handle UCS4 conversions
+					for (int i = 0; i < ca.Str.Length; i++) {
+						int utf32Char;
+						if (char.IsHighSurrogate (ca.Str, i)) {
+							utf32Char = char.ConvertToUtf32 (ca.Str, i);
+							i++;
+						} else {
+							utf32Char = (int) ca.Str[i];
+						}
+						
+						OnIMProcessedKeyPressEvent ((Gdk.Key)0, (uint)utf32Char, Gdk.ModifierType.None);
+					}
+				}
 			} finally {
 				ResetIMContext ();
 			}
@@ -562,7 +573,6 @@ namespace Mono.TextEditor
 		{
 			if ((modifier & Gdk.ModifierType.ControlMask) == Gdk.ModifierType.ControlMask) 
 				unicodeKey = 0;
-			System.Console.WriteLine("Mode:" + CurrentMode);
 			CurrentMode.InternalHandleKeypress (this, textEditorData, key, unicodeKey, modifier);
 			textViewMargin.ResetCaretBlink ();
 		}
@@ -585,25 +595,25 @@ namespace Mono.TextEditor
 		
 		protected override bool OnKeyPressEvent (Gdk.EventKey evt)
 		{
-			char ch = (char)Gdk.Keyval.ToUnicode (evt.KeyValue);
-			if (CurrentMode.WantsToPreemptIM || CurrentMode.PreemtIM (evt.Key, ch, evt.State)) {
+			uint unicodeChar = Gdk.Keyval.ToUnicode (evt.KeyValue);
+			if (CurrentMode.WantsToPreemptIM || CurrentMode.PreemptIM (evt.Key, unicodeChar, evt.State)) {
 				ResetIMContext ();	
-				SimulateKeyPress (evt.Key, ch, evt.State);
+				SimulateKeyPress (evt.Key, unicodeChar, evt.State);
 				return true;
 			}
-			
-			if (!IMFilterKeyPress (evt)) {
-				return OnIMProcessedKeyPressEvent (evt, ch);
+			bool filter = IMFilterKeyPress (evt);
+			if (!filter) {
+				return OnIMProcessedKeyPressEvent (evt.Key, unicodeChar, evt.State);
 			}
 			return true;
 		}
 		
 		/// <<remarks>
-		/// The EventKey may not correspond to the char, but in such cases, the char is the correct value.
+		/// The Key may be null if it has been handled by the IMContext. In such cases, the char is the value.
 		/// </remarks>
-		protected virtual bool OnIMProcessedKeyPressEvent (Gdk.EventKey evt, char ch)
+		protected virtual bool OnIMProcessedKeyPressEvent (Gdk.Key key, uint ch, Gdk.ModifierType state)
 		{
-			SimulateKeyPress (evt.Key, ch, evt.State);
+			SimulateKeyPress (key, ch, state);
 			return true;
 		}
 		
