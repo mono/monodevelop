@@ -268,6 +268,17 @@ namespace MonoDevelop.Ide.Commands
 			return sb.ToString ();
 		}
 		
+		static string FormatFileName (string fileName)
+		{
+			char[] seperators = { System.IO.Path.DirectorySeparatorChar, System.IO.Path.AltDirectorySeparatorChar };
+			int idx = fileName.LastIndexOfAny (seperators);
+			if (idx > 0) 
+				idx = fileName.LastIndexOfAny (seperators, idx - 1);
+			if (idx > 0) 
+				return "..." + fileName.Substring (idx);
+			return fileName;
+		}
+		
 		CommandInfo BuildRefactoryMenuForItem (ProjectDom ctx, ICompilationUnit pinfo, IType eclass, IDomVisitable item, bool includeModifyCommands)
 		{
 			IDomVisitable realItem = item;
@@ -286,8 +297,21 @@ namespace MonoDevelop.Ide.Commands
 			string itemName = EscapeName (ambience.GetString (item, flags));
 			bool canRename = false;
 			string txt;
-			if (IdeApp.ProjectOperations.CanJumpToDeclaration (item))
-				ciset.CommandInfos.Add (GettextCatalog.GetString ("_Go to declaration"), new RefactoryOperation (refactorer.GoToDeclaration));
+			if (IdeApp.ProjectOperations.CanJumpToDeclaration (item)) {
+				if (item is CompoundType) {
+					CommandInfoSet declSet = new CommandInfoSet ();
+					declSet.Text = GettextCatalog.GetString ("_Go to declaration");
+					CompoundType ct = (CompoundType)item;
+					foreach (IType part in ct.Parts) {
+						Refactorer partRefactorer = new Refactorer (ctx, pinfo, eclass, part, null);
+						declSet.CommandInfos.Add (string.Format (GettextCatalog.GetString ("{0}, Line {1}"), FormatFileName (part.CompilationUnit.FileName), part.Location.Line), 
+						                          new RefactoryOperation (partRefactorer.GoToDeclaration));
+					}
+					ciset.CommandInfos.Add (declSet);
+				} else {
+					ciset.CommandInfos.Add (GettextCatalog.GetString ("_Go to declaration"), new RefactoryOperation (refactorer.GoToDeclaration));
+				}
+			}
 			
 			if ((item is IMember || item is LocalVariable || item is IParameter) && !(item is IType))
 				ciset.CommandInfos.Add (GettextCatalog.GetString ("_Find references"), new RefactoryOperation (refactorer.FindReferences));

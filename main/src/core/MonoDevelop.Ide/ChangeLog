@@ -1,3 +1,8 @@
+2009-02-17  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: fixed "Bug
+	  476148 - Bad handling of partial classes".
+
 2009-02-16  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: fixed
