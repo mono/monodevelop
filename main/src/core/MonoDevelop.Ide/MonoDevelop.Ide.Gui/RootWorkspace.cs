@@ -162,6 +162,12 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
+		string IWorkspaceObject.ItemDirectory {
+			get {
+				return BaseDirectory;
+			}
+		}
+		
 		public PropertyBag GetUserPreferences (WorkspaceItem item)
 		{
 			PropertyBag props;

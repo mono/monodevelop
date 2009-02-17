@@ -1,5 +1,9 @@
 2009-02-17  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Gui/RootWorkspace.cs: Track api changes.
+
+2009-02-17  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui.Dialogs/ExportProjectDialog.cs: Suggest
 	  the item's physical directory as target directory.
 
