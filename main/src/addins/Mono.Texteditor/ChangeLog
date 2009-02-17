@@ -1,5 +1,10 @@
 2009-02-17  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs: enabled the preview editor
+	  string.
+
+2009-02-17  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* Mono.TextEditor.csproj:
 	* Mono.TextEditor/TextEditor.cs:

@@ -273,21 +273,19 @@ namespace Mono.TextEditor
 			imContext = new IMMulticontext ();
 			imContext.Commit += IMCommit;
 			
-			imContext.UsePreedit = false; 
-			// enable for preview editor:
-//			imContext.UsePreedit = true; 
-//			imContext.PreeditStart += delegate {
-//				preeditOffset = Caret.Offset;
-//				this.textEditorData.Document.CommitLineUpdate (Caret.Line);
-//			};
-//			imContext.PreeditEnd += delegate {
-//				preeditOffset = -1;
-//				this.textEditorData.Document.CommitLineUpdate (Caret.Line);
-//			};
-//			imContext.PreeditChanged += delegate (object sender, EventArgs e) {
-//				imContext.GetPreeditString (out preeditString, out preeditAttrs, out preeditCursorPos); 
-//				this.textEditorData.Document.CommitLineUpdate (Caret.Line);
-//			};
+			imContext.UsePreedit = true; 
+			imContext.PreeditStart += delegate {
+				preeditOffset = Caret.Offset;
+				this.textEditorData.Document.CommitLineUpdate (Caret.Line);
+			};
+			imContext.PreeditEnd += delegate {
+				preeditOffset = -1;
+				this.textEditorData.Document.CommitLineUpdate (Caret.Line);
+			};
+			imContext.PreeditChanged += delegate (object sender, EventArgs e) {
+				imContext.GetPreeditString (out preeditString, out preeditAttrs, out preeditCursorPos); 
+				this.textEditorData.Document.CommitLineUpdate (Caret.Line);
+			};
 			Caret.PositionChanged += CaretPositionChanged;
 			textViewMargin.Initialize ();
 			this.Realized += OptionsChanged;
