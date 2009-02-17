@@ -31,6 +31,7 @@ using System.Collections.Generic;
 
 using Mono.Cecil;
 
+using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects.Dom;
@@ -70,17 +71,11 @@ namespace MonoDevelop.AssemblyBrowser
 			foreach (AssemblyNameReference assemblyNameReference in referenceFolder.ModuleDefinition.AssemblyReferences) {
 //				AssemblyDefinition assembly = null;
 				try {
-					string realAssemblyName;
-					string assemblyFile;
-					string name;
-					if (MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetAssemblyInfo (assemblyNameReference.FullName, out realAssemblyName, out assemblyFile, out name)) {
-						if (System.IO.File.Exists (assemblyFile)) {
-							ctx.AddChild (new Reference (assemblyFile));
-						} else {
-							ctx.AddChild (new Error (MonoDevelop.Core.GettextCatalog.GetString ("Can't load:") + assemblyNameReference.FullName));
-						}
+					string assemblyFile = Runtime.SystemAssemblyService.GetAssemblyLocation (assemblyNameReference.FullName);
+					if (assemblyFile != null && System.IO.File.Exists (assemblyFile)) {
+						ctx.AddChild (new Reference (assemblyFile));
 					} else {
-						ctx.AddChild (new Error (MonoDevelop.Core.GettextCatalog.GetString ("Can't find:") + assemblyNameReference.FullName));
+						ctx.AddChild (new Error (MonoDevelop.Core.GettextCatalog.GetString ("Can't load:") + assemblyNameReference.FullName));
 					}
 				} catch (Exception) {
 				//	ctx.AddChild (new Error (MonoDevelop.Core.GettextCatalog.GetString ("Error while loading:") + assemblyNameReference.FullName + "/" + e.Message));

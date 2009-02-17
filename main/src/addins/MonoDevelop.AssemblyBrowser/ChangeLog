@@ -1,3 +1,9 @@
+2009-02-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:
+	* MonoDevelop.AssemblyBrowser/ReferenceFolderNodeBuilder.cs:
+	  Track api changes.
+
 2009-02-08  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.AssemblyBrowser.csproj: Remove more inadvertent

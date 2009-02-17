@@ -730,13 +730,9 @@ namespace MonoDevelop.AssemblyBrowser
 			if (nav == null) {
 				foreach (DomCecilCompilationUnit definition in definitions.ToArray ()) {
 					foreach (AssemblyNameReference assemblyNameReference in definition.AssemblyDefinition.MainModule.AssemblyReferences) {
-						string realAssemblyName;
-						string assemblyFile;
-						string name;
-						if (MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetAssemblyInfo (assemblyNameReference.FullName, out realAssemblyName, out assemblyFile, out name)) {
-							if (System.IO.File.Exists (assemblyFile))
-								AddReference (assemblyFile);
-						}
+						string assemblyFile = Runtime.SystemAssemblyService.GetAssemblyLocation (assemblyNameReference.FullName);
+						if (assemblyFile != null && System.IO.File.Exists (assemblyFile))
+							AddReference (assemblyFile);
 					}
 				}
 				nav = SearchMember (url);
