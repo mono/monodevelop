@@ -1,5 +1,14 @@
 2009-02-17  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Mono.TextEditor.csproj: Flush.
+
+	* Mono.TextEditor/TextEditor.cs: Include the key & state in
+	  OnIMProcessedKeyPressEvent calls if possible, i.e. if the
+	  char matches the unprocessed one, since the IMMultiContext
+	  captures a lot of the character keystrokes.
+
+2009-02-17  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Mono.TextEditor/EditMode.cs:
 	* Mono.TextEditor/TextEditor.cs: Handle UTF32 code points from
 	  IMContext. Don't pass most recent keypress through with

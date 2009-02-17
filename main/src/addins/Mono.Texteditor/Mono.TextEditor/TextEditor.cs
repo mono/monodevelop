@@ -370,7 +370,9 @@ namespace Mono.TextEditor
 		{
 			try {
 				if (IsRealized && IsFocus) {
-					//FIXME: this, if anywhere, is where we should handle UCS4 conversions
+					uint lastChar = Keyval.ToUnicode (lastIMEvent.KeyValue);
+					
+					//this, if anywhere, is where we should handle UCS4 conversions
 					for (int i = 0; i < ca.Str.Length; i++) {
 						int utf32Char;
 						if (char.IsHighSurrogate (ca.Str, i)) {
@@ -380,7 +382,11 @@ namespace Mono.TextEditor
 							utf32Char = (int) ca.Str[i];
 						}
 						
-						OnIMProcessedKeyPressEvent ((Gdk.Key)0, (uint)utf32Char, Gdk.ModifierType.None);
+						//include the key & state if possible, i.e. if the char matches the unprocessed one
+						if (lastChar == utf32Char)
+							OnIMProcessedKeyPressEvent (lastIMEvent.Key, lastChar, lastIMEvent.State);
+						else
+							OnIMProcessedKeyPressEvent ((Gdk.Key)0, (uint)utf32Char, Gdk.ModifierType.None);
 					}
 				}
 			} finally {
