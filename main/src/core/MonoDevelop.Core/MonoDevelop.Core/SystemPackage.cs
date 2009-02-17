@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Core
 {
@@ -35,20 +36,33 @@ namespace MonoDevelop.Core
 		string name;
 		string version;
 		string description;
-		string[] assemblies;
+		SystemAssembly assemblies;
 		bool isInternal;
 		string targetFramework;
 		string gacRoot;
+		bool gacPackage;
 		
-		internal void Initialize (string name, string version, string description, string[] assemblies, string targetFramework, string gacRoot, bool isInternal)
+		internal void Initialize (string name, string version, string description, IEnumerable<SystemAssembly> assemblies, string targetFramework, string gacRoot, bool isInternal, bool gacPackage)
 		{
 			this.isInternal = isInternal;
 			this.name = name;
 			this.version = version;
-			this.assemblies = assemblies;
 			this.description = description;
 			this.targetFramework = targetFramework;
 			this.gacRoot = gacRoot;
+			this.gacPackage = gacPackage;
+
+			SystemAssembly last = null;
+			foreach (SystemAssembly asm in assemblies) {
+				if (asm == null)
+					continue;
+				asm.Package = this;
+				if (this.assemblies == null)
+					this.assemblies = asm;
+				else
+					last.NextSamePackage = asm;
+				last = asm;
+			}
 		}
 		
 		public string Name {
@@ -57,6 +71,10 @@ namespace MonoDevelop.Core
 		
 		public string GacRoot {
 			get { return gacRoot; }
+		}
+		
+		public bool IsGacPackage {
+			get { return gacPackage; }
 		}
 		
 		public string Version {
@@ -71,7 +89,7 @@ namespace MonoDevelop.Core
 			get { return targetFramework ?? "1.1"; }
 		}
 		
-		// The package is part of the mono SDK
+		// The package is part of the core mono SDK
 		public bool IsCorePackage {
 			get;
 			internal set;
@@ -83,13 +101,20 @@ namespace MonoDevelop.Core
 			get { return isInternal; }
 		}
 		
+		// The package is part of the mono SDK (unlike IsCorePackage, it may be provided by a non-core package)
 		public bool IsFrameworkPackage {
 			get;
 			internal set;
 		}
 		
-		public string[] Assemblies {	
-			get { return assemblies; }
+		public IEnumerable<SystemAssembly> Assemblies {	
+			get {
+				SystemAssembly asm = assemblies;
+				while (asm != null) {
+					yield return asm;
+					asm = asm.NextSamePackage;
+				}
+			}
 		}
 	}
 }

@@ -46,7 +46,7 @@ namespace MonoDevelop.Core
 	public class SystemAssemblyService
 	{
 		Dictionary<string, SystemPackage> assemblyPathToPackage = new Dictionary<string, SystemPackage> ();
-		Dictionary<string, string> assemblyFullNameToPath = new Dictionary<string, string> ();
+		Dictionary<string, SystemAssembly> assemblyFullNameToAsm = new Dictionary<string, SystemAssembly> ();
 		Dictionary<string, SystemPackage> packagesHash = new Dictionary<string, SystemPackage> ();
 		List<SystemPackage> packages = new List<SystemPackage> ();
 		List<TargetFramework> frameworks;
@@ -83,15 +83,16 @@ namespace MonoDevelop.Core
 
 		public ICollection<string> GetAssemblyFullNames ()
 		{
-			return assemblyFullNameToPath.Keys;
+			return assemblyFullNameToAsm.Keys;
 		}
 		
 		public SystemPackage RegisterPackage (string name, string version, string description, string targetVersion, string gacRoot, params string[] assemblyFiles)
 		{
 			SystemPackage p = new SystemPackage ();
+			List<SystemAssembly> asms = new List<SystemAssembly> ();
 			foreach (string asm in assemblyFiles)
-				AddAssembly (asm, p);
-			p.Initialize (name, version, description, assemblyFiles, targetVersion, gacRoot, true);
+				asms.Add (AddAssembly (asm, p));
+			p.Initialize (name, version, description, asms, targetVersion, gacRoot, true, true);
 			packages.Add (p);
 			
 			if (PackagesChanged != null)
@@ -113,6 +114,11 @@ namespace MonoDevelop.Core
 				PackagesChanged (this, EventArgs.Empty);
 		}
 		
+		public IEnumerable<SystemPackage> GetPackages ()
+		{
+			return packages; 
+		}
+		
 		public IEnumerable<SystemPackage> GetPackages (TargetFramework fx)
 		{
 			foreach (SystemPackage pkg in packages) {
@@ -125,41 +131,66 @@ namespace MonoDevelop.Core
 			}
 		}
 
-		public ICollection GetAssemblyPaths ()
+		public SystemAssembly[] GetAssembliesFromFullName (string fullname)
 		{
-			return GetAssemblyPaths (null);
+			List<SystemAssembly> asms = new List<SystemAssembly> (GetAssembliesFromFullNameInternal (fullname));
+			return asms.ToArray ();
 		}
 		
-		// Returns the list of installed assemblies for the given runtime version.
-		public ICollection GetAssemblyPaths (TargetFramework fx)
-		{
-			Initialize ();
-			
-			List<string> list = new List<string> ();
-			if (fx != null && !fx.IsSupported)
-				return list;
-			
-			foreach (KeyValuePair<string, SystemPackage> e in assemblyPathToPackage) {
-				SystemPackage pkg = e.Value;
-				if (pkg.IsFrameworkPackage) {
-					if (fx != null && fx.IsExtensionOfFramework (pkg.TargetFramework))
-						list.Add (e.Key);
-				} else if (fx == null || fx.IsCompatibleWithFramework (pkg.TargetFramework))
-					list.Add (e.Key);
-			}
-			return list;
-		}
-
-		public SystemPackage GetPackageFromFullName (string fullname)
+		IEnumerable<SystemAssembly> GetAssembliesFromFullNameInternal (string fullname)
 		{
 			Initialize ();
 			
 			fullname = NormalizeAsmName (fullname);
-			string path;
-			if (!assemblyFullNameToPath.TryGetValue (fullname, out path))
-				return null;
+			SystemAssembly asm;
+			if (!assemblyFullNameToAsm.TryGetValue (fullname, out asm))
+				yield break;
 
-			return assemblyPathToPackage.ContainsKey (path) ? assemblyPathToPackage [path] : null;
+			while (asm != null) {
+				yield return asm;
+				asm = asm.NextSameName;
+			}
+		}
+		
+		public IEnumerable<SystemAssembly> GetAssemblies ()
+		{
+			return GetAssemblies (null);
+		}
+		
+		public IEnumerable<SystemAssembly> GetAssemblies (TargetFramework fx)
+		{
+			Initialize ();
+			
+			if (fx != null && !fx.IsSupported)
+				yield break;
+			
+			foreach (SystemPackage pkg in packages) {
+				if (pkg.IsFrameworkPackage) {
+					if (fx == null || pkg.TargetFramework != fx.Id)
+						continue;
+				} else if (fx != null && !fx.IsCompatibleWithFramework (pkg.TargetFramework))
+					continue;
+				
+				foreach (SystemAssembly asm in pkg.Assemblies)
+					yield return asm;
+			}
+		}
+		
+		public SystemAssembly GetAssemblyFromFullName (string fullname, string package)
+		{
+			foreach (SystemAssembly asm in GetAssembliesFromFullNameInternal (fullname)) {
+				if (package == null || package == asm.Package.Name)
+					return asm;
+			}
+			return null;
+		}
+		
+		public SystemPackage[] GetPackagesFromFullName (string fullname)
+		{
+			List<SystemPackage> packs = new List<SystemPackage> ();
+			foreach (SystemAssembly asm in GetAssembliesFromFullNameInternal (fullname))
+				packs.Add (asm.Package);
+			return packs.ToArray ();
 		}
 
 		public SystemPackage GetPackage (string name)
@@ -180,7 +211,7 @@ namespace MonoDevelop.Core
 			return assemblyPathToPackage.ContainsKey (path) ? assemblyPathToPackage [path] : null;
 		}
 		
-		string NormalizeAsmName (string name)
+		internal static string NormalizeAsmName (string name)
 		{
 			int i = name.IndexOf (", PublicKeyToken=null");
 			if (i != -1)
@@ -190,19 +221,26 @@ namespace MonoDevelop.Core
 	
 		// Returns the installed version of the given assembly name
 		// (it returns the full name of the installed assembly).
-		public string FindInstalledAssembly (string fullname)
+		public string FindInstalledAssembly (string fullname, string package)
 		{
 			Initialize ();
 			fullname = NormalizeAsmName (fullname);
-			if (assemblyFullNameToPath.ContainsKey (fullname))
+			
+			SystemAssembly fasm = GetAssemblyFromFullName (fullname, package);
+			if (fasm != null)
 				return fullname;
 			
 			// Try to find a newer version of the same assembly.
 			AssemblyName reqName = ParseAssemblyName (fullname);
-			foreach (string asm in assemblyFullNameToPath.Keys) {
-				AssemblyName foundName = ParseAssemblyName (asm);
-				if (reqName.Name == foundName.Name && (reqName.Version == null || reqName.Version.CompareTo (foundName.Version) < 0))
-					return asm;
+			foreach (KeyValuePair<string,SystemAssembly> pair in assemblyFullNameToAsm) {
+				AssemblyName foundName = ParseAssemblyName (pair.Key);
+				if (reqName.Name == foundName.Name && (reqName.Version == null || reqName.Version.CompareTo (foundName.Version) < 0)) {
+					SystemAssembly asm = pair.Value;
+					while (asm != null) {
+						if (package == null || asm.Package.Name == package)
+							return asm.FullName;
+					}
+				}
 			}
 			
 			return null;
@@ -210,18 +248,23 @@ namespace MonoDevelop.Core
 	
 		public string GetAssemblyLocation (string assemblyName)
 		{
+			return GetAssemblyLocation (assemblyName, null);
+		}
+		
+		public string GetAssemblyLocation (string assemblyName, string package)
+		{
 			Initialize ();
 			
 			assemblyName = NormalizeAsmName (assemblyName); 
 			
-			string path;
-			if (assemblyFullNameToPath.TryGetValue (assemblyName, out path))
-				return path;
-
+			SystemAssembly asm = GetAssemblyFromFullName (assemblyName, package);
+			if (asm != null)
+				return asm.Location;
+			
 			if (assemblyName == "mscorlib" || assemblyName.StartsWith ("mscorlib,"))
 				return typeof(object).Assembly.Location;
 			
-			path = FindAssembly (assemblyName, AppDomain.CurrentDomain.BaseDirectory);
+			string path = FindAssembly (assemblyName, AppDomain.CurrentDomain.BaseDirectory);
 			if (path != null)
 				return path;
 			
@@ -295,31 +338,47 @@ namespace MonoDevelop.Core
 		// in the specified target CLR version, or null if it doesn't exist in that version.
 		public string GetAssemblyNameForVersion (string fullName, TargetFramework fx)
 		{
+			return GetAssemblyNameForVersion (fullName, null, fx);
+		}
+		
+		public string GetAssemblyNameForVersion (string fullName, string packageName, TargetFramework fx)
+		{
+			SystemAssembly asm = GetAssemblyForVersion (fullName, packageName, fx);
+			if (asm != null)
+				return asm.FullName;
+			else
+				return null;
+		}
+		
+		// Given the full name of an assembly, returns the corresponding full assembly name
+		// in the specified target CLR version, or null if it doesn't exist in that version.
+		public SystemAssembly GetAssemblyForVersion (string fullName, string packageName, TargetFramework fx)
+		{
 			Initialize ();
 
 			fullName = NormalizeAsmName (fullName);
-			SystemPackage package = GetPackageFromFullName (fullName);
+			SystemAssembly asm = GetAssemblyFromFullName (fullName, packageName);
+
+			if (asm == null)
+				return null;
 			
-			if (package == null)
-				return fullName;
-			
-			if (!package.IsFrameworkPackage) {
+			if (!asm.Package.IsFrameworkPackage) {
 				// Return null if the package is not compatible with the requested version
-				if (fx.IsCompatibleWithFramework (package.TargetFramework))
-					return fullName;
+				if (fx.IsCompatibleWithFramework (asm.Package.TargetFramework))
+					return asm;
 				else
 					return null;
 			}
-			if (fx.IsExtensionOfFramework (package.TargetFramework))
-				return fullName;
+			if (fx.IsExtensionOfFramework (asm.Package.TargetFramework))
+				return asm;
 
 			// We have to find a core package which contains whits assembly
-			string fname = Path.GetFileName ((string) assemblyFullNameToPath [fullName]);
+			string fname = Path.GetFileName ((string) asm.Location);
 			
-			foreach (KeyValuePair<string, string> pair in assemblyFullNameToPath) {
-				SystemPackage rpack = (SystemPackage) assemblyPathToPackage [pair.Value];
-				if (rpack.IsFrameworkPackage && fx.IsExtensionOfFramework (rpack.TargetFramework) && Path.GetFileName (pair.Value) == fname)
-					return pair.Key;
+			foreach (KeyValuePair<string, SystemAssembly> pair in assemblyFullNameToAsm) {
+				SystemPackage rpack = pair.Value.Package;
+				if (rpack.IsFrameworkPackage && fx.IsExtensionOfFramework (rpack.TargetFramework) && Path.GetFileName (pair.Value.Location) == fname)
+					return pair.Value;
 			}
 			return null;
 		}
@@ -331,7 +390,7 @@ namespace MonoDevelop.Core
 			assemblyName = NormalizeAsmName (assemblyName);
 			
 			// Fast path for known assemblies.
-			if (assemblyFullNameToPath.ContainsKey (assemblyName))
+			if (assemblyFullNameToAsm.ContainsKey (assemblyName))
 				return assemblyName;
 
 			if (File.Exists (assemblyName)) {
@@ -580,7 +639,7 @@ namespace MonoDevelop.Core
 		void RegisterSystemAssemblies (string prefix, TargetFramework fx)
 		{
 			SystemPackage package = new SystemPackage ();
-			List<string> list = new List<string> ();
+			List<SystemAssembly> list = new List<SystemAssembly> ();
 			
 			string dir = Path.Combine (prefix, fx.AssembliesDir);
 			if (!Directory.Exists(dir))
@@ -589,12 +648,14 @@ namespace MonoDevelop.Core
 			foreach (string assembly in fx.Assemblies) {
 				string file = Path.Combine (dir, assembly) + ".dll";
 				if (File.Exists (file))
-					AddAssembly (file, package);
+					list.Add (AddAssembly (file, package));
 			}
 
 			// Include files from extended frameworks but don't register them,
 			// since they belong to another package
 			foreach (string fxid in fx.ExtendedFrameworks) {
+				if (fxid == fx.Id)
+					continue;
 				TargetFramework compFx = GetTargetFramework (fxid);
 				dir = Path.Combine (prefix, compFx.AssembliesDir);
 				if (!Directory.Exists(dir))
@@ -602,11 +663,11 @@ namespace MonoDevelop.Core
 				foreach (string assembly in compFx.Assemblies) {
 					string file = Path.Combine (dir, assembly) + ".dll";
 					if (File.Exists (file))
-						list.Add (file);
+						list.Add (SystemAssembly.FromFile (file));
 				}
 			}
 
-			package.Initialize (fx.Package ?? "mono", fx.Id, fx.Name, list.ToArray (), fx.Id, null, false);
+			package.Initialize (fx.Package ?? "mono", fx.Id, fx.Name, list.ToArray (), fx.Id, null, false, true);
 			package.IsFrameworkPackage = true;
 			package.IsCorePackage = string.IsNullOrEmpty (fx.Package);
 			packages.Add (package);
@@ -622,26 +683,36 @@ namespace MonoDevelop.Core
 			List<string> fullassemblies = null;
 			string version = "";
 			string desc = "";
+			bool gacPackage = true;
 			
 			SystemPackage package = new SystemPackage ();
 			
 			using (StreamReader reader = new StreamReader (pcfile)) {
 				string line;
 				while ((line = reader.ReadLine ()) != null) {
-					string lowerLine = line.ToLower ();
-					if (lowerLine.StartsWith ("libs:") && lowerLine.IndexOf (".dll") != -1) {
-						string choppedLine = line.Substring (5).Trim ();
-						if (choppedLine.IndexOf ("-lib:") != -1 || choppedLine.IndexOf ("/lib:") != -1) {
-							fullassemblies = GetAssembliesWithLibInfo (choppedLine, pcfile);
+					int i = line.IndexOf (':');
+					int j = line.IndexOf ('=');
+					i = Math.Min (i != -1 ? i : int.MaxValue, j != -1 ? j : int.MaxValue);
+					if (i == int.MaxValue)
+						continue;
+					string var = line.ToLower ().Substring (0, i).Trim ();
+					string value = line.Substring (i+1).Trim ();
+					if (var == "libs" && value.IndexOf (".dll") != -1) {
+						if (value.IndexOf ("-lib:") != -1 || value.IndexOf ("/lib:") != -1) {
+							fullassemblies = GetAssembliesWithLibInfo (value, pcfile);
 						} else {
-							fullassemblies = GetAssembliesWithoutLibInfo (choppedLine, pcfile);
+							fullassemblies = GetAssembliesWithoutLibInfo (value, pcfile);
 						}
 					}
-					else if (lowerLine.StartsWith ("version:")) {
-						version = line.Substring (8).Trim ();
+					else if (var == "version") {
+						version = value;
 					}
-					else if (lowerLine.StartsWith ("description:")) {
-						desc = line.Substring (12).Trim ();
+					else if (var == "description") {
+						desc = value;
+					}
+					else if (var == "gacpackage") {
+						value = value.ToLower ();
+						gacPackage = value == "yes" || value == "true";
 					}
 				}
 			}
@@ -649,25 +720,33 @@ namespace MonoDevelop.Core
 			if (fullassemblies == null)
 				return;
 
+			List<SystemAssembly> list = new List<SystemAssembly> ();
 			foreach (string assembly in fullassemblies) {
-				AddAssembly (assembly, package);
+				list.Add (AddAssembly (assembly, package));
 			}
 
-			package.Initialize (pname, version, desc, fullassemblies.ToArray (), null, null, false);
+			package.Initialize (pname, version, desc, list, null, null, false, gacPackage);
 			packages.Add (package);
 			packagesHash [pname] = package;
 		}
 
-		private void AddAssembly (string assemblyfile, SystemPackage package)
+		private SystemAssembly AddAssembly (string assemblyfile, SystemPackage package)
 		{
 			if (!File.Exists (assemblyfile))
-				return;
+				return null;
 
 			try {
-				System.Reflection.AssemblyName an = System.Reflection.AssemblyName.GetAssemblyName (assemblyfile);
-				assemblyFullNameToPath[NormalizeAsmName (an.FullName)] = assemblyfile;
-				assemblyPathToPackage[assemblyfile] = package;
+				SystemAssembly asm = SystemAssembly.FromFile (assemblyfile);
+				SystemAssembly prevAsm;
+				if (assemblyFullNameToAsm.TryGetValue (asm.FullName, out prevAsm)) {
+					asm.NextSameName = prevAsm.NextSameName;
+					prevAsm.NextSameName = asm;
+				} else
+					assemblyFullNameToAsm [asm.FullName] = asm;
+				assemblyPathToPackage [assemblyfile] = package;
+				return asm;
 			} catch {
+				return null;
 			}
 		}
 	

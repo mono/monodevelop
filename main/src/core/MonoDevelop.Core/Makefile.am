@@ -96,6 +96,7 @@ FILES =  \
 	MonoDevelop.Core/PropertyService.cs \
 	MonoDevelop.Core/Runtime.cs \
 	MonoDevelop.Core/StringParserService.cs \
+	MonoDevelop.Core/SystemAssembly.cs \
 	MonoDevelop.Core/SystemAssemblyService.cs \
 	MonoDevelop.Core/SystemPackage.cs \
 	MonoDevelop.Core/TargetFramework.cs \

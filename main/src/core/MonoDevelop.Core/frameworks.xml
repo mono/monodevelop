@@ -4,6 +4,7 @@
 		<Assemblies>
 			<!-- The first assembly is used to check if the framework is installed -->
 			<Assembly>System</Assembly>
+			<Assembly>mscorlib</Assembly>
 			<Assembly>ICSharpCode.SharpZipLib</Assembly>
 			<Assembly>Accessibility</Assembly>
 			<Assembly>cscompmgd</Assembly>
@@ -43,7 +44,6 @@
 			<Assembly>System.Data</Assembly>
 			<Assembly>System.Data.OracleClient</Assembly>
 			<Assembly>System.Data.SqlXml</Assembly>
-			<Assembly>System.Deployment</Assembly>
 			<Assembly>System.Design</Assembly>
 			<Assembly>System.DirectoryServices</Assembly>
 			<Assembly>System.DirectoryServices.Protocols</Assembly>
@@ -158,6 +158,7 @@
 		<Assemblies>
 			<!-- The first assembly is used to check if the framework is installed -->
 			<Assembly>System</Assembly>
+			<Assembly>mscorlib</Assembly>
 			<Assembly>System.Core</Assembly>
 			<Assembly>System.Net</Assembly>
 			<Assembly>System.Runtime.Serialization</Assembly>

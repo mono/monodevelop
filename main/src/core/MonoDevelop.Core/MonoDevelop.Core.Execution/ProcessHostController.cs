@@ -45,19 +45,24 @@ namespace MonoDevelop.Core.Execution
 		DateTime lastReleaseTime;
 		bool starting;
 		bool stopping;
-		Process process;
+		IProcessAsyncOperation process;
 		Timer timer;
 		string id;
+		IExecutionHandlerFactory executionHandlerFactory;
+		int shutdownTimeout = 2000;
 
 		IProcessHost processHost;
 		ManualResetEvent runningEvent = new ManualResetEvent (false);
 		ManualResetEvent exitRequestEvent = new ManualResetEvent (false);
 		ManualResetEvent exitedEvent = new ManualResetEvent (false);
 		
-		public ProcessHostController (string id, uint stopDelay)
+		public ProcessHostController (string id, uint stopDelay, IExecutionHandlerFactory executionHandlerFactory)
 		{
+			if (string.IsNullOrEmpty (id))
+				id = "?";
 			this.id = id;
 			this.stopDelay = stopDelay;
+			this.executionHandlerFactory = executionHandlerFactory;
 			timer = new Timer ();
 			timer.AutoReset = false;
 			timer.Elapsed += new System.Timers.ElapsedEventHandler (WaitTimeout);
@@ -78,24 +83,45 @@ namespace MonoDevelop.Core.Execution
 				MemoryStream ms = new MemoryStream ();
 				bf.Serialize (ms, oref);
 				string sref = Convert.ToBase64String (ms.ToArray ());
+				string tmpFile = null;
 
 				try {
-					process = new Process ();
-					process.Exited += new EventHandler (ProcessExited);
 					string location = Path.GetDirectoryName (System.Reflection.Assembly.GetExecutingAssembly ().Location);
-					string args = string.Empty;
-					if (isDebugMode) args += " --debug";
-					args += " \"" + Path.Combine (location, "mdhost.exe") + "\" " + id;
-					process.StartInfo = new ProcessStartInfo ("mono", args);
-					process.StartInfo.WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory;
-					process.StartInfo.UseShellExecute = false;
-					process.StartInfo.RedirectStandardInput = true;
-					process.EnableRaisingEvents = true;
-					process.Start ();
-					process.StandardInput.WriteLine (chId);
-					process.StandardInput.WriteLine (sref);
-					process.StandardInput.Flush ();
+					location = Path.Combine (location, "mdhost.exe");
+					
+					if (executionHandlerFactory != null) {
+						IExecutionHandler handler = executionHandlerFactory.CreateExecutionHandler ("Mono");
+						ProcessHostConsole cons = new ProcessHostConsole ();
+						tmpFile = Path.GetTempFileName ();
+						File.WriteAllText (tmpFile, chId + "\n" + sref + "\n");
+						process = handler.Execute (location, id + " " + tmpFile, AppDomain.CurrentDomain.BaseDirectory, null, cons);
+					}
+					else {
+						string args = string.Empty;
+						if (isDebugMode) args += " --debug";
+						args += " \"" + location + "\" " + id;
+						
+						InernalProcessHost proc = new InernalProcessHost ();
+						proc.StartInfo = new ProcessStartInfo ("mono", args);
+						proc.StartInfo.WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory;
+						proc.StartInfo.UseShellExecute = false;
+						proc.StartInfo.RedirectStandardInput = true;
+						proc.EnableRaisingEvents = true;
+						proc.Start ();
+						proc.StandardInput.WriteLine (chId);
+						proc.StandardInput.WriteLine (sref);
+						proc.StandardInput.Flush ();
+						process = proc;
+					}
+					process.Completed += ProcessExited;
+					
 				} catch (Exception ex) {
+					if (tmpFile != null) {
+						try {
+							File.Delete (tmpFile);
+						} catch {
+						}
+					}
 					LoggingService.LogError (ex.ToString ());
 					throw;
 				}
@@ -109,12 +135,12 @@ namespace MonoDevelop.Core.Execution
 			}
 		}
 
-		void ProcessExited (object sender, EventArgs args)
+		void ProcessExited (IAsyncOperation oper)
 		{
 			lock (this) {
+				Runtime.ProcessService.UnregisterHostInstance (this, null);
 				exitedEvent.Set ();
-				Process p = (Process) sender;
-				if (p != process) return;
+				if (oper != process) return;
 
 				// The process suddently died
 				runningEvent.Reset ();
@@ -141,7 +167,9 @@ namespace MonoDevelop.Core.Execution
 				// Before creating the instance, load the add-ins on which it depends
 				if (addins != null && addins.Length > 0)
 					processHost.LoadAddins (addins);
-				return processHost.CreateInstance (type);
+				RemoteProcessObject obj = processHost.CreateInstance (type);
+				Runtime.ProcessService.RegisterHostInstance (this, obj);
+				return obj;
 			} catch {
 				ReleaseInstance (null);
 				throw;
@@ -165,7 +193,9 @@ namespace MonoDevelop.Core.Execution
 				// Before creating the instance, load the add-ins on which it depends
 				if (addins != null && addins.Length > 0)
 					processHost.LoadAddins (addins);
-				return processHost.CreateInstance (assemblyPath, typeName);
+				RemoteProcessObject obj = processHost.CreateInstance (assemblyPath, typeName);
+				Runtime.ProcessService.RegisterHostInstance (this, obj);
+				return obj;
 			} catch {
 				ReleaseInstance (null);
 				throw;
@@ -174,7 +204,15 @@ namespace MonoDevelop.Core.Execution
 		
 		public void ReleaseInstance (RemoteProcessObject proc)
 		{
+			ReleaseInstance (proc, 2000);
+		}
+		
+		public void ReleaseInstance (RemoteProcessObject proc, int shutdownTimeout)
+		{
 			if (processHost == null) return;
+
+			if (proc != null)
+				Runtime.ProcessService.UnregisterHostInstance (this, proc);
 			
 			lock (this) {
 				references--;
@@ -182,6 +220,7 @@ namespace MonoDevelop.Core.Execution
 					lastReleaseTime = DateTime.Now;
 					if (!stopping) {
 						stopping = true;
+						this.shutdownTimeout = shutdownTimeout;
 						if (stopDelay == 0) {
 							// Always stop asyncrhonously, so the remote object
 							// has time to end the dispose call.
@@ -199,7 +238,7 @@ namespace MonoDevelop.Core.Execution
 		void WaitTimeout (object sender, System.Timers.ElapsedEventArgs args)
 		{
 			try {
-				Process oldProcess;
+				IProcessAsyncOperation oldProcess;
 				
 				lock (this) {
 					if (references > 0) {
@@ -223,9 +262,9 @@ namespace MonoDevelop.Core.Execution
 					stopping = false;
 				}
 	
-				if (!exitedEvent.WaitOne (2000, false)) {
+				if (!exitedEvent.WaitOne (shutdownTimeout, false)) {
 					try {
-						oldProcess.Kill ();
+						oldProcess.Cancel ();
 					} catch {
 					}
 				}
@@ -247,6 +286,108 @@ namespace MonoDevelop.Core.Execution
 		public void WaitForExit ()
 		{
 			exitRequestEvent.WaitOne ();
+		}
+	}
+	
+	class ProcessHostConsole: IConsole
+	{
+		public event EventHandler CancelRequested;
+		
+		public TextReader In {
+			get { return Console.In; }
+		}
+		
+		public TextWriter Out {
+			get { return Console.Out; }
+		}
+		
+		public TextWriter Error {
+			get { return Console.Error; }
+		}
+		
+		public TextWriter Log {
+			get { return Out; }
+		}
+		
+		public bool CloseOnDispose {
+			get {
+				return false;
+			}
+		}
+		
+		public void Dispose ()
+		{
+		}
+	}
+	
+	class InernalProcessHost: Process, IProcessAsyncOperation
+	{
+		object doneLock = new object ();
+		bool finished;
+		OperationHandler completed;
+		
+		public InernalProcessHost ()
+		{
+			Exited += delegate {
+				lock (doneLock) {
+					finished = true;
+					Monitor.PulseAll (doneLock);
+					if (completed != null)
+						completed (this);
+				}
+			};
+		}
+		
+		public int ProcessId {
+			get { return Id; }
+		}
+		
+		public event OperationHandler Completed {
+			add {
+				lock (doneLock) {
+					completed += value; 
+					if (finished)
+						value (this);
+				}
+			}
+			remove {
+				lock (doneLock) {
+					completed -= value;
+				}
+			}
+		}
+		
+		public void Cancel ()
+		{
+			Kill ();
+		}
+		
+		public void WaitForCompleted ()
+		{
+			lock (doneLock) {
+				while (!finished)
+					Monitor.Wait (doneLock);
+			}
+		}
+		
+		public bool IsCompleted {
+			get {
+				lock (doneLock) {
+					return finished;
+				}
+			}
+		}
+		
+		public bool Success {
+			get {
+				return true;
+			}
+		}
+		
+		public bool SuccessWithWarnings {
+			get {
+				return true;
+			}
 		}
 	}
 }

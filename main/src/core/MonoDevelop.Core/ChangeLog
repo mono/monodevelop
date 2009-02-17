@@ -1,3 +1,23 @@
+2009-02-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* frameworks.xml: Added mscorlib to frameworks.
+	  System.Deployment belongs to 2.0.
+
+	* MonoDevelop.Core.Execution/ProcessService.cs:
+	* MonoDevelop.Core.Execution/ProcessHostController.cs: Allow
+	  specifying an execution handler when creating a remote
+	  process object. Added method for explicitly disposing a
+	  remote object with a timeout.
+
+	* Makefile.am:
+	* MonoDevelop.Core.csproj: Updated.
+
+	* MonoDevelop.Core/SystemPackage.cs:
+	* MonoDevelop.Core/SystemAssembly.cs:
+	* MonoDevelop.Core/SystemAssemblyService.cs: Improved handling
+	  of assemblies with the same version provided by different
+	  packages. Added support for IsGacPackage flag.
+
 2009-02-11  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Serialization/DataContext.cs: Added api for

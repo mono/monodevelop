@@ -243,14 +243,14 @@ namespace MonoDevelop.Core.Execution
 				executionHandlers.Remove (args.ExtensionNode);
 		}
 		
-		ProcessHostController GetHost (string id, bool shared)
+		ProcessHostController GetHost (string id, bool shared, IExecutionHandlerFactory executionHandler)
 		{
 			if (!shared)
-				return new ProcessHostController (id, 0);
+				return new ProcessHostController (id, 0, executionHandler);
 			
 			lock (this) {
 				if (externalProcess == null)
-					externalProcess = new ProcessHostController ("SharedHostProcess", 10000);
+					externalProcess = new ProcessHostController ("SharedHostProcess", 10000, null);
 	
 				return externalProcess;
 			}
@@ -263,12 +263,57 @@ namespace MonoDevelop.Core.Execution
 		
 		public RemoteProcessObject CreateExternalProcessObject (Type type, bool shared)
 		{
-			return GetHost (type.ToString(), shared).CreateInstance (type.Assembly.Location, type.FullName, GetRequiredAddins (type));
+			ProcessHostController hc = GetHost (type.ToString(), shared, null);
+			RemoteProcessObject ob = hc.CreateInstance (type.Assembly.Location, type.FullName, GetRequiredAddins (type));
+			return ob;
+		}
+		
+		public RemoteProcessObject CreateExternalProcessObject (Type type, IExecutionHandlerFactory executionHandler)
+		{
+			return GetHost (type.ToString(), false, executionHandler).CreateInstance (type.Assembly.Location, type.FullName, GetRequiredAddins (type));
 		}
 		
 		public RemoteProcessObject CreateExternalProcessObject (string assemblyPath, string typeName, bool shared, params string[] requiredAddins)
 		{
-			return GetHost (typeName, shared).CreateInstance (assemblyPath, typeName, requiredAddins);
+			return GetHost (typeName, shared, null).CreateInstance (assemblyPath, typeName, requiredAddins);
+		}
+		
+		public RemoteProcessObject CreateExternalProcessObject (string assemblyPath, string typeName, IExecutionHandlerFactory executionHandler, params string[] requiredAddins)
+		{
+			return GetHost (typeName, false, executionHandler).CreateInstance (assemblyPath, typeName, requiredAddins);
+		}
+		
+		public void DisposeExternalProcessObject (RemoteProcessObject obj, int timeout)
+		{
+			foreach (KeyValuePair<RemoteProcessObject,ProcessHostController> ob in runningObjects) {
+				if (ob.Key == obj) {
+					ob.Value.ReleaseInstance (obj);
+					return;
+				}
+			}
+		}
+
+		// WARNING: don't use a hastable here since remote objects won't work as keys
+		List<KeyValuePair<RemoteProcessObject,ProcessHostController>> runningObjects = new List<KeyValuePair<RemoteProcessObject, ProcessHostController>> ();
+		
+		internal void RegisterHostInstance (ProcessHostController hc, RemoteProcessObject obj)
+		{
+			runningObjects.Add (new KeyValuePair<RemoteProcessObject,ProcessHostController> (obj, hc));
+		}
+		
+		internal void UnregisterHostInstance (ProcessHostController hc, RemoteProcessObject obj)
+		{
+			for (int n=0; n<runningObjects.Count; n++) {
+				if ((obj != null && runningObjects[n].Key == obj) || (obj == null && runningObjects[n].Value == hc)) {
+					runningObjects.RemoveAt (n--);
+					return;
+				}
+			}
+		}
+		
+		public bool IsValidForRemoteHosting (IExecutionHandlerFactory handler)
+		{
+			return handler.SupportsPlatform ("Mono");
 		}
 		
 		string[] GetRequiredAddins (Type type)
