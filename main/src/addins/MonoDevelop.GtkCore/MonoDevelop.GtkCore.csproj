@@ -132,6 +132,9 @@
     <EmbeddedResource Include="templates\WidgetPartial.xft.xml">
       <LogicalName>WidgetPartial.xft.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="templates\DrawingArea.xft.xml">
+      <LogicalName>DrawingArea.xft.xml</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="templates\WindowPartial.xft.xml">
       <LogicalName>WindowPartial.xft.xml</LogicalName>
     </EmbeddedResource>
