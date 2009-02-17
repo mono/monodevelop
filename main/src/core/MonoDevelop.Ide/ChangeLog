@@ -1,5 +1,11 @@
 2009-02-17  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs: Worked on
+	  preventing InvalidCastException reported in "Bug 475797 -
+	  text corruption on screen with folding on in build 126778".
+
+2009-02-17  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: fixed "Bug
 	  476148 - Bad handling of partial classes".
 

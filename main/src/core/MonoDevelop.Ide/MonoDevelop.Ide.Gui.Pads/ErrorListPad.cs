@@ -356,11 +356,9 @@ namespace MonoDevelop.Ide.Gui.Pads
 			get {
 				TreeModel model;
 				TreeIter iter;
-				if (view.Selection.GetSelected (out model, out iter))
-				{
-					return (Task)model.GetValue (iter, (int)Columns.Task);
-				}
-				else return null; // no one selected
+				if (view.Selection.GetSelected (out model, out iter)) 
+					return model.GetValue (iter, (int)Columns.Task) as Task;
+				return null; // no one selected
 			}
 		}
 
@@ -402,7 +400,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			if (view.Selection.GetSelected (out model, out iter)) {
 				iter = filter.ConvertIterToChildIter (iter);
 				store.SetValue (iter, (int)Columns.Weight, (int) Pango.Weight.Normal);
-				Task task = (Task) store.GetValue (iter, (int)Columns.Task);
+				Task task = store.GetValue (iter, (int)Columns.Task) as Task;
 				if (task != null) {
 					DisplayTask (task);
 					task.JumpToPosition ();
@@ -480,7 +478,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			bool canShow = false;
 
 			try {
-				Task task = (Task) store.GetValue (iter, (int)Columns.Task);
+				Task task = store.GetValue (iter, (int)Columns.Task) as Task;
 				if (task == null)
 					return true;
 				if (task.TaskType == TaskType.Error && errorBtn.Active) canShow = true;
@@ -518,7 +516,11 @@ namespace MonoDevelop.Ide.Gui.Pads
 			TreeIter iter;
 			if (store.GetIterFirst (out iter)) {
 				do {
-					Task curTask = (Task)store.GetValue (iter, (int)Columns.Task);
+					Task curTask = store.GetValue (iter, (int)Columns.Task) as Task;
+					if (curTask == null) {
+						LoggingService.LogWarning ("Error list pad: Can't cast object: " + store.GetValue (iter, (int)Columns.Task) + " - it is not a Task.");
+						continue;
+					}
 					foreach (Task task in e.Tasks) {
 						if (task == curTask) {
 							store.SetValue (iter, (int)Columns.Line, task.Line != 0 ? task.Line.ToString () : "");
@@ -717,7 +719,9 @@ namespace MonoDevelop.Ide.Gui.Pads
 				return false;
 			} else {
 				view.Selection.SelectIter (iter);
-				Task t = (Task) model.GetValue (iter, (int)Columns.Task);
+				Task t =  model.GetValue (iter, (int)Columns.Task) as Task;
+				if (t == null)
+					return false;
 				file = t.FileName;
 				if (file == null)
 					return GetNextLocation (out file, out line, out column);
@@ -758,7 +762,9 @@ namespace MonoDevelop.Ide.Gui.Pads
 				return false;
 			} else {
 				view.Selection.SelectIter (prevIter);
-				Task t = (Task) view.Model.GetValue (prevIter, (int)Columns.Task);
+				Task t = view.Model.GetValue (prevIter, (int)Columns.Task) as Task;
+				if (t == null)
+					return false;
 				file = t.FileName;
 				if (file == null)
 					return GetPreviousLocation (out file, out line, out column);
