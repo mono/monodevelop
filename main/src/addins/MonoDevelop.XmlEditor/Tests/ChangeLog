@@ -1,3 +1,7 @@
+2009-02-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.XmlEditor.Tests.csproj: Updated.
+
 2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.XmlEditor.Tests.mdp:
