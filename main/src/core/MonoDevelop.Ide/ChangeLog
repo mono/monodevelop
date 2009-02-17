@@ -1,5 +1,10 @@
 2009-02-17  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Gui.Dialogs/ExportProjectDialog.cs: Suggest
+	  the item's physical directory as target directory.
+
+2009-02-17  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs:
 	* MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs:
 	* MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:

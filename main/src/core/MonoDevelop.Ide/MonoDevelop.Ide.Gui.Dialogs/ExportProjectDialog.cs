@@ -52,7 +52,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			if (sel == -1) sel = 0;
 			comboFormat.Active = sel;
 			
-			folderEntry.Path = entry.BaseDirectory;
+			folderEntry.Path = entry.ItemDirectory;
 			UpdateControls ();
 		}
 		
