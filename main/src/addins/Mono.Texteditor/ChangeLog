@@ -1,5 +1,10 @@
 2009-02-18  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs: Only handle the control keys
+	  in the snooper func.
+
+2009-02-18  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextEditor.cs: fixed key snooper id.
 
 2009-02-18  Mike Krüger  <mkrueger@novell.com>

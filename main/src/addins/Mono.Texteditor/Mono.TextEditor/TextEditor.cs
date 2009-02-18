@@ -127,11 +127,15 @@ namespace Mono.TextEditor
 		Dictionary<Gdk.Key, bool> keyPressed = new Dictionary<Gdk.Key, bool> ();
 		int KeySnooperFunc (Widget grab_widget, Gdk.EventKey evnt) 
 		{
+			// only handle the control keys
+			if (evnt.Key != Gdk.Key.Control_L && evnt.Key != Gdk.Key.Control_R)
+				return 0;
+			
 			bool state = false;
 			if (keyPressed.ContainsKey (evnt.Key))
 				state = keyPressed[evnt.Key];
 			keyPressed[evnt.Key] = !state;
-			if (this.dragContext != null)
+			if (IsInDrag)
 				Gdk.Drag.Status (this.dragContext, GetSuggestedDragAction (), 0);
 			
 			return 0;
