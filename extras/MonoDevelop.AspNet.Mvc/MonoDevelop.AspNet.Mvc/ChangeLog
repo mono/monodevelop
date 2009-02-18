@@ -1,0 +1,5 @@
+2009-02-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.AspNet.Mvc.addin.xml: Fix MVC project type
+	  registration.
+
