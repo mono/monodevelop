@@ -1,3 +1,25 @@
+2009-02-18  David Makovský (Yakeen)  <yakeen@sannyas-on.net>
+
+	* da.po:
+	* tr.po:
+	* ca.po:
+	* pt.po:
+	* ja.po:
+	* id.po:
+	* ru.po:
+	* sv.po:
+	* sl.po:
+	* es.po:
+	* fr.po:
+	* gl.po:
+	* nl.po:
+	* it.po:
+	* hu.po:
+	* pl.po:
+	* zh_CN.po:
+	* pt_BR.po:
+	* zh_TW.po: fixed buildability
+
 2009-02-18  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* *.po: Updated.
