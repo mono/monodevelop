@@ -1,3 +1,7 @@
+2009-02-18  Mike Krüger  <mkrueger@novell.com>
+
+	* widget.cs: Fixed "Bug 472140 - Diff widget breaks themes".
+
 2009-02-07  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am:

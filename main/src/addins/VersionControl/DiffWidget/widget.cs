@@ -31,7 +31,7 @@ namespace Algorithm.Diff.Gtk {
 			public string Font = "Mono 9";
 		}
 		
-		static Gdk.Color
+		Gdk.Color
 			ColorChanged = new Gdk.Color (0xFF, 0x99, 0x99),
 			ColorChangedHighlight = new Gdk.Color (0xFF, 0xBB, 0xBB),
 			ColorAdded = new Gdk.Color (0xFF, 0xAA, 0x33),
@@ -43,12 +43,23 @@ namespace Algorithm.Diff.Gtk {
 			ColorGrey = new Gdk.Color (0x99, 0x99, 0x99),
 			ColorBlack = new Gdk.Color (0, 0, 0);
 
-		public DiffWidget(Diff diff, Options options) : this(Hunkify(diff), options) {
-		}
-			
-		public DiffWidget(Merge merge, Options options) : this(Hunkify(merge), options) {
+		public DiffWidget(Diff diff, Options options) : this(Hunkify(diff), options) 
+		{
 		}
 		
+		public DiffWidget(Merge merge, Options options) : this(Hunkify(merge), options) 
+		{
+		}
+		
+		protected override void OnStyleSet (global::Gtk.Style previous_style)
+		{
+			ColorBlack = this.Style.Text (StateType.Normal);
+			ColorGrey  = this.Style.Text (StateType.Insensitive);
+			ColorDefault = this.Style.Base (StateType.Normal);
+			ColorDefaultHighlight = this.Style.Base (StateType.Prelight);
+			base.OnStyleSet (previous_style);
+		}
+
 		private static Hunk[] Hunkify(IEnumerable e) {
 			ArrayList a = new ArrayList();
 			foreach (Hunk x in e)
@@ -74,7 +85,7 @@ namespace Algorithm.Diff.Gtk {
 
 			scroller = new ScrolledWindow();
 			
-			centerpanel.PackStart(new OverviewRenderer(scroller, hunks, options.SideBySide), false, false, 0);
+			centerpanel.PackStart(new OverviewRenderer(this, scroller, hunks, options.SideBySide), false, false, 0);
 			
 			Viewport textviewport = new Viewport();
 			
@@ -171,7 +182,7 @@ namespace Algorithm.Diff.Gtk {
 				text.Append((string)range[(int)i]);
 				if (i < range.Count-1) text.Append('\n');
 			}
-			RangeEventBox rangebox = new RangeEventBox(new RangeRenderer(text.ToString(), style, wrap, font));
+			RangeEventBox rangebox = new RangeEventBox(new RangeRenderer(this, text.ToString(), style, wrap, font));
 			table.Attach(rangebox, 0,1, startRow,(uint)(startRow+range.Count));
 			
 			/*
@@ -231,60 +242,92 @@ namespace Algorithm.Diff.Gtk {
 			Pango.FontDescription font;
 			string text;
 			bool wrap;
-
-			Gdk.Color bg_color;
-			Gdk.Color highlight_bg_color;
-
-			public RangeRenderer(string text, char type, bool wrap, Pango.FontDescription font) {
+			char type;
+			DiffWidget widget;
+				
+			public RangeRenderer(DiffWidget widget, string text, char type, bool wrap, Pango.FontDescription font)
+			{
+				this.widget = widget;
 				this.text = text;
 				this.wrap = wrap;
 				this.font = font;
+				this.type = type;
 				this.Realized += new EventHandler(OnRealized);
-				this.ExposeEvent += new ExposeEventHandler(OnExposed);
 				this.SizeAllocated += new SizeAllocatedHandler(SizeAllocatedHandler);
-				
-				switch (type) {
-					case 'C':
-						bg_color = DiffWidget.ColorChanged;
-						highlight_bg_color = DiffWidget.ColorChangedHighlight;
-						break;
-					case '+':
-						bg_color = DiffWidget.ColorAdded;
-						highlight_bg_color = DiffWidget.ColorAddedHighlight;
-						break;
-					case '-':
-						bg_color = DiffWidget.ColorRemoved;
-						highlight_bg_color = DiffWidget.ColorRemovedHighlight;
-						break;
-					default:
-						bg_color = DiffWidget.ColorDefault;
-						highlight_bg_color = DiffWidget.ColorDefaultHighlight;
-						break;
-				}
-				
-				Colormap.AllocColor(ref bg_color, false, true);
-				Colormap.AllocColor(ref highlight_bg_color, false, true);
 				ClearHighlight();
 			}
 			
-			public void Highlight() {
-				ModifyBg(StateType.Normal, highlight_bg_color);
+			Gdk.Color bg_color {
+				get {
+					switch (type) {
+						case 'C':
+							return widget.ColorChanged;
+						case '+':
+							return widget.ColorAdded;
+						case '-':
+							return  widget.ColorRemoved;
+						default:
+							return widget.ColorDefault;
+					}
+				}
 			}
 			
-			public void ClearHighlight() {
-				ModifyBg(StateType.Normal, bg_color);
+			Gdk.Color highlight_bg_color {
+				get {
+					switch (type) {
+						case 'C':
+							return widget.ColorChangedHighlight;
+						case '+':
+							return widget.ColorAddedHighlight;
+						case '-':
+							return widget.ColorRemovedHighlight;
+						default:
+							return widget.ColorDefaultHighlight;
+					}
+				}
+				
 			}
-
-			void OnExposed (object o, ExposeEventArgs args) {
-				GdkWindow.DrawLayout (this.Style.TextGC (StateType.Normal), 1, 1, layout);
+			bool inStyleSet = false;
+			protected override void OnStyleSet (global::Gtk.Style previous_style)
+			{
+				base.OnStyleSet (previous_style);
+				if (!inStyleSet) {
+					inStyleSet = true;
+					if (highlight) {
+						Highlight ();
+					} else {
+						ClearHighlight();
+					}
+					QueueDraw ();
+					inStyleSet = false;
+				}
 			}
 			
-			void OnRealized (object o, EventArgs args) {
+			bool highlight = false;
+			public void Highlight() 
+			{
+				highlight = true;
+				ModifyBg (StateType.Normal, highlight_bg_color);
+			}
+			
+			public void ClearHighlight() 
+			{
+				highlight = false;
+				ModifyBg (StateType.Normal, bg_color);
+			}
+			
+			protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+			{
+				GdkWindow.DrawLayout (this.Style.TextGC (highlight ? StateType.Prelight : StateType.Normal), 1, 1, layout);
+				return true;
+			}
+			
+			void OnRealized (object o, EventArgs args)
+			{
 				layout = new Pango.Layout(PangoContext);
 				layout.SingleParagraphMode = false;
 				layout.FontDescription = font;
 				layout.Indent = (int)(-Pango.Scale.PangoScale * 20);
-				
 				layout.SetText(text);
 				Render();
 			}
@@ -293,7 +336,8 @@ namespace Algorithm.Diff.Gtk {
 				Render();
 			}
 			
-			void Render() {
+			void Render()
+			{
 				if (layout == null) return;
 				
 				if (wrap)
@@ -311,10 +355,10 @@ namespace Algorithm.Diff.Gtk {
 		
 		class OverviewRenderer : EventBox {
 			ScrolledWindow scroller;
-			public OverviewRenderer(ScrolledWindow scroller, Hunk[] hunks, bool sidebyside) {
+			public OverviewRenderer(DiffWidget widget, ScrolledWindow scroller, Hunk[] hunks, bool sidebyside) {
 				this.scroller = scroller;
 				this.ButtonPressEvent += new ButtonPressEventHandler(ButtonPressHandler);
-				Add(new OverviewRenderer2(scroller, hunks, sidebyside));
+				Add(new OverviewRenderer2(widget, scroller, hunks, sidebyside));
 			}
 			
 			void ButtonPressHandler(object o, ButtonPressEventArgs args) {
@@ -329,34 +373,26 @@ namespace Algorithm.Diff.Gtk {
 			Hunk[] hunks;
 			ScrolledWindow scroller;
 			bool sidebyside;
+			DiffWidget widget;
 			
-			public OverviewRenderer2(ScrolledWindow scroller, Hunk[] hunks, bool sidebyside) {
+			public OverviewRenderer2(DiffWidget widget, ScrolledWindow scroller, Hunk[] hunks, bool sidebyside) {
+				this.widget = widget;
 				this.hunks = hunks;
 				this.scroller = scroller;
 				this.sidebyside = sidebyside;
-				this.ExposeEvent += new ExposeEventHandler(OnExposed);
 				scroller.ExposeEvent += new ExposeEventHandler(OnScroll);
 				WidthRequest = 50;
 			}
 			
-			void OnScroll (object o, ExposeEventArgs args) {
+			void OnScroll (object o, ExposeEventArgs args)
+			{
 				QueueDrawArea(0, 0, Allocation.Width, Allocation.Height);
 			}
 			
-			void OnExposed (object o, ExposeEventArgs args) {
-				Gdk.GC gc = this.Style.BaseGC(StateType.Normal);
+			protected override bool OnExposeEvent (Gdk.EventExpose e)
+			{
+				Gdk.GC gc = new Gdk.GC (e.Window);
 				
-				gc.Colormap.AllocColor(ref DiffWidget.ColorChanged, false, true);
-				gc.Colormap.AllocColor(ref DiffWidget.ColorChangedHighlight, false, true);
-				gc.Colormap.AllocColor(ref DiffWidget.ColorAdded, false, true);
-				gc.Colormap.AllocColor(ref DiffWidget.ColorAddedHighlight, false, true);
-				gc.Colormap.AllocColor(ref DiffWidget.ColorRemoved, false, true);
-				gc.Colormap.AllocColor(ref DiffWidget.ColorRemovedHighlight, false, true);
-				gc.Colormap.AllocColor(ref DiffWidget.ColorDefault, false, true);
-				gc.Colormap.AllocColor(ref DiffWidget.ColorDefaultHighlight, false, true);
-				gc.Colormap.AllocColor(ref DiffWidget.ColorBlack, false, true);
-				gc.Colormap.AllocColor(ref DiffWidget.ColorGrey, false, true);
-
 				int count = 0;
 				foreach (Hunk h in hunks) {
 					IncPos(h, ref count);
@@ -366,38 +402,36 @@ namespace Algorithm.Diff.Gtk {
 				foreach (Hunk h in hunks) {
 					int size = 0;
 					IncPos(h, ref size);
-					
 					if (h.Same)
-						gc.Foreground = DiffWidget.ColorDefault;
+						gc.RgbFgColor = widget.ColorDefault;
 					else if (h.Original().Count == 0)
-						gc.Foreground = DiffWidget.ColorAdded;
+						gc.RgbFgColor = widget.ColorAdded;
 					else if (h.ChangedLists == 1 && h.Changes(0).Count == 0)
-						gc.Foreground = DiffWidget.ColorRemoved;
+						gc.RgbFgColor = widget.ColorRemoved;
 					else
-						gc.Foreground = DiffWidget.ColorChanged;
+						gc.RgbFgColor = widget.ColorChanged;
 					
 					GdkWindow.DrawRectangle(gc, true, 0, Allocation.Height*start/count, Allocation.Width, Allocation.Height*size/count);
 					
 					start += size;
 				}
 
-				gc.Foreground = DiffWidget.ColorGrey;
-				GdkWindow.DrawRectangle(gc, false,
+				gc.RgbFgColor = widget.ColorGrey;
+				e.Window.DrawRectangle(gc, false,
 					1,
 					(int)(Allocation.Height*scroller.Vadjustment.Value/scroller.Vadjustment.Upper) + 1,
 					Allocation.Width-3,
 					(int)(Allocation.Height*((double)scroller.Allocation.Height/scroller.Vadjustment.Upper))-2);
 				
-				gc.Foreground = DiffWidget.ColorBlack;
-				GdkWindow.DrawRectangle(gc, false,
+				gc.RgbFgColor = widget.ColorBlack;
+				e.Window.DrawRectangle(gc, false,
 					0,
 					(int)(Allocation.Height*scroller.Vadjustment.Value/scroller.Vadjustment.Upper),
 					Allocation.Width-1,
 					(int)(Allocation.Height*((double)scroller.Allocation.Height/scroller.Vadjustment.Upper)));
 				
-				// Reset this otherwise MD colors get messed up.
-				// But what should I really do here?
-				gc.Foreground = DiffWidget.ColorDefault;
+				gc.Dispose ();
+				return true;
 			}
 			
 			private void IncPos(Hunk h, ref int pos) {
