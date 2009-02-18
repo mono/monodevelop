@@ -738,10 +738,11 @@ namespace Mono.TextEditor
 					this.textEditorData.SelectionRange.Offset -= selection.Length;
 				}
 				selection = null;
+				textEditorData.Document.MergeUndoOperations (2);
 			}
 			base.OnDragDataDelete (context); 
 		}
-
+		
 		protected override void OnDragLeave (DragContext context, uint time_)
 		{
 			if (dragOver) {

@@ -1,5 +1,13 @@
 2009-02-18  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs: Used MergeUndoOperations for
+	  drag&drop move operation.
+
+	* Mono.TextEditor/Document.cs: Added MergeUndoOperations for
+	  another way to merge undo operations.
+
+2009-02-18  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextEditor.cs: Only handle the control keys
 	  in the snooper func.
 

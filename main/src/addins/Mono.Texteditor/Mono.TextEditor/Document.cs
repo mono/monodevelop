@@ -439,6 +439,11 @@ namespace Mono.TextEditor
 				return false;
 			}
 			
+			public void Insert (int index, UndoOperation operation)
+			{
+				operations.Insert (index, operation);
+			}
+			
 			public void Add (UndoOperation operation)
 			{
 				operations.Add (operation);
@@ -575,6 +580,16 @@ namespace Mono.TextEditor
 			}
 			keyUndo.Add (top);
 			undoStack.Push (keyUndo);
+		}
+		
+		public void MergeUndoOperations (int number)
+		{
+			number = System.Math.Min (number, undoStack.Count);
+			AtomicUndoOperation atomicUndo = new AtomicUndoOperation ();
+			while (number-- > 0) {
+				atomicUndo.Insert (0, undoStack.Pop ());
+			}
+			undoStack.Push (atomicUndo);
 		}
 		
 		public void Undo ()
