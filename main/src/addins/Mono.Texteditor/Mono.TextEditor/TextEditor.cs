@@ -120,12 +120,10 @@ namespace Mono.TextEditor
 		
 		public TextEditor () : this (new Document ())
 		{
-			snooperID = startID++;
-			Gtk.Key.SnooperInstall (KeySnooperFunc);
+			snooperID = Gtk.Key.SnooperInstall (KeySnooperFunc);
 		}
 #region Key snooper (dnd hack)
-		static int startID = 8747;
-		int snooperID;
+		uint snooperID;
 		Dictionary<Gdk.Key, bool> keyPressed = new Dictionary<Gdk.Key, bool> ();
 		int KeySnooperFunc (Widget grab_widget, Gdk.EventKey evnt) 
 		{
@@ -135,7 +133,8 @@ namespace Mono.TextEditor
 			keyPressed[evnt.Key] = !state;
 			if (this.dragContext != null)
 				Gdk.Drag.Status (this.dragContext, GetSuggestedDragAction (), 0);
-			return snooperID;
+			
+			return 0;
 		}
 #endregion
 		Gdk.Pixmap buffer = null, flipBuffer = null;
@@ -491,7 +490,7 @@ namespace Mono.TextEditor
 				this.isDisposed = true;
 				DisposeBgBuffer ();
 				
-				Gtk.Key.SnooperRemove ((uint)snooperID);
+				Gtk.Key.SnooperRemove (snooperID);
 				
 				Caret.PositionChanged -= CaretPositionChanged;
 				

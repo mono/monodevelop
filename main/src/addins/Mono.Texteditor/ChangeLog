@@ -1,5 +1,9 @@
 2009-02-18  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs: fixed key snooper id.
+
+2009-02-18  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextEditor.cs:
 	* Mono.TextEditor/TextViewMargin.cs: fixed "Bug 445395 -
 	  drag/drop text in editor".
