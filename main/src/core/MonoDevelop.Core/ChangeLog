@@ -1,3 +1,8 @@
+2009-02-18  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Core/StringParserService.cs: fixed "Bug 456971 -
+	  ${ProjectDir} Not updating for currently building project".
+
 2009-02-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core/SystemAssemblyService.cs: Added some logic
