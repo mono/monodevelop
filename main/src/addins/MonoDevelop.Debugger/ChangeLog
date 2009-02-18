@@ -1,3 +1,8 @@
+2009-02-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Debugger/WatchPad.cs: When restoring the watch
+	  pad state, clear the old state.
+
 2009-02-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Debugger/ExceptionsDialog.cs: Track api changes.

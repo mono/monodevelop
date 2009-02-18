@@ -54,8 +54,11 @@ namespace MonoDevelop.Debugger
 		
 		public void SetMemento (ICustomXmlSerializer memento)
 		{
-			if (tree != null && storedVars != null)
-				tree.AddExpressions (storedVars);
+			if (tree != null) {
+				tree.ClearExpressions ();
+				if (storedVars != null)
+					tree.AddExpressions (storedVars);
+			}
 		}
 		
 		void ICustomXmlSerializer.WriteTo (System.Xml.XmlWriter writer)
