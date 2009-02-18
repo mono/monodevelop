@@ -1,3 +1,12 @@
+2009-02-18  Mike Krüger  <mkrueger@novell.com>
+
+	* Project/Package.cs:
+	* Project/CProject.cs:
+	* Compiler/ICompiler.cs:
+	* Compiler/CCompiler.cs:
+	* Compiler/GNUCompiler.cs: Fixed 'Bug 456971 - ${ProjectDir}
+	  Not updating for currently building project'.
+
 2009-02-07  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Gui/CTextEditorExtension.cs: Rename second 'openingLine'

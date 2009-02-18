@@ -63,7 +63,7 @@ namespace CBinding.Autotools
 			
 			CProject cproj = project as CProject;
 			
-			return cproj.Compiler.GetCompilerFlags (config);
+			return cproj.Compiler.GetCompilerFlags (cproj, config);
 		}
 
 		public bool CanDeploy (Project project)

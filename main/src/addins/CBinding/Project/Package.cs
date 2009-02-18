@@ -253,14 +253,13 @@ namespace CBinding
 			return builder.ToString ();
 		}
 		
-		string[,] CustomTags ()
+		Dictionary<string, string> CustomTags ()
 		{
-			string[,] customTags = new string[vars.Count, 2];
+			Dictionary<string, string> customTags = new Dictionary<string, string> (StringComparer.InvariantCultureIgnoreCase);
 			int i = 0;
 			
 			foreach (KeyValuePair<string, string> kvp in vars) {
-				customTags[i, 0] = kvp.Key;
-				customTags[i, 1] = kvp.Value;
+				customTags.Add (kvp.Key, kvp.Value);
 				i++;
 			}
 			

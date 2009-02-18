@@ -56,7 +56,8 @@ namespace CBinding
 		bool linkerFound;
 		
 		public override BuildResult Compile (
-			ProjectFileCollection projectFiles,
+		    Project project,
+		    ProjectFileCollection projectFiles,
 		    ProjectPackageCollection packages,
 		    CProjectConfiguration configuration,
 		    IProgressMonitor monitor)
@@ -81,7 +82,7 @@ namespace CBinding
 			
 			CompilerResults cr = new CompilerResults (new TempFileCollection ());
 			bool success = true;
-			string compilerArgs = GetCompilerFlags (configuration) + " " + GeneratePkgCompilerArgs (packages);
+			string compilerArgs = GetCompilerFlags (project, configuration) + " " + GeneratePkgCompilerArgs (packages);
 			
 			string outputName = Path.Combine (configuration.OutputDirectory,
 			                                  configuration.CompiledOutputName);
@@ -120,13 +121,13 @@ namespace CBinding
 				switch (configuration.CompileTarget)
 				{
 				case CBinding.CompileTarget.Bin:
-					MakeBin (projectFiles, configuration, packages, cr, monitor, outputName);
+					MakeBin (project, projectFiles, configuration, packages, cr, monitor, outputName);
 					break;
 				case CBinding.CompileTarget.StaticLibrary:
-					MakeStaticLibrary (projectFiles, configuration, packages, cr, monitor, outputName);
+					MakeStaticLibrary (project, projectFiles, configuration, packages, cr, monitor, outputName);
 					break;
 				case CBinding.CompileTarget.SharedLibrary:
-					MakeSharedLibrary (projectFiles, configuration, packages, cr, monitor, outputName);
+					MakeSharedLibrary (project, projectFiles, configuration, packages, cr, monitor, outputName);
 					break;
 				}
 			}
@@ -142,7 +143,15 @@ namespace CBinding
 			get { return true; }
 		}
 		
-		public override string GetCompilerFlags (CProjectConfiguration configuration)
+		Dictionary<string, string> GetStringTags (Project project)
+		{
+			Dictionary<string, string> result = new Dictionary<string, string> (StringComparer.InvariantCultureIgnoreCase);
+			result["PROJECTDIR"] = project.BaseDirectory;
+			result["PROJECTFILENAME"] = project.FileName;
+			return result;
+		}
+		
+		public override string GetCompilerFlags (Project project, CProjectConfiguration configuration)
 		{
 			StringBuilder args = new StringBuilder ();
 			
@@ -180,7 +189,7 @@ namespace CBinding
 			
 			if (configuration.Includes != null)
 				foreach (string inc in configuration.Includes)
-					args.Append ("-I\"" + StringParserService.Parse (inc) + "\" ");
+					args.Append ("-I\"" + StringParserService.Parse (inc, GetStringTags (project)) + "\" ");
 			
 			if (configuration.PrecompileHeaders) {
 				string precdir = Path.Combine (configuration.SourceDirectory, ".prec");
@@ -191,7 +200,7 @@ namespace CBinding
 			return args.ToString ();
 		}
 		
-		public override string GetDefineFlags (CProjectConfiguration configuration)
+		public override string GetDefineFlags (Project project, CProjectConfiguration configuration)
 		{
 			return ProcessDefineSymbols (configuration.DefineSymbols);
 		}
@@ -325,7 +334,8 @@ namespace CBinding
 			return true;
 		}
 		
-		private void MakeBin (ProjectFileCollection projectFiles,
+		private void MakeBin (Project project,
+		                      ProjectFileCollection projectFiles,
 		                     CProjectConfiguration configuration,
 		                     ProjectPackageCollection packages,
 		                     CompilerResults cr,
@@ -344,7 +354,7 @@ namespace CBinding
 			
 			if (configuration.LibPaths != null)
 				foreach (string libpath in configuration.LibPaths)
-					args.Append ("-L\"" + StringParserService.Parse (libpath) + "\" ");
+					args.Append ("-L\"" + StringParserService.Parse (libpath, GetStringTags (project)) + "\" ");
 			
 			if (configuration.Libs != null) {
 				foreach (string lib in configuration.Libs) {
@@ -376,7 +386,8 @@ namespace CBinding
 			ParseLinkerOutput (errorOutput, cr);
 		}
 		
-		private void MakeStaticLibrary (ProjectFileCollection projectFiles,
+		private void MakeStaticLibrary (Project project,
+		                                ProjectFileCollection projectFiles,
 		                                CProjectConfiguration configuration,
 		                                ProjectPackageCollection packages,
 		                                CompilerResults cr,
@@ -399,7 +410,8 @@ namespace CBinding
 			ParseLinkerOutput (errorOutput, cr);
 		}
 		
-		private void MakeSharedLibrary(ProjectFileCollection projectFiles,
+		private void MakeSharedLibrary(Project project,
+		                               ProjectFileCollection projectFiles,
 		                               CProjectConfiguration configuration,
 		                               ProjectPackageCollection packages,
 		                               CompilerResults cr,
@@ -418,7 +430,7 @@ namespace CBinding
 			
 			if (configuration.LibPaths != null)
 				foreach (string libpath in configuration.LibPaths)
-					args.Append ("-L\"" + StringParserService.Parse (libpath) + "\" ");
+					args.Append ("-L\"" + StringParserService.Parse (libpath, GetStringTags (project)) + "\" ");
 			
 			if (configuration.Libs != null) {
 				foreach (string lib in configuration.Libs) {

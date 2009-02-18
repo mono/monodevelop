@@ -261,7 +261,7 @@ namespace CBinding
 		/// This is the pkg-config package that gets deployed.
 		/// <returns>The pkg-config package's filename</returns>
 		/// </summary>
-		private string WriteDeployablePgkPackage (CProjectConfiguration config)
+		private string WriteDeployablePgkPackage (Project project, CProjectConfiguration config)
 		{
 			// FIXME: This should probably be grabed from somewhere.
 			string prefix = "/usr/local";
@@ -282,7 +282,7 @@ namespace CBinding
 				writer.Write ("Libs: -L${libdir} ");
 				writer.WriteLine ("-l{0}", config.Output);
 				writer.Write ("Cflags: -I${includedir}/");
-				writer.WriteLine ("{0} {1}", Name, Compiler.GetDefineFlags (config));
+				writer.WriteLine ("{0} {1}", Name, Compiler.GetDefineFlags (project, config));
 			}
 			
 			return pkgfile;
@@ -293,7 +293,7 @@ namespace CBinding
 			CProjectConfiguration pc = (CProjectConfiguration) GetConfiguration (configuration);
 			pc.SourceDirectory = BaseDirectory;
 			
-			return compiler_manager.Compile (
+			return compiler_manager.Compile (this,
 				Files, packages,
 				pc,
 			    monitor);
@@ -485,7 +485,7 @@ namespace CBinding
 			
 			// PkgPackage
 			if (target != CompileTarget.Bin) {
-				string pkgfile = WriteDeployablePgkPackage (conf);
+				string pkgfile = WriteDeployablePgkPackage (this, conf);
 				deployFiles.Add (new DeployFile (this, Path.Combine (BaseDirectory, pkgfile), pkgfile, LinuxTargetDirectory.PkgConfig));
 			}
 			

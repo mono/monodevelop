@@ -60,12 +60,13 @@ namespace CBinding
 			get;
 		}
 		
-		string GetCompilerFlags (CProjectConfiguration configuration);
+		string GetCompilerFlags (Project project, CProjectConfiguration configuration);
 		
-		string GetDefineFlags (CProjectConfiguration configuration);
+		string GetDefineFlags (Project project, CProjectConfiguration configuration);
 		
 		BuildResult Compile (
-			ProjectFileCollection projectFiles,
+		    Project project,
+		    ProjectFileCollection projectFiles,
 		    ProjectPackageCollection packages,
 		    CProjectConfiguration configuration,
 		    IProgressMonitor monitor);
