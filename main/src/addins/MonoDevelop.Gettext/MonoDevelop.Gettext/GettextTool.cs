@@ -55,12 +55,20 @@ namespace MonoDevelop.Gettext
 			}
 			
 			if (file == null) {
-				string[] files = Directory.GetFiles (".", "*.mds");
-				if (files.Length == 0) {
+				string[] files = Directory.GetFiles (".");
+				foreach (string f in files) {
+					if (Services.ProjectService.IsWorkspaceItemFile (f)) {
+						file = f;
+						break;
+					}
+				}
+				if (file == null) {
 					Console.WriteLine ("Solution file not found.");
 					return 1;
 				}
-				file = files [0];
+			} else if (!Services.ProjectService.IsWorkspaceItemFile (file)) {
+				Console.WriteLine ("File '{0}' is not a project or solution.", file);
+				return 1;
 			}
 			
 			ConsoleProgressMonitor monitor = new ConsoleProgressMonitor ();
