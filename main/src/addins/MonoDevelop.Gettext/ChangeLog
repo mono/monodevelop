@@ -1,5 +1,11 @@
 2009-02-18  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Gettext/Catalog.cs: Don't write newlines into
+	  empty (untranslated) messages, as this breaks msgfmt. Add a
+	  log message instead of silently swallowing an exception.
+
+2009-02-18  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Gettext/GettextTool.cs: Handle general solution
 	  files, not just mds.
 

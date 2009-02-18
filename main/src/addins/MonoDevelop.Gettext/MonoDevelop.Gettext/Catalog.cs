@@ -236,6 +236,9 @@ namespace MonoDevelop.Gettext
 		// Ensures that the end lines of text are the same as in the reference string.
 		static string EnsureCorrectEndings (string reference, string text)
 		{
+			if (text.Length == 0)
+				return "";
+			
 			int numEndings = 0;
 			for (int i = text.Length - 1; i >= 0 && text[i] == '\n'; i--, numEndings++)
 				;
@@ -333,8 +336,8 @@ namespace MonoDevelop.Gettext
 				byte[] content = encoding.GetBytes (sb.ToString ());
 				File.WriteAllBytes (poFile, content);
 				saved = true;
-			} catch (Exception) {
-				// TODO: log it
+			} catch (Exception ex) {
+				LoggingService.LogError ("Unhandled error saving Gettext Catalog '{0}': {1}", fileName, ex);
 			}
 			if (!saved)
 				return false;
