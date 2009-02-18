@@ -471,15 +471,23 @@ namespace CSharpBinding.Parser
 		{
 			IEditableTextFile buffer = ctx.GetFile (cls.CompilationUnit.FileName);
 			int pos = GetNewMethodPosition (buffer, cls);
+			string eolMarker = Environment.NewLine;
+			if (cls.SourceProject != null) {
+				TextStylePolicy policy = cls.SourceProject.Policies.Get<TextStylePolicy> ();
+				if (policy != null)
+					eolMarker = policy.GetEolMarker ();
+			}
 			
 			int line, col;
 			buffer.GetLineColumnFromPosition (pos, out line, out col);
-			string indent = GetLineIndent (buffer, line);
 			
-			string pre = "#region " + regionName + " \n" + indent + "\n" + indent;
-			string post = "\n" + indent + "\n" + indent + "#endregion \n" + indent;
-			buffer.InsertText (pos, pre + post);
-			return pos + pre.Length;
+			string indent = buffer.GetText (buffer.GetPositionFromLineColumn (line, 1), pos);
+			
+			string pre = "#region " + regionName + eolMarker;
+			string post = eolMarker + indent + "#endregion" + eolMarker;
+			
+			buffer.InsertText (pos, pre + indent + post);
+			return pos + indent.Length + pre.Length;
 		}
 		
 		protected override CodeGeneratorOptions GetOptions (bool isMethod)
