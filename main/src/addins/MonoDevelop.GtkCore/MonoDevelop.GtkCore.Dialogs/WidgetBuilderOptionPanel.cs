@@ -104,7 +104,8 @@ namespace MonoDevelop.GtkCore.Dialogs
 			public void Store ()
 			{
 				ReferenceManager refmgr = new ReferenceManager (project);
-				refmgr.GtkPackageVersion = comboVersions.ActiveText;
+				if (!string.IsNullOrEmpty (comboVersions.ActiveText))
+					refmgr.GtkPackageVersion = comboVersions.ActiveText;
 				if (GtkDesignInfo.HasDesignedObjects (project)) {
 					GtkDesignInfo info = GtkDesignInfo.FromProject (project);
 					info.GenerateGettext = checkGettext.Active;

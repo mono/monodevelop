@@ -1,3 +1,8 @@
+2009-02-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.GtkCore.Dialogs/WidgetBuilderOptionPanel.cs: Fix
+	  crash when the project's gtk# is not installed.
+
 2009-02-17  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.GtkCore.csproj: Set correct resource name for
