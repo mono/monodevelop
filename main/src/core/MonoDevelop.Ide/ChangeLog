@@ -1,3 +1,9 @@
+2009-02-18  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: fixed "Bug
+	  445462 - For interfaces, the refactor command "Find derived
+	  classes" should be renamed".
+
 2009-02-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui/RootWorkspace.cs: Track api changes.

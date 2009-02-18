@@ -356,8 +356,9 @@ namespace MonoDevelop.Ide.Commands
 					}
 				}
 				
-				if ((cls.ClassType == ClassType.Class && !cls.IsSealed) || cls.ClassType == ClassType.Interface)
-					ciset.CommandInfos.Add (GettextCatalog.GetString ("Find _derived classes"), new RefactoryOperation (refactorer.FindDerivedClasses));
+				if ((cls.ClassType == ClassType.Class && !cls.IsSealed) || cls.ClassType == ClassType.Interface) {
+					ciset.CommandInfos.Add (cls.ClassType != ClassType.Interface ? GettextCatalog.GetString ("Find _derived classes") : GettextCatalog.GetString ("Find _implementor classes"), new RefactoryOperation (refactorer.FindDerivedClasses));
+				}
 
 				if (cls.SourceProject != null && includeModifyCommands && ((cls.ClassType == ClassType.Class) || (cls.ClassType == ClassType.Struct))) {
 					ciset.CommandInfos.Add (GettextCatalog.GetString ("Encapsulate Fields..."), new RefactoryOperation (refactorer.EncapsulateField));
