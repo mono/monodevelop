@@ -1,3 +1,9 @@
+2009-02-18  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs: fixed
+	  "Bug 404706 - Refactorer is not aware of existing regions
+	  when inserting members".
+
 2009-02-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/ProjectReference.cs:
