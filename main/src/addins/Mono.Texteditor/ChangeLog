@@ -1,5 +1,9 @@
 2009-02-18  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs: removed gtk keyboard snooper.
+
+2009-02-18  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextEditor.cs: Used MergeUndoOperations for
 	  drag&drop move operation.
 

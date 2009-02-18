@@ -120,7 +120,8 @@ namespace Mono.TextEditor
 		
 		public TextEditor () : this (new Document ())
 		{
-			snooperID = Gtk.Key.SnooperInstall (KeySnooperFunc);
+		//	snooperID = Gtk.Key.SnooperInstall (KeySnooperFunc);
+			snooperID = 0;
 		}
 #region Key snooper (dnd hack)
 		uint snooperID;
@@ -493,8 +494,10 @@ namespace Mono.TextEditor
 					return;
 				this.isDisposed = true;
 				DisposeBgBuffer ();
-				
-				Gtk.Key.SnooperRemove (snooperID);
+				if (snooperID > 0) {
+					Gtk.Key.SnooperRemove (snooperID);
+					snooperID = 0;
+				}
 				
 				Caret.PositionChanged -= CaretPositionChanged;
 				
