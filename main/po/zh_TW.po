@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop 0.17\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-02-18 12:19:08-0500\n"
+"POT-Creation-Date: 2009-02-18 16:04:30-0500\n"
 "PO-Revision-Date: 2007-11-29 15:36+0800\n"
 "Last-Translator: Yan-ren Tsai <elleryq@gmail.com>\n"
 "Language-Team: 繁體中文 <zh-l10n@linux.org.tw>\n"
@@ -13,6 +13,11 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;X-Poedit-Language: Chinese\n"
 "X-Poedit-Country: TAIWAN\n"
 "X-Poedit-SourceCharset: utf-8\n"
+
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core/Runtime.cs:197
+#, fuzzy
+msgid "Unhandled internal error: {0}"
+msgstr "內部錯誤"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.Execution/ProcessService.cs:185
 #, fuzzy
@@ -9796,20 +9801,20 @@ msgstr ""
 msgid "F_ound in:"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/Catalog.cs:479
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/Catalog.cs:482
 msgid "Singular"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/Catalog.cs:480
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/Catalog.cs:483
 msgid "Plural"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/Catalog.cs:503
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/Catalog.cs:506
 #, fuzzy
 msgid "Form {0}"
 msgstr "錯誤: {0}"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/Catalog.cs:505
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/Catalog.cs:508
 msgid "Form {0} (e.g. \"{1}\")"
 msgstr ""
 

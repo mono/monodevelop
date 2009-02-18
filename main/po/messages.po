@@ -1,14 +1,18 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2009-02-18 12:19:08-0500\n"
-"PO-Revision-Date: 2009-02-18 12:19:13-0500\n"
+"POT-Creation-Date: 2009-02-18 16:04:30-0500\n"
+"PO-Revision-Date: 2009-02-18 16:04:35-0500\n"
 "Last-Translator: Michael Hutchinson <mhutchinson@novell.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: MonoDevelop Gettext addin\n"
+
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core/Runtime.cs:197
+msgid "Unhandled internal error: {0}"
+msgstr ""
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.Execution/ProcessService.cs:185
 msgid "MonoDevelop External Console"
@@ -2423,7 +2427,6 @@ msgstr ""
 msgid ""
 "<b>Ported and developed by:</b>\n"
 msgstr ""
-"\n"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:132
 msgid "translator-credits"
@@ -2435,7 +2438,6 @@ msgid ""
 "\n"
 "<b>Translated by:</b>\n"
 msgstr ""
-"\n"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:230
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:243
@@ -3193,7 +3195,6 @@ msgstr ""
 msgid ""
 "Some packages installed in your system are not compatible with MonoDevelop:\n"
 msgstr ""
-"\n"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:328
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:330
@@ -4735,7 +4736,6 @@ msgid ""
 "Reason: \n"
 "{2}\n"
 msgstr ""
-"\n"
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Formats.MD1/MD1DotNetProjectHandler.cs:481
 msgid "Generating satellite assembly for '{0}' culture with {1}"
@@ -4756,7 +4756,6 @@ msgid ""
 "Reason: \n"
 "{2}\n"
 msgstr ""
-"\n"
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Formats.MD1/MD1FileFormat.cs:137
 msgid "Saving project: {0}"
@@ -5269,8 +5268,6 @@ msgid ""
 "Identifiers explicitly set using the file properties pad won't be changed.\n"
 "\n"
 msgstr ""
-"\n"
-"\n"
 
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/NamespaceSynchronisationPanel.cs:150
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/LanguageItemWindow.cs:50
@@ -6878,7 +6875,6 @@ msgid ""
 "Reason: \n"
 "{2}\n"
 msgstr ""
-"\n"
 
 #: ../src/addins/prj2make-sharp-lib/VS2003ProjectFileFormat.cs:243
 msgid "Convert to MonoDevelop"
@@ -7692,7 +7688,6 @@ msgstr ""
 msgid ""
 "Required for ASP.NET controls.\n"
 msgstr ""
-"\n"
 
 #: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:275
 msgid ""
@@ -7704,7 +7699,6 @@ msgstr ""
 msgid ""
 "Unique identifier.\n"
 msgstr ""
-"\n"
 
 #: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:282
 msgid ""
@@ -7749,7 +7743,6 @@ msgstr ""
 msgid ""
 "A suggested event handler method name.\n"
 msgstr ""
-"\n"
 
 #: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Parser/SuggestedHandlerCompletionData.cs:71
 msgid ""
@@ -8009,7 +8002,6 @@ msgid ""
 "\n"
 "# Include project specific makefile\n"
 msgstr ""
-"\n"
 
 #: ../src/addins/MonoDevelop.Autotools/CustomMakefile.cs:265
 msgid "Makefile variable {0} not found in the file."
@@ -8037,7 +8029,6 @@ msgstr ""
 msgid ""
 "Error: Makefile generation supported only for solutions.\n"
 msgstr ""
-"\n"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:59
 msgid ""
@@ -9108,19 +9099,19 @@ msgstr ""
 msgid "F_ound in:"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/Catalog.cs:479
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/Catalog.cs:482
 msgid "Singular"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/Catalog.cs:480
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/Catalog.cs:483
 msgid "Plural"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/Catalog.cs:503
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/Catalog.cs:506
 msgid "Form {0}"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/Catalog.cs:505
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/Catalog.cs:508
 msgid "Form {0} (e.g. \"{1}\")"
 msgstr ""
 

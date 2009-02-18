@@ -9,13 +9,18 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-02-18 12:13:49-0500\n"
+"POT-Creation-Date: 2009-02-18 16:04:30-0500\n"
 "PO-Revision-Date: 2008-02-04 11:09+0100\n"
 "Last-Translator: Gergely Kiss <mail.gery@gmail.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core/Runtime.cs:197
+#, fuzzy
+msgid "Unhandled internal error: {0}"
+msgstr "Belső hiba"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.Execution/ProcessService.cs:185
 msgid "MonoDevelop External Console"
@@ -9833,19 +9838,19 @@ msgstr "Eredeti többesszám (msgid_plural):"
 msgid "F_ound in:"
 msgstr "Előfordulás:"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/Catalog.cs:479
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/Catalog.cs:482
 msgid "Singular"
 msgstr "Egyesszám"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/Catalog.cs:480
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/Catalog.cs:483
 msgid "Plural"
 msgstr "Többesszám"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/Catalog.cs:503
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/Catalog.cs:506
 msgid "Form {0}"
 msgstr "Alak: {0}"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/Catalog.cs:505
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/Catalog.cs:508
 msgid "Form {0} (e.g. \"{1}\")"
 msgstr "Alak: {0} (például '{1}')"
 

@@ -22,6 +22,11 @@
 
 2009-02-18  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* *.po: Updated. Remove unnecessary newlines introduced by buggy 
+	  catalogue writing, as they confused msgfmt.
+
+2009-02-18  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* *.po: Updated.
 
 2009-02-17  Mike Krüger  <mkrueger@novell.com>
