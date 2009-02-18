@@ -684,11 +684,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					buildItem.SetMetadata ("Private", "False");
 			}
 			else if (pref.ReferenceType == ReferenceType.Gac) {
-				string include = pref.Reference;
+				string include = pref.StoredReference;
 				SystemPackage pkg = pref.Package;
 				if (pkg != null && pkg.IsFrameworkPackage) {
 					int i = include.IndexOf (',');
-					include = include.Substring (0, i).Trim ();
+					if (i != -1)
+						include = include.Substring (0, i).Trim ();
 				}
 				buildItem = msproject.AddNewItem ("Reference", include);
 				if (!pref.SpecificVersion)

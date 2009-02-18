@@ -1,3 +1,15 @@
+2009-02-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/ProjectReference.cs:
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs:
+	  When saving references, save the loaded reference, not the
+	  one resolved by MD. Fixes bug #Bug 467137 - Target GTK#
+	  version is "upgraded" when version addins are not installed.
+
+	* MonoDevelop.Projects.Extensions/DotNetProjectSubtypeNode.cs:
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectService.cs:
+	  Properly handle subtypes of subtypes of projects.
+
 2009-02-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/SolutionItem.cs:

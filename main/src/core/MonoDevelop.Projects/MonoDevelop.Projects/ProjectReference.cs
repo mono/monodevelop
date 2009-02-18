@@ -132,7 +132,7 @@ namespace MonoDevelop.Projects
 		
 		public string StoredReference {
 			get {
-				if (loadedReference != null)
+				if (!string.IsNullOrEmpty (loadedReference))
 					return loadedReference;
 				else
 					return reference;

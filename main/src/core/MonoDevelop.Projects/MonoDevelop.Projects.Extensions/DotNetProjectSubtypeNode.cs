@@ -31,7 +31,7 @@ using MonoDevelop.Projects.Formats.MSBuild;
 
 namespace MonoDevelop.Projects.Extensions
 {
-	class DotNetProjectSubtypeNode: ExtensionNode
+	public class DotNetProjectSubtypeNode: ExtensionNode
 	{
 		[NodeAttribute]
 		string guid;
@@ -50,7 +50,7 @@ namespace MonoDevelop.Projects.Extensions
 			}
 		}
 		
-		Type Type {
+		public Type Type {
 			get {
 				if (itemType == null) {
 					itemType = Addin.GetType (type, true);
@@ -79,7 +79,8 @@ namespace MonoDevelop.Projects.Extensions
 		public virtual void InitializeHandler (SolutionEntityItem item)
 		{
 			MSBuildProjectHandler h = (MSBuildProjectHandler) ProjectExtensionUtil.GetItemHandler (item);
-			h.TargetImports.AddRange (import.Split (':'));
+			if (!string.IsNullOrEmpty (import))
+				h.TargetImports.AddRange (import.Split (':'));
 			h.SubtypeGuids.Add (guid);
 		}
 	}
