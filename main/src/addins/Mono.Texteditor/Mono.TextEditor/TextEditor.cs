@@ -120,9 +120,24 @@ namespace Mono.TextEditor
 		
 		public TextEditor () : this (new Document ())
 		{
-			
+			snooperID = startID++;
+			Gtk.Key.SnooperInstall (KeySnooperFunc);
 		}
-		
+#region Key snooper (dnd hack)
+		static int startID = 8747;
+		int snooperID;
+		Dictionary<Gdk.Key, bool> keyPressed = new Dictionary<Gdk.Key, bool> ();
+		int KeySnooperFunc (Widget grab_widget, Gdk.EventKey evnt) 
+		{
+			bool state = false;
+			if (keyPressed.ContainsKey (evnt.Key))
+				state = keyPressed[evnt.Key];
+			keyPressed[evnt.Key] = !state;
+			if (this.dragContext != null)
+				Gdk.Drag.Status (this.dragContext, GetSuggestedDragAction (), 0);
+			return snooperID;
+		}
+#endregion
 		Gdk.Pixmap buffer = null, flipBuffer = null;
 		
 		void DoFlipBuffer ()
@@ -268,7 +283,7 @@ namespace Mono.TextEditor
 			
 			Gtk.TargetList list = new Gtk.TargetList ();
 			list.AddTextTargets (ClipboardActions.CopyOperation.TextType);
-			Gtk.Drag.DestSet (this, DestDefaults.All, (TargetEntry[])list, DragAction.Move | DragAction.Copy);
+			Gtk.Drag.DestSet (this, DestDefaults.All, (TargetEntry[])list, DragAction.Ask | DragAction.Default | DragAction.Move | DragAction.Copy);
 			
 			imContext = new IMMulticontext ();
 			imContext.Commit += IMCommit;
@@ -475,6 +490,8 @@ namespace Mono.TextEditor
 					return;
 				this.isDisposed = true;
 				DisposeBgBuffer ();
+				
+				Gtk.Key.SnooperRemove ((uint)snooperID);
 				
 				Caret.PositionChanged -= CaretPositionChanged;
 				
@@ -692,6 +709,12 @@ namespace Mono.TextEditor
 		ISegment selection = null;
 		DragContext dragContext;
 		
+		public bool IsInDrag {
+			get {
+				return dragOver;
+			}
+		}
+		
 		protected override void OnDragBegin (DragContext context)
 		{
 			dragContext = context;
@@ -753,7 +776,13 @@ namespace Mono.TextEditor
 			}
 			base.OnDragDataReceived (context, x, y, selection_data, info, time_);
 		}
-		
+		DragAction GetSuggestedDragAction ()
+		{
+			if (keyPressed.ContainsKey (Gdk.Key.Control_L) && keyPressed [Gdk.Key.Control_L] || 
+			    keyPressed.ContainsKey (Gdk.Key.Control_R) && keyPressed[Gdk.Key.Control_R])
+				return DragAction.Copy;
+			return DragAction.Move;
+		}
 		protected override bool OnDragMotion (DragContext context, int x, int y, uint time_)
 		{
 			if (!this.HasFocus)
@@ -761,6 +790,9 @@ namespace Mono.TextEditor
 			if (!dragOver) {
 				defaultCaretPos = Caret.Location; 
 			}
+			
+			
+			DocumentLocation oldLocation = Caret.Location;
 			dragOver = true;
 			Caret.PreserveSelection = true;
 			dragCaretPos = VisualToDocumentLocation (x - textViewMargin.XOffset, y);
@@ -770,12 +802,15 @@ namespace Mono.TextEditor
 				Caret.Location = defaultCaretPos;
 			} else {
 				if (this.dragContext != null && context.StartTime == this.dragContext.StartTime) {
-					Gdk.Drag.Status (context, context.SuggestedAction == DragAction.Move ? DragAction.Copy : DragAction.Move, time_);
+					Gdk.Drag.Status (context, GetSuggestedDragAction (), time_);
 				} else {
-					Gdk.Drag.Status (context, context.SuggestedAction, time_);
+					Gdk.Drag.Status (context, GetSuggestedDragAction (), time_);
 				}
 				Caret.Location = dragCaretPos; 
 			}
+			this.RedrawLine (oldLocation.Line);
+			if (oldLocation.Line != Caret.Line)
+				this.RedrawLine (Caret.Line);
 			Caret.PreserveSelection = false;
 			return true;
 		}
@@ -801,8 +836,7 @@ namespace Mono.TextEditor
 			if (textViewMargin.inDrag && margin == this.textViewMargin && Gtk.Drag.CheckThreshold (this, pressPositionX, pressPositionY, (int)e.X, (int)e.Y)) {
 				dragContents = new ClipboardActions.CopyOperation ();
 				dragContents.CopyData (textEditorData);
-				DragContext context = Gtk.Drag.Begin (this, ClipboardActions.CopyOperation.TargetList,
-				                                      DragAction.Move | DragAction.Copy, 1, e);
+				DragContext context = Gtk.Drag.Begin (this, ClipboardActions.CopyOperation.TargetList, DragAction.Copy | DragAction.Move, 1, e);
 				CodeSegmentPreviewWindow window = new CodeSegmentPreviewWindow (this, textEditorData.SelectionRange, 300, 300);
 				Gtk.Drag.SetIconWidget (context, window, 0, 0);
 				selection = SelectionRange;
@@ -813,7 +847,8 @@ namespace Mono.TextEditor
 			oldMargin = margin;
 			return base.OnMotionNotifyEvent (e);
 		}
-		
+
+		#region CustomDrag (for getting dnd data from toolbox items for example)
 		string     customText;
 		Gtk.Widget customSource;
 		public void BeginDrag (string text, Gtk.Widget source, DragContext context)
@@ -834,6 +869,7 @@ namespace Mono.TextEditor
 			customSource = null;
 			customText = null;
 		}
+		#endregion
 		
 		protected override bool OnLeaveNotifyEvent (Gdk.EventCrossing e)
 		{
