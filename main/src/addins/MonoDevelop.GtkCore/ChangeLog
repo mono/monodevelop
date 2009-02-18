@@ -1,3 +1,11 @@
+2009-02-18  Mike Kestner <mkestner@novell.com> 
+
+	* libstetic/wrapper/ScrolledWindow.cs: when the child viewport itself
+	is being replaced, don't try to remove the viewport from itself.
+	* libstetic/wrapper/Viewport.cs: add case for when placeholders are
+	being replaced by scrollable widgets to insert the new child directly
+	into the parent scrolled window. [Fixes #404861]
+
 2009-02-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.GtkCore.Dialogs/WidgetBuilderOptionPanel.cs: Fix

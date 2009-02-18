@@ -71,7 +71,7 @@ namespace Stetic.Wrapper {
 				return;
 			}
 			
-			if (scrolled.Child is Gtk.Viewport) {
+			if (scrolled.Child is Gtk.Viewport && oldChild != scrolled.Child) {
 				Gtk.Viewport vp = (Gtk.Viewport)scrolled.Child;
 				vp.Remove (oldChild);
 				scrolled.Remove (vp);
