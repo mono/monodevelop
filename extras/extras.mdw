@@ -12,5 +12,6 @@
     <Item>GeckoWebBrowser/GeckoWebBrowser.sln</Item>
     <Item>BooBinding/BooBinding.sln</Item>
     <Item>AspNetEdit/AspNetEdit.sln</Item>
+    <Item>MonoDevelop.AspNet.Mvc/MonoDevelop.AspNet.Mvc.sln</Item>
   </Items>
 </WorkspaceItem>

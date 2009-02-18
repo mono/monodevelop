@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<Template originator="Michael Hutchinson"
+          created="2009/02/17"
+          lastModified="2009/02/17">
+
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<_Name>ASP.NET MVC Master Page</_Name>
+		<Icon>md-html-file-icon</Icon>
+		<_Category>ASP.NET MVC</_Category>
+		<LanguageName>*</LanguageName>
+		<ProjectType>AspNetMvc</ProjectType>
+		<_Description>Creates an ASP.NET MVC Master Page.</_Description>
+	</TemplateConfiguration>
+	
+	<!-- Template Content -->
+	<TemplateFiles>
+		<AspNetFile name="${Name}.master">
+			<FileText>
+				<![CDATA[<%@ Master Language="${AspNetLanguage}" Inherits="System.Web.Mvc.ViewMasterPage" %>
+${Doctype}
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+	<asp:ContentPlaceHolder ID="head" runat="server">
+		<title></title>
+	</asp:ContentPlaceHolder>
+</head>
+<body>
+	<asp:ContentPlaceHolder ID="MainContent" runat="server">
+		
+	</asp:ContentPlaceHolder>
+</body>
+</html>
+]]>
+			</FileText>
+		</AspNetFile>
+	</TemplateFiles>
+</Template>

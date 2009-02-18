@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<Template originator="Michael Hutchinson"
+          created="2009/02/17"
+          lastModified="2009/02/17">
+
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<_Name>ASP.NET MVC View Content</_Name>
+		<Icon>md-html-file-icon</Icon>
+		<_Category>ASP.NET MVC</_Category>
+		<LanguageName>*</LanguageName>
+		<ProjectType>AspNetMvc</ProjectType>
+		<_Description>Creates an ASP.NET MVC View Content page.</_Description>
+	</TemplateConfiguration>
+	
+	<!-- Template Content -->
+	<TemplateFiles>
+		<AspNetFile name="${Name}.aspx">
+			<FileText>
+				<![CDATA[﻿<%@ Page Title="" Language="${AspNetLanguage}" Inherits="System.Web.Mvc.ViewPage" %>
+<asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
+</asp:Content>
+<asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
+</asp:Content>
+]]>
+			</FileText>
+		</AspNetFile>
+	</TemplateFiles>
+</Template>

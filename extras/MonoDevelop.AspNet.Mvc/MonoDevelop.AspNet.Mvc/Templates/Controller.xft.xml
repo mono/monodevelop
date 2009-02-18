@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<Template originator="Michael Hutchinson"
+          created="2009/02/17"
+          lastModified="2009/02/17">
+
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<_Name>ASP.NET MVC Controller</_Name>
+		<Icon>md-html-file-icon</Icon>
+		<_Category>ASP.NET MVC</_Category>
+		<LanguageName>*</LanguageName>
+		<ProjectType>AspNetMvc</ProjectType>
+		<_Description>Creates an ASP.NET MVC Controller.</_Description>
+	</TemplateConfiguration>
+	
+	<!-- Template Content -->
+	<TemplateFiles>
+		<CodeDomFile>
+			<CompileUnit>
+				<Namespaces>
+					<Namespace Name="">
+						<Imports>
+							<NamespaceImport Namespace="System" />
+							<NamespaceImport Namespace="System.Collections.Generic" />
+							<NamespaceImport Namespace="System.Linq" />
+							<NamespaceImport Namespace="System.Web" />
+							<NamespaceImport Namespace="System.Web.Mvc" />
+							<NamespaceImport Namespace="System.Web.Mvc.Ajax" />
+						</Imports>
+					</Namespace>
+					<Namespace Name="${Namespace}">
+						<Types>
+							<TypeDeclaration Name="${Name}" IsClass="true" >
+								<BaseTypes>
+									<TypeReference BaseType="Controller" />
+								</BaseTypes>
+								<Members>
+								</Members>
+							</TypeDeclaration>
+						</Types>
+					</Namespace>
+				</Namespaces>
+			</CompileUnit>
+		</CodeDomFile>
+	</TemplateFiles>
+</Template>
