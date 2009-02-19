@@ -10,17 +10,15 @@ namespace Stetic.Wrapper {
 		const Gtk.AttachOptions expandOpts = Gtk.AttachOptions.Expand | Gtk.AttachOptions.Fill;
 		const Gtk.AttachOptions fillOpts = Gtk.AttachOptions.Fill;
 
-		public static new Gtk.Table CreateInstance ()
-		{
-			Gtk.Table t = new Gtk.Table (3, 3, false);
-			t.RowSpacing = 6;
-			t.ColumnSpacing = 6;
-			return t;
-		}
-
 		public override void Wrap (object obj, bool initialized)
 		{
 			base.Wrap (obj, initialized);
+			if (!initialized) {
+				table.NRows = 3;
+				table.NColumns = 3;
+				table.RowSpacing = 6;
+				table.ColumnSpacing = 6;
+			}
 			Sync ();
 		}
 

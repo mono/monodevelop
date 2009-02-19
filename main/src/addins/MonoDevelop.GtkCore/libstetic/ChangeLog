@@ -1,3 +1,9 @@
+2009-02-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* wrapper/Table.cs:
+	* wrapper/objects.xml: A better fix for the default row/column
+	  issue.
+
 2009-02-10  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* libstetic.csproj: Don't build with make, since MD can build
