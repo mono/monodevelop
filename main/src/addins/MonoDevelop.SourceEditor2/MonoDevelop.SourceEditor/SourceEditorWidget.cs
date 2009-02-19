@@ -625,7 +625,7 @@ namespace MonoDevelop.SourceEditor
 				l.Wrap = true;
 				l.SetAlignment (0.5f, 0);
 				l.Selectable = true;
-				l.Markup = "<small>" + string.Format (GettextCatalog.GetString ("If you reload the file all modifications since last save are lost.")) +"</small>";
+				l.Markup = "<small>" + string.Format (GettextCatalog.GetString ("Do you want to drop your changes and reload the file?")) +"</small>";
 				
 				labelBox.PackStart (l, false, false, 5);
 				
