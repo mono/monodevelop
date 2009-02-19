@@ -660,15 +660,15 @@ namespace MonoDevelop.CSharpBinding
 			StringBuilder result = new StringBuilder ();
 			int startLine = member.Location.Line;
 			int endLine   = member.Location.Line;
-			if (!member.BodyRegion.IsEmpty) {
+			if (!member.BodyRegion.IsEmpty) 
 				endLine = member.BodyRegion.End.Line + 1;
-				int col, maxLine;
-				editor.GetLineColumnFromPosition (editor.TextLength - 1, out col, out maxLine);
-				endLine = System.Math.Max (endLine, maxLine);
-			}
 			
 			result.Append ("class Wrapper {");
 			if (editor != null) {
+				int col, maxLine;
+				editor.GetLineColumnFromPosition (editor.TextLength - 1, out col, out maxLine);
+				endLine = System.Math.Max (endLine, maxLine);
+				
 				int endPos = this.editor.GetPositionFromLineColumn (endLine, this.editor.GetLineLength (endLine));
 				if (endPos < 0)
 					endPos = this.editor.TextLength;

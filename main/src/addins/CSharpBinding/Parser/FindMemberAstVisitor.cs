@@ -395,13 +395,15 @@ namespace MonoDevelop.CSharpBinding
 		{
 			string type = typeReference.SystemType ?? typeReference.Type;
 			if (searchedMember is IType && this.searchedMemberName == GetNameWithoutPrefix (type)) {
+				
 				int line = typeReference.StartLocation.Y;
 				int col  = typeReference.StartLocation.X;
 				ExpressionResult res = new ExpressionResult ("new " + typeReference.ToString () + "()");
 				ResolveResult resolveResult = resolver.Resolve (res, new DomLocation (line, col));
 				
 				IReturnType cls = resolveResult != null ? resolveResult.ResolvedType : null;
-				if (cls == null || cls.FullName == ((IType)searchedMember).FullName) 
+				IType resolvedType = cls != null ? resolver.Dom.SearchType (new SearchTypeRequest (resolver.Unit, cls, resolver.CallingType)) : null;
+				if (resolvedType == null || resolvedType.FullName == ((IType)searchedMember).FullName) 
 					AddUniqueReference (line, col, typeReference.Type);
 			}
 			return base.VisitTypeReference (typeReference, data);

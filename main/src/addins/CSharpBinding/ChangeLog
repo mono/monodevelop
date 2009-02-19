@@ -1,5 +1,11 @@
 2009-02-19  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/NRefactoryResolver.cs:
+	* Parser/FindMemberAstVisitor.cs: Fixed "Bug 477374 - Find
+	  references... doesn't find all references".
+
+2009-02-19  Mike Krüger  <mkrueger@novell.com>
+
 	* Parser/NRefactoryParser.cs: enum fields now have the correct
 	  return type.
 
