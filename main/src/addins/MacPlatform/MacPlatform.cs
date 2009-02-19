@@ -31,13 +31,18 @@ using System.IO;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
-
+using IgeMacIntegration;
+using MonoDevelop.Components.Commands;
 using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide.Commands;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Platform
 {
 	public class MacPlatform : PlatformService
 	{
+		bool igeInited, igeExists;
+		
 		static Dictionary<string, string> mimemap;
 
 		static MacPlatform () {
@@ -69,7 +74,7 @@ namespace MonoDevelop.Platform
 		}
 
 		public override string DefaultMonospaceFont {
-			get { return "Lucida Grande 14"; }
+			get { return "Monaco 12"; }
 		}
 		
 		public override string Name {
@@ -90,6 +95,59 @@ namespace MonoDevelop.Platform
 			} catch (Exception ex){
 				MonoDevelop.Core.LoggingService.LogError ("Could not load Apache mime database", ex);
 			}
+		}
+		
+		[System.Runtime.InteropServices.DllImport("libigemacintegration.dylib")]
+		static extern void ige_mac_menu_install_key_handler ();
+		
+		bool IgeExists {
+			get {
+				if (igeInited)
+					return igeExists;
+				igeInited = true;
+				
+				try {
+					ige_mac_menu_install_key_handler ();
+				}
+				catch (Exception ex) {
+					return false;
+				}
+				
+				IgeSetup ();
+				igeExists = true;
+				return true;
+			}
+		}
+		
+		public override bool CanInstallGlobalMenu {
+			get { return IgeExists; }
+		}
+		
+		public override void InstallGlobalMenu (Gtk.MenuBar mainMenu)
+		{
+			IgeMacMenu.MenuBar = mainMenu;
+		}
+		
+		//add quit, preferences, about to the app menu group
+		void IgeSetup ()
+		{
+			IgeMacMenu.QuitMenuItem = new CommandMenuItem (FileCommands.Exit, IdeApp.CommandService);
+			
+			IgeMacMenuGroup appMenu = IgeMacMenu.AddAppMenuGroup ();
+			foreach (object cmdId in new object[] { HelpCommands.About, EditCommands.MonodevelopPreferences, EditCommands.DefaultPolicies })
+				appMenu.AddMenuItem (new CommandMenuItem (cmdId, IdeApp.CommandService), IdeApp.CommandService.GetCommand (cmdId).Text);
+		}
+		
+		public override void UninstallGlobalMenu ()
+		{
+			IgeMacMenu.MenuBar = null;
+		}
+		
+		void InitDock ()
+		{
+			IgeMacDock.Default.QuitActivate += delegate {
+				 MonoDevelop.Core.Runtime.Shutdown ();
+			};
 		}
 	}
 }
