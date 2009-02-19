@@ -313,9 +313,9 @@ namespace MonoDevelop.VersionControl.Views
 		private void StartUpdate ()
 		{
 			if (!remoteStatus)
-				status.Text = "Scanning for changes...";
+				status.Text = GettextCatalog.GetString ("Scanning for changes...");
 			else
-				status.Text = "Scanning for local and remote changes...";
+				status.Text = GettextCatalog.GetString ("Scanning for local and remote changes...");
 			
 			status.Visible = true;
 			scroller.Visible = false;

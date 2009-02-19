@@ -1,3 +1,8 @@
+2009-02-19  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.VersionControl.Views/StatusView.cs: Added some
+	  strings to translation.
+
 2009-02-07  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.VersionControl.csproj: Don't local-copy other
