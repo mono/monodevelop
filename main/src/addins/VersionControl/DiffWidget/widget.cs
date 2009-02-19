@@ -122,19 +122,21 @@ namespace Algorithm.Diff.Gtk {
 			if (options.Font != null)
 				font = Pango.FontDescription.FromString(options.Font);
 			
+			Hunk lastHunk = hunks.Length > 0 ? hunks[hunks.Length - 1] : null;
+			
 			foreach (Hunk hunk in hunks) {
 				char leftmode = hunk.Same ? ' ' : (hunk.ChangedLists == 1 && hunk.Changes(0).Count == 0) ? '-' : 'C';
 				uint inc = 0;
 				
 				if (options.SideBySide) {
-					ComposeLines(hunk.Original(), leftmode, -1, difftable, row, false, 0, options.LineWrap, font, options.LineNumbers);
+					ComposeLines(hunk.Original(), leftmode, -1, difftable, row, false, 0, options.LineWrap, font, options.LineNumbers, lastHunk.Original ());
 					inc = (uint)hunk.Original().Count;
 				} else { 
 					if (leftmode == 'C') leftmode = '-';
 					int altlines = -1;
 					if (hunk.ChangedLists == 1 && hunk.Same)
 						altlines = hunk.Changes(0).Start;
-					ComposeLines(hunk.Original(), leftmode, altlines, difftable, row, true, 0, options.LineWrap, font, options.LineNumbers);
+					ComposeLines(hunk.Original(), leftmode, altlines, difftable, row, true, 0, options.LineWrap, font, options.LineNumbers, lastHunk.Original ());
 					row += (uint)hunk.Original().Count;
 				}
 
@@ -143,14 +145,14 @@ namespace Algorithm.Diff.Gtk {
 					
 					if (options.SideBySide) {
 						int colsper = 1 + (options.LineNumbers ? 1 : 0);			
-						ComposeLines(hunk.Changes(i), rightmode, -1, difftable, row, false, (uint)((i+1)*colsper), options.LineWrap, font, options.LineNumbers);
+						ComposeLines(hunk.Changes(i), rightmode, -1, difftable, row, false, (uint)((i+1)*colsper), options.LineWrap, font, options.LineNumbers, lastHunk.Original ());
 						if (hunk.Changes(i).Count > inc)
 							inc = (uint)hunk.Changes(i).Count;
 					} else {
 						if (rightmode == 'C') rightmode = '+';
 		
 						if (!hunk.Same) 
-							ComposeLines(hunk.Changes(i), rightmode, -1, difftable, row, true, 0, options.LineWrap, font, options.LineNumbers);
+							ComposeLines(hunk.Changes(i), rightmode, -1, difftable, row, true, 0, options.LineWrap, font, options.LineNumbers, lastHunk.Original ());
 						
 						if (!hunk.Same) row += (uint)hunk.Changes(i).Count;
 					}
@@ -161,7 +163,7 @@ namespace Algorithm.Diff.Gtk {
 			}
 		}
 		
-		void ComposeLines(Algorithm.Diff.Range range, char style, int otherStart, Table table, uint startRow, bool axn, uint col, bool wrap, Pango.FontDescription font, bool lineNumbers) {
+		void ComposeLines(Algorithm.Diff.Range range, char style, int otherStart, Table table, uint startRow, bool axn, uint col, bool wrap, Pango.FontDescription font, bool lineNumbers, Algorithm.Diff.Range lastRange) {
 			if (range.Count == 0) return;
 			
 			StringBuilder text = new StringBuilder();
@@ -175,8 +177,13 @@ namespace Algorithm.Diff.Gtk {
 					string lineNo = (range.Start + i + 1).ToString();
 					if (otherStart != -1 && range.Start != otherStart)
 					lineNo += "/" + (otherStart + i + 1).ToString();
+					string max = lastRange.End + "/" + lastRange.End;
+					
 					text.Append(lineNo);
-					text.Append('\t');
+					for (int j = 0; j < max.Length - lineNo.Length + 1; j++) {
+						text.Append(' ');
+					}
+//					text.Append('\t');
 				}
 				
 				text.Append((string)range[(int)i]);

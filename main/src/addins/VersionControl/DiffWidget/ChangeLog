@@ -1,3 +1,8 @@
+2009-02-19  Mike Krüger  <mkrueger@novell.com>
+
+	* widget.cs: fixed "Bug 409910 - Lines added in a diff make
+	  user think identing is incorrect".
+
 2009-02-18  Mike Krüger  <mkrueger@novell.com>
 
 	* widget.cs: Fixed "Bug 472140 - Diff widget breaks themes".
