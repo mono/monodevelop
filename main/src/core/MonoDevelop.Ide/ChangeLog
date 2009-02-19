@@ -1,3 +1,9 @@
+2009-02-18  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs:
+	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Add a hook for
+	  handling global menu installation.
+
 2009-02-18  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: fixed "Bug

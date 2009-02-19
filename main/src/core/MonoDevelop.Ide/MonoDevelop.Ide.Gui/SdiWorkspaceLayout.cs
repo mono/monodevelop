@@ -113,8 +113,8 @@ namespace MonoDevelop.Ide.Gui
 			wbWindow = (Window) workbench;
 			
 			rootWidget = fullViewVBox;
-
-			fullViewVBox.PackStart (workbench.TopMenu, false, false, 0);
+			
+			InstallMenuBar ();
 			
 			toolbarFrame = new CommandFrame (IdeApp.CommandService);
 			fullViewVBox.PackStart (toolbarFrame, true, true, 0);
@@ -126,7 +126,6 @@ namespace MonoDevelop.Ide.Gui
 			}
 			
 			toolBars = workbench.ToolBars;
-			menubar = workbench.TopMenu;
 			
 			// Create the docking widget and add it to the window.
 			dock = new DockFrame ();
@@ -422,7 +421,7 @@ namespace MonoDevelop.Ide.Gui
 			workbench.ContextChanged -= contextChangedHandler;
 
 			dock.SaveLayouts (configFile);
-			rootWidget.Remove(((DefaultWorkbench)workbench).TopMenu);
+			UninstallMenuBar ();
 			wbWindow.Remove(rootWidget);
 			activePadCollection = null;
 		}
@@ -617,17 +616,43 @@ namespace MonoDevelop.Ide.Gui
 				toolbarFrame.CurrentLayout = cl;
 			}
 
-			if (wb.TopMenu != menubar) {
-				Gtk.Box parent = (Gtk.Box) menubar.Parent;
-				int pos = ((Gtk.Box.BoxChild) parent [menubar]).Position;
-				
-				parent.PackStart (wb.TopMenu, false, false, 0);
-				((Gtk.Box.BoxChild) parent [wb.TopMenu]).Position = pos;
+			InstallMenuBar ();
+		}
+		
+		void InstallMenuBar ()
+		{
+			DefaultWorkbench wb = (DefaultWorkbench) workbench;
+			
+			if (wb.TopMenu == menubar)
+				return;
+			
+			if (MonoDevelop.Core.Gui.Services.PlatformService.CanInstallGlobalMenu) {
+				MonoDevelop.Core.Gui.Services.PlatformService.InstallGlobalMenu (wb.TopMenu);
+			}
+			else {
+				((VBox)rootWidget).PackStart (wb.TopMenu, false, false, 0);
+				((Gtk.Box.BoxChild) rootWidget [wb.TopMenu]).Position = 0;
 				wb.TopMenu.ShowAll ();
 				
-				parent.Remove (menubar);
-				menubar = wb.TopMenu;
+				if (menubar != null)
+					rootWidget.Remove (menubar);
 			}
+			menubar = wb.TopMenu;
+		}
+		
+		void UninstallMenuBar ()
+		{
+			if (menubar == null)
+				return;
+			
+			if (MonoDevelop.Core.Gui.Services.PlatformService.CanInstallGlobalMenu) {
+				MonoDevelop.Core.Gui.Services.PlatformService.UninstallGlobalMenu ();
+			}
+			else {
+				rootWidget.Remove(((DefaultWorkbench)workbench).TopMenu);
+			}
+			
+			menubar = null;
 		}
 		
 		public IPadWindow GetPadWindow (PadCodon content)

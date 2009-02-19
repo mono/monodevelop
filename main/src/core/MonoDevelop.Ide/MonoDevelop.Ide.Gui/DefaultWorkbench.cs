@@ -67,7 +67,7 @@ namespace MonoDevelop.Ide.Gui
 
 		internal static GType gtype;
 		
-		public Gtk.MenuBar TopMenu = null;
+		Gtk.MenuBar topMenu = null;
 		private Gtk.Toolbar[] toolbars = null;
 		MonoDevelopStatusBar statusBar = new MonoDevelop.Ide.MonoDevelopStatusBar ();
 		
@@ -84,6 +84,10 @@ namespace MonoDevelop.Ide.Gui
 		Gtk.TargetEntry[] targetEntryTypes = new Gtk.TargetEntry[] {
 			new Gtk.TargetEntry ("text/uri-list", 0, (uint)TargetList.UriList)
 		};
+		
+		public Gtk.MenuBar TopMenu {
+			get { return topMenu; }
+		}
 		
 		public bool FullScreen {
 			get {
@@ -219,7 +223,7 @@ namespace MonoDevelop.Ide.Gui
 //			TopMenu.Selected   += new CommandHandler(OnTopMenuSelected);
 //			TopMenu.Deselected += new CommandHandler(OnTopMenuDeselected);
 
-			TopMenu = IdeApp.CommandService.CreateMenuBar (mainMenuPath);
+			topMenu = IdeApp.CommandService.CreateMenuBar (mainMenuPath);
 			toolbars = IdeApp.CommandService.CreateToolbarSet (toolbarsPath);
 			foreach (Gtk.Toolbar t in toolbars) {
 				t.ToolbarStyle = Gtk.ToolbarStyle.Icons;
@@ -241,7 +245,7 @@ namespace MonoDevelop.Ide.Gui
 			bool changed = false;
 			
 			if (args.PathChanged (mainMenuPath)) {
-				TopMenu = IdeApp.CommandService.CreateMenuBar (mainMenuPath);
+				topMenu = IdeApp.CommandService.CreateMenuBar (mainMenuPath);
 				changed = true;
 			}
 			
