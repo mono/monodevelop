@@ -78,7 +78,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
-    <None Include="MacPlatform.addin.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <EmbeddedResource Include="MacPlatform.addin.xml" />
+  </ItemGroup>
 </Project>

@@ -1,5 +1,9 @@
 2009-02-19  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MacPlatform.csproj: Embed the addin manifest.
+
+2009-02-19  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MacPlatform.csproj: Updated.
 
 	* Ige:
