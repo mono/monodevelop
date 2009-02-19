@@ -618,17 +618,6 @@ namespace MonoDevelop.Projects
 		void RemoveFileFromAllProjects (string fileName)
 		{
 			foreach (Project projectEntry in GetAllProjects()) {
-				DotNetProject netProject = projectEntry as DotNetProject;
-				if (netProject != null) {
-					List<ProjectReference> refsToDelete = new List<ProjectReference> ();
-					foreach (ProjectReference rInfo in netProject.References) {
-						if (rInfo.ReferenceType == ReferenceType.Assembly && rInfo.Reference == fileName)
-							refsToDelete.Add (rInfo);
-					}
-					foreach (ProjectReference rInfo in refsToDelete)
-						netProject.References.Remove (rInfo);
-				}
-				
 				List<ProjectFile> toDelete = new List<ProjectFile> ();
 				foreach (ProjectFile fInfo in projectEntry.Files) {
 					if (fInfo.Name == fileName)

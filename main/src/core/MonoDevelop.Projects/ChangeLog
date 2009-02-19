@@ -1,3 +1,10 @@
+2009-02-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/SolutionFolder.cs: Don't automatically
+	  remove references when a file is deleted. Fixes bug 477517 -
+	  Clean on a project causes the deletion of a reference in
+	  another.
+
 2009-02-19  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/CompoundType.cs:
