@@ -25,7 +25,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs {
         
         private Gtk.Button button9;
         
-        private Gtk.Button button10;
+        private Gtk.Button buttonOk;
         
         protected virtual void Build() {
             Stetic.Gui.Initialize(this);
@@ -82,11 +82,11 @@ namespace MonoDevelop.Projects.Gui.Dialogs {
             w5.Fill = false;
             w1.Add(this.vbox79);
             Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(w1[this.vbox79]));
-            w6.Position = 2;
+            w6.Position = 0;
             // Internal child MonoDevelop.Projects.Gui.Dialogs.RenameConfigDialog.ActionArea
             Gtk.HButtonBox w7 = this.ActionArea;
             w7.Name = "hbuttonbox2";
-            w7.Spacing = 10;
+            w7.Spacing = 6;
             w7.BorderWidth = ((uint)(5));
             w7.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child hbuttonbox2.Gtk.ButtonBox+ButtonBoxChild
@@ -97,20 +97,21 @@ namespace MonoDevelop.Projects.Gui.Dialogs {
             this.button9.Label = "gtk-cancel";
             this.AddActionWidget(this.button9, -6);
             // Container child hbuttonbox2.Gtk.ButtonBox+ButtonBoxChild
-            this.button10 = new Gtk.Button();
-            this.button10.Name = "button10";
-            this.button10.UseStock = true;
-            this.button10.UseUnderline = true;
-            this.button10.Label = "gtk-ok";
-            this.AddActionWidget(this.button10, -5);
-            Gtk.ButtonBox.ButtonBoxChild w9 = ((Gtk.ButtonBox.ButtonBoxChild)(w7[this.button10]));
+            this.buttonOk = new Gtk.Button();
+            this.buttonOk.Name = "buttonOk";
+            this.buttonOk.UseStock = true;
+            this.buttonOk.UseUnderline = true;
+            this.buttonOk.Label = "gtk-ok";
+            w7.Add(this.buttonOk);
+            Gtk.ButtonBox.ButtonBoxChild w9 = ((Gtk.ButtonBox.ButtonBoxChild)(w7[this.buttonOk]));
             w9.Position = 1;
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
-            this.DefaultWidth = 305;
-            this.DefaultHeight = 143;
+            this.DefaultWidth = 371;
+            this.DefaultHeight = 149;
             this.Show();
+            this.buttonOk.Clicked += new System.EventHandler(this.OnButtonOkClicked);
         }
     }
 }

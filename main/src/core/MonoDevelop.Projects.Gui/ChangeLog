@@ -1,3 +1,21 @@
+2009-02-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs/RenameConfigDialog.cs:
+	* MonoDevelop.Projects.Gui.Dialogs/NewConfigurationDialog.cs:
+	* MonoDevelop.Projects.Gui.Dialogs/MultiConfigItemOptionsPanel.cs:
+	* MonoDevelop.Projects.Gui.Dialogs/MultiConfigItemOptionsDialog.cs:
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineConfigurationPanel.cs:
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/SolutionItemConfigurationsPanel.cs:
+	  Fixed several issues related to configuration management.
+	  Fixes bug #446851.
+
+	* gtk-gui/gui.stetic:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.RenameConfigDialog.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.NewConfigurationDialog.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.RunOptionsPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.StartupOptionsPanelWidget.cs:
+	  Updated.
+
 2009-02-11  Mike Krüger  <mkrueger@novell.com>
 
 	* gtk-gui/objects.xml: 

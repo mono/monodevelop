@@ -43,7 +43,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 		
 		public override Widget CreatePanelWidget()
 		{
-			return widget = new CombineConfigurationPanelWidget ();
+			return widget = new CombineConfigurationPanelWidget ((MultiConfigItemOptionsDialog) ParentDialog);
 		}
 
 		public override void LoadConfigData ()
@@ -61,11 +61,13 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 	{
 		TreeStore store;
 		SolutionConfiguration configuration;
+		MultiConfigItemOptionsDialog parentDialog;
 		
-		public CombineConfigurationPanelWidget ()
+		public CombineConfigurationPanelWidget (MultiConfigItemOptionsDialog parentDialog)
 		{
 			Build ();
 			
+			this.parentDialog = parentDialog;
 			store = new TreeStore (typeof(object), typeof(string), typeof(bool));
 			configsList.Model = store;
 			configsList.HeadersVisible = true;
@@ -102,9 +104,12 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 		void OnSetConfigurationsData (Gtk.TreeViewColumn treeColumn, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
 		{
 			SolutionConfigurationEntry entry = (SolutionConfigurationEntry) store.GetValue (iter, 0);
-			string[] values = new string [entry.Item.Configurations.Count];
+			
+			ConfigurationData data = parentDialog.ConfigurationData.FindConfigurationData (entry.Item);
+			
+			string[] values = new string [data.Configurations.Count];
 			for (int n=0; n<values.Length; n++)
-				values [n] = entry.Item.Configurations [n].Id;
+				values [n] = data.Configurations [n].Id;
 			CellRendererComboBox comboCell = (CellRendererComboBox) cell;
 			comboCell.Values = values;
 			comboCell.Text = entry.ItemConfiguration;
@@ -125,8 +130,10 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			TreeIter iter;
 			if (store.GetIter (out iter, new TreePath (args.Path))) {
 				SolutionConfigurationEntry entry = (SolutionConfigurationEntry) store.GetValue (iter, 0);
-				if (args.Active != -1)
-					entry.ItemConfiguration = entry.Item.Configurations [args.Active].Id;
+				if (args.Active != -1) {
+					ConfigurationData data = parentDialog.ConfigurationData.FindConfigurationData (entry.Item);
+					entry.ItemConfiguration = data.Configurations [args.Active].Id;
+				}
 				else
 					entry.ItemConfiguration = null;
 			}

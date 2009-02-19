@@ -25,23 +25,64 @@
 //
 //
 
+using System.Collections.Generic;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.Projects.Gui.Dialogs
 {
 	partial class NewConfigurationDialog : Gtk.Dialog
 	{
-		public NewConfigurationDialog ()
+		ItemConfigurationCollection<ItemConfiguration> configurations;
+		
+		public NewConfigurationDialog (ItemConfigurationCollection<ItemConfiguration> configurations)
 		{
 			this.Build();
+			this.configurations = configurations;
+			HashSet<string> configs = new HashSet<string> ();
+			HashSet<string> platforms = new HashSet<string> ();
+			foreach (ItemConfiguration conf in configurations) {
+				if (configs.Add (conf.Name))
+					comboName.AppendText (conf.Name);
+				string plat = MultiConfigItemOptionsPanel.GetPlatformName (conf.Platform);
+				if (platforms.Add (plat))
+				    comboPlatform.AppendText (plat);
+			}
+			comboPlatform.Entry.Text = MultiConfigItemOptionsPanel.GetPlatformName ("");
 		}
 		
 		public string ConfigName {
-			get { return nameEntry.Text; }
-			set { nameEntry.Text = value; }
+			get {
+				string plat = MultiConfigItemOptionsPanel.GetPlatformId (comboPlatform.Entry.Text.Trim ());
+				if (string.IsNullOrEmpty (plat))
+					return comboName.Entry.Text.Trim ();
+				else
+					return comboName.Entry.Text.Trim () + "|" + plat;
+			}
+			set {
+				int i = value.LastIndexOf ('|');
+				if (i == -1) {
+					comboName.Entry.Text = value;
+					comboPlatform.Entry.Text = string.Empty;
+				} else {
+					comboName.Entry.Text = value.Substring (0, i);
+					comboPlatform.Entry.Text = MultiConfigItemOptionsPanel.GetPlatformName (value.Substring (i+1));
+				}
+			}
 		}
 		
 		public bool CreateChildren {
 			get { return createChildrenCheck.Active; }
+		}
+		
+		protected virtual void OnOkbutton1Clicked (object sender, System.EventArgs e)
+		{
+			if (comboName.Entry.Text.Trim ().Length == 0 || comboName.Entry.Text.IndexOf ('|') != -1) {
+				MessageService.ShowWarning (this, GettextCatalog.GetString ("Please enter a valid configuration name."));
+			} else if (configurations [ConfigName] != null) {
+				MessageService.ShowWarning (this, GettextCatalog.GetString ("A configuration with the name '{0}' already exists.", ConfigName));
+			} else
+				Respond (Gtk.ResponseType.Ok);
 		}
 	}
 }

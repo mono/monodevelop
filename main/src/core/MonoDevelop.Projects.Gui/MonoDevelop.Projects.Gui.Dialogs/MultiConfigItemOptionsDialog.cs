@@ -115,6 +115,18 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 			this.entry = obj;
 		}
 		
+		public ConfigurationData FindConfigurationData (IConfigurationTarget item)
+		{
+			if (this.entry == item)
+				return this;
+			foreach (ConfigurationData data in children) {
+				ConfigurationData ret = data.FindConfigurationData (item);
+				if (ret != null)
+					return ret;
+			}
+			return null;
+		}
+		
 		internal static ConfigurationData Build (IConfigurationTarget entry)
 		{
 			ConfigurationData data = new ConfigurationData (entry);
@@ -190,17 +202,23 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 				ItemConfiguration sc = configurations [sourceName];
 				if (sc != null)
 					conf.CopyFrom (sc);
+				else
+					sourceName = null;
 			}
 			
 			if (entry is Solution) {
 				SolutionConfiguration cc = (SolutionConfiguration) conf;
 				foreach (ConfigurationData data in children) {
-					SolutionConfigurationEntry ce = cc.AddItem ((SolutionEntityItem) data.Entry);
+					SolutionConfigurationEntry ce;
+					if (sourceName != null)
+						ce = cc.GetEntryForItem ((SolutionEntityItem)data.Entry);
+					else
+						ce = cc.AddItem ((SolutionEntityItem) data.Entry);
 					if (createChildConfigurations) {
 						ce.ItemConfiguration = name;
 						if (data.Configurations [name] == null)
 							data.AddConfiguration (name, sourceName, createChildConfigurations);
-					} else {
+					} else if (sourceName == null) {
 						if (data.Configurations.Count > 0)
 							ce.ItemConfiguration = data.Configurations [0].Id;
 					}
@@ -230,9 +248,17 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 			
 			ItemConfiguration cc = configurations [oldName];
 			if (cc != null) {
-				cc.Name = newName;
+				cc.Id = newName;
 			}
 			if (renameChildConfigurations) {
+				if (entry is Solution) {
+					foreach (SolutionConfiguration conf in Configurations) {
+						foreach (SolutionConfigurationEntry se in conf.Configurations) {
+							if (se.ItemConfiguration == oldName)
+								se.ItemConfiguration = newName;
+						}
+					}
+				}
 				foreach (ConfigurationData data in children)
 					data.RenameConfiguration (oldName, newName, true);
 			}

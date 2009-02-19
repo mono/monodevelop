@@ -26,23 +26,53 @@
 //
 
 using System;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Gui.Dialogs
 {
 	partial class RenameConfigDialog: Gtk.Dialog
 	{
-		public RenameConfigDialog()
+		string platform;
+		ItemConfigurationCollection<ItemConfiguration> configurations;
+		
+		public RenameConfigDialog(ItemConfigurationCollection<ItemConfiguration> configurations)
 		{
 			Build ();
+			this.configurations = configurations;
 		}
 		
 		public string ConfigName {
-			get { return nameEntry.Text; }
-			set { nameEntry.Text = value; }
+			get {
+				if (string.IsNullOrEmpty (platform))
+					return nameEntry.Text;
+				else
+					return nameEntry.Text + "|" + platform;
+			}
+			set {
+				int i = value.LastIndexOf ('|');
+				if (i == -1) {
+					nameEntry.Text = value;
+					platform = string.Empty;
+				} else {
+					nameEntry.Text = value.Substring (0, i);
+					platform = value.Substring (i+1);
+				}
+			}
 		}
 		
 		public bool RenameChildren {
 			get { return renameChildrenCheck.Active; }
+		}
+	
+		protected virtual void OnButtonOkClicked (object sender, System.EventArgs e)
+		{
+			if (nameEntry.Text.Trim ().Length == 0 || nameEntry.Text.IndexOf ('|') != -1) {
+				MessageService.ShowWarning (GettextCatalog.GetString ("Please enter a valid configuration name."));
+			} else if (configurations [ConfigName] != null) {
+				MessageService.ShowWarning (GettextCatalog.GetString ("A configuration with the name '{0}' already exists.", ConfigName));
+			} else
+				Respond (Gtk.ResponseType.Ok);
 		}
 	}
 }

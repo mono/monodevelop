@@ -105,20 +105,14 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 
 		void AddConfiguration (string copyFrom)
 		{
-			NewConfigurationDialog dlg = new NewConfigurationDialog ();
+			NewConfigurationDialog dlg = new NewConfigurationDialog (configData.Configurations);
 			try {
 				bool done = false;
 				do {
 					if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
-						if (dlg.ConfigName.Length == 0) {
-							MessageService.ShowWarning (GettextCatalog.GetString ("Please enter a valid configuration name."));
-						} else if (configData.Configurations [dlg.ConfigName] != null) {
-							MessageService.ShowWarning (GettextCatalog.GetString ("A configuration with the name '{0}' already exists.", dlg.ConfigName));
-						} else {
-							ItemConfiguration cc = configData.AddConfiguration (dlg.ConfigName, copyFrom, dlg.CreateChildren);
-							store.AppendValues (cc, cc.Id);
-							done = true;
-						}
+						ItemConfiguration cc = configData.AddConfiguration (dlg.ConfigName, copyFrom, dlg.CreateChildren);
+						store.AppendValues (cc, cc.Id);
+						done = true;
 					} else
 						done = true;
 				} while (!done);
@@ -160,22 +154,16 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 				return;
 				
 			ItemConfiguration cc = (ItemConfiguration) store.GetValue (iter, 0);
-			RenameConfigDialog dlg = new RenameConfigDialog ();
+			RenameConfigDialog dlg = new RenameConfigDialog (configData.Configurations);
 			dlg.ConfigName = cc.Id;
 			
 			try {
 				bool done = false;
 				do {
 					if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
-						if (dlg.ConfigName.Length == 0) {
-							MessageService.ShowWarning (GettextCatalog.GetString ("Please enter a valid configuration name."));
-						} else if (configData.Configurations [dlg.ConfigName] != null) {
-							MessageService.ShowWarning (GettextCatalog.GetString ("A configuration with the name '{0}' already exists.", dlg.ConfigName));
-						} else {
-							configData.RenameConfiguration (cc.Id, dlg.ConfigName, dlg.RenameChildren);
-							store.SetValue (iter, 1, cc.Id);
-							done = true;
-						}
+						configData.RenameConfiguration (cc.Id, dlg.ConfigName, dlg.RenameChildren);
+						store.SetValue (iter, 1, cc.Id);
+						done = true;
 					} else
 						done = true;
 				} while (!done);

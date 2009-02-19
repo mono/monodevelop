@@ -134,7 +134,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 				UpdateSelection ();
 			}
 			widgetCreated = true;
-			panelWidget = cbox;
+			panelWidget = child;
 			
 			if (currentConfigs.Count > 0) {
 				panelWidget.Sensitive = true;
@@ -154,8 +154,11 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 			if (allowMixedConfigurations)
 				configCombo.AppendText (GettextCatalog.GetString ("All Configurations"));
 			
-			foreach (ItemConfiguration config in dialog.ConfigurationData.Configurations)
-				configCombo.AppendText (config.Name);
+			HashSet<string> configs = new HashSet<string> ();
+			foreach (ItemConfiguration config in dialog.ConfigurationData.Configurations) {
+				if (configs.Add (config.Name))
+					configCombo.AppendText (config.Name);
+			}
 			
 			loading = false;
 		}
@@ -168,21 +171,13 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 			platforms.Clear ();
 
 			string configName = null;
-			if (!allowMixedConfigurations || configCombo.Active > 0) {
-				int i = configCombo.Active;
-				if (allowMixedConfigurations)
-					i--;
-				ItemConfiguration config = dialog.ConfigurationData.Configurations [i];
-				configName = config.Name;
-			}
+			if (!allowMixedConfigurations || configCombo.Active > 0)
+				configName = configCombo.ActiveText;
 
 			foreach (ItemConfiguration config in dialog.ConfigurationData.Configurations) {
 				if ((configName == null || config.Name == configName) && !platforms.Contains (config.Platform)) {
 					platforms.Add (config.Platform);
-					if (config.Platform.Length > 0)
-						platformCombo.AppendText (config.Platform);
-					else
-						platformCombo.AppendText (GettextCatalog.GetString ("Any CPU"));
+					platformCombo.AppendText (GetPlatformName (config.Platform));
 				}
 			}
 			loading = false;
@@ -223,9 +218,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 			if (configName == GettextCatalog.GetString ("All Configurations"))
 				configName = null;
 			
-			string platform = dialog.CurrentPlatform = platformCombo.ActiveText;
-			if (platform == GettextCatalog.GetString ("Any CPU"))
-				platform = string.Empty;
+			string platform = GetPlatformId (dialog.CurrentPlatform = platformCombo.ActiveText);
 			
 			foreach (ItemConfiguration config in dialog.ConfigurationData.Configurations) {
 				if ((configName == null || config.Name == configName) && config.Platform == platform)
@@ -243,6 +236,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 		{
 			if (!widgetCreated)
 				return;
+			lastConfigSelection = -1;
 			FillConfigurations ();
 			UpdateSelection ();
 		}
@@ -311,5 +305,21 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 		}
 		
 		public abstract void LoadConfigData ();
+		
+		internal static string GetPlatformName (string id)
+		{
+			if (string.IsNullOrEmpty (id))
+				return GettextCatalog.GetString ("Any CPU");
+			else
+				return id;
+		}
+		
+		internal static string GetPlatformId (string name)
+		{
+			if (name == GettextCatalog.GetString ("Any CPU"))
+				return string.Empty;
+			else
+				return name;
+		}
 	}
 }
