@@ -1,3 +1,10 @@
+2009-02-19  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.VersionControl.Subversion.csproj:
+	* MonoDevelop.VersionControl.Subversion.dll.config: Add a
+	  dllmap for the Mac. Config patch from Kris Ray.
+
 2009-02-08  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.VersionControl.Subversion.csproj: Don't
