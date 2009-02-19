@@ -1,3 +1,12 @@
+2009-02-19  Mike Krüger  <mkrueger@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* gtk-gui/objects.xml: 
+
+	* MonoDevelop.Gettext.Editor/POEditorWidget.cs: fixed "Bug
+	  477062 - Sorting on status column of translation view causes
+	  hang".
+
 2009-02-18  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Gettext/Catalog.cs: Don't write newlines into

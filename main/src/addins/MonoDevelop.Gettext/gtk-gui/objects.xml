@@ -7,8 +7,4 @@
     </itemgroups>
     <signals />
   </object>
-  <object type="MonoDevelop.Gettext.GettextFeatureWidget" palette-category="widget" allow-children="false" base-type="Gtk.Bin">
-    <itemgroups />
-    <signals />
-  </object>
 </objects>

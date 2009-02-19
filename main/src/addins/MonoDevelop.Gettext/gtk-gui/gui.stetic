@@ -2,11 +2,11 @@
 <stetic-interface>
   <configuration>
     <images-root-path>..</images-root-path>
-    <target-gtk-version>2.8</target-gtk-version>
+    <target-gtk-version>2.12</target-gtk-version>
   </configuration>
   <import>
-    <widget-library name="../../../../build/bin/MonoDevelop.Core.Gui.dll" />
     <widget-library name="../../../../build/bin/MonoDevelop.Projects.Gui.dll" />
+    <widget-library name="../../../../build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll" />
     <widget-library name="../../../../build/bin/MonoDevelop.Components.dll" />
     <widget-library name="../../../../build/bin/MonoDevelop.Ide.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.Autotools/MonoDevelop.Autotools.dll" />
@@ -234,7 +234,6 @@
               <widget class="Gtk.Label" id="labelPoLastModification">
                 <property name="MemberName" />
                 <property name="Xalign">0</property>
-                <property name="LabelProp" translatable="yes" />
                 <property name="UseMarkup">True</property>
               </widget>
               <packing>
@@ -257,7 +256,6 @@
               <widget class="Gtk.Label" id="labelPotCreation">
                 <property name="MemberName" />
                 <property name="Xalign">0</property>
-                <property name="LabelProp" translatable="yes" />
                 <property name="UseMarkup">True</property>
               </widget>
               <packing>
@@ -692,7 +690,6 @@
                                         <property name="MemberName" />
                                         <property name="CanFocus">True</property>
                                         <property name="HeadersVisible">False</property>
-                                        <property name="HeadersClickable">True</property>
                                       </widget>
                                     </child>
                                   </widget>
@@ -742,7 +739,6 @@
                                         <property name="MemberName" />
                                         <property name="CanFocus">True</property>
                                         <property name="HeadersVisible">False</property>
-                                        <property name="HeadersClickable">True</property>
                                       </widget>
                                     </child>
                                   </widget>
@@ -1190,7 +1186,6 @@
                   <widget class="Gtk.TreeView" id="treeviewProjectList">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
-                    <property name="HeadersClickable">True</property>
                   </widget>
                 </child>
               </widget>
@@ -1404,7 +1399,6 @@
                           <widget class="Gtk.TreeView" id="treeviewEntries">
                             <property name="MemberName" />
                             <property name="CanFocus">True</property>
-                            <property name="HeadersClickable">True</property>
                           </widget>
                         </child>
                       </widget>
@@ -1561,7 +1555,6 @@
                                       <widget class="Gtk.Label" id="labelOriginal">
                                         <property name="MemberName" />
                                         <property name="Xalign">0</property>
-                                        <property name="LabelProp" translatable="yes" />
                                         <property name="Selectable">True</property>
                                       </widget>
                                     </child>
@@ -1603,7 +1596,6 @@
                                           <widget class="Gtk.Label" id="labelPlural">
                                             <property name="MemberName" />
                                             <property name="Xalign">0</property>
-                                            <property name="LabelProp" translatable="yes" />
                                             <property name="Selectable">True</property>
                                           </widget>
                                         </child>
@@ -1660,7 +1652,6 @@
                                   <widget class="Gtk.TreeView" id="treeviewFoundIn">
                                     <property name="MemberName" />
                                     <property name="CanFocus">True</property>
-                                    <property name="HeadersClickable">True</property>
                                   </widget>
                                 </child>
                               </widget>
@@ -1785,7 +1776,6 @@
                         <property name="MemberName" />
                         <property name="WidthRequest">200</property>
                         <property name="CanFocus">True</property>
-                        <property name="HeadersClickable">True</property>
                       </widget>
                     </child>
                   </widget>

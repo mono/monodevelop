@@ -75,6 +75,7 @@ namespace MonoDevelop.Gettext
 						store.SetValue (iter, (int)Columns.Stock, GetStockForEntry (SelectedEntry));
 						store.SetValue (iter, (int)Columns.Translation, StringEscaping.ToGettextFormat (this.SelectedEntry.GetTranslation (0)));
 						store.SetValue (iter, (int)Columns.RowColor, GetRowColorForEntry (SelectedEntry));
+						store.SetValue (iter, (int)Columns.TypeSortIndicator, GetTypeSortIndicator (SelectedEntry));
 					}
 				};
 				UpdateFromCatalog ();
@@ -104,7 +105,7 @@ namespace MonoDevelop.Gettext
 			AddButton (GettextCatalog.GetString ("Headers")).Active = false;
 			
 			// entries tree view 
-			store = new ListStore (typeof (string), typeof (bool), typeof (string), typeof (string), typeof (CatalogEntry), typeof (Gdk.Color));
+			store = new ListStore (typeof (string), typeof (bool), typeof (string), typeof (string), typeof (CatalogEntry), typeof (Gdk.Color), typeof(int));
 			this.treeviewEntries.Model = store;
 			
 			treeviewEntries.AppendColumn (String.Empty, new CellRendererPixbuf (), "stock_id", Columns.Stock, "cell-background-gdk", Columns.RowColor);
@@ -124,7 +125,7 @@ namespace MonoDevelop.Gettext
 			treeviewEntries.Selection.Changed += new EventHandler (OnEntrySelected);
 			
 			treeviewEntries.GetColumn (0).SortIndicator = true;
-			treeviewEntries.GetColumn (0).SortColumnId = (int)Columns.RowColor;
+			treeviewEntries.GetColumn (0).SortColumnId = (int)Columns.TypeSortIndicator;
 			
 			treeviewEntries.GetColumn (1).SortIndicator = true;
 			treeviewEntries.GetColumn (1).SortColumnId = (int)Columns.Fuzzy;
@@ -620,7 +621,7 @@ namespace MonoDevelop.Gettext
 			Translation,
 			CatalogEntry,
 			RowColor,
-			Count
+			TypeSortIndicator
 		}
 		
 		enum FoundInColumns : int
@@ -663,6 +664,11 @@ namespace MonoDevelop.Gettext
 			return entry.IsFuzzy ? fuzzy : entry.IsTranslated ? translated : untranslated;
 		}
 		
+		static int GetTypeSortIndicator (CatalogEntry entry)
+		{
+			return entry.IsFuzzy ? 1 : entry.IsTranslated ? 0 : 2;
+		}
+			
 		TreeIter SelectedIter {
 			get {
 				TreeIter iter;
@@ -841,7 +847,8 @@ namespace MonoDevelop.Gettext
 										            StringEscaping.ToGettextFormat (entry.String), 
 										            StringEscaping.ToGettextFormat (entry.GetTranslation (0)), 
 										            entry,
-										            GetRowColorForEntry (entry));
+										            GetRowColorForEntry (entry),
+								                    GetTypeSortIndicator (entry));
 							}
 						});
 						foundEntries.Clear ();
@@ -855,7 +862,7 @@ namespace MonoDevelop.Gettext
 				if (updateIsRunning) {
 					MonoDevelop.Core.Gui.DispatchService.GuiSyncDispatch (delegate {
 						foreach (CatalogEntry entry in foundEntries) {
-							store.AppendValues (GetStockForEntry (entry), entry.IsFuzzy, StringEscaping.ToGettextFormat (entry.String), StringEscaping.ToGettextFormat (entry.GetTranslation (0)), entry, GetRowColorForEntry (entry));
+							store.AppendValues (GetStockForEntry (entry), entry.IsFuzzy, StringEscaping.ToGettextFormat (entry.String), StringEscaping.ToGettextFormat (entry.GetTranslation (0)), entry, GetRowColorForEntry (entry), GetTypeSortIndicator (entry));
 						}
 						MonoDevelop.Ide.Gui.IdeApp.Workbench.StatusBar.EndProgress ();
 					});
