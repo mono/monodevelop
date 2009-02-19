@@ -3,7 +3,6 @@ ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.Database.Components.dll
 REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
-	$(GTKSOURCEVIEW_SHARP_LIBS) \
 	$(MONO_ADDINS_LIBS) \
 	$(MONODEVELOP_LIBS) \
 	-r:../build/MonoDevelop.Database.Sql.dll \

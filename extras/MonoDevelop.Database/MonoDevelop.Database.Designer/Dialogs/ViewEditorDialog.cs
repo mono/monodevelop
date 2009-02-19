@@ -24,7 +24,6 @@
 //
 
 using Gtk;
-using GtkSourceView;
 using System;
 using System.Threading;
 using System.Collections.Generic;

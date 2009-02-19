@@ -54,8 +54,6 @@ dnl hard dependencies
 MONOADDINS_REQUIRED_VERSION=0.3
 MONODEVELOP_REQUIRED_VERSION=1.9.2
 GTKSHARP_REQUIRED_VERSION=2.8.0
-GTKSOURCEVIEWSHARP_REQUIRED_VERSION=0.10
-GTKSOURCEVIEW2SHARP_REQUIRED_VERSION=2.0
 
 PKG_CHECK_MODULES(MONO_ADDINS, mono-addins >= $MONOADDINS_REQUIRED_VERSION)
 AC_SUBST(MONO_ADDINS_LIBS)
@@ -72,22 +70,6 @@ AC_SUBST(MONODEVELOP_LIBS)
 
 gtksharp_prefix="`$PKG_CONFIG --variable=prefix gtk-sharp-2.0`"
 AC_SUBST(gtksharp_prefix)
-
-## gtksourceview2-sharp
-AC_ARG_ENABLE(gtksourceview2,
-	AC_HELP_STRING([--enable-gtksourceview2],
-		[use GtkSourceView 2 [default=no]]),
-	enable_gtksourceview2=${enableval}, enable_gtksourceview2=no)
-
-if test "x$enable_gtksourceview2" = "xyes"; then
-	PKG_CHECK_MODULES(GTKSOURCEVIEW2_SHARP, gtksourceview2-sharp >= $GTKSOURCEVIEW2SHARP_REQUIRED_VERSION)
-	AC_SUBST(GTKSOURCEVIEW2_SHARP_LIBS)
-else
-	PKG_CHECK_MODULES(GTKSOURCEVIEW_SHARP, gtksourceview-sharp-2.0 >= $GTKSOURCEVIEWSHARP_REQUIRED_VERSION)
-	AC_SUBST(GTKSOURCEVIEW_SHARP_LIBS)
-fi
-
-AM_CONDITIONAL(ENABLE_GTKSOURCEVIEW2, test x$enable_gtksourceview2 = xyes)
 
 
 dnl *************************************************************

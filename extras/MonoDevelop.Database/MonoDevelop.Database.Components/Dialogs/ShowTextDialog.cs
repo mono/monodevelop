@@ -24,7 +24,7 @@
 //
 
 using Gtk;
-using GtkSourceView;
+using Mono.TextEditor;
 using System;
 using System.Collections.Generic;
 
@@ -32,34 +32,24 @@ namespace MonoDevelop.Database.Components
 {
 	public partial class ShowTextDialog : Gtk.Dialog
 	{
-		private SourceView sourceView;
+		private Mono.TextEditor.TextEditor sourceView;
 		
 		public ShowTextDialog (string text, string mimeType)
 		{
 			this.Build();
 			
-			SourceLanguagesManager lm = new SourceLanguagesManager ();
-			SourceLanguage lang = null;
-			
-			if (String.IsNullOrEmpty (mimeType))
-				lang = lm.GetLanguageFromMimeType (mimeType);
-			
-			SourceBuffer buf = null;
-			if (lang == null) {
-				SourceTagTable table = new SourceTagTable ();
-				buf = new SourceBuffer (table);
-			} else {
-				buf = new SourceBuffer (lang);
-				buf.Highlight = true;
-			}
-			sourceView = new SourceView (buf);
-			sourceView.ShowLineNumbers = true;
-			sourceView.Editable = false;
+			sourceView = new Mono.TextEditor.TextEditor ();
+			// TODO: Set styling ?
+			//sourceView.Options = new MonoDevelop.SourceEditor.StyledSourceEditorOptions (null);
+			sourceView.Document.MimeType = mimeType;
+			sourceView.Document.Text = text;
+//			sourceView.ShowLineNumbers = true;
+			sourceView.Document.ReadOnly = true;
 			
 			vboxContent.PackStart (sourceView, true, true, 0);
 			vboxContent.ShowAll ();
 			if (text != null)
-				sourceView.Buffer.Text = text;
+				sourceView.Document.Text = text;
 		}
 
 		protected virtual void CloseClicked (object sender, System.EventArgs e)

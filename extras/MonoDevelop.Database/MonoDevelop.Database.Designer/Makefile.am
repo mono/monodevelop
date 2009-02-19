@@ -2,7 +2,6 @@ ADDIN_BUILD = $(top_builddir)/build
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.Database.Designer.dll
 REFS =  \
 	$(GTK_SHARP_LIBS) \
-	$(GTKSOURCEVIEW_SHARP_LIBS) \
 	$(MONODEVELOP_LIBS) \
 	-r:../build/MonoDevelop.Database.Components.dll \
 	-r:../build/MonoDevelop.Database.Sql.dll \
