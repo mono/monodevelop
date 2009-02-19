@@ -612,7 +612,11 @@ namespace MonoDevelop.CSharpBinding
 					field.Name      = varDecl.Name;
 					field.Location  = ConvertLocation (fieldDeclaration.StartLocation);
 					field.Modifiers  = ConvertModifiers (fieldDeclaration.Modifier);
-					field.ReturnType = ConvertReturnType (fieldDeclaration.TypeReference);
+					if (typeStack.Peek ().ClassType == ClassType.Enum) {
+						field.ReturnType = new DomReturnType (typeStack.Peek ());
+					} else {
+						field.ReturnType = ConvertReturnType (fieldDeclaration.TypeReference);
+					}
 					// Enum fields have an empty type.
 					if (field.ReturnType != null && string.IsNullOrEmpty (field.ReturnType.FullName))
 						field.ReturnType = null;

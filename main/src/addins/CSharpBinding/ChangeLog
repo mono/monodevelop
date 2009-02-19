@@ -1,3 +1,8 @@
+2009-02-19  Mike Krüger  <mkrueger@novell.com>
+
+	* Parser/NRefactoryParser.cs: enum fields now have the correct
+	  return type.
+
 2009-02-18  Mike Krüger  <mkrueger@novell.com>
 
 	* Parser/CodeGenerator.cs: Fixed "Bug 404706 - Refactorer is
