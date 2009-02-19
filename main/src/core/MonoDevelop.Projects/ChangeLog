@@ -1,3 +1,12 @@
+2009-02-19  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom/CompoundType.cs:
+	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs:
+	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs:
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs: Fixed
+	  "Bug 402388 - Several refactory commands are not aware of
+	  partial classes".
+
 2009-02-18  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs: fixed

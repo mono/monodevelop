@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Linq;
 using System.Text;
 using System.Collections.Generic;
 
@@ -66,6 +67,10 @@ namespace MonoDevelop.Projects.Dom
 			get { return parts.Count > 0 ? parts[0].Location : DomLocation.Empty; }
 		}
 		
+		public override DomRegion BodyRegion {
+			get { return parts.Count > 0 ? parts[0].BodyRegion : DomRegion.Empty; }
+		}
+		
 		public override bool HasParts {
 			get {
 				return parts.Count > 0;
@@ -85,6 +90,21 @@ namespace MonoDevelop.Projects.Dom
 						yield return member;
 					}
 				}
+			}
+		}
+		
+		public void SetMainPart (string fileName, DomLocation location) 
+		{
+			SetMainPart (fileName, location.Line, location.Column);
+		}
+		
+		public void SetMainPart (string fileName, int line, int column) 
+		{
+			int idx = parts.FindIndex (1, x => x.CompilationUnit.FileName == fileName && x.Location.Line == line);
+			if (idx > 0) {
+				IType tmp = parts[0];
+				parts[0] = parts[idx];
+				parts[idx] = tmp;
 			}
 		}
 		

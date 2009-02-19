@@ -443,8 +443,14 @@ namespace MonoDevelop.Projects.CodeGeneration
 		IType GetUpdatedClass (RefactorerContext gctx, IType klass)
 		{
 			IEditableTextFile file = gctx.GetFile (klass.CompilationUnit.FileName);
-			ProjectDomService.Parse (gctx.ParserContext.Project, file.Name, null, delegate () { return file.Text; });
-			return gctx.ParserContext.GetType (klass.FullName, null, true, true);
+			ParsedDocument doc = ProjectDomService.Parse (gctx.ParserContext.Project, file.Name, null, delegate () { return file.Text; });
+			IType result = gctx.ParserContext.GetType (klass.FullName, null, true, true);
+			if (result is CompoundType) {
+				IType hintType = doc.CompilationUnit.GetType (klass.FullName, klass.TypeParameters.Count);
+				if (hintType != null) 
+					((CompoundType)result).SetMainPart (file.Name, hintType.Location);
+			}
+			return result;
 		}
 		
 		public void RemoveMember (IType cls, IMember member)

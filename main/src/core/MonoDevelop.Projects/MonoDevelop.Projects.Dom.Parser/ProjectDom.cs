@@ -30,6 +30,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.Projects.Dom.Parser
@@ -139,6 +140,11 @@ namespace MonoDevelop.Projects.Dom.Parser
 					rtype = GetType (type.FullName, type.TypeParameters.Count, true, true);
 				else
 					rtype = GetType (itype.UninstantiatedType.FullName, itype.GenericParameters, true, true);
+				
+				if (type is CompoundType && rtype is CompoundType) {
+					IType mainPart = ((CompoundType)type).Parts.First ();
+					((CompoundType)rtype).SetMainPart (mainPart.CompilationUnit.FileName, mainPart.Location);
+				}
 				if (rtype != null)
 					return rtype;
 			}
