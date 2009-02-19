@@ -73,7 +73,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			lineEndingCombo.AppendText (GettextCatalog.GetString ("Native"));
 			lineEndingCombo.AppendText (GettextCatalog.GetString ("Mac"));
 			lineEndingCombo.AppendText (GettextCatalog.GetString ("Unix"));
-			lineEndingCombo.AppendText (GettextCatalog.GetString ("Windows"));
+			lineEndingCombo.AppendText (GettextCatalog.GetString ("Microsoft Windows")); // Using "Windows" is too short, otherwise the translation get's confused. Mike
 		}
 		
 		protected virtual void UpdateState (object sender, System.EventArgs e)

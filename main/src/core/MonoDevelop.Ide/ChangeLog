@@ -1,5 +1,10 @@
 2009-02-19  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Gui.OptionPanels/TextStylePolicyPanel.cs:
+	  changed translation string.
+
+2009-02-19  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: fixed "Bug
 	  402388 - Several refactory commands are not aware of partial
 	  classes".
