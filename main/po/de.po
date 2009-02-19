@@ -6,7 +6,7 @@ msgstr ""
 "X-Poedit-Bookmarks: -1,1681,-1,-1,-1,-1,-1,-1,-1,-1\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2009-02-19 11:50:24+0100\n"
+"PO-Revision-Date: 2009-02-19 11:56:21+0100\n"
 "Language-Team: \n"
 "Project-Id-Version: Monodevelop\n"
 "MIME-Version: 1.0\n"
@@ -10926,8 +10926,7 @@ msgstr "Die Datei »{0}« wurde außerhalb von MonoDevelop verändert."
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:627
 msgid "If you reload the file all modifications since last save are lost."
-msgstr ""
-"Beim neu Laden gehen alle Änderungen seit dem letzten Speichern verloren."
+msgstr "Möchten Sie die Änderungen verwerfen und die Datei neu laden?"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:641
 msgid "_Ignore"
@@ -13989,7 +13988,6 @@ msgstr "Schließe die folgenden Kategorien ein:"
 #~ msgstr "Fehler aufgetreten: {0}"
 #~ msgid "Question"
 #~ msgstr "Frage"
-
 #~ msgid "Delete files"
 #~ msgstr "Lösche Dateien"
 
