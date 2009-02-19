@@ -88,7 +88,6 @@ namespace MonoDevelop.Ide.Commands
 			return null;
 		}
 		
-			
 		protected override void Update (CommandArrayInfo ainfo)
 		{
 			Document doc = IdeApp.Workbench.ActiveDocument;
@@ -284,6 +283,15 @@ namespace MonoDevelop.Ide.Commands
 			IDomVisitable realItem = item;
 			if (item is InstantiatedType)
 				realItem = ((InstantiatedType)item).UninstantiatedType;
+			if (realItem is CompoundType) {
+				Document doc = IdeApp.Workbench.ActiveDocument;
+				ITextBuffer editor = doc.GetContent <ITextBuffer> ();
+				int line, column;
+				editor.GetLineColumnFromPosition (editor.CursorPosition, out line, out column);				
+				((CompoundType)realItem).SetMainPart (doc.FileName, line, column);
+				item = realItem;
+			}
+			
 			Refactorer refactorer = new Refactorer (ctx, pinfo, eclass, realItem, null);
 			CommandInfoSet ciset = new CommandInfoSet ();
 			Ambience ambience = AmbienceService.GetAmbienceForFile (pinfo.FileName);
@@ -614,10 +622,12 @@ namespace MonoDevelop.Ide.Commands
 				
 			try {
 				EncapsulateFieldDialog dialog;
-				if (item is IField)
+				if (item is IField) {
 					dialog = new EncapsulateFieldDialog (ctx, (IField) item);
-				else
+				} else {
+					
 					dialog = new EncapsulateFieldDialog (ctx, (IType) item);
+				}
 				
 				dialog.Show ();
 			} finally {
