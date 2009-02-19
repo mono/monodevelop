@@ -44,26 +44,23 @@ using System.Collections.Generic;
 //   binding: The full key binding for a command/action.
 //
 
-namespace MonoDevelop.Components.Commands {
-	public class KeyBindingManager {
-		Dictionary<string, List<Command>> bindings;
-		Dictionary<string, int> modes;
-		List<Command> commands;
+namespace MonoDevelop.Components.Commands
+{
+	public class KeyBindingManager : IDisposable
+	{
+		Dictionary<string, List<Command>> bindings = new Dictionary<string, List<Command>> ();
+		Dictionary<string, int> modes = new Dictionary<string, int> ();
+		List<Command> commands = new List<Command> ();
 		
-#region Constructors
-		public KeyBindingManager ()
+		public void Dispose ()
 		{
-			bindings = new Dictionary<string, List<Command>> ();
-			modes = new Dictionary<string, int> ();
-			commands = new List<Command> ();
-		}
-		
-		~KeyBindingManager ()
-		{
+			if (commands == null)
+				return;
+			
 			for (int i = 0; i < commands.Count; i++)
 				commands[i].KeyBindingChanged -= OnKeyBindingChanged;
+			commands = null;
 		}
-#endregion
 		
 #region Static Public Helpers For Building Key-Binding Strings
 		static string KeyToString (Gdk.Key key)

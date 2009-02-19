@@ -232,6 +232,7 @@ namespace MonoDevelop.Components.Commands
 		public void Dispose ()
 		{
 			disposed = true;
+			bindings.Dispose ();
 		}
 		
 		public void LockAll ()

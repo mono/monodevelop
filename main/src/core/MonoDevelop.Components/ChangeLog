@@ -1,3 +1,9 @@
+2009-02-19  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Components.Commands/CommandManager.cs:
+	* MonoDevelop.Components.Commands/KeyBindingManager.cs: Don't
+	  use a finaliser for managed disposal.
+
 2009-02-12  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Components.DockToolbars/DockToolbarFrame.cs:
