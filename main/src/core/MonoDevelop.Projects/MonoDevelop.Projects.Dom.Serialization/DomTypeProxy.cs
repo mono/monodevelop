@@ -205,6 +205,14 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			}
 		}
 		
+		public override bool HasExtensionMethods {
+			get {
+				// Don't use HasContent() since that method loads the wrapped type
+				return (entry.ContentFlags & ContentFlags.HasExtensionMethods) != 0;
+			}
+		}
+
+		
 		public override ICompilationUnit CompilationUnit {
 			get {
 				if (HasContent (ContentFlags.HasCompilationUnit))

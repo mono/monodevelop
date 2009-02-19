@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Globalization;
 using System.CodeDom;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -280,11 +281,17 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		public static DomType ReadType (BinaryReader reader, INameDecoder nameTable)
 		{
+			nameTable.Reset ();
+			return ReadTypeInternal (reader, nameTable);
+		}
+		
+		static DomType ReadTypeInternal (BinaryReader reader, INameDecoder nameTable)
+		{
 			uint typeCount = ReadUInt (reader, 1000);
 			if (typeCount > 1) {
 				CompoundType compoundResult = new CompoundType ();
 				while (typeCount-- > 0) {
-					compoundResult.AddPart (ReadType (reader, nameTable));
+					compoundResult.AddPart (ReadTypeInternal (reader, nameTable));
 				}
 				return compoundResult;
 			}
@@ -314,7 +321,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			count = ReadUInt (reader, 10000);
 //			if (verbose) System.Console.WriteLine("inner types:" + count);
 			while (count-- > 0) {
-				DomType innerType = ReadType (reader, nameTable);
+				DomType innerType = ReadTypeInternal (reader, nameTable);
 				innerType.DeclaringType = result;
 				result.Add (innerType);
 			}
@@ -370,12 +377,18 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		public static void Write (BinaryWriter writer, INameEncoder nameTable, IType type)
 		{
+			nameTable.Reset ();
+			WriteInternal (writer, nameTable, type);
+		}
+		
+		static void WriteInternal (BinaryWriter writer, INameEncoder nameTable, IType type)
+		{
 			Debug.Assert (type != null);
 			if (type is CompoundType && ((CompoundType)type).PartsCount > 1) {
 				CompoundType compoundType = type as CompoundType;
 				writer.Write ((uint)compoundType.PartsCount);
 				foreach (IType part in compoundType.Parts)
-					Write (writer, nameTable, part);
+					WriteInternal (writer, nameTable, part);
 				return;
 			}
 			
@@ -402,7 +415,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			writer.Write (type.InnerTypeCount);
 //			if (verbose) System.Console.WriteLine("pos:{0}, write {1} inner types.", writer.BaseStream.Position, type.InnerTypeCount);
 			foreach (IType innerType in type.InnerTypes) {
-				Write (writer, nameTable, innerType);
+				WriteInternal (writer, nameTable, innerType);
 			}
 			writer.Write (type.FieldCount);
 //			if (verbose) System.Console.WriteLine("pos:{0}, write {1} fields.", writer.BaseStream.Position, type.FieldCount);
@@ -494,18 +507,22 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			attr.Region = ReadRegion (reader, nameTable);
 			attr.AttributeTarget = (AttributeTarget) reader.ReadInt32 ();
 			attr.AttributeType = ReadReturnType (reader, nameTable);
-			CodeExpression[] exps = (CodeExpression[]) DeserializeObject (reader);
-			if (exps != null) {
-				foreach (CodeExpression exp in exps)
-					attr.AddPositionalArgument (exp);
-			}
+			
+			// Named argument count
+			uint num = ReadUInt (reader, 500);
+			string[] names = new string[num];
+			for (int n=0; n<num; n++)
+				names [n] = ReadString (reader, nameTable);
+			
+			CodeExpression[] exps = ReadExpressionArray (reader, nameTable);
+			
+			int i;
+			for (i=0; i<num; i++)
+				attr.AddNamedArgument (names[i], exps [i]);
+			
+			for (;i<exps.Length; i++)
+				attr.AddPositionalArgument (exps [i]);
 
-			Dictionary<string, CodeExpression> nexps = (Dictionary<string, CodeExpression>) DeserializeObject (reader);
-			if (nexps != null) {
-				foreach (KeyValuePair<string, CodeExpression> entry in nexps) {
-					attr.AddNamedArgument (entry.Key, entry.Value);
-				}
-			}
 			return attr;
 		}
 		
@@ -515,11 +532,71 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			Write (writer, nameTable, attr.Region);
 			writer.Write ((int)attr.AttributeTarget);
 			Write (writer, nameTable, attr.AttributeType);
-			CodeExpression[] exps = new CodeExpression [attr.PositionalArguments.Count];
-			attr.PositionalArguments.CopyTo (exps, 0);
-			SerializeObject (writer, exps);
-			Dictionary<string, CodeExpression> nexps = new Dictionary<string, CodeExpression> (attr.NamedArguments);
-			SerializeObject (writer, nexps);
+			
+			CodeExpression[] exps = new CodeExpression [attr.PositionalArguments.Count + attr.NamedArguments.Count];
+			
+			// Save the named argument count. The remaining expressions will be considered positionl arguments.
+			writer.Write ((uint)attr.NamedArguments.Count);
+			int n=0;
+			foreach (KeyValuePair<string, CodeExpression> na in attr.NamedArguments) {
+				WriteString (na.Key, writer, nameTable);
+				exps [n++] = na.Value;
+			}
+			
+			attr.PositionalArguments.CopyTo (exps, n);
+			Write (writer, nameTable, exps);
+		}
+		
+		public static void Write (BinaryWriter writer, INameEncoder nameTable, CodeExpression[] exps)
+		{
+			if (exps.Length == 0) {
+				writer.Write (0);
+				return;
+			}
+			
+			bool mustSerialize = false;
+			foreach (CodeExpression exp in exps) {
+				if (!(exp is CodePrimitiveExpression)) {
+					mustSerialize = true;
+					break;
+				}
+			}
+			if (mustSerialize) {
+				writer.Write (-1);
+				SerializeObject (writer, exps);
+			} else {
+				writer.Write (exps.Length);
+				foreach (CodePrimitiveExpression exp in exps) {
+					if (exp.Value == null) {
+						writer.Write ((int) TypeCode.DBNull);
+					} else {
+						writer.Write ((int) Type.GetTypeCode (exp.Value.GetType ()));
+						WriteString (Convert.ToString (exp.Value, CultureInfo.InvariantCulture), writer, nameTable);
+					}
+				}
+			}
+		}
+		
+		public static CodeExpression[] ReadExpressionArray (BinaryReader reader, INameDecoder nameTable)
+		{
+			int count = reader.ReadInt32 ();
+			if (count == 0) {
+				return new CodeExpression[0];
+			} else if (count == -1) {
+				return (CodeExpression[]) DeserializeObject (reader);
+			} else {
+				CodeExpression[] exps = new CodeExpression[count];
+				for (int n=0; n<count; n++) {
+					object value;
+					TypeCode code = (TypeCode) reader.ReadInt32 ();
+					if (code == TypeCode.DBNull)
+						value = null;
+					else
+						value = Convert.ChangeType (ReadString (reader, nameTable), code, CultureInfo.InvariantCulture);
+					exps [n] = new CodePrimitiveExpression (value);
+				}
+				return exps;
+			}
 		}
 		
 #region Helper methods
@@ -551,9 +628,10 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			if (s == null)
 				writer.Write (-2);
 			else {
-				int id = nameTable.GetStringId (s);
+				bool isNew;
+				int id = nameTable.GetStringId (s, out isNew);
 				writer.Write (id);
-				if (id == -1)
+				if (isNew)
 					writer.Write (s);
 			}
 		}
@@ -561,12 +639,14 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		static string ReadString (BinaryReader reader, INameDecoder nameTable)
 		{
 			int id = reader.ReadInt32 ();
-			if (id == -1)
-				return reader.ReadString ();
-			else if (id == -2)
+			if (id == -2)
 				return null;
-			
-			return nameTable.GetStringValue (id);
+			string res = nameTable.GetStringValue (id);
+			if (res == null) {
+				res = reader.ReadString ();
+				nameTable.RegisterString (id, res);
+			}
+			return res;
 		}
 		
 		static uint ReadUInt (BinaryReader reader, int maxValue)
@@ -599,7 +679,8 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			if (len == 0) return null;
 			byte[] data = reader.ReadBytes (len);
 			MemoryStream ms = new MemoryStream (data);
-			return formatter.Deserialize (ms);
+			object ob = formatter.Deserialize (ms);
+			return ob;
 		}
 		
 		static bool ReadNull (BinaryReader reader)

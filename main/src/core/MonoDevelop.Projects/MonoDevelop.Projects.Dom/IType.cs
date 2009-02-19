@@ -110,6 +110,10 @@ namespace MonoDevelop.Projects.Dom
 			get;
 		}
 		
+		bool HasExtensionMethods {
+			get;
+		}
+		
 		int FieldCount {
 			get;
 		}

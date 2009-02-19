@@ -142,6 +142,8 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				flags |= ContentFlags.HasConstructors;
 			if (cls.IsObsolete)
 				flags |= ContentFlags.IsObsolete;
+			if (cls.HasExtensionMethods)
+				flags |= ContentFlags.HasExtensionMethods;
 		}
 		
 		public string Name {
@@ -198,26 +200,27 @@ namespace MonoDevelop.Projects.Dom.Serialization
 	}
 
 	[Flags]
-	enum ContentFlags: ushort
+	enum ContentFlags: uint
 	{
-		HasGenericParams   = 0x0001,
-		HasBaseTypes       = 0x0002,
-		HasInnerClasses    = 0x0004,
-		HasFields          = 0x0008,
+		HasGenericParams    = 0x00000001,
+		HasBaseTypes        = 0x00000002,
+		HasInnerClasses     = 0x00000004,
+		HasFields           = 0x00000008,
 		
-		HasMethods         = 0x0010,
-		HasProperties      = 0x0020,
-		HasIndexers        = 0x0040,
-		HasEvents          = 0x0080,
+		HasMethods          = 0x00000010,
+		HasProperties       = 0x00000020,
+		HasIndexers         = 0x00000040,
+		HasEvents           = 0x00000080,
 		
-		HasParts           = 0x0100,
-		HasRegion          = 0x0200,
-		HasBodyRegion      = 0x0400,
-		HasCompilationUnit = 0x0800,
+		HasParts            = 0x00000100,
+		HasRegion           = 0x00000200,
+		HasBodyRegion       = 0x00000400,
+		HasCompilationUnit  = 0x00000800,
 		
-		HasAttributes      = 0x1000,
-		HasDocumentation   = 0x2000,
-		HasConstructors    = 0x4000,
-		IsObsolete         = 0x8000
+		HasAttributes       = 0x00001000,
+		HasDocumentation    = 0x00002000,
+		HasConstructors     = 0x00004000,
+		IsObsolete          = 0x00008000,
+		HasExtensionMethods = 0x00010000
 	}
 }

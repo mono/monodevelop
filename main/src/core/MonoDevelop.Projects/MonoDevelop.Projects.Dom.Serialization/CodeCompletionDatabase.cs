@@ -49,7 +49,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 	{
 		static protected readonly int MAX_ACTIVE_COUNT = 100;
 		static protected readonly int MIN_ACTIVE_COUNT = 10;
-		static protected readonly int FORMAT_VERSION   = 63;
+		static protected readonly int FORMAT_VERSION   = 67;
 		
 		NamespaceEntry rootNamespace;
 		protected ArrayList references;
@@ -428,7 +428,6 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			lock (rwlock) {
 				dataFileStream.Position = ce.Position;
 				datareader.ReadInt32 ();// Length of data
-				
 				DomType cls = DomPersistence.ReadType (datareader, pdb.DefaultNameDecoder);
 				cls.SourceProjectDom = SourceProjectDom;
 				cls.Resolved = true;
@@ -1280,32 +1279,57 @@ namespace MonoDevelop.Projects.Dom
 {
 	public interface INameEncoder
 	{
-		int GetStringId (string text);
+		int GetStringId (string text, out bool isNew);
+		void Reset ();
 	}
 	
 	public interface INameDecoder
 	{
 		string GetStringValue (int id);
+		void RegisterString (int id, string str);
+		void Reset ();
 	}
 	
 	public class StringNameTable: INameEncoder, INameDecoder
 	{
 		string[] table;
+		Dictionary<string,int> stringToId = new Dictionary<string, int> ();
+		Dictionary<int,string> idToString = new Dictionary<int, string> ();
+		int ci;
 		
 		public StringNameTable (string[] names)
 		{
 			table = names;
 			Array.Sort (table);
+			Reset ();
+		}
+		
+		public void Reset ()
+		{
+			stringToId.Clear ();
+			idToString.Clear ();
+			ci = table.Length + 1;
+		}
+		
+		public void RegisterString (int id, string str)
+		{
+			idToString [id] = str;
 		}
 		
 		public string GetStringValue (int id)
 		{
+			if (id > table.Length) {
+				string res;
+				if (idToString.TryGetValue (id, out res))
+					return res;
+				return null;
+			}
 			if (id < 0 || id >= table.Length)
 				return "Invalid id:" + id;
 			return table [id];
 		}
 		
-		public int GetStringId (string text)
+		public int GetStringId (string text, out bool isNew)
 		{
 #if CHECK_STRINGS
 			count++;
@@ -1315,9 +1339,16 @@ namespace MonoDevelop.Projects.Dom
 			else
 				all [text] = 1;
 #endif
+			isNew = false;
 			int i = Array.BinarySearch (table, text);
 			if (i >= 0) return i;
-			else return -1;
+
+			if (stringToId.TryGetValue (text, out i))
+				return i;
+			
+			isNew = true;
+			stringToId.Add (text, ++ci);
+			return ci;
 		}
 
 #if CHECK_STRINGS

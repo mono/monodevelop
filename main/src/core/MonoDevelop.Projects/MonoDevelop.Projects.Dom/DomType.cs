@@ -227,6 +227,16 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
+		public virtual bool HasExtensionMethods {
+			get {
+				foreach (IMethod m in Methods) {
+					if (m.IsExtension)
+						return true;
+				}
+				return false;
+			}
+		}
+		
 		
 		static string[,] iconTable = new string[,] {
 			{Stock.Error,     Stock.Error,            Stock.Error,              Stock.Error},             // unknown
@@ -660,13 +670,8 @@ namespace MonoDevelop.Projects.Dom
 			}
 			foreach (object o in dom.GetNamespaceContents (namespaceList, true, true)) {
 				IType type = o as IType;
-				if (type != null && type.ClassType == ClassType.Class && (type.IsStatic || type.IsSealed)) {
-					foreach (IMethod m in type.Methods) {
-						if (m.IsExtension) {
-							result.Add (type);
-							break;
-						}
-					}
+				if (type != null && type.ClassType == ClassType.Class && type.HasExtensionMethods) {
+					result.Add (type);
 				}
 			}
 			return result;
