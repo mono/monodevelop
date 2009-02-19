@@ -131,7 +131,11 @@ namespace MonoDevelop.NUnit
 			LoadData ld = new LoadData ();
 			ld.Path = AssemblyPath;
 			ld.TestInfoCachePath = cacheLoaded ? null : TestInfoCachePath;
-			ld.Callback = new WaitCallback (AsyncCreateTests);
+			ld.Callback = delegate {
+				Gtk.Application.Invoke (delegate {
+					AsyncCreateTests (ld);
+				});
+			};
 			ld.SupportAssemblies = new List<string> (SupportAssemblies);
 			
 			AsyncLoadTest (ld);
