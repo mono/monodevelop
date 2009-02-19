@@ -6,12 +6,12 @@ msgstr ""
 "X-Poedit-Bookmarks: -1,1681,-1,-1,-1,-1,-1,-1,-1,-1\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2009-02-19 11:56:21+0100\n"
+"PO-Revision-Date: 2009-02-19 12:05:44+0100\n"
 "Language-Team: \n"
 "Project-Id-Version: Monodevelop\n"
 "MIME-Version: 1.0\n"
 "X-Generator: MonoDevelop Gettext addin\n"
-"POT-Creation-Date: 2009-02-19 10:39:45+0100\n"
+"POT-Creation-Date: 2009-02-19 12:04:27+0100\n"
 "Last-Translator: Mike Krüger <mkrueger@novell.com>\n"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.Execution/ProcessService.cs:185
@@ -4516,9 +4516,9 @@ msgid "Unix"
 msgstr "Unix"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/TextStylePolicyPanel.cs:75
-#: ../src/addins/MonoDevelop.GtkCore/libsteticui/PaletteBackend.cs:29
-msgid "Windows"
-msgstr "Fenster"
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.addin.xml:192
+msgid "Microsoft Windows"
+msgstr "Microsoft Windows"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TextStylePolicyPanelWidget.cs:69
 msgid "Desired _file width:"
@@ -6889,6 +6889,10 @@ msgstr "Platzhalter"
 #: ../src/addins/MonoDevelop.GtkCore/libsteticui/Glade.cs:25
 msgid "Not a glade file according to node name."
 msgstr "Keine Glade Datei (nach dem Knotennamen zu urteilen)."
+
+#: ../src/addins/MonoDevelop.GtkCore/libsteticui/PaletteBackend.cs:29
+msgid "Windows"
+msgstr "Fenster"
 
 #: ../src/addins/MonoDevelop.GtkCore/libsteticui/PaletteBackend.cs:245
 msgid "Empty"
@@ -10925,7 +10929,7 @@ msgid "The file »{0}« has been changed outside of MonoDevelop."
 msgstr "Die Datei »{0}« wurde außerhalb von MonoDevelop verändert."
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:627
-msgid "If you reload the file all modifications since last save are lost."
+msgid "Do you want to drop your changes and reload the file?"
 msgstr "Möchten Sie die Änderungen verwerfen und die Datei neu laden?"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:641
@@ -11760,10 +11764,6 @@ msgstr "Geteilter Anwendungsdaten Wurzelordner"
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.addin.xml:191
 msgid "Linux"
 msgstr "Linux"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.addin.xml:192
-msgid "Microsoft Windows"
-msgstr "Microsoft Windows"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:3
 msgid "A multimedia (audio/video) application"
@@ -13293,6 +13293,9 @@ msgstr "Schließe die folgenden Kategorien aus:"
 msgid "Include the following categories: "
 msgstr "Schließe die folgenden Kategorien ein:"
 
+#~ msgid "If you reload the file all modifications since last save are lost."
+#~ msgstr "Möchten Sie die Änderungen verwerfen und die Datei neu laden?"
+
 #, fuzzy
 #~ msgid "Unhandled internal error: {0}"
 #~ msgstr "Interner Fehler"
@@ -13967,9 +13970,6 @@ msgstr "Schließe die folgenden Kategorien ein:"
 #~ msgid "Replace Regex"
 #~ msgstr "Ersetze Regex"
 
-#~ msgid "Are you sure that you want to reload the file?"
-#~ msgstr "Sind Sie sich sicher, dass Sie die Datei erneut laden wollen?"
-
 #~ msgid "_Solution"
 #~ msgstr "_Projektmappe"
 
@@ -13984,10 +13984,13 @@ msgstr "Schließe die folgenden Kategorien ein:"
 #~ msgstr "Ab_wärts"
 #~ msgid "R_eplace:"
 #~ msgstr "E_rsetzen:"
+
 #~ msgid "Exception occurred: {0}"
 #~ msgstr "Fehler aufgetreten: {0}"
+
 #~ msgid "Question"
 #~ msgstr "Frage"
+
 #~ msgid "Delete files"
 #~ msgstr "Lösche Dateien"
 
