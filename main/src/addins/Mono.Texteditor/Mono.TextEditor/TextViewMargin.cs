@@ -220,6 +220,7 @@ namespace Mono.TextEditor
 			}
 			result = new Gdk.GC (textEditor.GdkWindow);
 			result.RgbFgColor = color;
+			result.ClipRectangle = clipRectangle;
 			gcDictionary.Add (colorId, result);
 			return result;
 		}
@@ -1056,7 +1057,6 @@ namespace Mono.TextEditor
 			layout.Alignment = Pango.Alignment.Left;
 			LineSegment line = lineNr < Document.LineCount ? Document.GetLine (lineNr) : null;
 			int xStart = System.Math.Max (area.X, XOffset);
-			//gc.ClipRectangle =
 			clipRectangle = new Gdk.Rectangle (xStart, y, area.Right - xStart, LineHeight);
 			
 			if (textEditor.Options.HighlightCaretLine && Caret.Line == lineNr) {

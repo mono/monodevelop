@@ -1,3 +1,10 @@
+2009-02-19  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextViewMargin.cs: Fixed a bug where clip
+	  rectangles are not set on first draw (text may have been
+	  drawn over the line number margin at first draw for
+	  example).
+
 2009-02-18  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextEditor.cs: removed gtk keyboard snooper.
