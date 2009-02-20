@@ -1529,10 +1529,10 @@ namespace Mono.TextEditor
 		
 		#endregion
 
-		internal void FireLinkEvent (string link)
+		internal void FireLinkEvent (string link, int button, ModifierType modifierState)
 		{
 			if (LinkRequest != null)
-				LinkRequest (this, new LinkEventArgs (link));
+				LinkRequest (this, new LinkEventArgs (link, button, modifierState));
 		}
 		
 		public event EventHandler<LinkEventArgs> LinkRequest;

@@ -671,12 +671,14 @@ namespace Mono.TextEditor
 			ISegment selection = textEditor.SelectionRange;
 			int anchor         = textEditor.SelectionAnchor;
 			int oldOffset      = textEditor.Caret.Offset;
+			
+			string link = GetLink (args);
+			if (!String.IsNullOrEmpty (link)) {
+				textEditor.FireLinkEvent (link, args.Button, args.ModifierState);
+				return;
+			}
+			
 			if (args.Button == 1 || args.Button == 2) {
-				string link = GetLink (args);
-				if (!String.IsNullOrEmpty (link)) {
-					textEditor.FireLinkEvent (link);
-					return;
-				}
 				VisualLocationTranslator trans = new VisualLocationTranslator (this, args.X, args.Y);
 				clickLocation = trans.VisualToDocumentLocation (args.X, args.Y);
 /*				if (!column = o - line.Offset;trans.WasInLine) {

@@ -37,9 +37,21 @@ namespace Mono.TextEditor
 			private set;
 		}
 		
-		public LinkEventArgs (string link)
+		public int Button {
+			get;
+			private set;
+		}
+		
+		public Gdk.ModifierType ModifierState {
+			get;
+			private set;
+		}
+		
+		public LinkEventArgs (string link, int button, Gdk.ModifierType modifierState)
 		{
 			this.Link = link;
+			this.Button = button;
+			this.ModifierState = modifierState;
 		}
 	}
 }
