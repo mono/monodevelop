@@ -1,3 +1,9 @@
+2009-02-20  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/LanguageItemWindow.cs: fixed "Bug
+	  477513 - Tooltips should show full namespace when names
+	  clash".
+
 2009-02-19  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Changed

@@ -91,6 +91,7 @@ namespace MonoDevelop.SourceEditor
 			settings.EmitNameCallback = delegate (IDomVisitable domVisitable, ref string outString) {
 				// crop used namespaces.
 				if (unit != null) {
+					
 					int len = 0;
 					foreach (IUsing u in unit.Usings) {
 						foreach (string ns in u.Namespaces) {
@@ -99,8 +100,20 @@ namespace MonoDevelop.SourceEditor
 							}
 						}
 					}
-					if (len > 0)
-						outString = outString.Substring (len);
+					string newName = outString.Substring (len);
+					int count = 0;
+					// check if there is a name clash.
+					if (dom.GetType (newName) != null)
+						count++;
+					foreach (IUsing u in unit.Usings) {
+						foreach (string ns in u.Namespaces) {
+							if (dom.GetType (ns + "." + newName) != null)
+								count++;
+						}
+					}
+					
+					if (len > 0 && count == 1)
+						outString = newName;
 				}
 			};
 			
