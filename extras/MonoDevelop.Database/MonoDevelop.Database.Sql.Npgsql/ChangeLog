@@ -1,3 +1,7 @@
+2009-02-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Database.Sql.Npgsql.csproj: Updated references.
+
 2009/02/06  Lluis Sanchez Gual  <lluis@novell.com>
 
  * MonoDevelop.Database.Sql.Npgsql.mdp:

@@ -38,10 +38,18 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
-    <Reference Include="MonoDevelop.Ide, Version=1.9.2.0, Culture=neutral" />
-    <Reference Include="MonoDevelop.Core, Version=1.9.2.0, Culture=neutral" />
-    <Reference Include="MonoDevelop.Core.Gui, Version=1.9.2.0, Culture=neutral" />
-    <Reference Include="MonoDevelop.Components, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.Ide, Version=1.9.2.0, Culture=neutral">
+      <Package>monodevelop</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.Core, Version=1.9.2.0, Culture=neutral">
+      <Package>monodevelop</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.Core.Gui, Version=1.9.2.0, Culture=neutral">
+      <Package>monodevelop</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.Components, Version=1.9.2.0, Culture=neutral">
+      <Package>monodevelop</Package>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.Database.Sql\MonoDevelop.Database.Sql.csproj">

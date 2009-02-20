@@ -37,7 +37,9 @@
     </Execution>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MonoDevelop.Core, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.Core, Version=1.9.2.0, Culture=neutral">
+      <Package>monodevelop</Package>
+    </Reference>
     <Reference Include="Mono.Posix" />
     <Reference Include="System" />
     <Reference Include="System.Xml" />
@@ -47,20 +49,38 @@
     <Reference Include="Mono.Cecil, Version=0.6.8.8607, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\dlls\Mono.Cecil.dll</HintPath>
     </Reference>
-    <Reference Include="NRefactory, Version=0.0.0.0, Culture=neutral" />
-    <Reference Include="Mono.Cecil, Version=0.6.8.8607, Culture=neutral" />
-    <Reference Include="Mono.TextEditor, Version=1.0.0.0, Culture=neutral" />
-    <Reference Include="Mono.Debugging, Version=0.0.0.0, Culture=neutral" />
+    <Reference Include="NRefactory, Version=0.0.0.0, Culture=neutral">
+      <Package>monodevelop</Package>
+    </Reference>
+    <Reference Include="Mono.Cecil, Version=0.6.8.8607, Culture=neutral">
+      <Package>monodevelop</Package>
+    </Reference>
+    <Reference Include="Mono.TextEditor, Version=1.0.0.0, Culture=neutral">
+      <Package>monodevelop</Package>
+    </Reference>
+    <Reference Include="Mono.Debugging, Version=0.0.0.0, Culture=neutral">
+      <Package>monodevelop</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.Core.Gui, Version=1.9.2.0, Culture=neutral">
+      <Package>monodevelop</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.Projects, Version=1.9.2.0, Culture=neutral">
+      <Package>monodevelop</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.Projects.Gui, Version=1.9.2.0, Culture=neutral">
+      <Package>monodevelop</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.Ide, Version=1.9.2.0, Culture=neutral">
+      <Package>monodevelop</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.Components, Version=1.9.2.0, Culture=neutral">
+      <Package>monodevelop</Package>
+    </Reference>
     <Reference Include="glib-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="pango-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="atk-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="gdk-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="gtk-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <Reference Include="MonoDevelop.Core.Gui, Version=1.9.2.0, Culture=neutral" />
-    <Reference Include="MonoDevelop.Projects, Version=1.9.2.0, Culture=neutral" />
-    <Reference Include="MonoDevelop.Projects.Gui, Version=1.9.2.0, Culture=neutral" />
-    <Reference Include="MonoDevelop.Ide, Version=1.9.2.0, Culture=neutral" />
-    <Reference Include="MonoDevelop.Components, Version=1.9.2.0, Culture=neutral" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.CodeAnalysis\MonoDevelop.CodeAnalysis.csproj">
