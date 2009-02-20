@@ -32,7 +32,7 @@ namespace Mono.TextEditor
 	public interface ITooltipProvider
 	{
 		object GetItem (TextEditor editor, int offset);
-		Gtk.Window CreateTooltipWindow (TextEditor editor, object item);
+		Gtk.Window CreateTooltipWindow (TextEditor editor, Gdk.ModifierType modifierState, object item);
 		void GetRequiredPosition (TextEditor editor, Gtk.Window tipWindow, out int requiredWidth, out double xalign);
 		bool IsInteractive (TextEditor editor, Gtk.Window tipWindow);
 	}

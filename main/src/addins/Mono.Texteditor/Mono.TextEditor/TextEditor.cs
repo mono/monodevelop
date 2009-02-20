@@ -827,7 +827,8 @@ namespace Mono.TextEditor
 		{
 			mx = e.X - textViewMargin.XOffset;
 			my = e.Y;
-			UpdateTooltip ();
+			
+			UpdateTooltip (e.State);
 			
 			int startPos;
 			Margin margin = GetMarginAtX ((int)e.X, out startPos);
@@ -1388,25 +1389,25 @@ namespace Mono.TextEditor
 			get { return tooltipProviders; }
 		}
 		
-		void UpdateTooltip ()
+		void UpdateTooltip (Gdk.ModifierType modifierState)
 		{
 			if (tipWindow != null) {
 				// Tip already being shown. Update it.
-				ShowTooltip ();
+				ShowTooltip (modifierState);
 			}
 			else if (showTipScheduled) {
 				// Tip already scheduled. Reset the timer.
 				GLib.Source.Remove (tipTimeoutId);
-				tipTimeoutId = GLib.Timeout.Add (TooltipTimer, ShowTooltip);
+				tipTimeoutId = GLib.Timeout.Add (TooltipTimer, delegate { return ShowTooltip (modifierState); } );
 			}
 			else {
 				// Start a timer to show the tip
 				showTipScheduled = true;
-				tipTimeoutId = GLib.Timeout.Add (TooltipTimer, ShowTooltip);
+				tipTimeoutId = GLib.Timeout.Add (TooltipTimer, delegate { return ShowTooltip (modifierState); } );
 			}
 		}
 		
-		bool ShowTooltip ()
+		bool ShowTooltip (Gdk.ModifierType modifierState)
 		{
 			showTipScheduled = false;
 			int xloc = (int)mx;
@@ -1452,7 +1453,7 @@ namespace Mono.TextEditor
 
 				HideTooltip ();
 
-				Gtk.Window tw = provider.CreateTooltipWindow (this, item);
+				Gtk.Window tw = provider.CreateTooltipWindow (this, modifierState, item);
 				if (tw == null)
 					return false;
 				

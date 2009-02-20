@@ -1,6 +1,12 @@
 2009-02-20  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/ITooltipProvider.cs: Tooltip proviters now
+	  get informed about the modifier state.
+
+2009-02-20  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextEditor.cs:
 	* Mono.TextEditor/LinkEventArgs.cs:
 	* Mono.TextEditor/TextViewMargin.cs: Link events are now
 	  informed about the button and modifier state.
