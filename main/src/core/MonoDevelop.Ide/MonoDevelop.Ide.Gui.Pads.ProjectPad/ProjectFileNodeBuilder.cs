@@ -146,14 +146,18 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			
 			if (oldPath != newPath) {
 				try {
-					if (FileService.IsValidPath (newPath)) {
+					if (!FileService.IsValidPath (newPath)) {
+						MessageService.ShowWarning (GettextCatalog.GetString ("The name you have chosen contains illegal characters. Please choose a different name."));
+					} else if (File.Exists (newPath) || Directory.Exists (newPath)) {
+						MessageService.ShowWarning (GettextCatalog.GetString ("File or directory name is already in use. Please choose a different one."));
+					} else {
 						FileService.RenameFile (oldPath, newName);
-						IdeApp.Workspace.Save();
+						IdeApp.Workspace.Save ();
 					}
-				} catch (System.IO.IOException) {   // assume duplicate file
-					MessageService.ShowError (GettextCatalog.GetString ("File or directory name is already in use. Please choose a different one."));
 				} catch (System.ArgumentException) { // new file name with wildcard (*, ?) characters in it
-					MessageService.ShowError (GettextCatalog.GetString ("The file name you have chosen contains illegal characters. Please choose a different file name."));
+					MessageService.ShowWarning (GettextCatalog.GetString ("The name you have chosen contains illegal characters. Please choose a different name."));
+				} catch (System.IO.IOException ex) {
+					MessageService.ShowException (ex, GettextCatalog.GetString ("There was an error renaming the file."));
 				}
 			}
 		}

@@ -104,15 +104,19 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			string oldname = file.Path;
 
 			string newname = Path.Combine (Path.GetDirectoryName (oldname), newName);
-			if (oldname != newname) {
+			if (newname != oldname) {
 				try {
-					if (FileService.IsValidPath (newname)) {
-						FileService.RenameFile (oldname, newName);
+					if (!FileService.IsValidPath (newname)) {
+						MessageService.ShowWarning (GettextCatalog.GetString ("The name you have chosen contains illegal characters. Please choose a different name."));
+					} else if (File.Exists (newname) || Directory.Exists (newname)) {
+						MessageService.ShowWarning (GettextCatalog.GetString ("File or directory name is already in use. Please choose a different one."));
+					} else {
+						FileService.RenameFile (oldname, newname);
 					}
-				} catch (System.IO.IOException) {   // assume duplicate file
-					MessageService.ShowError (GettextCatalog.GetString ("File or directory name is already in use. Please choose a different one."));
 				} catch (System.ArgumentException) { // new file name with wildcard (*, ?) characters in it
-					MessageService.ShowError (GettextCatalog.GetString ("The file name you have chosen contains illegal characters. Please choose a different file name."));
+					MessageService.ShowWarning (GettextCatalog.GetString ("The name you have chosen contains illegal characters. Please choose a different name."));
+				} catch (System.IO.IOException ex) { 
+					MessageService.ShowException (ex, GettextCatalog.GetString ("There was an error renaming the file."));
 				}
 			}
 		}

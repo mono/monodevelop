@@ -1,3 +1,12 @@
+2009-02-19  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:
+	  Better error messages for file rename. Fixes 'Bug 473688 -
+	  Reports problem about "already in use" when it should report
+	  non-existance'.
+
 2009-02-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui/Ide.cs:
