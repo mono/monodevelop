@@ -26,7 +26,7 @@ namespace Algorithm.Diff.Gtk {
 			public string LeftName = null;
 			public string RightName = null;
 			public bool SideBySide = false;
-			public bool LineWrap = true;
+			public bool LineWrap = false;
 			public bool LineNumbers = true;
 			public string Font = "Mono 9";
 		}
