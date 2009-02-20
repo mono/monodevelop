@@ -1,3 +1,9 @@
+2009-02-20  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: fixed "Bug
+	  477641 - Completion showing incorrect members for a
+	  parameter".
+
 2009-02-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Dom/IType.cs:
