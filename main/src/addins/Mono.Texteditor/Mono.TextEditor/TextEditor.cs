@@ -49,7 +49,7 @@ namespace Mono.TextEditor
 		protected GutterMargin     gutterMargin;
 		protected FoldMarkerMargin foldMarkerMargin;
 		protected TextViewMargin   textViewMargin;
-		
+		int oldLongestLineLength = -1;
 		internal LineSegment longestLine;
 		List<Margin> margins = new List<Margin> ();
 		int oldRequest = -1;
@@ -953,6 +953,7 @@ namespace Mono.TextEditor
 		
 		public void ScrollToCaret ()
 		{
+			System.Console.WriteLine("scroll to caret!");
 			if (Caret.Line < 0 || Caret.Line >= Document.LineCount)
 				return;
 			if (this.textEditorData.VAdjustment.Upper < Allocation.Height)  {
@@ -1012,6 +1013,26 @@ namespace Mono.TextEditor
 			return base.OnScrollEvent (evnt); 
 		}
 		
+		void SetHAdjustment ()
+		{
+			if (longestLine != null && this.textEditorData.HAdjustment != null) {
+				LineSegment curLine = this.Document.GetLineByOffset (this.longestLine.Offset);
+				// check if the longestLine is still valid
+				if (curLine == null || curLine.Offset != this.longestLine.Offset || curLine.Length != this.longestLine.Length) {
+					longestLine = null;
+				} else {
+					int maxX = this.TextViewMargin.GetWidth (this.Document.GetTextAt (this.longestLine)) + 10 * this.textViewMargin.CharWidth;
+					this.textEditorData.HAdjustment.SetBounds (0, 
+					                                           maxX, 
+					                                           this.textViewMargin.CharWidth,
+					                                           Allocation.Width,
+					                                           Allocation.Width);
+					if (maxX < Allocation.Width) 
+						this.textEditorData.HAdjustment.Value = 0;
+				}
+			}
+		}
+			
 		internal void SetAdjustments (Gdk.Rectangle allocation)
 		{
 			repaint = true;
@@ -1025,22 +1046,7 @@ namespace Mono.TextEditor
 				if (maxY < allocation.Height) 
 					this.textEditorData.VAdjustment.Value = 0;
 			}
-			if (longestLine != null && this.textEditorData.HAdjustment != null) {
-				LineSegment curLine = this.Document.GetLineByOffset (this.longestLine.Offset);
-				// check if the longestLine is still valid
-				if (curLine == null || curLine.Offset != this.longestLine.Offset || curLine.Length != this.longestLine.Length) {
-					longestLine = null;
-				} else {
-					int maxX = this.TextViewMargin.GetWidth (this.Document.GetTextAt (this.longestLine)) + 10 * this.textViewMargin.CharWidth;
-					this.textEditorData.HAdjustment.SetBounds (0, 
-					                                           maxX, 
-					                                           this.textViewMargin.CharWidth,
-					                                           allocation.Width,
-					                                           allocation.Width);
-					if (maxX < allocation.Width) 
-						this.textEditorData.HAdjustment.Value = 0;
-				}
-			}
+			SetHAdjustment ();
 		}
 		
 		public int GetWidth (string text)
@@ -1067,6 +1073,11 @@ namespace Mono.TextEditor
 			for (int visualLineNumber = startLine; visualLineNumber <= endLine; visualLineNumber++) {
 				int curX = 0;
 				int logicalLineNumber = Document.VisualToLogicalLine (visualLineNumber + firstLine);
+				LineSegment line = Document.GetLine (logicalLineNumber);
+				if (line != null && (longestLine == null || line != longestLine && this.TextViewMargin.GetWidth (this.Document.GetTextAt (line)) > this.TextViewMargin.GetWidth (this.Document.GetTextAt (longestLine)))) {
+					longestLine = line;
+					oldLongestLineLength = -1;
+				}
 				foreach (Margin margin in this.margins) {
 					if (margin.IsVisible) {
 						margin.XOffset = curX;
@@ -1083,6 +1094,11 @@ namespace Mono.TextEditor
 				curY += LineHeight;
 				if (curY > area.Bottom)
 					break;
+			}
+			
+			if (longestLine != null && longestLine.Length != oldLongestLineLength) {
+				SetHAdjustment ();
+				oldLongestLineLength = longestLine.Length;
 			}
 		}
 		/*
