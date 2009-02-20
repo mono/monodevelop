@@ -85,7 +85,7 @@ namespace MonoDevelop.SourceEditor
 			return member.Documentation;
 		}
 		
-		public LanguageItemWindow (ProjectDom dom, Ambience ambience, ResolveResult result, string errorInformations, ICompilationUnit unit)
+		public LanguageItemWindow (ProjectDom dom, Gdk.ModifierType modifierState, Ambience ambience, ResolveResult result, string errorInformations, ICompilationUnit unit)
 		{
 			settings = new OutputSettings (OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName | OutputFlags.IncludeKeywords | OutputFlags.IncludeMarkup | OutputFlags.UseFullName);
 			settings.EmitNameCallback = delegate (IDomVisitable domVisitable, ref string outString) {

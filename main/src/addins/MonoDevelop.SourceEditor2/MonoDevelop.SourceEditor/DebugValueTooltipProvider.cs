@@ -105,7 +105,7 @@ namespace MonoDevelop.SourceEditor
 			return char.IsLetterOrDigit (c) || c == '_';
 		}
 			
-		public Gtk.Window CreateTooltipWindow (TextEditor editor, object item)
+		public Gtk.Window CreateTooltipWindow (TextEditor editor, Gdk.ModifierType modifierState, object item)
 		{
 			return new DebugValueWindow (editor, DebuggingService.CurrentFrame, (ObjectValue) item);
 		}

@@ -580,7 +580,7 @@ namespace MonoDevelop.SourceEditor
 				if (changeStyle)
 					return;
 				changeStyle = true;
-				Gtk.Window win = new LanguageItemWindow (null, null, null, null, null);
+				Gtk.Window win = new LanguageItemWindow (null, Gdk.ModifierType.None, null, null, null, null);
 				win.EnsureStyle ();
 				this.Style = win.Style;
 				win.Destroy ();

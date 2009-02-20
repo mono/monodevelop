@@ -47,9 +47,9 @@ namespace MonoDevelop.SourceEditor
 			return ed.GetErrorInformationAt (offset);
 		}
 		
-		public Gtk.Window CreateTooltipWindow (TextEditor editor, object item)
+		public Gtk.Window CreateTooltipWindow (TextEditor editor, Gdk.ModifierType modifierState, object item)
 		{
-			LanguageItemWindow result = new LanguageItemWindow (null, null, null, (string)item, null);
+			LanguageItemWindow result = new LanguageItemWindow (null, modifierState, null, null, (string)item, null);
 			if (result.IsEmpty)
 				return null;
 			return result;
