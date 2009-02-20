@@ -1,3 +1,9 @@
+2009-02-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Components.DockToolbars/DockToolbarPanel.cs:
+	* MonoDevelop.Components.DockToolbars/DockToolbarFrame.cs:
+	  Added method for reseting the toolbar positions.
+
 2009-02-19  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Components.Commands/CommandManager.cs:

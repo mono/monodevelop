@@ -186,6 +186,12 @@ namespace MonoDevelop.Components.DockToolbars
 			get { return bars; }
 		}
 		
+		public void ResetToolbarPositions ()
+		{
+			foreach (DockToolbarPanel panel in panels)
+				panel.ResetBarPositions (false);
+		}
+		
 		void SaveCurrentLayout ()
 		{
 			DockToolbarStatus[] status = SaveStatus ();

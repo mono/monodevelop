@@ -139,15 +139,15 @@ namespace MonoDevelop.Components.DockToolbars
 		protected override void OnRealized ()
 		{
 			base.OnRealized ();
-			bool ea = EnableAnimation (false);
-			ResetBarPositions ();
-			EnableAnimation (ea);
+			ResetBarPositions (false);
 		}
 
-		public void ResetBarPositions ()
+		public void ResetBarPositions (bool animate)
 		{
 			int x=0, row=0;
 			int width = PanelWidth;
+			
+			bool ea = EnableAnimation (animate);
 			
 			foreach (DockToolbar b in bars) {
 				int barw = GetChildWidth (b);
@@ -161,7 +161,7 @@ namespace MonoDevelop.Components.DockToolbars
 				x += barw;
 			}
 			SortBars ();
-
+			EnableAnimation (ea);
 		}
 		
 		void SetPlaceholder (DockToolbar bar, int offset, int row)
