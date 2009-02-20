@@ -10,14 +10,17 @@ CLEANFILES = MonoDevelop.dmg
 noinst_DATA = MonoDevelop.dmg
 EXTRA_DIST = COPYING dmg-bg.png DS_Store Info.plist.in INSTALL make-dmg-bundle.sh mdtool monodevelop 
 
+all: MonoDevelop.app.zip
+
 MonoDevelop.dmg: MonoDevelop.app
 	./make-dmg-bundle.sh
 
 clean-local:
 	rm -rf MonoDevelop.app
 	rm -rf MonoDevelop.dmg
+	rm -f MonoDevelop.app.zip
 
-MonoDevelop.app: 
+MonoDevelop.app: ../AddIns/* ../AddIns/*/* ../AddIns/*/*/* ../bin/* ../data/*/* ../locale/*/*/*
 	mkdir -p $(MAC_APP_DIR)/Contents/{MacOS,Resources}
 	mkdir -p $(MAC_APP_DIR)/Contents/MacOS/{lib,share}
 	mkdir -p $(MAC_APP_LIB_DIR)
@@ -25,12 +28,12 @@ MonoDevelop.app:
 	cp -pR ../data $(MAC_APP_LIB_DIR)
 	cp -pR ../bin $(MAC_APP_LIB_DIR)
 	cp -pR ../locale $(MAC_APP_DIR)/Contents/MacOS/share
-
+	
 	sed -e "s/@BUNDLE_VERSION@/$(BUNDLE_VERSION)/" -e "s/@ASSEMBLY_VERSION@/$(ASSEMBLY_VERSION)/" Info.plist.in > $(MAC_APP_DIR)/Contents/Info.plist
 	cp ../../theme-icons/Mac/monodevelop.icns $(MAC_APP_DIR)/Contents/Resources
 	cp monodevelop $(MACOS)/monodevelop
 	cp mdtool $(MACOS)/mdtool
-
+	
 # copy monodevelop.pc and mono-addins.pc to Contents/MacOS/lib/pkgconfig
 	mkdir -p $(MACOS)/lib/pkgconfig
 	cp ../../*.pc $(MACOS)/lib/pkgconfig
@@ -45,7 +48,18 @@ MonoDevelop.app:
 	mkdir -p $(MACOS)/share/icons
 	cp ../../theme-icons/Mac/png/* $(MACOS)/share/icons
 
+# Remove addins that don't work on OSX
+	rm -rf  $(ADDINS)/GnomePlatform* \
+	  $(ADDINS)/WindowsPlatform* \
+	  $(ADDINS)/MonoDevelop.GtkCore* \
+	  $(ADDINS)/MonoDevelop.Moonlight* \
+	  $(ADDINS)/VersionControl/MonoDevelop.VersionControl.Subversion* \
+	  $(ADDINS)/MonoDevelop.Gettext/*
+	
+# touch the directory so that update dependencies work
+	touch MonoDevelop.app	  
 
-# Remove Gettext plugin (It's broken on OSX)
-	rm -rf $(ADDINS)/*Gettext*
+
+MonoDevelop.app.zip: MonoDevelop.app
+	zip -r9uq MonoDevelop.app.zip MonoDevelop.app
 

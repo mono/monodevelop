@@ -1,49 +1,17 @@
 #!/bin/sh
 
 # Author: Marc Christensen (mchristensen@novell.com)
+#         Michael Hutchinson (mhutchinson@novell.com)
 
 # fetch the path relative to the launch point where this shell script exists. (taken from macpack)
 # $0 should contain the full path from the root i.e. /Applications/<folder>.app/Contents/MacOS/<script>
 APP_PATH=`echo $0 | awk '{split($0,patharr,"/"); idx=1; while(patharr[idx+3] != "") { if (patharr[idx] != "/") {printf("%s/", patharr[idx]); idx++ }} }'`
 
-ASSEMBLY=MonoDevelop.exe
-MONO=`which mono`
-
 MONO_FRAMEWORK_PATH=/Library/Frameworks/Mono.framework/Versions/Current
 export DYLD_FALLBACK_LIBRARY_PATH=$APP_PATH/Contents/MacOS/lib/monodevelop/bin:$MONO_FRAMEWORK_PATH/lib:/lib:/usr/lib
 
-MD_BIN_PATH="$APP_PATH/Contents/MacOS/lib/monodevelop/bin"
-export MD_BIN_PATH
-
-reWrite() {
-    ret=""
-    WD=`pwd`
-    for arg in "$@"
-    do
-	if [ -f "./$arg" ]
-	then
-	    ret="$ret '$WD/$arg'"
-	else
-	    ret="$ret '$arg'"
-	fi
-   done
-
-   echo "$ret"
-}
-
-
-### SYNCH BLOCK: any changes to this block should be kept in sync with the one in Makefile.include and mdtool.in
-MD_PKG_CONFIG_PATH=$APP_PATH/Contents/MacOS/lib/pkgconfig:/tmp/build_deps/lib/pkgconfig/:/usr/lib/pkgconfig/:/usr/local/lib/pkgconfig/:/usr/share/pkgconfig/:/usr/local/share/pkgconfig/
-if test -d /usr/lib64; then MD_PKG_CONFIG_PATH=$MD_PKG_CONFIG_PATH:/usr/lib64/pkgconfig/:/usr/local/lib64/pkgconfig/; fi
-### END BLOCK
-
-if [ -n $PKG_CONFIG_PATH ]; then
-	export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:$MD_PKG_CONFIG_PATH
-else
-	export PKG_CONFIG_PATH=$MD_PKG_CONFIG_PATH
-fi
-
-eval set -- `reWrite "$@"`
+PREFIX="$APP_PATH/Contents/MacOS"
+export PREFIX
 
 # Work around a bug in 'exec' in older versions of macosx
 OSX_VERSION=$(uname -r | cut -f1 -d.)
@@ -53,26 +21,58 @@ else
    EXEC="exec -a monodevelop"
 fi
 
-cd $MD_BIN_PATH
+## END MAC-SPECIFIC SETUP ##
+### Beyond this, all is from the Linux monodevelop.in, except the exec -a tweak
 
-case x$1 in
-	x--profile)
+MD_FORCE_DEBUG=yes
+MD_REDIRECT_LOG="$HOME/.config/MonoDevelop/log"
+
+ARGS=""
+
+for arg in $*; do 
+case x$arg in
+	x--profile*)
+		MONO_OPTIONS="$MONO_OPTIONS $arg"
 		shift
-		$EXEC $MONO --profile $ASSEMBLY "$@"
-		exit 0
 		;;
-	x--debug)
-		shift
+	x--debug*)
 		export MONODEVELOP_DISPATCH_DEBUG=yes
-		$EXEC $MONO --debug $ASSEMBLY "$@"
-		exit 0
-		;;
-	x--trace)
+		unset MD_FORCE_DEBUG
+		MONO_OPTIONS="$MONO_OPTIONS $arg"
 		shift
-		$EXEC $MONO --trace $ASSEMBLY "$@"
-		exit 0;
 		;;
-esac
+	x--trace*)
+		MONO_OPTIONS="$MONO_OPTIONS $arg"
+		shift
+		;;
+	x--no-log)
+		unset MD_REDIRECT_LOG
+		shift
+		;;
+	x--no-debug)
+		unset MD_FORCE_DEBUG
+		shift
+		;;
+	*)
+		ARGS="$ARGS $arg"
+		shift
+		;;
+esac		
+done
 
-$EXEC $MONO $ASSEMBLY "$@"
+if [ -n "$MONO_OPTIONS" ]; then
+	echo "** Running with Mono options: $MONO_OPTIONS **"
+fi
 
+if [ -z MD_FORCE_DEBUG ]; then
+	MONO_OPTIONS="$MONO_OPTIONS --debug"
+fi
+
+exec_args="mono $MONO_OPTIONS $PREFIX/lib/monodevelop/bin/MonoDevelop.exe $ARGS"
+
+if [ -n "$MD_REDIRECT_LOG" ]; then
+	mkdir -p `dirname "$MD_REDIRECT_LOG"`
+	$EXEC $exec_args 2>&1 | tee "$MD_REDIRECT_LOG"
+else
+	$EXEC $exec_args
+fi
