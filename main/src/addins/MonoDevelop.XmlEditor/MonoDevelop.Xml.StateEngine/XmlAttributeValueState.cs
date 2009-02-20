@@ -98,10 +98,6 @@ namespace MonoDevelop.Xml.StateEngine
 				//the parent state should report the error
 				rollback = string.Empty;
 				return Parent;
-			} else if (c == '>' && context.KeywordBuilder.Length > 0) {
-				context.LogError  ("Attribute value ended unexpectedly.");
-				rollback = string.Empty;
-				return Parent;
 			} else if (c == '\'') {
 				//ending the value
 				XAttribute att = (XAttribute) context.Nodes.Peek ();
@@ -126,10 +122,6 @@ namespace MonoDevelop.Xml.StateEngine
 			
 			if (c == '<') {
 				//the parent state should report the error
-				rollback = string.Empty;
-				return Parent;
-			} else if (c == '>' && context.KeywordBuilder.Length > 0) {
-				context.LogError  ("Attribute value ended unexpectedly.");
 				rollback = string.Empty;
 				return Parent;
 			} else if (c == '"') {
