@@ -1,3 +1,15 @@
+2009-02-20  Scott Ellington  <scott.ellington@gmail.com>
+
+	* Makefile.am:
+	* icons/step-out-22.png:
+	* icons/step-out-16.png:
+	* icons/step-over-22.png:
+	* icons/step-over-16.png:
+	* icons/step-into-16.png:
+	* icons/step-into-22.png:
+	* MonoDevelop.Debugger.csproj:
+	* MonoDevelop.Debugger.addin.xml: add step icons
+
 2009-02-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Debugger/WatchPad.cs: When restoring the watch

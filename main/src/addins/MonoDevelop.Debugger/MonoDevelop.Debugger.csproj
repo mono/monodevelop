@@ -46,10 +46,10 @@
     <Reference Include="Mono.Addins, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="Mono.Cairo" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
-    <Reference Include="Mono.Cairo" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -130,6 +130,24 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\debug-overlay-32.png">
       <LogicalName>debug-overlay-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\step-into-16.png">
+      <LogicalName>step-into-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\step-into-22.png">
+      <LogicalName>step-into-22.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\step-out-16.png">
+      <LogicalName>step-out-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\step-out-22.png">
+      <LogicalName>step-out-22.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\step-over-16.png">
+      <LogicalName>step-over-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\step-over-22.png">
+      <LogicalName>step-over-22.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

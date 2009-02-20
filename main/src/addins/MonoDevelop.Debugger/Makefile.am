@@ -51,6 +51,12 @@ RES =  \
 	icons/debug-overlay-16.png \
 	icons/debug-overlay-22.png \
 	icons/debug-overlay-32.png \
+	icons/step-into-16.png \
+	icons/step-into-22.png \
+	icons/step-out-16.png \
+	icons/step-out-22.png \
+	icons/step-over-16.png \
+	icons/step-over-22.png \
 	MonoDevelop.Debugger.addin.xml
 
 DATA_FILES =
