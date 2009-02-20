@@ -1,3 +1,9 @@
+2009-02-20  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.VersionControl.Views/StatusView.cs:
+	* MonoDevelop.VersionControl.Views/CellRendererDiff.cs: Fixed
+	  "Bug 455892 - Crash when closing tabs".
+
 2009-02-19  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.VersionControl.Views/StatusView.cs: Added some

@@ -299,6 +299,10 @@ namespace MonoDevelop.VersionControl.Views
 		public override void Dispose ()
 		{
 			disposed = true;
+			if (this.diffRenderer != null) {
+				this.diffRenderer.Dispose ();
+				this.diffRenderer = null;
+			}
 			VersionControlService.FileStatusChanged -= OnFileStatusChanged;
 			widget.Destroy ();
 			base.Dispose ();
@@ -919,6 +923,8 @@ namespace MonoDevelop.VersionControl.Views
 		
 		void SetDiffCellData (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
 		{
+			if (disposed)
+				return;
 			CellRendererDiff rc = (CellRendererDiff) cell;
 			string text = (string) filestore.GetValue (iter, ColPath);
 			string path = (string) filestore.GetValue (iter, ColFullPath);

@@ -8,7 +8,7 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.VersionControl.Views
 {
-	class CellRendererDiff: Gtk.CellRendererText
+	class CellRendererDiff: Gtk.CellRendererText, IDisposable
 	{
 		Pango.Layout layout;
 		Pango.FontDescription font;
@@ -21,12 +21,34 @@ namespace MonoDevelop.VersionControl.Views
 			font = Pango.FontDescription.FromString (IdeApp.Services.PlatformService.DefaultMonospaceFont);
 		}
 		
+		void DisposeLayout ()
+		{
+			if (layout != null) {
+				layout.Dispose ();
+				layout = null;
+			}
+		}
+		#region IDisposable implementation
+		bool isDisposed = false;
+		public void Dispose ()
+		{
+			isDisposed = true;
+			DisposeLayout ();
+			if (font != null) {
+				font.Dispose ();
+				font = null;
+			}
+		}
+		#endregion
+		
 		public void Reset ()
 		{
 		}
 		
 		public void InitCell (Widget container, bool diffMode, string text, string path)
 		{
+			if (isDisposed)
+				return;
 			this.diffMode = diffMode;
 			
 			if (diffMode) {
@@ -40,6 +62,7 @@ namespace MonoDevelop.VersionControl.Views
 							maxlin = n;
 						}
 					}
+					DisposeLayout ();
 					layout = CreateLayout (container, lines [maxlin]);
 					layout.GetPixelSize (out width, out lineHeight);
 					height = lineHeight * lines.Length;
@@ -48,6 +71,7 @@ namespace MonoDevelop.VersionControl.Views
 					width = height = 0;
 			}
 			else {
+				DisposeLayout ();
 				layout = CreateLayout (container, text);
 				layout.GetPixelSize (out width, out height);
 			}
@@ -68,6 +92,8 @@ namespace MonoDevelop.VersionControl.Views
 
 		protected override void Render (Drawable window, Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, CellRendererState flags)
 		{
+			if (isDisposed)
+				return;
 			if (diffMode) {
 				int w, maxy;
 				window.GetSize (out w, out maxy);
@@ -143,5 +169,7 @@ namespace MonoDevelop.VersionControl.Views
 			else
 				return StateType.Normal;
 		}
-	}
+	
+		
+}
 }
