@@ -9,10 +9,12 @@ using Pango;
 
 namespace Algorithm.Diff.Gtk {
 
-	public class DiffWidget : VBox {
-	
+	public class DiffWidget : VBox 
+	{
+		Pango.FontDescription font = null;
 		ScrolledWindow scroller;
-	
+		Table difftable;
+		
 		public double Position {
 			get {
 				return scroller.Vadjustment.Value;
@@ -51,6 +53,23 @@ namespace Algorithm.Diff.Gtk {
 		{
 		}
 		
+		public override void Dispose ()
+		{
+			if (font != null) {
+				font.Dispose ();
+				font = null;
+			}
+			if (difftable != null) {
+				foreach (Widget child in difftable.Children) {
+					child.Dispose ();
+				}
+				difftable.Dispose ();
+				difftable = null;
+			}
+			scroller.Dispose ();
+			base.Dispose ();
+		}
+
 		protected override void OnStyleSet (global::Gtk.Style previous_style)
 		{
 			ColorBlack = this.Style.Text (StateType.Normal);
@@ -113,12 +132,12 @@ namespace Algorithm.Diff.Gtk {
 			VBox tablecontainer = new VBox(false, 0);
 			textviewport.Add(tablecontainer);
 			
-			Table difftable = new Table((uint)nRows, (uint)nCols, false);
+			difftable = new Table((uint)nRows, (uint)nCols, false);
+			
 			tablecontainer.PackStart(difftable, false, false, 0);	
 			
 			uint row = 0;
 			
-			Pango.FontDescription font = null;
 			if (options.Font != null)
 				font = Pango.FontDescription.FromString(options.Font);
 			
@@ -235,6 +254,15 @@ namespace Algorithm.Diff.Gtk {
 				this.EnterNotifyEvent += new EnterNotifyEventHandler(EnterNotifyEventHandler);
 				this.LeaveNotifyEvent += new LeaveNotifyEventHandler(LeaveNotifyEventHandler);
 			}
+			
+			public override void Dispose ()
+			{
+				if (renderer != null) {
+					renderer.Dispose ();
+					renderer = null;
+				}
+				base.Dispose ();
+			}
 
 			void EnterNotifyEventHandler (object o, EnterNotifyEventArgs args) {
 				renderer.Highlight();
@@ -264,6 +292,15 @@ namespace Algorithm.Diff.Gtk {
 				ClearHighlight();
 			}
 			
+			public override void Dispose ()
+			{
+				if (layout != null) {
+					layout.Dispose ();
+					layout = null;
+				}
+				base.Dispose ();
+			}
+
 			Gdk.Color bg_color {
 				get {
 					switch (type) {

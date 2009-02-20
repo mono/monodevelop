@@ -1,5 +1,9 @@
 2009-02-20  Mike Krüger  <mkrueger@novell.com>
 
+	* widget.cs: Worked on resource freeing of the diff widget.
+
+2009-02-20  Mike Krüger  <mkrueger@novell.com>
+
 	* widget.cs: fixed "Bug 474156 - diff window wraps lines of
 	  code".
 
