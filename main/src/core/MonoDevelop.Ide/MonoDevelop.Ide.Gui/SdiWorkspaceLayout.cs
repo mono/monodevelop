@@ -209,6 +209,11 @@ namespace MonoDevelop.Ide.Gui
 			workbench.ContextChanged += contextChangedHandler;
 		}
 		
+		public void ResetToolbars ()
+		{
+			toolbarFrame.ResetToolbarPositions ();
+		}
+		
 		void ShowPopup ()
 		{
 			Gtk.Menu contextMenu = IdeApp.CommandService.CreateMenu ("/MonoDevelop/Ide/ContextMenu/DocumentTab");

@@ -844,6 +844,11 @@ namespace MonoDevelop.Ide.Gui
 			documents.RemoveAt (oldPlacement);
 			documents.Insert (newPlacement, doc);
 		}
+		
+		internal void ResetToolbars ()
+		{
+			workbench.ResetToolbars ();
+		}
 	}
 	
 	class FileInformation

@@ -672,6 +672,11 @@ namespace MonoDevelop.Ide.Gui
 			AddinManager.AddExtensionNodeHandler (viewContentPath, OnExtensionChanged);
 			initializing = false;
 		}
+		
+		public void ResetToolbars ()
+		{
+			layout.ResetToolbars ();
+		}
 
 		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
 		{

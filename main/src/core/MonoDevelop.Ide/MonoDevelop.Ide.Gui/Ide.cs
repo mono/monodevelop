@@ -316,6 +316,7 @@ namespace MonoDevelop.Ide.Gui
 
 		static void OnInitialRun ()
 		{
+			Workbench.ResetToolbars ();
 		}
 
 		static void OnUpgraded (string previousVersion)

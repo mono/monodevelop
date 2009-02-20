@@ -1,3 +1,14 @@
+2009-02-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui/Ide.cs:
+	* MonoDevelop.Ide.Gui/Workbench.cs:
+	* MonoDevelop.Ide.Gui/WorkbenchMemento.cs:
+	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs:
+	* MonoDevelop.Ide.Gui/IWorkbenchLayout.cs:
+	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Reset the toolbar
+	  positions the first time MD is executed, in this way they
+	  will take all available space.
+
 2009-02-19  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Gui.OptionPanels/TextStylePolicyPanel.cs:
