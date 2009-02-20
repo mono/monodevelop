@@ -1,3 +1,8 @@
+2009-02-20  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs:
+	  Changed extensible tree view api a bit.
+
 2009-02-19  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs:

@@ -443,21 +443,23 @@ namespace MonoDevelop.Ide.Gui.Components
 			}
 		}
 		
-		public void LoadTree (object nodeObject)
+		public ITreeBuilder LoadTree (object nodeObject)
 		{
 			Clear ();
 			TreeBuilder builder = new TreeBuilder (this);
 			builder.AddChild (nodeObject, true);
 			builder.Expanded = true;
 			InitialSelection ();
+			return builder;
 		}
 		
-		public void AddChild (object nodeObject)
+		public ITreeBuilder AddChild (object nodeObject)
 		{
 			TreeBuilder builder = new TreeBuilder (this);
 			builder.AddChild (nodeObject, true);
 			builder.Expanded = true;
 			InitialSelection ();
+			return builder;
 		}
 		
 		public void RemoveChild (object nodeObject)
