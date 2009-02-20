@@ -953,7 +953,6 @@ namespace Mono.TextEditor
 		
 		public void ScrollToCaret ()
 		{
-			System.Console.WriteLine("scroll to caret!");
 			if (Caret.Line < 0 || Caret.Line >= Document.LineCount)
 				return;
 			if (this.textEditorData.VAdjustment.Upper < Allocation.Height)  {
