@@ -1,3 +1,8 @@
+2009-02-20  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Core/SystemAssemblyService.cs: Add
+	  Mac-compatible pkgconfig sniffing
+
 2009-02-18  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Core/StringParserService.cs: fixed "Bug 456971 -

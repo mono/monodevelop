@@ -483,6 +483,20 @@ namespace MonoDevelop.Core
 				foreach (string prefix in GetSystemPkgConfigDirs ())
 					foreach (string suffix in suffixes)
 						yield return Path.Combine (prefix, suffix);
+			
+			//mono is symlinked from a weird location on Mac
+			string sysDllLocation = typeof (Uri).Assembly.Location;
+			for (int i = 0;; i++) {
+				int lastIndex = sysDllLocation.LastIndexOf (Path.DirectorySeparatorChar);
+				if (lastIndex < 1)
+					break;
+				sysDllLocation = sysDllLocation.Substring (0, lastIndex);
+				if (i >= 5) {
+					foreach (string suffix in suffixes)
+						yield return Path.Combine (sysDllLocation, suffix);
+					break;
+				}
+			}
 		}
 		
 		static IEnumerable<string> GetPkgConfigDirs ()
