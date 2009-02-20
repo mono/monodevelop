@@ -343,7 +343,13 @@ namespace MonoDevelop.AspNet
 		
 		public string ResolveAssembly (string assemblyName)
 		{
-			//FIXME: look at assemblies in bin too
+			System.Reflection.AssemblyName parsed = Runtime.SystemAssemblyService.ParseAssemblyName (assemblyName);
+			if (string.IsNullOrEmpty (parsed.Name))
+				return null;
+			string localName = Path.Combine (Path.Combine (BaseDirectory, "bin"), parsed.Name + ".dll");
+			if (File.Exists (localName))
+				return localName;
+			
 			assemblyName = Runtime.SystemAssemblyService.GetAssemblyFullName (assemblyName);
 			if (assemblyName == null)
 				return null;

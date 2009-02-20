@@ -1,5 +1,10 @@
 2009-02-20  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.AspNet/AspNetAppProject.cs: Add an attempt at
+	  resolving assemblies from bin.
+
+2009-02-20  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.AspNet/WebTypeManager.cs:
 	* MonoDevelop.AspNet/AspNetAppProject.cs:
 	* MonoDevelop.AspNet.Parser/DocumentReferenceManager.cs: Track
