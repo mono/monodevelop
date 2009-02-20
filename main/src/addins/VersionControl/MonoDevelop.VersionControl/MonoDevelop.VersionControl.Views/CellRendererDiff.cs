@@ -30,7 +30,7 @@ namespace MonoDevelop.VersionControl.Views
 		}
 		#region IDisposable implementation
 		bool isDisposed = false;
-		public void Dispose ()
+		public override void Dispose ()
 		{
 			isDisposed = true;
 			DisposeLayout ();
@@ -38,6 +38,7 @@ namespace MonoDevelop.VersionControl.Views
 				font.Dispose ();
 				font = null;
 			}
+			base.Dispose ();
 		}
 		#endregion
 		
