@@ -84,7 +84,9 @@ namespace MonoDevelop.AssemblyBrowser
 				}, new TreePadOption [] {
 					new TreePadOption ("PublicApiOnly", GettextCatalog.GetString ("Show public members only"), PropertyService.Get ("AssemblyBrowser.ShowPublicOnly", true)),
 				});
-			
+			treeView.Tree.Selection.Mode = Gtk.SelectionMode.Single;
+			treeView.Tree.CursorChanged += HandleCursorChanged;
+				
 			scrolledwindow2.AddWithViewport (treeView);
 			scrolledwindow2.ShowAll ();
 			
@@ -109,7 +111,16 @@ namespace MonoDevelop.AssemblyBrowser
 			this.inspectEditor.Document.ReadOnly = true;
 			this.inspectEditor.Document.SyntaxMode = new Mono.TextEditor.Highlighting.MarkupSyntaxMode ();
 			this.inspectEditor.LinkRequest += delegate (object sender, Mono.TextEditor.LinkEventArgs args) {
-				this.Open (args.Link);
+				if (args.Button == 2 || (args.Button == 1 && (args.ModifierState & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask)) {
+					AssemblyBrowserViewContent assemblyBrowserView = new AssemblyBrowserViewContent ();
+					foreach (DomCecilCompilationUnit cu in definitions) {
+						assemblyBrowserView.Load (cu.FileName);
+					}
+					IdeApp.Workbench.OpenDocument (assemblyBrowserView, true);
+					((AssemblyBrowserWidget)assemblyBrowserView.Control).Open (args.Link);
+				} else {
+					this.Open (args.Link);
+				}
 			};
 			this.scrolledwindow3.Child = inspectEditor;
 			this.scrolledwindow3.ShowAll ();
@@ -189,6 +200,10 @@ namespace MonoDevelop.AssemblyBrowser
 //						this.inspectLabel.SelectRegion (idx, idx + searchEntry.Text.Length);
 					}
 				}
+			};
+			
+			this.Realized += delegate {
+				treeView.GrabFocus ();
 			};
 		}
 		
@@ -792,5 +807,54 @@ namespace MonoDevelop.AssemblyBrowser
 			this.notebook1.Page = 2;
 			this.searchEntry.GrabFocus ();
 		}
+	
+		#region NavigationHistory
+		Stack<ITreeNavigator> navigationBackwardHistory = new Stack<ITreeNavigator> ();
+		Stack<ITreeNavigator> navigationForwardHistory = new Stack<ITreeNavigator> ();
+		ITreeNavigator currentItem = null;
+		bool inNavigationOperation = false;
+		void HandleCursorChanged(object sender, EventArgs e)
+		{
+			if (!inNavigationOperation) {
+				if (currentItem != null)
+					navigationBackwardHistory.Push (currentItem);
+				currentItem = treeView.GetSelectedNode ();
+				navigationForwardHistory.Clear ();
+			}
+			UpdateNavigationActions ();
+		}
+		
+		void UpdateNavigationActions ()
+		{
+			NavigateBackwardAction.Sensitive = navigationBackwardHistory.Count != 0;
+			NavigateForwardAction.Sensitive = navigationForwardHistory.Count != 0;
+		}
+		
+		protected virtual void OnNavigateBackwardActionActivated (object sender, System.EventArgs e)
+		{
+			if (navigationBackwardHistory.Count == 0)
+				return;
+			inNavigationOperation = true;
+			ITreeNavigator item = navigationBackwardHistory.Pop ();
+			item.Selected = true;
+			navigationForwardHistory.Push (currentItem);
+			currentItem = item;
+			inNavigationOperation = false;
+			UpdateNavigationActions ();
+		}
+	
+		protected virtual void OnNavigateForwardActionActivated (object sender, System.EventArgs e)
+		{
+			if (navigationForwardHistory.Count == 0)
+				return;
+			inNavigationOperation = true;
+			ITreeNavigator item = navigationForwardHistory.Pop ();
+			item.Selected = true;
+			navigationBackwardHistory.Push (currentItem);
+			currentItem = item;
+			inNavigationOperation = false;
+			UpdateNavigationActions ();
+		}
+		#endregion
 	}
 }
