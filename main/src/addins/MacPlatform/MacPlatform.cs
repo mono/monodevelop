@@ -98,7 +98,7 @@ namespace MonoDevelop.Platform
 		}
 		
 		[System.Runtime.InteropServices.DllImport("libigemacintegration.dylib")]
-		static extern void ige_mac_menu_install_key_handler ();
+		static extern void ige_mac_menu_set_global_key_handler_enabled (bool enabled);
 		
 		bool IgeExists {
 			get {
@@ -107,9 +107,11 @@ namespace MonoDevelop.Platform
 				igeInited = true;
 				
 				try {
-					ige_mac_menu_install_key_handler ();
+					//disabled, as the IGE menu integration can't handle our menus
+					ige_mac_menu_set_global_key_handler_enabled (false);
 				}
 				catch (Exception ex) {
+					MonoDevelop.Core.LoggingService.LogError ("Could not load libigemacintegration. Main Menu integration disabled.", ex);
 					return false;
 				}
 				
@@ -120,22 +122,18 @@ namespace MonoDevelop.Platform
 		}
 		
 		public override bool CanInstallGlobalMenu {
-			get { return IgeExists; }
+			get {
+				//disabled, as the IGE menu integration can't handle our menus
+				if (IgeExists)
+					return false;
+				return false;
+			}
 		}
 		
 		public override void InstallGlobalMenu (Gtk.MenuBar mainMenu)
 		{
+			mainMenu.ShowAll ();
 			IgeMacMenu.MenuBar = mainMenu;
-		}
-		
-		//add quit, preferences, about to the app menu group
-		void IgeSetup ()
-		{
-			IgeMacMenu.QuitMenuItem = new CommandMenuItem (FileCommands.Exit, IdeApp.CommandService);
-			
-			IgeMacMenuGroup appMenu = IgeMacMenu.AddAppMenuGroup ();
-			foreach (object cmdId in new object[] { HelpCommands.About, EditCommands.MonodevelopPreferences, EditCommands.DefaultPolicies })
-				appMenu.AddMenuItem (new CommandMenuItem (cmdId, IdeApp.CommandService), IdeApp.CommandService.GetCommand (cmdId).Text);
 		}
 		
 		public override void UninstallGlobalMenu ()
@@ -143,11 +141,37 @@ namespace MonoDevelop.Platform
 			IgeMacMenu.MenuBar = null;
 		}
 		
-		void InitDock ()
+		//add quit, preferences, about to the app menu group
+		void IgeSetup ()
 		{
+			IgeMacMenu.QuitMenuItem = new CommandMenuItem (FileCommands.Exit, IdeApp.CommandService);
+			
+			IgeMacMenuGroup aboutGroup = IgeMacMenu.AddAppMenuGroup ();
+			object cmdId = HelpCommands.About;
+			aboutGroup.AddMenuItem (new CommandMenuItem (cmdId, IdeApp.CommandService), IdeApp.CommandService.GetCommand (cmdId).Text.Replace ("_", ""));
+			
+			IgeMacMenuGroup prefsGroup = IgeMacMenu.AddAppMenuGroup ();
+			cmdId = EditCommands.MonodevelopPreferences;
+			prefsGroup.AddMenuItem (new CommandMenuItem (cmdId, IdeApp.CommandService), IdeApp.CommandService.GetCommand (cmdId).Text.Replace ("_", ""));
+			cmdId = EditCommands.DefaultPolicies;
+			prefsGroup.AddMenuItem (new CommandMenuItem (cmdId, IdeApp.CommandService), IdeApp.CommandService.GetCommand (cmdId).Text.Replace ("_", ""));	
 			IgeMacDock.Default.QuitActivate += delegate {
-				 MonoDevelop.Core.Runtime.Shutdown ();
+				IdeApp.Exit ();
 			};
+			
+			IgeMacDock.Default.Clicked += delegate {
+				IdeApp.Workbench.RootWindow.Deiconify ();
+				IdeApp.Workbench.RootWindow.Visible = true;
+			};
+			
+			IdeApp.Workbench.RootWindow.DeleteEvent += HandleDeleteEvent;
+		}
+		
+		[GLib.ConnectBefore]
+		void HandleDeleteEvent(object o, Gtk.DeleteEventArgs args)
+		{
+			args.RetVal = true;
+			IdeApp.Workbench.RootWindow.Visible = false;
 		}
 	}
 }
