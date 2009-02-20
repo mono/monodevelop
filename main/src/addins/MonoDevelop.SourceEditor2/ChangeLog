@@ -1,5 +1,10 @@
 2009-02-20  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/LanguageItemWindow.cs: Language
+	  tooltips now shrink namespaces when control is pressed.
+
+2009-02-20  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/LanguageItemWindow.cs:
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs:
 	* MonoDevelop.SourceEditor/DebugValueTooltipProvider.cs:

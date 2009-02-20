@@ -88,34 +88,36 @@ namespace MonoDevelop.SourceEditor
 		public LanguageItemWindow (ProjectDom dom, Gdk.ModifierType modifierState, Ambience ambience, ResolveResult result, string errorInformations, ICompilationUnit unit)
 		{
 			settings = new OutputSettings (OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName | OutputFlags.IncludeKeywords | OutputFlags.IncludeMarkup | OutputFlags.UseFullName);
-			settings.EmitNameCallback = delegate (IDomVisitable domVisitable, ref string outString) {
-				// crop used namespaces.
-				if (unit != null) {
-					
-					int len = 0;
-					foreach (IUsing u in unit.Usings) {
-						foreach (string ns in u.Namespaces) {
-							if (outString.StartsWith (ns + ".")) {
-								len = Math.Max (len, ns.Length + 1);
+			if ((Gdk.ModifierType.ControlMask & modifierState) == Gdk.ModifierType.ControlMask) {
+				settings.EmitNameCallback = delegate (IDomVisitable domVisitable, ref string outString) {
+					// crop used namespaces.
+					if (unit != null) {
+						
+						int len = 0;
+						foreach (IUsing u in unit.Usings) {
+							foreach (string ns in u.Namespaces) {
+								if (outString.StartsWith (ns + ".")) {
+									len = Math.Max (len, ns.Length + 1);
+								}
 							}
 						}
-					}
-					string newName = outString.Substring (len);
-					int count = 0;
-					// check if there is a name clash.
-					if (dom.GetType (newName) != null)
-						count++;
-					foreach (IUsing u in unit.Usings) {
-						foreach (string ns in u.Namespaces) {
-							if (dom.GetType (ns + "." + newName) != null)
-								count++;
+						string newName = outString.Substring (len);
+						int count = 0;
+						// check if there is a name clash.
+						if (dom.GetType (newName) != null)
+							count++;
+						foreach (IUsing u in unit.Usings) {
+							foreach (string ns in u.Namespaces) {
+								if (dom.GetType (ns + "." + newName) != null)
+									count++;
+							}
 						}
+						
+						if (len > 0 && count == 1)
+							outString = newName;
 					}
-					
-					if (len > 0 && count == 1)
-						outString = newName;
-				}
-			};
+				};
+			}
 			
 			// Approximate value for usual case
 			StringBuilder s = new StringBuilder(150);
