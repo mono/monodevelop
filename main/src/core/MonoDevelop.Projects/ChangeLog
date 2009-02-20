@@ -1,3 +1,16 @@
+2009-02-21  Ankit Jain  <jankit@novell.com>
+
+	Merge r127549 from mcs.
+	Fix #449683.
+	* MonoDevelop.Projects.Formats.MSBuild.Conditions/ConditionTokenizer.cs:
+	Handle unquoted item references (with or w/o transforms) in conditions.
+	* MonoDevelop.Projects.Formats.MSBuild.Conditions/ConditionParser.cs:
+	Parse unquoted item, property references.
+	eg. Condition = " @(Foo->'%(Extension)') == '.exe' "
+	* MonoDevelop.Projects.Formats.MSBuild.Conditions/Token.cs
+	(Token.ToString): Override.
+	(TokenType.Transform): Uncomment.
+
 2009-02-20  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: fixed "Bug
