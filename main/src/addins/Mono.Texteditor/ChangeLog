@@ -1,5 +1,9 @@
 2009-02-20  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs: fixed hruler width.
+
+2009-02-20  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextEditor.cs: removed debug message.
 
 2009-02-20  Mike Krüger  <mkrueger@novell.com>

@@ -1017,16 +1017,17 @@ namespace Mono.TextEditor
 			if (longestLine != null && this.textEditorData.HAdjustment != null) {
 				LineSegment curLine = this.Document.GetLineByOffset (this.longestLine.Offset);
 				// check if the longestLine is still valid
-				if (curLine == null || curLine.Offset != this.longestLine.Offset || curLine.Length != this.longestLine.Length) {
+				if (curLine == null || curLine.Offset != this.longestLine.Offset || curLine.Length != this.longestLine.Length || this.longestLine.EndOffset >= this.Document.Length) {
 					longestLine = null;
 				} else {
 					int maxX = this.TextViewMargin.GetWidth (this.Document.GetTextAt (this.longestLine)) + 10 * this.textViewMargin.CharWidth;
+					int width = Allocation.Width - this.TextViewMargin.XOffset;
 					this.textEditorData.HAdjustment.SetBounds (0, 
 					                                           maxX, 
 					                                           this.textViewMargin.CharWidth,
-					                                           Allocation.Width,
-					                                           Allocation.Width);
-					if (maxX < Allocation.Width) 
+					                                           width,
+					                                           width);
+					if (maxX < width) 
 						this.textEditorData.HAdjustment.Value = 0;
 				}
 			}
@@ -1073,7 +1074,7 @@ namespace Mono.TextEditor
 				int curX = 0;
 				int logicalLineNumber = Document.VisualToLogicalLine (visualLineNumber + firstLine);
 				LineSegment line = Document.GetLine (logicalLineNumber);
-				if (line != null && (longestLine == null || line != longestLine && this.TextViewMargin.GetWidth (this.Document.GetTextAt (line)) > this.TextViewMargin.GetWidth (this.Document.GetTextAt (longestLine)))) {
+				if (line != null && (longestLine == null || longestLine.EndOffset >= this.Document.Length || line != longestLine && this.TextViewMargin.GetWidth (this.Document.GetTextAt (line)) > this.TextViewMargin.GetWidth (this.Document.GetTextAt (longestLine)))) {
 					longestLine = line;
 					oldLongestLineLength = -1;
 				}
