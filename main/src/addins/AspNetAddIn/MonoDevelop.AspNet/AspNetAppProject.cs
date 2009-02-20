@@ -341,6 +341,18 @@ namespace MonoDevelop.AspNet
 		
 		#endregion
 		
+		public string ResolveAssembly (string assemblyName)
+		{
+			//FIXME: look at assemblies in bin too
+			assemblyName = Runtime.SystemAssemblyService.GetAssemblyFullName (assemblyName);
+			if (assemblyName == null)
+				return null;
+			assemblyName = Runtime.SystemAssemblyService.GetAssemblyNameForVersion (assemblyName, TargetFramework);
+			if (assemblyName == null)
+				return null;
+			return Runtime.SystemAssemblyService.GetAssemblyLocation (assemblyName);
+		}
+		
 		#region Reference handling
 		
 		protected override void OnReferenceAddedToProject (ProjectReferenceEventArgs e)

@@ -74,7 +74,11 @@ namespace MonoDevelop.AspNet
 			foreach (RegistrationInfo info in project.ControlRegistrationCache.GetInfosForPath (webDirectory)) {
 				if (info.PrefixMatches (tagPrefix)) {
 					if (info.IsAssembly) {
-						IType type = AssemblyTypeLookup (project, info.Assembly, info.Namespace, tagName);
+						ProjectDom dom = ResolveAssembly (project, info.Assembly);
+						if (dom == null)
+							continue;
+						
+						IType type = AssemblyTypeLookup (dom, info.Namespace, tagName);
 						if (type != null)
 								return type;
 					}
@@ -105,7 +109,10 @@ namespace MonoDevelop.AspNet
 			//look up a level if a result not found until we hit the project root
 			foreach (RegistrationInfo info in project.ControlRegistrationCache.GetInfosForPath (webDirectory)) {
 				if (info.IsAssembly) {
-					foreach (IType t in ListControlClasses (project, baseType, info.Assembly, info.Namespace))
+					ProjectDom dom = WebTypeManager.ResolveAssembly (project, info.Assembly);
+					if (dom == null)
+						continue;
+					foreach (IType t in ListControlClasses (baseType, dom, info.Namespace))
 						yield return new MonoDevelop.AspNet.Parser.AspTagCompletionData (info.TagPrefix + ":", t);
 				}
 				else if (info.IsUserControl) {
@@ -137,7 +144,10 @@ namespace MonoDevelop.AspNet
 			foreach (TagPrefixInfo tpxInfo in pages.Controls) {
 				if (tpxInfo.TagPrefix != tagPrefix)
 					continue;
-				IType type = AssemblyTypeLookup (project, tagName, tpxInfo.Namespace, tpxInfo.Assembly);
+				ProjectDom dom = WebTypeManager.ResolveAssembly (project, tpxInfo.Assembly);
+				if (dom == null)
+						continue;
+				IType type = AssemblyTypeLookup (dom, tpxInfo.Namespace, tagName);
 				if (type != null)
 					return type;
 				//user controls don't make sense in machine.config; ignore them
@@ -152,9 +162,12 @@ namespace MonoDevelop.AspNet
 			PagesSection pages = (PagesSection) config.GetSection ("system.web/pages");
 			
 			foreach (TagPrefixInfo tpxInfo in pages.Controls) {
-				if (!String.IsNullOrEmpty (tpxInfo.Namespace) && !String.IsNullOrEmpty (tpxInfo.Assembly) && !string.IsNullOrEmpty (tpxInfo.TagPrefix))
-					foreach (IType type in ListControlClasses (project, baseType, tpxInfo.Assembly, tpxInfo.Namespace))
-						yield return new MonoDevelop.AspNet.Parser.AspTagCompletionData (tpxInfo.TagPrefix, type);
+				if (!String.IsNullOrEmpty (tpxInfo.Namespace) && !String.IsNullOrEmpty (tpxInfo.Assembly) && !string.IsNullOrEmpty (tpxInfo.TagPrefix)) {
+					ProjectDom dom = WebTypeManager.ResolveAssembly (project, tpxInfo.Assembly);
+					if (dom != null)
+						foreach (IType type in ListControlClasses (baseType, dom, tpxInfo.Namespace))
+							yield return new MonoDevelop.AspNet.Parser.AspTagCompletionData (tpxInfo.TagPrefix, type);
+				}
 			}
 		}
 		
@@ -236,78 +249,103 @@ namespace MonoDevelop.AspNet
 		
 		#region Control type lookups
 		
-		public static string SystemWebControlLookup (string tagName, MonoDevelop.Core.TargetFramework targetFramework)
+		public static string SystemTypeNameLookup (string tagName, AspNetAppProject project)
 		{
-			ProjectDom database = GetSystemWebAssemblyContext (targetFramework);
-			IType cls = database.GetType ("System.Web.UI.WebControls." + tagName, false, false);
+			return SystemTypeNameLookup (tagName, WebTypeManager.GetProjectTargetFramework (project));
+		}
+		
+		public static IType SystemTypeLookup (string tagName, AspNetAppProject project)
+		{
+			return SystemTypeLookup (tagName, WebTypeManager.GetProjectTargetFramework (project));
+		}
+		
+		public static string SystemTypeNameLookup (string tagName, MonoDevelop.Core.TargetFramework targetFramework)
+		{
+			IType cls = SystemTypeLookup (tagName, targetFramework);
 			return cls != null? cls.FullName : null;
 		}
 		
-		static ProjectDom GetSystemWebAssemblyContext (MonoDevelop.Core.TargetFramework targetFramework)
+		public static IType SystemTypeLookup (string tagName, MonoDevelop.Core.TargetFramework targetFramework)
 		{
-			string assem = MonoDevelop.Core.Runtime.SystemAssemblyService.GetAssemblyNameForVersion ("System.Web", targetFramework);
-			return MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetAssemblyDom (assem);
+			return AssemblyTypeLookup (GetSystemWebDom (targetFramework), "System.Web.UI.WebControls", tagName);
 		}
 		
-		public static string AssemblyTypeNameLookup (AspNetAppProject project, string assem, string namespac, string tagName)
+		public static string AssemblyTypeNameLookup (ProjectDom assemblyDatabase, string namespac, string tagName)
 		{
-			IType cls = AssemblyTypeLookup (project, assem, namespac, tagName);
+			IType cls = AssemblyTypeLookup (assemblyDatabase, namespac, tagName);
 			return cls != null? cls.FullName : null;
 		}
 		
-		public static IType AssemblyTypeLookup (AspNetAppProject project, string assem, string namespac, string tagName)
+		public static IType AssemblyTypeLookup (ProjectDom assemblyDatabase, string namespac, string tagName)
 		{
-			assem = MonoDevelop.Core.Runtime.SystemAssemblyService.GetAssemblyNameForVersion (
-					assem,
-					GetProjectTargetFramework (project));
-			ProjectDom database = MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetAssemblyDom (assem);
-			if (database == null)
-				return null;
-			
-			return database.GetType (namespac + "." + tagName, false, false);
+			return (assemblyDatabase == null)
+				? null
+				: assemblyDatabase.GetType (namespac + "." + tagName, false, false);
 		}
 		
 		#endregion
 		
+		public static ProjectDom ResolveAssembly (AspNetAppProject project, string assemblyName)
+		{
+			ProjectDom dom = InternalResolveAssembly (project, assemblyName);
+			if (dom == null)
+				LoggingService.LogWarning ("Failed to obtain completion database for {0}", assemblyName);
+			return dom;
+		}
+		
+		static ProjectDom InternalResolveAssembly (AspNetAppProject project, string assemblyName)
+		{
+			string path;
+			if (project == null) {
+				assemblyName = Runtime.SystemAssemblyService.GetAssemblyFullName (assemblyName);
+				if (assemblyName == null)
+					return null;
+				assemblyName = Runtime.SystemAssemblyService.GetAssemblyNameForVersion (assemblyName, TargetFramework.Default);
+				if (assemblyName == null)
+					return null;
+				path = Runtime.SystemAssemblyService.GetAssemblyLocation (assemblyName);
+			} else {
+				path = project.ResolveAssembly (assemblyName);
+			}
+			
+			if (path == null)
+				return null;
+			return MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetAssemblyDom (path);
+		}
+		
 		#region System type listings
 		
-		static MonoDevelop.Core.TargetFramework GetProjectTargetFramework (AspNetAppProject project)
+		public static MonoDevelop.Core.TargetFramework GetProjectTargetFramework (AspNetAppProject project)
 		{
 			return project == null? MonoDevelop.Core.TargetFramework.Default : project.TargetFramework;
 		}
 		
 		public static ProjectDom GetSystemWebDom (AspNetAppProject project)
 		{
-			return MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetAssemblyDom (
-				MonoDevelop.Core.Runtime.SystemAssemblyService.GetAssemblyNameForVersion (
-					"System.Web", GetProjectTargetFramework (project)));
+			return GetSystemWebDom (GetProjectTargetFramework (project));
+		}
+		
+		static ProjectDom GetSystemWebDom (MonoDevelop.Core.TargetFramework targetFramework)
+		{
+			string file = Runtime.SystemAssemblyService.GetAssemblyNameForVersion ("System.Web, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", targetFramework);
+			if (String.IsNullOrEmpty (file))
+				throw new Exception ("System.Web assembly name not found for framework " + targetFramework.Id);
+			file = Runtime.SystemAssemblyService.GetAssemblyLocation (file);
+			if (String.IsNullOrEmpty (file))
+				throw new Exception ("System.Web assembly file not found for framework " + targetFramework.Id);
+			ProjectDom dom = ProjectDomService.GetAssemblyDom (file);
+			if (dom == null)
+				throw new Exception ("System.Web parse database not found for framework " + targetFramework.Id + " file '" + file + "'");
+			return dom;
 		}
 		
 		public static IEnumerable<IType> ListSystemControlClasses (IType baseType, AspNetAppProject project)
 		{
-			return ListControlClasses (
-				baseType,
-				MonoDevelop.Core.Runtime.SystemAssemblyService.GetAssemblyNameForVersion (
-					"System.Web",
-					GetProjectTargetFramework (project)),
-				"System.Web.UI.WebControls");
+			return ListControlClasses (baseType, GetSystemWebDom (project), "System.Web.UI.WebControls");
 		}
 		
-		public static IEnumerable<IType> ListControlClasses (AspNetAppProject project, IType baseType, 
-		                                                     string assem, string namespac)
+		public static IEnumerable<IType> ListControlClasses (IType baseType, ProjectDom database, string namespac)
 		{
-			return ListControlClasses (
-				baseType,
-				MonoDevelop.Core.Runtime.SystemAssemblyService.GetAssemblyNameForVersion (
-					assem,
-					GetProjectTargetFramework (project)),
-				namespac);
-		}
-		
-		public static IEnumerable<IType> ListControlClasses (IType baseType, string assem, string namespac)
-		{
-			
-			ProjectDom database = MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetAssemblyDom (assem);
 			if (database == null)
 				yield break;
 			
@@ -325,34 +363,6 @@ namespace MonoDevelop.AspNet
 		
 		#endregion
 		
-		public static string TypeNameLookup (AspNetAppProject project, string tagName, string namespac, string assem)
-		{
-			IType cls = TypeLookup (project, tagName, namespac, assem);
-			return cls != null? cls.FullName : null;
-		}
-		
-		public static IType TypeLookup (AspNetAppProject project, string tagName, string namespac, string assem)
-		{
-			IType cls = null;
-			ProjectDom database = null;
-			
-			if (!string.IsNullOrEmpty (namespac)) {
-				if (!string.IsNullOrEmpty (assem))
-					database = MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetAssemblyDom (assem);
-				else if (project != null)
-					database = MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetProjectDom (project);
-				else
-					database = GetSystemWebAssemblyContext (MonoDevelop.Core.TargetFramework.Default);
-				
-				if (database == null) {
-					MonoDevelop.Core.LoggingService.LogError ("WebTypeManager could not obtain a type database.");
-					return null;
-				}
-				
-				cls = database.GetType (namespac + "." + tagName, false, false);
-			}
-			return cls;
-		}
 		
 		public static string GetControlPrefix (AspNetAppProject project, string webDirectory, IType control)
 		{
@@ -361,12 +371,12 @@ namespace MonoDevelop.AspNet
 			else if (control.Namespace == "System.Web.UI.HtmlControls")
 				return string.Empty;
 			
-			//todo: handle user controls, and check assembly names properly
+			//todo: handle user controls
 			foreach (RegistrationInfo info in project.ControlRegistrationCache.GetInfosForPath (webDirectory)) {
-				if (info.IsAssembly && info.Namespace == control.Namespace && 
-				    TypeLookup (project, control.Name, control.Namespace, info.Assembly) != null)
-				{
-					return info.TagPrefix;
+				if (info.IsAssembly && info.Namespace == control.Namespace) {
+					ProjectDom dom = ResolveAssembly (project, info.Assembly);
+					if (dom != null && AssemblyTypeLookup (dom, info.Namespace, control.Name) != null)
+						return info.TagPrefix;
 				}
 			}
 			
@@ -394,10 +404,7 @@ namespace MonoDevelop.AspNet
 			//FIXME: actually look up the type
 			//or maybe it's not necessary, as the compilers can't handle the types because
 			//they're only generated when the UserControl is hit.
-			IType type = AssemblyTypeLookup (project, "System.Web", "System.Web.UI", "UserControl");
-			if (type == null)
-				LoggingService.LogWarning ("Could not obtain IType for System.Web.UI.WebControls.WebControl");
-			return type;
+			return AssemblyTypeLookup (GetSystemWebDom (GetProjectTargetFramework (project)), "System.Web.UI", "UserControl");
 		}
 		
 		#region Global control registration tracking

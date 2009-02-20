@@ -1,3 +1,13 @@
+2009-02-20  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AspNet/WebTypeManager.cs:
+	* MonoDevelop.AspNet/AspNetAppProject.cs:
+	* MonoDevelop.AspNet.Parser/DocumentReferenceManager.cs: Track
+	  assembly database API behaviour. Improve assembly resolution
+	  error handling. Fixes "Bug 477476 - Template for ASP.Net Web
+	  Application doesn't work by default." and restores ASP.NET
+	  code completion and codebehind generation.
+
 2009-02-11  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.AspNet.Gui/HtmlEditorExtension.cs:

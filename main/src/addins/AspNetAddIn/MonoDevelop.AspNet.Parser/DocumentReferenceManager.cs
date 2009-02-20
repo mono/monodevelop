@@ -38,6 +38,7 @@ using MonoDevelop.AspNet.Parser.Dom;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Output;
+using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Gui.Completion;
 using MonoDevelop.Ide.Gui;
 
@@ -74,8 +75,7 @@ namespace MonoDevelop.AspNet.Parser
 				return WebTypeManager.HtmlControlLookup (tagName, htmlTypeAttribute);
 			
 			if (0 == string.Compare (tagPrefix, "asp", StringComparison.OrdinalIgnoreCase)) {
-				string systemType = WebTypeManager.SystemWebControlLookup (tagName,
-				    doc.Project == null? MonoDevelop.Core.TargetFramework.Default : doc.Project.TargetFramework);
+				string systemType = WebTypeManager.SystemTypeNameLookup (tagName, doc.Project);
 				if (!string.IsNullOrEmpty (systemType))
 					return systemType;
 			}
@@ -83,9 +83,12 @@ namespace MonoDevelop.AspNet.Parser
 			foreach (RegisterDirective directive in pageRefsList) {
 				AssemblyRegisterDirective ard = directive as AssemblyRegisterDirective;
 				if (ard != null && ard.TagPrefix == tagPrefix) {
-					string fullName;
-					fullName = WebTypeManager.TypeNameLookup (doc.Project, tagName, ard.Namespace, ard.Assembly);
 					
+					ProjectDom dom = WebTypeManager.ResolveAssembly (doc.Project, ard.Assembly);
+					if (dom == null)
+						continue;
+					
+					string fullName = WebTypeManager.AssemblyTypeNameLookup (dom, ard.Namespace, tagName);
 					if (fullName != null)
 						return fullName;
 				}
@@ -124,8 +127,12 @@ namespace MonoDevelop.AspNet.Parser
 				
 				AssemblyRegisterDirective ard = rd as AssemblyRegisterDirective;
 				if (ard != null) {
+					ProjectDom dom = WebTypeManager.ResolveAssembly (doc.Project, ard.Assembly);
+					if (dom == null)
+						continue;
+					
 					string prefix = ard.TagPrefix + ":";
-					foreach (IType cls in WebTypeManager.ListControlClasses (doc.Project, baseType, ard.Assembly, ard.Namespace))
+					foreach (IType cls in WebTypeManager.ListControlClasses (baseType, dom, ard.Namespace))
 						yield return new AspTagCompletionData (prefix, cls);
 					continue;
 				}
@@ -154,7 +161,7 @@ namespace MonoDevelop.AspNet.Parser
 			
 			IType type = null;
 			if (0 == string.Compare (tagPrefix, "asp", StringComparison.OrdinalIgnoreCase)) {
-				type = WebTypeManager.AssemblyTypeLookup (doc.Project, "System.Web", "System.Web.UI.WebControls", tagName);
+				type = WebTypeManager.SystemTypeLookup (tagName, WebTypeManager.GetProjectTargetFramework (doc.Project));
 				if (type != null)
 					return type;
 			}
@@ -165,7 +172,11 @@ namespace MonoDevelop.AspNet.Parser
 				
 				AssemblyRegisterDirective ard = rd as AssemblyRegisterDirective;
 				if (ard != null) {
-					type = WebTypeManager.AssemblyTypeLookup (doc.Project, ard.Assembly, ard.Namespace, tagName);
+					string assembly = ard.Assembly;
+					ProjectDom dom = WebTypeManager.ResolveAssembly (doc.Project, ard.Assembly);
+					if (dom == null)
+						continue;
+					type = WebTypeManager.AssemblyTypeLookup (dom, ard.Namespace, tagName);
 					if (type != null)
 						return type;
 					continue;
