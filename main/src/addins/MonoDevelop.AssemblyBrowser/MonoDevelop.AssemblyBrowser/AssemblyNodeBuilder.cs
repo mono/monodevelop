@@ -78,8 +78,7 @@ namespace MonoDevelop.AssemblyBrowser
 		#region IAssemblyBrowserNodeBuilder
 		static void PrintAssemblyHeader (StringBuilder result, AssemblyDefinition assemblyDefinition)
 		{
-			result.Append ("<span font_family=\"monospace\">");
-			
+			result.Append ("<span style=\"comment\">");
 			result.Append (AmbienceService.GetAmbience ("text/x-csharp").SingleLineComment (
                                String.Format (GettextCatalog.GetString ("Assembly <b>{0}</b>, Version {1}"),
 			                                  assemblyDefinition.Name.Name,
@@ -116,7 +115,7 @@ namespace MonoDevelop.AssemblyBrowser
 			return result.ToString ();
 		}
 		
-		string IAssemblyBrowserNodeBuilder.GetDisassembly (ITreeNavigator navigator)
+		public string GetDisassembly (ITreeNavigator navigator)
 		{
 			AssemblyDefinition assemblyDefinition = (AssemblyDefinition)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
@@ -127,9 +126,10 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 			return result.ToString ();
 		}
-		string IAssemblyBrowserNodeBuilder.GetDecompiledCode (ITreeNavigator navigator)
+		
+		public string GetDecompiledCode (ITreeNavigator navigator)
 		{
-			return "";
+			return GetDisassembly (navigator);
 		}
 		#endregion
 	}

@@ -1,3 +1,13 @@
+2009-02-20  Mike Krüger  <mkrueger@novell.com>
+
+	* gtk-gui/gui.stetic: 
+
+	* MonoDevelop.AssemblyBrowser/AssemblyNodeBuilder.cs:
+	* MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:
+	* MonoDevelop.AssemblyBrowser/ModuleDefinitionNodeBuilder.cs:
+	  module node now gets expanded + module "decompiliation view"
+	  now shows a list of all containing namespaces.
+
 2009-02-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:

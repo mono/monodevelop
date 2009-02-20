@@ -773,11 +773,15 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 			DomCecilCompilationUnit newUnit = DomCecilCompilationUnit.Load (fileName);
 			definitions.Add (newUnit);
+			ITreeBuilder builder;
 			if (definitions.Count == 1) {
-				treeView.LoadTree (newUnit.AssemblyDefinition);
+				builder = treeView.LoadTree (newUnit.AssemblyDefinition);
+				
 			} else {
-				treeView.AddChild (newUnit.AssemblyDefinition);
+				builder = treeView.AddChild (newUnit.AssemblyDefinition);
 			}
+			builder.MoveToFirstChild ();
+			builder.Expanded = true;
 			return newUnit.AssemblyDefinition;
 		}
 		

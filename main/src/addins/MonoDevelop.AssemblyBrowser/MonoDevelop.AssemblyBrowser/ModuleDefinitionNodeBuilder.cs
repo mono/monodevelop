@@ -91,7 +91,7 @@ namespace MonoDevelop.AssemblyBrowser
 		#region IAssemblyBrowserNodeBuilder
 		static void PrintModuleHeader (StringBuilder result, ModuleDefinition moduleDefinition)
 		{
-			result.Append ("<span font_family=\"monospace\">");
+			result.Append ("<span style=\"comment\">");
 			result.Append (AmbienceService.GetAmbience ("text/x-csharp").SingleLineComment (
 			                    String.Format (GettextCatalog.GetString ("Module <b>{0}</b>"),
 			                    moduleDefinition.Name)));
@@ -108,19 +108,38 @@ namespace MonoDevelop.AssemblyBrowser
 			result.Append (String.Format (GettextCatalog.GetString ("<b>Version:</b>\t{0}"),
 			                              moduleDefinition.Mvid));
 			result.AppendLine ();
+			
 			return result.ToString ();
 		}
 		
-		string IAssemblyBrowserNodeBuilder.GetDisassembly (ITreeNavigator navigator)
+		public string GetDisassembly (ITreeNavigator navigator)
 		{
 			ModuleDefinition moduleDefinition = (ModuleDefinition)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
 			PrintModuleHeader (result, moduleDefinition);
+			
+			HashSet<string> namespaces = new HashSet<string> ();
+			
+			foreach (TypeDefinition type in moduleDefinition.Types) {
+				if ((type.Attributes & TypeAttributes.NestedPrivate) == TypeAttributes.NestedPrivate)
+					continue;
+				if (String.IsNullOrEmpty (type.Namespace))
+					continue;
+				namespaces.Add (type.Namespace);
+			}
+			foreach (string ns in namespaces) {
+				result.Append ("<span style=\"keyword.namespace\">namespace</span> ");
+				result.Append ("<span style=\"text\">");
+				result.Append (ns);
+				result.Append ("</span>");
+				result.AppendLine ();
+			}
+			
 			return result.ToString ();
 		}
-		string IAssemblyBrowserNodeBuilder.GetDecompiledCode (ITreeNavigator navigator)
+		public string GetDecompiledCode (ITreeNavigator navigator)
 		{
-			return "";
+			return this.GetDisassembly (navigator);
 		}
 		#endregion		
 	}
