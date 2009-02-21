@@ -109,15 +109,15 @@ namespace MonoDevelop.Ide.Templates
 			generatedFile = SaveFile (policyParent, project, language, directory, name);
 			if (generatedFile != null) {		
 				string buildAction = this.buildAction ?? project.GetDefaultBuildAction (generatedFile);
-				ProjectFile projectFile = new ProjectFile (generatedFile, buildAction);
+				ProjectFile projectFile = project.AddFile (generatedFile, buildAction);
 				
 				if (!string.IsNullOrEmpty (dependsOn)) {
 					Hashtable tags = new Hashtable ();
 					ModifyTags (policyParent, project, language, null, generatedFile, ref tags);
 					string parsedDepName = StringParserService.Parse (dependsOn, HashtableToStringArray (tags));
-					projectFile.DependsOn = parsedDepName;
+					if (projectFile.DependsOn != parsedDepName)
+						projectFile.DependsOn = parsedDepName;
 				}
-				project.AddFile (projectFile);
 				
 				DotNetProject netProject = project as DotNetProject;
 				if (netProject != null) {
