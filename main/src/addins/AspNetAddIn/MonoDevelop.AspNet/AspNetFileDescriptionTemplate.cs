@@ -135,7 +135,7 @@ namespace MonoDevelop.AspNet
 				//makes CodeTranslationFile's internal name substitition easier
 				templ.GetFileName (policyParent, project, language, project == null? null :project.BaseDirectory, (string) tags ["Name"]);
 				
-				Stream stream = templ.CreateFile (policyParent, project, language, fileName);
+				Stream stream = templ.CreateFileContent (policyParent, project, language, fileName);
 				StreamReader reader = new StreamReader (stream);
 				tags ["CodeRegion:"+regionName] = reader.ReadToEnd ();
 				reader.Close ();

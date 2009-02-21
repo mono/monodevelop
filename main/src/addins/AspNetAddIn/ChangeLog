@@ -1,5 +1,10 @@
 2009-02-20  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.AspNet/AspNetFileDescriptionTemplate.cs: Track
+	  API.
+
+2009-02-20  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.AspNet/AspNetAppProject.cs: Add an attempt at
 	  resolving assemblies from bin.
 

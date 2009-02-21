@@ -173,7 +173,7 @@ namespace MonoDevelop.Ide.Templates
 			if (!Directory.Exists (Path.GetDirectoryName (file)))
 				Directory.CreateDirectory (Path.GetDirectoryName (file));
 					
-			Stream stream = CreateFile (policyParent, project, language, file);
+			Stream stream = CreateFileContent (policyParent, project, language, file);
 			
 			byte[] buffer = new byte [2048];
 			int nr;
@@ -228,12 +228,8 @@ namespace MonoDevelop.Ide.Templates
 		
 		// Returns a stream with the content of the file.
 		// project and language parameters are optional
-		public virtual Stream CreateFile (SolutionItem policyParent, Project project, string language, string fileName)
+		public virtual Stream CreateFileContent (SolutionItem policyParent, Project project, string language, string fileName)
 		{
-			
-			if (project != null && project.IsFileInProject (fileName))
-				throw new UserException (GettextCatalog.GetString ("The file '{0}' already exists in the project.", Path.GetFileName (fileName)));
-			
 			Hashtable tags = new Hashtable ();
 			ModifyTags (policyParent, project, language, null, fileName, ref tags);
 			

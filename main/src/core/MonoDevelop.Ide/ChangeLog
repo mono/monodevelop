@@ -1,5 +1,14 @@
 2009-02-20  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide.Templates/FileTemplate.cs: Track API.
+
+	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:
+	  CreateFile doesn't create a file, it just returns a stream
+	  of content, so rename it to CreateFileContent and remove
+	  redundant file-exists check.
+
+2009-02-20  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:
 	  In AddFileToProject, don't throw an exception if a file with
 	  the name is already in the project, since SaveFile already
