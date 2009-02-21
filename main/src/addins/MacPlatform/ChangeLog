@@ -1,5 +1,11 @@
 2009-02-20  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MacPlatform.csproj: Enable makefile integration.
+
+	* Makefile.am: Update.
+
+2009-02-20  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MacPlatform.cs: Add working main menu support, but disable,
 	  because the menus don't display correctly. Add Mac-like
 	  close window, quit, etc behaviour. Add App menu commands.
