@@ -1018,7 +1018,7 @@ namespace Mono.TextEditor
 			if (longestLine != null && this.textEditorData.HAdjustment != null) {
 				LineSegment curLine = this.Document.GetLineByOffset (this.longestLine.Offset);
 				// check if the longestLine is still valid
-				if (curLine == null || curLine.Offset != this.longestLine.Offset || curLine.Length != this.longestLine.Length || this.longestLine.EndOffset >= this.Document.Length) {
+				if (curLine == null || curLine.Offset != this.longestLine.Offset || curLine.Length != this.longestLine.Length || this.longestLine.EndOffset > this.Document.Length) {
 					longestLine = null;
 				} else {
 					int maxX = this.TextViewMargin.GetWidth (this.Document.GetTextAt (this.longestLine)) + 10 * this.textViewMargin.CharWidth;
@@ -1099,7 +1099,8 @@ namespace Mono.TextEditor
 			
 			if (longestLine != null && longestLine.Length != oldLongestLineLength) {
 				SetHAdjustment ();
-				oldLongestLineLength = longestLine.Length;
+				if (longestLine != null)
+					oldLongestLineLength = longestLine.Length;
 			}
 		}
 		/*
