@@ -1627,6 +1627,7 @@
 		<FileTemplateType name = "ProjectResource" class = "MonoDevelop.Ide.Templates.ResourceFileDescriptionTemplate"/>
 		<FileTemplateType name = "CodeTranslationFile" class = "MonoDevelop.Ide.Templates.CodeTranslationFileDescriptionTemplate"/>
 		<FileTemplateType name = "FileTemplateReference" class = "MonoDevelop.Ide.Templates.FileTemplateReference"/>
+		<FileTemplateType name = "Directory" class = "MonoDevelop.Ide.Templates.DirectoryTemplate"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/FileTemplateConditionTypes">

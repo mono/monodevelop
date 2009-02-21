@@ -42,9 +42,6 @@
     <Reference Include="Mono.Posix" />
     <Reference Include="Mono.GetOptions" />
     <Reference Include="System.Runtime.Remoting" />
-    <Reference Include="Mono.Addins, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
     <Reference Include="Mono.Addins.Setup, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
@@ -60,6 +57,9 @@
     <Reference Include="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="Mono.Addins, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -525,6 +525,7 @@
     <Compile Include="MonoDevelop.Ide.Gui.Content\TextStylePolicy.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\PadFontChanger.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Components\PadTreeView.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\DirectoryTemplate.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

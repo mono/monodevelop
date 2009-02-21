@@ -316,6 +316,7 @@ FILES =  \
 	MonoDevelop.Ide.Templates/CodeDomFileDescriptionTemplate.cs \
 	MonoDevelop.Ide.Templates/CodeTranslationFileDescriptionTemplate.cs \
 	MonoDevelop.Ide.Templates/CombineDescriptor.cs \
+	MonoDevelop.Ide.Templates/DirectoryTemplate.cs \
 	MonoDevelop.Ide.Templates/FileDescriptionTemplate.cs \
 	MonoDevelop.Ide.Templates/FileTemplate.cs \
 	MonoDevelop.Ide.Templates/FileTemplateCondition.cs \

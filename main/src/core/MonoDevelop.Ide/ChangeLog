@@ -1,3 +1,12 @@
+2009-02-20  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Ide.csproj:
+	* MonoDevelop.Ide.addin.xml:
+	* MonoDevelop.Ide.Templates/DirectoryTemplate.cs: Add a
+	  FileTemplateType for creating directories, which can contain
+	  files and can be nested.
+
 2009-02-20  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs:
