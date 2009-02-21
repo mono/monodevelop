@@ -53,6 +53,7 @@ REFS =  \
 	$(GTK_SHARP_LIBS) \
 	-r:Mono.Posix \
 	-r:System \
+	-r:System.Core \
 	-r:System.Xml
 
 ADDIN_BUILD = $(top_builddir)/build/AddIns

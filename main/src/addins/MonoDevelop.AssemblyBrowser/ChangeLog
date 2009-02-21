@@ -1,3 +1,10 @@
+2009-02-20  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.AssemblyBrowser.csproj: Enable building without
+	  make. Add System.Core reference, as it's not implicit in MD
+	  builds.
+
 2009-02-20  Mike Krüger  <mkrueger@novell.com>
 
 	* gtk-gui/gui.stetic: 
