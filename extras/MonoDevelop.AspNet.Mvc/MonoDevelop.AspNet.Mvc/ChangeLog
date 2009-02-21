@@ -1,6 +1,11 @@
 2009-02-20  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Templates/Project.xpt.xml:
+	* Templates/EmptyProject.xpt.xml: Add Web.configs.
+
+2009-02-20  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Templates/Project.xpt.xml:
 	* Templates/EmptyProject.xpt.xml: Set target framework
 	  version. Create default MVC directories.
 
