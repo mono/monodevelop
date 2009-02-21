@@ -16,6 +16,9 @@
 		<Import file = "Templates/ViewMasterPage.xft.xml" />
 		<Import file = "Templates/Project.xpt.xml" />
 		<Import file = "Templates/EmptyProject.xpt.xml"/>
+		<Import file = "Templates/GlobalAsax.xft.xml"/>
+		<Import file = "Templates/WebConfigApp.xft.xml"/>
+		<Import file = "Templates/WebConfigViews.xft.xml"/>
 	</Runtime>
 	
 	<Dependencies>
@@ -46,6 +49,12 @@
 		              file     = "Templates/UserControl.xft.xml"/>
 		<FileTemplate id       = "AspMvcViewMasterPage"
 		              file     = "Templates/ViewMasterPage.xft.xml" />
+		<FileTemplate id       = "AspMvcGlobalAsax"
+		              file     = "Templates/GlobalAsax.xft.xml" />
+		<FileTemplate id       = "AspMvcWebConfigApp"
+		              file     = "Templates/WebConfigApp.xft.xml" />
+		<FileTemplate id       = "AspMvcWebConfigViews"
+		              file     = "Templates/WebConfigViews.xft.xml" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">

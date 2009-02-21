@@ -1,0 +1,142 @@
+<?xml version="1.0"?>
+<Template
+	Originator="Michael Hutchinson"
+	Created="2009/02/20"
+	LastModified="2009/02/20">
+
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<_Name>ASP.NET MVC Application Configuration</_Name>
+		<_Category>ASP.NET MVC</_Category>
+		<Icon>md-html-file-icon</Icon>
+		<LanguageName>*</LanguageName>
+		<ProjectType>AspNetMvc</ProjectType>
+		<DefaultFilename IsFixed="True">Web.config</DefaultFilename>
+		<_Description>Creates an ASP.NET MVC Web.config file for an application.</_Description>
+	</TemplateConfiguration>
+	
+	<Conditions>
+		<ParentProject PermittedCreationPaths="" ExcludedFiles="Web.config" RequireProject="True"/>
+	</Conditions>
+
+	<!-- Template Content -->
+	<TemplateFiles>
+		<AspNetFile name="Web.config">
+			<FileText>
+<![CDATA[<?xml version="1.0" ?>
+<!--
+Web.config file for ${ProjectName}.
+
+The settings that can be used in this file are documented at 
+http://www.mono-project.com/Config_system.web and 
+http://msdn2.microsoft.com/en-us/library/b5ysx397.aspx
+-->
+<configuration>
+	<system.web>
+		<configSections>
+			<sectionGroup name="system.web.extensions" type="System.Web.Configuration.SystemWebExtensionsSectionGroup, System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35">
+				<sectionGroup name="scripting" type="System.Web.Configuration.ScriptingSectionGroup, System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35">
+					<section name="scriptResourceHandler" type="System.Web.Configuration.ScriptingScriptResourceHandlerSection, System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" requirePermission="false" allowDefinition="MachineToApplication"/>
+					<sectionGroup name="webServices" type="System.Web.Configuration.ScriptingWebServicesSectionGroup, System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35">
+						<section name="jsonSerialization" type="System.Web.Configuration.ScriptingJsonSerializationSection, System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" requirePermission="false" allowDefinition="Everywhere" />
+						<section name="profileService" type="System.Web.Configuration.ScriptingProfileServiceSection, System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" requirePermission="false" allowDefinition="MachineToApplication" />
+						<section name="authenticationService" type="System.Web.Configuration.ScriptingAuthenticationServiceSection, System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" requirePermission="false" allowDefinition="MachineToApplication" />
+						<section name="roleService" type="System.Web.Configuration.ScriptingRoleServiceSection, System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" requirePermission="false" allowDefinition="MachineToApplication" />
+					</sectionGroup>
+				</sectionGroup>
+			</sectionGroup>
+		</configSections>
+		
+		<!-- 
+		    Set compilation debug="true" to insert debugging 
+		    symbols into the compiled page. Because this 
+		    affects performance, set this value to true only 
+		    during development.
+		-->
+		<compilation defaultLanguage="${AspNetLanguage}" debug="false">
+			<assemblies>
+				<add assembly="System.Core, Version=3.5.0.0, Culture=neutral, PublicKeyToken=B77A5C561934E089"/>
+				<add assembly="System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35"/>
+				<add assembly="System.Web.Abstractions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35"/>
+				<add assembly="System.Web.Routing, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35"/>
+				<add assembly="System.Web.Mvc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35"/>
+				<add assembly="System.Data.DataSetExtensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=B77A5C561934E089"/>
+				<add assembly="System.Xml.Linq, Version=3.5.0.0, Culture=neutral, PublicKeyToken=B77A5C561934E089"/>
+				<add assembly="System.Data.Linq, Version=3.5.0.0, Culture=neutral, PublicKeyToken=B77A5C561934E089" />
+			</assemblies>
+		</compilation>
+		
+		<customErrors mode="RemoteOnly">
+		</customErrors>
+		
+		<pages>
+			<controls>
+				<add tagPrefix="asp" namespace="System.Web.UI" assembly="System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35"/>
+				<add tagPrefix="asp" namespace="System.Web.UI.WebControls" assembly="System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35"/>
+			</controls>
+			
+			<namespaces>
+				<add namespace="System.Web.Mvc"/>
+				<add namespace="System.Web.Mvc.Ajax"/>
+				<add namespace="System.Web.Mvc.Html"/>
+				<add namespace="System.Web.Routing"/>
+				<add namespace="System.Linq"/>
+				<add namespace="System.Collections.Generic"/>
+			</namespaces>
+		</pages>
+		
+		<authorization>
+			<allow users="*" />
+		</authorization>
+		
+		<httpHandlers>
+			<remove verb="*" path="*.asmx"/>
+			<add verb="*" path="*.asmx" validate="false" type="System.Web.Script.Services.ScriptHandlerFactory, System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35"/>
+			<add verb="*" path="*_AppService.axd" validate="false" type="System.Web.Script.Services.ScriptHandlerFactory, System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35"/>
+			<add verb="GET,HEAD" path="ScriptResource.axd" type="System.Web.Handlers.ScriptResourceHandler, System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" validate="false"/>
+			<add verb="*" path="*.mvc" validate="false" type="System.Web.Mvc.MvcHttpHandler, System.Web.Mvc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35"/>
+		</httpHandlers>
+
+		<httpModules>
+			<add name="ScriptModule" type="System.Web.Handlers.ScriptModule, System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35"/>
+			<add name="UrlRoutingModule" type="System.Web.Routing.UrlRoutingModule, System.Web.Routing, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" />
+		</httpModules>
+		
+		<system.codedom>
+			<compilers>
+				<compiler language="c#;cs;csharp" extension=".cs" warningLevel="4"
+				          type="Microsoft.CSharp.CSharpCodeProvider, System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+					<providerOption name="CompilerVersion" value="v3.5"/>
+					<providerOption name="WarnAsError" value="false"/>
+				</compiler>
+				<compiler language="vb;vbs;visualbasic;vbscript" extension=".vb" warningLevel="4"
+				          type="Microsoft.VisualBasic.VBCodeProvider, System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+					<providerOption name="CompilerVersion" value="v3.5"/>
+					<providerOption name="OptionInfer" value="true"/>
+					<providerOption name="WarnAsError" value="false"/>
+				</compiler>
+			</compilers>
+		</system.codedom>
+
+		<system.web.extensions/>
+		
+		<trace 
+			enabled="false"
+			localOnly="true"
+			pageOutput="false"
+			requestLimit="10" 
+			traceMode="SortByTime"
+		/>
+		
+		<globalization
+			requestEncoding="utf-8" 
+			responseEncoding="utf-8" 
+		/>
+		
+	</system.web>
+</configuration>]]>
+			</FileText>
+		</AspNetFile>
+	</TemplateFiles>
+</Template>
+

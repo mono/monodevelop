@@ -6,9 +6,9 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>Empty ASP.NET MVC Project</_Name>
-		<_Category>ASP.NET</_Category>
+		<_Category>C#/ASP.NET</_Category>
 		<Icon>md-project-web</Icon>
-		<LanguageName>*</LanguageName>
+		<LanguageName>C#</LanguageName>
 		<_Description>Creates an empty ASP.NET MVC Web Project.</_Description>
 	</TemplateConfiguration>
 	
@@ -42,140 +42,10 @@
 				<Directory name="Models" />
 				<Directory name="Scripts" />
 				<Directory name="Views">
-					<File name="Web.config">
-<![CDATA[<?xml version="1.0"?>
-<configuration>
-  <system.web>
-    <httpHandlers>
-      <add path="*" verb="*"
-          type="System.Web.HttpNotFoundHandler"/>
-    </httpHandlers>
-
-    <!--
-        Enabling request validation in view pages would cause validation to occur
-        after the input has already been processed by the controller. By default
-        MVC performs request validation before a controller processes the input.
-        To change this behavior apply the ValidateInputAttribute to a
-        controller or action.
-    -->
-    <pages
-        validateRequest="false"
-        pageParserFilterType="System.Web.Mvc.ViewTypeParserFilter, System.Web.Mvc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35"
-        pageBaseType="System.Web.Mvc.ViewPage, System.Web.Mvc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35"
-        userControlBaseType="System.Web.Mvc.ViewUserControl, System.Web.Mvc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35">
-      <controls>
-        <add assembly="System.Web.Mvc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" namespace="System.Web.Mvc" tagPrefix="mvc" />
-      </controls>
-    </pages>
-  </system.web>
-
-  <system.webServer>
-    <validation validateIntegratedModeConfiguration="false"/>
-    <handlers>
-      <remove name="BlockViewHandler"/>
-      <add name="BlockViewHandler" path="*" verb="*" preCondition="integratedMode" type="System.Web.HttpNotFoundHandler"/>
-    </handlers>
-  </system.webServer>
-</configuration>]]>
-					</File>
+					<FileTemplateReference TemplateID="AspMvcWebConfigViews" name="Web.config" SuppressAutoOpen="true"  />
 				</Directory>
-				<File name="Web.config">
-<![CDATA[<?xml version="1.0"?>
-<configuration>
-
-  <configSections>
-    <sectionGroup name="system.web.extensions" type="System.Web.Configuration.SystemWebExtensionsSectionGroup, System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35">
-      <sectionGroup name="scripting" type="System.Web.Configuration.ScriptingSectionGroup, System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35">
-        <section name="scriptResourceHandler" type="System.Web.Configuration.ScriptingScriptResourceHandlerSection, System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" requirePermission="false" allowDefinition="MachineToApplication"/>
-        <sectionGroup name="webServices" type="System.Web.Configuration.ScriptingWebServicesSectionGroup, System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35">
-          <section name="jsonSerialization" type="System.Web.Configuration.ScriptingJsonSerializationSection, System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" requirePermission="false" allowDefinition="Everywhere" />
-          <section name="profileService" type="System.Web.Configuration.ScriptingProfileServiceSection, System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" requirePermission="false" allowDefinition="MachineToApplication" />
-          <section name="authenticationService" type="System.Web.Configuration.ScriptingAuthenticationServiceSection, System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" requirePermission="false" allowDefinition="MachineToApplication" />
-          <section name="roleService" type="System.Web.Configuration.ScriptingRoleServiceSection, System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" requirePermission="false" allowDefinition="MachineToApplication" />
-        </sectionGroup>
-      </sectionGroup>
-    </sectionGroup>
-  </configSections>
-
-  <appSettings/>
-
-  <connectionStrings>
-  </connectionStrings>
-
-  <system.web>
-
-    <!-- 
-            Set compilation debug="true" to insert debugging 
-            symbols into the compiled page. Because this 
-            affects performance, set this value to true only 
-            during development.
-    -->
-    <compilation debug="false">
-      <assemblies>
-        <add assembly="System.Core, Version=3.5.0.0, Culture=neutral, PublicKeyToken=B77A5C561934E089"/>
-        <add assembly="System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35"/>
-        <add assembly="System.Web.Abstractions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35"/>
-        <add assembly="System.Web.Routing, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35"/>
-        <add assembly="System.Web.Mvc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35"/>
-        <add assembly="System.Data.DataSetExtensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=B77A5C561934E089"/>
-        <add assembly="System.Xml.Linq, Version=3.5.0.0, Culture=neutral, PublicKeyToken=B77A5C561934E089"/>
-        <add assembly="System.Data.Linq, Version=3.5.0.0, Culture=neutral, PublicKeyToken=B77A5C561934E089" />
-      </assemblies>
-    </compilation>
-    
-    <pages>
-      <controls>
-        <add tagPrefix="asp" namespace="System.Web.UI" assembly="System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35"/>
-        <add tagPrefix="asp" namespace="System.Web.UI.WebControls" assembly="System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35"/>
-      </controls>
-
-      <namespaces>
-        <add namespace="System.Web.Mvc"/>
-        <add namespace="System.Web.Mvc.Ajax"/>
-        <add namespace="System.Web.Mvc.Html"/>
-        <add namespace="System.Web.Routing"/>
-        <add namespace="System.Linq"/>
-        <add namespace="System.Collections.Generic"/>
-      </namespaces>
-    </pages>
-
-    <httpHandlers>
-      <remove verb="*" path="*.asmx"/>
-      <add verb="*" path="*.asmx" validate="false" type="System.Web.Script.Services.ScriptHandlerFactory, System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35"/>
-      <add verb="*" path="*_AppService.axd" validate="false" type="System.Web.Script.Services.ScriptHandlerFactory, System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35"/>
-      <add verb="GET,HEAD" path="ScriptResource.axd" type="System.Web.Handlers.ScriptResourceHandler, System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" validate="false"/>
-      <add verb="*" path="*.mvc" validate="false" type="System.Web.Mvc.MvcHttpHandler, System.Web.Mvc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35"/>
-    </httpHandlers>
-
-    <httpModules>
-      <add name="ScriptModule" type="System.Web.Handlers.ScriptModule, System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35"/>
-      <add name="UrlRoutingModule" type="System.Web.Routing.UrlRoutingModule, System.Web.Routing, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" />
-    </httpModules>
-
-  </system.web>
-
-  <system.codedom>
-    <compilers>
-      <compiler language="c#;cs;csharp" extension=".cs" warningLevel="4"
-                type="Microsoft.CSharp.CSharpCodeProvider, System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-        <providerOption name="CompilerVersion" value="v3.5"/>
-        <providerOption name="WarnAsError" value="false"/>
-      </compiler>
-
-      <compiler language="vb;vbs;visualbasic;vbscript" extension=".vb" warningLevel="4"
-                type="Microsoft.VisualBasic.VBCodeProvider, System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-        <providerOption name="CompilerVersion" value="v3.5"/>
-        <providerOption name="OptionInfer" value="true"/>
-        <providerOption name="WarnAsError" value="false"/>
-      </compiler>
-    </compilers>
-  </system.codedom>
-
-  <system.web.extensions/>
-
-</configuration>
-]]>					
-				</File>
+				<FileTemplateReference TemplateID="AspMvcWebConfigApp" name="Web.config" SuppressAutoOpen="true" />
+				<FileTemplateReference TemplateID="AspMvcGlobalAsax" name="Global.asax" SuppressAutoOpen="true"  />
 			</Files>
 		</Project>
 	</Combine>
