@@ -1,3 +1,7 @@
+2009-02-20  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Main.sln: Update mappings.
+
 2009-02-10  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* tests/test-projects/console-project/ConsoleProject.sln:

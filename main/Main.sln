@@ -130,7 +130,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mono.Cecil", "contrib\Mono.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mono.Cecil.Mdb", "contrib\Mono.Cecil\Mono.Cecil.Mdb.csproj", "{201F7AC0-D2D5-4F51-85A8-17475DADBED3}"
 EndProject
-Project("{9344bdbb-3e7f-41fc-a0dd-8665d75ee146}") = "po", "po\po.mdproj", "{FBC37C48-2C6C-42D0-AD64-4BCABC2B292E}"
+Project("{9344bdbb-3e7f-41fc-a0dd-8665d75ee146}") = "po", "po\po.mdproj", "{B71A97E1-2FC5-45DF-A6F9-B36F3B6438FC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{5D3F7E65-E55B-45CA-A83B-D1E10040281E}"
 EndProject
@@ -358,7 +358,6 @@ Global
 		{7926DB5B-96A7-47A7-9870-DB42FA5C3548}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7926DB5B-96A7-47A7-9870-DB42FA5C3548}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7926DB5B-96A7-47A7-9870-DB42FA5C3548}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
-		{7926DB5B-96A7-47A7-9870-DB42FA5C3548}.DebugMac|Any CPU.Build.0 = Debug|Any CPU
 		{7926DB5B-96A7-47A7-9870-DB42FA5C3548}.DebugWin32|x86.ActiveCfg = Debug|Any CPU
 		{7926DB5B-96A7-47A7-9870-DB42FA5C3548}.DebugWin32|x86.Build.0 = Debug|Any CPU
 		{7926DB5B-96A7-47A7-9870-DB42FA5C3548}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -403,7 +402,6 @@ Global
 		{8A04FF99-5DFE-4E3D-A24F-72A621C8DDC6}.Release|Any CPU.Build.0 = Debug|Any CPU
 		{8E47B77A-A649-494C-9BF2-B845E39CADE9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8E47B77A-A649-494C-9BF2-B845E39CADE9}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
-		{8E47B77A-A649-494C-9BF2-B845E39CADE9}.DebugMac|Any CPU.Build.0 = Debug|Any CPU
 		{8E47B77A-A649-494C-9BF2-B845E39CADE9}.DebugWin32|x86.ActiveCfg = Debug|Any CPU
 		{8E47B77A-A649-494C-9BF2-B845E39CADE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8FAD630E-4AED-4D2E-B8C2-5B1337213369}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -465,7 +463,6 @@ Global
 		{ADDC9D20-83C5-4245-9B46-2C5F6642CFBC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{ADDC9D20-83C5-4245-9B46-2C5F6642CFBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ADDC9D20-83C5-4245-9B46-2C5F6642CFBC}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
-		{ADDC9D20-83C5-4245-9B46-2C5F6642CFBC}.DebugMac|Any CPU.Build.0 = Debug|Any CPU
 		{ADDC9D20-83C5-4245-9B46-2C5F6642CFBC}.DebugWin32|x86.ActiveCfg = Debug|Any CPU
 		{ADDC9D20-83C5-4245-9B46-2C5F6642CFBC}.DebugWin32|x86.Build.0 = Debug|Any CPU
 		{ADDC9D20-83C5-4245-9B46-2C5F6642CFBC}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -476,6 +473,13 @@ Global
 		{AE84B4A7-E6B1-4565-8904-16284DCE41B6}.DebugWin32|x86.ActiveCfg = Debug|Any CPU
 		{AE84B4A7-E6B1-4565-8904-16284DCE41B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AE84B4A7-E6B1-4565-8904-16284DCE41B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B71A97E1-2FC5-45DF-A6F9-B36F3B6438FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B71A97E1-2FC5-45DF-A6F9-B36F3B6438FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B71A97E1-2FC5-45DF-A6F9-B36F3B6438FC}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
+		{B71A97E1-2FC5-45DF-A6F9-B36F3B6438FC}.DebugMac|Any CPU.Build.0 = Debug|Any CPU
+		{B71A97E1-2FC5-45DF-A6F9-B36F3B6438FC}.DebugWin32|x86.ActiveCfg = Debug|Any CPU
+		{B71A97E1-2FC5-45DF-A6F9-B36F3B6438FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B71A97E1-2FC5-45DF-A6F9-B36F3B6438FC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B841F25D-4F6D-4E0D-885F-212B54381F28}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B841F25D-4F6D-4E0D-885F-212B54381F28}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B841F25D-4F6D-4E0D-885F-212B54381F28}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
@@ -553,15 +557,12 @@ Global
 		{F79A67A1-4BA2-48F8-A7DD-A72E316EF6CD}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
 		{F79A67A1-4BA2-48F8-A7DD-A72E316EF6CD}.DebugMac|Any CPU.Build.0 = Debug|Any CPU
 		{F79A67A1-4BA2-48F8-A7DD-A72E316EF6CD}.DebugWin32|x86.ActiveCfg = Debug|Any CPU
-		{F79A67A1-4BA2-48F8-A7DD-A72E316EF6CD}.DebugWin32|x86.Build.0 = Debug|Any CPU
 		{F79A67A1-4BA2-48F8-A7DD-A72E316EF6CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F79A67A1-4BA2-48F8-A7DD-A72E316EF6CD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F870E2E7-FA64-4B2F-968A-90B36AB7AAA9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F870E2E7-FA64-4B2F-968A-90B36AB7AAA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F870E2E7-FA64-4B2F-968A-90B36AB7AAA9}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
-		{F870E2E7-FA64-4B2F-968A-90B36AB7AAA9}.DebugMac|Any CPU.Build.0 = Debug|Any CPU
 		{F870E2E7-FA64-4B2F-968A-90B36AB7AAA9}.DebugWin32|x86.ActiveCfg = Debug|Any CPU
-		{F870E2E7-FA64-4B2F-968A-90B36AB7AAA9}.DebugWin32|x86.Build.0 = Debug|Any CPU
 		{F870E2E7-FA64-4B2F-968A-90B36AB7AAA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F870E2E7-FA64-4B2F-968A-90B36AB7AAA9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F8F92AA4-A376-4679-A9D4-60E7B7FBF477}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -572,13 +573,6 @@ Global
 		{F8F92AA4-A376-4679-A9D4-60E7B7FBF477}.DebugWin32|x86.Build.0 = Debug|Any CPU
 		{F8F92AA4-A376-4679-A9D4-60E7B7FBF477}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F8F92AA4-A376-4679-A9D4-60E7B7FBF477}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FBC37C48-2C6C-42D0-AD64-4BCABC2B292E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FBC37C48-2C6C-42D0-AD64-4BCABC2B292E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FBC37C48-2C6C-42D0-AD64-4BCABC2B292E}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
-		{FBC37C48-2C6C-42D0-AD64-4BCABC2B292E}.DebugMac|Any CPU.Build.0 = Debug|Any CPU
-		{FBC37C48-2C6C-42D0-AD64-4BCABC2B292E}.DebugWin32|x86.ActiveCfg = Debug|Any CPU
-		{FBC37C48-2C6C-42D0-AD64-4BCABC2B292E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FBC37C48-2C6C-42D0-AD64-4BCABC2B292E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{7525BB88-6142-4A26-93B9-A30C6983390A} = {9D360D43-0C05-49D6-84DB-4E7AB2F38F82}
@@ -646,7 +640,6 @@ Global
 		{1497D0A8-AFF1-4938-BC22-BE79B358BA5B} = {78C10DAE-D3D7-44FC-93DF-831D8D54ECF9}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		name = Main
 		version = 0.1
 		outputpath = build\bin\
 		StartupItem = src\core\MonoDevelop.Startup\MonoDevelop.Startup.csproj
@@ -662,11 +655,13 @@ Global
 		$3.TabsToSpaces = False
 		$3.NoTabsAfterNonTabs = False
 		$3.RemoveTrailingWhitespace = False
+		$3.EolMarker = Native
 		$0.VersionControlPolicy = $4
 		$4.inheritsSet = Mono
 		$0.ChangeLogPolicy = $5
 		$5.UpdateMode = ProjectRoot
 		$5.inheritsSet = Mono
+		name = Main
 		MakePkgConfig = False
 		MakeLibPC = True
 	EndGlobalSection
