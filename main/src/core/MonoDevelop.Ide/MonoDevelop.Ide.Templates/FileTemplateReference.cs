@@ -42,6 +42,7 @@ namespace MonoDevelop.Ide.Templates
 		
 		FileTemplate innerTemplate;		
 		string name;
+		bool suppressAutoOpen = false;
 		
 		public override void Load (XmlElement filenode)
 		{
@@ -52,6 +53,15 @@ namespace MonoDevelop.Ide.Templates
 			innerTemplate = FileTemplate.GetFileTemplateByID (templateID);
 			if (innerTemplate == null)
 				throw new InvalidOperationException ("Could not find template with ID " + templateID);
+			
+			string suppressAutoOpenStr = filenode.GetAttribute ("SuppressAutoOpen");
+			if (!string.IsNullOrEmpty (suppressAutoOpenStr)) {
+				try {
+					suppressAutoOpen = bool.Parse (suppressAutoOpenStr);
+				} catch (FormatException) {
+					throw new InvalidOperationException ("Invalid value for SuppressAutoOpen in template.");
+				}
+			}
 		}
 
 		public override string Name {
@@ -89,6 +99,8 @@ namespace MonoDevelop.Ide.Templates
 		
 		public override void Show ()
 		{
+			if (suppressAutoOpen)
+				return;
 			foreach (FileDescriptionTemplate fdt in innerTemplate.Files) {
 				fdt.Show ();
 			}

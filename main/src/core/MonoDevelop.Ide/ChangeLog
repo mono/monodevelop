@@ -1,5 +1,17 @@
 2009-02-20  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:
+	  In AddFileToProject, don't throw an exception if a file with
+	  the name is already in the project, since SaveFile already
+	  asks the user if they want to overwrite the file if it
+	  exists. Prevents problems creating files when grouped files
+	  get added automatically.
+
+	* MonoDevelop.Ide.Templates/FileTemplateReference.cs: Allow
+	  suppressing whether the file auto-opens.
+
+2009-02-20  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Ide.csproj:
 	* MonoDevelop.Ide.addin.xml:

@@ -106,10 +106,6 @@ namespace MonoDevelop.Ide.Templates
 		
 		public ProjectFile AddFileToProject (SolutionItem policyParent, Project project, string language, string directory, string name)
 		{
-			generatedFile = GetFileName (policyParent, project, language, directory, name);
-			if (project != null && project.IsFileInProject (generatedFile))
-				throw new UserException (GettextCatalog.GetString ("The file '{0}' already exists in the project.", Path.GetFileName (generatedFile)));
-			
 			generatedFile = SaveFile (policyParent, project, language, directory, name);
 			if (generatedFile != null) {		
 				string buildAction = this.buildAction ?? project.GetDefaultBuildAction (generatedFile);
