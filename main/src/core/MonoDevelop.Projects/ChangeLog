@@ -1,3 +1,8 @@
+2009-02-20  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects/DotNetProject.cs: Allow templates to
+	  set a target framework version.
+
 2009-02-21  Ankit Jain  <jankit@novell.com>
 
 	Merge r127549 from mcs.

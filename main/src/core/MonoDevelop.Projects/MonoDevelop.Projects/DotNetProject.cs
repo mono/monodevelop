@@ -285,6 +285,10 @@ namespace MonoDevelop.Projects
 				CompileTarget = CompileTarget.Library;
 			}
 			
+			if (projectOptions != null && projectOptions.Attributes["TargetFrameworkVersion"] != null) {
+				targetFrameworkVersion = projectOptions.Attributes["TargetFrameworkVersion"].InnerText;
+			}
+			
 			foreach (DotNetProjectConfiguration parameter in Configurations) {
 				parameter.OutputDirectory = Path.Combine (binPath, parameter.Id);
 				if (info != null)
