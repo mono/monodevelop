@@ -239,8 +239,11 @@ namespace MonoDevelop.CSharpBinding.Gui
 				    && !hadSelection //was just a cursor, not a block of selected text -- the text editor handles that specially
 				    )
 				{
-					int delta = Editor.CursorPosition - this.cursorPositionBeforeKeyPress;
-					Editor.DeleteText (cursor - delta, delta);
+					if (Editor.CursorColumn > 2) {
+						int delta = cursor - this.cursorPositionBeforeKeyPress;
+						Editor.DeleteText (cursor - delta, delta);
+						Editor.CursorPosition = cursor - delta;
+					}
 					reIndent = true;
 				}
 				break;
@@ -252,10 +255,10 @@ namespace MonoDevelop.CSharpBinding.Gui
 		{
 			string newIndent = string.Empty;
 			int cursor = Editor.CursorPosition;
-			
 			// Get context to the end of the line w/o changing the main engine's state
 			CSharpIndentEngine ctx = (CSharpIndentEngine) stateTracker.Engine.Clone ();
 			string line = Editor.GetLineText (ctx.LineNumber);
+			
 			for (int i = ctx.LineOffset; i < line.Length; i++) {
 				ctx.Push (line[i]);
 			}
@@ -274,7 +277,6 @@ namespace MonoDevelop.CSharpBinding.Gui
 				offset = cursor - (pos + curIndent.Length);
 			else
 				offset = 0;
-			
 			if (!stateTracker.Engine.LineBeganInsideMultiLineComment ||
 			    (nlwsp < line.Length && line[nlwsp] == '*')) {
 				// Possibly replace the indent
@@ -294,6 +296,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			}
 			
 			pos += offset;
+			
 			if (pos != Editor.CursorPosition) {
 				Editor.CursorPosition = pos;
 				Editor.Select (pos, pos);
