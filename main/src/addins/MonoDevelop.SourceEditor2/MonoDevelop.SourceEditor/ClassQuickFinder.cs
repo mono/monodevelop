@@ -74,6 +74,11 @@ namespace MonoDevelop.SourceEditor
 			UpdateRegionComboTip (null);
 			this.PackStart (regionCombo);
 			
+			int w, h;
+			Gtk.Icon.SizeLookup (IconSize.Menu, out w, out h);
+			typeCombo.DefaultIconHeight = membersCombo.DefaultIconHeight = regionCombo.DefaultIconHeight = Math.Max (h, 16);
+			typeCombo.DefaultIconWidth = membersCombo.DefaultIconWidth = regionCombo.DefaultIconWidth = Math.Max (w, 16);
+			
 			this.FocusChain = new Widget[] { typeCombo, membersCombo, regionCombo };
 			
 			this.ShowAll ();

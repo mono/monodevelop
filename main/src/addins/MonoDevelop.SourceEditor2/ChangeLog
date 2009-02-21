@@ -1,3 +1,11 @@
+2009-02-20  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.SourceEditor/DropDownBox.cs:
+	* MonoDevelop.SourceEditor/ClassQuickFinder.cs: Set a minimum
+	  icon height and width on the drop down boxes. Fixes size
+	  jumping with small UI font (there'll still be an issue with
+	  large fonts).
+
 2009-02-20  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/LanguageItemWindow.cs: Language

@@ -37,6 +37,7 @@ namespace MonoDevelop.SourceEditor
 	{
 		Gtk.Label label;
 		Gtk.Image image;
+		int defaultIconHeight, defaultIconWidth;
 		
 		public DropDownBoxListWindow.IListDataProvider DataProvider {
 			get;
@@ -48,12 +49,30 @@ namespace MonoDevelop.SourceEditor
 			set;
 		}
 		
+		public int DefaultIconHeight {
+			get { return defaultIconHeight; }
+			set {
+				defaultIconHeight = value;
+				image.HeightRequest = Math.Max (image.HeightRequest, value);
+			}
+		}
+		
+		public int DefaultIconWidth  {
+			get { return defaultIconWidth; }
+			set {
+				defaultIconWidth = value;
+				image.WidthRequest = Math.Max (image.WidthRequest, value);
+			}
+		}
+		
 		public void SetItem (string text, Gdk.Pixbuf icon, object currentItem)
 		{
 			if (currentItem != CurrentItem) {// don't update when the same item is set.
 				label.Text = text;
 				this.CurrentItem = currentItem;
 				image.Pixbuf = icon;
+				image.HeightRequest = Math.Max (image.HeightRequest, DefaultIconHeight);
+				image.WidthRequest = Math.Max (image.WidthRequest, DefaultIconWidth);
 			//	this.HeightRequest = icon.Height + 4;
 				image.Show ();
 				this.QueueDraw ();
