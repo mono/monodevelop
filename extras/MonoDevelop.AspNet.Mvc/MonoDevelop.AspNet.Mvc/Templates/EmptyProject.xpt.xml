@@ -23,7 +23,7 @@
 		</Options>
 		
 		<Project name = "${ProjectName}" directory = "." type = "AspNetMvc">
-			<Options />
+			<Options TargetFrameworkVersion = "3.5" />
 			<References>
 				<Reference type="Gac" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
 				<Reference type="Gac" refto="System.Web, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
@@ -37,6 +37,11 @@
 				<Reference type="Gac" refto="System.Xml.Linq" />
 			</References>
 			<Files>
+				<Directory name="Content" />
+				<Directory name="Controllers" />
+				<Directory name="Models" />
+				<Directory name="Scripts" />
+				<Directory name="Views" />
 			</Files>
 		</Project>
 	</Combine>

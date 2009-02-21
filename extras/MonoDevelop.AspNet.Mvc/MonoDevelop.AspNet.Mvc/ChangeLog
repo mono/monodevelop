@@ -1,3 +1,9 @@
+2009-02-20  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Templates/Project.xpt.xml:
+	* Templates/EmptyProject.xpt.xml: Set target framework
+	  version. Create default MVC directories.
+
 2009-02-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.AspNet.Mvc.addin.xml: Fix MVC project type
