@@ -246,9 +246,11 @@ namespace MonoDevelop.Ide.Gui
 				fileName = member.DeclaringType.CompilationUnit.FileName;
 			}
 			Document doc = MonoDevelop.Ide.Gui.IdeApp.Workbench.OpenDocument (fileName, member.Location.Line, member.Location.Column, true);
-			MonoDevelop.Ide.Gui.Content.IUrlHandler handler = doc.ActiveView as MonoDevelop.Ide.Gui.Content.IUrlHandler;
-			if (handler != null)
-				handler.Open (member.HelpUrl);
+			if (doc != null) {
+				MonoDevelop.Ide.Gui.Content.IUrlHandler handler = doc.ActiveView as MonoDevelop.Ide.Gui.Content.IUrlHandler;
+				if (handler != null)
+					handler.Open (member.HelpUrl);
+			}
 		}
 //		string GetClassFileName (IType cls)
 //		{

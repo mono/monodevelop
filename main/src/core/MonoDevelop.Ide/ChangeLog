@@ -1,3 +1,8 @@
+2009-02-22  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: fixed "Bug 478483
+	  - go to declaration + assembly browser = NRE".
+
 2009-02-21  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:
