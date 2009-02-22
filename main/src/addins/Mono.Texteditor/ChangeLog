@@ -1,5 +1,17 @@
 2009-02-22  Mike Krüger  <mkrueger@novell.com>
 
+	* SyntaxModes/CSyntaxMode.xml:
+	* SyntaxModes/BooSyntaxMode.xml:
+	* SyntaxModes/JavaSyntaxMode.xml:
+	* SyntaxModes/ValaSyntaxMode.xml:
+	* SyntaxModes/VBNetSyntaxMode.xml:
+	* SyntaxModes/PythonSyntaxMode.xml:
+	* SyntaxModes/CSharpSyntaxMode.xml:
+	* SyntaxModes/JavascriptSyntaxMode.xml: Corrected escape
+	  strings.
+
+2009-02-22  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor.Highlighting/SyntaxMode.cs:
 	* Mono.TextEditor.Highlighting/SyntaxModeService.cs: fixed
 	  "Bug 478459 - Syntax highlighting broken with tripple-quote

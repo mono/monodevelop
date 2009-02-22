@@ -34,12 +34,12 @@
 	</Span>
 	
 
-	<Span color = "string" rule="String" stopateol = "true" escape="\">
+	<Span color = "string" rule="String" stopateol = "true" escape='\"'>
 		<Begin>"</Begin>
 		<End>"</End>
 	</Span>
 	
-	<Span color = "string" rule="String" stopateol = "true" escape="\">
+	<Span color = "string" rule="String" stopateol = "true" escape='\"'>
 		<Begin>'</Begin>
 		<End>'</End>
 	</Span>
