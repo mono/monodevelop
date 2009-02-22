@@ -1,3 +1,21 @@
+2009-02-22  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Components.Commands/CommandEntry.cs:
+	* MonoDevelop.Components.Commands/CommandMenuItem.cs:
+	* MonoDevelop.Components.Commands/CommandCheckMenuItem.cs:
+	* MonoDevelop.Components.Commands.ExtensionNodes/CommandItemCodon.cs:
+	  Implemented new flag which allows setting if a menu item has
+	  to be visible if it is not enabled.
+
+	* MonoDevelop.Components.Commands/CommandMenu.cs:
+	* MonoDevelop.Components.Commands/CommandEntrySet.cs:
+	  Implemented autohide flag on menus (when set, menus are
+	  hidden when all child options are hidden).
+
+	* MonoDevelop.Components.Commands/CommandManager.cs: Added
+	  overload which allows creating a CommandEntrySet for a
+	  specific extension context.
+
 2009-02-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Components.DockToolbars/DockToolbarPanel.cs:

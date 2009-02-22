@@ -71,14 +71,25 @@ namespace MonoDevelop.Components.Commands
 		protected override void OnShown ()
 		{
 			base.OnShown ();
+			Update ();
+		}
+		
+		void Update ()
+		{
 			foreach (Gtk.Widget item in Children) {
 				if (item is ICommandUserItem)
 					((ICommandUserItem)item).Update (initialCommandTarget);
 				else if (item is Gtk.MenuItem) {
-					CommandMenu men = ((Gtk.MenuItem)item).Submenu as CommandMenu;
+					Gtk.MenuItem mitem = (Gtk.MenuItem) item;
+					CommandMenu men = mitem.Submenu as CommandMenu;
 					if (men != null)
 						men.InitialCommandTarget = initialCommandTarget;
 					item.Show ();
+					if (item is AutoHideMenuItem) {
+						men.Update ();
+						if (!((AutoHideMenuItem)item).HasVisibleChildren)
+							item.Hide ();
+					}
 				}
 				else
 					item.Show ();

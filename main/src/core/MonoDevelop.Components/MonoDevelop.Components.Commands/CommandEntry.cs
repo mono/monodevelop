@@ -34,13 +34,20 @@ namespace MonoDevelop.Components.Commands
 	{
 		object cmdId;
 		string overrideLabel;
+		bool disabledVisible = true;
 
-		public CommandEntry (object cmdId, string overrideLabel)
+		public CommandEntry (object cmdId, string overrideLabel, bool disabledVisible)
 		{
 			this.cmdId         = cmdId;
 			this.overrideLabel = overrideLabel;
+			this.disabledVisible = disabledVisible;
 		}
-		public CommandEntry (object cmdId) : this (cmdId, null)
+		
+		public CommandEntry (object cmdId, string overrideLabel): this (cmdId, overrideLabel, true)
+		{
+		}
+		
+		public CommandEntry (object cmdId) : this (cmdId, null, true)
 		{
 		}
 		
@@ -49,9 +56,14 @@ namespace MonoDevelop.Components.Commands
 			set { cmdId = value; }
 		}
 		
+		public bool DisabledVisible {
+			get { return disabledVisible; }
+			set { disabledVisible = value; }
+		}
+		
 		internal protected virtual Gtk.MenuItem CreateMenuItem (CommandManager manager)
 		{
-			return CreateMenuItem (manager, cmdId, true, overrideLabel);
+			return CreateMenuItem (manager, cmdId, true, overrideLabel, disabledVisible);
 		}
 		
 		internal protected virtual Gtk.ToolItem CreateToolItem (CommandManager manager)
@@ -106,10 +118,10 @@ namespace MonoDevelop.Components.Commands
 		
 		internal static Gtk.MenuItem CreateMenuItem (CommandManager manager, object cmdId, bool isArrayMaster)		
 		{
-			return CreateMenuItem (manager, cmdId, isArrayMaster, null);
+			return CreateMenuItem (manager, cmdId, isArrayMaster, null, true);
 		}
 
-		internal static Gtk.MenuItem CreateMenuItem (CommandManager manager, object cmdId, bool isArrayMaster, string overrideLabel)
+		internal static Gtk.MenuItem CreateMenuItem (CommandManager manager, object cmdId, bool isArrayMaster, string overrideLabel, bool disabledVisible)
 		{
 			if (cmdId == Command.Separator)
 				return new Gtk.SeparatorMenuItem ();
@@ -127,9 +139,9 @@ namespace MonoDevelop.Components.Commands
 			
 			ActionCommand acmd = cmd as ActionCommand;
 			if (acmd.ActionType == ActionType.Normal || (isArrayMaster && acmd.CommandArray))
-				return new CommandMenuItem (cmdId, manager, overrideLabel);
+				return new CommandMenuItem (cmdId, manager, overrideLabel, disabledVisible);
 			else
-				return new CommandCheckMenuItem (cmdId, manager, overrideLabel);
+				return new CommandCheckMenuItem (cmdId, manager, overrideLabel, disabledVisible);
 		}	
 	}
 }

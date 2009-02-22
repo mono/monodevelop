@@ -43,10 +43,13 @@ namespace MonoDevelop.Components.Commands.ExtensionNodes
 		[NodeAttribute ("_label", "Label", Localizable=true)]
 		string label;
 		
+		[NodeAttribute ("disabledVisible", "Visible when disabled")]
+		bool disabledVisible = true;
+		
 		public override object CreateInstance ()
 		{
 			object id = CommandCodon.ParseCommandId (this);
-			return new CommandEntry (id, label);
+			return new CommandEntry (id, label, disabledVisible);
 		}
 	}
 }

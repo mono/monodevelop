@@ -58,9 +58,6 @@ namespace MonoDevelop.Components.Commands
 			set { icon = value; }
 		}
 		
-		// If true, the set will be automatically hidden if all
-		// items it contains are hidden or disabled
-		//FIXME: FUNCTIONALITY NOT IMPLEMENTED
 		public bool AutoHide {
 			get { return autoHide; }
 			set { autoHide = value; }
@@ -106,7 +103,11 @@ namespace MonoDevelop.Components.Commands
 		
 		internal protected override Gtk.MenuItem CreateMenuItem (CommandManager manager)
 		{
-			Gtk.MenuItem mi = new Gtk.MenuItem (name != null ? name : "");
+			Gtk.MenuItem mi;
+			if (autoHide)
+				mi = new AutoHideMenuItem (name != null ? name : "");
+			else
+				mi = new Gtk.MenuItem (name != null ? name : "");
 			mi.Submenu = manager.CreateMenu (this);
 			return mi;
 		}
@@ -118,17 +119,22 @@ namespace MonoDevelop.Components.Commands
 		}
 	}
 	
-	public class AutoHideMenuItem: Gtk.ImageMenuItem
+	class AutoHideMenuItem: Gtk.ImageMenuItem
 	{
 		public AutoHideMenuItem (string name): base (name)
 		{
-			Console.WriteLine ("MM:" + name);
+			ShowAll ();
 		}
-/*		
-		protected override void OnShown ()
-		{
-			base.OnShown ();
+		
+		public bool HasVisibleChildren {
+			get {
+				foreach (Gtk.Widget item in ((Gtk.Menu)Submenu).Children) {
+					if (item.Visible)
+						return true;
+				}
+				return false;
+			}
 		}
-*/	}
+	}
 }
 

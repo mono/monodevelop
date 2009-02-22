@@ -40,19 +40,21 @@ namespace MonoDevelop.Components.Commands
 		object initialTarget;
 		string overrideLabel;
 		CommandInfo lastCmdInfo;
+		bool disabledVisible = true;
 		
-		public CommandCheckMenuItem (object commandId, CommandManager commandManager, string overrideLabel): base ("")
+		public CommandCheckMenuItem (object commandId, CommandManager commandManager, string overrideLabel, bool disabledVisible): base ("")
 		{
 			this.commandId = commandId;
 			this.commandManager = commandManager;
 			this.overrideLabel = overrideLabel;
+			this.disabledVisible = disabledVisible;
 			
 			ActionCommand cmd = commandManager.GetCommand (commandId) as ActionCommand;
 			if (cmd != null && cmd.ActionType == ActionType.Radio)
 				this.DrawAsRadio = true;
 		}
 
-		public CommandCheckMenuItem (object commandId, CommandManager commandManager): this (commandId, commandManager, null)
+		public CommandCheckMenuItem (object commandId, CommandManager commandManager): this (commandId, commandManager, null, true)
 		{
 		}
 		
@@ -166,7 +168,7 @@ namespace MonoDevelop.Components.Commands
 			label.UseUnderline = true;
 			
 			Sensitive = cmdInfo.Enabled;
-			Visible = cmdInfo.Visible;
+			Visible = cmdInfo.Visible && (disabledVisible || cmdInfo.Enabled);
 			Active = cmdInfo.Checked;
 			Inconsistent = cmdInfo.CheckedInconsistent;
 			

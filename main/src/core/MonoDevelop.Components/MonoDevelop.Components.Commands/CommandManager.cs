@@ -137,6 +137,15 @@ namespace MonoDevelop.Components.Commands
 			ShowContextMenu (CreateCommandEntrySet (addinPath));
 		}
 		
+		public CommandEntrySet CreateCommandEntrySet (ExtensionContext ctx, string addinPath)
+		{
+			CommandEntrySet cset = new CommandEntrySet ();
+			object[] items = ctx.GetExtensionObjects (addinPath, false);
+			foreach (CommandEntry e in items)
+				cset.Add (e);
+			return cset;
+		}
+		
 		public CommandEntrySet CreateCommandEntrySet (string addinPath)
 		{
 			CommandEntrySet cset = new CommandEntrySet ();

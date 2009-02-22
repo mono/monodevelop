@@ -43,19 +43,21 @@ namespace MonoDevelop.Components.Commands
 		string overrideLabel;
 		bool wasButtonActivation;
 		object initialTarget;
+		bool disabledVisible = true;
 		CommandInfo lastCmdInfo;
 		
-		public CommandMenuItem (object commandId, CommandManager commandManager, string overrideLabel): base ("")
+		public CommandMenuItem (object commandId, CommandManager commandManager, string overrideLabel, bool disabledVisible): base ("")
 		{
 			this.commandId = commandId;
 			this.commandManager = commandManager;
 			this.overrideLabel = overrideLabel;
+			this.disabledVisible = disabledVisible;
 			ActionCommand cmd = commandManager.GetCommand (commandId) as ActionCommand;
 			if (cmd != null)
 				isArray = cmd.CommandArray;
 		}
 		
-		public CommandMenuItem (object commandId, CommandManager commandManager): this (commandId, commandManager, null)
+		public CommandMenuItem (object commandId, CommandManager commandManager): this (commandId, commandManager, null, true)
 		{
 		}
 
@@ -205,7 +207,7 @@ namespace MonoDevelop.Components.Commands
 				label.UseUnderline = true;
 				
 				this.Sensitive = cmdInfo.Enabled;
-				this.Visible = cmdInfo.Visible;
+				this.Visible = cmdInfo.Visible && (disabledVisible || cmdInfo.Enabled);
 				
 				if (cmdInfo.Icon != null && cmdInfo.Icon != "" && cmdInfo.Icon != lastIcon) {
 					Image = new Gtk.Image (cmdInfo.Icon, Gtk.IconSize.Menu);
