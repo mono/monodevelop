@@ -309,7 +309,7 @@ namespace Mono.TextEditor.Highlighting
 								curChunk.Length += curSpan.Escape.Length;
 								if (curSpan.Escape.Length == 1)
 									curChunk.Length++;
-								i += curSpan.Escape.Length;
+								i += curSpan.Escape.Length - 1;
 								continue;
 							}
 						}

@@ -185,7 +185,7 @@ namespace Mono.TextEditor.Highlighting
 							}
 						}
 						if (match) {
-							offset += curSpan.Escape.Length;
+							offset += curSpan.Escape.Length - 1;
 							continue;
 						}
 							
@@ -310,7 +310,7 @@ namespace Mono.TextEditor.Highlighting
 							}
 							
 							if (match) {
-								offset += curSpan.Escape.Length;
+								offset += curSpan.Escape.Length - 1;
 								continue;
 							}
 							
