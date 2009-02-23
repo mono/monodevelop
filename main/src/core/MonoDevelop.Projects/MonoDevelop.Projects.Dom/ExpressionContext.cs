@@ -87,6 +87,7 @@ namespace MonoDevelop.Projects.Dom
 		public static ExpressionContext Type                         = new ExpressionContext ("Type");
 		public static ExpressionContext Namespace                    = new ExpressionContext ("Namespace");
 		public static ExpressionContext Attribute                    = new ExpressionContext ("Attribute");
+		public static ExpressionContext AttributeArguments           = new ExpressionContext ("AttributeArguments");
 		public static ExpressionContext IdentifierExpected           = new ExpressionContext ("IdentifierExpected");
 		public static ExpressionContext ConstraintsStart             = new ExpressionContext ("ConstraintsStart");
 		public static ExpressionContext FullyQualifiedType           = new ExpressionContext ("FullyQualifiedType");
