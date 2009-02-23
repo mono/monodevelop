@@ -1,5 +1,9 @@
 2009-02-23  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.addin.xml: removed f11 shortcut.
+
+2009-02-23  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.addin.xml: Fullscreen set to F11 shortuct
 	  (same as gnome terminal).
 
