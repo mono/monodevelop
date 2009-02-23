@@ -1,3 +1,7 @@
+2009-02-23  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* TestBase.cs: Use a local directory for the add-in registry.
+
 2009-02-23  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharpBinding/CodeCompletionAccessibleTests.cs:

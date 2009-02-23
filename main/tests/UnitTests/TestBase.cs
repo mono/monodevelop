@@ -42,6 +42,7 @@ namespace UnitTests
 			if (firstRun) {
 				firstRun = false;
 				Util.ClearTmpDir ();
+				Environment.SetEnvironmentVariable ("MONO_ADDINS_REGISTRY", Path.Combine (Util.TestsRootDir, "config"));
 				Environment.SetEnvironmentVariable ("XDG_CONFIG_HOME", Path.Combine (Util.TestsRootDir, "config"));
 				Runtime.Initialize (true);
 				Gtk.Application.Init ();
