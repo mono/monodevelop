@@ -1,5 +1,12 @@
 2009-02-23  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Dom/DomType.cs:
+	* MonoDevelop.Projects.Dom/DomMethod.cs:
+	* MonoDevelop.Projects.Dom/ResolveResult.cs: Worked on
+	  explicit generic method parameters.
+
+2009-02-23  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Dom/AbstractMember.cs: Fixed inner type
 	  bug.
 

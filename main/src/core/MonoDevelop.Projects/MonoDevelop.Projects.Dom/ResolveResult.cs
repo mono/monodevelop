@@ -355,8 +355,9 @@ namespace MonoDevelop.Projects.Dom
 		public override IReturnType ResolvedType {
 			get {
 				IMethod method = MostLikelyMethod;
-				if (method != null)
-					return method.ReturnType;
+				if (method != null) {
+					return DomMethod.CreateInstantiatedGenericMethod (method, genericArguments).ReturnType;
+				}
 				return base.ResolvedType;
 			}
 		}

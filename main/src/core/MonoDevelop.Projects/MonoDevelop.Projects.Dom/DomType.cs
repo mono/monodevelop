@@ -621,7 +621,7 @@ namespace MonoDevelop.Projects.Dom
 			return result;
 		}
 		
-		class GenericTypeInstanceResolver: CopyDomVisitor<IType>
+		internal class GenericTypeInstanceResolver: CopyDomVisitor<IType>
 		{
 			public Dictionary<string, IReturnType> typeTable = new Dictionary<string,IReturnType> ();
 			
@@ -650,7 +650,7 @@ namespace MonoDevelop.Projects.Dom
 					return base.CreateInstance (type, typeToInstantiate);
 			}
 		}
-		
+ 		
 		/// <summary>
 		/// Returns a list of types that contains extension methods
 		/// </summary>

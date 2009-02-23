@@ -140,6 +140,40 @@ namespace MonoDevelop.Projects.Dom
 			this.ReturnType     = returnType;
 			this.MethodModifier = MethodModifier;
 		}
+		
+		internal static IMethod CreateInstantiatedGenericMethod (IMethod method, IList<IReturnType> genericArguments)
+		{
+			GenericMethodInstanceResolver resolver = new GenericMethodInstanceResolver ();
+			if (genericArguments != null) {
+				for (int i = 0; i < method.TypeParameters.Count && i < genericArguments.Count; i++)
+					resolver.Add (method.TypeParameters[i].Name, genericArguments[i]);
+			}
+			return (IMethod)method.AcceptVisitor (resolver, method);
+			
+		}
+		
+		internal class GenericMethodInstanceResolver: CopyDomVisitor<IMethod>
+		{
+			public Dictionary<string, IReturnType> typeTable = new Dictionary<string,IReturnType> ();
+			
+			public void Add (string name, IReturnType type)
+			{
+				typeTable.Add (name, type);
+			}
+			
+			public override IDomVisitable Visit (IReturnType type, IMethod typeToInstantiate)
+			{
+				DomReturnType copyFrom = (DomReturnType) type;
+				
+				IReturnType res;
+				if (typeTable.TryGetValue (copyFrom.DecoratedFullName, out res)) {
+					if (type.ArrayDimensions == 0 && type.GenericArguments.Count == 0)
+						return res;
+				}
+				return base.Visit (type, typeToInstantiate);
+			}
+		}
+		
 /*
 		public override bool IsAccessibleFrom (ProjectDom dom, IType calledType, IMember member)
 		{
