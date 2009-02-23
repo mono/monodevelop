@@ -37,7 +37,7 @@ namespace MonoDevelop.Core.Gui.Codons
 		[NodeAttribute ("class")]
 		protected string typeName;
 
-		[NodeAttribute ("_label")]
+		[NodeAttribute ("_label", Localizable=true)]
 		protected string label;
 		
 		[NodeAttribute]
