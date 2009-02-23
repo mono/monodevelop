@@ -61,7 +61,6 @@ FILES =  \
 	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandWidget.cs \
 	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/EnvVarList.cs \
 	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/GeneralProjectOptions.cs \
-	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/ItemTypeCondition.cs \
 	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/NamespaceSynchronisationPanel.cs \
 	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs \
 	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/RunOptionsPanel.cs \

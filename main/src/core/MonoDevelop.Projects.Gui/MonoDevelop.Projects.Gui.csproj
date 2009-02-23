@@ -120,7 +120,6 @@
     <Compile Include="MonoDevelop.Projects.Gui.Dialogs.OptionPanels\BaseDirectoryPanel.cs" />
     <Compile Include="MonoDevelop.Projects.Gui.Dialogs.OptionPanels\BaseDirectoryPanelWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Projects.Gui.Dialogs.OptionPanels.BaseDirectoryPanelWidget.cs" />
-    <Compile Include="MonoDevelop.Projects.Gui.Dialogs.OptionPanels\ItemTypeCondition.cs" />
     <Compile Include="MonoDevelop.Projects.Gui.Dialogs.OptionPanels\ActiveLanguageCondition.cs" />
     <Compile Include="MonoDevelop.Projects.Gui.Dialogs\ItemOptionsDialog.cs" />
     <Compile Include="MonoDevelop.Projects.Gui.Dialogs.OptionPanels\StartupOptionsPanel.cs" />

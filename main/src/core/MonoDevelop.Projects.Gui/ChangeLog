@@ -1,3 +1,12 @@
+2009-02-23  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Projects.Gui.csproj:
+	* MonoDevelop.Projects.Gui.addin.xml:
+	* MonoDevelop.Projects.Gui.Dialogs/ItemOptionsDialog.cs:
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/ItemTypeCondition.cs:
+	  Moved ItemTypeCondition to MD.Projects.
+
 2009-02-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Gui.Dialogs/RenameConfigDialog.cs:

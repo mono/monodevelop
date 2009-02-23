@@ -27,7 +27,7 @@
 
 using System;
 using Mono.Addins;
-using MonoDevelop.Projects.Gui.Dialogs.OptionPanels;
+using MonoDevelop.Projects.Extensions;
 using MonoDevelop.Core.Gui.Dialogs;
 
 namespace MonoDevelop.Projects.Gui.Dialogs

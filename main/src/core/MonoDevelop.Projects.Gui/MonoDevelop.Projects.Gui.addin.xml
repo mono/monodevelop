@@ -20,7 +20,7 @@
 		<ConditionType id="ItemType" type="MonoDevelop.Core.Gui.Dialogs.OptionPanels.ItemTypeCondition">
 			<Description>Type of the item. If no namespace is provided, MonoDevelop.Projects is assumed.</Description>
 		</ConditionType>
-		<ConditionType id="ActiveLanguage" type="MonoDevelop.Core.Gui.Dialogs.OptionPanels.ItemTypeCondition">
+		<ConditionType id="ActiveLanguage" type="MonoDevelop.Projects.Extensions.ItemTypeCondition">
 			<Description>Language of the project. It will evaluate to false if the project is not a .NET project.</Description>
 		</ConditionType>
 	</ExtensionPoint>
