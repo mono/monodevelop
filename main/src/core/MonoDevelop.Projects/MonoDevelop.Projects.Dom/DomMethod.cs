@@ -141,15 +141,30 @@ namespace MonoDevelop.Projects.Dom
 			this.MethodModifier = MethodModifier;
 		}
 		
-		internal static IMethod CreateInstantiatedGenericMethod (IMethod method, IList<IReturnType> genericArguments)
+		internal static IMethod CreateInstantiatedGenericMethod (IMethod method, IList<IReturnType> genericArguments, IList<IReturnType> methodArguments)
 		{
 			GenericMethodInstanceResolver resolver = new GenericMethodInstanceResolver ();
 			if (genericArguments != null) {
-				for (int i = 0; i < method.TypeParameters.Count && i < genericArguments.Count; i++)
+				for (int i = 0; i < method.TypeParameters.Count && i < genericArguments.Count; i++) 
 					resolver.Add (method.TypeParameters[i].Name, genericArguments[i]);
 			}
-			return (IMethod)method.AcceptVisitor (resolver, method);
-			
+			IMethod result = (IMethod)method.AcceptVisitor (resolver, method);
+			resolver = new GenericMethodInstanceResolver ();
+			if (methodArguments != null) {
+				for (int i = 0; i < method.Parameters.Count && i < methodArguments.Count; i++) {
+					bool found = false;
+					for (int j = 0; j < method.TypeParameters.Count; j++) {
+						if (method.TypeParameters[j].Name == method.Parameters[i].ReturnType.FullName) {
+							found = true;
+							break;
+						}
+					}
+					if (found) {
+						resolver.Add (method.Parameters[i].ReturnType.FullName, methodArguments[i]);
+					}
+				}
+			}
+			return (IMethod)result.AcceptVisitor (resolver, result);
 		}
 		
 		internal class GenericMethodInstanceResolver: CopyDomVisitor<IMethod>
@@ -158,6 +173,7 @@ namespace MonoDevelop.Projects.Dom
 			
 			public void Add (string name, IReturnType type)
 			{
+				System.Console.WriteLine("Add: " + name + " ==> " + type);
 				typeTable.Add (name, type);
 			}
 			

@@ -335,15 +335,15 @@ namespace MonoDevelop.Projects.Dom
 				IMethod result = methods [0];
 				foreach (IMethod method in methods) {
 					if (method.TypeParameters.Count == genericArguments.Count) {
-					 	if (method.Parameters.Count == arguments.Count) {
-					 		bool match = true;
-					 		for (int i = 0; i < method.Parameters.Count; i++) {
-					 			if (method.Parameters[i].ReturnType.FullName != arguments[i].FullName) {
-					 				match = false;
-					 			}
-					 		}
-					 		if (match)
-					 			return method;
+						if (method.Parameters.Count == arguments.Count) {
+							bool match = true;
+							for (int i = 0; i < method.Parameters.Count; i++) {
+								if (method.Parameters[i].ReturnType.FullName != arguments[i].FullName) {
+									match = false;
+								}
+							}
+							if (match)
+								return method;
 							result = method;
 						}
 					}
@@ -356,7 +356,8 @@ namespace MonoDevelop.Projects.Dom
 			get {
 				IMethod method = MostLikelyMethod;
 				if (method != null) {
-					return DomMethod.CreateInstantiatedGenericMethod (method, genericArguments).ReturnType;
+					
+					return DomMethod.CreateInstantiatedGenericMethod (method, genericArguments, arguments).ReturnType;
 				}
 				return base.ResolvedType;
 			}
