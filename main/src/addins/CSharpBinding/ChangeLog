@@ -1,5 +1,9 @@
 2009-02-23  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/NRefactoryResolver.cs: Fixed failing unit test.
+
+2009-02-23  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/NRefactoryResolver.cs: fixed inner type access issues.
 
 2009-02-23  Mike Krüger  <mkrueger@novell.com>

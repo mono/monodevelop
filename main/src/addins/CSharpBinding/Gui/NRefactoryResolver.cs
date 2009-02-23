@@ -526,9 +526,31 @@ namespace MonoDevelop.CSharpBinding
 				}
 			}
 			
-			
 			return null;
 		}
+		
+		IReturnType GetEnumerationMember (IReturnType returnType)
+		{
+			if (returnType == null)
+				return null;
+			IType type = dom.SearchType (new SearchTypeRequest (Unit, returnType, CallingType));
+			if (type != null) {
+				foreach (IType baseType in dom.GetInheritanceTree (type)) {
+					if (baseType.FullName == "System.Collections.IEnumerable") {
+						InstantiatedType instantiated = type as InstantiatedType;
+						if (instantiated != null && instantiated.GenericParameters != null && instantiated.GenericParameters.Count > 0) 
+							return instantiated.GenericParameters[0];
+					}
+				}
+			}
+			if (returnType.ArrayDimensions > 0) {
+				DomReturnType elementType = new DomReturnType (returnType.FullName);
+				elementType.ArrayDimensions = returnType.ArrayDimensions - 1;
+				return elementType;
+			}
+			return returnType;
+		}
+		
 		Dictionary<string, ResolveResult> resultTable = new Dictionary<string, ResolveResult> ();
  		public ResolveResult ResolveIdentifier (ResolveVisitor visitor, string identifier)
 		{
@@ -555,15 +577,15 @@ namespace MonoDevelop.CSharpBinding
 							}
 							if (var.Initializer != null) {
 								ResolveResult initializerResolve = visitor.Resolve (var.Initializer);
-								varType           = initializerResolve.ResolvedType;
-								varTypeUnresolved = initializerResolve.UnresolvedType;
+								varType           = GetEnumerationMember (initializerResolve.ResolvedType);
+								varTypeUnresolved = GetEnumerationMember (initializerResolve.UnresolvedType);
 							}
 						} else { 
 							varTypeUnresolved = varType = ConvertTypeReference (var.TypeRef);
 						}
-						//System.Console.Write("varType: " + varType);
+//						System.Console.Write("varType: " + varType);
 						varType = ResolveType (varType);
-						//System.Console.WriteLine(" resolved: " + varType);
+//						System.Console.WriteLine(" resolved: " + varType);
 							
 						result = new LocalVariableResolveResult (
 							new LocalVariable (CallingMember, identifier, varType,
