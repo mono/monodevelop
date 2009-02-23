@@ -545,6 +545,30 @@ public class TestInnerEnum
 			Assert.IsNotNull (provider.Find ("B"), "field 'B' not found");
 			Assert.IsNotNull (provider.Find ("C"), "field 'C' not found");
 		}
+		
+		[Test()]
+		public void TestInnerClassPrivateOuterMembersAccess ()
+		{
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
+@"
+public class TestClass
+{
+	void TestMethod ()
+	{
+	}
+	
+	public class InnerClass
+	{
+		void TestMethod ()
+		{
+			TestClass tc = new TestClass ();
+			$tc.$
+		}
+	}
+}");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("TestMethod"), "method 'TestMethod' not found");
+		}
 	}
 }
 		
