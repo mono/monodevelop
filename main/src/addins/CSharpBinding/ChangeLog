@@ -1,5 +1,10 @@
 2009-02-23  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/ResolveVisitor.cs:
+	* Gui/NRefactoryResolver.cs: Fixed some type resolving issues.
+
+2009-02-23  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/NRefactoryResolver.cs: Fixed failing unit test.
 
 2009-02-23  Mike Krüger  <mkrueger@novell.com>

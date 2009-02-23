@@ -174,7 +174,7 @@ namespace MonoDevelop.CSharpBinding
 			if (resolvedType != null) {
 				foreach (IType curType in resolver.Dom.GetInheritanceTree (resolvedType)) {
 					foreach (IProperty property in curType.Properties) {
-						//System.Console.WriteLine(property);
+//						System.Console.WriteLine(property);
 						if (property.IsIndexer)
 							return CreateResult (property.ReturnType);
 					}
@@ -482,7 +482,11 @@ namespace MonoDevelop.CSharpBinding
 							result.CallingType   = resolver.CallingType;
 							result.CallingMember = resolver.CallingMember;
 							//result.StaticResolve = isStatic;
-							result.UnresolvedType = result.ResolvedType  = member[0].ReturnType;
+							//result.UnresolvedType = result.ResolvedType  = member[0].ReturnType;
+							foreach (TypeReference typeReference in memberReferenceExpression.TypeArguments) {
+								((MethodResolveResult)result).AddGenericArgument (new DomReturnType (String.IsNullOrEmpty (typeReference.SystemType) ? typeReference.Type : typeReference.SystemType));
+							}
+							//System.Console.WriteLine(result + "/" + result.ResolvedType);
 							return result;
 						}
 						if (member[0] is IType) {
@@ -513,12 +517,12 @@ namespace MonoDevelop.CSharpBinding
 				foreach (Expression arg in invocationExpression.Arguments) {
 					methodResult.AddArgument (GetTypeSafe (arg));
 				}
-				MemberReferenceExpression mre = invocationExpression.TargetObject as MemberReferenceExpression;
+			/*	MemberReferenceExpression mre = invocationExpression.TargetObject as MemberReferenceExpression;
 				if (mre != null) {
 					foreach (TypeReference typeReference in mre.TypeArguments) {
 						methodResult.AddGenericArgument (new DomReturnType (String.IsNullOrEmpty (typeReference.SystemType) ? typeReference.Type : typeReference.SystemType));
 					}
-				}
+				}*/
 //				return CreateResult (methodResult.Methods [0].ReturnType);
 			}
 			return targetResult;

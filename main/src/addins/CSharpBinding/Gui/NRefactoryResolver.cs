@@ -534,6 +534,7 @@ namespace MonoDevelop.CSharpBinding
 			if (returnType == null)
 				return null;
 			IType type = dom.SearchType (new SearchTypeRequest (Unit, returnType, CallingType));
+			//System.Console.WriteLine("!!!! " + type);
 			if (type != null) {
 				foreach (IType baseType in dom.GetInheritanceTree (type)) {
 					if (baseType.FullName == "System.Collections.IEnumerable") {
@@ -577,15 +578,13 @@ namespace MonoDevelop.CSharpBinding
 							}
 							if (var.Initializer != null) {
 								ResolveResult initializerResolve = visitor.Resolve (var.Initializer);
-								varType           = GetEnumerationMember (initializerResolve.ResolvedType);
-								varTypeUnresolved = GetEnumerationMember (initializerResolve.UnresolvedType);
+								varType           = var.IsLoopVariable ? GetEnumerationMember (initializerResolve.ResolvedType)   : initializerResolve.ResolvedType;
+								varTypeUnresolved = var.IsLoopVariable ? GetEnumerationMember (initializerResolve.UnresolvedType) : initializerResolve.UnresolvedType;
 							}
 						} else { 
 							varTypeUnresolved = varType = ConvertTypeReference (var.TypeRef);
 						}
-//						System.Console.Write("varType: " + varType);
 						varType = ResolveType (varType);
-//						System.Console.WriteLine(" resolved: " + varType);
 							
 						result = new LocalVariableResolveResult (
 							new LocalVariable (CallingMember, identifier, varType,
