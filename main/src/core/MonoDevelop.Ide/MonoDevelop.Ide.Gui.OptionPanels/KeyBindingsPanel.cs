@@ -128,7 +128,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		public Gtk.Widget CreatePanelWidget ()
 		{
 			SortedDictionary<string, Command> commands = new SortedDictionary<string, Command> ();
-			Dictionary<string, string> translatedCats = new Dictionary<string, string> ();
+			string translatedOther = GettextCatalog.GetString ("Other");
 			
 			foreach (object c in IdeApp.CommandService.GetCommands ()) {
 				ActionCommand cmd = c as ActionCommand;
@@ -148,16 +148,13 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				} else {
 					commands.Add (key, cmd);
 				}
-				
-				if (!translatedCats.ContainsKey (cmd.Category)) {
-					string name = cmd.Category.Length == 0 ? GettextCatalog.GetString ("Other") : GettextCatalog.GetString (cmd.Category);
-					translatedCats[cmd.Category] = name;
-				}
 			}
 			
 			List<Command> sortedCommands = new List<Command> (commands.Values);
 			sortedCommands.Sort (delegate (Command c1, Command c2) {
-				int catCompare = translatedCats[c1.Category].CompareTo (translatedCats[c2.Category]);
+				string cat1 = c1.Category.Length == 0? translatedOther : c1.Category;
+				string cat2 = c2.Category.Length == 0? translatedOther : c2.Category;
+				int catCompare = cat1.CompareTo (cat2);
 				if (catCompare != 0)
 					return catCompare;
 				string t1 = c1.Text.Replace ("_", String.Empty);
@@ -170,7 +167,8 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			foreach (Command cmd in sortedCommands) {
 				if (currentCat != cmd.Category) {
 					currentCat = cmd.Category;
-					icat = keyStore.AppendValues (null, translatedCats[currentCat], String.Empty, String.Empty, (int) Pango.Weight.Bold, null, false);
+					string name = currentCat.Length == 0? translatedOther : currentCat;
+					icat = keyStore.AppendValues (null, name, String.Empty, String.Empty, (int) Pango.Weight.Bold, null, false);
 				}
 				string label = cmd.Text.Replace ("_", String.Empty);
 				keyStore.AppendValues (icat, cmd, label, cmd.AccelKey != null ? cmd.AccelKey : String.Empty, cmd.Description, (int) Pango.Weight.Normal, cmd.Icon, true);

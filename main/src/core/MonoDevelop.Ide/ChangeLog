@@ -1,6 +1,12 @@
 2009-02-23  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:
+	  Partial reversion of last patch. Don't double-translate, but
+	  still include "other" in the sort.
+
+2009-02-23  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:
 	  Translate categories. Sort on translated category names.
 
 2009-02-23  Lluis Sanchez Gual  <lluis@novell.com>
