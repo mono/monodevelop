@@ -73,20 +73,25 @@
 		<Command id = "MonoDevelop.Debugger.DebugCommands.Pause"
 				defaultHandler = "MonoDevelop.Debugger.PauseDebugHandler"
 				shortcut = "Control|Break"
-				_label = "Pause"/>
+				_label = "Pause"
+				_description = "Break Execution"
+				icon="gtk-media-pause"/>
 		<Command id = "MonoDevelop.Debugger.DebugCommands.StepOver"
 				defaultHandler = "MonoDevelop.Debugger.StepOverHandler"
 				_label = "Step Over"
+				_description = "Step Over"
 				shortcut = "F10" 
 				icon="md-step-over-debug"/>
 		<Command id = "MonoDevelop.Debugger.DebugCommands.StepInto"
 				defaultHandler = "MonoDevelop.Debugger.StepIntoHandler"
 				_label = "Step Into"
+				_description = "Step Into"
 				shortcut = "F11" 
 				icon="md-step-into-debug" />
 		<Command id = "MonoDevelop.Debugger.DebugCommands.StepOut"
 				defaultHandler = "MonoDevelop.Debugger.StepOutHandler"
 				_label = "Step Out"
+				_description = "Step Out"
 				shortcut = "Shift|F11" 
 				icon="md-step-out-debug"/>
 		<Command id = "MonoDevelop.Debugger.DebugCommands.NewBreakpoint"
@@ -176,10 +181,23 @@
 		<StockIcon stockid = "md-execute-debug" icon = "gtk-execute|res:debug-overlay-22.png" size = "SmallToolbar"/>
 		<StockIcon stockid = "md-execute-debug" icon = "gtk-execute|res:debug-overlay-32.png" size = "LargeToolbar"/>
 		<StockIcon stockid = "md-step-into-debug" resource = "step-into-16.png" size = "Menu"/>
-		<StockIcon stockid = "md-step-into-debug" resource = "step-into-22.png" size = "Button"/>
+		<StockIcon stockid = "md-step-into-debug" resource = "step-into-22.png" size="Button"/>
+		<StockIcon stockid = "md-step-into-debug" resource = "step-into-24.png" />
 		<StockIcon stockid = "md-step-out-debug" resource = "step-out-16.png" size = "Menu"/>
-		<StockIcon stockid = "md-step-out-debug" resource = "step-out-22.png" size = "Button"/>
+		<StockIcon stockid = "md-step-out-debug" resource = "step-out-22.png" size="Button"/>
+		<StockIcon stockid = "md-step-out-debug" resource = "step-out-24.png" />
 		<StockIcon stockid = "md-step-over-debug" resource = "step-over-16.png" size = "Menu"/>
-		<StockIcon stockid = "md-step-over-debug" resource = "step-over-22.png" size = "Button"/>
+		<StockIcon stockid = "md-step-over-debug" resource = "step-over-22.png" size="Button" />
+		<StockIcon stockid = "md-step-over-debug" resource = "step-over-24.png" />
 	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/Toolbar">
+		<ItemSet id = "Debugger" _label = "Debugger">
+			<CommandItem id = "MonoDevelop.Debugger.DebugCommands.StepOver" />
+			<CommandItem id = "MonoDevelop.Debugger.DebugCommands.StepInto" />
+			<CommandItem id = "MonoDevelop.Debugger.DebugCommands.StepOut" />	
+			<CommandItem id = "MonoDevelop.Debugger.DebugCommands.Pause" />						
+		</ItemSet>
+	</Extension>
+	
 </Addin>

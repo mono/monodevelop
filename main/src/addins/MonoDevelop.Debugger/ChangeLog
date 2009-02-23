@@ -1,3 +1,13 @@
+2009-02-23  Scott Ellington  <scott.ellington@gmail.com>
+
+	* Makefile.am:
+	* icons/step-out-24.png:
+	* icons/step-into-24.png:
+	* icons/step-over-24.png:
+	* MonoDevelop.Debugger.csproj:
+	* MonoDevelop.Debugger.addin.xml: add 24 px icons and debug
+	  toolbar
+
 2009-02-23  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Debugger.addin.xml: Track merge of the project

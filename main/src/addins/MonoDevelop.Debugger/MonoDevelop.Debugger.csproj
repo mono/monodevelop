@@ -149,6 +149,15 @@
     <EmbeddedResource Include="icons\step-over-22.png">
       <LogicalName>step-over-22.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\step-into-24.png">
+      <LogicalName>step-into-24.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\step-out-24.png">
+      <LogicalName>step-out-24.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\step-over-24.png">
+      <LogicalName>step-over-24.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
