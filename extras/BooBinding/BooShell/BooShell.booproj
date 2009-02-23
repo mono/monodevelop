@@ -35,8 +35,12 @@
     </Execution>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MonoDevelop.Core, Version=1.9.2.0, Culture=neutral" />
-    <Reference Include="MonoDevelop.Core.Gui, Version=1.9.2.0, Culture=neutral" />
+    <Reference Include="MonoDevelop.Core, Version=1.9.2.0, Culture=neutral">
+      <Package>monodevelop</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.Core.Gui, Version=1.9.2.0, Culture=neutral">
+      <Package>monodevelop</Package>
+    </Reference>
     <Reference Include="glib-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
   </ItemGroup>

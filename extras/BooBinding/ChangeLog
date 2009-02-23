@@ -1,3 +1,7 @@
+2009-02-23  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* BooBinding.booproj: Updated references.
+
 2009-02-18  Cedric Vivier  <cedricv@neonux.com>
 
 	* BooBindingCompilerServices.boo: Fix build with boo >= 0.8.2.
