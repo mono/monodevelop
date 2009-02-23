@@ -1,6 +1,11 @@
 2009-02-23  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharpBinding/CodeCompletionAccessibleTests.cs:
+	  Added test for inner inner type access.
+
+2009-02-23  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharpBinding/CodeCompletionAccessibleTests.cs:
 	  Added test for AttributeArguments expression context.
 
 2009-02-13  Michael Hutchinson  <mhutchinson@novell.com>

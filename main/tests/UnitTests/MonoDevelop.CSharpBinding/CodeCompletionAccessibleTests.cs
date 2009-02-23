@@ -522,6 +522,29 @@ public class Program
 			Assert.IsNotNull (provider.Find ("MyIntProperty"), "property 'MyIntProperty' not found");
 			Assert.IsNotNull (provider.Find ("MyStringProperty"), "property 'MyStringProperty' not found");
 		}
+		
+		[Test()]
+		public void TestInnerClassEnumAccess ()
+		{
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
+@"
+public class TestInnerEnum
+{
+	enum InnerEnum { A, B, C }
+
+	public class InnerClass
+	{
+		void TestMethod (InnerEnum e)
+		{
+			$e = InnerEnum.$
+		}
+	}
+}");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("A"), "field 'A' not found");
+			Assert.IsNotNull (provider.Find ("B"), "field 'B' not found");
+			Assert.IsNotNull (provider.Find ("C"), "field 'C' not found");
+		}
 	}
 }
 		
