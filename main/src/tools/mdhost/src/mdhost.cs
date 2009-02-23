@@ -45,8 +45,29 @@ public class MonoDevelopProcessHost
 {
 	public static int Main (string[] args)
 	{
+		string tmpFile = null;
+		TextReader input = null;
 		try {
-			string channel = Console.In.ReadLine ();
+			// The first parameter is the task id
+			// The second parameter is the temp file that contains the data
+			// If not provided, data is read from the standard input
+			
+			if (args.Length > 1) {
+				tmpFile = args [1];
+				input = new StreamReader (tmpFile);
+			} else
+				input = Console.In;
+			
+			string channel = input.ReadLine ();
+			string sref = input.ReadLine ();
+			
+			if (tmpFile != null) {
+				try {
+					input.Close ();
+					File.Delete (tmpFile);
+				} catch {
+				}
+			}
 			
 			string unixPath = null;
 			if (channel == "unix") {
@@ -67,7 +88,6 @@ public class MonoDevelopProcessHost
 				ChannelServices.RegisterChannel (new TcpChannel (props, clientProvider, serverProvider), false);
 			}
 			
-			string sref = Console.In.ReadLine ();
 			byte[] data = Convert.FromBase64String (sref);
 			MemoryStream ms = new MemoryStream (data);
 			BinaryFormatter bf = new BinaryFormatter ();

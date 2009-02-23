@@ -1,3 +1,8 @@
+2009-02-23  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* src/mdhost.cs: Read the configuration data from the config
+	  file if one is provided.
+
 2009-02-08  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* mdhost.csproj: Build mdhost and mdrun as 32-bit too on
