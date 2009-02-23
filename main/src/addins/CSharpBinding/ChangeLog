@@ -1,3 +1,11 @@
+2009-02-23  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/NRefactoryResolver.cs:
+	* Gui/NewCSharpExpressionFinder.cs:
+	* Gui/CSharpTextEditorCompletion.cs: Handled
+	  AttributeArguments context. Fixing bug 'Bug 478490 -
+	  Autocomplete Attribute Properties'.
+
 2009-02-21  Mike Krüger  <mkrueger@novell.com>
 
 	* Gui/CSharpTextEditorIndentation.cs: fixed "Bug 472104 -

@@ -1273,6 +1273,20 @@ namespace MonoDevelop.CSharpBinding.Gui
 			} else if (expressionResult.ExpressionContext == ExpressionContext.Global) {
 				AddNRefactoryKeywords (result, ICSharpCode.NRefactory.Parser.CSharp.Tokens.GlobalLevel);
 				CodeTemplateService.AddCompletionDataForExtension (".cs", result);
+			} else if (expressionResult.ExpressionContext == ExpressionContext.AttributeArguments) {				result.Add ("global", "md-literal");
+				AddPrimitiveTypes (result);
+				CompletionDataCollector col = resolver.AddAccessibleCodeCompletionData (expressionResult.ExpressionContext, result);
+				string attributeName = NewCSharpExpressionFinder.FindAttributeName (Editor, Document.CompilationUnit, Document.FileName);
+				if (attributeName != null) {
+					IType type = dom.SearchType (new SearchTypeRequest (resolver.Unit, new DomReturnType (attributeName + "Attribute"), resolver.CallingType));
+					if (type == null) 
+						type = dom.SearchType (new SearchTypeRequest (resolver.Unit, new DomReturnType (attributeName), resolver.CallingType));
+					if (type != null) {
+						foreach (IProperty property in type.Properties) {
+							col.AddCompletionData (result, property);
+						}
+					}
+				}
 			} else {
 				result.Add ("global", "md-literal");
 				AddPrimitiveTypes (result);

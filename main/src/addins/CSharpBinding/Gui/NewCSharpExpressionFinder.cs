@@ -44,7 +44,31 @@ namespace MonoDevelop.CSharpBinding.Gui
 			this.projectContent = projectContent;
 		}
 		
-		public ExpressionContext FindExactContextForNewCompletion(TextEditor editor, ICompilationUnit unit, string fileName, IType callingType)
+		public static string FindAttributeName (TextEditor editor, ICompilationUnit unit, string fileName)
+		{
+			string documentToCursor = editor.GetText (0, editor.CursorPosition);
+			int pos = -1;
+			for (int i = documentToCursor.Length - 1; i >= 0; i--) {
+				if (documentToCursor [i] == '[') {
+					pos = i;
+					break;
+				}
+			}
+			if (pos <= 0)
+				return null;
+			pos++;
+			StringBuilder result = new StringBuilder ();
+			while (pos < documentToCursor.Length) {
+				char ch = documentToCursor[pos];
+				if (!(Char.IsLetterOrDigit (ch) || ch == '_')) 
+					break;
+				result.Append (ch);
+				pos++;
+			}
+			return result.ToString ();
+		}
+		
+		public ExpressionContext FindExactContextForNewCompletion (TextEditor editor, ICompilationUnit unit, string fileName, IType callingType)
 		{
 			// find expression on left hand side of the assignment
 			string documentToCursor = editor.GetText (0, editor.CursorPosition);
@@ -430,6 +454,9 @@ namespace MonoDevelop.CSharpBinding.Gui
 							} else {
 								SetContext(ExpressionContext.ObjectInitializer);
 							}
+							break;
+						case FrameType.AttributeArguments:
+							SetContext(ExpressionContext.AttributeArguments);
 							break;
 						case FrameType.AttributeSection:
 							SetContext(ExpressionContext.Attribute);

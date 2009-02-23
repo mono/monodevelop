@@ -224,7 +224,7 @@ namespace MonoDevelop.CSharpBinding
 			}
 		}
 		static readonly IReturnType attributeType = new DomReturnType ("System.Attribute");
-		public void AddAccessibleCodeCompletionData (ExpressionContext context, CompletionDataList completionList)
+		public MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector AddAccessibleCodeCompletionData (ExpressionContext context, CompletionDataList completionList)
 		{
 			MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col = new MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector (unit, new DomLocation (editor.CursorLine - 1, editor.CursorColumn - 1));
 			if (context != ExpressionContext.Global) {
@@ -303,6 +303,7 @@ namespace MonoDevelop.CSharpBinding
 				}
 				CodeTemplateService.AddCompletionDataForExtension (".cs", completionList);
 			}
+			return col;
 		}
 		
 		Expression ParseExpression (ExpressionResult expressionResult)
@@ -360,6 +361,22 @@ namespace MonoDevelop.CSharpBinding
 			ResolveVisitor visitor = new ResolveVisitor (this);
 			ResolveResult result;
 		//	System.Console.WriteLine("expressionResult:" + expressionResult);
+			
+			if (expressionResult.ExpressionContext == ExpressionContext.AttributeArguments) {
+				string attributeName = MonoDevelop.CSharpBinding.Gui.NewCSharpExpressionFinder.FindAttributeName (editor, unit, unit.FileName);
+				if (attributeName != null) {
+					IType type = dom.SearchType (new SearchTypeRequest (unit, new DomReturnType (attributeName + "Attribute"), CallingType));
+					if (type == null) 
+						type = dom.SearchType (new SearchTypeRequest (unit, new DomReturnType (attributeName), CallingType));
+					if (type != null) {
+						foreach (IProperty property in type.Properties) {
+							if (property.Name == expressionResult.Expression) {
+								return new MemberResolveResult (property);
+							}
+						}
+					}
+				}
+			}
 			
 			if (expressionResult != null && expressionResult.ExpressionContext != null && expressionResult.ExpressionContext.IsObjectCreation) {
 				TypeReference typeRef = ParseTypeReference (expressionResult);
