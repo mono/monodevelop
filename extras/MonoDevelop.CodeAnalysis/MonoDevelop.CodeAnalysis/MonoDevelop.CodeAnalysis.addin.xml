@@ -18,20 +18,14 @@
 	</Dependencies>
 
 	<Extension path="/MonoDevelop/Ide/Commands">
-		<Command id="MonoDevelop.CodeAnalysis.CodeAnalysisCommands.AnalyzeProject" _label="Analyze Project"
-			defaultHandler="MonoDevelop.CodeAnalysis.AnalyzeHandler"/>
-
-		<Command id="MonoDevelop.CodeAnalysis.CodeAnalysisCommands.AnalyzeSolution" _label="Analyze Solution"
+		<Command id="MonoDevelop.CodeAnalysis.CodeAnalysisCommands.Analyze" _label="Analyze"
 			defaultHandler="MonoDevelop.CodeAnalysis.AnalyzeHandler"/>
 	</Extension>
 
-	<Extension path="/MonoDevelop/Ide/ContextMenu/ProjectPad/Project/Tools">
-		<CommandItem id="MonoDevelop.CodeAnalysis.CodeAnalysisCommands.AnalyzeProject" />
-	</Extension>
-
-
-	<Extension path="/MonoDevelop/Ide/ContextMenu/ProjectPad/Solution/Tools">
-		<CommandItem id="MonoDevelop.CodeAnalysis.CodeAnalysisCommands.AnalyzeSolution" />
+	<Extension path="/MonoDevelop/Ide/ContextMenu/ProjectPad/Tools">
+		<Condition id="ItemType" value="Project|Solution">
+			<CommandItem id="MonoDevelop.CodeAnalysis.CodeAnalysisCommands.Analyze" />
+		</Condition>
 	</Extension>
 
 	<Runtime>
