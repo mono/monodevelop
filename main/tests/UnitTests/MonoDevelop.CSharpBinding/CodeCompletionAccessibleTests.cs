@@ -494,6 +494,34 @@ class TestClass : A
 			Assert.IsNull (provider.Find ("TestClass"), "class 'TestClass' found, but shouldn't.");
 		}
 		
+		[Test()]
+		public void TestAttributePropertyAccess ()
+		{
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
+@"
+public class TestAttribute : System.Attribute
+{
+	public int MyIntProperty {
+		get;
+		set;
+	}
+	
+	public string MyStringProperty {
+		get;
+		set;
+	}
+}
+
+[Test($M$)]
+public class Program
+{
+	
+}	
+");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("MyIntProperty"), "property 'MyIntProperty' not found");
+			Assert.IsNotNull (provider.Find ("MyStringProperty"), "property 'MyStringProperty' not found");
+		}
 	}
 }
 		
