@@ -187,7 +187,7 @@ namespace MonoDevelop.CSharpBinding
 			sb.Append (" ");
 			sb.Append (method.Name);
 			sb.Append (" (");
-			OutputFlags flags = OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName;
+			OutputFlags flags = OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName | OutputFlags.IncludeModifiers | OutputFlags.IncludeKeywords;
 			for (int i = 0; i < method.Parameters.Count; i++) {
 				if (i > 0)
 					sb.Append (", ");

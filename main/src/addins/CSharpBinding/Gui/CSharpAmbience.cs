@@ -312,15 +312,12 @@ namespace MonoDevelop.CSharpBinding
 				if (settings.IncludeModifiers) {
 					if (parameter.IsOut) {
 						result.Append (settings.EmitKeyword ("out"));
-						result.Append (settings.Markup (" "));
 					}
 					if (parameter.IsRef) {
 						result.Append (settings.EmitKeyword ("ref"));
-						result.Append (settings.Markup (" "));
 					}
 					if (parameter.IsParams) {
 						result.Append (settings.EmitKeyword ("params"));
-						result.Append (settings.Markup (" "));
 					}
 				}
 				

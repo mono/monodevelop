@@ -1,5 +1,12 @@
 2009-02-23  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/CSharpAmbience.cs:
+	* Gui/NewOverrideCompletionData.cs: Fixed "Bug 478703 -
+	  Override completion fails to include parameter modifiers in
+	  method generation".
+
+2009-02-23  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/ResolveVisitor.cs:
 	* Gui/NRefactoryResolver.cs: Fixed some type resolving issues.
 
