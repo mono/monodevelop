@@ -1,3 +1,7 @@
+2009-02-23  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MacPlatform.csproj: Remove unwanted local copies.
+
 2009-02-20  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MacPlatform.csproj: Enable makefile integration.

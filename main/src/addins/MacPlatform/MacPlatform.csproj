@@ -52,18 +52,22 @@
     <ProjectReference Include="..\..\core\MonoDevelop.Projects.Gui\MonoDevelop.Projects.Gui.csproj">
       <Project>{00E87426-F1BD-4B55-9B3E-7267EE93E002}</Project>
       <Name>MonoDevelop.Projects.Gui</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\core\MonoDevelop.Projects\MonoDevelop.Projects.csproj">
       <Project>{04BED15A-DDC5-48BC-A36C-3E360A0348C0}</Project>
       <Name>MonoDevelop.Projects</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
       <Project>{27096E7F-C91C-4AC6-B289-6897A701DF21}</Project>
       <Name>MonoDevelop.Ide</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\core\MonoDevelop.Components\MonoDevelop.Components.csproj">
       <Project>{3344D566-484B-4AEC-BBCF-86BC484D14B0}</Project>
       <Name>MonoDevelop.Components</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />
