@@ -45,7 +45,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		}
 		
 		public override string ContextMenuAddinPath {
-			get { return "/MonoDevelop/GtkCore/ContextMenu/ProjectPad/ActionGroup"; }
+			get { return "/MonoDevelop/GtkCore/ContextMenu/ProjectPad.ActionGroup"; }
 		}
 			
 		public override Type NodeDataType {

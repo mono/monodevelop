@@ -1,3 +1,8 @@
+2009-02-23  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.WebReferences.addin.xml: Track merge of the
+	  project pad context menu.
+
 2009-02-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/generated.cs: Flush.

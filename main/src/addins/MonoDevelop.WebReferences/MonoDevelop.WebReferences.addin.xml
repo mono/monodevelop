@@ -57,9 +57,11 @@
 		</Category>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Project/Add">
-		<SeparatorItem insertafter = "MonoDevelop.Ide.Commands.ProjectCommands.AddFiles" />
-		<CommandItem id = "MonoDevelop.WebReferences.WebReferenceCommands.Add"/>
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Add">
+		<Condition id="ItemType" value="DotNetProject">
+			<SeparatorItem insertafter = "MonoDevelop.Ide.Commands.ProjectCommands.AddFiles" />
+			<CommandItem id = "MonoDevelop.WebReferences.WebReferenceCommands.Add"/>
+		</Condition>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/WebReferences/ContextMenu/ProjectPad/WebReferenceFolder">

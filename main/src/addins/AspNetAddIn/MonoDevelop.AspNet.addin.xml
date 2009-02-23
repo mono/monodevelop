@@ -159,8 +159,8 @@
 		</Category>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Project/Add">
-		<Condition id="activeproject" value="AspNetApp">
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Add">
+		<Condition id="ItemType" value="MonoDevelop.AspNet.AspNetAppProject">
 			<ItemSet id = "AspNetDirectories" _label = "ASP.NET Directory" insertafter = "MonoDevelop.Ide.Commands.ProjectCommands.NewFolder" autohide="True">
 				<CommandItem id = "MonoDevelop.AspNet.AspNetCommands.AddAspNetDirectory" />
 			</ItemSet>
@@ -171,8 +171,10 @@
 		<NodeBuilder id="MonoDevelop.AspNet.ProjectFolderNodeBuilderExtension" class = "MonoDevelop.AspNet.ProjectFolderNodeBuilderExtension"/>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Project/Tools">
-		<CommandItem id = "MonoDevelop.AspNet.Deployment.WebDeployCommands.DeployProject" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.ExportProject"/>
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Tools">
+		<Condition id="ItemType" value="MonoDevelop.AspNet.AspNetAppProject">
+			<CommandItem id = "MonoDevelop.AspNet.Deployment.WebDeployCommands.DeployProject" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.ExportProject"/>
+		</Condition>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Project">

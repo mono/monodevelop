@@ -122,96 +122,30 @@
 		<CommandItem id="MonoDevelop.VersionControl.Commands.Checkout" />
 	</Extension>	
 
-	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/ProjectFile">
-		<ItemSet id = "VersionControl" _label = "_Version Control" insertafter = "IncludeSeparator">
-			<CommandItem id = "MonoDevelop.VersionControl.Commands.Add"/>
-			<CommandItem id = "MonoDevelop.VersionControl.Commands.Remove"/>
-			<CommandItem id = "MonoDevelop.VersionControl.Commands.Revert"/>
-			<CommandItem id = "MonoDevelop.VersionControl.Commands.Lock"/>
-			<CommandItem id = "MonoDevelop.VersionControl.Commands.Unlock"/>
-			<SeparatorItem id = "CommandSeparator" />
-			<CommandItem id = "MonoDevelop.VersionControl.Commands.Update"/>
-			<CommandItem id = "MonoDevelop.VersionControl.Commands.Diff"/>
-			<CommandItem id = "MonoDevelop.VersionControl.Commands.Log"/>
-		</ItemSet>
-		<SeparatorItem />
-	</Extension>
-	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/SystemFile">
-		<ItemSet id = "VersionControl" _label = "_Version Control" insertafter = "IncludeToProjectSeparator">
-			<CommandItem id = "MonoDevelop.VersionControl.Commands.Add"/>
-			<CommandItem id = "MonoDevelop.VersionControl.Commands.Remove"/>
-			<CommandItem id = "MonoDevelop.VersionControl.Commands.Revert"/>
-			<CommandItem id = "MonoDevelop.VersionControl.Commands.Lock"/>
-			<CommandItem id = "MonoDevelop.VersionControl.Commands.Unlock"/>
-			<SeparatorItem id = "CommandSeparator" />
-			<CommandItem id = "MonoDevelop.VersionControl.Commands.Update"/>
-			<CommandItem id = "MonoDevelop.VersionControl.Commands.Diff"/>
-			<CommandItem id = "MonoDevelop.VersionControl.Commands.Log"/>
-		</ItemSet>
-		<SeparatorItem />
-	</Extension>
-	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Folder">
-		<ItemSet id = "VersionControl" _label = "_Version Control" insertafter = "AddSeparator">
-			<CommandItem id = "MonoDevelop.VersionControl.Commands.Add"/>
-			<CommandItem id = "MonoDevelop.VersionControl.Commands.Remove"/>
-			<CommandItem id = "MonoDevelop.VersionControl.Commands.Revert"/>
-			<SeparatorItem id = "CommandSeparator" />
-			<CommandItem id = "MonoDevelop.VersionControl.Commands.Update"/>
-			<CommandItem id = "MonoDevelop.VersionControl.Commands.Status"/>
-			<CommandItem id = "MonoDevelop.VersionControl.Commands.Commit"/>
-			<CommandItem id = "MonoDevelop.VersionControl.Commands.Log"/>
-		</ItemSet>
-		<SeparatorItem />
-	</Extension>
-	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Project">
-		<ItemSet id = "VersionControl" _label = "_Version Control" insertafter = "AddSeparator">
-			<CommandItem id = "MonoDevelop.VersionControl.Commands.Publish"/>
-			<SeparatorItem id = "CommandSeparator1" />
-			<CommandItem id = "MonoDevelop.VersionControl.Commands.Revert"/>
-			<SeparatorItem id = "CommandSeparator2" />
-			<CommandItem id = "MonoDevelop.VersionControl.Commands.Update"/>
-			<CommandItem id = "MonoDevelop.VersionControl.Commands.Status"/>
-			<CommandItem id = "MonoDevelop.VersionControl.Commands.Commit"/>
-			<CommandItem id = "MonoDevelop.VersionControl.Commands.Log"/>
-		</ItemSet>
-		<SeparatorItem />
-	</Extension>
-	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Solution">
-		<ItemSet id = "VersionControl" _label = "_Version Control" insertafter = "AddSeparator">
-			<CommandItem id = "MonoDevelop.VersionControl.Commands.Publish"/>
-			<SeparatorItem id = "CommandSeparator1" />
-			<CommandItem id = "MonoDevelop.VersionControl.Commands.Revert"/>
-			<SeparatorItem id = "CommandSeparator2" />
-			<CommandItem id = "MonoDevelop.VersionControl.Commands.Update"/>
-			<CommandItem id = "MonoDevelop.VersionControl.Commands.Status"/>
-			<CommandItem id = "MonoDevelop.VersionControl.Commands.Commit"/>
-			<CommandItem id = "MonoDevelop.VersionControl.Commands.Log"/>
-		</ItemSet>
-		<SeparatorItem />
-	</Extension>
-	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Workspace">
-		<ItemSet id = "VersionControl" _label = "_Version Control" insertafter = "AddSeparator">
-			<CommandItem id = "MonoDevelop.VersionControl.Commands.Publish"/>
-			<SeparatorItem id = "CommandSeparator1" />
-			<CommandItem id = "MonoDevelop.VersionControl.Commands.Revert"/>
-			<SeparatorItem id = "CommandSeparator2" />
-			<CommandItem id = "MonoDevelop.VersionControl.Commands.Update"/>
-			<CommandItem id = "MonoDevelop.VersionControl.Commands.Status"/>
-			<CommandItem id = "MonoDevelop.VersionControl.Commands.Commit"/>
-			<CommandItem id = "MonoDevelop.VersionControl.Commands.Log"/>
-		</ItemSet>
-		<SeparatorItem />
-	</Extension>
-	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/SolutionFolder">
-		<ItemSet id = "VersionControl" _label = "_Version Control" insertafter = "AddSeparator">
-			<CommandItem id = "MonoDevelop.VersionControl.Commands.Revert"/>
-			<SeparatorItem id = "CommandSeparator2" />
-			<CommandItem id = "MonoDevelop.VersionControl.Commands.Update"/>
-			<CommandItem id = "MonoDevelop.VersionControl.Commands.Status"/>
-			<CommandItem id = "MonoDevelop.VersionControl.Commands.Commit"/>
-			<CommandItem id = "MonoDevelop.VersionControl.Commands.Log"/>
-		</ItemSet>
-		<SeparatorItem />
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad">
+		<Condition id="ItemType" value="IFileItem|IFolderItem">
+			<ItemSet id = "VersionControl" _label = "_Version Control" insertafter = "Tools">
+				<Condition id="ItemType" value="Project|WorkspaceItem">
+					<CommandItem id = "MonoDevelop.VersionControl.Commands.Publish"/>
+				</Condition>
+				<CommandItem id = "MonoDevelop.VersionControl.Commands.Add"/>
+				<CommandItem id = "MonoDevelop.VersionControl.Commands.Remove"/>
+				<CommandItem id = "MonoDevelop.VersionControl.Commands.Revert"/>
+				<Condition id="ItemType" value="IFileItem">
+					<CommandItem id = "MonoDevelop.VersionControl.Commands.Lock"/>
+					<CommandItem id = "MonoDevelop.VersionControl.Commands.Unlock"/>
+				</Condition>
+				<SeparatorItem id = "CommandSeparator" />
+				<CommandItem id = "MonoDevelop.VersionControl.Commands.Update"/>
+				<Condition id="ItemType" value="IFolderItem">
+					<CommandItem id = "MonoDevelop.VersionControl.Commands.Status"/>
+					<CommandItem id = "MonoDevelop.VersionControl.Commands.Commit"/>
+				</Condition>
+				<CommandItem id = "MonoDevelop.VersionControl.Commands.Diff"/>
+				<CommandItem id = "MonoDevelop.VersionControl.Commands.Log"/>
+			</ItemSet>
+			<SeparatorItem />
+		</Condition>
 	</Extension>
 	<Extension path = "/MonoDevelop/VersionControl/StatusViewCommands">
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.Open" type="MonoDevelop.VersionControl.OpenCommandHandler"/>

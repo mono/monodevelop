@@ -35,7 +35,7 @@ using MonoDevelop.Core.Serialization;
 
 namespace MonoDevelop.Gettext
 {
-	public class Translation
+	public class Translation: IFileItem
 	{
 		TranslationProject parentProject;
 		

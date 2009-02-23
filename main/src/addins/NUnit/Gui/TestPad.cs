@@ -76,11 +76,11 @@ namespace MonoDevelop.NUnit
 		VBox detailsPad;
 		
 		ArrayList testNavigationHistory = new ArrayList ();
-		
+
 		ToolButton buttonRunAll, buttonRun, buttonStop;
-		public override void Initialize (NodeBuilder[] builders, TreePadOption[] options)
+		public override void Initialize (NodeBuilder[] builders, TreePadOption[] options, string menuPath)
 		{
-			base.Initialize (builders, options);
+			base.Initialize (builders, options, menuPath);
 			
 			testChangedHandler = (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnDetailsTestChanged));
 			testService.TestSuiteChanged += (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnTestSuiteChanged));

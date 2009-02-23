@@ -64,11 +64,6 @@
 		         _description = "Include this file in the translations scan." />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/ProjectFile/QuickProperties">
-		<CommandItem id = "MonoDevelop.Gettext.Commands.ScanForTranslations"
-		             insertafter = "MonoDevelop.Autotools.Commands.SynchWithMakefile" />
-	</Extension>
-	
 	<Extension path = "/MonoDevelop/Core/StockIcons">
 		<StockIcon stockid = "md-gettext-locale" resource = "locale_22x22.png" />
 		<StockIcon stockid = "md-gettext-locale" resource = "locale_16x16.png" size = "Menu" />
@@ -106,25 +101,22 @@
 		<DataType class = "MonoDevelop.Gettext.TranslationProjectConfiguration" />
 	</Extension>
 
-	<Extension path = "/MonoDevelop/Deployment/ProjectBrowser/ContextMenu/TranslationProject">
-		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Build" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Rebuild" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Clean" />
-		<SeparatorItem />
-		<CommandItem id = "MonoDevelop.Gettext.Commands.AddTranslation" />
-		<CommandItem id = "MonoDevelop.Gettext.Commands.UpdateTranslations" />
-		<SeparatorItem />
-		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Options" />
-		<SeparatorItem />
-		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad">
+		<Condition id="ItemType" value="MonoDevelop.Gettext.Translation">
+			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.Open" insertafter="ActionsSectionEnd" />
+			<CommandItem id = "MonoDevelop.Gettext.Commands.UpdateTranslation" />
+		</Condition>
+		<Condition id="ItemType" value="MonoDevelop.Gettext.TranslationProject">
+			<CommandItem id = "MonoDevelop.Gettext.Commands.UpdateTranslations" />
+			<CommandItem id = "MonoDevelop.Gettext.Commands.AddTranslation"/>
+		</Condition>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Deployment/ProjectBrowser/ContextMenu/Translation">
-		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.Open" />
-		<SeparatorItem />
-		<CommandItem id = "MonoDevelop.Gettext.Commands.UpdateTranslation" />
-		<SeparatorItem />
-		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/QuickProperties">
+		<Condition id="ItemType" value="ProjectFile">
+			<CommandItem id = "MonoDevelop.Gettext.Commands.ScanForTranslations"
+		             insertafter = "MonoDevelop.Autotools.Commands.SynchWithMakefile" />
+		</Condition>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">

@@ -44,7 +44,7 @@
 		<CommandItem id = "MonoDeveloper.Commands.Install" insertafter="MonoDevelop.Commands.ProjectCommands.Run"/>
 	</Extension>
 
-	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Project">
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad">
 		<Condition id="activeproject" value="MonoMakefile">
 			<CommandItem id = "MonoDeveloper.Commands.Install"
 					  insertafter = "BuildGroupSeparator"

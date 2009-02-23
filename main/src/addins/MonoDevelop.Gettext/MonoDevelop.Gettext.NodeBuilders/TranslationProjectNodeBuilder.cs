@@ -43,10 +43,6 @@ namespace MonoDevelop.Gettext.NodeBuilders
 {
 	public class TranslationProjectNodeBuilder : TypeNodeBuilder
 	{
-		public override string ContextMenuAddinPath {
-			get { return "/MonoDevelop/Deployment/ProjectBrowser/ContextMenu/TranslationProject"; }
-		}
-		
 		public override Type CommandHandlerType {
 			get { return typeof(TranslationProjectNodeCommandHandler); }
 		}

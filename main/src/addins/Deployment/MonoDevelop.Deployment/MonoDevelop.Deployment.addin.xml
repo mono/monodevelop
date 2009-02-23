@@ -83,14 +83,11 @@
 
 	<!-- Extensions -->
 
-	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Solution/Tools">
-		<CommandItem id = "MonoDevelop.Deployment.Commands.CreatePackage" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.ExportProject"/>
-		<CommandItem id = "MonoDevelop.Deployment.Commands.Install" insertafter="ExportSeparator"/>
-	</Extension>	
-
-	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Project/Tools">
-		<CommandItem id = "MonoDevelop.Deployment.Commands.CreatePackage" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.ExportProject"/>
-		<CommandItem id = "MonoDevelop.Deployment.Commands.Install" insertafter="ExportSeparator"/>
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Tools">
+		<Condition id="ItemType" value="Solution|Project">
+			<CommandItem id = "MonoDevelop.Deployment.Commands.CreatePackage" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.ExportProject"/>
+			<CommandItem id = "MonoDevelop.Deployment.Commands.Install" insertafter="ExportSeparator"/>
+		</Condition>
 	</Extension>	
 
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Project">

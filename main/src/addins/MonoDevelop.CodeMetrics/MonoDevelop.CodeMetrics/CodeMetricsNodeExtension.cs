@@ -50,7 +50,8 @@ namespace MonoDevelop.CodeMetrics
 		{
 			return typeof(ProjectFile).IsAssignableFrom (dataType)
 				|| typeof(ProjectFolder).IsAssignableFrom (dataType)
-				|| typeof(SolutionItem).IsAssignableFrom (dataType)
+				|| typeof(Project).IsAssignableFrom (dataType)
+				|| typeof(SolutionFolder).IsAssignableFrom (dataType)
 				|| typeof(Solution).IsAssignableFrom (dataType);
 		}
 		

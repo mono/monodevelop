@@ -57,20 +57,20 @@
 		</Category>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Solution/Tools">
-		<CommandItem id = "MonoDevelop.Autotools.Commands.GenerateFiles" insertafter="ExportListSeparator"/>
-	</Extension>
-
-	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Project/Tools">
-		<CommandItem id = "MonoDevelop.Autotools.Commands.GenerateFiles" insertafter="ExportListSeparator"/>
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Tools">
+		<Condition id="ItemType" value="Solution|Project">
+			<CommandItem id = "MonoDevelop.Autotools.Commands.GenerateFiles" insertafter="ExportListSeparator"/>
+		</Condition>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Project">
 		<CommandItem id = "MonoDevelop.Autotools.Commands.GenerateFiles" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.ExportProject"/>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/ProjectFile/QuickProperties">
-		<CommandItem id = "MonoDevelop.Autotools.Commands.SynchWithMakefile" />
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/QuickProperties">
+		<Condition id="ItemType" value="ProjectFile">
+			<CommandItem id = "MonoDevelop.Autotools.Commands.SynchWithMakefile" />
+		</Condition>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">

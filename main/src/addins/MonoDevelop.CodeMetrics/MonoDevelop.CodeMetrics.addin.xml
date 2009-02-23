@@ -33,23 +33,9 @@
 		<NodeBuilder id = "CodeMetricsNodeExtension" class = "MonoDevelop.CodeMetrics.CodeMetricsNodeExtension"/>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/ProjectFile">
-		<CommandItem id = "MonoDevelop.CodeMetrics.Commands.ShowMetrics" insertafter="OpenSeparator" insertbefore="CutSeparator"/>
-	</Extension>
-	
-	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/SystemFile">
-		<CommandItem id = "MonoDevelop.CodeMetrics.Commands.ShowMetrics" insertafter="OpenSeparator" insertbefore="CutSeparator"/>
-	</Extension>
-	
-	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Folder">
-		<CommandItem id = "MonoDevelop.CodeMetrics.Commands.ShowMetrics" insertafter="OpenSeparator" insertbefore="CutSeparator"/>
-	</Extension>
-	
-	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Project/Tools">
-		<CommandItem id = "MonoDevelop.CodeMetrics.Commands.ShowMetrics" insertafter="FindInFilesSeparator" insertbefore="CombineOptionsSeparator"/>
-	</Extension>
-	
-	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Solution/Tools">
-		<CommandItem id = "MonoDevelop.CodeMetrics.Commands.ShowMetrics" insertafter="FindInFilesSeparator" insertbefore="CombineOptionsSeparator"/>
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Tools">
+		<Condition id="ItemType" value="Solution|SolutionFolder|Project|ProjectFile|MonoDevelop.Ide.Gui.Pads.ProjectPad.ProjectFolder">
+			<CommandItem id = "MonoDevelop.CodeMetrics.Commands.ShowMetrics" insertafter="FindInFilesSeparator" insertbefore="CombineOptionsSeparator"/>
+		</Condition>
 	</Extension>
 </Addin>

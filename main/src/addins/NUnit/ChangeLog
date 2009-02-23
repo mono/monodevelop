@@ -1,3 +1,7 @@
+2009-02-23  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Gui/TestPad.cs: Track merge of the project pad context menu.
+
 2009-02-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Services/NUnitAssemblyTestSuite.cs: Modify the test

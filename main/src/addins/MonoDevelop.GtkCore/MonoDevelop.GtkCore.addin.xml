@@ -26,19 +26,19 @@
 		<Addin id="Components" version="1.9.2"/>
 	</Dependencies>
 	
-	<ExtensionPoint path = "/MonoDevelop/GtkCore/ContextMenu/ProjectPad/ActionGroup">
+	<ExtensionPoint path = "/MonoDevelop/GtkCore/ContextMenu/ProjectPad.ActionGroup">
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/MonoDevelop/GtkCore/ContextMenu/ProjectPad/UserInterfaceFolder">
+	<ExtensionPoint path = "/MonoDevelop/GtkCore/ContextMenu/ProjectPad.UserInterfaceFolder">
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/MonoDevelop/GtkCore/ContextMenu/ProjectPad/Component">
+	<ExtensionPoint path = "/MonoDevelop/GtkCore/ContextMenu/ProjectPad.Component">
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/MonoDevelop/GtkCore/ContextMenu/ProjectPad/StockIcons">
+	<ExtensionPoint path = "/MonoDevelop/GtkCore/ContextMenu/ProjectPad.StockIcons">
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
 
@@ -99,23 +99,17 @@
 		</Category>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Project/Add">
-		<SeparatorItem insertafter = "MonoDevelop.Ide.Commands.ProjectCommands.AddFiles" />
-		<CommandItem id = "MonoDevelop.GtkCore.GtkCommands.AddNewDialog" />
-		<CommandItem id = "MonoDevelop.GtkCore.GtkCommands.AddNewWindow" />
-		<CommandItem id = "MonoDevelop.GtkCore.GtkCommands.AddNewWidget" />
-		<CommandItem id = "MonoDevelop.GtkCore.GtkCommands.AddNewActionGroup" />
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Add">
+		<Condition id="ItemType" value="Project|ProjectFolder">
+			<SeparatorItem insertafter = "MonoDevelop.Ide.Commands.ProjectCommands.AddFiles" />
+			<CommandItem id = "MonoDevelop.GtkCore.GtkCommands.AddNewDialog" />
+			<CommandItem id = "MonoDevelop.GtkCore.GtkCommands.AddNewWindow" />
+			<CommandItem id = "MonoDevelop.GtkCore.GtkCommands.AddNewWidget" />
+			<CommandItem id = "MonoDevelop.GtkCore.GtkCommands.AddNewActionGroup" />
+		</Condition>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Folder/Add">
-		<SeparatorItem insertafter = "MonoDevelop.Ide.Commands.ProjectCommands.AddFiles" />
-		<CommandItem id = "MonoDevelop.GtkCore.GtkCommands.AddNewDialog" />
-		<CommandItem id = "MonoDevelop.GtkCore.GtkCommands.AddNewWindow" />
-		<CommandItem id = "MonoDevelop.GtkCore.GtkCommands.AddNewWidget" />
-		<CommandItem id = "MonoDevelop.GtkCore.GtkCommands.AddNewActionGroup" />
-	</Extension>
-	
-	<Extension path = "/MonoDevelop/GtkCore/ContextMenu/ProjectPad/UserInterfaceFolder">
+	<Extension path = "/MonoDevelop/GtkCore/ContextMenu/ProjectPad.UserInterfaceFolder">
 		<CommandItem id = "MonoDevelop.GtkCore.GtkCommands.AddNewDialog" />
 		<CommandItem id = "MonoDevelop.GtkCore.GtkCommands.AddNewWindow" />
 		<CommandItem id = "MonoDevelop.GtkCore.GtkCommands.AddNewWidget" />
@@ -127,17 +121,17 @@
 		<CommandItem id = "MonoDevelop.GtkCore.GtkCommands.GtkSettings" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/GtkCore/ContextMenu/ProjectPad/Component">
+	<Extension path = "/MonoDevelop/GtkCore/ContextMenu/ProjectPad.Component">
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.Open" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/GtkCore/ContextMenu/ProjectPad/ActionGroup">
+	<Extension path = "/MonoDevelop/GtkCore/ContextMenu/ProjectPad.ActionGroup">
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.Open" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/GtkCore/ContextMenu/ProjectPad/StockIcons">
+	<Extension path = "/MonoDevelop/GtkCore/ContextMenu/ProjectPad.StockIcons">
 		<CommandItem id = "MonoDevelop.GtkCore.GtkCommands.EditIcons" />
 	</Extension>
 	
