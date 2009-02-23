@@ -68,6 +68,7 @@ namespace MonoDevelop.SourceEditor
 		bool canShowClassBrowser;
 		bool isInitialParseUpdate = true;
 		ClassQuickFinder classBrowser;
+		ISourceEditorOptions options;
 		
 		bool isDisposed = false;
 		
@@ -182,6 +183,7 @@ namespace MonoDevelop.SourceEditor
 			this.PackStart (mainsw, true, true, 0);
 			this.mainsw.ButtonPressEvent += PrepareEvent;
 			this.textEditor.Errors = errors;
+			options = this.textEditor.Options;
 			
 			this.textEditor.Caret.ModeChanged += delegate {
 				this.UpdateLineCol ();
@@ -265,7 +267,7 @@ namespace MonoDevelop.SourceEditor
 			protected override void InnerRun ()
 			{
 				try {
-					if (this.widget.TextEditor.Options.ShowFoldMargin && widget.parsedDocument != null) {
+					if (this.widget.options.ShowFoldMargin && widget.parsedDocument != null) {
 						List<FoldSegment> foldSegments = new List<FoldSegment> ();
 						
 						foreach (FoldingRegion region in widget.parsedDocument.GenerateFolds ()) {
@@ -283,15 +285,15 @@ namespace MonoDevelop.SourceEditor
 								break;
 							case FoldType.UserRegion:
 								type = FoldingType.Region;
-								setFolded = this.widget.TextEditor.Options.DefaultRegionsFolding;
+								setFolded = this.widget.options.DefaultRegionsFolding;
 								folded = true;
 								break;
 							case FoldType.Comment:
-								setFolded = this.widget.TextEditor.Options.DefaultCommentFolding;
+								setFolded = this.widget.options.DefaultCommentFolding;
 								folded = true;
 								break;
 							case FoldType.CommentInsideMember:
-								setFolded = this.widget.TextEditor.Options.DefaultCommentFolding;
+								setFolded = this.widget.options.DefaultCommentFolding;
 								folded = false;
 								break;
 							case FoldType.Undefined:
@@ -363,7 +365,7 @@ namespace MonoDevelop.SourceEditor
 		
 		void UpdateAutocorTimer ()
 		{
-			if (!this.TextEditor.Options.UnderlineErrors)
+			if (!options.UnderlineErrors)
 				return;
 			// this may be run in another thread, therefore we've to synchronize
 			// with the gtk main loop.

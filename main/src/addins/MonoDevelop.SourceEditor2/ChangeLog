@@ -1,3 +1,9 @@
+2009-02-23  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Don't use
+	  the TextEditor from a non-gui thread since this property
+	  needs to query some gtk# properties.
+
 2009-02-20  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.SourceEditor/DropDownBox.cs:
