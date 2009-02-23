@@ -486,11 +486,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 					int partArgsCount = ProjectDom.ExtractGenericArgCount (ref nextName);
 					ClassEntry ce = nst.GetClass (nextName, partArgsCount, caseSensitive);
 					if (ce == null) return null;
-					foreach (IType type in SourceProjectDom.GetInheritanceTree (GetClass (ce))) {
-						result = SourceProjectDom.FindInnerType (type, path, nextPos, genericArgumentCount, caseSensitive);
-						if (result != null)
-							break;
-					}
+					result = SourceProjectDom.SearchInnerType (GetClass (ce), path, nextPos, genericArgumentCount, caseSensitive);
 				}
 				if (result != null && genericArguments != null && genericArguments.Count > 0)
 					return sourceProjectDom.CreateInstantiatedGenericType (result, genericArguments);

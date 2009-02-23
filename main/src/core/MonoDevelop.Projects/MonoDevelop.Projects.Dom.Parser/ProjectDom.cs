@@ -174,17 +174,13 @@ namespace MonoDevelop.Projects.Dom.Parser
 			c = GetType (name, genericParameters, false, true);
 			if (c != null)
 				return c;
-
 			// Maybe an inner type?
 			if (callingClass != null) {
 				IType t = ResolveType (callingClass);
-				foreach (IType inheritedType in GetInheritanceTree (t)) {
-					c = FindInnerType (inheritedType, name.Split ('.'), 0, genericParameters != null ? genericParameters.Count : 0, true);
-					if (c != null)
-						return c;
-				}
+				c = SearchInnerType (t, name.Split ('.'), 0, genericParameters != null ? genericParameters.Count : 0, true);
+				if (c != null)
+					return c;
 			}
-			
 			// If the name matches an alias, try using the alias first.
 			if (unit != null) {
 				IReturnType ualias = FindAlias (name, unit.Usings);
@@ -429,11 +425,9 @@ namespace MonoDevelop.Projects.Dom.Parser
 				return null;
 			for (int n=1; n<returnType.Parts.Count; n++) {
 				part = returnType.Parts [n];
-				foreach (IType tt in GetInheritanceTree (ptype)) {
-					ptype = FindInnerType (tt, part.Name, part.GenericArguments.Count, true);
-					if (ptype != null)
-						break;
-				}
+				ptype = SearchInnerType (ptype, part.Name, part.GenericArguments.Count, true);
+				if (ptype != null)
+					break;
 				if (ptype == null)
 					return null;
 				if (part.GenericArguments.Count > 0)
@@ -470,21 +464,6 @@ namespace MonoDevelop.Projects.Dom.Parser
 		public abstract IType GetType (string typeName, IList<IReturnType> genericArguments, bool deepSearchReferences, bool caseSensitive);
 		public abstract IType GetType (string typeName, int genericArgumentsCount, bool deepSearchReferences, bool caseSensitive);
 
-		internal IType FindInnerType (IType outerType, string[] names, int firstIndex, int finalTypeArgCount, bool caseSensitive)
-		{
-			int nextPos = firstIndex;
-			int len = names.Length;
-			IType c = outerType;
-			while (nextPos < len) {
-				string name = names[nextPos];
-				int partArgsCount = nextPos == len-1 ? finalTypeArgCount : ExtractGenericArgCount (ref name);
-				IType nextc = FindInnerType (c, name, partArgsCount, caseSensitive);
-				if (nextc == null) return null;
-				c = nextc;
-				nextPos++;
-			}
-			return c;
-		}
 		
 		internal static int ExtractGenericArgCount (ref string name)
 		{
@@ -499,9 +478,58 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return 0;
 		}
 		
-		internal IType FindInnerType (IType outerType, string name, int typeArgCount, bool caseSensitive)
+		internal IType SearchInnerType (IType outerType, string[] names, int firstIndex, int finalTypeArgCount, bool caseSensitive)
 		{
-			foreach (IType innerc in outerType.InnerTypes)  {
+			int nextPos = firstIndex;
+			int len = names.Length;
+			IType c = outerType;
+			while (nextPos < len) {
+				string name = names[nextPos];
+				int partArgsCount = nextPos == len-1 ? finalTypeArgCount : ExtractGenericArgCount (ref name);
+				IType nextc = SearchInnerType (c, name, partArgsCount, caseSensitive);
+				if (nextc == null) 
+					return null;
+				c = nextc;
+				nextPos++;
+			}
+			return c;
+		}
+		
+		internal IType SearchInnerType (IType outerType, string name, int typeArgCount, bool caseSensitive)
+		{
+			foreach (IType inheritedType in GetInheritanceTree (outerType)) {
+				IType c = FindInnerTypeInClass (inheritedType, name, typeArgCount, caseSensitive);
+				if (c != null) {
+					return c;
+				}
+			}
+			if (outerType.DeclaringType != null) {
+				IType c = SearchInnerType (outerType.DeclaringType, name, typeArgCount, caseSensitive);
+				if (c != null) {
+					return c;
+				}
+			}
+			return null;
+		}
+		
+/*		IType FindInnerTypeInClass (IType outerType, string[] names, int firstIndex, int finalTypeArgCount, bool caseSensitive)
+		{
+			int nextPos = firstIndex;
+			int len = names.Length;
+			IType c = outerType;
+			while (nextPos < len) {
+				string name = names[nextPos];
+				int partArgsCount = nextPos == len-1 ? finalTypeArgCount : ExtractGenericArgCount (ref name);
+				IType nextc = FindInnerTypeInClass (c, name, partArgsCount, caseSensitive);
+				if (nextc == null) return null;
+				c = nextc;
+				nextPos++;
+			}
+			return c;
+		}*/
+		IType FindInnerTypeInClass (IType outerType, string name, int typeArgCount, bool caseSensitive)
+		{
+			foreach (IType innerc in outerType.InnerTypes) {
 				if (string.Compare (innerc.Name, name, !caseSensitive) == 0 && innerc.TypeParameters.Count == typeArgCount) {
 					return innerc;
 				}
