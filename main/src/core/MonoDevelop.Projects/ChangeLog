@@ -1,3 +1,19 @@
+2009-02-23  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Extensions/ItemTypeCondition.cs: Moved
+	  ItemTypeCondition from MD.Projects.Gui.
+
+	* Makefile.am:
+	* MonoDevelop.Projects.csproj: Updated.
+
+	* MonoDevelop.Projects/IFileItem.cs:
+	* MonoDevelop.Projects/ProjectFile.cs:
+	* MonoDevelop.Projects/IFolderItem.cs:
+	* MonoDevelop.Projects/IWorkspaceObject.cs: Added new
+	  IFileItem and IFolderItem interfaces, which are used by the
+	  ide (e.g. by the solution pad) to provide generic operations
+	  on files and folders.
+
 2009-02-23  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomMethod.cs:

@@ -323,6 +323,9 @@
     <Compile Include="MonoDevelop.Projects\ProjectItem.cs" />
     <Compile Include="MonoDevelop.Projects\ProjectItemCollection.cs" />
     <Compile Include="MonoDevelop.Projects\SimpleProjectItem.cs" />
+    <Compile Include="MonoDevelop.Projects.Extensions\ItemTypeCondition.cs" />
+    <Compile Include="MonoDevelop.Projects\IFolderItem.cs" />
+    <Compile Include="MonoDevelop.Projects\IFileItem.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

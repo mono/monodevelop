@@ -40,7 +40,7 @@ namespace MonoDevelop.Projects
 	/// <summary>
 	/// This class represent a file information in an IProject object.
 	/// </summary>
-	public class ProjectFile : ProjectItem, ICloneable
+	public class ProjectFile : ProjectItem, ICloneable, IFileItem
 	{
 		string filename;
 		
@@ -123,6 +123,10 @@ namespace MonoDevelop.Projects
 			get {
 				return filename;
 			}
+		}
+		
+		string IFileItem.FileName {
+			get { return FilePath; }
 		}
 		
 		public string RelativePath {

@@ -144,6 +144,7 @@ FILES =  \
 	MonoDevelop.Projects.Extensions/IFileFormat.cs \
 	MonoDevelop.Projects.Extensions/ISolutionItemHandler.cs \
 	MonoDevelop.Projects.Extensions/ItemPropertyCodon.cs \
+	MonoDevelop.Projects.Extensions/ItemTypeCondition.cs \
 	MonoDevelop.Projects.Extensions/ItemTypeNode.cs \
 	MonoDevelop.Projects.Extensions/LanguageBindingCodon.cs \
 	MonoDevelop.Projects.Extensions/PolicyNode.cs \
@@ -228,6 +229,8 @@ FILES =  \
 	MonoDevelop.Projects/IBuildTarget.cs \
 	MonoDevelop.Projects/IConfigurationTarget.cs \
 	MonoDevelop.Projects/IDotNetLanguageBinding.cs \
+	MonoDevelop.Projects/IFileItem.cs \
+	MonoDevelop.Projects/IFolderItem.cs \
 	MonoDevelop.Projects/ILanguageBinding.cs \
 	MonoDevelop.Projects/IProjectBinding.cs \
 	MonoDevelop.Projects/ItemCollection.cs \
