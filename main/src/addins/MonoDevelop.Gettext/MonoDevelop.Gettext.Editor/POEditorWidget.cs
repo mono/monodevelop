@@ -951,7 +951,17 @@ namespace MonoDevelop.Gettext
 				IdeApp.Services.TaskService.Remove (task);
 			}*/
 		}
-		
+		static bool CompareTasks (List<Task> list1, List<Task> list2)
+		{
+			if (list1.Count != list2.Count)
+				return false;
+			for (int i = 0; i < list1.Count; i++) {
+				if (list1[i].Description != list2[i].Description)
+					return false;
+			}
+			return true;
+		}
+		List<Task> currentTasks = new List<Task> ();
 		class UpdateTaskWorkerThread : WorkerThread
 		{
 			POEditorWidget widget;
@@ -1005,9 +1015,11 @@ namespace MonoDevelop.Gettext
 					Stop ();
 					return;
 				}
-				
-				widget.ClearTasks ();
-				IdeApp.Services.TaskService.AddRange (tasks);
+				if (!CompareTasks (tasks, widget.currentTasks)) {
+					widget.ClearTasks ();
+					widget.currentTasks = tasks;
+					IdeApp.Services.TaskService.AddRange (tasks);
+				}
 				Stop ();
 			}
 		}
