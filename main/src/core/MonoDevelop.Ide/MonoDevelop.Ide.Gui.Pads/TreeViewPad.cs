@@ -84,9 +84,14 @@ namespace MonoDevelop.Ide.Gui.Pads
 			Initialize (builders, options);
 		}
 		
-		public virtual void Initialize (NodeBuilder[] builders, TreePadOption[] options)
+		public void Initialize (NodeBuilder[] builders, TreePadOption[] options)
 		{
-			treeView.Initialize (builders, options);
+			Initialize (builders, options, null);
+		}
+		
+		public virtual void Initialize (NodeBuilder[] builders, TreePadOption[] options, string contextMenuPath)
+		{
+			treeView.Initialize (builders, options, contextMenuPath);
 		}
 		
 		#region ICommandDelegatorRouter

@@ -46,6 +46,7 @@ using MonoDevelop.Ide.Commands;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Pads;
+using MonoDevelop.Projects.Extensions;
 
 namespace MonoDevelop.Ide.Gui.Components
 {
@@ -85,12 +86,19 @@ namespace MonoDevelop.Ide.Gui.Components
 
 		TransactedNodeStore transactionStore;
 		int updateLockCount;
+		string contextMenuPath;
+		IDictionary<string,string> contextMenuTypeNameAliases;
 		
 		private static Gtk.TargetEntry [] target_table = new Gtk.TargetEntry [] {
 			new Gtk.TargetEntry ("text/uri-list", 0, 11 ),
 			new Gtk.TargetEntry ("text/plain", 0, 22),
 			new Gtk.TargetEntry ("application/x-rootwindow-drop", 0, 33)
 		};
+		
+		public IDictionary<string,string> ContextMenuTypeNameAliases {
+			get { return contextMenuTypeNameAliases; }
+			set { contextMenuTypeNameAliases = value; }
+		}
 	
 		public Gtk.TreeStore Store {
 			get {
@@ -138,8 +146,14 @@ namespace MonoDevelop.Ide.Gui.Components
 			}
 		}
 		
-		public virtual void Initialize (NodeBuilder[] builders, TreePadOption[] options)
+		public void Initialize (NodeBuilder[] builders, TreePadOption[] options)
 		{
+			Initialize (builders, options, null);
+		}
+		
+		public virtual void Initialize (NodeBuilder[] builders, TreePadOption[] options, string contextMenuPath)
+		{
+			this.contextMenuPath = contextMenuPath;
 			builderContext = new TreeBuilderContext (this);
 		
 			SetBuilders (builders, options);
@@ -1449,8 +1463,40 @@ namespace MonoDevelop.Ide.Gui.Components
 		[CommandUpdateHandler (EditCommands.Rename)]
 		public void UpdateStartLabelEdit (CommandInfo info)
 		{
-			info.Enabled = GetSelectedNodes ().Length == 1;
+			if (editingText || GetSelectedNodes ().Length != 1) {
+				info.Visible = false;
+				return;
+			}
+
+			TreeNodeNavigator node = (TreeNodeNavigator) GetSelectedNode ();
+			NodeAttributes attributes = GetNodeAttributes (node);
+			if ((attributes & NodeAttributes.AllowRename) == 0) {
+				info.Visible = false;
+				return;
+			}
 		}
+		
+		NodeAttributes GetNodeAttributes (TreeNodeNavigator node)
+		{
+			Gtk.TreeIter iter = node.CurrentPosition._iter;
+			object dataObject = node.DataItem;
+			NodeAttributes attributes = NodeAttributes.None;
+			
+			ITreeNavigator parentNode = node.Clone ();
+			parentNode.MoveToParent ();
+			NodePosition pos = parentNode.CurrentPosition;
+			
+			foreach (NodeBuilder b in node.NodeBuilderChain) {
+				try {
+					b.GetNodeAttributes (parentNode, dataObject, ref attributes);
+				} catch (Exception ex) {
+					LoggingService.LogError (ex.ToString ());
+				}
+				parentNode.MoveToPosition (pos);
+			}
+			return attributes;
+		}
+		
 		
 		bool wantFocus ()
 		{
@@ -1473,7 +1519,8 @@ namespace MonoDevelop.Ide.Gui.Components
 		{
 			ITreeNavigator tnav = GetSelectedNode ();
 			TypeNodeBuilder nb = GetTypeNodeBuilder (tnav.CurrentPosition._iter);
-			if (nb == null || nb.ContextMenuAddinPath == null) {
+			string menuPath = nb != null && nb.ContextMenuAddinPath != null ? nb.ContextMenuAddinPath : contextMenuPath;
+			if (menuPath == null) {
 				if (options.Length > 0) {
 					CommandEntrySet opset = new CommandEntrySet ();
 					opset.AddItem (ViewCommands.TreeDisplayOptionList);
@@ -1482,7 +1529,10 @@ namespace MonoDevelop.Ide.Gui.Components
 					IdeApp.CommandService.ShowContextMenu (opset, this);
 				}
 			} else {
-				CommandEntrySet eset = IdeApp.CommandService.CreateCommandEntrySet (nb.ContextMenuAddinPath);
+				ExtensionContext ctx = AddinManager.CreateExtensionContext ();
+				ctx.RegisterCondition ("ItemType", new ItemTypeCondition (tnav.DataItem.GetType (), contextMenuTypeNameAliases));
+				CommandEntrySet eset = IdeApp.CommandService.CreateCommandEntrySet (ctx, menuPath);
+				
 				eset.AddItem (Command.Separator);
 				CommandEntrySet opset = eset.AddItemSet (GettextCatalog.GetString ("Display Options"));
 				opset.AddItem (ViewCommands.TreeDisplayOptionList);

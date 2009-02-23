@@ -36,7 +36,7 @@ using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
-	public class ProjectFolder: IDisposable
+	public class ProjectFolder: IDisposable, IFolderItem
 	{
 		string absolutePath;
 		Project project;
@@ -65,6 +65,10 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 						FileService.FileRenamed -= new EventHandler<FileCopyEventArgs> (OnFileRenamed);
 				}
 			}
+		}
+		
+		string IFolderItem.BaseDirectory {
+			get { return Path; }
 		}
 		
 		public string Path {

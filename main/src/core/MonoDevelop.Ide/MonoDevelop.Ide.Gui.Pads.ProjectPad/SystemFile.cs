@@ -33,7 +33,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
-	public class SystemFile
+	public class SystemFile: IFileItem
 	{
 		string absolutePath;
 		Project project;
@@ -52,6 +52,10 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		public string Path {
 			get { return absolutePath; }
+		}
+		
+		string IFileItem.FileName {
+			get { return Path; }
 		}
 		
 		public string Name {

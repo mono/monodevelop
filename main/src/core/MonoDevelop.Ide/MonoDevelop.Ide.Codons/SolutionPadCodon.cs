@@ -47,6 +47,7 @@ namespace MonoDevelop.Ide.Codons
 		NodeBuilder[] builders;
 		TreePadOption[] options;
 		TreeViewPad pad;
+		string contextMenuPath;
 		/*
 		string placement = null;*/
 
@@ -63,11 +64,11 @@ namespace MonoDevelop.Ide.Codons
 				NodeBuilderCodon nbc = ob as NodeBuilderCodon;
 				if (nbc != null)
 					bs.Add (nbc.NodeBuilder);
-				else {
-					PadOptionCodon poc = ob as PadOptionCodon;
-					if (poc != null)
-						ops.Add (poc.Option);
-				}
+				else if (ob is PadOptionCodon) {
+					PadOptionCodon poc = (PadOptionCodon) ob;
+					ops.Add (poc.Option);
+				} else if (ob is PadContextMenuExtensionNode)
+					contextMenuPath = ((PadContextMenuExtensionNode) ob).MenuPath;
 			}
 			builders = (NodeBuilder[]) bs.ToArray (typeof(NodeBuilder));
 			options = (TreePadOption[]) ops.ToArray (typeof(TreePadOption));
@@ -88,7 +89,7 @@ namespace MonoDevelop.Ide.Codons
 			} else
 				pad = new SolutionPad ();
 
-			pad.Initialize (builders, options);
+			pad.Initialize (builders, options, contextMenuPath);
 //			pad.DefaultPlacement = placement;
 			pad.Id = Id;
 			return pad;

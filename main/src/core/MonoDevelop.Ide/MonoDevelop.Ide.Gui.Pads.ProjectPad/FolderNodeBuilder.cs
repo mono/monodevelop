@@ -359,42 +359,5 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			CurrentNode.Expanded = true;
 			Tree.AddNodeInsertCallback (new ProjectFolder (directoryName, project), new TreeNodeCallback (OnFileInserted));
 		}
-		
-		[CommandHandler (SearchCommands.FindInFiles)]
-		public void OnFindInFiles ()
-		{
-			SearchReplaceInFilesManager.ShowFindDialog (GetFolderPath (CurrentNode.DataItem));
-		}
-		
-		public static string TerminalCommand {
-			get {
-				return PropertyService.Get ("MonoDevelop.Shell", "gnome-terminal");
-			}
-		}
-		
-		[CommandHandler (FileCommands.OpenInTerminal)]
-		[AllowMultiSelection]
-		public void OnOpenInTerminal ()
-		{
-			Set<string> paths = new Set<string> ();
-			foreach (ITreeNavigator node in CurrentNodes) {
-				string path = GetFolderPath (node.DataItem);
-				string terminal = TerminalCommand;
-				if (paths.Add (path))
-					Runtime.ProcessService.StartProcess (terminal, "", path, null);
-			}
-		}
-		
-		[CommandHandler (FileCommands.OpenFolder)]
-		[AllowMultiSelection]
-		public void OnOpenFolder ()
-		{
-			Set<string> paths = new Set<string> ();
-			foreach (ITreeNavigator node in CurrentNodes) {
-				string path = GetFolderPath (node.DataItem);
-				if (paths.Add (path))
-					System.Diagnostics.Process.Start ("file://" + path);
-			}
-		}
 	}	
 }

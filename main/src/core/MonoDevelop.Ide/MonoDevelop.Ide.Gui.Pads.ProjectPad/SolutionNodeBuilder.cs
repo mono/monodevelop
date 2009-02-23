@@ -85,10 +85,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			attributes |= NodeAttributes.AllowRename;
 		}
 		
-		public override string ContextMenuAddinPath {
-			get { return "/MonoDevelop/Ide/ContextMenu/ProjectPad/Solution"; }
-		}
-		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
 			Solution solution = dataObject as Solution;
@@ -311,25 +307,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			nav.Selected = true;
 			nav.Expanded = true;
 			Tree.StartLabelEdit ();
-		}
-		
-		[CommandHandler (FileCommands.OpenContainingFolder)]
-		[AllowMultiSelection]
-		public void OnOpenFolder ()
-		{
-			Set<string> paths = new Set<string> ();
-			foreach (ITreeNavigator node in CurrentNodes) {
-				Solution solution = (Solution) node.DataItem;
-				if (paths.Add (solution.BaseDirectory))
-					System.Diagnostics.Process.Start ("file://" + solution.BaseDirectory);
-			}
-		}
-		
-		[CommandHandler (SearchCommands.FindInFiles)]
-		public void OnFindInFiles ()
-		{
-			Solution solution = (Solution) CurrentNode.DataItem;
-			SearchReplaceInFilesManager.ShowFindDialog (solution.BaseDirectory);
 		}
 		
 		[CommandHandler (FileCommands.CloseWorkspaceItem)]

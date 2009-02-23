@@ -68,10 +68,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			attributes |= NodeAttributes.AllowRename;
 		}
 		
-		public override string ContextMenuAddinPath {
-			get { return "/MonoDevelop/Ide/ContextMenu/ProjectPad/SolutionFolder"; }
-		}
-		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
 			SolutionFolder combine = dataObject as SolutionFolder;
@@ -239,25 +235,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					return;
 				}
 			}
-		}
-		
-		[CommandHandler (FileCommands.OpenContainingFolder)]
-		[AllowMultiSelection]
-		public void OpenContainingFolder ()
-		{
-			Set<string> paths = new Set<string> ();
-			foreach (ITreeNavigator node in CurrentNodes) {
-				SolutionFolder folder = (SolutionFolder) node.DataItem;
-				if (paths.Add (folder.BaseDirectory))
-					System.Diagnostics.Process.Start ("file://" + folder.BaseDirectory);
-			}
-		}
-		
-		[CommandHandler (SearchCommands.FindInFiles)]
-		public void OnFindInFiles ()
-		{
-			SolutionFolder folder = (SolutionFolder) CurrentNode.DataItem;
-			SearchReplaceInFilesManager.ShowFindDialog (folder.BaseDirectory);
 		}
 		
 		void OnEntryInserted (ITreeNavigator nav)

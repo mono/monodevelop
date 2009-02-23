@@ -68,10 +68,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			return ((ProjectFolder)dataObject).Path;
 		}
 		
-		public override string ContextMenuAddinPath {
-			get { return "/MonoDevelop/Ide/ContextMenu/ProjectPad/Folder"; }
-		}
-		
 		protected override void Initialize ()
 		{
 			base.Initialize ();

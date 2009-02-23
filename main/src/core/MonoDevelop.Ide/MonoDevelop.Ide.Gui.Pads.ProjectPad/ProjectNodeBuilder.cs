@@ -102,10 +102,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			return ((Project)dataObject).BaseDirectory;
 		}
 		
-		public override string ContextMenuAddinPath {
-			get { return "/MonoDevelop/Ide/ContextMenu/ProjectPad/Project"; }
-		}
-		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
 			base.BuildNode (treeBuilder, dataObject, ref label, ref icon, ref closedIcon);
@@ -345,15 +341,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				prj.ParentFolder.Items.Remove (prj);
 				prj.Dispose ();
 				IdeApp.ProjectOperations.Save (sol);
-			}
-		}
-		[CommandHandler (FileCommands.OpenContainingFolder)]
-		[AllowMultiSelection]
-		public void OpenContainingFolder ()
-		{
-			foreach (ITreeNavigator nav in CurrentNodes) {
-				Project prj = nav.DataItem as Project;
-				System.Diagnostics.Process.Start ("file://" + prj.BaseDirectory);
 			}
 		}
 		

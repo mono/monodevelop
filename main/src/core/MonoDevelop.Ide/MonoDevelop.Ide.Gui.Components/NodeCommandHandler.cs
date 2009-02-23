@@ -41,11 +41,12 @@ namespace MonoDevelop.Ide.Gui.Components
 		object nextTarget;
 		CanDeleteFlags canDeleteFlags;
 
+		[Flags]
 		enum CanDeleteFlags {
 			NotChecked = 0,
 			Checked = 1,
 			Single = 2,
-			Multiple = 3
+			Multiple = 4
 		}
 		
 		internal void Initialize (ExtensibleTreeView tree)

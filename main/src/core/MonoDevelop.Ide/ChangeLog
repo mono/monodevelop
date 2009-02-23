@@ -1,3 +1,42 @@
+2009-02-23  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Ide.csproj: Added new files.
+
+	* MonoDevelop.Ide.Gui/Ide.cs: When registering for the
+	  Initialized event, fire it if the IDE has already been
+	  initialized.
+
+	* MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs:
+	* MonoDevelop.Ide.Gui.Pads/SolutionPad.cs:
+	* MonoDevelop.Ide.Codons/SolutionPadCodon.cs:
+	* MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs:
+	* MonoDevelop.Ide.Gui.Components/NodeCommandHandler.cs:
+	* MonoDevelop.Ide.Codons/PadContextMenuExtensionNode.cs: Allow
+	  setting the default context menu to be used when none is
+	  specified for a node type.
+
+	* MonoDevelop.Ide.addin.xml:
+	* MonoDevelop.Ide.Codons/ProjectActiveCondition.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFile.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ClassPad/SolutionNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectSolutionPad.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/WorkspaceNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/UnknownEntryNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionFolderNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectReferenceNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/FileOperationsBuilderExtension.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectReferenceFolderNodeBuilder.cs:
+	  Merged all project pad context menus in a single extension
+	  point.
+
 2009-02-23  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.addin.xml: removed f11 shortcut.

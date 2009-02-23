@@ -56,10 +56,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			return ((ProjectReference)dataObject).Reference;
 		}
 		
-		public override string ContextMenuAddinPath {
-			get { return "/MonoDevelop/Ide/ContextMenu/ProjectPad/Reference"; }
-		}
-		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
 			ProjectReference pref = (ProjectReference) dataObject;

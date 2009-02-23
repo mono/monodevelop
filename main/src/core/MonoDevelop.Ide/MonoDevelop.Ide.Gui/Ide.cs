@@ -65,7 +65,17 @@ namespace MonoDevelop.Ide.Gui
 		
 		public static event ExitEventHandler Exiting;
 		public static event EventHandler Exited;
-		public static event EventHandler Initialized;
+		
+		static EventHandler initializedEvent;
+		public static event EventHandler Initialized {
+			add {
+				if (isInitialized) value (null, EventArgs.Empty);
+				else initializedEvent += value;
+			}
+			remove { 
+				initializedEvent -= value;
+			}
+		}
 		
 		IdeApp ()
 		{
@@ -218,8 +228,8 @@ namespace MonoDevelop.Ide.Gui
 				}
 			}
 			
-			if (Initialized != null)
-				Initialized (null, EventArgs.Empty);
+			if (initializedEvent != null)
+				initializedEvent (null, EventArgs.Empty);
 			
 			// Load requested files
 			foreach (string file in StartupInfo.GetRequestedFileList()) {

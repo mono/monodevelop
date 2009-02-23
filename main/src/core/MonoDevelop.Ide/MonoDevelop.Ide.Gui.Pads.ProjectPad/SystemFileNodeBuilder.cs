@@ -56,10 +56,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			return Path.GetFileName (((SystemFile)dataObject).Name);
 		}
 		
-		public override string ContextMenuAddinPath {
-			get { return "/MonoDevelop/Ide/ContextMenu/ProjectPad/SystemFile"; }
-		}
-		
 		public override void GetNodeAttributes (ITreeNavigator treeNavigator, object dataObject, ref NodeAttributes attributes)
 		{
 			attributes |= NodeAttributes.AllowRename;
@@ -185,19 +181,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					info.AddSeparator ();
 				info.Add (fv.Title, fv);
 				prev = fv;
-			}
-		}
-		
-		[CommandHandler (FileCommands.OpenContainingFolder)]
-		[AllowMultiSelection]
-		public void OnOpenFolder ()
-		{
-			Set<string> folders = new Set<string> ();
-			foreach (ITreeNavigator node in CurrentNodes) {
-				SystemFile file = node.DataItem as SystemFile;
-				string path = System.IO.Path.GetDirectoryName (file.Path);
-				if (folders.Add (path))
-					System.Diagnostics.Process.Start ("file://" + path);
 			}
 		}
 	}

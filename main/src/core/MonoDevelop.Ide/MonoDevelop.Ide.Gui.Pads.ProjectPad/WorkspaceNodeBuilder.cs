@@ -75,10 +75,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			attributes |= NodeAttributes.AllowRename;
 		}
 		
-		public override string ContextMenuAddinPath {
-			get { return "/MonoDevelop/Ide/ContextMenu/ProjectPad/Workspace"; }
-		}
-		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
 			Workspace workspace = dataObject as Workspace;
@@ -294,25 +290,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			nav.Selected = true;
 			nav.Expanded = true;
-		}
-		
-		[CommandHandler (FileCommands.OpenContainingFolder)]
-		[AllowMultiSelection]
-		public void OnOpenFolder ()
-		{
-			Set<string> paths = new Set<string> ();
-			foreach (ITreeNavigator node in CurrentNodes) {
-				Workspace ws = (Workspace) node.DataItem;
-				if (paths.Add (ws.BaseDirectory))
-					System.Diagnostics.Process.Start ("file://" + ws.BaseDirectory);
-			}
-		}
-		
-		[CommandHandler (SearchCommands.FindInFiles)]
-		public void OnFindInFiles ()
-		{
-			Workspace ws = (Workspace) CurrentNode.DataItem;
-			SearchReplaceInFilesManager.ShowFindDialog (ws.BaseDirectory);
 		}
 		
 		[CommandHandler (FileCommands.CloseWorkspaceItem)]

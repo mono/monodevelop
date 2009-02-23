@@ -79,6 +79,7 @@ FILES =  \
 	MonoDevelop.Ide.Codons/LanguageActiveCondition.cs \
 	MonoDevelop.Ide.Codons/NodeBuilderCodon.cs \
 	MonoDevelop.Ide.Codons/PadCodon.cs \
+	MonoDevelop.Ide.Codons/PadContextMenuExtensionNode.cs \
 	MonoDevelop.Ide.Codons/PadOptionCodon.cs \
 	MonoDevelop.Ide.Codons/ProjectActiveCondition.cs \
 	MonoDevelop.Ide.Codons/ProjectTemplateCodon.cs \
@@ -198,6 +199,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Pads.ClassPad/PropertyNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ClassPad/ReferenceNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ClassPad/SolutionNodeBuilder.cs \
+	MonoDevelop.Ide.Gui.Pads.ProjectPad/FileOperationsBuilderExtension.cs \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/LinkedFilesFolder.cs \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/LinkedFilesFolderNodeBuilder.cs \

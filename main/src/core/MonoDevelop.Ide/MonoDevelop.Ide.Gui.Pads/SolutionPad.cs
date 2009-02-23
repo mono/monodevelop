@@ -45,9 +45,9 @@ namespace MonoDevelop.Ide.Gui.Pads
 			IdeApp.Workspace.WorkspaceItemClosed += OnCloseWorkspace;
 		}
 		
-		public override void Initialize (NodeBuilder[] builders, TreePadOption[] options)
+		public override void Initialize (NodeBuilder[] builders, TreePadOption[] options, string contextMenuPath)
 		{
-			base.Initialize (builders, options);
+			base.Initialize (builders, options, contextMenuPath);
 			foreach (WorkspaceItem it in IdeApp.Workspace.Items)
 				treeView.AddChild (it);
 		}

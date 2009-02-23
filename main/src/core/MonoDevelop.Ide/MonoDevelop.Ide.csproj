@@ -525,6 +525,8 @@
     <Compile Include="MonoDevelop.Ide.Gui.Content\TextStylePolicy.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\PadFontChanger.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Components\PadTreeView.cs" />
+    <Compile Include="MonoDevelop.Ide.Codons\PadContextMenuExtensionNode.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Pads.ProjectPad\FileOperationsBuilderExtension.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\DirectoryTemplate.cs" />
   </ItemGroup>
   <ItemGroup>

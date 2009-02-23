@@ -57,10 +57,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			return "References";
 		}
 		
-		public override string ContextMenuAddinPath {
-			get { return "/MonoDevelop/Ide/ContextMenu/ProjectPad/ReferenceFolder"; }
-		}
-		
 		protected override void Initialize ()
 		{
 			addedHandler = (ProjectReferenceEventHandler) DispatchService.GuiDispatch (new ProjectReferenceEventHandler (OnAddReference));
@@ -121,11 +117,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 	
 	public class ProjectReferenceFolderNodeCommandHandler: NodeCommandHandler
 	{
-		public override DragOperation CanDragNode ()
-		{
-			return DragOperation.Copy | DragOperation.Move;
-		}
-		
 		public override bool CanDropNode (object dataObject, DragOperation operation)
 		{
 			return dataObject is ProjectReference || dataObject is Project;

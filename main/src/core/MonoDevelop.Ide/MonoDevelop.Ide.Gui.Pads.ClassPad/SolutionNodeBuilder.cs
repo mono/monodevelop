@@ -83,10 +83,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			attributes |= NodeAttributes.AllowRename;
 		}
 		
-		public override string ContextMenuAddinPath {
-			get { return "/MonoDevelop/Ide/ContextMenu/ProjectPad/Solution"; }
-		}
-		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
 			Solution solution = dataObject as Solution;

@@ -28,6 +28,7 @@
 
 using System;
 using System.Resources;
+using System.Collections.Generic;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
@@ -43,6 +44,16 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			IdeApp.Workbench.ActiveDocumentChanged += new EventHandler (OnWindowChanged);
 		}
+		
+		public override void Initialize (MonoDevelop.Ide.Gui.Components.NodeBuilder[] builders, MonoDevelop.Ide.Gui.Components.TreePadOption[] options, string contextMenuPath)
+		{
+			base.Initialize (builders, options, contextMenuPath);
+			var aliases = new Dictionary<string,string> ();
+			aliases.Add ("SystemFile", "MonoDevelop.Ide.Gui.Pads.ProjectPad.SystemFile");
+			aliases.Add ("ProjectFolder", "MonoDevelop.Ide.Gui.Pads.ProjectPad.ProjectFolder");
+			TreeView.ContextMenuTypeNameAliases = aliases;
+		}
+
 		
 		protected override void OnSelectionChanged (object sender, EventArgs args)
 		{

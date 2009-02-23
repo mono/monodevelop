@@ -44,10 +44,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			get { return typeof(UnknownSolutionItem); }
 		}
 		
-		public override string ContextMenuAddinPath {
-			get { return "/MonoDevelop/Ide/ContextMenu/ProjectPad/UnknownEntry"; }
-		}
-		
 		public override Type CommandHandlerType {
 			get { return typeof(UnknownEntryCommandHandler); }
 		}

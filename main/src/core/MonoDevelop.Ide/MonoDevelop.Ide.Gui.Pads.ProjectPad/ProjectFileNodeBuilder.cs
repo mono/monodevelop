@@ -59,10 +59,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			return Path.GetFileName (((ProjectFile)dataObject).Name);
 		}
 		
-		public override string ContextMenuAddinPath {
-			get { return "/MonoDevelop/Ide/ContextMenu/ProjectPad/ProjectFile"; }
-		}
-		
 		public override void GetNodeAttributes (ITreeNavigator treeNavigator, object dataObject, ref NodeAttributes attributes)
 		{
 			ProjectFile file = (ProjectFile) dataObject;
@@ -183,19 +179,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		public override void OnNodeDrop (object dataObject, DragOperation operation)
 		{
-		}
-		
-		[CommandHandler (FileCommands.OpenContainingFolder)]
-		[AllowMultiSelection]
-		public void OnOpenFolder ()
-		{
-			Set<string> paths = new Set<string> ();
-			foreach (ITreeNavigator node in CurrentNodes) {
-				ProjectFile file = (ProjectFile) node.DataItem;
-				string path = System.IO.Path.GetDirectoryName (file.FilePath);
-				if (paths.Add (path))
-					System.Diagnostics.Process.Start ("file://" + path);
-			}
 		}
 		
 		public override bool CanDeleteItem ()
