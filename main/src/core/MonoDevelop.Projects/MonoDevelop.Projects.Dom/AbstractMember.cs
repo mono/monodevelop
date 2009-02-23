@@ -256,10 +256,13 @@ namespace MonoDevelop.Projects.Dom
 				}*/
 				return includeProtected;
 			}
-				
 			// inner class 
-			if (member.DeclaringType != null && member.DeclaringType.DeclaringType == DeclaringType)
-				return true;
+			IType declaringType = member.DeclaringType;
+			while (declaringType != null) {
+				if (declaringType.Equals (DeclaringType))
+					return true;
+				declaringType = declaringType.DeclaringType;
+			}
 			if (member is MonoDevelop.Projects.Dom.BaseResolveResult.BaseMemberDecorator)
 				return IsPublic | IsProtected;
 			
