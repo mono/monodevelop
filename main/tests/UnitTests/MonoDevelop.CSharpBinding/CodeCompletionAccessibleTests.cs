@@ -571,7 +571,7 @@ public class TestClass
 		}
 		
 		[Test()]
-		public void TestExplicitenericMethodParameter ()
+		public void TestExplicitGenericMethodParameter ()
 		{
 			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
 @"
@@ -591,6 +591,31 @@ public class Test
 	}
 }
 ");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("TestMethod"), "method 'TestMethod' not found");
+		}
+
+		[Test()]
+		public void TestImplicitGenericMethodParameter ()
+		{
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
+@"
+public class TestClass
+{
+	public static T TestMethod<T> (T t)
+	{
+		return t;
+	}
+}
+
+public class Test
+{
+	public void TestMethod ()
+	{
+		$TestClass.TestMethod (this).$
+	}
+}
+ ");
 			Assert.IsNotNull (provider, "provider == null");
 			Assert.IsNotNull (provider.Find ("TestMethod"), "method 'TestMethod' not found");
 		}
