@@ -173,7 +173,6 @@ namespace MonoDevelop.Projects.Dom
 			
 			public void Add (string name, IReturnType type)
 			{
-				System.Console.WriteLine("Add: " + name + " ==> " + type);
 				typeTable.Add (name, type);
 			}
 			
