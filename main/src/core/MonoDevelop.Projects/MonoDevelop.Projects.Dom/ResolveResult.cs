@@ -356,10 +356,15 @@ namespace MonoDevelop.Projects.Dom
 			get {
 				IMethod method = MostLikelyMethod;
 				if (method != null) {
-					
 					return DomMethod.CreateInstantiatedGenericMethod (method, genericArguments, arguments).ReturnType;
 				}
 				return base.ResolvedType;
+			}
+		}
+		
+		public override IReturnType UnresolvedType {
+			get {
+				return ResolvedType;
 			}
 		}
 
@@ -393,7 +398,7 @@ namespace MonoDevelop.Projects.Dom
 			foreach (object member in members) {
 				if (member is IMethod)
 					methods.Add ((IMethod)member);
-			}			
+			}
 		}
 		
 		public override IEnumerable<object> CreateResolveResult (ProjectDom dom, IMember callingMember)

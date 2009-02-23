@@ -54,7 +54,7 @@ namespace MonoDevelop.Projects.Dom
 		public virtual bool FilterEntry (object entry)
 		{
 			IMember member = entry as IMember;
-			if (member != null && member.Name.IndexOf ('<') >= 0)
+			if (member != null && member.Name != null && member.Name.IndexOf ('<') >= 0)
 				return true;
 			IMethod method = entry as IMethod;
 			if (method != null && method.Name == "Finalize" && method.DeclaringType.FullName == "System.Object")

@@ -143,6 +143,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		internal static IMethod CreateInstantiatedGenericMethod (IMethod method, IList<IReturnType> genericArguments, IList<IReturnType> methodArguments)
 		{
+			//System.Console.WriteLine("----");
 			GenericMethodInstanceResolver resolver = new GenericMethodInstanceResolver ();
 			if (genericArguments != null) {
 				for (int i = 0; i < method.TypeParameters.Count && i < genericArguments.Count; i++) 
@@ -164,7 +165,10 @@ namespace MonoDevelop.Projects.Dom
 					}
 				}
 			}
-			return (IMethod)result.AcceptVisitor (resolver, result);
+			//System.Console.WriteLine("before:" + result);
+			result = (IMethod)result.AcceptVisitor (resolver, result);
+			//System.Console.WriteLine("after:" + result);
+			return result;
 		}
 		
 		internal class GenericMethodInstanceResolver: CopyDomVisitor<IMethod>
@@ -173,17 +177,26 @@ namespace MonoDevelop.Projects.Dom
 			
 			public void Add (string name, IReturnType type)
 			{
+//				System.Console.WriteLine (name + "-->" + type);
 				typeTable.Add (name, type);
 			}
 			
 			public override IDomVisitable Visit (IReturnType type, IMethod typeToInstantiate)
 			{
 				DomReturnType copyFrom = (DomReturnType) type;
-				
 				IReturnType res;
 				if (typeTable.TryGetValue (copyFrom.DecoratedFullName, out res)) {
-					if (type.ArrayDimensions == 0 && type.GenericArguments.Count == 0)
-						return res;
+//					if (type.ArrayDimensions == 0 && type.GenericArguments.Count == 0) {
+					if (type.ArrayDimensions != 0) {
+						DomReturnType drr = new DomReturnType (res.ToInvariantString ());
+						drr.ArrayDimensions = type.ArrayDimensions;
+						for (int i = 0; i < type.ArrayDimensions; i++)
+							drr.SetDimension (i, type.GetDimension (i));
+						return drr;
+//						return new DomReturnType (typeToInstantiate.DeclaringType.SourceProjectDom.GetArrayType (res));
+					}
+					return res;
+//					}
 				}
 				return base.Visit (type, typeToInstantiate);
 			}

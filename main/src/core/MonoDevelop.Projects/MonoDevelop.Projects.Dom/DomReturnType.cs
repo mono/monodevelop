@@ -109,6 +109,7 @@ namespace MonoDevelop.Projects.Dom
 		public static readonly IReturnType Void;
 		public static readonly IReturnType Object;
 		public static readonly IReturnType Exception;
+		public static readonly IReturnType Int32;
 		
 		static DomReturnType ()
 		{
@@ -121,6 +122,7 @@ namespace MonoDevelop.Projects.Dom
 			Void      = GetSharedReturnType ("System.Void");
 			Object    = GetSharedReturnType ("System.Object");
 			Exception = GetSharedReturnType ("System.Exception");
+			Int32 = GetSharedReturnType ("System.Int32");
 		}
 
 		public List<IReturnTypePart> Parts {

@@ -390,6 +390,13 @@ namespace MonoDevelop.Projects.Dom.Parser
 			// Create a fake class which sublcasses System.Array and implements IList<T>
 			DomType t = new DomType (elementType.FullName + "[]");
 			t.BaseType = new DomReturnType ("System.Array");
+			DomProperty indexer = new DomProperty ();
+			indexer.Name = "Item";
+			indexer.Modifiers = Modifiers.Public;
+			indexer.PropertyModifier |= PropertyModifier.IsIndexer;
+			indexer.Add (new DomParameter(indexer, "this", DomReturnType.Int32));
+			indexer.ReturnType = elementType;
+			t.Add (indexer);
 			DomReturnType listType = new DomReturnType ("System.Collections.Generic.IList", false, new IReturnType [] { elementType });
 			t.AddInterfaceImplementation (listType);
 			return t;
