@@ -164,7 +164,7 @@ class Program
 }
 ");
 			Assert.IsNotNull (provider, "provider == null");
-			Assert.IsNotNull (provider.Find ("TestMethod"), "method 'Test' not found.");
+			Assert.IsNotNull (provider.Find ("TestMethod"), "method 'TestMethod' not found.");
 		}
 		
 		
