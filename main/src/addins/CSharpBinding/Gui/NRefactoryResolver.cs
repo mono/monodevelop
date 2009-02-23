@@ -199,6 +199,7 @@ namespace MonoDevelop.CSharpBinding
 				AddParameterList (completionList, col, property.Parameters);
 			if (CallingType == null)
 				return;
+			AddContentsFromOuterClass (CallingType.DeclaringType, context, completionList, col);
 			IType callingType = CallingType is InstantiatedType ? ((InstantiatedType)CallingType).UninstantiatedType : CallingType;
 			//bool isInStatic = CallingMember != null ? CallingMember.IsStatic : false;
 
@@ -223,6 +224,19 @@ namespace MonoDevelop.CSharpBinding
 				}
 			}
 		}
+		
+		void AddContentsFromOuterClass (IType outer, ExpressionContext context, CompletionDataList completionList, MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col)
+		{
+			if (outer == null)
+				return;
+			foreach (IMember member in outer.Members) {
+				if (member is IType || member.IsStatic || member.IsConst) {
+					col.AddCompletionData (completionList, member);
+				}
+			}
+			AddContentsFromOuterClass (outer.DeclaringType, context, completionList, col);
+		}
+		
 		static readonly IReturnType attributeType = new DomReturnType ("System.Attribute");
 		public MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector AddAccessibleCodeCompletionData (ExpressionContext context, CompletionDataList completionList)
 		{
@@ -516,7 +530,7 @@ namespace MonoDevelop.CSharpBinding
 			return null;
 		}
 		Dictionary<string, ResolveResult> resultTable = new Dictionary<string, ResolveResult> ();
-		public ResolveResult ResolveIdentifier (ResolveVisitor visitor, string identifier)
+ 		public ResolveResult ResolveIdentifier (ResolveVisitor visitor, string identifier)
 		{
 			ResolveResult result = null;
 			if (resultTable.TryGetValue (identifier, out result))
@@ -562,7 +576,7 @@ namespace MonoDevelop.CSharpBinding
 					}
 				}
 			}
-			IType searchedType = dom.SearchType (new SearchTypeRequest (unit, this.resolvePosition.Line, this.resolvePosition.Column, identifier));
+			IType searchedType = dom.SearchType (new SearchTypeRequest (unit, this.CallingType, identifier));
 			if (this.callingType != null && dom != null) {
 				List<IMember> members = new List <IMember> ();
 				foreach (IType type in dom.GetInheritanceTree (callingType)) {
