@@ -180,7 +180,6 @@ namespace MonoDevelop.CSharpBinding.Gui
 			while (lastWs > 0 && !Char.IsWhiteSpace (documentToCursor [lastWs]))
 				lastWs--;
 			ExpressionResult firstExprs = FindExpression (documentToCursor, lastWs);
-			System.Console.WriteLine(firstExprs);
 			if (firstExprs.Expression != null) {
 				IReturnType unresolvedReturnType = NRefactoryResolver.ParseReturnType (firstExprs);
 				if (unresolvedReturnType != null) {

@@ -1,5 +1,9 @@
 2009-02-23  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/NewCSharpExpressionFinder.cs: Removed debug message.
+
+2009-02-23  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/CSharpAmbience.cs:
 	* Gui/NewOverrideCompletionData.cs: Fixed "Bug 478703 -
 	  Override completion fails to include parameter modifiers in
