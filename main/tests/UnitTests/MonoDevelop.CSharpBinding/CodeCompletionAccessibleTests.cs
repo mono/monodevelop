@@ -569,6 +569,30 @@ public class TestClass
 			Assert.IsNotNull (provider, "provider == null");
 			Assert.IsNotNull (provider.Find ("TestMethod"), "method 'TestMethod' not found");
 		}
+		
+		[Test()]
+		public void TestExplicitenericMethodParameter ()
+		{
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
+@"
+public class TestClass
+{
+	public static T TestMethod<T> ()
+	{
+		return default(T);
 	}
 }
-		
+
+public class Test
+{
+	public void TestMethod ()
+	{
+		$TestClass.TestMethod<Test> ().$
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("TestMethod"), "method 'TestMethod' not found");
+		}
+	}
+}

@@ -1,5 +1,10 @@
 2009-02-23  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharpBinding/CodeCompletionAccessibleTests.cs:
+	  Added test for explicit generic method parameters.
+
+2009-02-23  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharpBinding/CodeCompletionCSharp3Tests.cs:
 	  fixed typo in unit test.
 
