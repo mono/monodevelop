@@ -642,6 +642,7 @@
 				defaultHandler = "MonoDevelop.Ide.Commands.FullScreenHandler"
 				_label = "_Full Screen" 
 				icon = "gtk-fullscreen" 
+				shortcut = "F11"
 				_description = "Set full screen mode" />
 		<Command id = "MonoDevelop.Ide.Commands.ViewCommands.Open"
 				_description = "Open selected document"
