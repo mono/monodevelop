@@ -1,3 +1,8 @@
+2009-02-23  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharpBinding/CodeCompletionAccessibleTests.cs:
+	  Added more unit tests do document resolver issues.
+
 2009-02-23  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* TestBase.cs: Use a local directory for the add-in registry.
