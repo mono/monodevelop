@@ -1,5 +1,10 @@
 2009-02-24  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.AspNet.Parser/Directive.cs: Add completion for
+	  MasterType directive.
+
+2009-02-24  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.AspNet.Gui/AspNetFileSelector.cs: Diplay project
 	  tree and its icons correctly.
 

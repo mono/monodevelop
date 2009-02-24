@@ -47,6 +47,7 @@ namespace MonoDevelop.AspNet.Parser
 		//
 		// NOTE: MS' documentation for directives is at http://msdn.microsoft.com/en-us/library/t8syafc7.aspx
 		//
+		// FIXME: gettextise this
 		public static ICompletionDataList GetDirectives (WebSubtype type)
 		{
 			CompletionDataList list = new CompletionDataList ();
@@ -59,6 +60,7 @@ namespace MonoDevelop.AspNet.Parser
 			} else if (type == WebSubtype.MasterPage) {
 				list.Add ("Implements", null, "Declare that this master page implements an interface.");
 				list.Add ("Master", null, "Define properties of this master page.");
+				list.Add ("MasterType", null, "Strongly type the page's Master property.");
 			} else if (type == WebSubtype.WebControl) {
 				list.Add ("Control", null, "Define properties of this user control.");
 				list.Add ("Implements", null, "Declare that this control implements an interface.");
@@ -118,6 +120,10 @@ namespace MonoDevelop.AspNet.Parser
 				ExclusiveAdd (list, existingAtts, masterControlAttributes);
 				if (vb)
 					ExclusiveAdd (list, existingAtts, pageVBAttributes);
+				break;
+			
+			case "mastertype":
+				MutexAdd (list, existingAtts, mastertypeAttributes);
 				break;
 				
 			case "assembly":
