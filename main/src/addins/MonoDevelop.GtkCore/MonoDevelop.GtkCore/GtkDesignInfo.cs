@@ -240,8 +240,6 @@ namespace MonoDevelop.GtkCore
 			try {
 				FileInfo fi = new FileInfo (SteticFile);
 				fi.LastWriteTime = DateTime.Now;
-				fi = new FileInfo (SteticGeneratedFile);
-				fi.LastWriteTime = DateTime.Now;
 			} catch {
 				// Ignore errors here
 			}

@@ -1,3 +1,11 @@
+2009-02-24  Mike Kestner <mkestner@novell.com> 
+
+	* MonoDevelop.GtkCore/GtkDesignInfo.cs: only touch the design file
+	when forcing rebuilds.
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs: don't regen
+	if design file and generated files have equal timestamps to avoid
+	regenerations on fresh checkouts. [#478894]
+
 2009-02-23  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.GtkCore.addin.xml:

@@ -366,7 +366,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			GtkDesignInfo info = GtkDesignInfo.FromProject (project);
 
 			// Check if generated code is already up to date.
-			if (File.Exists (info.SteticGeneratedFile) && File.GetLastWriteTime (info.SteticGeneratedFile) > File.GetLastWriteTime (info.SteticFile))
+			if (File.Exists (info.SteticGeneratedFile) && File.GetLastWriteTime (info.SteticGeneratedFile) >= File.GetLastWriteTime (info.SteticFile))
 				return null;
 			
 			if (info.GuiBuilderProject.HasError) {
