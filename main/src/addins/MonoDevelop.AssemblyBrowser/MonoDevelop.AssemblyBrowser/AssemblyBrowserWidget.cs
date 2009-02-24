@@ -741,21 +741,26 @@ namespace MonoDevelop.AssemblyBrowser
 			
 		public void Open (string url)
 		{
-			ITreeNavigator nav = SearchMember (url);
-			if (nav == null) {
-				foreach (DomCecilCompilationUnit definition in definitions.ToArray ()) {
-					foreach (AssemblyNameReference assemblyNameReference in definition.AssemblyDefinition.MainModule.AssemblyReferences) {
-						string assemblyFile = Runtime.SystemAssemblyService.GetAssemblyLocation (assemblyNameReference.FullName);
-						if (assemblyFile != null && System.IO.File.Exists (assemblyFile))
-							AddReference (assemblyFile);
+			GLib.Timeout.Add (100, delegate {
+				ITreeNavigator nav = SearchMember (url);
+				if (nav == null) {
+					foreach (DomCecilCompilationUnit definition in definitions.ToArray ()) {
+						foreach (AssemblyNameReference assemblyNameReference in definition.AssemblyDefinition.MainModule.AssemblyReferences) {
+							string assemblyFile = Runtime.SystemAssemblyService.GetAssemblyLocation (assemblyNameReference.FullName);
+							if (assemblyFile != null && System.IO.File.Exists (assemblyFile))
+								AddReference (assemblyFile);
+						}
 					}
+					nav = SearchMember (url);
 				}
-				nav = SearchMember (url);
-			}
-			if (nav != null) {
-				nav.ExpandToNode ();
-				nav.Selected = true;
-			}
+				if (nav != null) {
+					nav.ExpandToNode ();
+					nav.Selected = true;
+				} else {
+					LoggingService.LogError ("Can't open: " + url + " (not found).");
+				}
+				return false;
+			});
 		}
 		
 		public void SelectAssembly (string fileName)

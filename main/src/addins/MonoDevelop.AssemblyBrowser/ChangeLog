@@ -1,3 +1,8 @@
+2009-02-24  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs: open
+	  is now done with a timeout handler.
+
 2009-02-20  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am:
