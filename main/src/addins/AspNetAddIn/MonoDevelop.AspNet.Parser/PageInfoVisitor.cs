@@ -47,11 +47,19 @@ namespace MonoDevelop.AspNet.Parser
 		
 		public override void Visit (DirectiveNode node)
 		{
-			if (info.Subtype == WebSubtype.None)
+			if (info.Subtype == WebSubtype.None) {
 				info.SetSubtypeFromDirective (node.Name);
+			}
+			else if (String.Compare (node.Name, "mastertype") == 0)
+			{
+				info.MasterPageTypeName = node.Attributes["typename"] as string;
+				info.MasterPageTypeVPath = node.Attributes["virtualpath"] as string;
+				return;
+			}
 			else
 				return;
 			
+			//after SetSubtypeFromDirective
 			if (info.Subtype != WebSubtype.WebForm && info.Subtype != WebSubtype.MasterPage
 			    && info.Subtype != WebSubtype.WebControl)
 				return;
@@ -63,6 +71,7 @@ namespace MonoDevelop.AspNet.Parser
 			info.CodeBehindFile = node.Attributes ["codebehind"] as string;
 			info.Language = node.Attributes ["language"] as string;
 			info.CodeFile = node.Attributes ["codefile"] as string;
+			info.MasterPageFile = node.Attributes ["masterpagefile"] as string;
 		}
 		
 		public override void Visit (TextNode node)

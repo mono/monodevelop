@@ -1,3 +1,12 @@
+2009-02-24  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AspNet/AspNetAppProject.cs: Add methods for
+	  handling virtual paths.
+
+	* MonoDevelop.AspNet.Parser/PageInfo.cs:
+	* MonoDevelop.AspNet.Parser/PageInfoVisitor.cs: Capture
+	  MasterPageType info.
+
 2009-02-23  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.AspNet.addin.xml: Track merge of the project pad

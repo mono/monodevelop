@@ -359,6 +359,48 @@ namespace MonoDevelop.AspNet
 			return Runtime.SystemAssemblyService.GetAssemblyLocation (assemblyName);
 		}
 		
+		public ProjectFile ResolveVirtualPath (string virtualPath, string relativeToFile)
+		{
+			string name = VirtualToLocalPath (relativeToFile, virtualPath);
+			if (name == null)
+				return null;
+			return Files.GetFile (name);
+		}
+		
+		public string VirtualToLocalPath (string virtualPath, string relativeToFile)
+		{
+			if (virtualPath == null || virtualPath.Length == 0 || virtualPath[0] == '/'
+			    	|| virtualPath.IndexOf (':') > -1)
+				return null;
+			
+			string relativeToDir;
+			if (virtualPath.Length > 1 && virtualPath[0] == '~') {
+				if (virtualPath[1] == '/')
+					virtualPath = virtualPath.Substring (2);
+				else
+					virtualPath = virtualPath.Substring (1);
+				relativeToDir = this.BaseDirectory;
+			} else {
+				relativeToDir = String.IsNullOrEmpty (relativeToFile)
+					? BaseDirectory
+					: Path.GetDirectoryName (relativeToFile);
+			}
+			
+			virtualPath = virtualPath.Replace ('/', Path.DirectorySeparatorChar);
+			return Path.GetFullPath (Path.Combine (relativeToDir, virtualPath));
+		}
+		
+		public string LocalToVirtualPath (string filename)
+		{
+			string rel = FileService.AbsoluteToRelativePath (BaseDirectory, filename);
+			return "~/" + rel.Replace (Path.DirectorySeparatorChar, '/');
+		}
+		
+		public string LocalToVirtualPath (ProjectFile file)
+		{
+			return LocalToVirtualPath (file.FilePath);
+		}
+		
 		#region Reference handling
 		
 		protected override void OnReferenceAddedToProject (ProjectReferenceEventArgs e)

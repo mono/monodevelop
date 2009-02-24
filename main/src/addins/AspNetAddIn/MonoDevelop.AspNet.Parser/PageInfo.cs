@@ -70,6 +70,10 @@ namespace MonoDevelop.AspNet.Parser
 			set { type = value; }
 		}
 		
+		public string MasterPageFile { get; set; }
+		public string MasterPageTypeName { get; set; }
+		public string MasterPageTypeVPath { get; set; }
+		
 		public void SetSubtypeFromDirective (string directiveName)
 		{
 			switch (directiveName.ToLower ()) {
@@ -100,8 +104,8 @@ namespace MonoDevelop.AspNet.Parser
 		public override string ToString ()
 		{
 			return string.Format ("[PageInfo WebSubtype='{0}' InheritedClass='{1}' CodeBehindFile='{2}' " + 
-			    "CodeFile='{3}' Language='{4}' DocType='{5}']",
-			    Subtype, InheritedClass, CodeBehindFile, CodeFile, Language, DocType
+			    "CodeFile='{3}' Language='{4}' DocType='{5}' MasterPageFile='{6}']",
+			    Subtype, InheritedClass, CodeBehindFile, CodeFile, Language, DocType, MasterPageFile
 			    );
 		}
 	}
