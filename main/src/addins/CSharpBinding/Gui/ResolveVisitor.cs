@@ -509,9 +509,17 @@ namespace MonoDevelop.CSharpBinding
 		{
 			if (invocationExpression == null) 
 				return null;
-				
-			ResolveResult targetResult = Resolve (invocationExpression.TargetObject);
+			// add support for undocumented __makeref and __reftype keywords
+			if (invocationExpression.TargetObject is IdentifierExpression) {
+				IdentifierExpression idExpr = invocationExpression.TargetObject as IdentifierExpression;
+				if (idExpr.Identifier == "__makeref") 
+					return CreateResult ("System.TypedReference");
+				if (idExpr.Identifier == "__reftype") 
+					return CreateResult ("System.Type");
+			}
 			
+			ResolveResult targetResult = Resolve (invocationExpression.TargetObject);
+
 			MethodResolveResult methodResult = targetResult as MethodResolveResult;
 			if (methodResult != null) {
 				foreach (Expression arg in invocationExpression.Arguments) {
