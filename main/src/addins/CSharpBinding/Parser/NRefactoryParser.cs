@@ -190,6 +190,7 @@ namespace MonoDevelop.CSharpBinding
 					result.Add (new Error (ErrorType.Error, line, col, message));
 				};
 				parser.Lexer.SpecialCommentTags = ProjectDomService.SpecialCommentTags.GetNames ();
+				parser.Lexer.EvaluateConditionalCompilation = true;
 				
 				parser.Parse ();
 				

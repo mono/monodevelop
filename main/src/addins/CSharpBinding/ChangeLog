@@ -1,5 +1,11 @@
 2009-02-24  Mike Krüger  <mkrueger@novell.com>
 
+	* Parser/NRefactoryParser.cs: fixed "Bug 478702 - Underline on
+	  syntax error not working properly when using preprocessor
+	  directives and inheritance".
+
+2009-02-24  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/ResolveVisitor.cs: Added support for some undocumented
 	  keywords.
 
