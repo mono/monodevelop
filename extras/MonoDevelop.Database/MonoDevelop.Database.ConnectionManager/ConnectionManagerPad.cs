@@ -53,9 +53,9 @@ namespace MonoDevelop.Database.ConnectionManager
 			vbox.PackStart (toolbar, false, true, 0);
 		}
 		
-		public override void Initialize (NodeBuilder[] builders, TreePadOption[] options)
+		public override void Initialize (NodeBuilder[] builders, TreePadOption[] options, string contextMenuPath)
 		{
-			base.Initialize (builders, options);
+			base.Initialize (builders, options, contextMenuPath);
 			
 			vbox.PackStart (base.Control, true, true, 0);
 			vbox.ShowAll ();
