@@ -61,9 +61,9 @@
 	<!-- Extensions -->
 
 	<Extension path = "/MonoDevelop/SourceEditor2/TooltipProviders">
-		<Class class="MonoDevelop.SourceEditor.DebugValueTooltipProvider" />
-		<Class class="MonoDevelop.SourceEditor.LanguageItemTooltipProvider" />
-		<Class class="MonoDevelop.SourceEditor.CompileErrorTooltipProvider" />
+		<Class id="Debug" class="MonoDevelop.SourceEditor.DebugValueTooltipProvider" />
+		<Class id="LanguageItem" class="MonoDevelop.SourceEditor.LanguageItemTooltipProvider" />
+		<Class id="CompileError" class="MonoDevelop.SourceEditor.CompileErrorTooltipProvider" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/TextFormatters">

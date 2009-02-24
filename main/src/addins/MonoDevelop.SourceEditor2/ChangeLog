@@ -1,3 +1,8 @@
+2009-02-24  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.SourceEditor.addin.xml: Assigned ids to tooltip
+	  providers.
+
 2009-02-23  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Don't use
