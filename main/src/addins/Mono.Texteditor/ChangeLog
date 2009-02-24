@@ -1,5 +1,10 @@
 2009-02-24  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor.Highlighting/Match.cs: fixed C# number
+	  matching.
+
+2009-02-24  Mike Krüger  <mkrueger@novell.com>
+
 	* SyntaxModes/CSharpSyntaxMode.xml: Added highlighting for
 	  undocumented keywords.
 

@@ -89,7 +89,7 @@ namespace Mono.TextEditor.Highlighting
 	
 	public class CSharpNumberMatch : Match
 	{
-		bool ReadNonFloatEnd(string text, ref int i)
+		static bool ReadNonFloatEnd (string text, ref int i)
 		{
 			if (i >= text.Length)
 				return false;
@@ -100,14 +100,15 @@ namespace Mono.TextEditor.Highlighting
 					i++;
 				return true;
 			} else if (ch == 'U') {
+				i++;
 				if (i < text.Length && Char.ToUpper (text[i]) == 'L')
 					i++;
 				return true;
 			}
-			return true;
+			return false;
 		}
 		
-		bool ReadFloatEnd(string text, ref int i)
+		static bool ReadFloatEnd (string text, ref int i)
 		{
 			if (i >= text.Length)
 				return false;
@@ -127,14 +128,15 @@ namespace Mono.TextEditor.Highlighting
 		public override int TryMatch (string text, int matchOffset)
 		{
 			int i = matchOffset;
-			if (text[matchOffset] == '0' && Char.ToUpper (text[matchOffset]) == 'X') {
+			if (matchOffset + 1 < text.Length && text[matchOffset] == '0' && Char.ToUpper (text[matchOffset + 1]) == 'X') {
+				i += 2; // skip 0x
 				while (i < text.Length) {
 					char ch = Char.ToUpper (text[i]);
 					if (!(Char.IsDigit (ch) || ('A' <= ch && ch <= 'F')))
 						break;
 					i++;
 				}
-				ReadNonFloatEnd(text, ref i);
+				ReadNonFloatEnd (text, ref i);
 				return i - matchOffset;
 			} else {
 				if (!Char.IsDigit (text[i]))
@@ -143,10 +145,12 @@ namespace Mono.TextEditor.Highlighting
 				while (i < text.Length && Char.IsDigit (text[i]))
 					i++;
 			}
-			if (ReadNonFloatEnd(text, ref i))
+			if (ReadNonFloatEnd (text, ref i))
 				return i - matchOffset;
 			if (i < text.Length && text[i] == '.') {
 				i++;
+				if (i >= text.Length) 
+					return (i - 1) - matchOffset;
 				if (!Char.IsDigit (text[i]))
 					return -1;
 				i++;
