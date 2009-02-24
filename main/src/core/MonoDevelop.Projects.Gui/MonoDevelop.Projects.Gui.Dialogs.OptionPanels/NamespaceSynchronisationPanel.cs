@@ -104,7 +104,6 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 		NamespaceSynchronisationPanel panel;
 		TreeStore previewStore;
 		TreeView previewTree;
-		bool resourceNamingChanged;
 		ResourceNamePolicy initialResourceNaming;
 		bool firstLoad = true;
 		
