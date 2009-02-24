@@ -1,3 +1,8 @@
+2009-02-24  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor.Tests/SyntaxHighlightingTests.cs: Added some
+	  highlighting tests.
+
 2009-02-23  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharpBinding/CodeCompletionAccessibleTests.cs:

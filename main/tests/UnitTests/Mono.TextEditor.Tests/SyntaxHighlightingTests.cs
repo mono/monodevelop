@@ -26,6 +26,7 @@
 
 using System;
 using NUnit.Framework;
+using Mono.TextEditor.Highlighting;
 
 namespace Mono.TextEditor.Tests
 {
@@ -35,7 +36,51 @@ namespace Mono.TextEditor.Tests
 		[Test]
 		public void ValidateSyntaxModes ()
 		{
-			Assert.IsTrue (Mono.TextEditor.Highlighting.SyntaxModeService.ValidateAllSyntaxModes ());
+			Assert.IsTrue (SyntaxModeService.ValidateAllSyntaxModes ());
+		}
+		static void TestOutput (string input,
+		                         string expectedMarkup)
+		{
+			Document doc = new Document ();
+			doc.SyntaxMode = SyntaxModeService.GetSyntaxMode ("text/x-csharp");
+			doc.Text = input;
+			string markup = doc.SyntaxMode.GetMarkup (doc, TextEditorOptions.DefaultOptions, SyntaxModeService.GetColorStyle (null, "TangoLight"), 0, doc.Length, false);
+			Assert.AreEqual (expectedMarkup, markup, "expected:" + expectedMarkup + Environment.NewLine + "But got:" + markup);
+		}
+		
+		[Test]
+		public void TestSpans ()
+		{
+			TestOutput ("/* TestMe */",
+		                "<span foreground=\"#4E9A06\">/* TestMe */</span>");
+		}
+		
+		[Test]
+		public void TestStringEscapes ()
+		{
+			TestOutput ("\"Escape:\\\" \"outtext",
+		                "<span foreground=\"#75507B\">\"Escape:\\\" \"</span><span foreground=\"#000000\">outtext</span>");
+		}
+		
+		[Test]
+		public void TestVerbatimStringEscapes ()
+		{
+			TestOutput ("@\"Escape:\"\" \"outtext",
+		                "<span foreground=\"#75507B\">@\"Escape:\"\" \"</span><span foreground=\"#000000\">outtext</span>");
+		}
+		
+		[Test]
+		public void TestHexDigit ()
+		{
+			TestOutput ("0x12345679AFFEuL",
+		                "<span foreground=\"#75507B\">0x12345679AFFEuL</span>");
+		}
+		
+		[Test]
+		public void TestDoubleDigit ()
+		{
+			TestOutput ("123.45678e-09d",
+		                "<span foreground=\"#75507B\">123.45678e-09d</span>");
 		}
 	}
 }
