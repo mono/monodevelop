@@ -98,7 +98,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			return entry != null ? entry.IsModified : true;
 		}
 		
-		public override IEnumerable<IType> GetSubclasses (IType type, bool searchDeep, IList<string> namespaces)
+		protected override IEnumerable<IType> InternalGetSubclasses (IType type, bool searchDeep, IList<string> namespaces)
 		{
 			return dbProvider.GetSubclassesTree (database, type, searchDeep, namespaces);
 		}

@@ -381,15 +381,47 @@ namespace MonoDevelop.Projects.Dom.Parser
 		public IEnumerable<IType> GetSubclasses (IType type, bool searchDeep)
 		{
 			return GetSubclasses (type, searchDeep, null);
+			
 		}
 		
-		public abstract IEnumerable<IType> GetSubclasses (IType type, bool searchDeep, IList<string> namespaces);
+		protected abstract IEnumerable<IType> InternalGetSubclasses (IType type, bool searchDeep, IList<string> namespaces);
+		
+		public IEnumerable<IType> GetSubclasses (IType type, bool searchDeep, IList<string> namespaces)
+		{
+			foreach (IType subType in InternalGetSubclasses (type, searchDeep, null)) {
+				yield return subType;
+			}
+			if (type is InstantiatedType) {
+				InstantiatedType iType = type as InstantiatedType;
+				
+				if (iType.UninstantiatedType.FullName == "System.Collections.Generic.IEnumerable" ||
+				    iType.UninstantiatedType.FullName == "System.Collections.Generic.ICollection" ||
+				    iType.UninstantiatedType.FullName == "System.Collections.Generic.IList") {
+					if (iType.GenericParameters != null && iType.GenericParameters.Count > 0) {
+						yield return GetArrayType (iType.GenericParameters[0]);
+					}
+				}
+			}
+			if (type.FullName == "System.Collections.IEnumerable" || type.FullName == "System.Collections.ICollection" || type.FullName == "System.Collections.IList") {
+				foreach (IType t in GetSubclasses (GetType(DomReturnType.Object), true, namespaces)) {
+					yield return GetArrayType (new DomReturnType (t));
+				}
+			}
+		}
 		
 		public IType GetArrayType (IReturnType elementType)
 		{
+			return GetArrayType (elementType, MonoDevelop.Projects.Dom.Output.AmbienceService.DefaultAmbience);
+		}
+		
+		
+		public IType GetArrayType (IReturnType elementType, MonoDevelop.Projects.Dom.Output.Ambience ambience)
+		{
 			// Create a fake class which sublcasses System.Array and implements IList<T>
-			DomType t = new DomType (elementType.FullName + "[]");
+			DomType t = new DomType (ambience.GetString (elementType, MonoDevelop.Projects.Dom.Output.OutputFlags.UseFullName) + "[]");
 			t.BaseType = new DomReturnType ("System.Array");
+			t.ClassType = ClassType.Class;
+			t.Modifiers = Modifiers.Public;
 			DomProperty indexer = new DomProperty ();
 			indexer.Name = "Item";
 			indexer.Modifiers = Modifiers.Public;
@@ -710,7 +742,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 		}
 
-		public override IEnumerable<IType> GetSubclasses (IType type, bool searchDeep, IList<string> namespaces)
+		protected override IEnumerable<IType> InternalGetSubclasses (IType type, bool searchDeep, IList<string> namespaces)
 		{
 			if (namespaces == null || namespaces.Contains (type.Namespace))
 				yield return type;
@@ -742,7 +774,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 		}
 
-		public override IEnumerable<IType> GetSubclasses (IType type, bool searchDeep, IList<string> namespaces)
+		protected override IEnumerable<IType> InternalGetSubclasses (IType type, bool searchDeep, IList<string> namespaces)
 		{
 			yield break;
 		}

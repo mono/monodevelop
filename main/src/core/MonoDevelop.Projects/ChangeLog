@@ -1,3 +1,11 @@
+2009-02-24  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs:
+	* MonoDevelop.Projects.Dom.Output/AmbienceService.cs:
+	* MonoDevelop.Projects.Dom.Serialization/DatabaseProjectDom.cs:
+	  Fixed "Bug 472597 - New completion does not include array
+	  types".
+
 2009-02-23  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Extensions/ItemTypeCondition.cs: Moved

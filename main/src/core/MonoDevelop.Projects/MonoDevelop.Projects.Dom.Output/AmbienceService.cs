@@ -63,6 +63,8 @@ namespace MonoDevelop.Projects.Dom.Output
 		
 		public static Ambience GetAmbience (IMember member)
 		{
+			if (member is IType && ((IType)member).CompilationUnit != null)
+				return GetAmbienceForFile (((IType)member).CompilationUnit.FileName);
 			if (member.DeclaringType != null && member.DeclaringType.CompilationUnit != null)
 				return GetAmbienceForFile (member.DeclaringType.CompilationUnit.FileName);
 			return defaultAmbience;
