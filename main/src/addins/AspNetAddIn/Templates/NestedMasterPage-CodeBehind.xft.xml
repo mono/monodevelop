@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
-<Template	Originator="John Anderson"
-			Created="2007/02/03"
-			LastModified="2007/02/03">
+<Template Originator  ="Michael Hutchinson"
+          Created     ="2009/02/24"
+          LastModified="2009/02/24">
 
 	<!-- Template Header -->
 	<TemplateConfiguration>
-		<_Name>Master Page with CodeBehind</_Name>
+		<_Name>Nested Master Page with CodeBehind</_Name>
 		<Icon>md-html-file-icon</Icon>
 		<_Category>ASP.NET</_Category>
 		<LanguageName>*</LanguageName>
-		<_Description>Creates an ASP.NET Master Page with a CodeBehind class.</_Description>
+		<_Description>Creates an ASP.NET Nested Master Page with a CodeBehind class.</_Description>
 		<ProjectType>AspNetApp</ProjectType>
 	</TemplateConfiguration>
 	
@@ -20,24 +20,14 @@
 	
 	<!-- Template Content -->
 	<TemplateFiles>
-		<AspNetFile name="${Name}.master">
+		<AspNetMasterContentFile name="${Name}.master">
 			<FileText>
-				<![CDATA[<%@ Master Language="${AspNetLanguage}" Inherits="${Namespace}.${Name}" %>
-${Doctype}
-<html>
-<head>
-	<title>${Name}</title>
-</head>
-<body>
-<div id="container">
-<form runat="server">
-    <asp:contentplaceholder id="contentPlaceHolder" runat="server" /> 
-</form>
-</div>
-</body>
-</html>]]>
+				<![CDATA[<%@ Master Language="${AspNetLanguage}" MasterPage="${AspNetMaster}" Inherits="${Namespace}.${Name}" %>
+<%@ MasterType VirtualPath="${AspNetMaster}" %>
+${AspNetMasterContent}
+]]>
 			</FileText>
-		</AspNetFile>
+		</AspNetMasterContentFile>
 		
 		<CodeTranslationFile name="${Name}.master.${LanguageExtension}" DependsOn="${Name}.master" >
 <![CDATA[using System;

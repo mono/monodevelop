@@ -34,6 +34,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.AspNet.Deployment.WebDeployTargetEditor.cs \
 	gtk-gui/MonoDevelop.AspNet.Deployment.WebTargetEditor.cs \
 	gtk-gui/MonoDevelop.AspNet.Gui.AspNetConfigurationPanelWidget.cs \
+	gtk-gui/MonoDevelop.AspNet.Gui.AspNetFileSelector.cs \
 	gtk-gui/MonoDevelop.AspNet.Gui.XspOptionsPanelWidget.cs \
 	MonoDevelop.AspNet.Completion/SimpleLists.cs \
 	MonoDevelop.AspNet.Deployment/AspNetDeployServiceExtension.cs \
@@ -50,6 +51,7 @@ FILES =  \
 	MonoDevelop.AspNet.Gui/AspNetConfigurationPanel.cs \
 	MonoDevelop.AspNet.Gui/AspNetConfigurationPanelWidget.cs \
 	MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs \
+	MonoDevelop.AspNet.Gui/AspNetFileSelector.cs \
 	MonoDevelop.AspNet.Gui/BaseHtmlEditorExtension.cs \
 	MonoDevelop.AspNet.Gui/BrowserLauncher.cs \
 	MonoDevelop.AspNet.Gui/HtmlEditorExtension.cs \
@@ -78,6 +80,7 @@ FILES =  \
 	MonoDevelop.AspNet.Parser/AspNetParsedDocument.cs \
 	MonoDevelop.AspNet.Parser/AspNetParser.cs \
 	MonoDevelop.AspNet.Parser/CompilationUnitVisitor.cs \
+	MonoDevelop.AspNet.Parser/ContentPlaceHolderVisitor.cs \
 	MonoDevelop.AspNet.Parser/DebugStringVisitor.cs \
 	MonoDevelop.AspNet.Parser/Directive.cs \
 	MonoDevelop.AspNet.Parser/Document.cs \
@@ -109,6 +112,7 @@ FILES =  \
 	MonoDevelop.AspNet/AspNetToolboxProvider.cs \
 	MonoDevelop.AspNet/CodeBehind.cs \
 	MonoDevelop.AspNet/IAspNetLanguageBinding.cs \
+	MonoDevelop.AspNet/MasterContentFileDescriptionTemplate.cs \
 	MonoDevelop.AspNet/ProjectFolderNodeBuilderExtension.cs \
 	MonoDevelop.AspNet/ProjectRegisteredControls.cs \
 	MonoDevelop.AspNet/VerifyCodeBehindBuildStep.cs \
@@ -131,10 +135,14 @@ RES =  \
 	Templates/MasterPage-CodeBehind.xft.xml \
 	Templates/MasterPage-CodeBehindNonPartial.xft.xml \
 	Templates/MasterPage-Empty.xft.xml \
+	Templates/NestedMasterPage.xft.xml \
+	Templates/NestedMasterPage-CodeBehind.xft.xml \
 	Templates/WebApplication.xpt.xml \
 	Templates/WebApplication-Empty.xpt.xml \
 	Templates/WebConfig-Application.xft.xml \
 	Templates/WebConfig-SubDir.xft.xml \
+	Templates/WebContentForm.xft.xml \
+	Templates/WebContentForm-CodeBehind.xft.xml \
 	Templates/WebControl-CodeBehind.xft.xml \
 	Templates/WebControl-CodeBehindNonPartial.xft.xml \
 	Templates/WebControl-Empty.xft.xml \

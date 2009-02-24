@@ -69,6 +69,11 @@
 		<FileTemplate id       = "MasterPage-CodeBehindNonPartial"
 		              resource = "MasterPage-CodeBehindNonPartial.xft.xml" />
 		
+		<FileTemplate id       = "NestedMasterPage"
+		              resource = "NestedMasterPage.xft.xml" />
+		<FileTemplate id       = "NestedMasterPage-CodeBehind"
+		              resource = "NestedMasterPage-CodeBehind.xft.xml" />
+		
 		<FileTemplate id       = "GlobalAsax-Empty"
 		              resource = "GlobalAsax-Empty.xft.xml" />
 		<FileTemplate id       = "GlobalAsax-CodeBehind"
@@ -78,10 +83,16 @@
 		              resource = "WebConfig-Application.xft.xml" />
 		<FileTemplate id       = "WebConfig-SubDir"
 		              resource = "WebConfig-SubDir.xft.xml" />
+		
+		<FileTemplate id       = "WebContentForm-CodeBehind"
+		              resource = "WebContentForm-CodeBehind.xft.xml" />
+		<FileTemplate id       = "WebContentForm"
+		              resource = "WebContentForm.xft.xml" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/FileTemplateTypes">
 		<FileTemplateType name = "AspNetFile" class = "MonoDevelop.AspNet.AspNetFileDescriptionTemplate"/>
+		<FileTemplateType name = "AspNetMasterContentFile" class = "MonoDevelop.AspNet.MasterContentFileDescriptionTemplate"/>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">

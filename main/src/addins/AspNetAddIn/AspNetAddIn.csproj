@@ -170,6 +170,18 @@
     <EmbeddedResource Include="MonoDevelop.AspNet.MD1Serialization\md1format.xml">
       <LogicalName>md1format.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="Templates\WebContentForm-CodeBehind.xft.xml">
+      <LogicalName>WebContentForm-CodeBehind.xft.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Templates\NestedMasterPage.xft.xml">
+      <LogicalName>NestedMasterPage.xft.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Templates\NestedMasterPage-CodeBehind.xft.xml">
+      <LogicalName>NestedMasterPage-CodeBehind.xft.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Templates\WebContentForm.xft.xml">
+      <LogicalName>WebContentForm.xft.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.AspNet\AspNetAppProject.cs" />
@@ -266,6 +278,10 @@
     <Compile Include="MonoDevelop.AspNet.StateEngine\HtmlClosingTagState.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="MonoDevelop.AspNet\ProjectRegisteredControls.cs" />
+    <Compile Include="MonoDevelop.AspNet.Parser\ContentPlaceHolderVisitor.cs" />
+    <Compile Include="MonoDevelop.AspNet\MasterContentFileDescriptionTemplate.cs" />
+    <Compile Include="MonoDevelop.AspNet.Gui\AspNetFileSelector.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.AspNet.Gui.AspNetFileSelector.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

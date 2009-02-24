@@ -1,5 +1,35 @@
 2009-02-24  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.AspNet/MasterContentFileDescriptionTemplate.cs:
+	  Add new template type that allows user to pick a master page
+	  and stubs out content regions.
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* AspNetAddIn.csproj:
+	* MonoDevelop.AspNet.addin.xml: Updated.
+
+	* Templates/MasterPage-Empty.xft.xml:
+	* Templates/MasterPage-CodeBehind.xft.xml:
+	* Templates/MasterPage-CodeBehindNonPartial.xft.xml: Correct
+	  names.
+
+	* Templates/WebContentForm.xft.xml:
+	* Templates/NestedMasterPage.xft.xml:
+	* Templates/WebContentForm-CodeBehind.xft.xml:
+	* Templates/NestedMasterPage-CodeBehind.xft.xml: New
+	  templates.
+
+	* MonoDevelop.AspNet.Gui/AspNetFileSelector.cs:
+	* gtk-gui/MonoDevelop.AspNet.Gui.AspNetFileSelector.cs: Added
+	  a UI for picking a master page.
+
+	* MonoDevelop.AspNet.Parser/ContentPlaceHolderVisitor.cs: A
+	  visitor for finding the contentplaceholder ids of a master
+	  page.
+
+2009-02-24  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.AspNet/AspNetAppProject.cs: Add methods for
 	  handling virtual paths.
 

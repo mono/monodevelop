@@ -5,12 +5,12 @@
 
 	<!-- Template Header -->
 	<TemplateConfiguration>
-		<_Name>MasterPage without CodeBehind</_Name>
+		<_Name>Master Page without CodeBehind</_Name>
 		<Icon>md-html-file-icon</Icon>
 		<_Category>ASP.NET</_Category>
 		<LanguageName>*</LanguageName>
 		<ProjectType>AspNetApp</ProjectType>
-		<_Description>Creates an ASP.NET MasterPage without a CodeBehind class.</_Description>
+		<_Description>Creates an ASP.NET Master Page.</_Description>
 	</TemplateConfiguration>
 	
 	<Conditions>
