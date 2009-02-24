@@ -344,12 +344,20 @@ namespace MonoDevelop.CSharpBinding
 			string modifiers = !String.IsNullOrEmpty (modStr) ? settings.EmitModifiers (modStr) : "";
 			string keyword = settings.EmitKeyword (GetString (type.ClassType));
 			
-			string name;
-			if (settings.UseFullName)
-				name = Format (instantiatedType == null ? type.FullName : instantiatedType.UninstantiatedType.FullName);
-			else 
-				name = Format (NormalizeTypeName (instantiatedType == null ? type.Name : instantiatedType.UninstantiatedType.Name));
-			
+			string name = null;
+			if (type.Name.EndsWith("[]")) {
+				List<IMember> member = type.SearchMember ("Item", true);
+				if (member != null && member.Count >0)
+					name = Visit (member[0].ReturnType, settings);
+				if (settings.IncludeGenerics)
+					name += "[]";
+			} 
+			if (name == null) {
+				if (settings.UseFullName)
+					name = Format (instantiatedType == null ? type.FullName : instantiatedType.UninstantiatedType.FullName);
+				else 
+					name = Format (NormalizeTypeName (instantiatedType == null ? type.Name : instantiatedType.UninstantiatedType.Name));
+			}
 			int parameterCount = type.TypeParameters.Count;
 			if (instantiatedType != null)
 				parameterCount = instantiatedType.GenericParameters.Count;
