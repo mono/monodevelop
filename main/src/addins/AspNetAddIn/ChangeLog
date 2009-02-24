@@ -1,5 +1,10 @@
 2009-02-24  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.AspNet.Gui/AspNetFileSelector.cs: Diplay project
+	  tree and its icons correctly.
+
+2009-02-24  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.AspNet/MasterContentFileDescriptionTemplate.cs:
 	  Add new template type that allows user to pick a master page
 	  and stubs out content regions.

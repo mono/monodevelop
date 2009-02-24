@@ -29,7 +29,7 @@ using System.Collections.Generic;
 using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Gui;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.AspNet.Gui
 {
@@ -41,11 +41,10 @@ namespace MonoDevelop.AspNet.Gui
 		string defaultFilterName;
 		string defaultFilterPattern;
 		AspNetAppProject project;
-		TreeStore dirStore = new TreeStore (typeof (object), typeof (Boolean));
+		TreeStore dirStore = new TreeStore (typeof (string));
 		ListStore fileStore = new ListStore (typeof (ProjectFile));
 		
-		Gdk.Pixbuf openFolder;
-		Gdk.Pixbuf closedFolder;
+		Gdk.Pixbuf projBuf, dirOpenBuf, dirClosedBuf;
 		
 		public AspNetFileSelector (AspNetAppProject project)
 			: this (project, GettextCatalog.GetString ("All files"), "*")
@@ -54,14 +53,16 @@ namespace MonoDevelop.AspNet.Gui
 		
 		public AspNetFileSelector (AspNetAppProject project, string defaultFilterName, string defaultFilterPattern)
 		{
+			
 			this.project = project;
 			this.defaultFilterName = defaultFilterName;
 			this.defaultFilterPattern = defaultFilterPattern ?? "*";
 			
 			this.Build();
 			
-			openFolder = MonoDevelop.Core.Gui.Services.Resources.GetIcon (MonoDevelop.Core.Gui.Stock.OpenFolder);
-			closedFolder = MonoDevelop.Core.Gui.Services.Resources.GetIcon (MonoDevelop.Core.Gui.Stock.ClosedFolder); 
+			projBuf = IdeApp.Services.Resources.GetIcon (IdeApp.Services.Icons.GetImageForProjectType (project.ProjectType), IconSize.Menu);
+			dirClosedBuf = IdeApp.Services.Resources.GetIcon (MonoDevelop.Core.Gui.Stock.ClosedFolder, IconSize.Menu);
+			dirOpenBuf = IdeApp.Services.Resources.GetIcon (MonoDevelop.Core.Gui.Stock.OpenFolder, IconSize.Menu);
 			
 			TreeViewColumn projectCol = new TreeViewColumn ();
 			projectCol.Title = GettextCatalog.GetString ("Project Folders");
@@ -72,10 +73,9 @@ namespace MonoDevelop.AspNet.Gui
 			projectCol.SetCellDataFunc (pixRenderer, new TreeCellDataFunc (PixDataFunc));
 			projectCol.SetCellDataFunc (txtRenderer, new TreeCellDataFunc (TxtDataFunc));
 			projectTree.Model = dirStore;
-			projectTree.TestExpandRow += HandleTestExpandRow;;
 			projectTree.AppendColumn (projectCol);
-			TreeIter projectIter = dirStore.AppendValues (project);
-			InitDirs (projectIter, project.BaseDirectory);
+			TreeIter projectIter = dirStore.AppendValues ("");
+			InitDirs (projectIter);
 			
 			TreeViewColumn fileCol = new TreeViewColumn ();
 			CellRendererPixbuf filePixRenderer = new CellRendererPixbuf ();
@@ -92,58 +92,48 @@ namespace MonoDevelop.AspNet.Gui
 			projectTree.Selection.Changed += UpdateFileList;
 			fileList.Selection.Changed += UpdateSensitivity;
 		}
-
-		void HandleTestExpandRow (object o, TestExpandRowArgs args)
+		
+		//FIXME: this is horribly inefficient
+		void InitDirs (TreeIter parent)
 		{
-			if ((bool)dirStore.GetValue (args.Iter, 1) == false) {
-				ProjectFile pf = (ProjectFile) dirStore.GetValue (args.Iter, 0);
-				InitDirs (args.Iter, pf.FilePath);
-			}
-			args.RetVal = !dirStore.IterHasChild (args.Iter);
+			List<string> dirs = new List<string> ();
+			foreach (ProjectFile pf in project.Files.GetFilesInPath (project.BaseDirectory))
+				if (pf.Subtype == Subtype.Directory)
+					dirs.Add (pf.RelativePath);
+			InitDirs (parent, dirs, "");
 		}
 		
-		void InitDirs (TreeIter parent, string path)
+		void InitDirs (TreeIter parent, List<string> dirs, string path)
 		{
-			foreach (ProjectFile pf in project.Files.GetFilesInPath (path))
-				if (pf.Subtype == Subtype.Directory)
-					dirStore.AppendValues (parent, pf, false);
-			dirStore.SetValue (parent, 1, true);
+			foreach (string s in dirs)
+				if (s.StartsWith (path) && s.Length > path.Length && s.IndexOf (System.IO.Path.DirectorySeparatorChar, s.Length) < 0)
+					InitDirs (dirStore.AppendValues (parent, s), dirs, s);
 		}
 		
 		void PixDataFunc (TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter)
 		{
 			CellRendererPixbuf pixRenderer = (CellRendererPixbuf) cell;
-			object obj = tree_model.GetValue (iter, 0);
-			string icon = null;
-			if (obj is Project) {
-				pixRenderer.PixbufExpanderOpen = null;
-				pixRenderer.PixbufExpanderClosed = null;
-				pixRenderer.IconName
-					= MonoDevelop.Projects.Gui.Services.Icons.GetImageForProjectType (((Project)obj).ProjectType);
+			string dirname = (string) tree_model.GetValue (iter, 0);
+			
+			if (dirname.Length == 0) {
+				pixRenderer.PixbufExpanderOpen = pixRenderer.PixbufExpanderClosed = projBuf;
 				return;
 			}
-			
-			ProjectFile pf = (ProjectFile)obj;
-			System.Diagnostics.Debug.Assert (pf.Subtype == Subtype.Directory);
-			
-			pixRenderer.IconName = null;
-			pixRenderer.PixbufExpanderOpen = openFolder;
-			pixRenderer.PixbufExpanderClosed = closedFolder; 
+			pixRenderer.PixbufExpanderOpen = dirOpenBuf;
+			pixRenderer.PixbufExpanderClosed = pixRenderer.Pixbuf = dirClosedBuf;
 		}
 		
 		void TxtDataFunc (TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter)
 		{
 			CellRendererText txtRenderer = (CellRendererText) cell;
-			object obj = tree_model.GetValue (iter, 0);
-			if (obj is Project) {
-				txtRenderer.Text = ((Project)obj).Name;
+			string dirname = (string) tree_model.GetValue (iter, 0);
+			if (dirname.Length == 0) {
+				txtRenderer.Text = project.Name;
 				return;
 			}
 			
-			ProjectFile pf = (ProjectFile)obj;
-			System.Diagnostics.Debug.Assert (pf.Subtype == Subtype.Directory);
-			int lastSlash = pf.Name.LastIndexOf (System.IO.Path.DirectorySeparatorChar);
-			txtRenderer.Text = lastSlash < 0? pf.Name : pf.Name.Substring (lastSlash); 
+			int lastSlash = dirname.LastIndexOf (System.IO.Path.DirectorySeparatorChar);
+			txtRenderer.Text = lastSlash < 0? dirname : dirname.Substring (lastSlash + 1); 
 		}
 		
 		void PixFileDataFunc (TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter)
@@ -153,9 +143,9 @@ namespace MonoDevelop.AspNet.Gui
 			Gdk.Pixbuf oldBuf = pixRenderer.Pixbuf;
 			string icName = MonoDevelop.Projects.Gui.Services.Icons.GetImageForFile (pf.FilePath);
 			if (icName != MonoDevelop.Core.Gui.Stock.MiscFiles || !System.IO.File.Exists (pf.FilePath))
-				pixRenderer.Pixbuf = MonoDevelop.Core.Gui.Services.Resources.GetIcon (icName, Gtk.IconSize.Menu);
+				pixRenderer.Pixbuf = IdeApp.Services.Resources.GetIcon (icName, Gtk.IconSize.Menu);
 			else
-				pixRenderer.Pixbuf = MonoDevelop.Ide.Gui.IdeApp.Services.PlatformService.GetPixbufForFile (pf.FilePath, Gtk.IconSize.Menu);
+				pixRenderer.Pixbuf = IdeApp.Services.PlatformService.GetPixbufForFile (pf.FilePath, Gtk.IconSize.Menu);
 			if (oldBuf != null)
 				oldBuf.Dispose ();
 		}
@@ -190,12 +180,8 @@ namespace MonoDevelop.AspNet.Gui
 			TreeIter iter;
 			if (!projectTree.Selection.GetSelected (out iter))
 				return project.BaseDirectory;
-			object o = dirStore.GetValue (iter, 0);
-			if (o is Project)
-				return project.BaseDirectory;
-			ProjectFile pf = (ProjectFile)o;
-			System.Diagnostics.Debug.Assert (pf.Subtype == Subtype.Directory);
-			return pf.FilePath;
+			string dir = (string)dirStore.GetValue (iter, 0);
+			return System.IO.Path.Combine (project.BaseDirectory, dir);
 		}
 		
 		void UpdateFileList (object sender, EventArgs args)
@@ -214,9 +200,17 @@ namespace MonoDevelop.AspNet.Gui
 			System.Text.RegularExpressions.Regex regex = new System.Text.RegularExpressions.Regex (pattern);
 			
 			string dir = GetSelectedDirectory ();
-			foreach (ProjectFile pf in project.Files.GetFilesInPath (dir))
-				if (pf.Subtype != Subtype.Directory && regex.IsMatch (System.IO.Path.GetFileName (pf.Name)))
+			foreach (ProjectFile pf in project.Files) {
+				if (pf.Subtype == Subtype.Directory || !pf.FilePath.StartsWith (dir))
+					continue;
+				int split = pf.FilePath.LastIndexOf (System.IO.Path.DirectorySeparatorChar);
+				if (split != dir.Length)
+					continue;
+				
+				string filename = pf.FilePath.Substring (split + 1);
+				if (regex.IsMatch (System.IO.Path.GetFileName (filename)))
 					fileStore.AppendValues (pf);
+			}
 			
 			UpdateSensitivity (null, null);
 		}
@@ -231,11 +225,13 @@ namespace MonoDevelop.AspNet.Gui
 		
 		protected override void OnDestroyed ()
 		{
-			if (openFolder != null) {
-				openFolder.Dispose ();
-				closedFolder.Dispose ();
-				openFolder = closedFolder = null;
-			}
+			if (projBuf != null)
+				projBuf.Dispose ();
+			if (dirClosedBuf != null)
+				dirClosedBuf.Dispose ();
+			if (dirOpenBuf != null)
+				dirOpenBuf.Dispose ();
+			dirClosedBuf = dirOpenBuf = projBuf = null;
 			base.OnDestroyed ();
 		}
 
