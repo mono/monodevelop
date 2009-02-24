@@ -1,3 +1,8 @@
+2009-02-24  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Templates/ViewContentPage.xft.xml: Use master content
+	  generator.
+
 2009-02-21  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Templates/Project.xpt.xml:

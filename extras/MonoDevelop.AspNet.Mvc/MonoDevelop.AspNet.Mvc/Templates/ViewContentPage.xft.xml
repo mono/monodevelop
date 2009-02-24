@@ -15,15 +15,12 @@
 	
 	<!-- Template Content -->
 	<TemplateFiles>
-		<AspNetFile name="${Name}.aspx">
+		<AspNetMasterContentFile name="${Name}.aspx" DefaultExtension=".aspx">
 			<FileText>
-				<![CDATA[﻿<%@ Page Title="" Language="${AspNetLanguage}" Inherits="System.Web.Mvc.ViewPage" %>
-<asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-</asp:Content>
-<asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
-</asp:Content>
+				<![CDATA[﻿<%@ Page Title="" Language="${AspNetLanguage}" Inherits="System.Web.Mvc.ViewPage" MasterPage="${AspNetMaster}" %>
+${AspNetMasterContent}
 ]]>
 			</FileText>
-		</AspNetFile>
+		</AspNetMasterContentFile>
 	</TemplateFiles>
 </Template>
