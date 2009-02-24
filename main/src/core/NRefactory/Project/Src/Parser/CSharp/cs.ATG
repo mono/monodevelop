@@ -639,8 +639,11 @@ FormalParameterList<List<ParameterDeclarationExpression> parameter>
 			","                              (. attributes = new List<AttributeSection>(); if (paramsFound) Error("params array must be at end of parameter list"); .)
 			{ AttributeSection<out section> (.attributes.Add(section); .) }
 			(
-				FixedParameter<out p>        (. p.Attributes = attributes; parameter.Add(p); .)
+				IF (IsArgListFound ())
+					Identifier               (. p = new ParameterDeclarationExpression(new TypeReference("System.RuntimeArgumentHandle"), t.val);p.StartLocation = t.Location; p.EndLocation = t.EndLocation;parameter.Add(p); .)
+				| FixedParameter<out p>        (. p.Attributes = attributes; parameter.Add(p); .)
 				| ParameterArray<out p>      (. paramsFound = true; p.Attributes = attributes; parameter.Add(p); .)
+				
 			)
 		}
 		| ParameterArray<out p>              (. p.Attributes = attributes; parameter.Add(p); .)
@@ -658,7 +661,7 @@ FixedParameter<out ParameterDeclarationExpression p>
 		"ref"    (. mod = ParameterModifiers.Ref; .)
 		| "out"  (. mod = ParameterModifiers.Out; .)
 	]
-	Type<out type> Identifier (. p = new ParameterDeclarationExpression(type, t.val, mod); p.StartLocation = start; p.EndLocation = t.Location; .)
+	Type<out type> Identifier (. p = new ParameterDeclarationExpression(type, t.val, mod); p.StartLocation = start; p.EndLocation = t.Location;.)
 .
 
 ParameterArray<out ParameterDeclarationExpression p>

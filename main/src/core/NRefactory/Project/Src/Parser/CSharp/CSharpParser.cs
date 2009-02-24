@@ -574,6 +574,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		
 		bool LastExpressionIsUnaryMinus(System.Collections.ArrayList expressions)
 		{
+			
 			if (expressions.Count == 0) return false;
 			UnaryOperatorExpression uoe = expressions[expressions.Count - 1] as UnaryOperatorExpression;
 			if (uoe != null) {
@@ -591,6 +592,11 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					return true;
 			}
 			return false;
+		}
+		
+		bool IsArgListFound ()
+		{
+			return la.val == "__arglist";
 		}
 		
 		static bool IsIdentifierToken(Token tk)

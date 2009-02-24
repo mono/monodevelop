@@ -1,3 +1,10 @@
+2009-02-24  Mike Krüger  <mkrueger@novell.com>
+
+	* Project/Src/Parser/CSharp/cs.ATG:
+	* Project/Src/Parser/CSharp/Parser.cs:
+	* Project/Src/Parser/CSharp/CSharpParser.cs: Added support for
+	  the __arglist keyword.
+
 2009-02-11  Mike Krüger  <mkrueger@novell.com>
 
 	* Project/Src/Visitors/CodeDOMOutputVisitor.cs: fixed
