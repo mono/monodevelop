@@ -95,19 +95,36 @@ namespace Mono.TextEditor.Highlighting
 			while (curOffset < offset + length && curOffset < doc.Length) {
 				LineSegment line = doc.GetLineByOffset (curOffset);
 				int toOffset = System.Math.Min (line.Offset + line.EditableLength, offset + length);
+				Stack<ChunkStyle> styleStack = new Stack<ChunkStyle> ();
 				for (Chunk chunk = GetChunks (doc, style, line, curOffset, toOffset - curOffset); chunk != null; chunk = chunk.Next) {
-					result.Append("<span foreground=\"");
+					
 					ChunkStyle chunkStyle = chunk.GetChunkStyle (style);
-					result.Append(String.Format ("#{0:X2}{1:X2}{2:X2}", 
-					                             chunkStyle.Color.Red   >> 8,
-					                             chunkStyle.Color.Green >> 8,
-					                             chunkStyle.Color.Blue  >> 8));
-					result.Append("\"");
-					if (chunkStyle.Bold)
-						result.Append(" weight=\"bold\"");
-					if (chunkStyle.Italic)
-						result.Append(" style=\"italic\"");
-					result.Append(">");
+					bool setBold   = chunkStyle.Bold && (styleStack.Count == 0 || !styleStack.Peek ().Bold);
+					bool setItalic = chunkStyle.Italic && (styleStack.Count == 0 || !styleStack.Peek ().Italic);
+					bool setUnderline = chunkStyle.Underline && (styleStack.Count == 0 || !styleStack.Peek ().Underline);
+					bool setColor = styleStack.Count == 0 || TextViewMargin.GetPixel (styleStack.Peek ().Color) != TextViewMargin.GetPixel (chunkStyle.Color);
+					if (setColor || setBold || setItalic || setUnderline) {
+						if (styleStack.Count > 0) {
+							result.Append("</span>");
+							styleStack.Pop ();
+						}
+						result.Append("<span");
+						result.Append(" foreground=\"");
+						result.Append(String.Format ("#{0:X2}{1:X2}{2:X2}", 
+						                             chunkStyle.Color.Red   >> 8,
+						                             chunkStyle.Color.Green >> 8,
+						                             chunkStyle.Color.Blue  >> 8));
+						result.Append("\"");
+						if (chunkStyle.Bold)
+							result.Append(" weight=\"bold\"");
+						if (chunkStyle.Italic)
+							result.Append(" style=\"italic\"");
+						if (chunkStyle.Underline)
+							result.Append(" underline=\"single\"");
+						result.Append(">");
+						styleStack.Push (chunkStyle);
+					}
+					
 					for (int i = 0; i < chunk.Length; i++) {
 						char ch = chunk.GetCharAt (doc, chunk.Offset + i);
 						switch (ch) {
@@ -128,8 +145,12 @@ namespace Mono.TextEditor.Highlighting
 							break;
 						}
 					}
-					result.Append("</span>");
 				}
+				while (styleStack.Count > 0) {
+					result.Append("</span>");
+					styleStack.Pop ();
+				}
+						
 				curOffset = line.EndOffset;
 				if (removeIndent)
 					curOffset += indentLength;

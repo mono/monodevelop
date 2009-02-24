@@ -631,7 +631,7 @@ namespace Mono.TextEditor
 		{
 			win.DrawLayout (GetGC (ColorStyle.InvalidLineMarker), x, y, invalidLineMarker);
 		}
-		static ulong GetPixel (Color color)
+		internal static ulong GetPixel (Color color)
 		{
 			return (((ulong)color.Red) << 32) |
 					(((ulong)color.Green) << 16) |
