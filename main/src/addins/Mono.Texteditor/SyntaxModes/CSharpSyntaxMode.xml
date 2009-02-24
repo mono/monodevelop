@@ -93,6 +93,9 @@
 		<Word>partial</Word>
 		<Word>global</Word>
 		<Word>where</Word>
+		<Word>__arglist</Word>
+		<Word>__makeref</Word>
+		<Word>__reftype</Word>
 	</Keywords>
 	
 	<Keywords color = "keyword.exceptions">

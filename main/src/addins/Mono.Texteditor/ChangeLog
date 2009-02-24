@@ -1,3 +1,8 @@
+2009-02-24  Mike Krüger  <mkrueger@novell.com>
+
+	* SyntaxModes/CSharpSyntaxMode.xml: Added highlighting for
+	  undocumented keywords.
+
 2009-02-22  Mike Krüger  <mkrueger@novell.com>
 
 	* SyntaxModes/CSyntaxMode.xml:
