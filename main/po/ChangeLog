@@ -1,3 +1,7 @@
+2009-02-25  Atsushi Enomoto  <atsushi@ximian.com>
+
+	* ja.po : updated translation.
+
 2009-02-25  Mike Krüger  <mkrueger@novell.com>
 
 	* de.po: Worked on german translation.
@@ -27,6 +31,7 @@
 	* pt_BR.po:
 	* messages.po: Updated for string freeze.
 
+>>>>>>> .r127971
 2009-02-19  Mike Krüger  <mkrueger@novell.com>
 
 	* de.po: updated translation.
