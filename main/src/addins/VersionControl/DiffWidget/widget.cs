@@ -53,7 +53,7 @@ namespace Algorithm.Diff.Gtk {
 		{
 		}
 		OverviewRenderer overviewRenderer;
-		public override void Destroy ()
+		protected override void OnDestroyed ()
 		{
 			if (font != null) {
 				font.Dispose ();
@@ -72,9 +72,9 @@ namespace Algorithm.Diff.Gtk {
 				difftable.Destroy ();
 				difftable = null;
 			}
-			base.Destroy ();
+			base.OnDestroyed ();
 		}
-
+		
 		protected override void OnStyleSet (global::Gtk.Style previous_style)
 		{
 			ColorBlack = this.Style.Text (StateType.Normal);
@@ -265,15 +265,15 @@ namespace Algorithm.Diff.Gtk {
 				this.LeaveNotifyEvent += LeaveNotifyEventHandler;
 			}
 			
-			public override void Destroy ()
+			protected override void OnDestroyed ()
 			{
 				this.EnterNotifyEvent -= EnterNotifyEventHandler;
 				this.LeaveNotifyEvent -= LeaveNotifyEventHandler;
 				if (renderer != null) 
 					renderer = null;
-				base.Destroy ();
+				base.OnDestroyed ();
 			}
-
+			
 			void EnterNotifyEventHandler (object o, EnterNotifyEventArgs args) {
 				renderer.Highlight();
 			}		
@@ -303,7 +303,7 @@ namespace Algorithm.Diff.Gtk {
 				ClearHighlight();
 			}
 			
-			public override void Destroy ()
+			protected override void OnDestroyed ()
 			{
 				this.Realized -= OnRealized;
 				this.SizeAllocated -= SizeAllocatedHandler;
@@ -311,9 +311,9 @@ namespace Algorithm.Diff.Gtk {
 					layout.Dispose ();
 					layout = null;
 				}
-				base.Destroy ();
+				base.OnDestroyed ();
 			}
-
+			
 			Gdk.Color bg_color {
 				get {
 					switch (type) {
@@ -421,7 +421,7 @@ namespace Algorithm.Diff.Gtk {
 				Add(ovr2);
 			}
 			
-			public override void Destroy ()
+			protected override void OnDestroyed ()
 			{
 				if (ovr2 != null) {
 					ovr2.Destroy ();
@@ -429,9 +429,9 @@ namespace Algorithm.Diff.Gtk {
 				}
 				scroller = null;
 				this.ButtonPressEvent -= ButtonPressHandler;
-				base.Destroy ();
+				base.OnDestroyed ();
 			}
-
+			
 			void ButtonPressHandler(object o, ButtonPressEventArgs args) 
 			{
 				double position = ((double)args.Event.Y / Allocation.Height - (double)scroller.Allocation.Height/scroller.Vadjustment.Upper/2) * scroller.Vadjustment.Upper;
@@ -455,16 +455,15 @@ namespace Algorithm.Diff.Gtk {
 				scroller.ExposeEvent += OnScroll;
 				WidthRequest = 50;
 			}
-			
-			public override void Destroy ()
+			protected override void OnDestroyed ()
 			{
 				if (scroller != null) {
 					scroller.ExposeEvent -= OnScroll;
 					scroller = null;
 				}
-				base.Destroy ();
+				base.OnDestroyed ();
 			}
-
+			
 			void OnScroll (object o, ExposeEventArgs args)
 			{
 				QueueDrawArea(0, 0, Allocation.Width, Allocation.Height);

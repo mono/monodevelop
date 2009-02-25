@@ -1,5 +1,10 @@
 2009-02-25  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.VersionControl.Views/CellRendererDiff.cs:
+	  Changed override Destroy --> override OnDestroyed.
+
+2009-02-25  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.VersionControl.Views/LogView.cs:
 	* MonoDevelop.VersionControl.Views/DiffView.cs:
 	* MonoDevelop.VersionControl.Views/StatusView.cs:

@@ -30,7 +30,7 @@ namespace MonoDevelop.VersionControl.Views
 		}
 		
 		bool isDisposed = false;
-		public override void Destroy ()
+		protected override void OnDestroyed ()
 		{
 			isDisposed = true;
 			DisposeLayout ();
@@ -38,9 +38,9 @@ namespace MonoDevelop.VersionControl.Views
 				font.Dispose ();
 				font = null;
 			}
-			base.Destroy ();
+			base.OnDestroyed ();
 		}
-
+		
 		public void Reset ()
 		{
 		}

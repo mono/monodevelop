@@ -1,5 +1,10 @@
 2009-02-25  Mike Krüger  <mkrueger@novell.com>
 
+	* widget.cs: Changed override Destroy --> override
+	  OnDestroyed.
+
+2009-02-25  Mike Krüger  <mkrueger@novell.com>
+
 	* widget.cs: Worked on ressource de-allocation.
 
 2009-02-20  Mike Krüger  <mkrueger@novell.com>
