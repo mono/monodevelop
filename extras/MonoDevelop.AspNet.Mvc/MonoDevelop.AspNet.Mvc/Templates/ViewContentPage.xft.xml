@@ -17,7 +17,7 @@
 	<TemplateFiles>
 		<AspNetMasterContentFile name="${Name}.aspx" DefaultExtension=".aspx">
 			<FileText>
-				<![CDATA[﻿<%@ Page Title="" Language="${AspNetLanguage}" Inherits="System.Web.Mvc.ViewPage" MasterPage="${AspNetMaster}" %>
+				<![CDATA[﻿<%@ Page Title="" Language="${AspNetLanguage}" Inherits="System.Web.Mvc.ViewPage" MasterPageFile="${AspNetMaster}" %>
 ${AspNetMasterContent}
 ]]>
 			</FileText>

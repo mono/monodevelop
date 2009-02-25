@@ -1,5 +1,10 @@
 2009-02-24  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Templates/ViewContentPage.xft.xml: Fix MasterPageFile
+	  attribute name.
+
+2009-02-24  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Templates/ViewContentPage.xft.xml: Use master content
 	  generator.
 
