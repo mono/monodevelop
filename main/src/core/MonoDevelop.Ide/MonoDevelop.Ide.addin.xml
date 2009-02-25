@@ -333,7 +333,7 @@
 				icon  = "md-workspace" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddNewSolution"
 				_label = "_Add New Solution..."
-				_description = "Add a new child workspace to the selected workspace"
+				_description = "Add a new child solution to the selected workspace"
 				icon  = "md-new-solution-icon" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddSolutionFolder"
 				_label = "Add Solution _Folder" 
