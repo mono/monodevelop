@@ -361,7 +361,7 @@ namespace MonoDevelop.AspNet
 		
 		public ProjectFile ResolveVirtualPath (string virtualPath, string relativeToFile)
 		{
-			string name = VirtualToLocalPath (relativeToFile, virtualPath);
+			string name = VirtualToLocalPath (virtualPath, relativeToFile);
 			if (name == null)
 				return null;
 			return Files.GetFile (name);

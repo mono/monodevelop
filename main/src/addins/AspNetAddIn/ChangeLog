@@ -1,5 +1,14 @@
 2009-02-24  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.AspNet/AspNetAppProject.cs: Fix swapped
+	  parameters in ResolveVirtualPath.
+
+	* MonoDevelop.AspNet/VerifyCodeBehindBuildStep.cs: Generate
+	  strongly typed master accessor property if the MasterType
+	  directive is present.
+
+2009-02-24  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.AspNet.Parser/PageInfo.cs: More properties in
 	  ToString.
 

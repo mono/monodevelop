@@ -158,6 +158,45 @@ namespace MonoDevelop.AspNet
 					typeDecl.Name = className;
 				}
 				
+				string masterTypeName = null;
+				if (!String.IsNullOrEmpty (parsedDocument.PageInfo.MasterPageTypeName)) {
+					masterTypeName = parsedDocument.PageInfo.MasterPageTypeName;
+				} else if (!String.IsNullOrEmpty (parsedDocument.PageInfo.MasterPageTypeVPath)) {
+					try {
+						ProjectFile resolvedMaster = aspProject.ResolveVirtualPath (parsedDocument.PageInfo.MasterPageTypeVPath, parsedDocument.FileName);
+						AspNetParsedDocument masterParsedDocument = null;
+						if (resolvedMaster != null)
+							masterParsedDocument = ProjectDomService.Parse (aspProject, resolvedMaster.FilePath, null)	as AspNetParsedDocument;
+						if (masterParsedDocument != null && !String.IsNullOrEmpty (masterParsedDocument.PageInfo.InheritedClass)) {
+							masterTypeName = masterParsedDocument.PageInfo.InheritedClass;
+						} else {
+							errors.Add (new CodeBehindWarning (String.Format ("Could not find type for master '{0}'",
+							                                                  parsedDocument.PageInfo.MasterPageTypeVPath),
+							                                   parsedDocument.FileName));
+						}
+					} catch (Exception ex) {
+						errors.Add (new CodeBehindWarning (String.Format ("Could not find type for master '{0}'",
+						                                                  parsedDocument.PageInfo.MasterPageTypeVPath),
+						                                   parsedDocument.FileName));
+						LoggingService.LogWarning ("Error resolving master page type", ex);
+					}
+				}
+				
+				if (masterTypeName != null) {
+					System.CodeDom.CodeMemberProperty masterProp = new System.CodeDom.CodeMemberProperty ();
+					masterProp.Name = "Master";
+					masterProp.Type = new System.CodeDom.CodeTypeReference (masterTypeName);
+					masterProp.HasGet = true;
+					masterProp.HasSet = false;
+					masterProp.Attributes = System.CodeDom.MemberAttributes.Public | System.CodeDom.MemberAttributes.New 
+						| System.CodeDom.MemberAttributes.Final;
+					masterProp.GetStatements.Add (new System.CodeDom.CodeMethodReturnStatement (
+							new System.CodeDom.CodeCastExpression (masterTypeName, 
+								new System.CodeDom.CodePropertyReferenceExpression (
+									new System.CodeDom.CodeBaseReferenceExpression (), "Master"))));
+					typeDecl.Members.Add (masterProp);
+				}
+				
 				//add fields for each control in the page
 				foreach (System.CodeDom.CodeMemberField member in memberList.Members.Values)
 					typeDecl.Members.Add (member);
