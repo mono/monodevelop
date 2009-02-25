@@ -22,7 +22,7 @@
  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE. -->
- <EditorStyle name="C64" _description="A Style style that uses the old Commodore 64 Styles">
+ <EditorStyle name="C64" _description="A style that uses the old Commodore 64 colors">
 
 	<Style name="text" color="#97A0EF" bgColor="#3F3FDF"/>
 	<Style name="text.selection" color="#FFFFFF" bgColor="#000000"/>
