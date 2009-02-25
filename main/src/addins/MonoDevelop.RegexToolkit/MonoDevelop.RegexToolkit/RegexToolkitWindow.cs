@@ -200,6 +200,19 @@ namespace MonoDevelop.RegexToolkit
 		protected override void OnDestroyed ()
 		{
 			base.OnDestroyed ();
+			if (optionsStore != null) {
+				optionsStore.Dispose ();
+				optionsStore = null;
+			}
+			if (resultStore != null) {
+				resultStore.Dispose ();
+				resultStore = null;
+			}
+			if (elementsStore != null) {
+				elementsStore.Dispose ();
+				elementsStore = null;
+			}
+			
 			HideTooltipWindow ();
 		}
 

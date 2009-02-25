@@ -1,3 +1,9 @@
+2009-02-25  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.RegexToolkit/RegexToolkitWindow.cs:
+	* MonoDevelop.RegexToolkit/RegexLibraryWindow.cs: Worked on
+	  ressource de-allocation.
+
 2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.RegexToolkit.mdp:

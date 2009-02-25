@@ -74,6 +74,15 @@ namespace MonoDevelop.RegexToolkit
 			UpdateExpressions ();
 		}
 		
+		public override void Destroy ()
+		{
+			if (store != null) {
+				store.Dispose ();
+				store = null;
+			}
+			base.Destroy ();
+		}
+
 		void ShowSelectedEntry ()
 		{
 			TreeIter iter;
