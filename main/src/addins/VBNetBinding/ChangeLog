@@ -1,3 +1,26 @@
+2009-02-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* VBNetBinding.csproj:
+	* gtk-gui/objects.xml:
+	* ProjectExtensions.cs:
+	* VBLanguageBinding.cs:
+	* VBNetBinding.addin.xml:
+	* Gui/ProjectOptionsPanel.cs:
+	* Gui/ImportsOptionsPanel.cs:
+	* VBBindingCompilerServices.cs:
+	* Project/VBProjectParameters.cs:
+	* Project/VBCompilerParameters.cs:
+	* Gui/ProjectOptionsPanelWidget.cs:
+	* Gui/ImportsOptionsPanelWidget.cs:
+	* gtk-gui/MonoDevelop.VBNetBinding.ProjectOptionsPanelWidget.cs:
+	* gtk-gui/MonoDevelop.VBNetBinding.ImportsOptionsPanelWidget.cs:
+	  Use the new ProjectParameters class and property to store
+	  global project settings that were previously stored as
+	  custom properties. Split the compiler options in two panels,
+	  one with the basic options and one with the imports.
+
 2009-02-11  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:

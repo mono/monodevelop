@@ -25,17 +25,6 @@
 			resourceHandler="MonoDevelop.VBNetBinding.VBNetResourceIdBuilder"/>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/ProjectModel/ExtendedProperties">
-		<ItemProperty class = "MonoDevelop.Projects.Project" name = "OptionInfer"     type = "System.String" external="false" />
-		<ItemProperty class = "MonoDevelop.Projects.Project" name = "OptionExplicit"  type = "System.String" external="false" />
-		<ItemProperty class = "MonoDevelop.Projects.Project" name = "OptionCompare"   type = "System.String" external="false" />
-		<ItemProperty class = "MonoDevelop.Projects.Project" name = "OptionStrict"    type = "System.String" external="false" />
-		<ItemProperty class = "MonoDevelop.Projects.Project" name = "MyType"          type = "System.String" external="false" />
-		<ItemProperty class = "MonoDevelop.Projects.Project" name = "StartupObject"   type = "System.String" external="false" />
-		<ItemProperty class = "MonoDevelop.Projects.Project" name = "ApplicationIcon" type = "System.String" external="false" />
-		<ItemProperty class = "MonoDevelop.Projects.Project" name = "CodePage"        type = "System.String" external="false" />
-	</Extension>
-	
 	<Extension path = "/MonoDevelop/ProjectModel/MD1SerializationMaps">
 		<SerializationMap resource="md1format.xml" />
 	</Extension>
@@ -71,6 +60,9 @@
 			<Panel id = "VBNetProjectOptionsPanel"
 				_label = "General Options" 
 				class = "MonoDevelop.VBNetBinding.ProjectOptionsPanel"/>
+			<Panel id = "VBNetOutputOptionsPanel"
+				_label = "Imports" 
+				class = "MonoDevelop.VBNetBinding.ImportOptionsPanel"/>
 		</Condition>
 	</Extension>
 

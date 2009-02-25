@@ -59,7 +59,7 @@ namespace MonoDevelop.VBNetBinding
 			return compilerServices.Compile (items, configuration, monitor);
 		}
 		
-		public ICloneable CreateCompilationParameters (XmlElement projectOptions)
+		public ConfigurationParameters CreateCompilationParameters (XmlElement projectOptions)
 		{
 			return new VBCompilerParameters ();
 		}
@@ -93,7 +93,12 @@ namespace MonoDevelop.VBNetBinding
 		{
 			return new ClrVersion[] { ClrVersion.Net_2_0 };
 		}
-		
+	
+		public ProjectParameters CreateProjectParameters (XmlElement projectOptions)
+		{
+			return new VBProjectParameters ();
+		}
+	
 		class ImprovedCodeDomProvider : Microsoft.VisualBasic.VBCodeProvider
 		{
 			[Obsolete ("Use CodeDomProvider class")]

@@ -96,7 +96,6 @@
     <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="Project\VBNetResourceIdBuilder.cs" />
     <Compile Include="Parser\DomParser.cs" />
-    <Compile Include="ProjectExtensions.cs" />
     <Compile Include="gtk-gui\MonoDevelop.VBNetBinding.ProjectOptionsPanelWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.VBNetBinding.ConfigurationOptionsPanelWidget.cs" />
     <Compile Include="Gui\ProjectOptionsPanelWidget.cs" />
@@ -104,6 +103,10 @@
     <Compile Include="Gui\ConfigurationOptionsPanel.cs" />
     <Compile Include="Gui\ProjectOptionsPanel.cs" />
     <Compile Include="Project\Import.cs" />
+    <Compile Include="Gui\ImportsOptionsPanelWidget.cs" />
+    <Compile Include="Gui\ImportsOptionsPanel.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.VBNetBinding.ImportsOptionsPanelWidget.cs" />
+    <Compile Include="Project\VBProjectParameters.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="templates\EmptyVBFile.xft.xml">

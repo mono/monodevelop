@@ -25,16 +25,19 @@ FILES =  \
 	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.VBNetBinding.ConfigurationOptionsPanelWidget.cs \
+	gtk-gui/MonoDevelop.VBNetBinding.ImportsOptionsPanelWidget.cs \
 	gtk-gui/MonoDevelop.VBNetBinding.ProjectOptionsPanelWidget.cs \
 	Gui/ConfigurationOptionsPanel.cs \
 	Gui/ConfigurationOptionsPanelWidget.cs \
+	Gui/ImportsOptionsPanel.cs \
+	Gui/ImportsOptionsPanelWidget.cs \
 	Gui/ProjectOptionsPanel.cs \
 	Gui/ProjectOptionsPanelWidget.cs \
 	Parser/DomParser.cs \
 	Project/Import.cs \
 	Project/VBCompilerParameters.cs \
 	Project/VBNetResourceIdBuilder.cs \
-	ProjectExtensions.cs \
+	Project/VBProjectParameters.cs \
 	VBBindingCompilerServices.cs \
 	VBCodeGenerator.cs \
 	VBLanguageBinding.cs

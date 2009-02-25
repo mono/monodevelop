@@ -40,16 +40,13 @@ using MonoDevelop.Core.Gui;
 using MonoDevelop.Core;
 using MonoDevelop.Components;
 
-using MonoDevelop.VBNetBinding.Extensions;
-
 namespace MonoDevelop.VBNetBinding
 {
 	[System.ComponentModel.ToolboxItem(true)]
 	public partial class ProjectOptionsPanelWidget : Gtk.Bin
 	{
 		DotNetProject project;
-		Gtk.ListStore imports = new Gtk.ListStore (typeof (String));
-		List<Import> currentImports;
+		VBProjectParameters parameters;
 		
 		public ProjectOptionsPanelWidget (MonoDevelop.Projects.Project project)
 		{
@@ -59,7 +56,7 @@ namespace MonoDevelop.VBNetBinding
 			this.Build();
 
 			this.project = (DotNetProject) project;
-			currentImports = new List<Import> (project.Items.GetAll<Import> ());
+			parameters = (VBProjectParameters) this.project.LanguageParameters;
 			
 			cr = new Gtk.CellRendererText ();
 			store = new Gtk.ListStore (typeof (string));
@@ -81,7 +78,7 @@ namespace MonoDevelop.VBNetBinding
 			store.AppendValues ("Console");
 			txtMyType.Model = store;
 			txtMyType.TextColumn = 0;
-			switch (this.project.GetMyType ()) {
+			switch (parameters.MyType) {
 			case "WindowsForms":
 				txtMyType.Active = 0;
 				break;
@@ -95,7 +92,7 @@ namespace MonoDevelop.VBNetBinding
 			case "":
 				break;
 			default:
-				txtMyType.AppendText (this.project.GetMyType ());
+				txtMyType.AppendText (parameters.MyType);
 				txtMyType.Active = 3;
 				break;
 			}
@@ -107,7 +104,7 @@ namespace MonoDevelop.VBNetBinding
 			cmbOptionCompare.Model = store;
 			cmbOptionCompare.PackStart (cr, true);
 			cmbOptionCompare.AddAttribute (cr, "text", 0);
-			cmbOptionCompare.Active = this.project.GetOptionCompare () == "Text" ? 1 : 0;
+			cmbOptionCompare.Active = parameters.BinaryOptionCompare ? 0 : 1;
 				
 			cr = new Gtk.CellRendererText ();
 			store = new Gtk.ListStore (typeof (string));
@@ -116,7 +113,7 @@ namespace MonoDevelop.VBNetBinding
 			cmbOptionExplicit.Model = store;
 			cmbOptionExplicit.PackStart (cr, true);
 			cmbOptionExplicit.AddAttribute (cr, "text", 0);
-			cmbOptionExplicit.Active = this.project.GetOptionExplicit () == "Off" ? 1 : 0;
+			cmbOptionExplicit.Active = parameters.OptionExplicit ? 0 : 1;
 			
 			cr = new Gtk.CellRendererText ();
 			store = new Gtk.ListStore (typeof (string));
@@ -125,7 +122,7 @@ namespace MonoDevelop.VBNetBinding
 			cmbOptionInfer.Model = store;
 			cmbOptionInfer.PackStart (cr, true);
 			cmbOptionInfer.AddAttribute (cr, "text", 0);
-			cmbOptionInfer.Active = this.project.GetOptionInfer () == "Off" ? 1 : 0;
+			cmbOptionInfer.Active = parameters.OptionInfer ? 0 : 1;
 			
 			cr = new Gtk.CellRendererText ();
 			store = new Gtk.ListStore (typeof (string));
@@ -134,16 +131,11 @@ namespace MonoDevelop.VBNetBinding
 			cmbOptionStrict.Model = store;
 			cmbOptionStrict.PackStart (cr, true);
 			cmbOptionStrict.AddAttribute (cr, "text", 0);
-			cmbOptionStrict.Active = this.project.GetOptionStrict () == "Off" ? 1 : 0;
-			
-			treeview1.AppendColumn ("Import", new Gtk.CellRendererText (), "text", 0);
-			treeview1.Model = imports;
-			imports.SetSortColumnId (0, Gtk.SortType.Ascending);
-			LoadImports ();
+			cmbOptionStrict.Active = parameters.OptionStrict ? 0 : 1;
 
 			// Codepage
 			string foundEncoding = null;
-			string currentCodepage = this.project.GetCodePage ();
+			string currentCodepage = parameters.CodePage;
 			foreach (TextEncoding e in TextEncoding.SupportedEncodings) {
 				if (e.CodePage == -1)
 					continue;
@@ -156,84 +148,21 @@ namespace MonoDevelop.VBNetBinding
 			else if (!string.IsNullOrEmpty (currentCodepage))
 				cmbCodePage.Entry.Text = currentCodepage;
 			
+			entryMainClass.Entry.Text = parameters.StartupObject;
+			iconEntry.Path = parameters.ApplicationIcon;
 		}
 		
 		public void StorePanelContents ()
 		{
-			this.project.SetIsOptionCompareBinary (cmbOptionStrict.ActiveText == "Binary");
-			this.project.SetIsOptionExplicit (cmbOptionExplicit.ActiveText == "On");
-			this.project.SetIsOptionInfer (cmbOptionInfer.ActiveText == "On");
-			this.project.SetIsOptionStrict (cmbOptionStrict.ActiveText == "On");
-			this.project.SetMytype (txtMyType.ActiveText);
-			this.project.SetMainClass (entryMainClass.ActiveText);
+			parameters.BinaryOptionCompare = cmbOptionCompare.ActiveText == "Binary";
+			parameters.OptionExplicit = cmbOptionExplicit.ActiveText == "On";
+			parameters.OptionInfer = cmbOptionInfer.ActiveText == "On";
+			parameters.OptionStrict = cmbOptionStrict.ActiveText == "On";
+			parameters.MyType = txtMyType.ActiveText;
+			parameters.StartupObject = entryMainClass.ActiveText;
+			parameters.CodePage = cmbCodePage.Entry.Text;
+			parameters.ApplicationIcon = iconEntry.Path;
 			this.project.CompileTarget = (CompileTarget) compileTargetCombo.Active;
-			this.project.SetCodePage (cmbCodePage.Entry.Text);
-			
-			List<Import> oldImports = new List<Import> (project.Items.GetAll<Import> ());
-			foreach (Import i in oldImports)
-				project.Items.Remove (i);
-			foreach (Import i in currentImports)
-				project.Items.Add (i);
-		}
-		
-		protected virtual void OnCmdAddClicked (object sender, System.EventArgs e)
-		{
-			bool exists = false;
-			
-			foreach (Import import in currentImports) {
-				if (import.Include == txtImport.Text) {
-					exists = true;
-					break;
-				}
-			}
-
-			if (!exists) {
-				currentImports.Add (new Import (txtImport.Text));
-				LoadImports ();
-			}
-		}
-
-		protected virtual void OnCmdRemoveClicked (object sender, System.EventArgs e)
-		{
-			bool removed = false;
-
-			Console.WriteLine ("OnCmdRemoveClicked");
-			treeview1.Selection.SelectedForeach (delegate (Gtk.TreeModel model, Gtk.TreePath path, Gtk.TreeIter iter) 
-			{
-				string import;
-				GLib.Value value = new GLib.Value ();
-				
-				model.GetValue (iter, 0, ref value);
-
-				import = value.Val as string;
-
-				if (string.IsNullOrEmpty (import))
-					return;
-				
-				foreach (Import im in currentImports) {
-					if (im.Include == import) {
-						currentImports.Remove (im);
-						removed = true;
-						break;
-					}
-				}
-				
-			});
-			if (removed)
-				LoadImports ();
-		}
-
-		protected virtual void OnTxtImportChanged (object sender, System.EventArgs e)
-		{
-			cmdAdd.Sensitive = !string.IsNullOrEmpty (txtImport.Text);
-		}
-
-		private void LoadImports ()
-		{
-			imports.Clear ();
-			foreach (Import import in currentImports) {
-				imports.AppendValues (import.Include);
-			}
 		}
 	}
 }

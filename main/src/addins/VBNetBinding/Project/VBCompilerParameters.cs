@@ -29,8 +29,9 @@ using System.ComponentModel;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;
 
-namespace MonoDevelop.VBNetBinding {
-	public class VBCompilerParameters: ICloneable
+namespace MonoDevelop.VBNetBinding
+{
+	public class VBCompilerParameters: ConfigurationParameters
 	{
 		//
 		// Project level properties:
@@ -69,16 +70,16 @@ namespace MonoDevelop.VBNetBinding {
 		[ItemProperty ("DebugType", DefaultValue="full")]
 		string debugType = "full";
 		
-		[ItemProperty ("DocumentationFile")]
+		[ItemProperty ("DocumentationFile", DefaultValue="")]
 		string documentationFile = string.Empty;
 		
-		[ItemProperty ("NoWarn")]
+		[ItemProperty ("NoWarn", DefaultValue="")]
 		string noWarnings = string.Empty;
 		
-		[ItemProperty ("WarningsAsErrors")]
+		[ItemProperty ("WarningsAsErrors", DefaultValue="")]
 		string warningsAsErrors = string.Empty;
 		
-		[ItemProperty ("TreatWarningsAsErrors")]
+		[ItemProperty ("TreatWarningsAsErrors", DefaultValue=false)]
 		bool treatWarningsAsErrors = false;
 
 		[ItemProperty ("WarningLevel", DefaultValue=1)]
@@ -158,11 +159,6 @@ namespace MonoDevelop.VBNetBinding {
 		public string AdditionalParameters {
 			get { return additionalParameters; }
 			set { additionalParameters = value; }
-		}
-
-		public object Clone ()
-		{
-			return MemberwiseClone ();
 		}
 	}
 }

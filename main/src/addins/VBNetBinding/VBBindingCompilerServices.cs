@@ -40,8 +40,6 @@ using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Text;
 
-using MonoDevelop.VBNetBinding.Extensions;
-
 namespace MonoDevelop.VBNetBinding {
 	
 	/// <summary>
@@ -55,7 +53,7 @@ namespace MonoDevelop.VBNetBinding {
 		static Regex regexError = new Regex (@"^\s*((?<file>.*) \((?<line>\d*),(?<column>\d*)\) : )?(?<level>\w+) :? ?(?<number>[^:]*): (?<message>.*)$",
 		                                     RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 		
-		string GenerateOptions (DotNetProjectConfiguration configuration, VBCompilerParameters compilerparameters, string outputFileName)
+		string GenerateOptions (DotNetProjectConfiguration configuration, VBCompilerParameters compilerparameters, VBProjectParameters projectparameters, string outputFileName)
 		{
 			DotNetProject project = (DotNetProject) configuration.ParentItem;
 			StringBuilder sb = new StringBuilder ();
@@ -73,62 +71,46 @@ namespace MonoDevelop.VBNetBinding {
 				sb.AppendLine ("-optimize+");
 
 			
-			switch (project.GetOptionStrict ()) {
-			case "On":
+			if (projectparameters.OptionStrict)
 				sb.AppendLine ("-optionstrict+");
-				break;
-			case "Off":
+			else
 				sb.AppendLine ("-optionstrict-");
-				break;				
-			}
 			
-			switch (project.GetOptionExplicit ()) {
-			case "On":
+			if (projectparameters.OptionExplicit)
 				sb.AppendLine ("-optionexplicit+");
-				break;
-			case "Off":
+			else
 				sb.AppendLine ("-optionexplicit-");
-				break;
-			}
 
-			switch (project.GetOptionCompare ()) {
-			case "Binary":
+			if (projectparameters.BinaryOptionCompare)
 				sb.AppendLine ("-optioncompare:binary");
-				break;
-			case "Text":
+			else
 				sb.AppendLine ("-optioncompare:text");
-				break;
-			}
 
-			switch (project.GetOptionInfer ()) {
-			case "On":
+			if (projectparameters.OptionInfer)
 				sb.AppendLine ("-optioninfer+");
-				break;
-			case "Off":
+			else
 				sb.AppendLine ("-optioninfer-");
-				break;
-			}
 
-			string mytype = project.GetMyType ();
+			string mytype = projectparameters.MyType;
 			if (!string.IsNullOrEmpty (mytype)) {
 				sb.AppendFormat ("-define:_MYTYPE=\\\"{0}\\\"", mytype);
 				sb.AppendLine ();
 			}
 			
-			string win32IconPath = project.GetApplicationIconPath ();
+			string win32IconPath = projectparameters.ApplicationIcon;
 			if (!string.IsNullOrEmpty (win32IconPath) && File.Exists (win32IconPath)) {
 				sb.AppendFormat ("\"-win32icon:{0}\"", win32IconPath);
 				sb.AppendLine ();
 			}
 
-			if (!string.IsNullOrEmpty (project.GetCodePage ())) {
-				TextEncoding enc = TextEncoding.GetEncoding (project.GetCodePage ());
+			if (!string.IsNullOrEmpty (projectparameters.CodePage)) {
+				TextEncoding enc = TextEncoding.GetEncoding (projectparameters.CodePage);
 				sb.AppendFormat ("-codepage:{0}", enc.CodePage);
 				sb.AppendLine ();
 			}
 			
-			if (!string.IsNullOrEmpty (project.GetRootNamespace ())) {
-				sb.AppendFormat ("-rootnamespace:{0}", project.GetRootNamespace ());
+			if (!string.IsNullOrEmpty (project.DefaultNamespace)) {
+				sb.AppendFormat ("-rootnamespace:{0}", project.DefaultNamespace);
 				sb.AppendLine ();
 			}
 			
@@ -167,10 +149,9 @@ namespace MonoDevelop.VBNetBinding {
 				sb.AppendLine ();
 			}
 
-			string mainClass = project.GetMainClass ();
-			if (!string.IsNullOrEmpty (mainClass) && mainClass != "Sub Main") {
+			if (!string.IsNullOrEmpty (projectparameters.StartupObject) && projectparameters.StartupObject != "Sub Main") {
 				sb.Append ("-main:");
-				sb.Append (project.GetMainClass ());
+				sb.Append (projectparameters.StartupObject);
 				sb.AppendLine ();
 			}
 
@@ -208,11 +189,15 @@ namespace MonoDevelop.VBNetBinding {
 			if (compilerparameters == null)
 				compilerparameters = new VBCompilerParameters ();
 			
+			VBProjectParameters projectparameters = (VBProjectParameters) configuration.ProjectParameters;
+			if (projectparameters == null)
+				projectparameters = new VBProjectParameters ();
+			
 			string exe = configuration.CompiledOutputName;
 			string responseFileName = Path.GetTempFileName();
 			StreamWriter writer = new StreamWriter (responseFileName);
 			
-			writer.WriteLine (GenerateOptions (configuration, compilerparameters, exe));
+			writer.WriteLine (GenerateOptions (configuration, compilerparameters, projectparameters, exe));
 
 			// Write references
 			foreach (ProjectReference lib in items.GetAll<ProjectReference> ()) {

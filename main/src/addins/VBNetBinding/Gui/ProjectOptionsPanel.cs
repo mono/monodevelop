@@ -48,19 +48,16 @@ namespace MonoDevelop.VBNetBinding
 		
 		public override Gtk.Widget CreatePanelWidget ()
 		{
-			Console.WriteLine ("ProjectOptionsPanel.CreatePanelWidget");
 			return (widget = new ProjectOptionsPanelWidget (ConfiguredProject));
 		}
 		
 		public override void Initialize (OptionsDialog dialog, object dataObject)
 		{
-			Console.WriteLine ("ProjectOptionsPanel.Initialize");
 			base.Initialize (dialog, dataObject);
 		}
 		
 		public override void ApplyChanges ()
 		{
-			Console.WriteLine ("ProjectOptionsPanel.ApplyChanges");
  			widget.StorePanelContents ();
 		}
 	}
