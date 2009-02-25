@@ -1,5 +1,13 @@
 2009-02-24  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Templates/WebContentForm.xft.xml:
+	* Templates/NestedMasterPage.xft.xml:
+	* Templates/WebContentForm-CodeBehind.xft.xml:
+	* Templates/NestedMasterPage-CodeBehind.xft.xml: Fix
+	  MasterPageFile attribute name.
+
+2009-02-24  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.AspNet.Parser/Directive.cs: Add completion for
 	  MasterType directive.
 

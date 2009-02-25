@@ -21,7 +21,7 @@
 	<TemplateFiles>
 		<AspNetMasterContentFile name="${Name}.aspx" DefaultExtension=".aspx">
 			<FileText>
-				<![CDATA[<%@ Page Language="${AspNetLanguage}" MasterPage="${AspNetMaster}" %>
+				<![CDATA[<%@ Page Language="${AspNetLanguage}" MasterPageFile="${AspNetMaster}" %>
 ${AspNetMasterContent}
 ]]>
 			</FileText>

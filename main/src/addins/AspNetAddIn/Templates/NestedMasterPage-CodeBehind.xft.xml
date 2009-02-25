@@ -22,7 +22,7 @@
 	<TemplateFiles>
 		<AspNetMasterContentFile name="${Name}.master">
 			<FileText>
-				<![CDATA[<%@ Master Language="${AspNetLanguage}" MasterPage="${AspNetMaster}" Inherits="${Namespace}.${Name}" %>
+				<![CDATA[<%@ Master Language="${AspNetLanguage}" MasterPageFile="${AspNetMaster}" Inherits="${Namespace}.${Name}" %>
 <%@ MasterType VirtualPath="${AspNetMaster}" %>
 ${AspNetMasterContent}
 ]]>
