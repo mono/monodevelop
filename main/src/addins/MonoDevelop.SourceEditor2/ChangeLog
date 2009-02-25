@@ -1,6 +1,14 @@
 2009-02-25  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/DropDownBox.cs:
+	* MonoDevelop.SourceEditor/DropDownBoxListWindow.cs:
+	* MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs:
+	* MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs:
+	  Changed override Destroy --> override OnDestroyed.
+
+2009-02-25  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/DropDownBox.cs:
 	* MonoDevelop.SourceEditor/SourceEditorView.cs:
 	* MonoDevelop.SourceEditor/ClassQuickFinder.cs:
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs:

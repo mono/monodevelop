@@ -80,19 +80,6 @@ namespace MonoDevelop.SourceEditor
 			get { return entrySearch.Entry.Text; }
 			set { entrySearch.Entry.Text = value; }
 		}
-		
-		public override void Destroy ()
-		{
-			if (searchHistory != null) {
-				searchHistory.Dispose ();
-				searchHistory = null;
-			}
-			if (replaceHistory != null) {
-				replaceHistory.Dispose ();
-				replaceHistory = null;
-			}
-			base.Destroy ();
-		}
 
 		public SearchAndReplaceWidget (SourceEditorWidget widget)
 		{

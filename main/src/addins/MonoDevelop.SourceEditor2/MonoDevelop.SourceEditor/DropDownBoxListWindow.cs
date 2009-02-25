@@ -177,13 +177,13 @@ namespace MonoDevelop.SourceEditor
 				layout = new Pango.Layout (this.PangoContext);
 			}
 			
-			public override void Destroy ()
+			protected override void OnDestroyed ()
 			{
 				if (layout != null) {
 					layout.Dispose ();
 					layout = null;
 				}
-				base.Destroy ();
+				base.OnDestroyed ();
 			}
 			
 			public void Reset ()

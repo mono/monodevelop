@@ -102,12 +102,12 @@ namespace MonoDevelop.SourceEditor
 			hbox.PackEnd (new VSeparator (), false, false, 1);
 			Child = hbox;
 		}
-		public override void Destroy ()
+		
+		protected override void OnDestroyed ()
 		{
 			DestroyWindow ();
-			base.Destroy ();
+			base.OnDestroyed ();
 		}
-
 		
 		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
 		{

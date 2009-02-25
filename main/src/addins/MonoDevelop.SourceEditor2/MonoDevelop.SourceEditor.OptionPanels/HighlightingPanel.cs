@@ -47,13 +47,13 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			styleTreeview.Model = styleStore;
 		}
 		
-		public override void Destroy ()
+		protected override void OnDestroyed ()
 		{
 			if (styleStore != null) {
 				styleStore.Dispose ();
 				styleStore = null;
 			}
-			base.Destroy ();
+			base.OnDestroyed ();
 		}
 
 		string GetMarkup (string name, string description)
