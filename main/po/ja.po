@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: MonoDevelop 0.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-02-24 16:24:20-0500\n"
-"PO-Revision-Date: 2009-02-25 19:21:16+0900\n"
+"PO-Revision-Date: 2009-02-25 19:55:19+0900\n"
 "Last-Translator: Atsushi Eno <atsushi@ximian.com>\n"
 "Language-Team: Atsushi Enomoto <atsushi@ximian.com>\n"
 "MIME-Version: 1.0\n"
@@ -2816,13 +2816,10 @@ msgstr "デフォルトビルドアクションをオーバーライドします
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:164
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs:105
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs:112
-#, fuzzy
 msgid ""
 "The name you have chosen contains illegal characters. Please choose a "
 "different name."
-msgstr ""
-"指定したファイル名には無効な文字が含まれています。別のファイル名を選択して下"
-"さい。"
+msgstr "指定した名前には無効な文字が含まれています。別の名前を選択して下さい。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:147
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:157
@@ -2834,7 +2831,7 @@ msgstr "その名前のファイルまたはディレクトリは既に使用さ
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:155
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs:114
 msgid "There was an error renaming the file."
-msgstr ""
+msgstr "ファイル名の変更でエラーが発生しました。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:203
 msgid "_Remove from Project"
@@ -2883,7 +2880,7 @@ msgstr "'{0}'で開く"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:166
 msgid "There was an error renaming the directory."
-msgstr ""
+msgstr "ディレクトリ名の変更でエラーが発生しました。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:180
 msgid "Are you sure you want to permanently delete the folder {0}?"
@@ -4489,9 +4486,8 @@ msgstr "Unix"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/TextStylePolicyPanel.cs:75
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.addin.xml:189
-#, fuzzy
 msgid "Microsoft Windows"
-msgstr "前のウィンドウ (_P)"
+msgstr "Microsoft Windows"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TextStylePolicyPanelWidget.cs:69
 msgid "Desired _file width:"
@@ -5724,13 +5720,12 @@ msgid "Commit message:"
 msgstr "コミットメッセージ:"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:319
-#, fuzzy
 msgid "Scanning for changes..."
-msgstr "ファイルをスキャンしています..."
+msgstr "変更をスキャンしています..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:321
 msgid "Scanning for local and remote changes..."
-msgstr ""
+msgstr "ローカルとリモートの変更をスキャンしています..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:345
 msgid "No files have local modifications."
@@ -7611,25 +7606,21 @@ msgstr "ASP.NET Webサービスをコードビハインドクラス付きで作�
 
 #: ../src/addins/AspNetAddIn/Templates/MasterPage-CodeBehind.xft.xml:7
 #: ../src/addins/AspNetAddIn/Templates/MasterPage-CodeBehindNonPartial.xft.xml:7
-#, fuzzy
 msgid "Master Page with CodeBehind"
 msgstr "コードビハインド付きのマスターページ"
 
 #: ../src/addins/AspNetAddIn/Templates/MasterPage-CodeBehind.xft.xml:11
 #: ../src/addins/AspNetAddIn/Templates/MasterPage-CodeBehindNonPartial.xft.xml:11
-#, fuzzy
 msgid "Creates an ASP.NET Master Page with a CodeBehind class."
-msgstr "ASP.NET マスターページをコードビハインド付きで作成する。"
+msgstr "ASP.NET マスターページをコードビハインドクラス付きで作成します。"
 
 #: ../src/addins/AspNetAddIn/Templates/MasterPage-Empty.xft.xml:7
-#, fuzzy
 msgid "Master Page without CodeBehind"
 msgstr "コードビハインドなしのマスターページ"
 
 #: ../src/addins/AspNetAddIn/Templates/MasterPage-Empty.xft.xml:12
-#, fuzzy
 msgid "Creates an ASP.NET Master Page."
-msgstr "新しいASP.NET Webハンドラを作成します"
+msgstr "新しいASP.NETマスターページを作成します"
 
 #: ../src/addins/AspNetAddIn/Templates/GlobalAsax-CodeBehind.xft.xml:7
 msgid "Global.asax with CodeBehind"
@@ -7672,46 +7663,38 @@ msgid "Creates an ASP.NET web.config file for a subdirectory."
 msgstr "サブディレクトリにASP.NET web.configファイルを作成します"
 
 #: ../src/addins/AspNetAddIn/Templates/WebContentForm-CodeBehind.xft.xml:7
-#, fuzzy
 msgid "Web Content Form with CodeBehind"
-msgstr "Webフォームとコードビハインド"
+msgstr "Web内容フォームとコードビハインド"
 
 #: ../src/addins/AspNetAddIn/Templates/WebContentForm-CodeBehind.xft.xml:12
-#, fuzzy
 msgid ""
 "Creates an ASP.NET Web Form that is the child of a Master Page, with a "
 "CodeBehind class."
-msgstr "ASP.NET マスターページをコードビハインド付きで作成する。"
+msgstr "ASP.NET マスターページの子となるWebフォームをコードビハインド付きで作成します。"
 
 #: ../src/addins/AspNetAddIn/Templates/NestedMasterPage.xft.xml:7
-#, fuzzy
 msgid "Nested Master Page"
-msgstr "ネストしたネームスペース"
+msgstr "ネストしたマスターページ"
 
 #: ../src/addins/AspNetAddIn/Templates/NestedMasterPage.xft.xml:11
-#, fuzzy
 msgid "Creates an ASP.NET Nested Master Page."
-msgstr "新しいASP.NET Webサービスを作成します。"
+msgstr "ASP.NET のネストしたマスターページを作成します。"
 
 #: ../src/addins/AspNetAddIn/Templates/NestedMasterPage-CodeBehind.xft.xml:7
-#, fuzzy
 msgid "Nested Master Page with CodeBehind"
-msgstr "コードビハインド付きのマスターページ"
+msgstr "コードビハインド付きのネストしたマスターページ"
 
 #: ../src/addins/AspNetAddIn/Templates/NestedMasterPage-CodeBehind.xft.xml:11
-#, fuzzy
 msgid "Creates an ASP.NET Nested Master Page with a CodeBehind class."
-msgstr "ASP.NET マスターページをコードビハインド付きで作成する。"
+msgstr "ASP.NET のネストしたマスターページをコードビハインド付きで作成します。"
 
 #: ../src/addins/AspNetAddIn/Templates/WebContentForm.xft.xml:7
-#, fuzzy
 msgid "Web Content Form"
-msgstr "Webフォーム"
+msgstr "Web内容フォーム"
 
 #: ../src/addins/AspNetAddIn/Templates/WebContentForm.xft.xml:12
-#, fuzzy
 msgid "Creates an ASP.NET Web Form that is the child of a Master Page."
-msgstr "ASP.NET Webフォームをコードビハインドクラス付きで作成します。"
+msgstr "ASP.NET マスターページの子となるWebフォームを作成します。"
 
 #: ../src/addins/AspNetAddIn/MonoDevelop.AspNet/AspNetAppProject.cs:254
 msgid "Error launching web browser"
@@ -7989,29 +7972,24 @@ msgid "Character data"
 msgstr "文字データ"
 
 #: ../src/addins/AspNetAddIn/MonoDevelop.AspNet/MasterContentFileDescriptionTemplate.cs:57
-#, fuzzy
 msgid "Select a Master Page..."
-msgstr "画像を選択..."
+msgstr "マスターページを選択..."
 
 #: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetFileSelector.cs:49
-#, fuzzy
 msgid "All files"
 msgstr "全てのファイル"
 
 #: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetFileSelector.cs:67
-#, fuzzy
 msgid "Project Folders"
-msgstr "プロジェクト ファイル (_F)"
+msgstr "プロジェクト フォルダ"
 
 #: ../src/addins/AspNetAddIn/gtk-gui/MonoDevelop.AspNet.Gui.AspNetFileSelector.cs:41
-#, fuzzy
 msgid "Select Project File..."
-msgstr "プロジェクト ファイル (_F)"
+msgstr "プロジェクト ファイルを選択..."
 
 #: ../src/addins/AspNetAddIn/gtk-gui/MonoDevelop.AspNet.Gui.AspNetFileSelector.cs:90
-#, fuzzy
 msgid "File _type:"
-msgstr "ファイル種別:"
+msgstr "ファイル種別 (_t):"
 
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.PropertyGrid/EventPropertyTab.cs:48
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs:222
@@ -10733,9 +10711,8 @@ msgid "The file »{0}« has been changed outside of MonoDevelop."
 msgstr "このファイル »{0}« はMonoDevelopの外部で変更されています"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:629
-#, fuzzy
 msgid "Do you want to drop your changes and reload the file?"
-msgstr "本当にファイルを再ロードしますか?"
+msgstr "本当に変更を破棄してファイルを再読み込みしますか?"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:643
 msgid "_Ignore"
@@ -11086,13 +11063,11 @@ msgstr "基底型"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/gtk-gui/MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget.cs:67
 #: ../src/addins/MonoDevelop.AssemblyBrowser/gtk-gui/MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget.cs:68
-#, fuzzy
 msgid "Navigate backward"
 msgstr "戻る"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/gtk-gui/MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget.cs:70
 #: ../src/addins/MonoDevelop.AssemblyBrowser/gtk-gui/MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget.cs:71
-#, fuzzy
 msgid "Navigate forward"
 msgstr "進む"
 
@@ -12743,9 +12718,8 @@ msgid "Pause"
 msgstr "中断"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:76
-#, fuzzy
 msgid "Break Execution"
-msgstr "実行前"
+msgstr "実行を中断"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:80
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:81
@@ -12795,9 +12769,8 @@ msgid "Exceptions..."
 msgstr "例外..."
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:194
-#, fuzzy
 msgid "Debugger"
-msgstr "デバッガ:"
+msgstr "デバッガ"
 
 #: ../src/addins/NUnit/nunit.glade:7
 msgid "NUnit Options"
