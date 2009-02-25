@@ -8,7 +8,7 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.VersionControl.Views
 {
-	class CellRendererDiff: Gtk.CellRendererText, IDisposable
+	class CellRendererDiff: Gtk.CellRendererText
 	{
 		Pango.Layout layout;
 		Pango.FontDescription font;
@@ -28,9 +28,9 @@ namespace MonoDevelop.VersionControl.Views
 				layout = null;
 			}
 		}
-		#region IDisposable implementation
+		
 		bool isDisposed = false;
-		public override void Dispose ()
+		public override void Destroy ()
 		{
 			isDisposed = true;
 			DisposeLayout ();
@@ -38,10 +38,9 @@ namespace MonoDevelop.VersionControl.Views
 				font.Dispose ();
 				font = null;
 			}
-			base.Dispose ();
+			base.Destroy ();
 		}
-		#endregion
-		
+
 		public void Reset ()
 		{
 		}
@@ -144,6 +143,9 @@ namespace MonoDevelop.VersionControl.Views
 					window.DrawLayout (gc, cell_area.X + 2, y, layout);
 				}
 				window.DrawRectangle (widget.Style.DarkGC (Gtk.StateType.Prelight), false, cell_area.X, recty, cell_area.Width - 1, recth);
+				removedGC.Dispose ();
+				addedGC.Dispose ();
+				infoGC.Dispose ();
 			} else {
 				int y = cell_area.Y + (cell_area.Height - height)/2;
 				window.DrawLayout (widget.Style.TextGC (GetState(flags)), cell_area.X, y, layout);

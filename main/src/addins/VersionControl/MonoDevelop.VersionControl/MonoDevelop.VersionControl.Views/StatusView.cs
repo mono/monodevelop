@@ -163,6 +163,7 @@ namespace MonoDevelop.VersionControl.Views
 			scroller.ShadowType = Gtk.ShadowType.In;
 			filelist = new FileTreeView();
 			filelist.Selection.Mode = SelectionMode.Multiple;
+			
 			scroller.Add(filelist);
 			scroller.HscrollbarPolicy = PolicyType.Automatic;
 			scroller.VscrollbarPolicy = PolicyType.Automatic;
@@ -299,12 +300,28 @@ namespace MonoDevelop.VersionControl.Views
 		public override void Dispose ()
 		{
 			disposed = true;
+			if (colCommit != null) {
+				colCommit.Destroy ();
+				colCommit = null;
+			}
+			
+			if (colRemote != null) {
+				colRemote.Destroy ();
+				colRemote = null;
+			}
+			if (filestore != null) {
+				filestore.Dispose ();
+				filestore = null;
+			}
 			if (this.diffRenderer != null) {
-				this.diffRenderer.Dispose ();
+				this.diffRenderer.Destroy ();
 				this.diffRenderer = null;
 			}
 			VersionControlService.FileStatusChanged -= OnFileStatusChanged;
-			widget.Destroy ();
+			if (widget != null) {
+				widget.Destroy ();
+				widget = null;
+			}
 			base.Dispose ();
 		}
 		

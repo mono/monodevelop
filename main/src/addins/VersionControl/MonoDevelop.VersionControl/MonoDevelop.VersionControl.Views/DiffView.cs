@@ -88,12 +88,18 @@ namespace MonoDevelop.VersionControl.Views
 		
 		public override void Dispose ()
 		{
-			if (this.widget != null)
-				this.widget.Dispose ();
-			if(leftwatcher != null)
+			if (this.widget != null) {
+				this.widget.Destroy ();
+				this.widget = null;
+			}
+			if (leftwatcher != null) {
 				leftwatcher.Dispose ();
-			if(rightwatcher != null)
+				leftwatcher = null;
+			}
+			if (rightwatcher != null) {
 				rightwatcher.Dispose ();
+				rightwatcher = null;
+			}
 			box.Destroy ();
 			base.Dispose ();
 		}

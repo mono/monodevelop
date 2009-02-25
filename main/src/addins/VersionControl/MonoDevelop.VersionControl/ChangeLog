@@ -1,3 +1,11 @@
+2009-02-25  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.VersionControl.Views/LogView.cs:
+	* MonoDevelop.VersionControl.Views/DiffView.cs:
+	* MonoDevelop.VersionControl.Views/StatusView.cs:
+	* MonoDevelop.VersionControl.Views/CellRendererDiff.cs: Worked
+	  on ressource de-allocation.
+
 2009-02-23  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* VersionControl.addin.xml: Track merge of the project pad

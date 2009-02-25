@@ -298,7 +298,14 @@ namespace MonoDevelop.VersionControl.Views
 		
 		public override void Dispose ()
 		{
-			widget.Destroy ();
+			if (widget != null) {
+				widget.Destroy ();
+				widget = null;
+			}
+			if (changedpathstore != null) {
+				changedpathstore.Dispose ();
+				changedpathstore = null;
+			}
 			base.Dispose ();
 		}
 
