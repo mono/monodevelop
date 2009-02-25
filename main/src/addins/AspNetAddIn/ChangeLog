@@ -1,5 +1,13 @@
 2009-02-24  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.AspNet.Parser/PageInfo.cs: More properties in
+	  ToString.
+
+	* MonoDevelop.AspNet.Parser/PageInfoVisitor.cs: Ignore case of
+	  MasterType directive.
+
+2009-02-24  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Templates/WebContentForm.xft.xml:
 	* Templates/NestedMasterPage.xft.xml:
 	* Templates/WebContentForm-CodeBehind.xft.xml:

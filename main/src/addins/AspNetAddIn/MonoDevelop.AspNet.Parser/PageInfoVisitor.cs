@@ -50,7 +50,7 @@ namespace MonoDevelop.AspNet.Parser
 			if (info.Subtype == WebSubtype.None) {
 				info.SetSubtypeFromDirective (node.Name);
 			}
-			else if (String.Compare (node.Name, "mastertype") == 0)
+			else if (String.Compare (node.Name, "mastertype", StringComparison.OrdinalIgnoreCase) == 0)
 			{
 				info.MasterPageTypeName = node.Attributes["typename"] as string;
 				info.MasterPageTypeVPath = node.Attributes["virtualpath"] as string;

@@ -103,10 +103,11 @@ namespace MonoDevelop.AspNet.Parser
 		
 		public override string ToString ()
 		{
-			return string.Format ("[PageInfo WebSubtype='{0}' InheritedClass='{1}' CodeBehindFile='{2}' " + 
-			    "CodeFile='{3}' Language='{4}' DocType='{5}' MasterPageFile='{6}']",
-			    Subtype, InheritedClass, CodeBehindFile, CodeFile, Language, DocType, MasterPageFile
-			    );
+			return string.Format("[PageInfo: InheritedClass={0}, CodeBehindFile={1}, CodeFile={2}, Language={3}, " +
+			                     "DocType={4}, Subtype={5}, MasterPageFile={6}, MasterPageTypeName={7}, MasterPageTypeVPath={8}]",
+			                     InheritedClass, CodeBehindFile, CodeFile, Language, DocType, Subtype, MasterPageFile, 
+			                     MasterPageTypeName, MasterPageTypeVPath);
 		}
+
 	}
 }
