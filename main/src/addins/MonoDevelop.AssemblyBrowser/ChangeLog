@@ -1,3 +1,9 @@
+2009-02-25  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.AssemblyBrowser/AssemblyBrowserView.cs:
+	* MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs: Worked
+	  on ressource de-allocation.
+
 2009-02-24  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs: open

@@ -60,9 +60,14 @@ namespace MonoDevelop.AssemblyBrowser
 			get;
 			private set;
 		}
+		
 		public override void Dispose ()
 		{
 			IsDisposed = true;
+			if (widget != null) {
+				widget.Destroy ();
+				widget = null;
+			}
 			base.Dispose ();
 		}
 

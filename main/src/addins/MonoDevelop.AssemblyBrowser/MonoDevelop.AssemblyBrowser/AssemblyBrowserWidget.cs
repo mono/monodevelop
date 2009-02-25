@@ -207,10 +207,20 @@ namespace MonoDevelop.AssemblyBrowser
 			};
 		}
 		
-		public override void Dispose ()
+		public override void Destroy ()
 		{
+			if (memberListStore != null) {
+				memberListStore.Dispose ();
+				memberListStore = null;
+			}
+			
+			if (typeListStore != null) {
+				typeListStore.Dispose ();
+				typeListStore = null;
+			}
+			
 			PropertyService.PropertyChanged -= HandlePropertyChanged;
-			base.Dispose ();
+			base.Destroy ();
 		}
 
 		void HandlePropertyChanged(object sender, PropertyChangedEventArgs e)
