@@ -52,25 +52,11 @@ namespace Algorithm.Diff.Gtk {
 		public DiffWidget(Merge merge, Options options) : this(Hunkify(merge), options) 
 		{
 		}
-		OverviewRenderer overviewRenderer;
 		protected override void OnDestroyed ()
 		{
 			if (font != null) {
 				font.Dispose ();
 				font = null;
-			}
-			
-			if (overviewRenderer != null) {
-				overviewRenderer.Destroy ();
-				overviewRenderer = null;
-			}
-			
-			if (difftable != null) {
-				foreach (Widget child in difftable.Children) {
-					child.Destroy ();
-				}
-				difftable.Destroy ();
-				difftable = null;
 			}
 			base.OnDestroyed ();
 		}
@@ -110,8 +96,8 @@ namespace Algorithm.Diff.Gtk {
 			PackStart(centerpanel);
 
 			scroller = new ScrolledWindow();
-			overviewRenderer = new OverviewRenderer (this, scroller, hunks, options.SideBySide);
-			centerpanel.PackStart(overviewRenderer, false, false, 0);
+			
+			centerpanel.PackStart (new OverviewRenderer (this, scroller, hunks, options.SideBySide), false, false, 0);
 			
 			Viewport textviewport = new Viewport();
 			
@@ -412,21 +398,15 @@ namespace Algorithm.Diff.Gtk {
 		
 		class OverviewRenderer : EventBox {
 			ScrolledWindow scroller;
-			OverviewRenderer2 ovr2;
 			public OverviewRenderer(DiffWidget widget, ScrolledWindow scroller, Hunk[] hunks, bool sidebyside)
 			{
 				this.scroller = scroller;
 				this.ButtonPressEvent += ButtonPressHandler;
-				ovr2 = new OverviewRenderer2 (widget, scroller, hunks, sidebyside);
-				Add(ovr2);
+				Add (new OverviewRenderer2 (widget, scroller, hunks, sidebyside));
 			}
 			
 			protected override void OnDestroyed ()
 			{
-				if (ovr2 != null) {
-					ovr2.Destroy ();
-					ovr2 = null;
-				}
 				scroller = null;
 				this.ButtonPressEvent -= ButtonPressHandler;
 				base.OnDestroyed ();
@@ -455,6 +435,7 @@ namespace Algorithm.Diff.Gtk {
 				scroller.ExposeEvent += OnScroll;
 				WidthRequest = 50;
 			}
+			
 			protected override void OnDestroyed ()
 			{
 				if (scroller != null) {

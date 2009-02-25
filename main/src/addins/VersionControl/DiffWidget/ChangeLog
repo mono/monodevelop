@@ -1,5 +1,9 @@
 2009-02-25  Mike Krüger  <mkrueger@novell.com>
 
+	* widget.cs: Cleaned up OnDestroyed.
+
+2009-02-25  Mike Krüger  <mkrueger@novell.com>
+
 	* widget.cs: Changed override Destroy --> override
 	  OnDestroyed.
 
