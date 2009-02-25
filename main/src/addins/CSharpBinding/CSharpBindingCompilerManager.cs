@@ -50,6 +50,9 @@ namespace CSharpBinding
 			CSharpCompilerParameters compilerparameters = (CSharpCompilerParameters) configuration.CompilationParameters;
 			if (compilerparameters == null) compilerparameters = new CSharpCompilerParameters ();
 			
+			CSharpProjectParameters projectParameters = (CSharpProjectParameters) configuration.ProjectParameters;
+			if (projectParameters == null) projectParameters = new CSharpProjectParameters ();
+			
 			string exe = configuration.CompiledOutputName;
 			string responseFileName = Path.GetTempFileName();
 			StringWriter writer = new StringWriter ();
@@ -128,20 +131,20 @@ namespace CSharpBinding
 			else
 				writer.WriteLine("/optimize-");
 
-			if (compilerparameters.Win32Resource != null && compilerparameters.Win32Resource.Length > 0 && File.Exists (compilerparameters.Win32Resource)) {
-				writer.WriteLine("\"/win32res:" + compilerparameters.Win32Resource + "\"");
+			if (projectParameters.Win32Resource != null && projectParameters.Win32Resource.Length > 0 && File.Exists (projectParameters.Win32Resource)) {
+				writer.WriteLine("\"/win32res:" + projectParameters.Win32Resource + "\"");
 				hasWin32Res = true;
 			}
 		
-			if (compilerparameters.Win32Icon != null && compilerparameters.Win32Icon.Length > 0 && File.Exists (compilerparameters.Win32Icon)) {
+			if (projectParameters.Win32Icon != null && projectParameters.Win32Icon.Length > 0 && File.Exists (projectParameters.Win32Icon)) {
 				if (hasWin32Res)
 					monitor.ReportWarning ("Both Win32 icon and Win32 resource cannot be specified. Ignoring the icon.");
 				else
-					writer.WriteLine("\"/win32icon:" + compilerparameters.Win32Icon + "\"");
+					writer.WriteLine("\"/win32icon:" + projectParameters.Win32Icon + "\"");
 			}
 			
-			if (compilerparameters.CodePage != 0)
-				writer.WriteLine ("/codepage:" + compilerparameters.CodePage);
+			if (projectParameters.CodePage != 0)
+				writer.WriteLine ("/codepage:" + projectParameters.CodePage);
 			else
 				writer.WriteLine("/codepage:utf8");
 			
@@ -169,8 +172,8 @@ namespace CSharpBinding
 
 			CompileTarget ctarget = configuration.CompileTarget;
 			
-			if (compilerparameters.MainClass != null && compilerparameters.MainClass.Length > 0) {
-				writer.WriteLine("/main:" + compilerparameters.MainClass);
+			if (projectParameters.MainClass != null && projectParameters.MainClass.Length > 0) {
+				writer.WriteLine("/main:" + projectParameters.MainClass);
 				// mcs does not allow providing a Main class when compiling a dll
 				// As a workaround, we compile as WinExe (although the output will still
 				// have a .dll extension).

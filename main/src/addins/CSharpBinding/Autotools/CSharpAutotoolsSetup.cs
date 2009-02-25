@@ -39,6 +39,8 @@ namespace CSharpBinding.Autotools
 			if ( config == null ) return "";
 			
 			CSharpCompilerParameters parameters = (CSharpCompilerParameters) config.CompilationParameters;
+			CSharpProjectParameters projectParameters = (CSharpProjectParameters) config.ProjectParameters;
+			
 			StringWriter writer = new StringWriter();
 			
 			writer.Write(" -noconfig");
@@ -98,8 +100,8 @@ namespace CSharpBinding.Autotools
 				writer.Write (" \"-define:" + parameters.DefineSymbols + '"');
 			}
 				
-			if (parameters.MainClass != null && parameters.MainClass != "") {
-				writer.Write (" \"-main:" + parameters.MainClass + '"');
+			if (projectParameters.MainClass != null && projectParameters.MainClass != "") {
+				writer.Write (" \"-main:" + projectParameters.MainClass + '"');
 			}
 
 			if (config.SignAssembly)

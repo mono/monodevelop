@@ -51,6 +51,7 @@ namespace CSharpBinding
 			this.project = project;
 			DotNetProjectConfiguration configuration = (DotNetProjectConfiguration) project.GetActiveConfiguration (IdeApp.Workspace.ActiveConfiguration);
 			CSharpCompilerParameters compilerParameters = (CSharpCompilerParameters) configuration.CompilationParameters;
+			CSharpProjectParameters projectParameters = (CSharpProjectParameters) configuration.ProjectParameters;
 			
 			ListStore store = new ListStore (typeof (string));
 			store.AppendValues (GettextCatalog.GetString ("Executable"));
@@ -72,7 +73,7 @@ namespace CSharpBinding
 				classListStore = new ListStore (typeof(string));
 				mainClassEntry.Model = classListStore;
 				mainClassEntry.TextColumn = 0;
-				((Entry)mainClassEntry.Child).Text = compilerParameters.MainClass ?? string.Empty;
+				((Entry)mainClassEntry.Child).Text = projectParameters.MainClass ?? string.Empty;
 			
 				UpdateTarget ();
 			}
@@ -82,16 +83,16 @@ namespace CSharpBinding
 			foreach (TextEncoding e in TextEncoding.SupportedEncodings) {
 				if (e.CodePage == -1)
 					continue;
-				if (e.CodePage == compilerParameters.CodePage)
+				if (e.CodePage == projectParameters.CodePage)
 					foundEncoding = e.Id;
 				codepageEntry.AppendText (e.Id);
 			}
 			if (foundEncoding != null)
 				codepageEntry.Entry.Text = foundEncoding;
-			else if (compilerParameters.CodePage != 0)
-				codepageEntry.Entry.Text = compilerParameters.CodePage.ToString ();
+			else if (projectParameters.CodePage != 0)
+				codepageEntry.Entry.Text = projectParameters.CodePage.ToString ();
 			
-			iconEntry.Path = compilerParameters.Win32Icon;
+			iconEntry.Path = projectParameters.Win32Icon;
 			iconEntry.DefaultPath = project.BaseDirectory;
 			allowUnsafeCodeCheckButton.Active = compilerParameters.UnsafeCode;
 			
@@ -164,17 +165,18 @@ namespace CSharpBinding
 			
 			project.CompileTarget = compileTarget;
 			
+			CSharpProjectParameters projectParameters = (CSharpProjectParameters) project.LanguageParameters; 
+			
+			projectParameters.CodePage = codePage;
+
+			if (iconEntry.Sensitive)
+				projectParameters.Win32Icon = iconEntry.Path;
+			
+			if (mainClassEntry.Sensitive)
+				projectParameters.MainClass = mainClassEntry.Entry.Text;
+			
 			foreach (DotNetProjectConfiguration configuration in configs) {
 				CSharpCompilerParameters compilerParameters = (CSharpCompilerParameters) configuration.CompilationParameters; 
-				
-				compilerParameters.CodePage = codePage;
-
-				if (iconEntry.Sensitive)
-					compilerParameters.Win32Icon = iconEntry.Path;
-				
-				if (mainClassEntry.Sensitive)
-					compilerParameters.MainClass = mainClassEntry.Entry.Text;
-				
 				compilerParameters.UnsafeCode = allowUnsafeCodeCheckButton.Active;
 				compilerParameters.LangVersion = langVersion;
 			}

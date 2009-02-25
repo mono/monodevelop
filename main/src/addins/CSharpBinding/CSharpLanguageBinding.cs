@@ -64,7 +64,7 @@ namespace CSharpBinding
 			return compilerManager.Compile (projectItems, configuration, monitor);
 		}
 		
-		public ICloneable CreateCompilationParameters (XmlElement projectOptions)
+		public ConfigurationParameters CreateCompilationParameters (XmlElement projectOptions)
 		{
 			CSharpCompilerParameters pars = new CSharpCompilerParameters ();
 			if (projectOptions != null) {
@@ -72,6 +72,12 @@ namespace CSharpBinding
 				if (string.Compare ("True", debugAtt, true) == 0)
 					pars.DefineSymbols = "DEBUG";
 			}
+			return pars;
+		}
+	
+		public ProjectParameters CreateProjectParameters (XmlElement projectOptions)
+		{
+			CSharpProjectParameters pars = new CSharpProjectParameters ();
 			return pars;
 		}
 		

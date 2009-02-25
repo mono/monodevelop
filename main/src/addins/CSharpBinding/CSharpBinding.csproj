@@ -169,6 +169,7 @@
     <Compile Include="Gui\EventCreationCompletionData.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Parser\FindMemberAstVisitor.cs" />
+    <Compile Include="Project\CSharpProjectParameters.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

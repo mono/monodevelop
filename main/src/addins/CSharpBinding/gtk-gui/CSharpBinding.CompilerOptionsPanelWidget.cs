@@ -25,13 +25,11 @@ namespace CSharpBinding {
         
         private Gtk.Table table7;
         
+        private Gtk.ComboBoxEntry codepageEntry;
+        
         private Gtk.HBox hbox57;
         
         private Gtk.ComboBox compileTargetCombo;
-        
-        private Gtk.HBox hbox6;
-        
-        private Gtk.ComboBoxEntry codepageEntry;
         
         private MonoDevelop.Components.FileEntry iconEntry;
         
@@ -101,10 +99,21 @@ namespace CSharpBinding {
             this.vbox2.Name = "vbox2";
             this.vbox2.Spacing = 6;
             // Container child vbox2.Gtk.Box+BoxChild
-            this.table7 = new Gtk.Table(((uint)(4)), ((uint)(2)), false);
+            this.table7 = new Gtk.Table(((uint)(5)), ((uint)(2)), false);
             this.table7.Name = "table7";
             this.table7.RowSpacing = ((uint)(6));
             this.table7.ColumnSpacing = ((uint)(6));
+            // Container child table7.Gtk.Table+TableChild
+            this.codepageEntry = Gtk.ComboBoxEntry.NewText();
+            this.codepageEntry.Name = "codepageEntry";
+            this.table7.Add(this.codepageEntry);
+            Gtk.Table.TableChild w3 = ((Gtk.Table.TableChild)(this.table7[this.codepageEntry]));
+            w3.TopAttach = ((uint)(3));
+            w3.BottomAttach = ((uint)(4));
+            w3.LeftAttach = ((uint)(1));
+            w3.RightAttach = ((uint)(2));
+            w3.XOptions = ((Gtk.AttachOptions)(4));
+            w3.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table7.Gtk.Table+TableChild
             this.hbox57 = new Gtk.HBox();
             this.hbox57.Name = "hbox57";
@@ -112,68 +121,48 @@ namespace CSharpBinding {
             this.compileTargetCombo = new Gtk.ComboBox();
             this.compileTargetCombo.Name = "compileTargetCombo";
             this.hbox57.Add(this.compileTargetCombo);
-            Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.hbox57[this.compileTargetCombo]));
-            w3.Position = 0;
-            w3.Expand = false;
-            w3.Fill = false;
+            Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(this.hbox57[this.compileTargetCombo]));
+            w4.Position = 0;
+            w4.Expand = false;
+            w4.Fill = false;
             this.table7.Add(this.hbox57);
-            Gtk.Table.TableChild w4 = ((Gtk.Table.TableChild)(this.table7[this.hbox57]));
-            w4.LeftAttach = ((uint)(1));
-            w4.RightAttach = ((uint)(2));
-            w4.XOptions = ((Gtk.AttachOptions)(4));
-            w4.YOptions = ((Gtk.AttachOptions)(4));
-            // Container child table7.Gtk.Table+TableChild
-            this.hbox6 = new Gtk.HBox();
-            this.hbox6.Name = "hbox6";
-            this.hbox6.Spacing = 6;
-            // Container child hbox6.Gtk.Box+BoxChild
-            this.codepageEntry = Gtk.ComboBoxEntry.NewText();
-            this.codepageEntry.Name = "codepageEntry";
-            this.hbox6.Add(this.codepageEntry);
-            Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.hbox6[this.codepageEntry]));
-            w5.Position = 0;
-            w5.Expand = false;
-            w5.Fill = false;
-            this.table7.Add(this.hbox6);
-            Gtk.Table.TableChild w6 = ((Gtk.Table.TableChild)(this.table7[this.hbox6]));
-            w6.TopAttach = ((uint)(3));
-            w6.BottomAttach = ((uint)(4));
-            w6.LeftAttach = ((uint)(1));
-            w6.RightAttach = ((uint)(2));
-            w6.XOptions = ((Gtk.AttachOptions)(4));
-            w6.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w5 = ((Gtk.Table.TableChild)(this.table7[this.hbox57]));
+            w5.LeftAttach = ((uint)(1));
+            w5.RightAttach = ((uint)(2));
+            w5.XOptions = ((Gtk.AttachOptions)(4));
+            w5.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table7.Gtk.Table+TableChild
             this.iconEntry = new MonoDevelop.Components.FileEntry();
             this.iconEntry.Name = "iconEntry";
             this.table7.Add(this.iconEntry);
-            Gtk.Table.TableChild w7 = ((Gtk.Table.TableChild)(this.table7[this.iconEntry]));
-            w7.TopAttach = ((uint)(2));
-            w7.BottomAttach = ((uint)(3));
-            w7.LeftAttach = ((uint)(1));
-            w7.RightAttach = ((uint)(2));
-            w7.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w6 = ((Gtk.Table.TableChild)(this.table7[this.iconEntry]));
+            w6.TopAttach = ((uint)(2));
+            w6.BottomAttach = ((uint)(3));
+            w6.LeftAttach = ((uint)(1));
+            w6.RightAttach = ((uint)(2));
+            w6.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table7.Gtk.Table+TableChild
             this.label1 = new Gtk.Label();
             this.label1.Name = "label1";
             this.label1.Xalign = 0F;
             this.label1.LabelProp = Mono.Unix.Catalog.GetString("Compiler Code Page:");
             this.table7.Add(this.label1);
-            Gtk.Table.TableChild w8 = ((Gtk.Table.TableChild)(this.table7[this.label1]));
-            w8.TopAttach = ((uint)(3));
-            w8.BottomAttach = ((uint)(4));
-            w8.XOptions = ((Gtk.AttachOptions)(4));
-            w8.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w7 = ((Gtk.Table.TableChild)(this.table7[this.label1]));
+            w7.TopAttach = ((uint)(3));
+            w7.BottomAttach = ((uint)(4));
+            w7.XOptions = ((Gtk.AttachOptions)(4));
+            w7.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table7.Gtk.Table+TableChild
             this.label3 = new Gtk.Label();
             this.label3.Name = "label3";
             this.label3.Xalign = 0F;
             this.label3.LabelProp = Mono.Unix.Catalog.GetString("Win32 Icon:");
             this.table7.Add(this.label3);
-            Gtk.Table.TableChild w9 = ((Gtk.Table.TableChild)(this.table7[this.label3]));
-            w9.TopAttach = ((uint)(2));
-            w9.BottomAttach = ((uint)(3));
-            w9.XOptions = ((Gtk.AttachOptions)(4));
-            w9.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w8 = ((Gtk.Table.TableChild)(this.table7[this.label3]));
+            w8.TopAttach = ((uint)(2));
+            w8.BottomAttach = ((uint)(3));
+            w8.XOptions = ((Gtk.AttachOptions)(4));
+            w8.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table7.Gtk.Table+TableChild
             this.label86 = new Gtk.Label();
             this.label86.Name = "label86";
@@ -181,9 +170,9 @@ namespace CSharpBinding {
             this.label86.LabelProp = Mono.Unix.Catalog.GetString("Compile _Target:");
             this.label86.UseUnderline = true;
             this.table7.Add(this.label86);
-            Gtk.Table.TableChild w10 = ((Gtk.Table.TableChild)(this.table7[this.label86]));
-            w10.XOptions = ((Gtk.AttachOptions)(4));
-            w10.YOptions = ((Gtk.AttachOptions)(0));
+            Gtk.Table.TableChild w9 = ((Gtk.Table.TableChild)(this.table7[this.label86]));
+            w9.XOptions = ((Gtk.AttachOptions)(4));
+            w9.YOptions = ((Gtk.AttachOptions)(0));
             // Container child table7.Gtk.Table+TableChild
             this.label88 = new Gtk.Label();
             this.label88.Name = "label88";
@@ -191,31 +180,31 @@ namespace CSharpBinding {
             this.label88.LabelProp = Mono.Unix.Catalog.GetString("_Main Class:");
             this.label88.UseUnderline = true;
             this.table7.Add(this.label88);
-            Gtk.Table.TableChild w11 = ((Gtk.Table.TableChild)(this.table7[this.label88]));
-            w11.TopAttach = ((uint)(1));
-            w11.BottomAttach = ((uint)(2));
-            w11.XOptions = ((Gtk.AttachOptions)(4));
-            w11.YOptions = ((Gtk.AttachOptions)(0));
+            Gtk.Table.TableChild w10 = ((Gtk.Table.TableChild)(this.table7[this.label88]));
+            w10.TopAttach = ((uint)(1));
+            w10.BottomAttach = ((uint)(2));
+            w10.XOptions = ((Gtk.AttachOptions)(4));
+            w10.YOptions = ((Gtk.AttachOptions)(0));
             // Container child table7.Gtk.Table+TableChild
             this.mainClassEntry = new Gtk.ComboBoxEntry();
             this.mainClassEntry.Name = "mainClassEntry";
             this.table7.Add(this.mainClassEntry);
-            Gtk.Table.TableChild w12 = ((Gtk.Table.TableChild)(this.table7[this.mainClassEntry]));
-            w12.TopAttach = ((uint)(1));
-            w12.BottomAttach = ((uint)(2));
-            w12.LeftAttach = ((uint)(1));
-            w12.RightAttach = ((uint)(2));
-            w12.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w11 = ((Gtk.Table.TableChild)(this.table7[this.mainClassEntry]));
+            w11.TopAttach = ((uint)(1));
+            w11.BottomAttach = ((uint)(2));
+            w11.LeftAttach = ((uint)(1));
+            w11.RightAttach = ((uint)(2));
+            w11.YOptions = ((Gtk.AttachOptions)(4));
             this.vbox2.Add(this.table7);
-            Gtk.Box.BoxChild w13 = ((Gtk.Box.BoxChild)(this.vbox2[this.table7]));
-            w13.Position = 0;
+            Gtk.Box.BoxChild w12 = ((Gtk.Box.BoxChild)(this.vbox2[this.table7]));
+            w12.Position = 0;
             this.hbox5.Add(this.vbox2);
-            Gtk.Box.BoxChild w14 = ((Gtk.Box.BoxChild)(this.hbox5[this.vbox2]));
-            w14.Position = 1;
+            Gtk.Box.BoxChild w13 = ((Gtk.Box.BoxChild)(this.hbox5[this.vbox2]));
+            w13.Position = 1;
             this.vbox1.Add(this.hbox5);
-            Gtk.Box.BoxChild w15 = ((Gtk.Box.BoxChild)(this.vbox1[this.hbox5]));
-            w15.Position = 1;
-            w15.Expand = false;
+            Gtk.Box.BoxChild w14 = ((Gtk.Box.BoxChild)(this.vbox1[this.hbox5]));
+            w14.Position = 1;
+            w14.Expand = false;
             // Container child vbox1.Gtk.Box+BoxChild
             this.label83 = new Gtk.Label();
             this.label83.Name = "label83";
@@ -223,18 +212,18 @@ namespace CSharpBinding {
             this.label83.LabelProp = Mono.Unix.Catalog.GetString("<b>Language Options</b>");
             this.label83.UseMarkup = true;
             this.vbox1.Add(this.label83);
-            Gtk.Box.BoxChild w16 = ((Gtk.Box.BoxChild)(this.vbox1[this.label83]));
-            w16.Position = 2;
-            w16.Expand = false;
-            w16.Fill = false;
+            Gtk.Box.BoxChild w15 = ((Gtk.Box.BoxChild)(this.vbox1[this.label83]));
+            w15.Position = 2;
+            w15.Expand = false;
+            w15.Fill = false;
             // Container child vbox1.Gtk.Box+BoxChild
             this.label75 = new Gtk.Label();
             this.label75.WidthRequest = 18;
             this.label75.Name = "label75";
             this.vbox1.Add(this.label75);
-            Gtk.Box.BoxChild w17 = ((Gtk.Box.BoxChild)(this.vbox1[this.label75]));
-            w17.PackType = ((Gtk.PackType)(1));
-            w17.Position = 3;
+            Gtk.Box.BoxChild w16 = ((Gtk.Box.BoxChild)(this.vbox1[this.label75]));
+            w16.PackType = ((Gtk.PackType)(1));
+            w16.Position = 3;
             // Container child vbox1.Gtk.Box+BoxChild
             this.hbox7 = new Gtk.HBox();
             this.hbox7.Name = "hbox7";
@@ -244,10 +233,10 @@ namespace CSharpBinding {
             this.label74.WidthRequest = 18;
             this.label74.Name = "label74";
             this.hbox7.Add(this.label74);
-            Gtk.Box.BoxChild w18 = ((Gtk.Box.BoxChild)(this.hbox7[this.label74]));
-            w18.Position = 0;
-            w18.Expand = false;
-            w18.Fill = false;
+            Gtk.Box.BoxChild w17 = ((Gtk.Box.BoxChild)(this.hbox7[this.label74]));
+            w17.Position = 0;
+            w17.Expand = false;
+            w17.Fill = false;
             // Container child hbox7.Gtk.Box+BoxChild
             this.vbox3 = new Gtk.VBox();
             this.vbox3.Name = "vbox3";
@@ -263,22 +252,22 @@ namespace CSharpBinding {
             this.label2.Xalign = 0F;
             this.label2.LabelProp = Mono.Unix.Catalog.GetString("C# Language Version:");
             this.table2.Add(this.label2);
-            Gtk.Table.TableChild w19 = ((Gtk.Table.TableChild)(this.table2[this.label2]));
-            w19.XOptions = ((Gtk.AttachOptions)(4));
-            w19.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w18 = ((Gtk.Table.TableChild)(this.table2[this.label2]));
+            w18.XOptions = ((Gtk.AttachOptions)(4));
+            w18.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table2.Gtk.Table+TableChild
             this.langVerCombo = Gtk.ComboBox.NewText();
             this.langVerCombo.Name = "langVerCombo";
             this.table2.Add(this.langVerCombo);
-            Gtk.Table.TableChild w20 = ((Gtk.Table.TableChild)(this.table2[this.langVerCombo]));
-            w20.LeftAttach = ((uint)(1));
-            w20.RightAttach = ((uint)(2));
-            w20.XOptions = ((Gtk.AttachOptions)(4));
-            w20.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w19 = ((Gtk.Table.TableChild)(this.table2[this.langVerCombo]));
+            w19.LeftAttach = ((uint)(1));
+            w19.RightAttach = ((uint)(2));
+            w19.XOptions = ((Gtk.AttachOptions)(4));
+            w19.YOptions = ((Gtk.AttachOptions)(4));
             this.vbox3.Add(this.table2);
-            Gtk.Box.BoxChild w21 = ((Gtk.Box.BoxChild)(this.vbox3[this.table2]));
-            w21.Position = 0;
-            w21.Fill = false;
+            Gtk.Box.BoxChild w20 = ((Gtk.Box.BoxChild)(this.vbox3[this.table2]));
+            w20.Position = 0;
+            w20.Fill = false;
             // Container child vbox3.Gtk.Box+BoxChild
             this.allowUnsafeCodeCheckButton = new Gtk.CheckButton();
             this.allowUnsafeCodeCheckButton.CanFocus = true;
@@ -287,19 +276,19 @@ namespace CSharpBinding {
             this.allowUnsafeCodeCheckButton.DrawIndicator = true;
             this.allowUnsafeCodeCheckButton.UseUnderline = true;
             this.vbox3.Add(this.allowUnsafeCodeCheckButton);
-            Gtk.Box.BoxChild w22 = ((Gtk.Box.BoxChild)(this.vbox3[this.allowUnsafeCodeCheckButton]));
-            w22.Position = 1;
-            w22.Expand = false;
-            w22.Fill = false;
+            Gtk.Box.BoxChild w21 = ((Gtk.Box.BoxChild)(this.vbox3[this.allowUnsafeCodeCheckButton]));
+            w21.Position = 1;
+            w21.Expand = false;
+            w21.Fill = false;
             this.hbox7.Add(this.vbox3);
-            Gtk.Box.BoxChild w23 = ((Gtk.Box.BoxChild)(this.hbox7[this.vbox3]));
-            w23.Position = 1;
+            Gtk.Box.BoxChild w22 = ((Gtk.Box.BoxChild)(this.hbox7[this.vbox3]));
+            w22.Position = 1;
             this.vbox1.Add(this.hbox7);
-            Gtk.Box.BoxChild w24 = ((Gtk.Box.BoxChild)(this.vbox1[this.hbox7]));
-            w24.PackType = ((Gtk.PackType)(1));
-            w24.Position = 4;
-            w24.Expand = false;
-            w24.Fill = false;
+            Gtk.Box.BoxChild w23 = ((Gtk.Box.BoxChild)(this.vbox1[this.hbox7]));
+            w23.PackType = ((Gtk.PackType)(1));
+            w23.Position = 4;
+            w23.Expand = false;
+            w23.Fill = false;
             this.Add(this.vbox1);
             if ((this.Child != null)) {
                 this.Child.ShowAll();

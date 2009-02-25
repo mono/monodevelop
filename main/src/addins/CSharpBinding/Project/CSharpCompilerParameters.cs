@@ -37,7 +37,7 @@ namespace CSharpBinding
 	/// <summary>
 	/// This class handles project specific compiler parameters
 	/// </summary>
-	public class CSharpCompilerParameters: ICloneable
+	public class CSharpCompilerParameters: ConfigurationParameters
 	{
 		// Configuration parameters
 		
@@ -56,23 +56,11 @@ namespace CSharpBinding
 		[ItemProperty ("CheckForOverflowUnderflow", DefaultValue = false)]
 		bool generateOverflowChecks;
 		
-		[ItemProperty ("StartupObject", DefaultValue = null)]
-		string mainclass = null;
-		
 		[ItemProperty ("DefineConstants", DefaultValue = "")]
 		string definesymbols = String.Empty;
 		
 		[ItemProperty ("GenerateDocumentation", DefaultValue = false)]
 		bool generateXmlDocumentation = false;
-		
-		[ProjectPathItemProperty ("ApplicationIcon", DefaultValue = "")]
-		string win32Icon = String.Empty;
-
-		[ProjectPathItemProperty ("Win32Resource", DefaultValue = "")]
-		string win32Resource = String.Empty;
-	
-		[ItemProperty ("CodePage", DefaultValue = 0)]
-		int codePage;
 		
 		[ItemProperty ("additionalargs", DefaultValue = "")]
 		string additionalArgs = string.Empty;
@@ -88,41 +76,51 @@ namespace CSharpBinding
 
 		[ItemProperty("PlatformTarget", DefaultValue="")]
 		string platformTarget = "";
+		
+		
+		#region Members required for backwards compatibility. Not used for anything else.
+		
+		[ItemProperty ("StartupObject", DefaultValue = null)]
+		internal string mainclass;
+		
+		[ProjectPathItemProperty ("ApplicationIcon", DefaultValue = null)]
+		internal string win32Icon;
+
+		[ProjectPathItemProperty ("Win32Resource", DefaultValue = null)]
+		internal string win32Resource;
 	
-		public object Clone ()
+		[ItemProperty ("CodePage", DefaultValue = null)]
+		internal string codePage;
+		
+		#endregion
+		
+		
+		protected override void OnEndLoad ()
 		{
-			return MemberwiseClone ();
-		}
-		
-		public int CodePage {
-			get {
-				return codePage;
-			}
-			set {
-				codePage = value;
-			}
-		}
-		
-		[Browsable(false)]
-		public string Win32Icon {
-			get {
-				return win32Icon;
-			}
-			set {
-				win32Icon = value ?? string.Empty;
-			}
-		}
-		
-		[Browsable(false)]
-		public string Win32Resource {
-			get {
-				return win32Resource;
-			}
-			set {
-				win32Resource = value ?? string.Empty;
+			base.OnEndLoad ();
+			
+			// Backwards compatibility. Move parameters to the project parameters object
+			if (ParentConfiguration != null && ParentConfiguration.ProjectParameters != null) {
+				CSharpProjectParameters cparams = (CSharpProjectParameters) ParentConfiguration.ProjectParameters;
+				if (win32Icon != null) {
+					cparams.Win32Icon = win32Icon;
+					win32Icon = null;
+				}
+				if (win32Resource != null) {
+					cparams.Win32Resource = win32Resource;
+					win32Resource = null;
+				}
+				if (mainclass != null) {
+					cparams.MainClass = mainclass;
+					mainclass = null;
+				}
+				if (!string.IsNullOrEmpty (codePage)) {
+					cparams.CodePage = int.Parse (codePage);
+					codePage = null;
+				}
 			}
 		}
-		
+	
 		public string AdditionalArguments {
 			get { return additionalArgs; }
 			set { additionalArgs = value ?? string.Empty; }
@@ -139,14 +137,6 @@ namespace CSharpBinding
 		}
 
 #region Code Generation
-		public string MainClass {
-			get {
-				return mainclass;
-			}
-			set {
-				mainclass = value;
-			}
-		}
 		
 		public string DefineSymbols {
 			get {

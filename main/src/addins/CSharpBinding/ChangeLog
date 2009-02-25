@@ -1,3 +1,18 @@
+2009-02-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* md1format.xml:
+	* gtk-gui/gui.stetic:
+	* CSharpBinding.csproj:
+	* CSharpLanguageBinding.cs:
+	* CSharpBindingCompilerManager.cs:
+	* Gui/CompilerOptionsPanelWidget.cs:
+	* Project/CSharpProjectParameters.cs:
+	* Project/CSharpCompilerParameters.cs:
+	* gtk-gui/CSharpBinding.CompilerOptionsPanelWidget.cs: Moved
+	  some properties from configuration parameters to project
+	  parameters.
+
 2009-02-25  Mike Krüger  <mkrueger@novell.com>
 
 	* Gui/CompilerOptionsPanelWidget.cs: Changed override Destroy

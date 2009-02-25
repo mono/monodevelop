@@ -8,7 +8,6 @@
     <widget-library name="../../../../build/bin/MonoDevelop.Core.Gui.dll" />
     <widget-library name="../../../../build/bin/MonoDevelop.Components.dll" />
     <widget-library name="../../../../build/bin/MonoDevelop.Projects.Gui.dll" />
-    <widget-library name="../../../../build/bin/MonoDevelop.Ide.dll" />
     <widget-library name="../../../../build/bin/Mono.TextEditor.dll" />
     <widget-library name="../../../../build/AddIns/BackendBindings/MonoDevelop.CSharpBinding.dll" internal="true" />
   </import>
@@ -41,7 +40,6 @@
               <widget class="Gtk.Label" id="label81">
                 <property name="MemberName" />
                 <property name="WidthRequest">18</property>
-                <property name="LabelProp" translatable="yes" />
               </widget>
               <packing>
                 <property name="Position">0</property>
@@ -194,7 +192,6 @@
               <widget class="Gtk.Label" id="label73">
                 <property name="MemberName" />
                 <property name="WidthRequest">18</property>
-                <property name="LabelProp" translatable="yes" />
               </widget>
               <packing>
                 <property name="Position">0</property>
@@ -343,7 +340,6 @@
               <widget class="Gtk.Label" id="label74">
                 <property name="MemberName" />
                 <property name="WidthRequest">18</property>
-                <property name="LabelProp" translatable="yes" />
               </widget>
               <packing>
                 <property name="Position">0</property>
@@ -427,7 +423,6 @@
               <widget class="Gtk.Label" id="indentationSpacer">
                 <property name="MemberName" />
                 <property name="WidthRequest">18</property>
-                <property name="LabelProp" translatable="yes" />
               </widget>
               <packing>
                 <property name="Position">0</property>
@@ -493,7 +488,6 @@
               <widget class="Gtk.Label" id="labelIndentationSpacer">
                 <property name="MemberName" />
                 <property name="WidthRequest">18</property>
-                <property name="LabelProp" translatable="yes" />
               </widget>
               <packing>
                 <property name="Position">0</property>
@@ -511,6 +505,7 @@
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
                     <property name="Label" translatable="yes">Place goto labels in leftmost column</property>
+                    <property name="Active">True</property>
                     <property name="DrawIndicator">True</property>
                     <property name="HasLabel">True</property>
                     <property name="UseUnderline">True</property>
@@ -610,7 +605,6 @@
               <widget class="Gtk.Label" id="label76">
                 <property name="MemberName" />
                 <property name="WidthRequest">18</property>
-                <property name="LabelProp" translatable="yes" />
               </widget>
               <packing>
                 <property name="Position">0</property>
@@ -626,10 +620,38 @@
                 <child>
                   <widget class="Gtk.Table" id="table7">
                     <property name="MemberName" />
-                    <property name="NRows">4</property>
+                    <property name="NRows">5</property>
                     <property name="NColumns">2</property>
                     <property name="RowSpacing">6</property>
                     <property name="ColumnSpacing">6</property>
+                    <child>
+                      <placeholder />
+                    </child>
+                    <child>
+                      <placeholder />
+                    </child>
+                    <child>
+                      <widget class="Gtk.ComboBoxEntry" id="codepageEntry">
+                        <property name="MemberName" />
+                        <property name="IsTextCombo">True</property>
+                        <property name="Items" />
+                      </widget>
+                      <packing>
+                        <property name="TopAttach">3</property>
+                        <property name="BottomAttach">4</property>
+                        <property name="LeftAttach">1</property>
+                        <property name="RightAttach">2</property>
+                        <property name="AutoSize">True</property>
+                        <property name="XOptions">Fill</property>
+                        <property name="YOptions">Fill</property>
+                        <property name="XExpand">False</property>
+                        <property name="XFill">True</property>
+                        <property name="XShrink">False</property>
+                        <property name="YExpand">False</property>
+                        <property name="YFill">True</property>
+                        <property name="YShrink">False</property>
+                      </packing>
+                    </child>
                     <child>
                       <widget class="Gtk.HBox" id="hbox57">
                         <property name="MemberName" />
@@ -651,40 +673,6 @@
                         <property name="LeftAttach">1</property>
                         <property name="RightAttach">2</property>
                         <property name="AutoSize">False</property>
-                        <property name="XOptions">Fill</property>
-                        <property name="YOptions">Fill</property>
-                        <property name="XExpand">False</property>
-                        <property name="XFill">True</property>
-                        <property name="XShrink">False</property>
-                        <property name="YExpand">False</property>
-                        <property name="YFill">True</property>
-                        <property name="YShrink">False</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <widget class="Gtk.HBox" id="hbox6">
-                        <property name="MemberName" />
-                        <property name="Spacing">6</property>
-                        <child>
-                          <widget class="Gtk.ComboBoxEntry" id="codepageEntry">
-                            <property name="MemberName" />
-                            <property name="IsTextCombo">True</property>
-                            <property name="Items" />
-                          </widget>
-                          <packing>
-                            <property name="Position">0</property>
-                            <property name="AutoSize">True</property>
-                            <property name="Expand">False</property>
-                            <property name="Fill">False</property>
-                          </packing>
-                        </child>
-                      </widget>
-                      <packing>
-                        <property name="TopAttach">3</property>
-                        <property name="BottomAttach">4</property>
-                        <property name="LeftAttach">1</property>
-                        <property name="RightAttach">2</property>
-                        <property name="AutoSize">True</property>
                         <property name="XOptions">Fill</property>
                         <property name="YOptions">Fill</property>
                         <property name="XExpand">False</property>
@@ -853,7 +841,6 @@
           <widget class="Gtk.Label" id="label75">
             <property name="MemberName" />
             <property name="WidthRequest">18</property>
-            <property name="LabelProp" translatable="yes" />
           </widget>
           <packing>
             <property name="PackType">End</property>
@@ -869,7 +856,6 @@
               <widget class="Gtk.Label" id="label74">
                 <property name="MemberName" />
                 <property name="WidthRequest">18</property>
-                <property name="LabelProp" translatable="yes" />
               </widget>
               <packing>
                 <property name="Position">0</property>
@@ -885,7 +871,6 @@
                 <child>
                   <widget class="Gtk.Table" id="table2">
                     <property name="MemberName" />
-                    <property name="NRows">1</property>
                     <property name="NColumns">2</property>
                     <property name="RowSpacing">6</property>
                     <property name="ColumnSpacing">6</property>

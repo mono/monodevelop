@@ -55,6 +55,7 @@ FILES =  \
 	Parser/FindMemberAstVisitor.cs \
 	Parser/NRefactoryParser.cs \
 	Project/CSharpCompilerParameters.cs \
+	Project/CSharpProjectParameters.cs \
 	Project/CSharpResourceIdBuilder.cs
 
 RES =  \

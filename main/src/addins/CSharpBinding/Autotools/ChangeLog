@@ -1,3 +1,8 @@
+2009-02-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* CSharpAutotoolsSetup.cs: Moved some properties from
+	  configuration parameters to project parameters.
+
 2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Autotools.mdp:

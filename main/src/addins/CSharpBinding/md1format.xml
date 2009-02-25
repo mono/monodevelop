@@ -9,7 +9,7 @@
 		<ItemProperty member="mainclass" name="mainclass" defaultValue=""/>
 		<ItemProperty member="definesymbols" name="definesymbols" defaultValue="" />
 		<ItemProperty member="generateXmlDocumentation" name="generatexmldocumentation"/>
-		<ItemProperty member="win32Icon" name="win32Icon" defaultValue="" />
+		<ItemProperty member="win32Icon" name="win32Icon" defaultValue="" serializationDataType="MonoDevelop.Projects.PathDataType"/>
 		<ItemProperty member="win32Resource" name="win32Resource" defaultValue="" />
 		<ItemProperty member="codePage" name="codepage" defaultValue="0"/>
 		<ItemProperty member="additionalArgs" name="additionalargs" defaultValue="" />
