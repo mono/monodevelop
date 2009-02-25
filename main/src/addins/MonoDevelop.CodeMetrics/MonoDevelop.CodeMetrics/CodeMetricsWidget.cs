@@ -83,25 +83,16 @@ namespace MonoDevelop.CodeMetrics
 				}
 			};
 		}
-		public override void Destroy ()
+		
+		protected override void OnDestroyed ()
 		{
 			if (store != null) {
 				store.Dispose ();
 				store = null;
 			}
-			// is it required to destroy the columns ? 
-			// At least the .Destroyed event doesn't get fired by default.
-			if (col1 != null) {
-				col1.Destroy ();
-				col1 = null;
-			}
-			if (col2 != null) {
-				col2.Destroy ();
-				col2 = null;
-			}
-			base.Destroy ();
+			base.OnDestroyed ();
 		}
-
+		
 		class MetricsWorkerThread : WorkerThread
 		{
 			//Dictionary<string, Mono.TextEditor.Document> headers = new Dictionary<string, Mono.TextEditor.Document> ();

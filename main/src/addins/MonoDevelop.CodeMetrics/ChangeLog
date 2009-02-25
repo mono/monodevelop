@@ -1,5 +1,12 @@
 2009-02-25  Mike Krüger  <mkrueger@novell.com>
 
+	* gtk-gui/gui.stetic: 
+
+	* MonoDevelop.CodeMetrics/CodeMetricsWidget.cs: Changed
+	  override Destroy --> override OnDestroyed.
+
+2009-02-25  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CodeMetrics/CodeMetricsView.cs:
 	* MonoDevelop.CodeMetrics/CodeMetricsWidget.cs: Worked on
 	  ressource de-allocation.
