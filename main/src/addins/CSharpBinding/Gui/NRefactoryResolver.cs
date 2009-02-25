@@ -160,9 +160,7 @@ namespace MonoDevelop.CSharpBinding
 			}
 			//System.Console.WriteLine("CallingMember: " + callingMember);
 			if (callingMember != null && !setupLookupTableVisitor ) {
-				
 				string wrapper = CreateWrapperClassForMember (callingMember);
-				//System.Console.WriteLine("wrapper:" + wrapper);
 				ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (lang, new StringReader (wrapper));
 				parser.Parse ();
 				memberCompilationUnit = parser.CompilationUnit;
@@ -562,7 +560,7 @@ namespace MonoDevelop.CSharpBinding
 			foreach (KeyValuePair<string, List<LocalLookupVariable>> pair in this.lookupTableVisitor.Variables) {
 				if (identifier == pair.Key) {
 					foreach (LocalLookupVariable var in pair.Value) {
-						if (new DomLocation (lookupVariableLine + var.StartPos.Line, var.StartPos.Column) > this.resolvePosition || (!var.EndPos.IsEmpty && new DomLocation (CallingMember.Location.Line + var.EndPos.Line - 2, var.EndPos.Column) < this.resolvePosition))
+						if (new DomLocation (lookupVariableLine + var.StartPos.Line, var.StartPos.Column) > this.resolvePosition || (!var.EndPos.IsEmpty && new DomLocation (lookupVariableLine + var.EndPos.Line, var.EndPos.Column) < this.resolvePosition))
 							continue;
 						IReturnType varType = null;
 						IReturnType varTypeUnresolved = null;
@@ -585,10 +583,10 @@ namespace MonoDevelop.CSharpBinding
 							varTypeUnresolved = varType = ConvertTypeReference (var.TypeRef);
 						}
 						varType = ResolveType (varType);
-							
 						result = new LocalVariableResolveResult (
 							new LocalVariable (CallingMember, identifier, varType,
-								new DomRegion (CallingMember.Location.Line - 2 + var.StartPos.Line, var.StartPos.Column, CallingMember.Location.Line - 2 +var.EndPos.Line, var.EndPos.Column)),
+								new DomRegion (lookupVariableLine + var.StartPos.Line,  var.StartPos.Column - 1, 
+								               lookupVariableLine + var.StartPos.Line, var.EndPos.Column - 1)),
 								var.IsLoopVariable);
 						
 						result.ResolvedType = varType;
@@ -714,7 +712,7 @@ namespace MonoDevelop.CSharpBinding
 			int endLine   = member.Location.Line;
 			if (!member.BodyRegion.IsEmpty) 
 				endLine = member.BodyRegion.End.Line + 1;
-			
+			string text;
 			result.Append ("class Wrapper {");
 			if (editor != null) {
 				int col, maxLine;
@@ -724,17 +722,17 @@ namespace MonoDevelop.CSharpBinding
 				int endPos = this.editor.GetPositionFromLineColumn (endLine, this.editor.GetLineLength (endLine));
 				if (endPos < 0)
 					endPos = this.editor.TextLength;
-				result.Append (this.editor.GetText (this.editor.GetPositionFromLineColumn (startLine, 0), endPos));
+				text = this.editor.GetText (this.editor.GetPositionFromLineColumn (startLine, 0), endPos);
 			} else {
 				Mono.TextEditor.Document doc = new Mono.TextEditor.Document ();
 				doc.Text = File.ReadAllText (fileName) ?? "";
 				startLine = Math.Min (doc.LineCount, Math.Max (1, startLine));
 				endLine   = Math.Min (doc.LineCount, Math.Max (1, endLine));
 				int startOffset = doc.LocationToOffset (startLine - 1, 0);
-				result.Append (doc.GetTextAt (startOffset,
-				                              doc.LocationToOffset (endLine  - 1, doc.GetLine (endLine - 1).EditableLength) - startOffset));
+				text = doc.GetTextAt (startOffset, doc.LocationToOffset (endLine  - 1, doc.GetLine (endLine - 1).EditableLength) - startOffset);
 			}
-			
+			if (!string.IsNullOrEmpty (text))
+				result.Append (text);
 			result.Append ("}");
 			return result.ToString ();
 		}

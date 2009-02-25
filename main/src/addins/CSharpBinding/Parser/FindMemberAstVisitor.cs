@@ -364,7 +364,7 @@ namespace MonoDevelop.CSharpBinding
 				} else if (searchedMember is LocalVariable && result is LocalVariableResolveResult) {
 					LocalVariable avar = searchedMember as LocalVariable;
 					LocalVariable var = ((LocalVariableResolveResult)result).LocalVariable;
-					if (var != null && avar.Region.Contains (var.Region.Start)) {
+					if (var != null && avar.Region.Start == var.Region.Start) {
 						//Debug ("adding IdentifierExpression variable", idExp.Identifier, idExp);
 						AddUniqueReference (line, col, idExp.Identifier);
 					}

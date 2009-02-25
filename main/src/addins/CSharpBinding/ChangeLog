@@ -1,5 +1,11 @@
 2009-02-25  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/NRefactoryResolver.cs:
+	* Parser/FindMemberAstVisitor.cs: fixed "Bug 427453 - The
+	  rename operations are not working (for local variables)"
+
+2009-02-25  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/CompilerOptionsPanelWidget.cs: worked on ressource
 	  de-allocation.
 
