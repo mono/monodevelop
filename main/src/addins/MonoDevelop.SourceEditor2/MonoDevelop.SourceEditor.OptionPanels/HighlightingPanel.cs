@@ -47,6 +47,15 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			styleTreeview.Model = styleStore;
 		}
 		
+		public override void Destroy ()
+		{
+			if (styleStore != null) {
+				styleStore.Dispose ();
+				styleStore = null;
+			}
+			base.Destroy ();
+		}
+
 		string GetMarkup (string name, string description)
 		{
 			return String.Format ("<b>{0}</b> - {1}", name, description);

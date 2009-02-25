@@ -1,3 +1,14 @@
+2009-02-25  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/DropDownBox.cs:
+	* MonoDevelop.SourceEditor/SourceEditorView.cs:
+	* MonoDevelop.SourceEditor/ClassQuickFinder.cs:
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs:
+	* MonoDevelop.SourceEditor/DropDownBoxListWindow.cs:
+	* MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs:
+	* MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs:
+	  Worked on clean ressource de-allocation.
+
 2009-02-24  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.SourceEditor.addin.xml: Assigned ids to tooltip

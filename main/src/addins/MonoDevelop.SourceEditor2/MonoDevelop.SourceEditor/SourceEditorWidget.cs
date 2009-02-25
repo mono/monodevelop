@@ -126,7 +126,7 @@ namespace MonoDevelop.SourceEditor
 			} else {
 				if (classBrowser != null) {
 					this.Remove (classBrowser);
-					classBrowser.Destroy (); //note: calls dispose() (?)
+					classBrowser.Destroy ();
 					classBrowser = null;
 				}
 			}
@@ -433,7 +433,7 @@ namespace MonoDevelop.SourceEditor
 			if (!isDisposed) {
 				isDisposed = true;
 				StopParseInfoThread ();
-				
+				KillWidgets ();
 				mainsw.ButtonPressEvent -= PrepareEvent;
 				
 				this.textEditor = null;

@@ -58,7 +58,7 @@ namespace MonoDevelop.SourceEditor
 		public ClassQuickFinder (SourceEditorWidget editor)
 		{
 			this.editor = editor;
-			
+				
 			typeCombo.DataProvider = new TypeDataProvider (this);
 			typeCombo.ItemSet += TypeChanged;
 			UpdateTypeComboTip (null);
@@ -402,7 +402,6 @@ namespace MonoDevelop.SourceEditor
 				return;
 			
 			IType selectedClass = (IType)typeCombo.CurrentItem;
-			System.Console.WriteLine(selectedClass  +  "/" + selectedClass.Location);
 			int line = selectedClass.Location.Line;
 			UpdateTypeComboTip (selectedClass);
 			
@@ -455,7 +454,11 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (editor != null) 
 				editor = null;
-		
+			
+			if (tips != null) {
+				tips.Destroy ();
+				tips = null;
+			}
 			base.OnDestroyed ();
 		}
 	}

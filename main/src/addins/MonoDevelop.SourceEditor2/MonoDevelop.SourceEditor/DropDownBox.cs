@@ -102,12 +102,12 @@ namespace MonoDevelop.SourceEditor
 			hbox.PackEnd (new VSeparator (), false, false, 1);
 			Child = hbox;
 		}
-		
-		public override void Dispose ()
+		public override void Destroy ()
 		{
-			DisposeWindow ();
-			base.Dispose ();
+			DestroyWindow ();
+			base.Destroy ();
 		}
+
 		
 		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
 		{
@@ -118,16 +118,15 @@ namespace MonoDevelop.SourceEditor
 
 		protected override bool OnFocusOutEvent (Gdk.EventFocus evnt)
 		{
-			DisposeWindow ();
+			DestroyWindow ();
 			return base.OnFocusOutEvent (evnt);
 		}
 
 		DropDownBoxListWindow window = null;
-		void DisposeWindow ()
+		void DestroyWindow ()
 		{
 			if (window != null) {
 				window.Destroy ();
-				window.Dispose ();
 				window = null;
 			}
 		}
@@ -149,7 +148,7 @@ namespace MonoDevelop.SourceEditor
 		protected override void OnPressed ()
 		{
 			if (window != null) {
-				DisposeWindow ();
+				DestroyWindow ();
 			} else {
 				if (DataProvider != null) {
 					DataProvider.Reset ();

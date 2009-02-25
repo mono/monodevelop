@@ -268,7 +268,6 @@ namespace MonoDevelop.SourceEditor
 			}
 			
 			if (widget != null) {
-			
 				widget.TextEditor.Document.TextReplacing -= OnTextReplacing;
 				widget.TextEditor.Document.TextReplacing -= OnTextReplaced;
 				widget.TextEditor.Document.ReadOnlyCheckDelegate = null;

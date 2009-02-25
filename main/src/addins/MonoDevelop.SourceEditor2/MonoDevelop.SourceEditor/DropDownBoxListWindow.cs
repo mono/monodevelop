@@ -153,7 +153,6 @@ namespace MonoDevelop.SourceEditor
 			return base.OnFocusOutEvent (evnt);
 		}
 		
-		
 		internal class ListWidget: Gtk.DrawingArea
 		{
 			int margin = 0;
@@ -176,6 +175,15 @@ namespace MonoDevelop.SourceEditor
 				this.win = win;
 				this.Events = Gdk.EventMask.ButtonPressMask | Gdk.EventMask.ButtonReleaseMask | Gdk.EventMask.PointerMotionMask;
 				layout = new Pango.Layout (this.PangoContext);
+			}
+			
+			public override void Destroy ()
+			{
+				if (layout != null) {
+					layout.Dispose ();
+					layout = null;
+				}
+				base.Destroy ();
 			}
 			
 			public void Reset ()

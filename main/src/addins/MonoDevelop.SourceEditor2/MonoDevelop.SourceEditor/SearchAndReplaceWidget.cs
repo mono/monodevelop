@@ -55,7 +55,7 @@ namespace MonoDevelop.SourceEditor
 		
 		bool isReplaceMode = true;
 		Widget [] replaceWidgets;
-				
+		
 		public static bool IsCaseSensitive {
 			get { return PropertyService.Get ("IsCaseSensitive", true); }
 		}
@@ -81,6 +81,19 @@ namespace MonoDevelop.SourceEditor
 			set { entrySearch.Entry.Text = value; }
 		}
 		
+		public override void Destroy ()
+		{
+			if (searchHistory != null) {
+				searchHistory.Dispose ();
+				searchHistory = null;
+			}
+			if (replaceHistory != null) {
+				replaceHistory.Dispose ();
+				replaceHistory = null;
+			}
+			base.Destroy ();
+		}
+
 		public SearchAndReplaceWidget (SourceEditorWidget widget)
 		{
 			Build();
@@ -304,7 +317,7 @@ But I leave it in in the case I've missed something. Mike
 				searchButtonModeArrow.ArrowType = isReplaceMode ? ArrowType.Down : ArrowType.Up;
 				table.RowSpacing = isReplaceMode ? 6u : 0u;
 				foreach (Widget widget in replaceWidgets) {
-					widget.Visible = isReplaceMode;		
+					widget.Visible = isReplaceMode;
 				}
 			}
 		}
