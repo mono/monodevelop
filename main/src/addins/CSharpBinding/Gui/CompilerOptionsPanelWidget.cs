@@ -103,6 +103,15 @@ namespace CSharpBinding
 			langVerCombo.Active = (int) compilerParameters.LangVersion;
 		}
 		
+		public override void Destroy ()
+		{
+			if (classListStore != null) {
+				classListStore.Dispose ();
+				classListStore = null;
+			}
+			base.Destroy ();
+		}
+
 		public bool ValidateChanges ()
 		{
 			if (codepageEntry.Entry.Text.Length > 0) {
