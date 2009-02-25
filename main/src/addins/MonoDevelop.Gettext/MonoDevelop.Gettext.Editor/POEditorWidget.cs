@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
@@ -100,7 +101,7 @@ namespace MonoDevelop.Gettext
 			this.Build();
 			this.headersEditor = new CatalogHeadersWidget ();
 			this.notebookPages.AppendPage (headersEditor, new Gtk.Label ());
-		
+			
 			AddButton (GettextCatalog.GetString ("Translation")).Active = true;
 			AddButton (GettextCatalog.GetString ("Headers")).Active = false;
 			
@@ -923,10 +924,12 @@ namespace MonoDevelop.Gettext
 				tooltips.Destroy ();
 				tooltips = null;
 			}
+			
 			if (store != null) {
 				store.Dispose ();
 				store = null;
 			}
+			
 			if (foundInStore != null) {
 				foundInStore.Dispose ();
 				foundInStore = null;
@@ -974,30 +977,105 @@ namespace MonoDevelop.Gettext
 			}
 			return true;
 		}
+		static CatalogEntryRule[] allRules = {
+			new PointRuleCatalogEntryRule (),
+			new CaseMismatchCatalogEntryRule (),
+			new UnderscoreCatalogEntryRule (),
+			new StringFormatCatalogEntryRule ()
+		};
+		IEnumerable<CatalogEntryRule> rules = new CatalogEntryRule[] {};
 		
-//		class CatalogEntryRule
-//		{
-//			public virtual bool EntryFails (CatalogEntry entry)
-//			{
-//				return false;
-//			}
-//			public virtual string FailReason (CatalogEntry entry)
-//			{
-//			}
-//		}
-//		class PointRuleCatalogEntryRule : CatalogEntryRule
-//		{
-//			public override bool EntryFails (CatalogEntry entry)
-//			{
-//				return base.EntryFails (entry);
-//			}
-//			
-//			public override string FailReason (CatalogEntry entry)
-//			{
-//				return base.FailReason (entry);
-//			}
-//		}
+		public void UpdateRules (string country)
+		{
+			rules = from n in allRules where n.IsValid (country) select n;
+		}
+		
+		abstract class CatalogEntryRule
+		{
+			public virtual bool IsValid (string country)
+			{
+				switch (country) {
+				case "ca":
+				case "cs":
+				case "da":
+				case "de":
+				case "es":
+				case "fr":
+				case "hu":
+				case "it":
+				case "nl":
+				case "pl":
+				case "pt":
+					return true;
+				}
+				return false;
+			}
+			public abstract bool EntryFails (CatalogEntry entry);
+			public abstract string FailReason (CatalogEntry entry);
+		}
+		
+		class PointRuleCatalogEntryRule : CatalogEntryRule
+		{
+			public override bool EntryFails (CatalogEntry entry)
+			{
+				return entry.String.EndsWith (".") && !entry.GetTranslation (0).EndsWith (".");
+			}
 			
+			public override string FailReason (CatalogEntry entry)
+			{
+				return GettextCatalog.GetString ("Translation for '{0}' doesn't end with '.'.", entry.String);
+			}
+		}
+		
+		class CaseMismatchCatalogEntryRule : CatalogEntryRule
+		{
+			public override bool EntryFails (CatalogEntry entry)
+			{
+				return char.IsLetter (entry.String[0]) && char.IsLetter (entry.GetTranslation (0)[0])  &&
+						char.IsUpper (entry.String[0]) && !char.IsUpper (entry.GetTranslation (0)[0]);
+			}
+			
+			public override string FailReason (CatalogEntry entry)
+			{
+				return GettextCatalog.GetString ("Casing mismatch in '{0}'", entry.String);
+			}
+		}
+		
+		class UnderscoreCatalogEntryRule : CatalogEntryRule
+		{
+			public override bool EntryFails (CatalogEntry entry)
+			{
+				return entry.String.Contains ("_") && !entry.GetTranslation (0).Contains ("_");
+			}
+			
+			public override string FailReason (CatalogEntry entry)
+			{
+				return GettextCatalog.GetString ("Original string '{0}' contains '_', translation doesn't.", entry.String);
+			}
+		}
+		
+		class StringFormatCatalogEntryRule : CatalogEntryRule
+		{
+			public override bool EntryFails (CatalogEntry entry)
+			{
+				foreach (System.Text.RegularExpressions.Match match in Regex.Matches (entry.String, @"\{.\}", RegexOptions.None))  {
+					if (!entry.GetTranslation (0).Contains (match.Value)) 
+						return true;
+				}
+				return false;
+			}
+			
+			public override string FailReason (CatalogEntry entry)
+			{
+				foreach (System.Text.RegularExpressions.Match match in Regex.Matches (entry.String, @"\{.\}", RegexOptions.None))  {
+					if (!entry.GetTranslation (0).Contains (match.Value)) 
+						return GettextCatalog.GetString ("Original string '{0}' contains '{1}', translation doesn't.", entry.String, match.Value);
+				}
+				return "";
+			}
+		}
+		
+		
 		List<Task> currentTasks = new List<Task> ();
 		class UpdateTaskWorkerThread : WorkerThread
 		{
@@ -1017,34 +1095,18 @@ namespace MonoDevelop.Gettext
 					return;
 				}
 				try {
-					foreach (CatalogEntry entry in widget.catalog) {
-						if (IsStopping)
-							return;
-						if (String.IsNullOrEmpty (entry.String) || String.IsNullOrEmpty (entry.GetTranslation (0)))
-							continue;
-						
-						if (entry.String.EndsWith (".") && !entry.GetTranslation (0).EndsWith (".")) {
-							tasks.Add (new TranslationTask (widget,
-							                                entry,
-							                                GettextCatalog.GetString ("Translation for '{0}' doesn't end with '.'.", entry.String)));
-						}
-						if (char.IsLetter (entry.String[0]) && char.IsLetter (entry.GetTranslation (0)[0])  &&
-						    char.IsUpper (entry.String[0]) && !char.IsUpper (entry.GetTranslation (0)[0])) {
-							tasks.Add (new TranslationTask (widget,
-							                                entry,
-							                                GettextCatalog.GetString ("Casing mismatch in '{0}'", entry.String)));
-						}
-						if (entry.String.Contains ("_") && !entry.GetTranslation (0).Contains ("_")) {
-							tasks.Add (new TranslationTask (widget,
-							                                entry,
-							                                GettextCatalog.GetString ("Original string '{0}' contains '_', translation doesn't.", entry.String)));
-						}
-						foreach (System.Text.RegularExpressions.Match match in Regex.Matches (entry.String, @"\{.\}", RegexOptions.None))  {
-							if (!entry.GetTranslation (0).Contains (match.Value)) {
-								tasks.Add (new TranslationTask (widget,
-								                                entry,
-								                                GettextCatalog.GetString ("Original string '{0}' contains '{1}', translation doesn't.", entry.String, match.Value)));
-							}
+					foreach (CatalogEntryRule rule in widget.rules) {
+						System.Console.WriteLine("check rule: " + rule);
+						foreach (CatalogEntry entry in widget.catalog) {
+							if (IsStopping)
+								return;
+							if (String.IsNullOrEmpty (entry.String) || String.IsNullOrEmpty (entry.GetTranslation (0)))
+								continue;
+								if (rule.EntryFails (entry)) {
+									tasks.Add (new TranslationTask (widget,
+									                                entry,
+									                                rule.FailReason (entry)));
+								}
 						}
 					}
 				} catch (Exception e) {

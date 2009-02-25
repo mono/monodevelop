@@ -1,5 +1,15 @@
 2009-02-25  Mike Krüger  <mkrueger@novell.com>
 
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* gtk-gui/objects.xml:
+	* MonoDevelop.Gettext.csproj:
+	* MonoDevelop.Gettext.Editor/POEditorWidget.cs:
+	* MonoDevelop.Gettext.Editor/CatalogEditorView.cs: Fixed "Bug
+	  479376 - remove extra error check in Gettext addin".
+
+2009-02-25  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Gettext.Editor/POEditorWidget.cs: Changed
 	  override Destroy --> override OnDestroyed.
 

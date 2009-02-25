@@ -69,6 +69,7 @@ namespace MonoDevelop.Gettext.Editor
 //			}
 			poEditorWidget.Catalog = catalog;
 			poEditorWidget.POFileName = fileName;
+			poEditorWidget.UpdateRules (System.IO.Path.GetFileNameWithoutExtension (fileName));
 			
 			this.ContentName = fileName;
 			this.IsDirty = false;
