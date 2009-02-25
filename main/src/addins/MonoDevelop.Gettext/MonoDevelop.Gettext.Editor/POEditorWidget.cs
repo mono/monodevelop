@@ -57,7 +57,7 @@ namespace MonoDevelop.Gettext
 		Catalog catalog;
 		string  poFileName;
 		Gtk.Tooltips tooltips = new Gtk.Tooltips ();
-		
+
 		static List<POEditorWidget> widgets = new List<POEditorWidget> (); 
 		
 		public Catalog Catalog {
@@ -229,6 +229,23 @@ namespace MonoDevelop.Gettext
 //				if (vpaned2.Position != newPosition)
 //					vpaned2.Position = newPosition;
 //			};
+		}
+		
+		public override void Destroy ()
+		{
+			if (tooltips != null) {
+				tooltips.Destroy ();
+				tooltips = null;
+			}
+			if (store != null) {
+				store.Dispose ();
+				store = null;
+			}
+			if (foundInStore != null) {
+				foundInStore.Dispose ();
+				foundInStore = null;
+			}
+			base.Destroy ();
 		}
 		
 		#region Options
