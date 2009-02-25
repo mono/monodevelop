@@ -231,23 +231,6 @@ namespace MonoDevelop.Gettext
 //			};
 		}
 		
-		public override void Destroy ()
-		{
-			if (tooltips != null) {
-				tooltips.Destroy ();
-				tooltips = null;
-			}
-			if (store != null) {
-				store.Dispose ();
-				store = null;
-			}
-			if (foundInStore != null) {
-				foundInStore.Dispose ();
-				foundInStore = null;
-			}
-			base.Destroy ();
-		}
-		
 		#region Options
 		enum SearchIn {
 			Original,
@@ -935,6 +918,19 @@ namespace MonoDevelop.Gettext
 		{
 			updateIsRunning = false;
 			StopTaskWorkerThread ();
+		
+			if (tooltips != null) {
+				tooltips.Destroy ();
+				tooltips = null;
+			}
+			if (store != null) {
+				store.Dispose ();
+				store = null;
+			}
+			if (foundInStore != null) {
+				foundInStore.Dispose ();
+				foundInStore = null;
+			}
 			
 			widgets.Remove (this);
 			ClearTasks ();
@@ -978,6 +974,30 @@ namespace MonoDevelop.Gettext
 			}
 			return true;
 		}
+		
+//		class CatalogEntryRule
+//		{
+//			public virtual bool EntryFails (CatalogEntry entry)
+//			{
+//				return false;
+//			}
+//			public virtual string FailReason (CatalogEntry entry)
+//			{
+//			}
+//		}
+//		class PointRuleCatalogEntryRule : CatalogEntryRule
+//		{
+//			public override bool EntryFails (CatalogEntry entry)
+//			{
+//				return base.EntryFails (entry);
+//			}
+//			
+//			public override string FailReason (CatalogEntry entry)
+//			{
+//				return base.FailReason (entry);
+//			}
+//		}
+			
 		List<Task> currentTasks = new List<Task> ();
 		class UpdateTaskWorkerThread : WorkerThread
 		{
