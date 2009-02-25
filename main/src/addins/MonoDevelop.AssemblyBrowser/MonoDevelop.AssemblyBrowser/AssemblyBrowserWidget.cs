@@ -207,7 +207,7 @@ namespace MonoDevelop.AssemblyBrowser
 			};
 		}
 		
-		public override void Destroy ()
+		protected override void OnDestroyed ()
 		{
 			if (memberListStore != null) {
 				memberListStore.Dispose ();
@@ -220,9 +220,9 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 			
 			PropertyService.PropertyChanged -= HandlePropertyChanged;
-			base.Destroy ();
+			base.OnDestroyed ();
 		}
-
+		
 		void HandlePropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.Key == "ColorScheme")
