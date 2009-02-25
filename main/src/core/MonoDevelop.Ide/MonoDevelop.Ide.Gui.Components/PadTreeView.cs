@@ -56,7 +56,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			get { return textRenderer; }
 		}
 		
-		public override void Dispose ()
+		protected override void OnDestroyed ()
 		{
 			if (changer != null) {
 				changer.Dispose ();
