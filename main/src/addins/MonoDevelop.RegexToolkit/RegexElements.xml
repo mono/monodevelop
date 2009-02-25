@@ -145,21 +145,23 @@ Does not capture the substring matched by the subexpression.">(?:)</Element>
 "Applies or disables the specified options within the subexpression.">(?-:)</Element>
 		<Element _name = "(?= subexpression)" _description=
 "Zero-width positive lookahead assertion.
-Continues match only if the subexpression matches afterwards.">(?= )</Element>
+Continues match only if the subexpression matches at this 
+position on the right.">(?= )</Element>
 		<Element _name = "(?! subexpression)" _description=
 "Zero-width negative lookahead assertion.
 Continues match only if the subexpression does not match
-afterwards. 
+at this position on the right. 
 For example, \b(?!un)\w+\b matches words that do not begin with un.">(?! )</Element>
 		<Element _name = "(?&lt;= subexpression)" _description=
 "Zero-width positive lookbehind assertion.
-Continues match only if the subexpression matches backwards. 
+Continues match only if the subexpression matches at this
+position on the left. 
 For example, (?&lt;=19)99 matches instances of 99 that follow 19.
 This construct does not backtrack.">(?&lt;= )</Element>
 		<Element _name = "(?&lt;! subexpression)" _description=
 "Zero-width negative lookbehind assertion.
 Continues match only if the subexpression does not 
-match backwards.">(?&lt;! )</Element>
+match at the position on the left.">(?&lt;! )</Element>
 		<Element _name = "(?&gt; subexpression)" _description=
 "Nonbacktracking subexpression (also known as a 'greedy' subexpression.)
 The subexpression is fully matched once, and then does not participate 

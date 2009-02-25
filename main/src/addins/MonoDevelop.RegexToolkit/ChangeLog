@@ -1,5 +1,10 @@
 2009-02-25  Mike Krüger  <mkrueger@novell.com>
 
+	* RegexElements.xml: Reverted changes (we came to the
+	  conclusion that the old ones were more correct).
+
+2009-02-25  Mike Krüger  <mkrueger@novell.com>
+
 	* RegexElements.xml: Changed some problematic strings found by
 	  eno.
 
