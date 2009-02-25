@@ -365,8 +365,24 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 
 			GtkDesignInfo info = GtkDesignInfo.FromProject (project);
 
+			DateTime last_gen_time = File.Exists (info.SteticGeneratedFile) ? File.GetLastWriteTime (info.SteticGeneratedFile) : DateTime.MinValue;
+			
+			bool ref_changed = false;
+			foreach (ProjectReference pref in project.References) {
+				if (!pref.IsValid)
+					continue;
+				foreach (string filename in pref.GetReferencedFileNames (configuration)) {
+					if (File.GetLastWriteTime (filename) > last_gen_time) {
+						ref_changed = true;
+						break;
+					}
+				}
+				if (ref_changed)
+					break;
+			}
+
 			// Check if generated code is already up to date.
-			if (File.Exists (info.SteticGeneratedFile) && File.GetLastWriteTime (info.SteticGeneratedFile) >= File.GetLastWriteTime (info.SteticFile))
+			if (!ref_changed && last_gen_time >= File.GetLastWriteTime (info.SteticFile))
 				return null;
 			
 			if (info.GuiBuilderProject.HasError) {

@@ -161,6 +161,14 @@ namespace Stetic {
 				using (Stream stream = System.IO.File.Create (ObjectsPath))
 					objects.Save (stream);
 			}
+
+			public event EventHandler Changed;
+
+			public void OnChanged ()
+			{
+				if (Changed != null)
+					Changed (this, EventArgs.Empty);
+			}
 		}
 
 		static string dir = Path.Combine (Path.Combine (ENV.GetFolderPath (ENV.SpecialFolder.ApplicationData), "stetic"), "library-cache");
@@ -611,6 +619,8 @@ namespace Stetic {
 				if (gui != null)
 					info.GuiDocument = gui;
 			}
+
+			info.OnChanged ();
 			return info;
 		}
 

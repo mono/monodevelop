@@ -1,3 +1,18 @@
+2009-02-25  Mike Kestner <mkestner@novell.com> 
+
+	* libsteticui/ApplicationBackend.cs: Reload the registry libraries
+	in LoadLibraries, since adding a library doesn't necessarily refresh
+	an out-of-date previously registered library.
+	* libsteticui/CecilWidgetLibrary.cs: enhance NeedsReload check to 
+	use a cache refresh and the new change notification so that the
+	library stays 'dirty' until it's reloaded.
+	* libsteticui/LibraryCache.cs: add change notification for cache items.
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs: do an update
+	of the steticapp libs even if the list hasn't changed in case the 
+	contents of any of them have changed.
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs: check for 
+	'dirty' references when regenerating code. [Fixes #472683]
+
 2009-02-24  Mike Kestner <mkestner@novell.com> 
 
 	* MonoDevelop.GtkCore/GtkDesignInfo.cs: only touch the design file

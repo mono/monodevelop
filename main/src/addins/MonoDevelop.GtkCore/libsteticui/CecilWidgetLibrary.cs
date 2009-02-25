@@ -45,6 +45,7 @@ namespace Stetic
 		string[] dependencies;
 		AssemblyResolver resolver;
 		bool canGenerateCode;
+		bool info_changed;
 		bool objects_dirty;
 		AssemblyDefinition assembly;
 		
@@ -69,7 +70,10 @@ namespace Stetic
 		}
 		
 		public override bool NeedsReload {
-			get { return File.Exists (filename) && !cache.IsCurrent (filename); }
+			get {
+				cache.Refresh (resolver, name);
+				return info_changed; 
+			}
 		}
 		
 		public override bool CanReload {
@@ -90,6 +94,8 @@ namespace Stetic
 			if (objects_dirty)
 				info.WriteObjectsFile ();
 			
+			info.Changed += delegate { info_changed = true; };
+
 			canGenerateCode = true;
 			foreach (string dep in GetLibraryDependencies ()) {
 				WidgetLibrary lib = Registry.GetWidgetLibrary (dep);
@@ -97,6 +103,7 @@ namespace Stetic
 					canGenerateCode = false;
 			}
 			assembly = null;
+			info_changed = false;
 		}
 		
 		protected override ClassDescriptor LoadClassDescriptor (XmlElement element)

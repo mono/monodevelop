@@ -205,6 +205,7 @@ namespace Stetic
 		{
 			foreach (string s in libraries)
 				AddLibrary (resolver, visited, s);
+			Registry.ReloadWidgetLibraries ();
 		}
 		
 		WidgetLibrary AddLibrary (AssemblyResolver resolver, Hashtable visited, string s)

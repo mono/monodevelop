@@ -570,6 +570,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (LibrariesChanged (oldLibs, internalLibs, newLibs)) {
 				gproject.SetWidgetLibraries (newLibs, internalLibs);
 				needsSave = true;
+			} else {
+				GuiBuilderService.SteticApp.UpdateWidgetLibraries (false);
 			}
 			
 			if (needsSave)
