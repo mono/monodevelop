@@ -66,9 +66,14 @@ namespace ILAsmBinding
 			// Not supported
 		}
 		
-		public ICloneable CreateCompilationParameters (XmlElement projectOptions)
+		public ConfigurationParameters CreateCompilationParameters (XmlElement projectOptions)
 		{
 			return new ILAsmCompilerParameters();
+		}
+	
+		public ProjectParameters CreateProjectParameters (XmlElement projectOptions)
+		{
+			return null;
 		}
 		
 		public string CommentTag

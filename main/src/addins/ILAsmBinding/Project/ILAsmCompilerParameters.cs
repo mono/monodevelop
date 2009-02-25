@@ -33,13 +33,8 @@ namespace ILAsmBinding
 	/// <summary>
 	/// This class handles project specific compiler parameters
 	/// </summary>
-	public class ILAsmCompilerParameters: ICloneable
+	public class ILAsmCompilerParameters: ConfigurationParameters
 	{
 		// Add options here
-		
-		public object Clone ()
-		{
-			return MemberwiseClone ();
-		}
 	}
 }

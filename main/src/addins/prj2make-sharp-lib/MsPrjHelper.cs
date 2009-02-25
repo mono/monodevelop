@@ -467,7 +467,6 @@ namespace MonoDevelop.Prj2Make
 			compilerParams.DefineSymbols = ConfigBlock.DefineConstants;
 			compilerParams.UnsafeCode = ConfigBlock.AllowUnsafeBlocks; 
 			compilerParams.GenerateOverflowChecks = ConfigBlock.CheckForOverflowUnderflow;
-			compilerParams.MainClass = "";
 			
 			return confObj;
 		}

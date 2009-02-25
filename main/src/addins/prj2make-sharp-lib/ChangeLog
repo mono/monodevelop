@@ -1,3 +1,7 @@
+2009-02-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MsPrjHelper.cs: Track api changes.
+
 2009-02-08  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* prj2make-sharp-lib.csproj: Exorcise more unwanted local
