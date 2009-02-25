@@ -68,9 +68,8 @@ namespace MonoDevelop.AspNet
 				return base.Build (monitor, project, configuration);
 			}
 			
-			System.CodeDom.Compiler.CodeDomProvider provider = aspProject.LanguageBinding.GetCodeDomProvider ();
-			bool supportsPartialTypes = provider.Supports (System.CodeDom.Compiler.GeneratorSupport.PartialTypes);
-			if (!supportsPartialTypes) {
+			CodeBehindWriter writer = CodeBehindWriter.CreateForProject (monitor, aspProject);
+			if (!writer.SupportsPartialTypes) {
 				monitor.Log.WriteLine (GettextCatalog.GetString 
 					("The code generator for {0} does not support partial classes. Skipping CodeBehind member generation.", 
 					aspProject.LanguageBinding.Language));;
@@ -84,9 +83,6 @@ namespace MonoDevelop.AspNet
 			List<CodeBehindWarning> errors = new List<CodeBehindWarning> ();
 			
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Generating CodeBehind members..."));
-			int nUpdated = 0;
-			List<string> openFiles = null;
-			List<KeyValuePair<string,string>> filesToWrite = new List<KeyValuePair<string,string>> ();
 			
 			//go over all the files generating members where necessary
 			foreach (ProjectFile file in aspProject.Files)
@@ -113,175 +109,18 @@ namespace MonoDevelop.AspNet
 				if (parsedDocument == null || parsedDocument.Document == null)
 					continue;
 				
-				string className = parsedDocument.PageInfo.InheritedClass;
-				
-				//initialising this list may generate more errors so we do it here
-				MemberListVisitor memberList = null;
-				if (!string.IsNullOrEmpty (className))
-					memberList = parsedDocument.Document.MemberList;
-				
-				//log errors
-				if (parsedDocument.Document.ParseErrors.Count > 0) {
-					foreach (Exception e in parsedDocument.Document.ParseErrors) {
-						CodeBehindWarning cbw;
-						ErrorInFileException eife = e as ErrorInFileException;
-						if (eife != null)
-							cbw = new CodeBehindWarning (eife);
-						else
-							cbw = new CodeBehindWarning (
-							    GettextCatalog.GetString ("Parser failed with error {0}. CodeBehind members for this file will not be added.", e.ToString ()),
-							    file.FilePath
-							    );
-						errors.Add (cbw);
-					}
-				}
-				
-				if (string.IsNullOrEmpty (className))
+				System.CodeDom.CodeCompileUnit ccu = CodeBehind.GenerateCodeBehind (aspProject, parsedDocument, errors);
+				if (ccu == null)
 					continue;
 				
-				//initialise the generated type
-				System.CodeDom.CodeCompileUnit ccu = new System.CodeDom.CodeCompileUnit ();
-				System.CodeDom.CodeNamespace namespac = new System.CodeDom.CodeNamespace ();
-				ccu.Namespaces.Add (namespac); 
-				System.CodeDom.CodeTypeDeclaration typeDecl = new System.CodeDom.CodeTypeDeclaration ();
-				typeDecl.IsClass = true;
-				typeDecl.IsPartial = true;
-				namespac.Types.Add (typeDecl);
-				
-				//name the class and namespace
-				int namespaceSplit = className.LastIndexOf ('.');
-				string namespaceName = null;
-				if (namespaceSplit > -1) {
-					namespac.Name = className.Substring (0, namespaceSplit);
-					typeDecl.Name = className.Substring (namespaceSplit + 1);
-				} else {
-					typeDecl.Name = className;
-				}
-				
-				string masterTypeName = null;
-				if (!String.IsNullOrEmpty (parsedDocument.PageInfo.MasterPageTypeName)) {
-					masterTypeName = parsedDocument.PageInfo.MasterPageTypeName;
-				} else if (!String.IsNullOrEmpty (parsedDocument.PageInfo.MasterPageTypeVPath)) {
-					try {
-						ProjectFile resolvedMaster = aspProject.ResolveVirtualPath (parsedDocument.PageInfo.MasterPageTypeVPath, parsedDocument.FileName);
-						AspNetParsedDocument masterParsedDocument = null;
-						if (resolvedMaster != null)
-							masterParsedDocument = ProjectDomService.Parse (aspProject, resolvedMaster.FilePath, null)	as AspNetParsedDocument;
-						if (masterParsedDocument != null && !String.IsNullOrEmpty (masterParsedDocument.PageInfo.InheritedClass)) {
-							masterTypeName = masterParsedDocument.PageInfo.InheritedClass;
-						} else {
-							errors.Add (new CodeBehindWarning (String.Format ("Could not find type for master '{0}'",
-							                                                  parsedDocument.PageInfo.MasterPageTypeVPath),
-							                                   parsedDocument.FileName));
-						}
-					} catch (Exception ex) {
-						errors.Add (new CodeBehindWarning (String.Format ("Could not find type for master '{0}'",
-						                                                  parsedDocument.PageInfo.MasterPageTypeVPath),
-						                                   parsedDocument.FileName));
-						LoggingService.LogWarning ("Error resolving master page type", ex);
-					}
-				}
-				
-				if (masterTypeName != null) {
-					System.CodeDom.CodeMemberProperty masterProp = new System.CodeDom.CodeMemberProperty ();
-					masterProp.Name = "Master";
-					masterProp.Type = new System.CodeDom.CodeTypeReference (masterTypeName);
-					masterProp.HasGet = true;
-					masterProp.HasSet = false;
-					masterProp.Attributes = System.CodeDom.MemberAttributes.Public | System.CodeDom.MemberAttributes.New 
-						| System.CodeDom.MemberAttributes.Final;
-					masterProp.GetStatements.Add (new System.CodeDom.CodeMethodReturnStatement (
-							new System.CodeDom.CodeCastExpression (masterTypeName, 
-								new System.CodeDom.CodePropertyReferenceExpression (
-									new System.CodeDom.CodeBaseReferenceExpression (), "Master"))));
-					typeDecl.Members.Add (masterProp);
-				}
-				
-				//add fields for each control in the page
-				foreach (System.CodeDom.CodeMemberField member in memberList.Members.Values)
-					typeDecl.Members.Add (member);
-				
-				System.CodeDom.Compiler.CodeGeneratorOptions options = new System.CodeDom.Compiler.CodeGeneratorOptions ();
-				options.BlankLinesBetweenMembers = false;
-				
-				//check if designer files are open in the GUI. if they are, we want to edit them in-place
-				if (openFiles == null)
-					openFiles = GetOpenEditableFilesList ();
-				
-				//no? just write out to disc
-				if (!openFiles.Contains (designerFile.FilePath)) {
-					try {
-						using (StreamWriter sw = new StreamWriter (designerFile.FilePath)) {
-							provider.GenerateCodeFromCompileUnit (ccu, sw, options);
-						}
-						nUpdated++;
-					} catch (IOException ex) {
-						monitor.ReportError (
-							GettextCatalog.GetString ("Failed to write file '{0}'.",
-								designerFile.FilePath),
-							ex);
-					} catch (Exception ex) {
-						monitor.ReportError (
-							GettextCatalog.GetString ("Failed to generate code for file '{0}'.",
-								designerFile.FilePath),
-							ex);
-					}
-				}
-				//file is open, so generate code and queue up for a write in the GUI thread
-				else {
-					try {
-						using (StringWriter sw = new StringWriter ()) {
-							provider.GenerateCodeFromCompileUnit (ccu, sw, options);
-							filesToWrite.Add (new KeyValuePair<string, string> (
-								designerFile.FilePath, sw.ToString ()));
-						}
-					} catch (Exception ex) {
-						monitor.ReportError (
-							GettextCatalog.GetString ("Failed to generate code for file '{0}'.",
-								designerFile.FilePath),
-							ex);
-					}
-				}
+				writer.Write (ccu, designerFile.FilePath);
 			}
 			
-			
-			//these documents are open, so needs to run in GUI thread
-			MonoDevelop.Core.Gui.DispatchService.GuiSyncDispatch (delegate {
-				foreach (KeyValuePair<string, string> item in filesToWrite) {
-					try {
-						//get an interface to edit the file
-						MonoDevelop.Projects.Text.IEditableTextFile textFile = 
-							MonoDevelop.DesignerSupport.
-							OpenDocumentFileProvider.Instance.GetEditableTextFile (item.Key);
-						
-						if (textFile == null)
-							textFile = MonoDevelop.Projects.Text.TextFile.ReadFile (item.Key);
-						
-						//change the contents
-						textFile.Text = item.Value;
-						
-						//save the file
-						MonoDevelop.Projects.Text.TextFile tf = textFile as MonoDevelop.Projects.Text.TextFile;
-						if (tf != null)
-							tf.Save ();
-						
-						nUpdated++;
-						
-					} catch (IOException ex) {
-						monitor.ReportError (
-							GettextCatalog.GetString ("Failed to write file '{0}'.", item.Key),
-							ex);
-					}
-					
-					//save the changes
-					foreach (MonoDevelop.Ide.Gui.Document doc in MonoDevelop.Ide.Gui.IdeApp.Workbench.Documents)
-						doc.Save ();
-				}
-			});
+			writer.WriteOpenFiles ();
 			
 			//write out a friendly message aout what we did
-			if (nUpdated > 0) {
-				monitor.Log.WriteLine (GettextCatalog.GetString ("{0} CodeBehind designer classes updated.", nUpdated));
+			if (writer.WrittenCount > 0) {
+				monitor.Log.WriteLine (GettextCatalog.GetString ("{0} CodeBehind designer classes updated.", writer.WrittenCount));
 			} else {
 				monitor.Log.WriteLine (GettextCatalog.GetString ("No changes made to CodeBehind classes."));
 			}
@@ -308,57 +147,57 @@ namespace MonoDevelop.AspNet
 			});
 			return list;
 		}
+	}
+	
+	public class CodeBehindWarning
+	{
+		string fileName = null;
+		int line = 0;
+		int col = 0;
+		string warningText;
 		
-		class CodeBehindWarning
+		public CodeBehindWarning (string warningText)
+			: this (warningText, null)
 		{
-			string fileName = null;
-			int line = 0;
-			int col = 0;
-			string warningText;
-			
-			public CodeBehindWarning (string warningText)
-				: this (warningText, null)
-			{
-			}
-			
-			public CodeBehindWarning (string warningText, string fileName)
-				: this (warningText, fileName, 0, 0)
-			{
-			}
-			
-			public CodeBehindWarning (string warningText, string fileName, int line, int col)
-			{
-				this.warningText = warningText;
-				this.fileName = fileName;
-				this.line = line;
-				this.col = col;
-			}
-			
-			public CodeBehindWarning (ErrorInFileException ex)
-				: this (ex.ToString (), ex.FileName, ex.Line, ex.Column)
-			{
-			}
-			
-			public string FileName {
-				get { return fileName; }
-			}
-			
-			public string WarningText {
-				get { return warningText; }
-			}
-			
-			public int Line {
-				get { return line; }
-			}
-			
-			public int Column {
-				get { return col; }
-			}
-			
-			public override string ToString ()
-			{
-				return string.Format ("{0}({1},{2}): {3}", FileName, Line, Column, WarningText);
-			}
+		}
+		
+		public CodeBehindWarning (string warningText, string fileName)
+			: this (warningText, fileName, 0, 0)
+		{
+		}
+		
+		public CodeBehindWarning (string warningText, string fileName, int line, int col)
+		{
+			this.warningText = warningText;
+			this.fileName = fileName;
+			this.line = line;
+			this.col = col;
+		}
+		
+		public CodeBehindWarning (ErrorInFileException ex)
+			: this (ex.ToString (), ex.FileName, ex.Line, ex.Column)
+		{
+		}
+		
+		public string FileName {
+			get { return fileName; }
+		}
+		
+		public string WarningText {
+			get { return warningText; }
+		}
+		
+		public int Line {
+			get { return line; }
+		}
+		
+		public int Column {
+			get { return col; }
+		}
+		
+		public override string ToString ()
+		{
+			return string.Format ("{0}({1},{2}): {3}", FileName, Line, Column, WarningText);
 		}
 	}
 }

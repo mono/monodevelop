@@ -1,5 +1,12 @@
 2009-02-24  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.AspNet/CodeBehind.cs:
+	* MonoDevelop.AspNet/VerifyCodeBehindBuildStep.cs: Move
+	  codebehind generation code from VerifyCodeBehindBuildStep to
+	  CodeBehind and refactor it into something more re-usable.
+
+2009-02-24  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.AspNet/AspNetAppProject.cs: Fix swapped
 	  parameters in ResolveVirtualPath.
 
