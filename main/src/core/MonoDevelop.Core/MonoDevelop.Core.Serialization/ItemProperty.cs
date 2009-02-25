@@ -248,8 +248,13 @@ namespace MonoDevelop.Core.Serialization
 			
 			if (data != null) {
 				// Don't write empty collections or empty objects with the SkipEmpty flag
-				if (data is DataItem && !((DataItem)data).HasItemData && (DataType is CollectionDataType || SkipEmpty))
-					return null;
+				if (data is DataItem && (DataType is CollectionDataType || SkipEmpty)) {
+					DataItem di = (DataItem)data;
+					if (!di.HasItemData)
+						return null;
+					if (di.ItemData.Count == 1 && di.ItemData ["ctype"] != null)
+						return null;
+				}
 				data.Name = SingleName;
 			}
 			return data;

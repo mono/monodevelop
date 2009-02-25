@@ -1,3 +1,9 @@
+2009-02-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Serialization/ItemProperty.cs: An element
+	  which only has the ctype (type name) attribute is now
+	  considered empty when checking the SkipEmpty property.
+
 2009-02-20  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Core/SystemAssemblyService.cs: Add
