@@ -131,6 +131,19 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			}
 		}
 		
+		public override void Destroy ()
+		{
+			if (catStore != null) {
+				catStore.Dispose ();
+				catStore = null;
+			}
+			if (cat_imglist != null) {
+				cat_imglist.Clear ();
+				cat_imglist = null;
+			}
+			base.Destroy ();
+		}
+
 		static string GetCategoryPropertyKey (Project proj)
 		{
 			string key = "Dialogs.NewFileDialog.LastSelectedCategory";

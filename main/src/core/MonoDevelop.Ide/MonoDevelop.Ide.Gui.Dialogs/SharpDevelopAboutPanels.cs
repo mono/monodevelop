@@ -62,43 +62,55 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 	
 	internal class VersionInformationTabPage : VBox
 	{
+		ListStore store;
+		CellRendererText cellRenderer = new CellRendererText ();
+		
 		public VersionInformationTabPage ()
 		{
 			BorderWidth = 6;
 			TreeView listView = new TreeView ();
 			listView.RulesHint = true;
-			listView.AppendColumn (GettextCatalog.GetString ("Name"), new CellRendererText (), "text", 0);
-			listView.AppendColumn (GettextCatalog.GetString ("Version"), new CellRendererText (), "text", 1);
-			listView.AppendColumn (GettextCatalog.GetString ("Path"), new CellRendererText (), "text", 2);
+			listView.AppendColumn (GettextCatalog.GetString ("Name"), cellRenderer, "text", 0);
+			listView.AppendColumn (GettextCatalog.GetString ("Version"), cellRenderer, "text", 1);
+			listView.AppendColumn (GettextCatalog.GetString ("Path"), cellRenderer, "text", 2);
 			listView.Columns [0].Sizing = TreeViewColumnSizing.Fixed;
 			listView.Columns [0].FixedWidth = 200;
 			listView.Columns [0].Resizable = true;
 			
-			listView.Model = FillListView ();
+			listView.Model = store = FillListView ();
 			ScrolledWindow sw = new ScrolledWindow ();
 			sw.ShadowType = Gtk.ShadowType.In;
 			sw.Add (listView);
 			this.PackStart (sw, true, true, 0);
 		}
 		
+		public override void Destroy ()
+		{
+			if (store != null) {
+				store.Dispose ();
+				store = null;
+			}
+			if (cellRenderer != null) {
+				cellRenderer.Destroy ();
+				cellRenderer = null;
+			}
+			base.Destroy ();
+		}
+
 		ListStore FillListView()
 		{
 			ListStore store = new ListStore (typeof (string), typeof (string), typeof (string));
 			
 			foreach (Assembly asm in AppDomain.CurrentDomain.GetAssemblies ()) {
 				AssemblyName name = asm.GetName ();
-				
 				string loc;
-				
 				try {
 					loc = System.IO.Path.GetFullPath (asm.Location);
 				} catch {
 					loc = GettextCatalog.GetString ("dynamic");
 				}
-				
 				store.AppendValues (name.Name, name.Version.ToString (), loc);
 			}
-			
 			store.SetSortColumnId (0, SortType.Ascending);
 			return store;
 		}

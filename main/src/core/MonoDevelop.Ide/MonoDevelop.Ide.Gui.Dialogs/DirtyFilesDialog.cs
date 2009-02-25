@@ -17,7 +17,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		Button btnCancel;
 		TreeView tvFiles;
 		TreeStore tsFiles;
-
+		CellRendererToggle togRender;
+		CellRendererText textRender;
+		
 		public DirtyFilesDialog() : base (GettextCatalog.GetString ("Save Files"), IdeApp.Workbench.RootWindow, DialogFlags.Modal)
 		{
 			tsFiles = new TreeStore (typeof (string), typeof (bool), typeof (SdiWorkspaceWindow), typeof (bool));
@@ -58,13 +60,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			TreeViewColumn mainColumn = new TreeViewColumn ();
 			mainColumn.Title = "header";
 			
-			CellRendererToggle togRender = new CellRendererToggle ();
-			togRender.Toggled += new ToggledHandler (toggled);
+			togRender = new CellRendererToggle ();
+			togRender.Toggled += toggled;
 			mainColumn.PackStart (togRender, false);
 			mainColumn.AddAttribute (togRender, "active", 1);
 			mainColumn.AddAttribute (togRender, "inconsistent", 3);
 			
-			CellRendererText textRender = new CellRendererText ();
+			textRender = new CellRendererText ();
 			mainColumn.PackStart (textRender, true);
 			mainColumn.AddAttribute (textRender, "text", 0);
 
@@ -83,15 +85,36 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			btnQuit = new Button (Gtk.Stock.Quit);
 			btnCancel = new Button (Gtk.Stock.Cancel);
 
-			btnSaveAndQuit.Clicked += new EventHandler (SaveAndQuit);
-			btnQuit.Clicked += new EventHandler (Quit);
-			btnCancel.Clicked += new EventHandler (Cancel);
+			btnSaveAndQuit.Clicked += SaveAndQuit;
+			btnQuit.Clicked += Quit;
+			btnCancel.Clicked += Cancel;
 
 			this.ActionArea.PackStart (btnCancel);
 			this.ActionArea.PackStart (btnQuit);
 			this.ActionArea.PackStart (btnSaveAndQuit);
 			this.SetDefaultSize (300, 200);
 			this.ShowAll ();
+		}
+		
+		public override void Destroy ()
+		{
+			btnSaveAndQuit.Clicked -= SaveAndQuit;
+			btnQuit.Clicked -= Quit;
+			btnCancel.Clicked -= Cancel;
+			if (togRender != null) {
+				togRender.Toggled -= toggled;
+				togRender.Destroy ();
+				togRender = null;
+			}
+			if (textRender != null) {
+				textRender.Destroy ();
+				textRender = null;
+			}
+			if (tsFiles != null) {
+				tsFiles.Dispose ();
+				tsFiles = null;
+			}
+			base.Destroy ();
 		}
 
 		ArrayList arrSaveWorkbenches = new ArrayList ();

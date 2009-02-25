@@ -160,6 +160,26 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			ShowAll ();
 		}
 		
+		public override void Destroy ()
+		{
+			if (catStore != null) {
+				catStore.Dispose ();
+				catStore = null;
+			}
+			
+			if (catColumn != null) {
+				catColumn.Destroy ();
+				catColumn = null;
+			}
+			
+			if (cat_text_render != null) {
+				cat_text_render.Destroy ();
+				cat_text_render = null;
+			}
+			
+			base.Destroy ();
+		}
+ 
 		void InsertCategories (TreeIter node, ArrayList catarray)
 		{
 			foreach (Category cat in catarray) {
@@ -485,6 +505,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			txt_subdirectory.Sensitive = CreateSolutionDirectory;
 		}
 		
+		TreeViewColumn catColumn;
+		CellRendererText cat_text_render;
 		void InitializeComponents()
 		{	
 			catStore = new Gtk.TreeStore (typeof (string), typeof (Category));
@@ -493,10 +515,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			
 			lst_template_types.Selection.Changed += new EventHandler (CategoryChange);
 			
-			TreeViewColumn catColumn = new TreeViewColumn ();
+			catColumn = new TreeViewColumn ();
 			catColumn.Title = "categories";
-			
-			CellRendererText cat_text_render = new CellRendererText ();
+			cat_text_render = new CellRendererText ();
 			catColumn.PackStart (cat_text_render, true);
 			catColumn.AddAttribute (cat_text_render, "text", 0);
 

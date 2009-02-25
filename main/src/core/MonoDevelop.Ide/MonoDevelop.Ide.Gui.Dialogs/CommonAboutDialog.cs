@@ -219,7 +219,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 	
 	internal class CommonAboutDialog : Dialog
 	{
-		
+		Notebook nb;
 		ScrollBox aboutPictureScrollBox;
 		
 		public CommonAboutDialog ()
@@ -231,10 +231,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.Title = GettextCatalog.GetString ("About MonoDevelop");
 			this.TransientFor = IdeApp.Workbench.RootWindow;
 			aboutPictureScrollBox = new ScrollBox ();
-		
 			this.VBox.PackStart (aboutPictureScrollBox, false, false, 0);
 		
-			Notebook nb = new Notebook ();
+			nb = new Notebook ();
 			nb.BorderWidth = 6;
 //			nb.SetSizeRequest (440, 240);
 			this.ModifyBg (Gtk.StateType.Normal, new Gdk.Color (255, 255, 255));
@@ -242,13 +241,25 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			VersionInformationTabPage vinfo = new VersionInformationTabPage ();
 			
 			nb.AppendPage (new AboutMonoDevelopTabPage (), new Label (GettextCatalog.GetString ("About MonoDevelop")));
-
 			nb.AppendPage (vinfo, new Label (GettextCatalog.GetString ("Version Info")));
 			this.VBox.PackStart (nb, true, true, 0);
 			this.AddButton (Gtk.Stock.Close, (int) ResponseType.Close);
 			this.ShowAll ();
 		}
 		
+		public override void Destroy ()
+		{
+			aboutPictureScrollBox = null;
+			if (nb != null) {
+				foreach (Widget child in nb.Children) {
+					child.Destroy ();
+				}
+				nb.Destroy ();
+				nb = null;
+			}
+			base.Destroy ();
+		}
+
 		public new int Run ()
 		{
 			int tmp = base.Run ();
