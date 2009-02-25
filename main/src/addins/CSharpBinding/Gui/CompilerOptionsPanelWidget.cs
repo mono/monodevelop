@@ -103,13 +103,13 @@ namespace CSharpBinding
 			langVerCombo.Active = (int) compilerParameters.LangVersion;
 		}
 		
-		public override void Destroy ()
+		protected override void OnDestroyed ()
 		{
 			if (classListStore != null) {
 				classListStore.Dispose ();
 				classListStore = null;
 			}
-			base.Destroy ();
+			base.OnDestroyed ();
 		}
 
 		public bool ValidateChanges ()
