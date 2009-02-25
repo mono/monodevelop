@@ -97,6 +97,7 @@
 	
 	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
 		<DataType class = "CSharpBinding.CSharpCompilerParameters" />
+		<DataType class = "CSharpBinding.CSharpProjectParameters" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
