@@ -1,5 +1,11 @@
 2009-02-25  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/LanguageItemWindow.cs: Changed the
+	  key for small tooltips (without full names) to shift instead
+	  of control. This should now work on all window managers.
+
+2009-02-25  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/DropDownBox.cs:
 	* MonoDevelop.SourceEditor/DropDownBoxListWindow.cs:
 	* MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs:

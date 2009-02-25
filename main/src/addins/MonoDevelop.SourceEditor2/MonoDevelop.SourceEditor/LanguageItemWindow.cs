@@ -88,7 +88,7 @@ namespace MonoDevelop.SourceEditor
 		public LanguageItemWindow (ProjectDom dom, Gdk.ModifierType modifierState, Ambience ambience, ResolveResult result, string errorInformations, ICompilationUnit unit)
 		{
 			settings = new OutputSettings (OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName | OutputFlags.IncludeKeywords | OutputFlags.IncludeMarkup | OutputFlags.UseFullName);
-			if ((Gdk.ModifierType.ControlMask & modifierState) == Gdk.ModifierType.ControlMask) {
+			if ((Gdk.ModifierType.ShiftMask & modifierState) == Gdk.ModifierType.ShiftMask) {
 				settings.EmitNameCallback = delegate (IDomVisitable domVisitable, ref string outString) {
 					// crop used namespaces.
 					if (unit != null) {
