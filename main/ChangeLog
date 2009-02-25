@@ -1,5 +1,9 @@
 2009-02-25  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Makefile.am: Add casts debugging to run-debug target.
+
+2009-02-25  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Main.sln: Remove unused name attribute.
 
 2009-02-20  Michael Hutchinson  <mhutchinson@novell.com>
