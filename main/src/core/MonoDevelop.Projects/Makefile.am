@@ -210,6 +210,7 @@ FILES =  \
 	MonoDevelop.Projects/CombineEntryRenamedEventArgs.cs \
 	MonoDevelop.Projects/CombineEventArgs.cs \
 	MonoDevelop.Projects/ConfigurationEventHandler.cs \
+	MonoDevelop.Projects/ConfigurationParameters.cs \
 	MonoDevelop.Projects/ConvertXml.cs \
 	MonoDevelop.Projects/CustomCommand.cs \
 	MonoDevelop.Projects/CustomCommandCollection.cs \
@@ -247,6 +248,7 @@ FILES =  \
 	MonoDevelop.Projects/ProjectFileEventArgs.cs \
 	MonoDevelop.Projects/ProjectItem.cs \
 	MonoDevelop.Projects/ProjectItemCollection.cs \
+	MonoDevelop.Projects/ProjectParameters.cs \
 	MonoDevelop.Projects/ProjectPathItemPropertyAttribute.cs \
 	MonoDevelop.Projects/ProjectReference.cs \
 	MonoDevelop.Projects/ProjectReferenceCollection.cs \

@@ -45,8 +45,7 @@ namespace MonoDevelop.Projects
 		[ItemProperty ("AssemblyName")]
 		string assembly;
 		
-		[ItemProperty ("CodeGeneration", FallbackType=typeof(UnknownCompilationParameters))]
-		ICloneable compilationParameters;
+		ConfigurationParameters compilationParameters;
 		
 		string sourcePath;
 		
@@ -89,9 +88,24 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		public ICloneable CompilationParameters {
+		[ItemProperty ("CodeGeneration")]
+		public ConfigurationParameters CompilationParameters {
 			get { return compilationParameters; }
-			set { compilationParameters = value; }
+			set {
+				compilationParameters = value; 
+				if (compilationParameters != null)
+					compilationParameters.ParentConfiguration = this;
+			}
+		}
+		
+		public ProjectParameters ProjectParameters {
+			get {
+				DotNetProject dnp = ParentItem as DotNetProject;
+				if (dnp != null)
+					return dnp.LanguageParameters;
+				else
+					return null;
+			}
 		}
 		
 		public string CompiledOutputName {
@@ -118,7 +132,7 @@ namespace MonoDevelop.Projects
 			sourcePath = conf.sourcePath;
 			if (ParentItem == null)
 				SetParentItem (conf.ParentItem);
-			compilationParameters = conf.compilationParameters != null ? (ICloneable)conf.compilationParameters.Clone () : null;
+			CompilationParameters = conf.compilationParameters != null ? conf.compilationParameters.Clone () : null;
 		}
 		
 		public new DotNetProject ParentItem {
@@ -126,17 +140,21 @@ namespace MonoDevelop.Projects
 		}
 	}
 	
-	public class UnknownCompilationParameters: ICloneable, IExtendedDataItem
+	public class UnknownCompilationParameters: ConfigurationParameters, IExtendedDataItem
 	{
 		Hashtable table = new Hashtable ();
 		
 		public IDictionary ExtendedProperties { 
 			get { return table; }
 		}
+	}
+	
+	public class UnknownProjectParameters: ProjectParameters, IExtendedDataItem
+	{
+		Hashtable table = new Hashtable ();
 		
-		public object Clone ()
-		{
-			return MemberwiseClone (); 
+		public IDictionary ExtendedProperties { 
+			get { return table; }
 		}
 	}
 }

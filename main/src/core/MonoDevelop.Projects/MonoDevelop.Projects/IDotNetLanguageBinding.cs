@@ -36,8 +36,9 @@ namespace MonoDevelop.Projects
 	public interface IDotNetLanguageBinding: ILanguageBinding
 	{
 		BuildResult Compile (ProjectItemCollection items, DotNetProjectConfiguration configuration, IProgressMonitor monitor);
-		
-		ICloneable CreateCompilationParameters (XmlElement projectOptions);
+
+		ProjectParameters CreateProjectParameters (XmlElement projectOptions);
+		ConfigurationParameters CreateCompilationParameters (XmlElement projectOptions);
 
 		// Optional. Return null if not supported.
 		CodeDomProvider GetCodeDomProvider ();

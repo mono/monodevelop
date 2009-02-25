@@ -70,7 +70,7 @@ namespace MonoDevelop.Projects
 		[ItemProperty ("ConsolePause", DefaultValue=true)]
 		bool pauseconsoleoutput = true;
 
-		[ItemProperty ("EnvironmentVariables")]
+		[ItemProperty ("EnvironmentVariables", SkipEmpty=true)]
 		[ItemProperty ("Variable", Scope="item")]
 		[ItemProperty ("name", Scope="key")]
 		[ItemProperty ("value", Scope="value")]

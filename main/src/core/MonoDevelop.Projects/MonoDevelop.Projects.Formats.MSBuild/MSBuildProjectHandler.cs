@@ -222,6 +222,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					frameworkVersion = frameworkVersion.Substring (1);
 				if (!string.IsNullOrEmpty (frameworkVersion))
 					dotNetProject.TargetFramework = Runtime.SystemAssemblyService.GetTargetFramework (frameworkVersion);
+				
+				if (dotNetProject.LanguageParameters != null) {
+					DataItem data = ReadPropertyGroupMetadata (ser, globalGroup, dotNetProject.LanguageParameters);
+					ser.Deserialize (dotNetProject.LanguageParameters, data);
+				}
 			}
 			
 			// Read configurations
@@ -484,10 +489,25 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			// This serialize call will write data to ser.InternalItemProperties and ser.ExternalItemProperties
 			ser.Serialize (Item, Item.GetType ());
 			
+			object langParams = null;
+			
+			if (dotNetProject != null && dotNetProject.LanguageParameters != null) {
+				// Remove all language parameters properties from the data item, since we are going to write them again.
+				ClassDataType dt = (ClassDataType) ser.DataContext.GetConfigurationDataType (dotNetProject.LanguageParameters.GetType ());
+				foreach (ItemProperty prop in dt.GetProperties (ser.SerializationContext, dotNetProject.LanguageParameters)) {
+					DataNode n = ser.InternalItemProperties.ItemData [prop.Name];
+					if (n != null)
+						ser.InternalItemProperties.ItemData.Remove (n);
+				}
+				DataItem ditemComp = (DataItem) ser.Serialize (dotNetProject.LanguageParameters);
+				ser.InternalItemProperties.ItemData.AddRange (ditemComp.ItemData);
+				langParams = dotNetProject.LanguageParameters;
+			}
+			
 			if (fileContent == null)
 				ser.InternalItemProperties.ItemData.Sort (globalConfigOrder);
-			
-			WritePropertyGroupMetadata (globalGroup, ser.InternalItemProperties.ItemData, ser, Item);
+
+			WritePropertyGroupMetadata (globalGroup, ser.InternalItemProperties.ItemData, ser, Item, langParams);
 			
 			// Find a common assembly name for all configurations
 			
@@ -1034,7 +1054,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					return false;
 			}
 			if (instance is DotNetProject) {
-				if (prop.Name == "References")
+				if (prop.Name == "References" || prop.Name == "LanguageParameters")
 					return false;
 			}
 			if (instance is SolutionEntityItem) {

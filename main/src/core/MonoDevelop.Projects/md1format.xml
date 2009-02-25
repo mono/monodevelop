@@ -38,13 +38,14 @@
 		<ItemProperty member="UsePartialTypes" defaultValue="true"/>
 		<ItemProperty member="defaultNamespace" name="DefaultNamespace" defaultValue="" />
 		<ItemProperty member="References" name="References" />
+		<ItemProperty member="LanguageParameters" skipEmpty="true" />
 	</DataItem>
 	<DataItem class = "MonoDevelop.Projects.DotNetProjectConfiguration">
 		<ItemProperty member="assembly" name="Output/assembly"/>
 		<LiteralProperty name="Execution/runtime" value="MsNet" />
 		<ItemMember name="md1_CompileTarget" type="System.String"/>
 		<ItemProperty member="md1_CompileTarget" name="Build/target"/>
-		<ItemProperty member="compilationParameters" name="CodeGeneration" fallbackType="MonoDevelop.Projects.UnknownCompilationParameters"/>
+		<ItemProperty member="CompilationParameters" name="CodeGeneration" fallbackType="MonoDevelop.Projects.UnknownCompilationParameters"/>
 	</DataItem>
 	<DataItem class = "MonoDevelop.Projects.ItemConfiguration">
 		<ItemProperty member="Id" name="name" />

@@ -48,6 +48,7 @@ namespace MonoDevelop.Projects
 		string language;
 		bool usePartialTypes = true;
 		Ambience ambience;
+		ProjectParameters languageParameters;
 		
 		[ItemProperty ("OutputType")]
 		CompileTarget compileTarget;
@@ -113,6 +114,20 @@ namespace MonoDevelop.Projects
 				if (!Loading && IsLibraryBasedProjectType && value != CompileTarget.Library)
 					throw new InvalidOperationException ("CompileTarget cannot be changed on library-based project type.");
 				compileTarget = value;
+			}
+		}
+		
+		[ItemProperty ("LanguageParameters")]
+		public ProjectParameters LanguageParameters {
+			get {
+				if (languageParameters == null && LanguageBinding != null)
+					LanguageParameters = LanguageBinding.CreateProjectParameters (null);
+				return languageParameters;
+			}
+			internal set {
+				languageParameters = value;
+				if (languageParameters != null)
+					languageParameters.ParentProject = this;
 			}
 		}
 
@@ -264,6 +279,7 @@ namespace MonoDevelop.Projects
 			}
 			
 			if (languageBinding != null) {
+				LanguageParameters = languageBinding.CreateProjectParameters (projectOptions);
 				if (projectOptions != null)
 					projectOptions.SetAttribute ("DefineDebug", "True");
 				DotNetProjectConfiguration configuration = (DotNetProjectConfiguration) CreateConfiguration ("Debug");

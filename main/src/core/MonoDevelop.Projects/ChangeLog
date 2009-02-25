@@ -1,3 +1,21 @@
+2009-02-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* md1format.xml:
+	* MonoDevelop.Projects.csproj:
+	* MonoDevelop.Projects/DotNetProject.cs:
+	* MonoDevelop.Projects/ProjectParameters.cs:
+	* MonoDevelop.Projects/LanguageBindingService.cs:
+	* MonoDevelop.Projects/IDotNetLanguageBinding.cs:
+	* MonoDevelop.Projects/ConfigurationParameters.cs:
+	* MonoDevelop.Projects/DotNetProjectConfiguration.cs:
+	* MonoDevelop.Projects/AbstractProjectConfiguration.cs:
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs:
+	  Added support for ProjectParameters in DotNetProject.
+	  Language bindings can store project global settings there.
+	  Added a new base class for configuration parameters and
+	  project parameters.
+
 2009-02-24  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs:

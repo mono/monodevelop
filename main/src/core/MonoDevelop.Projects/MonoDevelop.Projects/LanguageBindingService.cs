@@ -138,7 +138,18 @@ namespace MonoDevelop.Projects
 		void OnExtensionChanged (object s, ExtensionNodeEventArgs args)
 		{
 			if (args.Change == ExtensionChange.Add) {
-				bindings.Add ((LanguageBindingCodon) args.ExtensionNode);
+				LanguageBindingCodon node = (LanguageBindingCodon) args.ExtensionNode;
+				bindings.Add (node);
+				
+				IDotNetLanguageBinding binding = node.LanguageBinding as IDotNetLanguageBinding;
+				if (binding != null) {
+					object ob = binding.CreateCompilationParameters (null);
+					if (ob != null)
+						Services.ProjectService.DataContext.IncludeType (ob.GetType ());
+					ob = binding.CreateProjectParameters (null);
+					if (ob != null)
+						Services.ProjectService.DataContext.IncludeType (ob.GetType ());
+				}
 				
 				// Make sure the langs list is re-created
 				langs = null;
