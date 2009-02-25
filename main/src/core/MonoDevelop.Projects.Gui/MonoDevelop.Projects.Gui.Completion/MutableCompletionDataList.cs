@@ -77,13 +77,13 @@ namespace MonoDevelop.Projects.Gui.Completion
 		
 		public event EventHandler Changed {
 			add {
-				if (changing == null)
+				if (changed == null)
 					ProjectDomService.ParseOperationFinished += HandleParseOperationFinished;
-				changing += value;
+				changed += value;
 			}
 			remove {
-				changing -= value;
-				if (changing == null)
+				changed -= value;
+				if (changed == null)
 					ProjectDomService.ParseOperationFinished -= HandleParseOperationFinished;
 			}
 		}
