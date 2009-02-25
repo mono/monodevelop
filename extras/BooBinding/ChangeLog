@@ -1,3 +1,7 @@
+2009-02-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* BooLanguageBinding.boo: Track api changes.
+
 2009-02-23  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* BooBinding.booproj: Updated references.

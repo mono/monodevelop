@@ -64,7 +64,7 @@ namespace JavaBinding
 			return IKVMCompilerManager.Compile (projectItems, configuration, monitor);
 		}
 		
-		public ICloneable CreateCompilationParameters (XmlElement projectOptions)
+		public ConfigurationParameters CreateCompilationParameters (XmlElement projectOptions)
 		{
 			JavaCompilerParameters parameters = new JavaCompilerParameters ();
 			if (Properties.Classpath.Length > 0)
@@ -82,6 +82,11 @@ namespace JavaBinding
 				}
 			}
 			return parameters;
+		}
+	
+		public ProjectParameters CreateProjectParameters (XmlElement projectOptions)
+		{
+			return null;
 		}
 		
 		// http://www.nbirn.net/Resources/Developers/Conventions/Commenting/Java_Comments.htm#CommentBlock

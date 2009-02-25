@@ -26,7 +26,7 @@ import System.Diagnostics
 import MonoDevelop.Projects
 import MonoDevelop.Core.Serialization
 
-public class BooCompilerParameters(ICloneable):
+public class BooCompilerParameters(ConfigurationParameters):
 	[ItemProperty("genwarnings")]
 	genwarnings = false
 	
@@ -36,9 +36,6 @@ public class BooCompilerParameters(ICloneable):
 	[ItemProperty("culture")]
 	culture = "" 
 
-	public def Clone () as object:
-		return MemberwiseClone ()
-		
 	public GenWarnings as bool:
 		get:
 			return genwarnings

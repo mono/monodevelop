@@ -55,9 +55,12 @@ public class BooLanguageBinding(IDotNetLanguageBinding):
 		Debug.Assert(compilerServices is not null)
 		return compilerServices.Compile (projectItems, configuration, monitor)
 	
-	public def CreateCompilationParameters (projectOptions as XmlElement) as ICloneable:
+	public def CreateCompilationParameters (projectOptions as XmlElement) as ConfigurationParameters:
 		parameters = BooCompilerParameters ()
 		return parameters
+	
+	public def CreateProjectParameters (projectOptions as XmlElement) as ProjectParameters:
+		return null
 	
 	public CommentTag as string:
 		get:
