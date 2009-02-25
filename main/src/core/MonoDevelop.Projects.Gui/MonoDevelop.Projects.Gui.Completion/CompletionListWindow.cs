@@ -94,6 +94,15 @@ namespace MonoDevelop.Projects.Gui.Completion
 			WindowTransparencyDecorator.Attach (this);
 		}
 		
+		protected override void OnDestroyed ()
+		{
+			if (declarationviewwindow != null) {
+				declarationviewwindow.Destroy ();
+				declarationviewwindow = null;
+			}
+			base.OnDestroyed ();
+		}
+
 		public bool ProcessKeyEvent (Gdk.Key key, Gdk.ModifierType modifier)
 		{
 			ListWindow.KeyAction ka = ProcessKey (key, modifier);
