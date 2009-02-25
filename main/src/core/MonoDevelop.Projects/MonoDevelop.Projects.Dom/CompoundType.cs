@@ -56,7 +56,11 @@ namespace MonoDevelop.Projects.Dom
 				return parts;
 			}
 		}
-
+		public override MonoDevelop.Projects.Dom.Parser.ProjectDom SourceProjectDom {
+			get {
+				return parts.Count > 0 ? parts[0].SourceProjectDom : base.SourceProjectDom;
+			}
+		}
 		// get the unit & compilation of the suggested main part.
 		public override ICompilationUnit CompilationUnit {
 			get { return parts.Count > 0 ? parts[0].CompilationUnit : null; }

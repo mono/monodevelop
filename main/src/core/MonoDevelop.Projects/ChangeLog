@@ -1,3 +1,9 @@
+2009-02-25  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom/DomType.cs:
+	* MonoDevelop.Projects.Dom/CompoundType.cs: Compound types now
+	  have sourcedom set.
+
 2009-02-25  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:

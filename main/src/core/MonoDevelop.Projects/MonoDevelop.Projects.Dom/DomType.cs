@@ -99,7 +99,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public ProjectDom SourceProjectDom {
+		public virtual ProjectDom SourceProjectDom {
 			get {
 				if (sourceProjectDom == null && DeclaringType != null)
 					return DeclaringType.SourceProjectDom;
@@ -112,7 +112,6 @@ namespace MonoDevelop.Projects.Dom
 		
 		public SolutionItem SourceProject {
 			get {
-				
 				return SourceProjectDom != null ? SourceProjectDom.Project : null;
 			}
 		}
