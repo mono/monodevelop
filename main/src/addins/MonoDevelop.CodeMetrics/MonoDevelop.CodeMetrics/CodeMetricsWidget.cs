@@ -50,7 +50,7 @@ namespace MonoDevelop.CodeMetrics
 		     //                            typeof (string),  // license
 		                                 typeof (int) // line count number
 		                                 );
-		
+		TreeViewColumn col1, col2;
 		public CodeMetricsWidget()
 		{
 			this.Build();
@@ -59,17 +59,17 @@ namespace MonoDevelop.CodeMetrics
 			
 			CellRendererText crt = new CellRendererText ();
 			crt.Ellipsize = Pango.EllipsizeMode.Start;
-			TreeViewColumn col = new TreeViewColumn (GettextCatalog.GetString ("File"), crt, "text", 0);
-			col.SortIndicator = true;
-			col.SortColumnId = 0;
-			col.Expand = true;
-			col.Resizable = true;
-			treeviewMetrics.AppendColumn (col);
+			TreeViewColumn col1 = new TreeViewColumn (GettextCatalog.GetString ("File"), crt, "text", 0);
+			col1.SortIndicator = true;
+			col1.SortColumnId = 0;
+			col1.Expand = true;
+			col1.Resizable = true;
+			treeviewMetrics.AppendColumn (col1);
 			
-			col = new TreeViewColumn (GettextCatalog.GetString ("Lines (real)"), new CellRendererText (), "text", 1);
-			col.SortIndicator = true;
-			col.SortColumnId = 3;
-			treeviewMetrics.AppendColumn (col);
+			col2 = new TreeViewColumn (GettextCatalog.GetString ("Lines (real)"), new CellRendererText (), "text", 1);
+			col2.SortIndicator = true;
+			col2.SortColumnId = 3;
+			treeviewMetrics.AppendColumn (col2);
 			/*
 			col = new TreeViewColumn (GettextCatalog.GetString ("License"), new CellRendererText (), "text", 2);
 			col.SortIndicator = true;
@@ -83,7 +83,25 @@ namespace MonoDevelop.CodeMetrics
 				}
 			};
 		}
-		
+		public override void Destroy ()
+		{
+			if (store != null) {
+				store.Dispose ();
+				store = null;
+			}
+			// is it required to destroy the columns ? 
+			// At least the .Destroyed event doesn't get fired by default.
+			if (col1 != null) {
+				col1.Destroy ();
+				col1 = null;
+			}
+			if (col2 != null) {
+				col2.Destroy ();
+				col2 = null;
+			}
+			base.Destroy ();
+		}
+
 		class MetricsWorkerThread : WorkerThread
 		{
 			//Dictionary<string, Mono.TextEditor.Document> headers = new Dictionary<string, Mono.TextEditor.Document> ();
