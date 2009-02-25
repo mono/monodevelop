@@ -1,3 +1,7 @@
+2009-02-25  Mike Krüger  <mkrueger@novell.com>
+
+	* widget.cs: Worked on ressource de-allocation.
+
 2009-02-20  Mike Krüger  <mkrueger@novell.com>
 
 	* widget.cs: Worked on resource freeing of the diff widget.

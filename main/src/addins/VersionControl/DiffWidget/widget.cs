@@ -52,22 +52,27 @@ namespace Algorithm.Diff.Gtk {
 		public DiffWidget(Merge merge, Options options) : this(Hunkify(merge), options) 
 		{
 		}
-		
-		public override void Dispose ()
+		OverviewRenderer overviewRenderer;
+		public override void Destroy ()
 		{
 			if (font != null) {
 				font.Dispose ();
 				font = null;
 			}
+			
+			if (overviewRenderer != null) {
+				overviewRenderer.Destroy ();
+				overviewRenderer = null;
+			}
+			
 			if (difftable != null) {
 				foreach (Widget child in difftable.Children) {
-					child.Dispose ();
+					child.Destroy ();
 				}
-				difftable.Dispose ();
+				difftable.Destroy ();
 				difftable = null;
 			}
-			scroller.Dispose ();
-			base.Dispose ();
+			base.Destroy ();
 		}
 
 		protected override void OnStyleSet (global::Gtk.Style previous_style)
@@ -79,14 +84,16 @@ namespace Algorithm.Diff.Gtk {
 			base.OnStyleSet (previous_style);
 		}
 
-		private static Hunk[] Hunkify(IEnumerable e) {
+		private static Hunk[] Hunkify(IEnumerable e) 
+		{
 			ArrayList a = new ArrayList();
 			foreach (Hunk x in e)
 				a.Add(x);
 			return (Hunk[])a.ToArray(typeof(Hunk));
 		}
 
-		private DiffWidget(Hunk[] hunks, Options options) : base(false, 0) {
+		private DiffWidget(Hunk[] hunks, Options options) : base(false, 0) 
+		{
 			if (hunks == null || hunks.Length == 0 || options == null)
 				throw new ArgumentException();
 			
@@ -103,8 +110,8 @@ namespace Algorithm.Diff.Gtk {
 			PackStart(centerpanel);
 
 			scroller = new ScrolledWindow();
-			
-			centerpanel.PackStart(new OverviewRenderer(this, scroller, hunks, options.SideBySide), false, false, 0);
+			overviewRenderer = new OverviewRenderer (this, scroller, hunks, options.SideBySide);
+			centerpanel.PackStart(overviewRenderer, false, false, 0);
 			
 			Viewport textviewport = new Viewport();
 			
@@ -182,7 +189,8 @@ namespace Algorithm.Diff.Gtk {
 			}
 		}
 		
-		void ComposeLines(Algorithm.Diff.Range range, char style, int otherStart, Table table, uint startRow, bool axn, uint col, bool wrap, Pango.FontDescription font, bool lineNumbers, Algorithm.Diff.Range lastRange) {
+		void ComposeLines(Algorithm.Diff.Range range, char style, int otherStart, Table table, uint startRow, bool axn, uint col, bool wrap, Pango.FontDescription font, bool lineNumbers, Algorithm.Diff.Range lastRange) 
+		{
 			if (range.Count == 0) return;
 			
 			StringBuilder text = new StringBuilder();
@@ -245,23 +253,25 @@ namespace Algorithm.Diff.Gtk {
 			return text;
 		}*/
 
-		class RangeEventBox : EventBox {
+		class RangeEventBox : EventBox 
+		{
 			RangeRenderer renderer;
 			
-			public RangeEventBox(RangeRenderer r) {
+			public RangeEventBox(RangeRenderer r) 
+			{
 				renderer = r;
-				Add(r);
-				this.EnterNotifyEvent += new EnterNotifyEventHandler(EnterNotifyEventHandler);
-				this.LeaveNotifyEvent += new LeaveNotifyEventHandler(LeaveNotifyEventHandler);
+				Add (r);
+				this.EnterNotifyEvent += EnterNotifyEventHandler;
+				this.LeaveNotifyEvent += LeaveNotifyEventHandler;
 			}
 			
-			public override void Dispose ()
+			public override void Destroy ()
 			{
-				if (renderer != null) {
-					renderer.Dispose ();
+				this.EnterNotifyEvent -= EnterNotifyEventHandler;
+				this.LeaveNotifyEvent -= LeaveNotifyEventHandler;
+				if (renderer != null) 
 					renderer = null;
-				}
-				base.Dispose ();
+				base.Destroy ();
 			}
 
 			void EnterNotifyEventHandler (object o, EnterNotifyEventArgs args) {
@@ -272,7 +282,8 @@ namespace Algorithm.Diff.Gtk {
 			}		
 		}
 		
-		class RangeRenderer : DrawingArea {
+		class RangeRenderer : DrawingArea 
+		{
 			Pango.Layout layout;
 			Pango.FontDescription font;
 			string text;
@@ -287,18 +298,20 @@ namespace Algorithm.Diff.Gtk {
 				this.wrap = wrap;
 				this.font = font;
 				this.type = type;
-				this.Realized += new EventHandler(OnRealized);
-				this.SizeAllocated += new SizeAllocatedHandler(SizeAllocatedHandler);
+				this.Realized += OnRealized;
+				this.SizeAllocated += SizeAllocatedHandler;
 				ClearHighlight();
 			}
 			
-			public override void Dispose ()
+			public override void Destroy ()
 			{
+				this.Realized -= OnRealized;
+				this.SizeAllocated -= SizeAllocatedHandler;
 				if (layout != null) {
 					layout.Dispose ();
 					layout = null;
 				}
-				base.Dispose ();
+				base.Destroy ();
 			}
 
 			Gdk.Color bg_color {
@@ -399,13 +412,28 @@ namespace Algorithm.Diff.Gtk {
 		
 		class OverviewRenderer : EventBox {
 			ScrolledWindow scroller;
-			public OverviewRenderer(DiffWidget widget, ScrolledWindow scroller, Hunk[] hunks, bool sidebyside) {
+			OverviewRenderer2 ovr2;
+			public OverviewRenderer(DiffWidget widget, ScrolledWindow scroller, Hunk[] hunks, bool sidebyside)
+			{
 				this.scroller = scroller;
-				this.ButtonPressEvent += new ButtonPressEventHandler(ButtonPressHandler);
-				Add(new OverviewRenderer2(widget, scroller, hunks, sidebyside));
+				this.ButtonPressEvent += ButtonPressHandler;
+				ovr2 = new OverviewRenderer2 (widget, scroller, hunks, sidebyside);
+				Add(ovr2);
 			}
 			
-			void ButtonPressHandler(object o, ButtonPressEventArgs args) {
+			public override void Destroy ()
+			{
+				if (ovr2 != null) {
+					ovr2.Destroy ();
+					ovr2 = null;
+				}
+				scroller = null;
+				this.ButtonPressEvent -= ButtonPressHandler;
+				base.Destroy ();
+			}
+
+			void ButtonPressHandler(object o, ButtonPressEventArgs args) 
+			{
 				double position = ((double)args.Event.Y / Allocation.Height - (double)scroller.Allocation.Height/scroller.Vadjustment.Upper/2) * scroller.Vadjustment.Upper;
 				if (position < 0) position = 0;
 				if (position + scroller.Allocation.Height > scroller.Vadjustment.Upper) position = scroller.Vadjustment.Upper - scroller.Allocation.Height;
@@ -424,10 +452,19 @@ namespace Algorithm.Diff.Gtk {
 				this.hunks = hunks;
 				this.scroller = scroller;
 				this.sidebyside = sidebyside;
-				scroller.ExposeEvent += new ExposeEventHandler(OnScroll);
+				scroller.ExposeEvent += OnScroll;
 				WidthRequest = 50;
 			}
 			
+			public override void Destroy ()
+			{
+				if (scroller != null) {
+					scroller.ExposeEvent -= OnScroll;
+					scroller = null;
+				}
+				base.Destroy ();
+			}
+
 			void OnScroll (object o, ExposeEventArgs args)
 			{
 				QueueDrawArea(0, 0, Allocation.Width, Allocation.Height);
