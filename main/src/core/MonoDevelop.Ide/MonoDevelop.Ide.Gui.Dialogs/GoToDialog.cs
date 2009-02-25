@@ -188,7 +188,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			UpdateList ();
 		}
 		
-		public override void Destroy ()
+		protected override void OnDestroyed ()
 		{
 			// Set the thread into a dispose state and wake it up so it can exit
 			if (searchCycleActive && searchThread != null && searchThreadWait != null) {
@@ -196,8 +196,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				searchThreadDispose = true;
 				searchThreadWait.Set ();
 			}
-			
-			base.Destroy ();
+			base.OnDestroyed ();
 		}
 		
 		void StopActiveSearch ()

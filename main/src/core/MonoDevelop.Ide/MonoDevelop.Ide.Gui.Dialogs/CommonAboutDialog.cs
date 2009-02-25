@@ -247,17 +247,17 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.ShowAll ();
 		}
 		
-		public override void Destroy ()
+		protected override void OnDestroyed ()
 		{
 			aboutPictureScrollBox = null;
-			if (nb != null) {
+		/*	if (nb != null) {
 				foreach (Widget child in nb.Children) {
 					child.Destroy ();
 				}
 				nb.Destroy ();
 				nb = null;
-			}
-			base.Destroy ();
+			}*/
+			base.OnDestroyed ();
 		}
 
 		public new int Run ()

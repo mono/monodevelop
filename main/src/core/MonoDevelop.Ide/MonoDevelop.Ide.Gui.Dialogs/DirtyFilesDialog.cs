@@ -96,7 +96,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.ShowAll ();
 		}
 		
-		public override void Destroy ()
+		protected override void OnDestroyed ()
 		{
 			btnSaveAndQuit.Clicked -= SaveAndQuit;
 			btnQuit.Clicked -= Quit;
@@ -114,9 +114,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				tsFiles.Dispose ();
 				tsFiles = null;
 			}
-			base.Destroy ();
+			base.OnDestroyed ();
 		}
-
+		
 		ArrayList arrSaveWorkbenches = new ArrayList ();
 		void SaveAndQuit (object o, EventArgs e)
 		{

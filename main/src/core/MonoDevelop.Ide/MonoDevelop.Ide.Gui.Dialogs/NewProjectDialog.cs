@@ -159,8 +159,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			SelectCategory (PropertyService.Get<string> ("Dialogs.NewProjectDialog.LastSelectedCategory", "C#"));
 			ShowAll ();
 		}
-		
-		public override void Destroy ()
+		protected override void OnDestroyed ()
 		{
 			if (catStore != null) {
 				catStore.Dispose ();
@@ -176,10 +175,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 				cat_text_render.Destroy ();
 				cat_text_render = null;
 			}
-			
-			base.Destroy ();
+			base.OnDestroyed ();
 		}
- 
+		
 		void InsertCategories (TreeIter node, ArrayList catarray)
 		{
 			foreach (Category cat in catarray) {

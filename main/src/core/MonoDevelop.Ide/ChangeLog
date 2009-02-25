@@ -1,5 +1,15 @@
 2009-02-25  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Gui.Dialogs/GoToDialog.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/DirtyFilesDialog.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:
+	  Changed override Destroy --> override OnDestroyed.
+
+2009-02-25  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs:
 	* MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:
 	* MonoDevelop.Ide.Gui.Dialogs/DirtyFilesDialog.cs:

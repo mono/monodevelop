@@ -84,7 +84,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.PackStart (sw, true, true, 0);
 		}
 		
-		public override void Destroy ()
+		protected override void OnDestroyed ()
 		{
 			if (store != null) {
 				store.Dispose ();
@@ -94,7 +94,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				cellRenderer.Destroy ();
 				cellRenderer = null;
 			}
-			base.Destroy ();
+			base.OnDestroyed ();
 		}
 
 		ListStore FillListView()
