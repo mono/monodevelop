@@ -293,6 +293,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				while (typeCount-- > 0) {
 					compoundResult.AddPart (ReadTypeInternal (reader, nameTable));
 				}
+				
 				return compoundResult;
 			}
 			

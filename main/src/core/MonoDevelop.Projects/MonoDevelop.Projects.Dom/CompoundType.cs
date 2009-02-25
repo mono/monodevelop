@@ -60,6 +60,13 @@ namespace MonoDevelop.Projects.Dom
 			get {
 				return parts.Count > 0 ? parts[0].SourceProjectDom : base.SourceProjectDom;
 			}
+			set {
+				if (parts.Count > 0) {
+					parts.ForEach (x => x.SourceProjectDom = value);
+			 	} else {
+					base.SourceProjectDom = value;
+				}
+			}
 		}
 		// get the unit & compilation of the suggested main part.
 		public override ICompilationUnit CompilationUnit {
@@ -143,7 +150,6 @@ namespace MonoDevelop.Projects.Dom
 			this.classType = parts[0].ClassType;
 			this.Name      = parts[0].Name;
 			this.Namespace = parts[0].Namespace;
-			this.SourceProjectDom = parts[0].SourceProjectDom;
 			if (parts[0] is DomType)
 				this.Resolved = ((DomType)parts[0]).Resolved;
 			this.ClearTypeParameter ();

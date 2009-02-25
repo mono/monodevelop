@@ -1,5 +1,12 @@
 2009-02-25  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Dom.Serialization/DomPersistence.cs: 
+
+	* MonoDevelop.Projects.Dom/CompoundType.cs: fixed compound
+	  type soureproject dom bug.
+
+2009-02-25  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Dom/DomType.cs:
 	* MonoDevelop.Projects.Dom/CompoundType.cs: Compound types now
 	  have sourcedom set.
