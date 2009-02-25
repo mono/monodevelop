@@ -27,8 +27,25 @@ Global
 		{87E0A9FD-8DFD-4A3D-93D7-C86F6322CCF4}.Release|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		name = BooBinding
 		version = 0.1
 		StartupItem = BooBinding.booproj
+		Policies = $0
+		$0.DotNetNamingPolicy = $1
+		$1.DirectoryNamespaceAssociation = Flat
+		$1.ResourceNamePolicy = FileName
+		$0.StandardHeader = $2
+		$2.inheritsSet = MITX11License
+		$0.TextStylePolicy = $3
+		$3.FileWidth = 120
+		$3.TabWidth = 4
+		$3.TabsToSpaces = False
+		$3.NoTabsAfterNonTabs = False
+		$3.RemoveTrailingWhitespace = False
+		$3.EolMarker = Native
+		$0.VersionControlPolicy = $4
+		$4.inheritsSet = Mono
+		$0.ChangeLogPolicy = $5
+		$5.UpdateMode = ProjectRoot
+		$5.inheritsSet = Mono
 	EndGlobalSection
 EndGlobal

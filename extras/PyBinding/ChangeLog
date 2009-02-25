@@ -1,3 +1,7 @@
+2009-02-25  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* PyBinding.sln: Set policies. Remove unused name attribute.
+
 2009/02/06  Lluis Sanchez Gual  <lluis@novell.com>
 
  * PyBinding.sln: Add missing file.

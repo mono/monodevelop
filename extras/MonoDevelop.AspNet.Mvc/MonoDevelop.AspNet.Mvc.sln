@@ -19,6 +19,20 @@ Global
 		Policies = $0
 		$0.DotNetNamingPolicy = $1
 		$1.DirectoryNamespaceAssociation = PrefixedFlat
-		$1.ResourceNamePolicy = MSBuild
+		$1.ResourceNamePolicy = FileName
+		$0.StandardHeader = $2
+		$2.inheritsSet = MITX11License
+		$0.TextStylePolicy = $3
+		$3.FileWidth = 120
+		$3.TabWidth = 4
+		$3.TabsToSpaces = False
+		$3.NoTabsAfterNonTabs = False
+		$3.RemoveTrailingWhitespace = False
+		$3.EolMarker = Native
+		$0.VersionControlPolicy = $4
+		$4.inheritsSet = Mono
+		$0.ChangeLogPolicy = $5
+		$5.UpdateMode = ProjectRoot
+		$5.inheritsSet = Mono
 	EndGlobalSection
 EndGlobal

@@ -1,3 +1,8 @@
+2009-02-25  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Debugger.Gdb.sln: Set policies. Remove unused
+	  name attribute.
+
 2009-02-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Debugger.csproj: Updated references.

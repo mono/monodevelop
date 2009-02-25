@@ -661,7 +661,6 @@ Global
 		$0.ChangeLogPolicy = $5
 		$5.UpdateMode = ProjectRoot
 		$5.inheritsSet = Mono
-		name = Main
 		MakePkgConfig = False
 		MakeLibPC = True
 	EndGlobalSection

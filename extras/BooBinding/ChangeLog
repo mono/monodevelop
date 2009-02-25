@@ -1,3 +1,7 @@
+2009-02-25  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* BooBinding.sln: Set policies. Remove unused name attribute.
+
 2009-02-25  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* BooLanguageBinding.boo: Track api changes.
