@@ -1,5 +1,10 @@
 2009-02-25  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.RegexToolkit/RegexLibraryWindow.cs: Changed
+	  override Destroy --> override OnDestroyed.
+
+2009-02-25  Mike Krüger  <mkrueger@novell.com>
+
 	* RegexElements.xml: Reverted changes (we came to the
 	  conclusion that the old ones were more correct).
 

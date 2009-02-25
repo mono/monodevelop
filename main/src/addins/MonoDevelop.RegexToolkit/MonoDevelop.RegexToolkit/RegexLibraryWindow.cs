@@ -74,13 +74,13 @@ namespace MonoDevelop.RegexToolkit
 			UpdateExpressions ();
 		}
 		
-		public override void Destroy ()
+		protected override void OnDestroyed ()
 		{
 			if (store != null) {
 				store.Dispose ();
 				store = null;
 			}
-			base.Destroy ();
+			base.OnDestroyed ();
 		}
 
 		void ShowSelectedEntry ()
