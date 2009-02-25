@@ -59,17 +59,17 @@ namespace MonoDevelop.XmlEditor.Gui
 			registeredSchemasStore = new ListStore (typeof (XmlSchemaCompletionData));
 			registeredSchemasView.Model = registeredSchemasStore;
 			
-			registeredSchemasView.AppendColumn ("Namespace", textRenderer,
+			registeredSchemasView.AppendColumn (GettextCatalog.GetString ("Namespace"), textRenderer,
 			    delegate (TreeViewColumn col, CellRenderer cell, TreeModel model, TreeIter iter) {
 				((Gtk.CellRendererText)cell).Text = ((MonoDevelop.XmlEditor.Completion.XmlSchemaCompletionData)model.GetValue (iter, 0)).NamespaceUri;
 			});
 			
-			registeredSchemasView.AppendColumn ("Type", textRenderer,
+			registeredSchemasView.AppendColumn (GettextCatalog.GetString ("Type"), textRenderer,
 			    delegate (TreeViewColumn col, CellRenderer cell, TreeModel model, TreeIter iter) {
 				bool builtIn = ((MonoDevelop.XmlEditor.Completion.XmlSchemaCompletionData)model.GetValue (iter, 0)).ReadOnly;
 				((Gtk.CellRendererText)cell).Text = builtIn? 
-					  MonoDevelop.Core.GettextCatalog.GetString ("Built in") 
-					: MonoDevelop.Core.GettextCatalog.GetString ("User schema");
+					  GettextCatalog.GetString ("Built in") 
+					: GettextCatalog.GetString ("User schema");
 			});
 			
 			registeredSchemasStore.SetSortFunc (0, 
@@ -117,9 +117,9 @@ namespace MonoDevelop.XmlEditor.Gui
 			//set up tree view for associations
 			defaultAssociationsStore = new ListStore (typeof (string), typeof (string), typeof (string), typeof (bool));
 			defaultAssociationsView.Model = defaultAssociationsStore;
-			defaultAssociationsView.AppendColumn ("File Extension", extensionTextRenderer, "text", DACols.Extension);
-			defaultAssociationsView.AppendColumn ("Namespace", comboEditor, "text", DACols.Namespace);
-			defaultAssociationsView.AppendColumn ("Prefix", prefixTextRenderer, "text", DACols.Prefix);
+			defaultAssociationsView.AppendColumn (GettextCatalog.GetString ("File Extension"), extensionTextRenderer, "text", DACols.Extension);
+			defaultAssociationsView.AppendColumn (GettextCatalog.GetString ("Namespace"), comboEditor, "text", DACols.Namespace);
+			defaultAssociationsView.AppendColumn (GettextCatalog.GetString ("Prefix"), prefixTextRenderer, "text", DACols.Prefix);
 			defaultAssociationsStore.SetSortColumnId ((int)DACols.Extension, SortType.Ascending);
 			
 			//editing handlers
