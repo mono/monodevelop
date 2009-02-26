@@ -1,3 +1,7 @@
+2009-02-26  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Main.sln: Fix translation projects' GUIDs.
+
 2009-02-25  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am: Add casts debugging to run-debug target.

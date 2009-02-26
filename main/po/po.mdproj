@@ -32,6 +32,7 @@
     </translations>
     <packageName>monodevelop</packageName>
     <outputType>RelativeToOutput</outputType>
+    <ProjectGuid>{AC7D119C-980B-4712-8811-5368C14412D7}</ProjectGuid>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />

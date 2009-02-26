@@ -1,5 +1,9 @@
 2009-02-26  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* po.mdproj: Fix translation projects' GUIDs.
+
+2009-02-26  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Makefile.am: Don't use datarootdir as this isn't present
 	  with automake 1.9.
 

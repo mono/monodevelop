@@ -1,3 +1,7 @@
+2009-02-26  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* BooBinding.sln: Fix translation projects' GUIDs.
+
 2009-02-25  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* BooBinding.sln: Set policies. Remove unused name attribute.
