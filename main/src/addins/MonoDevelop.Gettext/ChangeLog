@@ -1,3 +1,10 @@
+2009-02-26  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Gettext.addin.xml:
+	* MonoDevelop.Gettext/PropertyProvider.cs:
+	* MonoDevelop.Gettext.Editor/POEditorWidget.cs: Worked on
+	  propertygrid localization.
+
 2009-02-25  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:

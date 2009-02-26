@@ -862,6 +862,8 @@ namespace MonoDevelop.Gettext
 			} finally {
 				if (updateIsRunning) {
 					MonoDevelop.Core.Gui.DispatchService.GuiSyncDispatch (delegate {
+						if (number < 60)
+							store.Clear ();
 						foreach (CatalogEntry entry in foundEntries) {
 							store.AppendValues (GetStockForEntry (entry), entry.IsFuzzy, StringEscaping.ToGettextFormat (entry.String), StringEscaping.ToGettextFormat (entry.GetTranslation (0)), entry, GetRowColorForEntry (entry), GetTypeSortIndicator (entry));
 						}
@@ -1096,7 +1098,6 @@ namespace MonoDevelop.Gettext
 				}
 				try {
 					foreach (CatalogEntryRule rule in widget.rules) {
-						System.Console.WriteLine("check rule: " + rule);
 						foreach (CatalogEntry entry in widget.catalog) {
 							if (IsStopping)
 								return;

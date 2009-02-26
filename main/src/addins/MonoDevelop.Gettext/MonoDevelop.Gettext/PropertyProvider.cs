@@ -27,8 +27,8 @@
 //
 
 using System;
-using System.ComponentModel;
 
+using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.DesignerSupport;
 
@@ -56,9 +56,9 @@ namespace MonoDevelop.Gettext
 			}
 			
 			const string scanForTranslationsProperty = "Gettext.ScanForTranslations";
-			[Category ("Gettext translation")]
-			[DisplayName ("Scan for translations")]
-			[Description ("Include this file in the translation scan.")]
+			[LocalizedCategory ("Gettext translation")]
+			[LocalizedDisplayName ("Scan for translations")]
+			[LocalizedDescription ("Include this file in the translation scan.")]
 			public bool ScanForTranslations {
 				get {
 					object result = file.ExtendedProperties [scanForTranslationsProperty];
