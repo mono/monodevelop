@@ -62,7 +62,7 @@ namespace MonoDevelop.Projects.Dom.Output
 			if (!IncludeModifiers)
 				return string.Empty;
 			if (EmitModifiersCallback != null)
-				return EmitModifiersCallback (text + " ");
+				return EmitModifiersCallback (text) + " ";
 			if (IncludeMarkup)
 				return "<b>" + PangoFormat (text) + "</b> ";
 			return text + " ";
@@ -71,7 +71,7 @@ namespace MonoDevelop.Projects.Dom.Output
 		public string EmitKeyword (string text)
 		{
 			if (EmitKeywordCallback != null)
-				return EmitKeywordCallback (text);
+				return EmitKeywordCallback (text) + " ";
 			if (!IncludeKeywords)
 				return "";
 			if (IncludeMarkup)

@@ -1,3 +1,8 @@
+2009-02-26  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom.Output/OutputSettings.cs: fixed
+	  keyword output issues.
+
 2009-02-25  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Serialization/DomPersistence.cs: 
