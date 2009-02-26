@@ -1017,10 +1017,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		// Those are properties which are dynamically set by this file format
 		
 		internal static readonly ItemMember[] ExtendedMSBuildProperties = new ItemMember [] {
-			new ItemMember (typeof(Project), "ProductVersion"),
-			new ItemMember (typeof(Project), "SchemaVersion"),
-			new ItemMember (typeof(Project), "ProjectGuid"),
-			new ItemMember (typeof(Project), "ProjectTypeGuids"),
+			new ItemMember (typeof(SolutionEntityItem), "ProductVersion"),
+			new ItemMember (typeof(SolutionEntityItem), "SchemaVersion"),
+			new ItemMember (typeof(SolutionEntityItem), "ProjectGuid"),
+			new ItemMember (typeof(SolutionEntityItem), "ProjectTypeGuids"),
 			new ItemMember (typeof(DotNetProjectConfiguration), "DebugType"),
 			new ItemMember (typeof(DotNetProjectConfiguration), "ErrorReport"),
 			new ItemMember (typeof(DotNetProjectConfiguration), "TargetFrameworkVersion"),

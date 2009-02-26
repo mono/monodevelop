@@ -1,3 +1,10 @@
+2009-02-26  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs:
+	  Attach certain extended properties to SolutionEntityItem
+	  instead of Project. Fixes serialization of translation
+	  projects.
+
 2009-02-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/ProjectReference.cs: Added property for
