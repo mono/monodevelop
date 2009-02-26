@@ -1,5 +1,10 @@
 2009-02-26  Mike Kestner <mkestner@novell.com> 
 
+	* MonoDevelop.GtkCore/ProjectResourcesProvider.cs: lookup mime
+	type and use more specific ResourceInfo ctor. [Fixes #475820]
+
+2009-02-26  Mike Kestner <mkestner@novell.com> 
+
 	* libsteticui/WidgetDesignerBackend.cs: implement Delete key 
 	support.  [Fixes #470637]
 
