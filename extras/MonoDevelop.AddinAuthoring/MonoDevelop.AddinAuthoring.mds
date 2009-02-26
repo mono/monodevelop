@@ -1,4 +1,4 @@
-<Combine name="MonoDevelop.AddinAuthoring" fileversion="2.0">
+<Combine fileversion="2.0" name="MonoDevelop.AddinAuthoring">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="CombineConfiguration">
       <Entry build="True" name="MonoDevelop.AddinAuthoring" configuration="Debug" />

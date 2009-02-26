@@ -1,3 +1,7 @@
+2009-02-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* libsteticui.csproj: Flush.
+
 2009-02-12  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* PropertyTree.cs:

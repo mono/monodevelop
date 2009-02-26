@@ -9,6 +9,7 @@
     <OutputType>Library</OutputType>
     <AssemblyName>MonoDevelop.ValaBinding</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <ApplicationIcon>.</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -19,7 +20,6 @@
     <WarningLevel>4</WarningLevel>
     <AssemblyKeyFile>.</AssemblyKeyFile>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
-    <ApplicationIcon>.</ApplicationIcon>
     <ConsolePause>false</ConsolePause>
     <Execution>
       <Execution clr-version="Net_2_0" />
@@ -33,7 +33,6 @@
     <WarningLevel>4</WarningLevel>
     <AssemblyKeyFile>.</AssemblyKeyFile>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
-    <ApplicationIcon>.</ApplicationIcon>
     <ConsolePause>false</ConsolePause>
     <Execution>
       <Execution clr-version="Net_2_0" />

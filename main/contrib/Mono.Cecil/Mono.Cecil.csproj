@@ -22,7 +22,6 @@
     <Execution>
       <Execution clr-version="Net_1_1" />
     </Execution>
-    <StartupObject />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -35,7 +34,6 @@
     <Execution>
       <Execution clr-version="Net_1_1" />
     </Execution>
-    <StartupObject />
   </PropertyGroup>
   <ItemGroup>
     <None Include="Mono.Cecil\ChangeLog" />

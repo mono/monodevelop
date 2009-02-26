@@ -23,7 +23,6 @@
       <Execution clr-version="Net_2_0" />
     </Execution>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <StartupObject />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -36,7 +35,6 @@
       <Execution clr-version="Net_2_0" />
     </Execution>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <StartupObject />
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Mono.Posix" />

@@ -1,3 +1,7 @@
+2009-02-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Gettext.csproj: Flush.
+
 2009-02-26  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Gettext.addin.xml:

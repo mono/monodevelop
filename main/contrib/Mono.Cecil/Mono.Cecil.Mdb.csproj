@@ -22,7 +22,6 @@
     <Execution>
       <Execution clr-version="Net_1_1" />
     </Execution>
-    <StartupObject />
     <DefineConstants>CECIL</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -36,7 +35,6 @@
     <Execution>
       <Execution clr-version="Net_1_1" />
     </Execution>
-    <StartupObject />
     <DefineConstants>CECIL</DefineConstants>
   </PropertyGroup>
   <ItemGroup>

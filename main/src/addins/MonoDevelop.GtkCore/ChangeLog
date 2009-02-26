@@ -1,3 +1,7 @@
+2009-02-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.GtkCore.csproj: Flush.
+
 2009-02-26  Mike Kestner <mkestner@novell.com> 
 
 	* MonoDevelop.GtkCore/ProjectResourcesProvider.cs: lookup mime

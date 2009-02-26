@@ -1,3 +1,7 @@
+2009-02-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MacPlatform.csproj: Flush.
+
 2009-02-23  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MacPlatform.csproj: Remove unwanted local copies.

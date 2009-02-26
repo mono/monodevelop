@@ -4,7 +4,7 @@
       <Output directory="build" assemblyKeyFile="." assembly="MonoDevelop.AddinAuthoring" />
       <Build debugmode="True" target="Library" />
       <Execution runwithwarnings="True" consolepause="False" runtime="MsNet" clr-version="Net_2_0" />
-      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" generatexmldocumentation="False" win32Icon="." ctype="CSharpCompilerParameters" />
+      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
     </Configuration>
     <Configuration name="Release" ctype="DotNetProjectConfiguration">
       <Output directory="bin/Release" assembly="MonoDevelop.AddinAuthoring" />
@@ -101,6 +101,7 @@
     <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
   </References>
+  <LanguageParameters ApplicationIcon="." ctype="CSharpProjectParameters" />
   <GtkDesignInfo gettextClass="Mono.Addins.AddinManager.CurrentLocalizer" />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="MonoDevelop.AddinAuthoring.make" RelativeConfigureInPath="../../">
     <BuildFilesVar Sync="True" Name="FILES" />

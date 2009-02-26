@@ -1,3 +1,7 @@
+2009-02-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Debugger.csproj: Flush.
+
 2009-02-23  Scott Ellington  <scott.ellington@gmail.com>
 
 	* Makefile.am:

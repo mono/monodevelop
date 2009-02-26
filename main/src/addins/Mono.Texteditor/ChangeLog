@@ -1,3 +1,7 @@
+2009-02-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.TextEditor.csproj: Flush.
+
 2009-02-25  Mike Krüger  <mkrueger@novell.com>
 
 	* Styles/C64Style.xml: Fixed description.

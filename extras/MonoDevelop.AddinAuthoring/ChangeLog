@@ -1,3 +1,8 @@
+2009-02-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.AddinAuthoring.mds:
+	* MonoDevelop.AddinAuthoring.mdp: Flush.
+
 2009/02/03  Lluis Sanchez Gual  <lluis@novell.com>
 
  * MonoDevelop.AddinAuthoring/AddinFileDescriptionTemplate.cs: Fix

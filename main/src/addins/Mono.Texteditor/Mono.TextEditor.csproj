@@ -23,9 +23,6 @@
     <Execution>
       <Execution clr-version="Net_2_0" />
     </Execution>
-    <EnvironmentVariables>
-      <EnvironmentVariables />
-    </EnvironmentVariables>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -33,9 +30,6 @@
     <OutputPath>..\..\..\build\bin</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <EnvironmentVariables>
-      <EnvironmentVariables />
-    </EnvironmentVariables>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
     <Execution>
       <Execution clr-version="Net_2_0" />

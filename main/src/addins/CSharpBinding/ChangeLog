@@ -1,5 +1,9 @@
 2009-02-26  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* CSharpBinding.csproj: Flush.
+
+2009-02-26  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* md1format.xml:
 	* CSharpBindingCompilerManager.cs:
 	* Project/CSharpCompilerParameters.cs: Added support for
