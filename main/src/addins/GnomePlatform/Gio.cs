@@ -140,7 +140,6 @@ namespace MonoDevelop.Platform {
 			IntPtr content_type = g_file_info_get_content_type (info);
 			string mime_type = GLib.Marshaller.Utf8PtrToString (g_content_type_get_mime_type (content_type));
 			GLib.Marshaller.Free (content_type);
-			g_object_unref (info);
 			g_object_unref (gfile);
 			return mime_type;
 		}
