@@ -322,7 +322,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				if (action == "--") {
 					info.AddSeparator ();
 				} else {
-					CommandInfo ci = info.Add (action, action);
+					CommandInfo ci = info.Add (BuildAction.Translate (action), action);
 					ci.Checked = toggledActions.Contains (action);
 					if (ci.Checked)
 						ci.CheckedInconsistent = toggledActions.Count > 1;

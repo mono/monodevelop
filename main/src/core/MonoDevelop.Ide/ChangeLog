@@ -1,3 +1,8 @@
+2009-02-26  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:
+	  Worked on property pad translation.
+
 2009-02-25  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.addin.xml: Fix translatable strings.
