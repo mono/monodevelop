@@ -1,3 +1,7 @@
+2009-02-26  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* ValaBinding.csproj: Remove bad property value.
+
 2009-02-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* ValaBinding.sln: Flush.
