@@ -1,3 +1,19 @@
+2009-02-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/ProjectReference.cs: Added property for
+	  getting a validation error message.
+
+	* MonoDevelop.Projects/DotNetProject.cs: Don't remove+add
+	  invalid references when the target framework changes. Just
+	  reset all cached values.
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs:
+	  Decrement load count when unloading a project.
+
+	* MonoDevelop.Projects.Dom/DomReturnType.cs: Memory use
+	  optimization. The most common array of dimensions is 1 with
+	  index=0.
+
 2009-02-26  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProject.cs:

@@ -99,7 +99,7 @@ namespace MonoDevelop.Projects.Dom
 	public class DomReturnType : IReturnType
 	{
 		static readonly int[] zeroDimensions = new int[0];
-		static readonly int[] oneDimensions = new int[] { 1 };
+		static readonly int[] oneDimensions = new int[] { 0 };
 		
 		List<IReturnTypePart> parts = new List<IReturnTypePart> ();
 		
@@ -359,7 +359,7 @@ namespace MonoDevelop.Projects.Dom
 			// Reuse common dimension constants to save memory
 			if (arrayDimensions == null)
 				dimensions = null;
-			else if (arrayDimensions != null && arrayDimensions.Length == 1 && arrayDimensions[0] == 1)
+			else if (arrayDimensions != null && arrayDimensions.Length == 1 && arrayDimensions[0] == 0)
 				dimensions = oneDimensions;
 			else
 				dimensions = arrayDimensions;

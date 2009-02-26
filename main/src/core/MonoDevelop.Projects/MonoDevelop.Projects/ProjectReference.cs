@@ -167,22 +167,30 @@ namespace MonoDevelop.Projects
 		}
 
 		public bool IsValid {
+			get { return string.IsNullOrEmpty (ValidationErrorMessage); }
+		}
+		
+		// Returns the validation error message, or an empty string if everything is ok
+		public virtual string ValidationErrorMessage {
 			get {
 				if (ReferenceType == ReferenceType.Gac) {
 					if (notFound)
-						return false;
+						return GettextCatalog.GetString ("Assembly not found");
 					if (!IsExactVersion && SpecificVersion)
-						return false;
+						return GettextCatalog.GetString ("Specified version not found: expected {0}, found {1}", GetVersionNum (StoredReference), GetVersionNum (Reference));
 				} else if (ReferenceType == ReferenceType.Project) {
 					if (ownerProject != null && ownerProject.ParentSolution != null) {
 						DotNetProject p = ownerProject.ParentSolution.FindProjectByName (reference) as DotNetProject;
-						if (p != null)
-							return ownerProject.TargetFramework.IsCompatibleWithFramework (p.TargetFramework.Id);
+						if (p != null) {
+							if (!ownerProject.TargetFramework.IsCompatibleWithFramework (p.TargetFramework.Id))
+								return GettextCatalog.GetString ("Incompatible target framework ({0})", p.TargetFramework.Name);
+						}
 					}
 				} else if (ReferenceType == ReferenceType.Assembly) {
-					return File.Exists (reference);
+					if (!File.Exists (reference))
+						GettextCatalog.GetString ("File not found");
 				}
-				return true;
+				return string.Empty;
 			}
 		}
 		
@@ -194,6 +202,21 @@ namespace MonoDevelop.Projects
 				}
 				return true;
 			}
+		}
+		
+		string GetVersionNum (string asmName)
+		{
+			int i = asmName.IndexOf (',');
+			if (i != -1) {
+				i++;
+				int j = asmName.IndexOf (',', i);
+				if (j == -1)
+					j = asmName.Length;
+				string ver = asmName.Substring (i, j - i).Trim ();
+				if (ver.Length > 0)
+					return ver;
+			}
+			return "0.0.0.0";
 		}
 		
 		/// <summary>
@@ -273,10 +296,18 @@ namespace MonoDevelop.Projects
 							best = asm;
 					}
 					if (best != null)
-						return best.Package;
+						return cachedPackage = best.Package;
 				}
 				return null;
 			}
+		}
+		
+		internal void ResetReference ()
+		{
+			cachedPackage = null;
+			reference = loadedReference;
+			loadedReference = null;
+			UpdateGacReference ();
 		}
 		
 		public object Clone()

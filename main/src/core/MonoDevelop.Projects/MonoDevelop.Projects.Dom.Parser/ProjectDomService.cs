@@ -447,6 +447,9 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		public static void Unload (Project project)
 		{
+			if (DecLoadCount (project) != 0)
+				return;
+			
 			string uri = "Project:" + project.FileName;
 			if (UnrefDom (uri)) {
 				if (project is DotNetProject) {

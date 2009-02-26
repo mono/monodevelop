@@ -677,8 +677,7 @@ namespace MonoDevelop.Projects
 						toAdd.Add (new ProjectReference (ReferenceType.Gac, newRef));
 					}
 					else if (!pref.IsValid) {
-						toDelete.Add (pref);
-						toAdd.Add (new ProjectReference (ReferenceType.Gac, pref.Reference));
+						pref.ResetReference ();
 					}
 				}
 			}
