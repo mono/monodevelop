@@ -189,6 +189,9 @@ namespace MonoDevelop.Ide.Templates
 					
 						ReferenceType referenceType = (ReferenceType)Enum.Parse(typeof(ReferenceType), node.Attributes["type"].InnerXml);
 						ProjectReference projectReference = new ProjectReference (referenceType, node.Attributes["refto"].InnerXml);
+						XmlNode specVerNode = node.Attributes["SpecificVersion"];
+						if (specVerNode != null && !String.IsNullOrEmpty (specVerNode.Value))
+							projectReference.SpecificVersion = bool.Parse (specVerNode.Value);
 						projectDescriptor.references.Add(projectReference);
 					}
 				}
