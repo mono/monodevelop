@@ -1,5 +1,9 @@
 2009-02-26  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* ValaBinding.sln: Flush.
+
+2009-02-26  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* ValaBinding.csproj: Flush.
 
 2009-02-25  Michael Hutchinson  <mhutchinson@novell.com>

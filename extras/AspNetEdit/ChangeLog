@@ -1,5 +1,9 @@
 2009-02-26  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* AspNetEdit.sln: Flush.
+
+2009-02-26  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* AspNetEdit.csproj: Flush.
 
 2009-02-25  Michael Hutchinson  <mhutchinson@novell.com>
