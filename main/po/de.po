@@ -6,12 +6,12 @@ msgstr ""
 "X-Poedit-Bookmarks: -1,1681,-1,-1,-1,-1,-1,-1,-1,-1\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2009-02-26 08:48:23+0100\n"
+"PO-Revision-Date: 2009-02-26 09:40:35+0100\n"
 "Language-Team: \n"
 "Project-Id-Version: Monodevelop\n"
 "MIME-Version: 1.0\n"
 "X-Generator: MonoDevelop Gettext addin\n"
-"POT-Creation-Date: 2009-02-26 08:33:34+0100\n"
+"POT-Creation-Date: 2009-02-26 09:39:26+0100\n"
 "Last-Translator: Mike Krüger <mkrueger@novell.com>\n"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.Execution/ProcessService.cs:185
@@ -97,7 +97,7 @@ msgstr "Moonlight / Silverlight 2.0"
 #: ../src/core/MonoDevelop.Core.Gui/Base.glade:10
 #: ../src/core/MonoDevelop.Core.Gui/gtk-gui/MonoDevelop.Core.Gui.Dialogs.OptionsDialog.cs:41
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:130
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:295
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:297
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs:160
 msgid "Options"
 msgstr "Einstellungen"
@@ -3188,7 +3188,7 @@ msgstr "Datei '{0}' konnte nicht erstellt werden."
 
 # msgid_plural "{0} errors"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:832
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:313
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:312
 #: ../src/addins/prj2make-sharp-lib/MSBuildProjectServiceExtension.cs:66
 msgid "{0} error"
 msgid_plural "{0} errors"
@@ -3197,7 +3197,7 @@ msgstr[1] "{0} Fehler"
 
 # msgstr[1] "{0} Fehler"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:833
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:314
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:313
 #: ../src/addins/prj2make-sharp-lib/MSBuildProjectServiceExtension.cs:67
 msgid "{0} warning"
 msgid_plural "{0} warnings"
@@ -3442,7 +3442,7 @@ msgstr "Zeige Zeilenumbruchsansicht"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/CodeTemplatePanel.cs:115
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/InternalLogPad.cs:254
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:80
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs:238
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs:239
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DotDesktopViewWidget.cs:69
 msgid "Description"
 msgstr "Beschreibung"
@@ -3620,8 +3620,8 @@ msgid "_Name:"
 msgstr "_Name:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.ExportProjectDialog.cs:84
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.SourcesZipEditorWidget.cs:125
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.BinariesZipEditorWidget.cs:137
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.SourcesZipEditorWidget.cs:126
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.BinariesZipEditorWidget.cs:138
 msgid "Target folder:"
 msgstr "Zielordner"
 
@@ -3753,7 +3753,7 @@ msgstr "Referenzen akt_ualisieren:"
 msgid "_External"
 msgstr "_Extern"
 
-#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.EncapsulateFieldDialog.cs:163
+#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.EncapsulateFieldDialog.cs:162
 msgid "_All"
 msgstr "_Alles"
 
@@ -4428,8 +4428,8 @@ msgstr "Haltepunkt-Eigenschaften"
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.BreakpointPropertiesDialog.cs:157
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/gtk-gui/MonoDevelop.VersionControl.Subversion.Gui.ClientCertificateDialog.cs:90
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:1208
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.SourcesZipEditorWidget.cs:114
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.BinariesZipEditorWidget.cs:148
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.SourcesZipEditorWidget.cs:115
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.BinariesZipEditorWidget.cs:149
 msgid "File:"
 msgstr "Datei:"
 
@@ -4584,36 +4584,36 @@ msgstr "Schreibzugriff auf Datei '{0}' wurde verwehrt"
 msgid "File '{0}' not found."
 msgstr "Datei '{0}' nicht gefunden."
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:271
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:270
 msgid "Cannot create directory {0}, as a file with that name exists."
 msgstr ""
 "Kann Ordner {0} nicht erstellen, weil eine andere Datei mit dem selben Namen "
 "bereits existiert."
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:289
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:404
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:440
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:288
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:403
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:439
 msgid "Configuration '{0}' not found in project '{1}'"
 msgstr "Konfiguration '{0}' wurde nicht für das Projekt '{1}' gefunden"
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:307
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:306
 msgid "Performing main compilation..."
 msgstr "Bereite Hauptkompilierung vor..."
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:316
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:315
 #: ../src/addins/prj2make-sharp-lib/MSBuildProjectServiceExtension.cs:65
 msgid "Build complete -- "
 msgstr "Erstellung abgeschlossen -- "
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:345
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:344
 msgid "Could not find support file '{0}'."
 msgstr "Konnte Test-HTML-Datei '{0}' nicht finden."
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:349
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:348
 msgid "Error copying support file '{0}'."
 msgstr "Fehler beim Kopieren der Supportdatei '{0}'."
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:371
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:370
 msgid "Error deleting support file '{0}'."
 msgstr "Fehler beim Löschen der Supportdatei '{0}'."
 
@@ -5053,6 +5053,43 @@ msgstr "Projekt mit guid '{0}' nicht gefunden."
 msgid "Item with guid '{0}' is not a folder."
 msgstr "Element mit guid '{0}' ist kein Ordner."
 
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/BuildAction.cs:84
+msgid "Nothing"
+msgstr "Nichts"
+
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/BuildAction.cs:85
+msgid "Compile"
+msgstr "Kompilieren"
+
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/BuildAction.cs:86
+msgid "Embed as resource"
+msgstr "Als Ressource einbeziehen"
+
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/BuildAction.cs:87
+msgid "Content"
+msgstr "Content"
+
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/BuildAction.cs:88
+msgid "Application definition"
+msgstr "Applikations-Definition"
+
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/BuildAction.cs:89
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:1223
+msgid "Page"
+msgstr "Seite"
+
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/BuildAction.cs:90
+msgid "Resource"
+msgstr "Ressource"
+
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/BuildAction.cs:91
+msgid "Splash screen"
+msgstr "Splash-Screen"
+
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/BuildAction.cs:92
+msgid "Entity deploy"
+msgstr "Entity-Deploy"
+
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/FileCopyMode.cs:35
 msgid "Do not copy"
 msgstr "Nicht kopieren"
@@ -5357,7 +5394,7 @@ msgid "Automatically _include found files"
 msgstr "_Automatisch die gefundenen Dateien einbinden"
 
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/MultiConfigItemOptionsPanel.cs:101
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.BinariesZipEditorWidget.cs:128
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.BinariesZipEditorWidget.cs:129
 msgid "Configuration:"
 msgstr "Konfiguration:"
 
@@ -5734,7 +5771,7 @@ msgid "Modify"
 msgstr "Ändern"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:249
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:346
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:349
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs:78
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.Gui/XmlSchemasPanelWidget.cs:398
 msgid "Replace"
@@ -9714,19 +9751,19 @@ msgstr "{0:#00.00}% übersetzt"
 msgid "Update catalog list..."
 msgstr "Aktualisiere Katalogliste..."
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:1026
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:1027
 msgid "Translation for '{0}' doesn't end with '.'."
 msgstr "Übersetzung für '{0}' endet nicht mit '.'."
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:1040
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:1041
 msgid "Casing mismatch in '{0}'"
 msgstr "Gross-/Kleinschreibung für '{0}' stimmt nicht überein."
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:1053
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:1054
 msgid "Original string '{0}' contains '_', translation doesn't."
 msgstr "Übersetzung für '{0}' enthält kein '_'."
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:1072
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:1073
 msgid "Original string '{0}' contains '{1}', translation doesn't."
 msgstr "Übersetzung für '{0}' sollte '{1}' enthalten."
 
@@ -9901,15 +9938,15 @@ msgstr "RegEx _starten"
 msgid "_Input:"
 msgstr "_Eingabe:"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:276
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:277
 msgid "Elements"
 msgstr "Elemente"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:325
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:328
 msgid "Matches"
 msgstr "Übereinstimmungen"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:380
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:383
 #: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs:79
 msgid "Regex Library"
 msgstr "Regex-Bibliothek"
@@ -9930,23 +9967,23 @@ msgstr "Suchen:"
 msgid "Expressions"
 msgstr "Ausdrücke"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs:174
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs:175
 msgid "Source:"
 msgstr "Quelle:"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs:197
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs:198
 msgid "Pattern:"
 msgstr "Muster:"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs:207
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs:208
 msgid "Author:"
 msgstr "Autor:"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs:270
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs:271
 msgid "Matching:"
 msgstr "Übereinstimmend:"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs:288
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs:289
 msgid "Non Matching:"
 msgstr "Nicht Übereinstimmend:"
 
@@ -11215,10 +11252,6 @@ msgstr "Druckvorschau - Quelltext"
 msgid "Print operation failed."
 msgstr "Druckoperation fehlgeschlagen."
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:1223
-msgid "Page"
-msgstr "Seite"
-
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:1337
 msgid "Clipboard ring"
 msgstr "Zwischenablagering"
@@ -11977,7 +12010,7 @@ msgstr ""
 msgid "Select the archive file name and format:"
 msgstr "Wähle den Archiv-Namen und das Format:"
 
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.SourcesZipEditorWidget.cs:136
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.SourcesZipEditorWidget.cs:137
 msgid "File format:"
 msgstr "Dateiformat:"
 
@@ -11999,7 +12032,7 @@ msgstr "Projekte/-mappen"
 msgid "Select the archive file name and location:"
 msgstr "Wählen sie den Archiv-Dateinamen und -Ort:"
 
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.BinariesZipEditorWidget.cs:159
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.BinariesZipEditorWidget.cs:160
 msgid "Target platform:"
 msgstr "Ziel-Plattform:"
 
@@ -14178,9 +14211,6 @@ msgstr "Schließe die folgenden Kategorien ein:"
 
 #~ msgid "File {0} not found in {1}."
 #~ msgstr "Datei {0} nicht gefunden in {1}."
-
-#~ msgid "Compile"
-#~ msgstr "Kompilieren"
 
 #~ msgid "Common"
 #~ msgstr "Allgemein"
