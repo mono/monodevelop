@@ -1,6 +1,6 @@
 
 using System;
-using System.ComponentModel;
+using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.DesignerSupport;
 
@@ -30,9 +30,9 @@ namespace MonoDevelop.Deployment.Gui
 			this.file = file;
 		}
 		
-		[Category ("Deployment")]
-		[DisplayName ("Target directory")]
-		[Description ("Target Directory")]
+		[LocalizedCategory ("Deployment")]
+		[LocalizedDisplayName ("Target directory")]
+		[LocalizedDescription ("Target Directory")]
 		public DeployDirectoryInfo TargetDirectory {
 			get {
 				string dirId = props.TargetDirectory;
@@ -47,41 +47,41 @@ namespace MonoDevelop.Deployment.Gui
 			}
 		}
 		
-		[Category ("Deployment")]
-		[DisplayName ("Relative target path")]
-		[Description ("Relative path of the file in the installation directory.")]
+		[LocalizedCategory ("Deployment")]
+		[LocalizedDisplayName ("Relative target path")]
+		[LocalizedDescription ("Relative path of the file in the installation directory.")]
 		public string RelativeDeployPath {
 			get { return props.RelativeDeployPath; }
 			set { props.RelativeDeployPath = value; }
 		}
 		
-		[Category ("Deployment")]
-		[DisplayName ("Has path references")]
-		[Description ("Set to 'true' if the text file contains unresolved references to paths (e.g. @ProgramFiles@)")]
+		[LocalizedCategory ("Deployment")]
+		[LocalizedDisplayName ("Has path references")]
+		[LocalizedDescription ("Set to 'true' if the text file contains unresolved references to paths (e.g. @ProgramFiles@)")]
 		public bool HasPathReferences {
 			get { return props.HasPathReferences; }
 			set { props.HasPathReferences = value; }
 		}
 		
-		[Category ("Deployment")]
-		[DisplayName ("Use project relative path")]
-		[Description ("Use the relative path of the file in the project when deploying to the target directory.")]
+		[LocalizedCategory ("Deployment")]
+		[LocalizedDisplayName ("Use project relative path")]
+		[LocalizedDescription ("Use the relative path of the file in the project when deploying to the target directory.")]
 		public bool UseProjectRelativePath {
 			get { return props.UseProjectRelativePath; }
 			set { props.UseProjectRelativePath = value; }
 		}
 		
-		[Category ("Deployment")]
-		[DisplayName ("File attributes")]
-		[Description ("Attributes to apply to the target file.")]
+		[LocalizedCategory ("Deployment")]
+		[LocalizedDisplayName ("File attributes")]
+		[LocalizedDescription ("Attributes to apply to the target file.")]
 		public DeployFileAttributes FileAttributes {
 			get { return props.FileAttributes; }
 			set { props.FileAttributes = value; }
 		}
 		
-		[Category ("Deployment")]
-		[DisplayName ("Include in deploy")]
-		[Description ("Include the file in deployment in addition to the files included automatically.")]
+		[LocalizedCategory ("Deployment")]
+		[LocalizedDisplayName ("Include in deploy")]
+		[LocalizedDescription ("Include the file in deployment in addition to the files included automatically.")]
 		public bool ShouldDeploy {
 			get { return props.ShouldDeploy; }
 			set { props.ShouldDeploy = value; }
