@@ -84,7 +84,7 @@ namespace MonoDevelop.Projects.Dom.Output
 			if (HighlightCallback != null)
 				return HighlightCallback (text);
 			if (IncludeMarkup)
-				return "<b>" + PangoFormat (text) + "</b> ";
+				return "<b>" + PangoFormat (text) + "</b>";
 			return text;
 		}
 		
