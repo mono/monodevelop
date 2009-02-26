@@ -39,7 +39,7 @@
 		<End>&gt;</End>
 	</Span>
 	
-	<Span tagColor = "keyword.exceptions" color = "comment">
+	<Span tagColor = "keyword.exceptions" color = "comment" rule = "Comment">
 		<Begin>&lt;![CDATA[</Begin>
 		<End>]]&gt;</End>
 	</Span>
@@ -55,7 +55,7 @@
 		<End>?&gt;</End>
 	</Span>
 	
-	<Span color = "text.markup" rule = "InTag" constraint="!!" >
+	<Span color = "text.markup" rule = "InTag">
 		<Begin>&lt;</Begin>
 		<End>&gt;</End>
 	</Span>

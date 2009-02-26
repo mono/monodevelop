@@ -26,13 +26,13 @@
  
 <SyntaxMode name = "Vala" mimeTypes="text/x-vala">
 	<EolSpan color = "comment" rule="DoxDocumentation" tagColor="comment.tag">///</EolSpan>
-	<EolSpan color = "comment" rule="Comment" constraint="!/" tagColor="comment.tag">//</EolSpan>
+	<EolSpan color = "comment" rule="Comment" tagColor="comment.tag">//</EolSpan>
 	
 	<Span color = "comment" rule="DoxDocumentation" tagColor="comment.tag" >
 		<Begin>/**</Begin>
 		<End>*/</End>
 	</Span>
-	<Span color = "comment" rule="Comment" tagColor="comment.tag" constraint="!*">
+	<Span color = "comment" rule="Comment" tagColor="comment.tag">
 		<Begin>/*</Begin>
 		<End>*/</End>
 	</Span>

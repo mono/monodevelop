@@ -1,3 +1,16 @@
+2009-02-26  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* SyntaxModes/ValaSyntaxMode.xml:
+	* SyntaxModes/PythonSyntaxMode.xml:
+	* Mono.TextEditor.Highlighting/Span.cs: Remove unused
+	  constraint attribute.
+
+	* SyntaxModes/AspNetSyntaxMode.xml: Better highlighting for
+	  comments and cdata.
+
+	* SyntaxModes/XmlSyntaxMode.xml: Better highlighting for
+	  cdata.
+
 2009-02-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.TextEditor.csproj: Flush.

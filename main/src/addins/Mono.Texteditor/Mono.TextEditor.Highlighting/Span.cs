@@ -42,7 +42,6 @@ namespace Mono.TextEditor.Highlighting
 		
 		string end;
 		HashSet<string> endFlags = new HashSet<string> ();
-		string constraint;
 		string nextColor;
 		string escape;
 		
@@ -104,12 +103,6 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 
-		public string Constraint {
-			get {
-				return constraint;
-			}
-		}
-
 		public string NextColor {
 			get {
 				return nextColor;
@@ -149,7 +142,6 @@ namespace Mono.TextEditor.Highlighting
 			result.rule       = reader.GetAttribute ("rule");
 			result.color      = reader.GetAttribute ("color");
 			result.tagColor   = reader.GetAttribute ("tagColor");
-			result.constraint = reader.GetAttribute ("constraint");
 			result.nextColor  = reader.GetAttribute ("nextColor");
 			
 			result.escape = reader.GetAttribute ("escape");

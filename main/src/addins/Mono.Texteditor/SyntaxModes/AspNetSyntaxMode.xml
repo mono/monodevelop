@@ -30,15 +30,21 @@
 		<End>%&gt;</End>
 	</Span>
 	
-	<!-- expressions -->
-	<Span color = "constant.language" constraint="!@" >
-		<Begin>&lt;%</Begin>
-		<End>%&gt;</End>
+	<!-- comments -->
+	<Span color = "comment.server" rule = "Comment">
+		<Begin>&lt;%--</Begin>
+		<End>--%&gt;</End>
 	</Span>
 	
-	<Span color = "comment" stopateol = "false" >
+	<Span color = "comment.client" rule = "Comment">
 		<Begin>&lt;!--</Begin>
 		<End>--&gt;</End>
+	</Span>
+	
+	<!-- expressions -->
+	<Span color = "constant.language">
+		<Begin>&lt;%</Begin>
+		<End>%&gt;</End>
 	</Span>
 	
 	<!-- entities -->
@@ -53,7 +59,7 @@
 	</Span>
 	
 	<!-- CDATA section -->
-	<Span tagColor = "keyword.declaration" color="text">
+	<Span tagColor = "keyword.declaration" color="text" rule = "Comment">
 		<Begin>&lt;![CDATA[</Begin>
 		<End>]]&gt;</End>
 	</Span>
@@ -65,7 +71,7 @@
 	</Span>
 	
 	<!-- tags -->
-	<Span color = "text.markup" rule = "InTag" constraint="!!" >
+	<Span color = "text.markup" rule = "InTag">
 		<Begin>&lt;</Begin>
 		<End>&gt;</End>
 	</Span>
@@ -85,11 +91,18 @@
 		<!-- attributes -->
 		<Match color = "keyword.type">[A-Za-z0-9_]+(:[A-Za-z0-9_]+)?[\s\n\r]*=</Match>
 		
+		<!-- comments -->
+		<Span color = "comment.server" rule = "Comment">
+			<Begin>&lt;%--</Begin>
+			<End>--%&gt;</End>
+		</Span>
+	
 		<!-- expressions -->
-		<Span color = "constant.language" constraint="!@" >
+		<Span color = "constant.language">
 			<Begin>&lt;%</Begin>
 			<End>%&gt;</End>
 		</Span>
+		
 	</Rule>
 	
 	<Rule name = "InLiteral">
@@ -100,9 +113,12 @@
 		</Span>
 		
 		<!-- expressions -->
-		<Span color = "constant.language" constraint="!@" >
+		<Span color = "constant.language">
 			<Begin>&lt;%</Begin>
 			<End>%&gt;</End>
 		</Span>
+	</Rule>
+	
+	<Rule name = "Comment">
 	</Rule>
 </SyntaxMode>
