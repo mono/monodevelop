@@ -33,12 +33,15 @@
 	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
 		<NodeBuilder class = "MonoDevelop.VersionControl.Subversion.SubversionNodeExtension"/>
 	</Extension>
-	
 
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/VersionControl">
 		<Condition id="ItemType" value="IFileItem|IFolderItem">
 			<CommandItem id = "MonoDevelop.VersionControl.Subversion.Commands.Resolve" insertafter="MonoDevelop.VersionControl.Commands.Revert" />
 		</Condition>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/VersionControl/StatusViewCommands">
+		<CommandItem id = "MonoDevelop.VersionControl.Subversion.Commands.Resolve" type="MonoDevelop.VersionControl.Subversion.SubversionCommandHandler"/>
 	</Extension>
 </Addin>
 	

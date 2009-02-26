@@ -1,3 +1,8 @@
+2009-02-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.VersionControl.Subversion.addin.xml: Restore
+	  accidentally removed menu extension.
+
 2009-02-25  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am: Flush.

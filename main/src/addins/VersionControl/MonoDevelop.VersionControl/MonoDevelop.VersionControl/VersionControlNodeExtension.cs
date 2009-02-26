@@ -53,9 +53,11 @@ namespace MonoDevelop.VersionControl
 				return;
 			} else if (dataObject is ProjectFolder) {
 				ProjectFolder ce = (ProjectFolder) dataObject;
-				Repository rep = VersionControlService.GetRepository (ce.Project);
-				if (rep != null)
-					AddFolderOverlay (rep, ce.Path, ref icon, ref closedIcon);
+				if (ce.Project != null) {
+					Repository rep = VersionControlService.GetRepository (ce.Project);
+					if (rep != null)
+						AddFolderOverlay (rep, ce.Path, ref icon, ref closedIcon);
+				}
 				return;
 			}
 			
