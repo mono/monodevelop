@@ -1,3 +1,7 @@
+2009-02-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* UnitTests.csproj: Flush.
+
 2009-02-24  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor.Tests/SyntaxHighlightingTests.cs: Added some
