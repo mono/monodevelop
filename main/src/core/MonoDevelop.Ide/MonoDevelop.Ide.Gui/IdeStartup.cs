@@ -84,7 +84,9 @@ namespace MonoDevelop.Ide.Gui
 			StartupInfo.SetCommandLineArgs (remainingArgs);
 			
 			// If a combine was specified, force --newwindow.
-			if(!options.newwindow) {
+			
+			if(!options.newwindow && StartupInfo.HasFiles) {
+				Runtime.Initialize (true);
 				foreach (string file in StartupInfo.GetRequestedFileList ()) {
 					if (MonoDevelop.Projects.Services.ProjectService.IsWorkspaceItemFile (file))
 					{
@@ -94,6 +96,22 @@ namespace MonoDevelop.Ide.Gui
 				}
 			}
 			
+			IProgressMonitor monitor = SplashScreenForm.SplashScreen;
+			
+			if (!options.nologo) {
+				SplashScreenForm.SplashScreen.ShowAll ();
+			}
+			
+			monitor.BeginTask (GettextCatalog.GetString ("Starting MonoDevelop"), 2);
+			
+			monitor.BeginTask (GettextCatalog.GetString ("Starting MonoDevelop"), 2);
+			monitor.Step (1);
+			Runtime.Initialize (true);
+			monitor.Step (1);
+			monitor.EndTask ();
+			
+			monitor.Step (1);
+
 			if(!options.ipc_tcp){
 				socket_filename = "/tmp/md-" + Environment.GetEnvironmentVariable ("USER") + "-socket";
 				listen_socket = new Socket (AddressFamily.Unix, SocketType.Stream, ProtocolType.IP);
@@ -132,18 +150,13 @@ namespace MonoDevelop.Ide.Gui
 					Dns.GetHostEntry (Dns.GetHostName ());
 				} catch {
 					using (ErrorDialog dialog = new ErrorDialog (null)) {
+						SplashScreenForm.SplashScreen.Hide ();
 						dialog.Message = GettextCatalog.GetString ("MonoDevelop failed to start. Local hostname cannot be resolved.");
 						dialog.AddDetails (GettextCatalog.GetString ("Your network may be misconfigured. Make sure the hostname of your system is added to the /etc/hosts file."), true);
 						dialog.Run ();
 					}
 					return 1;
 				}
-			}
-
-			IProgressMonitor monitor = SplashScreenForm.SplashScreen;
-			
-			if (!options.nologo) {
-				SplashScreenForm.SplashScreen.ShowAll ();
 			}
 
 			Exception error = null;
@@ -166,6 +179,7 @@ namespace MonoDevelop.Ide.Gui
 				// Application.ThreadException += new ThreadExceptionEventHandler(ShowErrorBox);
 
 				IdeApp.Initialize (monitor);
+				monitor.Step (1);
 			
 			} catch (Exception e) {
 				error = e;
@@ -332,6 +346,7 @@ namespace MonoDevelop.Ide.Gui
 					msg += "\n\n";
 					msg += GettextCatalog.GetString ("You need to upgrade the previous packages to start using MonoDevelop.");
 					
+					SplashScreenForm.SplashScreen.Hide ();
 					Gtk.MessageDialog dlg = new Gtk.MessageDialog (null, Gtk.DialogFlags.Modal, Gtk.MessageType.Error, Gtk.ButtonsType.Ok, msg);
 					dlg.Run ();
 					dlg.Destroy ();

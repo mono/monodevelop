@@ -47,6 +47,10 @@ namespace MonoDevelop.Ide.Gui
 			return GetStringArray(requestedFileList);
 		}
 		
+		public static bool HasFiles {
+			get { return requestedFileList.Count > 0; }
+		}
+		
 		static string[] GetStringArray(ArrayList list)
 		{
 			return (string[])list.ToArray(typeof(string));
