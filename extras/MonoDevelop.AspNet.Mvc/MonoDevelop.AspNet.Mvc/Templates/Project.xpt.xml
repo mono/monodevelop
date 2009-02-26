@@ -30,10 +30,10 @@
 				<Reference type="Gac" refto="System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
 				<Reference type="Gac" refto="System.Core" />
 				<Reference type="Gac" refto="System.Web.Services, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-				<Reference type="Gac" refto="System.Web.Routing, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+				<Reference type="Gac" refto="System.Web.Routing, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" SpecificVersion="false"  />
 				<Reference type="Gac" refto="System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
-				<Reference type="Gac" refto="System.Web.Abstractions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
-				<Reference type="Gac" refto="System.Web.Mvc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+				<Reference type="Gac" refto="System.Web.Abstractions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" SpecificVersion="false"  />
+				<Reference type="Gac" refto="System.Web.Mvc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" SpecificVersion="false" />
 				<Reference type="Gac" refto="System.Xml.Linq" />
 			</References>
 			<Files>
