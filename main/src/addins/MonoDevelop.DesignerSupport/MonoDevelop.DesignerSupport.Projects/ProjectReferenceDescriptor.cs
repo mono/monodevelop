@@ -44,9 +44,9 @@ namespace MonoDevelop.DesignerSupport.Projects
 			this.pref = pref;
 		}
 		
-		[Category ("Reference")]
-		[DisplayName ("Type")]
-		[Description ("Type of the reference.")]
+		[LocalizedCategory ("Reference")]
+		[LocalizedDisplayName ("Type")]
+		[LocalizedDescription ("Type of the reference.")]
 		public string Type {
 			get {
 				switch (pref.ReferenceType) {
@@ -63,9 +63,9 @@ namespace MonoDevelop.DesignerSupport.Projects
 			}
 		}
 		
-		[Category ("Reference")]
-		[DisplayName ("Project")]
-		[Description ("Referenced project, when the reference is of type 'Project'.")]
+		[LocalizedCategory ("Reference")]
+		[LocalizedDisplayName ("Project")]
+		[LocalizedDescription ("Referenced project, when the reference is of type 'Project'.")]
 		public string ProjectName {
 			get {
 				if (pref.ReferenceType == ReferenceType.Project)
@@ -75,9 +75,9 @@ namespace MonoDevelop.DesignerSupport.Projects
 			}
 		}
 		
-		[Category ("Reference")]
-		[DisplayName ("Assembly Name")]
-		[Description ("Name of the assembly.")]
+		[LocalizedCategory ("Reference")]
+		[LocalizedDisplayName ("Assembly Name")]
+		[LocalizedDescription ("Name of the assembly.")]
 		public string FullName {
 			get {
 				if (Path.Length > 0) {
@@ -90,9 +90,9 @@ namespace MonoDevelop.DesignerSupport.Projects
 			}
 		}
 		
-		[Category ("Reference")]
-		[DisplayName ("Assembly Version")]
-		[Description ("Version of the assembly.")]
+		[LocalizedCategory ("Reference")]
+		[LocalizedDisplayName ("Assembly Version")]
+		[LocalizedDescription ("Version of the assembly.")]
 		public string Version {
 			get {
 				if (Path.Length > 0) {
@@ -105,9 +105,9 @@ namespace MonoDevelop.DesignerSupport.Projects
 			}
 		}
 		
-		[Category ("Reference")]
-		[DisplayName ("Path")]
-		[Description ("Path to the assembly.")]
+		[LocalizedCategory ("Reference")]
+		[LocalizedDisplayName ("Path")]
+		[LocalizedDescription ("Path to the assembly.")]
 		public string Path {
 			get {
 				string[] files = pref.GetReferencedFileNames (IdeApp.Workspace.ActiveConfiguration);
@@ -118,25 +118,25 @@ namespace MonoDevelop.DesignerSupport.Projects
 			}
 		}
 		
-		[Category ("Build")]
-		[DisplayName ("Local Copy")]
-		[Description ("Copy the referenced assembly to the output directory.")]
+		[LocalizedCategory ("Build")]
+		[LocalizedDisplayName ("Local Copy")]
+		[LocalizedDescription ("Copy the referenced assembly to the output directory.")]
 		public bool LocalCopy {
 			get { return pref.LocalCopy; }
 			set { pref.LocalCopy = value; }
 		}
 		
-		[Category ("Build")]
-		[DisplayName ("Specific Version")]
-		[Description ("Require a specific version of the assembly. A warning will be issued if the specific version is not found in the system.")]
+		[LocalizedCategory ("Build")]
+		[LocalizedDisplayName ("Specific Version")]
+		[LocalizedDescription ("Require a specific version of the assembly. A warning will be issued if the specific version is not found in the system.")]
 		public bool SpecificVersion {
 			get { return pref.SpecificVersion; }
 			set { pref.SpecificVersion = value; }
 		}
 		
-		[Category ("Reference")]
-		[DisplayName ("Package")]
-		[Description ("Package that provides this reference.")]
+		[LocalizedCategory ("Reference")]
+		[LocalizedDisplayName ("Package")]
+		[LocalizedDescription ("Package that provides this reference.")]
 		public string Package {
 			get {
 				if (pref.ReferenceType == ReferenceType.Gac && pref.Package != null)

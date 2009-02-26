@@ -1,3 +1,13 @@
+2009-02-26  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.DesignerSupport.Toolbox/TypeReference.cs:
+	* MonoDevelop.DesignerSupport.Toolbox/TextToolboxNode.cs:
+	* MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:
+	* MonoDevelop.DesignerSupport.Projects/SolutionItemDescriptor.cs:
+	* MonoDevelop.DesignerSupport.Projects/WorkspaceItemDescriptor.cs:
+	* MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:
+	  Worked on propertygrid localization.
+
 2009-02-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.DesignerSupport/ToolboxService.cs: Track api

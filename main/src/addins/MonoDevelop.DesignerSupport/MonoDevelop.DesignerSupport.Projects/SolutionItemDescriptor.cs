@@ -26,8 +26,8 @@
 //
 
 using System;
-using System.ComponentModel;
 using MonoDevelop.Projects;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.DesignerSupport.Projects
 {
@@ -40,15 +40,15 @@ namespace MonoDevelop.DesignerSupport.Projects
 			this.entry = entry;
 		}
 		
-		[DisplayName ("Name")]
-		[Description ("Name of the solution item.")]
+		[LocalizedDisplayName ("Name")]
+		[LocalizedDescription ("Name of the solution item.")]
 		public string Name {
 			get { return entry.Name; }
 			set { entry.Name = value; }
 		}
 		
-		[DisplayName ("File Path")]
-		[Description ("File path of the solution item.")]
+		[LocalizedDisplayName ("File Path")]
+		[LocalizedDescription ("File path of the solution item.")]
 		public string FilePath {
 			get {
 				if (entry is SolutionEntityItem)
@@ -58,8 +58,8 @@ namespace MonoDevelop.DesignerSupport.Projects
 			}
 		}
 		
-		[DisplayName ("Root Directory")]
-		[Description ("Root directory of source files and projects. File paths will be shown relative to this directory.")]
+		[LocalizedDisplayName ("Root Directory")]
+		[LocalizedDescription ("Root directory of source files and projects. File paths will be shown relative to this directory.")]
 		public string RootDirectory {
 			get {
 				return entry.BaseDirectory;

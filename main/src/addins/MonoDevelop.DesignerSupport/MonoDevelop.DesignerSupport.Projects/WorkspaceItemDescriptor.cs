@@ -27,7 +27,7 @@
 
 using System;
 using MonoDevelop.Projects;
-using System.ComponentModel;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.DesignerSupport.Projects
 {
@@ -40,23 +40,23 @@ namespace MonoDevelop.DesignerSupport.Projects
 			this.item = item;
 		}
 		
-		[DisplayName ("Name")]
-		[Description ("Name of the item.")]
+		[LocalizedDisplayName ("Name")]
+		[LocalizedDescription ("Name of the item.")]
 		public string Name {
 			get { return item.Name; }
 			set { item.Name = value; }
 		}
 		
-		[DisplayName ("File Path")]
-		[Description ("File path of the item.")]
+		[LocalizedDisplayName ("File Path")]
+		[LocalizedDescription ("File path of the item.")]
 		public string FilePath {
 			get {
 				return item.FileName;
 			}
 		}
 		
-		[DisplayName ("Root Directory")]
-		[Description ("Root directory of source files and projects. File paths will be shown relative to this directory.")]
+		[LocalizedDisplayName ("Root Directory")]
+		[LocalizedDescription ("Root directory of source files and projects. File paths will be shown relative to this directory.")]
 		public string RootDirectory {
 			get {
 				return item.BaseDirectory;
@@ -67,8 +67,8 @@ namespace MonoDevelop.DesignerSupport.Projects
 			}
 		}
 		
-		[DisplayName ("File Format")]
-		[Description ("File format of the project file.")]
+		[LocalizedDisplayName ("File Format")]
+		[LocalizedDescription ("File format of the project file.")]
 		public string FileFormat {
 			get {
 				return item.FileFormat.Name;

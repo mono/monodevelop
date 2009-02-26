@@ -30,6 +30,7 @@
 
 using System;
 using System.ComponentModel;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
@@ -65,7 +66,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			return code;
 		}
 		
-		[DescriptionAttribute ("The text that will be inserted into the document.")]
+		[LocalizedDescription ("The text that will be inserted into the document.")]
 		public string Text {
 			get { return text; }
 			set { text = value; }

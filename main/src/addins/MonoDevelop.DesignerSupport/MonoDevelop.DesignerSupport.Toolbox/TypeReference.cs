@@ -32,6 +32,7 @@
 
 using System;
 using System.ComponentModel;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
@@ -105,24 +106,24 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		
 		#region property accessors for the private fields
 		
-		[DisplayNameAttribute ("Assembly Name")]
-		[DescriptionAttribute ("The assembly name.")]
+		[LocalizedDisplayName ("Assembly Name")]
+		[LocalizedDescription ("The assembly name.")]
 		[ReadOnly (true)]
 		public string AssemblyName {
 			get { return assemblyName; }
 			set { assemblyName = value; }
 		}
 		
-		[DisplayNameAttribute ("Type Name")]
-		[DescriptionAttribute ("The fully-qualified type name.")]
+		[LocalizedDisplayName ("Type Name")]
+		[LocalizedDescription ("The fully-qualified type name.")]
 		[ReadOnly (true)]
 		public string TypeName {
 			get { return typeName; }
 			set { typeName = value; }
 		}
 		
-		[DisplayNameAttribute ("Assembly Location")]
-		[DescriptionAttribute ("The location of the assembly.")]
+		[LocalizedDisplayName ("Assembly Location")]
+		[LocalizedDescription ("The location of the assembly.")]
 		[ReadOnly (true)]
 		public string AssemblyLocation {
 			get { return assemblyLocation; }

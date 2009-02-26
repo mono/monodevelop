@@ -27,6 +27,7 @@
 
 using System;
 using System.ComponentModel;
+
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using System.Reflection;
@@ -43,20 +44,20 @@ namespace MonoDevelop.DesignerSupport
 			this.file = file;
 		}
 		
-		[DisplayName ("Name")]
-		[Description ("Name of the file.")]
+		[LocalizedDisplayName ("Name")]
+		[LocalizedDescription ("Name of the file.")]
 		public string Name {
 			get { return System.IO.Path.GetFileName (file.Name); }
 		}
 		
-		[DisplayName ("Path")]
-		[Description ("Full path of the file.")]
+		[LocalizedDisplayName ("Path")]
+		[LocalizedDescription ("Full path of the file.")]
 		public string Path {
 			get { return file.FilePath; }
 		}
 		
-		[DisplayName ("Type")]
-		[Description ("Type of the file.")]
+		[LocalizedDisplayName ("Type")]
+		[LocalizedDescription ("Type of the file.")]
 		public string FileType {
 			get {
 				string type = MonoDevelop.Core.Gui.Services.PlatformService.GetMimeTypeForUri (file.Name);
@@ -64,26 +65,26 @@ namespace MonoDevelop.DesignerSupport
 			}
 		}
 		
-		[Category ("Build")]
-		[DisplayName ("Build action")]
-		[Description ("Action to perform when building this file.")]
+		[LocalizedCategory ("Build")]
+		[LocalizedDisplayName ("Build action")]
+		[LocalizedDescription ("Action to perform when building this file.")]
 		[TypeConverter (typeof (BuildActionStringsConverter))]
 		public string BuildAction {
 			get { return file.BuildAction; }
 			set { file.BuildAction = value; }
 		}
 		
-		[Category ("Build")]
-		[DisplayName ("Resource ID")]
-		[Description ("Identifier of the embedded resource.")]
+		[LocalizedCategory ("Build")]
+		[LocalizedDisplayName ("Resource ID")]
+		[LocalizedDescription ("Identifier of the embedded resource.")]
 		public string ResourceId {
 			get { return file.ResourceId; }
 			set { file.ResourceId = value; }
 		}
 		
-		[Category ("Build")]
-		[DisplayName ("Copy to output directory")]
-		[Description ("Whether to copy the file to the project's output directory when the project is built.")]
+		[LocalizedCategory ("Build")]
+		[LocalizedDisplayName ("Copy to output directory")]
+		[LocalizedDescription ("Whether to copy the file to the project's output directory when the project is built.")]
 		public FileCopyMode CopyToOutputDirectory {
 			get { return file.CopyToOutputDirectory; }
 			set { file.CopyToOutputDirectory = value; }
