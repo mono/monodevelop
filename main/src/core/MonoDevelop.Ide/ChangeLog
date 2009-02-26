@@ -1,3 +1,9 @@
+2009-02-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Use the active
+	  configuration by default when opening the project options.
+	  Fixes bug #479535.
+
 2009-02-26  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:
