@@ -503,6 +503,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			else
 				return null;
 		}
+		
+		public bool GetMetadataIsFalse (string name)
+		{
+			return String.Compare (GetMetadata (name), "False", StringComparison.OrdinalIgnoreCase) == 0;
+		}
 	}
 	
 	class MSBuildItemGroup: MSBuildObject

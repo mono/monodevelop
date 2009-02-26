@@ -314,7 +314,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						string path = MSBuildProjectService.FromMSBuildPath (dotNetProject.BaseDirectory, buildItem.GetMetadata ("HintPath"));
 						if (File.Exists (path)) {
 							pref = new ProjectReference (ReferenceType.Assembly, path);
-							pref.LocalCopy = buildItem.GetMetadata ("Private") != "False";
+							pref.LocalCopy = !buildItem.GetMetadataIsFalse ("Private");
 						} else {
 							pref = new ProjectReference (ReferenceType.Gac, buildItem.Include);
 						}
@@ -328,7 +328,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						pref = new ProjectReference (ReferenceType.Gac, asm);
 					}
 					pref.Condition = buildItem.Condition;
-					pref.SpecificVersion = buildItem.GetMetadata ("SpecificVersion") != "False";
+					pref.SpecificVersion = !buildItem.GetMetadataIsFalse ("SpecificVersion");
 					ReadBuildItemMetadata (ser, buildItem, pref, typeof(ProjectReference));
 					return pref;
 				}
@@ -339,7 +339,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					if (i != -1)
 						name = name.Substring (0, i);
 					ProjectReference pref = new ProjectReference (ReferenceType.Project, name);
-					pref.LocalCopy = buildItem.GetMetadata ("Private") != "False";
+					pref.LocalCopy = !buildItem.GetMetadataIsFalse ("Private");
 					pref.Condition = buildItem.Condition;
 					return pref;
 				}
@@ -911,7 +911,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				}
 			}
 			
-			if (buildItem.GetMetadata ("Visible") == "False")
+			if (buildItem.GetMetadataIsFalse ("Visible"))
 				file.Visible = false;
 				
 			

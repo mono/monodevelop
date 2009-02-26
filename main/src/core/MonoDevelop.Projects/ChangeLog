@@ -1,3 +1,9 @@
+2009-02-26  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProject.cs:
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs:
+	  Case insensitive compare for reading bools in references.
+
 2009-02-26  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects/Project.cs:
