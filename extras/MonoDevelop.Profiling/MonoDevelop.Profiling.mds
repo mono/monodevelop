@@ -1,4 +1,4 @@
-<Combine name="MonoDevelop.Profiling" fileversion="2.0">
+<Combine fileversion="2.0">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="CombineConfiguration">
       <Entry build="True" name="MonoDevelop.Profiling" configuration="Debug" />
