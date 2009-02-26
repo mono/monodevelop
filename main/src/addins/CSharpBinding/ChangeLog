@@ -1,3 +1,11 @@
+2009-02-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* md1format.xml:
+	* CSharpBindingCompilerManager.cs:
+	* Project/CSharpCompilerParameters.cs: Added support for
+	  WarningsNotAsErrors, although there is no gui for setting it
+	  because it is not supported by mcs.
+
 2009-02-26  Mike Krüger  <mkrueger@novell.com>
 
 	* Gui/NRefactoryParameterDataProvider.cs: fixed 'Bug 479757 -

@@ -158,6 +158,8 @@ namespace CSharpBinding
 			
 			if (compilerparameters.TreatWarningsAsErrors) {
 				writer.WriteLine("-warnaserror");
+				if (!string.IsNullOrEmpty (compilerparameters.WarningsNotAsErrors))
+					writer.WriteLine("-warnaserror-:" + compilerparameters.WarningsNotAsErrors);
 			}
 			
 			if (compilerparameters.DefineSymbols.Length > 0) {

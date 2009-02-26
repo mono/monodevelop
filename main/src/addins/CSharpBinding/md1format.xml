@@ -15,5 +15,6 @@
 		<ItemProperty member="additionalArgs" name="additionalargs" defaultValue="" />
 		<ItemProperty member="LangVersion" name="langversion" defaultValue="Default"/>
 		<ItemProperty member="treatWarningsAsErrors" name="warningsAsErrors" defaultValue="False"/>
+		<ItemProperty member="warningsNotAsErrors" name="warningsNotAsErrors" defaultValue=""/>
 	</DataItem>
 </SerializationMap>

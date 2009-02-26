@@ -77,6 +77,9 @@ namespace CSharpBinding
 		[ItemProperty("PlatformTarget", DefaultValue="")]
 		string platformTarget = "";
 		
+		[ItemProperty("WarningsNotAsErrors", DefaultValue="")]
+		string warningsNotAsErrors = "";
+		
 		
 		#region Members required for backwards compatibility. Not used for anything else.
 		
@@ -228,6 +231,15 @@ namespace CSharpBinding
 			}
 			set {
 				treatWarningsAsErrors = value;
+			}
+		}
+		
+		public string WarningsNotAsErrors {
+			get {
+				return warningsNotAsErrors;
+			}
+			set {
+				warningsNotAsErrors = value;
 			}
 		}
 #endregion
