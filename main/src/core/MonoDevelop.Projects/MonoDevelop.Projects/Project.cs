@@ -177,7 +177,6 @@ namespace MonoDevelop.Projects
 			} else {
 				Array.Sort (buildActions, StringComparer.Ordinal);
 			}
-			
 			return buildActions;
 		}
 		

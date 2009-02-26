@@ -1,5 +1,11 @@
 2009-02-26  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects/Project.cs:
+	* MonoDevelop.Projects/BuildAction.cs: Worked on property pad
+	  translation.
+
+2009-02-26  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects/FileCopyMode.cs: Worked on propertygrid
 	  localization.
 

@@ -27,21 +27,23 @@
 //
 
 using System;
+using System.Collections.Generic;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects
 {
 	
 	public static class BuildAction
 	{
-		public static readonly string None = "None"; //Nothing
-		public static readonly string Compile = "Compile";
-		public static readonly string EmbeddedResource = "EmbeddedResource"; //EmbedAsResource, "Embed as resource"
-		public static readonly string Content = "Content"; //Exclude
-		public static readonly string ApplicationDefinition = "ApplicationDefinition";
-		public static readonly string Page = "Page";
-		public static readonly string Resource = "Resource";
-		public static readonly string SplashScreen = "SplashScreen";
-		public static readonly string EntityDeploy = "EntityDeploy";
+		public const string None = "None"; //Nothing
+		public const string Compile = "Compile";
+		public const string EmbeddedResource = "EmbeddedResource"; //EmbedAsResource, "Embed as resource"
+		public const string Content = "Content"; //Exclude
+		public const string ApplicationDefinition = "ApplicationDefinition";
+		public const string Page = "Page";
+		public const string Resource = "Resource";
+		public const string SplashScreen = "SplashScreen";
+		public const string EntityDeploy = "EntityDeploy";
 		
 		public static string[] StandardActions {
 			get {
@@ -77,5 +79,36 @@ namespace MonoDevelop.Projects
 				};
 			}
 		}
+		static Dictionary<string, string> translations = new Dictionary<string, string> ();
+		static BuildAction()
+		{
+			translations[None] = GettextCatalog.GetString ("Nothing");
+			translations[Compile] = GettextCatalog.GetString ("Compile");
+			translations[EmbeddedResource] = GettextCatalog.GetString ("Embed as resource");
+			translations[Content] = GettextCatalog.GetString ("Content");
+			translations[ApplicationDefinition] = GettextCatalog.GetString ("Application definition");
+			translations[Page] = GettextCatalog.GetString ("Page");
+			translations[Resource] = GettextCatalog.GetString ("Resource");
+			translations[SplashScreen] = GettextCatalog.GetString ("Splash screen");
+			translations[EntityDeploy] = GettextCatalog.GetString ("Entity deploy");
+		}
+		
+		public static string ReTranslate (string translatedAction)
+		{
+			foreach (KeyValuePair<string, string> translation in translations) {
+				if (translation.Value == translatedAction)
+					return translation.Key;
+			}
+			return translatedAction;
+		}
+		
+		public static string Translate (string action)
+		{
+			string result;
+			if (translations.TryGetValue (action, out result))
+				return result;
+			return action;
+		}
+		
 	}
 }
