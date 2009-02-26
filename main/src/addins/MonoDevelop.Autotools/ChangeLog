@@ -1,3 +1,7 @@
+2009-02-26  Mike Krüger  <mkrueger@novell.com>
+
+	* PropertyProvider.cs: Worked on propertygrid localization.
+
 2009-02-23  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Autotools.addin.xml: Track merge of the project

@@ -1,6 +1,6 @@
 
 using System;
-using System.ComponentModel;
+using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.DesignerSupport;
 
@@ -36,9 +36,9 @@ namespace MonoDevelop.Autotools
 			data = file.Project.ExtendedProperties ["MonoDevelop.Autotools.MakefileInfo"] as MakefileData;
 		}
 		
-		[Category ("Makefile Integration")]
-		[DisplayName ("Include in Makefile")]
-		[Description ("Include this file in the file list of the synchronized Makefile")]
+		[LocalizedCategory ("Makefile Integration")]
+		[LocalizedDisplayName ("Include in Makefile")]
+		[LocalizedDescription ("Include this file in the file list of the synchronized Makefile")]
 		public bool IncludeInMakefile {
 			get {
 				return !data.IsFileExcluded (file.FilePath); 
