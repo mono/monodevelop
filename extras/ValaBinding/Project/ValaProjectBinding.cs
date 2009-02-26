@@ -29,7 +29,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-
+using System;
 using System.Xml;
 using System.IO;
 
@@ -68,7 +68,7 @@ namespace MonoDevelop.ValaBinding
 		
 		public bool CanCreateSingleFileProject (string sourceFile)
 		{
-			return true;
+			return sourceFile.EndsWith (".vala", StringComparison.OrdinalIgnoreCase);
 		}
 	}
 }

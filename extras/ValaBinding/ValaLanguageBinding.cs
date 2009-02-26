@@ -55,8 +55,8 @@ namespace MonoDevelop.ValaBinding
 		public bool IsSourceCodeFile (string fileName)
 		{
 			string ext = Path.GetExtension(fileName);
-			return (ext.Equals(".vala", StringComparison.CurrentCultureIgnoreCase) ||
-			        ext.Equals(".vapi", StringComparison.CurrentCultureIgnoreCase));
+			return (ext.Equals(".vala", StringComparison.OrdinalIgnoreCase) ||
+			        ext.Equals(".vapi", StringComparison.OrdinalIgnoreCase));
 		}
 		
 		public IParser Parser {

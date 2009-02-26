@@ -1,5 +1,12 @@
 2009-02-26  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* ValaLanguageBinding.cs: Ordinal compare.
+
+	* Project/ValaProjectBinding.cs: Only create projects for vala
+	  files. Fixes nasty crash on xml files.
+
+2009-02-26  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* ValaBinding.csproj: Remove bad property value.
 
 2009-02-26  Lluis Sanchez Gual  <lluis@novell.com>
