@@ -1,3 +1,8 @@
+2009-02-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:
+	  The dialog now works for any solutionEntityItem.
+
 2009-02-25  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
