@@ -83,6 +83,7 @@ FILES =  \
 	MonoDevelop.Core.Serialization/XmlElementDataType.cs \
 	MonoDevelop.Core.Serialization/XmlMapAttributeProvider.cs \
 	MonoDevelop.Core/ClrVersion.cs \
+	MonoDevelop.Core/ComponentModelLocalization.cs \
 	MonoDevelop.Core/DefaultAddinLocalizer.cs \
 	MonoDevelop.Core/FileEventArgs.cs \
 	MonoDevelop.Core/FileService.cs \

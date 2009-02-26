@@ -21,7 +21,6 @@
     <Execution>
       <Execution clr-version="Net_2_0" />
     </Execution>
-    <StartupObject />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -33,7 +32,6 @@
     <Execution>
       <Execution clr-version="Net_2_0" />
     </Execution>
-    <StartupObject />
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -153,6 +151,7 @@
     <Compile Include="MonoDevelop.Core.ProgressMonitoring\AsyncOperation.cs" />
     <Compile Include="MonoDevelop.Core.AddIns\PackageInstalledCondition.cs" />
     <Compile Include="MonoDevelop.Core\SystemAssembly.cs" />
+    <Compile Include="MonoDevelop.Core\ComponentModelLocalization.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
