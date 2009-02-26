@@ -1,3 +1,9 @@
+2009-02-26  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/NRefactoryParameterDataProvider.cs: fixed 'Bug 479757 -
+	  Parameters of a Method when opening Parenthesis result in a
+	  blank "Tooltip".'
+
 2009-02-25  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* CSharpBinding.addin.xml: Register CSharpProjectParameters as 

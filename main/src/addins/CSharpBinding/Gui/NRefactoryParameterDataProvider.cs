@@ -202,7 +202,27 @@ namespace MonoDevelop.CSharpBinding
 		
 		public string GetMethodMarkup (int overload, string[] parameterMarkup)
 		{
-			return prefix + "<b>" + (this.delegateName ?? (methods[overload].IsConstructor ? ambience.GetString (methods[overload].DeclaringType, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup  | OutputFlags.IncludeGenerics) : methods[overload].Name)) + "</b> (" + string.Join (", ", parameterMarkup)  + ")";
+			string name = (this.delegateName ?? (methods[overload].IsConstructor ? ambience.GetString (methods[overload].DeclaringType, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup  | OutputFlags.IncludeGenerics) : methods[overload].Name));
+			StringBuilder parameters = new StringBuilder ();
+			int curLen = 0;
+			
+			foreach (string parameter in parameterMarkup) {
+				if (parameters.Length > 0)
+					parameters.Append (", ");
+				string text;
+				Pango.AttrList attrs;
+				char ch;
+				Pango.Global.ParseMarkup (parameter, '_', out attrs, out text, out ch);
+				if (curLen > 80) {
+					parameters.AppendLine ();
+					parameters.Append (new string (' ', (prefix != null ? prefix.Length : 0) + name.Length + 4));
+					curLen = 0;
+				}
+				curLen += text.Length + 2;
+				parameters.Append (parameter);
+			}
+			return prefix + "<b>" + name + "</b> (" + parameters + ")";
+			
 //			return ambience.GetIntellisenseDescription (methods[overload]);
 		}
 		
@@ -213,7 +233,7 @@ namespace MonoDevelop.CSharpBinding
 			
 			if (methods[overload].Parameters == null || paramIndex < 0 || paramIndex >= methods[overload].Parameters.Count)
 				return "";
-			return ambience.GetString (methods[overload].Parameters [paramIndex], OutputFlags.AssemblyBrowserDescription | OutputFlags.HighlightName | OutputFlags.HideExtensionsParameter | OutputFlags.IncludeGenerics | OutputFlags.IncludeModifiers);
+			return ambience.GetString (methods[overload].Parameters [paramIndex], OutputFlags.AssemblyBrowserDescription | OutputFlags.HideExtensionsParameter | OutputFlags.IncludeGenerics | OutputFlags.IncludeModifiers | OutputFlags.HighlightName);
 		}
 		
 		public int GetParameterCount (int overload)
