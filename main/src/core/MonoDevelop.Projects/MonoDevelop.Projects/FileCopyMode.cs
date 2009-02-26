@@ -26,18 +26,18 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System.ComponentModel;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects
 {
 	
 	public enum FileCopyMode
 	{
-		[Description ("Do not copy")]
+		[LocalizedDescription ("Do not copy")]
 		None = 0,
-		[Description ("Always copy")]
+		[LocalizedDescription ("Always copy")]
 		Always,
-		[Description ("Copy if newer")]
+		[LocalizedDescription ("Copy if newer")]
 		PreserveNewest
 	}
 }

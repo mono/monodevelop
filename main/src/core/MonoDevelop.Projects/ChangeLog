@@ -1,5 +1,10 @@
 2009-02-26  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects/FileCopyMode.cs: Worked on propertygrid
+	  localization.
+
+2009-02-26  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Dom.Output/OutputSettings.cs: Changed
 	  output settings space print after highlight
 
