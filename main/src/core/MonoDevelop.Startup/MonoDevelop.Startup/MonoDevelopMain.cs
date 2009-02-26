@@ -11,7 +11,6 @@ namespace MonoDevelop.Startup
 	{
 		public static int Main (string[] args)
 		{
-			Runtime.Initialize (true);
 			bool retry = false;
 			
 			do {

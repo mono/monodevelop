@@ -1,3 +1,8 @@
+2009-02-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Startup/MonoDevelopMain.cs: The runtime is now
+	  initialized by the Ide.
+
 2009-02-08  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Startup.csproj: Remove more inadvertent local
