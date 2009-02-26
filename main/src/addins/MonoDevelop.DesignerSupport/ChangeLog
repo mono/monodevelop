@@ -1,5 +1,13 @@
 2009-02-26  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.DesignerSupport.Toolbox/TypeReference.cs:
+	* MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:
+	* MonoDevelop.DesignerSupport.Projects/SolutionItemDescriptor.cs:
+	* MonoDevelop.DesignerSupport.Projects/WorkspaceItemDescriptor.cs:
+	  Added explicit "Misc" category for localization.
+
+2009-02-26  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:
 	  Worked on property pad translation.
 

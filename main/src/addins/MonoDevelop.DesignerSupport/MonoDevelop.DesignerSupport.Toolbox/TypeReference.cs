@@ -106,6 +106,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		
 		#region property accessors for the private fields
 		
+		[LocalizedCategory ("Misc")]
 		[LocalizedDisplayName ("Assembly Name")]
 		[LocalizedDescription ("The assembly name.")]
 		[ReadOnly (true)]
@@ -114,6 +115,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			set { assemblyName = value; }
 		}
 		
+		[LocalizedCategory ("Misc")]
 		[LocalizedDisplayName ("Type Name")]
 		[LocalizedDescription ("The fully-qualified type name.")]
 		[ReadOnly (true)]

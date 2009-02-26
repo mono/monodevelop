@@ -44,18 +44,21 @@ namespace MonoDevelop.DesignerSupport
 			this.file = file;
 		}
 		
+		[LocalizedCategory ("Misc")]
 		[LocalizedDisplayName ("Name")]
 		[LocalizedDescription ("Name of the file.")]
 		public string Name {
 			get { return System.IO.Path.GetFileName (file.Name); }
 		}
 		
+		[LocalizedCategory ("Misc")]
 		[LocalizedDisplayName ("Path")]
 		[LocalizedDescription ("Full path of the file.")]
 		public string Path {
 			get { return file.FilePath; }
 		}
 		
+		[LocalizedCategory ("Misc")]
 		[LocalizedDisplayName ("Type")]
 		[LocalizedDescription ("Type of the file.")]
 		public string FileType {

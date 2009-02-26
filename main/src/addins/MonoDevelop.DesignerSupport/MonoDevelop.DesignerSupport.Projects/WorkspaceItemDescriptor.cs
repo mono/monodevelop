@@ -40,6 +40,7 @@ namespace MonoDevelop.DesignerSupport.Projects
 			this.item = item;
 		}
 		
+		[LocalizedCategory ("Misc")]
 		[LocalizedDisplayName ("Name")]
 		[LocalizedDescription ("Name of the item.")]
 		public string Name {
@@ -47,6 +48,7 @@ namespace MonoDevelop.DesignerSupport.Projects
 			set { item.Name = value; }
 		}
 		
+		[LocalizedCategory ("Misc")]
 		[LocalizedDisplayName ("File Path")]
 		[LocalizedDescription ("File path of the item.")]
 		public string FilePath {
@@ -55,6 +57,7 @@ namespace MonoDevelop.DesignerSupport.Projects
 			}
 		}
 		
+		[LocalizedCategory ("Misc")]
 		[LocalizedDisplayName ("Root Directory")]
 		[LocalizedDescription ("Root directory of source files and projects. File paths will be shown relative to this directory.")]
 		public string RootDirectory {
@@ -67,6 +70,7 @@ namespace MonoDevelop.DesignerSupport.Projects
 			}
 		}
 		
+		[LocalizedCategory ("Misc")]
 		[LocalizedDisplayName ("File Format")]
 		[LocalizedDescription ("File format of the project file.")]
 		public string FileFormat {
