@@ -1,3 +1,10 @@
+2009-02-26  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/DropDownBox.cs:
+	* MonoDevelop.SourceEditor/DropDownBoxListWindow.cs: drop down
+	  box popup now selects always the current selected item as
+	  first item.
+
 2009-02-25  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/LanguageItemWindow.cs: Changed the

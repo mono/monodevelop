@@ -154,8 +154,8 @@ namespace MonoDevelop.SourceEditor
 					DataProvider.Reset ();
 					if (DataProvider.IconCount > 0) {
 						window = new DropDownBoxListWindow (this);
-						
 						PositionListWindow ();
+						window.SelectItem (CurrentItem);
 						window.ShowAll ();
 					}
 				}

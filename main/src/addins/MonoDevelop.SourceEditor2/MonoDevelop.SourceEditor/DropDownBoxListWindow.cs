@@ -77,6 +77,19 @@ namespace MonoDevelop.SourceEditor
 			
 			ResetSizes ();
 		}
+		
+		public void SelectItem (object item)
+		{
+			for (int i = 0; i < DataProvider.IconCount; i++) {
+				if (DataProvider.GetTag (i) == item) {
+					list.Selection = i;
+					vScrollbar.Value = Math.Max (0, i - list.VisibleRows / 2);
+					break;
+				}
+			}
+				
+		}
+		
 		public bool ProcessKey (Gdk.Key key, Gdk.ModifierType modifier)
 		{
 			switch (key) {
