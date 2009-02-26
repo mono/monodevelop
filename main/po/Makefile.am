@@ -1,6 +1,7 @@
 
 LC_BUILD=$(top_builddir)/build/locale
-INSTALL_DIR=$(DESTDIR)$(datarootdir)/locale
+#old automake versions don't set datarootdir or localedir
+INSTALL_DIR=$(DESTDIR)$(prefix)/share/locale
 
 FILES = $(addsuffix .po, $(ALL_LINGUAS))
 GMO_FILES = $(patsubst %.po,$(LC_BUILD)/%/LC_MESSAGES/$(PACKAGE).mo,$(FILES))

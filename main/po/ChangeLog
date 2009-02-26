@@ -1,3 +1,8 @@
+2009-02-26  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am: Don't use datarootdir as this isn't present
+	  with automake 1.9.
+
 2009-02-26  Mike Krüger  <mkrueger@novell.com>
 
 	* de.po: Worked on german translation.
