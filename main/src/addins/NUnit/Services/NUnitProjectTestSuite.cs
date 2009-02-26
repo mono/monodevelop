@@ -64,7 +64,7 @@ namespace MonoDevelop.NUnit
 		public static NUnitProjectTestSuite CreateTest (DotNetProject project)
 		{
 			foreach (ProjectReference p in project.References)
-				if (p.Reference.IndexOf ("nunit.framework") != -1)
+				if (p.Reference.IndexOf ("nunit.framework") != -1 || p.Reference.IndexOf ("nunit.core") != -1)
 					return new NUnitProjectTestSuite (project);
 			return null;
 		}
