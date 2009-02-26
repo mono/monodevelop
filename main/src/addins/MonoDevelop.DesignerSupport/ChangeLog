@@ -1,5 +1,10 @@
 2009-02-26  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:
+	  Worked on property pad translation.
+
+2009-02-26  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.DesignerSupport.Toolbox/TypeReference.cs:
 	* MonoDevelop.DesignerSupport.Toolbox/TextToolboxNode.cs:
 	* MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:

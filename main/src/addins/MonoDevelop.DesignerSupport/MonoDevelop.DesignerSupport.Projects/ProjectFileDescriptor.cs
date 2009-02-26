@@ -112,6 +112,16 @@ namespace MonoDevelop.DesignerSupport
 				}
 			}
 			
+			public override bool CanConvertTo (System.ComponentModel.ITypeDescriptorContext context, System.Type destinationType)
+			{
+				return destinationType == typeof (string);
+			}
+			
+			public override object ConvertTo (System.ComponentModel.ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value, System.Type destinationType)
+			{
+				return MonoDevelop.Projects.BuildAction.Translate ((string)value);
+			}
+
 			public override bool CanConvertFrom (ITypeDescriptorContext context, Type sourceType)
 			{
 				return sourceType == typeof (string);
@@ -123,16 +133,15 @@ namespace MonoDevelop.DesignerSupport
 				if (!IsValid (context, value))
 					throw new FormatException ("Invalid build target name");
 				
-				return value;
+				return MonoDevelop.Projects.BuildAction.ReTranslate ((string)value);
 			}
 			
-			//these must encode into XML element names
 			public override bool IsValid (ITypeDescriptorContext context, object value)
 			{
 				if (!(value is string))
 					return false;
 				
-				string str = (string) value;
+				string str = MonoDevelop.Projects.BuildAction.ReTranslate ((string) value);
 				if (string.IsNullOrEmpty (str) || !char.IsLetter (str[0]))
 					return false;
 				
@@ -146,7 +155,6 @@ namespace MonoDevelop.DesignerSupport
 				
 				return true;
 			}
-			
 			public override bool GetStandardValuesExclusive (ITypeDescriptorContext context)
 			{
 				//only make the list exclusive if we managed to get a list from the parent project
