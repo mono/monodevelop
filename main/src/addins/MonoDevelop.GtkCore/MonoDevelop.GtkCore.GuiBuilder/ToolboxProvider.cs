@@ -140,6 +140,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		}
 		
 		[ReadOnly (true)]
+		[LocalizedCategory ("Misc")]
 		[LocalizedDisplayName ("Reference Type")]
 		[LocalizedDescription ("The type of the project or assembly from which this component originates.")]
 		public ReferenceType ReferenceType {
@@ -152,6 +153,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		}
 		
 		[ReadOnly (true)]
+		[LocalizedCategory ("Misc")]
 		[LocalizedDisplayName ("Reference Path")]
 		[LocalizedDescription ("The project or assembly from which this component originates.")]
 		public string Reference {
@@ -163,6 +165,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 		}
 		
+		[LocalizedCategory ("Misc")]
 		[LocalizedDisplayName ("Class Name")]
 		[LocalizedDescription ("The name of the component class.")]
 		public string ClassName {
@@ -171,6 +174,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 		}
 		
+		[LocalizedCategory ("Misc")]
 		[LocalizedDisplayName ("GTK# Version")]
 		[LocalizedDescription ("The minimum GTK# version required to use this component.")]
 		public string GtkVersion {

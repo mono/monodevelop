@@ -1,5 +1,10 @@
 2009-02-26  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.GtkCore.GuiBuilder/ToolboxProvider.cs: Added
+	  explicit "Misc" category for localization.
+
+2009-02-26  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.GtkCore.GuiBuilder/ToolboxProvider.cs: Worked on
 	  propertygrid localization.
 
