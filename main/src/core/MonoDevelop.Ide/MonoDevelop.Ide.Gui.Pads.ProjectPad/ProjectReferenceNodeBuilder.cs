@@ -81,6 +81,20 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			} else
 				icon = Context.GetIcon (Stock.Reference);
 		}
+		
+		public override bool HasChildNodes (MonoDevelop.Ide.Gui.Components.ITreeBuilder builder, object dataObject)
+		{
+			ProjectReference pref = (ProjectReference) dataObject;
+			return !pref.IsValid;
+		}
+
+		public override void BuildChildNodes (MonoDevelop.Ide.Gui.Components.ITreeBuilder treeBuilder, object dataObject)
+		{
+			ProjectReference pref = (ProjectReference) dataObject;
+			if (!pref.IsValid)
+				treeBuilder.AddChild (new TreeViewItem (pref.ValidationErrorMessage, Gtk.Stock.DialogWarning));
+		}
+
 	}
 	
 	public class ProjectReferenceNodeCommandHandler: NodeCommandHandler
