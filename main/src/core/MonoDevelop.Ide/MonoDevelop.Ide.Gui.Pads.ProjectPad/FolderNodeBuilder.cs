@@ -62,6 +62,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			string path = GetFolderPath (dataObject);
 			
 			Project project = builder.GetParentDataItem (typeof(Project), true) as Project;
+			if (project == null)
+				return;
+			
 			ProjectFileCollection files;
 			ArrayList folders;
 			GetFolderContent (project, path, out files, out folders);
@@ -107,6 +110,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
 			Project project = builder.GetParentDataItem (typeof(Project), true) as Project;
+			if (project == null)
+				return false;
 			
 			// For big projects, a real HasChildNodes value is too slow to get
 			if (project.Files.Count > 500)

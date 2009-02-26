@@ -1,5 +1,11 @@
 2009-02-26  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ShowAllFilesBuilderExtension.cs:
+	  Make the show hidden files work for all folder items.
+
+2009-02-26  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectReferenceNodeBuilder.cs:
 	  If the reference is not valid, display the validation error
 	  message.

@@ -52,8 +52,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		public override bool CanBuildNode (Type dataType)
 		{
-			return typeof(ProjectFolder).IsAssignableFrom (dataType) ||
-					typeof(Project).IsAssignableFrom (dataType);
+			return typeof(IFolderItem).IsAssignableFrom (dataType);
 		}
 		
 		public override Type CommandHandlerType {
@@ -104,8 +103,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		internal static string GetFolderPath (object dataObject)
 		{
-			if (dataObject is Project) return ((Project)dataObject).BaseDirectory;
-			else return ((ProjectFolder)dataObject).Path;
+			return ((IFolderItem)dataObject).BaseDirectory;
 		}
 		
 		public override void BuildNode (ITreeBuilder builder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
@@ -115,7 +113,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			if ((dataObject is ProjectFolder) && builder.Options ["ShowAllFiles"] && Directory.Exists (thisPath))
 			{
 				ProjectFolder pf = (ProjectFolder) dataObject;
-				if (!HasProjectFiles (pf.Project, thisPath)) {
+				if (pf.Project == null || !HasProjectFiles (pf.Project, thisPath)) {
 					Gdk.Pixbuf gicon = Context.GetComposedIcon (icon, "fade");
 					if (gicon == null) {
 						gicon = Services.Icons.MakeTransparent (icon, 0.5);
@@ -140,7 +138,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				Project project = (Project) builder.GetParentDataItem (typeof(Project), true);
 				
 				foreach (string file in Directory.GetFiles (path)) {
-					if (project.Files.GetFile (file) == null)
+					if (project == null || project.Files.GetFile (file) == null)
 						builder.AddChild (new SystemFile (file, project));
 				}
 				
