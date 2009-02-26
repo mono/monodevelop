@@ -1,3 +1,9 @@
+2009-02-26  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Core/SystemAssemblyService.cs: In
+	  GetAssemblyFromFullName, if package is null, prefer GAC
+	  packages.
+
 2009-02-26  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:

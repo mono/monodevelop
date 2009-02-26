@@ -178,8 +178,18 @@ namespace MonoDevelop.Core
 		
 		public SystemAssembly GetAssemblyFromFullName (string fullname, string package)
 		{
+			if (package == null) {
+				SystemAssembly found = null;
+				foreach (SystemAssembly asm in GetAssembliesFromFullNameInternal (fullname)) {
+					found = asm;
+					if (asm.Package.IsGacPackage)
+						return asm;
+				}
+				return found;
+			}
+			
 			foreach (SystemAssembly asm in GetAssembliesFromFullNameInternal (fullname)) {
-				if (package == null || package == asm.Package.Name)
+				if (package == asm.Package.Name)
 					return asm;
 			}
 			return null;
