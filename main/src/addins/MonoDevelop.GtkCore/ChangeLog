@@ -1,3 +1,8 @@
+2009-02-26  Mike Kestner <mkestner@novell.com> 
+
+	* libsteticui/WidgetDesignerBackend.cs: implement Delete key 
+	support.  [Fixes #470637]
+
 2009-02-26  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.GtkCore.GuiBuilder/ToolboxProvider.cs: Added

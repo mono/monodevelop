@@ -326,7 +326,7 @@ namespace Stetic
 			fixd = new Fixed ();
 			Add (fixd);
 			this.CanFocus = true;
-			this.Events = EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.PointerMotionMask;
+			this.Events = EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.PointerMotionMask | EventMask.KeyPressMask;
 //			fixd.ModifyBg (Gtk.StateType.Normal, this.Style.Mid (Gtk.StateType.Normal));
 //			VisibleWindow = false;
 			selectionBox = new SelectionHandleBox (this);
@@ -740,6 +740,23 @@ namespace Stetic
 			return r;
 		}
 		
+		protected override bool OnKeyPressEvent (Gdk.EventKey ev)
+		{
+			switch (ev.Key) {
+			case Gdk.Key.Delete:
+			case Gdk.Key.KP_Delete:
+				IObjectSelection sel = GetSelection ();
+				if (sel != null && sel.DataObject != null) {
+					Wrapper.Widget wrapper = Wrapper.Widget.Lookup (sel.DataObject) as Wrapper.Widget;
+					if (wrapper != null)
+						wrapper.Delete ();
+				}
+				return true;
+			default:
+				return base.OnKeyPressEvent (ev);
+			}
+		}
+
 		class TopLevelChild
 		{
 			public int X;
