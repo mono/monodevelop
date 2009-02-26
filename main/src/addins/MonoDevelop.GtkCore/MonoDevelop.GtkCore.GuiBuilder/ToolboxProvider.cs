@@ -1,8 +1,9 @@
 
 using System;
-using System.Collections;
 using System.ComponentModel;
+using System.Collections;
 using System.Collections.Generic;
+
 using MonoDevelop.DesignerSupport.Toolbox;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;
@@ -139,8 +140,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		}
 		
 		[ReadOnly (true)]
-		[DisplayName ("Reference Type")]
-		[DescriptionAttribute ("The type of the project or assembly from which this component originates.")]
+		[LocalizedDisplayName ("Reference Type")]
+		[LocalizedDescription ("The type of the project or assembly from which this component originates.")]
 		public ReferenceType ReferenceType {
 			get {
 				return refType;
@@ -151,8 +152,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		}
 		
 		[ReadOnly (true)]
-		[DisplayName ("Reference Path")]
-		[DescriptionAttribute ("The project or assembly from which this component originates.")]
+		[LocalizedDisplayName ("Reference Path")]
+		[LocalizedDescription ("The project or assembly from which this component originates.")]
 		public string Reference {
 			get {
 				return reference;
@@ -162,16 +163,16 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 		}
 		
-		[DisplayName ("Class Name")]
-		[DescriptionAttribute ("The name of the component class.")]
+		[LocalizedDisplayName ("Class Name")]
+		[LocalizedDescription ("The name of the component class.")]
 		public string ClassName {
 			get {
 				return className;
 			}
 		}
 		
-		[DisplayName ("GTK# Version")]
-		[DescriptionAttribute ("The minimum GTK# version required to use this component.")]
+		[LocalizedDisplayName ("GTK# Version")]
+		[LocalizedDescription ("The minimum GTK# version required to use this component.")]
 		public string GtkVersion {
 			get {
 				return gtkVersion;

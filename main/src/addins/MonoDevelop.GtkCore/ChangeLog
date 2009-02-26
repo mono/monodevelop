@@ -1,3 +1,8 @@
+2009-02-26  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.GtkCore.GuiBuilder/ToolboxProvider.cs: Worked on
+	  propertygrid localization.
+
 2009-02-25  Mike Kestner <mkestner@novell.com> 
 
 	* libsteticui/ApplicationBackend.cs: Reload the registry libraries
