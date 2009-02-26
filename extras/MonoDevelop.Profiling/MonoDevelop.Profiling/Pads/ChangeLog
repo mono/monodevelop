@@ -1,0 +1,4 @@
+2009-02-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* ProfilingPad.cs: Track api changes.
+

@@ -54,9 +54,9 @@ namespace MonoDevelop.Profiling
 			vbox.PackStart (toolbar, false, true, 0);
 		}
 		
-		public override void Initialize (NodeBuilder[] builders, TreePadOption[] options)
+		public override void Initialize (NodeBuilder[] builders, TreePadOption[] options, string menuPath)
 		{
-			base.Initialize (builders, options);
+			base.Initialize (builders, options, menuPath);
 			vbox.PackStart (base.Control, true, true, 0);
 			vbox.ShowAll ();
 
