@@ -167,6 +167,29 @@ class Program
 			Assert.IsNotNull (provider.Find ("TestMethod"), "method 'TestMethod' not found.");
 		}
 		
+		[Test()]
+		public void TestObjectInitializer ()
+		{
+			CompletionDataList provider = CodeCompletionBugTests.CreateCtrlSpaceProvider (
+@"
+class foo {
+	public string bar { get; set; }
+	public string baz { get; set; }
+}
+
+class test {
+	public void testcc ()
+	{
+		foo f = new foo () {
+			$$
+		};
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("bar"), "property 'bar' not found.");
+			Assert.IsNotNull (provider.Find ("baz"), "property 'baz' not found.");
+		}
 		
 
 	}

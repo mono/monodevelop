@@ -1,3 +1,9 @@
+2009-02-27  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharpBinding/CodeCompletionCSharp3Tests.cs:
+	  Added unit test for "Bug 479983 - No C# completion for
+	  object initializers".
+
 2009-02-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* UnitTests.csproj: Flush.
