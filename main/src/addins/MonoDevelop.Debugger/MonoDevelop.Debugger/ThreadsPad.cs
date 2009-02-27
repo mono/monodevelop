@@ -135,7 +135,7 @@ namespace MonoDevelop.Debugger
 		
 		void IPadContent.Initialize (IPadWindow window)
 		{
-			window.Title = "Threads List";
+			window.Title = GettextCatalog.GetString ("Threads List");
 			window.Icon = Stock.OutputIcon;
 		}
 		

@@ -1,3 +1,9 @@
+2009-02-27  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Debugger/ThreadsPad.cs:
+	* MonoDevelop.Debugger/StackTracePad.cs: Added translatable
+	  strings. Patch from Bálint Kriván.
+
 2009-02-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Debugger.csproj: Flush.
