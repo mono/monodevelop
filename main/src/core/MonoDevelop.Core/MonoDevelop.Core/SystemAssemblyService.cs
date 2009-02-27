@@ -757,18 +757,13 @@ namespace MonoDevelop.Core
 					asm = Path.GetFullPath (assembly);
 				else {
 					if (Path.GetDirectoryName (assembly).Length == 0) {
-						// Simple reference such as -r:System.Web. The assembly must be in the gac
-						if (!gacPackageSet) {
-							gacPackageSet = true;
-							gacPackage = true;
-						}
 						asm = assembly;
 					} else {
 						asm = Path.GetFullPath (Path.Combine (pcDir, assembly));
 					}
 				}
 				list.Add (AddAssembly (asm, package));
-				if (!gacPackageSet && !asm.StartsWith (monoPrefix)) {
+				if (!gacPackageSet && !asm.StartsWith (monoPrefix) && Path.IsPathRooted (asm)) {
 					// Assembly installed outside $(prefix)/lib/mono. It is most likely not a gac package.
 					gacPackageSet = true;
 					gacPackage = false;

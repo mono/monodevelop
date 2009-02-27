@@ -1,3 +1,10 @@
+2009-02-27  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core/SystemAssemblyService.cs: Fixed logic for
+	  detecting gac packages. Don't consider a package a gac
+	  package if it contains at least one assembly with an
+	  absolute path outside the mono directory.
+
 2009-02-26  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Core/SystemAssemblyService.cs: In
