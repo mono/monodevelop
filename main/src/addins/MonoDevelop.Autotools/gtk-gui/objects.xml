@@ -1,6 +1,0 @@
-<objects attr-sync="on">
-  <object type="MonoDevelop.Autotools.MakefileIntegrationFeatureWidget" palette-category="widget" allow-children="false" base-type="Gtk.Bin">
-    <itemgroups />
-    <signals />
-  </object>
-</objects>
