@@ -33,7 +33,9 @@
 using System;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Collections.Generic;
+using System.Threading;
 
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
@@ -46,8 +48,8 @@ namespace MonoDevelop.ValaBinding
 	public class ValaTextEditorExtension : CompletionTextEditorExtension
 	{
 		// Allowed chars to be next to an identifier
-		private static char[] allowedChars = new char[] {
-			'.', ':', ' ', '\t', '=', '*', '+', '-', '/', '%', ',', '&',
+		private static char[] allowedChars = new char[] { ' ', '\t', '\r', '\n', 
+			':', '=', '*', '+', '-', '/', '%', ',', '&',
 			'|', '^', '{', '}', '[', ']', '(', ')', '\n', '!', '?', '<', '>'
 		};
 		
@@ -57,10 +59,17 @@ namespace MonoDevelop.ValaBinding
 			'^', '{', '}', '[', ']', '(', ')', '\n', '!', '?', '<', '>'
 		};
 		
+		private ProjectInformation Parser {
+			get {
+				ValaProject project = Document.Project as ValaProject;
+				return (null == project)? null: ProjectInformationManager.Instance.Get (project);
+			}
+		}// Parser
+		
 		public override bool ExtendsEditor (Document doc, IEditableTextBuffer editor)
 		{
-			return (Path.GetExtension (doc.Name).ToUpper () == ".VALA"   ||
-			        Path.GetExtension (doc.Name).ToUpper () == ".VAPI" );
+			return (Path.GetExtension (doc.FileName).ToUpper () == ".VALA"   ||
+			        Path.GetExtension (doc.FileName).ToUpper () == ".VAPI" );
 		}
 		
 		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
@@ -89,14 +98,26 @@ namespace MonoDevelop.ValaBinding
 			return base.KeyPress (key, keyChar, modifier);
 		}
 		
+		private static Regex initializationRegex = new Regex (@"(((?<typename>\w[\w\d\.<>]*)\s+)?(?<variable>\w[\w\d]*)\s*=\s*)?new\s*(?<constructor>\w[\w\d\.<>]*)?", RegexOptions.Compiled);
 		public override ICompletionDataList HandleCodeCompletion (
 		    ICodeCompletionContext completionContext, char completionChar)
 		{
-			string lineText = Editor.GetLineText (completionContext.TriggerLine + 1);
+			int line, column;
+			string lineText = null;
+			ProjectInformation parser = Parser;
+			// Console.WriteLine ("({0},{1}): {2}", line, column, lineText);
+
+			Editor.GetLineColumnFromPosition (completionContext.TriggerOffset, out line, out column);
 			
-			if (lineText.EndsWith (".")) {
+			switch (completionChar) {
+			case '.':
+				lineText = Editor.GetLineText (line);
+				if (column > lineText.Length){ column = lineText.Length; }
+				lineText = lineText.Substring (0, column - 1);
 				// remove the trailing '.'
-				lineText = lineText.Substring (0, lineText.Length - 1);
+				if (lineText.EndsWith (".", StringComparison.Ordinal)) {
+					lineText = lineText.Substring (0, lineText.Length-1);
+				}
 				
 				int nameStart = lineText.LastIndexOfAny (allowedChars);
 
@@ -107,196 +128,93 @@ namespace MonoDevelop.ValaBinding
 				if (string.IsNullOrEmpty (itemName))
 					return null;
 				
-				return GetMembersOfItem (itemName);
+				return GetMembersOfItem (itemName, line, column);
+			case '\t':
+			case ' ':
+				lineText = Editor.GetLineText (line);
+				if (column > lineText.Length){ column = lineText.Length; }
+				lineText = lineText.Substring (0, column-1).Trim ();
+				
+				if (lineText.EndsWith ("new")) {
+					return CompleteConstructor (lineText, line, column);
+				} else if (lineText.EndsWith ("is")) {
+					ValaCompletionDataList list = new ValaCompletionDataList ();
+					parser.GetTypesVisibleFrom (Document.FileName, line, column, list);
+					return list;
+				}
+				
+				break;
+			default:
+				break;
 			}
 			
 			return null;
 		}
 		
+		private ValaCompletionDataList CompleteConstructor (string lineText, int line, int column)
+		{
+			ProjectInformation parser = Parser;
+			Match match = initializationRegex.Match (lineText);
+			ValaCompletionDataList list = new ValaCompletionDataList ();
+			list.IsChanging = true;
+			
+			list.Changed += delegate(object sender, EventArgs args) {
+				if (0 == list.Count) { 
+					// Fallback to known types
+					list.IsChanging = true;
+					parser.GetTypesVisibleFrom (Document.FileName, line, column, list);
+				}
+			};
+			
+			ThreadPool.QueueUserWorkItem (delegate{
+				if (match.Success) {
+					// variable initialization
+					if (match.Groups["typename"].Success) {
+						// simultaneous declaration and initialization
+						parser.GetConstructorsForType (match.Groups["typename"].Value, Document.FileName, line, column, list);
+					} else if (match.Groups["variable"].Success) {
+						// initialization of previously declared variable
+						parser.GetConstructorsForExpression (match.Groups["variable"].Value, Document.FileName, line, column, list);
+					}
+				}
+			});
+			return list;
+		}// CompleteConstructor
+		
 		public override ICompletionDataList CodeCompletionCommand (
 		    ICodeCompletionContext completionContext)
 		{
+			if (null == (Document.Project as ValaProject)){ return null; }
+			
 			int pos = completionContext.TriggerOffset;
-			int line, column;
-			Editor.GetLineColumnFromPosition (Editor.CursorPosition, out line, out column);
-			string lineText = Editor.GetLineText (line);
 			
-			if (!lineText.Contains ("."))
-			    return GlobalComplete ();
-			
-			return HandleCodeCompletion (completionContext, Editor.GetText (pos - 1, pos)[0]);
-		}
-		
-		private CompletionDataList GetMembersOfItem (string itemFullName)
-		{
-			ValaProject project = Document.Project as ValaProject;
-			
-			if (project == null)
-				return null;
-				
-			ProjectInformation info = ProjectInformationManager.Instance.Get (project);
-			CompletionDataList list = new CompletionDataList ();
-			
-			LanguageItem container = null;
-			string containerType = null;
-			
-			string currentFileName = Document.FileName;
-			bool in_project = false;
-			
-			// Try containers
-			foreach (LanguageItem li in info.Containers ()) {
-				if ((itemFullName == li.FullName) || (itemFullName == li.Name)){
-					container = li;
-					in_project = true;
-					break;
-				}
+			ICompletionDataList list = HandleCodeCompletion(completionContext, Editor.GetText (pos - 1, pos)[0]);
+			if (null == list) {
+				list = GlobalComplete (completionContext);
 			}
-			
-			// Try included containers
-			if (!in_project && info.IncludedFiles.ContainsKey (currentFileName)) {
-				foreach (FileInformation fi in info.IncludedFiles[currentFileName]) {
-					foreach (LanguageItem li in fi.Containers ()) {
-						if ((itemFullName == li.FullName) || (itemFullName == li.Name)) {
-							container = li;
-							break;
-						}
-					}
-				}
-			}
-			
-			// Try instances
-			// Find the typename of the instance
-			foreach (Member li in info.Members ) {
-				if (itemFullName == li.Name) {
-					containerType = li.InstanceType;
-					in_project = true;
-					break;
-				}
-			}
-			
-			// Search included files
-			if (!in_project && info.IncludedFiles.ContainsKey (currentFileName)) {
-				foreach (FileInformation fi in info.IncludedFiles[currentFileName]) {
-					foreach (Member li in fi.Members) {
-						if (itemFullName == li.Name) {
-							containerType = li.InstanceType;
-							break;
-						}
-					}
-				}
-			}
-			
-			if (null == container) {
-				// Search locals
-				foreach (Local li in info.Locals ) {
-					if (itemFullName == li.Name && currentFileName == li.File) {
-						containerType = li.InstanceType;
-						in_project = true;
-						break;
-					}
-				}
-			}
-
-			
-			if ((container == null) && (containerType == null))
-				return null;
-			
-			if(null != container) {
-				if (in_project) {
-					foreach (LanguageItem li in info.AllItems ()) {
-						if (li.Parent != null && li.Parent.Equals (container)) {
-							list.Add (new CompletionData (li));
-						}
-					}
-				} else {
-					foreach (FileInformation fi in info.IncludedFiles[currentFileName]) {
-						foreach (LanguageItem li in fi.AllItems ()) {
-							if (li.Parent != null && li.Parent.Equals (container))
-								list.Add (new CompletionData (li));
-						}
-					}
-				}
-			} else {
-				if (in_project) {
-					AddMembersWithParent (list, info.InstanceMembers (), containerType);
-				} else {
-					foreach (FileInformation fi in info.IncludedFiles[currentFileName]) {
-						AddMembersWithParent (list, fi.InstanceMembers (), containerType);
-					}
-				}
-			}
-			
 			return list;
 		}
 		
-		/// <summary>
-		/// Adds completion data for children to a list
-		/// </summary>
-		/// <param name="list">
-		/// The list to which completion data will be added
-		/// <see cref="CompletionDataList"/>
-		/// </param>
-		/// <param name="items">
-		/// A list of items to search
-		/// <see cref="IEnumerable"/>
-		/// </param>
-		/// <param name="parentName">
-		/// The name of the parent that will be matched
-		/// <see cref="System.String"/>
-		/// </param>
-		public static void AddMembersWithParent(CompletionDataList list, IEnumerable<LanguageItem> items, string parentName) {
-				foreach (LanguageItem li in items) {
-					if (li.Parent != null && li.Parent.Name.EndsWith (parentName))
-						list.Add (new CompletionData (li));
-				}
-		}
-
-		
-		private ICompletionDataList GlobalComplete ()
+		private ValaCompletionDataList GetMembersOfItem (string itemFullName, int line, int column)
 		{
-			ValaProject project = Document.Project as ValaProject;
+			ProjectInformation info = Parser;
+			if (null == info){ return null; }
 			
-			if (project == null)
-				return null;
+			ValaCompletionDataList list = new ValaCompletionDataList ();
+			list.IsChanging = true;
+			info.Complete (itemFullName, Document.FileName, line, column, list);
+			return list;
+		}
+		
+		private ValaCompletionDataList GlobalComplete (ICodeCompletionContext context)
+		{
+			ProjectInformation info = Parser;
+			if (null == info){ return null; }
 			
-			ProjectInformation info = ProjectInformationManager.Instance.Get (project);
-			
-			CompletionDataList list = new CompletionDataList ();
-			
-			foreach (LanguageItem li in info.Containers ())
-				if (li.Parent == null)
-					list.Add (new CompletionData (li));
-			
-			foreach (Function f in info.Functions)
-				if (f.Parent == null)
-					list.Add (new CompletionData (f));
-
-			foreach (Enumerator e in info.Enumerators)
-				list.Add (new CompletionData (e));
-			
-			foreach (Macro m in info.Macros)
-				list.Add (new CompletionData (m));
-			
-			string currentFileName = Document.FileName;
-			
-			if (info.IncludedFiles.ContainsKey (currentFileName)) {
-				foreach (FileInformation fi in info.IncludedFiles[currentFileName]) {
-					foreach (LanguageItem li in fi.Containers ())
-						if (li.Parent == null)
-							list.Add (new CompletionData (li));
-					
-					foreach (Function f in fi.Functions)
-						if (f.Parent == null)
-							list.Add (new CompletionData (f));
-
-					foreach (Enumerator e in fi.Enumerators)
-						list.Add (new CompletionData (e));
-					
-					foreach (Macro m in fi.Macros)
-						list.Add (new CompletionData (m));
-				}
-			}
-			
+			ValaCompletionDataList list = new ValaCompletionDataList ();
+			int line, column;
+			Editor.GetLineColumnFromPosition (context.TriggerOffset, out line, out column);
+			info.GetSymbolsVisibleFrom (Document.FileName, line, column, list);
 			return list;
 		}
 		
@@ -307,28 +225,58 @@ namespace MonoDevelop.ValaBinding
 			if (completionChar != '(')
 				return null;
 			
-			ValaProject project = Document.Project as ValaProject;
-			
-			if (project == null)
-				return null;
-			
-			ProjectInformation info = ProjectInformationManager.Instance.Get (project);
+			ProjectInformation info = Parser;
+			if (null == info){ return null; }
 			
 			int line, column;
 			Editor.GetLineColumnFromPosition (Editor.CursorPosition, out line, out column);
 			int position = Editor.GetPositionFromLineColumn (line, 1);
 			string lineText = Editor.GetText (position, Editor.CursorPosition - 1).TrimEnd ();
+			string functionName = string.Empty;
 			
-			int nameStart = lineText.LastIndexOfAny (allowedChars);
-
-			nameStart++;
+			Match match = initializationRegex.Match (lineText);
+			if (match.Success && match.Groups["constructor"].Success) {
+				string[] tokens = match.Groups["constructor"].Value.Split('.');
+				string overload = tokens[tokens.Length-1];
+				string typename = (match.Groups["typename"].Success? match.Groups["typename"].Value: null);
+				int index = 0;
+				
+				if (1 == tokens.Length || null == typename) {
+					// Ideally if typename is null and token length is longer than 1, 
+					// we have an expression like: var w = new x.y.z(); and 
+					// we would check whether z is the type or if y.z is an overload for type y
+					typename = overload;
+				} else if ("var".Equals (typename, StringComparison.Ordinal)) {
+					typename = match.Groups["constructor"].Value;
+				} else {
+					// Foo.Bar bar = new Foo.Bar.blah( ...
+					for (string[] typeTokens = typename.Split ('.'); 0 < typeTokens.Length && 0 < tokens.Length; ++index) {
+						if (!typeTokens[0].Equals (tokens[0], StringComparison.Ordinal)) {
+							break;
+						}
+					}
+					List<string> overloadTokens = new List<string> ();
+					for (int i=index; i<tokens.Length; ++i) {
+						overloadTokens.Add (tokens[i]);
+					}
+					overload = string.Join (".", overloadTokens.ToArray ());
+				} 
+				
+				// HACK: Generics
+				if (0 < (index = overload.IndexOf ("<", StringComparison.Ordinal))) {
+					overload = overload.Substring (0, index);
+				}
+				if (0 < (index = typename.IndexOf ("<", StringComparison.Ordinal))) {
+					typename = typename.Substring (0, index);
+				}
+				
+				Console.WriteLine ("Constructor: type {0}, overload {1}", typename, overload);
+				return new ParameterDataProvider (Document, info, typename, overload); 
+			} 
 			
-			string functionName = lineText.Substring (nameStart).Trim ();
-			
-			if (string.IsNullOrEmpty (functionName))
-				return null;
-			
-			return new ParameterDataProvider (Document, info, functionName);
+			int nameStart = lineText.LastIndexOfAny (allowedChars) + 1;
+			functionName = lineText.Substring (nameStart).Trim ();
+			return (string.IsNullOrEmpty (functionName)? null: new ParameterDataProvider (Document, info, functionName));
 		}
 		
 		private bool AllWhiteSpace (string lineText)

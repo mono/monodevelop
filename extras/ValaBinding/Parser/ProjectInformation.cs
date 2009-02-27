@@ -32,223 +32,504 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Threading;
+using System.Text;
+using System.Text.RegularExpressions;
 
 using MonoDevelop.Projects;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Execution;
+using MonoDevelop.Projects.Gui.Completion;
 
 namespace MonoDevelop.ValaBinding.Parser
 {
-	public class FileInformation
+	/// <summary>
+	/// Class to obtain parse information for a project
+	/// </summary>
+	public class ProjectInformation
 	{
-		protected Project project;
-		
-		protected List<Namespace> namespaces = new List<Namespace> ();
-		protected List<Function> functions = new List<Function> ();
-		protected List<Class> classes = new List<Class> ();
-		protected List<Structure> structures = new List<Structure> ();
-		protected List<Member> members = new List<Member> ();
-		protected List<Variable> variables = new List<Variable> ();
-		protected List<Macro> macros = new List<Macro> ();
-		protected List<Enumeration> enumerations = new List<Enumeration> ();
-		protected List<Enumerator> enumerators = new List<Enumerator> ();
-		protected List<Union> unions = new List<Union> ();
-		protected List<Typedef> typedefs = new List<Typedef> ();
-		protected List<Local> locals = new List<Local> ();
-		
-		private string file_name;
-		private bool is_filled = false;
-		
-		public FileInformation (Project project)
+		private ProcessWrapper p;
+		private bool vtgInstalled = false;
+		private bool checkedVtgInstalled = false;
+		private Dictionary<string,List<Function>> methods;
+		private Dictionary<string,List<CodeNode>> cache;
+		private HashSet<string> files;
+		private HashSet<string> packages;
+
+		public Project Project{ get; set; }
+
+		//// <value>
+		/// Checks whether <see cref="http://code.google.com/p/vtg/">Vala Toys for GEdit</see> 
+		/// is installed.
+		/// </value>
+		bool DepsInstalled {
+			get {
+				if (!checkedVtgInstalled) {
+					checkedVtgInstalled = true;
+					try {
+						Runtime.ProcessService.StartProcess ("vsc-shell", "--help", null, null).WaitForOutput ();
+					} catch {
+						LoggingService.LogWarning ("Cannot update Vala parser database because vsc-shell is not installed: {0}{1}", 
+						                           Environment.NewLine, "http://code.google.com/p/vtg/");
+						return false;
+					}
+					vtgInstalled = true;
+				}
+				return vtgInstalled;
+			}
+			set {
+				//don't assume that the caller is correct :-)
+				if (value)
+					checkedVtgInstalled = false; //will re-determine on next getting
+				else
+					vtgInstalled = false;
+			}
+		}
+
+		private void RestartParser ()
 		{
-			this.project = project;
-			this.file_name = null;
-		}
-		
-		public FileInformation (Project project, string filename)
+			if (null != p) {
+				lock (p) {
+					if (!p.HasExited){ p.Kill (); }
+					try {
+						p.Dispose ();
+					} catch {
+						// We don't care about anything that happens here.
+					}
+				}
+			}
+			
+			cache = new Dictionary<string,List<CodeNode>> ();
+			
+			if (DepsInstalled) {
+				p = Runtime.ProcessService.StartProcess ("vsc-shell", string.Empty, ".", (ProcessEventHandler)null, null, null, true);
+				foreach (string package in packages) {
+					AddPackage (package);
+				}
+				foreach (string file in files) {
+					AddFile (file);
+				}
+			}
+		}// RestartParser
+
+		private static Regex endOutputRegex = new Regex (@"^(\s*vsc-shell -\s*$|^\s*>)", RegexOptions.Compiled);
+		/// <summary>
+		/// Reads process output
+		/// </summary>
+		/// <returns>
+		/// A <see cref="System.String[]"/>: The lines output by the parser process
+		/// </returns>
+		private string[] ReadOutput ()
 		{
-			this.project = project;
-			this.file_name = filename;
-		}
-		
-		public void Clear ()
+			List<string> result = new List<string> ();
+			int count = 0;
+			
+			DataReceivedEventHandler gotdata = delegate(object sender, DataReceivedEventArgs e) {
+				// Console.WriteLine(e.Data);
+				lock(result){ result.Add(e.Data); }
+			};
+			
+			p.OutputDataReceived += gotdata;
+
+			for (int i=0; i<100; ++i) {
+				p.BeginOutputReadLine ();
+				Thread.Sleep (50);
+				p.CancelOutputRead ();
+				lock (result) {
+					if (count < result.Count){ --i; }
+					if (0 < result.Count && endOutputRegex.Match(result[result.Count-1]).Success) {
+						break;
+					}
+					count = result.Count;
+				}
+				p.StandardInput.WriteLine(string.Empty);
+			}
+			p.OutputDataReceived -= gotdata;
+			
+			return result.ToArray();
+		}// ReadOutput
+
+		/// <summary>
+		/// Sends a command to the parser
+		/// </summary>
+		/// <param name="command">
+		/// A <see cref="System.String"/>: The command to be sent to the parser
+		/// </param>
+		/// <param name="args">
+		/// A <see cref="System.Object[]"/>: string.Format-style arguments for command
+		/// </param>
+		/// <returns>
+		/// A <see cref="System.String[]"/>: The output from the command
+		/// </returns>
+		private string[] ParseCommand (string command, params object[] args)
 		{
-			namespaces.Clear ();
-			functions.Clear ();
-			classes.Clear ();
-			structures.Clear ();
-			members.Clear ();
-			variables.Clear ();
-			macros.Clear ();
-			enumerations.Clear ();
-			enumerators.Clear ();
-			unions.Clear ();
-			typedefs.Clear ();
-			locals.Clear ();
-		}
-		
-		public void RemoveFileInfo(string filename)
+			string[] output = new string[0];
+
+			try {
+			lock (p) {
+				// Console.WriteLine (command, args);
+				p.StandardInput.WriteLine (string.Format (command, args));
+				output =  ReadOutput ();
+			}
+			} catch (Exception e) { 
+				Console.WriteLine("{0}{1}{2}", e.Message, Environment.NewLine, e.StackTrace); 
+			}
+			
+			if (0 == output.Length) { RestartParser (); }
+			
+			return output;
+		}// ParseCommand
+
+		private ProjectInformation ()
 		{
-			namespaces.RemoveAll(delegate(Namespace item){ return item.File == filename; });
-			functions.RemoveAll(delegate(Function item){ return item.File == filename; });
-			classes.RemoveAll(delegate(Class item){ return item.File == filename; });
-			structures.RemoveAll(delegate(Structure item){ return item.File == filename; });
-			members.RemoveAll(delegate(Member item){ return item.File == filename; });
-			variables.RemoveAll(delegate(Variable item){ return item.File == filename; });
-			macros.RemoveAll(delegate(Macro item){ return item.File == filename; });
-			enumerations.RemoveAll(delegate(Enumeration item){ return item.File == filename; });
-			enumerators.RemoveAll(delegate(Enumerator item){ return item.File == filename; });
-			unions.RemoveAll(delegate(Union item){ return item.File == filename; });
-			typedefs.RemoveAll(delegate(Typedef item){ return item.File == filename; });
-			locals.RemoveAll(delegate(Local item){ return item.File == filename; });
+			files = new HashSet<string> ();
+			packages = new HashSet<string> ();
+			methods = new Dictionary<string,List<Function>> ();
+			RestartParser ();
 		}
-		
-		public IEnumerable<LanguageItem> Containers ()
+
+		public ProjectInformation (Project project): this ()
 		{
-			foreach (Namespace n in namespaces)
-				yield return n;
-			
-			foreach (Class c in classes)
-				yield return c;
-			
-			foreach (Structure s in structures)
-				yield return s;
-			
-			foreach (Enumeration e in enumerations)
-				yield return e;
-			
-			foreach (Union u in unions)
-				yield return u;
+			this.Project = project;
 		}
-		
-		// All items except macros
-		public IEnumerable<LanguageItem> AllItems ()
+
+		~ProjectInformation ()
 		{
-			foreach (Namespace n in namespaces)
-				yield return n;
-			
-			foreach (Class c in classes)
-				yield return c;
-			
-			foreach (Structure s in structures)
-				yield return s;
-			
-			foreach (Enumeration e in enumerations)
-				yield return e;
-			
-			foreach (Union u in unions)
-				yield return u;
-			
-			foreach (Function f in functions)
-				yield return f;
-			
-			foreach (Member m in members)
-				yield return m;
-			
-			foreach (Variable v in variables)
-				yield return v;
-			
-			foreach (Enumerator e in enumerators)
-				yield return e;
-			
-			foreach (Typedef t in typedefs)
-				yield return t;
+			lock (p) {
+				try {
+					p.StandardInput.WriteLine("quit");
+					p.WaitForExit (100);
+					if (!p.HasExited) {
+						p.Kill ();
+					}
+					p.Dispose ();
+				} catch {
+				}
+			}
 		}
-		
-		// Functions, fields
-		public IEnumerable<LanguageItem> InstanceMembers ()
+
+		/// <summary>
+		/// Gets the children of a given code node
+		/// </summary>
+		public IList<CodeNode> GetChildren (CodeNode parent)
 		{
-			foreach (Function f in functions)
-				yield return f;
+			IList<CodeNode> children = new List<CodeNode> ();
 			
-			foreach (Member m in members)
-				yield return m;
-		}
-		
-		public Project Project {
-			get { return project; }
-		}
-		
-		public List<Namespace> Namespaces {
-			get { return namespaces; }
-		}
-		
-		public List<Function> Functions {
-			get { return functions; }
-		}
-		
-		public List<Class> Classes {
-			get { return classes; }
-		}
-		
-		public List<Structure> Structures {
-			get { return structures; }
-		}
-		
-		public List<Member> Members {
-			get { return members; }
-		}
-		
-		public List<Variable> Variables {
-			get { return variables; }
-		}
-		
-		public List<Macro> Macros {
-			get { return macros; }
-		}
-		
-		public List<Enumeration> Enumerations {
-			get { return enumerations; }
-		}
-		
-		public List<Enumerator> Enumerators {
-			get { return enumerators; }
-		}
-		
-		public List<Union> Unions {
-			get { return unions; } 
-		}
-		
-		public List<Typedef> Typedefs {
-			get { return typedefs; }
-		}
-		
-		public List<Local> Locals {
-			get { return locals; }
-		}
-		
-		public string FileName {
-			get { return file_name; }
-			set { file_name = value; }
-		}
-		
-		public bool IsFilled {
-			get { return is_filled; }
-			set { is_filled = value; }
-		}
-	}
+			if (null == parent) {
+				string[] output = ParseCommand ("get-namespaces");
+				Match match;
+				CodeNode child;
 	
-	public class ProjectInformation : FileInformation
-	{
-//		private Globals globals;
-//		private MacroDefinitions macroDefs;
-		
-		private Dictionary<string, List<FileInformation>> includedFiles = new Dictionary<string, List<FileInformation>> ();
-		
-		public ProjectInformation (Project project) : base (project)
+				foreach (string line in output) {
+					if (null != (child = ParseType (string.Empty, line))) {
+						children.Add (child);
+					}
+				}
+			} else {
+				children = CacheCompleteType (parent.FullName, string.Empty, 0, 0, null);
+			}
+
+			return children;
+		}// GetChildren
+
+		private List<CodeNode> CacheCompleteType (string typename, string filename, int linenum, int column, ValaCompletionDataList results) 
 		{
-//			globals = new Globals (project);
-//			macroDefs = new MacroDefinitions (project);
-		}
+			bool cached;
+			List<CodeNode> completion;
+			
+			lock (cache){ cached = cache.TryGetValue (typename, out completion); }
+			
+			if (cached) {
+				AddResults (completion, results);
+				ThreadPool.QueueUserWorkItem (delegate{
+					List<CodeNode> newcompletion = CompleteType (typename, filename, linenum, column, null);
+					lock (cache){ cache[typename] = newcompletion; }
+				});
+			} else {
+				completion = CompleteType (typename, filename, linenum, column, results);
+				lock (cache){ cache[typename] = completion; }
+			}
+			
+			return completion;
+		}// CacheCompleteType
 		
-//		public Globals Globals {
-//			get { return globals; }
-//		}
-//		
-//		public MacroDefinitions MacroDefinitions {
-//			get { return macroDefs; }
-//		}
-		
-		public Dictionary<string, List<FileInformation>> IncludedFiles {
-			get { return includedFiles; }
+		/// <summary>
+		/// Gets the completion list for a given type name in a given file
+		/// </summary>
+		private List<CodeNode> CompleteType (string typename, string filename, int linenum, int column, ValaCompletionDataList results)
+		{
+			string[] output = ParseCommand ("complete {0} {1}", typename, filename);
+			List<CodeNode> children = new List<CodeNode> ();
+			CodeNode child;
+
+			foreach (string line in output) {
+				if (null != (child = ParseType (typename, line))) {
+					children.Add (child);
+					if (null != results) {
+						CompletionData datum = new CompletionData (child);
+						Gtk.Application.Invoke (delegate(object sender, EventArgs args){
+							results.Add (datum);
+							results.IsChanging = true;
+						});
+					}
+				}
+			}
+			
+			if (null != results) {
+				Gtk.Application.Invoke (delegate(object sender, EventArgs args){
+					results.IsChanging = false;
+				});
+			}
+
+			return children;
 		}
+
+		/// <summary>
+		/// Adds a file to be parsed
+		/// </summary>
+		public void AddFile (string filename)
+		{
+			lock (files){ files.Add (filename); }
+			ParseCommand ("add-source {0}", filename);
+		}// AddFile
+
+		/// <summary>
+		/// Removes a file from the parse list
+		/// </summary>
+		public void RemoveFile (string filename)
+		{
+			lock (files){ files.Remove (filename); }
+			ParseCommand ("remove-source {0}", filename);
+		}// RemoveFile
+
+		/// <summary>
+		/// Adds a package to be parsed
+		/// </summary>
+		public void AddPackage (string packagename)
+		{
+			lock (packages){ packages.Add (packagename); }
+			ParseCommand ("add-package {0}", packagename);
+		}// AddPackage
+
+		/// <summary>
+		/// Tells the parser to reparse
+		/// </summary>
+		public void Reparse ()
+		{
+			ParseCommand ("reparse");
+		}// Reparse
+
+		private static Regex typeNameRegex = new Regex (@"vsc-shell - typename for [^:]+: (?<type>[^\s]+)\s*$", RegexOptions.Compiled);
+		/// <summary>
+		/// Gets the completion list for a given symbol at a given location
+		/// </summary>
+		public void Complete (string symbol, string filename, int line, int column, ValaCompletionDataList results)
+		{
+			ThreadPool.QueueUserWorkItem (delegate{
+				string expressionType = GetExpressionType (symbol, filename, line, column);
+				CacheCompleteType (expressionType, filename, line, column, results);
+			});
+		}// Complete
+
+		/// <summary>
+		/// Get the type of a given expression
+		/// </summary>
+		public string GetExpressionType (string symbol, string filename, int line, int column)
+		{
+			AddFile (filename);
+			string[] responses = ParseCommand ("type-name {0} {1} {2} {3}", symbol, filename, line, column);
+			Match match;
+			
+			foreach (string response in responses) {
+				match = typeNameRegex.Match (response);
+				if (match.Success) {
+					return match.Groups["type"].Value;
+				}
+			}
+
+			return symbol;
+		}// GetExpressionType
+		
+		/// <summary>
+		/// Get overloads for a method
+		/// </summary>
+		public List<Function> GetOverloads (string name)
+		{
+			lock (methods) {
+				return (methods.ContainsKey (name))? methods[name]: new List<Function> ();
+			}
+		}// GetOverloads
+		
+		/// <summary>
+		/// Get constructors for a given type
+		/// </summary>
+		public List<Function> GetConstructorsForType (string typename, string filename, int line, int column, ValaCompletionDataList results)
+		{
+			string[] tokens = typename.Split ('.');
+			string baseTypeName = tokens[tokens.Length-1];
+			
+			List<Function> constructors = CacheCompleteType (typename, filename, line, column, null).FindAll (delegate (CodeNode node){ 
+				return ("method" == node.NodeType && 
+				        (baseTypeName == node.Name || node.Name.StartsWith (baseTypeName + ".")));
+			}).ConvertAll<Function> (delegate (CodeNode node){ 
+				if (null != results) {
+					CompletionData datum = new CompletionData (node);
+					Gtk.Application.Invoke (delegate (object sender, EventArgs args){
+						results.Add (datum);
+						results.IsChanging = true;
+					});
+				}
+				return node as Function; 
+			});
+			
+			if (null != results) {
+				Gtk.Application.Invoke (delegate (object sender, EventArgs args){
+					results.IsChanging = false;
+				});
+			}
+			
+			return constructors;
+		}// GetConstructorsForType
+		
+		/// <summary>
+		/// Get constructors for a given expression
+		/// </summary>
+		public List<Function> GetConstructorsForExpression (string expression, string filename, int line, int column, ValaCompletionDataList results)
+		{
+			string typename = GetExpressionType (expression, filename, line, column);
+			return GetConstructorsForType (typename, filename, line, column, results);
+		}// GetConstructorsForExpression
+		
+		/// <summary>
+		/// Get types visible from a given source location
+		/// </summary>
+		public void GetTypesVisibleFrom (string filename, int line, int column, ValaCompletionDataList results)
+		{
+			results.IsChanging = true;
+			
+			ThreadPool.QueueUserWorkItem (delegate{
+				string[] output = ParseCommand ("visible-types {0} {1} {2}", filename, line, column);
+				CodeNode child;
+				
+				foreach (string outputline in output) {
+					if (null != (child = ParseType (string.Empty, outputline))) {
+						CompletionData datum = new CompletionData (child);
+						Gtk.Application.Invoke (delegate (object sender, EventArgs args){
+							results.Add (datum);
+							results.IsChanging = true;
+						});
+					}
+				}
+				Gtk.Application.Invoke (delegate (object sender, EventArgs args){
+					results.IsChanging = false;
+				});
+			});
+		}// GetTypesVisibleFrom
+		
+		/// <summary>
+		/// Get symbols visible from a given source location
+		/// </summary>
+		public void GetSymbolsVisibleFrom (string filename, int line, int column, ValaCompletionDataList results) 
+		{
+			results.IsChanging = true;
+			
+			ThreadPool.QueueUserWorkItem (delegate{
+				string[] output = ParseCommand ("visible-symbols {0} {1} {2}", filename, line, column);
+				CodeNode child;
+				
+				foreach (string outputline in output) {
+					if (null != (child = ParseType (string.Empty, outputline))) {
+						CompletionData datum = new CompletionData (child);
+						Gtk.Application.Invoke (delegate (object sender, EventArgs args){
+							results.Add (datum);
+							results.IsChanging = true;
+						});
+					}
+				}
+				Gtk.Application.Invoke (delegate (object sender, EventArgs args){
+					results.IsChanging = false;
+				});
+			});
+		}// GetSymbolsVisibleFrom
+		
+		private static Regex completionRegex = new Regex (@"^\s*vsc-shell - (?<type>[^:]+):(?<name>[^\s:]+)(:(?<modifier>[^;]*);(?<static>[^:]*))?(:(?<returntype>[^;]*);(?<ownership>[^:]*))?(:(?<args>[^:]*);)?", RegexOptions.Compiled);
+		/// <summary>
+		/// Parse out a CodeNode from a vsc-shell description string
+		/// </summary>
+		private CodeNode ParseType (string typename, string typeDescription)
+		{
+			Match match = completionRegex.Match (typeDescription);
+			
+			if (match.Success) {
+				string childType = match.Groups["type"].Value;
+				string name = match.Groups["name"].Value;
+				AccessModifier access = AccessModifier.Public;
+				string[] argtokens = typename.Split ('.');
+				string baseTypeName = argtokens[argtokens.Length-1];
+				
+				switch (match.Groups["modifier"].Value) {
+				case "private":
+					access = AccessModifier.Private;
+					break;
+				case "protected":
+					access = AccessModifier.Protected;
+					break;
+				case "internal":
+					access = AccessModifier.Internal;
+					break;
+				default:
+					access = AccessModifier.Public;
+					break;
+				}
+				
+				switch (childType) {
+				case "method":
+					List<KeyValuePair<string,string>> paramlist = new List<KeyValuePair<string,string>>();
+					string returnType = (match.Groups["returntype"].Success)? match.Groups["returntype"].Value: string.Empty;
+					if (name == baseTypeName || name.StartsWith (baseTypeName + ".")) {
+						returnType = string.Empty;
+					}
+					
+					if (match.Groups["args"].Success) {
+						StringBuilder args = new StringBuilder ();
+						foreach (string arg in match.Groups["args"].Value.Split (';')) {
+							argtokens = arg.Split (',');
+							if (3 == argtokens.Length) {
+								paramlist.Add (new KeyValuePair<string,string> (argtokens[0], string.Format("{0} {1}", argtokens[2], argtokens[1])));
+							}
+						}
+					}
+					Function function = new Function (childType, name, typename, access, returnType, paramlist.ToArray ());
+					if (!methods.ContainsKey (function.Name)){ methods[function.Name] = new List<Function> (); }
+					methods[function.Name].Add (function);
+					return function;
+					break;
+				default:
+					return new CodeNode (childType, name, typename, access);
+					break;
+				}
+			}
+			
+			return null;
+		}// ParseType
+		
+		/// <summary>
+		/// Add results to a ValaCompletionDataList on the GUI thread
+		/// </summary>
+		private static void AddResults (IList<CodeNode> list, ValaCompletionDataList results) 
+		{
+			if (null == results){ return; }
+			
+			Gtk.Application.Invoke (delegate(object sender, EventArgs args){
+				results.IsChanging = true;
+				foreach (CodeNode node in list) {
+					results.Add (new CompletionData (node));
+					// results.IsChanging = true;
+				}
+				results.IsChanging = false;
+			});
+		}// AddResults
 	}
 }

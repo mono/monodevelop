@@ -39,14 +39,14 @@ namespace MonoDevelop.ValaBinding.Navigation
 	
 	public class LanguageItemEventArgs : EventArgs
 	{
-		LanguageItem item;
+		CodeNode item;
 		
-		public LanguageItemEventArgs (LanguageItem item)
+		public LanguageItemEventArgs (CodeNode item)
 		{
 			this.item = item;
 		}
 		
-		public LanguageItem Item {
+		public CodeNode Item {
 			get { return item; }
 		}
 	}

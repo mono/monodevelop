@@ -4,8 +4,7 @@
 // Authors:
 //  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com> 
 //
-// Copyright (C) 2008 Levi Bard
-// Based on CBinding by Marcos David Marin Amador <MarcosMarin@gmail.com>
+// Copyright (C) 2009 Levi Bard
 //
 // This source code is licenced under The MIT License:
 //
@@ -31,103 +30,38 @@
 
 
 using System;
-
-using MonoDevelop.Projects;
+using System.Collections.Generic;
+using System.Text;
 
 namespace MonoDevelop.ValaBinding.Parser
 {
-	public class Function : LanguageItem
+	/// <summary>
+	/// Representation of a Vala function
+	/// </summary>
+	public class Function: CodeNode
 	{
-		private string[] parameters;
-		private string signature;
-		private bool is_const = false;
+		public string ReturnType{ get; protected set; }
+		public KeyValuePair<string,string>[] Parameters{ get; protected set; }
 		
-		public Function (Tag tag, Project project, string ctags_output) : base (tag, project)
-		{
-			signature = tag.Signature;
-			ParseSignature (tag.Signature);
-			
-			if (tag.Kind == TagKind.Prototype) {
-				Access = tag.Access;
-				if (GetNamespace (tag, ctags_output)) return;
-				if (GetClass (tag, ctags_output)) return;
-				if (GetStructure (tag, ctags_output)) return;
-				if (GetUnion (tag, ctags_output)) return;
-			} else {
-				// If it is not a prototype tag, we attempt to get the prototype tag
-				// we need the prototype tag because the implementation tag
-				// marks the belonging namespace as a if it were a class
-				// and it does not have the access field.
-				Tag prototypeTag = TagDatabaseManager.Instance.FindTag (Name, TagKind.Prototype, ctags_output);
-				
-				if (prototypeTag == null) {
-					// It does not have a prototype tag which means it is inline
-					// and when it is inline it does have all the info we need
-					
-					if (GetNamespace (tag, ctags_output)) return;
-					if (GetClass (tag, ctags_output)) return;
-					if (GetStructure (tag, ctags_output)) return;
-					if (GetUnion (tag, ctags_output)) return;
-					
-					return;
+		public override string Description {
+			get {
+				StringBuilder sb = new StringBuilder ();
+				sb.AppendFormat ("{0} {1} (", ReturnType, Name);
+				foreach (KeyValuePair<string,string> param in Parameters) {
+					sb.AppendFormat ("{0} {1},", param.Value, param.Key);
 				}
+				if (',' == sb[sb.Length-1]){ sb = sb.Remove (sb.Length-1, 1); }
+				sb.Append(")");
 				
-				// we need to re-get the access
-				Access = prototypeTag.Access;
-				
-				if (GetNamespace (prototypeTag, ctags_output)) return;
-				if (GetClass (prototypeTag, ctags_output)) return;
-				if (GetStructure (prototypeTag, ctags_output)) return;
-				if (GetUnion (prototypeTag, ctags_output)) return;
+				return sb.ToString ();
 			}
 		}
 		
-		private void ParseSignature (string signature)
+		public Function (string type, string name, string parentname, AccessModifier access, string returnType, KeyValuePair<string,string>[] parameters): 
+			base (type, name, parentname, access)
 		{
-			if (null == signature) return;
-			
-			string sig = signature;
-			
-			if (signature.EndsWith ("const")) {
-				is_const = true;
-				sig = signature.Substring (0, signature.Length - 6);
-				sig = sig.Substring (1, sig.Length - 2);
-			} else {
-				sig = signature.Substring (1, signature.Length - 2);
-			}
-			
-			parameters = sig.Split (',');
-			
-			for (int i = 0; i < parameters.Length; i++)
-				parameters[i] = parameters[i].Trim ();
-		}
-		
-		public string[] Parameters {
-			get { return parameters; }
-		}
-		
-		public string Signature {
-			get { return signature; }
-		}
-		
-		public bool IsConst {
-			get { return is_const; }
-		}
-		
-		public override bool Equals (object o)
-		{
-			Function other = o as Function;
-			
-			return (other != null &&
-			    FullName == other.FullName &&
-			    LanguageItem.Equals(Parent, other.Parent) &&
-			    Project.Equals(other.Project) &&
-				Signature == other.Signature);
-		}
-		
-		public override int GetHashCode ()
-		{
-			return base.GetHashCode () + parameters.GetHashCode ();
+			ReturnType = returnType;
+			Parameters = parameters;
 		}
 	}
 }

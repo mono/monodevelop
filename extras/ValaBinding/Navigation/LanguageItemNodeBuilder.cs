@@ -1,11 +1,10 @@
 //
-// FunctionNodeBuilder.cs
+// LanguageItemNodeBuilder.cs
 //
 // Authors:
-//   Marcos David Marin Amador <MarcosMarin@gmail.com>
+//  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com> 
 //
-// Copyright (C) 2007 Marcos David Marin Amador
-//
+// Copyright (C) 2009 Levi Bard
 //
 // This source code is licenced under The MIT License:
 //
@@ -30,7 +29,7 @@
 //
 
 using System;
-using System.IO;
+using System.Collections.Generic;
 
 using Mono.Addins;
 
@@ -44,10 +43,23 @@ using MonoDevelop.ValaBinding.Parser;
 
 namespace MonoDevelop.ValaBinding.Navigation
 {
-	public class FunctionNodeBuilder : TypeNodeBuilder
+	/// <summary>
+	/// Class pad node builder for all Vala language items
+	/// </summary>
+	public class LanguageItemNodeBuilder: TypeNodeBuilder
 	{
+		//// <value>
+		/// Container types
+		/// </value>
+		private static string[] containers = { "namespaces", "class", "struct", "enums" };
+
+		//// <value>
+		/// Sort order for nodes
+		/// </value>
+		private static string[] types = { "namespaces", "class", "struct", "property", "method", "signal", "field", "constants", "enums", "other" };
+		
 		public override Type NodeDataType {
-			get { return typeof(Function); }
+			get { return typeof(CodeNode); }
 		}
 		
 		public override Type CommandHandlerType {
@@ -56,7 +68,7 @@ namespace MonoDevelop.ValaBinding.Navigation
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			return ((Function)dataObject).Name;
+			return ((CodeNode)dataObject).Name;
 		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder,
@@ -65,35 +77,48 @@ namespace MonoDevelop.ValaBinding.Navigation
 		                                ref Gdk.Pixbuf icon,
 		                                ref Gdk.Pixbuf closedIcon)
 		{
-			Function f = (Function)dataObject;
-				
-			label = f.Name;
-			
-			switch (f.Access)
-			{
-			case AccessModifier.Public:
-				icon = Context.GetIcon (Stock.Method);
-				break;
-			case AccessModifier.Protected:
-				icon = Context.GetIcon (Stock.ProtectedMethod);
-				break;
-			case AccessModifier.Private:
-				icon = Context.GetIcon (Stock.PrivateMethod);
-				break;
-			}
+			CodeNode c = (CodeNode)dataObject;
+			label = c.Name;
+			icon = Context.GetIcon (c.Icon);
 		}
 		
+		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
+		{
+			ValaProject p = treeBuilder.GetParentDataItem (typeof(ValaProject), false) as ValaProject;
+			if (p == null){ return; }
+			
+			ProjectInformation info = ProjectInformationManager.Instance.Get (p);
+			
+			bool publicOnly = treeBuilder.Options["PublicApiOnly"];
+			CodeNode thisCodeNode = (CodeNode)dataObject;
+
+			foreach (CodeNode child in info.GetChildren (thisCodeNode)) {
+				treeBuilder.AddChild (child);
+			}
+		}
+
+		/// <summary>
+		/// Show all container types as having child nodes; 
+		/// only check on expansion
+		/// </summary>
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			return false;
+			return (0 <= Array.IndexOf<string> (containers, ((CodeNode)dataObject).NodeType));
 		}
 		
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
 		{
-			if (otherNode.DataItem is Typedef)
-				return 1;
-			else
-				return -1;
+			if (null != thisNode && null != otherNode) {
+				CodeNode thisCN = thisNode.DataItem as CodeNode,
+				         otherCN = otherNode.DataItem as CodeNode;
+	
+				if (null != thisCN && null != otherCN) {
+					return Array.IndexOf<string>(types, thisCN.NodeType) - 
+					       Array.IndexOf<string>(types, otherCN.NodeType);
+				}
+			}
+
+			return -1;
 		}
 	}
 }

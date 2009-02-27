@@ -33,40 +33,15 @@ FILES =  \
 	Gui/OutputOptionsPanel.cs \
 	Gui/PackageDetails.cs \
 	Gui/ValaTextEditorExtension.cs \
-	Navigation/ClassNodeBuilder.cs \
 	Navigation/ClassPadEventArgs.cs \
-	Navigation/EnumerationNodeBuilder.cs \
-	Navigation/EnumeratorNodeBuilder.cs \
-	Navigation/FunctionNodeBuilder.cs \
-	Navigation/GlobalsNodeBuilder.cs \
 	Navigation/LanguageItemCommandHandler.cs \
 	Navigation/LanguageItemEventArgs.cs \
-	Navigation/MacroDefinitionsNodeBuilder.cs \
-	Navigation/MacroNodeBuilder.cs \
-	Navigation/MemberNodeBuilder.cs \
-	Navigation/NamespaceNodeBuilder.cs \
+	Navigation/LanguageItemNodeBuilder.cs \
 	Navigation/ProjectNodeBuilderExtension.cs \
-	Navigation/StructureNodeBuilder.cs \
-	Navigation/TypedefNodeBuilder.cs \
-	Navigation/UnionNodeBuilder.cs \
-	Navigation/VariableNodeBuilder.cs \
-	Parser/Class.cs \
-	Parser/Enumeration.cs \
-	Parser/Enumerator.cs \
+	Parser/CodeNode.cs \
 	Parser/Function.cs \
-	Parser/LanguageItem.cs \
-	Parser/Local.cs \
-	Parser/Macro.cs \
-	Parser/Member.cs \
-	Parser/Namespace.cs \
 	Parser/ProjectInformation.cs \
 	Parser/ProjectInformationManager.cs \
-	Parser/Structure.cs \
-	Parser/Tag.cs \
-	Parser/TagDatabaseManager.cs \
-	Parser/Typedef.cs \
-	Parser/Union.cs \
-	Parser/Variable.cs \
 	Project/ProjectPackage.cs \
 	Project/ProjectPackageCollection.cs \
 	Project/ProjectPackageEventArgs.cs \

@@ -1,5 +1,5 @@
 //
-// FunctionNodeBuilder.cs
+// LanguageItemCommandHandler.cs
 //
 // Authors:
 //   Marcos David Marin Amador <MarcosMarin@gmail.com>
@@ -48,25 +48,24 @@ namespace MonoDevelop.ValaBinding.Navigation
 	{
 		public override void ActivateItem ()
 		{
-			LanguageItem item = (LanguageItem)CurrentNode.DataItem;
-			
-			Document doc = IdeApp.Workbench.OpenDocument (item.File);
-			
-			int lineNum = 0;
-			string line;
-			bool isMacro = item is Macro;
-			StringReader reader = new StringReader (doc.TextEditor.Text);
-			
-			while ((line = reader.ReadLine ()) != null) {
-				lineNum++;
-				
-				if (line.Equals (item.Pattern) || (isMacro && line.StartsWith (item.Pattern))) {
-					doc.TextEditor.JumpTo (lineNum, line.Length + 1);
-					break;
-				}
-			}
-			
-			reader.Close ();
+//			CodeNode item = (CodeNode)CurrentNode.DataItem;
+//			
+//			Document doc = IdeApp.Workbench.OpenDocument (item.File);
+//			
+//			int lineNum = 0;
+//			string line;
+//			StringReader reader = new StringReader (doc.TextEditor.Text);
+//			
+//			while ((line = reader.ReadLine ()) != null) {
+//				lineNum++;
+//				
+//				if (line.Equals (item.Pattern)) {
+//					doc.TextEditor.JumpTo (lineNum, line.Length + 1);
+//					break;
+//				}
+//			}
+//			
+//			reader.Close ();
 		}
 	}
 }

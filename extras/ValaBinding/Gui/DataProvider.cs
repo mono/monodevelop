@@ -33,6 +33,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
@@ -45,30 +46,64 @@ namespace MonoDevelop.ValaBinding
 	public class ParameterDataProvider : IParameterDataProvider
 	{
 		private TextEditor editor;
-		private List<Function> functions = new List<Function> ();
+		private IList<Function> functions;
+		private string functionName;
+		private string returnType;
+		private ProjectInformation info;
 		
+		private static Regex identifierRegex = new Regex(@"^[^\w\d]*(?<identifier>\w[\w\d\.<>]*)", RegexOptions.Compiled);
 		public ParameterDataProvider (Document document, ProjectInformation info, string functionName)
 		{
 			this.editor = document.TextEditor;
+			this.functionName = functionName;
+			this.info = info;
+
+			int lastDot = functionName.LastIndexOf (".", StringComparison.OrdinalIgnoreCase);
+			string instancename = (0 <= lastDot)? functionName.Substring (0, lastDot): "this";
 			
-			foreach (Function f in info.Functions) {
-				if (f.Name == functionName) {
-					functions.Add (f);
+			Match match = identifierRegex.Match (instancename);
+			if (match.Success && match.Groups["identifier"].Success) {
+				instancename = match.Groups["identifier"].Value;
+			}
+			
+			string typename = info.GetExpressionType (instancename, document.FileName, editor.CursorLine, editor.CursorColumn); // bottleneck
+			info.Complete(typename, document.FileName, editor.CursorLine, editor.CursorColumn, null);
+			string functionBaseName = (0 <= lastDot)? functionName.Substring (lastDot+1): functionName;
+			
+			match = identifierRegex.Match (functionBaseName);
+			if (match.Success && match.Groups["identifier"].Success) {
+				functionBaseName = match.Groups["identifier"].Value;
+			}
+			IList<Function> myfunctions = info.GetOverloads (functionBaseName); // bottleneck
+			
+			foreach (Function function in myfunctions) {
+				if (string.Format("{0}.{1}", typename, functionBaseName).Equals (function.FullName, StringComparison.Ordinal)) {
+					functions = new List<Function>(new Function[]{function});
+					break;
 				}
 			}
 			
-			string currentFile = document.FileName;
+			if (null == functions){ functions = myfunctions; }
+		}// member function constructor
+		
+		public ParameterDataProvider (Document document, ProjectInformation info, string typename, string constructorOverload)
+		{
+			this.functionName = constructorOverload;
+			this.editor = document.TextEditor;
+			this.info = info;
 			
-			if (info.IncludedFiles.ContainsKey (currentFile)) {
-				foreach (FileInformation fi in info.IncludedFiles[currentFile]) {
-					foreach (Function f in fi.Functions) {
-						if (f.Name == functionName) {
-							functions.Add (f);
-						}
+			List<Function> myfunctions = info.GetConstructorsForType (typename, document.FileName, editor.CursorLine, editor.CursorColumn, null); // bottleneck
+			if (0 < myfunctions.Count) {
+				foreach (Function function in myfunctions) {
+					if (functionName.Equals (function.Name, StringComparison.Ordinal)) {
+						functions = new List<Function>(new Function[]{function});
+						return;
 					}
 				}
 			}
-		}
+			
+			functions = myfunctions;
+		}// constructor constructor
 		
 		// Returns the number of methods
 		public int OverloadCount {
@@ -84,18 +119,18 @@ namespace MonoDevelop.ValaBinding
 			int cursor = editor.CursorPosition;
 			int i = ctx.TriggerOffset;
 			
-			if (editor.GetCharAt (i) == ')')
-				return -1;
+//			if (editor.GetCharAt (i) == ')')
+//				return -1;
 			
 			if (i > cursor)
 				return -1;
 			else if (i == cursor)
-				return 0;
+				return 1;
 			
 			int parameterIndex = 1;
 			
 			while (i++ < cursor) {
-				char ch = editor.GetCharAt (i);
+				char ch = editor.GetCharAt (i-1);
 				if (ch == ',')
 					parameterIndex++;
 				else if (ch == ')')
@@ -109,21 +144,25 @@ namespace MonoDevelop.ValaBinding
 		// in the parameter information window.
 		public string GetMethodMarkup (int overload, string[] parameterMarkup)
 		{
-			Function function = functions[overload];
 			string paramTxt = string.Join (", ", parameterMarkup);
+			Function function = functions[overload];
 			
 			int len = function.FullName.LastIndexOf (".");
 			string prename = null;
 			
 			if (len > 0)
-				prename = function.FullName.Substring (0, len + 2);
+				prename = function.FullName.Substring (0, len + 1);
 			
 			string cons = string.Empty;
 			
-			if (function.IsConst)
-				cons = " const";
-			
-			return prename + "<b>" + function.Name + "</b>" + " (" + paramTxt + ")" + cons;
+//			if (function.IsConst)
+//				cons = " const";
+
+			return string.Format ("{2} {3}<b>{0}</b>({1})", GLib.Markup.EscapeText (function.Name), 
+			                                                paramTxt, 
+			                                                GLib.Markup.EscapeText (function.ReturnType), 
+			                                                GLib.Markup.EscapeText (prename));
+			// return prename + "<b>" + function.Name + "</b>" + " (" + paramTxt + ")" + cons;
 		}
 		
 		// Returns the text to use to represent the specified parameter
@@ -131,7 +170,7 @@ namespace MonoDevelop.ValaBinding
 		{
 			Function function = functions[overload];
 			
-			return function.Parameters[paramIndex];
+			return GLib.Markup.EscapeText (string.Format ("{1} {0}", function.Parameters[paramIndex].Key, function.Parameters[paramIndex].Value));
 		}
 		
 		// Returns the number of parameters of the specified method
@@ -148,36 +187,12 @@ namespace MonoDevelop.ValaBinding
 		private string description;
 		private string completion_string;
 		
-		public CompletionData (LanguageItem item)
+		public CompletionData (CodeNode item)
 		{
-			if (item is Class)
-				image = Stock.Class;
-			else if (item is Structure)
-				image = Stock.Struct;
-			else if (item is Union)
-				image = "md-union";
-			else if (item is Enumeration)
-				image = Stock.Enum;
-			else if (item is Enumerator)
-				image = Stock.Literal;
-			else if (item is Function)
-				image = Stock.Method;
-			else if (item is Namespace)
-				image = Stock.NameSpace;
-			else if (item is Typedef)
-				image = Stock.Interface;
-			else if (item is Member)
-				image = Stock.Field;
-			else if (item is Variable)
-				image = Stock.Field;
-			else if (item is Macro)
-				image = Stock.Literal;
-			else
-				image = Stock.Literal;
-			
 			this.text = item.Name;
 			this.completion_string = item.Name;
-			this.description = string.Empty;
+			this.description = item.Description;
+			this.image = item.Icon;
 		}
 		
 		public string Icon {
@@ -201,4 +216,50 @@ namespace MonoDevelop.ValaBinding
 		}
 	}
 
+	/// <summary>
+	/// Mutable completion data list for asynchronous parsing
+	/// </summary>
+	public class ValaCompletionDataList: CompletionDataList, IMutableCompletionDataList
+	{
+		public ValaCompletionDataList (): base ()
+		{
+		}
+		
+		#region IMutableCompletionDataList implementation 
+		
+		public event EventHandler Changed;
+		public event EventHandler Changing;
+		
+		protected virtual void OnChanged (object sender, EventArgs args)
+		{
+			if (null != Changed){ Changed (sender, args); }
+		}// OnChanged
+		
+		protected virtual void OnChanging (object sender, EventArgs args)
+		{
+			if (null != Changing){ Changing (sender, args); }
+		}// OnChanging
+		
+		public virtual bool IsChanging
+		{
+			get{ return isChanging; }
+			internal set {
+				isChanging = value;
+				if (value) {
+					OnChanging (this, new EventArgs ());
+				} else {
+					OnChanged (this, new EventArgs ());
+				}
+			}
+		}
+		protected bool isChanging;
+		
+		public void Dispose ()
+		{
+		}
+		
+		#endregion 
+		
+
+	}// ValaCompletionDataList
 }

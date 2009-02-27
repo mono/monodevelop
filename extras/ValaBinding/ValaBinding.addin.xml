@@ -108,19 +108,7 @@
 	
 	<Extension path = "/MonoDevelop/Ide/Pads/ClassPad">
 		<NodeBuilder id = "MonoDevelop.ValaBinding.Navigation.ProjectNodeBuilderExtension" class = "MonoDevelop.ValaBinding.Navigation.ProjectNodeBuilderExtension"/>
-		<NodeBuilder id = "MonoDevelop.ValaBinding.Navigation.NamespaceNodeBuilder" class = "MonoDevelop.ValaBinding.Navigation.NamespaceNodeBuilder"/>
-		<NodeBuilder id = "MonoDevelop.ValaBinding.Navigation.FunctionNodeBuilder" class = "MonoDevelop.ValaBinding.Navigation.FunctionNodeBuilder"/>
-		<NodeBuilder id = "MonoDevelop.ValaBinding.Navigation.GlobalsNodeBuilder" class = "MonoDevelop.ValaBinding.Navigation.GlobalsNodeBuilder"/>
-		<NodeBuilder id = "MonoDevelop.ValaBinding.Navigation.ClassNodeBuilder" class = "MonoDevelop.ValaBinding.Navigation.ClassNodeBuilder"/>
-		<NodeBuilder id = "MonoDevelop.ValaBinding.Navigation.StructureNodeBuilder" class = "MonoDevelop.ValaBinding.Navigation.StructureNodeBuilder"/>
-		<NodeBuilder id = "MonoDevelop.ValaBinding.Navigation.MemberNodeBuilder" class = "MonoDevelop.ValaBinding.Navigation.MemberNodeBuilder"/>
-		<NodeBuilder id = "MonoDevelop.ValaBinding.Navigation.VariableNodeBuilder" class = "MonoDevelop.ValaBinding.Navigation.VariableNodeBuilder"/>
-		<NodeBuilder id = "MonoDevelop.ValaBinding.Navigation.MacroDefinitionsNodeBuilder" class = "MonoDevelop.ValaBinding.Navigation.MacroDefinitionsNodeBuilder"/>
-		<NodeBuilder id = "MonoDevelop.ValaBinding.Navigation.MacroNodeBuilder" class = "MonoDevelop.ValaBinding.Navigation.MacroNodeBuilder"/>
-		<NodeBuilder id = "MonoDevelop.ValaBinding.Navigation.EnumerationNodeBuilder" class = "MonoDevelop.ValaBinding.Navigation.EnumerationNodeBuilder"/>
-		<NodeBuilder id = "MonoDevelop.ValaBinding.Navigation.EnumeratorNodeBuilder" class = "MonoDevelop.ValaBinding.Navigation.EnumeratorNodeBuilder"/>
-		<NodeBuilder id = "MonoDevelop.ValaBinding.Navigation.UnionNodeBuilder" class = "MonoDevelop.ValaBinding.Navigation.UnionNodeBuilder"/>
-		<NodeBuilder id = "MonoDevelop.ValaBinding.Navigation.TypedefNodeBuilder" class = "MonoDevelop.ValaBinding.Navigation.TypedefNodeBuilder"/>
+		<NodeBuilder id = "MonoDevelop.ValaBinding.Navigation.LanguageItemNodeBuilder" class = "MonoDevelop.ValaBinding.Navigation.LanguageItemNodeBuilder"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/Commands">

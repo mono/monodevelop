@@ -80,6 +80,17 @@ PKG_CHECK_MODULES(GCONF_SHARP, gconf-sharp-2.0 >= $GTKSHARP_REQUIRED_VERSION, [g
 AC_SUBST(GCONF_SHARP_LIBS)
 AM_CONDITIONAL(HAVE_GCONF_SHARP, test x$gconf_sharp = xyes)
 
+AC_CHECK_PROG(VSCSHELL, vsc-shell, [vsc-shell])
+AC_SUBST(VSCSHELL)
+
+if test x$VSCSHELL = x; then
+	echo ""
+	echo "Vsc-shell is required for Vala code completion."
+	echo "Vsc-shell is part of the VTG package, available from: "
+	echo "http://code.google.com/p/vtg/"
+	echo ""
+fi
+
 gtksharp_prefix="`$PKG_CONFIG --variable=prefix gtk-sharp-2.0`"
 AC_SUBST(gtksharp_prefix)
 

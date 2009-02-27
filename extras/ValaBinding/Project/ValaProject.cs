@@ -377,8 +377,9 @@ namespace MonoDevelop.ValaBinding
 			set {
 				packages = value;
 				packages.Project = this;
+				ProjectInformation pi = ProjectInformationManager.Instance.Get (this);
 				foreach(ProjectPackage p in packages) {
-					TagDatabaseManager.Instance.UpdateFileTags(this, p.File);
+					if (!p.IsProject){ pi.AddPackage (p.Name); }
 				}
 			}
 		}
@@ -393,21 +394,20 @@ namespace MonoDevelop.ValaBinding
 			}
 			
 			if (e.ProjectFile.BuildAction == BuildAction.Compile)
-				TagDatabaseManager.Instance.UpdateFileTags (this, e.ProjectFile.Name);
+				ProjectInformationManager.Instance.Get (this).AddFile (e.ProjectFile.FilePath);
 		}
 		
 		protected override void OnFileChangedInProject (ProjectFileEventArgs e)
 		{
 			base.OnFileChangedInProject (e);
-			
-			TagDatabaseManager.Instance.UpdateFileTags (this, e.ProjectFile.Name);
+//			ProjectInformationManager.Instance.Get (this).Reparse ();
+			ProjectInformationManager.Instance.Get (this).AddFile (e.ProjectFile.FilePath);
 		}
 		
 		protected override void OnFileRemovedFromProject (ProjectFileEventArgs e)
 		{
 			base.OnFileRemovedFromProject(e);
-			
-			TagDatabaseManager.Instance.RemoveFileInfo (this, e.ProjectFile.Name);
+			ProjectInformationManager.Instance.Get (this).RemoveFile (e.ProjectFile.FilePath);
 		}
 		
 		private static void OnEntryAddedToCombine (object sender, SolutionItemEventArgs e)
@@ -417,10 +417,10 @@ namespace MonoDevelop.ValaBinding
 			if (p == null)
 				return;
 			
-			foreach (ProjectFile f in p.Files)
-				TagDatabaseManager.Instance.UpdateFileTags (p, f.Name);
 			foreach (ProjectPackage package in p.Packages)
-				TagDatabaseManager.Instance.UpdateFileTags (p, package.File);
+				if (!package.IsProject){ ProjectInformationManager.Instance.Get (p).AddPackage (package.Name); }
+			foreach (ProjectFile f in p.Files)
+				ProjectInformationManager.Instance.Get (p).AddFile (f.FilePath);
 		}
 		
 		internal void NotifyPackageRemovedFromProject (ProjectPackage package)
@@ -428,7 +428,6 @@ namespace MonoDevelop.ValaBinding
 			if (null != PackageRemovedFromProject) {
 				PackageRemovedFromProject (this, new ProjectPackageEventArgs (this, package));
 			}
-			TagDatabaseManager.Instance.RemoveFileInfo(this, package.File);
 		}
 		
 		internal void NotifyPackageAddedToProject (ProjectPackage package)
@@ -436,7 +435,7 @@ namespace MonoDevelop.ValaBinding
 			if(null != PackageAddedToProject) {
 				PackageAddedToProject (this, new ProjectPackageEventArgs (this, package));
 			}
-			TagDatabaseManager.Instance.UpdateFileTags(this, package.File);
+			if (!package.IsProject){ ProjectInformationManager.Instance.Get (this).AddPackage (package.Name); }
 		}
 
 		public DeployFileCollection GetDeployFiles (string configuration)

@@ -48,7 +48,10 @@ namespace MonoDevelop.ValaBinding.Parser
 		private ProjectInformationManager ()
 		{
 		}
-		
+
+		/// <summary>
+		/// Gets or creates the ProjectInformation for a given project
+		/// </summary>
 		public ProjectInformation Get (Project project)
 		{
 			foreach (ProjectInformation p in projects) {
@@ -64,10 +67,10 @@ namespace MonoDevelop.ValaBinding.Parser
 		}
 		
 		public static ProjectInformationManager Instance {
-			get {
+			get { 
 				if (instance == null)
 					instance = new ProjectInformationManager ();
-				
+
 				return instance;
 			}
 		}

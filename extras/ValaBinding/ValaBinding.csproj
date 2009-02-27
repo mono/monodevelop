@@ -9,6 +9,7 @@
     <OutputType>Library</OutputType>
     <AssemblyName>MonoDevelop.ValaBinding</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <RootNamespace>MonoDevelop.ValaBinding</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -193,47 +194,18 @@
     <Compile Include="Gui\OutputOptionsPanel.cs" />
     <Compile Include="Project\ValaProjectServiceExtension.cs" />
     <Compile Include="Gui\GeneralOptionsPanel.cs" />
-    <Compile Include="Parser\Class.cs" />
-    <Compile Include="Parser\Enumeration.cs" />
-    <Compile Include="Parser\Enumerator.cs" />
-    <Compile Include="Parser\Function.cs" />
-    <Compile Include="Parser\LanguageItem.cs" />
-    <Compile Include="Parser\Macro.cs" />
-    <Compile Include="Parser\Member.cs" />
-    <Compile Include="Parser\Namespace.cs" />
     <Compile Include="Parser\ProjectInformation.cs" />
     <Compile Include="Parser\ProjectInformationManager.cs" />
-    <Compile Include="Parser\Structure.cs" />
-    <Compile Include="Parser\Tag.cs" />
-    <Compile Include="Parser\TagDatabaseManager.cs" />
-    <Compile Include="Parser\Typedef.cs" />
-    <Compile Include="Parser\Union.cs" />
-    <Compile Include="Parser\Variable.cs" />
     <Compile Include="Gui\ValaTextEditorExtension.cs" />
     <Compile Include="Gui\DataProvider.cs" />
-    <Compile Include="Parser\Local.cs" />
     <Compile Include="gtk-gui\MonoDevelop.ValaBinding.AddLibraryDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.ValaBinding.CodeGenerationPanel.cs" />
     <Compile Include="gtk-gui\MonoDevelop.ValaBinding.AddPathDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.ValaBinding.GeneralOptionsPanel.cs" />
     <Compile Include="gtk-gui\MonoDevelop.ValaBinding.OutputOptionsPanel.cs" />
-    <Compile Include="Navigation\ClassNodeBuilder.cs" />
     <Compile Include="Navigation\ClassPadEventArgs.cs" />
-    <Compile Include="Navigation\EnumerationNodeBuilder.cs" />
-    <Compile Include="Navigation\EnumeratorNodeBuilder.cs" />
-    <Compile Include="Navigation\FunctionNodeBuilder.cs" />
-    <Compile Include="Navigation\GlobalsNodeBuilder.cs" />
     <Compile Include="Navigation\LanguageItemCommandHandler.cs" />
     <Compile Include="Navigation\LanguageItemEventArgs.cs" />
-    <Compile Include="Navigation\MacroDefinitionsNodeBuilder.cs" />
-    <Compile Include="Navigation\MacroNodeBuilder.cs" />
-    <Compile Include="Navigation\MemberNodeBuilder.cs" />
-    <Compile Include="Navigation\NamespaceNodeBuilder.cs" />
-    <Compile Include="Navigation\ProjectNodeBuilderExtension.cs" />
-    <Compile Include="Navigation\StructureNodeBuilder.cs" />
-    <Compile Include="Navigation\TypedefNodeBuilder.cs" />
-    <Compile Include="Navigation\UnionNodeBuilder.cs" />
-    <Compile Include="Navigation\VariableNodeBuilder.cs" />
     <Compile Include="ProjectPad\ProjectReferencesExtension.cs" />
     <Compile Include="Gui\EditPackagesDialog.cs" />
     <Compile Include="Gui\PackageDetails.cs" />
@@ -243,6 +215,10 @@
     <Compile Include="ProjectPad\ProjectPackagesFolderNodeBuilder.cs" />
     <Compile Include="ProjectPad\ProjectNodeExtension.cs" />
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Parser\CodeNode.cs" />
+    <Compile Include="Navigation\LanguageItemNodeBuilder.cs" />
+    <Compile Include="Navigation\ProjectNodeBuilderExtension.cs" />
+    <Compile Include="Parser\Function.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
@@ -252,7 +228,7 @@
         <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="Makefile.am" SyncReferences="true" IsAutotoolsProject="true" RelativeConfigureInPath=".">
           <BuildFilesVar Sync="true" Name="FILES" />
           <DeployFilesVar />
-          <ResourcesVar Sync="true" Name="RES" />
+          <ResourcesVar Name="RES" />
           <OthersVar />
           <GacRefVar Sync="true" Name="REFS" Prefix="-r:" />
           <AsmRefVar Sync="true" Name="REFS" Prefix="-r:" />

@@ -65,46 +65,28 @@ namespace MonoDevelop.ValaBinding.Navigation
 		protected override void Initialize ()
 		{
 			finishedBuildingTreeHandler = (ClassPadEventHandler)DispatchService.GuiDispatch (new ClassPadEventHandler (OnFinishedBuildingTree));
-
-			TagDatabaseManager.Instance.FileUpdated += finishedBuildingTreeHandler;
 		}
 		
 		public override void Dispose ()
 		{
-			TagDatabaseManager.Instance.FileUpdated -= finishedBuildingTreeHandler;
 		}
 		
 		public static void CreatePadTree (object o)
 		{
 			ValaProject p = o as ValaProject;
 			if (o == null) return;
+			ProjectInformation pi = ProjectInformationManager.Instance.Get (p);
 			
 			try {
 				foreach (ProjectFile f in p.Files) {
 					if (f.BuildAction == BuildAction.Compile)
-						TagDatabaseManager.Instance.UpdateFileTags (p, f.Name);
+						pi.AddFile (f.FilePath);
 				}
 				foreach (ProjectPackage package in p.Packages) {
-					TagDatabaseManager.Instance.UpdateFileTags(p, package.File);
+					if(!package.IsProject){ pi.AddPackage (p.Name); }
 				}
 			} catch (IOException) {
 				return;
-			}
-		}
-		
-		private bool check_ctags = false;
-		private bool have_ctags = false;
-		
-		private void CheckForCtags ()
-		{
-			check_ctags = true;
-			
-			try {
-				ProcessWrapper p = Runtime.ProcessService.StartProcess ("ctags", "--version", null, null);
-				p.WaitForOutput ();
-				have_ctags = true;
-			} catch {
-				have_ctags = false;
 			}
 		}
 		
@@ -114,24 +96,12 @@ namespace MonoDevelop.ValaBinding.Navigation
 		                                ref Gdk.Pixbuf icon,
 		                                ref Gdk.Pixbuf closedIcon)
 		{
-			if (!check_ctags)
-				CheckForCtags ();
-			
-			ValaProject p = dataObject as ValaProject;
-			
-			if (p == null)
-				return;
-			
-			if (!have_ctags) {
-				label = string.Format ("{0} <span foreground='red' size='small'>(CTags not installed)</span>", p.Name);
-			}
 		}
 
 		
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
 		{			
 			ValaProject p = dataObject as ValaProject;
-			
 			if (p == null) return;
 			
 			bool nestedNamespaces = builder.Options["NestedNamespaces"];
@@ -139,21 +109,9 @@ namespace MonoDevelop.ValaBinding.Navigation
 			ProjectInformation info = ProjectInformationManager.Instance.Get (p);
 			
 			// Namespaces
-			foreach (Namespace n in info.Namespaces) {
-				if (nestedNamespaces) {
-					if (n.Parent == null) {
-						builder.AddChild (n);
-					}
-				} else {
-					builder.AddChild (n);
-				}
+			foreach (CodeNode node in info.GetChildren (null)) {
+				builder.AddChild (node);
 			}
-			
-//			// Globals
-//			builder.AddChild (info.Globals);
-//			
-//			// Macro Definitions
-//			builder.AddChild (info.MacroDefinitions);
 		}
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
@@ -174,17 +132,7 @@ namespace MonoDevelop.ValaBinding.Navigation
 		[CommandHandler (ValaProjectCommands.UpdateClassPad)]
 		public void UpdateClassPad ()
 		{
-			ValaProject p = CurrentNode.DataItem as ValaProject;
-			
-			if (p == null) return;
-			
-			foreach (ProjectFile f in p.Files) {
-				if (f.BuildAction == BuildAction.Compile)
-					TagDatabaseManager.Instance.UpdateFileTags (p, f.Name);
-			}
-			foreach (ProjectPackage package in p.Packages) {
-				TagDatabaseManager.Instance.UpdateFileTags(p, package.File);
-			}
+			ProjectNodeBuilderExtension.CreatePadTree (CurrentNode.DataItem);
 		}
 	}
 }
