@@ -1,3 +1,10 @@
+2009-02-27  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* menu_resolve.png:
+	* Makefile.am:
+	* MonoDevelop.VersionControl.csproj:
+	* VersionControl.addin.xml: Add "Resolve" menu icon.
+
 2009-02-26  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.VersionControl.Dialogs/SelectRepositoryDialog.cs:

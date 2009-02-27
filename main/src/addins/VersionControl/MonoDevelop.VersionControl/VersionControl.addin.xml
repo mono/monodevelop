@@ -56,6 +56,7 @@
 		<StockIcon stockid = "vc-remove" resource = "overlay_removed.png" />
 		<StockIcon stockid = "vc-add-command" resource = "menu_add.png" />
 		<StockIcon stockid = "vc-remove-command" resource = "menu_remove.png" />
+		<StockIcon stockid = "vc-resolve-command" resource = "menu_resolve.png" />
 		<StockIcon stockid = "vc-revert-command" resource = "menu_revert.png" />
 		<StockIcon stockid = "vc-diff" resource = "menu_diff.png" />
 		<StockIcon stockid = "vc-log" resource = "menu_log.png" />
