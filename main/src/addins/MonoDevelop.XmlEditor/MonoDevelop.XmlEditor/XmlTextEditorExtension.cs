@@ -38,6 +38,8 @@ namespace MonoDevelop.XmlEditor
 		string stylesheetFileName;
 		XmlSchemaCompletionData defaultSchemaCompletionData;
 		string defaultNamespacePrefix;
+		InferredXmlCompletionProvider inferredCompletionData;
+		bool inferenceQueued = false;
 		
 //		bool showSchemaAnnotation;
 		
@@ -134,7 +136,9 @@ namespace MonoDevelop.XmlEditor
 		{	
 			XmlElementPath path = GetCurrentPath ();
 			if (path.Elements.Count > 0) {
-				XmlSchemaCompletionData schema = FindSchema (path);
+				IXmlCompletionProvider schema = FindSchema (path);
+				if (schema == null)
+					schema = inferredCompletionData;
 				if (schema != null) {
 					ICompletionData[] completionData = schema.GetChildElementCompletionData (path);
 					if (completionData != null)
@@ -142,6 +146,8 @@ namespace MonoDevelop.XmlEditor
 				}
 			} else if (defaultSchemaCompletionData != null) {
 				list.AddRange (defaultSchemaCompletionData.GetElementCompletionData (defaultNamespacePrefix));
+			} else if (inferredCompletionData != null) {
+				list.AddRange (inferredCompletionData.GetElementCompletionData ());
 			}
 		}
 		
@@ -150,7 +156,9 @@ namespace MonoDevelop.XmlEditor
 		{
 			XmlElementPath path = GetCurrentPath ();
 			if (path.Elements.Count > 0) {
-				XmlSchemaCompletionData schema = FindSchema (path);
+				IXmlCompletionProvider schema = FindSchema (path);
+				if (schema == null)
+					schema = inferredCompletionData;
 				if (schema != null) {
 					ICompletionData[] completionData = schema.GetAttributeCompletionData (path);
 					if (completionData != null)
@@ -379,6 +387,10 @@ namespace MonoDevelop.XmlEditor
 			}
 			string extension = System.IO.Path.GetExtension (fileName).ToLower ();
 			defaultSchemaCompletionData = XmlSchemaManager.GetSchemaCompletionData (extension);
+			if (defaultSchemaCompletionData != null)
+				inferredCompletionData = null;
+			else
+				QueueInference ();
 			defaultNamespacePrefix = XmlSchemaManager.GetNamespacePrefix (extension);
 		}
 		
@@ -733,9 +745,33 @@ namespace MonoDevelop.XmlEditor
 			return reader.ReadToEnd();
 		}
 		
-		
-		
 		#endregion
 		
+		void QueueInference ()
+		{
+			XmlParsedDocument doc = this.CU as XmlParsedDocument;
+			if (defaultSchemaCompletionData != null || doc == null || doc.XDocument == null || inferenceQueued)
+				return;
+			if (inferredCompletionData == null
+			    || (doc.ParseTime - inferredCompletionData.TimeStamp).TotalSeconds >= 5
+			        && doc.Errors.Count <= inferredCompletionData.ErrorCount)
+			{
+				inferenceQueued = true;
+				System.Threading.ThreadPool.QueueUserWorkItem (delegate {
+					InferredXmlCompletionProvider newData = new InferredXmlCompletionProvider ();
+					newData.Populate (doc.XDocument);
+					newData.TimeStamp = DateTime.Now;
+					newData.ErrorCount = doc.Errors.Count;
+					this.inferenceQueued = false;
+					this.inferredCompletionData = newData;
+				});
+			}	
+		}
+		
+		protected override void OnParsedDocumentUpdated ()
+		{
+			QueueInference ();
+			base.OnParsedDocumentUpdated ();
+		}		
 	}
 }

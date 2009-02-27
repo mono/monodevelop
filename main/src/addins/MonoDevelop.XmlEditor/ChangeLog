@@ -1,3 +1,13 @@
+2009-02-27  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.XmlEditor.csproj:
+	* MonoDevelop.XmlEditor/XmlTextEditorExtension.cs:
+	* MonoDevelop.XmlEditor.Gui/BaseXmlEditorExtension.cs:
+	* MonoDevelop.XmlEditor.Completion/InferredXmlCompletionProvider.cs:
+	  Add support for very simplistic inferred XML completion when
+	  a schema isn't present.
+
 2009-02-25  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.XmlEditor.Gui/XmlSchemasPanelWidget.cs: Make
