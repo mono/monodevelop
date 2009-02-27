@@ -208,7 +208,7 @@ namespace MonoDevelop.Gettext
 				if (e.Event.Button == 3)
 					ShowPopup ();
 			};
-			this.buttonOptions.Label = "Options";
+			this.buttonOptions.Label = GettextCatalog.GetString ("Options");
 			this.buttonOptions.StockImage = Gtk.Stock.Properties;
 			this.buttonOptions.MenuCreator = CreateOptionsMenu;
 			widgets.Add (this);

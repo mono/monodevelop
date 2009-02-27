@@ -43,7 +43,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			store = new Gtk.TreeStore (typeof(object), typeof(string), typeof(string), typeof(bool), typeof(string));
 			repoTree.Model = store;
 			TreeViewColumn col = new TreeViewColumn ();
-			col.Title = "Repository";
+			col.Title = GettextCatalog.GetString ("Repository");
 			CellRendererText crt = new CellRendererText ();
 			CellRendererPixbuf crp = new CellRendererPixbuf ();
 			col.PackStart (crp, false);
@@ -51,7 +51,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			col.AddAttribute (crp, "stock-id", IconCol);
 			col.AddAttribute (crt, "text", RepoNameCol);
 			repoTree.AppendColumn (col);
-			repoTree.AppendColumn ("Type", new CellRendererText (), "text", VcsName);
+			repoTree.AppendColumn (GettextCatalog.GetString ("Type"), new CellRendererText (), "text", VcsName);
 			repoTree.TestExpandRow += new Gtk.TestExpandRowHandler (OnTestExpandRow);
 			LoadRepositories ();
 			
@@ -309,7 +309,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 		protected virtual void OnButtonBrowseClicked(object sender, System.EventArgs e)
 		{
 			FileChooserDialog dialog =
-				new FileChooserDialog ("Select target directory", null, FileChooserAction.SelectFolder,
+				new FileChooserDialog (GettextCatalog.GetString ("Select target directory"), null, FileChooserAction.SelectFolder,
 						       Gtk.Stock.Cancel, Gtk.ResponseType.Cancel,
 						       Gtk.Stock.Open, Gtk.ResponseType.Ok);
 			int response = dialog.Run ();

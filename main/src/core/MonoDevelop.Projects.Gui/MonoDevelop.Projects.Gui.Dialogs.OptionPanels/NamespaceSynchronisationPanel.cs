@@ -50,7 +50,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 		}
 		
 		protected override string PolicyTitleWithMnemonic {
-			get { return "_Policy"; }
+			get { return GettextCatalog.GetString ("_Policy"); }
 		}
 		
 		protected override void LoadFrom (DotNetNamingPolicy policy)

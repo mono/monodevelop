@@ -65,7 +65,7 @@ namespace MonoDevelop.SourceEditor
 		
 		string IDisplayBinding.DisplayName {
 			get {
-				return "Source Code Editor";
+				return GettextCatalog.GetString ("Source Code Editor");
 			}
 		}
 		

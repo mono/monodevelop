@@ -167,7 +167,7 @@ namespace MonoDevelop.WelcomePage
 				a = link.Attributes ["href"];
 				if (a != null) button.LinkUrl = a.Value;
 				a = link.Attributes ["_desc"];
-				if (a != null) button.HoverMessage = a.Value;
+				if (a != null) button.HoverMessage = GettextCatalog.GetString (a.Value);
 				actionBox.PackEnd (button, true, false, 0);
 			}
 			actionBox.ShowAll ();
@@ -182,11 +182,11 @@ namespace MonoDevelop.WelcomePage
 				button.EnterNotifyEvent += linkHoverEnterEventHandler;
 				button.LeaveNotifyEvent += linkHoverLeaveEventHandler;
 				a = link.Attributes ["_title"];
-				if (a != null) button.Label = string.Format (textFormat, a.Value);
+				if (a != null) button.Label = string.Format (textFormat, GettextCatalog.GetString (a.Value));
 				a = link.Attributes ["href"];
 				if (a != null) button.LinkUrl = a.Value;
 				a = link.Attributes ["_desc"];
-				if (a != null) button.Description = a.Value;
+				if (a != null) button.Description = GettextCatalog.GetString (a.Value);
 				supportLinkBox.PackEnd (button, true, false, 0);
 			}
 			supportLinkBox.ShowAll ();
@@ -201,11 +201,11 @@ namespace MonoDevelop.WelcomePage
 				button.EnterNotifyEvent += linkHoverEnterEventHandler;
 				button.LeaveNotifyEvent += linkHoverLeaveEventHandler;
 				a = link.Attributes ["_title"];
-				if (a != null) button.Label = string.Format (textFormat, a.Value);
+				if (a != null) button.Label = string.Format (textFormat, GettextCatalog.GetString (a.Value));
 				a = link.Attributes ["href"];
 				if (a != null) button.LinkUrl = a.Value;
 				a = link.Attributes ["_desc"];
-				if (a != null) button.Description = a.Value;
+				if (a != null) button.Description = GettextCatalog.GetString (a.Value);
 				newsLinkBox.PackEnd (button, true, false, 0);
 			}
 			if (!newsLinks.HasChildNodes)
@@ -213,7 +213,7 @@ namespace MonoDevelop.WelcomePage
 				LinkButton button = new LinkButton ();
 				button.EnterNotifyEvent += linkHoverEnterEventHandler;
 				button.LeaveNotifyEvent += linkHoverLeaveEventHandler;
-				button.Label = "No news has been found";
+				button.Label = GettextCatalog.GetString ("No news has been found");
 				newsLinkBox.PackEnd (button, true, false, 0);
 			}
 			newsLinkBox.ShowAll ();
@@ -228,11 +228,11 @@ namespace MonoDevelop.WelcomePage
 				button.EnterNotifyEvent += linkHoverEnterEventHandler;
 				button.LeaveNotifyEvent += linkHoverLeaveEventHandler;
 				a = link.Attributes ["_title"];
-				if (a != null) button.Label = string.Format (textFormat, a.Value);
+				if (a != null) button.Label = string.Format (textFormat, GettextCatalog.GetString (a.Value));
 				a = link.Attributes ["href"];
 				if (a != null) button.LinkUrl = a.Value;
 				a = link.Attributes ["_desc"];
-				if (a != null) button.Description = a.Value;
+				if (a != null) button.Description = GettextCatalog.GetString (a.Value);
 				devLinkBox.PackEnd (button, true, false, 0);
 			}
 			devLinkBox.ShowAll ();

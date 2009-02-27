@@ -1,3 +1,8 @@
+2009-02-26  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* WelcomePageFallbackWidget.cs: Translation fixes. Patch from
+	  Kriván Bálint.
+
 2009-02-11  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/gui.stetic:
