@@ -1216,7 +1216,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			                                                                                Document.FileName);
 			
 			resolver.SetupResolver (new DomLocation (ctx.TriggerLine, ctx.TriggerLineOffset));
-			//System.Console.WriteLine(expressionResult.ExpressionContext );
+		//	System.Console.WriteLine(expressionResult.ExpressionContext );
 			CompletionDataList result = new ProjectDomCompletionDataList ();
 			if (expressionResult == null) {
 				AddPrimitiveTypes (result);
@@ -1275,7 +1275,32 @@ namespace MonoDevelop.CSharpBinding.Gui
 			} else if (expressionResult.ExpressionContext == ExpressionContext.Global) {
 				AddNRefactoryKeywords (result, ICSharpCode.NRefactory.Parser.CSharp.Tokens.GlobalLevel);
 				CodeTemplateService.AddCompletionDataForExtension (".cs", result);
-			} else if (expressionResult.ExpressionContext == ExpressionContext.AttributeArguments) {				result.Add ("global", "md-literal");
+			} else if (expressionResult.ExpressionContext == ExpressionContext.ObjectInitializer) {
+				ExpressionContext exactContext = new NewCSharpExpressionFinder (dom).FindExactContextForObjectInitializer (Editor, resolver.Unit, Document.FileName, resolver.CallingType);
+				if (exactContext is ExpressionContext.TypeExpressionContext) {
+					IReturnType objectInitializer = ((ExpressionContext.TypeExpressionContext)exactContext).UnresolvedType;
+					
+					IType foundType = dom.SearchType (new SearchTypeRequest (Document.CompilationUnit, objectInitializer, resolver.CallingType));
+					if (foundType == null)
+						foundType = dom.GetType (objectInitializer);
+					
+					if (foundType != null) {
+						CompletionDataCollector col = new CompletionDataCollector (Document.CompilationUnit, resolver.ResolvePosition);
+						bool includeProtected = DomType.IncludeProtected (dom, foundType, resolver.CallingType);
+						foreach (IType type in dom.GetInheritanceTree (foundType)) {
+							foreach (IProperty property in type.Properties) {
+								if (property.IsAccessibleFrom (dom, resolver.CallingType, resolver.CallingMember, includeProtected)) {
+									col.AddCompletionData (result, property);
+								}
+							}
+						}
+					}
+				}
+//				result.Add ("global", "md-literal");
+//				AddPrimitiveTypes (result);
+//				resolver.AddAccessibleCodeCompletionData (expressionResult.ExpressionContext, result);
+			} else if (expressionResult.ExpressionContext == ExpressionContext.AttributeArguments) {
+				result.Add ("global", "md-literal");
 				AddPrimitiveTypes (result);
 				CompletionDataCollector col = resolver.AddAccessibleCodeCompletionData (expressionResult.ExpressionContext, result);
 				string attributeName = NewCSharpExpressionFinder.FindAttributeName (Editor, Document.CompilationUnit, Document.FileName);

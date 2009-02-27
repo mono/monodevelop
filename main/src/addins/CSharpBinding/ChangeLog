@@ -1,5 +1,12 @@
 2009-02-27  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/NRefactoryResolver.cs:
+	* Gui/NewCSharpExpressionFinder.cs:
+	* Gui/CSharpTextEditorCompletion.cs: Fixed "Bug 479983 - No C#
+	  completion for object initializers".
+
+2009-02-27  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/CSharpTextEditorCompletion.cs: fixed "Bug 479986 -
 	  Incorrect new completion for var".
 

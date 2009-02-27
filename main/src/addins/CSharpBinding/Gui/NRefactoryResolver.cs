@@ -367,7 +367,12 @@ namespace MonoDevelop.CSharpBinding
 				return expr;
 			}
 		}
-		public ResolveResult Resolve (ExpressionResult expressionResult, DomLocation resolvePosition)
+	
+		public DomLocation ResolvePosition {
+				get {
+					return resolvePosition;
+				}
+			}	public ResolveResult Resolve (ExpressionResult expressionResult, DomLocation resolvePosition)
 		{
 			this.SetupResolver (resolvePosition);
 			ResolveVisitor visitor = new ResolveVisitor (this);

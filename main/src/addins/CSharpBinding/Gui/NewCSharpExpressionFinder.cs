@@ -68,10 +68,26 @@ namespace MonoDevelop.CSharpBinding.Gui
 			return result.ToString ();
 		}
 		
+		public ExpressionContext FindExactContextForObjectInitializer (TextEditor editor, ICompilationUnit unit, string fileName, IType callingType)
+		{
+			string documentToCursor = editor.GetText (0, editor.CursorPosition);
+			int pos = -1;
+			for (int i = documentToCursor.Length - 5; i >= 0; i--) {
+				if (documentToCursor.Substring (i, 4) == "new ")
+					return FindExactContextForNewCompletion (editor, unit, fileName, callingType, i + 4);
+			}
+			return null;
+		}
+		
 		public ExpressionContext FindExactContextForNewCompletion (TextEditor editor, ICompilationUnit unit, string fileName, IType callingType)
 		{
+			return FindExactContextForNewCompletion (editor, unit, fileName, callingType, editor.CursorPosition);
+		}
+		
+		public ExpressionContext FindExactContextForNewCompletion (TextEditor editor, ICompilationUnit unit, string fileName, IType callingType, int cursorPos)
+		{
 			// find expression on left hand side of the assignment
-			string documentToCursor = editor.GetText (0, editor.CursorPosition);
+			string documentToCursor = editor.GetText (0, cursorPos);
 			int pos = -1;
 			for (int i = documentToCursor.Length - 1; i >= 0; i--) {
 				if (documentToCursor [i] == '=') {
@@ -85,7 +101,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				return null;
 			
 			// check if new +=/-=/= is right before "new"
-			for (int i = pos; i < editor.CursorPosition; i++) {
+			for (int i = pos; i < cursorPos; i++) {
 				char ch = documentToCursor[i];
 				if (Char.IsWhiteSpace (ch))
 					continue;
@@ -404,6 +420,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				this.expectedType = expectedType;
 				this.context = ExpressionContext.Default;
 			}
+			
 			internal void SetDefaultContext()
 			{
 				if (state == FrameState.InheritanceList) {
