@@ -305,9 +305,11 @@ namespace MonoDevelop.Projects
 		internal void ResetReference ()
 		{
 			cachedPackage = null;
-			reference = loadedReference;
-			loadedReference = null;
-			UpdateGacReference ();
+			if (loadedReference != null) {
+				reference = loadedReference;
+				loadedReference = null;
+				UpdateGacReference ();
+			}
 		}
 		
 		public object Clone()
