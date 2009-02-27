@@ -1108,7 +1108,9 @@ namespace MonoDevelop.CSharpBinding.Gui
 		CompletionDataList CreateTypeCompletionData (DomLocation location, IType callingType, ExpressionContext context, IReturnType returnType, IReturnType returnTypeUnresolved)
 		{
 			CompletionDataList result = new ProjectDomCompletionDataList ();
-			
+			// "var o = new " needs special treatment.
+			if (returnType == null && returnTypeUnresolved != null && returnTypeUnresolved.FullName == "var")
+				returnType = returnTypeUnresolved = DomReturnType.Object;
 			
 		//	ExpressionContext.TypeExpressionContext tce = context as ExpressionContext.TypeExpressionContext;
 			
