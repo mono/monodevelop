@@ -1,6 +1,0 @@
-Name: BooBinding
-Description: BooBinding
-Version: 0.1
-
-Requires: 
-Libs: -r:@prefix@/lib/@PACKAGE@/BooBinding.dll

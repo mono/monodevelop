@@ -1,9 +1,0 @@
-2009-02-26  Michael Hutchinson  <mhutchinson@novell.com>
-
-	* MonoDevelop.AspNet.Mvc.sln: Flush.
-
-2009-02-25  Michael Hutchinson  <mhutchinson@novell.com>
-
-	* MonoDevelop.AspNet.Mvc.sln: Set policies. Remove unused name
-	  attribute.
-

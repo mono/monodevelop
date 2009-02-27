@@ -1,9 +1,0 @@
-2009-02-26  Michael Hutchinson  <mhutchinson@novell.com>
-
-	* po.mdproj: Fix translation projects' GUIDs.
-
-2009/02/06  Lluis Sanchez Gual  <lluis@novell.com>
-
- * po.mdse:
- * po.mdproj: Migrated to MSBuild file format.
-
