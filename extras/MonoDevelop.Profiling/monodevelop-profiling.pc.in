@@ -1,8 +1,0 @@
-Name: monodevelop-profiling
-Description: MonoDevelop.Profiling Add-in
-Version: 0.2
-
-libdir=@prefix@/lib/monodevelop
-
-Requires: 
-Libs: -r:${libdir}/AddIns/MonoDevelop.Profiling/MonoDevelop.Profiling.dll -r:${libdir}/AddIns/MonoDevelop.Profiling/MonoDevelop.Profiling.HeapShot.dll -r:${libdir}/AddIns/MonoDevelop.Profiling/MonoDevelop.Profiling.HeapBuddy.dll
