@@ -113,7 +113,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			if ((dataObject is ProjectFolder) && builder.Options ["ShowAllFiles"] && Directory.Exists (thisPath))
 			{
 				ProjectFolder pf = (ProjectFolder) dataObject;
-				if (pf.Project == null || !HasProjectFiles (pf.Project, thisPath)) {
+				if (pf.Project == null || !ProjectFolderCommandHandler.PathExistsInProject (pf.Project, thisPath)) {
 					Gdk.Pixbuf gicon = Context.GetComposedIcon (icon, "fade");
 					if (gicon == null) {
 						gicon = Services.Icons.MakeTransparent (icon, 0.5);
@@ -161,16 +161,23 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		void OnAddFile (object sender, ProjectFileEventArgs e)
 		{
 			if (!e.ProjectFile.IsExternalToProject) {
-				ITreeBuilder tb = Context.GetTreeBuilder (new SystemFile (e.ProjectFile.Name, e.Project));
-				if (tb != null) tb.Remove (true);
-				Context.Tree.AddNodeInsertCallback (e.ProjectFile, new TreeNodeCallback (UpdateProjectFileParent));
+				object target;
+				if (e.ProjectFile.Subtype == Subtype.Directory) {
+					target = new ProjectFolder (e.ProjectFile.FilePath, e.Project);
+				} else {
+					ITreeBuilder tb = Context.GetTreeBuilder (new SystemFile (e.ProjectFile.Name, e.Project));
+					if (tb != null) tb.Remove (true);
+					target = e.ProjectFile;
+				}
+				Context.Tree.AddNodeInsertCallback (target, new TreeNodeCallback (UpdateProjectFileParent));
 			}
 		}
 		
 		void UpdateProjectFileParent (ITreeNavigator nav)
 		{
 			ITreeBuilder tb = Context.GetTreeBuilder (nav);
-			tb.MoveToParent ();
+			if (!(tb.DataItem is ProjectFolder))
+				tb.MoveToParent ();
 			while (tb.DataItem is ProjectFolder) {
 				tb.Update ();
 				tb.MoveToParent ();
@@ -251,7 +258,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			
 			if (e.IsDirectory) {
 				if (tb.MoveToObject (new ProjectFolder (e.FileName, project))) {
-					if (tb.Options ["ShowAllFiles"] && !HasProjectFiles (project, e.FileName)) {
+					if (tb.Options ["ShowAllFiles"] && !ProjectFolderCommandHandler.PathExistsInProject (project, e.FileName)) {
 						tb.Remove ();
 						return;
 					}
@@ -301,15 +308,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			if (tb != null && childPath != path && tb.Options ["ShowAllFiles"]) {
 				tb.AddChild (new ProjectFolder (childPath, project));
 			}
-		}
-		
-		bool HasProjectFiles (Project project, string path)
-		{
-			string basePath = path + Path.DirectorySeparatorChar;
-			foreach (ProjectFile f in project.Files)
-				if (f.Name.StartsWith (basePath))
-					return true;
-			return false;
 		}
 		
 		Project GetProjectForFile (string path)
