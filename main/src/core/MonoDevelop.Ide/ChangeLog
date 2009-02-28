@@ -1,5 +1,11 @@
 2009-02-27  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide.Templates/DirectoryTemplate.cs: Only add the
+	  directory if it's explicit, i.e. when there are no inner
+	  contents.
+
+2009-02-27  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:
 	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ShowAllFilesBuilderExtension.cs:
 	  Handle directories that are explicitly included in the

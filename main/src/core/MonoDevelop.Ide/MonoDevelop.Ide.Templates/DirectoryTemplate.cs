@@ -92,9 +92,11 @@ namespace MonoDevelop.Ide.Templates
 		{
 			bool addedSomething = false;
 			directory = Path.Combine (directory, dirName);
-			string relPath = FileService.AbsoluteToRelativePath (project.BaseDirectory, directory);
-			if (project.AddDirectory (directory) != null)
-				addedSomething = true;
+			if (templates.Count == 0) {
+				string relPath = FileService.AbsoluteToRelativePath (project.BaseDirectory, directory);
+				if (project.AddDirectory (relPath) != null)
+					addedSomething = true;
+			}
 			
 			foreach (FileDescriptionTemplate t in templates)
 				addedSomething |= t.AddToProject (policyParent, project, language, directory, name);
