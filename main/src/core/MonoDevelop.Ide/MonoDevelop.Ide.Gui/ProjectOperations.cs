@@ -792,7 +792,10 @@ namespace MonoDevelop.Ide.Gui
 				case BeforeCompileAction.PromptForSave:
 					foreach (Document doc in IdeApp.Workbench.Documents) {
 						if (doc.IsDirty) {
-							if (MessageService.AskQuestion(GettextCatalog.GetString ("Save changed files?"), AlertButton.CloseWithoutSave, AlertButton.Save) == AlertButton.Save) {
+							if (MessageService.AskQuestion (
+						            GettextCatalog.GetString ("Save changed documents before building?"),
+							        GettextCatalog.GetString ("Some of the open documents have unsaved changes."),
+							                                AlertButton.BuildWithoutSave, AlertButton.Save) == AlertButton.Save) {
 								MarkFileDirty (doc.FileName);
 								doc.Save ();
 							}

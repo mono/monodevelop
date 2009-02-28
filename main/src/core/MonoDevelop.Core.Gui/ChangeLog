@@ -1,3 +1,8 @@
+2009-02-28  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Core.Gui/MessageService.cs: Better message for
+	  saving before building. Thanks to Bálint Kriván.
+
 2009-02-25  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Core.Gui.addin.xml: Fix translatable strings.

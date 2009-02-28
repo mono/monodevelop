@@ -1,5 +1,10 @@
 2009-02-28  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Better message for
+	  saving before building. Thanks to Bálint Kriván.
+
+2009-02-28  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.EncapsulateFieldDialog.cs:
 	  Flush.
 
