@@ -613,28 +613,19 @@ namespace MonoDevelop.AspNet
 		
 		#endregion
 		
-		public List<string> GetNotPresentSpecialDirectories ()
+		public virtual IEnumerable<string> GetSpecialDirectories ()
 		{
-			List<string> notPresent = new List<string> ();
+			if (TargetFramework.ClrVersion != MonoDevelop.Core.ClrVersion.Net_2_0)
+				yield break;
+			yield return "App_Browsers";
+			yield return "App_Data";
+			yield return "App_GlobalResources";
+			yield return "App_LocalResources";
+			yield return "Theme";
 			
-			if (TargetFramework.ClrVersion == MonoDevelop.Core.ClrVersion.Net_2_0)
-				foreach (string dir in specialDirs20)
-					if (Files.GetFile (Path.Combine (BaseDirectory, dir)) == null)
-						notPresent.Add (dir);
-			
-			return notPresent;
+			// For "web site" projects
+			// "App_WebReferences", "App_Resources","App_Themes", "App_Code",
 		}
-	
-		static readonly string [] specialDirs20 = new string [] {
-			"App_Code",
-			"App_Themes",
-			"App_Browsers",
-			"App_Data",
-			"App_WebReferences",
-			"App_Resources",
-			"App_LocalResources",
-			"App_GlobalResources",		
-		};
 		
 		protected override IList<string> GetCommonBuildActions ()
 		{

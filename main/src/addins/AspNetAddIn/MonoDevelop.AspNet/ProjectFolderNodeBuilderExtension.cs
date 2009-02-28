@@ -42,8 +42,7 @@ namespace MonoDevelop.AspNet
 	{
 		public override bool CanBuildNode (Type dataType)
 		{
-			return typeof(ProjectFolder).IsAssignableFrom (dataType) ||
-					typeof(Project).IsAssignableFrom (dataType);
+			return typeof(AspNetAppProject).IsAssignableFrom (dataType);
 		}
 		
 		public override Type CommandHandlerType {
@@ -70,8 +69,33 @@ namespace MonoDevelop.AspNet
 			if (proj == null)
 				return;
 			
-			foreach (string dir in proj.GetNotPresentSpecialDirectories ())
-				info.Add (dir.Replace("_", "__"), dir);		
+			List<string> dirs = new List<string> (proj.GetSpecialDirectories ());
+			dirs.Sort ();
+			List<string> fullPaths = new List<string> (dirs.Count);
+			foreach (string s in dirs)
+				fullPaths.Add (System.IO.Path.Combine (proj.BaseDirectory, s));
+			RemoveDirsNotInProject (fullPaths, proj);
+			
+			foreach (string dir in dirs) {
+				CommandInfo cmd = info.Add (dir.Replace("_", "__"), dir);
+				cmd.Enabled = fullPaths.Contains (System.IO.Path.Combine (proj.BaseDirectory, dir));
+			}
+		}
+		
+		static void RemoveDirsNotInProject (List<string> dirs, Project proj)
+		{
+			//don't query project for existence of each dir, because proj.Files is much bigger than dirs
+			//instead we switch the loops
+			foreach (ProjectFile pf in proj.Files) {
+				for (int i = 0; i < dirs.Count; i++) {
+					if (pf.FilePath.StartsWith (dirs[i], StringComparison.Ordinal)) {
+						dirs.RemoveAt (i);
+						if (dirs.Count == 0)
+							return;
+						break;
+					}
+				}
+			}
 		}
 	}
 	
