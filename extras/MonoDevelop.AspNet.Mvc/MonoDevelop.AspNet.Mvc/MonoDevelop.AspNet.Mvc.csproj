@@ -34,6 +34,8 @@
     <Compile Include="AspMvcProjectBinding.cs" />
     <Compile Include="AspMvcProject.cs" />
     <Compile Include="AspMvcProjectConfiguration.cs" />
+    <Compile Include="AspMvcCommands.cs" />
+    <Compile Include="Gui\FolderNodeBuilderExtension.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -56,9 +58,13 @@
       <Package>monodevelop</Package>
     </Reference>
     <Reference Include="System.Xml" />
+    <Reference Include="MonoDevelop.Components, Version=1.9.2.0, Culture=neutral">
+      <Package>monodevelop</Package>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Templates/" />
+    <Folder Include="Templates\" />
+    <Folder Include="Gui\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.AspNet.Mvc.addin.xml" />

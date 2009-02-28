@@ -39,7 +39,7 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/FileTemplates">
-		<FileTemplate id       = "AspMvcController-Empty"
+		<FileTemplate id       = "AspMvcController"
 		              file     = "Templates/Controller.xft.xml"/>
 		<FileTemplate id       = "AspMvcViewPage"
 		              file     = "Templates/ViewPage.xft.xml"/>
@@ -71,19 +71,26 @@
 		<DataType class = "MonoDevelop.AspNet.Mvc.AspMvcProjectConfiguration" />
 	</Extension>
 	
-	<!--
 	<Extension path = "/MonoDevelop/Ide/Commands">
 		<Category _name = "ASP.NET" id = "AspNet">
-		<Command id = "MonoDevelop.AspNet.AspNetCommands.AddAspNetDirectory"
-		         _label = "ASP.NET Directory"
-		         type="array" />
+		<Command id = "MonoDevelop.AspNet.Mvc.AspMvcCommands.AddController"
+		         _label = "Controller..."
+		         _description = "Add an ASP.NET MVC controller" />
+		<Command id = "MonoDevelop.AspNet.Mvc.AspMvcCommands.AddView"
+		         _label = "View..."
+		         _description = "Add an ASP.NET MVC view" />
 		</Category>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Project/Add">
-		<Condition id="activeproject" value="AspNetApp">
-			<CommandItem _label = "MVC Controller" id = "MonoDevelop.AspNet.Mvc.AddAspNetDirectory" />
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Add">
+		<Condition id="activeproject" value="AspNetMvc">
+			<CommandItem id = "MonoDevelop.AspNet.Mvc.AspMvcCommands.AddController" insertbefore="MonoDevelop.Ide.Commands.ProjectCommands.AddNewFiles"  disabledVisible="false"/>
+			<CommandItem id = "MonoDevelop.AspNet.Mvc.AspMvcCommands.AddView" disabledVisible="false" />
+			<SeparatorItem id = "MvcAddSeparator" />
 		</Condition>
 	</Extension>
-	-->
+	
+	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
+		<NodeBuilder id="AspMvcFolderNodeBuilderExtension" class = "MonoDevelop.AspNet.Mvc.Gui.FolderNodeBuilderExtension"/>
+	</Extension>
 </Addin>

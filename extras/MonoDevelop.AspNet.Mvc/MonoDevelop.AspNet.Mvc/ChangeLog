@@ -1,3 +1,13 @@
+2009-02-27  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Gui:
+	* AspMvcCommands.cs:
+	* MonoDevelop.AspNet.Mvc.addin.xml:
+	* Gui/FolderNodeBuilderExtension.cs: Add context menu commands
+	  for adding views and controllers to the appropriate folders.
+
+	* MonoDevelop.AspNet.Mvc.csproj: Updated.
+
 2009-02-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.AspNet.Mvc.csproj: Flush.
