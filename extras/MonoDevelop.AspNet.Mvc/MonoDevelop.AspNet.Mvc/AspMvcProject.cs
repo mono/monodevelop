@@ -25,8 +25,10 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Xml;
 using MonoDevelop.Projects;
+using MonoDevelop.Core.Serialization;
 
 namespace MonoDevelop.AspNet.Mvc
 {
@@ -34,7 +36,6 @@ namespace MonoDevelop.AspNet.Mvc
 	
 	public class AspMvcProject : AspNetAppProject
 	{
-		
 		public AspMvcProject ()
 		{
 		}
@@ -67,5 +68,13 @@ namespace MonoDevelop.AspNet.Mvc
 			return framework.IsCompatibleWithFramework ("3.5");
 		}
 		
+		public override IEnumerable<string> GetSpecialDirectories ()
+		{
+			foreach (string s in base.GetSpecialDirectories ())
+				yield return s;
+			yield return "Views";
+			yield return "Models";
+			yield return "Controllers";
+		}
 	}
 }

@@ -1,3 +1,8 @@
+2009-02-28  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* AspMvcProject.cs: Add Models, Views, Controllers to special
+	  folders list.
+
 2009-02-27  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Gui:
