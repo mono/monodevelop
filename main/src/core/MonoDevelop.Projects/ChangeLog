@@ -1,3 +1,8 @@
+2009-02-27  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs:
+	  MSBuildified directory names should end with '\', not '/'.
+
 2009-02-27  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/ProjectReference.cs: Added missing null
