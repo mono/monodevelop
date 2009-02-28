@@ -60,6 +60,7 @@ namespace MonoDevelop.AspNet
 			if (proj == null)
 				return;
 			proj.AddDirectory ((string) ob);
+			MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.Save (proj);
 		}
 		
 		[CommandUpdateHandler (AspNetCommands.AddAspNetDirectory)]
