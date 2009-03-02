@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
@@ -11,6 +12,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 	{
 		protected override BuildResult Build (IProgressMonitor monitor, SolutionEntityItem entry, string configuration)
 		{
+			if (!IdeApp.IsInitialized)
+				return base.Build (monitor, entry, configuration);
+			
 			DotNetProject project = entry as DotNetProject;
 			if (GtkDesignInfo.HasDesignedObjects (project)) {
 
