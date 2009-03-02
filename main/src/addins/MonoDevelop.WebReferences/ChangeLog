@@ -1,3 +1,8 @@
+2009-03-02  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.WebReferences.Commands/WebReferenceCommandHandler.cs:
+	  Fix framework IDs.
+
 2009-02-23  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.WebReferences.addin.xml: Track merge of the
