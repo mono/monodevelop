@@ -324,7 +324,7 @@ namespace MonoDevelop.Ide.Gui
 
 		public virtual bool CanRun ()
 		{
-			return IdeApp.ProjectOperations.CanExecuteFile (Window.ViewContent.ContentName);
+			return Window.ViewContent.ContentName != null && IdeApp.ProjectOperations.CanExecuteFile (Window.ViewContent.ContentName);
 		}
 		
 		public bool Close ()

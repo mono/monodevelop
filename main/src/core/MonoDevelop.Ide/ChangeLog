@@ -1,5 +1,10 @@
 2009-03-02  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Gui/Document.cs: Fixed NRE when the current
+	  view does not have a file name.
+
+2009-03-02  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui.Components/NodeCommandHandler.cs: Make
 	  sure the default implementation of CanDeleteMultipleItems is
 	  used if CanDeleteItem is overriden.
