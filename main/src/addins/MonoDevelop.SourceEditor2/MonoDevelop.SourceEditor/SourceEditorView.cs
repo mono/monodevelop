@@ -187,7 +187,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public override void Save (string fileName)
 		{
-			Save (fileName, null);
+			Save (fileName, this.encoding);
 		}
 		
 		public void Save (string fileName, string encoding)
@@ -230,19 +230,20 @@ namespace MonoDevelop.SourceEditor
 		
 		public override void Load (string fileName)
 		{
-			Load (fileName, null);
+			Load (fileName, TextFile.GetFileEncoding (fileName));
 		}
 		
 		
 		bool warnOverwrite = false;
+		string encoding = null;
 		public void Load (string fileName, string encoding)
 		{
+			this.encoding = encoding;
 			if (warnOverwrite) {
 				warnOverwrite = false;
 				widget.RemoveReloadBar ();
 				WorkbenchWindow.ShowNotification = false;
 			}
-			
 			Document.MimeType = IdeApp.Services.PlatformService.GetMimeTypeForUri (fileName);
 			widget.SetMime (Document.MimeType);
 			Document.Text = MonoDevelop.Projects.Text.TextFile.ReadFile (fileName, encoding).Text;
