@@ -480,19 +480,25 @@ namespace MonoDevelop.Ide.Gui.Pads
 					int prevPosEnd = pos + len;
 					pos = res.Positions [n];
 					len = res.Positions [n + 1];
+					
+					//FIXME: sometimes the offsets seem to be calculated with a different encoding to the text
+					// so we need to bail out if it's too long
+					if (pos + len > res.Text.Length)
+						return GLib.Markup.EscapeText (res.Text).Trim ();
+					
 					if (pos - prevPosEnd > 0)
 						sb.Append (GLib.Markup.EscapeText (res.Text.Substring (prevPosEnd, Math.Min (pos - prevPosEnd, res.Text.Length - prevPosEnd))));
-					sb.Append ("<span background='yellow'>");
-					if (len > 0)
+					
+					if (len > 0) {
+						sb.Append ("<span background='yellow'>");
 						sb.Append (GLib.Markup.EscapeText (res.Text.Substring (pos, Math.Min (len, res.Text.Length - pos))));
-					sb.Append ("</span>");
+						sb.Append ("</span>");
+					}
 				}
 				
 				if (res.Text.Length - pos - len > 0)
 					sb.Append (GLib.Markup.EscapeText (res.Text.Substring (pos + len, (res.Text.Length - pos - len))));
 			}
-			//old implementation seemed to think that pos+len might be out of bounds,
-			//but I think catching & logging an exception's more appropriate than a range check
 			catch (Exception ex)
 			{
 				LoggingService.LogWarning ("Error escaping search result '{0}' @{1}x{2};\n{3}", res.Text, pos, len, ex);
