@@ -26,10 +26,12 @@ FILES =  \
 	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.Debugger.AttachToProcessDialog.cs \
+	gtk-gui/MonoDevelop.Debugger.BreakpointPropertiesDialog.cs \
 	gtk-gui/MonoDevelop.Debugger.ExceptionsDialog.cs \
 	gtk-gui/MonoDevelop.Debugger.ExpressionEvaluatorDialog.cs \
 	MonoDevelop.Debugger/AttachToProcessDialog.cs \
 	MonoDevelop.Debugger/BreakpointPad.cs \
+	MonoDevelop.Debugger/BreakpointPropertiesDialog.cs \
 	MonoDevelop.Debugger/DebugCommands.cs \
 	MonoDevelop.Debugger/DebugExecutionHandlerFactory.cs \
 	MonoDevelop.Debugger/DebuggingService.cs \
