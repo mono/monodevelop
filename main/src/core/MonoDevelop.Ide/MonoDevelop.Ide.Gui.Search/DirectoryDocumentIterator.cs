@@ -52,7 +52,7 @@ namespace MonoDevelop.Ide.Gui.Search
 					return null;
 				}
 				
-				return files[curIndex].ToString();
+				return files[curIndex];
 			}
 		}
 				
@@ -61,22 +61,28 @@ namespace MonoDevelop.Ide.Gui.Search
 				if (curIndex < 0 || curIndex >= files.Count) {
 					return null;
 				}
-				if (!File.Exists(files[curIndex].ToString())) {
-					++curIndex;
-					return Current;
-				}
-				string fileName = files[curIndex].ToString();
+				string fileName = files[curIndex];
 				return new FileDocumentInformation(fileName, 0);
 			}
 		}
 		
+		bool IsValid ()
+		{
+			if (curIndex < 0 || curIndex >= files.Count)
+				return true;
+			string fileName = files[curIndex];
+			if (!File.Exists (fileName))
+				return false;
+			string mimeType = IdeApp.Services.PlatformService.GetMimeTypeForUri ("file://" + fileName);
+			return !String.IsNullOrEmpty (mimeType) && IdeApp.Services.PlatformService.GetMimeTypeIsText (mimeType);
+		}
+		
 		public bool MoveForward() 
 		{
-			curIndex++;
-			if (curIndex >= files.Count)
-				return FetchDirectories ();
-			else
-				return true;
+			while (++curIndex < files.Count || FetchDirectories ())
+				if (IsValid())
+					return true;
+			return false;
 		}
 		
 		bool FetchDirectories ()
@@ -107,10 +113,12 @@ namespace MonoDevelop.Ide.Gui.Search
 		{
 			if (curIndex == -1) {
 				while (FetchDirectories ());	// Fetch all
-				curIndex = files.Count - 1;
-				return true;
+				curIndex = files.Count;
 			}
-			return --curIndex >= -1;
+			while (--curIndex >= -1)
+				if (IsValid())
+					return true;
+			return false;
 		}
 		
 		

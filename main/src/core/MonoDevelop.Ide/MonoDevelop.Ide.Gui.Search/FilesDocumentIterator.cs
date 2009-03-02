@@ -50,8 +50,19 @@ namespace MonoDevelop.Ide.Gui.Search
 					return null;
 				}
 				
-				return files[curIndex].ToString();
+				return files[curIndex];
 			}
+		}
+		
+		bool IsValid ()
+		{
+			if (curIndex < 0 || curIndex >= files.Count)
+				return true;
+			string fileName = files[curIndex];
+			if (!File.Exists (fileName))
+				return false;
+			string mimeType = IdeApp.Services.PlatformService.GetMimeTypeForUri ("file://" + fileName);
+			return !String.IsNullOrEmpty (mimeType) && IdeApp.Services.PlatformService.GetMimeTypeIsText (mimeType);
 		}
 		
 		public IDocumentInformation Current {
@@ -59,15 +70,11 @@ namespace MonoDevelop.Ide.Gui.Search
 				if (curIndex < 0 || curIndex >= files.Count) {
 					return null;
 				}
-				if (!File.Exists(files[curIndex].ToString())) {
-					++curIndex;
-					return Current;
-				}
-
-				string fileName = files[curIndex].ToString();
+				
+				string fileName = files[curIndex];
 				foreach (Document document in IdeApp.Workbench.Documents) {
-					// WINDOWS DEPENDENCY : ToUpper
-					if (document.FileName != null && document.FileName.ToUpper() == fileName.ToUpper()) {
+					// WINDOWS DEPENDENCY: code insensitive check
+					if (document.FileName != null && 0 == String.Compare (document.FileName, fileName, StringComparison.OrdinalIgnoreCase)) {
 						IDocumentInformation doc = document.Window.ViewContent as IDocumentInformation;
 						if (doc != null) return doc;
 					}
@@ -78,7 +85,10 @@ namespace MonoDevelop.Ide.Gui.Search
 		
 		public bool MoveForward() 
 		{
-			return ++curIndex < files.Count;
+			while (++curIndex < files.Count)
+				if (IsValid())
+					return true;
+			return false;
 		}
 		
 		public bool MoveBackward()
@@ -87,9 +97,11 @@ namespace MonoDevelop.Ide.Gui.Search
 				curIndex = files.Count - 1;
 				return true;
 			}
-			return --curIndex >= -1;
+			while (--curIndex >= -1)
+				if (IsValid())
+					return true;
+			return false;
 		}
-		
 		
 		public abstract void Reset();
 	}
