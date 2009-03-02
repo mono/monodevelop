@@ -106,7 +106,7 @@
 	
 	<!-- highlighting -->
 	<Style name="comment" color="aluminium4"/>
-	<Style name="comment.keyword.todo" color="aluminium4" weight="italic" />
+	<Style name="comment.keyword.todo" color="aluminium4" bgColor="butter1" weight="bold" />
 	<Style name="comment.keyword" color="aluminium4" weight="bold" />
 	<Style name="comment.tag" color="aluminium4"/>
 	
