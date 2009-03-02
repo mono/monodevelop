@@ -29,6 +29,7 @@
 using System;
 using System.Text;
 using System.Collections;
+using System.Collections.Generic;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Text
@@ -96,15 +97,18 @@ namespace MonoDevelop.Projects.Text
 								str += " " + s;
 						}
 					}
-					
-					string[] encs = str.Split (' ');
-					ArrayList list = new ArrayList ();
+					List<string> encs = new List<string> (str.Split (' '));
+					List<TextEncoding> list = new List<TextEncoding> ();
+					// hack to insert UTF-16 as 2nd encoding in existing monodevelop properties
+					// can be taken out 2010.
+					if (!encs.Contains("UTF-16"))
+						encs.Insert (encs.Count > 0 ? 1 : 0, "UTF-16");
 					foreach (string id in encs) {
 						TextEncoding enc = GetEncoding (id);
 						if (enc != null)
 							list.Add (enc);
 					}
-					conversion = (TextEncoding[]) list.ToArray (typeof(TextEncoding));
+					conversion = list.ToArray ();
 				}
 				return conversion;
 			}
@@ -131,7 +135,7 @@ namespace MonoDevelop.Projects.Text
 			get { return "UTF-8"; }
 		}
 		
-		static string[] defaultEncodings = {"UTF-8", "ISO-8859-15"};
+		static string[] defaultEncodings = {"UTF-8", "UTF-16", "ISO-8859-15"};
 		
 		static string[,] encodings = {
 		

@@ -107,7 +107,7 @@ namespace MonoDevelop.Projects.Text
 			}
 		}
 		
-		public string GetFileEncoding (string fileName)
+		public static string GetFileEncoding (string fileName)
 		{
 			// Maybe this can be optimized later.
 			TextFile file = TextFile.ReadFile (fileName);
