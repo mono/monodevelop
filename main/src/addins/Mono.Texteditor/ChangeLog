@@ -1,5 +1,10 @@
 2009-03-02  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs: Worked on horizontal
+	  scrolling behavior.
+
+2009-03-02  Mike Krüger  <mkrueger@novell.com>
+
 	* Styles/OblivionStyle.xml: fixed "Bug 480800 - please
 	  highlight //TODO items as gedit does in oblivion style"
 
