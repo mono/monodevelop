@@ -287,7 +287,7 @@ namespace MonoDevelop.Debugger
 			
 			state.Load ();
 
-			Console.WriteLine ("pp object tree view update: " + (DateTime.Now - t).TotalMilliseconds);
+//			Console.WriteLine ("pp object tree view update: " + (DateTime.Now - t).TotalMilliseconds);
 		}
 
 		void RegisterValue (ObjectValue val, TreeIter it)
