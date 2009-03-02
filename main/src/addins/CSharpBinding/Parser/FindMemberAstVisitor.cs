@@ -379,7 +379,7 @@ namespace MonoDevelop.CSharpBinding
 				} else if (searchedMember is IMember && result is MemberResolveResult) {
 					IMember item = ((MemberResolveResult)result).ResolvedMember;
 					IMember m = item as IMember;
-					if (m != null /*&& IsExpectedClass (m.DeclaringType)*/ &&
+					if (m != null /*&& IsExpectedClass (m.DeclaringType)*/ && ((IMember)searchedMember).DeclaringType.FullName == item.DeclaringType.FullName &&
 						((searchedMember is IField && item is IField) || (searchedMember is IMethod && item is IMethod) ||
 						 (searchedMember is IProperty && item is IProperty) || (searchedMember is IEvent && item is IEvent))) {
 						//Debug ("adding IdentifierExpression searchedMember", searchedMember.Name, idExp);
@@ -421,6 +421,7 @@ namespace MonoDevelop.CSharpBinding
 							AddUniqueReference (line, column, searchedMemberName);
 						return base.VisitMemberReferenceExpression (fieldExp, data);
 					}
+					return null;
 				}
 				IType cls = resolveResult != null ? resolver.Dom.GetType (resolveResult.ResolvedType) : null;
 				if (cls != null) {
