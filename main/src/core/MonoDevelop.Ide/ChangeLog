@@ -1,5 +1,13 @@
 2009-03-02  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Makefile.am:
+	* MonoDevelop.Ide.csproj:
+	* MonoDevelop.Ide.Gui.Dialogs/BreakpointPropertiesDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.BreakpointPropertiesDialog.cs:
+	  Breakpoint properties dialog moved to MD.Debugger.
+
+2009-03-02  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui/Document.cs: Fixed NRE when the current
 	  view does not have a file name.
 
