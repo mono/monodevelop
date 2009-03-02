@@ -1,5 +1,10 @@
 2009-03-02  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide.Gui.Search/CurrentProjectDocumentIterator.cs:
+	  Saner implementation. Don't add duplicate files.
+
+2009-03-02  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs: Partial
 	  workaround for results that have a bad encoding.
 

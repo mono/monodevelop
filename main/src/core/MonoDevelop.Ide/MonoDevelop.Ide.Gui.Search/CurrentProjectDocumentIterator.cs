@@ -24,7 +24,7 @@
 // 
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
@@ -49,25 +49,25 @@ namespace MonoDevelop.Ide.Gui.Search
 			return GettextCatalog.GetString ("Replacing '{0}' in project '{1}'", pattern, projectName);
 		}
 		
-		public override void Reset() 
+		public override void Reset () 
 		{
-			files.Clear();
-			Document document;
-			if (IdeApp.Workspace.IsOpen && 
-			   ((document = IdeApp.Workbench.ActiveDocument) != null) &&
-			   //FIXME: when document.FileName == null, maybe it's interesting to pick the file selected on the project pad...
-			   (document.FileName != null)) {
-				Project theProject = IdeApp.Workspace.GetProjectContainingFile (document.FileName);
-				projectName = theProject.Name;
-				foreach (ProjectFile file in theProject.Files)
-					if (file.Subtype == Subtype.Code)
-						files.Add(file.Name);
-			} else {
+			files.Clear ();
+			curIndex = -1;
+			
+			Project proj;
+			if (!IdeApp.Workspace.IsOpen ||
+					((proj = IdeApp.ProjectOperations.CurrentSelectedProject) == null &&
+					(IdeApp.Workbench.ActiveDocument == null || (proj = IdeApp.Workbench.ActiveDocument.Project) == null)))
+			{
 				//FIXME: it may be interesting to show a warning dialog/message to the user in this case
 				projectName = GettextCatalog.GetString ("(none selected)");
+				return;
 			}
 			
-			curIndex = -1;
+			HashSet<string> added = new HashSet<string> ();
+			foreach (ProjectFile file in proj.Files)
+				if (file.Subtype == Subtype.Code && added.Add (file.Name))
+					files.Add (file.Name);
 		}
 	}
 }
