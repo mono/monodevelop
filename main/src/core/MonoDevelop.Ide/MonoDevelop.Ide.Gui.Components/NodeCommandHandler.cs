@@ -144,7 +144,8 @@ namespace MonoDevelop.Ide.Gui.Components
 				canDeleteFlags |= CanDeleteFlags.Checked;
 				if (GetType().GetMethod ("DeleteItem").DeclaringType != typeof(NodeCommandHandler))
 					canDeleteFlags |= CanDeleteFlags.Single;
-				if (GetType().GetMethod ("DeleteMultipleItems").DeclaringType != typeof(NodeCommandHandler))
+				if (GetType().GetMethod ("DeleteMultipleItems").DeclaringType != typeof(NodeCommandHandler) &&
+				    GetType().GetMethod ("CanDeleteItem").DeclaringType == typeof(NodeCommandHandler))
 					canDeleteFlags |= CanDeleteFlags.Multiple;
 			}
 			return (canDeleteFlags & flag) != 0;
