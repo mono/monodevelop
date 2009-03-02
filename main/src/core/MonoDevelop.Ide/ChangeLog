@@ -1,5 +1,9 @@
 2009-03-02  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* gtk-gui/gui.stetic: Remove unused dialog.
+
+2009-03-02  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Ide.csproj:
 	* MonoDevelop.Ide.Gui.Dialogs/BreakpointPropertiesDialog.cs:
