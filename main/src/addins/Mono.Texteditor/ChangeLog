@@ -1,3 +1,15 @@
+2009-03-03  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* Mono.TextEditor.csproj:
+	* Styles/OblivionStyle.xml:
+	* Styles/TangoLightStyle.xml:
+	* SyntaxModes/DiffSyntaxMode.xml:
+	* Mono.TextEditor.Highlighting/Span.cs:
+	* Mono.TextEditor.Highlighting/Style.cs:
+	* Mono.TextEditor.Highlighting/SyntaxMode.cs: Added diff file
+	  syntax mode.
+
 2009-03-02  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextEditor.cs: Worked on horizontal

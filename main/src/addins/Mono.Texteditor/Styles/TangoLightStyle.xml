@@ -70,6 +70,19 @@
 		</Style>
 	</Style>
 	
+	<Style name="diff">
+		<Style name="line-added" color="skyblue2"/>
+		<Style name="line-removed" color="scarletred1"/>
+		<Style name="line-changed" color="plum2"/>
+		
+		<Style name="header" color="black" weight="bold"/>
+		<Style name="header-seperator" color="black" weight="bold"/>
+		<Style name="header-oldfile" color="scarletred1" weight="bold"/>
+		<Style name="header-newfile" color="skyblue2" weight="bold"/>
+		
+		<Style name="location" color="plum2" weight="bold"/>
+	</Style>
+	
 	<Style name="caret" color="black" bgColor="white"/>
 	
 	<Style name="marker">

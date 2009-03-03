@@ -372,6 +372,8 @@ namespace Mono.TextEditor.Highlighting
 						Span[] spanList = spanTree[ch];
 						for (int l = 0; l < spanList.Length; l++) {
 							Span span = spanList[l];
+							if (span.BeginFlags.Contains ("startsLine") && i != line.Offset)
+								continue;
 							bool mismatch = false;
 							for (int j = 1; j < span.Begin.Length; j++) {
 								if (i + j >= doc.Length || span.Begin [j] != doc.GetCharAt (i + j)) {

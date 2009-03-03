@@ -363,6 +363,15 @@ namespace Mono.TextEditor.Highlighting
 			
 			SetStyle (ErrorUnderlineString, new ChunkStyle (new Gdk.Color (255, 0, 0)));
 			SetStyle (WarningUnderlineString, new ChunkStyle (new Gdk.Color (30, 30, 255)));
+			
+			SetStyle ("diff.line-added", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0,  0x8B,  0x8B), ChunkProperties.None));
+			SetStyle ("diff.line-removed", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0x6A, 0x5A, 0xCD), ChunkProperties.None));
+			SetStyle ("diff.line-changed", new ReferencedChunkStyle (this, "text.preprocessor"));
+			SetStyle ("diff.header", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 128,  0), ChunkProperties.Bold));
+			SetStyle ("diff.header-seperator", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0,  0,  255)));
+			SetStyle ("diff.header-oldfile", new ReferencedChunkStyle (this, "diff.header"));
+			SetStyle ("diff.header-newfile", new ReferencedChunkStyle (this, "diff.header"));
+			SetStyle ("diff.location", new ReferencedChunkStyle (this, "keyword.misc"));
 		}
 		
 		protected void PopulateDefaults ()
@@ -413,6 +422,7 @@ namespace Mono.TextEditor.Highlighting
 			SetStyle ("keyword.declaration", new Mono.TextEditor.ChunkStyle (new Gdk.Color (165,  42,  42), ChunkProperties.Bold));
 			SetStyle ("keyword.parameter", new Mono.TextEditor.ChunkStyle (new Gdk.Color (165,  42,  42), ChunkProperties.Bold));
 			SetStyle ("keyword.misc", new Mono.TextEditor.ChunkStyle (new Gdk.Color (165,  42,  42), ChunkProperties.Bold));
+			
 		}
 		
 		void SetStyle (string name, ChunkStyle style)
@@ -442,13 +452,13 @@ namespace Mono.TextEditor.Highlighting
 				fallbackName = fallbackName.Substring (0, dotIndex);
 				if (styleLookupTable.TryGetValue (fallbackName, out style)) {
 					styleLookupTable[name] = style;
-					Console.WriteLine ("Chunk style {0} fell back to {1}", name, fallbackName);
+				//	Console.WriteLine ("Chunk style {0} fell back to {1}", name, fallbackName);
 					return style;
 				}
 				dotIndex = fallbackName.LastIndexOf ('.');
 			}
 			
-			Console.WriteLine ("Chunk style {0} fell back to default", name);
+		//	Console.WriteLine ("Chunk style {0} fell back to default", name);
 			return GetDefaultChunkStyle ();
 		}
 		
