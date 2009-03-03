@@ -151,6 +151,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.radioUpdateExternal = new Gtk.RadioButton(Mono.Unix.Catalog.GetString("_External"));
             this.radioUpdateExternal.CanFocus = true;
             this.radioUpdateExternal.Name = "radioUpdateExternal";
+            this.radioUpdateExternal.Active = true;
             this.radioUpdateExternal.DrawIndicator = true;
             this.radioUpdateExternal.UseUnderline = true;
             this.radioUpdateExternal.Group = new GLib.SList(System.IntPtr.Zero);

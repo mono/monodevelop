@@ -227,6 +227,12 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 						project.AddFile (file.Path);
 
 					projects.Add (project);
+				} else {
+					ProjectFolder pf = node.DataItem as ProjectFolder;
+					if (pf != null) {
+						project.AddDirectory (FileService.AbsoluteToRelativePath (project.BaseDirectory, pf.Path));
+						projects.Add (project);
+					}
 				}
 			}
 			IdeApp.ProjectOperations.Save (projects);
@@ -238,7 +244,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			foreach (ITreeNavigator nav in CurrentNodes) {
 				Project project = nav.GetParentDataItem (typeof (Project), true) as Project;
 				string thisPath = GetFolderPath (nav.DataItem);
-				if (HasProjectFiles (project, thisPath)) {
+				if (PathExistsInProject (project, thisPath)) {
 					item.Visible = false;
 					return;
 				}
@@ -277,11 +283,12 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			nav.MoveToParent ();
 		}
 		
-		bool HasProjectFiles (Project project, string path)
+		internal static bool PathExistsInProject (Project project, string path)
 		{
-			string basePath = path + Path.DirectorySeparatorChar;
+			string basePath = path;
 			foreach (ProjectFile f in project.Files)
-				if (f.Name.StartsWith (basePath))
+				if (f.Name.StartsWith (basePath)
+				    && (f.Name.Length == basePath.Length || f.Name[basePath.Length] == Path.DirectorySeparatorChar))
 					return true;
 			return false;
 		}

@@ -55,7 +55,7 @@ using Services = MonoDevelop.Projects.Services;
 namespace MonoDevelop.SourceEditor
 {	
 	public class SourceEditorView : AbstractViewContent, IExtensibleTextEditor, IBookmarkBuffer, IClipboardHandler, 
-		ICompletionWidget, IDocumentInformation, ISplittable, IFoldable, IToolboxDynamicProvider, 
+		ICompletionWidget, IDocumentInformation, ISplittable, IFoldable, IToolboxDynamicProvider, IEncodedTextContent,
 		ICustomFilteringToolboxConsumer, IZoomable, ITextEditorResolver, Mono.TextEditor.ITextEditorDataProvider
 #if GNOME_PRINT
 		, IPrintable
@@ -187,7 +187,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public override void Save (string fileName)
 		{
-			Save (fileName, null);
+			Save (fileName, this.encoding);
 		}
 		
 		public void Save (string fileName, string encoding)
@@ -211,7 +211,7 @@ namespace MonoDevelop.SourceEditor
 			
 			isInWrite = true;
 			try {
-				MonoDevelop.Projects.Text.TextFile.WriteFile (fileName, Document.Text, encoding);
+				TextFile.WriteFile (fileName, Document.Text, encoding);
 				lastSaveTime = File.GetLastWriteTime (fileName);
 			} finally {
 				isInWrite = false;
@@ -235,6 +235,7 @@ namespace MonoDevelop.SourceEditor
 		
 		
 		bool warnOverwrite = false;
+		string encoding = null;
 		public void Load (string fileName, string encoding)
 		{
 			if (warnOverwrite) {
@@ -242,10 +243,11 @@ namespace MonoDevelop.SourceEditor
 				widget.RemoveReloadBar ();
 				WorkbenchWindow.ShowNotification = false;
 			}
-			
 			Document.MimeType = IdeApp.Services.PlatformService.GetMimeTypeForUri (fileName);
 			widget.SetMime (Document.MimeType);
-			Document.Text = MonoDevelop.Projects.Text.TextFile.ReadFile (fileName, encoding).Text;
+			TextFile file = TextFile.ReadFile (fileName, encoding);
+			Document.Text = file.Text;
+			this.encoding = file.SourceEncoding;
 			ContentName = fileName;
 			widget.ParsedDocument = ProjectDomService.GetParsedDocument (fileName);
 //			InitializeFormatter ();
@@ -255,6 +257,10 @@ namespace MonoDevelop.SourceEditor
 
 			widget.PopulateClassCombo ();
 			this.IsDirty = false;
+		}
+		
+		public string SourceEncoding {
+			get { return encoding; }
 		}
 		
 		public override void Dispose()

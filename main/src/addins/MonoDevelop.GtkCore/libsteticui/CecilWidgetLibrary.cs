@@ -48,6 +48,7 @@ namespace Stetic
 		bool info_changed;
 		bool objects_dirty;
 		AssemblyDefinition assembly;
+		LibraryCache.LibraryInfo cache_info;
 		
 		public CecilWidgetLibrary (AssemblyResolver resolver, string path)
 		{
@@ -55,14 +56,16 @@ namespace Stetic
 			this.resolver = resolver;
 
 			if (System.IO.File.Exists (path))
-				filename = System.IO.Path.GetFullPath (path);
+				filename = path;
 			else if (resolver != null)
 				filename = resolver.Resolve (path, null);
 			
 			if (filename == null)
 				filename = path;
+			else
+				filename = System.IO.Path.GetFullPath (filename);
 
-			cache.Refresh (resolver, filename);
+			RefreshFromCache ();
 		}
 
 		public override string Name {
@@ -71,7 +74,7 @@ namespace Stetic
 		
 		public override bool NeedsReload {
 			get {
-				cache.Refresh (resolver, name);
+				cache.Refresh (resolver, filename);
 				return info_changed; 
 			}
 		}
@@ -86,17 +89,19 @@ namespace Stetic
 		
 		public override void Load ()
 		{
-			LibraryCache.LibraryInfo info = cache.Refresh (resolver, name);
+			canGenerateCode = true;
+			
+			RefreshFromCache ();
+			if (cache_info == null || !File.Exists (filename))
+				return;
+			
 			assembly = AssemblyFactory.GetAssembly (filename);
 
 			objects_dirty = false;
-			Load (info.ObjectsDocument);
+			Load (cache_info.ObjectsDocument);
 			if (objects_dirty)
-				info.WriteObjectsFile ();
+				cache_info.WriteObjectsFile ();
 			
-			info.Changed += delegate { info_changed = true; };
-
-			canGenerateCode = true;
 			foreach (string dep in GetLibraryDependencies ()) {
 				WidgetLibrary lib = Registry.GetWidgetLibrary (dep);
 				if (lib != null && !lib.CanGenerateCode)
@@ -105,6 +110,32 @@ namespace Stetic
 			assembly = null;
 			info_changed = false;
 		}
+		
+		void RefreshFromCache ()
+		{
+			LibraryCache.LibraryInfo newInfo = cache.Refresh (resolver, filename);
+			if (newInfo != cache_info) {
+				if (cache_info != null)
+					cache_info.Changed -= OnCacheInfoChanged;
+				cache_info = newInfo;
+				cache_info.Changed += OnCacheInfoChanged;
+			}
+		}
+		
+		void OnCacheInfoChanged (object o, EventArgs a)
+		{
+			info_changed = true;
+		}
+		
+		public override void Dispose ()
+		{
+			base.Dispose ();
+			if (cache_info != null) {
+				cache_info.Changed -= OnCacheInfoChanged;
+				cache_info = null;
+			}
+		}
+
 		
 		protected override ClassDescriptor LoadClassDescriptor (XmlElement element)
 		{
@@ -166,33 +197,7 @@ namespace Stetic
 		
 		AssemblyDefinition ResolveAssembly (AssemblyNameReference aref)
 		{
-			string bpath = Path.Combine (Path.GetDirectoryName (filename), aref.Name);
-			string filePath = null;
-			
-			if (resolver != null)
-				filePath = resolver.Resolve (aref.FullName, null);
-			    
-			if (filePath != null) {
-				if (File.Exists (bpath + ".dll"))
-					filePath = bpath + ".dll";
-				if (File.Exists (bpath + ".exe"))
-					filePath = bpath + ".exe";
-			}
-				
-			AssemblyDefinition adef = null;
-			if (filePath != null) {
-				adef = AssemblyFactory.GetAssembly (filePath);
-			}
-			else {
-				try {
-					adef = resolver.Resolve (aref);
-				} catch {
-					// If can't resolve, just return null
-					return null;
-				}
-			}
-			
-			return adef;
+			return resolver.Resolve (aref, Path.GetDirectoryName (filename));
 		}
 		
 		internal TypeDefinition FindTypeDefinition (string fullName)
@@ -235,16 +240,19 @@ namespace Stetic
 		
 		void LoadDependencies ()
 		{
-			LibraryCache.LibraryInfo info = cache.Refresh (resolver, name);
-			if (info == null || info.ObjectsDocument == null) {
+			RefreshFromCache ();
+			if (cache_info == null || cache_info.ObjectsDocument == null) {
 				dependencies = new string[0];
 				return;
 			}
-			XmlElement elem = info.ObjectsDocument.DocumentElement ["dependencies"];
-			ArrayList list = new ArrayList ();
-			foreach (XmlElement dep in elem.SelectNodes ("dependency"))
-				list.Add (dep.InnerText);
-			dependencies = (string[]) list.ToArray (typeof(string));
+			XmlElement elem = cache_info.ObjectsDocument.DocumentElement ["dependencies"];
+			if (elem != null) {
+				ArrayList list = new ArrayList ();
+				foreach (XmlElement dep in elem.SelectNodes ("dependency"))
+					list.Add (dep.InnerText);
+				dependencies = (string[]) list.ToArray (typeof(string));
+			} else
+				dependencies = new string[0];
 		}
 		
 		public static bool IsWidgetLibrary (string path)
@@ -275,7 +283,7 @@ namespace Stetic
 		{
 			List<ComponentType> list = new List<ComponentType> ();
 
-			LibraryCache.LibraryInfo info = cache.Refresh (null, filename);
+			LibraryCache.LibraryInfo info = cache.Refresh (new AssemblyResolver (app.Backend), filename);
 			if (info.ObjectsDocument == null)
 				return list;
 
@@ -346,5 +354,13 @@ namespace Stetic
 			}
 			return null;
 		}
+		
+		public override void Flush ()
+		{
+			base.Flush ();
+			if (resolver != null)
+				resolver.ClearCache ();
+		}
+
 	}
 }

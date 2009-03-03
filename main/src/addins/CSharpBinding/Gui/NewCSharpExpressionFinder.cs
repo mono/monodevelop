@@ -256,7 +256,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 		
 		int LocationToOffset(Location location)
 		{
-			if (location.Line <= 0) return -1;
+			if (location.Line <= 0 || location.Line -1 >= lineOffsets.Count) return -1;
 			return lineOffsets[location.Line - 1] + location.Column - 1;
 		}
 		

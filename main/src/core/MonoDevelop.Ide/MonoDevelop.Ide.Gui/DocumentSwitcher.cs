@@ -27,6 +27,8 @@
 //
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Gdk;
 using Gtk;
 using MonoDevelop.Ide.Gui;
@@ -38,6 +40,7 @@ namespace MonoDevelop.Ide
 		Gtk.ListStore padListStore;
 		Gtk.ListStore documentListStore;
 		Gtk.TreeView  treeviewPads, treeviewDocuments;
+		List<Document> documents;
 		
 		class MyTreeView : Gtk.TreeView
 		{
@@ -63,11 +66,23 @@ namespace MonoDevelop.Ide
 			}
 		}
 		
+		Pixbuf GetIconForDocument (MonoDevelop.Ide.Gui.Document document, Gtk.IconSize iconSize)
+		{
+			if (!string.IsNullOrEmpty (document.Window.ViewContent.StockIconId))
+				return IdeApp.Services.Resources.GetBitmap (document.Window.ViewContent.StockIconId, iconSize);
+			if (string.IsNullOrEmpty (document.FileName)) 
+				return IdeApp.Services.Resources.GetBitmap (MonoDevelop.Core.Gui.Stock.MiscFiles, iconSize);
+			string icName = MonoDevelop.Projects.Gui.Services.Icons.GetImageForFile (document.FileName);
+			if (icName != MonoDevelop.Core.Gui.Stock.MiscFiles || !System.IO.File.Exists (document.FileName))
+				return IdeApp.Services.Resources.GetIcon (icName, Gtk.IconSize.Menu);
+			return IdeApp.Services.PlatformService.GetPixbufForFile (document.FileName, iconSize);
+		}
+		
 		void ShowSelectedDocument ()
 		{
 			MonoDevelop.Ide.Gui.Document document = SelectedDocument;
 			if (document != null) {
-				ShowType (MonoDevelop.Ide.Gui.IdeApp.Services.Resources.GetBitmap (string.IsNullOrEmpty (document.Window.ViewContent.StockIconId) ? MonoDevelop.Core.Gui.Stock.MiscFiles : document.Window.ViewContent.StockIconId, Gtk.IconSize.Dialog),
+				ShowType (GetIconForDocument (document, IconSize.Dialog),
 				          System.IO.Path.GetFileName (document.Name),
 				          document.Window.DocumentType,
 				          document.FileName);
@@ -76,6 +91,7 @@ namespace MonoDevelop.Ide
 		
 		public DocumentSwitcher (Gtk.Window parent, bool startWithNext) : base(Gtk.WindowType.Toplevel)
 		{
+			this.documents = new List<Document> (IdeApp.Workbench.Documents.OrderByDescending (d => d.LastTimeActive));
 			this.TransientFor = parent;
 			this.CanFocus = true;
 			this.Decorated = false;
@@ -157,18 +173,18 @@ namespace MonoDevelop.Ide
 		
 		Document GetNextDocument (Document doc)
 		{
-			if (IdeApp.Workbench.Documents.Count == 0)
+			if (documents.Count == 0)
 				return null;
-			int index = IdeApp.Workbench.Documents.IndexOf (doc);
-			return IdeApp.Workbench.Documents [(index + 1) % IdeApp.Workbench.Documents.Count];
+			int index = documents.IndexOf (doc);
+			return documents [(index + 1) % documents.Count];
 		}
 		
 		Document GetPrevDocument (Document doc)
 		{
-			if (IdeApp.Workbench.Documents.Count == 0)
+			if (documents.Count == 0)
 				return null;
-			int index = IdeApp.Workbench.Documents.IndexOf (doc);
-			return IdeApp.Workbench.Documents [(index + IdeApp.Workbench.Documents.Count - 1) % IdeApp.Workbench.Documents.Count];
+			int index = documents.IndexOf (doc);
+			return documents [(index + documents.Count - 1) % documents.Count];
 		}
 		
 		Document SelectedDocument {
@@ -263,8 +279,8 @@ namespace MonoDevelop.Ide
 				                           pad);
 			}
 			
-			foreach (Document doc in IdeApp.Workbench.Documents) {
-				documentListStore.AppendValues (IdeApp.Services.Resources.GetBitmap (String.IsNullOrEmpty (doc.Window.ViewContent.StockIconId) ? MonoDevelop.Core.Gui.Stock.MiscFiles : doc.Window.ViewContent.StockIconId, IconSize.Menu),
+			foreach (Document doc in documents) {
+				documentListStore.AppendValues (GetIconForDocument (doc, IconSize.Menu),
 				                                doc.Window.Title,
 				                                doc);
 			}

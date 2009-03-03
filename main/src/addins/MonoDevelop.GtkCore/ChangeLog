@@ -1,3 +1,13 @@
+2009-03-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/gui.stetic: Flush.
+
+2009-03-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.GtkCore.GuiBuilder/GtkProjectServiceExtension.cs:
+	  Don't try to generate files when not building inside the
+	  IDE.
+
 2009-02-27  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.GtkCore/GtkDesignInfo.cs: In

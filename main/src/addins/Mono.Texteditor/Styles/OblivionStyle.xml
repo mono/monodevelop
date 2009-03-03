@@ -74,6 +74,19 @@
 	<Style name="marker.bookmark.color1" color="aluminium1"/>
 	<Style name="marker.bookmark.color2" color="aluminium4"/>
 	
+	<Style name="diff">
+		<Style name="line-added" color="butter2"/>
+		<Style name="line-removed" color="skyblue1"/>
+		<Style name="line-changed" color="plum1"/>
+		
+		<Style name="header" color="chameleon1" weight="bold"/>
+		<Style name="header-seperator" color="aluminium4"/>
+		<Style name="header-oldfile" color="chameleon1" weight="bold"/>
+		<Style name="header-newfile" color="chameleon1" weight="bold"/>
+		
+		<Style name="location" color="chameleon1"/>
+	</Style>
+
 	<!-- TODO: override defaults
 	<Style name="marker.underline" color="red"/>
 	<Style name="marker.underline.error" color="red"/>
@@ -106,7 +119,7 @@
 	
 	<!-- highlighting -->
 	<Style name="comment" color="aluminium4"/>
-	<Style name="comment.keyword.todo" color="aluminium4" weight="italic" />
+	<Style name="comment.keyword.todo" color="aluminium4" bgColor="butter1" weight="bold" />
 	<Style name="comment.keyword" color="aluminium4" weight="bold" />
 	<Style name="comment.tag" color="aluminium4"/>
 	

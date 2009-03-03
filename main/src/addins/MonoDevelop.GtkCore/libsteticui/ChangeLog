@@ -1,3 +1,24 @@
+2009-03-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* LibraryCache.cs: Avoid recursive loading of
+	  AssemblyDefinition. Rely on cache info to check if a
+	  referenced library contains widget definitions.
+
+	* AssemblyResolver.cs: Make sure the resolver returns full
+	  paths.
+
+	* CecilWidgetLibrary.cs: Use the full path to query info from
+	  the cache. Properly unsubscribe the Changed event from the
+	  cache. Resolve assemblies using the provided assembly
+	  resolver.
+
+	* ApplicationBackend.cs:
+	* AssemblyWidgetLibrary.cs: From now on the registry and the
+	  library cache only handle libraries with full paths.
+
+	* Project.cs: Make sure unused project backends are properly
+	  disposed.
+
 2009-02-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* libsteticui.csproj: Flush.

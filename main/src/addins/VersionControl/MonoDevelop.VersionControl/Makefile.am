@@ -80,6 +80,7 @@ RES =  \
 	menu_log.png \
 	menu_remote_status.png \
 	menu_remove.png \
+	menu_resolve.png \
 	menu_revert.png \
 	menu_status.png \
 	menu_update.png \

@@ -277,18 +277,18 @@ namespace MonoDevelop.RegexToolkit
 			this.resultStore.Clear ();
 			
 			foreach (Match match in regex.Matches (input)) {
-				TreeIter iter = this.resultStore.AppendValues (Stock.Find, String.Format ("Match '{0}'", match.Value), match.Index, match.Length);
+				TreeIter iter = this.resultStore.AppendValues (Stock.Find, String.Format (GettextCatalog.GetString("Match '{0}'"), match.Value), match.Index, match.Length);
 				int i = 0;
 				foreach (Group group in match.Groups) {
 					if (i > 0) {
 						TreeIter groupIter;
 						if (group.Success) {
-							groupIter = this.resultStore.AppendValues (iter, Stock.Apply, String.Format ("Group '{0}':'{1}'", regex.GroupNameFromNumber (i), group.Value), group.Index, group.Length);
+							groupIter = this.resultStore.AppendValues (iter, Stock.Apply, String.Format (GettextCatalog.GetString("Group '{0}':'{1}'"), regex.GroupNameFromNumber (i), group.Value), group.Index, group.Length);
 							foreach (Capture capture in match.Captures) {
-								this.resultStore.AppendValues (groupIter, null, String.Format ("Capture '{0}'", capture.Value), capture.Index, capture.Length);
+								this.resultStore.AppendValues (groupIter, null, String.Format (GettextCatalog.GetString("Capture '{0}'"), capture.Value), capture.Index, capture.Length);
 							}
 						} else {
-							groupIter = this.resultStore.AppendValues (iter, Stock.Cancel, String.Format ("Group '{0}' not found", regex.GroupNameFromNumber (i)), -1, -1);
+							groupIter = this.resultStore.AppendValues (iter, Stock.Cancel, String.Format (GettextCatalog.GetString("Group '{0}' not found"), regex.GroupNameFromNumber (i)), -1, -1);
 						}
 
 					}
@@ -351,12 +351,12 @@ namespace MonoDevelop.RegexToolkit
 		void FillOptionsBox ()
 		{
 			Options[] options = {
-				new Options (RegexOptions.IgnorePatternWhitespace, "Ignore Whitespace"),
-				new Options (RegexOptions.IgnoreCase, "Ignore case"),
-				new Options (RegexOptions.Singleline, "Single line"),
-				new Options (RegexOptions.Multiline, "Multi line"),
-				new Options (RegexOptions.ExplicitCapture, "Explicit Capture"),
-				new Options (RegexOptions.RightToLeft, "Right to left")
+				new Options (RegexOptions.IgnorePatternWhitespace, GettextCatalog.GetString("Ignore Whitespace")),
+				new Options (RegexOptions.IgnoreCase, GettextCatalog.GetString("Ignore case")),
+				new Options (RegexOptions.Singleline, GettextCatalog.GetString("Single line")),
+				new Options (RegexOptions.Multiline, GettextCatalog.GetString("Multi line")),
+				new Options (RegexOptions.ExplicitCapture, GettextCatalog.GetString("Explicit Capture")),
+				new Options (RegexOptions.RightToLeft, GettextCatalog.GetString("Right to left"))
 			};
 			foreach (Options option in options) {
 				this.optionsStore.AppendValues (false, option.Name, option);

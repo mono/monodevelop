@@ -1,3 +1,27 @@
+2009-03-03  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* icons/template-16.png:
+	* MonoDevelop.Core.Gui.csproj:
+	* MonoDevelop.Core.Gui.addin.xml: Added icon for code
+	  templates.
+
+2009-03-03  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* icons/keyword-16.png:
+	* MonoDevelop.Core.Gui.csproj:
+	* MonoDevelop.Core.Gui.addin.xml: Added icon for keywords
+
+2009-03-03  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Core.Gui.addin.xml: added text/x-patch mime.
+
+2009-02-28  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Core.Gui/MessageService.cs: Better message for
+	  saving before building. Thanks to Bálint Kriván.
+
 2009-02-25  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Core.Gui.addin.xml: Fix translatable strings.

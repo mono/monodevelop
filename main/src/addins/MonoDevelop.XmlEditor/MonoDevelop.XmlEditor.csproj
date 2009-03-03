@@ -157,6 +157,7 @@
     <Compile Include="MonoDevelop.XmlEditor.Completion\XmlMultipleClosingTagCompletionData.cs" />
     <Compile Include="MonoDevelop.Xml.StateEngine\XmlParsedDocument.cs" />
     <Compile Include="MonoDevelop.XmlEditor\XmlDocumentParser.cs" />
+    <Compile Include="MonoDevelop.XmlEditor.Completion\InferredXmlCompletionProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="XmlEditor.glade" />

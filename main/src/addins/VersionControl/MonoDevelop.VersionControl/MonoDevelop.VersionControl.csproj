@@ -111,6 +111,7 @@
     <EmbeddedResource Include="overlay_unversioned.png" />
     <EmbeddedResource Include="menu_add.png" />
     <EmbeddedResource Include="menu_remove.png" />
+    <EmbeddedResource Include="menu_resolve.png" />
     <EmbeddedResource Include="comment.png" />
     <EmbeddedResource Include="menu_revert.png" />
     <EmbeddedResource Include="overlay_lock_required.png" />

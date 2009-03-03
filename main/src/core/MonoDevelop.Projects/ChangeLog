@@ -1,3 +1,26 @@
+2009-03-03  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom/DomCecilType.cs: added new
+	  constructor.
+
+2009-03-03  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom/IParameter.cs:
+	* MonoDevelop.Projects.Dom/DomParameter.cs:
+	* MonoDevelop.Projects.Dom/LocalVariable.cs: Added stock icon
+	  properties for parameters & local variables.
+
+2009-03-02  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Text/TextFile.cs:
+	* MonoDevelop.Projects.Text/TextEncoding.cs: Worked on "Bug
+	  480556 - MonoDevelop can't handle UTF-16 source files".
+
+2009-02-27  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs:
+	  MSBuildified directory names should end with '\', not '/'.
+
 2009-02-27  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/ProjectReference.cs: Added missing null

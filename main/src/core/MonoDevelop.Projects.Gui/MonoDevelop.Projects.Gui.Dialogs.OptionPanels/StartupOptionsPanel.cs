@@ -51,12 +51,16 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			foreach (SolutionEntityItem it in sol.GetAllSolutionItems<SolutionEntityItem> ()) {
 				// Include in the list if it can run in any of the existing execution modes and configurations
 				foreach (IExecutionMode mode in Runtime.ProcessService.GetExecutionModes ()) {
+					bool matched = false;
 					foreach (string sc in sol.GetConfigurations ()) {
 						if (it.CanExecute (new ExecutionContext (mode, null), sc)) {
 							startupItems.Add (it);
+							matched = true;
 							break;
 						}
 					}
+					if (matched)
+						break;
 				}
 			}
 			
@@ -65,7 +69,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			
 			CellRendererToggle crt = new CellRendererToggle ();
 			treeItems.AppendColumn ("", crt, "active", 1);
-			treeItems.AppendColumn ("Project", new CellRendererText (), "text", 2);
+			treeItems.AppendColumn (GettextCatalog.GetString ("Project"), new CellRendererText (), "text", 2);
 			
 			if (startupItems.Count > 0) {
 				for (int n=0; n<startupItems.Count; n++) {

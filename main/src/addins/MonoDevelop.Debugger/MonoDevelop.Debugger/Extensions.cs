@@ -114,7 +114,7 @@ namespace MonoDevelop.Debugger
 
 		public static bool CanDebug (this Document doc)
 		{
-			return IdeApp.ProjectOperations.CanDebugFile (doc.FileName);
+			return doc.FileName != null && IdeApp.ProjectOperations.CanDebugFile (doc.FileName);
 		}
 	}
 }

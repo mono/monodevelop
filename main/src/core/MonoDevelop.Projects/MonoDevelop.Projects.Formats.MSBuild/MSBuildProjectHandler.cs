@@ -643,8 +643,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				return;
 			
 			//directory paths must end with '/'
-			if ((file.Subtype == Subtype.Directory) && path[path.Length-1] != '/')
-				path = path + "/";
+			if ((file.Subtype == Subtype.Directory) && path[path.Length-1] != '\\')
+				path = path + "\\";
 			
 			MSBuildItem buildItem = msproject.AddNewItem (itemName, path);
 			WriteBuildItemMetadata (ser, buildItem, file);

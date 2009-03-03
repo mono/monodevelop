@@ -29,8 +29,10 @@ using System;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core;
 using Mono.Debugging.Client;
+using MonoDevelop.Projects;
+using MonoDevelop.Ide.Gui;
 
-namespace MonoDevelop.Ide.Gui.Dialogs
+namespace MonoDevelop.Debugger
 {
 	public partial class BreakpointPropertiesDialog : Gtk.Dialog
 	{
@@ -70,6 +72,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			else {
 				radioActionTrace.Active = true;
 				entryTraceExpr.Text = bp.TraceExpression;
+			}
+			
+			Project project = IdeApp.Workspace.GetProjectContainingFile (bp.FileName);
+			if (project != null) {
+				boxConditionOptions.Sensitive = DebuggingService.IsFeatureSupported (project, DebuggerFeatures.ConditionalBreakpoints);
+				boxAction.Sensitive = DebuggingService.IsFeatureSupported (project, DebuggerFeatures.Tracepoints);
 			}
 			
 			UpdateControls ();

@@ -118,7 +118,13 @@ namespace MonoDevelop.XmlEditor.Gui
 					if (!found)
 						DocType = null;
 				}
+				
+				OnParsedDocumentUpdated ();
 			}
+		}
+		
+		protected virtual void OnParsedDocumentUpdated ()
+		{
 		}
 
 		#endregion

@@ -270,6 +270,14 @@ namespace MonoDevelop.AssemblyBrowser
 					if (result != null)
 						return result;
 					nav.MoveToParent ();
+					if (nav.Options["PublicApiOnly"]) {
+						nav.Options["PublicApiOnly"] = false;
+						nav.MoveToFirstChild ();
+						result = SearchMember (nav, helpUrl);
+						if (result != null)
+							return result;
+						nav.MoveToParent ();
+					}
 				}
 			} while (nav.MoveNext());
 			return null;

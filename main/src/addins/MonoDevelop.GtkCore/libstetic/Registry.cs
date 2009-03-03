@@ -39,8 +39,11 @@ namespace Stetic {
 		public static void EndChangeSet ()
 		{
 			if (--changing == 0) {
-				if (changed)
+				if (changed) {
+					foreach (WidgetLibrary lib in libraries)
+						lib.Flush ();
 					NotifyChanged ();
+				}
 				changed = false;
 			}
 		}
@@ -75,6 +78,7 @@ namespace Stetic {
 			NotifyChanging ();
 
 			libraries.Remove (library);
+			library.Dispose ();
 			InternalUpdate ();
 
 			NotifyChanged ();

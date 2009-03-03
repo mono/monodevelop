@@ -172,7 +172,7 @@
 	
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Add">
 		<Condition id="ItemType" value="MonoDevelop.AspNet.AspNetAppProject">
-			<ItemSet id = "AspNetDirectories" _label = "ASP.NET Directory" insertafter = "MonoDevelop.Ide.Commands.ProjectCommands.NewFolder" autohide="True">
+			<ItemSet id = "AspNetDirectories" _label = "ASP.NET Directory" insertafter = "MonoDevelop.Ide.Commands.ProjectCommands.NewFolder">
 				<CommandItem id = "MonoDevelop.AspNet.AspNetCommands.AddAspNetDirectory" />
 			</ItemSet>
 		</Condition>

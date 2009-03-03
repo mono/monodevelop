@@ -1,3 +1,18 @@
+2009-03-03  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/MemberCompletionData.cs:
+	* Gui/CSharpTextEditorCompletion.cs: Worked on icons for
+	  parameters/local variables and keywords.
+
+2009-03-03  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/NewCSharpExpressionFinder.cs: added bounds check.
+
+2009-03-02  Mike Krüger  <mkrueger@novell.com>
+
+	* Parser/FindMemberAstVisitor.cs: fixed "Bug 480492 - Find
+	  field references returns incorrect references".
+
 2009-02-27  Mike Krüger  <mkrueger@novell.com>
 
 	* Gui/NRefactoryResolver.cs:

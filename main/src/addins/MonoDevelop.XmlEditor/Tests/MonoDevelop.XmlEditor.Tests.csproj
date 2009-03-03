@@ -134,15 +134,15 @@
     <Compile Include="Schema\SchemaAssociationTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Parser/" />
-    <Folder Include="Paths/" />
-    <Folder Include="Schema/" />
-    <Folder Include="Schema.Includes/" />
-    <Folder Include="Schema.Uri/" />
-    <Folder Include="Utils/" />
-    <Folder Include="CompletionData/" />
-    <Folder Include="XPathQuery/" />
-    <Folder Include="FindSchemaObject/" />
+    <Folder Include="Parser\" />
+    <Folder Include="Paths\" />
+    <Folder Include="Schema\" />
+    <Folder Include="Schema.Includes\" />
+    <Folder Include="Schema.Uri\" />
+    <Folder Include="Utils\" />
+    <Folder Include="CompletionData\" />
+    <Folder Include="XPathQuery\" />
+    <Folder Include="FindSchemaObject\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\xhtml1-strict-modified.xsd">

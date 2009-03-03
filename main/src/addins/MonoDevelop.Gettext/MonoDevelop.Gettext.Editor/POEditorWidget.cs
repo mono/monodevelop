@@ -106,7 +106,7 @@ namespace MonoDevelop.Gettext
 			AddButton (GettextCatalog.GetString ("Headers")).Active = false;
 			
 			// entries tree view 
-			store = new ListStore (typeof (string), typeof (bool), typeof (string), typeof (string), typeof (CatalogEntry), typeof (Gdk.Color), typeof(int));
+			store = new ListStore (typeof (string), typeof (bool), typeof (string), typeof (string), typeof (CatalogEntry), typeof (Gdk.Color), typeof(int), typeof (Gdk.Color));
 			this.treeviewEntries.Model = store;
 			
 			treeviewEntries.AppendColumn (String.Empty, new CellRendererPixbuf (), "stock_id", Columns.Stock, "cell-background-gdk", Columns.RowColor);
@@ -118,11 +118,11 @@ namespace MonoDevelop.Gettext
 			 
 			CellRendererText original = new CellRendererText ();
 			original.Ellipsize = Pango.EllipsizeMode.End;
-			treeviewEntries.AppendColumn (GettextCatalog.GetString ("Original string"), original, "text", Columns.String, "cell-background-gdk", Columns.RowColor);
+			treeviewEntries.AppendColumn (GettextCatalog.GetString ("Original string"), original, "text", Columns.String, "cell-background-gdk", Columns.RowColor, "foreground-gdk", Columns.ForeColor);
 			
 			CellRendererText translation = new CellRendererText ();
 			translation.Ellipsize = Pango.EllipsizeMode.End;
-			treeviewEntries.AppendColumn (GettextCatalog.GetString ("Translated string"), translation, "text", Columns.Translation, "cell-background-gdk", Columns.RowColor);
+			treeviewEntries.AppendColumn (GettextCatalog.GetString ("Translated string"), translation, "text", Columns.Translation, "cell-background-gdk", Columns.RowColor, "foreground-gdk", Columns.ForeColor);
 			treeviewEntries.Selection.Changed += new EventHandler (OnEntrySelected);
 			
 			treeviewEntries.GetColumn (0).SortIndicator = true;
@@ -622,7 +622,8 @@ namespace MonoDevelop.Gettext
 			Translation,
 			CatalogEntry,
 			RowColor,
-			TypeSortIndicator
+			TypeSortIndicator,
+			ForeColor
 		}
 		
 		enum FoundInColumns : int
@@ -630,6 +631,25 @@ namespace MonoDevelop.Gettext
 			File,
 			Line,
 			FullFileName
+		}
+		
+		protected override void OnStyleSet (Gtk.Style previous_style)
+		{
+			base.OnStyleSet (previous_style);
+			UpdateColors ();
+		}
+		
+		void UpdateColors ()
+		{
+			TreeIter iter;
+			if (store == null || !store.GetIterFirst (out iter))
+				return;
+			do {
+				CatalogEntry entry = (CatalogEntry)store.GetValue (iter, (int)Columns.CatalogEntry);
+				store.SetValue (iter, (int)Columns.RowColor, GetRowColorForEntry (entry));
+				store.SetValue (iter, (int)Columns.ForeColor, GetForeColorForEntry (entry));
+				
+			} while (store.IterNext (ref iter));
 		}
 		
 		void FuzzyToggled (object o, ToggledArgs args)
@@ -642,6 +662,7 @@ namespace MonoDevelop.Gettext
 				store.SetValue (iter, (int)Columns.Fuzzy, !val);
 				store.SetValue (iter, (int)Columns.Stock, GetStockForEntry (entry));
 				store.SetValue (iter, (int)Columns.RowColor, GetRowColorForEntry (entry));
+				store.SetValue (iter, (int)Columns.ForeColor, GetForeColorForEntry (entry));
 				UpdateProgressBar ();
 			}
 		}
@@ -658,11 +679,18 @@ namespace MonoDevelop.Gettext
 		static Color fuzzy        = new Color (237, 226, 187);
 		static Color missing      = new Color (237, 167, 167);
 		
-		static Color GetRowColorForEntry (CatalogEntry entry)
+		Color GetRowColorForEntry (CatalogEntry entry)
 		{
 			if (entry.References.Length == 0)
 				return missing;
-			return entry.IsFuzzy ? fuzzy : entry.IsTranslated ? translated : untranslated;
+			return entry.IsFuzzy ? fuzzy : entry.IsTranslated ? Style.Base (StateType.Normal) : untranslated;
+		}
+		
+		Color GetForeColorForEntry (CatalogEntry entry)
+		{
+			if (entry.References.Length == 0)
+				return missing;
+			return entry.IsFuzzy ? Style.Black : entry.IsTranslated ? Style.Text (StateType.Normal) : Style.Black;
 		}
 		
 		static int GetTypeSortIndicator (CatalogEntry entry)
@@ -711,9 +739,10 @@ namespace MonoDevelop.Gettext
 				store.SetValue (foundIter, (int)Columns.Fuzzy, entry.IsFuzzy);
 				store.SetValue (foundIter, (int)Columns.Stock, GetStockForEntry (entry));
 				store.SetValue (foundIter, (int)Columns.RowColor, GetRowColorForEntry (entry));
+				store.SetValue (foundIter, (int)Columns.ForeColor, GetForeColorForEntry (entry));
 			}
 		}
-		
+ 
 		bool IsMatch (string text, string filter)
 		{
 			if (RegexSearch)
@@ -818,7 +847,10 @@ namespace MonoDevelop.Gettext
 			                    StringEscaping.ToGettextFormat (entry.String), 
 			                    StringEscaping.ToGettextFormat (entry.GetTranslation (0)), 
 			                    entry,
-			                    GetRowColorForEntry (entry));
+			                    GetRowColorForEntry (entry),
+			                    GetTypeSortIndicator (entry),
+			                    GetForeColorForEntry (entry)
+			);
 			SelectEntry (entry);
 				
 		}
@@ -849,7 +881,9 @@ namespace MonoDevelop.Gettext
 										            StringEscaping.ToGettextFormat (entry.GetTranslation (0)), 
 										            entry,
 										            GetRowColorForEntry (entry),
-								                    GetTypeSortIndicator (entry));
+								                    GetTypeSortIndicator (entry),
+								                    GetForeColorForEntry (entry)
+								                    );
 							}
 						});
 						foundEntries.Clear ();
@@ -865,7 +899,7 @@ namespace MonoDevelop.Gettext
 						if (number < 60)
 							store.Clear ();
 						foreach (CatalogEntry entry in foundEntries) {
-							store.AppendValues (GetStockForEntry (entry), entry.IsFuzzy, StringEscaping.ToGettextFormat (entry.String), StringEscaping.ToGettextFormat (entry.GetTranslation (0)), entry, GetRowColorForEntry (entry), GetTypeSortIndicator (entry));
+							store.AppendValues (GetStockForEntry (entry), entry.IsFuzzy, StringEscaping.ToGettextFormat (entry.String), StringEscaping.ToGettextFormat (entry.GetTranslation (0)), entry, GetRowColorForEntry (entry), GetTypeSortIndicator (entry), GetForeColorForEntry (entry));
 						}
 						MonoDevelop.Ide.Gui.IdeApp.Workbench.StatusBar.EndProgress ();
 					});

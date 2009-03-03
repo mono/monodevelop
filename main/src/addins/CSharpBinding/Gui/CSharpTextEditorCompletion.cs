@@ -424,7 +424,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 						}
 						if (token == "+=") {
 							IMethod delegateMethod = delegateType.Methods.First ();
-							completionList.Add ("delegate", "md-literal", GettextCatalog.GetString ("Creates anonymous delegate."), "delegate {\n" + stateTracker.Engine.ThisLineIndent  + TextEditorProperties.IndentString + "|\n" + stateTracker.Engine.ThisLineIndent +"};");
+							completionList.Add ("delegate", "md-keyword", GettextCatalog.GetString ("Creates anonymous delegate."), "delegate {\n" + stateTracker.Engine.ThisLineIndent  + TextEditorProperties.IndentString + "|\n" + stateTracker.Engine.ThisLineIndent +"};");
 							StringBuilder sb = new StringBuilder ("(");
 							for (int k = 0; k < delegateMethod.Parameters.Count; k++) {
 								if (k > 0)
@@ -432,7 +432,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 								sb.Append (CompletionDataCollector.ambience.GetString (delegateMethod.Parameters[k], OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName));
 							}
 							sb.Append (")");
-							completionList.Add ("delegate" + sb, "md-literal", GettextCatalog.GetString ("Creates anonymous delegate."), "delegate" + sb+" {\n" + stateTracker.Engine.ThisLineIndent  + TextEditorProperties.IndentString + "|\n" + stateTracker.Engine.ThisLineIndent +"};");
+							completionList.Add ("delegate" + sb, "md-keyword", GettextCatalog.GetString ("Creates anonymous delegate."), "delegate" + sb+" {\n" + stateTracker.Engine.ThisLineIndent  + TextEditorProperties.IndentString + "|\n" + stateTracker.Engine.ThisLineIndent +"};");
 							completionList.Add (new EventCreationCompletionData (Editor, delegateType, evt, sb.ToString (), resolver.CallingMember, typeFromDatabase));
 						}
 						return completionList;
@@ -805,8 +805,8 @@ namespace MonoDevelop.CSharpBinding.Gui
 			case "yield":
 				CompletionDataList yieldDataList = new CompletionDataList ();
 				yieldDataList.DefaultCompletionString = "return";
-				yieldDataList.Add ("break", "md-literal");
-				yieldDataList.Add ("return", "md-literal");
+				yieldDataList.Add ("break", "md-keyword");
+				yieldDataList.Add ("return", "md-keyword");
 				return yieldDataList;
 			}
 			return null;
@@ -929,7 +929,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			{
 				this.unit = unit;
 				this.FullyQualify = false;
-
+				
 				// Get a list of all namespaces in scope
 				foreach (IUsing u in unit.Usings) {
 					if (!u.IsFromNamespace || u.Region.Contains (location)) {
@@ -938,6 +938,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 					}
 				}
 			}
+			
 			MemberCompletionData AddMemberCompletionData (CompletionDataList completionList, object member, OutputFlags flags)
 			{
 				MemberCompletionData newData = new MemberCompletionData (member as IDomVisitable, flags);
@@ -1192,7 +1193,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 		static void AddPrimitiveTypes (CompletionDataList completionList)
 		{
 			foreach (string primitiveType in primitiveTypes) {
-				completionList.Add (primitiveType, "md-literal");
+				completionList.Add (primitiveType, "md-keyword");
 			}
 		}
 		
@@ -1203,7 +1204,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 					string keyword = ICSharpCode.NRefactory.Parser.CSharp.Tokens.GetTokenString (i);
 					if (keyword.IndexOf ('<') >= 0)
 						continue;
-					list.Add (keyword, "md-literal");
+					list.Add (keyword, "md-keyword");
 				}
 			}
 		}
@@ -1230,44 +1231,44 @@ namespace MonoDevelop.CSharpBinding.Gui
 				AddNRefactoryKeywords (result, ICSharpCode.NRefactory.Parser.CSharp.Tokens.InterfaceLevel);
 				resolver.AddAccessibleCodeCompletionData (expressionResult.ExpressionContext, result);
 			} else if (expressionResult.ExpressionContext == ExpressionContext.MethodBody) {
-				result.Add ("global", "md-literal");
+				result.Add ("global", "md-keyword");
 				AddNRefactoryKeywords (result, ICSharpCode.NRefactory.Parser.CSharp.Tokens.StatementStart);
 				AddPrimitiveTypes (result);
 				resolver.AddAccessibleCodeCompletionData (expressionResult.ExpressionContext, result);
 			} else if (expressionResult.ExpressionContext == ExpressionContext.InterfacePropertyDeclaration) {
-				result.Add ("get", "md-literal");
-				result.Add ("set", "md-literal");
+				result.Add ("get", "md-keyword");
+				result.Add ("set", "md-keyword");
 			} else if (expressionResult.ExpressionContext == ExpressionContext.Attribute) {
-				result.Add ("assembly", "md-literal");
-				result.Add ("module", "md-literal");
-				result.Add ("type", "md-literal");
-				result.Add ("method", "md-literal");
-				result.Add ("field", "md-literal");
-				result.Add ("property", "md-literal");
-				result.Add ("event", "md-literal");
-				result.Add ("param", "md-literal");
-				result.Add ("return", "md-literal");
+				result.Add ("assembly", "md-keyword");
+				result.Add ("module", "md-keyword");
+				result.Add ("type", "md-keyword");
+				result.Add ("method", "md-keyword");
+				result.Add ("field", "md-keyword");
+				result.Add ("property", "md-keyword");
+				result.Add ("event", "md-keyword");
+				result.Add ("param", "md-keyword");
+				result.Add ("return", "md-keyword");
 				resolver.AddAccessibleCodeCompletionData (expressionResult.ExpressionContext, result);
 			} else if (expressionResult.ExpressionContext == ExpressionContext.BaseConstructorCall) {
-				result.Add ("this", "md-literal");
-				result.Add ("base", "md-literal");
+				result.Add ("this", "md-keyword");
+				result.Add ("base", "md-keyword");
 			} else  if (expressionResult.ExpressionContext == ExpressionContext.ParameterType || expressionResult.ExpressionContext == ExpressionContext.FirstParameterType) {
-				result.Add ("ref", "md-literal");
-				result.Add ("out", "md-literal");
-				result.Add ("params", "md-literal");
+				result.Add ("ref", "md-keyword");
+				result.Add ("out", "md-keyword");
+				result.Add ("params", "md-keyword");
 				// C# 3.0 extension method
 				if (expressionResult.ExpressionContext == ExpressionContext.FirstParameterType)
-					result.Add ("this", "md-literal");
+					result.Add ("this", "md-keyword");
 				AddPrimitiveTypes (result);
 				resolver.AddAccessibleCodeCompletionData (expressionResult.ExpressionContext, result);
 			} else if (expressionResult.ExpressionContext == ExpressionContext.PropertyDeclaration) {
 				AddNRefactoryKeywords (result, ICSharpCode.NRefactory.Parser.CSharp.Tokens.InPropertyDeclaration);
 			} else if (expressionResult.ExpressionContext == ExpressionContext.EventDeclaration) {
-				result.Add ("add", "md-literal");
-				result.Add ("remove", "md-literal");
+				result.Add ("add", "md-keyword");
+				result.Add ("remove", "md-keyword");
 			} //else if (expressionResult.ExpressionContext == ExpressionContext.FullyQualifiedType) {} 
 			else if (expressionResult.ExpressionContext == ExpressionContext.Default) {
-				result.Add ("global", "md-literal");
+				result.Add ("global", "md-keyword");
 				AddPrimitiveTypes (result);
 				AddNRefactoryKeywords (result, ICSharpCode.NRefactory.Parser.CSharp.Tokens.ExpressionStart);
 				AddNRefactoryKeywords (result, ICSharpCode.NRefactory.Parser.CSharp.Tokens.ExpressionContent);
@@ -1300,7 +1301,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 //				AddPrimitiveTypes (result);
 //				resolver.AddAccessibleCodeCompletionData (expressionResult.ExpressionContext, result);
 			} else if (expressionResult.ExpressionContext == ExpressionContext.AttributeArguments) {
-				result.Add ("global", "md-literal");
+				result.Add ("global", "md-keyword");
 				AddPrimitiveTypes (result);
 				CompletionDataCollector col = resolver.AddAccessibleCodeCompletionData (expressionResult.ExpressionContext, result);
 				string attributeName = NewCSharpExpressionFinder.FindAttributeName (Editor, Document.CompilationUnit, Document.FileName);
@@ -1315,14 +1316,14 @@ namespace MonoDevelop.CSharpBinding.Gui
 					}
 				}
 			} else {
-				result.Add ("global", "md-literal");
+				result.Add ("global", "md-keyword");
 				AddPrimitiveTypes (result);
 				resolver.AddAccessibleCodeCompletionData (expressionResult.ExpressionContext, result);
 			}
 			
 			if (resolver.CallingMember is IMethod) {
 				foreach (ITypeParameter tp in ((IMethod)resolver.CallingMember).TypeParameters) {
-					result.Add (tp.Name, "md-literal");
+					result.Add (tp.Name, "md-keyword");
 				}
 			}
 			return result;

@@ -79,7 +79,16 @@ namespace MonoDevelop.Projects.Dom
 		
 		public DomCecilType (TypeDefinition typeDefinition) : this (true, true, typeDefinition)
 		{
-		}	
+		}
+		
+		public DomCecilType (TypeReference typeReference)
+		{
+			this.classType = ClassType.Unknown;
+			this.Modifiers = Modifiers.None;
+			this.Name      = DomCecilType.RemoveGenericParamSuffix (typeReference.Name);
+			this.Namespace = typeReference.Namespace;
+		}
+		
 		public DomCecilType (bool keepDefinitions, bool loadInternal, TypeDefinition typeDefinition)
 		{
 			if (keepDefinitions)

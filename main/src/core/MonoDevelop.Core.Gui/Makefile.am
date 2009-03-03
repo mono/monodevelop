@@ -168,6 +168,7 @@ RES =  \
 	icons/Icons.32x32.XMLFileIcon \
 	icons/Icons.SharpDevelopIcon \
 	icons/Icons.SharpDevelopIcon-22.png \
+	icons/keyword-16.png \
 	icons/package-x-generic.png \
 	icons/package-x-generic_22.png \
 	icons/pad-task-list-16.png \
@@ -186,6 +187,7 @@ RES =  \
 	icons/solution-folder-open-16.png \
 	icons/system-software-update.png \
 	icons/system-software-update_22.png \
+	icons/template-16.png \
 	icons/uncomment.png \
 	icons/user-package.png \
 	icons/visibility-internal-16.png \

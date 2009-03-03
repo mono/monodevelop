@@ -1,3 +1,32 @@
+2009-03-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Debugger.csproj:
+	* MonoDevelop.Debugger/DebuggingService.cs:
+	* MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:
+	* gtk-gui/MonoDevelop.Debugger.BreakpointPropertiesDialog.cs:
+	  Moved breakpoint properties dialog from MD.Ide. Disable
+	  conditional and tracepoint options if they are not supported
+	  by the project.
+
+2009-03-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Debugger/Extensions.cs: Fixed NRE when the
+	  current view does not have a file name. Fixes bug #480823 -
+	  NRE when closing solution.
+
+2009-03-02  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Debugger/ObjectValueTreeView.cs: commented out
+	  debug message.
+
+2009-02-27  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Debugger/ThreadsPad.cs:
+	* MonoDevelop.Debugger/StackTracePad.cs: Added translatable
+	  strings. Patch from Bálint Kriván.
+
 2009-02-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Debugger.csproj: Flush.

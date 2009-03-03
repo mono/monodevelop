@@ -43,7 +43,7 @@ using ICSharpCode.NRefactory.Visitors;
 namespace MonoDevelop.CSharpBinding.Tests
 {
 	[TestFixture]
-	public class FindMemberVisitorTests
+	public class FindMemberVisitorTests : UnitTests.TestBase
 	{
 		#region TestHelper
 		static NRefactoryParser parser = new NRefactoryParser ();
@@ -486,6 +486,34 @@ int b)
 }
 ");
 		}
+		
+		/// <summary>
+		/// Bug 480492 - Find field references returns incorrect references
+		/// </summary>
+		[Test()]
+		public void TestBug480492 ()
+		{
+			RunTest (
+@"class BaseClass
+{
+}
+
+class A : BaseClass
+{
+	BaseClass $@myField;
+}
+
+class B : BaseClass
+{
+	BaseClass myField;
+	void TestMe ()
+	{
+		myField = null; // this should not be found.
+		this.myField = null; // this should not be found.
+	}
+}");
+		}
+		
 		/*
 		[Test()]
 		public void FindInterfaceMethodReferences ()

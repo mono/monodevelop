@@ -480,8 +480,6 @@
     <Compile Include="MonoDevelop.Ide.Gui.Search\FilesDocumentIterator.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\NavigationHistoryService.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\TextFileNavigationPoint.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Dialogs\BreakpointPropertiesDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.Dialogs.BreakpointPropertiesDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Components\ExtensibleTreeView.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Components\ITreeBuilder.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Components\ITreeBuilderContext.cs" />

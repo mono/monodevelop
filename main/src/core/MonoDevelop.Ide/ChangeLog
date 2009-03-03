@@ -1,3 +1,80 @@
+2009-03-03  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplateService.cs: Make
+	  use of template icon.
+
+2009-03-03  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui/Document.cs:
+	* MonoDevelop.Ide.Gui/Workbench.cs:
+	* MonoDevelop.Ide.Gui/DocumentSwitcher.cs: Fixed "Bug 444416 -
+	  CTRL+TAB should switch between files in same order as they
+	  were opened". Taken the patch from David Goemans
+	  <dgoemans@gmail.com> and many good ideas from Michael
+	  Hutchinson (but not all ^^).
+
+2009-03-02  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Gui.Search/FilesDocumentIterator.cs:
+	* MonoDevelop.Ide.Gui.Search/DirectoryDocumentIterator.cs:
+	  Skip over files that aren't text files.
+
+2009-03-02  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Gui.Search/CurrentProjectDocumentIterator.cs:
+	  Saner implementation. Don't add duplicate files.
+
+2009-03-02  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs: Partial
+	  workaround for results that have a bad encoding.
+
+2009-03-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/gui.stetic: Remove unused dialog.
+
+2009-03-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Ide.csproj:
+	* MonoDevelop.Ide.Gui.Dialogs/BreakpointPropertiesDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.BreakpointPropertiesDialog.cs:
+	  Breakpoint properties dialog moved to MD.Debugger.
+
+2009-03-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui/Document.cs: Fixed NRE when the current
+	  view does not have a file name.
+
+2009-03-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Components/NodeCommandHandler.cs: Make
+	  sure the default implementation of CanDeleteMultipleItems is
+	  used if CanDeleteItem is overriden.
+
+2009-02-28  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Better message for
+	  saving before building. Thanks to Bálint Kriván.
+
+2009-02-28  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.EncapsulateFieldDialog.cs:
+	  Flush.
+
+2009-02-27  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Templates/DirectoryTemplate.cs: Only add the
+	  directory if it's explicit, i.e. when there are no inner
+	  contents.
+
+2009-02-27  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ShowAllFilesBuilderExtension.cs:
+	  Handle directories that are explicitly included in the
+	  project.
+
 2009-02-26  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.addin.xml: Translation fixes. Patch from

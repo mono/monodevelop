@@ -152,6 +152,7 @@ namespace Mono.TextEditor.Highlighting
 			}
 			
 			if (reader.LocalName == AltNode) {
+				AddFlags (result.BeginFlags, reader.GetAttribute ("flags"));
 				result.begin     = reader.ReadElementString ();
 				result.stopAtEol = true;
 			} else {

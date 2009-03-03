@@ -1,3 +1,17 @@
+2009-03-02  David Makovský (Yakeen)  <yakeen@sannyas-on.net>
+
+	* cs.po: updated translation, 100% :)
+
+	* messages.po: updated
+
+2009-03-02  David Makovský (Yakeen)  <yakeen@sannyas-on.net>
+
+	* cs.po: updated translation
+
+2009-02-28  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* po.mdproj: Flush.
+
 2009-02-26  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* po.mdproj: Fix translation projects' GUIDs.

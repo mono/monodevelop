@@ -63,6 +63,11 @@ namespace MonoDevelop.Ide.Gui
 			get { return window; }
 		}
 		
+		internal DateTime LastTimeActive {
+			get;
+			set;
+		}
+ 		
 		public object GetContent (Type type)
 		{
 			//check whether the ViewContent can return the type directly
@@ -95,6 +100,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public Document (IWorkbenchWindow window)
 		{
+			LastTimeActive = DateTime.Now;
 			this.window = window;
 			window.Closed += OnClosed;
 			window.ActiveViewContentChanged += OnActiveViewContentChanged;
@@ -324,7 +330,7 @@ namespace MonoDevelop.Ide.Gui
 
 		public virtual bool CanRun ()
 		{
-			return IdeApp.ProjectOperations.CanExecuteFile (Window.ViewContent.ContentName);
+			return Window.ViewContent.ContentName != null && IdeApp.ProjectOperations.CanExecuteFile (Window.ViewContent.ContentName);
 		}
 		
 		public bool Close ()

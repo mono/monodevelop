@@ -110,7 +110,7 @@ namespace MonoDevelop.Debugger
 
 		public static bool IsFeatureSupported (IBuildTarget target, DebuggerFeatures feature)
 		{
-			return (GetSupportedFeatures (target) & feature) != 0;
+			return (GetSupportedFeatures (target) & feature) == feature;
 		}
 
 		public static bool IsDebuggingSupported {
@@ -122,7 +122,7 @@ namespace MonoDevelop.Debugger
 		public static bool IsFeatureSupported (DebuggerFeatures feature)
 		{
 			foreach (IDebuggerEngine engine in GetDebuggerEngines ())
-				if ((engine.SupportedFeatures & feature) != 0)
+				if ((engine.SupportedFeatures & feature) == feature)
 					return true;
 			return false;
 		}

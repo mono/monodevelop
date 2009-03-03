@@ -674,6 +674,7 @@ namespace Stetic
 			if (oldBackend != null) {
 				tmpProjectFile = Path.GetTempFileName ();
 				backend.Save (tmpProjectFile);
+				backend.Dispose ();
 			}
 			
 			backend = app.Backend.CreateProject ();

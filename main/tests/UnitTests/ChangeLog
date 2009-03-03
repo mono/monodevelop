@@ -1,3 +1,9 @@
+2009-03-02  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharpBinding/FindMemberVisitorTests.cs: added
+	  unit test for "Bug 480492 - Find field references returns
+	  incorrect references".
+
 2009-02-27  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharpBinding/CodeCompletionCSharp3Tests.cs:

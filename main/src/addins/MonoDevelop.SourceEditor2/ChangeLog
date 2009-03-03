@@ -1,3 +1,13 @@
+2009-03-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Properly
+	  implement IEncodedTextContent.
+
+2009-03-02  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: fixed "Bug
+	  480556 - MonoDevelop can't handle UTF-16 source files".
+
 2009-02-26  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorDisplayBinding.cs:

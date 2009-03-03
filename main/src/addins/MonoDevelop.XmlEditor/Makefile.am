@@ -48,6 +48,7 @@ FILES =  \
 	MonoDevelop.Xml.StateEngine/XmlTagState.cs \
 	MonoDevelop.XmlEditor.Completion/EmptyXmlCompletionProvider.cs \
 	MonoDevelop.XmlEditor.Completion/ILazilyLoadedProvider.cs \
+	MonoDevelop.XmlEditor.Completion/InferredXmlCompletionProvider.cs \
 	MonoDevelop.XmlEditor.Completion/IXmlCompletionProvider.cs \
 	MonoDevelop.XmlEditor.Completion/XmlCompletionData.cs \
 	MonoDevelop.XmlEditor.Completion/XmlCompletionDataCollection.cs \

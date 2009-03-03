@@ -1,3 +1,22 @@
+2009-02-27  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AspNet/ProjectFolderNodeBuilderExtension.cs:
+	  Save the project after adding a special folder.
+
+2009-02-27  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AspNet/ProjectFolderNodeBuilderExtension.cs:
+	  More efficient query for existing folders. Attach node
+	  builder to more limited range of node types. Show special
+	  folders even if they exist in the project, or users might
+	  get confused when the menu vanishes.
+
+	* MonoDevelop.AspNet/AspNetAppProject.cs: Slim down the list
+	  of special folders to ones for web apps rather than sites.
+	  Make virtual.
+
+	* MonoDevelop.AspNet.addin.xml: Remove unused attribute.
+
 2009-02-24  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.AspNet/CodeBehind.cs:

@@ -562,10 +562,13 @@ namespace MonoDevelop.Ide.Gui
 			
 			return active;
 		}
+		
 		void OnDocumentChanged (object s, EventArgs a)
 		{
 			if (ActiveDocumentChanged != null)
 				ActiveDocumentChanged (s, a);
+			if (ActiveDocument != null)
+				ActiveDocument.LastTimeActive = DateTime.Now;
 		}
 		
 		internal Document WrapDocument (IWorkbenchWindow window)

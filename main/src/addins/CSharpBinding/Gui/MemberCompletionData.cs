@@ -72,7 +72,15 @@ namespace MonoDevelop.CSharpBinding
 		}
 		
 		public string Icon {
-			get { return member is IMember ? (member as IMember).StockIcon : "md-literal"; }
+			get {
+				if (member is IMember)
+					return ((IMember)member).StockIcon;
+				if (member is IParameter)
+					return ((IParameter)member).StockIcon;
+				if (member is LocalVariable)
+					return ((LocalVariable)member).StockIcon;
+				return "md-literal"; 
+			}
 		}
 		
 		public DisplayFlags DisplayFlags { get; set; }
