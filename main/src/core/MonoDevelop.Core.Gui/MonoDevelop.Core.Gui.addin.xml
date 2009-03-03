@@ -231,5 +231,11 @@
 		<MimeType id="application/x-mds" _description="MonoDevelop 1.0 Solution" icon="md-solution" >
 			<File pattern="*.mds" />
 		</MimeType>
+		
+		<MimeType id="text/x-patch" _description="diff files" isText="true">
+			<File pattern="*.patch" />
+			<File pattern="*.diff" />
+		</MimeType>
+		
 	</Extension>
 </Addin>
