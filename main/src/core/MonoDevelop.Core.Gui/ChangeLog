@@ -1,6 +1,14 @@
 2009-03-03  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:
+	* icons/template-16.png:
+	* MonoDevelop.Core.Gui.csproj:
+	* MonoDevelop.Core.Gui.addin.xml: Added icon for code
+	  templates.
+
+2009-03-03  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
 	* icons/keyword-16.png:
 	* MonoDevelop.Core.Gui.csproj:
 	* MonoDevelop.Core.Gui.addin.xml: Added icon for keywords

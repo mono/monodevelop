@@ -424,6 +424,9 @@
     <EmbeddedResource Include="icons\keyword-16.png">
       <LogicalName>keyword-16.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\template-16.png">
+      <LogicalName>template-16.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Core.Gui.Components\FileBrowser.cs" />
