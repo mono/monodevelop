@@ -1,5 +1,10 @@
 2009-03-03  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplateService.cs: Make
+	  use of template icon.
+
+2009-03-03  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.Gui/Document.cs:
 	* MonoDevelop.Ide.Gui/Workbench.cs:
 	* MonoDevelop.Ide.Gui/DocumentSwitcher.cs: Fixed "Bug 444416 -

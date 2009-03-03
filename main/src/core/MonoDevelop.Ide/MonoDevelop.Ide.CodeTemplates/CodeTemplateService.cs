@@ -93,7 +93,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 				if (string.IsNullOrEmpty (ct.Shortcut))
 					continue;
 				list.Remove (ct.Shortcut);
-				list.Add (new CompletionData (ct.Shortcut, "md-literal", ct.Description));
+				list.Add (new CompletionData (ct.Shortcut, "md-template", ct.Description));
 			}
 		}
 		
