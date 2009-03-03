@@ -1,3 +1,13 @@
+2009-03-03  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui/Document.cs:
+	* MonoDevelop.Ide.Gui/Workbench.cs:
+	* MonoDevelop.Ide.Gui/DocumentSwitcher.cs: Fixed "Bug 444416 -
+	  CTRL+TAB should switch between files in same order as they
+	  were opened". Taken the patch from David Goemans
+	  <dgoemans@gmail.com> and many good ideas from Michael
+	  Hutchinson (but not all ^^).
+
 2009-03-02  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.Gui.Search/FilesDocumentIterator.cs:
