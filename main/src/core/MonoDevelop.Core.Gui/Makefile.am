@@ -168,6 +168,7 @@ RES =  \
 	icons/Icons.32x32.XMLFileIcon \
 	icons/Icons.SharpDevelopIcon \
 	icons/Icons.SharpDevelopIcon-22.png \
+	icons/keyword-16.png \
 	icons/package-x-generic.png \
 	icons/package-x-generic_22.png \
 	icons/pad-task-list-16.png \

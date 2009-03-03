@@ -1,5 +1,12 @@
 2009-03-03  Mike Krüger  <mkrueger@novell.com>
 
+	* Makefile.am:
+	* icons/keyword-16.png:
+	* MonoDevelop.Core.Gui.csproj:
+	* MonoDevelop.Core.Gui.addin.xml: Added icon for keywords
+
+2009-03-03  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Core.Gui.addin.xml: added text/x-patch mime.
 
 2009-02-28  Michael Hutchinson  <mhutchinson@novell.com>
