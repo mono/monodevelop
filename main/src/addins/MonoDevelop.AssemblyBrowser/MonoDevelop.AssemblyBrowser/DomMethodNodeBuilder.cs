@@ -159,6 +159,15 @@ namespace MonoDevelop.AssemblyBrowser
 			return result.ToString ();
 		}
 		
+		static void AppendLink (StringBuilder sb, string link, string text)
+		{
+			sb.Append ("<span style=\"text.link\"><u><a ref=\"");
+			sb.Append (link);
+			sb.Append ("\">");
+			sb.Append (AssemblyBrowserWidget.FormatText (text.Replace ("::", ".")));
+			sb.Append ("</a></u></span>");
+		}
+		
 		public static string Disassemble (DomCecilMethod method, bool markup)
 		{
 			if (method.MethodDefinition.IsPInvokeImpl)
@@ -185,6 +194,51 @@ namespace MonoDevelop.AssemblyBrowser
 						result.Append ('"');
 					} else if (instruction.Operand is Mono.Cecil.Cil.Instruction) {
 						result.Append (GetInstructionOffset ((Mono.Cecil.Cil.Instruction)instruction.Operand));
+					} else if (instruction.Operand is Mono.Cecil.TypeDefinition) {
+						AppendLink (result, 
+						            new DomCecilType ((Mono.Cecil.TypeDefinition)instruction.Operand).HelpUrl,
+						            instruction.Operand.ToString ());
+					} else if (instruction.Operand is Mono.Cecil.MethodDefinition) {
+						Mono.Cecil.MethodDefinition md = instruction.Operand as Mono.Cecil.MethodDefinition;
+						AppendLink (result, 
+						            new DomCecilMethod (new DomCecilType (md.DeclaringType), true, md).HelpUrl,
+						            instruction.Operand.ToString ());
+					} else if (instruction.Operand is Mono.Cecil.FieldDefinition) {
+						Mono.Cecil.FieldDefinition fd = instruction.Operand as Mono.Cecil.FieldDefinition;
+						AppendLink (result, 
+						            new DomCecilField (new DomCecilType (fd.DeclaringType), true, fd).HelpUrl,
+						            instruction.Operand.ToString ());
+					} else if (instruction.Operand is Mono.Cecil.PropertyDefinition) {
+						Mono.Cecil.PropertyDefinition pd = instruction.Operand as Mono.Cecil.PropertyDefinition;
+						AppendLink (result, 
+						            new DomCecilProperty (new DomCecilType (pd.DeclaringType), true, pd).HelpUrl,
+						            instruction.Operand.ToString ());
+					} else if (instruction.Operand is Mono.Cecil.TypeReference) {
+						AppendLink (result, 
+						            "T:" + ((TypeReference)instruction.Operand).FullName,
+						            instruction.Operand.ToString ());
+					} else if (instruction.Operand is Mono.Cecil.MethodReference) {
+						Mono.Cecil.MethodReference mr = instruction.Operand as Mono.Cecil.MethodReference;
+						StringBuilder id = new StringBuilder (mr.DeclaringType.ToString ());
+						bool isConstructor = mr.Name == ".ctor";
+						if (!isConstructor)
+							id.Append ("." + mr.Name);
+						id.Append ("(");
+						for (int i = 0; i < mr.Parameters.Count; i++) {
+							if (i > 0)
+								id.Append (',');
+							id.Append (mr.Parameters[i].ParameterType.FullName);
+						}
+						id.Append (")");
+						AppendLink (result, (isConstructor ? "C:" : "M:") + id, id.ToString ());
+					} else if (instruction.Operand is Mono.Cecil.FieldReference) {
+						Mono.Cecil.FieldReference fr = instruction.Operand as Mono.Cecil.FieldReference;
+						string id = fr.DeclaringType + "." + fr.Name;
+						AppendLink (result, "F:" + id, id);
+					} else if (instruction.Operand is Mono.Cecil.PropertyReference) {
+						Mono.Cecil.PropertyReference pr = instruction.Operand as Mono.Cecil.PropertyReference;
+						string id = pr.DeclaringType + "." + pr.Name;
+						AppendLink (result, "P:" + id, id);
 					} else {
 						result.Append (AssemblyBrowserWidget.FormatText (instruction.Operand.ToString ()));
 					}

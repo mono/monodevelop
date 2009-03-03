@@ -1,3 +1,10 @@
+2009-03-03  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:
+	* MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs: Worked
+	  on 'Bug 479976 - Links in assembly browser are only shown
+	  for intrinsic types'.
+
 2009-02-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.AssemblyBrowser.csproj: Flush.
