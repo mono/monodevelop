@@ -1,5 +1,10 @@
 2009-03-03  Mike Krüger  <mkrueger@novell.com>
 
+	* Styles/TangoLightStyle.xml: Changed diff header style for
+	  tango light.
+
+2009-03-03  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* Mono.TextEditor.csproj:
 	* Styles/OblivionStyle.xml:

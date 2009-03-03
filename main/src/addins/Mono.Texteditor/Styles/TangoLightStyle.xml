@@ -75,8 +75,8 @@
 		<Style name="line-removed" color="scarletred1"/>
 		<Style name="line-changed" color="plum2"/>
 		
-		<Style name="header" color="black" weight="bold"/>
-		<Style name="header-seperator" color="black" weight="bold"/>
+		<Style name="header" color="chameleon3" weight="bold"/>
+		<Style name="header-seperator" color="chameleon3" weight="bold"/>
 		<Style name="header-oldfile" color="scarletred1" weight="bold"/>
 		<Style name="header-newfile" color="skyblue2" weight="bold"/>
 		
