@@ -2,7 +2,7 @@
 <stetic-interface>
   <configuration>
     <images-root-path>..</images-root-path>
-    <target-gtk-version>2.8.5</target-gtk-version>
+    <target-gtk-version>2.8</target-gtk-version>
   </configuration>
   <import>
     <widget-library name="../../../../build/bin/MonoDevelop.Core.Gui.dll" />
@@ -12,7 +12,7 @@
     <widget-library name="../../../../build/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.dll" />
     <widget-library name="../../../../build/bin/MonoDevelop.Projects.Gui.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.GtkCore/libstetic.dll" />
-    <widget-library name="glade-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <widget-library name="../../../../build/AddIns/MonoDevelop.GtkCore/libsteticui.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.GtkCore/MonoDevelop.GtkCore.dll" internal="true" />
   </import>
   <widget class="Gtk.Bin" id="MonoDevelop.GtkCore.Dialogs.GtkDesignerOptionsPanelWidget" design-size="503 22">

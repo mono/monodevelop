@@ -126,8 +126,15 @@ namespace Stetic
 				
 				ManifestResourceInfo res = depasm.GetManifestResourceInfo ("objects.xml");
 				if (res != null)
-					list.Add (depasm.FullName);
+					list.Add (depasm.Location);
 			}
+		}
+		
+		public override void Flush ()
+		{
+			base.Flush ();
+			if (resolver != null)
+				resolver.ClearCache ();
 		}
 	}
 	

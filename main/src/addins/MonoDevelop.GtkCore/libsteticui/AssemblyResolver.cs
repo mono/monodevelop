@@ -57,23 +57,37 @@ namespace Stetic {
 
 		public override AssemblyDefinition Resolve (AssemblyNameReference name)
 		{
-			AssemblyDefinition asm = (AssemblyDefinition) _assemblies [name.Name];
+			return Resolve (name, (string)null);
+		}
+	
+		public AssemblyDefinition Resolve (AssemblyNameReference name, string basePath)
+		{
+			AssemblyDefinition asm = (AssemblyDefinition) _assemblies [name.FullName];
 			if (asm == null) {
 				if (app != null) {
 					string ares = app.ResolveAssembly (name.Name);
 					if (ares != null) {
 						asm = AssemblyFactory.GetAssembly (ares);
 						asm.Resolver = this;
-						_assemblies [name.Name] = asm;
+						_assemblies [name.FullName] = asm;
 						return asm;
 					}
 				}
-				asm = base.Resolve (name);
+				string file = Resolve (name.FullName, basePath);
+				if (file != null)
+					asm = AssemblyFactory.GetAssembly (file);
+				else
+					asm = base.Resolve (name);
 				asm.Resolver = this;
-				_assemblies [name.Name] = asm;
+				_assemblies [name.FullName] = asm;
 			}
 
 			return asm;
+		}
+		
+		public void ClearCache ()
+		{
+			_assemblies.Clear ();
 		}
 
 		public TypeDefinition Resolve (TypeReference type)
@@ -102,10 +116,13 @@ namespace Stetic {
 
 		public string Resolve (string assemblyName, string basePath)
 		{
+			if (Path.IsPathRooted (assemblyName) && (assemblyName.EndsWith (".dll") || assemblyName.EndsWith (".exe")))
+				return Path.GetFullPath (assemblyName);
+			
 			if (app != null) {
 				string ares = app.ResolveAssembly (assemblyName);
 				if (ares != null)
-					return ares;
+					return Path.GetFullPath (ares);
 			}
 			
 			StringCollection col = new StringCollection ();
@@ -139,7 +156,7 @@ namespace Stetic {
 
 			string asm = GetAssemblyInGac (name);
 			if (asm != null)
-				return asm;
+				return Path.GetFullPath (asm);
 
 			throw new FileNotFoundException ("Could not resolve: " + name);
 		}
@@ -172,7 +189,7 @@ namespace Stetic {
 					throw new NotSupportedException ("Version not supported: " + reference.Version);
 			}
 
-			return Path.Combine (path, "mscorlib.dll");
+			return Path.GetFullPath (Path.Combine (path, "mscorlib.dll"));
 		}
 
 		static string GetAssemblyInGac (AssemblyNameReference reference)

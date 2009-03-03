@@ -105,6 +105,11 @@ namespace Stetic
 		{
 		}
 		
+		// Flush is called by the registry to free cached data stored in the widget library.
+		public virtual void Flush ()
+		{
+		}
+		
 		protected abstract ClassDescriptor LoadClassDescriptor (XmlElement element);
 		
 		

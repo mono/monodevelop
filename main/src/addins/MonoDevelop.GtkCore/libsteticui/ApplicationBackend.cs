@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using System.Collections;
+using System.Collections.Generic;
 using System.CodeDom;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.Remoting;
@@ -22,6 +23,7 @@ namespace Stetic
 		object targetViewerObject;
 		bool allowInProcLibraries = true;
 		Application appFrontend;
+		string coreLibrary;
 		
 		ProjectBackend activeProject;
 		WidgetEditSession activeDesignSession;
@@ -30,7 +32,8 @@ namespace Stetic
 		public ApplicationBackend (Application app)
 		{
 			appFrontend = app;
-			Registry.Initialize (new AssemblyWidgetLibrary (typeof(Registry).Assembly.FullName, typeof(Registry).Assembly));
+			coreLibrary = Path.GetFullPath (typeof(Registry).Assembly.Location);
+			Registry.Initialize (new AssemblyWidgetLibrary (coreLibrary, typeof(Registry).Assembly));
 			WidgetDesignerBackend.DefaultObjectViewer = this;
 		}
 		
@@ -167,7 +170,7 @@ namespace Stetic
 				// Load required libraries
 				
 				Hashtable visited = new Hashtable ();
-				LoadLibraries (null, visited, libraries);
+				LoadLibraries (new AssemblyResolver (this), visited, libraries);
 				
 				foreach (ProjectBackend project in projects)
 					LoadLibraries (project.Resolver, visited, project.WidgetLibraries);
@@ -201,10 +204,15 @@ namespace Stetic
 			}
 		}
 		
-		internal void LoadLibraries (AssemblyResolver resolver, Hashtable visited, IEnumerable libraries)
+		void LoadLibraries (AssemblyResolver resolver, Hashtable visited, IEnumerable libraries)
 		{
-			foreach (string s in libraries)
-				AddLibrary (resolver, visited, s);
+			// Convert all assembly names to assembly paths before registering the libraries.
+			// The registry and the library cache will only handle full paths.
+			foreach (string s in libraries) {
+				string sr = resolver.Resolve (s, null);
+				if (sr != null)
+					AddLibrary (resolver, visited, sr);
+			}
 			Registry.ReloadWidgetLibraries ();
 		}
 		
@@ -215,6 +223,10 @@ namespace Stetic
 				CheckDependencies (resolver, visited, lib);
 				return lib;
 			}
+			
+			// Avoid registering direct references of libstetic
+			if (Path.GetFileName (s) == "libstetic.dll" && s != coreLibrary)
+				return null;
 
 			WidgetLibrary alib = CreateLibrary (resolver, s);
 			if (alib == null)

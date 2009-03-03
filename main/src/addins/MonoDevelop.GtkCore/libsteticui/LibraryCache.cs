@@ -68,6 +68,12 @@ namespace Stetic {
 					guid = value; 
 				}
 			}
+			
+			public bool IsCurrent {
+				get {
+					return Timestamp == System.IO.File.GetLastWriteTime (file).ToUniversalTime ();
+				}
+			}
 
 			[XmlIgnore]
 			public XmlDocument GuiDocument {
@@ -121,6 +127,20 @@ namespace Stetic {
 					if (objects == null && gui != null)
 						GuiDocument = null;
 				}
+			}
+			
+			internal ToolboxItemInfo GetToolboxItem (string name)
+			{
+				XmlDocument doc = ObjectsDocument;
+				if (doc != null) {
+					XmlElement elem = (XmlElement) doc.SelectSingleNode ("/objects/object[@type='" + name + "']");
+					if (elem != null) {
+						ToolboxItemInfo info = new ToolboxItemInfo (elem.GetAttribute ("base-type"));
+						info.PaletteCategory = elem.GetAttribute ("palette-category");
+						return info;
+					}
+				}
+				return null;
 			}
 
 			string ObjectsPath {
@@ -248,12 +268,10 @@ namespace Stetic {
 		{
 			string dir = Path.GetDirectoryName (filename);
 			foreach (AssemblyNameReference aref in asm.MainModule.AssemblyReferences) {
-				string file = null;
-				if (resolver != null)
-					resolver.Resolve (aref.FullName, dir);
-				if (file != null && Application.InternalIsWidgetLibrary (resolver, file)) {
+				LibraryInfo info = GetInfo (resolver, aref.FullName, dir);
+				if (info != null && info.HasWidgets) {
 					XmlElement edep = elem.OwnerDocument.CreateElement ("dependency");
-					edep.InnerText = file;
+					edep.InnerText = info.File;
 					elem.AppendChild (edep);
 				}
 			}
@@ -297,7 +315,7 @@ namespace Stetic {
 			return false;
 		}
 
-		class ToolboxItemInfo {
+		internal class ToolboxItemInfo {
 
 			public ToolboxItemInfo (string base_type)
 			{
@@ -308,7 +326,7 @@ namespace Stetic {
 			public string PaletteCategory;
 		}
 
-		ToolboxItemInfo GetToolboxItemInfo (AssemblyResolver resolver, TypeDefinition tdef)
+		ToolboxItemInfo GetToolboxItemInfo (AssemblyResolver resolver, string baseDirectory, AssemblyDefinition asm, TypeDefinition tdef)
 		{
 			if (tdef == null)
 				return null;
@@ -360,10 +378,18 @@ namespace Stetic {
 			}
 
 			if (info == null && tdef.BaseType != null) {
-				try {
-					info = GetToolboxItemInfo (resolver, resolver.Resolve (tdef.BaseType));
-				} catch {
-					// Ignore assembly resolution errors
+				string baseName = tdef.BaseType.FullName;
+
+				foreach (AssemblyNameReference aref in asm.MainModule.AssemblyReferences) {
+					LibraryInfo libInfo = GetInfo (resolver, aref.FullName, baseDirectory);
+					if (libInfo != null && libInfo.HasWidgets) {
+						ToolboxItemInfo binfo = libInfo.GetToolboxItem (baseName);
+						if (binfo != null) {
+							info = new ToolboxItemInfo (baseName);
+							category = binfo.PaletteCategory;
+							break;
+						}
+					}
 				}
 			}
 
@@ -518,13 +544,13 @@ namespace Stetic {
 			}
 		}
 	
-		void AddObjects (XmlDocument doc, AssemblyResolver resolver, AssemblyDefinition adef)
+		void AddObjects (XmlDocument doc, AssemblyResolver resolver, string basePath, AssemblyDefinition adef)
 		{
 			foreach (TypeDefinition tdef in adef.MainModule.Types) {
 				if (tdef.IsAbstract || !tdef.IsClass) 
 					continue;
 
-				ToolboxItemInfo tbinfo = GetToolboxItemInfo (resolver, tdef);
+				ToolboxItemInfo tbinfo = GetToolboxItemInfo (resolver, basePath, adef, tdef);
 				if (tbinfo == null)
 					continue;
 
@@ -544,6 +570,8 @@ namespace Stetic {
 		XmlDocument GetObjectsDoc (AssemblyResolver resolver, AssemblyDefinition adef, string path)
 		{
 			XmlDocument doc = null;
+			bool isMainLib = Path.GetFileName (path) == "libstetic.dll";
+			
 			try {
 				EmbeddedResource res = GetResource (adef, "objects.xml");
 				if (res != null) {
@@ -556,22 +584,34 @@ namespace Stetic {
 				if (resolver == null)
 					resolver = new AssemblyResolver (null);
 
+				string baseDirectory = Path.GetDirectoryName (path);
+				
+				if (!isMainLib) {
+					// Make sure all referenced assemblies are up to date.
+					foreach (AssemblyNameReference aref in adef.MainModule.AssemblyReferences) {
+						Refresh (resolver, aref.FullName, baseDirectory);
+					}
+				}
+			
 				if (doc == null) {
 					Hashtable visited = new Hashtable ();
 					foreach (AssemblyNameReference aref in adef.MainModule.AssemblyReferences) {
-						if (!ReferenceChainContainsGtk (resolver, aref, visited))
-							continue;
+						if (aref.Name != "gtk-sharp") {
+							LibraryInfo info = GetInfo (resolver, aref.FullName, baseDirectory);
+							if (info == null || !info.HasWidgets)
+								continue;
+						}
 
 						if (doc == null) {
 							doc = new XmlDocument ();
 							doc.AppendChild (doc.CreateElement ("objects"));
 						}
-						AddObjects (doc, resolver, adef);
+						AddObjects (doc, resolver, baseDirectory, adef);
 						break;
 					}
 				}
 
-				if (doc != null) {
+				if (doc != null && !isMainLib) {
 					XmlElement elem = doc.CreateElement ("dependencies");
 					doc.DocumentElement.AppendChild (elem);
 					AddDependencies (elem, resolver, path, adef);
@@ -584,42 +624,59 @@ namespace Stetic {
 			return doc;
 		}
 		
-		internal LibraryInfo Refresh (AssemblyResolver resolver, string assembly)
+		LibraryInfo GetInfo (AssemblyResolver resolver, string assembly, string baseDirectory)
 		{
+			string file = assembly;
 			if (File.Exists (assembly))
-				assembly = Path.GetFullPath (assembly);
+				file = assembly;
 			else {
 				if (resolver == null)
 					resolver = new AssemblyResolver (null);
 				try {
-					string path = resolver.Resolve (assembly, null);
+					string path = resolver.Resolve (assembly, baseDirectory);
 					if (path != null)
-						assembly = path;
+						file = path;
+					else
+						return null;
 				} catch (Exception) {
+					return null;
 				}
 			}
 
-			if (IsCurrent (assembly))
-				return Members [assembly];
-
-			LibraryInfo info = Members [assembly];
+			file = Path.GetFullPath (file);
+			
+			LibraryInfo info = Members [file];
 			if (info == null) {
 				info = new LibraryInfo ();
-				info.File = assembly;
+				info.File = file ?? assembly;
 				Members.Add (info);
 			}
-			info.Timestamp = File.GetLastWriteTime (assembly).ToUniversalTime ();
+			return info;
+		}
+		
+		internal LibraryInfo Refresh (AssemblyResolver resolver, string assembly)
+		{
+			return Refresh (resolver, assembly, null);
+		}
+		
+		LibraryInfo Refresh (AssemblyResolver resolver, string assembly, string baseDirectory)
+		{
+			LibraryInfo info = GetInfo (resolver, assembly, baseDirectory);
+
+			if (info == null || info.IsCurrent || !File.Exists (info.File))
+				return info;
+
+			info.Timestamp = File.GetLastWriteTime (info.File).ToUniversalTime ();
 			info.Guid = Guid.NewGuid ();
 			Save ();
-			AssemblyDefinition adef = AssemblyFactory.GetAssembly (assembly);
-			XmlDocument objects = GetObjectsDoc (resolver, adef, assembly);
+			AssemblyDefinition adef = AssemblyFactory.GetAssembly (info.File);
+			XmlDocument objects = GetObjectsDoc (resolver, adef, info.File);
 			if (objects != null) {
 				info.ObjectsDocument = objects;
 				XmlDocument gui = GetGuiDoc (adef);
 				if (gui != null)
 					info.GuiDocument = gui;
 			}
-
 			info.OnChanged ();
 			return info;
 		}
