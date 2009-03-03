@@ -1,3 +1,18 @@
+2009-03-03  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* T4:
+	* T4/Engine.cs:
+	* T4/Template.cs:
+	* T4/Tokeniser.cs:
+	* T4/ToStringHelper.cs:
+	* T4/DirectiveProcessor.cs:
+	* T4/TextTransformation.cs:
+	* MonoDevelop.AspNet.Mvc.csproj:
+	* T4/ITextTemplatingEngineHost.cs:
+	* T4/DirectiveProcessorException.cs:
+	* T4/RequiresProvidesDirectiveProcessor.cs: Added an
+	  incomplete T4 implemention.
+
 2009-02-28  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* AspMvcProject.cs: Add Models, Views, Controllers to special

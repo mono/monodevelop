@@ -36,6 +36,15 @@
     <Compile Include="AspMvcProjectConfiguration.cs" />
     <Compile Include="AspMvcCommands.cs" />
     <Compile Include="Gui\FolderNodeBuilderExtension.cs" />
+    <Compile Include="T4\TextTransformation.cs" />
+    <Compile Include="T4\ITextTemplatingEngineHost.cs" />
+    <Compile Include="T4\Engine.cs" />
+    <Compile Include="T4\DirectiveProcessor.cs" />
+    <Compile Include="T4\RequiresProvidesDirectiveProcessor.cs" />
+    <Compile Include="T4\ToStringHelper.cs" />
+    <Compile Include="T4\DirectiveProcessorException.cs" />
+    <Compile Include="T4\Template.cs" />
+    <Compile Include="T4\Tokeniser.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -61,10 +70,14 @@
     <Reference Include="MonoDevelop.Components, Version=1.9.2.0, Culture=neutral">
       <Package>monodevelop</Package>
     </Reference>
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Templates\" />
     <Folder Include="Gui\" />
+    <Folder Include="T4\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.AspNet.Mvc.addin.xml" />
