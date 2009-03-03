@@ -84,6 +84,12 @@ namespace MonoDevelop.Projects.Dom
 			set;
 		}
 		
+		public virtual string StockIcon {
+			get {
+				return Stock.Field;
+			}
+		}
+		
 		public DomParameter ()
 		{
 		}

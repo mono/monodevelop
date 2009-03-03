@@ -69,5 +69,10 @@ namespace MonoDevelop.Projects.Dom
 		bool IsParams {
 			get;
 		}
+		
+		string StockIcon {
+			get;
+		}
+		
 	}
 }

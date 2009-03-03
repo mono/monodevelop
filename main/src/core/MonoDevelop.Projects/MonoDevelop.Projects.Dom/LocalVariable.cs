@@ -39,6 +39,12 @@ namespace MonoDevelop.Projects.Dom
 		DomRegion region;
 		IMember declaringMember;
 		
+		public virtual string StockIcon {
+			get {
+				return Stock.Field;
+			}
+		}
+		
 		public LocalVariable (IMember declaringMember, string name, IReturnType type, DomRegion region)
 		{
 			this.declaringMember = declaringMember;
