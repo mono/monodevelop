@@ -1,5 +1,10 @@
 2009-03-03  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs: fixed "Bug 480308 - Editor
+	  not scrolling horizontally".
+
+2009-03-03  Mike Krüger  <mkrueger@novell.com>
+
 	* Styles/TangoLightStyle.xml: Changed diff header style for
 	  tango light.
 
