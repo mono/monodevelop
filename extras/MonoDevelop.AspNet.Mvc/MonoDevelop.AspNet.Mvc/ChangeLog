@@ -1,5 +1,10 @@
 2009-03-03  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* T4/Engine.cs: Handle culture, encoding, extension directive
+	  values.
+
+2009-03-03  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* T4/Engine.cs:
 	* T4/Template.cs:
 	* T4/Tokeniser.cs:

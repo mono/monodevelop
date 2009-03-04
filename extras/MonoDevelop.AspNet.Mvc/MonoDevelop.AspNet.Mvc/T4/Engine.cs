@@ -68,6 +68,14 @@ namespace MonoDevelop.AspNet.Mvc.T4
 				return null;
 			}
 			
+			if (!String.IsNullOrEmpty (settings.Extension)) {
+				host.SetFileExtension (settings.Extension);
+			}
+			if (settings.Encoding != null) {
+				//FIXME: when is this called with false?
+				host.SetOutputEncoding (settings.Encoding, true);
+			}
+			
 			AppDomain appdomain = host.ProvideTemplatingAppDomain (content);
 			TransformationRunner runner;
 			if (appdomain != null) {
@@ -78,7 +86,7 @@ namespace MonoDevelop.AspNet.Mvc.T4
 				runner = new TransformationRunner ();
 			}
 			
-			return runner.Run (results.PathToAssembly, settings.Namespace + "." + settings.Name, host);
+			return runner.Run (results.PathToAssembly, settings.Namespace + "." + settings.Name, host, settings.Culture);
 		}
 		
 		static CompilerResults GenerateCode (ITextTemplatingEngineHost host, ParsedTemplate pt, TemplateSettings settings, CodeCompileUnit ccu)
@@ -318,7 +326,7 @@ namespace MonoDevelop.AspNet.Mvc.T4
 		
 		class TransformationRunner : MarshalByRefObject
 		{
-			public string Run (string assemblyPath, string type, ITextTemplatingEngineHost host)
+			public string Run (string assemblyPath, string type, ITextTemplatingEngineHost host, System.Globalization.CultureInfo culture)
 			{
 				
 				System.Reflection.Assembly assem = System.Reflection.Assembly.Load (assemblyPath);
@@ -330,9 +338,16 @@ namespace MonoDevelop.AspNet.Mvc.T4
 				if (hostProp != null && hostProp.CanWrite)
 					hostProp.SetValue (tt, host, null);
 				
+				//set the culture
+				if (culture != null)
+					ToStringHelper.FormatProvider = culture;
+				else
+					ToStringHelper.FormatProvider = System.Globalization.CultureInfo.InvariantCulture;
+				
 				tt.Initialize ();
 				string output = tt.TransformText ();
 				host.LogErrors (tt.Errors);
+				ToStringHelper.FormatProvider = System.Globalization.CultureInfo.InvariantCulture;
 				return output;
 			}
 		}
