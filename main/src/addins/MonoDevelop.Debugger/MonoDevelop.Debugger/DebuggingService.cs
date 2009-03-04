@@ -494,11 +494,11 @@ namespace MonoDevelop.Debugger
 			return (IDebuggerEngine[]) AddinManager.GetExtensionObjects (FactoriesPath, typeof(IDebuggerEngine), true);
 		}		
 		
-		static IDebuggerEngine GetFactoryForCommand (string file)
+		static IDebuggerEngine GetFactoryForCommand (string cmd)
 		{
 			foreach (TypeExtensionNode node in AddinManager.GetExtensionNodes (FactoriesPath)) {
 				IDebuggerEngine factory = (IDebuggerEngine) node.GetInstance ();
-				if (factory.CanDebugFile (file))
+				if (factory.CanDebugCommand (cmd))
 					return factory;
 			}
 			return null;

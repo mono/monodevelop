@@ -46,12 +46,7 @@ namespace MonoDevelop.Debugger.Gdb
 			get { return "GNU Debugger (GDB)"; }
 		}
 		
-		public bool CanDebugPlatform (string platformId)
-		{
-			return platformId == "Native";
-		}
-		
-		public bool CanDebugFile (string file)
+		public bool CanDebugCommand (string file)
 		{
 			string ext = System.IO.Path.GetExtension (file).ToLower ();
 			if (ext == ".exe" || ext == ".dll")

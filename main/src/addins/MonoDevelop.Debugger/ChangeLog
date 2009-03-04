@@ -1,5 +1,10 @@
 2009-03-04  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Debugger/DebuggingService.cs: Removed unused
+	  CanDebugPlatform and rename CanDebugFile to CanDebugCommand.
+
+2009-03-04  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Debugger/Extensions.cs:
 	* MonoDevelop.Debugger/DebuggingService.cs:
 	* MonoDevelop.Debugger/DebugExecutionHandlerFactory.cs:

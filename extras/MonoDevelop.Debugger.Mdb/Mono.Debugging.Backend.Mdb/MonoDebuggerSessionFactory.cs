@@ -39,12 +39,7 @@ namespace Mono.Debugging.Backend.Mdb
 			get { return "Mono Debugger"; }
 		}
 		
-		public bool CanDebugPlatform (string platformId)
-		{
-			return platformId == "Mono";
-		}
-		
-		public bool CanDebugFile (string file)
+		public bool CanDebugCommand (string file)
 		{
 			string ext = System.IO.Path.GetExtension (file).ToLower ();
 			return ext == ".exe" || ext == ".dll";
