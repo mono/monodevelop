@@ -90,7 +90,7 @@ namespace MonoDevelop.Profiling
 			SwitchWorkbenchContext (ProfileWorkbenchContext);
 
 			string workingDir = ProfilingService.GetProcessDirectory (process.Id);
-			IExecutionHandler handler = profiler.GetProcessExecutionHandlerFactory (process).CreateExecutionHandler (null);
+			IExecutionHandler handler = profiler.GetProcessExecutionHandlerFactory (process);
 			return handler.Execute (null, null, workingDir, null, null /*context.ConsoleFactory.CreateConsole (true)*/);
 		}
 		

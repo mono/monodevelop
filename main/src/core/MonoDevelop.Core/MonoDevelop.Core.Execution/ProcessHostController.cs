@@ -48,7 +48,7 @@ namespace MonoDevelop.Core.Execution
 		IProcessAsyncOperation process;
 		Timer timer;
 		string id;
-		IExecutionHandlerFactory executionHandlerFactory;
+		IExecutionHandler executionHandlerFactory;
 		int shutdownTimeout = 2000;
 
 		IProcessHost processHost;
@@ -56,7 +56,7 @@ namespace MonoDevelop.Core.Execution
 		ManualResetEvent exitRequestEvent = new ManualResetEvent (false);
 		ManualResetEvent exitedEvent = new ManualResetEvent (false);
 		
-		public ProcessHostController (string id, uint stopDelay, IExecutionHandlerFactory executionHandlerFactory)
+		public ProcessHostController (string id, uint stopDelay, IExecutionHandler executionHandlerFactory)
 		{
 			if (string.IsNullOrEmpty (id))
 				id = "?";
@@ -90,11 +90,10 @@ namespace MonoDevelop.Core.Execution
 					location = Path.Combine (location, "mdhost.exe");
 					
 					if (executionHandlerFactory != null) {
-						IExecutionHandler handler = executionHandlerFactory.CreateExecutionHandler ("Mono");
 						ProcessHostConsole cons = new ProcessHostConsole ();
 						tmpFile = Path.GetTempFileName ();
 						File.WriteAllText (tmpFile, chId + "\n" + sref + "\n");
-						process = handler.Execute (location, id + " " + tmpFile, AppDomain.CurrentDomain.BaseDirectory, null, cons);
+						process = executionHandlerFactory.Execute (location, id + " " + tmpFile, AppDomain.CurrentDomain.BaseDirectory, null, cons);
 					}
 					else {
 						string args = string.Empty;

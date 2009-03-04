@@ -209,15 +209,17 @@ namespace MonoDevelop.Core.Execution
 			}
 		}
 		
-		public IExecutionHandler GetDefaultExecutionHandler (string platformId)
+		public IExecutionHandler GetDefaultExecutionHandler (string command)
 		{
 			if (executionHandlers == null) {
 				executionHandlers = new List<ExtensionNode> ();
 				AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Core/ExecutionHandlers", OnExtensionChange);
 			}
 			
-			foreach (ExecutionHandlerCodon codon in executionHandlers)
-				if (codon.Platform == platformId) return codon.ExecutionHandler;
+			foreach (TypeExtensionNode codon in executionHandlers) {
+				IExecutionHandler handler = (IExecutionHandler) codon.GetInstance (typeof(IExecutionHandler));
+				if (handler.CanExecute (command)) return handler;
+			}
 			return null;
 		}
 		
@@ -243,7 +245,7 @@ namespace MonoDevelop.Core.Execution
 				executionHandlers.Remove (args.ExtensionNode);
 		}
 		
-		ProcessHostController GetHost (string id, bool shared, IExecutionHandlerFactory executionHandler)
+		ProcessHostController GetHost (string id, bool shared, IExecutionHandler executionHandler)
 		{
 			if (!shared)
 				return new ProcessHostController (id, 0, executionHandler);
@@ -268,7 +270,7 @@ namespace MonoDevelop.Core.Execution
 			return ob;
 		}
 		
-		public RemoteProcessObject CreateExternalProcessObject (Type type, IExecutionHandlerFactory executionHandler)
+		public RemoteProcessObject CreateExternalProcessObject (Type type, IExecutionHandler executionHandler)
 		{
 			return GetHost (type.ToString(), false, executionHandler).CreateInstance (type.Assembly.Location, type.FullName, GetRequiredAddins (type));
 		}
@@ -278,7 +280,7 @@ namespace MonoDevelop.Core.Execution
 			return GetHost (typeName, shared, null).CreateInstance (assemblyPath, typeName, requiredAddins);
 		}
 		
-		public RemoteProcessObject CreateExternalProcessObject (string assemblyPath, string typeName, IExecutionHandlerFactory executionHandler, params string[] requiredAddins)
+		public RemoteProcessObject CreateExternalProcessObject (string assemblyPath, string typeName, IExecutionHandler executionHandler, params string[] requiredAddins)
 		{
 			return GetHost (typeName, false, executionHandler).CreateInstance (assemblyPath, typeName, requiredAddins);
 		}
@@ -311,9 +313,11 @@ namespace MonoDevelop.Core.Execution
 			}
 		}
 		
-		public bool IsValidForRemoteHosting (IExecutionHandlerFactory handler)
+		public bool IsValidForRemoteHosting (IExecutionHandler handler)
 		{
-			return handler.SupportsPlatform ("Mono");
+			string location = Path.GetDirectoryName (System.Reflection.Assembly.GetExecutingAssembly ().Location);
+			location = Path.Combine (location, "mdhost.exe");
+			return handler.CanExecute (location);
 		}
 		
 		string[] GetRequiredAddins (Type type)

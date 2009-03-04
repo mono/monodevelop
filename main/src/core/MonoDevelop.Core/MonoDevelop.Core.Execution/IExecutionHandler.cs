@@ -33,6 +33,7 @@ namespace MonoDevelop.Core.Execution
 {
 	public interface IExecutionHandler
 	{
+		bool CanExecute (string command);
 		IProcessAsyncOperation Execute (string command, string arguments, string workingDirectory, IDictionary<string, string> environmentVariables, IConsole console);
 	}
 }

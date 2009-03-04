@@ -82,7 +82,7 @@ namespace MonoDevelop.Debugger
 			IdeApp.Workspace.LoadingUserPreferences += OnLoadUserPrefs;
 		}
 
-		public static IExecutionHandlerFactory GetExecutionHandlerFactory ()
+		public static IExecutionHandler GetExecutionHandler ()
 		{
 			return executionHandlerFactory;
 		}
@@ -135,9 +135,9 @@ namespace MonoDevelop.Debugger
 			return fc.SupportedFeatures;
 		}
 
-		public static DebuggerFeatures GetSupportedFeaturesForPlatform (string plaformId)
+		public static DebuggerFeatures GetSupportedFeaturesForCommand (string command)
 		{
-			IDebuggerEngine engine = GetFactoryForPlatform (plaformId);
+			IDebuggerEngine engine = GetFactoryForCommand (command);
 			if (engine != null)
 				return engine.SupportedFeatures;
 			else
@@ -219,7 +219,7 @@ namespace MonoDevelop.Debugger
 
 		public static IProcessAsyncOperation Run (string file, IConsole console)
 		{
-			DebugExecutionHandler h = new DebugExecutionHandler (null);
+			DebugExecutionHandler h = new DebugExecutionHandler ();
 			return h.Execute (file, null, null, null, console);
 		}
 		
@@ -242,14 +242,11 @@ namespace MonoDevelop.Debugger
 				DisassemblyRequested (null, EventArgs.Empty);
 		}
 		
-		internal static void InternalRun (string platform, DebuggerStartInfo startInfo, IConsole c)
+		internal static void InternalRun (DebuggerStartInfo startInfo, IConsole c)
 		{
 			console = c;
 			
-			if (platform != null)
-				session = CreateDebugSessionForPlatform (platform);
-			else
-				session = CreateDebugSessionForFile (startInfo.Command);
+			session = CreateDebugSessionForCommand (startInfo.Command);
 			
 			SetupSession ();
 
@@ -476,36 +473,20 @@ namespace MonoDevelop.Debugger
 			});
 		}
 		
-		public static bool CanDebugPlatform (string platform)
+		public static bool CanDebugCommand (string command)
 		{
-			return GetFactoryForPlatform (platform) != null;
+			return GetFactoryForCommand (command) != null;
 		}
 		
-		public static bool CanDebugFile (string file)
+		public static DebuggerSession CreateDebugSessionForCommand (string command)
 		{
-			return GetFactoryForFile (file) != null;
-		}
-		
-		public static DebuggerSession CreateDebugSessionForPlatform (string platform)
-		{
-			IDebuggerEngine factory = GetFactoryForPlatform (platform);
+			IDebuggerEngine factory = GetFactoryForCommand (command);
 			if (factory != null) {
 				DebuggerSession ds = factory.CreateSession ();
 				ds.Initialize ();
 				return ds;
 			} else
-				throw new InvalidOperationException ("Unsupported platform: " + platform);
-		}
-		
-		public static DebuggerSession CreateDebugSessionForFile (string file)
-		{
-			IDebuggerEngine factory = GetFactoryForFile (file);
-			if (factory != null) {
-				DebuggerSession ds = factory.CreateSession ();
-				ds.Initialize ();
-				return ds;
-			} else
-				throw new InvalidOperationException ("Unsupported file: " + file);
+				throw new InvalidOperationException ("Unsupported command: " + command);
 		}
 		
 		public static IDebuggerEngine[] GetDebuggerEngines ()
@@ -513,17 +494,7 @@ namespace MonoDevelop.Debugger
 			return (IDebuggerEngine[]) AddinManager.GetExtensionObjects (FactoriesPath, typeof(IDebuggerEngine), true);
 		}		
 		
-		static IDebuggerEngine GetFactoryForPlatform (string platform)
-		{
-			foreach (TypeExtensionNode node in AddinManager.GetExtensionNodes (FactoriesPath)) {
-				IDebuggerEngine factory = (IDebuggerEngine) node.GetInstance ();
-				if (factory.CanDebugPlatform (platform))
-					return factory;
-			}
-			return null;
-		}
-		
-		static IDebuggerEngine GetFactoryForFile (string file)
+		static IDebuggerEngine GetFactoryForCommand (string file)
 		{
 			foreach (TypeExtensionNode node in AddinManager.GetExtensionNodes (FactoriesPath)) {
 				IDebuggerEngine factory = (IDebuggerEngine) node.GetInstance ();
@@ -557,19 +528,20 @@ namespace MonoDevelop.Debugger
 		}
 	}
 	
-	internal class FeatureCheckerHandlerFactory: IExecutionHandlerFactory
+	internal class FeatureCheckerHandlerFactory: IExecutionHandler
 	{
 		public DebuggerFeatures SupportedFeatures { get; set; }
 		
-		public bool SupportsPlatform (string platformId)
+		public bool CanExecute (string command)
 		{
-			SupportedFeatures = DebuggingService.GetSupportedFeaturesForPlatform (platformId);
+			SupportedFeatures = DebuggingService.GetSupportedFeaturesForCommand (command);
 			return SupportedFeatures != DebuggerFeatures.None;
 		}
 
-		public IExecutionHandler CreateExecutionHandler (string platformId)
+		public IProcessAsyncOperation Execute (string command, string arguments, string workingDirectory, IDictionary<string, string> environmentVariables, IConsole console)
 		{
-			return null;
+			// Never called
+			throw new System.NotImplementedException();
 		}
 	}
 }

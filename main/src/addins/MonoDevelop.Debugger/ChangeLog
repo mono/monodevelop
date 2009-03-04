@@ -1,3 +1,15 @@
+2009-03-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Debugger/Extensions.cs:
+	* MonoDevelop.Debugger/DebuggingService.cs:
+	* MonoDevelop.Debugger/DebugExecutionHandlerFactory.cs:
+	  Changed the way execution handlers work. We are not using
+	  platform ids anymore. Instead, we use command strings when
+	  looking for execution handlers. IExecutionHandlerFactory has
+	  been removed and now everything is handled by
+	  IExecutionHandler, which has a new CanExecute method. This
+	  model is more simple and more generic.
+
 2009-03-02  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:

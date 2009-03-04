@@ -77,9 +77,7 @@
     <Compile Include="MonoDevelop.Core.Execution\IConsole.cs" />
     <Compile Include="MonoDevelop.Core.Execution\IConsoleFactory.cs" />
     <Compile Include="MonoDevelop.Core.Execution\IExecutionHandler.cs" />
-    <Compile Include="MonoDevelop.Core.Execution\IExecutionHandlerFactory.cs" />
     <Compile Include="MonoDevelop.Core.Execution\IProcessAsyncOperation.cs" />
-    <Compile Include="MonoDevelop.Core.Execution\MintPlatformExecutionHandler.cs" />
     <Compile Include="MonoDevelop.Core.Execution\MonoPlatformExecutionHandler.cs" />
     <Compile Include="MonoDevelop.Core.Execution\NativePlatformExecutionHandler.cs" />
     <Compile Include="MonoDevelop.Core.ProgressMonitoring\AggregatedOperationMonitor.cs" />
@@ -91,7 +89,6 @@
     <Compile Include="MonoDevelop.Core.FileSystem\FileSystemExtension.cs" />
     <Compile Include="MonoDevelop.Core.FileSystem\DefaultFileSystemExtension.cs" />
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="MonoDevelop.Core.AddIns\ExecutionHandlerCodon.cs" />
     <Compile Include="MonoDevelop.Core.ProgressMonitoring\ConsoleProgressStatus.cs" />
     <Compile Include="MonoDevelop.Core.AddIns\AssemblyExtensionNode.cs" />
     <Compile Include="MonoDevelop.Core.AddIns\PackageExtensionNode.cs" />

@@ -344,16 +344,16 @@ namespace MonoDevelop.NUnit
 			return res;
 		}
 		
-		public bool CanRun (IExecutionHandlerFactory executionContext)
+		public bool CanRun (IExecutionHandler executionContext)
 		{
 			if (executionContext == null)
-				executionContext = Runtime.ProcessService.DefaultExecutionMode.HandlerFactory;
+				executionContext = Runtime.ProcessService.DefaultExecutionMode.ExecutionHandler;
 			return OnCanRun (executionContext);
 		}
 		
 		protected abstract UnitTestResult OnRun (TestContext testContext);
 		
-		protected virtual bool OnCanRun (IExecutionHandlerFactory executionContext)
+		protected virtual bool OnCanRun (IExecutionHandler executionContext)
 		{
 			return true;
 		}

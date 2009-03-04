@@ -1,3 +1,26 @@
+2009-03-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Core.csproj:
+	* MonoDevelop.Core.addin.xml:
+	* MonoDevelop.Core.Execution/IExecutionMode.cs:
+	* MonoDevelop.Core.Execution/ProcessService.cs:
+	* MonoDevelop.Core.AddIns/ExecutionModeNode.cs:
+	* MonoDevelop.Core.Execution/IExecutionHandler.cs:
+	* MonoDevelop.Core.AddIns/ExecutionHandlerCodon.cs:
+	* MonoDevelop.Core.Execution/ProcessHostController.cs:
+	* MonoDevelop.Core.Execution/IExecutionHandlerFactory.cs:
+	* MonoDevelop.Core.Execution/MonoPlatformExecutionHandler.cs:
+	* MonoDevelop.Core.Execution/MintPlatformExecutionHandler.cs:
+	* MonoDevelop.Core.Execution/DefaultExecutionHandlerFactory.cs:
+	* MonoDevelop.Core.Execution/NativePlatformExecutionHandler.cs:
+	  Changed the way execution handlers work. We are not using
+	  platform ids anymore. Instead, we use command strings when
+	  looking for execution handlers. IExecutionHandlerFactory has
+	  been removed and now everything is handled by
+	  IExecutionHandler, which has a new CanExecute method. This
+	  model is more simple and more generic.
+
 2009-02-27  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core/SystemAssemblyService.cs: Fixed logic for

@@ -103,7 +103,7 @@ namespace MonoDevelop.Projects
 		
 		public bool CanExecute (ExecutionContext context, string configuration)
 		{
-			return context == null || context.ExecutionHandlerFactory.SupportsPlatform ("Native");
+			return context == null || context.ExecutionHandler.CanExecute (command);
 		}
 		
 		public void Execute (IProgressMonitor monitor, IWorkspaceObject entry, ExecutionContext context, string configuration)
@@ -177,8 +177,7 @@ namespace MonoDevelop.Projects
 				else
 					console = context.ConsoleFactory.CreateConsole (!pauseExternalConsole);
 
-				IExecutionHandler handler = context.ExecutionHandlerFactory.CreateExecutionHandler ("Native");
-				oper = handler.Execute (exe, args, dir, null, console);
+				oper = context.ExecutionHandler.Execute (exe, args, dir, null, console);
 			}
 			else {
 				if (externalConsole) {

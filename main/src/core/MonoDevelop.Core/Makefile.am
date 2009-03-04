@@ -5,7 +5,6 @@ FILES =  \
 	AssemblyInfo.cs \
 	MonoDevelop.Core.AddIns/ApplicationExtensionNode.cs \
 	MonoDevelop.Core.AddIns/AssemblyExtensionNode.cs \
-	MonoDevelop.Core.AddIns/ExecutionHandlerCodon.cs \
 	MonoDevelop.Core.AddIns/ExecutionModeNode.cs \
 	MonoDevelop.Core.AddIns/PackageExtensionNode.cs \
 	MonoDevelop.Core.AddIns/PackageInstalledCondition.cs \
@@ -21,12 +20,10 @@ FILES =  \
 	MonoDevelop.Core.Execution/IConsole.cs \
 	MonoDevelop.Core.Execution/IConsoleFactory.cs \
 	MonoDevelop.Core.Execution/IExecutionHandler.cs \
-	MonoDevelop.Core.Execution/IExecutionHandlerFactory.cs \
 	MonoDevelop.Core.Execution/IExecutionMode.cs \
 	MonoDevelop.Core.Execution/IProcessAsyncOperation.cs \
 	MonoDevelop.Core.Execution/IProcessHost.cs \
 	MonoDevelop.Core.Execution/IProcessHostController.cs \
-	MonoDevelop.Core.Execution/MintPlatformExecutionHandler.cs \
 	MonoDevelop.Core.Execution/MonoPlatformExecutionHandler.cs \
 	MonoDevelop.Core.Execution/NativePlatformExecutionHandler.cs \
 	MonoDevelop.Core.Execution/ProcessHostController.cs \

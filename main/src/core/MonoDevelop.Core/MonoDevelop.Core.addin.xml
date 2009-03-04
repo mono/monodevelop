@@ -19,8 +19,8 @@
 	</ExtensionPoint>
 
 	<ExtensionPoint path = "/MonoDevelop/Core/ExecutionHandlers" name = "Execution handlers">
-		<Description>Execution handlers for the default execution mode</Description>
-		<ExtensionNode name="ExecutionHandler" type="MonoDevelop.Core.AddIns.ExecutionHandlerCodon" />
+		<Description>Execution handlers for the default execution mode. Specified types must implement IExecutionHandler.</Description>
+		<ExtensionNode name="ExecutionHandler"/>
 	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/Core/FileSystemExtensions" name = "File system extensions">
@@ -43,13 +43,8 @@
 	
 	<Extension path = "/MonoDevelop/Core/ExecutionHandlers">
 		<ExecutionHandler id="Mono"
-		                  platform = "Mono"
 		                  class = "MonoDevelop.Core.Execution.MonoPlatformExecutionHandler"/>
-		<ExecutionHandler id="Mint"
-		                  platform = "Mint"
-		                  class = "MonoDevelop.Core.Execution.MintPlatformExecutionHandler"/>
 		<ExecutionHandler id="Native"
-		                  platform = "Native"
 		                  class = "MonoDevelop.Core.Execution.NativePlatformExecutionHandler"/>
 	</Extension>
 </Addin>

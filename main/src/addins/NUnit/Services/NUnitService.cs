@@ -104,12 +104,12 @@ namespace MonoDevelop.NUnit
 			}
 		}
 		
-		public IAsyncOperation RunTest (UnitTest test, IExecutionHandlerFactory context)
+		public IAsyncOperation RunTest (UnitTest test, IExecutionHandler context)
 		{
 			return RunTest (test, context, IdeApp.Preferences.BuildBeforeExecuting);
 		}
 		
-		public IAsyncOperation RunTest (UnitTest test, IExecutionHandlerFactory context, bool buildOwnerObject)
+		public IAsyncOperation RunTest (UnitTest test, IExecutionHandler context, bool buildOwnerObject)
 		{
 			if (buildOwnerObject) {
 				IBuildTarget bt = test.OwnerObject as IBuildTarget;
@@ -259,9 +259,9 @@ namespace MonoDevelop.NUnit
 		Thread runThread;
 		bool success;
 		ManualResetEvent waitEvent;
-		IExecutionHandlerFactory context;
+		IExecutionHandler context;
 		
-		public TestSession (UnitTest test, IExecutionHandlerFactory context, TestResultsPad resultsPad)
+		public TestSession (UnitTest test, IExecutionHandler context, TestResultsPad resultsPad)
 		{
 			this.test = test;
 			this.context = context;

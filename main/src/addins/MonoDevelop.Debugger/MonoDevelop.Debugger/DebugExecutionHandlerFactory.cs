@@ -37,19 +37,19 @@ using Mono.Debugging;
 
 namespace MonoDevelop.Debugger
 {
-	internal class DebugExecutionHandlerFactory: IExecutionHandlerFactory
+	internal class DebugExecutionHandlerFactory: IExecutionHandler
 	{
-		public bool SupportsPlatform (string platformId)
+		public bool CanExecute (string command)
 		{
-			return DebuggingService.CanDebugPlatform (platformId);
+			return DebuggingService.CanDebugCommand (command);
 		}
 
-		public IExecutionHandler CreateExecutionHandler (string platformId)
+		public IProcessAsyncOperation Execute (string command, string arguments, string workingDirectory, IDictionary<string, string> environmentVariables, IConsole console)
 		{
-			if (DebuggingService.CanDebugPlatform (platformId))
-				return new DebugExecutionHandler (platformId);
-			else
-				return null;
+			if (!CanExecute (command))
+			    return null;
+			DebugExecutionHandler h = new DebugExecutionHandler ();
+			return h.Execute (command, arguments, workingDirectory, environmentVariables, console);
 		}
 	}
 	
@@ -57,14 +57,18 @@ namespace MonoDevelop.Debugger
 	{
 		bool done;
 		ManualResetEvent stopEvent;
-		string platformId;
 		
-		public DebugExecutionHandler (string platformId)
+		public DebugExecutionHandler ()
 		{
-			this.platformId = platformId;
 			DebuggingService.StoppedEvent += new EventHandler (OnStopDebug);
 		}
 		
+		public bool CanExecute (string command)
+		{
+			// Never called
+			throw new InvalidOperationException ();
+		}
+
 		public IProcessAsyncOperation Execute (string command, string arguments, string workingDirectory, IDictionary<string, string> environmentVariables, IConsole console)
 		{
 			DebuggerStartInfo startInfo = new DebuggerStartInfo ();
@@ -76,7 +80,7 @@ namespace MonoDevelop.Debugger
 					startInfo.EnvironmentVariables [val.Key] = val.Value;
 			}
 
-			DebuggingService.InternalRun (platformId, startInfo, console);
+			DebuggingService.InternalRun (startInfo, console);
 			return this;
 		}
 		

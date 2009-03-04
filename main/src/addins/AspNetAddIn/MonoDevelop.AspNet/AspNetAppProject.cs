@@ -202,9 +202,11 @@ namespace MonoDevelop.AspNet
 			}
 		}
 		
-		protected override bool OnGetCanExecute (MonoDevelop.Projects.ExecutionContext context, string configuration)
+		protected override bool OnGetCanExecute (MonoDevelop.Projects.ExecutionContext context, string config)
 		{
-			return context.ExecutionHandlerFactory.SupportsPlatform (ExecutionPlatform.Native);
+			AspNetAppProjectConfiguration configuration = (AspNetAppProjectConfiguration) GetConfiguration (config);
+			string xspVersion = (configuration.ClrVersion == ClrVersion.Net_1_1)? "xsp" : "xsp2";
+			return context.ExecutionHandler.CanExecute (xspVersion);
 		}
 		
 		protected override void DoExecute (IProgressMonitor monitor, ExecutionContext context, string config)
@@ -224,10 +226,6 @@ namespace MonoDevelop.AspNet
 			AggregatedOperationMonitor operationMonitor = new AggregatedOperationMonitor (monitor);
 			
 			try {
-				IExecutionHandler handler = context.ExecutionHandlerFactory.CreateExecutionHandler ("Native");
-				if (handler == null)
-					throw new Exception ("Could not obtain platform handler.");
-				
 				if (configuration.ExternalConsole)
 					console = context.ExternalConsoleFactory.CreateConsole (!configuration.PauseConsoleOutput);
 				else
@@ -240,7 +238,7 @@ namespace MonoDevelop.AspNet
 				if (configuration.DebugMode)
 					envVars ["MONO_OPTIONS"] = "--debug";
 				
-				IProcessAsyncOperation op = handler.Execute (xspVersion, XspParameters.GetXspParameters (), BaseDirectory, envVars, console);
+				IProcessAsyncOperation op = context.ExecutionHandler.Execute (xspVersion, XspParameters.GetXspParameters (), BaseDirectory, envVars, console);
 				operationMonitor.AddOperation (op); //handles cancellation
 				
 				//launch a separate thread to detect the running server and launch a web browser

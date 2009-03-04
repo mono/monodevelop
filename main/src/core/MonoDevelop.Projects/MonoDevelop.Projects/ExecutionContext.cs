@@ -34,23 +34,23 @@ namespace MonoDevelop.Projects
 	[Serializable]
 	public class ExecutionContext
 	{
-		IExecutionHandlerFactory executionHandlerFactory;
+		IExecutionHandler executionHandler;
 		IConsoleFactory consoleFactory;
 		
 		public ExecutionContext (IExecutionMode executionMode, IConsoleFactory consoleFactory)
 		{
-			this.executionHandlerFactory = executionMode.HandlerFactory;
+			this.executionHandler = executionMode.ExecutionHandler;
 			this.consoleFactory = consoleFactory;
 		}
 		
-		public ExecutionContext (IExecutionHandlerFactory executionHandlerFactory, IConsoleFactory consoleFactory)
+		public ExecutionContext (IExecutionHandler executionHandler, IConsoleFactory consoleFactory)
 		{
-			this.executionHandlerFactory = executionHandlerFactory;
+			this.executionHandler = executionHandler;
 			this.consoleFactory = consoleFactory;
 		}
 		
-		public IExecutionHandlerFactory ExecutionHandlerFactory {
-			get { return executionHandlerFactory; }
+		public IExecutionHandler ExecutionHandler {
+			get { return executionHandler; }
 		}
 		
 		public IConsoleFactory ConsoleFactory {

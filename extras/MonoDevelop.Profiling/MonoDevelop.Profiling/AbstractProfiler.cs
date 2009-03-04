@@ -73,12 +73,12 @@ namespace MonoDevelop.Profiling
 			get { return isSupported; }
 		}
 		
-		public virtual IExecutionHandlerFactory GetDefaultExecutionHandlerFactory ()
+		public virtual IExecutionHandler GetDefaultExecutionHandlerFactory ()
 		{
 			return new ApplicationExecutionHandlerFactory (this);
 		}
 
-		public virtual IExecutionHandlerFactory GetProcessExecutionHandlerFactory (Process process)
+		public virtual IExecutionHandler GetProcessExecutionHandlerFactory (Process process)
 		{
 			return new ProcessExecutionHandlerFactory (this, process);
 		}
@@ -216,7 +216,7 @@ namespace MonoDevelop.Profiling
 			return null;
 		}
 		
-		protected internal class ApplicationExecutionHandlerFactory : IExecutionHandlerFactory
+		protected internal class ApplicationExecutionHandlerFactory : IExecutionHandler
 		{
 			IProfiler profiler;
 			
@@ -225,20 +225,20 @@ namespace MonoDevelop.Profiling
 				this.profiler = profiler;
 			}
 			
-			public bool SupportsPlatform (string platformId)
+			public bool CanExecute (string command)
 			{
-				return platformId == "Mono";
+				string ext = System.IO.Path.GetExtension (command).ToLower ();
+				return ext == ".exe" || ext == ".dll";
 			}
 			
-			public IExecutionHandler CreateExecutionHandler (string platformId)
+			public IProcessAsyncOperation Execute (string command, string arguments, string workingDirectory, IDictionary<string, string> environmentVariables, IConsole console)
 			{
-				if (platformId == "Mono")
-					return new MonoProfilerExecutionHandler (profiler);
-				return null;
+				MonoProfilerExecutionHandler h = new MonoProfilerExecutionHandler (profiler);
+				return h.Execute (command, arguments, workingDirectory, environmentVariables, console);
 			}
 		}
 		
-		protected internal class ProcessExecutionHandlerFactory : IExecutionHandlerFactory
+		protected internal class ProcessExecutionHandlerFactory : IExecutionHandler
 		{
 			IProfiler profiler;
 			Process process;
@@ -249,14 +249,15 @@ namespace MonoDevelop.Profiling
 				this.process = process;
 			}
 
-			public bool SupportsPlatform (string platformId)
+			public bool CanExecute (string command)
 			{
 				return true;
 			}
 			
-			public IExecutionHandler CreateExecutionHandler (string platformId)
+			public IProcessAsyncOperation Execute (string command, string arguments, string workingDirectory, IDictionary<string, string> environmentVariables, IConsole console)
 			{
-				return new ProcessProfilerExecutionHandler (profiler, process);
+				ProcessProfilerExecutionHandler h = new ProcessProfilerExecutionHandler (profiler, process);
+				return h.Execute (command, arguments, workingDirectory, environmentVariables, console);
 			}
 		}
 	}

@@ -41,8 +41,8 @@ namespace MonoDevelop.Profiling
 
 		string GetSnapshotFileName (string workingDirectory, string filename);
 		
-		IExecutionHandlerFactory GetDefaultExecutionHandlerFactory ();
-		IExecutionHandlerFactory GetProcessExecutionHandlerFactory (Process process);
+		IExecutionHandler GetDefaultExecutionHandlerFactory ();
+		IExecutionHandler GetProcessExecutionHandlerFactory (Process process);
 		
 		event ProfilingSnapshotEventHandler SnapshotTaken;
 		event EventHandler SnapshotFailed;
