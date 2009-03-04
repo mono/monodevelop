@@ -285,7 +285,7 @@ namespace MonoDevelop.ValaBinding
 		{
 			ValaProjectConfiguration conf = (ValaProjectConfiguration)GetConfiguration(solutionConfiguration);
 			return (conf.CompileTarget == ValaBinding.CompileTarget.Bin) &&
-				context.ExecutionHandlerFactory.SupportsPlatform (ExecutionPlatform.Native);
+				context.ExecutionHandler.CanExecute (Path.Combine (conf.OutputDirectory, conf.Output));
 		}
 		
 		protected override void DoExecute (IProgressMonitor monitor,
@@ -315,14 +315,12 @@ namespace MonoDevelop.ValaBinding
 			AggregatedOperationMonitor operationMonitor = new AggregatedOperationMonitor (monitor);
 			
 			try {
-				IExecutionHandler handler = context.ExecutionHandlerFactory.CreateExecutionHandler (platform);
-				
-				if (handler == null) {
-					monitor.ReportError ("Cannot execute \"" + command + "\". The selected execution mode is not supported in the " + platform + " platform.", null);
+				if (!context.ExecutionHandler.CanExecute (Path.Combine (dir, command))) {
+					monitor.ReportError ("Cannot execute \"" + command + "\". The selected execution mode is not supported for Vala projects.", null);
 					return;
 				}
 				
-				IProcessAsyncOperation op = handler.Execute (Path.Combine (dir, command), args, dir, null, console);
+				IProcessAsyncOperation op = context.ExecutionHandler.Execute (Path.Combine (dir, command), args, dir, null, console);
 				
 				operationMonitor.AddOperation (op);
 				op.WaitForCompleted ();
