@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sl_SI\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: \n"
+"POT-Creation-Date: 2009-03-04 18:11:19-0500\n"
 "PO-Revision-Date: 2006-11-18 01:38+0100\n"
 "Last-Translator: Matej Urbas <matej.urbas@gmail.com>\n"
 "Language-Team: Slovene\n"
@@ -76,19 +76,35 @@ msgstr "Prazen projekt"
 msgid "Creates an empty Boo solution."
 msgstr "Ustvari prazno VB.NET rešitev"
 
-#: ../Gui/ShellTextView.boo:194
+#: ../BooBinding.addin.xml:33
+msgid "Boo Files"
+msgstr "Boo datoteke"
+
+#: ../BooBinding.addin.xml:55 ../Gui/OptionPanels/CodeCompilationPanel.boo:91
+msgid "Code Generation"
+msgstr "Generator koda"
+
+#: ../BooBinding.addin.xml:69
+msgid "Boo source code"
+msgstr ""
+
+#: ../BooBinding.addin.xml:90 ../BooBinding.addin.xml:98
+msgid "Boo Shell"
+msgstr "Boo shell"
+
+#: ../Gui/ShellTextView.boo:188
 msgid "Copy Script"
 msgstr ""
 
-#: ../Gui/ShellTextView.boo:198
+#: ../Gui/ShellTextView.boo:192
 msgid "Save Script As ..."
 msgstr ""
 
-#: ../Gui/ShellTextView.boo:202
+#: ../Gui/ShellTextView.boo:196
 msgid "Load Project Assemblies (forces shell reset)"
 msgstr ""
 
-#: ../Gui/ShellTextView.boo:209
+#: ../Gui/ShellTextView.boo:203
 #, fuzzy
 msgid "Reset Shell"
 msgstr "Boo shell"
@@ -101,41 +117,37 @@ msgstr ""
 msgid "Enable ducky mode"
 msgstr ""
 
-#: ../Gui/OptionPanels/CodeCompilationPanel.boo:88 ../BooBinding.addin.xml:52
-msgid "Code Generation"
-msgstr "Generator koda"
-
-#: ../Gui/OptionPanels/CodeCompilationPanel.boo:89
+#: ../Gui/OptionPanels/CodeCompilationPanel.boo:92
 msgid "Output Path"
 msgstr ""
 
-#: ../Gui/OptionPanels/CodeCompilationPanel.boo:93
-#: ../Gui/OptionPanels/CodeCompilationPanel.boo:100
+#: ../Gui/OptionPanels/CodeCompilationPanel.boo:96
+#: ../Gui/OptionPanels/CodeCompilationPanel.boo:103
 msgid "Output Assembly"
 msgstr ""
 
-#: ../Gui/OptionPanels/CodeCompilationPanel.boo:95
+#: ../Gui/OptionPanels/CodeCompilationPanel.boo:98
 msgid "Warnings and Compiler Options"
 msgstr ""
 
-#: ../Gui/OptionPanels/CodeCompilationPanel.boo:97
+#: ../Gui/OptionPanels/CodeCompilationPanel.boo:100
 msgid "Compiler"
 msgstr ""
 
-#: ../Gui/OptionPanels/CodeCompilationPanel.boo:98
+#: ../Gui/OptionPanels/CodeCompilationPanel.boo:101
 msgid "Culture"
 msgstr ""
 
-#: ../Gui/OptionPanels/CodeCompilationPanel.boo:106
+#: ../Gui/OptionPanels/CodeCompilationPanel.boo:109
 msgid "Executable"
 msgstr ""
 
-#: ../Gui/OptionPanels/CodeCompilationPanel.boo:110
+#: ../Gui/OptionPanels/CodeCompilationPanel.boo:113
 #, fuzzy
 msgid "Library"
 msgstr "Knjižnica (dll)"
 
-#: ../Gui/OptionPanels/CodeCompilationPanel.boo:114
+#: ../Gui/OptionPanels/CodeCompilationPanel.boo:117
 msgid "Executable with GUI"
 msgstr ""
 
@@ -171,11 +183,3 @@ msgstr ""
 #: ../Gui/OptionPanels/GeneralShellPanel.boo:58
 msgid "Use custom font:"
 msgstr ""
-
-#: ../BooBinding.addin.xml:30
-msgid "Boo Files"
-msgstr "Boo datoteke"
-
-#: ../BooBinding.addin.xml:82 ../BooBinding.addin.xml:90
-msgid "Boo Shell"
-msgstr "Boo shell"

@@ -31,5 +31,7 @@
     <packageName>monodevelop-boo</packageName>
     <outputType>RelativeToOutput</outputType>
     <ProjectGuid>{E1321D51-614A-49D9-974B-2AEB9B27210D}</ProjectGuid>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
   </PropertyGroup>
 </Project>

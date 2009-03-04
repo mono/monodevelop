@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: \n"
+"POT-Creation-Date: 2009-03-04 18:11:19-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Fajrin Azis <fajrin_azis_kudo@yahoo.co.id>\n"
 "Language-Team: Indonesian <id@li.org>\n"
@@ -68,21 +68,37 @@ msgstr "Proyek Kosong"
 msgid "Creates an empty Boo solution."
 msgstr "Buat solusi Boo kosong."
 
-#: ../Gui/ShellTextView.boo:194
+#: ../BooBinding.addin.xml:33
+msgid "Boo Files"
+msgstr "Boo Files"
+
+#: ../BooBinding.addin.xml:55 ../Gui/OptionPanels/CodeCompilationPanel.boo:91
+msgid "Code Generation"
+msgstr "Generasi Code"
+
+#: ../BooBinding.addin.xml:69
+msgid "Boo source code"
+msgstr ""
+
+#: ../BooBinding.addin.xml:90 ../BooBinding.addin.xml:98
+msgid "Boo Shell"
+msgstr "Boo Shell"
+
+#: ../Gui/ShellTextView.boo:188
 #, fuzzy
 msgid "Copy Script"
 msgstr "Hak cipta:"
 
-#: ../Gui/ShellTextView.boo:198
+#: ../Gui/ShellTextView.boo:192
 #, fuzzy
 msgid "Save Script As ..."
 msgstr "Simpan _Sebagai..."
 
-#: ../Gui/ShellTextView.boo:202
+#: ../Gui/ShellTextView.boo:196
 msgid "Load Project Assemblies (forces shell reset)"
 msgstr ""
 
-#: ../Gui/ShellTextView.boo:209
+#: ../Gui/ShellTextView.boo:203
 #, fuzzy
 msgid "Reset Shell"
 msgstr "Batalkan Seluruh Seleksi"
@@ -96,43 +112,39 @@ msgstr "Enabled"
 msgid "Enable ducky mode"
 msgstr ""
 
-#: ../Gui/OptionPanels/CodeCompilationPanel.boo:88 ../BooBinding.addin.xml:52
-msgid "Code Generation"
-msgstr "Generasi Code"
-
-#: ../Gui/OptionPanels/CodeCompilationPanel.boo:89
+#: ../Gui/OptionPanels/CodeCompilationPanel.boo:92
 #, fuzzy
 msgid "Output Path"
 msgstr "Jalur Output:"
 
-#: ../Gui/OptionPanels/CodeCompilationPanel.boo:93
-#: ../Gui/OptionPanels/CodeCompilationPanel.boo:100
+#: ../Gui/OptionPanels/CodeCompilationPanel.boo:96
+#: ../Gui/OptionPanels/CodeCompilationPanel.boo:103
 #, fuzzy
 msgid "Output Assembly"
 msgstr ".Net Assembly"
 
-#: ../Gui/OptionPanels/CodeCompilationPanel.boo:95
+#: ../Gui/OptionPanels/CodeCompilationPanel.boo:98
 #, fuzzy
 msgid "Warnings and Compiler Options"
 msgstr "Opsi Extra Compiler"
 
-#: ../Gui/OptionPanels/CodeCompilationPanel.boo:97
+#: ../Gui/OptionPanels/CodeCompilationPanel.boo:100
 msgid "Compiler"
 msgstr "Compiler"
 
-#: ../Gui/OptionPanels/CodeCompilationPanel.boo:98
+#: ../Gui/OptionPanels/CodeCompilationPanel.boo:101
 msgid "Culture"
 msgstr ""
 
-#: ../Gui/OptionPanels/CodeCompilationPanel.boo:106
+#: ../Gui/OptionPanels/CodeCompilationPanel.boo:109
 msgid "Executable"
 msgstr "Executable"
 
-#: ../Gui/OptionPanels/CodeCompilationPanel.boo:110
+#: ../Gui/OptionPanels/CodeCompilationPanel.boo:113
 msgid "Library"
 msgstr "Library"
 
-#: ../Gui/OptionPanels/CodeCompilationPanel.boo:114
+#: ../Gui/OptionPanels/CodeCompilationPanel.boo:117
 msgid "Executable with GUI"
 msgstr "Dapat dieksekusi dengan GUI"
 
@@ -171,12 +183,3 @@ msgstr "Gunakan huruh _monospace yang biasanya"
 #, fuzzy
 msgid "Use custom font:"
 msgstr "_Gunakan huruf custom:"
-
-#: ../BooBinding.addin.xml:30
-msgid "Boo Files"
-msgstr "Boo Files"
-
-#: ../BooBinding.addin.xml:82 ../BooBinding.addin.xml:90
-msgid "Boo Shell"
-msgstr "Boo Shell"
-
