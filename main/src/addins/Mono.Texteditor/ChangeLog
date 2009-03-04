@@ -1,3 +1,7 @@
+2009-03-04  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am: fixed makefile.
+
 2009-03-03  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextEditor.cs: fixed "Bug 480308 - Editor

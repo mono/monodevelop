@@ -102,7 +102,7 @@ RES =  \
 	SyntaxModes/CPPSyntaxMode.xml \
 	SyntaxModes/CSharpSyntaxMode.xml \
 	SyntaxModes/CSyntaxMode.xml \
-	SyntaxModes/DiffSyntaxMode.xml \
+	SyntaxModes/DiffSyntaxMode.xml,SyntaxModes.DiffSyntaxMode.xml \
 	SyntaxModes/JavascriptSyntaxMode.xml \
 	SyntaxModes/JavaSyntaxMode.xml \
 	SyntaxModes/PythonSyntaxMode.xml \
