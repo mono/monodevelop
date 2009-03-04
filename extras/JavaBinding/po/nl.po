@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: \n"
+"POT-Creation-Date: 2009-03-04 18:11:10-0500\n"
 "PO-Revision-Date: 2008-01-22 18:54:28+0100\n"
 "Last-Translator: AndrÃ© Offringa\n"
 "Language-Team: \n"
@@ -152,22 +152,6 @@ msgstr "AWT panel"
 msgid "Creates a Java AWT panel."
 msgstr "Maakt een Java AWT panel aan."
 
-#: ../Gui/ProjectConfigurationPropertyPanel.cs:60
-msgid "Executable"
-msgstr "Uitvoerbaar bestand"
-
-#: ../Gui/ProjectConfigurationPropertyPanel.cs:61
-msgid "Library"
-msgstr "Bibliotheek"
-
-#: ../Gui/GlobalOptionsPanel.cs:35
-msgid "Javac"
-msgstr "Javac"
-
-#: ../Gui/GlobalOptionsPanel.cs:36
-msgid "Gcj"
-msgstr "Gcj"
-
 #: ../JavaBinding.addin.xml:27
 msgid "Java Files"
 msgstr "Java-bestanden"
@@ -180,89 +164,110 @@ msgstr "Broncode-generatie"
 msgid "Output"
 msgstr "Uitvoer"
 
+#: ../JavaBinding.addin.xml:76
+#, fuzzy
+msgid "Java source code"
+msgstr "Bezig met compileren Java broncode ..."
+
+#: ../Gui/ProjectConfigurationPropertyPanel.cs:61
+msgid "Executable"
+msgstr "Uitvoerbaar bestand"
+
+#: ../Gui/ProjectConfigurationPropertyPanel.cs:62
+msgid "Library"
+msgstr "Bibliotheek"
+
+#: ../Gui/GlobalOptionsPanel.cs:34
+msgid "Javac"
+msgstr "Javac"
+
+#: ../Gui/GlobalOptionsPanel.cs:35
+msgid "Gcj"
+msgstr "Gcj"
+
 #: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:106
-#: ../gtk-gui/JavaBinding.GlobalOptionsPanelWidget.cs:171
+#: ../gtk-gui/JavaBinding.GlobalOptionsPanelWidget.cs:170
 msgid "<b>Code Generation</b>"
 msgstr "<b>Broncode-generatie</b>"
 
-#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:168
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:167
 msgid "Compile _Target:"
 msgstr "Compileer _doel:"
 
-#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:178
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:177
 msgid "Define S_ymbols:"
 msgstr "Definieer s_ymbolen:"
 
-#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:190
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:189
 msgid "_Main Class:"
 msgstr "_Hoofd klasse:"
 
-#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:202
-#: ../gtk-gui/JavaBinding.GlobalOptionsPanelWidget.cs:210
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:201
+#: ../gtk-gui/JavaBinding.GlobalOptionsPanelWidget.cs:208
 msgid "Classpath:"
 msgstr "Class-pad:"
 
-#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:249
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:248
 #: ../gtk-gui/JavaBinding.GlobalOptionsPanelWidget.cs:64
 msgid "<b>Compiler</b>"
 msgstr "<b>Compileer</b>"
 
-#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:277
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:275
 msgid "gcj"
 msgstr "gcj"
 
-#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:289
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:287
 msgid "javac"
 msgstr "javac"
 
-#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:331
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:329
 msgid "<b>Options</b>"
 msgstr "<b>Opties</b>"
 
-#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:359
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:356
 msgid "Enable _optimizations"
 msgstr "_Optimalisaties inschakelen"
 
-#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:370
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:367
 msgid "Emit _debugging information"
 msgstr "Genereer _debug-informatie"
 
-#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:395
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:392
 msgid "<b>Warnings</b>"
 msgstr "<b>Waarschuwingen</b>"
 
-#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:423
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:419
 msgid "Generate warnings"
 msgstr "Genereer waarschuwingen"
 
-#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:434
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:430
 msgid "Enable deprecation warnings"
 msgstr "Deprecation-waarschuwingen inschakelen"
 
-#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:445
+#: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:441
 msgid "Treat warnings as _errors"
 msgstr "Behandel waarschuwingen als _foutmeldingen"
 
-#: ../gtk-gui/JavaBinding.GlobalOptionsPanelWidget.cs:132
+#: ../gtk-gui/JavaBinding.GlobalOptionsPanelWidget.cs:131
 msgid "Compiler command:"
 msgstr "Compileer-commando:"
 
-#: ../gtk-gui/JavaBinding.GlobalOptionsPanelWidget.cs:143
+#: ../gtk-gui/JavaBinding.GlobalOptionsPanelWidget.cs:142
 msgid "IKVM path:"
 msgstr "IKVM-pad:"
 
-#: ../gtk-gui/JavaBinding.GlobalOptionsPanelWidget.cs:152
+#: ../gtk-gui/JavaBinding.GlobalOptionsPanelWidget.cs:151
 msgid "Java compiler:"
 msgstr "Java compiler:"
 
-#: ../IKVMCompilerManager.cs:134
+#: ../IKVMCompilerManager.cs:132
 msgid "Generating {0} reference stub ..."
 msgstr "Bezig met genereren {0} referentie-stub ..."
 
-#: ../IKVMCompilerManager.cs:165
+#: ../IKVMCompilerManager.cs:163
 msgid "Generating assembly ..."
 msgstr "Bezig met genereren assembly ..."
 
-#: ../IKVMCompilerManager.cs:213
+#: ../IKVMCompilerManager.cs:209
 msgid "Compiling Java source code ..."
 msgstr "Bezig met compileren Java broncode ..."
