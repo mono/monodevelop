@@ -1,3 +1,8 @@
+2009-03-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDebuggerSessionFactory.cs: Removed unused
+	  CanDebugPlatform and rename CanDebugFile to CanDebugCommand.
+
 2009-02-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Debugging.Backend.Mdb.csproj: Updated references.
