@@ -1,5 +1,9 @@
 2009-03-04  Mike Krüger  <mkrueger@novell.com>
 
+	* Makefile.am: corrected makefile.
+
+2009-03-04  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Core.Gui.csproj:
 	* MonoDevelop.Core.Gui.addin.xml: Added new icons to the icon
