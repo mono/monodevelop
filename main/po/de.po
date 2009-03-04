@@ -6,12 +6,12 @@ msgstr ""
 "X-Poedit-Bookmarks: -1,1681,-1,-1,-1,-1,-1,-1,-1,-1\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2009-03-04 12:15:04+0100\n"
+"PO-Revision-Date: 2009-03-04 15:15:41+0100\n"
 "Language-Team: \n"
 "Project-Id-Version: Monodevelop\n"
 "MIME-Version: 1.0\n"
 "X-Generator: MonoDevelop Gettext addin\n"
-"POT-Creation-Date: 2009-03-04 11:34:19+0100\n"
+"POT-Creation-Date: 2009-03-04 15:15:08+0100\n"
 "Last-Translator: Mike Krüger <mkrueger@novell.com>\n"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.Execution/ProcessService.cs:185
@@ -246,36 +246,36 @@ msgstr "MonoDevelop Paket"
 msgid "Loading..."
 msgstr "Lade..."
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:208
 #: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:211
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:214
 msgid ".NET resource"
 msgstr ".NET Ressource"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:214
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:217
 msgid "Add-in manifest"
 msgstr "Erweiterungs Manifest"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:218
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:221
 msgid "XML document"
 msgstr "XML Dokument"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:222
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:225
 msgid "ChangeLog document"
 msgstr "Änderungsprotokoll Dokument"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:225
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:228
 msgid ".NET program"
 msgstr ".NET Progamm"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:229
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:232
 msgid "MonoDevelop/MSBuild Solution"
 msgstr "MonoDevelop/MSBuild Projektmappe"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:232
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:235
 msgid "MonoDevelop 1.0 Solution"
 msgstr "MonoDevelop 1.0 Projektmappe"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:236
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:239
 msgid "diff files"
 msgstr "Diff Dateien"
 
@@ -5945,7 +5945,6 @@ msgid "Unversioned"
 msgstr "Keine Version angegeben"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:153
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:854
 msgid "Modified"
 msgstr "Geändert"
 
@@ -6133,55 +6132,111 @@ msgstr "Die Datei '{0}' muss gesperrt werden vor dem Editieren."
 msgid "The file '{0}' could not be unlocked"
 msgstr "Die Datei '{0}' konnte nicht entsperrt werden."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:578
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:580
 msgid "Revision: {0}"
 msgstr "Revision: {0}"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:846
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:852
-msgid "Added"
-msgstr "Hinzugefügt"
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:877
+msgid "Skipped missing target: '{0}'"
+msgstr "Fehlendes Ziel: »{0}« übersprungen"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:847
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:853
-msgid "Deleted"
-msgstr "Gelöscht"
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:879
+msgid "Skipped '{0}'"
+msgstr "Überspringe »{0}«"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:848
-msgid "Updating"
-msgstr "Aktualisiere"
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:883
+msgid "Deleted   '{0}'"
+msgstr "Gelöscht       '{0}'"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:849
-msgid "External Updated"
-msgstr "Auserhalb aktualisiert"
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:891
+msgid "Conflict {0}"
+msgstr "Konflikt       {0}"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:850
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:893
+msgid "Added   {0}"
+msgstr "Hinzugefügt     {0}"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:909
+msgid "Restored '{0}'"
+msgstr "Wieder hergestellt »%s«"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:912
+msgid "Reverted '{0}'"
+msgstr "Zurückgesetzt: »{0}«"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:915
+msgid "Failed to revert '{0}' -- try updating instead."
+msgstr ""
+"Zurücksetzen von »{0}« schlug fehl -- Versuchen Sie statt dessen zu "
+"aktualisieren."
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:918
+msgid "Resolved conflict state of '{0}'"
+msgstr "Konflikt von »%s« aufgelöst"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:922
+msgid "Add (bin) '{0}'"
+msgstr "Hinzuf. (bin)  '{0}'"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:924
+msgid "Add       '{0}'"
+msgstr "Hinzufügen     '{0}'"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:928
+msgid "Delete    '{0}'"
+msgstr "Lösche     '{0}'"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:954
+msgid "Update '{0}'"
+msgstr "Aktualisiere    {0}"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:958
+msgid "Fetching external item into '{0}'"
+msgstr "Hole externen Verweis nach »%s«"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:961
 msgid "Finished"
 msgstr "Abgeschlossen"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:855
-msgid "Replaced"
-msgstr "Ersetzt"
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:964
+msgid "Performing status on external item at '{0}'"
+msgstr "Hole Status des externen Verweises in »{0}«"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:856
-msgid "Sending Content"
-msgstr "Sende Daten"
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:967
+msgid "Status against revision: '{0}'"
+msgstr "Status bezogen auf Revision: {0}"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:858
-msgid "Locked"
-msgstr "Gesperrt"
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:971
+msgid "Deleting       {0}"
+msgstr "Lösche         {0}"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:859
-msgid "Unlocked"
-msgstr "Entsperrt"
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:974
+msgid "Sending        {0}"
+msgstr "Sende          {0}"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:860
-msgid "Lock Failed"
-msgstr "Sperren fehlgeschlagen"
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:979
+msgid "Adding  (bin)  '{0}'"
+msgstr "Hinzuf. (bin)  {0}"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:861
-msgid "Unlock Failed"
-msgstr "Entsperrung fehlgeschlagen"
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:981
+msgid "Adding         '{0}'"
+msgstr "Hinzufügen     {0}"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:985
+msgid "Replacing      {0}"
+msgstr "Ersetze        {0}"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:990
+msgid "Transmitting file data"
+msgstr "Übertrage Daten"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:1000
+msgid "'{0}' locked by user '{1}'."
+msgstr "»{0}« gesperrt durch »{1}«."
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:1003
+msgid "'{0}' unlocked."
+msgstr "»{0}« freigegeben."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.Gui/ClientCertificateDialog.cs:12
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.Gui/ClientCertificatePasswordDialog.cs:12
@@ -13841,6 +13896,30 @@ msgstr "Schließe die folgenden Kategorien aus:"
 msgid "Include the following categories: "
 msgstr "Schließe die folgenden Kategorien ein:"
 
+#~ msgid "Added"
+#~ msgstr "Hinzugefügt"
+
+#~ msgid "Updating"
+#~ msgstr "Aktualisiere"
+
+#~ msgid "External Updated"
+#~ msgstr "Auserhalb aktualisiert"
+
+#~ msgid "Replaced"
+#~ msgstr "Ersetzt"
+
+#~ msgid "Sending Content"
+#~ msgstr "Sende Daten"
+
+#~ msgid "Locked"
+#~ msgstr "Gesperrt"
+
+#~ msgid "Lock Failed"
+#~ msgstr "Sperren fehlgeschlagen"
+
+#~ msgid "Unlock Failed"
+#~ msgstr "Entsperrung fehlgeschlagen"
+
 #~ msgid "GotDotNet"
 #~ msgstr "GotDotNet"
 
@@ -14523,10 +14602,13 @@ msgstr "Schließe die folgenden Kategorien ein:"
 #~ msgstr "Ab_wärts"
 #~ msgid "R_eplace:"
 #~ msgstr "E_rsetzen:"
+
 #~ msgid "Exception occurred: {0}"
 #~ msgstr "Fehler aufgetreten: {0}"
+
 #~ msgid "Question"
 #~ msgstr "Frage"
+
 #~ msgid "Delete files"
 #~ msgstr "Lösche Dateien"
 
