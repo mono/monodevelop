@@ -1,5 +1,10 @@
 2009-03-04  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/GapBuffer.cs: Corrected insignificant
+	  algortihm glitch in gap buffer.
+
+2009-03-04  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am: fixed makefile.
 
 2009-03-03  Mike Krüger  <mkrueger@novell.com>

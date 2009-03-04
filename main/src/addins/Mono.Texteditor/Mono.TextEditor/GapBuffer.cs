@@ -113,13 +113,12 @@ namespace Mono.TextEditor
 			if (offset + count > Length) 
 				Debug.Assert (false, "count was '" + count +"' value must be offset + count <= Length = " + Length + " offset was " + offset + " and count was " + count + Environment.NewLine + Environment.StackTrace);
 #endif
-			
-			if (text != null) { 
+			if (!string.IsNullOrEmpty (text)) { 
 				PlaceGap (offset, text.Length - count);
 				text.CopyTo (0, buffer, offset, text.Length);
 				gapBegin += text.Length;
 			} else {
-				PlaceGap (offset, count);
+				PlaceGap (offset, 0);
 			}
 			gapEnd   += count; 
 			gapLength = gapEnd - gapBegin;
