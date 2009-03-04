@@ -33,6 +33,8 @@
     <packageName>monodevelop-database</packageName>
     <outputType>RelativeToOutput</outputType>
     <ProjectGuid>{0CC523C2-CCB4-4BE6-8050-A20050521093}</ProjectGuid>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />

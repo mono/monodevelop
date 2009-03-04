@@ -5,12 +5,12 @@
 # Alejandro Serrano <trupill@yahoo.es>, 2006
 # Jonathan Hernández Velasco <jbilbo@ya.com>, 2004-2005
 # Antonio Ognio <gnrfan@gnrfan.org>, 2004
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop rev2237\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: \n"
+"POT-Creation-Date: 2009-03-04 18:11:47-0500\n"
 "PO-Revision-Date: 2005-03-01 16:34+0100\n"
 "Last-Translator: Andrés G. Aragoneses <knocte@gmail.com>\n"
 "Language-Team: Spanish <es@li.org>\n"
@@ -23,11 +23,11 @@ msgstr ""
 msgid "Unable to load stored SQL connection information."
 msgstr "Imposible cargar la información guardada sobre conexiones SQL."
 
-#: ../MonoDevelop.Database.Sql/QueryService.cs:73
+#: ../MonoDevelop.Database.Sql/QueryService.cs:75
 msgid "Please enter the password for connection '{0}'"
 msgstr "Por favor introduzca la contraseña para la conexión '{0}'"
 
-#: ../MonoDevelop.Database.Sql/QueryService.cs:75
+#: ../MonoDevelop.Database.Sql/QueryService.cs:77
 msgid "Enter Password"
 msgstr "Introducir contraseña"
 
@@ -39,274 +39,176 @@ msgstr "Consultar base de datos"
 msgid "_Database"
 msgstr "Base de _datos"
 
-#: ../MonoDevelop.Database.Query/SqlQueryView.cs:76
+#: ../MonoDevelop.Database.Query/SqlQueryView.cs:77
 msgid "Execute"
 msgstr "Ejecutar"
 
-#: ../MonoDevelop.Database.Query/SqlQueryView.cs:79
+#: ../MonoDevelop.Database.Query/SqlQueryView.cs:80
 msgid "Clear Results"
 msgstr "Limpiar resultados"
 
-#: ../MonoDevelop.Database.Query/SqlQueryView.cs:109
+#: ../MonoDevelop.Database.Query/SqlQueryView.cs:110
 msgid "Status"
 msgstr "Estado"
 
-#: ../MonoDevelop.Database.Query/SqlQueryView.cs:169
+#: ../MonoDevelop.Database.Query/SqlQueryView.cs:170
+#: ../MonoDevelop.Database.CodeGenerator/Dialogs/GenerateDataClassesDialog.cs:95
 msgid "Unable to connect to database '{0}'"
 msgstr "Imposible conectar a la base de datos '{0}'"
 
-#: ../MonoDevelop.Database.Query/SqlQueryView.cs:202
+#: ../MonoDevelop.Database.Query/SqlQueryView.cs:192
+msgid "Query duration: {0}"
+msgstr ""
+
+#: ../MonoDevelop.Database.Query/SqlQueryView.cs:209
+#: ../MonoDevelop.Database.Components/Widgets/SelectTableWidget.cs:71
 msgid "Table"
 msgstr "Tabla"
 
-#: ../MonoDevelop.Database.Query/SqlQueryView.cs:203
+#: ../MonoDevelop.Database.Query/SqlQueryView.cs:210
 msgid "Affected Rows"
 msgstr "Filas afectadas"
 
-#: ../MonoDevelop.Database.Query/SqlQueryView.cs:216
+#: ../MonoDevelop.Database.Query/SqlQueryView.cs:223
 msgid "No Results"
 msgstr "No hay resultados"
 
-#: ../MonoDevelop.Database.Query/SqlQueryView.cs:234
+#: ../MonoDevelop.Database.Query/SqlQueryView.cs:241
 msgid "Executing query"
 msgstr "Ejecutando consulta"
 
-#: ../MonoDevelop.Database.Query/SqlQueryView.cs:248
+#: ../MonoDevelop.Database.Query/SqlQueryView.cs:255
 msgid "Query execute cancelled"
 msgstr "Ejecución de consulta cancelada"
 
-#: ../MonoDevelop.Database.Query/SqlQueryView.cs:185
+#: ../MonoDevelop.Database.Query/SqlQueryView.cs:189
 msgid "Query executed ({0} result table)"
 msgid_plural "Query executed ({0} result tables)"
 msgstr[0] "Consulta ejecutada ({0} tabla resultante)"
 msgstr[1] "Consulta ejecutada ({0} tablas resultantes)"
 
-#: ../MonoDevelop.Database.Sql.Sqlite/SqliteGuiProvider.cs:41
-msgid "Save Database"
+#: ../MonoDevelop.Database.Sql.MySql/MySqlDbFactory.cs:45
+#, fuzzy
+msgid "MySql database"
 msgstr "Guardar base de datos"
 
-#: ../MonoDevelop.Database.Sql.Sqlite/SqliteGuiProvider.cs:47
+#: ../MonoDevelop.Database.Sql.MySql/gtk-gui/MonoDevelop.Database.Sql.MySql.MySqlCreateDatabaseWidget.cs:60
+#, fuzzy
+msgid "Character Set:"
+msgstr "Crear Setter"
+
+#: ../MonoDevelop.Database.Sql.MySql/gtk-gui/MonoDevelop.Database.Sql.MySql.MySqlCreateDatabaseWidget.cs:69
+#: ../MonoDevelop.Database.Sql.SqlServer/gtk-gui/MonoDevelop.Database.Sql.SqlServer.SqlServerCreateDatabaseWidget.cs:71
+msgid "Collation:"
+msgstr ""
+
+#: ../MonoDevelop.Database.Sql.SqlServer/SqlServerDbFactory.cs:44
+#, fuzzy
+msgid "SQL Server database"
+msgstr "Bases de datos SQLite"
+
+#: ../MonoDevelop.Database.Sql.SqlServer/gtk-gui/MonoDevelop.Database.Sql.SqlServer.SqlServerCreateDatabaseWidget.cs:62
+#: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.ConnectionSettingsWidget.cs:337
+#: ../MonoDevelop.Database.CodeGenerator/gtk-gui/MonoDevelop.Database.CodeGenerator.GenerateDataClassesDialog.cs:74
+#, fuzzy
+msgid "Database:"
+msgstr "Base de datos"
+
+#: ../MonoDevelop.Database.Sql.Sqlite/SqliteSchemaProvider.cs:235
+msgid "Database '{0}' already exists."
+msgstr ""
+
+#: ../MonoDevelop.Database.Sql.Sqlite/SqliteDbFactory.cs:45
+#, fuzzy
+msgid "SQLite database"
+msgstr "Bases de datos SQLite"
+
+#: ../MonoDevelop.Database.Sql.Sqlite/Widgets/SqliteConnectionSettingsWidget.cs:60
 msgid "Open Database"
 msgstr "Abrir base de datos"
 
-#: ../MonoDevelop.Database.Sql.Sqlite/SqliteGuiProvider.cs:60
+#: ../MonoDevelop.Database.Sql.Sqlite/Widgets/SqliteConnectionSettingsWidget.cs:72
 msgid "SQLite databases"
 msgstr "Bases de datos SQLite"
 
-#: ../MonoDevelop.Database.Sql.Sqlite/SqliteGuiProvider.cs:63
-#: ../MonoDevelop.Database.Components/Widgets/SqlEditorWidget.cs:110
+#: ../MonoDevelop.Database.Sql.Sqlite/Widgets/SqliteConnectionSettingsWidget.cs:75
+#: ../MonoDevelop.Database.Components/Widgets/SqlEditorWidget.cs:108
 msgid "All files"
 msgstr "Todos los archivos"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:27
-msgid "Database Browser"
-msgstr "Explorador de bases de datos"
-
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:28
-msgid "Show System Objects"
-msgstr "Mostrar objetos de sistema"
-
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:166
-#: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.DatabaseConnectionSettingsDialog.cs:299
-#: ../MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.CreateDatabaseDialog.cs:135
-msgid "Database"
-msgstr "Base de datos"
-
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:169
-msgid "Add Connection"
-msgstr "Agregar conexión"
-
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:172
-msgid "Edit Connection"
-msgstr "Editar conexión"
-
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:175
-msgid "Remove"
-msgstr "Quitar"
-
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:178
-msgid "Refresh"
-msgstr "Refrescar"
-
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:181
-msgid "Connect"
-msgstr "Conectar"
-
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:184
-msgid "Disconnect"
-msgstr "Desconectar"
-
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:187
-msgid "Select *"
-msgstr "Seleccionar *"
-
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:190
-msgid "Select x,y,..."
-msgstr "Seleccionar x,y,..."
-
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:193
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TableNodeBuilder.cs:255
-msgid "Empty Table"
-msgstr "Tabla vacía"
-
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:196
-msgid "Query"
-msgstr "Consulta"
-
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:199
-msgid "Re_name"
-msgstr "Re_nombrar"
-
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:207
-#: ../MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.CreateDatabaseDialog.cs:41
-msgid "Create Database"
+#: ../MonoDevelop.Database.Sql.Oracle/OracleDbFactory.cs:41
+#, fuzzy
+msgid "Oracle database"
 msgstr "Crear base de datos"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:210
-#: ../MonoDevelop.Database.Designer/Dialogs/TableEditorDialog.cs:74
-msgid "Create Table"
-msgstr "Crear tabla"
+#: ../MonoDevelop.Database.Sql.Npgsql/NpgsqlDbFactory.cs:44
+#, fuzzy
+msgid "PostgreSQL database"
+msgstr "Bases de datos SQLite"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:213
-#: ../MonoDevelop.Database.Designer/Dialogs/ViewEditorDialog.cs:64
-msgid "Create View"
-msgstr "Crear vista"
-
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:216
-#: ../MonoDevelop.Database.Designer/Dialogs/ProcedureEditorDialog.cs:64
-msgid "Create Procedure"
-msgstr "Crear procedimiento"
-
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:219
-msgid "Create Constraint"
-msgstr "Crear restricción"
-
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:222
-msgid "Create Trigger"
-msgstr "Crear disparador"
-
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:225
-#: ../MonoDevelop.Database.Designer/Dialogs/UserEditorDialog.cs:62
-msgid "Create User"
-msgstr "Crear usuario"
-
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:229
-msgid "Alter Database"
-msgstr "Alterar base de datos"
-
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:232
-#: ../MonoDevelop.Database.Designer/Dialogs/TableEditorDialog.cs:76
-msgid "Alter Table"
-msgstr "Alterar tabla"
-
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:235
-#: ../MonoDevelop.Database.Designer/Dialogs/ViewEditorDialog.cs:66
-msgid "Alter View"
-msgstr "Alterar vista"
-
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:238
-#: ../MonoDevelop.Database.Designer/Dialogs/ProcedureEditorDialog.cs:66
-msgid "Alter Procedure"
-msgstr "Alterar procedimiento"
-
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:241
-msgid "Alter Constraint"
-msgstr "Alterar restricción"
-
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:244
-msgid "Alter Trigger"
-msgstr "Alterar disparador"
-
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:247
-#: ../MonoDevelop.Database.Designer/Dialogs/UserEditorDialog.cs:64
-msgid "Alter User"
-msgstr "Alterar usuario"
-
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:251
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ConnectionContextNodeBuilder.cs:247
-msgid "Drop Database"
-msgstr "Eliminar base de datos"
-
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:254
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TableNodeBuilder.cs:281
-msgid "Drop Table"
-msgstr "Eliminar tabla"
-
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:257
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ViewNodeBuilder.cs:191
-msgid "Drop View"
-msgstr "Eliminar vista"
-
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:260
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ProcedureNodeBuilder.cs:190
-msgid "Drop Procedure"
-msgstr "Eliminar procedimiento"
-
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:263
-msgid "Drop Trigger"
-msgstr "Eliminar disparador"
-
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:266
-msgid "Drop Constraint"
-msgstr "Eliminar restricción"
-
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:269
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/UserNodeBuilder.cs:170
-msgid "Drop User"
-msgstr "Eliminar usuario"
-
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ConnectionContextCollectionNodeBuilder.cs:66
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ConnectionContextCollectionNodeBuilder.cs:71
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ConnectionContextCollectionNodeBuilder.cs:67
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ConnectionContextCollectionNodeBuilder.cs:72
 msgid "Database Connections"
 msgstr "Conexiones de base de datos"
 
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ConnectionContextNodeBuilder.cs:87
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ConnectionContextNodeBuilder.cs:88
 msgid "Unable to connect:"
 msgstr "Imposible conectar:"
 
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ConnectionContextNodeBuilder.cs:167
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ConnectionContextNodeBuilder.cs:168
 msgid "Are you sure you want to remove connection '{0}'?"
 msgstr "¿Está seguro de que desea eliminar la conexión '{0}'?"
 
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ConnectionContextNodeBuilder.cs:168
-msgid "Remove Connection"
-msgstr "Eliminar conexión"
-
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ConnectionContextNodeBuilder.cs:246
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TableNodeBuilder.cs:278
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/UserNodeBuilder.cs:169
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ProcedureNodeBuilder.cs:187
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ViewNodeBuilder.cs:188
+#, fuzzy
+msgid "Drop"
+msgstr "Eliminar vista"
+
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ConnectionContextNodeBuilder.cs:248
 msgid "Are you sure you want to drop database '{0}'"
 msgstr "¿Está seguro de que desea eliminar la base de datos '{0}'?"
 
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TablesNodeBuilder.cs:66
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TablesNodeBuilder.cs:71
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TablesNodeBuilder.cs:67
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TablesNodeBuilder.cs:72
+#: ../MonoDevelop.Database.CodeGenerator/gtk-gui/MonoDevelop.Database.CodeGenerator.GenerateDataClassesDialog.cs:117
 msgid "Tables"
 msgstr "Tablas"
 
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ViewsNodeBuilder.cs:65
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ViewsNodeBuilder.cs:70
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ViewsNodeBuilder.cs:66
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ViewsNodeBuilder.cs:71
 msgid "Views"
 msgstr "Vistas"
 
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ProceduresNodeBuilder.cs:65
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ProceduresNodeBuilder.cs:70
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ProceduresNodeBuilder.cs:66
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ProceduresNodeBuilder.cs:71
 msgid "Procedures"
 msgstr "Procedimientos"
 
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/UsersNodeBuilder.cs:65
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/UsersNodeBuilder.cs:70
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/UsersNodeBuilder.cs:66
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/UsersNodeBuilder.cs:71
 msgid "Users"
 msgstr "Usuarios"
 
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ConstraintsNodeBuilder.cs:63
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ConstraintsNodeBuilder.cs:68
-#: ../MonoDevelop.Database.Designer/Dialogs/TableEditorDialog.cs:90
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ConstraintsNodeBuilder.cs:64
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ConstraintsNodeBuilder.cs:69
+#: ../MonoDevelop.Database.Designer/Dialogs/TableEditorDialog.cs:86
 msgid "Constraints"
 msgstr "Restricciones"
 
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TableNodeBuilder.cs:254
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TableNodeBuilder.cs:251
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:199
+msgid "Empty Table"
+msgstr "Tabla vacía"
+
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TableNodeBuilder.cs:253
 msgid "Are you sure you want to empty table '{0}'"
 msgstr "¿Está seguro de que desea vaciar la tabla '{0}'?"
 
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TableNodeBuilder.cs:271
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TableNodeBuilder.cs:270
 msgid "Table emptied"
 msgstr "Tabla vaciada"
 
@@ -314,7 +216,7 @@ msgstr "Tabla vaciada"
 msgid "Are you sure you want to drop table '{0}'"
 msgstr "¿Está seguro de que desea eliminar la tabla '{0}'?"
 
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/UserNodeBuilder.cs:169
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/UserNodeBuilder.cs:171
 msgid "Are you sure you want to drop user '{0}'"
 msgstr "¿Está seguro de que desea eliminar el usuario '{0}'?"
 
@@ -326,77 +228,251 @@ msgstr "¿Está seguro de que desea eliminar el procedimiento '{0}'?"
 msgid "Are you sure you want to drop view '{0}'"
 msgstr "¿Está seguro de que desea eliminar la vista '{0}'?"
 
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ColumnNodeBuilder.cs:56
-#: ../MonoDevelop.Database.Components/Widgets/SelectColumnWidget.cs:69
-#: ../MonoDevelop.Database.Designer/Widgets/CheckConstraintEditorWidget.cs:87
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ColumnNodeBuilder.cs:57
+#: ../MonoDevelop.Database.Components/Widgets/SelectColumnWidget.cs:71
+#: ../MonoDevelop.Database.Designer/Widgets/CheckConstraintEditorWidget.cs:82
 msgid "Column"
 msgstr "Columna"
 
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ColumnsNodeBuilder.cs:63
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ColumnsNodeBuilder.cs:68
-#: ../MonoDevelop.Database.Designer/Dialogs/TableEditorDialog.cs:83
-#: ../MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.ForeignKeyConstraintEditorWidget.cs:140
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ColumnsNodeBuilder.cs:64
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ColumnsNodeBuilder.cs:69
+#: ../MonoDevelop.Database.Designer/Dialogs/TableEditorDialog.cs:81
+#: ../MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.ForeignKeyConstraintEditorWidget.cs:134
 msgid "Columns"
 msgstr "Columnas"
 
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ConstraintNodeBuilder.cs:56
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ConstraintNodeBuilder.cs:57
 msgid "Constraint"
 msgstr "Restricción"
 
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/AggregatesNodeBuilder.cs:63
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/AggregatesNodeBuilder.cs:68
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/AggregatesNodeBuilder.cs:64
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/AggregatesNodeBuilder.cs:69
 msgid "Aggregates"
 msgstr "Conjuntos"
 
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/GroupsNodeBuilder.cs:63
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/GroupsNodeBuilder.cs:68
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/GroupsNodeBuilder.cs:64
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/GroupsNodeBuilder.cs:69
 msgid "Groups"
 msgstr "Grupos"
 
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/LanguagesNodeBuilder.cs:63
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/LanguagesNodeBuilder.cs:68
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/LanguagesNodeBuilder.cs:64
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/LanguagesNodeBuilder.cs:69
 msgid "Languages"
 msgstr "Lenguajes"
 
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/OperatorsNodeBuilder.cs:63
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/OperatorsNodeBuilder.cs:68
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/OperatorsNodeBuilder.cs:64
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/OperatorsNodeBuilder.cs:69
 msgid "Operators"
 msgstr "Operadores"
 
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/RolesNodeBuilder.cs:63
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/RolesNodeBuilder.cs:68
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/RolesNodeBuilder.cs:64
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/RolesNodeBuilder.cs:69
 msgid "Roles"
 msgstr "Roles"
 
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/RulesNodeBuilder.cs:63
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/RulesNodeBuilder.cs:68
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/RulesNodeBuilder.cs:64
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/RulesNodeBuilder.cs:69
 msgid "Rules"
 msgstr "Reglas"
 
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/SequencesNodeBuilder.cs:63
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/SequencesNodeBuilder.cs:68
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/SequencesNodeBuilder.cs:64
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/SequencesNodeBuilder.cs:69
 msgid "Sequences"
 msgstr "Secuencias"
 
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TriggersNodeBuilder.cs:63
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TriggersNodeBuilder.cs:68
-#: ../MonoDevelop.Database.Designer/Dialogs/TableEditorDialog.cs:100
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TriggersNodeBuilder.cs:64
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TriggersNodeBuilder.cs:69
+#: ../MonoDevelop.Database.Designer/Dialogs/TableEditorDialog.cs:96
 msgid "Triggers"
 msgstr "Disparadores"
 
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TypesNodeBuilder.cs:63
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TypesNodeBuilder.cs:68
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TypesNodeBuilder.cs:64
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TypesNodeBuilder.cs:69
 msgid "Types"
 msgstr "Tipos"
 
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ParametersNodeBuilder.cs:63
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ParametersNodeBuilder.cs:68
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ParametersNodeBuilder.cs:64
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ParametersNodeBuilder.cs:69
 msgid "Parameters"
 msgstr "Parámetros"
 
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ParameterNodeBuilder.cs:56
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ParameterNodeBuilder.cs:57
 msgid "Parameter"
 msgstr "Parámetro"
+
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:27
+msgid "Database Browser"
+msgstr "Explorador de bases de datos"
+
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:28
+msgid "Show System Objects"
+msgstr "Mostrar objetos de sistema"
+
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:171
+#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:42
+msgid "Database"
+msgstr "Base de datos"
+
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:176
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:212
+#, fuzzy
+msgid "Database Provider List"
+msgstr "Explorador de bases de datos"
+
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:178
+msgid "Edit Connection"
+msgstr "Editar conexión"
+
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:181
+msgid "Remove"
+msgstr "Quitar"
+
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:184
+msgid "Refresh"
+msgstr "Refrescar"
+
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:187
+msgid "Connect"
+msgstr "Conectar"
+
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:190
+msgid "Disconnect"
+msgstr "Desconectar"
+
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:193
+msgid "Select *"
+msgstr "Seleccionar *"
+
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:196
+msgid "Select x,y,..."
+msgstr "Seleccionar x,y,..."
+
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:202
+msgid "Query"
+msgstr "Consulta"
+
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:214
+#: ../MonoDevelop.Database.Designer/Dialogs/TableEditorDialog.cs:70
+msgid "Create Table"
+msgstr "Crear tabla"
+
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:217
+#: ../MonoDevelop.Database.Designer/Dialogs/ViewEditorDialog.cs:61
+msgid "Create View"
+msgstr "Crear vista"
+
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:220
+#: ../MonoDevelop.Database.Designer/Dialogs/ProcedureEditorDialog.cs:63
+msgid "Create Procedure"
+msgstr "Crear procedimiento"
+
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:223
+msgid "Create Constraint"
+msgstr "Crear restricción"
+
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:226
+msgid "Create Trigger"
+msgstr "Crear disparador"
+
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:229
+#: ../MonoDevelop.Database.Designer/Dialogs/UserEditorDialog.cs:62
+msgid "Create User"
+msgstr "Crear usuario"
+
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:233
+msgid "Alter Database"
+msgstr "Alterar base de datos"
+
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:236
+#: ../MonoDevelop.Database.Designer/Dialogs/TableEditorDialog.cs:72
+msgid "Alter Table"
+msgstr "Alterar tabla"
+
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:239
+#: ../MonoDevelop.Database.Designer/Dialogs/ViewEditorDialog.cs:63
+msgid "Alter View"
+msgstr "Alterar vista"
+
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:242
+#: ../MonoDevelop.Database.Designer/Dialogs/ProcedureEditorDialog.cs:65
+msgid "Alter Procedure"
+msgstr "Alterar procedimiento"
+
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:245
+msgid "Alter Constraint"
+msgstr "Alterar restricción"
+
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:248
+msgid "Alter Trigger"
+msgstr "Alterar disparador"
+
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:251
+#: ../MonoDevelop.Database.Designer/Dialogs/UserEditorDialog.cs:64
+msgid "Alter User"
+msgstr "Alterar usuario"
+
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:255
+msgid "Drop Database"
+msgstr "Eliminar base de datos"
+
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:258
+msgid "Drop Table"
+msgstr "Eliminar tabla"
+
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:261
+msgid "Drop View"
+msgstr "Eliminar vista"
+
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:264
+msgid "Drop Procedure"
+msgstr "Eliminar procedimiento"
+
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:267
+msgid "Drop Trigger"
+msgstr "Eliminar disparador"
+
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:270
+msgid "Drop Constraint"
+msgstr "Eliminar restricción"
+
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:273
+msgid "Drop User"
+msgstr "Eliminar usuario"
+
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:278
+#, fuzzy
+msgid "Toggle System Objects"
+msgstr "Mostrar objetos de sistema"
+
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:284
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:396
+#: ../MonoDevelop.Database.Components/Dialogs/DatabaseConnectionSettingsDialog.cs:50
+msgid "Add Database Connection"
+msgstr "Agregar conexión a base de datos"
+
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:287
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:399
+#: ../MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.CreateDatabaseDialog.cs:29
+msgid "Create Database"
+msgstr "Crear base de datos"
+
+#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:46
+msgid "Visualize Data As"
+msgstr ""
+
+#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:49
+#: ../MonoDevelop.Database.Components/Widgets/SqlEditorWidget.cs:95
+msgid "Import From File"
+msgstr "Importar desde archivo"
+
+#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:52
+#: ../MonoDevelop.Database.Components/Widgets/SqlEditorWidget.cs:126
+msgid "Export To File"
+msgstr "Exportar a archivo"
+
+#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:59
+msgid "Visualize Data"
+msgstr ""
 
 #: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.SelectColumnDialog.cs:31
 msgid "Select Column"
@@ -410,51 +486,46 @@ msgstr "Seleccionar todo"
 msgid "Deselect All"
 msgstr "Deseleccionar todo"
 
-#: ../MonoDevelop.Database.Components/Widgets/ColumnMappingWidget.cs:46
-#: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.DatabaseConnectionSettingsDialog.cs:244
-#: ../MonoDevelop.Database.Designer/Widgets/TriggersEditorWidget.cs:93
-#: ../MonoDevelop.Database.Designer/Widgets/ColumnsEditorWidget.cs:84
+#: ../MonoDevelop.Database.Components/Widgets/ColumnMappingWidget.cs:55
+#: ../MonoDevelop.Database.Components/Widgets/TableMappingWidget.cs:54
+#: ../MonoDevelop.Database.Designer/Widgets/TriggersEditorWidget.cs:95
+#: ../MonoDevelop.Database.Designer/Widgets/ColumnsEditorWidget.cs:90
 #: ../MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.TableEditorDialog.cs:61
-#: ../MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.CreateDatabaseDialog.cs:124
 #: ../MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.ViewEditorDialog.cs:56
 #: ../MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.ProcedureEditorDialog.cs:56
 #: ../MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.UserEditorDialog.cs:50
-#: ../MonoDevelop.Database.Designer/Widgets/ForeignKeyConstraintEditorWidget.cs:113
-#: ../MonoDevelop.Database.Designer/Widgets/CheckConstraintEditorWidget.cs:86
-#: ../MonoDevelop.Database.Designer/Widgets/PrimaryKeyConstraintEditorWidget.cs:77
-#: ../MonoDevelop.Database.Designer/Widgets/UniqueConstraintEditorWidget.cs:82
+#: ../MonoDevelop.Database.Designer/Widgets/ForeignKeyConstraintEditorWidget.cs:106
+#: ../MonoDevelop.Database.Designer/Widgets/CheckConstraintEditorWidget.cs:81
+#: ../MonoDevelop.Database.Designer/Widgets/PrimaryKeyConstraintEditorWidget.cs:70
+#: ../MonoDevelop.Database.Designer/Widgets/UniqueConstraintEditorWidget.cs:75
 msgid "Name"
 msgstr "Nombre"
 
-#: ../MonoDevelop.Database.Components/Widgets/ColumnMappingWidget.cs:56
-#: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.DatabaseConnectionSettingsDialog.cs:235
-#: ../MonoDevelop.Database.Designer/Widgets/TriggersEditorWidget.cs:94
-#: ../MonoDevelop.Database.Designer/Widgets/ColumnsEditorWidget.cs:85
+#: ../MonoDevelop.Database.Components/Widgets/ColumnMappingWidget.cs:65
+#, fuzzy
+msgid "Db Type"
+msgstr "Tipo"
+
+#: ../MonoDevelop.Database.Components/Widgets/ColumnMappingWidget.cs:70
+#: ../MonoDevelop.Database.Designer/Widgets/TriggersEditorWidget.cs:96
+#: ../MonoDevelop.Database.Designer/Widgets/ColumnsEditorWidget.cs:91
 msgid "Type"
 msgstr "Tipo"
 
-#: ../MonoDevelop.Database.Components/Widgets/ColumnMappingWidget.cs:61
+#: ../MonoDevelop.Database.Components/Widgets/ColumnMappingWidget.cs:75
+msgid "Field Name"
+msgstr ""
+
+#: ../MonoDevelop.Database.Components/Widgets/ColumnMappingWidget.cs:82
 msgid "Property Name"
 msgstr "Nombre de la propiedad"
 
-#: ../MonoDevelop.Database.Components/Widgets/ColumnMappingWidget.cs:68
-msgid "Property Type"
-msgstr "Tipo de la propiedad"
+#: ../MonoDevelop.Database.Components/Widgets/ColumnMappingWidget.cs:89
+#, fuzzy
+msgid "Setter"
+msgstr "Servidor"
 
-#: ../MonoDevelop.Database.Components/Widgets/ColumnMappingWidget.cs:73
-#: ../MonoDevelop.Database.Designer/Widgets/ColumnsEditorWidget.cs:87
-msgid "Nullable"
-msgstr "Nulable"
-
-#: ../MonoDevelop.Database.Components/Widgets/ColumnMappingWidget.cs:78
-msgid "Create Setter"
-msgstr "Crear Setter"
-
-#: ../MonoDevelop.Database.Components/Widgets/ColumnMappingWidget.cs:85
-msgid "Ctor Parameter"
-msgstr "Parámetro del constructor"
-
-#: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.DataGrid.cs:106
+#: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.DataGrid.cs:103
 msgid "of"
 msgstr "de"
 
@@ -467,14 +538,18 @@ msgid "N"
 msgstr "N"
 
 #: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.ShowImageDialog.cs:31
+#: ../MonoDevelop.Database.Components/Widgets/DataGrid/Views/TextVisualizerView.cs:61
+#: ../MonoDevelop.Database.Components/Widgets/DataGrid/Views/ImageVisualizerView.cs:59
+#: ../MonoDevelop.Database.Components/Widgets/DataGrid/Visualizers/DefaultVisualizers.cs:37
 msgid "Image"
 msgstr "Imagen"
 
-#: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.ShowImageDialog.cs:75
+#: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.ShowImageDialog.cs:73
 msgid "Unable to load object as Image"
 msgstr "Imposible cargar el objeto como imagen"
 
 #: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.ShowTextDialog.cs:23
+#: ../MonoDevelop.Database.Components/Widgets/DataGrid/Visualizers/DefaultVisualizers.cs:59
 msgid "Text"
 msgstr "Texto"
 
@@ -482,59 +557,9 @@ msgstr "Texto"
 msgid "button462"
 msgstr ""
 
-#: ../MonoDevelop.Database.Components/Dialogs/DatabaseConnectionSettingsDialog.cs:64
+#: ../MonoDevelop.Database.Components/Dialogs/DatabaseConnectionSettingsDialog.cs:48
 msgid "Edit Database Connection"
 msgstr "Editar conexión a base de datos"
-
-#: ../MonoDevelop.Database.Components/Dialogs/DatabaseConnectionSettingsDialog.cs:66
-msgid "Add Database Connection"
-msgstr "Agregar conexión a base de datos"
-
-#: ../MonoDevelop.Database.Components/Dialogs/DatabaseConnectionSettingsDialog.cs:121
-#: ../MonoDevelop.Database.Components/Dialogs/DatabaseConnectionSettingsDialog.cs:229
-#: ../MonoDevelop.Database.Components/Dialogs/DatabaseConnectionSettingsDialog.cs:289
-msgid "No databases found!"
-msgstr "No se encontró ninguna base de datos"
-
-#: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.DatabaseConnectionSettingsDialog.cs:215
-msgid "Save Password"
-msgstr "Guardar contraseña"
-
-#: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.DatabaseConnectionSettingsDialog.cs:255
-msgid "Server"
-msgstr "Servidor"
-
-#: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.DatabaseConnectionSettingsDialog.cs:266
-msgid "Port"
-msgstr "Puerto"
-
-#: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.DatabaseConnectionSettingsDialog.cs:277
-msgid "Username"
-msgstr "Nombre de usuario"
-
-#: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.DatabaseConnectionSettingsDialog.cs:288
-msgid "Password"
-msgstr "Contraseña"
-
-#: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.DatabaseConnectionSettingsDialog.cs:328
-msgid "General"
-msgstr "General"
-
-#: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.DatabaseConnectionSettingsDialog.cs:341
-msgid "Use custom connection string"
-msgstr "Usar cadena de conexión personalizada"
-
-#: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.DatabaseConnectionSettingsDialog.cs:354
-msgid "Min Pool Size"
-msgstr "Tamaño mínimo de Pool"
-
-#: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.DatabaseConnectionSettingsDialog.cs:363
-msgid "Max Pool Size"
-msgstr "Tamaño máximo de Pool"
-
-#: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.DatabaseConnectionSettingsDialog.cs:426
-msgid "Advanced"
-msgstr "Avanzado"
 
 #: ../MonoDevelop.Database.Components/Dialogs/WaitDialog.cs:57
 msgid "Please Wait"
@@ -548,130 +573,174 @@ msgstr ""
 msgid "Please wait"
 msgstr "Por favor espere"
 
-#: ../MonoDevelop.Database.Components/Widgets/SqlEditorWidget.cs:97
-#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:46
-msgid "Import From File"
-msgstr "Importar desde archivo"
-
-#: ../MonoDevelop.Database.Components/Widgets/SqlEditorWidget.cs:107
-#: ../MonoDevelop.Database.Components/Widgets/SqlEditorWidget.cs:139
+#: ../MonoDevelop.Database.Components/Widgets/SqlEditorWidget.cs:105
+#: ../MonoDevelop.Database.Components/Widgets/SqlEditorWidget.cs:137
 msgid "SQL files"
 msgstr "Archivos SQL"
 
-#: ../MonoDevelop.Database.Components/Widgets/SqlEditorWidget.cs:128
-#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:49
-msgid "Export To File"
-msgstr "Exportar a archivo"
-
-#: ../MonoDevelop.Database.Components/Widgets/SqlEditorWidget.cs:145
+#: ../MonoDevelop.Database.Components/Widgets/SqlEditorWidget.cs:143
 msgid "Are you sure you want to overwrite the file '{0}'?"
 msgstr "¿Está seguro de que desea sobreescribir el archivo '{0}'?"
 
-#: ../MonoDevelop.Database.Components/Widgets/SqlEditorWidget.cs:146
-msgid "Overwrite?"
-msgstr "¿Sobreescribir?"
+#: ../MonoDevelop.Database.Components/Widgets/TableMappingWidget.cs:64
+msgid "Class Name"
+msgstr ""
 
-#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:37
-msgid "Display content as text"
-msgstr "Representar el contenido como texto"
+#: ../MonoDevelop.Database.Components/Widgets/ConnectionSettingsWidget.cs:241
+#: ../MonoDevelop.Database.Components/Widgets/ConnectionSettingsWidget.cs:316
+msgid "No databases found!"
+msgstr "No se encontró ninguna base de datos"
 
-#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:39
-msgid "Display content as xml text"
-msgstr "Representar el contenido como texto XML"
+#: ../MonoDevelop.Database.Components/Widgets/ConnectionSettingsWidget.cs:337
+#, fuzzy
+msgid "Trying to connect to database ..."
+msgstr "Imposible conectar a la base de datos '{0}'"
 
-#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:41
-msgid "Display content as xml tree"
-msgstr "Representar el contenido como un árbol XML"
+#: ../MonoDevelop.Database.Components/Widgets/ConnectionSettingsWidget.cs:372
+msgid "Test Succeeded."
+msgstr ""
 
-#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:43
-msgid "Display content as image"
-msgstr "Representar el contenido como una imagen"
+#: ../MonoDevelop.Database.Components/Widgets/ConnectionSettingsWidget.cs:374
+msgid "Test Failed: {0}."
+msgstr ""
 
-#: ../MonoDevelop.Database.Designer/Widgets/TriggersEditorWidget.cs:95
+#: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.ConnectionSettingsWidget.cs:102
+#, fuzzy
+msgid "Test"
+msgstr "Texto"
+
+#: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.ConnectionSettingsWidget.cs:169
+msgid "Use custom connection string"
+msgstr "Usar cadena de conexión personalizada"
+
+#: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.ConnectionSettingsWidget.cs:182
+#, fuzzy
+msgid "Min Pool Size:"
+msgstr "Tamaño mínimo de Pool"
+
+#: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.ConnectionSettingsWidget.cs:191
+#, fuzzy
+msgid "Max Pool Size:"
+msgstr "Tamaño máximo de Pool"
+
+#: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.ConnectionSettingsWidget.cs:248
+msgid "Advanced"
+msgstr "Avanzado"
+
+#: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.ConnectionSettingsWidget.cs:317
+msgid "Save Password"
+msgstr "Guardar contraseña"
+
+#: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.ConnectionSettingsWidget.cs:348
+#, fuzzy
+msgid "Name:"
+msgstr "Nombre"
+
+#: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.ConnectionSettingsWidget.cs:357
+#, fuzzy
+msgid "Password:"
+msgstr "Contraseña"
+
+#: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.ConnectionSettingsWidget.cs:368
+#, fuzzy
+msgid "Port:"
+msgstr "Puerto"
+
+#: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.ConnectionSettingsWidget.cs:379
+#, fuzzy
+msgid "Server:"
+msgstr "Servidor"
+
+#: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.ConnectionSettingsWidget.cs:403
+#, fuzzy
+msgid "Username:"
+msgstr "Nombre de usuario"
+
+#: ../MonoDevelop.Database.Components/Commands/AbstractDatabaseProviderList.cs:48
+msgid "No database providers detected."
+msgstr ""
+
+#: ../MonoDevelop.Database.Designer/Widgets/TriggersEditorWidget.cs:97
 msgid "Event"
 msgstr "Evento"
 
-#: ../MonoDevelop.Database.Designer/Widgets/TriggersEditorWidget.cs:96
+#: ../MonoDevelop.Database.Designer/Widgets/TriggersEditorWidget.cs:98
 msgid "Each Row"
 msgstr "Cada fila"
 
-#: ../MonoDevelop.Database.Designer/Widgets/TriggersEditorWidget.cs:97
+#: ../MonoDevelop.Database.Designer/Widgets/TriggersEditorWidget.cs:99
 msgid "Position"
 msgstr "Posición"
 
-#: ../MonoDevelop.Database.Designer/Widgets/TriggersEditorWidget.cs:98
+#: ../MonoDevelop.Database.Designer/Widgets/TriggersEditorWidget.cs:100
 msgid "Active"
 msgstr "Activo"
 
-#: ../MonoDevelop.Database.Designer/Widgets/TriggersEditorWidget.cs:99
-#: ../MonoDevelop.Database.Designer/Widgets/ColumnsEditorWidget.cs:88
-#: ../MonoDevelop.Database.Designer/Dialogs/TableEditorDialog.cs:105
-#: ../MonoDevelop.Database.Designer/Dialogs/ViewEditorDialog.cs:77
-#: ../MonoDevelop.Database.Designer/Dialogs/ProcedureEditorDialog.cs:77
+#: ../MonoDevelop.Database.Designer/Widgets/TriggersEditorWidget.cs:101
+#: ../MonoDevelop.Database.Designer/Widgets/ColumnsEditorWidget.cs:94
+#: ../MonoDevelop.Database.Designer/Dialogs/TableEditorDialog.cs:101
+#: ../MonoDevelop.Database.Designer/Dialogs/ViewEditorDialog.cs:73
+#: ../MonoDevelop.Database.Designer/Dialogs/ProcedureEditorDialog.cs:75
 msgid "Comment"
 msgstr "Comentario"
 
-#: ../MonoDevelop.Database.Designer/Widgets/TriggersEditorWidget.cs:185
+#: ../MonoDevelop.Database.Designer/Widgets/TriggersEditorWidget.cs:187
 msgid "Are you sure you want to remove trigger '{0}'?"
 msgstr "¿Está seguro de que desea eliminar el disparador '{0}'?"
 
-#: ../MonoDevelop.Database.Designer/Widgets/TriggersEditorWidget.cs:186
-msgid "Remove Trigger"
-msgstr "Eliminar disparador"
-
-#: ../MonoDevelop.Database.Designer/Widgets/TriggersEditorWidget.cs:341
+#: ../MonoDevelop.Database.Designer/Widgets/TriggersEditorWidget.cs:343
 msgid "Trigger '{0}' does not contain a trigger statement."
 msgstr "El disparador '{0}' no contiene una instrucción trigger."
 
-#: ../MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.TriggersEditorWidget.cs:123
+#: ../MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.TriggersEditorWidget.cs:119
 msgid "Statement"
 msgstr "Instrucción"
 
-#: ../MonoDevelop.Database.Designer/Widgets/ColumnsEditorWidget.cs:83
+#: ../MonoDevelop.Database.Designer/Widgets/ColumnsEditorWidget.cs:89
 msgid "PK"
 msgstr "PK"
 
-#: ../MonoDevelop.Database.Designer/Widgets/ColumnsEditorWidget.cs:86
+#: ../MonoDevelop.Database.Designer/Widgets/ColumnsEditorWidget.cs:92
 msgid "Length"
 msgstr "Longitud"
 
-#: ../MonoDevelop.Database.Designer/Widgets/ColumnsEditorWidget.cs:220
+#: ../MonoDevelop.Database.Designer/Widgets/ColumnsEditorWidget.cs:93
+msgid "Nullable"
+msgstr "Nulable"
+
+#: ../MonoDevelop.Database.Designer/Widgets/ColumnsEditorWidget.cs:225
 msgid "Are you sure you want to remove column '{0}'"
 msgstr "¿Está seguro de que desea eliminar la columna '{0}'?"
 
-#: ../MonoDevelop.Database.Designer/Widgets/ColumnsEditorWidget.cs:221
-msgid "Remove Column"
-msgstr "Eliminar columna"
-
-#: ../MonoDevelop.Database.Designer/Widgets/ColumnsEditorWidget.cs:384
+#: ../MonoDevelop.Database.Designer/Widgets/ColumnsEditorWidget.cs:389
 msgid "Unknown data type '{0}' applied to column '{1}'."
 msgstr "Tipo de datos desconocido '{0}' aplicado a columna '{1}'."
 
-#: ../MonoDevelop.Database.Designer/Widgets/ColumnsEditorWidget.cs:396
+#: ../MonoDevelop.Database.Designer/Widgets/ColumnsEditorWidget.cs:401
 msgid "Table '{0}' must contain at least one primary key."
 msgstr "La tabla '{0}' debe contener al menos una clave primaria."
 
-#: ../MonoDevelop.Database.Designer/Widgets/ColumnsEditorWidget.cs:403
+#: ../MonoDevelop.Database.Designer/Widgets/ColumnsEditorWidget.cs:408
 msgid "Table '{0}' must contain at least 1 column."
 msgstr "La tabla '{0}' debe contener al menos 1 columna."
 
-#: ../MonoDevelop.Database.Designer/Widgets/ConstraintsEditorWidget.cs:84
+#: ../MonoDevelop.Database.Designer/Widgets/ConstraintsEditorWidget.cs:71
 msgid "Primary Key"
 msgstr "Clave primaria"
 
-#: ../MonoDevelop.Database.Designer/Widgets/ConstraintsEditorWidget.cs:91
+#: ../MonoDevelop.Database.Designer/Widgets/ConstraintsEditorWidget.cs:77
 msgid "Foreign Key"
 msgstr "Clave ajena"
 
-#: ../MonoDevelop.Database.Designer/Widgets/ConstraintsEditorWidget.cs:98
+#: ../MonoDevelop.Database.Designer/Widgets/ConstraintsEditorWidget.cs:83
 msgid "Check"
 msgstr "Chequear"
 
-#: ../MonoDevelop.Database.Designer/Widgets/ConstraintsEditorWidget.cs:105
+#: ../MonoDevelop.Database.Designer/Widgets/ConstraintsEditorWidget.cs:89
 msgid "Unique"
 msgstr "Único"
 
-#: ../MonoDevelop.Database.Designer/Dialogs/TableEditorDialog.cs:227
+#: ../MonoDevelop.Database.Designer/Dialogs/TableEditorDialog.cs:231
 msgid "No name specified."
 msgstr "Sin nombre especificado."
 
@@ -679,16 +748,17 @@ msgstr "Sin nombre especificado."
 msgid "Edit Table"
 msgstr "Editar tabla"
 
-#: ../MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.TableEditorDialog.cs:112
+#: ../MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.TableEditorDialog.cs:111
 msgid "Preview SQL"
 msgstr "Previsualizar SQL"
 
-#: ../MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.CreateDatabaseDialog.cs:146
-msgid "Base Settings"
-msgstr "Preferencias básicas"
+#: ../MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.CreateDatabaseDialog.cs:53
+#, fuzzy
+msgid "Connection"
+msgstr "Agregar conexión"
 
-#: ../MonoDevelop.Database.Designer/Dialogs/ViewEditorDialog.cs:72
-#: ../MonoDevelop.Database.Designer/Dialogs/ProcedureEditorDialog.cs:72
+#: ../MonoDevelop.Database.Designer/Dialogs/ViewEditorDialog.cs:69
+#: ../MonoDevelop.Database.Designer/Dialogs/ProcedureEditorDialog.cs:71
 msgid "Definition"
 msgstr "Definición"
 
@@ -696,61 +766,120 @@ msgstr "Definición"
 msgid "Preview"
 msgstr "Vista preliminar"
 
-#: ../MonoDevelop.Database.Designer/Widgets/ForeignKeyConstraintEditorWidget.cs:114
+#: ../MonoDevelop.Database.Designer/Widgets/ForeignKeyConstraintEditorWidget.cs:107
 msgid "Reference Table"
 msgstr "Tabla de referencia"
 
-#: ../MonoDevelop.Database.Designer/Widgets/ForeignKeyConstraintEditorWidget.cs:115
-#: ../MonoDevelop.Database.Designer/Widgets/CheckConstraintEditorWidget.cs:88
-#: ../MonoDevelop.Database.Designer/Widgets/UniqueConstraintEditorWidget.cs:83
+#: ../MonoDevelop.Database.Designer/Widgets/ForeignKeyConstraintEditorWidget.cs:108
+#: ../MonoDevelop.Database.Designer/Widgets/CheckConstraintEditorWidget.cs:83
+#: ../MonoDevelop.Database.Designer/Widgets/UniqueConstraintEditorWidget.cs:76
 msgid "Column Constraint"
 msgstr "Restricción de la columna"
 
-#: ../MonoDevelop.Database.Designer/Widgets/ForeignKeyConstraintEditorWidget.cs:116
+#: ../MonoDevelop.Database.Designer/Widgets/ForeignKeyConstraintEditorWidget.cs:109
 msgid "Delete Action"
 msgstr "Eliminar acción"
 
-#: ../MonoDevelop.Database.Designer/Widgets/ForeignKeyConstraintEditorWidget.cs:117
+#: ../MonoDevelop.Database.Designer/Widgets/ForeignKeyConstraintEditorWidget.cs:110
 msgid "Update Action"
 msgstr "Actualizar acción"
 
-#: ../MonoDevelop.Database.Designer/Widgets/ForeignKeyConstraintEditorWidget.cs:191
-#: ../MonoDevelop.Database.Designer/Widgets/CheckConstraintEditorWidget.cs:153
-#: ../MonoDevelop.Database.Designer/Widgets/PrimaryKeyConstraintEditorWidget.cs:169
-#: ../MonoDevelop.Database.Designer/Widgets/UniqueConstraintEditorWidget.cs:188
+#: ../MonoDevelop.Database.Designer/Widgets/ForeignKeyConstraintEditorWidget.cs:201
+#: ../MonoDevelop.Database.Designer/Widgets/CheckConstraintEditorWidget.cs:158
+#: ../MonoDevelop.Database.Designer/Widgets/PrimaryKeyConstraintEditorWidget.cs:176
+#: ../MonoDevelop.Database.Designer/Widgets/UniqueConstraintEditorWidget.cs:195
 msgid "Are you sure you want to remove constraint '{0}'?"
 msgstr "¿Está seguro de que desea eliminar la restricción '{0}'?"
 
-#: ../MonoDevelop.Database.Designer/Widgets/ForeignKeyConstraintEditorWidget.cs:192
-#: ../MonoDevelop.Database.Designer/Widgets/CheckConstraintEditorWidget.cs:154
-#: ../MonoDevelop.Database.Designer/Widgets/PrimaryKeyConstraintEditorWidget.cs:170
-#: ../MonoDevelop.Database.Designer/Widgets/UniqueConstraintEditorWidget.cs:189
-msgid "Remove Constraint"
-msgstr "Eliminar restricción"
-
-#: ../MonoDevelop.Database.Designer/Widgets/ForeignKeyConstraintEditorWidget.cs:346
-#: ../MonoDevelop.Database.Designer/Widgets/UniqueConstraintEditorWidget.cs:228
+#: ../MonoDevelop.Database.Designer/Widgets/ForeignKeyConstraintEditorWidget.cs:356
+#: ../MonoDevelop.Database.Designer/Widgets/UniqueConstraintEditorWidget.cs:235
 msgid "Unique Key constraint '{0}' must be applied to one or more columns."
-msgstr "La restricción de clave única '{0}' debe ser aplicada a una o más columnas"
+msgstr ""
+"La restricción de clave única '{0}' debe ser aplicada a una o más columnas"
 
-#: ../MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.ForeignKeyConstraintEditorWidget.cs:168
+#: ../MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.ForeignKeyConstraintEditorWidget.cs:159
 msgid "Reference Columns"
 msgstr "Columnas de referencia"
 
-#: ../MonoDevelop.Database.Designer/Widgets/CheckConstraintEditorWidget.cs:250
+#: ../MonoDevelop.Database.Designer/Widgets/CheckConstraintEditorWidget.cs:255
 msgid "Checked constraint '{0}' does not contain a check statement."
 msgstr "La restricción de chequeo '{0}' no contiene una instrucción check."
 
-#: ../MonoDevelop.Database.Designer/Widgets/CheckConstraintEditorWidget.cs:255
+#: ../MonoDevelop.Database.Designer/Widgets/CheckConstraintEditorWidget.cs:260
 msgid ""
 "Checked constraint '{0}' is marked as a column constraint but is not applied "
 "to a column."
-msgstr "La restricción de chequeo '{0}' está marcada como una restricción de columna pero no se está aplicando a ninguna columna."
+msgstr ""
+"La restricción de chequeo '{0}' está marcada como una restricción de columna "
+"pero no se está aplicando a ninguna columna."
 
-#: ../MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.CheckConstraintEditorWidget.cs:122
+#: ../MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.CheckConstraintEditorWidget.cs:118
 msgid "Check Condition"
 msgstr "Comprobar condición"
 
-#: ../MonoDevelop.Database.Designer/Widgets/PrimaryKeyConstraintEditorWidget.cs:193
+#: ../MonoDevelop.Database.Designer/Widgets/PrimaryKeyConstraintEditorWidget.cs:200
 msgid "Primary Key constraint '{0}' must be applied to one or more columns."
-msgstr "La restricción de clave primaria '{0}' debe ser aplicada a una o más columnas."
+msgstr ""
+"La restricción de clave primaria '{0}' debe ser aplicada a una o más "
+"columnas."
+
+#: ../MonoDevelop.Database.CodeGenerator/MonoDevelop.Database.CodeGenerator.addin.xml:28
+#: ../MonoDevelop.Database.CodeGenerator/gtk-gui/MonoDevelop.Database.CodeGenerator.GenerateDataClassesDialog.cs:41
+#, fuzzy
+msgid "Generate Data Classes"
+msgstr "Crear base de datos"
+
+#: ../MonoDevelop.Database.CodeGenerator/gtk-gui/MonoDevelop.Database.CodeGenerator.GenerateDataClassesDialog.cs:65
+msgid "Location:"
+msgstr ""
+
+#: ../MonoDevelop.Database.CodeGenerator/gtk-gui/MonoDevelop.Database.CodeGenerator.GenerateDataClassesDialog.cs:85
+msgid "General"
+msgstr "General"
+
+#: ../MonoDevelop.Database.CodeGenerator/gtk-gui/MonoDevelop.Database.CodeGenerator.GenerateDataClassesDialog.cs:96
+msgid "Fields & Properties"
+msgstr ""
+
+#: ../MonoDevelop.Database.CodeGenerator/gtk-gui/MonoDevelop.Database.CodeGenerator.GenerateDataClassesDialog.cs:106
+msgid "Classes"
+msgstr ""
+
+#~ msgid "Re_name"
+#~ msgstr "Re_nombrar"
+
+#~ msgid "Remove Connection"
+#~ msgstr "Eliminar conexión"
+
+#~ msgid "Property Type"
+#~ msgstr "Tipo de la propiedad"
+
+#~ msgid "Ctor Parameter"
+#~ msgstr "Parámetro del constructor"
+
+#~ msgid "Overwrite?"
+#~ msgstr "¿Sobreescribir?"
+
+#~ msgid "Display content as text"
+#~ msgstr "Representar el contenido como texto"
+
+#~ msgid "Display content as xml text"
+#~ msgstr "Representar el contenido como texto XML"
+
+#~ msgid "Display content as xml tree"
+#~ msgstr "Representar el contenido como un árbol XML"
+
+#~ msgid "Display content as image"
+#~ msgstr "Representar el contenido como una imagen"
+
+#~ msgid "Remove Trigger"
+#~ msgstr "Eliminar disparador"
+
+#~ msgid "Remove Column"
+#~ msgstr "Eliminar columna"
+
+#~ msgid "Base Settings"
+#~ msgstr "Preferencias básicas"
+
+#~ msgid "Remove Constraint"
+#~ msgstr "Eliminar restricción"
