@@ -6,7 +6,7 @@ msgstr ""
 "X-Poedit-Bookmarks: -1,1681,-1,-1,-1,-1,-1,-1,-1,-1\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2009-03-04 11:10:09+0100\n"
+"PO-Revision-Date: 2009-03-04 11:16:06+0100\n"
 "Language-Team: \n"
 "Project-Id-Version: Monodevelop\n"
 "MIME-Version: 1.0\n"
@@ -178,7 +178,7 @@ msgid ""
 msgstr ""
 "Zeige alle Pakete\n"
 "Nur neue zeigen\n"
-"Nur Updates zeigen"
+"Nur Aktualisierungen zeigen"
 
 #: ../src/core/MonoDevelop.Core.Gui/Base.glade:1460
 msgid "_Unselect All"
@@ -7054,7 +7054,7 @@ msgstr "Beim Starten Willkommen-Seite anzeigen"
 
 #: ../src/addins/WelcomePage/WelcomePageOptionPanel.cs:19
 msgid "Update welcome page from internet"
-msgstr "Willkommen-Seite aus dem web updaten"
+msgstr "Willkommen-Seite aus dem web aktualisieren"
 
 #: ../src/addins/WelcomePage/WelcomePageView.cs:74
 msgid "Welcome"
@@ -7522,7 +7522,7 @@ msgstr "Die folgende Änderungsprotokol-Datei wird aktualisiert:"
 
 #: ../src/addins/ChangeLogAddIn/CommitDialogExtensionWidget.cs:125
 msgid "{0} ChangeLog files will be updated."
-msgstr "{0} Änderungsprotokoll-Dateien werden erneuert."
+msgstr "{0} Änderungsprotokoll-Dateien werden aktualisiert."
 
 #: ../src/addins/ChangeLogAddIn/CommitDialogExtensionWidget.cs:117
 msgid "{0} ChangeLog file not found. Some changes will not be logged."
@@ -7561,9 +7561,9 @@ msgid ""
 "of the project or solution and click on the 'ChangeLog Integration\" "
 "section."
 msgstr ""
-"Um die Änderungsprotokollerzeugung und Updateverfahren zu ändern, öffnen Sie "
-"den Dialog für das Projekt oder die Projektmappe und klicken Sie auf die "
-"'Änderungsprotokoll-Integration'-Sektion."
+"Um die Änderungsprotokollerzeugung und Aktualisierungsverfahren zu ändern, "
+"öffnen Sie den Dialog für das Projekt oder die Projektmappe und klicken Sie auf "
+"die 'Änderungsprotokoll-Integration'-Sektion."
 
 #: ../src/addins/ChangeLogAddIn/ProjectOptionPanel.cs:47
 msgid "ChangeLog _Policy"
@@ -14417,7 +14417,6 @@ msgstr "Schließe die folgenden Kategorien ein:"
 #~ msgstr "E_rsetzen:"
 #~ msgid "Exception occurred: {0}"
 #~ msgstr "Fehler aufgetreten: {0}"
-
 #~ msgid "Question"
 #~ msgstr "Frage"
 
