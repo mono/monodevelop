@@ -1,5 +1,30 @@
 2009-03-04  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* da.po:
+	* tr.po:
+	* ca.po:
+	* sl.po:
+	* pt.po:
+	* ja.po:
+	* id.po:
+	* sv.po:
+	* ru.po:
+	* de.po:
+	* es.po:
+	* fr.po:
+	* gl.po:
+	* cs.po:
+	* hu.po:
+	* it.po:
+	* nl.po:
+	* pl.po:
+	* zh_CN.po:
+	* zh_TW.po:
+	* pt_BR.po:
+	* messages.po: Updated for string freeze.
+
+2009-03-04  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* hu.po: Updated Hungarian translation from Bálint Kriván.
 
 2009-03-04  Mike Krüger  <mkrueger@novell.com>
@@ -104,7 +129,6 @@
 	* pt_BR.po:
 	* messages.po: Updated for string freeze.
 
->>>>>>> .r127971
 2009-02-19  Mike Krüger  <mkrueger@novell.com>
 
 	* de.po: updated translation.

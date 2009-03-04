@@ -7,26 +7,26 @@
 #
 msgid ""
 msgstr ""
-"X-Generator: MonoDevelop Gettext addin\n"
-"Language-Team: \n"
-"PO-Revision-Date: 2009-03-03 21:27:26+0100\n"
-"POT-Creation-Date: 2009-03-03 21:23:53+0100\n"
 "Project-Id-Version: MonoDevelop\n"
-"MIME-Version: 1.0\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Last-Translator: Bálint Kriván <balint@krivan.info>\n"
-"Content-Type: text/plain; charset=UTF-8\n"
 "Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2009-03-04 18:10:09-0500\n"
+"PO-Revision-Date: 2009-03-03 21:27:26+0100\n"
+"Last-Translator: Bálint Kriván <balint@krivan.info>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: MonoDevelop Gettext addin\n"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.Execution/ProcessService.cs:185
 msgid "MonoDevelop External Console"
 msgstr "Külső konzol"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.Execution/ProcessService.cs:392
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.Execution/ProcessService.cs:396
 msgid "The application was terminated by a signal: {0}"
 msgstr "Az alkalmazás futását megszakította a következő szignál: {0}"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.Execution/ProcessService.cs:394
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.Execution/ProcessService.cs:398
 #: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:413
 msgid "The application exited with code: {0}"
 msgstr "Az alkalmazás futása megszakadt a következő visszatérési kóddal: {0}"
@@ -250,39 +250,45 @@ msgstr "MonoDevelop csomag"
 msgid "Loading..."
 msgstr "Betöltés..."
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:208
 #: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:211
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:214
 msgid ".NET resource"
 msgstr ".NET erőforrás"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:214
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:217
 msgid "Add-in manifest"
 msgstr "Add-in manifest"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:218
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:221
 msgid "XML document"
 msgstr "XML dokumentum"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:222
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:225
 msgid "ChangeLog document"
 msgstr "ChangeLog dokumentum"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:225
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:228
 msgid ".NET program"
 msgstr ".NET program"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:229
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:232
 msgid "MonoDevelop/MSBuild Solution"
 msgstr "MonoDevelop/MSBuild Megoldás"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:232
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:235
 msgid "MonoDevelop 1.0 Solution"
 msgstr "MonoDevelop 1.0 Megoldás"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:236
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:239
 #, fuzzy
 msgid "diff files"
 msgstr "Fájlok hozzáadása"
+
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:244
+#: ../src/addins/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:60
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:433
+msgid "Makefile"
+msgstr "Makefile"
 
 #: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:60
 msgid "Go up one level"
@@ -2473,10 +2479,8 @@ msgid "Done."
 msgstr "Kész"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:122
-msgid ""
-"<b>Ported and developed by:</b>\n"
-msgstr ""
-"<b>Átültetés és fejlesztés:</b>\n"
+msgid "<b>Ported and developed by:</b>\n"
+msgstr "<b>Átültetés és fejlesztés:</b>\n"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:132
 msgid "translator-credits"
@@ -2880,8 +2884,8 @@ msgid ""
 "The name you have chosen contains illegal characters. Please choose a "
 "different name."
 msgstr ""
-"A megadott fájlnév érvénytelen karaktereket tartalmaz. Kérem, válasszon másik "
-"nevet."
+"A megadott fájlnév érvénytelen karaktereket tartalmaz. Kérem, válasszon "
+"másik nevet."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:147
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:157
@@ -3078,9 +3082,9 @@ msgid ""
 "You need a newer monodoc to use it externally from monodevelop. Using the "
 "integrated help viewer now."
 msgstr ""
-"A monodoc újabb verziója szükséges ahhoz, hogy a MonoDevelopon kívül lehessen "
-"használni, ezért a beépített súgóböngésző lesz használva a dokumentáció "
-"megtekintésére."
+"A monodoc újabb verziója szükséges ahhoz, hogy a MonoDevelopon kívül "
+"lehessen használni, ezért a beépített súgóböngésző lesz használva a "
+"dokumentáció megtekintésére."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Ide.cs:154
 msgid "Loading Workbench"
@@ -3647,8 +3651,8 @@ msgid "_Name:"
 msgstr "_Név:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.ExportProjectDialog.cs:84
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.SourcesZipEditorWidget.cs:126
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.BinariesZipEditorWidget.cs:138
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.SourcesZipEditorWidget.cs:125
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.BinariesZipEditorWidget.cs:137
 msgid "Target folder:"
 msgstr "Célkönyvtár:"
 
@@ -4125,8 +4129,8 @@ msgstr "Végzetes hiba történt. A MonoDevelop nem indítható el."
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.AddinLoadErrorDialog.cs:124
 msgid ""
-"MonoDevelop can run without these add-ins, but the functionality they provide "
-"will be missing."
+"MonoDevelop can run without these add-ins, but the functionality they "
+"provide will be missing."
 msgstr ""
 "A MonoDevelop elindítható a bővítmények nélkül is, de az általuk nyújtott "
 "funkciókat nem lehet majd használni."
@@ -4406,8 +4410,8 @@ msgid ""
 "The project '{0}' has been modified by an external application. Do you want "
 "to reload it? All project files will be closed."
 msgstr ""
-"A projektet ({0}) módosította egy másik alkalmazás. Betölti újra a projektet? "
-"Minden megnyitott fájl be lesz zárva."
+"A projektet ({0}) módosította egy másik alkalmazás. Betölti újra a "
+"projektet? Minden megnyitott fájl be lesz zárva."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/OverridesImplementsDialog.cs:75
 msgid "Override and/or implement members"
@@ -4833,7 +4837,8 @@ msgid ""
 "Error while trying to invoke '{0}' to compile resource '{1}' :\n"
 " {2}"
 msgstr ""
-"Hiba történt a parancs meghívása során ({0}) a forrás ({1}) fordítása közben:\n"
+"Hiba történt a parancs meghívása során ({0}) a forrás ({1}) fordítása "
+"közben:\n"
 " {2}"
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Formats.MD1/MD1DotNetProjectHandler.cs:367
@@ -5253,9 +5258,9 @@ msgid ""
 "custom commands which will be available in the project or solution menu."
 msgstr ""
 "A MonoDeveloppal lehetőség van egyedi parancsok megadására, melyek az "
-"általános projektműveletek előtt, után, vagy azokat helyettesítve futtathatók le. "
-"Megadhat projektekre és megoldásokra végrehajtható parancsokat is. Ezek a "
-"projektek és a megoldások menüiben fognak megjelenni."
+"általános projektműveletek előtt, után, vagy azokat helyettesítve "
+"futtathatók le. Megadhat projektekre és megoldásokra végrehajtható "
+"parancsokat is. Ezek a projektek és a megoldások menüiben fognak megjelenni."
 
 #: ../src/core/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CommonAssemblySigningPreferences.cs:38
 msgid "_Sign this assembly"
@@ -5372,7 +5377,7 @@ msgid "Automatically _include found files"
 msgstr "A talált fájlok automatikusan kerüljenek bele a projektbe"
 
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/MultiConfigItemOptionsPanel.cs:101
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.BinariesZipEditorWidget.cs:129
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.BinariesZipEditorWidget.cs:128
 msgid "Configuration:"
 msgstr "Konfiguráció:"
 
@@ -5855,6 +5860,11 @@ msgstr "Nincsenek eltérések"
 msgid "Could not get diff information. "
 msgstr "Nem sikerült lekérdezni az eltérési (diff) információkat."
 
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:969
+#, fuzzy
+msgid "Retrieving status for {0}..."
+msgstr "Előzmények lekérdezése a következőhöz: {0}..."
+
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/SelectRepositoryDialog.cs:45
 msgid "Repository"
 msgstr "Tároló"
@@ -5922,7 +5932,6 @@ msgid "Unversioned"
 msgstr "Nincs verzió"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:153
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:854
 msgid "Modified"
 msgstr "Módosított"
 
@@ -6108,55 +6117,119 @@ msgstr "A(z) „{0}” fájlt zárolnia kell, mielőtt szerkesztené."
 msgid "The file '{0}' could not be unlocked"
 msgstr "A(z) „{0}” fájl zárolása nem oldható fel"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:578
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:580
 msgid "Revision: {0}"
 msgstr "Revízió: {0}"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:846
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:852
-msgid "Added"
-msgstr "Hozzáadva"
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:877
+msgid "Skipped missing target: '{0}'"
+msgstr ""
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:847
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:853
-msgid "Deleted"
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:879
+#, fuzzy
+msgid "Skipped '{0}'"
+msgstr "Beágyazás: '{0}'"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:883
+#, fuzzy
+msgid "Deleted   '{0}'"
 msgstr "Törölve"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:848
-msgid "Updating"
-msgstr "Frissítés"
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:891
+#, fuzzy
+msgid "Conflict {0}"
+msgstr "Ütköző"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:849
-msgid "External Updated"
-msgstr "Külsőleg frissített"
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:893
+#, fuzzy
+msgid "Added   {0}"
+msgstr "Hozzáadva"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:850
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:909
+#, fuzzy
+msgid "Restored '{0}'"
+msgstr "Beágyazás: '{0}'"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:912
+#, fuzzy
+msgid "Reverted '{0}'"
+msgstr "Visszaállítás"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:915
+msgid "Failed to revert '{0}' -- try updating instead."
+msgstr ""
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:918
+msgid "Resolved conflict state of '{0}'"
+msgstr ""
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:922
+msgid "Add (bin) '{0}'"
+msgstr ""
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:924
+msgid "Add       '{0}'"
+msgstr ""
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:928
+msgid "Delete    '{0}'"
+msgstr ""
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:954
+#, fuzzy
+msgid "Update '{0}'"
+msgstr "{0} frissítése"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:958
+#, fuzzy
+msgid "Fetching external item into '{0}'"
+msgstr "(külső terminálban)"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:961
 msgid "Finished"
 msgstr "Befejezve"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:855
-msgid "Replaced"
-msgstr "Lecserélve"
-
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:856
-msgid "Sending Content"
-msgstr "Tartalom küldése"
-
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:858
-msgid "Locked"
-msgstr "Zárolva"
-
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:859
-msgid "Unlocked"
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:964
+msgid "Performing status on external item at '{0}'"
 msgstr ""
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:860
-msgid "Lock Failed"
-msgstr "Zárolás sikertelen"
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:967
+msgid "Status against revision: '{0}'"
+msgstr ""
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:861
-msgid "Unlock Failed"
-msgstr "Zárolás feloldása sikertelen"
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:971
+msgid "Deleting       {0}"
+msgstr ""
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:974
+#, fuzzy
+msgid "Sending        {0}"
+msgstr "„{0}” megnyitása"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:979
+msgid "Adding  (bin)  '{0}'"
+msgstr ""
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:981
+msgid "Adding         '{0}'"
+msgstr ""
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:985
+#, fuzzy
+msgid "Replacing      {0}"
+msgstr "{0} cserélve."
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:990
+msgid "Transmitting file data"
+msgstr ""
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:1000
+msgid "'{0}' locked by user '{1}'."
+msgstr ""
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:1003
+msgid "'{0}' unlocked."
+msgstr ""
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.Gui/ClientCertificateDialog.cs:12
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.Gui/ClientCertificatePasswordDialog.cs:12
@@ -6195,8 +6268,8 @@ msgstr "Kérem, adja meg a tanúsítvány helyét:"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/gtk-gui/MonoDevelop.VersionControl.Subversion.Gui.ClientCertificateDialog.cs:90
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:1214
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.SourcesZipEditorWidget.cs:115
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.BinariesZipEditorWidget.cs:149
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.SourcesZipEditorWidget.cs:114
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.BinariesZipEditorWidget.cs:148
 #: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.BreakpointPropertiesDialog.cs:157
 msgid "File:"
 msgstr "Fájl:"
@@ -6431,8 +6504,8 @@ msgid ""
 "The project '{0}' has been modified by an external application. Do you want "
 "to reload it?"
 msgstr ""
-"A projektet ({0}) módosította egy másik alkalmazás. Betölti újra a projektet? "
-"Minden megnyitott fájl be lesz zárva."
+"A projektet ({0}) módosította egy másik alkalmazás. Betölti újra a "
+"projektet? Minden megnyitott fájl be lesz zárva."
 
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs:164
 msgid "Unsaved changes in the open GTK designers will be lost."
@@ -6458,21 +6531,21 @@ msgstr "GUI-készítő"
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:216
 msgid ""
 "ERROR: MonoDevelop could not find the Gtk# 2.0 development package. "
-"Compilation of projects depending on Gtk# libraries will fail. You may need to install "
-"development packages for gtk-sharp-2.0."
+"Compilation of projects depending on Gtk# libraries will fail. You may need "
+"to install development packages for gtk-sharp-2.0."
 msgstr ""
 "HIBA: A MonoDevelop nem találta meg a GTK# 2.0 fejlesztői csomagot. A GTK# "
-"függvénykönyvtárakat használó projekteket nem lehet így lefordítani. A probléma "
-"megoldásához telepítse fel a gtk-sharp-2.0 csomaghoz tartozó fejlesztői "
-"csomagokat."
+"függvénykönyvtárakat használó projekteket nem lehet így lefordítani. A "
+"probléma megoldásához telepítse fel a gtk-sharp-2.0 csomaghoz tartozó "
+"fejlesztői csomagokat."
 
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:388
 msgid ""
 "GUI code generation failed for project '{0}'. The file '{1}' could not be "
 "loaded."
 msgstr ""
-"Nem sikerült a GUI-kódot elkészíteni a projekthez ('{0}'). A fájl ('{1}') nem "
-"tölthető be."
+"Nem sikerült a GUI-kódot elkészíteni a projekthez ('{0}'). A fájl ('{1}') "
+"nem tölthető be."
 
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:396
 msgid "Generating GUI code for project '{0}'..."
@@ -6485,12 +6558,13 @@ msgstr "Források"
 
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:506
 msgid ""
-"You are requesting the file '{0}' to be used as source for an image. However, "
-"this file is already added to the project as a resource. Are you sure you "
-"want to continue (the file will have to be removed from the resource list)?"
+"You are requesting the file '{0}' to be used as source for an image. "
+"However, this file is already added to the project as a resource. Are you "
+"sure you want to continue (the file will have to be removed from the "
+"resource list)?"
 msgstr ""
-"A fájlt ('{0}') egy kép forrásaként szeretné használni, azonban ez a fájl már "
-"szerepel a projekt forrásai közt. Ha folytatja a műveletet, akkor a fájl "
+"A fájlt ('{0}') egy kép forrásaként szeretné használni, azonban ez a fájl "
+"már szerepel a projekt forrásai közt. Ha folytatja a műveletet, akkor a fájl "
 "törölve lesz a források közül. Ezt szeretné?"
 
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs:90
@@ -6544,8 +6618,8 @@ msgstr "Biztosan törli a következőt: '{0}'?"
 
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/CodeBinder.cs:304
 msgid ""
-"The class bound to the component '{0}' could not be found. This may be due to "
-"syntax errors in the source code file."
+"The class bound to the component '{0}' could not be found. This may be due "
+"to syntax errors in the source code file."
 msgstr ""
 "A komponenshez ('{0}') tartozó osztály nem található. Ellenőrizze a "
 "forráskódot, hogy tartalmaz-e szintaktikai hibákat."
@@ -6663,8 +6737,8 @@ msgstr "Akció létrehozásához kattintson ide"
 
 #: ../src/addins/MonoDevelop.GtkCore/libstetic/editor/ActionGroupEditor.cs:390
 msgid ""
-"Are you sure you want to delete the action '{0}'? It will be removed from all "
-"menus and toolbars."
+"Are you sure you want to delete the action '{0}'? It will be removed from "
+"all menus and toolbars."
 msgstr ""
 "Ha törli az akciót ('{0}'), akkor az el lesz távolítva minden menüből és "
 "eszköztárból. Biztosan ezt szeretné?"
@@ -6885,8 +6959,8 @@ msgid ""
 "The selected icon may not show at run time if the required icon factory is "
 "not properly initialized."
 msgstr ""
-"A kiválasztott ikon nem biztos, hogy megjelenik futási időben, ha a megfelelő "
-"ikontár nincs megfelelően előkészítve."
+"A kiválasztott ikon nem biztos, hogy megjelenik futási időben, ha a "
+"megfelelő ikontár nincs megfelelően előkészítve."
 
 #: ../src/addins/MonoDevelop.GtkCore/libstetic/stetic.glade:1270
 msgid "Project Icons"
@@ -6927,15 +7001,15 @@ msgstr "Komponenstervező"
 #: ../src/addins/MonoDevelop.GtkCore/libstetic/stetic.glade:1993
 msgid ""
 "You are trying to add a non-container widget into the main window. In "
-"<b>GTK#</b>, widget positioning is controlled by a special type of widgets called "
-"<b>Container</b> widgets. If you don't place the widget into a container, it "
-"will fill the all the available space in the window. Are you sure you want to "
-"continue?"
+"<b>GTK#</b>, widget positioning is controlled by a special type of widgets "
+"called <b>Container</b> widgets. If you don't place the widget into a "
+"container, it will fill the all the available space in the window. Are you "
+"sure you want to continue?"
 msgstr ""
 "Egy olyan komponenst próbál hozzáadni a főablakhoz, ami nem használható "
-"tárolóként. A GTK#-ban a komponensek pozícióját ún. tárolók segítségével lehet "
-"megadni. Tárolók használata nélkül a komponens ki fogja tölteni az ablak teljes "
-"területét. Biztosan ezt szeretné?"
+"tárolóként. A GTK#-ban a komponensek pozícióját ún. tárolók segítségével "
+"lehet megadni. Tárolók használata nélkül a komponens ki fogja tölteni az "
+"ablak teljes területét. Biztosan ezt szeretné?"
 
 #: ../src/addins/MonoDevelop.GtkCore/libstetic/stetic.glade:2024
 msgid "To know more about this topic see the article:"
@@ -7190,8 +7264,8 @@ msgid ""
 "Error while trying to invoke '{0}' to generate partial classes for '{1}' :\n"
 " {2}"
 msgstr ""
-"Hiba történt '{0}' behívásakor. A részleges osztály generálása nem sikerült a "
-"következőhöz: '{1}'.\n"
+"Hiba történt '{0}' behívásakor. A részleges osztály generálása nem sikerült "
+"a következőhöz: '{1}'.\n"
 "A hiba oka: {2}"
 
 #: ../src/addins/prj2make-sharp-lib/MSBuildProjectServiceExtension.cs:115
@@ -7221,8 +7295,8 @@ msgstr ""
 
 #: ../src/addins/prj2make-sharp-lib/VS2003ProjectFileFormat.cs:259
 msgid ""
-"The project file {0} is a Visual Studio 2003 project. It must be converted to "
-"either a MonoDevelop or a Visual Studio 2005 project."
+"The project file {0} is a Visual Studio 2003 project. It must be converted "
+"to either a MonoDevelop or a Visual Studio 2005 project."
 msgstr ""
 "A projekt ({0}) a Visual Studio 2003 formátumát használja, ezért a megnyitás "
 "előtt át kell konvertálni MonoDevelop vagy VS2005 projektté. Ha VS2005 "
@@ -7235,8 +7309,9 @@ msgid ""
 "to either a MonoDevelop or a Visual Studio 2005 project."
 msgstr ""
 "A megoldás ({0}) a Visual Studio 2003 formátumát használja. A megoldásból "
-"létre kell hozni egy MonoDevelop vagy VS2005 megoldást. Ha a VS2005 formátumot "
-"választja, akkor a meglévő fájlok felül lesznek írva. Elvégzi a konvertálást?"
+"létre kell hozni egy MonoDevelop vagy VS2005 megoldást. Ha a VS2005 "
+"formátumot választja, akkor a meglévő fájlok felül lesznek írva. Elvégzi a "
+"konvertálást?"
 
 #: ../src/addins/prj2make-sharp-lib/prj2make-sharp-lib.addin.xml:31
 msgid "Visual Studio Solution"
@@ -7535,13 +7610,13 @@ msgstr "A ChangeLog fájl nem létezik, és <b>nem lesz</b> létrehozva."
 
 #: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.AddLogEntryDialog.cs:233
 msgid ""
-"To change the ChangeLog creation and update policies, open the options dialog "
-"of the project or solution and click on the 'ChangeLog Integration\" "
+"To change the ChangeLog creation and update policies, open the options "
+"dialog of the project or solution and click on the 'ChangeLog Integration\" "
 "section."
 msgstr ""
 "A projekthez vagy megoldáshoz tartozó ChangeLogok létrehozásának és "
-"frissítésének szabályai a Beállítások ablakban adhatók meg, a 'ChangeLog integrálása' "
-"részben."
+"frissítésének szabályai a Beállítások ablakban adhatók meg, a 'ChangeLog "
+"integrálása' részben."
 
 #: ../src/addins/ChangeLogAddIn/ProjectOptionPanel.cs:47
 msgid "ChangeLog _Policy"
@@ -7572,8 +7647,9 @@ msgid ""
 msgstr ""
 "<b>Legközelebbi ChangeLog frissítése</b>\n"
 "A könyvtárstruktúra szerint a fájlhoz legközelebb eső ChangeLog fájl lesz "
-"frissítve. Ha nincs ilyen fájl, akkor egy figyelmeztető üzenet fog megjelenni. "
-"Ennél a beállításnál nem hozhatóak létre automatikusan ChangLog fájlok."
+"frissítve. Ha nincs ilyen fájl, akkor egy figyelmeztető üzenet fog "
+"megjelenni. Ennél a beállításnál nem hozhatóak létre automatikusan ChangLog "
+"fájlok."
 
 #: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:110
 msgid "One ChangeLog in the project root directory"
@@ -7868,8 +7944,8 @@ msgid ""
 "Creates an ASP.NET Web Form that is the child of a Master Page, with a "
 "CodeBehind class."
 msgstr ""
-"Létrehoz egy ASP.NET-es webes űrlapot, ami egy mesterlap gyermeke (CodeBehind "
-"osztállyal)."
+"Létrehoz egy ASP.NET-es webes űrlapot, ami egy mesterlap gyermeke "
+"(CodeBehind osztállyal)."
 
 #: ../src/addins/AspNetAddIn/Templates/NestedMasterPage.xft.xml:7
 msgid "Nested Master Page"
@@ -7897,7 +7973,7 @@ msgstr "Webes űrlap"
 msgid "Creates an ASP.NET Web Form that is the child of a Master Page."
 msgstr "Létrehoz egy ASP.NET-es webes űrlapot, ami egy mesterlap gyermeke."
 
-#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet/AspNetAppProject.cs:254
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet/AspNetAppProject.cs:252
 msgid "Error launching web browser"
 msgstr "Nem sikerült elindítani a webböngészőt"
 
@@ -7947,8 +8023,8 @@ msgid ""
 "Parser failed with error {0}. CodeBehind members for this file will not be "
 "added."
 msgstr ""
-"A kódértelmező leállít a következő hibával: {0}. A fájlhoz tartozó CodeBehind "
-"tagok nem lesznek elérhetők."
+"A kódértelmező leállít a következő hibával: {0}. A fájlhoz tartozó "
+"CodeBehind tagok nem lesznek elérhetők."
 
 #: ../src/addins/AspNetAddIn/MonoDevelop.AspNet/CodeBehind.cs:217
 #: ../src/addins/AspNetAddIn/MonoDevelop.AspNet/CodeBehind.cs:266
@@ -8094,56 +8170,53 @@ msgstr "Kulcs helye:"
 msgid "Certificate location:"
 msgstr "Tanúsítvány helye:"
 
-#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:274
-msgid ""
-"Required for ASP.NET controls.\n"
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:284
+msgid "Required for ASP.NET controls.\n"
 msgstr ""
 
-#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:275
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:285
 msgid ""
 "Indicates that this tag should be able to be\n"
 "manipulated programmatically on the web server."
 msgstr ""
 
-#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:281
-msgid ""
-"Unique identifier.\n"
-msgstr ""
-"Egyedi azonosító.\n"
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:291
+msgid "Unique identifier.\n"
+msgstr "Egyedi azonosító.\n"
 
-#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:282
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:292
 msgid ""
 "An identifier that is unique within the document.\n"
 "If the tag is a server control, this will be used \n"
 "for the corresponding variable name in the CodeBehind."
 msgstr ""
 
-#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:358
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:368
 msgid "ASP.NET render block"
 msgstr ""
 
-#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:359
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:369
 #, fuzzy
 msgid "ASP.NET render expression"
 msgstr "ASP.NET beállítások"
 
-#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:360
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:370
 msgid "ASP.NET directive"
 msgstr "ASP.NET direktíva"
 
-#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:361
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:371
 msgid "ASP.NET databinding expression"
 msgstr ""
 
-#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:362
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:372
 msgid "ASP.NET server-side comment"
 msgstr ""
 
-#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:366
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:376
 msgid "ASP.NET resource expression"
 msgstr ""
 
-#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:465
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:475
 #, fuzzy
 msgid "A compatible method in the CodeBehind class"
 msgstr "A CodeBehind osztályok nem módosultak."
@@ -8153,8 +8226,7 @@ msgid "Could not connect to webserver {0}"
 msgstr "Nem sikerült csatlakozni a következő webszerverhez: {0}"
 
 #: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Parser/SuggestedHandlerCompletionData.cs:70
-msgid ""
-"A suggested event handler method name.\n"
+msgid "A suggested event handler method name.\n"
 msgstr ""
 
 #: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Parser/SuggestedHandlerCompletionData.cs:71
@@ -8224,8 +8296,8 @@ msgstr "Komponenesek keresése..."
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport/MemberExistsException.cs:109
 #, fuzzy
 msgid ""
-"Cannot add {0} '{1}' to class '{2}', because there is already a {3} with that "
-"name with an incompatible return type."
+"Cannot add {0} '{1}' to class '{2}', because there is already a {3} with "
+"that name with an incompatible return type."
 msgstr ""
 "Nem sikerült hozzáadni az osztályhoz ({2}) a következőt: {0} '{1}'. Már "
 "létezik egy {3} a megadott néven ({4})."
@@ -8233,8 +8305,8 @@ msgstr ""
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport/MemberExistsException.cs:112
 #, fuzzy
 msgid ""
-"Cannot add {0} '{1}' to class '{2}', because there is already a {3} with that "
-"name."
+"Cannot add {0} '{1}' to class '{2}', because there is already a {3} with "
+"that name."
 msgstr ""
 "Nem sikerült hozzáadni az osztályhoz ({2}) a következőt: {0} '{1}'. Már "
 "létezik egy {3} a megadott néven ({4})."
@@ -8522,8 +8594,8 @@ msgstr "{0} generálása a következő megoldáshoz: {1}"
 
 #: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:92
 msgid ""
-"MonoDevelop does not currently support generating {0} for one (or more) child "
-"projects."
+"MonoDevelop does not currently support generating {0} for one (or more) "
+"child projects."
 msgstr ""
 "A MonoDevelop nem támogatja {0} generálását egy vagy több alárendelt "
 "projekthez."
@@ -8617,8 +8689,8 @@ msgid ""
 "Error: Filename already specified - {0}, another filename '{1}' cannot be "
 "specified."
 msgstr ""
-"Hiba: A fájlnév már használatban van ('{0}') - a helyettesítő fájlnév ('{1}') "
-"nem adható meg."
+"Hiba: A fájlnév már használatban van ('{0}') - a helyettesítő fájlnév "
+"('{1}') nem adható meg."
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:44
 msgid "Error: Solution file not specified."
@@ -8629,10 +8701,8 @@ msgid "Loading solution file {0}"
 msgstr "Megoldás betöltése ('{0}')..."
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:54
-msgid ""
-"Error: Makefile generation supported only for solutions.\n"
-msgstr ""
-"Hiba: A Makefile generálás csak megoldásoknál használható.\n"
+msgid "Error: Makefile generation supported only for solutions.\n"
+msgstr "Hiba: A Makefile generálás csak megoldásoknál használható.\n"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:59
 msgid ""
@@ -8655,32 +8725,27 @@ msgstr "'{0}' már létezik ehhez a megoldáshoz. Felülírja a meglévő elemek
 msgid ""
 " --simple-makefiles -s\n"
 "\tGenerates set of Makefiles with the most common targets, and a "
-"configuration script that does a basic check of package dependencies. Default is to "
-"generate Makefile structure based on Autotools with the standard targets and "
-"configuration scripts."
+"configuration script that does a basic check of package dependencies. "
+"Default is to generate Makefile structure based on Autotools with the "
+"standard targets and configuration scripts."
 msgstr ""
 "--simple-makefiles -s\n"
 "\tA legáltalánosabb célpontokkal hozza létre a Makefile-okat és egy "
-"configure parancsfájlt, melynek segítségével a fordítás előtt ellenőrizhető, hogy "
-"adottak-e az alapvető függőségek. Az alapértelmezett beállítás: "
+"configure parancsfájlt, melynek segítségével a fordítás előtt ellenőrizhető, "
+"hogy adottak-e az alapvető függőségek. Az alapértelmezett beállítás: "
 "Makefile-struktúra a szabványos célpontokkal és configure parancsfájlokkal."
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:133
 msgid ""
 " -d:default-config\n"
 "\tConfiguration that the Makefile will build by default. Other "
-"configurations can be selected via the '--config' or '--enable-*' option of the generated "
-"configure script."
+"configurations can be selected via the '--config' or '--enable-*' option of "
+"the generated configure script."
 msgstr ""
 "-d:default-config\n"
 "\tA Makefile által fordított alapértelmezett konfiguráció. Egyéb "
-"konfigurációk a '--config' és az '--enable-*' kapcsolók segítségével adhatók meg (ezeket "
-"a configure parancsfájlhoz kell megadni)."
-
-#: ../src/addins/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:60
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:433
-msgid "Makefile"
-msgstr "Makefile"
+"konfigurációk a '--config' és az '--enable-*' kapcsolók segítségével adhatók "
+"meg (ezeket a configure parancsfájlhoz kell megadni)."
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:215
 msgid "Specified makefile is invalid: {0}"
@@ -8716,8 +8781,8 @@ msgid ""
 "Either disable the sync'ing or select a variable name."
 msgstr ""
 "A fájlváltozó ('{0}') be lett állítva a szinkronizálásra, de nincs "
-"kiválasztva egyetlen érvényes változó sem. Kapcsolja ki a szinkronizálást, vagy "
-"válasszon egy változónevet."
+"kiválasztva egyetlen érvényes változó sem. Kapcsolja ki a szinkronizálást, "
+"vagy válasszon egy változónevet."
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:378
 msgid ""
@@ -8812,12 +8877,13 @@ msgstr "Érvénytelen Makefile: {0}. Makefile integráció kikapcsolva."
 #: ../src/addins/MonoDevelop.Autotools/MakefileData.cs:647
 msgid ""
 "Enabling Makefile integration. You can choose to have either the Project or "
-"the Makefile be used as the master copy. This is done only when enabling this "
-"feature. After this, the Makefile will be taken as the master copy."
+"the Makefile be used as the master copy. This is done only when enabling "
+"this feature. After this, the Makefile will be taken as the master copy."
 msgstr ""
 "Makefile integráció bekapcsolása. Megadhatja, hogy magát a projektet vagy "
-"pedig a Makefile-t szeretné-e főmásolatként használni. Ez csak akkor lehetséges, "
-"ha engedélyezi ezt a lehetőséget. Ezt követően a Makefile lesz a főmásolat."
+"pedig a Makefile-t szeretné-e főmásolatként használni. Ez csak akkor "
+"lehetséges, ha engedélyezi ezt a lehetőséget. Ezt követően a Makefile lesz a "
+"főmásolat."
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileData.cs:689
 #, fuzzy
@@ -8850,12 +8916,12 @@ msgstr ""
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileData.cs:846
 msgid ""
-"Files in variable '{0}' contains variables which cannot be parsed without the "
-"path to configure.in being set. Ignoring such files."
+"Files in variable '{0}' contains variables which cannot be parsed without "
+"the path to configure.in being set. Ignoring such files."
 msgstr ""
 "A változóban ({0}) lévő fájlok olyan változókat tartalmaznak, melyek nem "
-"dolgozhatók fel a configure.in fájl nélkül. Ezek a fájlok figyelmen kívül lesznek "
-"hagyva."
+"dolgozhatók fel a configure.in fájl nélkül. Ezek a fájlok figyelmen kívül "
+"lesznek hagyva."
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileData.cs:871
 msgid "Ignoring invalid file '{0}' found in '{1}' for project '{2}'."
@@ -8874,16 +8940,16 @@ msgstr ""
 #: ../src/addins/MonoDevelop.Autotools/MakefileData.cs:929
 msgid "Unable to parse reference '{0}' for project '{1}'. Ignoring."
 msgstr ""
-"Nem sikerült a referencia feldolgozása ('{0}') a következő projekthez: '{1}'. "
-"A referencia figyelmen kívül lesz hagyva."
+"Nem sikerült a referencia feldolgozása ('{0}') a következő projekthez: "
+"'{1}'. A referencia figyelmen kívül lesz hagyva."
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileData.cs:1374
 msgid ""
 "Makefile variable '{0}' not found. Skipping writing of '{1}' files to the "
 "Makefile."
 msgstr ""
-"A Makefile változó ({0}) nem található. {1} fájl nem lesz kiírva a "
-"Makefile-ba."
+"A Makefile változó ({0}) nem található. {1} fájl nem lesz kiírva a Makefile-"
+"ba."
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileData.cs:1433
 msgid ""
@@ -8894,16 +8960,17 @@ msgstr ""
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileData.cs:1535
 msgid ""
-"A reference to the pkg-config package '{0}' is being emitted to the Makefile, "
-"because at least one assembly from the package is used in the project '{1}'. "
-"However, this dependency is not specified in the configure.in file, so you "
-"might need to add it to ensure that the project builds successfully on other "
-"systems."
+"A reference to the pkg-config package '{0}' is being emitted to the "
+"Makefile, because at least one assembly from the package is used in the "
+"project '{1}'. However, this dependency is not specified in the configure.in "
+"file, so you might need to add it to ensure that the project builds "
+"successfully on other systems."
 msgstr ""
 "A(z) „{0}” pkg-config csomaghoz tartozó referencia ki lesz bocsátva a "
-"Makefile-ba, mivel a(z) „{1}” projekt legalább egy assemblyt használ a csomagból. Ez "
-"nincs megadva a configure.in fájlban, ezért előfordulhat, hogy kézzel kell "
-"hozzáadni a fájlhoz, más rendszereken való sikeres fordítás érdekében."
+"Makefile-ba, mivel a(z) „{1}” projekt legalább egy assemblyt használ a "
+"csomagból. Ez nincs megadva a configure.in fájlban, ezért előfordulhat, hogy "
+"kézzel kell hozzáadni a fájlhoz, más rendszereken való sikeres fordítás "
+"érdekében."
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileData.cs:1642
 msgid "Unable to find configure.in at '{0}'."
@@ -9018,14 +9085,14 @@ msgstr "Csomagok keresése a configure.in fájlban"
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:813
 msgid ""
 "Select the kind of references you want to synchronize with the makefile. For "
-"each reference type please specify the makefile variable that holds the list, "
-"and optionally a prefix to be prepended to each reference name. You can "
-"specify the same variable name for several types of references."
+"each reference type please specify the makefile variable that holds the "
+"list, and optionally a prefix to be prepended to each reference name. You "
+"can specify the same variable name for several types of references."
 msgstr ""
 "Válassza ki azokat a referenciákat, amelyeket szinkronizálni szeretne a "
 "makefile-lal. Minden egyes referenciatípushoz adja meg a listát tartalmazó "
-"változót, illetve egy esetleges előtagot, amelyet minden referencianévhez hozzá "
-"szeretne fűzni. Egy változónevet használhat több referenciatípushoz is."
+"változót, illetve egy esetleges előtagot, amelyet minden referencianévhez "
+"hozzá szeretne fűzni. Egy változónevet használhat több referenciatípushoz is."
 
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:825
 msgid "Assembly References"
@@ -9046,16 +9113,16 @@ msgstr "Projektreferenciák"
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:914
 msgid ""
 "Select the Compiler message format for parsing the compiler errors and "
-"warnings. You can either select one of the built-in options, or specify custom "
-"regular expressions for errors and warnings. The regex must be the .net style "
-"regex. The following named groups are relevant : file, line, column, number "
-"(error number) and message."
+"warnings. You can either select one of the built-in options, or specify "
+"custom regular expressions for errors and warnings. The regex must be the ."
+"net style regex. The following named groups are relevant : file, line, "
+"column, number (error number) and message."
 msgstr ""
 "Ezen a lapon megadhatja a fordító hibák és figyelmeztetések jelzésére "
-"használt üzenetformátumát. Kiválaszthat egyet a beépített lehetőségek közül, vagy "
-"megadhat egyedi szabályos kifejezéseket (regular expression) is. A kifejezésnek "
-".NET formátumúnak kell lennie. A következő named group-ok használhatók: "
-"file, line, column, number (hibakód), message."
+"használt üzenetformátumát. Kiválaszthat egyet a beépített lehetőségek közül, "
+"vagy megadhat egyedi szabályos kifejezéseket (regular expression) is. A "
+"kifejezésnek .NET formátumúnak kell lennie. A következő named group-ok "
+"használhatók: file, line, column, number (hibakód), message."
 
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:980
 msgid "Error regex :"
@@ -9081,25 +9148,25 @@ msgstr "Telepítési könyvtár:"
 msgid "Use existing Makefiles"
 msgstr "A meglévő Makefile-ok használata"
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:106
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:107
 msgid "Generate new Makefiles"
 msgstr "Új Makefile-ok készítése"
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:137
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:138
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.GenerateMakefilesDialog.cs:148
 msgid "Default configuration:"
 msgstr "Alapértelmezett konfiguráció:"
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:170
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:171
 msgid "Select the kind of Makefile to generate:"
 msgstr "A készítendő Makefile típusa:"
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:195
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:196
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.GenerateMakefilesDialog.cs:96
 msgid "Autotools based"
 msgstr "Autotools-on alapuló"
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:207
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:208
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.GenerateMakefilesDialog.cs:107
 msgid ""
 "<b>Autotools based Makefile</b>\n"
@@ -9110,12 +9177,12 @@ msgstr ""
 "Létrehoz egy autotools alapú Makefile struktúrát az alapértelmezett "
 "célpontokkal és konfigurációs szkriptekkel."
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:233
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:234
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.GenerateMakefilesDialog.cs:75
 msgid "Simple"
 msgstr "Egyszerű"
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:244
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:245
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.GenerateMakefilesDialog.cs:86
 msgid ""
 "<b>Simple Makefile</b>\n"
@@ -9150,7 +9217,8 @@ msgid ""
 "configure script."
 msgstr ""
 "Jelöljön ki egy alapértelmezett konfigurációt a Makefile-hoz. Egyéb "
-"konfigurációk a '--config' kapcsoló segítségével adhatók meg a configure szkripthez."
+"konfigurációk a '--config' kapcsoló segítségével adhatók meg a configure "
+"szkripthez."
 
 #: ../src/addins/MonoDevelop.Autotools/MonoDevelop.Autotools.addin.xml:49
 msgid "Autotools"
@@ -9694,38 +9762,38 @@ msgstr "Hiányzó fordítások megjelenítése"
 msgid "Show valid translations"
 msgstr "Érvényes fordítások megjelenítése"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:299
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:301
 msgid "_Search in"
 msgstr "Keresés a következőben:"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:304
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:306
 msgid "_Original"
 msgstr "_Eredeti karakterlánc"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:309
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:311
 msgid "_Translated"
 msgstr "_Lefordított karakterlánc"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:314
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:316
 msgid "_Both"
 msgstr "_Mindkettő"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:348
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:353
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs:189
 msgid "_Regex search"
 msgstr "_Regex keresés"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:359
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:361
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs:164
 msgid "_Case sensitive"
 msgstr "Kis- és nagybetűk megkülönböztetése"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:370
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:369
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs:177
 msgid "_Whole words only"
 msgstr "Csak teljes szóra"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:486
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:482
 msgid ""
 "Do you really want to remove the translation string {0} (It will be removed "
 "from all translations)?"
@@ -9733,39 +9801,39 @@ msgstr ""
 "Biztosan törli a lefordított sztringet ({0})? A sztring törlődni fog minden "
 "fordításból."
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:504
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:500
 msgid "{0:#00.00}% Translated"
 msgstr "{0:#00.00}% lefordítva"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:821
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:817
 msgid "Update catalog list..."
 msgstr "Katalógus frissítése..."
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:1061
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:1057
 msgid "Translation for '{0}' doesn't end with '.'."
 msgstr "A(z) '{0}' fordítása nem végződik ponttal."
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:1075
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:1071
 msgid "Casing mismatch in '{0}'"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:1088
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:1084
 msgid "Original string '{0}' contains '_', translation doesn't."
 msgstr "Az eredeti karakterlánc ({0}) tartalmaz '_'-t, a fordítás viszont nem."
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:1107
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:1103
 msgid "Original string '{0}' contains '{1}', translation doesn't."
 msgstr ""
 "Az eredeti karakterlánc ({0}) tartalmazza a következőt: '{1}', a fordítás "
 "viszont nem."
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:509
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:505
 msgid "{0} Fuzzy Message"
 msgid_plural "{0} Fuzzy Messages"
 msgstr[0] "{0} nem végleges"
 msgstr[1] "{0} nem végleges"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:516
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:512
 msgid "{0} Missing Message"
 msgid_plural "{0} Missing Messages"
 msgstr[0] "{0} lefordítatlan"
@@ -9830,8 +9898,8 @@ msgstr "Gettext fordítás"
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/GettextFeature.cs:45
 msgid ""
-"Add a Translation Project to the solution that will use gettext to generate a "
-"set of PO files for the new project."
+"Add a Translation Project to the solution that will use gettext to generate "
+"a set of PO files for the new project."
 msgstr ""
 "Egy fordítási projekt hozzáadása a megoldáshoz, ami a gettext segítségével "
 "elkészíti a PO fájlokat a projekthez."
@@ -10079,10 +10147,8 @@ msgid "Matches a form feed \\u000C."
 msgstr ""
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:9
-msgid ""
-"\\n"
-msgstr ""
-"\\n"
+msgid "\\n"
+msgstr "\\n"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:9
 msgid "Matches a new line \\u000A."
@@ -10649,8 +10715,7 @@ msgid "Backreference Constructs"
 msgstr ""
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:172
-msgid ""
-"\\number"
+msgid "\\number"
 msgstr "\\szám"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:172
@@ -11644,16 +11709,16 @@ msgid ""
 "Set to 'true' if the text file contains unresolved references to paths (e.g. "
 "@ProgramFiles@)"
 msgstr ""
-"Jelölje be, ha a szövegfájl tartalmaz feloldatlan útvonal referenciákat (pl.: "
-"@ProgramFiles@)"
+"Jelölje be, ha a szövegfájl tartalmaz feloldatlan útvonal referenciákat "
+"(pl.: @ProgramFiles@)"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/PropertyProvider.cs:67
 msgid ""
-"Use the relative path of the file in the project when deploying to the target "
-"directory."
+"Use the relative path of the file in the project when deploying to the "
+"target directory."
 msgstr ""
-"A fájl relatív útvonalának használata a projektben amikor telepítésre kerül a "
-"célkönyvtárba."
+"A fájl relatív útvonalának használata a projektben amikor telepítésre kerül "
+"a célkönyvtárba."
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/PropertyProvider.cs:75
 msgid "Attributes to apply to the target file."
@@ -11780,8 +11845,8 @@ msgstr "Csomagok létrehozása a projekthez egy új csomagolóprojektben"
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/PackagingFeatureWidget.cs:37
 msgid "Select packages to add to the new Packaging Project"
 msgstr ""
-"Jelölje ki azokat a csomagokat, amelyeket hozzá szeretné adni az új csomagoló "
-"projekthez"
+"Jelölje ki azokat a csomagokat, amelyeket hozzá szeretné adni az új "
+"csomagoló projekthez"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/PackagingFeatureWidget.cs:65
 msgid "Add the new project to the Packaging Project '{0}'"
@@ -11810,8 +11875,8 @@ msgid ""
 "Add a Packaging Project to the solution for generating different kinds of "
 "packages for the new project."
 msgstr ""
-"Egy csomagolóprojekt hozzáadása a megoldáshoz, melynek segítségével különféle "
-"csomagokat lehet létrehozni a projekthez."
+"Egy csomagolóprojekt hozzáadása a megoldáshoz, melynek segítségével "
+"különféle csomagokat lehet létrehozni a projekthez."
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.CommandDeployEditorWidget.cs:64
 msgid "Arguments:"
@@ -11899,14 +11964,14 @@ msgstr "Könyvtár előtag:"
 msgid ""
 "Application name (to use as subdirectory name in the installation prefix):"
 msgstr ""
-"Az alkalmazás neve (a telepítési könyvtárban ezen a néven lesz létrehozva egy "
-"alkönyvtár):"
+"Az alkalmazás neve (a telepítési könyvtárban ezen a néven lesz létrehozva "
+"egy alkönyvtár):"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.SourcesZipEditorWidget.cs:51
 msgid "Select the archive file name and format:"
 msgstr "Jelölje ki az archív fájl nevét és formátumát:"
 
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.SourcesZipEditorWidget.cs:137
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.SourcesZipEditorWidget.cs:136
 msgid "File format:"
 msgstr "Fájl formátuma:"
 
@@ -11928,7 +11993,7 @@ msgstr "Projektek/megoldások"
 msgid "Select the archive file name and location:"
 msgstr "Jelölje ki az archívfájl nevét és helyét:"
 
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.BinariesZipEditorWidget.cs:160
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.BinariesZipEditorWidget.cs:159
 msgid "Target platform:"
 msgstr "Célplatform:"
 
@@ -11955,12 +12020,13 @@ msgstr "<b><big>A telepítési fájl már létezik. Kicseréli?</big></b>"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.FileReplaceDialog.cs:151
 msgid ""
-"There is already a file in the target directory that has the same name as the "
-"source file. You can keep the existing target file, or overwrite it with the "
-"source file."
+"There is already a file in the target directory that has the same name as "
+"the source file. You can keep the existing target file, or overwrite it with "
+"the source file."
 msgstr ""
 "Már létezik olyan fájl a célkönyvtárban, amelynek a neve megegyezik a "
-"forrásfájl nevével. Megtarthatja a létező fájlt, vagy felülírhatja a forrásfájllal."
+"forrásfájl nevével. Megtarthatja a létező fájlt, vagy felülírhatja a "
+"forrásfájllal."
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.FileReplaceDialog.cs:239
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.FileReplaceDialog.cs:330
@@ -11969,8 +12035,8 @@ msgstr "Módosítva:"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.FileReplaceDialog.cs:387
 msgid ""
-"The source file will replace the existing target file if it has been modified "
-"more recently."
+"The source file will replace the existing target file if it has been "
+"modified more recently."
 msgstr ""
 "A forrásfájl felül fogja írni a meglévő célfájlt, ha annak módosítási dátuma "
 "újabb."
@@ -12013,10 +12079,10 @@ msgid ""
 "password protected, the password must be loaded into a running SSH "
 "authentication daemon, such as <i>ssh-agent</i> or <i>seahorse-agent</i>."
 msgstr ""
-"Megjegyzés: a megadott számítógép SSH kulcsát telepíteni kell a számítógépre. "
-"Ha a kulcsot jelszó védi, akkor meg kell adni azt egy futó SSH autentikációs "
-"démonnak, például a következők valamelyikének: <i>ssh-agent</i> vagy "
-"<i>seahorse-agent</i>."
+"Megjegyzés: a megadott számítógép SSH kulcsát telepíteni kell a "
+"számítógépre. Ha a kulcsot jelszó védi, akkor meg kell adni azt egy futó SSH "
+"autentikációs démonnak, például a következők valamelyikének: <i>ssh-agent</"
+"i> vagy <i>seahorse-agent</i>."
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/templates/PackagingProject.xpt.xml:5
 msgid "Packaging project"
@@ -12765,27 +12831,27 @@ msgstr ""
 msgid "Always show"
 msgstr "Mindig jelenítse meg"
 
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:622
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:623
 msgid "Only show in the following environments:"
 msgstr "Csak a következő környezetekben jelenjen meg:"
 
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:633
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:634
 msgid "Not show in the following environments:"
 msgstr "Ne jelenjen meg a következő környezetekben:"
 
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:668
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:669
 msgid "Menu entry"
 msgstr "Menübejegyzés"
 
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:685
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:686
 msgid "MIME types supported by this application:"
 msgstr "Az alkalmazás által támogatott MIME típusok:"
 
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:750
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:751
 msgid "Mime types"
 msgstr "MIME típusok"
 
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:810
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:811
 msgid "Other entries"
 msgstr "Egyéb bejegyzések"
 
@@ -13247,39 +13313,39 @@ msgstr "<b>Feltétel</b>"
 msgid "Always break"
 msgstr "Mindig megáll"
 
-#: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.BreakpointPropertiesDialog.cs:230
+#: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.BreakpointPropertiesDialog.cs:231
 msgid "Break when condition is true"
 msgstr "Megáll, ha a feltétel igaz"
 
-#: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.BreakpointPropertiesDialog.cs:242
+#: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.BreakpointPropertiesDialog.cs:243
 msgid "Break when the expression changes"
 msgstr "Megáll, ha a kifejezés változik"
 
-#: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.BreakpointPropertiesDialog.cs:270
+#: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.BreakpointPropertiesDialog.cs:271
 msgid "Condition expression:"
 msgstr "Feltétel-kifejezés:"
 
-#: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.BreakpointPropertiesDialog.cs:304
+#: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.BreakpointPropertiesDialog.cs:305
 msgid "Hit count before breaking:"
 msgstr "Ennyiszer hagyja ki, mielőtt megáll:"
 
-#: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.BreakpointPropertiesDialog.cs:340
+#: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.BreakpointPropertiesDialog.cs:341
 msgid "<b>Action</b>"
 msgstr "<b>Esemény</b>"
 
-#: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.BreakpointPropertiesDialog.cs:368
+#: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.BreakpointPropertiesDialog.cs:369
 msgid "When the breakpoint is hit:"
 msgstr "Amikor a törésponthoz ér:"
 
-#: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.BreakpointPropertiesDialog.cs:375
+#: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.BreakpointPropertiesDialog.cs:376
 msgid "Break"
 msgstr "Megáll"
 
-#: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.BreakpointPropertiesDialog.cs:387
+#: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.BreakpointPropertiesDialog.cs:389
 msgid "Write expression to the output"
 msgstr "Kifejezés kiírása a kimenetre"
 
-#: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.BreakpointPropertiesDialog.cs:414
+#: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.BreakpointPropertiesDialog.cs:416
 msgid "Expression:"
 msgstr "Kifejezés:"
 
@@ -13685,6 +13751,27 @@ msgstr "A következő kategóriák kihagyása: "
 #: ../src/addins/NUnit/Services/NUnitOptions.cs:81
 msgid "Include the following categories: "
 msgstr "A következő kategóriák figyelembe vétele: "
+
+#~ msgid "Updating"
+#~ msgstr "Frissítés"
+
+#~ msgid "External Updated"
+#~ msgstr "Külsőleg frissített"
+
+#~ msgid "Replaced"
+#~ msgstr "Lecserélve"
+
+#~ msgid "Sending Content"
+#~ msgstr "Tartalom küldése"
+
+#~ msgid "Locked"
+#~ msgstr "Zárolva"
+
+#~ msgid "Lock Failed"
+#~ msgstr "Zárolás sikertelen"
+
+#~ msgid "Unlock Failed"
+#~ msgstr "Zárolás feloldása sikertelen"
 
 #~ msgid "GotDotNet"
 #~ msgstr "GotDotNet"
@@ -15204,4 +15291,3 @@ msgstr "A következő kategóriák figyelembe vétele: "
 
 #~ msgid "The required addin '{0}' is not installed."
 #~ msgstr "A szükséges bővítmény ({0}) nincs telepítve."
-
