@@ -491,6 +491,9 @@
   <ItemGroup>
     <None Include="Makefile.am" />
     <None Include="ChangeLog" />
+    <None Include="icons\translation-fuzzy.png" />
+    <None Include="icons\translation-missing.png" />
+    <None Include="icons\translation-valid.png" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
