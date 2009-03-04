@@ -512,7 +512,7 @@ namespace MonoDevelop.VersionControl.Subversion {
 					throw new SubversionException ("Another Subversion operation is already in progress.");
 				inProgress = true;
 			}
-			
+			nb = new notify_baton ();
 			updatemonitor = monitor;
 			IntPtr localpool = newpool (pool);
 			try {
@@ -534,7 +534,7 @@ namespace MonoDevelop.VersionControl.Subversion {
 					throw new SubversionException ("Another Subversion operation is already in progress.");
 				inProgress = true;
 			}
-			
+			nb = new notify_baton ();
 			updatemonitor = monitor;
 			IntPtr result_rev = IntPtr.Zero;
 			IntPtr localpool = newpool (pool);
@@ -558,6 +558,7 @@ namespace MonoDevelop.VersionControl.Subversion {
 				inProgress = true;
 			}
 			
+			nb = new notify_baton ();
 			updatemonitor = monitor;
 			
 			IntPtr localpool = newpool (pool);
@@ -597,6 +598,7 @@ namespace MonoDevelop.VersionControl.Subversion {
 				inProgress = true;
 			}
 
+			nb = new notify_baton ();
 			updatemonitor = monitor;
 			
 			IntPtr localpool = newpool(pool);
@@ -631,6 +633,7 @@ namespace MonoDevelop.VersionControl.Subversion {
 				inProgress = true;
 			}
 			
+			nb = new notify_baton ();
 			updatemonitor = monitor;
 			
 			IntPtr localpool = newpool (pool);
@@ -662,6 +665,7 @@ namespace MonoDevelop.VersionControl.Subversion {
 				inProgress = true;
 			}
 			
+			nb = new notify_baton ();
 			updatemonitor = monitor;
 			IntPtr commit_info = IntPtr.Zero;
 			IntPtr localpool = newpool (pool);
@@ -686,6 +690,7 @@ namespace MonoDevelop.VersionControl.Subversion {
 			IntPtr localpool = newpool (pool);
 			IntPtr array = apr.array_make (localpool, 0, IntPtr.Size);
 			updatemonitor = monitor;
+			nb = new notify_baton ();
 
 			try {
 				foreach (string path in paths) {
@@ -717,6 +722,7 @@ namespace MonoDevelop.VersionControl.Subversion {
 			IntPtr localpool = newpool (pool);
 			IntPtr array = apr.array_make (localpool, 0, IntPtr.Size);
 			updatemonitor = monitor;
+			nb = new notify_baton ();
 			
 			try {
 				foreach (string path in paths) {
@@ -847,12 +853,22 @@ namespace MonoDevelop.VersionControl.Subversion {
 			         mimeType == "image/x-xpixmap");
 		}
 		
+		struct notify_baton {
+			public bool received_some_change;
+			public bool is_checkout;
+			public bool is_export;
+			public bool suppress_final_line;
+			public bool sent_first_txdelta;
+			public bool in_external;
+			public bool had_print_error;
+		}
+		notify_baton nb;
 		void svn_wc_notify_func_t_impl (IntPtr baton, ref LibSvnClient.svn_wc_notify_t data, IntPtr pool)
 		{
 			string actiondesc;
 			string file = Marshal.PtrToStringAnsi (data.path);
 			bool notifyChange = false;
-			
+			bool skipEol = false;
 			switch (data.action) {
 			case LibSvnClient.NotifyAction.Skip: 
 				if (data.content_state == LibSvnClient.NotifyState.Missing) {
@@ -968,8 +984,12 @@ namespace MonoDevelop.VersionControl.Subversion {
 				notifyChange = true; 
 				break;
 			case LibSvnClient.NotifyAction.CommitPostfixTxDelta: 
-				actiondesc = null;
-				//actiondesc = GettextCatalog.GetString ("Transmitting file data");
+				if (!nb.sent_first_txdelta) {
+					actiondesc = GettextCatalog.GetString ("Transmitting file data");
+				} else {
+					actiondesc = ".";
+					skipEol = true;
+				}
 				break;
 					
 			case LibSvnClient.NotifyAction.Locked: 
@@ -995,8 +1015,13 @@ namespace MonoDevelop.VersionControl.Subversion {
 				 BlameRevision*/
 			}
 			
-			if (updatemonitor != null && !string.IsNullOrEmpty (actiondesc))
-				updatemonitor.Log.WriteLine (actiondesc);
+			if (updatemonitor != null && !string.IsNullOrEmpty (actiondesc)) {
+				if (skipEol) {
+					updatemonitor.Log.Write (actiondesc);
+				} else {
+					updatemonitor.Log.WriteLine (actiondesc);
+				}
+			}
 			if (updateFileList != null && notifyChange && File.Exists (file))
 				updateFileList.Add (file);
 			

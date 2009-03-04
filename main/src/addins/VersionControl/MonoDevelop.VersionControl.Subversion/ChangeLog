@@ -1,5 +1,10 @@
 2009-03-04  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.VersionControl.Subversion/SvnClient.cs: Handled
+	  commit delta message.
+
+2009-03-04  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.VersionControl.Subversion/SvnClient.cs: Improved
 	  subversion notify messages (taken some logic out of the
 	  subversion implementation).
