@@ -1,3 +1,17 @@
+2009-03-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* GdbSessionFactory.cs: Removed unused CanDebugPlatform and
+	  rename CanDebugFile to CanDebugCommand.
+
+2009-03-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* GdbSessionFactory.cs: Changed the way execution handlers
+	  work. We are not using platform ids anymore. Instead, we use
+	  command strings when looking for execution handlers.
+	  IExecutionHandlerFactory has been removed and now everything
+	  is handled by IExecutionHandler, which has a new CanExecute
+	  method. This model is more simple and more generic.
+
 2009-02-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Debugger.Gdb.sln: Flush.
