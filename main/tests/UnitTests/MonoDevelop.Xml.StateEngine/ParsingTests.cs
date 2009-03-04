@@ -197,12 +197,22 @@ namespace MonoDevelop.Xml.StateEngine
 			TestParser parser = new TestParser (CreateRootState (), true);
 			parser.Parse (@"
 		<!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.0 Strict//EN""
-""DTD/xhtml1-strict.dtd"">
+""DTD/xhtml1-strict.dtd""
+[
+<!-- foo -->
+<!bar #baz>
+]>
 <doc><foo/></doc>");
 			parser.AssertEmpty ();
 			XDocument doc = (XDocument)parser.Nodes.Peek ();
 			Assert.IsTrue (doc.FirstChild is XDocType);
-			Assert.AreEqual (" html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"\n\"DTD/xhtml1-strict.dtd\"", ((XDocType)doc.FirstChild).Value);
+			XDocType dt = (XDocType) doc.FirstChild;
+			Assert.AreEqual ("html", dt.RootElement.FullName);
+			Assert.AreEqual ("-//W3C//DTD XHTML 1.0 Strict//EN", dt.PublicFpi);
+			Assert.AreEqual ("DTD/xhtml1-strict.dtd", dt.Uri);
+			Assert.AreEqual (dt.InternalDeclarationRegion.Start.Line, 4);
+			Assert.AreEqual (dt.InternalDeclarationRegion.End.Line, 7);
+			parser.AssertNoErrors ();
 		}
 	}
 	

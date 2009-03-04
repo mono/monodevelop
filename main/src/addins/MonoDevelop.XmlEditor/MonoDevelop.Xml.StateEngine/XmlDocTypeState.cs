@@ -95,11 +95,13 @@ namespace MonoDevelop.Xml.StateEngine
 							return null;
 						}
 					} else {
-						context.KeywordBuilder.Append (c);
 						if (c == '"') {
+							context.KeywordBuilder.Remove (0,1);
 							doc.PublicFpi = context.KeywordBuilder.ToString ();
 							context.KeywordBuilder.Length = 0;
 							context.StateTag = 0;
+						} else {
+							context.KeywordBuilder.Append (c);
 						}
 						return null;
 					}
@@ -114,10 +116,12 @@ namespace MonoDevelop.Xml.StateEngine
 						return null;
 					}
 				} else {
-					context.KeywordBuilder.Append (c);
 					if (c == '"') {
+						context.KeywordBuilder.Remove (0,1);
 						doc.Uri = context.KeywordBuilder.ToString ();
 						context.KeywordBuilder.Length = 0;
+					} else {
+						context.KeywordBuilder.Append (c);
 					}
 					return null;
 				}
