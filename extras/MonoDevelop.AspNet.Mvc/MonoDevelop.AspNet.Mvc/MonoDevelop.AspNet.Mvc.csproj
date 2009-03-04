@@ -43,7 +43,7 @@
     <Compile Include="T4\RequiresProvidesDirectiveProcessor.cs" />
     <Compile Include="T4\ToStringHelper.cs" />
     <Compile Include="T4\DirectiveProcessorException.cs" />
-    <Compile Include="T4\Template.cs" />
+    <Compile Include="T4\ParsedTemplate.cs" />
     <Compile Include="T4\Tokeniser.cs" />
   </ItemGroup>
   <ItemGroup>

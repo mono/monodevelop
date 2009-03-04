@@ -32,22 +32,25 @@ namespace MonoDevelop.AspNet.Mvc.T4
 {
 	
 	
-	class Tokeniser
+	class Tokeniser : ILocation
 	{
 		string content;
 		int position = 0;
 		string value;
 		State nextState;
+		int nextStateLine;
 		
-		public Tokeniser (string content)
+		public Tokeniser (string fileName, string content)
 		{
 			this.content = content;
+			this.FileName = fileName;
 		}
 		
 		public bool Advance ()
 		{
 			value = null;
 			State = nextState;
+			Line = nextStateLine;
 			nextState = GetNextStateAndCurrentValue ();
 			return State != State.EOF;
 		}
@@ -82,7 +85,7 @@ namespace MonoDevelop.AspNet.Mvc.T4
 			for (; position < content.Length; position++) {
 				char c = content[position];
 				if (c == '\n') {
-					Line++;
+					nextStateLine++;
 				} else if (c =='>' && content[position-1] == '#' && content[position-2] != '\\') {
 					position++;
 					value = content.Substring (start, position - start);
@@ -113,7 +116,7 @@ namespace MonoDevelop.AspNet.Mvc.T4
 			for (; position < content.Length; position++) {
 				char c = content[position];
 				if (c == '\n')
-					Line++;
+					nextStateLine++;
 				if (delimiter == '\0') {
 					if (c == '\'' || c == '"') {
 						start = position;
@@ -137,7 +140,7 @@ namespace MonoDevelop.AspNet.Mvc.T4
 			for (; position < content.Length; position++) {
 				char c = content[position];
 				if (c == '\n') {
-					Line++;
+					nextStateLine++;
 				} else if (c =='<' && position + 2 > content.Length && content[position+1] == '#') {
 					char type = content[position+2];
 					if (type == '@') {
@@ -148,7 +151,11 @@ namespace MonoDevelop.AspNet.Mvc.T4
 						position += 2;
 						value = content.Substring (start, position - start);
 						return State.Content;
-					} else {
+					} else if (type == '+') {
+						position += 2;
+						value = content.Substring (start, position - start);
+						return State.Helper;
+					}  else {
 						position++;
 						value = content.Substring (start, position - start);
 						return State.Block;
@@ -163,7 +170,7 @@ namespace MonoDevelop.AspNet.Mvc.T4
 			for (; position < content.Length; position++) {
 				char c = content[position];
 				if (c == '\n') {
-					Line++;
+					nextStateLine++;
 				} else if (Char.IsLetter (c)) {
 					position--;
 					return State.DirectiveName;
@@ -197,6 +204,10 @@ namespace MonoDevelop.AspNet.Mvc.T4
 		public string Value {
 			get { return value; }
 		}
+		
+		public string FileName {
+			get; private set;
+		}
 	}
 	
 	enum State
@@ -205,20 +216,23 @@ namespace MonoDevelop.AspNet.Mvc.T4
 		Content,
 		Expression,
 		Block,
+		Helper,
 		DirectiveName,
 		DirectiveValue,
 		Name,
 		EOF
 	}
 	
-	class ParserException : Exception
+	class ParserException : Exception, ILocation
 	{
 		
 		public ParserException (string message, Tokeniser parent) : base (message)
 		{
 			Line = parent.Line;
+			FileName = parent.FileName;
 		}
 		
 		public int Line { get; private set; }
+		public string FileName { get; private set; }
 	}
 }

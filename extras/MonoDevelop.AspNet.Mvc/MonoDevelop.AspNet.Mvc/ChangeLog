@@ -1,5 +1,15 @@
 2009-03-03  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* T4/Engine.cs:
+	* T4/Template.cs:
+	* T4/Tokeniser.cs:
+	* T4/ParsedTemplate.cs:
+	* MonoDevelop.AspNet.Mvc.csproj: T4 implementation is complete
+	  except for handling some of the directive values and custom
+	  directives.
+
+2009-03-03  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* T4:
 	* T4/Engine.cs:
 	* T4/Template.cs:
