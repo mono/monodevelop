@@ -1,3 +1,30 @@
+2009-03-04  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* da.po:
+	* tr.po:
+	* ca.po:
+	* hu.po:
+	* pt.po:
+	* ja.po:
+	* id.po:
+	* sv.po:
+	* ru.po:
+	* de.po:
+	* fr.po:
+	* es.po:
+	* gl.po:
+	* cs.po:
+	* it.po:
+	* pl.po:
+	* nl.po:
+	* zh_TW.po:
+	* zh_CN.po:
+	* sl_SI.po:
+	* pt_BR.po:
+	* messages.po: Updated for string freeze.
+
+	* po.mdproj: Updated.
+
 2009-02-26  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* po.mdproj: Fix translation projects' GUIDs.

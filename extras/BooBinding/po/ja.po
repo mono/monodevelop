@@ -2,20 +2,20 @@
 # Copyright (C) 2004 Atsushi Enomoto
 # This file is distributed under the same license as the PACKAGE package.
 # Atsushi Enomoto <atsushi@ximian.com>, 2004.
-# 
+#
 msgid ""
 msgstr ""
-"Content-Transfer-Encoding: 8bit\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2008-01-24 01:53:35+0900\n"
-"Language-Team: Atsushi Enomoto <atsushi@ximian.com>\n"
 "Project-Id-Version: MonoDevelop 0.3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2009-03-04 18:11:19-0500\n"
+"PO-Revision-Date: 2008-01-24 01:53:35+0900\n"
+"Last-Translator: Atsushi Eno <atsushi@ximian.com>\n"
+"Language-Team: Atsushi Enomoto <atsushi@ximian.com>\n"
 "MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: MonoDevelop.Gettext \n"
-"POT-Creation-Date: \n"
-"Last-Translator: Atsushi Eno <atsushi@ximian.com>\n"
 
 #: ../templates/BooGtkSharpProject.xpt.xml:7
 msgid "Gtk# Project"
@@ -68,19 +68,35 @@ msgstr "空のプロジェクト"
 msgid "Creates an empty Boo solution."
 msgstr "空のBooソリューションを作成します"
 
-#: ../Gui/ShellTextView.boo:194
+#: ../BooBinding.addin.xml:33
+msgid "Boo Files"
+msgstr "Booファイル"
+
+#: ../BooBinding.addin.xml:55 ../Gui/OptionPanels/CodeCompilationPanel.boo:91
+msgid "Code Generation"
+msgstr "コード生成方法"
+
+#: ../BooBinding.addin.xml:69
+msgid "Boo source code"
+msgstr ""
+
+#: ../BooBinding.addin.xml:90 ../BooBinding.addin.xml:98
+msgid "Boo Shell"
+msgstr "Booシェル"
+
+#: ../Gui/ShellTextView.boo:188
 msgid "Copy Script"
 msgstr "スクリプトをコピー"
 
-#: ../Gui/ShellTextView.boo:198
+#: ../Gui/ShellTextView.boo:192
 msgid "Save Script As ..."
 msgstr "スクリプトに名前をつけて保存..."
 
-#: ../Gui/ShellTextView.boo:202
+#: ../Gui/ShellTextView.boo:196
 msgid "Load Project Assemblies (forces shell reset)"
 msgstr "プロジェクトアセンブリを読み込み（シェルのリセットを強制実行）"
 
-#: ../Gui/ShellTextView.boo:209
+#: ../Gui/ShellTextView.boo:203
 msgid "Reset Shell"
 msgstr "シェルをリセット"
 
@@ -92,41 +108,36 @@ msgstr "デバッグを有効にする"
 msgid "Enable ducky mode"
 msgstr "duckyモードを有効にする"
 
-#: ../Gui/OptionPanels/CodeCompilationPanel.boo:88
-#: ../BooBinding.addin.xml:52
-msgid "Code Generation"
-msgstr "コード生成方法"
-
-#: ../Gui/OptionPanels/CodeCompilationPanel.boo:89
+#: ../Gui/OptionPanels/CodeCompilationPanel.boo:92
 msgid "Output Path"
 msgstr "出力パス"
 
-#: ../Gui/OptionPanels/CodeCompilationPanel.boo:93
-#: ../Gui/OptionPanels/CodeCompilationPanel.boo:100
+#: ../Gui/OptionPanels/CodeCompilationPanel.boo:96
+#: ../Gui/OptionPanels/CodeCompilationPanel.boo:103
 msgid "Output Assembly"
 msgstr "出力アセンブリ"
 
-#: ../Gui/OptionPanels/CodeCompilationPanel.boo:95
+#: ../Gui/OptionPanels/CodeCompilationPanel.boo:98
 msgid "Warnings and Compiler Options"
 msgstr "警告とコンパイラのオプション"
 
-#: ../Gui/OptionPanels/CodeCompilationPanel.boo:97
+#: ../Gui/OptionPanels/CodeCompilationPanel.boo:100
 msgid "Compiler"
 msgstr "コンパイラ"
 
-#: ../Gui/OptionPanels/CodeCompilationPanel.boo:98
+#: ../Gui/OptionPanels/CodeCompilationPanel.boo:101
 msgid "Culture"
 msgstr "カルチャ"
 
-#: ../Gui/OptionPanels/CodeCompilationPanel.boo:106
+#: ../Gui/OptionPanels/CodeCompilationPanel.boo:109
 msgid "Executable"
 msgstr "実行可能ファイル"
 
-#: ../Gui/OptionPanels/CodeCompilationPanel.boo:110
+#: ../Gui/OptionPanels/CodeCompilationPanel.boo:113
 msgid "Library"
 msgstr "ライブラリ"
 
-#: ../Gui/OptionPanels/CodeCompilationPanel.boo:114
+#: ../Gui/OptionPanels/CodeCompilationPanel.boo:117
 msgid "Executable with GUI"
 msgstr "GUI実行可能ファイル"
 
@@ -148,7 +159,9 @@ msgstr "シェルのリセットでコマンド ヒストリをクリアする"
 
 #: ../Gui/OptionPanels/GeneralShellPanel.boo:55
 msgid "Load project assemblies after building them (Causes shell reset)"
-msgstr "プロジェクトアセンブリをビルドした後で読み込む（シェルのリセットが発生します）"
+msgstr ""
+"プロジェクトアセンブリをビルドした後で読み込む（シェルのリセットが発生しま"
+"す）"
 
 #: ../Gui/OptionPanels/GeneralShellPanel.boo:56
 msgid "Font"
@@ -161,13 +174,3 @@ msgstr "デフォルトの等幅フォントを使用"
 #: ../Gui/OptionPanels/GeneralShellPanel.boo:58
 msgid "Use custom font:"
 msgstr "カスタムフォントを使用:"
-
-#: ../BooBinding.addin.xml:30
-msgid "Boo Files"
-msgstr "Booファイル"
-
-#: ../BooBinding.addin.xml:82
-#: ../BooBinding.addin.xml:90
-msgid "Boo Shell"
-msgstr "Booシェル"
-
