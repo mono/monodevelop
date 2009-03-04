@@ -1,3 +1,8 @@
+2009-03-04  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Gettext.Editor/POEditorWidget.cs: Fixed gettext
+	  options menu.
+
 2009-03-03  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Gettext.Editor/POEditorWidget.cs: fixed "Bug
