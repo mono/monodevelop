@@ -986,6 +986,7 @@ namespace MonoDevelop.VersionControl.Subversion {
 			case LibSvnClient.NotifyAction.CommitPostfixTxDelta: 
 				if (!nb.sent_first_txdelta) {
 					actiondesc = GettextCatalog.GetString ("Transmitting file data");
+					nb.sent_first_txdelta = true;
 				} else {
 					actiondesc = ".";
 					skipEol = true;
