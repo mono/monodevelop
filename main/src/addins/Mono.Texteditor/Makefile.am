@@ -105,6 +105,7 @@ RES =  \
 	SyntaxModes/DiffSyntaxMode.xml \
 	SyntaxModes/JavascriptSyntaxMode.xml \
 	SyntaxModes/JavaSyntaxMode.xml \
+	SyntaxModes/MakefileSyntaxMode.xml \
 	SyntaxModes/PythonSyntaxMode.xml \
 	SyntaxModes/ValaSyntaxMode.xml \
 	SyntaxModes/VBNetSyntaxMode.xml \

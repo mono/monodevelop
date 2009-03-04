@@ -188,6 +188,9 @@ RES =  \
 	icons/system-software-update.png \
 	icons/system-software-update_22.png \
 	icons/template-16.png \
+	icons/translation-fuzzy.png \
+	icons/translation-missing.png \
+	icons/translation-valid.png \
 	icons/uncomment.png \
 	icons/user-package.png \
 	icons/visibility-internal-16.png \

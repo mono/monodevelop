@@ -38,5 +38,10 @@ namespace MonoDevelop.Core.Execution
 		{
 			return Runtime.ProcessService.StartConsoleProcess (command, arguments, workingDirectory, environmentVariables, console, null);
 		}
+	
+		public virtual bool CanExecute (string command)
+		{
+			return true;
+		}
 	}
 }

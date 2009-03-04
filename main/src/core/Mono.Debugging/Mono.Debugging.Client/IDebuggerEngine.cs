@@ -32,8 +32,7 @@ namespace Mono.Debugging.Client
 	public interface IDebuggerEngine
 	{
 		string Name { get; }
-		bool CanDebugPlatform (string id);
-		bool CanDebugFile (string file);
+		bool CanDebugCommand (string command);
 		ProcessInfo[] GetAttachablePocesses ();
 		DebuggerSession CreateSession ();
 		DebuggerFeatures SupportedFeatures { get; }

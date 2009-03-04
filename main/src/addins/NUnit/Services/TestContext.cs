@@ -39,13 +39,13 @@ namespace MonoDevelop.NUnit
 		ITestProgressMonitor monitor;
 		DateTime testDate;
 		object contextData;
-		IExecutionHandlerFactory executionContext;
+		IExecutionHandler executionContext;
 		
-		public TestContext (ITestProgressMonitor monitor, IExecutionHandlerFactory executionContext, DateTime testDate)
+		public TestContext (ITestProgressMonitor monitor, IExecutionHandler executionContext, DateTime testDate)
 		{
 			this.monitor = monitor;
 			if (executionContext == null)
-				executionContext = Runtime.ProcessService.DefaultExecutionMode.HandlerFactory;
+				executionContext = Runtime.ProcessService.DefaultExecutionMode.ExecutionHandler;
 			this.executionContext = executionContext;
 			// Round to seconds
 			this.testDate = new DateTime ((testDate.Ticks / TimeSpan.TicksPerSecond) * TimeSpan.TicksPerSecond);
@@ -64,7 +64,7 @@ namespace MonoDevelop.NUnit
 			set { contextData = value; }
 		}
 		
-		public IExecutionHandlerFactory ExecutionContext {
+		public IExecutionHandler ExecutionContext {
 			get { return executionContext; }
 		}
 	}

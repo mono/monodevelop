@@ -305,6 +305,7 @@ namespace MonoDevelop.CodeMetrics
 		
 		public void Add (Project project)
 		{
+//			System.Console.WriteLine("add project folder :" + project);
 			foreach (ProjectFile projectFile in project.Files) {
 				Add (projectFile);
 			}
@@ -312,6 +313,7 @@ namespace MonoDevelop.CodeMetrics
 		
 		public void Add (SolutionFolder combine)
 		{
+//			System.Console.WriteLine("add solution folder :" + combine);
 			foreach (Project project in combine.GetAllProjects ()) {
 				Add (project);
 			}
@@ -319,6 +321,7 @@ namespace MonoDevelop.CodeMetrics
 		
 		public void Add (WorkspaceItem item)
 		{
+//			System.Console.WriteLine("add workspace item:" + item);
 			foreach (Project project in item.GetAllProjects ()) {
 				Add (project);
 			}

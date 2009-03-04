@@ -30,16 +30,17 @@ using System;
 
 namespace MonoDevelop.Core.Execution
 {
-	public class DefaultExecutionHandlerFactory: IExecutionHandlerFactory
+	public class DefaultExecutionHandlerFactory: IExecutionHandler
 	{
-		public bool SupportsPlatform (string platformId)
+		public bool CanExecute (string command)
 		{
-			return Runtime.ProcessService.GetDefaultExecutionHandler (platformId) != null;
+			return Runtime.ProcessService.GetDefaultExecutionHandler (command) != null;
 		}
 		
-		public IExecutionHandler CreateExecutionHandler (string platformId)
+		public IProcessAsyncOperation Execute (string command, string arguments, string workingDirectory, System.Collections.Generic.IDictionary<string, string> environmentVariables, IConsole console)
 		{
-			return Runtime.ProcessService.GetDefaultExecutionHandler (platformId);
+			IExecutionHandler handler = Runtime.ProcessService.GetDefaultExecutionHandler (command);
+			return handler.Execute (command, arguments, workingDirectory, environmentVariables, console);
 		}
 	}
 }

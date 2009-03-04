@@ -40,7 +40,7 @@ namespace MonoDevelop.Debugger
 	{
 		public static bool CanDebug (this ProjectOperations opers, IBuildTarget entry)
 		{
-			ExecutionContext context = new ExecutionContext (DebuggingService.GetExecutionHandlerFactory (), IdeApp.Workbench.ProgressMonitors);
+			ExecutionContext context = new ExecutionContext (DebuggingService.GetExecutionHandler (), IdeApp.Workbench.ProgressMonitors);
 			return opers.CanExecute (entry, context);
 		}
 		
@@ -52,7 +52,7 @@ namespace MonoDevelop.Debugger
 			string oldLayout = IdeApp.Workbench.CurrentLayout;
 			IdeApp.Workbench.CurrentLayout = "Debug";
 
-			ExecutionContext context = new ExecutionContext (DebuggingService.GetExecutionHandlerFactory (), IdeApp.Workbench.ProgressMonitors);
+			ExecutionContext context = new ExecutionContext (DebuggingService.GetExecutionHandler (), IdeApp.Workbench.ProgressMonitors);
 
 			IAsyncOperation op = opers.Execute (entry, context);
 			op.Completed += delegate {
@@ -65,13 +65,13 @@ namespace MonoDevelop.Debugger
 		
 		public static bool CanDebugFile (this ProjectOperations opers, string file)
 		{
-			ExecutionContext context = new ExecutionContext (DebuggingService.GetExecutionHandlerFactory (), IdeApp.Workbench.ProgressMonitors);
+			ExecutionContext context = new ExecutionContext (DebuggingService.GetExecutionHandler (), IdeApp.Workbench.ProgressMonitors);
 			return opers.CanExecuteFile (file, context);
 		}
 		
 		public static IAsyncOperation DebugFile (this ProjectOperations opers, string file)
 		{
-			ExecutionContext context = new ExecutionContext (DebuggingService.GetExecutionHandlerFactory (), IdeApp.Workbench.ProgressMonitors);
+			ExecutionContext context = new ExecutionContext (DebuggingService.GetExecutionHandler (), IdeApp.Workbench.ProgressMonitors);
 			return opers.ExecuteFile (file, context);
 		}
 		

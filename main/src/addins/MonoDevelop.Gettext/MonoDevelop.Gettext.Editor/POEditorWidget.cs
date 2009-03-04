@@ -246,7 +246,7 @@ namespace MonoDevelop.Gettext
 		
 		static POEditorWidget ()
 		{
-			isCaseSensitive = PropertyService.Get ("GettetAddin.Search.IsCaseSensitive", true);
+			isCaseSensitive = PropertyService.Get ("GettetAddin.Search.IsCaseSensitive", false);
 			isWholeWordOnly = PropertyService.Get ("GettetAddin.Search.IsWholeWordOnly", false);
 			regexSearch     = PropertyService.Get ("GettetAddin.Search.RegexSearch", false);
 			searchIn        = PropertyService.Get ("GettetAddin.Search.SearchIn", SearchIn.Both);
@@ -254,9 +254,11 @@ namespace MonoDevelop.Gettext
 		
 		static bool IsCaseSensitive {
 			get {
+				System.Console.WriteLine("is:" + isCaseSensitive);
 				return isCaseSensitive;
 			}
 			set {
+				System.Console.WriteLine("set to:" + value);
 				PropertyService.Set ("GettetAddin.Search.IsCaseSensitive", value);
 				isCaseSensitive = value;
 			}
@@ -331,52 +333,46 @@ namespace MonoDevelop.Gettext
 				if (DoSearchIn != SearchIn.Both) {
 					DoSearchIn = SearchIn.Both;
 					UpdateFromCatalog ();
+					menu.Dispose ();
 				}
 			};
 			original.Activated += delegate {
 				if (DoSearchIn != SearchIn.Original) {
 					DoSearchIn = SearchIn.Original;
 					UpdateFromCatalog ();
+					menu.Dispose ();
 				}
 			};
 			translated.Activated += delegate {
 				if (DoSearchIn != SearchIn.Translated) {
 					DoSearchIn = SearchIn.Translated;
 					UpdateFromCatalog ();
+					menu.Dispose ();
 				}
 			};
 			
 			Gtk.CheckMenuItem regexSearch = new Gtk.CheckMenuItem (MonoDevelop.Core.GettextCatalog.GetString ("_Regex search"));
 			regexSearch.Active = RegexSearch;
-			regexSearch.ButtonPressEvent += delegate { regexSearch.Toggle (); };
-			regexSearch.Toggled += delegate {
-				if (RegexSearch != regexSearch.Active) {
-					RegexSearch = regexSearch.Active;
-					UpdateFromCatalog ();
-				}
+			regexSearch.ButtonPressEvent += delegate { 
+				RegexSearch = !RegexSearch;
+				UpdateFromCatalog ();
 			};
 			menu.Append (regexSearch);
 			
 			Gtk.CheckMenuItem caseSensitive = new Gtk.CheckMenuItem (MonoDevelop.Core.GettextCatalog.GetString ("_Case sensitive"));
 			caseSensitive.Active = IsCaseSensitive;
-			caseSensitive.ButtonPressEvent += delegate { caseSensitive.Toggle (); };
-			caseSensitive.Toggled += delegate {
-				if (IsCaseSensitive!= caseSensitive.Active) {
-					IsCaseSensitive = caseSensitive.Active;
-					UpdateFromCatalog ();
-				}
+			caseSensitive.ButtonPressEvent += delegate { 
+				IsCaseSensitive = !IsCaseSensitive;
+				UpdateFromCatalog ();
 			};
 			menu.Append (caseSensitive);
 			
 			Gtk.CheckMenuItem wholeWordsOnly = new Gtk.CheckMenuItem (MonoDevelop.Core.GettextCatalog.GetString ("_Whole words only"));
 			wholeWordsOnly.Active = IsWholeWordOnly;
 			wholeWordsOnly.Sensitive = !RegexSearch;
-			wholeWordsOnly.ButtonPressEvent += delegate { wholeWordsOnly.Toggle (); };
-			wholeWordsOnly.Toggled += delegate {
-				if (IsWholeWordOnly != wholeWordsOnly.Active) {
-					IsWholeWordOnly = wholeWordsOnly.Active;
-					UpdateFromCatalog ();
-				}
+			wholeWordsOnly.ButtonPressEvent += delegate {
+				IsWholeWordOnly = !IsWholeWordOnly;
+				UpdateFromCatalog ();
 			};
 			menu.Append (wholeWordsOnly);
 			menu.ShowAll ();
@@ -838,6 +834,7 @@ namespace MonoDevelop.Gettext
 					CatalogEntry curEntry = store.GetValue (iter, 4) as CatalogEntry;
 					if (entry == curEntry) {
 						this.treeviewEntries.Selection.SelectIter (iter);
+						this.treeviewEntries.ScrollToCell (store.GetPath (iter), treeviewEntries.GetColumn (0), true, 0, 0);
 						return;
 					}
 				} while (store.IterNext (ref iter));
@@ -852,7 +849,6 @@ namespace MonoDevelop.Gettext
 			                    GetForeColorForEntry (entry)
 			);
 			SelectEntry (entry);
-				
 		}
 		
 		public void UpdateWorkerThread ()

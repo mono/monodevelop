@@ -524,8 +524,6 @@ namespace MonoDevelop.Projects
 			DotNetProjectConfiguration configuration = (DotNetProjectConfiguration) GetConfiguration (config);
 			monitor.Log.WriteLine ("Running " + configuration.CompiledOutputName + " ...");
 			
-			string platform = "Mono";
-			
 			IConsole console;
 			if (configuration.ExternalConsole)
 				console = context.ExternalConsoleFactory.CreateConsole (!configuration.PauseConsoleOutput);
@@ -535,13 +533,12 @@ namespace MonoDevelop.Projects
 			AggregatedOperationMonitor operationMonitor = new AggregatedOperationMonitor (monitor);
 			
 			try {
-				IExecutionHandler handler = context.ExecutionHandlerFactory.CreateExecutionHandler (platform);
-				if (handler == null) {
-					monitor.ReportError ("Can not execute \"" + configuration.CompiledOutputName + "\". The selected execution mode is not supported in the " + platform + " platform.", null);
+				if (!context.ExecutionHandler.CanExecute (configuration.CompiledOutputName)) {
+					monitor.ReportError ("Can not execute \"" + configuration.CompiledOutputName + "\". The selected execution mode is not supported for .NET projects.", null);
 					return;
 				}
 			
-				IProcessAsyncOperation op = handler.Execute (configuration.CompiledOutputName, configuration.CommandLineParameters, Path.GetDirectoryName (configuration.CompiledOutputName), configuration.EnvironmentVariables, console);
+				IProcessAsyncOperation op = context.ExecutionHandler.Execute (configuration.CompiledOutputName, configuration.CommandLineParameters, Path.GetDirectoryName (configuration.CompiledOutputName), configuration.EnvironmentVariables, console);
 				
 				operationMonitor.AddOperation (op);
 				op.WaitForCompleted ();
@@ -556,8 +553,9 @@ namespace MonoDevelop.Projects
 		
 		protected internal override bool OnGetCanExecute (ExecutionContext context, string configuration)
 		{
+			DotNetProjectConfiguration config = (DotNetProjectConfiguration) GetConfiguration (configuration);
 			return (compileTarget == CompileTarget.Exe || compileTarget == CompileTarget.WinExe) &&
-				context.ExecutionHandlerFactory.SupportsPlatform (ExecutionPlatform.Mono);
+				context.ExecutionHandler.CanExecute (config.CompiledOutputName);
 		}
 		
 		protected internal override List<string> OnGetItemFiles (bool includeReferencedFiles)

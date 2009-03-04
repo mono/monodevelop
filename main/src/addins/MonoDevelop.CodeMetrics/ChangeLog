@@ -1,3 +1,9 @@
+2009-03-04  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CodeMetrics/CodeMetricsWidget.cs:
+	* MonoDevelop.CodeMetrics/CodeMetricsNodeExtension.cs: fixed
+	  bug in code metrics.
+
 2009-02-28  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* gtk-gui/gui.stetic:

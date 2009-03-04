@@ -77,13 +77,12 @@ namespace MonoDevelop.CodeMetrics
 					view.Add (fileName);
 				}
 			}
-			
 			SolutionFolder combine = CurrentNode.DataItem as SolutionFolder;
 			if (combine != null) 
 				view.Add (combine);
 			
 			Solution solution = CurrentNode.DataItem as Solution;
-			if (combine != null) 
+			if (solution != null) 
 				view.Add (solution);
 			
 			Project project = CurrentNode.DataItem as Project;

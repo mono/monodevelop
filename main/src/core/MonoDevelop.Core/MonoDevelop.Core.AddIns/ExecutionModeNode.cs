@@ -40,9 +40,9 @@ namespace MonoDevelop.Core.AddIns
 			get { return name; }
 		}
 		
-		public IExecutionHandlerFactory HandlerFactory {
+		public IExecutionHandler ExecutionHandler {
 			get {
-				return (IExecutionHandlerFactory) GetInstance (typeof(IExecutionHandlerFactory)); 
+				return (IExecutionHandler) GetInstance (typeof(IExecutionHandler)); 
 			}
 		}
 	}

@@ -301,8 +301,9 @@ namespace CBinding
 
 		protected override bool OnGetCanExecute (ExecutionContext context, string solutionConfiguration)
 		{
-			return (target == CBinding.CompileTarget.Bin) &&
-				context.ExecutionHandlerFactory.SupportsPlatform (ExecutionPlatform.Native);
+			CProjectConfiguration conf = (CProjectConfiguration) GetConfiguration (solutionConfiguration);
+			string cmd = Path.Combine (conf.OutputDirectory, conf.Output);
+			return (target == CBinding.CompileTarget.Bin) && context.ExecutionHandler.CanExecute (cmd);
 		}
 
 		protected override void DoExecute (IProgressMonitor monitor, ExecutionContext context, string configuration)
@@ -311,7 +312,6 @@ namespace CBinding
 			string command = conf.Output;
 			string args = conf.CommandLineParameters;
 			string dir = Path.GetFullPath (conf.OutputDirectory);
-			string platform = "Native";
 			bool pause = conf.PauseConsoleOutput;
 			IConsole console;
 			
@@ -330,14 +330,13 @@ namespace CBinding
 			AggregatedOperationMonitor operationMonitor = new AggregatedOperationMonitor (monitor);
 			
 			try {
-				IExecutionHandler handler = context.ExecutionHandlerFactory.CreateExecutionHandler (platform);
-				
-				if (handler == null) {
-					monitor.ReportError ("Cannot execute \"" + command + "\". The selected execution mode is not supported in the " + platform + " platform.", null);
+				string cmd = Path.Combine (dir, command);
+				if (!context.ExecutionHandler.CanExecute (cmd)) {
+					monitor.ReportError ("Cannot execute \"" + command + "\". The selected execution mode is not supported for C projects.", null);
 					return;
 				}
 				
-				IProcessAsyncOperation op = handler.Execute (Path.Combine (dir, command), args, dir, conf.EnvironmentVariables, console);
+				IProcessAsyncOperation op = context.ExecutionHandler.Execute (cmd, args, dir, conf.EnvironmentVariables, console);
 				
 				operationMonitor.AddOperation (op);
 				op.WaitForCompleted ();

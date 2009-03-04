@@ -967,7 +967,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 			
 			protected override string GetDescription() {
-				return "Retrieving status for " + Path.GetFileName(filepath) + "...";
+				return string.Format (GettextCatalog.GetString ("Retrieving status for {0}..."), Path.GetFileName (filepath));
 			}
 			
 			protected override void Run() {

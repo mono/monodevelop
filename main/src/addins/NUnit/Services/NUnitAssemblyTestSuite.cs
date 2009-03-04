@@ -272,7 +272,7 @@ namespace MonoDevelop.NUnit
 			return RunUnitTest (this, "", null, testContext);
 		}
 		
-		protected override bool OnCanRun (MonoDevelop.Core.Execution.IExecutionHandlerFactory executionContext)
+		protected override bool OnCanRun (MonoDevelop.Core.Execution.IExecutionHandler executionContext)
 		{
 			return Runtime.ProcessService.IsValidForRemoteHosting (executionContext);
 		}

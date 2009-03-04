@@ -1,3 +1,18 @@
+2009-03-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Gui/TestPad.cs:
+	* Services/UnitTest.cs:
+	* Services/TestContext.cs:
+	* Services/NUnitService.cs:
+	* Services/NUnitAssemblyTestSuite.cs:
+	* Services/NUnitProjectServiceExtension.cs: Changed the way
+	  execution handlers work. We are not using platform ids
+	  anymore. Instead, we use command strings when looking for
+	  execution handlers. IExecutionHandlerFactory has been
+	  removed and now everything is handled by IExecutionHandler,
+	  which has a new CanExecute method. This model is more simple
+	  and more generic.
+
 2009-02-27  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Services/NUnitProjectTestSuite.cs: Check for nunit.core as

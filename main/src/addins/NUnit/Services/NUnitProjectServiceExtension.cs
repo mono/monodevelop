@@ -46,7 +46,7 @@ namespace MonoDevelop.NUnit
 				if (test != null) {
 					IAsyncOperation oper = null;
 					DispatchService.GuiSyncDispatch (delegate {
-						oper = NUnitService.Instance.RunTest (test, context.ExecutionHandlerFactory, false);
+						oper = NUnitService.Instance.RunTest (test, context.ExecutionHandler, false);
 					});
 					if (oper != null) {
 						monitor.CancelRequested += delegate {
@@ -65,7 +65,7 @@ namespace MonoDevelop.NUnit
 			bool res = base.CanExecute (item, context, configuration);
 			if (!res && (item is IWorkspaceObject)) {
 				UnitTest test = NUnitService.Instance.FindRootTest ((IWorkspaceObject)item);
-				return (test != null) && test.CanRun (context.ExecutionHandlerFactory);
+				return (test != null) && test.CanRun (context.ExecutionHandler);
 			} else
 				return res;
 		}

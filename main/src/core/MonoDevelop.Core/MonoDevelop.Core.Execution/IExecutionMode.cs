@@ -33,6 +33,6 @@ namespace MonoDevelop.Core.Execution
 	{
 		string Name { get; }
 		string Id { get; }
-		IExecutionHandlerFactory HandlerFactory { get; }
+		IExecutionHandler ExecutionHandler { get; }
 	}
 }

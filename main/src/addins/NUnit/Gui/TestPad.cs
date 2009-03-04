@@ -421,7 +421,7 @@ namespace MonoDevelop.NUnit
 		protected void OnRunTest (object data)
 		{
 			IExecutionMode mode = (IExecutionMode) data;
-			RunSelectedTest (mode.HandlerFactory);
+			RunSelectedTest (mode.ExecutionHandler);
 		}
 		
 		[CommandUpdateHandler (TestCommands.RunTestWith)]
@@ -430,7 +430,7 @@ namespace MonoDevelop.NUnit
 			UnitTest test = GetSelectedTest ();
 			if (test != null) {
 				foreach (IExecutionMode mode in Runtime.ProcessService.GetExecutionModes ()) {
-					if (mode != Runtime.ProcessService.DefaultExecutionMode && test.CanRun (mode.HandlerFactory)) {
+					if (mode != Runtime.ProcessService.DefaultExecutionMode && test.CanRun (mode.ExecutionHandler)) {
 						CommandInfo ci = new CommandInfo (mode.Name);
 						info.Add (ci, mode);
 					}
@@ -464,7 +464,7 @@ namespace MonoDevelop.NUnit
 			return nav.DataItem as UnitTest;
 		}
 		
-		void RunTest (ITreeNavigator nav, IExecutionHandlerFactory mode)
+		void RunTest (ITreeNavigator nav, IExecutionHandler mode)
 		{
 			if (nav == null)
 				return;
@@ -487,7 +487,7 @@ namespace MonoDevelop.NUnit
 			RunTest (TreeView.GetRootNode (), null);
 		}
 		
-		void RunSelectedTest (IExecutionHandlerFactory mode)
+		void RunSelectedTest (IExecutionHandler mode)
 		{
 			RunTest (TreeView.GetSelectedNode (), mode);
 		}

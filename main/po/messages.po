@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2009-03-02 22:22:27+0100\n"
-"PO-Revision-Date: 2009-03-02 22:22:47+0100\n"
+"POT-Creation-Date: 2009-03-04 00:49:41+0100\n"
+"PO-Revision-Date: 2009-03-04 00:49:52+0100\n"
 "Last-Translator: David Makovský (Yakeen) <yakeen@sannyas-on.net>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -94,7 +94,7 @@ msgstr ""
 #: ../src/core/MonoDevelop.Core.Gui/gtk-gui/MonoDevelop.Core.Gui.Dialogs.OptionsDialog.cs:41
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:130
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:210
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:295
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:297
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs:160
 msgid "Options"
 msgstr ""
@@ -237,33 +237,37 @@ msgstr ""
 msgid "Loading..."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:206
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:209
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:208
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:211
 msgid ".NET resource"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:212
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:214
 msgid "Add-in manifest"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:216
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:218
 msgid "XML document"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:220
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:222
 msgid "ChangeLog document"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:223
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:225
 msgid ".NET program"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:227
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:229
 msgid "MonoDevelop/MSBuild Solution"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:230
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:232
 msgid "MonoDevelop 1.0 Solution"
+msgstr ""
+
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:236
+msgid "diff files"
 msgstr ""
 
 #: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:60
@@ -2112,10 +2116,14 @@ msgid "C# Corner"
 msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1495
-msgid "GotDotNet"
+msgid "CodePlex"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1499
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1496
+msgid "MSDN Code Gallery"
+msgstr ""
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1500
 #: ../src/addins/WelcomePage/WelcomePageContent.xml:27
 msgid "Report a Bug"
 msgstr ""
@@ -2614,8 +2622,8 @@ msgstr ""
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs:54
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:182
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:53
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:311
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:328
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:319
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:336
 msgid "Assembly"
 msgstr ""
 
@@ -2659,7 +2667,7 @@ msgstr ""
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:47
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:61
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/LanguageItemWindow.cs:49
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:317
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:325
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.Gui/XmlSchemasPanelWidget.cs:66
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValueTreeView.cs:119
 msgid "Type"
@@ -2954,11 +2962,11 @@ msgid_plural "in {0} files."
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/DirectoryDocumentIterator.cs:123
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/DirectoryDocumentIterator.cs:131
 msgid "Looking for '{0}' in directory '{1}'"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/DirectoryDocumentIterator.cs:128
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/DirectoryDocumentIterator.cs:136
 msgid "Replacing '{0}' in directory '{1}'"
 msgstr ""
 
@@ -2983,19 +2991,19 @@ msgstr ""
 msgid "Select contents"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:194
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:200
 msgid "The file could not be saved. Write permission has not been granted."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:241
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:247
 msgid "Save as..."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:262
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:268
 msgid "File name {0} is invalid"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:267
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:273
 msgid "File {0} already exists. Overwrite?"
 msgstr ""
 
@@ -3160,37 +3168,37 @@ msgstr ""
 msgid "Opening {0}"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:606
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:609
 msgid "Save the changes to document '{0}' before closing?"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:607
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:610
 msgid "If you don't save, all changes will be permanently lost."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:622
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:625
 msgid "The document could not be saved."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:649
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:652
 msgid "Invalid file name"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:663
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:666
 msgid "{0} is a directory"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:679
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:682
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/RootWorkspace.cs:484
 msgid "File not found: {0}"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:740
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:743
 msgid "File '{0}' could not be opened"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:893
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:903
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:896
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:906
 msgid "The file '{0}' could not be opened."
 msgstr ""
 
@@ -3383,7 +3391,7 @@ msgstr ""
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/CodeTemplatePanel.cs:115
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/InternalLogPad.cs:254
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:80
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs:238
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs:239
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DotDesktopViewWidget.cs:69
 msgid "Description"
 msgstr ""
@@ -4325,7 +4333,7 @@ msgstr ""
 msgid "Replacing '{0}' in project '{1}'"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/CurrentProjectDocumentIterator.cs:66
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/CurrentProjectDocumentIterator.cs:62
 msgid "(none selected)"
 msgstr ""
 
@@ -5313,7 +5321,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/NamespaceSynchronisationPanel.cs:149
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/LanguageItemWindow.cs:50
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:326
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:334
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.Gui/XmlSchemasPanelWidget.cs:61
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.Gui/XmlSchemasPanelWidget.cs:120
 msgid "Namespace"
@@ -5595,7 +5603,7 @@ msgid "Modify"
 msgstr ""
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:249
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:346
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:349
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs:78
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.Gui/XmlSchemasPanelWidget.cs:398
 msgid "Replace"
@@ -9016,91 +9024,91 @@ msgstr ""
 msgid "Creates anonymous delegate."
 msgstr ""
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1523
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1524
 msgid "Set text in a code-like font"
 msgstr ""
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1524
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1525
 msgid "Set one or more lines of source code or program output"
 msgstr ""
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1525
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1526
 msgid "Indicate an example"
 msgstr ""
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1526
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1527
 msgid "Identifies the exceptions a method can throw"
 msgstr ""
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1527
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1528
 msgid "Includes comments from a external file"
 msgstr ""
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1528
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1529
 msgid "Create a list or table"
 msgstr ""
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1530
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1531
 msgid "Define the heading row"
 msgstr ""
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1531
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1532
 msgid "Defines list or table item"
 msgstr ""
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1532
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1533
 msgid "A term to define"
 msgstr ""
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1533
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1534
 msgid "Describes a list item"
 msgstr ""
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1534
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1535
 msgid "Permit structure to be added to text"
 msgstr ""
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1536
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1537
 msgid "Describe a parameter for a method or constructor"
 msgstr ""
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1537
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1538
 msgid "Identify that a word is a parameter name"
 msgstr ""
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1539
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1540
 msgid "Document the security accessibility of a member"
 msgstr ""
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1540
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1541
 msgid "Describe a type"
 msgstr ""
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1541
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1542
 msgid "Describe the return value of a method"
 msgstr ""
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1542
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1543
 msgid "Specify a link"
 msgstr ""
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1543
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1544
 msgid "Generate a See Also entry"
 msgstr ""
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1544
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1545
 msgid "Describe a member of a type"
 msgstr ""
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1545
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1546
 msgid "Describe a type parameter for a generic type or method"
 msgstr ""
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1546
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1547
 msgid "Identify that a word is a type parameter name"
 msgstr ""
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1547
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1548
 msgid "Describe a property"
 msgstr ""
 
@@ -9363,23 +9371,23 @@ msgstr ""
 msgid "{0:#00.00}% Translated"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:792
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:821
 msgid "Update catalog list..."
 msgstr ""
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:1027
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:1061
 msgid "Translation for '{0}' doesn't end with '.'."
 msgstr ""
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:1041
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:1075
 msgid "Casing mismatch in '{0}'"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:1054
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:1088
 msgid "Original string '{0}' contains '_', translation doesn't."
 msgstr ""
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:1073
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:1107
 msgid "Original string '{0}' contains '{1}', translation doesn't."
 msgstr ""
 
@@ -9587,15 +9595,15 @@ msgstr ""
 msgid "_Input:"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:276
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:277
 msgid "Elements"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:325
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:328
 msgid "Matches"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:380
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:383
 #: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs:79
 msgid "Regex Library"
 msgstr ""
@@ -9616,23 +9624,23 @@ msgstr ""
 msgid "Expressions"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs:174
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs:175
 msgid "Source:"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs:197
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs:198
 msgid "Pattern:"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs:207
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs:208
 msgid "Author:"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs:270
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs:271
 msgid "Matching:"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs:288
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs:289
 msgid "Non Matching:"
 msgstr ""
 
@@ -11030,32 +11038,32 @@ msgstr ""
 msgid "Inspect"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:300
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:308
 msgid "Member"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:309
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:317
 msgid "Declaring Type"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:341
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:349
 msgid "Searching member..."
 msgstr ""
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:344
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:396
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:352
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:404
 msgid "Searching string in disassembled code..."
 msgstr ""
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:347
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:355
 msgid "Searching string in decompiled code..."
 msgstr ""
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:350
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:358
 msgid "Searching type..."
 msgstr ""
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:707
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:715
 msgid "No documentation available."
 msgstr ""
 
@@ -11140,17 +11148,17 @@ msgid "<b>Declaring Type:</b>\t{0}"
 msgstr ""
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:116
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:164
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:173
 msgid "Method is P/Invoke"
 msgstr ""
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:119
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:167
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:176
 msgid "Interface method"
 msgstr ""
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:119
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:167
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:176
 msgid "Abstract method"
 msgstr ""
 

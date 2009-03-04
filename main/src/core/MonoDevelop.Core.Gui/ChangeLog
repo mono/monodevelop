@@ -1,3 +1,27 @@
+2009-03-04  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Core.Gui.addin.xml: Added makefile mime.
+
+2009-03-04  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am: corrected makefile.
+
+2009-03-04  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Core.Gui.csproj:
+	* MonoDevelop.Core.Gui.addin.xml: Added new icons to the icon
+	  pool.
+
+2009-03-04  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Core.Gui.csproj: 
+
+	* icons/translation-fuzzy.png:
+	* icons/translation-valid.png:
+	* icons/translation-missing.png: Added some iconst for gettext
+	  addin.
+
 2009-03-03  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:

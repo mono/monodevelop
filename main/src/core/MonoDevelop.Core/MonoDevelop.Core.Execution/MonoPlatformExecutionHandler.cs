@@ -48,5 +48,12 @@ namespace MonoDevelop.Core.Execution
 //				// in mono, Process can't start a "mono" process.
 //				return base.Execute ("sh", string.Format ("-c \"mono {0}\"", args), workingDirectory, console);
 		}
+		
+		public override bool CanExecute (string command)
+		{
+			string ext = System.IO.Path.GetExtension (command).ToLower ();
+			return ext == ".exe" || ext == ".dll";
+		}
+
 	}
 }
