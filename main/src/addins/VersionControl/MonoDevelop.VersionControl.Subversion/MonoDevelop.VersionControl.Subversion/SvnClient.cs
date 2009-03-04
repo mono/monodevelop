@@ -891,7 +891,7 @@ namespace MonoDevelop.VersionControl.Subversion {
 				if (data.content_state == LibSvnClient.NotifyState.Conflicted) {
 					actiondesc = string.Format (GettextCatalog.GetString ("Conflict {0}"), file); 
 				} else {
-					actiondesc = string.Format (GettextCatalog.GetString ("Addded   {0}"), file); 
+					actiondesc = string.Format (GettextCatalog.GetString ("Added   {0}"), file); 
 				}
 				break;
 //			case LibSvnClient.NotifyAction.Exists:
