@@ -1,3 +1,7 @@
+2009-03-04  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Database.Sql.Oracle.csproj: Updated format.
+
 2009-02-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Database.Sql.Oracle.csproj: Updated references.

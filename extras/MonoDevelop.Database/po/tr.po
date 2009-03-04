@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop 1.0\n"
 "Report-Msgid-Bugs-To: ealtin@gmail.com\n"
-"POT-Creation-Date: 2008-02-24 00:01+0200\n"
+"POT-Creation-Date: 2009-03-04 18:11:47-0500\n"
 "PO-Revision-Date: 2008-02-24 00:20+0200\n"
 "Last-Translator: Enver ALTIN <ealtin@gmail.com>\n"
 "Language-Team: Turkish <gnome-turk@gnome.org>\n"
@@ -51,7 +51,7 @@ msgid "Status"
 msgstr "Durum"
 
 #: ../MonoDevelop.Database.Query/SqlQueryView.cs:170
-#: ../MonoDevelop.Database.CodeGenerator/Dialogs/GenerateDataClassesDialog.cs:93
+#: ../MonoDevelop.Database.CodeGenerator/Dialogs/GenerateDataClassesDialog.cs:95
 msgid "Unable to connect to database '{0}'"
 msgstr "'{0}' veritabanına bağlanılamadı"
 
@@ -60,7 +60,7 @@ msgid "Query duration: {0}"
 msgstr "Sorgu süresi: {0}"
 
 #: ../MonoDevelop.Database.Query/SqlQueryView.cs:209
-#: ../MonoDevelop.Database.Components/Widgets/SelectTableWidget.cs:69
+#: ../MonoDevelop.Database.Components/Widgets/SelectTableWidget.cs:71
 msgid "Table"
 msgstr "Tablo"
 
@@ -81,8 +81,11 @@ msgid "Query execute cancelled"
 msgstr "Sorgu çalıştırması iptal edildi"
 
 #: ../MonoDevelop.Database.Query/SqlQueryView.cs:189
-msgid "Query executed ({0} result tables)"
-msgstr "Sorgu çalıştırıldı ({0} sonuç tablosu)"
+#, fuzzy
+msgid "Query executed ({0} result table)"
+msgid_plural "Query executed ({0} result tables)"
+msgstr[0] "Sorgu çalıştırıldı ({0} sonuç tablosu)"
+msgstr[1] "Sorgu çalıştırıldı ({0} sonuç tablosu)"
 
 #: ../MonoDevelop.Database.Sql.MySql/MySqlDbFactory.cs:45
 msgid "MySql database"
@@ -124,7 +127,7 @@ msgid "SQLite databases"
 msgstr "SQLite veritabanları"
 
 #: ../MonoDevelop.Database.Sql.Sqlite/Widgets/SqliteConnectionSettingsWidget.cs:75
-#: ../MonoDevelop.Database.Components/Widgets/SqlEditorWidget.cs:112
+#: ../MonoDevelop.Database.Components/Widgets/SqlEditorWidget.cs:108
 msgid "All files"
 msgstr "Tüm dosyalar"
 
@@ -135,6 +138,160 @@ msgstr "Oracle veritabanı"
 #: ../MonoDevelop.Database.Sql.Npgsql/NpgsqlDbFactory.cs:44
 msgid "PostgreSQL database"
 msgstr "PostgreSQL veritabanı"
+
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ConnectionContextCollectionNodeBuilder.cs:67
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ConnectionContextCollectionNodeBuilder.cs:72
+msgid "Database Connections"
+msgstr "Veritabanı Bağlantıları"
+
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ConnectionContextNodeBuilder.cs:88
+msgid "Unable to connect:"
+msgstr "Bağlanılamadı:"
+
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ConnectionContextNodeBuilder.cs:168
+msgid "Are you sure you want to remove connection '{0}'?"
+msgstr "'{0}' bağlantısını silmek istediğinizden emin misiniz?"
+
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ConnectionContextNodeBuilder.cs:246
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TableNodeBuilder.cs:278
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/UserNodeBuilder.cs:169
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ProcedureNodeBuilder.cs:187
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ViewNodeBuilder.cs:188
+#, fuzzy
+msgid "Drop"
+msgstr "Görünümü Sil"
+
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ConnectionContextNodeBuilder.cs:248
+msgid "Are you sure you want to drop database '{0}'"
+msgstr "'{0}' veritabanını tamamen silmek istediğinizden emin misiniz?"
+
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TablesNodeBuilder.cs:67
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TablesNodeBuilder.cs:72
+#: ../MonoDevelop.Database.CodeGenerator/gtk-gui/MonoDevelop.Database.CodeGenerator.GenerateDataClassesDialog.cs:117
+msgid "Tables"
+msgstr "Tablolar"
+
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ViewsNodeBuilder.cs:66
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ViewsNodeBuilder.cs:71
+msgid "Views"
+msgstr "Görünümler"
+
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ProceduresNodeBuilder.cs:66
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ProceduresNodeBuilder.cs:71
+msgid "Procedures"
+msgstr "Yordamlar"
+
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/UsersNodeBuilder.cs:66
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/UsersNodeBuilder.cs:71
+msgid "Users"
+msgstr "Kullanıcılar"
+
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ConstraintsNodeBuilder.cs:64
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ConstraintsNodeBuilder.cs:69
+#: ../MonoDevelop.Database.Designer/Dialogs/TableEditorDialog.cs:86
+msgid "Constraints"
+msgstr "Sınırlamalar"
+
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TableNodeBuilder.cs:251
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:199
+msgid "Empty Table"
+msgstr "Tabloyu Boşalt"
+
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TableNodeBuilder.cs:253
+msgid "Are you sure you want to empty table '{0}'"
+msgstr "'{0}' tablosunu boşaltmak istediğinizden emin misiniz?"
+
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TableNodeBuilder.cs:270
+msgid "Table emptied"
+msgstr "Tablo boşaltıldı"
+
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TableNodeBuilder.cs:280
+msgid "Are you sure you want to drop table '{0}'"
+msgstr "'{0}' tablosunu silmek istediğinizden emin misiniz?"
+
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/UserNodeBuilder.cs:171
+msgid "Are you sure you want to drop user '{0}'"
+msgstr "'{0}' kullanıcısını silmek istediğinizden emin misiniz?"
+
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ProcedureNodeBuilder.cs:189
+msgid "Are you sure you want to drop procedure '{0}'"
+msgstr "'{0}' yordamını silmek istediğinizden emin misiniz?"
+
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ViewNodeBuilder.cs:190
+msgid "Are you sure you want to drop view '{0}'"
+msgstr "'{0}' görünümünü silmek istediğinizden emin misiniz?"
+
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ColumnNodeBuilder.cs:57
+#: ../MonoDevelop.Database.Components/Widgets/SelectColumnWidget.cs:71
+#: ../MonoDevelop.Database.Designer/Widgets/CheckConstraintEditorWidget.cs:82
+msgid "Column"
+msgstr "Kolon"
+
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ColumnsNodeBuilder.cs:64
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ColumnsNodeBuilder.cs:69
+#: ../MonoDevelop.Database.Designer/Dialogs/TableEditorDialog.cs:81
+#: ../MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.ForeignKeyConstraintEditorWidget.cs:134
+msgid "Columns"
+msgstr "Kolonlar"
+
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ConstraintNodeBuilder.cs:57
+msgid "Constraint"
+msgstr "Sınırlama"
+
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/AggregatesNodeBuilder.cs:64
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/AggregatesNodeBuilder.cs:69
+msgid "Aggregates"
+msgstr "Toplayıcılar"
+
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/GroupsNodeBuilder.cs:64
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/GroupsNodeBuilder.cs:69
+msgid "Groups"
+msgstr "Gruplar"
+
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/LanguagesNodeBuilder.cs:64
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/LanguagesNodeBuilder.cs:69
+msgid "Languages"
+msgstr "Diller"
+
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/OperatorsNodeBuilder.cs:64
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/OperatorsNodeBuilder.cs:69
+msgid "Operators"
+msgstr "İşleçler"
+
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/RolesNodeBuilder.cs:64
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/RolesNodeBuilder.cs:69
+msgid "Roles"
+msgstr "Roller"
+
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/RulesNodeBuilder.cs:64
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/RulesNodeBuilder.cs:69
+msgid "Rules"
+msgstr "Kurallar"
+
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/SequencesNodeBuilder.cs:64
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/SequencesNodeBuilder.cs:69
+msgid "Sequences"
+msgstr "Sayaçlar"
+
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TriggersNodeBuilder.cs:64
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TriggersNodeBuilder.cs:69
+#: ../MonoDevelop.Database.Designer/Dialogs/TableEditorDialog.cs:96
+msgid "Triggers"
+msgstr "Tetikleyiciler"
+
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TypesNodeBuilder.cs:64
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TypesNodeBuilder.cs:69
+msgid "Types"
+msgstr "Türler"
+
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ParametersNodeBuilder.cs:64
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ParametersNodeBuilder.cs:69
+msgid "Parameters"
+msgstr "Parametreler"
+
+#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ParameterNodeBuilder.cs:57
+msgid "Parameter"
+msgstr "Parametre"
 
 #: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:27
 msgid "Database Browser"
@@ -150,7 +307,7 @@ msgid "Database"
 msgstr "Veritabanı"
 
 #: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:176
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:215
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:212
 msgid "Database Provider List"
 msgstr "Veritabanı Eriştirici Listesi"
 
@@ -182,271 +339,131 @@ msgstr "Tümünü seç"
 msgid "Select x,y,..."
 msgstr "Kolonları seç"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:199
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TableNodeBuilder.cs:252
-msgid "Empty Table"
-msgstr "Tabloyu Boşalt"
-
 #: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:202
 msgid "Query"
 msgstr "Sorgu"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:205
-msgid "Re_name"
-msgstr "Ye_niden adlandır"
-
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:217
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:214
 #: ../MonoDevelop.Database.Designer/Dialogs/TableEditorDialog.cs:70
 msgid "Create Table"
 msgstr "Tablo Oluştur"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:220
-#: ../MonoDevelop.Database.Designer/Dialogs/ViewEditorDialog.cs:62
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:217
+#: ../MonoDevelop.Database.Designer/Dialogs/ViewEditorDialog.cs:61
 msgid "Create View"
 msgstr "Görünüm Oluştur"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:223
-#: ../MonoDevelop.Database.Designer/Dialogs/ProcedureEditorDialog.cs:64
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:220
+#: ../MonoDevelop.Database.Designer/Dialogs/ProcedureEditorDialog.cs:63
 msgid "Create Procedure"
 msgstr "Yordam Oluştur"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:226
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:223
 msgid "Create Constraint"
 msgstr "Kısıt Oluştur"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:229
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:226
 msgid "Create Trigger"
 msgstr "Tetikleyici Oluştur"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:232
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:229
 #: ../MonoDevelop.Database.Designer/Dialogs/UserEditorDialog.cs:62
 msgid "Create User"
 msgstr "Kullanıcı Oluştur"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:236
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:233
 msgid "Alter Database"
 msgstr "Veritabanını Değiştir"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:239
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:236
 #: ../MonoDevelop.Database.Designer/Dialogs/TableEditorDialog.cs:72
 msgid "Alter Table"
 msgstr "Tabloyu Değiştir"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:242
-#: ../MonoDevelop.Database.Designer/Dialogs/ViewEditorDialog.cs:64
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:239
+#: ../MonoDevelop.Database.Designer/Dialogs/ViewEditorDialog.cs:63
 msgid "Alter View"
 msgstr "Görünümü Değiştir"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:245
-#: ../MonoDevelop.Database.Designer/Dialogs/ProcedureEditorDialog.cs:66
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:242
+#: ../MonoDevelop.Database.Designer/Dialogs/ProcedureEditorDialog.cs:65
 msgid "Alter Procedure"
 msgstr "Yordamı Değiştir"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:248
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:245
 msgid "Alter Constraint"
 msgstr "Sınırlamayı Değiştir"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:251
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:248
 msgid "Alter Trigger"
 msgstr "Tetikleyiciyi Değiştir"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:254
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:251
 #: ../MonoDevelop.Database.Designer/Dialogs/UserEditorDialog.cs:64
 msgid "Alter User"
 msgstr "Kullanıcıyı Değiştir"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:258
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ConnectionContextNodeBuilder.cs:247
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:255
 msgid "Drop Database"
 msgstr "Veritabanını Sil"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:261
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TableNodeBuilder.cs:278
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:258
 msgid "Drop Table"
 msgstr "Tabloyu Sil"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:264
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ViewNodeBuilder.cs:189
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:261
 msgid "Drop View"
 msgstr "Görünümü Sil"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:267
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ProcedureNodeBuilder.cs:188
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:264
 msgid "Drop Procedure"
 msgstr "Yordamı Sil"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:270
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:267
 msgid "Drop Trigger"
 msgstr "Tetikleyiciyi Sil"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:273
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:270
 msgid "Drop Constraint"
 msgstr "Sınırlamayı Sil"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:276
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/UserNodeBuilder.cs:170
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:273
 msgid "Drop User"
 msgstr "Kullanıcıyı Sil"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:281
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:278
 msgid "Toggle System Objects"
 msgstr "Sistem Nesneleri Gösterimi Aç/Kapat"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:287
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:399
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:284
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:396
 #: ../MonoDevelop.Database.Components/Dialogs/DatabaseConnectionSettingsDialog.cs:50
 msgid "Add Database Connection"
 msgstr "Veritabanı Bağlantısı Ekle"
 
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:290
-#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:402
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:287
+#: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:399
 #: ../MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.CreateDatabaseDialog.cs:29
 msgid "Create Database"
 msgstr "Veritabanı Oluştur"
 
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ConnectionContextCollectionNodeBuilder.cs:66
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ConnectionContextCollectionNodeBuilder.cs:71
-msgid "Database Connections"
-msgstr "Veritabanı Bağlantıları"
+#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:46
+msgid "Visualize Data As"
+msgstr "Veriyi Görselleştirme Şekli"
 
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ConnectionContextNodeBuilder.cs:87
-msgid "Unable to connect:"
-msgstr "Bağlanılamadı:"
+#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:49
+#: ../MonoDevelop.Database.Components/Widgets/SqlEditorWidget.cs:95
+msgid "Import From File"
+msgstr "Dosyadan İthal Et"
 
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ConnectionContextNodeBuilder.cs:167
-msgid "Are you sure you want to remove connection '{0}'?"
-msgstr "'{0}' bağlantısını silmek istediğinizden emin misiniz?"
+#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:52
+#: ../MonoDevelop.Database.Components/Widgets/SqlEditorWidget.cs:126
+msgid "Export To File"
+msgstr "Dosyaya İhraç Et"
 
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ConnectionContextNodeBuilder.cs:168
-msgid "Remove Connection"
-msgstr "Bağlantıyı Sil"
-
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ConnectionContextNodeBuilder.cs:246
-msgid "Are you sure you want to drop database '{0}'"
-msgstr "'{0}' veritabanını tamamen silmek istediğinizden emin misiniz?"
-
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TablesNodeBuilder.cs:66
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TablesNodeBuilder.cs:71
-#: ../MonoDevelop.Database.CodeGenerator/gtk-gui/MonoDevelop.Database.CodeGenerator.GenerateDataClassesDialog.cs:117
-msgid "Tables"
-msgstr "Tablolar"
-
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ViewsNodeBuilder.cs:65
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ViewsNodeBuilder.cs:70
-msgid "Views"
-msgstr "Görünümler"
-
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ProceduresNodeBuilder.cs:65
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ProceduresNodeBuilder.cs:70
-msgid "Procedures"
-msgstr "Yordamlar"
-
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/UsersNodeBuilder.cs:65
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/UsersNodeBuilder.cs:70
-msgid "Users"
-msgstr "Kullanıcılar"
-
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ConstraintsNodeBuilder.cs:63
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ConstraintsNodeBuilder.cs:68
-#: ../MonoDevelop.Database.Designer/Dialogs/TableEditorDialog.cs:86
-msgid "Constraints"
-msgstr "Sınırlamalar"
-
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TableNodeBuilder.cs:251
-msgid "Are you sure you want to empty table '{0}'"
-msgstr "'{0}' tablosunu boşaltmak istediğinizden emin misiniz?"
-
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TableNodeBuilder.cs:268
-msgid "Table emptied"
-msgstr "Tablo boşaltıldı"
-
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TableNodeBuilder.cs:277
-msgid "Are you sure you want to drop table '{0}'"
-msgstr "'{0}' tablosunu silmek istediğinizden emin misiniz?"
-
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/UserNodeBuilder.cs:169
-msgid "Are you sure you want to drop user '{0}'"
-msgstr "'{0}' kullanıcısını silmek istediğinizden emin misiniz?"
-
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ProcedureNodeBuilder.cs:187
-msgid "Are you sure you want to drop procedure '{0}'"
-msgstr "'{0}' yordamını silmek istediğinizden emin misiniz?"
-
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ViewNodeBuilder.cs:188
-msgid "Are you sure you want to drop view '{0}'"
-msgstr "'{0}' görünümünü silmek istediğinizden emin misiniz?"
-
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ColumnNodeBuilder.cs:56
-#: ../MonoDevelop.Database.Components/Widgets/SelectColumnWidget.cs:69
-#: ../MonoDevelop.Database.Designer/Widgets/CheckConstraintEditorWidget.cs:80
-msgid "Column"
-msgstr "Kolon"
-
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ColumnsNodeBuilder.cs:63
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ColumnsNodeBuilder.cs:68
-#: ../MonoDevelop.Database.Designer/Dialogs/TableEditorDialog.cs:81
-#: ../MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.ForeignKeyConstraintEditorWidget.cs:135
-msgid "Columns"
-msgstr "Kolonlar"
-
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ConstraintNodeBuilder.cs:56
-msgid "Constraint"
-msgstr "Sınırlama"
-
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/AggregatesNodeBuilder.cs:63
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/AggregatesNodeBuilder.cs:68
-msgid "Aggregates"
-msgstr "Toplayıcılar"
-
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/GroupsNodeBuilder.cs:63
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/GroupsNodeBuilder.cs:68
-msgid "Groups"
-msgstr "Gruplar"
-
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/LanguagesNodeBuilder.cs:63
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/LanguagesNodeBuilder.cs:68
-msgid "Languages"
-msgstr "Diller"
-
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/OperatorsNodeBuilder.cs:63
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/OperatorsNodeBuilder.cs:68
-msgid "Operators"
-msgstr "İşleçler"
-
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/RolesNodeBuilder.cs:63
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/RolesNodeBuilder.cs:68
-msgid "Roles"
-msgstr "Roller"
-
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/RulesNodeBuilder.cs:63
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/RulesNodeBuilder.cs:68
-msgid "Rules"
-msgstr "Kurallar"
-
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/SequencesNodeBuilder.cs:63
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/SequencesNodeBuilder.cs:68
-msgid "Sequences"
-msgstr "Sayaçlar"
-
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TriggersNodeBuilder.cs:63
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TriggersNodeBuilder.cs:68
-#: ../MonoDevelop.Database.Designer/Dialogs/TableEditorDialog.cs:96
-msgid "Triggers"
-msgstr "Tetikleyiciler"
-
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TypesNodeBuilder.cs:63
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TypesNodeBuilder.cs:68
-msgid "Types"
-msgstr "Türler"
-
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ParametersNodeBuilder.cs:63
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ParametersNodeBuilder.cs:68
-msgid "Parameters"
-msgstr "Parametreler"
-
-#: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ParameterNodeBuilder.cs:56
-msgid "Parameter"
-msgstr "Parametre"
+#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:59
+msgid "Visualize Data"
+msgstr "Veriyi Görselleştir"
 
 #: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.SelectColumnDialog.cs:31
 msgid "Select Column"
@@ -460,44 +477,44 @@ msgstr "Tümünü seç"
 msgid "Deselect All"
 msgstr "Hiçbirini seçme"
 
-#: ../MonoDevelop.Database.Components/Widgets/ColumnMappingWidget.cs:53
-#: ../MonoDevelop.Database.Components/Widgets/TableMappingWidget.cs:52
-#: ../MonoDevelop.Database.Designer/Widgets/TriggersEditorWidget.cs:93
-#: ../MonoDevelop.Database.Designer/Widgets/ColumnsEditorWidget.cs:88
+#: ../MonoDevelop.Database.Components/Widgets/ColumnMappingWidget.cs:55
+#: ../MonoDevelop.Database.Components/Widgets/TableMappingWidget.cs:54
+#: ../MonoDevelop.Database.Designer/Widgets/TriggersEditorWidget.cs:95
+#: ../MonoDevelop.Database.Designer/Widgets/ColumnsEditorWidget.cs:90
 #: ../MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.TableEditorDialog.cs:61
 #: ../MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.ViewEditorDialog.cs:56
 #: ../MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.ProcedureEditorDialog.cs:56
 #: ../MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.UserEditorDialog.cs:50
-#: ../MonoDevelop.Database.Designer/Widgets/ForeignKeyConstraintEditorWidget.cs:104
-#: ../MonoDevelop.Database.Designer/Widgets/CheckConstraintEditorWidget.cs:79
-#: ../MonoDevelop.Database.Designer/Widgets/PrimaryKeyConstraintEditorWidget.cs:68
-#: ../MonoDevelop.Database.Designer/Widgets/UniqueConstraintEditorWidget.cs:73
+#: ../MonoDevelop.Database.Designer/Widgets/ForeignKeyConstraintEditorWidget.cs:106
+#: ../MonoDevelop.Database.Designer/Widgets/CheckConstraintEditorWidget.cs:81
+#: ../MonoDevelop.Database.Designer/Widgets/PrimaryKeyConstraintEditorWidget.cs:70
+#: ../MonoDevelop.Database.Designer/Widgets/UniqueConstraintEditorWidget.cs:75
 msgid "Name"
 msgstr "Ad"
 
-#: ../MonoDevelop.Database.Components/Widgets/ColumnMappingWidget.cs:63
+#: ../MonoDevelop.Database.Components/Widgets/ColumnMappingWidget.cs:65
 msgid "Db Type"
 msgstr "Veritabanı Türü"
 
-#: ../MonoDevelop.Database.Components/Widgets/ColumnMappingWidget.cs:68
-#: ../MonoDevelop.Database.Designer/Widgets/TriggersEditorWidget.cs:94
-#: ../MonoDevelop.Database.Designer/Widgets/ColumnsEditorWidget.cs:89
+#: ../MonoDevelop.Database.Components/Widgets/ColumnMappingWidget.cs:70
+#: ../MonoDevelop.Database.Designer/Widgets/TriggersEditorWidget.cs:96
+#: ../MonoDevelop.Database.Designer/Widgets/ColumnsEditorWidget.cs:91
 msgid "Type"
 msgstr "Tür"
 
-#: ../MonoDevelop.Database.Components/Widgets/ColumnMappingWidget.cs:73
+#: ../MonoDevelop.Database.Components/Widgets/ColumnMappingWidget.cs:75
 msgid "Field Name"
 msgstr "Alan Adı"
 
-#: ../MonoDevelop.Database.Components/Widgets/ColumnMappingWidget.cs:80
+#: ../MonoDevelop.Database.Components/Widgets/ColumnMappingWidget.cs:82
 msgid "Property Name"
 msgstr "Öznitelik Adı"
 
-#: ../MonoDevelop.Database.Components/Widgets/ColumnMappingWidget.cs:87
+#: ../MonoDevelop.Database.Components/Widgets/ColumnMappingWidget.cs:89
 msgid "Setter"
 msgstr "Kaydedici"
 
-#: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.DataGrid.cs:104
+#: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.DataGrid.cs:103
 msgid "of"
 msgstr "of"
 
@@ -545,55 +562,33 @@ msgstr "BeklemeDiyaloğu"
 msgid "Please wait"
 msgstr "Lütfen bekleyin"
 
-#: ../MonoDevelop.Database.Components/Widgets/SqlEditorWidget.cs:99
-#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:49
-msgid "Import From File"
-msgstr "Dosyadan İthal Et"
-
-#: ../MonoDevelop.Database.Components/Widgets/SqlEditorWidget.cs:109
-#: ../MonoDevelop.Database.Components/Widgets/SqlEditorWidget.cs:141
+#: ../MonoDevelop.Database.Components/Widgets/SqlEditorWidget.cs:105
+#: ../MonoDevelop.Database.Components/Widgets/SqlEditorWidget.cs:137
 msgid "SQL files"
 msgstr "SQL dosyaları"
 
-#: ../MonoDevelop.Database.Components/Widgets/SqlEditorWidget.cs:130
-#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:52
-msgid "Export To File"
-msgstr "Dosyaya İhraç Et"
-
-#: ../MonoDevelop.Database.Components/Widgets/SqlEditorWidget.cs:147
+#: ../MonoDevelop.Database.Components/Widgets/SqlEditorWidget.cs:143
 msgid "Are you sure you want to overwrite the file '{0}'?"
 msgstr "'{0}' dosyasının üzerine yazmak istediğinizden emin misiniz?"
 
-#: ../MonoDevelop.Database.Components/Widgets/SqlEditorWidget.cs:148
-msgid "Overwrite?"
-msgstr "Üzerine yazılsın mı?"
-
-#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:46
-msgid "Visualize Data As"
-msgstr "Veriyi Görselleştirme Şekli"
-
-#: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:59
-msgid "Visualize Data"
-msgstr "Veriyi Görselleştir"
-
-#: ../MonoDevelop.Database.Components/Widgets/TableMappingWidget.cs:62
+#: ../MonoDevelop.Database.Components/Widgets/TableMappingWidget.cs:64
 msgid "Class Name"
 msgstr "Sınıf Adı"
 
-#: ../MonoDevelop.Database.Components/Widgets/ConnectionSettingsWidget.cs:238
-#: ../MonoDevelop.Database.Components/Widgets/ConnectionSettingsWidget.cs:313
+#: ../MonoDevelop.Database.Components/Widgets/ConnectionSettingsWidget.cs:241
+#: ../MonoDevelop.Database.Components/Widgets/ConnectionSettingsWidget.cs:316
 msgid "No databases found!"
 msgstr "Hiç veritabanı bulunamadı!"
 
-#: ../MonoDevelop.Database.Components/Widgets/ConnectionSettingsWidget.cs:334
+#: ../MonoDevelop.Database.Components/Widgets/ConnectionSettingsWidget.cs:337
 msgid "Trying to connect to database ..."
 msgstr "'{0}' veritabanına bağlantı deneniyor ..."
 
-#: ../MonoDevelop.Database.Components/Widgets/ConnectionSettingsWidget.cs:369
+#: ../MonoDevelop.Database.Components/Widgets/ConnectionSettingsWidget.cs:372
 msgid "Test Succeeded."
 msgstr "Sınama Başarılı."
 
-#: ../MonoDevelop.Database.Components/Widgets/ConnectionSettingsWidget.cs:371
+#: ../MonoDevelop.Database.Components/Widgets/ConnectionSettingsWidget.cs:374
 msgid "Test Failed: {0}."
 msgstr "Sınama Başarısız: {0}."
 
@@ -637,7 +632,7 @@ msgstr "Bağlantı noktası:"
 msgid "Server:"
 msgstr "Sunucu:"
 
-#: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.ConnectionSettingsWidget.cs:404
+#: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.ConnectionSettingsWidget.cs:403
 msgid "Username:"
 msgstr "Kullanıcı adı:"
 
@@ -645,91 +640,83 @@ msgstr "Kullanıcı adı:"
 msgid "No database providers detected."
 msgstr "Hiçbir veritabanı eriştirici bulunamadı."
 
-#: ../MonoDevelop.Database.Designer/Widgets/TriggersEditorWidget.cs:95
+#: ../MonoDevelop.Database.Designer/Widgets/TriggersEditorWidget.cs:97
 msgid "Event"
 msgstr "Olay"
 
-#: ../MonoDevelop.Database.Designer/Widgets/TriggersEditorWidget.cs:96
+#: ../MonoDevelop.Database.Designer/Widgets/TriggersEditorWidget.cs:98
 msgid "Each Row"
 msgstr "Her Satır"
 
-#: ../MonoDevelop.Database.Designer/Widgets/TriggersEditorWidget.cs:97
+#: ../MonoDevelop.Database.Designer/Widgets/TriggersEditorWidget.cs:99
 msgid "Position"
 msgstr "Konum"
 
-#: ../MonoDevelop.Database.Designer/Widgets/TriggersEditorWidget.cs:98
+#: ../MonoDevelop.Database.Designer/Widgets/TriggersEditorWidget.cs:100
 msgid "Active"
 msgstr "Etkin"
 
-#: ../MonoDevelop.Database.Designer/Widgets/TriggersEditorWidget.cs:99
-#: ../MonoDevelop.Database.Designer/Widgets/ColumnsEditorWidget.cs:92
+#: ../MonoDevelop.Database.Designer/Widgets/TriggersEditorWidget.cs:101
+#: ../MonoDevelop.Database.Designer/Widgets/ColumnsEditorWidget.cs:94
 #: ../MonoDevelop.Database.Designer/Dialogs/TableEditorDialog.cs:101
-#: ../MonoDevelop.Database.Designer/Dialogs/ViewEditorDialog.cs:74
-#: ../MonoDevelop.Database.Designer/Dialogs/ProcedureEditorDialog.cs:76
+#: ../MonoDevelop.Database.Designer/Dialogs/ViewEditorDialog.cs:73
+#: ../MonoDevelop.Database.Designer/Dialogs/ProcedureEditorDialog.cs:75
 msgid "Comment"
 msgstr "Yorum"
 
-#: ../MonoDevelop.Database.Designer/Widgets/TriggersEditorWidget.cs:185
+#: ../MonoDevelop.Database.Designer/Widgets/TriggersEditorWidget.cs:187
 msgid "Are you sure you want to remove trigger '{0}'?"
 msgstr "'{0}' tetikleyicisini silmek istediğinizden emin misiniz?"
 
-#: ../MonoDevelop.Database.Designer/Widgets/TriggersEditorWidget.cs:186
-msgid "Remove Trigger"
-msgstr "Tetikleyiciyi Sil"
-
-#: ../MonoDevelop.Database.Designer/Widgets/TriggersEditorWidget.cs:341
+#: ../MonoDevelop.Database.Designer/Widgets/TriggersEditorWidget.cs:343
 msgid "Trigger '{0}' does not contain a trigger statement."
 msgstr "'{0}' tetikleyicisi bir tetikleyici deyimi içermiyor."
 
-#: ../MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.TriggersEditorWidget.cs:120
+#: ../MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.TriggersEditorWidget.cs:119
 msgid "Statement"
 msgstr "Deyim"
 
-#: ../MonoDevelop.Database.Designer/Widgets/ColumnsEditorWidget.cs:87
+#: ../MonoDevelop.Database.Designer/Widgets/ColumnsEditorWidget.cs:89
 msgid "PK"
 msgstr "PK"
 
-#: ../MonoDevelop.Database.Designer/Widgets/ColumnsEditorWidget.cs:90
+#: ../MonoDevelop.Database.Designer/Widgets/ColumnsEditorWidget.cs:92
 msgid "Length"
 msgstr "Uzunluk"
 
-#: ../MonoDevelop.Database.Designer/Widgets/ColumnsEditorWidget.cs:91
+#: ../MonoDevelop.Database.Designer/Widgets/ColumnsEditorWidget.cs:93
 msgid "Nullable"
 msgstr "Hükümsüzleştirilebilir"
 
-#: ../MonoDevelop.Database.Designer/Widgets/ColumnsEditorWidget.cs:223
+#: ../MonoDevelop.Database.Designer/Widgets/ColumnsEditorWidget.cs:225
 msgid "Are you sure you want to remove column '{0}'"
 msgstr "'{0}' kolonunu silmek istediğinizden emin misiniz?"
 
-#: ../MonoDevelop.Database.Designer/Widgets/ColumnsEditorWidget.cs:224
-msgid "Remove Column"
-msgstr "Kolonu Sil"
-
-#: ../MonoDevelop.Database.Designer/Widgets/ColumnsEditorWidget.cs:387
+#: ../MonoDevelop.Database.Designer/Widgets/ColumnsEditorWidget.cs:389
 msgid "Unknown data type '{0}' applied to column '{1}'."
 msgstr "'{1}' kolonuna bilinmeyen veri tipi '{0}' uygulanmış."
 
-#: ../MonoDevelop.Database.Designer/Widgets/ColumnsEditorWidget.cs:399
+#: ../MonoDevelop.Database.Designer/Widgets/ColumnsEditorWidget.cs:401
 msgid "Table '{0}' must contain at least one primary key."
 msgstr "'{0}' tablosu en az bir birincil anahtar içermelidir."
 
-#: ../MonoDevelop.Database.Designer/Widgets/ColumnsEditorWidget.cs:406
+#: ../MonoDevelop.Database.Designer/Widgets/ColumnsEditorWidget.cs:408
 msgid "Table '{0}' must contain at least 1 column."
 msgstr "'{0}' tablosu en az bir kolon içermelidir."
 
-#: ../MonoDevelop.Database.Designer/Widgets/ConstraintsEditorWidget.cs:69
+#: ../MonoDevelop.Database.Designer/Widgets/ConstraintsEditorWidget.cs:71
 msgid "Primary Key"
 msgstr "Birincil Anahtar"
 
-#: ../MonoDevelop.Database.Designer/Widgets/ConstraintsEditorWidget.cs:75
+#: ../MonoDevelop.Database.Designer/Widgets/ConstraintsEditorWidget.cs:77
 msgid "Foreign Key"
 msgstr "Yabancı Anahtar"
 
-#: ../MonoDevelop.Database.Designer/Widgets/ConstraintsEditorWidget.cs:81
+#: ../MonoDevelop.Database.Designer/Widgets/ConstraintsEditorWidget.cs:83
 msgid "Check"
 msgstr "Denetle"
 
-#: ../MonoDevelop.Database.Designer/Widgets/ConstraintsEditorWidget.cs:87
+#: ../MonoDevelop.Database.Designer/Widgets/ConstraintsEditorWidget.cs:89
 msgid "Unique"
 msgstr "Eşsiz"
 
@@ -741,7 +728,7 @@ msgstr "Hiçbir ad belirtilmedi."
 msgid "Edit Table"
 msgstr "Tabloyu Düzenle"
 
-#: ../MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.TableEditorDialog.cs:112
+#: ../MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.TableEditorDialog.cs:111
 msgid "Preview SQL"
 msgstr "SQL Önizleme"
 
@@ -749,8 +736,8 @@ msgstr "SQL Önizleme"
 msgid "Connection"
 msgstr "Bağlantı"
 
-#: ../MonoDevelop.Database.Designer/Dialogs/ViewEditorDialog.cs:70
-#: ../MonoDevelop.Database.Designer/Dialogs/ProcedureEditorDialog.cs:72
+#: ../MonoDevelop.Database.Designer/Dialogs/ViewEditorDialog.cs:69
+#: ../MonoDevelop.Database.Designer/Dialogs/ProcedureEditorDialog.cs:71
 msgid "Definition"
 msgstr "Tanımlama"
 
@@ -758,52 +745,46 @@ msgstr "Tanımlama"
 msgid "Preview"
 msgstr "Önizleme"
 
-#: ../MonoDevelop.Database.Designer/Widgets/ForeignKeyConstraintEditorWidget.cs:105
+#: ../MonoDevelop.Database.Designer/Widgets/ForeignKeyConstraintEditorWidget.cs:107
 msgid "Reference Table"
 msgstr "Atıf Tablosu"
 
-#: ../MonoDevelop.Database.Designer/Widgets/ForeignKeyConstraintEditorWidget.cs:106
-#: ../MonoDevelop.Database.Designer/Widgets/CheckConstraintEditorWidget.cs:81
-#: ../MonoDevelop.Database.Designer/Widgets/UniqueConstraintEditorWidget.cs:74
+#: ../MonoDevelop.Database.Designer/Widgets/ForeignKeyConstraintEditorWidget.cs:108
+#: ../MonoDevelop.Database.Designer/Widgets/CheckConstraintEditorWidget.cs:83
+#: ../MonoDevelop.Database.Designer/Widgets/UniqueConstraintEditorWidget.cs:76
 msgid "Column Constraint"
 msgstr "Kolon Kısıtı"
 
-#: ../MonoDevelop.Database.Designer/Widgets/ForeignKeyConstraintEditorWidget.cs:107
+#: ../MonoDevelop.Database.Designer/Widgets/ForeignKeyConstraintEditorWidget.cs:109
 msgid "Delete Action"
 msgstr "Eylemi Sil"
 
-#: ../MonoDevelop.Database.Designer/Widgets/ForeignKeyConstraintEditorWidget.cs:108
+#: ../MonoDevelop.Database.Designer/Widgets/ForeignKeyConstraintEditorWidget.cs:110
 msgid "Update Action"
 msgstr "Eylemi Güncelle"
 
-#: ../MonoDevelop.Database.Designer/Widgets/ForeignKeyConstraintEditorWidget.cs:199
-#: ../MonoDevelop.Database.Designer/Widgets/CheckConstraintEditorWidget.cs:156
-#: ../MonoDevelop.Database.Designer/Widgets/PrimaryKeyConstraintEditorWidget.cs:174
-#: ../MonoDevelop.Database.Designer/Widgets/UniqueConstraintEditorWidget.cs:193
+#: ../MonoDevelop.Database.Designer/Widgets/ForeignKeyConstraintEditorWidget.cs:201
+#: ../MonoDevelop.Database.Designer/Widgets/CheckConstraintEditorWidget.cs:158
+#: ../MonoDevelop.Database.Designer/Widgets/PrimaryKeyConstraintEditorWidget.cs:176
+#: ../MonoDevelop.Database.Designer/Widgets/UniqueConstraintEditorWidget.cs:195
 msgid "Are you sure you want to remove constraint '{0}'?"
 msgstr "'{0}' kısıtını silmek istediğinizden emin misiniz?"
 
-#: ../MonoDevelop.Database.Designer/Widgets/ForeignKeyConstraintEditorWidget.cs:200
-#: ../MonoDevelop.Database.Designer/Widgets/CheckConstraintEditorWidget.cs:157
-#: ../MonoDevelop.Database.Designer/Widgets/PrimaryKeyConstraintEditorWidget.cs:175
-#: ../MonoDevelop.Database.Designer/Widgets/UniqueConstraintEditorWidget.cs:194
-msgid "Remove Constraint"
-msgstr "Kısıtı Sil"
-
-#: ../MonoDevelop.Database.Designer/Widgets/ForeignKeyConstraintEditorWidget.cs:354
-#: ../MonoDevelop.Database.Designer/Widgets/UniqueConstraintEditorWidget.cs:233
+#: ../MonoDevelop.Database.Designer/Widgets/ForeignKeyConstraintEditorWidget.cs:356
+#: ../MonoDevelop.Database.Designer/Widgets/UniqueConstraintEditorWidget.cs:235
 msgid "Unique Key constraint '{0}' must be applied to one or more columns."
-msgstr "'{0}' adlı Eşsiz Anahtar kısıtı bir veya daha fazla kolona uygulanmalıdır."
+msgstr ""
+"'{0}' adlı Eşsiz Anahtar kısıtı bir veya daha fazla kolona uygulanmalıdır."
 
-#: ../MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.ForeignKeyConstraintEditorWidget.cs:160
+#: ../MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.ForeignKeyConstraintEditorWidget.cs:159
 msgid "Reference Columns"
 msgstr "Atıf Kolonları"
 
-#: ../MonoDevelop.Database.Designer/Widgets/CheckConstraintEditorWidget.cs:253
+#: ../MonoDevelop.Database.Designer/Widgets/CheckConstraintEditorWidget.cs:255
 msgid "Checked constraint '{0}' does not contain a check statement."
 msgstr "'{0}' adlı denetlenmiş kısıt bir check deyimi içermiyor."
 
-#: ../MonoDevelop.Database.Designer/Widgets/CheckConstraintEditorWidget.cs:258
+#: ../MonoDevelop.Database.Designer/Widgets/CheckConstraintEditorWidget.cs:260
 msgid ""
 "Checked constraint '{0}' is marked as a column constraint but is not applied "
 "to a column."
@@ -811,15 +792,16 @@ msgstr ""
 "'{0}' adlı denetlenmiş kısıt bir kolon kısıtı olarak işaretlenmiş olmasına "
 "karşın herhangi bir kolona uygulanmamış."
 
-#: ../MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.CheckConstraintEditorWidget.cs:119
+#: ../MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.CheckConstraintEditorWidget.cs:118
 msgid "Check Condition"
 msgstr "Koşulu Kontrol Et"
 
-#: ../MonoDevelop.Database.Designer/Widgets/PrimaryKeyConstraintEditorWidget.cs:198
+#: ../MonoDevelop.Database.Designer/Widgets/PrimaryKeyConstraintEditorWidget.cs:200
 msgid "Primary Key constraint '{0}' must be applied to one or more columns."
-msgstr "'{0}' adlı Birincil Anahtar kısıtı bir veya daha fazla kolona uygulanmalıdır."
+msgstr ""
+"'{0}' adlı Birincil Anahtar kısıtı bir veya daha fazla kolona uygulanmalıdır."
 
-#: ../MonoDevelop.Database.CodeGenerator/MonoDevelop.Database.CodeGenerator.addin.xml:27
+#: ../MonoDevelop.Database.CodeGenerator/MonoDevelop.Database.CodeGenerator.addin.xml:28
 #: ../MonoDevelop.Database.CodeGenerator/gtk-gui/MonoDevelop.Database.CodeGenerator.GenerateDataClassesDialog.cs:41
 msgid "Generate Data Classes"
 msgstr "Veri Sınıflarını Üret"
@@ -839,6 +821,24 @@ msgstr "Alanlar & Öznitelikler"
 #: ../MonoDevelop.Database.CodeGenerator/gtk-gui/MonoDevelop.Database.CodeGenerator.GenerateDataClassesDialog.cs:106
 msgid "Classes"
 msgstr "Sınıflar"
+
+#~ msgid "Re_name"
+#~ msgstr "Ye_niden adlandır"
+
+#~ msgid "Remove Connection"
+#~ msgstr "Bağlantıyı Sil"
+
+#~ msgid "Overwrite?"
+#~ msgstr "Üzerine yazılsın mı?"
+
+#~ msgid "Remove Trigger"
+#~ msgstr "Tetikleyiciyi Sil"
+
+#~ msgid "Remove Column"
+#~ msgstr "Kolonu Sil"
+
+#~ msgid "Remove Constraint"
+#~ msgstr "Kısıtı Sil"
 
 #~ msgid "Property Type"
 #~ msgstr "Öznitelik Türü"

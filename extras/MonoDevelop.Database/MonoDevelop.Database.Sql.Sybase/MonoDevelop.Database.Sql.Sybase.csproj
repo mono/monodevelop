@@ -60,7 +60,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Schema/" />
+    <Folder Include="Schema\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
