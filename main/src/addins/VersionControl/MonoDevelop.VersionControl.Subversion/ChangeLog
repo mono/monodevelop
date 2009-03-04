@@ -1,3 +1,9 @@
+2009-03-04  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.VersionControl.Subversion/SvnClient.cs: Improved
+	  subversion notify messages (taken some logic out of the
+	  subversion implementation).
+
 2009-02-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.VersionControl.Subversion.addin.xml: Restore

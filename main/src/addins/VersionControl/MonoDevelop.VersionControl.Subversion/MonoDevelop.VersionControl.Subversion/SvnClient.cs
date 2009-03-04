@@ -837,45 +837,166 @@ namespace MonoDevelop.VersionControl.Subversion {
 			throw new SubversionException (msg);
 		}
 		
+		// same logic as svn_mime_type_is_binary, but I don't see a reason for a native call
+		static bool MimeTypeIsBinary (string mimeType)
+		{
+			if (string.IsNullOrEmpty (mimeType))
+				return false;
+			return !(mimeType.StartsWith ("text/") || 
+			         mimeType == "image/x-xbitmap" || 
+			         mimeType == "image/x-xpixmap");
+		}
+		
 		void svn_wc_notify_func_t_impl (IntPtr baton, ref LibSvnClient.svn_wc_notify_t data, IntPtr pool)
 		{
-			string actiondesc = data.action.ToString ();
+			string actiondesc;
 			string file = Marshal.PtrToStringAnsi (data.path);
 			bool notifyChange = false;
 			
 			switch (data.action) {
-			case LibSvnClient.NotifyAction.UpdateAdd: actiondesc = GettextCatalog.GetString ("Added"); break;
-			case LibSvnClient.NotifyAction.UpdateDelete: actiondesc = GettextCatalog.GetString ("Deleted"); break;
-			case LibSvnClient.NotifyAction.UpdateUpdate: actiondesc = GettextCatalog.GetString ("Updating"); notifyChange = true; break;
-			case LibSvnClient.NotifyAction.UpdateExternal: actiondesc = GettextCatalog.GetString ("External Updated"); break;
-			case LibSvnClient.NotifyAction.UpdateCompleted: actiondesc = GettextCatalog.GetString ("Finished"); break;
+			case LibSvnClient.NotifyAction.Skip: 
+				if (data.content_state == LibSvnClient.NotifyState.Missing) {
+					actiondesc = string.Format (GettextCatalog.GetString ("Skipped missing target: '{0}'"), file); 
+				} else {
+					actiondesc = string.Format (GettextCatalog.GetString ("Skipped '{0}'"), file); 
+				}
+				break;
+			case LibSvnClient.NotifyAction.UpdateDelete: 
+				actiondesc = string.Format (GettextCatalog.GetString ("Deleted   '{0}'"), file);
+				break;
+//			case LibSvnClient.NotifyAction.UpdateReplace: 
+//				actiondesc = string.Format (GettextCatalog.GetString ("Replaced  '{0}'"), file);
+//				break;
 				
-			case LibSvnClient.NotifyAction.CommitAdded: actiondesc = GettextCatalog.GetString ("Added"); break;
-			case LibSvnClient.NotifyAction.CommitDeleted: actiondesc = GettextCatalog.GetString ("Deleted"); break;
-			case LibSvnClient.NotifyAction.CommitModified: actiondesc = GettextCatalog.GetString ("Modified"); notifyChange = true; break;
-			case LibSvnClient.NotifyAction.CommitReplaced: actiondesc = GettextCatalog.GetString ("Replaced"); notifyChange = true; break;
-			case LibSvnClient.NotifyAction.CommitPostfixTxDelta: actiondesc = GettextCatalog.GetString ("Sending Content"); break;
+			case LibSvnClient.NotifyAction.UpdateAdd: 
+				if (data.content_state == LibSvnClient.NotifyState.Conflicted) {
+					actiondesc = string.Format (GettextCatalog.GetString ("Conflict {0}"), file); 
+				} else {
+					actiondesc = string.Format (GettextCatalog.GetString ("Addded   {0}"), file); 
+				}
+				break;
+//			case LibSvnClient.NotifyAction.Exists:
+//				// original is untranslated, we'll make it a bit shorter
+///*				actiondesc = data.content_state == LibSvnClient.NotifyState.Conflicted ? "C" : "E";
+//				if (data.prop_state == LibSvnClient.NotifyState.Conflicted) {
+//					actiondesc += "C";
+//				} else if (data.prop_state == LibSvnClient.NotifyState.Merged) {
+//					actiondesc += "G";
+//				}
+//				actiondesc += " {0}";
+//				actiondesc = string.Format (actiondesc, file); */
+//				actiondesc = string.Format (GettextCatalog.GetString ("Exists   {0}"), file);
+//				break;
+			case LibSvnClient.NotifyAction.Restore: 
+				actiondesc = string.Format (GettextCatalog.GetString ("Restored '{0}'"), file); 
+				break;
+			case LibSvnClient.NotifyAction.Revert: 
+				actiondesc = string.Format (GettextCatalog.GetString ("Reverted '{0}'"), file); 
+				break;
+			case LibSvnClient.NotifyAction.FailedRevert: 
+				actiondesc = string.Format (GettextCatalog.GetString ("Failed to revert '{0}' -- try updating instead."), file);
+				break;
+			case LibSvnClient.NotifyAction.Resolved:
+				actiondesc = string.Format (GettextCatalog.GetString ("Resolved conflict state of '{0}'"), file);
+				break;
+			case LibSvnClient.NotifyAction.Add: 
+				if (MimeTypeIsBinary (Marshal.PtrToStringAuto (data.mime_type))) {
+					actiondesc = string.Format (GettextCatalog.GetString ("Add (bin) '{0}'"), file); 
+				} else {
+					actiondesc = string.Format (GettextCatalog.GetString ("Add       '{0}'"), file); 
+				}
+				break;
+			case LibSvnClient.NotifyAction.Delete: 
+				actiondesc = string.Format (GettextCatalog.GetString ("Delete    '{0}'"), file);
+				break;
+				
+			case LibSvnClient.NotifyAction.UpdateUpdate: 
+				// original is untranslated, we'll make it a bit shorter
+			/*	actiondesc = "";
+				if (data.content_state == LibSvnClient.NotifyState.Conflicted) {
+					actiondesc += "C";
+				} else if (data.content_state == LibSvnClient.NotifyState.Merged) {
+					actiondesc += "G";
+				} else if (data.content_state == LibSvnClient.NotifyState.Changed) {
+					actiondesc += "U";
+				}
+				
+				if (data.prop_state == LibSvnClient.NotifyState.Conflicted) {
+					actiondesc += "C";
+				} else if (data.prop_state == LibSvnClient.NotifyState.Merged) {
+					actiondesc += "G";
+				} else if (data.prop_state == LibSvnClient.NotifyState.Changed) {
+					actiondesc += "U";
+				}
+				if (data.lock_state == LibSvnClient.NotifyLockState.Unlocked)
+					actiondesc += "B";
+				
+				actiondesc += " '{0}'"; 
+				actiondesc = string.Format (actiondesc, file); */
+				actiondesc = string.Format (GettextCatalog.GetString ("Update '{0}'"), file);
+				notifyChange = true;
+				break;
+			case LibSvnClient.NotifyAction.UpdateExternal: 
+				actiondesc = string.Format (GettextCatalog.GetString ("Fetching external item into '{0}'"), file); 
+				break;
+			case LibSvnClient.NotifyAction.UpdateCompleted:  // TODO
+				actiondesc = GettextCatalog.GetString ("Finished"); 
+				break;
+			case LibSvnClient.NotifyAction.StatusExternal: 
+				actiondesc = string.Format (GettextCatalog.GetString ("Performing status on external item at '{0}'"), file);
+				break;
+			case LibSvnClient.NotifyAction.StatusCompleted: 
+				actiondesc = string.Format (GettextCatalog.GetString ("Status against revision: '{0}'"), data.revision);
+				break;
+				
+			case LibSvnClient.NotifyAction.CommitDeleted: 
+				actiondesc = string.Format (GettextCatalog.GetString ("Deleting       {0}"), file); 
+				break;
+			case LibSvnClient.NotifyAction.CommitModified: 
+				actiondesc = string.Format (GettextCatalog.GetString ("Sending        {0}"), file);
+				notifyChange = true; 
+				break;
+			case LibSvnClient.NotifyAction.CommitAdded: 
+				if (MimeTypeIsBinary (Marshal.PtrToStringAuto (data.mime_type))) {
+					actiondesc = string.Format (GettextCatalog.GetString ("Adding  (bin)  '{0}'"), file); 
+				} else {
+					actiondesc = string.Format (GettextCatalog.GetString ("Adding         '{0}'"), file); 
+				}
+				break;
+			case LibSvnClient.NotifyAction.CommitReplaced: 
+				actiondesc = string.Format (GettextCatalog.GetString ("Replacing      {0}"), file);
+				notifyChange = true; 
+				break;
+			case LibSvnClient.NotifyAction.CommitPostfixTxDelta: 
+				actiondesc = null;
+				//actiondesc = GettextCatalog.GetString ("Transmitting file data");
+				break;
 					
-			case LibSvnClient.NotifyAction.Locked: actiondesc = GettextCatalog.GetString ("Locked"); break;
-			case LibSvnClient.NotifyAction.Unlocked: actiondesc = GettextCatalog.GetString ("Unlocked"); break;
-			case LibSvnClient.NotifyAction.FailedLock: actiondesc = GettextCatalog.GetString ("Lock Failed"); break;
-			case LibSvnClient.NotifyAction.FailedUnlock: actiondesc = GettextCatalog.GetString ("Unlock Failed"); break;
-					
-				/*Add,
-				 Copy,
-				 Delete,
-				 Restore,
-				 Revert,
-				 FailedRevert,
-				 Resolved,
-				 Skip,
+			case LibSvnClient.NotifyAction.Locked: 
+				LibSvnClient.svn_lock_t repoLock = (LibSvnClient.svn_lock_t) Marshal.PtrToStructure (data.repo_lock, typeof (LibSvnClient.svn_lock_t));
+				actiondesc = string.Format (GettextCatalog.GetString ("'{0}' locked by user '{1}'."), file, repoLock.owner);
+				break;
+			case LibSvnClient.NotifyAction.Unlocked: 
+				actiondesc = string.Format (GettextCatalog.GetString ("'{0}' unlocked."), file);
+				break;
+//			case LibSvnClient.NotifyAction.ChangeListSet: 
+//				actiondesc = string.Format (GettextCatalog.GetString ("Path '{0}' is now a member of changelist '{1}'."), file, Marshal.PtrToStringAuto (data.changelist_name));
+//				break;
+//			case LibSvnClient.NotifyAction.ChangeListClear: 
+//				actiondesc = string.Format (GettextCatalog.GetString ("Path '{0}' is no longer a member of a changelist."), file);
+//				break;
+			default:
+				System.Console.WriteLine("untranslated action:" + data.action);
+				actiondesc = data.action.ToString () + " " + file;
+				break;
+				/*
 				 StatusCompleted,
 				 StatusExternal,
 				 BlameRevision*/
 			}
 			
-			if (updatemonitor != null)
-				updatemonitor.Log.WriteLine (actiondesc + " " + file);
+			if (updatemonitor != null && !string.IsNullOrEmpty (actiondesc))
+				updatemonitor.Log.WriteLine (actiondesc);
 			if (updateFileList != null && notifyChange && File.Exists (file))
 				updateFileList.Add (file);
 			
