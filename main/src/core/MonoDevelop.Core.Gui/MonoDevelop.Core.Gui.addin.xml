@@ -242,5 +242,9 @@
 			<File pattern="*.diff" />
 		</MimeType>
 		
+		<MimeType id="text/x-makefile" _description="Makefile" isText="true">
+			<File pattern="Makefile|Makefile.am|Makefile.in"/>
+		</MimeType>
+		
 	</Extension>
 </Addin>

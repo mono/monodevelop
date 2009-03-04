@@ -1,5 +1,9 @@
 2009-03-04  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Core.Gui.addin.xml: Added makefile mime.
+
+2009-03-04  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am: corrected makefile.
 
 2009-03-04  Mike Krüger  <mkrueger@novell.com>
