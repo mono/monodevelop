@@ -121,7 +121,7 @@ namespace MonoDevelop.AssemblyBrowser
 			foreach (object o in type.Members) {
 				IMember member = o as IMember;
 				if (member != null) {
-					if (member.IsSpecialName) 
+					if (member.IsSpecialName && !(member is IMethod && ((IMethod)member).IsConstructor)) 
 						continue;
 					if (publicOnly && !member.IsPublic)
 						continue;
