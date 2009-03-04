@@ -6,7 +6,7 @@ msgstr ""
 "X-Poedit-Bookmarks: -1,1681,-1,-1,-1,-1,-1,-1,-1,-1\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2009-03-04 11:16:06+0100\n"
+"PO-Revision-Date: 2009-03-04 11:30:47+0100\n"
 "Language-Team: \n"
 "Project-Id-Version: Monodevelop\n"
 "MIME-Version: 1.0\n"
@@ -5707,7 +5707,7 @@ msgstr "_Versionskontrolle"
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:171
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:178
 msgid "Commit Message Style"
-msgstr "Commit-Nachrichten-Stil"
+msgstr "Übertragungs-Nachrichten-Stil"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:55
 msgid "Retrieving history for {0}..."
@@ -5842,7 +5842,7 @@ msgstr "Remotestatus"
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:231
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.CommitDialog.cs:106
 msgid "Commit message:"
-msgstr "Commit-Nachricht:"
+msgstr "Übertragungs-Nachricht:"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:336
 msgid "Scanning for changes..."
@@ -5862,15 +5862,16 @@ msgstr "Keine Dateien haben lokale oder entfernte Veränderungen."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:468
 msgid "Commit message for file '{0}':"
-msgstr "Commit-Nachricht für Datei '{0}':"
+msgstr "Übertragungs-Nachricht für Datei '{0}':"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:470
 msgid "Commit message (multiple selection):"
-msgstr "Commit-Nachricht (Mehrfach-Auswahl):"
+msgstr "Übertragungs-Nachricht (Mehrfach-Auswahl):"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:587
 msgid "Some of the files in this commit do not have ChangeLog messages."
-msgstr "Einige Dateien in dieser Übertragung haben keine Commit nachrichten."
+msgstr ""
+"Einige Dateien in dieser Übertragung haben keine Änderungsprotokoll Einträge."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:588
 msgid "You may have forgotten to unselect items."
@@ -6049,7 +6050,7 @@ msgstr "Password:"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.CommitDialog.cs:40
 msgid "Commit Files"
-msgstr "Dateien comitten"
+msgstr "Dateien übertragen"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.CommitDialog.cs:58
 msgid "The following files will be committed:"
@@ -7633,7 +7634,8 @@ msgstr "_Integrieren in Versionskontrolle"
 
 #: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:180
 msgid "_Require ChangeLog entries for all files when committing"
-msgstr "_ChangeLog Einträge für alle Dateien beim Übertragen vorraussetzen"
+msgstr ""
+"Ä_nderungsprotokoll-Einträge für alle Dateien beim Übertragen vorraussetzen"
 
 #: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:194
 msgid "ChangeLog Generation"
@@ -14419,7 +14421,6 @@ msgstr "Schließe die folgenden Kategorien ein:"
 #~ msgstr "Fehler aufgetreten: {0}"
 #~ msgid "Question"
 #~ msgstr "Frage"
-
 #~ msgid "Delete files"
 #~ msgstr "Lösche Dateien"
 
