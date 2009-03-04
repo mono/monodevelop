@@ -1,5 +1,13 @@
 2009-03-04  Mike Krüger  <mkrueger@novell.com>
 
+	* Makefile.am:
+	* Mono.TextEditor.csproj:
+	* SyntaxModes/CSharpSyntaxMode.xml:
+	* SyntaxModes/MakefileSyntaxMode.xml: Added makefile syntax
+	  mode.
+
+2009-03-04  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/GapBuffer.cs: Corrected insignificant
 	  algortihm glitch in gap buffer.
 

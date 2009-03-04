@@ -123,6 +123,9 @@
     <None Include="ChangeLog" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="SyntaxModes\MakefileSyntaxMode.xml">
+      <LogicalName>MakefileSyntaxMode.xml</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="SyntaxModes\BooSyntaxMode.xml">
       <LogicalName>BooSyntaxMode.xml</LogicalName>
     </EmbeddedResource>
@@ -177,7 +180,9 @@
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="SyntaxModes\DiffSyntaxMode.xml" />
+    <EmbeddedResource Include="SyntaxModes\DiffSyntaxMode.xml">
+      <LogicalName>DiffSyntaxMode.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
