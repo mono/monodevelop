@@ -1,5 +1,10 @@
 2009-03-04  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.VersionControl.Subversion/SvnClient.cs: Added
+	  newline before revision message.
+
+2009-03-04  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.VersionControl.Subversion/SvnClient.cs: worked
 	  on messages.
 

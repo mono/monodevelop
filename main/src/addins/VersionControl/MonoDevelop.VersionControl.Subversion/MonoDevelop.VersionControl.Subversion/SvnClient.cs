@@ -576,8 +576,10 @@ namespace MonoDevelop.VersionControl.Subversion {
 				
 				CheckError (svn.client_commit (ref commit_info, array, 0, ctx, localpool));
 				unsafe {
-					if (commit_info != IntPtr.Zero)
+					if (commit_info != IntPtr.Zero) {
+						monitor.Log.WriteLine ();
 						monitor.Log.WriteLine (GettextCatalog.GetString ("Revision: {0}", ((LibSvnClient.svn_client_commit_info_t *) commit_info.ToPointer())->revision));
+					}
 				}
 			} finally {
 				commitmessage = null;
@@ -869,6 +871,7 @@ namespace MonoDevelop.VersionControl.Subversion {
 			string file = Marshal.PtrToStringAnsi (data.path);
 			bool notifyChange = false;
 			bool skipEol = false;
+//			System.Console.WriteLine(data.action);
 			switch (data.action) {
 			case LibSvnClient.NotifyAction.Skip: 
 				if (data.content_state == LibSvnClient.NotifyState.Missing) {
