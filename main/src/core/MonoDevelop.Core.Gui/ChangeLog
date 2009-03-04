@@ -1,5 +1,12 @@
 2009-03-04  Mike Krüger  <mkrueger@novell.com>
 
+	* Makefile.am:
+	* MonoDevelop.Core.Gui.csproj:
+	* MonoDevelop.Core.Gui.addin.xml: Added new icons to the icon
+	  pool.
+
+2009-03-04  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Core.Gui.csproj: 
 
 	* icons/translation-fuzzy.png:

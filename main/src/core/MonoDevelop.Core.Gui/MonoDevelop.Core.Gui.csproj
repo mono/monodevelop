@@ -427,6 +427,15 @@
     <EmbeddedResource Include="icons\template-16.png">
       <LogicalName>template-16.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\translation-fuzzy.png">
+      <LogicalName>translation-fuzzy-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\translation-missing.png">
+      <LogicalName>translation-missing-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\translation-valid.png">
+      <LogicalName>translation-valid-16.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Core.Gui.Components\FileBrowser.cs" />
@@ -491,9 +500,6 @@
   <ItemGroup>
     <None Include="Makefile.am" />
     <None Include="ChangeLog" />
-    <None Include="icons\translation-fuzzy.png" />
-    <None Include="icons\translation-missing.png" />
-    <None Include="icons\translation-valid.png" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
