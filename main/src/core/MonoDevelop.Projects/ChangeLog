@@ -1,5 +1,11 @@
 2009-03-04  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects.Formats.MD1/MD1DotNetProjectHandler.cs:
+	  Properly evaluate $(Platform) in conditions. Fixes bug
+	  #480680.
+
+2009-03-04  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects/DotNetProject.cs:
 	* MonoDevelop.Projects/CustomCommand.cs:
 	* MonoDevelop.Projects/ExecutionContext.cs: Changed the way

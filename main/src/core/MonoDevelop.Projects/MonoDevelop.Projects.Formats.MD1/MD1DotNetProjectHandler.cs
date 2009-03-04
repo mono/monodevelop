@@ -598,7 +598,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 		
 		public string EvaluateString (string value)
 		{
-			string val = value.Replace ("$(Configuration)", config.Name);
+			string val = value.Replace ("$(Configuration)", config.Name).Replace ("$(Platform)", config.Platform);
 			return val;
 		}
 	}

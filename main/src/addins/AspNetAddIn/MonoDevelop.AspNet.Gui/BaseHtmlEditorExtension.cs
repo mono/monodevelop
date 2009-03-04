@@ -60,13 +60,13 @@ namespace MonoDevelop.AspNet.Gui
 				
 				resolvedDocType = true;
 				
-				if (string.IsNullOrEmpty (DocType)) {
+				if (DocType == null || String.IsNullOrEmpty (DocType.PublicFpi)) {
 					LoggingService.LogDebug ("HTML completion found no doctype, using default");
 					schema = HtmlSchemaService.DefaultDocType;
 					return schema;
 				}
 				
-				schema = HtmlSchemaService.GetSchema (DocType, true);
+				schema = HtmlSchemaService.GetSchema (DocType.PublicFpi, true);
 				if (schema != null) {
 					LoggingService.LogDebug ("HTML completion using doctype {0}", schema.Name);
 				} else {
@@ -106,7 +106,7 @@ namespace MonoDevelop.AspNet.Gui
 			AddMiscBeginTags (list);
 			
 			//FIXME: don't show this after any elements
-			if (string.IsNullOrEmpty (DocType))
+			if (DocType == null)
 				list.Add ("!DOCTYPE", "md-literal", GettextCatalog.GetString ("Character data"));
 		}
 		

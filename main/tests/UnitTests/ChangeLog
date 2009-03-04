@@ -1,3 +1,9 @@
+2009-03-04  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Xml.StateEngine/ParsingTests.cs: Update doctype
+	  test to cover the improved captures and
+	  InternalDeclarationRegion support.
+
 2009-03-02  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharpBinding/FindMemberVisitorTests.cs: added

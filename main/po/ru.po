@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop 0.13\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-02-24 16:24:20-0500\n"
+"POT-Creation-Date: 2009-03-04 18:10:09-0500\n"
 "PO-Revision-Date: 2007-10-29 10:54+0300\n"
 "Last-Translator: Daniel Abramov <ex@vingrad.ru>\n"
 "Language-Team: Russian <ru@li.org>\n"
@@ -22,22 +22,17 @@ msgstr ""
 "X-Poedit-Country: RUSSIAN FEDERATION\n"
 "X-Poedit-SourceCharset: utf-8\n"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core/Runtime.cs:197
-#, fuzzy
-msgid "Unhandled internal error: {0}"
-msgstr "Внутренняя ошибка"
-
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.Execution/ProcessService.cs:185
 #, fuzzy
 msgid "MonoDevelop External Console"
 msgstr "Запустить во внешней консоли"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.Execution/ProcessService.cs:392
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.Execution/ProcessService.cs:396
 #, fuzzy
 msgid "The application was terminated by a signal: {0}"
 msgstr "Приложение завершилось с кодом выхода: {0}"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.Execution/ProcessService.cs:394
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core.Execution/ProcessService.cs:398
 #: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:413
 msgid "The application exited with code: {0}"
 msgstr "Приложение завершилось с кодом выхода: {0}"
@@ -86,8 +81,8 @@ msgstr ""
 #: ../src/core/MonoDevelop.Components/MonoDevelop.Components.Commands/KeyBindingService.cs:198
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs:60
 #: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/XspOptionsPanelWidget.cs:53
-#: ../src/addins/CSharpBinding/Gui/CompilerOptionsPanelWidget.cs:98
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs:69
+#: ../src/addins/CSharpBinding/Gui/CompilerOptionsPanelWidget.cs:99
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs:78
 msgid "Default"
 msgstr "По умолчанию"
 
@@ -114,6 +109,7 @@ msgstr ""
 #: ../src/core/MonoDevelop.Core.Gui/Base.glade:10
 #: ../src/core/MonoDevelop.Core.Gui/gtk-gui/MonoDevelop.Core.Gui.Dialogs.OptionsDialog.cs:41
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:130
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:210
 #: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:297
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs:160
 msgid "Options"
@@ -264,40 +260,52 @@ msgstr "Главная страница MonoDevelop"
 msgid "Loading..."
 msgstr "Идёт загрузка..."
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:206
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:209
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:211
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:214
 #, fuzzy
 msgid ".NET resource"
 msgstr "Добавить ресурс"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:212
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:217
 #, fuzzy
 msgid "Add-in manifest"
 msgstr "_Менеджер дополнений..."
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:216
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:221
 #, fuzzy
 msgid "XML document"
 msgstr "Документация"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:220
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:225
 #, fuzzy
 msgid "ChangeLog document"
 msgstr "Запись в журнале изменений:"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:223
-msgid ".NET progam"
-msgstr ""
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:228
+#, fuzzy
+msgid ".NET program"
+msgstr "Добавить ресурс"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:227
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:232
 #, fuzzy
 msgid "MonoDevelop/MSBuild Solution"
 msgstr "Файлы решения MonoDevelop"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:230
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:235
 #, fuzzy
 msgid "MonoDevelop 1.0 Solution"
 msgstr "Файлы решения MonoDevelop"
+
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:239
+#, fuzzy
+msgid "diff files"
+msgstr "Добавить файлы"
+
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:244
+#: ../src/addins/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:60
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:433
+msgid "Makefile"
+msgstr "Makefile"
 
 #: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:60
 msgid "Go up one level"
@@ -421,7 +429,7 @@ msgid "_Reload"
 msgstr "Перезагрузить"
 
 #: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/MessageService.cs:45
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:903
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:909
 msgid "_Move"
 msgstr "Пере_местить"
 
@@ -431,15 +439,20 @@ msgid "Close _without Saving"
 msgstr "Закрыть ре_шение"
 
 #: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/MessageService.cs:49
+#, fuzzy
+msgid "Build _without Saving"
+msgstr "Закрыть ре_шение"
+
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/MessageService.cs:50
 msgid "D_iscard"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/MessageService.cs:51
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/MessageService.cs:52
 #, fuzzy
 msgid "_Proceed"
 msgstr "Процедура"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/MessageService.cs:53
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/MessageService.cs:54
 #, fuzzy
 msgid "_Overwrite file"
 msgstr "Текущий файл"
@@ -574,7 +587,23 @@ msgstr "Файл конфигурации приложения"
 #: ../src/core/MonoDevelop.Ide/templates/AppConfigFile.xft.xml:6
 #: ../src/core/MonoDevelop.Ide/templates/EmptyResourceFile.xft.xml:6
 #: ../src/core/MonoDevelop.Ide/templates/EmptyTextFile.xft.xml:6
+#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/ToolboxProvider.cs:142
+#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/ToolboxProvider.cs:155
+#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/ToolboxProvider.cs:167
+#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/ToolboxProvider.cs:176
 #: ../src/addins/VBNetBinding/templates/AssemblyInfo.xft.xml:9
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/TypeReference.cs:108
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/TypeReference.cs:117
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:46
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:53
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:60
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/SolutionItemDescriptor.cs:42
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/SolutionItemDescriptor.cs:50
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/SolutionItemDescriptor.cs:62
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/WorkspaceItemDescriptor.cs:42
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/WorkspaceItemDescriptor.cs:50
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/WorkspaceItemDescriptor.cs:59
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/WorkspaceItemDescriptor.cs:72
 #: ../src/addins/CSharpBinding/templates/AssemblyInfo.xft.xml:9
 msgid "Misc"
 msgstr ""
@@ -845,8 +874,10 @@ msgstr ""
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:183
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:283
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:438
+#: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/StartupOptionsPanel.cs:71
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/NamespaceSynchronisationPanel.cs:232
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml:43
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:66
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:57
 msgid "Project"
 msgstr "Проект"
@@ -867,7 +898,6 @@ msgid "_Add New Workspace..."
 msgstr "Добавить новый проект..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:331
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:335
 msgid "Add a new child workspace to the selected workspace"
 msgstr ""
 
@@ -875,6 +905,11 @@ msgstr ""
 #, fuzzy
 msgid "_Add New Solution..."
 msgstr "Добавить новое решение..."
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:335
+#, fuzzy
+msgid "Add a new child solution to the selected workspace"
+msgstr "Добавить новый проект к проекту упаковки '{0}'"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:338
 #, fuzzy
@@ -1111,7 +1146,7 @@ msgstr "Экспорт..."
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:436
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/CommentTasksView.cs:98
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/CommentTasksView.cs:253
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:196
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:197
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/CommitDialog.cs:41
 #: ../src/addins/MonoDevelop.CodeMetrics/MonoDevelop.CodeMetrics/CodeMetricsWidget.cs:61
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/StackTracePad.cs:53
@@ -1198,7 +1233,7 @@ msgid "Close the active solution or workspace item"
 msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:498
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:87
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:88
 #, fuzzy
 msgid "_Revert"
 msgstr "Восстановить"
@@ -1294,6 +1329,7 @@ msgid "Opens the folder that contains this file."
 msgstr "Переименовать файл, содержащий общедоступный класс"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:553
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:71
 #, fuzzy
 msgid "Build action"
 msgstr "Построить _всё решение"
@@ -1637,8 +1673,9 @@ msgid "Find _Previous (Emacs behavior)"
 msgstr "Найти выделенный текст _ранее"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:774
-msgid "Search backwards for the same tex twith emacs behavior"
-msgstr ""
+#, fuzzy
+msgid "Search backwards for the same text with emacs behavior"
+msgstr "Не начинать _блок кода с новой строки"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:777
 msgid "Find Next Selection"
@@ -1949,7 +1986,7 @@ msgid "Open _With"
 msgstr "Внешний редактор"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1006
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:71
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:72
 #, fuzzy
 msgid "_Add"
 msgstr "Добавить"
@@ -2062,6 +2099,11 @@ msgstr "Загрузка и сохранение"
 #: ../src/core/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandWidget.cs:80
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml:64
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml:70
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:120
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:128
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:70
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:79
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:87
 msgid "Build"
 msgstr "Построение"
 
@@ -2084,7 +2126,6 @@ msgid "Coding"
 msgstr "Написание кода"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1184
-#: ../src/addins/VBNetBinding/gtk-gui/MonoDevelop.VBNetBinding.ProjectOptionsPanelWidget.cs:335
 #: ../src/addins/AspNetAddIn/gtk-gui/MonoDevelop.AspNet.Gui.AspNetConfigurationPanelWidget.cs:40
 #: ../src/addins/CBinding/CBinding.addin.xml:111
 #: ../src/addins/CBinding/gtk-gui/CBinding.CodeGenerationPanel.cs:398
@@ -2100,9 +2141,9 @@ msgid "Formatting"
 msgstr "Форматирование"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1192
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:69
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:165
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:177
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:70
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:166
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:178
 msgid "Version Control"
 msgstr "Контроль версий"
 
@@ -2268,10 +2309,14 @@ msgid "C# Corner"
 msgstr "C# Corner"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1495
-msgid "GotDotNet"
-msgstr "GotDotNet"
+msgid "CodePlex"
+msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1499
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1496
+msgid "MSDN Code Gallery"
+msgstr ""
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1500
 #: ../src/addins/WelcomePage/WelcomePageContent.xml:27
 msgid "Report a Bug"
 msgstr ""
@@ -2630,24 +2675,24 @@ msgstr ""
 "<b>Переводом занимались:</b>\n"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:230
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:243
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:242
 msgid "About MonoDevelop"
 msgstr "О программе MonoDevelop"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:245
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:243
 msgid "Version Info"
 msgstr "Информация о версии"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/DirtyFilesDialog.cs:20
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/DirtyFilesDialog.cs:22
 msgid "Save Files"
 msgstr "Сохранить файлы"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/DirtyFilesDialog.cs:39
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/DirtyFilesDialog.cs:41
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/DirtyFilesDialog.cs:43
 msgid "Project: {0}"
 msgstr "Проект: {0}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/DirtyFilesDialog.cs:81
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/DirtyFilesDialog.cs:83
 msgid "_Save and Quit"
 msgstr "Сохранить и в_ыйти"
 
@@ -2664,11 +2709,11 @@ msgstr "Новое решение"
 msgid "New Project"
 msgstr "Новый проект"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:295
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:313
 msgid "Project will be saved at"
 msgstr "Проект будет сохранён в:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:388
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:406
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:310
 msgid ""
 "Illegal project name.\n"
@@ -2677,20 +2722,20 @@ msgstr ""
 "Недопустимое имя проекта. \n"
 "Вы можете использовать только латинские буквы, цифры, пробел, '.' или '_'."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:393
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:411
 msgid "A Project with that name is already in your Project Space"
 msgstr "Имя проекта совпадает с уже существующим"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:409
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:427
 msgid "Could not create directory {0}. File already exists."
 msgstr ""
 "Не удалось создать каталог {0}, потому что существует файл с таким же именем."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:412
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:430
 msgid "You do not have permission to create to {0}"
 msgstr "Отсутствуют права на создание в {0}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:424
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:442
 msgid "The project could not be created"
 msgstr "Не удалось создать проект"
 
@@ -2741,7 +2786,7 @@ msgid "Invalid file mask: {0}"
 msgstr "Некорректная маска файла: {0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:43
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:70
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:73
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs:65
 msgid "Version"
 msgstr "Версия"
@@ -2768,25 +2813,30 @@ msgstr ""
 "    (c) 2000-2003 icsharpcode.net\n"
 "    (c) 2004-{0} участники проекта MonoDevelop"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:69
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:72
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/OverridesImplementsDialog.cs:81
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/ComponentSelectorDialog.cs:81
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:47
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/SolutionItemDescriptor.cs:43
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/WorkspaceItemDescriptor.cs:43
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/StackTracePad.cs:45
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValueTreeView.cs:94
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ThreadsPad.cs:94
 msgid "Name"
 msgstr "Имя"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:71
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:74
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs:383
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:289
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:440
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/CommentTasksView.cs:104
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/CommentTasksView.cs:259
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:108
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:54
 msgid "Path"
 msgstr "Путь"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:95
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:109
 msgid "dynamic"
 msgstr "динамический"
 
@@ -2802,13 +2852,14 @@ msgstr "Файл {0} не является сборкой .NET"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs:54
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:182
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:53
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:301
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:318
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:319
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:336
 msgid "Assembly"
 msgstr "Сборка"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs:66
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:181
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:137
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:55
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment/PackageBuilder.cs:66
 msgid "Package"
@@ -2834,13 +2885,23 @@ msgstr ""
 "так как циклические зависимости запрещены)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:144
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:46
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:65
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:77
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:92
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:107
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:136
 msgid "Reference"
 msgstr "Ссылка"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:153
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:253
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/SelectRepositoryDialog.cs:53
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:47
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:61
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/LanguageItemWindow.cs:49
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:307
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:325
+#: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.Gui/XmlSchemasPanelWidget.cs:66
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValueTreeView.cs:119
 msgid "Type"
 msgstr "Тип"
@@ -2914,37 +2975,37 @@ msgid "Do you really want to remove the folder '{0}' from '{1}'?"
 msgstr "Перенести каталог '{0}' в каталог '{1}'?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionFolderNodeBuilder.cs:206
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:340
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:345
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionNodeBuilder.cs:265
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ClassPad/SolutionNodeBuilder.cs:254
 msgid "New Folder"
 msgstr "Новая папка"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:183
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:188
 msgid ""
 "Do you really want to move the folder '{0}' to the root folder of project "
 "'{1}'?"
 msgstr "Перенести каталог '{0}' в корневой каталог проекта '{1}'?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:185
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:190
 msgid "Do you really want to move the folder '{0}' to the folder '{1}'?"
 msgstr "Перенести каталог '{0}' в каталог '{1}'?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:191
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:196
 msgid ""
 "Do you really want to copy the folder '{0}' to the root folder of project "
 "'{1}'?"
 msgstr "Скопировать каталог '{0}' в корневой каталог проекта '{1}'?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:193
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:198
 msgid "Do you really want to copy the folder '{0}' to the folder '{1}'?"
 msgstr "Скопировать каталог '{0}' в каталог '{1}'?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:224
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:229
 msgid "Do you want to save the file '{0}' before the move operation?"
 msgstr "Сохранить файл '{0}' перед перемещением?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:226
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:231
 msgid ""
 "Do you want to save the following files before the move operation?\n"
 "\n"
@@ -2954,11 +3015,11 @@ msgstr ""
 "\n"
 "{0}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:229
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:234
 msgid "Do you want to save the file '{0}' before the copy operation?"
 msgstr "Сохранить файл '{0}' перед копированием?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:231
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:236
 msgid ""
 "Do you want to save the following files before the copy operation?\n"
 "\n"
@@ -2968,26 +3029,26 @@ msgstr ""
 "\n"
 "{0}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:233
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:238
 msgid "Don't Save"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:243
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:248
 msgid "Save operation failed."
 msgstr "Запись завершилась неудачно."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:254
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ShowAllFilesBuilderExtension.cs:344
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1051
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:259
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ShowAllFilesBuilderExtension.cs:340
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1057
 msgid "Copying files..."
 msgstr "Копируются файлы..."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:266
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:271
 #: ../src/addins/NUnit/Gui/NUnitAssemblyGroupConfigurationNodeBuilder.cs:117
 msgid "Add files"
 msgstr "Добавить файлы"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:278
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:283
 msgid "Override default build action"
 msgstr ""
 
@@ -3057,7 +3118,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:263
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/WorkspaceNodeBuilder.cs:221
-#: ../src/addins/VBNetBinding/gtk-gui/MonoDevelop.VBNetBinding.ProjectOptionsPanelWidget.cs:387
+#: ../src/addins/VBNetBinding/gtk-gui/MonoDevelop.VBNetBinding.ImportsOptionsPanelWidget.cs:85
 #: ../src/addins/CBinding/gtk-gui/CBinding.CodeGenerationPanel.cs:476
 #: ../src/addins/CBinding/gtk-gui/CBinding.CodeGenerationPanel.cs:596
 #: ../src/addins/CBinding/gtk-gui/CBinding.CodeGenerationPanel.cs:705
@@ -3158,12 +3219,12 @@ msgstr[0] "в {0} файле."
 msgstr[1] "в {0} файлах."
 msgstr[2] "в {0} файлах."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/DirectoryDocumentIterator.cs:123
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/DirectoryDocumentIterator.cs:131
 #, fuzzy
 msgid "Looking for '{0}' in directory '{1}'"
 msgstr "Поиск '{0}' в {1}."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/DirectoryDocumentIterator.cs:128
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/DirectoryDocumentIterator.cs:136
 #, fuzzy
 msgid "Replacing '{0}' in directory '{1}'"
 msgstr "Замена '{0}' в {1}."
@@ -3194,19 +3255,19 @@ msgstr "Выделить всё"
 msgid "Select contents"
 msgstr "Снять выделение"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:194
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:200
 msgid "The file could not be saved. Write permission has not been granted."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:241
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:247
 msgid "Save as..."
 msgstr "Сохранить как..."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:262
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:268
 msgid "File name {0} is invalid"
 msgstr "Некорректное имя файла: {0}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:267
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:273
 #, fuzzy
 msgid "File {0} already exists. Overwrite?"
 msgstr "Переписать существующий файл {0}?"
@@ -3254,73 +3315,78 @@ msgstr "Проект сохранён."
 msgid "Item saved."
 msgstr "Проект сохранён."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:480
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:483
 msgid "Add to Workspace"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:489
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:534
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:492
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:537
 msgid "The file '{0}' could not be loaded."
 msgstr "Не удалось загрузить файл {0}."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:525
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:528
 msgid "Add to Solution"
 msgstr "Добавить в решение"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:669
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:672
 msgid "Execution failed."
 msgstr "Исполнение завершилось неудачно."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:688
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:691
 msgid "The file {0} can't be compiled."
 msgstr "Не удалось скомпилировать файл {0}."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:701
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:732
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:704
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:735
 msgid "No runnable executable found."
 msgstr "Не найден исполняемый файл."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:773
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:842
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:776
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:848
 msgid "Build failed."
 msgstr "Построение завершилось неудачно."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:791
-msgid "Save changed files?"
-msgstr "Сохранить изменённые файлы?"
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:795
+#, fuzzy
+msgid "Save changed documents before building?"
+msgstr "Сохранять изменения в открытых документах"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:824
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:796
+msgid "Some of the open documents have unsaved changes."
+msgstr ""
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:830
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.NodeBuilders/TranslationProjectNodeBuilder.cs:195
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.NodeBuilders/TranslationNodeBuilder.cs:150
 msgid "---------------------- Done ----------------------"
 msgstr "--------------------- Готово ---------------------"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:836
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:842
 msgid "Build successful."
 msgstr "Построение завершено успешно."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:838
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:840
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:844
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:846
 msgid "Build: "
 msgstr "Построение: "
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:871
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:877
 msgid "Adding files..."
 msgstr "Добавляются файлы..."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:888
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:894
 msgid "{0} is outside the project directory, what should I do?"
 msgstr "{0} находится вне каталога проекта, что будем делать?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:893
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:899
 msgid "Use the same action for all selected files."
 msgstr "Применить это же действие ко всем выбранным файлам."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:901
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:907
 msgid "_Link"
 msgstr "_Ссылка"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:923
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:929
 msgid ""
 "An error occurred while attempt to move/copy that file. Please check your "
 "permissions."
@@ -3328,29 +3394,29 @@ msgstr ""
 "Произошла ошибка во время копирования или перемещения файла. Проверьте, "
 "пожалуйста, права доступа."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:947
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:953
 msgid "The file '{0}' already exists. Do you want to replace it?"
 msgstr "Файл {0} уже существует. Заменить?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:994
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1000
 msgid "Could not get any file from '{0}'."
 msgstr "Не удалось получить файлы из '{0}'."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1025
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1031
 msgid "Could not create directory '{0}'."
 msgstr "Не удалось создать каталог '{0}'."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1045
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1051
 #, fuzzy
 msgid "Directory '{0}' could not be moved."
 msgstr "Не удалось удалить каталог '{0}'."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1069
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1075
 msgid "File '{0}' could not be created."
 msgstr "Не удалось создать файл '{0}'."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:832
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:313
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:838
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:312
 #: ../src/addins/prj2make-sharp-lib/MSBuildProjectServiceExtension.cs:66
 msgid "{0} error"
 msgid_plural "{0} errors"
@@ -3358,8 +3424,8 @@ msgstr[0] "{0} ошибка"
 msgstr[1] "{0} ошибки"
 msgstr[2] "{0} ошибок"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:833
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:314
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:839
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:313
 #: ../src/addins/prj2make-sharp-lib/MSBuildProjectServiceExtension.cs:67
 msgid "{0} warning"
 msgid_plural "{0} warnings"
@@ -3375,39 +3441,39 @@ msgstr "Инициализация главного окна"
 msgid "Opening {0}"
 msgstr "Открытие {0}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:606
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:609
 #, fuzzy
 msgid "Save the changes to document '{0}' before closing?"
 msgstr "Сохранять изменения в открытых документах"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:607
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:610
 msgid "If you don't save, all changes will be permanently lost."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:622
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:625
 msgid "The document could not be saved."
 msgstr "Не удалось сохранить документ."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:649
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:652
 msgid "Invalid file name"
 msgstr "Недопустимое имя файла"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:663
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:666
 msgid "{0} is a directory"
 msgstr "{0} является каталогом"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:679
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:682
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/RootWorkspace.cs:484
 msgid "File not found: {0}"
 msgstr "Файл не найден: {0}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:740
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:743
 #, fuzzy
 msgid "File '{0}' could not be opened"
 msgstr "Не удалось открыть файл {0}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:893
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:903
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:896
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:906
 msgid "The file '{0}' could not be opened."
 msgstr "Не удалось открыть файл {0}"
 
@@ -3433,12 +3499,18 @@ msgstr "Сохраняется..."
 msgid "Search Results"
 msgstr "Результаты поиска"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:134
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:104
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:106
+#, fuzzy
+msgid "Starting MonoDevelop"
+msgstr "Инициализация MonoDevelop"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:153
 msgid "MonoDevelop failed to start. Local hostname cannot be resolved."
 msgstr ""
 "MonoDevelop не удалось запуститься: не распознать сетевое имя компьютера."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:135
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:154
 msgid ""
 "Your network may be misconfigured. Make sure the hostname of your system is "
 "added to the /etc/hosts file."
@@ -3446,23 +3518,23 @@ msgstr ""
 "Вероятно, ваша сеть настроена некорректно. Убедитесь, что вы добавили "
 "сетевое имя компьютера в файл /etc/hosts."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:177
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:191
 msgid "MonoDevelop failed to start. The following error has been reported: "
 msgstr "MonoDevelop не удалось запуститься из-за следующей ошибки: "
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:326
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:340
 msgid ""
 "Some packages installed in your system are not compatible with MonoDevelop:\n"
 msgstr ""
 "Некоторые пакеты, установленные на вашей системе, несовместимы с  "
 "MonoDevelop:\n"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:328
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:330
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:342
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:344
 msgid "version required: {0}"
 msgstr "необходима версия: {0}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:332
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:346
 msgid "You need to upgrade the previous packages to start using MonoDevelop."
 msgstr "Вам необходимо обновить пакеты для запуска MonoDevelop."
 
@@ -3790,8 +3862,8 @@ msgid "_Name:"
 msgstr "_Имя:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.ExportProjectDialog.cs:84
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.SourcesZipEditorWidget.cs:126
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.BinariesZipEditorWidget.cs:138
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.SourcesZipEditorWidget.cs:125
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.BinariesZipEditorWidget.cs:137
 msgid "Target folder:"
 msgstr "Целевой каталог:"
 
@@ -3814,7 +3886,7 @@ msgid "Creates a new C# Project"
 msgstr "Создать новый проект на языке C#"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.cs:184
-#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.BreakpointPropertiesDialog.cs:109
+#: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.BreakpointPropertiesDialog.cs:109
 msgid "<b>Location</b>"
 msgstr "<b>Расположение</b>"
 
@@ -3881,7 +3953,7 @@ msgstr "Поле"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/EncapsulateFieldDialog.cs:97
 #: ../src/addins/MonoDevelop.GtkCore/libsteticui/PropertyTree.cs:33
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.PropertyGrid/PropertyGridTree.cs:69
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.PropertyGrid/PropertyGridTree.cs:70
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/LanguageItemWindow.cs:47
 msgid "Property"
 msgstr "Свойство"
@@ -4030,7 +4102,7 @@ msgstr "Сочетания клавиш"
 msgid "Custom"
 msgstr "Вы_резать"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:362
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:376
 msgid "This key combination is already bound to command '{0}'"
 msgstr ""
 
@@ -4622,85 +4694,9 @@ msgstr "Поиск '{0}' в {1}."
 msgid "Replacing '{0}' in project '{1}'"
 msgstr "Замена '{0}' в {1}."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/CurrentProjectDocumentIterator.cs:66
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/CurrentProjectDocumentIterator.cs:62
 msgid "(none selected)"
 msgstr ""
-
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/BreakpointPropertiesDialog.cs:86
-msgid "Condition expression not specified"
-msgstr ""
-
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/BreakpointPropertiesDialog.cs:90
-msgid "Trace expression not specified"
-msgstr ""
-
-#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.BreakpointPropertiesDialog.cs:93
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:105
-#, fuzzy
-msgid "Breakpoint Properties"
-msgstr "Параметры построения"
-
-#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.BreakpointPropertiesDialog.cs:157
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/gtk-gui/MonoDevelop.VersionControl.Subversion.Gui.ClientCertificateDialog.cs:90
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:1209
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.SourcesZipEditorWidget.cs:115
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.BinariesZipEditorWidget.cs:149
-msgid "File:"
-msgstr "Файл:"
-
-#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.BreakpointPropertiesDialog.cs:167
-#, fuzzy
-msgid "Line:"
-msgstr "Строка"
-
-#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.BreakpointPropertiesDialog.cs:193
-#, fuzzy
-msgid "<b>Condition</b>"
-msgstr "<b>Расположение</b>"
-
-#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.BreakpointPropertiesDialog.cs:218
-#, fuzzy
-msgid "Always break"
-msgstr "Показывать всегда"
-
-#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.BreakpointPropertiesDialog.cs:230
-msgid "Break when condition is true"
-msgstr ""
-
-#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.BreakpointPropertiesDialog.cs:242
-msgid "Break when the expression changes"
-msgstr ""
-
-#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.BreakpointPropertiesDialog.cs:270
-msgid "Condition expression:"
-msgstr ""
-
-#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.BreakpointPropertiesDialog.cs:304
-msgid "Hit count before breaking:"
-msgstr ""
-
-#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.BreakpointPropertiesDialog.cs:340
-#, fuzzy
-msgid "<b>Action</b>"
-msgstr "<b>Расположение</b>"
-
-#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.BreakpointPropertiesDialog.cs:368
-msgid "When the breakpoint is hit:"
-msgstr ""
-
-#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.BreakpointPropertiesDialog.cs:375
-#, fuzzy
-msgid "Break"
-msgstr "Назад"
-
-#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.BreakpointPropertiesDialog.cs:388
-msgid "Write expression to the output"
-msgstr ""
-
-#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.BreakpointPropertiesDialog.cs:415
-#, fuzzy
-msgid "Expression:"
-msgstr "Регулярные выражения"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs:1536
 msgid "Display Options"
@@ -4820,42 +4816,60 @@ msgstr ""
 msgid "File '{0}' not found."
 msgstr "Файл '{0}' не найден."
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:271
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:270
 msgid "Cannot create directory {0}, as a file with that name exists."
 msgstr ""
 "Не удалось создать каталог {0}, потому что уже существует файл с тем же "
 "именем."
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:289
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:404
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:440
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:288
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:403
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:439
 #, fuzzy
 msgid "Configuration '{0}' not found in project '{1}'"
 msgstr "Создаётся {0} для проекта {1}"
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:307
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:306
 msgid "Performing main compilation..."
 msgstr "Выполняется основная компиляция..."
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:316
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:315
 #: ../src/addins/prj2make-sharp-lib/MSBuildProjectServiceExtension.cs:65
 msgid "Build complete -- "
 msgstr "Построение завершено -- "
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:345
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:344
 #, fuzzy
 msgid "Could not find support file '{0}'."
 msgstr "Не удалось загрузить адрес {0}"
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:349
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:348
 #, fuzzy
 msgid "Error copying support file '{0}'."
 msgstr "Ошибка при чтении файла {0} :"
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:371
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:370
 #, fuzzy
 msgid "Error deleting support file '{0}'."
 msgstr "Ошибка при чтении файла {0} :"
+
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/ProjectReference.cs:177
+#, fuzzy
+msgid "Assembly not found"
+msgstr "Подписывание сборки"
+
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/ProjectReference.cs:179
+msgid "Specified version not found: expected {0}, found {1}"
+msgstr ""
+
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/ProjectReference.cs:185
+msgid "Incompatible target framework ({0})"
+msgstr ""
+
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/ProjectReference.cs:190
+#, fuzzy
+msgid "File not found"
+msgstr "Файл не найден: {0}"
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs:136
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs:481
@@ -4883,136 +4897,136 @@ msgstr "Рефакторинг проекта {0}"
 msgid "Could not look for references in file '{0}': {1}"
 msgstr "Не удалось поискать ссылки в файле '{0}': {1}"
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:137
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:150
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:177
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:200
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:141
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:154
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:181
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:204
 msgid "Western"
 msgstr "Западная"
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:138
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:178
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:198
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:142
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:182
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:202
 msgid "Central European"
 msgstr "Центральноевропейская"
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:139
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:143
 msgid "South European"
 msgstr "Южноевропейская"
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:140
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:148
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:205
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:144
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:152
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:209
 msgid "Baltic"
 msgstr "Прибалтийская"
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:141
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:179
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:186
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:188
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:189
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:199
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:145
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:183
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:190
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:192
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:193
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:203
 msgid "Cyrillic"
 msgstr "Кириллица"
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:142
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:182
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:204
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:146
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:186
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:208
 msgid "Arabic"
 msgstr "Арабская"
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:143
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:201
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:147
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:205
 msgid "Greek"
 msgstr "Греческая"
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:144
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:148
 msgid "Hebrew Visual"
 msgstr "Визуальный иврит"
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:145
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:181
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:203
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:149
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:185
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:207
 msgid "Hebrew"
 msgstr "Иврит"
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:146
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:180
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:202
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:150
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:184
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:206
 msgid "Turkish"
 msgstr "Турецкая"
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:147
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:151
 msgid "Nordic"
 msgstr "Скандинавская"
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:149
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:153
 msgid "Celtic"
 msgstr "Кельтская"
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:151
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:155
 msgid "Romanian"
 msgstr "Румынская"
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:153
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:154
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:155
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:156
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:157
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:158
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:159
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:160
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:161
 msgid "Unicode"
 msgstr "Юникод"
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:159
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:163
 msgid "Armenian"
 msgstr "Армянская"
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:160
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:161
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:169
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:164
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:165
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:173
 msgid "Chinese Traditional"
 msgstr "Традиционная китайская"
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:162
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:166
 msgid "Cyrillic/Russian"
 msgstr "Кириллица/Россия"
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:164
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:165
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:166
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:184
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:192
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:168
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:169
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:170
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:188
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:196
 msgid "Japanese"
 msgstr "Японская"
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:168
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:185
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:187
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:195
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:172
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:189
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:191
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:199
 msgid "Korean"
 msgstr "Корейская"
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:171
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:172
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:173
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:175
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:176
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:177
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:179
 msgid "Chinese Simplified"
 msgstr "Упрощённая китайская"
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:174
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:178
 msgid "Georgian"
 msgstr "Грузинская"
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:190
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:194
 msgid "Cyrillic/Ukrainian"
 msgstr "Кириллица/Украина"
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:193
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:196
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:206
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:197
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:200
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:210
 msgid "Vietnamese"
 msgstr "Вьетнамская"
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:194
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:198
 msgid "Thai"
 msgstr "Тайская"
 
@@ -5229,7 +5243,7 @@ msgid ""
 "targetting ({2})"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs:713
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs:733
 #, fuzzy
 msgid "Reference to unknown project '{0}' ignored."
 msgstr "Не удалось добавить ссылку в проект '{0}'"
@@ -5299,6 +5313,61 @@ msgstr "Файл проекта не найден: "
 msgid "Item with guid '{0}' is not a folder."
 msgstr "Файл проекта не найден: "
 
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/BuildAction.cs:84
+#, fuzzy
+msgid "Nothing"
+msgstr "Форматирование"
+
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/BuildAction.cs:85
+msgid "Compile"
+msgstr "Компиляция"
+
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/BuildAction.cs:86
+#, fuzzy
+msgid "Embed as resource"
+msgstr "Добавить ресурс"
+
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/BuildAction.cs:87
+#, fuzzy
+msgid "Content"
+msgstr "Комментарии"
+
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/BuildAction.cs:88
+#, fuzzy
+msgid "Application definition"
+msgstr "Файл конфигурации приложения"
+
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/BuildAction.cs:89
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:1229
+msgid "Page"
+msgstr "Страница"
+
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/BuildAction.cs:90
+#, fuzzy
+msgid "Resource"
+msgstr "Ресурсы"
+
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/BuildAction.cs:91
+msgid "Splash screen"
+msgstr ""
+
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/BuildAction.cs:92
+msgid "Entity deploy"
+msgstr ""
+
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/FileCopyMode.cs:35
+msgid "Do not copy"
+msgstr ""
+
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/FileCopyMode.cs:37
+#, fuzzy
+msgid "Always copy"
+msgstr "Показывать всегда"
+
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/FileCopyMode.cs:39
+msgid "Copy if newer"
+msgstr ""
+
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Formats.MSBuild.Conditions/InvalidProjectFileException.cs:103
 #, fuzzy
 msgid "errorCode"
@@ -5347,7 +5416,7 @@ msgstr "Указан некорректный целевой каталог"
 msgid "Solution Options"
 msgstr "Свойства решения"
 
-#: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:443
+#: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:452
 msgid "Gathering class information..."
 msgstr "Запрашиваю информацию о классе..."
 
@@ -5602,7 +5671,7 @@ msgid "Automatically _include found files"
 msgstr "Автоматически включать найденные файлы"
 
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/MultiConfigItemOptionsPanel.cs:101
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.BinariesZipEditorWidget.cs:129
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.BinariesZipEditorWidget.cs:128
 #, fuzzy
 msgid "Configuration:"
 msgstr "Конфигурация"
@@ -5633,7 +5702,7 @@ msgstr "<b>Расположение</b>"
 msgid "Root directory:"
 msgstr "Целевой каталог:"
 
-#: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/StartupOptionsPanel.cs:79
+#: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/StartupOptionsPanel.cs:83
 #, fuzzy
 msgid "The solution does not contain any executable project"
 msgstr "Не удалось открыть файл {0}"
@@ -5664,7 +5733,7 @@ msgstr "Переименовать переменную"
 
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/EnvVarList.cs:55
 #: ../src/addins/MonoDevelop.GtkCore/libsteticui/PropertyTree.cs:44
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.PropertyGrid/PropertyGridTree.cs:81
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.PropertyGrid/PropertyGridTree.cs:82
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DotDesktopViewWidget.cs:83
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValueTreeView.cs:108
 msgid "Value"
@@ -5675,6 +5744,7 @@ msgid "Click here to add a new variable"
 msgstr ""
 
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/PolicyOptionsPanel.cs:58
+#: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/NamespaceSynchronisationPanel.cs:52
 msgid "_Policy"
 msgstr ""
 
@@ -5696,7 +5766,9 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/NamespaceSynchronisationPanel.cs:149
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/LanguageItemWindow.cs:50
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:316
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:334
+#: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.Gui/XmlSchemasPanelWidget.cs:61
+#: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.Gui/XmlSchemasPanelWidget.cs:120
 #, fuzzy
 msgid "Namespace"
 msgstr "Пространство имён:"
@@ -5862,62 +5934,62 @@ msgstr "Цель компиляции"
 msgid "Show version control overlay icons"
 msgstr "Показывать иконки контроля версий"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:75
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:76
 #, fuzzy
 msgid "_Remove"
 msgstr "Удалить"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:79
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:80
 #, fuzzy
 msgid "_Commit"
 msgstr "Отправить изменения"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:83
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:84
 #, fuzzy
 msgid "_Diff"
 msgstr "Различия"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:91
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:92
 #, fuzzy
 msgid "_Log"
 msgstr "Журнал"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:95
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:96
 #, fuzzy
 msgid "_Review Changes"
 msgstr "Просмотреть изменения"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:99
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:100
 #, fuzzy
 msgid "_Update"
 msgstr "Обновить"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:103
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:104
 #, fuzzy
 msgid "_Publish..."
 msgstr "Опубликовать..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:107
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:108
 #, fuzzy
 msgid "C_heckout..."
 msgstr "Создать рабочую копию..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:111
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:112
 #, fuzzy
 msgid "Lock"
 msgstr "Закрепить"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:114
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:115
 msgid "Release Lock"
 msgstr ""
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:126
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:127
 #, fuzzy
 msgid "_Version Control"
 msgstr "Контроль версий"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:171
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:178
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:172
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:179
 #, fuzzy
 msgid "Commit Message Style"
 msgstr "Добавить сообщение:"
@@ -5929,7 +6001,7 @@ msgstr "Получение истории для {0}..."
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:81
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/CommitCommand.cs:58
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertCommand.cs:52
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlNodeExtension.cs:374
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlNodeExtension.cs:376
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:80
 msgid "Version control command failed."
 msgstr "Не удалось выполнить команду контроля версий."
@@ -5975,12 +6047,14 @@ msgid "Operation"
 msgstr "Операция"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:192
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/SolutionItemDescriptor.cs:51
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/WorkspaceItemDescriptor.cs:51
 msgid "File Path"
 msgstr "Путь к файлу"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:237
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:157
-#: ../src/addins/VBNetBinding/gtk-gui/MonoDevelop.VBNetBinding.ProjectOptionsPanelWidget.cs:348
+#: ../src/addins/VBNetBinding/gtk-gui/MonoDevelop.VBNetBinding.ImportsOptionsPanelWidget.cs:46
 #: ../src/addins/CBinding/gtk-gui/CBinding.CodeGenerationPanel.cs:413
 #: ../src/addins/CBinding/gtk-gui/CBinding.CodeGenerationPanel.cs:552
 #: ../src/addins/CBinding/gtk-gui/CBinding.CodeGenerationPanel.cs:653
@@ -6004,17 +6078,17 @@ msgstr "Изменить"
 msgid "Replace"
 msgstr "Заменить"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:320
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:327
 #, fuzzy
 msgid "Retrieving changes in {0} at revision {1}..."
 msgstr "Запрос изменений в {0} {1} ревизии..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:324
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:332
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:331
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:339
 msgid "Getting text of {0} at revision {1}..."
 msgstr "Получаю текст {0} {1} ревизии..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:376
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:383
 msgid "Retreiving content of {0} at revision {1}..."
 msgstr "Зугружаю содержание {0} {1} ревизии..."
 
@@ -6044,74 +6118,88 @@ msgstr "Свернуть всё"
 msgid "Select None"
 msgstr "Снять выделение"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:187
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:188
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/CommitDialog.cs:32
 msgid "Status"
 msgstr "Статус"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:209
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:210
 #, fuzzy
 msgid "Remote Status"
 msgstr "Статус"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:230
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:231
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.CommitDialog.cs:106
 msgid "Commit message:"
 msgstr "Добавить сообщение:"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:319
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:336
 #, fuzzy
 msgid "Scanning for changes..."
 msgstr "Добавляются файлы..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:321
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:338
 msgid "Scanning for local and remote changes..."
 msgstr ""
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:345
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:362
 msgid "No files have local modifications."
 msgstr "Нет файлов, изменённых локально."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:347
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:364
 msgid "No files have local or remote modifications."
 msgstr "Нет файлов, изменённых локально или удалённо."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:451
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:468
 msgid "Commit message for file '{0}':"
 msgstr "Добавить сообщение для файла '{0}':"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:453
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:470
 msgid "Commit message (multiple selection):"
 msgstr "Добавить сообщение (выделено несколько файлов):"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:570
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:587
 msgid "Some of the files in this commit do not have ChangeLog messages."
 msgstr ""
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:571
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:588
 msgid "You may have forgotten to unselect items."
 msgstr ""
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:744
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:761
 #, fuzzy
 msgid "_Open All"
 msgstr "Открыть папку"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:745
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:762
 msgid "Do you want to open all {0} files?"
 msgstr "Вы действительно хотите открыть сразу {0} файл(а)(ов)?"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:854
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:871
 msgid "Loading data..."
 msgstr "Загружаются данные..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:892
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:909
 msgid "No differences found"
 msgstr "Различий не найдено"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:903
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:920
 msgid "Could not get diff information. "
 msgstr "Не удалось получить информацию о различиях."
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:969
+#, fuzzy
+msgid "Retrieving status for {0}..."
+msgstr "Получение истории для {0}..."
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/SelectRepositoryDialog.cs:45
+msgid "Repository"
+msgstr "Репозиторий"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/SelectRepositoryDialog.cs:311
+#, fuzzy
+msgid "Select target directory"
+msgstr "Выберите каталог вывода"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/AddRemoveMoveCommand.cs:47
 #, fuzzy
@@ -6168,7 +6256,7 @@ msgstr "Посылается запрос"
 msgid "Updating..."
 msgstr "Сохраняется..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlNodeExtension.cs:311
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlNodeExtension.cs:313
 msgid "This project or folder is not under version control"
 msgstr "Этот проект или папка не используют контроль версий"
 
@@ -6177,7 +6265,6 @@ msgid "Unversioned"
 msgstr "Без версии"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:153
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:854
 msgid "Modified"
 msgstr "Изменено"
 
@@ -6372,63 +6459,118 @@ msgstr "Не удалось загрузить файл {0}."
 msgid "The file '{0}' could not be unlocked"
 msgstr "Не удалось загрузить файл {0}."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:578
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:580
 #, fuzzy
 msgid "Revision: {0}"
 msgstr "Ревизия"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:846
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:852
-#, fuzzy
-msgid "Added"
-msgstr "Добавить"
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:877
+msgid "Skipped missing target: '{0}'"
+msgstr ""
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:847
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:853
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:879
+msgid "Skipped '{0}'"
+msgstr ""
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:883
 #, fuzzy
-msgid "Deleted"
+msgid "Deleted   '{0}'"
 msgstr "Удалить"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:848
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:891
 #, fuzzy
-msgid "Updating"
+msgid "Conflict {0}"
+msgstr "Конфликт"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:893
+#, fuzzy
+msgid "Added   {0}"
+msgstr "Добавить"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:909
+msgid "Restored '{0}'"
+msgstr ""
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:912
+#, fuzzy
+msgid "Reverted '{0}'"
+msgstr "Восстановить"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:915
+msgid "Failed to revert '{0}' -- try updating instead."
+msgstr ""
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:918
+msgid "Resolved conflict state of '{0}'"
+msgstr ""
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:922
+msgid "Add (bin) '{0}'"
+msgstr ""
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:924
+msgid "Add       '{0}'"
+msgstr ""
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:928
+msgid "Delete    '{0}'"
+msgstr ""
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:954
+#, fuzzy
+msgid "Update '{0}'"
 msgstr "Открытие {0}"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:849
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:958
 #, fuzzy
-msgid "External Updated"
-msgstr "Внешние файлы"
+msgid "Fetching external item into '{0}'"
+msgstr "(во внешнем терминале)"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:850
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:961
 #, fuzzy
 msgid "Finished"
 msgstr "Завершить"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:855
-#, fuzzy
-msgid "Replaced"
-msgstr "Заменить"
-
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:856
-msgid "Sending Content"
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:964
+msgid "Performing status on external item at '{0}'"
 msgstr ""
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:858
-#, fuzzy
-msgid "Locked"
-msgstr "Закрепить"
-
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:859
-msgid "Unlocked"
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:967
+msgid "Status against revision: '{0}'"
 msgstr ""
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:860
-#, fuzzy
-msgid "Lock Failed"
-msgstr "(Сбой при загрузке)"
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:971
+msgid "Deleting       {0}"
+msgstr ""
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:861
-msgid "Unlock Failed"
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:974
+#, fuzzy
+msgid "Sending        {0}"
+msgstr "Открытие {0}"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:979
+msgid "Adding  (bin)  '{0}'"
+msgstr ""
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:981
+msgid "Adding         '{0}'"
+msgstr ""
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:985
+#, fuzzy
+msgid "Replacing      {0}"
+msgstr "Заменён {0}."
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:990
+msgid "Transmitting file data"
+msgstr ""
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:1000
+msgid "'{0}' locked by user '{1}'."
+msgstr ""
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:1003
+msgid "'{0}' unlocked."
 msgstr ""
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.Gui/ClientCertificateDialog.cs:12
@@ -6468,6 +6610,14 @@ msgstr ""
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/gtk-gui/MonoDevelop.VersionControl.Subversion.Gui.ClientCertificateDialog.cs:76
 msgid "Please provide a path to the required certificate:"
 msgstr "Укажите путь к необходимому сертификату:"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/gtk-gui/MonoDevelop.VersionControl.Subversion.Gui.ClientCertificateDialog.cs:90
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:1214
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.SourcesZipEditorWidget.cs:114
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.BinariesZipEditorWidget.cs:148
+#: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.BreakpointPropertiesDialog.cs:157
+msgid "File:"
+msgstr "Файл:"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/gtk-gui/MonoDevelop.VersionControl.Subversion.Gui.ClientCertificateDialog.cs:111
 msgid "Remember certificate location"
@@ -6736,7 +6886,7 @@ msgstr ""
 "Компиляция проекта, требующего наличия библиотек Gtk#, невозможна. "
 "Установите пакеты разработчика gtk-sharp-2.0."
 
-#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:372
+#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:388
 msgid ""
 "GUI code generation failed for project '{0}'. The file '{1}' could not be "
 "loaded."
@@ -6744,16 +6894,16 @@ msgstr ""
 "Сгенерировать код графического интерфейса проекта '{0}' не получилось. Не "
 "удалось найти файл '{1}'."
 
-#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:380
+#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:396
 msgid "Generating GUI code for project '{0}'..."
 msgstr "Создаётся графический интерфейс проекта '{0}'..."
 
-#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:489
+#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:505
 #, fuzzy
 msgid "_Use as Source"
 msgstr "Ресурсы"
 
-#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:490
+#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:506
 msgid ""
 "You are requesting the file '{0}' to be used as source for an image. "
 "However, this file is already added to the project as a resource. Are you "
@@ -6823,16 +6973,54 @@ msgstr ""
 "Не удалось обнаружить класс, компонента '{0}'. Возможно, в исходном коде "
 "присутствуют ошибки."
 
-#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/ToolboxProvider.cs:103
+#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/ToolboxProvider.cs:143
+#, fuzzy
+msgid "Reference Type"
+msgstr "Ссылка:"
+
+#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/ToolboxProvider.cs:156
+#, fuzzy
+msgid "Reference Path"
+msgstr "Ссылка:"
+
+#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/ToolboxProvider.cs:168
+#, fuzzy
+msgid "Class Name"
+msgstr "Классы"
+
+#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/ToolboxProvider.cs:177
+#, fuzzy
+msgid "GTK# Version"
+msgstr "Версия"
+
+#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/ToolboxProvider.cs:144
+msgid ""
+"The type of the project or assembly from which this component originates."
+msgstr ""
+
+#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/ToolboxProvider.cs:157
+msgid "The project or assembly from which this component originates."
+msgstr ""
+
+#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/ToolboxProvider.cs:169
+#, fuzzy
+msgid "The name of the component class."
+msgstr "Переименовать файл, содержащий общедоступный класс"
+
+#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/ToolboxProvider.cs:178
+msgid "The minimum GTK# version required to use this component."
+msgstr ""
+
+#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/ToolboxProvider.cs:104
 msgid "GTK# Widgets"
 msgstr "Виджеты Gtk#"
 
-#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/ToolboxProvider.cs:183
+#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/ToolboxProvider.cs:188
 #: ../src/addins/MonoDevelop.GtkCore/libsteticui/PaletteBackend.cs:31
 msgid "Containers"
 msgstr "Контейнеры"
 
-#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/ToolboxProvider.cs:185
+#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/ToolboxProvider.cs:190
 #: ../src/addins/MonoDevelop.GtkCore/libsteticui/PaletteBackend.cs:30
 msgid "Widgets"
 msgstr "Виджеты"
@@ -7326,6 +7514,11 @@ msgstr[0] "{0} минуту назад"
 msgstr[1] "{0} минуты назад"
 msgstr[2] "{0} минут назад"
 
+#: ../src/addins/WelcomePage/WelcomePageFallbackWidget.cs:215
+#, fuzzy
+msgid "No news has been found"
+msgstr "Регрессии не найдены."
+
 #: ../src/addins/WelcomePage/WelcomePage.addin.xml:27
 #: ../src/addins/WelcomePage/WelcomePage.addin.xml:42
 msgid "Welcome Page"
@@ -7526,57 +7719,48 @@ msgstr "Решение Visual Studio"
 msgid "Visual Studio Project"
 msgstr "Проект Visual Studio"
 
-#: ../src/addins/VBNetBinding/gtk-gui/MonoDevelop.VBNetBinding.ProjectOptionsPanelWidget.cs:101
-#: ../src/addins/CSharpBinding/gtk-gui/CSharpBinding.CompilerOptionsPanelWidget.cs:78
-msgid "<b>Code Generation</b>"
-msgstr "<b>Генерация Кода</b>"
-
-#: ../src/addins/VBNetBinding/gtk-gui/MonoDevelop.VBNetBinding.ProjectOptionsPanelWidget.cs:215
+#: ../src/addins/VBNetBinding/gtk-gui/MonoDevelop.VBNetBinding.ProjectOptionsPanelWidget.cs:158
 #, fuzzy
 msgid "Option Infer:"
 msgstr "Свойства"
 
-#: ../src/addins/VBNetBinding/gtk-gui/MonoDevelop.VBNetBinding.ProjectOptionsPanelWidget.cs:226
-#: ../src/addins/CSharpBinding/gtk-gui/CSharpBinding.CompilerOptionsPanelWidget.cs:169
+#: ../src/addins/VBNetBinding/gtk-gui/MonoDevelop.VBNetBinding.ProjectOptionsPanelWidget.cs:169
+#: ../src/addins/CSharpBinding/gtk-gui/CSharpBinding.CompilerOptionsPanelWidget.cs:158
 msgid "Win32 Icon:"
 msgstr "Иконка Win32:"
 
-#: ../src/addins/VBNetBinding/gtk-gui/MonoDevelop.VBNetBinding.ProjectOptionsPanelWidget.cs:237
+#: ../src/addins/VBNetBinding/gtk-gui/MonoDevelop.VBNetBinding.ProjectOptionsPanelWidget.cs:180
 #, fuzzy
 msgid "My Type:"
 msgstr "Тип:"
 
-#: ../src/addins/VBNetBinding/gtk-gui/MonoDevelop.VBNetBinding.ProjectOptionsPanelWidget.cs:248
+#: ../src/addins/VBNetBinding/gtk-gui/MonoDevelop.VBNetBinding.ProjectOptionsPanelWidget.cs:191
 msgid "Option Explicit:"
 msgstr ""
 
-#: ../src/addins/VBNetBinding/gtk-gui/MonoDevelop.VBNetBinding.ProjectOptionsPanelWidget.cs:259
+#: ../src/addins/VBNetBinding/gtk-gui/MonoDevelop.VBNetBinding.ProjectOptionsPanelWidget.cs:202
 #, fuzzy
 msgid "Option Strict:"
 msgstr "Структура"
 
-#: ../src/addins/VBNetBinding/gtk-gui/MonoDevelop.VBNetBinding.ProjectOptionsPanelWidget.cs:270
+#: ../src/addins/VBNetBinding/gtk-gui/MonoDevelop.VBNetBinding.ProjectOptionsPanelWidget.cs:213
 msgid "Option Compare:"
 msgstr ""
 
-#: ../src/addins/VBNetBinding/gtk-gui/MonoDevelop.VBNetBinding.ProjectOptionsPanelWidget.cs:281
-#: ../src/addins/CSharpBinding/gtk-gui/CSharpBinding.CompilerOptionsPanelWidget.cs:158
+#: ../src/addins/VBNetBinding/gtk-gui/MonoDevelop.VBNetBinding.ProjectOptionsPanelWidget.cs:224
+#: ../src/addins/CSharpBinding/gtk-gui/CSharpBinding.CompilerOptionsPanelWidget.cs:147
 msgid "Compiler Code Page:"
 msgstr "Кодовая страница компилятора:"
 
-#: ../src/addins/VBNetBinding/gtk-gui/MonoDevelop.VBNetBinding.ProjectOptionsPanelWidget.cs:292
-#: ../src/addins/CSharpBinding/gtk-gui/CSharpBinding.CompilerOptionsPanelWidget.cs:180
+#: ../src/addins/VBNetBinding/gtk-gui/MonoDevelop.VBNetBinding.ProjectOptionsPanelWidget.cs:235
+#: ../src/addins/CSharpBinding/gtk-gui/CSharpBinding.CompilerOptionsPanelWidget.cs:169
 msgid "Compile _Target:"
 msgstr "Тип проекта:"
 
-#: ../src/addins/VBNetBinding/gtk-gui/MonoDevelop.VBNetBinding.ProjectOptionsPanelWidget.cs:302
-#: ../src/addins/CSharpBinding/gtk-gui/CSharpBinding.CompilerOptionsPanelWidget.cs:190
+#: ../src/addins/VBNetBinding/gtk-gui/MonoDevelop.VBNetBinding.ProjectOptionsPanelWidget.cs:245
+#: ../src/addins/CSharpBinding/gtk-gui/CSharpBinding.CompilerOptionsPanelWidget.cs:179
 msgid "_Main Class:"
 msgstr "_Основной класс:"
-
-#: ../src/addins/VBNetBinding/gtk-gui/MonoDevelop.VBNetBinding.ProjectOptionsPanelWidget.cs:415
-msgid "Imports"
-msgstr ""
 
 #: ../src/addins/VBNetBinding/gtk-gui/MonoDevelop.VBNetBinding.ConfigurationOptionsPanelWidget.cs:98
 #, fuzzy
@@ -7644,27 +7828,27 @@ msgstr ""
 msgid "Define constants:"
 msgstr "Назначить _символы:"
 
-#: ../src/addins/VBNetBinding/Gui/ProjectOptionsPanelWidget.cs:65
-#: ../src/addins/CSharpBinding/Gui/CompilerOptionsPanelWidget.cs:55
+#: ../src/addins/VBNetBinding/Gui/ProjectOptionsPanelWidget.cs:62
+#: ../src/addins/CSharpBinding/Gui/CompilerOptionsPanelWidget.cs:56
 #: ../src/addins/CBinding/gtk-gui/CBinding.CodeGenerationPanel.cs:208
 msgid "Executable"
 msgstr "Исполняемый файл"
 
-#: ../src/addins/VBNetBinding/Gui/ProjectOptionsPanelWidget.cs:66
+#: ../src/addins/VBNetBinding/Gui/ProjectOptionsPanelWidget.cs:63
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/ComponentSelectorDialog.cs:95
 #: ../src/addins/CSharpBinding/templates/Library.xpt.xml:7
-#: ../src/addins/CSharpBinding/Gui/CompilerOptionsPanelWidget.cs:56
+#: ../src/addins/CSharpBinding/Gui/CompilerOptionsPanelWidget.cs:57
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyNodeBuilder.cs:95
 msgid "Library"
 msgstr "Библиотека"
 
-#: ../src/addins/VBNetBinding/Gui/ProjectOptionsPanelWidget.cs:67
-#: ../src/addins/CSharpBinding/Gui/CompilerOptionsPanelWidget.cs:57
+#: ../src/addins/VBNetBinding/Gui/ProjectOptionsPanelWidget.cs:64
+#: ../src/addins/CSharpBinding/Gui/CompilerOptionsPanelWidget.cs:58
 msgid "Executable with GUI"
 msgstr "Исполняемый файл с графическим интерфейсом"
 
-#: ../src/addins/VBNetBinding/Gui/ProjectOptionsPanelWidget.cs:68
-#: ../src/addins/CSharpBinding/Gui/CompilerOptionsPanelWidget.cs:58
+#: ../src/addins/VBNetBinding/Gui/ProjectOptionsPanelWidget.cs:65
+#: ../src/addins/CSharpBinding/Gui/CompilerOptionsPanelWidget.cs:59
 msgid "Module"
 msgstr "Модуль"
 
@@ -7706,25 +7890,29 @@ msgstr "Проект Gtk# 2.0"
 msgid "Creates a VB.NET Gtk# 2.0 project."
 msgstr "Создать проект на основе Gtk# 2.0 на языке VB .NET.."
 
-#: ../src/addins/VBNetBinding/VBNetBinding.addin.xml:45
+#: ../src/addins/VBNetBinding/VBNetBinding.addin.xml:34
 msgid "VB.NET Files"
 msgstr "Файлы VB .NET"
 
-#: ../src/addins/VBNetBinding/VBNetBinding.addin.xml:63
+#: ../src/addins/VBNetBinding/VBNetBinding.addin.xml:52
 msgid "Output Options"
 msgstr "Параметры вывода"
 
-#: ../src/addins/VBNetBinding/VBNetBinding.addin.xml:71
+#: ../src/addins/VBNetBinding/VBNetBinding.addin.xml:60
 #, fuzzy
 msgid "General Options"
 msgstr "<b>Основные настройки</b>"
 
-#: ../src/addins/VBNetBinding/VBNetBinding.addin.xml:79
+#: ../src/addins/VBNetBinding/VBNetBinding.addin.xml:63
+msgid "Imports"
+msgstr ""
+
+#: ../src/addins/VBNetBinding/VBNetBinding.addin.xml:71
 #, fuzzy
 msgid "Compiler Options"
 msgstr "Компилятор :"
 
-#: ../src/addins/VBNetBinding/VBNetBinding.addin.xml:93
+#: ../src/addins/VBNetBinding/VBNetBinding.addin.xml:85
 #, fuzzy
 msgid "Visual Basic source code"
 msgstr "Показать проверяемый исходный код"
@@ -8200,7 +8388,7 @@ msgstr "Веб-форма"
 msgid "Creates an ASP.NET Web Form that is the child of a Master Page."
 msgstr "Создать веб-форму ASP .NET с раздельным кодом."
 
-#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet/AspNetAppProject.cs:254
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet/AspNetAppProject.cs:252
 #, fuzzy
 msgid "Error launching web browser"
 msgstr "Веб-браузер"
@@ -8228,43 +8416,43 @@ msgid ""
 "disabled."
 msgstr ""
 
-#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet/VerifyCodeBehindBuildStep.cs:73
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet/VerifyCodeBehindBuildStep.cs:72
 msgid ""
 "The code generator for {0} does not support partial classes. Skipping "
 "CodeBehind member generation."
 msgstr ""
 
-#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet/VerifyCodeBehindBuildStep.cs:85
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet/VerifyCodeBehindBuildStep.cs:84
 #, fuzzy
 msgid "Generating CodeBehind members..."
 msgstr "Автоматически создавать члены из разделённого кода перед компиляцией"
 
-#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet/VerifyCodeBehindBuildStep.cs:131
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet/VerifyCodeBehindBuildStep.cs:122
+msgid "{0} CodeBehind designer classes updated."
+msgstr ""
+
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet/VerifyCodeBehindBuildStep.cs:124
+#, fuzzy
+msgid "No changes made to CodeBehind classes."
+msgstr "Создать обработчик запросов ASP .NET с раздельным кодом."
+
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet/CodeBehind.cs:83
 msgid ""
 "Parser failed with error {0}. CodeBehind members for this file will not be "
 "added."
 msgstr ""
 
-#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet/VerifyCodeBehindBuildStep.cs:180
-#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet/VerifyCodeBehindBuildStep.cs:232
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet/CodeBehind.cs:217
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet/CodeBehind.cs:266
 #, fuzzy
 msgid "Failed to write file '{0}'."
 msgstr "Также удалить файл '{0}'"
 
-#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet/VerifyCodeBehindBuildStep.cs:185
-#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet/VerifyCodeBehindBuildStep.cs:200
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet/CodeBehind.cs:219
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet/CodeBehind.cs:232
 #, fuzzy
 msgid "Failed to generate code for file '{0}'."
 msgstr "Не удалось создать папку '{0}'"
-
-#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet/VerifyCodeBehindBuildStep.cs:244
-msgid "{0} CodeBehind designer classes updated."
-msgstr ""
-
-#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet/VerifyCodeBehindBuildStep.cs:246
-#, fuzzy
-msgid "No changes made to CodeBehind classes."
-msgstr "Создать обработчик запросов ASP .NET с раздельным кодом."
 
 #: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/XspOptionsPanelWidget.cs:46
 #: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/XspOptionsPanelWidget.cs:59
@@ -8418,54 +8606,54 @@ msgstr "Размещение ключа:"
 msgid "Certificate location:"
 msgstr "Запомнить размещение сертификата"
 
-#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:274
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:284
 msgid "Required for ASP.NET controls.\n"
 msgstr ""
 
-#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:275
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:285
 msgid ""
 "Indicates that this tag should be able to be\n"
 "manipulated programmatically on the web server."
 msgstr ""
 
-#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:281
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:291
 msgid "Unique identifier.\n"
 msgstr ""
 
-#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:282
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:292
 msgid ""
 "An identifier that is unique within the document.\n"
 "If the tag is a server control, this will be used \n"
 "for the corresponding variable name in the CodeBehind."
 msgstr ""
 
-#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:358
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:368
 msgid "ASP.NET render block"
 msgstr ""
 
-#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:359
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:369
 #, fuzzy
 msgid "ASP.NET render expression"
 msgstr "Параметры ASP .NET "
 
-#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:360
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:370
 #, fuzzy
 msgid "ASP.NET directive"
 msgstr "Каталог ASP .NET"
 
-#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:361
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:371
 msgid "ASP.NET databinding expression"
 msgstr ""
 
-#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:362
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:372
 msgid "ASP.NET server-side comment"
 msgstr ""
 
-#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:366
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:376
 msgid "ASP.NET resource expression"
 msgstr ""
 
-#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:465
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:475
 #, fuzzy
 msgid "A compatible method in the CodeBehind class"
 msgstr "Создать обработчик запросов ASP .NET с раздельным кодом."
@@ -8491,7 +8679,7 @@ msgid "ASP.NET Controls"
 msgstr "Параметры ASP .NET "
 
 #: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/BaseHtmlEditorExtension.cs:109
-#: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.Gui/BaseXmlEditorExtension.cs:461
+#: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.Gui/BaseXmlEditorExtension.cs:467
 #, fuzzy
 msgid "Character data"
 msgstr "_Кодировка символов:"
@@ -8532,7 +8720,11 @@ msgstr "События"
 msgid "Unknown"
 msgstr "Неизвестная запись"
 
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/TextToolboxNode.cs:39
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/TextToolboxNode.cs:68
+msgid "The text that will be inserted into the document."
+msgstr ""
+
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/TextToolboxNode.cs:40
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/CodeTemplateToolboxProvider.cs:36
 msgid "Text Snippets"
 msgstr ""
@@ -8556,6 +8748,36 @@ msgstr ""
 msgid ""
 "Cannot add {0} '{1}' to class '{2}', because there is already a {3} with "
 "that name."
+msgstr ""
+
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/TypeReference.cs:109
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:78
+#, fuzzy
+msgid "Assembly Name"
+msgstr "Название сборки"
+
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/TypeReference.cs:118
+#, fuzzy
+msgid "Type Name"
+msgstr "Имя цели"
+
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/TypeReference.cs:126
+#, fuzzy
+msgid "Assembly Location"
+msgstr "Подписывание сборки"
+
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/TypeReference.cs:110
+#, fuzzy
+msgid "The assembly name."
+msgstr "Название сборки"
+
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/TypeReference.cs:119
+#, fuzzy
+msgid "The fully-qualified type name."
+msgstr "Использовать полные имена типов"
+
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/TypeReference.cs:127
+msgid "The location of the assembly."
 msgstr ""
 
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.PropertyGrid/PropertyGrid.cs:92
@@ -8611,6 +8833,118 @@ msgstr ""
 msgid "Could not find type '{0}'."
 msgstr "Не удалось загрузить адрес {0}"
 
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:93
+#, fuzzy
+msgid "Assembly Version"
+msgstr "Подписывание сборки"
+
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:121
+#, fuzzy
+msgid "Local Copy"
+msgstr "Ссылка на локальную копию"
+
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:129
+#, fuzzy
+msgid "Specific Version"
+msgstr "Версия"
+
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:48
+#, fuzzy
+msgid "Type of the reference."
+msgstr "_Обновить ссылки:"
+
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:67
+msgid "Referenced project, when the reference is of type 'Project'."
+msgstr ""
+
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:79
+#, fuzzy
+msgid "Name of the assembly."
+msgstr "Сборка .NET"
+
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:94
+msgid "Version of the assembly."
+msgstr ""
+
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:109
+msgid "Path to the assembly."
+msgstr ""
+
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:122
+msgid "Copy the referenced assembly to the output directory."
+msgstr ""
+
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:130
+msgid ""
+"Require a specific version of the assembly. A warning will be issued if the "
+"specific version is not found in the system."
+msgstr ""
+
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:138
+#, fuzzy
+msgid "Package that provides this reference."
+msgstr "Не указано имя пакета."
+
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:80
+#, fuzzy
+msgid "Resource ID"
+msgstr "Ресурсы"
+
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:88
+#, fuzzy
+msgid "Copy to output directory"
+msgstr "<b>Результирующий каталог</b>"
+
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:48
+msgid "Name of the file."
+msgstr ""
+
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:55
+msgid "Full path of the file."
+msgstr ""
+
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:62
+#, fuzzy
+msgid "Type of the file."
+msgstr "_Совет дня..."
+
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:72
+msgid "Action to perform when building this file."
+msgstr ""
+
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:81
+msgid "Identifier of the embedded resource."
+msgstr ""
+
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:89
+msgid ""
+"Whether to copy the file to the project's output directory when the project "
+"is built."
+msgstr ""
+
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/SolutionItemDescriptor.cs:63
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/WorkspaceItemDescriptor.cs:60
+#, fuzzy
+msgid "Root Directory"
+msgstr "Целевой каталог:"
+
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/SolutionItemDescriptor.cs:44
+#, fuzzy
+msgid "Name of the solution item."
+msgstr "Не удалось сохранить компонент решения: {0}"
+
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/SolutionItemDescriptor.cs:52
+#, fuzzy
+msgid "File path of the solution item."
+msgstr "Построить всё решение"
+
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/SolutionItemDescriptor.cs:64
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/WorkspaceItemDescriptor.cs:61
+msgid ""
+"Root directory of source files and projects. File paths will be shown "
+"relative to this directory."
+msgstr ""
+
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/ToolboxWidget.cs:200
 #, fuzzy
 msgid "There are no tools available for the current document."
@@ -8619,6 +8953,24 @@ msgstr "Нет доступных дополнительных опций для
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport/DocumentOutlinePad.cs:123
 msgid "An outline is not available for the current document."
 msgstr ""
+
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/WorkspaceItemDescriptor.cs:73
+#, fuzzy
+msgid "File Format"
+msgstr "Формат файла:"
+
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/WorkspaceItemDescriptor.cs:44
+msgid "Name of the item."
+msgstr ""
+
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/WorkspaceItemDescriptor.cs:52
+msgid "File path of the item."
+msgstr ""
+
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/WorkspaceItemDescriptor.cs:74
+#, fuzzy
+msgid "File format of the project file."
+msgstr "Не указан формат файла."
 
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.addin.xml:63
 msgid "Toolbox"
@@ -8854,11 +9206,6 @@ msgid ""
 "configurations can be selected via the '--config' or '--enable-*' option of "
 "the generated configure script."
 msgstr ""
-
-#: ../src/addins/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:60
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:433
-msgid "Makefile"
-msgstr "Makefile"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:215
 msgid "Specified makefile is invalid: {0}"
@@ -9109,6 +9456,7 @@ msgid "Please enter a valid project name"
 msgstr "Пожалуйста, введите корректное имя проекта."
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileIntegrationFeature.cs:12
+#: ../src/addins/MonoDevelop.Autotools/PropertyProvider.cs:38
 #: ../src/addins/MonoDevelop.Autotools/MonoDevelop.Autotools.addin.xml:93
 msgid "Makefile Integration"
 msgstr "Интеграция Makefile"
@@ -9260,25 +9608,25 @@ msgstr "Каталог развёртывания:"
 msgid "Use existing Makefiles"
 msgstr "Использовать существующие файлы Makefile"
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:106
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:107
 msgid "Generate new Makefiles"
 msgstr "Создать новые файлы Makefile"
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:137
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:138
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.GenerateMakefilesDialog.cs:148
 msgid "Default configuration:"
 msgstr "Конфигурация по умолчанию:"
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:170
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:171
 msgid "Select the kind of Makefile to generate:"
 msgstr "Выберите тип создаваемого Makefile:"
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:195
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:196
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.GenerateMakefilesDialog.cs:96
 msgid "Autotools based"
 msgstr "Основанный на автосборке"
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:207
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:208
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.GenerateMakefilesDialog.cs:107
 msgid ""
 "<b>Autotools based Makefile</b>\n"
@@ -9289,12 +9637,12 @@ msgstr ""
 "Создаёт структуру Makefile, основанную на автосборке, со стандартными целями "
 "и конфигурационными сценариямию"
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:233
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:234
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.GenerateMakefilesDialog.cs:75
 msgid "Simple"
 msgstr "Простой"
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:244
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:245
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.GenerateMakefilesDialog.cs:86
 msgid ""
 "<b>Simple Makefile</b>\n"
@@ -9304,6 +9652,16 @@ msgstr ""
 "<b>Простой Makefile</b>\n"
 "Создаёт набор файлов Makefile с общими целями и конфигурационный сценарий, "
 "осуществляющий базовую проверку всех зависимостей пакета."
+
+#: ../src/addins/MonoDevelop.Autotools/PropertyProvider.cs:39
+#, fuzzy
+msgid "Include in Makefile"
+msgstr "Включить в синхронизацию Makefile"
+
+#: ../src/addins/MonoDevelop.Autotools/PropertyProvider.cs:40
+#, fuzzy
+msgid "Include this file in the file list of the synchronized Makefile"
+msgstr "Включить в синхронизацию Makefile"
 
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.GenerateMakefilesDialog.cs:47
 #, fuzzy
@@ -9460,12 +9818,12 @@ msgstr "Файлы XML"
 msgid "Resource Files"
 msgstr "Файлы ресурсов"
 
-#: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:124
+#: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:125
 #, fuzzy
 msgid "C# source code"
 msgstr "Исходный код"
 
-#: ../src/addins/CSharpBinding/CSharpBindingCompilerManager.cs:71
+#: ../src/addins/CSharpBinding/CSharpBindingCompilerManager.cs:74
 msgid "{0} could not be found or is invalid."
 msgstr "{0} не был найден или содержит ошибку."
 
@@ -9537,21 +9895,25 @@ msgstr "Помещать отметки goto на один отступ леве
 msgid "Indent goto labels normally"
 msgstr "Помещать отметки goto на одном уровне с текстом программы"
 
-#: ../src/addins/CSharpBinding/gtk-gui/CSharpBinding.CompilerOptionsPanelWidget.cs:222
+#: ../src/addins/CSharpBinding/gtk-gui/CSharpBinding.CompilerOptionsPanelWidget.cs:76
+msgid "<b>Code Generation</b>"
+msgstr "<b>Генерация Кода</b>"
+
+#: ../src/addins/CSharpBinding/gtk-gui/CSharpBinding.CompilerOptionsPanelWidget.cs:211
 #, fuzzy
 msgid "<b>Language Options</b>"
 msgstr "<b>Параметры</b>"
 
-#: ../src/addins/CSharpBinding/gtk-gui/CSharpBinding.CompilerOptionsPanelWidget.cs:263
+#: ../src/addins/CSharpBinding/gtk-gui/CSharpBinding.CompilerOptionsPanelWidget.cs:252
 #, fuzzy
 msgid "C# Language Version:"
 msgstr "Языки"
 
-#: ../src/addins/CSharpBinding/gtk-gui/CSharpBinding.CompilerOptionsPanelWidget.cs:285
+#: ../src/addins/CSharpBinding/gtk-gui/CSharpBinding.CompilerOptionsPanelWidget.cs:274
 msgid "Allow '_unsafe' code"
 msgstr "Разрешить _небезопасный код"
 
-#: ../src/addins/CSharpBinding/Gui/CompilerOptionsPanelWidget.cs:119
+#: ../src/addins/CSharpBinding/Gui/CompilerOptionsPanelWidget.cs:129
 msgid "Invalid code page number."
 msgstr "Неверный номер кодовой страницы."
 
@@ -9561,93 +9923,93 @@ msgstr "Неверный номер кодовой страницы."
 msgid "Creates anonymous delegate."
 msgstr "Создать программу Gnome#."
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1496
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1524
 msgid "Set text in a code-like font"
 msgstr ""
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1497
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1525
 msgid "Set one or more lines of source code or program output"
 msgstr ""
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1498
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1526
 msgid "Indicate an example"
 msgstr ""
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1499
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1527
 msgid "Identifies the exceptions a method can throw"
 msgstr ""
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1500
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1528
 msgid "Includes comments from a external file"
 msgstr ""
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1501
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1529
 #, fuzzy
 msgid "Create a list or table"
 msgstr "Создать файл на языке C#."
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1503
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1531
 msgid "Define the heading row"
 msgstr ""
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1504
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1532
 msgid "Defines list or table item"
 msgstr ""
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1505
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1533
 msgid "A term to define"
 msgstr ""
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1506
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1534
 msgid "Describes a list item"
 msgstr ""
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1507
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1535
 msgid "Permit structure to be added to text"
 msgstr ""
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1509
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1537
 msgid "Describe a parameter for a method or constructor"
 msgstr ""
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1510
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1538
 msgid "Identify that a word is a parameter name"
 msgstr ""
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1512
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1540
 msgid "Document the security accessibility of a member"
 msgstr ""
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1513
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1541
 msgid "Describe a type"
 msgstr ""
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1514
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1542
 msgid "Describe the return value of a method"
 msgstr ""
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1515
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1543
 msgid "Specify a link"
 msgstr ""
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1516
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1544
 #, fuzzy
 msgid "Generate a See Also entry"
 msgstr "Создавать _дополнительные комментарии"
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1517
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1545
 msgid "Describe a member of a type"
 msgstr ""
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1518
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1546
 msgid "Describe a type parameter for a generic type or method"
 msgstr ""
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1519
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1547
 msgid "Identify that a word is a type parameter name"
 msgstr ""
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1520
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1548
 msgid "Describe a property"
 msgstr ""
 
@@ -9876,69 +10238,69 @@ msgstr "Настройки GTK#"
 msgid "Include in Projects"
 msgstr "Включить в проект"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:103
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:104
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/GettextFeature.cs:41
 #, fuzzy
 msgid "Translation"
 msgstr "Переводчик"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:104
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:105
 #, fuzzy
 msgid "Headers"
 msgstr "Заголовок"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:115
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:116
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs:207
 msgid "Fuzzy"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:119
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:120
 msgid "Original string"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:123
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:124
 msgid "Translated string"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:168
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:169
 msgid "Show fuzzy translations"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:175
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:176
 msgid "Show missing translations"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:182
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:183
 #, fuzzy
 msgid "Show valid translations"
 msgstr "Показать проваленные тесты"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:298
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:301
 #, fuzzy
 msgid "_Search in"
 msgstr "Область поиска:"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:303
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:306
 #, fuzzy
 msgid "_Original"
 msgstr "Сигналы"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:308
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:311
 #, fuzzy
 msgid "_Translated"
 msgstr "Переводчик"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:313
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:316
 msgid "_Both"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:347
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:353
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs:189
 #, fuzzy
 msgid "_Regex search"
 msgstr "Библиотека виджетов"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:358
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:361
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs:164
 #, fuzzy
 msgid "_Case sensitive"
@@ -9950,39 +10312,39 @@ msgstr "Учитывать регистр"
 msgid "_Whole words only"
 msgstr "Искать слова целиком"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:485
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:482
 #, fuzzy
 msgid ""
 "Do you really want to remove the translation string {0} (It will be removed "
 "from all translations)?"
 msgstr "Удалить решение {0} из решения {1}?"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:503
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:500
 msgid "{0:#00.00}% Translated"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:791
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:817
 #, fuzzy
 msgid "Update catalog list..."
 msgstr "Сохранить все открытые файлы"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:991
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:1057
 msgid "Translation for '{0}' doesn't end with '.'."
 msgstr ""
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:997
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:1071
 msgid "Casing mismatch in '{0}'"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:1002
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:1084
 msgid "Original string '{0}' contains '_', translation doesn't."
 msgstr ""
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:1008
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:1103
 msgid "Original string '{0}' contains '{1}', translation doesn't."
 msgstr ""
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:508
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:505
 #, fuzzy
 msgid "{0} Fuzzy Message"
 msgid_plural "{0} Fuzzy Messages"
@@ -9990,7 +10352,7 @@ msgstr[0] "{0} сообщение"
 msgstr[1] "{0} сообщения"
 msgstr[2] "{0} сообщений"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:515
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:512
 #, fuzzy
 msgid "{0} Missing Message"
 msgid_plural "{0} Missing Messages"
@@ -10046,6 +10408,20 @@ msgstr "Ошибка : {0}"
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/Catalog.cs:508
 msgid "Form {0} (e.g. \"{1}\")"
 msgstr ""
+
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/PropertyProvider.cs:59
+#, fuzzy
+msgid "Scan for translations"
+msgstr "Переводчик"
+
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/PropertyProvider.cs:60
+msgid "Include this file in the translation scan."
+msgstr ""
+
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/PropertyProvider.cs:58
+#, fuzzy
+msgid "Gettext translation"
+msgstr "Переводчик"
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/GettextFeature.cs:45
 #, fuzzy
@@ -10134,6 +10510,53 @@ msgstr "Проект обновляется"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.UpdateInProgressDialog.cs:42
 msgid "Contacting www.regexlib.com. This may take a while ..."
+msgstr ""
+
+#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWindow.cs:279
+#, fuzzy
+msgid "Match '{0}'"
+msgstr "Открытие {0}"
+
+#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWindow.cs:285
+msgid "Group '{0}':'{1}'"
+msgstr ""
+
+#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWindow.cs:287
+#, fuzzy
+msgid "Capture '{0}'"
+msgstr "Инкапсулировать '{0}'"
+
+#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWindow.cs:290
+#, fuzzy
+msgid "Group '{0}' not found"
+msgstr "Файл '{0}' не найден."
+
+#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWindow.cs:353
+#, fuzzy
+msgid "Ignore Whitespace"
+msgstr "Пропущенные"
+
+#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWindow.cs:354
+#, fuzzy
+msgid "Ignore case"
+msgstr "Игнорировать"
+
+#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWindow.cs:355
+#, fuzzy
+msgid "Single line"
+msgstr "Показать проверяемый исходный код"
+
+#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWindow.cs:356
+#, fuzzy
+msgid "Multi line"
+msgstr "Построение: "
+
+#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWindow.cs:357
+msgid "Explicit Capture"
+msgstr ""
+
+#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWindow.cs:358
+msgid "Right to left"
 msgstr ""
 
 #: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:89
@@ -11333,7 +11756,7 @@ msgid "Light color scheme using brownish colors."
 msgstr ""
 
 #: ../src/addins/Mono.Texteditor/Styles/C64Style.xml:24
-msgid "A Style style that uses the old Commodore 64 Styles"
+msgid "A style that uses the old Commodore 64 colors"
 msgstr ""
 
 #: ../src/addins/Mono.Texteditor/Styles/OblivionStyle.xml:24
@@ -11382,6 +11805,11 @@ msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
 
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorDisplayBinding.cs:67
+#, fuzzy
+msgid "Source Code Editor"
+msgstr "Редактор исходного кода"
+
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:122
 #, fuzzy
 msgid "Source"
@@ -11393,23 +11821,19 @@ msgid ""
 "to overwrite the file?"
 msgstr "Файл {0} был изменён вне среды разработки. Вы хотите его перезаписать?"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:1148
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:1153
 msgid "Print Source Code"
 msgstr "Распечатать исходный код"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:1167
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:1172
 msgid "Print Preview - Source Code"
 msgstr "Предпросмотр - исходный код"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:1182
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:1187
 msgid "Print operation failed."
 msgstr "Произошёл сбой при печати."
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:1224
-msgid "Page"
-msgstr "Страница"
-
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:1338
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:1343
 #, fuzzy
 msgid "Clipboard ring"
 msgstr "Написание кода"
@@ -11469,7 +11893,7 @@ msgstr "GNU/Emacs"
 msgid "SharpDevelop"
 msgstr "MonoDevelop"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs:69
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs:78
 msgid "The default color scheme."
 msgstr ""
 
@@ -11496,7 +11920,7 @@ msgstr "Переименовать {0}"
 msgid "Member list"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/ClassQuickFinder.cs:418
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/ClassQuickFinder.cs:417
 #, fuzzy
 msgid "Type list"
 msgstr "Типы"
@@ -11728,36 +12152,36 @@ msgstr "Документация"
 msgid "Inspect"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:290
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:308
 #, fuzzy
 msgid "Member"
 msgstr "Номер порта:"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:299
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:317
 msgid "Declaring Type"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:331
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:349
 #, fuzzy
 msgid "Searching member..."
 msgstr "Сохраняется..."
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:334
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:386
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:352
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:404
 msgid "Searching string in disassembled code..."
 msgstr ""
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:337
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:355
 #, fuzzy
 msgid "Searching string in decompiled code..."
 msgstr "Искомая строка не найдена:"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:340
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:358
 #, fuzzy
 msgid "Searching type..."
 msgstr "Сохраняется..."
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:697
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:715
 #, fuzzy
 msgid "No documentation available."
 msgstr "Нет доступных целей для развёртывания"
@@ -11859,18 +12283,18 @@ msgid "<b>Declaring Type:</b>\t{0}"
 msgstr ""
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:116
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:164
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:173
 msgid "Method is P/Invoke"
 msgstr ""
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:119
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:167
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:176
 #, fuzzy
 msgid "Interface method"
 msgstr "Переименовать метод"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:119
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:167
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:176
 #, fuzzy
 msgid "Abstract method"
 msgstr "Абстрактное содержимое"
@@ -11883,17 +12307,17 @@ msgstr ""
 msgid "Lines (real)"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.CodeMetrics/MonoDevelop.CodeMetrics/CodeMetricsWidget.cs:246
+#: ../src/addins/MonoDevelop.CodeMetrics/MonoDevelop.CodeMetrics/CodeMetricsWidget.cs:255
 #, fuzzy
 msgid "Results:"
 msgstr "Результат"
 
-#: ../src/addins/MonoDevelop.CodeMetrics/MonoDevelop.CodeMetrics/CodeMetricsWidget.cs:248
+#: ../src/addins/MonoDevelop.CodeMetrics/MonoDevelop.CodeMetrics/CodeMetricsWidget.cs:257
 msgid "lines: {0} (real:{1}), commented:{2} ({3:0.00}%), blank:{4} ({5:0.00}%)"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.CodeMetrics/MonoDevelop.CodeMetrics/CodeMetricsWidget.cs:280
-#: ../src/addins/MonoDevelop.CodeMetrics/MonoDevelop.CodeMetrics/CodeMetricsWidget.cs:281
+#: ../src/addins/MonoDevelop.CodeMetrics/MonoDevelop.CodeMetrics/CodeMetricsWidget.cs:289
+#: ../src/addins/MonoDevelop.CodeMetrics/MonoDevelop.CodeMetrics/CodeMetricsWidget.cs:290
 #, fuzzy
 msgid "Scanning files..."
 msgstr "Добавляются файлы..."
@@ -11930,6 +12354,77 @@ msgstr "Не выбран проект упаковки."
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/DeployDialog.cs:266
 msgid "Create"
 msgstr "Создать"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/PropertyProvider.cs:33
+#, fuzzy
+msgid "Target directory"
+msgstr "Целевой каталог:"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/PropertyProvider.cs:50
+#, fuzzy
+msgid "Relative target path"
+msgstr "Выберите путь вывода"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/PropertyProvider.cs:58
+#, fuzzy
+msgid "Has path references"
+msgstr "_Обновить ссылки:"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/PropertyProvider.cs:66
+msgid "Use project relative path"
+msgstr ""
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/PropertyProvider.cs:74
+msgid "File attributes"
+msgstr ""
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/PropertyProvider.cs:82
+#, fuzzy
+msgid "Include in deploy"
+msgstr "Включить в проект"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/PropertyProvider.cs:34
+#, fuzzy
+msgid "Target Directory"
+msgstr "_Целевой каталог"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/PropertyProvider.cs:51
+msgid "Relative path of the file in the installation directory."
+msgstr ""
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/PropertyProvider.cs:59
+msgid ""
+"Set to 'true' if the text file contains unresolved references to paths (e.g. "
+"@ProgramFiles@)"
+msgstr ""
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/PropertyProvider.cs:67
+msgid ""
+"Use the relative path of the file in the project when deploying to the "
+"target directory."
+msgstr ""
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/PropertyProvider.cs:75
+msgid "Attributes to apply to the target file."
+msgstr ""
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/PropertyProvider.cs:83
+msgid ""
+"Include the file in deployment in addition to the files included "
+"automatically."
+msgstr ""
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/PropertyProvider.cs:32
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/PropertyProvider.cs:49
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/PropertyProvider.cs:57
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/PropertyProvider.cs:65
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/PropertyProvider.cs:73
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/PropertyProvider.cs:81
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.addin.xml:22
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.addin.xml:175
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/app.desktop.xft.xml:6
+msgid "Deployment"
+msgstr "Развёртывание"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/CommandPackageBuilder.cs:47
 msgid "Execute command"
@@ -12154,7 +12649,7 @@ msgstr "Имя приложения (используется как имя вл
 msgid "Select the archive file name and format:"
 msgstr "Выберите имя файла архива и формат:"
 
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.SourcesZipEditorWidget.cs:137
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.SourcesZipEditorWidget.cs:136
 msgid "File format:"
 msgstr "Формат файла:"
 
@@ -12174,7 +12669,7 @@ msgstr "Проекты и решения"
 msgid "Select the archive file name and location:"
 msgstr "Выберите расположение и имя файла архива:"
 
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.BinariesZipEditorWidget.cs:160
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.BinariesZipEditorWidget.cs:159
 msgid "Target platform:"
 msgstr "Целевая платформа:"
 
@@ -12273,12 +12768,6 @@ msgid "Create a project which can generate packages for a solution"
 msgstr ""
 "Создать проект, который позволяет генерировать установочные пакеты для "
 "решения"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.addin.xml:22
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.addin.xml:175
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/app.desktop.xft.xml:6
-msgid "Deployment"
-msgstr "Развёртывание"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.addin.xml:26
 msgid "Create Package..."
@@ -13018,27 +13507,27 @@ msgstr "Выберите окружения, которые должны исп�
 msgid "Always show"
 msgstr "Показывать всегда"
 
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:622
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:623
 msgid "Only show in the following environments:"
 msgstr "Только в следующих оконных средах:"
 
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:633
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:634
 msgid "Not show in the following environments:"
 msgstr "Не показывать в следующих оконных средах:"
 
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:668
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:669
 msgid "Menu entry"
 msgstr "Пункт меню"
 
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:685
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:686
 msgid "MIME types supported by this application:"
 msgstr "Типы MIME, поддерживаемые данным приложением:"
 
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:750
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:751
 msgid "Mime types"
 msgstr "Типы MIME"
 
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:810
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:811
 msgid "Other entries"
 msgstr "Другие пункты меню"
 
@@ -13214,35 +13703,35 @@ msgstr ""
 msgid "Select XML Schema"
 msgstr "Выбрать файл"
 
-#: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor/XmlTextEditorExtension.cs:600
+#: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor/XmlTextEditorExtension.cs:612
 #, fuzzy
 msgid "Creating schema..."
 msgstr "Создаётся rules.make"
 
-#: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor/XmlTextEditorExtension.cs:605
+#: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor/XmlTextEditorExtension.cs:617
 #, fuzzy
 msgid "Schema created."
 msgstr "Поиск завершён. "
 
-#: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor/XmlTextEditorExtension.cs:607
+#: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor/XmlTextEditorExtension.cs:619
 msgid "Error creating XML schema."
 msgstr ""
 
-#: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor/XmlTextEditorExtension.cs:695
+#: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor/XmlTextEditorExtension.cs:707
 #, fuzzy
 msgid "Error reading file '{0}'."
 msgstr "Ошибка при чтении файла {0} :"
 
-#: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor/XmlTextEditorExtension.cs:709
+#: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor/XmlTextEditorExtension.cs:721
 msgid "Executing transform..."
 msgstr ""
 
-#: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor/XmlTextEditorExtension.cs:715
+#: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor/XmlTextEditorExtension.cs:727
 #, fuzzy
 msgid "Transform completed."
 msgstr "Поиск завершён. "
 
-#: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor/XmlTextEditorExtension.cs:718
+#: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor/XmlTextEditorExtension.cs:730
 #, fuzzy
 msgid "Could not run transform."
 msgstr "Не удалось получить информацию о различиях."
@@ -13264,6 +13753,17 @@ msgstr "Построение: "
 #, fuzzy
 msgid "User schema"
 msgstr "Пользователи"
+
+#: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.Gui/XmlSchemasPanelWidget.cs:119
+#, fuzzy
+msgid "File Extension"
+msgstr "Расширение"
+
+#: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.Gui/XmlSchemasPanelWidget.cs:121
+#: ../src/addins/MonoDevelop.XmlEditor/XmlEditor.glade:374
+#, fuzzy
+msgid "Prefix"
+msgstr "Префикс:"
 
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.Gui/XmlSchemasPanelWidget.cs:379
 #, fuzzy
@@ -13293,12 +13793,12 @@ msgstr "<b>Основные настройки</b>"
 msgid "Unhandled error saving schema changes."
 msgstr ""
 
-#: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.Gui/BaseXmlEditorExtension.cs:446
+#: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.Gui/BaseXmlEditorExtension.cs:452
 #, fuzzy
 msgid "Closing tag for '{0}'"
 msgstr "Добавить сообщение для файла '{0}':"
 
-#: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.Gui/BaseXmlEditorExtension.cs:460
+#: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.Gui/BaseXmlEditorExtension.cs:466
 #, fuzzy
 msgid "Comment"
 msgstr "Комментарии"
@@ -13338,11 +13838,6 @@ msgstr "<b>Кодировка</b>"
 #: ../src/addins/MonoDevelop.XmlEditor/XmlEditor.glade:295
 msgid "Schema"
 msgstr ""
-
-#: ../src/addins/MonoDevelop.XmlEditor/XmlEditor.glade:374
-#, fuzzy
-msgid "Prefix"
-msgstr "Префикс:"
 
 #: ../src/addins/MonoDevelop.XmlEditor/XmlEditor.glade:544
 msgid "XPath Query"
@@ -13404,6 +13899,12 @@ msgstr ""
 msgid "Language"
 msgstr "Языки"
 
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/StackTracePad.cs:84
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:28
+#, fuzzy
+msgid "Call Stack"
+msgstr "Все файлы"
+
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValueTreeView.cs:135
 msgid "Click here to add a new watch"
 msgstr ""
@@ -13452,6 +13953,11 @@ msgstr "Установить контрольную точку"
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ThreadsPad.cs:85
 msgid "Id"
 msgstr ""
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ThreadsPad.cs:137
+#, fuzzy
+msgid "Threads List"
+msgstr "Список задач"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:127
 #, fuzzy
@@ -13516,6 +14022,74 @@ msgstr "Регулярные выражения"
 msgid "Evaluate"
 msgstr "Значение"
 
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:94
+msgid "Condition expression not specified"
+msgstr ""
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:98
+msgid "Trace expression not specified"
+msgstr ""
+
+#: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.BreakpointPropertiesDialog.cs:93
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:105
+#, fuzzy
+msgid "Breakpoint Properties"
+msgstr "Параметры построения"
+
+#: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.BreakpointPropertiesDialog.cs:167
+#, fuzzy
+msgid "Line:"
+msgstr "Строка"
+
+#: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.BreakpointPropertiesDialog.cs:193
+#, fuzzy
+msgid "<b>Condition</b>"
+msgstr "<b>Расположение</b>"
+
+#: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.BreakpointPropertiesDialog.cs:218
+#, fuzzy
+msgid "Always break"
+msgstr "Показывать всегда"
+
+#: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.BreakpointPropertiesDialog.cs:231
+msgid "Break when condition is true"
+msgstr ""
+
+#: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.BreakpointPropertiesDialog.cs:243
+msgid "Break when the expression changes"
+msgstr ""
+
+#: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.BreakpointPropertiesDialog.cs:271
+msgid "Condition expression:"
+msgstr ""
+
+#: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.BreakpointPropertiesDialog.cs:305
+msgid "Hit count before breaking:"
+msgstr ""
+
+#: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.BreakpointPropertiesDialog.cs:341
+#, fuzzy
+msgid "<b>Action</b>"
+msgstr "<b>Расположение</b>"
+
+#: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.BreakpointPropertiesDialog.cs:369
+msgid "When the breakpoint is hit:"
+msgstr ""
+
+#: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.BreakpointPropertiesDialog.cs:376
+#, fuzzy
+msgid "Break"
+msgstr "Назад"
+
+#: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.BreakpointPropertiesDialog.cs:389
+msgid "Write expression to the output"
+msgstr ""
+
+#: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.BreakpointPropertiesDialog.cs:416
+#, fuzzy
+msgid "Expression:"
+msgstr "Регулярные выражения"
+
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:25
 #, fuzzy
 msgid "Debug Windows"
@@ -13529,11 +14103,6 @@ msgstr "Путь"
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:27
 msgid "Locals"
 msgstr ""
-
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:28
-#, fuzzy
-msgid "Call Stack"
-msgstr "Все файлы"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:30
 msgid "Threads"
@@ -13948,6 +14517,36 @@ msgstr "Исключить следующие категории: "
 msgid "Include the following categories: "
 msgstr "Включить следующие категории: "
 
+#, fuzzy
+#~ msgid "Unhandled internal error: {0}"
+#~ msgstr "Внутренняя ошибка"
+
+#~ msgid "GotDotNet"
+#~ msgstr "GotDotNet"
+
+#~ msgid "Save changed files?"
+#~ msgstr "Сохранить изменённые файлы?"
+
+#, fuzzy
+#~ msgid "Updating"
+#~ msgstr "Открытие {0}"
+
+#, fuzzy
+#~ msgid "External Updated"
+#~ msgstr "Внешние файлы"
+
+#, fuzzy
+#~ msgid "Replaced"
+#~ msgstr "Заменить"
+
+#, fuzzy
+#~ msgid "Locked"
+#~ msgstr "Закрепить"
+
+#, fuzzy
+#~ msgid "Lock Failed"
+#~ msgstr "(Сбой при загрузке)"
+
 #~ msgid "The file '{0}' already exists in the project."
 #~ msgstr "Файл '{0}' уже существует в проекте."
 
@@ -14125,9 +14724,6 @@ msgstr "Включить следующие категории: "
 #~ msgid "_Delete from disk"
 #~ msgstr "_Удалить с диска"
 
-#~ msgid "Encapsulate '{0}'"
-#~ msgstr "Инкапсулировать '{0}'"
-
 #~ msgid "Field name:"
 #~ msgstr "Имя поля:"
 
@@ -14223,9 +14819,6 @@ msgstr "Включить следующие категории: "
 #~ msgid "File {0} not found in {1}."
 #~ msgstr "Файл {0} не найден в {1}."
 
-#~ msgid "Compile"
-#~ msgstr "Компиляция"
-
 #~ msgid "Common"
 #~ msgstr "Общие"
 
@@ -14301,9 +14894,6 @@ msgstr "Включить следующие категории: "
 
 #~ msgid "Background:"
 #~ msgstr "Фон:"
-
-#~ msgid "Source Editor"
-#~ msgstr "Редактор исходного кода"
 
 #~ msgid "Buffer Options"
 #~ msgstr "Параметры буферизации"
@@ -14517,9 +15107,6 @@ msgstr "Включить следующие категории: "
 
 #~ msgid "Select deploy script"
 #~ msgstr "Выберите сценарий развертывания"
-
-#~ msgid "Select output directory"
-#~ msgstr "Выберите каталог вывода"
 
 #~ msgid "Select target location"
 #~ msgstr "Выберите целевое расположение"
@@ -14942,9 +15529,6 @@ msgstr "Включить следующие категории: "
 #~ msgstr ""
 #~ "Чтобы изменения вступили в силу, необходимо перезапустить MonoDevelop."
 
-#~ msgid "Repository"
-#~ msgstr "Репозиторий"
-
 #~ msgid "Add-in"
 #~ msgstr "Дополнение"
 
@@ -15058,9 +15642,6 @@ msgstr "Включить следующие категории: "
 
 #~ msgid "Replace in Files"
 #~ msgstr "Заменить в файлах"
-
-#~ msgid "Initializing MonoDevelop"
-#~ msgstr "Инициализация MonoDevelop"
 
 #~ msgid "Deploy Output"
 #~ msgstr "Вывод развёртывания"

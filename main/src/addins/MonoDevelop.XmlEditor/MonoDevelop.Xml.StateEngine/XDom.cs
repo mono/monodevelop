@@ -570,7 +570,7 @@ namespace MonoDevelop.Xml.StateEngine
 		}
 	}
 	
-	public class XDocType : XNode 
+	public class XDocType : XNode, INamedXObject 
 	{
 		public XDocType (DomLocation start) : base (start) {}
 		public XDocType (DomRegion region) : base (region) {}
@@ -578,7 +578,11 @@ namespace MonoDevelop.Xml.StateEngine
 		protected XDocType () {}
 		protected override XObject NewInstance () { return new XDocType (); }
 		
-		public string Value { get; set; }
+		public XName RootElement { get; set; }
+		public string PublicFpi { get; set; }
+		public bool IsPublic { get { return PublicFpi != null; } }
+		public DomRegion InternalDeclarationRegion { get; set; }
+		public string Uri { get; set; }
 		
 		public override string FriendlyPathRepresentation {
 			get { return "<!DOCTYPE>"; }
@@ -589,7 +593,25 @@ namespace MonoDevelop.Xml.StateEngine
 			base.ShallowCopyFrom (copyFrom);
 			XDocType copyFromDT = (XDocType) copyFrom;
 			//immutable types
-			Value = copyFromDT.Value;
+			RootElement = copyFromDT.RootElement;
+			PublicFpi = copyFromDT.PublicFpi;
+			InternalDeclarationRegion = copyFromDT.InternalDeclarationRegion;
+			Uri = copyFromDT.Uri;
+		}
+		
+		XName INamedXObject.Name {
+			get { return RootElement; }
+			set { RootElement = value; }
+		}
+		
+		bool INamedXObject.IsNamed {
+			get { return RootElement.IsValid; }
+		}
+		
+		public override string ToString ()
+		{
+			return string.Format("[DocType: RootElement='{0}', PublicFpi='{1}',  InternalDeclarationRegion='{2}', Uri='{3}']",
+			                     RootElement.FullName, PublicFpi, InternalDeclarationRegion, Uri);
 		}
 	}
 	
