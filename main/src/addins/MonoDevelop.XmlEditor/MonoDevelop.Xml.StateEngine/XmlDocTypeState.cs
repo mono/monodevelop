@@ -27,6 +27,7 @@
 //
 
 using System;
+using MonoDevelop.Projects.Dom;
 using System.Collections.Generic;
 using System.Text;
 
@@ -34,32 +35,137 @@ namespace MonoDevelop.Xml.StateEngine
 {
 	public class XmlDocTypeState : State
 	{
+		XmlNameState nameState = new XmlNameState ();
+		
+		public XmlDocTypeState ()
+		{
+			 Adopt (nameState);
+		}
+		
 		public override State PushChar (char c, IParseContext context, ref string rollback)
 		{
-			if (context.CurrentStateLength == 1) {
-				context.Nodes.Push (new XDocType (context.LocationMinus ("<!DOCTYPE".Length + 1)));
+			XDocType doc = context.Nodes.Peek () as XDocType;
+			if (doc == null) {
+				doc = new XDocType (context.LocationMinus ("<!DOCTYPE".Length + 1));
+				context.Nodes.Push (doc);
 			}
 			
-			if (c == '>' || c == '<') {
-				XDocType doc = (XDocType) context.Nodes.Pop ();
-				
-				if (c == '<') {
-					rollback = string.Empty;
-					context.LogError ("Doctype ended prematurely.");
+			if (!doc.RootElement.IsValid) {
+				if (XmlChar.IsWhitespace (c))
+					return null;
+				else if (XmlChar.IsFirstNameChar (c)) {
+					rollback = "";
+					return nameState;
 				}
-				
-				if (context.BuildTree) {
-					doc.Value = context.KeywordBuilder.ToString ();
-					doc.End (context.Location);
-					((XContainer) context.Nodes.Peek ()).AddChildNode (doc); 
+			}
+			else if (doc.PublicFpi == null) {
+				if (context.StateTag == 0) {
+					if (c == 's' || c == 'S') {
+						context.StateTag = 1;
+						return null;
+					} else if (c == 'p' || c == 'P') {
+						context.StateTag = -1;
+						return null;
+					} if (XmlChar.IsWhitespace (c)) {
+						return null;
+					}
+				} else if (Math.Abs (context.StateTag) < 6) {
+					if (context.StateTag > 0) {
+						if ("YSTEM"[context.StateTag - 1] == c || "ystem"[context.StateTag - 1] == c) {
+							context.StateTag++;
+							if (context.StateTag == 6) {
+								context.StateTag = 0;
+								doc.PublicFpi = "";
+							}
+							return null;
+						}
+					} else {
+						int absState = Math.Abs (context.StateTag) - 1;
+						if ("UBLIC"[absState] == c || "ublic"[absState] == c) {
+							context.StateTag--;
+							return null;
+						}
+					}
+				} else {
+					if (context.KeywordBuilder.Length == 0) {
+						if (XmlChar.IsWhitespace (c))
+							return null;
+						else if (c == '"') {
+							context.KeywordBuilder.Append (c);
+							return null;
+						}
+					} else {
+						context.KeywordBuilder.Append (c);
+						if (c == '"') {
+							doc.PublicFpi = context.KeywordBuilder.ToString ();
+							context.KeywordBuilder.Length = 0;
+							context.StateTag = 0;
+						}
+						return null;
+					}
 				}
-				return Parent;
+			}
+			else if (doc.Uri == null) {
+				if (context.KeywordBuilder.Length == 0) {
+					if (XmlChar.IsWhitespace (c))
+						return null;
+					else if (c == '"') {
+						context.KeywordBuilder.Append (c);
+						return null;
+					}
+				} else {
+					context.KeywordBuilder.Append (c);
+					if (c == '"') {
+						doc.Uri = context.KeywordBuilder.ToString ();
+						context.KeywordBuilder.Length = 0;
+					}
+					return null;
+				}
+			}
+			else if (doc.InternalDeclarationRegion.End.Line <= 0) {
+				if (XmlChar.IsWhitespace (c))
+						return null;
+				switch (context.StateTag) {
+				case 0:
+					if (c == '[') {
+						doc.InternalDeclarationRegion = new DomRegion (context.Location, DomLocation.Empty);
+						context.StateTag = 1;
+						return null;
+					}
+					break;
+				case 1:
+					if (c == '<') {
+						context.StateTag = 2;
+						return null;
+					} else if (c == ']') {
+						context.StateTag = 0;
+						doc.InternalDeclarationRegion = new DomRegion (doc.InternalDeclarationRegion.Start, context.Location);
+						return null;
+					}
+					break;
+				case 2:
+					if (c == '>') {
+						context.StateTag = 1;
+					}
+					return null;
+				default:
+					throw new InvalidOperationException ();
+				}
 			}
 			
-			if (context.BuildTree)
-				context.KeywordBuilder.Append (c);
+			doc = (XDocType)context.Nodes.Pop ();
+			if (c == '<') {
+				rollback = string.Empty;
+				context.LogError ("Doctype ended prematurely.");
+			} else if (c != '>') {
+				context.LogError ("Unexpected character '" + c +"' in doctype.");
+			}
 			
-			return null;
+			if (context.BuildTree) {
+				doc.End (context.Location);
+				((XContainer) context.Nodes.Peek ()).AddChildNode (doc); 
+			}
+			return Parent;
 		}
 	}
 }

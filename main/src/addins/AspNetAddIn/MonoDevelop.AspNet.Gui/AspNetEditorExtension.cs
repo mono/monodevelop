@@ -56,6 +56,9 @@ namespace MonoDevelop.AspNet.Gui
 	{
 		AspNetParsedDocument AspCU { get { return CU as AspNetParsedDocument; } }
 		Document AspDocument { get { return AspCU == null? null : AspCU.Document; } }
+		 
+		System.Text.RegularExpressions.Regex DocTypeRegex =
+				new System.Text.RegularExpressions.Regex (@"(?:PUBLIC|public)\s+""(?<fpi>[^""]*)""\s+""(?<uri>[^""]*)""");
 		
 		#region Setup and teardown
 		
@@ -122,7 +125,14 @@ namespace MonoDevelop.AspNet.Gui
 				return list;
 			}
 			
-			DocType = AspCU != null ? AspCU.PageInfo.DocType : null;
+			if (AspCU == null) {
+				DocType = null;
+			} else {
+				DocType = new MonoDevelop.Xml.StateEngine.XDocType (DomLocation.Empty);
+				System.Text.RegularExpressions.Match matches = DocTypeRegex.Match (AspCU.PageInfo.DocType);
+				DocType.PublicFpi = matches.Groups["fpi"].Value;
+				DocType.Uri = matches.Groups["uri"].Value;
+			}
 			
 			return base.HandleCodeCompletion (completionContext, forced, ref triggerWordLength);
 		}
@@ -759,11 +769,7 @@ namespace MonoDevelop.AspNet.Gui
 			
 			//FIXME: why is this offset necessary?
 			int offset = n is TagNode? 1 : 0;
-			
-			int s = Editor.GetPositionFromLineColumn (start.BeginLine, start.BeginColumn + offset);
-			int e = Editor.GetPositionFromLineColumn (end.EndLine, end.EndColumn + offset);
-			if (e > s && s > -1)
-				Editor.Select (s, e);
+			EditorSelect (new DomRegion (start.BeginLine, start.BeginColumn + offset, end.EndLine, end.EndColumn + offset));
 		}
 		
 		#endregion

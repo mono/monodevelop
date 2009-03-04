@@ -1,3 +1,9 @@
+2009-03-04  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:
+	* MonoDevelop.AspNet.Gui/BaseHtmlEditorExtension.cs: Track
+	  doctype parsing changes. Fix jumping to selections.
+
 2009-03-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.AspNet/AspNetAppProject.cs: Changed the way

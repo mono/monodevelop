@@ -68,6 +68,21 @@ namespace MonoDevelop.Xml.StateEngine
 							 new DomRegion (el.Region.Start, el.ClosingTag.Region.End));
 					}
 				}
+				else if (node is XDocType)
+				{
+					XDocType dt = (XDocType) node;
+					string id = !String.IsNullOrEmpty (dt.PublicFpi) ? dt.PublicFpi
+						: !String.IsNullOrEmpty (dt.Uri) ? dt.Uri : null;
+					
+					if (id != null && dt.Region.End.Line - dt.Region.Start.Line > 2) {
+						if (id.Length > 50)
+							id = id.Substring (0, 47) + "...";
+						
+						FoldingRegion fr = new FoldingRegion (string.Format ("<!DOCTYPE {0}>", id), dt.Region);
+						fr.IsFoldedByDefault = true;
+						yield return fr;
+					}
+				}
 			}
 		}
 

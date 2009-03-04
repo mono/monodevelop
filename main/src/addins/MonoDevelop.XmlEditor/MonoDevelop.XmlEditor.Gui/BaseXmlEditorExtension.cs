@@ -49,7 +49,7 @@ namespace MonoDevelop.XmlEditor.Gui
 		DocumentStateTracker<Parser> tracker;
 		ParsedDocument lastCU;
 		
-		string docType;
+		XDocType docType;
 		
 		MonoDevelop.Ide.Gui.Components.PadTreeView outlineTreeView;
 		Gtk.TreeStore outlineTreeStore;
@@ -107,7 +107,7 @@ namespace MonoDevelop.XmlEditor.Gui
 				if (doc != null && doc.XDocument != null) {
 					foreach (XNode node in doc.XDocument.Nodes) {
 						if (node is XDocType) {
-							DocType = ((XDocType)node).Value;
+							DocType = (XDocType)node;
 							found = true;
 							break;
 						}
@@ -168,7 +168,7 @@ namespace MonoDevelop.XmlEditor.Gui
 		
 		#endregion
 		
-		protected string DocType {
+		protected XDocType DocType {
 			get { return docType; }
 			set {
 				if (docType == value)
@@ -537,7 +537,7 @@ namespace MonoDevelop.XmlEditor.Gui
 			
 			if (el == null) {
 				MonoDevelop.Core.LoggingService.LogDebug ("Selecting {0}", ob.Region);
-				EditorSelect (ob.Region.Start, ob.Region.End);
+				EditorSelect (ob.Region);
 			}
 			else if (el.IsClosed) {
 				MonoDevelop.Core.LoggingService.LogDebug ("Selecting {0}-{1}",
@@ -549,18 +549,20 @@ namespace MonoDevelop.XmlEditor.Gui
 				//pick out the locations, with some offsets to account for the parsing model
 				DomLocation s = contents? el.Region.End : el.Region.Start;
 				DomLocation e = contents? el.ClosingTag.Region.Start : el.ClosingTag.Region.End;
-				EditorSelect (s, e);
+				EditorSelect (new DomRegion (s, e));
 			} else {
 				MonoDevelop.Core.LoggingService.LogDebug ("No end tag found for selection");
 			}
 		}
 		
-		void EditorSelect (DomLocation start, DomLocation end)
+		protected void EditorSelect (DomRegion region)
 		{
-			int s = Editor.GetPositionFromLineColumn (start.Line, start.Column);
-			int e = Editor.GetPositionFromLineColumn (end.Line, end.Column);
-			if (s > -1 && e > s)
+			int s = Editor.GetPositionFromLineColumn (region.Start.Line, region.Start.Column);
+			int e = Editor.GetPositionFromLineColumn (region.End.Line, region.End.Column);
+			if (s > -1 && e > s) {
 				Editor.Select (s, e);
+				Editor.ShowPosition (s);
+			}
 		}
 		
 		public event EventHandler<DocumentPathChangedEventArgs> PathChanged;
@@ -806,11 +808,7 @@ namespace MonoDevelop.XmlEditor.Gui
 			if (el != null && el.IsClosed && el.ClosingTag.Region.End > region.End) {
 				region.End = el.ClosingTag.Region.End;
 			}
-			
-			int s = Editor.GetPositionFromLineColumn (region.Start.Line, region.Start.Column);
-			int e = Editor.GetPositionFromLineColumn (region.End.Line, region.End.Column);
-			if (e > s && s > -1)
-				Editor.Select (s, e);
+			EditorSelect (region);
 		}		
 		#endregion
 	}

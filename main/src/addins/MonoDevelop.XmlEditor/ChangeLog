@@ -1,3 +1,18 @@
+2009-03-04  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.XmlEditor.Gui/BaseXmlEditorExtension.cs: Track
+	  doctype parsing changes. Fix jumping to selections.
+
+	* MonoDevelop.Xml.StateEngine/XDom.cs:
+	* MonoDevelop.Xml.StateEngine/XmlDocTypeState.cs: XDocType now
+	  captures root element, URI, FPI, and the internal
+	  declaration region. Fixes Bug 481897 - xml can't be parsed.
+
+	* MonoDevelop.Xml.StateEngine/XmlParsedDocument.cs: Fold large
+	  DocTypes.
+
+	* gtk-gui/gui.stetic: Flush.
+
 2009-02-27  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am:
