@@ -1,10 +1,10 @@
 #!/bin/bash
-VERSION=1.9.2
+VERSION=1.9.3
 PACKAGE=monodevelop-debugger-mdb
 prefix=/usr/local
 config=DEBUG
 configurations=" RELEASE DEBUG"
-common_packages=" mono-addins;0.3 mono-debugger;2.0 monodevelop;1.9.2 monodevelop-core-addins;1.9.2"
+common_packages=" mono-addins;0.3 mono-debugger;2.0 monodevelop;1.9.3 monodevelop-core-addins;1.9.3"
 
 
 usage ()
