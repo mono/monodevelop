@@ -306,6 +306,10 @@ namespace MonoDevelop.NUnit
 			UnitTestResult result;
 			
 			try {
+				if (string.IsNullOrEmpty (AssemblyPath)) {
+					string msg = GettextCatalog.GetString ("Could not get a valid path to the assembly. There may be a conflict in the project configurations.");
+					throw new Exception (msg);
+				}
 				result = runner.Run (localMonitor, filter, AssemblyPath, suiteName, new List<string> (SupportAssemblies));
 				if (testName != null)
 					result = localMonitor.SingleTestResult;
