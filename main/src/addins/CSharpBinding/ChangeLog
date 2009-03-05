@@ -1,5 +1,12 @@
 2009-03-05  Mike Krüger  <mkrueger@novell.com>
 
+	* gtk-gui/gui.stetic: 
+
+	* Gui/ResolveVisitor.cs: Using new anonymous type
+	  representation.
+
+2009-03-05  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/ResolveVisitor.cs:
 	* Gui/NRefactoryResolver.cs:
 	* FormattingStrategy/CSharpIndentEngine.cs: Worked on lambda

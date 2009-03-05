@@ -201,7 +201,7 @@ namespace MonoDevelop.CSharpBinding
 		
 		IType CreateAnonymousClass (CollectionInitializerExpression initializer)
 		{
-			DomType result = new DomType ("AnonymousType");
+			DomType result = new AnonymousDomType ();
 			result.SourceProjectDom = resolver.Dom;
 			foreach (Expression expr in initializer.CreateExpressions) {
 				DomProperty newProperty = new DomProperty (GetAnonymousTypeFieldName (expr), MonoDevelop.Projects.Dom.Modifiers.Public, DomLocation.Empty, DomRegion.Empty, ResolveType(expr));
