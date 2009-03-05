@@ -56,6 +56,13 @@ namespace MonoDevelop.Projects.Dom
 		
 		public ReturnTypePart (string name, IEnumerable<IReturnType> typeParameters)
 		{
+			for (int i = 0; i < name.Length; i++) {
+				char ch = name[i];
+				if (!(Char.IsLetterOrDigit (ch) || ch =='_')) {
+					name = name.Substring (0, i);
+					break;
+				}
+			}
 			this.Name = name;
 			if (typeParameters != null) 
 				this.genericArguments = new List<IReturnType> (typeParameters);

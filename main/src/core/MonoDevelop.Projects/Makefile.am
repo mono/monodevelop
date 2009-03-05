@@ -106,6 +106,7 @@ FILES =  \
 	MonoDevelop.Projects.Dom/Error.cs \
 	MonoDevelop.Projects.Dom/ExpressionContext.cs \
 	MonoDevelop.Projects.Dom/ExpressionResult.cs \
+	MonoDevelop.Projects.Dom/ExtensionMethod.cs \
 	MonoDevelop.Projects.Dom/FoldingRegion.cs \
 	MonoDevelop.Projects.Dom/IAttribute.cs \
 	MonoDevelop.Projects.Dom/ICompilationUnit.cs \

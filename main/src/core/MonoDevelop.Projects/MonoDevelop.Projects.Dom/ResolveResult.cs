@@ -322,6 +322,13 @@ namespace MonoDevelop.Projects.Dom
 		List<IReturnType> arguments = new List<IReturnType> ();
 		List<IReturnType> genericArguments = new List<IReturnType> ();
 		
+		/// <value>
+		/// The type the methods are called on. (Required to resolve extension methods).
+		/// </value>
+		public IType Type {
+			get;
+			set;
+		}
 		public ReadOnlyCollection<IMethod> Methods {
 			get {
 				return methods.AsReadOnly ();
@@ -401,6 +408,14 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
+		public void ResolveExtensionMethods ()
+		{
+			for (int i = 0; i < methods.Count; i++) {
+				if (methods[i].IsExtension) {
+					methods[i] = new ExtensionMethod (Type, methods[i], genericArguments, arguments);
+				}
+			}
+		}
 		public override IEnumerable<object> CreateResolveResult (ProjectDom dom, IMember callingMember)
 		{
 			List<object> result = new List<object> ();

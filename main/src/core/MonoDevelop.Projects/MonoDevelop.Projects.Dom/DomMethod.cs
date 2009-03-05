@@ -147,21 +147,32 @@ namespace MonoDevelop.Projects.Dom
 			GenericMethodInstanceResolver resolver = new GenericMethodInstanceResolver ();
 			if (genericArguments != null) {
 				for (int i = 0; i < method.TypeParameters.Count && i < genericArguments.Count; i++) 
-					resolver.Add (method.TypeParameters[i].Name, genericArguments[i]);
+					resolver.Add (method.TypeParameters[i].Name, new DomReturnType (genericArguments[i].Name));
 			}
 			IMethod result = (IMethod)method.AcceptVisitor (resolver, method);
 			resolver = new GenericMethodInstanceResolver ();
 			if (methodArguments != null) {
+				Stack<KeyValuePair<IReturnType, IReturnType>> returnTypeStack = new Stack<KeyValuePair<IReturnType, IReturnType>> ();
 				for (int i = 0; i < method.Parameters.Count && i < methodArguments.Count; i++) {
-					bool found = false;
-					for (int j = 0; j < method.TypeParameters.Count; j++) {
-						if (method.TypeParameters[j].Name == method.Parameters[i].ReturnType.FullName) {
-							found = true;
+					returnTypeStack.Push (new KeyValuePair<IReturnType, IReturnType> (method.Parameters[i].ReturnType, methodArguments[i]));
+					while (returnTypeStack.Count > 0) {
+						KeyValuePair<IReturnType, IReturnType> curReturnType = returnTypeStack.Pop ();
+						bool found = false;
+						for (int j = 0; j < method.TypeParameters.Count; j++) {
+							if (method.TypeParameters[j].Name == curReturnType.Key.FullName) {
+								found = true;
+								break;
+							}
+						}
+						if (found) {
+							DomReturnType rt = new DomReturnType (curReturnType.Value.FullName);
+							rt.ArrayDimensions = rt.PointerNestingLevel = 0;
+							resolver.Add (curReturnType.Key.FullName, rt);
 							break;
 						}
-					}
-					if (found) {
-						resolver.Add (method.Parameters[i].ReturnType.FullName, methodArguments[i]);
+						for (int k = 0; k < System.Math.Min (curReturnType.Key.GenericArguments.Count, curReturnType.Value.GenericArguments.Count); k++) {
+							returnTypeStack.Push (new KeyValuePair<IReturnType, IReturnType> (curReturnType.Key.GenericArguments[k], curReturnType.Value.GenericArguments[k]));
+						}
 					}
 				}
 			}
@@ -214,10 +225,16 @@ namespace MonoDevelop.Projects.Dom
 		{
 			if (dom == null || type == null || Parameters.Count == 0 || !IsExtension)
 				return false;
-			string extensionTableKey = Parameters[0].ReturnType.FullName + "/" + type.FullName;
+			string extensionTableKey = Parameters[0].ReturnType.ToInvariantString () + "/" + type.FullName;
 			lock (extensionTable) {
 				if (extensionTable.ContainsKey (extensionTableKey))
 					return extensionTable[extensionTableKey];
+					
+				if (type.FullName == "System.Array" && Parameters[0].ReturnType.ArrayDimensions > 0) {
+					bool result = true;
+					extensionTable.Add (extensionTableKey, result);
+					return result;
+				}
 				
 				IType extensionType = dom.GetType (Parameters[0].ReturnType, true);
 				

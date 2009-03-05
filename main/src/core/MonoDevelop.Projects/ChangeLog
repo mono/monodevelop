@@ -1,3 +1,14 @@
+2009-03-05  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Projects.csproj: 
+
+	* MonoDevelop.Projects.Dom/DomMethod.cs:
+	* MonoDevelop.Projects.Dom/DomReturnType.cs:
+	* MonoDevelop.Projects.Dom/ResolveResult.cs:
+	* MonoDevelop.Projects.Dom/ExtensionMethod.cs: Worked on code
+	  completion.
+
 2009-03-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Formats.MD1/MD1DotNetProjectHandler.cs:

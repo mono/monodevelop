@@ -328,6 +328,7 @@
     <Compile Include="MonoDevelop.Projects\IFileItem.cs" />
     <Compile Include="MonoDevelop.Projects\ProjectParameters.cs" />
     <Compile Include="MonoDevelop.Projects\ConfigurationParameters.cs" />
+    <Compile Include="MonoDevelop.Projects.Dom\ExtensionMethod.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
