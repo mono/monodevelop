@@ -202,6 +202,8 @@ namespace MonoDevelop.CSharpBinding
 		
 		public string Visit (IReturnType returnType, OutputSettings settings)
 		{
+			if (returnType.Type is AnonymousType)
+				return returnType.Type.AcceptVisitor (this, settings);
 			StringBuilder result = new StringBuilder ();
 			if (netToCSharpTypes.ContainsKey (returnType.FullName)) {
 				result.Append (settings.EmitName (returnType, netToCSharpTypes[returnType.FullName]));
@@ -339,6 +341,22 @@ namespace MonoDevelop.CSharpBinding
 		
 		public string Visit (IType type, OutputSettings settings)
 		{
+			StringBuilder result = new StringBuilder ();
+			if (type is AnonymousType) {
+				result.Append ("new {");
+				foreach (IProperty property in type.Properties) {
+					result.AppendLine ();
+					result.Append ("\t");
+					result.Append (property.ReturnType.AcceptVisitor (this, settings));
+					result.Append (" ");
+					result.Append (property.Name);
+					result.Append (";");
+				}
+				result.AppendLine ();
+				result.Append ("}");
+				return result.ToString ();
+			}
+			
 			InstantiatedType instantiatedType = type as InstantiatedType;
 			string modStr = base.GetString (type.Modifiers);
 			string modifiers = !String.IsNullOrEmpty (modStr) ? settings.EmitModifiers (modStr) : "";
@@ -365,7 +383,7 @@ namespace MonoDevelop.CSharpBinding
 			if (modifiers.Length == 0 && keyword.Length == 0 && (!settings.IncludeGenerics || parameterCount == 0) && (!settings.IncludeBaseTypes || !type.BaseTypes.Any ()))
 				return name;
 			
-			StringBuilder result = new StringBuilder ();
+			
 			result.Append (modifiers);
 			result.Append (keyword);
 			if (result.Length > 0 && !result.ToString ().EndsWith (" "))
