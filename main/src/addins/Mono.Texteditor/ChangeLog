@@ -1,5 +1,9 @@
 2009-03-05  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs: Removed debug messages.
+
+2009-03-05  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextEditor.cs: fixed "Bug 482120 - Selection
 	  isn't repainted correctly when it's reduced
 	  programmatically".
