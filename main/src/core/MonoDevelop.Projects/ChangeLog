@@ -1,6 +1,13 @@
 2009-03-05  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:
+	* MonoDevelop.Projects.csproj:
+	* MonoDevelop.Projects.Dom/AnonymousType.cs: Added
+	  anonymoustype representation.
+
+2009-03-05  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
 	* MonoDevelop.Projects.csproj: 
 
 	* MonoDevelop.Projects.Dom/DomMethod.cs:

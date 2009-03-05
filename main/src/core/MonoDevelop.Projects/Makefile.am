@@ -75,6 +75,7 @@ FILES =  \
 	MonoDevelop.Projects.Dom.Serialization/ProjectCodeCompletionDatabase.cs \
 	MonoDevelop.Projects.Dom.Serialization/SimpleCodeCompletionDatabase.cs \
 	MonoDevelop.Projects.Dom/AbstractMember.cs \
+	MonoDevelop.Projects.Dom/AnonymousType.cs \
 	MonoDevelop.Projects.Dom/AttributeTarget.cs \
 	MonoDevelop.Projects.Dom/ClassType.cs \
 	MonoDevelop.Projects.Dom/Comment.cs \
