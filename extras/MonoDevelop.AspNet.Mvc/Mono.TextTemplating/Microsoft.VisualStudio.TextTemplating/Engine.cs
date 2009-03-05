@@ -30,18 +30,37 @@ using System.Text;
 using System.Collections.Generic;
 using System.CodeDom;
 using System.CodeDom.Compiler;
+using Mono.TextTemplating;
 
-namespace MonoDevelop.AspNet.Mvc.T4
+namespace Microsoft.VisualStudio.TextTemplating
 {
 	
 	
-	public class Engine
+	public class Engine : ITextTemplatingEngine
 	{
 		
 		public Engine ()
 		{
 		}
 		
+		public string ProcessTemplate (string content, ITextTemplatingEngineHost host)
+		{
+			AppDomain appdomain = host.ProvideTemplatingAppDomain (content);
+			ITextTemplatingEngine engine;
+			if (appdomain != null) {
+				engine = (ITextTemplatingEngine)
+					appdomain.CreateInstanceAndUnwrap (typeof (AppDomainHostedEngine).Assembly.FullName,
+					                                   typeof (AppDomainHostedEngine).FullName);
+			} else {
+				engine = new AppDomainHostedEngine ();
+			}
+			
+			return engine.ProcessTemplate (content, host);
+		}
+	}
+	
+	class AppDomainHostedEngine : MarshalByRefObject, ITextTemplatingEngine
+	{	
 		public string ProcessTemplate (string content, ITextTemplatingEngineHost host)
 		{
 			ParsedTemplate pt = ParsedTemplate.FromText (content, host);
@@ -76,16 +95,7 @@ namespace MonoDevelop.AspNet.Mvc.T4
 				host.SetOutputEncoding (settings.Encoding, true);
 			}
 			
-			AppDomain appdomain = host.ProvideTemplatingAppDomain (content);
-			TransformationRunner runner;
-			if (appdomain != null) {
-				runner = (TransformationRunner)
-					appdomain.CreateInstanceAndUnwrap (typeof (TransformationRunner).Assembly.FullName,
-					                                   typeof (TransformationRunner).FullName);
-			} else {
-				runner = new TransformationRunner ();
-			}
-			
+			TransformationRunner runner = new TransformationRunner ();
 			return runner.Run (results.PathToAssembly, settings.Namespace + "." + settings.Name, host, settings.Culture);
 		}
 		
@@ -333,7 +343,7 @@ namespace MonoDevelop.AspNet.Mvc.T4
 				Type transformType = assem.GetType (type);
 				TextTransformation tt = (TextTransformation)Activator.CreateInstance (transformType);
 				
-				//set the host rpoperty if it exists
+				//set the host property if it exists
 				System.Reflection.PropertyInfo hostProp = transformType.GetProperty ("Host", typeof (ITextTemplatingEngineHost));
 				if (hostProp != null && hostProp.CanWrite)
 					hostProp.SetValue (tt, host, null);

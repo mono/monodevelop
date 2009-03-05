@@ -1,3 +1,11 @@
+2009-03-04  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextTemplating:
+	* MonoDevelop.AspNet.Mvc.sln: Move T4 implementation to its
+	  own assembly. Tweak some appdomain stuff.
+
+	* TextTransform: Stub out the command-line TextTransform tool.
+
 2009-02-26  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.AspNet.Mvc.sln: Flush.

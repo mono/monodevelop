@@ -1,5 +1,5 @@
 // 
-// DirectiveProcessorException.cs
+// ToStringHelper.cs
 //  
 // Author:
 //       Michael Hutchinson <mhutchinson@novell.com>
@@ -25,32 +25,43 @@
 // THE SOFTWARE.
 
 using System;
-using System.Runtime.Serialization;
+using System.Collections.Generic;
+using System.Reflection;
 
-namespace MonoDevelop.AspNet.Mvc.T4
+namespace Microsoft.VisualStudio.TextTemplating
 {
 	
-	[Serializable]
-	public class DirectiveProcessorException : Exception
+	
+	public static class ToStringHelper
 	{
+		static Dictionary<Type, Func<object, IFormatProvider, string>> cache
+			= new Dictionary<Type, Func<object, IFormatProvider, string>> ();
+		static IFormatProvider formatProvider = System.Globalization.CultureInfo.InvariantCulture;
 		
-		public DirectiveProcessorException ()
+		public static string ToStringWithCulture (object objectToConvert)
 		{
+			Type type = objectToConvert.GetType ();
+			Func<object, IFormatProvider, string> action = null;
+			if (!cache.TryGetValue (type, out action)) {
+				MethodInfo mi = type.GetMethod ("ToString", new Type[] { typeof (IFormatProvider) });
+				if (mi != null)
+					action = (Func<object, IFormatProvider, string>)
+						Delegate.CreateDelegate (typeof(Func<object, IFormatProvider, string>), mi);
+				else
+					action = InvokeToString;
+				cache.Add (type, action);
+			}
+			return action (objectToConvert, FormatProvider);
 		}
 		
-		public DirectiveProcessorException (string message)
-			: base (message)
-		{
+		public static IFormatProvider FormatProvider {
+			get { return formatProvider; }
+			set { formatProvider = value; }
 		}
 		
-		public DirectiveProcessorException (SerializationInfo info, StreamingContext context)
-			: base (info, context)
+		static string InvokeToString (object obj, IFormatProvider dummy)
 		{
-		}
-		
-		public DirectiveProcessorException (string message, Exception inner)
-			: base (message, inner)
-		{
+			return obj.ToString ();
 		}
 	}
 }

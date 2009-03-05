@@ -28,7 +28,7 @@ using System;
 using System.IO;
 using System.Diagnostics;
 
-namespace MonoDevelop.AspNet.Mvc.T4
+namespace Mono.TextTemplating
 {
 	
 	

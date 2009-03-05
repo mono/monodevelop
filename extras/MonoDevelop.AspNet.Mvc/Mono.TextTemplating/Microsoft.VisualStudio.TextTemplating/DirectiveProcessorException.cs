@@ -1,5 +1,5 @@
 // 
-// DirectiveProcessor.cs
+// DirectiveProcessorException.cs
 //  
 // Author:
 //       Michael Hutchinson <mhutchinson@novell.com>
@@ -25,45 +25,32 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using System.CodeDom.Compiler;
+using System.Runtime.Serialization;
 
-namespace MonoDevelop.AspNet.Mvc.T4
+namespace Microsoft.VisualStudio.TextTemplating
 {
 	
-	
-	public abstract class DirectiveProcessor
+	[Serializable]
+	public class DirectiveProcessorException : Exception
 	{
 		
-		protected DirectiveProcessor ()
+		public DirectiveProcessorException ()
 		{
 		}
 		
-		public virtual void Initialize (ITextTemplatingEngineHost host)
+		public DirectiveProcessorException (string message)
+			: base (message)
 		{
-			if (host == null)
-				throw new ArgumentException ();
 		}
 		
-		public virtual void StartProcessingRun (CodeDomProvider languageProvider, string templateContents, CompilerErrorCollection errors)
+		public DirectiveProcessorException (SerializationInfo info, StreamingContext context)
+			: base (info, context)
 		{
-			if (languageProvider == null)
-				throw new ArgumentNullException ("languageProvider");
 		}
 		
-		public abstract void FinishProcessingRun ();
-		public abstract string GetClassCodeForProcessingRun ();
-		public abstract string[] GetImportsForProcessingRun ();
-		public abstract string GetPostInitializationCodeForProcessingRun ();
-		public abstract string GetPreInitializationCodeForProcessingRun ();
-		public abstract string[] GetReferencesForProcessingRun ();
-		public abstract bool IsDirectiveSupported (string directiveName);
-		public abstract void ProcessDirective (string directiveName, IDictionary<string, string> arguments);
-		
-		protected CompilerErrorCollection Errors {
-			get {
-				throw new NotImplementedException ();
-			} 
+		public DirectiveProcessorException (string message, Exception inner)
+			: base (message, inner)
+		{
 		}
 	}
 }

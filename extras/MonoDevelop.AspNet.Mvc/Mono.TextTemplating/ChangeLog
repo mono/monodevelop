@@ -1,0 +1,18 @@
+2009-03-04  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* AssemblyInfo.cs:
+	* Mono.TextTemplating:
+	* Mono.TextTemplating.csproj:
+	* Mono.TextTemplating/Tokeniser.cs:
+	* Microsoft.VisualStudio.TextTemplating:
+	* Mono.TextTemplating/ParsedTemplate.cs:
+	* Microsoft.VisualStudio.TextTemplating/Engine.cs:
+	* Microsoft.VisualStudio.TextTemplating/ToStringHelper.cs:
+	* Microsoft.VisualStudio.TextTemplating/DirectiveProcessor.cs:
+	* Microsoft.VisualStudio.TextTemplating/TextTransformation.cs:
+	* Microsoft.VisualStudio.TextTemplating/ITextTemplatingEngineHost.cs:
+	* Microsoft.VisualStudio.TextTemplating/DirectiveProcessorException.cs:
+	* Microsoft.VisualStudio.TextTemplating/RequiresProvidesDirectiveProcessor.cs:
+	  Move T4 implementation to its own assembly. Tweak some
+	  appdomain stuff.
+

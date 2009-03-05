@@ -1,5 +1,5 @@
 // 
-// ToStringHelper.cs
+// DirectiveProcessor.cs
 //  
 // Author:
 //       Michael Hutchinson <mhutchinson@novell.com>
@@ -26,42 +26,44 @@
 
 using System;
 using System.Collections.Generic;
-using System.Reflection;
+using System.CodeDom.Compiler;
 
-namespace MonoDevelop.AspNet.Mvc.T4
+namespace Microsoft.VisualStudio.TextTemplating
 {
 	
 	
-	public static class ToStringHelper
+	public abstract class DirectiveProcessor
 	{
-		static Dictionary<Type, Func<object, IFormatProvider, string>> cache
-			= new Dictionary<Type, Func<object, IFormatProvider, string>> ();
-		static IFormatProvider formatProvider = System.Globalization.CultureInfo.InvariantCulture;
 		
-		public static string ToStringWithCulture (object objectToConvert)
+		protected DirectiveProcessor ()
 		{
-			Type type = objectToConvert.GetType ();
-			Func<object, IFormatProvider, string> action = null;
-			if (!cache.TryGetValue (type, out action)) {
-				MethodInfo mi = type.GetMethod ("ToString", new Type[] { typeof (IFormatProvider) });
-				if (mi != null)
-					action = (Func<object, IFormatProvider, string>)
-						Delegate.CreateDelegate (typeof(Func<object, IFormatProvider, string>), mi);
-				else
-					action = InvokeToString;
-				cache.Add (type, action);
-			}
-			return action (objectToConvert, FormatProvider);
 		}
 		
-		public static IFormatProvider FormatProvider {
-			get { return formatProvider; }
-			set { formatProvider = value; }
+		public virtual void Initialize (ITextTemplatingEngineHost host)
+		{
+			if (host == null)
+				throw new ArgumentException ();
 		}
 		
-		static string InvokeToString (object obj, IFormatProvider dummy)
+		public virtual void StartProcessingRun (CodeDomProvider languageProvider, string templateContents, CompilerErrorCollection errors)
 		{
-			return obj.ToString ();
+			if (languageProvider == null)
+				throw new ArgumentNullException ("languageProvider");
+		}
+		
+		public abstract void FinishProcessingRun ();
+		public abstract string GetClassCodeForProcessingRun ();
+		public abstract string[] GetImportsForProcessingRun ();
+		public abstract string GetPostInitializationCodeForProcessingRun ();
+		public abstract string GetPreInitializationCodeForProcessingRun ();
+		public abstract string[] GetReferencesForProcessingRun ();
+		public abstract bool IsDirectiveSupported (string directiveName);
+		public abstract void ProcessDirective (string directiveName, IDictionary<string, string> arguments);
+		
+		protected CompilerErrorCollection Errors {
+			get {
+				throw new NotImplementedException ();
+			} 
 		}
 	}
 }

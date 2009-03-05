@@ -1,0 +1,8 @@
+2009-03-04  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Options.cs:
+	* AssemblyInfo.cs:
+	* TextTransform.cs:
+	* TextTransform.csproj: Stub out the command-line
+	  TextTransform tool.
+

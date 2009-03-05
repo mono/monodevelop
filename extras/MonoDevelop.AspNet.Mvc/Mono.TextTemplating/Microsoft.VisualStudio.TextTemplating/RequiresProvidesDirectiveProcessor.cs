@@ -29,7 +29,7 @@ using System.Collections.Generic;
 using System.CodeDom.Compiler;
 using System.Text;
 
-namespace MonoDevelop.AspNet.Mvc.T4
+namespace Microsoft.VisualStudio.TextTemplating
 {
 	
 	
