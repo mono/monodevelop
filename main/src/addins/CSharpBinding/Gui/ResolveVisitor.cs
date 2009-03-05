@@ -28,7 +28,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using ICSharpCode.NRefactory.Visitors;
@@ -201,7 +200,7 @@ namespace MonoDevelop.CSharpBinding
 		
 		IType CreateAnonymousClass (CollectionInitializerExpression initializer)
 		{
-			DomType result = new AnonymousDomType ();
+			DomType result = new AnonymousType ();
 			result.SourceProjectDom = resolver.Dom;
 			foreach (Expression expr in initializer.CreateExpressions) {
 				DomProperty newProperty = new DomProperty (GetAnonymousTypeFieldName (expr), MonoDevelop.Projects.Dom.Modifiers.Public, DomLocation.Empty, DomRegion.Empty, ResolveType(expr));
