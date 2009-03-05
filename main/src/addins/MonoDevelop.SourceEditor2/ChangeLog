@@ -1,3 +1,8 @@
+2009-03-05  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AssemblyInfo.cs:
+	* MonoDevelop.SourceEditor.addin.xml: Bump MD version.
+
 2009-03-02  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Properly

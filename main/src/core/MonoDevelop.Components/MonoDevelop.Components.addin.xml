@@ -6,7 +6,7 @@
        url         = "http://www.monodevelop.com"
 	   category    = "MonoDevelop Core"
 	   isroot      = "true"
-       version     = "1.9.2">
+       version     = "1.9.3">
 
 	<!-- This item set can be used to define extension points for extensible menus and toolbars -->
 	

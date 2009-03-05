@@ -16,7 +16,7 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyCopyright("(c) 2004 MonoDevelop Team and Mike Krueger 2000-2003")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
-[assembly: AssemblyVersion("1.9.2.0")]
+[assembly: AssemblyVersion("1.9.3.0")]
 [assembly: AssemblyDelaySign(false)]
 [assembly: AssemblyKeyFile("")]
 

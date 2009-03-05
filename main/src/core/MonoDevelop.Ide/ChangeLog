@@ -1,3 +1,9 @@
+2009-03-05  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AssemblyInfo.cs:
+	* BuildVariables.cs:
+	* MonoDevelop.Ide.addin.xml: Bump MD version.
+
 2009-03-03  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.addin.xml: Removed dead web page link from

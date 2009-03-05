@@ -7,11 +7,11 @@
        description = "Provides support for loading and building MonoDevelop projects."
 	   category    = "MonoDevelop Core"
 	   isroot      = "true"
-       version     = "1.9.2"
-       compatVersion = "1.9.2">
+       version     = "1.9.3"
+       compatVersion = "1.9.3">
 
 	<Dependencies>
-		<Addin id="Core" version="1.9.2"/>
+		<Addin id="Core" version="1.9.3"/>
 	</Dependencies>
 	
 	<!-- Extension points -->

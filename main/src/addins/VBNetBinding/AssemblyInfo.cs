@@ -5,5 +5,5 @@ using System.Reflection;
 [assembly: AssemblyProduct ("MonoDevelop")]
 [assembly: AssemblyTitle ("VB.NET Language Binding")]
 [assembly: AssemblyDescription ("VB.NET Language Binding")]
-[assembly: AssemblyVersion ("1.9.2")]
+[assembly: AssemblyVersion ("1.9.3")]
 [assembly: AssemblyCopyright ("GPL")]

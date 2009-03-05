@@ -1,3 +1,8 @@
+2009-03-05  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AssemblyInfo.cs:
+	* MonoDevelop.RegexToolkit.addin.xml: Bump MD version.
+
 2009-03-02  David Makovský (Yakeen)  <yakeen@sannyas-on.net>
 
 	* MonoDevelop.RegexToolkit/RegexToolkitWindow.cs: make strings

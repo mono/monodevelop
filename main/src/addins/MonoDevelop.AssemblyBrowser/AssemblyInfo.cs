@@ -5,4 +5,4 @@ using System.Reflection;
 [assembly: AssemblyProduct ("MonoDevelop")]
 [assembly: AssemblyTitle ("MonoDevelop Assembly Browser")]
 [assembly: AssemblyDescription ("Provides an assembly browser for the MonoDevelop")]
-[assembly: AssemblyVersion ("1.9.2")]
+[assembly: AssemblyVersion ("1.9.3")]

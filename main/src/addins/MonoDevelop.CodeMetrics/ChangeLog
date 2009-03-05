@@ -1,3 +1,8 @@
+2009-03-05  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AssemblyInfo.cs:
+	* MonoDevelop.CodeMetrics.addin.xml: Bump MD version.
+
 2009-03-04  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CodeMetrics/CodeMetricsWidget.cs:

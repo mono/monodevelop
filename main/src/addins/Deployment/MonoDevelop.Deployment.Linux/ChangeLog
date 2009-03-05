@@ -1,3 +1,8 @@
+2009-03-05  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AssemblyInfo.cs:
+	* MonoDevelop.Deployment.Linux.addin.xml: Bump MD version.
+
 2009-02-07  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Deployment.Linux.csproj: Flush MD's removal of

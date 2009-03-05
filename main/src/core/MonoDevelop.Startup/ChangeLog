@@ -1,3 +1,7 @@
+2009-03-05  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AssemblyInfo.cs: Bump MD version.
+
 2009-02-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Startup/MonoDevelopMain.cs: The runtime is now

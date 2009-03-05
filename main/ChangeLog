@@ -1,3 +1,7 @@
+2009-03-05  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* configure.in: Bump MD version.
+
 2009-03-03  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* monodevelop.desktop: Added more application categories.
