@@ -1,3 +1,10 @@
+2009-03-05  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/ResolveVisitor.cs:
+	* Gui/NRefactoryResolver.cs:
+	* FormattingStrategy/CSharpIndentEngine.cs: Worked on lambda
+	  code completion.
+
 2009-03-03  Mike Krüger  <mkrueger@novell.com>
 
 	* Gui/MemberCompletionData.cs:

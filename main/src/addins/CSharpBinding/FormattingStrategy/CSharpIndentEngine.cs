@@ -421,8 +421,8 @@ namespace CSharpBinding.FormattingStrategy {
 			
 			// got a "/*" - might start a MultiLineComment
 			if ((inside & (Inside.StringOrChar | Inside.Comment)) != 0) {
-				if ((inside & Inside.MultiLineComment) != 0)
-					Console.WriteLine ("Watch out! Nested /* */ comment detected!");
+//				if ((inside & Inside.MultiLineComment) != 0)
+//					Console.WriteLine ("Watch out! Nested /* */ comment detected!");
 				return;
 			}
 			

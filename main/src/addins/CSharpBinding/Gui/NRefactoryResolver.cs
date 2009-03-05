@@ -377,7 +377,7 @@ namespace MonoDevelop.CSharpBinding
 			this.SetupResolver (resolvePosition);
 			ResolveVisitor visitor = new ResolveVisitor (this);
 			ResolveResult result;
-		//	System.Console.WriteLine("expressionResult:" + expressionResult);
+//			System.Console.WriteLine("expressionResult:" + expressionResult);
 			
 			if (expressionResult.ExpressionContext == ExpressionContext.AttributeArguments) {
 				string attributeName = MonoDevelop.CSharpBinding.Gui.NewCSharpExpressionFinder.FindAttributeName (editor, unit, unit.FileName);
@@ -497,6 +497,16 @@ namespace MonoDevelop.CSharpBinding
 			return type;
 		}
 		
+		ResolveResult GetFunctionParameterType (ResolveResult resolveResult)
+		{
+			if (resolveResult == null || resolveResult.ResolvedType == null)
+				return null;
+			if (resolveResult.ResolvedType.Name == "Func" && resolveResult.ResolvedType.GenericArguments.Count == 2) {
+				resolveResult.ResolvedType = resolveResult.ResolvedType.GenericArguments[0];
+			}
+			return resolveResult;
+		}
+
 		public ResolveResult ResolveLambda (ResolveVisitor visitor, Expression lambdaExpression)
 		{
 			if (lambdaExpression.Parent is LambdaExpression) 
@@ -509,7 +519,22 @@ namespace MonoDevelop.CSharpBinding
 				return visitor.Resolve (((CastExpression)lambdaExpression.Parent));
 			if (lambdaExpression.Parent is VariableDeclaration) {
 				VariableDeclaration varDec = (VariableDeclaration)lambdaExpression.Parent;
-				return visitor.CreateResult (varDec.TypeReference);
+				return GetFunctionParameterType (ResolveIdentifier (visitor, varDec.Name));
+			}
+			if (lambdaExpression.Parent is InvocationExpression) {
+				InvocationExpression invocation = (InvocationExpression)lambdaExpression.Parent;
+				MethodResolveResult result = visitor.Resolve (invocation.TargetObject) as MethodResolveResult;
+				if (result == null)
+					return null;
+				result.ResolveExtensionMethods ();
+				for (int i = 0; i < invocation.Arguments.Count; i++) {
+					if (invocation.Arguments [i] == lambdaExpression && i < result.MostLikelyMethod.Parameters.Count) {
+						IParameter parameterType = result.MostLikelyMethod.Parameters [i];
+						if (parameterType.ReturnType.Name == "Func" && parameterType.ReturnType.GenericArguments.Count > 0) {
+							return visitor.CreateResult (parameterType.ReturnType.GenericArguments[0]);
+						}
+					}
+				}
 			}
 			
 			if (lambdaExpression.Parent is ObjectCreateExpression) {
@@ -570,7 +595,7 @@ namespace MonoDevelop.CSharpBinding
 						IReturnType varType = null;
 						IReturnType varTypeUnresolved = null;
 						if ((var.TypeRef == null || var.TypeRef.Type == "var" || var.TypeRef.IsNull)) {
-							if (var.ParentLambdaExpression != null)  {
+							if (var.ParentLambdaExpression != null) {
 								ResolveResult lambdaResolve = ResolveLambda (visitor, var.ParentLambdaExpression);
 								if (lambdaResolve != null) {
 									varType           = lambdaResolve.ResolvedType;

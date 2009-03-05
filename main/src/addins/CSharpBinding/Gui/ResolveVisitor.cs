@@ -457,8 +457,9 @@ namespace MonoDevelop.CSharpBinding
 					List<IType> accessibleExtTypes = DomType.GetAccessibleExtensionTypes (resolver.Dom, resolver.Unit);
 					foreach (IType curType in resolver.Dom.GetInheritanceTree (type)) {
 						foreach (IMethod method in curType.GetExtensionMethods (accessibleExtTypes)) {
-							if (method.Name == memberReferenceExpression.MemberName) 
+							if (method.Name == memberReferenceExpression.MemberName) {
 								member.Add (method);
+							}
 						}
 						member.AddRange (curType.SearchMember (memberReferenceExpression.MemberName, true));
 					}
@@ -479,6 +480,7 @@ namespace MonoDevelop.CSharpBinding
 							if (member.Count == 0)
 								return null;
 							result = new MethodResolveResult (member);
+							((MethodResolveResult)result).Type = type;
 							result.CallingType   = resolver.CallingType;
 							result.CallingMember = resolver.CallingMember;
 							//result.StaticResolve = isStatic;
@@ -519,12 +521,13 @@ namespace MonoDevelop.CSharpBinding
 			}
 			
 			ResolveResult targetResult = Resolve (invocationExpression.TargetObject);
-
+			//System.Console.WriteLine("target:" + targetResult);
 			MethodResolveResult methodResult = targetResult as MethodResolveResult;
 			if (methodResult != null) {
 				foreach (Expression arg in invocationExpression.Arguments) {
 					methodResult.AddArgument (GetTypeSafe (arg));
 				}
+				methodResult.ResolveExtensionMethods ();
 			/*	MemberReferenceExpression mre = invocationExpression.TargetObject as MemberReferenceExpression;
 				if (mre != null) {
 					foreach (TypeReference typeReference in mre.TypeArguments) {
