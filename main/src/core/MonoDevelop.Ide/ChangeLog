@@ -4,6 +4,15 @@
 	* BuildVariables.cs:
 	* MonoDevelop.Ide.addin.xml: Bump MD version.
 
+2009-03-05  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs:
+	* MonoDevelop.Ide.Gui.Components/TransactedTreeBuilder.cs:
+	  Reset the transaction store field of the tree before
+	  committing, since while committing there may be further
+	  changes in the tree, and those should not be done using the
+	  current store. Fixes bugs #481179 and #479158.
+
 2009-03-03  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.addin.xml: Removed dead web page link from

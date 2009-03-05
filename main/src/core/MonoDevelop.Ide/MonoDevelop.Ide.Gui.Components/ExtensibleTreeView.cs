@@ -401,8 +401,9 @@ namespace MonoDevelop.Ide.Gui.Components
 		internal void UnlockUpdates ()
 		{
 			if (--updateLockCount == 0) {
-				transactionStore.CommitChanges ();
+				TransactedNodeStore store = transactionStore;
 				transactionStore = null;
+				store.CommitChanges ();
 			}
 		}
 

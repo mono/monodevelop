@@ -3,6 +3,10 @@
 	* AssemblyInfo.cs:
 	* MonoDevelopNUnit.addin.xml: Bump MD version.
 
+2009-03-05  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Services/NUnitAssemblyTestSuite.cs: Improved error message.
+
 2009-03-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Gui/TestPad.cs:

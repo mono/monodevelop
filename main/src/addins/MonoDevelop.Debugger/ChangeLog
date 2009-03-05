@@ -3,6 +3,12 @@
 	* AssemblyInfo.cs:
 	* MonoDevelop.Debugger.addin.xml: Bump MD version.
 
+2009-03-05  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Debugger/ObjectValueTreeView.cs: Fix bug #478331
+	  - Adding second (third, etc) variable to watch pad takes
+	  type of first variable.
+
 2009-03-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Debugger/DebuggingService.cs: Removed unused

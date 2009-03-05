@@ -263,8 +263,6 @@ namespace MonoDevelop.Debugger
 		
 		public void Refresh ()
 		{
-			DateTime t = DateTime.Now;
-
 			foreach (ObjectValue val in nodes.Keys)
 				UnregisterValue (val);
 			nodes.Clear ();
@@ -286,8 +284,6 @@ namespace MonoDevelop.Debugger
 				store.AppendValues (createMsg, "", "", null, true, true, null, disabledColor, disabledColor);
 			
 			state.Load ();
-
-//			Console.WriteLine ("pp object tree view update: " + (DateTime.Now - t).TotalMilliseconds);
 		}
 
 		void RegisterValue (ObjectValue val, TreeIter it)
@@ -738,11 +734,11 @@ namespace MonoDevelop.Debugger
 
 			ObjectValue[] qvalues;
 			if (frame != null)
-				qvalues = frame.GetExpressionValues (names, true, 1000);
+				qvalues = frame.GetExpressionValues (list.ToArray (), true, 1000);
 			else {
-				qvalues = new ObjectValue [names.Length];
+				qvalues = new ObjectValue [list.Count];
 				for (int n=0; n<qvalues.Length; n++)
-					qvalues [n] = ObjectValue.CreateUnknown (names [n]);
+					qvalues [n] = ObjectValue.CreateUnknown (list [n]);
 			}
 
 			int kv = 0;

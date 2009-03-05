@@ -31,6 +31,12 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Gui.Components
 {
+/*
+  TransactedTreeBuilder is a ITreeBuilder which does not directly modify the tree, but instead
+  it stores all changes in a special node store and. Those changes can be later applied all
+  together to the tree.
+ */
+	
 	public partial class ExtensibleTreeView
 	{
 		internal class TransactedTreeBuilder: ITreeBuilder

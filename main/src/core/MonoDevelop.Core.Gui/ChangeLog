@@ -3,6 +3,17 @@
 	* AssemblyInfo.cs:
 	* MonoDevelop.Core.Gui.addin.xml: Bump MD version.
 
+2009-03-05  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* icons/translation-fuzzy.png:
+	* icons/translation-valid.png:
+	* MonoDevelop.Core.Gui.csproj:
+	* icons/translation-missing.png:
+	* icons/translation-fuzzy-16.png:
+	* icons/translation-valid-16.png:
+	* icons/translation-missing-16.png: Fix icon file names.
+
 2009-03-04  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Core.Gui.addin.xml: Added makefile mime.
