@@ -1,10 +1,10 @@
 #!/bin/bash
-VERSION=1.9.2
+VERSION=1.9.3
 PACKAGE=monodevelop-boo
 prefix=/usr/local
 config=DEBUG
 configurations=" RELEASE DEBUG"
-required_packages="gtk-sharp-2.0;2.8.3 monodevelop;1.9.2 mono-addins;0.3 glib-sharp-2.0;2.8.3 monodevelop-core-addins;1.9.2 boo;0.7.9.2659 gconf-sharp-2.0;2.8.3 gtksourceview-sharp-2.0;0.11"
+required_packages="gtk-sharp-2.0;2.8.3 monodevelop;1.9.3 mono-addins;0.3 glib-sharp-2.0;2.8.3 monodevelop-core-addins;1.9.3 boo;0.7.9.2659 gconf-sharp-2.0;2.8.3 gtksourceview-sharp-2.0;0.11"
 
 usage ()
 {
