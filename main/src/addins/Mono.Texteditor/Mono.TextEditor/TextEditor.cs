@@ -324,6 +324,7 @@ namespace Mono.TextEditor
 		ISegment oldSelection = null;
 		void TextEditorDataSelectionChanged (object sender, EventArgs args)
 		{
+			System.Console.WriteLine("selection changed!!!");
 			if (IsSomethingSelected && SelectionRange.Offset >= 0 && SelectionRange.EndOffset < Document.Length) {
 				ClipboardActions.CopyToPrimary (this.textEditorData);
 			} else {
@@ -355,7 +356,10 @@ namespace Mono.TextEditor
 				} else if (startLine == oldStartLine && endLine == oldEndLine)  {
 					if (selection.Offset == oldSelection.Offset) {
 						this.RedrawLine (endLine);
-					} else {
+					} else if (selection.EndOffset == oldSelection.EndOffset) {
+						this.RedrawLine (startLine);
+					} else { // 3rd case - may happen when changed programmatically
+						this.RedrawLine (endLine);
 						this.RedrawLine (startLine);
 					}
 					from = to = -1;
@@ -369,8 +373,10 @@ namespace Mono.TextEditor
 					to = endLine;
 				} 
 			}
+			
 			if (from >= 0 && to >= 0) {
 				oldSelection = selection != null ? new Segment (selection.Offset, selection.Length) : null;
+				System.Console.WriteLine(from + "/" + to);
 				this.RedrawLines (System.Math.Max (0, System.Math.Min (from, to) - 1),
 				                  System.Math.Max (from, to));
 			}
