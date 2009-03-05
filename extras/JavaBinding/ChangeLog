@@ -1,3 +1,9 @@
+2009-03-05  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* configure:
+	* AssemblyInfo.cs:
+	* JavaBinding.addin.xml: Bump MD version.
+
 2009-02-26  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* JavaBinding.sln: Fix translation projects' GUIDs.

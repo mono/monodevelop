@@ -5,5 +5,5 @@ using System.Reflection;
 [assembly: AssemblyProduct ("MonoDevelop")]
 [assembly: AssemblyTitle ("Java Language Binding")]
 [assembly: AssemblyDescription ("Java Language Binding")]
-[assembly: AssemblyVersion ("1.9.2")]
+[assembly: AssemblyVersion ("1.9.3")]
 [assembly: AssemblyCopyright ("GPL")]
