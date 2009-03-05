@@ -63,6 +63,7 @@ namespace Mono.TextTemplating
 			switch (State) {
 			case State.Block:
 			case State.Expression:
+			case State.Helper:
 				return GetBlockEnd ();
 			
 			case State.Directive:

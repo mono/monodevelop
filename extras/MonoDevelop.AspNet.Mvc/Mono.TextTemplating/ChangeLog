@@ -1,5 +1,12 @@
 2009-03-05  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Mono.TextTemplating/TemplateGenerator.cs: Fix output
+	  extension changing.
+
+	* Mono.TextTemplating/Tokeniser.cs: Fix helper regions.
+
+2009-03-05  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Mono.TextTemplating.csproj: Updated.
 
 	* Mono.TextTemplating/TemplateGenerator.cs: Simple template

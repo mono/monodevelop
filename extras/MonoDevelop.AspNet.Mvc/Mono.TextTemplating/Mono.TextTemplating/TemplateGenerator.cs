@@ -67,14 +67,6 @@ namespace Mono.TextTemplating
 			Refs.Add (typeof (TextTransformation).Assembly.Location);
 		}
 		
-		void Initialise (string inputFile, string outputFile)
-		{
-			errors.Clear ();
-			encoding = Encoding.UTF8;
-			this.outputFile = outputFile;
-			this.inputFile = inputFile;
-		}
-		
 		public bool ProcessTemplate (string inputFile, string outputFile)
 		{
 			if (String.IsNullOrEmpty (inputFile))
@@ -82,10 +74,18 @@ namespace Mono.TextTemplating
 			if (String.IsNullOrEmpty (outputFile))
 				throw new ArgumentNullException ("outputFile");
 			
+			errors.Clear ();
+			encoding = Encoding.UTF8;
+			this.outputFile = outputFile;
+			this.inputFile = inputFile;
+			
+			return ProcessCurrent ();
+		}
+		
+		public bool ProcessCurrent ()
+		{
 			if (engine == null)
 				engine = new Engine ();
-			
-			Initialise (inputFile, outputFile);
 			
 			string content;
 			try {
@@ -188,7 +188,7 @@ namespace Mono.TextTemplating
 		
 		void ITextTemplatingEngineHost.SetFileExtension (string extension)
 		{
-			Path.ChangeExtension (outputFile, extension);
+			outputFile = Path.ChangeExtension (outputFile, extension);
 		}
 		
 		void ITextTemplatingEngineHost.SetOutputEncoding (System.Text.Encoding encoding, bool fromOutputDirective)
