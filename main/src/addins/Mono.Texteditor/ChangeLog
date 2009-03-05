@@ -1,5 +1,11 @@
 2009-03-05  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextViewMargin.cs: Fixed "Bug 476015 -
+	  general crash _wapi_handle_unref: Attempting to unref unused
+	  handle 0x496".
+
+2009-03-05  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextEditor.cs: Removed debug messages.
 
 2009-03-05  Mike Krüger  <mkrueger@novell.com>

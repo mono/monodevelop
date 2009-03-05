@@ -938,8 +938,12 @@ namespace Mono.TextEditor
 						visibleColumn = newColumn;
 					} else {
 						ChunkStyle style = chunk.GetChunkStyle (ColorStyle);
-						measureLayout.FontDescription.Weight = style.GetWeight (DefaultWeight);
-						measureLayout.FontDescription.Style =  style.GetStyle (DefaultStyle);
+						Pango.Weight requestedWeight = style.GetWeight (DefaultWeight);
+						if (measureLayout.FontDescription.Weight != requestedWeight)
+							measureLayout.FontDescription.Weight = requestedWeight;
+						Pango.Style requestedStyle = style.GetStyle (DefaultStyle);
+						if (measureLayout.FontDescription.Style != requestedStyle)
+							measureLayout.FontDescription.Style = requestedStyle;
 						measureLayout.SetText (ch.ToString ());
 						int height;
 						measureLayout.GetPixelSize (out delta, out height);
@@ -953,6 +957,7 @@ namespace Mono.TextEditor
 				}
 			}
 		 exit:
+			measureLayout.Dispose ();
 			if (column > line.EditableLength)
 				lineXPos += (line.EditableLength - column + 1) * this.charWidth;
 			return lineXPos;
@@ -1227,8 +1232,12 @@ namespace Mono.TextEditor
 							visibleColumn++;
 						} else {
 							ChunkStyle style = chunks.GetChunkStyle (margin.ColorStyle);
-							measureLayout.FontDescription.Weight = style.GetWeight (margin.DefaultWeight);
-							measureLayout.FontDescription.Style =  style.GetStyle (margin.DefaultStyle);
+							Pango.Weight requestedWeight = style.GetWeight (margin.DefaultWeight);
+							if (measureLayout.FontDescription.Weight != requestedWeight)
+								measureLayout.FontDescription.Weight = requestedWeight;
+							Pango.Style requestedStyle = style.GetStyle (margin.DefaultStyle);
+							if (measureLayout.FontDescription.Style != requestedStyle)
+								measureLayout.FontDescription.Style = requestedStyle;
 							measureLayout.SetText (ch.ToString ());
 							int height;
 							measureLayout.GetPixelSize (out delta, out height);
