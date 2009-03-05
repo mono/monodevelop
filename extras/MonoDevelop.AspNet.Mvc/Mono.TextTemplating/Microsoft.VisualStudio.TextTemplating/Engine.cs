@@ -64,25 +64,25 @@ namespace Microsoft.VisualStudio.TextTemplating
 		public string ProcessTemplate (string content, ITextTemplatingEngineHost host)
 		{
 			ParsedTemplate pt = ParsedTemplate.FromText (content, host);
-			if (pt.HasErrorsNotWarnings ()) {
+			if (pt.Errors.HasErrors) {
 				host.LogErrors (pt.Errors);
 				return null;
 			}
 			
 			TemplateSettings settings = GetSettings (host, pt);
-			if (pt.HasErrorsNotWarnings ()) {
+			if (pt.Errors.HasErrors) {
 				host.LogErrors (pt.Errors);
 				return null;
 			}
 			
 			CodeCompileUnit ccu = GetCompileUnit (host, pt, settings);
-			if (pt.HasErrorsNotWarnings ()) {
+			if (pt.Errors.HasErrors) {
 				host.LogErrors (pt.Errors);
 				return null;
 			}
 			
-			CompilerResults results = GenerateCode (host, pt, settings, ccu);
-			if (pt.HasErrorsNotWarnings ()) {
+			System.Reflection.Assembly results = GenerateCode (host, pt, settings, ccu);
+			if (pt.Errors.HasErrors) {
 				host.LogErrors (pt.Errors);
 				return null;
 			}
@@ -95,19 +95,28 @@ namespace Microsoft.VisualStudio.TextTemplating
 				host.SetOutputEncoding (settings.Encoding, true);
 			}
 			
-			TransformationRunner runner = new TransformationRunner ();
-			return runner.Run (results.PathToAssembly, settings.Namespace + "." + settings.Name, host, settings.Culture);
+			string output = "";
+			try {
+				output = Run (results, settings.Namespace + "." + settings.Name, host, settings.Culture);
+			} catch (Exception ex) {
+				pt.LogError ("Error running transform: " + ex.ToString ());
+			}
+			host.LogErrors (pt.Errors);
+			return output;
 		}
 		
-		static CompilerResults GenerateCode (ITextTemplatingEngineHost host, ParsedTemplate pt, TemplateSettings settings, CodeCompileUnit ccu)
+		static System.Reflection.Assembly GenerateCode (ITextTemplatingEngineHost host, ParsedTemplate pt, TemplateSettings settings, CodeCompileUnit ccu)
 		{
 			CompilerParameters pars = new CompilerParameters ();
 			pars.GenerateExecutable = false;
-			pars.GenerateInMemory = false;
+			pars.GenerateInMemory = !settings.Debug;
 			pars.IncludeDebugInformation = settings.Debug;
 			
 			//resolve and add assembly references
-			foreach (string assem in settings.Assemblies) {
+			HashSet<string> assemblies = new HashSet<string> ();
+			assemblies.UnionWith (settings.Assemblies);
+			assemblies.UnionWith (host.StandardAssemblyReferences);
+			foreach (string assem in assemblies) {
 				string resolvedAssem = host.ResolveAssemblyReference (assem);
 				if (!String.IsNullOrEmpty (resolvedAssem)) {
 					pars.ReferencedAssemblies.Add (resolvedAssem);
@@ -119,7 +128,7 @@ namespace Microsoft.VisualStudio.TextTemplating
 			
 			CompilerResults results = settings.Provider.CompileAssemblyFromDom (pars, ccu);
 			pt.Errors.AddRange (results.Errors);
-			return results;
+			return results.CompiledAssembly;
 		}
 		
 		static TemplateSettings GetSettings (ITextTemplatingEngineHost host, ParsedTemplate pt)
@@ -143,7 +152,7 @@ namespace Microsoft.VisualStudio.TextTemplating
 					if (val != null) {
 						System.Globalization.CultureInfo culture = System.Globalization.CultureInfo.GetCultureInfo (val);
 						if (culture == null)
-							pt.LogError ("Could not find culture '" + val + "'", dt).IsWarning = true;
+							pt.LogWarning ("Could not find culture '" + val + "'", dt.Location);
 						else
 							settings.Culture = culture;
 					}
@@ -152,7 +161,7 @@ namespace Microsoft.VisualStudio.TextTemplating
 				case "assembly":
 					string name = dt.Extract ("name");
 					if (name == null)
-						pt.LogError ("Missing name attribute in assembly directive", dt);
+						pt.LogError ("Missing name attribute in assembly directive", dt.Location);
 					else
 						settings.Assemblies.Add (name);
 					break;
@@ -160,7 +169,7 @@ namespace Microsoft.VisualStudio.TextTemplating
 				case "import":
 					string namespac = dt.Extract ("namespace");
 					if (namespac == null)
-						pt.LogError ("Missing namespace attribute in import directive", dt);
+						pt.LogError ("Missing namespace attribute in import directive", dt.Location);
 					else
 						settings.Assemblies.Add (namespac);
 					break;
@@ -182,7 +191,7 @@ namespace Microsoft.VisualStudio.TextTemplating
 			}
 			
 			if (settings.Name == null)
-				settings.Name = string.Format ("GeneratedTextTransformation{0:x}", new System.Random ());
+				settings.Name = string.Format ("GeneratedTextTransformation{0:x}", new System.Random ().Next ());
 			if (settings.Namespace == null)
 				settings.Namespace = typeof (TextTransformation).Namespace;
 			
@@ -221,7 +230,7 @@ namespace Microsoft.VisualStudio.TextTemplating
 			sb.Append (" found in ");
 			sb.Append (dt.Name);
 			sb.Append (" directive.");
-			pt.LogError (sb.ToString (), dt).IsWarning = true;
+			pt.LogWarning (sb.ToString (), dt.Location);
 			return false;
 		}
 		
@@ -232,7 +241,10 @@ namespace Microsoft.VisualStudio.TextTemplating
 			CodeNamespace namespac = new CodeNamespace (settings.Namespace);
 			ccu.Namespaces.Add (namespac);
 			
-			foreach (string ns in settings.Imports)
+			HashSet<string> imports = new HashSet<string> ();
+			imports.UnionWith (settings.Imports);
+			imports.UnionWith (host.StandardImports);
+			foreach (string ns in imports)
 				namespac.Imports.Add (new CodeNamespaceImport (ns));
 			
 			//prep the type
@@ -251,8 +263,7 @@ namespace Microsoft.VisualStudio.TextTemplating
 			
 			//method references that will need to be used multiple times
 			CodeMethodReferenceExpression writeMeth =
-				new CodeMethodReferenceExpression (new CodeThisReferenceExpression (), "Write",
-				                                   new CodeTypeReference (typeof (String)));
+				new CodeMethodReferenceExpression (new CodeThisReferenceExpression (), "Write");
 			CodeMethodReferenceExpression toStringMeth =
 				new CodeMethodReferenceExpression (new CodeTypeReferenceExpression (typeof (ToStringHelper)), "ToStringWithCulture");
 			
@@ -269,18 +280,20 @@ namespace Microsoft.VisualStudio.TextTemplating
 							new CodeMethodInvokeExpression (toStringMeth, new CodeSnippetExpression (seg.Text))));
 					break;
 				case SegmentType.Content:
-					st = new CodeExpressionStatement (new CodeMethodInvokeExpression (writeMeth, new CodePrimitiveExpression (seg.Text)));
+					if (!ShouldSkipContentSegment (seg.Text)) {
+						st = new CodeExpressionStatement (new CodeMethodInvokeExpression (writeMeth, new CodePrimitiveExpression (seg.Text)));
+					}
 					break;
 				case SegmentType.Helper:
 					CodeTypeMember mem = new CodeSnippetTypeMember (seg.Text);
-					mem.LinePragma = new CodeLinePragma (host.TemplateFile, seg.Line);
+					mem.LinePragma = new CodeLinePragma (host.TemplateFile, seg.Location.Line);
 					type.Members.Add (mem);
 					break;
 				default:
 					throw new InvalidOperationException ();
 				}
 				if (st != null) {
-					st.LinePragma = new CodeLinePragma (host.TemplateFile, seg.Line);
+					st.LinePragma = new CodeLinePragma (host.TemplateFile, seg.Location.Line);
 					transformMeth.Statements.Add (st);
 				}
 			}
@@ -313,6 +326,14 @@ namespace Microsoft.VisualStudio.TextTemplating
 			return ccu;
 		}
 		
+		//skip over content segments that contain a single newline
+		static bool ShouldSkipContentSegment (string content)
+		{
+			return content.Length < 3
+				&& (content.Length !=2 || (content[0] =='\r' && content[1] == '\n'))
+				&& (content.Length !=1 || content[0] == '\r' || content[0] == '\n');
+		}
+		
 		class TemplateSettings
 		{
 			public TemplateSettings ()
@@ -334,32 +355,27 @@ namespace Microsoft.VisualStudio.TextTemplating
 			public System.Globalization.CultureInfo Culture { get; set; }
 		}
 		
-		class TransformationRunner : MarshalByRefObject
+		static string Run (System.Reflection.Assembly assem, string type, ITextTemplatingEngineHost host, System.Globalization.CultureInfo culture)
 		{
-			public string Run (string assemblyPath, string type, ITextTemplatingEngineHost host, System.Globalization.CultureInfo culture)
-			{
-				
-				System.Reflection.Assembly assem = System.Reflection.Assembly.Load (assemblyPath);
-				Type transformType = assem.GetType (type);
-				TextTransformation tt = (TextTransformation)Activator.CreateInstance (transformType);
-				
-				//set the host property if it exists
-				System.Reflection.PropertyInfo hostProp = transformType.GetProperty ("Host", typeof (ITextTemplatingEngineHost));
-				if (hostProp != null && hostProp.CanWrite)
-					hostProp.SetValue (tt, host, null);
-				
-				//set the culture
-				if (culture != null)
-					ToStringHelper.FormatProvider = culture;
-				else
-					ToStringHelper.FormatProvider = System.Globalization.CultureInfo.InvariantCulture;
-				
-				tt.Initialize ();
-				string output = tt.TransformText ();
-				host.LogErrors (tt.Errors);
+			Type transformType = assem.GetType (type);
+			TextTransformation tt = (TextTransformation)Activator.CreateInstance (transformType);
+			
+			//set the host property if it exists
+			System.Reflection.PropertyInfo hostProp = transformType.GetProperty ("Host", typeof (ITextTemplatingEngineHost));
+			if (hostProp != null && hostProp.CanWrite)
+				hostProp.SetValue (tt, host, null);
+			
+			//set the culture
+			if (culture != null)
+				ToStringHelper.FormatProvider = culture;
+			else
 				ToStringHelper.FormatProvider = System.Globalization.CultureInfo.InvariantCulture;
-				return output;
-			}
+			
+			tt.Initialize ();
+			string output = tt.TransformText ();
+			host.LogErrors (tt.Errors);
+			ToStringHelper.FormatProvider = System.Globalization.CultureInfo.InvariantCulture;
+			return output;
 		}
 	}
 	

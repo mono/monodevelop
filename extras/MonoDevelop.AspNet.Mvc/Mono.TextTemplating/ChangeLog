@@ -1,3 +1,29 @@
+2009-03-05  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextTemplating.csproj: Updated.
+
+	* Mono.TextTemplating/TemplateGenerator.cs: Simple template
+	  host implementation. Doesn't handle everything yet.
+
+	* Mono.TextTemplating/Tokeniser.cs: Fix a number of offset
+	  issues that broke most captures. Only allow EOF in content
+	  regions, and in this case capture the last content. Track
+	  current column, for error reporting.
+
+	* Mono.TextTemplating/ParsedTemplate.cs: Overhaul location
+	  tracking for error reporting. Don't record empty segments.
+
+	* Microsoft.VisualStudio.TextTemplating/Engine.cs: Use run
+	  method instead of runner, since the whole thing's done in
+	  the appdomain now. Catch errors from the runner. Use host's
+	  default assemblies and imports. Track ParsedTemplate error
+	  reporting changes. Filter out content regions with only a
+	  single newline.
+
+	* Microsoft.VisualStudio.TextTemplating/ToStringHelper.cs:
+	  Don't cache delegates; this won't work for instances. Maybe
+	  IL generation is called for.
+
 2009-03-04  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* AssemblyInfo.cs:

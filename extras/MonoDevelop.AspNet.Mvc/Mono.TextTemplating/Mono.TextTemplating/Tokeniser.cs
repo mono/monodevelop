@@ -32,27 +32,30 @@ namespace Mono.TextTemplating
 {
 	
 	
-	class Tokeniser : ILocation
+	class Tokeniser
 	{
 		string content;
 		int position = 0;
 		string value;
-		State nextState;
-		int nextStateLine;
+		State nextState = State.Content;
+		Location nextStateLocation;
 		
 		public Tokeniser (string fileName, string content)
 		{
+			State = State.Content;
 			this.content = content;
-			this.FileName = fileName;
+			this.Location = this.nextStateLocation = new Location (fileName, 1, 1);
 		}
 		
 		public bool Advance ()
 		{
 			value = null;
 			State = nextState;
-			Line = nextStateLine;
+			Location = nextStateLocation;
+			if (nextState == State.EOF)
+				return false;
 			nextState = GetNextStateAndCurrentValue ();
-			return State != State.EOF;
+			return true;
 		}
 		
 		State GetNextStateAndCurrentValue ()
@@ -84,15 +87,16 @@ namespace Mono.TextTemplating
 			int start = position;
 			for (; position < content.Length; position++) {
 				char c = content[position];
+				nextStateLocation = nextStateLocation.AddCol ();
 				if (c == '\n') {
-					nextStateLine++;
+					nextStateLocation = nextStateLocation.AddLine ();
 				} else if (c =='>' && content[position-1] == '#' && content[position-2] != '\\') {
-					position++;
-					value = content.Substring (start, position - start);
+					value = content.Substring (start, position - start - 1);
+					position+=1;
 					return State.Content;
 				}
 			}
-			return State.EOF;
+			throw new ParserException ("Unexpected end of file.", nextStateLocation);
 		}
 		
 		State GetDirectiveName ()
@@ -101,12 +105,11 @@ namespace Mono.TextTemplating
 			for (; position < content.Length; position++) {
 				char c = content[position];
 				if (!Char.IsLetterOrDigit (c)) {
-					position--;
-					value = content.Substring (start, position - 1);
+					value = content.Substring (start, position - start);
+					return State.Directive;
 				}
-				return State.Directive;
 			}
-			return State.EOF;
+			throw new ParserException ("Unexpected end of file.", nextStateLocation);
 		}
 		
 		State GetDirectiveValue ()
@@ -115,23 +118,25 @@ namespace Mono.TextTemplating
 			int delimiter = '\0';
 			for (; position < content.Length; position++) {
 				char c = content[position];
+				nextStateLocation = nextStateLocation.AddCol ();
 				if (c == '\n')
-					nextStateLine++;
+					nextStateLocation = nextStateLocation.AddLine ();
 				if (delimiter == '\0') {
 					if (c == '\'' || c == '"') {
 						start = position;
 						delimiter = c;
 					} else if (!Char.IsWhiteSpace (c)) {
-						throw new ParserException ("Unexpected character '" + c + "'. Expecting attribute value.", this);
+						throw new ParserException ("Unexpected character '" + c + "'. Expecting attribute value.", nextStateLocation);
 					}
 					continue;
 				}
 				if (c == delimiter) {
-					value = content.Substring (start, position - 1);
+					value = content.Substring (start + 1, position - start - 1);
+					position++;
 					return State.Directive;
 				}
 			}
-			return State.EOF;
+			throw new ParserException ("Unexpected end of file.", nextStateLocation);;
 		}
 		
 		State NextStateInContent ()
@@ -139,29 +144,36 @@ namespace Mono.TextTemplating
 			int start = position;
 			for (; position < content.Length; position++) {
 				char c = content[position];
+				nextStateLocation = nextStateLocation.AddCol ();
 				if (c == '\n') {
-					nextStateLine++;
-				} else if (c =='<' && position + 2 > content.Length && content[position+1] == '#') {
+					nextStateLocation = nextStateLocation.AddLine ();
+				} else if (c =='<' && position + 2 < content.Length && content[position+1] == '#') {
 					char type = content[position+2];
 					if (type == '@') {
-						position += 2;
+						nextStateLocation = nextStateLocation.AddCols (2);
 						value = content.Substring (start, position - start);
+						position += 3;
 						return State.Directive;
 					} else if (type == '=') {
-						position += 2;
+						nextStateLocation = nextStateLocation.AddCols (2);
 						value = content.Substring (start, position - start);
-						return State.Content;
+						position += 3;
+						return State.Expression;
 					} else if (type == '+') {
-						position += 2;
+						nextStateLocation = nextStateLocation.AddCols (2);
 						value = content.Substring (start, position - start);
+						position += 3;
 						return State.Helper;
 					}  else {
-						position++;
 						value = content.Substring (start, position - start);
+						nextStateLocation = nextStateLocation.AddCol ();
+						position += 2;
 						return State.Block;
 					}
 				}
 			}
+			//EOF is only valid when we're in content
+			value = content.Substring (start);
 			return State.EOF;
 		}
 		
@@ -169,27 +181,26 @@ namespace Mono.TextTemplating
 		{
 			for (; position < content.Length; position++) {
 				char c = content[position];
+				nextStateLocation = nextStateLocation.AddCol ();
 				if (c == '\n') {
-					nextStateLine++;
+					nextStateLocation = nextStateLocation.AddLine ();
 				} else if (Char.IsLetter (c)) {
-					position--;
 					return State.DirectiveName;
 				} else if (c == '=') {
+					position++;
 					return State.DirectiveValue;	
 				} else if (c == '#' && position + 1 < content.Length && content[position+1] == '>') {
+					nextStateLocation = nextStateLocation.AddCols (1);
+					position += 2;
 					return State.Content;
 				} else if (!Char.IsWhiteSpace (c)) {
-					throw new ParserException ("Directive ended unexpectedly", this);
+					throw new ParserException ("Directive ended unexpectedly with character '" + c + "'", nextStateLocation);
 				}
 			}
-			return State.EOF;
+			throw new ParserException ("Unexpected end of file.", nextStateLocation);
 		}
 		
 		public State State {
-			get; private set;
-		}
-		
-		public int Line {
 			get; private set;
 		}
 		
@@ -205,15 +216,13 @@ namespace Mono.TextTemplating
 			get { return value; }
 		}
 		
-		public string FileName {
-			get; private set;
-		}
+		public Location Location { get; private set; }
 	}
 	
 	enum State
 	{
+		Content = 0,
 		Directive,
-		Content,
 		Expression,
 		Block,
 		Helper,
@@ -223,16 +232,13 @@ namespace Mono.TextTemplating
 		EOF
 	}
 	
-	class ParserException : Exception, ILocation
+	class ParserException : Exception
 	{
-		
-		public ParserException (string message, Tokeniser parent) : base (message)
+		public ParserException (string message, Location location) : base (message)
 		{
-			Line = parent.Line;
-			FileName = parent.FileName;
+			Location = location;
 		}
 		
-		public int Line { get; private set; }
-		public string FileName { get; private set; }
+		public Location Location { get; private set; }
 	}
 }

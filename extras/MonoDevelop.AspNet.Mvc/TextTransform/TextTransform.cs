@@ -23,7 +23,9 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
+using System.IO;
 using System.Collections.Generic;
 using Mono.Options;
 
@@ -38,37 +40,60 @@ namespace Mono.TextTemplating
 		{
 			if (args.Length == 0) {
 				ShowHelp (true);
-				return -1;
 			}
 			
-			string output = null;
-			List<string> refs = new List<string> ();
-			List<string> imports = new List<string> ();
-			List<string> includePaths = new List<string> ();
-			List<string> referencePaths = new List<string> ();
-			List<string> directiveProcessors = new List<string> ();
-			Dictionary<string, string> values = new Dictionary<string, string> ();
+			TemplateGenerator generator = new TemplateGenerator ();
+			string outputFile = null, inputFile = null;
 			
 			optionSet = new OptionSet () {
-				{ "o=|out=", "The name of the output {file}", s => output = s },
-				{ "r=", "Assemblies to reference", s => refs.Add (s) },
-				{ "u=", "Namespaces to import <{0:namespace}>", s => imports.Add (s) },
-				{ "I=", "Paths to search for included files", s => includePaths.Add (s) },
-				{ "P=", "Paths to search for referenced assemblies", s => referencePaths.Add (s) },
-				{ "dp=", "Directive processor name!class!assembly", s => directiveProcessors.Add (s) },
-				{ "a=", "Key value pairs for directive processors", (s, p) => values[s] = p },
+				{ "o=|out=", "The name of the output {file}", s => outputFile = s },
+				{ "r=", "Assemblies to reference", s => generator.Refs.Add (s) },
+				{ "u=", "Namespaces to import <{0:namespace}>", s => generator.Imports.Add (s) },
+				{ "I=", "Paths to search for included files", s => generator.IncludePaths.Add (s) },
+				{ "P=", "Paths to search for referenced assemblies", s => generator.ReferencePaths.Add (s) },
+				{ "dp=", "Directive processor name!class!assembly", s => generator.DirectiveProcessors.Add (s) },
+				{ "a=", "Key value pairs for directive processors", (s, p) => generator.ProcessorValues[s] = p },
 				{ "h|?|help", "Show help", s => ShowHelp (false) }
 			};
 			
-			optionSet.Parse (args);
+			List<string> remainingArgs = optionSet.Parse (args);
 			
-			return 0;
+			if (String.IsNullOrEmpty (outputFile)) {
+				Console.WriteLine ("No output file specified.");
+				return -1;
+			}
+			
+			if (remainingArgs.Count != 1) {
+				Console.WriteLine ("No input file specified.");
+				return -1;
+			}
+			inputFile = remainingArgs [0];
+			
+			if (!File.Exists (inputFile)) {
+				Console.WriteLine ("Input file '{0}' does not exist.");
+				return -1;
+			}
+			
+			System.Console.Write("Processing '{0}'... ", inputFile);
+			generator.ProcessTemplate (inputFile, outputFile);
+			
+			if (generator.Errors.HasErrors) {
+				System.Console.WriteLine("failed.");
+			} else {
+				System.Console.WriteLine("completed successfully.");
+			}
+			
+			foreach (System.CodeDom.Compiler.CompilerError err in generator.Errors)
+				Console.WriteLine ("{0}({1},{2}): {3} {4}", err.FileName, err.Line, err.Column,
+				                   err.IsWarning? "WARNING" : "ERROR", err.ErrorText);
+			
+			return generator.Errors.HasErrors? -1 : 0;
 		}
 		
 		static void ShowHelp (bool concise)
 		{
 			Console.WriteLine ("TextTransform command line T4 processor");
-			Console.WriteLine ("Usage: {0} [options] input-files", name);
+			Console.WriteLine ("Usage: {0} [options] input-file", name);
 			if (concise) {
 				Console.WriteLine ("Use --help to display options.");
 			} else {
@@ -76,6 +101,7 @@ namespace Mono.TextTemplating
 				optionSet.WriteOptionDescriptions (System.Console.Out);
 			}
 			Console.WriteLine ();
+			Environment.Exit (0);
 		}
 	}
 }

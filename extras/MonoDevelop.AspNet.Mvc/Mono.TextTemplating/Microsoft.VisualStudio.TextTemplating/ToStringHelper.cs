@@ -34,34 +34,22 @@ namespace Microsoft.VisualStudio.TextTemplating
 	
 	public static class ToStringHelper
 	{
-		static Dictionary<Type, Func<object, IFormatProvider, string>> cache
-			= new Dictionary<Type, Func<object, IFormatProvider, string>> ();
-		static IFormatProvider formatProvider = System.Globalization.CultureInfo.InvariantCulture;
+		static object [] formatProvider = new object[] { System.Globalization.CultureInfo.InvariantCulture };
 		
 		public static string ToStringWithCulture (object objectToConvert)
 		{
-			Type type = objectToConvert.GetType ();
-			Func<object, IFormatProvider, string> action = null;
-			if (!cache.TryGetValue (type, out action)) {
-				MethodInfo mi = type.GetMethod ("ToString", new Type[] { typeof (IFormatProvider) });
-				if (mi != null)
-					action = (Func<object, IFormatProvider, string>)
-						Delegate.CreateDelegate (typeof(Func<object, IFormatProvider, string>), mi);
-				else
-					action = InvokeToString;
-				cache.Add (type, action);
-			}
-			return action (objectToConvert, FormatProvider);
+			if (objectToConvert == null)
+				return null;
+			
+			MethodInfo mi = objectToConvert.GetType ().GetMethod ("ToString", new Type[] { typeof (IFormatProvider) });
+			if (mi != null && mi.ReturnType == typeof (String))
+				return (string) mi.Invoke (objectToConvert, formatProvider);
+			return objectToConvert.ToString ();
 		}
 		
 		public static IFormatProvider FormatProvider {
-			get { return formatProvider; }
-			set { formatProvider = value; }
-		}
-		
-		static string InvokeToString (object obj, IFormatProvider dummy)
-		{
-			return obj.ToString ();
+			get { return (IFormatProvider)formatProvider[0]; }
+			set { formatProvider[0] = value; }
 		}
 	}
 }

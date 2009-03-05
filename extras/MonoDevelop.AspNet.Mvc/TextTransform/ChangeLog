@@ -1,3 +1,9 @@
+2009-03-05  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* TextTransform.csproj: Updated.
+
+	* TextTransform.cs: Complete the runner implementation.
+
 2009-03-04  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Options.cs:
