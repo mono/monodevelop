@@ -191,6 +191,49 @@ class test {
 			Assert.IsNotNull (provider.Find ("baz"), "property 'baz' not found.");
 		}
 		
+		[Test()]
+		public void TestLambdaExpressionCase1 ()
+		{
+			CompletionDataList provider = CodeCompletionBugTests.CreateCtrlSpaceProvider (
+@"
+using System;
+class Test
+{	
+	public void Foo ()
+	{
+		$Func<Test,int> x = s => s.$
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("Foo"), "method 'Foo' not found.");
+		}
+		
+		[Test()]
+		public void TestLambdaExpressionCase2 ()
+		{
+			CompletionDataList provider = CodeCompletionBugTests.CreateCtrlSpaceProvider (
+@"
+static class ExtMethods
+{
+	public static T[] Where<T>(this T[] t, Func<T, bool> pred)
+	{
+		return t;
+	}
+}
 
+class Test
+{
+	public void TestMethod ()
+	{
+		Test[] en = new Test[0];
+		var x = en.Where ($t => t.$);
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("TestMethod"), "method 'TestMethod' not found.");
+		}
+		
 	}
 }

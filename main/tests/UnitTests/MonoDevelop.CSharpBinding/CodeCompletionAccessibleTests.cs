@@ -619,6 +619,43 @@ public class Test
 			Assert.IsNotNull (provider, "provider == null");
 			Assert.IsNotNull (provider.Find ("TestMethod"), "method 'TestMethod' not found");
 		}
+		
+		[Test()]
+		public void TestImplicitGenericMethodParameterComplex ()
+		{
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
+@"
+using System;
+
+class SomeTemplate<T>
+{
+	public T Val { get; set; }
+	public SomeTemplate (T val)
+	{
+		this.Val = val;
+	}
+}
+
+class Test
+{
+	public T GetVal<T> (SomeTemplate<T> t)
+	{
+		return t.Val;
+	}
+	
+	public void TestMethod ()
+	{
+		SomeTemplate<Test> c = SomeTemplate<Test> (this);
+		var x = GetVal (c);
+		$x.$
+		
+	}
+}
+
+ ");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("TestMethod"), "method 'TestMethod' not found");
+		}
 
 		[Test()]
 		public void TestImplicitGenericArrayMethodParameter ()
