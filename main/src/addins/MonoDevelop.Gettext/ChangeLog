@@ -1,5 +1,11 @@
 2009-03-06  Mike Krüger  <mkrueger@novell.com>
 
+	* icons/translation-fuzzy-16.png:
+	* icons/translation-valid-16.png:
+	* icons/translation-missing-16.png: Worked on icons.
+
+2009-03-06  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* gtk-gui/gui.stetic:
 	* gtk-gui/objects.xml:
