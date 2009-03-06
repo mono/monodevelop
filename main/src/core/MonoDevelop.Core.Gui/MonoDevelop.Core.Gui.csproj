@@ -427,15 +427,6 @@
     <EmbeddedResource Include="icons\template-16.png">
       <LogicalName>template-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\translation-fuzzy-16.png">
-      <LogicalName>translation-fuzzy-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\translation-missing-16.png">
-      <LogicalName>translation-missing-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\translation-valid-16.png">
-      <LogicalName>translation-valid-16.png</LogicalName>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Core.Gui.Components\FileBrowser.cs" />

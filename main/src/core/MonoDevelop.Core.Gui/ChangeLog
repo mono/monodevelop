@@ -1,3 +1,13 @@
+2009-03-06  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Core.Gui.csproj:
+	* icons/translation-fuzzy-16.png:
+	* MonoDevelop.Core.Gui.addin.xml:
+	* icons/translation-valid-16.png:
+	* icons/translation-missing-16.png: Moved icons to the gettext
+	  addin.
+
 2009-03-05  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:

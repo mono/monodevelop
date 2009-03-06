@@ -203,9 +203,6 @@
 		<StockIcon stockid = "md-empty-category" resource = "empty-category-16.png" size = "Menu"/>
 		<StockIcon stockid = "md-keyword" resource = "keyword-16.png" size = "Menu"/>
 		<StockIcon stockid = "md-template" resource = "template-16.png" size = "Menu"/>
-		<StockIcon stockid = "md-translation-fuzzy" resource = "translation-fuzzy-16.png" size = "Menu"/>
-		<StockIcon stockid = "md-translation-missing" resource = "translation-missing-16.png" size = "Menu"/>
-		<StockIcon stockid = "md-translation-valid" resource = "translation-valid-16.png" size = "Menu"/>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Core/MimeTypes">
