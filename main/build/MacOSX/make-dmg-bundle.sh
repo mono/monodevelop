@@ -8,6 +8,11 @@ VOLUME_NAME=MonoDevelop
 DMG_APP=MonoDevelop.app
 DMG_FILE=$VOLUME_NAME.dmg
 MOUNT_POINT=$VOLUME_NAME.mounted
+
+if test ! -e $DMG_APP ; then
+	echo "Missing MonoDevelop.app"
+	exit 1
+fi
 	
 rm -f $DMG_FILE
 rm -f $DMG_FILE.master
@@ -20,7 +25,7 @@ echo "Creating disk image (${image_size}MB)..."
 hdiutil create $DMG_FILE -megabytes $image_size -volname $VOLUME_NAME -fs HFS+ -quiet || exit $?
 
 echo "Attaching to disk image..."
-hdiutil attach $DMG_FILE -readwrite -noautoopen -mountpoint $MOUNT_POINT -quiet
+hdiutil attach $DMG_FILE -readwrite -noautoopen -mountpoint $MOUNT_POINT -quiet || exit $?
 
 echo "Populating image..."
 
@@ -39,12 +44,12 @@ cp DS_Store $MOUNT_POINT/.DS_Store
 cp COPYING INSTALL $MOUNT_POINT
 
 echo "Detaching from disk image..."
-hdiutil detach $MOUNT_POINT -quiet
+hdiutil detach $MOUNT_POINT -quiet || exit $?
 
 mv $DMG_FILE $DMG_FILE.master
 
 echo "Creating distributable image..."
-hdiutil convert -quiet -format UDBZ -o $DMG_FILE $DMG_FILE.master
+hdiutil convert -quiet -format UDBZ -o $DMG_FILE $DMG_FILE.master || exit $?
 
 #echo "Installing end user license agreement..."
 #hdiutil flatten -quiet $DMG_FILE
@@ -56,5 +61,7 @@ echo "Done."
 if [ ! "x$1" = "x-m" ]; then
 rm $DMG_FILE.master
 fi
+
+rm -rf $MOUNT_POINT
 
 popd &>/dev/null 

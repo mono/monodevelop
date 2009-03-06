@@ -1,19 +1,18 @@
-
-BUNDLE_VERSION=0.0.3
+BUNDLE_VERSION=0.0.5
 MAC_APP_DIR=MonoDevelop.app
 MACOS=$(MAC_APP_DIR)/Contents/MacOS
 MAC_APP_LIB_DIR=$(MACOS)/lib/monodevelop
 ADDINS=$(MACOS)/lib/monodevelop/AddIns
 
-CLEANFILES = MonoDevelop.dmg
+CLEANFILES = MonoDevelop.dmg MonoDevelop.app
 #DISTCLEANFILES = 
-noinst_DATA = MonoDevelop.dmg
+noinst_DATA = MonoDevelop.app.zip
 EXTRA_DIST = COPYING dmg-bg.png DS_Store Info.plist.in INSTALL make-dmg-bundle.sh mdtool monodevelop 
 
 all: MonoDevelop.app.zip
 
-MonoDevelop.dmg: MonoDevelop.app
-	./make-dmg-bundle.sh
+#MonoDevelop.dmg: MonoDevelop.app
+#	./make-dmg-bundle.sh
 
 clean-local:
 	rm -rf MonoDevelop.app
