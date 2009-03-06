@@ -76,9 +76,12 @@
 		<StockIcon stockid = "md-po-file" resource = "locale_16x16.png" size = "Menu" />
 		<StockIcon stockid = "md-po-file" resource = "locale_22x22.png" size = "Button" />
 		<StockIcon stockid = "md-po-file" resource = "locale_32x32.png" size = "Dialog" />
-		<StockIcon stockid = "md-translation-fuzzy" resource = "translation-fuzzy-16.png" size = "Menu"/>
+<!--		<StockIcon stockid = "md-translation-fuzzy" resource = "translation-fuzzy-16.png" size = "Menu"/>
 		<StockIcon stockid = "md-translation-missing" resource = "translation-missing-16.png" size = "Menu"/>
-		<StockIcon stockid = "md-translation-valid" resource = "translation-valid-16.png" size = "Menu"/>
+		<StockIcon stockid = "md-translation-valid" resource = "translation-valid-16.png" size = "Menu"/>-->
+		<StockIcon stockid = "silk_accept" resource = "silk_accept.png" size = "Menu"/>
+		<StockIcon stockid = "silk_error" resource = "silk_error.png" size = "Menu"/>
+		<StockIcon stockid = "silk_exclamation" resource = "silk_exclamation.png" size = "Menu"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/MimeTypes">

@@ -1318,7 +1318,7 @@
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
                         <property name="Type">TextAndIcon</property>
-                        <property name="Icon">resource:translation-valid-16.png</property>
+                        <property name="Icon">resource:silk_accept.png</property>
                         <property name="Label" translatable="yes">Valid</property>
                         <property name="UseUnderline">True</property>
                       </widget>
@@ -1334,7 +1334,7 @@
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
                         <property name="Type">TextAndIcon</property>
-                        <property name="Icon">resource:translation-missing-16.png</property>
+                        <property name="Icon">resource:silk_exclamation.png</property>
                         <property name="Label" translatable="yes">Missing</property>
                         <property name="UseUnderline">True</property>
                       </widget>
@@ -1350,7 +1350,7 @@
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
                         <property name="Type">TextAndIcon</property>
-                        <property name="Icon">resource:translation-fuzzy-16.png</property>
+                        <property name="Icon">resource:silk_error.png</property>
                         <property name="Label" translatable="yes">Fuzzy</property>
                         <property name="UseUnderline">True</property>
                       </widget>

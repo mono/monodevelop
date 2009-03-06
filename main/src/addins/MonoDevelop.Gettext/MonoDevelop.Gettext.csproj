@@ -186,6 +186,15 @@
     <EmbeddedResource Include="icons\translation-valid-16.png">
       <LogicalName>translation-valid-16.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\silk_accept.png">
+      <LogicalName>silk_accept.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\silk_error.png">
+      <LogicalName>silk_error.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\silk_exclamation.png">
+      <LogicalName>silk_exclamation.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

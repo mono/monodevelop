@@ -74,6 +74,9 @@ RES =  \
 	icons/locale_16x16.png \
 	icons/locale_22x22.png \
 	icons/locale_32x32.png \
+	icons/silk_accept.png \
+	icons/silk_error.png \
+	icons/silk_exclamation.png \
 	icons/translation-fuzzy-16.png \
 	icons/translation-missing-16.png \
 	icons/translation-valid-16.png \
