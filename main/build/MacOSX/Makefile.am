@@ -7,13 +7,13 @@ ADDINS=$(MACOS)/lib/monodevelop/AddIns
 
 CLEANFILES = MonoDevelop.dmg
 #DISTCLEANFILES = 
-noinst_DATA = MonoDevelop.dmg
+noinst_DATA = MonoDevelop.app.zip
 EXTRA_DIST = COPYING dmg-bg.png DS_Store Info.plist.in INSTALL make-dmg-bundle.sh mdtool monodevelop 
 
 all: MonoDevelop.app.zip
 
-MonoDevelop.dmg: MonoDevelop.app
-	./make-dmg-bundle.sh
+#MonoDevelop.dmg: MonoDevelop.app
+#	./make-dmg-bundle.sh
 
 clean-local:
 	rm -rf MonoDevelop.app
