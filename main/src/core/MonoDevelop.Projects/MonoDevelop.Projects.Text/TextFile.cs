@@ -27,7 +27,9 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Runtime.InteropServices;
 using Mono.Unix;
@@ -95,22 +97,25 @@ namespace MonoDevelop.Projects.Text
 				sourceEncoding = encoding;
 			}
 			else {
-				string enc = "UTF-8";
-				if (content.Length > 3) {
-					if (content[0] == 0xEF && content[1] == 0xBB && content[2] == 0xBF) {
-						// utf-8
-					} else if (content[0] == 0xFF && content[1] == 0xFE && content[2] == 0 && content[3] == 0) {
-						enc = "UTF-32";
-					} else if (content[0] == 0 && content[1] == 0 && content[2] == 0xFE && content[3] == 0xFF) {
-						enc = "UTF-32BE";
-					} else if (content[0] == 0xFE && content[1] == 0xFF) {
-						enc = "UTF-16";
-					} else if (content[0] == 0xFF && content[1] == 0xFE) {
-						enc = "UTF-16BE";
-					} else if (content[0] == 0x2B && content[1] == 0x2F && content[2] == 0x76) {
-						enc = "UTF-7";
-					}
-				}
+				var bomTable = new [] {
+					new { Enc = "UTF-8", Bytes = new byte[] {0xEF, 0xBB, 0xBF} },
+					new { Enc = "UTF-32BE", Bytes = new byte[] {0x00, 0x00, 0xFE, 0xFF} },
+					new { Enc = "UTF-32LE", Bytes = new byte[] {0xFF, 0xFE, 0x00, 0x00} },
+					new { Enc = "UTF-16BE", Bytes = new byte[] {0xFE, 0xFF} },
+					new { Enc = "UTF-16LE", Bytes = new byte[] {0xFF, 0xFE} },
+					new { Enc = "UTF-7", Bytes = new byte[] {0x2B, 0x2F, 0x76, 0x38} },
+					new { Enc = "UTF-7", Bytes = new byte[] {0x2B, 0x2F, 0x76, 0x39} },
+					new { Enc = "UTF-7", Bytes = new byte[] {0x2B, 0x2F, 0x76, 0x2B} },
+					new { Enc = "UTF-7", Bytes = new byte[] {0x2B, 0x2F, 0x76, 0x2F} },
+					new { Enc = "UTF-1", Bytes = new byte[] {0xF7, 0x64, 0x4C} },
+					new { Enc = "UTF-EBCDIC", Bytes = new byte[] {0xDD, 0x73, 0x66, 073} },
+					new { Enc = "SCSU", Bytes = new byte[] {0x0E, 0xFE, 0xFF} },
+					new { Enc = "BOCU-1", Bytes = new byte[] {0xFB, 0xEE, 0x28} },
+					new { Enc = "GB18030", Bytes = new byte[] {0x84, 0x31, 0x95, 0x33} },
+				};
+				string enc = (from bom in bomTable where content.StartsWith (bom.Bytes) select bom.Enc).FirstOrDefault ();
+				if (string.IsNullOrEmpty (enc))
+					enc = "UTF-8";
 				string s = Convert (content, "UTF-8", enc);
 				if (s != null) {
 					sourceEncoding = enc;
@@ -302,6 +307,23 @@ namespace MonoDevelop.Projects.Text
 			fs.Close ();
 			
 			Syscall.rename (tempName, fileName);
+		}
+	}
+	
+	public static class ExtensionMethods
+	{
+		public static bool StartsWith<T> (this IEnumerable<T> t, IEnumerable<T> s)
+		{
+			using (IEnumerator<T> te = t.GetEnumerator()) {
+				using (IEnumerator<T> se = s.GetEnumerator()) {
+					bool didMoveTe = false;
+					while ((didMoveTe = te.MoveNext ()) && se.MoveNext ()) {
+						if (!te.Current.Equals (se.Current))
+							return false;
+					}
+					return didMoveTe;
+				}
+			}
 		}
 	}
 }
