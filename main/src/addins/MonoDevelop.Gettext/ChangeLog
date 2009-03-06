@@ -1,5 +1,10 @@
 2009-03-06  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Gettext.Editor/POEditorWidget.cs: fixed "Bug
+	  480125 - Gettext editor's filter is buggy".
+
+2009-03-06  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Gettext.Editor/POEditorWidget.cs: Removed some
 	  debug messages.
 

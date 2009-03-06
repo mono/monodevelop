@@ -792,15 +792,12 @@ namespace MonoDevelop.Gettext
 			return true;
 		}
 		
-		Thread updateThread = null;
-		bool updateIsRunning = false;
+		FilterWorkerThread updateThread = null;
 		string filter = "";
 		Regex  regex = new Regex ("");
 		
 		void UpdateFromCatalog ()
 		{
-			if (updateIsRunning)
-				updateIsRunning = false;
 			filter = this.entryFilter.Text;
 			if (!IsCaseSensitive && filter != null)
 				filter = filter.ToUpper ();
@@ -817,17 +814,23 @@ namespace MonoDevelop.Gettext
 				}
 			}
 			this.entryFilter.ModifyBase (StateType.Normal, Style.Base (StateType.Normal));
-			IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Update catalog list..."));
-			updateThread = new Thread (UpdateWorkerThread);
-			updateThread.IsBackground = true;
-			updateThread.Priority = ThreadPriority.Lowest;
+			StopFilterWorkerThread ();
+			updateThread = new FilterWorkerThread (this);
 			updateThread.Start ();
 		}
 		
+		void StopFilterWorkerThread ()
+		{
+			if (updateThread != null)  {
+				updateThread.Stop ();
+				//updateThread.WaitForFinish ();
+				updateThread = null;
+			}
+		}
 		
 		public void SelectEntry (CatalogEntry entry)
 		{
-			if (updateIsRunning)
+			if (updateThread != null && !updateThread.IsStopped)
 				return;
 			
 			TreeIter iter;
@@ -853,58 +856,75 @@ namespace MonoDevelop.Gettext
 			SelectEntry (entry);
 		}
 		
-		public void UpdateWorkerThread ()
+		class FilterWorkerThread : WorkerThread
 		{
-			int number = 1;
-			double count = catalog.Count;
-			List<CatalogEntry> foundEntries = new List<CatalogEntry> ();
-			updateIsRunning = true;
-			try {
-				foreach (CatalogEntry curEntry in catalog) {
-					if (!updateIsRunning)
-						break;
-					number++;
-					if (number % 50 == 0) {
-						DispatchService.GuiSyncDispatch (delegate {
-							if (number < 60)
-								store.Clear ();
-							MonoDevelop.Ide.Gui.IdeApp.Workbench.StatusBar.SetProgressFraction (Math.Min (1.0,  Math.Max (0.0, number / (double)count)));
-							foreach (CatalogEntry entry in foundEntries) {
-								if (!updateIsRunning)
-									break;
-								
-								store.AppendValues (GetStockForEntry (entry), 
-										            entry.IsFuzzy,
-										            StringEscaping.ToGettextFormat (entry.String), 
-										            StringEscaping.ToGettextFormat (entry.GetTranslation (0)), 
-										            entry,
-										            GetRowColorForEntry (entry),
-								                    GetTypeSortIndicator (entry),
-								                    GetForeColorForEntry (entry)
-								                    );
-							}
-						});
-						foundEntries.Clear ();
-					}
-					if (!ShouldFilter (curEntry, filter)) 
-						foundEntries.Add (curEntry);
-				}
-			} catch (Exception) {
-				
-			} finally {
-				if (updateIsRunning) {
-					MonoDevelop.Core.Gui.DispatchService.GuiSyncDispatch (delegate {
-						if (number < 60)
-							store.Clear ();
-						foreach (CatalogEntry entry in foundEntries) {
-							store.AppendValues (GetStockForEntry (entry), entry.IsFuzzy, StringEscaping.ToGettextFormat (entry.String), StringEscaping.ToGettextFormat (entry.GetTranslation (0)), entry, GetRowColorForEntry (entry), GetTypeSortIndicator (entry), GetForeColorForEntry (entry));
+			POEditorWidget widget;
+			
+			public FilterWorkerThread (POEditorWidget widget)
+			{
+				this.widget = widget;
+			}
+			
+			protected override void InnerRun ()
+			{
+				int number = 1, found = 0;
+				double count = widget.catalog.Count;
+				List<CatalogEntry> foundEntries = new List<CatalogEntry> ();
+				DispatchService.GuiSyncDispatch (delegate {
+					IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Update catalog list..."));
+					widget.store.Clear ();
+				});
+				try {
+					foreach (CatalogEntry curEntry in widget.catalog) {
+						if (IsStopping)
+							return;
+						number++;
+						if (number % 50 == 0) {
+							DispatchService.GuiSyncDispatch (delegate {
+								MonoDevelop.Ide.Gui.IdeApp.Workbench.StatusBar.SetProgressFraction (Math.Min (1.0,  Math.Max (0.0, number / (double)count)));
+								foreach (CatalogEntry entry in foundEntries) {
+									if (IsStopping)
+										break;
+									widget.store.AppendValues (GetStockForEntry (entry), 
+											            entry.IsFuzzy,
+											            StringEscaping.ToGettextFormat (entry.String), 
+											            StringEscaping.ToGettextFormat (entry.GetTranslation (0)), 
+											            entry,
+											            widget.GetRowColorForEntry (entry),
+									                    GetTypeSortIndicator (entry),
+									                    widget.GetForeColorForEntry (entry)
+									                    );
+								}
+								foundEntries.Clear ();
+							});
 						}
+						if (!widget.ShouldFilter (curEntry, widget.filter)) {
+							foundEntries.Add (curEntry);
+							found++;
+						}
+					}
+				} catch (Exception) {
+					
+				}
+				if (!IsStopping) {
+					MonoDevelop.Core.Gui.DispatchService.GuiSyncDispatch (delegate {
+						foreach (CatalogEntry entry in foundEntries) {
+							widget.store.AppendValues (GetStockForEntry (entry), entry.IsFuzzy, StringEscaping.ToGettextFormat (entry.String), StringEscaping.ToGettextFormat (entry.GetTranslation (0)), entry, widget.GetRowColorForEntry (entry), GetTypeSortIndicator (entry), widget.GetForeColorForEntry (entry));
+						}
+						foundEntries.Clear ();
+						MonoDevelop.Ide.Gui.IdeApp.Workbench.StatusBar.EndProgress ();
+						MonoDevelop.Ide.Gui.IdeApp.Workbench.StatusBar.ShowMessage (string.Format (GettextCatalog.GetPluralString ("Found {0} catalog entry.", "Found {0} catalog entries.", found), found));
+					});
+				} /*else {
+					MonoDevelop.Core.Gui.DispatchService.GuiSyncDispatch (delegate {
 						MonoDevelop.Ide.Gui.IdeApp.Workbench.StatusBar.EndProgress ();
 					});
-					updateIsRunning = false;
-				}
+				}*/
+				Stop ();
 			}
+
 		}
+		
 #endregion
 		
 #region Toolbar handling
@@ -951,7 +971,7 @@ namespace MonoDevelop.Gettext
 		
 		protected override void OnDestroyed ()
 		{
-			updateIsRunning = false;
+			StopFilterWorkerThread ();
 			StopTaskWorkerThread ();
 		
 			if (tooltips != null) {
