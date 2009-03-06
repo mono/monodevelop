@@ -95,15 +95,41 @@ namespace MonoDevelop.Projects.Text
 				sourceEncoding = encoding;
 			}
 			else {
-				foreach (TextEncoding co in TextEncoding.ConversionEncodings) {
-					string s = Convert (content, "UTF-8", co.Id);
+				string enc = "UTF-8";
+				if (content.Length > 3) {
+					if (content[0] == 0xEF && content[1] == 0xBB && content[2] == 0xBF) {
+						// utf-8
+					} else if (content[0] == 0xFF && content[1] == 0xFE && content[2] == 0 && content[3] == 0) {
+						enc = "UTF-32";
+					} else if (content[0] == 0 && content[1] == 0 && content[2] == 0xFE && content[3] == 0xFF) {
+						enc = "UTF-32BE";
+					} else if (content[0] == 0xFE && content[1] == 0xFF) {
+						enc = "UTF-16";
+					} else if (content[0] == 0xFF && content[1] == 0xFE) {
+						enc = "UTF-16BE";
+					} else if (content[0] == 0x2B && content[1] == 0x2F && content[2] == 0x76) {
+						enc = "UTF-7";
+					}
+				}
+				string s = Convert (content, "UTF-8", enc);
+				if (s != null) {
+					sourceEncoding = enc;
+					text = new StringBuilder (s);
+					return;
+				}
+				enc = "ISO-8859-15";
+				s = Convert (content, "UTF-8", enc);
+				sourceEncoding = enc;
+				text = new StringBuilder (s);
+			/*	foreach (TextEncoding co in TextEncoding.ConversionEncodings) {
+					s = Convert (content, "UTF-8", co.Id);
 					if (s != null) {
 						sourceEncoding = co.Id;
 						text = new StringBuilder (s);
 						return;
 					}
 				}
-				throw new Exception ("Unknown text file encoding");
+				throw new Exception ("Unknown text file encoding");*/
 			}
 		}
 		
