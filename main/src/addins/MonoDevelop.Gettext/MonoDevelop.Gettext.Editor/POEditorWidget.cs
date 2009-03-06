@@ -667,8 +667,12 @@ namespace MonoDevelop.Gettext
 		{
 			if (entry.References.Length == 0)
 				return Gtk.Stock.DialogError;
-			return entry.IsFuzzy ? Gtk.Stock.About : entry.IsTranslated ? Gtk.Stock.Apply : Gtk.Stock.Cancel;
+			return entry.IsFuzzy ? iconFuzzy : entry.IsTranslated ? iconValid : iconMissing;
 		}
+		
+		static string iconFuzzy   = "md-translation-fuzzy";
+		static string iconValid   = "md-translation-valid";
+		static string iconMissing = "md-translation-missing";
 		
 		static Color translated   = new Color (255, 255, 255);
 		static Color untranslated = new Color (234, 232, 227);

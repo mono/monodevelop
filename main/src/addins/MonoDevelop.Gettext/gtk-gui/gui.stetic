@@ -2,7 +2,7 @@
 <stetic-interface>
   <configuration>
     <images-root-path>..</images-root-path>
-    <target-gtk-version>2.12</target-gtk-version>
+    <target-gtk-version>2.8</target-gtk-version>
   </configuration>
   <import>
     <widget-library name="../../../../build/bin/MonoDevelop.Core.Gui.dll" />
@@ -1318,7 +1318,7 @@
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
                         <property name="Type">TextAndIcon</property>
-                        <property name="Icon">stock:gtk-apply Menu</property>
+                        <property name="Icon">resource:translation-valid-16.png</property>
                         <property name="Label" translatable="yes">Valid</property>
                         <property name="UseUnderline">True</property>
                       </widget>
@@ -1334,7 +1334,7 @@
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
                         <property name="Type">TextAndIcon</property>
-                        <property name="Icon">stock:gtk-cancel Menu</property>
+                        <property name="Icon">resource:translation-missing-16.png</property>
                         <property name="Label" translatable="yes">Missing</property>
                         <property name="UseUnderline">True</property>
                       </widget>
@@ -1350,7 +1350,7 @@
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
                         <property name="Type">TextAndIcon</property>
-                        <property name="Icon">stock:gtk-about Menu</property>
+                        <property name="Icon">resource:translation-fuzzy-16.png</property>
                         <property name="Label" translatable="yes">Fuzzy</property>
                         <property name="UseUnderline">True</property>
                       </widget>

@@ -149,7 +149,7 @@ namespace MonoDevelop.Gettext {
             w6.Spacing = 2;
             // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Image w7 = new Gtk.Image();
-            w7.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-apply", Gtk.IconSize.Menu, 16);
+            w7.Pixbuf = Gdk.Pixbuf.LoadFromResource("translation-valid-16.png");
             w6.Add(w7);
             // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Label w9 = new Gtk.Label();
@@ -175,7 +175,7 @@ namespace MonoDevelop.Gettext {
             w15.Spacing = 2;
             // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Image w16 = new Gtk.Image();
-            w16.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-cancel", Gtk.IconSize.Menu, 16);
+            w16.Pixbuf = Gdk.Pixbuf.LoadFromResource("translation-missing-16.png");
             w15.Add(w16);
             // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Label w18 = new Gtk.Label();
@@ -201,7 +201,7 @@ namespace MonoDevelop.Gettext {
             w24.Spacing = 2;
             // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Image w25 = new Gtk.Image();
-            w25.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-about", Gtk.IconSize.Menu, 16);
+            w25.Pixbuf = Gdk.Pixbuf.LoadFromResource("translation-fuzzy-16.png");
             w24.Add(w25);
             // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Label w27 = new Gtk.Label();
