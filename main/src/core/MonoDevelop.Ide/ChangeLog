@@ -1,3 +1,8 @@
+2009-03-06  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs: Added silk
+	  icons to about dialog.
+
 2009-03-05  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs:

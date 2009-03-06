@@ -136,6 +136,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					sb.Append (GettextCatalog.GetString ("\n\n<b>Translated by:</b>\n"));
 					sb.Append (trans);
 				}
+				sb.AppendLine ();
+				sb.Append ("Using some icons from:");
+				sb.Append ("http://www.famfamfam.com/lab/icons/silk");
 				return sb.ToString ();
 			}
 		}
