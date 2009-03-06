@@ -1,5 +1,10 @@
 2009-03-06  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Gettext.Editor/POEditorWidget.cs: Removed some
+	  debug messages.
+
+2009-03-06  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* gtk-gui/gui.stetic:
 	* icons/silk_error.png:

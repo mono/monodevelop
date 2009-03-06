@@ -254,11 +254,9 @@ namespace MonoDevelop.Gettext
 		
 		static bool IsCaseSensitive {
 			get {
-				System.Console.WriteLine("is:" + isCaseSensitive);
 				return isCaseSensitive;
 			}
 			set {
-				System.Console.WriteLine("set to:" + value);
 				PropertyService.Set ("GettetAddin.Search.IsCaseSensitive", value);
 				isCaseSensitive = value;
 			}
