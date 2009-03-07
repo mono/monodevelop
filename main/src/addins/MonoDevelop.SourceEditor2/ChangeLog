@@ -1,5 +1,10 @@
 2009-03-07  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Remove old
+	  code that could intefere with previous fix.
+
+2009-03-07  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Only show
 	  the class & method bar when there's a parsed
 	  CompilationUnit.

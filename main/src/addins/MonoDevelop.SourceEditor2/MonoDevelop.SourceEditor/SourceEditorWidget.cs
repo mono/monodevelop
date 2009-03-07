@@ -204,8 +204,6 @@ namespace MonoDevelop.SourceEditor
 
 		public void SetMime (string mimeType)
 		{
-			//FIXME: check that the parser is able to return information that we can use
-			CanShowClassBrowser = MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetParserByMime (mimeType) != null;
 		}
 
 		protected override bool OnFocused (DirectionType direction)
