@@ -26,9 +26,11 @@
 
 using System;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide.Gui.Pads.ProjectPad;
+using MonoDevelop.AspNet.Mvc.TextTemplating;
 
 namespace MonoDevelop.AspNet.Mvc.Gui
 {
@@ -74,7 +76,96 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 		[CommandHandler (AspMvcCommands.AddView)]
 		public void AddView ()
 		{
-			AddFile ("AspMvcViewPage");
+			AspMvcProject project = CurrentNode.GetParentDataItem (typeof(AspMvcProject), true) as AspMvcProject;
+			if (project == null)
+				return;
+			
+			object currentItem = CurrentNode.DataItem;
+				
+			ProjectFolder folder = CurrentNode.GetParentDataItem (typeof(ProjectFolder), true) as ProjectFolder;
+			string path = folder != null? folder.Path : project.BaseDirectory;
+			
+			AddView (project, path, null);
+			
+			ITreeNavigator nav = Tree.GetNodeAtObject (currentItem);
+			if (nav != null)
+				nav.Expanded = true;
+		}
+		
+		public static void AddView (AspMvcProject project, string path, string name)
+		{
+			string outputFile = null;
+			MvcTextTemplateHost host = null;
+			AppDomain domain = null;
+			AddViewDialog dialog = null;
+			
+			try {
+				dialog = new AddViewDialog (project);
+				dialog.ViewName = name;
+				
+				bool fileGood = false;
+				while (!fileGood) {
+					Gtk.ResponseType resp = (Gtk.ResponseType) MessageService.ShowCustomDialog (dialog);
+					dialog.Hide ();
+					if (resp != Gtk.ResponseType.Ok || ! dialog.IsValid ())
+						return;
+				
+					outputFile = System.IO.Path.Combine (path, dialog.ViewName) + (dialog.IsPartialView? ".ascx" : ".aspx");
+					
+					if (System.IO.File.Exists (outputFile)) {
+						fileGood = MessageService.AskQuestion ("Overwrite file?", "The file '{0}' already exists.\n" +
+								"Would you like to overwrite it?", AlertButton.OverwriteFile, AlertButton.Cancel)
+							!= AlertButton.Cancel;
+					} else
+						break;
+				}	
+				
+				AppDomainSetup info = new AppDomainSetup ();
+				info.ApplicationBase  = System.IO.Path.GetDirectoryName (typeof (MvcTextTemplateHost).Assembly.Location);
+				domain = AppDomain.CreateDomain ("AspMvcGenerationDomain", null, info);
+				host = MvcTextTemplateHost.Create (domain);
+				
+				if (dialog.HasMaster) {
+					host.IsViewContentPage = true;
+					host.ContentPlaceholder = dialog.PrimaryPlaceHolder;
+					host.MasterPage = dialog.MasterFile;
+					host.ContentPlaceHolders = dialog.ContentPlaceHolders;
+				}
+				else if (dialog.IsPartialView)
+					host.IsViewUserControl = true;
+				else
+					host.IsViewPage = true;
+				
+				if (dialog.IsStronglyTyped) {
+					//TODO: use dialog.ViewDataType to construct 
+					// host.ViewDataTypeGenericString and host.ViewDataType
+				}
+				
+				host.ProcessTemplate (dialog.TemplateFile, outputFile);
+				
+				if (host.Errors.Count > 0)
+				{	
+					MonoDevelop.Ide.Gui.Pad errPad = MonoDevelop.Ide.Gui.IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ErrorListPad> ();
+					MonoDevelop.Ide.Gui.Pads.ErrorListPad errPadContent = (MonoDevelop.Ide.Gui.Pads.ErrorListPad) errPad.Content;
+					MonoDevelop.Ide.Gui.IdeApp.Services.TaskService.ClearExceptCommentTasks ();
+					foreach (System.CodeDom.Compiler.CompilerError err in host.Errors)
+						errPadContent.AddTask (new MonoDevelop.Ide.Tasks.Task (err.FileName, err.ErrorText, err.Column, err.Line,
+						                                                       err.IsWarning
+						                                                       ? MonoDevelop.Ide.Tasks.TaskType.Warning
+						                                                       : MonoDevelop.Ide.Tasks.TaskType.Error));
+					errPad.BringToFront ();
+				}
+			} finally {
+				if (domain != null)
+					AppDomain.Unload (domain);
+				if (dialog != null)
+					dialog.Destroy ();
+			}
+			
+			if (System.IO.File.Exists (outputFile)) {
+				project.AddFile (outputFile);
+				MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.Save (project);
+			}
 		}
 		
 		//adapted from GtkCore

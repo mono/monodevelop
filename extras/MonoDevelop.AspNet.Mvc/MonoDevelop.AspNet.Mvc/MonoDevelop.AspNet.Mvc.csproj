@@ -36,6 +36,10 @@
     <Compile Include="AspMvcProjectConfiguration.cs" />
     <Compile Include="AspMvcCommands.cs" />
     <Compile Include="Gui\FolderNodeBuilderExtension.cs" />
+    <Compile Include="TextTemplating\MvcTextTemplateHost.cs" />
+    <Compile Include="gtk-gui\generated.cs" />
+    <Compile Include="Gui\AddViewDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.AspNet.Mvc.Gui.AddViewDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -64,13 +68,27 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="Mono.Posix" />
+    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="MonoDevelop.Core.Gui, Version=1.9.2.0, Culture=neutral">
+      <Package>monodevelop</Package>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Templates\" />
     <Folder Include="Gui\" />
+    <Folder Include="TextTemplating\" />
+    <Folder Include="CodeTemplates\" />
+    <Folder Include="CodeTemplates\AddView\" />
+    <Folder Include="CodeTemplates\AddController\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.AspNet.Mvc.addin.xml" />
+    <EmbeddedResource Include="gtk-gui\gui.stetic">
+      <LogicalName>gui.stetic</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Include="Templates\Controller.xft.xml">
@@ -103,6 +121,15 @@
     <None Include="Templates\WebConfigViews.xft.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="CodeTemplates\AddView\Empty.tt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <ProjectReference Include="..\Mono.TextTemplating\Mono.TextTemplating.csproj">
+      <Project>{A2364D6A-00EF-417C-80A6-815726C70032}</Project>
+      <Name>Mono.TextTemplating</Name>
+    </ProjectReference>
+  </ItemGroup>
 </Project>

@@ -1,0 +1,29 @@
+<#@ template language="C#v3.5" HostSpecific="true" #>
+<#
+MvcTextTemplateHost mvcHost = (MvcTextTemplateHost) Host;
+string dataTypeString = mvcHost.ViewDataTypeGenericString;
+
+if (mvcHost.IsViewUserControl) { #>
+<%@ Control Language="C#" Inherits="System.Web.Mvc.ViewUserControl<#= dataTypeString #>" %>
+
+<# } else if (mvcHost.IsViewContentPage) { #>
+<%@ Page Language="C#" MasterPageFile="<#= mvcHost.MasterPage #>" Inherits="System.Web.Mvc.ViewPage<#= dataTypeString #>" %>
+<#
+	foreach (string contentID in mvcHost.ContentPlaceHolders) {
+#>
+<asp:Content ID="<#= contentID #>Content" ContentPlaceHolderID="<#= contentID #>" >
+</asp:Content>
+<#
+	}
+} else if(mvcHost.IsViewPage)  { #>
+<%@ Page Language="C#" Inherits="System.Web.Mvc.ViewPage<#= dataTypeString #>" %>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+	<title></title>
+</head>
+<body>
+	<div>
+		
+	</div>
+</body>
+<# } #>

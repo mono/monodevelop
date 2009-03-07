@@ -25,7 +25,9 @@
 // THE SOFTWARE.
 
 using System;
+using System.IO;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;
@@ -75,6 +77,27 @@ namespace MonoDevelop.AspNet.Mvc
 			yield return "Views";
 			yield return "Models";
 			yield return "Controllers";
+		}
+		
+		public IList<string> GetCodeTemplates (string type)
+		{
+			List<string> files = new List<string> ();
+			HashSet<string> names = new HashSet<string> ();
+			
+			string asmDir = Path.GetDirectoryName (typeof (AspMvcProject).Assembly.Location);
+			
+			string[] dirs = new string[] {
+				Path.Combine (Path.Combine (this.BaseDirectory, "CodeTemplates"), type),
+				Path.Combine (Path.Combine (asmDir, "CodeTemplates"), type)
+			};
+			
+			foreach (string directory in dirs)
+				if (Directory.Exists (directory))
+					foreach (string file in Directory.GetFiles (directory, "*.tt", SearchOption.TopDirectoryOnly))
+						if (names.Add (Path.GetFileName (file)))
+						    files.Add (file);
+			
+			return files;
 		}
 	}
 }

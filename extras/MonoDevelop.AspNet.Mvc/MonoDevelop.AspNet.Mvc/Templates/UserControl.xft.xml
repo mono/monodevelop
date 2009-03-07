@@ -17,7 +17,9 @@
 	<TemplateFiles>
 		<AspNetFile name="${Name}.ascx">
 			<FileText>
-				<![CDATA[﻿<%@ Control Language="${AspNetLanguage}" Inherits="System.Web.Mvc.ViewUserControl" %>]]>
+				<![CDATA[﻿<%@ Control Language="${AspNetLanguage}" Inherits="System.Web.Mvc.ViewUserControl" %>
+				
+				]]>
 			</FileText>
 		</AspNetFile>
 	</TemplateFiles>
