@@ -156,6 +156,10 @@ namespace Microsoft.VisualStudio.TextTemplating
 						else
 							settings.Culture = culture;
 					}
+					val = dt.Extract ("hostspecific");
+					if (val != null) {
+						settings.HostSpecific = string.Compare (val, "true", StringComparison.OrdinalIgnoreCase) == 0;
+					}
 					break;
 					
 				case "assembly":

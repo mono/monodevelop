@@ -188,7 +188,12 @@ namespace Mono.TextTemplating
 		
 		void ITextTemplatingEngineHost.SetFileExtension (string extension)
 		{
-			outputFile = Path.ChangeExtension (outputFile, extension);
+			extension = extension.TrimStart ('.');
+			if (Path.HasExtension (outputFile)) {
+				outputFile = Path.ChangeExtension (outputFile, extension);
+			} else {
+				outputFile = outputFile + "." + extension;
+			}
 		}
 		
 		void ITextTemplatingEngineHost.SetOutputEncoding (System.Text.Encoding encoding, bool fromOutputDirective)
@@ -200,7 +205,7 @@ namespace Mono.TextTemplating
 			get { return refs; }
 		}
 		
-		public virtual IList<string> StandardImports {
+		IList<string> ITextTemplatingEngineHost.StandardImports {
 			get { return imports; }
 		}
 		

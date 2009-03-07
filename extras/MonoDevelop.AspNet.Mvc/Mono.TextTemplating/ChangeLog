@@ -1,3 +1,11 @@
+2009-03-06  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextTemplating/TemplateGenerator.cs: Fix
+	  SetFileExtension.
+
+	* Microsoft.VisualStudio.TextTemplating/Engine.cs: Capture
+	  hostspecific attribute from template directive.
+
 2009-03-05  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.TextTemplating/TemplateGenerator.cs: Fix output
