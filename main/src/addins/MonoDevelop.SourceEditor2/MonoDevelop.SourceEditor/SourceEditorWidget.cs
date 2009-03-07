@@ -335,6 +335,9 @@ namespace MonoDevelop.SourceEditor
 			}
 			
 			ParsedDocument = args.ParsedDocument;
+			bool canShowBrowser = ParsedDocument != null && ParsedDocument.CompilationUnit != null;
+			if (canShowBrowser)
+				Gtk.Application.Invoke (delegate { this.CanShowClassBrowser = canShowBrowser; } );
 		}
 		
 		public ParsedDocument ParsedDocument  {

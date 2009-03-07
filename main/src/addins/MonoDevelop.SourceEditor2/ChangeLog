@@ -1,3 +1,9 @@
+2009-03-07  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Only show
+	  the class & method bar when there's a parsed
+	  CompilationUnit.
+
 2009-03-02  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Properly
