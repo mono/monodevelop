@@ -1,5 +1,13 @@
 2009-03-06  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.AspNet.Gui/AspNetFileSelector.cs: Show
+	  directories that contain project files, even if the
+	  directories aren't explicitly in the project. Don't
+	  duplicate directories that have children that are explictly
+	  in the project.
+
+2009-03-06  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Don't crash
 	  on documents without doctypes. Better root element
 	  completion for web controls and master children.

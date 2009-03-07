@@ -96,11 +96,19 @@ namespace MonoDevelop.AspNet.Gui
 		//FIXME: this is horribly inefficient
 		void InitDirs (TreeIter parent)
 		{
-			List<string> dirs = new List<string> ();
-			foreach (ProjectFile pf in project.Files.GetFilesInPath (project.BaseDirectory))
+			HashSet<string> hash = new HashSet<string> ();
+			foreach (ProjectFile pf in project.Files) {
+				string dirname;
 				if (pf.Subtype == Subtype.Directory)
-					dirs.Add (pf.RelativePath);
-			InitDirs (parent, dirs, "");
+					dirname = pf.FilePath;
+				else
+					dirname = System.IO.Path.GetDirectoryName (pf.FilePath);
+				hash.Add (dirname);
+			}
+			
+			List<string> dirList = new List<string> (hash);
+			dirList.Sort ();
+			InitDirs (parent, dirList, project.BaseDirectory);
 		}
 		
 		void InitDirs (TreeIter parent, List<string> dirs, string path)
