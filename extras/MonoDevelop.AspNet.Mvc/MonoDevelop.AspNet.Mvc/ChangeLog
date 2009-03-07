@@ -1,5 +1,10 @@
 2009-03-06  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Gui/AddViewDialog.cs: Get the placeholder list from the
+	  master page. Better validation of input.
+
+2009-03-06  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.AspNet.Mvc.csproj: Updated.
 
 	* AspMvcProject.cs: Add method for looking up .tt files.

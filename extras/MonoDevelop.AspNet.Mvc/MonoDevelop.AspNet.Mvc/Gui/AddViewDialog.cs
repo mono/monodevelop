@@ -38,11 +38,18 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 	{	
 		AspMvcProject project;
 		IList<string> loadedTemplateList;
+		string oldMaster;
+		Gtk.ListStore primaryPlaceholderStore = new Gtk.ListStore (typeof (String));
+		System.CodeDom.Compiler.CodeDomProvider provider;
 		
 		public AddViewDialog (AspMvcProject project)
 		{
 			this.project = project;
 			this.Build ();
+			
+			provider = project.LanguageBinding.GetCodeDomProvider ();
+			
+			ContentPlaceHolders = new List<string> ();
 			
 			string siteMaster = PP.Combine (PP.Combine (PP.Combine (project.BaseDirectory, "Views"), "Shared"), "Site.master");
 			if (project.Files.GetFile (siteMaster) != null)
@@ -66,12 +73,19 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			if (!foundEmptyTemplate)
 				throw new Exception ("The Empty.tt template is missing.");
 			
+			primaryPlaceholderCombo.Model = primaryPlaceholderStore;
+			
 			UpdateTypePanelSensitivity (null, null);
 			UpdateMasterPanelSensitivity (null, null);
-			Validate (null, null);
+			Validate ();
 		}
-	
+		
 		protected virtual void Validate (object sender, EventArgs e)
+		{
+			Validate ();
+		}
+		
+		void Validate ()
 		{
 			buttonOk.Sensitive = IsValid ();
 		}
@@ -81,11 +95,14 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			bool canHaveMaster = !IsPartialView;
 			masterCheck.Sensitive = canHaveMaster;
 			masterPanel.Sensitive = canHaveMaster && HasMaster;
+			MasterChanged (null, null);
+			Validate ();
 		}
 		
 		protected virtual void UpdateTypePanelSensitivity (object sender, EventArgs e)
 		{
 			typePanel.Sensitive = stronglyTypedCheck.Active;
+			Validate ();
 		}
 		
 		public override void Dispose ()
@@ -96,16 +113,24 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 		
 		public bool IsValid ()
 		{
-			if (String.IsNullOrEmpty (ViewName))
+			if (!IsValidIdentifier (ViewName))
 				return false;
 			
-			if (!IsPartialView && HasMaster && String.IsNullOrEmpty (MasterFile)) //PrimaryPlaceHolder can be empty
+			if (!IsPartialView && HasMaster) {
+				if (String.IsNullOrEmpty (MasterFile) || !System.IO.File.Exists (project.VirtualToLocalPath (oldMaster, null)))
 				return false;
+				//PrimaryPlaceHolder can be empty
+			}
 			
-			if (IsStronglyTyped && (ViewDataType == null || String.IsNullOrEmpty (TemplateFile)))
+			if (IsStronglyTyped && (ViewDataType == null))
 			    return false;
 			
 			return true;
+		}
+		
+		bool IsValidIdentifier (string identifier)
+		{
+			return !String.IsNullOrEmpty (identifier) && provider.IsValidIdentifier (identifier);
 		}
 	
 		protected virtual void ShowMasterSelectionDialog (object sender, System.EventArgs e)
@@ -121,6 +146,50 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 					masterEntry.Text = project.LocalToVirtualPath (dialog.SelectedFile.FilePath);
 				dialog.Destroy ();
 			}
+		}
+		
+		protected virtual void MasterChanged (object sender, EventArgs e)
+		{
+			if (masterEntry.Text == oldMaster)
+				return;
+			oldMaster = masterEntry.Text;
+			
+			primaryPlaceholderStore.Clear ();
+			ContentPlaceHolders.Clear ();
+			
+			if (IsPartialView || !HasMaster)
+				return;
+			
+			string realPath = project.VirtualToLocalPath (oldMaster, null);
+			if (!System.IO.File.Exists (realPath))
+				return;
+			
+			MonoDevelop.AspNet.Parser.AspNetParsedDocument pd
+				= MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetParsedDocument (realPath)
+				as MonoDevelop.AspNet.Parser.AspNetParsedDocument;
+			
+			if (pd != null && pd.Document != null) {
+				try {
+					MonoDevelop.AspNet.Parser.ContentPlaceHolderVisitor visitor
+						= new MonoDevelop.AspNet.Parser.ContentPlaceHolderVisitor ();
+					pd.Document.RootNode.AcceptVisit (visitor);
+					ContentPlaceHolders.AddRange (visitor.PlaceHolders);
+					
+					for (int i = 0; i < ContentPlaceHolders.Count; i++) {
+						string placeholder = ContentPlaceHolders[i];
+						primaryPlaceholderStore.AppendValues (placeholder);
+						
+						if (placeholder.Contains ("main") || placeholder.Contains ("Main") 
+						    	|| placeholder.Contains ("content") || placeholder.Contains ("Main"))
+							primaryPlaceholderCombo.Active = i;
+					}
+				} catch (Exception ex) {
+					MonoDevelop.Core.LoggingService.LogError ("Unhandled exception getting master regions for '" + 
+					                                          realPath + "'", ex);
+				}
+			}
+			
+			Validate ();
 		}
 		
 		#region Public properties
