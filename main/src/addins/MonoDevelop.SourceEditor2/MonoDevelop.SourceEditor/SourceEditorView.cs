@@ -249,7 +249,7 @@ namespace MonoDevelop.SourceEditor
 			Document.Text = file.Text;
 			this.encoding = file.SourceEncoding;
 			ContentName = fileName;
-			widget.ParsedDocument = ProjectDomService.GetParsedDocument (fileName);
+//			widget.ParsedDocument = ProjectDomService.GetParsedDocument (fileName);
 //			InitializeFormatter ();
 			
 			UpdateExecutionLocation ();

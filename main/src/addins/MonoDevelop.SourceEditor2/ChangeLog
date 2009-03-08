@@ -1,3 +1,9 @@
+2009-03-08  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs:
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: fixed "Bug
+	  482806 - #region auto folding doesn't work.".
+
 2009-03-07  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Remove old

@@ -204,6 +204,7 @@ namespace MonoDevelop.SourceEditor
 
 		public void SetMime (string mimeType)
 		{
+			this.isInitialParseUpdate = true;
 		}
 
 		protected override bool OnFocused (DirectionType direction)
@@ -269,6 +270,8 @@ namespace MonoDevelop.SourceEditor
 						List<FoldSegment> foldSegments = new List<FoldSegment> ();
 						
 						foreach (FoldingRegion region in widget.parsedDocument.GenerateFolds ()) {
+							if (IsStopping)
+								return;
 							FoldingType type = FoldingType.None;
 							bool setFolded = false;
 							bool folded = false;
@@ -311,10 +314,10 @@ namespace MonoDevelop.SourceEditor
 							}
 						}
 						widget.textEditorData.Document.UpdateFoldSegments (foldSegments);
+						widget.isInitialParseUpdate = false;
 					}
 					widget.UpdateAutocorTimer ();
 					widget.PopulateClassCombo ();
-					widget.isInitialParseUpdate = false;
 				} catch (Exception ex) {
 					LoggingService.LogError ("Unhandled exception in ParseInformationUpdaterWorkerThread", ex);
 				}
