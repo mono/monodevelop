@@ -1,5 +1,10 @@
 2009-03-09  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Gui.Content/IUndoHandler.cs: corrected code
+	  style.
+
+2009-03-09  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Ide.csproj: 
 

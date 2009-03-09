@@ -38,8 +38,8 @@ namespace MonoDevelop.Ide.Gui.Content
 			get;
 		}
 		
-		void Undo();
-		void Redo();
+		void Undo ();
+		void Redo ();
 		
 		void BeginAtomicUndo ();
 		void EndAtomicUndo ();
