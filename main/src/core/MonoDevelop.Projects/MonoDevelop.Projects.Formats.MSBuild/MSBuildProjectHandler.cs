@@ -305,13 +305,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (project != null) {
 				if (buildItem.Name == "Folder") {
 					// Read folders
-					string path = MSBuildProjectService.FromMSBuildPath (project.BaseDirectory, buildItem.Include);
+					string path = MSBuildProjectService.FromMSBuildPath (project.ItemDirectory, buildItem.Include);
 					return new ProjectFile () { Name = Path.GetDirectoryName (path), Subtype = Subtype.Directory };
 				}
 				else if (buildItem.Name == "Reference" && dotNetProject != null) {
 					ProjectReference pref;
 					if (buildItem.HasMetadata ("HintPath")) {
-						string path = MSBuildProjectService.FromMSBuildPath (dotNetProject.BaseDirectory, buildItem.GetMetadata ("HintPath"));
+						string path = MSBuildProjectService.FromMSBuildPath (dotNetProject.ItemDirectory, buildItem.GetMetadata ("HintPath"));
 						if (File.Exists (path)) {
 							pref = new ProjectReference (ReferenceType.Assembly, path);
 							pref.LocalCopy = !buildItem.GetMetadataIsFalse ("Private");
@@ -638,7 +638,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			string itemName = (file.Subtype == Subtype.Directory)? "Folder" : file.BuildAction;
 
-			string path = MSBuildProjectService.ToMSBuildPath (Item.BaseDirectory, file.FilePath);
+			string path = MSBuildProjectService.ToMSBuildPath (Item.ItemDirectory, file.FilePath);
 			if (path.Length == 0)
 				return;
 			
@@ -699,7 +699,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				buildItem = msproject.AddNewItem ("Reference", asm);
 				if (!pref.SpecificVersion)
 					buildItem.SetMetadata ("SpecificVersion", "False");
-				buildItem.SetMetadata ("HintPath", MSBuildProjectService.ToMSBuildPath (Item.BaseDirectory, pref.Reference));
+				buildItem.SetMetadata ("HintPath", MSBuildProjectService.ToMSBuildPath (Item.ItemDirectory, pref.Reference));
 				if (!pref.LocalCopy)
 					buildItem.SetMetadata ("Private", "False");
 			}
@@ -723,7 +723,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			else if (pref.ReferenceType == ReferenceType.Project) {
 				Project refProj = Item.ParentSolution.FindProjectByName (pref.Reference);
 				if (refProj != null) {
-					buildItem = msproject.AddNewItem ("ProjectReference", MSBuildProjectService.ToMSBuildPath (Item.BaseDirectory, refProj.FileName));
+					buildItem = msproject.AddNewItem ("ProjectReference", MSBuildProjectService.ToMSBuildPath (Item.ItemDirectory, refProj.FileName));
 					MSBuildProjectHandler handler = refProj.ItemHandler as MSBuildProjectHandler;
 					if (handler != null)
 						buildItem.SetMetadata ("Project", handler.Item.ItemId);
@@ -884,7 +884,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		
 		ProjectFile ReadProjectFile (DataSerializer ser, Project project, MSBuildItem buildItem, Type type)
 		{
-			string path = MSBuildProjectService.FromMSBuildPath (project.BaseDirectory, buildItem.Include);
+			string path = MSBuildProjectService.FromMSBuildPath (project.ItemDirectory, buildItem.Include);
 			ProjectFile file = (ProjectFile) Activator.CreateInstance (type);
 			file.Name = path;
 			file.BuildAction = buildItem.Name;
@@ -1058,7 +1058,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					return false;
 			}
 			if (instance is SolutionEntityItem) {
-				if (prop.Name == "Policies")
+				if (prop.Name == "Policies" || prop.Name == "BaseDirectory")
 					return true;
 				return prop.IsExtendedProperty (typeof(SolutionEntityItem));
 			}

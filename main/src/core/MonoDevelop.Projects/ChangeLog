@@ -1,3 +1,11 @@
+2009-03-09  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs:
+	  Save the BaseDirectory property. Store all paths relative to
+	  ItemDirectory, not BaseDirectory. Fixes bug #483134 -
+	  Project base directory doesn't appear to be serialized
+	  correctly.
+
 2009-03-06  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Text/TextFile.cs: Added some more
