@@ -1,3 +1,13 @@
+2009-03-09  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Ide.csproj: 
+
+	* MonoDevelop.Ide.Gui/ViewCommandHandlers.cs:
+	* MonoDevelop.Ide.Gui.Content/IUndoHandler.cs:
+	* MonoDevelop.Ide.Gui.Content/IEditableTextBuffer.cs: Moved
+	  undo/redo function to an own interface.
+
 2009-03-06  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs: Added silk

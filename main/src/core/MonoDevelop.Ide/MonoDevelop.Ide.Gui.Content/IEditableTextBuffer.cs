@@ -31,22 +31,11 @@ using MonoDevelop.Projects.Text;
 
 namespace MonoDevelop.Ide.Gui.Content
 {
-	public interface IEditableTextBuffer : ITextBuffer, IEditableTextFile
+	public interface IEditableTextBuffer : ITextBuffer, IEditableTextFile, IUndoHandler
 	{	
-		bool EnableUndo {
-			get;
-		}
-		bool EnableRedo {
-			get;
-		}
 		
 		void SetCaretTo (int line, int column);
 		
-		void Undo();
-		void Redo();
-		
-		void BeginAtomicUndo ();
-		void EndAtomicUndo ();
 		
 		event EventHandler CaretPositionSet;
 		event EventHandler<TextChangedEventArgs> TextChanged;

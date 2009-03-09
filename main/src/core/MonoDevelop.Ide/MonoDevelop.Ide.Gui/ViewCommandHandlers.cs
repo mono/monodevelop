@@ -130,7 +130,7 @@ namespace MonoDevelop.Ide.Gui
 		[CommandHandler (EditCommands.Undo)]
 		protected void OnUndo ()
 		{
-			IEditableTextBuffer editable = GetContent <IEditableTextBuffer> ();
+			IUndoHandler editable = GetContent <IUndoHandler> ();
 			if (editable != null)
 				editable.Undo();
 		}
@@ -138,14 +138,14 @@ namespace MonoDevelop.Ide.Gui
 		[CommandUpdateHandler (EditCommands.Undo)]
 		protected void OnUpdateUndo (CommandInfo info)
 		{
-			IEditableTextBuffer textBuffer = GetContent <IEditableTextBuffer> ();
+			IUndoHandler textBuffer = GetContent <IUndoHandler> ();
 			info.Enabled = textBuffer != null && textBuffer.EnableUndo;
 		}
 		
 		[CommandHandler (EditCommands.Redo)]
 		protected void OnRedo ()
 		{
-			IEditableTextBuffer editable = GetContent <IEditableTextBuffer> ();
+			IUndoHandler editable = GetContent <IUndoHandler> ();
 			if (editable != null) {
 				editable.Redo();
 			}
@@ -154,7 +154,7 @@ namespace MonoDevelop.Ide.Gui
 		[CommandUpdateHandler (EditCommands.Redo)]
 		protected void OnUpdateRedo (CommandInfo info)
 		{
-			IEditableTextBuffer textBuffer = GetContent <IEditableTextBuffer> ();
+			IUndoHandler textBuffer = GetContent <IUndoHandler> ();
 			info.Enabled = textBuffer != null && textBuffer.EnableRedo;
 		}
 		

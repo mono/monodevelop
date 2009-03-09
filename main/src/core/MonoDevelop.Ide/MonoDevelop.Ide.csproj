@@ -526,6 +526,7 @@
     <Compile Include="MonoDevelop.Ide.Codons\PadContextMenuExtensionNode.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Pads.ProjectPad\FileOperationsBuilderExtension.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\DirectoryTemplate.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Content\IUndoHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

@@ -142,6 +142,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Content/ISplittable.cs \
 	MonoDevelop.Ide.Gui.Content/ITextBuffer.cs \
 	MonoDevelop.Ide.Gui.Content/ITextEditorResolver.cs \
+	MonoDevelop.Ide.Gui.Content/IUndoHandler.cs \
 	MonoDevelop.Ide.Gui.Content/IUrlHandler.cs \
 	MonoDevelop.Ide.Gui.Content/IZoomable.cs \
 	MonoDevelop.Ide.Gui.Content/TextEditorExtension.cs \
