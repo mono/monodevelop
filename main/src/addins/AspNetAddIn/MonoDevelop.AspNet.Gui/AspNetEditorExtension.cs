@@ -125,7 +125,8 @@ namespace MonoDevelop.AspNet.Gui
 				return list;
 			}
 			
-			if (AspCU == null) {
+			if (AspCU == null || AspCU.PageInfo.DocType == null) {
+				//FIXME: get doctype from master page
 				DocType = null;
 			} else {
 				DocType = new MonoDevelop.Xml.StateEngine.XDocType (DomLocation.Empty);
@@ -171,9 +172,26 @@ namespace MonoDevelop.AspNet.Gui
 			//we're just in HTML
 			if (controlClass == null)
 			{
-				AddAspBeginExpressions (list, AspDocument);
-				list.AddRange (AspDocument.ReferenceManager.GetControlCompletionData ());
-				base.GetElementCompletions (list);
+				//root element?
+				if (!parentName.IsValid) {
+					if (AspCU.PageInfo.Subtype == WebSubtype.WebControl)
+					{
+						AddHtmlTagCompletionData (list, Schema, new S.XName ("div"));
+						AddAspBeginExpressions (list, AspDocument);
+						list.AddRange (AspDocument.ReferenceManager.GetControlCompletionData ());
+						AddMiscBeginTags (list);
+					}
+					else if (!string.IsNullOrEmpty (AspCU.PageInfo.MasterPageFile))
+					{
+						//FIXME: add the actual region names
+						list.Add (new CompletionData ("asp:Content"));
+					}
+				}
+				else {
+					AddAspBeginExpressions (list, AspDocument);
+					list.AddRange (AspDocument.ReferenceManager.GetControlCompletionData ());
+					base.GetElementCompletions (list);
+				}
 				return;
 			}
 			
@@ -188,6 +206,7 @@ namespace MonoDevelop.AspNet.Gui
 				AddAspBeginExpressions (list, AspDocument);
 				list.AddRange (AspDocument.ReferenceManager.GetControlCompletionData ());
 				AddMiscBeginTags (list);
+				//TODO: get correct parent for Content tags
 				AddHtmlTagCompletionData (list, Schema, new S.XName ("body"));
 				return;
 			}

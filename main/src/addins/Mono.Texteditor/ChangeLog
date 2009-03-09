@@ -1,3 +1,8 @@
+2009-03-08  Mike Krüger  <mkrueger@novell.com>
+
+	* Styles/OblivionStyle.xml: fixed "Bug 482804 - Highlight
+	  current line doesnt work in Oblivion theme".
+
 2009-03-05  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextEditor.cs: Removed debug messages.
