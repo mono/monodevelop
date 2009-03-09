@@ -106,8 +106,12 @@ namespace MonoDevelop.Projects
 		
 		public string BaseDirectory {
 			get {
-				if (baseDirectory == null)
-					return System.IO.Path.GetFullPath (GetDefaultBaseDirectory ());
+				if (baseDirectory == null) {
+					string dir = GetDefaultBaseDirectory ();
+					if (string.IsNullOrEmpty (dir))
+						dir = ".";
+					return System.IO.Path.GetFullPath (dir);
+				}
 				else
 					return baseDirectory;
 			}
@@ -124,7 +128,12 @@ namespace MonoDevelop.Projects
 		}
 		
 		public string ItemDirectory {
-			get { return System.IO.Path.GetFullPath (GetDefaultBaseDirectory ()); }
+			get {
+				string dir = GetDefaultBaseDirectory ();
+				if (string.IsNullOrEmpty (dir))
+					dir = ".";
+				return System.IO.Path.GetFullPath (dir);
+			}
 		}
 		
 		internal bool HasCustomBaseDirectory {

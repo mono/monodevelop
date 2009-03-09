@@ -1,5 +1,10 @@
 2009-03-09  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects/SolutionItem.cs: Added some protection
+	  in case GetDefaultBaseDirectory retuns an empty value.
+
+2009-03-09  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs:
 	  Save the BaseDirectory property. Store all paths relative to
 	  ItemDirectory, not BaseDirectory. Fixes bug #483134 -
