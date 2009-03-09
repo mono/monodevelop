@@ -75,6 +75,11 @@
     <Reference Include="MonoDevelop.Core.Gui, Version=1.9.2.0, Culture=neutral">
       <Package>monodevelop</Package>
     </Reference>
+    <Reference Include="MonoDevelop.SourceEditor2, Version=1.9.2.0, Culture=neutral, PublicKeyToken=null">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\main\build\AddIns\MonoDevelop.SourceEditor2.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Templates\" />

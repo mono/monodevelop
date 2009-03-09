@@ -9,6 +9,7 @@
        version     = "1.9.2">
 	
 	<Runtime>
+		<Import assembly = "Mono.TextTemplating.dll" />
 		<Import file = "Templates/Controller.xft.xml"/>
 		<Import file = "Templates/ViewPage.xft.xml"/>
 		<Import file = "Templates/ViewContentPage.xft.xml"/>
@@ -19,6 +20,7 @@
 		<Import file = "Templates/GlobalAsax.xft.xml"/>
 		<Import file = "Templates/WebConfigApp.xft.xml"/>
 		<Import file = "Templates/WebConfigViews.xft.xml"/>
+		<Import file = "CodeTemplates/AddView/Empty.tt" />
 	</Runtime>
 	
 	<Dependencies>
@@ -29,6 +31,7 @@
 		<Addin id="Ide" version="1.9.2"/>
 		<Addin id="XmlEditor" version="1.9.2" />
 		<Addin id="AspNet" version="1.9.2" />
+		<Addin id="SourceEditor2" version="1.9.2" />
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">

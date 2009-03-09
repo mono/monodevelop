@@ -41,17 +41,28 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 		string oldMaster;
 		Gtk.ListStore primaryPlaceholderStore = new Gtk.ListStore (typeof (String));
 		System.CodeDom.Compiler.CodeDomProvider provider;
+		MonoDevelop.SourceEditor.DropDownBox dataClassCombo;
+		TypeDataProvider classDataProvider;
 		
 		public AddViewDialog (AspMvcProject project)
 		{
 			this.project = project;
 			this.Build ();
 			
+			dataClassCombo = new MonoDevelop.SourceEditor.DropDownBox ();
+			
+			int w, h;
+			Gtk.Icon.SizeLookup (Gtk.IconSize.Menu, out w, out h);
+			dataClassCombo.DefaultIconHeight = Math.Max (h, 16);
+			dataClassCombo.DefaultIconWidth = Math.Max (w, 16);
+			dataClassAlignment.Add (dataClassCombo);
+			dataClassAlignment.QueueResize ();
+			dataClassCombo.ShowAll ();
+			
 			provider = project.LanguageBinding.GetCodeDomProvider ();
 			
 			ContentPlaceHolders = new List<string> ();
-			
-			string siteMaster = PP.Combine (PP.Combine (PP.Combine (project.BaseDirectory, "Views"), "Shared"), "Site.master");
+			string siteMaster = project.VirtualToLocalPath ("~/Views/Shared/Site.master", null);
 			if (project.Files.GetFile (siteMaster) != null)
 				masterEntry.Text = "~/Views/Shared/Site.master";
 			
@@ -101,7 +112,14 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 		
 		protected virtual void UpdateTypePanelSensitivity (object sender, EventArgs e)
 		{
-			typePanel.Sensitive = stronglyTypedCheck.Active;
+			bool enabled = typePanel.Sensitive = stronglyTypedCheck.Active;
+			
+			if (enabled && classDataProvider == null) {
+				dataClassCombo.DataProvider = classDataProvider = new TypeDataProvider (project);
+				if (classDataProvider.List.Count > 0)
+					dataClassCombo.SetItem (0);
+			}
+			
 			Validate ();
 		}
 		
@@ -196,7 +214,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 		
 		public MonoDevelop.Projects.Dom.IType ViewDataType {
 			get {
-				return null;
+				return (MonoDevelop.Projects.Dom.IType)dataClassCombo.CurrentItem;
 			}
 		}
 		
@@ -246,6 +264,47 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 		}
 		
 		#endregion
+		
+		class TypeDataProvider : MonoDevelop.SourceEditor.DropDownBoxListWindow.IListDataProvider
+		{
+			MonoDevelop.Projects.Dom.Output.Ambience ambience;
+			MonoDevelop.Projects.DotNetProject project;
+			
+			public List<MonoDevelop.Projects.Dom.IType> List { get; private set; }
+			
+			public TypeDataProvider (MonoDevelop.Projects.DotNetProject project)
+			{
+				List = new List<MonoDevelop.Projects.Dom.IType> ();
+				MonoDevelop.Projects.Dom.Parser.ProjectDom dom =
+						MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetProjectDom (project);
+				List.AddRange (dom.Types);
+				this.ambience = MonoDevelop.Projects.Dom.Output.AmbienceService.GetAmbienceForLanguage (project.LanguageName);
+				this.project = project;
+			}
+			
+			public int IconCount { get { return List.Count; } }
+			
+			public void Reset ()
+			{
+				//called when the list is shown
+			}
+			
+			public string GetText (int n)
+			{
+				return ambience.GetString (List[n], MonoDevelop.Projects.Dom.Output.OutputFlags.IncludeGenerics
+				                           | MonoDevelop.Projects.Dom.Output.OutputFlags.UseFullName);
+			}
+			
+			public Gdk.Pixbuf GetIcon (int n)
+			{
+				return MonoDevelop.Core.Gui.Services.Resources.GetIcon (List[n].StockIcon,Gtk.IconSize.Menu);
+			}
+			
+			public object GetTag (int n)
+			{
+				return List[n];
+			}
+		}
 	}
 }
 
