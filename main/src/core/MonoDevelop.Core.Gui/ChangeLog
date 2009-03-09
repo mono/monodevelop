@@ -1,3 +1,10 @@
+2009-03-09  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Gui/DispatchService.cs: Use Glib.Timeout
+	  instead of Glib.Idle for dispatching into the gui thread.
+	  The execution of idle handlers may be delayed if there are
+	  other events waiting.
+
 2009-03-06  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:

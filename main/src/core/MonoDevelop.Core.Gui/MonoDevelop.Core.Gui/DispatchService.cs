@@ -41,7 +41,7 @@ namespace MonoDevelop.Core.Gui
 		static ArrayList arrGuiQueue;
 		static Thread thrBackground;
 		static uint iIdle = 0;
-		static GLib.IdleHandler handler;
+		static GLib.TimeoutHandler handler;
 		static Thread guiThread;
 		static GuiSyncContext guiContext;
 		static internal bool DispatchDebug;
@@ -53,7 +53,7 @@ namespace MonoDevelop.Core.Gui
 
 			guiThread = Thread.CurrentThread;
 			
-			handler = new GLib.IdleHandler (guiDispatcher);
+			handler = new GLib.TimeoutHandler (guiDispatcher);
 			arrBackgroundQueue = new ArrayList ();
 			arrGuiQueue = new ArrayList ();
 			thrBackground = new Thread (new ThreadStart (backgroundDispatcher));
@@ -119,7 +119,7 @@ namespace MonoDevelop.Core.Gui
 			lock (arrGuiQueue) {
 				arrGuiQueue.Add (msg);
 				if (iIdle == 0)
-					iIdle = GLib.Idle.Add (handler);
+					iIdle = GLib.Timeout.Add (0, handler);
 			}
 		}
 		
