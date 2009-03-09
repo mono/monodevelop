@@ -34,10 +34,11 @@ using Gtk;
 using Gdk;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.Gettext.Editor
 {
-	internal class CatalogEditorView : AbstractViewContent
+	internal class CatalogEditorView : AbstractViewContent, IUndoHandler
 	{
 		Catalog catalog;
 		POEditorWidget poEditorWidget;
@@ -87,7 +88,41 @@ namespace MonoDevelop.Gettext.Editor
 		{
 			Save (this.ContentName);
 		}
+	
+		#region IUndoHandler implementation
+		void IUndoHandler.Undo ()
+		{
+			poEditorWidget.Undo ();
+		}
 		
+		void IUndoHandler.Redo ()
+		{
+			poEditorWidget.Redo ();
+		}
+		
+		void IUndoHandler.BeginAtomicUndo ()
+		{
+			poEditorWidget.BeginAtomicUndo ();
+		}
+		
+		void IUndoHandler.EndAtomicUndo ()
+		{
+			poEditorWidget.EndAtomicUndo ();
+		}
+		
+		bool IUndoHandler.EnableUndo {
+			get {
+				return poEditorWidget.EnableUndo;
+			}
+		}
+		
+		bool IUndoHandler.EnableRedo {
+			get {
+				return poEditorWidget.EnableRedo;
+			}
+		}
+		#endregion
+	
 		public override Widget Control
 		{
 			get { return poEditorWidget; }

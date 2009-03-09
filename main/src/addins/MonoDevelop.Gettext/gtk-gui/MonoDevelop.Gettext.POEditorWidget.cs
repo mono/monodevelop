@@ -170,14 +170,14 @@ namespace MonoDevelop.Gettext {
             this.togglebuttonMissing.UseUnderline = true;
             // Container child togglebuttonMissing.Gtk.Container+ContainerChild
             Gtk.Alignment w14 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
-            // Container child GtkAlignment.Gtk.Container+ContainerChild
+            // Container child GtkAlignment1.Gtk.Container+ContainerChild
             Gtk.HBox w15 = new Gtk.HBox();
             w15.Spacing = 2;
-            // Container child GtkHBox.Gtk.Container+ContainerChild
+            // Container child GtkHBox1.Gtk.Container+ContainerChild
             Gtk.Image w16 = new Gtk.Image();
             w16.Pixbuf = Gdk.Pixbuf.LoadFromResource("silk_exclamation.png");
             w15.Add(w16);
-            // Container child GtkHBox.Gtk.Container+ContainerChild
+            // Container child GtkHBox1.Gtk.Container+ContainerChild
             Gtk.Label w18 = new Gtk.Label();
             w18.LabelProp = Mono.Unix.Catalog.GetString("Missing");
             w18.UseUnderline = true;
@@ -196,14 +196,14 @@ namespace MonoDevelop.Gettext {
             this.togglebuttonFuzzy.UseUnderline = true;
             // Container child togglebuttonFuzzy.Gtk.Container+ContainerChild
             Gtk.Alignment w23 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
-            // Container child GtkAlignment.Gtk.Container+ContainerChild
+            // Container child GtkAlignment2.Gtk.Container+ContainerChild
             Gtk.HBox w24 = new Gtk.HBox();
             w24.Spacing = 2;
-            // Container child GtkHBox.Gtk.Container+ContainerChild
+            // Container child GtkHBox2.Gtk.Container+ContainerChild
             Gtk.Image w25 = new Gtk.Image();
             w25.Pixbuf = Gdk.Pixbuf.LoadFromResource("silk_error.png");
             w24.Add(w25);
-            // Container child GtkHBox.Gtk.Container+ContainerChild
+            // Container child GtkHBox2.Gtk.Container+ContainerChild
             Gtk.Label w27 = new Gtk.Label();
             w27.LabelProp = Mono.Unix.Catalog.GetString("Fuzzy");
             w27.UseUnderline = true;

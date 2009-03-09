@@ -40,6 +40,7 @@ using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Gettext.Editor;
 using MonoDevelop.Ide.Tasks;
@@ -49,7 +50,7 @@ namespace MonoDevelop.Gettext
 {
 	[System.ComponentModel.Category("widget")]
 	[System.ComponentModel.ToolboxItem(true)]
-	public partial class POEditorWidget : Gtk.Bin
+	public partial class POEditorWidget : Gtk.Bin, IUndoHandler
 	{
 		TranslationProject project;
 		CatalogHeadersWidget headersEditor;
@@ -421,8 +422,12 @@ namespace MonoDevelop.Gettext
 				if (this.isUpdating)
 					return;
 				try {
-					if (this.currentEntry != null)
-						this.currentEntry.SetTranslation (StringEscaping.FromGettextFormat (textView.Buffer.Text), index);
+					if (this.currentEntry != null) {
+						string escapedText = StringEscaping.FromGettextFormat (textView.Buffer.Text);
+						string oldText     = this.currentEntry.GetTranslation (index);
+						this.currentEntry.SetTranslation (escapedText, index);
+						AddChange (this.currentEntry, oldText, escapedText, index);
+					}
 					MonoDevelop.Ide.Gui.IdeApp.Workbench.StatusBar.ShowReady ();
 					textView.ModifyBase (Gtk.StateType.Normal, Style.Base (Gtk.StateType.Normal));
 				} catch (System.Exception e) {
@@ -827,7 +832,20 @@ namespace MonoDevelop.Gettext
 				updateThread = null;
 			}
 		}
-		
+		bool IsVisible (TreePath path)
+		{
+			TreePath start, end, cur;
+			this.treeviewEntries.GetVisibleRange (out start, out end);
+			TreeIter iter;
+			if (!store.GetIter (out iter, start))
+				return false;
+			do {
+				cur = store.GetPath (iter);
+				if (cur.Equals (path))
+					return true;
+			} while (!cur.Equals (end) && store.IterNext (ref iter));
+			return false;
+		}
 		public void SelectEntry (CatalogEntry entry)
 		{
 			if (updateThread != null && !updateThread.IsStopped)
@@ -839,7 +857,9 @@ namespace MonoDevelop.Gettext
 					CatalogEntry curEntry = store.GetValue (iter, 4) as CatalogEntry;
 					if (entry == curEntry) {
 						this.treeviewEntries.Selection.SelectIter (iter);
-						this.treeviewEntries.ScrollToCell (store.GetPath (iter), treeviewEntries.GetColumn (0), true, 0, 0);
+						TreePath iterPath = store.GetPath (iter);
+						if (!IsVisible (iterPath))
+							this.treeviewEntries.ScrollToCell (iterPath, treeviewEntries.GetColumn (0), true, 0, 0);
 						return;
 					}
 				} while (store.IterNext (ref iter));
@@ -1194,5 +1214,101 @@ namespace MonoDevelop.Gettext
 			updateTaskThread.Start ();
 		}
 #endregion
+
+		#region IUndoHandler implementation
+		Stack<Change> undoStack = new Stack<Change> ();
+		Stack<Change> redoStack = new Stack<Change> ();
+		public class Change
+		{
+			POEditorWidget widget;
+			public CatalogEntry Entry {
+				get; 
+				set;
+			}
+			public string OldText {
+				get;
+				set;
+			}
+			public string Text {
+				get;
+				set;
+			}
+			public int Index {
+				get;
+				set;
+			}
+			public Change (POEditorWidget widget, CatalogEntry entry, string oldText, string text, int index)
+			{
+				this.widget = widget;
+				this.Entry = entry;
+				this.OldText = oldText;
+				this.Text  = text;
+				this.Index = index;
+			}
+			
+			public void Undo ()
+			{
+				widget.inUndoOperation = true;
+				widget.SelectEntry (Entry);
+				TextView textView = widget.GetTextView (Index);
+				if (textView != null)
+					textView.Buffer.Text = OldText;
+				widget.inUndoOperation = false;
+			}
+			
+			public void Redo ()
+			{
+				widget.inUndoOperation = true;
+				widget.SelectEntry (Entry);
+				TextView textView = widget.GetTextView (Index);
+				if (textView != null)
+					textView.Buffer.Text = Text;
+				widget.inUndoOperation = false;
+			}
+		}
+		
+		bool inUndoOperation = false;
+		public void AddChange (CatalogEntry entry, string oldText, string text, int index)
+		{
+			if (inUndoOperation)
+				return;
+			redoStack.Clear ();
+			undoStack.Push (new Change (this, entry, oldText, text, index));
+		}
+		
+		public void Undo ()
+		{
+			Change change = undoStack.Pop ();
+			change.Undo ();
+			redoStack.Push (change);
+		}
+		
+		public void Redo ()
+		{
+			Change change = redoStack.Pop ();
+			change.Redo ();
+			undoStack.Push (change);
+		}
+		
+		public void BeginAtomicUndo ()
+		{
+		}
+		
+		public void EndAtomicUndo ()
+		{
+		}
+		
+		public bool EnableUndo {
+			get {
+				return undoStack.Count > 0;
+			}
+		}
+		
+		public bool EnableRedo {
+			get {
+				return redoStack.Count > 0;
+			}
+		}
+		#endregion
 	}
 }
