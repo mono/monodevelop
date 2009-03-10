@@ -311,7 +311,8 @@ namespace MonoDevelop.Projects
 				reference = loadedReference;
 				loadedReference = null;
 				UpdateGacReference ();
-			}
+			} else if (notFound)
+				UpdateGacReference ();
 		}
 		
 		public object Clone()

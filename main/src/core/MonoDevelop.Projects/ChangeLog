@@ -1,5 +1,10 @@
 2009-03-10  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects/ProjectReference.cs: Make sure missing
+	  references are updated when changing the framework.
+
+2009-03-10  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects/ProjectReference.cs: Don't store the
 	  loaded reference for framework assemblies, since they must
 	  always match the current target framework version. Fixes bug
