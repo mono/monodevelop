@@ -59,15 +59,14 @@
       <Name>MonoDevelop.Components</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\core\NRefactory\NRefactory.csproj">
-      <Project>{B9178B8E-69E5-46FB-B338-C83BEDF1BBA4}</Project>
-      <Name>NRefactory</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\core\MonoDevelop.Projects.Gui\MonoDevelop.Projects.Gui.csproj">
       <Project>{00E87426-F1BD-4B55-9B3E-7267EE93E002}</Project>
       <Name>MonoDevelop.Projects.Gui</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\contrib\NRefactory\Project\NRefactory.csproj">
+      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
+      <Name>NRefactory</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

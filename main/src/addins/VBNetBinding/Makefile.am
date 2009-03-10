@@ -9,7 +9,7 @@ DEPS =  \
 	$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll \
-	$(top_builddir)/build/bin/NRefactory.dll
+	/home/mkrueger/work/monodevelop/bin/ICSharpCode.NRefactory.dll
 
 REFS =  \
 	$(GLIB_SHARP_LIBS) \
