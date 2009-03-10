@@ -56,28 +56,28 @@ namespace MonoDevelop.Ide.Gui.Pads
 			tree_view.Selection.Changed += new EventHandler (RowActivated);
 			
 			store = new TreeStore (typeof (string), typeof (Node));
-			if (ProjectDomService.HelpTree != null) {
-				root_iter = store.AppendValues (GettextCatalog.GetString ("Mono Documentation"), ProjectDomService.HelpTree);
-				PopulateNode (root_iter);
-			}
-
 			tree_view.Model = store;
 			tree_view.HeadersVisible = false;
 			
 			scroller = new ScrolledWindow ();
 			scroller.ShadowType = Gtk.ShadowType.None;
 			scroller.Add (tree_view);
-
-			tree_view.ExpandRow (new TreePath ("0"), false);
-			TreeIter child_iter;
-		start:
-			if (store.IterChildren (out child_iter, root_iter)) {
-				do {
-					if (!store.IterHasChild (child_iter)) {
-						store.Remove (ref child_iter);
-						goto start;
-					}
-				} while (store.IterNext (ref child_iter));
+			
+			if (ProjectDomService.HelpTree != null) {
+				root_iter = store.AppendValues (GettextCatalog.GetString ("Mono Documentation"), ProjectDomService.HelpTree);
+				PopulateNode (root_iter);
+	
+				tree_view.ExpandRow (new TreePath ("0"), false);
+				TreeIter child_iter;
+			start:
+				if (store.IterChildren (out child_iter, root_iter)) {
+					do {
+						if (!store.IterHasChild (child_iter)) {
+							store.Remove (ref child_iter);
+							goto start;
+						}
+					} while (store.IterNext (ref child_iter));
+				}
 			}
 			Control.ShowAll ();
 		}
