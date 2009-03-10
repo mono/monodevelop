@@ -84,7 +84,9 @@ namespace MonoDevelop.CSharpBinding
 				MonoDevelop.Projects.Dom.Comment newComment = new MonoDevelop.Projects.Dom.Comment ();
 				newComment.CommentStartsLine = comment.CommentStartsLine;
 				newComment.Text              = comment.CommentText;
-				newComment.Region            = new DomRegion (comment.StartPosition.Line, comment.StartPosition.Column, comment.EndPosition.Line, comment.EndPosition.Column);
+				int commentTagLength = comment.CommentType == ICSharpCode.NRefactory.CommentType.Documentation ? 3 : 2;
+				int commentEndOffset = comment.CommentType == ICSharpCode.NRefactory.CommentType.Block ? 0 : 1;
+				newComment.Region    = new DomRegion (comment.StartPosition.Line, comment.StartPosition.Column - commentTagLength, comment.EndPosition.Line, comment.EndPosition.Column - commentEndOffset);
 				switch (comment.CommentType) {
 					case ICSharpCode.NRefactory.CommentType.Block:
 						newComment.CommentType = MonoDevelop.Projects.Dom.CommentType.MultiLine;
