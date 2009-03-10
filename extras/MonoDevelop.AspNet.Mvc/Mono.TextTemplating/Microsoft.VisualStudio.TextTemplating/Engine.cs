@@ -284,9 +284,7 @@ namespace Microsoft.VisualStudio.TextTemplating
 							new CodeMethodInvokeExpression (toStringMeth, new CodeSnippetExpression (seg.Text))));
 					break;
 				case SegmentType.Content:
-					if (!ShouldSkipContentSegment (seg.Text)) {
-						st = new CodeExpressionStatement (new CodeMethodInvokeExpression (writeMeth, new CodePrimitiveExpression (seg.Text)));
-					}
+					st = new CodeExpressionStatement (new CodeMethodInvokeExpression (writeMeth, new CodePrimitiveExpression (seg.Text)));
 					break;
 				case SegmentType.Helper:
 					CodeTypeMember mem = new CodeSnippetTypeMember (seg.Text);
@@ -328,14 +326,6 @@ namespace Microsoft.VisualStudio.TextTemplating
 			}
 			
 			return ccu;
-		}
-		
-		//skip over content segments that contain a single newline
-		static bool ShouldSkipContentSegment (string content)
-		{
-			return content.Length < 3
-				&& (content.Length !=2 || (content[0] =='\r' && content[1] == '\n'))
-				&& (content.Length !=1 || content[0] == '\r' || content[0] == '\n');
 		}
 		
 		class TemplateSettings

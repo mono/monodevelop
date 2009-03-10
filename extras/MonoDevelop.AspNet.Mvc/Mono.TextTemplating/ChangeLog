@@ -1,5 +1,11 @@
 2009-03-10  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Mono.TextTemplating/Tokeniser.cs:
+	* Microsoft.VisualStudio.TextTemplating/Engine.cs: Match T4's
+	  newline handling.
+
+2009-03-10  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Mono.TextTemplating/ParsedTemplate.cs: Fix logic that
 	  prevented adding directives.
 

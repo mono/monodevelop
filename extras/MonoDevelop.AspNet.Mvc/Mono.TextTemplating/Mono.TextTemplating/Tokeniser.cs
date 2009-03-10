@@ -96,7 +96,14 @@ namespace Mono.TextTemplating
 					nextStateLocation = nextStateLocation.AddLine ();
 				} else if (c =='>' && content[position-1] == '#' && content[position-2] != '\\') {
 					value = content.Substring (start, position - start - 1);
-					position+=1;
+					
+					//skip newlines directly after blocks, unless they're expressions
+					if (State != State.Expression && position < content.Length && content[position+1] == '\n') {
+						nextStateLocation = nextStateLocation.AddLine ();
+						position += 2;
+					} else {
+						position++;
+					}
 					return State.Content;
 				}
 			}
@@ -197,8 +204,17 @@ namespace Mono.TextTemplating
 					position++;
 					return State.DirectiveValue;	
 				} else if (c == '#' && position + 1 < content.Length && content[position+1] == '>') {
-					nextStateLocation = nextStateLocation.AddCols (1);
-					position += 2;
+					position++;
+					
+					//skip newlines directly after directives
+					if (position < content.Length && content[position+1] == '\n') {
+						nextStateLocation = nextStateLocation.AddLine ();
+						position+= 2;
+					} else {
+						nextStateLocation = nextStateLocation.AddCols (1);
+						position++;
+					}
+					
 					return State.Content;
 				} else if (!Char.IsWhiteSpace (c)) {
 					throw new ParserException ("Directive ended unexpectedly with character '" + c + "'", nextStateLocation);
