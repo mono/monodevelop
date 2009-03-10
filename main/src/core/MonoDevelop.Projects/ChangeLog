@@ -1,3 +1,8 @@
+2009-03-10  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs: Added
+	  null check.
+
 2009-03-09  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/SolutionItem.cs: Added some protection

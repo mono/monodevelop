@@ -855,7 +855,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 				// information.
 				if (projects != null && projects.Length > 0 && parseInformation.CompilationUnit != null)
 					SetSourceProject (parseInformation.CompilationUnit, GetProjectDom (projects [0]));
-				if (!parseInformation.HasErrors &&
+				if (!parseInformation.HasErrors && parseInformation.CompilationUnit != null &&
 				    (parseInformation.Flags & ParsedDocumentFlags.NonSerializable) == 0) {
 					if (projects != null && projects.Length > 0) {
 						foreach (Project project in projects) {
