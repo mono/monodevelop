@@ -1,6 +1,12 @@
 2009-03-10  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:
+	* prj2make-sharp-lib.csproj: Monodevelop changed the reference
+	  a bit.
+
+2009-03-10  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
 	* prj2make-sharp-lib.csproj: Updated nrefactory references.
 
 2009-02-25  Lluis Sanchez Gual  <lluis@novell.com>
