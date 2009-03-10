@@ -314,9 +314,9 @@ build/Makefile
 build/MacOSX/Makefile
 contrib/Makefile
 contrib/Mono.Cecil/Makefile
+contrib/NRefactory/Makefile
 src/Makefile
 src/core/Makefile
-src/core/NRefactory/Makefile
 src/core/Mono.Debugging/Makefile
 src/core/MonoDevelop.Core/Makefile
 src/core/MonoDevelop.Core.Gui/Makefile
