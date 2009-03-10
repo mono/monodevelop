@@ -39,8 +39,6 @@ namespace MonoDevelop.Ide.CodeFormatting {
         
         private Gtk.ScrolledWindow scrolledwindow1;
         
-        private Mono.TextEditor.TextEditor texteditor1;
-        
         protected virtual void Build() {
             Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Ide.CodeFormatting.CodeFormattingPolicyPanel
@@ -170,22 +168,10 @@ namespace MonoDevelop.Ide.CodeFormatting {
             this.scrolledwindow1.CanFocus = true;
             this.scrolledwindow1.Name = "scrolledwindow1";
             this.scrolledwindow1.ShadowType = ((Gtk.ShadowType)(1));
-            // Container child scrolledwindow1.Gtk.Container+ContainerChild
-            Gtk.Viewport w12 = new Gtk.Viewport();
-            w12.ShadowType = ((Gtk.ShadowType)(0));
-            // Container child GtkViewport.Gtk.Container+ContainerChild
-            this.texteditor1 = new Mono.TextEditor.TextEditor();
-            this.texteditor1.Name = "texteditor1";
-            this.texteditor1.SelectionAnchor = 0;
-            this.texteditor1.HighlightSearchPattern = false;
-            this.texteditor1.IsCaseSensitive = false;
-            this.texteditor1.IsWholeWordOnly = false;
-            w12.Add(this.texteditor1);
-            this.scrolledwindow1.Add(w12);
             this.vbox1.Add(this.scrolledwindow1);
-            Gtk.Box.BoxChild w15 = ((Gtk.Box.BoxChild)(this.vbox1[this.scrolledwindow1]));
-            w15.Position = 4;
-            w15.Padding = ((uint)(6));
+            Gtk.Box.BoxChild w12 = ((Gtk.Box.BoxChild)(this.vbox1[this.scrolledwindow1]));
+            w12.Position = 4;
+            w12.Padding = ((uint)(6));
             this.Add(this.vbox1);
             if ((this.Child != null)) {
                 this.Child.ShowAll();

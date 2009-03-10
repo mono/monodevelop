@@ -99,7 +99,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.notebook = new Gtk.Notebook();
             this.notebook.CanFocus = true;
             this.notebook.Name = "notebook";
-            this.notebook.CurrentPage = 1;
+            this.notebook.CurrentPage = 0;
             this.notebook.ShowBorder = false;
             this.notebook.BorderWidth = ((uint)(6));
             // Container child notebook.Gtk.Notebook+NotebookChild

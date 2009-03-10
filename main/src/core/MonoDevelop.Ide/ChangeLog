@@ -3,6 +3,18 @@
 	* Makefile.am:
 	* gtk-gui/gui.stetic:
 	* MonoDevelop.Ide.csproj:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewLayoutDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.FeatureSelectorDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.CodeFormatting.CodeFormattingPolicyPanel.cs:
+	* gtk-gui/MonoDevelop.Ide.CodeFormatting.EditFormattingPolicyDialog.cs:
+	  Removed text editor reference.
+
+2009-03-10  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Ide.csproj:
 	* MonoDevelop.Ide.CodeFormatting:
 	* MonoDevelop.Ide.CodeFormatting/CodeFormatterService.cs:
 	* MonoDevelop.Ide.CodeFormatting/CodeFormattingPolicyPanel.cs:

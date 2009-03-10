@@ -68,7 +68,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             // Internal child MonoDevelop.Ide.Gui.Dialogs.NewLayoutDialog.ActionArea
             Gtk.HButtonBox w5 = this.ActionArea;
             w5.Name = "GtkDialog_ActionArea";
-            w5.Spacing = 10;
+            w5.Spacing = 6;
             w5.BorderWidth = ((uint)(5));
             w5.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child GtkDialog_ActionArea.Gtk.ButtonBox+ButtonBoxChild

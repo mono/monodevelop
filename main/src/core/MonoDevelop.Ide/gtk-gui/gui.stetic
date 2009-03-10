@@ -11,7 +11,6 @@
     <widget-library name="../../../../build/bin/MonoDevelop.Core.Gui.dll" />
     <widget-library name="../../../../build/bin/MonoDevelop.Projects.Gui.dll" />
     <widget-library name="../../../../build/bin/MonoDevelop.Ide.dll" internal="true" />
-    <widget-library name="../../../../build/bin/Mono.TextEditor.dll" />
   </import>
   <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Gui.Dialogs.GoToDialog" design-size="750 579">
     <property name="MemberName" />
@@ -6663,13 +6662,7 @@ Large</property>
                 <property name="MemberName" />
                 <property name="ShadowType">None</property>
                 <child>
-                  <widget class="Mono.TextEditor.TextEditor" id="texteditor1">
-                    <property name="MemberName" />
-                    <property name="SelectionAnchor">0</property>
-                    <property name="HighlightSearchPattern">False</property>
-                    <property name="IsCaseSensitive">False</property>
-                    <property name="IsWholeWordOnly">False</property>
-                  </widget>
+                  <placeholder />
                 </child>
               </widget>
             </child>
@@ -6840,13 +6833,7 @@ Large</property>
                             <property name="MemberName" />
                             <property name="ShadowType">None</property>
                             <child>
-                              <widget class="Mono.TextEditor.TextEditor" id="texteditor3">
-                                <property name="MemberName" />
-                                <property name="SelectionAnchor">0</property>
-                                <property name="HighlightSearchPattern">False</property>
-                                <property name="IsCaseSensitive">False</property>
-                                <property name="IsWholeWordOnly">False</property>
-                              </widget>
+                              <placeholder />
                             </child>
                           </widget>
                         </child>
