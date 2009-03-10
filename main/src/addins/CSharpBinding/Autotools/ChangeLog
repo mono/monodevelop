@@ -1,6 +1,11 @@
 2009-03-10  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:
+	* Autotools.csproj: Monodevelop changed the reference a bit.
+
+2009-03-10  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
 	* Autotools.csproj: Updated nrefactory references.
 
 2009-02-25  Lluis Sanchez Gual  <lluis@novell.com>

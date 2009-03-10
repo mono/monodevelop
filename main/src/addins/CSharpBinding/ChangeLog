@@ -1,5 +1,13 @@
 2009-03-10  Mike Krüger  <mkrueger@novell.com>
 
+	* Makefile.am:
+	* CSharpBinding.csproj:
+	* CSharpBinding.addin.xml:
+	* FormattingStrategy/CSharpFormattingStyleDefinition.xml:
+	  Added format style definition
+
+2009-03-10  Mike Krüger  <mkrueger@novell.com>
+
 	* Parser/NRefactoryParser.cs: fixed comment position.
 
 2009-03-10  Mike Krüger  <mkrueger@novell.com>

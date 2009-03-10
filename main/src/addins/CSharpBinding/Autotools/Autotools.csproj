@@ -76,10 +76,6 @@
       <Name>Mono.TextEditor</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\contrib\NRefactory\Project\NRefactory.csproj">
-      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
-      <Name>NRefactory</Name>
-    </ProjectReference>
     <ProjectReference Include="..\CSharpBinding.csproj">
       <Project>{07CC7654-27D6-421D-A64C-0FFA40456FA2}</Project>
       <Name>CSharpBinding</Name>
@@ -87,6 +83,10 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="NRefactory, Version=1.9.2.0, Culture=neutral, PublicKeyToken=null">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\build\bin\NRefactory.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CSharpAutotoolsSetup.cs" />

@@ -9,13 +9,13 @@ DEPS =  \
 	$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
-	$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll \
-	$(top_builddir)/build/bin/NRefactory.dll
+	$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll
 
-REFS = -r:System
+REFS =  \
+	-r:../../../../build/bin/NRefactory.dll \
+	-r:System
 
-FILES =  \
-	CSharpAutotoolsSetup.cs
+FILES = CSharpAutotoolsSetup.cs
 
 ADDIN_BUILD = $(top_builddir)/build/AddIns/BackendBindings
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.CSharpBinding.Autotools.dll

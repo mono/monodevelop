@@ -1,0 +1,91 @@
+<CodeStyle>
+	<Type name = "BraceStyle">
+		<Value>EndOfLine</Value>
+		<Value>NextLine</Value>
+		<Value>NextLineShifted</Value>
+		<Value>NextLineShifted2</Value>
+	</Type>
+	
+	<Type name = "BraceStyle">
+	</Type>
+	
+	<Category name ="Indentation">
+	</Category>
+	
+	<Category name ="Braces">
+		<Category name = "Declarations">
+			<Option _displayName="Namespace declaration" type="BraceStyle">NamespaceBraceStyle</Option>
+			<Option _displayName="Class declaration" type="BraceStyle"/>
+			<Option _displayName="Interface declaration" type="BraceStyle"/>
+			<Option _displayName="Struct declaration" type="BraceStyle"/>
+			<Option _displayName="Enum declaration" type="BraceStyle"/>
+			
+			<Option _displayName="Constructor declaration" type="BraceStyle"/>
+			<Option _displayName="Destructor declaration" type="BraceStyle"/>
+			<Option _displayName="Method declaration" type="BraceStyle"/>
+			
+			<Option _displayName="Property declaration" type="BraceStyle"/>
+			<Option _displayName="Get declaration" type="BraceStyle"/>
+			<Option _displayName="Set declaration" type="BraceStyle"/>
+			
+			<Option _displayName="Event declaration" type="BraceStyle"/>
+			<Option _displayName="Add declaration" type="BraceStyle"/>
+			<Option _displayName="Remove declaration" type="BraceStyle"/>
+		</Category>
+		
+		<Category name = "Blocks">
+			<Option _displayName="Blocks" type="BraceStyle"/>
+			
+			<Option _displayName="Switch" type="BraceStyle"/>
+			<Option _displayName="Blocks in case statement" type="BraceStyle"/>
+		</Category>
+		
+		<Category name = "New Lines">
+			<Option _displayName="in empty class body" type="Bool"/>
+			<Option _displayName="in empty anonymous class body" type="Bool"/>
+			<Option _displayName="in empty interface body" type="Bool"/>
+			<Option _displayName="in empty struct body" type="Bool"/>
+			<Option _displayName="in empty enum body" type="Bool"/>
+			
+			<Option _displayName="in empty method body" type="Bool"/>
+			<Option _displayName="in empty anonymous method body" type="Bool"/>
+			<Option _displayName="in empty block" type="Bool"/>
+			
+			<Option _displayName="at end of file" type="Bool"/>
+			
+			<Category name = "Array initializers">
+				<Option _displayName="after opening brace" type="Bool"/>
+				<Option _displayName="before closing brace" type="Bool"/>
+			</Category>
+		</Category>
+		
+	</Category>
+	
+	<Category name = "Spaces">
+		<Category name = "Before Parentheses">
+			<Option _displayName="Method call" type="Bool"/>
+			<Option _displayName="Method declaration" type="Bool"/>
+			<Option _displayName="if statement" type="Bool"/>
+			<Option _displayName="while statement" type="Bool"/>
+			<Option _displayName="for statement" type="Bool"/>
+			<Option _displayName="catch statement" type="Bool"/>
+			<Option _displayName="switch statement" type="Bool"/>
+			<Option _displayName="lock statement" type="Bool"/>
+			<Option _displayName="using statement" type="Bool"/>
+		</Category>
+		
+		<Category name = "Operators">
+			<Option _displayName="before assignment" type="Bool"/>
+			<Option _displayName="after assignment" type="Bool"/>
+			
+			<Option _displayName="before binary operators" type="Bool"/>
+			<Option _displayName="after binary operators" type="Bool"/>
+			
+			<Option _displayName="before prefix operators" type="Bool"/>
+			<Option _displayName="after prefix operators" type="Bool"/>
+			
+			<Option _displayName="before postfix operators" type="Bool"/>
+			<Option _displayName="after postfix operators" type="Bool"/>
+		</Category>
+	</Category>
+</CodeStyle>

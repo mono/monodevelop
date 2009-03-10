@@ -73,10 +73,6 @@
       <Name>Mono.TextEditor</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\contrib\NRefactory\Project\NRefactory.csproj">
-      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
-      <Name>NRefactory</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -93,6 +89,10 @@
     <Reference Include="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="NRefactory, Version=1.9.2.0, Culture=neutral, PublicKeyToken=null">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\build\bin\NRefactory.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -134,6 +134,9 @@
       <LogicalName>AssemblyInfo.xft.xml</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="md1format.xml" />
+    <EmbeddedResource Include="FormattingStrategy\CSharpFormattingStyleDefinition.xml">
+      <LogicalName>CSharpFormattingStyleDefinition.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Gui\FormattingPanel.cs" />

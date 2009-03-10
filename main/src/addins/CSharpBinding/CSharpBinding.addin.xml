@@ -128,6 +128,11 @@
 		</MimeType>
 	</Extension>
 	
+	<Extension path = "/MonoDevelop/ProjectModel/TextFormatDefinition">
+		<Definition resource="CSharpFormattingStyleDefinition.xml"/>
+	</Extension>
+	
+	
 	<Module>
 	    <Runtime>
 	        <Import assembly="MonoDevelop.CSharpBinding.Autotools.dll"/>
