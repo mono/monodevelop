@@ -1,3 +1,10 @@
+2009-03-10  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* monodevelop-core-addins.pc.in: Add MD.Debugger to the list,
+	  since it is required by SourceEditor.
+
+	* monodevelop.pc.in: Set GacPackage flag.
+
 2009-03-10  Mike Krüger  <mkrueger@novell.com>
 
 	* Main.sln: Updated nrefactory references.
