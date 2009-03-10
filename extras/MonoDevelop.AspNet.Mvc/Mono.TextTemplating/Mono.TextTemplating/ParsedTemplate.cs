@@ -107,24 +107,28 @@ namespace Mono.TextTemplating
 				case State.Block:
 					if (!String.IsNullOrEmpty (tokeniser.Value)) {
 						previousSegment = new TemplateSegment (SegmentType.Block, tokeniser.Value, tokeniser.Location);
+						previousSegment.TagStartLocation = tokeniser.TagStartLocation;
 						segments.Add (previousSegment);
 					}
 					break;
 				case State.Content:
 					if (!String.IsNullOrEmpty (tokeniser.Value)) {
 						previousSegment = new TemplateSegment (SegmentType.Content, tokeniser.Value, tokeniser.Location);
+						previousSegment.TagStartLocation = tokeniser.TagStartLocation;
 						segments.Add (previousSegment);
 					};
 					break;
 				case State.Expression:
 					if (!String.IsNullOrEmpty (tokeniser.Value)) {
 						previousSegment = new TemplateSegment (SegmentType.Expression, tokeniser.Value, tokeniser.Location);
+						previousSegment.TagStartLocation = tokeniser.TagStartLocation;
 						segments.Add (previousSegment);
 					}
 					break;
 				case State.Helper:
 					if (!String.IsNullOrEmpty (tokeniser.Value)) {
 						previousSegment = new TemplateSegment (SegmentType.Helper, tokeniser.Value, tokeniser.Location);
+						previousSegment.TagStartLocation = tokeniser.TagStartLocation;
 						segments.Add (previousSegment);
 					}
 					break;
@@ -136,6 +140,7 @@ namespace Mono.TextTemplating
 						case State.DirectiveName:
 							if (directive == null) {
 								previousSegment = directive = new Directive (tokeniser.Value.ToLower (), tokeniser.Location);
+								previousSegment.TagStartLocation = tokeniser.TagStartLocation;
 								if (!parseIncludes && directive.Name != "include")
 									segments.Add (directive);
 							} else
@@ -223,6 +228,7 @@ namespace Mono.TextTemplating
 	{
 		Location StartLocation { get; }
 		Location EndLocation { get; set; }
+		Location TagStartLocation {get; set; }
 	}
 	
 	public class TemplateSegment : ISegment
@@ -236,6 +242,7 @@ namespace Mono.TextTemplating
 		
 		public SegmentType Type { get; private set; }
 		public string Text { get; private set; }
+		public Location TagStartLocation { get; set; }
 		public Location StartLocation { get; private set; }
 		public Location EndLocation { get; set; }
 	}
@@ -251,6 +258,7 @@ namespace Mono.TextTemplating
 		
 		public string Name { get; private set; }
 		public Dictionary<string,string> Attributes { get; private set; }
+		public Location TagStartLocation { get; set; }
 		public Location StartLocation { get; private set; }
 		public Location EndLocation { get; set; }
 		

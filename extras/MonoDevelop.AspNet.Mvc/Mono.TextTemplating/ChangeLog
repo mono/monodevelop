@@ -1,5 +1,12 @@
 2009-03-09  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Mono.TextTemplating/Tokeniser.cs:
+	* Mono.TextTemplating/ParsedTemplate.cs: More accurate
+	  location captures. Capture start of tags as well as start of
+	  content.
+
+2009-03-09  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Mono.TextTemplating/TemplateGenerator.cs: Report exceptions
 	  in errors.
 

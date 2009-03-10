@@ -1,5 +1,10 @@
 2009-03-09  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Parser/T4ParsedDocument.cs: More concise fold markers. Use
+	  new tag start position info.
+
+2009-03-09  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* .:
 	* Parser:
 	* AssemblyInfo.cs:

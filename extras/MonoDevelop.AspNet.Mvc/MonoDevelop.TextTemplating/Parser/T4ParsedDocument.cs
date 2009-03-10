@@ -67,7 +67,7 @@ namespace MonoDevelop.TextTemplating.Parser
 		public override IEnumerable<FoldingRegion> GenerateFolds ()
 		{
 			foreach (ISegment seg in TemplateSegments) {
-				if (seg.EndLocation.Line - seg.StartLocation.Line < 2)
+				if (seg.EndLocation.Line - seg.TagStartLocation.Line < 1)
 					continue;
 				
 				string name;
@@ -76,18 +76,18 @@ namespace MonoDevelop.TextTemplating.Parser
 					if (ts.Type == SegmentType.Content) {
 						continue;
 					} else if (ts.Type == SegmentType.Expression) {
-						name = "<#= ... #>";
+						name = "<#=...#>";
 					} else if (ts.Type == SegmentType.Helper) {
-						name = "<#+ ... #>";
+						name = "<#+...#>";
 					} else {
-						name = "<# ... #>";
+						name = "<#...#>";
 					}
 				} else {
 					Directive dir = (Directive)seg;
-					name = "<#@ " + dir.Name + "... #>";
+					name = "<#@" + dir.Name + "...#>";
 				}
 				
-				DomRegion region = new DomRegion (seg.StartLocation.Line, seg.StartLocation.Column,
+				DomRegion region = new DomRegion (seg.TagStartLocation.Line, seg.TagStartLocation.Column,
 			                                      seg.EndLocation.Line, seg.EndLocation.Column);
 				
 				yield return new FoldingRegion (name, region, false);

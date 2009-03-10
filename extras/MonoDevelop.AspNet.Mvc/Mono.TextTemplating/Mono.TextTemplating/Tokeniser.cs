@@ -39,12 +39,13 @@ namespace Mono.TextTemplating
 		string value;
 		State nextState = State.Content;
 		Location nextStateLocation;
+		Location nextStateTagStartLocation;
 		
 		public Tokeniser (string fileName, string content)
 		{
 			State = State.Content;
 			this.content = content;
-			this.Location = this.nextStateLocation = new Location (fileName, 1, 1);
+			this.Location = this.nextStateLocation = this.nextStateTagStartLocation = new Location (fileName, 1, 1);
 		}
 		
 		public bool Advance ()
@@ -52,6 +53,7 @@ namespace Mono.TextTemplating
 			value = null;
 			State = nextState;
 			Location = nextStateLocation;
+			TagStartLocation = nextStateTagStartLocation;
 			if (nextState == State.EOF)
 				return false;
 			nextState = GetNextStateAndCurrentValue ();
@@ -88,6 +90,7 @@ namespace Mono.TextTemplating
 			int start = position;
 			for (; position < content.Length; position++) {
 				char c = content[position];
+				nextStateTagStartLocation = nextStateLocation;
 				nextStateLocation = nextStateLocation.AddCol ();
 				if (c == '\n') {
 					nextStateLocation = nextStateLocation.AddLine ();
@@ -108,6 +111,8 @@ namespace Mono.TextTemplating
 				if (!Char.IsLetterOrDigit (c)) {
 					value = content.Substring (start, position - start);
 					return State.Directive;
+				} else {
+					nextStateLocation = nextStateLocation.AddCol ();
 				}
 			}
 			throw new ParserException ("Unexpected end of file.", nextStateLocation);
@@ -145,6 +150,7 @@ namespace Mono.TextTemplating
 			int start = position;
 			for (; position < content.Length; position++) {
 				char c = content[position];
+				nextStateTagStartLocation = nextStateLocation;
 				nextStateLocation = nextStateLocation.AddCol ();
 				if (c == '\n') {
 					nextStateLocation = nextStateLocation.AddLine ();
@@ -218,6 +224,7 @@ namespace Mono.TextTemplating
 		}
 		
 		public Location Location { get; private set; }
+		public Location TagStartLocation { get; private set; }
 	}
 	
 	public enum State
