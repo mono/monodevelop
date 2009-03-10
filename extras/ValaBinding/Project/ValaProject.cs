@@ -284,7 +284,7 @@ namespace MonoDevelop.ValaBinding
 		protected override bool OnGetCanExecute (MonoDevelop.Projects.ExecutionContext context, string solutionConfiguration)
 		{
 			ValaProjectConfiguration conf = (ValaProjectConfiguration)GetConfiguration(solutionConfiguration);
-			return (conf.CompileTarget == ValaBinding.CompileTarget.Bin) &&
+			return (null != conf && conf.CompileTarget == ValaBinding.CompileTarget.Bin) &&
 				context.ExecutionHandler.CanExecute (Path.Combine (conf.OutputDirectory, conf.Output));
 		}
 		

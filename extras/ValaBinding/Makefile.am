@@ -42,6 +42,7 @@ FILES =  \
 	Parser/Function.cs \
 	Parser/ProjectInformation.cs \
 	Parser/ProjectInformationManager.cs \
+	Project/MakefileHandler.cs \
 	Project/ProjectPackage.cs \
 	Project/ProjectPackageCollection.cs \
 	Project/ProjectPackageEventArgs.cs \
@@ -73,6 +74,8 @@ RES =  \
 	templates/EmptyValaSourceFile.xft.xml \
 	templates/SharedLibraryValaProject.xpt.xml \
 	templates/ValaTestFixture.xpt.xml \
+	templates/Makefile.am.template \
+	templates/Makefile.template \
 	ValaBinding.addin.xml
 
 all: $(ASSEMBLY)

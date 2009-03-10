@@ -1,0 +1,23 @@
+
+# Warning: This is an automatically generated file, do not edit!
+
+VTARGET = %%VTARGET%%
+CLEANFILES = $(VTARGET)
+
+include $(top_srcdir)/Makefile.include
+
+PACKAGE = @PACKAGE@
+BUILD_DIR = %%BUILD_DIR%%
+INSTALL_DIR = %%INSTALL_DIR%%
+
+FILES = %%FILES%%
+VFLAGS = %%VFLAGS%%
+
+install:
+
+uninstall:
+
+all:
+	mkdir -p $(BUILD_DIR)
+	valac $(VFLAGS) -o $(VTARGET) $(FILES)
+    

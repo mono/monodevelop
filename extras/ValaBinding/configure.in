@@ -24,6 +24,8 @@ if test "x$PKG_CONFIG" = "xno"; then
         AC_MSG_ERROR([You need to install pkg-config])
 fi
 
+export PKG_CONFIG_PATH="${PKG_CONFIG_PATH}:../../local-config/"
+
 MONO_REQUIRED_VERSION=1.1.10
 PKG_CHECK_MODULES(UNMANAGED_DEPENDENCIES_MONO,mono >= $MONO_REQUIRED_VERSION, has_mono=true, has_mono=false)
 

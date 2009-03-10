@@ -82,7 +82,7 @@ namespace MonoDevelop.ValaBinding
 		/// The string needed by the compiler to reference the necessary packages
 		/// <see cref="System.String"/>
 		/// </returns>
-		protected string GeneratePkgCompilerArgs (ProjectPackageCollection packages)
+		public static string GeneratePkgCompilerArgs (ProjectPackageCollection packages)
 		{
 			if (packages == null || packages.Count < 1)
 				return string.Empty;
@@ -165,6 +165,11 @@ namespace MonoDevelop.ValaBinding
 			return new BuildResult (cr, "");
 		}
 		
+		string ICompiler.GetCompilerFlags (ValaProjectConfiguration configuration)
+		{
+			return ValaCompiler.GetCompilerFlags (configuration);
+		}
+		
 		/// <summary>
 		/// Generates compiler args for the current settings
 		/// </summary>
@@ -176,7 +181,7 @@ namespace MonoDevelop.ValaBinding
 		/// A compiler-interpretable string
 		/// <see cref="System.String"/>
 		/// </returns>
-		public string GetCompilerFlags (ValaProjectConfiguration configuration)
+		public static string GetCompilerFlags (ValaProjectConfiguration configuration)
 		{
 			List<string> args = new List<string> ();
 			
@@ -350,7 +355,7 @@ namespace MonoDevelop.ValaBinding
 		/// <returns>
 		/// A <see cref="System.String"/>
 		/// </returns>
-		private string ProcessDefineSymbols (string symbols)
+		private static string ProcessDefineSymbols (string symbols)
 		{
 			return string.Empty; // No -D in valac for now :-(
 //			return ((null == symbols) || (0 == symbols.Length))?
@@ -588,7 +593,7 @@ namespace MonoDevelop.ValaBinding
 		/// </returns> 
 		// TODO: Portability, although otoh, probably someone who doesn't have sh 
 		// isn't going to put backticks in the compiler flags
-		public string ExpandBacktickedParameters (string tmp)
+		public static string ExpandBacktickedParameters (string tmp)
 		{
 			string parameters = "-c \"echo -n " + tmp + "\"";
 			Process p = new Process ();

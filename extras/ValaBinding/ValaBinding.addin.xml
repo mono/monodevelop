@@ -17,6 +17,7 @@
 		<Addin id = "Components" version = "1.9.2"/>
 		<Addin id = "Deployment" version = "1.9.2"/>
 		<Addin id = "Deployment.Linux" version = "1.9.2"/>
+		<Addin id = "Autotools" version = "1.9.2"/>
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/Core/StockIcons">
@@ -149,5 +150,9 @@
 		<DataType class = "MonoDevelop.ValaBinding.ValaProject"/>
 		<DataType class = "MonoDevelop.ValaBinding.ValaCompiler"/>
 		<DataType class = "MonoDevelop.ValaBinding.ProjectPackage"/>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Autotools/MakefileHandlers">
+		<Class class = "MonoDevelop.ValaBinding.MakefileHandler"/>
 	</Extension>
 </Addin>

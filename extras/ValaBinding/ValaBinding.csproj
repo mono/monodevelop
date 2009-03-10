@@ -9,6 +9,7 @@
     <OutputType>Library</OutputType>
     <AssemblyName>MonoDevelop.ValaBinding</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <ApplicationIcon>.</ApplicationIcon>
     <RootNamespace>MonoDevelop.ValaBinding</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -42,43 +43,13 @@
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="Mono.Posix" />
-    <Reference Include="Mono.Addins, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="MonoDevelop.Core, Version=1.9.2.0, Culture=neutral">
-      <Package>monodevelop</Package>
-    </Reference>
-    <Reference Include="MonoDevelop.Projects, Version=1.9.2.0, Culture=neutral">
-      <Package>monodevelop</Package>
-    </Reference>
-    <Reference Include="MonoDevelop.Core.Gui, Version=1.9.2.0, Culture=neutral">
-      <Package>monodevelop</Package>
-    </Reference>
-    <Reference Include="MonoDevelop.Deployment, Version=1.9.2.0, Culture=neutral">
-      <Package>monodevelop-core-addins</Package>
-    </Reference>
     <Reference Include="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="glib-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <Reference Include="MonoDevelop.Ide, Version=1.9.2.0, Culture=neutral">
-      <Package>monodevelop</Package>
-    </Reference>
-    <Reference Include="MonoDevelop.Components, Version=1.9.2.0, Culture=neutral">
-      <Package>monodevelop</Package>
-    </Reference>
-    <Reference Include="NRefactory, Version=0.0.0.0, Culture=neutral">
-      <Package>monodevelop</Package>
-    </Reference>
-    <Reference Include="Mono.Cecil, Version=0.6.8.8607, Culture=neutral">
-      <Package>monodevelop</Package>
-    </Reference>
-    <Reference Include="Mono.TextEditor, Version=1.0.0.0, Culture=neutral">
-      <Package>monodevelop</Package>
-    </Reference>
-    <Reference Include="Mono.Debugging, Version=0.0.0.0, Culture=neutral">
-      <Package>monodevelop</Package>
+    <Reference Include="Mono.Addins, Version=0.3.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
+      <Package>mono-addins</Package>
     </Reference>
     <Reference Include="MonoDevelop.VersionControl, Version=1.9.2.0, Culture=neutral">
       <Package>monodevelop-core-addins</Package>
@@ -93,6 +64,9 @@
       <Package>monodevelop-core-addins</Package>
     </Reference>
     <Reference Include="MonoDevelop.Gettext, Version=1.9.2.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.Deployment, Version=1.9.2.0, Culture=neutral">
       <Package>monodevelop-core-addins</Package>
     </Reference>
     <Reference Include="MonoDevelop.Deployment.Linux, Version=1.9.2.0, Culture=neutral">
@@ -116,7 +90,34 @@
     <Reference Include="MonoDevelop.Autotools, Version=1.9.2.0, Culture=neutral">
       <Package>monodevelop-core-addins</Package>
     </Reference>
+    <Reference Include="MonoDevelop.Core, Version=1.9.2.0, Culture=neutral">
+      <Package>monodevelop</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.Core.Gui, Version=1.9.2.0, Culture=neutral">
+      <Package>monodevelop</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.Projects, Version=1.9.2.0, Culture=neutral">
+      <Package>monodevelop</Package>
+    </Reference>
     <Reference Include="MonoDevelop.Projects.Gui, Version=1.9.2.0, Culture=neutral">
+      <Package>monodevelop</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.Ide, Version=1.9.2.0, Culture=neutral">
+      <Package>monodevelop</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.Components, Version=1.9.2.0, Culture=neutral">
+      <Package>monodevelop</Package>
+    </Reference>
+    <Reference Include="NRefactory, Version=0.0.0.0, Culture=neutral">
+      <Package>monodevelop</Package>
+    </Reference>
+    <Reference Include="Mono.Cecil, Version=0.6.8.8607, Culture=neutral">
+      <Package>monodevelop</Package>
+    </Reference>
+    <Reference Include="Mono.TextEditor, Version=1.0.0.0, Culture=neutral">
+      <Package>monodevelop</Package>
+    </Reference>
+    <Reference Include="Mono.Debugging, Version=0.0.0.0, Culture=neutral">
       <Package>monodevelop</Package>
     </Reference>
   </ItemGroup>
@@ -175,6 +176,12 @@
     <EmbeddedResource Include="templates\ValaTestFixture.xpt.xml">
       <LogicalName>ValaTestFixture.xpt.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="templates\Makefile.am.template">
+      <LogicalName>Makefile.am.template</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\Makefile.template">
+      <LogicalName>Makefile.template</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Project\ValaCompilationParameters.cs" />
@@ -215,6 +222,7 @@
     <Compile Include="ProjectPad\ProjectPackagesFolderNodeBuilder.cs" />
     <Compile Include="ProjectPad\ProjectNodeExtension.cs" />
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Project\MakefileHandler.cs" />
     <Compile Include="Parser\CodeNode.cs" />
     <Compile Include="Navigation\LanguageItemNodeBuilder.cs" />
     <Compile Include="Navigation\ProjectNodeBuilderExtension.cs" />

@@ -17,6 +17,7 @@ Global
 	GlobalSection(MonoDevelopProperties) = preSolution
 		version = 0.1
 		StartupItem = ValaBinding.csproj
+		name = ValaBinding
 		Policies = $0
 		$0.DotNetNamingPolicy = $1
 		$1.DirectoryNamespaceAssociation = Flat

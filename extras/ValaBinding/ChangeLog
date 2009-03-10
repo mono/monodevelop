@@ -1,3 +1,7 @@
+2009-03-10  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* *: Implement basic Makefile generation.
+
 2009-03-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Project/ValaProject.cs: Changed the way execution handlers
