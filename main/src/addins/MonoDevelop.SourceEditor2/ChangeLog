@@ -1,3 +1,10 @@
+2009-03-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.SourceEditor.Extension/TemplateCodon.cs: Fix
+	  resource disposal issues that prevented addins adding syntax
+	  modes and colour schemes, and probably caused resource
+	  stream leaks.
+
 2009-03-08  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorView.cs:

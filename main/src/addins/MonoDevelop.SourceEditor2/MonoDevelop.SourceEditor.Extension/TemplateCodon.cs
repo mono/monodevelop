@@ -46,7 +46,7 @@ namespace MonoDevelop.SourceEditor.Extension
 			resource = file = null;
 		}
 		
-		public XmlTextReader Open ()
+		public XmlReader Open ()
 		{
 			Stream stream;
 			if (!string.IsNullOrEmpty (file)) {
@@ -59,9 +59,9 @@ namespace MonoDevelop.SourceEditor.Extension
 				throw new InvalidOperationException ("Template file or resource not provided");
 			}
 			
-			using (stream) {
-				return new XmlTextReader (stream);
-			}
+			XmlReaderSettings settings = new XmlReaderSettings ();
+			settings.CloseInput = true;
+			return XmlTextReader.Create (stream, settings);
 		}
 	}
 }
