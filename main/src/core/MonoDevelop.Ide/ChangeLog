@@ -1,3 +1,8 @@
+2009-03-10  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Pads/MonodocTreePad.cs: Possible fix for
+	  bug #483723 - Gtk-criticals infinite loop.
+
 2009-03-09  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Gui.Content/IUndoHandler.cs: corrected code

@@ -71,14 +71,14 @@ namespace MonoDevelop.Ide.Gui.Pads
 			tree_view.ExpandRow (new TreePath ("0"), false);
 			TreeIter child_iter;
 		start:
-			store.IterChildren (out child_iter, root_iter);
-			do {
-				if (!store.IterHasChild (child_iter)) {
-					store.Remove (ref child_iter);
-					goto start;
-				}
-			} while (store.IterNext (ref child_iter));
-			
+			if (store.IterChildren (out child_iter, root_iter)) {
+				do {
+					if (!store.IterHasChild (child_iter)) {
+						store.Remove (ref child_iter);
+						goto start;
+					}
+				} while (store.IterNext (ref child_iter));
+			}
 			Control.ShowAll ();
 		}
 
