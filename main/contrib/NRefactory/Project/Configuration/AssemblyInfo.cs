@@ -23,3 +23,6 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
+
+[assembly: AssemblyVersion ("1.9.2")]
+[assembly: AssemblyCopyright ("LGPL")]
