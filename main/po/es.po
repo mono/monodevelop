@@ -11,7 +11,7 @@ msgstr ""
 "Project-Id-Version: MonoDevelop rev2237\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-03-09 01:28:55-0400\n"
-"PO-Revision-Date: 2009-03-09 01:33:21-0400\n"
+"PO-Revision-Date: 2009-03-09 23:10:30-0400\n"
 "Last-Translator: Andrés G. Aragoneses <knocte@gmail.com>\n"
 "Language-Team: Spanish <es@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -562,7 +562,7 @@ msgstr "Miscelánea"
 
 #: ../src/core/MonoDevelop.Ide/templates/AppConfigFile.xft.xml:8
 msgid "Creates a .NET application configuration file."
-msgstr "Crea un archivo de configuración de la aplicación .NET"
+msgstr "Crea un archivo de configuración de la aplicación .NET."
 
 #: ../src/core/MonoDevelop.Ide/templates/BlankCombine.xpt.xml:7
 msgid "Blank Solution"
@@ -712,9 +712,8 @@ msgid "Comment/Uncomment selected lines of code"
 msgstr "Comentar/descomentar las líneas de código seleccionadas"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:270
-#, fuzzy
 msgid "_Toggle Line Comment(s)"
-msgstr "_Generar comentarios"
+msgstr "Conmu_tar comentado de línea(s)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:274
 msgid "Indent selected lines of code"
@@ -770,7 +769,7 @@ msgstr "Mostrar ventana de preferencias de MonoDevelop"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:302
 msgid "Default Po_licies"
-msgstr "Políticas predeterminadas"
+msgstr "Po_líticas predeterminadas"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:303
 msgid "Edit the default policies that are applied to new projects"
@@ -785,31 +784,28 @@ msgid "Add the user defined header to the top of the file"
 msgstr "Añadir una cabecera definida por el usuario al principio del archivo"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:310
-#, fuzzy
 msgid "_Toggle Fold"
-msgstr "Acción de conmutación"
+msgstr "Conmu_tar colapsado"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:312
 msgid "Toggles the folding at caret position."
 msgstr "Conmuta el colapso de código en la posición actual del cursor."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:314
-#, fuzzy
 msgid "Toggle _All Folds"
-msgstr "Contraer todos los nodos"
+msgstr "Conmut_ar todos los bloques de colapso"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:316
-#, fuzzy
 msgid "Toggles all the foldings in the document."
-msgstr "Conmuta el colapso de código en la posición actual del cursor."
+msgstr "Conmuta todos los bloques de colapso del documento."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:318
 msgid "Show _Definitions Only"
-msgstr "Mostrar definiciones solamente"
+msgstr "Mostrar _definiciones solamente"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:319
 msgid "Folds all method and property bodies."
-msgstr "Colapsa todos los cuerpos de método y propiedad"
+msgstr "Colapsa todos los cuerpos de método y propiedad."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:323
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs:55
@@ -1166,7 +1162,6 @@ msgstr "_Archivos recientes"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:524
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:533
-#, fuzzy
 msgid "_Clear"
 msgstr "L_impiar"
 
@@ -1246,7 +1241,7 @@ msgstr "C_opiar nombre/ruta del archivo"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:570
 msgid "S_witch maximize/normal view"
-msgstr "Conmutar entre vista normal/maximizada"
+msgstr "Conmutar entre vista normal/ma_ximizada"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:574
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultWorkbench.cs:358
@@ -1838,9 +1833,8 @@ msgid "Build Action"
 msgstr "Acción de construcción"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1073
-#, fuzzy
 msgid "_Quick Properties"
-msgstr "_Propiedades"
+msgstr "Propiedades fre_cuentes"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1097
 msgid "Comments"
@@ -2067,7 +2061,7 @@ msgstr "_Formato"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1366
 msgid "F_olding"
-msgstr "Colapsamiento"
+msgstr "C_olapsado"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1383
 msgid "_View"
@@ -2605,7 +2599,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:48
 msgid "Released under the GNU General Public license."
-msgstr "Liberado bajo la Licencia Pública General de GNU"
+msgstr "Liberado bajo la Licencia Pública General de GNU."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:52
 msgid ""
@@ -3098,7 +3092,7 @@ msgstr "Proyecto guardado."
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:371
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/RootWorkspace.cs:271
 msgid "Save failed."
-msgstr "Error al guardar"
+msgstr "Error al guardar."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:328
 msgid "Solution saved."
@@ -3396,7 +3390,7 @@ msgstr "Auto-detectado"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/FileSelectorDialog.cs:227
 msgid "Add or _Remove..."
-msgstr "Añadir o quitar..."
+msgstr "Añadir o quita_r..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/FileSelectorDialog.cs:258
 msgid "Solution Workbench"
@@ -4246,7 +4240,7 @@ msgstr "Directorio de inicio de MonoDevelop"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:342
 msgid "The command of tool \"{0}\" is invalid."
-msgstr "El comando de la herramienta \"{0}\" no es válido"
+msgstr "El comando de la herramienta \"{0}\" no es válido."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:347
 msgid "The working directory of tool \"{0}\" is invalid."
@@ -4469,7 +4463,7 @@ msgstr "_Incluir cabecera estándar en archivos nuevos"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/TextStylePolicyPanel.cs:58
 msgid "Text Style _Policy"
-msgstr "Política de estilo de texto"
+msgstr "_Política de estilo de texto"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/TextStylePolicyPanel.cs:72
 msgid "Native"
@@ -4759,7 +4753,7 @@ msgstr "Entrada desconocida"
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/UnknownProjectVersionException.cs:28
 msgid "The file '{0}' has an unknown format version (version '{1}')'."
 msgstr ""
-"El archivo '{0}' tiene una versión de formato desconocida (versión '{1}')"
+"El archivo '{0}' tiene una versión de formato desconocida (versión '{1}')."
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Solution.cs:432
 msgid "Startup item not set"
@@ -5160,19 +5154,16 @@ msgid "Solution F_ile"
 msgstr "Archivo de soluc_ión"
 
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandWidget.cs:86
-#, fuzzy
 msgid "Solution _Item Directory"
-msgstr "Directorio de la _solución"
+msgstr "D_irectorio del elemento de solución"
 
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandWidget.cs:87
-#, fuzzy
 msgid "Solution Item _Name"
-msgstr "Elemento de solución"
+msgstr "_Nombre de elemento de solución"
 
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandWidget.cs:88
-#, fuzzy
 msgid "Solution Item _File"
-msgstr "Elemento de solución"
+msgstr "Archivo de _elemento de solución"
 
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandWidget.cs:155
 msgid "Select File"
@@ -5439,7 +5430,7 @@ msgstr "Haga clic aquí para añadir una nueva variable"
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/PolicyOptionsPanel.cs:58
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/NamespaceSynchronisationPanel.cs:52
 msgid "_Policy"
-msgstr "Política"
+msgstr "_Política"
 
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/PolicyOptionsPanel.cs:122
 msgid "Parent Policy"
@@ -5635,7 +5626,7 @@ msgstr "Prot_eger"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:84
 msgid "_Diff"
-msgstr ""
+msgstr "_Diff"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:92
 msgid "_Log"
@@ -5942,7 +5933,7 @@ msgstr "Conflicto"
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:161
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs:181
 msgid "Missing"
-msgstr ""
+msgstr "Ausentes"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:474
 msgid "Updating version control repository"
@@ -6088,7 +6079,7 @@ msgstr "Añadir una línea en blanco entre los mensajes"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.CommitMessageStylePanelWidget.cs:129
 msgid "File list and message in separate lines"
-msgstr ""
+msgstr "Lista de archivos y mensaje en líneas separadas"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.CommitMessageStylePanelWidget.cs:143
 msgid "One line per file"
@@ -6096,7 +6087,7 @@ msgstr "Una línea por archivo"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.CommitMessageStylePanelWidget.cs:155
 msgid "Use bullets"
-msgstr ""
+msgstr "Usar viñetas"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.CommitMessageStylePanelWidget.cs:170
 msgid "Preview:"
@@ -6190,7 +6181,7 @@ msgstr ""
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.Gui/SslServerTrustDialog.cs:33
 msgid "Certificate authority is unknown (i.e. not trusted)."
-msgstr "La autoridad de certificación es desconocida (p.e. no confiable)"
+msgstr "La autoridad de certificación es desconocida (p.e. no confiable)."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/gtk-gui/MonoDevelop.VersionControl.Subversion.Gui.ClientCertificateDialog.cs:40
 msgid "Client Certificate Required"
@@ -6327,7 +6318,7 @@ msgstr "Editar iconos del proyecto..."
 
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.addin.xml:97
 msgid "GTK# support settings..."
-msgstr "Parámetros del soporte GTK#"
+msgstr "Parámetros del soporte GTK#..."
 
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.addin.xml:151
 msgid "GTK# Settings"
@@ -6404,7 +6395,7 @@ msgstr "Asociación del diseño del componente"
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.Dialogs/BindDesignDialog.cs:60
 msgid "The widget design {0} is not currently bound to a class."
 msgstr ""
-"El diseño del componente {0} no está asociado actualmente a ninguna clase"
+"El diseño del componente {0} no está asociado actualmente a ninguna clase."
 
 #: ../src/addins/MonoDevelop.GtkCore/gui.glade:239
 msgid "Bind the design to an existing class"
@@ -6979,7 +6970,7 @@ msgstr "_Seleccionar"
 
 #: ../src/addins/MonoDevelop.GtkCore/libsteticui/ContextMenu.cs:152
 msgid "Placeholder"
-msgstr ""
+msgstr "Punto de partida"
 
 #: ../src/addins/MonoDevelop.GtkCore/libsteticui/Glade.cs:25
 msgid "Not a glade file according to node name."
@@ -7140,7 +7131,7 @@ msgstr "Referencia MSDN de la librería de clases"
 
 #: ../src/addins/WelcomePage/WelcomePageContent.xml:42
 msgid "Documentation for Microsoft's implementation of the .NET framework."
-msgstr "Documentación para la implementación de Microsoft del framework .NET"
+msgstr "Documentación para la implementación de Microsoft del framework .NET."
 
 #: ../src/addins/WelcomePage/WelcomePageContent.xml:46
 msgid "The Code Project"
@@ -7550,7 +7541,7 @@ msgstr ""
 
 #: ../src/addins/ChangeLogAddIn/ProjectOptionPanel.cs:47
 msgid "ChangeLog _Policy"
-msgstr "Política de ChangeLog (listas de cambios)"
+msgstr "_Política de ChangeLog (listas de cambios)"
 
 #: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:69
 msgid "radiobutton1"
@@ -7740,7 +7731,7 @@ msgstr "Formulario web"
 
 #: ../src/addins/AspNetAddIn/Templates/WebForm-Empty.xft.xml:12
 msgid "Creates an ASP.NET Web Form."
-msgstr "Crear un formulario web ASP.NET"
+msgstr "Crear un formulario web ASP.NET."
 
 #: ../src/addins/AspNetAddIn/Templates/WebHandler-Empty.xft.xml:7
 msgid "Web Handler"
@@ -7748,7 +7739,7 @@ msgstr "Manejador web"
 
 #: ../src/addins/AspNetAddIn/Templates/WebHandler-Empty.xft.xml:12
 msgid "Creates an ASP.NET Web Handler."
-msgstr "Crea un manejador web ASP.NET"
+msgstr "Crea un manejador web ASP.NET."
 
 #: ../src/addins/AspNetAddIn/Templates/WebControl-Empty.xft.xml:7
 msgid "User Control"
@@ -7826,7 +7817,7 @@ msgstr "Página maestra sin CodeBehind"
 
 #: ../src/addins/AspNetAddIn/Templates/MasterPage-Empty.xft.xml:12
 msgid "Creates an ASP.NET Master Page."
-msgstr "Crea una página maestra ASP.NET"
+msgstr "Crea una página maestra ASP.NET."
 
 #: ../src/addins/AspNetAddIn/Templates/GlobalAsax-CodeBehind.xft.xml:7
 msgid "Global.asax with CodeBehind"
@@ -7842,7 +7833,7 @@ msgstr "Global.asax"
 
 #: ../src/addins/AspNetAddIn/Templates/GlobalAsax-Empty.xft.xml:13
 msgid "Creates an ASP.NET Global.asax file."
-msgstr "Crea un archivo ASP.NET Global.asax"
+msgstr "Crea un archivo ASP.NET Global.asax."
 
 #: ../src/addins/AspNetAddIn/Templates/WebApplication-Empty.xpt.xml:7
 msgid "Empty Web Application"
@@ -7872,7 +7863,7 @@ msgstr "Crea un archivo web.config ASP.NET para un subdirectorio."
 
 #: ../src/addins/AspNetAddIn/Templates/WebContentForm-CodeBehind.xft.xml:7
 msgid "Web Content Form with CodeBehind"
-msgstr ""
+msgstr "Fomulario de contenido web con CodeBehind"
 
 #: ../src/addins/AspNetAddIn/Templates/WebContentForm-CodeBehind.xft.xml:12
 msgid ""
@@ -7900,7 +7891,7 @@ msgstr "Crear una página maestra ASP.NET anidada con una clase CodeBehind."
 
 #: ../src/addins/AspNetAddIn/Templates/WebContentForm.xft.xml:7
 msgid "Web Content Form"
-msgstr ""
+msgstr "Fomulario de contenido web"
 
 #: ../src/addins/AspNetAddIn/Templates/WebContentForm.xft.xml:12
 msgid "Creates an ASP.NET Web Form that is the child of a Master Page."
@@ -7973,7 +7964,7 @@ msgstr "Fallo al escribir el achivo '{0}'."
 #: ../src/addins/AspNetAddIn/MonoDevelop.AspNet/CodeBehind.cs:219
 #: ../src/addins/AspNetAddIn/MonoDevelop.AspNet/CodeBehind.cs:232
 msgid "Failed to generate code for file '{0}'."
-msgstr "Generación de código fallida para el archivo '{0}'"
+msgstr "Generación de código fallida para el archivo '{0}'."
 
 #: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/XspOptionsPanelWidget.cs:46
 #: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/XspOptionsPanelWidget.cs:59
@@ -8467,7 +8458,7 @@ msgstr "Barras de herramientas"
 
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.addin.xml:73
 msgid "Document Outline"
-msgstr ""
+msgstr "Contorno del documento"
 
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.addin.xml:104
 msgid "Add Items..."
@@ -8613,7 +8604,7 @@ msgid ""
 "supported."
 msgstr ""
 "No está soportada la configuración basada en muchos proyectos bajo un mismo "
-"directorio común como primer nivel de la solución"
+"directorio común como primer nivel de la solución."
 
 #: ../src/addins/MonoDevelop.Autotools/SolutionMakefileHandler.cs:169
 msgid ""
@@ -8637,7 +8628,7 @@ msgid ""
 "specified."
 msgstr ""
 "Error: nombre de archivo ya especificado - {0}, no se puede especificar otro "
-"nombre de archivo '{1}'"
+"nombre de archivo '{1}'."
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:44
 msgid "Error: Solution file not specified."
@@ -9928,7 +9919,7 @@ msgstr "Coincidencia '{0}'"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWindow.cs:285
 msgid "Group '{0}':'{1}'"
-msgstr ""
+msgstr "Grupo '{0}':'{1}'"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWindow.cs:287
 msgid "Capture '{0}'"
@@ -9943,9 +9934,8 @@ msgid "Ignore Whitespace"
 msgstr "Ignorar espacio en blanco"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWindow.cs:354
-#, fuzzy
 msgid "Ignore case"
-msgstr "_Ignorar"
+msgstr "Ignorar diferencia entre mayúsculas/minúsculas"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWindow.cs:355
 msgid "Single line"
@@ -9961,7 +9951,7 @@ msgstr "Captura explícita"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWindow.cs:358
 msgid "Right to left"
-msgstr "De izquierda a derecha"
+msgstr "De derecha a izquierda"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:89
 msgid "Regular Expression Toolkit"
@@ -10145,7 +10135,7 @@ msgid ""
 "for example, \\cC is control-C."
 msgstr ""
 "Casa con un caracter de control ASCII;\n"
-"por ejemplo, \\cC es Control+C"
+"por ejemplo, \\cC es Control+C."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:21
 msgid "\\u0020"
@@ -10337,7 +10327,7 @@ msgstr "\\s"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:54
 msgid "Matches any white-space character."
-msgstr "Casa con cualquier caracter de espacio en blanco"
+msgstr "Casa con cualquier caracter de espacio en blanco."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:55
 msgid "\\S"
@@ -10415,6 +10405,9 @@ msgid ""
 "string or before \\n at the end of the string (ignores \n"
 "the Multiline option)."
 msgstr ""
+"Indica que la coincidencia debe ocurrir al final de la\n"
+"cadena or antes de \\n al final de la cadena (ignora \n"
+"la opción multi-línea)."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:75
 msgid "\\z"
@@ -10906,11 +10899,11 @@ msgstr "Actualizar panel de clase"
 
 #: ../src/addins/CBinding/CBinding.addin.xml:159
 msgid "Swap Source/Header"
-msgstr ""
+msgstr "Alternar entre fuente y cabeceras"
 
 #: ../src/addins/CBinding/CBinding.addin.xml:161
 msgid "Swap source/header file display"
-msgstr ""
+msgstr "Alternar la visualización del archivo de cabeceras o fuentes"
 
 #: ../src/addins/CBinding/templates/EmptyCProject.xpt.xml:8
 msgid "Empty C Project"
@@ -10996,11 +10989,11 @@ msgstr "Crea un proyecto C++ de librería estática simple."
 
 #: ../src/addins/CBinding/templates/ConsoleCProject.xpt.xml:12
 msgid "Creates simple hello world C project."
-msgstr "Crear un proyecto C simple de Hola Mundo"
+msgstr "Crear un proyecto C simple de Hola Mundo."
 
 #: ../src/addins/CBinding/templates/ConsoleCppProject.xpt.xml:12
 msgid "Creates simple hello world C++ project."
-msgstr "Crear un proyecto C++ simple de Hola Mundo"
+msgstr "Crear un proyecto C++ simple de Hola Mundo."
 
 #: ../src/addins/CBinding/Gui/CodeGenerationPanel.cs:52
 msgid "_Root Solution Directory"
@@ -11193,11 +11186,11 @@ msgstr ""
 
 #: ../src/addins/CBinding/gtk-gui/CBinding.PackageDetails.cs:167
 msgid "Requires:"
-msgstr ""
+msgstr "Requiere:"
 
 #: ../src/addins/CBinding/gtk-gui/CBinding.PackageDetails.cs:201
 msgid "Libs:"
-msgstr ""
+msgstr "Librerías:"
 
 #: ../src/addins/CBinding/gtk-gui/CBinding.PackageDetails.cs:259
 msgid "CFlags:"
@@ -11283,7 +11276,7 @@ msgstr "La operación de impresión ha fallado."
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:1343
 msgid "Clipboard ring"
-msgstr ""
+msgstr "Panel del portapapeles"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:619
 msgid "The file »{0}« has been changed outside of MonoDevelop."
@@ -11399,7 +11392,7 @@ msgstr "<b>Tipografía</b>"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs:227
 msgid "_Default monospace"
-msgstr "Monoespaciada predeterminada"
+msgstr "Monoespaciada pre_determinada"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs:244
 msgid "_Custom"
@@ -11463,7 +11456,7 @@ msgstr "Modo de _indentación:"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:149
 msgid "Interpret tab _keystroke as reindent command"
-msgstr "Interpretar la tecla tabulador como comando de reindentación"
+msgstr "_Interpretar la tecla tabulador como comando de reindentación"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:167
 msgid "<b>Navigation</b>"
@@ -11475,7 +11468,7 @@ msgstr "Usar modos _Vi"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:201
 msgid "Word _break mode:"
-msgstr "Modo de corte de palabra:"
+msgstr "Modo de corte de pala_bra:"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.HighlightingPanel.cs:56
 msgid "<b>Syntax highlighting</b>"
@@ -11696,7 +11689,7 @@ msgstr "Resultados:"
 #: ../src/addins/MonoDevelop.CodeMetrics/MonoDevelop.CodeMetrics/CodeMetricsWidget.cs:257
 msgid "lines: {0} (real:{1}), commented:{2} ({3:0.00}%), blank:{4} ({5:0.00}%)"
 msgstr ""
-"líneas: {0} (reales: {1}), comentadas: {1} ({3:0.00}%), en blanco: {4} "
+"líneas: {0} (reales: {1}), comentadas: {2} ({3:0.00}%), en blanco: {4} "
 "({5:0.00}%)"
 
 #: ../src/addins/MonoDevelop.CodeMetrics/MonoDevelop.CodeMetrics/CodeMetricsWidget.cs:289
@@ -11868,7 +11861,7 @@ msgstr "{0} binarios"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/SourcesZipPackageBuilder.cs:117
 msgid "Target file name not provided."
-msgstr "No se proporcionó un nombre de archivo como objetivo"
+msgstr "No se proporcionó un nombre de archivo como objetivo."
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/SourcesZipPackageBuilder.cs:119
 msgid "File format not provided."
@@ -13006,7 +12999,7 @@ msgstr "<b>Página de prueba</b>"
 
 #: ../src/addins/MonoDevelop.Moonlight/gtk-gui/MonoDevelop.Moonlight.Gui.MoonlightOptionsPanelWidget.cs:214
 msgid "Generate _test page"
-msgstr "Generar página de prueba"
+msgstr "Generar página de p_rueba"
 
 #: ../src/addins/MonoDevelop.Moonlight/gtk-gui/MonoDevelop.Moonlight.Gui.MoonlightOptionsPanelWidget.cs:229
 msgid "Test _page filename:"
@@ -13022,7 +13015,7 @@ msgstr "_Validar XAML"
 
 #: ../src/addins/MonoDevelop.Moonlight/gtk-gui/MonoDevelop.Moonlight.Gui.MoonlightOptionsPanelWidget.cs:292
 msgid "Throw _errors in XAML validation"
-msgstr "Indicar errores en la validación XAML"
+msgstr "Indicar _errores en la validación XAML"
 
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor/XmlEditorService.cs:221
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor/XmlEditorService.cs:250
@@ -13121,11 +13114,11 @@ msgstr "Prefijo"
 
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.Gui/XmlSchemasPanelWidget.cs:379
 msgid "Error loading schema '{0}'."
-msgstr "Error cargando esquema '{0}'"
+msgstr "Error cargando esquema '{0}'."
 
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.Gui/XmlSchemasPanelWidget.cs:387
 msgid "Schema '{0}' has no target namespace."
-msgstr "El esquema '{0}' no indica un espacio de nombres"
+msgstr "El esquema '{0}' no indica un espacio de nombres."
 
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.Gui/XmlSchemasPanelWidget.cs:395
 msgid ""
@@ -13580,7 +13573,7 @@ msgstr "Lanzar pruebas unitarias"
 
 #: ../src/addins/NUnit/MonoDevelopNUnit.addin.xml:103
 msgid "Runs all tests of the current selected project."
-msgstr "Lanza las pruebas del proyecto seleccionado actualmente"
+msgstr "Lanza las pruebas del proyecto seleccionado actualmente."
 
 #: ../src/addins/NUnit/MonoDevelopNUnit.addin.xml:107
 msgid "Run With"
@@ -13588,7 +13581,7 @@ msgstr "Ejecutar con"
 
 #: ../src/addins/NUnit/MonoDevelopNUnit.addin.xml:109
 msgid "Runs tests using a special execution mode."
-msgstr "Lanza las pruebas bajo un modo de ejecución especial"
+msgstr "Lanza las pruebas bajo un modo de ejecución especial."
 
 #: ../src/addins/NUnit/MonoDevelopNUnit.addin.xml:110
 #: ../src/addins/NUnit/Gui/TestResultsPad.cs:147
@@ -13994,13 +13987,10 @@ msgstr "Incluir las siguientes categorías: "
 #~ msgstr "Abrir archivo de la solución"
 #~ msgid "Delete File"
 #~ msgstr "Eliminar archivo"
-
 #~ msgid "_Delete from disk"
 #~ msgstr "Suprimir en _disco"
-
 #~ msgid "Field name:"
 #~ msgstr "Nombre del campo:"
-
 #~ msgid "_Property name:"
 #~ msgstr "Nombre de la _propiedad:"
 
@@ -14974,13 +14964,10 @@ msgstr "Incluir las siguientes categorías: "
 #~ msgstr "Página 5"
 #~ msgid "page3"
 #~ msgstr "Página 3"
-
 #~ msgid "page4"
 #~ msgstr "Página 4"
-
 #~ msgid "Not a deployable solution."
 #~ msgstr "Solución no apta para despliegue."
-
 #~ msgid "Create pkg-config files for libraries"
 #~ msgstr "Crear archivos pkg-config para las librerías"
 

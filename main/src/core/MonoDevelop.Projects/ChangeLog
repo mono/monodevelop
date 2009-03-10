@@ -1,3 +1,21 @@
+2009-03-10  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/ProjectReference.cs: Make sure missing
+	  references are updated when changing the framework.
+
+2009-03-10  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/ProjectReference.cs: Don't store the
+	  loaded reference for framework assemblies, since they must
+	  always match the current target framework version. Fixes bug
+	  #483981 - [Regression] C# Library projects have a bad
+	  reference to the System library.
+
+2009-03-10  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs: Added
+	  null check.
+
 2009-03-09  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/SolutionItem.cs: Added some protection
