@@ -1,5 +1,10 @@
 2009-03-10  Mike Krüger  <mkrueger@novell.com>
 
+	* Src/Lexer/CSharp/Lexer.cs: handled comment position
+	  elsewhere.
+
+2009-03-10  Mike Krüger  <mkrueger@novell.com>
+
 	* Src/Lexer/CSharp/Lexer.cs: fix comment position.
 
 2009-03-10  Mike Krüger  <mkrueger@novell.com>
