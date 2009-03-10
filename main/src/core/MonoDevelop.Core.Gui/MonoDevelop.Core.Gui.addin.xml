@@ -219,6 +219,7 @@
 		<MimeType id="application/xml" _description="XML document" icon="md-xml-file-icon" isText="true">
 			<File pattern="*.xml" />
 			<File pattern="*.config" />
+			<File pattern="*.glade" />
 		</MimeType>
 		<MimeType id="text/x-changelog" _description="ChangeLog document" isText="true">
 			<File pattern="ChangeLog|Changelog|CHANGELOG|Changelog"/>
