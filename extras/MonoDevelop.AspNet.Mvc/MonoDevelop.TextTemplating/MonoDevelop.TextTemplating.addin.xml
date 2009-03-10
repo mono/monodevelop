@@ -40,9 +40,8 @@
 	<Extension path = "/MonoDevelop/ProjectModel/DomParser">
 		<Class class = "MonoDevelop.TextTemplating.Parser.T4Parser" />
 	</Extension>
-	<!--
+	
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
-		<Class class = "MonoDevelop.TextTemplating.T4EditorExtension" />
+		<Class class = "MonoDevelop.TextTemplating.Gui.T4EditorExtension" />
 	</Extension>
-	-->
 </Addin>

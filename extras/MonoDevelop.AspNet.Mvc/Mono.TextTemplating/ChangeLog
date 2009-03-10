@@ -1,3 +1,8 @@
+2009-03-10  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextTemplating/ParsedTemplate.cs: Fix logic that
+	  prevented adding directives.
+
 2009-03-09  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.TextTemplating/Tokeniser.cs:

@@ -1,3 +1,11 @@
+2009-03-10  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Gui:
+	* Gui/T4EditorExtension.cs:
+	* MonoDevelop.TextTemplating.csproj:
+	* MonoDevelop.TextTemplating.addin.xml: Add T4 editor
+	  extension with outlining.
+
 2009-03-09  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Parser/T4ParsedDocument.cs: More concise fold markers. Use

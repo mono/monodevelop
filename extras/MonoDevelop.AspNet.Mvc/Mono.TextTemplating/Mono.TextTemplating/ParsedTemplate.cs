@@ -141,7 +141,7 @@ namespace Mono.TextTemplating
 							if (directive == null) {
 								previousSegment = directive = new Directive (tokeniser.Value.ToLower (), tokeniser.Location);
 								previousSegment.TagStartLocation = tokeniser.TagStartLocation;
-								if (!parseIncludes && directive.Name != "include")
+								if (!parseIncludes || directive.Name != "include")
 									segments.Add (directive);
 							} else
 								attName = tokeniser.Value;
