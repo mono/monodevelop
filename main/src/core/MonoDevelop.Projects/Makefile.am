@@ -194,6 +194,7 @@ FILES =  \
 	MonoDevelop.Projects.Policies/PolicyChangedEventArgs.cs \
 	MonoDevelop.Projects.Policies/PolicyService.cs \
 	MonoDevelop.Projects.Policies/PolicySet.cs \
+	MonoDevelop.Projects.Text/CodeFormatDescription.cs \
 	MonoDevelop.Projects.Text/IEditableTextFile.cs \
 	MonoDevelop.Projects.Text/IFormatter.cs \
 	MonoDevelop.Projects.Text/ITextFile.cs \
@@ -203,6 +204,7 @@ FILES =  \
 	MonoDevelop.Projects.Text/TextFileReader.cs \
 	MonoDevelop.Projects.Text/TextFileService.cs \
 	MonoDevelop.Projects.Text/TextFormatter.cs \
+	MonoDevelop.Projects.Text/XmlDefinitionCodon.cs \
 	MonoDevelop.Projects.Utility/DiffUtility.cs \
 	MonoDevelop.Projects/AbstractProjectConfiguration.cs \
 	MonoDevelop.Projects/BuildAction.cs \

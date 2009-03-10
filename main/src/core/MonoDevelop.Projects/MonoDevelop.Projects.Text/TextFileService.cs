@@ -1,5 +1,5 @@
 //
-// RegexLibraryWindow.cs
+// TextFileService.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -48,11 +48,20 @@ namespace MonoDevelop.Projects.Text
 					break;
 				}
 			});
+			
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/ProjectModel/TextFormatDefinition", delegate(object sender, ExtensionNodeEventArgs args) {
+				switch (args.Change) {
+				case ExtensionChange.Add:
+					System.Console.WriteLine("Add:" + args.ExtensionNode);
+					break;
+				case ExtensionChange.Remove:
+					break;
+				}
+			});
 		}
 		
 		public static IFormatter GetFormatter (string mimeType)
 		{
-			System.Console.WriteLine("format:" + formatters.Count);
 			return formatters.Find (x => x.CanFormat (mimeType));
 		}
 		
@@ -130,6 +139,5 @@ namespace MonoDevelop.Projects.Text
 		{
 			 return String.Format ("[LineCountEventArgs: LineNumber={0}, LineCount={1}, Column={2}]", lineNumber, lineCount, column);
 		}
-
-	}	
+	}
 }

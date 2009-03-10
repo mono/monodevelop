@@ -1,3 +1,14 @@
+2009-03-10  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Projects.csproj:
+	* MonoDevelop.Projects.addin.xml:
+	* MonoDevelop.Projects.Text/IFormatter.cs:
+	* MonoDevelop.Projects.Text/TextFileService.cs:
+	* MonoDevelop.Projects.Text/XmlDefinitionCodon.cs:
+	* MonoDevelop.Projects.Text/CodeFormatDescription.cs: Worked
+	  on code formatting infrastructure.
+
 2009-03-10  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs: Added

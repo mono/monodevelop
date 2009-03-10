@@ -1,5 +1,5 @@
 // 
-// IFormatter.cs
+// XmlDefinitionCodon.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -25,13 +25,38 @@
 // THE SOFTWARE.
 
 using System;
+using System.IO;
+using System.Xml;
+
+using Mono.Addins;
 
 namespace MonoDevelop.Projects.Text
 {
-	public interface IFormatter
+	[ExtensionNode (Description="A xml definition.")]
+	public class XmlDefinitionCodon : ExtensionNode
 	{
-		bool CanFormat (string mimeType);
-		string FormatText (SolutionItem policyParent, string input);
-		string FormatText (SolutionItem policyParent, string input, int fromOffest, int toOffset);
+		[NodeAttribute("resource", "Name of the resource where the xml is stored.")]
+		string resource = null;
+		
+		[NodeAttribute("file", "Name of the file where the xml is stored.")]
+		string file = null;
+		
+		public XmlReader Open ()
+		{
+			Stream stream;
+			if (!string.IsNullOrEmpty (file)) {
+				stream = File.OpenRead (Addin.GetFilePath (file));
+			} else if (!string.IsNullOrEmpty (resource)) {
+				stream = Addin.GetResource (resource);
+				if (stream == null)
+					throw new ApplicationException ("Xml " + resource + " not found");
+			} else {
+				throw new InvalidOperationException ("Xml file or resource not provided");
+			}
+			
+			XmlReaderSettings settings = new XmlReaderSettings ();
+			settings.CloseInput = true;
+			return XmlTextReader.Create (stream, settings);
+		}
 	}
 }
