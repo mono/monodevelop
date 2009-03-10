@@ -44,8 +44,13 @@ namespace MonoDevelop.SourceEditor
 			int result = currentColumn + tabSize;
 			return (result / tabSize) * tabSize;
 		}
-		
 		public string FormatText (SolutionItem policyParent, string input)
+		{
+			if (string.IsNullOrEmpty (input))
+				return input;
+			return FormatText (policyParent, input, 0, input.Length - 1);
+		}
+		public string FormatText (SolutionItem policyParent, string input, int startOffset, int endOffset)
 		{
 			TextStylePolicy currentPolicy = policyParent != null
 				? policyParent.Policies.Get<TextStylePolicy> ()
@@ -56,7 +61,7 @@ namespace MonoDevelop.SourceEditor
 			string eolMarker = currentPolicy.GetEolMarker ();
 			StringBuilder result = new StringBuilder ();
 			
-			for (int i = 0; i < input.Length; i++) {
+			for (int i = startOffset; i <= endOffset; i++) {
 				char ch = input[i];
 				switch (ch) {
 				case '\t':
