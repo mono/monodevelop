@@ -591,14 +591,14 @@ namespace MonoDevelop.CSharpBinding.Gui
 				lastError = new Location(errorCol, errorLine);
 			};
 			while ((token = lexer.NextToken()) != null) {
-				if (token.kind == Tokens.EOF) break;
+				if (token.Kind == Tokens.EOF) break;
 				
 				if (targetPosition <= token.Location) {
 					break;
 				}
 				ApplyToken(token);
 				if (targetPosition <= token.EndLocation) {
-					if (token.kind == Tokens.Literal) {
+					if (token.Kind == Tokens.Literal) {
 						// do not return string literal as expression if offset was inside the literal,
 						// or if it was at the end of the literal when the literal was not terminated correctly.
 						if (targetPosition < token.EndLocation || lastError == token.Location) {
@@ -607,11 +607,11 @@ namespace MonoDevelop.CSharpBinding.Gui
 					}
 					break;
 				}
-				lastToken = token.kind;
+				lastToken = token.Kind;
 			}
 			
 			int tokenOffset;
-			if (token == null || token.kind == Tokens.EOF)
+			if (token == null || token.Kind == Tokens.EOF)
 				tokenOffset = text.Length;
 			else
 				tokenOffset = LocationToOffset(token.Location);
@@ -637,11 +637,11 @@ namespace MonoDevelop.CSharpBinding.Gui
 		
 		void TrackCurrentFrameAndExpression(Token token)
 		{
-			while (frame.bracketType == '<' && !Tokens.ValidInsideTypeName[token.kind]) {
+			while (frame.bracketType == '<' && !Tokens.ValidInsideTypeName[token.Kind]) {
 				frame.type = FrameType.Popped;
 				frame = frame.parent;
 			}
-			switch (token.kind) {
+			switch (token.Kind) {
 				case Tokens.OpenCurlyBrace:
 					frame.lastExpressionStart = Location.Empty;
 					frame = new Frame(frame, '{');
@@ -712,14 +712,14 @@ namespace MonoDevelop.CSharpBinding.Gui
 					// let the current expression continue
 					break;
 				default:
-					if (Tokens.IdentifierTokens[token.kind]) {
+					if (Tokens.IdentifierTokens[token.Kind]) {
 						if (lastToken != Tokens.Dot && lastToken != Tokens.DoubleColon) {
 							if (Tokens.ValidInsideTypeName[lastToken]) {
 								frame.SetDefaultContext();
 							}
 							frame.lastExpressionStart = token.Location;
 						}
-					} else if (Tokens.SimpleTypeName[token.kind] || Tokens.ExpressionStart[token.kind] || token.kind == Tokens.Literal) {
+					} else if (Tokens.SimpleTypeName[token.Kind] || Tokens.ExpressionStart[token.Kind] || token.Kind == Tokens.Literal) {
 						frame.lastExpressionStart = token.Location;
 					} else {
 						frame.lastExpressionStart = Location.Empty;
@@ -732,15 +732,15 @@ namespace MonoDevelop.CSharpBinding.Gui
 		void TrackCurrentContext(Token token)
 		{
 			if (frame.state == FrameState.ObjectCreation) {
-				if (token.kind == Tokens.CloseParenthesis) {
+				if (token.Kind == Tokens.CloseParenthesis) {
 					if (frame.context.IsObjectCreation) {
 						frame.context = ExpressionContext.Default;
 						frame.lastExpressionStart = frame.lastNewTokenStart;
 					}
 					// keep frame.state
-				} else if (token.kind == Tokens.GreaterThan
-				           || token.kind == Tokens.DoubleColon || token.kind == Tokens.Dot
-				           || Tokens.SimpleTypeName[token.kind])
+				} else if (token.Kind == Tokens.GreaterThan
+				           || token.Kind == Tokens.DoubleColon || token.Kind == Tokens.Dot
+				           || Tokens.SimpleTypeName[token.Kind])
 				{
 					// keep frame.state == FrameState.ObjectCreationInType
 				} else {
@@ -749,7 +749,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				}
 			}
 			
-			switch (token.kind) {
+			switch (token.Kind) {
 				case Tokens.Using:
 					if (frame.type == FrameType.Global) {
 						frame.SetContext(ExpressionContext.NamespaceNameExcepted);
@@ -918,12 +918,12 @@ namespace MonoDevelop.CSharpBinding.Gui
 				default:
 					if (frame.context == ExpressionContext.NamespaceNameExcepted)
 						break;
-					if (Tokens.SimpleTypeName[token.kind]) {
+					if (Tokens.SimpleTypeName[token.Kind]) {
 						if (frame.type == FrameType.Interface || frame.type == FrameType.TypeDecl) {
 							if (frame.state == FrameState.Normal) {
 								frame.state = FrameState.FieldDecl;
 								frame.curlyChildType = FrameType.Property;
-							} else if (frame.state == FrameState.FieldDecl && Tokens.IdentifierTokens[token.kind]) {
+							} else if (frame.state == FrameState.FieldDecl && Tokens.IdentifierTokens[token.Kind]) {
 								frame.state = FrameState.FieldDeclAfterIdentifier;
 							}
 							if (frame.state != FrameState.ObjectCreation) {
@@ -992,7 +992,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			
 			Token token;
 			while ((token = lexer.NextToken()) != null) {
-				if (token.kind == Tokens.EOF) break;
+				if (token.Kind == Tokens.EOF) break;
 				
 				if (state == SEARCHING_OFFSET) {
 					if (targetPosition < token.Location) {
@@ -1025,15 +1025,15 @@ namespace MonoDevelop.CSharpBinding.Gui
 						resultStartOffset = lastExpressionStartOffset;
 					if (resultFrame.type == FrameType.Popped ||
 					    lastExpressionStartOffset != resultStartOffset ||
-					    token.kind == Tokens.Dot || token.kind == Tokens.DoubleColon)
+					    token.Kind == Tokens.Dot || token.Kind == Tokens.DoubleColon)
 					{
 						
 						// now we can change the context based on the next token
-						if (frame == resultFrame && Tokens.IdentifierTokens[token.kind]) {
+						if (frame == resultFrame && Tokens.IdentifierTokens[token.Kind]) {
 							// the expression got aborted because of an identifier. This means the
 							// expression was a type reference
 							resultContext = ExpressionContext.Type;
-						} else if (resultFrame.bracketType == '<' && token.kind == Tokens.GreaterThan) {
+						} else if (resultFrame.bracketType == '<' && token.Kind == Tokens.GreaterThan) {
 							// expression was a type argument
 							resultContext = ExpressionContext.Type;
 							return MakeResult(text, resultStartOffset, resultEndOffset, resultContext);
@@ -1047,7 +1047,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 						}
 					}
 				}
-				lastToken = token.kind;
+				lastToken = token.Kind;
 			}
 			// offset is behind all tokens -> cannot find any expression
 			return new ExpressionResult(null, frame.context);
@@ -1072,18 +1072,18 @@ namespace MonoDevelop.CSharpBinding.Gui
 			int lastValidPos = 0;
 			Token token;
 			while ((token = lexer.NextToken()) != null) {
-				if (token.kind == Tokens.EOF) break;
+				if (token.Kind == Tokens.EOF) break;
 				
 				if (frame.parent == null) {
-					if (token.kind == Tokens.Dot || token.kind == Tokens.DoubleColon
-					    || token.kind == Tokens.OpenParenthesis || token.kind == Tokens.OpenSquareBracket)
+					if (token.Kind == Tokens.Dot || token.Kind == Tokens.DoubleColon
+					    || token.Kind == Tokens.OpenParenthesis || token.Kind == Tokens.OpenSquareBracket)
 					{
 						lastValidPos = LocationToOffset(token.Location);
 					}
 				}
 				ApplyToken(token);
 				
-				lastToken = token.kind;
+				lastToken = token.Kind;
 			}
 			return expression.Substring(0, lastValidPos);
 		}
