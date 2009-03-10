@@ -98,39 +98,25 @@ namespace Mono.TextTemplating
 		void Parse (ITextTemplatingEngineHost host, Tokeniser tokeniser, bool parseIncludes)
 		{
 			bool skip = false;
-			ISegment previousSegment = null;
 			while ((skip || tokeniser.Advance ()) && tokeniser.State != State.EOF) {
 				skip = false;
-				if (previousSegment != null)
-					previousSegment.EndLocation = tokeniser.Location;
+				ISegment seg = null;	
 				switch (tokeniser.State) {
 				case State.Block:
-					if (!String.IsNullOrEmpty (tokeniser.Value)) {
-						previousSegment = new TemplateSegment (SegmentType.Block, tokeniser.Value, tokeniser.Location);
-						previousSegment.TagStartLocation = tokeniser.TagStartLocation;
-						segments.Add (previousSegment);
-					}
+					if (!String.IsNullOrEmpty (tokeniser.Value))
+						seg = new TemplateSegment (SegmentType.Block, tokeniser.Value, tokeniser.Location);
 					break;
 				case State.Content:
-					if (!String.IsNullOrEmpty (tokeniser.Value)) {
-						previousSegment = new TemplateSegment (SegmentType.Content, tokeniser.Value, tokeniser.Location);
-						previousSegment.TagStartLocation = tokeniser.TagStartLocation;
-						segments.Add (previousSegment);
-					};
+					if (!String.IsNullOrEmpty (tokeniser.Value))
+						seg = new TemplateSegment (SegmentType.Content, tokeniser.Value, tokeniser.Location);
 					break;
 				case State.Expression:
-					if (!String.IsNullOrEmpty (tokeniser.Value)) {
-						previousSegment = new TemplateSegment (SegmentType.Expression, tokeniser.Value, tokeniser.Location);
-						previousSegment.TagStartLocation = tokeniser.TagStartLocation;
-						segments.Add (previousSegment);
-					}
+					if (!String.IsNullOrEmpty (tokeniser.Value))
+						seg = new TemplateSegment (SegmentType.Expression, tokeniser.Value, tokeniser.Location);
 					break;
 				case State.Helper:
-					if (!String.IsNullOrEmpty (tokeniser.Value)) {
-						previousSegment = new TemplateSegment (SegmentType.Helper, tokeniser.Value, tokeniser.Location);
-						previousSegment.TagStartLocation = tokeniser.TagStartLocation;
-						segments.Add (previousSegment);
-					}
+					if (!String.IsNullOrEmpty (tokeniser.Value))
+						seg = new TemplateSegment (SegmentType.Helper, tokeniser.Value, tokeniser.Location);
 					break;
 				case State.Directive:
 					Directive directive = null;
@@ -139,8 +125,8 @@ namespace Mono.TextTemplating
 						switch (tokeniser.State) {
 						case State.DirectiveName:
 							if (directive == null) {
-								previousSegment = directive = new Directive (tokeniser.Value.ToLower (), tokeniser.Location);
-								previousSegment.TagStartLocation = tokeniser.TagStartLocation;
+								directive = new Directive (tokeniser.Value.ToLower (), tokeniser.Location);
+								directive.TagStartLocation = tokeniser.TagStartLocation;
 								if (!parseIncludes || directive.Name != "include")
 									segments.Add (directive);
 							} else
@@ -154,6 +140,8 @@ namespace Mono.TextTemplating
 							attName = null;
 							break;
 						case State.Directive:
+							if (directive != null)
+								directive.EndLocation = tokeniser.TagEndLocation;
 							break;
 						default:
 							skip = true;
@@ -165,6 +153,11 @@ namespace Mono.TextTemplating
 					break;
 				default:
 					throw new InvalidOperationException ();
+				}
+				if (seg != null) {
+					seg.TagStartLocation = tokeniser.TagStartLocation;
+					seg.EndLocation = tokeniser.TagEndLocation;
+					segments.Add (seg);
 				}
 			}
 		}

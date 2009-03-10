@@ -1,6 +1,12 @@
 2009-03-10  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.TextTemplating/Tokeniser.cs:
+	* Mono.TextTemplating/ParsedTemplate.cs: Fix end location
+	  capture after newline handling changes.
+
+2009-03-10  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextTemplating/Tokeniser.cs:
 	* Microsoft.VisualStudio.TextTemplating/Engine.cs: Match T4's
 	  newline handling.
 

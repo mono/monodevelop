@@ -31,7 +31,7 @@ using System.Diagnostics;
 namespace Mono.TextTemplating
 {
 	
-	
+	//TODO: handle \r, \r\n newlines
 	public class Tokeniser
 	{
 		string content;
@@ -96,13 +96,13 @@ namespace Mono.TextTemplating
 					nextStateLocation = nextStateLocation.AddLine ();
 				} else if (c =='>' && content[position-1] == '#' && content[position-2] != '\\') {
 					value = content.Substring (start, position - start - 1);
+					position++;
+					TagEndLocation = nextStateLocation;
 					
 					//skip newlines directly after blocks, unless they're expressions
-					if (State != State.Expression && position < content.Length && content[position+1] == '\n') {
+					if (State != State.Expression && position < content.Length && content[position] == '\n') {
 						nextStateLocation = nextStateLocation.AddLine ();
-						position += 2;
-					} else {
-						position++;
+						position ++;
 					}
 					return State.Content;
 				}
@@ -162,6 +162,7 @@ namespace Mono.TextTemplating
 				if (c == '\n') {
 					nextStateLocation = nextStateLocation.AddLine ();
 				} else if (c =='<' && position + 2 < content.Length && content[position+1] == '#') {
+					TagEndLocation = nextStateLocation;
 					char type = content[position+2];
 					if (type == '@') {
 						nextStateLocation = nextStateLocation.AddCols (2);
@@ -204,16 +205,15 @@ namespace Mono.TextTemplating
 					position++;
 					return State.DirectiveValue;	
 				} else if (c == '#' && position + 1 < content.Length && content[position+1] == '>') {
-					position++;
+					position+=2;
+					nextStateLocation = nextStateLocation.AddCols (1);
+					TagEndLocation = nextStateLocation;
 					
 					//skip newlines directly after directives
-					if (position < content.Length && content[position+1] == '\n') {
+					if (position < content.Length && content[position] == '\n') {
 						nextStateLocation = nextStateLocation.AddLine ();
-						position+= 2;
-					} else {
-						nextStateLocation = nextStateLocation.AddCols (1);
 						position++;
-					}
+					} 
 					
 					return State.Content;
 				} else if (!Char.IsWhiteSpace (c)) {
@@ -241,6 +241,7 @@ namespace Mono.TextTemplating
 		
 		public Location Location { get; private set; }
 		public Location TagStartLocation { get; private set; }
+		public Location TagEndLocation { get; private set; }
 	}
 	
 	public enum State
