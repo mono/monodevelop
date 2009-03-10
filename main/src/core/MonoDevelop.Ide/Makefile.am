@@ -1,6 +1,7 @@
 
 DEPS =  \
 	$(top_builddir)/build/bin/Mono.Debugging.dll \
+	$(top_builddir)/build/bin/Mono.TextEditor.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
@@ -30,6 +31,8 @@ FILES =  \
 	AssemblyInfo.cs \
 	BuildVariables.cs \
 	gtk-gui/generated.cs \
+	gtk-gui/MonoDevelop.Ide.CodeFormatting.CodeFormattingPolicyPanel.cs \
+	gtk-gui/MonoDevelop.Ide.CodeFormatting.EditFormattingPolicyDialog.cs \
 	gtk-gui/MonoDevelop.Ide.CodeTemplates.CodeTemplatePanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.DocumentSwitcher.cs \
 	gtk-gui/MonoDevelop.Ide.ExternalTools.ExternalToolPanelWidget.cs \
@@ -60,6 +63,9 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.OverridesImplementsDialog.cs \
 	gtk-gui/MonoDevelop.Ide.SelectEncodingsDialog.cs \
 	gtk-gui/MonoDevelop.Ide.StandardHeader.StandardHeaderPolicyPanelWidget.cs \
+	MonoDevelop.Ide.CodeFormatting/CodeFormatterService.cs \
+	MonoDevelop.Ide.CodeFormatting/CodeFormattingPolicyPanel.cs \
+	MonoDevelop.Ide.CodeFormatting/EditFormattingPolicyDialog.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplateGroup.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplatePanel.cs \
