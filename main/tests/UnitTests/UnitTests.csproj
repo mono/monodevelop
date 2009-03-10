@@ -104,19 +104,20 @@
       <Name>MonoDevelop.Core.Gui</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\addins\AspNetAddIn\AspNetAddIn.csproj">
-      <Project>{1CF94D07-5480-4D10-A3CD-2EBD5E87B02E}</Project>
-      <Name>AspNetAddIn</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\src\addins\CSharpBinding\CSharpBinding.csproj">
       <Project>{07CC7654-27D6-421D-A64C-0FFA40456FA2}</Project>
       <Name>CSharpBinding</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\src\addins\AspNetAddIn\AspNetAddIn.csproj">
+      <Project>{1CF94D07-5480-4D10-A3CD-2EBD5E87B02E}</Project>
+      <Name>AspNetAddIn</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\contrib\NRefactory\Project\NRefactory.csproj">
       <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
       <Name>NRefactory</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

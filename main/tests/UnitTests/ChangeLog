@@ -1,6 +1,13 @@
 2009-03-10  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:
+	* UnitTests.csproj:
+	* MonoDevelop.CSharpBinding/FindMemberVisitorTests.cs: Fixed
+	  unit tests.
+
+2009-03-10  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
 	* UnitTests.csproj: Updated nrefactory references.
 
 2009-03-05  Mike Krüger  <mkrueger@novell.com>
