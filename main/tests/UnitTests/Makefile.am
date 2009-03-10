@@ -12,6 +12,7 @@ REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	$(MONO_NUNIT_LIBS) \
+	-r:../../../bin/ICSharpCode.NRefactory.dll \
 	-r:../../build/AddIns/BackendBindings/MonoDevelop.CSharpBinding.dll \
 	-r:../../build/AddIns/MonoDevelop.AspNet/MonoDevelop.AspNet.dll \
 	-r:../../build/AddIns/MonoDevelop.Autotools/MonoDevelop.Autotools.dll \
@@ -24,7 +25,6 @@ REFS =  \
 	-r:../../build/bin/MonoDevelop.Ide.dll \
 	-r:../../build/bin/MonoDevelop.Projects.dll \
 	-r:../../build/bin/MonoDevelop.Projects.Gui.dll \
-	-r:../../build/bin/NRefactory.dll \
 	-r:System \
 	-r:System.Core \
 	-r:System.Xml
