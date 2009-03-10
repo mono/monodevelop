@@ -7,12 +7,18 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mono.TextTemplating", "Mono
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextTransform", "TextTransform\TextTransform.csproj", "{D1D35409-C814-47F6-B038-B9B5BF0FE490}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.TextTemplating", "MonoDevelop.TextTemplating\MonoDevelop.TextTemplating.csproj", "{8CCA39DD-8412-4547-BE7F-0C3D3ACC6FAC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8CCA39DD-8412-4547-BE7F-0C3D3ACC6FAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8CCA39DD-8412-4547-BE7F-0C3D3ACC6FAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8CCA39DD-8412-4547-BE7F-0C3D3ACC6FAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8CCA39DD-8412-4547-BE7F-0C3D3ACC6FAC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A2364D6A-00EF-417C-80A6-815726C70032}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A2364D6A-00EF-417C-80A6-815726C70032}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A2364D6A-00EF-417C-80A6-815726C70032}.Release|Any CPU.ActiveCfg = Release|Any CPU

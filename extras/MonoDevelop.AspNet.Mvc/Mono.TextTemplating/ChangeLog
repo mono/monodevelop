@@ -1,3 +1,17 @@
+2009-03-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextTemplating/TemplateGenerator.cs: Report exceptions
+	  in errors.
+
+	* Mono.TextTemplating/Tokeniser.cs: Make API public.
+
+	* Mono.TextTemplating/ParsedTemplate.cs: Unify segment types.
+	  Track end locations. Make API public. Allow parsing without
+	  includes.
+
+	* Microsoft.VisualStudio.TextTemplating/Engine.cs: Track
+	  location API.
+
 2009-03-06  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.TextTemplating/TemplateGenerator.cs: Fix

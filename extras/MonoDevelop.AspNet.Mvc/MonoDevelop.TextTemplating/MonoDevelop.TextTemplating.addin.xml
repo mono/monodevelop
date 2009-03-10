@@ -1,0 +1,48 @@
+<Addin id          = "TextTemplating"
+       namespace   = "MonoDevelop"
+       name        = "Text Templating"
+       author      = "Michael Hutchinson"
+       copyright   = ""
+       url         = ""
+       description = "Support for editing and running T4 text templates."
+       category    = "IDE extensions"
+       version     = "1.9.2">
+	
+	<Runtime>
+	</Runtime>
+	
+	<Dependencies>
+	    <Addin id="Core" version="1.9.2"/>
+	    <Addin id="Core.Gui" version="1.9.2"/>
+		<Addin id="Components" version="1.9.2"/>
+		<Addin id="Ide" version="1.9.2"/>
+		<Addin id="SourceEditor2" version="1.9.2"/>
+		<Addin id="Projects" version="1.9.2"/>
+	</Dependencies>
+	
+	<Extension path = "/MonoDevelop/SourceEditor2/SyntaxModes">
+		<Templates resource="T4SyntaxMode.xml" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Core/MimeTypes">
+		<MimeType id="application/t4-template" _description="Text template" icon="md-template" isText="true">
+			<File pattern="*.tt" />
+		</MimeType>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/FileFilters">
+		<FileFilter id = "T4Templates"
+		            insertbefore = "AllFiles"
+		           _label = "T4 Templates"
+		           extensions = "*.tt" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/DomParser">
+		<Class class = "MonoDevelop.TextTemplating.Parser.T4Parser" />
+	</Extension>
+	<!--
+	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
+		<Class class = "MonoDevelop.TextTemplating.T4EditorExtension" />
+	</Extension>
+	-->
+</Addin>

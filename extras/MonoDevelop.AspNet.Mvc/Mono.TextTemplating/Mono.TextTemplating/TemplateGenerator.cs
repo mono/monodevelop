@@ -91,7 +91,7 @@ namespace Mono.TextTemplating
 			try {
 				content = File.ReadAllText (inputFile);
 			} catch (IOException ex) {
-				AddError ("Could not read input file '" + inputFile + "'");
+				AddError ("Could not read input file '" + inputFile + "':\n" + ex.ToString ());
 				return false;
 			}
 			
@@ -101,7 +101,7 @@ namespace Mono.TextTemplating
 				if (!errors.HasErrors)
 					File.WriteAllText (outputFile, output, encoding);
 			} catch (IOException ex) {
-				AddError ("Could not read input file '" + inputFile + "'");
+				AddError ("Could not read input file '" + inputFile + "':\n" + ex.ToString ());
 			}
 			
 			return !errors.HasErrors;
@@ -155,7 +155,7 @@ namespace Mono.TextTemplating
 				content = System.IO.File.ReadAllText (location);
 				return true;
 			} catch (IOException ex) {
-				AddError ("Could not read included file '" + location + "'");
+				AddError ("Could not read included file '" + location +  "':\n" + ex.ToString ());
 			}
 			return false;
 		}

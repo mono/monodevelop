@@ -32,7 +32,7 @@ namespace Mono.TextTemplating
 {
 	
 	
-	class Tokeniser
+	public class Tokeniser
 	{
 		string content;
 		int position = 0;
@@ -220,7 +220,7 @@ namespace Mono.TextTemplating
 		public Location Location { get; private set; }
 	}
 	
-	enum State
+	public enum State
 	{
 		Content = 0,
 		Directive,
@@ -233,7 +233,7 @@ namespace Mono.TextTemplating
 		EOF
 	}
 	
-	class ParserException : Exception
+	public class ParserException : Exception
 	{
 		public ParserException (string message, Location location) : base (message)
 		{

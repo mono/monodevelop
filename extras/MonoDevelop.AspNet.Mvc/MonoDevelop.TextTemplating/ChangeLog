@@ -1,0 +1,12 @@
+2009-03-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* .:
+	* Parser:
+	* AssemblyInfo.cs:
+	* T4SyntaxMode.xml:
+	* Parser/T4Parser.cs:
+	* Parser/T4ParsedDocument.cs:
+	* MonoDevelop.TextTemplating.csproj:
+	* MonoDevelop.TextTemplating.addin.xml: Added new
+	  TextTemplating addin.
+

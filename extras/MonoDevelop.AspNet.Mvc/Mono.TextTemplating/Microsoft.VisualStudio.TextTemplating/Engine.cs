@@ -152,7 +152,7 @@ namespace Microsoft.VisualStudio.TextTemplating
 					if (val != null) {
 						System.Globalization.CultureInfo culture = System.Globalization.CultureInfo.GetCultureInfo (val);
 						if (culture == null)
-							pt.LogWarning ("Could not find culture '" + val + "'", dt.Location);
+							pt.LogWarning ("Could not find culture '" + val + "'", dt.StartLocation);
 						else
 							settings.Culture = culture;
 					}
@@ -165,7 +165,7 @@ namespace Microsoft.VisualStudio.TextTemplating
 				case "assembly":
 					string name = dt.Extract ("name");
 					if (name == null)
-						pt.LogError ("Missing name attribute in assembly directive", dt.Location);
+						pt.LogError ("Missing name attribute in assembly directive", dt.StartLocation);
 					else
 						settings.Assemblies.Add (name);
 					break;
@@ -173,7 +173,7 @@ namespace Microsoft.VisualStudio.TextTemplating
 				case "import":
 					string namespac = dt.Extract ("namespace");
 					if (namespac == null)
-						pt.LogError ("Missing namespace attribute in import directive", dt.Location);
+						pt.LogError ("Missing namespace attribute in import directive", dt.StartLocation);
 					else
 						settings.Assemblies.Add (namespac);
 					break;
@@ -234,7 +234,7 @@ namespace Microsoft.VisualStudio.TextTemplating
 			sb.Append (" found in ");
 			sb.Append (dt.Name);
 			sb.Append (" directive.");
-			pt.LogWarning (sb.ToString (), dt.Location);
+			pt.LogWarning (sb.ToString (), dt.StartLocation);
 			return false;
 		}
 		
@@ -272,7 +272,7 @@ namespace Microsoft.VisualStudio.TextTemplating
 				new CodeMethodReferenceExpression (new CodeTypeReferenceExpression (typeof (ToStringHelper)), "ToStringWithCulture");
 			
 			//build the code from the segments
-			foreach (TemplateSegment seg in pt.Segments) {
+			foreach (TemplateSegment seg in pt.Content) {
 				CodeStatement st = null;
 				switch (seg.Type) {
 				case SegmentType.Block:
@@ -290,14 +290,14 @@ namespace Microsoft.VisualStudio.TextTemplating
 					break;
 				case SegmentType.Helper:
 					CodeTypeMember mem = new CodeSnippetTypeMember (seg.Text);
-					mem.LinePragma = new CodeLinePragma (host.TemplateFile, seg.Location.Line);
+					mem.LinePragma = new CodeLinePragma (host.TemplateFile, seg.StartLocation.Line);
 					type.Members.Add (mem);
 					break;
 				default:
 					throw new InvalidOperationException ();
 				}
 				if (st != null) {
-					st.LinePragma = new CodeLinePragma (host.TemplateFile, seg.Location.Line);
+					st.LinePragma = new CodeLinePragma (host.TemplateFile, seg.StartLocation.Line);
 					transformMeth.Statements.Add (st);
 				}
 			}
