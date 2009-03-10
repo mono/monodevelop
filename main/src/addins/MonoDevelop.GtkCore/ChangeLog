@@ -1,3 +1,11 @@
+2009-03-10  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.GtkCore/GtkDesignInfo.cs: When the stetic files
+	  are generated for the first time, ensure that their write
+	  date is < the write date of the .stetic file, otherwise they
+	  won't be regenerated when building. Fixes bug #483970 -
+	  [Regression] Default C# Gtk# app no longer builds.
+
 2009-03-03  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/gui.stetic: Flush.
