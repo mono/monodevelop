@@ -52,35 +52,40 @@ namespace MonoDevelop.Projects.Text
 		
 		static TextFileService ()
 		{
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/ProjectModel/TextFormatters", delegate(object sender, ExtensionNodeEventArgs args) {
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/ProjectModel/TextFormatters", FormatterExtHandler);
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/ProjectModel/TextFormatDefinition", DefinitionExtHandler);
+		}
+		
+		static void FormatterExtHandler (object sender, ExtensionNodeEventArgs args)
+		{
+			switch (args.Change) {
+			case ExtensionChange.Add:
+				formatters.Add ((IFormatter) args.ExtensionObject);
+				break;
+			case ExtensionChange.Remove:
+				formatters.Remove ((IFormatter) args.ExtensionObject);
+				break;
+			}
+		}
+		
+		static void DefinitionExtHandler (object sender, ExtensionNodeEventArgs args)
+		{
+			XmlDefinitionCodon xmlDef = args.ExtensionNode as XmlDefinitionCodon;
+			using (XmlReader reader = xmlDef.Open ()) {
+				CodeFormatDescription descr = CodeFormatDescription.Read (reader);
 				switch (args.Change) {
 				case ExtensionChange.Add:
-					formatters.Add ((IFormatter) args.ExtensionObject);
+				/*	foreach (var v in descr.Types) {
+						System.Console.WriteLine(v);
+					}
+					PrintCategory (descr);*/
+					descriptions.Add (descr);
 					break;
 				case ExtensionChange.Remove:
-					formatters.Remove ((IFormatter) args.ExtensionObject);
+					descriptions.RemoveAll (d => d.MimeType == descr.MimeType);
 					break;
 				}
-			});
-			
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/ProjectModel/TextFormatDefinition", delegate(object sender, ExtensionNodeEventArgs args) {
-				XmlDefinitionCodon xmlDef = args.ExtensionNode as XmlDefinitionCodon;
-				using (XmlReader reader = xmlDef.Open ()) {
-					CodeFormatDescription descr = CodeFormatDescription.Read (reader);
-					switch (args.Change) {
-					case ExtensionChange.Add:
-					/*	foreach (var v in descr.Types) {
-							System.Console.WriteLine(v);
-						}
-						PrintCategory (descr);*/
-						descriptions.Add (descr);
-						break;
-					case ExtensionChange.Remove:
-						descriptions.RemoveAll (d => d.MimeType == descr.MimeType);
-						break;
-					}
-				}
-			});
+			}
 		}
 		
 		public static CodeFormatDescription GetFormatDescription (string mimeType)

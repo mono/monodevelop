@@ -1,3 +1,8 @@
+2009-03-11  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Text/TextFileService.cs: Work around 
+	  gmcs 2.2 bug that generated invalid IL.
+
 2009-03-11  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Text/TextFileService.cs:
