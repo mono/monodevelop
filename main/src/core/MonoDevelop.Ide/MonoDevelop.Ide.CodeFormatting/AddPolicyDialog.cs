@@ -1,5 +1,5 @@
 // 
-// EditFormattingPolicyDialog.cs
+// AddPolicyDialog.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -25,47 +25,24 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Core;
-using MonoDevelop.Projects.Text;
 
 namespace MonoDevelop.Ide.CodeFormatting
 {
-	public partial class EditFormattingPolicyDialog : Gtk.Dialog
+	
+	
+	public partial class AddPolicyDialog : Gtk.Dialog
 	{
-		CodeFormatSettings    settings;
-		CodeFormatDescription description;
+		public string NewPolicyName {
+			get {
+				return entryName.Text;
+			}
+		}
 		
-		public EditFormattingPolicyDialog()
+		public AddPolicyDialog()
 		{
 			this.Build();
-			buttonOk.Clicked += delegate {
-				if (description == null)
-					return;
-				settings.Name = this.entryName.Text;
-			};
-		}
-		
-		public void SetFormat (CodeFormatDescription description, CodeFormatSettings settings)
-		{
-			this.description = description;
-			this.settings    = settings;
-			this.entryName.Text = settings.Name;
-			while (notebookCategories.NPages > 0) {
-				notebookCategories.RemovePage (0);
-			}
-			if (description != null) {
-				foreach (CodeFormatCategory category in description.SubCategories) {
-					AddCategoryPage (category);
-				}
-			}
-			notebookCategories.ShowAll ();
-		}
-		
-		void AddCategoryPage (CodeFormatCategory category)
-		{
-			Gtk.Label label = new Gtk.Label (GettextCatalog.GetString (category.DisplayName));
-			Gtk.TreeView tree = new Gtk.TreeView ();
-			notebookCategories.AppendPage (tree, label);
+			this.comboboxentryInitFrom.AppendText ("default");
+			
 		}
 	}
 }

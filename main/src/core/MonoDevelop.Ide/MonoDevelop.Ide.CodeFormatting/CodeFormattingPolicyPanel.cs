@@ -25,18 +25,94 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using Gtk;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Serialization;
+using MonoDevelop.Projects.Gui.Dialogs;
+using MonoDevelop.Projects.Text;
 
 namespace MonoDevelop.Ide.CodeFormatting
 {
-	
+	class CodeFormattingPolicyPanel : PolicyOptionsPanel<CodeFormattingPolicy>
+	{
+		protected override string PolicyTitleWithMnemonic {
+			get { return GettextCatalog.GetString ("Code _Format"); }
+		}
+		
+		CodeFormattingPolicyPanelWidget panel;
+		
+		public override Widget CreatePanelWidget ()
+		{
+			panel = new CodeFormattingPolicyPanelWidget ();
+			panel.ShowAll ();
+			return panel;
+		}
+		
+		protected override void LoadFrom (CodeFormattingPolicy policy)
+		{
+			panel.Policy = policy;
+		}
+		
+		protected override CodeFormattingPolicy GetPolicy ()
+		{
+			return panel.Policy;
+		}
+	}
 	
 	[System.ComponentModel.ToolboxItem(true)]
-	public partial class CodeFormattingPolicyPanel : Gtk.Bin
+	public partial class CodeFormattingPolicyPanelWidget : Gtk.Bin
 	{
+		List<string> policies = new List<string> ();
+		public CodeFormattingPolicy Policy {
+			get;
+			set;
+		}
 		
-		public CodeFormattingPolicyPanel()
+		public CodeFormattingPolicyPanelWidget()
 		{
 			this.Build();
+			buttonAdd.Clicked += delegate {
+				AddPolicyDialog addPolicy = new AddPolicyDialog ();
+				ResponseType response = (ResponseType)addPolicy.Run ();
+				if (response == ResponseType.Ok) {
+					policies.Add (addPolicy.NewPolicyName);
+					comboboxFormattingPolicies.AppendText (addPolicy.NewPolicyName);
+				}
+				addPolicy.Destroy ();
+			};
+			
+			buttonEdit.Clicked += delegate {
+				EditFormattingPolicyDialog d = new EditFormattingPolicyDialog ();
+				d.SetFormat (TextFileService.GetFormatDescription ("text/x-csharp"), new CodeFormatSettings (comboboxFormattingPolicies.Name));
+				d.Run ();
+				d.Destroy ();
+			};
+			
+			buttonImport.Clicked += delegate {
+				
+			};
+			
+			buttonRemove.Clicked += delegate {
+				
+			};
 		}
+	}
+	
+	[DataItem ("CodeFormat")]
+	public class CodeFormattingPolicy  : IEquatable<CodeFormattingPolicy>
+	{
+		[ItemProperty]
+		public string CodeStyle { 
+			get; 
+			set; 
+		}
+	
+		#region IEquatable<CodeFormattingPolicy> implementation
+		public bool Equals (CodeFormattingPolicy other)
+		{
+			return other != null && CodeStyle == other.CodeStyle;
+		}
+		#endregion
 	}
 }

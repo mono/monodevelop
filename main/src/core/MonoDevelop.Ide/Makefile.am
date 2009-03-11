@@ -30,7 +30,8 @@ FILES =  \
 	AssemblyInfo.cs \
 	BuildVariables.cs \
 	gtk-gui/generated.cs \
-	gtk-gui/MonoDevelop.Ide.CodeFormatting.CodeFormattingPolicyPanel.cs \
+	gtk-gui/MonoDevelop.Ide.CodeFormatting.AddPolicyDialog.cs \
+	gtk-gui/MonoDevelop.Ide.CodeFormatting.CodeFormattingPolicyPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.CodeFormatting.EditFormattingPolicyDialog.cs \
 	gtk-gui/MonoDevelop.Ide.CodeTemplates.CodeTemplatePanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.DocumentSwitcher.cs \
@@ -62,6 +63,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.OverridesImplementsDialog.cs \
 	gtk-gui/MonoDevelop.Ide.SelectEncodingsDialog.cs \
 	gtk-gui/MonoDevelop.Ide.StandardHeader.StandardHeaderPolicyPanelWidget.cs \
+	MonoDevelop.Ide.CodeFormatting/AddPolicyDialog.cs \
 	MonoDevelop.Ide.CodeFormatting/CodeFormatterService.cs \
 	MonoDevelop.Ide.CodeFormatting/CodeFormattingPolicyPanel.cs \
 	MonoDevelop.Ide.CodeFormatting/EditFormattingPolicyDialog.cs \

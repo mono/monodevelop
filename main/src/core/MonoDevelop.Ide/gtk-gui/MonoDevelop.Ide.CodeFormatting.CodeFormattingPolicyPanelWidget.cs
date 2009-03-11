@@ -11,7 +11,7 @@
 namespace MonoDevelop.Ide.CodeFormatting {
     
     
-    public partial class CodeFormattingPolicyPanel {
+    public partial class CodeFormattingPolicyPanelWidget {
         
         private Gtk.VBox vbox1;
         
@@ -21,19 +21,19 @@ namespace MonoDevelop.Ide.CodeFormatting {
         
         private Gtk.HBox hbox3;
         
-        private Gtk.ComboBoxEntry comboboxentry1;
+        private Gtk.ComboBoxEntry comboboxFormattingPolicies;
         
         private Gtk.Table table1;
         
-        private Gtk.Button button17;
+        private Gtk.Button buttonEdit;
         
-        private Gtk.Button button18;
+        private Gtk.Button buttonRemove;
         
         private Gtk.Table table2;
         
-        private Gtk.Button button13;
+        private Gtk.Button buttonAdd;
         
-        private Gtk.Button button19;
+        private Gtk.Button buttonImport;
         
         private Gtk.Label lbl_will_save_in1;
         
@@ -41,10 +41,10 @@ namespace MonoDevelop.Ide.CodeFormatting {
         
         protected virtual void Build() {
             Stetic.Gui.Initialize(this);
-            // Widget MonoDevelop.Ide.CodeFormatting.CodeFormattingPolicyPanel
+            // Widget MonoDevelop.Ide.CodeFormatting.CodeFormattingPolicyPanelWidget
             Stetic.BinContainer.Attach(this);
-            this.Name = "MonoDevelop.Ide.CodeFormatting.CodeFormattingPolicyPanel";
-            // Container child MonoDevelop.Ide.CodeFormatting.CodeFormattingPolicyPanel.Gtk.Container+ContainerChild
+            this.Name = "MonoDevelop.Ide.CodeFormatting.CodeFormattingPolicyPanelWidget";
+            // Container child MonoDevelop.Ide.CodeFormatting.CodeFormattingPolicyPanelWidget.Gtk.Container+ContainerChild
             this.vbox1 = new Gtk.VBox();
             this.vbox1.Name = "vbox1";
             this.vbox1.Spacing = 6;
@@ -75,10 +75,10 @@ namespace MonoDevelop.Ide.CodeFormatting {
             this.hbox3.Name = "hbox3";
             this.hbox3.Spacing = 6;
             // Container child hbox3.Gtk.Box+BoxChild
-            this.comboboxentry1 = Gtk.ComboBoxEntry.NewText();
-            this.comboboxentry1.Name = "comboboxentry1";
-            this.hbox3.Add(this.comboboxentry1);
-            Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.hbox3[this.comboboxentry1]));
+            this.comboboxFormattingPolicies = Gtk.ComboBoxEntry.NewText();
+            this.comboboxFormattingPolicies.Name = "comboboxFormattingPolicies";
+            this.hbox3.Add(this.comboboxFormattingPolicies);
+            Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.hbox3[this.comboboxFormattingPolicies]));
             w3.Position = 0;
             // Container child hbox3.Gtk.Box+BoxChild
             this.table1 = new Gtk.Table(((uint)(1)), ((uint)(2)), true);
@@ -86,24 +86,24 @@ namespace MonoDevelop.Ide.CodeFormatting {
             this.table1.RowSpacing = ((uint)(6));
             this.table1.ColumnSpacing = ((uint)(6));
             // Container child table1.Gtk.Table+TableChild
-            this.button17 = new Gtk.Button();
-            this.button17.CanFocus = true;
-            this.button17.Name = "button17";
-            this.button17.UseUnderline = true;
-            this.button17.Label = Mono.Unix.Catalog.GetString("_Edit...");
-            this.table1.Add(this.button17);
-            Gtk.Table.TableChild w4 = ((Gtk.Table.TableChild)(this.table1[this.button17]));
+            this.buttonEdit = new Gtk.Button();
+            this.buttonEdit.CanFocus = true;
+            this.buttonEdit.Name = "buttonEdit";
+            this.buttonEdit.UseUnderline = true;
+            this.buttonEdit.Label = Mono.Unix.Catalog.GetString("_Edit...");
+            this.table1.Add(this.buttonEdit);
+            Gtk.Table.TableChild w4 = ((Gtk.Table.TableChild)(this.table1[this.buttonEdit]));
             w4.XOptions = ((Gtk.AttachOptions)(4));
             w4.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table1.Gtk.Table+TableChild
-            this.button18 = new Gtk.Button();
-            this.button18.CanFocus = true;
-            this.button18.Name = "button18";
-            this.button18.UseStock = true;
-            this.button18.UseUnderline = true;
-            this.button18.Label = "gtk-remove";
-            this.table1.Add(this.button18);
-            Gtk.Table.TableChild w5 = ((Gtk.Table.TableChild)(this.table1[this.button18]));
+            this.buttonRemove = new Gtk.Button();
+            this.buttonRemove.CanFocus = true;
+            this.buttonRemove.Name = "buttonRemove";
+            this.buttonRemove.UseStock = true;
+            this.buttonRemove.UseUnderline = true;
+            this.buttonRemove.Label = "gtk-remove";
+            this.table1.Add(this.buttonRemove);
+            Gtk.Table.TableChild w5 = ((Gtk.Table.TableChild)(this.table1[this.buttonRemove]));
             w5.LeftAttach = ((uint)(1));
             w5.RightAttach = ((uint)(2));
             w5.XOptions = ((Gtk.AttachOptions)(4));
@@ -123,24 +123,24 @@ namespace MonoDevelop.Ide.CodeFormatting {
             this.table2.RowSpacing = ((uint)(6));
             this.table2.ColumnSpacing = ((uint)(6));
             // Container child table2.Gtk.Table+TableChild
-            this.button13 = new Gtk.Button();
-            this.button13.CanFocus = true;
-            this.button13.Name = "button13";
-            this.button13.UseStock = true;
-            this.button13.UseUnderline = true;
-            this.button13.Label = "gtk-add";
-            this.table2.Add(this.button13);
-            Gtk.Table.TableChild w8 = ((Gtk.Table.TableChild)(this.table2[this.button13]));
+            this.buttonAdd = new Gtk.Button();
+            this.buttonAdd.CanFocus = true;
+            this.buttonAdd.Name = "buttonAdd";
+            this.buttonAdd.UseStock = true;
+            this.buttonAdd.UseUnderline = true;
+            this.buttonAdd.Label = "gtk-add";
+            this.table2.Add(this.buttonAdd);
+            Gtk.Table.TableChild w8 = ((Gtk.Table.TableChild)(this.table2[this.buttonAdd]));
             w8.XOptions = ((Gtk.AttachOptions)(4));
             w8.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table2.Gtk.Table+TableChild
-            this.button19 = new Gtk.Button();
-            this.button19.CanFocus = true;
-            this.button19.Name = "button19";
-            this.button19.UseUnderline = true;
-            this.button19.Label = Mono.Unix.Catalog.GetString("_Import...");
-            this.table2.Add(this.button19);
-            Gtk.Table.TableChild w9 = ((Gtk.Table.TableChild)(this.table2[this.button19]));
+            this.buttonImport = new Gtk.Button();
+            this.buttonImport.CanFocus = true;
+            this.buttonImport.Name = "buttonImport";
+            this.buttonImport.UseUnderline = true;
+            this.buttonImport.Label = Mono.Unix.Catalog.GetString("_Import...");
+            this.table2.Add(this.buttonImport);
+            Gtk.Table.TableChild w9 = ((Gtk.Table.TableChild)(this.table2[this.buttonImport]));
             w9.LeftAttach = ((uint)(1));
             w9.RightAttach = ((uint)(2));
             w9.XOptions = ((Gtk.AttachOptions)(4));

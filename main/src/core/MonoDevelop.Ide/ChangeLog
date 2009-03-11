@@ -1,3 +1,19 @@
+2009-03-11  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Ide.csproj:
+	* MonoDevelop.Ide.addin.xml:
+	* MonoDevelop.Ide.CodeFormatting/AddPolicyDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.CodeFormatting.AddPolicyDialog.cs:
+	* MonoDevelop.Ide.CodeFormatting/CodeFormattingPolicyPanel.cs:
+	* MonoDevelop.Ide.CodeFormatting/EditFormattingPolicyDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.FeatureSelectorDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.CodeFormatting.CodeFormattingPolicyPanel.cs:
+	* gtk-gui/MonoDevelop.Ide.CodeFormatting.EditFormattingPolicyDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.CodeFormatting.CodeFormattingPolicyPanelWidget.cs:
+	  Worked on code formatting.
+
 2009-03-10  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.Components/TreeViewItem.cs: Fix

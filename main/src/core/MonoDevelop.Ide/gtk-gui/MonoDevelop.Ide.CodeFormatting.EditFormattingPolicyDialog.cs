@@ -19,13 +19,13 @@ namespace MonoDevelop.Ide.CodeFormatting {
         
         private Gtk.Label label2;
         
-        private Gtk.Entry entry1;
+        private Gtk.Entry entryName;
         
         private Gtk.Button button5;
         
         private Gtk.HPaned hpaned1;
         
-        private Gtk.Notebook notebook2;
+        private Gtk.Notebook notebookCategories;
         
         private Gtk.Label label5;
         
@@ -49,7 +49,6 @@ namespace MonoDevelop.Ide.CodeFormatting {
             Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Ide.CodeFormatting.EditFormattingPolicyDialog
             this.Name = "MonoDevelop.Ide.CodeFormatting.EditFormattingPolicyDialog";
-            this.Title = Mono.Unix.Catalog.GetString("dialog1");
             this.WindowPosition = ((Gtk.WindowPosition)(4));
             this.HasSeparator = false;
             // Internal child MonoDevelop.Ide.CodeFormatting.EditFormattingPolicyDialog.VBox
@@ -75,13 +74,13 @@ namespace MonoDevelop.Ide.CodeFormatting {
             w2.Expand = false;
             w2.Fill = false;
             // Container child hbox1.Gtk.Box+BoxChild
-            this.entry1 = new Gtk.Entry();
-            this.entry1.CanFocus = true;
-            this.entry1.Name = "entry1";
-            this.entry1.IsEditable = true;
-            this.entry1.InvisibleChar = '●';
-            this.hbox1.Add(this.entry1);
-            Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.hbox1[this.entry1]));
+            this.entryName = new Gtk.Entry();
+            this.entryName.CanFocus = true;
+            this.entryName.Name = "entryName";
+            this.entryName.IsEditable = true;
+            this.entryName.InvisibleChar = '●';
+            this.hbox1.Add(this.entryName);
+            Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.hbox1[this.entryName]));
             w3.Position = 1;
             // Container child hbox1.Gtk.Box+BoxChild
             this.button5 = new Gtk.Button();
@@ -105,21 +104,21 @@ namespace MonoDevelop.Ide.CodeFormatting {
             this.hpaned1.Name = "hpaned1";
             this.hpaned1.Position = 266;
             // Container child hpaned1.Gtk.Paned+PanedChild
-            this.notebook2 = new Gtk.Notebook();
-            this.notebook2.CanFocus = true;
-            this.notebook2.Name = "notebook2";
-            this.notebook2.CurrentPage = 0;
+            this.notebookCategories = new Gtk.Notebook();
+            this.notebookCategories.CanFocus = true;
+            this.notebookCategories.Name = "notebookCategories";
+            this.notebookCategories.CurrentPage = 0;
             // Notebook tab
             Gtk.Label w6 = new Gtk.Label();
             w6.Visible = true;
-            this.notebook2.Add(w6);
+            this.notebookCategories.Add(w6);
             this.label5 = new Gtk.Label();
             this.label5.Name = "label5";
             this.label5.LabelProp = Mono.Unix.Catalog.GetString("page1");
-            this.notebook2.SetTabLabel(w6, this.label5);
+            this.notebookCategories.SetTabLabel(w6, this.label5);
             this.label5.ShowAll();
-            this.hpaned1.Add(this.notebook2);
-            Gtk.Paned.PanedChild w7 = ((Gtk.Paned.PanedChild)(this.hpaned1[this.notebook2]));
+            this.hpaned1.Add(this.notebookCategories);
+            Gtk.Paned.PanedChild w7 = ((Gtk.Paned.PanedChild)(this.hpaned1[this.notebookCategories]));
             w7.Resize = false;
             // Container child hpaned1.Gtk.Paned+PanedChild
             this.vbox3 = new Gtk.VBox();

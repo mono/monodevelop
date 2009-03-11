@@ -1204,11 +1204,13 @@
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/SourceCode">
 		<Section id = "ProjectStandardHeader" _label = "Standard Header" fill="true" class = "MonoDevelop.Ide.StandardHeader.StandardHeaderPolicyPanel" />
 		<Section id = "ProjectTextStylePolicy" _label = "Text Style" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.TextStylePolicyPanel" />
+<!--		<Section id = "CodeFormatPolicy" _label = "Code Format" fill="true" class = "MonoDevelop.Ide.CodeFormatting.CodeFormattingPolicyPanel" />-->
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/DefaultPolicyPanels">
 		<Section id = "DefaultStandardHeader" _label = "Standard Header" fill="true" class = "MonoDevelop.Ide.StandardHeader.StandardHeaderPolicyPanel" />
 		<Section id = "DefaultTextStylePolicy" _label = "Text Style" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.TextStylePolicyPanel" />
+<!--		<Section id = "CodeFormatPolicy" _label = "Code Format" fill="true" class = "MonoDevelop.Ide.CodeFormatting.CodeFormattingPolicyPanel" />-->
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/PolicyTypes" >
