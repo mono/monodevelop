@@ -1,3 +1,9 @@
+2009-03-11  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Text/TextFileService.cs:
+	* MonoDevelop.Projects.Text/CodeFormatDescription.cs: Worked
+	  on code formatting.
+
 2009-03-10  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/ProjectReference.cs: Make sure missing

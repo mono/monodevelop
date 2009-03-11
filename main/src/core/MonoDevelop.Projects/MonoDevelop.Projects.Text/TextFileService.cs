@@ -27,14 +27,28 @@
 //
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
+using System.Xml;
 using Mono.Addins;
 
 namespace MonoDevelop.Projects.Text
 {
 	public static class TextFileService
 	{
+		static List<CodeFormatDescription> descriptions = new List<CodeFormatDescription> ();
 		static List<IFormatter> formatters = new List<IFormatter>();
+		
+//		static void PrintCategory (CodeFormatCategory c)
+//		{
+//			System.Console.WriteLine (c);
+//			foreach (var o in c.Options) {
+//				System.Console.WriteLine(o);
+//			}
+//			foreach (var sub in c.SubCategories) {
+//				PrintCategory (sub);
+//			}
+//		}
 		
 		static TextFileService ()
 		{
@@ -50,14 +64,28 @@ namespace MonoDevelop.Projects.Text
 			});
 			
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/ProjectModel/TextFormatDefinition", delegate(object sender, ExtensionNodeEventArgs args) {
-				switch (args.Change) {
-				case ExtensionChange.Add:
-					System.Console.WriteLine("Add:" + args.ExtensionNode);
-					break;
-				case ExtensionChange.Remove:
-					break;
+				XmlDefinitionCodon xmlDef = args.ExtensionNode as XmlDefinitionCodon;
+				using (XmlReader reader = xmlDef.Open ()) {
+					CodeFormatDescription descr = CodeFormatDescription.Read (reader);
+					switch (args.Change) {
+					case ExtensionChange.Add:
+					/*	foreach (var v in descr.Types) {
+							System.Console.WriteLine(v);
+						}
+						PrintCategory (descr);*/
+						descriptions.Add (descr);
+						break;
+					case ExtensionChange.Remove:
+						descriptions.RemoveAll (d => d.MimeType == descr.MimeType);
+						break;
+					}
 				}
 			});
+		}
+		
+		public static CodeFormatDescription GetFormatDescription (string mimeType)
+		{
+			return descriptions.Find (d => d.MimeType == mimeType);
 		}
 		
 		public static IFormatter GetFormatter (string mimeType)

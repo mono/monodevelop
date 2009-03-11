@@ -46,9 +46,15 @@ namespace MonoDevelop.Projects.Text
 		}
 		internal const string Node = "Type";
 		
+		public override string ToString ()
+		{
+			return string.Format("[CodeFormatType: Name={0}, Values=({1})]", Name, string.Join (",", values.ToArray ()));
+		}
+
 		public static CodeFormatType Read (XmlReader reader)
 		{
 			CodeFormatType result = new CodeFormatType ();
+			result.Name = reader.GetAttribute ("name");
 			XmlReadHelper.ReadList (reader, Node, delegate () {
 				switch (reader.LocalName) {
 				case "Value":
@@ -79,9 +85,16 @@ namespace MonoDevelop.Projects.Text
 		}
 		internal static string Node = "Option";
 		
+		public override string ToString ()
+		{
+			return string.Format("[CodeFormatOption: Name={0}, DisplayName={1}, Type={2}]", Name, DisplayName, Type);
+		}
+		
 		public static CodeFormatOption Read (XmlReader reader)
 		{
 			CodeFormatOption result = new CodeFormatOption ();
+			result.DisplayName = reader.GetAttribute ("_displayName");
+			result.Type = reader.GetAttribute ("type");
 			result.Name = reader.ReadElementString ();
 			return result;
 		}
@@ -93,6 +106,12 @@ namespace MonoDevelop.Projects.Text
 			get;
 			set;
 		}
+		
+		public string DisplayName {
+			get;
+			set;
+		}
+		
 		public string Example {
 			get;
 			set;
@@ -111,11 +130,19 @@ namespace MonoDevelop.Projects.Text
 				return options;
 			}
 		}
+		
+		public override string ToString ()
+		{
+			return string.Format("[CodeFormatCategory: Name={0}, DisplayName={4}, Example={1}, #SubCategories={2}, #Options={3}]", Name, Example, subCategories.Count, options.Count, DisplayName);
+		}
+		
 		internal const string Node = "Category";
 		
 		public static CodeFormatCategory Read (XmlReader reader)
 		{
 			CodeFormatCategory result = new CodeFormatCategory ();
+			result.DisplayName = reader.GetAttribute ("_displayName");
+			result.Name        = reader.GetAttribute ("name");
 			XmlReadHelper.ReadList (reader, Node, delegate () {
 				switch (reader.LocalName) {
 				case "Option":
@@ -131,49 +158,84 @@ namespace MonoDevelop.Projects.Text
 		}
 	}
 	
+	public class CodeFormatSettings
+	{
+		public string Name {
+			get;
+			set;
+		}
+		
+		Dictionary<string, string> properties = new Dictionary<string, string> ();
+		public Dictionary<string, string> Properties {
+			get {
+				return properties;
+			}
+		}
+		
+		public CodeFormatSettings (string name)
+		{
+			this.Name = name;
+		}
+	}
+	
 	public class CodeFormatDescription : CodeFormatCategory
 	{
 		List<CodeFormatType> types = new List<CodeFormatType> ();
+		
+		public string MimeType {
+			get;
+			set;
+		}
+	
+		public IEnumerable<CodeFormatType> Types {
+			get {
+				return types;
+			}
+		}
 		
 		public CodeFormatDescription()
 		{
 		}
 		
-		public static CodeFormatDescription Load (string fileName)
-		{
-			CodeFormatDescription result = new CodeFormatDescription ();
-			XmlReader reader = XmlTextReader.Create (fileName);
-			try {
-				result.Read (reader);
-			} finally {
-				reader.Close ();
-			}
-			return result;
-		}
-		
 		const string Version          = "1.0";
-		new const string Node             = "CodeFormat";
+		new const string Node         = "CodeStyle";
 		const string VersionAttribute = "version";
 
-		public new void Read (XmlReader reader)
+		public static CodeFormatDescription Load (string fileName)
 		{
+			using (XmlReader reader = XmlTextReader.Create (fileName)) {
+				return Read (reader);
+			}
+		}
+		public override string ToString ()
+		{
+			return string.Format("[CodeFormatDescription: MimeType={0}, #Types={1}, #Categories={2}]", MimeType, types.Count, subCategories.Count);
+		}
+
+		public new static CodeFormatDescription Read (XmlReader reader)
+		{
+			CodeFormatDescription result = new CodeFormatDescription ();
 			while (reader.Read ()) {
 				if (reader.IsStartElement ()) {
+					System.Console.WriteLine(reader.LocalName);
 					switch (reader.LocalName) {
 					case Node:
+						System.Console.WriteLine("1");
 						string fileVersion = reader.GetAttribute (VersionAttribute);
 						if (fileVersion != Version) 
-							return;
+							return result;
+						result.MimeType = reader.GetAttribute ("mimeType");
 						break;
 					case CodeFormatType.Node:
-						types.Add (CodeFormatType.Read (reader));
+						result.types.Add (CodeFormatType.Read (reader));
 						break;
 					case CodeFormatCategory.Node:
-						subCategories.Add (CodeFormatCategory.Read (reader));
+						result.subCategories.Add (CodeFormatCategory.Read (reader));
 						break;
 					}
 				}
 			}
+			return result;
 		}
 
 	}
