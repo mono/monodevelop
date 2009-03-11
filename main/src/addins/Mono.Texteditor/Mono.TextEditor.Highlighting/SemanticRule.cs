@@ -52,6 +52,8 @@ namespace Mono.TextEditor
 		
 		public override void Analyze (Document doc, LineSegment line, List<Chunk> chunks, int startOffset, int endOffset)
 		{
+			if (endOffset <= startOffset)
+				return;
 			string text = doc.GetTextAt (startOffset, endOffset - startOffset);
 			int startColumn = startOffset - line.Offset;
 			line.RemoveMarker (typeof(UrlMarker));
