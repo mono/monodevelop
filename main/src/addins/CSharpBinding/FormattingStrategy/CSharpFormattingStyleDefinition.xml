@@ -1,4 +1,4 @@
-<CodeStyle>
+<CodeStyle version="1.0" mimeType="text/x-csharp">
 	<Type name = "BraceStyle">
 		<Value>EndOfLine</Value>
 		<Value>NextLine</Value>
@@ -6,86 +6,82 @@
 		<Value>NextLineShifted2</Value>
 	</Type>
 	
-	<Type name = "BraceStyle">
-	</Type>
-	
-	<Category name ="Indentation">
+	<Category name ="Indentation" _displayName="Indentation">
 	</Category>
 	
-	<Category name ="Braces">
-		<Category name = "Declarations">
-			<Option _displayName="Namespace declaration" type="BraceStyle">NamespaceBraceStyle</Option>
-			<Option _displayName="Class declaration" type="BraceStyle"/>
-			<Option _displayName="Interface declaration" type="BraceStyle"/>
-			<Option _displayName="Struct declaration" type="BraceStyle"/>
-			<Option _displayName="Enum declaration" type="BraceStyle"/>
+	<Category name ="Braces" _displayName="Braces">
+		<Category name = "Declarations" _displayName="Declarations">
+			<Option name="NamespaceDeclaration" _displayName="Namespace declaration" type="BraceStyle">NamespaceBraceStyle</Option>
+			<Option name="ClassDeclaration" _displayName="Class declaration" type="BraceStyle"/>
+			<Option name="InterfaceDeclaration" _displayName="Interface declaration" type="BraceStyle"/>
+			<Option name="StructDeclaration" _displayName="Struct declaration" type="BraceStyle"/>
+			<Option name="EnumDeclaration" _displayName="Enum declaration" type="BraceStyle"/>
 			
-			<Option _displayName="Constructor declaration" type="BraceStyle"/>
-			<Option _displayName="Destructor declaration" type="BraceStyle"/>
-			<Option _displayName="Method declaration" type="BraceStyle"/>
+			<Option name="ConstructorDeclaration" _displayName="Constructor declaration" type="BraceStyle"/>
+			<Option name="DestructorDeclaration" _displayName="Destructor declaration" type="BraceStyle"/>
+			<Option name="MethodDeclaration" _displayName="Method declaration" type="BraceStyle"/>
 			
-			<Option _displayName="Property declaration" type="BraceStyle"/>
-			<Option _displayName="Get declaration" type="BraceStyle"/>
-			<Option _displayName="Set declaration" type="BraceStyle"/>
+			<Option name="PropertyDeclaration" _displayName="Property declaration" type="BraceStyle"/>
+			<Option name="GetDeclaration" _displayName="Get declaration" type="BraceStyle"/>
+			<Option name="SetDeclaration" _displayName="Set declaration" type="BraceStyle"/>
 			
-			<Option _displayName="Event declaration" type="BraceStyle"/>
-			<Option _displayName="Add declaration" type="BraceStyle"/>
-			<Option _displayName="Remove declaration" type="BraceStyle"/>
+			<Option name="EventDeclaration" _displayName="Event declaration" type="BraceStyle"/>
+			<Option name="AddDeclaration" _displayName="Add declaration" type="BraceStyle"/>
+			<Option name="RemoveDeclaration" _displayName="Remove declaration" type="BraceStyle"/>
 		</Category>
 		
-		<Category name = "Blocks">
-			<Option _displayName="Blocks" type="BraceStyle"/>
-			
-			<Option _displayName="Switch" type="BraceStyle"/>
-			<Option _displayName="Blocks in case statement" type="BraceStyle"/>
+		<Category name = "Blocks" _displayName="Blocks">
+			<Option name="InBlocks" _displayName="Blocks" type="BraceStyle"/>
+			<Option name="InSwitch" _displayName="Switch" type="BraceStyle"/>
+			<Option name="InCaseStatement" _displayName="Blocks in case statement" type="BraceStyle"/>
 		</Category>
 		
-		<Category name = "New Lines">
-			<Option _displayName="in empty class body" type="Bool"/>
-			<Option _displayName="in empty anonymous class body" type="Bool"/>
-			<Option _displayName="in empty interface body" type="Bool"/>
-			<Option _displayName="in empty struct body" type="Bool"/>
-			<Option _displayName="in empty enum body" type="Bool"/>
+		<Category name = "NewLines"  _displayName="New Lines">
+			<Option name="InEmptyClassBody" _displayName="in empty class body" type="Bool"/>
+			<Option name="InEmptyAnonymousClassBody" _displayName="in empty anonymous class body" type="Bool"/>
+			<Option name="InEmptyInterfaceBody" _displayName="in empty interface body" type="Bool"/>
+			<Option name="InEmptyStructBody" _displayName="in empty struct body" type="Bool"/>
+			<Option name="InEmptyEnumBody" _displayName="in empty enum body" type="Bool"/>
 			
-			<Option _displayName="in empty method body" type="Bool"/>
-			<Option _displayName="in empty anonymous method body" type="Bool"/>
-			<Option _displayName="in empty block" type="Bool"/>
+			<Option name="InEmptyMethodBody" _displayName="in empty method body" type="Bool"/>
+			<Option name="InEmptyAnonymousMethodBody" _displayName="in empty anonymous method body" type="Bool"/>
+			<Option name="InEmptyBlock" _displayName="in empty block" type="Bool"/>
 			
-			<Option _displayName="at end of file" type="Bool"/>
+			<Option name="AtEndOfFile" _displayName="at end of file" type="Bool"/>
 			
-			<Category name = "Array initializers">
-				<Option _displayName="after opening brace" type="Bool"/>
-				<Option _displayName="before closing brace" type="Bool"/>
+			<Category name = "ArrayInitializers"  _displayName="Array initializers">
+				<Option name="AfterOpeningBrace" _displayName="after opening brace" type="Bool"/>
+				<Option name="BeforeClosingBrace" _displayName="before closing brace" type="Bool"/>
 			</Category>
 		</Category>
 		
 	</Category>
 	
-	<Category name = "Spaces">
-		<Category name = "Before Parentheses">
-			<Option _displayName="Method call" type="Bool"/>
-			<Option _displayName="Method declaration" type="Bool"/>
-			<Option _displayName="if statement" type="Bool"/>
-			<Option _displayName="while statement" type="Bool"/>
-			<Option _displayName="for statement" type="Bool"/>
-			<Option _displayName="catch statement" type="Bool"/>
-			<Option _displayName="switch statement" type="Bool"/>
-			<Option _displayName="lock statement" type="Bool"/>
-			<Option _displayName="using statement" type="Bool"/>
+	<Category name = "Spaces" _displayName="Spaces">
+		<Category name = "BeforeParentheses" _displayName="Before Parentheses">
+			<Option name="MethodCall" _displayName="Method call" type="Bool"/>
+			<Option name="MethodDeclaration" _displayName="Method declaration" type="Bool"/>
+			<Option name="IfStatement" _displayName="if statement" type="Bool"/>
+			<Option name="WhileStatement" _displayName="while statement" type="Bool"/>
+			<Option name="ForStatement" _displayName="for statement" type="Bool"/>
+			<Option name="CatchStatement" _displayName="catch statement" type="Bool"/>
+			<Option name="SwitchStatement" _displayName="switch statement" type="Bool"/>
+			<Option name="LockStatement" _displayName="lock statement" type="Bool"/>
+			<Option name="UsingStatement" _displayName="using statement" type="Bool"/>
 		</Category>
 		
-		<Category name = "Operators">
-			<Option _displayName="before assignment" type="Bool"/>
-			<Option _displayName="after assignment" type="Bool"/>
+		<Category name = "Operators" _displayName="Operators">
+			<Option name="BeforeAssignment" _displayName="before assignment" type="Bool"/>
+			<Option name="AfterAssignment" _displayName="after assignment" type="Bool"/>
 			
-			<Option _displayName="before binary operators" type="Bool"/>
-			<Option _displayName="after binary operators" type="Bool"/>
+			<Option name="BeforeBinary" _displayName="before binary operators" type="Bool"/>
+			<Option name="AfterBinary" _displayName="after binary operators" type="Bool"/>
 			
-			<Option _displayName="before prefix operators" type="Bool"/>
-			<Option _displayName="after prefix operators" type="Bool"/>
+			<Option name="BeforePrefix" _displayName="before prefix operators" type="Bool"/>
+			<Option name="AfterPrefix" _displayName="after prefix operators" type="Bool"/>
 			
-			<Option _displayName="before postfix operators" type="Bool"/>
-			<Option _displayName="after postfix operators" type="Bool"/>
+			<Option name="BeforePostfix" _displayName="before postfix operators" type="Bool"/>
+			<Option name="AfterPostfix" _displayName="after postfix operators" type="Bool"/>
 		</Category>
 	</Category>
 </CodeStyle>

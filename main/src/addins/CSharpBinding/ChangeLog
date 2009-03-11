@@ -1,3 +1,8 @@
+2009-03-11  Mike Krüger  <mkrueger@novell.com>
+
+	* FormattingStrategy/CSharpFormattingStyleDefinition.xml:
+	  Worked on code formatting.
+
 2009-03-10  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:
