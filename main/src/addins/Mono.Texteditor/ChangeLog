@@ -1,3 +1,8 @@
+2009-03-11  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* Mono.TextEditor.Vi/ViMode.cs: Fix visual mode anchoring,
+	  return to normal mode when entire command buffer deleted.
+
 2009-03-11  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor.Highlighting/SemanticRule.cs: applied '
