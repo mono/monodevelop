@@ -1,5 +1,10 @@
 2009-03-12  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Mono.TextTemplating/Tokeniser.cs: Tweaked location of next
+	  state after directive.
+
+2009-03-12  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Mono.TextTemplating/Tokeniser.cs: Location tweaks within
 	  directives.
 

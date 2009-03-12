@@ -206,8 +206,8 @@ namespace Mono.TextTemplating
 					return State.DirectiveValue;	
 				} else if (c == '#' && position + 1 < content.Length && content[position+1] == '>') {
 					position+=2;
-					nextStateLocation = nextStateLocation.AddCols (2);
-					TagEndLocation = nextStateLocation;
+					TagEndLocation = nextStateLocation.AddCols (2);
+					nextStateLocation = nextStateLocation.AddCols (3);
 					
 					//skip newlines directly after directives
 					if (position < content.Length && content[position] == '\n') {

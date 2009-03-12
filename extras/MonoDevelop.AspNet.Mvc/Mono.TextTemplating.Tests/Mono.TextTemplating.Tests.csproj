@@ -33,6 +33,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ParsingTests.cs" />
+    <Compile Include="DummyHost.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Mono.TextTemplating\Mono.TextTemplating.csproj">
