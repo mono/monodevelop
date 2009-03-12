@@ -17,7 +17,7 @@ namespace MonoDevelop.Ide.CodeFormatting {
         
         private Gtk.Table table2;
         
-        private Gtk.ComboBoxEntry comboboxentryInitFrom;
+        private Gtk.ComboBox comboboxInitFrom;
         
         private Gtk.Entry entryName;
         
@@ -49,19 +49,21 @@ namespace MonoDevelop.Ide.CodeFormatting {
             this.table2.RowSpacing = ((uint)(6));
             this.table2.ColumnSpacing = ((uint)(6));
             // Container child table2.Gtk.Table+TableChild
-            this.comboboxentryInitFrom = Gtk.ComboBoxEntry.NewText();
-            this.comboboxentryInitFrom.Name = "comboboxentryInitFrom";
-            this.table2.Add(this.comboboxentryInitFrom);
-            Gtk.Table.TableChild w2 = ((Gtk.Table.TableChild)(this.table2[this.comboboxentryInitFrom]));
+            this.comboboxInitFrom = Gtk.ComboBox.NewText();
+            this.comboboxInitFrom.Name = "comboboxInitFrom";
+            this.table2.Add(this.comboboxInitFrom);
+            Gtk.Table.TableChild w2 = ((Gtk.Table.TableChild)(this.table2[this.comboboxInitFrom]));
             w2.TopAttach = ((uint)(1));
             w2.BottomAttach = ((uint)(2));
             w2.LeftAttach = ((uint)(1));
             w2.RightAttach = ((uint)(2));
+            w2.XOptions = ((Gtk.AttachOptions)(4));
             w2.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table2.Gtk.Table+TableChild
             this.entryName = new Gtk.Entry();
             this.entryName.CanFocus = true;
             this.entryName.Name = "entryName";
+            this.entryName.Text = Mono.Unix.Catalog.GetString("p");
             this.entryName.IsEditable = true;
             this.entryName.InvisibleChar = '●';
             this.table2.Add(this.entryName);

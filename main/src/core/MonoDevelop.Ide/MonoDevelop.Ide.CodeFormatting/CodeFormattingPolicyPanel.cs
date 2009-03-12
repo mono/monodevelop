@@ -64,29 +64,60 @@ namespace MonoDevelop.Ide.CodeFormatting
 	public partial class CodeFormattingPolicyPanelWidget : Gtk.Bin
 	{
 		List<string> policies = new List<string> ();
+		List<CodeFormatSettings> settings;
+		CodeFormatDescription description;
+		ListStore formatStore = new ListStore (typeof (string), typeof (CodeFormatSettings));
+		
 		public CodeFormattingPolicy Policy {
 			get;
 			set;
 		}
 		
+		public void FillFormattingPolicies ()
+		{
+			formatStore.Clear ();
+			foreach (CodeFormatSettings setting in settings) {
+				formatStore.AppendValues (setting.Name, setting);
+			}
+			if (settings.Count == 0) 
+				formatStore.AppendValues ("default", null);
+			comboboxFormattingPolicies.Active = 0;
+		}
+		
 		public CodeFormattingPolicyPanelWidget()
 		{
 			this.Build();
+			description = TextFileService.GetFormatDescription ("text/x-csharp");
+			settings = new List<CodeFormatSettings> (TextFileService.GetAvailableSettings (description));
+			
+			comboboxFormattingPolicies.Model = formatStore;
+			/*Gtk.CellRendererText ctx = new Gtk.CellRendererText ();
+			comboboxFormattingPolicies.PackStart (ctx, true);
+			comboboxFormattingPolicies.AddAttribute (ctx, "text", 0);*/
+			
 			buttonAdd.Clicked += delegate {
-				AddPolicyDialog addPolicy = new AddPolicyDialog ();
+				AddPolicyDialog addPolicy = new AddPolicyDialog (settings);
 				ResponseType response = (ResponseType)addPolicy.Run ();
 				if (response == ResponseType.Ok) {
-					policies.Add (addPolicy.NewPolicyName);
-					comboboxFormattingPolicies.AppendText (addPolicy.NewPolicyName);
+					settings.Add (new CodeFormatSettings (TextFileService.GetSettings (description, addPolicy.InitFrom), addPolicy.NewPolicyName));
+					FillFormattingPolicies ();
+					comboboxFormattingPolicies.Active = settings.Count - 1;
+					TextFileService.SetSettings (description, settings);
 				}
 				addPolicy.Destroy ();
 			};
 			
 			buttonEdit.Clicked += delegate {
 				EditFormattingPolicyDialog d = new EditFormattingPolicyDialog ();
-				d.SetFormat (TextFileService.GetFormatDescription ("text/x-csharp"), new CodeFormatSettings (comboboxFormattingPolicies.Name));
+				CodeFormatSettings setting = new CodeFormatSettings ("New settings");
+				int a = comboboxFormattingPolicies.Active;
+				if (a >= 0 && a < settings.Count) 
+					setting = settings [a];
+				d.SetFormat (description, setting);
 				d.Run ();
 				d.Destroy ();
+				FillFormattingPolicies ();
+				comboboxFormattingPolicies.Active = a;
 			};
 			
 			buttonImport.Clicked += delegate {
@@ -94,25 +125,14 @@ namespace MonoDevelop.Ide.CodeFormatting
 			};
 			
 			buttonRemove.Clicked += delegate {
-				
+				int a = comboboxFormattingPolicies.Active;
+				if (a >= 0 && a < settings.Count)
+					settings.RemoveAt (a);
+				FillFormattingPolicies ();
+				TextFileService.SetSettings (description, settings);
 			};
+			FillFormattingPolicies ();
 		}
 	}
 	
-	[DataItem ("CodeFormat")]
-	public class CodeFormattingPolicy  : IEquatable<CodeFormattingPolicy>
-	{
-		[ItemProperty]
-		public string CodeStyle { 
-			get; 
-			set; 
-		}
-	
-		#region IEquatable<CodeFormattingPolicy> implementation
-		public bool Equals (CodeFormattingPolicy other)
-		{
-			return other != null && CodeStyle == other.CodeStyle;
-		}
-		#endregion
-	}
 }

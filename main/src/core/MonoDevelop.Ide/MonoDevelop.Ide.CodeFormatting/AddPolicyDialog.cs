@@ -25,6 +25,9 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using MonoDevelop.Projects.Text;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.CodeFormatting
 {
@@ -38,11 +41,23 @@ namespace MonoDevelop.Ide.CodeFormatting
 			}
 		}
 		
-		public AddPolicyDialog()
+		public string InitFrom {
+			get {
+				return this.comboboxInitFrom.ActiveText;
+			}
+		}
+		
+		public AddPolicyDialog (List<CodeFormatSettings> settings)
 		{
 			this.Build();
-			this.comboboxentryInitFrom.AppendText ("default");
 			
+			foreach (var setting in settings) {
+				this.comboboxInitFrom.AppendText (setting.Name);
+			}
+			if (settings.Count == 0) 
+				this.comboboxInitFrom.AppendText ("default");
+			
+			this.comboboxInitFrom.Active = 0;
 		}
 	}
 }

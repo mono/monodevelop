@@ -21,7 +21,7 @@ namespace MonoDevelop.Ide.CodeFormatting {
         
         private Gtk.HBox hbox3;
         
-        private Gtk.ComboBoxEntry comboboxFormattingPolicies;
+        private Gtk.ComboBox comboboxFormattingPolicies;
         
         private Gtk.Table table1;
         
@@ -75,7 +75,7 @@ namespace MonoDevelop.Ide.CodeFormatting {
             this.hbox3.Name = "hbox3";
             this.hbox3.Spacing = 6;
             // Container child hbox3.Gtk.Box+BoxChild
-            this.comboboxFormattingPolicies = Gtk.ComboBoxEntry.NewText();
+            this.comboboxFormattingPolicies = Gtk.ComboBox.NewText();
             this.comboboxFormattingPolicies.Name = "comboboxFormattingPolicies";
             this.hbox3.Add(this.comboboxFormattingPolicies);
             Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.hbox3[this.comboboxFormattingPolicies]));
