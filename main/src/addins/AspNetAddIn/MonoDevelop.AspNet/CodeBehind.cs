@@ -244,21 +244,31 @@ namespace MonoDevelop.AspNet
 			MonoDevelop.Core.Gui.DispatchService.GuiSyncDispatch (delegate {
 				foreach (KeyValuePair<string, string> item in filesToWrite) {
 					try {
-						//get an interface to edit the file
-						MonoDevelop.Projects.Text.IEditableTextFile textFile = 
-							MonoDevelop.DesignerSupport.
-							OpenDocumentFileProvider.Instance.GetEditableTextFile (item.Key);
 						
-						if (textFile == null)
-							textFile = MonoDevelop.Projects.Text.TextFile.ReadFile (item.Key);
+						bool updated = false;
+						foreach (MonoDevelop.Ide.Gui.Document doc in MonoDevelop.Ide.Gui.IdeApp.Workbench.Documents) {
+							if (doc.FileName == item.Key) {
+								var textFile = doc.GetContent<MonoDevelop.Projects.Text.IEditableTextFile> ();
+								if (textFile == null)
+									continue;
+								
+								//change the contents
+								//FIXME: Workaround for "Bug 484574 - Setting SourceEditorView.Text doesn't mark the document as dirty"
+								// The bug means that the docuemnt doesn't get saved or reparsed.
+								textFile.DeleteText (0, textFile.Length);
+								textFile.InsertText (0, item.Value);
+								
+								doc.Save ();
+								updated = true;
+								break;
+							}
+						}
 						
-						//change the contents
-						textFile.Text = item.Value;
-						
-						//save the file
-						MonoDevelop.Projects.Text.TextFile tf = textFile as MonoDevelop.Projects.Text.TextFile;
-						if (tf != null)
-							tf.Save ();
+						if (!updated) {
+							var textFile = MonoDevelop.Projects.Text.TextFile.ReadFile (item.Key);
+							textFile.Text = item.Value;
+							textFile.Save ();
+						}
 						
 						WrittenCount++;
 						
@@ -267,10 +277,6 @@ namespace MonoDevelop.AspNet
 							GettextCatalog.GetString ("Failed to write file '{0}'.", item.Key),
 							ex);
 					}
-					
-					//save the changes
-					foreach (MonoDevelop.Ide.Gui.Document doc in MonoDevelop.Ide.Gui.IdeApp.Workbench.Documents)
-						doc.Save ();
 				}
 			});
 			

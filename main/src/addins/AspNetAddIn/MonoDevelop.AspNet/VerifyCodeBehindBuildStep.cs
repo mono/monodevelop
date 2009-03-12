@@ -84,6 +84,8 @@ namespace MonoDevelop.AspNet
 			
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Generating CodeBehind members..."));
 			
+			bool updatedParseDb = false;
+			
 			//go over all the files generating members where necessary
 			foreach (ProjectFile file in aspProject.Files)
 			{
@@ -102,6 +104,15 @@ namespace MonoDevelop.AspNet
 				if (System.IO.File.GetLastWriteTimeUtc (designerFile.FilePath)
 				    > System.IO.File.GetLastWriteTimeUtc (file.FilePath))
 					continue;
+				
+				//need parse DB to be up to date
+				if (!updatedParseDb) {
+					updatedParseDb = true;
+					monitor.Log.Write (GettextCatalog.GetString ("Waiting for project type database to finish updating..."));
+					ProjectDom dom = ProjectDomService.GetProjectDom (aspProject);
+					dom.ForceUpdate (true);
+					monitor.Log.WriteLine (GettextCatalog.GetString (" complete."));
+				}
 				
 				//parse the ASP.NET file
 				AspNetParsedDocument parsedDocument = ProjectDomService.Parse (aspProject, file.FilePath, null)
@@ -135,17 +146,6 @@ namespace MonoDevelop.AspNet
 					
 			}
 			return baseResult;
-		}
-		
-		List<string> GetOpenEditableFilesList ()
-		{
-			List<string> list = new List<string> ();
-			MonoDevelop.Core.Gui.DispatchService.GuiSyncDispatch (delegate {
-				foreach (MonoDevelop.Ide.Gui.Document doc in MonoDevelop.Ide.Gui.IdeApp.Workbench.Documents)
-					if (doc.GetContent<MonoDevelop.Ide.Gui.Content.IEditableTextBuffer> () != null)
-						list.Add (doc.FileName);
-			});
-			return list;
 		}
 	}
 	

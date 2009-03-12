@@ -1,3 +1,14 @@
+2009-03-11  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AspNet/CodeBehind.cs: Work around text editor
+	  bug (#484574) that caused modifications to open files not to
+	  be saved. Only try to save files that we've modified.
+
+	* MonoDevelop.AspNet/VerifyCodeBehindBuildStep.cs: Force type
+	  database to update during build. Fixes "Bug 484122 -
+	  [Regression] Default C# Asp.Net template fails to compile".
+	  Remove dead code.
+
 2009-03-05  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:
