@@ -67,7 +67,7 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/TextFormatters">
-		<Class class="MonoDevelop.SourceEditor.DefaultFormatter" />
+		<Class id="default" class="MonoDevelop.SourceEditor.DefaultFormatter" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/Commands">

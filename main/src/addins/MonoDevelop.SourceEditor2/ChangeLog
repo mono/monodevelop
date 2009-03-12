@@ -1,3 +1,9 @@
+2009-03-12  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor.addin.xml:
+	* MonoDevelop.SourceEditor/DefaultFormatter.cs: Worked on code
+	  formatter.
+
 2009-03-10  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/DefaultFormatter.cs: Changed

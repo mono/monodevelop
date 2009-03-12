@@ -32,9 +32,9 @@ using MonoDevelop.Projects.Text;
 
 namespace MonoDevelop.SourceEditor
 {
-	public class DefaultFormatter : IFormatter
+	public class DefaultFormatter : AbstractFormatter
 	{
-		public bool CanFormat (string mimeType)
+		public override bool CanFormat (string mimeType)
 		{
 			return true;
 		}
@@ -44,18 +44,12 @@ namespace MonoDevelop.SourceEditor
 			int result = currentColumn + tabSize;
 			return (result / tabSize) * tabSize;
 		}
-		public string FormatText (SolutionItem policyParent, string input)
-		{
-			if (string.IsNullOrEmpty (input))
-				return input;
-			return FormatText (policyParent, input, 0, input.Length - 1);
-		}
-		public string FormatText (SolutionItem policyParent, string input, int startOffset, int endOffset)
+		
+		protected override string InternalFormat (SolutionItem policyParent, string input, int startOffset, int endOffset)
 		{
 			TextStylePolicy currentPolicy = policyParent != null
-				? policyParent.Policies.Get<TextStylePolicy> ()
-				: MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy> ();
-			
+					? policyParent.Policies.Get<TextStylePolicy> ()
+					: MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy> ();
 			input = input ?? "";
 			int line = 0, col = 0;
 			string eolMarker = currentPolicy.GetEolMarker ();
