@@ -142,19 +142,8 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 				}
 				
 				host.ProcessTemplate (dialog.TemplateFile, outputFile);
+				MonoDevelop.TextTemplating.TextTemplatingService.ShowTemplateHostErrors (host.Errors);
 				
-				if (host.Errors.Count > 0)
-				{	
-					MonoDevelop.Ide.Gui.Pad errPad = MonoDevelop.Ide.Gui.IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ErrorListPad> ();
-					MonoDevelop.Ide.Gui.Pads.ErrorListPad errPadContent = (MonoDevelop.Ide.Gui.Pads.ErrorListPad) errPad.Content;
-					MonoDevelop.Ide.Gui.IdeApp.Services.TaskService.ClearExceptCommentTasks ();
-					foreach (System.CodeDom.Compiler.CompilerError err in host.Errors)
-						errPadContent.AddTask (new MonoDevelop.Ide.Tasks.Task (err.FileName, err.ErrorText, err.Column, err.Line,
-						                                                       err.IsWarning
-						                                                       ? MonoDevelop.Ide.Tasks.TaskType.Warning
-						                                                       : MonoDevelop.Ide.Tasks.TaskType.Error));
-					errPad.BringToFront ();
-				}
 			} finally {
 				if (domain != null)
 					AppDomain.Unload (domain);

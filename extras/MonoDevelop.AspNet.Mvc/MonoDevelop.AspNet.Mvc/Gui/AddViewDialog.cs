@@ -268,7 +268,6 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 		class TypeDataProvider : MonoDevelop.SourceEditor.DropDownBoxListWindow.IListDataProvider
 		{
 			MonoDevelop.Projects.Dom.Output.Ambience ambience;
-			MonoDevelop.Projects.DotNetProject project;
 			
 			public List<MonoDevelop.Projects.Dom.IType> List { get; private set; }
 			
@@ -279,7 +278,6 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 						MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetProjectDom (project);
 				List.AddRange (dom.Types);
 				this.ambience = MonoDevelop.Projects.Dom.Output.AmbienceService.GetAmbienceForLanguage (project.LanguageName);
-				this.project = project;
 			}
 			
 			public int IconCount { get { return List.Count; } }

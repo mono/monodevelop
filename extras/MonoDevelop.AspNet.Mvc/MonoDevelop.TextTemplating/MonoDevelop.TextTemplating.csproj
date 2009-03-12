@@ -42,6 +42,7 @@
     <Compile Include="Parser\T4Parser.cs" />
     <Compile Include="Parser\T4ParsedDocument.cs" />
     <Compile Include="Gui\T4EditorExtension.cs" />
+    <Compile Include="TextTemplatingService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

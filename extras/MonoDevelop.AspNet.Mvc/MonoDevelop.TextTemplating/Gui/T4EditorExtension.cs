@@ -139,7 +139,7 @@ namespace MonoDevelop.TextTemplating.Gui
 		protected virtual ICompletionDataList HandleCodeCompletion (
 		    CodeCompletionContext completionContext, bool forced, ref int triggerWordLength)
 		{
-			IEditableTextBuffer buf = this.EditableBuffer;
+			//IEditableTextBuffer buf = this.EditableBuffer;
 			return null;
 		}
 		

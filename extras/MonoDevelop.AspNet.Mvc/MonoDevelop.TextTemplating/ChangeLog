@@ -1,3 +1,11 @@
+2009-03-12  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Gui/T4EditorExtension.cs: Fix warning.
+
+	* TextTemplatingService.cs:
+	* MonoDevelop.TextTemplating.csproj: Added new
+	  TextTemplatingService.
+
 2009-03-10  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Gui:

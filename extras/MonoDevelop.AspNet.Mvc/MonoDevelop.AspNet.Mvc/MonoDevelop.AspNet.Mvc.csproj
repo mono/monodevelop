@@ -136,5 +136,10 @@
       <Project>{A2364D6A-00EF-417C-80A6-815726C70032}</Project>
       <Name>Mono.TextTemplating</Name>
     </ProjectReference>
+    <ProjectReference Include="..\MonoDevelop.TextTemplating\MonoDevelop.TextTemplating.csproj">
+      <Project>{8CCA39DD-8412-4547-BE7F-0C3D3ACC6FAC}</Project>
+      <Name>MonoDevelop.TextTemplating</Name>
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
 </Project>

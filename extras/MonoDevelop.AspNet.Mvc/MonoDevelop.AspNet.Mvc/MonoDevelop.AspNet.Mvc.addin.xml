@@ -32,6 +32,7 @@
 		<Addin id="XmlEditor" version="1.9.2" />
 		<Addin id="AspNet" version="1.9.2" />
 		<Addin id="SourceEditor2" version="1.9.2" />
+		<Addin id="TextTemplating" version="1.9.2" />
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">

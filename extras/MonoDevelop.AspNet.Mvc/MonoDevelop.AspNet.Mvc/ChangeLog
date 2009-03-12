@@ -1,3 +1,14 @@
+2009-03-12  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AspNet.Mvc.csproj:
+	* MonoDevelop.AspNet.Mvc.addin.xml: Reference the
+	  TextTemplating addin.
+
+	* Gui/AddViewDialog.cs: Fix warning.
+
+	* Gui/FolderNodeBuilderExtension.cs: Move error-showing code
+	  to the TemplatingService.
+
 2009-03-09  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.AspNet.Mvc.addin.xml: Update dependencies.
