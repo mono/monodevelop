@@ -52,6 +52,7 @@ FILES =  \
 	Gui/NRefactoryResolver.cs \
 	Gui/ResolveVisitor.cs \
 	Parser/CodeGenerator.cs \
+	Parser/CSharpFormatter.cs \
 	Parser/FindMemberAstVisitor.cs \
 	Parser/NRefactoryParser.cs \
 	Project/CSharpCompilerParameters.cs \

@@ -6,24 +6,23 @@
 		<Value>NextLineShifted2</Value>
 	</Type>
 	
-	<Category name ="Indentation" _displayName="Indentation">
-	</Category>
+<!--	<Category name ="Indentation" _displayName="Indentation">
+	</Category> -->
 	
 	<Category name ="Braces" _displayName="Braces">
 		<Category name = "Declarations" _displayName="Declarations">
-			<Option name="NamespaceDeclaration" _displayName="Namespace declaration" type="BraceStyle">NamespaceBraceStyle</Option>
-			<Option name="ClassDeclaration" _displayName="Class declaration" type="BraceStyle"/>
-			<Option name="InterfaceDeclaration" _displayName="Interface declaration" type="BraceStyle"/>
-			<Option name="StructDeclaration" _displayName="Struct declaration" type="BraceStyle"/>
-			<Option name="EnumDeclaration" _displayName="Enum declaration" type="BraceStyle"/>
+			<Option name="NamespaceDeclaration" _displayName="Namespace declaration" type="BraceStyle"><Example>namespace TestNameSpace {}</Example></Option>
+			<Option name="ClassDeclaration" _displayName="Class declaration" type="BraceStyle"><Example>class ClassDeclaration {}</Example></Option>
+			<Option name="InterfaceDeclaration" _displayName="Interface declaration" type="BraceStyle"><Example><![CDATA[interface InterfaceDeclaraction {}]]></Example></Option>
+			<Option name="StructDeclaration" _displayName="Struct declaration" type="BraceStyle"><Example><![CDATA[struct StructDeclaration {}]]></Example></Option>
+			<Option name="EnumDeclaration" _displayName="Enum declaration" type="BraceStyle"><Example><![CDATA[enum EnumDeclaration { A, B, C}]]></Example></Option>
+			<Option name="ConstructorDeclaration" _displayName="Constructor declaration" type="BraceStyle"><Example><![CDATA[class ClassDeclaration { public ClassDeclaration () {} }]]></Example></Option>
+			<Option name="DestructorDeclaration" _displayName="Destructor declaration" type="BraceStyle"><Example><![CDATA[class ClassDeclaration { ~ClassDeclaration () {} }]]></Example></Option>
+			<Option name="MethodDeclaration" _displayName="Method declaration" type="BraceStyle"><Example><![CDATA[class ClassDeclaration { void MyMethod () {} }]]></Example></Option>
 			
-			<Option name="ConstructorDeclaration" _displayName="Constructor declaration" type="BraceStyle"/>
-			<Option name="DestructorDeclaration" _displayName="Destructor declaration" type="BraceStyle"/>
-			<Option name="MethodDeclaration" _displayName="Method declaration" type="BraceStyle"/>
-			
-			<Option name="PropertyDeclaration" _displayName="Property declaration" type="BraceStyle"/>
-			<Option name="GetDeclaration" _displayName="Get declaration" type="BraceStyle"/>
-			<Option name="SetDeclaration" _displayName="Set declaration" type="BraceStyle"/>
+			<Option name="PropertyDeclaration" _displayName="Property declaration" type="BraceStyle"><Example><![CDATA[class ClassDeclaration { int myProperty; int MyProperty { get { return myProperty;} set { myProperty = value;} } }]]></Example></Option>
+			<Option name="GetDeclaration" _displayName="Get declaration" type="BraceStyle"><Example><![CDATA[class ClassDeclaration { int myProperty; int MyProperty { get { return myProperty;} set { myProperty = value;} } }]]></Example></Option>
+			<Option name="SetDeclaration" _displayName="Set declaration" type="BraceStyle"><Example><![CDATA[class ClassDeclaration { int myProperty; int MyProperty { get { return myProperty;} set { myProperty = value;} } }]]></Example></Option>
 			
 			<Option name="EventDeclaration" _displayName="Event declaration" type="BraceStyle"/>
 			<Option name="AddDeclaration" _displayName="Add declaration" type="BraceStyle"/>
@@ -54,7 +53,6 @@
 				<Option name="BeforeClosingBrace" _displayName="before closing brace" type="Bool"/>
 			</Category>
 		</Category>
-		
 	</Category>
 	
 	<Category name = "Spaces" _displayName="Spaces">

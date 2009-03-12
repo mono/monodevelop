@@ -170,6 +170,7 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Parser\FindMemberAstVisitor.cs" />
     <Compile Include="Project\CSharpProjectParameters.cs" />
+    <Compile Include="Parser\CSharpFormatter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

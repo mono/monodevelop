@@ -1,3 +1,12 @@
+2009-03-12  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* CSharpBinding.csproj:
+	* CSharpBinding.addin.xml:
+	* Parser/CSharpFormatter.cs:
+	* FormattingStrategy/CSharpFormattingStyleDefinition.xml:
+	  Worked on code formatter.
+
 2009-03-11  Mike Krüger  <mkrueger@novell.com>
 
 	* FormattingStrategy/CSharpFormattingStyleDefinition.xml:
