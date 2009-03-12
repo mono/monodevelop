@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextTransform", "TextTransf
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.TextTemplating", "MonoDevelop.TextTemplating\MonoDevelop.TextTemplating.csproj", "{8CCA39DD-8412-4547-BE7F-0C3D3ACC6FAC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mono.TextTemplating.Tests", "Mono.TextTemplating.Tests\Mono.TextTemplating.Tests.csproj", "{CB590106-8331-4CBE-8131-B154E7BF79E1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{B32AD0DD-5247-437B-A2EF-1A4676C1B072}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B32AD0DD-5247-437B-A2EF-1A4676C1B072}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B32AD0DD-5247-437B-A2EF-1A4676C1B072}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CB590106-8331-4CBE-8131-B154E7BF79E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CB590106-8331-4CBE-8131-B154E7BF79E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CB590106-8331-4CBE-8131-B154E7BF79E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CB590106-8331-4CBE-8131-B154E7BF79E1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D1D35409-C814-47F6-B038-B9B5BF0FE490}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D1D35409-C814-47F6-B038-B9B5BF0FE490}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D1D35409-C814-47F6-B038-B9B5BF0FE490}.Release|Any CPU.ActiveCfg = Release|Any CPU

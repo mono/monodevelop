@@ -273,7 +273,7 @@ namespace Mono.TextTemplating
 		Helper
 	}
 	
-	public struct Location
+	public struct Location : IEquatable<Location>
 	{
 		public Location (string fileName, int line, int column)
 		{
@@ -308,6 +308,11 @@ namespace Mono.TextTemplating
 		public override string ToString ()
 		{
 			return string.Format("[{0} ({1},{2})]", FileName, Line, Column);
+		}
+		
+		public bool Equals (Location other)
+		{
+			return other.Line == Line && other.Column == Column && other.FileName == FileName;
 		}
 	}
 }

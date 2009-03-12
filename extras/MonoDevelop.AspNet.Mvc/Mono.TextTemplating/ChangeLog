@@ -1,3 +1,11 @@
+2009-03-12  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextTemplating/Tokeniser.cs: Location tweaks within
+	  directives.
+
+	* Mono.TextTemplating/ParsedTemplate.cs: Make Location
+	  equatable.
+
 2009-03-10  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.TextTemplating/Tokeniser.cs:

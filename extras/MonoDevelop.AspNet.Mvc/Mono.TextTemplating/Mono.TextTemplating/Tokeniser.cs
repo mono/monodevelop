@@ -196,17 +196,17 @@ namespace Mono.TextTemplating
 		{
 			for (; position < content.Length; position++) {
 				char c = content[position];
-				nextStateLocation = nextStateLocation.AddCol ();
 				if (c == '\n') {
 					nextStateLocation = nextStateLocation.AddLine ();
 				} else if (Char.IsLetter (c)) {
 					return State.DirectiveName;
 				} else if (c == '=') {
+					nextStateLocation = nextStateLocation.AddCol ();
 					position++;
 					return State.DirectiveValue;	
 				} else if (c == '#' && position + 1 < content.Length && content[position+1] == '>') {
 					position+=2;
-					nextStateLocation = nextStateLocation.AddCols (1);
+					nextStateLocation = nextStateLocation.AddCols (2);
 					TagEndLocation = nextStateLocation;
 					
 					//skip newlines directly after directives
@@ -218,6 +218,8 @@ namespace Mono.TextTemplating
 					return State.Content;
 				} else if (!Char.IsWhiteSpace (c)) {
 					throw new ParserException ("Directive ended unexpectedly with character '" + c + "'", nextStateLocation);
+				} else {
+					nextStateLocation = nextStateLocation.AddCol ();
 				}
 			}
 			throw new ParserException ("Unexpected end of file.", nextStateLocation);

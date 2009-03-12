@@ -1,3 +1,8 @@
+2009-03-12  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextTemplating.Tests:
+	* MonoDevelop.AspNet.Mvc.sln: Add tests.
+
 2009-03-09  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.AspNet.Mvc.sln: Added new TextTemplating addin.
