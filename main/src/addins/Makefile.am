@@ -25,6 +25,5 @@ SUBDIRS = \
 	MonoDevelop.RegexToolkit \
 	CBinding \
 	MonoDevelop.AssemblyBrowser \
-	MonoDevelop.Moonlight \
 	MonoDevelop.CodeMetrics \
 	WindowsPlatform

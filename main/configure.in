@@ -367,7 +367,6 @@ src/addins/WindowsPlatform/Makefile
 src/addins/MonoDevelop.AssemblyBrowser/Makefile
 src/addins/Mono.Texteditor/Makefile
 src/addins/MonoDevelop.SourceEditor2/Makefile
-src/addins/MonoDevelop.Moonlight/Makefile
 src/addins/MonoDevelop.XmlEditor/Makefile
 src/addins/MonoDevelop.CodeMetrics/Makefile
 src/addins/MonoDevelop.Debugger/Makefile
