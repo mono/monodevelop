@@ -43,9 +43,6 @@
     <Reference Include="Mono.Addins, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="Mono.Data" />
-    <Reference Include="Mono.Data.Sqlite" />
-    <Reference Include="Mono.Data.SqliteClient" />
     <Reference Include="System.Data" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>

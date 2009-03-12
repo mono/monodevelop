@@ -10,9 +10,6 @@ DEPS =  \
 REFS =  \
 	$(MONO_ADDINS_LIBS) \
 	$(MONODOC_LIBS) \
-	-r:Mono.Data \
-	-r:Mono.Data.Sqlite \
-	-r:Mono.Data.SqliteClient \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Core \
