@@ -1,3 +1,10 @@
+2009-03-12  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Text/IFormatter.cs:
+	* MonoDevelop.Projects.Text/TextFileService.cs:
+	* MonoDevelop.Projects.Text/CodeFormatDescription.cs: Worked
+	  on code formatter.
+
 2009-03-11  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects.Text/TextFileService.cs: Work around 

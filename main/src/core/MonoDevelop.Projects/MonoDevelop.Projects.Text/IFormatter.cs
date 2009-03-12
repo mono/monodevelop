@@ -31,7 +31,29 @@ namespace MonoDevelop.Projects.Text
 	public interface IFormatter
 	{
 		bool CanFormat (string mimeType);
+		
 		string FormatText (SolutionItem policyParent, string input);
 		string FormatText (SolutionItem policyParent, string input, int fromOffest, int toOffset);
+	}
+	
+	public abstract class AbstractFormatter : IFormatter
+	{
+		public abstract bool CanFormat (string mimeType);
+		
+		protected abstract string InternalFormat (SolutionItem policyParent, string text, int fromOffest, int toOffset);
+		
+		public string FormatText (SolutionItem policyParent, string input)
+		{
+			if (string.IsNullOrEmpty (input))
+				return input;
+			return FormatText (policyParent, input, 0, input.Length - 1);
+		}
+		
+		public string FormatText (SolutionItem policyParent, string input, int fromOffest, int toOffset)
+		{
+			if (string.IsNullOrEmpty (input))
+				return input;
+			return InternalFormat (policyParent, input, fromOffest, toOffset);
+		}
 	}
 }

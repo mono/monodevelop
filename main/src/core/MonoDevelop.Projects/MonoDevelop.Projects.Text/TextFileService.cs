@@ -38,7 +38,7 @@ namespace MonoDevelop.Projects.Text
 	{
 		static List<CodeFormatDescription> descriptions = new List<CodeFormatDescription> ();
 		static List<IFormatter> formatters = new List<IFormatter>();
-		
+		static List<CodeFormatSettings> settings = new List<CodeFormatSettings> ();
 //		static void PrintCategory (CodeFormatCategory c)
 //		{
 //			System.Console.WriteLine (c);
@@ -54,6 +54,27 @@ namespace MonoDevelop.Projects.Text
 		{
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/ProjectModel/TextFormatters", FormatterExtHandler);
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/ProjectModel/TextFormatDefinition", DefinitionExtHandler);
+		}
+		public static IEnumerable<CodeFormatSettings> GetAvailableSettings (CodeFormatDescription description)
+		{
+			return settings;
+		}
+		 
+		public static CodeFormatSettings GetSettings (string description, string name)
+		{
+			return GetSettings (GetFormatDescription (description), name);
+		}
+		
+		public static CodeFormatSettings GetSettings (CodeFormatDescription description, string name)
+		{
+			if (description == null)
+				return null;
+			return GetAvailableSettings (description).FirstOrDefault (s => s.Name == name);
+		}
+		
+		public static void SetSettings (CodeFormatDescription description, IEnumerable<CodeFormatSettings> settings)
+		{
+			TextFileService.settings = new List<CodeFormatSettings> (settings);
 		}
 		
 		static void FormatterExtHandler (object sender, ExtensionNodeEventArgs args)

@@ -25,12 +25,15 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Xml;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Serialization;
 
 namespace MonoDevelop.Projects.Text
 {
+	
 	public class CodeFormatType
 	{
 		public string Name {
@@ -45,6 +48,21 @@ namespace MonoDevelop.Projects.Text
 			}
 		}
 		internal const string Node = "Type";
+		
+		public CodeFormatType ()
+		{
+		}
+		
+		public CodeFormatType (string name)
+		{
+			this.Name = name;
+		}
+		
+		public CodeFormatType (string name, params string[] values)
+		{
+			this.Name = name;
+			this.values.AddRange (values);
+		}
 		
 		public override string ToString ()
 		{
@@ -83,6 +101,12 @@ namespace MonoDevelop.Projects.Text
 			get;
 			set;
 		}
+		
+		public string Example {
+			get;
+			set;
+		}
+		
 		internal static string Node = "Option";
 		
 		public override string ToString ()
@@ -93,9 +117,13 @@ namespace MonoDevelop.Projects.Text
 		public static CodeFormatOption Read (XmlReader reader)
 		{
 			CodeFormatOption result = new CodeFormatOption ();
+			result.Name        = reader.GetAttribute ("name");
 			result.DisplayName = reader.GetAttribute ("_displayName");
 			result.Type = reader.GetAttribute ("type");
-			result.Name = reader.ReadElementString ();
+			if (!reader.IsEmptyElement) {
+				reader.Read ();
+				result.Example = reader.ReadElementString ();
+			}
 			return result;
 		}
 	}
@@ -176,6 +204,28 @@ namespace MonoDevelop.Projects.Text
 		{
 			this.Name = name;
 		}
+		
+		public CodeFormatSettings (CodeFormatSettings copyFrom, string name)
+		{
+			this.Name = name;
+			if (copyFrom != null) {
+				foreach (KeyValuePair<string, string> item in copyFrom.Properties) {
+					properties.Add (item.Key, item.Value);
+				}
+			}
+		}
+		
+		public void SetValue (CodeFormatOption option, string value)
+		{
+			properties[option.Name] = value;
+		}
+		public string GetValue (CodeFormatDescription descr, CodeFormatOption option)
+		{
+			string result;
+			if (properties.TryGetValue (option.Name, out result))
+				return result;
+			return descr.GetCodeFormatType (option.Type).Values.FirstOrDefault ();
+		}
 	}
 	
 	public class CodeFormatDescription : CodeFormatCategory
@@ -196,6 +246,15 @@ namespace MonoDevelop.Projects.Text
 		public CodeFormatDescription()
 		{
 		}
+		static CodeFormatType codeFormatTypeBool = new CodeFormatType ("Bool", "True", "False");
+			
+		public CodeFormatType GetCodeFormatType (string name)
+		{
+			if (name == "Bool")
+				return codeFormatTypeBool;
+			return types.FirstOrDefault (t => t.Name == name);
+		}
+		
 		
 		const string Version          = "1.0";
 		new const string Node         = "CodeStyle";
@@ -217,10 +276,8 @@ namespace MonoDevelop.Projects.Text
 			CodeFormatDescription result = new CodeFormatDescription ();
 			while (reader.Read ()) {
 				if (reader.IsStartElement ()) {
-					System.Console.WriteLine(reader.LocalName);
 					switch (reader.LocalName) {
 					case Node:
-						System.Console.WriteLine("1");
 						string fileVersion = reader.GetAttribute (VersionAttribute);
 						if (fileVersion != Version) 
 							return result;
@@ -237,6 +294,33 @@ namespace MonoDevelop.Projects.Text
 			}
 			return result;
 		}
-
+	}
+	
+	[DataItem ("CodeFormat")]
+	public class CodeFormattingPolicy  : IEquatable<CodeFormattingPolicy>
+	{
+		[ItemProperty]
+		public string MimeType { 
+			get; 
+			set; 
+		}
+		
+		[ItemProperty]
+		public string CodeStyle { 
+			get; 
+			set; 
+		}
+		
+		public virtual CodeFormatSettings GetSettings ()
+		{
+			return TextFileService.GetSettings (MimeType, CodeStyle);
+		}
+	
+		#region IEquatable<CodeFormattingPolicy> implementation
+		public bool Equals (CodeFormattingPolicy other)
+		{
+			return other != null && CodeStyle == other.CodeStyle && MimeType == other.MimeType;
+		}
+		#endregion
 	}
 }
