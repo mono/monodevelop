@@ -1,5 +1,10 @@
 2009-03-13  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.CodeFormatting/EditFormattingPolicyDialog.cs:
+	  Removed debug message.
+
+2009-03-13  Mike Krüger  <mkrueger@novell.com>
+
 	* gtk-gui/gui.stetic:
 	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow.cs:
 	* MonoDevelop.Ide.CodeFormatting/EditFormattingPolicyDialog.cs:

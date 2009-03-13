@@ -60,7 +60,7 @@ namespace MonoDevelop.Ide.CodeFormatting
 				dialog.Filter = new FileFilter();
 				dialog.Filter.AddPattern ("*.xml");
 				if (ResponseType.Ok == (ResponseType)dialog.Run ()) {
-					System.Console.WriteLine("fn:" + dialog.Filename);
+//					System.Console.WriteLine("fn:" + dialog.Filename);
 					description.ExportSettings (settings, dialog.Filename);
 				}
 				dialog.Destroy ();
