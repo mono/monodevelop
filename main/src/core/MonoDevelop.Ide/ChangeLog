@@ -1,5 +1,13 @@
 2009-03-13  Mike Krüger  <mkrueger@novell.com>
 
+	* gtk-gui/gui.stetic:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow.cs:
+	* MonoDevelop.Ide.CodeFormatting/EditFormattingPolicyDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.CodeFormatting.EditFormattingPolicyDialog.cs:
+	  Worked on code formatting.
+
+2009-03-13  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* gtk-gui/gui.stetic:
 	* gtk-gui/MonoDevelop.Ide.DocumentSwitcher.cs:

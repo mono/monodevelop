@@ -77,8 +77,10 @@ namespace MonoDevelop.Ide.CodeFormatting
 			comboboxValue.Model = comboBoxStore;
 			
 			comboboxValue.Changed += HandleChanged;
+			scrolledwindow2.Child = texteditor1;
+			scrolledwindow2.ShowAll ();
 		}
-		
+		Mono.TextEditor.TextEditor texteditor1 = new Mono.TextEditor.TextEditor ();
 		class CustomFormattingPolicy : CodeFormattingPolicy
 		{
 			CodeFormatSettings settings;

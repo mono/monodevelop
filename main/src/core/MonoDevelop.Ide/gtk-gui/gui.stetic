@@ -6894,13 +6894,7 @@ Large</property>
                             <property name="MemberName" />
                             <property name="ShadowType">None</property>
                             <child>
-                              <widget class="Mono.TextEditor.TextEditor" id="texteditor1">
-                                <property name="MemberName" />
-                                <property name="SelectionAnchor">0</property>
-                                <property name="HighlightSearchPattern">False</property>
-                                <property name="IsCaseSensitive">False</property>
-                                <property name="IsWholeWordOnly">False</property>
-                              </widget>
+                              <placeholder />
                             </child>
                           </widget>
                         </child>
