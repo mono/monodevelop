@@ -95,10 +95,23 @@ namespace MonoDevelop.Ide.CodeFormatting
 			description = TextFileService.GetFormatDescription ("text/x-csharp");
 			settings = new List<CodeFormatSettings> (TextFileService.GetAvailableSettings (description));
 			
+			
+			
 			comboboxFormattingPolicies.Model = formatStore;
 			/*Gtk.CellRendererText ctx = new Gtk.CellRendererText ();
 			comboboxFormattingPolicies.PackStart (ctx, true);
 			comboboxFormattingPolicies.AddAttribute (ctx, "text", 0);*/
+			
+			Mono.TextEditor.TextEditorOptions options = new Mono.TextEditor.TextEditorOptions ();
+			options.ShowLineNumberMargin = false;
+			options.ShowFoldMargin = false;
+			options.ShowIconMargin = false;
+			options.ShowInvalidLines = false;
+			options.ShowSpaces = options.ShowTabs = options.ShowEolMarkers = false;
+			options.ColorScheme = PropertyService.Get ("ColorScheme", "Default");
+			texteditor1.Options = options;
+			texteditor1.Document.ReadOnly = true;
+			texteditor1.Document.MimeType = description.MimeType;
 			
 			buttonAdd.Clicked += delegate {
 				AddPolicyDialog addPolicy = new AddPolicyDialog (settings);

@@ -11,6 +11,7 @@
     <widget-library name="../../../../build/bin/MonoDevelop.Core.Gui.dll" />
     <widget-library name="../../../../build/bin/MonoDevelop.Projects.Gui.dll" />
     <widget-library name="../../../../build/bin/MonoDevelop.Ide.dll" internal="true" />
+    <widget-library name="../../../../build/bin/Mono.TextEditor.dll" />
   </import>
   <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Gui.Dialogs.GoToDialog" design-size="750 579">
     <property name="MemberName" />
@@ -324,7 +325,6 @@
                   <widget class="Gtk.Label" id="labelNewFormat">
                     <property name="MemberName" />
                     <property name="Xalign">0</property>
-                    <property name="LabelProp" translatable="yes" />
                   </widget>
                   <packing>
                     <property name="LeftAttach">1</property>
@@ -1327,7 +1327,6 @@
                 <child>
                   <widget class="Gtk.Label" id="labelError">
                     <property name="MemberName" />
-                    <property name="LabelProp" translatable="yes" />
                   </widget>
                   <packing>
                     <property name="Position">1</property>
@@ -1539,7 +1538,6 @@
             <property name="MemberName" />
             <property name="Visible">False</property>
             <property name="Xalign">0</property>
-            <property name="LabelProp" translatable="yes" />
             <property name="UseMarkup">True</property>
           </widget>
           <packing>
@@ -3671,7 +3669,6 @@
                 <property name="WidthRequest">24</property>
                 <property name="Xalign">0</property>
                 <property name="Yalign">0</property>
-                <property name="LabelProp" translatable="yes" />
               </widget>
               <packing>
                 <property name="Position">0</property>
@@ -4263,7 +4260,6 @@ Months</property>
                     <property name="MemberName" />
                     <property name="Xalign">0</property>
                     <property name="Yalign">0</property>
-                    <property name="LabelProp" translatable="yes" />
                   </widget>
                   <packing>
                     <property name="Position">0</property>
@@ -4305,7 +4301,6 @@ Months</property>
                     <property name="MemberName" />
                     <property name="Xalign">0</property>
                     <property name="Yalign">0</property>
-                    <property name="LabelProp" translatable="yes" />
                   </widget>
                   <packing>
                     <property name="Position">3</property>
@@ -5099,7 +5094,6 @@ Months</property>
                       <widget class="Gtk.Label" id="infoLabel">
                         <property name="MemberName" />
                         <property name="Xalign">0</property>
-                        <property name="LabelProp" translatable="yes" />
                         <property name="Ellipsize">End</property>
                       </widget>
                     </child>
@@ -5118,7 +5112,6 @@ Months</property>
                 <property name="MemberName" />
                 <property name="WidthRequest">1</property>
                 <property name="HeightRequest">1</property>
-                <property name="LabelProp" translatable="yes" />
               </widget>
               <packing>
                 <property name="Position">2</property>
@@ -5322,7 +5315,6 @@ Months</property>
                   <widget class="Gtk.Label" id="labelTitle">
                     <property name="MemberName" />
                     <property name="Xalign">0</property>
-                    <property name="LabelProp" translatable="yes" />
                   </widget>
                   <packing>
                     <property name="Position">0</property>
@@ -5335,7 +5327,6 @@ Months</property>
                   <widget class="Gtk.Label" id="labelType">
                     <property name="MemberName" />
                     <property name="Xalign">0</property>
-                    <property name="LabelProp" translatable="yes" />
                   </widget>
                   <packing>
                     <property name="Position">1</property>
@@ -5505,7 +5496,6 @@ Months</property>
         <child>
           <widget class="Gtk.Label" id="labelFileName">
             <property name="MemberName" />
-            <property name="LabelProp" translatable="yes" />
             <property name="Ellipsize">Start</property>
           </widget>
           <packing>
@@ -6704,7 +6694,13 @@ Large</property>
                 <property name="MemberName" />
                 <property name="ShadowType">None</property>
                 <child>
-                  <placeholder />
+                  <widget class="Mono.TextEditor.TextEditor" id="texteditor1">
+                    <property name="MemberName" />
+                    <property name="SelectionAnchor">0</property>
+                    <property name="HighlightSearchPattern">False</property>
+                    <property name="IsCaseSensitive">False</property>
+                    <property name="IsWholeWordOnly">False</property>
+                  </widget>
                 </child>
               </widget>
             </child>
@@ -6753,7 +6749,7 @@ Large</property>
                   <widget class="Gtk.Entry" id="entryName">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
-                    <property name="Text" translatable="yes">rtE</property>
+                    <property name="Text" translatable="yes"> </property>
                     <property name="IsEditable">True</property>
                     <property name="InvisibleChar">●</property>
                   </widget>
@@ -6866,7 +6862,7 @@ Large</property>
                           </packing>
                         </child>
                         <child>
-                          <widget class="Gtk.CheckButton" id="checkbutton2">
+                          <widget class="Gtk.CheckButton" id="checkbuttonWhiteSpaces">
                             <property name="MemberName" />
                             <property name="CanFocus">True</property>
                             <property name="Label" translatable="yes">S_how whitespaces</property>
@@ -6894,10 +6890,18 @@ Large</property>
                         <property name="CanFocus">True</property>
                         <property name="ShadowType">In</property>
                         <child>
-                          <widget class="Gtk.TextView" id="textviewPreview">
+                          <widget class="Gtk.Viewport" id="GtkViewport">
                             <property name="MemberName" />
-                            <property name="CanFocus">True</property>
-                            <property name="Text" translatable="yes" />
+                            <property name="ShadowType">None</property>
+                            <child>
+                              <widget class="Mono.TextEditor.TextEditor" id="texteditor1">
+                                <property name="MemberName" />
+                                <property name="SelectionAnchor">0</property>
+                                <property name="HighlightSearchPattern">False</property>
+                                <property name="IsCaseSensitive">False</property>
+                                <property name="IsWholeWordOnly">False</property>
+                              </widget>
+                            </child>
                           </widget>
                         </child>
                       </widget>

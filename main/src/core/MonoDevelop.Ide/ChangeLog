@@ -1,5 +1,25 @@
 2009-03-13  Mike Krüger  <mkrueger@novell.com>
 
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* gtk-gui/MonoDevelop.Ide.DocumentSwitcher.cs:
+	* gtk-gui/MonoDevelop.Ide.SelectEncodingsDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewFileDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.ExportProjectDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AddInsPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.EncapsulateFieldDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.CodeFormatting.EditFormattingPolicyDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.CodeFormatting.CodeFormattingPolicyPanelWidget.cs:
+
+
+	* MonoDevelop.Ide.csproj:
+	* MonoDevelop.Ide.CodeFormatting/CodeFormattingPolicyPanel.cs:
+	* MonoDevelop.Ide.CodeFormatting/EditFormattingPolicyDialog.cs:
+	  Using Mono.TextEditor in code format panels.
+
+2009-03-13  Mike Krüger  <mkrueger@novell.com>
+
 	* gtk-gui/gui.stetic: 
 
 	* gtk-gui/MonoDevelop.Ide.DocumentSwitcher.cs:

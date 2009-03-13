@@ -63,7 +63,6 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             this.label104.Name = "label104";
             this.label104.Xalign = 0F;
             this.label104.Yalign = 0F;
-            this.label104.LabelProp = "";
             this.hbox46.Add(this.label104);
             Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.hbox46[this.label104]));
             w2.Position = 0;

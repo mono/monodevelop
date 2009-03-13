@@ -65,7 +65,10 @@ namespace MonoDevelop.Ide.CodeFormatting
 				}
 				dialog.Destroy ();
 			};
-			
+			checkbuttonWhiteSpaces.Toggled += delegate {
+				options.ShowSpaces = options.ShowTabs = options.ShowEolMarkers = checkbuttonWhiteSpaces.Active;
+				this.texteditor1.QueueDraw ();
+			};
 /*			Gtk.CellRendererText ctx = new Gtk.CellRendererText ();
 			comboboxValue.PackStart (ctx, true);
 			comboboxValue.AddAttribute (ctx, "text", 0);*/
@@ -98,7 +101,7 @@ namespace MonoDevelop.Ide.CodeFormatting
 				return;
 			DotNetProject parent = new DotNetProject ();
 			parent.Policies.Set <CodeFormattingPolicy> (new CustomFormattingPolicy (settings));
-			textviewPreview.Buffer.Text = printer.FormatText (parent, textviewPreview.Buffer.Text);
+			texteditor1.Document.Text  = printer.FormatText (parent, texteditor1.Document.Text);
 		}
 		
 		void HandleChanged(object sender, EventArgs e)
@@ -107,14 +110,22 @@ namespace MonoDevelop.Ide.CodeFormatting
 			store.SetValue (iter, 1, comboboxValue.ActiveText);
 			UpdateExample ();
 		}
-		
+		Mono.TextEditor.TextEditorOptions options = new Mono.TextEditor.TextEditorOptions ();
 		public void SetFormat (CodeFormatDescription description, CodeFormatSettings settings)
 		{
 			this.description = description;
 			this.settings    = settings;
 			this.entryName.Text = settings.Name;
 			this.Title = string.Format (GettextCatalog.GetString ("Edit Profile '{0}'"), settings.Name);
-
+			options.ShowLineNumberMargin = false;
+			options.ShowFoldMargin = false;
+			options.ShowIconMargin = false;
+			options.ShowInvalidLines = false;
+			options.ShowSpaces = options.ShowTabs = options.ShowEolMarkers = false;
+			options.ColorScheme = PropertyService.Get ("ColorScheme", "Default");
+			texteditor1.Options = options;
+			texteditor1.Document.ReadOnly = true;
+			texteditor1.Document.MimeType = description.MimeType;
 			while (notebookCategories.NPages > 0) {
 				notebookCategories.RemovePage (0);
 			}
@@ -164,15 +175,16 @@ namespace MonoDevelop.Ide.CodeFormatting
 
 					option =  model.GetValue (iter, objectColumn) as CodeFormatOption;
 					this.store = store;
-					textviewPreview.Buffer.Text = "";
 					if (option == null) {
+						texteditor1.Document.Text = "";
 	//					comboboxentryValue.Sensitive = false;
 						return;
 					}
 					comboboxValue.Changed -= HandleChanged;
 	//				comboboxentryValue.Sensitive = true;
 					CodeFormatType type = description.GetCodeFormatType (option.Type);
-					textviewPreview.Buffer.Text = option.Example;
+					texteditor1.Document.Text = option.Example;
+					
 					comboBoxStore.Clear ();
 					int active = 0, i = 0;
 					string curValue = settings.GetValue (description, option);

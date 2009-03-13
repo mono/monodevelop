@@ -116,7 +116,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.infoLabel = new Gtk.Label();
             this.infoLabel.Name = "infoLabel";
             this.infoLabel.Xalign = 0F;
-            this.infoLabel.LabelProp = "";
             this.infoLabel.Ellipsize = ((Pango.EllipsizeMode)(3));
             this.GtkAlignment2.Add(this.infoLabel);
             this.frame1.Add(this.GtkAlignment2);
@@ -130,7 +129,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.label1.WidthRequest = 1;
             this.label1.HeightRequest = 1;
             this.label1.Name = "label1";
-            this.label1.LabelProp = "";
             this.vbox2.Add(this.label1);
             Gtk.Box.BoxChild w9 = ((Gtk.Box.BoxChild)(this.vbox2[this.label1]));
             w9.Position = 2;

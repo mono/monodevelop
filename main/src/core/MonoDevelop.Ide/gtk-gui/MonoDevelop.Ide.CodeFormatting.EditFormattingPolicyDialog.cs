@@ -41,11 +41,11 @@ namespace MonoDevelop.Ide.CodeFormatting {
         
         private Gtk.Fixed fixed1;
         
-        private Gtk.CheckButton checkbutton2;
+        private Gtk.CheckButton checkbuttonWhiteSpaces;
         
         private Gtk.ScrolledWindow scrolledwindow2;
         
-        private Gtk.TextView textviewPreview;
+        private Mono.TextEditor.TextEditor texteditor1;
         
         private Gtk.Button buttonCancel;
         
@@ -83,7 +83,7 @@ namespace MonoDevelop.Ide.CodeFormatting {
             this.entryName = new Gtk.Entry();
             this.entryName.CanFocus = true;
             this.entryName.Name = "entryName";
-            this.entryName.Text = Mono.Unix.Catalog.GetString("rtE");
+            this.entryName.Text = Mono.Unix.Catalog.GetString(" ");
             this.entryName.IsEditable = true;
             this.entryName.InvisibleChar = '●';
             this.hbox1.Add(this.entryName);
@@ -167,14 +167,14 @@ namespace MonoDevelop.Ide.CodeFormatting {
             Gtk.Box.BoxChild w11 = ((Gtk.Box.BoxChild)(this.hbox2[this.fixed1]));
             w11.Position = 1;
             // Container child hbox2.Gtk.Box+BoxChild
-            this.checkbutton2 = new Gtk.CheckButton();
-            this.checkbutton2.CanFocus = true;
-            this.checkbutton2.Name = "checkbutton2";
-            this.checkbutton2.Label = Mono.Unix.Catalog.GetString("S_how whitespaces");
-            this.checkbutton2.DrawIndicator = true;
-            this.checkbutton2.UseUnderline = true;
-            this.hbox2.Add(this.checkbutton2);
-            Gtk.Box.BoxChild w12 = ((Gtk.Box.BoxChild)(this.hbox2[this.checkbutton2]));
+            this.checkbuttonWhiteSpaces = new Gtk.CheckButton();
+            this.checkbuttonWhiteSpaces.CanFocus = true;
+            this.checkbuttonWhiteSpaces.Name = "checkbuttonWhiteSpaces";
+            this.checkbuttonWhiteSpaces.Label = Mono.Unix.Catalog.GetString("S_how whitespaces");
+            this.checkbuttonWhiteSpaces.DrawIndicator = true;
+            this.checkbuttonWhiteSpaces.UseUnderline = true;
+            this.hbox2.Add(this.checkbuttonWhiteSpaces);
+            Gtk.Box.BoxChild w12 = ((Gtk.Box.BoxChild)(this.hbox2[this.checkbuttonWhiteSpaces]));
             w12.Position = 2;
             w12.Expand = false;
             this.vbox4.Add(this.hbox2);
@@ -188,26 +188,33 @@ namespace MonoDevelop.Ide.CodeFormatting {
             this.scrolledwindow2.Name = "scrolledwindow2";
             this.scrolledwindow2.ShadowType = ((Gtk.ShadowType)(1));
             // Container child scrolledwindow2.Gtk.Container+ContainerChild
-            this.textviewPreview = new Gtk.TextView();
-            this.textviewPreview.CanFocus = true;
-            this.textviewPreview.Name = "textviewPreview";
-            this.scrolledwindow2.Add(this.textviewPreview);
+            Gtk.Viewport w14 = new Gtk.Viewport();
+            w14.ShadowType = ((Gtk.ShadowType)(0));
+            // Container child GtkViewport.Gtk.Container+ContainerChild
+            this.texteditor1 = new Mono.TextEditor.TextEditor();
+            this.texteditor1.Name = "texteditor1";
+            this.texteditor1.SelectionAnchor = 0;
+            this.texteditor1.HighlightSearchPattern = false;
+            this.texteditor1.IsCaseSensitive = false;
+            this.texteditor1.IsWholeWordOnly = false;
+            w14.Add(this.texteditor1);
+            this.scrolledwindow2.Add(w14);
             this.vbox4.Add(this.scrolledwindow2);
-            Gtk.Box.BoxChild w15 = ((Gtk.Box.BoxChild)(this.vbox4[this.scrolledwindow2]));
-            w15.Position = 1;
+            Gtk.Box.BoxChild w17 = ((Gtk.Box.BoxChild)(this.vbox4[this.scrolledwindow2]));
+            w17.Position = 1;
             this.hpaned1.Add(this.vbox4);
             this.vbox2.Add(this.hpaned1);
-            Gtk.Box.BoxChild w17 = ((Gtk.Box.BoxChild)(this.vbox2[this.hpaned1]));
-            w17.Position = 1;
+            Gtk.Box.BoxChild w19 = ((Gtk.Box.BoxChild)(this.vbox2[this.hpaned1]));
+            w19.Position = 1;
             w1.Add(this.vbox2);
-            Gtk.Box.BoxChild w18 = ((Gtk.Box.BoxChild)(w1[this.vbox2]));
-            w18.Position = 0;
+            Gtk.Box.BoxChild w20 = ((Gtk.Box.BoxChild)(w1[this.vbox2]));
+            w20.Position = 0;
             // Internal child MonoDevelop.Ide.CodeFormatting.EditFormattingPolicyDialog.ActionArea
-            Gtk.HButtonBox w19 = this.ActionArea;
-            w19.Name = "dialog1_ActionArea";
-            w19.Spacing = 6;
-            w19.BorderWidth = ((uint)(5));
-            w19.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
+            Gtk.HButtonBox w21 = this.ActionArea;
+            w21.Name = "dialog1_ActionArea";
+            w21.Spacing = 6;
+            w21.BorderWidth = ((uint)(5));
+            w21.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
             this.buttonCancel = new Gtk.Button();
             this.buttonCancel.CanDefault = true;
@@ -217,9 +224,9 @@ namespace MonoDevelop.Ide.CodeFormatting {
             this.buttonCancel.UseUnderline = true;
             this.buttonCancel.Label = "gtk-cancel";
             this.AddActionWidget(this.buttonCancel, -6);
-            Gtk.ButtonBox.ButtonBoxChild w20 = ((Gtk.ButtonBox.ButtonBoxChild)(w19[this.buttonCancel]));
-            w20.Expand = false;
-            w20.Fill = false;
+            Gtk.ButtonBox.ButtonBoxChild w22 = ((Gtk.ButtonBox.ButtonBoxChild)(w21[this.buttonCancel]));
+            w22.Expand = false;
+            w22.Fill = false;
             // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
             this.buttonOk = new Gtk.Button();
             this.buttonOk.CanDefault = true;
@@ -229,10 +236,10 @@ namespace MonoDevelop.Ide.CodeFormatting {
             this.buttonOk.UseUnderline = true;
             this.buttonOk.Label = "gtk-ok";
             this.AddActionWidget(this.buttonOk, -5);
-            Gtk.ButtonBox.ButtonBoxChild w21 = ((Gtk.ButtonBox.ButtonBoxChild)(w19[this.buttonOk]));
-            w21.Position = 1;
-            w21.Expand = false;
-            w21.Fill = false;
+            Gtk.ButtonBox.ButtonBoxChild w23 = ((Gtk.ButtonBox.ButtonBoxChild)(w21[this.buttonOk]));
+            w23.Position = 1;
+            w23.Expand = false;
+            w23.Fill = false;
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
