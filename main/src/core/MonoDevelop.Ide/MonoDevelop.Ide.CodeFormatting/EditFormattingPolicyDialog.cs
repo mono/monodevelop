@@ -131,7 +131,11 @@ namespace MonoDevelop.Ide.CodeFormatting
 			while (notebookCategories.NPages > 0) {
 				notebookCategories.RemovePage (0);
 			}
+			
 			if (description != null) {
+				Gtk.Label label = new Gtk.Label (GettextCatalog.GetString ("Text Style"));
+				notebookCategories.AppendPage (new OverrideTextSettingsPolicyWidget (), label);
+
 				foreach (CodeFormatCategory category in description.SubCategories) {
 					AddCategoryPage (category);
 				}

@@ -34,6 +34,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.CodeFormatting.AddPolicyDialog.cs \
 	gtk-gui/MonoDevelop.Ide.CodeFormatting.CodeFormattingPolicyPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.CodeFormatting.EditFormattingPolicyDialog.cs \
+	gtk-gui/MonoDevelop.Ide.CodeFormatting.OverrideTextSettingsPolicyWidget.cs \
 	gtk-gui/MonoDevelop.Ide.CodeTemplates.CodeTemplatePanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.DocumentSwitcher.cs \
 	gtk-gui/MonoDevelop.Ide.ExternalTools.ExternalToolPanelWidget.cs \
@@ -68,6 +69,7 @@ FILES =  \
 	MonoDevelop.Ide.CodeFormatting/CodeFormatterService.cs \
 	MonoDevelop.Ide.CodeFormatting/CodeFormattingPolicyPanel.cs \
 	MonoDevelop.Ide.CodeFormatting/EditFormattingPolicyDialog.cs \
+	MonoDevelop.Ide.CodeFormatting/OverrideTextSettingsPolicyWidget.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplateGroup.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplatePanel.cs \

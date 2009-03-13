@@ -538,6 +538,8 @@
     <Compile Include="gtk-gui\MonoDevelop.Ide.CodeFormatting.CodeFormattingPolicyPanelWidget.cs" />
     <Compile Include="MonoDevelop.Ide.CodeFormatting\AddPolicyDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.CodeFormatting.AddPolicyDialog.cs" />
+    <Compile Include="MonoDevelop.Ide.CodeFormatting\OverrideTextSettingsPolicyWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Ide.CodeFormatting.OverrideTextSettingsPolicyWidget.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
