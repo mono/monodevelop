@@ -92,8 +92,8 @@ namespace MonoDevelop.ValaBinding.Parser
 		{
 			if (null != p) {
 				lock (p) {
-					if (!p.HasExited){ p.Kill (); }
 					try {
+						if (!p.HasExited){ p.Kill (); }
 						p.Dispose ();
 					} catch {
 						// We don't care about anything that happens here.
