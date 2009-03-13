@@ -135,6 +135,7 @@ namespace Mono.TextEditor
 				splitter.TextReplaced (this, args);
 				UpdateHighlighting ();
 				this.OnTextReplaced (args);
+				this.CommitDocumentUpdate ();
 			}
 		}
 		

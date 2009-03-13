@@ -1,3 +1,8 @@
+2009-03-13  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/Document.cs: fire commit update on text
+	  replace.
+
 2009-03-11  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* Mono.TextEditor.Vi/ViMode.cs: Fix visual mode anchoring,
