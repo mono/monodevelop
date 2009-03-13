@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
-//     <version>$Revision: 3845 $</version>
+//     <version>$Revision: 3848 $</version>
 // </file>
 
 using System;
@@ -315,11 +315,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.Space();
 			outputFormatter.PrintIdentifier(namespaceDeclaration.Name);
 			
-			outputFormatter.BeginBrace(this.prettyPrintOptions.NamespaceBraceStyle);
+			outputFormatter.BeginBrace (this.prettyPrintOptions.NamespaceBraceStyle, this.prettyPrintOptions.IndentNamespaceBody);
 			
 			namespaceDeclaration.AcceptChildren(this, data);
 			
-			outputFormatter.EndBrace();
+			outputFormatter.EndBrace(this.prettyPrintOptions.IndentNamespaceBody);
 			
 			return null;
 		}
@@ -392,16 +392,16 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			
 			switch (typeDeclaration.Type) {
 				case ClassType.Enum:
-					outputFormatter.BeginBrace(this.prettyPrintOptions.EnumBraceStyle);
+					outputFormatter.BeginBrace(this.prettyPrintOptions.EnumBraceStyle, this.prettyPrintOptions.IndentEnumBody);
 					break;
 				case ClassType.Interface:
-					outputFormatter.BeginBrace(this.prettyPrintOptions.InterfaceBraceStyle);
+					outputFormatter.BeginBrace(this.prettyPrintOptions.InterfaceBraceStyle, this.prettyPrintOptions.IndentInterfaceBody);
 					break;
 				case ClassType.Struct:
-					outputFormatter.BeginBrace(this.prettyPrintOptions.StructBraceStyle);
+					outputFormatter.BeginBrace(this.prettyPrintOptions.StructBraceStyle, this.prettyPrintOptions.IndentStructBody);
 					break;
 				default:
-					outputFormatter.BeginBrace(this.prettyPrintOptions.ClassBraceStyle);
+					outputFormatter.BeginBrace(this.prettyPrintOptions.ClassBraceStyle, this.prettyPrintOptions.IndentClassBody);
 					break;
 			}
 			
@@ -413,7 +413,20 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				typeDeclaration.AcceptChildren(this, data);
 			}
 			currentType = oldType;
-			outputFormatter.EndBrace();
+			switch (typeDeclaration.Type) {
+				case ClassType.Enum:
+					outputFormatter.EndBrace(this.prettyPrintOptions.IndentEnumBody);
+					break;
+				case ClassType.Interface:
+					outputFormatter.EndBrace(this.prettyPrintOptions.IndentInterfaceBody);
+					break;
+				case ClassType.Struct:
+					outputFormatter.EndBrace(this.prettyPrintOptions.IndentStructBody);
+					break;
+				default:
+					outputFormatter.EndBrace(this.prettyPrintOptions.IndentCaseBody);
+					break;
+			}
 			
 			return null;
 		}
@@ -536,12 +549,12 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 			outputFormatter.PrintIdentifier(propertyDeclaration.Name);
 			
-			outputFormatter.BeginBrace(this.prettyPrintOptions.PropertyBraceStyle);
+			outputFormatter.BeginBrace(this.prettyPrintOptions.PropertyBraceStyle, this.prettyPrintOptions.IndentPropertyBody);
 			
 			TrackVisit(propertyDeclaration.GetRegion, data);
 			TrackVisit(propertyDeclaration.SetRegion, data);
 			
-			outputFormatter.EndBrace();
+			outputFormatter.EndBrace(this.prettyPrintOptions.IndentPropertyBody);
 			return null;
 		}
 		
@@ -551,7 +564,6 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.Indent();
 			OutputModifier(propertyGetRegion.Modifier);
 			outputFormatter.PrintText("get");
-			System.Console.WriteLine("allow get in line:" + prettyPrintOptions.AllowPropertyGetBlockInline);
 			if (prettyPrintOptions.AllowPropertyGetBlockInline) {
 				OutputBlockAllowInline(propertyGetRegion.Block, prettyPrintOptions.PropertyGetBraceStyle);
 			} else {
@@ -602,10 +614,10 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.PrintToken(Tokens.Semicolon);
 				outputFormatter.NewLine();
 			} else {
-				outputFormatter.BeginBrace(this.prettyPrintOptions.PropertyBraceStyle);
+				outputFormatter.BeginBrace(this.prettyPrintOptions.PropertyBraceStyle, this.prettyPrintOptions.IndentEventBody);
 				TrackVisit(eventDeclaration.AddRegion, data);
 				TrackVisit(eventDeclaration.RemoveRegion, data);
-				outputFormatter.EndBrace();
+				outputFormatter.EndBrace(this.prettyPrintOptions.IndentEventBody);
 			}
 			return null;
 		}
@@ -925,7 +937,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.PrintToken(Tokens.Semicolon);
 				outputFormatter.NewLine();
 			} else {
-				outputFormatter.BeginBrace(braceStyle);
+				outputFormatter.BeginBrace(braceStyle, this.prettyPrintOptions.IndentBlocks);
 				foreach (Statement stmt in blockStatement.Children) {
 					outputFormatter.Indent();
 					if (stmt is BlockStatement) {
@@ -936,7 +948,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					if (!outputFormatter.LastCharacterIsNewLine)
 						outputFormatter.NewLine();
 				}
-				outputFormatter.EndBrace();
+				outputFormatter.EndBrace(this.prettyPrintOptions.IndentBlocks);
 			}
 			EndVisit(blockStatement);
 		}
@@ -1036,7 +1048,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.PrintToken(Tokens.Null);
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
 			
-			outputFormatter.BeginBrace(BraceStyle.EndOfLine);
+			outputFormatter.BeginBrace(BraceStyle.EndOfLine, this.prettyPrintOptions.IndentBlocks);
 			
 			outputFormatter.Indent();
 			outputFormatter.PrintIdentifier(raiseEventStatement.EventName);
@@ -1046,7 +1058,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.PrintToken(Tokens.Semicolon);
 			
 			outputFormatter.NewLine();
-			outputFormatter.EndBrace();
+			outputFormatter.EndBrace(this.prettyPrintOptions.IndentBlocks);
 			
 			return null;
 		}
@@ -1322,11 +1334,15 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.OpenCurlyBrace);
 			outputFormatter.NewLine();
-			++outputFormatter.IndentationLevel;
+			if (prettyPrintOptions.IndentSwitchBody)
+				++outputFormatter.IndentationLevel;
+			
 			foreach (SwitchSection section in switchStatement.SwitchSections) {
 				TrackVisit(section, data);
 			}
-			--outputFormatter.IndentationLevel;
+			
+			if (prettyPrintOptions.IndentSwitchBody)
+				--outputFormatter.IndentationLevel;
 			outputFormatter.Indent();
 			outputFormatter.PrintToken(Tokens.CloseCurlyBrace);
 			return null;
@@ -1337,14 +1353,26 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			foreach (CaseLabel label in switchSection.SwitchLabels) {
 				TrackVisit(label, data);
 			}
-			
-			++outputFormatter.IndentationLevel;
-			foreach (Statement stmt in switchSection.Children) {
+			int standardIndentLevel = outputFormatter.IndentationLevel;
+			if (prettyPrintOptions.IndentCaseBody)
+				++outputFormatter.IndentationLevel;
+			for (int i = 0; i < switchSection.Children.Count; i++) {
+				Statement stmt = switchSection.Children[i] as Statement;
+				int oldIndent = outputFormatter.IndentationLevel;
+				if (i == switchSection.Children.Count - 1) {
+					if (prettyPrintOptions.IndentBreakStatements)
+						outputFormatter.IndentationLevel = standardIndentLevel + 1;
+					else 
+						outputFormatter.IndentationLevel = standardIndentLevel;
+				}
 				outputFormatter.Indent();
 				TrackVisit(stmt, data);
 				outputFormatter.NewLine();
+				outputFormatter.IndentationLevel = oldIndent;
 			}
-			--outputFormatter.IndentationLevel;
+			
+			if (prettyPrintOptions.IndentCaseBody)
+				--outputFormatter.IndentationLevel;
 			return null;
 		}
 		

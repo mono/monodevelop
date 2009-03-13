@@ -1,5 +1,12 @@
 2009-03-13  Mike Krüger  <mkrueger@novell.com>
 
+	* Src/PrettyPrinter/CSharp/OutputFormatter.cs:
+	* Src/PrettyPrinter/CSharp/PrettyPrintOptions.cs:
+	* Src/PrettyPrinter/CSharp/CSharpOutputVisitor.cs: Updated
+	  nrefactory.
+
+2009-03-13  Mike Krüger  <mkrueger@novell.com>
+
 	* Src/PrettyPrinter/CSharp/PrettyPrintOptions.cs:
 	* Src/PrettyPrinter/CSharp/CSharpOutputVisitor.cs: Updated
 	  pretty printer.

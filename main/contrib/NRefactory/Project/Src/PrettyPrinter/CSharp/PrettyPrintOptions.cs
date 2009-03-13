@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version>$Revision: 1966 $</version>
+//     <version>$Revision: 3848 $</version>
 // </file>
 
 namespace ICSharpCode.NRefactory.PrettyPrinter
@@ -211,6 +211,132 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				allowEventRemoveBlockInline = value;
 			}
 		}
+		#endregion
+		
+		#region Indentation
+		bool indentNamespaceBody = true;
+		bool indentClassBody     = true;
+		bool indentInterfaceBody = true;
+		bool indentStructBody    = true;
+		bool indentEnumBody      = true;
+		
+		bool indentMethodBody    = true;
+		bool indentPropertyBody  = true;
+		bool indentEventBody     = true;
+		bool indentBlocks        = true;
+		
+		bool indentSwitchBody = true;
+		bool indentCaseBody   = true;
+		bool indentBreakStatements = true;
+		
+		public bool IndentBlocks {
+			get {
+				return indentBlocks;
+			}
+			set {
+				indentBlocks = value;
+			}
+		}
+
+		public bool IndentClassBody {
+			get {
+				return indentClassBody;
+			}
+			set {
+				indentClassBody = value;
+			}
+		}
+
+		public bool IndentStructBody {
+			get {
+				return indentStructBody;
+			}
+			set {
+				indentStructBody = value;
+			}
+		}
+		
+		public bool IndentPropertyBody {
+			get {
+				return indentPropertyBody;
+			}
+			set {
+				indentPropertyBody = value;
+			}
+		}
+		
+		public bool IndentNamespaceBody {
+			get {
+				return indentNamespaceBody;
+			}
+			set {
+				indentNamespaceBody = value;
+			}
+		}
+
+		public bool IndentMethodBody {
+			get {
+				return indentMethodBody;
+			}
+			set {
+				indentMethodBody = value;
+			}
+		}
+
+		public bool IndentInterfaceBody {
+			get {
+				return indentInterfaceBody;
+			}
+			set {
+				indentInterfaceBody = value;
+			}
+		}
+
+		public bool IndentEventBody {
+			get {
+				return indentEventBody;
+			}
+			set {
+				indentEventBody = value;
+			}
+		}
+	
+		public bool IndentEnumBody {
+			get {
+				return indentEnumBody;
+			}
+			set {
+				indentEnumBody = value;
+			}
+		}
+		
+		public bool IndentBreakStatements {
+			get {
+				return indentBreakStatements;
+			}
+			set {
+				indentBreakStatements = value;
+			}
+		}
+		
+		public bool IndentSwitchBody {
+			get {
+				return indentSwitchBody;
+			}
+			set {
+				indentSwitchBody = value;
+			}
+		}
+
+		public bool IndentCaseBody {
+			get {
+				return indentCaseBody;
+			}
+			set {
+				indentCaseBody = value;
+			}
+		}
+
 		#endregion
 		
 		#region Before Parentheses
@@ -553,5 +679,6 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 		}
 		#endregion
+	
 	}
 }

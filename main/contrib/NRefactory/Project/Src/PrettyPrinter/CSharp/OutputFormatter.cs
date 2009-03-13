@@ -40,7 +40,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		Stack braceStack = new Stack();
 		
-		public void BeginBrace(BraceStyle style)
+		public void BeginBrace(BraceStyle style, bool indent)
 		{
 			switch (style) {
 				case BraceStyle.EndOfLine:
@@ -49,25 +49,29 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					}
 					PrintToken(Tokens.OpenCurlyBrace);
 					NewLine();
-					++IndentationLevel;
+					if (indent)
+						++IndentationLevel;
 					break;
 				case BraceStyle.NextLine:
 					NewLine();
 					Indent();
 					PrintToken(Tokens.OpenCurlyBrace);
 					NewLine();
-					++IndentationLevel;
+					if (indent)
+						++IndentationLevel;
 					break;
 				case BraceStyle.NextLineShifted:
 					NewLine();
-					++IndentationLevel;
+					if (indent)
+						++IndentationLevel;
 					Indent();
 					PrintToken(Tokens.OpenCurlyBrace);
 					NewLine();
 					break;
 				case BraceStyle.NextLineShifted2:
 					NewLine();
-					++IndentationLevel;
+					if (indent)
+						++IndentationLevel;
 					Indent();
 					PrintToken(Tokens.OpenCurlyBrace);
 					NewLine();
@@ -77,13 +81,14 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			braceStack.Push(style);
 		}
 		
-		public void EndBrace()
+		public void EndBrace(bool indent)
 		{
 			BraceStyle style = (BraceStyle)braceStack.Pop();
 			switch (style) {
 				case BraceStyle.EndOfLine:
 				case BraceStyle.NextLine:
-					--IndentationLevel;
+					if (indent)
+						--IndentationLevel;
 					Indent();
 					PrintToken(Tokens.CloseCurlyBrace);
 					NewLine();
@@ -92,10 +97,12 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					Indent();
 					PrintToken(Tokens.CloseCurlyBrace);
 					NewLine();
-					--IndentationLevel;
+					if (indent)
+						--IndentationLevel;
 					break;
 				case BraceStyle.NextLineShifted2:
-					--IndentationLevel;
+					if (indent)
+						--IndentationLevel;
 					Indent();
 					PrintToken(Tokens.CloseCurlyBrace);
 					NewLine();
