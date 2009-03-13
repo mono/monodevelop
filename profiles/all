@@ -12,4 +12,5 @@ extras/MonoDevelop.CodeAnalysis
 extras/MonoDevelop.Debugger.Mdb
 extras/MonoDevelop.Debugger.Gdb
 extras/PyBinding
+extras/MonoDevelop.AspNet.Mvc
 
