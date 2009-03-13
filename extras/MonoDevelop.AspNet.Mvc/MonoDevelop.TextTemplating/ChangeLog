@@ -1,3 +1,8 @@
+2009-03-13  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.TextTemplating.csproj: Move output dir from
+	  ../bin to ../build.
+
 2009-03-12  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Gui/T4EditorExtension.cs: Fix warning.

@@ -1,5 +1,10 @@
 2009-03-13  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.AspNet.Mvc.csproj: Move output dir from ../bin
+	  to ../build.
+
+2009-03-13  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* gtk-gui:
 	* gtk-gui/gui.stetic:
 	* gtk-gui/generated.cs:
