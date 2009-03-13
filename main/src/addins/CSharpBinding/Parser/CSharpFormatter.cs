@@ -25,18 +25,29 @@
 // THE SOFTWARE.
 
 using System;
+using System.IO;
+using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Text;
 
+using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory.Parser;
+using ICSharpCode.NRefactory.Parser.CSharp;
+using ICSharpCode.NRefactory.Visitors;
+using ICSharpCode.NRefactory.PrettyPrinter;
+
 namespace CSharpBinding.Parser
 {
-	public class CSharpFormatter : AbstractFormatter
+	public class CSharpFormatter : AbstractPrettyPrinter
 	{
+		const string MimeType = "text/x-csharp";
 		public override bool CanFormat (string mimeType)
 		{
-			return mimeType == "text/x-csharp";
+			return mimeType == MimeType;
 		}
 		
 		static int GetNextTabstop (int currentColumn, int tabSize)
@@ -44,13 +55,58 @@ namespace CSharpBinding.Parser
 			int result = currentColumn + tabSize;
 			return (result / tabSize) * tabSize;
 		}
-		
+
 		protected override string InternalFormat (SolutionItem policyParent, string input, int startOffset, int endOffset)
 		{
+			if (string.IsNullOrEmpty (input))
+				return input;
 			TextStylePolicy currentPolicy = policyParent != null
 					? policyParent.Policies.Get<TextStylePolicy> ()
 					: MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy> ();
-			input = input ?? "";
+			CodeFormattingPolicy codePolicy = policyParent != null
+					? policyParent.Policies.Get<CodeFormattingPolicy> ()
+					: MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<CodeFormattingPolicy> ();
+			
+			CSharpOutputVisitor outputVisitor = new CSharpOutputVisitor ();
+			outputVisitor.Options.IndentationChar = currentPolicy.TabsToSpaces ? ' ' : '\t';
+			outputVisitor.Options.TabSize         = currentPolicy.TabWidth;
+			outputVisitor.Options.IndentSize      = currentPolicy.TabWidth;
+			CodeFormatSettings settings = codePolicy.GetSettings ();
+			CodeFormatDescription descr = TextFileService.GetFormatDescription (MimeType);
+			Type optionType = outputVisitor.Options.GetType ();
+			
+			foreach (CodeFormatOption option in descr.AllOptions) {
+				string val = settings.GetValue (descr, option);
+				PropertyInfo info = optionType.GetProperty (option.Name);
+				if (info == null) {
+					System.Console.WriteLine("option : " + option.Name + " not found.");
+					continue;
+				}
+				object cval = null;
+				if (info.PropertyType.IsEnum) {
+					cval = Enum.Parse (info.PropertyType, val);
+				} else if (info.PropertyType == typeof (bool)) {
+					cval = Convert.ToBoolean (val);
+				} else {
+					cval = Convert.ChangeType (val, info.PropertyType);
+				}
+				//System.Console.WriteLine("set " + option.Name + " to " + cval);
+				info.SetValue (outputVisitor.Options, cval, null);
+			}
+			
+			using (IParser parser = ParserFactory.CreateParser (SupportedLanguage.CSharp, new StringReader (input))) {
+				parser.Parse ();
+				IList<ISpecial> specials = parser.Lexer.SpecialTracker.RetrieveSpecials ();
+				if (parser.Errors.Count == 0) {
+					using (SpecialNodesInserter.Install (specials, outputVisitor)) {
+						parser.CompilationUnit.AcceptVisitor (outputVisitor, null);
+					}
+					return outputVisitor.Text;
+				}
+			}
+			return input;
+			
+/*			input = input ?? "";
 			int line = 0, col = 0;
 			string eolMarker = currentPolicy.GetEolMarker ();
 			StringBuilder result = new StringBuilder ();
@@ -81,7 +137,7 @@ namespace CSharpBinding.Parser
 					break;
 				}
 			}
-			return result.ToString ();
+			return result.ToString ();*/
 		}
 	}
 }

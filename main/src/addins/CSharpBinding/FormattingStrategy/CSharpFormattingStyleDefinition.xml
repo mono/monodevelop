@@ -1,38 +1,157 @@
 <CodeStyle version="1.0" mimeType="text/x-csharp">
+
 	<Type name = "BraceStyle">
 		<Value>EndOfLine</Value>
 		<Value>NextLine</Value>
 		<Value>NextLineShifted</Value>
-		<Value>NextLineShifted2</Value>
 	</Type>
 	
+	<Example name = "event"><![CDATA[
+	class ClassDeclaration { 
+		EventHandler<EventArgs> onAction;
+		public event EventHandler<EventArgs> Action {
+			add { onAction = (EventHandler<EventArgs>)Delegate.Combine(onAction, value); }
+			remove { onAction = (EventHandler<EventArgs>)Delegate.Remove(onAction, value);}
+		}
+		EventHandler<EventArgs> onAnotherAction;
+		public event EventHandler<EventArgs> AnotherAction {
+			add { if (value != null) 
+					onAnotherAction = (EventHandler<EventArgs>)Delegate.Combine(onAnotherAction, value); }
+			remove { if (value != null) 
+					onAnotherAction = (EventHandler<EventArgs>)Delegate.Remove(onAnotherAction, value);}
+		}
+	}
+]]></Example>
+	
+	<Example name = "property"><![CDATA[
+	class ClassDeclaration { 
+		int myProperty;
+		int MyProperty { 
+			get { return myProperty;} 
+			set { myProperty = value;} 
+		}
+		
+		int myOtherProperty;
+		int MyOtherProperty { 
+			get { 
+				Console.WriteLine ("get myOtherProperty");
+				return myOtherProperty;
+			} 
+			set { 
+				if (myOtherProperty != value)
+					myOtherProperty = value;
+			} 
+		}
+	}
+]]></Example>
+<Example name = "methodSpaceExample"><![CDATA[
+	class ClassDeclaration { 
+		public void TestMethod ()
+		{
+			Console.WriteLine ("Hello World!");
+		}
+	}
+]]></Example>
+
+<Example name = "spaceExample"><![CDATA[
+	class ClassDeclaration { 
+		public void TestMethod ()
+		{
+			try {
+				TestMethod ("");
+			} catch (Exception e) {
+				// Do something
+			} finally {
+				// Do something
+			}
+		}
+		
+		public void TestMethod (string test)
+		{
+			lock (this) {
+				switch (test) {
+					case "A": {
+						Console.WriteLine ("was A");
+						break;
+					}
+					case "B":
+						Console.WriteLine ("was B");
+						break;
+				}
+			}
+		}
+		
+		public void Calculate (int a, int b)
+		{
+			if (a < b) {
+				for (int i = a; i < b; i++) {
+					
+				}
+			} else {
+				using (object o = new object ()) {
+					while (b < a) {
+						
+					}
+				}
+			}
+		}
+	}
+		
+]]></Example>
+
+<Example name = "operatorExample"><![CDATA[
+	class ClassDeclaration { 
+		public void TestMethod ()
+		{
+			int a = 5 << 5;
+			int b = (a + 5 - 3) * 6 / 2;
+			a += b;
+			a = a & ~255;
+			if (a == b || b < a >> 1) {
+				b -= a;
+			}
+		}
+	}
+]]></Example>
+
+<Example name = "condOpExample"><![CDATA[
+	class ClassDeclaration { 
+		public string GetSign (int i)
+		{
+			return i < 0 ? "-" : "+";
+		}
+	}
+]]></Example>
+
 <!--	<Category name ="Indentation" _displayName="Indentation">
 	</Category> -->
 	
 	<Category name ="Braces" _displayName="Braces">
 		<Category name = "Declarations" _displayName="Declarations">
-			<Option name="NamespaceDeclaration" _displayName="Namespace declaration" type="BraceStyle"><Example>namespace TestNameSpace {}</Example></Option>
-			<Option name="ClassDeclaration" _displayName="Class declaration" type="BraceStyle"><Example>class ClassDeclaration {}</Example></Option>
-			<Option name="InterfaceDeclaration" _displayName="Interface declaration" type="BraceStyle"><Example><![CDATA[interface InterfaceDeclaraction {}]]></Example></Option>
-			<Option name="StructDeclaration" _displayName="Struct declaration" type="BraceStyle"><Example><![CDATA[struct StructDeclaration {}]]></Example></Option>
-			<Option name="EnumDeclaration" _displayName="Enum declaration" type="BraceStyle"><Example><![CDATA[enum EnumDeclaration { A, B, C}]]></Example></Option>
-			<Option name="ConstructorDeclaration" _displayName="Constructor declaration" type="BraceStyle"><Example><![CDATA[class ClassDeclaration { public ClassDeclaration () {} }]]></Example></Option>
-			<Option name="DestructorDeclaration" _displayName="Destructor declaration" type="BraceStyle"><Example><![CDATA[class ClassDeclaration { ~ClassDeclaration () {} }]]></Example></Option>
-			<Option name="MethodDeclaration" _displayName="Method declaration" type="BraceStyle"><Example><![CDATA[class ClassDeclaration { void MyMethod () {} }]]></Example></Option>
+			<Option name="NamespaceBraceStyle" _displayName="Namespace declaration" type="BraceStyle"><Example>namespace TestNameSpace {}</Example></Option>
+			<Option name="ClassBraceStyle" _displayName="Class declaration" type="BraceStyle"><Example>class ClassDeclaration {}</Example></Option>
+			<Option name="InterfaceBraceStyle" _displayName="Interface declaration" type="BraceStyle"><Example><![CDATA[interface InterfaceDeclaraction {}]]></Example></Option>
+			<Option name="StructBraceStyle" _displayName="Struct declaration" type="BraceStyle"><Example><![CDATA[struct StructDeclaration {}]]></Example></Option>
+			<Option name="EnumBraceStyle" _displayName="Enum declaration" type="BraceStyle"><Example><![CDATA[enum EnumDeclaration { A, B, C}]]></Example></Option>
+			<Option name="ConstructorBraceStyle" _displayName="Constructor declaration" type="BraceStyle"><Example><![CDATA[class ClassDeclaration { public ClassDeclaration () {} }]]></Example></Option>
+			<Option name="DestructorBraceStyle" _displayName="Destructor declaration" type="BraceStyle"><Example><![CDATA[class ClassDeclaration { ~ClassDeclaration () {} }]]></Example></Option>
+			<Option name="MethodBraceStyle" _displayName="Method declaration" type="BraceStyle"><Example><![CDATA[class ClassDeclaration { void MyMethod () {} }]]></Example></Option>
 			
-			<Option name="PropertyDeclaration" _displayName="Property declaration" type="BraceStyle"><Example><![CDATA[class ClassDeclaration { int myProperty; int MyProperty { get { return myProperty;} set { myProperty = value;} } }]]></Example></Option>
-			<Option name="GetDeclaration" _displayName="Get declaration" type="BraceStyle"><Example><![CDATA[class ClassDeclaration { int myProperty; int MyProperty { get { return myProperty;} set { myProperty = value;} } }]]></Example></Option>
-			<Option name="SetDeclaration" _displayName="Set declaration" type="BraceStyle"><Example><![CDATA[class ClassDeclaration { int myProperty; int MyProperty { get { return myProperty;} set { myProperty = value;} } }]]></Example></Option>
+			<Option name="PropertyBraceStyle" _displayName="Property declaration" type="BraceStyle" example="property"/>
+			<Option name="PropertyGetBraceStyle" _displayName="Get declaration" type="BraceStyle" example="property"/>
+			<Option name="AllowPropertyGetBlockInline" _displayName="Allow one line get" type="Bool" example="property"/>
+			<Option name="PropertySetBraceStyle" _displayName="Set declaration" type="BraceStyle" example="property"/>
+			<Option name="AllowPropertySetBlockInline" _displayName="Allow one line set" type="Bool" example="property"/>
 			
-			<Option name="EventDeclaration" _displayName="Event declaration" type="BraceStyle"/>
-			<Option name="AddDeclaration" _displayName="Add declaration" type="BraceStyle"/>
-			<Option name="RemoveDeclaration" _displayName="Remove declaration" type="BraceStyle"/>
+			<Option name="EventBraceStyle" _displayName="Event declaration" type="BraceStyle" example="event"/>
+			<Option name="EventAddBraceStyle" _displayName="Add declaration" type="BraceStyle" example="event"/>
+			<Option name="AllowEventAddBlockInline" _displayName="Allow one line add" type="Bool" example="event"/>
+			<Option name="EventRemoveBraceStyle" _displayName="Remove declaration" type="BraceStyle" example="event"/>
+			<Option name="AllowEventRemoveBlockInline" _displayName="Allow one line remove" type="Bool" example="event"/>
 		</Category>
 		
 		<Category name = "Blocks" _displayName="Blocks">
-			<Option name="InBlocks" _displayName="Blocks" type="BraceStyle"/>
-			<Option name="InSwitch" _displayName="Switch" type="BraceStyle"/>
-			<Option name="InCaseStatement" _displayName="Blocks in case statement" type="BraceStyle"/>
+			<Option name="StatementBraceStyle" _displayName="Statements" type="BraceStyle"/>
 		</Category>
 		
 		<Category name = "NewLines"  _displayName="New Lines">
@@ -57,29 +176,121 @@
 	
 	<Category name = "Spaces" _displayName="Spaces">
 		<Category name = "BeforeParentheses" _displayName="Before Parentheses">
-			<Option name="MethodCall" _displayName="Method call" type="Bool"/>
-			<Option name="MethodDeclaration" _displayName="Method declaration" type="Bool"/>
-			<Option name="IfStatement" _displayName="if statement" type="Bool"/>
-			<Option name="WhileStatement" _displayName="while statement" type="Bool"/>
-			<Option name="ForStatement" _displayName="for statement" type="Bool"/>
-			<Option name="CatchStatement" _displayName="catch statement" type="Bool"/>
-			<Option name="SwitchStatement" _displayName="switch statement" type="Bool"/>
-			<Option name="LockStatement" _displayName="lock statement" type="Bool"/>
-			<Option name="UsingStatement" _displayName="using statement" type="Bool"/>
+			<Option name="BeforeMethodCallParentheses" _displayName="Method call" type="Bool" example ="methodSpaceExample"/>
+			<Option name="BeforeMethodDeclarationParentheses" _displayName="Method declaration" type="Bool" example ="methodSpaceExample"/>
+			<Option name="IfParentheses" _displayName="if statement" type="Bool"><Example><![CDATA[
+class ClassDeclaration { 
+		public void Test ()
+		{
+			if (true) {
+				Console.WriteLine ("Hello World!");
+			}
+		}
+	}
+]]></Example>
+</Option>
+			<Option name="WhileParentheses" _displayName="while statement" type="Bool"><Example><![CDATA[
+class ClassDeclaration { 
+		public void Test ()
+		{
+			while (true) {
+				Console.WriteLine ("Hello World!");
+			}
+		}
+	}
+]]></Example>
+</Option>
+			<Option name="ForParentheses" _displayName="for statement" type="Bool"><Example><![CDATA[
+class ClassDeclaration { 
+		public void Test ()
+		{
+			for (int i = 0; i < 10; i++) {
+				Console.WriteLine ("Hello World!");
+			}
+		}
+	}
+]]></Example>
+</Option>
+			<Option name="ForeachParentheses" _displayName="foreach statement" type="Bool"><Example><![CDATA[
+class ClassDeclaration : ArrayList { 
+		public void Test ()
+		{
+			foreach (object o in this) {
+				Console.WriteLine ("Hello World!");
+			}
+		}
+	}
+]]></Example>
+</Option>
+
+
+			<Option name="CatchParentheses" _displayName="catch statement" type="Bool"><Example><![CDATA[
+class ClassDeclaration { 
+		public void Test ()
+		{
+			try {
+				Console.WriteLine ("Hello World!");
+			} catch (Exception) {
+			}
+		}
+	}
+]]></Example>
+</Option>
+			<Option name="SwitchParentheses" _displayName="switch statement" type="Bool"><Example><![CDATA[
+class ClassDeclaration { 
+		public void Test (string a)
+		{
+			switch (a) {
+			case "silent":
+			break;
+			default:
+				Console.WriteLine ("Hello World!");
+				break;
+			}
+		}
+	}
+]]></Example>
+</Option>
+			<Option name="LockParentheses" _displayName="lock statement" type="Bool"><Example><![CDATA[
+class ClassDeclaration { 
+		public void Test ()
+		{
+			lock (this) {
+				Console.WriteLine ("Hello World!");
+			}
+		}
+	}
+]]></Example>
+</Option>
+			<Option name="UsingParentheses" _displayName="using statement" type="Bool"><Example><![CDATA[
+class ClassDeclaration { 
+		public void Test ()
+		{
+			using (object o = new object ()) {
+				Console.WriteLine ("Hello World!");
+			}
+		}
+	}
+]]></Example>
+</Option>
 		</Category>
 		
 		<Category name = "Operators" _displayName="Operators">
-			<Option name="BeforeAssignment" _displayName="before assignment" type="Bool"/>
-			<Option name="AfterAssignment" _displayName="after assignment" type="Bool"/>
+			<Option name="AroundAdditiveOperatorParentheses" _displayName="around additive (+,-) operators" type="Bool" example="operatorExample"/>
+			<Option name="AroundAssignmentParentheses" _displayName="around assignment (=)" type="Bool" example="operatorExample"/>
+			<Option name="AroundBitwiseOperatorParentheses" _displayName="around bitwise (&amp;,|,^) operators" type="Bool" example="operatorExample"/>
+			<Option name="AroundLogicalOperatorParentheses" _displayName="around logical (&amp;&amp;,||) operators" type="Bool" example="operatorExample"/>
+			<Option name="AroundMultiplicativeOperatorParentheses" _displayName="around multiplicative (*,/,%) operators" type="Bool" example="operatorExample"/>
+			<Option name="AroundRelationalOperatorParentheses" _displayName="around relational (==,&lt;=,...) operators" type="Bool" example="operatorExample"/>
+			<Option name="AroundShiftOperatorParentheses" _displayName="around shift (&lt;&lt;,&gt;&gt;) operators" type="Bool" example="operatorExample"/>
 			
-			<Option name="BeforeBinary" _displayName="before binary operators" type="Bool"/>
-			<Option name="AfterBinary" _displayName="after binary operators" type="Bool"/>
+<!--			<Category name = "ConditionalOperator" _displayName="ConditionalOperator">-->
+				<Option name="ConditionalOperatorBeforeConditionSpace" _displayName="before condition" type="Bool" example="condOpExample"/>
+				<Option name="ConditionalOperatorAfterConditionSpace" _displayName="after condition" type="Bool" example="condOpExample"/>
+				<Option name="ConditionalOperatorBeforeSeparatorSpace" _displayName="before separator" type="Bool" example="condOpExample"/>
+				<Option name="ConditionalOperatorAfterSeparatorSpace" _displayName="after separator" type="Bool" example="condOpExample"/>
+<!--			</Category>-->
 			
-			<Option name="BeforePrefix" _displayName="before prefix operators" type="Bool"/>
-			<Option name="AfterPrefix" _displayName="after prefix operators" type="Bool"/>
-			
-			<Option name="BeforePostfix" _displayName="before postfix operators" type="Bool"/>
-			<Option name="AfterPostfix" _displayName="after postfix operators" type="Bool"/>
 		</Category>
 	</Category>
 </CodeStyle>

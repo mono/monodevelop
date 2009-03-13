@@ -132,10 +132,9 @@
 		<Definition resource="CSharpFormattingStyleDefinition.xml"/>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/ProjectModel/TextFormatters">
-		<Class insertbefore="default" class="CSharpBinding.Parser.CSharpFormatter" />
+	<Extension path = "/MonoDevelop/ProjectModel/TextPrettyPrinters">
+		<Class class="CSharpBinding.Parser.CSharpFormatter" />
 	</Extension>
-	
 	
 	<Module>
 	    <Runtime>
