@@ -199,12 +199,14 @@ namespace Mono.TextEditor.Vi
 
 					case 'V':
 						Status = "-- VISUAL LINE --";
+						Data.SelectionAnchor = Caret.Offset;
 						Data.SetSelectLines (Caret.Line, Caret.Line);
 						state = State.VisualLine;
 						return;
 						
 					case 'v':
 						Status = "-- VISUAL --";
+						Data.SelectionAnchor = Caret.Offset;
 						state = State.Visual;
 						return;
 						
@@ -495,6 +497,8 @@ namespace Mono.TextEditor.Vi
 					if (0 < commandBuffer.Length) {
 						commandBuffer.Remove (commandBuffer.Length-1, 1);
 						Status = commandBuffer.ToString ();
+						if (0 == commandBuffer.Length)
+							Reset (Status);
 					}
 					break;
 				default:
