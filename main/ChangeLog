@@ -1,5 +1,15 @@
 2009-03-12  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* mdtool.in:
+	* monodevelop.in:
+	* build/MacOSX/mdtool:
+	* build/MacOSX/monodevelop: Fix escaping and handling of
+	  escaped arguments. Fixes "Bug 484954 - Monodevelop does not
+	  start from volumes with spaces in the name" and "Bug 483260
+	  - mdtool doesn't properly handle spaces in pathnames.".
+
+2009-03-12  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Main.sln: Remove libsteticui from windows build.
 
 2009-03-12  Michael Hutchinson  <mhutchinson@novell.com>
