@@ -1,5 +1,10 @@
 2009-03-13  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
+	* Parser/ProjectInformation.cs: Reduce parser latency on 
+	  bad match.
+
+2009-03-13  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
 	* Parser/ProjectInformation.cs: Fix intermittent exception.
 
 2009-03-10  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>

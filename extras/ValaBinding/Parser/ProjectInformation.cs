@@ -133,12 +133,12 @@ namespace MonoDevelop.ValaBinding.Parser
 			
 			p.OutputDataReceived += gotdata;
 
-			for (int i=0; i<100; ++i) {
+			for (int i=0; i<10; ++i) {
 				p.BeginOutputReadLine ();
 				Thread.Sleep (50);
 				p.CancelOutputRead ();
 				lock (result) {
-					if (count < result.Count){ --i; }
+					if (count < result.Count){ i = 0; }
 					if (0 < result.Count && endOutputRegex.Match(result[result.Count-1]).Success) {
 						break;
 					}
