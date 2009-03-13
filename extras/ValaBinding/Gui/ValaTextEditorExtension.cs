@@ -53,10 +53,9 @@ namespace MonoDevelop.ValaBinding
 			'|', '^', '{', '}', '[', ']', '(', ')', '\n', '!', '?', '<', '>'
 		};
 		
-		// Allowed Chars to be next to an identifier excluding ':' (to get the full name in '::' completion).
-		private static char[] allowedCharsMinusColon = new char[] {
-			'.', ' ', '\t', '=', '*', '+', '-', '/', '%', ',', '&', '|',
-			'^', '{', '}', '[', ']', '(', ')', '\n', '!', '?', '<', '>'
+		private static char[] operators = new char[] {
+			'=', '*', '+', '-', '/', '%', ',', '&', '|',
+			'^', '[', '(', '!', '?', '<', '>', ':'
 		};
 		
 		private ProjectInformation Parser {
@@ -141,10 +140,19 @@ namespace MonoDevelop.ValaBinding
 					ValaCompletionDataList list = new ValaCompletionDataList ();
 					parser.GetTypesVisibleFrom (Document.FileName, line, column, list);
 					return list;
+				} else if (0 < lineText.Length) {
+					char lastNonWS = lineText[lineText.Length-1];
+					if (0 <= Array.IndexOf (operators, lastNonWS) || 
+				          (1 == lineText.Length && 0 > Array.IndexOf (allowedChars, lastNonWS))) { 
+						return GlobalComplete (completionContext); 
+					}
 				}
 				
 				break;
 			default:
+				if (0 <= Array.IndexOf (operators, completionChar)) {
+					return GlobalComplete (completionContext);
+				}
 				break;
 			}
 			
