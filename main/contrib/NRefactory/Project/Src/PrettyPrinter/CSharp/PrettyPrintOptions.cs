@@ -31,10 +31,15 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		BraceStyle methodBraceStyle       = BraceStyle.NextLine;
 		
 		BraceStyle propertyBraceStyle     = BraceStyle.EndOfLine;
+		bool      allowPropertyGetBlockInline = true;
 		BraceStyle propertyGetBraceStyle  = BraceStyle.EndOfLine;
+		bool      allowPropertySetBlockInline = true;
 		BraceStyle propertySetBraceStyle  = BraceStyle.EndOfLine;
 		
+		BraceStyle eventBraceStyle        = BraceStyle.EndOfLine;
+		bool      allowEventAddBlockInline = true;
 		BraceStyle eventAddBraceStyle     = BraceStyle.EndOfLine;
+		bool      allowEventRemoveBlockInline = true;
 		BraceStyle eventRemoveBraceStyle  = BraceStyle.EndOfLine;
 		
 		BraceStyle statementBraceStyle = BraceStyle.EndOfLine;
@@ -137,12 +142,39 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				propertyGetBraceStyle = value;
 			}
 		}
+		
+		public bool AllowPropertyGetBlockInline {
+			get {
+				return allowPropertyGetBlockInline;
+			}
+			set {
+				allowPropertyGetBlockInline = value;
+			}
+		}
+		
 		public BraceStyle PropertySetBraceStyle {
 			get {
 				return propertySetBraceStyle;
 			}
 			set {
 				propertySetBraceStyle = value;
+			}
+		}
+		public bool AllowPropertySetBlockInline {
+			get {
+				return allowPropertySetBlockInline;
+			}
+			set {
+				allowPropertySetBlockInline = value;
+			}
+		}
+		
+		public BraceStyle EventBraceStyle {
+			get {
+				return eventBraceStyle;
+			}
+			set {
+				eventBraceStyle = value;
 			}
 		}
 		
@@ -154,12 +186,29 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				eventAddBraceStyle = value;
 			}
 		}
+		public bool AllowEventAddBlockInline {
+			get {
+				return allowEventAddBlockInline;
+			}
+			set {
+				allowEventAddBlockInline = value;
+			}
+		}
+		
 		public BraceStyle EventRemoveBraceStyle {
 			get {
 				return eventRemoveBraceStyle;
 			}
 			set {
 				eventRemoveBraceStyle = value;
+			}
+		}
+		public bool AllowEventRemoveBlockInline {
+			get {
+				return allowEventRemoveBlockInline;
+			}
+			set {
+				allowEventRemoveBlockInline = value;
 			}
 		}
 		#endregion
