@@ -1,3 +1,7 @@
+2009-03-13  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextTemplating.Tests.csproj: Fix output directory.
+
 2009-03-12  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.TextTemplating.Tests.csproj: Updated.
