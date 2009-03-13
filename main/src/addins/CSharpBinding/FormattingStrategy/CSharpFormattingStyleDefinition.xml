@@ -123,8 +123,44 @@
 	}
 ]]></Example>
 
-<!--	<Category name ="Indentation" _displayName="Indentation">
-	</Category> -->
+<Example name = "switchExample"><![CDATA[
+	class ClassDeclaration { 
+		public void Test (int i)
+		{
+			switch (i) {
+				case 0:
+					Console.WriteLine ("was zero");
+					break;
+				case 1:
+					Console.WriteLine ("was one");
+					break;
+				default:
+					Console.WriteLine ("was " + i);
+					break;
+			}
+		}
+	}
+]]></Example>
+
+	<Category name ="Indentation" _displayName="Indentation">
+		<Category name = "Declarations" _displayName="Declarations">
+			<Option name="IndentNamespaceBody" _displayName="within namespaces" type="Bool"><Example><![CDATA[namespace Test { class AClass {} }]]></Example></Option>
+			<Option name="IndentClassBody" _displayName="within classes" type="Bool"><Example><![CDATA[class AClass { int aField; void AMethod () {}}]]></Example></Option>
+			<Option name="IndentInterfaceBody" _displayName="within interfaces" type="Bool"><Example><![CDATA[interface IAInterfaces { int AProperty {get;set;} void AMethod ();}]]></Example></Option>
+			<Option name="IndentStructBody" _displayName="within structs" type="Bool"><Example><![CDATA[struct AStruct { int aField; void AMethod () {}}]]></Example></Option>
+			<Option name="IndentEnumBody" _displayName="within enums" type="Bool"><Example><![CDATA[enum AEnum { A, B, C }]]></Example></Option>
+			<Option name="IndentMethodBody" _displayName="within methods" type="Bool" example="methodSpaceExample"/>
+			<Option name="IndentPropertyBody" _displayName="within properties" type="Bool" example="property"/>
+			<Option name="IndentEventBody" _displayName="within events" type="Bool" example="event"/>
+		</Category>
+		
+		<Category name = "Statements" _displayName="Statements">
+			<Option name="IndentBlocks" _displayName="within blocks" type="Bool" example="spaceExample"/>
+			<Option name="IndentSwitchBody" _displayName="Indent 'switch' body" type="Bool" example="switchExample"/>
+			<Option name="IndentCaseBody" _displayName="Indent 'case' body" type="Bool" example="switchExample"/>
+			<Option name="IndentBreakStatements" _displayName="Indent 'break' statements" type="Bool" example="switchExample"/>
+		</Category>
+	</Category>
 	
 	<Category name ="Braces" _displayName="Braces">
 		<Category name = "Declarations" _displayName="Declarations">
