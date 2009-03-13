@@ -1,3 +1,8 @@
+2009-03-13  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.XmlEditor.Tests.csproj: Moved text editor to
+	  core
+
 2009-02-28  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.XmlEditor.Tests.csproj: Flush.

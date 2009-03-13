@@ -1,3 +1,7 @@
+2009-03-13  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.XmlEditor.csproj: Moved text editor to core
+
 2009-03-04  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Xml.StateEngine/XmlDocTypeState.cs: Don't

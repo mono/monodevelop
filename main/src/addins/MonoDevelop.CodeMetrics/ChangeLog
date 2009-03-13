@@ -1,3 +1,7 @@
+2009-03-13  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CodeMetrics.csproj: Moved text editor to core
+
 2009-03-04  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CodeMetrics/CodeMetricsWidget.cs:

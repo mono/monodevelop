@@ -317,6 +317,7 @@ contrib/Mono.Cecil/Makefile
 contrib/NRefactory/Makefile
 src/Makefile
 src/core/Makefile
+src/core/Mono.Texteditor/Makefile
 src/core/Mono.Debugging/Makefile
 src/core/MonoDevelop.Core/Makefile
 src/core/MonoDevelop.Core.Gui/Makefile
@@ -365,7 +366,6 @@ src/addins/GnomePlatform/Makefile
 src/addins/MacPlatform/Makefile
 src/addins/WindowsPlatform/Makefile
 src/addins/MonoDevelop.AssemblyBrowser/Makefile
-src/addins/Mono.Texteditor/Makefile
 src/addins/MonoDevelop.SourceEditor2/Makefile
 src/addins/MonoDevelop.Moonlight/Makefile
 src/addins/MonoDevelop.XmlEditor/Makefile

@@ -1,3 +1,8 @@
+2009-03-13  Mike Krüger  <mkrueger@novell.com>
+
+	* Main.sln:
+	* configure.in: Moved text editor to core
+
 2009-03-12  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* mdtool.in:

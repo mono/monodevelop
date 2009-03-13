@@ -1,5 +1,9 @@
 2009-03-13  Mike Krüger  <mkrueger@novell.com>
 
+	* CSharpBinding.csproj: Moved text editor to core
+
+2009-03-13  Mike Krüger  <mkrueger@novell.com>
+
 	* CSharpBinding.addin.xml:
 	* Parser/CSharpFormatter.cs:
 	* FormattingStrategy/CSharpFormattingStyleDefinition.xml:

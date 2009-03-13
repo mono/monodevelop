@@ -1,3 +1,7 @@
+2009-03-13  Mike Krüger  <mkrueger@novell.com>
+
+	* prj2make-sharp-lib.csproj: Moved text editor to core
+
 2009-03-10  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:

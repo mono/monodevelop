@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.Startup", "src\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mono.Debugging", "src\core\Mono.Debugging\Mono.Debugging.csproj", "{90C99ADB-7D4B-4EB4-98C2-40BD1B14C7D2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mono.TextEditor", "src\core\Mono.Texteditor\Mono.TextEditor.csproj", "{A2329308-3751-4DBD-9A75-5F7B8B024625}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Addins", "Addins", "{D417E929-2B3A-46AC-BBE8-027ADB63A790}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ILAsmBinding", "src\addins\ILAsmBinding\ILAsmBinding.csproj", "{961B9266-C44A-42B6-BA3D-3FB229C9C417}"
@@ -87,8 +89,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CBinding.Autotools", "src\addins\CBinding\CBinding.Autotools\CBinding.Autotools.csproj", "{B841F25D-4F6D-4E0D-885F-212B54381F28}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GnomePlatform", "src\addins\GnomePlatform\GnomePlatform.csproj", "{AE84B4A7-E6B1-4565-8904-16284DCE41B6}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mono.TextEditor", "src\addins\Mono.Texteditor\Mono.TextEditor.csproj", "{A2329308-3751-4DBD-9A75-5F7B8B024625}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.SourceEditor", "src\addins\MonoDevelop.SourceEditor2\MonoDevelop.SourceEditor.csproj", "{F8F92AA4-A376-4679-A9D4-60E7B7FBF477}"
 EndProject
@@ -453,10 +453,10 @@ Global
 		{9BC670A8-1851-40EC-9685-279F4C98433D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A2329308-3751-4DBD-9A75-5F7B8B024625}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A2329308-3751-4DBD-9A75-5F7B8B024625}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A2329308-3751-4DBD-9A75-5F7B8B024625}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
-		{A2329308-3751-4DBD-9A75-5F7B8B024625}.DebugMac|Any CPU.Build.0 = Debug|Any CPU
-		{A2329308-3751-4DBD-9A75-5F7B8B024625}.DebugWin32|x86.ActiveCfg = Debug|Any CPU
-		{A2329308-3751-4DBD-9A75-5F7B8B024625}.DebugWin32|x86.Build.0 = Debug|Any CPU
+		{A2329308-3751-4DBD-9A75-5F7B8B024625}.DebugMac|Any CPU.ActiveCfg = DebugMac|Any CPU
+		{A2329308-3751-4DBD-9A75-5F7B8B024625}.DebugMac|Any CPU.Build.0 = DebugMac|Any CPU
+		{A2329308-3751-4DBD-9A75-5F7B8B024625}.DebugWin32|x86.ActiveCfg = DebugWin32|x86
+		{A2329308-3751-4DBD-9A75-5F7B8B024625}.DebugWin32|x86.Build.0 = DebugWin32|x86
 		{A2329308-3751-4DBD-9A75-5F7B8B024625}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A2329308-3751-4DBD-9A75-5F7B8B024625}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A7A4246D-CEC4-42DF-A3C1-C31B9F51C4EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -583,6 +583,7 @@ Global
 		{00E87426-F1BD-4B55-9B3E-7267EE93E002} = {9D360D43-0C05-49D6-84DB-4E7AB2F38F82}
 		{DA8EDEA6-7DA8-435D-B1A0-F3A0CA07F424} = {9D360D43-0C05-49D6-84DB-4E7AB2F38F82}
 		{90C99ADB-7D4B-4EB4-98C2-40BD1B14C7D2} = {9D360D43-0C05-49D6-84DB-4E7AB2F38F82}
+		{A2329308-3751-4DBD-9A75-5F7B8B024625} = {9D360D43-0C05-49D6-84DB-4E7AB2F38F82}
 		{961B9266-C44A-42B6-BA3D-3FB229C9C417} = {D417E929-2B3A-46AC-BBE8-027ADB63A790}
 		{DEEB9163-3966-4E5E-9AB5-FBB3E01AC82A} = {D417E929-2B3A-46AC-BBE8-027ADB63A790}
 		{02280E65-C507-4931-AE68-AA2E89E15EEF} = {D417E929-2B3A-46AC-BBE8-027ADB63A790}
@@ -600,7 +601,6 @@ Global
 		{1F29B0A7-458F-4093-85DE-52E36EA2FC0E} = {D417E929-2B3A-46AC-BBE8-027ADB63A790}
 		{49157389-0F4C-4000-88A1-D37B2AEBA941} = {D417E929-2B3A-46AC-BBE8-027ADB63A790}
 		{AE84B4A7-E6B1-4565-8904-16284DCE41B6} = {D417E929-2B3A-46AC-BBE8-027ADB63A790}
-		{A2329308-3751-4DBD-9A75-5F7B8B024625} = {D417E929-2B3A-46AC-BBE8-027ADB63A790}
 		{F8F92AA4-A376-4679-A9D4-60E7B7FBF477} = {D417E929-2B3A-46AC-BBE8-027ADB63A790}
 		{0EA3AD14-404A-4D3F-979B-F087E2E70C82} = {D417E929-2B3A-46AC-BBE8-027ADB63A790}
 		{8FAD630E-4AED-4D2E-B8C2-5B1337213369} = {D417E929-2B3A-46AC-BBE8-027ADB63A790}
@@ -643,23 +643,23 @@ Global
 		outputpath = build\bin\
 		StartupItem = src\core\MonoDevelop.Startup\MonoDevelop.Startup.csproj
 		Policies = $0
-		$0.TextStylePolicy = $1
-		$1.FileWidth = 120
-		$1.TabWidth = 4
-		$1.TabsToSpaces = False
-		$1.NoTabsAfterNonTabs = False
-		$1.RemoveTrailingWhitespace = False
-		$1.EolMarker = Native
-		$0.StandardHeader = $2
-		$2.inheritsSet = MITX11License
-		$0.ChangeLogPolicy = $3
-		$3.UpdateMode = ProjectRoot
-		$3.inheritsSet = Mono
+		$0.StandardHeader = $1
+		$1.inheritsSet = MITX11License
+		$0.TextStylePolicy = $2
+		$2.FileWidth = 120
+		$2.TabWidth = 4
+		$2.TabsToSpaces = False
+		$2.NoTabsAfterNonTabs = False
+		$2.RemoveTrailingWhitespace = False
+		$2.EolMarker = Native
+		$0.DotNetNamingPolicy = $3
+		$3.DirectoryNamespaceAssociation = Flat
+		$3.ResourceNamePolicy = FileName
 		$0.VersionControlPolicy = $4
 		$4.inheritsSet = Mono
-		$0.DotNetNamingPolicy = $5
-		$5.DirectoryNamespaceAssociation = Flat
-		$5.ResourceNamePolicy = FileName
+		$0.ChangeLogPolicy = $5
+		$5.UpdateMode = ProjectRoot
+		$5.inheritsSet = Mono
 		MakePkgConfig = False
 		MakeLibPC = True
 	EndGlobalSection

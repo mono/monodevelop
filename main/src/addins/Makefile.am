@@ -1,6 +1,5 @@
 
 SUBDIRS = \
-	Mono.Texteditor \
 	MacPlatform \
 	GnomePlatform \
 	MonoDevelop.DesignerSupport \
