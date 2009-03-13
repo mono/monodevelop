@@ -63,7 +63,10 @@ $(ASSEMBLY).mdb: $(ASSEMBLY)
 check: all
 
 mdmoonlightlibdir = $(MD_ADDIN_DIR)/MonoDevelop.Moonlight
-mdmoonlightlib_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb $(DATA_FILES)
+mdmoonlightlib_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb
+
+mdmoonlighttemplatelibdir = $(MD_ADDIN_DIR)/MonoDevelop.Moonlight/Templates
+mdmoonlighttemplatelib_DATA = $(DATA_FILE_BUILD)
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(DATA_FILE_BUILD)
 
