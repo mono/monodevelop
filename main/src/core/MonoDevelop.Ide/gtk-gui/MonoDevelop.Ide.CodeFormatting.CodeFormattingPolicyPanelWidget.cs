@@ -17,7 +17,7 @@ namespace MonoDevelop.Ide.CodeFormatting {
         
         private Gtk.VBox vbox2;
         
-        private Gtk.Label lbl_will_save_in;
+        private Gtk.Label label;
         
         private Gtk.HBox hbox3;
         
@@ -53,15 +53,15 @@ namespace MonoDevelop.Ide.CodeFormatting {
             this.vbox2.Name = "vbox2";
             this.vbox2.Spacing = 6;
             // Container child vbox2.Gtk.Box+BoxChild
-            this.lbl_will_save_in = new Gtk.Label();
-            this.lbl_will_save_in.WidthRequest = 580;
-            this.lbl_will_save_in.Name = "lbl_will_save_in";
-            this.lbl_will_save_in.Xalign = 0F;
-            this.lbl_will_save_in.Yalign = 0F;
-            this.lbl_will_save_in.LabelProp = "Active formatting policy:";
-            this.lbl_will_save_in.Wrap = true;
-            this.vbox2.Add(this.lbl_will_save_in);
-            Gtk.Box.BoxChild w1 = ((Gtk.Box.BoxChild)(this.vbox2[this.lbl_will_save_in]));
+            this.label = new Gtk.Label();
+            this.label.WidthRequest = 580;
+            this.label.Name = "label";
+            this.label.Xalign = 0F;
+            this.label.Yalign = 0F;
+            this.label.LabelProp = "Active profile:";
+            this.label.Wrap = true;
+            this.vbox2.Add(this.label);
+            Gtk.Box.BoxChild w1 = ((Gtk.Box.BoxChild)(this.vbox2[this.label]));
             w1.Position = 0;
             w1.Expand = false;
             w1.Fill = false;

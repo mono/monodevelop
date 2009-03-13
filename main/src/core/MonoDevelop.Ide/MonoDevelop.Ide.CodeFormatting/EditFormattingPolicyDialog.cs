@@ -52,6 +52,20 @@ namespace MonoDevelop.Ide.CodeFormatting
 				settings.Name = this.entryName.Text;
 			};
 			
+			buttonExport.Clicked += delegate {
+				Gtk.FileChooserDialog dialog = new Gtk.FileChooserDialog (GettextCatalog.GetString ("Export Profile"),
+				                                                          this,
+				                                                          FileChooserAction.Save,
+				                                                          Gtk.Stock.Cancel, Gtk.ResponseType.Cancel, Gtk.Stock.Save, Gtk.ResponseType.Ok);
+				dialog.Filter = new FileFilter();
+				dialog.Filter.AddPattern ("*.xml");
+				if (ResponseType.Ok == (ResponseType)dialog.Run ()) {
+					System.Console.WriteLine("fn:" + dialog.Filename);
+					description.ExportSettings (settings, dialog.Filename);
+				}
+				dialog.Destroy ();
+			};
+			
 /*			Gtk.CellRendererText ctx = new Gtk.CellRendererText ();
 			comboboxValue.PackStart (ctx, true);
 			comboboxValue.AddAttribute (ctx, "text", 0);*/
@@ -79,10 +93,12 @@ namespace MonoDevelop.Ide.CodeFormatting
 		
 		void UpdateExample ()
 		{
-			IFormatter formatter = TextFileService.GetFormatter (description.MimeType);
+			IPrettyPrinter printer = TextFileService.GetPrettyPrinter (description.MimeType);
+			if (printer == null)
+				return;
 			DotNetProject parent = new DotNetProject ();
 			parent.Policies.Set <CodeFormattingPolicy> (new CustomFormattingPolicy (settings));
-			textviewPreview.Buffer.Text = formatter.FormatText (parent, textviewPreview.Buffer.Text);
+			textviewPreview.Buffer.Text = printer.FormatText (parent, textviewPreview.Buffer.Text);
 		}
 		
 		void HandleChanged(object sender, EventArgs e)
@@ -97,6 +113,8 @@ namespace MonoDevelop.Ide.CodeFormatting
 			this.description = description;
 			this.settings    = settings;
 			this.entryName.Text = settings.Name;
+			this.Title = string.Format (GettextCatalog.GetString ("Edit Profile '{0}'"), settings.Name);
+
 			while (notebookCategories.NPages > 0) {
 				notebookCategories.RemovePage (0);
 			}

@@ -6475,12 +6475,12 @@ Large</property>
             <property name="MemberName" />
             <property name="Spacing">6</property>
             <child>
-              <widget class="Gtk.Label" id="lbl_will_save_in">
+              <widget class="Gtk.Label" id="label">
                 <property name="MemberName" />
                 <property name="WidthRequest">580</property>
                 <property name="Xalign">0</property>
                 <property name="Yalign">0</property>
-                <property name="LabelProp">Active formatting policy:</property>
+                <property name="LabelProp">Active profile:</property>
                 <property name="Wrap">True</property>
               </widget>
               <packing>
@@ -6711,6 +6711,7 @@ Large</property>
                   <widget class="Gtk.Entry" id="entryName">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
+                    <property name="Text" translatable="yes">rtE</property>
                     <property name="IsEditable">True</property>
                     <property name="InvisibleChar">●</property>
                   </widget>
@@ -6720,7 +6721,7 @@ Large</property>
                   </packing>
                 </child>
                 <child>
-                  <widget class="Gtk.Button" id="button5">
+                  <widget class="Gtk.Button" id="buttonExport">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
                     <property name="Type">TextOnly</property>
@@ -6775,7 +6776,7 @@ Large</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="Gtk.ComboBoxEntry" id="comboboxValue">
+                      <widget class="Gtk.ComboBox" id="comboboxValue">
                         <property name="MemberName" />
                         <property name="IsTextCombo">True</property>
                         <property name="Items" translatable="yes" />
@@ -6969,7 +6970,6 @@ Large</property>
                   <widget class="Gtk.Entry" id="entryName">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
-                    <property name="Text" translatable="yes">p</property>
                     <property name="IsEditable">True</property>
                     <property name="InvisibleChar">●</property>
                   </widget>
@@ -6989,7 +6989,7 @@ Large</property>
                 <child>
                   <widget class="Gtk.Label" id="label1">
                     <property name="MemberName" />
-                    <property name="LabelProp" translatable="yes">_Name of new policy:</property>
+                    <property name="LabelProp" translatable="yes">_Profile name:</property>
                     <property name="UseUnderline">True</property>
                   </widget>
                   <packing>

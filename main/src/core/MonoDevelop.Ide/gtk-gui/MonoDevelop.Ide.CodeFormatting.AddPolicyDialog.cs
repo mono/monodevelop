@@ -63,7 +63,6 @@ namespace MonoDevelop.Ide.CodeFormatting {
             this.entryName = new Gtk.Entry();
             this.entryName.CanFocus = true;
             this.entryName.Name = "entryName";
-            this.entryName.Text = Mono.Unix.Catalog.GetString("p");
             this.entryName.IsEditable = true;
             this.entryName.InvisibleChar = '●';
             this.table2.Add(this.entryName);
@@ -74,7 +73,7 @@ namespace MonoDevelop.Ide.CodeFormatting {
             // Container child table2.Gtk.Table+TableChild
             this.label1 = new Gtk.Label();
             this.label1.Name = "label1";
-            this.label1.LabelProp = Mono.Unix.Catalog.GetString("_Name of new policy:");
+            this.label1.LabelProp = Mono.Unix.Catalog.GetString("_Profile name:");
             this.label1.UseUnderline = true;
             this.table2.Add(this.label1);
             Gtk.Table.TableChild w4 = ((Gtk.Table.TableChild)(this.table2[this.label1]));

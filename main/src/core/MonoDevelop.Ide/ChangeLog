@@ -1,3 +1,17 @@
+2009-03-13  Mike Krüger  <mkrueger@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Ide.addin.xml: 
+
+	* MonoDevelop.Ide.CodeFormatting/AddPolicyDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow.cs:
+	* gtk-gui/MonoDevelop.Ide.CodeFormatting.AddPolicyDialog.cs:
+	* MonoDevelop.Ide.CodeFormatting/CodeFormattingPolicyPanel.cs:
+	* MonoDevelop.Ide.CodeFormatting/EditFormattingPolicyDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.CodeFormatting.EditFormattingPolicyDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.CodeFormatting.CodeFormattingPolicyPanelWidget.cs:
+	  Worked on code formatting.
+
 2009-03-12  Mike Krüger  <mkrueger@novell.com>
 
 	* gtk-gui/gui.stetic:

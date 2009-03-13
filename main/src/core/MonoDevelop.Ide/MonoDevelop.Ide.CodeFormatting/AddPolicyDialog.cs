@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.CodeFormatting
 {
@@ -50,6 +51,7 @@ namespace MonoDevelop.Ide.CodeFormatting
 		public AddPolicyDialog (List<CodeFormatSettings> settings)
 		{
 			this.Build();
+			this.Title = GettextCatalog.GetString ("New Profile");
 			
 			foreach (var setting in settings) {
 				this.comboboxInitFrom.AppendText (setting.Name);

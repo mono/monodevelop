@@ -21,7 +21,7 @@ namespace MonoDevelop.Ide.CodeFormatting {
         
         private Gtk.Entry entryName;
         
-        private Gtk.Button button5;
+        private Gtk.Button buttonExport;
         
         private Gtk.HPaned hpaned1;
         
@@ -31,7 +31,7 @@ namespace MonoDevelop.Ide.CodeFormatting {
         
         private Gtk.Label label5;
         
-        private Gtk.ComboBoxEntry comboboxValue;
+        private Gtk.ComboBox comboboxValue;
         
         private Gtk.VBox vbox4;
         
@@ -83,19 +83,20 @@ namespace MonoDevelop.Ide.CodeFormatting {
             this.entryName = new Gtk.Entry();
             this.entryName.CanFocus = true;
             this.entryName.Name = "entryName";
+            this.entryName.Text = Mono.Unix.Catalog.GetString("rtE");
             this.entryName.IsEditable = true;
             this.entryName.InvisibleChar = '●';
             this.hbox1.Add(this.entryName);
             Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.hbox1[this.entryName]));
             w3.Position = 1;
             // Container child hbox1.Gtk.Box+BoxChild
-            this.button5 = new Gtk.Button();
-            this.button5.CanFocus = true;
-            this.button5.Name = "button5";
-            this.button5.UseUnderline = true;
-            this.button5.Label = Mono.Unix.Catalog.GetString("E_xport...");
-            this.hbox1.Add(this.button5);
-            Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(this.hbox1[this.button5]));
+            this.buttonExport = new Gtk.Button();
+            this.buttonExport.CanFocus = true;
+            this.buttonExport.Name = "buttonExport";
+            this.buttonExport.UseUnderline = true;
+            this.buttonExport.Label = Mono.Unix.Catalog.GetString("E_xport...");
+            this.hbox1.Add(this.buttonExport);
+            Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(this.hbox1[this.buttonExport]));
             w4.Position = 2;
             w4.Expand = false;
             w4.Fill = false;
@@ -131,7 +132,7 @@ namespace MonoDevelop.Ide.CodeFormatting {
             Gtk.Box.BoxChild w7 = ((Gtk.Box.BoxChild)(this.vbox3[this.notebookCategories]));
             w7.Position = 0;
             // Container child vbox3.Gtk.Box+BoxChild
-            this.comboboxValue = Gtk.ComboBoxEntry.NewText();
+            this.comboboxValue = Gtk.ComboBox.NewText();
             this.comboboxValue.Name = "comboboxValue";
             this.vbox3.Add(this.comboboxValue);
             Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.vbox3[this.comboboxValue]));

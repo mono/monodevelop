@@ -121,7 +121,25 @@ namespace MonoDevelop.Ide.CodeFormatting
 			};
 			
 			buttonImport.Clicked += delegate {
-				
+				Gtk.FileChooserDialog dialog = new Gtk.FileChooserDialog (GettextCatalog.GetString ("Import Profile"),
+				                                                          null,
+				                                                          FileChooserAction.Open,
+				                                                          Gtk.Stock.Cancel, Gtk.ResponseType.Cancel, Gtk.Stock.Open, Gtk.ResponseType.Ok);
+				FileFilter f1 = new FileFilter();
+				f1.Name = "*.xml";
+				f1.AddPattern ("*.xml");
+				dialog.AddFilter (f1);
+				FileFilter f2 = new FileFilter();
+				f1.Name = "*";
+				f2.AddPattern ("*");
+				dialog.AddFilter (f2);
+				if (ResponseType.Ok == (ResponseType)dialog.Run ()) {
+					settings.Add (description.ImportSettings (dialog.Filename));
+					int a = comboboxFormattingPolicies.Active;
+					FillFormattingPolicies ();
+					comboboxFormattingPolicies.Active = a;
+				}
+				dialog.Destroy ();
 			};
 			
 			buttonRemove.Clicked += delegate {
