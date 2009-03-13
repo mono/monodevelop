@@ -626,7 +626,10 @@ namespace MonoDevelop.SourceEditor
 				return this.widget.TextEditor.Document.Text;
 			}
 			set {
+				this.IsDirty = true;
 				this.widget.TextEditor.Document.Text = value;
+				if (TextChanged != null)
+					TextChanged (this, new TextChangedEventArgs (0, Length));
 			}
 		}
 		

@@ -1,5 +1,11 @@
 2009-03-13  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: fixed "Bug
+	  484574 - Setting SourceEditorView.Text doesn't mark the
+	  document as dirty".
+
+2009-03-13  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor.csproj: Moved text editor to core
 
 2009-03-12  Mike Krüger  <mkrueger@novell.com>
