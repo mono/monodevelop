@@ -1,0 +1,166 @@
+<!-- BrownStyle.xml
+
+ Author:
+   Mike Krüger <mkrueger@novell.com>
+
+ Copyright (c) 2008 Novell, Inc (http://www.novell.com)
+
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ THE SOFTWARE. -->
+ <EditorStyle name="Brown" _description="Light color scheme using brownish colors.">
+ 
+	<!-- ubuntu palette -->
+	<Color name="orange_highlight" value="#eec73e"/>
+	<Color name="orange"           value="#f0a513"/>
+	<Color name="orange_base"      value="#fb8b00"/>
+	<Color name="orange_shadow"    value="#f44800"/>
+
+	<Color name="environmental_blue_highlight" value="#aaccee"/>
+	<Color name="environmental_blue_medium"    value="#6699cc"/>
+	<Color name="environmental_blue_base"      value="#336699"/>
+	<Color name="environmental_blue_shadow"    value="#003366"/>
+	
+	<Color name="accent_yellow_highlight" value="#fdff99"/>
+	<Color name="yellow"                  value="#ffff00"/>
+	<Color name="accent_yellow_base"      value="#fdca01"/>
+	<Color name="accent_yellow_shadow"    value="#986601"/>
+ 
+	<Color name="accent_blue_highlight" value="#b3defd"/>
+	<Color name="accent_blue"           value="#0197fd"/>
+	<Color name="accent_blue_base"      value="#0169c9"/>
+	<Color name="accent_blue_shadow"    value="#013397"/>
+
+	<Color name="accent_orange"   value="#f44800"/>
+	<Color name="accent_red"      value="#fd3301"/>
+	<Color name="accent_red_base" value="#d40000"/>
+	<Color name="accent_deep_red" value="#980101"/>
+
+	<Color name="accent_green_highlight" value="#ccff99"/>
+	<Color name="accent_green"           value="#98fc66"/>
+	<Color name="accent_green_base"      value="#339900"/>
+	<Color name="accent_green_shadow"    value="#015a01"/>
+
+	<Color name="human_highlight"      value="#fdd99b"/>
+	<Color name="human"                value="#d9bb7a"/>
+	<Color name="human_base"           value="#816647"/>
+	<Color name="environmental_shadow" value="#565248"/>
+ 
+	<Color name="ubuntu_toner"             value="#002b3d"/>
+	<Color name="accent_magenta_highlight" value="#ff9bff"/>
+	<Color name="accent_magenta"           value="#ff00ff"/>
+	<Color name="accent_dark_violet"       value="#6600cc"/>
+	
+	<!-- environment -->
+	<Style name="text" color="black" bgColor="white"/>
+	<Style name="text.selection" color="human_highlight" bgColor="black"/>
+	<Style name="text.background.searchresult" color="yellow"/>
+	
+	<Style name="text.link" color="blue"/>
+	
+	<Style name="caret" color="black" bgcolor="white"/>
+	
+	<Style name="marker.line" color="accent_yellow_highlight"/>
+	<Style name="marker.line.changed" color="yellow"/>	
+	<Style name="marker.line.dirty" color="accent_yellow_highlight"/>	
+	
+	<Style name="marker.ruler" color="accent_blue_highlight"/>
+	<Style name="marker.whitespace" color="human"/>
+	<Style name="marker.invalidline" color="accent_red_base"/>
+	<Style name="marker.bracket" color="environmental_blue_medium" bgColor="environmental_blue_highlight"/>
+	
+	<Style name="marker.bookmark.color1" color="human_highlight"/>
+	<Style name="marker.bookmark.color2" color="human_base"/>
+	
+<!-- TODO: override defaults
+	<Style name="marker.underline" color="red"/>
+	<Style name="marker.underline.error" color="red"/>
+	<Style name="marker.underline.warning" color="yellow"/>
+	
+	<Style name="marker.breakpoint.color1" color=""/>
+	<Style name="marker.breakpoint.color2" color=""/>
+	<Style name="marker.breakpoint.foreground" color=""/>
+	<Style name="marker.breakpoint.background" color=""/>
+	<Style name="marker.breakpoint.disabled.background" color=""/>
+	<Style name="marker.breakpoint.invalid.background" color=""/>
+	<Style name="marker.breakpoint.invalid.color1" color=""/>
+	<Style name="marker.breakpoint.invalid.border" color=""/>
+	
+	<Style name="marker.debug.currentline.foreground" color=""/>
+	<Style name="marker.debug.currentline.background" color=""/>
+	<Style name="marker.debug.currentline.color1" color=""/>
+	<Style name="marker.debug.currentline.color2" color=""/>
+	<Style name="marker.debug.currentline.border" color=""/>
+	-->
+		
+	<Style name="linenumber" color="human" bgColor="white"/>
+	<Style name="linenumber.highlight" color="human_base"/>
+	
+	<Style name="iconbar" color="human_highlight"/>
+	<Style name="iconbar.separator" color="human_base"/>
+
+	<Style name="fold" color="human" bgColor="white"/>
+	<Style name="fold.highlight" color="environmental_shadow"/>
+	<Style name="fold.togglemarker" color="black"/>
+	
+	<!-- highlighting -->
+	<Style name="comment" color="accent_green_base"/>
+	<Style name="comment.tag" color="accent_green_base"/>	
+	<Style name="comment.line" color="accent_green_base"/>
+	<Style name="comment.tag.line" color="accent_green_base"/>	
+	<Style name="comment.block" color="accent_green_base"/>
+	<Style name="comment.tag.block" color="accent_green_base"/>	
+	<Style name="comment.doc" color="accent_green_base"/>
+	<Style name="comment.tag.doc" color="accent_green_base"/>	
+	<Style name="comment.keyword" color="accent_green_base" weight="bold"/>	
+	<Style name="comment.keyword.todo" color="accent_green_base" weight="italic"/>		
+	
+	<Style name="text.literal" color="accent_magenta"/>
+	<Style name="text.punctuation" color="accent_magenta"/>
+	<Style name="text.preprocessor" color="environmental_blue_base"/>
+	<Style name="text.preprocessor.keyword" color="environmental_blue_base" weight="bold"/>
+	<Style name="text.markup" color="accent_blue_base"/>
+	<Style name="text.markup.tag" color="accent_blue_shadow"/>
+	
+	<Style name="constant" color="accent_magenta"/>
+	<Style name="constant.digit" color="accent_magenta"/>
+	<Style name="constant.language" color="accent_magenta"/>
+	<Style name="constant.language.void" color="accent_red" weight="bold"/>
+	
+	<Style name="string" color="accent_magenta"/>
+	<Style name="string.single" color="accent_magenta"/>
+	<Style name="string.double" color="accent_magenta"/>
+	<Style name="string.other" color="accent_magenta"/>
+	
+	<Style name="keyword" color="black" weight="bold" />
+	<Style name="keyword.access" color="black" weight="bold" />
+	<Style name="keyword.namespace" color="accent_green_base" weight="bold"/>
+	<Style name="keyword.property" color="accent_blue_base" weight="bold"/>
+	<Style name="keyword.modifier" color="accent_red" weight="bold"/>
+	<Style name="keyword.type" color="accent_deep_red" weight="bold"/>
+	<Style name="keyword.declaration" color="accent_blue_shadow" weight="bold"/>
+	<Style name="keyword.access" color="black" weight="bold" />
+	<Style name="keyword.operator" color="accent_dark_violet"/>
+	<Style name="keyword.operator.declaration" color="orange_base" weight="bold"/>
+	<Style name="keyword.selection" color="orange_base" weight="bold"/>
+	<Style name="keyword.iteration" color="orange_base" weight="bold"/>
+	<Style name="keyword.jump" color="orange_base" weight="bold"/>
+	<Style name="keyword.context" color="orange_base" />
+	<Style name="keyword.exceptions" color="accent_orange" weight="bold"/>
+	<Style name="keyword.parameter" color="orange_base" weight="bold"/>
+	<Style name="keyword.misc" color="orange_base"/>
+</EditorStyle>

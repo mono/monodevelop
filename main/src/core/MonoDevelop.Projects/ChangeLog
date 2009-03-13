@@ -1,5 +1,9 @@
 2009-03-13  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.csproj: 
+
+2009-03-13  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Text/CodeFormatDescription.cs: fixed
 	  compiler error.
 

@@ -1,0 +1,263 @@
+<!-- CSharpSyntaxMode.xml
+
+ Author:
+   Mike Krüger <mkrueger@novell.com>
+
+ Copyright (c) 2007 Novell, Inc (http://www.novell.com)
+
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ THE SOFTWARE. -->
+ 
+<SyntaxMode name = "C#" mimeTypes="text/x-csharp">
+
+	<EolSpan color = "text.preprocessor" rule="text.preprocessor">#</EolSpan>
+	<EolSpan color = "comment.doc" rule="XmlDocumentation" tagColor="comment.tag.doc">///</EolSpan>
+	<EolSpan color = "comment.line" rule="Comment" tagColor="comment.tag.line">//</EolSpan>
+	
+	<Span color = "comment.block" rule="Comment" tagColor="comment.tag.block">
+		<Begin>/*</Begin>
+		<End>*/</End>
+	</Span>
+	
+	<Span color = "string.other" rule="String" stopateol = "false" escape='""'>
+		<Begin>@"</Begin>
+		<End>"</End>
+	</Span>
+
+	<Span color = "string.double" rule="String" stopateol = "true" escape='\"'>
+		<Begin>"</Begin>
+		<End>"</End>
+	</Span>
+
+	<Span color = "string.single" rule="String" stopateol = "true" escape="\'">
+		<Begin>&apos;</Begin>
+		<End>&apos;</End>
+	</Span>
+	
+	<Match color = "constant.digit">CSharpNumber</Match>
+	
+	<Keywords color = "keyword.access">
+		<Word>this</Word>
+		<Word>base</Word>
+	</Keywords>
+	
+	<Keywords color = "keyword.operator">
+		<Word>as</Word>
+		<Word>is</Word>
+		<Word>new</Word>
+		<Word>sizeof</Word>
+		<Word>typeof</Word>
+		<Word>stackalloc</Word>
+	</Keywords>
+	
+	<Keywords color = "keyword.selection">
+		<Word>else</Word>
+		<Word>if</Word>
+		<Word>switch</Word>
+		<Word>case</Word>
+		<Word>default</Word>
+	</Keywords>
+	
+	<Keywords color = "keyword.iteration">
+		<Word>do</Word>
+		<Word>for</Word>
+		<Word>foreach</Word>
+		<Word>in</Word>
+		<Word>while</Word>
+	</Keywords>
+	
+	<Keywords color = "keyword.jump">
+		<Word>break</Word>
+		<Word>continue</Word>
+		<Word>goto</Word>
+		<Word>return</Word>
+	</Keywords>
+	
+	<Keywords color = "keyword.context">
+		<Word>yield</Word>
+		<Word>partial</Word>
+		<Word>global</Word>
+		<Word>where</Word>
+		<Word>__arglist</Word>
+		<Word>__makeref</Word>
+		<Word>__reftype</Word>
+	</Keywords>
+	
+	<Keywords color = "keyword.exceptions">
+		<Word>try</Word>
+		<Word>throw</Word>
+		<Word>catch</Word>
+		<Word>finally</Word>
+	</Keywords>
+	
+	<Keywords color = "constant.language">
+		<Word>true</Word>
+		<Word>false</Word>
+		<Word>null</Word>
+	</Keywords>
+	
+	<Keywords color = "keyword.modifier">
+		<Word>abstract</Word>
+		<Word>const</Word>
+		<Word>event</Word>
+		<Word>extern</Word>
+		<Word>override</Word>
+		<Word>readonly</Word>
+		<Word>sealed</Word>
+		<Word>static</Word>
+		<Word>virtual</Word>
+		<Word>volatile</Word>
+		
+		<Word>public</Word>
+		<Word>protected</Word>
+		<Word>private</Word>
+		<Word>internal</Word>
+	</Keywords>
+	
+	<Keywords color = "keyword.type">
+		<Word>bool</Word>
+		<Word>byte</Word>
+		<Word>char</Word>
+		<Word>decimal</Word>
+		<Word>double</Word>
+		<Word>enum</Word>
+		<Word>float</Word>
+		<Word>int</Word>
+		<Word>long</Word>
+		<Word>sbyte</Word>
+		<Word>short</Word>
+		<Word>struct</Word>
+		<Word>uint</Word>
+		<Word>ushort</Word>
+		<Word>ulong</Word>
+		<Word>object</Word>
+		<Word>string</Word>
+	</Keywords>
+	
+	<Keywords color = "constant.language.void">
+		<Word>void</Word>
+	</Keywords>
+	
+	<Keywords color = "keyword.namespace">
+		<Word>namespace</Word>
+		<Word>using</Word>
+	</Keywords>
+	
+	<Keywords color = "keyword.property">		<Word>get</Word>
+		<Word>set</Word>
+		<Word>add</Word>
+		<Word>remove</Word>
+		<Word>value</Word>
+	</Keywords>
+	
+	<Keywords color = "keyword.declaration">
+		<Word>class</Word>
+		<Word>interface</Word>
+		<Word>delegate</Word>
+	</Keywords>
+	
+	<Keywords color = "keyword.parameter">
+		<Word>params</Word>
+		<Word>ref</Word>
+		<Word>out</Word>
+	</Keywords>
+	
+	
+	<Keywords color = "keyword.operator.declaration">
+		<Word>explicit</Word>
+		<Word>implicit</Word>
+		
+		<Word>operator</Word>
+	</Keywords>
+	
+	<Keywords color = "keyword.misc">
+		<Word>checked</Word>
+		<Word>unchecked</Word>
+		<Word>fixed</Word>
+		<Word>unsafe</Word>
+		<Word>lock</Word>
+	</Keywords>
+
+	<Rule name = "text.preprocessor">
+		<Keywords color="text.preprocessor.keyword">
+			<Word>if</Word>
+			<Word>else</Word>
+			<Word>elif</Word>
+			<Word>endif</Word>
+			<Word>define</Word>
+			<Word>undef</Word>
+			<Word>warning</Word>
+			<Word>error</Word>
+			<Word>line</Word>
+			<Word>region</Word>
+			<Word>endregion</Word>
+			<Word>pragma</Word>
+		</Keywords>
+	</Rule>
+	
+	<Rule name = "Comment">
+		<Keywords color="comment.keyword.todo" ignorecase="True">
+			<Word>TODO</Word>
+			<Word>FIXME</Word>
+			<Word>HACK</Word>
+			<Word>UNDONE</Word>
+		</Keywords>	
+	</Rule>
+	
+	<Rule name = "String">
+	</Rule>
+	
+	<Rule name = "XmlDocumentation">
+		<Span color = "comment" rule = "XmlDocumentationTag">
+			<Begin>&lt;</Begin>
+			<End>&gt;</End>
+		</Span>
+	</Rule>
+
+	<Rule name = "XmlDocumentationTag">
+		<Span color = "string" stopateol = "true" escape="\" rule="String" >
+			<Begin>"</Begin>
+			<End>"</End>
+		</Span>
+		<Keywords color="comment.keyword">
+			<Word>c</Word>
+			<Word>code</Word>
+			<Word>example</Word>
+			<Word>exception</Word>
+			<Word>list</Word>
+			<Word>para</Word>
+			<Word>param</Word>
+			<Word>paramref</Word>
+			<Word>permission</Word>
+			<Word>remarks</Word>
+			<Word>returns</Word>
+			<Word>see</Word>
+			<Word>seealso</Word>
+			<Word>summary</Word>
+			<Word>value</Word>
+			<Word>type</Word>
+			<Word>name</Word>
+			<Word>cref</Word>
+			<Word>item</Word>
+			<Word>term</Word>
+			<Word>description</Word>
+			<Word>listheader</Word>
+		</Keywords>
+	</Rule>
+
+</SyntaxMode>
