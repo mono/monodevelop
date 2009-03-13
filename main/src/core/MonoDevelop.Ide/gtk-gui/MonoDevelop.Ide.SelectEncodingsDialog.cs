@@ -130,6 +130,7 @@ namespace MonoDevelop.Ide {
             this.label108.Name = "label108";
             this.label108.Xalign = 0F;
             this.label108.Yalign = 0F;
+            this.label108.LabelProp = "";
             this.vbox74.Add(this.label108);
             Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.vbox74[this.label108]));
             w8.Position = 0;
@@ -148,6 +149,7 @@ namespace MonoDevelop.Ide {
             w10.Add(w11);
             // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Label w13 = new Gtk.Label();
+            w13.LabelProp = "";
             w10.Add(w13);
             w9.Add(w10);
             this.btnAdd.Add(w9);
@@ -170,6 +172,7 @@ namespace MonoDevelop.Ide {
             w19.Add(w20);
             // Container child GtkHBox1.Gtk.Container+ContainerChild
             Gtk.Label w22 = new Gtk.Label();
+            w22.LabelProp = "";
             w19.Add(w22);
             w18.Add(w19);
             this.btnRemove.Add(w18);
@@ -183,6 +186,7 @@ namespace MonoDevelop.Ide {
             this.label109.Name = "label109";
             this.label109.Xalign = 0F;
             this.label109.Yalign = 0F;
+            this.label109.LabelProp = "";
             this.vbox74.Add(this.label109);
             Gtk.Box.BoxChild w27 = ((Gtk.Box.BoxChild)(this.vbox74[this.label109]));
             w27.Position = 3;

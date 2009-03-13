@@ -195,6 +195,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             // Container child hbox2.Gtk.Box+BoxChild
             this.labelError = new Gtk.Label();
             this.labelError.Name = "labelError";
+            this.labelError.LabelProp = "";
             this.hbox2.Add(this.labelError);
             Gtk.Box.BoxChild w15 = ((Gtk.Box.BoxChild)(this.hbox2[this.labelError]));
             w15.Position = 1;

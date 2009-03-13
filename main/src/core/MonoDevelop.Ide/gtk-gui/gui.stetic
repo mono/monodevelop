@@ -324,6 +324,7 @@
                   <widget class="Gtk.Label" id="labelNewFormat">
                     <property name="MemberName" />
                     <property name="Xalign">0</property>
+                    <property name="LabelProp" translatable="yes" />
                   </widget>
                   <packing>
                     <property name="LeftAttach">1</property>
@@ -1326,6 +1327,7 @@
                 <child>
                   <widget class="Gtk.Label" id="labelError">
                     <property name="MemberName" />
+                    <property name="LabelProp" translatable="yes" />
                   </widget>
                   <packing>
                     <property name="Position">1</property>
@@ -1537,6 +1539,7 @@
             <property name="MemberName" />
             <property name="Visible">False</property>
             <property name="Xalign">0</property>
+            <property name="LabelProp" translatable="yes" />
             <property name="UseMarkup">True</property>
           </widget>
           <packing>
@@ -3668,6 +3671,7 @@
                 <property name="WidthRequest">24</property>
                 <property name="Xalign">0</property>
                 <property name="Yalign">0</property>
+                <property name="LabelProp" translatable="yes" />
               </widget>
               <packing>
                 <property name="Position">0</property>
@@ -4259,6 +4263,7 @@ Months</property>
                     <property name="MemberName" />
                     <property name="Xalign">0</property>
                     <property name="Yalign">0</property>
+                    <property name="LabelProp" translatable="yes" />
                   </widget>
                   <packing>
                     <property name="Position">0</property>
@@ -4300,6 +4305,7 @@ Months</property>
                     <property name="MemberName" />
                     <property name="Xalign">0</property>
                     <property name="Yalign">0</property>
+                    <property name="LabelProp" translatable="yes" />
                   </widget>
                   <packing>
                     <property name="Position">3</property>
@@ -5093,6 +5099,7 @@ Months</property>
                       <widget class="Gtk.Label" id="infoLabel">
                         <property name="MemberName" />
                         <property name="Xalign">0</property>
+                        <property name="LabelProp" translatable="yes" />
                         <property name="Ellipsize">End</property>
                       </widget>
                     </child>
@@ -5111,6 +5118,7 @@ Months</property>
                 <property name="MemberName" />
                 <property name="WidthRequest">1</property>
                 <property name="HeightRequest">1</property>
+                <property name="LabelProp" translatable="yes" />
               </widget>
               <packing>
                 <property name="Position">2</property>
@@ -5314,6 +5322,7 @@ Months</property>
                   <widget class="Gtk.Label" id="labelTitle">
                     <property name="MemberName" />
                     <property name="Xalign">0</property>
+                    <property name="LabelProp" translatable="yes" />
                   </widget>
                   <packing>
                     <property name="Position">0</property>
@@ -5326,6 +5335,7 @@ Months</property>
                   <widget class="Gtk.Label" id="labelType">
                     <property name="MemberName" />
                     <property name="Xalign">0</property>
+                    <property name="LabelProp" translatable="yes" />
                   </widget>
                   <packing>
                     <property name="Position">1</property>
@@ -5495,6 +5505,7 @@ Months</property>
         <child>
           <widget class="Gtk.Label" id="labelFileName">
             <property name="MemberName" />
+            <property name="LabelProp" translatable="yes" />
             <property name="Ellipsize">Start</property>
           </widget>
           <packing>
@@ -6480,7 +6491,7 @@ Large</property>
                 <property name="WidthRequest">580</property>
                 <property name="Xalign">0</property>
                 <property name="Yalign">0</property>
-                <property name="LabelProp">Active profile:</property>
+                <property name="LabelProp">Used profiles:</property>
                 <property name="Wrap">True</property>
               </widget>
               <packing>
@@ -6490,12 +6501,43 @@ Large</property>
                 <property name="Fill">False</property>
               </packing>
             </child>
+            <child>
+              <widget class="Gtk.ScrolledWindow" id="GtkScrolledWindow">
+                <property name="MemberName" />
+                <property name="ShadowType">In</property>
+                <child>
+                  <widget class="Gtk.TreeView" id="treeviewUsedProfiles">
+                    <property name="MemberName" />
+                    <property name="CanFocus">True</property>
+                    <property name="ShowScrollbars">True</property>
+                  </widget>
+                </child>
+              </widget>
+              <packing>
+                <property name="Position">1</property>
+                <property name="AutoSize">True</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.Label" id="label1">
+                <property name="MemberName" />
+                <property name="WidthRequest">580</property>
+                <property name="Xalign">0</property>
+                <property name="Yalign">0</property>
+                <property name="LabelProp">Active profile:</property>
+                <property name="Wrap">True</property>
+              </widget>
+              <packing>
+                <property name="Position">2</property>
+                <property name="AutoSize">True</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
+            </child>
           </widget>
           <packing>
             <property name="Position">0</property>
             <property name="AutoSize">True</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
           </packing>
         </child>
         <child>

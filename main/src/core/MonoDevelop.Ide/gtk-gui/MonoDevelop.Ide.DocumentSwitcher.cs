@@ -70,6 +70,7 @@ namespace MonoDevelop.Ide {
             this.labelTitle = new Gtk.Label();
             this.labelTitle.Name = "labelTitle";
             this.labelTitle.Xalign = 0F;
+            this.labelTitle.LabelProp = "";
             this.vbox4.Add(this.labelTitle);
             Gtk.Box.BoxChild w1 = ((Gtk.Box.BoxChild)(this.vbox4[this.labelTitle]));
             w1.Position = 0;
@@ -79,6 +80,7 @@ namespace MonoDevelop.Ide {
             this.labelType = new Gtk.Label();
             this.labelType.Name = "labelType";
             this.labelType.Xalign = 0F;
+            this.labelType.LabelProp = "";
             this.vbox4.Add(this.labelType);
             Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.vbox4[this.labelType]));
             w2.Position = 1;
@@ -179,6 +181,7 @@ namespace MonoDevelop.Ide {
             // Container child vbox1.Gtk.Box+BoxChild
             this.labelFileName = new Gtk.Label();
             this.labelFileName.Name = "labelFileName";
+            this.labelFileName.LabelProp = "";
             this.labelFileName.Ellipsize = ((Pango.EllipsizeMode)(1));
             this.vbox1.Add(this.labelFileName);
             Gtk.Box.BoxChild w15 = ((Gtk.Box.BoxChild)(this.vbox1[this.labelFileName]));

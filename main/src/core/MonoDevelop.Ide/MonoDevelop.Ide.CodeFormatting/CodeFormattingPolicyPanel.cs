@@ -87,6 +87,11 @@ namespace MonoDevelop.Ide.CodeFormatting
 		public CodeFormattingPolicyPanelWidget()
 		{
 			this.Build();
+			ListStore store = new ListStore (typeof (string), typeof (string));
+			store.AppendValues ("text/x-csharp", "default");
+			treeviewUsedProfiles.Model = store;
+			treeviewUsedProfiles.AppendColumn ("mime type", new CellRendererText (), "text", 0);
+			treeviewUsedProfiles.AppendColumn ("profile", new CellRendererText (), "text", 1);
 			description = TextFileService.GetFormatDescription ("text/x-csharp");
 			settings = new List<CodeFormatSettings> (TextFileService.GetAvailableSettings (description));
 			

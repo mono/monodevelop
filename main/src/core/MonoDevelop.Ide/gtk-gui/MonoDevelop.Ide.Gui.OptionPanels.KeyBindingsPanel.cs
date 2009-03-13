@@ -155,6 +155,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             this.labelMessage = new Gtk.Label();
             this.labelMessage.Name = "labelMessage";
             this.labelMessage.Xalign = 0F;
+            this.labelMessage.LabelProp = "";
             this.labelMessage.UseMarkup = true;
             this.vbox.Add(this.labelMessage);
             Gtk.Box.BoxChild w12 = ((Gtk.Box.BoxChild)(this.vbox[this.labelMessage]));
