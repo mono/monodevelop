@@ -1,5 +1,9 @@
 2009-03-13  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/Document.cs: ComitUpdateAll after text set.
+
+2009-03-13  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/Document.cs: fire commit update on text
 	  replace.
 
