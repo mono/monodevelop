@@ -1,5 +1,10 @@
 2009-03-13  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor.csproj: Added text editor
+	  reference.
+
+2009-03-13  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: fixed "Bug
 	  484574 - Setting SourceEditorView.Text doesn't mark the
 	  document as dirty".
