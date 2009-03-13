@@ -1,3 +1,14 @@
+2009-03-13  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Projects.csproj:
+	* MonoDevelop.Projects.addin.xml:
+	* MonoDevelop.Projects.Text/IFormatter.cs:
+	* MonoDevelop.Projects.Text/IPrettyPrinter.cs:
+	* MonoDevelop.Projects.Text/TextFileService.cs:
+	* MonoDevelop.Projects.Text/CodeFormatDescription.cs: Worked
+	  on code formatting.
+
 2009-03-12  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am:

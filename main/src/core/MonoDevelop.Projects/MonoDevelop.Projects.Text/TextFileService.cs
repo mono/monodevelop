@@ -38,6 +38,7 @@ namespace MonoDevelop.Projects.Text
 	{
 		static List<CodeFormatDescription> descriptions = new List<CodeFormatDescription> ();
 		static List<IFormatter> formatters = new List<IFormatter>();
+		static List<IPrettyPrinter> prettyPrinters = new List<IPrettyPrinter>();
 		static List<CodeFormatSettings> settings = new List<CodeFormatSettings> ();
 //		static void PrintCategory (CodeFormatCategory c)
 //		{
@@ -53,6 +54,7 @@ namespace MonoDevelop.Projects.Text
 		static TextFileService ()
 		{
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/ProjectModel/TextFormatters", FormatterExtHandler);
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/ProjectModel/TextPrettyPrinters", PrettyPrinterExtHandler);
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/ProjectModel/TextFormatDefinition", DefinitionExtHandler);
 		}
 		public static IEnumerable<CodeFormatSettings> GetAvailableSettings (CodeFormatDescription description)
@@ -89,6 +91,18 @@ namespace MonoDevelop.Projects.Text
 			}
 		}
 		
+		static void PrettyPrinterExtHandler (object sender, ExtensionNodeEventArgs args)
+		{
+			switch (args.Change) {
+			case ExtensionChange.Add:
+				prettyPrinters.Add ((IPrettyPrinter) args.ExtensionObject);
+				break;
+			case ExtensionChange.Remove:
+				prettyPrinters.Remove ((IPrettyPrinter) args.ExtensionObject);
+				break;
+			}
+		}
+		
 		static void DefinitionExtHandler (object sender, ExtensionNodeEventArgs args)
 		{
 			XmlDefinitionCodon xmlDef = args.ExtensionNode as XmlDefinitionCodon;
@@ -117,6 +131,11 @@ namespace MonoDevelop.Projects.Text
 		public static IFormatter GetFormatter (string mimeType)
 		{
 			return formatters.Find (x => x.CanFormat (mimeType));
+		}
+		
+		public static IPrettyPrinter GetPrettyPrinter (string mimeType)
+		{
+			return prettyPrinters.Find (x => x.CanFormat (mimeType));
 		}
 		
 		public static void FireLineCountChanged (ITextFile textFile, int lineNumber, int lineCount, int column)

@@ -1,5 +1,5 @@
 // 
-// IFormatter.cs
+// IPrettyPrinter.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -28,7 +28,7 @@ using System;
 
 namespace MonoDevelop.Projects.Text
 {
-	public interface IFormatter
+	public interface IPrettyPrinter
 	{
 		bool CanFormat (string mimeType);
 		
@@ -36,7 +36,7 @@ namespace MonoDevelop.Projects.Text
 		string FormatText (SolutionItem policyParent, string input, int fromOffest, int toOffset);
 	}
 	
-	public abstract class AbstractFormatter : IFormatter
+	public abstract class AbstractPrettyPrinter : IPrettyPrinter
 	{
 		public abstract bool CanFormat (string mimeType);
 		
@@ -56,5 +56,4 @@ namespace MonoDevelop.Projects.Text
 			return InternalFormat (policyParent, input, fromOffest, toOffset);
 		}
 	}
-	
 }

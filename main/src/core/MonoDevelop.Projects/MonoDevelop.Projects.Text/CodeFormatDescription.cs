@@ -114,12 +114,15 @@ namespace MonoDevelop.Projects.Text
 			return string.Format("[CodeFormatOption: Name={0}, DisplayName={1}, Type={2}]", Name, DisplayName, Type);
 		}
 		
-		public static CodeFormatOption Read (XmlReader reader)
+		public static CodeFormatOption Read (CodeFormatDescription descr, XmlReader reader)
 		{
 			CodeFormatOption result = new CodeFormatOption ();
 			result.Name        = reader.GetAttribute ("name");
 			result.DisplayName = reader.GetAttribute ("_displayName");
-			result.Type = reader.GetAttribute ("type");
+			result.Type        = reader.GetAttribute ("type");
+			string example    = reader.GetAttribute ("example");
+			if (!string.IsNullOrEmpty (example))
+				result.Example = descr.GetExample (example);
 			if (!reader.IsEmptyElement) {
 				reader.Read ();
 				result.Example = reader.ReadElementString ();
@@ -159,6 +162,19 @@ namespace MonoDevelop.Projects.Text
 			}
 		}
 		
+		public IEnumerable<CodeFormatOption> AllOptions {
+			get {
+				foreach (CodeFormatOption option in Options) {
+					yield return option;
+				}
+				foreach (CodeFormatCategory cat in SubCategories) {
+					foreach (CodeFormatOption option in cat.AllOptions) {
+						yield return option;
+					}
+				}
+			}
+		}
+		
 		public override string ToString ()
 		{
 			return string.Format("[CodeFormatCategory: Name={0}, DisplayName={4}, Example={1}, #SubCategories={2}, #Options={3}]", Name, Example, subCategories.Count, options.Count, DisplayName);
@@ -166,7 +182,7 @@ namespace MonoDevelop.Projects.Text
 		
 		internal const string Node = "Category";
 		
-		public static CodeFormatCategory Read (XmlReader reader)
+		public static CodeFormatCategory Read (CodeFormatDescription descr, XmlReader reader)
 		{
 			CodeFormatCategory result = new CodeFormatCategory ();
 			result.DisplayName = reader.GetAttribute ("_displayName");
@@ -174,10 +190,10 @@ namespace MonoDevelop.Projects.Text
 			XmlReadHelper.ReadList (reader, Node, delegate () {
 				switch (reader.LocalName) {
 				case "Option":
-					result.options.Add (CodeFormatOption.Read (reader));
+					result.options.Add (CodeFormatOption.Read (descr, reader));
 					return true;
 				case CodeFormatCategory.Node:
-					result.subCategories.Add (CodeFormatCategory.Read (reader));
+					result.subCategories.Add (CodeFormatCategory.Read (descr, reader));
 					return true;
 				}
 				return false;
@@ -230,6 +246,7 @@ namespace MonoDevelop.Projects.Text
 	
 	public class CodeFormatDescription : CodeFormatCategory
 	{
+		Dictionary<string, string> examples = new Dictionary<string, string> ();
 		List<CodeFormatType> types = new List<CodeFormatType> ();
 		
 		public string MimeType {
@@ -246,6 +263,26 @@ namespace MonoDevelop.Projects.Text
 		public CodeFormatDescription()
 		{
 		}
+		
+		public void ExportSettings (CodeFormatSettings settings, string fileName)
+		{
+			// todo
+		}
+		
+		public CodeFormatSettings ImportSettings (string fileName)
+		{
+			// todo
+			return new CodeFormatSettings (System.IO.Path.GetFileNameWithoutExtension (fileName));
+		}
+		
+		public string GetExample (string name)
+		{
+			string result;
+			if (!examples.TryGetValue (name, out result))
+				System.Console.WriteLine ("Example:" + name + " not found.");
+			return result;
+		}
+		
 		static CodeFormatType codeFormatTypeBool = new CodeFormatType ("Bool", "True", "False");
 			
 		public CodeFormatType GetCodeFormatType (string name)
@@ -283,11 +320,15 @@ namespace MonoDevelop.Projects.Text
 							return result;
 						result.MimeType = reader.GetAttribute ("mimeType");
 						break;
+					case "Example":
+						string name = reader.GetAttribute ("name");
+						result.examples[name] = reader.ReadElementString ();
+						break;
 					case CodeFormatType.Node:
 						result.types.Add (CodeFormatType.Read (reader));
 						break;
 					case CodeFormatCategory.Node:
-						result.subCategories.Add (CodeFormatCategory.Read (reader));
+						result.subCategories.Add (CodeFormatCategory.Read (result, reader));
 						break;
 					}
 				}

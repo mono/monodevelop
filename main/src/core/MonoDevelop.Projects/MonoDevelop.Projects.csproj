@@ -329,6 +329,7 @@
     <Compile Include="MonoDevelop.Projects.Dom\AnonymousType.cs" />
     <Compile Include="MonoDevelop.Projects.Text\CodeFormatDescription.cs" />
     <Compile Include="MonoDevelop.Projects.Text\XmlDefinitionCodon.cs" />
+    <Compile Include="MonoDevelop.Projects.Text\IPrettyPrinter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

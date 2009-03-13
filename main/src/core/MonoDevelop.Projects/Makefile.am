@@ -194,6 +194,7 @@ FILES =  \
 	MonoDevelop.Projects.Text/CodeFormatDescription.cs \
 	MonoDevelop.Projects.Text/IEditableTextFile.cs \
 	MonoDevelop.Projects.Text/IFormatter.cs \
+	MonoDevelop.Projects.Text/IPrettyPrinter.cs \
 	MonoDevelop.Projects.Text/ITextFile.cs \
 	MonoDevelop.Projects.Text/ITextFileProvider.cs \
 	MonoDevelop.Projects.Text/TextEncoding.cs \
