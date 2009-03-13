@@ -1,3 +1,9 @@
+2009-03-13  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* MonoDevelop.Ide.addin.xml:
+	* MonoDevelop.Ide.Gui/RootWorkspace.cs: Correct string
+	  messages.
+
 2009-03-13  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:

@@ -753,7 +753,7 @@
   </widget>
   <widget class="Gtk.Window" id="MonoDevelop.AspNet.Deployment.WebTargetEditor" design-size="400 300">
     <property name="MemberName" />
-    <property name="Title" translatable="yes">WebTargetEditor</property>
+    <property name="Title" translatable="no">WebTargetEditor</property>
     <property name="WindowPosition">CenterOnParent</property>
     <child>
       <placeholder />

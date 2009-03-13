@@ -1,3 +1,7 @@
+2009-03-13  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* Base.glade: Making some strings not translatable.
+
 2009-03-10  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Core.Gui.addin.xml: fixed "Bug 483721 - .glade

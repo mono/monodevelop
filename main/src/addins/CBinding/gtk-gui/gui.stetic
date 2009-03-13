@@ -1962,7 +1962,7 @@ Example:
                     <property name="MemberName" />
                     <property name="Xalign">0</property>
                     <property name="Yalign">0</property>
-                    <property name="LabelProp" translatable="yes">label12</property>
+                    <property name="LabelProp" translatable="no">label12</property>
                   </widget>
                   <packing>
                     <property name="TopAttach">2</property>
@@ -2043,7 +2043,7 @@ Example:
                   <widget class="Gtk.Label" id="nameLabel">
                     <property name="MemberName" />
                     <property name="Xalign">0</property>
-                    <property name="LabelProp" translatable="yes">label10</property>
+                    <property name="LabelProp" translatable="no">label10</property>
                   </widget>
                   <packing>
                     <property name="LeftAttach">1</property>
@@ -2063,7 +2063,7 @@ Example:
                   <widget class="Gtk.Label" id="versionLabel">
                     <property name="MemberName" />
                     <property name="Xalign">0</property>
-                    <property name="LabelProp" translatable="yes">label11</property>
+                    <property name="LabelProp" translatable="no">label11</property>
                   </widget>
                   <packing>
                     <property name="TopAttach">1</property>

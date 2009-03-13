@@ -35,7 +35,7 @@ namespace MonoDevelop.Deployment.Targets
 	public class SshFuseFileCopyHandler : BaseFuseFileCopyHandler
 	{
 		public override string Id {
-			get { return GettextCatalog.GetString ("MonoDevelop.Deployment.SshFuseFileCopyHandler"); }
+			get { return "MonoDevelop.Deployment.SshFuseFileCopyHandler"; }
 		}
 		
 		public override string Name {

@@ -1,3 +1,9 @@
+2009-03-13  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* gtk-gui/CBinding.PackageDetails.cs: Making some strings not
+	  translatable.
+
 2009-03-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Project/CProject.cs: Changed the way execution handlers

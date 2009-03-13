@@ -322,7 +322,7 @@
               <widget class="Gtk.RadioButton" id="noneRadioButton">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="Label" translatable="yes">radiobutton1</property>
+                <property name="Label" translatable="no">radiobutton1</property>
                 <property name="Active">True</property>
                 <property name="DrawIndicator">True</property>
                 <property name="HasLabel">False</property>

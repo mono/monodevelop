@@ -433,7 +433,7 @@ namespace MonoDevelop.Ide.Gui
 						Items.Remove (it);
 						it.Dispose ();
 					} catch (Exception ex) {
-						MessageService.ShowException (ex, GettextCatalog.GetString ("Could not close solution '{0}.'", it.Name));
+						MessageService.ShowException (ex, GettextCatalog.GetString ("Could not close solution '{0}'.", it.Name));
 					}
 				}
 			}

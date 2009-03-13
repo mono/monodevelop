@@ -1,3 +1,8 @@
+2009-03-13  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* MonoDevelop.Deployment.Targets/SshFuseFileCopyHandler.cs:
+	  Making some strings not translatable.
+
 2009-02-26  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Deployment.Gui/PropertyProvider.cs: Worked on

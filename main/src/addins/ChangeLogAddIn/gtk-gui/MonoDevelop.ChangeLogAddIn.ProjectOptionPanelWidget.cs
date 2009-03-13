@@ -67,7 +67,7 @@ namespace MonoDevelop.ChangeLogAddIn {
             this.vbox2.Spacing = 6;
             this.vbox2.BorderWidth = ((uint)(6));
             // Container child vbox2.Gtk.Box+BoxChild
-            this.noneRadioButton = new Gtk.RadioButton(Mono.Unix.Catalog.GetString("radiobutton1"));
+            this.noneRadioButton = new Gtk.RadioButton("radiobutton1");
             this.noneRadioButton.CanFocus = true;
             this.noneRadioButton.Name = "noneRadioButton";
             this.noneRadioButton.Active = true;

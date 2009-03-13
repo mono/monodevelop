@@ -1,3 +1,7 @@
+2009-03-13  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* XmlEditor.glade: Making some strings not translatable.
+
 2009-03-13  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.XmlEditor.csproj: Moved text editor to core

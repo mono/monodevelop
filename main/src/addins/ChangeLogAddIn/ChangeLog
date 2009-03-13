@@ -1,3 +1,9 @@
+2009-03-13  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:
+	  Making some strings not translatable.
+
 2009-02-07  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* ChangeLogService.cs: Rename 'dir', as csc doesn't like

@@ -17,7 +17,7 @@ namespace MonoDevelop.AspNet.Deployment {
             Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.AspNet.Deployment.WebTargetEditor
             this.Name = "MonoDevelop.AspNet.Deployment.WebTargetEditor";
-            this.Title = MonoDevelop.Core.GettextCatalog.GetString("WebTargetEditor");
+            this.Title = "WebTargetEditor";
             this.WindowPosition = ((Gtk.WindowPosition)(4));
             if ((this.Child != null)) {
                 this.Child.ShowAll();

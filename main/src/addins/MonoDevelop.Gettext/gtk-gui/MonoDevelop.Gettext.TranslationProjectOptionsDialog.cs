@@ -225,7 +225,7 @@ namespace MonoDevelop.Gettext {
             this.labelInitString = new Gtk.Label();
             this.labelInitString.Name = "labelInitString";
             this.labelInitString.Xalign = 0F;
-            this.labelInitString.LabelProp = Mono.Unix.Catalog.GetString("Mono.Unix.Catalog.Init (\"i18n\", \"./locale\");");
+            this.labelInitString.LabelProp = "Mono.Unix.Catalog.Init (\"i18n\", \"./locale\");";
             this.GtkAlignment4.Add(this.labelInitString);
             this.frame3.Add(this.GtkAlignment4);
             this.vbox4.Add(this.frame3);

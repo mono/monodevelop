@@ -87,7 +87,7 @@ namespace CBinding {
             this.descriptionLabel.Name = "descriptionLabel";
             this.descriptionLabel.Xalign = 0F;
             this.descriptionLabel.Yalign = 0F;
-            this.descriptionLabel.LabelProp = Mono.Unix.Catalog.GetString("label12");
+            this.descriptionLabel.LabelProp = "label12";
             this.table1.Add(this.descriptionLabel);
             Gtk.Table.TableChild w2 = ((Gtk.Table.TableChild)(this.table1[this.descriptionLabel]));
             w2.TopAttach = ((uint)(2));
@@ -132,7 +132,7 @@ namespace CBinding {
             this.nameLabel = new Gtk.Label();
             this.nameLabel.Name = "nameLabel";
             this.nameLabel.Xalign = 0F;
-            this.nameLabel.LabelProp = Mono.Unix.Catalog.GetString("label10");
+            this.nameLabel.LabelProp = "label10";
             this.table1.Add(this.nameLabel);
             Gtk.Table.TableChild w6 = ((Gtk.Table.TableChild)(this.table1[this.nameLabel]));
             w6.LeftAttach = ((uint)(1));
@@ -143,7 +143,7 @@ namespace CBinding {
             this.versionLabel = new Gtk.Label();
             this.versionLabel.Name = "versionLabel";
             this.versionLabel.Xalign = 0F;
-            this.versionLabel.LabelProp = Mono.Unix.Catalog.GetString("label11");
+            this.versionLabel.LabelProp = "label11";
             this.table1.Add(this.versionLabel);
             Gtk.Table.TableChild w7 = ((Gtk.Table.TableChild)(this.table1[this.versionLabel]));
             w7.TopAttach = ((uint)(1));

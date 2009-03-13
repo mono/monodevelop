@@ -314,7 +314,7 @@
 		<Command id = "MonoDevelop.Ide.Commands.EditCommands.ToggleAllFoldings"
 				_label = "Toggle _All Folds" 
 				shortcut = "Control|Shift|A"
-				_description = "Toggles the all foldings in the document."/>
+				_description = "Toggles all the foldings in the document."/>
 		<Command id = "MonoDevelop.Ide.Commands.EditCommands.FoldDefinitions"
 				_label = "Show _Definitions Only" 
 				_description = "Folds all method and property bodies."/>
