@@ -1,5 +1,9 @@
 2009-03-13  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* gtk-gui/gui.stetic: Track build directory change.
+
+2009-03-13  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.AspNet.Mvc.csproj: Move output dir from ../bin
 	  to ../build.
 
