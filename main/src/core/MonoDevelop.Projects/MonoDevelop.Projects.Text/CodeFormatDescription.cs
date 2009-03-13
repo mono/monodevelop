@@ -308,7 +308,7 @@ namespace MonoDevelop.Projects.Text
 			return string.Format("[CodeFormatDescription: MimeType={0}, #Types={1}, #Categories={2}]", MimeType, types.Count, subCategories.Count);
 		}
 
-		public new static CodeFormatDescription Read (XmlReader reader)
+	 	public static CodeFormatDescription Read (XmlReader reader)
 		{
 			CodeFormatDescription result = new CodeFormatDescription ();
 			while (reader.Read ()) {
