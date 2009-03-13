@@ -1,5 +1,11 @@
 2009-03-13  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* configure: Capture prefix.
+
+	* Makefile: Add clean, install, uninstall targets.
+
+2009-03-13  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Makefile:
 	* configure: Add make stubs.
 
