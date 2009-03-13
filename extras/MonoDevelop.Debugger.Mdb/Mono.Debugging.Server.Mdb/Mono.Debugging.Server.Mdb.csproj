@@ -119,6 +119,9 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="MonoDevelop.SourceEditor2, Version=1.9.2.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Mono.Debugging.Backend.Mdb\Mono.Debugging.Backend.Mdb.csproj">

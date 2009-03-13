@@ -400,7 +400,7 @@ namespace DebuggerServer
 				}
 			}
 
-			throw CreateParseError ("Unknwon identifier: {0}", name);
+			throw CreateParseError ("Unknown identifier: {0}", name);
 		}
 		
 		public override object VisitMemberReferenceExpression (MemberReferenceExpression memberReferenceExpression, object data)

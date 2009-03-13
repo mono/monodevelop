@@ -1,3 +1,9 @@
+2009-03-13  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* NRefactoryEvaluator.cs: Fix typo.
+
+	* Mono.Debugging.Server.Mdb.csproj: Updated.
+
 2009-02-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Debugging.Server.Mdb.csproj: Updated references.
