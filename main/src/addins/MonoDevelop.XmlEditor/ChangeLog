@@ -1,3 +1,7 @@
+2009-03-13  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.XmlEditor.csproj: Don't local-copy project refs.
+
 2009-03-13  Andrés G. Aragoneses  <aaragoneses@novell.com>
 
 	* XmlEditor.glade: Making some strings not translatable.
