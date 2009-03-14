@@ -1,3 +1,7 @@
+2009-03-13  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Main.sln: Fix invalid configuration mappings again.
+
 2009-03-13  Mike Krüger  <mkrueger@novell.com>
 
 	* Main.sln:
