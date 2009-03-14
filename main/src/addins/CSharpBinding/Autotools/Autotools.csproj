@@ -74,6 +74,7 @@
     <ProjectReference Include="..\CSharpBinding.csproj">
       <Project>{07CC7654-27D6-421D-A64C-0FFA40456FA2}</Project>
       <Name>CSharpBinding</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\core\Mono.Texteditor\Mono.TextEditor.csproj">
       <Project>{A2329308-3751-4DBD-9A75-5F7B8B024625}</Project>
@@ -85,6 +86,7 @@
     <Reference Include="NRefactory, Version=1.9.2.0, Culture=neutral, PublicKeyToken=null">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\build\bin\NRefactory.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
