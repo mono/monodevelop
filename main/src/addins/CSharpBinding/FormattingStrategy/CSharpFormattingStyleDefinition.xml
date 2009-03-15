@@ -2,8 +2,10 @@
 
 	<Type name = "BraceStyle">
 		<Value>EndOfLine</Value>
+		<Value>EndOfLineWithoutSpace</Value>
 		<Value>NextLine</Value>
 		<Value>NextLineShifted</Value>
+		<Value>NextLineShifted2</Value>
 	</Type>
 	
 	<Example name = "event"><![CDATA[
@@ -311,22 +313,48 @@ class ClassDeclaration {
 </Option>
 		</Category>
 		
-		<Category name = "Operators" _displayName="Operators">
-			<Option name="AroundAdditiveOperatorParentheses" _displayName="around additive (+,-) operators" type="Bool" example="operatorExample"/>
-			<Option name="AroundAssignmentParentheses" _displayName="around assignment (=)" type="Bool" example="operatorExample"/>
-			<Option name="AroundBitwiseOperatorParentheses" _displayName="around bitwise (&amp;,|,^) operators" type="Bool" example="operatorExample"/>
-			<Option name="AroundLogicalOperatorParentheses" _displayName="around logical (&amp;&amp;,||) operators" type="Bool" example="operatorExample"/>
-			<Option name="AroundMultiplicativeOperatorParentheses" _displayName="around multiplicative (*,/,%) operators" type="Bool" example="operatorExample"/>
-			<Option name="AroundRelationalOperatorParentheses" _displayName="around relational (==,&lt;=,...) operators" type="Bool" example="operatorExample"/>
-			<Option name="AroundShiftOperatorParentheses" _displayName="around shift (&lt;&lt;,&gt;&gt;) operators" type="Bool" example="operatorExample"/>
-			
-<!--			<Category name = "ConditionalOperator" _displayName="ConditionalOperator">-->
-				<Option name="ConditionalOperatorBeforeConditionSpace" _displayName="before condition" type="Bool" example="condOpExample"/>
-				<Option name="ConditionalOperatorAfterConditionSpace" _displayName="after condition" type="Bool" example="condOpExample"/>
-				<Option name="ConditionalOperatorBeforeSeparatorSpace" _displayName="before separator" type="Bool" example="condOpExample"/>
-				<Option name="ConditionalOperatorAfterSeparatorSpace" _displayName="after separator" type="Bool" example="condOpExample"/>
-<!--			</Category>-->
-			
+		<Category name = "Operators" _displayName="Around Operators">
+			<Option name="AroundAssignmentParentheses" _displayName="Assignment (=, -=, ...)" type="Bool" example="operatorExample"/>
+			<Option name="AroundLogicalOperatorParentheses" _displayName="Logical (&amp;&amp;,||) operators" type="Bool" example="operatorExample"/>
+			<Option name="AroundEqualityOperatorParentheses" _displayName="Equality (==, !=) operators" type="Bool" example="operatorExample"/>
+			<Option name="AroundRelationalOperatorParentheses" _displayName="Relational (&lt;,&gt;,&lt;=,&gt;=) operators" type="Bool" example="operatorExample"/>
+			<Option name="AroundBitwiseOperatorParentheses" _displayName="Bitwise (&amp;,|,^) operators" type="Bool" example="operatorExample"/>
+			<Option name="AroundAdditiveOperatorParentheses" _displayName="Additive (+,-) operators" type="Bool" example="operatorExample"/>
+			<Option name="AroundMultiplicativeOperatorParentheses" _displayName="Multiplicative (*,/,%) operators" type="Bool" example="operatorExample"/>
+			<Option name="AroundShiftOperatorParentheses" _displayName="Shift (&lt;&lt;,&gt;&gt;) operators" type="Bool" example="operatorExample"/>
+		</Category>
+		
+		<Category name = "WithinParentheses" _displayName="Within Parentheses">
+			<Option name="WithinParentheses" _displayName="Parentheses" type="Bool" example="operatorExample"/>
+			<Option name="WithinMethodCallParentheses" _displayName="Method call" type="Bool" example="operatorExample"/>
+			<Option name="WithinMethodDeclarationParentheses" _displayName="Method declaration" type="Bool" example="operatorExample"/>
+			<Option name="WithinIfParentheses" _displayName="'if' statement" type="Bool" example="operatorExample"/>
+			<Option name="WithinWhileParentheses" _displayName="'while' statement" type="Bool" example="operatorExample"/>
+			<Option name="WithinForParentheses" _displayName="'for' statement" type="Bool" example="operatorExample"/>
+			<Option name="WithinForEachParentheses" _displayName="'foreach' statement" type="Bool" example="operatorExample"/>
+			<Option name="WithinCatchParentheses" _displayName="'catch' statement" type="Bool" example="operatorExample"/>
+			<Option name="WithinSwitchParentheses" _displayName="'switch' statement" type="Bool" example="operatorExample"/>
+			<Option name="WithinLockParentheses" _displayName="'lock' statement" type="Bool" example="operatorExample"/>
+			<Option name="WithinUsingParentheses" _displayName="'using' statement" type="Bool" example="operatorExample"/>
+			<Option name="WithinCastParentheses" _displayName="Type cast" type="Bool" example="operatorExample"/>
+			<Option name="WithinSizeOfParentheses" _displayName="'sizeof' expression" type="Bool" example="operatorExample"/>
+			<Option name="WithinTypeOfParentheses" _displayName="'typeof' expression" type="Bool" example="operatorExample"/>
+			<Option name="WithinCheckedExpressionParantheses" _displayName="'checked'/'unchecked'/'fixed' expression" type="Bool" example="operatorExample"/>
+		</Category>
+		
+		<Category name = "ConditionalOperator" _displayName="Conditional Operator (?:)">
+			<Option name="ConditionalOperatorBeforeConditionSpace" _displayName="before '?'" type="Bool" example="condOpExample"/>
+			<Option name="ConditionalOperatorAfterConditionSpace" _displayName="after '?'" type="Bool" example="condOpExample"/>
+			<Option name="ConditionalOperatorBeforeSeparatorSpace" _displayName="before ':'" type="Bool" example="condOpExample"/>
+			<Option name="ConditionalOperatorAfterSeparatorSpace" _displayName="after ':'" type="Bool" example="condOpExample"/>
+		</Category>
+		
+		<Category name = "Other" _displayName="Other">
+			<Option name="SpacesWithinBrackets" _displayName="Within brackets" type="Bool" example="operatorExample"/>
+			<Option name="SpacesAfterComma" _displayName="After comma" type="Bool" example="operatorExample"/>
+			<Option name="SpacesBeforeComma" _displayName="Before comma" type="Bool" example="operatorExample"/>
+			<Option name="SpacesAfterSemicolon" _displayName="After semicolon" type="Bool" example="operatorExample"/>
+			<Option name="SpacesAfterTypecast" _displayName="After type cast" type="Bool" example="operatorExample"/>
 		</Category>
 	</Category>
 </CodeStyle>
