@@ -1,11 +1,11 @@
 <CodeStyle version="1.0" mimeType="text/x-csharp">
 
 	<Type name = "BraceStyle">
-		<Value>EndOfLine</Value>
-		<Value>EndOfLineWithoutSpace</Value>
-		<Value>NextLine</Value>
-		<Value>NextLineShifted</Value>
-		<Value>NextLineShifted2</Value>
+		<Value _displayName="End of line">EndOfLine</Value>
+		<Value _displayName="End of line without space">EndOfLineWithoutSpace</Value>
+		<Value _displayName="Next line">NextLine</Value>
+		<Value _displayName="Next line shifted">NextLineShifted</Value>
+		<Value _displayName="Next line shifted2">NextLineShifted2</Value>
 	</Type>
 	
 	<Example name = "event"><![CDATA[

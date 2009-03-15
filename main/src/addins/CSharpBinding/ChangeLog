@@ -1,5 +1,11 @@
 2009-03-15  Mike Krüger  <mkrueger@novell.com>
 
+	* Parser/CSharpFormatter.cs:
+	* FormattingStrategy/CSharpFormattingStyleDefinition.xml:
+	  Worked on code formatting.
+
+2009-03-15  Mike Krüger  <mkrueger@novell.com>
+
 	* FormattingStrategy/CSharpFormattingStyleDefinition.xml:
 	  Added some formatting options.
 

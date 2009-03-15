@@ -76,7 +76,7 @@ namespace CSharpBinding.Parser
 			Type optionType = outputVisitor.Options.GetType ();
 			
 			foreach (CodeFormatOption option in descr.AllOptions) {
-				string val = settings.GetValue (descr, option);
+				KeyValuePair<string, string> val = settings.GetValue (descr, option);
 				PropertyInfo info = optionType.GetProperty (option.Name);
 				if (info == null) {
 					System.Console.WriteLine("option : " + option.Name + " not found.");
@@ -84,11 +84,11 @@ namespace CSharpBinding.Parser
 				}
 				object cval = null;
 				if (info.PropertyType.IsEnum) {
-					cval = Enum.Parse (info.PropertyType, val);
+					cval = Enum.Parse (info.PropertyType, val.Key);
 				} else if (info.PropertyType == typeof (bool)) {
-					cval = Convert.ToBoolean (val);
+					cval = Convert.ToBoolean (val.Key);
 				} else {
-					cval = Convert.ChangeType (val, info.PropertyType);
+					cval = Convert.ChangeType (val.Key, info.PropertyType);
 				}
 				//System.Console.WriteLine("set " + option.Name + " to " + cval);
 				info.SetValue (outputVisitor.Options, cval, null);
