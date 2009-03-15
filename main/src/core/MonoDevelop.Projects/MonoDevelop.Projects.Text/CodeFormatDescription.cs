@@ -41,16 +41,21 @@ namespace MonoDevelop.Projects.Text
 			set;
 		} 
 		
-		List<string> values = new List<string> ();
-		public IEnumerable<string> Values {
+		List<KeyValuePair<string, string>> values = new List<KeyValuePair<string, string>> ();
+		public IEnumerable<KeyValuePair<string, string>> Values {
 			get {
 				return values;
 			}
 		}
+		
 		internal const string Node = "Type";
 		
 		public CodeFormatType ()
 		{
+		}
+		public KeyValuePair<string, string> GetValue (string name)
+		{
+			return values.Find (x => x.Key == name);
 		}
 		
 		public CodeFormatType (string name)
@@ -58,7 +63,7 @@ namespace MonoDevelop.Projects.Text
 			this.Name = name;
 		}
 		
-		public CodeFormatType (string name, params string[] values)
+		public CodeFormatType (string name, params KeyValuePair<string, string>[] values)
 		{
 			this.Name = name;
 			this.values.AddRange (values);
@@ -66,9 +71,9 @@ namespace MonoDevelop.Projects.Text
 		
 		public override string ToString ()
 		{
-			return string.Format("[CodeFormatType: Name={0}, Values=({1})]", Name, string.Join (",", values.ToArray ()));
+			return string.Format("[CodeFormatType: Name={0}, #Values={1}]", Name, values.Count);
 		}
-
+		
 		public static CodeFormatType Read (XmlReader reader)
 		{
 			CodeFormatType result = new CodeFormatType ();
@@ -76,7 +81,9 @@ namespace MonoDevelop.Projects.Text
 			XmlReadHelper.ReadList (reader, Node, delegate () {
 				switch (reader.LocalName) {
 				case "Value":
-					result.values.Add (reader.ReadElementString ());
+					string displayName = reader.GetAttribute ("_displayName");
+					string name        = reader.ReadElementString ();
+					result.values.Add (new KeyValuePair <string, string> (name, displayName ?? name));
 					return true;
 				}
 				return false;
@@ -235,12 +242,14 @@ namespace MonoDevelop.Projects.Text
 		{
 			properties[option.Name] = value;
 		}
-		public string GetValue (CodeFormatDescription descr, CodeFormatOption option)
+		
+		public KeyValuePair<string, string> GetValue (CodeFormatDescription descr, CodeFormatOption option)
 		{
 			string result;
+			CodeFormatType type = descr.GetCodeFormatType (option.Type);
 			if (properties.TryGetValue (option.Name, out result))
-				return result;
-			return descr.GetCodeFormatType (option.Type).Values.FirstOrDefault ();
+				return type.GetValue (result);
+			return type.Values.FirstOrDefault ();
 		}
 	}
 	
@@ -283,7 +292,7 @@ namespace MonoDevelop.Projects.Text
 			return result;
 		}
 		
-		static CodeFormatType codeFormatTypeBool = new CodeFormatType ("Bool", "True", "False");
+		static CodeFormatType codeFormatTypeBool = new CodeFormatType ("Bool", new KeyValuePair <string, string> ("True", "True"), new KeyValuePair <string, string> ("False", "False"));
 			
 		public CodeFormatType GetCodeFormatType (string name)
 		{
