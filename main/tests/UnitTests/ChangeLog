@@ -1,3 +1,8 @@
+2009-03-16  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharpBinding/CodeCompletionCSharpTests.cs:
+	  Added test for new context.
+
 2009-03-13  Mike Krüger  <mkrueger@novell.com>
 
 	* UnitTests.csproj: Moved text editor to core

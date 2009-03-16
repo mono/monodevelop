@@ -329,7 +329,25 @@ class Test
 		}
 		
 		
-		
+			
+		[Test()]
+		public void TestLocalVariableNameContext ()
+		{
+			CompletionDataList provider = CodeCompletionBugTests.CreateCtrlSpaceProvider (
+@"
+public class TestMyLongName
+{
+	public void Method ()
+	{
+		$TestMyLongName $
+	}
+}");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("testMyLongName"), "name 'testMyLongName' not found.");
+			Assert.IsNotNull (provider.Find ("myLongName"), "name 'myLongName' not found.");
+			Assert.IsNotNull (provider.Find ("longName"), "name 'longName' not found.");
+			Assert.IsNotNull (provider.Find ("name"), "name 'name' not found.");
+		}
 
 		
 	}
