@@ -162,28 +162,28 @@ namespace MonoDevelop.Ide.CodeFormatting
 		
 		void AppendCategory (Gtk.TreeStore store, TreeIter iter, CodeFormatCategory category)
 		{
-			
-			foreach (CodeFormatCategory subCategory in category.SubCategories) {
-				TreeIter categoryIter = iter.Equals (TreeIter.Zero) ? store.AppendValues (GettextCatalog.GetString (subCategory.DisplayName), null, subCategory) : store.AppendValues (iter, GettextCatalog.GetString (subCategory.DisplayName), null, subCategory);
-				foreach (CodeFormatOption option in subCategory.Options) {
-					KeyValuePair<string, string> val = settings.GetValue (description, option);
-					store.AppendValues (categoryIter, 
-					                    GettextCatalog.GetString (option.DisplayName), 
-					                    val.Key,
-					                    GettextCatalog.GetString (val.Value), 
-					                    option);
-				}
-				foreach (CodeFormatCategory s in subCategory.SubCategories) {
-					AppendCategory (store, categoryIter, s);
-				}
+			TreeIter categoryIter = iter.Equals (TreeIter.Zero) 
+				? store.AppendValues (GettextCatalog.GetString (category.DisplayName), null, category)
+				: store.AppendValues (iter, GettextCatalog.GetString (category.DisplayName), null, category);
+			foreach (CodeFormatOption option in category.Options) {
+				KeyValuePair<string, string> val = settings.GetValue (description, option);
+				store.AppendValues (categoryIter, 
+				                    GettextCatalog.GetString (option.DisplayName), 
+				                    val.Key,
+				                    GettextCatalog.GetString (val.Value), 
+				                    option);
 			}
-			
+			foreach (CodeFormatCategory s in category.SubCategories) {
+				AppendCategory (store, categoryIter, s);
+			}
 		}
 		void AddCategoryPage (CodeFormatCategory category)
 		{
 			Gtk.Label label = new Gtk.Label (GettextCatalog.GetString (category.DisplayName));
 			Gtk.TreeStore store = new Gtk.TreeStore (typeof(string), typeof (string), typeof (string), typeof (object));
-			AppendCategory (store, TreeIter.Zero, category);
+			foreach (CodeFormatCategory cat in category.SubCategories) {
+				AppendCategory (store, TreeIter.Zero, cat);
+			}
 			Gtk.TreeView tree = new Gtk.TreeView (store);
 			tree.AppendColumn (GettextCatalog.GetString ("Key"), new CellRendererText (), "text", keyColumn);
 			tree.AppendColumn (GettextCatalog.GetString ("Value"), new CellRendererText (), "text", valueDisplayTextColumn);
