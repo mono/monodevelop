@@ -1216,8 +1216,9 @@ namespace MonoDevelop.CSharpBinding.Gui
 			                                                                                Editor,
 			                                                                                Document.FileName);
 			
-			resolver.SetupResolver (new DomLocation (ctx.TriggerLine, ctx.TriggerLineOffset));
-		//	System.Console.WriteLine(expressionResult.ExpressionContext );
+			DomLocation cursorLocation = new DomLocation (ctx.TriggerLine, ctx.TriggerLineOffset);
+			resolver.SetupResolver (cursorLocation);
+			//System.Console.WriteLine ("ctrl+space expression result:" + expressionResult);
 			CompletionDataList result = new ProjectDomCompletionDataList ();
 			if (expressionResult == null) {
 				AddPrimitiveTypes (result);
@@ -1315,6 +1316,45 @@ namespace MonoDevelop.CSharpBinding.Gui
 						}
 					}
 				}
+			} else if (expressionResult.ExpressionContext == ExpressionContext.IdentifierExpected) {
+				expressionResult.Expression = expressionResult.Expression.Trim ();
+				MemberResolveResult resolveResult = resolver.Resolve (expressionResult, cursorLocation) as MemberResolveResult;
+				if (resolveResult != null && resolveResult.ResolvedMember == null && resolveResult.ResolvedType != null) {
+					string name = CSharpAmbience.NetToCSharpTypeName (resolveResult.ResolvedType.FullName);
+					if (name != resolveResult.ResolvedType.FullName) {
+						result.Add (Char.ToLower (name[0]).ToString (), "md-field");
+					} else {
+						name = resolveResult.ResolvedType.Name;
+						List<string> names = new List<string> ();
+						int lastNameStart = 0;
+						for (int i = 1; i < name.Length; i++) {
+							if (Char.IsUpper (name[i])) {
+								names.Add (name.Substring (lastNameStart, i - lastNameStart));
+								lastNameStart = i;
+							}
+						}
+						names.Add (name.Substring (lastNameStart, name.Length - lastNameStart));
+						
+						StringBuilder possibleName = new StringBuilder ();
+						for (int i = 0; i < names.Count; i++) {
+							possibleName.Length  = 0;
+							for (int j = i; j < names.Count; j++) {
+								if (string.IsNullOrEmpty (names[j]))
+									continue;
+								if (j == i) 
+									names[j] = Char.ToLower (names[j][0]) + names[j].Substring (1);
+								possibleName.Append (names[j]);
+							}
+							result.Add (possibleName.ToString (), "md-field");
+						}
+						result.IsSorted = true;
+					}
+				} else {
+					result.Add ("global", "md-keyword");
+					AddPrimitiveTypes (result);
+					resolver.AddAccessibleCodeCompletionData (expressionResult.ExpressionContext, result);
+				}
+				
 			} else {
 				result.Add ("global", "md-keyword");
 				AddPrimitiveTypes (result);

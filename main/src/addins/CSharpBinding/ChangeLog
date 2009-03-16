@@ -1,5 +1,10 @@
 2009-03-16  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/CSharpTextEditorCompletion.cs: Added new code completion
+	  context (local variable naming proposal).
+
+2009-03-16  Mike Krüger  <mkrueger@novell.com>
+
 	* FormattingStrategy/CSharpFormattingStyleDefinition.xml:
 	  Added place in new line options.
 
