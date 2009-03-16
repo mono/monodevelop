@@ -768,8 +768,10 @@ namespace MonoDevelop.Debugger
 	
 	class DebugCompletionDataList: List<ICompletionData>, ICompletionDataList
 	{
+		public bool IsSorted { get; set; }
 		public DebugCompletionDataList (Mono.Debugging.Client.CompletionData data)
 		{
+			IsSorted = false;
 			foreach (CompletionItem it in data.Items)
 				Add (new DebugCompletionData (it));
 		}
