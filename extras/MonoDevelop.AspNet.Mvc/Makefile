@@ -10,7 +10,7 @@ clean:
 
 install: all
 	mkdir -p  $(installdir)
-	cp -r "build/*" $(installdir)
+	cp -r ./build/* $(installdir)
 
 uninstall:
 	rm -rf "$(installdir)"
