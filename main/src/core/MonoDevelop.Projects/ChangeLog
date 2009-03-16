@@ -1,5 +1,10 @@
 2009-03-16  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Text/CodeFormatDescription.cs: Added
+	  option categories.
+
+2009-03-16  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Text/CodeFormatDescription.cs: Changed
 	  return type of values.
 

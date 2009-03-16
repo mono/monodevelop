@@ -141,6 +141,11 @@ namespace MonoDevelop.Projects.Text
 	
 	public class CodeFormatCategory
 	{
+		public bool IsOptionCategory {
+			get;
+			set;
+		}
+		
 		public string Name {
 			get;
 			set;
@@ -189,17 +194,20 @@ namespace MonoDevelop.Projects.Text
 		}
 		
 		internal const string Node = "Category";
+		internal const string OptionCategoryNode = "OptionCategory";
 		
 		public static CodeFormatCategory Read (CodeFormatDescription descr, XmlReader reader)
 		{
 			CodeFormatCategory result = new CodeFormatCategory ();
+			result.IsOptionCategory = reader.LocalName == OptionCategoryNode;
 			result.DisplayName = reader.GetAttribute ("_displayName");
 			result.Name        = reader.GetAttribute ("name");
-			XmlReadHelper.ReadList (reader, Node, delegate () {
+			XmlReadHelper.ReadList (reader, result.IsOptionCategory ? OptionCategoryNode : Node, delegate () {
 				switch (reader.LocalName) {
 				case "Option":
 					result.options.Add (CodeFormatOption.Read (descr, reader));
 					return true;
+				case CodeFormatCategory.OptionCategoryNode:
 				case CodeFormatCategory.Node:
 					result.subCategories.Add (CodeFormatCategory.Read (descr, reader));
 					return true;
