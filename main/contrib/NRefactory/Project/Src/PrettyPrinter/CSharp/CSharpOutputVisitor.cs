@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
-//     <version>$Revision: 3850 $</version>
+//     <version>$Revision: 3854 $</version>
 // </file>
 
 using System;
@@ -142,13 +142,14 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		{
 			for (int i = startRankIndex; i < rankSpecifier.Length; ++i) {
 				outputFormatter.PrintToken(Tokens.OpenSquareBracket);
-				if (this.prettyPrintOptions.SpacesWithinBrackets) {
+				bool outputSpace = this.prettyPrintOptions.SpacesWithinBrackets && rankSpecifier[i] > 0;
+				if (outputSpace) {
 					outputFormatter.Space();
 				}
 				for (int j = 0; j < rankSpecifier[i]; ++j) {
 					outputFormatter.PrintToken(Tokens.Comma);
 				}
-				if (this.prettyPrintOptions.SpacesWithinBrackets) {
+				if (outputSpace) {
 					outputFormatter.Space();
 				}
 				outputFormatter.PrintToken(Tokens.CloseSquareBracket);
@@ -2680,14 +2681,15 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				
 				if (arrayCreateExpression.Arguments.Count > 0) {
 					outputFormatter.PrintToken(Tokens.OpenSquareBracket);
-					if (this.prettyPrintOptions.SpacesWithinBrackets) {
+					bool outputSpace = this.prettyPrintOptions.SpacesWithinBrackets && arrayCreateExpression.Arguments.Count > 0;
+					if (outputSpace) {
 						outputFormatter.Space();
 					}
 					for (int i = 0; i < arrayCreateExpression.Arguments.Count; ++i) {
 						if (i > 0) PrintFormattedComma();
 						TrackVisit(arrayCreateExpression.Arguments[i], data);
 					}
-					if (this.prettyPrintOptions.SpacesWithinBrackets) {
+					if (outputSpace) {
 						outputFormatter.Space();
 					}
 					outputFormatter.PrintToken(Tokens.CloseSquareBracket);

@@ -1,3 +1,8 @@
+2009-03-16  Mike Krüger  <mkrueger@novell.com>
+
+	* Src/PrettyPrinter/CSharp/CSharpOutputVisitor.cs: fixed
+	  bracket output issues.
+
 2009-03-15  Mike Krüger  <mkrueger@novell.com>
 
 	* Src/PrettyPrinter/CSharp/OutputFormatter.cs:
