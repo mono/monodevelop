@@ -1,5 +1,10 @@
 2009-03-16  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Text/CodeFormatDescription.cs: Changed
+	  return type of values.
+
+2009-03-16  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Text/CodeFormatDescription.cs: Fixed
 	  reading routine.
 

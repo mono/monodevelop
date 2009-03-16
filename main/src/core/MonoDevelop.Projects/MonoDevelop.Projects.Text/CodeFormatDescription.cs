@@ -42,7 +42,7 @@ namespace MonoDevelop.Projects.Text
 		} 
 		
 		List<KeyValuePair<string, string>> values = new List<KeyValuePair<string, string>> ();
-		public IEnumerable<KeyValuePair<string, string>> Values {
+		public IList<KeyValuePair<string, string>> Values {
 			get {
 				return values;
 			}
