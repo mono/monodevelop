@@ -1,3 +1,8 @@
+2009-03-16  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Text/CodeFormatDescription.cs: Fixed
+	  reading routine.
+
 2009-03-15  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Text/CodeFormatDescription.cs: Worked

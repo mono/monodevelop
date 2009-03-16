@@ -133,6 +133,7 @@ namespace MonoDevelop.Projects.Text
 			if (!reader.IsEmptyElement) {
 				reader.Read ();
 				result.Example = reader.ReadElementString ();
+				reader.Read ();
 			}
 			return result;
 		}
