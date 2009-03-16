@@ -34,6 +34,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 {
 	public interface ICompletionDataList : IList<ICompletionData>
 	{
+		bool IsSorted { get; }
 		bool AutoCompleteUniqueMatch { get; }
 		string DefaultCompletionString { get; }
 		void Sort (Comparison<ICompletionData> comparison);
@@ -42,11 +43,13 @@ namespace MonoDevelop.Projects.Gui.Completion
 	
 	public class CompletionDataList : List<ICompletionData>, ICompletionDataList
 	{
+		public bool IsSorted { get; set; }
 		public bool AutoCompleteUniqueMatch { get; set; }
 		public string DefaultCompletionString { get; set; }
 		
 		public CompletionDataList ()
 		{
+			IsSorted = false;
 		}
 		
 		public CompletionDataList (IEnumerable<ICompletionData> data)

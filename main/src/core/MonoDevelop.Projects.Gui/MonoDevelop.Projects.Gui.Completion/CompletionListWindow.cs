@@ -206,7 +206,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			{
 				return ((a.DisplayFlags & DisplayFlags.Obsolete) == (b.DisplayFlags & DisplayFlags.Obsolete))
 					? StringComparer.OrdinalIgnoreCase.Compare (a.DisplayText, b.DisplayText)
-					: (a.DisplayFlags & DisplayFlags.Obsolete) != 0? 1 : -1;
+					: (a.DisplayFlags & DisplayFlags.Obsolete) != 0 ? 1 : -1;
 			}
 		}
 		
@@ -220,7 +220,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 			//sort, sinking obsolete items to the bottoms
 			//the string comparison is ordinal as that makes it an order of magnitude faster, which 
 			//which makes completion triggering noticeably more responsive
-			completionDataList.Sort (new DataItemComparer ());
+			if (!completionDataList.IsSorted)
+				completionDataList.Sort (new DataItemComparer ());
 			
 			DataProvider = this;
 			
