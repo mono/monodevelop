@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Text;
@@ -69,11 +70,12 @@ namespace MonoDevelop.Ide.CodeFormatting
 				options.ShowSpaces = options.ShowTabs = options.ShowEolMarkers = checkbuttonWhiteSpaces.Active;
 				this.texteditor1.QueueDraw ();
 			};
-/*			Gtk.CellRendererText ctx = new Gtk.CellRendererText ();
+			comboboxValue.Clear ();
+			Gtk.CellRendererText ctx = new Gtk.CellRendererText ();
 			comboboxValue.PackStart (ctx, true);
-			comboboxValue.AddAttribute (ctx, "text", 0);*/
+			comboboxValue.AddAttribute (ctx, "text", 1);
 			
-			comboBoxStore = new ListStore (typeof (string));
+			comboBoxStore = new ListStore (typeof (string), typeof (string));
 			comboboxValue.Model = comboBoxStore;
 			
 			comboboxValue.Changed += HandleChanged;
@@ -144,7 +146,8 @@ namespace MonoDevelop.Ide.CodeFormatting
 		}
 		const int keyColumn   = 0;
 		const int valueColumn = 1;
-		const int objectColumn = 2;
+		const int valueDisplayTextColumn = 2;
+		const int objectColumn = 3;
 
 		public CodeFormatSettings Settings {
 			get {
@@ -158,9 +161,12 @@ namespace MonoDevelop.Ide.CodeFormatting
 			foreach (CodeFormatCategory subCategory in category.SubCategories) {
 				TreeIter categoryIter = iter.Equals (TreeIter.Zero) ? store.AppendValues (GettextCatalog.GetString (subCategory.DisplayName), null, subCategory) : store.AppendValues (iter, GettextCatalog.GetString (subCategory.DisplayName), null, subCategory);
 				foreach (CodeFormatOption option in subCategory.Options) {
+					KeyValuePair<string, string> val = settings.GetValue (description, option);
 					store.AppendValues (categoryIter, 
 					                    GettextCatalog.GetString (option.DisplayName), 
-					                    GettextCatalog.GetString (settings.GetValue (description, option)), option);
+					                    val.Key,
+					                    GettextCatalog.GetString (val.Value), 
+					                    option);
 				}
 				foreach (CodeFormatCategory s in subCategory.SubCategories) {
 					AppendCategory (store, categoryIter, s);
@@ -171,11 +177,11 @@ namespace MonoDevelop.Ide.CodeFormatting
 		void AddCategoryPage (CodeFormatCategory category)
 		{
 			Gtk.Label label = new Gtk.Label (GettextCatalog.GetString (category.DisplayName));
-			Gtk.TreeStore store = new Gtk.TreeStore (typeof(string), typeof (string), typeof (object));
+			Gtk.TreeStore store = new Gtk.TreeStore (typeof(string), typeof (string), typeof (string), typeof (object));
 			AppendCategory (store, TreeIter.Zero, category);
 			Gtk.TreeView tree = new Gtk.TreeView (store);
 			tree.AppendColumn (GettextCatalog.GetString ("Key"), new CellRendererText (), "text", keyColumn);
-			tree.AppendColumn (GettextCatalog.GetString ("Value"), new CellRendererText (), "text", valueColumn);
+			tree.AppendColumn (GettextCatalog.GetString ("Value"), new CellRendererText (), "text", valueDisplayTextColumn);
 			tree.Selection.Changed += delegate {
 				if (tree.Selection.GetSelected (out model, out iter)) {
 
@@ -193,11 +199,11 @@ namespace MonoDevelop.Ide.CodeFormatting
 					
 					comboBoxStore.Clear ();
 					int active = 0, i = 0;
-					string curValue = settings.GetValue (description, option);
-					foreach (string v in type.Values) {
-						if (v == curValue)
+					KeyValuePair<string, string> curValue = settings.GetValue (description, option);
+					foreach (KeyValuePair<string, string> v in type.Values) {
+						if (v.Key == curValue.Key)
 							active = i;
-					 	comboBoxStore.AppendValues (v);
+					 	comboBoxStore.AppendValues (v.Key, GettextCatalog.GetString (v.Value));
 						i++;
 					}
 					comboboxValue.Active = active;

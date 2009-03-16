@@ -1,3 +1,8 @@
+2009-03-16  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.CodeFormatting/EditFormattingPolicyDialog.cs:
+	  worked on edit formatting policy dialog.
+
 2009-03-13  Andrés G. Aragoneses  <aaragoneses@novell.com>
 
 	* MonoDevelop.Ide.addin.xml:
