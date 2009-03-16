@@ -1,3 +1,7 @@
+2009-03-16  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Core/XmlReadHelper.cs: Improved error handing.
+
 2009-03-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:
