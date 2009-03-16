@@ -1,3 +1,8 @@
+2009-03-16  Mike Krüger  <mkrueger@novell.com>
+
+	* FormattingStrategy/CSharpFormattingStyleDefinition.xml:
+	  Added place in new line options.
+
 2009-03-15  Mike Krüger  <mkrueger@novell.com>
 
 	* Parser/CSharpFormatter.cs:

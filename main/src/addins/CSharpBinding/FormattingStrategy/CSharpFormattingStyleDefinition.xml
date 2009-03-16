@@ -48,7 +48,7 @@
 ]]></Example>
 <Example name = "methodSpaceExample"><![CDATA[
 	class ClassDeclaration { 
-		public void TestMethod ()
+		public static void Main (string[] args)
 		{
 			Console.WriteLine ("Hello World!");
 		}
@@ -72,10 +72,9 @@
 		{
 			lock (this) {
 				switch (test) {
-					case "A": {
+					case "A":
 						Console.WriteLine ("was A");
 						break;
-					}
 					case "B":
 						Console.WriteLine ("was B");
 						break;
@@ -87,12 +86,12 @@
 		{
 			if (a < b) {
 				for (int i = a; i < b; i++) {
-					
+					Console.WriteLine (i);
 				}
 			} else {
 				using (object o = new object ()) {
 					while (b < a) {
-						
+						Console.WriteLine (b++);
 					}
 				}
 			}
@@ -144,13 +143,147 @@
 	}
 ]]></Example>
 
+<Example name="simpleIf"><![CDATA[
+class ClassDeclaration { 
+		public void Test (int i)
+		{
+			if (i == 5) {
+				Console.WriteLine ("== 5");
+			} else if (i > 0) {
+				Console.WriteLine (">0");
+			} else if (i < 0) {
+				Console.WriteLine ("<0");
+			} else {
+				Console.WriteLine ("== 0");
+			}
+		}
+	}
+]]></Example>
+
+<Example name="simpleWhile"><![CDATA[
+class ClassDeclaration { 
+		public void Test ()
+		{
+			while (true) {
+				Console.WriteLine ("Hello World!");
+			}
+		}
+	}
+]]></Example>
+
+<Example name="simpleDoWhile"><![CDATA[
+class ClassDeclaration { 
+		public void Test ()
+		{
+			int i = 0;
+			do {
+				Console.WriteLine ("Hello World!");
+			} while (i++ < 10);
+		}
+	}
+]]></Example>
+
+<Example name="simpleFor"><![CDATA[
+class ClassDeclaration { 
+		public void Test ()
+		{
+			for (int i = 0; i < 10; i++) {
+				Console.WriteLine ("Hello World!");
+			}
+		}
+	}
+]]></Example>
+
+<Example name="simpleForeach"><![CDATA[
+class ClassDeclaration : ArrayList { 
+		public void Test ()
+		{
+			foreach (object o in this) {
+				Console.WriteLine ("Hello World!");
+			}
+		}
+	}
+]]></Example>
+
+<Example name="simpleCatch"><![CDATA[
+class ClassDeclaration { 
+		public void Test ()
+		{
+			try {
+				Console.WriteLine ("Hello World!");
+			} catch (Exception) {
+				Console.WriteLine ("Got exception!!");
+			} finally {
+				Console.WriteLine ("finally done.");
+			}
+		}
+	}
+]]></Example>
+
+<Example name="simpleSwitch"><![CDATA[
+class ClassDeclaration { 
+		public void Test (string a)
+		{
+			switch (a) {
+			case "silent":
+			break;
+			default:
+				Console.WriteLine ("Hello World!");
+				break;
+			}
+		}
+	}
+]]></Example>
+
+<Example name="simpleLock"><![CDATA[
+class ClassDeclaration { 
+		public void Test ()
+		{
+			lock (this) {
+				Console.WriteLine ("Hello World!");
+			}
+		}
+	}
+]]></Example>
+
+<Example name="simpleUsingStatement"><![CDATA[
+class ClassDeclaration { 
+		public void Test ()
+		{
+			using (object o = new object ()) {
+				Console.WriteLine ("Hello World!");
+			}
+		}
+	}
+]]></Example>
+
+<Example name="simpleTypeCast"><![CDATA[
+class ClassDeclaration { 
+		public void Test (object o)
+		{
+			int i = (int)o;
+		}
+	}
+]]></Example>
+
+<Example name="simpleArrayInitializer"><![CDATA[
+class ClassDeclaration { 
+		public void Test (object o)
+		{
+			int[] i = new int[] { 1, 3, 3, 7 };
+		}
+	}
+]]></Example>
+
 	<Category name ="Indentation" _displayName="Indentation">
 		<Category name = "Declarations" _displayName="Declarations">
 			<Option name="IndentNamespaceBody" _displayName="within namespaces" type="Bool"><Example><![CDATA[namespace Test { class AClass {} }]]></Example></Option>
+			
 			<Option name="IndentClassBody" _displayName="within classes" type="Bool"><Example><![CDATA[class AClass { int aField; void AMethod () {}}]]></Example></Option>
 			<Option name="IndentInterfaceBody" _displayName="within interfaces" type="Bool"><Example><![CDATA[interface IAInterfaces { int AProperty {get;set;} void AMethod ();}]]></Example></Option>
 			<Option name="IndentStructBody" _displayName="within structs" type="Bool"><Example><![CDATA[struct AStruct { int aField; void AMethod () {}}]]></Example></Option>
 			<Option name="IndentEnumBody" _displayName="within enums" type="Bool"><Example><![CDATA[enum AEnum { A, B, C }]]></Example></Option>
+			
 			<Option name="IndentMethodBody" _displayName="within methods" type="Bool" example="methodSpaceExample"/>
 			<Option name="IndentPropertyBody" _displayName="within properties" type="Bool" example="property"/>
 			<Option name="IndentEventBody" _displayName="within events" type="Bool" example="event"/>
@@ -189,9 +322,9 @@
 		</Category>
 		
 		<Category name = "Blocks" _displayName="Blocks">
-			<Option name="StatementBraceStyle" _displayName="Statements" type="BraceStyle"/>
+			<Option name="StatementBraceStyle" _displayName="Statements" type="BraceStyle" example="spaceExample"/>
 		</Category>
-		
+		<!--
 		<Category name = "NewLines"  _displayName="New Lines">
 			<Option name="InEmptyClassBody" _displayName="in empty class body" type="Bool"/>
 			<Option name="InEmptyAnonymousClassBody" _displayName="in empty anonymous class body" type="Bool"/>
@@ -209,108 +342,31 @@
 				<Option name="AfterOpeningBrace" _displayName="after opening brace" type="Bool"/>
 				<Option name="BeforeClosingBrace" _displayName="before closing brace" type="Bool"/>
 			</Category>
+		</Category>-->
+	</Category>
+	<Category name ="NewLines" _displayName="New Lines">
+		<Category name = "PlaceNewLine" _displayName="Place on new line">
+			<Option name="PlaceElseOnNewLine" _displayName="'else'" type="Bool" example="simpleIf"/>
+			<Option name="PlaceCatchOnNewLine" _displayName="'catch'" type="Bool" example="simpleCatch"/>
+			<Option name="PlaceFinallyOnNewLine" _displayName="'finally'" type="Bool" example="simpleCatch"/>
+			<Option name="PlaceWhileOnNewLine" _displayName="'while'" type="Bool" example="simpleDoWhile"/>
 		</Category>
+		
 	</Category>
 	
 	<Category name = "Spaces" _displayName="Spaces">
 		<Category name = "BeforeParentheses" _displayName="Before Parentheses">
 			<Option name="BeforeMethodCallParentheses" _displayName="Method call" type="Bool" example ="methodSpaceExample"/>
 			<Option name="BeforeMethodDeclarationParentheses" _displayName="Method declaration" type="Bool" example ="methodSpaceExample"/>
-			<Option name="IfParentheses" _displayName="if statement" type="Bool"><Example><![CDATA[
-class ClassDeclaration { 
-		public void Test ()
-		{
-			if (true) {
-				Console.WriteLine ("Hello World!");
-			}
-		}
-	}
-]]></Example>
-</Option>
-			<Option name="WhileParentheses" _displayName="while statement" type="Bool"><Example><![CDATA[
-class ClassDeclaration { 
-		public void Test ()
-		{
-			while (true) {
-				Console.WriteLine ("Hello World!");
-			}
-		}
-	}
-]]></Example>
-</Option>
-			<Option name="ForParentheses" _displayName="for statement" type="Bool"><Example><![CDATA[
-class ClassDeclaration { 
-		public void Test ()
-		{
-			for (int i = 0; i < 10; i++) {
-				Console.WriteLine ("Hello World!");
-			}
-		}
-	}
-]]></Example>
-</Option>
-			<Option name="ForeachParentheses" _displayName="foreach statement" type="Bool"><Example><![CDATA[
-class ClassDeclaration : ArrayList { 
-		public void Test ()
-		{
-			foreach (object o in this) {
-				Console.WriteLine ("Hello World!");
-			}
-		}
-	}
-]]></Example>
-</Option>
+			<Option name="IfParentheses" _displayName="if statement" type="Bool" example="simpleIf"/>
+			<Option name="WhileParentheses" _displayName="while statement" type="Bool" example="simpleWhile"/>
+			<Option name="ForParentheses" _displayName="for statement" type="Bool" example="simpleFor"/>
+			<Option name="ForeachParentheses" _displayName="foreach statement" type="Bool" example="simpleForeach"/>
+			<Option name="CatchParentheses" _displayName="catch statement" type="Bool" example="simpleCatch"/>
+			<Option name="SwitchParentheses" _displayName="switch statement" type="Bool" example="simpleSwitch"/>
+			<Option name="LockParentheses" _displayName="lock statement" type="Bool" example="simpleLock"/>
+			<Option name="UsingParentheses" _displayName="using statement" type="Bool" example="simpleUsingStatement"/>
 
-
-			<Option name="CatchParentheses" _displayName="catch statement" type="Bool"><Example><![CDATA[
-class ClassDeclaration { 
-		public void Test ()
-		{
-			try {
-				Console.WriteLine ("Hello World!");
-			} catch (Exception) {
-			}
-		}
-	}
-]]></Example>
-</Option>
-			<Option name="SwitchParentheses" _displayName="switch statement" type="Bool"><Example><![CDATA[
-class ClassDeclaration { 
-		public void Test (string a)
-		{
-			switch (a) {
-			case "silent":
-			break;
-			default:
-				Console.WriteLine ("Hello World!");
-				break;
-			}
-		}
-	}
-]]></Example>
-</Option>
-			<Option name="LockParentheses" _displayName="lock statement" type="Bool"><Example><![CDATA[
-class ClassDeclaration { 
-		public void Test ()
-		{
-			lock (this) {
-				Console.WriteLine ("Hello World!");
-			}
-		}
-	}
-]]></Example>
-</Option>
-			<Option name="UsingParentheses" _displayName="using statement" type="Bool"><Example><![CDATA[
-class ClassDeclaration { 
-		public void Test ()
-		{
-			using (object o = new object ()) {
-				Console.WriteLine ("Hello World!");
-			}
-		}
-	}
-]]></Example>
-</Option>
 		</Category>
 		
 		<Category name = "Operators" _displayName="Around Operators">
@@ -326,20 +382,47 @@ class ClassDeclaration {
 		
 		<Category name = "WithinParentheses" _displayName="Within Parentheses">
 			<Option name="WithinParentheses" _displayName="Parentheses" type="Bool" example="operatorExample"/>
-			<Option name="WithinMethodCallParentheses" _displayName="Method call" type="Bool" example="operatorExample"/>
-			<Option name="WithinMethodDeclarationParentheses" _displayName="Method declaration" type="Bool" example="operatorExample"/>
-			<Option name="WithinIfParentheses" _displayName="'if' statement" type="Bool" example="operatorExample"/>
-			<Option name="WithinWhileParentheses" _displayName="'while' statement" type="Bool" example="operatorExample"/>
-			<Option name="WithinForParentheses" _displayName="'for' statement" type="Bool" example="operatorExample"/>
-			<Option name="WithinForEachParentheses" _displayName="'foreach' statement" type="Bool" example="operatorExample"/>
-			<Option name="WithinCatchParentheses" _displayName="'catch' statement" type="Bool" example="operatorExample"/>
-			<Option name="WithinSwitchParentheses" _displayName="'switch' statement" type="Bool" example="operatorExample"/>
-			<Option name="WithinLockParentheses" _displayName="'lock' statement" type="Bool" example="operatorExample"/>
-			<Option name="WithinUsingParentheses" _displayName="'using' statement" type="Bool" example="operatorExample"/>
-			<Option name="WithinCastParentheses" _displayName="Type cast" type="Bool" example="operatorExample"/>
-			<Option name="WithinSizeOfParentheses" _displayName="'sizeof' expression" type="Bool" example="operatorExample"/>
-			<Option name="WithinTypeOfParentheses" _displayName="'typeof' expression" type="Bool" example="operatorExample"/>
-			<Option name="WithinCheckedExpressionParantheses" _displayName="'checked'/'unchecked'/'fixed' expression" type="Bool" example="operatorExample"/>
+			<Option name="WithinMethodCallParentheses" _displayName="Method call" type="Bool" example="methodSpaceExample"/>
+			<Option name="WithinMethodDeclarationParentheses" _displayName="Method declaration" type="Bool" example="methodSpaceExample"/>
+			<Option name="WithinIfParentheses" _displayName="'if' statement" type="Bool" example="simpleIf"/>
+			<Option name="WithinWhileParentheses" _displayName="'while' statement" type="Bool" example="simpleWhile"/>
+			<Option name="WithinForParentheses" _displayName="'for' statement" type="Bool" example="simpleFor"/>
+			<Option name="WithinForEachParentheses" _displayName="'foreach' statement" type="Bool" example="simpleForeach"/>
+			<Option name="WithinCatchParentheses" _displayName="'catch' statement" type="Bool" example="simpleCatch"/>
+			<Option name="WithinSwitchParentheses" _displayName="'switch' statement" type="Bool" example="simpleSwitch"/>
+			<Option name="WithinLockParentheses" _displayName="'lock' statement" type="Bool" example="simpleLock"/>
+			<Option name="WithinUsingParentheses" _displayName="'using' statement" type="Bool" example="simpleUsingStatement"/>
+			<Option name="WithinCastParentheses" _displayName="Type cast" type="Bool" example="simpleTypeCast"/>
+			<Option name="WithinSizeOfParentheses" _displayName="'sizeof' expression" type="Bool"><Example><![CDATA[
+class ClassDeclaration { 
+		public void Test ()
+		{
+			int i = sizeof (ClassDeclaration);
+		}
+	}
+]]></Example>
+</Option>
+			<Option name="WithinTypeOfParentheses" _displayName="'typeof' expression" type="Bool"><Example><![CDATA[
+class ClassDeclaration { 
+		public void Test ()
+		{
+			Type t = typeof (ClassDeclaration);
+		}
+	}
+]]></Example>
+</Option>
+			<Option name="WithinCheckedExpressionParantheses" _displayName="'checked'/'fixed' expression" type="Bool"><Example><![CDATA[
+class ClassDeclaration { 
+		public void Test ()
+		{
+			int i =  checked(5 + 3);
+			fixed (int* p1 = &i) {
+				*p1 = 5;
+			}
+		}
+	}
+]]></Example>
+</Option>
 		</Category>
 		
 		<Category name = "ConditionalOperator" _displayName="Conditional Operator (?:)">
@@ -350,11 +433,20 @@ class ClassDeclaration {
 		</Category>
 		
 		<Category name = "Other" _displayName="Other">
-			<Option name="SpacesWithinBrackets" _displayName="Within brackets" type="Bool" example="operatorExample"/>
-			<Option name="SpacesAfterComma" _displayName="After comma" type="Bool" example="operatorExample"/>
-			<Option name="SpacesBeforeComma" _displayName="Before comma" type="Bool" example="operatorExample"/>
-			<Option name="SpacesAfterSemicolon" _displayName="After semicolon" type="Bool" example="operatorExample"/>
-			<Option name="SpacesAfterTypecast" _displayName="After type cast" type="Bool" example="operatorExample"/>
+			<Option name="SpacesWithinBrackets" _displayName="Within brackets" type="Bool"><Example><![CDATA[
+class ClassDeclaration { 
+		public void Test ()
+		{
+			string[] hello = new string[] { "Hello", "World" };
+			Console.WriteLine (hello [0] + hello [1]);
+		}
+	}
+]]></Example>
+</Option>
+			<Option name="SpacesAfterComma" _displayName="After comma" type="Bool" example="simpleArrayInitializer"/>
+			<Option name="SpacesBeforeComma" _displayName="Before comma" type="Bool" example="simpleArrayInitializer"/>
+			<Option name="SpacesAfterSemicolon" _displayName="After semicolon" type="Bool" example="simpleFor"/>
+			<Option name="SpacesAfterTypecast" _displayName="After type cast" type="Bool" example="simpleTypeCast"/>
 		</Category>
 	</Category>
 </CodeStyle>
