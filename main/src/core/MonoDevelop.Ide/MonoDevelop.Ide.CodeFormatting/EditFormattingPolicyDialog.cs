@@ -110,8 +110,13 @@ namespace MonoDevelop.Ide.CodeFormatting
 		
 		void HandleChanged(object sender, EventArgs e)
 		{
-			settings.SetValue (option, comboboxValue.ActiveText);
-			store.SetValue (iter, 1, comboboxValue.ActiveText);
+			CodeFormatType type = description.GetCodeFormatType (option.Type);
+			int a = comboboxValue.Active;
+			if (type == null || a < 0 || a >= type.Values.Count)
+				return;
+			KeyValuePair<string, string> val = type.Values[a];
+			settings.SetValue (option, val.Key);
+			store.SetValue (iter, valueDisplayTextColumn, GettextCatalog.GetString (val.Value));
 			UpdateExample ();
 		}
 		Mono.TextEditor.TextEditorOptions options = new Mono.TextEditor.TextEditorOptions ();
