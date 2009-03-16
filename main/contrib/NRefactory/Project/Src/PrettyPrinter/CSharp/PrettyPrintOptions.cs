@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version>$Revision: 3849 $</version>
+//     <version>$Revision: 3856 $</version>
 // </file>
 
 namespace ICSharpCode.NRefactory.PrettyPrinter
@@ -338,6 +338,48 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 		}
 
+		#endregion
+		
+		#region NewLines
+		bool placeCatchOnNewLine = true;
+		public bool PlaceCatchOnNewLine {
+			get {
+				return placeCatchOnNewLine;
+			}
+			set {
+				placeCatchOnNewLine  = value;
+			}
+		}
+		
+		bool placeFinallyOnNewLine = true;
+		public bool PlaceFinallyOnNewLine {
+			get {
+				return placeFinallyOnNewLine;
+			}
+			set {
+				placeFinallyOnNewLine  = value;
+			}
+		}
+		
+		bool placeElseOnNewLine = true;
+		public bool PlaceElseOnNewLine {
+			get {
+				return placeElseOnNewLine;
+			}
+			set {
+				placeElseOnNewLine  = value;
+			}
+		}
+		
+		bool placeWhileOnNewLine = true;
+		public bool PlaceWhileOnNewLine {
+			get {
+				return placeWhileOnNewLine;
+			}
+			set {
+				placeWhileOnNewLine  = value;
+			}
+		}
 		#endregion
 		
 		#region Spaces

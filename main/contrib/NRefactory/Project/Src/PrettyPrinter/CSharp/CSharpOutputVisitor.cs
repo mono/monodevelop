@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
-//     <version>$Revision: 3854 $</version>
+//     <version>$Revision: 3856 $</version>
 // </file>
 
 using System;
@@ -987,6 +987,10 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		void OutputBlock(BlockStatement blockStatement, BraceStyle braceStyle)
 		{
+			OutputBlock(blockStatement, braceStyle, true);
+		}
+		void OutputBlock(BlockStatement blockStatement, BraceStyle braceStyle, bool emitEndingNewLine)
+		{
 			BeginVisit(blockStatement);
 			if (blockStatement.IsNull) {
 				outputFormatter.PrintToken(Tokens.Semicolon);
@@ -1003,7 +1007,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					if (!outputFormatter.LastCharacterIsNewLine)
 						outputFormatter.NewLine();
 				}
-				outputFormatter.EndBrace(this.prettyPrintOptions.IndentBlocks);
+				outputFormatter.EndBrace (this.prettyPrintOptions.IndentBlocks, emitEndingNewLine);
 			}
 			EndVisit(blockStatement);
 		}
@@ -1261,7 +1265,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 			
 			if (ifElseStatement.HasElseStatements) {
-				outputFormatter.Indent();
+				if (prettyPrintOptions.PlaceElseOnNewLine) {
+					outputFormatter.Indent();
+				} else {
+					outputFormatter.Space();
+				}
 				outputFormatter.PrintToken(Tokens.Else);
 				PrintIfSection(ifElseStatement.FalseStatement);
 			}
@@ -1271,6 +1279,12 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		void PrintIfSection(List<Statement> statements)
 		{
+			if (statements.Count == 1 && (statements[0] is BlockStatement)) {
+				OutputBlock((BlockStatement)statements[0], 
+				            prettyPrintOptions.StatementBraceStyle, 
+				            prettyPrintOptions.PlaceElseOnNewLine);
+				return;
+			}
 			if (statements.Count != 1 || !(statements[0] is BlockStatement)) {
 				outputFormatter.Space();
 			}
@@ -1290,7 +1304,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public override object TrackedVisitElseIfSection(ElseIfSection elseIfSection, object data)
 		{
-			outputFormatter.Indent();
+			if (prettyPrintOptions.PlaceElseOnNewLine) {
+				outputFormatter.Indent();
+			} else {
+				outputFormatter.Space();
+			}
 			outputFormatter.PrintToken(Tokens.Else);
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.If);
@@ -1307,7 +1325,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
 			
-			WriteEmbeddedStatement(elseIfSection.EmbeddedStatement);
+			WriteEmbeddedStatement(elseIfSection.EmbeddedStatement, prettyPrintOptions.PlaceElseOnNewLine);
 			
 			return null;
 		}
@@ -1370,10 +1388,15 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		void WriteEmbeddedStatement(Statement statement)
+		void WriteEmbeddedStatement (Statement statement)
+		{
+			WriteEmbeddedStatement (statement, true);
+		}
+		
+		void WriteEmbeddedStatement (Statement statement, bool emitEndingNewLine)
 		{
 			if (statement is BlockStatement) {
-				TrackVisit(statement, prettyPrintOptions.StatementBraceStyle);
+				OutputBlock((BlockStatement)statement, prettyPrintOptions.StatementBraceStyle, emitEndingNewLine);
 			} else {
 				++outputFormatter.IndentationLevel;
 				outputFormatter.NewLine();
@@ -1593,10 +1616,14 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.PrintToken(Tokens.Do);
 			}
 			
-			WriteEmbeddedStatement(doLoopStatement.EmbeddedStatement);
+			WriteEmbeddedStatement(doLoopStatement.EmbeddedStatement, prettyPrintOptions.PlaceWhileOnNewLine);
 			
 			if (doLoopStatement.ConditionPosition == ConditionPosition.End) {
-				outputFormatter.Indent();
+				if (prettyPrintOptions.PlaceWhileOnNewLine) {
+					outputFormatter.Indent();
+				} else {
+					outputFormatter.Space();
+				}
 				PrintLoopCheck(doLoopStatement);
 				outputFormatter.PrintToken(Tokens.Semicolon);
 				outputFormatter.NewLine();
@@ -1694,23 +1721,34 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public override object TrackedVisitTryCatchStatement(TryCatchStatement tryCatchStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.Try);
-			WriteEmbeddedStatement(tryCatchStatement.StatementBlock);
 			
-			foreach (CatchClause catchClause in tryCatchStatement.CatchClauses) {
-				TrackVisit(catchClause, data);
+			WriteEmbeddedStatement (tryCatchStatement.StatementBlock, prettyPrintOptions.PlaceCatchOnNewLine);
+			for (int i = 0 ; i < tryCatchStatement.CatchClauses.Count; i++) {
+				TrackVisit(tryCatchStatement.CatchClauses[i], i == tryCatchStatement.CatchClauses.Count - 1);
 			}
 			
 			if (!tryCatchStatement.FinallyBlock.IsNull) {
-				outputFormatter.Indent();
+				if (prettyPrintOptions.PlaceFinallyOnNewLine) {
+	//				if (!prettyPrintOptions.PlaceCatchOnNewLine) 
+	//					outputFormatter.NewLine ();
+					outputFormatter.Indent();
+				} else {
+					outputFormatter.Space();
+				}
 				outputFormatter.PrintToken(Tokens.Finally);
 				WriteEmbeddedStatement(tryCatchStatement.FinallyBlock);
 			}
+			
 			return null;
 		}
 		
 		public override object TrackedVisitCatchClause(CatchClause catchClause, object data)
 		{
-			outputFormatter.Indent();
+			if (prettyPrintOptions.PlaceCatchOnNewLine) {
+				outputFormatter.Indent();
+			} else {
+				outputFormatter.Space();
+			}
 			outputFormatter.PrintToken(Tokens.Catch);
 			
 			if (!catchClause.TypeReference.IsNull) {
@@ -1731,7 +1769,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				}
 				outputFormatter.PrintToken(Tokens.CloseParenthesis);
 			}
-			WriteEmbeddedStatement(catchClause.StatementBlock);
+			WriteEmbeddedStatement(catchClause.StatementBlock, ((bool)data) ? prettyPrintOptions.PlaceFinallyOnNewLine : prettyPrintOptions.PlaceCatchOnNewLine);
 			return null;
 		}
 		

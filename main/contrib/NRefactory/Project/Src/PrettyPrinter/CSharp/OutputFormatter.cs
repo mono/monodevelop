@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version>$Revision: 3849 $</version>
+//     <version>$Revision: 3856 $</version>
 // </file>
 
 using System.Collections;
@@ -87,7 +87,12 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			braceStack.Push(style);
 		}
 		
-		public void EndBrace(bool indent)
+		public void EndBrace (bool indent)
+		{
+			EndBrace (indent, true);
+		}
+		
+		public void EndBrace (bool indent, bool emitNewLine)
 		{
 			BraceStyle style = (BraceStyle)braceStack.Pop();
 			switch (style) {
@@ -98,12 +103,14 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 						--IndentationLevel;
 					Indent();
 					PrintToken(Tokens.CloseCurlyBrace);
-					NewLine();
+					if (emitNewLine)
+						NewLine();
 					break;
 				case BraceStyle.NextLineShifted:
 					Indent();
 					PrintToken(Tokens.CloseCurlyBrace);
-					NewLine();
+					if (emitNewLine)
+						NewLine();
 					if (indent)
 						--IndentationLevel;
 					break;
@@ -112,7 +119,8 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 						--IndentationLevel;
 					Indent();
 					PrintToken(Tokens.CloseCurlyBrace);
-					NewLine();
+					if (emitNewLine)
+						NewLine();
 					--IndentationLevel;
 					break;
 			}

@@ -1,5 +1,12 @@
 2009-03-16  Mike Krüger  <mkrueger@novell.com>
 
+	* Src/PrettyPrinter/CSharp/OutputFormatter.cs:
+	* Src/PrettyPrinter/CSharp/PrettyPrintOptions.cs:
+	* Src/PrettyPrinter/CSharp/CSharpOutputVisitor.cs: Added place
+	  on new line options.
+
+2009-03-16  Mike Krüger  <mkrueger@novell.com>
+
 	* Src/PrettyPrinter/CSharp/CSharpOutputVisitor.cs: fixed
 	  bracket output issues.
 
