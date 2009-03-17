@@ -1,3 +1,7 @@
+2009-03-17  Mike Krüger  <mkrueger@novell.com>
+
+	* Parser/DomParser.cs: Track API changes.
+
 2009-03-13  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* VBNetBinding.csproj: Don't local-copy project refs.

@@ -26,7 +26,7 @@ namespace MonoDevelop.VBNetBinding
 			return Path.GetExtension (fileName) == ".vb";
 		}
 		
-		public override ParsedDocument Parse (string fileName, string content)
+		public override ParsedDocument Parse (ProjectDom dom, string fileName, string content)
 		{
 			using (ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (ICSharpCode.NRefactory.SupportedLanguage.VBNet, new StringReader(content))) {
 				return Parse (parser, fileName);
