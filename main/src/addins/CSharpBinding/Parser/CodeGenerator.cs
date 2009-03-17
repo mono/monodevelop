@@ -429,7 +429,7 @@ namespace CSharpBinding.Parser
 		static NRefactoryParser parser = new NRefactoryParser ();
 		public override IEnumerable<MemberReference> FindMemberReferences (RefactorerContext ctx, string fileName, IType cls, IMember member)
 		{
-			ParsedDocument parsedDocument = parser.Parse (fileName);
+			ParsedDocument parsedDocument = parser.Parse (cls.SourceProjectDom, fileName);
 			
 			NRefactoryResolver resolver = new NRefactoryResolver (ctx.ParserContext, parsedDocument.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, null, fileName);
 			resolver.SetupParsedCompilationUnit (parser.LastUnit);

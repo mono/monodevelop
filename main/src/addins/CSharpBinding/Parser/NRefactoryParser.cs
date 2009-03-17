@@ -181,7 +181,7 @@ namespace MonoDevelop.CSharpBinding
 			get;
 			set;
 		}
-		public override ParsedDocument Parse (string fileName, string content)
+		public override ParsedDocument Parse (ProjectDom dom, string fileName, string content)
 		{
 			using (ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (ICSharpCode.NRefactory.SupportedLanguage.CSharp, new StringReader (content))) {
 				
