@@ -138,7 +138,7 @@ namespace MonoDevelop.Ide.Gui
 				//verify that the namespace exists in the help tree
 				//FIXME: GetHelpXml doesn't seem to work for namespaces, so forced to do full render
 				Monodoc.Node dummy;
-				if (!String.IsNullOrEmpty (namespc) && ProjectDomService.HelpTree.RenderUrl ("N:" + namespc, out dummy) != null)
+				if (!String.IsNullOrEmpty (namespc) && ProjectDomService.HelpTree != null && ProjectDomService.HelpTree.RenderUrl ("N:" + namespc, out dummy) != null)
 					return "N:" + namespc;
 				else return null;
 			}
@@ -155,7 +155,7 @@ namespace MonoDevelop.Ide.Gui
 			IReturnType type = result.ResolvedType;
 			if (type != null && !String.IsNullOrEmpty (type.FullName)) {
 				string t = "T:" + type.FullName;
-				if (ProjectDomService.HelpTree.GetHelpXml (t) != null)
+				if (ProjectDomService.HelpTree != null && ProjectDomService.HelpTree.GetHelpXml (t) != null)
 					return t;
 			}
 			

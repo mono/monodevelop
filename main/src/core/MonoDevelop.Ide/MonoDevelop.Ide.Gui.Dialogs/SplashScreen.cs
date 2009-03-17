@@ -58,13 +58,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			Pango.Layout pl = new Pango.Layout (PangoContext);
 			Pango.FontDescription des = this.Style.FontDescription.Copy();
 			pl.FontDescription = des;
-			pl.SetMarkup("<b><span foreground='#8cb8e8'>" + BuildVariables.PackageVersionLabel + "</span></b>");
+		//	pl.SetMarkup("<b><span foreground='#cccccc'>" + BuildVariables.PackageVersionLabel + "</span></b>");
 			int w,h;
 			pl.GetPixelSize (out w, out h);
 			GdkWindow.DrawLayout (gc, bitmap.Width - w - 40, 110, pl);
 			return base.OnExposeEvent (evt);
 		}
-
+		
 		public static void SetProgress (double Percentage)
 		{
 			progress.Fraction = Percentage;
@@ -73,7 +73,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 
 		public static void SetMessage (string Message)
 		{
-			label.Markup = "<span size='small' foreground='#707070'>" + Message + "</span>";
+			label.Markup = "<span size='small' foreground='white'>" + Message + "</span>";
 			RunMainLoop ();
 		}
 		
