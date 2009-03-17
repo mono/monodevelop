@@ -69,12 +69,15 @@ namespace MonoDevelop.Deployment.Linux
 		{
 			string libs = "-r:@ProgramFiles@/" + Path.GetFileName (conf.CompiledOutputName);
 			string requires = "";
-			
+			string version = netProject.Version;
+			if (string.IsNullOrEmpty (version) && netProject.ParentSolution != null)
+				version = netProject.ParentSolution.Version;
+			    
 			string file = ctx.CreateTempFile ();
 			using (StreamWriter sw = new StreamWriter (file)) {
 				sw.WriteLine ("Name: " + netProject.Name);
 				sw.WriteLine ("Description: " + (String.IsNullOrEmpty(netProject.Description) ? netProject.Name : netProject.Description));
-				sw.WriteLine ("Version: " + netProject.Version);
+				sw.WriteLine ("Version: " + version);
 				sw.WriteLine ();
 				sw.WriteLine ("Requires: " + requires);
 				sw.WriteLine ("Libs: " + libs);
