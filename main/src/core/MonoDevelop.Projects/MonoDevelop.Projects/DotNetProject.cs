@@ -486,7 +486,8 @@ namespace MonoDevelop.Projects
 		public override SolutionItemConfiguration CreateConfiguration (string name)
 		{
 			DotNetProjectConfiguration conf = new DotNetProjectConfiguration (name);
-			conf.OutputDirectory = Path.Combine ("bin", name);
+			string dir = Path.Combine ("bin", name);
+			conf.OutputDirectory = String.IsNullOrEmpty (BaseDirectory)? dir : Path.Combine (BaseDirectory, dir);
 			conf.OutputAssembly  = Name;
 			if (LanguageBinding != null)
 				conf.CompilationParameters = LanguageBinding.CreateCompilationParameters (null);

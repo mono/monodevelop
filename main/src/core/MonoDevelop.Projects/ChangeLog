@@ -1,3 +1,12 @@
+2009-03-17  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects/DotNetProjectConfiguration.cs:
+	* MonoDevelop.Projects.Formats.MD1/MD1DotNetProjectHandler.cs:
+	  Remove unused property.
+
+	* MonoDevelop.Projects/DotNetProject.cs: Fully qualify the
+	  output path of new configurations.
+
 2009-03-17  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Parser/IParser.cs:

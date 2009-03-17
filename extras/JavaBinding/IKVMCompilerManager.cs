@@ -181,7 +181,7 @@ namespace JavaBinding
 			args.Append (" -target:"); args.Append (TargetToString (configuration.CompileTarget));
 			if (configuration.DebugMode)
 				args.Append (" -debug");
-			args.Append (" -srcpath:"); args.Append (configuration.SourceDirectory);
+			args.Append (" -srcpath:"); args.Append (configuration.ParentItem.BaseDirectory);
 			
 			foreach (ProjectReference lib in projectItems.GetAll<ProjectReference> ()) {
 				foreach (string fileName in lib.GetReferencedFileNames (configuration.Id)) {
