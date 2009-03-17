@@ -77,15 +77,13 @@ namespace MonoDevelop.WelcomePage
 	public partial class WelcomePageFallbackWidget : Gtk.EventBox
 	{
 		Gdk.Pixbuf bgPixbuf;
-		Gdk.Pixbuf logoPixbuf;
-		Gdk.Pixbuf decorationPixbuf;
 		
 		WelcomePageView parentView;
 		
-		const string headerSize = "large";
+		const string headerSize = "x-large";
 		const string textSize = "medium";
-		static readonly string headerFormat = "<span size=\"" + headerSize + "\"  weight=\"bold\" foreground=\"#2525a6\">{0}</span>";
-		static readonly string tableHeaderFormat = "<span size=\"" + textSize + "\" weight=\"bold\">{0}</span>";
+		static readonly string headerFormat = "<span size=\"" + headerSize + "\"  foreground=\"#4e6d9f\">{0}</span>";
+		static readonly string tableHeaderFormat = "<span size=\"" + textSize + "\" weight=\"bold\" foreground=\"#4e6d9f\">{0}</span>";
 		static readonly string textFormat = "<span size=\"" + textSize + "\">{0}</span>";
 		
 		readonly int logoOffset = 20;
@@ -104,18 +102,12 @@ namespace MonoDevelop.WelcomePage
 			linkHoverEnterEventHandler = new Gtk.EnterNotifyEventHandler (handleHoverEnter);
 			linkClickedEventHandler = new EventHandler (HandleLink);
 			
-			string logoPath = System.IO.Path.Combine (parentView.DataDirectory, "mono-logo.png");
-			logoPixbuf = new Gdk.Pixbuf (logoPath);
-			
 			string bgPath = System.IO.Path.Combine (parentView.DataDirectory, "mono-bg.png");
 			bgPixbuf = new Gdk.Pixbuf (bgPath);
 			
-			string decorationPath = System.IO.Path.Combine (parentView.DataDirectory, "mono-decoration.png");
-			decorationPixbuf = new Gdk.Pixbuf (decorationPath);
-			
+			alignment1.SetPadding ((uint) (logoOffset + 70 + logoOffset), 0, (uint) logoOffset, 0);
 			ModifyBg (StateType.Normal, Style.White);
 			
-			alignment1.SetPadding ((uint) (logoOffset + logoPixbuf.Height + logoOffset), 0, (uint) logoOffset, 0);
 			BuildFromXml ();
 			LoadRecent ();
 
@@ -265,23 +257,9 @@ namespace MonoDevelop.WelcomePage
 		//draw the background
 		protected override bool OnExposeEvent (EventExpose evnt)
 		{
-			Pixbuf stretched = bgPixbuf.ScaleSimple (Allocation.Width,
-			                                  bgPixbuf.Height,
-			                                  InterpType.Nearest);
-			
 			GdkWindow.DrawPixbuf (Style.BackgroundGC (StateType.Normal), 
-			                      stretched, 0, 0, 0, 0, 
-			                      stretched.Width, stretched.Height, 
-			                      RgbDither.Normal, 0, 0);
-			
-			GdkWindow.DrawPixbuf (Style.BackgroundGC (StateType.Normal), 
-			                      decorationPixbuf, 0, 0, 0, 0, 
-			                      decorationPixbuf.Width, decorationPixbuf.Height, 
-			                      RgbDither.Normal, 0, 0);
-			
-			GdkWindow.DrawPixbuf (Style.BackgroundGC (StateType.Normal), 
-			                      logoPixbuf, 0, 0, logoOffset, logoOffset, 
-			                      logoPixbuf.Width, logoPixbuf.Height, 
+			                      bgPixbuf, 0, 0, 0, 0, 
+			                      bgPixbuf.Width, bgPixbuf.Height, 
 			                      RgbDither.Normal, 0, 0);
 			
 			foreach (Widget widget in Children)

@@ -21,11 +21,11 @@ FILES =  \
 	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.WelcomePage.WelcomePageFallbackWidget.cs \
-	WelcomePageBrowser.cs \
 	WelcomePageCommands.cs \
 	WelcomePageFallbackWidget.cs \
 	WelcomePageOptionPanel.cs \
-	WelcomePageView.cs
+	WelcomePageView.cs \
+	XslGettextCatalog.cs
 
 RES =  \
 	gtk-gui/gui.stetic \

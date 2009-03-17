@@ -1,3 +1,15 @@
+2009-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* mono-bg.png:
+	* WelcomePageView.cs:
+	* XslGettextCatalog.cs:
+	* WelcomePageContent.xml:
+	* WelcomePageFallbackWidget.cs: New art for the welcome page.
+
+	* Makefile.am:
+	* WelcomePage.csproj:
+	* WelcomePageBrowser.cs: Remove unused classes.
+
 2009-02-26  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* WelcomePageFallbackWidget.cs: Translation fixes. Patch from

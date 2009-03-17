@@ -79,7 +79,7 @@
     <Compile Include="WelcomePageView.cs" />
     <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="WelcomePageFallbackWidget.cs" />
-    <Compile Include="WelcomePageBrowser.cs" />
+    <Compile Include="XslGettextCatalog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.WelcomePage.WelcomePageFallbackWidget.cs" />
     <Compile Include="AssemblyInfo.cs" />
   </ItemGroup>

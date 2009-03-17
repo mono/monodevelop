@@ -16,16 +16,16 @@
 	
 	<Links _title="Support Links">
 		<Link
+			href="http://bugzilla.novell.com/enter_bug.cgi?alias=&amp;assigned_to=&amp;blocked=&amp;bug_file_loc=http%3A%2F%2F&amp;bug_severity=Normal&amp;bug_status=NEW&amp;cf_foundby=---&amp;cf_nts_priority=&amp;cf_nts_support_num=&amp;cf_partnerid=&amp;comment=Description%20of%20Problem%3A%0D%0A%0D%0A%0D%0ASteps%20to%20reproduce%20the%20problem%3A%0D%0A1.%20%0D%0A2.%20%0D%0A%0D%0A%0D%0AActual%20Results%3A%0D%0A%0D%0A%0D%0AExpected%20Results%3A%0D%0A%0D%0A%0D%0AHow%20often%20does%20this%20happen%3F%20%0D%0A%0D%0A%0D%0AAdditional%20Information%3A%0D%0A%0D%0A%0D%0A&amp;component=&amp;contenttypeentry=&amp;contenttypemethod=autodetect&amp;contenttypeselection=text%2Fplain&amp;data=&amp;deadline=&amp;dependson=&amp;description=&amp;estimated_time=0.0&amp;flag_type-2=X&amp;form_name=enter_bug&amp;keywords=&amp;maketemplate=Remember%20values%20as%20bookmarkable%20template&amp;op_sys=Other&amp;priority=P5%20-%20None&amp;product=MonoDevelop%20&amp;qa_contact=&amp;rep_platform=Other&amp;short_desc=&amp;version=unspecified"
+			_title="Report a Bug"
+		/>
+		<Link
 			href="http://www.monodevelop.com"
 			_title="MonoDevelop Home Page"
 		/>
 		<Link
 			href="http://www.mono-project.com/Main_Page"
 			_title="Mono Project Home Page"
-		/>
-		<Link
-			href="http://bugzilla.novell.com/enter_bug.cgi?alias=&amp;assigned_to=&amp;blocked=&amp;bug_file_loc=http%3A%2F%2F&amp;bug_severity=Normal&amp;bug_status=NEW&amp;cf_foundby=---&amp;cf_nts_priority=&amp;cf_nts_support_num=&amp;cf_partnerid=&amp;comment=Description%20of%20Problem%3A%0D%0A%0D%0A%0D%0ASteps%20to%20reproduce%20the%20problem%3A%0D%0A1.%20%0D%0A2.%20%0D%0A%0D%0A%0D%0AActual%20Results%3A%0D%0A%0D%0A%0D%0AExpected%20Results%3A%0D%0A%0D%0A%0D%0AHow%20often%20does%20this%20happen%3F%20%0D%0A%0D%0A%0D%0AAdditional%20Information%3A%0D%0A%0D%0A%0D%0A&amp;component=&amp;contenttypeentry=&amp;contenttypemethod=autodetect&amp;contenttypeselection=text%2Fplain&amp;data=&amp;deadline=&amp;dependson=&amp;description=&amp;estimated_time=0.0&amp;flag_type-2=X&amp;form_name=enter_bug&amp;keywords=&amp;maketemplate=Remember%20values%20as%20bookmarkable%20template&amp;op_sys=Other&amp;priority=P5%20-%20None&amp;product=MonoDevelop%20&amp;qa_contact=&amp;rep_platform=Other&amp;short_desc=&amp;version=unspecified"
-			_title="Report a Bug"
 		/>
 	</Links>
 	<Links _title="News Links">
