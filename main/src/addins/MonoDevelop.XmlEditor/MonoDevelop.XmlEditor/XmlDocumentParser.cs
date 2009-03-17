@@ -52,7 +52,7 @@ namespace MonoDevelop.XmlEditor
 			return XmlTextEditorExtension.IsFileNameHandled (fileName);
 		}
 		
-		public override ParsedDocument Parse (string fileName, string fileContent)
+		public override ParsedDocument Parse (ProjectDom dom, string fileName, string fileContent)
 		{
 			XmlParsedDocument doc = new XmlParsedDocument (fileName);
 			doc.Flags |= ParsedDocumentFlags.NonSerializable;
