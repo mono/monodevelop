@@ -5,5 +5,5 @@ using System.Reflection;
 [assembly: AssemblyProduct ("MonoDevelop")]
 [assembly: AssemblyTitle ("Deployment Services Core")]
 [assembly: AssemblyDescription ("Provides basic deployment services")]
-[assembly: AssemblyVersion ("1.9.3")]
+[assembly: AssemblyVersion ("2.0")]
 [assembly: AssemblyCopyright ("MIT X11")]

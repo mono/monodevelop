@@ -5,5 +5,5 @@ using System.Reflection;
 [assembly: AssemblyProduct ("MonoDevelop")]
 [assembly: AssemblyTitle ("NUnit support")]
 [assembly: AssemblyDescription ("Integrates NUnit into the MonoDevelop IDE.")]
-[assembly: AssemblyVersion ("1.9.3")]
+[assembly: AssemblyVersion ("2.0")]
 [assembly: AssemblyCopyright ("GPL")]

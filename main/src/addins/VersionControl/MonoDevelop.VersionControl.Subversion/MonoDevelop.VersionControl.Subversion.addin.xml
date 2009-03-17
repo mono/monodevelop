@@ -6,18 +6,18 @@
        url       = "http://taubz.for.net/code/diff"
        description = "Subversion support for the Version Control Add-in"
        category    = "Version Control"
-       version   = "1.9.3">
+       version   = "2.0">
  
 	<Runtime>
 		<Import assembly="MonoDevelop.VersionControl.Subversion.dll"/>
 	</Runtime>
 
 	<Dependencies>
-	    <Addin id="Core" version="1.9.3"/>
-	    <Addin id="Core.Gui" version="1.9.3"/>
-		<Addin id="Projects" version="1.9.3"/>
-	    <Addin id="Ide" version="1.9.3"/>
-	    <Addin id="VersionControl" version="1.9.3"/>
+	    <Addin id="Core" version="2.0"/>
+	    <Addin id="Core.Gui" version="2.0"/>
+		<Addin id="Projects" version="2.0"/>
+	    <Addin id="Ide" version="2.0"/>
+	    <Addin id="VersionControl" version="2.0"/>
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/VersionControl/VersionControlSystems">

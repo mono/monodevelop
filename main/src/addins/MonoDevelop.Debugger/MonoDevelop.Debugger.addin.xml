@@ -6,15 +6,15 @@
        description = "Support for Debugging projects"
        copyright = "MIT X11"
        flags = "Hidden"
-       version = "1.9.3">
+       version = "2.0">
 
 	<Dependencies>
-	    <Addin id="Core" version="1.9.3"/>
-	    <Addin id="Core.Gui" version="1.9.3"/>
-    	<Addin id="Projects" version="1.9.3"/>
-		<Addin id="Projects.Gui" version="1.9.3"/>
-		<Addin id="Ide" version="1.9.3"/>
-		<Addin id="Components" version="1.9.3"/>
+	    <Addin id="Core" version="2.0"/>
+	    <Addin id="Core.Gui" version="2.0"/>
+    	<Addin id="Projects" version="2.0"/>
+		<Addin id="Projects.Gui" version="2.0"/>
+		<Addin id="Ide" version="2.0"/>
+		<Addin id="Components" version="2.0"/>
 	</Dependencies>
 	
 	<ExtensionPoint path="/MonoDevelop/Debugging/DebuggerFactories">

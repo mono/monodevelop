@@ -6,7 +6,7 @@
        url       = ""
        description = "Provides support for visual design of GTK# windows, dialogs and widgets."
 	   category    = "IDE extensions"
-       version   = "1.9.3">
+       version   = "2.0">
 
 	<Runtime>
 		<Import assembly="libstetic.dll"/>
@@ -17,13 +17,13 @@
 	</Runtime>
 
 	<Dependencies>
-	    <Addin id="Core" version="1.9.3"/>
-	    <Addin id="Core.Gui" version="1.9.3"/>
-	    <Addin id="Projects" version="1.9.3"/>
-	    <Addin id="Projects.Gui" version="1.9.3"/>
-		<Addin id="Ide" version="1.9.3"/>
-		<Addin id="DesignerSupport" version="1.9.3"/>
-		<Addin id="Components" version="1.9.3"/>
+	    <Addin id="Core" version="2.0"/>
+	    <Addin id="Core.Gui" version="2.0"/>
+	    <Addin id="Projects" version="2.0"/>
+	    <Addin id="Projects.Gui" version="2.0"/>
+		<Addin id="Ide" version="2.0"/>
+		<Addin id="DesignerSupport" version="2.0"/>
+		<Addin id="Components" version="2.0"/>
 	</Dependencies>
 	
 	<ExtensionPoint path = "/MonoDevelop/GtkCore/ContextMenu/ProjectPad.ActionGroup">
