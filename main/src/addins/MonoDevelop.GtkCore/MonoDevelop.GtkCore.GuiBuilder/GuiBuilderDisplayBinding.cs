@@ -97,7 +97,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (file.StartsWith (info.GtkGuiFolder))
 				return null;
 
-			ParsedDocument doc = ProjectDomService.GetParsedDocument (file);
+			ParsedDocument doc = ProjectDomService.GetParsedDocument (null, file);
 			if (doc == null || doc.CompilationUnit == null)
 				return null;
 

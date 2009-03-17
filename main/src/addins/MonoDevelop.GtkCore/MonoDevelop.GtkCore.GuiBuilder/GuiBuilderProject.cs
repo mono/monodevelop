@@ -316,7 +316,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		void OnFileAdded (object sender, ProjectFileEventArgs args)
 		{
-			ParsedDocument doc = ProjectDomService.GetParsedDocument (args.ProjectFile.Name);
+			
+			ParsedDocument doc = ProjectDomService.GetParsedDocument (ProjectDomService.GetProjectDom (args.Project), args.ProjectFile.Name);
 			if (doc == null || doc.CompilationUnit == null)
 				return;
 
@@ -339,7 +340,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			ArrayList toDelete = new ArrayList ();
 
-			ParsedDocument doc = ProjectDomService.GetParsedDocument (args.ProjectFile.Name);
+			ParsedDocument doc = ProjectDomService.GetParsedDocument (ProjectDomService.GetProjectDom (args.Project), args.ProjectFile.Name);
 			if (doc == null || doc.CompilationUnit == null)
 				return;
 
