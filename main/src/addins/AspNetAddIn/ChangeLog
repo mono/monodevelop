@@ -1,3 +1,10 @@
+2009-03-17  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Html/HtmlParser.cs:
+	* MonoDevelop.AspNet.Parser/AspNetParser.cs:
+	* MonoDevelop.AspNet/MasterContentFileDescriptionTemplate.cs:
+	  Track API changes.
+
 2009-03-16  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.AspNet/AspNetAppProject.cs: Migrate bad output

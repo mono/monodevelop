@@ -48,7 +48,7 @@ namespace MonoDevelop.AspNet.Parser
 			return fileName.EndsWith (".aspx") || fileName.EndsWith (".ascx") || fileName.EndsWith (".master");
 		}
 		
-		public override ParsedDocument Parse (string fileName, string fileContent)
+		public override ParsedDocument Parse (ProjectDom dom, string fileName, string fileContent)
 		{
 			using (TextReader tr = new StringReader (fileContent)) {
 				Document doc = new Document (tr, null, fileName);

@@ -66,7 +66,7 @@ namespace MonoDevelop.AspNet
 			tags["AspNetMaster"] = aspProj.LocalToVirtualPath (masterPage);
 			
 			try {
-				AspNetParsedDocument pd	= MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetParsedDocument (masterPage.FilePath)
+				AspNetParsedDocument pd	= MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetParsedDocument (MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetProjectDom (project), masterPage.FilePath)
 						as AspNetParsedDocument;
 				if (pd == null)
 					return;
