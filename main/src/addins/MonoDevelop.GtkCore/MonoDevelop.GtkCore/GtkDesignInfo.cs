@@ -276,8 +276,10 @@ namespace MonoDevelop.GtkCore
 
 			FileService.CreateDirectory (GtkGuiFolder);
 			bool projectModified = false;
+			bool initialGeneration = false;
 			
 			if (!File.Exists (SteticFile)) {
+				initialGeneration = true;
 				StreamWriter sw = new StreamWriter (SteticFile);
 				sw.WriteLine ("<stetic-interface />");
 				sw.Close ();
@@ -291,8 +293,14 @@ namespace MonoDevelop.GtkCore
 			}
 
 			StringCollection files = GuiBuilderProject.GenerateFiles (GtkGuiFolder);
+			DateTime generatedTime = File.GetLastWriteTime (SteticFile).Subtract (TimeSpan.FromSeconds (2));
 
 			foreach (string filename in files) {
+				if (initialGeneration) {
+					// Ensure that the generation date of this file is < the date of the .stetic file
+					// In this way the code will be properly regenerated when building the project.
+					File.SetLastWriteTime (filename, generatedTime);
+				}
 				if (!project.IsFileInProject (filename)) {
 					project.AddFile (filename, BuildAction.Compile);
 					projectModified = true;

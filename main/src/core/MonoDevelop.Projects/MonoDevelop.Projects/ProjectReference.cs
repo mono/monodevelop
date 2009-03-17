@@ -268,7 +268,9 @@ namespace MonoDevelop.Projects
 					notFound = (cref == null);
 				}
 				if (cref != null && cref != reference) {
-					if (loadedReference == null) {
+					SystemAssembly asm = Runtime.SystemAssemblyService.GetAssemblyFromFullName (cref, package);
+					bool isFrameworkAssembly = asm != null && asm.Package.IsFrameworkPackage;
+					if (loadedReference == null && !isFrameworkAssembly) {
 						loadedReference = reference;
 					}
 					reference = cref;
