@@ -2,6 +2,12 @@
 
 	* Src/Lexer/ILexer.cs:
 	* Src/Lexer/CSharp/Lexer.cs:
+	* Src/Lexer/AbstractLexer.cs: Renamed method.
+
+2009-03-17  Mike Krüger  <mkrueger@novell.com>
+
+	* Src/Lexer/ILexer.cs:
+	* Src/Lexer/CSharp/Lexer.cs:
 	* Src/Lexer/AbstractLexer.cs: Added SetDefinedSymbols method.
 
 2009-03-16  Mike Krüger  <mkrueger@novell.com>

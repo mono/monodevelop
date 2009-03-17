@@ -990,13 +990,10 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			get { return conditionalCompilation.Symbols; }
 		}
 		
-		public override void SetDefinedSymbols (string symbols)
+		public override void SetConditionalCompilationSymbols (string symbols)
 		{
-			foreach (string symbol in symbols.Split (';')) {
-				string s = symbol.Trim ();
-				if (s.Length == 0)
-					continue;
-				conditionalCompilation.Define (s);
+			foreach (string symbol in GetSymbols (symbols)) {
+				conditionalCompilation.Define (symbol);
 			}
 		}
 		
