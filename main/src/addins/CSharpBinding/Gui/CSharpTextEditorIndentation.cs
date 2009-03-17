@@ -228,7 +228,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 						Editor.InsertText (lastLineEndPos, "\" +");
 						if (!trimmedPreviousLine.StartsWith ("\"")) {
 							Editor.InsertText (cursor++ + 3, "\t");
-							caretEndPos++;
+							cursorEndPos++;
 						}
 						Editor.InsertText (cursor + 3, "\"");
 						Editor.CursorPosition = cursorEndPos;
