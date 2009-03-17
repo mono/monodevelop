@@ -79,7 +79,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 			dom.Project = project;
 			ProjectDomService.RegisterDom (dom, "Project:" + project.FileName);
 			
-			ParsedDocument parsedDocument = parser.Parse ("a.cs", testText.ToString ());
+			ParsedDocument parsedDocument = parser.Parse (null, "a.cs", testText.ToString ());
 			dom.Add (parsedDocument.CompilationUnit);
 			
 			TestViewContent testViewContent = new TestViewContent ();

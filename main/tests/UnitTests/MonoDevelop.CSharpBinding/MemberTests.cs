@@ -41,7 +41,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 	{
 		void DoTestFields (IParser parser)
 		{
-			ICompilationUnit unit = parser.Parse ("a.cs", @"class AClass { int x, y; }").CompilationUnit;
+			ICompilationUnit unit = parser.Parse (null, "a.cs", @"class AClass { int x, y; }").CompilationUnit;
 			Assert.AreEqual (1, unit.Types.Count);
 			IType type = unit.Types[0];
 			
@@ -62,7 +62,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 		
 		void DoTestMethods (IParser parser)
 		{
-			ICompilationUnit unit = parser.Parse ("a.cs", 
+			ICompilationUnit unit = parser.Parse (null, "a.cs", 
 @"class AClass {
      void TestMethod<T> (string a, int b) {}
      void ExtensionMethod (this int a) {}; 
@@ -92,7 +92,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 		
 		void DoTestConstructor (IParser parser)
 		{
-			ICompilationUnit unit = parser.Parse ("a.cs", 
+			ICompilationUnit unit = parser.Parse (null, "a.cs", 
 @"public abstract class BaseClass {
      BaseClass () {}
   	protected BaseClass(int id)
@@ -117,7 +117,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 		
 		void DoTestProperties (IParser parser)
 		{
-			ICompilationUnit unit = parser.Parse ("a.cs", 
+			ICompilationUnit unit = parser.Parse (null, "a.cs", 
 @"class AClass {
 	int MyProperty {
 		get { }
@@ -160,7 +160,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 		
 		void DoTestIndexer (IParser parser)
 		{
-			ICompilationUnit unit = parser.Parse ("a.cs", 
+			ICompilationUnit unit = parser.Parse (null, "a.cs", 
 @"class AClass {
 	int this[int a] {
 		get { }
@@ -186,7 +186,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 
 		void DoTestEvents (IParser parser)
 		{
-			ICompilationUnit unit = parser.Parse ("a.cs", 
+			ICompilationUnit unit = parser.Parse (null, "a.cs", 
 @"class AClass {
 	event EventHandler TestEvent;
 }").CompilationUnit;

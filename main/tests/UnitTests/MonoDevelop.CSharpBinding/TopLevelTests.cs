@@ -41,7 +41,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 	{
 		void DoTestUsings (IParser parser)
 		{
-			ICompilationUnit unit = parser.Parse ("a.cs", 
+			ICompilationUnit unit = parser.Parse (null, "a.cs", 
 @"using System;
 using NUnit.Framework;").CompilationUnit;
 			foreach (IUsing u in unit.Usings) {
@@ -68,7 +68,7 @@ using NUnit.Framework;").CompilationUnit;
 		
 		void DoTestEnums (IParser parser)
 		{
-			ICompilationUnit unit = parser.Parse ("a.cs", 
+			ICompilationUnit unit = parser.Parse (null, "a.cs", 
 @"enum TestEnum {
 	A,
 	B,
@@ -104,7 +104,7 @@ using NUnit.Framework;").CompilationUnit;
 		
 		void DoTestStruct (IParser parser)
 		{
-			ICompilationUnit unit = parser.Parse ("a.cs", @"struct TestStruct { }").CompilationUnit;
+			ICompilationUnit unit = parser.Parse (null, "a.cs", @"struct TestStruct { }").CompilationUnit;
 			Assert.AreEqual (1, unit.Types.Count);
 			IType type = unit.Types[0];
 			Assert.AreEqual (ClassType.Struct, type.ClassType);
@@ -120,7 +120,7 @@ using NUnit.Framework;").CompilationUnit;
 		
 		void DoTestInterface (IParser parser)
 		{
-			ICompilationUnit unit = parser.Parse ("a.cs", @"interface TestInterface { }").CompilationUnit;
+			ICompilationUnit unit = parser.Parse (null, "a.cs", @"interface TestInterface { }").CompilationUnit;
 			Assert.AreEqual (1, unit.Types.Count);
 			IType type = unit.Types[0];
 			Assert.AreEqual (ClassType.Interface, type.ClassType);
@@ -136,7 +136,7 @@ using NUnit.Framework;").CompilationUnit;
 		
 		void DoTestDelegate (IParser parser)
 		{
-			ICompilationUnit unit = parser.Parse ("a.cs", @"delegate void TestDelegate (int a, string b);").CompilationUnit;
+			ICompilationUnit unit = parser.Parse (null, "a.cs", @"delegate void TestDelegate (int a, string b);").CompilationUnit;
 			Assert.AreEqual (1, unit.Types.Count);
 			IType type = unit.Types[0];
 			Assert.AreEqual (ClassType.Delegate, type.ClassType);
@@ -164,7 +164,7 @@ using NUnit.Framework;").CompilationUnit;
 		
 		void DoTestClass (IParser parser)
 		{
-			ICompilationUnit unit = parser.Parse ("a.cs", @"public partial class TestClass<T, S> : MyBaseClass where T : Constraint { }").CompilationUnit;
+			ICompilationUnit unit = parser.Parse (null, "a.cs", @"public partial class TestClass<T, S> : MyBaseClass where T : Constraint { }").CompilationUnit;
 			Assert.AreEqual (1, unit.Types.Count);
 			IType type = unit.Types[0];
 			Assert.AreEqual (ClassType.Class, type.ClassType);
@@ -186,7 +186,7 @@ using NUnit.Framework;").CompilationUnit;
 		
 		void DoTestNamespace (IParser parser)
 		{
-			ICompilationUnit unit = parser.Parse ("a.cs", @"namespace Test1.Test2.Test3 { class A { } }").CompilationUnit;
+			ICompilationUnit unit = parser.Parse (null, "a.cs", @"namespace Test1.Test2.Test3 { class A { } }").CompilationUnit;
 			Assert.AreEqual (3, unit.Usings.Count);
 			Assert.AreEqual ("Test1.Test2.Test3", unit.Usings[0].Namespaces[0]);
 			Assert.AreEqual ("Test1.Test2", unit.Usings[1].Namespaces[0]);
@@ -205,7 +205,7 @@ using NUnit.Framework;").CompilationUnit;
 		
 		void DoTestAttributes (IParser parser)
 		{
-			ICompilationUnit unit = parser.Parse ("a.cs", @"[Attr1][Attr2(1,true)][Attr3('c',a=1,b=""hi"")] public class TestClass { }").CompilationUnit;
+			ICompilationUnit unit = parser.Parse (null, "a.cs", @"[Attr1][Attr2(1,true)][Attr3('c',a=1,b=""hi"")] public class TestClass { }").CompilationUnit;
 			Assert.AreEqual (1, unit.Types.Count);
 			IType type = unit.Types[0];
 			Assert.AreEqual (ClassType.Class, type.ClassType);
