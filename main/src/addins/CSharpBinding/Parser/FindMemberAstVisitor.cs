@@ -364,9 +364,9 @@ namespace MonoDevelop.CSharpBinding
 				} else if (searchedMember is LocalVariable && result is LocalVariableResolveResult) {
 					LocalVariable avar = searchedMember as LocalVariable;
 					LocalVariable var = ((LocalVariableResolveResult)result).LocalVariable;
-					if (var != null && avar.Region.Start == var.Region.Start) {
-						//Debug ("adding IdentifierExpression variable", idExp.Identifier, idExp);
-						AddUniqueReference (line, col, idExp.Identifier);
+					if (var != null && avar.DeclaringMember.FullName == var.DeclaringMember.FullName) {
+						if (Math.Abs (avar.Region.Start.Line - var.Region.Start.Line) <= 1)
+							AddUniqueReference (line, col, idExp.Identifier);
 					}
 				} else if (searchedMember is IParameter && result is ParameterResolveResult) {
 					IParameter param = ((ParameterResolveResult)result).Parameter;

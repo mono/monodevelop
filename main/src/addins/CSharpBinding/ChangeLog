@@ -1,3 +1,8 @@
+2009-03-17  Mike Krüger  <mkrueger@novell.com>
+
+	* Parser/FindMemberAstVisitor.cs: fixed 'Bug 485610 - Can't
+	  rename a variable'.
+
 2009-03-16  Mike Krüger  <mkrueger@novell.com>
 
 	* FormattingStrategy/CSharpFormattingStyleDefinition.xml:
