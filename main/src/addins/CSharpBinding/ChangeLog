@@ -1,5 +1,11 @@
 2009-03-17  Mike Krüger  <mkrueger@novell.com>
 
+	* Parser/NRefactoryParser.cs: fixed 'Bug 485783 - Class/method
+	  navigation bar doesn't honor "Define symbols:" project
+	  setting when parsing file'.
+
+2009-03-17  Mike Krüger  <mkrueger@novell.com>
+
 	* Parser/CodeGenerator.cs:
 	* Parser/NRefactoryParser.cs: Track API changes.
 

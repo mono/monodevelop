@@ -32,9 +32,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.CodeDom;
+using MonoDevelop.Projects;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using ICSharpCode.NRefactory.Visitors;
+using CSharpBinding;
 
 namespace MonoDevelop.CSharpBinding
 {
@@ -193,7 +195,12 @@ namespace MonoDevelop.CSharpBinding
 				};
 				parser.Lexer.SpecialCommentTags = ProjectDomService.SpecialCommentTags.GetNames ();
 				parser.Lexer.EvaluateConditionalCompilation = true;
-				
+				if (dom != null && dom.Project != null) {
+					DotNetProjectConfiguration conf = dom.Project.DefaultConfiguration as DotNetProjectConfiguration;
+					CSharpCompilerParameters par = conf != null ? conf.CompilationParameters as CSharpCompilerParameters : null;
+					if (par != null)
+						parser.Lexer.SetDefinedSymbols (par.DefineSymbols);
+				}
 				parser.Parse ();
 				
 				SpecialTracker tracker = new SpecialTracker (result);
