@@ -26,6 +26,7 @@ FILES =  \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.ChangeLogAddIn.AddLogEntryDialog.cs \
 	gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs \
+	OldChangeLogData.cs \
 	ProjectOptionPanel.cs \
 	ProjectOptionPanelWidget.cs
 

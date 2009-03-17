@@ -1,3 +1,17 @@
+2009-03-17  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* OldChangeLogData.cs:
+	* ChangeLogService.cs:
+	* ProjectOptionPanel.cs:
+	* ChangeLogAddIn.csproj:
+	* ChangeLogAddIn.addin.xml: Migrate MD1 changelog settings to
+	  the policy system. Fixes "Bug 471285 - Project ChangeLog
+	  settings lost".
+
+	* gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:
+	  Flush.
+
 2009-03-13  Andrés G. Aragoneses  <aaragoneses@novell.com>
 
 	* gtk-gui/gui.stetic:

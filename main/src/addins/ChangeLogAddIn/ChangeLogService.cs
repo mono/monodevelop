@@ -66,7 +66,7 @@ namespace MonoDevelop.ChangeLogAddIn
 			if (parentEntry == null)
 				return null;
 			
-			policy = parentEntry.Policies.Get<ChangeLogPolicy> ();
+			policy = GetPolicy (parentEntry);
 			
 			if (baseCommitPath == null)
 				baseCommitPath = parentEntry.ParentSolution.BaseDirectory;
@@ -118,10 +118,16 @@ namespace MonoDevelop.ChangeLogAddIn
 		{
 			ChangeLogPolicy policy;
 			if (item != null)
-				policy = item.Policies.Get<ChangeLogPolicy> ();
+				policy = GetPolicy (item);
 			else
 				policy = new ChangeLogPolicy ();
 			return policy.MessageStyle;
+		}
+		
+		static ChangeLogPolicy GetPolicy (SolutionItem item)
+		{
+			OldChangeLogData.Migrate (item);
+			return item.Policies.Get<ChangeLogPolicy> ();
 		}
 	}
 }

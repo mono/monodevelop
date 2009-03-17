@@ -56,4 +56,13 @@
 	<Extension path = "/MonoDevelop/ProjectModel/PolicySets/Mono" >
 		<Policies resource="Policies.xml"/>
 	</Extension>
+	
+	<!-- for MD1 migration -->
+	<Extension path = "/MonoDevelop/ProjectModel/ExtendedProperties">
+		<ItemProperty class = "MonoDevelop.Projects.SolutionItem"
+			name = "MonoDevelop.ChangeLogAddIn.ChangeLogInfo" type = "MonoDevelop.ChangeLogAddIn.OldChangeLogData" />
+		<ItemProperty class = "MonoDevelop.Projects.Solution"
+			name = "MonoDevelop.ChangeLogAddIn.ChangeLogInfo" type = "MonoDevelop.ChangeLogAddIn.OldChangeLogData" />
+	</Extension>
+
 </Addin>

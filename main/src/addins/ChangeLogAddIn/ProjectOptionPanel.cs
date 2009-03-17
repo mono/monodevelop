@@ -43,6 +43,16 @@ namespace MonoDevelop.ChangeLogAddIn
 			return widget = new ProjectOptionPanelWidget (this);
 		}
 		
+		public override void Initialize (MonoDevelop.Core.Gui.Dialogs.OptionsDialog dialog, object dataObject)
+		{
+			if (dataObject is SolutionItem)
+				OldChangeLogData.Migrate ((SolutionItem)dataObject);
+			else if (dataObject is Solution)
+				OldChangeLogData.Migrate (((Solution)dataObject).RootFolder);
+			
+			base.Initialize (dialog, dataObject);
+		}
+		
 		protected override string PolicyTitleWithMnemonic {
 			get {
 				return GettextCatalog.GetString ("ChangeLog _Policy");
