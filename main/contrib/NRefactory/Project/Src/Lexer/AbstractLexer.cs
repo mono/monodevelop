@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version>$Revision: 3715M $</version>
+//     <version>$Revision: 3845 $</version>
 // </file>
 
 using System;
@@ -44,6 +44,11 @@ namespace ICSharpCode.NRefactory.Parser
 		public bool EvaluateConditionalCompilation { get; set; }
 		public virtual IDictionary<string, object> ConditionalCompilationSymbols {
 			get { throw new NotSupportedException(); }
+		}
+		
+		public virtual void SetDefinedSymbols (string symbols)
+		{
+			throw new NotSupportedException ();
 		}
 		
 		protected int Line {

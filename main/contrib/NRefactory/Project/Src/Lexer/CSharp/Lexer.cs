@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Andrea Paatz" email="andrea@icsharpcode.net"/>
-//     <version>$Revision: 3715M $</version>
+//     <version>$Revision: 3845 $</version>
 // </file>
 
 using System;
@@ -989,6 +989,17 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		public override IDictionary<string, object> ConditionalCompilationSymbols {
 			get { return conditionalCompilation.Symbols; }
 		}
+		
+		public override void SetDefinedSymbols (string symbols)
+		{
+			foreach (string symbol in symbols.Split (';')) {
+				string s = symbol.Trim ();
+				if (s.Length == 0)
+					continue;
+				conditionalCompilation.Define (s);
+			}
+		}
+		
 		
 		ConditionalCompilation conditionalCompilation = new ConditionalCompilation();
 		

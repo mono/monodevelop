@@ -62,6 +62,14 @@ namespace ICSharpCode.NRefactory.Parser
 		IDictionary<string, object> ConditionalCompilationSymbols { get; }
 		
 		/// <summary>
+		/// Sets the conditional compilation symbols. 
+		/// </summary>
+		/// <param name="symbols">
+		/// A <see cref="System.String"/> containing the symbols. The symbols are separated by ';'.
+		/// </param>
+		void SetDefinedSymbols (string symbols);
+		
+		/// <summary>
 		/// Returns the comments that had been read and containing tag key words.
 		/// </summary>
 		List<TagComment> TagComments {
