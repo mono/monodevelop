@@ -1,3 +1,9 @@
+2009-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Deployment.Linux/LinuxDeployExtension.cs: If
+	  version number is not set in the project, get the version
+	  from the solution.
+
 2009-02-07  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Deployment.Linux.csproj: Flush MD's removal of
