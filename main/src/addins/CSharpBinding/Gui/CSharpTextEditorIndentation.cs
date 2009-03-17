@@ -221,6 +221,15 @@ namespace MonoDevelop.CSharpBinding.Gui
 						}
 						Editor.InsertText (cursor, /*GetLineWhiteSpace (previousLine) +*/ commentPrefix);
 						return;
+					} else if (stateTracker.Engine.IsInsideStringLiteral) {
+						int lastLineEndPos = Editor.GetPositionFromLineColumn (stateTracker.Engine.LineNumber - 1,
+						                                                       Editor.GetLineLength (stateTracker.Engine.LineNumber - 1) + 1);
+						Editor.InsertText (lastLineEndPos, "\" +");
+						if (!trimmedPreviousLine.StartsWith ("\"")) 
+							Editor.InsertText (cursor++ + 3, "\t");
+						Editor.InsertText (cursor + 3, "\"");
+						Editor.CursorPosition = cursor + 5;
+						return;
 					}
 				}
 				//newline always reindents unless it's had special handling

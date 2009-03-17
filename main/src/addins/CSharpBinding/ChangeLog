@@ -1,5 +1,11 @@
 2009-03-17  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/CSharpTextEditorIndentation.cs:
+	* FormattingStrategy/CSharpIndentEngine.cs: Added auto string
+	  concat when return is hit inside a string.
+
+2009-03-17  Mike Krüger  <mkrueger@novell.com>
+
 	* Parser/NRefactoryParser.cs: Renamed method.
 
 2009-03-17  Mike Krüger  <mkrueger@novell.com>
