@@ -1,3 +1,12 @@
+2009-03-16  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AspNet/AspNetAppProject.cs: Migrate bad output
+	  directories from MD1 format. Set proper output directory for
+	  new configurations.
+
+	* MonoDevelop.AspNet/AspNetAppProjectConfiguration.cs: Remove
+	  output directory hacks.
+
 2009-03-11  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.AspNet/CodeBehind.cs: Work around text editor

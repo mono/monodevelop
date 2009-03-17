@@ -1,3 +1,9 @@
+2009-03-16  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* src/mdrun.cs: Don't remove the console error logger, just
+	  control its verbosity. Fixes "Bug 480816 - mdtool removes
+	  console logger so that errors are swallowed silently".
+
 2009-02-08  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* mdrun.csproj: Build mdhost and mdrun as 32-bit too on

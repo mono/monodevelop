@@ -1,3 +1,7 @@
+2009-03-13  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* Mono.TextEditor.Vi/ViMode.cs: Clear selection when pasting.
+
 2009-03-11  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* Mono.TextEditor.Vi/ViMode.cs: Fix visual mode anchoring,

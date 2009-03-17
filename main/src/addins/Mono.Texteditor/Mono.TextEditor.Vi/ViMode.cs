@@ -727,6 +727,7 @@ namespace Mono.TextEditor.Vi
 					data.InsertAtCaret (contents);
 					data.Caret.Offset = offset;
 				}
+				Reset (string.Empty);
 			});
 		}
 
@@ -774,6 +775,7 @@ namespace Mono.TextEditor.Vi
 					data.InsertAtCaret (contents);
 					Caret.Offset = offset;
 				}
+				Reset (string.Empty);
 			});
 		}
 

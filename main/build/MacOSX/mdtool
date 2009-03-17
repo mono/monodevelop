@@ -16,32 +16,32 @@ export PREFIX
 # Work around a bug in 'exec' in older versions of macosx
 OSX_VERSION=$(uname -r | cut -f1 -d.)
 if [ $OSX_VERSION -lt 9 ]; then  # If OSX version is 10.4
-   EXEC=""
+   MONO_EXEC="mono"
 else
-   EXEC="exec -a mdtool"
+   MONO_EXEC="exec -a mdtool mono"
 fi
 
 ## END MAC-SPECIFIC SETUP ##
-### Beyond this, all is from the Linux mdtool.in, except the exec -a tweak
+### Beyond this, all is from the Linux mdtool.in, except the PREFIX and MONO_EXEC tweaks
+
+EXE_PATH="$PREFIX/lib/monodevelop/bin/mdrun.exe"
 
 MD_FORCE_DEBUG=yes
 
-ARGS=""
-
-for arg in $*; do 
+for arg in "$@"; do 
 case x$arg in
 	x--profile*)
-		MONO_OPTIONS="$MONO_OPTIONS $arg"
+		MONO_OPTIONS+=("$arg")
 		shift
 		;;
 	x--debug*)
 		export MONODEVELOP_DISPATCH_DEBUG=yes
 		unset MD_FORCE_DEBUG
-		MONO_OPTIONS="$MONO_OPTIONS $arg"
+		MONO_OPTIONS+=("$arg")
 		shift
 		;;
 	x--trace*)
-		MONO_OPTIONS="$MONO_OPTIONS $arg"
+		MONO_OPTIONS+=("$arg")
 		shift
 		;;
 	x--no-debug)
@@ -49,22 +49,19 @@ case x$arg in
 		shift
 		;;
 	*)
-		ARGS="$ARGS $arg"
+		ARGS+=("$arg")
 		shift
 		;;
 esac		
 done
 
 if [ -z MD_FORCE_DEBUG ]; then
-	MONO_OPTIONS="$MONO_OPTIONS --debug"
+	MONO_OPTIONS+=("--debug")
 fi
 
-if [ -n "$MONO_OPTIONS" ]; then
-	echo "** Running with Mono options: $MONO_OPTIONS **"
+if [ -n "${MONO_OPTIONS[0]}" ]; then
+	echo "** Running with Mono options: ${MONO_OPTIONS[@]} **"
 fi
 
-exec_args=" mono $MONO_OPTIONS $PREFIX/lib/monodevelop/bin/mdrun.exe $ARGS"
-
-$EXEC $exec_args
-
+$MONO_EXEC "${MONO_OPTIONS[@]}" "$EXE_PATH" "${ARGS[@]}"
 

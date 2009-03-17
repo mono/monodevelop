@@ -55,6 +55,10 @@ MonoDevelop.app: ../AddIns/* ../AddIns/*/* ../AddIns/*/*/* ../bin/* ../data/*/* 
 	  $(ADDINS)/MonoDevelop.Moonlight* \
 	  $(ADDINS)/VersionControl/MonoDevelop.VersionControl.Subversion* \
 	  $(ADDINS)/MonoDevelop.Gettext/*
+
+# remove stuff we don't need
+	rm -rf $(MACOS)/lib/monodevelop/bin/UnitTests.dll* \
+	  $(MACOS)/lib/monodevelop/bin/TestResult.xml
 	
 # touch the directory so that update dependencies work
 	touch MonoDevelop.app	  
