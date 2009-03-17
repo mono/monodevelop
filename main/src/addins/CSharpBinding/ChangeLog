@@ -1,5 +1,9 @@
 2009-03-17  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/CSharpTextEditorIndentation.cs: Fixed caret end pos.
+
+2009-03-17  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/CSharpTextEditorIndentation.cs:
 	* FormattingStrategy/CSharpIndentEngine.cs: Added auto string
 	  concat when return is hit inside a string.

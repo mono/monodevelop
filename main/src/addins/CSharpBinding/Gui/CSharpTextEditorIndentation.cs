@@ -224,11 +224,14 @@ namespace MonoDevelop.CSharpBinding.Gui
 					} else if (stateTracker.Engine.IsInsideStringLiteral) {
 						int lastLineEndPos = Editor.GetPositionFromLineColumn (stateTracker.Engine.LineNumber - 1,
 						                                                       Editor.GetLineLength (stateTracker.Engine.LineNumber - 1) + 1);
+						int cursorEndPos = cursor + 4;
 						Editor.InsertText (lastLineEndPos, "\" +");
-						if (!trimmedPreviousLine.StartsWith ("\"")) 
+						if (!trimmedPreviousLine.StartsWith ("\"")) {
 							Editor.InsertText (cursor++ + 3, "\t");
+							caretEndPos++;
+						}
 						Editor.InsertText (cursor + 3, "\"");
-						Editor.CursorPosition = cursor + 5;
+						Editor.CursorPosition = cursorEndPos;
 						return;
 					}
 				}
