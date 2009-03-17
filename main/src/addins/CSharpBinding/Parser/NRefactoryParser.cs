@@ -199,7 +199,7 @@ namespace MonoDevelop.CSharpBinding
 					DotNetProjectConfiguration conf = dom.Project.DefaultConfiguration as DotNetProjectConfiguration;
 					CSharpCompilerParameters par = conf != null ? conf.CompilationParameters as CSharpCompilerParameters : null;
 					if (par != null)
-						parser.Lexer.SetDefinedSymbols (par.DefineSymbols);
+						parser.Lexer.SetConditionalCompilationSymbols (par.DefineSymbols);
 				}
 				parser.Parse ();
 				
