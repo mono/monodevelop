@@ -51,7 +51,7 @@ namespace MonoDevelop.SourceEditor
 		public Gtk.Window CreateTooltipWindow (TextEditor editor, Gdk.ModifierType modifierState, object item)
 		{
 			ExtensibleTextEditor ed = (ExtensibleTextEditor) editor;
-			ParsedDocument doc = ProjectDomService.GetParsedDocument (ed.Document.FileName);
+			ParsedDocument doc = ProjectDomService.GetParsedDocument (null, ed.Document.FileName);
 			
 			LanguageItemWindow result = new LanguageItemWindow (ed.ProjectDom, modifierState, AmbienceService.GetAmbience (ed.Document.MimeType), (ResolveResult)item, null, doc != null ? doc.CompilationUnit : null);
 			if (result.IsEmpty)
