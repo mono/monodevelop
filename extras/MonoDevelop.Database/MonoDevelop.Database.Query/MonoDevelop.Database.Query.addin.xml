@@ -6,7 +6,7 @@
 	url		= "http://www.monodevelop.com"
 	description	= "Database Query Module"
 	category    = "Database"
-	version		= "1.9.3">
+	version		= "2.0">
     
 	<Runtime>
 		<Import assembly="MonoDevelop.Database.Query.dll"/>
@@ -15,11 +15,11 @@
   	<Localizer type="Gettext" catalog="monodevelop-database"/>
 	
 	<Dependencies>
-		<Addin id="Core" version="1.9.3"/>
-		<Addin id="Core.Gui" version="1.9.3"/>
-		<Addin id="Ide" version="1.9.3"/>
-		<Addin id="Database.Sql" version="1.9.3"/>
-		<Addin id="Database.Components" version="1.9.3"/>
+		<Addin id="Core" version="2.0"/>
+		<Addin id="Core.Gui" version="2.0"/>
+		<Addin id="Ide" version="2.0"/>
+		<Addin id="Database.Sql" version="2.0"/>
+		<Addin id="Database.Components" version="2.0"/>
 	</Dependencies>
 	
 	<ExtensionPoint path = "/MonoDevelop/Database/ToolBar/SqlQueryView">
