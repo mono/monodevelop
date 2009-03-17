@@ -92,6 +92,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			"Michael Hutchinson",
 			"Miguel de Icaza",
 			"Mike Krüger",
+			"Mike Kestner",
 			"Mitchell Wheeler",
 			"Muthiah Annamalai",
 			"Nick Drochak",
