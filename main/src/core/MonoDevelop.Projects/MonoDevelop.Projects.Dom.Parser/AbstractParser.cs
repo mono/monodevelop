@@ -43,9 +43,9 @@ namespace MonoDevelop.Projects.Dom.Parser
 			this.mimeTypes   = mimeTypes;
 		}
 		
-		public ParsedDocument Parse (string fileName)
+		public ParsedDocument Parse (ProjectDom dom, string fileName)
 		{
-			return Parse (fileName, System.IO.File.ReadAllText (fileName));
+			return Parse (dom, fileName, System.IO.File.ReadAllText (fileName));
 		}
 		
 		public virtual IExpressionFinder CreateExpressionFinder (ProjectDom dom)
@@ -58,11 +58,11 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return null;
 		}
 		
-		public abstract ParsedDocument Parse (string fileName, string content);
+		public abstract ParsedDocument Parse (ProjectDom dom, string fileName, string content);
 		
-		public virtual ParsedDocument Parse (string fileName, TextReader content)
+		public virtual ParsedDocument Parse (ProjectDom dom, string fileName, TextReader content)
 		{
-			return Parse (fileName, content.ReadToEnd ());
+			return Parse (dom, fileName, content.ReadToEnd ());
 		}
 		
 		public virtual bool CanParseMimeType (string mimeType)

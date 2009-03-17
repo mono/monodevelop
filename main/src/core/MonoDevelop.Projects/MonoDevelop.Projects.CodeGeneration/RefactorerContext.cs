@@ -80,7 +80,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			if (cls.CompilationUnit == null || cls.CompilationUnit.FileName == null)
 				return null;
 			string file = cls.CompilationUnit.FileName;
-			ParsedDocument pi = ProjectDomService.GetParsedDocument (file);
+			ParsedDocument pi = ProjectDomService.GetParsedDocument (cls.SourceProjectDom, file);
 			if (pi == null)
 				return null;
 			ICompilationUnit unit = pi.CompilationUnit;

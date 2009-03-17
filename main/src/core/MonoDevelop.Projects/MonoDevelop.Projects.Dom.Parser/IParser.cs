@@ -33,8 +33,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 {
 	public interface IParser
 	{
-		ParsedDocument Parse (string fileName, string content);
-		ParsedDocument Parse (string fileName, TextReader content);
+		ParsedDocument Parse (ProjectDom dom, string fileName, string content);
+		ParsedDocument Parse (ProjectDom dom, string fileName, TextReader content);
 		
 		bool CanParseMimeType (string mimeType);
 		bool CanParseProjectType (string projectType);

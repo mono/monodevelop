@@ -266,7 +266,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			if (projects.Count > 0)
 				return UpdateFile (projects.ToArray (), fileName, mimeType, getContent);
 			else
-				return ParseFile (fileName, getContent);
+				return ParseFile (null, fileName, getContent);
 		}
 
 		// Parses a file an updates the parser database
@@ -297,29 +297,30 @@ namespace MonoDevelop.Projects.Dom.Parser
 		}
 
 		// Parses a file. It does not update the parser database
-		public static ParsedDocument ParseFile (string fileName)
+		public static ParsedDocument ParseFile (ProjectDom dom, string fileName)
 		{
-			return ParseFile (fileName, null);
+			return ParseFile (dom, fileName, null);
 		}
 		
 		// Parses a file. It does not update the parser database
-		public static ParsedDocument ParseFile (string fileName, ContentDelegate getContent)
+		public static ParsedDocument ParseFile (ProjectDom dom, string fileName, ContentDelegate getContent)
 		{
 			string fileContent = getContent != null ? getContent () : null;
-			return DoParseFile (fileName, fileContent);
+			return DoParseFile (dom, fileName, fileContent);
 		}
 
 		// Returns the ParsedDocument object for a file. It will parse
 		// the file if it has not been recently parsed
-		public static ParsedDocument GetParsedDocument (string fileName)
+		public static ParsedDocument GetParsedDocument (ProjectDom dom, string fileName)
 		{
 			if (fileName == null || fileName.Length == 0) {
 				return null;
 			}
 			
 			ParsedDocument info = GetCachedParseInformation (fileName);
-			if (info != null) return info;
-			else return ParseFile(fileName);
+			if (info != null) 
+				return info;
+			return ParseFile (dom, fileName);
 		}
 		
 		public static ProjectDom GetFileDom (string file)
@@ -847,14 +848,14 @@ namespace MonoDevelop.Projects.Dom.Parser
 
 				// Remove any pending jobs for this file
 				RemoveParseJob (fileName);
-				
-				parseInformation = DoParseFile (fileName, fileContent);
+				ProjectDom dom = projects != null && projects.Length > 0 ? GetProjectDom (projects [0]) : null;
+				parseInformation = DoParseFile (dom, fileName, fileContent);
 				if (parseInformation == null)
 					return null;
 				// don't update project dom with incorrect parse informations, they may not contain all
 				// information.
 				if (projects != null && projects.Length > 0 && parseInformation.CompilationUnit != null)
-					SetSourceProject (parseInformation.CompilationUnit, GetProjectDom (projects [0]));
+					SetSourceProject (parseInformation.CompilationUnit, dom);
 				if (!parseInformation.HasErrors && parseInformation.CompilationUnit != null &&
 				    (parseInformation.Flags & ParsedDocumentFlags.NonSerializable) == 0) {
 					if (projects != null && projects.Length > 0) {
@@ -885,7 +886,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 		}
 		
-		static ParsedDocument DoParseFile (string fileName, string fileContent)
+		static ParsedDocument DoParseFile (ProjectDom dom, string fileName, string fileContent)
 		{
 			IParser parser = GetParserByFileName (fileName);
 			
@@ -903,7 +904,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 				}
 			}
 			
-			parserOutput = parser.Parse (fileName, fileContent);
+			parserOutput = parser.Parse (dom, fileName, fileContent);
 			
 /*			ParseInformation parseInformation = GetCachedParseInformation (fileName);
 			bool newInfo = false;
