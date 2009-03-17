@@ -1,3 +1,7 @@
+2009-03-17  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Moonlight/MoonlightParser.cs: Track API changes.
+
 2009-03-12  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am: Fix Silverlight.js install directory.

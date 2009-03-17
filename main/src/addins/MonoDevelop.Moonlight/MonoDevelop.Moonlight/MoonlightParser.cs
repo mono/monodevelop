@@ -52,7 +52,7 @@ namespace MonoDevelop.Moonlight
 			return fileName.EndsWith (".xaml");
 		}
 		
-		public override ParsedDocument Parse (string fileName, string fileContent)
+		public override ParsedDocument Parse (ProjectDom dom, string fileName, string fileContent)
 		{
 			XmlParsedDocument doc = new XmlParsedDocument (fileName);
 			TextReader tr = new StringReader (fileContent);
