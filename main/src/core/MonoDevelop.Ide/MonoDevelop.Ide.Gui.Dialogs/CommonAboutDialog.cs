@@ -38,10 +38,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		Pixbuf monoPowered;
 		int scroll;
 		Pango.Layout layout;
-		int monoLogoSpacing = 30;
+		int monoLogoSpacing = 80;
 		int textTop;
 		int scrollPause;
 		int scrollStart;
+		Gdk.GC backGc;
 
 		internal uint TimerHandle;
 		
@@ -107,12 +108,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		public ScrollBox ()
 		{
-			this.SetSizeRequest (450, 220);
 			this.Realized += new EventHandler (OnRealized);
-			this.ExposeEvent += new ExposeEventHandler (OnExposed);
+			this.ModifyBg (Gtk.StateType.Normal, new Gdk.Color (49, 49, 74));
 			
 			image = new Gdk.Pixbuf (GetType().Assembly, "AboutImage.png");
 			monoPowered = new Gdk.Pixbuf (GetType().Assembly, "mono-powered.png");
+			this.SetSizeRequest (450, image.Height - 1);
 			
 			TimerHandle = GLib.Timeout.Add (50, new TimeoutHandler (ScrollDown));
 		}
@@ -137,7 +138,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					sb.Append (trans);
 				}
 				sb.AppendLine ();
-				sb.Append ("Using some icons from:");
+				sb.AppendLine ();
+				sb.AppendLine ("Using some icons from:");
 				sb.Append ("http://www.famfamfam.com/lab/icons/silk");
 				return sb.ToString ();
 			}
@@ -152,7 +154,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				++scroll;
 			int w, h;
 			this.GdkWindow.GetSize (out w, out h);
-			this.QueueDrawArea (0, 0, w, 220);
+			this.QueueDrawArea (0, 0, w, image.Height);
 			return true;
 		}
 		
@@ -161,7 +163,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			if (image != null) {
 				int w, h;
 				this.GdkWindow.GetSize (out w, out h);
-				this.GdkWindow.DrawPixbuf (this.Style.BackgroundGC (StateType.Normal), image, 0, 0, (w - image.Width) / 2, 0, -1, -1, RgbDither.Normal,  0,  0);
+				this.GdkWindow.DrawPixbuf (backGc, image, 0, 0, (w - image.Width) / 2, 0, -1, -1, RgbDither.Normal,  0,  0);
 			}
 		}
 
@@ -179,23 +181,25 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			int tw, maxHeight;
 			layout.GetPixelSize (out tw, out maxHeight);
 			
-			this.GdkWindow.DrawLayout (this.Style.BlackGC, 0, textTop - scroll, layout);
-			this.GdkWindow.DrawPixbuf (this.Style.BackgroundGC (StateType.Normal), monoPowered, 0, 0, (w/2) - (monoPowered.Width/2), textTop - scroll + maxHeight + monoLogoSpacing, -1, -1, RgbDither.Normal,  0,  0);
+			this.GdkWindow.DrawLayout (this.Style.WhiteGC, 0, textTop - scroll, layout);
+			this.GdkWindow.DrawPixbuf (backGc, monoPowered, 0, 0, (w/2) - (monoPowered.Width/2), textTop - scroll + maxHeight + monoLogoSpacing, -1, -1, RgbDither.Normal,  0,  0);
 
+			maxHeight += image.Height - 80;
 			if (scroll == maxHeight && scrollPause == 0)
 				scrollPause = 60;
 			if (scroll > maxHeight + monoLogoSpacing + monoPowered.Height)
 				scroll = scrollStart;
 		}
 		
-		protected void OnExposed (object o, ExposeEventArgs args)
+		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
 			int w, h;
+			
 			this.GdkWindow.GetSize (out w, out h);
-			this.GdkWindow.DrawRectangle (this.Style.WhiteGC, true, 0, 0, w, h);
 			this.DrawText ();
 			this.DrawImage ();
-			this.GdkWindow.DrawRectangle (this.Style.WhiteGC, true, 0, 210, w, 10);
+//			this.GdkWindow.DrawRectangle (backGc, true, 0, 210, w, 10);
+			return false;
 		}
 
 		protected void OnRealized (object o, EventArgs args)
@@ -206,7 +210,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			GdkWindow.GetSize (out w, out h);
 			
 			textTop = y + image.Height - 30;
-			scrollStart = -(220 - textTop);
+			scrollStart = -(image.Height - textTop);
 			scroll = scrollStart;
 			
 			layout = new Pango.Layout (this.PangoContext);
@@ -217,13 +221,23 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			FontDescription fd = FontDescription.FromString ("Tahoma 10");
 			layout.FontDescription = fd;
 			layout.SetMarkup (CreditText);	
+			
+			backGc = new Gdk.GC (GdkWindow);
+			backGc.RgbBgColor = new Gdk.Color (49, 49, 74);
 		}
+		
+		protected override void OnDestroyed ()
+		{
+			base.OnDestroyed ();
+			backGc.Dispose ();
+		}
+
 	}
 	
 	internal class CommonAboutDialog : Dialog
 	{
-		Notebook nb;
 		ScrollBox aboutPictureScrollBox;
+		Pixbuf imageSep;
 		
 		public CommonAboutDialog ()
 		{
@@ -234,35 +248,46 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.Title = GettextCatalog.GetString ("About MonoDevelop");
 			this.TransientFor = IdeApp.Workbench.RootWindow;
 			aboutPictureScrollBox = new ScrollBox ();
-			this.VBox.PackStart (aboutPictureScrollBox, false, false, 0);
 		
-			nb = new Notebook ();
+			this.VBox.PackStart (aboutPictureScrollBox, false, false, 0);
+			
+			imageSep = new Gdk.Pixbuf (GetType().Assembly, "AboutImageSep.png");
+			Gtk.Image img = new Gtk.Image (imageSep);
+			this.VBox.PackStart (img, false, false, 0);
+		
+			Notebook nb = new Notebook ();
 			nb.BorderWidth = 6;
 //			nb.SetSizeRequest (440, 240);
-			this.ModifyBg (Gtk.StateType.Normal, new Gdk.Color (255, 255, 255));
 //			nb.ModifyBg (Gtk.StateType.Normal, new Gdk.Color (255, 255, 255));
 			VersionInformationTabPage vinfo = new VersionInformationTabPage ();
 			
 			nb.AppendPage (new AboutMonoDevelopTabPage (), new Label (GettextCatalog.GetString ("About MonoDevelop")));
+
 			nb.AppendPage (vinfo, new Label (GettextCatalog.GetString ("Version Info")));
-			this.VBox.PackStart (nb, true, true, 0);
+			this.VBox.PackStart (nb, true, true, 4);
 			this.AddButton (Gtk.Stock.Close, (int) ResponseType.Close);
+			
+//			ChangeColor (this);
+//			this.ModifyBg (Gtk.StateType.Normal, new Gdk.Color (49, 49, 74));
+//			aboutPictureScrollBox.ModifyBg (Gtk.StateType.Normal, new Gdk.Color (49, 49, 74));
+			
 			this.ShowAll ();
 		}
 		
-		protected override void OnDestroyed ()
+		void ChangeColor (Gtk.Widget w)
 		{
-			aboutPictureScrollBox = null;
-		/*	if (nb != null) {
-				foreach (Widget child in nb.Children) {
-					child.Destroy ();
-				}
-				nb.Destroy ();
-				nb = null;
-			}*/
-			base.OnDestroyed ();
+			w.ModifyBg (Gtk.StateType.Normal, new Gdk.Color (69, 69, 94));
+			w.ModifyBg (Gtk.StateType.Active, new Gdk.Color (69, 69, 94));
+			w.ModifyFg (Gtk.StateType.Normal, new Gdk.Color (255, 255, 255));
+			w.ModifyFg (Gtk.StateType.Active, new Gdk.Color (255, 255, 255));
+			w.ModifyFg (Gtk.StateType.Prelight, new Gdk.Color (255, 255, 255));
+			Gtk.Container c = w as Gtk.Container;
+			if (c != null) {
+				foreach (Widget cw in c.Children)
+					ChangeColor (cw);
+			}
 		}
-
+		
 		public new int Run ()
 		{
 			int tmp = base.Run ();
