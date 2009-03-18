@@ -1,3 +1,7 @@
+2009-03-18  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* NRefactory.csproj: Fix output name.
+
 2009-03-17  Mike Krüger  <mkrueger@novell.com>
 
 	* Src/Lexer/ILexer.cs:

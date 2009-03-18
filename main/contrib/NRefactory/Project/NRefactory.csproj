@@ -7,7 +7,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</ProjectGuid>
     <RootNamespace>ICSharpCode.NRefactory</RootNamespace>
-    <AssemblyName>ICSharpCode.NRefactory</AssemblyName>
+    <AssemblyName>NRefactory</AssemblyName>
     <OutputTarget>Library</OutputTarget>
     <WarningLevel>4</WarningLevel>
     <NoStdLib>False</NoStdLib>
