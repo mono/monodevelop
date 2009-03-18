@@ -55,6 +55,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 		static int parseStatus;
 		static Dictionary<object,int> loadCount = new Dictionary<object,int> ();
 		
+		static ManualResetEvent queueEmptied = new ManualResetEvent (true);
+		
 		const int MAX_PARSING_CACHE_SIZE = 10;
 		const int MAX_SINGLEDB_CACHE_SIZE = 10;
 
@@ -656,6 +658,9 @@ namespace MonoDevelop.Projects.Dom.Parser
 				parseQueueIndex [file] = job;
 				parseQueue.Enqueue (job);
 				parseEvent.Set ();
+				
+				if (parseQueueIndex.Count == 1)
+					queueEmptied.Reset ();
 			}
 		}
 		
@@ -672,11 +677,20 @@ namespace MonoDevelop.Projects.Dom.Parser
 					ParsingJob job = parseQueue.Dequeue ();
 					if (job.ParseCallback != null) {
 						parseQueueIndex.Remove (job.File);
+						
+						if (parseQueueIndex.Count == 0)
+							queueEmptied.Set ();
+						
 						return job;
 					}
 				}
 				return null;
 			}
+		}
+		
+		internal static void WaitForParseQueue ()
+		{
+			queueEmptied.WaitOne ();
 		}
 		
 		static void RemoveParseJob (string file)
@@ -687,6 +701,9 @@ namespace MonoDevelop.Projects.Dom.Parser
 				if (parseQueueIndex.TryGetValue (file, out job)) {
 					job.ParseCallback = null;
 					parseQueueIndex.Remove (file);
+					
+					if (parseQueueIndex.Count == 0)
+						queueEmptied.Set ();
 				}
 			}
 		}
@@ -699,6 +716,9 @@ namespace MonoDevelop.Projects.Dom.Parser
 					if (pj.Database == dom) {
 						pj.ParseCallback = null;
 						parseQueueIndex.Remove (pj.File);
+						
+						if (parseQueueIndex.Count == 0)
+							queueEmptied.Set ();
 					}
 				}
 			}

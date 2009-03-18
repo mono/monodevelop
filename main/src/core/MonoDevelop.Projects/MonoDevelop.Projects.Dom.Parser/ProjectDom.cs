@@ -70,24 +70,30 @@ namespace MonoDevelop.Projects.Dom.Parser
 		// updating is automatically done in the background. However, in some
 		// cases an up-to-date database is required to do some operation,
 		// and this method will ensure that everything is up-to-date.
-		public virtual void ForceUpdate ()
+		public void ForceUpdate ()
 		{
 			ForceUpdate (false);
 		}
 		
 		public void ForceUpdate (bool updateReferences)
 		{
-			HashSet<ProjectDom> visited = new HashSet<ProjectDom> ();
-			ForceUpdateRec (visited);
+			if (updateReferences) {
+				HashSet<ProjectDom> visited = new HashSet<ProjectDom> ();
+				ForceUpdateRec (visited);
+			} else {
+				CheckModifiedFiles ();
+			}
+			
+			ProjectDomService.WaitForParseQueue ();
 		}
 
 		void ForceUpdateRec (HashSet<ProjectDom> visited)
 		{
 			if (!visited.Add (this))
 				return;
+			CheckModifiedFiles ();
 			foreach (ProjectDom dom in References)
 				dom.ForceUpdateRec (visited);
-			ForceUpdate ();
 		}
 		
 		public virtual IEnumerable<IType> GetTypes (string fileName)

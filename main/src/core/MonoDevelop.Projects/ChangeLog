@@ -1,3 +1,25 @@
+2009-03-18  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: Make
+	  ForceUpdate add items to the parse queue and block on the
+	  queue, instead of parallel-parsing. Should kill possible
+	  race conditions.
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs: Add
+	  method that blocks until parsing queue is empty.
+
+	* MonoDevelop.Projects.Dom.Serialization/DatabaseProjectDom.cs:
+	* MonoDevelop.Projects.Dom.Serialization/SimpleCodeCompletionDatabase.cs:
+	* MonoDevelop.Projects.Dom.Serialization/ProjectCodeCompletionDatabase.cs:
+	* MonoDevelop.Projects.Dom.Serialization/AssemblyCodeCompletionDatabase.cs:
+	  Track API.
+
+	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
+	  Track API. Add constructor parameter that can be used to
+	  enable special comment events, instead of always
+	  subscribing, so that remote assembly parser process doesn't
+	  touch project DOM service and cause help tree to be loaded.
+
 2009-03-17  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects/DotNetProjectConfiguration.cs:

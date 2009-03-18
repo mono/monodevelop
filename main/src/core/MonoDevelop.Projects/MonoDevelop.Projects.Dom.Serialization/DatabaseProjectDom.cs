@@ -166,11 +166,6 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			return dbProvider.GetClass (database, typeName, null, deepSearchReferences, caseSensitive);
 		}
 
-		public override void ForceUpdate ()
-		{
-			database.UpdateDatabase ();
-		}
-
 		public override string ToString ()
 		{
 			return string.Format("[DatabaseProjectDom: {0}]", System.IO.Path.GetFileName (Database.DataFile));
