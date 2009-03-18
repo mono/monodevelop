@@ -1,3 +1,9 @@
+2009-03-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* VBBindingCompilerServices.cs: Added workaround for bug
+	  484351 - VB projects compile with warning "optioninfer was
+	  not recognized.
+
 2009-03-05  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:

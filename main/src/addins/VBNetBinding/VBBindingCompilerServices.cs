@@ -338,7 +338,11 @@ namespace MonoDevelop.VBNetBinding {
 					error.Line = i;
 				if (int.TryParse (match.Result ("${column}"), out i))
 					error.Column = i;
-								
+				
+				// Workaround for bug #484351. Vbnc incorrectly emits this warning.
+				if (error.ErrorNumber == "VBNC2009" && error.ErrorText != null && error.ErrorText.IndexOf ("optioninfer") != -1)
+					return null;
+				
 				return error;
 			}
 
