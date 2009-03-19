@@ -1,3 +1,9 @@
+2009-03-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/DotNetProject.cs: Fix for bug #486639 -
+	  Configuration Manager creates project configurations with a
+	  bad OutputPath (contains "|").
+
 2009-03-18  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: Make
