@@ -1,5 +1,11 @@
 2009-03-19  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Avoid using
+	  IdeApp.Workbench.ProgressMonitors because it is a gui sync
+	  object, and it's an unnecessary thread transition.
+
+2009-03-19  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui/BackgroundProgressMonitor.cs: Make sure
 	  BackgroundProgressMonitor is fully asynchronous. Should fix
 	  deadlock in the parser service, which uses this progress
