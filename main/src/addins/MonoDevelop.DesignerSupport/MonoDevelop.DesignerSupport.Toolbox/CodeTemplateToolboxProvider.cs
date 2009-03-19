@@ -38,21 +38,22 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		
 		public System.Collections.Generic.IEnumerable<ItemToolboxNode> GetDynamicItems (IToolboxConsumer consumer)
 		{
+			//FIXME: make this work again
+			/*
 			MonoDevelop.Ide.Gui.Content.IExtensibleTextEditor editor 
 				= consumer as MonoDevelop.Ide.Gui.Content.IExtensibleTextEditor;
 			if (editor != null) {
-				CodeTemplateGroup group = CodeTemplateService.GetTemplateGroupPerFilename (editor.Name);
-				if (group != null) {
-					foreach (CodeTemplate ct in group.Templates) {
-						string text = ct.Text.Replace ("|", string.Empty);
-						TextToolboxNode n = new TextToolboxNode (text);
-						n.Description = ct.Description;
-						n.Name = ct.Shortcut;
-						n.Category = category;
-						yield return n;
-					}
+				string mimetype = "";
+				foreach (CodeTemplate ct in CodeTemplateService.GetCodeTemplates (mimetype)) {
+					string text = ct.Code;
+					TextToolboxNode n = new TextToolboxNode (text);
+					n.Description = ct.Description;
+					n.Name = ct.Shortcut;
+					n.Category = category;
+					yield return n;
 				}
-			}
+			}*/
+			yield break;
 		}
 		
 		public event EventHandler ItemsChanged;

@@ -1,3 +1,8 @@
+2009-03-19  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.DesignerSupport.Toolbox/CodeTemplateToolboxProvider.cs:
+	  Fix build.
+
 2009-02-26  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.DesignerSupport.Toolbox/TypeReference.cs:
