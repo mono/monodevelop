@@ -317,7 +317,7 @@ namespace MonoDevelop.CSharpBinding
 						data.SetText (newText);
 					}
 				}
-				CodeTemplateService.AddCompletionDataForExtension (".cs", completionList);
+				CodeTemplateService.AddCompletionDataForMime ("text/x-csharp", completionList);
 			}
 			return col;
 		}

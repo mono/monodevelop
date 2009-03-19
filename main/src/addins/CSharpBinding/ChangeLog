@@ -1,3 +1,10 @@
+2009-03-19  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/NRefactoryResolver.cs:
+	* Gui/CSharpTextEditorCompletion.cs: Track API changes.
+
+	* Gui/CSharpTextEditorIndentation.cs: changed naming.
+
 2009-03-17  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Gui/CSharpTextEditorIndentation.cs: Fix build.

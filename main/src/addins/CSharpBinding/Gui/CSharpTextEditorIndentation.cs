@@ -253,8 +253,10 @@ namespace MonoDevelop.CSharpBinding.Gui
 				{
 					if (Editor.CursorColumn > 2) {
 						int delta = cursor - this.cursorPositionBeforeKeyPress;
-						Editor.DeleteText (cursor - delta, delta);
-						Editor.CursorPosition = cursor - delta;
+						if (delta < 2) {
+							Editor.DeleteText (cursor - delta, delta);
+							Editor.CursorPosition = cursor - delta;
+						}
 					}
 					reIndent = true;
 				}

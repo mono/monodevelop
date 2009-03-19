@@ -1276,7 +1276,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				resolver.AddAccessibleCodeCompletionData (expressionResult.ExpressionContext, result);
 			} else if (expressionResult.ExpressionContext == ExpressionContext.Global) {
 				AddNRefactoryKeywords (result, ICSharpCode.NRefactory.Parser.CSharp.Tokens.GlobalLevel);
-				CodeTemplateService.AddCompletionDataForExtension (".cs", result);
+				CodeTemplateService.AddCompletionDataForMime ("text/x-csharp", result);
 			} else if (expressionResult.ExpressionContext == ExpressionContext.ObjectInitializer) {
 				ExpressionContext exactContext = new NewCSharpExpressionFinder (dom).FindExactContextForObjectInitializer (Editor, resolver.Unit, Document.FileName, resolver.CallingType);
 				if (exactContext is ExpressionContext.TypeExpressionContext) {
@@ -1317,7 +1317,8 @@ namespace MonoDevelop.CSharpBinding.Gui
 					}
 				}
 			} else if (expressionResult.ExpressionContext == ExpressionContext.IdentifierExpected) {
-				expressionResult.Expression = expressionResult.Expression.Trim ();
+				if (!string.IsNullOrEmpty (expressionResult.Expression))
+					expressionResult.Expression = expressionResult.Expression.Trim ();
 				MemberResolveResult resolveResult = resolver.Resolve (expressionResult, cursorLocation) as MemberResolveResult;
 				if (resolveResult != null && resolveResult.ResolvedMember == null && resolveResult.ResolvedType != null) {
 					string name = CSharpAmbience.NetToCSharpTypeName (resolveResult.ResolvedType.FullName);
