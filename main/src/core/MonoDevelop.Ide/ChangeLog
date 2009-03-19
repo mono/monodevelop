@@ -1,3 +1,10 @@
+2009-03-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui/BackgroundProgressMonitor.cs: Make sure
+	  BackgroundProgressMonitor is fully asynchronous. Should fix
+	  deadlock in the parser service, which uses this progress
+	  monitor to notify parsing progress.
+
 2009-03-19  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:

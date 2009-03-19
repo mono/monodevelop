@@ -32,12 +32,12 @@ using System.IO;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Components;
-using MonoDevelop.Core.Gui.ProgressMonitoring;
+using MonoDevelop.Core.ProgressMonitoring;
 using Gtk;
 
 namespace MonoDevelop.Ide.Gui
 {
-	internal class BackgroundProgressMonitor: BaseProgressMonitor
+	internal class BackgroundProgressMonitor: SimpleProgressMonitor
 	{
 		string title;
 		MonoDevelopStatusBar.StatusIcon icon;
@@ -45,27 +45,38 @@ namespace MonoDevelop.Ide.Gui
 		public BackgroundProgressMonitor (string title, string iconName)
 		{
 			this.title = title;
-			Gdk.Pixbuf img = Services.Resources.GetBitmap (iconName, Gtk.IconSize.Menu);
-			icon = IdeApp.Workbench.StatusBar.ShowStatusIcon (img);
-			if (icon == null)
-				LoggingService.LogError ("Icon '" + iconName + "' not found.");
+			Application.Invoke (delegate {
+				Gdk.Pixbuf img = Services.Resources.GetBitmap (iconName, Gtk.IconSize.Menu);
+				icon = IdeApp.Workbench.StatusBar.ShowStatusIcon (img);
+				if (icon == null)
+					LoggingService.LogError ("Icon '" + iconName + "' not found.");
+			});
 		}
 		
 		protected override void OnProgressChanged ()
 		{
 			if (icon != null) {
-				if (UnknownWork)
-					icon.ToolTip = string.Format ("{0}\n{1}", title, CurrentTask);
+				string tip;
+				if (Tracker.UnknownWork)
+					tip = string.Format ("{0}\n{1}", title, Tracker.CurrentTask);
 				else
-					icon.ToolTip = string.Format ("{0} ({1}%)\n{2}", title, (int)(GlobalWork * 100), CurrentTask);
+					tip = string.Format ("{0} ({1}%)\n{2}", title, (int)(Tracker.GlobalWork * 100), Tracker.CurrentTask);
+				
+				Application.Invoke (delegate {
+					icon.ToolTip = tip;
+				});
 			}
 		}
 		
 		public override void Dispose()
 		{
 			base.Dispose ();
-			if (icon != null)
-				icon.Dispose ();
+			Application.Invoke (delegate {
+				if (icon != null) {
+					icon.Dispose ();
+					icon = null;
+				}
+			});
 		}
 	}
 }
