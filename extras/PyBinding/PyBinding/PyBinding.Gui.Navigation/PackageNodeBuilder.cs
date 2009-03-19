@@ -85,10 +85,7 @@ namespace PyBinding.Gui.Navigation
 		                                      object       dataObject)
 		{
 			PackageNode packageNode = dataObject as PackageNode;
-
-			StreamReader reader = new StreamReader (File.OpenRead (packageNode.ProjectFile.Name));
-			
-			PythonParsedDocument parsed = ProjectDomService.GetParserByFileName (packageNode.ProjectFile.Name).Parse (packageNode.ProjectFile.Name, reader) as PythonParsedDocument;
+			PythonParsedDocument parsed = ProjectDomService.ParseFile (null, packageNode.ProjectFile.Name) as PythonParsedDocument;
 
 			if (parsed != null && parsed.Module != null) {
 				foreach (PythonClass pyClass in parsed.Module.Classes)

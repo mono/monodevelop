@@ -37,7 +37,7 @@ namespace PyBinding.Parser
 			this.m_Parser = new PythonParserInternal ();
 		}
 
-		public override ParsedDocument Parse (string fileName, string content)
+		public override ParsedDocument Parse (ProjectDom dom, string fileName, string content)
 		{
 			try {
 				return this.m_Parser.Parse (fileName, content);

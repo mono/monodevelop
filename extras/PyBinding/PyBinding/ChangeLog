@@ -1,3 +1,9 @@
+2009-03-19  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* PyBinding.csproj:
+	* PyBinding.Parser/PythonParser.cs:
+	* PyBinding.Gui.Navigation/PackageNodeBuilder.cs: Track API.
+
 2009-03-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* PyBinding/PythonProject.cs: Changed the way execution
