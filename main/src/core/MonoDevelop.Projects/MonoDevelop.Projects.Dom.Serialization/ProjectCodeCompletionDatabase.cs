@@ -287,6 +287,19 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			if (classInfo.Removed.Count > 0)
 				ProjectDomService.NotifyTypeUpdate (project, fileName, classInfo);
 		}
+		
+		protected internal override void ForceUpdateBROKEN ()
+		{
+			int lastCount;
+			totalUnresolvedCount = int.MaxValue;
 
+			do {
+				// Keep trying updating the db while types are being resolved
+				lastCount = totalUnresolvedCount;
+				totalUnresolvedCount = 0;
+				base.ForceUpdateBROKEN ();
+			}
+			while (totalUnresolvedCount != 0 && totalUnresolvedCount < lastCount);
+		}
 	}
 }

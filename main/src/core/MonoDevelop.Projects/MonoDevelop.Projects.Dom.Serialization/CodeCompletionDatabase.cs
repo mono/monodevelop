@@ -150,6 +150,20 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			dataFile = file;
 		}
 		
+		protected internal virtual void ForceUpdateBROKEN ()
+		{
+			ArrayList list = GetModifiedFileEntries ();
+			foreach (FileEntry file in list) {
+				ParseFile (file.FileName, null);
+				try {
+					FileInfo fi = new FileInfo (file.FileName);
+					file.LastParseTime = fi.LastWriteTime;
+				} catch {
+					// Ignore
+				}
+			}
+		}
+		
 		public virtual void Read ()
 		{
 			if (!File.Exists (dataFile)) return;

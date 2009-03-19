@@ -1,3 +1,12 @@
+2009-03-19  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs:
+	* MonoDevelop.Projects.Dom.Serialization/DatabaseProjectDom.cs:
+	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
+	* MonoDevelop.Projects.Dom.Serialization/ProjectCodeCompletionDatabase.cs:
+	  Restore the old ForceUpdate behaviour for the parameterless
+	  overload, since stetic sort of depends on it.
+
 2009-03-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/SolutionEntityItem.cs:

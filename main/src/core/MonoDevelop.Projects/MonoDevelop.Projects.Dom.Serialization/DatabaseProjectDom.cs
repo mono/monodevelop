@@ -170,6 +170,10 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		{
 			return string.Format("[DatabaseProjectDom: {0}]", System.IO.Path.GetFileName (Database.DataFile));
 		}
-
+		
+		protected override void ForceUpdateBROKEN ()
+		{
+			database.ForceUpdateBROKEN ();
+		}
 	}
 }

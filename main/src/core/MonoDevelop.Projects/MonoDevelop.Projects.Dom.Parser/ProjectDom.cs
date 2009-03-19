@@ -72,7 +72,25 @@ namespace MonoDevelop.Projects.Dom.Parser
 		// and this method will ensure that everything is up-to-date.
 		public void ForceUpdate ()
 		{
-			ForceUpdate (false);
+			//HACK: stetic depends on the old, broken behaviour, so this overload of ForceUpdate uses
+			//the old behaviour
+			ForceUpdateBROKEN ();
+			//ForceUpdate (false);
+		}
+		
+		protected virtual void ForceUpdateBROKEN ()
+		{
+			HashSet<ProjectDom> visited = new HashSet<ProjectDom> ();
+			ForceUpdateRecBROKEN (visited);
+		}
+
+		void ForceUpdateRecBROKEN (HashSet<ProjectDom> visited)
+		{
+			if (!visited.Add (this))
+				return;
+			foreach (ProjectDom dom in References)
+				dom.ForceUpdateRecBROKEN (visited);
+			ForceUpdateBROKEN ();
 		}
 		
 		public void ForceUpdate (bool updateReferences)
