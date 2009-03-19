@@ -118,6 +118,7 @@
     <Compile Include="Mono.TextEditor\LinkEventArgs.cs" />
     <Compile Include="Mono.TextEditor\SearchRequest.cs" />
     <Compile Include="Mono.TextEditor\ITextEditorOptions.cs" />
+    <Compile Include="Mono.TextEditor\TextLinkEditMode.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

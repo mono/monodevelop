@@ -77,6 +77,7 @@ FILES =  \
 	Mono.TextEditor/TextEditor.cs \
 	Mono.TextEditor/TextEditorData.cs \
 	Mono.TextEditor/TextEditorOptions.cs \
+	Mono.TextEditor/TextLinkEditMode.cs \
 	Mono.TextEditor/TextMarker.cs \
 	Mono.TextEditor/TextViewMargin.cs 
 	Mono.TextEditor.Highlighting/Match.cs \
