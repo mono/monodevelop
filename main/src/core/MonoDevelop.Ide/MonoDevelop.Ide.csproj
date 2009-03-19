@@ -225,6 +225,9 @@
     <EmbeddedResource Include="icons\AboutImageSep.png">
       <LogicalName>AboutImageSep.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.CodeTemplates\MonoDevelop-templates.xml">
+      <LogicalName>MonoDevelop-templates.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
@@ -253,7 +256,6 @@
     <Compile Include="MonoDevelop.Ide.ExternalTools\ExternalTool.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\IncludeFilesDialog.cs" />
     <Compile Include="MonoDevelop.Ide.CodeTemplates\CodeTemplate.cs" />
-    <Compile Include="MonoDevelop.Ide.CodeTemplates\CodeTemplateGroup.cs" />
     <Compile Include="MonoDevelop.Ide.CodeTemplates\CodeTemplateService.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\FileDescriptionTemplate.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\FileTemplate.cs" />
@@ -416,9 +418,6 @@
     <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.Dialogs.EncapsulateFieldDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Content\TextEditorProperties.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Content\IndentStyle.cs" />
-    <Compile Include="MonoDevelop.Ide.CodeTemplates\EditTemplateDialog.cs" />
-    <Compile Include="MonoDevelop.Ide.CodeTemplates\CodeTemplatePanel.cs" />
-    <Compile Include="MonoDevelop.Ide.CodeTemplates\EditTemplateGroupDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Pads\ILocationListPad.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Pads\InternalLogPad.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\InternalLog.cs" />
@@ -434,7 +433,6 @@
     <Compile Include="gtk-gui\MonoDevelop.Ide.SelectEncodingsDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.OptionPanels.TasksPanelWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Ide.CodeTemplates.CodeTemplatePanelWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.OptionPanels.AddInsPanelWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.Dialogs.AddinLoadErrorDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.Dialogs.SelectReferenceDialog.cs" />
@@ -543,6 +541,15 @@
     <Compile Include="gtk-gui\MonoDevelop.Ide.CodeFormatting.AddPolicyDialog.cs" />
     <Compile Include="MonoDevelop.Ide.CodeFormatting\OverrideTextSettingsPolicyWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.CodeFormatting.OverrideTextSettingsPolicyWidget.cs" />
+    <Compile Include="MonoDevelop.Ide.CodeTemplates\CodeTemplatePanel.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Ide.CodeTemplates.CodeTemplatePanelWidget.cs" />
+    <Compile Include="MonoDevelop.Ide.CodeTemplates\EditTemplateDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Ide.CodeTemplates.EditTemplateDialog.cs" />
+    <Compile Include="MonoDevelop.Ide.CodeTemplates\EditVariablesDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Ide.CodeTemplates.EditVariablesDialog.cs" />
+    <Compile Include="MonoDevelop.Ide.CodeTemplates\CodeTemplateVariable.cs" />
+    <Compile Include="MonoDevelop.Ide.CodeTemplates\ExpansionObject.cs" />
+    <Compile Include="MonoDevelop.Ide.CodeTemplates\CodeTemplateCompletionData.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

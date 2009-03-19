@@ -27,45 +27,61 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Xml;
+using MonoDevelop.Core;
+using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Parser;
 
 namespace MonoDevelop.Ide.CodeTemplates
 {
+	[Flags]
+	public enum CodeTemplateType {
+		Unknown       = 0,
+		Expansion     = 1,
+		SurroundsWith = 2
+	}
+	
 	public class CodeTemplate
 	{
-		string shortcut;
-		string description;
-		string text;
+		public string Group { 
+			get; 
+			set; 
+		}
 		
 		public string Shortcut {
-			get {
-				return shortcut;
-			}
-			set {
-				Debug.Assert (!String.IsNullOrEmpty (value));
-				shortcut = value;
-			}
+			get;
+			set;
+		}
+		
+		public CodeTemplateType CodeTemplateType {
+			get;
+			set;
+		}
+		
+		public string MimeType {
+			get;
+			set;
 		}
 		
 		public string Description {
-			get {
-				return description;
-			}
-			set {
-				Debug.Assert (!String.IsNullOrEmpty (value));
-				description = value;
-			}
+			get;
+			set;
 		}
 		
-		public string Text {
+		public string Code {
+			get;
+			set;
+		}
+		
+		Dictionary<string, CodeTemplateVariable> variableDecarations = new Dictionary<string, CodeTemplateVariable> ();
+		
+		public IEnumerable<CodeTemplateVariable> Variables {
 			get {
-				return text;
-			}
-			set {
-				Debug.Assert (!String.IsNullOrEmpty (value));
-				text = value;
+				return variableDecarations.Values;
 			}
 		}
 		
@@ -73,16 +89,9 @@ namespace MonoDevelop.Ide.CodeTemplates
 		{
 		}
 		
-		public CodeTemplate (string shortcut, string description, string text)
-		{
-			this.shortcut = shortcut;
-			this.description = description;
-			this.text = text;
-		}
-		
 		public override string ToString ()
 		{
-			return String.Format ("[CodeTemplate: Shortcut={0}, Description={1}, Text={2}]", this.shortcut, this.description, this.text);
+			return string.Format("[CodeTemplate: Group={0}, Shortcut={1}, CodeTemplateType={2}, MimeType={3}, Description={4}, Code={5}]", Group, Shortcut, CodeTemplateType, MimeType, Description, Code);
 		}
 		
 		static int FindPrevWordStart (MonoDevelop.Ide.Gui.TextEditor editor, int offset)
@@ -106,6 +115,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			editor.DeleteText (start, offset - start);
 			return start;
 		}
+		
 		static string GetLeadingWhiteSpace (MonoDevelop.Ide.Gui.TextEditor editor, int lineNr)
 		{
 			string lineText = editor.GetLineText (lineNr);
@@ -115,52 +125,193 @@ namespace MonoDevelop.Ide.CodeTemplates
 			return index > 0 ? lineText.Substring (0, index) : "";
 		}
 		
-		public void InsertTemplate (MonoDevelop.Ide.Gui.TextEditor editor)
+		static Regex variableRegEx = new Regex ("\\$([^$]*)\\$", RegexOptions.Compiled);
+		
+		public List<string> ParseVariables ()
 		{
-			int offset = editor.CursorPosition;
-			string word = GetWordBeforeCaret (editor).Trim ();
-			if (word.Length > 0)
-				offset = DeleteWordBeforeCaret (editor);
-			
-			string leadingWhiteSpace = GetLeadingWhiteSpace (editor, editor.CursorLine);
-
-			int finalCaretOffset = offset + Text.Length;
-			StringBuilder builder = new StringBuilder ();
-			for (int i = 0; i < Text.Length; ++i) {
-				switch (Text[i]) {
-				case '|':
-					finalCaretOffset = i + offset;
-					break;
-				case '\r':
-					break;
-				case '\n':
-					builder.Append (Environment.NewLine);
-					builder.Append (leadingWhiteSpace);
-					break;
-				default:
-					builder.Append (Text[i]);
-					break;
-				}
+			List<string> result = new List<string> ();
+			foreach (Match match in variableRegEx.Matches (Code)) {
+				string name = match.Groups[0].Captures[0].Value;
+				if (!result.Contains (name))
+					result.Add (name);
+			}
+			return result;
+		}
+		
+		public class TemplateResult
+		{
+			public string Code {
+				get;
+				set;
 			}
 			
-//			if (endLine > beginLine) {
-//				IndentLines (beginLine+1, endLine, leadingWhiteSpace);
-//			}
-			editor.InsertText (offset, builder.ToString ());
-			editor.CursorPosition = finalCaretOffset;
-		}		
+			public int CaretEndOffset {
+				get;
+				set;
+			}
+			
+			public TemplateResult ()
+			{
+				Code = null;
+				CaretEndOffset = -1;
+			}
+		}
+		
+		public TemplateResult FillVariables (TemplateContext context)
+		{
+			ExpansionObject expansion = CodeTemplateService.GetExpansionObject (this);
+			TemplateResult result = new TemplateResult ();
+			StringBuilder sb = new StringBuilder ();
+			int lastOffset = 0;
+			string code = context.TemplateCode;
+			foreach (Match match in variableRegEx.Matches (code)) {
+				string name = match.Groups[1].Value;
+				sb.Append (code.Substring (lastOffset, match.Index - lastOffset));
+				lastOffset = match.Index + match.Length;
+				if (name == "end") {
+					result.CaretEndOffset = sb.Length;
+				} else if (name == "selected") {
+					if (!string.IsNullOrEmpty (context.SelectedText))
+						sb.Append (context.SelectedText);
+				}
+				if (!variableDecarations.ContainsKey (name))
+					continue;
+				if (!string.IsNullOrEmpty (variableDecarations[name].Function)) {
+					string functionResult = expansion.RunFunction (context, variableDecarations[name].Function);
+					sb.Append (functionResult ?? variableDecarations[name].Default);
+				} else {
+					sb.Append (variableDecarations[name].Default);
+				}
+			}
+			sb.Append (code.Substring (lastOffset, code.Length - lastOffset));
+			result.Code = sb.ToString ();
+			return result;
+		}
+		
+		public string IndentCode (string code, string indent)
+		{
+			StringBuilder result = new StringBuilder ();
+			for (int i = 0; i < code.Length; i++) {
+				result.Append (code[i]);
+				if (code[i] == '\n')
+					result.Append (indent);
+			}
+			return result.ToString ();
+		}
+		
+		// todo: better code formatting !!!
+		string GetIndent (MonoDevelop.Ide.Gui.TextEditor d, int lineNumber, int terminateIndex)
+		{
+			string lineText = d.GetLineText (lineNumber);
+			if(terminateIndex > 0)
+				lineText = lineText.Substring(0, terminateIndex);
+			
+			StringBuilder whitespaces = new StringBuilder ();
+			
+			foreach (char ch in lineText) {
+				if (!char.IsWhiteSpace (ch))
+					break;
+				whitespaces.Append (ch);
+			}
+			
+			return whitespaces.ToString ();
+		}
+		
+		public void InsertTemplate (ProjectDom dom, ParsedDocument doc, MonoDevelop.Ide.Gui.TextEditor editor)
+		{
+			int offset = editor.CursorPosition;
+			int line, col;
+			editor.GetLineColumnFromPosition (offset, out line, out col);
+			string leadingWhiteSpace = GetLeadingWhiteSpace (editor, editor.CursorLine);
+			TemplateContext context = new TemplateContext {
+				ProjectDom     = dom,
+				ParsedDocument = doc,
+				InsertPosition = new DomLocation (line, col),
+				SelectedText   = editor.SelectedText,
+				TemplateCode   = IndentCode (Code, GetIndent (editor, line, 0))
+			};
+			
+			if (!string.IsNullOrEmpty (editor.SelectedText)) {
+				int selectionLength = editor.SelectionEndPosition - editor.SelectionStartPosition;
+				if (editor.SelectionStartPosition < offset) {
+					offset -= selectionLength;
+				}
+				editor.DeleteText (editor.SelectionStartPosition, selectionLength);
+			} else {
+				string word = GetWordBeforeCaret (editor).Trim ();
+				if (word.Length > 0)
+					offset = DeleteWordBeforeCaret (editor);
+			}
+			
+			TemplateResult template = FillVariables (context);
+			editor.InsertText (offset, template.Code);
+			
+			if (template.CaretEndOffset >= 0) {
+				editor.CursorPosition = offset + template.CaretEndOffset; 
+			} else {
+				editor.CursorPosition = offset + template.Code.Length; 
+			}
+		}
 
 #region I/O
-		public const string Node          = "CodeTemplate";
-		const string shortcutAttribute    = "template";
+		public const string Node        = "CodeTemplate";
+		const string HeaderNode          = "Header";
+		const string GroupNode           = "_Group";
+		const string MimeNode            = "MimeType";
+		const string ShortcutNode        = "Shortcut";
+		const string DescriptionNode     = "_Description";
+		const string TemplateTypeNode    = "TemplateType";
+		
+		const string VariablesNode       = "Variables";
+		
+		
+		const string CodeNode            = "Code";
+			
+		const string versionAttribute    = "version";
+		const string version             = "2.0";
+		
 		const string descriptionAttribute = "description";
 		
 		public void Write (XmlWriter writer)
 		{
 			writer.WriteStartElement (Node);
-			writer.WriteAttributeString (shortcutAttribute, this.shortcut);
-			writer.WriteAttributeString (descriptionAttribute, this.description);
-			writer.WriteString (this.text);
+			writer.WriteAttributeString (versionAttribute, version);
+			
+			writer.WriteStartElement (HeaderNode);
+			
+			writer.WriteStartElement (GroupNode);
+			writer.WriteString (Group);
+			writer.WriteEndElement ();
+			
+			writer.WriteStartElement (MimeNode);
+			writer.WriteString (MimeType);
+			writer.WriteEndElement ();
+			
+			writer.WriteStartElement (ShortcutNode);
+			writer.WriteString (Shortcut);
+			writer.WriteEndElement ();
+			
+			writer.WriteStartElement (DescriptionNode);
+			writer.WriteString (Description);
+			writer.WriteEndElement ();
+			
+			writer.WriteStartElement (TemplateTypeNode);
+			writer.WriteString (CodeTemplateType.ToString ());
+			writer.WriteEndElement ();
+			
+			writer.WriteEndElement (); // HeaderNode
+			
+			writer.WriteStartElement (VariablesNode);
+			foreach (CodeTemplateVariable var in variableDecarations.Values) {
+				var.Write (writer);
+			}
+			
+			writer.WriteEndElement (); // VariablesNode
+			
+			writer.WriteStartElement (CodeNode);
+			writer.WriteCData (Code);
+			writer.WriteEndElement (); // CodeNode
+			
 			writer.WriteEndElement (); // Node
 		}
 		
@@ -169,9 +320,51 @@ namespace MonoDevelop.Ide.CodeTemplates
 			Debug.Assert (reader.LocalName == Node);
 			
 			CodeTemplate result = new CodeTemplate ();
-			result.shortcut    = reader.GetAttribute (shortcutAttribute);
-			result.description = reader.GetAttribute (descriptionAttribute);
-			result.text        = reader.ReadString ();
+			
+			XmlReadHelper.ReadList (reader, Node, delegate () {
+				//Console.WriteLine (reader.LocalName);
+				switch (reader.LocalName) {
+				case HeaderNode:
+					XmlReadHelper.ReadList (reader, HeaderNode, delegate () {
+						switch (reader.LocalName) {
+						case GroupNode:
+							result.Group = reader.ReadElementContentAsString ();
+							return true;
+						case MimeNode:
+							result.MimeType = reader.ReadElementContentAsString ();
+							return true;
+						case ShortcutNode:
+							result.Shortcut = reader.ReadElementContentAsString ();
+							return true;
+						case DescriptionNode:
+							result.Description = reader.ReadElementContentAsString ();
+							return true;
+						case TemplateTypeNode:
+							result.CodeTemplateType = (CodeTemplateType)Enum.Parse (typeof (CodeTemplateType), reader.ReadElementContentAsString ());
+							return true;
+						}
+						return false;
+					});
+					return true;
+				case VariablesNode:
+					XmlReadHelper.ReadList (reader, VariablesNode, delegate () {
+						//Console.WriteLine ("var:" + reader.LocalName);
+						switch (reader.LocalName) {
+						case CodeTemplateVariable.Node:
+							CodeTemplateVariable var = CodeTemplateVariable.Read (reader);
+							result.variableDecarations [var.Name] = var;
+							return true;
+						}
+						return false;
+					});
+					return true;
+				case CodeNode:
+					result.Code = reader.ReadElementContentAsString ();
+					return true;
+				}
+				return false;
+			});
+			//Console.WriteLine ("result:" + result);
 			return result;
 		}
 #endregion

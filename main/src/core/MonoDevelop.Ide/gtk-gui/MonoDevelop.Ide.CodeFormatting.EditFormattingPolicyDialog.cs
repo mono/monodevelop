@@ -107,7 +107,7 @@ namespace MonoDevelop.Ide.CodeFormatting {
             this.hpaned1 = new Gtk.HPaned();
             this.hpaned1.CanFocus = true;
             this.hpaned1.Name = "hpaned1";
-            this.hpaned1.Position = 266;
+            this.hpaned1.Position = 264;
             // Container child hpaned1.Gtk.Paned+PanedChild
             this.vbox3 = new Gtk.VBox();
             this.vbox3.Name = "vbox3";

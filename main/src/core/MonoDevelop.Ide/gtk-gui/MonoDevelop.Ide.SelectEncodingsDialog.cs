@@ -65,6 +65,7 @@ namespace MonoDevelop.Ide {
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog-vbox5";
             w1.Spacing = 6;
+            w1.BorderWidth = ((uint)(2));
             // Container child dialog-vbox5.Gtk.Box+BoxChild
             this.table5 = new Gtk.Table(((uint)(2)), ((uint)(4)), false);
             this.table5.Name = "table5";
@@ -244,8 +245,8 @@ namespace MonoDevelop.Ide {
             // Internal child MonoDevelop.Ide.SelectEncodingsDialog.ActionArea
             Gtk.HButtonBox w35 = this.ActionArea;
             w35.Name = "dialog-action_area5";
-            w35.Spacing = 10;
-            w35.BorderWidth = ((uint)(6));
+            w35.Spacing = 6;
+            w35.BorderWidth = ((uint)(5));
             w35.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child dialog-action_area5.Gtk.ButtonBox+ButtonBoxChild
             this.cancelbutton1 = new Gtk.Button();

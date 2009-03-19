@@ -13,39 +13,33 @@ namespace MonoDevelop.Ide.CodeTemplates {
     
     internal partial class CodeTemplatePanelWidget {
         
-        private Gtk.VBox vbox13;
+        private Gtk.VPaned vpaned1;
         
-        private Gtk.Table table2;
+        private Gtk.HBox hbox1;
         
-        private Gtk.Label extensionLabel;
+        private Gtk.ScrolledWindow GtkScrolledWindow;
         
-        private Gtk.ComboBox groupCombo;
+        private Gtk.TreeView treeviewCodeTemplates;
         
-        private Gtk.HBox hbox8;
+        private Gtk.VBox vbox2;
         
-        private Gtk.Button addGroupButton;
+        private Gtk.Button buttonAdd;
         
-        private Gtk.Button editGroupButton;
+        private Gtk.Button buttonEdit;
         
-        private Gtk.Button removeGroupButton;
+        private Gtk.Button buttonRemove;
         
-        private Gtk.HBox hbox9;
+        private Gtk.VBox vbox1;
         
-        private Gtk.ScrolledWindow scrolledwindow3;
+        private Gtk.HBox hbox2;
         
-        private Gtk.TreeView templateListView;
+        private Gtk.Label label3;
         
-        private Gtk.VBox vbox14;
+        private Gtk.Fixed fixed1;
         
-        private Gtk.Button addButton;
+        private Gtk.CheckButton checkbuttonWhiteSpaces;
         
-        private Gtk.Button editButton;
-        
-        private Gtk.Button removeButton;
-        
-        private Gtk.ScrolledWindow scrolledwindow4;
-        
-        private Gtk.TextView templateTextView;
+        private Gtk.ScrolledWindow scrolledwindow1;
         
         protected virtual void Build() {
             Stetic.Gui.Initialize(this);
@@ -53,153 +47,129 @@ namespace MonoDevelop.Ide.CodeTemplates {
             Stetic.BinContainer.Attach(this);
             this.Name = "MonoDevelop.Ide.CodeTemplates.CodeTemplatePanelWidget";
             // Container child MonoDevelop.Ide.CodeTemplates.CodeTemplatePanelWidget.Gtk.Container+ContainerChild
-            this.vbox13 = new Gtk.VBox();
-            this.vbox13.Name = "vbox13";
-            this.vbox13.Spacing = 6;
-            // Container child vbox13.Gtk.Box+BoxChild
-            this.table2 = new Gtk.Table(((uint)(2)), ((uint)(2)), false);
-            this.table2.Name = "table2";
-            this.table2.RowSpacing = ((uint)(6));
-            this.table2.ColumnSpacing = ((uint)(6));
-            // Container child table2.Gtk.Table+TableChild
-            this.extensionLabel = new Gtk.Label();
-            this.extensionLabel.Name = "extensionLabel";
-            this.extensionLabel.Xalign = 0F;
-            this.extensionLabel.LabelProp = Mono.Unix.Catalog.GetString("Extension");
-            this.extensionLabel.UseUnderline = true;
-            this.table2.Add(this.extensionLabel);
-            Gtk.Table.TableChild w1 = ((Gtk.Table.TableChild)(this.table2[this.extensionLabel]));
-            w1.XOptions = ((Gtk.AttachOptions)(4));
-            w1.YOptions = ((Gtk.AttachOptions)(0));
-            // Container child table2.Gtk.Table+TableChild
-            this.groupCombo = new Gtk.ComboBox();
-            this.groupCombo.Name = "groupCombo";
-            this.table2.Add(this.groupCombo);
-            Gtk.Table.TableChild w2 = ((Gtk.Table.TableChild)(this.table2[this.groupCombo]));
-            w2.LeftAttach = ((uint)(1));
-            w2.RightAttach = ((uint)(2));
-            w2.XOptions = ((Gtk.AttachOptions)(4));
-            w2.YOptions = ((Gtk.AttachOptions)(4));
-            // Container child table2.Gtk.Table+TableChild
-            this.hbox8 = new Gtk.HBox();
-            this.hbox8.Name = "hbox8";
-            this.hbox8.Spacing = 6;
-            // Container child hbox8.Gtk.Box+BoxChild
-            this.addGroupButton = new Gtk.Button();
-            this.addGroupButton.Name = "addGroupButton";
-            this.addGroupButton.UseUnderline = true;
-            this.addGroupButton.Label = Mono.Unix.Catalog.GetString("Add Group");
-            this.hbox8.Add(this.addGroupButton);
-            Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.hbox8[this.addGroupButton]));
+            this.vpaned1 = new Gtk.VPaned();
+            this.vpaned1.CanFocus = true;
+            this.vpaned1.Name = "vpaned1";
+            this.vpaned1.Position = 127;
+            // Container child vpaned1.Gtk.Paned+PanedChild
+            this.hbox1 = new Gtk.HBox();
+            this.hbox1.Name = "hbox1";
+            this.hbox1.Spacing = 6;
+            // Container child hbox1.Gtk.Box+BoxChild
+            this.GtkScrolledWindow = new Gtk.ScrolledWindow();
+            this.GtkScrolledWindow.Name = "GtkScrolledWindow";
+            this.GtkScrolledWindow.ShadowType = ((Gtk.ShadowType)(1));
+            // Container child GtkScrolledWindow.Gtk.Container+ContainerChild
+            this.treeviewCodeTemplates = new Gtk.TreeView();
+            this.treeviewCodeTemplates.CanFocus = true;
+            this.treeviewCodeTemplates.Name = "treeviewCodeTemplates";
+            this.treeviewCodeTemplates.HeadersVisible = false;
+            this.GtkScrolledWindow.Add(this.treeviewCodeTemplates);
+            this.hbox1.Add(this.GtkScrolledWindow);
+            Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.hbox1[this.GtkScrolledWindow]));
+            w2.Position = 0;
+            // Container child hbox1.Gtk.Box+BoxChild
+            this.vbox2 = new Gtk.VBox();
+            this.vbox2.Name = "vbox2";
+            this.vbox2.Spacing = 6;
+            // Container child vbox2.Gtk.Box+BoxChild
+            this.buttonAdd = new Gtk.Button();
+            this.buttonAdd.CanFocus = true;
+            this.buttonAdd.Name = "buttonAdd";
+            this.buttonAdd.UseStock = true;
+            this.buttonAdd.UseUnderline = true;
+            this.buttonAdd.Label = "gtk-add";
+            this.vbox2.Add(this.buttonAdd);
+            Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.vbox2[this.buttonAdd]));
             w3.Position = 0;
             w3.Expand = false;
             w3.Fill = false;
-            // Container child hbox8.Gtk.Box+BoxChild
-            this.editGroupButton = new Gtk.Button();
-            this.editGroupButton.Name = "editGroupButton";
-            this.editGroupButton.UseUnderline = true;
-            this.editGroupButton.Label = Mono.Unix.Catalog.GetString("Edit Group");
-            this.hbox8.Add(this.editGroupButton);
-            Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(this.hbox8[this.editGroupButton]));
+            // Container child vbox2.Gtk.Box+BoxChild
+            this.buttonEdit = new Gtk.Button();
+            this.buttonEdit.CanFocus = true;
+            this.buttonEdit.Name = "buttonEdit";
+            this.buttonEdit.UseStock = true;
+            this.buttonEdit.UseUnderline = true;
+            this.buttonEdit.Label = "gtk-edit";
+            this.vbox2.Add(this.buttonEdit);
+            Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(this.vbox2[this.buttonEdit]));
             w4.Position = 1;
             w4.Expand = false;
             w4.Fill = false;
-            // Container child hbox8.Gtk.Box+BoxChild
-            this.removeGroupButton = new Gtk.Button();
-            this.removeGroupButton.Name = "removeGroupButton";
-            this.removeGroupButton.UseUnderline = true;
-            this.removeGroupButton.Label = Mono.Unix.Catalog.GetString("Remove Group");
-            this.hbox8.Add(this.removeGroupButton);
-            Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.hbox8[this.removeGroupButton]));
+            // Container child vbox2.Gtk.Box+BoxChild
+            this.buttonRemove = new Gtk.Button();
+            this.buttonRemove.CanFocus = true;
+            this.buttonRemove.Name = "buttonRemove";
+            this.buttonRemove.UseStock = true;
+            this.buttonRemove.UseUnderline = true;
+            this.buttonRemove.Label = "gtk-remove";
+            this.vbox2.Add(this.buttonRemove);
+            Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.vbox2[this.buttonRemove]));
             w5.Position = 2;
             w5.Expand = false;
             w5.Fill = false;
-            this.table2.Add(this.hbox8);
-            Gtk.Table.TableChild w6 = ((Gtk.Table.TableChild)(this.table2[this.hbox8]));
-            w6.TopAttach = ((uint)(1));
-            w6.BottomAttach = ((uint)(2));
-            w6.LeftAttach = ((uint)(1));
-            w6.RightAttach = ((uint)(2));
-            w6.XOptions = ((Gtk.AttachOptions)(4));
-            this.vbox13.Add(this.table2);
-            Gtk.Box.BoxChild w7 = ((Gtk.Box.BoxChild)(this.vbox13[this.table2]));
-            w7.Position = 0;
-            w7.Expand = false;
-            // Container child vbox13.Gtk.Box+BoxChild
-            this.hbox9 = new Gtk.HBox();
-            this.hbox9.Name = "hbox9";
-            this.hbox9.Spacing = 6;
-            // Container child hbox9.Gtk.Box+BoxChild
-            this.scrolledwindow3 = new Gtk.ScrolledWindow();
-            this.scrolledwindow3.Name = "scrolledwindow3";
-            this.scrolledwindow3.ShadowType = ((Gtk.ShadowType)(1));
-            // Container child scrolledwindow3.Gtk.Container+ContainerChild
-            this.templateListView = new Gtk.TreeView();
-            this.templateListView.Name = "templateListView";
-            this.scrolledwindow3.Add(this.templateListView);
-            this.hbox9.Add(this.scrolledwindow3);
-            Gtk.Box.BoxChild w9 = ((Gtk.Box.BoxChild)(this.hbox9[this.scrolledwindow3]));
-            w9.Position = 0;
-            // Container child hbox9.Gtk.Box+BoxChild
-            this.vbox14 = new Gtk.VBox();
-            this.vbox14.Name = "vbox14";
-            this.vbox14.Spacing = 6;
-            // Container child vbox14.Gtk.Box+BoxChild
-            this.addButton = new Gtk.Button();
-            this.addButton.Name = "addButton";
-            this.addButton.UseStock = true;
-            this.addButton.UseUnderline = true;
-            this.addButton.Label = "gtk-add";
-            this.vbox14.Add(this.addButton);
-            Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(this.vbox14[this.addButton]));
-            w10.Position = 0;
+            this.hbox1.Add(this.vbox2);
+            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.hbox1[this.vbox2]));
+            w6.Position = 1;
+            w6.Expand = false;
+            w6.Fill = false;
+            this.vpaned1.Add(this.hbox1);
+            Gtk.Paned.PanedChild w7 = ((Gtk.Paned.PanedChild)(this.vpaned1[this.hbox1]));
+            w7.Resize = false;
+            // Container child vpaned1.Gtk.Paned+PanedChild
+            this.vbox1 = new Gtk.VBox();
+            this.vbox1.Name = "vbox1";
+            this.vbox1.Spacing = 6;
+            // Container child vbox1.Gtk.Box+BoxChild
+            this.hbox2 = new Gtk.HBox();
+            this.hbox2.Name = "hbox2";
+            this.hbox2.Spacing = 6;
+            // Container child hbox2.Gtk.Box+BoxChild
+            this.label3 = new Gtk.Label();
+            this.label3.Name = "label3";
+            this.label3.LabelProp = Mono.Unix.Catalog.GetString("Preview:");
+            this.hbox2.Add(this.label3);
+            Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.hbox2[this.label3]));
+            w8.Position = 0;
+            w8.Expand = false;
+            w8.Fill = false;
+            // Container child hbox2.Gtk.Box+BoxChild
+            this.fixed1 = new Gtk.Fixed();
+            this.fixed1.Name = "fixed1";
+            this.fixed1.HasWindow = false;
+            this.hbox2.Add(this.fixed1);
+            Gtk.Box.BoxChild w9 = ((Gtk.Box.BoxChild)(this.hbox2[this.fixed1]));
+            w9.Position = 1;
+            // Container child hbox2.Gtk.Box+BoxChild
+            this.checkbuttonWhiteSpaces = new Gtk.CheckButton();
+            this.checkbuttonWhiteSpaces.CanFocus = true;
+            this.checkbuttonWhiteSpaces.Name = "checkbuttonWhiteSpaces";
+            this.checkbuttonWhiteSpaces.Label = Mono.Unix.Catalog.GetString("S_how whitespaces");
+            this.checkbuttonWhiteSpaces.DrawIndicator = true;
+            this.checkbuttonWhiteSpaces.UseUnderline = true;
+            this.hbox2.Add(this.checkbuttonWhiteSpaces);
+            Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(this.hbox2[this.checkbuttonWhiteSpaces]));
+            w10.Position = 2;
             w10.Expand = false;
-            w10.Fill = false;
-            // Container child vbox14.Gtk.Box+BoxChild
-            this.editButton = new Gtk.Button();
-            this.editButton.Name = "editButton";
-            this.editButton.UseStock = true;
-            this.editButton.UseUnderline = true;
-            this.editButton.Label = "gtk-edit";
-            this.vbox14.Add(this.editButton);
-            Gtk.Box.BoxChild w11 = ((Gtk.Box.BoxChild)(this.vbox14[this.editButton]));
-            w11.Position = 1;
+            this.vbox1.Add(this.hbox2);
+            Gtk.Box.BoxChild w11 = ((Gtk.Box.BoxChild)(this.vbox1[this.hbox2]));
+            w11.Position = 0;
             w11.Expand = false;
             w11.Fill = false;
-            // Container child vbox14.Gtk.Box+BoxChild
-            this.removeButton = new Gtk.Button();
-            this.removeButton.Name = "removeButton";
-            this.removeButton.UseStock = true;
-            this.removeButton.UseUnderline = true;
-            this.removeButton.Label = "gtk-remove";
-            this.vbox14.Add(this.removeButton);
-            Gtk.Box.BoxChild w12 = ((Gtk.Box.BoxChild)(this.vbox14[this.removeButton]));
-            w12.Position = 2;
-            w12.Expand = false;
-            w12.Fill = false;
-            this.hbox9.Add(this.vbox14);
-            Gtk.Box.BoxChild w13 = ((Gtk.Box.BoxChild)(this.hbox9[this.vbox14]));
-            w13.Position = 1;
-            w13.Expand = false;
-            this.vbox13.Add(this.hbox9);
-            Gtk.Box.BoxChild w14 = ((Gtk.Box.BoxChild)(this.vbox13[this.hbox9]));
-            w14.Position = 1;
-            // Container child vbox13.Gtk.Box+BoxChild
-            this.scrolledwindow4 = new Gtk.ScrolledWindow();
-            this.scrolledwindow4.Name = "scrolledwindow4";
-            this.scrolledwindow4.ShadowType = ((Gtk.ShadowType)(1));
-            // Container child scrolledwindow4.Gtk.Container+ContainerChild
-            this.templateTextView = new Gtk.TextView();
-            this.templateTextView.Name = "templateTextView";
-            this.scrolledwindow4.Add(this.templateTextView);
-            this.vbox13.Add(this.scrolledwindow4);
-            Gtk.Box.BoxChild w16 = ((Gtk.Box.BoxChild)(this.vbox13[this.scrolledwindow4]));
-            w16.Position = 2;
-            this.Add(this.vbox13);
+            // Container child vbox1.Gtk.Box+BoxChild
+            this.scrolledwindow1 = new Gtk.ScrolledWindow();
+            this.scrolledwindow1.CanFocus = true;
+            this.scrolledwindow1.Name = "scrolledwindow1";
+            this.scrolledwindow1.ShadowType = ((Gtk.ShadowType)(1));
+            this.vbox1.Add(this.scrolledwindow1);
+            Gtk.Box.BoxChild w12 = ((Gtk.Box.BoxChild)(this.vbox1[this.scrolledwindow1]));
+            w12.Position = 1;
+            this.vpaned1.Add(this.vbox1);
+            this.Add(this.vpaned1);
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
-            this.Show();
+            this.Hide();
         }
     }
 }

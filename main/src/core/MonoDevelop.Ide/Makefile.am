@@ -36,6 +36,8 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.CodeFormatting.EditFormattingPolicyDialog.cs \
 	gtk-gui/MonoDevelop.Ide.CodeFormatting.OverrideTextSettingsPolicyWidget.cs \
 	gtk-gui/MonoDevelop.Ide.CodeTemplates.CodeTemplatePanelWidget.cs \
+	gtk-gui/MonoDevelop.Ide.CodeTemplates.EditTemplateDialog.cs \
+	gtk-gui/MonoDevelop.Ide.CodeTemplates.EditVariablesDialog.cs \
 	gtk-gui/MonoDevelop.Ide.DocumentSwitcher.cs \
 	gtk-gui/MonoDevelop.Ide.ExternalTools.ExternalToolPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.AddinLoadErrorDialog.cs \
@@ -71,11 +73,13 @@ FILES =  \
 	MonoDevelop.Ide.CodeFormatting/EditFormattingPolicyDialog.cs \
 	MonoDevelop.Ide.CodeFormatting/OverrideTextSettingsPolicyWidget.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs \
-	MonoDevelop.Ide.CodeTemplates/CodeTemplateGroup.cs \
+	MonoDevelop.Ide.CodeTemplates/CodeTemplateCompletionData.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplatePanel.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplateService.cs \
+	MonoDevelop.Ide.CodeTemplates/CodeTemplateVariable.cs \
 	MonoDevelop.Ide.CodeTemplates/EditTemplateDialog.cs \
-	MonoDevelop.Ide.CodeTemplates/EditTemplateGroupDialog.cs \
+	MonoDevelop.Ide.CodeTemplates/EditVariablesDialog.cs \
+	MonoDevelop.Ide.CodeTemplates/ExpansionObject.cs \
 	MonoDevelop.Ide.Codons/CategoryNode.cs \
 	MonoDevelop.Ide.Codons/CombineOpenCondition.cs \
 	MonoDevelop.Ide.Codons/ContextPadCodon.cs \
@@ -365,6 +369,7 @@ RES =  \
 	icons/text-editor-16.png \
 	icons/text-editor-22.png \
 	MonoDevelop.Ide.addin.xml \
+	MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml \
 	MonoDevelop.Ide.StandardHeader/Apache2LicencePolicy.xml \
 	MonoDevelop.Ide.StandardHeader/GPL2LicencePolicy.xml \
 	MonoDevelop.Ide.StandardHeader/GPL3LicencePolicy.xml \

@@ -861,6 +861,9 @@
 		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCompletionWindow"
 				_label = "Show Completion Window" 
 				shortcut = "Control|space" />
+		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeSurroundingsWindow"
+				_label = "_Surround With..." 
+				shortcut = "Control|Alt|t" />
 		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.LineEnd"
 				_label = "Go to end of line" />
 		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.LineStart"
@@ -1373,6 +1376,8 @@
 			</ItemSet>
 			
 			<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCompletionWindow" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeSurroundingsWindow" />
+			
 			<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowParameterCompletionWindow" />
 			<SeparatorItem id = "Separator5" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.WordCount" />

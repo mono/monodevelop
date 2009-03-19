@@ -35,6 +35,7 @@ using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.CodeTemplates;
 
 namespace MonoDevelop.Ide.Gui.Content
 {
@@ -193,6 +194,33 @@ namespace MonoDevelop.Ide.Gui.Content
 				currentCompletionContext = null;
 		}
 		
+		[CommandHandler (TextEditorCommands.ShowCodeSurroundingsWindow)]
+		public virtual void RunShowCodeSurroundingsWindow ()
+		{
+			ICompletionDataList completionList = null;
+			int cpos, wlen;
+			if (!GetCompletionCommandOffset (out cpos, out wlen)) {
+				cpos = Editor.CursorPosition;
+				wlen = 0;
+			}
+			
+			currentCompletionContext = completionWidget.CreateCodeCompletionContext (cpos);
+			currentCompletionContext.TriggerWordLength = wlen;
+			completionList = ShowCodeSurroundingsCommand (currentCompletionContext);
+				
+			if (completionList != null)
+				CompletionWindowManager.ShowWindow ((char)0, completionList, completionWidget, currentCompletionContext, OnCompletionWindowClosed);
+			else
+				currentCompletionContext = null;
+		}
+		
+		[CommandUpdateHandler (TextEditorCommands.ShowCodeSurroundingsWindow)]
+		internal void OnUpdateShowCodeSurroundingsWindow (CommandInfo info)
+		{
+			info.Bypass = !CanRunCompletionCommand ();
+		}
+		
+		
 		[CommandHandler (TextEditorCommands.ShowParameterCompletionWindow)]
 		public virtual void RunParameterCompletionCommand ()
 		{
@@ -270,7 +298,19 @@ namespace MonoDevelop.Ide.Gui.Content
 			cpos = 0;
 			return false;
 		}
-
+		
+		public virtual ICompletionDataList ShowCodeSurroundingsCommand (ICodeCompletionContext completionContext)
+		{
+			CompletionDataList list = new CompletionDataList ();
+			foreach (CodeTemplate template in CodeTemplateService.GetCodeTemplatesForFile (Document.FileName)) {
+				if ((template.CodeTemplateType & CodeTemplateType.SurroundsWith) == CodeTemplateType.SurroundsWith)  {
+					list.Add (new CodeTemplateCompletionData (Document, template));
+				}
+			}
+			return list;
+		}
+		
+		
 		public virtual ICompletionDataList CodeCompletionCommand (ICodeCompletionContext completionContext)
 		{
 			// This default implementation of CodeCompletionCommand calls HandleCodeCompletion providing

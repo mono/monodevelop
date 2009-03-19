@@ -1,20 +1,21 @@
-// TextEditorCommands.cs
-//
+// 
+// CodeTemplateCompletionData.cs
+//  
 // Author:
-//   Lluis Sanchez Gual <lluis@novell.com>
-//
-// Copyright (c) 2007 Novell, Inc (http://www.novell.com)
-//
+//       Mike Krüger <mkrueger@novell.com>
+// 
+// Copyright (c) 2009 Mike Krüger
+// 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-//
+// 
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-//
+// 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -22,56 +23,35 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//
-//
 
 using System;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.Projects.Gui.Completion;
 
-namespace MonoDevelop.Ide.Commands
+namespace MonoDevelop.Ide.CodeTemplates
 {
-	public enum TextEditorCommands
+	public class CodeTemplateCompletionData : CompletionData, IActionCompletionData
 	{
-		ShowCompletionWindow,
-		ShowCodeSurroundingsWindow,
-		LineEnd,
-		LineStart,
-		DeleteLeftChar,
-		DeleteRightChar,
-		CharLeft,
-		CharRight,
-		LineUp,
-		LineDown,
-		DocumentStart,
-		DocumentEnd,
-		PageUp,
-		PageDown,
-		ScrollLineUp,
-		ScrollLineDown,
-		DeleteLine,
-		DeleteToLineEnd,
-		MoveBlockUp,
-		MoveBlockDown,
-		ShowParameterCompletionWindow,
-		GotoMatchingBrace,
-		SelectionMoveLeft,
-		SelectionMoveRight,
-		MovePrevWord,
-		MoveNextWord,
-		SelectionMovePrevWord,
-		SelectionMoveNextWord,
-		SelectionMoveUp,
-		SelectionMoveDown,
-		SelectionMoveHome,
-		SelectionMoveEnd,
-		SelectionMoveToDocumentStart,
-		SelectionMoveToDocumentEnd,
-		SwitchCaretMode,
-		InsertTab,
-		RemoveTab,
-		InsertNewLine,
-		DeletePrevWord,
-		DeleteNextWord,
-		SelectionPageDownAction,
-		SelectionPageUpAction
+		Document doc;
+		CodeTemplate template;
+		
+		public CodeTemplateCompletionData (Document doc, CodeTemplate template)
+		{
+			this.doc      = doc;
+			this.template = template;
+			this.CompletionText = "test";
+			this.Icon        = "md-template";
+			this.DisplayText = template.Shortcut;
+			this.Description = template.Shortcut + Environment.NewLine + template.Description;
+		}
+		
+		public void InsertCompletionText (ICompletionWidget widget, ICodeCompletionContext context)
+		{
+			template.InsertTemplate (ProjectDomService.GetProjectDom (doc.Project),
+			                         doc.ParsedDocument,
+			                         doc.TextEditor);
+		}
+		
 	}
 }

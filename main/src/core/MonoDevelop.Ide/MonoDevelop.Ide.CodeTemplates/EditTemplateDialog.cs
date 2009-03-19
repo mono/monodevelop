@@ -1,109 +1,107 @@
-//  EditTemplateDialog.cs
-//
-//  This file was derived from a file from #Develop. 
-//
-//  Copyright (C) 2001-2007 Mike Krüger <mkrueger@novell.com>
 // 
-//  This program is free software; you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation; either version 2 of the License, or
-//  (at your option) any later version.
-// 
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-//  GNU General Public License for more details.
+// EditTemplateDialog.cs
 //  
-//  You should have received a copy of the GNU General Public License
-//  along with this program; if not, write to the Free Software
-//  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// Author:
+//       Mike Krüger <mkrueger@novell.com>
+// 
+// Copyright (c) 2009 Mike Krüger
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 
 using System;
-using System.IO;
-
+using System.Collections.Generic;
 using MonoDevelop.Core;
-using MonoDevelop.Ide.CodeTemplates;
 
 namespace MonoDevelop.Ide.CodeTemplates
 {
-	internal class EditTemplateDialog : Gtk.Dialog 
+	
+	
+	public partial class EditTemplateDialog : Gtk.Dialog
 	{
-		CodeTemplate codeTemplate;
+		CodeTemplate template;
+		Mono.TextEditor.TextEditor textEditor = new Mono.TextEditor.TextEditor ();
 		
-		// Gtk members
-		Gtk.Entry templateTextBox;
-		Gtk.Entry descriptionTextBox;
-		
-		public CodeTemplate CodeTemplate {
-			get {
-				return codeTemplate;
+		public EditTemplateDialog (CodeTemplate template, bool isNew)
+		{
+			//this.Modal = true;
+			this.Title = isNew ? GettextCatalog.GetString ("New template") : GettextCatalog.GetString ("Edit template");
+			this.Build();
+			this.template = template;
+			this.entryShortcut1.Text = template.Shortcut;
+			this.comboboxentryGroups.Entry.Text = template.Group;
+			this.comboboxentryMime.Entry.Text = template.MimeType;
+			this.entryDescription.Text = template.Description;
+			this.textEditor.Document.MimeType = template.MimeType;
+			this.textEditor.Document.Text = template.Code;
+			
+			checkbuttonExpansion.Active = (template.CodeTemplateType & CodeTemplateType.Expansion) == CodeTemplateType.Expansion;
+			checkbuttonSurroundWith.Active = (template.CodeTemplateType & CodeTemplateType.SurroundsWith) == CodeTemplateType.SurroundsWith;
+			
+			scrolledwindow1.Child = textEditor;
+			textEditor.ShowAll ();
+			Mono.TextEditor.TextEditorOptions options = new Mono.TextEditor.TextEditorOptions ();
+			options.ShowLineNumberMargin = false;
+			options.ShowFoldMargin = false;
+			options.ShowIconMargin = false;
+			options.ShowInvalidLines = false;
+			options.ShowSpaces = options.ShowTabs = options.ShowEolMarkers = false;
+			options.ColorScheme = PropertyService.Get ("ColorScheme", "Default");
+			textEditor.Options = options;
+			
+			HashSet<string> mimeTypes = new HashSet<string> ();
+			HashSet<string> groups    = new HashSet<string> ();
+			foreach (CodeTemplate ct in CodeTemplateService.Templates) {
+				mimeTypes.Add (ct.MimeType);
+				groups.Add (ct.Group);
 			}
-		}
-		
-		public EditTemplateDialog(CodeTemplate codeTemplate)
-		{
-			this.codeTemplate = codeTemplate;
-			InitializeComponents();
-			this.ShowAll();
-		}
-		
-		void AcceptEvent(object sender, EventArgs e)
-		{
-			codeTemplate.Shortcut    = templateTextBox.Text;
-			codeTemplate.Description = descriptionTextBox.Text;
+			comboboxentryMime.AppendText ("");
+			foreach (string mime in mimeTypes) {
+				comboboxentryMime.AppendText (mime);
+			}
+			comboboxentryGroups.AppendText ("");
+			foreach (string group in groups) {
+				comboboxentryGroups.AppendText (group);
+			}
 			
-			// close the window
-			CancelEvent(sender, EventArgs.Empty);
-		}
-		
-		void CancelEvent(object sender, EventArgs e)
-		{
-			this.Destroy();
-		}
-		
-		void InitializeComponents()
-		{
-			// set up this actual dialog
-			this.Modal = true;
+			this.buttonEditVariables.Clicked += delegate {
+				EditVariablesDialog editVariablesDialog = new EditVariablesDialog (template);
+				editVariablesDialog.Run ();
+				editVariablesDialog.Destroy ();
+			};
+			this.buttonOk.Clicked += delegate {
+				template.Shortcut = this.entryShortcut1.Text;
+				template.Group = this.comboboxentryGroups.Entry.Text;
+				template.MimeType = this.comboboxentryMime.Entry.Text;
+				template.Description = this.entryDescription.Text;
+				template.Code = this.textEditor.Document.Text;
+				
+				template.CodeTemplateType = CodeTemplateType.Unknown;
+				if (checkbuttonExpansion.Active)
+					template.CodeTemplateType |= CodeTemplateType.Expansion;
+				if (checkbuttonSurroundWith.Active)
+					template.CodeTemplateType |= CodeTemplateType.SurroundsWith;
+			};
 			
-			// set up the dialog fields and add them
-			templateTextBox = new Gtk.Entry();
-			descriptionTextBox = new Gtk.Entry();
-			descriptionTextBox.ActivatesDefault = true;
-			Gtk.Label label1 = new Gtk.Label(GettextCatalog.GetString ("_Description"));
-			Gtk.Label label2 = new Gtk.Label(GettextCatalog.GetString ("_Template"));
-			label1.Xalign = 0;
-			label2.Xalign = 0;
-			templateTextBox.Text    = codeTemplate.Shortcut;
-			descriptionTextBox.Text = codeTemplate.Description;			
-			Gtk.SizeGroup sizeGroup1 = new Gtk.SizeGroup(Gtk.SizeGroupMode.Horizontal);
-			Gtk.SizeGroup sizeGroup2 = new Gtk.SizeGroup(Gtk.SizeGroupMode.Horizontal);			
-			sizeGroup1.AddWidget(templateTextBox);
-			sizeGroup1.AddWidget(descriptionTextBox);
-			sizeGroup2.AddWidget(label1);
-			sizeGroup2.AddWidget(label2);
-			
-			// FIXME: make the labels both part of the same sizing group so they have the same left and right rows.
-			Gtk.HBox hBox1 = new Gtk.HBox(false, 6);
-			hBox1.PackStart(label1, false, false, 6);
-			hBox1.PackStart(descriptionTextBox, false, false, 6);
-			
-			Gtk.HBox hBox2 = new Gtk.HBox(false, 6);
-			hBox2.PackStart(label2, false, false, 6);
-			hBox2.PackStart(templateTextBox, false, false, 6);
-			
-			this.VBox.PackStart(hBox1, false, false, 6);
-			this.VBox.PackStart(hBox2, false, false, 6);
-			
-			// set up the buttons and add them
-			this.DefaultResponse = Gtk.ResponseType.Ok;
-			Gtk.Button cancelButton = new Gtk.Button(Gtk.Stock.Cancel);
-			Gtk.Button okButton = new Gtk.Button(Gtk.Stock.Ok);
-			okButton.Clicked += new EventHandler(AcceptEvent);
-			cancelButton.Clicked += new EventHandler(CancelEvent);
-			this.AddActionWidget (cancelButton, Gtk.ResponseType.Cancel);
-			this.AddActionWidget (okButton, (int) Gtk.ResponseType.Ok);
-			
+			checkbuttonSurroundWith.Toggled += delegate {
+				options.ShowSpaces = options.ShowTabs = options.ShowEolMarkers = checkbuttonSurroundWith.Active;
+				textEditor.QueueDraw ();
+			};
 		}
 	}
 }

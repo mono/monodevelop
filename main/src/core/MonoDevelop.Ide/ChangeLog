@@ -1,3 +1,31 @@
+2009-03-19  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Ide.csproj:
+	* MonoDevelop.Ide.addin.xml:
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs:
+	* MonoDevelop.Ide.Commands/TextEditorCommands.cs:
+	* gtk-gui/MonoDevelop.Ide.SelectEncodingsDialog.cs:
+	* MonoDevelop.Ide.CodeTemplates/ExpansionObject.cs:
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplatePanel.cs:
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplateGroup.cs:
+	* MonoDevelop.Ide.CodeTemplates/EditTemplateDialog.cs:
+	* MonoDevelop.Ide.CodeTemplates/EditVariablesDialog.cs:
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplateService.cs:
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplateVariable.cs:
+	* MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:
+	* MonoDevelop.Ide.CodeTemplates/EditTemplateGroupDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.CodeTemplates.EditTemplateDialog.cs:
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplateCompletionData.cs:
+	* MonoDevelop.Ide.Gui.Content/CompletionTextEditorExtension.cs:
+	* gtk-gui/MonoDevelop.Ide.CodeTemplates.EditVariablesDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.CodeTemplates.CodeTemplatePanelWidget.cs:
+	* gtk-gui/MonoDevelop.Ide.CodeFormatting.EditFormattingPolicyDialog.cs:
+	  Worked on code template system, added surround templates.
+	  (Edit template mode still missing in the text editor, but
+	  the templates should be already more useful than before.)
+
 2009-03-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs: Add

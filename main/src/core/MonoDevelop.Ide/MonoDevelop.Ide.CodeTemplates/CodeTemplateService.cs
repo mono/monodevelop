@@ -40,79 +40,80 @@ namespace MonoDevelop.Ide.CodeTemplates
 {
 	public static class CodeTemplateService
 	{
-		static string FileName = "MonoDevelop-templates.xml";
-		static string Version  = "2.0";
+		static string Version  = "3.0";
 		
-		static List<CodeTemplateGroup> groups = new List<CodeTemplateGroup> ();
+		static List<CodeTemplate> templates;
 		
-		public static List<CodeTemplateGroup> TemplateGroups {
+		public static List<CodeTemplate> Templates {
 			get {
-				return groups;
+				return templates;
 			}
 			set {
-				groups = value;
+				templates = value;
 			}
 		}
 		
 		static CodeTemplateService ()
 		{
 			try {
-				groups = LoadTemplates ();			
+				templates = LoadTemplates () ?? new List<CodeTemplate> ();
+				Console.WriteLine ("#Templates:" + templates.Count);
+				
 			} catch (Exception e) {
 				LoggingService.LogError ("CodeTemplateService: Exception while loading templates.", e);
 			}
-			if (groups == null)
-				groups = new List<CodeTemplateGroup> ();
 		}
 		
-		public static CodeTemplateGroup GetTemplateGroupPerFilename (string fileName)
+		public static IEnumerable<CodeTemplate> GetCodeTemplates (string mimeType)
 		{
-			return GetTemplateGroupPerExtension (Path.GetExtension (fileName));
-		}
-		
-		public static CodeTemplateGroup GetTemplateGroupPerExtension (string extension)
-		{
-			foreach (CodeTemplateGroup group in groups) {
-				if (group.Extensions.Contains (extension)) 
-					return group;
+			foreach (CodeTemplate template in templates) {
+				if (template.MimeType == mimeType)
+					yield return template;
 			}
-			return null;
+		}
+		
+		public static IEnumerable<CodeTemplate> GetCodeTemplatesForFile (string fileName)
+		{
+			string mimeType = MonoDevelop.Ide.Gui.IdeApp.Services.PlatformService.GetMimeTypeForUri (fileName);
+			return GetCodeTemplates (mimeType);
 		}
 		
 		public static void AddCompletionDataForFileName (string fileName, CompletionDataList list)
 		{
-			AddCompletionDataForExtension (Path.GetExtension (fileName), list);
+			string mimeType = MonoDevelop.Ide.Gui.IdeApp.Services.PlatformService.GetMimeTypeForUri (fileName);
+			AddCompletionDataForFileName (mimeType, list);
 		}
 		
-		public static void AddCompletionDataForExtension (string extension, CompletionDataList list)
+		public static void AddCompletionDataForMime (string mimeType, CompletionDataList list)
 		{
-			CodeTemplateGroup group = GetTemplateGroupPerExtension (extension);
-			if (group == null)
-				return;
-			foreach (CodeTemplate ct in group.Templates) {
+			foreach (CodeTemplate ct in GetCodeTemplates (mimeType)) {
 				if (string.IsNullOrEmpty (ct.Shortcut))
 					continue;
 				list.Remove (ct.Shortcut);
-				list.Add (new CompletionData (ct.Shortcut, "md-template", ct.Description));
+				list.Add (new CompletionData (ct.Shortcut, "md-template", ct.Shortcut + Environment.NewLine + ct.Description));
 			}
+		}
+		
+		public static ExpansionObject GetExpansionObject (CodeTemplate template)
+		{
+			// TODO: Add more expansion objects.
+			return new ExpansionObject ();
 		}
 		
 #region I/O
 		const string Node             = "CodeTemplates";
 		const string VersionAttribute = "version";
 		
-		static void SaveTemplates (string fileName)
+		static void SaveTemplate (CodeTemplate template, string fileName)
 		{
 			XmlTextWriter writer = new XmlTextWriter (fileName, System.Text.Encoding.UTF8);
-			writer.Settings.Indent = true;
+			writer.Formatting = Formatting.Indented;
+			
 			try {
 				writer.WriteStartDocument ();
 				writer.WriteStartElement (Node);
 				writer.WriteAttributeString (VersionAttribute, Version);
-			
-				foreach (CodeTemplateGroup group in groups)
-					group.Write (writer);
-				
+				template.Write (writer);
 				writer.WriteEndElement (); // Node 
 			} finally {
 				writer.Close ();
@@ -121,15 +122,24 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 		public static void SaveTemplates ()
 		{
-			SaveTemplates (Path.Combine (PropertyService.ConfigPath, FileName));
+			if (!Directory.Exists (TemplatePath))
+				Directory.CreateDirectory (TemplatePath);
+			foreach (string templateFile in Directory.GetFiles (TemplatePath, "*.xml")) {
+				File.Delete (templateFile);
+			}
+			foreach (CodeTemplate template in templates) {
+				if (string.IsNullOrEmpty (template.Shortcut)) {
+					LoggingService.LogError ("CodeTemplateService: Can't save unnamed template " + template);
+					continue;
+				}
+				SaveTemplate (template, Path.Combine (TemplatePath, template.Shortcut + ".template.xml"));
+			}
 		}
 		
-		static List<CodeTemplateGroup> LoadTemplates (string fileName)
+		static List<CodeTemplate> LoadTemplates (XmlReader reader)
 		{
-			if (!File.Exists (fileName))
-				return null;
-			List<CodeTemplateGroup> result = new List<CodeTemplateGroup> ();
-			XmlReader reader = XmlTextReader.Create (fileName);
+			List<CodeTemplate> result = new List<CodeTemplate> ();
+			
 			try {
 				while (reader.Read ()) {
 					if (reader.IsStartElement ()) {
@@ -139,26 +149,40 @@ namespace MonoDevelop.Ide.CodeTemplates
 							if (fileVersion != Version) 
 								return null;
 							break;
-						case CodeTemplateGroup.Node:
-							result.Add (CodeTemplateGroup.Read (reader));
+						case CodeTemplate.Node:
+							result.Add (CodeTemplate.Read (reader));
 							break;
 						}
 					}
 				}
+			} catch (Exception e) {
+				LoggingService.LogError ("CodeTemplateService: Exception while loading template.", e);
+				return null;
 			} finally {
 				reader.Close ();
 			}
 			return result;
 		}
 		
-		static List<CodeTemplateGroup> LoadTemplates ()
-		{
-			List<CodeTemplateGroup> result = LoadTemplates (Path.Combine (PropertyService.ConfigPath, FileName));
-			if (result == null) {
-				LoggingService.LogInfo ("CodeTemplateService: No user templates, reading default templates.");
-				result = LoadTemplates (Path.Combine (Path.Combine (PropertyService.DataPath, "options"), FileName));
+		static string TemplatePath {
+			get {
+				return Path.Combine (PropertyService.ConfigPath, Path.Combine ("templates", "code"));
 			}
-			return result;
+		}
+		
+		static List<CodeTemplate> LoadTemplates ()
+		{
+			if (Directory.Exists (TemplatePath)) {
+				List<CodeTemplate> result = new List<CodeTemplate> ();
+				foreach (string templateFile in Directory.GetFiles (TemplatePath, "*.xml")) {
+					result.AddRange (LoadTemplates (XmlTextReader.Create (templateFile)));
+				}
+				return result;
+			}
+			
+			LoggingService.LogInfo ("CodeTemplateService: No user templates, reading default templates.");
+			const string ManifestResourceName = "MonoDevelop-templates.xml";
+			return LoadTemplates (XmlTextReader.Create (typeof (CodeTemplateService).Assembly.GetManifestResourceStream (ManifestResourceName)));
 		}
 #endregion
 	}
