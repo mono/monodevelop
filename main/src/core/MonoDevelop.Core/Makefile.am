@@ -47,6 +47,7 @@ FILES =  \
 	MonoDevelop.Core.ProgressMonitoring/NullAsyncOperation.cs \
 	MonoDevelop.Core.ProgressMonitoring/NullProgressMonitor.cs \
 	MonoDevelop.Core.ProgressMonitoring/ProgressTracker.cs \
+	MonoDevelop.Core.ProgressMonitoring/SimpleProgressMonitor.cs \
 	MonoDevelop.Core.ProgressMonitoring/SynchronizedProgressMonitor.cs \
 	MonoDevelop.Core.Serialization/ArrayHandler.cs \
 	MonoDevelop.Core.Serialization/ArrayListHandler.cs \

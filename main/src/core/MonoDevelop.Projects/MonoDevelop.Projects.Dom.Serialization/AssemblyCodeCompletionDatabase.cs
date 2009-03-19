@@ -57,7 +57,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		{
 		}
 		
-		public AssemblyCodeCompletionDatabase (string assemblyFile, ParserDatabase pdb, bool isTempDatabase): base (pdb)
+		public AssemblyCodeCompletionDatabase (string assemblyFile, ParserDatabase pdb, bool isTempDatabase): base (pdb, false)
 		{
 			this.assemblyFile = assemblyFile;
 			

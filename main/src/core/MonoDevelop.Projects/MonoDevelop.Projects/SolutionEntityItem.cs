@@ -181,7 +181,7 @@ namespace MonoDevelop.Projects
 		
 		protected override string GetDefaultBaseDirectory ()
 		{
-			return Path.GetDirectoryName (FileName); 
+			return string.IsNullOrEmpty (FileName) ? string.Empty : Path.GetDirectoryName (FileName); 
 		}
 		
 		public void Save (string fileName, IProgressMonitor monitor)

@@ -1,3 +1,11 @@
+2009-03-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Core.csproj:
+	* MonoDevelop.Core.ProgressMonitoring/SimpleProgressMonitor.cs:
+	  Added new progress monitor which implements the most basic
+	  progress tracking functionality.
+
 2009-03-05  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:

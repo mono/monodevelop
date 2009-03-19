@@ -62,6 +62,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		int currentGetTime = 0;
 		bool modified;
 		bool disposed;
+		bool handlesCommentTags;
 		
 		string dataFile;
 		string tempDataFile;
@@ -79,26 +80,32 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		protected Object rwlock = new Object ();
 		
-		public SerializationCodeCompletionDatabase (ParserDatabase pdb)
+		public SerializationCodeCompletionDatabase (ParserDatabase pdb, bool handlesCommentTags)
 		{
+			this.handlesCommentTags = handlesCommentTags;
+			
 			rootNamespace = new NamespaceEntry (null, null);
 			files = new Hashtable ();
 			references = new ArrayList ();
 			headers = new Hashtable ();
 			this.pdb = pdb;
 			
-			ProjectDomService.SpecialCommentTagsChanged += OnSpecialTagsChanged;	
+			if (handlesCommentTags)
+				ProjectDomService.SpecialCommentTagsChanged += OnSpecialTagsChanged;	
 		}
 		
 		public virtual void Dispose ()
 		{
+			if (disposed)
+				return;
 			if (dataFileStream != null)
 				dataFileStream.Close ();
 			if (tempDataFile != null) {
 				File.Delete (tempDataFile);
 				tempDataFile = null;
 			}
-			ProjectDomService.SpecialCommentTagsChanged -= OnSpecialTagsChanged;
+			if (handlesCommentTags)
+				ProjectDomService.SpecialCommentTagsChanged -= OnSpecialTagsChanged;
 			disposed = true;
 		}
 
@@ -141,6 +148,20 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		protected void SetFile (string file)
 		{
 			dataFile = file;
+		}
+		
+		protected internal virtual void ForceUpdateBROKEN ()
+		{
+			ArrayList list = GetModifiedFileEntries ();
+			foreach (FileEntry file in list) {
+				ParseFile (file.FileName, null);
+				try {
+					FileInfo fi = new FileInfo (file.FileName);
+					file.LastParseTime = fi.LastWriteTime;
+				} catch {
+					// Ignore
+				}
+			}
 		}
 		
 		public virtual void Read ()
@@ -665,20 +686,6 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			get
 			{
 				return (string)headers["LastValidTaskListTokens"];
-			}
-		}
-		
-		public virtual void UpdateDatabase ()
-		{
-			ArrayList list = GetModifiedFileEntries ();
-			foreach (FileEntry file in list) {
-				ParseFile (file.FileName, null);
-				try {
-					FileInfo fi = new FileInfo (file.FileName);
-					file.LastParseTime = fi.LastWriteTime;
-				} catch {
-					// Ignore
-				}
 			}
 		}
 

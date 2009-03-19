@@ -38,7 +38,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 	{
 		string file = "_currentFile";
 		
-		public SimpleCodeCompletionDatabase (string file, ParserDatabase pdb): base (pdb)
+		public SimpleCodeCompletionDatabase (string file, ParserDatabase pdb): base (pdb, false)
 		{
 			AddFile (file);
 			this.file = file;

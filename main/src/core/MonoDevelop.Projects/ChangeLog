@@ -1,3 +1,55 @@
+2009-03-19  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs:
+	* MonoDevelop.Projects.Dom.Serialization/DatabaseProjectDom.cs:
+	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
+	* MonoDevelop.Projects.Dom.Serialization/ProjectCodeCompletionDatabase.cs:
+	  Restore the old ForceUpdate behaviour for the parameterless
+	  overload, since stetic sort of depends on it.
+
+2009-03-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/SolutionEntityItem.cs:
+	  GetDefaultBaseDirectoru: return an empty string if the file
+	  name is not yet set.
+
+2009-03-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/DotNetProject.cs: Fix for bug #486639 -
+	  Configuration Manager creates project configurations with a
+	  bad OutputPath (contains "|").
+
+2009-03-18  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: Make
+	  ForceUpdate add items to the parse queue and block on the
+	  queue, instead of parallel-parsing. Should kill possible
+	  race conditions.
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs: Add
+	  method that blocks until parsing queue is empty.
+
+	* MonoDevelop.Projects.Dom.Serialization/DatabaseProjectDom.cs:
+	* MonoDevelop.Projects.Dom.Serialization/SimpleCodeCompletionDatabase.cs:
+	* MonoDevelop.Projects.Dom.Serialization/ProjectCodeCompletionDatabase.cs:
+	* MonoDevelop.Projects.Dom.Serialization/AssemblyCodeCompletionDatabase.cs:
+	  Track API.
+
+	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
+	  Track API. Add constructor parameter that can be used to
+	  enable special comment events, instead of always
+	  subscribing, so that remote assembly parser process doesn't
+	  touch project DOM service and cause help tree to be loaded.
+
+2009-03-17  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects/DotNetProjectConfiguration.cs:
+	* MonoDevelop.Projects.Formats.MD1/MD1DotNetProjectHandler.cs:
+	  Remove unused property.
+
+	* MonoDevelop.Projects/DotNetProject.cs: Fully qualify the
+	  output path of new configurations.
+
 2009-03-10  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/ProjectReference.cs: Make sure missing

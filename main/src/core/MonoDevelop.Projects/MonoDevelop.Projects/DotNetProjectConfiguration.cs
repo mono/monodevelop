@@ -118,11 +118,6 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		public string SourceDirectory {
-			get { return sourcePath; }
-			set { sourcePath = value; }
-		}
-		
 		public override void CopyFrom (ItemConfiguration configuration)
 		{
 			base.CopyFrom (configuration);

@@ -170,7 +170,6 @@ namespace MonoDevelop.Projects.Formats.MD1
 			}
 			
 			DotNetProjectConfiguration conf = (DotNetProjectConfiguration) project.GetConfiguration (configuration);
-			conf.SourceDirectory = project.BaseDirectory;
 
 			// Create a copy of the data needed to compile the project.
 			// This data can be modified by extensions.

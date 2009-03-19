@@ -1177,7 +1177,7 @@ namespace MonoDevelop.Ide.Gui
 	{
 		public IProgressMonitor CreateProgressMonitor ()
 		{
-			return IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor ("Code Completion Database Generation", "md-parser");
+			return new BackgroundProgressMonitor ("Code Completion Database Generation", "md-parser");
 		}
 	}
 	

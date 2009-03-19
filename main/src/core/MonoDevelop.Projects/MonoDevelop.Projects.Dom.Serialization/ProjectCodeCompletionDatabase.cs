@@ -45,7 +45,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		string lastVersion = null;
 		int parseCount;
 		
-		public ProjectCodeCompletionDatabase (Project project, ParserDatabase pdb): base (pdb)
+		public ProjectCodeCompletionDatabase (Project project, ParserDatabase pdb): base (pdb, true)
 		{
 			this.project = project;
 			SetLocation (project.BaseDirectory, project.Name);
@@ -243,20 +243,6 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				if (monitor != null) monitor.EndTask ();
 			}
 		}
-
-		public override void UpdateDatabase ()
-		{
-			int lastCount;
-			totalUnresolvedCount = int.MaxValue;
-
-			do {
-				// Keep trying updating the db while types are being resolved
-				lastCount = totalUnresolvedCount;
-				totalUnresolvedCount = 0;
-				base.UpdateDatabase ();
-			}
-			while (totalUnresolvedCount != 0 && totalUnresolvedCount < lastCount);
-		}
 		
 		int totalUnresolvedCount;
 		
@@ -301,6 +287,19 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			if (classInfo.Removed.Count > 0)
 				ProjectDomService.NotifyTypeUpdate (project, fileName, classInfo);
 		}
+		
+		protected internal override void ForceUpdateBROKEN ()
+		{
+			int lastCount;
+			totalUnresolvedCount = int.MaxValue;
 
+			do {
+				// Keep trying updating the db while types are being resolved
+				lastCount = totalUnresolvedCount;
+				totalUnresolvedCount = 0;
+				base.ForceUpdateBROKEN ();
+			}
+			while (totalUnresolvedCount != 0 && totalUnresolvedCount < lastCount);
+		}
 	}
 }
