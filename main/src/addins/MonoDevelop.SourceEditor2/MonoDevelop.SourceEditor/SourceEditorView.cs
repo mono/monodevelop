@@ -837,7 +837,12 @@ namespace MonoDevelop.SourceEditor
 		
 		public void SetCompletionText (ICodeCompletionContext ctx, string partial_word, string complete_word)
 		{
-			TextEditor.DeleteSelectedText ();
+			int triggerOffset = ctx.TriggerOffset;
+			if (TextEditor.IsSomethingSelected) {
+				if (TextEditor.SelectionRange.Offset < ctx.TriggerOffset)
+					triggerOffset = ctx.TriggerOffset - TextEditor.SelectionRange.Length;
+				TextEditor.DeleteSelectedText ();
+			}
 			
 			int idx = complete_word.IndexOf ('|'); // | in the completion text now marks the caret position
 			if (idx >= 0) {
@@ -847,8 +852,8 @@ namespace MonoDevelop.SourceEditor
 			}
 			int length = String.IsNullOrEmpty (partial_word) ? 0 : partial_word.Length;
 			
-			this.widget.TextEditor.Replace (ctx.TriggerOffset, length, complete_word);
-			this.widget.TextEditor.Caret.Offset = ctx.TriggerOffset + idx;
+			this.widget.TextEditor.Replace (triggerOffset, length, complete_word);
+			this.widget.TextEditor.Caret.Offset = triggerOffset + idx;
 		}
 		
 		void FireCompletionContextChanged ()

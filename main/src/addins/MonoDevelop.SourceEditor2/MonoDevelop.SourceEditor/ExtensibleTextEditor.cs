@@ -567,13 +567,8 @@ namespace MonoDevelop.SourceEditor
 		public bool IsTemplateKnown ()
 		{
 			string word = GetWordBeforeCaret ();
-			
-			CodeTemplateGroup templateGroup = CodeTemplateService.GetTemplateGroupPerFilename (this.view.ContentName);
-			if (String.IsNullOrEmpty (word) || templateGroup == null) 
-				return false;
-			
 			bool result = false;
-			foreach (CodeTemplate template in templateGroup.Templates) {
+			foreach (CodeTemplate template in CodeTemplateService.GetCodeTemplates (Document.MimeType)) {
 				if (template.Shortcut == word) {
 					result = true;
 				} else if (template.Shortcut.StartsWith (word)) {
@@ -587,11 +582,7 @@ namespace MonoDevelop.SourceEditor
 		public bool DoInsertTemplate ()
 		{
 			string word = GetWordBeforeCaret ();
-			CodeTemplateGroup templateGroup = CodeTemplateService.GetTemplateGroupPerFilename (this.view.ContentName);
-			if (String.IsNullOrEmpty (word) || templateGroup == null) 
-				return false;
-			
-			foreach (CodeTemplate template in templateGroup.Templates) {
+			foreach (CodeTemplate template in CodeTemplateService.GetCodeTemplates (Document.MimeType)) {
 				if (template.Shortcut == word) {
 					InsertTemplate (template);
 					return true;
@@ -602,7 +593,9 @@ namespace MonoDevelop.SourceEditor
 		
 		public void InsertTemplate (CodeTemplate template)
 		{
-			template.InsertTemplate (MonoDevelop.Ide.Gui.TextEditor.GetTextEditor (this.view));
+			template.InsertTemplate (this.ProjectDom,
+			                         view.SourceEditorWidget.ParsedDocument,
+			                         MonoDevelop.Ide.Gui.TextEditor.GetTextEditor (this.view));
 		}		
 #endregion
 		
