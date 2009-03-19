@@ -149,6 +149,7 @@
     <Compile Include="MonoDevelop.Core.AddIns\PackageInstalledCondition.cs" />
     <Compile Include="MonoDevelop.Core\SystemAssembly.cs" />
     <Compile Include="MonoDevelop.Core\ComponentModelLocalization.cs" />
+    <Compile Include="MonoDevelop.Core.ProgressMonitoring\SimpleProgressMonitor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
