@@ -1,3 +1,9 @@
+2009-03-20  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AspNet/AspNetAppProject.cs: Fix output directory
+	  for newly created projects, since DotNetProject changes it
+	  during project creation.
+
 2009-03-16  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.AspNet/AspNetAppProject.cs: Migrate bad output
