@@ -43,7 +43,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		CellRendererText templateCellRenderer;
 		Mono.TextEditor.TextEditor textEditor = new Mono.TextEditor.TextEditor ();
 
-		public CodeTemplatePanelWidget(OptionsDialog parent)
+		public CodeTemplatePanelWidget (OptionsDialog parent)
 		{
 			this.parent = parent;
 			this.Build();

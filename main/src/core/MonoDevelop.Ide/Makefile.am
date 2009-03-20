@@ -37,7 +37,6 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.CodeFormatting.OverrideTextSettingsPolicyWidget.cs \
 	gtk-gui/MonoDevelop.Ide.CodeTemplates.CodeTemplatePanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.CodeTemplates.EditTemplateDialog.cs \
-	gtk-gui/MonoDevelop.Ide.CodeTemplates.EditVariablesDialog.cs \
 	gtk-gui/MonoDevelop.Ide.DocumentSwitcher.cs \
 	gtk-gui/MonoDevelop.Ide.ExternalTools.ExternalToolPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.AddinLoadErrorDialog.cs \
@@ -78,7 +77,6 @@ FILES =  \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplateService.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplateVariable.cs \
 	MonoDevelop.Ide.CodeTemplates/EditTemplateDialog.cs \
-	MonoDevelop.Ide.CodeTemplates/EditVariablesDialog.cs \
 	MonoDevelop.Ide.CodeTemplates/ExpansionObject.cs \
 	MonoDevelop.Ide.Codons/CategoryNode.cs \
 	MonoDevelop.Ide.Codons/CombineOpenCondition.cs \

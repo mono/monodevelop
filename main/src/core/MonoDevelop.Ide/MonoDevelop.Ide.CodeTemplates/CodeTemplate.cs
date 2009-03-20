@@ -128,15 +128,22 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 		static Regex variableRegEx = new Regex ("\\$([^$]*)\\$", RegexOptions.Compiled);
 		
-		public List<string> ParseVariables ()
+		public List<string> ParseVariables (string code)
 		{
 			List<string> result = new List<string> ();
-			foreach (Match match in variableRegEx.Matches (Code)) {
-				string name = match.Groups[0].Captures[0].Value;
+			foreach (Match match in variableRegEx.Matches (code)) {
+				string name = match.Groups[1].Value;
+				if (name == "end" || name == "selected" || string.IsNullOrEmpty (name) || name.Trim ().Length == 0)
+					continue;
 				if (!result.Contains (name))
 					result.Add (name);
 			}
 			return result;
+		}
+		
+		public void AddVariable (CodeTemplateVariable var)
+		{
+			this.variableDecarations.Add (var.Name, var);
 		}
 		
 		public class TemplateResult

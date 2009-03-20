@@ -1,5 +1,21 @@
 2009-03-20  Mike Krüger  <mkrueger@novell.com>
 
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Ide.csproj:
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs:
+	* MonoDevelop.Ide.CodeTemplates/ExpansionObject.cs:
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplatePanel.cs:
+	* MonoDevelop.Ide.CodeTemplates/EditTemplateDialog.cs:
+	* MonoDevelop.Ide.CodeTemplates/EditVariablesDialog.cs:
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplateVariable.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow.cs:
+	* gtk-gui/MonoDevelop.Ide.CodeTemplates.EditTemplateDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.CodeTemplates.EditVariablesDialog.cs:
+	  Worked on code template edit dialog.
+
+2009-03-20  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.CodeTemplates/CodeTemplateVariable.cs:
 	* MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:
 	  Templates can now specify a set of values.

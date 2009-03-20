@@ -157,9 +157,10 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 		static Regex functionRegEx = new Regex ("([^(]*)\\(([^(]*)\\)", RegexOptions.Compiled);
 		
-		public virtual IEnumerable<string> Descriptions {
+		public virtual string[] Descriptions {
 			get {
 				return new string[] {
+					"",
 					"GetCurrentClassName()",
 					"GetSimpleTypeName(\"LongName\")",
 					"GetLengthProperty(\"Var\")",

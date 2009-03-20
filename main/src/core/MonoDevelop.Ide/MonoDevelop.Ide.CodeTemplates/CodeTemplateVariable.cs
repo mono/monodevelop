@@ -70,6 +70,11 @@ namespace MonoDevelop.Ide.CodeTemplates
 			IsEditable = true;
 		}
 		
+		public CodeTemplateVariable (string name) : this ()
+		{
+			this.Name = name;
+		}
+		
 		public override string ToString ()
 		{
 			return string.Format("[CodeTemplateVariable: Name={0}, Default={1}, ToolTip={2}, Function={3}]", Name, Default, ToolTip, Function);

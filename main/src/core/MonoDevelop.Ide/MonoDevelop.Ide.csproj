@@ -545,8 +545,6 @@
     <Compile Include="gtk-gui\MonoDevelop.Ide.CodeTemplates.CodeTemplatePanelWidget.cs" />
     <Compile Include="MonoDevelop.Ide.CodeTemplates\EditTemplateDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.CodeTemplates.EditTemplateDialog.cs" />
-    <Compile Include="MonoDevelop.Ide.CodeTemplates\EditVariablesDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Ide.CodeTemplates.EditVariablesDialog.cs" />
     <Compile Include="MonoDevelop.Ide.CodeTemplates\CodeTemplateVariable.cs" />
     <Compile Include="MonoDevelop.Ide.CodeTemplates\ExpansionObject.cs" />
     <Compile Include="MonoDevelop.Ide.CodeTemplates\CodeTemplateCompletionData.cs" />
