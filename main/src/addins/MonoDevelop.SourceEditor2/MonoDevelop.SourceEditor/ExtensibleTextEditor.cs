@@ -593,9 +593,18 @@ namespace MonoDevelop.SourceEditor
 		
 		public void InsertTemplate (CodeTemplate template)
 		{
-			template.InsertTemplate (this.ProjectDom,
-			                         view.SourceEditorWidget.ParsedDocument,
-			                         MonoDevelop.Ide.Gui.TextEditor.GetTextEditor (this.view));
+			CodeTemplate.TemplateResult result = template.InsertTemplate (this.ProjectDom,
+			                                                              view.SourceEditorWidget.ParsedDocument,
+			                                                              MonoDevelop.Ide.Gui.TextEditor.GetTextEditor (this.view));
+			TextLinkEditMode tle = new TextLinkEditMode (this, 
+			                                             result.InsertPosition,
+			                                             result.TextLinks);
+			if (tle.ShouldStartTextLinkMode) {
+				tle.OldMode = CurrentMode;
+				tle.StartMode ();
+				CurrentMode = tle;
+			}
+			
 		}		
 #endregion
 		

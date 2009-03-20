@@ -1,3 +1,8 @@
+2009-03-20  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: Worked on
+	  text link edit mode.
+
 2009-03-19  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Fix possible
