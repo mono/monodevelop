@@ -23,8 +23,8 @@
 		
 		<Project name = "${ProjectName}" directory = ".">
 			<References>
-				<Reference type="Gac" refto="gtk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-				<Reference type="Gac" refto="glib-sharp, Version=2.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+				<Reference type="Gac" SpecificVersion="false" refto="gtk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+				<Reference type="Gac" SpecificVersion="false" refto="glib-sharp, Version=2.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
 			</References>
 			<Files>
 				<File name="Main.boo"><![CDATA[// project created on ${Date} at ${Time}
