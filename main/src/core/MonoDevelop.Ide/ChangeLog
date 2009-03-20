@@ -1,3 +1,8 @@
+2009-03-20  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs: Worked on
+	  text link edit mode.
+
 2009-03-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Avoid using

@@ -35,6 +35,7 @@ using System.Xml;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
+using Mono.TextEditor;
 
 namespace MonoDevelop.Ide.CodeTemplates
 {
@@ -150,6 +151,16 @@ namespace MonoDevelop.Ide.CodeTemplates
 				set;
 			}
 			
+			public int InsertPosition {
+				get;
+				set;
+			}
+			
+			public List<TextLink> TextLinks {
+				get;
+				set;
+			}
+			
 			public TemplateResult ()
 			{
 				Code = null;
@@ -164,6 +175,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			StringBuilder sb = new StringBuilder ();
 			int lastOffset = 0;
 			string code = context.TemplateCode;
+			result.TextLinks = new List<TextLink> ();
 			foreach (Match match in variableRegEx.Matches (code)) {
 				string name = match.Groups[1].Value;
 				sb.Append (code.Substring (lastOffset, match.Index - lastOffset));
@@ -176,10 +188,28 @@ namespace MonoDevelop.Ide.CodeTemplates
 				}
 				if (!variableDecarations.ContainsKey (name))
 					continue;
+				TextLink link = result.TextLinks.Find (l => l.Name == name);
+				bool isNew = link == null;
+				if (isNew) {
+					link         = new TextLink (name);
+					link.Tooltip = variableDecarations[name].ToolTip;
+					result.TextLinks.Add (link);
+				}
+				link.IsEditable = variableDecarations[name].IsEditable;
 				if (!string.IsNullOrEmpty (variableDecarations[name].Function)) {
 					string functionResult = expansion.RunFunction (context, variableDecarations[name].Function);
-					sb.Append (functionResult ?? variableDecarations[name].Default);
+					string s = functionResult ?? variableDecarations[name].Default;
+					link.AddLink (new Segment (sb.Length, s.Length));
+					if (isNew) {
+						link.GetStringFunc = delegate {
+							return expansion.RunFunction (context, variableDecarations[name].Function);
+						};
+					}
+					sb.Append (s);
 				} else {
+					link.AddLink (new Segment (sb.Length, variableDecarations[name].Default.Length));
+					if (isNew)
+						link.AddString (variableDecarations[name].Default);
 					sb.Append (variableDecarations[name].Default);
 				}
 			}
@@ -217,7 +247,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			return whitespaces.ToString ();
 		}
 		
-		public void InsertTemplate (ProjectDom dom, ParsedDocument doc, MonoDevelop.Ide.Gui.TextEditor editor)
+		public TemplateResult InsertTemplate (ProjectDom dom, ParsedDocument doc, MonoDevelop.Ide.Gui.TextEditor editor)
 		{
 			int offset = editor.CursorPosition;
 			int line, col;
@@ -244,6 +274,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			}
 			
 			TemplateResult template = FillVariables (context);
+			template.InsertPosition = offset;
 			editor.InsertText (offset, template.Code);
 			
 			if (template.CaretEndOffset >= 0) {
@@ -251,6 +282,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			} else {
 				editor.CursorPosition = offset + template.Code.Length; 
 			}
+			return template;
 		}
 
 #region I/O
