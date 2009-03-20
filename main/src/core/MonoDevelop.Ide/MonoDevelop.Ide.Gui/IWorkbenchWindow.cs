@@ -66,6 +66,11 @@ namespace MonoDevelop.Ide.Gui
 			set;
 		}
 		
+		Document Document {
+			get;
+			set;
+		}
+		
 		/// <summary>
 		/// Closes the window, if force == true it closes the window
 		/// without ask, even the content is dirty.

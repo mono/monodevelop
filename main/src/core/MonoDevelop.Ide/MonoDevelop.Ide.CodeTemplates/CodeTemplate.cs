@@ -197,12 +197,12 @@ namespace MonoDevelop.Ide.CodeTemplates
 				}
 				link.IsEditable = variableDecarations[name].IsEditable;
 				if (!string.IsNullOrEmpty (variableDecarations[name].Function)) {
-					string functionResult = expansion.RunFunction (context, variableDecarations[name].Function);
+					string functionResult = expansion.RunFunction (context, null, variableDecarations[name].Function);
 					string s = functionResult ?? variableDecarations[name].Default;
 					link.AddLink (new Segment (sb.Length, s.Length));
 					if (isNew) {
-						link.GetStringFunc = delegate {
-							return expansion.RunFunction (context, variableDecarations[name].Function);
+						link.GetStringFunc = delegate (Func<string, string> callback) {
+							return expansion.RunFunction (context, callback, variableDecarations[name].Function);
 						};
 					}
 					sb.Append (s);
@@ -247,13 +247,20 @@ namespace MonoDevelop.Ide.CodeTemplates
 			return whitespaces.ToString ();
 		}
 		
-		public TemplateResult InsertTemplate (ProjectDom dom, ParsedDocument doc, MonoDevelop.Ide.Gui.TextEditor editor)
+		public TemplateResult InsertTemplate (MonoDevelop.Ide.Gui.Document document)
 		{
+			ProjectDom dom = ProjectDomService.GetProjectDom (document.Project);
+			ParsedDocument doc = document.ParsedDocument;
+			MonoDevelop.Ide.Gui.TextEditor editor = document.TextEditor;
+				
 			int offset = editor.CursorPosition;
 			int line, col;
 			editor.GetLineColumnFromPosition (offset, out line, out col);
 			string leadingWhiteSpace = GetLeadingWhiteSpace (editor, editor.CursorLine);
+			
 			TemplateContext context = new TemplateContext {
+				Template       = this,
+				Document       = document,
 				ProjectDom     = dom,
 				ParsedDocument = doc,
 				InsertPosition = new DomLocation (line, col),

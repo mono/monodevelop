@@ -641,7 +641,7 @@ $selected$$end$
 				<Function>GetLengthProperty("collection")</Function>
 			</Variable>
 			<Variable name="type" isEditable="false">
-				<Default>object</Default>
+				<Default>var</Default>
 				<Function>GetComponentTypeOf("collection")</Function>
 			</Variable>
 		</Variables>
@@ -678,7 +678,7 @@ $selected$$end$
 				<Function>GetLengthProperty("collection")</Function>
 			</Variable>
 			<Variable name="type" isEditable="false">
-				<Default>object</Default>
+				<Default>var</Default>
 				<Function>GetComponentTypeOf("collection")</Function>
 			</Variable>
 		</Variables>

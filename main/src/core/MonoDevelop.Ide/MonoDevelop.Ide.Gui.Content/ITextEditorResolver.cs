@@ -34,5 +34,6 @@ namespace MonoDevelop.Ide.Gui.Content
 	public interface ITextEditorResolver
 	{
 		ResolveResult GetLanguageItem (int offset);
+		ResolveResult GetLanguageItem (int offset, string expression);
 	}
 }

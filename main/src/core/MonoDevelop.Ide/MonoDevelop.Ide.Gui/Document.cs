@@ -476,6 +476,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 			if (editorExtension != null)
 				last.Next = editor.AttachExtension (editorExtension);
+			window.Document = this;
 			
 			if (window is SdiWorkspaceWindow)
 				((SdiWorkspaceWindow)window).AttachToPathedDocument (GetContent<MonoDevelop.Ide.Gui.Content.IPathedDocument> ());

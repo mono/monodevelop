@@ -103,6 +103,11 @@ namespace MonoDevelop.Ide.Gui
 			get { return tabLabel; }
 		}
 
+		public Document Document {
+			get;
+			set;
+		}
+		
 		public bool ShowNotification {
 			get {
 				return show_notification;

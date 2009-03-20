@@ -1,5 +1,17 @@
 2009-03-20  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Gui/Document.cs:
+	* MonoDevelop.Ide.Gui/IWorkbenchWindow.cs:
+	* MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs:
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs:
+	* MonoDevelop.Ide.CodeTemplates/ExpansionObject.cs:
+	* MonoDevelop.Ide.Gui.Content/ITextEditorResolver.cs:
+	* MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplateCompletionData.cs:
+	  Implemented template function callbacks.
+
+2009-03-20  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.CodeTemplates/CodeTemplateCompletionData.cs:
 	  Added ICodeTemplateWidget interface.
 

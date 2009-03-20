@@ -33,7 +33,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 {
 	public interface ICodeTemplateWidget
 	{
-		void InsertTemplate (CodeTemplate template);
+		void InsertTemplate (CodeTemplate template, Document document);
 	}
 	
 	public class CodeTemplateCompletionData : CompletionData, IActionCompletionData
@@ -54,11 +54,9 @@ namespace MonoDevelop.Ide.CodeTemplates
 		public void InsertCompletionText (ICompletionWidget widget, ICodeCompletionContext context)
 		{
 			if (widget is ICodeTemplateWidget) {
-				((ICodeTemplateWidget)widget).InsertTemplate (template);
+				((ICodeTemplateWidget)widget).InsertTemplate (template, doc);
 			} else {
-				template.InsertTemplate (ProjectDomService.GetProjectDom (doc.Project),
-				                         doc.ParsedDocument,
-				                         doc.TextEditor);
+				template.InsertTemplate (doc);
 			}
 		}
 		

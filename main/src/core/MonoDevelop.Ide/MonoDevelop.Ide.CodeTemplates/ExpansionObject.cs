@@ -29,13 +29,19 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 
+using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.Projects.Dom.Output;
 
 namespace MonoDevelop.Ide.CodeTemplates
 {
 	public class TemplateContext
 	{
+		public CodeTemplate Template {
+			get;
+			set;
+		}
 		public ProjectDom ProjectDom {
 			get;
 			set;
@@ -60,6 +66,11 @@ namespace MonoDevelop.Ide.CodeTemplates
 			get;
 			set;
 		}
+		
+		public MonoDevelop.Ide.Gui.Document Document {
+			get;
+			set;
+		}
 	}
 	
 	public class ExpansionObject
@@ -77,14 +88,41 @@ namespace MonoDevelop.Ide.CodeTemplates
 			return type.Name;
 		}
 		
-		public string GetLengthProperty (string varName)
+		public string GetLengthProperty (Func<string, string> callback, string varName)
 		{
-			return "Length";
+			if (callback == null)
+				return "Count";
+			
+			string var = callback (varName);
+			ITextEditorResolver textEditorResolver = CurrentContext.Document.GetContent <ITextEditorResolver> ();
+			if (textEditorResolver != null) {
+				ResolveResult result =  textEditorResolver.GetLanguageItem (CurrentContext.Document.TextEditor.CursorPosition, var);
+				if (result != null && result.ResolvedType.ArrayDimensions > 0)
+					return "Length";
+			}
+			
+			return "Count";
 		}
 		
-		public string GetComponentTypeOf (string varName)
+		public string GetComponentTypeOf (Func<string, string> callback, string varName)
 		{
-			return "object";
+			if (callback == null)
+				return "var";
+			
+			string var = callback (varName);
+			ITextEditorResolver textEditorResolver = CurrentContext.Document.GetContent <ITextEditorResolver> ();
+			if (textEditorResolver != null) {
+				ResolveResult result =  textEditorResolver.GetLanguageItem (CurrentContext.Document.TextEditor.CursorPosition, var);
+				if (result != null) {
+					IReturnType componentType =  DomType.GetComponentType (CurrentContext.ProjectDom, result.ResolvedType);
+					if (componentType != null) {
+						Ambience ambience = AmbienceService.GetAmbience (CurrentContext.Template.MimeType);
+						return ambience != null ? ambience.GetString (componentType, OutputFlags.None) :  componentType.ToInvariantString ();
+					}
+				}
+			}
+
+			return "var";
 		}
 		
 		public string GetCollections ()
@@ -131,7 +169,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			}
 		}
 		
-		public virtual string RunFunction (TemplateContext context, string function)
+		public virtual string RunFunction (TemplateContext context, Func<string, string> callback, string function)
 		{
 			this.CurrentContext = context;
 			Match match = functionRegEx.Match (function);
@@ -146,9 +184,9 @@ namespace MonoDevelop.Ide.CodeTemplates
 			case "GetSimpleTypeName":
 				return GetSimpleTypeName (match.Groups[2].Value.Trim ('"'));
 			case "GetLengthProperty":
-				return GetLengthProperty (match.Groups[2].Value.Trim ('"'));
+				return GetLengthProperty (callback, match.Groups[2].Value.Trim ('"'));
 			case "GetComponentTypeOf":
-				return GetComponentTypeOf (match.Groups[2].Value.Trim ('"'));
+				return GetComponentTypeOf (callback, match.Groups[2].Value.Trim ('"'));
 			}
 			return null;
 		}
