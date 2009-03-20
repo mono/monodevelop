@@ -49,6 +49,11 @@ namespace MonoDevelop.CSharpBinding.Tests
 			get { return ""; }
 			set {}
 		}
+		
+		public Document Document {
+			get;
+			set;
+		}
 
 		public bool ShowNotification {
 			get { return false; }
