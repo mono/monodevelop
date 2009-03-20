@@ -1,3 +1,11 @@
+2009-03-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* icons/Icons.16x16.Reference:
+	* MonoDevelop.Core.Gui.csproj:
+	* MonoDevelop.Core.Gui.addin.xml:
+	* icons/project-reference-16.png: Replaced reference icon.
+
 2009-03-13  Andrés G. Aragoneses  <aaragoneses@novell.com>
 
 	* Base.glade: Making some strings not translatable.
