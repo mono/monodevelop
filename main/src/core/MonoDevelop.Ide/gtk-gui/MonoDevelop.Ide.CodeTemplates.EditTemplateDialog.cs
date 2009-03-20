@@ -188,6 +188,7 @@ namespace MonoDevelop.Ide.CodeTemplates {
             this.hbox5.Add(this.checkbuttonExpansion);
             Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(this.hbox5[this.checkbuttonExpansion]));
             w10.Position = 0;
+            w10.Expand = false;
             // Container child hbox5.Gtk.Box+BoxChild
             this.checkbuttonSurroundWith = new Gtk.CheckButton();
             this.checkbuttonSurroundWith.CanFocus = true;
