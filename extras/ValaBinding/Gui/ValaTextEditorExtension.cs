@@ -54,8 +54,8 @@ namespace MonoDevelop.ValaBinding
 		};
 		
 		private static char[] operators = new char[] {
-			'=', '*', '+', '-', '/', '%', ',', '&', '|',
-			'^', '[', '(', '!', '?', '<', '>', ':'
+			'=', '+', '-', ',', '&', '|',
+			'^', '[', '!', '?', '<', '>', ':'
 		};
 		
 		private ProjectInformation Parser {
