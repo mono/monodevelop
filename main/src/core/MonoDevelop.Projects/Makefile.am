@@ -58,6 +58,9 @@ FILES =  \
 	MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs \
 	MonoDevelop.Projects.Dom.Parser/TypeNameResolver.cs \
 	MonoDevelop.Projects.Dom.Parser/TypeResolverVisitor.cs \
+	MonoDevelop.Projects.Dom.Refactoring/Change.cs \
+	MonoDevelop.Projects.Dom.Refactoring/Refactoring.cs \
+	MonoDevelop.Projects.Dom.Refactoring/RefactoringService.cs \
 	MonoDevelop.Projects.Dom.Serialization/AssemblyCodeCompletionDatabase.cs \
 	MonoDevelop.Projects.Dom.Serialization/ClassEntry.cs \
 	MonoDevelop.Projects.Dom.Serialization/ClassInformationEventHandler.cs \

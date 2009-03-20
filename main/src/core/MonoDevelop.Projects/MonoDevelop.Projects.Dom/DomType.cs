@@ -714,6 +714,30 @@ namespace MonoDevelop.Projects.Dom
 			IType a = this is InstantiatedType ? ((InstantiatedType)this).UninstantiatedType : this;
 			return a.ToString ().GetHashCode ();
 		}
+		
+		public static IReturnType GetComponentType (ProjectDom dom, IReturnType returnType)
+		{
+			if (returnType == null)
+				return null;
+			
+			if (returnType.ArrayDimensions > 0)
+				return new DomReturnType (returnType.FullName);
+			
+			IType resolvedType = dom.GetType (returnType);
+			if (resolvedType != null) {
+				foreach (IType curType in dom.GetInheritanceTree (resolvedType)) {
+					foreach (IProperty property in curType.Properties) {
+						if (property.IsIndexer)
+							return property.ReturnType;
+					}
+				}
+			}
+			
+			if (returnType.GenericArguments.Count > 0) 
+				return returnType.GenericArguments[0];
+			
+			return null;
+		}
 
 		
 		public bool Equals (IType other)

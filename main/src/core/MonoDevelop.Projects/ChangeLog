@@ -1,3 +1,17 @@
+2009-03-20  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Projects.csproj: 
+
+	* MonoDevelop.Projects.Dom.Refactoring:
+	* MonoDevelop.Projects.Dom.Refactoring/Change.cs:
+	* MonoDevelop.Projects.Dom.Refactoring/Refactoring.cs:
+	* MonoDevelop.Projects.Dom.Refactoring/RefactoringService.cs:
+	  Started refactoring changes.
+
+	* MonoDevelop.Projects.Dom/DomType.cs: Added GetComponentType
+	  method.
+
 2009-03-19  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects.Policies/PolicyBag.cs: Expose method

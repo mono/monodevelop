@@ -331,6 +331,9 @@
     <Compile Include="MonoDevelop.Projects.Text\CodeFormatDescription.cs" />
     <Compile Include="MonoDevelop.Projects.Text\XmlDefinitionCodon.cs" />
     <Compile Include="MonoDevelop.Projects.Text\IPrettyPrinter.cs" />
+    <Compile Include="MonoDevelop.Projects.Dom.Refactoring\Refactoring.cs" />
+    <Compile Include="MonoDevelop.Projects.Dom.Refactoring\Change.cs" />
+    <Compile Include="MonoDevelop.Projects.Dom.Refactoring\RefactoringService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -361,4 +364,7 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
+  <ItemGroup>
+    <Folder Include="MonoDevelop.Projects.Dom.Refactoring\" />
+  </ItemGroup>
 </Project>
