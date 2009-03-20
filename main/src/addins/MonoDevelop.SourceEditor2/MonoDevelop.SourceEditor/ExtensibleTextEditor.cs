@@ -465,6 +465,82 @@ namespace MonoDevelop.SourceEditor
 			
 			return this.resolveResult;
 		}
+		
+		public ResolveResult GetLanguageItem (int offset, string expression)
+		{
+			string txt = this.Document.Text;
+			string fileName = view.ContentName ?? view.UntitledName;
+			
+			// we'll cache old results.
+			if (offset == oldOffset)
+				return this.resolveResult;
+			oldOffset = offset;
+			
+			this.resolveResult = null;
+			MonoDevelop.Ide.Gui.Document doc = IdeApp.Workbench.ActiveDocument;
+			if (doc == null)
+				return null;
+			
+			IParser parser = ProjectDomService.GetParser (fileName, Document.MimeType);
+			if (parser == null)
+				return null;
+
+			ProjectDom        dom      = this.ProjectDom;
+			IResolver         resolver = parser.CreateResolver (dom, doc, fileName);
+			IExpressionFinder expressionFinder = parser.CreateExpressionFinder (dom);
+			if (resolver == null || expressionFinder == null) 
+				return null;
+			int wordEnd = offset;
+			while (wordEnd < txt.Length && (Char.IsLetterOrDigit (txt[wordEnd]) || txt[wordEnd] == '_'))
+				wordEnd++;
+			ExpressionResult expressionResult = new ExpressionResult (expression);
+			
+			DocumentLocation loc = Document.OffsetToLocation (offset);
+			string savedExpression = null;
+			
+			if (expressionResult.ExpressionContext == ExpressionContext.Attribute) {
+				savedExpression = expressionResult.Expression;
+				expressionResult.Expression += "Attribute";
+				expressionResult.ExpressionContext = ExpressionContext.ObjectCreation;
+			} 
+			this.resolveResult = resolver.Resolve (expressionResult, new DomLocation (loc.Line + 1, loc.Column + 1));
+			
+			if (savedExpression != null && this.resolveResult == null) {
+				expressionResult.Expression = savedExpression;
+				this.resolveResult = resolver.Resolve (expressionResult, new DomLocation (loc.Line + 1, loc.Column + 1));
+			}
+			// Search for possible generic parameters.
+//			if (this.resolveResult == null || this.resolveResult.ResolvedType == null || String.IsNullOrEmpty (this.resolveResult.ResolvedType.Name)) {
+				int j = Document.LocationToOffset (expressionResult.Region.End.Line - 1, expressionResult.Region.End.Column - 1);
+				int bracket = 0;
+				for (int i = j; i >= 0 && i < Document.Length; i++) {
+					char ch = Document.GetCharAt (i);
+					if (Char.IsWhiteSpace (ch))
+						continue;
+					if (ch == '<') {
+						bracket++;
+					} else if (ch == '>') {
+						bracket--;
+						if (bracket == 0) {
+							expressionResult.Expression += Document.GetTextBetween (j, i + 1);
+							expressionResult.ExpressionContext = ExpressionContext.ObjectCreation;
+							this.resolveResult = resolver.Resolve (expressionResult, new DomLocation (loc.Line + 1, loc.Column + 1));
+							break;
+						}
+					} else {
+						if (bracket == 0)
+							break;
+					}
+				}
+//			}
+			
+			// To resolve method overloads the full expression must be parsed.
+			// ex.: Overload (1)/ Overload("one") - parsing "Overload" gives just a MethodResolveResult
+			if (this.resolveResult is MethodResolveResult) 
+				this.resolveResult = resolver.Resolve (expressionFinder.FindFullExpression (txt, wordEnd), new DomLocation (loc.Line + 1, loc.Column + 1)) ?? this.resolveResult;
+			
+			return this.resolveResult;
+		}
 
 		public string GetExpression (int offset)
 		{
@@ -584,18 +660,20 @@ namespace MonoDevelop.SourceEditor
 			string word = GetWordBeforeCaret ();
 			foreach (CodeTemplate template in CodeTemplateService.GetCodeTemplates (Document.MimeType)) {
 				if (template.Shortcut == word) {
-					InsertTemplate (template);
+					InsertTemplate (template, view.WorkbenchWindow.Document);
 					return true;
 				}
 			}
 			return false;
 		}
 		
-		public void InsertTemplate (CodeTemplate template)
+		public void InsertTemplate (CodeTemplate template, MonoDevelop.Ide.Gui.Document document)
 		{
-			CodeTemplate.TemplateResult result = template.InsertTemplate (this.ProjectDom,
-			                                                              view.SourceEditorWidget.ParsedDocument,
-			                                                              MonoDevelop.Ide.Gui.TextEditor.GetTextEditor (this.view));
+			CodeTemplate.TemplateResult result = template.InsertTemplate (document);
+			
+			/*this.ProjectDom,
+			  view.SourceEditorWidget.ParsedDocument,
+			  MonoDevelop.Ide.Gui.TextEditor.GetTextEditor (this.view));*/
 			TextLinkEditMode tle = new TextLinkEditMode (this, 
 			                                             result.InsertPosition,
 			                                             result.TextLinks);

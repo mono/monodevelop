@@ -1502,6 +1502,10 @@ namespace MonoDevelop.SourceEditor
 			return this.SourceEditorWidget.TextEditor.GetLanguageItem (offset);
 		}
 		
+		public ResolveResult GetLanguageItem (int offset, string expression)
+		{
+			return this.SourceEditorWidget.TextEditor.GetLanguageItem (offset, expression);
+		}
 		#endregion 
 		
 		#endregion
@@ -1510,9 +1514,9 @@ namespace MonoDevelop.SourceEditor
 			return TextEditor.GetTextEditorData ();
 		}
 		
-		public void InsertTemplate (CodeTemplate template)
+		public void InsertTemplate (CodeTemplate template, MonoDevelop.Ide.Gui.Document doc)
 		{
-			TextEditor.InsertTemplate (template);
+			TextEditor.InsertTemplate (template, doc);
 		}
 	}
 } 
