@@ -74,7 +74,7 @@ namespace Mono.TextEditor
 			set;
 		}
 		
-		public Func<string> GetStringFunc {
+		public Func<Func<string, string>, string> GetStringFunc {
 			get;
 			set;
 		}
@@ -224,19 +224,35 @@ namespace Mono.TextEditor
 				}
 				break;
 			}
-			
-			if (link != null) {
-				link.CurrentText = editor.Document.GetTextAt (link.PrimaryLink.Offset + baseOffset, 
-				                                              link.PrimaryLink.Length);
-				for (int i = link.Links.Count - 1; i > 0; i--) {
-					Segment s = link.Links[i];
-					editor.Replace (s.Offset + baseOffset, s.Length, link.CurrentText);
-					s.Length = link.CurrentText.Length;
+			foreach (TextLink l in links) {
+				if (l.GetStringFunc != null && !l.IsEditable) {
+					l.CurrentText = l.GetStringFunc (GetStringCallback);
+				} else {
+					l.CurrentText = editor.Document.GetTextAt (l.PrimaryLink.Offset + baseOffset, 
+					                                           l.PrimaryLink.Length);
 				}
-			} 
+				UpdateLinkText (l);
+			}
 			editor.Document.CommitUpdateAll ();
 		}
-
+		
+		public string GetStringCallback (string linkName)
+		{
+			foreach (TextLink link in links) {
+				if (link.Name == linkName)
+					return link.CurrentText;
+			}
+			return null;
+		}
+		
+		public void UpdateLinkText (TextLink link)
+		{
+			for (int i = link.Links.Count - 1; i >= 0; i--) {
+				Segment s = link.Links[i];
+				editor.Replace (s.Offset + baseOffset, s.Length, link.CurrentText);
+				s.Length = link.CurrentText.Length;
+			}
+		}
 		
 	}
 	
@@ -311,6 +327,4 @@ namespace Mono.TextEditor
 			return true;
 		}
 	}
-	
-
 }

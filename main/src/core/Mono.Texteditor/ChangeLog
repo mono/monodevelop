@@ -1,5 +1,10 @@
 2009-03-20  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextLinkEditMode.cs: Implemented function
+	  callbacks.
+
+2009-03-20  Mike Krüger  <mkrueger@novell.com>
+
 	* Styles/C64Style.xml:
 	* Styles/BrownStyle.xml:
 	* Styles/OblivionStyle.xml:
