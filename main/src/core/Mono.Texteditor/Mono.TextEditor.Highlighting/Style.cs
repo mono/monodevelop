@@ -290,6 +290,19 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 		
+		public const string PrimaryTemplateColorString = "marker.template.primary_template";
+		public virtual ChunkStyle PrimaryTemplate {
+			get {
+				return GetChunkStyle (PrimaryTemplateColorString);
+			}
+		}
+		
+		public const string SecondaryTemplateColorString = "marker.template.secondary_template";
+		public virtual ChunkStyle SecondaryTemplate {
+			get {
+				return GetChunkStyle (SecondaryTemplateColorString);
+			}
+		}
 		#endregion
 		
 		public string Name {
@@ -372,6 +385,9 @@ namespace Mono.TextEditor.Highlighting
 			SetStyle ("diff.header-oldfile", new ReferencedChunkStyle (this, "diff.header"));
 			SetStyle ("diff.header-newfile", new ReferencedChunkStyle (this, "diff.header"));
 			SetStyle ("diff.location", new ReferencedChunkStyle (this, "keyword.misc"));
+			
+			SetStyle (PrimaryTemplateColorString, new ChunkStyle (new Gdk.Color (0, 0, 0), new Gdk.Color (0xB4, 0xE4, 0xB4)));
+			SetStyle (SecondaryTemplateColorString, new ChunkStyle (new Gdk.Color (0x7F, 0x7F, 0x7F), new Gdk.Color (0xFF, 0xFF, 0xFF)));
 		}
 		
 		protected void PopulateDefaults ()

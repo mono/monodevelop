@@ -1,3 +1,17 @@
+2009-03-20  Mike Krüger  <mkrueger@novell.com>
+
+	* Styles/C64Style.xml:
+	* Styles/BrownStyle.xml:
+	* Styles/OblivionStyle.xml:
+	* Styles/TangoLightStyle.xml:
+	* Styles/VisualStudioStyle.xml:
+	* Mono.TextEditor/TextMarker.cs:
+	* Mono.TextEditor/LineSegment.cs:
+	* Mono.TextEditor/TextViewMargin.cs:
+	* Mono.TextEditor/TextLinkEditMode.cs:
+	* Mono.TextEditor.Highlighting/Style.cs: Worked on text link
+	  edit mode.
+
 2009-03-13  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* Mono.TextEditor.Vi/ViMode.cs: Clear selection when pasting.

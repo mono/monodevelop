@@ -388,8 +388,7 @@ namespace Mono.TextEditor
 				IBackgroundMarker bgMarker = marker as IBackgroundMarker;
 				if (bgMarker == null) 
 					continue;
-				drawBg = false;
-				drawText &= bgMarker.DrawBackground (textEditor, win, selected, startOffset, curOffset, y, oldxPos, oldxPos + xPos);
+				drawText &= bgMarker.DrawBackground (textEditor, win, selected, startOffset, curOffset, y, oldxPos, oldxPos + xPos, ref drawBg);
 			}
 			if (drawText) {
 				string text = wordBuilder.ToString ();
@@ -499,8 +498,7 @@ namespace Mono.TextEditor
 						IBackgroundMarker bgMarker = marker as IBackgroundMarker;
 						if (bgMarker == null) 
 							continue;
-						drawBg = false;
-						drawText &= bgMarker.DrawBackground (textEditor, win, selected, offset, offset + 1, y, xPos, xPos + charWidth);
+						drawText &= bgMarker.DrawBackground (textEditor, win, selected, offset, offset + 1, y, xPos, xPos + charWidth, ref drawBg);
 					}
 					int width = this.charWidth;
 					if (drawText) {
@@ -528,8 +526,7 @@ namespace Mono.TextEditor
 						IBackgroundMarker bgMarker = marker as IBackgroundMarker;
 						if (bgMarker == null) 
 							continue;
-						drawBg = false;
-						drawText &= bgMarker.DrawBackground (textEditor, win, selected, offset, offset + 1, y, xPos, xPos + charWidth);
+						drawText &= bgMarker.DrawBackground (textEditor, win, selected, offset, offset + 1, y, xPos, xPos + charWidth, ref drawBg);
 					}
 					if (drawText) {
 						if (drawBg) {
@@ -558,8 +555,7 @@ namespace Mono.TextEditor
 						IBackgroundMarker bgMarker = marker as IBackgroundMarker;
 						if (bgMarker == null) 
 							continue;
-						drawBg = false;
-						drawText &= bgMarker.DrawBackground (textEditor, win, selected, offset, offset + 1, y, xPos, xPos + charWidth);
+						drawText &= bgMarker.DrawBackground (textEditor, win, selected, offset, offset + 1, y, xPos, xPos + charWidth, ref drawBg);
 					}
 					if (drawText) {
 						if (drawBg)

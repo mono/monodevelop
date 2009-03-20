@@ -26,6 +26,7 @@
 //
 
 using System;
+using System.Linq;
 using System.Text;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -147,6 +148,13 @@ namespace Mono.TextEditor
 			markers.Remove (marker);
 			if (markers.Count == 0)
 				markers = null;
+		}
+		
+		internal TextMarker GetMarker (Type type)
+		{
+			if (markers == null)
+				return null;
+			return markers.Find (m => m.GetType () == type);
 		}
 		
 		internal void RemoveMarker (Type type)

@@ -66,6 +66,9 @@
 	<Style name="marker.line.changed" color="chameleon2"/>
 	<Style name="marker.line.dirty" color="butter2"/>
 	
+	<Style name="marker.template.primary_template" color="black" bgColor="#b4e4b4"/>
+	<Style name="marker.template.secondary_template" color="gray" bgColor="white"/>
+		
 	<Style name="marker.ruler" color="aluminium5"/>
 	<Style name="marker.whitespace" color="aluminium3"/>
 	<Style name="marker.invalidline" color="orange1"/>

@@ -101,6 +101,11 @@
 			<Style name="error" color="scarletred1"/>
 			<Style name="warning" color="butter2"/>
 		</Style>
+		
+		<Style name="template">
+			<Style name="primary_template" color="aluminium6" bgColor="chameleon1"/>
+			<Style name="secondary_template" color="aluminium4" bgColor="aluminium2"/>
+		</Style>
 	</Style>
 
 	<Style name="linenumber" color="aluminium4" bgColor="white">
