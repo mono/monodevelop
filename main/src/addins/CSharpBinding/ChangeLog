@@ -1,3 +1,8 @@
+2009-03-20  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* templates/GtkSharp2Project.xpt.xml: Don't require specific
+	  GTK# versions.
+
 2009-03-19  Mike Krüger  <mkrueger@novell.com>
 
 	* Gui/NRefactoryResolver.cs:
