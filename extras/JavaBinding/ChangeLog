@@ -1,3 +1,10 @@
+2009-03-20  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* templates/IkvmGtkApplicationProject.xpt.xml:
+	* templates/IkvmGnomeApplicationProject.xpt.xml:
+	* templates/IkvmGladeApplicationProject.xpt.xml: Don't require
+	  specific GTK# versions.
+
 2009-03-17  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* IKVMCompilerManager.cs: Track API.
