@@ -1,5 +1,10 @@
 2009-03-20  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplateCompletionData.cs:
+	  Added ICodeTemplateWidget interface.
+
+2009-03-20  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs: Worked on
 	  text link edit mode.
 
