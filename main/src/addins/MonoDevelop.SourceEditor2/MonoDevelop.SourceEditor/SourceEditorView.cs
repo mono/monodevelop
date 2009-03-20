@@ -50,13 +50,15 @@ using MonoDevelop.Debugger;
 using Mono.Debugging.Client;
 using MonoDevelop.DesignerSupport.Toolbox;
 using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide.CodeTemplates;
 using Services = MonoDevelop.Projects.Services;
 
 namespace MonoDevelop.SourceEditor
 {	
 	public class SourceEditorView : AbstractViewContent, IExtensibleTextEditor, IBookmarkBuffer, IClipboardHandler, 
 		ICompletionWidget, IDocumentInformation, ISplittable, IFoldable, IToolboxDynamicProvider, IEncodedTextContent,
-		ICustomFilteringToolboxConsumer, IZoomable, ITextEditorResolver, Mono.TextEditor.ITextEditorDataProvider
+		ICustomFilteringToolboxConsumer, IZoomable, ITextEditorResolver, Mono.TextEditor.ITextEditorDataProvider,
+		ICodeTemplateWidget
 #if GNOME_PRINT
 		, IPrintable
 #endif
@@ -1506,6 +1508,11 @@ namespace MonoDevelop.SourceEditor
 		public Mono.TextEditor.TextEditorData GetTextEditorData ()
 		{
 			return TextEditor.GetTextEditorData ();
+		}
+		
+		public void InsertTemplate (CodeTemplate template)
+		{
+			TextEditor.InsertTemplate (template);
 		}
 	}
 } 

@@ -604,8 +604,8 @@ namespace MonoDevelop.SourceEditor
 				tle.StartMode ();
 				CurrentMode = tle;
 			}
-			
-		}		
+		}
+		
 #endregion
 		
 #region Key bindings
