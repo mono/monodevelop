@@ -167,6 +167,8 @@ namespace MonoDevelop.AspNet
 		public AspNetAppProject (string languageName, ProjectCreateInformation info, XmlElement projectOptions)
 			: base (languageName, info, projectOptions)
 		{
+			foreach (AspNetAppProjectConfiguration conf in Configurations)
+				conf.OutputDirectory = "bin";
 		}	
 		
 		public override SolutionItemConfiguration CreateConfiguration (string name)
