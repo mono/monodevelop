@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Xml;
 using MonoDevelop.Core;
 
@@ -57,6 +58,13 @@ namespace MonoDevelop.Ide.CodeTemplates
 			set;
 		}
 		
+		List<string> values = new List<string> ();
+		public List<string> Values {
+			get {
+				return values;
+			}
+		}
+		
 		public CodeTemplateVariable ()
 		{
 			IsEditable = true;
@@ -71,6 +79,8 @@ namespace MonoDevelop.Ide.CodeTemplates
 		const string nameAttribute       = "name";
 		const string editableAttribute   = "isEditable";
 		const string DefaultNode         = "Default";
+		const string ValuesNode          = "Values";
+		const string ValueNode           = "Value";
 		const string TooltipNode         = "_ToolTip";
 		const string FunctionNode        = "Function";
 
@@ -86,6 +96,16 @@ namespace MonoDevelop.Ide.CodeTemplates
 				writer.WriteStartElement (DefaultNode);
 				writer.WriteString (Default);
 				writer.WriteEndElement (); 
+			}
+			
+			if (Values.Count > 0) {
+				writer.WriteStartElement (ValuesNode);
+				foreach (string val in Values) {
+					writer.WriteStartElement (ValueNode);
+					writer.WriteString (val);
+					writer.WriteEndElement (); 
+				}
+				writer.WriteEndElement (); // ValuesNode
 			}
 			
 			if (!string.IsNullOrEmpty (ToolTip)) {
@@ -119,6 +139,16 @@ namespace MonoDevelop.Ide.CodeTemplates
 					return true;
 				case TooltipNode:
 					result.ToolTip = reader.ReadElementContentAsString ();
+					return true;
+				case ValuesNode:
+					XmlReadHelper.ReadList (reader, ValuesNode, delegate () {
+						switch (reader.LocalName) {
+						case ValueNode:
+							result.Values.Add (reader.ReadElementContentAsString ());
+							return true;
+						}
+						return false;
+					});
 					return true;
 				case FunctionNode:
 					result.Function = reader.ReadElementContentAsString ();

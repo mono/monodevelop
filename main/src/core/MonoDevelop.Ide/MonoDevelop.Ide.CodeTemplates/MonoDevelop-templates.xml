@@ -35,12 +35,38 @@
 			</Variable>
 			<Variable name="target">
 				<Default>All</Default>
+				<Values>
+					<Value>Assembly</Value>
+					<Value>Module</Value>
+					<Value>Class</Value>
+					<Value>Struct</Value>
+					<Value>Enum</Value>
+					<Value>Constructor</Value>
+					<Value>Method</Value>
+					<Value>Property</Value>
+					<Value>Field</Value>
+					<Value>Event</Value>
+					<Value>Interface</Value>
+					<Value>Parameter</Value>
+					<Value>Delegate</Value>
+					<Value>ReturnValue</Value>
+					<Value>GenericParameter</Value>
+					<Value>All</Value>
+				</Values>
 			</Variable>
 			<Variable name="inherited">
 				<Default>false</Default>
+				<Values>
+					<Value>true</Value>
+					<Value>false</Value>
+				</Values>
 			</Variable>
 			<Variable name="allowmultiple">
 				<Default>true</Default>
+				<Values>
+					<Value>true</Value>
+					<Value>false</Value>
+				</Values>
 			</Variable>
 			<Variable name="SystemAttribute" isEditable="false">
 				<Default>System.Attribute</Default>
