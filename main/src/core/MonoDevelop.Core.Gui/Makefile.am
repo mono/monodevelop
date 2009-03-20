@@ -147,7 +147,6 @@ RES =  \
 	icons/Icons.16x16.OpenReferenceFolder \
 	icons/Icons.16x16.OpenResourceFolder \
 	icons/Icons.16x16.OutputIcon \
-	icons/Icons.16x16.Reference \
 	icons/Icons.16x16.ReplaceInFiles \
 	icons/Icons.16x16.ResourceFileIcon \
 	icons/Icons.16x16.SaveAllIcon \
@@ -181,6 +180,7 @@ RES =  \
 	icons/project-console-32.png \
 	icons/project-gui-32.png \
 	icons/project-library-32.png \
+	icons/project-reference-16.png \
 	icons/solution-16.png \
 	icons/solution-32.png \
 	icons/solution-folder-closed-16.png \

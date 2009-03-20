@@ -141,9 +141,6 @@
     <EmbeddedResource Include="icons\Icons.16x16.OutputIcon">
       <LogicalName>Icons.16x16.OutputIcon</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.Reference">
-      <LogicalName>Icons.16x16.Reference</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\Icons.16x16.ReplaceInFiles">
       <LogicalName>Icons.16x16.ReplaceInFiles</LogicalName>
     </EmbeddedResource>
@@ -435,6 +432,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\translation-valid-16.png">
       <LogicalName>translation-valid-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-reference-16.png">
+      <LogicalName>project-reference-16.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
