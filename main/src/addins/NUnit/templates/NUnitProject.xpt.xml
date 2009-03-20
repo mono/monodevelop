@@ -25,8 +25,8 @@
 			
 			<References>
 				<Reference type="Gac" refto="System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-				<Reference type="Gac" refto="nunit.core, Version=2.2.9.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77" />
-				<Reference type="Gac" refto="nunit.framework, Version=2.2.9.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77" />
+				<Reference type="Gac" refto="nunit.core, Version=2.4.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77" />
+				<Reference type="Gac" refto="nunit.framework, Version=2.4.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77" />
 			</References>
 		
 			<Files>

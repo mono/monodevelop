@@ -1,3 +1,8 @@
+2009-03-20  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* templates/VBGtkSharp2Project.xpt.xml: Don't require specific
+	  GTK# versions.
+
 2009-03-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* VBBindingCompilerServices.cs: Added workaround for bug
