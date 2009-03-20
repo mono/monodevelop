@@ -1,5 +1,11 @@
 2009-03-19  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Projects.Policies/PolicyBag.cs: Expose method
+	  for getting policy directly from the bag without cacading or
+	  creating default values.
+
+2009-03-19  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs:
 	* MonoDevelop.Projects.Dom.Serialization/DatabaseProjectDom.cs:
 	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:

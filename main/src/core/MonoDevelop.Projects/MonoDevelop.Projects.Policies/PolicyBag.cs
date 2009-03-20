@@ -71,7 +71,8 @@ namespace MonoDevelop.Projects.Policies
 				return Owner.ParentFolder.Policies.Get<T> ();
 		}
 		
-		T DirectGet<T> () where T : class, IEquatable<T>, new ()
+		// Gets policy directly from the bag without cacading or creating default instances
+		public T DirectGet<T> () where T : class, IEquatable<T>, new ()
 		{
 			if (policies != null) {
 				object policy;

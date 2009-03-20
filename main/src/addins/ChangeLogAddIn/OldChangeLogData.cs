@@ -61,14 +61,14 @@ namespace MonoDevelop.ChangeLogAddIn
 			
 			entry.ExtendedProperties.Remove ("MonoDevelop.ChangeLogAddIn.ChangeLogInfo");
 			
+			if (entry.Policies.DirectGet<ChangeLogPolicy> () != null)
+				return;
+			
 			ChangeLogPolicyEnum policy = data.policy;
 			
 			if ((entry is SolutionFolder) && ((SolutionFolder)entry).IsRoot) {
 				if (policy == ChangeLogPolicyEnum.UseParentPolicy)
 					policy = ChangeLogPolicyEnum.UpdateNearestChangeLog;
-			} else {
-				if (entry.Policies.Has<ChangeLogPolicy> ())
-					return;
 			}
 			
 			ChangeLogUpdateMode mode;
@@ -94,7 +94,7 @@ namespace MonoDevelop.ChangeLogAddIn
 				throw new InvalidOperationException ("Unknown value '" + policy + "'");
 			}
 			
-			entry.Policies.Set (new ChangeLogPolicy (mode, intEnabled, new MonoDevelop.VersionControl.CommitMessageStyle ()));
+			entry.Policies.Set (new ChangeLogPolicy (mode, intEnabled, null));
 		}
 	}
 }

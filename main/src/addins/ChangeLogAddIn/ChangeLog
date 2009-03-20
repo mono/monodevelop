@@ -1,3 +1,9 @@
+2009-03-19  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* OldChangeLogData.cs: Don't set value for commit message
+	  style. Fix whether solution already has a policy. Fixes "Bug
+	  486756 - Regression in changelog addin".
+
 2009-03-17  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am:
