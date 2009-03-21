@@ -232,12 +232,6 @@ namespace MonoDevelop.TextEditor.PopupWindow
 				case Gdk.Key.Scroll_Lock:
 					return KeyAction.Ignore;
 					
-				case Gdk.Key.Tab:
-					//tab always completes current item even if selection is disabled
-					if (list.SelectionDisabled)
-						list.SelectionDisabled = false;
-					goto case Gdk.Key.Return;
-				
 				case Gdk.Key.Return:
 				case Gdk.Key.ISO_Enter:
 				case Gdk.Key.Key_3270_Enter:

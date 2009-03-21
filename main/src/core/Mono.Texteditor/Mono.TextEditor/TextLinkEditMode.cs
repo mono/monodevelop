@@ -183,7 +183,7 @@ namespace Mono.TextEditor
 			this.editor.TooltipProviders.Insert (0, tooltipProvider);
 			this.editor.Caret.PositionChanged += HandlePositionChanged;
 		}
-
+		TextLink closedLink = null;
 		void HandlePositionChanged(object sender, DocumentLocationEventArgs e)
 		{
 			int caretOffset = editor.Caret.Offset - baseOffset;
@@ -192,6 +192,9 @@ namespace Mono.TextEditor
 			if (link != null && link.ItemCount > 0) {
 				if (window != null && window.DataProvider != link)
 					DestroyWindow ();
+				if (closedLink == link)
+					return;
+				closedLink = null;
 				if (window == null) {
 					window = new ListWindow ();
 					window.DataProvider = link;
@@ -206,6 +209,7 @@ namespace Mono.TextEditor
 				} 
 			} else {
 				DestroyWindow ();
+				closedLink = null;
 			}
 		}
 		
@@ -293,25 +297,26 @@ namespace Mono.TextEditor
 			if (window == null)
 				return;
 			TextLink lnk = (TextLink)window.DataProvider;
+			int line = editor.Caret.Line;
 			editor.Replace (baseOffset + lnk.PrimaryLink.Offset, lnk.PrimaryLink.Length, window.CompleteWord);
-			DestroyWindow ();
-			GotoNextLink (lnk);
+			lnk.CurrentText = window.CompleteWord;
 		}
 		
 		protected override void HandleKeypress (Gdk.Key key, uint unicodeKey, Gdk.ModifierType modifier)
 		{
 			if (window != null) {
 				ListWindow.KeyAction action = window.ProcessKey (key, modifier);
-				switch (action) {
-				case ListWindow.KeyAction.Ignore:
-					return;
-				case ListWindow.KeyAction.CloseWindow:
-					DestroyWindow ();
-					return;
-				case ListWindow.KeyAction.Complete:
+				if ((action & ListWindow.KeyAction.Complete) == ListWindow.KeyAction.Complete)
 					CompleteWindow ();
+				if ((action & ListWindow.KeyAction.CloseWindow) == ListWindow.KeyAction.CloseWindow) {
+					closedLink = (TextLink)window.DataProvider;
+					DestroyWindow ();
+				}
+				if ((action & ListWindow.KeyAction.Complete) == ListWindow.KeyAction.Complete)
+					GotoNextLink (closedLink);
+
+				if ((action & ListWindow.KeyAction.Ignore) == ListWindow.KeyAction.Ignore)
 					return;
-				};
 			}
 			int caretOffset = editor.Caret.Offset - baseOffset;
 			TextLink link = links.Find (l => l.Links.Any (s => s.Offset <= caretOffset && caretOffset <= s.EndOffset));
@@ -470,7 +475,7 @@ namespace Mono.TextEditor
 					if (BaseOffset + segment.Offset <= startOffset && startOffset < BaseOffset + segment.EndOffset) {
 						int strOffset    = startOffset - (BaseOffset + segment.Offset);
 						int strEndOffset = System.Math.Min (segment.Length, endOffset - startOffset);
-						string txt = strEndOffset > strOffset ? link.CurrentText.Substring (strOffset, strEndOffset - strOffset) : "";
+						string txt = strEndOffset - strOffset <= link.CurrentText.Length - strOffset ? link.CurrentText.Substring (strOffset, strEndOffset - strOffset) : "";
 						int width = editor.GetWidth (txt);
 						using (Gdk.GC rectangleGc = new Gdk.GC (win)) {
 							rectangleGc.ClipRectangle = clipRectangle;

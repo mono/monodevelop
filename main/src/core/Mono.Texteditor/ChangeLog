@@ -1,5 +1,11 @@
 2009-03-21  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextLinkEditMode.cs:
+	* Mono.TextEditor.PopupWindow/ListWindow.cs: Worked on text
+	  link mode.
+
+2009-03-21  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* Styles/C64Style.xml:
 	* Styles/BrownStyle.xml:
