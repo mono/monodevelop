@@ -39,8 +39,10 @@
 	<Style name="text.selection" color="white" bgColor="#0a246a"/>
 	<Style name="text.background.searchresult" color="yellow"/>
 	
-	<Style name="marker.template.primary_template" color="black" bgColor="#b4e4b4"/>
-	<Style name="marker.template.secondary_template" color="gray" bgColor="white"/>
+	<Style name="marker.template.primary_template" color="#b4e4b4" bgColor="#b4e4b4"/>
+	<Style name="marker.template.primary_highlighted_template" color="black" bgColor="#b4e4b4"/>
+	<Style name="marker.template.secondary_template" color="white" bgColor="white"/>
+	<Style name="marker.template.secondary_highlighted_template" color="gray" bgColor="white"/>
 	
 	<Style name="text.link" color="skyblue"/>
 	

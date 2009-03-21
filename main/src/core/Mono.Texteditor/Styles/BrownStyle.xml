@@ -87,7 +87,9 @@
 	<Style name="marker.bookmark.color2" color="human_base"/>
 	
 	<Style name="marker.template.primary_template" color="black" bgColor="#b4e4b4"/>
-	<Style name="marker.template.secondary_template" color="gray" bgColor="white"/>
+	<Style name="marker.template.primary_highlighted_template" color="black" bgColor="#b4e4b4"/>
+	<Style name="marker.template.secondary_template" color="white" bgColor="white"/>
+	<Style name="marker.template.secondary_highlighted_template" color="gray" bgColor="white"/>
 	
 <!-- TODO: override defaults
 	<Style name="marker.underline" color="red"/>

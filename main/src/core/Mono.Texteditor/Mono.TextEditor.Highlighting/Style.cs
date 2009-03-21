@@ -297,10 +297,24 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 		
+		public const string PrimaryTemplateHighlightedColorString = "marker.template.primary_highlighted_template";
+		public virtual ChunkStyle PrimaryTemplateHighlighted {
+			get {
+				return GetChunkStyle (PrimaryTemplateHighlightedColorString);
+			}
+		}
+		
 		public const string SecondaryTemplateColorString = "marker.template.secondary_template";
 		public virtual ChunkStyle SecondaryTemplate {
 			get {
 				return GetChunkStyle (SecondaryTemplateColorString);
+			}
+		}
+		
+		public const string SecondaryTemplateHighlightedColorString = "marker.template.secondary_highlighted_template";
+		public virtual ChunkStyle SecondaryTemplateHighlighted {
+			get {
+				return GetChunkStyle (SecondaryTemplateHighlightedColorString);
 			}
 		}
 		#endregion
@@ -386,8 +400,11 @@ namespace Mono.TextEditor.Highlighting
 			SetStyle ("diff.header-newfile", new ReferencedChunkStyle (this, "diff.header"));
 			SetStyle ("diff.location", new ReferencedChunkStyle (this, "keyword.misc"));
 			
-			SetStyle (PrimaryTemplateColorString, new ChunkStyle (new Gdk.Color (0, 0, 0), new Gdk.Color (0xB4, 0xE4, 0xB4)));
-			SetStyle (SecondaryTemplateColorString, new ChunkStyle (new Gdk.Color (0x7F, 0x7F, 0x7F), new Gdk.Color (0xFF, 0xFF, 0xFF)));
+			SetStyle (PrimaryTemplateColorString, new ChunkStyle (new Gdk.Color (0xB4, 0xE4, 0xB4), new Gdk.Color (0xB4, 0xE4, 0xB4)));
+			SetStyle (PrimaryTemplateHighlightedColorString, new ChunkStyle (new Gdk.Color (0, 0, 0), new Gdk.Color (0xB4, 0xE4, 0xB4)));
+			
+			SetStyle (SecondaryTemplateColorString, new ChunkStyle (new Gdk.Color (0xFF, 0xFF, 0xFF), new Gdk.Color (0xFF, 0xFF, 0xFF)));
+			SetStyle (SecondaryTemplateHighlightedColorString, new ChunkStyle (new Gdk.Color (0x7F, 0x7F, 0x7F), new Gdk.Color (0xFF, 0xFF, 0xFF)));
 		}
 		
 		protected void PopulateDefaults ()

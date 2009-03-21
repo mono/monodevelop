@@ -1511,7 +1511,8 @@ namespace Mono.TextEditor
 			    
 			tipWindow.Move (x, yloc + oy + 20);
 			tipWindow.ShowAll ();
-		}		
+		}
+		
 
 		public void HideTooltip ()
 		{

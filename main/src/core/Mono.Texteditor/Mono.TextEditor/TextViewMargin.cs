@@ -967,8 +967,9 @@ namespace Mono.TextEditor
 		
 		public static int GetNextTabstop (TextEditorData textEditor, int currentColumn)
 		{
-			int result = currentColumn + textEditor.Options.TabSize;
-			return (result / textEditor.Options.TabSize) * textEditor.Options.TabSize;
+			int tabSize = textEditor != null && textEditor.Options != null ? textEditor.Options.TabSize : 4;
+			int result = currentColumn + tabSize;
+			return (result / tabSize) * tabSize;
 		}
 		
 		internal int rulerX = 0;

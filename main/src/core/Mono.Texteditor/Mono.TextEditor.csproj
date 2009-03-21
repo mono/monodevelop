@@ -120,6 +120,7 @@
     <Compile Include="Mono.TextEditor\ITextEditorOptions.cs" />
     <Compile Include="Mono.TextEditor\TextLinkEditMode.cs" />
     <Compile Include="Mono.TextEditor.PopupWindow\TooltipWindow.cs" />
+    <Compile Include="Mono.TextEditor.PopupWindow\ListWindow.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

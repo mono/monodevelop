@@ -103,8 +103,10 @@
 		</Style>
 		
 		<Style name="template">
-			<Style name="primary_template" color="aluminium6" bgColor="chameleon1"/>
-			<Style name="secondary_template" color="aluminium4" bgColor="aluminium2"/>
+			<Style name="primary_template" color="chameleon2" bgColor="chameleon1"/>
+			<Style name="primary_highlighted_template" color="aluminium6" bgColor="orange2"/>
+			<Style name="secondary_template" color="aluminium4" bgColor="white"/>
+			<Style name="secondary_highlighted_template" color="aluminium4" bgColor="aluminium2"/>
 		</Style>
 	</Style>
 

@@ -142,7 +142,7 @@ namespace Mono.TextEditor
 			set;
 		}
 		
-		public Caret (TextEditorData editor, Document document)
+		public Caret (TextEditorData Editor, Document document)
 		{
 			this.editor = editor;
 			this.document = document;

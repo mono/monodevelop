@@ -1,6 +1,25 @@
 2009-03-21  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:
+	* Styles/C64Style.xml:
+	* Styles/BrownStyle.xml:
+	* Mono.TextEditor.csproj:
+	* Styles/OblivionStyle.xml:
+	* Mono.TextEditor/Caret.cs:
+	* Mono.TextEditor/Margin.cs:
+	* Styles/TangoLightStyle.xml:
+	* Styles/VisualStudioStyle.xml:
+	* Mono.TextEditor/TextMarker.cs:
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/TextViewMargin.cs:
+	* Mono.TextEditor/TextLinkEditMode.cs:
+	* Mono.TextEditor.Highlighting/Style.cs:
+	* Mono.TextEditor.PopupWindow/ListWindow.cs: Worked on text
+	  link editor mode.
+
+2009-03-21  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
 	* gtk-gui/objects.xml:
 	* Mono.TextEditor.csproj:
 	* Mono.TextEditor.PopupWindow:

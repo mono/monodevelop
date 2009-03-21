@@ -152,7 +152,7 @@ namespace Mono.TextEditor
 		public int LineNumber {
 			get {
 				if (lineNumber == -2) {
-					lineNumber = editor.Document.VisualToLogicalLine ((int)((y + editor.VAdjustment.Value) / editor.LineHeight));
+					lineNumber = Editor.Document.VisualToLogicalLine ((int)((y + editor.VAdjustment.Value) / editor.LineHeight));
 					if (lineNumber >= editor.Document.LineCount)
 						lineNumber = -1;
 				}

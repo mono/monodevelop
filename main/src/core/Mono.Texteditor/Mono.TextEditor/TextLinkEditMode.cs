@@ -31,7 +31,7 @@ using MonoDevelop.TextEditor.PopupWindow;
 
 namespace Mono.TextEditor	
 {
-	public class TextLink
+	public class TextLink : IListDataProvider
 	{
 		public ISegment PrimaryLink {
 			get {
@@ -75,6 +75,11 @@ namespace Mono.TextEditor
 			set;
 		}
 		
+		public string[] Values {
+			get;
+			set;
+		}
+		
 		public Func<Func<string, string>, string> GetStringFunc {
 			get;
 			set;
@@ -95,6 +100,39 @@ namespace Mono.TextEditor
 		{
 			this.proposedStrings.Add (proposedString);
 		}
+	
+		#region IListDataProvider implementation
+		public string GetText (int n)
+		{
+			return Values[n];
+		}
+		
+		public string GetMarkup (int n)
+		{
+			return Values[n];
+		}
+		
+		public bool HasMarkup (int n)
+		{
+			return true;
+		}
+		
+		public string GetCompletionText (int n)
+		{
+			return Values[n];
+		}
+		
+		public Gdk.Pixbuf GetIcon (int n)
+		{
+			return null;
+		}
+		
+		public int ItemCount {
+			get {
+				return Values != null ? Values.Length : 0;
+			}
+		}
+		#endregion
 	}
 	
 	public class TextLinkEditMode : SimpleEditMode
@@ -127,6 +165,13 @@ namespace Mono.TextEditor
 				return links.Any (l => l.IsEditable);
 			}
 		}
+	
+		public TextEditor Editor {
+			get {
+				return editor;
+			}
+		}
+		
 		TextLinkTooltipProvider tooltipProvider;
 		public TextLinkEditMode (TextEditor editor, int baseOffset, List<TextLink> links)
 		{
@@ -136,6 +181,32 @@ namespace Mono.TextEditor
 			this.endOffset = editor.Caret.Offset;
 			tooltipProvider = new TextLinkTooltipProvider (this);
 			this.editor.TooltipProviders.Insert (0, tooltipProvider);
+			this.editor.Caret.PositionChanged += HandlePositionChanged;
+		}
+
+		void HandlePositionChanged(object sender, DocumentLocationEventArgs e)
+		{
+			int caretOffset = editor.Caret.Offset - baseOffset;
+			TextLink link = links.Find (l => l.Links.Any (s => s.Offset <= caretOffset && caretOffset <= s.EndOffset));
+			
+			if (link != null && link.ItemCount > 0) {
+				if (window != null && window.DataProvider != link)
+					DestroyWindow ();
+				if (window == null) {
+					window = new ListWindow ();
+					window.DataProvider = link;
+					DocumentLocation loc = editor.Document.OffsetToLocation (BaseOffset + link.PrimaryLink.Offset);
+					Gdk.Point p = editor.TextViewMargin.LocationToDisplayCoordinates (loc);
+					int ox = 0, oy = 0;
+					editor.GdkWindow.GetOrigin (out ox, out oy);
+			
+					window.Move (ox + p.X - window.TextOffset , oy + p.Y + editor.LineHeight);
+					window.ShowAll ();
+					
+				} 
+			} else {
+				DestroyWindow ();
+			}
 		}
 		
 		public void StartMode ()
@@ -145,13 +216,14 @@ namespace Mono.TextEditor
 				                                              link.PrimaryLink.Length);
 				foreach (ISegment segment in link.Links) {
 					LineSegment line = editor.Document.GetLineByOffset (baseOffset + segment.Offset);
+					if (line.GetMarker (typeof (TextLinkMarker)) != null)
+						continue;
 					TextLinkMarker marker = (TextLinkMarker)line.GetMarker (typeof (TextLinkMarker));
 					if (marker == null) {
-						marker = new TextLinkMarker ();
+						marker = new TextLinkMarker (this);
 						marker.BaseOffset = baseOffset;
 						line.AddMarker (marker);
 					}
-					marker.AddLink (link);
 				}
 			}
 			TextLink firstLink = links.First (l => l.IsEditable);
@@ -161,14 +233,18 @@ namespace Mono.TextEditor
 		
 		void Setlink (TextLink link)
 		{
+			editor.Caret.Offset    = baseOffset + link.PrimaryLink.Offset;
+			editor.ScrollToCaret ();
 			editor.Caret.Offset    = baseOffset + link.PrimaryLink.EndOffset;
 			editor.SelectionAnchor = baseOffset + link.PrimaryLink.Offset;
 			editor.SelectionRange = new Segment (editor.SelectionAnchor, link.PrimaryLink.Length);
 			editor.Document.CommitUpdateAll ();
+			
 		}
 		
 		void ExitTextLinkMode ()
 		{
+			DestroyWindow ();
 			foreach (TextLink link in links) {
 				foreach (ISegment segment in link.Links) {
 					LineSegment line = editor.Document.GetLineByOffset (baseOffset + segment.Offset);
@@ -180,6 +256,7 @@ namespace Mono.TextEditor
 			editor.CurrentMode = OldMode;
 			editor.Document.CommitUpdateAll ();
 			editor.Document.TextReplaced -= UpdateLinksOnTextReplace;
+			this.editor.Caret.PositionChanged -= HandlePositionChanged;
 			this.editor.TooltipProviders.Remove (tooltipProvider);
 		}
 		
@@ -202,8 +279,40 @@ namespace Mono.TextEditor
 				endOffset += delta;
 		}
 		
+		void GotoNextLink (TextLink link)
+		{
+			int caretOffset = editor.Caret.Offset - baseOffset;
+			TextLink nextLink = links.Find (l => l.IsEditable && l.PrimaryLink.Offset > (link != null ? link.PrimaryLink.EndOffset : caretOffset));
+			if (nextLink == null)
+				nextLink = links.Find (l => l.IsEditable);
+			Setlink (nextLink);
+		}
+		
+		void CompleteWindow ()
+		{
+			if (window == null)
+				return;
+			TextLink lnk = (TextLink)window.DataProvider;
+			editor.Replace (baseOffset + lnk.PrimaryLink.Offset, lnk.PrimaryLink.Length, window.CompleteWord);
+			DestroyWindow ();
+			GotoNextLink (lnk);
+		}
+		
 		protected override void HandleKeypress (Gdk.Key key, uint unicodeKey, Gdk.ModifierType modifier)
 		{
+			if (window != null) {
+				ListWindow.KeyAction action = window.ProcessKey (key, modifier);
+				switch (action) {
+				case ListWindow.KeyAction.Ignore:
+					return;
+				case ListWindow.KeyAction.CloseWindow:
+					DestroyWindow ();
+					return;
+				case ListWindow.KeyAction.Complete:
+					CompleteWindow ();
+					return;
+				};
+			}
 			int caretOffset = editor.Caret.Offset - baseOffset;
 			TextLink link = links.Find (l => l.Links.Any (s => s.Offset <= caretOffset && caretOffset <= s.EndOffset));
 			switch (key) {
@@ -216,20 +325,21 @@ namespace Mono.TextEditor
 					return;
 				goto default;
 			case Gdk.Key.Tab:
-				TextLink nextLink = links.Find (l => l.IsEditable && l.PrimaryLink.Offset > (link != null ? link.PrimaryLink.EndOffset : caretOffset));
-				if (nextLink == null)
-					nextLink = links[0];
-				Setlink (nextLink);
+				GotoNextLink (link);
 				return;
 			case Gdk.Key.ISO_Left_Tab:
 				TextLink prevLink = links.FindLast (l => l.IsEditable && l.PrimaryLink.Offset < (link != null ? link.PrimaryLink.Offset : caretOffset));
 				if (prevLink == null)
-					prevLink = links[links.Count - 1];
+					prevLink = links.FindLast (l => l.IsEditable);
 				Setlink (prevLink);
 				return;
 			case Gdk.Key.Escape:
 			case Gdk.Key.Return:
-				ExitTextLinkMode ();
+				if (window != null) {
+					CompleteWindow ();
+				} else {
+					ExitTextLinkMode ();
+				}
 				return;
 			default:
 				wasReplaced = false;
@@ -250,6 +360,14 @@ namespace Mono.TextEditor
 				UpdateLinkText (l);
 			}
 			editor.Document.CommitUpdateAll ();
+		}
+		ListWindow window;
+		void DestroyWindow ()
+		{
+			if (window != null) {
+				window.Destroy ();
+				window = null;
+			}
 		}
 		
 		public string GetStringCallback (string linkName)
@@ -315,72 +433,105 @@ namespace Mono.TextEditor
 	
 	public class TextLinkMarker : TextMarker, IBackgroundMarker
 	{
-		HashSet<TextLink> links = new HashSet<TextLink> ();
+		TextLinkEditMode mode;
 		
 		public int BaseOffset {
 			get;
 			set;
 		}
 		
-		public void AddLink (TextLink link)
+		public TextLinkMarker (TextLinkEditMode mode)
 		{
-			links.Add (link);
+			this.mode = mode;
 		}
 		
-		public bool DrawBackground (TextEditor editor, Gdk.Drawable win, bool selected, int startOffset, int endOffset, int y, int startXPos, int endXPos, ref bool drawBg)
+		void InternalDrawBackground (TextEditor editor, Gdk.Drawable win, bool selected, int startOffset, int endOffset, int y, ref int startXPos, int endXPos, ref bool drawBg)
 		{
-			int caretOffset = editor.Caret.Offset - BaseOffset;
+			Gdk.Rectangle clipRectangle = new Gdk.Rectangle (mode.Editor.TextViewMargin.XOffset, 0, 
+			                                                 editor.Allocation.Width - mode.Editor.TextViewMargin.XOffset, editor.Allocation.Height);
 			
-			foreach (TextLink link in links) {
+			// draw default background
+			using (Gdk.GC fillGc = new Gdk.GC (win)) {
+				fillGc.ClipRectangle = clipRectangle;
+				fillGc.RgbFgColor = selected ? editor.ColorStyle.Selection.BackgroundColor : editor.ColorStyle.Default.BackgroundColor;
+				win.DrawRectangle (fillGc, true, startXPos, y, endXPos, editor.LineHeight);
+			}
+			
+			if (startOffset >= endOffset)
+				return;
+			
+			int caretOffset = editor.Caret.Offset - BaseOffset;
+			foreach (TextLink link in mode.Links) {
 				if (!link.IsEditable)
 					continue;
+				bool isPrimaryHighlighted = link.PrimaryLink.Offset <= caretOffset && caretOffset <= link.PrimaryLink.EndOffset;
 				
 				foreach (ISegment segment in link.Links) {
-					if (BaseOffset + segment.Offset <= startOffset && startOffset <= BaseOffset + segment.EndOffset) {
-						int strOffset = startOffset - (BaseOffset + segment.Offset);
-						int width = editor.GetWidth (link.CurrentText.Substring (strOffset));
-						using (Gdk.GC gc = new Gdk.GC (win)) {
-							drawBg = false;
-							
-							if (segment == link.PrimaryLink) {
-								gc.RgbFgColor = editor.ColorStyle.PrimaryTemplate.BackgroundColor;
-							} else {
-								gc.RgbFgColor = editor.ColorStyle.Default.BackgroundColor;
-								if (segment != link.PrimaryLink && link.PrimaryLink.Offset <= caretOffset && caretOffset <= link.PrimaryLink.EndOffset) 
-									gc.RgbFgColor = editor.ColorStyle.SecondaryTemplate.BackgroundColor;
-							}
-							if (selected)
-								gc.RgbFgColor = editor.ColorStyle.Selection.BackgroundColor;
-							win.DrawRectangle (gc, true, startXPos, y, width, editor.LineHeight);
-							
-							gc.RgbFgColor = editor.ColorStyle.Default.BackgroundColor;
-							if (selected)
-								gc.RgbFgColor = editor.ColorStyle.Selection.BackgroundColor;
-							win.DrawRectangle (gc, true, startXPos + width, y, endXPos - (startXPos + width), editor.LineHeight);
-							
-							if (segment != link.PrimaryLink) {
-								if (link.PrimaryLink.Offset <= caretOffset && caretOffset <= link.PrimaryLink.EndOffset) {
-									gc.RgbFgColor = editor.ColorStyle.SecondaryTemplate.Color;
-									win.DrawRectangle (gc, false, startXPos, y, System.Math.Max (1, width), editor.LineHeight - 1);
+					if (BaseOffset + segment.Offset <= startOffset && startOffset < BaseOffset + segment.EndOffset) {
+						int strOffset    = startOffset - (BaseOffset + segment.Offset);
+						int strEndOffset = System.Math.Min (segment.Length, endOffset - startOffset);
+						string txt = strEndOffset > strOffset ? link.CurrentText.Substring (strOffset, strEndOffset - strOffset) : "";
+						int width = editor.GetWidth (txt);
+						using (Gdk.GC rectangleGc = new Gdk.GC (win)) {
+							rectangleGc.ClipRectangle = clipRectangle;
+							using (Gdk.GC fillGc = new Gdk.GC (win)) {
+								fillGc.ClipRectangle = clipRectangle;
+								drawBg = false;
+								
+								if (segment == link.PrimaryLink) {
+									fillGc.RgbFgColor      = isPrimaryHighlighted ? editor.ColorStyle.PrimaryTemplateHighlighted.BackgroundColor : editor.ColorStyle.PrimaryTemplate.BackgroundColor;
+									rectangleGc.RgbFgColor = isPrimaryHighlighted ? editor.ColorStyle.PrimaryTemplateHighlighted.Color           : editor.ColorStyle.PrimaryTemplate.Color;
+								} else {
+									fillGc.RgbFgColor      = isPrimaryHighlighted ? editor.ColorStyle.SecondaryTemplateHighlighted.BackgroundColor : editor.ColorStyle.SecondaryTemplate.BackgroundColor;
+									rectangleGc.RgbFgColor = isPrimaryHighlighted ? editor.ColorStyle.SecondaryTemplateHighlighted.Color           : editor.ColorStyle.SecondaryTemplate.Color;
 								}
-							} else if (segment.Offset <= caretOffset && caretOffset <= segment.EndOffset) {
-								gc.RgbFgColor = editor.ColorStyle.PrimaryTemplate.Color;
+								// Draw segment
+								if (!selected)
+									win.DrawRectangle (fillGc, true, startXPos, y, width, editor.LineHeight);
+								
 								if (strOffset != 0) {
 									int x1 = startXPos - 1;
 									int x2 = x1 + System.Math.Max (1, width) - 1;
 									int y2 = y + editor.LineHeight - 1;
 									
-									win.DrawLine (gc, x1, y, x2, y);
-									win.DrawLine (gc, x1, y2, x2, y2);
-									win.DrawLine (gc, x2, y, x2, y2);
+									win.DrawLine (rectangleGc, x1, y, x2, y);
+									win.DrawLine (rectangleGc, x1, y2, x2, y2);
+									win.DrawLine (rectangleGc, x2, y, x2, y2);
 								} else {
-									win.DrawRectangle (gc, false, startXPos - 1, y, System.Math.Max (1, width), editor.LineHeight - 1);
+									win.DrawRectangle (rectangleGc, false, startXPos, y, System.Math.Max (1, width) - 1, editor.LineHeight - 1);
 								}
 							}
 						}
 					}
 				}
 			}
+			startXPos += editor.GetWidth (editor.Document.GetTextBetween (startOffset, endOffset));
+		}
+		
+		bool Overlaps (ISegment segment, int start, int end)
+		{
+			return segment.Offset <= start && start < segment.EndOffset || 
+				    segment.Offset <= end && end < segment.EndOffset ||
+					start <= segment.Offset && segment.Offset < end ||
+					start < segment.EndOffset && segment.EndOffset < end;
+		}
+		
+		public bool DrawBackground (TextEditor editor, Gdk.Drawable win, bool selected, int startOffset, int endOffset, int y, int startXPos, int endXPos, ref bool drawBg)
+		{
+			int curOffset = startOffset;
+			
+			foreach (TextLink link in mode.Links) {
+				if (!link.IsEditable)
+					continue;
+				ISegment segment = link.Links.Where (s => Overlaps (s, curOffset - BaseOffset, endOffset - BaseOffset)).FirstOrDefault ();
+				if (segment == null) {
+					break;
+				}
+				InternalDrawBackground (editor, win, selected, curOffset, segment.Offset + BaseOffset, y, ref startXPos, endXPos, ref drawBg);
+				curOffset = segment.EndOffset + BaseOffset;
+				InternalDrawBackground (editor, win, selected, segment.Offset + BaseOffset, curOffset, y, ref startXPos, endXPos, ref drawBg);
+			}
+			InternalDrawBackground (editor, win, selected, curOffset, endOffset, y, ref startXPos, endXPos, ref drawBg);
 			return true;
 		}
 	}
