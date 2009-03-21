@@ -629,6 +629,12 @@ namespace Mono.TextEditor
 		
 		protected override bool OnKeyPressEvent (Gdk.EventKey evt)
 		{
+			if (evt.Key == Gdk.Key.F1 && (evt.State & (ModifierType.ControlMask | ModifierType.ShiftMask)) == ModifierType.ControlMask) {
+				Point p = textViewMargin.LocationToDisplayCoordinates (Caret.Location);
+				ShowTooltip (Gdk.ModifierType.None, Caret.Offset, p.X, p.Y);
+				return true;
+			}
+			    
 			uint unicodeChar = Gdk.Keyval.ToUnicode (evt.KeyValue);
 			if (CurrentMode.WantsToPreemptIM || CurrentMode.PreemptIM (evt.Key, unicodeChar, evt.State)) {
 				ResetIMContext ();	
@@ -1421,9 +1427,15 @@ namespace Mono.TextEditor
 		
 		bool ShowTooltip (Gdk.ModifierType modifierState)
 		{
+			return ShowTooltip (modifierState, 
+			                    Document.LocationToOffset (VisualToDocumentLocation ((int)mx, (int)my)),
+			                    (int)mx,
+			                    (int)my);
+		}
+		
+		bool ShowTooltip (Gdk.ModifierType modifierState, int offset, int xloc, int yloc)
+		{
 			showTipScheduled = false;
-			int xloc = (int)mx;
-			int yloc = (int)my;
 			
 			if (tipWindow != null && currentTooltipProvider.IsInteractive (this, tipWindow)) {
 				int wx, ww, wh;
@@ -1434,8 +1446,6 @@ namespace Mono.TextEditor
 			}
 
 			// Find a provider
-			
-			int offset = Document.LocationToOffset (VisualToDocumentLocation ((int)mx, (int)my));
 			ITooltipProvider provider = null;
 			object item = null;
 			

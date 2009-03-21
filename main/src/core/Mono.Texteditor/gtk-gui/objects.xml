@@ -17,4 +17,17 @@
       </itemgroup>
     </signals>
   </object>
+  <object type="MonoDevelop.TextEditor.PopupWindow.TooltipWindow.FixedWidthWrapLabel" palette-category="MonoDevelop.Components" allow-children="false" base-type="Gtk.Widget">
+    <itemgroups>
+      <itemgroup label="FixedWidthWrapLabel Properties">
+        <property name="MaxWidth" />
+        <property name="Markup" />
+        <property name="Text" />
+        <property name="Indent" />
+        <property name="BreakOnPunctuation" />
+        <property name="BreakOnCamelCasing" />
+      </itemgroup>
+    </itemgroups>
+    <signals />
+  </object>
 </objects>

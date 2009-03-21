@@ -27,6 +27,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using MonoDevelop.TextEditor.PopupWindow;
 
 namespace Mono.TextEditor	
 {
@@ -109,18 +110,32 @@ namespace Mono.TextEditor
 			set;
 		}
 		
+		public List<TextLink> Links  {
+			get {
+				return links;
+			}
+		}
+		
+		public int BaseOffset {
+			get {
+				return baseOffset;
+			}
+		}
+		
 		public bool ShouldStartTextLinkMode {
 			get {
 				return links.Any (l => l.IsEditable);
 			}
 		}
-		
+		TextLinkTooltipProvider tooltipProvider;
 		public TextLinkEditMode (TextEditor editor, int baseOffset, List<TextLink> links)
 		{
 			this.editor = editor;
 			this.links  = links;
 			this.baseOffset = baseOffset;
 			this.endOffset = editor.Caret.Offset;
+			tooltipProvider = new TextLinkTooltipProvider (this);
+			this.editor.TooltipProviders.Insert (0, tooltipProvider);
 		}
 		
 		public void StartMode ()
@@ -165,6 +180,7 @@ namespace Mono.TextEditor
 			editor.CurrentMode = OldMode;
 			editor.Document.CommitUpdateAll ();
 			editor.Document.TextReplaced -= UpdateLinksOnTextReplace;
+			this.editor.TooltipProviders.Remove (tooltipProvider);
 		}
 		
 		bool wasReplaced = false;
@@ -254,6 +270,47 @@ namespace Mono.TextEditor
 			}
 		}
 		
+	}
+	
+	public class TextLinkTooltipProvider : ITooltipProvider
+	{
+		TextLinkEditMode mode;
+		
+		public TextLinkTooltipProvider (TextLinkEditMode mode)
+		{
+			this.mode = mode;
+		}
+
+		#region ITooltipProvider implementation 
+		public object GetItem (TextEditor editor, int offset)
+		{
+			int o = offset - mode.BaseOffset;
+			return mode.Links.First (l => l.PrimaryLink.Offset <= o && o <= l.PrimaryLink.EndOffset);
+		}
+		
+		public Gtk.Window CreateTooltipWindow (TextEditor editor, Gdk.ModifierType modifierState, object item)
+		{
+			TextLink link = item as TextLink;
+			if (link == null)
+				return null;
+			
+			TooltipWindow window = new TooltipWindow ();
+			window.Markup = link.Tooltip;
+			return window;
+		}
+		
+		public void GetRequiredPosition (TextEditor editor, Gtk.Window tipWindow, out int requiredWidth, out double xalign)
+		{
+			TooltipWindow win = (TooltipWindow) tipWindow;
+			requiredWidth = win.SetMaxWidth (win.Screen.Width);
+			xalign = 0.5;
+		}
+		
+		public bool IsInteractive (TextEditor editor, Gtk.Window tipWindow)
+		{
+			return false;
+		}
+		#endregion 
 	}
 	
 	public class TextLinkMarker : TextMarker, IBackgroundMarker

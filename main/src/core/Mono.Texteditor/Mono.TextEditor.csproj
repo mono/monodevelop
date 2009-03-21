@@ -119,6 +119,7 @@
     <Compile Include="Mono.TextEditor\SearchRequest.cs" />
     <Compile Include="Mono.TextEditor\ITextEditorOptions.cs" />
     <Compile Include="Mono.TextEditor\TextLinkEditMode.cs" />
+    <Compile Include="Mono.TextEditor.PopupWindow\TooltipWindow.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -201,4 +202,7 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
+  <ItemGroup>
+    <Folder Include="Mono.TextEditor.PopupWindow\" />
+  </ItemGroup>
 </Project>

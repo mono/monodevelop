@@ -1,3 +1,14 @@
+2009-03-21  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/objects.xml:
+	* Mono.TextEditor.csproj:
+	* Mono.TextEditor.PopupWindow:
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/TextLinkEditMode.cs:
+	* Mono.TextEditor.PopupWindow/TooltipWindow.cs: Text links now
+	  show tooltips. Set the tooltip popup hotkey to Ctrl+F1.
+
 2009-03-20  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextLinkEditMode.cs: Implemented function

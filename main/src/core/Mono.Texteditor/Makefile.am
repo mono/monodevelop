@@ -30,6 +30,7 @@ FILES =  \
 	Mono.TextEditor.Highlighting/SyntaxModeService.cs \
 	Mono.TextEditor.Highlighting/WorkerThread.cs \
 	Mono.TextEditor.Highlighting/XmlReadHelper.cs \
+	Mono.TextEditor.PopupWindow/TooltipWindow.cs \
 	Mono.TextEditor.Vi/ViActionMaps.cs \
 	Mono.TextEditor.Vi/ViActions.cs \
 	Mono.TextEditor.Vi/ViMode.cs \
