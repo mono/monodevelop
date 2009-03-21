@@ -80,7 +80,7 @@ namespace Mono.TextEditor
 			set;
 		}
 		
-		public Func<Func<string, string>, string> GetStringFunc {
+		public Func<Func<string, string>, string[]> GetStringFunc {
 			get;
 			set;
 		}
@@ -181,7 +181,6 @@ namespace Mono.TextEditor
 			this.endOffset = editor.Caret.Offset;
 			tooltipProvider = new TextLinkTooltipProvider (this);
 			this.editor.TooltipProviders.Insert (0, tooltipProvider);
-			this.editor.Caret.PositionChanged += HandlePositionChanged;
 		}
 		TextLink closedLink = null;
 		void HandlePositionChanged(object sender, DocumentLocationEventArgs e)
@@ -189,7 +188,7 @@ namespace Mono.TextEditor
 			int caretOffset = editor.Caret.Offset - baseOffset;
 			TextLink link = links.Find (l => l.Links.Any (s => s.Offset <= caretOffset && caretOffset <= s.EndOffset));
 			
-			if (link != null && link.ItemCount > 0) {
+			if (link != null && link.ItemCount > 0 && link.IsEditable) {
 				if (window != null && window.DataProvider != link)
 					DestroyWindow ();
 				if (closedLink == link)
@@ -233,6 +232,7 @@ namespace Mono.TextEditor
 			TextLink firstLink = links.First (l => l.IsEditable);
 			Setlink (firstLink);
 			editor.Document.TextReplaced += UpdateLinksOnTextReplace;
+			this.editor.Caret.PositionChanged += HandlePositionChanged;
 		}
 		
 		void Setlink (TextLink link)
@@ -300,6 +300,7 @@ namespace Mono.TextEditor
 			int line = editor.Caret.Line;
 			editor.Replace (baseOffset + lnk.PrimaryLink.Offset, lnk.PrimaryLink.Length, window.CompleteWord);
 			lnk.CurrentText = window.CompleteWord;
+			editor.Document.CommitUpdateAll ();
 		}
 		
 		protected override void HandleKeypress (Gdk.Key key, uint unicodeKey, Gdk.ModifierType modifier)
@@ -356,8 +357,11 @@ namespace Mono.TextEditor
 				break;
 			}
 			foreach (TextLink l in links) {
-				if (l.GetStringFunc != null && !l.IsEditable) {
-					l.CurrentText = l.GetStringFunc (GetStringCallback);
+				if (l.GetStringFunc != null)
+					l.Values = l.GetStringFunc (GetStringCallback);
+				
+				if (!l.IsEditable && l.Values.Length > 0) {
+					l.CurrentText = l.Values [l.Values.Length - 1];
 				} else {
 					l.CurrentText = editor.Document.GetTextAt (l.PrimaryLink.Offset + baseOffset, 
 					                                           l.PrimaryLink.Length);
