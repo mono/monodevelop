@@ -233,6 +233,8 @@ namespace Mono.TextEditor
 			Setlink (firstLink);
 			editor.Document.TextReplaced += UpdateLinksOnTextReplace;
 			this.editor.Caret.PositionChanged += HandlePositionChanged;
+			this.UpdateTextLinks ();
+			editor.Document.CommitUpdateAll ();
 		}
 		
 		void Setlink (TextLink link)
@@ -298,8 +300,9 @@ namespace Mono.TextEditor
 				return;
 			TextLink lnk = (TextLink)window.DataProvider;
 			int line = editor.Caret.Line;
-			editor.Replace (baseOffset + lnk.PrimaryLink.Offset, lnk.PrimaryLink.Length, window.CompleteWord);
 			lnk.CurrentText = window.CompleteWord;
+			UpdateLinkText (lnk);
+			UpdateTextLinks ();
 			editor.Document.CommitUpdateAll ();
 		}
 		
@@ -356,18 +359,7 @@ namespace Mono.TextEditor
 				}
 				break;
 			}
-			foreach (TextLink l in links) {
-				if (l.GetStringFunc != null)
-					l.Values = l.GetStringFunc (GetStringCallback);
-				
-				if (!l.IsEditable && l.Values.Length > 0) {
-					l.CurrentText = l.Values [l.Values.Length - 1];
-				} else {
-					l.CurrentText = editor.Document.GetTextAt (l.PrimaryLink.Offset + baseOffset, 
-					                                           l.PrimaryLink.Length);
-				}
-				UpdateLinkText (l);
-			}
+			UpdateTextLinks ();
 			editor.Document.CommitUpdateAll ();
 		}
 		ListWindow window;
@@ -387,7 +379,21 @@ namespace Mono.TextEditor
 			}
 			return null;
 		}
-		
+		public void UpdateTextLinks ()
+		{
+			foreach (TextLink l in links) {
+				if (l.GetStringFunc != null)
+					l.Values = l.GetStringFunc (GetStringCallback);
+				
+				if (!l.IsEditable && l.Values.Length > 0) {
+					l.CurrentText = l.Values [l.Values.Length - 1];
+				} else {
+					l.CurrentText = editor.Document.GetTextAt (l.PrimaryLink.Offset + baseOffset, 
+					                                           l.PrimaryLink.Length);
+				}
+				UpdateLinkText (l);
+			}
+		}
 		public void UpdateLinkText (TextLink link)
 		{
 			for (int i = link.Links.Count - 1; i >= 0; i--) {

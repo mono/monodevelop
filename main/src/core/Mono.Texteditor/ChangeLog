@@ -1,5 +1,10 @@
 2009-03-21  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextLinkEditMode.cs: Worked on template
+	  callbacks.
+
+2009-03-21  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextLinkEditMode.cs: Worked on multi item
 	  callback.
 
