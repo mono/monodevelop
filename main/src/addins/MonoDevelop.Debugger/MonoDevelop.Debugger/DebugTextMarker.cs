@@ -36,14 +36,14 @@ namespace MonoDevelop.Debugger
 {
 	public abstract class DebugTextMarker : StyleTextMarker, IIconBarMarker
 	{
-		protected TextEditor editor;
+		protected Mono.TextEditor.TextEditor editor;
 		
-		public DebugTextMarker (TextEditor editor)
+		public DebugTextMarker (Mono.TextEditor.TextEditor editor)
 		{
 			this.editor = editor;
 		}
 		
-		public void DrawIcon (TextEditor editor, Gdk.Drawable win, LineSegment line, int lineNumber, int x, int y, int width, int height)
+		public void DrawIcon (Mono.TextEditor.TextEditor editor, Gdk.Drawable win, LineSegment line, int lineNumber, int x, int y, int width, int height)
 		{
 			int size;
 			if (width > height) {
@@ -130,7 +130,7 @@ namespace MonoDevelop.Debugger
 		}
 
 
-		public BreakpointTextMarker (TextEditor editor) : base (editor)
+		public BreakpointTextMarker (Mono.TextEditor.TextEditor editor) : base (editor)
 		{
 			IncludedStyles |= StyleFlag.BackgroundColor | StyleFlag.Color;
 		}
@@ -152,7 +152,7 @@ namespace MonoDevelop.Debugger
 			set {  }
 		}
 	
-		public DisabledBreakpointTextMarker (TextEditor editor) : base (editor)
+		public DisabledBreakpointTextMarker (Mono.TextEditor.TextEditor editor) : base (editor)
 		{
 			IncludedStyles |= StyleFlag.BackgroundColor;
 		}
@@ -178,7 +178,7 @@ namespace MonoDevelop.Debugger
 			set {  }
 		}
 		
-		public CurrentDebugLineTextMarker (TextEditor editor) : base (editor)
+		public CurrentDebugLineTextMarker (Mono.TextEditor.TextEditor editor) : base (editor)
 		{
 			IncludedStyles |= StyleFlag.BackgroundColor | StyleFlag.Color;
 		}
@@ -202,7 +202,7 @@ namespace MonoDevelop.Debugger
 			set {  }
 		}
 		
-		public InvalidBreakpointTextMarker (TextEditor editor) : base (editor)
+		public InvalidBreakpointTextMarker (Mono.TextEditor.TextEditor editor) : base (editor)
 		{
 			IncludedStyles |= StyleFlag.BackgroundColor;
 		}

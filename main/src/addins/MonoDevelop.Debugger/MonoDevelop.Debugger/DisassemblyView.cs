@@ -42,7 +42,7 @@ namespace MonoDevelop.Debugger
 	public class DisassemblyView: AbstractViewContent
 	{
 		Gtk.ScrolledWindow sw;
-		TextEditor editor;
+		Mono.TextEditor.TextEditor editor;
 		int firstLine;
 		int lastLine;
 		List<AssemblyLine> lines = new List<AssemblyLine> ();
@@ -60,7 +60,7 @@ namespace MonoDevelop.Debugger
 		{
 			UntitledName = GettextCatalog.GetString ("Disassembly");
 			sw = new Gtk.ScrolledWindow ();
-			editor = new TextEditor ();
+			editor = new Mono.TextEditor.TextEditor ();
 			editor.Document.ReadOnly = true;
 			
 			TextEditorOptions options = new TextEditorOptions ();
