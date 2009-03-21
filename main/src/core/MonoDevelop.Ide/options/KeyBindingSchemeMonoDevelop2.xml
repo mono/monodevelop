@@ -23,7 +23,7 @@
     <binding command="Pad|MonoDevelop.Ide.Gui.Pads.TaskListPad" shortcut="Alt+Shift+T" />
     <binding command="Pad|MonoDevelop.DesignerSupport.ToolboxPad" shortcut="Alt+Shift+B" />
     <binding command="Pad|ConnectionManagerPad" shortcut="Alt+Shift+D" />
-    <binding command="Pad|MonoDevelop.Ide.Gui.Pads.HelpTree" shortcut="Control+F1" />
+    <binding command="Pad|MonoDevelop.Ide.Gui.Pads.HelpTree" shortcut="Alt+Shift+F1" />
     <binding command="Pad|MonoDevelop.DesignerSupport.DocumentOutlinePad" shortcut="Control+R|U" />
     <binding command="Pad|MonoDevelop.Ide.Gui.Pads.FileScout" shortcut="Alt+Shift+F" />
 </scheme>
