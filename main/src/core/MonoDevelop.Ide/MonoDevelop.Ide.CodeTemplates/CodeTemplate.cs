@@ -205,8 +205,8 @@ namespace MonoDevelop.Ide.CodeTemplates
 				}
 				link.IsEditable = variableDecarations[name].IsEditable;
 				if (!string.IsNullOrEmpty (variableDecarations[name].Function)) {
-					string functionResult = expansion.RunFunction (context, null, variableDecarations[name].Function);
-					string s = functionResult ?? variableDecarations[name].Default;
+					string[] functionResult = expansion.RunFunction (context, null, variableDecarations[name].Function);
+					string s = functionResult[functionResult.Length - 1] ?? variableDecarations[name].Default;
 					link.AddLink (new Segment (sb.Length, s.Length));
 					if (isNew) {
 						link.GetStringFunc = delegate (Func<string, string> callback) {

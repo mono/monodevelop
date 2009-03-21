@@ -1,5 +1,11 @@
 2009-03-21  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs:
+	* MonoDevelop.Ide.CodeTemplates/ExpansionObject.cs: Worked on
+	  multi item callback.
+
+2009-03-21  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs: Set standard
 	  values.
 

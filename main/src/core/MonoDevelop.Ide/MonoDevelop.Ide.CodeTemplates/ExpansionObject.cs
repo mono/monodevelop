@@ -125,9 +125,9 @@ namespace MonoDevelop.Ide.CodeTemplates
 			return "var";
 		}
 		
-		public string GetCollections ()
+		public string[] GetCollections ()
 		{
-			return "cols";
+			return new string [] { "cols", "cols2" };
 		}
 		
 		public string GetSimpleTypeName (string fullTypeName)
@@ -170,7 +170,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			}
 		}
 		
-		public virtual string RunFunction (TemplateContext context, Func<string, string> callback, string function)
+		public virtual string[] RunFunction (TemplateContext context, Func<string, string> callback, string function)
 		{
 			this.CurrentContext = context;
 			Match match = functionRegEx.Match (function);
@@ -181,13 +181,13 @@ namespace MonoDevelop.Ide.CodeTemplates
 			case "GetCollections":
 				return GetCollections ();
 			case "GetCurrentClassName":
-				return GetCurrentClassName ();
+				return new string[] { GetCurrentClassName () } ;
 			case "GetSimpleTypeName":
-				return GetSimpleTypeName (match.Groups[2].Value.Trim ('"'));
+				return new string[] { GetSimpleTypeName (match.Groups[2].Value.Trim ('"')) };
 			case "GetLengthProperty":
-				return GetLengthProperty (callback, match.Groups[2].Value.Trim ('"'));
+				return new string[] { GetLengthProperty (callback, match.Groups[2].Value.Trim ('"')) };
 			case "GetComponentTypeOf":
-				return GetComponentTypeOf (callback, match.Groups[2].Value.Trim ('"'));
+				return new string[] { GetComponentTypeOf (callback, match.Groups[2].Value.Trim ('"')) };
 			}
 			return null;
 		}
