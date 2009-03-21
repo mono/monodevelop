@@ -127,7 +127,46 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 		public string[] GetCollections ()
 		{
-			return new string [] { "cols", "cols2" };
+			List<string> result = new List<string> ();
+			CompletionTextEditorExtension ext = CurrentContext.Document.GetContent <CompletionTextEditorExtension> ();
+			if (ext != null) {
+				var list = ext.CodeCompletionCommand (CurrentContext.Document.TextEditor.CurrentCodeCompletionContext);
+				
+				foreach (object o in list) {
+					MonoDevelop.Projects.Gui.Completion.IMemberCompletionData data = o as MonoDevelop.Projects.Gui.Completion.IMemberCompletionData;
+					if (data == null)
+						continue;
+					
+					if (data.Member is IMember) {
+						IMember m = data.Member as IMember;
+						if (DomType.GetComponentType (CurrentContext.ProjectDom, m.ReturnType) != null)
+							result.Add (m.Name);
+					}
+				}
+				
+				foreach (object o in list) {
+					MonoDevelop.Projects.Gui.Completion.IMemberCompletionData data = o as MonoDevelop.Projects.Gui.Completion.IMemberCompletionData;
+					if (data == null)
+						continue;
+					if (data.Member is IParameter) {
+						IParameter m = data.Member as IParameter;
+						if (DomType.GetComponentType (CurrentContext.ProjectDom, m.ReturnType) != null)
+							result.Add (m.Name);
+					}
+				}
+				
+				foreach (object o in list) {
+					MonoDevelop.Projects.Gui.Completion.IMemberCompletionData data = o as MonoDevelop.Projects.Gui.Completion.IMemberCompletionData;
+					if (data == null)
+						continue;
+					if (data.Member is LocalVariable) {
+						LocalVariable m = data.Member as LocalVariable;
+						if (DomType.GetComponentType (CurrentContext.ProjectDom, m.ReturnType) != null)
+							result.Add (m.Name);
+					}
+				}
+			}
+			return result.ToArray ();
 		}
 		
 		public string GetSimpleTypeName (string fullTypeName)
