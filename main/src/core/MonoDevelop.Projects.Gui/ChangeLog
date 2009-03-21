@@ -1,3 +1,11 @@
+2009-03-21  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Projects.Gui.csproj: 
+
+	* MonoDevelop.Projects.Gui.Completion/BaseMemberCompletionData.cs:
+	  Worked on template callbacks.
+
 2009-03-16  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Gui.Completion/CompletionDataList.cs:

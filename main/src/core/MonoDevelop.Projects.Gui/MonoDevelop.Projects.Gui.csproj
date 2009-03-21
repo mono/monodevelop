@@ -136,6 +136,7 @@
     <Compile Include="MonoDevelop.Projects.Gui.Dialogs.OptionPanels\NamespaceSynchronisationPanel.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Projects.Gui.Dialogs.OptionPanels.NamespaceSynchronisationPanelWidget.cs" />
     <Compile Include="MonoDevelop.Projects.Gui.Dialogs\DefaultPolicyOptionsDialog.cs" />
+    <Compile Include="MonoDevelop.Projects.Gui.Completion\BaseMemberCompletionData.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

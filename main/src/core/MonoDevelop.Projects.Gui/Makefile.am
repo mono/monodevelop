@@ -36,6 +36,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.RuntimeOptionsPanelWidget.cs \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.StartupOptionsPanelWidget.cs \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.RenameConfigDialog.cs \
+	MonoDevelop.Projects.Gui.Completion/BaseMemberCompletionData.cs \
 	MonoDevelop.Projects.Gui.Completion/CompletionData.cs \
 	MonoDevelop.Projects.Gui.Completion/CompletionDataList.cs \
 	MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs \
