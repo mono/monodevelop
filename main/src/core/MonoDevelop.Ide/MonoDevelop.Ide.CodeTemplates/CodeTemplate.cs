@@ -200,6 +200,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 				if (isNew) {
 					link         = new TextLink (name);
 					link.Tooltip = variableDecarations[name].ToolTip;
+					link.Values  = variableDecarations[name].Values.ToArray ();
 					result.TextLinks.Add (link);
 				}
 				link.IsEditable = variableDecarations[name].IsEditable;

@@ -1,5 +1,10 @@
 2009-03-21  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs: Set standard
+	  values.
+
+2009-03-21  Mike Krüger  <mkrueger@novell.com>
+
 	* options/KeyBindingSchemeMonoDevelop2.xml: Set the help tree
 	  key to alt+shift+f1. ctrl+f1 conflicts with the tooltip
 	  popup key.
