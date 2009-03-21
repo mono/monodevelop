@@ -40,7 +40,7 @@ namespace MonoDevelop.SourceEditor
 		ScrolledWindow sw;
 		bool resetSelection = true;
 		
-		public DebugValueWindow (TextEditor editor, StackFrame frame, ObjectValue value)
+		public DebugValueWindow (Mono.TextEditor.TextEditor editor, StackFrame frame, ObjectValue value)
 		{
 			TransientFor = (Gtk.Window) editor.Toplevel;
 			AcceptFocus = true;

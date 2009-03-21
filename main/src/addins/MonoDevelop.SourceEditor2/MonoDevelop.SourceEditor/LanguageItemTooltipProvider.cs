@@ -41,14 +41,14 @@ namespace MonoDevelop.SourceEditor
 
 		#region ITooltipProvider implementation 
 		
-		public object GetItem (TextEditor editor, int offset)
+		public object GetItem (Mono.TextEditor.TextEditor editor, int offset)
 		{
 			ExtensibleTextEditor ed = (ExtensibleTextEditor) editor;
 			
 			return ed.GetLanguageItem (offset);
 		}
 		
-		public Gtk.Window CreateTooltipWindow (TextEditor editor, Gdk.ModifierType modifierState, object item)
+		public Gtk.Window CreateTooltipWindow (Mono.TextEditor.TextEditor editor, Gdk.ModifierType modifierState, object item)
 		{
 			ExtensibleTextEditor ed = (ExtensibleTextEditor) editor;
 			ParsedDocument doc = ProjectDomService.GetParsedDocument (null, ed.Document.FileName);
@@ -59,14 +59,14 @@ namespace MonoDevelop.SourceEditor
 			return result;
 		}
 		
-		public void GetRequiredPosition (TextEditor editor, Gtk.Window tipWindow, out int requiredWidth, out double xalign)
+		public void GetRequiredPosition (Mono.TextEditor.TextEditor editor, Gtk.Window tipWindow, out int requiredWidth, out double xalign)
 		{
 			LanguageItemWindow win = (LanguageItemWindow) tipWindow;
 			requiredWidth = win.SetMaxWidth (win.Screen.Width);
 			xalign = 0.5;
 		}
 		
-		public bool IsInteractive (TextEditor editor, Gtk.Window tipWindow)
+		public bool IsInteractive (Mono.TextEditor.TextEditor editor, Gtk.Window tipWindow)
 		{
 			return false;
 		}

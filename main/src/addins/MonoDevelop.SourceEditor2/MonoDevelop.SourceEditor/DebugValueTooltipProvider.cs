@@ -52,7 +52,7 @@ namespace MonoDevelop.SourceEditor
 
 		#region ITooltipProvider implementation 
 		
-		public object GetItem (TextEditor editor, int offset)
+		public object GetItem (Mono.TextEditor.TextEditor editor, int offset)
 		{
 			if (offset >= editor.Document.Length)
 				return null;
@@ -105,18 +105,18 @@ namespace MonoDevelop.SourceEditor
 			return char.IsLetterOrDigit (c) || c == '_';
 		}
 			
-		public Gtk.Window CreateTooltipWindow (TextEditor editor, Gdk.ModifierType modifierState, object item)
+		public Gtk.Window CreateTooltipWindow (Mono.TextEditor.TextEditor editor, Gdk.ModifierType modifierState, object item)
 		{
 			return new DebugValueWindow (editor, DebuggingService.CurrentFrame, (ObjectValue) item);
 		}
 		
-		public void GetRequiredPosition (TextEditor editor, Gtk.Window tipWindow, out int requiredWidth, out double xalign)
+		public void GetRequiredPosition (Mono.TextEditor.TextEditor editor, Gtk.Window tipWindow, out int requiredWidth, out double xalign)
 		{
 			xalign = 0.1;
 			requiredWidth = tipWindow.SizeRequest ().Width;
 		}
 
-		public bool IsInteractive (TextEditor editor, Gtk.Window tipWindow)
+		public bool IsInteractive (Mono.TextEditor.TextEditor editor, Gtk.Window tipWindow)
 		{
 			return true;
 		}
