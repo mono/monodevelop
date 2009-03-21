@@ -38,9 +38,8 @@ using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.CSharpBinding
 {
-	public class MemberCompletionData : IOverloadedCompletionData
+	public class MemberCompletionData : IMemberCompletionData, IOverloadedCompletionData
 	{
-		IDomVisitable member;
 		OutputFlags flags;
 		bool hideExtensionParameter = true;
 		static CSharpAmbience ambience = new CSharpAmbience ();
@@ -63,22 +62,27 @@ namespace MonoDevelop.CSharpBinding
 			set { completionString = value; }
 		}
 		
+		public IDomVisitable Member {
+			get;
+			set;
+		}
+		
 		public string DisplayText {
 			get {
 				if (displayText == null)
-					displayText = ambience.GetString (member, flags | OutputFlags.HideGenericParameterNames);
+					displayText = ambience.GetString (Member, flags | OutputFlags.HideGenericParameterNames);
 				return displayText; 
 			}
 		}
 		
 		public string Icon {
 			get {
-				if (member is IMember)
-					return ((IMember)member).StockIcon;
-				if (member is IParameter)
-					return ((IParameter)member).StockIcon;
-				if (member is LocalVariable)
-					return ((LocalVariable)member).StockIcon;
+				if (Member is IMember)
+					return ((IMember)Member).StockIcon;
+				if (Member is IParameter)
+					return ((IParameter)Member).StockIcon;
+				if (Member is LocalVariable)
+					return ((LocalVariable)Member).StockIcon;
 				return "md-literal"; 
 			}
 		}
@@ -94,13 +98,13 @@ namespace MonoDevelop.CSharpBinding
 			}
 		}
 		
-		public MemberCompletionData (IDomVisitable member, OutputFlags flags)
+		public MemberCompletionData (IDomVisitable member, OutputFlags flags) 
 		{
+			this.Member = member;
 			this.flags = flags;
-			this.member = member;
-			this.completionString = ambience.GetString (member, flags ^ OutputFlags.IncludeGenerics);
+			this.completionString = ambience.GetString (Member, flags ^ OutputFlags.IncludeGenerics);
 			DisplayFlags = DisplayFlags.DescriptionHasMarkup;
-			IMember m = member as IMember;
+			IMember m = Member as IMember;
 			if (m != null && m.IsObsolete)
 				DisplayFlags |= DisplayFlags.Obsolete;
 		}
@@ -111,14 +115,14 @@ namespace MonoDevelop.CSharpBinding
 				return;
 			
 			descriptionCreated = true;
-			string docMarkup = ambience.GetString (member,
+			string docMarkup = ambience.GetString (Member,
 				OutputFlags.ClassBrowserEntries | OutputFlags.UseFullName | OutputFlags.IncludeParameterName | OutputFlags.IncludeMarkup
 				| (HideExtensionParameter ? OutputFlags.HideExtensionsParameter : OutputFlags.None));
-			if (member is IMember) {
-				if ((member as IMember).IsObsolete) {
+			if (Member is IMember) {
+				if ((Member as IMember).IsObsolete) {
 					docMarkup += Environment.NewLine + "[Obsolete]";
 				}
-				XmlNode node = (member as IMember).GetMonodocDocumentation ();
+				XmlNode node = (Member as IMember).GetMonodocDocumentation ();
 				if (node != null) {
 					node = node.SelectSingleNode ("summary");
 					if (node != null) {
@@ -229,8 +233,8 @@ namespace MonoDevelop.CSharpBinding
 			
 			public int Compare (ICompletionData x, ICompletionData y)
 			{
-				IDomVisitable mx = ((MemberCompletionData)x).member;
-				IDomVisitable my = ((MemberCompletionData)y).member;
+				IDomVisitable mx = ((MemberCompletionData)x).Member;
+				IDomVisitable my = ((MemberCompletionData)y).Member;
 				int result;
 				
 				if (mx is IType && my is IType) {
@@ -270,31 +274,25 @@ namespace MonoDevelop.CSharpBinding
 		public bool IsOverloaded {
 			get { return overloads != null; }
 		}
-
-		public IDomVisitable Member {
-			get {
-				return member;
-			}
-		}
 		
 		public void AddOverload (MemberCompletionData overload)
 		{
 			if (overloads == null)
 				overloads = new Dictionary<string, ICompletionData> ();
-			if (overload.member is IMember && member is IMember) {
-				string memberId = (overload.member as IMember).HelpUrl;
-				if (memberId != (this.member as IMember).HelpUrl || !overloads.ContainsKey (memberId)) {
-					overloads[memberId] = overload;
+			if (overload.Member is IMember && Member is IMember) {
+				string MemberId = (overload.Member as IMember).HelpUrl;
+				if (MemberId != (this.Member as IMember).HelpUrl || !overloads.ContainsKey (MemberId)) {
+					overloads[MemberId] = overload;
 					
 					//if any of the overloads is obsolete, we should not mark the item obsolete
-					if (!(overload.member as IMember).IsObsolete)
+					if (!(overload.Member as IMember).IsObsolete)
 						DisplayFlags &= ~DisplayFlags.Obsolete;
 					
 					//make sure that if there are generic overloads, we show a generic signature
-					if (overload.member is IType && member is IType && ((IType)member).TypeParameters.Count == 0 && ((IType)overload.member).TypeParameters.Count > 0) {
+					if (overload.Member is IType && Member is IType && ((IType)Member).TypeParameters.Count == 0 && ((IType)overload.Member).TypeParameters.Count > 0) {
 						displayText = overload.DisplayText;
 					}
-					if (overload.member is IMethod && member is IMethod && ((IMethod)member).TypeParameters.Count == 0 && ((IMethod)overload.member).TypeParameters.Count > 0) {
+					if (overload.Member is IMethod && Member is IMethod && ((IMethod)Member).TypeParameters.Count == 0 && ((IMethod)overload.Member).TypeParameters.Count > 0) {
 						displayText = overload.DisplayText;
 					}
 				}

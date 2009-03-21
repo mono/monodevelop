@@ -1,6 +1,11 @@
 2009-03-21  Mike Krüger  <mkrueger@novell.com>
 
 	* Gui/NRefactoryResolver.cs:
+	* Gui/MemberCompletionData.cs: Worked on template callbacks.
+
+2009-03-21  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/NRefactoryResolver.cs:
 	* Gui/NewCSharpExpressionFinder.cs:
 	* Gui/NewOverrideCompletionData.cs:
 	* Gui/EventCreationCompletionData.cs:

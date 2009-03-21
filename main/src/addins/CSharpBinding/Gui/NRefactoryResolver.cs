@@ -194,8 +194,9 @@ namespace MonoDevelop.CSharpBinding
 		void AddContentsFromClassAndMembers (ExpressionContext context, CompletionDataList completionList, MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col)
 		{
 			IMethod method = callingMember as IMethod;
-			if (method != null && method.Parameters != null)
+			if (method != null && method.Parameters != null) {
 				AddParameterList (completionList, col, method.Parameters);
+			}
 			IProperty property = callingMember as IProperty;
 			if (property != null && property.Parameters != null) 
 				AddParameterList (completionList, col, property.Parameters);
