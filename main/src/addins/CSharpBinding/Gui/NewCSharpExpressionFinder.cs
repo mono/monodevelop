@@ -44,7 +44,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			this.projectContent = projectContent;
 		}
 		
-		public static string FindAttributeName (TextEditor editor, ICompilationUnit unit, string fileName)
+		public static string FindAttributeName (MonoDevelop.Ide.Gui.TextEditor editor, ICompilationUnit unit, string fileName)
 		{
 			string documentToCursor = editor.GetText (0, editor.CursorPosition);
 			int pos = -1;
@@ -68,7 +68,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			return result.ToString ();
 		}
 		
-		public ExpressionContext FindExactContextForObjectInitializer (TextEditor editor, ICompilationUnit unit, string fileName, IType callingType)
+		public ExpressionContext FindExactContextForObjectInitializer (MonoDevelop.Ide.Gui.TextEditor editor, ICompilationUnit unit, string fileName, IType callingType)
 		{
 			string documentToCursor = editor.GetText (0, editor.CursorPosition);
 			int pos = -1;
@@ -79,12 +79,12 @@ namespace MonoDevelop.CSharpBinding.Gui
 			return null;
 		}
 		
-		public ExpressionContext FindExactContextForNewCompletion (TextEditor editor, ICompilationUnit unit, string fileName, IType callingType)
+		public ExpressionContext FindExactContextForNewCompletion (MonoDevelop.Ide.Gui.TextEditor editor, ICompilationUnit unit, string fileName, IType callingType)
 		{
 			return FindExactContextForNewCompletion (editor, unit, fileName, callingType, editor.CursorPosition);
 		}
 		
-		public ExpressionContext FindExactContextForNewCompletion (TextEditor editor, ICompilationUnit unit, string fileName, IType callingType, int cursorPos)
+		public ExpressionContext FindExactContextForNewCompletion (MonoDevelop.Ide.Gui.TextEditor editor, ICompilationUnit unit, string fileName, IType callingType, int cursorPos)
 		{
 			// find expression on left hand side of the assignment
 			string documentToCursor = editor.GetText (0, cursorPos);
@@ -169,7 +169,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			return null;
 		}
 		
-		public ExpressionContext FindExactContextForAsCompletion (TextEditor editor, ICompilationUnit unit, string fileName, IType callingType)
+		public ExpressionContext FindExactContextForAsCompletion (MonoDevelop.Ide.Gui.TextEditor editor, ICompilationUnit unit, string fileName, IType callingType)
 		{
 			// find expression on left hand side of the assignment
 			string documentToCursor = editor.GetText (0, editor.CursorPosition);

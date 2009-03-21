@@ -1,3 +1,12 @@
+2009-03-21  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/NRefactoryResolver.cs:
+	* Gui/NewCSharpExpressionFinder.cs:
+	* Gui/NewOverrideCompletionData.cs:
+	* Gui/EventCreationCompletionData.cs:
+	* Gui/NRefactoryParameterDataProvider.cs: Fixed compilation
+	  error.
+
 2009-03-20  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* templates/GtkSharp2Project.xpt.xml: Don't require specific

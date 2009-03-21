@@ -55,7 +55,7 @@ namespace MonoDevelop.CSharpBinding
 	{
 		ProjectDom dom;
 		SupportedLanguage lang;
-		TextEditor editor;
+		MonoDevelop.Ide.Gui.TextEditor editor;
 		IType   callingType;
 		IMember callingMember;
 		ICompilationUnit unit;
@@ -110,11 +110,11 @@ namespace MonoDevelop.CSharpBinding
 			return null;
 		}
 		
-		public NRefactoryResolver (ProjectDom dom, ICompilationUnit unit, TextEditor editor, string fileName) : this (dom, unit, SupportedLanguage.CSharp, editor, fileName)
+		public NRefactoryResolver (ProjectDom dom, ICompilationUnit unit, MonoDevelop.Ide.Gui.TextEditor editor, string fileName) : this (dom, unit, SupportedLanguage.CSharp, editor, fileName)
 		{
 		}
 			
-		public NRefactoryResolver (ProjectDom dom, ICompilationUnit unit, SupportedLanguage lang, TextEditor editor, string fileName)
+		public NRefactoryResolver (ProjectDom dom, ICompilationUnit unit, SupportedLanguage lang, MonoDevelop.Ide.Gui.TextEditor editor, string fileName)
 		{
 			if (dom == null)
 				throw new ArgumentNullException ("dom");

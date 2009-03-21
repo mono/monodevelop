@@ -37,7 +37,7 @@ namespace MonoDevelop.CSharpBinding
 {
 	public class NewOverrideCompletionData : CompletionData, IActionCompletionData
 	{
-		TextEditor editor;
+		MonoDevelop.Ide.Gui.TextEditor editor;
 		IMember member;
 		static Ambience ambience = new MonoDevelop.CSharpBinding.CSharpAmbience ();
 		string indent;
@@ -48,7 +48,7 @@ namespace MonoDevelop.CSharpBinding
 		IType  type;
 		ICompilationUnit unit;
 			
-		public NewOverrideCompletionData (TextEditor editor, int declarationBegin, ICompilationUnit unit, IType type, IMember member) : base (null)
+		public NewOverrideCompletionData (MonoDevelop.Ide.Gui.TextEditor editor, int declarationBegin, ICompilationUnit unit, IType type, IMember member) : base (null)
 		{
 			this.editor = editor;
 			this.type   = type;
@@ -94,7 +94,7 @@ namespace MonoDevelop.CSharpBinding
 			
 		}
 		
-		internal static string GetIndentString (TextEditor editor, int pos)
+		internal static string GetIndentString (MonoDevelop.Ide.Gui.TextEditor editor, int pos)
 		{
 			string ch = editor.GetText (pos - 1, pos);
 			int nwpos = pos;

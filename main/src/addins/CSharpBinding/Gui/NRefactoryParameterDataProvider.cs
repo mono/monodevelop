@@ -40,13 +40,13 @@ namespace MonoDevelop.CSharpBinding
 {
 	public class NRefactoryParameterDataProvider : IParameterDataProvider
 	{
-		TextEditor editor;
+		MonoDevelop.Ide.Gui.TextEditor editor;
 		List<IMethod> methods = new List<IMethod> ();
 		CSharpAmbience ambience = new CSharpAmbience ();
 		
 		bool staticResolve = false;
 		
-		public NRefactoryParameterDataProvider (TextEditor editor, NRefactoryResolver resolver, MethodResolveResult resolveResult)
+		public NRefactoryParameterDataProvider (MonoDevelop.Ide.Gui.TextEditor editor, NRefactoryResolver resolver, MethodResolveResult resolveResult)
 		{
 			this.editor = editor;
 			
@@ -56,7 +56,7 @@ namespace MonoDevelop.CSharpBinding
 				this.prefix = ambience.GetString (resolveResult.Methods[0].ReturnType, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup  | OutputFlags.IncludeGenerics) + " ";
 		}
 		
-		public NRefactoryParameterDataProvider (TextEditor editor, NRefactoryResolver resolver, ThisResolveResult resolveResult)
+		public NRefactoryParameterDataProvider (MonoDevelop.Ide.Gui.TextEditor editor, NRefactoryResolver resolver, ThisResolveResult resolveResult)
 		{
 			this.editor = editor;
 			if (resolveResult.CallingType != null) {
@@ -70,7 +70,7 @@ namespace MonoDevelop.CSharpBinding
 			}
 		}
 		
-		public NRefactoryParameterDataProvider (TextEditor editor, NRefactoryResolver resolver, BaseResolveResult resolveResult)
+		public NRefactoryParameterDataProvider (MonoDevelop.Ide.Gui.TextEditor editor, NRefactoryResolver resolver, BaseResolveResult resolveResult)
 		{
 			this.editor = editor;
 			if (resolveResult.CallingType != null) {
@@ -92,7 +92,7 @@ namespace MonoDevelop.CSharpBinding
 		}
 
 		// used for constructor completion
-		public NRefactoryParameterDataProvider (TextEditor editor, NRefactoryResolver resolver, IType type)
+		public NRefactoryParameterDataProvider (MonoDevelop.Ide.Gui.TextEditor editor, NRefactoryResolver resolver, IType type)
 		{
 			this.editor = editor;
 			
@@ -136,7 +136,7 @@ namespace MonoDevelop.CSharpBinding
 		
  		string delegateName = null;
 		string prefix = null;
-		public NRefactoryParameterDataProvider (TextEditor editor, string delegateName, IType type)
+		public NRefactoryParameterDataProvider (MonoDevelop.Ide.Gui.TextEditor editor, string delegateName, IType type)
 		{
 			this.editor = editor;
 			this.delegateName = delegateName;
@@ -152,7 +152,7 @@ namespace MonoDevelop.CSharpBinding
 			return GetCurrentParameterIndex (editor, ctx.TriggerOffset, 0);
 		}
 		
-		internal static int GetCurrentParameterIndex (TextEditor editor, int offset, int memberStart)
+		internal static int GetCurrentParameterIndex (MonoDevelop.Ide.Gui.TextEditor editor, int offset, int memberStart)
 		{
 			int cursor = editor.CursorPosition;
 			int i = offset;

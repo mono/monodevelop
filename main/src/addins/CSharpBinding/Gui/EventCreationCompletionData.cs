@@ -41,10 +41,10 @@ namespace MonoDevelop.CSharpBinding
 	{
 		string parameterList;
 		IMember callingMember;
-		TextEditor editor;
+		MonoDevelop.Ide.Gui.TextEditor editor;
 		int initialOffset;
 		
-		public EventCreationCompletionData (TextEditor editor, IType delegateType, IEvent evt, string parameterList, IMember callingMember, IType declaringType) : base (null)
+		public EventCreationCompletionData (MonoDevelop.Ide.Gui.TextEditor editor, IType delegateType, IEvent evt, string parameterList, IMember callingMember, IType declaringType) : base (null)
 		{
 			if (delegateType is InstantiatedType) {
 				this.DisplayText   = "Handle" + evt.Name;
