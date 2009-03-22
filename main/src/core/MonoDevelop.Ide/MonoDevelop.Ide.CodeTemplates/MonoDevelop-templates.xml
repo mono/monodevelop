@@ -3,6 +3,7 @@
 	<CodeTemplate version="2.0">
 		<Header>
 			<_Group>C#</_Group>
+			<Version>1.0</Version>
 			<MimeType>text/x-csharp</MimeType>
 			<Shortcut>~</Shortcut>
 			<_Description>Template for destructor</_Description>
@@ -23,6 +24,7 @@
 	<CodeTemplate version="2.0">
 		<Header>
 			<_Group>C#</_Group>
+			<Version>1.0</Version>
 			<MimeType>text/x-csharp</MimeType>
 			<Shortcut>Attribute</Shortcut>
 			<_Description>Template for an attribute.</_Description>
@@ -110,6 +112,7 @@ public sealed class $name$Attribute : $SystemAttribute$
 	<CodeTemplate version="2.0">
 		<Header>
 			<_Group>C#</_Group>
+			<Version>1.0</Version>
 			<MimeType>text/x-csharp</MimeType>
 			<Shortcut>ctor</Shortcut>
 			<_Description>Template for constructor</_Description>
@@ -130,6 +133,7 @@ public sealed class $name$Attribute : $SystemAttribute$
 	<CodeTemplate version="2.0">
 		<Header>
 			<_Group>C#</_Group>
+			<Version>1.0</Version>
 			<MimeType>text/x-csharp</MimeType>
 			<Shortcut>cw</Shortcut>
 			<_Description>Template for Console.WriteLine</_Description>
@@ -147,6 +151,7 @@ public sealed class $name$Attribute : $SystemAttribute$
 	<CodeTemplate version="2.0">
 		<Header>
 			<_Group>C#</_Group>
+			<Version>1.0</Version>
 			<MimeType>text/x-csharp</MimeType>
 			<Shortcut>switch</Shortcut>
 			<_Description>Template for switch statement</_Description>
@@ -167,6 +172,7 @@ break;
 	<CodeTemplate version="2.0">
 		<Header>
 			<_Group>C#</_Group>
+			<Version>1.0</Version>
 			<MimeType>text/x-csharp</MimeType>
 			<Shortcut>svm</Shortcut>
 			<_Description>Template for void Main method.</_Description>
@@ -182,6 +188,7 @@ break;
 	<CodeTemplate version="2.0">
 		<Header>
 			<_Group>C#</_Group>
+			<Version>1.0</Version>
 			<MimeType>text/x-csharp</MimeType>
 			<Shortcut>sim</Shortcut>
 			<_Description>Template for int Main method.</_Description>
@@ -197,6 +204,7 @@ break;
 	<CodeTemplate version="2.0">
 		<Header>
 			<_Group>C#</_Group>
+			<Version>1.0</Version>
 			<MimeType>text/x-csharp</MimeType>
 			<Shortcut>Exception</Shortcut>
 			<_Description>Template for exception</_Description>
@@ -266,6 +274,7 @@ public sealed class $name$Exception : $SystemException$
 	<CodeTemplate version="2.0">
 		<Header>
 			<_Group>C#</_Group>
+			<Version>1.0</Version>
 			<MimeType>text/x-csharp</MimeType>
 			<Shortcut>indexer</Shortcut>
 			<_Description>Template for an indexer</_Description>
@@ -298,6 +307,7 @@ public sealed class $name$Exception : $SystemException$
 	<CodeTemplate version="2.0">
 		<Header>
 			<_Group>C#</_Group>
+			<Version>1.0</Version>
 			<MimeType>text/x-csharp</MimeType>
 			<Shortcut>prop</Shortcut>
 			<_Description>Template for a short property</_Description>
@@ -322,6 +332,7 @@ public sealed class $name$Exception : $SystemException$
 	<CodeTemplate version="2.0">
 		<Header>
 			<_Group>C#</_Group>
+			<Version>1.0</Version>
 			<MimeType>text/x-csharp</MimeType>
 			<Shortcut>propg</Shortcut>
 			<_Description>Template for a short property with private set.</_Description>
@@ -346,6 +357,7 @@ public sealed class $name$Exception : $SystemException$
 	<CodeTemplate version="2.0">
 		<Header>
 			<_Group>C#</_Group>
+			<Version>1.0</Version>
 			<MimeType>text/x-csharp</MimeType>
 			<Shortcut>EventArgs</Shortcut>
 			<_Description>Template for event arguments</_Description>
@@ -379,6 +391,7 @@ public sealed class $name$EventArgs : $SystemEventArgs$
 	<CodeTemplate version="2.0">
 		<Header>
 			<_Group>C#</_Group>
+			<Version>1.0</Version>
 			<MimeType>text/x-csharp</MimeType>
 			<Shortcut>mn</Shortcut>
 			<_Description>Sets minimum value to a variable</_Description>
@@ -400,6 +413,7 @@ public sealed class $name$EventArgs : $SystemEventArgs$
 	<CodeTemplate version="2.0">
 		<Header>
 			<_Group>C#</_Group>
+			<Version>1.0</Version>
 			<MimeType>text/x-csharp</MimeType>
 			<Shortcut>mx</Shortcut>
 			<_Description>Sets maximum value to a variable</_Description>
@@ -421,6 +435,7 @@ public sealed class $name$EventArgs : $SystemEventArgs$
 	<CodeTemplate version="2.0">
 		<Header>
 			<_Group>C#</_Group>
+			<Version>1.0</Version>
 			<MimeType>text/x-csharp</MimeType>
 			<Shortcut>lst</Shortcut>
 			<_Description>Access last element of a collection</_Description>
@@ -465,6 +480,7 @@ $selected$$end$
 	<CodeTemplate version="2.0">
 		<Header>
 			<_Group>C#</_Group>
+			<Version>1.0</Version>
 			<MimeType>text/x-csharp</MimeType>
 			<Shortcut>#if</Shortcut>
 			<_Description>Template for #if</_Description>
@@ -485,6 +501,7 @@ $selected$$end$
 	<CodeTemplate version="2.0">
 		<Header>
 			<_Group>C#</_Group>
+			<Version>1.0</Version>
 			<MimeType>text/x-csharp</MimeType>
 			<Shortcut>checked</Shortcut>
 			<_Description>Template checked block</_Description>
@@ -499,6 +516,7 @@ $selected$$end$
 	<CodeTemplate version="2.0">
 		<Header>
 			<_Group>C#</_Group>
+			<Version>1.0</Version>
 			<MimeType>text/x-csharp</MimeType>
 			<Shortcut>class</Shortcut>
 			<_Description>Template for class declaration</_Description>
@@ -519,6 +537,7 @@ $selected$$end$
 	<CodeTemplate version="2.0">
 		<Header>
 			<_Group>C#</_Group>
+			<Version>1.0</Version>
 			<MimeType>text/x-csharp</MimeType>
 			<Shortcut>interface</Shortcut>
 			<_Description>Template for an Interface</_Description>
@@ -539,6 +558,7 @@ $selected$$end$
 	<CodeTemplate version="2.0">
 		<Header>
 			<_Group>C#</_Group>
+			<Version>1.0</Version>
 			<MimeType>text/x-csharp</MimeType>
 			<Shortcut>struct</Shortcut>
 			<_Description>Template for a Struct</_Description>
@@ -559,6 +579,7 @@ $selected$$end$
 	<CodeTemplate version="2.0">
 		<Header>
 			<_Group>C#</_Group>
+			<Version>1.0</Version>
 			<MimeType>text/x-csharp</MimeType>
 			<Shortcut>enum</Shortcut>
 			<_Description>Template for an Enumeration</_Description>
@@ -579,6 +600,7 @@ $selected$$end$
 	<CodeTemplate version="2.0">
 		<Header>
 			<_Group>C#</_Group>
+			<Version>1.0</Version>
 			<MimeType>text/x-csharp</MimeType>
 			<Shortcut>for</Shortcut>
 			<_Description>Template for 'for' loop</_Description>
@@ -602,6 +624,7 @@ $selected$$end$
 	<CodeTemplate version="2.0">
 		<Header>
 			<_Group>C#</_Group>
+			<Version>1.0</Version>
 			<MimeType>text/x-csharp</MimeType>
 			<Shortcut>forr</Shortcut>
 			<_Description>Template for reverse 'for' loop</_Description>
@@ -625,6 +648,7 @@ $selected$$end$
 	<CodeTemplate version="2.0">
 		<Header>
 			<_Group>C#</_Group>
+			<Version>1.0</Version>
 			<MimeType>text/x-csharp</MimeType>
 			<Shortcut>while</Shortcut>
 			<_Description>Template for 'while' loop</_Description>
@@ -644,6 +668,7 @@ $selected$$end$
 	<CodeTemplate version="2.0">
 		<Header>
 			<_Group>C#</_Group>
+			<Version>1.0</Version>
 			<MimeType>text/x-csharp</MimeType>
 			<Shortcut>itar</Shortcut>
 			<_Description>Template for iterating through a collection</_Description>
@@ -681,6 +706,7 @@ $selected$$end$
 	<CodeTemplate version="2.0">
 		<Header>
 			<_Group>C#</_Group>
+			<Version>1.0</Version>
 			<MimeType>text/x-csharp</MimeType>
 			<Shortcut>itarr</Shortcut>
 			<_Description>Template for iterating reverse through a collection</_Description>
@@ -718,6 +744,7 @@ $selected$$end$
 	<CodeTemplate version="2.0">
 		<Header>
 			<_Group>C#</_Group>
+			<Version>1.0</Version>
 			<MimeType>text/x-csharp</MimeType>
 			<Shortcut>do</Shortcut>
 			<_Description>Template for 'do...while' loop</_Description>
@@ -737,6 +764,7 @@ $selected$$end$
 	<CodeTemplate version="2.0">
 		<Header>
 			<_Group>C#</_Group>
+			<Version>1.0</Version>
 			<MimeType>text/x-csharp</MimeType>
 			<Shortcut>else</Shortcut>
 			<_Description>Template for 'else'</_Description>
@@ -756,6 +784,7 @@ $selected$$end$
 	<CodeTemplate version="2.0">
 		<Header>
 			<_Group>C#</_Group>
+			<Version>1.0</Version>
 			<MimeType>text/x-csharp</MimeType>
 			<Shortcut>foreach</Shortcut>
 			<_Description>Template for 'foreach' loop</_Description>
@@ -783,6 +812,7 @@ $selected$$end$
 	<CodeTemplate version="2.0">
 		<Header>
 			<_Group>C#</_Group>
+			<Version>1.0</Version>
 			<MimeType>text/x-csharp</MimeType>
 			<Shortcut>if</Shortcut>
 			<_Description>Template for 'if' statement</_Description>
@@ -802,6 +832,7 @@ $selected$$end$
 	<CodeTemplate version="2.0">
 		<Header>
 			<_Group>C#</_Group>
+			<Version>1.0</Version>
 			<MimeType>text/x-csharp</MimeType>
 			<Shortcut>lock</Shortcut>
 			<_Description>Template for 'lock' statement</_Description>
@@ -821,6 +852,7 @@ $selected$$end$
 	<CodeTemplate version="2.0">
 		<Header>
 			<_Group>C#</_Group>
+			<Version>1.0</Version>
 			<MimeType>text/x-csharp</MimeType>
 			<Shortcut>namespace</Shortcut>
 			<_Description>Template for namespace</_Description>
@@ -840,6 +872,7 @@ $selected$$end$
 	<CodeTemplate version="2.0">
 		<Header>
 			<_Group>C#</_Group>
+			<Version>1.0</Version>
 			<MimeType>text/x-csharp</MimeType>
 			<Shortcut>try</Shortcut>
 			<_Description>Template for try...catch</_Description>
@@ -862,6 +895,7 @@ $selected$$end$
 	<CodeTemplate version="2.0">
 		<Header>
 			<_Group>C#</_Group>
+			<Version>1.0</Version>
 			<MimeType>text/x-csharp</MimeType>
 			<Context>InExpression</Context>
 			<Shortcut>(...)</Shortcut>
@@ -874,6 +908,7 @@ $selected$$end$
 	<CodeTemplate version="2.0">
 		<Header>
 			<_Group>C#</_Group>
+			<Version>1.0</Version>
 			<MimeType>text/x-csharp</MimeType>
 			<Context>InExpression</Context>
 			<Shortcut>((type)...)</Shortcut>
@@ -891,6 +926,7 @@ $selected$$end$
 	<CodeTemplate version="2.0">
 		<Header>
 			<_Group>C#</_Group>
+			<Version>1.0</Version>
 			<MimeType>text/x-csharp</MimeType>
 			<Shortcut>try</Shortcut>
 			<_Description>Template for try...finally</_Description>
@@ -906,6 +942,7 @@ $selected$$end$
 	<CodeTemplate version="2.0">
 		<Header>
 			<_Group>C#</_Group>
+			<Version>1.0</Version>
 			<MimeType>text/x-csharp</MimeType>
 			<Shortcut>unchecked</Shortcut>
 			<_Description>Template for 'unchecked' block</_Description>
@@ -919,6 +956,7 @@ $selected$$end$
 	<CodeTemplate version="2.0">
 		<Header>
 			<_Group>C#</_Group>
+			<Version>1.0</Version>
 			<MimeType>text/x-csharp</MimeType>
 			<Shortcut>unsafe</Shortcut>
 			<_Description>Template for 'unsafe' block</_Description>
@@ -933,6 +971,7 @@ $selected$$end$
 	<CodeTemplate version="2.0">
 		<Header>
 			<_Group>Html</_Group>
+			<Version>1.0</Version>
 			<MimeType>text/html</MimeType>
 			<Shortcut>boldb</Shortcut>
 			<_Description>bold block</_Description>
@@ -944,6 +983,7 @@ $selected$$end$
 	<CodeTemplate version="2.0">
 		<Header>
 			<_Group>Html</_Group>
+			<Version>1.0</Version>
 			<MimeType>text/html</MimeType>
 			<Shortcut>commentb</Shortcut>
 			<_Description>comment block</_Description>
@@ -955,6 +995,7 @@ $selected$$end$
 	<CodeTemplate version="2.0">
 		<Header>
 			<_Group>Html</_Group>
+			<Version>1.0</Version>
 			<MimeType>text/html</MimeType>
 			<Shortcut>heading1b</Shortcut>
 			<_Description>heading 1 block</_Description>
@@ -966,6 +1007,7 @@ $selected$$end$
 	<CodeTemplate version="2.0">
 		<Header>
 			<_Group>Html</_Group>
+			<Version>1.0</Version>
 			<MimeType>text/html</MimeType>
 			<Shortcut>heading2b</Shortcut>
 			<_Description>heading 2 block</_Description>
@@ -977,6 +1019,7 @@ $selected$$end$
 	<CodeTemplate version="2.0">
 		<Header>
 			<_Group>Html</_Group>
+			<Version>1.0</Version>
 			<MimeType>text/html</MimeType>
 			<Shortcut>heading3b</Shortcut>
 			<_Description>heading 3 block</_Description>
@@ -988,6 +1031,7 @@ $selected$$end$
 	<CodeTemplate version="2.0">
 		<Header>
 			<_Group>Html</_Group>
+			<Version>1.0</Version>
 			<MimeType>text/html</MimeType>
 			<Shortcut>heading4b</Shortcut>
 			<_Description>heading 4 block</_Description>
@@ -999,6 +1043,7 @@ $selected$$end$
 	<CodeTemplate version="2.0">
 		<Header>
 			<_Group>Html</_Group>
+			<Version>1.0</Version>
 			<MimeType>text/html</MimeType>
 			<Shortcut>italicb</Shortcut>
 			<_Description>italic block</_Description>
@@ -1010,6 +1055,7 @@ $selected$$end$
 	<CodeTemplate version="2.0">
 		<Header>
 			<_Group>Html</_Group>
+			<Version>1.0</Version>
 			<MimeType>text/html</MimeType>
 			<Shortcut>parab</Shortcut>
 			<_Description>paragraph block</_Description>
@@ -1022,6 +1068,7 @@ $selected$$end$
 	<CodeTemplate version="2.0">
 		<Header>
 			<_Group>Xml</_Group>
+			<Version>1.0</Version>
 			<MimeType>application/xml</MimeType>
 			<Shortcut>commentb</Shortcut>
 			<_Description>Template for comment block</_Description>

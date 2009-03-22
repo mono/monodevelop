@@ -94,6 +94,11 @@ namespace MonoDevelop.Ide.CodeTemplates
 			set;
 		}
 		
+		public string Version {
+			get;
+			set;
+		}
+		
 		Dictionary<string, CodeTemplateVariable> variableDecarations = new Dictionary<string, CodeTemplateVariable> ();
 		
 		public IEnumerable<CodeTemplateVariable> Variables {
@@ -361,6 +366,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 		const string VariablesNode       = "Variables";
 		
+		const string VersionNode         = "Version";
 		
 		const string CodeNode            = "Code";
 			
@@ -378,6 +384,10 @@ namespace MonoDevelop.Ide.CodeTemplates
 			
 			writer.WriteStartElement (GroupNode);
 			writer.WriteString (Group);
+			writer.WriteEndElement ();
+			
+			writer.WriteStartElement (VersionNode);
+			writer.WriteString (Version);
 			writer.WriteEndElement ();
 			
 			writer.WriteStartElement (MimeNode);
@@ -432,6 +442,9 @@ namespace MonoDevelop.Ide.CodeTemplates
 						switch (reader.LocalName) {
 						case GroupNode:
 							result.Group = reader.ReadElementContentAsString ();
+							return true;
+						case VersionNode:
+							result.Version = reader.ReadElementContentAsString ();
 							return true;
 						case MimeNode:
 							result.MimeType = reader.ReadElementContentAsString ();

@@ -172,17 +172,37 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 		static List<CodeTemplate> LoadTemplates ()
 		{
+			const string ManifestResourceName = "MonoDevelop-templates.xml";
+			List<CodeTemplate> builtinTemplates = LoadTemplates (XmlTextReader.Create (typeof (CodeTemplateService).Assembly.GetManifestResourceStream (ManifestResourceName)));
 			if (Directory.Exists (TemplatePath)) {
 				List<CodeTemplate> result = new List<CodeTemplate> ();
 				foreach (string templateFile in Directory.GetFiles (TemplatePath, "*.xml")) {
 					result.AddRange (LoadTemplates (XmlTextReader.Create (templateFile)));
 				}
+				
+				// merge user templates with built in templates
+				for (int i = 0; i < builtinTemplates.Count; i++) {
+					CodeTemplate curTemplate = builtinTemplates[i];
+					bool found = false;
+					for (int j = 0; j < result.Count; j++) {
+						CodeTemplate curResultTemplate = result[j];
+						if (curTemplate.Shortcut == curResultTemplate.Shortcut) {
+							found = true;
+							if (curResultTemplate.Version != curTemplate.Version)
+								result[j] = curTemplate;
+						}
+					}
+					// template is new, insert it.
+					if (!found) 
+						result.Add (curTemplate);
+				}
+				
+				
 				return result;
 			}
 			
 			LoggingService.LogInfo ("CodeTemplateService: No user templates, reading default templates.");
-			const string ManifestResourceName = "MonoDevelop-templates.xml";
-			return LoadTemplates (XmlTextReader.Create (typeof (CodeTemplateService).Assembly.GetManifestResourceStream (ManifestResourceName)));
+			return builtinTemplates;
 		}
 #endregion
 	}
