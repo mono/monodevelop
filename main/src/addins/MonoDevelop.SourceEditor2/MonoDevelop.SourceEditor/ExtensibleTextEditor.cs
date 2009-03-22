@@ -471,9 +471,6 @@ namespace MonoDevelop.SourceEditor
 			string txt = this.Document.Text;
 			string fileName = view.ContentName ?? view.UntitledName;
 			
-			// we'll cache old results.
-			if (offset == oldOffset)
-				return this.resolveResult;
 			oldOffset = offset;
 			
 			this.resolveResult = null;
@@ -494,6 +491,7 @@ namespace MonoDevelop.SourceEditor
 			while (wordEnd < txt.Length && (Char.IsLetterOrDigit (txt[wordEnd]) || txt[wordEnd] == '_'))
 				wordEnd++;
 			ExpressionResult expressionResult = new ExpressionResult (expression);
+			expressionResult.ExpressionContext = ExpressionContext.MethodBody;
 			
 			DocumentLocation loc = Document.OffsetToLocation (offset);
 			string savedExpression = null;
@@ -504,7 +502,6 @@ namespace MonoDevelop.SourceEditor
 				expressionResult.ExpressionContext = ExpressionContext.ObjectCreation;
 			} 
 			this.resolveResult = resolver.Resolve (expressionResult, new DomLocation (loc.Line + 1, loc.Column + 1));
-			
 			if (savedExpression != null && this.resolveResult == null) {
 				expressionResult.Expression = savedExpression;
 				this.resolveResult = resolver.Resolve (expressionResult, new DomLocation (loc.Line + 1, loc.Column + 1));
