@@ -32,6 +32,7 @@ namespace MonoDevelop.Ide.Commands
 	public enum TextEditorCommands
 	{
 		ShowCompletionWindow,
+		ShowCodeTemplateWindow,
 		ShowCodeSurroundingsWindow,
 		LineEnd,
 		LineStart,

@@ -861,6 +861,9 @@
 		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCompletionWindow"
 				_label = "Show Completion Window" 
 				shortcut = "Control|space" />
+		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeTemplateWindow"
+				_label = "_Insert Template..." 
+				shortcut = "Control|t" />
 		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeSurroundingsWindow"
 				_label = "_Surround With..." 
 				shortcut = "Control|Alt|t" />
@@ -1376,6 +1379,7 @@
 			</ItemSet>
 			
 			<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCompletionWindow" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeTemplateWindow" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeSurroundingsWindow" />
 			
 			<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowParameterCompletionWindow" />

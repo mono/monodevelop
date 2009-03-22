@@ -1,5 +1,13 @@
 2009-03-22  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.addin.xml:
+	* MonoDevelop.Ide.Commands/TextEditorCommands.cs:
+	* MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:
+	* MonoDevelop.Ide.Gui.Content/CompletionTextEditorExtension.cs:
+	  Added show code template command.
+
+2009-03-22  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Ide.csproj:
 	* MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs:

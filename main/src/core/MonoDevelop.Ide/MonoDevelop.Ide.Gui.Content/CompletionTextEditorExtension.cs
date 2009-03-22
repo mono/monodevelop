@@ -197,6 +197,7 @@ namespace MonoDevelop.Ide.Gui.Content
 		[CommandHandler (TextEditorCommands.ShowCodeSurroundingsWindow)]
 		public virtual void RunShowCodeSurroundingsWindow ()
 		{
+			Console.WriteLine ("run show code surroundings!!!");
 			ICompletionDataList completionList = null;
 			int cpos, wlen;
 			if (!GetCompletionCommandOffset (out cpos, out wlen)) {
@@ -220,6 +221,32 @@ namespace MonoDevelop.Ide.Gui.Content
 			info.Bypass = !CanRunCompletionCommand ();
 		}
 		
+		[CommandHandler (TextEditorCommands.ShowCodeTemplateWindow)]
+		public virtual void RunShowCodeTemplatesWindow ()
+		{
+			ICompletionDataList completionList = null;
+			int cpos, wlen;
+			if (!GetCompletionCommandOffset (out cpos, out wlen)) {
+				cpos = Editor.CursorPosition;
+				wlen = 0;
+			}
+			
+			currentCompletionContext = completionWidget.CreateCodeCompletionContext (cpos);
+			currentCompletionContext.TriggerWordLength = wlen;
+			completionList = ShowCodeTemplatesCommand (currentCompletionContext);
+				
+			if (completionList != null)
+				CompletionWindowManager.ShowWindow ((char)0, completionList, completionWidget, currentCompletionContext, OnCompletionWindowClosed);
+			else
+				currentCompletionContext = null;
+		}
+		
+		[CommandUpdateHandler (TextEditorCommands.ShowCodeTemplateWindow)]
+		internal void OnUpdateShowCodeTemplatesWindow (CommandInfo info)
+		{
+			info.Bypass = !CanRunCompletionCommand ();
+		}
+	
 		
 		[CommandHandler (TextEditorCommands.ShowParameterCompletionWindow)]
 		public virtual void RunParameterCompletionCommand ()
@@ -302,8 +329,20 @@ namespace MonoDevelop.Ide.Gui.Content
 		public virtual ICompletionDataList ShowCodeSurroundingsCommand (ICodeCompletionContext completionContext)
 		{
 			CompletionDataList list = new CompletionDataList ();
+			
 			foreach (CodeTemplate template in CodeTemplateService.GetCodeTemplatesForFile (Document.FileName)) {
 				if ((template.CodeTemplateType & CodeTemplateType.SurroundsWith) == CodeTemplateType.SurroundsWith)  {
+					list.Add (new CodeTemplateCompletionData (Document, template));
+				}
+			}
+			return list;
+		}
+		
+		public virtual ICompletionDataList ShowCodeTemplatesCommand (ICodeCompletionContext completionContext)
+		{
+			CompletionDataList list = new CompletionDataList ();
+			foreach (CodeTemplate template in CodeTemplateService.GetCodeTemplatesForFile (Document.FileName)) {
+				if (template.CodeTemplateType != CodeTemplateType.SurroundsWith)  {
 					list.Add (new CodeTemplateCompletionData (Document, template));
 				}
 			}

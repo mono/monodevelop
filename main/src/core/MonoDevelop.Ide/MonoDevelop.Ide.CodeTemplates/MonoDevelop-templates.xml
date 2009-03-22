@@ -36,36 +36,36 @@
 			<Variable name="target">
 				<Default>All</Default>
 				<Values>
-					<Value>Assembly</Value>
-					<Value>Module</Value>
-					<Value>Class</Value>
-					<Value>Struct</Value>
-					<Value>Enum</Value>
-					<Value>Constructor</Value>
-					<Value>Method</Value>
-					<Value>Property</Value>
-					<Value>Field</Value>
-					<Value>Event</Value>
-					<Value>Interface</Value>
-					<Value>Parameter</Value>
-					<Value>Delegate</Value>
-					<Value>ReturnValue</Value>
-					<Value>GenericParameter</Value>
-					<Value>All</Value>
+					<Value icon="md-field">Assembly</Value>
+					<Value icon="md-field">Module</Value>
+					<Value icon="md-field">Class</Value>
+					<Value icon="md-field">Struct</Value>
+					<Value icon="md-field">Enum</Value>
+					<Value icon="md-field">Constructor</Value>
+					<Value icon="md-field">Method</Value>
+					<Value icon="md-field">Property</Value>
+					<Value icon="md-field">Field</Value>
+					<Value icon="md-field">Event</Value>
+					<Value icon="md-field">Interface</Value>
+					<Value icon="md-field">Parameter</Value>
+					<Value icon="md-field">Delegate</Value>
+					<Value icon="md-field">ReturnValue</Value>
+					<Value icon="md-field">GenericParameter</Value>
+					<Value icon="md-field">All</Value>
 				</Values>
 			</Variable>
 			<Variable name="inherited">
 				<Default>false</Default>
 				<Values>
-					<Value>true</Value>
-					<Value>false</Value>
+					<Value icon="md-keyword">true</Value>
+					<Value icon="md-keyword">false</Value>
 				</Values>
 			</Variable>
 			<Variable name="allowmultiple">
 				<Default>true</Default>
 				<Values>
-					<Value>true</Value>
-					<Value>false</Value>
+					<Value icon="md-keyword">true</Value>
+					<Value icon="md-keyword">false</Value>
 				</Values>
 			</Variable>
 			<Variable name="SystemAttribute" isEditable="false">
