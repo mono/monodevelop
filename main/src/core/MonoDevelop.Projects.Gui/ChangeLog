@@ -1,3 +1,8 @@
+2009-03-22  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/BaseMemberCompletionData.cs:
+	  Added icons to the template completion list.
+
 2009-03-21  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:

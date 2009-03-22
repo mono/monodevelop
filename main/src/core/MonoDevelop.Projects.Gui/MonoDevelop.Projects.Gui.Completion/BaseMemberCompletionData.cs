@@ -29,7 +29,7 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.Projects.Gui.Completion
 {
-	public interface IMemberCompletionData 
+	public interface IMemberCompletionData : ICompletionData
 	{
 		IDomVisitable Member {
 			get;
