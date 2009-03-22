@@ -45,35 +45,26 @@ namespace MonoDevelop.Ide.CodeTemplates
 		}
 
 		#region IListDataProvider implementation
-		public string GetText (int n)
+		public string GetText (int index)
 		{
-			return itemList[n].Value;
+			return itemList[index].Value;
 		}
 		
-		public bool HasMarkup (int n)
-		{
-			return false;
+		public object this [int index] {
+			get {
+				return GetText (index);
+			}
 		}
 		
-		public string GetMarkup (int n)
+		public Gdk.Pixbuf GetIcon (int index)
 		{
-			throw new System.NotImplementedException();
-		}
-		
-		public string GetCompletionText (int n)
-		{
-			return GetText (n);
-		}
-		
-		public Gdk.Pixbuf GetIcon (int n)
-		{
-			string iconName = itemList[n].Key;
+			string iconName = itemList[index].Key;
 			if (string.IsNullOrEmpty (iconName))
 				return null;
 			return MonoDevelop.Core.Gui.Services.Resources.GetIcon (iconName, Gtk.IconSize.Menu);
 		}
 		
-		public int ItemCount {
+		public int Count {
 			get {
 				return itemList.Count;
 			}
