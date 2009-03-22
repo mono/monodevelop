@@ -197,7 +197,6 @@ namespace MonoDevelop.Ide.Gui.Content
 		[CommandHandler (TextEditorCommands.ShowCodeSurroundingsWindow)]
 		public virtual void RunShowCodeSurroundingsWindow ()
 		{
-			Console.WriteLine ("run show code surroundings!!!");
 			ICompletionDataList completionList = null;
 			int cpos, wlen;
 			if (!GetCompletionCommandOffset (out cpos, out wlen)) {

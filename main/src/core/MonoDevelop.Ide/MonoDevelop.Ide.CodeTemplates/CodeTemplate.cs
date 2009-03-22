@@ -190,8 +190,10 @@ namespace MonoDevelop.Ide.CodeTemplates
 				if (name == "end") {
 					result.CaretEndOffset = sb.Length;
 				} else if (name == "selected") {
-					if (!string.IsNullOrEmpty (context.SelectedText))
-						sb.Append (context.SelectedText);
+					if (!string.IsNullOrEmpty (context.SelectedText)) {
+						string indent = GetIndent (sb);
+						sb.Append (Reindent (context.SelectedText, indent));
+					}
 				}
 				if (!variableDecarations.ContainsKey (name))
 					continue;
@@ -256,6 +258,34 @@ namespace MonoDevelop.Ide.CodeTemplates
 			return whitespaces.ToString ();
 		}
 		
+		string GetIndent (StringBuilder sb)
+		{
+			string str = sb.ToString ();
+			int i = str.Length - 1;
+			while (!Char.IsWhiteSpace (str[i])) {
+				i--;
+			}
+			StringBuilder indent = new StringBuilder ();
+			while (str[i] == ' ' || str[i] == '\t') {
+				indent.Append (str[i]);
+				i--;
+			}
+			return indent.ToString ();
+		}
+		
+		string Reindent (string text, string indent)
+		{
+			Document doc = new Document ();
+			doc.Text = text;
+			
+			StringBuilder result = new StringBuilder ();
+			foreach (LineSegment line in doc.Lines) {
+				if (result.Length > 0)
+					result.Append (indent);
+				result.Append (doc.GetTextAt (line).TrimStart (' ', '\t'));
+			}
+			return result.ToString ();
+		}
 		public TemplateResult InsertTemplate (MonoDevelop.Ide.Gui.Document document)
 		{
 			ProjectDom dom = ProjectDomService.GetProjectDom (document.Project) ?? ProjectDomService.GetFileDom (document.FileName);
