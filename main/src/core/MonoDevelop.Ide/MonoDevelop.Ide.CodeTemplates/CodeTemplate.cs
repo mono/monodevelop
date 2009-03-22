@@ -260,7 +260,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 		public TemplateResult InsertTemplate (MonoDevelop.Ide.Gui.Document document)
 		{
-			ProjectDom dom = ProjectDomService.GetProjectDom (document.Project);
+			ProjectDom dom = ProjectDomService.GetProjectDom (document.Project) ?? ProjectDomService.GetFileDom (document.FileName);
 			ParsedDocument doc = document.ParsedDocument;
 			MonoDevelop.Ide.Gui.TextEditor editor = document.TextEditor;
 				
