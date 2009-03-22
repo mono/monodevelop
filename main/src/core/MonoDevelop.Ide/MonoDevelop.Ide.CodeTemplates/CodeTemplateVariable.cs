@@ -58,8 +58,8 @@ namespace MonoDevelop.Ide.CodeTemplates
 			set;
 		}
 		
-		List<string> values = new List<string> ();
-		public List<string> Values {
+		List<KeyValuePair<string, string>> values = new List<KeyValuePair<string, string>> ();
+		public List<KeyValuePair<string, string>> Values {
 			get {
 				return values;
 			}
@@ -82,6 +82,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 		public const string Node        = "Variable";
 		const string nameAttribute       = "name";
+		const string iconAttribute       = "icon";
 		const string editableAttribute   = "isEditable";
 		const string DefaultNode         = "Default";
 		const string ValuesNode          = "Values";
@@ -105,9 +106,11 @@ namespace MonoDevelop.Ide.CodeTemplates
 			
 			if (Values.Count > 0) {
 				writer.WriteStartElement (ValuesNode);
-				foreach (string val in Values) {
+				foreach (KeyValuePair<string, string> val in Values) {
 					writer.WriteStartElement (ValueNode);
-					writer.WriteString (val);
+					if (!string.IsNullOrEmpty (val.Key))
+						writer.WriteAttributeString (iconAttribute, val.Key);
+					writer.WriteString (val.Value);
 					writer.WriteEndElement (); 
 				}
 				writer.WriteEndElement (); // ValuesNode
@@ -149,7 +152,9 @@ namespace MonoDevelop.Ide.CodeTemplates
 					XmlReadHelper.ReadList (reader, ValuesNode, delegate () {
 						switch (reader.LocalName) {
 						case ValueNode:
-							result.Values.Add (reader.ReadElementContentAsString ());
+							string icon = reader.GetAttribute (iconAttribute);
+							string val  = reader.ReadElementContentAsString ();
+							result.Values.Add (new KeyValuePair<string, string> (icon, val));
 							return true;
 						}
 						return false;

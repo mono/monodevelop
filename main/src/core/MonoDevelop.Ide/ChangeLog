@@ -1,5 +1,17 @@
 2009-03-22  Mike Krüger  <mkrueger@novell.com>
 
+	* Makefile.am:
+	* MonoDevelop.Ide.csproj:
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs:
+	* MonoDevelop.Ide.CodeTemplates/ExpansionObject.cs:
+	* MonoDevelop.Ide.CodeTemplates/EditTemplateDialog.cs:
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplateVariable.cs:
+	* MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplateListDataProvider.cs:
+	  Added icons to the template completion list.
+
+2009-03-22  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs:
 	* MonoDevelop.Ide.CodeTemplates/ExpansionObject.cs:
 	* MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:

@@ -125,9 +125,9 @@ namespace MonoDevelop.Ide.CodeTemplates
 			return "var";
 		}
 		MonoDevelop.Projects.Gui.Completion.ICompletionDataList list;
-		public string[] GetCollections ()
+		public MonoDevelop.TextEditor.PopupWindow.IListDataProvider GetCollections ()
 		{
-			List<string> result = new List<string> ();
+			List<KeyValuePair<string, string>> result = new List<KeyValuePair<string, string>> ();
 			CompletionTextEditorExtension ext = CurrentContext.Document.GetContent <CompletionTextEditorExtension> ();
 			if (ext != null) {
 				if (list == null)
@@ -142,7 +142,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 					if (data.Member is IMember) {
 						IMember m = data.Member as IMember;
 						if (DomType.GetComponentType (CurrentContext.ProjectDom, m.ReturnType) != null)
-							result.Add (m.Name);
+							result.Add (new KeyValuePair<string, string>(data.Icon, m.Name));
 					}
 				}
 				
@@ -153,7 +153,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 					if (data.Member is IParameter) {
 						IParameter m = data.Member as IParameter;
 						if (DomType.GetComponentType (CurrentContext.ProjectDom, m.ReturnType) != null)
-							result.Add (m.Name);
+							result.Add (new KeyValuePair<string, string>(data.Icon, m.Name));
 					}
 				}
 				
@@ -164,11 +164,11 @@ namespace MonoDevelop.Ide.CodeTemplates
 					if (data.Member is LocalVariable) {
 						LocalVariable m = data.Member as LocalVariable;
 						if (DomType.GetComponentType (CurrentContext.ProjectDom, m.ReturnType) != null)
-							result.Add (m.Name);
+							result.Add (new KeyValuePair<string, string>(data.Icon, m.Name));
 					}
 				}
 			}
-			return result.ToArray ();
+			return new CodeTemplateListDataProvider (result);
 		}
 		
 		public string GetSimpleTypeName (string fullTypeName)
@@ -211,7 +211,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			}
 		}
 		
-		public virtual string[] RunFunction (TemplateContext context, Func<string, string> callback, string function)
+		public virtual MonoDevelop.TextEditor.PopupWindow.IListDataProvider RunFunction (TemplateContext context, Func<string, string> callback, string function)
 		{
 			this.CurrentContext = context;
 			Match match = functionRegEx.Match (function);
@@ -222,13 +222,13 @@ namespace MonoDevelop.Ide.CodeTemplates
 			case "GetCollections":
 				return GetCollections ();
 			case "GetCurrentClassName":
-				return new string[] { GetCurrentClassName () } ;
+				return new CodeTemplateListDataProvider (GetCurrentClassName ());
 			case "GetSimpleTypeName":
-				return new string[] { GetSimpleTypeName (match.Groups[2].Value.Trim ('"')) };
+				return new CodeTemplateListDataProvider (GetSimpleTypeName (match.Groups[2].Value.Trim ('"')));
 			case "GetLengthProperty":
-				return new string[] { GetLengthProperty (callback, match.Groups[2].Value.Trim ('"')) };
+				return new CodeTemplateListDataProvider (GetLengthProperty (callback, match.Groups[2].Value.Trim ('"')));
 			case "GetComponentTypeOf":
-				return new string[] { GetComponentTypeOf (callback, match.Groups[2].Value.Trim ('"')) };
+				return new CodeTemplateListDataProvider (GetComponentTypeOf (callback, match.Groups[2].Value.Trim ('"')));
 			}
 			return null;
 		}

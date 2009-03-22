@@ -9,7 +9,7 @@
 			<TemplateType>Expansion</TemplateType>
 		</Header>
 		<Variables>
-			<Variable name="classname">
+			<Variable name="classname" isEditable="false">
 				<_ToolTip>Class name</_ToolTip>
 				<Function>GetCurrentClassName()</Function>
 			</Variable>
@@ -116,7 +116,7 @@ public sealed class $name$Attribute : $SystemAttribute$
 			<TemplateType>Expansion</TemplateType>
 		</Header>
 		<Variables>
-			<Variable name="classname">
+			<Variable name="classname" isEditable="false">
 				<_ToolTip>Class name</_ToolTip>
 				<Function>GetCurrentClassName()</Function>
 			</Variable>

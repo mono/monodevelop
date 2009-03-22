@@ -548,6 +548,7 @@
     <Compile Include="MonoDevelop.Ide.CodeTemplates\CodeTemplateVariable.cs" />
     <Compile Include="MonoDevelop.Ide.CodeTemplates\ExpansionObject.cs" />
     <Compile Include="MonoDevelop.Ide.CodeTemplates\CodeTemplateCompletionData.cs" />
+    <Compile Include="MonoDevelop.Ide.CodeTemplates\CodeTemplateListDataProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

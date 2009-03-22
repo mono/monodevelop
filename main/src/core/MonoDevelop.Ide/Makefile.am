@@ -73,6 +73,7 @@ FILES =  \
 	MonoDevelop.Ide.CodeFormatting/OverrideTextSettingsPolicyWidget.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplateCompletionData.cs \
+	MonoDevelop.Ide.CodeTemplates/CodeTemplateListDataProvider.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplatePanel.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplateService.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplateVariable.cs \

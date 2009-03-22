@@ -200,7 +200,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 				if (isNew) {
 					link         = new TextLink (name);
 					link.Tooltip = variableDecarations[name].ToolTip;
-					link.Values  = variableDecarations[name].Values.ToArray ();
+					link.Values  = new CodeTemplateListDataProvider (variableDecarations[name].Values);
 					if (!string.IsNullOrEmpty (variableDecarations[name].Function)) {
 						link.Values  = expansion.RunFunction (context, null, variableDecarations[name].Function);
 					}
@@ -208,8 +208,8 @@ namespace MonoDevelop.Ide.CodeTemplates
 				}
 				link.IsEditable = variableDecarations[name].IsEditable;
 				if (!string.IsNullOrEmpty (variableDecarations[name].Function)) {
-					string[] functionResult = expansion.RunFunction (context, null, variableDecarations[name].Function);
-					string s = functionResult[functionResult.Length - 1] ?? variableDecarations[name].Default;
+					MonoDevelop.TextEditor.PopupWindow.IListDataProvider functionResult = expansion.RunFunction (context, null, variableDecarations[name].Function);
+					string s = functionResult.GetCompletionText (functionResult.ItemCount - 1) ?? variableDecarations[name].Default;
 					link.AddLink (new Segment (sb.Length, s.Length));
 					if (isNew) {
 						link.GetStringFunc = delegate (Func<string, string> callback) {

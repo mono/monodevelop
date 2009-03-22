@@ -225,9 +225,9 @@ namespace MonoDevelop.Ide.CodeTemplates
 				if (var.Values.Count == 0) {
 					valueRenderer.Markup = "<span foreground=\"" + CodeTemplatePanelWidget.GetColorString (Style.Text (StateType.Insensitive)) + "\">(empty)</span>";
 				} else if (var.Values.Count == 1) {
-					valueRenderer.Text = var.Values[0];
+					valueRenderer.Text = var.Values[0].Value;
 				} else { 
-					valueRenderer.Text = var.Values[0] + ", ...";
+					valueRenderer.Text = var.Values[0].Value + ", ...";
 				}
 			});
 			#endregion
