@@ -1,6 +1,13 @@
 2009-03-22  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs:
+	* MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:
+	* MonoDevelop.Ide.Gui.Content/CompletionTextEditorExtension.cs:
+	  Added support for contextual templates.
+
+2009-03-22  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs:
 	* MonoDevelop.Ide.CodeTemplates/ExpansionObject.cs:
 	* MonoDevelop.Ide.Gui.Content/CompletionTextEditorExtension.cs:
 	* MonoDevelop.Ide.CodeTemplates/CodeTemplateListDataProvider.cs:

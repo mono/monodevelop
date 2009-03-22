@@ -47,6 +47,16 @@ namespace MonoDevelop.Ide.CodeTemplates
 		SurroundsWith = 2
 	}
 	
+	public enum CodeTemplateContext {
+		Standard,
+		InExpression
+	}
+	
+	public interface ITemplateWidget 
+	{
+		CodeTemplateContext GetCodeTemplateContext ();
+	}
+	
 	public class CodeTemplate
 	{
 		public string Group { 
@@ -60,6 +70,11 @@ namespace MonoDevelop.Ide.CodeTemplates
 		}
 		
 		public CodeTemplateType CodeTemplateType {
+			get;
+			set;
+		}
+		
+		public CodeTemplateContext CodeTemplateContext {
 			get;
 			set;
 		}
@@ -89,6 +104,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 		public CodeTemplate()
 		{
+			CodeTemplateContext = CodeTemplateContext.Standard;
 		}
 		
 		public override string ToString ()
@@ -263,11 +279,11 @@ namespace MonoDevelop.Ide.CodeTemplates
 		{
 			string str = sb.ToString ();
 			int i = str.Length - 1;
-			while (!Char.IsWhiteSpace (str[i])) {
+			while (i >= 0 && !Char.IsWhiteSpace (str[i])) {
 				i--;
 			}
 			StringBuilder indent = new StringBuilder ();
-			while (str[i] == ' ' || str[i] == '\t') {
+			while (i >= 0 && (str[i] == ' ' || str[i] == '\t')) {
 				indent.Append (str[i]);
 				i--;
 			}
@@ -287,6 +303,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			}
 			return result.ToString ();
 		}
+		
 		public TemplateResult InsertTemplate (MonoDevelop.Ide.Gui.Document document)
 		{
 			ProjectDom dom = ProjectDomService.GetProjectDom (document.Project) ?? ProjectDomService.GetFileDom (document.FileName);
@@ -337,6 +354,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		const string HeaderNode          = "Header";
 		const string GroupNode           = "_Group";
 		const string MimeNode            = "MimeType";
+		const string ContextNode        = "Context";
 		const string ShortcutNode        = "Shortcut";
 		const string DescriptionNode     = "_Description";
 		const string TemplateTypeNode    = "TemplateType";
@@ -365,6 +383,12 @@ namespace MonoDevelop.Ide.CodeTemplates
 			writer.WriteStartElement (MimeNode);
 			writer.WriteString (MimeType);
 			writer.WriteEndElement ();
+			
+			if (CodeTemplateContext != CodeTemplateContext.Standard) {
+				writer.WriteStartElement (ContextNode);
+				writer.WriteString (CodeTemplateContext.ToString ());
+				writer.WriteEndElement ();
+			}
 			
 			writer.WriteStartElement (ShortcutNode);
 			writer.WriteString (Shortcut);
@@ -411,6 +435,9 @@ namespace MonoDevelop.Ide.CodeTemplates
 							return true;
 						case MimeNode:
 							result.MimeType = reader.ReadElementContentAsString ();
+							return true;
+						case ContextNode:
+							result.CodeTemplateContext = (CodeTemplateContext)Enum.Parse (typeof (CodeTemplateContext), reader.ReadElementContentAsString ());
 							return true;
 						case ShortcutNode:
 							result.Shortcut = reader.ReadElementContentAsString ();

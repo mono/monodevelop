@@ -328,10 +328,14 @@ namespace MonoDevelop.Ide.Gui.Content
 		public virtual ICompletionDataList ShowCodeSurroundingsCommand (ICodeCompletionContext completionContext)
 		{
 			CompletionDataList list = new CompletionDataList ();
-			
+			ITemplateWidget templateWidget = Document.GetContent <ITemplateWidget> ();
+			CodeTemplateContext ctx = CodeTemplateContext.Standard;
+			if (templateWidget != null)
+				ctx = templateWidget.GetCodeTemplateContext();
 			foreach (CodeTemplate template in CodeTemplateService.GetCodeTemplatesForFile (Document.FileName)) {
 				if ((template.CodeTemplateType & CodeTemplateType.SurroundsWith) == CodeTemplateType.SurroundsWith)  {
-					list.Add (new CodeTemplateCompletionData (Document, template));
+					if (ctx == template.CodeTemplateContext)
+						list.Add (new CodeTemplateCompletionData (Document, template));
 				}
 			}
 			return list;
