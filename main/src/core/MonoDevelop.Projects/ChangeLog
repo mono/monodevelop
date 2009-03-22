@@ -1,5 +1,18 @@
 2009-03-22  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Text/IFormatter.cs:
+	* MonoDevelop.Projects.Dom/AnonymousType.cs:
+	* MonoDevelop.Projects.Text/IPrettyPrinter.cs:
+	* MonoDevelop.Projects.Dom/ExtensionMethod.cs:
+	* MonoDevelop.Projects.Dom.Refactoring/Change.cs:
+	* MonoDevelop.Projects.Text/XmlDefinitionCodon.cs:
+	* MonoDevelop.Projects.Text/CodeFormatDescription.cs:
+	* MonoDevelop.Projects.Dom.Refactoring/Refactoring.cs:
+	* MonoDevelop.Projects.Dom.Refactoring/RefactoringService.cs:
+	  Fixed headers.
+
+2009-03-22  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Dom/DomType.cs: fixed possible null
 	  reference.
 
