@@ -31,6 +31,7 @@ FILES =  \
 	Mono.TextEditor.Highlighting/WorkerThread.cs \
 	Mono.TextEditor.Highlighting/XmlReadHelper.cs \
 	Mono.TextEditor.PopupWindow/IListDataProvider.cs \
+	Mono.TextEditor.PopupWindow/ListWidget.cs \
 	Mono.TextEditor.PopupWindow/ListWindow.cs \
 	Mono.TextEditor.PopupWindow/TooltipWindow.cs \
 	Mono.TextEditor.Vi/ViActionMaps.cs \
