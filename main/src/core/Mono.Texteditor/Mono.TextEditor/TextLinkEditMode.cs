@@ -416,7 +416,13 @@ namespace Mono.TextEditor
 		public object GetItem (TextEditor editor, int offset)
 		{
 			int o = offset - mode.BaseOffset;
-			return mode.Links.First (l => l.PrimaryLink.Offset <= o && o <= l.PrimaryLink.EndOffset);
+			for (int i = 0; i < mode.Links.Count; i++) {
+				TextLink l = mode.Links[i];
+				if (l.PrimaryLink != null && l.PrimaryLink.Offset <= o && o <= l.PrimaryLink.EndOffset)
+					return l;
+			}
+			return null;
+			//return mode.Links.First (l => l.PrimaryLink != null && l.PrimaryLink.Offset <= o && o <= l.PrimaryLink.EndOffset);
 		}
 		
 		public Gtk.Window CreateTooltipWindow (TextEditor editor, Gdk.ModifierType modifierState, object item)
