@@ -1,5 +1,15 @@
 2009-03-22  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/TextLinkEditMode.cs:
+	* Mono.TextEditor.PopupWindow/ListWindow.cs:
+	* Mono.TextEditor.PopupWindow/ListWidget.cs:
+	* Mono.TextEditor.PopupWindow/TooltipWindow.cs:
+	* Mono.TextEditor.PopupWindow/IListDataProvider.cs: Cleaned up
+	  some source.
+
+2009-03-22  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* Mono.TextEditor.csproj: 
 

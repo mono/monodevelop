@@ -24,12 +24,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using Gtk;
+using Gdk;
+using Pango;
 using System;
+using System.Text;
 
 namespace Mono.TextEditor.PopupWindow
 {
-	
-	internal class ListWidget<T> : Gtk.DrawingArea
+	class ListWidget<T> : Gtk.DrawingArea
 	{
 		int margin = 0;
 		int padding = 4;

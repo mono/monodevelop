@@ -27,7 +27,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace MonoDevelop.TextEditor.PopupWindow
+namespace Mono.TextEditor.PopupWindow
 {
 	public interface IListDataProvider<T>
 	{

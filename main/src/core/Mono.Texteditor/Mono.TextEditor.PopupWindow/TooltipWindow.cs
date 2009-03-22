@@ -33,7 +33,7 @@ using System.Runtime.InteropServices;
 using Gtk;
 using Gdk;
 
-namespace MonoDevelop.TextEditor.PopupWindow
+namespace Mono.TextEditor.PopupWindow
 {
 	public class TooltipWindow : Gtk.Window
 	{

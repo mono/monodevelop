@@ -27,7 +27,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using MonoDevelop.TextEditor.PopupWindow;
+using Mono.TextEditor.PopupWindow;
 
 namespace Mono.TextEditor
 {
@@ -188,13 +188,9 @@ namespace Mono.TextEditor
 				if (window == null) {
 					window = new ListWindow<string> ();
 					window.DataProvider = link;
+					
 					DocumentLocation loc = editor.Document.OffsetToLocation (BaseOffset + link.PrimaryLink.Offset);
-					Gdk.Point p = editor.TextViewMargin.LocationToDisplayCoordinates (loc);
-					int ox = 0, oy = 0;
-					editor.GdkWindow.GetOrigin (out ox, out oy);
-			
-					window.Move (ox + p.X - window.TextOffset , oy + p.Y + editor.LineHeight);
-					window.ShowAll ();
+					editor.ShowListWindow (window, loc);
 					
 				} 
 			} else {

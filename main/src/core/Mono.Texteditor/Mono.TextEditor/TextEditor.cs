@@ -33,6 +33,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using Mono.TextEditor.Highlighting;
+using Mono.TextEditor.PopupWindow;
 
 using Gdk;
 using Gtk;
@@ -309,6 +310,17 @@ namespace Mono.TextEditor
 			Caret.PositionChanged += CaretPositionChanged;
 			textViewMargin.Initialize ();
 			this.Realized += OptionsChanged;
+		}
+		
+		
+		public void ShowListWindow<T> (ListWindow<T> window, DocumentLocation loc)
+		{
+			Gdk.Point p = TextViewMargin.LocationToDisplayCoordinates (loc);
+			int ox = 0, oy = 0;
+			GdkWindow.GetOrigin (out ox, out oy);
+	
+			window.Move (ox + p.X - window.TextOffset , oy + p.Y + LineHeight);
+			window.ShowAll ();
 		}
 		
 		internal int preeditCursorPos = -1, preeditOffset = -1;

@@ -31,7 +31,7 @@ using Pango;
 using System;
 using System.Text;
 
-namespace MonoDevelop.TextEditor.PopupWindow
+namespace Mono.TextEditor.PopupWindow
 {
 	[Flags]
 	public enum ListWindowKeyAction { 
@@ -126,7 +126,7 @@ namespace MonoDevelop.TextEditor.PopupWindow
 		void ResetSizes ()
 		{
 			scrollbar.Adjustment.Lower = 0;
-			scrollbar.Adjustment.Upper = Math.Max(0, provider.Count - list.VisibleRows);
+			scrollbar.Adjustment.Upper = System.Math.Max(0, provider.Count - list.VisibleRows);
 			scrollbar.Adjustment.PageIncrement = list.VisibleRows - 1;
 			scrollbar.Adjustment.StepIncrement = 1;
 			
@@ -187,7 +187,7 @@ namespace MonoDevelop.TextEditor.PopupWindow
 			}
 		}
 		
-		protected ListWidget<T> List
+		internal ListWidget<T> List
 		{
 			get { return list; }
 		}
@@ -292,7 +292,7 @@ namespace MonoDevelop.TextEditor.PopupWindow
 				} else {
 					//try to match as many characters at the beginning of the words as possible
 					int matchLength = 0;
-					int minLength = Math.Min (s.Length, txt.Length);
+					int minLength = System.Math.Min (s.Length, txt.Length);
 					while (matchLength < minLength && char.ToLower (txt[matchLength]) == sLower [matchLength]) {
 						matchLength++;
 					}
