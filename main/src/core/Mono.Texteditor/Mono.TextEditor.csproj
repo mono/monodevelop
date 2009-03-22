@@ -121,6 +121,7 @@
     <Compile Include="Mono.TextEditor\TextLinkEditMode.cs" />
     <Compile Include="Mono.TextEditor.PopupWindow\TooltipWindow.cs" />
     <Compile Include="Mono.TextEditor.PopupWindow\ListWindow.cs" />
+    <Compile Include="Mono.TextEditor.PopupWindow\IListDataProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

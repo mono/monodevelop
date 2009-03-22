@@ -29,7 +29,7 @@ using System.Linq;
 using System.Collections.Generic;
 using MonoDevelop.TextEditor.PopupWindow;
 
-namespace Mono.TextEditor	
+namespace Mono.TextEditor
 {
 	public class TextLink : IListDataProvider
 	{
@@ -92,7 +92,7 @@ namespace Mono.TextEditor
 			                     IsEditable, 
 			                     Tooltip, 
 			                     CurrentText, 
-			                     Values.ItemCount);
+			                     Values.Count);
 		}
 		
 		public void AddLink (Segment segment)
@@ -106,19 +106,10 @@ namespace Mono.TextEditor
 			return Values.GetText (n);
 		}
 		
-		public string GetMarkup (int n)
-		{
-			return Values.GetMarkup (n);
-		}
-		
-		public bool HasMarkup (int n)
-		{
-			return Values.HasMarkup (n);
-		}
-		
-		public string GetCompletionText (int n)
-		{
-			return Values.GetCompletionText (n);
+		public object this [int n] {
+			get {
+				return Values[n];
+			}
 		}
 		
 		public Gdk.Pixbuf GetIcon (int n)
@@ -126,9 +117,9 @@ namespace Mono.TextEditor
 			return Values.GetIcon (n);
 		}
 		
-		public int ItemCount {
+		public int Count {
 			get {
-				return Values.ItemCount;
+				return Values.Count;
 			}
 		}
 		#endregion
@@ -187,7 +178,7 @@ namespace Mono.TextEditor
 		{
 			int caretOffset = editor.Caret.Offset - baseOffset;
 			TextLink link = links.Find (l => l.PrimaryLink.Offset <= caretOffset && caretOffset <= l.PrimaryLink.EndOffset);
-			if (link != null && link.ItemCount > 0 && link.IsEditable) {
+			if (link != null && link.Count > 0 && link.IsEditable) {
 				if (window != null && window.DataProvider != link) {
 					DestroyWindow ();
 				}
@@ -303,7 +294,7 @@ namespace Mono.TextEditor
 				return;
 			TextLink lnk = (TextLink)window.DataProvider;
 			int line = editor.Caret.Line;
-			lnk.CurrentText = window.CompleteWord;
+			lnk.CurrentText = (string)window.CurrentItem;
 			UpdateLinkText (lnk);
 			UpdateTextLinks ();
 			editor.Document.CommitUpdateAll ();
@@ -312,17 +303,17 @@ namespace Mono.TextEditor
 		protected override void HandleKeypress (Gdk.Key key, uint unicodeKey, Gdk.ModifierType modifier)
 		{
 			if (window != null) {
-				ListWindow.KeyAction action = window.ProcessKey (key, modifier);
-				if ((action & ListWindow.KeyAction.Complete) == ListWindow.KeyAction.Complete)
+				ListWindowKeyAction action = window.ProcessKey (key, modifier);
+				if ((action & ListWindowKeyAction.Complete) == ListWindowKeyAction.Complete)
 					CompleteWindow ();
-				if ((action & ListWindow.KeyAction.CloseWindow) == ListWindow.KeyAction.CloseWindow) {
+				if ((action & ListWindowKeyAction.CloseWindow) == ListWindowKeyAction.CloseWindow) {
 					closedLink = (TextLink)window.DataProvider;
 					DestroyWindow ();
 				}
-				if ((action & ListWindow.KeyAction.Complete) == ListWindow.KeyAction.Complete)
+				if ((action & ListWindowKeyAction.Complete) == ListWindowKeyAction.Complete)
 					GotoNextLink (closedLink);
 
-				if ((action & ListWindow.KeyAction.Ignore) == ListWindow.KeyAction.Ignore)
+				if ((action & ListWindowKeyAction.Ignore) == ListWindowKeyAction.Ignore)
 					return;
 			}
 			int caretOffset = editor.Caret.Offset - baseOffset;
@@ -396,8 +387,8 @@ namespace Mono.TextEditor
 					//Console.WriteLine ("Call function for " + l.Name + " res:" + String.Join (",", l.Values));
 				}
 				
-				if (!l.IsEditable && l.Values.ItemCount > 0) {
-					l.CurrentText = l.Values.GetCompletionText (l.Values.ItemCount - 1);
+				if (!l.IsEditable && l.Values.Count > 0) {
+					l.CurrentText = (string)l.Values[l.Values.Count - 1];
 				} else {
 					l.CurrentText = editor.Document.GetTextAt (l.PrimaryLink.Offset + baseOffset, 
 					                                           l.PrimaryLink.Length);

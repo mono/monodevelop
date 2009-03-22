@@ -33,7 +33,15 @@ using System.Text;
 
 namespace MonoDevelop.TextEditor.PopupWindow
 {
-	internal class ListWindow: Gtk.Window
+	[Flags]
+	public enum ListWindowKeyAction { 
+		Process = 1, 
+		Ignore = 2, 
+		CloseWindow = 4, 
+		Complete = 8 
+	}
+	
+	internal class ListWindow : Gtk.Window
 	{
 		VScrollbar scrollbar;
 		ListWidget list;
@@ -44,8 +52,6 @@ namespace MonoDevelop.TextEditor.PopupWindow
 		StringBuilder word;
 		int curPos;
 		
-		[Flags]
-		public enum KeyAction { Process=1, Ignore=2, CloseWindow=4, Complete=8 } 
 
 		public ListWindow (): base (Gtk.WindowType.Popup)
 		{
@@ -115,11 +121,11 @@ namespace MonoDevelop.TextEditor.PopupWindow
 		void ResetSizes ()
 		{
 			scrollbar.Adjustment.Lower = 0;
-			scrollbar.Adjustment.Upper = Math.Max(0, provider.ItemCount - list.VisibleRows);
+			scrollbar.Adjustment.Upper = Math.Max(0, provider.Count - list.VisibleRows);
 			scrollbar.Adjustment.PageIncrement = list.VisibleRows - 1;
 			scrollbar.Adjustment.StepIncrement = 1;
 			
-			if (list.VisibleRows >= provider.ItemCount) {
+			if (list.VisibleRows >= provider.Count) {
 				this.scrollbar.Hide();
 			}
 
@@ -132,13 +138,9 @@ namespace MonoDevelop.TextEditor.PopupWindow
 			set { provider = value; }
 		}
 		
-		public string CompleteWord
-		{
+		public object CurrentItem {
 			get { 
-				if (list.Selection != -1 && !SelectionDisabled)
-					return provider.GetCompletionText (list.Selection);
-				else
-					return null;
+				return (list.Selection != -1 && !SelectionDisabled) ? provider[list.Selection] : null;
 			}
 		}
 		
@@ -170,7 +172,7 @@ namespace MonoDevelop.TextEditor.PopupWindow
 			get
 			{
 				int pos = list.Selection + 1;
-				if (provider.ItemCount > pos && provider.GetText (pos).ToLower ().StartsWith (PartialWord.ToLower ())
+				if (provider.Count > pos && provider.GetText (pos).ToLower ().StartsWith (PartialWord.ToLower ())
 				    || !(provider.GetText (list.Selection).ToLower ().StartsWith (PartialWord.ToLower ())))
 					return false;
 				
@@ -183,7 +185,7 @@ namespace MonoDevelop.TextEditor.PopupWindow
 			get { return list; }
 		}
 		
-		public KeyAction ProcessKey (Gdk.Key key, Gdk.ModifierType modifier)
+		public ListWindowKeyAction ProcessKey (Gdk.Key key, Gdk.ModifierType modifier)
 		{
 			switch (key)
 			{
@@ -192,59 +194,59 @@ namespace MonoDevelop.TextEditor.PopupWindow
 						list.SelectionDisabled = false;
 					else
 						list.Selection --;
-					return KeyAction.Ignore;
+					return ListWindowKeyAction.Ignore;
 					
 				case Gdk.Key.Down:
 					if (list.SelectionDisabled)
 						list.SelectionDisabled = false;
 					else
 						list.Selection ++;
-					return KeyAction.Ignore;
+					return ListWindowKeyAction.Ignore;
 					
 				case Gdk.Key.Page_Up:
 					list.Selection -= list.VisibleRows - 1;
-					return KeyAction.Ignore;
+					return ListWindowKeyAction.Ignore;
 					
 				case Gdk.Key.Page_Down:
 					list.Selection += list.VisibleRows - 1;
-					return KeyAction.Ignore;
+					return ListWindowKeyAction.Ignore;
 					
 				case Gdk.Key.Left:
 					//if (curPos == 0) return KeyAction.CloseWindow | KeyAction.Process;
 					//curPos--;
-					return KeyAction.Process;
+					return ListWindowKeyAction.Process;
 					
 				case Gdk.Key.BackSpace:
 					if (curPos == 0 || (modifier & Gdk.ModifierType.ControlMask) != 0)
-						return KeyAction.CloseWindow | KeyAction.Process;
+						return ListWindowKeyAction.CloseWindow | ListWindowKeyAction.Process;
 					curPos--;
 					word.Remove (curPos, 1);
 					UpdateWordSelection ();
-					return KeyAction.Process;
+					return ListWindowKeyAction.Process;
 					
 				case Gdk.Key.Right:
 					//if (curPos == word.Length) return KeyAction.CloseWindow | KeyAction.Process;
 					//curPos++;
-					return KeyAction.Process;
+					return ListWindowKeyAction.Process;
 				
 				case Gdk.Key.Caps_Lock:
 				case Gdk.Key.Num_Lock:
 				case Gdk.Key.Scroll_Lock:
-					return KeyAction.Ignore;
+					return ListWindowKeyAction.Ignore;
 					
 				case Gdk.Key.Return:
 				case Gdk.Key.ISO_Enter:
 				case Gdk.Key.Key_3270_Enter:
 				case Gdk.Key.KP_Enter:
-					return (list.SelectionDisabled? KeyAction.Process : (KeyAction.Complete | KeyAction.Ignore))
-						| KeyAction.CloseWindow;
+					return (list.SelectionDisabled? ListWindowKeyAction.Process : (ListWindowKeyAction.Complete | ListWindowKeyAction.Ignore))
+						| ListWindowKeyAction.CloseWindow;
 				
 				case Gdk.Key.Escape:
-					return KeyAction.CloseWindow | KeyAction.Ignore;
+					return ListWindowKeyAction.CloseWindow | ListWindowKeyAction.Ignore;
 				
 				case Gdk.Key.Home:
 				case Gdk.Key.End:
-					return KeyAction.CloseWindow | KeyAction.Process;
+					return ListWindowKeyAction.CloseWindow | ListWindowKeyAction.Process;
 					
 				case Gdk.Key.Control_L:
 				case Gdk.Key.Control_R:
@@ -253,11 +255,11 @@ namespace MonoDevelop.TextEditor.PopupWindow
 				case Gdk.Key.Shift_L:
 				case Gdk.Key.Shift_R:
 				case Gdk.Key.ISO_Level3_Shift:	// AltGr
-					return KeyAction.Process;
+					return ListWindowKeyAction.Process;
 			}
 			
 			
-			return KeyAction.CloseWindow | KeyAction.Process;
+			return ListWindowKeyAction.CloseWindow | ListWindowKeyAction.Process;
 		}
 		
 		void UpdateWordSelection ()
@@ -269,7 +271,7 @@ namespace MonoDevelop.TextEditor.PopupWindow
 		//returns -1 if there is no match at all
 		int findMatchedEntry (string s, out bool hasMismatches)
 		{
-			int max = (provider == null ? 0 : provider.ItemCount);
+			int max = (provider == null ? 0 : provider.Count);
 			string sLower = s.ToLower ();
 			
 			int bestMatch = -1;
@@ -391,7 +393,7 @@ namespace MonoDevelop.TextEditor.PopupWindow
 				return;
 			}
 			
-			if (win.DataProvider.ItemCount == 0)
+			if (win.DataProvider.Count == 0)
 				selection = -1;
 			else
 				selection = 0;
@@ -414,8 +416,8 @@ namespace MonoDevelop.TextEditor.PopupWindow
 			set {
 				if (value < 0)
 					value = 0;
-				if (value >= win.DataProvider.ItemCount)
-					value = win.DataProvider.ItemCount - 1;
+				if (value >= win.DataProvider.Count)
+					value = win.DataProvider.Count - 1;
 				
 				if (value != selection) 
 				{
@@ -527,13 +529,18 @@ namespace MonoDevelop.TextEditor.PopupWindow
 			int xpos = margin + padding;
 				
 			int n = 0;
-			while (ypos < winHeight - margin && (page + n) < win.DataProvider.ItemCount)
+			while (ypos < winHeight - margin && (page + n) < win.DataProvider.Count)
 			{
-				bool hasMarkup = win.DataProvider.HasMarkup (page + n);
+				bool hasMarkup = false;
+				IMarkupListDataProvider markupListDataProvider = win.DataProvider as IMarkupListDataProvider;
+				if (markupListDataProvider != null) {
+					if (markupListDataProvider.HasMarkup (page + n)) {
+						layout.SetMarkup (markupListDataProvider.GetMarkup (page + n) ?? "&lt;null&gt;");
+						hasMarkup = true;
+					}
+				}
 				
-				if (hasMarkup)
-					layout.SetMarkup (win.DataProvider.GetMarkup (page + n) ?? "&lt;null&gt;");
-				else
+				if (!hasMarkup)
 					layout.SetText (win.DataProvider.GetText (page + n) ?? "<null>");
 				
 				Gdk.Pixbuf icon = win.DataProvider.GetIcon (page + n);
@@ -619,10 +626,10 @@ namespace MonoDevelop.TextEditor.PopupWindow
 			
 			int newHeight;
 
-			if (this.win.DataProvider.ItemCount > this.visibleRows)
+			if (this.win.DataProvider.Count > this.visibleRows)
 				newHeight = (rowHeight * visibleRows) + margin * 2;
 			else
-				newHeight = (rowHeight * this.win.DataProvider.ItemCount) + margin * 2;
+				newHeight = (rowHeight * this.win.DataProvider.Count) + margin * 2;
 			
 			if (lvWidth != listWidth || lvHeight != newHeight)
 				this.SetSizeRequest (listWidth, newHeight);
@@ -646,15 +653,4 @@ namespace MonoDevelop.TextEditor.PopupWindow
 			CalcVisibleRows ();
 		}
 	}
-
-	public interface IListDataProvider
-	{
-		int ItemCount { get; }
-		string GetText (int n);
-		bool HasMarkup (int n);
-		string GetMarkup (int n);
-		string GetCompletionText (int n);
-		Gdk.Pixbuf GetIcon (int n);
-	}
 }
-
