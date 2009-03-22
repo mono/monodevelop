@@ -94,13 +94,13 @@ namespace MonoDevelop.Ide.CodeTemplates
 				return "Count";
 			
 			string var = callback (varName);
+			
 			ITextEditorResolver textEditorResolver = CurrentContext.Document.GetContent <ITextEditorResolver> ();
 			if (textEditorResolver != null) {
-				ResolveResult result =  textEditorResolver.GetLanguageItem (CurrentContext.Document.TextEditor.CursorPosition, var);
+				ResolveResult result = textEditorResolver.GetLanguageItem (CurrentContext.Document.TextEditor.GetPositionFromLineColumn (CurrentContext.InsertPosition.Line, CurrentContext.InsertPosition.Column), var);
 				if (result != null && result.ResolvedType.ArrayDimensions > 0)
 					return "Length";
 			}
-			
 			return "Count";
 		}
 		
