@@ -1,5 +1,10 @@
 2009-03-22  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: Fixed auto
+	  insert matching bracket bug.
+
+2009-03-22  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/SourceEditorView.cs:
 	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: Added
 	  support for contextual templates.
