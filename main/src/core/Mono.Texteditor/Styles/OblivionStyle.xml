@@ -66,10 +66,10 @@
 	<Style name="marker.line.changed" color="chameleon2"/>
 	<Style name="marker.line.dirty" color="butter2"/>
 	
-	<Style name="marker.template.primary_template" color="#b4e4b4" bgColor="#b4e4b4"/>
-	<Style name="marker.template.primary_highlighted_template" color="black" bgColor="#b4e4b4"/>
-	<Style name="marker.template.secondary_template" color="white" bgColor="white"/>
-	<Style name="marker.template.secondary_highlighted_template" color="gray" bgColor="white"/>
+	<Style name="marker.template.primary_template" color="chocolate1" bgColor="chocolate3"/>
+	<Style name="marker.template.primary_highlighted_template" color="chocolate1" bgColor="chocolate2"/>
+	<Style name="marker.template.secondary_template" color="white" bgColor="aluminium6"/>
+	<Style name="marker.template.secondary_highlighted_template" color="aluminium1" bgColor="aluminium5"/>
 		
 	<Style name="marker.ruler" color="aluminium5"/>
 	<Style name="marker.whitespace" color="aluminium3"/>

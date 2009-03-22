@@ -186,7 +186,7 @@ namespace Mono.TextEditor
 		void HandlePositionChanged(object sender, DocumentLocationEventArgs e)
 		{
 			int caretOffset = editor.Caret.Offset - baseOffset;
-			TextLink link = links.Find (l => l.Links.Any (s => s.Offset <= caretOffset && caretOffset <= s.EndOffset));
+			TextLink link = links.Find (l => l.PrimaryLink.Offset <= caretOffset && caretOffset <= l.PrimaryLink.EndOffset);
 			if (link != null && link.ItemCount > 0 && link.IsEditable) {
 				if (window != null && window.DataProvider != link) {
 					DestroyWindow ();
@@ -332,6 +332,10 @@ namespace Mono.TextEditor
 				if (link != null && caretOffset == link.PrimaryLink.Offset)
 					return;
 				goto default;
+			case Gdk.Key.space:
+				if (link == null)
+					goto default;
+				return;
 			case Gdk.Key.Delete:
 				if (link != null && caretOffset == link.PrimaryLink.EndOffset)
 					return;

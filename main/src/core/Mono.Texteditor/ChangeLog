@@ -1,5 +1,15 @@
 2009-03-22  Mike Krüger  <mkrueger@novell.com>
 
+	* Styles/BrownStyle.xml:
+	* Styles/OblivionStyle.xml:
+	* Styles/TangoLightStyle.xml: Updated template colors (but I'm
+	  up for color suggestions).
+
+	* Mono.TextEditor/TextLinkEditMode.cs: Fixed some minor issues
+	  in text link mode.
+
+2009-03-22  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextLinkEditMode.cs:
 	* Mono.TextEditor.PopupWindow/ListWindow.cs: Added icons to
 	  the template completion list.
