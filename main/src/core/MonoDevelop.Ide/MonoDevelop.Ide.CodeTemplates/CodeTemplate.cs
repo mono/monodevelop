@@ -233,14 +233,18 @@ namespace MonoDevelop.Ide.CodeTemplates
 				link.IsEditable = variableDecarations[name].IsEditable;
 				if (!string.IsNullOrEmpty (variableDecarations[name].Function)) {
 					IListDataProvider<string> functionResult = expansion.RunFunction (context, null, variableDecarations[name].Function);
-					string s = (string)functionResult[functionResult.Count - 1] ?? variableDecarations[name].Default;
-					link.AddLink (new Segment (sb.Length, s.Length));
-					if (isNew) {
-						link.GetStringFunc = delegate (Func<string, string> callback) {
-							return expansion.RunFunction (context, callback, variableDecarations[name].Function);
-						};
+					if (functionResult != null && functionResult.Count > 0) {
+						string s = (string)functionResult[functionResult.Count - 1] ?? variableDecarations[name].Default;
+						link.AddLink (new Segment (sb.Length, s.Length));
+						if (isNew) {
+							link.GetStringFunc = delegate (Func<string, string> callback) {
+								return expansion.RunFunction (context, callback, variableDecarations[name].Function);
+							};
+						}
+						sb.Append (s);
+					} else {
+						sb.Append (variableDecarations[name].Default);
 					}
-					sb.Append (s);
 				} else {
 					link.AddLink (new Segment (sb.Length, variableDecarations[name].Default.Length));
 					sb.Append (variableDecarations[name].Default);
