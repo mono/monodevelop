@@ -68,12 +68,12 @@ namespace Mono.TextEditor
 			set;
 		}
 		
-		public string[] Values {
+		public IListDataProvider Values {
 			get;
 			set;
 		}
 		
-		public Func<Func<string, string>, string[]> GetStringFunc {
+		public Func<Func<string, string>, IListDataProvider> GetStringFunc {
 			get;
 			set;
 		}
@@ -92,7 +92,7 @@ namespace Mono.TextEditor
 			                     IsEditable, 
 			                     Tooltip, 
 			                     CurrentText, 
-			                     String.Join (",", Values));
+			                     Values.ItemCount);
 		}
 		
 		public void AddLink (Segment segment)
@@ -103,32 +103,32 @@ namespace Mono.TextEditor
 		#region IListDataProvider implementation
 		public string GetText (int n)
 		{
-			return Values[n];
+			return Values.GetText (n);
 		}
 		
 		public string GetMarkup (int n)
 		{
-			return Values[n];
+			return Values.GetMarkup (n);
 		}
 		
 		public bool HasMarkup (int n)
 		{
-			return true;
+			return Values.HasMarkup (n);
 		}
 		
 		public string GetCompletionText (int n)
 		{
-			return Values[n];
+			return Values.GetCompletionText (n);
 		}
 		
 		public Gdk.Pixbuf GetIcon (int n)
 		{
-			return null;
+			return Values.GetIcon (n);
 		}
 		
 		public int ItemCount {
 			get {
-				return Values != null ? Values.Length : 0;
+				return Values.ItemCount;
 			}
 		}
 		#endregion
@@ -392,8 +392,8 @@ namespace Mono.TextEditor
 					//Console.WriteLine ("Call function for " + l.Name + " res:" + String.Join (",", l.Values));
 				}
 				
-				if (!l.IsEditable && l.Values.Length > 0) {
-					l.CurrentText = l.Values [l.Values.Length - 1];
+				if (!l.IsEditable && l.Values.ItemCount > 0) {
+					l.CurrentText = l.Values.GetCompletionText (l.Values.ItemCount - 1);
 				} else {
 					l.CurrentText = editor.Document.GetTextAt (l.PrimaryLink.Offset + baseOffset, 
 					                                           l.PrimaryLink.Length);

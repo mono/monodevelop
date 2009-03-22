@@ -1,5 +1,11 @@
 2009-03-22  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextLinkEditMode.cs:
+	* Mono.TextEditor.PopupWindow/ListWindow.cs: Added icons to
+	  the template completion list.
+
+2009-03-22  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextLinkEditMode.cs: Worked on templates.
 
 2009-03-21  Mike Krüger  <mkrueger@novell.com>

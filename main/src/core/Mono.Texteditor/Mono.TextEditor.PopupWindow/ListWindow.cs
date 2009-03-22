@@ -651,8 +651,8 @@ namespace MonoDevelop.TextEditor.PopupWindow
 	{
 		int ItemCount { get; }
 		string GetText (int n);
-		string GetMarkup (int n);
 		bool HasMarkup (int n);
+		string GetMarkup (int n);
 		string GetCompletionText (int n);
 		Gdk.Pixbuf GetIcon (int n);
 	}
