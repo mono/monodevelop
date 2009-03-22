@@ -430,6 +430,7 @@ public sealed class $name$EventArgs : $SystemEventArgs$
 			<Variable name="col">
 				<Default>col</Default>
 				<_ToolTip>Collection name</_ToolTip>
+				<Function>GetCollections()</Function>
 			</Variable>
 			<Variable name="countorlength" isEditable="false">
 				<Default>Count</Default>

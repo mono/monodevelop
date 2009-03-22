@@ -124,14 +124,16 @@ namespace MonoDevelop.Ide.CodeTemplates
 
 			return "var";
 		}
-		
+		MonoDevelop.Projects.Gui.Completion.ICompletionDataList list;
 		public string[] GetCollections ()
 		{
 			List<string> result = new List<string> ();
 			CompletionTextEditorExtension ext = CurrentContext.Document.GetContent <CompletionTextEditorExtension> ();
 			if (ext != null) {
-				var list = ext.CodeCompletionCommand (CurrentContext.Document.TextEditor.CurrentCodeCompletionContext);
+				if (list == null)
+					list = ext.CodeCompletionCommand (CurrentContext.Document.TextEditor.CurrentCodeCompletionContext);
 				
+				Console.WriteLine ("get collections: " + list.Count);
 				foreach (object o in list) {
 					MonoDevelop.Projects.Gui.Completion.IMemberCompletionData data = o as MonoDevelop.Projects.Gui.Completion.IMemberCompletionData;
 					if (data == null)
