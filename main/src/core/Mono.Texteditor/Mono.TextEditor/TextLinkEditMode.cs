@@ -48,13 +48,6 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		List<string> proposedStrings = new List<string> ();
-		public IList<string> ProposedStrings {
-			get {
-				return ProposedStrings;
-			}
-		}
-		
 		public bool IsEditable {
 			get;
 			set;
@@ -91,16 +84,22 @@ namespace Mono.TextEditor
 			this.Name  = name;
 		}
 		
+		public override string ToString ()
+		{
+			return string.Format("[TextLink: Name={0}, Links={1}, IsEditable={2}, Tooltip={3}, CurrentText={4}, Values=({5})]", 
+			                     Name, 
+			                     Links.Count, 
+			                     IsEditable, 
+			                     Tooltip, 
+			                     CurrentText, 
+			                     String.Join (",", Values));
+		}
+		
 		public void AddLink (Segment segment)
 		{
 			links.Add (segment);
 		}
 		
-		public void AddString (string proposedString)
-		{
-			this.proposedStrings.Add (proposedString);
-		}
-	
 		#region IListDataProvider implementation
 		public string GetText (int n)
 		{
@@ -182,15 +181,16 @@ namespace Mono.TextEditor
 			tooltipProvider = new TextLinkTooltipProvider (this);
 			this.editor.TooltipProviders.Insert (0, tooltipProvider);
 		}
+		
 		TextLink closedLink = null;
 		void HandlePositionChanged(object sender, DocumentLocationEventArgs e)
 		{
 			int caretOffset = editor.Caret.Offset - baseOffset;
 			TextLink link = links.Find (l => l.Links.Any (s => s.Offset <= caretOffset && caretOffset <= s.EndOffset));
-			
 			if (link != null && link.ItemCount > 0 && link.IsEditable) {
-				if (window != null && window.DataProvider != link)
+				if (window != null && window.DataProvider != link) {
 					DestroyWindow ();
+				}
 				if (closedLink == link)
 					return;
 				closedLink = null;
@@ -234,6 +234,7 @@ namespace Mono.TextEditor
 			editor.Document.TextReplaced += UpdateLinksOnTextReplace;
 			this.editor.Caret.PositionChanged += HandlePositionChanged;
 			this.UpdateTextLinks ();
+			this.HandlePositionChanged(null, null);
 			editor.Document.CommitUpdateAll ();
 		}
 		
@@ -244,6 +245,7 @@ namespace Mono.TextEditor
 			editor.Caret.Offset    = baseOffset + link.PrimaryLink.EndOffset;
 			editor.SelectionAnchor = baseOffset + link.PrimaryLink.Offset;
 			editor.SelectionRange = new Segment (editor.SelectionAnchor, link.PrimaryLink.Length);
+			
 			editor.Document.CommitUpdateAll ();
 			
 		}
@@ -291,6 +293,7 @@ namespace Mono.TextEditor
 			TextLink nextLink = links.Find (l => l.IsEditable && l.PrimaryLink.Offset > (link != null ? link.PrimaryLink.EndOffset : caretOffset));
 			if (nextLink == null)
 				nextLink = links.Find (l => l.IsEditable);
+			closedLink = null;
 			Setlink (nextLink);
 		}
 		
@@ -362,6 +365,7 @@ namespace Mono.TextEditor
 			UpdateTextLinks ();
 			editor.Document.CommitUpdateAll ();
 		}
+		
 		ListWindow window;
 		void DestroyWindow ()
 		{
@@ -379,11 +383,14 @@ namespace Mono.TextEditor
 			}
 			return null;
 		}
+		
 		public void UpdateTextLinks ()
 		{
 			foreach (TextLink l in links) {
-				if (l.GetStringFunc != null)
+				if (l.GetStringFunc != null) {
 					l.Values = l.GetStringFunc (GetStringCallback);
+					//Console.WriteLine ("Call function for " + l.Name + " res:" + String.Join (",", l.Values));
+				}
 				
 				if (!l.IsEditable && l.Values.Length > 0) {
 					l.CurrentText = l.Values [l.Values.Length - 1];
