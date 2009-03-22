@@ -243,6 +243,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 						}
 						sb.Append (s);
 					} else {
+						link.AddLink (new Segment (sb.Length, variableDecarations[name].Default.Length));
 						sb.Append (variableDecarations[name].Default);
 					}
 				} else {
