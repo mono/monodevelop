@@ -466,6 +466,23 @@ namespace MonoDevelop.SourceEditor
 			return this.resolveResult;
 		}
 		
+		public CodeTemplateContext GetTemplateContext ()
+		{
+			if (IsSomethingSelected) {
+				string fileName = view.ContentName ?? view.UntitledName;
+				IParser parser = ProjectDomService.GetParser (fileName, Document.MimeType);
+				if (parser == null)
+					return CodeTemplateContext.Standard;
+
+				IExpressionFinder expressionFinder = parser.CreateExpressionFinder (ProjectDom);
+				if (expressionFinder == null) 
+					return CodeTemplateContext.Standard;
+				if (expressionFinder.IsExpression (Document.GetTextAt (SelectionRange)))
+					return CodeTemplateContext.InExpression;
+			}
+			return CodeTemplateContext.Standard;
+		}
+		
 		public ResolveResult GetLanguageItem (int offset, string expression)
 		{
 			string txt = this.Document.Text;

@@ -58,7 +58,7 @@ namespace MonoDevelop.SourceEditor
 	public class SourceEditorView : AbstractViewContent, IExtensibleTextEditor, IBookmarkBuffer, IClipboardHandler, 
 		ICompletionWidget, IDocumentInformation, ISplittable, IFoldable, IToolboxDynamicProvider, IEncodedTextContent,
 		ICustomFilteringToolboxConsumer, IZoomable, ITextEditorResolver, Mono.TextEditor.ITextEditorDataProvider,
-		ICodeTemplateWidget
+		ICodeTemplateWidget, ITemplateWidget
 #if GNOME_PRINT
 		, IPrintable
 #endif
@@ -826,6 +826,11 @@ namespace MonoDevelop.SourceEditor
 			result.TriggerYCoord = ty + p.Y - (int)TextEditor.VAdjustment.Value + TextEditor.LineHeight;
 			result.TriggerTextHeight = TextEditor.LineHeight;
 			return result;
+		}
+		
+		public CodeTemplateContext GetCodeTemplateContext ()
+		{
+			return TextEditor.GetTemplateContext ();
 		}
 		
 		public string GetCompletionText (ICodeCompletionContext ctx)
