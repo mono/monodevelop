@@ -207,7 +207,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			currentCompletionContext = completionWidget.CreateCodeCompletionContext (cpos);
 			currentCompletionContext.TriggerWordLength = wlen;
 			completionList = ShowCodeSurroundingsCommand (currentCompletionContext);
-				
+			
 			if (completionList != null)
 				CompletionWindowManager.ShowWindow ((char)0, completionList, completionWidget, currentCompletionContext, OnCompletionWindowClosed);
 			else

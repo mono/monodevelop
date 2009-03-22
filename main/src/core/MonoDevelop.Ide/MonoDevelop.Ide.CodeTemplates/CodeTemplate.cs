@@ -36,6 +36,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using Mono.TextEditor;
+using Mono.TextEditor.PopupWindow;
 
 namespace MonoDevelop.Ide.CodeTemplates
 {
@@ -210,7 +211,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 				}
 				link.IsEditable = variableDecarations[name].IsEditable;
 				if (!string.IsNullOrEmpty (variableDecarations[name].Function)) {
-					MonoDevelop.TextEditor.PopupWindow.IListDataProvider<string> functionResult = expansion.RunFunction (context, null, variableDecarations[name].Function);
+					IListDataProvider<string> functionResult = expansion.RunFunction (context, null, variableDecarations[name].Function);
 					string s = (string)functionResult[functionResult.Count - 1] ?? variableDecarations[name].Default;
 					link.AddLink (new Segment (sb.Length, s.Length));
 					if (isNew) {

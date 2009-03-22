@@ -26,10 +26,11 @@
 
 using System;
 using System.Collections.Generic;
+using Mono.TextEditor.PopupWindow;
 
 namespace MonoDevelop.Ide.CodeTemplates
 {
-	public class CodeTemplateListDataProvider : MonoDevelop.TextEditor.PopupWindow.IListDataProvider<string>
+	public class CodeTemplateListDataProvider : IListDataProvider<string>
 	{
 		List<KeyValuePair<string, string>> itemList;
 		

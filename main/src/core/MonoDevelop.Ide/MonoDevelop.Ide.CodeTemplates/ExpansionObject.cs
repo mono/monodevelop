@@ -33,6 +33,7 @@ using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Dom.Output;
+using Mono.TextEditor.PopupWindow;
 
 namespace MonoDevelop.Ide.CodeTemplates
 {
@@ -125,7 +126,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			return "var";
 		}
 		MonoDevelop.Projects.Gui.Completion.ICompletionDataList list;
-		public MonoDevelop.TextEditor.PopupWindow.IListDataProvider<string> GetCollections ()
+		public IListDataProvider<string> GetCollections ()
 		{
 			List<KeyValuePair<string, string>> result = new List<KeyValuePair<string, string>> ();
 			CompletionTextEditorExtension ext = CurrentContext.Document.GetContent <CompletionTextEditorExtension> ();
@@ -210,7 +211,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			}
 		}
 		
-		public virtual MonoDevelop.TextEditor.PopupWindow.IListDataProvider<string> RunFunction (TemplateContext context, Func<string, string> callback, string function)
+		public virtual IListDataProvider<string> RunFunction (TemplateContext context, Func<string, string> callback, string function)
 		{
 			this.CurrentContext = context;
 			Match match = functionRegEx.Match (function);
