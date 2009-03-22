@@ -68,6 +68,30 @@ namespace MonoDevelop.CSharpBinding.Gui
 			return result.ToString ();
 		}
 		
+		static string Strip (string text)
+		{
+			StringBuilder sb = new StringBuilder ();
+			for (int i = 0; i < text.Length; i++) {
+				if (!Char.IsWhiteSpace (text[i]))
+					sb.Append (text[i]);
+			}
+			return sb.ToString ();
+		}
+		
+		public bool IsExpression (string expr)
+		{
+			if (expr == null)
+				return false;
+			using (ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (SupportedLanguage.CSharp, new StringReader (expr))) {
+				var parsedExpr = parser.ParseExpression ();
+				if (parsedExpr == null)
+					return false;
+				var visitor = new ICSharpCode.NRefactory.PrettyPrinter.CSharpOutputVisitor ();
+				parsedExpr.AcceptVisitor (visitor, null);
+				return Strip (expr) == Strip (visitor.Text);
+			}
+		}
+		
 		public ExpressionContext FindExactContextForObjectInitializer (MonoDevelop.Ide.Gui.TextEditor editor, ICompilationUnit unit, string fileName, IType callingType)
 		{
 			string documentToCursor = editor.GetText (0, editor.CursorPosition);
