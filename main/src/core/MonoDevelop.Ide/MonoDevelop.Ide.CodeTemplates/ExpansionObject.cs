@@ -125,7 +125,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			return "var";
 		}
 		MonoDevelop.Projects.Gui.Completion.ICompletionDataList list;
-		public MonoDevelop.TextEditor.PopupWindow.IListDataProvider GetCollections ()
+		public MonoDevelop.TextEditor.PopupWindow.IListDataProvider<string> GetCollections ()
 		{
 			List<KeyValuePair<string, string>> result = new List<KeyValuePair<string, string>> ();
 			CompletionTextEditorExtension ext = CurrentContext.Document.GetContent <CompletionTextEditorExtension> ();
@@ -210,7 +210,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			}
 		}
 		
-		public virtual MonoDevelop.TextEditor.PopupWindow.IListDataProvider RunFunction (TemplateContext context, Func<string, string> callback, string function)
+		public virtual MonoDevelop.TextEditor.PopupWindow.IListDataProvider<string> RunFunction (TemplateContext context, Func<string, string> callback, string function)
 		{
 			this.CurrentContext = context;
 			Match match = functionRegEx.Match (function);

@@ -29,7 +29,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.CodeTemplates
 {
-	public class CodeTemplateListDataProvider : MonoDevelop.TextEditor.PopupWindow.IListDataProvider
+	public class CodeTemplateListDataProvider : MonoDevelop.TextEditor.PopupWindow.IListDataProvider<string>
 	{
 		List<KeyValuePair<string, string>> itemList;
 		
@@ -50,7 +50,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			return itemList[index].Value;
 		}
 		
-		public object this [int index] {
+		public string this [int index] {
 			get {
 				return GetText (index);
 			}
