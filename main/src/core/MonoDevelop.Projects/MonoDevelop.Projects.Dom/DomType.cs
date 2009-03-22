@@ -717,7 +717,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		public static IReturnType GetComponentType (ProjectDom dom, IReturnType returnType)
 		{
-			if (returnType == null)
+			if (dom == null || returnType == null)
 				return null;
 			
 			if (returnType.ArrayDimensions > 0)
