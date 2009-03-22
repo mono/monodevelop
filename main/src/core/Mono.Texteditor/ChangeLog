@@ -1,5 +1,12 @@
 2009-03-22  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextLinkEditMode.cs:
+	* Mono.TextEditor.PopupWindow/ListWindow.cs:
+	* Mono.TextEditor.PopupWindow/IListDataProvider.cs: Used
+	  template data provider.
+
+2009-03-22  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* Mono.TextEditor.csproj: 
 

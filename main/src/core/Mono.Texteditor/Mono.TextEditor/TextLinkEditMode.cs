@@ -31,7 +31,7 @@ using MonoDevelop.TextEditor.PopupWindow;
 
 namespace Mono.TextEditor
 {
-	public class TextLink : IListDataProvider
+	public class TextLink : IListDataProvider<string>
 	{
 		public ISegment PrimaryLink {
 			get {
@@ -68,12 +68,12 @@ namespace Mono.TextEditor
 			set;
 		}
 		
-		public IListDataProvider Values {
+		public IListDataProvider<string> Values {
 			get;
 			set;
 		}
 		
-		public Func<Func<string, string>, IListDataProvider> GetStringFunc {
+		public Func<Func<string, string>, IListDataProvider<string>> GetStringFunc {
 			get;
 			set;
 		}
@@ -106,7 +106,7 @@ namespace Mono.TextEditor
 			return Values.GetText (n);
 		}
 		
-		public object this [int n] {
+		public string this [int n] {
 			get {
 				return Values[n];
 			}
@@ -186,7 +186,7 @@ namespace Mono.TextEditor
 					return;
 				closedLink = null;
 				if (window == null) {
-					window = new ListWindow ();
+					window = new ListWindow<string> ();
 					window.DataProvider = link;
 					DocumentLocation loc = editor.Document.OffsetToLocation (BaseOffset + link.PrimaryLink.Offset);
 					Gdk.Point p = editor.TextViewMargin.LocationToDisplayCoordinates (loc);
@@ -361,7 +361,7 @@ namespace Mono.TextEditor
 			editor.Document.CommitUpdateAll ();
 		}
 		
-		ListWindow window;
+		ListWindow<string> window;
 		void DestroyWindow ()
 		{
 			if (window != null) {

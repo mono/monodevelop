@@ -41,11 +41,11 @@ namespace MonoDevelop.TextEditor.PopupWindow
 		Complete = 8 
 	}
 	
-	internal class ListWindow : Gtk.Window
+	internal class ListWindow<T> : Gtk.Window
 	{
 		VScrollbar scrollbar;
-		ListWidget list;
-		IListDataProvider provider;
+		ListWidget<T> list;
+		IListDataProvider<T> provider;
 		Widget footer;
 		VBox vbox;
 		
@@ -58,7 +58,7 @@ namespace MonoDevelop.TextEditor.PopupWindow
 			vbox = new VBox ();
 			
 			HBox box = new HBox ();
-			list = new ListWidget (this);
+			list = new ListWidget<T> (this);
 			list.SelectionChanged += new EventHandler (OnSelectionChanged);
 			list.ScrollEvent += new ScrollEventHandler (OnScrolled);
 			box.PackStart (list, true, true, 0);
@@ -132,15 +132,15 @@ namespace MonoDevelop.TextEditor.PopupWindow
 			this.Resize(this.list.WidthRequest, this.list.HeightRequest);
 		}
 		
-		public IListDataProvider DataProvider
+		public IListDataProvider<T> DataProvider
 		{
 			get { return provider; }
 			set { provider = value; }
 		}
 		
-		public object CurrentItem {
+		public T CurrentItem {
 			get { 
-				return (list.Selection != -1 && !SelectionDisabled) ? provider[list.Selection] : null;
+				return (list.Selection != -1 && !SelectionDisabled) ? provider[list.Selection] : default(T);
 			}
 		}
 		
@@ -180,7 +180,7 @@ namespace MonoDevelop.TextEditor.PopupWindow
 			}
 		}
 		
-		protected ListWidget List
+		protected ListWidget<T> List
 		{
 			get { return list; }
 		}
@@ -363,14 +363,14 @@ namespace MonoDevelop.TextEditor.PopupWindow
 		}
 	}
 
-	internal class ListWidget: Gtk.DrawingArea
+	internal class ListWidget<T> : Gtk.DrawingArea
 	{
 		int margin = 0;
 		int padding = 4;
 		int listWidth = 300;
 		
 		Pango.Layout layout;
-		ListWindow win;
+		ListWindow<T> win;
 		int selection = 0;
 		int page = 0;
 		int visibleRows = -1;
@@ -380,7 +380,7 @@ namespace MonoDevelop.TextEditor.PopupWindow
 
 		public event EventHandler SelectionChanged;
 				
-		public ListWidget (ListWindow win)
+		public ListWidget (ListWindow<T> win)
 		{
 			this.win = win;
 			this.Events = EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.PointerMotionMask; 
@@ -532,7 +532,7 @@ namespace MonoDevelop.TextEditor.PopupWindow
 			while (ypos < winHeight - margin && (page + n) < win.DataProvider.Count)
 			{
 				bool hasMarkup = false;
-				IMarkupListDataProvider markupListDataProvider = win.DataProvider as IMarkupListDataProvider;
+				IMarkupListDataProvider<T> markupListDataProvider = win.DataProvider as IMarkupListDataProvider<T>;
 				if (markupListDataProvider != null) {
 					if (markupListDataProvider.HasMarkup (page + n)) {
 						layout.SetMarkup (markupListDataProvider.GetMarkup (page + n) ?? "&lt;null&gt;");

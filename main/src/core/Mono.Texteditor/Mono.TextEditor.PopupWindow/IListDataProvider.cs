@@ -29,13 +29,13 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.TextEditor.PopupWindow
 {
-	public interface IListDataProvider
+	public interface IListDataProvider<T>
 	{
 		int Count {
 			get; 
 		}
 		
-		object this[int index] { 
+		T this[int index] { 
 			get;
 		}
 		
@@ -43,7 +43,7 @@ namespace MonoDevelop.TextEditor.PopupWindow
 		string GetText (int index);
 	}
 	
-	public interface IMarkupListDataProvider : IListDataProvider
+	public interface IMarkupListDataProvider<T> : IListDataProvider<T>
 	{
 		bool HasMarkup (int index);
 		string GetMarkup (int index);
