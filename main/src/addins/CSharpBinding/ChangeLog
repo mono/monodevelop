@@ -1,3 +1,7 @@
+2009-03-22  Mike Krüger  <mkrueger@novell.com>
+
+	* Parser/CSharpFormatter.cs: Fixed Header.
+
 2009-03-21  Mike Krüger  <mkrueger@novell.com>
 
 	* Gui/NRefactoryResolver.cs:
