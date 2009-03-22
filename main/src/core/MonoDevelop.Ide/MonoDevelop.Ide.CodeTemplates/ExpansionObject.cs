@@ -133,7 +133,6 @@ namespace MonoDevelop.Ide.CodeTemplates
 				if (list == null)
 					list = ext.CodeCompletionCommand (CurrentContext.Document.TextEditor.CurrentCodeCompletionContext);
 				
-				Console.WriteLine ("get collections: " + list.Count);
 				foreach (object o in list) {
 					MonoDevelop.Projects.Gui.Completion.IMemberCompletionData data = o as MonoDevelop.Projects.Gui.Completion.IMemberCompletionData;
 					if (data == null)
