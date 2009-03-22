@@ -97,6 +97,9 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.ToggleCodeComment" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.IndentSelection" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.UnIndentSelection" />
+		<SeparatorItem id = "Separator3" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeTemplateWindow" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeSurroundingsWindow" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/SourceEditor2/IconContextMenu/Editor">
