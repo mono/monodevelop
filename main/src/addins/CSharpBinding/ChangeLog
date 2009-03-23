@@ -1,5 +1,10 @@
 2009-03-23  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/ResolveVisitor.cs: Fixed "Bug 487218 - var does not work
+	  with arrays".
+
+2009-03-23  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/ResolveVisitor.cs: fixed "Bug 487228 - No intellisense
 	  for implicit arrays".
 

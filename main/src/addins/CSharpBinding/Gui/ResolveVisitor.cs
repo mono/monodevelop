@@ -86,8 +86,15 @@ namespace MonoDevelop.CSharpBinding
 				SearchTypeRequest req = new SearchTypeRequest (unit, type, resolver.CallingType);
 				req.CallingType = resolver.CallingType;
 				IType searchedType = resolver.Dom.SearchType (req);
-				if (searchedType != null)
-					result.ResolvedType = new DomReturnType (searchedType);
+				if (searchedType != null) {
+					DomReturnType resType = new DomReturnType (searchedType);
+					resType.ArrayDimensions = type.ArrayDimensions;
+					for (int i = 0; i < type.ArrayDimensions; i++) {
+						resType.SetDimension (i, type.GetDimension (i));
+					}
+					resType.PointerNestingLevel = type.PointerNestingLevel;
+					result.ResolvedType = resType;
+				}
 			}
 			return result;
 		}
