@@ -272,7 +272,7 @@ namespace MonoDevelop.CSharpBinding
 		}
 		
 		public bool IsOverloaded {
-			get { return overloads != null; }
+			get { return overloads != null && overloads.Count > 0; }
 		}
 		
 		public void AddOverload (MemberCompletionData overload)
@@ -282,6 +282,8 @@ namespace MonoDevelop.CSharpBinding
 			if (overload.Member is IMember && Member is IMember) {
 				string MemberId = (overload.Member as IMember).HelpUrl;
 				if (MemberId != (this.Member as IMember).HelpUrl || !overloads.ContainsKey (MemberId)) {
+					if (((IMember)overload.Member).IsPartial)
+						return;
 					overloads[MemberId] = overload;
 					
 					//if any of the overloads is obsolete, we should not mark the item obsolete
