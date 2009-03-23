@@ -1,5 +1,11 @@
 2009-03-23  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Fixed "Bug
+	  487736 - Clipboard ring and code snippets not shown anymore
+	  in the toolbox".
+
+2009-03-23  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/SourceEditorView.cs:
 	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs:
 	  Implemented "Bug 487422 - Ctrl+C/V/X should copy/paste/cut

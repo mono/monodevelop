@@ -1405,6 +1405,11 @@ namespace MonoDevelop.SourceEditor
 		
 		void IToolboxConsumer.ConsumeItem (ItemToolboxNode item)
 		{
+			if (item is TemplateToolboxNode) {
+				InsertTemplate (((TemplateToolboxNode)item).Template, new MonoDevelop.Ide.Gui.Document (base.WorkbenchWindow));
+				TextEditor.GrabFocus ();
+				return;
+			}
 			string text = GetText (item);
 			if (string.IsNullOrEmpty (text))
 				return;
@@ -1412,16 +1417,45 @@ namespace MonoDevelop.SourceEditor
 			TextEditor.GrabFocus ();
 		}
 		
+		#region dnd
+		Gtk.Widget customSource;
+		ItemToolboxNode dragItem;
 		void IToolboxConsumer.DragItem (ItemToolboxNode item, Gtk.Widget source, Gdk.DragContext ctx)
 		{
 			string text = GetText (item);
 			if (string.IsNullOrEmpty (text))
 				return;
-			TextEditor.BeginDrag (text, source, ctx);
+			dragItem = item;
+			customSource = source;
+			customSource.DragDataGet += HandleDragDataGet;
+			customSource.DragEnd += HandleDragEnd;
 		}
+		
+		void HandleDragEnd(object o, DragEndArgs args)
+		{
+			if (customSource != null) {
+				customSource.DragDataGet -= HandleDragDataGet;
+				customSource.DragEnd -= HandleDragEnd;
+				customSource = null;
+			}
+		}
+		
+		void HandleDragDataGet(object o, DragDataGetArgs args)
+		{
+			if (dragItem != null) {
+				TextEditor.CaretToDragCaretPosition ();
+				((IToolboxConsumer)this).ConsumeItem (dragItem);
+				dragItem = null;
+			}
+		}
+		#endregion
 		
 		string GetText (ItemToolboxNode item)
 		{
+			TemplateToolboxNode templateToolboxNode = item as TemplateToolboxNode;
+			if (templateToolboxNode != null)
+				return templateToolboxNode.Template.Shortcut;
+			
 			ITextToolboxNode tn = item as ITextToolboxNode;
 			if (tn == null) {
 				LoggingService.LogWarning ("Cannot use non-ITextToolboxNode toolbox items in the text editor.");
