@@ -46,20 +46,21 @@ namespace Mono.TextEditor
 			if (data.IsSomethingSelected && data.CanEditSelection) {
 				Copy (data);
 				DeleteActions.Delete (data);
+			} else {
+				Copy (data);
+				DeleteActions.CaretLine (data);
 			}
 		}
 		
 		public static void Copy (TextEditorData data)
 		{
-			if (data.IsSomethingSelected) {
-				CopyOperation operation = new CopyOperation ();
-				
-				Clipboard clipboard = Clipboard.Get (CopyOperation.CLIPBOARD_ATOM);
-				operation.CopyData (data);
-				
-				clipboard.SetWithData ((Gtk.TargetEntry[])CopyOperation.TargetList, operation.ClipboardGetFunc,
-				                       operation.ClipboardClearFunc);
-			}
+			CopyOperation operation = new CopyOperation ();
+			
+			Clipboard clipboard = Clipboard.Get (CopyOperation.CLIPBOARD_ATOM);
+			operation.CopyData (data);
+			
+			clipboard.SetWithData ((Gtk.TargetEntry[])CopyOperation.TargetList, operation.ClipboardGetFunc,
+			                       operation.ClipboardClearFunc);
 		}
 	
 		public class CopyOperation
@@ -279,7 +280,8 @@ namespace Mono.TextEditor
 			
 			public void CopyData (TextEditorData data)
 			{
-				CopyData (data, data.SelectionRange);
+				ISegment segment = data.IsSomethingSelected ? data.SelectionRange : data.Document.GetLine (data.Caret.Line);
+				CopyData (data, segment);
 				
 				if (Copy != null)
 					Copy (copiedDocument != null ? copiedDocument.Text : null);

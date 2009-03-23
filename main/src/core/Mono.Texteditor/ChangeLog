@@ -1,3 +1,9 @@
+2009-03-23  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/ClipboardActions.cs: Fixed "Bug 487422 -
+	  Ctrl+C/V/X should copy/paste/cut the whole line if no
+	  selection is made like in VS".
+
 2009-03-22  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextLinkEditMode.cs: Handled possible
