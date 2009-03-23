@@ -1418,5 +1418,57 @@ public class SomeControl : Control
 			Assert.IsNull (provider.Find ("Left"), "enum 'Left' found");
 			Assert.IsNull (provider.Find ("Right"), "enum 'Right' found");
 		}
+		
+		/// <summary>
+		/// Bug 487236 - Object initializer completion uses wrong type
+		/// </summary>
+		[Test()]
+		public void TestBug487236 ()
+		{
+			CompletionDataList provider = CreateCtrlSpaceProvider (
+@"
+public class A
+{
+	public string Name { get; set; }
+}
+
+class MyTest
+{
+	public void Test ()
+	{
+		$var x = new A () { $
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			
+			Assert.IsNotNull (provider.Find ("Name"), "property 'Name' not found.");
+		}
+		
+		/// <summary>
+		/// Bug 487236 - Object initializer completion uses wrong type
+		/// </summary>
+		[Test()]
+		public void TestBug487236B ()
+		{
+			CompletionDataList provider = CreateCtrlSpaceProvider (
+@"
+public class A
+{
+	public string Name { get; set; }
+}
+
+class MyTest
+{
+	public void Test ()
+	{
+		$A x = new NotExists () { $
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			
+			Assert.IsNull (provider.Find ("Name"), "property 'Name' found, but shouldn't'.");
+		}
 	}
 }
