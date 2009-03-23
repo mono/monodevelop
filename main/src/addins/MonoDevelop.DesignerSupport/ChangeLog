@@ -1,3 +1,13 @@
+2009-03-23  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.DesignerSupport.csproj:
+	* MonoDevelop.DesignerSupport.Toolbox/TextToolboxNode.cs:
+	* MonoDevelop.DesignerSupport.Toolbox/TemplateToolboxNode.cs:
+	* MonoDevelop.DesignerSupport.Toolbox/CodeTemplateToolboxProvider.cs:
+	  "fixed Bug 487736 - Clipboard ring and code snippets not
+	  shown anymore in the toolbox".
+
 2009-03-19  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.DesignerSupport.Toolbox/CodeTemplateToolboxProvider.cs:

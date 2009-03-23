@@ -38,21 +38,20 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		
 		public System.Collections.Generic.IEnumerable<ItemToolboxNode> GetDynamicItems (IToolboxConsumer consumer)
 		{
-			//FIXME: make this work again
-			/*
+			
 			MonoDevelop.Ide.Gui.Content.IExtensibleTextEditor editor 
 				= consumer as MonoDevelop.Ide.Gui.Content.IExtensibleTextEditor;
 			if (editor != null) {
-				string mimetype = "";
-				foreach (CodeTemplate ct in CodeTemplateService.GetCodeTemplates (mimetype)) {
-					string text = ct.Code;
-					TextToolboxNode n = new TextToolboxNode (text);
+				foreach (CodeTemplate ct in CodeTemplateService.GetCodeTemplatesForFile (editor.Name)) {
+					if (ct.CodeTemplateContext != CodeTemplateContext.Standard)
+						continue;
+					TemplateToolboxNode n = new TemplateToolboxNode (ct);
 					n.Description = ct.Description;
 					n.Name = ct.Shortcut;
 					n.Category = category;
 					yield return n;
 				}
-			}*/
+			}
 			yield break;
 		}
 		

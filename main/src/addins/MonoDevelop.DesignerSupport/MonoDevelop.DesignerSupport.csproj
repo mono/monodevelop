@@ -166,6 +166,7 @@
     <Compile Include="MonoDevelop.DesignerSupport\ClassOutlineTextEditorExtension.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\CodeBehind.cs" />
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport.Toolbox\TemplateToolboxNode.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.DesignerSupport.addin.xml" />

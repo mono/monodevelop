@@ -73,6 +73,7 @@ FILES =  \
 	MonoDevelop.DesignerSupport.Toolbox/IToolboxConsumer.cs \
 	MonoDevelop.DesignerSupport.Toolbox/IToolboxLoader.cs \
 	MonoDevelop.DesignerSupport.Toolbox/IToolboxProvider.cs \
+	MonoDevelop.DesignerSupport.Toolbox/TemplateToolboxNode.cs \
 	MonoDevelop.DesignerSupport.Toolbox/TextToolboxNode.cs \
 	MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs \
 	MonoDevelop.DesignerSupport.Toolbox/ToolboxConfiguration.cs \
