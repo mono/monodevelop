@@ -580,7 +580,7 @@ namespace MonoDevelop.CSharpBinding
 			}
 			
 			QueryExpressionGroupClause groupClause = queryExpression.SelectOrGroupClause as QueryExpressionGroupClause;
-			if (groupClause == null) {
+			if (groupClause != null) {
 				InvocationExpression groupInvocation = new InvocationExpression (new MemberReferenceExpression (queryExpression.FromClause.InExpression, "GroupBy"));
 				
 				LambdaExpression keyLambdaExpr = new LambdaExpression ();

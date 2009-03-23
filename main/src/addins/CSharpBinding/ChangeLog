@@ -1,3 +1,7 @@
+2009-03-23  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/ResolveVisitor.cs: Fixed possible null ref.
+
 2009-03-22  Mike Krüger  <mkrueger@novell.com>
 
 	* Gui/NewCSharpExpressionFinder.cs: Added support for
