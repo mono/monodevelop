@@ -1494,10 +1494,10 @@ public class Test
 		}
 		
 		/// <summary>
-		/// Bug 487218 - No intellisense for implicit arrays
+		/// Bug 487218 - var does not work with arrays
 		/// </summary>
 		[Test()]
-		public void TestBug487228 ()
+		public void TestBug487218 ()
 		{
 			CompletionDataList provider = CreateProvider (
 @"
@@ -1513,6 +1513,32 @@ public class Test
 			Assert.IsNotNull (provider, "provider not found.");
 			
 			Assert.IsNotNull (provider.Find ("Method"), "method 'Method' not found");
+		}
+		
+		/// <summary>
+		/// Bug 487206 - Intellisense not working
+		/// </summary>
+		[Test()]
+		public void TestBug487206 ()
+		{
+			CompletionDataList provider = CreateProvider (
+@"
+class CastByExample
+{
+	static T Cast<T> (object obj, T type)
+	{
+		return (T) obj;
+	}
+	
+	static void Main ()
+	{
+		var typed = Cast (o, new { Foo = "" });
+		$typed.$
+	}
+}");
+			Assert.IsNotNull (provider, "provider not found.");
+			
+			Assert.IsNotNull (provider.Find ("Foo"), "property 'Foo' not found");
 		}
 	}
 }

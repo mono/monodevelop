@@ -1,5 +1,10 @@
 2009-03-23  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: Added
+	  test for "Bug 487206 - Intellisense not working".
+
+2009-03-23  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: added
 	  test for 'Bug 487218 - var does not work with arrays'.
 
