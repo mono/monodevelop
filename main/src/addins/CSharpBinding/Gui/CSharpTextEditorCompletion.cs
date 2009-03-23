@@ -149,6 +149,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			return result;
 		}
 		
+		bool tryToForceCompletion = false;
 		public override ICompletionDataList HandleCodeCompletion (ICodeCompletionContext completionContext, char completionChar, ref int triggerWordLength)
 		{
 		try {
@@ -180,7 +181,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				ResolveResult resolveResult = resolver.Resolve (result, location);
 				if (resolver.ResolvedExpression is ICSharpCode.NRefactory.Ast.PrimitiveExpression) {
 					ICSharpCode.NRefactory.Ast.PrimitiveExpression pex = (ICSharpCode.NRefactory.Ast.PrimitiveExpression)resolver.ResolvedExpression;
-					if (!(pex.Value is string || pex.Value is char))
+					if (!tryToForceCompletion && !(pex.Value is string || pex.Value is char))
 						return null;
 				}
 					
@@ -850,7 +851,9 @@ namespace MonoDevelop.CSharpBinding.Gui
 			string txt = Editor.GetText (pos - 1, pos);
 			if (txt.Length > 0) {
 				int triggerWordLength = 0; 
+				tryToForceCompletion = true;
 				ICompletionDataList cp = this.HandleCodeCompletion (completionContext, txt[0], ref triggerWordLength);
+				tryToForceCompletion = false;
 				if (cp != null) {
 					((CompletionDataList)cp).AutoCompleteUniqueMatch = true;
 					return cp;

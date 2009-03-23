@@ -1,5 +1,10 @@
 2009-03-23  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/CSharpTextEditorCompletion.cs: Fixed "Bug 487246 - No
+	  intellisense for extension methods".
+
+2009-03-23  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/ResolveVisitor.cs: Fixed possible null ref.
 
 2009-03-22  Mike Krüger  <mkrueger@novell.com>
