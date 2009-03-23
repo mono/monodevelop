@@ -732,7 +732,7 @@ namespace MonoDevelop.SourceEditor
 		#region IClipboardHandler
 		public bool EnableCut {
 			get {
-				return widget.EditorHasFocus && TextEditor.IsSomethingSelected;
+				return widget.EditorHasFocus;
 			}
 		}
 		public bool EnableCopy {
@@ -747,7 +747,7 @@ namespace MonoDevelop.SourceEditor
 		}
 		public bool EnableDelete {
 			get {
-				return widget.EditorHasFocus && TextEditor.IsSomethingSelected;
+				return widget.EditorHasFocus;
 			}
 		}
 		public bool EnableSelectAll {
@@ -773,8 +773,11 @@ namespace MonoDevelop.SourceEditor
 		
 		public void Delete ()
 		{
-			if (TextEditor.IsSomethingSelected) 
+			if (TextEditor.IsSomethingSelected) {
 				TextEditor.DeleteSelectedText ();
+			} else {
+				TextEditor.RunAction (DeleteActions.CaretLine);
+			}
 		}
 		
 		public void SelectAll ()
