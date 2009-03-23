@@ -1,5 +1,11 @@
 2009-03-23  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: added
+	  test for bug "Bug 487228 - No intellisense for implicit
+	  arrays"
+
+2009-03-23  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: Added
 	  tests for "Bug 487236 - Object initializer completion uses
 	  wrong type".

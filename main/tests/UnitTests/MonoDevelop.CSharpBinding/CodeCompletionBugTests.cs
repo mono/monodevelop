@@ -1470,5 +1470,27 @@ class MyTest
 			
 			Assert.IsNull (provider.Find ("Name"), "property 'Name' found, but shouldn't'.");
 		}
+		
+		/// <summary>
+		/// Bug 487228 - No intellisense for implicit arrays
+		/// </summary>
+		[Test()]
+		public void TestBug487228 ()
+		{
+			CompletionDataList provider = CreateProvider (
+@"
+public class Test
+{
+	public void Method ()
+	{
+		var v = new [] { new Test () };
+		$v[0].$
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			
+			Assert.IsNotNull (provider.Find ("Method"), "method 'Method' not found");
+		}
 	}
 }
