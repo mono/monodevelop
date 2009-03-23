@@ -119,8 +119,21 @@ namespace MonoDevelop.CSharpBinding
 			return parenthesizedExpression.Expression.AcceptVisitor (this, data);
 		}
 		
+		public override object VisitCollectionInitializerExpression (CollectionInitializerExpression collectionInitializerExpression, object data)
+		{
+			if (collectionInitializerExpression.CreateExpressions.Count == 0)
+				return null;
+			DomReturnType type = (DomReturnType)ResolveType (collectionInitializerExpression.CreateExpressions[0]);
+			type.ArrayDimensions++;
+			return CreateResult (type);
+		}
+		
 		public override object VisitArrayCreateExpression(ArrayCreateExpression arrayCreateExpression, object data)
 		{
+			if (arrayCreateExpression.IsImplicitlyTyped) {
+				Console.WriteLine (arrayCreateExpression.ArrayInitializer);
+				return Resolve (arrayCreateExpression.ArrayInitializer);
+			}
 			return CreateResult (arrayCreateExpression.CreateType);
 		}
 		
