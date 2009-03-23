@@ -97,8 +97,25 @@ namespace MonoDevelop.CSharpBinding.Gui
 			string documentToCursor = editor.GetText (0, editor.CursorPosition);
 			int pos = -1;
 			for (int i = documentToCursor.Length - 5; i >= 0; i--) {
-				if (documentToCursor.Substring (i, 4) == "new ")
-					return FindExactContextForNewCompletion (editor, unit, fileName, callingType, i + 4);
+				if (documentToCursor.Substring (i, 4) == "new ") {
+					int j = i + 4;
+					while (j < documentToCursor.Length && Char.IsWhiteSpace (documentToCursor[j])) 
+						j++;
+					int start = j;	
+					while (j < documentToCursor.Length && (Char.IsLetterOrDigit (documentToCursor[j]) || documentToCursor[j] == '_')) 
+						j++;
+					
+					ExpressionResult firstExprs = FindExpression (documentToCursor, j);
+					
+					if (firstExprs.Expression != null) {
+						IReturnType unresolvedReturnType = NRefactoryResolver.ParseReturnType (firstExprs);
+						if (unresolvedReturnType != null) {
+							IType resolvedType = projectContent.SearchType (new SearchTypeRequest (unit, unresolvedReturnType, callingType));
+							return ExpressionContext.TypeDerivingFrom (resolvedType != null ? new DomReturnType (resolvedType) : null, unresolvedReturnType, true);
+						}
+					}
+					
+				}
 			}
 			return null;
 		}
