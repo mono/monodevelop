@@ -198,6 +198,8 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 		static Regex functionRegEx = new Regex ("([^(]*)\\(([^(]*)\\)", RegexOptions.Compiled);
 		
+		
+		// We should use reflection here (but for 5 functions it doesn't hurt) !!! - Mike
 		public virtual string[] Descriptions {
 			get {
 				return new string[] {

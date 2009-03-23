@@ -1,5 +1,10 @@
 2009-03-23  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.CodeTemplates/ExpansionObject.cs: added
+	  comment
+
+2009-03-23  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.CodeTemplates/CodeTemplateService.cs:
 	  Filtered expression templates from code completion.
 
