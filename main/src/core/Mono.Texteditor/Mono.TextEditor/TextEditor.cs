@@ -744,6 +744,11 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		public void CaretToDragCaretPosition ()
+		{
+			Caret.Location = defaultCaretPos = dragCaretPos;
+		}
+		
 		protected override void OnDragBegin (DragContext context)
 		{
 			dragContext = context;
