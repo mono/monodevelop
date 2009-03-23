@@ -1,3 +1,8 @@
+2009-03-23  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom/DomMethod.cs: Fixed "Bug 487206 -
+	  Intellisense not working".
+
 2009-03-22  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/IExpressionFinder.cs: Added support

@@ -147,7 +147,7 @@ namespace MonoDevelop.Projects.Dom
 			GenericMethodInstanceResolver resolver = new GenericMethodInstanceResolver ();
 			if (genericArguments != null) {
 				for (int i = 0; i < method.TypeParameters.Count && i < genericArguments.Count; i++) 
-					resolver.Add (method.TypeParameters[i].Name, new DomReturnType (genericArguments[i].Name));
+					resolver.Add (method.TypeParameters[i].Name, genericArguments[i]);
 			}
 			IMethod result = (IMethod)method.AcceptVisitor (resolver, method);
 			resolver = new GenericMethodInstanceResolver ();
@@ -165,9 +165,10 @@ namespace MonoDevelop.Projects.Dom
 							}
 						}
 						if (found) {
-							DomReturnType rt = new DomReturnType (curReturnType.Value.FullName);
+					/*		DomReturnType rt = new DomReturnType (curReturnType.Value.FullName);
 							rt.ArrayDimensions = rt.PointerNestingLevel = 0;
-							resolver.Add (curReturnType.Key.FullName, rt);
+							resolver.Add (curReturnType.Key.FullName, rt);*/
+							resolver.Add (curReturnType.Key.FullName, curReturnType.Value);
 							break;
 						}
 						for (int k = 0; k < System.Math.Min (curReturnType.Key.GenericArguments.Count, curReturnType.Value.GenericArguments.Count); k++) {
