@@ -27,11 +27,12 @@
 	<binding command="MonoDevelop.Ide.Commands.ViewCommands.ShowNext" shortcut="F8" />
 	<binding command="MonoDevelop.Ide.Commands.ViewCommands.ShowPrevious" shortcut="Shift+F8" />
 	<binding command="MonoDevelop.Ide.Commands.SearchCommands.GotoType" shortcut="Control+K|Control+V" />
-    <binding command="MonoDevelop.Ide.Commands.WindowCommands.SwitchSplitWindow" shortcut="Control+L" />
+    <binding command="MonoDevelop.Ide.Commands.WindowCommands.SwitchSplitWindow" shortcut="" />
 	<binding command="MonoDevelop.Debugger.DebugCommands.Debug" shortcut="F5" />
 	<binding command="MonoDevelop.Debugger.DebugCommands.StepInto" shortcut="F11" />
 	<binding command="MonoDevelop.Debugger.DebugCommands.StepOver" shortcut="F10" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DeleteToLineEnd" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DeleteLine" shortcut="Control+L" />
 	<binding command="Pad|MonoDevelop.Ide.Gui.Pads.ErrorListPad" shortcut="Control+W|E" />
 	<binding command="Pad|MonoDevelop.Debugger.LocalsPad" shortcut="Control+D|L" />
 	<binding command="Pad|MonoDevelop.Debugger.StackTracePad" shortcut="Control+D|C" />

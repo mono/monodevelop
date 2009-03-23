@@ -1,5 +1,10 @@
 2009-03-23  Mike Krüger  <mkrueger@novell.com>
 
+	* options/KeyBindingSchemeVisualStudio.xml: fixed "Bug 487424
+	  - Ctrl + L doesn't delete the current line in VS profile".
+
+2009-03-23  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.CodeTemplates/ExpansionObject.cs: added
 	  comment
 
