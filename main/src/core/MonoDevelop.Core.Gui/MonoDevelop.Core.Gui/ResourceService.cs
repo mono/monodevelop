@@ -335,6 +335,7 @@ namespace MonoDevelop.Core.Gui
 		
 		public void AddToIconFactory (string stockId, Gdk.Pixbuf pixbuf, Gtk.IconSize iconSize)
 		{
+			Console.WriteLine ("pp ss: " + stockId);
 			Gtk.IconSet iconSet = iconFactory.Lookup (stockId);
 			if (iconSet == null) {
 				iconSet = new Gtk.IconSet ();

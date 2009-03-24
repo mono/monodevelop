@@ -1,3 +1,14 @@
+2009-03-24  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs: In
+	  AddMembers, get the updated class after adding each member.
+	  Make sure the main part of the class is used everywhere.
+	  When getting the position of a member, explicitly add a
+	  separator line if there is a member already present. That
+	  was implicitly done in GetNextLine, but it was removed. All
+	  this fixes bug #487934 - Stetic throws exception while
+	  adding event to control.
+
 2009-03-19  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs:
