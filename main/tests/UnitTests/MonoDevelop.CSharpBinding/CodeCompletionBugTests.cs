@@ -1540,5 +1540,38 @@ class CastByExample
 			
 			Assert.IsNotNull (provider.Find ("Foo"), "property 'Foo' not found");
 		}
+
+		/// <summary>
+		/// Bug 487203 - Extension methods not working
+		/// </summary>
+		[Test()]
+		public void TestBug487203 ()
+		{
+			// WARNING: May not run, because of missing extension methods.
+			//          But I can't run tests on my system today. If this
+			//          fails add a 'Select' extension method. (copy an empty 
+			//          System.Linq.Enumerable.Select method should do the job)
+			CompletionDataList provider = CreateProvider (
+@"
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+
+class Program 
+{
+	public void Foo ()
+	{
+		Program[] prgs;
+		foreach (var prg in (from Program p in prgs select p)) {
+			$prg.$
+		}
+	}
+}		
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.Find ("Foo"), "method 'Foo' not found");
+		}
+
 	}
 }
