@@ -1,3 +1,11 @@
+2009-03-24  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom/DomMethod.cs:
+	* MonoDevelop.Projects.Dom/ResolveResult.cs:
+	* MonoDevelop.Projects.Dom/ExtensionMethod.cs: Worked on
+	  lambda expression resolving (fixing Bug 487203 - Extension
+	  methods not working)
+
 2009-03-23  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomMethod.cs: Fixed "Bug 487206 -

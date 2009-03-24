@@ -363,7 +363,8 @@ namespace MonoDevelop.Projects.Dom
 			get {
 				IMethod method = MostLikelyMethod;
 				if (method != null) {
-					return DomMethod.CreateInstantiatedGenericMethod (method, genericArguments, arguments).ReturnType;
+					IMethod instMethod = DomMethod.CreateInstantiatedGenericMethod (method, genericArguments, arguments);
+					return instMethod.ReturnType;
 				}
 				return base.ResolvedType;
 			}
@@ -407,15 +408,28 @@ namespace MonoDevelop.Projects.Dom
 					methods.Add ((IMethod)member);
 			}
 		}
-		
 		public void ResolveExtensionMethods ()
 		{
+//			Console.WriteLine (" --- Resolve extension");
+//			Console.WriteLine ("---Args:");
+//			foreach (var arg in arguments)
+//				Console.WriteLine (arg);
+//			Console.WriteLine ("---GenArgs:");
+//			if (genericArguments != null) {
+//				foreach (var arg in genericArguments)
+//					Console.WriteLine (arg);
+//			} else {
+//				Console.WriteLine ("<null>");
+//			}
+			
 			for (int i = 0; i < methods.Count; i++) {
 				if (methods[i].IsExtension) {
 					methods[i] = new ExtensionMethod (Type, methods[i], genericArguments, arguments);
 				}
 			}
+//			Console.WriteLine ("-- end resolve extension.");
 		}
+		
 		public override IEnumerable<object> CreateResolveResult (ProjectDom dom, IMember callingMember)
 		{
 			List<object> result = new List<object> ();

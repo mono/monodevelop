@@ -54,7 +54,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public bool IsExtension {
+		public virtual bool IsExtension {
 			get {
 				return (MethodModifier & MethodModifier.IsExtension) == MethodModifier.IsExtension;
 			}
@@ -143,7 +143,8 @@ namespace MonoDevelop.Projects.Dom
 		
 		internal static IMethod CreateInstantiatedGenericMethod (IMethod method, IList<IReturnType> genericArguments, IList<IReturnType> methodArguments)
 		{
-			//System.Console.WriteLine("----");
+		//	System.Console.WriteLine("----");
+		//	Console.WriteLine ("instantiate: " + method);
 			GenericMethodInstanceResolver resolver = new GenericMethodInstanceResolver ();
 			if (genericArguments != null) {
 				for (int i = 0; i < method.TypeParameters.Count && i < genericArguments.Count; i++) 
@@ -152,11 +153,13 @@ namespace MonoDevelop.Projects.Dom
 			IMethod result = (IMethod)method.AcceptVisitor (resolver, method);
 			resolver = new GenericMethodInstanceResolver ();
 			if (methodArguments != null) {
+				// The stack should contain <TEMPLATE> / RealType pairs
 				Stack<KeyValuePair<IReturnType, IReturnType>> returnTypeStack = new Stack<KeyValuePair<IReturnType, IReturnType>> ();
 				for (int i = 0; i < method.Parameters.Count && i < methodArguments.Count; i++) {
 					returnTypeStack.Push (new KeyValuePair<IReturnType, IReturnType> (method.Parameters[i].ReturnType, methodArguments[i]));
 					while (returnTypeStack.Count > 0) {
 						KeyValuePair<IReturnType, IReturnType> curReturnType = returnTypeStack.Pop ();
+						//Console.WriteLine ("key:" + curReturnType.Key + "/ val:" + curReturnType.Value);
 						bool found = false;
 						for (int j = 0; j < method.TypeParameters.Count; j++) {
 							if (method.TypeParameters[j].Name == curReturnType.Key.FullName) {
@@ -171,15 +174,26 @@ namespace MonoDevelop.Projects.Dom
 							resolver.Add (curReturnType.Key.FullName, curReturnType.Value);
 							break;
 						}
-						for (int k = 0; k < System.Math.Min (curReturnType.Key.GenericArguments.Count, curReturnType.Value.GenericArguments.Count); k++) {
-							returnTypeStack.Push (new KeyValuePair<IReturnType, IReturnType> (curReturnType.Key.GenericArguments[k], curReturnType.Value.GenericArguments[k]));
+						//Console.WriteLine ("key:" + curReturnType.Key);
+						//Console.WriteLine ("value:" + curReturnType.Value);
+						if (curReturnType.Key.FullName == "System.Func") {
+							if (curReturnType.Key.GenericArguments.Count > 0) {
+								//Console.WriteLine ("2add:" + curReturnType.Key.GenericArguments[curReturnType.Key.GenericArguments.Count - 1] + "/" + curReturnType.Value);
+								returnTypeStack.Push (new KeyValuePair<IReturnType, IReturnType> (curReturnType.Key.GenericArguments[curReturnType.Key.GenericArguments.Count - 1], curReturnType.Value));
+							}
+						} else {
+							for (int k = 0; k < System.Math.Min (curReturnType.Key.GenericArguments.Count, curReturnType.Value.GenericArguments.Count); k++) {
+								//Console.WriteLine ("add " + curReturnType.Key.GenericArguments[k] + " " + curReturnType.Value.GenericArguments[k]);
+								returnTypeStack.Push (new KeyValuePair<IReturnType, IReturnType> (curReturnType.Key.GenericArguments[k], 
+								                                                                  curReturnType.Value.GenericArguments[k]));
+							}
 						}
 					}
 				}
 			}
-			//System.Console.WriteLine("before:" + result);
+		//	System.Console.WriteLine("before:" + result);
 			result = (IMethod)result.AcceptVisitor (resolver, result);
-			//System.Console.WriteLine("after:" + result);
+		//	System.Console.WriteLine("after:" + result);
 			return result;
 		}
 		
@@ -189,8 +203,11 @@ namespace MonoDevelop.Projects.Dom
 			
 			public void Add (string name, IReturnType type)
 			{
-//				System.Console.WriteLine (name + "-->" + type);
-				typeTable.Add (name, type);
+				if (type == null || string.IsNullOrEmpty (type.FullName))
+					return;
+				//System.Console.WriteLine (name + "-->" + type);
+				if (!typeTable.ContainsKey (name))
+					typeTable[name] = type;
 			}
 			
 			public override IDomVisitable Visit (IReturnType type, IMethod typeToInstantiate)
@@ -200,7 +217,8 @@ namespace MonoDevelop.Projects.Dom
 				if (typeTable.TryGetValue (copyFrom.DecoratedFullName, out res)) {
 //					if (type.ArrayDimensions == 0 && type.GenericArguments.Count == 0) {
 					if (type.ArrayDimensions != 0) {
-						DomReturnType drr = new DomReturnType (res.ToInvariantString ());
+						DomReturnType drr = new DomReturnType (res.FullName);
+						drr.PointerNestingLevel = type.PointerNestingLevel;
 						drr.ArrayDimensions = type.ArrayDimensions;
 						for (int i = 0; i < type.ArrayDimensions; i++)
 							drr.SetDimension (i, type.GetDimension (i));

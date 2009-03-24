@@ -123,20 +123,31 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public ExtensionMethod (IType extenisonType, IMethod originalMethod, IList<IReturnType> genericArguments, IList<IReturnType> methodArguments)
+		public override bool IsExtension {
+			get {
+				return false;
+			}
+		}
+		
+		public ExtensionMethod (IType extenisonType, IMethod originalMethod, IList<IReturnType> genericArguments, IEnumerable<IReturnType> methodArguments)
 		{
 			this.DeclaringType = extenisonType;
 			List<IReturnType> args = new List<IReturnType> ();
 			args.Add (new DomReturnType (extenisonType));
 			args.AddRange (methodArguments);
+			//Console.WriteLine ("Create Extension method from:");
+			//Console.WriteLine ("ext type:" + args[0]);
+			//Console.WriteLine (originalMethod);
 			this.method = DomMethod.CreateInstantiatedGenericMethod (originalMethod, genericArguments, args);
-			System.Console.WriteLine(method);
+			
 			// skip first parameter.
 			for (int i = 1; i < method.Parameters.Count; i++) {
 				Add (method.Parameters[i]);
 			}
 			this.ExtensionType  = extenisonType;
 			this.OriginalMethod = originalMethod;
+			//Console.WriteLine (this);
+			//Console.WriteLine ("oOoOoOoOoOoOoOoOoOoOoOoOoOoO");
 		}
 	}
 }
