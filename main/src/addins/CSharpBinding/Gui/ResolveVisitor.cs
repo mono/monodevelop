@@ -54,7 +54,7 @@ namespace MonoDevelop.CSharpBinding
 			return result;
 		}
 		
-		IReturnType GetTypeSafe (Expression expression)
+		public IReturnType GetTypeSafe (Expression expression)
 		{
 			ResolveResult result = Resolve (expression);
 			return result.ResolvedType ?? DomReturnType.Void;
@@ -101,7 +101,10 @@ namespace MonoDevelop.CSharpBinding
 		
 		public override object VisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
 		{
-			return resolver.ResolveIdentifier (this, identifierExpression.Identifier.TrimEnd ('.'));
+//			Console.WriteLine ("visit id: " + identifierExpression.Identifier);
+			var res = resolver.ResolveIdentifier (this, identifierExpression.Identifier.TrimEnd ('.'));
+//			Console.WriteLine ("result: " + res.ResolvedType);
+			return res;
 		}
 		
 		public override object VisitSizeOfExpression (SizeOfExpression sizeOfExpression, object data)
@@ -138,7 +141,7 @@ namespace MonoDevelop.CSharpBinding
 		public override object VisitArrayCreateExpression(ArrayCreateExpression arrayCreateExpression, object data)
 		{
 			if (arrayCreateExpression.IsImplicitlyTyped) {
-				Console.WriteLine (arrayCreateExpression.ArrayInitializer);
+//				Console.WriteLine (arrayCreateExpression.ArrayInitializer);
 				return Resolve (arrayCreateExpression.ArrayInitializer);
 			}
 			return CreateResult (arrayCreateExpression.CreateType);
@@ -543,10 +546,17 @@ namespace MonoDevelop.CSharpBinding
 			//System.Console.WriteLine("target:" + targetResult);
 			MethodResolveResult methodResult = targetResult as MethodResolveResult;
 			if (methodResult != null) {
+				//Console.WriteLine ("--------------------");
+				//Console.WriteLine ("i:" + methodResult.ResolvedType);
 				foreach (Expression arg in invocationExpression.Arguments) {
-					methodResult.AddArgument (GetTypeSafe (arg));
+					var type = GetTypeSafe (arg);
+//					Console.WriteLine ("  arg:" + arg);
+//					Console.WriteLine ("type :" + type);
+					methodResult.AddArgument (type);
 				}
+				//Console.WriteLine ("--------------------");
 				methodResult.ResolveExtensionMethods ();
+//				Console.WriteLine ("i2:" + methodResult.ResolvedType);
 			/*	MemberReferenceExpression mre = invocationExpression.TargetObject as MemberReferenceExpression;
 				if (mre != null) {
 					foreach (TypeReference typeReference in mre.TypeArguments) {

@@ -1,3 +1,10 @@
+2009-03-24  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/ResolveVisitor.cs:
+	* Gui/NRefactoryResolver.cs:
+	* Gui/NewCSharpExpressionFinder.cs: Worked on lambda resolving
+	  (fixing bug 'Bug 487203 - Extension methods not working').
+
 2009-03-23  Mike Krüger  <mkrueger@novell.com>
 
 	* Gui/MemberCompletionData.cs: Fixed "Bug 487209 - Incorrent

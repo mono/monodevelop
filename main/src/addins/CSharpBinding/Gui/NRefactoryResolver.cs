@@ -514,6 +514,9 @@ namespace MonoDevelop.CSharpBinding
 
 		public ResolveResult ResolveLambda (ResolveVisitor visitor, Expression lambdaExpression)
 		{
+//			Console.WriteLine ("oOoOoOoOoO");
+//			Console.WriteLine ("lambda expr:" + lambdaExpression);
+//			Console.WriteLine ("Parent:" + lambdaExpression.Parent);
 			if (lambdaExpression.Parent is LambdaExpression) 
 				return ResolveLambda (visitor, lambdaExpression.Parent as Expression);
 			if (lambdaExpression.Parent is ParenthesizedExpression) 
@@ -529,17 +532,51 @@ namespace MonoDevelop.CSharpBinding
 			if (lambdaExpression.Parent is InvocationExpression) {
 				InvocationExpression invocation = (InvocationExpression)lambdaExpression.Parent;
 				MethodResolveResult result = visitor.Resolve (invocation.TargetObject) as MethodResolveResult;
-				if (result == null)
+				if (result == null) {
+//					Console.WriteLine ("No compatible method found.");
 					return null;
+				} 
 				result.ResolveExtensionMethods ();
 				for (int i = 0; i < invocation.Arguments.Count; i++) {
 					if (invocation.Arguments [i] == lambdaExpression && i < result.MostLikelyMethod.Parameters.Count) {
 						IParameter parameterType = result.MostLikelyMethod.Parameters [i];
+//						Console.WriteLine (i + " par: " + parameterType);
 						if (parameterType.ReturnType.Name == "Func" && parameterType.ReturnType.GenericArguments.Count > 0) {
 							return visitor.CreateResult (parameterType.ReturnType.GenericArguments[0]);
 						}
 					}
 				}
+				
+				LambdaExpression lambda = (LambdaExpression)lambdaExpression;
+				
+				if (!lambda.ExpressionBody.IsNull) {
+					DomLocation old = resolvePosition;
+					try {
+						resolvePosition = new DomLocation (lookupVariableLine + lambda.ExpressionBody.StartLocation.Line,
+						                                   lambda.ExpressionBody.StartLocation.Column);
+						//result.AddArgument (visitor.GetTypeSafe (lambda.ExpressionBody));
+						return visitor.Resolve (lambda.ExpressionBody);
+					} finally {
+						resolvePosition = old;
+					}
+				} else {
+					foreach (Expression arg in invocation.Arguments) {
+						var argType = visitor.GetTypeSafe (arg);
+						result.AddArgument (argType);
+					}
+				}
+				result.ResolveExtensionMethods ();
+				
+				for (int i = 0; i < invocation.Arguments.Count; i++) {
+					if (invocation.Arguments [i] == lambdaExpression && i < result.MostLikelyMethod.Parameters.Count) {
+						IParameter parameterType = result.MostLikelyMethod.Parameters [i];
+//						Console.WriteLine (i + " par: " + parameterType);
+						if (parameterType.ReturnType.Name == "Func" && parameterType.ReturnType.GenericArguments.Count > 0) {
+							return visitor.CreateResult (parameterType.ReturnType.GenericArguments[0]);
+						}
+					}
+				}
+				return result;
 			}
 			
 			if (lambdaExpression.Parent is ObjectCreateExpression) {
@@ -577,17 +614,20 @@ namespace MonoDevelop.CSharpBinding
 					}
 				}
 			}
+			
 			if (returnType.ArrayDimensions > 0) {
 				DomReturnType elementType = new DomReturnType (returnType.FullName);
 				elementType.ArrayDimensions = returnType.ArrayDimensions - 1;
 				return elementType;
 			}
+			
 			return returnType;
 		}
 		
 		Dictionary<string, ResolveResult> resultTable = new Dictionary<string, ResolveResult> ();
  		public ResolveResult ResolveIdentifier (ResolveVisitor visitor, string identifier)
 		{
+		//	Console.WriteLine ("resolve:" + identifier);
 			ResolveResult result = null;
 			if (resultTable.TryGetValue (identifier, out result))
 				return result;
@@ -611,12 +651,15 @@ namespace MonoDevelop.CSharpBinding
 							}
 							if (var.Initializer != null) {
 								ResolveResult initializerResolve = visitor.Resolve (var.Initializer);
+								//Console.WriteLine ("resolved type:" + initializerResolve.ResolvedType);
 								varType           = var.IsLoopVariable ? GetEnumerationMember (initializerResolve.ResolvedType)   : initializerResolve.ResolvedType;
 								varTypeUnresolved = var.IsLoopVariable ? GetEnumerationMember (initializerResolve.UnresolvedType) : initializerResolve.UnresolvedType;
 							}
 						} else { 
 							varTypeUnresolved = varType = ConvertTypeReference (var.TypeRef);
 						}
+						//Console.WriteLine ("-----");
+						//Console.WriteLine (varType);
 						varType = ResolveType (varType);
 						result = new LocalVariableResolveResult (
 							new LocalVariable (CallingMember, identifier, varType,

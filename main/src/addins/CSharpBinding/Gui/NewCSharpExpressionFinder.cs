@@ -95,7 +95,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 		public ExpressionContext FindExactContextForObjectInitializer (MonoDevelop.Ide.Gui.TextEditor editor, ICompilationUnit unit, string fileName, IType callingType)
 		{
 			string documentToCursor = editor.GetText (0, editor.CursorPosition);
-			int pos = -1;
+			int pos = -1; 
 			for (int i = documentToCursor.Length - 5; i >= 0; i--) {
 				if (documentToCursor.Substring (i, 4) == "new ") {
 					int j = i + 4;
