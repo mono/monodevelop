@@ -33,9 +33,15 @@ namespace MonoDevelop.Projects.Dom
 {
 	public class InstantiatedType : DomType
 	{
+		IList<IReturnType> genericParameters = null;
+		static readonly IList<IReturnType> emptyList = new IReturnType[0];
 		public IList<IReturnType> GenericParameters {
-			get;
-			set;
+			get {
+				return genericParameters ?? emptyList;
+			}
+			set {
+				genericParameters = value;
+			}
 		}
 		
 		public IType UninstantiatedType {

@@ -25,20 +25,10 @@ FILES =  \
 	MonoDevelop.Projects.CodeGeneration/RefactorerContext.cs \
 	MonoDevelop.Projects.CodeGeneration/RefactorOperations.cs \
 	MonoDevelop.Projects.CodeGeneration/XmlCodeDomReader.cs \
-	MonoDevelop.Projects.Dom.Database/CodeCompletionDatabase.cs \
-	MonoDevelop.Projects.Dom.Database/DatabaseColumnAttribute.cs \
-	MonoDevelop.Projects.Dom.Database/DatabaseEvent.cs \
-	MonoDevelop.Projects.Dom.Database/DatabaseField.cs \
-	MonoDevelop.Projects.Dom.Database/DatabaseMethod.cs \
-	MonoDevelop.Projects.Dom.Database/DatabaseParameter.cs \
-	MonoDevelop.Projects.Dom.Database/DatabaseProjectDom.cs \
-	MonoDevelop.Projects.Dom.Database/DatabaseProperty.cs \
-	MonoDevelop.Projects.Dom.Database/DatabaseType.cs \
-	MonoDevelop.Projects.Dom.Database/DateTimeUtil.cs \
-	MonoDevelop.Projects.Dom.Database/HyenaSqliteCommand.cs \
-	MonoDevelop.Projects.Dom.Database/HyenaSqliteConnection.cs \
-	MonoDevelop.Projects.Dom.Database/MonoDevelopDatabaseConnection.cs \
-	MonoDevelop.Projects.Dom.Database/SqliteUtils.cs \
+	MonoDevelop.Projects.Dom.MemoryDatabase/AssemblyProjectDom.cs \
+	MonoDevelop.Projects.Dom.MemoryDatabase/MemoryDatabase.cs \
+	MonoDevelop.Projects.Dom.MemoryDatabase/MemoryProjectDom.cs \
+	MonoDevelop.Projects.Dom.MemoryDatabase/NamespaceEntry.cs \
 	MonoDevelop.Projects.Dom.Output/Ambience.cs \
 	MonoDevelop.Projects.Dom.Output/AmbienceService.cs \
 	MonoDevelop.Projects.Dom.Output/DocumentationService.cs \

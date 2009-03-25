@@ -48,7 +48,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 		static List<IParser> parsers = new List<IParser>();
 		static RootTree helpTree;
 		static IParserDatabase parserDatabase = new MonoDevelop.Projects.Dom.Serialization.ParserDatabase ();
-
+		//static IParserDatabase parserDatabase = new MonoDevelop.Projects.Dom.MemoryDatabase.MemoryDatabase ();
+		
 		static bool threadRunning;
 		static bool trackingFileChanges;
 		static IProgressMonitorFactory parseProgressMonitorFactory;
@@ -643,6 +644,15 @@ namespace MonoDevelop.Projects.Dom.Parser
 				lock (parseQueueLock) {
 					return parseQueueIndex.Count;
 				}
+			}
+		}
+
+		public static IParserDatabase ParserDatabase {
+			get {
+				return parserDatabase;
+			}
+			set {
+				parserDatabase = value;
 			}
 		}
 		

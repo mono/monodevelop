@@ -1,3 +1,41 @@
+2009-03-25  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs: Added
+	  the ability to set the parser factory.
+
+	* MonoDevelop.Projects.Dom.MemoryDatabase:
+	* MonoDevelop.Projects.Dom.MemoryDatabase/NamespaceEntry.cs:
+	* MonoDevelop.Projects.Dom.MemoryDatabase/MemoryDatabase.cs:
+	* MonoDevelop.Projects.Dom.MemoryDatabase/MemoryProjectDom.cs:
+	* MonoDevelop.Projects.Dom.MemoryDatabase/AssemblyProjectDom.cs:
+	  Added more advanced form of "simpleprojectdom" - this'll be
+	  used in the unit test suite because the database layer seems
+	  not to work on my pc. (and later for speed comparisons
+	  against the serialization layer)
+
+	* MonoDevelop.Projects.Dom/InstantiatedType.cs: Forced
+	  GenericParameters are always != null (was missing)
+
+	* MonoDevelop.Projects.Dom.Database:
+	* MonoDevelop.Projects.Dom.Database/SqliteUtils.cs:
+	* MonoDevelop.Projects.Dom.Database/DatabaseType.cs:
+	* MonoDevelop.Projects.Dom.Database/DateTimeUtil.cs:
+	* MonoDevelop.Projects.Dom.Database/DatabaseField.cs:
+	* MonoDevelop.Projects.Dom.Database/DatabaseEvent.cs:
+	* MonoDevelop.Projects.Dom.Database/DatabaseMethod.cs:
+	* MonoDevelop.Projects.Dom.Database/DatabaseProperty.cs:
+	* MonoDevelop.Projects.Dom.Database/DatabaseParameter.cs:
+	* MonoDevelop.Projects.Dom.Database/DatabaseProjectDom.cs:
+	* MonoDevelop.Projects.Dom.Database/HyenaSqliteCommand.cs:
+	* MonoDevelop.Projects.Dom.Database/HyenaSqliteConnection.cs:
+	* MonoDevelop.Projects.Dom.Database/CodeCompletionDatabase.cs:
+	* MonoDevelop.Projects.Dom.Database/DatabaseColumnAttribute.cs:
+	* MonoDevelop.Projects.Dom.Database/MonoDevelopDatabaseConnection.cs:
+	  Removed old sqlite database layer
+
+	* Makefile.am:
+	* MonoDevelop.Projects.csproj: 
+
 2009-03-24  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs: In

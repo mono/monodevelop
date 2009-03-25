@@ -250,20 +250,7 @@
     <Compile Include="MonoDevelop.Projects.Formats.MD1\BuildActionDataType.cs" />
     <Compile Include="MonoDevelop.Projects\FileCopyMode.cs" />
     <Compile Include="MonoDevelop.Projects.Dom.Parser\IResolver.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom.Database\CodeCompletionDatabase.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom.Database\HyenaSqliteConnection.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom.Database\HyenaSqliteCommand.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom.Database\SqliteUtils.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom.Database\DatabaseColumnAttribute.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom.Database\DateTimeUtil.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom.Database\DatabaseType.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom.Database\DatabaseField.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom.Database\DatabaseMethod.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom.Database\DatabaseProperty.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom.Database\DatabaseEvent.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom.Database\DatabaseParameter.cs" />
     <Compile Include="MonoDevelop.Projects\DotNetProject.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom.Database\MonoDevelopDatabaseConnection.cs" />
     <Compile Include="MonoDevelop.Projects.Dom\LocalVariable.cs" />
     <Compile Include="MonoDevelop.Projects.Dom.Serialization\DomPersistence.cs" />
     <Compile Include="MonoDevelop.Projects.Dom.Serialization\AssemblyCodeCompletionDatabase.cs" />
@@ -274,7 +261,6 @@
     <Compile Include="MonoDevelop.Projects.Dom.Serialization\FileEntry.cs" />
     <Compile Include="MonoDevelop.Projects.Dom.Serialization\NamespaceEntry.cs" />
     <Compile Include="MonoDevelop.Projects.Dom.Serialization\DomTypeProxy.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom.Database\DatabaseProjectDom.cs" />
     <Compile Include="MonoDevelop.Projects.Dom.Serialization\DatabaseProjectDom.cs" />
     <Compile Include="MonoDevelop.Projects.Dom.Serialization\ParserDatabase.cs" />
     <Compile Include="MonoDevelop.Projects.Dom.Serialization\IParserService.cs" />
@@ -334,6 +320,10 @@
     <Compile Include="MonoDevelop.Projects.Dom.Refactoring\Refactoring.cs" />
     <Compile Include="MonoDevelop.Projects.Dom.Refactoring\Change.cs" />
     <Compile Include="MonoDevelop.Projects.Dom.Refactoring\RefactoringService.cs" />
+    <Compile Include="MonoDevelop.Projects.Dom.MemoryDatabase\MemoryDatabase.cs" />
+    <Compile Include="MonoDevelop.Projects.Dom.MemoryDatabase\MemoryProjectDom.cs" />
+    <Compile Include="MonoDevelop.Projects.Dom.MemoryDatabase\AssemblyProjectDom.cs" />
+    <Compile Include="MonoDevelop.Projects.Dom.MemoryDatabase\NamespaceEntry.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -366,5 +356,6 @@
   </ProjectExtensions>
   <ItemGroup>
     <Folder Include="MonoDevelop.Projects.Dom.Refactoring\" />
+    <Folder Include="MonoDevelop.Projects.Dom.MemoryDatabase\" />
   </ItemGroup>
 </Project>
