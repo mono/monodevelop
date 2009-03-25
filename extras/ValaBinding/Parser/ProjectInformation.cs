@@ -454,7 +454,7 @@ namespace MonoDevelop.ValaBinding.Parser
 			});
 		}// GetSymbolsVisibleFrom
 		
-		private static Regex completionRegex = new Regex (@"^\s*vsc-shell - (?<type>[^:]+):(?<name>[^\s:]+)(:(?<modifier>[^;]*);(?<static>[^:]*))?(:(?<returntype>[^;]*);(?<ownership>[^:]*))?(:(?<args>[^:]*);)?", RegexOptions.Compiled);
+		private static Regex completionRegex = new Regex (@"^\s*vsc-shell - (?<type>[^:]+):(?<name>[^\s:]+)(:(?<modifier>[^;]*);(?<static>[^:]*))?(:(?<returntype>[^;]*);(?<ownership>[^:]*))?(:(?<args>[^:]*);)?((?<file>[^:]*):(?<line>\d+);)?", RegexOptions.Compiled);
 		/// <summary>
 		/// Parse out a CodeNode from a vsc-shell description string
 		/// </summary>
@@ -468,6 +468,8 @@ namespace MonoDevelop.ValaBinding.Parser
 				AccessModifier access = AccessModifier.Public;
 				string[] argtokens = typename.Split ('.');
 				string baseTypeName = argtokens[argtokens.Length-1];
+				string file = match.Groups["file"].Success? match.Groups["file"].Value: string.Empty;
+				int line = match.Groups["line"].Success? int.Parse(match.Groups["line"].Value): 0;
 				
 				switch (match.Groups["modifier"].Value) {
 				case "private":
@@ -501,13 +503,13 @@ namespace MonoDevelop.ValaBinding.Parser
 							}
 						}
 					}
-					Function function = new Function (childType, name, typename, access, returnType, paramlist.ToArray ());
+					Function function = new Function (childType, name, typename, file, line, access, returnType, paramlist.ToArray ());
 					if (!methods.ContainsKey (function.Name)){ methods[function.Name] = new List<Function> (); }
 					methods[function.Name].Add (function);
 					return function;
 					break;
 				default:
-					return new CodeNode (childType, name, typename, access);
+					return new CodeNode (childType, name, typename, file, line, access);
 					break;
 				}
 			}

@@ -48,24 +48,14 @@ namespace MonoDevelop.ValaBinding.Navigation
 	{
 		public override void ActivateItem ()
 		{
-//			CodeNode item = (CodeNode)CurrentNode.DataItem;
-//			
-//			Document doc = IdeApp.Workbench.OpenDocument (item.File);
-//			
-//			int lineNum = 0;
-//			string line;
-//			StringReader reader = new StringReader (doc.TextEditor.Text);
-//			
-//			while ((line = reader.ReadLine ()) != null) {
-//				lineNum++;
-//				
-//				if (line.Equals (item.Pattern)) {
-//					doc.TextEditor.JumpTo (lineNum, line.Length + 1);
-//					break;
-//				}
-//			}
-//			
-//			reader.Close ();
+			CodeNode item = (CodeNode)CurrentNode.DataItem;
+			
+			if (null != item && !string.IsNullOrEmpty (item.File) && File.Exists (item.File)) {
+				Document doc = IdeApp.Workbench.OpenDocument (item.File);
+				if(null != doc && null != doc.TextEditor) {
+					doc.TextEditor.JumpTo (item.Line, 0);
+				}
+			}
 		}
 	}
 }

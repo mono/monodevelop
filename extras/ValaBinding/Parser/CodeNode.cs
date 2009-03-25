@@ -104,17 +104,21 @@ namespace MonoDevelop.ValaBinding.Parser
 		public virtual string Description {
 			get{ return string.Format("{0} {1}", NodeType, Name); }
 		}
+		public string File{ get; set; }
+		public int Line{ get; set; }
 
 		public CodeNode () {}
 
-		public CodeNode (string type, string name, string parentname)
+		public CodeNode (string type, string name, string parentname, string file, int line)
 		{
 			Name = name;
 			NodeType = type;
 			FullName = (string.IsNullOrEmpty (parentname))? Name: string.Format ("{0}.{1}", parentname, name);
+			File = file;
+			Line = line;
 		}
 		
-		public CodeNode (string type, string name, string parentname, AccessModifier access): this (type, name, parentname)
+		public CodeNode (string type, string name, string parentname, string file, int line, AccessModifier access): this (type, name, parentname, file, line)
 		{
 			Access = access;
 		}

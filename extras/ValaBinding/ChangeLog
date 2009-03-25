@@ -1,3 +1,9 @@
+2009-03-25  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* Parser/*: 
+	* Navigation/LanguageItemCommandHandler.cs: Use file 
+	  positions from VSC.
+
 2009-03-20  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* Gui/ValaTextEditorExtension.cs: Tweak completion
