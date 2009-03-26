@@ -141,7 +141,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			database.Flush ();
 		}
 		
-		internal override TypeUpdateInformation UpdateFromParseInfo (ICompilationUnit unit)
+		public override TypeUpdateInformation UpdateFromParseInfo (ICompilationUnit unit)
 		{
 			ProjectCodeCompletionDatabase db = database as ProjectCodeCompletionDatabase;
 			if (db != null)

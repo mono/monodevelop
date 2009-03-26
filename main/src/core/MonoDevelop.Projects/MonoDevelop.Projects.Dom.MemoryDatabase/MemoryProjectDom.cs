@@ -45,30 +45,70 @@ namespace MonoDevelop.Projects.Dom.MemoryDatabase
 			this.Project = p;
 		}
 		
-		Dictionary<string, int> files = new Dictionary<string, int> ();
-		internal override TypeUpdateInformation UpdateFromParseInfo (ICompilationUnit cu)
+		internal class GenericTypeInstanceResolver: CopyDomVisitor<IType>
 		{
-			List<IType> resolved;
-			int unresolvedCount = ProjectDomService.ResolveTypes (this, cu, cu.Types, out resolved);
+			public Dictionary<string, IReturnType> typeTable = new Dictionary<string,IReturnType> ();
+			
+			public void Add (string name, IReturnType type)
+			{
+				Console.WriteLine (name + " ==> " + type);
+				typeTable.Add (name, type);
+			}
+			
+			public override IDomVisitable Visit (IReturnType type, IType typeToInstantiate)
+			{
+				DomReturnType copyFrom = (DomReturnType) type;
+				
+				IReturnType res;
+				Console.WriteLine ("Transfer:" + copyFrom.DecoratedFullName);
+				if (typeTable.TryGetValue (copyFrom.DecoratedFullName, out res)) {
+					if (type.ArrayDimensions == 0 && type.GenericArguments.Count == 0)
+						return res;
+				}
+				return base.Visit (type, typeToInstantiate);
+			}
+		}
+		List<IType> ResolveTypeParameters (IEnumerable<IType> types)
+		{
+			List<IType> result = new List<IType> ();
+			foreach (IType type in types) {
+				if (type.TypeParameters.Count == 0) {
+					result.Add (type);
+					continue;
+				}
+				GenericTypeInstanceResolver resolver = new GenericTypeInstanceResolver ();
+				string typeName = NamespaceEntry.GetDecoratedName (type);
+				foreach (TypeParameter par in type.TypeParameters) {
+					resolver.Add (par.Name, new DomReturnType (NamespaceEntry.ConcatNamespaces (typeName, par.Name)));
+				}
+				resolver.Visit (type, type);
+				result.Add ((IType)type.AcceptVisitor (resolver, type));
+
+			}
+			return result;
+		}
+		Dictionary<string, int> files = new Dictionary<string, int> ();
+		public override TypeUpdateInformation UpdateFromParseInfo (ICompilationUnit cu)
+		{
+			//List<IType> resolved;
+			List<IType> types = ResolveTypeParameters (cu.Types);
+			
 		//	totalUnresolvedCount += unresolvedCount;
 			units.Add (cu);
-			TypeUpdateInformation res = UpdateTypeInformation (resolved, cu.FileName);
+			TypeUpdateInformation res = UpdateTypeInformation (types, cu.FileName);
 			int fileParseErrorRetries = 0;
 			files.TryGetValue (cu.FileName, out fileParseErrorRetries);
 			
-			if (unresolvedCount > 0) {
+		/*	if (unresolvedCount > 0) {
 				if (fileParseErrorRetries != 1) {
 					files[cu.FileName] = 1;
 					
-					// Enqueue the file for quickly reparse. Types can't be resolved most probably because
-					// the file that implements them is not yet parsed.
-					ProjectDomService.QueueParseJob (this, 
-					                                 delegate { UpdateFromParseInfo (cu); },
-					                                 cu.FileName);
+					ProjectDomService.ResolveTypes (this, cu, cu.Types, out resolved);
+					res = UpdateTypeInformation (resolved, cu.FileName);
 				}
 			} else {
 				files[cu.FileName] = 0;
-			}
+			}*/
 			
 			return res;
 		}
@@ -76,16 +116,21 @@ namespace MonoDevelop.Projects.Dom.MemoryDatabase
 		public TypeUpdateInformation UpdateTypeInformation (IList<IType> newClasses, string fileName)
 		{
 			TypeUpdateInformation res = new TypeUpdateInformation ();
-			
+			Console.WriteLine ("UPDATE TYPE INFO: " + newClasses.Count);
 			for (int n = 0; n < newClasses.Count; n++) {
-				((DomType)newClasses[n]).SourceProjectDom = this;
-			}
-			
-			for (int n=0; n < newClasses.Count; n++) {
-				IType c = newClasses[n]; //CopyClass ();
+				IType c = newClasses[n];
+				c.SourceProjectDom = this;
+				
+				// Remove file from compound types.
 				NamespaceEntry entry = rootNamespace.FindNamespace (c.Namespace, true);
-				Console.WriteLine ("add:" + c);
-				Console.WriteLine (c.Namespace + "/" + entry);
+				IType t;
+				if (entry.ContainingTypes.TryGetValue (NamespaceEntry.GetDecoratedName (c), out t))
+					CompoundType.RemoveFile (t, c.CompilationUnit.FileName);
+			}
+
+			for (int n=0; n < newClasses.Count; n++) {
+				IType c = newClasses[n];
+				NamespaceEntry entry = rootNamespace.FindNamespace (c.Namespace, true);
 				entry.Add (c);
 				ResetInstantiatedTypes (c);
 			}
@@ -95,38 +140,46 @@ namespace MonoDevelop.Projects.Dom.MemoryDatabase
 		
 		public override IType GetType (string typeName, IList<IReturnType> genericArguments, bool deepSearchReferences, bool caseSensitive)
 		{
-			Console.WriteLine ("Get Type: " + typeName);
 			int genericArgumentCount = ExtractGenericArgCount (ref typeName);
-			if (genericArguments != null)
+			if (genericArguments != null) {
 				genericArgumentCount = genericArguments.Count;
+			}
+			string decoratedTypeName = NamespaceEntry.GetDecoratedName (typeName, genericArgumentCount);
 			
-			NamespaceEntry entry = rootNamespace.FindNamespace (typeName, false);
-			Console.WriteLine (entry);
+			NamespaceEntry entry = rootNamespace.FindNamespace (decoratedTypeName, false);
+			IType searchType;
+			Console.WriteLine ("Get Type: >" + typeName+"< " + genericArgumentCount + " in " + entry);
+			if (entry.ContainingTypes.TryGetValue (decoratedTypeName, out searchType)) {
+				IType result = CreateInstantiatedGenericType (searchType, genericArguments);
+				Console.WriteLine ("found type:" + result);
+				return result;
+			}
+			// may be inner type
 			foreach (IType type in entry.ContainingTypes.Values) {
-				if (NamespaceEntry.GetDecoratedName (type) == typeName) {
-					Console.WriteLine ("Found type:" + type);
-					return CreateInstantiatedGenericType (type, genericArguments);
-				}
-				if (typeName.StartsWith (NamespaceEntry.GetDecoratedName (type))) {
-					Console.WriteLine ("try inner");
-					IType inner = SearchInnerType (type, typeName, genericArgumentCount, caseSensitive);
+				string name = NamespaceEntry.GetDecoratedName (type);
+				if (decoratedTypeName.StartsWith (name)) {
+					string innerClassName = decoratedTypeName.Substring (name.Length + 1);
+					Console.WriteLine ("icn:" + innerClassName);
+					IType inner = SearchInnerType (type, innerClassName, genericArgumentCount, caseSensitive);
 					if (inner != null) {
-						Console.WriteLine ("Found inner:" + inner);
-						return inner;
+						return CreateInstantiatedGenericType (inner, genericArguments);
 					}
 				}
 			}
-			
 			
 			return null;
 		}
 
 		public override IType GetType (string typeName, int genericArgumentsCount, bool deepSearchReferences, bool caseSensitive)
 		{
-			if (genericArgumentsCount > 0)
-				typeName += "`" + genericArgumentsCount;
-			return GetType (typeName, null, deepSearchReferences, caseSensitive);
+			return GetType (NamespaceEntry.GetDecoratedName (typeName, genericArgumentsCount), null, deepSearchReferences, caseSensitive);
 		}
+		
+		public override bool NamespaceExists (string name, bool searchDeep, bool caseSensitive)
+		{
+			return rootNamespace.FindNamespace (name, false, true) != null;
+		}
+
 		
 		public override IEnumerable<IType> Types {
 			get {

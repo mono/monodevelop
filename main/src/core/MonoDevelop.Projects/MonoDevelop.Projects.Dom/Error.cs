@@ -64,5 +64,10 @@ namespace MonoDevelop.Projects.Dom
 			this.Region = region;
 			this.Message = message;
 		}
+		
+		public override string ToString ()
+		{
+			return string.Format("[Error: Region={0}, Message={1}, ErrorType={2}]", Region, Message, ErrorType);
+		}
 	}
 }

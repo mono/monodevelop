@@ -1,3 +1,14 @@
+2009-03-26  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom/Error.cs:
+	* MonoDevelop.Projects.Dom/TypeParameter.cs:
+	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs:
+	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs:
+	* MonoDevelop.Projects.Dom.MemoryDatabase/NamespaceEntry.cs:
+	* MonoDevelop.Projects.Dom.MemoryDatabase/MemoryProjectDom.cs:
+	* MonoDevelop.Projects.Dom.Serialization/DatabaseProjectDom.cs:
+	  Worked on project dom & unit tests.
+
 2009-03-25  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs: Added

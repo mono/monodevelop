@@ -607,7 +607,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return null;
 		}
 		
-		internal virtual TypeUpdateInformation UpdateFromParseInfo (ICompilationUnit unit)
+		public virtual TypeUpdateInformation UpdateFromParseInfo (ICompilationUnit unit)
 		{
 			return null;
 		}
@@ -673,7 +673,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		public IType CreateInstantiatedGenericType (IType type, IList<IReturnType> genericArguments)
 		{
-			if (type == null || type is InstantiatedType)
+			if (genericArguments == null || type == null || type is InstantiatedType)
 				return type;
 			
 			string name = DomType.GetInstantiatedTypeName (type.FullName, genericArguments);

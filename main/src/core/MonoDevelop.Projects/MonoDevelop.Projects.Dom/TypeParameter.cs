@@ -70,7 +70,12 @@ namespace MonoDevelop.Projects.Dom
 		{
 			this.name = name;
 		}
-
+		
+		public override string ToString ()
+		{
+			return string.Format("[TypeParameter: Name={0}, ConstructorRequired={1}, ClassRequired={2}, ValueTypeRequired={3}, Attributes={4}, Constraints={5}]", Name, ConstructorRequired, ClassRequired, ValueTypeRequired, Attributes, Constraints);
+		}
+ 		
 		public void AddConstraint (IReturnType type)
 		{
 			if (constraints == null)

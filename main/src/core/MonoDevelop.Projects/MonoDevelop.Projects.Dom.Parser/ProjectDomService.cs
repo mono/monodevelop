@@ -105,16 +105,19 @@ namespace MonoDevelop.Projects.Dom.Parser
 			});
 			
 			codeCompletionPath = GetDefaultCompletionFileLocation ();
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/ProjectModel/DomParser", delegate(object sender, ExtensionNodeEventArgs args) {
-				switch (args.Change) {
-				case ExtensionChange.Add:
-					parsers.Add ((IParser) args.ExtensionObject);
-					break;
-				case ExtensionChange.Remove:
-					parsers.Remove ((IParser) args.ExtensionObject);
-					break;
-				}
-			});
+			// for unit tests it may not have been initialized.
+			if (AddinManager.IsInitialized) {
+				AddinManager.AddExtensionNodeHandler ("/MonoDevelop/ProjectModel/DomParser", delegate(object sender, ExtensionNodeEventArgs args) {
+					switch (args.Change) {
+					case ExtensionChange.Add:
+						parsers.Add ((IParser) args.ExtensionObject);
+						break;
+					case ExtensionChange.Remove:
+						parsers.Remove ((IParser) args.ExtensionObject);
+						break;
+					}
+				});
+			}
 		}
 
 		public static RootTree HelpTree {

@@ -80,6 +80,7 @@ namespace MonoDevelop.Projects.Dom.MemoryDatabase
 		{
 			return FindNamespace (ns, createIfNotExists, false);
 		}
+		
 		public NamespaceEntry FindNamespace (string ns, bool createIfNotExists, bool exactMatch)
 		{
 		//	if (string.IsNullOrEmpty (ns))
@@ -103,18 +104,11 @@ namespace MonoDevelop.Projects.Dom.MemoryDatabase
 		public void Add (IType type)
 		{
 			string name = GetDecoratedName (type);
-			
 			if (containingTypes.ContainsKey (name)) {
 				containingTypes[name] = CompoundType.Merge (containingTypes[name], type);
-				return;
-/*				IType tp = CompoundType.RemoveFile (type, type.CompilationUnit.FileName);
-				if (tp != null) {
-					return;
-				}*/
+			} else {
+				containingTypes[name] = type;
 			}
-				
-			
-			containingTypes[name] = type;
 		}
 		
 		internal static string GetDecoratedName (string name, int genericArgumentCount)
