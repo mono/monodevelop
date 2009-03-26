@@ -1,3 +1,15 @@
+2009-03-26  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharpBinding/ProjectDomTests.cs:
+	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs:
+	* MonoDevelop.CSharpBinding/ParameterCompletionTests.cs:
+	* MonoDevelop.CSharpBinding/CodeCompletionCSharpTests.cs:
+	* MonoDevelop.CSharpBinding/CodeCompletionAccessibleTests.cs:
+	  Worked on unit tests & project dom.
+
+	* Makefile.am:
+	* UnitTests.csproj: 
+
 2009-03-24  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: Added

@@ -39,7 +39,7 @@ using MonoDevelop.Projects.Dom.Parser;
 namespace MonoDevelop.CSharpBinding.Tests
 {
 	[TestFixture()]
-	public class ParameterCompletionTests : UnitTests.TestBase
+	public class ParameterCompletionTests
 	{
 		static int pcount = 0;
 		internal static IParameterDataProvider CreateProvider (string text)
@@ -86,7 +86,9 @@ namespace MonoDevelop.CSharpBinding.Tests
 			ctx.TriggerLine = line;
 			ctx.TriggerLineOffset = column;
 			
-			return textEditorCompletion.HandleParameterCompletion (ctx, editorText[cursorPosition - 1]);
+			IParameterDataProvider result = textEditorCompletion.HandleParameterCompletion (ctx, editorText[cursorPosition - 1]);
+			ProjectDomService.Unload (project);
+			return result;
 		}
 		
 		/// <summary>

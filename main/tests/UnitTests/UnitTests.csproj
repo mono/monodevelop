@@ -49,13 +49,13 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
-    <Reference Include="nunit.core, Version=2.2.0.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77" />
-    <Reference Include="nunit.framework, Version=2.2.0.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77" />
-    <Reference Include="nunit.util, Version=2.2.0.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77" />
     <Reference Include="NRefactory, Version=1.9.2.0, Culture=neutral, PublicKeyToken=null">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\build\bin\NRefactory.dll</HintPath>
     </Reference>
+    <Reference Include="nunit.framework, Version=2.2.0.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77" />
+    <Reference Include="nunit.core, Version=2.2.0.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77" />
+    <Reference Include="nunit.util, Version=2.2.0.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\core\MonoDevelop.Projects\MonoDevelop.Projects.csproj">
@@ -91,7 +91,6 @@
     <ProjectReference Include="..\..\src\addins\MonoDevelop.XmlEditor\MonoDevelop.XmlEditor.csproj">
       <Project>{86DFC74A-B0B6-4C73-9E05-9098DA8FA5F1}</Project>
       <Name>MonoDevelop.XmlEditor</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\src\core\MonoDevelop.Components\MonoDevelop.Components.csproj">
       <Project>{3344D566-484B-4AEC-BBCF-86BC484D14B0}</Project>
@@ -106,12 +105,10 @@
     <ProjectReference Include="..\..\src\addins\CSharpBinding\CSharpBinding.csproj">
       <Project>{07CC7654-27D6-421D-A64C-0FFA40456FA2}</Project>
       <Name>CSharpBinding</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\src\addins\AspNetAddIn\AspNetAddIn.csproj">
       <Project>{1CF94D07-5480-4D10-A3CD-2EBD5E87B02E}</Project>
       <Name>AspNetAddIn</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\src\core\Mono.Texteditor\Mono.TextEditor.csproj">
       <Project>{A2329308-3751-4DBD-9A75-5F7B8B024625}</Project>
@@ -162,6 +159,7 @@
     <Compile Include="Mono.TextEditor.Tests\SyntaxHighlightingTests.cs" />
     <Compile Include="MonoDevelop.Xml.StateEngine\AspNetParsingTests.cs" />
     <Compile Include="MonoDevelop.Xml.StateEngine\HtmlParsingTests.cs" />
+    <Compile Include="MonoDevelop.CSharpBinding\ProjectDomTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

@@ -39,7 +39,7 @@ using MonoDevelop.Projects.Dom.Parser;
 namespace MonoDevelop.CSharpBinding.Tests
 {
 	[TestFixture()]
-	public class CodeCompletionCSharpTests
+	public class CodeCompletionCSharpTests : UnitTests.TestBase
 	{
 		[Test()]
 		public void TestUsingDeclaration ()
