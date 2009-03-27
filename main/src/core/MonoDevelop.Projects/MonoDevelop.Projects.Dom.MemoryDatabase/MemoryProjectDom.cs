@@ -31,7 +31,7 @@ using MonoDevelop.Projects.Dom.Parser;
 
 namespace MonoDevelop.Projects.Dom.MemoryDatabase
 {
-	public class MemoryProjectDom : ProjectDom 
+	public class MemoryProjectDom : ProjectDom, IDisposable
 	{
 		List<ICompilationUnit> units = new List<ICompilationUnit> ();
 		NamespaceEntry rootNamespace = new NamespaceEntry ();
@@ -40,9 +40,10 @@ namespace MonoDevelop.Projects.Dom.MemoryDatabase
 		{
 		}
 		
-		public MemoryProjectDom (Project p)
+		public virtual void Dispose ()
 		{
-			this.Project = p;
+			units = null;
+			rootNamespace = null;
 		}
 		
 		internal class GenericTypeInstanceResolver: CopyDomVisitor<IType>
@@ -51,7 +52,7 @@ namespace MonoDevelop.Projects.Dom.MemoryDatabase
 			
 			public void Add (string name, IReturnType type)
 			{
-				Console.WriteLine (name + " ==> " + type);
+				//Console.WriteLine (name + " ==> " + type);
 				typeTable.Add (name, type);
 			}
 			
@@ -60,7 +61,7 @@ namespace MonoDevelop.Projects.Dom.MemoryDatabase
 				DomReturnType copyFrom = (DomReturnType) type;
 				
 				IReturnType res;
-				Console.WriteLine ("Transfer:" + copyFrom.DecoratedFullName);
+				//Console.WriteLine ("Transfer:" + copyFrom.DecoratedFullName);
 				if (typeTable.TryGetValue (copyFrom.DecoratedFullName, out res)) {
 					if (type.ArrayDimensions == 0 && type.GenericArguments.Count == 0)
 						return res;
@@ -68,7 +69,7 @@ namespace MonoDevelop.Projects.Dom.MemoryDatabase
 				return base.Visit (type, typeToInstantiate);
 			}
 		}
-		List<IType> ResolveTypeParameters (IEnumerable<IType> types)
+		internal List<IType> ResolveTypeParameters (IEnumerable<IType> types)
 		{
 			List<IType> result = new List<IType> ();
 			foreach (IType type in types) {
@@ -90,9 +91,10 @@ namespace MonoDevelop.Projects.Dom.MemoryDatabase
 		Dictionary<string, int> files = new Dictionary<string, int> ();
 		public override TypeUpdateInformation UpdateFromParseInfo (ICompilationUnit cu)
 		{
-			//List<IType> resolved;
+			//List<IType> types = new List<IType> (cu.Types);
+			//ProjectDomService.ResolveTypes (this, cu, ResolveTypeParameters (cu.Types), out types);
 			List<IType> types = ResolveTypeParameters (cu.Types);
-			
+
 		//	totalUnresolvedCount += unresolvedCount;
 			units.Add (cu);
 			TypeUpdateInformation res = UpdateTypeInformation (types, cu.FileName);
@@ -116,7 +118,7 @@ namespace MonoDevelop.Projects.Dom.MemoryDatabase
 		public TypeUpdateInformation UpdateTypeInformation (IList<IType> newClasses, string fileName)
 		{
 			TypeUpdateInformation res = new TypeUpdateInformation ();
-			Console.WriteLine ("UPDATE TYPE INFO: " + newClasses.Count);
+			//Console.WriteLine ("UPDATE TYPE INFO: " + newClasses.Count);
 			for (int n = 0; n < newClasses.Count; n++) {
 				IType c = newClasses[n];
 				c.SourceProjectDom = this;
@@ -134,7 +136,7 @@ namespace MonoDevelop.Projects.Dom.MemoryDatabase
 				entry.Add (c);
 				ResetInstantiatedTypes (c);
 			}
-			Console.WriteLine ("root:" + rootNamespace);
+			//Console.WriteLine ("root:" + rootNamespace);
 			return res;
 		}
 		
@@ -145,13 +147,14 @@ namespace MonoDevelop.Projects.Dom.MemoryDatabase
 				genericArgumentCount = genericArguments.Count;
 			}
 			string decoratedTypeName = NamespaceEntry.GetDecoratedName (typeName, genericArgumentCount);
+			//Console.WriteLine ("Get Type: >" + typeName+"< " + genericArgumentCount + " in " + this.Uri +  " deep refs:" + deepSearchReferences + " type count:" + Types.Count ());
 			
 			NamespaceEntry entry = rootNamespace.FindNamespace (decoratedTypeName, false);
+			//Console.WriteLine ("found entry:" + entry);
 			IType searchType;
-			Console.WriteLine ("Get Type: >" + typeName+"< " + genericArgumentCount + " in " + entry);
 			if (entry.ContainingTypes.TryGetValue (decoratedTypeName, out searchType)) {
 				IType result = CreateInstantiatedGenericType (searchType, genericArguments);
-				Console.WriteLine ("found type:" + result);
+				//Console.WriteLine ("found type:" + result);
 				return result;
 			}
 			// may be inner type
@@ -159,17 +162,30 @@ namespace MonoDevelop.Projects.Dom.MemoryDatabase
 				string name = NamespaceEntry.GetDecoratedName (type);
 				if (decoratedTypeName.StartsWith (name)) {
 					string innerClassName = decoratedTypeName.Substring (name.Length + 1);
-					Console.WriteLine ("icn:" + innerClassName);
+					//Console.WriteLine ("icn:" + innerClassName);
 					IType inner = SearchInnerType (type, innerClassName, genericArgumentCount, caseSensitive);
 					if (inner != null) {
+						//Console.WriteLine ("found inner:" + inner);
 						return CreateInstantiatedGenericType (inner, genericArguments);
 					}
 				}
 			}
-			
+			/*
+			if (deepSearchReferences) {
+				foreach (string uri in this.OnGetReferences ()) {
+					ProjectDom dom = ProjectDomService.GetDomForUri (uri);
+					if (dom != null) {
+						IType result = dom.GetType (typeName, genericArguments, false, caseSensitive);
+						if (result != null) {
+							//Console.WriteLine ("found in :" + uri + " : " + result);
+							return result;
+						}
+					}
+				}
+			}*/
 			return null;
 		}
-
+		
 		public override IType GetType (string typeName, int genericArgumentsCount, bool deepSearchReferences, bool caseSensitive)
 		{
 			return GetType (NamespaceEntry.GetDecoratedName (typeName, genericArgumentsCount), null, deepSearchReferences, caseSensitive);
@@ -227,7 +243,7 @@ namespace MonoDevelop.Projects.Dom.MemoryDatabase
 				if (entry == null)
 					continue;
 				foreach (NamespaceEntry subEntry in entry.SubEntries.Values) {
-					Console.WriteLine ("Add: " + new Namespace (subEntry.Name));
+					//Console.WriteLine ("Add: " + new Namespace (subEntry.Name));
 					result.Add (new Namespace (subEntry.Name));
 				}
 				foreach (IMember member in entry.ContainingTypes.Values) {
@@ -247,5 +263,7 @@ namespace MonoDevelop.Projects.Dom.MemoryDatabase
 		{
 			yield break;
 		}
+		
+		
 	}
 }

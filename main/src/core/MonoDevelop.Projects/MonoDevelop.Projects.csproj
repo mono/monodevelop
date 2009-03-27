@@ -324,6 +324,7 @@
     <Compile Include="MonoDevelop.Projects.Dom.MemoryDatabase\MemoryProjectDom.cs" />
     <Compile Include="MonoDevelop.Projects.Dom.MemoryDatabase\AssemblyProjectDom.cs" />
     <Compile Include="MonoDevelop.Projects.Dom.MemoryDatabase\NamespaceEntry.cs" />
+    <Compile Include="MonoDevelop.Projects.Dom.MemoryDatabase\ProjectMemoryProjectDom.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

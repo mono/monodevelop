@@ -49,7 +49,7 @@ namespace MonoDevelop.Projects.Dom.MemoryDatabase
 		
 		public ProjectDom LoadProjectDom (Project project)
 		{
-			MemoryProjectDom result = new MemoryProjectDom (project);
+			MemoryProjectDom result = new ProjectMemoryProjectDom (project);
 			return result;
 		}
 		#endregion

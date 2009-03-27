@@ -1,3 +1,14 @@
+2009-03-27  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom.Output/AmbienceService.cs:
+	* MonoDevelop.Projects.Dom.MemoryDatabase/MemoryDatabase.cs:
+	* MonoDevelop.Projects.Dom.MemoryDatabase/MemoryProjectDom.cs:
+	* MonoDevelop.Projects.Dom.MemoryDatabase/ProjectMemoryProjectDom.cs:
+	  Worked on memory project dom.
+
+	* Makefile.am:
+	* MonoDevelop.Projects.csproj: 
+
 2009-03-26  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/Error.cs:

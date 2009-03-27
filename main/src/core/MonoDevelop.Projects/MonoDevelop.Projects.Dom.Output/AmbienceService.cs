@@ -40,25 +40,28 @@ namespace MonoDevelop.Projects.Dom.Output
 		
 		static AmbienceService ()
 		{
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/ProjectModel/Ambiences", delegate(object sender, ExtensionNodeEventArgs args) {
-					Ambience ambience = args.ExtensionObject as Ambience;
-					if (ambience == null)
-						return;
-					string[] mimeTypes = ambience.MimeTypes.Split (';');
-						
-					switch (args.Change) {
-					case ExtensionChange.Add:
-						foreach (string mimeType in mimeTypes)
-							ambiences[mimeType] = ambience;
-						break;
-					case ExtensionChange.Remove:
-						foreach (string mimeType in mimeTypes) {
-							if (ambiences.ContainsKey (mimeType))
-								ambiences.Remove (mimeType);
+			// may not have been initialized in testing environment.
+			if (AddinManager.IsInitialized) {
+				AddinManager.AddExtensionNodeHandler ("/MonoDevelop/ProjectModel/Ambiences", delegate(object sender, ExtensionNodeEventArgs args) {
+						Ambience ambience = args.ExtensionObject as Ambience;
+						if (ambience == null)
+							return;
+						string[] mimeTypes = ambience.MimeTypes.Split (';');
+							
+						switch (args.Change) {
+						case ExtensionChange.Add:
+							foreach (string mimeType in mimeTypes)
+								ambiences[mimeType] = ambience;
+							break;
+						case ExtensionChange.Remove:
+							foreach (string mimeType in mimeTypes) {
+								if (ambiences.ContainsKey (mimeType))
+									ambiences.Remove (mimeType);
+							}
+							break;
 						}
-						break;
-					}
-				});
+					});
+			}
 		}
 		
 		public static Ambience GetAmbience (IMember member)

@@ -29,6 +29,7 @@ FILES =  \
 	MonoDevelop.Projects.Dom.MemoryDatabase/MemoryDatabase.cs \
 	MonoDevelop.Projects.Dom.MemoryDatabase/MemoryProjectDom.cs \
 	MonoDevelop.Projects.Dom.MemoryDatabase/NamespaceEntry.cs \
+	MonoDevelop.Projects.Dom.MemoryDatabase/ProjectMemoryProjectDom.cs \
 	MonoDevelop.Projects.Dom.Output/Ambience.cs \
 	MonoDevelop.Projects.Dom.Output/AmbienceService.cs \
 	MonoDevelop.Projects.Dom.Output/DocumentationService.cs \
