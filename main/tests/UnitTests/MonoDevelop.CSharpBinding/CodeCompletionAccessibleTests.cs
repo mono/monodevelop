@@ -436,8 +436,6 @@ namespace A {
 		}
 	}
 }		
-	}
-}
 ");
 			Assert.IsNotNull (provider, "provider == null");
 			Assert.IsNull (provider.Find ("TestNS"), "namespace 'TestNS' found, but shouldn't");

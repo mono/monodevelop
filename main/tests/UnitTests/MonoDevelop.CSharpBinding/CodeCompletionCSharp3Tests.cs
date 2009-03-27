@@ -212,11 +212,11 @@ class Test
 		[Test()]
 		public void TestLambdaExpressionCase2 ()
 		{
-			CompletionDataList provider = CodeCompletionBugTests.CreateCtrlSpaceProvider (
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
 @"
 static class ExtMethods
 {
-	public static T[] Where<T>(this T[] t, Func<T, bool> pred)
+	public static T Where<T>(this T[] t, Func<T, bool> pred)
 	{
 		return t;
 	}
@@ -227,7 +227,8 @@ class Test
 	public void TestMethod ()
 	{
 		Test[] en = new Test[0];
-		var x = en.Where ($t => t.$);
+		var x = en.Where (t => t != null);
+		$x.$
 	}
 }
 ");

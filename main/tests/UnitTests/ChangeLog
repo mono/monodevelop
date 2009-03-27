@@ -1,3 +1,11 @@
+2009-03-27  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs:
+	* MonoDevelop.CSharpBinding/ParameterCompletionTests.cs:
+	* MonoDevelop.CSharpBinding/CodeCompletionCSharp3Tests.cs:
+	* MonoDevelop.CSharpBinding/CodeCompletionAccessibleTests.cs:
+	  Worked on unit tests.
+
 2009-03-26  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharpBinding/ProjectDomTests.cs:

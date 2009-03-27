@@ -80,7 +80,6 @@ namespace MonoDevelop.CSharpBinding.Tests
 			ProjectDom dom = ProjectDomService.GetProjectDom (project);
 			dom.ForceUpdate (true);
 			ProjectDomService.Parse (project, file, null, delegate { return parsedText; });
-			ProjectDomService.Parse (project, file, null, delegate { return parsedText; });
 			
 			sev.Project = project;
 			sev.ContentName = file;
