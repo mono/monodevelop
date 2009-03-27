@@ -37,7 +37,7 @@ using MonoDevelop.CSharpBinding;
 namespace MonoDevelop.CSharpBinding.Tests
 {
 	[TestFixture]
-	public class TopLevelTests : UnitTests.TestBase
+	public class TopLevelTests
 	{
 		void DoTestUsings (IParser parser)
 		{

@@ -37,7 +37,7 @@ using MonoDevelop.CSharpBinding;
 namespace MonoDevelop.CSharpBinding.Tests
 {
 	[TestFixture]
-	public class MemberTests : UnitTests.TestBase
+	public class MemberTests
 	{
 		void DoTestFields (IParser parser)
 		{

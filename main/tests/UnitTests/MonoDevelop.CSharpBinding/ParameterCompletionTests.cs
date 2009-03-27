@@ -58,23 +58,27 @@ namespace MonoDevelop.CSharpBinding.Tests
 			
 			TestWorkbenchWindow tww = new TestWorkbenchWindow ();
 			TestViewContent sev = new TestViewContent ();
-			DotNetProject project = new DotNetProject ("C#");
-			project.FileName = "/tmp/ap" + pcount + ".csproj";
-			
 			string file = "/tmp/test-pfile-" + (pcount++) + ".cs";
-			project.AddFile (file);
-			ProjectDomService.ParserDatabase = new MonoDevelop.Projects.Dom.MemoryDatabase.MemoryDatabase ();
-			ProjectDomService.Load (project);
-//			ProjectDom dom = ProjectDomService.GetProjectDom (project);
-			ProjectDomService.Parse (project, file, null, delegate { return parsedText; });
 			
-			sev.Project = project;
+			ProjectDomService.ParserDatabase = new MonoDevelop.Projects.Dom.MemoryDatabase.MemoryDatabase ();
+			
+//			DotNetProject project = new DotNetProject ("C#");
+//			project.FileName = "/tmp/ap" + pcount + ".csproj";
+//			ProjectDomService.Load (project);
+//			project.AddFile (file);
+//			sev.Project = project;
+//			ProjectDom dom = ProjectDomService.GetProjectDom (project);
+			
+			ProjectDom dom = ProjectDomService.GetFileDom (file);
+			
 			sev.ContentName = file;
 			sev.Text = editorText;
 			sev.CursorPosition = cursorPosition;
 			tww.ViewContent = sev;
 			Document doc = new Document (tww);
 			doc.ParsedDocument = new NRefactoryParser ().Parse (null, sev.ContentName, parsedText);
+			dom.UpdateFromParseInfo (doc.ParsedDocument.CompilationUnit);
+			
 			CSharpTextEditorCompletion textEditorCompletion = new CSharpTextEditorCompletion (doc);
 			
 			int triggerWordLength = 1;
@@ -86,7 +90,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 			ctx.TriggerLineOffset = column;
 			
 			IParameterDataProvider result = textEditorCompletion.HandleParameterCompletion (ctx, editorText[cursorPosition - 1]);
-			ProjectDomService.Unload (project);
+//			ProjectDomService.Unload (project);
 			return result;
 		}
 		

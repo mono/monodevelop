@@ -39,7 +39,7 @@ using MonoDevelop.Projects.Dom.Parser;
 namespace MonoDevelop.CSharpBinding.Tests
 {
 	[TestFixture()]
-	public class CodeCompletionAccessibleTests: UnitTests.TestBase
+	public class CodeCompletionAccessibleTests
 	{
 		static string testClass = @"
 using System;

@@ -39,7 +39,7 @@ using MonoDevelop.Projects.Dom.Parser;
 namespace MonoDevelop.CSharpBinding.Tests
 {
 	[TestFixture()]
-	public class CodeCompletionCSharp3Tests : UnitTests.TestBase
+	public class CodeCompletionCSharp3Tests
 	{
 		/* Currently fails but works in monodevelop. Seems to be a bug in the unit test somewhere.
 		[Test()]
@@ -214,6 +214,18 @@ class Test
 		{
 			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
 @"
+
+namespace System {
+	public class Array {
+		public Test this[int i] {
+			get {
+			}
+			set {
+			}
+		}
+	}
+}
+
 static class ExtMethods
 {
 	public static T Where<T>(this T[] t, Func<T, bool> pred)

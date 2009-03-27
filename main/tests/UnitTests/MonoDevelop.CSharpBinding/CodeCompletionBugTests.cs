@@ -39,7 +39,7 @@ using MonoDevelop.Projects.Dom.Parser;
 namespace MonoDevelop.CSharpBinding.Tests
 {
 	[TestFixture()]
-	public class CodeCompletionBugTests : UnitTests.TestBase
+	public class CodeCompletionBugTests 
 	{
 		static int pcount = 0;
 		
@@ -70,24 +70,26 @@ namespace MonoDevelop.CSharpBinding.Tests
 			
 			TestWorkbenchWindow tww = new TestWorkbenchWindow ();
 			TestViewContent sev = new TestViewContent ();
-			DotNetProject project = new DotNetProject ("C#");
-			project.FileName = "/tmp/a" + pcount + ".csproj";
-			
 			string file = "/tmp/test-file-" + (pcount++) + ".cs";
-			project.AddFile (file);
 			ProjectDomService.ParserDatabase = new MonoDevelop.Projects.Dom.MemoryDatabase.MemoryDatabase ();
-			ProjectDomService.Load (project);
-			ProjectDom dom = ProjectDomService.GetProjectDom (project);
-			dom.ForceUpdate (true);
-			ProjectDomService.Parse (project, file, null, delegate { return parsedText; });
+
+//			DotNetProject project = new DotNetProject ("C#");
+//			project.FileName = "/tmp/a" + pcount + ".csproj";
+//			ProjectDomService.Load (project);
+//			project.AddFile (file);
+//			sev.Project = project;
+//			ProjectDom dom = ProjectDomService.GetProjectDom (project);
 			
-			sev.Project = project;
+			ProjectDom dom = ProjectDomService.GetFileDom (file);
+			
 			sev.ContentName = file;
 			sev.Text = editorText;
 			sev.CursorPosition = cursorPosition;
 			tww.ViewContent = sev;
 			Document doc = new Document (tww);
 			doc.ParsedDocument = new NRefactoryParser ().Parse (null, sev.ContentName, parsedText);
+			dom.UpdateFromParseInfo (doc.ParsedDocument.CompilationUnit);
+			
 			foreach (var error in doc.ParsedDocument.Errors) {
 				Console.WriteLine (error);
 			}
@@ -109,7 +111,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 			} else {
 				result = textEditorCompletion.HandleCodeCompletion (ctx, editorText[cursorPosition - 1] , ref triggerWordLength) as CompletionDataList;
 			}
-			ProjectDomService.Unload (project);
+//			ProjectDomService.Unload (project);
 			
 			return result;
 		}

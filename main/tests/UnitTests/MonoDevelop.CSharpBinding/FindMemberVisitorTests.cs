@@ -43,7 +43,7 @@ using ICSharpCode.NRefactory.Visitors;
 namespace MonoDevelop.CSharpBinding.Tests
 {
 	[TestFixture]
-	public class FindMemberVisitorTests : UnitTests.TestBase
+	public class FindMemberVisitorTests
 	{
 		#region TestHelper
 		static NRefactoryParser parser = new NRefactoryParser ();
