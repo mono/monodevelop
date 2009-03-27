@@ -1,3 +1,10 @@
+2009-03-27  Mike Krüger  <mkrueger@novell.com>
+
+	* Src/Visitors/LookupTableVisitor.cs: Added
+	  IsQueryContinuation flag to local lookup variables. This is
+	  required for resolving the "from ... where ... into VAR"
+	  constructs correctly.
+
 2009-03-18  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* NRefactory.csproj: Fix output name.
