@@ -639,7 +639,14 @@ namespace MonoDevelop.CSharpBinding
 							continue;
 						IReturnType varType = null;
 						IReturnType varTypeUnresolved = null;
-						if ((var.TypeRef == null || var.TypeRef.Type == "var" || var.TypeRef.IsNull)) {
+						if (var.IsQueryContinuation) {
+							ResolveResult initializerResolve = visitor.Resolve (var.Initializer);
+							QueryExpression query = var.Initializer as QueryExpression;
+							QueryExpressionGroupClause grouBy = query.SelectOrGroupClause as QueryExpressionGroupClause;
+							ResolveResult groupByResolve = visitor.Resolve (grouBy.GroupBy);
+							DomReturnType resolved = new DomReturnType (dom.GetType ("System.Linq.IGrouping", new IReturnType [] {groupByResolve.ResolvedType, GetEnumerationMember (initializerResolve.ResolvedType)}));
+							varTypeUnresolved = varType = resolved;
+						} else if ((var.TypeRef == null || var.TypeRef.Type == "var" || var.TypeRef.IsNull)) {
 							if (var.ParentLambdaExpression != null) {
 								ResolveResult lambdaResolve = ResolveLambda (visitor, var.ParentLambdaExpression);
 								if (lambdaResolve != null) {
