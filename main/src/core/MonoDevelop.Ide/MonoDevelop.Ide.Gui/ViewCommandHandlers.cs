@@ -504,7 +504,9 @@ namespace MonoDevelop.Ide.Gui
 			int oldSelEnd = doc.TextEditor.SelectionEndPosition;
 			
 			int startPos = doc.TextEditor.GetPositionFromLineColumn (lineStart, 1);
-			int endPos = doc.TextEditor.GetPositionFromLineColumn (lineEnd, doc.TextEditor.GetLineLength(lineEnd) + 1) + 1;  // Include \n
+			int endPos = System.Math.Min (doc.TextEditor.GetPositionFromLineColumn (lineEnd, doc.TextEditor.GetLineLength(lineEnd) + 1) + 1, doc.TextEditor.TextLength);  // Include \n
+			
+			int pos = doc.TextEditor.CursorPosition - startPos;
 			
 			string text = doc.TextEditor.GetText(startPos, endPos);
 			doc.TextEditor.DeleteText(startPos, endPos - startPos);
@@ -515,8 +517,9 @@ namespace MonoDevelop.Ide.Gui
 			// on what the case was when we started.
 			int selStart = newStartPos + colStart - 1;
 			int selEnd = selStart + (oldSelEnd - oldSelStart);
+			doc.TextEditor.CursorPosition = newStartPos + pos;
 			doc.TextEditor.Select(selStart, selEnd);
-
+			
 			doc.TextEditor.EndAtomicUndo ();
 		}
 		
@@ -549,16 +552,20 @@ namespace MonoDevelop.Ide.Gui
 			if (doc.TextEditor.GetPositionFromLineColumn (lineEnd + 2, 1) == -1)
 				endPos--;
 			
+			int pos = doc.TextEditor.CursorPosition - startPos;
 			string text = doc.TextEditor.GetText(startPos, endPos);
 			doc.TextEditor.DeleteText(startPos, endPos - startPos);
 			int newStartPos = doc.TextEditor.GetPositionFromLineColumn(lineStart + 1, 1);
+			
 			doc.TextEditor.InsertText(newStartPos, text);
 			
 			// Now we either reset the selection or the cursor, depending
 			// on what the case was when we started.
 			int selStart = newStartPos + colStart - 1;
 			int selEnd = selStart + (oldSelEnd - oldSelStart);
+			doc.TextEditor.CursorPosition = newStartPos + pos;
 			doc.TextEditor.Select(selStart, selEnd);
+			
 			doc.TextEditor.EndAtomicUndo ();
 		}
 		
