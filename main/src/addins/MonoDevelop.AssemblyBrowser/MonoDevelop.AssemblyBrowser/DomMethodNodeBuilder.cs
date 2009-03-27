@@ -162,9 +162,9 @@ namespace MonoDevelop.AssemblyBrowser
 		static void AppendLink (StringBuilder sb, string link, string text)
 		{
 			sb.Append ("<span style=\"text.link\"><u><a ref=\"");
-			sb.Append (link);
+			sb.Append (AssemblyBrowserWidget.FormatText (link.Replace ("<", "").Replace (">", "")));
 			sb.Append ("\">");
-			sb.Append (AssemblyBrowserWidget.FormatText (text.Replace ("::", ".")));
+			sb.Append (AssemblyBrowserWidget.FormatText (text.Replace ("::", ".").Replace ("<", "").Replace (">", "")));
 			sb.Append ("</a></u></span>");
 		}
 		
@@ -248,7 +248,6 @@ namespace MonoDevelop.AssemblyBrowser
 				result.AppendLine ();
 			}
 			result.AppendLine ();
-			
 			return result.ToString ();
 		}
 		
