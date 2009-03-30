@@ -1022,14 +1022,17 @@ namespace MonoDevelop.CSharpBinding.Gui
 			CompletionDataCollector col = new CompletionDataCollector (Document.CompilationUnit, location);
 			col.HideExtensionParameter = !resolveResult.StaticResolve;
 			col.NamePrefix = expressionResult.Expression;
-			
 			if (objects != null) {
 				foreach (object obj in objects) {
 					if (expressionResult.ExpressionContext != null && expressionResult.ExpressionContext.FilterEntry (obj))
 						continue;
 					if (expressionResult.ExpressionContext == ExpressionContext.NamespaceNameExcepted && !(obj is Namespace))
 						continue;
-					col.AddCompletionData (result, obj);
+					ICompletionData data = col.AddCompletionData (result, obj);
+					if (data != null && expressionResult.ExpressionContext == ExpressionContext.Attribute && data.CompletionText != null && data.CompletionText.EndsWith ("Attribute")) {
+						string newText = data.CompletionText.Substring (0, data.CompletionText.Length - "Attribute".Length);
+						data.SetText (newText);
+					}
 				}
 			}
 			
