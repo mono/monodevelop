@@ -310,6 +310,14 @@ namespace Mono.TextEditor
 			Caret.PositionChanged += CaretPositionChanged;
 			textViewMargin.Initialize ();
 			this.Realized += OptionsChanged;
+			
+			string data = "1 1 1 1" +
+			               "       c None" +
+			               " ";
+			Gdk.Color col = Gdk.Color.Zero;
+			using (Pixmap inv = Pixmap.CreateFromData (GdkWindow, data, 1, 1, 1, col, col)) {
+				invisibleCursor = new Cursor (inv, inv, col, col, 1, 1);
+			}
 		}
 		
 		
@@ -515,7 +523,10 @@ namespace Mono.TextEditor
 					Gtk.Key.SnooperRemove (snooperID);
 					snooperID = 0;
 				}
-				
+				if (invisibleCursor != null) {
+					invisibleCursor.Dispose ();
+					invisibleCursor = null;
+				}
 				Caret.PositionChanged -= CaretPositionChanged;
 				
 				Document.DocumentUpdated -= DocumentUpdatedHandler;
@@ -638,9 +649,10 @@ namespace Mono.TextEditor
 				return false;
 			}
 		}
-		
+		Gdk.Cursor invisibleCursor;
 		protected override bool OnKeyPressEvent (Gdk.EventKey evt)
 		{
+			GdkWindow.Cursor = invisibleCursor;
 			if (evt.Key == Gdk.Key.F1 && (evt.State & (ModifierType.ControlMask | ModifierType.ShiftMask)) == ModifierType.ControlMask) {
 				Point p = textViewMargin.LocationToDisplayCoordinates (Caret.Location);
 				ShowTooltip (Gdk.ModifierType.None, Caret.Offset, p.X, p.Y);
