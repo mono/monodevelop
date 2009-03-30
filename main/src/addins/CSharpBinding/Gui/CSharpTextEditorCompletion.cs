@@ -149,6 +149,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			return result;
 		}
 		
+					
 		bool tryToForceCompletion = false;
 		public override ICompletionDataList HandleCodeCompletion (ICodeCompletionContext completionContext, char completionChar, ref int triggerWordLength)
 		{
@@ -241,19 +242,9 @@ namespace MonoDevelop.CSharpBinding.Gui
 				
 				if (resolveResult != null && resolver.ResolvedExpression is ICSharpCode.NRefactory.Ast.TypeOfExpression) {
 					CompletionDataList completionList = new ProjectDomCompletionDataList ();
-					List<string> namespaceList = new List<string> ();
-					namespaceList.Add ("");
-					if (Document.CompilationUnit != null && Document.CompilationUnit.Usings != null) {
-						foreach (IUsing u in Document.CompilationUnit.Usings) {
-							if (u.Namespaces == null)
-								continue;
-							foreach (string ns in u.Namespaces) {
-								namespaceList.Add (ns);
-							}
-						}
-					}
+					
 					CompletionDataCollector col = new CompletionDataCollector (Document.CompilationUnit, location);
-					foreach (object o in dom.GetNamespaceContents (namespaceList, true, true)) {
+					foreach (object o in dom.GetNamespaceContents (GetUsedNamespaces (), true, true)) {
 						col.AddCompletionData (completionList, o);
 					}
 					return completionList;
@@ -533,8 +524,9 @@ namespace MonoDevelop.CSharpBinding.Gui
 			
 			while (cpos > startPos) {
 				char c = Editor.GetCharAt (cpos);
-				if (c == '(') {
+				if (c == '(' || c == '<') {
 					int p = NRefactoryParameterDataProvider.GetCurrentParameterIndex (Editor, cpos + 1, startPos);
+					Console.WriteLine (p);
 					if (p != -1) {
 						cpos++;
 						return true;
@@ -547,7 +539,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 		
 		public override IParameterDataProvider HandleParameterCompletion (ICodeCompletionContext completionContext, char completionChar)
 		{
-			if (dom == null || completionChar != '(')
+			if (dom == null || (completionChar != '(' && completionChar != '<'))
 				return null;
 			
 			if (stateTracker.Engine.IsInsideDocLineComment || stateTracker.Engine.IsInsideOrdinaryCommentOrString)
@@ -567,6 +559,10 @@ namespace MonoDevelop.CSharpBinding.Gui
 				result.ExpressionContext = new NewCSharpExpressionFinder (dom).FindExactContextForNewCompletion(Editor, Document.CompilationUnit, Document.FileName, resolver.CallingType) ?? result.ExpressionContext;
 			
 			switch (completionChar) {
+			case '<':
+				if (string.IsNullOrEmpty (result.Expression))
+					return null;
+				return new NRefactoryTemplateParameterDataProvider (Editor, resolver, GetUsedNamespaces (), result.Expression.Trim ());
 			case '(':
 				ResolveResult resolveResult = resolver.Resolve (result, new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
 				if (result.ExpressionContext == ExpressionContext.Attribute) {
@@ -727,17 +723,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 							AddAsCompletionData (completionList, col, type);
 						}
 					}
-					List<string> namespaceList = new List<string> ();
-					namespaceList.Add ("");
-					if (resolver.Unit != null && resolver.Unit.Usings != null) {
-						foreach (IUsing u in resolver.Unit.Usings) {
-							if (u.Namespaces == null)
-								continue;
-							foreach (string ns in u.Namespaces) {
-								namespaceList.Add (ns);
-							}
-						}
-					}
+					List<string> namespaceList = GetUsedNamespaces ();
 					foreach (object o in dom.GetNamespaceContents (namespaceList, true, true)) {
 						if (o is IType) {
 							IType type = (IType)o;

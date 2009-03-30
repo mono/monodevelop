@@ -50,6 +50,7 @@ FILES =  \
 	Gui/NRefactoryDocumentMetaInformation.cs \
 	Gui/NRefactoryParameterDataProvider.cs \
 	Gui/NRefactoryResolver.cs \
+	Gui/NRefactoryTemplateParameterDataProvider.cs \
 	Gui/ResolveVisitor.cs \
 	Parser/CodeGenerator.cs \
 	Parser/CSharpFormatter.cs \

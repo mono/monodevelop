@@ -1,5 +1,14 @@
 2009-03-30  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/CSharpTextEditorCompletion.cs:
+	* Gui/NRefactoryTemplateParameterDataProvider.cs: Implemented
+	  "Bug 324888 - Auto complete not activating in generics".
+
+	* Makefile.am:
+	* CSharpBinding.csproj: 
+
+2009-03-30  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/CSharpTextEditorCompletion.cs: Implemented "Bug 324989 -
 	  code completion doesn't strip off 'Attribute' part in
 	  Attributes".
