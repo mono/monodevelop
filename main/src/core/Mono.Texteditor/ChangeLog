@@ -1,5 +1,10 @@
 2009-03-30  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextViewMargin.cs: Handeled invalid folding
+	  marker.
+
+2009-03-30  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextEditor.cs: Fixed 'Bug 489850 - Implement
 	  mouse-cursor hide on typing'.
 
