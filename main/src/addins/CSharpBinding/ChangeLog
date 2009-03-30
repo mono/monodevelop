@@ -1,5 +1,9 @@
 2009-03-30  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/CSharpTextEditorCompletion.cs: Removed debug message.
+
+2009-03-30  Mike Krüger  <mkrueger@novell.com>
+
 	* Parser/NRefactoryParser.cs: implemented 'Bug 363627 - MD
 	  text editor does not show folding symbols for preprocessor
 	  directives'.

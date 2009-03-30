@@ -526,7 +526,6 @@ namespace MonoDevelop.CSharpBinding.Gui
 				char c = Editor.GetCharAt (cpos);
 				if (c == '(' || c == '<') {
 					int p = NRefactoryParameterDataProvider.GetCurrentParameterIndex (Editor, cpos + 1, startPos);
-					Console.WriteLine (p);
 					if (p != -1) {
 						cpos++;
 						return true;
