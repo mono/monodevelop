@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version>$Revision: 3845 $</version>
+//     <version>$Revision: 3867 $</version>
 // </file>
 
 using System;
@@ -48,11 +48,13 @@ namespace ICSharpCode.NRefactory.Parser
 		
 		protected static IEnumerable<string> GetSymbols (string symbols)
 		{
-			foreach (string symbol in symbols.Split (';')) {
-				string s = symbol.Trim ();
-				if (s.Length == 0)
-					continue;
-				yield return s;
+			if (!string.IsNullOrEmpty(symbols)) {
+				foreach (string symbol in symbols.Split (';')) {
+					string s = symbol.Trim ();
+					if (s.Length == 0)
+						continue;
+					yield return s;
+				}
 			}
 		}
 		
@@ -71,10 +73,16 @@ namespace ICSharpCode.NRefactory.Parser
 				return col;
 			}
 		}
+		
+		protected bool recordRead = false;
+		protected StringBuilder recordedText = new StringBuilder ();
+		
 		protected int ReaderRead()
 		{
 			++col;
 			int val = reader.Read();
+			if (recordRead)
+				recordedText.Append ((char)val);
 			if ((val == '\r' && reader.Peek() != '\n') || val == '\n') {
 				++line;
 				col = 1;

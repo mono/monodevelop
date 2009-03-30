@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Andrea Paatz" email="andrea@icsharpcode.net"/>
-//     <version>$Revision: 3845 $</version>
+//     <version>$Revision: 3866 $</version>
 // </file>
 
 using System;
@@ -1092,7 +1092,12 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			
 			PPWhitespace();
 			if (parseIfExpression && directive == "#if" || parseElifExpression && directive == "#elif") {
+				recordedText.Length = 0;
+				recordRead = true;
 				Ast.Expression expr = PPExpression();
+				string arg = recordedText.ToString ();
+				recordRead = false;
+				
 				Location endLocation = new Location(Col, Line);
 				int c = ReaderRead();
 				if (c >= 0 && !HandleLineEnd((char)c)) {
@@ -1103,7 +1108,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					}
 					SkipToEndOfLine(); // skip comment
 				}
-				return new PreprocessingDirective(directive, null, start, endLocation) { Expression = expr, LastLineEnd = lastLineEnd };
+				return new PreprocessingDirective(directive, arg, start, endLocation) { Expression = expr, LastLineEnd = lastLineEnd };
 			} else {
 				Location endLocation = new Location(Col, Line);
 				string arg = ReadToEndOfLine();
