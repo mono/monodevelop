@@ -107,7 +107,10 @@ namespace MonoDevelop.CSharpBinding
 			}
 			
 			Stack<ICSharpCode.NRefactory.PreprocessingDirective> regions = new Stack<ICSharpCode.NRefactory.PreprocessingDirective> ();
-
+			Stack<ICSharpCode.NRefactory.PreprocessingDirective> ifBlocks = new Stack<ICSharpCode.NRefactory.PreprocessingDirective> ();
+			List<ICSharpCode.NRefactory.PreprocessingDirective>  elifBlocks = new List<ICSharpCode.NRefactory.PreprocessingDirective> ();
+			ICSharpCode.NRefactory.PreprocessingDirective  elseBlock = null;
+			
 			Stack<ConditionalRegion> conditionalRegions = new Stack<ConditionalRegion> ();
 			ConditionalRegion ConditionalRegion {
 				get {
@@ -141,6 +144,7 @@ namespace MonoDevelop.CSharpBinding
 						directive.Expression.AcceptVisitor (visitor, null);
 						conditionalRegions.Push (new ConditionalRegion (visitor.Text));
 						visitor.Reset ();
+						ifBlocks.Push (directive);
 						ConditionalRegion.Start = loc;
 						break;
 					case "#elif":
@@ -148,10 +152,12 @@ namespace MonoDevelop.CSharpBinding
 						directive.Expression.AcceptVisitor (visitor, null);
 						ConditionalRegion.ConditionBlocks.Add (new ConditionBlock (visitor.Text, loc));
 						visitor.Reset ();
+//						elifBlocks.Add (directive);
 						break;
 					case "#else":
 						CloseConditionBlock (new DomLocation (directive.LastLineEnd.Line, directive.LastLineEnd.Column));
 						ConditionalRegion.ElseBlock = new DomRegion (loc, DomLocation.Empty);
+//						elseBlock = directive;
 						break;
 					case "#endif":
 						DomLocation endLoc = new DomLocation (directive.LastLineEnd.Line, directive.LastLineEnd.Column);
@@ -159,6 +165,21 @@ namespace MonoDevelop.CSharpBinding
 						if (!ConditionalRegion.ElseBlock.Start.IsEmpty)
 							ConditionalRegion.ElseBlock = new DomRegion (ConditionalRegion.ElseBlock.Start, endLoc);
 						AddCurRegion (directive.EndPosition);
+						if (ifBlocks.Count > 0) {
+							ICSharpCode.NRefactory.PreprocessingDirective ifBlock = ifBlocks.Pop ();
+							Console.WriteLine (ifBlock);
+							DomRegion dr = new DomRegion (ifBlock.StartPosition.Line, ifBlock.StartPosition.Column, directive.EndPosition.Line, directive.EndPosition.Column);
+							result.Add  (new FoldingRegion ("#if " + ifBlock.Arg.Trim (), dr, FoldType.UserRegion, false));
+							foreach (ICSharpCode.NRefactory.PreprocessingDirective d in elifBlocks) {
+								dr.Start = new DomLocation (d.StartPosition.Line, d.StartPosition.Column);
+								result.Add  (new FoldingRegion ("#elif " + ifBlock.Arg.Trim (), dr, FoldType.UserRegion, false));
+							}
+							if (elseBlock != null) {
+								dr.Start = new DomLocation (elseBlock.StartPosition.Line, elseBlock.StartPosition.Column);
+								result.Add  (new FoldingRegion ("#else", dr, FoldType.UserRegion, false));
+							}
+						}
+						elseBlock = null;
 						break;
 					case "#define":
 						result.Add (new PreProcessorDefine (directive.Arg, loc));
@@ -172,7 +193,7 @@ namespace MonoDevelop.CSharpBinding
 							DomRegion dr = new DomRegion (start.StartPosition.Line, 
 								start.StartPosition.Column, directive.EndPosition.Line,
 								directive.EndPosition.Column);
-							result.Add (new FoldingRegion (start.Arg, dr, FoldType.UserRegion));
+							result.Add (new FoldingRegion (start.Arg, dr, FoldType.UserRegion, true));
 						}
 						break;
 				}

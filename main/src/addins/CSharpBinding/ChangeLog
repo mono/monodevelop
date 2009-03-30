@@ -1,5 +1,11 @@
 2009-03-30  Mike Krüger  <mkrueger@novell.com>
 
+	* Parser/NRefactoryParser.cs: implemented 'Bug 363627 - MD
+	  text editor does not show folding symbols for preprocessor
+	  directives'.
+
+2009-03-30  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/CSharpTextEditorCompletion.cs:
 	* Gui/NRefactoryTemplateParameterDataProvider.cs: Implemented
 	  "Bug 324888 - Auto complete not activating in generics".
