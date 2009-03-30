@@ -61,6 +61,12 @@ namespace MonoDevelop.Projects.Dom
 			this.Type = type;
 		}
 		
+		public FoldingRegion (string name, DomRegion region, FoldType type, bool isFoldedByDefault) : this (name, region)
+		{
+			this.Type = type;
+			this.IsFoldedByDefault = isFoldedByDefault;
+		}
+		
 		public FoldingRegion (DomRegion region, FoldType type) : this (null, region, type)
 		{
 		}
