@@ -627,7 +627,6 @@ namespace MonoDevelop.CSharpBinding
 		Dictionary<string, ResolveResult> resultTable = new Dictionary<string, ResolveResult> ();
  		public ResolveResult ResolveIdentifier (ResolveVisitor visitor, string identifier)
 		{
-		//	Console.WriteLine ("resolve:" + identifier);
 			ResolveResult result = null;
 			if (resultTable.TryGetValue (identifier, out result))
 				return result;
@@ -640,11 +639,14 @@ namespace MonoDevelop.CSharpBinding
 						IReturnType varType = null;
 						IReturnType varTypeUnresolved = null;
 						if (var.IsQueryContinuation) {
-							ResolveResult initializerResolve = visitor.Resolve (var.Initializer);
 							QueryExpression query = var.Initializer as QueryExpression;
+							
 							QueryExpressionGroupClause grouBy = query.SelectOrGroupClause as QueryExpressionGroupClause;
+							ResolveResult initializerResolve = visitor.Resolve (var.Initializer);
+							initializerResolve = visitor.Resolve (grouBy.Projection);
 							ResolveResult groupByResolve = visitor.Resolve (grouBy.GroupBy);
-							DomReturnType resolved = new DomReturnType (dom.GetType ("System.Linq.IGrouping", new IReturnType [] {groupByResolve.ResolvedType, GetEnumerationMember (initializerResolve.ResolvedType)}));
+							DomReturnType resolved = new DomReturnType (dom.GetType ("System.Linq.IGrouping", new IReturnType [] { 
+								GetEnumerationMember (initializerResolve.ResolvedType), groupByResolve.ResolvedType}));
 							varTypeUnresolved = varType = resolved;
 						} else if ((var.TypeRef == null || var.TypeRef.Type == "var" || var.TypeRef.IsNull)) {
 							if (var.ParentLambdaExpression != null) {
