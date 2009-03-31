@@ -2101,6 +2101,7 @@ ShortedLambdaExpression<IdentifierExpression ident, out Expression pexpr>
 LambdaExpressionParameter<out ParameterDeclarationExpression p>
 (.	Location start = la.Location; p = null;
 	TypeReference type;
+	ParameterModifiers mod = ParameterModifiers.In;
 .)
 =
 	( IF (Peek(1).kind == Tokens.Comma || Peek(1).kind == Tokens.CloseParenthesis)
@@ -2108,9 +2109,12 @@ LambdaExpressionParameter<out ParameterDeclarationExpression p>
 		(.	p = new ParameterDeclarationExpression(null, t.val);
 			p.StartLocation = start; p.EndLocation = t.EndLocation;
 		.)
-	|	Type<out type>
+	| [ "ref"  (. mod = ParameterModifiers.Ref; .)
+	  | "out"  (. mod = ParameterModifiers.Out; .)
+	  ]
+	Type<out type>
 		Identifier
-		(.	p = new ParameterDeclarationExpression(type, t.val);
+		(.	p = new ParameterDeclarationExpression(type, t.val, mod);
 			p.StartLocation = start; p.EndLocation = t.EndLocation;
 		.)
 	)

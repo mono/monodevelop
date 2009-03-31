@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
-//     <version>$Revision: 3717M $</version>
+//     <version>$Revision: 3943 $</version>
 // </file>
 
 using ICSharpCode.NRefactory.Visitors;
@@ -247,6 +247,9 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			StartPeek();
 			Token pt = Peek();
 			while (pt.kind != Tokens.CloseParenthesis) {
+				if (pt.kind == Tokens.Out || pt.kind == Tokens.Ref) {
+					pt = Peek();
+				}
 				if (!IsTypeNameOrKWForTypeCast(ref pt)) {
 					return false;
 				}

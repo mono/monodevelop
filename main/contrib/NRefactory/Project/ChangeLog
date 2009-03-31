@@ -1,3 +1,10 @@
+2009-03-31  Mike Krüger  <mkrueger@novell.com>
+
+	* Src/Parser/CSharp/cs.ATG:
+	* Src/Parser/CSharp/Parser.cs:
+	* Src/Parser/CSharp/CSharpParser.cs: Added ref/out parameters
+	  for typed lambda expressions.
+
 2009-03-30  Mike Krüger  <mkrueger@novell.com>
 
 	* Src/Lexer/CSharp/Lexer.cs:
