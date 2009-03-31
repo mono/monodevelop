@@ -29,6 +29,7 @@ using System;
 using System.IO;
 using NUnit.Framework;
 using MonoDevelop.Core;
+using MonoDevelop.Projects.Dom.Parser;
 
 namespace UnitTests
 {
@@ -46,6 +47,7 @@ namespace UnitTests
 				Environment.SetEnvironmentVariable ("XDG_CONFIG_HOME", Path.Combine (Util.TestsRootDir, "config"));
 				Runtime.Initialize (true);
 				Gtk.Application.Init ();
+				ProjectDomService.TrackFileChanges = true;
 			}
 		}
 		

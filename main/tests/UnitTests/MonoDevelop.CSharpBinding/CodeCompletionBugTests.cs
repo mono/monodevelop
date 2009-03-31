@@ -39,10 +39,9 @@ using MonoDevelop.Projects.Dom.Parser;
 namespace MonoDevelop.CSharpBinding.Tests
 {
 	[TestFixture()]
-	public class CodeCompletionBugTests 
+	public class CodeCompletionBugTests : UnitTests.TestBase
 	{
 		static int pcount = 0;
-		
 		
 		public static CompletionDataList CreateProvider (string text)
 		{
@@ -70,31 +69,25 @@ namespace MonoDevelop.CSharpBinding.Tests
 			
 			TestWorkbenchWindow tww = new TestWorkbenchWindow ();
 			TestViewContent sev = new TestViewContent ();
+			DotNetProject project = new DotNetProject ("C#");
+			project.FileName = "/tmp/a" + pcount + ".csproj";
+			
 			string file = "/tmp/test-file-" + (pcount++) + ".cs";
-			ProjectDomService.ParserDatabase = new MonoDevelop.Projects.Dom.MemoryDatabase.MemoryDatabase ();
-
-//			DotNetProject project = new DotNetProject ("C#");
-//			project.FileName = "/tmp/a" + pcount + ".csproj";
-//			ProjectDomService.Load (project);
-//			project.AddFile (file);
-//			sev.Project = project;
-//			ProjectDom dom = ProjectDomService.GetProjectDom (project);
+			project.AddFile (file);
 			
-			ProjectDom dom = ProjectDomService.GetFileDom (file);
+			ProjectDomService.Load (project);
+			ProjectDom dom = ProjectDomService.GetProjectDom (project);
+			dom.ForceUpdate (true);
+			ProjectDomService.Parse (project, file, null, delegate { return parsedText; });
+			ProjectDomService.Parse (project, file, null, delegate { return parsedText; });
 			
+			sev.Project = project;
 			sev.ContentName = file;
 			sev.Text = editorText;
 			sev.CursorPosition = cursorPosition;
 			tww.ViewContent = sev;
 			Document doc = new Document (tww);
 			doc.ParsedDocument = new NRefactoryParser ().Parse (null, sev.ContentName, parsedText);
-			dom.UpdateFromParseInfo (doc.ParsedDocument.CompilationUnit);
-			
-			foreach (var error in doc.ParsedDocument.Errors) {
-				Console.WriteLine (error);
-			}
-			Assert.AreEqual (0, doc.ParsedDocument.Errors.Count);
-			
 			CSharpTextEditorCompletion textEditorCompletion = new CSharpTextEditorCompletion (doc);
 			
 			int triggerWordLength = 1;
@@ -105,85 +98,30 @@ namespace MonoDevelop.CSharpBinding.Tests
 			ctx.TriggerLine = line;
 			ctx.TriggerLineOffset = column;
 			
-			CompletionDataList result;
-			if (isCtrlSpace) {
-				result = textEditorCompletion.CodeCompletionCommand (ctx) as CompletionDataList;
-			} else {
-				result = textEditorCompletion.HandleCodeCompletion (ctx, editorText[cursorPosition - 1] , ref triggerWordLength) as CompletionDataList;
-			}
-//			ProjectDomService.Unload (project);
-			
-			return result;
+			if (isCtrlSpace)
+				return textEditorCompletion.CodeCompletionCommand (ctx) as CompletionDataList;
+			else
+				return textEditorCompletion.HandleCodeCompletion (ctx, editorText[cursorPosition - 1] , ref triggerWordLength) as CompletionDataList;
 		}
-		
-//		static CompletionDataList CreateProvider (string text, bool isCtrlSpace)
-//		{
-//			string parsedText;
-//			string editorText;
-//			int cursorPosition = text.IndexOf ('$');
-//			int endPos = text.IndexOf ('$', cursorPosition + 1);
-//			if (endPos == -1)
-//				parsedText = editorText = text.Substring (0, cursorPosition) + text.Substring (cursorPosition + 1);
-//			else {
-//				parsedText = text.Substring (0, cursorPosition) + new string (' ', endPos - cursorPosition) + text.Substring (endPos + 1);
-//				editorText = text.Substring (0, cursorPosition) + text.Substring (cursorPosition + 1, endPos - cursorPosition - 1) + text.Substring (endPos + 1);
-//				cursorPosition = endPos - 1; 
-//			}
-//			
-//			TestWorkbenchWindow tww = new TestWorkbenchWindow ();
-//			TestViewContent sev = new TestViewContent ();
-//			DotNetProject project = new DotNetProject ("C#");
-//			project.FileName = "/tmp/a.csproj";
-//			
-//			SimpleProjectDom dom = new SimpleProjectDom ();
-//			dom.Project = project;
-//			ProjectDomService.RegisterDom (dom, "Project:" + project.FileName);
-//			
-//			sev.Project = project;
-//			sev.ContentName = "a.cs";
-//			sev.Text = editorText;
-//			sev.CursorPosition = cursorPosition;
-//			tww.ViewContent = sev;
-//			
-//			Document doc = new Document (tww);
-//			doc.ParsedDocument = new NRefactoryParser ().Parse (dom, sev.ContentName, parsedText);
-//			Console.WriteLine (doc.ParsedDocument);
-//			dom.Add (doc.CompilationUnit);
-//			CSharpTextEditorCompletion textEditorCompletion = new CSharpTextEditorCompletion (doc);
-//			
-//			
-//			int triggerWordLength = 1;
-//			CodeCompletionContext ctx = new CodeCompletionContext ();
-//			ctx.TriggerOffset = sev.CursorPosition;
-//			int line, column;
-//			sev.GetLineColumnFromPosition (sev.CursorPosition, out line, out column);
-//			ctx.TriggerLine = line;
-//			ctx.TriggerLineOffset = column;
-//			
-//			if (isCtrlSpace)
-//				return textEditorCompletion.CodeCompletionCommand (ctx) as CompletionDataList;
-//			return textEditorCompletion.HandleCodeCompletion (ctx, editorText[cursorPosition - 1] , ref triggerWordLength) as CompletionDataList;
-//		}
-		
 		
 		public static void CheckObjectMembers (CompletionDataList provider)
 		{
-//			Assert.IsNotNull (provider.Find ("Equals"), "Method 'System.Object.Equals' not found.");
-//			Assert.IsNotNull (provider.Find ("GetHashCode"), "Method 'System.Object.GetHashCode' not found.");
-//			Assert.IsNotNull (provider.Find ("GetType"), "Method 'System.Object.GetType' not found.");
-//			Assert.IsNotNull (provider.Find ("ToString"), "Method 'System.Object.ToString' not found.");
+			Assert.IsNotNull (provider.Find ("Equals"), "Method 'System.Object.Equals' not found.");
+			Assert.IsNotNull (provider.Find ("GetHashCode"), "Method 'System.Object.GetHashCode' not found.");
+			Assert.IsNotNull (provider.Find ("GetType"), "Method 'System.Object.GetType' not found.");
+			Assert.IsNotNull (provider.Find ("ToString"), "Method 'System.Object.ToString' not found.");
 		}
 		
 		public static void CheckProtectedObjectMembers (CompletionDataList provider)
 		{
 			CheckObjectMembers (provider);
-//			Assert.IsNotNull (provider.Find ("MemberwiseClone"), "Method 'System.Object.MemberwiseClone' not found.");
+			Assert.IsNotNull (provider.Find ("MemberwiseClone"), "Method 'System.Object.MemberwiseClone' not found.");
 		}
 		
 		public static void CheckStaticObjectMembers (CompletionDataList provider)
 		{
-//			Assert.IsNotNull (provider.Find ("Equals"), "Method 'System.Object.Equals' not found.");
-//			Assert.IsNotNull (provider.Find ("ReferenceEquals"), "Method 'System.Object.ReferenceEquals' not found.");
+			Assert.IsNotNull (provider.Find ("Equals"), "Method 'System.Object.Equals' not found.");
+			Assert.IsNotNull (provider.Find ("ReferenceEquals"), "Method 'System.Object.ReferenceEquals' not found.");
 		}
 		
 		[Test()]
@@ -200,7 +138,7 @@ void TestMethod ()
 }
 ");
 			Assert.IsNotNull (provider);
-			
+			Assert.AreEqual (7, provider.Count);
 			CodeCompletionBugTests.CheckObjectMembers (provider); // 4 from System.Object
 			Assert.IsNotNull (provider.Find ("TM1"));
 			Assert.IsNotNull (provider.Find ("TM2"));
@@ -220,6 +158,7 @@ void TestMethod ()
 }
 ");
 			Assert.IsNotNull (provider);
+			Assert.AreEqual (7, provider.Count);
 			CodeCompletionBugTests.CheckObjectMembers (provider); // 4 from System.Object
 			Assert.IsNotNull (provider.Find ("TM1"));
 			Assert.IsNotNull (provider.Find ("TM2"));
@@ -320,7 +259,7 @@ class Test
 	}
 }");
 			Assert.IsNotNull (provider, "provider not found.");
-			
+			Assert.AreEqual (6, provider.Count);
 			CodeCompletionBugTests.CheckObjectMembers (provider); // 4 from System.Object
 			Assert.IsNotNull (provider.Find ("AField"), "field 'AField' not found.");
 			Assert.IsNotNull (provider.Find ("BField"), "field 'BField' not found.");
@@ -357,7 +296,7 @@ class Test
 	}
 }");
 			Assert.IsNotNull (provider, "provider not found.");
-			
+			Assert.AreEqual (6, provider.Count);
 			CodeCompletionBugTests.CheckObjectMembers (provider); // 4 from System.Object
 			Assert.IsNotNull (provider.Find ("AField"), "field 'AField' not found.");
 			Assert.IsNotNull (provider.Find ("BField"), "field 'BField' not found.");
@@ -384,7 +323,7 @@ class Test
 	}
 }");
 			Assert.IsNotNull (provider, "provider not found.");
-			
+			Assert.AreEqual (6, provider.Count);
 			CodeCompletionBugTests.CheckObjectMembers (provider); // 4 from System.Object
 			Assert.IsNotNull (provider.Find ("AField"), "field 'AField' not found.");
 			Assert.IsNotNull (provider.Find ("BField"), "field 'BField' not found.");
@@ -415,7 +354,7 @@ class Test
 	}
 }");
 			Assert.IsNotNull (provider, "provider not found.");
-			
+			Assert.AreEqual (6, provider.Count);
 			CodeCompletionBugTests.CheckObjectMembers (provider); // 4 from System.Object
 			Assert.IsNotNull (provider.Find ("A"), "field 'A' not found.");
 			Assert.IsNotNull (provider.Find ("B"), "field 'B' not found.");
@@ -490,7 +429,7 @@ class Test
 	}
 }");
 			Assert.IsNotNull (provider, "provider not found.");
-			
+			Assert.AreEqual (5, provider.Count);
 			CodeCompletionBugTests.CheckObjectMembers (provider); // 4 from System.Object
 			Assert.IsNotNull (provider.Find ("GetTestClass"), "method 'GetTestClass' not found.");
 		}
@@ -547,7 +486,7 @@ class C : BaseClass
 }
 ");
 			Assert.IsNotNull (provider, "provider not found.");
-			
+			Assert.AreEqual (4, provider.Count);
 			CodeCompletionBugTests.CheckObjectMembers (provider); // 4 from System.Object
 		}
 		
@@ -568,7 +507,7 @@ class C : BaseClass
 	}
 }");
 			Assert.IsNotNull (provider, "provider not found.");
-			
+			Assert.AreEqual (3, provider.Count);
 			CodeCompletionBugTests.CheckStaticObjectMembers (provider); // 2 from System.Object
 			Assert.IsNotNull (provider.Find ("SomeEnum"), "enum 'SomeEnum' not found.");
 		}
@@ -753,7 +692,7 @@ namespace MyNamespace
 {
 	partial class FormMain
 	{
-		public void Foo()
+		private void Foo()
 		{
 			Bar();
 		}
@@ -781,9 +720,9 @@ namespace MyNamespace
 }
 ");
 			Assert.IsNotNull (provider, "provider not found.");
-			Assert.IsNotNull (provider.Find ("Bar"), "method 'Bar' not found.");
 			Assert.IsNotNull (provider.Find ("Foo"), "method 'Foo' not found.");
 			Assert.IsNotNull (provider.Find ("Blah"), "method 'Blah' not found.");
+			Assert.IsNotNull (provider.Find ("Bar"), "method 'Bar' not found.");
 		}
 		
 		/// <summary>
@@ -955,7 +894,7 @@ class AClass
 }
 ");
 			Assert.IsNotNull (provider, "provider not found.");
-			
+			Assert.AreEqual (5, provider.Count);
 			CodeCompletionBugTests.CheckObjectMembers (provider); // 4 from System.Object
 			Assert.IsNull (provider.Find (".dtor"), "destructor found - but shouldn't.");
 			Assert.IsNotNull (provider.Find ("TestMethod"), "method 'TestMethod' not found.");
@@ -997,7 +936,7 @@ namespace CCTests
 	}
 }");
 			Assert.IsNotNull (provider, "provider not found.");
-			
+			Assert.AreEqual (5, provider.Count);
 			CodeCompletionBugTests.CheckObjectMembers (provider); // 4 from System.Object
 			Assert.IsNotNull (provider.Find ("TestField"), "field 'TestField' not found.");
 		}
@@ -1164,33 +1103,24 @@ class Test
 		{
 			CompletionDataList provider = CreateCtrlSpaceProvider (
 @"
+using System;
+using System.Collections.Generic;
 
-namespace System.Collections.Generic {
-	public interface IList<T> { }
-}
-
-namespace System {
-	public class Array : System.Collections.Generic.IList<T>
+	static class ExtensionTest
 	{
-
+		public static bool TestExt<T> (this IList<T> list, T val)
+		{
+			return true;
+		}
 	}
-}
-
-static class ExtensionTest
-{
-	public static bool TestExt<T> (this System.Collections.Generic.IList<T> list, T val)
+	
+	class MainClass
 	{
-		return true;
+		public static void Main(string[] args)
+		{
+			$args.$
+		}
 	}
-}
-
-class MainClass
-{
-	public static void Main(string[] args)
-	{
-		$args.$
-	}
-}
 ");
 			Assert.IsNotNull (provider, "provider not found.");
 			Assert.IsNotNull (provider.Find ("TestExt"), "method 'TestExt' not found");
@@ -1602,7 +1532,7 @@ class CastByExample
 	
 	static void Main ()
 	{
-		var typed = Cast (o, new { Foo = 5 });
+		var typed = Cast (o, new { Foo = "" });
 		$typed.$
 	}
 }");

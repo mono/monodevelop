@@ -40,7 +40,7 @@ using MonoDevelop.Projects.Dom.Parser;
 
 namespace MonoDevelop.CSharpBinding
 {
-	[TestFixture()]
+/*	[TestFixture()]
 	public class ProjectDomTests : UnitTests.TestBase
 	{
 		public delegate void DomCallback (ProjectDom dom);
@@ -52,8 +52,8 @@ namespace MonoDevelop.CSharpBinding
 		
 		public static void CheckDomCorrectness (IEnumerable<IType> types, DomCallback callback)
 		{
-			IParserDatabase database = new MonoDevelop.Projects.Dom.MemoryDatabase.MemoryDatabase ();
-			//IParserDatabase database = new MonoDevelop.Projects.Dom.Serialization.ParserDatabase ();
+			//IParserDatabase database = new MonoDevelop.Projects.Dom.MemoryDatabase.MemoryDatabase ();
+			IParserDatabase database = new MonoDevelop.Projects.Dom.Serialization.ParserDatabase ();
 			ProjectDom dom = database.LoadSingleFileDom ("a.cs");
 			Console.WriteLine ("dom:" + dom);
 			CompilationUnit unit = new CompilationUnit ("a.cs");
@@ -173,4 +173,5 @@ namespace MonoDevelop.CSharpBinding
 			});
 		}
 	}
+	*/
 }

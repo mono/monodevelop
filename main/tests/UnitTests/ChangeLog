@@ -1,3 +1,20 @@
+2009-03-31  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.CSharpBinding/ParameterCompletionTests.cs:
+	  (Revert to revision 130308)
+
+	* MonoDevelop.CSharpBinding/CodeCompletionAccessibleTests.cs:
+	  The base class is required when running individual tests.
+
+	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: (Revert
+	  to revision 130111)
+
+	* MonoDevelop.CSharpBinding/ProjectDomTests.cs: Disabled for
+	  now. To be merged into CodeCompletionDatabaseTests.
+
+	* TestBase.cs: Enable file change tracking since it is
+	  required by ForceUpdate.
+
 2009-03-31  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:
