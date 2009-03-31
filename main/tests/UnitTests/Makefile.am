@@ -57,6 +57,7 @@ FILES =  \
 	MonoDevelop.Projects/CompletionDatabaseTests.cs \
 	MonoDevelop.Projects/DomCompilationUnitTests.cs \
 	MonoDevelop.Projects/DomPersistenceTests.cs \
+	MonoDevelop.Projects/DomTests.cs \
 	MonoDevelop.Projects/LocalCopyTests.cs \
 	MonoDevelop.Projects/MakefileTests.cs \
 	MonoDevelop.Projects/MdsTests.cs \
