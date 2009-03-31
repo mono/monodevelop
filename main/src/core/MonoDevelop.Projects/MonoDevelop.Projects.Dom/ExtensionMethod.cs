@@ -133,7 +133,16 @@ namespace MonoDevelop.Projects.Dom
 		{
 			this.DeclaringType = extenisonType;
 			List<IReturnType> args = new List<IReturnType> ();
-			args.Add (new DomReturnType (extenisonType));
+			if (extenisonType is InstantiatedType) {
+				InstantiatedType instType = (InstantiatedType)extenisonType;
+				DomReturnType uninstantiatedReturnType = new DomReturnType (instType.UninstantiatedType.FullName);
+				foreach (IReturnType genArg in instType.GenericParameters) {
+					uninstantiatedReturnType.AddTypeParameter (genArg);
+				}
+				args.Add (uninstantiatedReturnType);
+			} else {
+				args.Add (new DomReturnType (extenisonType));
+			}
 			args.AddRange (methodArguments);
 			//Console.WriteLine ("Create Extension method from:");
 			//Console.WriteLine ("ext type:" + args[0]);

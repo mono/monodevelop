@@ -1,3 +1,10 @@
+2009-03-31  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom/DomType.cs:
+	* MonoDevelop.Projects.Dom/DomMethod.cs:
+	* MonoDevelop.Projects.Dom/ExtensionMethod.cs: Worked on C#3
+	  lambda resolving.
+
 2009-03-30  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/FoldingRegion.cs: Track api
