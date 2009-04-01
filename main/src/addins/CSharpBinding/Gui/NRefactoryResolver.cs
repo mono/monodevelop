@@ -537,10 +537,11 @@ namespace MonoDevelop.CSharpBinding
 					return null;
 				} 
 				result.ResolveExtensionMethods ();
+//				Console.WriteLine ("2");
 				for (int i = 0; i < invocation.Arguments.Count; i++) {
 					if (invocation.Arguments [i] == lambdaExpression && i < result.MostLikelyMethod.Parameters.Count) {
 						IParameter parameterType = result.MostLikelyMethod.Parameters [i];
-//						Console.WriteLine (i + " par: " + parameterType);
+						Console.WriteLine (i + " par: " + parameterType);
 						if (parameterType.ReturnType.Name == "Func" && parameterType.ReturnType.GenericArguments.Count > 0) {
 							return visitor.CreateResult (parameterType.ReturnType.GenericArguments[0]);
 						}
@@ -548,25 +549,28 @@ namespace MonoDevelop.CSharpBinding
 				}
 				
 				LambdaExpression lambda = (LambdaExpression)lambdaExpression;
-				
+//				Console.WriteLine ("lambda:" + lambda);
 				if (!lambda.ExpressionBody.IsNull) {
 					DomLocation old = resolvePosition;
 					try {
 						resolvePosition = new DomLocation (lookupVariableLine + lambda.ExpressionBody.StartLocation.Line,
 						                                   lambda.ExpressionBody.StartLocation.Column);
 						//result.AddArgument (visitor.GetTypeSafe (lambda.ExpressionBody));
-						return visitor.Resolve (lambda.ExpressionBody);
+						ResolveResult res =  visitor.Resolve (lambda.ExpressionBody);
+						if (!string.IsNullOrEmpty (res.ResolvedType.FullName))
+							return res;
 					} finally {
 						resolvePosition = old;
 					}
-				} else {
-					foreach (Expression arg in invocation.Arguments) {
-						var argType = visitor.GetTypeSafe (arg);
-						result.AddArgument (argType);
-					}
-				}
-				result.ResolveExtensionMethods ();
+				} 
 				
+				foreach (Expression arg in invocation.Arguments) {
+					var argType = arg is LambdaExpression ?  DomReturnType.Void : visitor.GetTypeSafe (arg);
+					result.AddArgument (argType);
+				}
+				
+				result.ResolveExtensionMethods ();
+//				Console.WriteLine ("maybe method:" + result.MostLikelyMethod);
 				for (int i = 0; i < invocation.Arguments.Count; i++) {
 					if (invocation.Arguments [i] == lambdaExpression && i < result.MostLikelyMethod.Parameters.Count) {
 						IParameter parameterType = result.MostLikelyMethod.Parameters [i];
@@ -642,12 +646,19 @@ namespace MonoDevelop.CSharpBinding
 							QueryExpression query = var.Initializer as QueryExpression;
 							
 							QueryExpressionGroupClause grouBy = query.SelectOrGroupClause as QueryExpressionGroupClause;
-							ResolveResult initializerResolve = visitor.Resolve (var.Initializer);
-							initializerResolve = visitor.Resolve (grouBy.Projection);
-							ResolveResult groupByResolve = visitor.Resolve (grouBy.GroupBy);
-							DomReturnType resolved = new DomReturnType (dom.GetType ("System.Linq.IGrouping", new IReturnType [] { 
+							DomLocation old = resolvePosition;
+							try {
+								resolvePosition = new DomLocation (lookupVariableLine + grouBy.Projection.StartLocation.Line,
+								                                   grouBy.Projection.StartLocation.Column);
+								ResolveResult initializerResolve = visitor.Resolve (grouBy.Projection);
+								ResolveResult groupByResolve = visitor.Resolve (grouBy.GroupBy);
+								DomReturnType resolved = new DomReturnType (dom.GetType ("System.Linq.IGrouping", new IReturnType [] { 
 								GetEnumerationMember (initializerResolve.ResolvedType), groupByResolve.ResolvedType}));
 							varTypeUnresolved = varType = resolved;
+							} finally {
+								resolvePosition = old;
+							}
+							
 						} else if ((var.TypeRef == null || var.TypeRef.Type == "var" || var.TypeRef.IsNull)) {
 							if (var.ParentLambdaExpression != null) {
 								ResolveResult lambdaResolve = ResolveLambda (visitor, var.ParentLambdaExpression);
