@@ -681,7 +681,8 @@ namespace MonoDevelop.Projects.Dom
 			List<IMethod> result = new List<IMethod> ();
 			foreach (IType staticType in accessibleExtensionTypes) {
 				foreach (IMethod method in staticType.Methods) {
-					if (method.Extends (this.SourceProjectDom, this)) {
+					IMethod instMethod = DomMethod.CreateInstantiatedGenericMethod (method, new IReturnType[]{}, new IReturnType[]{ new DomReturnType (this) });
+					if (instMethod.Extends (this.SourceProjectDom, this)) {
 						result.Add (method);
 					}
 				}

@@ -1,3 +1,8 @@
+2009-04-01  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom/DomType.cs: fixed "Bug 487226 - No
+	  intellisense in LINQ queries".
+
 2009-03-31  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomType.cs:
