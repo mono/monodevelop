@@ -1337,7 +1337,8 @@ namespace MonoDevelop.CSharpBinding.Gui
 									names[j] = Char.ToLower (names[j][0]) + names[j].Substring (1);
 								possibleName.Append (names[j]);
 							}
-							result.Add (possibleName.ToString (), "md-field");
+							if (possibleName.Length > 0)
+								result.Add (possibleName.ToString (), "md-field");
 						}
 						result.IsSorted = true;
 					}
