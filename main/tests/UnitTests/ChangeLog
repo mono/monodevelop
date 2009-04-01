@@ -1,3 +1,8 @@
+2009-04-01  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects/DomTests.cs: Added test for extension
+	  method.
+
 2009-03-31  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.CSharpBinding/ParameterCompletionTests.cs:

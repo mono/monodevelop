@@ -150,5 +150,32 @@ namespace MonoDevelop.Projects.DomTests
 			Assert.AreEqual (DomReturnType.Int32.FullName, extMethod.ReturnType.FullName);
 			Assert.AreEqual (DomReturnType.Object.FullName, extMethod.Parameters[0].ReturnType.FullName);
 		}
+		
+			
+		[Test()]
+		public void ExtensionMethodPreserveParameterTest ()
+		{
+			// build "T MyMethod<T, S> (T a, S b)"
+			DomMethod method = new DomMethod ();
+			method.Name = "MyMethod";
+			method.ReturnType = new DomReturnType ("T");
+			method.AddTypeParameter (new TypeParameter ("T"));
+			method.AddTypeParameter (new TypeParameter ("S"));
+			
+			method.Add (new DomParameter (method, "a", new DomReturnType ("T")));
+			method.Add (new DomParameter (method, "b", new DomReturnType ("S")));
+			// extend method
+			List<IReturnType> genArgs = new List<IReturnType> ();
+			List<IReturnType> args    = new List<IReturnType> ();
+			DomType extType = new DomType ("MyType");
+			
+			ExtensionMethod extMethod = new ExtensionMethod (extType, method, genArgs, args);
+			
+			// check for MyType MyMethod<S> (S b)
+			Assert.AreEqual ("MyType", extMethod.ReturnType.FullName);
+			Assert.AreEqual ("S", extMethod.Parameters[0].ReturnType.FullName);
+			Assert.AreEqual (1, extMethod.TypeParameters.Count);
+			Assert.AreEqual ("S", extMethod.TypeParameters[0].Name);
+		}
 	}
 }
