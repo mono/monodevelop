@@ -1,3 +1,9 @@
+2009-04-01  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: Fixed "Bug
+	  487215 - No type is displayed when hovering over "var"
+	  keyword".
+
 2009-03-23  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Fixed "Bug

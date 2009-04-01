@@ -421,6 +421,32 @@ namespace MonoDevelop.SourceEditor
 				return null;
 			DocumentLocation loc = Document.OffsetToLocation (offset);
 			string savedExpression = null;
+			// special handling for 'var' "keyword"
+			if (expressionResult.ExpressionContext == ExpressionContext.IdentifierExpected && expressionResult.Expression != null && expressionResult.Expression.Trim () == "var") {
+				int endOffset = Document.LocationToOffset (expressionResult.Region.End.Line - 1, expressionResult.Region.End.Column - 1);
+				StringBuilder identifer = new StringBuilder ();
+				for (int i = endOffset; i >= 0 && i < Document.Length; i++) {
+					char ch = Document.GetCharAt (i);
+					if (Char.IsWhiteSpace (ch))
+						continue;
+					if (ch == '=')
+						break;
+					if (Char.IsLetterOrDigit (ch) || ch =='_') {
+						identifer.Append (ch);
+						continue;
+					}
+					identifer.Length = 0;
+					break;
+				}
+				if (identifer.Length > 0) {
+					expressionResult.Expression = identifer.ToString ();
+					this.resolveResult = resolver.Resolve (expressionResult, new DomLocation (loc.Line + 1, loc.Column + 1));
+					if (this.resolveResult != null) {
+						this.resolveResult = new MemberResolveResult (dom.GetType (resolveResult.ResolvedType));
+						return this.resolveResult;
+					}
+				}
+			}
 			
 			if (expressionResult.ExpressionContext == ExpressionContext.Attribute) {
 				savedExpression = expressionResult.Expression;
