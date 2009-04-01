@@ -651,9 +651,13 @@ namespace MonoDevelop.CSharpBinding
 			resultTable[identifier] = result;
 			foreach (KeyValuePair<string, List<LocalLookupVariable>> pair in this.lookupTableVisitor.Variables) {
 				if (identifier == pair.Key) {
-					foreach (LocalLookupVariable var in pair.Value) {
-						if (new DomLocation (lookupVariableLine + var.StartPos.Line, var.StartPos.Column) > this.resolvePosition || (!var.EndPos.IsEmpty && new DomLocation (lookupVariableLine + var.EndPos.Line, var.EndPos.Column) < this.resolvePosition))
+					LocalLookupVariable var = null;
+					foreach (LocalLookupVariable v2 in pair.Value) {
+						if (new DomLocation (lookupVariableLine + v2.StartPos.Line, v2.StartPos.Column) > this.resolvePosition || (!v2.EndPos.IsEmpty && new DomLocation (lookupVariableLine + v2.EndPos.Line, v2.EndPos.Column) < this.resolvePosition))
 							continue;
+						var = v2;
+					}
+					if (var != null) {
 						IReturnType varType = null;
 						IReturnType varTypeUnresolved = null;
 						if (var.IsQueryContinuation) {
