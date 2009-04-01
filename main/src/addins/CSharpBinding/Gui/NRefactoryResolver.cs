@@ -506,9 +506,23 @@ namespace MonoDevelop.CSharpBinding
 		{
 			if (resolveResult == null || resolveResult.ResolvedType == null)
 				return null;
-			if (resolveResult.ResolvedType.Name == "Func" && resolveResult.ResolvedType.GenericArguments.Count == 2) {
-				resolveResult.ResolvedType = resolveResult.ResolvedType.GenericArguments[0];
+			IReturnType type = resolveResult.ResolvedType;
+			while (type.GenericArguments.Count > 0) {
+				IType realType = dom.SearchType (new SearchTypeRequest (Unit, type, CallingType));
+				if (realType != null && realType.ClassType == MonoDevelop.Projects.Dom.ClassType.Delegate) {
+					IMethod invokeMethod = realType.SearchMember ("Invoke", true) [0] as IMethod;
+					if (invokeMethod != null && invokeMethod.Parameters.Count > 0) {
+						type = invokeMethod.Parameters[0].ReturnType;
+						break;
+					}
+				}
+				if (type.GenericArguments.Count > 0) {
+					type = type.GenericArguments[0];
+				} else {
+					break;
+				}
 			}
+			resolveResult.ResolvedType = type;
 			return resolveResult;
 		}
 
