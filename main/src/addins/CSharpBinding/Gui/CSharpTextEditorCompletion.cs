@@ -1224,6 +1224,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				resolver.AddAccessibleCodeCompletionData (expressionResult.ExpressionContext, result);
 			} else if (expressionResult.ExpressionContext == ExpressionContext.MethodBody) {
 				result.Add ("global", "md-keyword");
+				result.Add ("var", "md-keyword");
 				AddNRefactoryKeywords (result, ICSharpCode.NRefactory.Parser.CSharp.Tokens.StatementStart);
 				AddPrimitiveTypes (result);
 				resolver.AddAccessibleCodeCompletionData (expressionResult.ExpressionContext, result);
@@ -1261,6 +1262,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			} //else if (expressionResult.ExpressionContext == ExpressionContext.FullyQualifiedType) {} 
 			else if (expressionResult.ExpressionContext == ExpressionContext.Default) {
 				result.Add ("global", "md-keyword");
+				result.Add ("var", "md-keyword");
 				AddPrimitiveTypes (result);
 				AddNRefactoryKeywords (result, ICSharpCode.NRefactory.Parser.CSharp.Tokens.ExpressionStart);
 				AddNRefactoryKeywords (result, ICSharpCode.NRefactory.Parser.CSharp.Tokens.ExpressionContent);
@@ -1343,13 +1345,16 @@ namespace MonoDevelop.CSharpBinding.Gui
 						result.IsSorted = true;
 					}
 				} else {
+					
 					result.Add ("global", "md-keyword");
+					result.Add ("var", "md-keyword");
 					AddPrimitiveTypes (result);
 					resolver.AddAccessibleCodeCompletionData (expressionResult.ExpressionContext, result);
 				}
 				
 			} else {
 				result.Add ("global", "md-keyword");
+				result.Add ("var", "md-keyword");
 				AddPrimitiveTypes (result);
 				resolver.AddAccessibleCodeCompletionData (expressionResult.ExpressionContext, result);
 			}
