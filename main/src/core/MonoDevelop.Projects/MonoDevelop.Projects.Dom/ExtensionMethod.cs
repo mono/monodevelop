@@ -143,10 +143,11 @@ namespace MonoDevelop.Projects.Dom
 			} else {
 				args.Add (new DomReturnType (extenisonType));
 			}
-			args.AddRange (methodArguments);
-			//Console.WriteLine ("Create Extension method from:");
-			//Console.WriteLine ("ext type:" + args[0]);
-			//Console.WriteLine (originalMethod);
+			if (methodArguments != null)
+				args.AddRange (methodArguments);
+//			Console.WriteLine ("Create Extension method from:");
+//			Console.WriteLine ("ext type:" + args[0]);
+//			Console.WriteLine (originalMethod);
 			this.method = DomMethod.CreateInstantiatedGenericMethod (originalMethod, genericArguments, args);
 			
 			// skip first parameter.

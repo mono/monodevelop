@@ -1,5 +1,13 @@
 2009-04-01  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Dom/IMethod.cs:
+	* MonoDevelop.Projects.Dom/DomType.cs:
+	* MonoDevelop.Projects.Dom/DomMethod.cs:
+	* MonoDevelop.Projects.Dom/ExtensionMethod.cs: fixed "Bug
+	  491016 - No intellisense for lambdas inside linq query".
+
+2009-04-01  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Dom/DomType.cs: fixed "Bug 487226 - No
 	  intellisense in LINQ queries".
 

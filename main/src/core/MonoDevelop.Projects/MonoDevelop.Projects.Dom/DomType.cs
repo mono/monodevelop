@@ -681,9 +681,9 @@ namespace MonoDevelop.Projects.Dom
 			List<IMethod> result = new List<IMethod> ();
 			foreach (IType staticType in accessibleExtensionTypes) {
 				foreach (IMethod method in staticType.Methods) {
-					IMethod instMethod = DomMethod.CreateInstantiatedGenericMethod (method, new IReturnType[]{}, new IReturnType[]{ new DomReturnType (this) });
-					if (instMethod.Extends (this.SourceProjectDom, this)) {
-						result.Add (method);
+					IMethod extMethod = method.Extends (this.SourceProjectDom, this);
+					if (extMethod != null) {
+						result.Add (extMethod);
 					}
 				}
 			}
@@ -743,9 +743,12 @@ namespace MonoDevelop.Projects.Dom
 		
 		public bool Equals (IType other)
 		{
-			IType a = this is InstantiatedType ? ((InstantiatedType)this).UninstantiatedType : this;
-			IType b = other is InstantiatedType ? ((InstantiatedType)other).UninstantiatedType : other;
-			return a.TypeParameters.Count == b.TypeParameters.Count && a.FullName == b.FullName;
+			IType         a = this is InstantiatedType ? ((InstantiatedType)this).UninstantiatedType : this;
+			int typeParamsA = this is InstantiatedType ? ((InstantiatedType)this).UninstantiatedType.TypeParameters.Count : a.TypeParameters.Count;
+			
+			IType         b = other is InstantiatedType ? ((InstantiatedType)other).UninstantiatedType : other;
+			int typeParamsB = other is InstantiatedType ? ((InstantiatedType)other).UninstantiatedType.TypeParameters.Count : other.TypeParameters.Count;
+			return typeParamsA == typeParamsB && a.FullName == b.FullName;
 		}
 	}
 	

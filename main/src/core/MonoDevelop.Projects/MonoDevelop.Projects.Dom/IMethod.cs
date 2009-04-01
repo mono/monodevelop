@@ -70,6 +70,6 @@ namespace MonoDevelop.Projects.Dom
 		/// <summary>
 		/// Returns true, if IsExtension == true and this method extends <param name="type"/>
 		/// </summary>
-		bool Extends (ProjectDom dom, IType type);
+		IMethod Extends (ProjectDom dom, IType type);
 	}
 }
