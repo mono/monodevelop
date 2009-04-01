@@ -39,7 +39,7 @@ using MonoDevelop.Projects.Dom.Parser;
 namespace MonoDevelop.CSharpBinding.Tests
 {
 	[TestFixture()]
-	public class CodeCompletionCSharp3Tests
+	public class CodeCompletionCSharp3Tests :  UnitTests.TestBase
 	{
 		/* Currently fails but works in monodevelop. Seems to be a bug in the unit test somewhere.
 		[Test()]
@@ -247,6 +247,36 @@ class Test
 			Assert.IsNotNull (provider, "provider == null");
 			Assert.IsNotNull (provider.Find ("TestMethod"), "method 'TestMethod' not found.");
 		}
+		
+		/// <summary>
+		/// Bug 487237 - Broken lambda intellisense 
+		/// </summary>
+		[Test()]
+		public void TestBug487237 ()
+		{
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
+@"
+public interface IHelper
+{
+    void DoIt ();
+}
+
+public class Program
+{
+	delegate T MyDelegate <T> (T t);
+    
+	static int Main ()
+    {
+        $MyDelegate<IHelper> e = helper => helper.$
+        return 0;
+    }
+}
+");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("DoIt"), "method 'DoIt' not found.");
+		}
+		
+		
 		
 	}
 }

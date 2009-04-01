@@ -1,5 +1,10 @@
 2009-04-01  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharpBinding/CodeCompletionCSharp3Tests.cs:
+	  added test for "Bug 487237 - Broken lambda intellisense".
+
+2009-04-01  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects/DomTests.cs: Added test for extension
 	  method.
 
