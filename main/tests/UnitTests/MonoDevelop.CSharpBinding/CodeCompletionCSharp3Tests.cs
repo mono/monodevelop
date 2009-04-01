@@ -275,8 +275,47 @@ public class Program
 			Assert.IsNotNull (provider, "provider == null");
 			Assert.IsNotNull (provider.Find ("DoIt"), "method 'DoIt' not found.");
 		}
-		
-		
+		/*
+		/// <summary>
+		/// Bug 491016 - No intellisense for lambdas inside linq query
+		/// </summary>
+		[Test()]
+		public void TestBug491016 ()
+		{
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
+@"
+using System;
+using System.Collections.Generic;
+
+namespace Foo
+{
+    class Data
+    {
+        public int Value = 5;
+    }
+
+    static class Ex
+    {
+        public static IEnumerable<TR> Foo<T, TR> (this IEnumerable<T> t, Func<T, TR> f)
+        {
+            yield return f (t.First ());
+        }
+    }
+
+    public class C
+    {
+        public static void Main ()
+        {
+            Data[] i = new Data [0];
+            $var prods = from pe in i.Foo (p2 => p2.$
+        }
+    }
+}
+");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("Value"), "field 'Value' not found.");
+		}
+		*/
 		
 	}
 }
