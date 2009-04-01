@@ -551,11 +551,9 @@ namespace MonoDevelop.CSharpBinding
 					return null;
 				} 
 				result.ResolveExtensionMethods ();
-//				Console.WriteLine ("2");
 				for (int i = 0; i < invocation.Arguments.Count; i++) {
 					if (invocation.Arguments [i] == lambdaExpression && i < result.MostLikelyMethod.Parameters.Count) {
 						IParameter parameterType = result.MostLikelyMethod.Parameters [i];
-						Console.WriteLine (i + " par: " + parameterType);
 						if (parameterType.ReturnType.Name == "Func" && parameterType.ReturnType.GenericArguments.Count > 0) {
 							return visitor.CreateResult (parameterType.ReturnType.GenericArguments[0]);
 						}

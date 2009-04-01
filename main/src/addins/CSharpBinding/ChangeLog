@@ -1,5 +1,9 @@
 2009-04-01  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/NRefactoryResolver.cs: removed debug messages.
+
+2009-04-01  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/NRefactoryResolver.cs: fixed "Bug 491016 - No
 	  intellisense for lambdas inside linq query".
 
