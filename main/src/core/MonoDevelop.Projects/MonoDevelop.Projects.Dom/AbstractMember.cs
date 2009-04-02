@@ -226,6 +226,8 @@ namespace MonoDevelop.Projects.Dom
 		{
 			if (member == null)
 				return IsStatic || IsPublic;
+			if (member is MonoDevelop.Projects.Dom.BaseResolveResult.BaseMemberDecorator) 
+				return IsPublic | IsProtected;
 	//		if (member.IsStatic && !IsStatic)
 	//			return false;
 			if (IsPublic || calledType != null && calledType.ClassType == ClassType.Interface)
@@ -263,8 +265,7 @@ namespace MonoDevelop.Projects.Dom
 					return true;
 				declaringType = declaringType.DeclaringType;
 			}
-			if (member is MonoDevelop.Projects.Dom.BaseResolveResult.BaseMemberDecorator)
-				return IsPublic | IsProtected;
+			
 			
 			return member.DeclaringType != null && DeclaringType.FullName == member.DeclaringType.FullName;
 		}
