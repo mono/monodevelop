@@ -99,5 +99,20 @@ namespace MonoDevelop.AspNet.Mvc
 			
 			return files;
 		}
+		
+		protected override void PopulateSupportFileList (MonoDevelop.Projects.FileCopySet list, string solutionConfiguration)
+		{
+			base.PopulateSupportFileList (list, solutionConfiguration);
+			
+			//HACK: workaround for MD not local-copying package references
+			foreach (ProjectReference projectReference in References) {
+				if (projectReference.Package.Name == "aspnet-mvc") {
+					if (projectReference.LocalCopy && projectReference.ReferenceType == ReferenceType.Gac)
+						foreach (MonoDevelop.Core.SystemAssembly assem in projectReference.Package.Assemblies)
+							list.Add (assem.Location);
+					break;
+				}
+			}
+		}
 	}
 }
