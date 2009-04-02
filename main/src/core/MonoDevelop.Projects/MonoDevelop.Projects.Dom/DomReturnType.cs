@@ -117,6 +117,8 @@ namespace MonoDevelop.Projects.Dom
 		public static readonly IReturnType Object;
 		public static readonly IReturnType Exception;
 		public static readonly IReturnType Int32;
+		public static readonly IReturnType String;
+		public static readonly IReturnType Char;
 		
 		static DomReturnType ()
 		{
@@ -127,6 +129,8 @@ namespace MonoDevelop.Projects.Dom
 			returnTypeCache = new Dictionary<string, IReturnType> ();
 			
 			Void      = GetSharedReturnType ("System.Void");
+			String    = GetSharedReturnType ("System.String");
+			Char      = GetSharedReturnType ("System.Char");
 			Object    = GetSharedReturnType ("System.Object");
 			Exception = GetSharedReturnType ("System.Exception");
 			Int32 = GetSharedReturnType ("System.Int32");
@@ -169,7 +173,7 @@ namespace MonoDevelop.Projects.Dom
 		public string FullName {
 			get {
 				if (Parts.Count == 1)
-					return !String.IsNullOrEmpty (nspace) ? nspace + "." + Name : Name;
+					return !string.IsNullOrEmpty (nspace) ? nspace + "." + Name : Name;
 				else {
 					string fn = nspace;
 					foreach (ReturnTypePart part in Parts) {
@@ -198,7 +202,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		public static KeyValuePair<string, string> SplitFullName (string fullName)
 		{
-			if (String.IsNullOrEmpty (fullName)) 
+			if (string.IsNullOrEmpty (fullName)) 
 				return new KeyValuePair<string, string> ("", "");
 			int idx = fullName.LastIndexOf ('.');
 			if (idx >= 0) 
@@ -468,7 +472,7 @@ namespace MonoDevelop.Projects.Dom
 
 		public static IReturnType GetSharedReturnType (string invariantString)
 		{
-			if (String.IsNullOrEmpty (invariantString))
+			if (string.IsNullOrEmpty (invariantString))
 				return null;
 			lock (returnTypeCache) {
 				IReturnType type;

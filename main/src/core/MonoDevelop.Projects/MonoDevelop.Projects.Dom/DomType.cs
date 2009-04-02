@@ -719,7 +719,8 @@ namespace MonoDevelop.Projects.Dom
 		{
 			if (dom == null || returnType == null)
 				return null;
-			
+			if (returnType.FullName == DomReturnType.String.FullName)
+				return DomReturnType.Char;
 			if (returnType.ArrayDimensions > 0)
 				return new DomReturnType (returnType.FullName);
 			
