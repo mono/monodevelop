@@ -204,6 +204,7 @@ namespace MonoDevelop.Projects.Dom
 					DomReturnType newType = new DomReturnType (type.FullName);
 					newType.ArrayDimensions     = Math.Max (0, type.ArrayDimensions - parameterType.ArrayDimensions);
 					newType.PointerNestingLevel = Math.Max (0, type.PointerNestingLevel - parameterType.PointerNestingLevel);
+					newType.Type  = type.Type; // May be anonymous type
 					for (int i = 0; i < newType.ArrayDimensions; i++)
 							newType.SetDimension (i, parameterType.GetDimension (i));
 					typeTable[name] = newType;
@@ -219,6 +220,7 @@ namespace MonoDevelop.Projects.Dom
 						DomReturnType drr = new DomReturnType (res.FullName);
 						drr.PointerNestingLevel = type.PointerNestingLevel;
 						drr.ArrayDimensions = type.ArrayDimensions;
+						drr.Type  = type.Type; // May be anonymous type
 						for (int i = 0; i < type.ArrayDimensions; i++)
 							drr.SetDimension (i, type.GetDimension (i));
 						return drr;
