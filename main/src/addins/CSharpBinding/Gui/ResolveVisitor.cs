@@ -477,12 +477,12 @@ namespace MonoDevelop.CSharpBinding
 				if (type != null) {
 					List<IMember> member = new List <IMember> ();
 					List<IType> accessibleExtTypes = DomType.GetAccessibleExtensionTypes (resolver.Dom, resolver.Unit);
+					// Inheritance of extension methods is handled in DomType
+					foreach (IMethod method in type.GetExtensionMethods (accessibleExtTypes)) {
+						if (method.Name == memberReferenceExpression.MemberName) 
+							member.Add (method);
+					}
 					foreach (IType curType in resolver.Dom.GetInheritanceTree (type)) {
-						foreach (IMethod method in curType.GetExtensionMethods (accessibleExtTypes)) {
-							if (method.Name == memberReferenceExpression.MemberName) {
-								member.Add (method);
-							}
-						}
 						member.AddRange (curType.SearchMember (memberReferenceExpression.MemberName, true));
 					}
 					
