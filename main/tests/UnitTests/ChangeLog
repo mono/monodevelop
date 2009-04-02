@@ -1,5 +1,11 @@
 2009-04-02  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharpBinding/CodeCompletionCSharp3Tests.cs:
+	  Added test for "Bug 491017 - No intellisense for static LINQ
+	  queries".
+
+2009-04-02  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs:
 	* MonoDevelop.CSharpBinding/CodeCompletionCSharp3Tests.cs:
 	  It's all green again :)

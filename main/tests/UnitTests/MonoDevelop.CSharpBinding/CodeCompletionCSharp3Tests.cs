@@ -321,5 +321,26 @@ namespace Foo
 			Assert.IsNotNull (provider, "provider == null");
 			Assert.IsNotNull (provider.Find ("Value"), "field 'Value' not found.");
 		}
+		
+		/// <summary>
+		/// Bug 491017 - No intellisense for static LINQ queries
+		/// </summary>
+		[Test()]
+		public void TestBug491017 ()
+		{
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
+@"
+using System.Linq;
+using System.Linq.Expressions;
+
+class Test
+{
+    $object e = from entity in ""olololcolc"" select entity.$
+}
+");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("ToString"), "method 'ToString' not found.");
+			Assert.IsNull (provider.Find ("Length"), "property 'Length' found, but shouldn't (indicates wrong return type).");
+		}
 	}
 }
