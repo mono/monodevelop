@@ -74,13 +74,16 @@ namespace Mono.TextEditor.Highlighting
 		
 		public const string Node = "Keywords";
 		
-		public static Keywords Read (XmlReader reader)
+		public static Keywords Read (XmlReader reader, bool ignoreCaseDefault)
 		{
 			Keywords result = new Keywords ();
 			
 			result.color      = reader.GetAttribute ("color");
-			if (!String.IsNullOrEmpty (reader.GetAttribute ("ignorecase")))
+			if (!String.IsNullOrEmpty (reader.GetAttribute ("ignorecase"))) {
 				result.ignorecase = Boolean.Parse (reader.GetAttribute ("ignorecase"));
+			} else {
+				result.ignorecase = ignoreCaseDefault;
+			}
 			
 			XmlReadHelper.ReadList (reader, Node, delegate () {
 				switch (reader.LocalName) {

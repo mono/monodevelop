@@ -528,8 +528,10 @@ namespace Mono.TextEditor.Highlighting
 					if (!String.IsNullOrEmpty (extends)) {
 						result = SyntaxModeService.GetSyntaxMode (extends);
 					}
-					result.name     = reader.GetAttribute ("name");
-					result.mimeType = reader.GetAttribute (MimeTypesAttribute);
+					result.name       = reader.GetAttribute ("name");
+					result.mimeType   = reader.GetAttribute (MimeTypesAttribute);
+					if (!String.IsNullOrEmpty (reader.GetAttribute ("ignorecase")))
+						result.ignorecase = Boolean.Parse (reader.GetAttribute ("ignorecase"));
 					return true;
 				case Rule.Node:
 					result.rules.Add (Rule.Read (reader));

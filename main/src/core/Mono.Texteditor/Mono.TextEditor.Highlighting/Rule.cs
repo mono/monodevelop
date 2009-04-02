@@ -37,7 +37,7 @@ namespace Mono.TextEditor.Highlighting
 	{
 		protected string name;
 		protected string defaultColor;
-		
+		protected bool ignorecase = false;
 		protected List<Keywords> keywords = new List<Keywords> ();
 		protected List<Span> spans = new List<Span> ();
 		protected Match[] matches = new Match[0];
@@ -135,7 +135,7 @@ namespace Mono.TextEditor.Highlighting
 				this.spans.Add (Span.Read (reader));
 				return true;
 			case Mono.TextEditor.Highlighting.Keywords.Node:
-				this.keywords.Add (Mono.TextEditor.Highlighting.Keywords.Read (reader));
+				this.keywords.Add (Mono.TextEditor.Highlighting.Keywords.Read (reader, ignorecase));
 				return true;
 			case Marker.PrevMarker:
 				this.prevMarker.Add (Marker.Read (reader));
@@ -227,6 +227,8 @@ namespace Mono.TextEditor.Highlighting
 			Rule result = new Rule ();
 			result.name         = reader.GetAttribute ("name");
 			result.defaultColor = reader.GetAttribute ("color");
+			if (!String.IsNullOrEmpty (reader.GetAttribute ("ignorecase")))
+				result.ignorecase = Boolean.Parse (reader.GetAttribute ("ignorecase"));
 			List<Match> matches = new List<Match> ();
 			XmlReadHelper.ReadList (reader, Node, delegate () {
 				switch (reader.LocalName) {

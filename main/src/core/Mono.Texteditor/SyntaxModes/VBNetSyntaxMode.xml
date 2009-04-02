@@ -23,7 +23,7 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE. -->
  
-<SyntaxMode name = "Visual Basic.NET" mimeTypes="text/x-vb">
+<SyntaxMode name = "Visual Basic.NET" mimeTypes="text/x-vb" ignorecase="True">
 
 	<EolSpan color = "text.preprocessor" rule="text.preprocessor">#</EolSpan>
 	<EolSpan color = "comment" rule="Comment">'</EolSpan>
@@ -39,13 +39,13 @@
 		<End>"</End>
 	</Span>
 	
-	<Keywords color = "keyword.access" ignorecase="True">
+	<Keywords color = "keyword.access">
 		<Word>Me</Word>
 		<Word>MyBase</Word>
 		<Word>MyClass</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.operator" ignorecase="True">
+	<Keywords color = "keyword.operator">
 		<Word>AddressOf</Word>
 		<Word>And</Word>
 		<Word>AndAlso</Word>
@@ -60,7 +60,7 @@
 		<Word>Xor</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.selection" ignorecase="True">
+	<Keywords color = "keyword.selection">
 		<Word>If</Word>
 		<Word>Then</Word>
 		<Word>Else</Word>
@@ -71,7 +71,7 @@
 		<Word>Case</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.iteration" ignorecase="True">
+	<Keywords color = "keyword.iteration">
 		<Word>For</Word>
 		<Word>To</Word>
 		<Word>Step</Word>
@@ -88,7 +88,7 @@
 		<Word>Wend</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.jump" ignorecase="True">
+	<Keywords color = "keyword.jump">
 		<Word>GoTo</Word>
 		<Word>GoSub</Word>
 		<Word>Call</Word>
@@ -97,7 +97,7 @@
 		<Word>Return</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.context" ignorecase="True">
+	<Keywords color = "keyword.context">
 		<Word>Resume</Word>
 		<Word>AddHandler</Word>
 		<Word>RemoveHandler</Word>
@@ -108,7 +108,7 @@
 		<Word>Erase</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.exceptions" ignorecase="True">
+	<Keywords color = "keyword.exceptions">
 		<Word>Try</Word>
 		<Word>Catch</Word>
 		<Word>When</Word>
@@ -122,13 +122,13 @@
 		<Word>Exit</Word>
 	</Keywords>
 	
-	<Keywords color = "constant.language" ignorecase="True">
+	<Keywords color = "constant.language">
 		<Word>False</Word>
 		<Word>Nothing</Word>
 		<Word>True</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.modifier" ignorecase="True">
+	<Keywords color = "keyword.modifier">
 		<Word>Friend</Word>
 		<Word>Private</Word>
 		<Word>Protected</Word>
@@ -157,7 +157,7 @@
 				
 	</Keywords>
 	
-	<Keywords color = "keyword.type" ignorecase="True">
+	<Keywords color = "keyword.type">
 		<Word>Boolean</Word>
 		<Word>Byte</Word>
 		<Word>Char</Word>
@@ -178,12 +178,12 @@
 	</Keywords>
 	
 	
-	<Keywords color = "keyword.namespace" ignorecase="True">
+	<Keywords color = "keyword.namespace">
 		<Word>Namespace</Word>
 		<Word>Imports</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.property" ignorecase="True">		<Word>Sub</Word>
+	<Keywords color = "keyword.property">		<Word>Sub</Word>
 		<Word>Function</Word>
 		<Word>Handles</Word>
 		<Word>Declare</Word>
@@ -196,7 +196,7 @@
 		<Word>Event</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.declaration" ignorecase="True">
+	<Keywords color = "keyword.declaration">
 		<Word>Class</Word>
 		<Word>Implements</Word>
 		<Word>Inherits</Word>
@@ -207,7 +207,7 @@
 		<Word>Enum</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.parameter" ignorecase="True">
+	<Keywords color = "keyword.parameter">
 		<Word>ByRef</Word>
 		<Word>ByVal</Word>
 		<Word>Optional</Word>
@@ -215,7 +215,7 @@
 	</Keywords>
 	
 	
-	<Keywords color = "keyword.operator.declaration" ignorecase="True">
+	<Keywords color = "keyword.operator.declaration">
 		<Word>Ansi</Word>
 		<Word>Auto</Word>
 		<Word>Unicode</Word>
@@ -223,7 +223,7 @@
 		<Word>Until</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.misc" ignorecase="True">
+	<Keywords color = "keyword.misc">
 		<Word>As</Word>
 		<Word>Of</Word>
 		<Word>New</Word>
@@ -253,7 +253,7 @@
 	</Keywords>
 
 	<Rule name = "text.preprocessor">
-		<Keywords color="text.preprocessor.keyword" ignorecase="True">
+		<Keywords color="text.preprocessor.keyword">
 			<Word>const</Word>
 			<Word>if</Word>
 			<Word>else</Word>
@@ -266,7 +266,7 @@
 	</Rule>
 	
 	<Rule name = "Comment">
-		<Keywords color="comment.keyword.todo" ignorecase="True">
+		<Keywords color="comment.keyword.todo">
 			<Word>TODO</Word>
 			<Word>FIXME</Word>
 			<Word>HACK</Word>
