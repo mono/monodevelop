@@ -165,20 +165,22 @@ namespace MonoDevelop.CSharpBinding
 			//System.Console.WriteLine("CallingMember: " + callingMember);
 			if (callingMember != null && !setupLookupTableVisitor ) {
 				string wrapper = CreateWrapperClassForMember (callingMember);
-				ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (lang, new StringReader (wrapper));
-				parser.Parse ();
-				memberCompilationUnit = parser.CompilationUnit;
-				lookupTableVisitor.VisitCompilationUnit (parser.CompilationUnit, null);
-				lookupVariableLine = CallingMember.Location.Line - 2;
-				setupLookupTableVisitor = true;
+				using (ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (lang, new StringReader (wrapper))) {
+					parser.Parse ();
+					memberCompilationUnit = parser.CompilationUnit;
+					lookupTableVisitor.VisitCompilationUnit (parser.CompilationUnit, null);
+					lookupVariableLine = CallingMember.Location.Line - 2;
+					setupLookupTableVisitor = true;
+				}
 			} else {
 				string wrapper = editor.Text;
-				ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (lang, new StringReader (wrapper));
-				parser.Parse ();
-				memberCompilationUnit = parser.CompilationUnit;
-				lookupTableVisitor.VisitCompilationUnit (parser.CompilationUnit, null);
-				lookupVariableLine = 0;
-				setupLookupTableVisitor = true;
+				using (ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (lang, new StringReader (wrapper))) {
+					parser.Parse ();
+					memberCompilationUnit = parser.CompilationUnit;
+					lookupTableVisitor.VisitCompilationUnit (parser.CompilationUnit, null);
+					lookupVariableLine = 0;
+					setupLookupTableVisitor = true;
+				}
 			}
 		}
 		bool setupLookupTableVisitor = false;
@@ -336,19 +338,33 @@ namespace MonoDevelop.CSharpBinding
 			if (expressionResult == null || String.IsNullOrEmpty (expressionResult.Expression))
 				return null;
 			string expr = expressionResult.Expression.Trim ();
-			ICSharpCode.NRefactory.IParser parser
-				= ICSharpCode.NRefactory.ParserFactory.CreateParser (this.lang, new StringReader (expr));
-			return parser.ParseExpression();
+			if (!expr.EndsWith (";"))
+				expr += ";";
+			using (ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (this.lang, new StringReader (expr))) {
+				Expression result = parser.ParseExpression();
+				if (result is BinaryOperatorExpression) {
+					TypeReference typeRef = ParseTypeReference (expressionResult);
+					if (typeRef != null) {
+						return new TypeReferenceExpression (typeRef);
+					}
+				}
+				return result;
+			}
 		}
+		
 		static TypeReference ParseTypeReference (ExpressionResult expressionResult)
 		{
 			if (expressionResult == null || String.IsNullOrEmpty (expressionResult.Expression))
 				return null;
 			string expr = expressionResult.Expression.Trim ();
-			ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (SupportedLanguage.CSharp, new StringReader (expr));
-			return parser.ParseTypeReference ();
+			using (ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (SupportedLanguage.CSharp, new StringReader ("typeof(" + expr + ");"))) {
+				TypeOfExpression typeOfExpression = parser.ParseExpression () as TypeOfExpression;
+				if (typeOfExpression != null)
+					return typeOfExpression.TypeReference;
+			}
+			return null;
 		}
-
+		
 		public static IReturnType ParseReturnType (ExpressionResult expressionResult)
 		{
 			TypeReference typeReference = ParseTypeReference (expressionResult);
@@ -392,7 +408,7 @@ namespace MonoDevelop.CSharpBinding
 			this.SetupResolver (resolvePosition);
 			ResolveVisitor visitor = new ResolveVisitor (this);
 			ResolveResult result;
-//			System.Console.WriteLine("expressionResult:" + expressionResult);
+			System.Console.WriteLine("expressionResult:" + expressionResult);
 			
 			if (expressionResult.ExpressionContext == ExpressionContext.AttributeArguments) {
 				string attributeName = MonoDevelop.CSharpBinding.Gui.NewCSharpExpressionFinder.FindAttributeName (editor, unit, unit.FileName);
@@ -409,9 +425,9 @@ namespace MonoDevelop.CSharpBinding
 					}
 				}
 			}
-			
+			TypeReference typeRef;
 			if (expressionResult != null && expressionResult.ExpressionContext != null && expressionResult.ExpressionContext.IsObjectCreation) {
-				TypeReference typeRef = ParseTypeReference (expressionResult);
+				typeRef = ParseTypeReference (expressionResult);
 				if (typeRef != null) {
 					if (dom.NamespaceExists (typeRef.Type)) {
 //						System.Console.WriteLine("namespace resolve result");
@@ -425,7 +441,8 @@ namespace MonoDevelop.CSharpBinding
 				}
 			}
 			expr = ParseExpression (expressionResult);
-			//System.Console.WriteLine("parsed expression:" + expr);
+			
+			System.Console.WriteLine("parsed expression:" + expr);
 			if (expr == null) {
 //				System.Console.WriteLine("Can't parse expression");
 				return null;
@@ -434,7 +451,7 @@ namespace MonoDevelop.CSharpBinding
 			result = visitor.Resolve (expr);
 //			if (CallingMember == null && result != null)
 //				result.StaticResolve = true;
-			//System.Console.WriteLine("result:" + result);
+//			System.Console.WriteLine("result:" + result + "STATIC" + result.StaticResolve);
 			result.ResolvedExpression = expressionResult.Expression;
 			return result;
 		}

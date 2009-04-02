@@ -101,6 +101,13 @@ namespace MonoDevelop.CSharpBinding
 		
 		public override object VisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
 		{
+			if (identifierExpression.TypeArguments != null && identifierExpression.TypeArguments.Count > 0) {
+				TypeReference reference = new TypeReference (identifierExpression.Identifier);
+				reference.GenericTypes.AddRange (identifierExpression.TypeArguments);
+				ResolveResult result = CreateResult (reference);
+				result.StaticResolve = true;
+				return result;
+			}
 //			Console.WriteLine ("visit id: " + identifierExpression.Identifier);
 			var res = resolver.ResolveIdentifier (this, identifierExpression.Identifier.TrimEnd ('.'));
 //			Console.WriteLine ("result: " + res.ResolvedType);
@@ -463,7 +470,13 @@ namespace MonoDevelop.CSharpBinding
 				string fullName = namespaceResult.Namespace + "." + memberReferenceExpression.MemberName;
 				if (resolver.Dom.NamespaceExists (fullName, true))
 					return new NamespaceResolveResult (fullName);
-				IType type = resolver.Dom.GetType (fullName);
+				DomReturnType searchType = new DomReturnType (fullName);
+				if (memberReferenceExpression.TypeArguments != null) {
+					foreach (TypeReference typeRef in memberReferenceExpression.TypeArguments) {
+						searchType.AddTypeParameter (NRefactoryResolver.ConvertTypeReference (typeRef));
+					}
+				}
+				IType type = resolver.Dom.GetType (searchType);
 				if (type != null) {
 					result = CreateResult (this.resolver.Unit, new DomReturnType (type));
 					result.StaticResolve = true;

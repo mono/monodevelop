@@ -1,6 +1,12 @@
 2009-04-02  Mike Krüger  <mkrueger@novell.com>
 
 	* Gui/ResolveVisitor.cs:
+	* Gui/NRefactoryResolver.cs: Fixed "Bug 491020 - Wrong typeof
+	  intellisense".
+
+2009-04-02  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/ResolveVisitor.cs:
 	* Gui/NRefactoryResolver.cs: Fixed "Bug 491017 - No
 	  intellisense for static LINQ queries".
 
