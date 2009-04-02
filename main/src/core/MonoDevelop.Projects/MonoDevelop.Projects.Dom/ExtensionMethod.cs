@@ -133,7 +133,16 @@ namespace MonoDevelop.Projects.Dom
 		{
 			this.DeclaringType = extenisonType;
 			List<IReturnType> args = new List<IReturnType> ();
-			if (extenisonType is InstantiatedType) {
+			if (extenisonType.FullName.EndsWith ("[]")) {
+				foreach (IReturnType returnType in extenisonType.BaseTypes) {
+					if (returnType.FullName == "System.Collections.Generic.IList" && returnType.GenericArguments.Count > 0) {
+						args.Add (returnType.GenericArguments[0]);
+						break;
+					}
+				}
+				if (args.Count == 0)
+					args.Add (new DomReturnType (extenisonType));
+			} else if (extenisonType is InstantiatedType) {
 				InstantiatedType instType = (InstantiatedType)extenisonType;
 				DomReturnType uninstantiatedReturnType = new DomReturnType (instType.UninstantiatedType.FullName);
 				foreach (IReturnType genArg in instType.GenericParameters) {

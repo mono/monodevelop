@@ -1,3 +1,11 @@
+2009-04-02  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom/DomType.cs:
+	* MonoDevelop.Projects.Dom/DomMethod.cs:
+	* MonoDevelop.Projects.Dom/ExtensionMethod.cs:
+	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: Fixed failing
+	  unit test.
+
 2009-04-01  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/IMethod.cs:

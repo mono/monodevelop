@@ -184,10 +184,10 @@ namespace MonoDevelop.Projects.Dom
 					}
 				}
 			}
-		//	System.Console.WriteLine("before:" + result);
+			//System.Console.WriteLine("before:" + result);
 			result = (IMethod)result.AcceptVisitor (resolver, result);
 			((DomMethod)result).DeclaringType = method.DeclaringType;
-		//	System.Console.WriteLine("after:" + result);
+			//System.Console.WriteLine("after:" + result);
 			return result;
 		}
 		
@@ -200,11 +200,10 @@ namespace MonoDevelop.Projects.Dom
 				if (type == null || string.IsNullOrEmpty (type.FullName))
 					return;
 				string name = parameterType.Name;
-			//	System.Console.WriteLine (name + "-->" + type);
 				if (!typeTable.ContainsKey (name)) {
 					DomReturnType newType = new DomReturnType (type.FullName);
-					newType.ArrayDimensions     = Math.Max (0, parameterType.ArrayDimensions - type.ArrayDimensions);
-					newType.PointerNestingLevel = Math.Max (0, parameterType.PointerNestingLevel - type.PointerNestingLevel);
+					newType.ArrayDimensions     = Math.Max (0, type.ArrayDimensions - parameterType.ArrayDimensions);
+					newType.PointerNestingLevel = Math.Max (0, type.PointerNestingLevel - parameterType.PointerNestingLevel);
 					for (int i = 0; i < newType.ArrayDimensions; i++)
 							newType.SetDimension (i, parameterType.GetDimension (i));
 					typeTable[name] = newType;
@@ -216,18 +215,15 @@ namespace MonoDevelop.Projects.Dom
 				DomReturnType copyFrom = (DomReturnType) type;
 				IReturnType res;
 				if (typeTable.TryGetValue (copyFrom.DecoratedFullName, out res)) {
-//					if (type.ArrayDimensions == 0 && type.GenericArguments.Count == 0) {
-					if (type.ArrayDimensions != 0) {
+					if (type.ArrayDimensions > 0) {
 						DomReturnType drr = new DomReturnType (res.FullName);
 						drr.PointerNestingLevel = type.PointerNestingLevel;
 						drr.ArrayDimensions = type.ArrayDimensions;
 						for (int i = 0; i < type.ArrayDimensions; i++)
 							drr.SetDimension (i, type.GetDimension (i));
 						return drr;
-//						return new DomReturnType (typeToInstantiate.DeclaringType.SourceProjectDom.GetArrayType (res));
 					}
 					return res;
-//					}
 				}
 				return base.Visit (type, typeToInstantiate);
 			}
@@ -242,24 +238,36 @@ namespace MonoDevelop.Projects.Dom
 		static Dictionary<string, IMethod> extensionTable = new Dictionary<string, IMethod> ();
 		
 		public IMethod Extends (ProjectDom dom, IType type)
-		{
-			if (dom == null || type == null || Parameters.Count == 0 || !IsExtension)
+		{ 
+			if (dom == null || type == null || Parameters.Count == 0 || !IsExtension) {
 				return null;
+			}
 			string extensionTableKey = Parameters[0].ReturnType.ToInvariantString () + "/" + type.FullName;
-			
 			lock (extensionTable) {
 				if (extensionTable.ContainsKey (extensionTableKey))
 					return extensionTable[extensionTableKey];
+				if (type.BaseType != null && type.BaseType.FullName == "System.Array" && Parameters[0].ReturnType.ArrayDimensions > 0) {
+					Console.WriteLine ("ARRAY");
+					IReturnType elementType = null;
+					foreach (IReturnType returnType in type.BaseTypes) {
+						if (returnType.FullName == "System.Collections.Generic.IList" && returnType.GenericArguments.Count > 0) {
+							elementType = returnType.GenericArguments[0];
+							break;
+						}
+					}
+					Console.WriteLine ("EL:" + elementType);
+					if (elementType != null) {
+						IMethod instMethod = DomMethod.CreateInstantiatedGenericMethod (this, new IReturnType[]{}, new IReturnType[] { elementType });DomMethod.CreateInstantiatedGenericMethod (this, new IReturnType[]{}, new IReturnType[] { elementType });
+						Console.WriteLine ("int method: " + instMethod);
+						extensionTable.Add (extensionTableKey, instMethod);
+						return instMethod;
+					}
+				}
 				
 				foreach (IType baseType in dom.GetInheritanceTree (type)) {
 					IMethod instMethod = DomMethod.CreateInstantiatedGenericMethod (this, new IReturnType[]{}, new IReturnType[] { new DomReturnType (baseType) });
 					string baseTypeFullName = baseType is InstantiatedType ? ((InstantiatedType)baseType).UninstantiatedType.FullName : baseType.FullName;
 					
-					if (baseTypeFullName == "System.Array" && instMethod.Parameters[0].ReturnType.ArrayDimensions > 0) {
-						//ExtensionMethod result = new ExtensionMethod (type, instMethod, null, null);
-						extensionTable.Add (extensionTableKey, instMethod);
-						return instMethod;
-					}
 					if (instMethod.Parameters[0].ReturnType.FullName == baseTypeFullName) {
 						//ExtensionMethod result = new ExtensionMethod (baseType, this, null, null);
 						extensionTable.Add (extensionTableKey, instMethod);

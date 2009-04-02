@@ -137,9 +137,9 @@ namespace MonoDevelop.Projects.Dom.Parser
 					continue;
 				
 				string fullName = DomType.GetNetFullName (cur);
-				if (!alreadyTaken.Add (fullName))
+				if (!alreadyTaken.Add (fullName)) {
 					continue;
-				
+				}
 				yield return cur;
 				
 				foreach (IReturnType baseType in cur.BaseTypes) {
@@ -443,9 +443,11 @@ namespace MonoDevelop.Projects.Dom.Parser
 		{
 			// Create a fake class which sublcasses System.Array and implements IList<T>
 			DomType t = new DomType (ambience.GetString (elementType, MonoDevelop.Projects.Dom.Output.OutputFlags.UseFullName) + "[]");
+			t.Resolved = true;
 			t.BaseType = new DomReturnType ("System.Array");
 			t.ClassType = ClassType.Class;
 			t.Modifiers = Modifiers.Public;
+			t.SourceProjectDom = this;
 			DomProperty indexer = new DomProperty ();
 			indexer.Name = "Item";
 			indexer.Modifiers = Modifiers.Public;
@@ -454,6 +456,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			indexer.ReturnType = elementType;
 			t.Add (indexer);
 			DomReturnType listType = new DomReturnType ("System.Collections.Generic.IList", false, new IReturnType [] { elementType });
+			
 			t.AddInterfaceImplementation (listType);
 			return t;
 		}
@@ -462,8 +465,16 @@ namespace MonoDevelop.Projects.Dom.Parser
 		{
 			if (returnType == null)
 				return null;
-			if (returnType.ArrayDimensions > 0) 
-				return GetArrayType (returnType);
+			if (returnType.ArrayDimensions > 0) {
+				DomReturnType newType = new DomReturnType (returnType.FullName);
+				newType.ArrayDimensions = returnType.ArrayDimensions - 1;
+				for (int i = 0; i < newType.ArrayDimensions; i++) {
+					newType.SetDimension (i, returnType.ArrayDimensions - 1);
+				}
+				newType.PointerNestingLevel = returnType.PointerNestingLevel;
+				return GetArrayType (newType);
+			}
+			
 			if (returnType.Type != null)  {
 				if (returnType.GenericArguments == null || returnType.GenericArguments.Count == 0)
 					return returnType.Type;
