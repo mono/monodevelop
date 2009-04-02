@@ -523,6 +523,8 @@ namespace MonoDevelop.CSharpBinding
 						}
 						return result;
 					}
+				} else {
+					MonoDevelop.Core.LoggingService.LogWarning ("Couldn't resolve type " + result.ResolvedType);
 				}
 			}
 			

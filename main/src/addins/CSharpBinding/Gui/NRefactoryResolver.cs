@@ -171,6 +171,14 @@ namespace MonoDevelop.CSharpBinding
 				lookupTableVisitor.VisitCompilationUnit (parser.CompilationUnit, null);
 				lookupVariableLine = CallingMember.Location.Line - 2;
 				setupLookupTableVisitor = true;
+			} else {
+				string wrapper = editor.Text;
+				ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (lang, new StringReader (wrapper));
+				parser.Parse ();
+				memberCompilationUnit = parser.CompilationUnit;
+				lookupTableVisitor.VisitCompilationUnit (parser.CompilationUnit, null);
+				lookupVariableLine = 0;
+				setupLookupTableVisitor = true;
 			}
 		}
 		bool setupLookupTableVisitor = false;
@@ -374,10 +382,12 @@ namespace MonoDevelop.CSharpBinding
 		}
 	
 		public DomLocation ResolvePosition {
-				get {
-					return resolvePosition;
-				}
-			}	public ResolveResult Resolve (ExpressionResult expressionResult, DomLocation resolvePosition)
+			get {
+				return resolvePosition;
+			}
+		}
+		
+		public ResolveResult Resolve (ExpressionResult expressionResult, DomLocation resolvePosition)
 		{
 			this.SetupResolver (resolvePosition);
 			ResolveVisitor visitor = new ResolveVisitor (this);
@@ -415,16 +425,16 @@ namespace MonoDevelop.CSharpBinding
 				}
 			}
 			expr = ParseExpression (expressionResult);
-//			System.Console.WriteLine("parsed expression:" + expr);
+			//System.Console.WriteLine("parsed expression:" + expr);
 			if (expr == null) {
 //				System.Console.WriteLine("Can't parse expression");
 				return null;
 			}
 			
 			result = visitor.Resolve (expr);
-			if (CallingMember == null && result != null)
-				result.StaticResolve = true;
-//			System.Console.WriteLine("result:" + result);
+//			if (CallingMember == null && result != null)
+//				result.StaticResolve = true;
+			//System.Console.WriteLine("result:" + result);
 			result.ResolvedExpression = expressionResult.Expression;
 			return result;
 		}
@@ -528,9 +538,9 @@ namespace MonoDevelop.CSharpBinding
 
 		public ResolveResult ResolveLambda (ResolveVisitor visitor, Expression lambdaExpression)
 		{
-//			Console.WriteLine ("oOoOoOoOoO");
-//			Console.WriteLine ("lambda expr:" + lambdaExpression);
-//			Console.WriteLine ("Parent:" + lambdaExpression.Parent);
+			//Console.WriteLine ("oOoOoOoOoO");
+			//Console.WriteLine ("lambda expr:" + lambdaExpression);
+			//Console.WriteLine ("Parent:" + lambdaExpression.Parent);
 			if (lambdaExpression.Parent is LambdaExpression) 
 				return ResolveLambda (visitor, lambdaExpression.Parent as Expression);
 			if (lambdaExpression.Parent is ParenthesizedExpression) 
@@ -547,7 +557,7 @@ namespace MonoDevelop.CSharpBinding
 				InvocationExpression invocation = (InvocationExpression)lambdaExpression.Parent;
 				MethodResolveResult result = visitor.Resolve (invocation.TargetObject) as MethodResolveResult;
 				if (result == null) {
-//					Console.WriteLine ("No compatible method found.");
+					MonoDevelop.Core.LoggingService.LogWarning ("No compatible method found :" + invocation.TargetObject);
 					return null;
 				} 
 				result.ResolveExtensionMethods ();
@@ -561,7 +571,7 @@ namespace MonoDevelop.CSharpBinding
 				}
 				
 				LambdaExpression lambda = (LambdaExpression)lambdaExpression;
-//				Console.WriteLine ("lambda:" + lambda);
+				//Console.WriteLine ("lambda:" + lambda);
 				if (!lambda.ExpressionBody.IsNull) {
 					DomLocation old = resolvePosition;
 					try {
@@ -582,11 +592,11 @@ namespace MonoDevelop.CSharpBinding
 				}
 				
 				result.ResolveExtensionMethods ();
-//				Console.WriteLine ("maybe method:" + result.MostLikelyMethod);
+				//Console.WriteLine ("maybe method:" + result.MostLikelyMethod);
 				for (int i = 0; i < invocation.Arguments.Count; i++) {
 					if (invocation.Arguments [i] == lambdaExpression && i < result.MostLikelyMethod.Parameters.Count) {
 						IParameter parameterType = result.MostLikelyMethod.Parameters [i];
-//						Console.WriteLine (i + " par: " + parameterType);
+						//Console.WriteLine (i + " par: " + parameterType);
 						if (parameterType.ReturnType.Name == "Func" && parameterType.ReturnType.GenericArguments.Count > 0) {
 							return visitor.CreateResult (parameterType.ReturnType.GenericArguments[0]);
 						}
@@ -619,6 +629,8 @@ namespace MonoDevelop.CSharpBinding
 		{
 			if (returnType == null)
 				return null;
+			if (returnType.FullName == DomReturnType.String.FullName)
+				return DomReturnType.Char;
 			IType type = dom.SearchType (new SearchTypeRequest (Unit, returnType, CallingType));
 			//System.Console.WriteLine("!!!! " + type);
 			if (type != null) {
@@ -687,9 +699,11 @@ namespace MonoDevelop.CSharpBinding
 							}
 							if (var.Initializer != null) {
 								ResolveResult initializerResolve = visitor.Resolve (var.Initializer);
-								//Console.WriteLine ("resolved type:" + initializerResolve.ResolvedType);
 								varType           = var.IsLoopVariable ? GetEnumerationMember (initializerResolve.ResolvedType)   : initializerResolve.ResolvedType;
 								varTypeUnresolved = var.IsLoopVariable ? GetEnumerationMember (initializerResolve.UnresolvedType) : initializerResolve.UnresolvedType;
+								Console.WriteLine ("resolved type:" + initializerResolve.ResolvedType + " is loop : " + var.IsLoopVariable);
+								Console.WriteLine (varType);
+								Console.WriteLine ("----------");
 							}
 						} else { 
 							varTypeUnresolved = varType = ConvertTypeReference (var.TypeRef);

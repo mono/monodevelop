@@ -1,5 +1,11 @@
 2009-04-02  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/ResolveVisitor.cs:
+	* Gui/NRefactoryResolver.cs: Fixed "Bug 491017 - No
+	  intellisense for static LINQ queries".
+
+2009-04-02  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/ResolveVisitor.cs: Fixed failing unit test.
 
 2009-04-01  Mike Krüger  <mkrueger@novell.com>
