@@ -6,7 +6,7 @@
        url         = "http://monodevelop.com/"
        description = "Support for ASP.NET MVC projects."
        category    = "Web Development"
-       version     = "2.0">
+       version     = "2.0.1">
 	
 	<Runtime>
 		<Import file = "Templates/Controller.xft.xml"/>

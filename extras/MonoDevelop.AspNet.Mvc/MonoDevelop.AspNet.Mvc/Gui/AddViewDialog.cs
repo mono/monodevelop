@@ -112,7 +112,8 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 		
 		protected virtual void UpdateTypePanelSensitivity (object sender, EventArgs e)
 		{
-			bool enabled = typePanel.Sensitive = stronglyTypedCheck.Active;
+			//FIXME: need to fix the class list widget
+			bool enabled = typePanel.Sensitive = false; // stronglyTypedCheck.Active;
 			
 			if (enabled && classDataProvider == null) {
 				dataClassCombo.DataProvider = classDataProvider = new TypeDataProvider (project);
