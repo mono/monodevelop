@@ -1,3 +1,12 @@
+2009-04-02  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* System.Web.Mvc.dll:
+	* MonoDevelop.AspNet.Mvc.csproj:
+	* MonoDevelop.AspNet.Mvc.addin.xml: Bump to 2.0. Fix refs. Add
+	  a local copy of the GMCS-built, MS-PL System.Web.Mvc dll.
+
+	* gtk-gui/gui.stetic: Updated.
+
 2009-03-13  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* gtk-gui/gui.stetic: Track build directory change.

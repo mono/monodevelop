@@ -44,25 +44,32 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="MonoDevelop.AspNet, Version=1.9.2.0, Culture=neutral">
+      <SpecificVersion>False</SpecificVersion>
       <Package>monodevelop-core-addins</Package>
     </Reference>
     <Reference Include="MonoDevelop.Core, Version=1.9.2.0, Culture=neutral">
+      <SpecificVersion>False</SpecificVersion>
       <Package>monodevelop</Package>
     </Reference>
     <Reference Include="MonoDevelop.XmlEditor, Version=1.9.2.0, Culture=neutral">
+      <SpecificVersion>False</SpecificVersion>
       <Package>monodevelop-core-addins</Package>
     </Reference>
     <Reference Include="MonoDevelop.Projects.Gui, Version=1.9.2.0, Culture=neutral">
+      <SpecificVersion>False</SpecificVersion>
       <Package>monodevelop</Package>
     </Reference>
     <Reference Include="MonoDevelop.Projects, Version=1.9.2.0, Culture=neutral">
+      <SpecificVersion>False</SpecificVersion>
       <Package>monodevelop</Package>
     </Reference>
     <Reference Include="MonoDevelop.Ide, Version=1.9.2.0, Culture=neutral">
+      <SpecificVersion>False</SpecificVersion>
       <Package>monodevelop</Package>
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="MonoDevelop.Components, Version=1.9.2.0, Culture=neutral">
+      <SpecificVersion>False</SpecificVersion>
       <Package>monodevelop</Package>
     </Reference>
     <Reference Include="System.Core">
@@ -73,12 +80,12 @@
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="MonoDevelop.Core.Gui, Version=1.9.2.0, Culture=neutral">
+      <SpecificVersion>False</SpecificVersion>
       <Package>monodevelop</Package>
     </Reference>
     <Reference Include="MonoDevelop.SourceEditor2, Version=1.9.2.0, Culture=neutral, PublicKeyToken=null">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\main\build\AddIns\MonoDevelop.SourceEditor2.dll</HintPath>
-      <Private>False</Private>
+      <Package>monodevelop-core-addins</Package>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -129,12 +136,16 @@
     <None Include="CodeTemplates\AddView\Empty.tt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="System.Web.Mvc.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <ProjectReference Include="..\Mono.TextTemplating\Mono.TextTemplating.csproj">
       <Project>{A2364D6A-00EF-417C-80A6-815726C70032}</Project>
       <Name>Mono.TextTemplating</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\MonoDevelop.TextTemplating\MonoDevelop.TextTemplating.csproj">
       <Project>{8CCA39DD-8412-4547-BE7F-0C3D3ACC6FAC}</Project>

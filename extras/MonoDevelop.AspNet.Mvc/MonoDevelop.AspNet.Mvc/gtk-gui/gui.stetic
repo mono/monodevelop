@@ -5,13 +5,13 @@
     <target-gtk-version>2.12</target-gtk-version>
   </configuration>
   <import>
-    <widget-library name="MonoDevelop.AspNet, Version=1.9.2.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.XmlEditor, Version=1.9.2.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Projects.Gui, Version=1.9.2.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Ide, Version=1.9.2.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Components, Version=1.9.2.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Core.Gui, Version=1.9.2.0, Culture=neutral" />
-    <widget-library name="../../../../main/build/AddIns/MonoDevelop.SourceEditor2.dll" />
+    <widget-library name="MonoDevelop.AspNet, Version=2.0.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.XmlEditor, Version=2.0.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Projects.Gui, Version=2.0.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Ide, Version=2.0.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Components, Version=2.0.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Core.Gui, Version=2.0.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.SourceEditor2, Version=2.0.0.0, Culture=neutral" />
     <widget-library name="../../build/MonoDevelop.TextTemplating.dll" />
     <widget-library name="../../build/MonoDevelop.AspNet.Mvc.dll" internal="true" />
   </import>

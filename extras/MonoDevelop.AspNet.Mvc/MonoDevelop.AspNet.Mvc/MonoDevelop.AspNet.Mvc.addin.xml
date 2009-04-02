@@ -3,13 +3,12 @@
        name        = "ASP.NET MVC Support"
        author      = "Michael Hutchinson"
        copyright   = "MIT X11"
-       url         = "http://www.monodevelop.com/"
+       url         = "http://monodevelop.com/"
        description = "Support for ASP.NET MVC projects."
        category    = "Web Development"
-       version     = "1.9.2">
+       version     = "2.0">
 	
 	<Runtime>
-		<Import assembly = "Mono.TextTemplating.dll" />
 		<Import file = "Templates/Controller.xft.xml"/>
 		<Import file = "Templates/ViewPage.xft.xml"/>
 		<Import file = "Templates/ViewContentPage.xft.xml"/>
@@ -21,18 +20,19 @@
 		<Import file = "Templates/WebConfigApp.xft.xml"/>
 		<Import file = "Templates/WebConfigViews.xft.xml"/>
 		<Import file = "CodeTemplates/AddView/Empty.tt" />
+		<Import assembly = "System.Web.Mvc.dll" />
 	</Runtime>
 	
 	<Dependencies>
-		<Addin id="Core" version="1.9.2"/>
-		<Addin id="Core.Gui" version="1.9.2"/>
-		<Addin id="Projects" version="1.9.2"/>
-		<Addin id="Projects.Gui" version="1.9.2"/>
-		<Addin id="Ide" version="1.9.2"/>
-		<Addin id="XmlEditor" version="1.9.2" />
-		<Addin id="AspNet" version="1.9.2" />
-		<Addin id="SourceEditor2" version="1.9.2" />
-		<Addin id="TextTemplating" version="1.9.2" />
+		<Addin id="Core" version="2.0"/>
+		<Addin id="Core.Gui" version="2.0"/>
+		<Addin id="Projects" version="2.0"/>
+		<Addin id="Projects.Gui" version="2.0"/>
+		<Addin id="Ide" version="2.0"/>
+		<Addin id="XmlEditor" version="2.0" />
+		<Addin id="AspNet" version="2.0" />
+		<Addin id="SourceEditor2" version="2.0" />
+		<Addin id="TextTemplating" version="2.0" />
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
@@ -96,5 +96,12 @@
 	
 	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
 		<NodeBuilder id="AspMvcFolderNodeBuilderExtension" class = "MonoDevelop.AspNet.Mvc.Gui.FolderNodeBuilderExtension"/>
+	</Extension>
+	
+	<Extension path="/MonoDevelop/Core/SupportPackages">
+		<!--<Condition id="PackageNotInstalled" name="mono-aspnetmvc" version="2.4">-->
+		<Package name="aspnet-mvc" version="1.0" targetFramework="3.5">
+			<Assembly file="System.Web.Mvc.dll" />
+		</Package>
 	</Extension>
 </Addin>
