@@ -63,8 +63,10 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			
 			ContentPlaceHolders = new List<string> ();
 			string siteMaster = project.VirtualToLocalPath ("~/Views/Shared/Site.master", null);
-			if (project.Files.GetFile (siteMaster) != null)
+			if (project.Files.GetFile (siteMaster) != null) {
 				masterEntry.Text = "~/Views/Shared/Site.master";
+				MasterChanged (null, null);
+			}
 			
 			loadedTemplateList = project.GetCodeTemplates ("AddView");
 			bool foundEmptyTemplate = false;

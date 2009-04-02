@@ -2,6 +2,13 @@
 
 	* MonoDevelop.AspNet.Mvc.addin.xml: Bump version.
 
+	* Gui/AddViewDialog.cs: When auto-selecting site master,
+	  refresh the placeholders list.
+
+2009-04-02  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AspNet.Mvc.addin.xml: Bump version.
+
 	* CodeTemplates/AddView/Empty.tt: Fix missing runat="server"
 	  in Content tags.
 
