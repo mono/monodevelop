@@ -88,6 +88,8 @@ namespace MonoDevelop.CSharpBinding.Tests
 			tww.ViewContent = sev;
 			Document doc = new Document (tww);
 			doc.ParsedDocument = new NRefactoryParser ().Parse (null, sev.ContentName, parsedText);
+			foreach (var e in doc.ParsedDocument.Errors)
+				Console.WriteLine (e);
 			CSharpTextEditorCompletion textEditorCompletion = new CSharpTextEditorCompletion (doc);
 			
 			int triggerWordLength = 1;
@@ -1532,7 +1534,7 @@ class CastByExample
 	
 	static void Main ()
 	{
-		var typed = Cast (o, new { Foo = "" });
+		var typed = Cast (o, new { Foo = 5 });
 		$typed.$
 	}
 }");

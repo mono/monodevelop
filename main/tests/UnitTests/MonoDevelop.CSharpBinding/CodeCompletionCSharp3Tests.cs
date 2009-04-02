@@ -275,7 +275,7 @@ public class Program
 			Assert.IsNotNull (provider, "provider == null");
 			Assert.IsNotNull (provider.Find ("DoIt"), "method 'DoIt' not found.");
 		}
-		/*
+		
 		/// <summary>
 		/// Bug 491016 - No intellisense for lambdas inside linq query
 		/// </summary>
@@ -287,6 +287,12 @@ public class Program
 using System;
 using System.Collections.Generic;
 
+namespace System.Collections.Generic {
+	public interface IEnumerable<T>
+	{
+	
+	}
+}
 namespace Foo
 {
     class Data
@@ -296,7 +302,7 @@ namespace Foo
 
     static class Ex
     {
-        public static IEnumerable<TR> Foo<T, TR> (this IEnumerable<T> t, Func<T, TR> f)
+        public static System.Collections.Generic.IEnumerable<TR> Foo<T, TR> (this System.Collections.Generic.IEnumerable<T> t, Func<T, TR> f)
         {
             yield return f (t.First ());
         }
@@ -306,7 +312,7 @@ namespace Foo
     {
         public static void Main ()
         {
-            Data[] i = new Data [0];
+            System.Collections.Generic.IEnumerable<Data> i = new Data [0];
             $var prods = from pe in i.Foo (p2 => p2.$
         }
     }
@@ -315,7 +321,5 @@ namespace Foo
 			Assert.IsNotNull (provider, "provider == null");
 			Assert.IsNotNull (provider.Find ("Value"), "field 'Value' not found.");
 		}
-		*/
-		
 	}
 }

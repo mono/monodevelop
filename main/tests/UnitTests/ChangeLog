@@ -1,3 +1,9 @@
+2009-04-02  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs:
+	* MonoDevelop.CSharpBinding/CodeCompletionCSharp3Tests.cs:
+	  It's all green again :)
+
 2009-04-01  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharpBinding/CodeCompletionCSharp3Tests.cs:
