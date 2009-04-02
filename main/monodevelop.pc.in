@@ -1,9 +1,0 @@
-prefix=@prefix@
-exec_prefix=${prefix}
-libdir=${exec_prefix}/lib/monodevelop
-GacPackage=false
-                                                                                
-Name: MonoDevelop
-Description: Free .NET Development Environment
-Version: @VERSION@
-Libs: -r:${libdir}/bin/MonoDevelop.Core.dll -r:${libdir}/bin/MonoDevelop.Core.Gui.dll -r:${libdir}/bin/MonoDevelop.Projects.dll -r:${libdir}/bin/MonoDevelop.Projects.Gui.dll -r:${libdir}/bin/MonoDevelop.Ide.dll -r:${libdir}/bin/MonoDevelop.Components.dll -r:${libdir}/bin/NRefactory.dll -r:${libdir}/bin/Mono.Cecil.dll -r:${libdir}/bin/Mono.TextEditor.dll -r:${libdir}/bin/Mono.Debugging.dll

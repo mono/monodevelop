@@ -1,9 +1,0 @@
-2009-03-13  Mike Krüger  <mkrueger@novell.com>
-
-	* Makefile.am:
-	* Mono.Texteditor: Added text editor to core.
-
-2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
-
-	* Core.mds: Migrated to MSBuild file format.
-
