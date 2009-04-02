@@ -1,5 +1,10 @@
 2009-04-02  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: Added
+	  tests for "Bug 491020 - Wrong typeof intellisense".
+
+2009-04-02  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharpBinding/CodeCompletionCSharp3Tests.cs:
 	  Added test for "Bug 491017 - No intellisense for static LINQ
 	  queries".

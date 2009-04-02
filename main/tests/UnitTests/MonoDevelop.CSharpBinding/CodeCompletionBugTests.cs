@@ -1549,10 +1549,6 @@ class CastByExample
 		[Test()]
 		public void TestBug487203 ()
 		{
-			// WARNING: May not run, because of missing extension methods.
-			//          But I can't run tests on my system today. If this
-			//          fails add a 'Select' extension method. (copy an empty 
-			//          System.Linq.Enumerable.Select method should do the job)
 			CompletionDataList provider = CreateProvider (
 @"
 using System;
@@ -1574,6 +1570,69 @@ class Program
 			Assert.IsNotNull (provider, "provider not found.");
 			Assert.IsNotNull (provider.Find ("Foo"), "method 'Foo' not found");
 		}
+		
+		/// <summary>
+		/// Bug 491020 - Wrong typeof intellisense
+		/// </summary>
+		[Test()]
+		public void TestBug491020 ()
+		{
+			CompletionDataList provider = CreateProvider (
+@"
+public class EventClass<T>
+{
+	public class Inner {}
+	public delegate void HookDelegate (T del);
+	public void Method ()
+	{}
+}
 
+public class Test
+{
+	public static void Main ()
+	{
+		$EventClass<int>.$
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.Find ("Inner"), "class 'Inner' not found.");
+			Assert.IsNotNull (provider.Find ("HookDelegate"), "delegate 'HookDelegate' not found.");
+			Assert.IsNull (provider.Find ("Method"), "method 'Method' found, but shouldn't.");
+		}
+		
+		/// <summary>
+		/// Bug 491020 - Wrong typeof intellisense
+		/// It's a different case when the class is inside a namespace.
+		/// </summary>
+		[Test()]
+		public void TestBug491020B ()
+		{
+			CompletionDataList provider = CreateProvider (
+@"
+
+namespace A {
+	public class EventClass<T>
+	{
+		public class Inner {}
+		public delegate void HookDelegate (T del);
+		public void Method ()
+		{}
+	}
+}
+
+public class Test
+{
+	public static void Main ()
+	{
+		$A.EventClass<int>.$
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.Find ("Inner"), "class 'Inner' not found.");
+			Assert.IsNotNull (provider.Find ("HookDelegate"), "delegate 'HookDelegate' not found.");
+			Assert.IsNull (provider.Find ("Method"), "method 'Method' found, but shouldn't.");
+		}
 	}
 }
