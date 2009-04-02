@@ -88,7 +88,7 @@ namespace Mono.TextEditor.Highlighting
 		{
 			if (!styleLookup.ContainsKey (name))
 				throw new System.ArgumentException ("Style " + name + " not found", "name");
-			XmlTextReader reader = styleLookup [name].Open ();
+			XmlReader reader = styleLookup [name].Open ();
 			try {
 				styles [name] = Style.LoadFrom (reader);
 			} finally {
@@ -100,7 +100,7 @@ namespace Mono.TextEditor.Highlighting
 		{
 			if (!syntaxModeLookup.ContainsKey (mimeType))
 				throw new System.ArgumentException ("Syntax mode for mime:" + mimeType + " not found", "mimeType");
-			XmlTextReader reader = syntaxModeLookup [mimeType].Open ();
+			XmlReader reader = syntaxModeLookup [mimeType].Open ();
 			try {
 				SyntaxMode mode = SyntaxMode.Read (reader);
 				foreach (string mime in mode.MimeType.Split (';')) {
@@ -463,7 +463,7 @@ namespace Mono.TextEditor.Highlighting
 			queueSignal.Set ();
 		}
 		
-		static string Scan (XmlTextReader reader, string attribute)
+		static string Scan (XmlReader reader, string attribute)
 		{
 			while (reader.Read () && !reader.IsStartElement ()) 
 				;
@@ -524,25 +524,29 @@ namespace Mono.TextEditor.Highlighting
 				if (!resource.EndsWith (".xml")) 
 					continue;
 				if (resource.EndsWith ("SyntaxMode.xml")) {
-					XmlTextReader reader =  new XmlTextReader (assembly.GetManifestResourceStream (resource));
-					string mimeTypes = Scan (reader, SyntaxMode.MimeTypesAttribute);
-					ResourceXmlProvider provider = new ResourceXmlProvider (assembly, resource);
-					foreach (string mimeType in mimeTypes.Split (';')) {
-						syntaxModeLookup [mimeType] = provider;
+					using (Stream stream = assembly.GetManifestResourceStream (resource)) {
+						XmlTextReader reader =  new XmlTextReader (stream);
+						string mimeTypes = Scan (reader, SyntaxMode.MimeTypesAttribute);
+						ResourceXmlProvider provider = new ResourceXmlProvider (assembly, resource);
+						foreach (string mimeType in mimeTypes.Split (';')) {
+							syntaxModeLookup [mimeType] = provider;
+						}
+						reader.Close ();
 					}
-					reader.Close ();
 				} else if (resource.EndsWith ("Style.xml")) {
-					XmlTextReader reader = new XmlTextReader (assembly.GetManifestResourceStream (resource));
-					string styleName = Scan (reader, Style.NameAttribute);
-					styleLookup [styleName] = new ResourceXmlProvider (assembly, resource);
-					reader.Close ();
+					using (Stream stream = assembly.GetManifestResourceStream (resource)) {
+						XmlTextReader reader = new XmlTextReader (stream);
+						string styleName = Scan (reader, Style.NameAttribute);
+						styleLookup [styleName] = new ResourceXmlProvider (assembly, resource);
+						reader.Close ();
+					}
 				}
 			}
 		}
 
 		public static void AddSyntaxMode (IXmlProvider provider)
 		{
-			using (XmlTextReader reader = provider.Open ()) {
+			using (XmlReader reader = provider.Open ()) {
 				string mimeTypes = Scan (reader, SyntaxMode.MimeTypesAttribute);
 				foreach (string mimeType in mimeTypes.Split (';')) {
 					syntaxModeLookup [mimeType] = provider;
@@ -552,7 +556,7 @@ namespace Mono.TextEditor.Highlighting
 		
 		public static void RemoveSyntaxMode (IXmlProvider provider)
 		{
-			using (XmlTextReader reader = provider.Open ()) {
+			using (XmlReader reader = provider.Open ()) {
 				string mimeTypes = Scan (reader, SyntaxMode.MimeTypesAttribute);
 				foreach (string mimeType in mimeTypes.Split (';')) {
 					syntaxModeLookup.Remove (mimeType);
@@ -562,14 +566,14 @@ namespace Mono.TextEditor.Highlighting
 		
 		public static void AddStyle (IXmlProvider provider)
 		{
-			using (XmlTextReader reader = provider.Open ()) {
+			using (XmlReader reader = provider.Open ()) {
 				string styleName = Scan (reader, Style.NameAttribute);
 				styleLookup [styleName] = provider;
 			}
 		}
 		public static void RemoveStyle (IXmlProvider provider)
 		{
-			using (XmlTextReader reader = provider.Open ()) {
+			using (XmlReader reader = provider.Open ()) {
 				string styleName = Scan (reader, Style.NameAttribute);
 				styleLookup.Remove (styleName);
 			}

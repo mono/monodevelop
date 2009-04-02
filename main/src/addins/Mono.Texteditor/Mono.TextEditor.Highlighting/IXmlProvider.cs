@@ -32,7 +32,7 @@ namespace Mono.TextEditor.Highlighting
 {
 	public interface IXmlProvider
 	{
-		XmlTextReader Open ();
+		XmlReader Open ();
 	}
 	
 	public class ResourceXmlProvider : IXmlProvider
@@ -58,9 +58,11 @@ namespace Mono.TextEditor.Highlighting
 			this.manifestResourceName = manifestResourceName;
 		}
 		
-		public XmlTextReader Open ()
+		public XmlReader Open ()
 		{
-			return new XmlTextReader (this.assembly.GetManifestResourceStream (this.ManifestResourceName));
+			XmlReaderSettings settings = new XmlReaderSettings ();
+			settings.CloseInput = true;
+			return XmlTextReader.Create (this.assembly.GetManifestResourceStream (this.ManifestResourceName), settings);
 		}
 	}
 	
@@ -79,7 +81,7 @@ namespace Mono.TextEditor.Highlighting
 			this.url = url;
 		}
 		
-		public XmlTextReader Open ()
+		public XmlReader Open ()
 		{
 			return new XmlTextReader (url);
 		}

@@ -3,6 +3,13 @@
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Fix possible
 	  NRE.
 
+2009-03-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.SourceEditor.Extension/TemplateCodon.cs: Fix
+	  resource disposal issues that prevented addins adding syntax
+	  modes and colour schemes, and probably caused resource
+	  stream leaks.
+
 2009-03-05  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:
