@@ -6,7 +6,7 @@
        url         = "http://monodevelop.com/"
        description = "Support for ASP.NET MVC projects."
        category    = "Web Development"
-       version     = "2.0.1">
+       version     = "2.0.2">
 	
 	<Runtime>
 		<Import file = "Templates/Controller.xft.xml"/>
@@ -32,7 +32,7 @@
 		<Addin id="XmlEditor" version="2.0" />
 		<Addin id="AspNet" version="2.0" />
 		<Addin id="SourceEditor2" version="2.0" />
-		<Addin id="TextTemplating" version="2.0" />
+		<Addin id="TextTemplating" version="2.0.1" />
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
@@ -99,9 +99,10 @@
 	</Extension>
 	
 	<Extension path="/MonoDevelop/Core/SupportPackages">
-		<!--<Condition id="PackageNotInstalled" name="mono-aspnetmvc" version="2.4">-->
-		<Package name="aspnet-mvc" version="1.0" targetFramework="3.5">
-			<Assembly file="System.Web.Mvc.dll" />
-		</Package>
+		<Condition id="PackageNotInstalled" name="system.web.mvc" version="1.0.0.0">
+			<Package name="system.web.mvc" version="1.0.0.0" targetFramework="3.5">
+				<Assembly file="System.Web.Mvc.dll" />
+			</Package>
+		</Condition>
 	</Extension>
 </Addin>

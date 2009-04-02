@@ -6,7 +6,7 @@
        url         = "http://monodevelop.com"
        description = "Support for editing and running T4 text templates."
        category    = "IDE extensions"
-       version     = "2.0">
+       version     = "2.0.1">
 	
 	<Runtime>
 		<Import assembly="Mono.TextTemplating.dll" />

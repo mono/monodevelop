@@ -28,6 +28,7 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Xml;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;
@@ -38,18 +39,32 @@ namespace MonoDevelop.AspNet.Mvc
 	
 	public class AspMvcProject : AspNetAppProject
 	{
+		static void Check24 ()
+		{
+			Type mr = Type.GetType ("Mono.Runtime");
+			if (mr != null) {
+				string version = (string) mr.GetMethod ("GetDisplayName", BindingFlags.NonPublic|BindingFlags.Static).Invoke (null, null);
+				//MD only builds on 2.0 or later
+				if (version.StartsWith ("Mono 2.0") || version.StartsWith ("Mono 2.2"))
+					MonoDevelop.Core.Gui.MessageService.ShowWarning ("ASP.NET MVC projects only build and run on Mono 2.4 or later");
+			}
+		}
+		
 		public AspMvcProject ()
 		{
+			Check24 ();
 		}
 		
 		public AspMvcProject (string languageName)
 			: base (languageName)
 		{
+			Check24 ();
 		}
 		
 		public AspMvcProject (string languageName, ProjectCreateInformation info, XmlElement projectOptions)
 			: base (languageName, info, projectOptions)
 		{
+			Check24 ();
 		}	
 		
 		public override SolutionItemConfiguration CreateConfiguration (string name)
@@ -106,7 +121,7 @@ namespace MonoDevelop.AspNet.Mvc
 			
 			//HACK: workaround for MD not local-copying package references
 			foreach (ProjectReference projectReference in References) {
-				if (projectReference.Package.Name == "aspnet-mvc") {
+				if (projectReference.Package.Name == "system.web.mvc") {
 					if (projectReference.LocalCopy && projectReference.ReferenceType == ReferenceType.Gac)
 						foreach (MonoDevelop.Core.SystemAssembly assem in projectReference.Package.Assemblies)
 							list.Add (assem.Location);

@@ -38,11 +38,51 @@
 			</References>
 			<Files>
 				<Directory name="Content" />
-				<Directory name="Controllers" />
+				<Directory name="Controllers">
+					<File name="HomeController.cs"><![CDATA[using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using System.Web.Mvc.Ajax;
+
+namespace Controllers
+{
+	
+	[HandleError]
+	public class HomeController : Controller
+	{
+		public ActionResult Index ()
+		{
+			ViewData["Message"] = "Welcome to ASP.NET MVC on Mono!";
+			return View ();
+		}
+	}
+}
+]]>
+					</File>
+				</Directory>
 				<Directory name="Models" />
 				<Directory name="Scripts" />
 				<Directory name="Views">
 					<FileTemplateReference TemplateID="AspMvcWebConfigViews" name="Web.config" SuppressAutoOpen="true"  />
+					<Directory name="Home">
+						<AspNetFile name="Index.aspx">
+						<FileText><![CDATA[<%@ Page Language="${AspNetLanguage}" Inherits="System.Web.Mvc.ViewPage" %>
+${Doctype}
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+	<title></title>
+</head>
+<body>
+	<div>
+		<%= Html.Encode(ViewData["Message"]) %>
+	</div>
+</body>
+]]>
+						</FileText>
+						</AspNetFile>
+					</Directory>
 				</Directory>
 				<FileTemplateReference TemplateID="AspMvcWebConfigApp" name="Web.config" SuppressAutoOpen="true" />
 				<FileTemplateReference TemplateID="AspMvcGlobalAsax" name="Global.asax" SuppressAutoOpen="true"  />

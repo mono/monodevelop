@@ -1,5 +1,15 @@
 2009-04-02  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.AspNet.Mvc.addin.xml: Bump version. Update
+	  package name.
+
+	* AspMvcProject.cs: Check we're on the 2.4 runtime or later.
+	  Update package name.
+
+	* Templates/Project.xpt.xml: Add some "Hello World" content.
+
+2009-04-02  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.AspNet.Mvc.addin.xml: Bump version.
 
 	* Gui/AddViewDialog.cs: Disable class selector, and the widget
