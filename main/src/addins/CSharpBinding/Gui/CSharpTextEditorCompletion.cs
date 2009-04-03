@@ -667,8 +667,35 @@ namespace MonoDevelop.CSharpBinding.Gui
 					CompletionDataList completionList = new ProjectDomCompletionDataList ();
 					List<string> namespaceList = GetUsedNamespaces ();
 					MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col = new MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector (Document.CompilationUnit, location);
+					bool isInterface = false;
+					HashSet<string> baseTypeNames = new HashSet<string> ();
+					if (cls != null) {
+						baseTypeNames.Add (cls.Name);
+						if (cls.ClassType == ClassType.Struct)
+							isInterface = true;
+					}
+					int tokenIndex = completionContext.TriggerOffset;
+					
+					// Search base types " : [Type1, ... ,TypeN,] <Caret>"
+					string token = null;
+					do {
+						token = GetPreviousToken (ref tokenIndex, false);
+						if (string.IsNullOrEmpty (token))
+							break;
+						token = token.Trim ();
+						if (Char.IsLetterOrDigit (token[0]) || token[0] == '_')  {
+							IType baseType = dom.SearchType (new SearchTypeRequest (Document.CompilationUnit, token));
+							if (baseType != null) {
+								if (baseType.ClassType != ClassType.Interface)
+									isInterface = true;
+								baseTypeNames.Add (baseType.Name);
+							}
+						}
+					} while (token != ":");
+					
 					foreach (object o in dom.GetNamespaceContents (namespaceList, true, true)) {
-						if (cls != null && o is IType && ((IType)o).Name == cls.Name) {
+						IType type = o as IType;
+						if (type != null && (type.IsStatic || type.IsSealed || baseTypeNames.Contains (type.Name) || isInterface && type.ClassType != ClassType.Interface)) {
 							continue;
 						}
 						col.AddCompletionData (completionList, o);
