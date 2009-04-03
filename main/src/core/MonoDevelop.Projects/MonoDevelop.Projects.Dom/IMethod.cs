@@ -38,7 +38,8 @@ namespace MonoDevelop.Projects.Dom
 		None          = 0,
 		IsConstructor = 1,
 		IsExtension   = 2,
-		IsFinalizer   = 4
+		IsFinalizer   = 4,
+		WasExtended   = 8
 	}
 	
 	public interface IMethod : IMember
@@ -52,6 +53,10 @@ namespace MonoDevelop.Projects.Dom
 		}
 
 		bool IsExtension {
+			get;
+		}
+		
+		bool WasExtended {
 			get;
 		}
 		

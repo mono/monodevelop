@@ -1,5 +1,16 @@
 2009-04-03  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Dom/IMethod.cs:
+	* MonoDevelop.Projects.Dom/DomType.cs:
+	* MonoDevelop.Projects.Dom/DomMethod.cs:
+	* MonoDevelop.Projects.Dom/ResolveResult.cs:
+	* MonoDevelop.Projects.Dom/CopyDomVisitor.cs:
+	* MonoDevelop.Projects.Dom/ExtensionMethod.cs:
+	* MonoDevelop.Projects.Dom/InstantiatedType.cs: Worked on
+	  issues resolving extension methods.
+
+2009-04-03  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Dom/ExpressionContext.cs: Fixed "Bug
 	  491019 - No intellisense for recursive generics".
 

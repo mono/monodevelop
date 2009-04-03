@@ -43,6 +43,16 @@ namespace MonoDevelop.Projects.Dom
 			get;
 			private set;
 		}
+		
+		public override MethodModifier MethodModifier {
+			get {
+				return method.MethodModifier | MethodModifier.WasExtended;
+			}
+			set {
+				base.MethodModifier = value;
+			}
+		}
+		
 
 		public override DomLocation Location {
 			get {
@@ -88,6 +98,8 @@ namespace MonoDevelop.Projects.Dom
 				throw new NotSupportedException ();
 			}
 		}
+		
+		
 
 		public override string Name {
 			get {
@@ -129,6 +141,13 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
+		internal ExtensionMethod (IType extenisonType, IMethod originalMethod)
+		{
+			this.DeclaringType = extenisonType;
+			this.ExtensionType  = extenisonType;
+			this.OriginalMethod = originalMethod;
+		}
+		
 		public ExtensionMethod (IType extenisonType, IMethod originalMethod, IList<IReturnType> genericArguments, IEnumerable<IReturnType> methodArguments)
 		{
 			this.DeclaringType = extenisonType;
@@ -163,6 +182,10 @@ namespace MonoDevelop.Projects.Dom
 			for (int i = 1; i < method.Parameters.Count; i++) {
 				Add (method.Parameters[i]);
 			}
+			foreach (ITypeParameter par in method.TypeParameters) {
+				AddTypeParameter (par);
+			}
+				
 			this.ExtensionType  = extenisonType;
 			this.OriginalMethod = originalMethod;
 			//Console.WriteLine (this);

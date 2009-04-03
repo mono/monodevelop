@@ -62,7 +62,7 @@ namespace MonoDevelop.Projects.Dom
 			return newAttr;
 		}
 		
-		void Visit (IMember source, AbstractMember target, T data)
+		protected void Visit (IMember source, AbstractMember target, T data)
 		{
 			target.Name           = source.Name;
 			target.Documentation  = source.Documentation;

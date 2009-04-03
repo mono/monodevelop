@@ -682,8 +682,9 @@ namespace MonoDevelop.Projects.Dom
 			foreach (IType staticType in accessibleExtensionTypes) {
 				foreach (IMethod method in staticType.Methods) {
 					IMethod extMethod = method.Extends (this.SourceProjectDom, this);
-					if (extMethod != null)  
+					if (extMethod != null) {  
 						result.Add (extMethod);
+					}
 				}
 			}
 			return result;

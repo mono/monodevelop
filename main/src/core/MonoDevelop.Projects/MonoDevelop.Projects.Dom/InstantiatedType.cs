@@ -61,5 +61,11 @@ namespace MonoDevelop.Projects.Dom
 		public InstantiatedType()
 		{
 		}
+		
+		public InstantiatedType (IType uninstantiatedType, IEnumerable<IReturnType> genericParameters)
+		{
+			this.UninstantiatedType = uninstantiatedType;
+			this.GenericParameters  = new List<IReturnType> (genericParameters);
+		}
 	}
 }

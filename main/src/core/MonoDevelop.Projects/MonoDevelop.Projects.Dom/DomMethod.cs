@@ -43,7 +43,7 @@ namespace MonoDevelop.Projects.Dom
 		static readonly ReadOnlyCollection<IParameter> emptyParameters = new ReadOnlyCollection<IParameter> (new IParameter [0]);
 		static readonly ReadOnlyCollection<ITypeParameter> emptyGenericParameters = new ReadOnlyCollection<ITypeParameter> (new ITypeParameter [0]);
 
-		public MethodModifier MethodModifier {
+		public virtual MethodModifier MethodModifier {
 			get;
 			set;
 		}
@@ -57,6 +57,12 @@ namespace MonoDevelop.Projects.Dom
 		public virtual bool IsExtension {
 			get {
 				return (MethodModifier & MethodModifier.IsExtension) == MethodModifier.IsExtension;
+			}
+		}
+		
+		public virtual bool WasExtended {
+			get {
+				return (MethodModifier & MethodModifier.WasExtended) == MethodModifier.WasExtended;
 			}
 		}
 		
@@ -156,6 +162,7 @@ namespace MonoDevelop.Projects.Dom
 				// The stack should contain <TEMPLATE> / RealType pairs
 				Stack<KeyValuePair<IReturnType, IReturnType>> returnTypeStack = new Stack<KeyValuePair<IReturnType, IReturnType>> ();
 				for (int i = 0; i < method.Parameters.Count && i < methodArguments.Count; i++) {
+//					Console.WriteLine ("parameter:" + method.Parameters[i]);
 					returnTypeStack.Push (new KeyValuePair<IReturnType, IReturnType> (method.Parameters[i].ReturnType, methodArguments[i]));
 					while (returnTypeStack.Count > 0) {
 						KeyValuePair<IReturnType, IReturnType> curReturnType = returnTypeStack.Pop ();
@@ -168,9 +175,6 @@ namespace MonoDevelop.Projects.Dom
 							}
 						}
 						if (found) {
-					/*		DomReturnType rt = new DomReturnType (curReturnType.Value.FullName);
-							rt.ArrayDimensions = rt.PointerNestingLevel = 0;
-							resolver.Add (curReturnType.Key.FullName, rt);*/
 							resolver.Add (curReturnType.Key, curReturnType.Value);
 							continue;
 						}
@@ -184,10 +188,12 @@ namespace MonoDevelop.Projects.Dom
 					}
 				}
 			}
-			//System.Console.WriteLine("before:" + result);
+//			System.Console.WriteLine("before:" + result);
 			result = (IMethod)result.AcceptVisitor (resolver, result);
 			((DomMethod)result).DeclaringType = method.DeclaringType;
-			//System.Console.WriteLine("after:" + result);
+			((DomMethod)result).MethodModifier = method.MethodModifier;
+			
+//			System.Console.WriteLine("after:" + result);
 			return result;
 		}
 		
@@ -208,9 +214,29 @@ namespace MonoDevelop.Projects.Dom
 					for (int i = 0; i < newType.ArrayDimensions; i++)
 							newType.SetDimension (i, parameterType.GetDimension (i));
 					typeTable[name] = newType;
+//					Console.WriteLine (name + " --> " + newType + " orig. Type " + type + " param type: " + parameterType);
 				}
 			}
 			
+			public override IDomVisitable Visit (IMethod source, IMethod data)
+			{
+				DomMethod result = CreateInstance (source, data);
+				Visit (source, result, data);
+				
+				foreach (ITypeParameter tp in source.TypeParameters) {
+					if (!typeTable.ContainsKey (tp.Name))
+						result.AddTypeParameter (Visit (tp, data));
+				}
+				
+				result.MethodModifier = source.MethodModifier;
+				if (source.Parameters != null) {
+					foreach (IParameter parameter in source.Parameters)
+						result.Add ((IParameter) parameter.AcceptVisitor (this, data));
+				}
+				
+				return result;
+			}
+				
 			public override IDomVisitable Visit (IReturnType type, IMethod typeToInstantiate)
 			{
 				DomReturnType copyFrom = (DomReturnType) type;
@@ -244,12 +270,13 @@ namespace MonoDevelop.Projects.Dom
 			if (dom == null || type == null || Parameters.Count == 0 || !IsExtension) {
 				return null;
 			}
-			string extensionTableKey = Parameters[0].ReturnType.ToInvariantString () + "/" + type.FullName;
+//			Console.WriteLine ("Test Method: " + Name);
+			string extensionTableKey = FullName + "." + Parameters[0].ReturnType.ToInvariantString () + "/" + type.FullName;
+//			Console.WriteLine ("table key:" + extensionTableKey);
 			lock (extensionTable) {
 				if (extensionTable.ContainsKey (extensionTableKey))
 					return extensionTable[extensionTableKey];
 				if (type.BaseType != null && type.BaseType.FullName == "System.Array" && Parameters[0].ReturnType.ArrayDimensions > 0) {
-					Console.WriteLine ("ARRAY");
 					IReturnType elementType = null;
 					foreach (IReturnType returnType in type.BaseTypes) {
 						if (returnType.FullName == "System.Collections.Generic.IList" && returnType.GenericArguments.Count > 0) {
@@ -257,10 +284,9 @@ namespace MonoDevelop.Projects.Dom
 							break;
 						}
 					}
-					Console.WriteLine ("EL:" + elementType);
 					if (elementType != null) {
 						IMethod instMethod = DomMethod.CreateInstantiatedGenericMethod (this, new IReturnType[]{}, new IReturnType[] { elementType });DomMethod.CreateInstantiatedGenericMethod (this, new IReturnType[]{}, new IReturnType[] { elementType });
-						Console.WriteLine ("int method: " + instMethod);
+						instMethod = new ExtensionMethod (type , instMethod, null, null);
 						extensionTable.Add (extensionTableKey, instMethod);
 						return instMethod;
 					}
@@ -269,14 +295,16 @@ namespace MonoDevelop.Projects.Dom
 				foreach (IType baseType in dom.GetInheritanceTree (type)) {
 					IMethod instMethod = DomMethod.CreateInstantiatedGenericMethod (this, new IReturnType[]{}, new IReturnType[] { new DomReturnType (baseType) });
 					string baseTypeFullName = baseType is InstantiatedType ? ((InstantiatedType)baseType).UninstantiatedType.FullName : baseType.FullName;
-					
+//					Console.WriteLine (instMethod.Parameters[0].ReturnType.FullName + " === " + baseTypeFullName);
 					if (instMethod.Parameters[0].ReturnType.FullName == baseTypeFullName) {
 						//ExtensionMethod result = new ExtensionMethod (baseType, this, null, null);
+						instMethod = new ExtensionMethod (type , instMethod, null, null);
 						extensionTable.Add (extensionTableKey, instMethod);
 //						Console.WriteLine (result.Parameters[0]);
 						return instMethod;
 					}
 				}
+//				Console.WriteLine ("null");
 				extensionTable.Add (extensionTableKey, null);
 				return null;
 			}

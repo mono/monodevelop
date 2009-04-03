@@ -260,12 +260,12 @@ namespace MonoDevelop.Projects.Dom
 				genericParameters = ((InstantiatedType)type).GenericParameters;*/
 
 			bool includeProtected = callingMember != null ? DomType.IncludeProtected (dom, type, callingMember.DeclaringType) : false;
+			if (accessibleStaticTypes != null) {
+				foreach (IMethod extensionMethod in type.GetExtensionMethods (accessibleStaticTypes))
+					result.Add (extensionMethod);
+			}
 			
 			foreach (IType curType in dom.GetInheritanceTree (type)) {
-				if (accessibleStaticTypes != null) {
-					foreach (IMethod extensionMethod in curType.GetExtensionMethods (accessibleStaticTypes))
-						result.Add (extensionMethod);
-				}
 				if (curType.ClassType == ClassType.Interface && type.ClassType != ClassType.Interface)
 					continue;
 				foreach (IMember member in curType.Members) {
