@@ -1,5 +1,11 @@
 2009-04-03  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Dom/DomType.cs:
+	* MonoDevelop.Projects.Dom/DomMethod.cs: Added extension
+	  methods icons.
+
+2009-04-03  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Dom/IMethod.cs:
 	* MonoDevelop.Projects.Dom/DomType.cs:
 	* MonoDevelop.Projects.Dom/DomMethod.cs:

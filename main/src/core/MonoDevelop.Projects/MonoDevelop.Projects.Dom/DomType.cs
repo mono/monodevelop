@@ -762,6 +762,7 @@ namespace MonoDevelop.Projects.Dom
 		public static readonly string Field = "md-field";
 		public static readonly string Interface = "md-interface";
 		public static readonly string Method = "md-method";
+		public static readonly string ExtensionMethod = "md-extensionmethod";
 		public static readonly string Property = "md-property";
 		public static readonly string Struct = "md-struct";
 		public static readonly string Delegate = "md-delegate";
@@ -774,6 +775,7 @@ namespace MonoDevelop.Projects.Dom
 		public static readonly string InternalField = "md-internal-field";
 		public static readonly string InternalInterface = "md-internal-interface";
 		public static readonly string InternalMethod = "md-internal-method";
+		public static readonly string InternalExtensionMethod = "md-internal-extensionmethod";
 		public static readonly string InternalProperty = "md-internal-property";
 		public static readonly string InternalStruct = "md-internal-struct";
 		
@@ -784,6 +786,7 @@ namespace MonoDevelop.Projects.Dom
 		public static readonly string PrivateField = "md-private-field";
 		public static readonly string PrivateInterface = "md-private-interface";
 		public static readonly string PrivateMethod = "md-private-method";
+		public static readonly string PrivateExtensionMethod = "md-private-extensionmethod";
 		public static readonly string PrivateProperty = "md-private-property";
 		public static readonly string PrivateStruct = "md-private-struct";
 		
@@ -794,6 +797,7 @@ namespace MonoDevelop.Projects.Dom
 		public static readonly string ProtectedField = "md-protected-field";
 		public static readonly string ProtectedInterface = "md-protected-interface";
 		public static readonly string ProtectedMethod = "md-protected-method";
+		public static readonly string ProtectedExtensionMethod = "md-protected-extensionmethod";
 		public static readonly string ProtectedProperty = "md-protected-property";
 		public static readonly string ProtectedStruct = "md-protected-struct";
 		

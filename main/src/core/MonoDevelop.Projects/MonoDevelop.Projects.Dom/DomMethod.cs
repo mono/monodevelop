@@ -118,8 +118,11 @@ namespace MonoDevelop.Projects.Dom
 		}
 		
 		static readonly string[] iconTable = {Stock.Method, Stock.PrivateMethod, Stock.ProtectedMethod, Stock.InternalMethod};
+		static readonly string[] extensionIconTable = {Stock.ExtensionMethod, Stock.PrivateExtensionMethod, Stock.ProtectedExtensionMethod, Stock.InternalExtensionMethod};
 		public override string StockIcon {
 			get {
+				if (WasExtended)
+					return extensionIconTable [ModifierToOffset (Modifiers)];
 				return iconTable [ModifierToOffset (Modifiers)];
 			}
 		}
