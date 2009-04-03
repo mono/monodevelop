@@ -33,19 +33,15 @@ namespace Mono.TextEditor.Highlighting
 {
 	public class Match
 	{
-		string color;
-		string pattern;
 		Regex  regex;
 		public string Color {
-			get {
-				return color;
-			}
+			get;
+			private set;
 		}
 
 		public string Pattern {
-			get {
-				return pattern;
-			}
+			get;
+			private set;
 		}
 		
 		public System.Text.RegularExpressions.Regex Regex {
@@ -55,12 +51,12 @@ namespace Mono.TextEditor.Highlighting
 		}
 		public virtual bool GetIsValid (Style style)
 		{
-			return style.GetChunkStyle (color) != null;
+			return style.GetChunkStyle (Color) != null;
 		}
 		
 		public override string ToString ()
 		{
-			return String.Format ("[Match: Color={0}, Pattern={1}]", color, pattern);
+			return String.Format ("[Match: Color={0}, Pattern={1}]", Color, Pattern);
 		}
 
 		public virtual int TryMatch (string text, int matchOffset)
@@ -80,9 +76,9 @@ namespace Mono.TextEditor.Highlighting
 			string color   = reader.GetAttribute ("color");
 			string pattern = reader.ReadElementString ();
 			Match result   = pattern == "CSharpNumber" ? new CSharpNumberMatch () : new Match ();
-			result.color   = color;
-			result.pattern = "^" + pattern;
-			result.regex   = new System.Text.RegularExpressions.Regex (result.pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+			result.Color   = color;
+			result.Pattern = "^" + pattern;
+			result.regex   = new System.Text.RegularExpressions.Regex (result.Pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
 			return result;
 		}
 	}

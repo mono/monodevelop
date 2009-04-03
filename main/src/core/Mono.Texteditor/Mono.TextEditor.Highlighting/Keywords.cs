@@ -34,14 +34,11 @@ namespace Mono.TextEditor.Highlighting
 {
 	public class Keywords
 	{
-		string        color;
 		List<string>  words = new List<string> ();
-		bool          ignorecase = false;
 		
 		public string Color {
-			get {
-				return color;
-			}
+			get;
+			private set;
 		}
 
 		public IEnumerable<string> Words {
@@ -50,13 +47,9 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 
-		public bool Ignorecase {
-			get {
-				return ignorecase;
-			}
-			set {
-				ignorecase = value;
-			}
+		public bool IgnoreCase {
+			get;
+			private set;
 		}
 		
 		public Keywords ()
@@ -65,8 +58,8 @@ namespace Mono.TextEditor.Highlighting
 		
 		public virtual bool GetIsValid (Style style)
 		{
-			if (style.GetChunkStyle (color) == null) {
-				System.Console.WriteLine("color:" + color + " not found.");
+			if (style.GetChunkStyle (Color) == null) {
+				System.Console.WriteLine("color:" + Color + " not found.");
 				return false;
 			}
 			return true;
@@ -78,11 +71,11 @@ namespace Mono.TextEditor.Highlighting
 		{
 			Keywords result = new Keywords ();
 			
-			result.color      = reader.GetAttribute ("color");
+			result.Color      = reader.GetAttribute ("color");
 			if (!String.IsNullOrEmpty (reader.GetAttribute ("ignorecase"))) {
-				result.ignorecase = Boolean.Parse (reader.GetAttribute ("ignorecase"));
+				result.IgnoreCase = Boolean.Parse (reader.GetAttribute ("ignorecase"));
 			} else {
-				result.ignorecase = ignoreCaseDefault;
+				result.IgnoreCase = ignoreCaseDefault;
 			}
 			
 			XmlReadHelper.ReadList (reader, Node, delegate () {

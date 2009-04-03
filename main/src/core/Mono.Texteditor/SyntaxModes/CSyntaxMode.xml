@@ -30,7 +30,7 @@
 		<End>#endif</End>
 	</Span>
 	
-	<EolSpan color = "text.preprocessor" rule="text.preprocessor">#</EolSpan>
+	<EolSpan color = "text.preprocessor" rule="text.preprocessor" continuation="\">#</EolSpan>
 	<EolSpan color = "comment" rule="Comment">//</EolSpan>
 	
 	<Span color = "comment" rule="Comment" tagColor="comment.tag">

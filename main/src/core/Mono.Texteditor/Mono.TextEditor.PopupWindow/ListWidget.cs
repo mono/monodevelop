@@ -32,7 +32,7 @@ using System.Text;
 
 namespace Mono.TextEditor.PopupWindow
 {
-	class ListWidget<T> : Gtk.DrawingArea
+	public class ListWidget<T> : Gtk.DrawingArea
 	{
 		int margin = 0;
 		int padding = 4;

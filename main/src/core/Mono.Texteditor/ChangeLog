@@ -1,3 +1,22 @@
+2009-04-03  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/Caret.cs:
+	* SyntaxModes/CSyntaxMode.xml:
+	* Mono.TextEditor/EditMode.cs:
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/TextLinkEditMode.cs:
+	* Mono.TextEditor.Highlighting/Span.cs:
+	* Mono.TextEditor.Highlighting/Rule.cs:
+	* Mono.TextEditor.Highlighting/Style.cs:
+	* Mono.TextEditor.Highlighting/Match.cs:
+	* Mono.TextEditor.Highlighting/Marker.cs:
+	* Mono.TextEditor.Highlighting/Keywords.cs:
+	* Mono.TextEditor.PopupWindow/ListWidget.cs:
+	* Mono.TextEditor.Highlighting/SyntaxMode.cs:
+	* Mono.TextEditor.Highlighting/SyntaxModeService.cs: fixed
+	  "Bug 491089 - Oblivion syntax highlight error". Cleaned up
+	  some code.
+
 2009-04-02  Mike Krüger  <mkrueger@novell.com>
 
 	* SyntaxModes/VBNetSyntaxMode.xml:

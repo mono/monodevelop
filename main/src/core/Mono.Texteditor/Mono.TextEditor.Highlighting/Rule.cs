@@ -35,9 +35,6 @@ namespace Mono.TextEditor.Highlighting
 {
 	public class Rule
 	{
-		protected string name;
-		protected string defaultColor;
-		protected bool ignorecase = false;
 		protected List<Keywords> keywords = new List<Keywords> ();
 		protected List<Span> spans = new List<Span> ();
 		protected Match[] matches = new Match[0];
@@ -75,9 +72,8 @@ namespace Mono.TextEditor.Highlighting
 		}
 		
 		public string Name {
-			get {
-				return name;
-			}
+			get;
+			protected set;
 		}
 		
 		public IEnumerable<Keywords> Keywords {
@@ -97,16 +93,21 @@ namespace Mono.TextEditor.Highlighting
 				return this.matches;
 			}
 		}
+		
 		public bool HasMatches {
 			get {
 				return this.matches.Length > 0;
 			}
 		}
-
+		
+		public bool IgnoreCase {
+			get;
+			protected set;
+		}
+		
 		public string DefaultColor {
-			get {
-				return defaultColor;
-			}
+			get;
+			private set;
 		}
 
 		public List<Marker> PrevMarker {
@@ -121,7 +122,7 @@ namespace Mono.TextEditor.Highlighting
 		
 		public override string ToString ()
 		{
-			return String.Format ("[Rule: Name={0}, #Keywords={1}]", name, keywords.Count);
+			return String.Format ("[Rule: Name={0}, #Keywords={1}]", Name, keywords.Count);
 		}
 		
 		protected bool ReadNode (XmlReader reader, List<Match> matchList)
@@ -135,7 +136,7 @@ namespace Mono.TextEditor.Highlighting
 				this.spans.Add (Span.Read (reader));
 				return true;
 			case Mono.TextEditor.Highlighting.Keywords.Node:
-				this.keywords.Add (Mono.TextEditor.Highlighting.Keywords.Read (reader, ignorecase));
+				this.keywords.Add (Mono.TextEditor.Highlighting.Keywords.Read (reader, IgnoreCase));
 				return true;
 			case Marker.PrevMarker:
 				this.prevMarker.Add (Marker.Read (reader));
@@ -212,7 +213,7 @@ namespace Mono.TextEditor.Highlighting
 		{
 			foreach (Keywords kw in this.keywords) {  
 				foreach (string word in kw.Words)  {
-					if (kw.Ignorecase) {
+					if (kw.IgnoreCase) {
 						AddWord (kw, word.ToLowerInvariant (), 0);
 					} else {
 						AddToParseTree (word, kw);
@@ -225,10 +226,10 @@ namespace Mono.TextEditor.Highlighting
 		public static Rule Read (XmlReader reader)
 		{
 			Rule result = new Rule ();
-			result.name         = reader.GetAttribute ("name");
-			result.defaultColor = reader.GetAttribute ("color");
+			result.Name         = reader.GetAttribute ("name");
+			result.DefaultColor = reader.GetAttribute ("color");
 			if (!String.IsNullOrEmpty (reader.GetAttribute ("ignorecase")))
-				result.ignorecase = Boolean.Parse (reader.GetAttribute ("ignorecase"));
+				result.IgnoreCase = Boolean.Parse (reader.GetAttribute ("ignorecase"));
 			List<Match> matches = new List<Match> ();
 			XmlReadHelper.ReadList (reader, Node, delegate () {
 				switch (reader.LocalName) {

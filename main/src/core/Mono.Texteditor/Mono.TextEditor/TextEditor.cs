@@ -122,26 +122,26 @@ namespace Mono.TextEditor
 		public TextEditor () : this (new Document ())
 		{
 		//	snooperID = Gtk.Key.SnooperInstall (KeySnooperFunc);
-			snooperID = 0;
+		//	snooperID = 0;
 		}
 #region Key snooper (dnd hack)
-		uint snooperID;
-		Dictionary<Gdk.Key, bool> keyPressed = new Dictionary<Gdk.Key, bool> ();
-		int KeySnooperFunc (Widget grab_widget, Gdk.EventKey evnt) 
-		{
-			// only handle the control keys
-			if (evnt.Key != Gdk.Key.Control_L && evnt.Key != Gdk.Key.Control_R)
-				return 0;
-			
-			bool state = false;
-			if (keyPressed.ContainsKey (evnt.Key))
-				state = keyPressed[evnt.Key];
-			keyPressed[evnt.Key] = !state;
-			if (IsInDrag)
-				Gdk.Drag.Status (this.dragContext, GetSuggestedDragAction (), 0);
-			
-			return 0;
-		}
+//		uint snooperID;
+//		Dictionary<Gdk.Key, bool> keyPressed = new Dictionary<Gdk.Key, bool> ();
+//		int KeySnooperFunc (Widget grab_widget, Gdk.EventKey evnt) 
+//		{
+//			// only handle the control keys
+//			if (evnt.Key != Gdk.Key.Control_L && evnt.Key != Gdk.Key.Control_R)
+//				return 0;
+//			
+//			bool state = false;
+//			if (keyPressed.ContainsKey (evnt.Key))
+//				state = keyPressed[evnt.Key];
+//			keyPressed[evnt.Key] = !state;
+//			if (IsInDrag)
+//				Gdk.Drag.Status (this.dragContext, GetSuggestedDragAction (), 0);
+//			
+//			return 0;
+//		}
 #endregion
 		Gdk.Pixmap buffer = null, flipBuffer = null;
 		
@@ -519,10 +519,10 @@ namespace Mono.TextEditor
 					return;
 				this.isDisposed = true;
 				DisposeBgBuffer ();
-				if (snooperID > 0) {
+/*				if (snooperID > 0) {
 					Gtk.Key.SnooperRemove (snooperID);
 					snooperID = 0;
-				}
+				}*/
 				if (invisibleCursor != null) {
 					invisibleCursor.Dispose ();
 					invisibleCursor = null;
@@ -825,9 +825,9 @@ namespace Mono.TextEditor
 		}
 		DragAction GetSuggestedDragAction ()
 		{
-			if (keyPressed.ContainsKey (Gdk.Key.Control_L) && keyPressed [Gdk.Key.Control_L] || 
+/*			if (keyPressed.ContainsKey (Gdk.Key.Control_L) && keyPressed [Gdk.Key.Control_L] || 
 			    keyPressed.ContainsKey (Gdk.Key.Control_R) && keyPressed[Gdk.Key.Control_R])
-				return DragAction.Copy;
+				return DragAction.Copy;*/
 			return DragAction.Move;
 		}
 		protected override bool OnDragMotion (DragContext context, int x, int y, uint time_)

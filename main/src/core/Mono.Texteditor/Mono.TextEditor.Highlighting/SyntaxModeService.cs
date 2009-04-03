@@ -379,12 +379,19 @@ namespace Mono.TextEditor.Highlighting
 				}
 			}
 			
+			bool EndsWithContinuation (Span span, LineSegment line)
+			{
+				return span.StopAtEol && !string.IsNullOrEmpty (span.Continuation) &&
+					line != null && doc.GetTextAt (line).Trim ().EndsWith (span.Continuation);
+			}
+			
 			public void InnerRun ()
 			{
 				bool doUpdate = false;
 				RedBlackTree<LineSegmentTree.TreeNode>.RedBlackTreeIterator iter = doc.GetLineByOffset (startOffset).Iter;
 				Stack<Span> spanStack = iter.Current.StartSpan != null ? new Stack<Span> (iter.Current.StartSpan) : new Stack<Span> ();
 				
+				LineSegment oldLine = iter.Current.Offset > 0 ? doc.GetLineByOffset (iter.Current.Offset - 1) : null;
 				do {
 					LineSegment line = iter.Current;
 					if (line == null || line.Offset < 0)
@@ -393,7 +400,7 @@ namespace Mono.TextEditor.Highlighting
 					List<Span> spanList = new List<Span> (spanStack.ToArray ());
 					spanList.Reverse ();
 					for (int i = 0; i < spanList.Count; i++) {
-						if (spanList[i].StopAtEol) {
+						if (!EndsWithContinuation (spanList[i], oldLine)) {
 							spanList.RemoveAt (i);
 							i--;
 						}
@@ -406,12 +413,13 @@ namespace Mono.TextEditor.Highlighting
 							break;
 					}
 					line.StartSpan = newSpans.Length > 0 ? newSpans : null;
+					oldLine = line;
 					Rule rule = mode;
 					if (spanStack.Count > 0 && !String.IsNullOrEmpty (spanStack.Peek ().Rule))
 						rule = mode.GetRule (spanStack.Peek ().Rule) ?? mode;
 					
 					ScanSpansThreaded (doc, rule, spanStack, line.Offset, line.EndOffset);
-					while (spanStack.Count > 0 && spanStack.Peek ().StopAtEol)
+					while (spanStack.Count > 0 && !EndsWithContinuation (spanStack.Peek (), line))
 						spanStack.Pop ();
 				} while (iter.MoveNext ());
 				if (doUpdate) {

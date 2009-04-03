@@ -38,13 +38,11 @@ namespace Mono.TextEditor.Highlighting
 	public class SyntaxMode : Rule
 	{
 		public static readonly SyntaxMode Default = new SyntaxMode ();
-		string mimeType;
 		List<Rule> rules = new List<Rule> ();
 		
 		public string MimeType {
-			get {
-				return mimeType;
-			}
+			get;
+			private set;
 		}
 		
 		public IEnumerable<Rule> Rules {
@@ -528,10 +526,10 @@ namespace Mono.TextEditor.Highlighting
 					if (!String.IsNullOrEmpty (extends)) {
 						result = SyntaxModeService.GetSyntaxMode (extends);
 					}
-					result.name       = reader.GetAttribute ("name");
-					result.mimeType   = reader.GetAttribute (MimeTypesAttribute);
+					result.Name       = reader.GetAttribute ("name");
+					result.MimeType   = reader.GetAttribute (MimeTypesAttribute);
 					if (!String.IsNullOrEmpty (reader.GetAttribute ("ignorecase")))
-						result.ignorecase = Boolean.Parse (reader.GetAttribute ("ignorecase"));
+						result.IgnoreCase = Boolean.Parse (reader.GetAttribute ("ignorecase"));
 					return true;
 				case Rule.Node:
 					result.rules.Add (Rule.Read (reader));

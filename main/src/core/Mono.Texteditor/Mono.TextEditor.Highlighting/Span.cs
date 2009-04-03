@@ -34,87 +34,73 @@ namespace Mono.TextEditor.Highlighting
 {
 	public class Span
 	{
-		string color;
-		string tagColor;
-		string rule;
-		string begin;
-		HashSet<string> beginFlags = new HashSet<string> ();
-		
-		string end;
-		HashSet<string> endFlags = new HashSet<string> ();
-		string nextColor;
-		string escape;
-		
-		bool   stopAtEol;
-			
 		public Span ()
 		{
 		}
 		
 		public virtual bool GetIsValid (Style style)
 		{
-			return (string.IsNullOrEmpty (color) || style.GetChunkStyle (color) != null) && 
-			        (string.IsNullOrEmpty (tagColor) || style.GetChunkStyle (tagColor) != null) && 
-			        (string.IsNullOrEmpty (nextColor) || style.GetChunkStyle (nextColor) != null);
+			return (string.IsNullOrEmpty (Color) || style.GetChunkStyle (Color) != null) && 
+			        (string.IsNullOrEmpty (TagColor) || style.GetChunkStyle (TagColor) != null) && 
+			        (string.IsNullOrEmpty (NextColor) || style.GetChunkStyle (NextColor) != null);
 		}
 		
 		public const string Node    = "Span";
 		public const string AltNode = "EolSpan";
 		
 		public string Begin {
-			get {
-				return begin;
-			}
+			get;
+			private set;
 		}
 
 		public string End {
-			get {
-				return end;
-			}
+			get;
+			private set;
 		}
 
 		public string Color {
-			get {
-				return color;
-			}
+			get;
+			private set;
 		}
 		
 		public string TagColor {
-			get {
-				return tagColor;
-			}
+			get;
+			private set;
 		}
 
 		public string Escape {
-			get {
-				return escape;
-			}
+			get;
+			private set;
 		}
 
 		public bool StopAtEol {
-			get {
-				return stopAtEol;
-			}
+			get;
+			private set;
 		}
 
 		public string Rule {
-			get {
-				return rule;
-			}
+			get;
+			private set;
 		}
 
 		public string NextColor {
-			get {
-				return nextColor;
-			}
+			get;
+			private set;
 		}
-
+		
+		public string Continuation {
+			get;
+			private set;
+		}
+		
+		HashSet<string> endFlags = new HashSet<string> ();
 		public HashSet<string> EndFlags {
 			get {
 				return endFlags;
 			}
 		}
-
+		
+		HashSet<string> beginFlags = new HashSet<string> ();
 		public HashSet<string> BeginFlags {
 			get {
 				return beginFlags;
@@ -123,7 +109,7 @@ namespace Mono.TextEditor.Highlighting
 		
 		public override string ToString ()
 		{
-			return String.Format ("[Span: Color={0}, Rule={1}, Begin={2}, End={3}, Escape={4}, stopAtEol={5}]", color, rule, begin, end, String.IsNullOrEmpty (escape) ? "not set" : "'" + escape +"'", stopAtEol);
+			return String.Format ("[Span: Color={0}, Rule={1}, Begin={2}, End={3}, Escape={4}, stopAtEol={5}]", Color, Rule, Begin, End, String.IsNullOrEmpty (Escape) ? "not set" : "'" + Escape +"'", StopAtEol);
 		}
 		
 		static void AddFlags (HashSet<string> hashSet, string flags)
@@ -139,32 +125,34 @@ namespace Mono.TextEditor.Highlighting
 		{
 			Span result = new Span ();
 			
-			result.rule       = reader.GetAttribute ("rule");
-			result.color      = reader.GetAttribute ("color");
-			result.tagColor   = reader.GetAttribute ("tagColor");
-			result.nextColor  = reader.GetAttribute ("nextColor");
+			result.Rule       = reader.GetAttribute ("rule");
+			result.Color      = reader.GetAttribute ("color");
+			result.TagColor   = reader.GetAttribute ("tagColor");
+			result.NextColor  = reader.GetAttribute ("nextColor");
 			
-			result.escape = reader.GetAttribute ("escape");
+			result.Escape = reader.GetAttribute ("escape");
 			
 			string stopateol = reader.GetAttribute ("stopateol");
 			if (!String.IsNullOrEmpty (stopateol)) {
-				result.stopAtEol = Boolean.Parse (stopateol);
+				result.StopAtEol = Boolean.Parse (stopateol);
 			}
 			
 			if (reader.LocalName == AltNode) {
 				AddFlags (result.BeginFlags, reader.GetAttribute ("flags"));
-				result.begin     = reader.ReadElementString ();
-				result.stopAtEol = true;
+				result.Continuation = reader.GetAttribute ("continuation");
+				Console.WriteLine (result.Continuation);
+				result.Begin        = reader.ReadElementString ();
+				result.StopAtEol = true;
 			} else {
 				XmlReadHelper.ReadList (reader, Node, delegate () {
 					switch (reader.LocalName) {
 					case "Begin":
 						AddFlags (result.BeginFlags, reader.GetAttribute ("flags"));
-						result.begin = reader.ReadElementString ();
+						result.Begin = reader.ReadElementString ();
 						return true;
 					case "End":
 						AddFlags (result.EndFlags, reader.GetAttribute ("flags"));
-						result.end = reader.ReadElementString ();
+						result.End = reader.ReadElementString ();
 						return true;
 					}
 					return false;

@@ -34,9 +34,6 @@ namespace Mono.TextEditor.Highlighting
 {
 	public class Style
 	{
-		string name;
-		string description;
-		
 		Dictionary<string, ChunkStyle> styleLookupTable = new Dictionary<string, ChunkStyle> (); 
 		Dictionary<string, string> customPalette = new Dictionary<string, string> (); 
 		
@@ -320,15 +317,13 @@ namespace Mono.TextEditor.Highlighting
 		#endregion
 		
 		public string Name {
-			get {
-				return name;
-			}
+			get;
+			private set;
 		}
 		
 		public string Description {
-			get {
-				return description;
-			}
+			get;
+			private set;
 		}
 		
 		public static Cairo.Color ToCairoColor (Gdk.Color color)
@@ -556,8 +551,8 @@ namespace Mono.TextEditor.Highlighting
 			XmlReadHelper.ReadList (reader, "EditorStyle", delegate () {
 				switch (reader.LocalName) {
 				case "EditorStyle":
-					result.name        = reader.GetAttribute (NameAttribute);
-					result.description = reader.GetAttribute ("_description");
+					result.Name        = reader.GetAttribute (NameAttribute);
+					result.Description = reader.GetAttribute ("_description");
 					return true;
 				case "Color":
 					result.customPalette[reader.GetAttribute ("name")] = reader.GetAttribute ("value");

@@ -33,19 +33,14 @@ namespace Mono.TextEditor.Highlighting
 {
 	public class Marker
 	{
-		string color;
-		string tag;
-		
 		public string Color {
-			get {
-				return color;
-			}
+			get;
+			private set;
 		}
 		
 		public string Tag {
-			get {
-				return tag;
-			}
+			get;
+			private set;
 		}
 		
 		public Marker ()
@@ -54,7 +49,7 @@ namespace Mono.TextEditor.Highlighting
 		
 		public virtual bool GetIsValid (Style style)
 		{
-			return style.GetChunkStyle (color) != null;
+			return style.GetChunkStyle (Color) != null;
 		}
 		
 		public const string PrevMarker = "PrevMarker";
@@ -62,8 +57,8 @@ namespace Mono.TextEditor.Highlighting
 		public static Marker Read (XmlReader reader)
 		{
 			Marker result = new Marker ();
-			result.color = reader.GetAttribute ("color");
-			result.tag   = reader.ReadElementString ();
+			result.Color = reader.GetAttribute ("color");
+			result.Tag   = reader.ReadElementString ();
 			return result;
 		}
 	}

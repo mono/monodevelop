@@ -37,32 +37,31 @@ namespace Mono.TextEditor
 		//NOTE: the behaviour of this class is actually stateless; these variables are used to make the API
 		// friendlier for implementors
 		TextEditorData textEditorData;
-		TextEditor editor;
 	//	string status;
 		
 		internal void InternalHandleKeypress (TextEditor editor, TextEditorData data, Gdk.Key key, 
 		                                      uint unicodeKey, Gdk.ModifierType modifier)
 		{
-			this.editor = editor; 
+			this.Editor = editor; 
 			this.textEditorData = data;
 			
 			HandleKeypress (key, unicodeKey, modifier & (Gdk.ModifierType.ControlMask | Gdk.ModifierType.ShiftMask));
 			
 			//make sure that nothing funny goes on when the mode should have finished
 			this.textEditorData = null;
-			this.editor = null;
+			this.Editor = null;
 		}
 		
 		internal virtual void InternalSelectionChanged (TextEditor editor, TextEditorData data)
 		{
 			// only trigger SelectionChanged when event is a result of external stimuli, i.e. when 
 			// not already running HandleKeypress
-			if (this.editor == null) {
-				this.editor = editor; 
+			if (this.Editor == null) {
+				this.Editor = editor; 
 				this.textEditorData = data;
 				SelectionChanged ();
 				this.textEditorData = null;
-				this.editor = null;
+				this.Editor = null;
 			}
 		}
 		
@@ -72,7 +71,7 @@ namespace Mono.TextEditor
 		
 		protected Caret Caret { get { return textEditorData.Caret; } }
 		protected Document Document { get { return textEditorData.Document; } }
-		protected TextEditor Editor { get { return editor; } }
+		public TextEditor Editor { get; set;  }
 		protected TextEditorData Data { get { return textEditorData; } }
 		
 		protected abstract void HandleKeypress (Gdk.Key key, uint unicodeKey, Gdk.ModifierType modifier);
