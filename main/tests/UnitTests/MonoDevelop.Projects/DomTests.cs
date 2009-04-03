@@ -74,7 +74,7 @@ namespace MonoDevelop.Projects.DomTests
 			List<IReturnType> args    = new List<IReturnType> ();
 			returnType = new DomReturnType (DomReturnType.Int32.FullName);
 			returnType.ArrayDimensions = 1;
-			genArgs.Add (returnType);
+			args.Add (returnType);
 			
 			IMethod instMethod = DomMethod.CreateInstantiatedGenericMethod (method, genArgs, args);
 			
@@ -164,6 +164,7 @@ namespace MonoDevelop.Projects.DomTests
 			
 			method.Add (new DomParameter (method, "a", new DomReturnType ("T")));
 			method.Add (new DomParameter (method, "b", new DomReturnType ("S")));
+			
 			// extend method
 			List<IReturnType> genArgs = new List<IReturnType> ();
 			List<IReturnType> args    = new List<IReturnType> ();

@@ -1,5 +1,9 @@
 2009-04-03  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects/DomTests.cs: Fixed wrong unit test.
+
+2009-04-03  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: Added
 	  test for "Bug 491019 - No intellisense for recursive
 	  generics".
