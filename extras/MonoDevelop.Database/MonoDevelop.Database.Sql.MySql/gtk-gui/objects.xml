@@ -1,2 +1,10 @@
 <objects attr-sync="on">
+  <object type="MonoDevelop.Database.Sql.MySql.MySqlCreateDatabaseWidget" palette-category="MonoDevelop.Database.Sql.MySql" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups />
+    <signals />
+  </object>
+  <object type="MonoDevelop.Database.Sql.MySql.MySqlColumnEditorWidget" palette-category="MonoDevelop.Database.Sql.MySql" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups />
+    <signals />
+  </object>
 </objects>

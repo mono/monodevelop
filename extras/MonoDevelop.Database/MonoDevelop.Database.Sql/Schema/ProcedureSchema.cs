@@ -36,6 +36,7 @@ namespace MonoDevelop.Database.Sql
 		protected ParameterSchemaCollection parameters;
 		protected string language;
 		protected bool isSystemProcedure = false;
+		protected bool isFunction = false;
 		
 		public ProcedureSchema (ISchemaProvider schemaProvider)
 			: base (schemaProvider)
@@ -86,6 +87,18 @@ namespace MonoDevelop.Database.Sql
 			set {
 				if (isSystemProcedure != value) {
 					isSystemProcedure = value;
+					OnChanged ();
+				}
+			}
+		}
+		
+		public bool IsFunction {
+			get {
+				return isFunction;
+			} 
+			set {
+				if (isFunction != value) {
+					isFunction = value;
 					OnChanged ();
 				}
 			}

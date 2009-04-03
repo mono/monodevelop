@@ -51,9 +51,7 @@ namespace MonoDevelop.Database.Designer
 		{
 			if (schemaProvider == null)
 				throw new ArgumentNullException ("schemaProvider");
-			if (procedure == null)
-				throw new ArgumentNullException ("procedure");
-			
+
 			this.schemaProvider = schemaProvider;
 			this.procedure = procedure;
 			this.action = create ? SchemaActions.Create : SchemaActions.Alter;
@@ -83,9 +81,12 @@ namespace MonoDevelop.Database.Designer
 		
 		public void Initialize (ProcedureSchema procedure)
 		{
+			if (procedure == null)
+				throw new ArgumentNullException ("procedure");
+			
 			entryName.Text = procedure.Name;
 
-			if (action == SchemaActions.Create) {
+			if (action == SchemaActions.Create || action == SchemaActions.Alter) {
 				sqlEditor.Text = schemaProvider.GetProcedureAlterStatement (procedure);
 				if (commentEditor != null)
 					commentEditor.Comment = procedure.Comment;

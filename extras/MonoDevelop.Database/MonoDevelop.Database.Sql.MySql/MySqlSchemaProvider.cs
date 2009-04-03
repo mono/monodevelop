@@ -104,7 +104,6 @@ using MonoDevelop.Core;
 						using (IDataReader r = command.ExecuteReader()) {
 							while (r.Read ()) {
 								TableSchema table = new TableSchema (this);
-			
 								table.Name = r.GetString (0);
 								table.SchemaName = r.GetString (1);
 								table.Comment = r.IsDBNull (3) ? null : r.GetString (3);
@@ -116,7 +115,6 @@ using MonoDevelop.Core;
 									table.Definition = r2.GetString (1);
 								}
 								conn2.Release ();
-								
 								tables.Add (table);
 							}
 							r.Close ();
@@ -263,34 +261,35 @@ using MonoDevelop.Core;
 		public override ProcedureSchemaCollection GetProcedures ()
 		{
 			ProcedureSchemaCollection procedures = new ProcedureSchemaCollection ();
-			
 			IPooledDbConnection conn = connectionPool.Request ();
-			IDbCommand command = conn.CreateCommand (
-				"SELECT ROUTINE_NAME, ROUTINE_SCHEMA, ROUTINE_TYPE FROM information_schema.ROUTINES WHERE ROUTINE_SCHEMA ='"
-				+ ConnectionPool.ConnectionContext.ConnectionSettings.Database +
-				"' ORDER BY ROUTINE_NAME"
-			);
+			IDbCommand command = conn.CreateCommand (string.Concat (
+																	"SELECT ROUTINE_NAME, ROUTINE_SCHEMA, ROUTINE_TYPE FROM information_schema.ROUTINES WHERE ROUTINE_SCHEMA ='",
+																	ConnectionPool.ConnectionContext.ConnectionSettings.Database,
+																	"' ORDER BY ROUTINE_NAME"));
 			try {
 				using (command) {
 					if (GetMainVersion (command) >= 5) {
-					    	using (IDataReader r = command.ExecuteReader()) {
-					    		while (r.Read ()) {
-					    			ProcedureSchema procedure = new ProcedureSchema (this);
-					    			
-					    			procedure.Name = r.GetString (0);
-					    			procedure.OwnerName = r.GetString (1);
-					    			procedure.IsSystemProcedure = r.GetString (2).ToLower ().Contains ("system");
-								
+						using (IDataReader r = command.ExecuteReader()) {
+							while (r.Read ()) {
+								ProcedureSchema procedure = new ProcedureSchema (this);
+								procedure.Name = r.GetString (0);
+								procedure.OwnerName = r.GetString (1);
+								procedure.IsSystemProcedure = (r.GetString (2).IndexOf ("system", StringComparison.OrdinalIgnoreCase) > -1);
+								procedure.IsFunction = (r.GetString (2).IndexOf ("function", StringComparison.OrdinalIgnoreCase) > -1);
+									
 								IPooledDbConnection conn2 = connectionPool.Request ();
-								IDbCommand command2 = conn2.CreateCommand ("SHOW CREATE PROCEDURE `" + procedure.Name + "`;");
+								IDbCommand command2;
+								if (!procedure.IsFunction)
+									command2 = conn2.CreateCommand ("SHOW CREATE PROCEDURE `" + procedure.Name + "`;");
+								else
+									command2 = conn2.CreateCommand ("SHOW CREATE FUNCTION `" + procedure.Name + "`;");
 								using (IDataReader r2 = command2.ExecuteReader()) {
 									r2.Read ();
 									procedure.Definition = r2.GetString (2);
 								}
-					    			conn2.Release ();
-								
-					    			procedures.Add (procedure);
-					    		}
+					    		conn2.Release ();
+					    		procedures.Add (procedure);
+					    	}
 							r.Close ();
 						}
 					} //else: do nothing, since procedures are only supported since mysql 5.x
@@ -930,10 +929,13 @@ using MonoDevelop.Core;
 //			return String.Concat ("DROP VIEW IF EXISTS ", view.Name, "; ", Environment.NewLine, view.Definition); 
 //		}
 //		
-//		public override string GetProcedureAlterStatement (ProcedureAlterSchema procedure)
-//		{
-//			return String.Concat ("DROP PROCEDURE IF EXISTS ", procedure.Name, "; ", Environment.NewLine, procedure.Definition);
-//		}
+		public override string GetProcedureAlterStatement (ProcedureSchema procedure)
+		{
+			if (!procedure.IsFunction)
+				return String.Concat ("DROP PROCEDURE IF EXISTS ", procedure.Name, "; ", Environment.NewLine, procedure.Definition);
+			else
+				return String.Concat ("DROP FUNCTION IF EXISTS ", procedure.Name, "; ", Environment.NewLine, procedure.Definition);
+		}
 		
 //TODO: remove this and use the Version provided by the connection pool
 		private int GetMainVersion (IDbCommand command)

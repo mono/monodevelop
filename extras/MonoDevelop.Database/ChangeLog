@@ -1,3 +1,14 @@
+2009-03-24 Luciano N. Callero <lnc19@hotmail.com>
+	* MonoDevelop.Database.Sql/Schema/ProcedureSchema.cs: Added IsFunction 
+	  property to determine whether a Procedure is a function or a normal SP.
+	* MonoDevelop.Database.Designer/Dialogs/ProcedureEditorDialog.cs: Fix 
+	  ArgumentNullException. It was checking a parameter to null which is 
+	  supplied after the constructor.
+	* MonoDevelop.Database.Sql.MySql/MySqlSchemaProvider.cs: Check if it is a 
+	  function or SP. Fix MySqlException when stored procedures are shown on a 
+	  table which has functions. Uncomment GetProcedureAlterStatement 
+	  implementation and check if it is a function or a SP.   
+
 2009-02-26  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Database.sln: Fix translation projects' GUIDs.
