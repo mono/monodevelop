@@ -69,8 +69,10 @@ namespace MonoDevelop.CSharpBinding
 		
 		public string DisplayText {
 			get {
-				if (displayText == null)
+				if (displayText == null) {
 					displayText = ambience.GetString (Member, flags | OutputFlags.HideGenericParameterNames);
+				}
+
 				return displayText; 
 			}
 		}
@@ -114,24 +116,30 @@ namespace MonoDevelop.CSharpBinding
 			if (descriptionCreated)
 				return;
 			
+			StringBuilder sb = new StringBuilder ();
+			
 			descriptionCreated = true;
-			string docMarkup = ambience.GetString (Member,
+			if (Member is IMethod && ((IMethod)Member).WasExtended)
+				sb.Append (GettextCatalog.GetString ("(Extension) "));
+			sb.Append (ambience.GetString (Member,
 				OutputFlags.ClassBrowserEntries | OutputFlags.UseFullName | OutputFlags.IncludeParameterName | OutputFlags.IncludeMarkup
-				| (HideExtensionParameter ? OutputFlags.HideExtensionsParameter : OutputFlags.None));
+				| (HideExtensionParameter ? OutputFlags.HideExtensionsParameter : OutputFlags.None)));
+			
 			if (Member is IMember) {
 				if ((Member as IMember).IsObsolete) {
-					docMarkup += Environment.NewLine + "[Obsolete]";
+					sb.AppendLine ();
+					sb.Append (GettextCatalog.GetString ("[Obsolete]"));
 				}
 				XmlNode node = (Member as IMember).GetMonodocDocumentation ();
 				if (node != null) {
 					node = node.SelectSingleNode ("summary");
 					if (node != null) {
-						string mdDoc = GetDocumentation (node.InnerXml);
-						docMarkup += Environment.NewLine + mdDoc;
+						sb.AppendLine ();
+						sb.Append (GetDocumentation (node.InnerXml));
 					}
 				}
 			}
-			description = docMarkup;
+			description = sb.ToString ();
 		}
 		
 		static string GetCref (string cref)

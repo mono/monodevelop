@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml;
 
+using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects.Gui.Completion;
 using MonoDevelop.Projects.Dom;
@@ -221,9 +222,30 @@ namespace MonoDevelop.CSharpBinding
 				curLen += text.Length + 2;
 				parameters.Append (parameter);
 			}
-			return prefix + "<b>" + name + "</b> (" + parameters + ")";
+			StringBuilder sb = new StringBuilder ();
+			if (methods[overload].WasExtended)
+				sb.Append (GettextCatalog.GetString ("(Extension) "));
+			sb.Append (prefix);
+			sb.Append ("<b>");
+			sb.Append (name);
+			sb.Append ("</b> (");
+			sb.Append (parameters.ToString ());
+			sb.Append (")");
 			
-//			return ambience.GetIntellisenseDescription (methods[overload]);
+			if (methods[overload].IsObsolete) {
+				sb.AppendLine ();
+				sb.Append (GettextCatalog.GetString ("[Obsolete]"));
+			}
+			XmlNode node = methods[overload].GetMonodocDocumentation ();
+			if (node != null) {
+				node = node.SelectSingleNode ("summary");
+				if (node != null) {
+					sb.AppendLine ();
+					sb.Append (MemberCompletionData.GetDocumentation (node.InnerXml));
+				}
+			}
+			
+			return sb.ToString ();
 		}
 		
 		public string GetParameterMarkup (int overload, int paramIndex)

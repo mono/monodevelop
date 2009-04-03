@@ -492,8 +492,9 @@ namespace MonoDevelop.CSharpBinding
 					List<IType> accessibleExtTypes = DomType.GetAccessibleExtensionTypes (resolver.Dom, resolver.Unit);
 					// Inheritance of extension methods is handled in DomType
 					foreach (IMethod method in type.GetExtensionMethods (accessibleExtTypes)) {
-						if (method.Name == memberReferenceExpression.MemberName) 
+						if (method.Name == memberReferenceExpression.MemberName) {
 							member.Add (method);
+						}
 					}
 					foreach (IType curType in resolver.Dom.GetInheritanceTree (type)) {
 						member.AddRange (curType.SearchMember (memberReferenceExpression.MemberName, true));
@@ -505,7 +506,7 @@ namespace MonoDevelop.CSharpBinding
 							bool includeProtected = true;
 							for (int i = 0; i < member.Count; i++) {
 								IMethod method = member[i] as IMethod;
-								if (method != null && !method.IsFinalizer && method.IsExtension && method.IsAccessibleFrom (resolver.Dom, type, resolver.CallingMember, true))
+								if (method != null && !method.IsFinalizer && (method.IsExtension || method.WasExtended) && method.IsAccessibleFrom (resolver.Dom, type, resolver.CallingMember, true))
 									continue;
 								if ((member[i].IsStatic ^ isStatic) || !member[i].IsAccessibleFrom (resolver.Dom, type, resolver.CallingMember, includeProtected) || (method != null && method.IsFinalizer)) {
 									member.RemoveAt (i);
