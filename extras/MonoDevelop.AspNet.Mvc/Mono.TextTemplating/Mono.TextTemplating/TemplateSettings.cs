@@ -1,5 +1,5 @@
 // 
-// Engine.cs
+// TemplateSettings.cs
 //  
 // Author:
 //       Michael Hutchinson <mhutchinson@novell.com>
@@ -25,42 +25,30 @@
 // THE SOFTWARE.
 
 using System;
-using System.IO;
 using System.Text;
 using System.Collections.Generic;
-using System.CodeDom;
-using System.CodeDom.Compiler;
-using Mono.TextTemplating;
 
-namespace Microsoft.VisualStudio.TextTemplating
+namespace Mono.TextTemplating
 {
 	
-	
-	public class Engine : ITextTemplatingEngine
+	public class TemplateSettings
 	{
-		
-		public Engine ()
+		public TemplateSettings ()
 		{
+			Imports = new List<string> ();
+			Assemblies = new List<string> ();
 		}
 		
-		public string ProcessTemplate (string content, ITextTemplatingEngineHost host)
-		{
-			AppDomain appdomain = host.ProvideTemplatingAppDomain (content);
-			ITextTemplatingEngine engine;
-			if (appdomain != null) {
-				engine = (ITextTemplatingEngine)
-					appdomain.CreateInstanceAndUnwrap (typeof (TemplatingEngine).Assembly.FullName,
-					                                   typeof (TemplatingEngine).FullName);
-			} else {
-				engine = new TemplatingEngine ();
-			}
-			
-			return engine.ProcessTemplate (content, host);
-		}
-	}
-	
-	public interface ITextTemplatingEngine
-	{
-		string ProcessTemplate (string content, ITextTemplatingEngineHost host);
+		public bool HostSpecific { get; set; }
+		public bool Debug { get; set; }
+		public string Inherits { get; set; }
+		public string Name { get; set; }
+		public string Namespace { get; set; }
+		public List<string> Imports { get; private set; }
+		public List<string> Assemblies { get; private set; }
+		public System.CodeDom.Compiler.CodeDomProvider Provider { get; set; }
+		public Encoding Encoding { get; set; }
+		public string Extension { get; set; }
+		public System.Globalization.CultureInfo Culture { get; set; }
 	}
 }

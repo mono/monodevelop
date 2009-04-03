@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.CodeDom.Compiler;
 using Microsoft.VisualStudio.TextTemplating;
 
 namespace Mono.TextTemplating.Tests
@@ -33,24 +34,35 @@ namespace Mono.TextTemplating.Tests
 	
 	public class DummyHost : ITextTemplatingEngineHost
 	{
+		public readonly Dictionary<string, string> Locations = new Dictionary<string, string> ();
+		public readonly Dictionary<string, string> Contents = new Dictionary<string, string> ();
+		public readonly Dictionary<string, object> HostOptions = new Dictionary<string, object> ();
+	 	List<string> standardAssemblyReferences = new List<string> ();
+		List<string> standardImports = new List<string> ();
+		public readonly CompilerErrorCollection Errors = new CompilerErrorCollection ();
+		public readonly Dictionary<string, Type> DirectiveProcessors = new Dictionary<string, Type> ();
+		
 		public virtual object GetHostOption (string optionName)
 		{
-			throw new System.NotImplementedException();
+			object o;
+			HostOptions.TryGetValue (optionName, out o);
+			return o;
 		}
 		
 		public virtual bool LoadIncludeText (string requestFileName, out string content, out string location)
 		{
-			throw new System.NotImplementedException();
+			return Locations.TryGetValue (requestFileName, out location)
+				&& Contents.TryGetValue (requestFileName, out content);
 		}
 		
-		public virtual void LogErrors (System.CodeDom.Compiler.CompilerErrorCollection errors)
+		public virtual void LogErrors (CompilerErrorCollection errors)
 		{
-			throw new System.NotImplementedException();
+			Errors.AddRange (errors);
 		}
 		
 		public virtual AppDomain ProvideTemplatingAppDomain (string content)
 		{
-			throw new System.NotImplementedException();
+			return null;
 		}
 		
 		public virtual string ResolveAssemblyReference (string assemblyReference)
@@ -60,7 +72,9 @@ namespace Mono.TextTemplating.Tests
 		
 		public virtual Type ResolveDirectiveProcessor (string processorName)
 		{
-			throw new System.NotImplementedException();
+			Type t;
+			DirectiveProcessors.TryGetValue (processorName, out t);
+			return t;
 		}
 		
 		public virtual string ResolveParameterValue (string directiveId, string processorName, string parameterName)
@@ -83,34 +97,16 @@ namespace Mono.TextTemplating.Tests
 			throw new System.NotImplementedException();
 		}
 		
-		public virtual System.Collections.Generic.IList<string> StandardAssemblyReferences {
-			get {
-				throw new System.NotImplementedException();
-			}
+		public virtual IList<string> StandardAssemblyReferences {
+			get { return standardAssemblyReferences; }
 		}
 		
-		public virtual System.Collections.Generic.IList<string> StandardImports {
-			get {
-				throw new System.NotImplementedException();
-			}
+		public virtual IList<string> StandardImports {
+			get { return standardImports; }
 		}
 		
 		public virtual string TemplateFile {
-			get {
-				throw new System.NotImplementedException();
-			}
-		}
-	}
-	
-	public class IncludeFileHost : DummyHost
-	{
-		public readonly Dictionary<string, string> Locations = new Dictionary<string, string> ();
-		public readonly Dictionary<string, string> Contents = new Dictionary<string, string> ();
-		
-		public override bool LoadIncludeText (string requestFileName, out string content, out string location)
-		{
-			return Locations.TryGetValue (requestFileName, out location)
-				&& Contents.TryGetValue (requestFileName, out content);
+			get; set;
 		}
 	}
 }

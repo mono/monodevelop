@@ -35,7 +35,7 @@ namespace Mono.TextTemplating.Tests
 	[TestFixture]
 	public class ParsingTests
 	{
-		static string sample1 = 
+		public static string ParseSample1 = 
 @"<#@ template language=""C#v3.5"" #>
 Line One
 Line Two
@@ -53,7 +53,7 @@ baz \#>
 		public void TokenTest ()
 		{
 			string tf = "test.input";
-			Tokeniser tk = new Tokeniser (tf, sample1);
+			Tokeniser tk = new Tokeniser (tf, ParseSample1);
 			
 			//line 1
 			Assert.IsTrue (tk.Advance ());
@@ -139,8 +139,8 @@ baz \#>
 			string tf = "test.input";
 			
 			ParsedTemplate pt = new ParsedTemplate ("test.input");
-			Tokeniser tk = new Tokeniser (tf, sample1);
-			IncludeFileHost host = new IncludeFileHost ();
+			Tokeniser tk = new Tokeniser (tf, ParseSample1);
+			DummyHost host = new DummyHost ();
 			pt.Parse (host, tk);
 			
 			Assert.AreEqual (0, pt.Errors.Count);

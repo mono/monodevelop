@@ -47,6 +47,8 @@
     <Compile Include="Mono.TextTemplating\Tokeniser.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Mono.TextTemplating\TemplateGenerator.cs" />
+    <Compile Include="Mono.TextTemplating\TemplatingEngine.cs" />
+    <Compile Include="Mono.TextTemplating\TemplateSettings.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

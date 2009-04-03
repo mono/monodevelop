@@ -1,3 +1,12 @@
+2009-04-03  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextTemplating.csproj:
+	* Mono.TextTemplating/TemplatingEngine.cs:
+	* Mono.TextTemplating/TemplateSettings.cs:
+	* Microsoft.VisualStudio.TextTemplating/Engine.cs: Move the
+	  real engine into the Mono.TextTemplating namespace and
+	  expose helper methods so that they can be tested.
+
 2009-03-13  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.TextTemplating.csproj: Move output dir from ../bin to
