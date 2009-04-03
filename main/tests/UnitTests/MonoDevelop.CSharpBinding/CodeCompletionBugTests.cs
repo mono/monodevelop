@@ -1634,5 +1634,32 @@ public class Test
 			Assert.IsNotNull (provider.Find ("HookDelegate"), "delegate 'HookDelegate' not found.");
 			Assert.IsNull (provider.Find ("Method"), "method 'Method' found, but shouldn't.");
 		}
+		
+		/// <summary>
+		/// Bug 491019 - No intellisense for recursive generics
+		/// </summary>
+		[Test()]
+		public void TestBug491019 ()
+		{
+			CompletionDataList provider = CreateProvider (
+@"
+public abstract class NonGenericBase
+{
+	public abstract int this[int i] { get; }
+}
+
+public abstract class GenericBase<T> : NonGenericBase where T : GenericBase<T>
+{
+	T Instance { get { return default (T); } }
+
+	public void Foo ()
+	{
+		$Instance.Instance.$
 	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.Find ("Instance"), "class 'Inner' not found.");
+			Assert.IsNull (provider.Find ("this"), "'this' found, but shouldn't.");
+		}	}
 }
