@@ -427,6 +427,9 @@
     <EmbeddedResource Include="icons\project-reference-16.png">
       <LogicalName>project-reference-16.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-extensionmethod-16.png">
+      <LogicalName>element-extensionmethod-16.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Core.Gui.Components\FileBrowser.cs" />

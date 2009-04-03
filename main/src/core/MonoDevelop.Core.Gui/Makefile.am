@@ -107,6 +107,7 @@ RES =  \
 	icons/element-delegate-16.png \
 	icons/element-enumeration-16.png \
 	icons/element-event-16.png \
+	icons/element-extensionmethod-16.png \
 	icons/element-field-16.png \
 	icons/element-interface-16.png \
 	icons/element-literal-16.png \

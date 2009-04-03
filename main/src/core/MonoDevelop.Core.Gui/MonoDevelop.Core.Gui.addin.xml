@@ -91,6 +91,7 @@
 		<StockIcon stockid = "md-enum" resource = "element-enumeration-16.png" />
 		<StockIcon stockid = "md-event" resource = "element-event-16.png" />
 		<StockIcon stockid = "md-execution-marker" resource = "ExecutionMarker.png" />
+		<StockIcon stockid = "md-extensionmethod" resource = "element-extensionmethod-16.png" />
 		<StockIcon stockid = "md-field" resource = "element-field-16.png" />
 		<StockIcon stockid = "md-find-in-files" resource = "Icons.16x16.FindInFiles" />
 		<StockIcon stockid = "md-find-next-icon" resource = "Icons.16x16.FindNextIcon" />
@@ -105,6 +106,7 @@
 		<StockIcon stockid = "md-internal-delegate" icon = "res:element-delegate-16.png|res:visibility-internal-16.png" size="Menu" />
 		<StockIcon stockid = "md-internal-enum" icon = "res:element-enumeration-16.png|res:visibility-internal-16.png" size="Menu" />
 		<StockIcon stockid = "md-internal-event" icon = "res:element-event-16.png|res:visibility-internal-16.png" size="Menu" />
+		<StockIcon stockid = "md-internal-extensionmethod" resource = "res:element-extensionmethod-16.png|res:visibility-internal-16.png" />
 		<StockIcon stockid = "md-internal-field" icon = "res:element-field-16.png|res:visibility-internal-16.png" size="Menu" />
 		<StockIcon stockid = "md-internal-interface" icon = "res:element-interface-16.png|res:visibility-internal-16.png" size="Menu" />
 		<StockIcon stockid = "md-internal-method" icon = "res:element-method-16.png|res:visibility-internal-16.png" size="Menu" />
@@ -126,6 +128,7 @@
 		<StockIcon stockid = "md-private-delegate" icon = "res:element-delegate-16.png|res:visibility-private-16.png" size="Menu" />
 		<StockIcon stockid = "md-private-enum" icon = "res:element-enumeration-16.png|res:visibility-private-16.png" size="Menu" />
 		<StockIcon stockid = "md-private-event" icon = "res:element-event-16.png|res:visibility-private-16.png" size="Menu" />
+		<StockIcon stockid = "md-private-extensionmethod" resource = "res:element-extensionmethod-16.png|res:visibility-private-16.png" />
 		<StockIcon stockid = "md-private-field" icon = "res:element-field-16.png|res:visibility-private-16.png" size="Menu" />
 		<StockIcon stockid = "md-private-interface" icon = "res:element-interface-16.png|res:visibility-private-16.png" size="Menu" />
 		<StockIcon stockid = "md-private-method" icon = "res:element-method-16.png|res:visibility-private-16.png" size="Menu" />
@@ -137,6 +140,7 @@
 		<StockIcon stockid = "md-protected-delegate" icon = "res:element-delegate-16.png|res:visibility-protected-16.png" size="Menu" />
 		<StockIcon stockid = "md-protected-enum" icon = "res:element-enumeration-16.png|res:visibility-protected-16.png" size="Menu" />
 		<StockIcon stockid = "md-protected-event" icon = "res:element-event-16.png|res:visibility-protected-16.png" size="Menu" />
+		<StockIcon stockid = "md-protected-extensionmethod" resource = "res:element-extensionmethod-16.png|res:visibility-protected-16.png" />
 		<StockIcon stockid = "md-protected-field" icon = "res:element-field-16.png|res:visibility-protected-16.png" size="Menu" />
 		<StockIcon stockid = "md-protected-interface" icon = "res:element-interface-16.png|res:visibility-protected-16.png" size="Menu" />
 		<StockIcon stockid = "md-protected-method" icon = "res:element-method-16.png|res:visibility-protected-16.png" size="Menu" />
