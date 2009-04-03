@@ -59,6 +59,9 @@ namespace MonoDevelop.Projects.Dom
 			IMethod method = entry as IMethod;
 			if (method != null && method.Name == "Finalize" && method.DeclaringType.FullName == "System.Object")
 				return true;
+			IProperty property = entry as IProperty;
+			if (property != null && property.IsIndexer)
+				return true;
 			if (entry is IMember) 
 				return ((IMember)entry).DeclaringType != null && ((IMember)entry).DeclaringType.ClassType != ClassType.Enum && ((IMember)entry).IsSpecialName;
 		

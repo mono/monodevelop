@@ -1,3 +1,8 @@
+2009-04-03  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom/ExpressionContext.cs: Fixed "Bug
+	  491019 - No intellisense for recursive generics".
+
 2009-04-02  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomType.cs:
