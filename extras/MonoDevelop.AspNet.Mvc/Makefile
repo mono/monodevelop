@@ -2,8 +2,9 @@ include config.make
 installdir = "$(prefix)/lib/monodevelop/AddIns/MonoDevelop.AspNet.Mvc"
 conf=Debug
 
+
 all:
-	mdtool build -c:$(conf)
+	PKG_CONFIG_PATH="../../local-config:$(PKG_CONFIG_PATH)" mdtool build -c:$(conf)
 
 clean:
 	mdtool build -t:Clean -c:$(conf)
