@@ -95,7 +95,7 @@
 															</li>
 														</xsl:for-each>
 													<xsl:if test="normalize-space(.)">
-														<xsl:if test="gtc:GetString(@_title)="News Links">
+														<xsl:if test="gtc:GetString(@_title)='News Links'">
 															<li>No news can be found
 															</li>
 														</xsl:if>
