@@ -125,6 +125,21 @@ namespace CSharpBinding.Parser
 			return GetGeneratedClass (ctx, file, cls);
 		}
 		
+		public override void AddNamespaceImport (RefactorerContext ctx, string fileName, string nsName)
+		{
+			IEditableTextFile file = ctx.GetFile (fileName);
+			int pos = 0;
+			ParsedDocument parsedDocument = parser.Parse (ctx.ParserContext, fileName);
+			
+			if (parsedDocument.CompilationUnit.Usings.Count > 0) {
+				IUsing lastUsing = parsedDocument.CompilationUnit.Usings[parsedDocument.CompilationUnit.Usings.Count - 1];
+				pos = file.GetPositionFromLineColumn (lastUsing.Region.End.Line, lastUsing.Region.End.Column);
+				file.InsertText (pos, Environment.NewLine);
+				pos += Environment.NewLine.Length;
+			}
+			file.InsertText (pos, "using " + nsName +";" + Environment.NewLine);
+			
+		}
 		
 		//TODO
 		//static CodeStatement ThrowNewNotImplementedException ()

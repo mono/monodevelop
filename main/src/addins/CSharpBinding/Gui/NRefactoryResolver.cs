@@ -408,7 +408,7 @@ namespace MonoDevelop.CSharpBinding
 			this.SetupResolver (resolvePosition);
 			ResolveVisitor visitor = new ResolveVisitor (this);
 			ResolveResult result;
-			System.Console.WriteLine("expressionResult:" + expressionResult);
+//			System.Console.WriteLine("expressionResult:" + expressionResult);
 			
 			if (expressionResult.ExpressionContext == ExpressionContext.AttributeArguments) {
 				string attributeName = MonoDevelop.CSharpBinding.Gui.NewCSharpExpressionFinder.FindAttributeName (editor, unit, unit.FileName);
@@ -436,13 +436,13 @@ namespace MonoDevelop.CSharpBinding
 						result = visitor.CreateResult (ConvertTypeReference (typeRef));
 					}
 //					System.Console.WriteLine("type reference resolve result");
-					result.ResolvedExpression = expressionResult.Expression;
+					result.ResolvedExpression = expressionResult;
 					return result;
 				}
 			}
 			expr = ParseExpression (expressionResult);
 			
-			System.Console.WriteLine("parsed expression:" + expr);
+//			System.Console.WriteLine("parsed expression:" + expr);
 			if (expr == null) {
 //				System.Console.WriteLine("Can't parse expression");
 				return null;
@@ -452,7 +452,7 @@ namespace MonoDevelop.CSharpBinding
 //			if (CallingMember == null && result != null)
 //				result.StaticResolve = true;
 //			System.Console.WriteLine("result:" + result + "STATIC" + result.StaticResolve);
-			result.ResolvedExpression = expressionResult.Expression;
+			result.ResolvedExpression = expressionResult;
 			return result;
 		}
 		
