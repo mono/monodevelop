@@ -16,6 +16,7 @@ FILES =  \
 	MonoDevelop.SourceEditor.OptionPanels/GeneralOptionsPanel.cs \
 	MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs \
 	MonoDevelop.SourceEditor.OptionPanels/MarkerPanel.cs \
+	MonoDevelop.SourceEditor/AutoSave.cs \
 	MonoDevelop.SourceEditor/ClassQuickFinder.cs \
 	MonoDevelop.SourceEditor/CompileErrorTooltipProvider.cs \
 	MonoDevelop.SourceEditor/DebugValueTooltipProvider.cs \

@@ -27,6 +27,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading;
 
 using Gtk;
 #if GNOME_PRINT
@@ -68,6 +69,7 @@ namespace MonoDevelop.SourceEditor
 		FileSystemWatcher fileSystemWatcher;
 		static bool isInWrite = false;
 		DateTime lastSaveTime;
+		
 		
 		TextMarker currentDebugLineMarker;
 		TextMarker breakpointMarker;
@@ -138,6 +140,8 @@ namespace MonoDevelop.SourceEditor
 				int endIndex   = startIndex + Math.Max (args.Count, args.Value != null ? args.Value.Length : 0);
 				if (TextChanged != null)
 					TextChanged (this, new TextChangedEventArgs (startIndex, endIndex));
+				if (!inLoad)
+					autoSave.InformAutoSaveThread (Document.Text);
 			};
 			
 			widget.TextEditor.Document.TextReplacing += OnTextReplacing;
@@ -186,6 +190,13 @@ namespace MonoDevelop.SourceEditor
 			DebuggingService.Breakpoints.BreakpointRemoved += breakpointRemoved;
 			DebuggingService.Breakpoints.BreakpointStatusChanged += breakpointStatusChanged;
 		}
+		AutoSave autoSave = new AutoSave ();
+		
+		internal AutoSave AutoSave {
+			get {
+				return autoSave;
+			}
+		}
 		
 		public override void Save (string fileName)
 		{
@@ -194,6 +205,9 @@ namespace MonoDevelop.SourceEditor
 		
 		public void Save (string fileName, string encoding)
 		{
+			autoSave.FileName = fileName;
+			autoSave.RemoveAutoSaveFile ();
+		
 			if (ContentName != fileName) {
 				if (!FileService.RequestFileEdit (fileName))
 					return;
@@ -207,7 +221,7 @@ namespace MonoDevelop.SourceEditor
 						return;
 				}
 				warnOverwrite = false;
-				widget.RemoveReloadBar ();
+				widget.RemoveMessageBar ();
 				WorkbenchWindow.ShowNotification = false;
 			}
 			
@@ -235,25 +249,57 @@ namespace MonoDevelop.SourceEditor
 			Load (fileName, null);
 		}
 		
-		
-		bool warnOverwrite = false;
-		string encoding = null;
 		public void Load (string fileName, string encoding)
 		{
+			autoSave.FileName = fileName;
 			if (warnOverwrite) {
 				warnOverwrite = false;
-				widget.RemoveReloadBar ();
+				widget.RemoveMessageBar ();
 				WorkbenchWindow.ShowNotification = false;
 			}
 			Document.MimeType = IdeApp.Services.PlatformService.GetMimeTypeForUri (fileName);
 			widget.SetMime (Document.MimeType);
-			TextFile file = TextFile.ReadFile (fileName, encoding);
-			Document.Text = file.Text;
-			this.encoding = file.SourceEncoding;
-			ContentName = fileName;
-//			widget.ParsedDocument = ProjectDomService.GetParsedDocument (fileName);
-//			InitializeFormatter ();
 			
+			if (AutoSave.AutoSaveExists (fileName)) {
+				widget.ShowAutoSaveWarning (fileName);
+				this.encoding = encoding;
+			} else {
+				TextFile file = TextFile.ReadFile (fileName, encoding);
+				inLoad = true;
+				Document.Text = file.Text;
+				inLoad = false;
+				this.encoding = file.SourceEncoding;
+			}
+			ContentName = fileName;
+	//			widget.ParsedDocument = ProjectDomService.GetParsedDocument (fileName);
+	//			InitializeFormatter ();
+		
+			UpdateExecutionLocation ();
+			UpdateBreakpoints ();
+
+			widget.PopulateClassCombo ();
+			this.IsDirty = false;
+		}
+
+		bool warnOverwrite = false;
+		bool inLoad = false;
+		string encoding = null;
+		public void Load (string fileName, string content, string encoding)
+		{
+			autoSave.FileName = fileName;
+			if (warnOverwrite) {
+				warnOverwrite = false;
+				widget.RemoveMessageBar ();
+				WorkbenchWindow.ShowNotification = false;
+			}
+			Document.MimeType = IdeApp.Services.PlatformService.GetMimeTypeForUri (fileName);
+			widget.SetMime (Document.MimeType);
+			inLoad = true;
+			Document.Text = content;
+			inLoad = false;
+			this.encoding = encoding;
+			ContentName = fileName;
+
 			UpdateExecutionLocation ();
 			UpdateBreakpoints ();
 
@@ -268,6 +314,12 @@ namespace MonoDevelop.SourceEditor
 		public override void Dispose()
 		{
 			this.isDisposed= true;
+			if (autoSave != null) {
+				autoSave.RemoveAutoSaveFile ();
+				autoSave.Dispose ();
+				autoSave = null;
+			}
+			
 			ClipbardRingUpdated -= UpdateClipboardRing;
 			if (fileSystemWatcher != null) {
 				fileSystemWatcher.EnableRaisingEvents = false;

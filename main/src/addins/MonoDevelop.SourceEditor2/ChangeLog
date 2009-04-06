@@ -1,3 +1,13 @@
+2009-04-06  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.SourceEditor.csproj: 
+
+	* MonoDevelop.SourceEditor/AutoSave.cs:
+	* MonoDevelop.SourceEditor/SourceEditorView.cs:
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Implemented
+	  auto save feature ("Bug 409717 - No automatic save").
+
 2009-04-01  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: Fixed "Bug

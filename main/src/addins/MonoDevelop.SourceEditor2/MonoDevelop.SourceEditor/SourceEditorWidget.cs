@@ -558,7 +558,7 @@ namespace MonoDevelop.SourceEditor
 //			this.splitContainer.SizeRequested += SplitContainerSizeRequested;
 //		}
 //		
-		HBox reloadBar = null;
+		HBox messageBar = null;
 		class MessageArea : HBox
 		{
 			public MessageArea () : base (false, 8)
@@ -612,14 +612,14 @@ namespace MonoDevelop.SourceEditor
 		
 		public void ShowFileChangedWarning ()
 		{
-			RemoveReloadBar ();
+			RemoveMessageBar ();
 			
-			if (reloadBar == null) {
-				reloadBar = new MessageArea ();
+			if (messageBar == null) {
+				messageBar = new MessageArea ();
 				
 				Gtk.Image img = MonoDevelop.Core.Gui.Services.Resources.GetImage ("gtk-dialog-warning", IconSize.Dialog);
 				img.SetAlignment (0.5f, 0);
-				reloadBar.PackStart (img, false, false, 0);
+				messageBar.PackStart (img, false, false, 0);
 				
 				VBox labelBox = new VBox (false, 6);
 				
@@ -638,10 +638,10 @@ namespace MonoDevelop.SourceEditor
 				
 				labelBox.PackStart (l, false, false, 5);
 				
-				reloadBar.PackStart (labelBox, false, false, 5);
+				messageBar.PackStart (labelBox, false, false, 5);
 				
 				VBox box = new VBox ();
-				reloadBar.PackEnd (box, false, false, 10);
+				messageBar.PackEnd (box, false, false, 10);
 				
 				Button b1 = new Button (GettextCatalog.GetString("_Reload"));
 				b1.Image = MonoDevelop.Core.Gui.Services.Resources.GetImage (Gtk.Stock.Refresh, IconSize.Button);
@@ -655,23 +655,106 @@ namespace MonoDevelop.SourceEditor
 			}
 			
 			view.WarnOverwrite = true;
-			this.PackStart (reloadBar, false, false, CHILD_PADDING);
-			this.ReorderChild (reloadBar, classBrowser != null ? 1 : 0);
-			reloadBar.ShowAll ();
+			this.PackStart (messageBar, false, false, CHILD_PADDING);
+			this.ReorderChild (messageBar, classBrowser != null ? 1 : 0);
+			messageBar.ShowAll ();
 
-			reloadBar.QueueDraw ();
+			messageBar.QueueDraw ();
 			
 			view.WorkbenchWindow.ShowNotification = true;
 		}
 		
-		public void RemoveReloadBar ()
+		
+		public void ShowAutoSaveWarning (string fileName)
 		{
-			if (reloadBar != null) {
-				if (reloadBar.Parent == this)
-					this.Remove (reloadBar);
-				reloadBar.Destroy ();
-				reloadBar = null;
+			RemoveMessageBar ();
+			TextEditor.Visible = false;
+			if (messageBar == null) {
+				messageBar = new MessageArea ();
+				
+				Gtk.Image img = MonoDevelop.Core.Gui.Services.Resources.GetImage ("gtk-dialog-warning", IconSize.Dialog);
+				img.SetAlignment (0.5f, 0);
+				messageBar.PackStart (img, false, false, 0);
+				
+				VBox labelBox = new VBox (false, 6);
+				
+				Gtk.Label l = new Gtk.Label ();
+				l.Markup = "<b>" + string.Format (GettextCatalog.GetString ("Found auto save file for: »{0}«"), StrMiddleTruncate(fileName, 50)) + "</b>" + Environment.NewLine + Environment.NewLine + 
+					string.Format (GettextCatalog.GetString ("This may have following reasons:\n\n1) An other instance of monodevelop is running and editing this file. If this is the case be you could mess up that file.\n2) Monodevelop opened the file and crashed."));
+				l.Wrap = true;
+				l.SetAlignment (0.5f, 0);
+				l.Selectable = true;
+				labelBox.PackStart (l, false, false, 5);
+				
+				l = new Gtk.Label ();
+				l.Wrap = true;
+				l.SetAlignment (0.5f, 0);
+				l.Selectable = true;
+				l.Markup = "<small>" + string.Format (GettextCatalog.GetString ("Do you want to restore the contents of the auto save file?")) +"</small>";
+				
+				labelBox.PackStart (l, false, false, 5);
+				
+				messageBar.PackStart (labelBox, false, false, 5);
+				
+				VBox box = new VBox ();
+				messageBar.PackEnd (box, false, false, 10);
+				
+				Button b1 = new Button (GettextCatalog.GetString("_Load"));
+				b1.Image = MonoDevelop.Core.Gui.Services.Resources.GetImage (Gtk.Stock.Refresh, IconSize.Button);
+				box.PackStart (b1, false, false, 5);
+				b1.Clicked += delegate {
+					try {
+						view.AutoSave.FileName = fileName;
+						view.AutoSave.RemoveAutoSaveFile ();
+						view.Load (fileName);
+					} catch (Exception ex) {
+						MessageService.ShowException (ex, "Could not remove the auto save file.");
+					} finally {
+						RemoveMessageBar ();
+					}
+					
+				};
+				
+				Button b2 = new Button (GettextCatalog.GetString("_Restore"));
+				b2.Image = MonoDevelop.Core.Gui.Services.Resources.GetImage (Gtk.Stock.RevertToSaved, IconSize.Button);
+				box.PackStart (b2, false, false, 5);
+				b2.Clicked += delegate {
+					try {
+						view.AutoSave.FileName = fileName;
+						string content = view.AutoSave.LoadAutoSave ();
+						view.AutoSave.RemoveAutoSaveFile ();
+						view.Load (fileName, content, null);
+						view.IsDirty = true;
+					} catch (Exception ex) {
+						MessageService.ShowException (ex, "Could not remove the auto save file.");
+					} finally {
+						RemoveMessageBar ();
+					}
+					
+				};
 			}
+			
+			view.WarnOverwrite = true;
+			this.PackStart (messageBar, false, false, CHILD_PADDING);
+			this.ReorderChild (messageBar, classBrowser != null ? 1 : 0);
+			messageBar.ShowAll ();
+
+			messageBar.QueueDraw ();
+			
+//			view.WorkbenchWindow.ShowNotification = true;
+		}
+		
+		
+		public void RemoveMessageBar ()
+		{
+			if (messageBar != null) {
+				if (messageBar.Parent == this)
+					this.Remove (messageBar);
+				messageBar.Destroy ();
+				messageBar = null;
+			}
+			if (!TextEditor.Visible)
+				TextEditor.Visible = true;
 		}
 		
 		void ClickedReload (object sender, EventArgs args)
@@ -684,13 +767,13 @@ namespace MonoDevelop.SourceEditor
 			} catch (Exception ex) {
 				MessageService.ShowException (ex, "Could not reload the file.");
 			} finally {
-				RemoveReloadBar ();
+				RemoveMessageBar ();
 			}
 		}
 		
 		void ClickedIgnore (object sender, EventArgs args)
 		{
-			RemoveReloadBar ();
+			RemoveMessageBar ();
 			view.WorkbenchWindow.ShowNotification = false;
 		}
 		

@@ -154,6 +154,7 @@
     <Compile Include="MonoDevelop.SourceEditor\StyledSourceEditorOptions.cs" />
     <Compile Include="MonoDevelop.SourceEditor\ISourceEditorOptions.cs" />
     <Compile Include="MonoDevelop.SourceEditor\DefaultFormatter.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\AutoSave.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
