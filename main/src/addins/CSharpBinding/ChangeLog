@@ -1,5 +1,9 @@
 2009-04-06  Mike Krüger  <mkrueger@novell.com>
 
+	* Parser/CodeGenerator.cs: AddNamespace import is now atomar.
+
+2009-04-06  Mike Krüger  <mkrueger@novell.com>
+
 	* Parser/CodeGenerator.cs:
 	* Gui/NRefactoryResolver.cs: Added "resolve namespace"
 	  feature.

@@ -28,6 +28,7 @@
 //
 
 using System;
+using System.Text;
 using System.Diagnostics;
 using System.IO;
 using System.Drawing;
@@ -130,14 +131,17 @@ namespace CSharpBinding.Parser
 			IEditableTextFile file = ctx.GetFile (fileName);
 			int pos = 0;
 			ParsedDocument parsedDocument = parser.Parse (ctx.ParserContext, fileName);
-			
+			StringBuilder text = new StringBuilder ();
 			if (parsedDocument.CompilationUnit.Usings.Count > 0) {
 				IUsing lastUsing = parsedDocument.CompilationUnit.Usings[parsedDocument.CompilationUnit.Usings.Count - 1];
 				pos = file.GetPositionFromLineColumn (lastUsing.Region.End.Line, lastUsing.Region.End.Column);
-				file.InsertText (pos, Environment.NewLine);
-				pos += Environment.NewLine.Length;
+				text.AppendLine ();
 			}
-			file.InsertText (pos, "using " + nsName +";" + Environment.NewLine);
+			text.Append ("using ");
+			text.Append (nsName);
+			text.Append (";");
+			text.AppendLine ();
+			file.InsertText (pos, text.ToString ());
 			
 		}
 		
