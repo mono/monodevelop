@@ -82,6 +82,7 @@ FILES =  \
 RES =  \
 	Base.glade \
 	gtk-gui/gui.stetic \
+	icons/add-namespace-16.png \
 	icons/breakpoint-16.png \
 	icons/breakpoint-22.png \
 	icons/breakpoint-disable-all-16.png \

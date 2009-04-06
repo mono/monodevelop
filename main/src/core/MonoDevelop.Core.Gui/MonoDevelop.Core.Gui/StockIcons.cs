@@ -32,6 +32,7 @@ namespace MonoDevelop.Core.Gui
 {
 	public class Stock
 	{
+		public static readonly string AddNamespace = "md-add-namespace";
 		public static readonly string BreakPoint = "md-break-point";
 		public static readonly string BuildCombine = "md-build-combine";
 		public static readonly string BuildCurrentSelectedProject = "md-build-current-selected-project";

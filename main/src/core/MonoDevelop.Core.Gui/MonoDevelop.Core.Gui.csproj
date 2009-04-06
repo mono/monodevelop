@@ -430,6 +430,9 @@
     <EmbeddedResource Include="icons\element-extensionmethod-16.png">
       <LogicalName>element-extensionmethod-16.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\add-namespace-16.png">
+      <LogicalName>add-namespace-16.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Core.Gui.Components\FileBrowser.cs" />

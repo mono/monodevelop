@@ -1,3 +1,12 @@
+2009-04-06  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* icons/add-namespace-16.png:
+	* MonoDevelop.Core.Gui.csproj:
+	* MonoDevelop.Core.Gui.addin.xml:
+	* MonoDevelop.Core.Gui/StockIcons.cs: Added new icon for
+	  "resolve namespace" feature.
+
 2009-04-03  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:
