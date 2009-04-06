@@ -1,3 +1,8 @@
+2009-04-06  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/CSharpTextEditorCompletion.cs: fixed "Bug 438696 - Error
+	  in text editor extension chain.".
+
 2009-04-03  Mike Krüger  <mkrueger@novell.com>
 
 	* Gui/CSharpTextEditorCompletion.cs: Implemented "Bug 325527 -
