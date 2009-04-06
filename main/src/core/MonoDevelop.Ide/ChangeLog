@@ -1,3 +1,8 @@
+2009-04-06  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: Added
+	  "resolve namespace" feature.
+
 2009-03-27  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Gui/ViewCommandHandlers.cs: fixed "Bug

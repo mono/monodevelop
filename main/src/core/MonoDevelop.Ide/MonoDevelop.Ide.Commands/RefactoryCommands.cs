@@ -107,6 +107,7 @@ namespace MonoDevelop.Ide.Commands
 			ResolveResult resolveResult = GetResolveResult (doc, editor);
 			if (resolveResult is AggregatedResolveResult)
 				resolveResult = ((AggregatedResolveResult)resolveResult).PrimaryResult;
+			
 			IDomVisitable item = null;
 			IMember eitem = resolveResult != null ? (resolveResult.CallingMember ?? resolveResult.CallingType) : null;
 			if (resolveResult is ParameterResolveResult) {
@@ -155,7 +156,28 @@ namespace MonoDevelop.Ide.Commands
 					eitem = null;
 				}
 			}
-				
+			if (item == null && resolveResult != null && resolveResult.ResolvedType != null) {
+				CommandInfoSet resolveMenu = new CommandInfoSet ();
+				resolveMenu.Text = GettextCatalog.GetString ("Resolve");
+				foreach (string ns in ctx.ResolvePossibleNamespaces (resolveResult.ResolvedType)) {
+					CommandInfo info = resolveMenu.CommandInfos.Add ("using " + ns + ";", new RefactoryOperation (delegate {
+						CodeRefactorer refactorer = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
+						
+						refactorer.AddNamespaceImport (ctx, doc.FileName, ns);
+					}));
+					info.Icon = MonoDevelop.Core.Gui.Stock.AddNamespace;
+				}
+				resolveMenu.CommandInfos.AddSeparator ();
+				foreach (string ns in ctx.ResolvePossibleNamespaces (resolveResult.ResolvedType)) {
+					resolveMenu.CommandInfos.Add (ns, new RefactoryOperation (delegate {
+						// TODO: Move this to a expression refactorer !!!!
+						int pos = doc.TextEditor.GetPositionFromLineColumn (resolveResult.ResolvedExpression.Region.Start.Line, resolveResult.ResolvedExpression.Region.Start.Column);
+						doc.TextEditor.InsertText (pos, ns +"." );
+					}));
+				}
+				ainfo.Add (resolveMenu, null);
+			}
+			
 			while (item != null) {
 				CommandInfo ci;
 
@@ -164,14 +186,14 @@ namespace MonoDevelop.Ide.Commands
 				if (resolveResult is BaseResolveResult && eitem is IMethod && ((IMethod)eitem).IsConstructor) {
 					IType type = item as IType;
 					IMethod baseConstructor = null;
-					int idx1 = resolveResult.ResolvedExpression.IndexOf ('(');
-					int idx2 = resolveResult.ResolvedExpression.IndexOf (')');
+					int idx1 = resolveResult.ResolvedExpression.Expression.IndexOf ('(');
+					int idx2 = resolveResult.ResolvedExpression.Expression.IndexOf (')');
 					int paramCount = 0;
 					if (idx1 > 0 && idx2 > 0) {
 						if (idx2 - idx1 > 1)
 							paramCount++;
 						for (int i=idx1; i < idx2; i++) {
-							if (resolveResult.ResolvedExpression[i] == ',') 
+							if (resolveResult.ResolvedExpression.Expression[i] == ',') 
 								paramCount++;
 						}
 					}
