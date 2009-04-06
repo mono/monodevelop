@@ -56,6 +56,28 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		public abstract IEnumerable<IType> Types { get; }
 
+
+		protected virtual IEnumerable<string> InternalResolvePossibleNamespaces (IReturnType returnType)
+		{
+			foreach (IType type in Types) {
+				if (type.DecoratedFullName == type.Namespace + "." + returnType.DecoratedFullName) {
+					yield return type.Namespace;
+				}
+			}
+		}
+		
+		public IEnumerable<string> ResolvePossibleNamespaces (IReturnType returnType)
+		{
+			foreach (string ns in InternalResolvePossibleNamespaces (returnType)) {
+				yield return ns;
+			}
+			foreach (ProjectDom refDom in References) {
+				foreach (string ns in refDom.InternalResolvePossibleNamespaces (returnType)) {
+					yield return ns;
+				}
+			}
+		}
+				
 		public virtual IList<Tag> GetSpecialComments (string fileName)
 		{
 			return new List<Tag> ();
@@ -765,7 +787,6 @@ namespace MonoDevelop.Projects.Dom.Parser
 		{
 			return GetType (typeName, null, deepSearchReferences, caseSensitive);
 		}
-
 
 		public override IEnumerable<IType> Types {
 			get {

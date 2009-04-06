@@ -1,3 +1,14 @@
+2009-04-06  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom/IType.cs:
+	* MonoDevelop.Projects.Dom/IReturnType.cs:
+	* MonoDevelop.Projects.Dom/ResolveResult.cs:
+	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs:
+	* MonoDevelop.Projects.CodeGeneration/IRefactorer.cs:
+	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs:
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs: Added
+	  "resolve namespace" feature.
+
 2009-04-03  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomType.cs:

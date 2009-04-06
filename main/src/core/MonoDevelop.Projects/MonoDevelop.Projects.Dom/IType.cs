@@ -39,6 +39,10 @@ namespace MonoDevelop.Projects.Dom
 			get;
 		}
 		
+		string DecoratedFullName {
+			get;
+		}
+		
 		ProjectDom SourceProjectDom {
 			get;
 			set;

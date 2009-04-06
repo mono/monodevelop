@@ -289,11 +289,18 @@ namespace MonoDevelop.Projects.CodeGeneration
 		
 		public IMember ImplementMember (IType cls, IMember member, IReturnType privateReturnType)
 		{
+			
 			RefactorerContext gctx = GetGeneratorContext (cls);
 			IRefactorer gen = GetGeneratorForClass (cls);
 			IMember m = gen.ImplementMember (gctx, cls, member, privateReturnType);
 			gctx.Save ();
 			return m;
+		}
+		
+		public void AddNamespaceImport (ProjectDom dom, string fileName, string nsName)
+		{
+			IRefactorer refactorer = Services.Languages.GetRefactorerForFile (fileName);
+			refactorer.AddNamespaceImport (new RefactorerContext (dom, fileProvider, null), fileName, nsName);
 		}
 		
 		public IType ImplementMembers (IType cls, IEnumerable<KeyValuePair<IMember,IReturnType>> members,

@@ -72,6 +72,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 		IMember EncapsulateField (RefactorerContext ctx, IType cls, IField field, string propName, MemberAttributes attr, bool generateSetter);
 		
 		string ConvertToLanguageTypeName (string netTypeName);
+		void AddNamespaceImport (RefactorerContext ctx, string fileName, string nsName);
 	}
 	
 	public class MemberReference

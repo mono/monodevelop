@@ -1100,6 +1100,6 @@ namespace MonoDevelop.Projects.CodeGeneration
 				ops.BracingStyle = "C";
 			return ops;
 		}
-
+		public abstract void AddNamespaceImport (RefactorerContext ctx, string fileName, string nsName);
 	}
 }

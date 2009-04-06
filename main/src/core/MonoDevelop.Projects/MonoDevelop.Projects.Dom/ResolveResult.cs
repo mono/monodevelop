@@ -60,7 +60,7 @@ namespace MonoDevelop.Projects.Dom
 			set;
 		}
 
-		public string ResolvedExpression {
+		public ExpressionResult ResolvedExpression {
 			get;
 			set;
 		}
