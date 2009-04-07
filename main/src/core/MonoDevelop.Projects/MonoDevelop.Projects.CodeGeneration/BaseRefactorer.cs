@@ -41,7 +41,7 @@ using MonoDevelop.Projects.CodeGeneration;
 
 namespace MonoDevelop.Projects.CodeGeneration
 {
-	public abstract class BaseRefactorer: IRefactorer
+	public abstract class BaseRefactorer: IRefactorer, INameValidator
 	{
 		public virtual RefactorOperations SupportedOperations {
 			get { return RefactorOperations.All ^ RefactorOperations.AddFoldingRegion; }
@@ -1102,5 +1102,6 @@ namespace MonoDevelop.Projects.CodeGeneration
 		}
 		public abstract void AddNamespaceImport (RefactorerContext ctx, string fileName, string nsName);
 		public abstract DomLocation CompleteStatement (RefactorerContext ctx, string fileName, DomLocation caretLocation);
+		public abstract ValidationResult ValidateName (IDomVisitable visitable, string name);
 	}
 }

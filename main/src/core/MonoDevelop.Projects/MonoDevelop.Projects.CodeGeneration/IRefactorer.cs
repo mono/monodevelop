@@ -35,7 +35,7 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.Projects.CodeGeneration
 {
-	public interface IRefactorer
+	public interface IRefactorer : INameValidator
 	{
 		RefactorOperations SupportedOperations { get; }
 		

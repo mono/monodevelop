@@ -21,6 +21,7 @@ FILES =  \
 	AssemblyInfo.cs \
 	MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs \
 	MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs \
+	MonoDevelop.Projects.CodeGeneration/INameValidator.cs \
 	MonoDevelop.Projects.CodeGeneration/IRefactorer.cs \
 	MonoDevelop.Projects.CodeGeneration/RefactorerContext.cs \
 	MonoDevelop.Projects.CodeGeneration/RefactorOperations.cs \
