@@ -1,5 +1,10 @@
 2009-04-07  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: Fixed bug in
+	  resolve type feature.
+
+2009-04-07  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.CodeTemplates/ExpansionObject.cs: handled
 	  strings in GetLenghtOrCount expansion method.
 

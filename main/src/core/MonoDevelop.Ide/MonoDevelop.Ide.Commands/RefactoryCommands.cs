@@ -159,7 +159,12 @@ namespace MonoDevelop.Ide.Commands
 			if (item == null && resolveResult != null && resolveResult.ResolvedType != null) {
 				CommandInfoSet resolveMenu = new CommandInfoSet ();
 				resolveMenu.Text = GettextCatalog.GetString ("Resolve");
-				foreach (string ns in ctx.ResolvePossibleNamespaces (resolveResult.ResolvedType)) {
+				IReturnType returnType = resolveResult.ResolvedType;
+				if (returnType == null || string.IsNullOrEmpty (returnType.FullName))
+					returnType = new DomReturnType (resolveResult.ResolvedExpression.Expression);
+				
+				List<string> namespaces = new List<string> (ctx.ResolvePossibleNamespaces (returnType));
+				foreach (string ns in namespaces) {
 					CommandInfo info = resolveMenu.CommandInfos.Add ("using " + ns + ";", new RefactoryOperation (delegate {
 						CodeRefactorer refactorer = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
 						
@@ -168,14 +173,15 @@ namespace MonoDevelop.Ide.Commands
 					info.Icon = MonoDevelop.Core.Gui.Stock.AddNamespace;
 				}
 				resolveMenu.CommandInfos.AddSeparator ();
-				foreach (string ns in ctx.ResolvePossibleNamespaces (resolveResult.ResolvedType)) {
+				foreach (string ns in namespaces) {
 					resolveMenu.CommandInfos.Add (ns, new RefactoryOperation (delegate {
 						// TODO: Move this to a expression refactorer !!!!
 						int pos = doc.TextEditor.GetPositionFromLineColumn (resolveResult.ResolvedExpression.Region.Start.Line, resolveResult.ResolvedExpression.Region.Start.Column);
 						doc.TextEditor.InsertText (pos, ns +"." );
 					}));
 				}
-				ainfo.Add (resolveMenu, null);
+				if (namespaces.Count > 0)
+					ainfo.Add (resolveMenu, null);
 			}
 			
 			while (item != null) {
