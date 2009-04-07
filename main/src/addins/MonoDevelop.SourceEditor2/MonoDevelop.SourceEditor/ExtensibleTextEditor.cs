@@ -38,6 +38,7 @@ using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Gui.Completion;
+using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Components.Commands;
 using Mono.TextEditor.Highlighting;
 using MonoDevelop.Ide.CodeTemplates;
@@ -937,6 +938,17 @@ namespace MonoDevelop.SourceEditor
 		{
 			RunAction (MiscActions.InsertNewLinePreserveCaretPosition);
 		}
+		
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.CompleteStatement)]
+		internal void OnCompleteStatement ()
+		{
+			CodeRefactorer refactorer = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
+			DomLocation caretLocation = refactorer.CompleteStatement (ProjectDom, Document.FileName, new DomLocation (Caret.Line, Caret.Column));
+			Caret.Line   = caretLocation.Line;
+			Caret.Column = caretLocation.Column;
+		}
+		
+		
 		
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.DeletePrevWord)]
 		internal void OnDeletePrevWord ()

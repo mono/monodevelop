@@ -1,5 +1,10 @@
 2009-04-07  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs:
+	  Implemented "Bug 492675 - New line & ; at end of line".
+
+2009-04-07  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: Added
 	  ctrl+return/shift+return commands.
 
