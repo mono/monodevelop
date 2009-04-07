@@ -41,7 +41,9 @@ namespace MonoDevelop.Platform
 {
 	public class MacPlatform : PlatformService
 	{
+		OSXIntegration.OSXMenu globalMenu;
 		bool igeInited, igeExists;
+		bool menuFail;
 		
 		static Dictionary<string, string> mimemap;
 
@@ -100,45 +102,52 @@ namespace MonoDevelop.Platform
 		[System.Runtime.InteropServices.DllImport("libigemacintegration.dylib")]
 		static extern void ige_mac_menu_set_global_key_handler_enabled (bool enabled);
 		
-		bool IgeExists {
-			get {
-				if (igeInited)
-					return igeExists;
-				igeInited = true;
-				
-				try {
-					//disabled, as the IGE menu integration can't handle our menus
-					ige_mac_menu_set_global_key_handler_enabled (false);
-				}
-				catch (Exception ex) {
-					MonoDevelop.Core.LoggingService.LogError ("Could not load libigemacintegration. Main Menu integration disabled.", ex);
-					return false;
-				}
-				
-				IgeSetup ();
-				igeExists = true;
-				return true;
-			}
-		}
-		
-		public override bool CanInstallGlobalMenu {
-			get {
+		bool IgeExists ()
+		{
+			if (igeInited)
+				return igeExists;
+			igeInited = true;
+			
+			try {
 				//disabled, as the IGE menu integration can't handle our menus
-				if (IgeExists)
-					return false;
+				ige_mac_menu_set_global_key_handler_enabled (false);
+			}
+			catch (Exception ex) {
+				MonoDevelop.Core.LoggingService.LogError ("Could not load libigemacintegration. Main Menu integration disabled.", ex);
 				return false;
 			}
+			
+			IgeSetup ();
+			igeExists = true;
+			return true;
 		}
 		
-		public override void InstallGlobalMenu (Gtk.MenuBar mainMenu)
+		public override bool SetGlobalMenu (CommandManager commandManager, string commandMenuAddinPath)
 		{
-			mainMenu.ShowAll ();
-			IgeMacMenu.MenuBar = mainMenu;
-		}
-		
-		public override void UninstallGlobalMenu ()
-		{
-			IgeMacMenu.MenuBar = null;
+			IgeExists ();
+			
+			//FIXME: disabled, as it doesn't fully work yet
+			return false;
+			
+			if (menuFail)
+				return false;
+			
+			if (globalMenu == null) {
+				try {
+					CommandEntrySet ces = commandManager.CreateCommandEntrySet (commandMenuAddinPath);
+					globalMenu = new OSXIntegration.OSXMenu (commandManager, ces);
+					globalMenu.InstallMenu ();
+				} catch (Exception ex) {
+					MonoDevelop.Core.LoggingService.LogError ("Could not install global menu", ex);
+					menuFail = true;
+					return false;
+				}
+			} else {
+				//FIXME: update existing menus
+				MonoDevelop.Core.LoggingService.LogError ("Updating global menu not supported yet");
+			}
+			
+			return true;
 		}
 		
 		//add quit, preferences, about to the app menu group

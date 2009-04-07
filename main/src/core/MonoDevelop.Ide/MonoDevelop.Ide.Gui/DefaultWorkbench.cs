@@ -222,8 +222,10 @@ namespace MonoDevelop.Ide.Gui
 			
 //			TopMenu.Selected   += new CommandHandler(OnTopMenuSelected);
 //			TopMenu.Deselected += new CommandHandler(OnTopMenuDeselected);
-
-			topMenu = IdeApp.CommandService.CreateMenuBar (mainMenuPath);
+			
+			if (!MonoDevelop.Core.Gui.Services.PlatformService.SetGlobalMenu (MonoDevelop.Ide.Gui.IdeApp.CommandService, mainMenuPath))
+				topMenu = IdeApp.CommandService.CreateMenuBar (mainMenuPath);
+			
 			toolbars = IdeApp.CommandService.CreateToolbarSet (toolbarsPath);
 			foreach (Gtk.Toolbar t in toolbars) {
 				t.ToolbarStyle = Gtk.ToolbarStyle.Icons;
@@ -245,6 +247,9 @@ namespace MonoDevelop.Ide.Gui
 			bool changed = false;
 			
 			if (args.PathChanged (mainMenuPath)) {
+				if (MonoDevelop.Core.Gui.Services.PlatformService.SetGlobalMenu (MonoDevelop.Ide.Gui.IdeApp.CommandService, mainMenuPath))
+					return;
+				
 				topMenu = IdeApp.CommandService.CreateMenuBar (mainMenuPath);
 				changed = true;
 			}

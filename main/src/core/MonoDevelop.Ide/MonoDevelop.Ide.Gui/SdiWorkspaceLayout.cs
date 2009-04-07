@@ -631,17 +631,15 @@ namespace MonoDevelop.Ide.Gui
 			if (wb.TopMenu == menubar)
 				return;
 			
-			if (MonoDevelop.Core.Gui.Services.PlatformService.CanInstallGlobalMenu) {
-				MonoDevelop.Core.Gui.Services.PlatformService.InstallGlobalMenu (wb.TopMenu);
-			}
-			else {
+			if (menubar != null)
+				rootWidget.Remove (menubar);
+			
+			if (wb.TopMenu != null) {
 				((VBox)rootWidget).PackStart (wb.TopMenu, false, false, 0);
 				((Gtk.Box.BoxChild) rootWidget [wb.TopMenu]).Position = 0;
 				wb.TopMenu.ShowAll ();
-				
-				if (menubar != null)
-					rootWidget.Remove (menubar);
 			}
+			
 			menubar = wb.TopMenu;
 		}
 		
@@ -650,13 +648,7 @@ namespace MonoDevelop.Ide.Gui
 			if (menubar == null)
 				return;
 			
-			if (MonoDevelop.Core.Gui.Services.PlatformService.CanInstallGlobalMenu) {
-				MonoDevelop.Core.Gui.Services.PlatformService.UninstallGlobalMenu ();
-			}
-			else {
-				rootWidget.Remove(((DefaultWorkbench)workbench).TopMenu);
-			}
-			
+			rootWidget.Remove(((DefaultWorkbench)workbench).TopMenu);
 			menubar = null;
 		}
 		

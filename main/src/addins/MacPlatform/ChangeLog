@@ -1,3 +1,14 @@
+2009-04-06  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MacPlatform.cs: Use the OSXMenu wrapper instead of IGE.
+	  Currently disabled.
+
+	* Menus:
+	* Makefile.am:
+	* Menus/OSXMenu.cs:
+	* MacPlatform.csproj: Add Miguel's first pass at wrapping the
+	  OS X menus.
+
 2009-02-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MacPlatform.csproj: Flush.

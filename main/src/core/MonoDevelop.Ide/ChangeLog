@@ -1,3 +1,10 @@
+2009-04-06  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs:
+	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Change the
+	  platform service method for installing the global menu so
+	  that it uses a command path instead of a GTK menu.
+
 2009-04-06  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: Added

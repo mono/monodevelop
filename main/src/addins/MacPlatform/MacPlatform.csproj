@@ -79,6 +79,7 @@
     <Compile Include="Ige\IgeMacMenu.cs" />
     <Compile Include="Ige\IgeMacMenuGroup.cs" />
     <Compile Include="Ige\ObjectManager.cs" />
+    <Compile Include="Menus\OSXMenu.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -103,4 +104,7 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
+  <ItemGroup>
+    <Folder Include="Menus\" />
+  </ItemGroup>
 </Project>

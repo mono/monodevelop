@@ -24,7 +24,8 @@ FILES =  \
 	Ige/IgeMacMenu.cs \
 	Ige/IgeMacMenuGroup.cs \
 	Ige/ObjectManager.cs \
-	MacPlatform.cs
+	MacPlatform.cs \
+	Menus/OSXMenu.cs
 
 RES = MacPlatform.addin.xml
 

@@ -237,14 +237,9 @@ namespace MonoDevelop.Core.Gui
 			return null;
 		}
 		
-		public virtual bool CanInstallGlobalMenu { get { return false; } }
-		
-		public virtual void InstallGlobalMenu (Gtk.MenuBar mainMenu)
+		public virtual bool SetGlobalMenu (MonoDevelop.Components.Commands.CommandManager commandManager, string commandMenuAddinPath)
 		{
-		}
-		
-		public virtual void UninstallGlobalMenu ()
-		{
+			return false;
 		}
 	}
 }
