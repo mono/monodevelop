@@ -37,7 +37,7 @@ using MonoDevelop.Projects.CodeGeneration;
 namespace MonoDevelop.Ide.Gui.Dialogs {
 	public partial class RenameItemDialog : Gtk.Dialog {
 		IDomVisitable item;
-		
+		string fileName;
 		public RenameItemDialog (ProjectDom ctx, IDomVisitable item)
 		{
 			this.item = item;
@@ -54,6 +54,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 					this.Title = GettextCatalog.GetString ("Rename Interface");
 				else
 					this.Title = GettextCatalog.GetString ("Rename Class");
+				this.fileName = type.CompilationUnit.FileName;
 			} else if (item is IField) {
 				this.Title = GettextCatalog.GetString ("Rename Field");
 			} else if (item is IProperty) {
@@ -74,11 +75,18 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 				this.Title = GettextCatalog.GetString ("Rename Item");
 			}
 			if (item is IMember) {
-				entry.Text = ((IMember)item).Name;
+				IMember member = (IMember)item;
+				entry.Text = member.Name;
+				if (!(member is IType) && member.DeclaringType != null)
+					this.fileName = member.DeclaringType.CompilationUnit.FileName;
 			} else if (item is LocalVariable) {
-				entry.Text = ((LocalVariable)item).Name;
+				LocalVariable lvar = (LocalVariable)item;
+				entry.Text = lvar.Name;
+				this.fileName = lvar.FileName;
 			} else {
-				entry.Text = ((IParameter)item).Name;
+				IParameter par = (IParameter)item;
+				entry.Text = par.Name;
+				this.fileName = par.DeclaringMember.DeclaringType.CompilationUnit.FileName;
 			}
 			entry.SelectRegion (0, -1);
 			
@@ -88,8 +96,29 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			
 			buttonOk.Clicked += new EventHandler (OnOKClicked);
 			buttonCancel.Clicked += new EventHandler (OnCancelClicked);
+			entry.Changed += delegate {
+				buttonOk.Sensitive = ValidateName ();
+			};
+			ValidateName ();
 		}
 		
+		bool ValidateName ()
+		{
+			INameValidator nameValidator = MonoDevelop.Projects.Services.Languages.GetRefactorerForFile (fileName ?? "default.cs");
+			if (nameValidator == null)
+				return true;
+			ValidationResult result = nameValidator.ValidateName (this.item, entry.Text);
+			if (!result.IsValid) {
+				imageWarning.IconName = Stock.DialogError;
+			} else if (result.HasWarning) {
+				imageWarning.IconName = Stock.DialogWarning;
+			} else {
+				imageWarning.IconName = Stock.Apply;
+			}
+			labelWarning.Text = result.Message;
+			return result.IsValid;
+		}
+
 		void OnEntryChanged (object sender, EventArgs e)
 		{
 			// Don't allow the user to click OK unless there is a new name

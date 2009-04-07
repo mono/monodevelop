@@ -23,6 +23,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
         
         private Gtk.CheckButton renameFileFlag;
         
+        private Gtk.HBox hbox1;
+        
+        private Gtk.Image imageWarning;
+        
+        private Gtk.Label labelWarning;
+        
         private Gtk.Button buttonCancel;
         
         private Gtk.Button buttonOk;
@@ -38,6 +44,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog1_VBox";
             w1.Spacing = 6;
+            w1.BorderWidth = ((uint)(2));
             // Container child dialog1_VBox.Gtk.Box+BoxChild
             this.vbox = new Gtk.VBox();
             this.vbox.Name = "vbox";
@@ -84,17 +91,43 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             w5.Position = 1;
             w5.Expand = false;
             w5.Fill = false;
-            w1.Add(this.vbox);
-            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(w1[this.vbox]));
+            // Container child vbox.Gtk.Box+BoxChild
+            this.hbox1 = new Gtk.HBox();
+            this.hbox1.Name = "hbox1";
+            this.hbox1.Spacing = 6;
+            // Container child hbox1.Gtk.Box+BoxChild
+            this.imageWarning = new Gtk.Image();
+            this.imageWarning.Name = "imageWarning";
+            this.imageWarning.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-apply", Gtk.IconSize.Button, 20);
+            this.hbox1.Add(this.imageWarning);
+            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.hbox1[this.imageWarning]));
             w6.Position = 0;
             w6.Expand = false;
             w6.Fill = false;
+            // Container child hbox1.Gtk.Box+BoxChild
+            this.labelWarning = new Gtk.Label();
+            this.labelWarning.Name = "labelWarning";
+            this.hbox1.Add(this.labelWarning);
+            Gtk.Box.BoxChild w7 = ((Gtk.Box.BoxChild)(this.hbox1[this.labelWarning]));
+            w7.Position = 1;
+            w7.Expand = false;
+            w7.Fill = false;
+            this.vbox.Add(this.hbox1);
+            Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.vbox[this.hbox1]));
+            w8.Position = 2;
+            w8.Expand = false;
+            w8.Fill = false;
+            w1.Add(this.vbox);
+            Gtk.Box.BoxChild w9 = ((Gtk.Box.BoxChild)(w1[this.vbox]));
+            w9.Position = 0;
+            w9.Expand = false;
+            w9.Fill = false;
             // Internal child MonoDevelop.Ide.Gui.Dialogs.RenameItemDialog.ActionArea
-            Gtk.HButtonBox w7 = this.ActionArea;
-            w7.Name = "dialog1_ActionArea";
-            w7.Spacing = 10;
-            w7.BorderWidth = ((uint)(5));
-            w7.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
+            Gtk.HButtonBox w10 = this.ActionArea;
+            w10.Name = "dialog1_ActionArea";
+            w10.Spacing = 6;
+            w10.BorderWidth = ((uint)(5));
+            w10.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
             this.buttonCancel = new Gtk.Button();
             this.buttonCancel.CanDefault = true;
@@ -104,9 +137,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.buttonCancel.UseUnderline = true;
             this.buttonCancel.Label = "gtk-cancel";
             this.AddActionWidget(this.buttonCancel, -6);
-            Gtk.ButtonBox.ButtonBoxChild w8 = ((Gtk.ButtonBox.ButtonBoxChild)(w7[this.buttonCancel]));
-            w8.Expand = false;
-            w8.Fill = false;
+            Gtk.ButtonBox.ButtonBoxChild w11 = ((Gtk.ButtonBox.ButtonBoxChild)(w10[this.buttonCancel]));
+            w11.Expand = false;
+            w11.Fill = false;
             // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
             this.buttonOk = new Gtk.Button();
             this.buttonOk.CanDefault = true;
@@ -116,15 +149,15 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.buttonOk.UseUnderline = true;
             this.buttonOk.Label = "gtk-ok";
             this.AddActionWidget(this.buttonOk, -5);
-            Gtk.ButtonBox.ButtonBoxChild w9 = ((Gtk.ButtonBox.ButtonBoxChild)(w7[this.buttonOk]));
-            w9.Position = 1;
-            w9.Expand = false;
-            w9.Fill = false;
+            Gtk.ButtonBox.ButtonBoxChild w12 = ((Gtk.ButtonBox.ButtonBoxChild)(w10[this.buttonOk]));
+            w12.Position = 1;
+            w12.Expand = false;
+            w12.Fill = false;
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
-            this.DefaultWidth = 375;
-            this.DefaultHeight = 139;
+            this.DefaultWidth = 370;
+            this.DefaultHeight = 166;
             this.labelNewName.MnemonicWidget = this.entry;
             this.renameFileFlag.Hide();
             this.Show();

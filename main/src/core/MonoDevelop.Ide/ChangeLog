@@ -1,5 +1,15 @@
 2009-04-07  Mike Krüger  <mkrueger@novell.com>
 
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Ide.Gui.Dialogs/RenameItemDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.RenameItemDialog.cs:
+	  implemented Bug 414735 - Rename refactoring should not allow
+	  invalid names
+
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow.cs: 
+
+2009-04-07  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.addin.xml:
 	* MonoDevelop.Ide.Commands/TextEditorCommands.cs: Implemented
 	  "Bug 492675 - New line & ; at end of line".
