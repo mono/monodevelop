@@ -228,6 +228,24 @@ namespace Mono.TextEditor
 			data.Document.EndAtomicUndo ();
 		}
 		
+		public static void InsertNewLinePreserveCaretPosition (TextEditorData data)
+		{
+			if (!data.CanEditSelection)
+				return;
+			DocumentLocation loc = data.Caret.Location;
+			InsertNewLine (data);
+			data.Caret.Location = loc;
+		}
+		
+		public static void InsertNewLineAtEnd (TextEditorData data)
+		{
+			if (!data.CanEditSelection)
+				return;
+			LineSegment line = data.Document.GetLine (data.Caret.Line);
+			data.Caret.Column = line.EditableLength;
+			InsertNewLine (data);
+		}
+		
 		public static void InsertNewLine (TextEditorData data)
 		{
 			if (!data.CanEditSelection)

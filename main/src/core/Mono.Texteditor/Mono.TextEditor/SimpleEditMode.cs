@@ -155,6 +155,9 @@ namespace Mono.TextEditor
 			keyBindings.Add (GetKeyCode (Gdk.Key.Return), action);
 			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Enter), action);
 			
+			keyBindings.Add (GetKeyCode (Gdk.Key.Return, Gdk.ModifierType.ControlMask), MiscActions.InsertNewLinePreserveCaretPosition);
+			keyBindings.Add (GetKeyCode (Gdk.Key.Return, Gdk.ModifierType.ShiftMask), MiscActions.InsertNewLineAtEnd);
+			
 			action = DeleteActions.Backspace;
 			keyBindings.Add (GetKeyCode (Gdk.Key.BackSpace), action);
 			keyBindings.Add (GetKeyCode (Gdk.Key.BackSpace, Gdk.ModifierType.ShiftMask), action);
