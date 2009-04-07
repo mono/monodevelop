@@ -126,6 +126,50 @@ namespace CSharpBinding.Parser
 			return GetGeneratedClass (ctx, file, cls);
 		}
 		
+		public override DomLocation CompleteStatement (RefactorerContext ctx, string fileName, DomLocation caretLocation)
+		{
+			IEditableTextFile file = ctx.GetFile (fileName);
+			int pos = file.GetPositionFromLineColumn (caretLocation.Line + 1, 1);
+			
+			StringBuilder line = new StringBuilder ();
+			int lineNr = caretLocation.Line + 1, column = 1, maxColumn = 1, lastPos = pos;
+			
+			while (lineNr == caretLocation.Line + 1) {
+				maxColumn = column;
+				lastPos = pos;
+				line.Append (file.GetCharAt (pos));
+				pos++;
+				file.GetLineColumnFromPosition (pos, out lineNr, out column);
+			}
+			string trimmedline = line.ToString ().Trim ();
+			string indent      = line.ToString ().Substring (0, line.Length - line.ToString ().TrimStart (' ', '\t').Length);
+			if (trimmedline.EndsWith (";") || trimmedline.EndsWith ("{"))
+				return caretLocation;
+			if (trimmedline.StartsWith ("if") || 
+			    trimmedline.StartsWith ("while") ||
+			    trimmedline.StartsWith ("switch") ||
+			    trimmedline.StartsWith ("for") ||
+			    trimmedline.StartsWith ("foreach")) {
+				if (!trimmedline.EndsWith (")")) {
+					file.InsertText (lastPos, " () {" + Environment.NewLine + indent + TextEditorProperties.IndentString + Environment.NewLine + indent + "}");
+					caretLocation.Column = maxColumn + 1;
+				} else {
+					file.InsertText (lastPos, " {" + Environment.NewLine + indent + TextEditorProperties.IndentString + Environment.NewLine + indent + "}");
+					caretLocation.Column = indent.Length + 1;
+					caretLocation.Line++;
+				}
+			} else if (trimmedline.StartsWith ("do")) {
+				file.InsertText (lastPos, " {" + Environment.NewLine + indent + TextEditorProperties.IndentString + Environment.NewLine + indent + "} while ();");
+				caretLocation.Column = indent.Length + 1;
+				caretLocation.Line++;
+			} else {
+				file.InsertText (lastPos, ";" + Environment.NewLine + indent);
+				caretLocation.Column = indent.Length;
+				caretLocation.Line++;
+			}
+			return caretLocation;
+		}
+		
 		public override void AddNamespaceImport (RefactorerContext ctx, string fileName, string nsName)
 		{
 			IEditableTextFile file = ctx.GetFile (fileName);
