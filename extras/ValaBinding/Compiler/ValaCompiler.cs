@@ -201,7 +201,7 @@ namespace MonoDevelop.ValaBinding
 				}
 				break;
 			case ValaBinding.CompileTarget.SharedLibrary:
-				args.Add (string.Format ("--Xcc=\"-shared\" --Xcc=\"-fPIC\" --Xcc=\"-I'{0}'\" --library \"{1}\"", configuration.OutputDirectory, configuration.Output));
+				args.Add (string.Format ("--Xcc=\"-shared\" --Xcc=\"-fPIC\" --Xcc=\"-I'{0}'\" -H \"{1}.h\" --library \"{1}\"", configuration.OutputDirectory, configuration.Output));
 				break;
 			}
 
@@ -357,10 +357,9 @@ namespace MonoDevelop.ValaBinding
 		/// </returns>
 		private static string ProcessDefineSymbols (string symbols)
 		{
-			return string.Empty; // No -D in valac for now :-(
-//			return ((null == symbols) || (0 == symbols.Length))?
-//				string.Empty:
-//				"-D " + Regex.Replace (symbols, " +", " -D ");
+			return ((null == symbols) || (0 == symbols.Length))?
+				string.Empty:
+				"-D " + Regex.Replace (symbols, " +", " -D ");
 		}
 		
 		/// <summary>

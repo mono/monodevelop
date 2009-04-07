@@ -1,3 +1,7 @@
+2009-04-07  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* Compiler/ValaCompiler.cs: Update for Vala 0.7.0.
+
 2009-03-25  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* Parser/*: 
