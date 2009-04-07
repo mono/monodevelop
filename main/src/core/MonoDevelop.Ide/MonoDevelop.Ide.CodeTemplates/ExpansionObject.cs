@@ -99,7 +99,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			ITextEditorResolver textEditorResolver = CurrentContext.Document.GetContent <ITextEditorResolver> ();
 			if (textEditorResolver != null) {
 				ResolveResult result = textEditorResolver.GetLanguageItem (CurrentContext.Document.TextEditor.GetPositionFromLineColumn (CurrentContext.InsertPosition.Line, CurrentContext.InsertPosition.Column), var);
-				if (result != null && result.ResolvedType.ArrayDimensions > 0)
+				if (result != null && (result.ResolvedType.ArrayDimensions > 0 || result.ResolvedType.FullName == DomReturnType.String.FullName))
 					return "Length";
 			}
 			return "Count";

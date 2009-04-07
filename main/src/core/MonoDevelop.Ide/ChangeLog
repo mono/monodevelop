@@ -1,5 +1,10 @@
 2009-04-07  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.CodeTemplates/ExpansionObject.cs: handled
+	  strings in GetLenghtOrCount expansion method.
+
+2009-04-07  Mike Krüger  <mkrueger@novell.com>
+
 	* gtk-gui/gui.stetic:
 	* MonoDevelop.Ide.Gui.Dialogs/RenameItemDialog.cs:
 	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.RenameItemDialog.cs:
