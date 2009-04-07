@@ -484,11 +484,14 @@ namespace Mono.TextEditor
 				bool isPrimaryHighlighted = link.PrimaryLink.Offset <= caretOffset && caretOffset <= link.PrimaryLink.EndOffset;
 				
 				foreach (ISegment segment in link.Links) {
-					if (BaseOffset + segment.Offset <= startOffset && startOffset < BaseOffset + segment.EndOffset) {
+					if ((BaseOffset + segment.Offset <= startOffset && startOffset < BaseOffset + segment.EndOffset) ||
+					    (startOffset <= BaseOffset + segment.Offset && BaseOffset + segment.Offset < endOffset)) {
 						int strOffset    = startOffset - (BaseOffset + segment.Offset);
-						int strEndOffset = System.Math.Min (segment.Length, endOffset - startOffset);
+						int strEndOffset = -(BaseOffset + segment.Offset) + System.Math.Min (BaseOffset + segment.EndOffset, endOffset); //System.Math.Min (segment.Length, endOffset - startOffset);
 						int len = strEndOffset - strOffset;
+						
 						string txt = 0 <= len && len <= link.CurrentText.Length - strOffset ? link.CurrentText.Substring (strOffset, len) : "";
+						
 						int width = Editor.GetWidth (txt);
 						using (Gdk.GC rectangleGc = new Gdk.GC (win)) {
 							rectangleGc.ClipRectangle = clipRectangle;
@@ -507,17 +510,16 @@ namespace Mono.TextEditor
 								if (!selected)
 									win.DrawRectangle (fillGc, true, startXPos, y, width, Editor.LineHeight);
 								
-								if (strOffset != 0) {
-									int x1 = startXPos - 1;
-									int x2 = x1 + System.Math.Max (1, width) - 1;
-									int y2 = y + Editor.LineHeight - 1;
-									
-									win.DrawLine (rectangleGc, x1, y, x2, y);
-									win.DrawLine (rectangleGc, x1, y2, x2, y2);
+								int x1 = startXPos - 1;
+								int x2 = x1 + System.Math.Max (1, width) - 1;
+								int y2 = y + Editor.LineHeight - 1;
+								
+								win.DrawLine (rectangleGc, x1, y, x2, y);
+								win.DrawLine (rectangleGc, x1, y2, x2, y2);
+								if (strOffset == 0) 
+									win.DrawLine (rectangleGc, x1, y, x1, y2);
+								if (strOffset + len == link.CurrentText.Length)
 									win.DrawLine (rectangleGc, x2, y, x2, y2);
-								} else {
-									win.DrawRectangle (rectangleGc, false, startXPos, y, System.Math.Max (1, width) - 1, Editor.LineHeight - 1);
-								}
 							}
 						}
 					}

@@ -1,5 +1,10 @@
 2009-04-07  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextLinkEditMode.cs: Fixed some drawing
+	  issues in text link mode (templates).
+
+2009-04-07  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextLinkEditMode.cs: fixed possible out of
 	  range exception.
 
