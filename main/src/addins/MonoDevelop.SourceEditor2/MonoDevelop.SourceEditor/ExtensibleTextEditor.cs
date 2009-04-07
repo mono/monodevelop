@@ -925,7 +925,19 @@ namespace MonoDevelop.SourceEditor
 		{
 			RunAction (MiscActions.InsertNewLine);
 		}
-
+		
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.InsertNewLineAtEnd)]
+		internal void OnInsertNewLineAtEnd ()
+		{
+			RunAction (MiscActions.InsertNewLineAtEnd);
+		}
+		
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.InsertNewLinePreserveCaretPosition)]
+		internal void OnInsertNewLinePreserveCaretPosition ()
+		{
+			RunAction (MiscActions.InsertNewLinePreserveCaretPosition);
+		}
+		
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.DeletePrevWord)]
 		internal void OnDeletePrevWord ()
 		{
