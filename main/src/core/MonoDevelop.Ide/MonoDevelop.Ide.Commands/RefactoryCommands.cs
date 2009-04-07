@@ -165,20 +165,12 @@ namespace MonoDevelop.Ide.Commands
 				
 				List<string> namespaces = new List<string> (ctx.ResolvePossibleNamespaces (returnType));
 				foreach (string ns in namespaces) {
-					CommandInfo info = resolveMenu.CommandInfos.Add ("using " + ns + ";", new RefactoryOperation (delegate {
-						CodeRefactorer refactorer = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
-						
-						refactorer.AddNamespaceImport (ctx, doc.FileName, ns);
-					}));
+					CommandInfo info = resolveMenu.CommandInfos.Add ("using " + ns + ";", new RefactoryOperation (new ResolveNameOperation (ctx, doc, resolveResult, ns).AddImport));
 					info.Icon = MonoDevelop.Core.Gui.Stock.AddNamespace;
 				}
 				resolveMenu.CommandInfos.AddSeparator ();
 				foreach (string ns in namespaces) {
-					resolveMenu.CommandInfos.Add (ns, new RefactoryOperation (delegate {
-						// TODO: Move this to a expression refactorer !!!!
-						int pos = doc.TextEditor.GetPositionFromLineColumn (resolveResult.ResolvedExpression.Region.Start.Line, resolveResult.ResolvedExpression.Region.Start.Column);
-						doc.TextEditor.InsertText (pos, ns +"." );
-					}));
+					resolveMenu.CommandInfos.Add (ns, new RefactoryOperation (new ResolveNameOperation (ctx, doc, resolveResult, ns).ResolveName));
 				}
 				if (namespaces.Count > 0)
 					ainfo.Add (resolveMenu, null);
@@ -244,6 +236,35 @@ namespace MonoDevelop.Ide.Commands
 			
 			if (added)
 				ainfo.AddSeparator ();
+		}
+		
+		class ResolveNameOperation
+		{
+			ProjectDom ctx;
+			Document doc;
+			string ns;
+			ResolveResult resolveResult;
+			
+			public ResolveNameOperation (ProjectDom ctx, Document doc, ResolveResult resolveResult, string ns)
+			{
+				this.ctx = ctx;
+				this.doc = doc;
+				this.resolveResult = resolveResult;
+				this.ns = ns;
+			}
+			
+			public void AddImport ()
+			{
+				CodeRefactorer refactorer = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
+				refactorer.AddNamespaceImport (ctx, doc.FileName, ns);
+			}
+			
+			public void ResolveName ()
+			{
+				// TODO: Move this to a expression refactorer !!!!
+				int pos = doc.TextEditor.GetPositionFromLineColumn (resolveResult.ResolvedExpression.Region.Start.Line, resolveResult.ResolvedExpression.Region.Start.Column);
+				doc.TextEditor.InsertText (pos, ns +"." );
+			}
 		}
 
 		bool IsModifiable (IDomVisitable member)
