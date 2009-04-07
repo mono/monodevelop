@@ -167,7 +167,6 @@ namespace MonoDevelop.CSharpBinding
 						AddCurRegion (directive.EndPosition);
 						if (ifBlocks.Count > 0) {
 							ICSharpCode.NRefactory.PreprocessingDirective ifBlock = ifBlocks.Pop ();
-							Console.WriteLine (ifBlock);
 							DomRegion dr = new DomRegion (ifBlock.StartPosition.Line, ifBlock.StartPosition.Column, directive.EndPosition.Line, directive.EndPosition.Column);
 							result.Add  (new FoldingRegion ("#if " + ifBlock.Arg.Trim (), dr, FoldType.UserRegion, false));
 							foreach (ICSharpCode.NRefactory.PreprocessingDirective d in elifBlocks) {

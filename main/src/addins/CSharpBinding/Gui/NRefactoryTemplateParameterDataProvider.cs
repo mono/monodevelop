@@ -61,7 +61,6 @@ namespace MonoDevelop.CSharpBinding
 		public int GetCurrentParameterIndex (ICodeCompletionContext ctx)
 		{
 			int result =  GetCurrentParameterIndex (editor, ctx.TriggerOffset, 0);
-			Console.WriteLine (result);
 			return result;
 		}
 		

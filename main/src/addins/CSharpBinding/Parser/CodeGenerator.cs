@@ -39,7 +39,7 @@ using System.CodeDom.Compiler;
 using System.Text.RegularExpressions;
 using System.Linq;
 using Microsoft.CSharp;
-
+using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Content;
 
 using MonoDevelop.Projects.Dom;
@@ -64,6 +64,75 @@ namespace CSharpBinding.Parser
 		
 		public override RefactorOperations SupportedOperations {
 			get { return RefactorOperations.All; }
+		}
+		
+		public override ValidationResult ValidateName (IDomVisitable visitable, string name)
+		{
+			if (string.IsNullOrEmpty (name))
+				return ValidationResult.CreateError (GettextCatalog.GetString ("Name must not be empty."));
+			
+			int token = ICSharpCode.NRefactory.Parser.CSharp.Keywords.GetToken (name);
+			if (token >= ICSharpCode.NRefactory.Parser.CSharp.Tokens.Abstract)
+				return ValidationResult.CreateError (GettextCatalog.GetString ("Name can't be a keyword."));
+			
+			char startChar = name[0];
+			if (!Char.IsLetter (startChar) && startChar != '_')
+				return ValidationResult.CreateError (GettextCatalog.GetString ("Name must start with a letter or '_'"));
+			
+			for (int i = 1; i < name.Length; i++) {
+				char ch = name[i];
+				if (!Char.IsLetterOrDigit (ch) && ch != '_')
+					return ValidationResult.CreateError (GettextCatalog.GetString ("Name can only contain letters, digits and '_'"));
+			}
+			
+			if (visitable is LocalVariable) {
+				if (Char.IsUpper (startChar))
+					return ValidationResult.CreateWarning (GettextCatalog.GetString ("Local variables shouldn't start with upper case"));
+				return ValidationResult.Valid;
+			}
+			
+			if (visitable is IParameter) {
+				if (Char.IsUpper (startChar))
+					return ValidationResult.CreateWarning (GettextCatalog.GetString ("Parameters shouldn't start with upper case"));
+				return ValidationResult.Valid;
+			}
+			
+			if (visitable is IField) {
+				IField field = (IField)visitable;
+				if (!field.IsConst && !field.IsStatic  && !field.IsReadonly && Char.IsUpper (startChar))
+					return ValidationResult.CreateWarning (GettextCatalog.GetString ("Fields shouldn't start with upper case"));
+				return ValidationResult.Valid;
+			}
+			
+			if (visitable is IType) {
+				IType type = (IType)visitable;
+				if (type.ClassType == ClassType.Interface && startChar != 'I')
+					return ValidationResult.CreateWarning (GettextCatalog.GetString ("Interfaces should always start with 'I'"));
+				
+				if (!Char.IsUpper (startChar))
+					return ValidationResult.CreateWarning (GettextCatalog.GetString ("Types should always start with upper case"));
+				return ValidationResult.Valid;
+			}
+			
+			if (visitable is IMethod) {
+				if (!Char.IsUpper (startChar))
+					return ValidationResult.CreateWarning (GettextCatalog.GetString ("Methods should always start with upper case"));
+				return ValidationResult.Valid;
+			}
+			
+			if (visitable is IProperty) {
+				IProperty prop = (IProperty)visitable;
+				if (!prop.IsIndexer && !Char.IsUpper (startChar))
+					return ValidationResult.CreateWarning (GettextCatalog.GetString ("Properties should always start with upper case"));
+				return ValidationResult.Valid;
+			}
+			
+			if (visitable is IEvent) {
+				if (!Char.IsUpper (startChar))
+					return ValidationResult.CreateWarning (GettextCatalog.GetString ("Events should always start with upper case"));
+				return ValidationResult.Valid;
+			}
+			return ValidationResult.Valid;
 		}
 		
 		protected override CodeDomProvider GetCodeDomProvider ()
