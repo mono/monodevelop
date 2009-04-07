@@ -1101,5 +1101,6 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return ops;
 		}
 		public abstract void AddNamespaceImport (RefactorerContext ctx, string fileName, string nsName);
+		public abstract DomLocation CompleteStatement (RefactorerContext ctx, string fileName, DomLocation caretLocation);
 	}
 }

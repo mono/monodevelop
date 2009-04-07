@@ -303,6 +303,12 @@ namespace MonoDevelop.Projects.CodeGeneration
 			refactorer.AddNamespaceImport (new RefactorerContext (dom, fileProvider, null), fileName, nsName);
 		}
 		
+		public DomLocation CompleteStatement (ProjectDom dom, string fileName, DomLocation caretLocation)
+		{
+			IRefactorer refactorer = Services.Languages.GetRefactorerForFile (fileName);
+			return refactorer.CompleteStatement (new RefactorerContext (dom, fileProvider, null), fileName, caretLocation);
+		}
+		
 		public IType ImplementMembers (IType cls, IEnumerable<KeyValuePair<IMember,IReturnType>> members,
 		                                              string foldingRegionName)
 		{

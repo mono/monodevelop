@@ -73,6 +73,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 		
 		string ConvertToLanguageTypeName (string netTypeName);
 		void AddNamespaceImport (RefactorerContext ctx, string fileName, string nsName);
+		DomLocation CompleteStatement (RefactorerContext ctx, string fileName, DomLocation caretLocation);
 	}
 	
 	public class MemberReference
