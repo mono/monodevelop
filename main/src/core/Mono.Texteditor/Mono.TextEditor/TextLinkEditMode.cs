@@ -487,7 +487,8 @@ namespace Mono.TextEditor
 					if (BaseOffset + segment.Offset <= startOffset && startOffset < BaseOffset + segment.EndOffset) {
 						int strOffset    = startOffset - (BaseOffset + segment.Offset);
 						int strEndOffset = System.Math.Min (segment.Length, endOffset - startOffset);
-						string txt = strEndOffset - strOffset <= link.CurrentText.Length - strOffset ? link.CurrentText.Substring (strOffset, strEndOffset - strOffset) : "";
+						int len = strEndOffset - strOffset;
+						string txt = 0 <= len && len <= link.CurrentText.Length - strOffset ? link.CurrentText.Substring (strOffset, len) : "";
 						int width = Editor.GetWidth (txt);
 						using (Gdk.GC rectangleGc = new Gdk.GC (win)) {
 							rectangleGc.ClipRectangle = clipRectangle;
