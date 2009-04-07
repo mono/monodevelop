@@ -948,6 +948,10 @@
 				_label = "Remove tab" />
 		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.InsertNewLine"
 				_label = "Insert new line" />
+		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.InsertNewLinePreserveCaretPosition"
+				_label = "Insert new line and don't move caret'" />
+		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.InsertNewLineAtEnd"
+				_label = "Move caret to EOL and insert new line" />
 		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.DeletePrevWord"
 				_label = "Delete previous word" />
 		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.DeleteNextWord"

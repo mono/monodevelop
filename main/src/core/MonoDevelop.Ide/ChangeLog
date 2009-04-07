@@ -1,3 +1,9 @@
+2009-04-07  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.addin.xml:
+	* MonoDevelop.Ide.Commands/TextEditorCommands.cs: Added
+	  ctrl+return/shift+return commands.
+
 2009-04-06  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs:

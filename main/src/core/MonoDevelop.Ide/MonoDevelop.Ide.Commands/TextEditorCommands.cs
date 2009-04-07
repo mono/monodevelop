@@ -70,6 +70,8 @@ namespace MonoDevelop.Ide.Commands
 		InsertTab,
 		RemoveTab,
 		InsertNewLine,
+		InsertNewLinePreserveCaretPosition,
+		InsertNewLineAtEnd,
 		DeletePrevWord,
 		DeleteNextWord,
 		SelectionPageDownAction,
