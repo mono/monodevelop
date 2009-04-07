@@ -155,6 +155,11 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		public new TextEditor Editor {
+			get;
+			set;
+		}
+		
 		TextLinkTooltipProvider tooltipProvider;
 		public TextLinkEditMode (TextEditor Editor, int baseOffset, List<TextLink> links)
 		{
