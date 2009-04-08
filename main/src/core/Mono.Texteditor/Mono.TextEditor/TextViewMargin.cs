@@ -677,10 +677,10 @@ namespace Mono.TextEditor
 			if (args.Button == 1 || args.Button == 2) {
 				VisualLocationTranslator trans = new VisualLocationTranslator (this, args.X, args.Y);
 				clickLocation = trans.VisualToDocumentLocation (args.X, args.Y);
-/*				if (!column = o - line.Offset;trans.WasInLine) {
+				if (!trans.WasInLine) {
 					int nextColumn = this.textEditor.GetTextEditorData ().GetNextVirtualColumn (clickLocation.Line, clickLocation.Column);
 					clickLocation.Column = nextColumn;
-				}*/
+				}
 				
 				if (!textEditor.IsSomethingSelected) {
 					textEditor.SelectionAnchorLocation = clickLocation;

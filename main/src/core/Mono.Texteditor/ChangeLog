@@ -1,5 +1,10 @@
 2009-04-08  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextViewMargin.cs: activated virtual leading
+	  whitespace click.
+
+2009-04-08  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextEditorData.cs: Added some virtual
 	  leading whitespace fixes.
 
