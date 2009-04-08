@@ -57,6 +57,8 @@ namespace MonoDevelop.ValaBinding.Parser
 		private Dictionary<string,List<CodeNode>> cache;
 		private HashSet<string> files;
 		private HashSet<string> packages;
+		private DateTime lastRestarted;
+		string lockme = "lockme";
 
 		public Project Project{ get; set; }
 
@@ -90,6 +92,12 @@ namespace MonoDevelop.ValaBinding.Parser
 
 		private void RestartParser ()
 		{
+			// Don't restart more often than once/second
+			lock (lockme) {
+				if (0 > DateTime.Now.AddSeconds (-1).CompareTo (lastRestarted)){ return; }
+				lastRestarted = DateTime.Now;
+			}
+            
 			if (null != p) {
 				lock (p) {
 					try {
@@ -112,6 +120,8 @@ namespace MonoDevelop.ValaBinding.Parser
 					AddFile (file);
 				}
 			}
+			
+			lock(lockme){ lastRestarted = DateTime.Now; }
 		}// RestartParser
 
 		private static Regex endOutputRegex = new Regex (@"^(\s*vsc-shell -\s*$|^\s*>)", RegexOptions.Compiled);
@@ -133,7 +143,7 @@ namespace MonoDevelop.ValaBinding.Parser
 			
 			p.OutputDataReceived += gotdata;
 
-			for (int i=0; i<10; ++i) {
+			for (int i=0; i<100; ++i) {
 				p.BeginOutputReadLine ();
 				Thread.Sleep (50);
 				p.CancelOutputRead ();
@@ -187,6 +197,7 @@ namespace MonoDevelop.ValaBinding.Parser
 			files = new HashSet<string> ();
 			packages = new HashSet<string> ();
 			methods = new Dictionary<string,List<Function>> ();
+			lastRestarted = DateTime.Now.AddSeconds(-1);
 			RestartParser ();
 		}
 
