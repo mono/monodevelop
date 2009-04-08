@@ -174,8 +174,8 @@ namespace MonoDevelop.ValaBinding
 				}
 			};
 			
-			ThreadPool.QueueUserWorkItem (delegate{
-				if (match.Success) {
+			if (match.Success) {
+				ThreadPool.QueueUserWorkItem (delegate{
 					// variable initialization
 					if (match.Groups["typename"].Success) {
 						// simultaneous declaration and initialization
@@ -184,8 +184,8 @@ namespace MonoDevelop.ValaBinding
 						// initialization of previously declared variable
 						parser.GetConstructorsForExpression (match.Groups["variable"].Value, Document.FileName, line, column, list);
 					}
-				}
-			});
+				});
+			}
 			return list;
 		}// CompleteConstructor
 		
@@ -278,7 +278,7 @@ namespace MonoDevelop.ValaBinding
 					typename = typename.Substring (0, index);
 				}
 				
-				Console.WriteLine ("Constructor: type {0}, overload {1}", typename, overload);
+				// Console.WriteLine ("Constructor: type {0}, overload {1}", typename, overload);
 				return new ParameterDataProvider (Document, info, typename, overload); 
 			} 
 			
