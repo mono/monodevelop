@@ -909,7 +909,7 @@ namespace MonoDevelop.SourceEditor
 					triggerOffset = ctx.TriggerOffset - TextEditor.SelectionRange.Length;
 				TextEditor.DeleteSelectedText ();
 			}
-			
+
 			int idx = complete_word.IndexOf ('|'); // | in the completion text now marks the caret position
 			if (idx >= 0) {
 				complete_word = complete_word.Remove (idx, 1);
@@ -918,6 +918,7 @@ namespace MonoDevelop.SourceEditor
 			}
 			int length = String.IsNullOrEmpty (partial_word) ? 0 : partial_word.Length;
 			
+			triggerOffset += TextEditor.GetTextEditorData ().EnsureCaretIsNotVirtual ();
 			this.widget.TextEditor.Replace (triggerOffset, length, complete_word);
 			this.widget.TextEditor.Caret.Offset = triggerOffset + idx;
 		}

@@ -323,8 +323,8 @@ namespace MonoDevelop.SourceEditor
 					}
 				}
 				if (count >= 0)  {
-					InsertAtCaret (closingBrace.ToString ());
-					Caret.Offset--;
+					GetTextEditorData ().EnsureCaretIsNotVirtual ();
+					Insert (Caret.Offset, closingBrace.ToString ());
 				}
 			}
 			
