@@ -1,5 +1,10 @@
 2009-04-08  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextViewMargin.cs: Changed the virtual space
+	  click behavior.
+
+2009-04-08  Mike Krüger  <mkrueger@novell.com>
+
 	* SyntaxModes/XmlSyntaxMode.xml:
 	* Mono.TextEditor.Highlighting.Regex:
 	* Mono.TextEditor/ClipboardActions.cs:

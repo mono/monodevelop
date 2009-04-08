@@ -673,19 +673,20 @@ namespace Mono.TextEditor
 				textEditor.FireLinkEvent (link, args.Button, args.ModifierState);
 				return;
 			}
-			
+
 			if (args.Button == 1 || args.Button == 2) {
 				VisualLocationTranslator trans = new VisualLocationTranslator (this, args.X, args.Y);
 				clickLocation = trans.VisualToDocumentLocation (args.X, args.Y);
-				if (!trans.WasInLine) {
+				LineSegment line = Document.GetLine (clickLocation.Line);
+				if (line != null && clickLocation.Column >= line.EditableLength && GetWidth (Document.GetTextAt (line)+"-") < args.X) {
 					int nextColumn = this.textEditor.GetTextEditorData ().GetNextVirtualColumn (clickLocation.Line, clickLocation.Column);
 					clickLocation.Column = nextColumn;
 				}
-				
+
 				if (!textEditor.IsSomethingSelected) {
 					textEditor.SelectionAnchorLocation = clickLocation;
 				}
-				
+
 				int offset = Document.LocationToOffset (clickLocation);
 				if (offset < 0) {
 					textEditor.RunAction (CaretMoveActions.ToDocumentEnd);
