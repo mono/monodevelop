@@ -258,10 +258,11 @@ namespace MonoDevelop.CSharpBinding
 				AddContentsFromClassAndMembers (context, completionList, col);
 				
 				if (lookupTableVisitor != null && lookupTableVisitor.Variables != null) {
+					int callingMemberline = CallingMember != null ? CallingMember.Location.Line : 0; // local variables could be outside members (LINQ initializers) 
 					foreach (KeyValuePair<string, List<LocalLookupVariable>> pair in lookupTableVisitor.Variables) {
 						if (pair.Value != null && pair.Value.Count > 0) {
 							foreach (LocalLookupVariable v in pair.Value) {
-								if (new DomLocation (CallingMember.Location.Line + v.StartPos.Line - 2, v.StartPos.Column) <= this.resolvePosition && (v.EndPos.IsEmpty || new DomLocation (CallingMember.Location.Line + v.EndPos.Line - 2, v.EndPos.Column) >= this.resolvePosition)) {
+								if (new DomLocation (callingMemberline + v.StartPos.Line - 2, v.StartPos.Column) <= this.resolvePosition && (v.EndPos.IsEmpty || new DomLocation (callingMemberline + v.EndPos.Line - 2, v.EndPos.Column) >= this.resolvePosition)) {
 									col.AddCompletionData (completionList, new LocalVariable (CallingMember, pair.Key, ConvertTypeReference (v.TypeRef) , DomRegion.Empty));
 								}
 							}
