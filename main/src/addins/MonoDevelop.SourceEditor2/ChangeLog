@@ -1,5 +1,11 @@
 2009-04-08  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: Added some
+	  fixes for virtual leading whitespace feature/removed some
+	  old code.
+
+2009-04-08  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/AutoSave.cs:
 	* MonoDevelop.SourceEditor/EditActions.cs:
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Worked on "Bug

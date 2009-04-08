@@ -322,8 +322,10 @@ namespace MonoDevelop.SourceEditor
 						count--;
 					}
 				}
-				if (count >= 0) 
-					Insert (Caret.Offset, closingBrace.ToString ());
+				if (count >= 0)  {
+					InsertAtCaret (closingBrace.ToString ());
+					Caret.Offset--;
+				}
 			}
 			
 			if (extension != null) {
@@ -340,15 +342,7 @@ namespace MonoDevelop.SourceEditor
 					base.SimulateKeyPress (Gdk.Key.Return, 0, Gdk.ModifierType.None);
 				}
 			}
-/* auto insert templates IS annoying !!!
-			// auto insert templates
-			if (!templateInserted &&
-			    Options.AutoInsertTemplates && 
-			    ch != '\0' && // don't auto insert templates for control keys
-			    IsTemplateKnown () // only insert templates when there is a 100% match (ex.: scw vs. scwl)
-			    ) {
-				templateInserted = !inStringOrComment && DoInsertTemplate ();
-			}*/
+			
 			if (templateInserted) {
 				Document.EndAtomicUndo ();
 				return true;
@@ -654,18 +648,6 @@ namespace MonoDevelop.SourceEditor
 			pushIn = true;
 		}
 		
-//		protected override void OnPopulatePopup (Menu menu)
-//		{
-//			
-//			CommandEntrySet cset = IdeApp.CommandService.CreateCommandEntrySet ("");
-//			if (cset.Count > 0) {
-//				cset.AddItem (Command.Separator);
-//				IdeApp.CommandService.InsertOptions (menu, cset, 0);
-//			}
-//			base.OnPopulatePopup (menu);
-//		}
-//		
-		
 #region Templates
 		int FindPrevWordStart (int offset)
 		{
@@ -711,10 +693,7 @@ namespace MonoDevelop.SourceEditor
 		public void InsertTemplate (CodeTemplate template, MonoDevelop.Ide.Gui.Document document)
 		{
 			CodeTemplate.TemplateResult result = template.InsertTemplate (document);
-			
-			/*this.ProjectDom,
-			  view.SourceEditorWidget.ParsedDocument,
-			  MonoDevelop.Ide.Gui.TextEditor.GetTextEditor (this.view));*/
+
 			TextLinkEditMode tle = new TextLinkEditMode (this, 
 			                                             result.InsertPosition,
 			                                             result.TextLinks);
