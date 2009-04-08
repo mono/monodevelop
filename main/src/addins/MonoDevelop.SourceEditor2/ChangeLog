@@ -1,5 +1,10 @@
 2009-04-08  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: Track api
+	  changes.
+
+2009-04-08  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/SourceEditorView.cs:
 	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: Added some
 	  virtual leading whitespace fixes.
