@@ -132,8 +132,13 @@ namespace MonoDevelop.Platform
 				return false;
 			
 			try {
+				var ignoreCommands = new HashSet<object> () {
+					MonoDevelop.Ide.Commands.HelpCommands.About,
+					MonoDevelop.Ide.Commands.EditCommands.DefaultPolicies,
+					MonoDevelop.Ide.Commands.EditCommands.MonodevelopPreferences,
+				};
 				CommandEntrySet ces = commandManager.CreateCommandEntrySet (commandMenuAddinPath);
-				OSXIntegration.OSXMenu.Update (commandManager, MonoDevelop.Core.Gui.MessageService.RootWindow, ces);
+				OSXIntegration.OSXMenu.Update (commandManager, ces, ignoreCommands);
 			} catch (Exception ex) {
 				try {
 					OSXIntegration.OSXMenu.Destroy (true);

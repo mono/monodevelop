@@ -1,5 +1,20 @@
 2009-04-08  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Makefile.am:
+	* MacPlatform.csproj: Add System.Core ref.
+
+	* Menus/OSXMenu.cs: Implement command enabled/disable
+	  updating.
+
+	* Framework/Carbon.cs: Add command enums values.
+
+	* Framework/HIToolbox.cs: More P/Invokes.
+
+	* MacPlatform.cs: Track API. Hide commands that're in the app
+	  menu.
+
+2009-04-08  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MacPlatform.cs: Track API. Update menu when the command set
 	  changes.
 

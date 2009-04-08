@@ -81,6 +81,22 @@ namespace OSXIntegration.Framework
 		}
 		
 		[DllImport (hiToolboxLib)]
+		static extern MenuResult EnableMenuItem (IntPtr menuRef, ushort index);
+		
+		public static void EnableMenuItem (HIMenuItem item)
+		{
+			CheckResult (EnableMenuItem (item.MenuRef, item.Index));
+		}
+		
+		[DllImport (hiToolboxLib)]
+		static extern MenuResult DisableMenuItem (IntPtr menuRef, ushort index);
+		
+		public static void DisableMenuItem (HIMenuItem item)
+		{
+			CheckResult (DisableMenuItem (item.MenuRef, item.Index));
+		}
+		
+		[DllImport (hiToolboxLib)]
 		internal static extern MenuResult SetMenuItemHierarchicalMenu (IntPtr parentMenu, ushort parent_index, IntPtr submenu);
 
 		[DllImport (hiToolboxLib)]

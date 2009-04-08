@@ -182,6 +182,53 @@ namespace OSXIntegration.Framework
 		HIObject = 1751740258, // 'hiob'
 	}
 	
+	internal enum CarbonCommandID
+	{
+		OK = 1869291552, // 'ok  '
+		Cancel = 1852797985, // 'not!'
+		Quit = 1903520116, // 'quit'
+		Undo = 1970168943, // 'undo'
+		Redo = 1919247471, // 'redo'
+		Cut = 1668641824, // 'cut '
+		Copy = 1668247673, // 'copy'
+		Paste = 1885434740, // 'past'
+		Clear = 1668048225, // 'clea',
+		SelectAll = 1935764588, // 'sall',
+		Preferences = 1886545254, //'pref'
+		About = 1633841013, // 'abou'
+		New = 1852143392, // 'new ',
+		Open = 1869636974, // 'open'
+		Close = 1668050803, // 'clos'
+		Save = 1935767141, // 'save',
+		SaveAs = 1937138035, // 'svas'
+		Revert = 1920365172, //
+		Print = 1886547572, // 'prnt'
+		PageSetup = 1885431653, // 'page',
+		AppHelp = 1634233456, //'ahlp'
+	/*	
+		//menu manager handles these automatically
+		
+		Hide                = 'hide',
+		HideOthers          = 'hido',
+		ShowAll             = 'shal',
+		ZoomWindow          = 'zoom',
+		MinimizeWindow      = 'mini',
+		MinimizeAll         = 'mina',
+		MaximizeAll         = 'maxa',
+		ArrangeInFront      = 'frnt',
+		BringAllToFront     = 'bfrt',
+		SelectWindow        = 'swin',
+		RotateWindowsForward = 'rotw',
+		RotateWindowsBackward = 'rotb',
+		RotateFloatingWindowsForward = 'rtfw',
+		RotateFloatingWindowsBackward = 'rtfb',
+		
+		
+		//created automatically -- used for inserting before/after the default window list
+		WindowListSeparator = 'wldv',
+		WindowListTerminator = 'wlst',*/
+	}
+	
 	internal enum CarbonEventCommand : uint
 	{
 		Process = 1,

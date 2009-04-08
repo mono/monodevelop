@@ -43,7 +43,6 @@ namespace OSXIntegration
 		static IntPtr openingHandlerRef, updateHandlerRef, commandHandlerRef;
 		
 		static CommandManager manager;
-		static object initialCommandTarget;
 		
 		static uint cmdSeq;
 		static ushort idSeq;
@@ -57,27 +56,23 @@ namespace OSXIntegration
 			return text.Replace ("_", "");
 		}
 		
-		public static void Update (CommandManager manager, object initialCommandTarget, CommandEntrySet entrySet)
+		public static void Update (CommandManager manager, CommandEntrySet entrySet, HashSet<object> ignoreCommands)
 		{
 			if (manager == null)
 				throw new ArgumentException ("manager");
-		//	if (initialCommandTarget == null)
-		//		throw new ArgumentException ("initialCommandTarget");
-				
 			OSXMenu.manager = manager;
-			OSXMenu.initialCommandTarget = initialCommandTarget;
 			
 			if (rootMenu == IntPtr.Zero) {
 				rootMenu = HIToolbox.CreateMenu (idSeq++, GetName (entrySet), 0);
-				CreateChildren (rootMenu, entrySet);
+				CreateChildren (rootMenu, entrySet, ignoreCommands);
 				InstallRootMenu ();
 			} else {
 				Destroy (false);
-				CreateChildren (rootMenu, entrySet);
+				CreateChildren (rootMenu, entrySet, ignoreCommands);
 			}
 		}
 
-		static void CreateChildren (IntPtr parentMenu, CommandEntrySet entrySet) 
+		static void CreateChildren (IntPtr parentMenu, CommandEntrySet entrySet, HashSet<object> ignoreCommands) 
 		{
 			Gdk.Keymap keymap = Gdk.Keymap.Default;
 			foreach (CommandEntry entry in entrySet){
@@ -85,15 +80,16 @@ namespace OSXIntegration
 
 				if (ces == null){
 					ushort pos;
+					
+					if (ignoreCommands.Contains (entry.CommandId))
+						continue;
 
-					object cmdId = entry.CommandId;
-
-					if (cmdId == Command.Separator){
+					if (entry.CommandId == Command.Separator){
 						HIToolbox.AppendMenuSeparator (parentMenu);
 						continue;
 					}
 
-					Command cmd = manager.GetCommand (cmdId);
+					Command cmd = manager.GetCommand (entry.CommandId);
 					if (cmd == null){
 						Console.Error.WriteLine ("ERROR: Null command");
 						continue;
@@ -142,7 +138,7 @@ namespace OSXIntegration
 				} else {
 					IntPtr menuRef = HIToolbox.CreateMenu (idSeq++, GetName (ces), 0);
 					menus [menuRef] = GetName (ces);
-					CreateChildren (menuRef, ces);
+					CreateChildren (menuRef, ces, ignoreCommands);
 					ushort pos = HIToolbox.AppendMenuItem (parentMenu, GetName (ces), 0, 0);
 					HIToolbox.CheckResult (HIToolbox.SetMenuItemHierarchicalMenu (parentMenu, pos, menuRef));
 				}
@@ -197,8 +193,11 @@ namespace OSXIntegration
 				CarbonHICommand cmd = Carbon.GetEventParameter<CarbonHICommand> (eventRef, CarbonEventParameterName.DirectObject, CarbonEventParameterType.HICommand);
 				object cmdID;
 				if (commands.TryGetValue (cmd.CommandID, out cmdID)) {
-					Command mdCmd = manager.GetCommand (cmdID);
-					
+					CommandInfo cinfo = manager.GetCommandInfo (cmdID, null);
+					if (cinfo.Enabled)
+						HIToolbox.EnableMenuItem (cmd.MenuItem);
+					else
+						HIToolbox.DisableMenuItem (cmd.MenuItem);
 				} else {
 					MonoDevelop.Core.LoggingService.LogError ("Command not found for Mac menu {0} {1}", cmd.MenuItem.MenuRef, cmd.MenuItem.Index);
 				}
