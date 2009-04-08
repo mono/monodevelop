@@ -17,6 +17,9 @@ REFS =  \
 
 FILES =  \
 	AssemblyInfo.cs \
+	Framework/Carbon.cs \
+	Framework/CoreFoundation.cs \
+	Framework/HIToolbox.cs \
 	Ige/IgeMacAttentionRequest.cs \
 	Ige/IgeMacAttentionType.cs \
 	Ige/IgeMacBundle.cs \

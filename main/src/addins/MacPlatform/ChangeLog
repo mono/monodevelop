@@ -1,3 +1,17 @@
+2009-04-07  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Framework:
+	* Makefile.am:
+	* MacPlatform.csproj:
+	* Framework/Carbon.cs:
+	* Framework/HIToolbox.cs:
+	* Framework/CoreFoundation.cs: Move the P/Invokes and wrappers
+	  into a separate framework namespace.
+
+	* Menus/OSXMenu.cs: Add an event handler so that the commands
+	  are run when the menu's clicked. Move P/Invokes and wrappers
+	  into another namespace.
+
 2009-04-06  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MacPlatform.cs: Use the OSXMenu wrapper instead of IGE.

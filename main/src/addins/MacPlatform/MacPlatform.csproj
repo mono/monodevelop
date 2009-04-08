@@ -80,6 +80,9 @@
     <Compile Include="Ige\IgeMacMenuGroup.cs" />
     <Compile Include="Ige\ObjectManager.cs" />
     <Compile Include="Menus\OSXMenu.cs" />
+    <Compile Include="Framework\Carbon.cs" />
+    <Compile Include="Framework\CoreFoundation.cs" />
+    <Compile Include="Framework\HIToolbox.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -106,5 +109,6 @@
   </ProjectExtensions>
   <ItemGroup>
     <Folder Include="Menus\" />
+    <Folder Include="Framework\" />
   </ItemGroup>
 </Project>
