@@ -63,24 +63,26 @@ namespace OSXIntegration.Framework
 		[DllImport (CarbonLib)]
 		public static extern OSStatus RemoveEventHandler (IntPtr handlerRef);
 		
-		public static void InstallEventHandler (IntPtr target, EventDelegate handler, CarbonEventTypeSpec [] types, out IntPtr handlerRef)
+		public static IntPtr InstallEventHandler (IntPtr target, EventDelegate handler, CarbonEventTypeSpec [] types)
 		{
+			IntPtr handlerRef;
 			CheckReturn (InstallEventHandler (target, handler, (uint)types.Length, types, IntPtr.Zero, out handlerRef));
+			return handlerRef;
 		}
 		
-		public static void InstallEventHandler (IntPtr target, EventDelegate handler, CarbonEventTypeSpec type, out IntPtr handlerRef)
+		public static IntPtr InstallEventHandler (IntPtr target, EventDelegate handler, CarbonEventTypeSpec type)
 		{
-			InstallEventHandler (target, handler, new CarbonEventTypeSpec[] { type }, out handlerRef);
+			return InstallEventHandler (target, handler, new CarbonEventTypeSpec[] { type });
 		}
 		
-		public static void InstallApplicationEventHandler (EventDelegate handler, CarbonEventTypeSpec [] types, out IntPtr handlerRef)
+		public static IntPtr InstallApplicationEventHandler (EventDelegate handler, CarbonEventTypeSpec [] types)
 		{
-			InstallEventHandler (GetApplicationEventTarget (), handler, types, out handlerRef);
+			return InstallEventHandler (GetApplicationEventTarget (), handler, types);
 		}
 		
-		public static void InstallApplicationEventHandler (EventDelegate handler, CarbonEventTypeSpec type, out IntPtr handlerRef)
+		public static IntPtr InstallApplicationEventHandler (EventDelegate handler, CarbonEventTypeSpec type)
 		{
-			InstallEventHandler (GetApplicationEventTarget (), handler, new CarbonEventTypeSpec[] { type }, out handlerRef);
+			return InstallEventHandler (GetApplicationEventTarget (), handler, new CarbonEventTypeSpec[] { type });
 		}
 		
 		#endregion

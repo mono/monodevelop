@@ -41,7 +41,6 @@ namespace MonoDevelop.Platform
 {
 	public class MacPlatform : PlatformService
 	{
-		OSXIntegration.OSXMenu globalMenu;
 		bool igeInited, igeExists;
 		bool menuFail;
 		
@@ -132,19 +131,16 @@ namespace MonoDevelop.Platform
 			if (menuFail)
 				return false;
 			
-			if (globalMenu == null) {
+			try {
+				CommandEntrySet ces = commandManager.CreateCommandEntrySet (commandMenuAddinPath);
+				OSXIntegration.OSXMenu.Update (commandManager, MonoDevelop.Core.Gui.MessageService.RootWindow, ces);
+			} catch (Exception ex) {
 				try {
-					CommandEntrySet ces = commandManager.CreateCommandEntrySet (commandMenuAddinPath);
-					globalMenu = new OSXIntegration.OSXMenu (commandManager, ces);
-					globalMenu.InstallMenu ();
-				} catch (Exception ex) {
-					MonoDevelop.Core.LoggingService.LogError ("Could not install global menu", ex);
-					menuFail = true;
-					return false;
-				}
-			} else {
-				//FIXME: update existing menus
-				MonoDevelop.Core.LoggingService.LogError ("Updating global menu not supported yet");
+					OSXIntegration.OSXMenu.Destroy (true);
+				} catch {}
+				MonoDevelop.Core.LoggingService.LogError ("Could not install global menu", ex);
+				menuFail = true;
+				return false;
 			}
 			
 			return true;

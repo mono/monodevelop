@@ -1,5 +1,20 @@
 2009-04-08  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MacPlatform.cs: Track API. Update menu when the command set
+	  changes.
+
+	* Framework/Carbon.cs: Wrap Install*EventHandler in nicer API.
+
+	* Framework/HIToolbox.cs: Add ClearMenuBar and DeleteMenu
+	  P/Invokes, and wrap CreateMenu in nicer API.
+
+	* Menus/OSXMenu.cs: Heavy refactoring. Make static, since
+	  there is only ever one global menu. Handle
+	  destorying/recreating menu. Track P/Invokes API wrapper
+	  changes.
+
+2009-04-08  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Menus/OSXMenu.cs: Don't use instance methods as callbacks,
 	  as the managed objects are currently GC'd. We can now handle
 	  the menu open events and writeline the menu names.

@@ -37,14 +37,25 @@ namespace OSXIntegration.Framework
 		const string hiToolboxLib = "/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/HIToolbox.framework/Versions/A/HIToolbox";
 		
 		[DllImport (hiToolboxLib)]
-		internal static extern MenuResult CreateNewMenu (ushort menuid, MenuAttributes attributes, out IntPtr menuRef);
+		static extern MenuResult CreateNewMenu (ushort menuId, MenuAttributes attributes, out IntPtr menuRef);
+		
+		public static IntPtr CreateMenu (ushort id, string title, MenuAttributes attributes)
+		{
+			IntPtr menuRef;
+			CheckResult (CreateNewMenu (id, attributes, out menuRef));
+			SetMenuTitle (menuRef, title);
+			return menuRef;
+		}
 
 		[DllImport (hiToolboxLib)]
 		internal static extern MenuResult SetRootMenu (IntPtr menuRef);
 
 		[DllImport (hiToolboxLib)]
-		internal static extern void DisposeMenu (IntPtr menuRef);
+		internal static extern void DeleteMenu (IntPtr menuRef);
 
+		[DllImport (hiToolboxLib)]
+		internal static extern void ClearMenuBar ();
+		
 		[DllImport (hiToolboxLib)]
 		internal static extern void InsertMenu (IntPtr menuRef, ushort before_id);
 		
