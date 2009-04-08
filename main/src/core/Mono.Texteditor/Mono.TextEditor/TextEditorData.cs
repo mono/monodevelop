@@ -191,14 +191,7 @@ namespace Mono.TextEditor
 			if (String.IsNullOrEmpty (text))
 				return;
 			Document.BeginAtomicUndo ();
-			
-			LineSegment line = Document.GetLine (Caret.Line);
-			if (Caret.Column > line.EditableLength) {
-				string virtualSpace = GetVirtualSpaces (Caret.Line, Caret.Column);
-				Insert (Caret.Offset, virtualSpace);
-				Caret.Offset += virtualSpace.Length - 1;
-			}
-			
+			EnsureCaretIsNotVirtual ();
 			int length = Insert (Caret.Offset, text);
 			Caret.Offset += length;
 			Document.EndAtomicUndo ();
@@ -665,7 +658,7 @@ namespace Mono.TextEditor
 		}
 		#endregion
 		
-#region VirtualSpace Manager
+		#region VirtualSpace Manager
 		IVirtualSpaceManager virtualSpaceManager = null;
 		public IVirtualSpaceManager VirtualSpaceManager {
 			get {
@@ -714,6 +707,19 @@ namespace Mono.TextEditor
 		{
 			return VirtualSpaceManager.GetNextVirtualColumn (lineNumber, column);
 		}
-#endregion
+		
+		public int EnsureCaretIsNotVirtual ()
+		{
+			LineSegment line = Document.GetLine (Caret.Line);
+			if (Caret.Column > line.EditableLength) {
+				string virtualSpace = GetVirtualSpaces (Caret.Line, Caret.Column);
+				Insert (Caret.Offset, virtualSpace);
+				// No need to reposition the caret, because it's already at the correct position
+				// The only difference is that the position is not virtual anymore.
+				return virtualSpace.Length;
+			}
+			return 0;
+		}
+		#endregion
 	}
 }
