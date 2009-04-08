@@ -34,6 +34,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Threading;
 
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
@@ -66,8 +67,12 @@ namespace MonoDevelop.ValaBinding
 				instancename = match.Groups["identifier"].Value;
 			}
 			
-			string typename = info.GetExpressionType (instancename, document.FileName, editor.CursorLine, editor.CursorColumn); // bottleneck
-			info.Complete(typename, document.FileName, editor.CursorLine, editor.CursorColumn, null);
+			string typename = null;
+			
+			ThreadPool.QueueUserWorkItem (delegate(object o) {
+				typename = info.GetExpressionType (instancename, document.FileName, editor.CursorLine, editor.CursorColumn); // bottleneck
+				info.Complete(typename, document.FileName, editor.CursorLine, editor.CursorColumn, null);
+			});
 			string functionBaseName = (0 <= lastDot)? functionName.Substring (lastDot+1): functionName;
 			
 			match = identifierRegex.Match (functionBaseName);
@@ -76,10 +81,12 @@ namespace MonoDevelop.ValaBinding
 			}
 			IList<Function> myfunctions = info.GetOverloads (functionBaseName); // bottleneck
 			
-			foreach (Function function in myfunctions) {
-				if (string.Format("{0}.{1}", typename, functionBaseName).Equals (function.FullName, StringComparison.Ordinal)) {
-					functions = new List<Function>(new Function[]{function});
-					break;
+			if (null != typename) {
+				foreach (Function function in myfunctions) {
+					if (string.Format("{0}.{1}", typename, functionBaseName).Equals (function.FullName, StringComparison.Ordinal)) {
+						functions = new List<Function>(new Function[]{function});
+						break;
+					}
 				}
 			}
 			
