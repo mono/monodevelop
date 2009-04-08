@@ -48,12 +48,17 @@ namespace Mono.TextEditor.Highlighting
 		public const string Node    = "Span";
 		public const string AltNode = "EolSpan";
 		
-		public string Begin {
+		public Regex Begin {
 			get;
 			private set;
 		}
-
-		public string End {
+		
+		public Regex Exit {
+			get;
+			private set;
+		}
+		
+		public Regex End {
 			get;
 			private set;
 		}
@@ -107,6 +112,13 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 		
+		HashSet<string> exitFlags = new HashSet<string> ();
+		public HashSet<string> ExitFlags {
+			get {
+				return exitFlags;
+			}
+		}
+		
 		public override string ToString ()
 		{
 			return String.Format ("[Span: Color={0}, Rule={1}, Begin={2}, End={3}, Escape={4}, stopAtEol={5}]", Color, Rule, Begin, End, String.IsNullOrEmpty (Escape) ? "not set" : "'" + Escape +"'", StopAtEol);
@@ -140,19 +152,22 @@ namespace Mono.TextEditor.Highlighting
 			if (reader.LocalName == AltNode) {
 				AddFlags (result.BeginFlags, reader.GetAttribute ("flags"));
 				result.Continuation = reader.GetAttribute ("continuation");
-				Console.WriteLine (result.Continuation);
-				result.Begin        = reader.ReadElementString ();
+				result.Begin        = new Regex (reader.ReadElementString ());
 				result.StopAtEol = true;
 			} else {
 				XmlReadHelper.ReadList (reader, Node, delegate () {
 					switch (reader.LocalName) {
 					case "Begin":
 						AddFlags (result.BeginFlags, reader.GetAttribute ("flags"));
-						result.Begin = reader.ReadElementString ();
+						result.Begin = new Regex (reader.ReadElementString ());
 						return true;
 					case "End":
 						AddFlags (result.EndFlags, reader.GetAttribute ("flags"));
-						result.End = reader.ReadElementString ();
+						result.End = new Regex (reader.ReadElementString ());
+						return true;
+					case "Exit":
+						AddFlags (result.ExitFlags, reader.GetAttribute ("flags"));
+						result.Exit = new Regex (reader.ReadElementString ());
 						return true;
 					}
 					return false;

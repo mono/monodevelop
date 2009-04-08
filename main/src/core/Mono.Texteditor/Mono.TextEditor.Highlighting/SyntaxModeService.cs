@@ -166,92 +166,12 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 		
-		public static void ScanSpans (Document doc, Rule rule, Stack<Span> spanStack, int start, int end)
+		public static void ScanSpans (Document doc, SyntaxMode mode, Rule rule, Stack<Span> spanStack, int start, int end)
 		{
-			Dictionary<char, Span[]> spanTree = rule != null ? rule.spanStarts : null;
-			int endOffset = 0;
-			end = System.Math.Min (end, doc.Length);
-			Span curSpan = spanStack.Count > 0 ? spanStack.Peek () : null;
-			Rule curRule = rule;
-			for (int offset = start; offset < end; offset++) {
-				char ch = doc.GetCharAt (offset);
-				if (curSpan != null && !String.IsNullOrEmpty (curSpan.End)) {
-					if (!String.IsNullOrEmpty (curSpan.Escape) && offset + 1 < end && endOffset == 0 && doc.GetCharAt (offset + 1) == curSpan.End[0]) {
-						bool match = true;
-						for (int j = 0; j < curSpan.Escape.Length && offset + j < doc.Length; j++) {
-							if (doc.GetCharAt (offset + j) != curSpan.Escape[j]) {
-								match = false;
-								break;
-							}
-						}
-						if (match) {
-							offset += curSpan.Escape.Length - 1;
-							continue;
-						}
-							
-						
-					} 
-					if (curSpan.End[endOffset] == ch) {
-						endOffset++;
-						if (endOffset >= curSpan.End.Length) {
-							spanStack.Pop ();
-							curSpan = spanStack.Count > 0 ? spanStack.Peek () : null;
-							curRule = curSpan != null ? doc.SyntaxMode.GetRule (curSpan.Rule) : rule;
-							spanTree = curRule != null ? curRule.spanStarts : null;
-							endOffset = 0;
-							continue;
-						}
-					} else if (endOffset != 0) {
-						endOffset = 0;
-						if (curSpan.End[endOffset] == ch) {
-							offset--;
-							continue;
-						}
-					}
-					if (String.IsNullOrEmpty (curSpan.Rule))
-						continue;
-				}
-				
-				if (spanTree != null && spanTree.ContainsKey (ch)) {
-					bool found = false;
-					foreach (Span span in spanTree[ch]) {
-						bool mismatch = false;
-						for (int j = 1; j < span.Begin.Length; j++) {
-							if (offset + j >= doc.Length || span.Begin [j] != doc.GetCharAt (offset + j)) {
-								mismatch = true;
-								break;
-							}
-						}
-						if (!mismatch && span.BeginFlags.Contains ("firstNonWs")) {
-							LineSegment line = doc.GetLineByOffset (offset);
-							for (int k = line.Offset; k < offset; k++) {
-								if (!Char.IsWhiteSpace (doc.GetCharAt (k))) {
-									mismatch = true;
-									break;
-								}
-							}
-						}
-						
-						if (!mismatch) {
-							spanStack.Push (span);
-							curSpan = span;
-							curRule = doc.SyntaxMode.GetRule (curSpan.Rule);
-							spanTree = curRule != null ? curRule.spanStarts : null;
-							found = true; 
-							offset += span.Begin.Length - 1;
-							endOffset = 0;
-							break;
-						}
-					}
-					if (found) 
-						continue;
-				} else {
-					spanTree = curRule != null ? curRule.spanStarts : null;
-				}
-//			 skip:
-//					;
-			}
+			SyntaxMode.SpanParser parser = new SyntaxMode.SpanParser (doc, mode, null, spanStack);
+			parser.ParseSpans (rule, start, end - start);
 		}
+		
 		static bool IsEqual (Span[] spans1, Span[] spans2)
 		{
 			if (spans1 == null || spans1.Length == 0) 
@@ -285,98 +205,8 @@ namespace Mono.TextEditor.Highlighting
 			
 			protected void ScanSpansThreaded (Document doc, Rule rule, Stack<Span> spanStack, int start, int end)
 			{
-				Dictionary<char, Span[]> spanTree = rule != null ? rule.spanStarts : null;
-				int endOffset = 0;
-				end = System.Math.Min (end, doc.Length);
-				Span curSpan = spanStack.Count > 0 ? spanStack.Peek () : null;
-				Rule curRule = rule;
-				for (int offset = start; offset < end; offset++) {
-					char ch;
-					try {
-						// document may have been changed and the thread is still running
-						// (however a new highlighting thread will be created after each document change)
-						ch = doc.GetCharAt (offset);
-					} catch (Exception) {
-						return;
-					}
-					if (curSpan != null && !String.IsNullOrEmpty (curSpan.End)) {
-						if (!String.IsNullOrEmpty (curSpan.Escape) && offset + 1 < end && endOffset == 0 && doc.GetCharAt (offset + 1) == curSpan.End[0]) {
-							bool match = true;
-							for (int j = 0; j < curSpan.Escape.Length && offset + j < doc.Length; j++) {
-								if (doc.GetCharAt (offset + j) != curSpan.Escape[j]) {
-									match = false;
-									break;
-								}
-							}
-							
-							if (match) {
-								offset += curSpan.Escape.Length - 1;
-								continue;
-							}
-							
-							
-						}
-						if (curSpan.End[endOffset] == ch) {
-							endOffset++;
-							if (endOffset >= curSpan.End.Length) {
-								spanStack.Pop ();
-								curSpan = spanStack.Count > 0 ? spanStack.Peek () : null;
-								curRule = curSpan != null ? doc.SyntaxMode.GetRule (curSpan.Rule) : rule;
-								spanTree = curRule != null ? curRule.spanStarts : null;
-								endOffset = 0;
-								continue;
-							}
-						} else if (endOffset != 0) {
-							endOffset = 0;
-							if (curSpan.End[endOffset] == ch) {
-								offset--;
-								continue;
-							}
-						}
-						if (String.IsNullOrEmpty (curSpan.Rule))
-							continue;
-						
-					}
-					if (spanTree != null && spanTree.ContainsKey (ch)) {
-						bool found = false;
-						foreach (Span span in spanTree[ch]) {
-							bool mismatch = false;
-							for (int j = 1; j < span.Begin.Length; j++) {
-								if (offset + j >= doc.Length || span.Begin [j] != doc.GetCharAt (offset + j)) {
-									mismatch = true;
-									break;
-								}
-							}
-							if (!mismatch && span.BeginFlags.Contains ("firstNonWs")) {
-								LineSegment line = doc.GetLineByOffset (offset);
-								for (int k = line.Offset; k < offset; k++) {
-									if (!Char.IsWhiteSpace (doc.GetCharAt (k))) {
-										mismatch = true;
-										break;
-									}
-								}
-							}
-							
-							if (!mismatch) {
-								spanStack.Push (span);
-								curSpan = span;
-								curRule = doc.SyntaxMode.GetRule (curSpan.Rule);
-								spanTree = curRule != null ? curRule.spanStarts : null;
-								offset += span.Begin.Length - 1;
-								endOffset = 0;
-								
-								found = true; 
-								break;
-							}
-						}
-						if (found) 
-							continue;
-					} else {
-						spanTree = curRule != null ? curRule.spanStarts : null;
-					}
-//				 skip:
-//						;
-				}
+				SyntaxMode.SpanParser parser = new SyntaxMode.SpanParser (doc, mode, null, spanStack);
+				parser.ParseSpans (rule, start, end - start);
 			}
 			
 			bool EndsWithContinuation (Span span, LineSegment line)

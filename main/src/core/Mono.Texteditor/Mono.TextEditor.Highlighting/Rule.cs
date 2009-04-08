@@ -161,25 +161,7 @@ namespace Mono.TextEditor.Highlighting
 				return String.Format ("[Pair: o1={0}, o2={1}]", o1, o2);
 			}
 		}
-		public Dictionary<char, Span[]>             spanStarts = new Dictionary<char, Span[]> ();
 		public Dictionary<char, Pair<Keywords, object>> parseTree  = new Dictionary<char, Pair<Keywords, object>> ();
-		
-		protected void SetupSpanTree ()
-		{
-			Dictionary<char, List<Span>> tree = new Dictionary<char, List<Span>> ();
-			foreach (Span span in this.spans) {
-				//List<Span> list = null;
-				char start = span.Begin[0];
-				if (!tree.ContainsKey (start))
-					tree.Add (start, new List<Span> ());
-				tree[start].Add (span);
-			}
-			
-			spanStarts.Clear ();
-			foreach (KeyValuePair<char, List<Span>> spans in tree) {
-				spanStarts[spans.Key] = spans.Value.ToArray ();
-			}
-		}
 		
 		void AddToParseTree (string key, Keywords value)
 		{
@@ -239,7 +221,6 @@ namespace Mono.TextEditor.Highlighting
 				return result.ReadNode (reader, matches);
 			});
 			result.matches = matches.ToArray ();
-			result.SetupSpanTree ();
 			result.SetupParseTree ();
 			return result;
 		}

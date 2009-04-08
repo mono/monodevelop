@@ -1,5 +1,24 @@
 2009-04-08  Mike Krüger  <mkrueger@novell.com>
 
+	* SyntaxModes/XmlSyntaxMode.xml:
+	* Mono.TextEditor.Highlighting.Regex:
+	* Mono.TextEditor/ClipboardActions.cs:
+	* Mono.TextEditor.Highlighting/Span.cs:
+	* Mono.TextEditor.Highlighting/Rule.cs:
+	* Mono.TextEditor.Highlighting/Match.cs:
+	* Mono.TextEditor.Highlighting/SyntaxMode.cs:
+	* Mono.TextEditor.Highlighting.Regex/Regex.cs:
+	* Mono.TextEditor.Highlighting.Regex/RegexMatch.cs:
+	* Mono.TextEditor.Highlighting/SyntaxModeService.cs:
+	  Overworked the syntax highlighting & implemented "Bug 480133
+	  - XML highlighting doesn't deal well with incomplete tags".
+
+	* Makefile.am:
+	* gtk-gui/objects.xml:
+	* Mono.TextEditor.csproj: 
+
+2009-04-08  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextViewMargin.cs: activated virtual leading
 	  whitespace click.
 

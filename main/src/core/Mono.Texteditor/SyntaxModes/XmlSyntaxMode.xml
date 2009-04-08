@@ -66,11 +66,13 @@
 	<Rule name = "InTag">
 		<Span color = "string" rule="InLiteral">
 			<Begin>&quot;</Begin>
+			<Exit>&lt;</Exit>
 			<End>&quot;</End>
 		</Span>
 		
 		<Span color = "string" rule="InLiteral">
 			<Begin>&apos;</Begin>
+			<Exit>&lt;</Exit>
 			<End>&apos;</End>
 		</Span>
 		

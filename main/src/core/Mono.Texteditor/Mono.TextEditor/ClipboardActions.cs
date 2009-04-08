@@ -254,7 +254,7 @@ namespace Mono.TextEditor
 					
 					LineSegment line    = data.Document.GetLineByOffset (segment.Offset);
 					Stack<Span> spanStack = line.StartSpan != null ? new Stack<Span> (line.StartSpan) : new Stack<Span> ();
-					SyntaxModeService.ScanSpans (data.Document, this.mode, spanStack, line.Offset, segment.Offset);
+					SyntaxModeService.ScanSpans (data.Document, this.mode, this.mode, spanStack, line.Offset, segment.Offset);
 	
 					this.copiedDocument.GetLine (0).StartSpan = spanStack.ToArray ();
 					

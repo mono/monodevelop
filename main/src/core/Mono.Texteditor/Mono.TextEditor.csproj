@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -8,7 +8,6 @@
     <ProjectGuid>{A2329308-3751-4DBD-9A75-5F7B8B024625}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AssemblyName>Mono.TextEditor</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -123,6 +122,8 @@
     <Compile Include="Mono.TextEditor.PopupWindow\ListWindow.cs" />
     <Compile Include="Mono.TextEditor.PopupWindow\IListDataProvider.cs" />
     <Compile Include="Mono.TextEditor.PopupWindow\ListWidget.cs" />
+    <Compile Include="Mono.TextEditor.Highlighting.Regex\Regex.cs" />
+    <Compile Include="Mono.TextEditor.Highlighting.Regex\RegexMatch.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -192,7 +193,7 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <MonoDevelop>
-      <Properties>
+      <Properties InternalTargetFrameworkVersion="3.5">
         <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="true" IsAutotoolsProject="true" RelativeConfigureInPath="../../..">
           <BuildFilesVar Sync="true" Name="FILES" />
           <DeployFilesVar />
@@ -207,5 +208,6 @@
   </ProjectExtensions>
   <ItemGroup>
     <Folder Include="Mono.TextEditor.PopupWindow\" />
+    <Folder Include="Mono.TextEditor.Highlighting.Regex\" />
   </ItemGroup>
 </Project>

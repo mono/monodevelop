@@ -33,7 +33,7 @@ namespace Mono.TextEditor.Highlighting
 {
 	public class Match
 	{
-		Regex  regex;
+		System.Text.RegularExpressions.Regex  regex;
 		public string Color {
 			get;
 			private set;
@@ -49,6 +49,7 @@ namespace Mono.TextEditor.Highlighting
 				return regex;
 			}
 		}
+		
 		public virtual bool GetIsValid (Style style)
 		{
 			return style.GetChunkStyle (Color) != null;

@@ -13,6 +13,8 @@ REFS =  \
 FILES =  \
 	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
+	Mono.TextEditor.Highlighting.Regex/Regex.cs \
+	Mono.TextEditor.Highlighting.Regex/RegexMatch.cs \
 	Mono.TextEditor.Highlighting/Chunk.cs \
 	Mono.TextEditor.Highlighting/ChunkStyle.cs \
 	Mono.TextEditor.Highlighting/DefaultStyle.cs \
