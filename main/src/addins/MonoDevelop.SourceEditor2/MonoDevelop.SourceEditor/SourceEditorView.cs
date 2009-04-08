@@ -251,6 +251,10 @@ namespace MonoDevelop.SourceEditor
 		
 		public void Load (string fileName, string encoding)
 		{
+			// Handle the "reload" case.
+			if (autoSave.FileName == fileName) {
+				autoSave.RemoveAutoSaveFile ();
+			}
 			autoSave.FileName = fileName;
 			if (warnOverwrite) {
 				warnOverwrite = false;

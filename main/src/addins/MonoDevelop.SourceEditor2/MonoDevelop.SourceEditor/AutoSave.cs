@@ -84,7 +84,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			IsDirty = false;
 		}
-		
+		AutoResetEvent resetEvent = new AutoResetEvent (false);
 		bool autoSaveThreadRunning = false;
 		Thread autoSaveThread;
 		bool fileChanged   = false;
@@ -103,41 +103,34 @@ namespace MonoDevelop.SourceEditor
 		
 		void AutoSaveThread ()
 		{
-			restart:
-			try {
-			 	while (autoSaveThreadRunning) {
-					lock (contentLock) {
-						if (fileChanged) {	
-							CreateAutoSave (content.FileName, content.Content);
-							fileChanged = false;
-						}
+			while (autoSaveThreadRunning) {
+				resetEvent.WaitOne ();
+				lock (contentLock) {
+					if (fileChanged) {
+						CreateAutoSave (content.FileName, content.Content);
+						fileChanged = false;
 					}
-					Thread.Sleep (Timeout.Infinite);
 				}
-			} catch (System.Threading.ThreadInterruptedException) {
-				goto restart;	
 			}
 		}
 		
 		public string LoadAutoSave ()
 		{
-			lock (contentLock) {
-				string autoSaveFileName = GetAutoSaveFileName (FileName);
-				return File.ReadAllText (autoSaveFileName);
-			}
+			string autoSaveFileName = GetAutoSaveFileName (FileName);
+			return File.ReadAllText (autoSaveFileName);
 		}
 		
 		public void RemoveAutoSaveFile ()
 		{
 			IsDirty = false;
-			lock (contentLock) {
-				if (AutoSaveExists (FileName)) {
-					string autoSaveFileName = GetAutoSaveFileName (FileName);
-					try {
+			if (AutoSaveExists (FileName)) {
+				string autoSaveFileName = GetAutoSaveFileName (FileName);
+				try {
+					lock (contentLock) {
 						File.Delete (autoSaveFileName);
-					} catch (Exception e) {
-						LoggingService.LogError ("Can't delete auto save file: " + autoSaveFileName, e);
 					}
+				} catch (Exception e) {
+					LoggingService.LogError ("Can't delete auto save file: " + autoSaveFileName, e);
 				}
 			}
 		}
@@ -146,15 +139,15 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (FileName == null || content == null)
 				return;
+			if (!autoSaveThreadRunning)
+				StartAutoSaveThread ();
+			
 			IsDirty = true;
 			lock (contentLock) {
 				fileChanged = true;
 				this.content = new FileContent (FileName, content);
 				
-				if (!autoSaveThreadRunning)
-					StartAutoSaveThread ();
-				
-				autoSaveThread.Interrupt ();
+				resetEvent.Set ();
 			}
 		}
 		
@@ -162,7 +155,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			autoSaveThreadRunning = false;
 			if (autoSaveThread != null) {
-				autoSaveThread.Interrupt ();
+				resetEvent.Set ();
 				autoSaveThread.Join ();
 				autoSaveThread = null;
 			}

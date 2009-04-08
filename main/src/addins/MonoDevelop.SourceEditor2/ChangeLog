@@ -1,3 +1,10 @@
+2009-04-08  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/AutoSave.cs:
+	* MonoDevelop.SourceEditor/EditActions.cs:
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Worked on "Bug
+	  492923 - MD hangs while editing text".
+
 2009-04-07  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs:
