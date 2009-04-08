@@ -42,12 +42,14 @@ namespace OSXIntegration
 		protected IntPtr menuref;		// The handle returned by the CreateNewMenu
 		ushort id; 				// The ID for this menu
 		ushort id_sequence;
-		CommandManager manager;
+		static CommandManager manager;
+		object commandId;
 
 		static uint cmdseq;
 		
-		static Dictionary<uint,object> commands = new Dictionary<uint, object> ();
-
+		static Dictionary<uint,object> commands = new Dictionary<uint,object> ();
+		static Dictionary<IntPtr,string> menus = new Dictionary<IntPtr,string> ();
+		
 		string GetName (CommandEntrySet ces)
 		{
 			string text = ces.Name ?? "";
@@ -57,12 +59,12 @@ namespace OSXIntegration
 
 		public OSXMenu (CommandManager manager, CommandEntrySet entrySet) 
 		{
-			this.manager = manager;
+			OSXMenu.manager = manager;
 			id = id_sequence++;
 			
-			//commands[id] = entrySet.
-			
 			HIToolbox.CheckResult (HIToolbox.CreateNewMenu (id, 0, out menuref));
+			
+			menus[menuref] = entrySet.Name;
 			
 			HIToolbox.SetMenuTitle (menuref, GetName (entrySet));
 
@@ -158,24 +160,24 @@ namespace OSXIntegration
 			Carbon.InstallApplicationEventHandler (HandleMenuCommand, CarbonEventCommand.Process, out handlerRef2);
 		}
 		
-		CarbonEventReturn HandleMenuOpening (IntPtr callRef, IntPtr eventRef, IntPtr user_data)
-		{/*
+		static CarbonEventReturn HandleMenuOpening (IntPtr callRef, IntPtr eventRef, IntPtr user_data)
+		{
 			try {
-				IntPtr menuRef = Carbon.GetEventParameter<IntPtr> (eventRef, CarbonEventParameterName.DirectObject, CarbonEventParameterType.MenuRef);
-				uint cmd = HIToolbox.GetMenuItemCommandID (new HIMenuItem (menuRef, 0));
-				object cmdKey;
-				if (commands.TryGetValue (cmd, out cmdKey))
-					System.Console.WriteLine(cmdKey.ToString ());
+				IntPtr menuRef = Carbon.GetEventParameter (eventRef, CarbonEventParameterName.DirectObject, CarbonEventParameterType.MenuRef);
+			//	uint cmd = HIToolbox.GetMenuItemCommandID (new HIMenuItem (menuRef, 0));
+				string name;
+				if (menus.TryGetValue (menuRef, out name))
+					Console.WriteLine ("Menu opened: {0}", name);
 				else
-					System.Console.WriteLine("Command not found");
+					System.Console.WriteLine ("Menu not found");
 			} catch (Exception ex) {
-				System.Console.WriteLine(ex);
-			}*/
-			Console.WriteLine ("Menu opened");
-			return CarbonEventReturn.Handled;
+				System.Console.WriteLine (ex);
+			}
+			
+			return CarbonEventReturn.NotHandled;
 		}
 		
-		CarbonEventReturn HandleMenuCommand (IntPtr callRef, IntPtr eventRef, IntPtr userData)
+		static CarbonEventReturn HandleMenuCommand (IntPtr callRef, IntPtr eventRef, IntPtr userData)
 		{
 			try {
 				CarbonHICommand cmd = Carbon.GetEventParameter<CarbonHICommand> (eventRef, CarbonEventParameterName.DirectObject, CarbonEventParameterType.HICommand);
@@ -200,6 +202,7 @@ namespace OSXIntegration
 		public void Dispose (bool disposing)
 		{
 			if (menuref != IntPtr.Zero) {
+				menus.Remove (menuref);
 				CoreFoundation.Release (menuref);
 				if (!disposing)
 					MonoDevelop.Core.LoggingService.LogWarning ("Warning, Mac menu was finalized, not disposed");

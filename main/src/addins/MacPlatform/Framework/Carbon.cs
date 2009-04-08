@@ -85,10 +85,24 @@ namespace OSXIntegration.Framework
 		
 		#endregion
 		
-		[DllImport (CarbonLib)]
-		static extern OSStatus GetEventParameter (IntPtr eventRef, CarbonEventParameterName name, CarbonEventParameterType desiredType,
-		                                          out CarbonEventParameterType actualType, uint size, ref uint outSize, IntPtr dataBuffer);
 		
+		[DllImport (CarbonLib)]
+		public static extern OSStatus GetEventParameter (IntPtr eventRef, CarbonEventParameterName name, CarbonEventParameterType desiredType,
+		                                                 out CarbonEventParameterType actualType, uint size, ref uint outSize, ref IntPtr outPtr);
+		
+		public static IntPtr GetEventParameter (IntPtr eventRef, CarbonEventParameterName name, CarbonEventParameterType desiredType)
+		{
+			CarbonEventParameterType actualType;
+			uint outSize = 0;
+			IntPtr val = IntPtr.Zero;
+			CheckReturn (GetEventParameter (eventRef, name, desiredType, out actualType, (uint)IntPtr.Size, ref outSize, ref val));
+			return val;
+		} 
+		
+		[DllImport (CarbonLib)]
+		static extern OSStatus GetEventParameter (IntPtr eventRef, CarbonEventParameterName name, CarbonEventParameterType desiredType,	
+		                                          out CarbonEventParameterType actualType, uint size, ref uint outSize, IntPtr dataBuffer);
+		  
 		public static T GetEventParameter<T> (IntPtr eventRef, CarbonEventParameterName name, CarbonEventParameterType desiredType) where T : struct
 		{
 			CarbonEventParameterType actualType;
@@ -271,9 +285,17 @@ namespace OSXIntegration.Framework
 		public IntPtr WindowRef { get { return windowRef; } }
 		public HIMenuItem MenuItem { get { return menuItem; } }
 		
-		public bool IsFromMenu { get { return attributes == CarbonHICommandAttributes.FromMenu; } }
-		public bool IsFromControl { get { return attributes == CarbonHICommandAttributes.FromControl; } }
-		public bool IsFromWindow { get { return attributes == CarbonHICommandAttributes.FromWindow; } }
+		public bool IsFromMenu {
+			get { return attributes == CarbonHICommandAttributes.FromMenu; }
+		}
+		
+		public bool IsFromControl {
+			get { return attributes == CarbonHICommandAttributes.FromControl; }
+		}
+		
+		public bool IsFromWindow {
+			get { return attributes == CarbonHICommandAttributes.FromWindow; }
+		}
 	}
 	
 	[StructLayout(LayoutKind.Sequential)]

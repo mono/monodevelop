@@ -117,6 +117,11 @@ namespace OSXIntegration.Framework
 		}
 		
 		public MenuResult Result { get; private set; }
+		
+		public override string ToString ()
+		{
+			return string.Format("CarbonMenuException: Result={0}\n{1}", Result, StackTrace);
+		}
 	}
 	
 	internal enum MenuResult {

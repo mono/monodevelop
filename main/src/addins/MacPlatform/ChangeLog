@@ -1,3 +1,15 @@
+2009-04-08  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Menus/OSXMenu.cs: Don't use instance methods as callbacks,
+	  as the managed objects are currently GC'd. We can now handle
+	  the menu open events and writeline the menu names.
+
+	* Framework/Carbon.cs: Add a GetEventParameter overload for
+	  IntPtr.
+
+	* Framework/HIToolbox.cs: ToString overload for
+	  CarbonMenuException.
+
 2009-04-07  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Framework:
