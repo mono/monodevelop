@@ -191,6 +191,14 @@ namespace Mono.TextEditor
 			if (String.IsNullOrEmpty (text))
 				return;
 			Document.BeginAtomicUndo ();
+			
+			LineSegment line = Document.GetLine (Caret.Line);
+			if (Caret.Column > line.EditableLength) {
+				string virtualSpace = GetVirtualSpaces (Caret.Line, Caret.Column);
+				Insert (Caret.Offset, virtualSpace);
+				Caret.Offset += virtualSpace.Length - 1;
+			}
+			
 			int length = Insert (Caret.Offset, text);
 			Caret.Offset += length;
 			Document.EndAtomicUndo ();
