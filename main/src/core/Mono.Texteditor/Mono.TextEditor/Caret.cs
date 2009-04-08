@@ -178,6 +178,9 @@ namespace Mono.TextEditor
 		{
 			LineSegment curLine = this.document.GetLine (this.Line);
 			this.location.Column = curLine.GetLogicalColumn (editor, this.document, this.desiredColumn);
+			if (curLine.GetVisualColumn (editor, document, this.location.Column) < this.desiredColumn) {
+				this.location.Column = editor.GetNextVirtualColumn (Line, this.location.Column);
+			}
 		}
 		
 		public override string ToString ()
