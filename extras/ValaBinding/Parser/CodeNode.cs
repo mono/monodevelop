@@ -105,20 +105,22 @@ namespace MonoDevelop.ValaBinding.Parser
 			get{ return string.Format("{0} {1}", NodeType, Name); }
 		}
 		public string File{ get; set; }
-		public int Line{ get; set; }
+		public int FirstLine{ get; set; }
+		public int LastLine{ get; set; }
 
 		public CodeNode () {}
 
-		public CodeNode (string type, string name, string parentname, string file, int line)
+		public CodeNode (string type, string name, string parentname, string file, int first_line, int last_line)
 		{
 			Name = name;
 			NodeType = type;
 			FullName = (string.IsNullOrEmpty (parentname))? Name: string.Format ("{0}.{1}", parentname, name);
 			File = file;
-			Line = line;
+			FirstLine = first_line;
+			LastLine = last_line;
 		}
 		
-		public CodeNode (string type, string name, string parentname, string file, int line, AccessModifier access): this (type, name, parentname, file, line)
+		public CodeNode (string type, string name, string parentname, string file, int first_line, int last_line, AccessModifier access): this (type, name, parentname, file, first_line, last_line)
 		{
 			Access = access;
 		}

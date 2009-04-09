@@ -238,6 +238,8 @@ namespace MonoDevelop.ValaBinding.Parser
 						children.Add (child);
 					}
 				}
+			} else if ("namespaces" != parent.NodeType) {
+				children = CacheCompleteType (parent.FullName, parent.File, parent.FirstLine, 0, null);
 			} else {
 				children = CacheCompleteType (parent.FullName, string.Empty, 0, 0, null);
 			}
@@ -465,7 +467,7 @@ namespace MonoDevelop.ValaBinding.Parser
 			});
 		}// GetSymbolsVisibleFrom
 		
-		private static Regex completionRegex = new Regex (@"^\s*vsc-shell - (?<type>[^:]+):(?<name>[^\s:]+)(:(?<modifier>[^;]*);(?<static>[^:]*))?(:(?<returntype>[^;]*);(?<ownership>[^:]*))?(:(?<args>[^:]*);)?((?<file>[^:]*):(?<line>\d+);)?", RegexOptions.Compiled);
+		private static Regex completionRegex = new Regex (@"^\s*vsc-shell - (?<type>[^:]+):(?<name>[^\s:]+)(:(?<modifier>[^;]*);(?<static>[^:]*))?(:(?<returntype>[^;]*);(?<ownership>[^:]*))?(:(?<args>[^:]*);)?((?<file>[^:]*):(?<first_line>\d+);(?<last_line>\d+);)?", RegexOptions.Compiled);
 		/// <summary>
 		/// Parse out a CodeNode from a vsc-shell description string
 		/// </summary>
@@ -480,7 +482,8 @@ namespace MonoDevelop.ValaBinding.Parser
 				string[] argtokens = typename.Split ('.');
 				string baseTypeName = argtokens[argtokens.Length-1];
 				string file = match.Groups["file"].Success? match.Groups["file"].Value: string.Empty;
-				int line = match.Groups["line"].Success? int.Parse(match.Groups["line"].Value): 0;
+				int first_line = match.Groups["first_line"].Success? int.Parse(match.Groups["first_line"].Value): 0;
+				int last_line = match.Groups["last_line"].Success? int.Parse(match.Groups["last_line"].Value): 0;
 				
 				switch (match.Groups["modifier"].Value) {
 				case "private":
@@ -514,13 +517,13 @@ namespace MonoDevelop.ValaBinding.Parser
 							}
 						}
 					}
-					Function function = new Function (childType, name, typename, file, line, access, returnType, paramlist.ToArray ());
+					Function function = new Function (childType, name, typename, file, first_line, last_line, access, returnType, paramlist.ToArray ());
 					if (!methods.ContainsKey (function.Name)){ methods[function.Name] = new List<Function> (); }
 					methods[function.Name].Add (function);
 					return function;
 					break;
 				default:
-					return new CodeNode (childType, name, typename, file, line, access);
+					return new CodeNode (childType, name, typename, file, first_line, last_line, access);
 					break;
 				}
 			}
@@ -544,5 +547,19 @@ namespace MonoDevelop.ValaBinding.Parser
 				results.IsChanging = false;
 			});
 		}// AddResults
+		
+		public List<CodeNode> GetClassesForFile (string file)
+		{
+			List<CodeNode> classes = new List<CodeNode> ();
+			AddFile (file);
+			CodeNode node = null;
+			foreach (string result in ParseCommand ("get-classes {0}", file)) {
+				Console.WriteLine ("get-classes: got {0}", result);
+				node = ParseType (string.Empty, result);
+				if(null != node){ classes.Add (node); }
+			}
+			
+			return classes;
+		}// GetClassesForFile
 	}
 }

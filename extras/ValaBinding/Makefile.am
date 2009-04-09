@@ -42,6 +42,8 @@ FILES =  \
 	Parser/Function.cs \
 	Parser/ProjectInformation.cs \
 	Parser/ProjectInformationManager.cs \
+	Parser/ValaDocumentParser.cs \
+	Parser/ValaParsedDocument.cs \
 	Project/MakefileHandler.cs \
 	Project/ProjectPackage.cs \
 	Project/ProjectPackageCollection.cs \

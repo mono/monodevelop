@@ -227,6 +227,8 @@
     <Compile Include="Navigation\LanguageItemNodeBuilder.cs" />
     <Compile Include="Navigation\ProjectNodeBuilderExtension.cs" />
     <Compile Include="Parser\Function.cs" />
+    <Compile Include="Parser\ValaDocumentParser.cs" />
+    <Compile Include="Parser\ValaParsedDocument.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

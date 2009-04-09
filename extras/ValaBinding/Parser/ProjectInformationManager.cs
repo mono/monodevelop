@@ -55,7 +55,7 @@ namespace MonoDevelop.ValaBinding.Parser
 		public ProjectInformation Get (Project project)
 		{
 			foreach (ProjectInformation p in projects) {
-				if (project.Equals (p.Project)) {
+				if (project == p.Project || (null != project && project.Equals (p.Project))) {
 					return p;
 				}
 			}

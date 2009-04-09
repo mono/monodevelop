@@ -1,3 +1,7 @@
+2009-04-09  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* *: Populate quick finder.
+
 2009-04-08  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* Parser/ProjectInformation.cs: Increase parser robustness.

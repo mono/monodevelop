@@ -53,7 +53,7 @@ namespace MonoDevelop.ValaBinding.Navigation
 			if (null != item && !string.IsNullOrEmpty (item.File) && File.Exists (item.File)) {
 				Document doc = IdeApp.Workbench.OpenDocument (item.File);
 				if(null != doc && null != doc.TextEditor) {
-					doc.TextEditor.JumpTo (item.Line, 0);
+					doc.TextEditor.JumpTo (item.FirstLine, 0);
 				}
 			}
 		}

@@ -57,8 +57,8 @@ namespace MonoDevelop.ValaBinding.Parser
 			}
 		}
 		
-		public Function (string type, string name, string parentname, string file, int line, AccessModifier access, string returnType, KeyValuePair<string,string>[] parameters): 
-			base (type, name, parentname, file, line, access)
+		public Function (string type, string name, string parentname, string file, int first_line, int last_line, AccessModifier access, string returnType, KeyValuePair<string,string>[] parameters): 
+			base (type, name, parentname, file, first_line, last_line, access)
 		{
 			ReturnType = returnType;
 			Parameters = parameters;

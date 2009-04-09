@@ -155,4 +155,8 @@
 	<Extension path = "/MonoDevelop/Autotools/MakefileHandlers">
 		<Class class = "MonoDevelop.ValaBinding.MakefileHandler"/>
 	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/DomParser">
+		<Class class = "MonoDevelop.ValaBinding.Parser.ValaDocumentParser" id = "ValaDocumentParser" />
+	</Extension>
 </Addin>
