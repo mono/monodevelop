@@ -11,7 +11,7 @@ if (mvcHost.IsViewUserControl) { #>
 <#
 	foreach (string contentID in mvcHost.ContentPlaceHolders) {
 #>
-<asp:Content ID="<#= contentID #>Content" ContentPlaceHolderID="<#= contentID #>" >
+<asp:Content ID="<#= contentID #>Content" ContentPlaceHolderID="<#= contentID #>" runat="server">
 </asp:Content>
 <#
 	}

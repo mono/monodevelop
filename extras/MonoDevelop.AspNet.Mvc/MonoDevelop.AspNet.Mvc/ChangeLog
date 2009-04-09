@@ -2,6 +2,55 @@
 
 	* Gui/AddViewDialog.cs: Track parser API.
 
+2009-04-02  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Gui/AddViewDialog.cs: Refresh the placeholder list properly.
+
+2009-04-02  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Gui/AddViewDialog.cs: When auto-selecting site master,
+	  refresh the placeholders list.
+
+2009-04-02  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* CodeTemplates/AddView/Empty.tt: Fix missing runat="server"
+	  in Content tags.
+
+2009-04-02  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AspNet.Mvc.addin.xml: Update package name.
+
+	* AspMvcProject.cs: Check we're on the 2.4 runtime or later.
+	  Update package name.
+
+	* Templates/Project.xpt.xml: Add some "Hello World" content.
+
+2009-04-02  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Gui/AddViewDialog.cs: Disable class selector, and the widget
+	  it uses has broken input handling in modal dialogs.
+
+2009-04-02  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* AspMvcProject.cs: Add a workaround for Bug 491377: Package
+	  references can't be local-copied even if they aren't GAC
+	  assemblies.
+
+2009-04-02  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Templates/WebConfigApp.xft.xml: Fix web.config.
+
+2009-04-02  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* System.Web.Mvc.dll: Need assembly signed with winfx key.
+
+2009-04-02  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* System.Web.Mvc.dll:
+	* MonoDevelop.AspNet.Mvc.csproj:
+	* MonoDevelop.AspNet.Mvc.addin.xml: Fix refs. Add a local 
+	  copy of the GMCS-built, MS-PL System.Web.Mvc dll.
+
 2009-03-13  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* gtk-gui/gui.stetic: Track build directory change.

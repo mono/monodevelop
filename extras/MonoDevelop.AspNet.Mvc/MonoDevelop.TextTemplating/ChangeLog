@@ -2,6 +2,10 @@
 
 	* Parser/T4Parser.cs: Track parser API.
 
+2009-04-02  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.TextTemplating.addin.xml: Fix refs.
+
 2009-03-13  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.TextTemplating.csproj: Move output dir from

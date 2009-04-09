@@ -113,7 +113,8 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 		
 		protected virtual void UpdateTypePanelSensitivity (object sender, EventArgs e)
 		{
-			bool enabled = typePanel.Sensitive = stronglyTypedCheck.Active;
+			//FIXME: need to fix the class list widget
+			bool enabled = typePanel.Sensitive = false; // stronglyTypedCheck.Active;
 			
 			if (enabled && classDataProvider == null) {
 				dataClassCombo.DataProvider = classDataProvider = new TypeDataProvider (project);
@@ -169,15 +170,15 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 		
 		protected virtual void MasterChanged (object sender, EventArgs e)
 		{
+			if (IsPartialView || !HasMaster)
+				return;
+			
 			if (masterEntry.Text == oldMaster)
 				return;
 			oldMaster = masterEntry.Text;
 			
 			primaryPlaceholderStore.Clear ();
 			ContentPlaceHolders.Clear ();
-			
-			if (IsPartialView || !HasMaster)
-				return;
 			
 			string realPath = project.VirtualToLocalPath (oldMaster, null);
 			if (!System.IO.File.Exists (realPath))

@@ -3,13 +3,12 @@
        name        = "ASP.NET MVC Support"
        author      = "Michael Hutchinson"
        copyright   = "MIT X11"
-       url         = "http://www.monodevelop.com/"
+       url         = "http://monodevelop.com/"
        description = "Support for ASP.NET MVC projects."
        category    = "Web Development"
        version     = "1.9.2">
 	
 	<Runtime>
-		<Import assembly = "Mono.TextTemplating.dll" />
 		<Import file = "Templates/Controller.xft.xml"/>
 		<Import file = "Templates/ViewPage.xft.xml"/>
 		<Import file = "Templates/ViewContentPage.xft.xml"/>
@@ -21,6 +20,7 @@
 		<Import file = "Templates/WebConfigApp.xft.xml"/>
 		<Import file = "Templates/WebConfigViews.xft.xml"/>
 		<Import file = "CodeTemplates/AddView/Empty.tt" />
+		<Import assembly = "System.Web.Mvc.dll" />
 	</Runtime>
 	
 	<Dependencies>
@@ -96,5 +96,13 @@
 	
 	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
 		<NodeBuilder id="AspMvcFolderNodeBuilderExtension" class = "MonoDevelop.AspNet.Mvc.Gui.FolderNodeBuilderExtension"/>
+	</Extension>
+	
+	<Extension path="/MonoDevelop/Core/SupportPackages">
+		<Condition id="PackageNotInstalled" name="system.web.mvc" version="1.0.0.0">
+			<Package name="system.web.mvc" version="1.0.0.0" targetFramework="3.5">
+				<Assembly file="System.Web.Mvc.dll" />
+			</Package>
+		</Condition>
 	</Extension>
 </Addin>

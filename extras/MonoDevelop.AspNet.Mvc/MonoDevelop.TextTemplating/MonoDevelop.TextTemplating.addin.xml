@@ -2,13 +2,14 @@
        namespace   = "MonoDevelop"
        name        = "Text Templating"
        author      = "Michael Hutchinson"
-       copyright   = ""
-       url         = ""
+       copyright   = "MIT/X11"
+       url         = "http://monodevelop.com"
        description = "Support for editing and running T4 text templates."
        category    = "IDE extensions"
        version     = "1.9.2">
 	
 	<Runtime>
+		<Import assembly="Mono.TextTemplating.dll" />
 	</Runtime>
 	
 	<Dependencies>
