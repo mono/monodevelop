@@ -1,3 +1,8 @@
+2009-04-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AspNet/MasterContentFileDescriptionTemplate.cs:
+	  Add a using.
+
 2009-03-20  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.AspNet/AspNetAppProject.cs: Fix output directory
