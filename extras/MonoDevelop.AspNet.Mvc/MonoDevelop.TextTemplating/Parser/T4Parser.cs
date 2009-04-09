@@ -46,11 +46,11 @@ namespace MonoDevelop.TextTemplating.Parser
 			return fileName.EndsWith (".tt");
 		}
 		
-		public override ParsedDocument Parse (string fileName, string fileContent)
+		public override ParsedDocument Parse (ProjectDom dom, string fileName, string content)
 		{
 			ParsedTemplate template = new ParsedTemplate (fileName);
 			try {
-				Tokeniser tk = new Tokeniser (fileName, fileContent);
+				Tokeniser tk = new Tokeniser (fileName, content);
 				template.ParseWithoutIncludes (tk);
 			} catch (ParserException ex) {
 				template.LogError (ex.Message, ex.Location);

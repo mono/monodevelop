@@ -28,6 +28,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using MonoDevelop.AspNet.Gui;
+using MonoDevelop.Projects.Dom.Parser;
 using PP = System.IO.Path;
 
 namespace MonoDevelop.AspNet.Mvc.Gui
@@ -183,7 +184,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 				return;
 			
 			MonoDevelop.AspNet.Parser.AspNetParsedDocument pd
-				= MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetParsedDocument (realPath)
+				= ProjectDomService.GetParsedDocument (ProjectDomService.GetProjectDom (project), realPath)
 				as MonoDevelop.AspNet.Parser.AspNetParsedDocument;
 			
 			if (pd != null && pd.Document != null) {

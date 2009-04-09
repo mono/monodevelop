@@ -1,3 +1,7 @@
+2009-04-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Gui/AddViewDialog.cs: Track parser API.
+
 2009-03-13  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* gtk-gui/gui.stetic: Track build directory change.
