@@ -1,3 +1,9 @@
+2009-04-09  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharpBinding/FindMemberVisitorTests.cs: Addded
+	  test for "Bug 493202 - List References on private
+	  constructor yields nothing".
+
 2009-04-03  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects/DomTests.cs: Fixed wrong unit test.

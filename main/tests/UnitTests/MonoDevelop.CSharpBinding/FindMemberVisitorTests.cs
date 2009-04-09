@@ -43,7 +43,7 @@ using ICSharpCode.NRefactory.Visitors;
 namespace MonoDevelop.CSharpBinding.Tests
 {
 	[TestFixture]
-	public class FindMemberVisitorTests
+	public class FindMemberVisitorTests : UnitTests.TestBase
 	{
 		#region TestHelper
 		static NRefactoryParser parser = new NRefactoryParser ();
@@ -512,6 +512,26 @@ class B : BaseClass
 	}
 }");
 		}
+			
+		/// <summary>
+		/// Bug 493202 - List References on private constructor yields nothing
+		/// </summary>
+		[Test()]
+		public void TestBug493202 ()
+		{
+			RunTest (
+@"public class Foo {
+   $@Foo () //right click on Foo and list constructor references
+   {}
+
+   public Foo Instance()
+   {
+     return new @Foo ();
+   }
+}
+");
+		}
+		
 		
 		/*
 		[Test()]
