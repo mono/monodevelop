@@ -491,12 +491,14 @@ namespace MonoDevelop.ValaBinding
 
 			string depsfile = Path.ChangeExtension (package.File, ".deps");
 			try {
-				string[] lines = File.ReadAllLines (depsfile);
-				List<ProjectPackage> deps = new List<ProjectPackage>();
-				foreach (string line in lines) {
-					deps.Add(new ProjectPackage(Path.Combine(vapidir, line) + ".vapi"));
-				}// add package for each dep
-				packages.AddRange(deps);
+				if (File.Exists (depsfile)) {
+					string[] lines = File.ReadAllLines (depsfile);
+					List<ProjectPackage> deps = new List<ProjectPackage>();
+					foreach (string line in lines) {
+						deps.Add(new ProjectPackage(Path.Combine(vapidir, line) + ".vapi"));
+					}// add package for each dep
+					packages.AddRange(deps);
+				}
 
 				// Currently, we need to add include directory and linker flags - this should be obsoleted
 				string ccargs = string.Format (" --Xcc=\\\\\\\"-I{0}\\\\\\\" --Xcc=\\\\\\\"-L{0}\\\\\\\" --Xcc=\\\\\\\"-l{1}\\\\\\\" ", Path.GetDirectoryName (depsfile), package.Name);

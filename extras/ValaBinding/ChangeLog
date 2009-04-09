@@ -1,5 +1,10 @@
 2009-04-09  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
+	* Project/ValaProject.cs: Auto-add C compiler options 
+	  when there are no package dependencies.
+
+2009-04-09  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
 	* *: Populate quick finder.
 
 2009-04-08  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
