@@ -1661,5 +1661,52 @@ public abstract class GenericBase<T> : NonGenericBase where T : GenericBase<T>
 			Assert.IsNotNull (provider, "provider not found.");
 			Assert.IsNotNull (provider.Find ("Instance"), "class 'Inner' not found.");
 			Assert.IsNull (provider.Find ("this"), "'this' found, but shouldn't.");
-		}	}
+		}
+		
+		
+				
+		/// <summary>
+		/// Bug 429034 - Class alias completion not working properly
+		/// </summary>
+		[Test()]
+		public void TestBug429034 ()
+		{
+			CompletionDataList provider = CreateCtrlSpaceProvider (
+@"
+using Path = System.IO.Path;
+
+class Test
+{
+	void Test ()
+	{
+		$$
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.Find ("Path"), "class 'Path' not found.");
+		}	
+		
+		/// <summary>
+		/// Bug 429034 - Class alias completion not working properly
+		/// </summary>
+		[Test()]
+		public void TestBug429034B ()
+		{
+			CompletionDataList provider = CreateProvider (
+@"
+using Path = System.IO.Path;
+
+class Test
+{
+	void Test ()
+	{
+		$Path.$
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.Find ("DirectorySeparatorChar"), "method 'PathTest' not found.");
+		}
+	}
 }
