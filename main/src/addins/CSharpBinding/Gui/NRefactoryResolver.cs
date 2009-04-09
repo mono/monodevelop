@@ -172,7 +172,7 @@ namespace MonoDevelop.CSharpBinding
 					lookupVariableLine = CallingMember.Location.Line - 2;
 					setupLookupTableVisitor = true;
 				}
-			} else {
+			} else if (editor != null) {
 				string wrapper = editor.Text;
 				using (ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (lang, new StringReader (wrapper))) {
 					parser.Parse ();

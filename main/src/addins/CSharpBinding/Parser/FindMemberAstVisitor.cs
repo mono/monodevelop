@@ -67,7 +67,11 @@ namespace MonoDevelop.CSharpBinding
 			this.file           = file;
 			this.resolver       = resolver;
 			this.searchedMember = searchedMember;
-			if (searchedMember is IMember) {
+			if (searchedMember is IMethod) {
+				IMethod method = (IMethod)searchedMember;
+				this.searchedMemberName     = method.IsConstructor ? method.DeclaringType.Name : method.Name;
+				this.searchedMemberLocation = method.Location;
+			} else if (searchedMember is IMember) {
 				this.searchedMemberName     = ((IMember)searchedMember).Name;
 				this.searchedMemberLocation = ((IMember)searchedMember).Location;
 			} else if (searchedMember is IParameter) {
@@ -255,6 +259,12 @@ namespace MonoDevelop.CSharpBinding
 				    ((IType)this.searchedMember).TypeParameters.Count == typeStack.Peek ().Templates.Count)
 					AddUniqueReference (constructorDeclaration.StartLocation.Line, constructorDeclaration.StartLocation.Column, this.searchedMemberName);
 			}
+			if (this.searchedMember is IMethod) {
+				IMethod method = (IMethod)this.searchedMember; 
+				if (method.IsConstructor)
+					CheckNode (constructorDeclaration);
+				
+			}
 			
 			return base.VisitConstructorDeclaration (constructorDeclaration, data);
 		}
@@ -346,7 +356,25 @@ namespace MonoDevelop.CSharpBinding
 		{
 			return base.VisitVariableDeclaration(variableDeclaration, data);
 		}
-
+		
+		public override object VisitObjectCreateExpression (ICSharpCode.NRefactory.Ast.ObjectCreateExpression objectCreateExpression, object data)
+		{
+			IMethod method = searchedMember as IMethod;
+			if (method != null && method.IsConstructor) {
+				ResolveResult resolveResult = resolver.ResolveExpression (objectCreateExpression, new DomLocation (objectCreateExpression.StartLocation.Y, objectCreateExpression.StartLocation.X));
+				if (resolveResult != null && resolveResult.ResolvedType != null) {
+					IType resolvedType = resolver.Dom.GetType (resolveResult.ResolvedType);
+					int pCount = objectCreateExpression.Parameters != null ? objectCreateExpression.Parameters.Count : 0;
+					if (resolvedType != null && resolvedType.FullName == method.DeclaringType.FullName && pCount == method.Parameters.Count) {
+						int line, column;
+						if (SearchText (searchedMemberName, objectCreateExpression.StartLocation.Line, objectCreateExpression.StartLocation.Column, out line, out column))
+							AddUniqueReference (line, column, searchedMemberName);
+					}
+				}
+			}
+			return base.VisitObjectCreateExpression (objectCreateExpression, data);
+		}
+		
 		public override object VisitIdentifierExpression (IdentifierExpression idExp, object data)
 		{
 			if (idExp.Identifier == searchedMemberName) {
