@@ -1,5 +1,10 @@
 2009-04-09  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/NRefactoryResolver.cs: fixed "Bug 429034 - Class alias
+	  completion not working properly".
+
+2009-04-09  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/NRefactoryResolver.cs:
 	* Parser/FindMemberAstVisitor.cs: Fixed "Bug 493202 - List
 	  References on private constructor yields nothing".

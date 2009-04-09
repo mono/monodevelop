@@ -287,6 +287,10 @@ namespace MonoDevelop.CSharpBinding
 			namespaceDeclList.Add ("");
 			if (unit != null) {
 				foreach (IUsing u in unit.Usings) {
+					
+					foreach (string alias in u.Aliases.Keys) {
+						ICompletionData data = col.AddCompletionData (completionList, alias);
+					}
 					if (u.Namespaces == null) 
 						continue;
 					bool isNamespaceDecl = u.IsFromNamespace && u.Region.Contains (this.resolvePosition);
