@@ -237,16 +237,13 @@ namespace Mono.TextEditor.Highlighting
 				SetTree ();
 				bool isNoKeyword = false;
 				int len = maxEnd - offset;
-				string str = len > 0 ? doc.GetTextAt (offset, len) : null;
 				
 				for (int i = offset; i < maxEnd; i++) {
-					int textOffset = i - offset;
-					char ch = str [textOffset];
 					if (curSpan != null) {
 						if (curSpan.Escape != null) {
 							bool mismatch = false;
 							for (int j = 0; j < curSpan.Escape.Length; j++) {
-								if (textOffset + j >= str.Length || str[textOffset + j] != curSpan.Escape[j]) {
+								if (i + j >= doc.Length || doc.GetCharAt (i + j) != curSpan.Escape[j]) {
 									mismatch = true;
 									break;
 								}
@@ -310,7 +307,7 @@ namespace Mono.TextEditor.Highlighting
 							break;
 						}
 					}
-					ParseChar (ref i, ch);
+					ParseChar (ref i, doc.GetCharAt (i));
 				}
 				SetSpan (maxEnd);
 			}
@@ -519,141 +516,6 @@ namespace Mono.TextEditor.Highlighting
 				if (curChunk.Length > 0) 
 					AddRealChunk (curChunk);
 				return startChunk;
-				
-//				curRule = mode;
-//				startChunk = null;
-//				this.ruleStart = offset;
-//				spanStack = line.StartSpan != null ? new Stack<Span> (line.StartSpan) : new Stack<Span> ();
-//				SyntaxModeService.ScanSpans (doc, mode, curRule, spanStack, line.Offset, offset);
-//				pair = null;
-//				
-//				maxEnd = System.Math.Min (offset + length, System.Math.Min (line.Offset + line.EditableLength, doc.Length));
-//				
-//				int endOffset = 0;
-//				SetSpan (offset);
-//				SetTree ();
-//				int len = maxEnd - offset;
-//				string str = len > 0 ? doc.GetTextAt (offset, len) : null;
-//				
-//				for (int i = offset; i < maxEnd; i++) {
-//					int textOffset = i - offset;
-//					char ch = str [textOffset];
-//					if (curSpan != null) {
-//						if (curSpan.Escape != null && ch == curSpan.Escape[0]) {
-//							curChunk.Length+=2;
-//							i++;
-//							continue;
-//						}
-//							
-//						if (curSpan.End != null) {
-//							RegexMatch match = curSpan.End.TryMatch (doc, i);
-//							if (match.Success) {
-//								curChunk.Length--;
-//								AddChunk (ref curChunk, match.Length, !String.IsNullOrEmpty (curSpan.TagColor) ? curSpan.TagColor : GetSpanStyle ());
-//								spanStack.Pop ();
-//								SetSpan (i);
-//								SetTree ();
-//								curChunk.Style  = GetSpanStyle ();
-//								endOffset = 0;
-//								continue;
-//							}
-//						}
-//						if (curSpan.Exit != null) {
-//							RegexMatch match = curSpan.Exit.TryMatch (doc, i);
-//							if (match.Success) {
-//								curChunk.Length -= match.Length + 1;
-//								AddChunk (ref curChunk, 0, !String.IsNullOrEmpty (curSpan.TagColor) ? curSpan.TagColor : GetSpanStyle ());
-//								spanStack.Pop ();
-//								SetSpan (i);
-//								SetTree ();
-//								curChunk.Style  = GetSpanStyle ();
-//								endOffset = 0;
-//								continue;
-//							}
-//						}
-//					}
-//					
-//					foreach (Span span in curRule.Spans) {
-//						if (span.BeginFlags.Contains ("startsLine") && i != line.Offset)
-//							continue;
-//						
-//						RegexMatch match = span.Begin.TryMatch (doc, i);
-//						if (match.Success) {
-//							bool mismatch = false;
-//							if (span.BeginFlags.Contains ("firstNonWs")) {
-//								for (int k = line.Offset; k < i; k++) {
-//									if (!Char.IsWhiteSpace (doc.GetCharAt (k))) {
-//										mismatch = true;
-//										break;
-//									}
-//								}
-//							}
-//							if (mismatch)
-//								continue;
-//							spanStack.Push (span);
-//							
-//							AddChunk (ref curChunk, match.Length, !String.IsNullOrEmpty (span.TagColor) ? span.TagColor : GetSpanStyle ());
-//							SetSpan (i);
-//							endOffset = 0;
-//							SetTree ();
-//							if (!String.IsNullOrEmpty (span.NextColor))
-//								curChunk.Style = span.NextColor;
-//							i += match.Length - 1;
-//							break;
-//						}
-//					}
-//					
-//					if (!Char.IsLetterOrDigit (ch) && ch != '_' && pair != null && pair.o1 != null) {
-//						curChunk.Length -= wordOffset;
-//						AddChunk (ref curChunk, wordOffset, GetChunkStyleColor (pair.o1.Color));
-//						isNoKeyword = false;
-//					}
-//					
-//					if (!isNoKeyword && wordOffset == 0 && curRule.HasMatches) {
-//						Match foundMatch = null;
-//						int   foundMatchLength = 0;
-//						foreach (Match ruleMatch in curRule.Matches) {
-//							int matchLength = ruleMatch.TryMatch (str, textOffset);
-//							if (foundMatchLength < matchLength) {
-//								foundMatch = ruleMatch;
-//								foundMatchLength = matchLength;
-//							}
-//						}
-//						if (foundMatch != null) {
-//							AddChunk (ref curChunk, foundMatchLength, GetChunkStyleColor (foundMatch.Color));
-//							i += foundMatchLength - 1;
-//							continue;
-//						}
-//					}
-//					
-//					if (tree != null) {
-//						if (!isNoKeyword && tree.ContainsKey (ch)) {
-//							wordOffset++;
-//							pair = tree[ch];
-//							tree = (Dictionary<char, Rule.Pair<Keywords, object>>)pair.o2;
-//						} else {
-//							SetTree ();
-//							isNoKeyword = Char.IsLetterOrDigit (ch) || ch == '_';
-//						}
-//					} else {
-//						SetTree ();
-//						isNoKeyword = false;
-//					}
-//					
-//					curChunk.Length++;
-//				}
-//				curChunk.Length = maxEnd - curChunk.Offset;
-//				if (pair != null && pair.o1 != null) {
-//					curChunk.Length -= wordOffset;
-//					AddChunk (ref curChunk, wordOffset, GetChunkStyleColor (pair.o1.Color));
-//					curChunk.Style = GetChunkStyleColor (pair.o1.Color);
-//				}
-//				
-//				if (curChunk.Length > 0) 
-//					AddRealChunk (curChunk);
-//				
-//				SetSpan (maxEnd);
-//				return startChunk;
 			}
 		}
 		

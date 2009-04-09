@@ -136,7 +136,7 @@ namespace Mono.TextEditor.Highlighting
 				ReadNonFloatEnd (text, ref i);
 				return i - matchOffset;
 			} else {
-				if (!Char.IsDigit (text[i]))
+				if (i >= text.Length || !Char.IsDigit (text[i]))
 					return -1;
 				i++;
 				while (i < text.Length && Char.IsDigit (text[i]))
