@@ -24,7 +24,7 @@ namespace Mono.TextEditor.Highlighting
 					}
 					curOffset++;
 					if (curOffset >= doc.Length) {
-						match = false;
+						match = i + 1 == pattern.Length;
 						break;
 					}
 				}

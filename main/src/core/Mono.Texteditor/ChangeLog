@@ -1,3 +1,12 @@
+2009-04-09  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor.Highlighting/Rule.cs:
+	* Mono.TextEditor.Highlighting/SyntaxMode.cs:
+	* Mono.TextEditor.Highlighting.Regex/Regex.cs:
+	* Mono.TextEditor.Highlighting/SyntaxModeService.cs:
+	  Optimized/Refactored the highlighting engine. (Bug 387486 -
+	  Syntax scheme improvements).
+
 2009-04-08  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/Caret.cs: Virtual spaces now works with

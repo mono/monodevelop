@@ -26,6 +26,7 @@
 //
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
@@ -51,8 +52,9 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 		
-		public SyntaxMode()
+		public SyntaxMode() : base (null)
 		{
+			DefaultColor = "text";
 		}
 		
 		public bool Validate (Style style)
@@ -160,54 +162,55 @@ namespace Mono.TextEditor.Highlighting
 		
 		internal class SpanParser
 		{
-			protected Rule curRule;
 			protected SyntaxMode mode;
 			protected Stack<Span> spanStack;
+			protected Stack<Rule> ruleStack;
+
 			protected Document doc;
 			protected LineSegment line;
 			
-			protected Span curSpan;
 			int ruleStart;
 			int maxEnd;
 			
+			protected Rule CurRule {
+				get {
+					return ruleStack.Peek ();
+				}
+			}
+			
+			protected Span CurSpan {
+				get {
+					if (spanStack.Count == 0)
+						return null;
+					return spanStack.Peek ();
+				}
+			}
+			
 			public SpanParser (Document doc, SyntaxMode mode, LineSegment line, Stack<Span> spanStack)
 			{
+				if (doc == null)
+					throw new ArgumentNullException ("doc");
+				if (mode == null)
+					throw new ArgumentNullException ("mode");
 				this.doc  = doc;
 				this.mode = mode;
 				this.line = line;
 				this.spanStack = spanStack ?? new Stack<Span> (line.StartSpan != null ? line.StartSpan : new Span[0]);
-			}
-			
-			protected virtual void SetSpan (int offset)
-			{
-				curSpan = spanStack.Count > 0 ? spanStack.Peek () : null;
-				if (curSpan != null) { 
-					if (String.IsNullOrEmpty (curSpan.Rule)) {
-						Span span = spanStack.Pop ();
-						SetSpan (offset);
-						spanStack.Push (span);
-						return;
-					}
-					curRule  = mode.GetRule (curSpan.Rule);
-				} else {
-					curRule  = mode;
-				}
+				//this.ruleStack = ruleStack ?? new Stack<Span> (line.StartRule != null ? line.StartRule : new Rule[0]);
 				
-				ruleStart = offset;
+				ruleStack = new Stack<Rule> ();
+				ruleStack.Push (mode);
+				foreach (Span span in this.spanStack) {
+					Rule rule = CurRule.GetRule (span.Rule);
+					ruleStack.Push (rule ?? CurRule);
+				}
 			}
 			
-			protected virtual void SetTree ()
+			Rule GetRule (Span span)
 			{
-				curSpan = spanStack.Count > 0 ? spanStack.Peek () : null;
-				if (curSpan != null) { 
-					if (String.IsNullOrEmpty (curSpan.Rule)) {
-						Span span = spanStack.Pop ();
-						SetTree ();
-						spanStack.Push (span);
-						return;
-					}
-					curRule = mode.GetRule (curSpan.Rule);
-				}
+				if (string.IsNullOrEmpty (span.Rule))
+					return new Rule (mode);
+				return CurRule.GetRule (span.Rule);
 			}
 			
 			public virtual void FoundSpanBegin (Span span, int offset, RegexMatch match)
@@ -226,24 +229,21 @@ namespace Mono.TextEditor.Highlighting
 			{
 			}
 			
-			public void ParseSpans (Rule startRule, int offset, int length)
+			public void ParseSpans (int offset, int length)
 			{
-				curRule = startRule;
 				this.ruleStart = offset;
-				maxEnd = System.Math.Min (offset + length, line != null ? System.Math.Min (line.Offset + line.EditableLength, doc.Length) : doc.Length);
+				maxEnd = System.Math.Min (doc.Length, System.Math.Min (offset + length, line != null ? System.Math.Min (line.Offset + line.EditableLength, doc.Length) : doc.Length));
 				
 				int endOffset = 0;
-				SetSpan (offset);
-				SetTree ();
-				bool isNoKeyword = false;
 				int len = maxEnd - offset;
 				
 				for (int i = offset; i < maxEnd; i++) {
-					if (curSpan != null) {
-						if (curSpan.Escape != null) {
+					Span cur = CurSpan;
+					if (cur != null) {
+						if (cur.Escape != null) {
 							bool mismatch = false;
-							for (int j = 0; j < curSpan.Escape.Length; j++) {
-								if (i + j >= doc.Length || doc.GetCharAt (i + j) != curSpan.Escape[j]) {
+							for (int j = 0; j < cur.Escape.Length; j++) {
+								if (i + j >= doc.Length || doc.GetCharAt (i + j) != cur.Escape[j]) {
 									mismatch = true;
 									break;
 								}
@@ -254,34 +254,30 @@ namespace Mono.TextEditor.Highlighting
 							}
 						} 
 							
-						if (curSpan.End != null) {
-							RegexMatch match = curSpan.End.TryMatch (doc, i);
+						if (cur.End != null) {
+							RegexMatch match = cur.End.TryMatch (doc, i);
 							if (match.Success) {
+								FoundSpanEnd (cur, i, match);
 								spanStack.Pop ();
-								Span spanEnd = curSpan;
-								SetSpan (i);
-								SetTree ();
-								FoundSpanEnd (spanEnd, i, match);
+								ruleStack.Pop ();
 								endOffset = 0;
 								continue;
 							}
 						}
 						
-						if (curSpan.Exit != null) {
-							RegexMatch match = curSpan.Exit.TryMatch (doc, i);
+						if (cur.Exit != null) {
+							RegexMatch match = cur.Exit.TryMatch (doc, i);
 							if (match.Success) {
-								Span spanExit = curSpan;
 								spanStack.Pop ();
-								SetSpan (i);
-								SetTree ();
-								FoundSpanExit (spanExit, i, match);
+								ruleStack.Pop ();
+								FoundSpanExit (cur, i, match);
 								endOffset = 0;
 								continue;
 							}
 						}
 					}
 					
-					foreach (Span span in curRule.Spans) {
+					foreach (Span span in CurRule.Spans) {
 						if (span.BeginFlags.Contains ("startsLine") && line != null && i != line.Offset)
 							continue;
 						
@@ -298,18 +294,18 @@ namespace Mono.TextEditor.Highlighting
 							}
 							if (mismatch)
 								continue;
+							FoundSpanBegin (span, i, match);
 							spanStack.Push (span);
-							SetSpan (i);
+							ruleStack.Push (GetRule (span));
 							endOffset = 0;
-							SetTree ();
-							FoundSpanBegin (curSpan, i, match);
+							
 							i += match.Length - 1;
 							break;
 						}
 					}
-					ParseChar (ref i, doc.GetCharAt (i));
+					if (i < doc.Length)
+						ParseChar (ref i, doc.GetCharAt (i));
 				}
-				SetSpan (maxEnd);
 			}
 		}
 		
@@ -317,8 +313,6 @@ namespace Mono.TextEditor.Highlighting
 		{
 			readonly string defaultStyle = "text";
 			List<Chunk> result = new List<Chunk> ();
-			Dictionary<char, Rule.Pair<Keywords, object>> tree;
-			Rule.Pair<Keywords, object> pair     = null;
 			
 			int ruleStart;
 			
@@ -357,9 +351,11 @@ namespace Mono.TextEditor.Highlighting
 					AddRealChunk (curChunk);
 					curChunk = new Chunk (curChunk.EndOffset, 0, defaultStyle);
 				}
-				curChunk.Style = style;
-				curChunk.Length = length;
-				AddRealChunk (curChunk);
+				if (length > 0) {
+					curChunk.Style  = style;
+					curChunk.Length = length;
+					AddRealChunk (curChunk);
+				}
 				curChunk = new Chunk (curChunk.EndOffset, 0, defaultStyle);
 				curChunk.Style = GetSpanStyle ();
 			}
@@ -387,86 +383,71 @@ namespace Mono.TextEditor.Highlighting
 					spanStack.Push (span);
 					return result;
 				}
-				
+				if (spanStack.Peek ().Rule.StartsWith ("mode:"))
+					return defaultStyle;
 				return spanStack.Peek ().Color;
 			}
 			
-			protected override void SetTree ()
-			{
-				curSpan = spanStack.Count > 0 ? spanStack.Peek () : null;
-				pair    = null;
-				if (curSpan != null) { 
-					if (String.IsNullOrEmpty (curSpan.Rule)) {
-						Span span = spanStack.Pop ();
-						SetTree ();
-						spanStack.Push (span);
-						return;
-					}
-					curRule = mode.GetRule (curSpan.Rule);
-					tree     = curRule.parseTree;
-				} else {
-					tree     = curRule.parseTree;
-				}
-				wordOffset = 0;
-			}
-			
-			protected override void SetSpan (int offset)
-			{
-				curSpan = spanStack.Count > 0 ? spanStack.Peek () : null;
-				foreach (SemanticRule semanticRule in curRule.SemanticRules) {
-					semanticRule.Analyze (this.doc, line, result, ruleStart, offset);
-				}
-				if (curSpan != null) { 
-					if (String.IsNullOrEmpty (curSpan.Rule)) {
-						Span span = spanStack.Pop ();
-						SetSpan (offset);
-						spanStack.Push (span);
-						return;
-					}
-					curRule  = mode.GetRule (curSpan.Rule);
-				} else {
-					curRule  = mode;
-				}
-				
-				ruleStart = offset;
-			}
-			
-			int wordOffset =  0; 
-			
 			Chunk curChunk;
 			int maxEnd;
-			bool isNoKeyword = false;
 			
+			string GetChunkStyle (Span span) 
+			{
+				if (span == null)
+					return GetSpanStyle ();
+				return span.TagColor ?? span.Color ?? GetSpanStyle ();
+			}
 			
 			public override void FoundSpanBegin (Span span, int offset, RegexMatch match)
 			{
-				AddChunk (ref curChunk, match.Length, span.TagColor ?? span.Color ?? GetSpanStyle ());
+				curChunk.Length = offset - curChunk.Offset;
+				curChunk.Style  = GetStyle (curChunk) ?? GetSpanStyle ();
+				AddChunk (ref curChunk, 0, curChunk.Style);
+				
+				curChunk.Offset = offset;
+				curChunk.Length = match.Length;
+				curChunk.Style  = GetChunkStyle (span);
+				Console.WriteLine ("style:" + curChunk.Style);
+				AddChunk (ref curChunk, 0, curChunk.Style);
+				/*
+				curChunk.Length = offset - curChunk.Offset;
+				AddChunk (ref curChunk, match.Length, GetChunkStyle (span));*/
 			}
 			
 			public override void FoundSpanExit (Span span, int offset, RegexMatch match)
 			{
-				AddChunk (ref curChunk, 0, span.TagColor ?? span.Color ?? GetSpanStyle ());
+				curChunk.Length = offset - curChunk.Offset;
+				AddChunk (ref curChunk, 0, GetChunkStyle (span));
 			}
 			
 			public override void FoundSpanEnd (Span span, int offset, RegexMatch match)
 			{
-				AddChunk (ref curChunk, match.Length, span.TagColor ?? span.Color ?? GetSpanStyle ());
-				curChunk.Style  = GetSpanStyle ();
+				curChunk.Length = offset - curChunk.Offset;
+				curChunk.Style  = GetStyle (curChunk) ?? GetChunkStyle (span);
+				AddChunk (ref curChunk, 0, defaultStyle);
 				
+				curChunk.Offset = offset;
+				curChunk.Length = match.Length;
+				curChunk.Style  = GetChunkStyle (span);
+				AddChunk (ref curChunk, 0, defaultStyle);
 			}
 			
+			bool inWord = false;
 			public override void ParseChar (ref int i, char ch)
 			{
 				int textOffset = i - line.Offset;
-				if (!Char.IsLetterOrDigit (ch) && ch != '_' && pair != null && pair.o1 != null) {
-					curChunk.Length -= wordOffset;
-					AddChunk (ref curChunk, wordOffset, GetChunkStyleColor (pair.o1.Color));
-					isNoKeyword = false;
-				}
-				if (!isNoKeyword && wordOffset == 0 && curRule.HasMatches) {
+				
+				bool isWordPart = Char.IsLetterOrDigit (ch) || ch == '_';
+				
+				if (inWord && !isWordPart || !inWord && isWordPart) 
+					AddChunk (ref curChunk, 0, curChunk.Style = GetStyle (curChunk) ?? GetSpanStyle ());
+				
+				inWord = isWordPart;
+				
+				if (CurRule.HasMatches) {
 					Match foundMatch = null;
 					int   foundMatchLength = 0;
-					foreach (Match ruleMatch in curRule.Matches) {
+					foreach (Match ruleMatch in CurRule.Matches) {
 						int matchLength = ruleMatch.TryMatch (str, textOffset);
 						if (foundMatchLength < matchLength) {
 							foundMatch = ruleMatch;
@@ -481,46 +462,42 @@ namespace Mono.TextEditor.Highlighting
 					}
 				}
 				
-				if (tree != null) {
-					if (!isNoKeyword && tree.ContainsKey (ch)) {
-						wordOffset++;
-						pair = tree[ch];
-						tree = (Dictionary<char, Rule.Pair<Keywords, object>>)pair.o2;
-					} else {
-						SetTree ();
-						isNoKeyword = Char.IsLetterOrDigit (ch) || ch == '_';
-					}
-				} else {
-					SetTree ();
-					isNoKeyword = false;
-				}
 				curChunk.Length = i - curChunk.Offset + 1; 
-				
 			}
+			
+			string GetStyle (Chunk chunk)
+			{
+				if (chunk.Length > 0) {
+					Keywords keyword = CurRule.GetKeyword (doc, chunk.Offset, chunk.Length); 
+					if (keyword != null)
+						return keyword.Color;
+				}
+				return null;
+			}
+			
 			string str;
 			int curOffset;
 			public virtual Chunk GetChunks (int offset, int length)
 			{
-				SyntaxModeService.ScanSpans (doc, mode, curRule, spanStack, line.Offset, offset);
+				SyntaxModeService.ScanSpans (doc, mode, CurRule, spanStack, line.Offset, offset);
 				curOffset = offset;
 				str = length > 0 ? doc.GetTextAt (offset, length) : null;
 				curChunk = new Chunk (offset, 0, GetSpanStyle ());
-				ParseSpans (mode, offset, length);
-				
-				if (pair != null && pair.o1 != null) {
-					curChunk.Length -= wordOffset;
-					AddChunk (ref curChunk, wordOffset, GetChunkStyleColor (pair.o1.Color));
-					curChunk.Style = GetChunkStyleColor (pair.o1.Color);
-				}
-				
-				if (curChunk.Length > 0) 
+				ParseSpans (offset, length);
+				curChunk.Length = offset + length - curChunk.Offset;
+				if (curChunk.Length > 0) {
+					curChunk.Style = GetStyle (curChunk) ?? GetSpanStyle ();
 					AddRealChunk (curChunk);
+				}
 				return startChunk;
 			}
 		}
 		
-		public Rule GetRule (string name)
+		public override Rule GetRule (string name)
 		{
+			if (name.StartsWith ("mode:"))
+				return SyntaxModeService.GetSyntaxMode (name.Substring ("mode:".Length));
+			
 			foreach (Rule rule in rules) {
 				if (rule.Name == name)
 					return rule;
@@ -590,13 +567,12 @@ namespace Mono.TextEditor.Highlighting
 						result.IgnoreCase = Boolean.Parse (reader.GetAttribute ("ignorecase"));
 					return true;
 				case Rule.Node:
-					result.rules.Add (Rule.Read (reader));
+					result.rules.Add (Rule.Read (result, reader));
 					return true;
 				}
 				return result.ReadNode (reader, matches);
 			});
 			result.matches = matches.ToArray ();
-			result.SetupParseTree ();
 			return result;
 		}
 	}

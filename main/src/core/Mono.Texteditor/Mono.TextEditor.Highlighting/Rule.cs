@@ -107,7 +107,7 @@ namespace Mono.TextEditor.Highlighting
 		
 		public string DefaultColor {
 			get;
-			private set;
+			protected set;
 		}
 
 		public List<Marker> PrevMarker {
@@ -116,13 +116,63 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 		
-		public Rule()
+		SyntaxMode mode;
+		
+		public Rule (SyntaxMode mode)
 		{
+			this.mode = mode;
+		}
+		
+		public virtual Rule GetRule (string name)
+		{
+			return mode.GetRule (name);
 		}
 		
 		public override string ToString ()
 		{
 			return String.Format ("[Rule: Name={0}, #Keywords={1}]", Name, keywords.Count);
+		}
+		
+		class KeyTable 
+		{
+			public Keywords   keywords = null;
+			public KeyTable[] table    = new KeyTable[255];
+		}
+		
+		KeyTable[] table = new KeyTable[255];
+		
+		void AddToTable (Keywords keywords, string word)
+		{
+			KeyTable[] curTable = table;
+			for (int i = 0; i < word.Length; i++) {
+				uint idx = (uint)word[i];
+				if (idx > 255)
+					throw new ArgumentOutOfRangeException (word + " contains invalid chars.");
+				if (curTable[idx] == null)
+					curTable[idx] = new KeyTable ();
+				if (i == word.Length -1) {
+					curTable[idx].keywords = keywords;
+					break;
+				}
+				curTable = curTable[idx].table;
+			}
+		}
+		
+		public Keywords GetKeyword (Document doc, int offset, int length)
+		{
+			KeyTable[] curTable = table;
+			int max = offset + length - 1;
+			uint idx;
+			for (int i = offset; i < max; i++) {
+				idx = (uint)doc.GetCharAt (i);
+				if (idx > 255 || curTable[idx] == null)
+					return null;
+				curTable = curTable[idx].table;
+			}
+			idx = (uint)doc.GetCharAt (max);
+			if (idx > 255 || curTable[idx] == null)
+				return null;
+			return curTable[idx].keywords;
 		}
 		
 		protected bool ReadNode (XmlReader reader, List<Match> matchList)
@@ -136,7 +186,11 @@ namespace Mono.TextEditor.Highlighting
 				this.spans.Add (Span.Read (reader));
 				return true;
 			case Mono.TextEditor.Highlighting.Keywords.Node:
-				this.keywords.Add (Mono.TextEditor.Highlighting.Keywords.Read (reader, IgnoreCase));
+				Keywords keywords = Mono.TextEditor.Highlighting.Keywords.Read (reader, IgnoreCase);
+				this.keywords.Add (keywords);
+				foreach (string word in keywords.Words) {
+					AddToTable (keywords, word);
+				}
 				return true;
 			case Marker.PrevMarker:
 				this.prevMarker.Add (Marker.Read (reader));
@@ -145,69 +199,69 @@ namespace Mono.TextEditor.Highlighting
 			return false;
 		}
 		
-		public class Pair<S, T>
-		{
-			public S o1;
-			public T o2;
-			
-			public Pair (S o1, T o2)
-			{
-				this.o1 = o1;
-				this.o2 = o2;
-			}
-			
-			public override string ToString ()
-			{
-				return String.Format ("[Pair: o1={0}, o2={1}]", o1, o2);
-			}
-		}
-		public Dictionary<char, Pair<Keywords, object>> parseTree  = new Dictionary<char, Pair<Keywords, object>> ();
-		
-		void AddToParseTree (string key, Keywords value)
-		{
-			Dictionary<char, Pair<Keywords, object>> tree = parseTree;
-			Pair<Keywords, object> pair = null;
-			
-			for (int i = 0; i < key.Length; i++) {
-				if (!tree.ContainsKey (key[i]))
-					tree.Add (key[i], new Pair<Keywords, object> (null, new Dictionary<char, Pair<Keywords, object>>()));
-				pair = tree[key[i]];
-				tree = (Dictionary<char, Pair<Keywords, object>>)pair.o2;
-			}
-			pair.o1 = value;
-		}
-		
-		void AddWord (Keywords kw, string word, int i)
-		{
-			AddToParseTree (word, kw);
-			char[] chars = word.ToCharArray ();
-			
-			if (i < word.Length) {
-				chars[i] = Char.ToUpperInvariant (chars[i]);
-				AddWord (kw, new string (chars), i + 1);
-				
-				chars[i] = Char.ToLowerInvariant (chars[i]);
-				AddWord (kw, new string (chars), i + 1);
-			}
-		}
-		
-		protected void SetupParseTree ()
-		{
-			foreach (Keywords kw in this.keywords) {  
-				foreach (string word in kw.Words)  {
-					if (kw.IgnoreCase) {
-						AddWord (kw, word.ToLowerInvariant (), 0);
-					} else {
-						AddToParseTree (word, kw);
-					}
-				}
-			}
-		}
+//		public class Pair<S, T>
+//		{
+//			public S o1;
+//			public T o2;
+//			
+//			public Pair (S o1, T o2)
+//			{
+//				this.o1 = o1;
+//				this.o2 = o2;
+//			}
+//			
+//			public override string ToString ()
+//			{
+//				return String.Format ("[Pair: o1={0}, o2={1}]", o1, o2);
+//			}
+//		}
+//		public Dictionary<char, Pair<Keywords, object>> parseTree  = new Dictionary<char, Pair<Keywords, object>> ();
+//		
+//		void AddToParseTree (string key, Keywords value)
+//		{
+//			Dictionary<char, Pair<Keywords, object>> tree = parseTree;
+//			Pair<Keywords, object> pair = null;
+//			
+//			for (int i = 0; i < key.Length; i++) {
+//				if (!tree.ContainsKey (key[i]))
+//					tree.Add (key[i], new Pair<Keywords, object> (null, new Dictionary<char, Pair<Keywords, object>>()));
+//				pair = tree[key[i]];
+//				tree = (Dictionary<char, Pair<Keywords, object>>)pair.o2;
+//			}
+//			pair.o1 = value;
+//		}
+//		
+//		void AddWord (Keywords kw, string word, int i)
+//		{
+//			AddToParseTree (word, kw);
+//			char[] chars = word.ToCharArray ();
+//			
+//			if (i < word.Length) {
+//				chars[i] = Char.ToUpperInvariant (chars[i]);
+//				AddWord (kw, new string (chars), i + 1);
+//				
+//				chars[i] = Char.ToLowerInvariant (chars[i]);
+//				AddWord (kw, new string (chars), i + 1);
+//			}
+//		}
+//		
+//		protected void SetupParseTree ()
+//		{
+//			foreach (Keywords kw in this.keywords) {  
+//				foreach (string word in kw.Words)  {
+//					if (kw.IgnoreCase) {
+//						AddWord (kw, word.ToLowerInvariant (), 0);
+//					} else {
+//						AddToParseTree (word, kw);
+//					}
+//				}
+//			}
+//		}
 		
 		public const string Node = "Rule";
-		public static Rule Read (XmlReader reader)
+		public static Rule Read (SyntaxMode mode, XmlReader reader)
 		{
-			Rule result = new Rule ();
+			Rule result = new Rule (mode);
 			result.Name         = reader.GetAttribute ("name");
 			result.DefaultColor = reader.GetAttribute ("color");
 			if (!String.IsNullOrEmpty (reader.GetAttribute ("ignorecase")))
@@ -221,7 +275,6 @@ namespace Mono.TextEditor.Highlighting
 				return result.ReadNode (reader, matches);
 			});
 			result.matches = matches.ToArray ();
-			result.SetupParseTree ();
 			return result;
 		}
 	}

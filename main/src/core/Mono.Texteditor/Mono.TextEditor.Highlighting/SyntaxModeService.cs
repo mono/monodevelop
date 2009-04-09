@@ -169,7 +169,7 @@ namespace Mono.TextEditor.Highlighting
 		public static void ScanSpans (Document doc, SyntaxMode mode, Rule rule, Stack<Span> spanStack, int start, int end)
 		{
 			SyntaxMode.SpanParser parser = new SyntaxMode.SpanParser (doc, mode, null, spanStack);
-			parser.ParseSpans (rule, start, end - start);
+			parser.ParseSpans (start, end - start);
 		}
 		
 		static bool IsEqual (Span[] spans1, Span[] spans2)
@@ -206,7 +206,7 @@ namespace Mono.TextEditor.Highlighting
 			protected void ScanSpansThreaded (Document doc, Rule rule, Stack<Span> spanStack, int start, int end)
 			{
 				SyntaxMode.SpanParser parser = new SyntaxMode.SpanParser (doc, mode, null, spanStack);
-				parser.ParseSpans (rule, start, end - start);
+				parser.ParseSpans (start, end - start);
 			}
 			
 			bool EndsWithContinuation (Span span, LineSegment line)
@@ -220,6 +220,7 @@ namespace Mono.TextEditor.Highlighting
 				bool doUpdate = false;
 				RedBlackTree<LineSegmentTree.TreeNode>.RedBlackTreeIterator iter = doc.GetLineByOffset (startOffset).Iter;
 				Stack<Span> spanStack = iter.Current.StartSpan != null ? new Stack<Span> (iter.Current.StartSpan) : new Stack<Span> ();
+				try { 
 				
 				LineSegment oldLine = iter.Current.Offset > 0 ? doc.GetLineByOffset (iter.Current.Offset - 1) : null;
 				do {
@@ -251,7 +252,9 @@ namespace Mono.TextEditor.Highlighting
 					ScanSpansThreaded (doc, rule, spanStack, line.Offset, line.EndOffset);
 					while (spanStack.Count > 0 && !EndsWithContinuation (spanStack.Peek (), line))
 						spanStack.Pop ();
+					
 				} while (iter.MoveNext ());
+				} catch (Exception) {}
 				if (doUpdate) {
 					GLib.Timeout.Add (0, delegate {
 						doc.RequestUpdate (new UpdateAll ());
