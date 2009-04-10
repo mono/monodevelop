@@ -610,7 +610,9 @@ namespace MonoDevelop.Debugger
 			Gtk.Entry entry = (Gtk.Entry) s;
 			
 			if (currentCompletionData != null) {
-				bool ret = CompletionWindowManager.ProcessKeyEvent (args.Event.Key, args.Event.State);
+				KeyAction ka;
+				bool ret = CompletionWindowManager.PreProcessKeyEvent (args.Event.Key, args.Event.State, out ka);
+				CompletionWindowManager.PostProcessKeyEvent (ka);
 				args.RetVal = ret;
 			}
 			

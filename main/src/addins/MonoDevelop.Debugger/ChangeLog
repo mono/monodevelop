@@ -1,3 +1,9 @@
+2009-04-10  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Debugger/ObjectValueTreeView.cs: Track api
+	  changes (Made the 'undo' of code completion operations more
+	  intelligent.)
+
 2009-03-21  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Debugger.csproj:
