@@ -1,3 +1,9 @@
+2009-04-10  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui.Content/CompletionTextEditorExtension.cs:
+	  Made the 'undo' of code completion operations more
+	  intelligent.
+
 2009-04-07  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: Fixed error

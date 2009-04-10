@@ -52,9 +52,11 @@ namespace MonoDevelop.Ide.Gui.Content
 		{
 			bool res;
 			
+			KeyAction ka = KeyAction.None;
 			if (currentCompletionContext != null) {
 				autoHideCompletionWindow = false;
-				if (CompletionWindowManager.ProcessKeyEvent (key, modifier)) {
+				if (CompletionWindowManager.PreProcessKeyEvent (key, modifier, out ka)) {
+					CompletionWindowManager.PostProcessKeyEvent (ka);
 					autoHideCompletionWindow = true;
 					return false;
 				}
@@ -71,6 +73,9 @@ namespace MonoDevelop.Ide.Gui.Content
 			int oldLen = Editor.TextLength;
 			
 			res = base.KeyPress (key, keyChar, modifier);
+			
+			CompletionWindowManager.PostProcessKeyEvent (ka);
+			
 			if ((modifier & Gdk.ModifierType.ControlMask) == Gdk.ModifierType.ControlMask)
 				return res;
 			
