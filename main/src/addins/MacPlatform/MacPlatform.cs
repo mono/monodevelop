@@ -122,47 +122,24 @@ namespace MonoDevelop.Platform
 			return true;
 		}
 		
-		static Dictionary<object,CarbonCommandID> cmdIdMap
-			= new Dictionary<object, CarbonCommandID> ()
-		{
-			{ EditCommands.Copy, CarbonCommandID.Copy },
-			{ EditCommands.Cut, CarbonCommandID.Cut },
-			//TODO: for some reason mapping this causes two menu items to be created
-	//		{ EditCommands.MonodevelopPreferences, CarbonCommandID.Preferences }, 
-			{ EditCommands.Redo, CarbonCommandID.Redo },
-			{ EditCommands.Undo, CarbonCommandID.Undo },
-			{ EditCommands.SelectAll, CarbonCommandID.SelectAll },
-			{ FileCommands.NewFile, CarbonCommandID.New },
-			{ FileCommands.OpenFile, CarbonCommandID.Open },
-			{ FileCommands.Save, CarbonCommandID.Save },
-			{ FileCommands.SaveAs, CarbonCommandID.SaveAs },
-			{ FileCommands.CloseFile, CarbonCommandID.Close },
-			{ FileCommands.Exit, CarbonCommandID.Quit },
-			{ FileCommands.ReloadFile, CarbonCommandID.Revert },
-			{ HelpCommands.About, CarbonCommandID.About },
-			{ HelpCommands.Help, CarbonCommandID.AppHelp },
-		};
-		
 		HashSet<object> ignoreCommands = new HashSet<object> () {
 			HelpCommands.About,
 			EditCommands.DefaultPolicies,
 			EditCommands.MonodevelopPreferences,
+			FileCommands.Exit,
 		};
 		
 		public override bool SetGlobalMenu (CommandManager commandManager, string commandMenuAddinPath)
 		{
 			IgeExists ();
 			
-			//FIXME: disabled, as it doesn't fully work yet
-			//return false;
-			
 			if (menuFail)
 				return false;
 			
 			try {
-				CommandEntrySet ces = commandManager.CreateCommandEntrySet (commandMenuAddinPath);
-				OSXIntegration.OSXMenu.Update (commandManager, ces, cmdIdMap, ignoreCommands);
 				InitAppMenu (commandManager);
+				CommandEntrySet ces = commandManager.CreateCommandEntrySet (commandMenuAddinPath);
+				OSXIntegration.OSXMenu.Recreate (commandManager, ces, ignoreCommands);
 			} catch (Exception ex) {
 				try {
 					OSXIntegration.OSXMenu.Destroy (true);
@@ -179,9 +156,30 @@ namespace MonoDevelop.Platform
 		{
 			if (initedAppMenu)
 				return;
+			
+			OSXIntegration.OSXMenu.AddCommandIDMappings (new Dictionary<object, CarbonCommandID> ()
+			{
+				{ EditCommands.Copy, CarbonCommandID.Copy },
+				{ EditCommands.Cut, CarbonCommandID.Cut },
+				//FIXME: for some reason mapping this causes two menu items to be created
+		//		{ EditCommands.MonodevelopPreferences, CarbonCommandID.Preferences }, 
+				{ EditCommands.Redo, CarbonCommandID.Redo },
+				{ EditCommands.Undo, CarbonCommandID.Undo },
+				{ EditCommands.SelectAll, CarbonCommandID.SelectAll },
+				{ FileCommands.NewFile, CarbonCommandID.New },
+				{ FileCommands.OpenFile, CarbonCommandID.Open },
+				{ FileCommands.Save, CarbonCommandID.Save },
+				{ FileCommands.SaveAs, CarbonCommandID.SaveAs },
+				{ FileCommands.CloseFile, CarbonCommandID.Close },
+				{ FileCommands.Exit, CarbonCommandID.Quit },
+				{ FileCommands.ReloadFile, CarbonCommandID.Revert },
+				{ HelpCommands.About, CarbonCommandID.About },
+				{ HelpCommands.Help, CarbonCommandID.AppHelp },
+			});
+			
 			initedAppMenu = true;
 			OSXIntegration.OSXMenu.SetAppQuitCommand (FileCommands.Exit);
-			OSXIntegration.OSXMenu.AddAppMenuItems (commandManager, cmdIdMap, HelpCommands.About, Command.Separator,
+			OSXIntegration.OSXMenu.AddAppMenuItems (commandManager, HelpCommands.About, Command.Separator,
 			                                        EditCommands.DefaultPolicies, EditCommands.MonodevelopPreferences);
 		}
 		

@@ -48,7 +48,7 @@ namespace OSXIntegration
 		static ushort idSeq;
 		
 		static Dictionary<uint,object> commands = new Dictionary<uint,object> ();
-		static Dictionary<uint,object> appMenuCommands = new Dictionary<uint,object> ();
+		static Dictionary<object,CarbonCommandID> cmdIdMap = new Dictionary<object, CarbonCommandID> ();
 		static Dictionary<IntPtr,string> menus = new Dictionary<IntPtr,string> ();
 		
 		static Gdk.Keymap keymap = Gdk.Keymap.Default;
@@ -59,8 +59,14 @@ namespace OSXIntegration
 			return text.Replace ("_", "");
 		}
 		
-		public static void Update (CommandManager manager, CommandEntrySet entrySet,
-		                            Dictionary<object,CarbonCommandID> cmdIdMap, HashSet<object> ignoreCommands) 
+		static public void AddCommandIDMappings (Dictionary<object,CarbonCommandID> map)
+		{
+			if (cmdIdMap.Count > 0)
+				throw new InvalidOperationException ("This can only be done once, before creating menus");
+			cmdIdMap = new Dictionary<object, CarbonCommandID> (map);
+		}
+		
+		public static void Recreate (CommandManager manager, CommandEntrySet entrySet, HashSet<object> ignoreCommands) 
 		{
 			if (manager == null)
 				throw new ArgumentException ("manager");
@@ -68,11 +74,11 @@ namespace OSXIntegration
 			
 			if (rootMenu == IntPtr.Zero) {
 				rootMenu = HIToolbox.CreateMenu (idSeq++, GetName (entrySet), 0);
-				CreateChildren (rootMenu, entrySet, cmdIdMap, ignoreCommands);
+				CreateChildren (rootMenu, entrySet, ignoreCommands);
 				InstallRootMenu ();
 			} else {
 				Destroy (false);
-				CreateChildren (rootMenu, entrySet, cmdIdMap, ignoreCommands);
+				CreateChildren (rootMenu, entrySet, ignoreCommands);
 			}
 		}
 		
@@ -86,8 +92,7 @@ namespace OSXIntegration
 			updateHandlerRef = Carbon.InstallApplicationEventHandler (HandleMenuCommandUpdate, CarbonEventCommand.UpdateStatus);
 		}
 
-		static void CreateChildren (IntPtr parentMenu, CommandEntrySet entrySet, 
-		                            Dictionary<object,CarbonCommandID> cmdIdMap, HashSet<object> ignoreCommands) 
+		static void CreateChildren (IntPtr parentMenu, CommandEntrySet entrySet, HashSet<object> ignoreCommands) 
 		{
 			foreach (CommandEntry entry in entrySet){
 				CommandEntrySet ces = entry as CommandEntrySet;
@@ -117,7 +122,7 @@ namespace OSXIntegration
 							continue;
 						}
 						
-						uint macCmdId = GetNewMenuItemId (cmd, cmdIdMap);
+						uint macCmdId = GetNewMenuItemId (cmd);
 
 						bool isArray = acmd.CommandArray;
 						
@@ -129,7 +134,7 @@ namespace OSXIntegration
 				} else {
 					IntPtr menuRef = HIToolbox.CreateMenu (idSeq++, GetName (ces), MenuAttributes.CondenseSeparators);
 					menus [menuRef] = GetName (ces);
-					CreateChildren (menuRef, ces, cmdIdMap, ignoreCommands);
+					CreateChildren (menuRef, ces, ignoreCommands);
 					ushort pos = HIToolbox.AppendMenuItem (parentMenu, GetName (ces), 0, 0);
 					HIToolbox.CheckResult (HIToolbox.SetMenuItemHierarchicalMenu (parentMenu, pos, menuRef));
 				}
@@ -182,14 +187,21 @@ namespace OSXIntegration
 			return false;
 		}
 		
-		static uint GetNewMenuItemId (Command cmd, Dictionary<object,CarbonCommandID> cmdIdMap)
+		static uint GetNewMenuItemId (Command cmd)
 		{
 			uint macCmdId;
 			CarbonCommandID standardId;
+			//use mapped values if possible
 			if (cmdIdMap.TryGetValue (cmd.Id, out standardId))
 				macCmdId = (uint) standardId;
-			else
-				macCmdId = cmdSeq++;
+			//or generate a new value
+			else {
+				//but avoid conflicts
+				do cmdSeq++;
+				while (commands.ContainsKey (cmdSeq));
+				macCmdId = cmdSeq;
+				cmdIdMap[cmd.Id] = (CarbonCommandID)macCmdId;
+			}
 			
 			commands[macCmdId] = cmd.Id;
 			return macCmdId;
@@ -240,11 +252,13 @@ namespace OSXIntegration
 		
 		public static void SetAppQuitCommand (object cmdID)
 		{
-			appMenuCommands[(uint)CarbonCommandID.Quit] = cmdID;
+			commands[(uint)CarbonCommandID.Quit] = cmdID;
 		}
 		
-		public static void AddAppMenuItems (CommandManager manager, Dictionary<object,CarbonCommandID> cmdIdMap, params object [] cmdIds)
+		public static void AddAppMenuItems (CommandManager manager, params object [] cmdIds)
 		{
+			//FIXME: we assume we get first pick of cmdIDs
+			
 			HIMenuItem mnu = HIToolbox.GetMenuItem ((uint)CarbonCommandID.Hide);
 			for (int i = cmdIds.Length - 1; i >= 0; i--) {
 				object cmdId = cmdIds[i];
@@ -259,8 +273,7 @@ namespace OSXIntegration
 					continue;
 				}
 				
-				uint macCmdId = GetNewMenuItemId (cmd, cmdIdMap);
-				System.Console.WriteLine(cmd.Text);
+				uint macCmdId = GetNewMenuItemId (cmd);
 				ushort pos = HIToolbox.InsertMenuItem (mnu.MenuRef, (cmd.Text ?? "").Replace ("_", ""), 0, 0, macCmdId);
 				SetMenuAccelerator (new HIMenuItem (mnu.MenuRef, pos), cmd.AccelKey);
 			}
@@ -307,8 +320,7 @@ namespace OSXIntegration
 		static object GetCommandID (CarbonHICommand cmdEvent)
 		{
 			object cmdID;
-			if (!commands.TryGetValue (cmdEvent.CommandID, out cmdID))
-				appMenuCommands.TryGetValue (cmdEvent.CommandID, out cmdID);
+			commands.TryGetValue (cmdEvent.CommandID, out cmdID);
 			return cmdID;
 		}
 		
@@ -357,8 +369,6 @@ namespace OSXIntegration
 				foreach (IntPtr menu in menus.Keys)
 					CoreFoundation.Release (menu);
 				menus.Clear ();
-				commands.Clear ();
-				cmdSeq = 1;
 				idSeq = 1;
 			}
 			
@@ -373,7 +383,6 @@ namespace OSXIntegration
 				Carbon.RemoveEventHandler (closedHandlerRef);
 				Carbon.RemoveEventHandler (updateHandlerRef);
 				commandHandlerRef = openingHandlerRef = updateHandlerRef = rootMenu = IntPtr.Zero;
-				cmdSeq = 1;
 				idSeq = 0;
 			}
 		}
