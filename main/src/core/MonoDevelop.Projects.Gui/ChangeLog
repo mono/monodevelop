@@ -1,3 +1,8 @@
+2009-04-10  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
+	  shift+space now overrides automatic completion.
+
 2009-03-22  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Gui.Completion/BaseMemberCompletionData.cs:

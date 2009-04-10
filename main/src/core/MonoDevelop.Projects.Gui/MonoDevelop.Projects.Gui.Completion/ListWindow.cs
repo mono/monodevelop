@@ -263,7 +263,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 			
 			char c = (char)(uint)key;
-			
+			if (c == ' ' && (modifier & ModifierType.ShiftMask) == ModifierType.ShiftMask)
+				return KeyAction.CloseWindow | KeyAction.Process;
 			if (System.Char.IsLetterOrDigit (c) || c == '_') {
 				word.Insert (curPos, c);
 				curPos++;
