@@ -1,3 +1,8 @@
+2009-04-10  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* Parser/ProjectInformation.cs: Handle it more gracefully 
+	  when vsc-shell is not installed.
+
 2009-04-09  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* Project/ValaProject.cs: Auto-add C compiler options 

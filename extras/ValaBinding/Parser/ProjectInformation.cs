@@ -176,6 +176,7 @@ namespace MonoDevelop.ValaBinding.Parser
 		private string[] ParseCommand (string command, params object[] args)
 		{
 			string[] output = new string[0];
+			if (null == p){ return output; }
 
 			try {
 			lock (p) {
