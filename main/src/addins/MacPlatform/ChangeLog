@@ -1,3 +1,22 @@
+2009-04-10  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Menus/OSXMenu.cs: Lots of refactoring. Handle updating text,
+	  accelerators, visibility, sensitivity. Hide unnecessary
+	  separators. Disable menus when MD root window doesn't have
+	  toplevel focus so that it can't interfere with modal
+	  dialogs. Map commands to standard command IDs when possible.
+	  Dispatch commands after returning from handler. Avoid
+	  command ID 0 since it's used when there's no command ID. Add
+	  an API for handling the app menu.
+
+	* MacPlatform.cs: Install app menu items without using IGE.
+	  Enable Mac menu since it mostly works now.
+
+	* Framework/Carbon.cs: More bindings. Fix Handled/NotHandled
+	  values (MWF had them the wrong way round).
+
+	* Framework/HIToolbox.cs: More bindings.
+
 2009-04-08  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am:

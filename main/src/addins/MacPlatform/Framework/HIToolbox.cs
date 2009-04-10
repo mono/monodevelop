@@ -31,13 +31,12 @@ using System.Runtime.InteropServices;
 namespace OSXIntegration.Framework
 {
 	
-	
 	internal static class HIToolbox
 	{
 		const string hiToolboxLib = "/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/HIToolbox.framework/Versions/A/HIToolbox";
 		
 		[DllImport (hiToolboxLib)]
-		static extern MenuResult CreateNewMenu (ushort menuId, MenuAttributes attributes, out IntPtr menuRef);
+		static extern CarbonMenuStatus CreateNewMenu (ushort menuId, MenuAttributes attributes, out IntPtr menuRef);
 		
 		public static IntPtr CreateMenu (ushort id, string title, MenuAttributes attributes)
 		{
@@ -48,7 +47,7 @@ namespace OSXIntegration.Framework
 		}
 
 		[DllImport (hiToolboxLib)]
-		internal static extern MenuResult SetRootMenu (IntPtr menuRef);
+		internal static extern CarbonMenuStatus SetRootMenu (IntPtr menuRef);
 
 		[DllImport (hiToolboxLib)]
 		internal static extern void DeleteMenu (IntPtr menuRef);
@@ -60,13 +59,13 @@ namespace OSXIntegration.Framework
 		internal static extern void InsertMenu (IntPtr menuRef, ushort before_id);
 		
 		[DllImport (hiToolboxLib)]
-		static extern MenuResult AppendMenuItemTextWithCFString (IntPtr menuRef, IntPtr cfstring, MenuItemAttributes inAttributes, uint commandId, out ushort index);
+		static extern CarbonMenuStatus AppendMenuItemTextWithCFString (IntPtr menuRef, IntPtr cfString, MenuItemAttributes attributes, uint commandId, out ushort index);
 		
-		public static ushort AppendMenuItem (IntPtr parentRef, string title, MenuItemAttributes inAttributes, uint commandId)
+		public static ushort AppendMenuItem (IntPtr parentRef, string title, MenuItemAttributes attributes, uint commandId)
 		{
 			ushort index;
 			IntPtr str = CoreFoundation.CreateString (title);
-			MenuResult result = AppendMenuItemTextWithCFString (parentRef, str, inAttributes, commandId, out index);
+			CarbonMenuStatus result = AppendMenuItemTextWithCFString (parentRef, str, attributes, commandId, out index);
 			CoreFoundation.Release (str);
 			CheckResult (result);
 			return index;
@@ -75,13 +74,36 @@ namespace OSXIntegration.Framework
 		public static ushort AppendMenuSeparator (IntPtr parentRef)
 		{
 			ushort index;
-			MenuResult result = AppendMenuItemTextWithCFString (parentRef, IntPtr.Zero, MenuItemAttributes.Separator, 0, out index);
+			CarbonMenuStatus result = AppendMenuItemTextWithCFString (parentRef, IntPtr.Zero, MenuItemAttributes.Separator, 0, out index);
 			CheckResult (result);
 			return index;
 		}
 		
 		[DllImport (hiToolboxLib)]
-		static extern MenuResult EnableMenuItem (IntPtr menuRef, ushort index);
+		static extern CarbonMenuStatus InsertMenuItemTextWithCFString (IntPtr menuRef, IntPtr cfString, ushort afterItemIndex,
+		                                                         MenuItemAttributes attributes, uint commandID, out ushort index);
+		
+		public static ushort InsertMenuItem (IntPtr parentRef, string title, ushort afterItemIndex, MenuItemAttributes attributes, uint commandId)
+		{
+			ushort index;
+			IntPtr str = CoreFoundation.CreateString (title);
+			CarbonMenuStatus result = InsertMenuItemTextWithCFString (parentRef, str, afterItemIndex, attributes, commandId, out index);
+			CoreFoundation.Release (str);
+			CheckResult (result);
+			return index;
+		}
+		
+		public static ushort InsertMenuSeparator (IntPtr parentRef, ushort afterItemIndex)
+		{
+			ushort index;
+			CarbonMenuStatus result = InsertMenuItemTextWithCFString (parentRef, IntPtr.Zero, afterItemIndex, MenuItemAttributes.Separator, 0, out index);
+			CheckResult (result);
+			return index;
+		}
+
+		
+		[DllImport (hiToolboxLib)]
+		static extern CarbonMenuStatus EnableMenuItem (IntPtr menuRef, ushort index);
 		
 		public static void EnableMenuItem (HIMenuItem item)
 		{
@@ -89,7 +111,7 @@ namespace OSXIntegration.Framework
 		}
 		
 		[DllImport (hiToolboxLib)]
-		static extern MenuResult DisableMenuItem (IntPtr menuRef, ushort index);
+		static extern CarbonMenuStatus DisableMenuItem (IntPtr menuRef, ushort index);
 		
 		public static void DisableMenuItem (HIMenuItem item)
 		{
@@ -97,30 +119,30 @@ namespace OSXIntegration.Framework
 		}
 		
 		[DllImport (hiToolboxLib)]
-		internal static extern MenuResult SetMenuItemHierarchicalMenu (IntPtr parentMenu, ushort parent_index, IntPtr submenu);
+		internal static extern CarbonMenuStatus SetMenuItemHierarchicalMenu (IntPtr parentMenu, ushort parent_index, IntPtr submenu);
 
 		[DllImport (hiToolboxLib)]
-		static extern MenuResult SetMenuTitleWithCFString (IntPtr menuRef, IntPtr cfstring);
+		static extern CarbonMenuStatus SetMenuTitleWithCFString (IntPtr menuRef, IntPtr cfstring);
 		
 		public static void SetMenuTitle (IntPtr menuRef, string title)
 		{
 			IntPtr str = CoreFoundation.CreateString (title);
-			MenuResult result = SetMenuTitleWithCFString (menuRef, str);
+			CarbonMenuStatus result = SetMenuTitleWithCFString (menuRef, str);
 			CoreFoundation.Release (str);
 			CheckResult (result);
 		}
 
 		[DllImport (hiToolboxLib)]
-		internal static extern MenuResult SetMenuItemKeyGlyph (IntPtr menuRef, ushort index, short glyph);
+		internal static extern CarbonMenuStatus SetMenuItemKeyGlyph (IntPtr menuRef, ushort index, short glyph);
 
 		[DllImport (hiToolboxLib)]
-		internal static extern MenuResult SetMenuItemCommandKey (IntPtr menuRef, ushort index, bool isVirtualKey, short key);
+		internal static extern CarbonMenuStatus SetMenuItemCommandKey (IntPtr menuRef, ushort index, bool isVirtualKey, ushort key);
 
 		[DllImport (hiToolboxLib)]
-		internal static extern MenuResult SetMenuItemModifiers (IntPtr menuRef, ushort index, MenuModifier modifiers);
+		internal static extern CarbonMenuStatus SetMenuItemModifiers (IntPtr menuRef, ushort index, MenuAccelModifier modifiers);
 		
 		[DllImport (hiToolboxLib)]
-		static extern MenuResult GetMenuItemCommandID (IntPtr menuRef, ushort index, out uint commandId);
+		static extern CarbonMenuStatus GetMenuItemCommandID (IntPtr menuRef, ushort index, out uint commandId);
 		
 		public static uint GetMenuItemCommandID (HIMenuItem item)
 		{
@@ -129,21 +151,53 @@ namespace OSXIntegration.Framework
 			return id;
 		}
 		
-		internal static void CheckResult (MenuResult result)
+		[DllImport (hiToolboxLib)]
+		static extern CarbonMenuStatus GetIndMenuItemWithCommandID (IntPtr startAtMenuRef, uint commandID, uint commandItemIndex, 
+		                                                      out IntPtr itemMenuRef, out ushort itemIndex);
+		
+		public static HIMenuItem GetMenuItem (uint commandId)
 		{
-			if (result != MenuResult.Ok)
+			IntPtr itemMenuRef;
+			ushort itemIndex;
+			CheckResult (GetIndMenuItemWithCommandID (IntPtr.Zero, commandId, 1, out itemMenuRef, out itemIndex));
+			return new HIMenuItem (itemMenuRef, itemIndex);
+		}
+		
+		[DllImport (hiToolboxLib)]
+		public static extern CarbonMenuStatus CancelMenuTracking (IntPtr rootMenu, bool inImmediate, MenuDismissalReason reason);
+		
+		[DllImport (hiToolboxLib)]
+		static extern CarbonMenuStatus SetMenuItemData (IntPtr menu, uint indexOrCommandID, bool isCommandID, IntPtr dataPtr);
+		
+		public static void SetMenuItemData (IntPtr menu, uint indexOrCommandID, bool isCommandID, MenuItemData data)
+		{
+			int len = Marshal.SizeOf (typeof (MenuItemData));
+			IntPtr bufferPtr = IntPtr.Zero;
+			try {
+				bufferPtr = Marshal.AllocHGlobal (len);
+				Marshal.StructureToPtr (data, bufferPtr, false);
+				CheckResult (SetMenuItemData (menu, indexOrCommandID, isCommandID, bufferPtr));
+			} finally {
+				if (bufferPtr != IntPtr.Zero)
+					Marshal.FreeHGlobal (bufferPtr);
+			}
+		}
+		
+		internal static void CheckResult (CarbonMenuStatus result)
+		{
+			if (result != CarbonMenuStatus.Ok)
 				throw new CarbonMenuException (result);
 		}
 	}
 	
 	class CarbonMenuException : Exception
 	{
-		public CarbonMenuException (MenuResult result)
+		public CarbonMenuException (CarbonMenuStatus result)
 		{
 			this.Result = result;
 		}
 		
-		public MenuResult Result { get; private set; }
+		public CarbonMenuStatus Result { get; private set; }
 		
 		public override string ToString ()
 		{
@@ -151,7 +205,8 @@ namespace OSXIntegration.Framework
 		}
 	}
 	
-	internal enum MenuResult {
+	internal enum CarbonMenuStatus // this is an OSStatus
+	{ 
 		Ok = 0,
 		PropertyInvalid = -5603,
 		PropertyNotFound = -5604,
@@ -172,16 +227,18 @@ namespace OSXIntegration.Framework
 		DoNotUseUserCommandKeys = 1 << 7
 	}
 
-	internal enum MenuModifier : byte {
-		NoModifier = 0,
+	internal enum MenuAccelModifier : byte
+	{
+		CommandModifier = 0,
 		ShiftModifier = 1 << 0,
 		OptionModifier = 1 << 1,
 		ControlModifier = 1 << 2,
-		NoCommandModifier = 1 << 3
+		None = 1 << 3
 	}
 	
 	[Flags]
-	internal enum MenuItemAttributes {
+	internal enum MenuItemAttributes : uint
+	{
 		Disabled = 1 << 0,
 		IconDisabled = 1 << 1,
 		SubmenuParentChoosable = 1 << 2,
@@ -197,5 +254,366 @@ namespace OSXIntegration.Framework
 		IncludeInCmdKeyMatching = 1 << 12,
 		AutoDisable = 1 << 13,
 		UpdateSingleItem = 1 << 14
+	}
+	
+	internal enum MenuDismissalReason : uint
+	{
+		DismissedBySelection   = 1,
+		DismissedByUserCancel  = 2,
+		DismissedByMouseDown   = 3,
+		DismissedByMouseUp     = 4,
+		DismissedByKeyEvent    = 5,
+		DismissedByAppSwitch   = 6,
+		DismissedByTimeout     = 7,
+		DismissedByCancelMenuTracking = 8,
+		DismissedByActivationChange = 9,
+		DismissedByFocusChange = 10,
+	}
+	
+	
+	[StructLayout(LayoutKind.Sequential, Pack = 2)]
+	internal struct MenuItemData
+	{
+		MenuItemDataFlags whichData; //8
+		IntPtr text; //Str255 //12
+		[MarshalAs (UnmanagedType.U2)] //14
+		char mark;
+		[MarshalAs (UnmanagedType.U2)] //16
+		char cmdKey;
+		uint cmdKeyGlyph; //20
+		uint cmdKeyModifiers; //24
+		byte style; //25
+		[MarshalAs (UnmanagedType.U1)] //26
+		bool enabled;
+		[MarshalAs (UnmanagedType.U1)] //27
+		bool iconEnabled;
+		byte filler1; //28
+		int iconID; //32
+		uint iconType; //36
+		IntPtr iconHandle; //40
+		uint cmdID; //44
+		CarbonTextEncoding encoding; //48
+		ushort submenuID; //50
+		IntPtr submenuHandle; //54
+		int fontID; //58
+		uint refcon; //62
+		// LAMESPEC: this field is documented as OptionBits
+		MenuItemAttributes attr; //66
+		IntPtr cfText; //70
+		// Collection 
+		IntPtr properties; //74
+		uint indent; //78
+		ushort cmdVirtualKey; //80
+		
+		//these aren't documented
+		IntPtr attributedText; //84
+		IntPtr font; //88
+		
+		#region Properties
+		
+		public IntPtr Text {
+			get { return text; }
+			set {
+				whichData |= MenuItemDataFlags.Text;
+				text = value;
+			}
+		}
+		
+		public char Mark {
+			get { return mark; }
+			set {
+				whichData |= MenuItemDataFlags.Mark;
+				mark = value;
+			}
+		}
+		
+		public char CommandKey {
+			get { return cmdKey; }
+			set {
+				whichData |= MenuItemDataFlags.CmdKey;
+				cmdKey = value;
+			}
+		}
+		
+		public uint CommandKeyGlyph {
+			get { return cmdKeyGlyph; }
+			set {
+				whichData |= MenuItemDataFlags.CmdKeyGlyph;
+				cmdKeyGlyph = value;
+			}
+		}
+		
+		public MenuAccelModifier CommandKeyModifiers {
+			get { return (MenuAccelModifier) cmdKeyModifiers; }
+			set {
+				whichData |= MenuItemDataFlags.CmdKeyModifiers;
+				cmdKeyModifiers = (uint) value;
+			}
+		}
+		
+		public byte Style {
+			get { return style; }
+			set {
+				whichData |= MenuItemDataFlags.Style;
+				style = value;
+			}
+		}
+		
+		public bool Enabled {
+			get { return enabled; }
+			set {
+				whichData |= MenuItemDataFlags.Enabled;
+				enabled = value;
+			}
+		}
+		
+		public bool IconEnabled {
+			get { return iconEnabled; }
+			set {
+				whichData |= MenuItemDataFlags.IconEnabled;
+				iconEnabled = value;
+			}
+		}
+		
+		public int IconID {
+			get { return iconID; }
+			set {
+				whichData |= MenuItemDataFlags.IconID;
+				iconID = value;
+			}
+		}
+		
+		public HIIconHandle IconHandle {
+			get { return new HIIconHandle (iconHandle, iconType); }
+			set {
+				whichData |= MenuItemDataFlags.IconHandle;
+				iconHandle = value.Ref;
+				iconType = value.Type;
+			}
+		}
+		
+		public uint CommandID {
+			get { return cmdID; }
+			set {
+				whichData |= MenuItemDataFlags.CommandID;
+				cmdID = value;
+			}
+		}
+		
+		public CarbonTextEncoding Encoding {
+			get { return encoding; }
+			set {
+				whichData |= MenuItemDataFlags.TextEncoding;
+				encoding = value;
+			}
+		}
+		
+		public ushort SubmenuID {
+			get { return submenuID; }
+			set {
+				whichData |= MenuItemDataFlags.SubmenuID;
+				submenuID = value;
+			}
+		}
+		
+		public IntPtr SubmenuHandle {
+			get { return submenuHandle; }
+			set {
+				whichData |= MenuItemDataFlags.SubmenuHandle;
+				submenuHandle = value;
+			}
+		}
+		
+		public int FontID {
+			get { return fontID; }
+			set {
+				whichData |= MenuItemDataFlags.FontID;
+				fontID = value;
+			}
+		}
+		
+		public uint Refcon {
+			get { return refcon; }
+			set {
+				whichData |= MenuItemDataFlags.Refcon;
+				refcon = value;
+			}
+		}
+		
+		public MenuItemAttributes Attributes {
+			get { return attr; }
+			set {
+				whichData |= MenuItemDataFlags.Attributes;
+				attr = value;
+			}
+		}
+		
+		public IntPtr CFText {
+			get { return cfText; }
+			set {
+				whichData |= MenuItemDataFlags.CFString;
+				cfText = value;
+			}
+		}
+		
+		public IntPtr Properties {
+			get { return properties; }
+			set {
+				whichData |= MenuItemDataFlags.Properties;
+				properties = value;
+			}
+		}
+		
+		public uint Indent {
+			get { return indent; }
+			set {
+				whichData |= MenuItemDataFlags.Indent;
+				indent = value;
+			}
+		}
+		
+		public ushort CommandVirtualKey {
+			get { return cmdVirtualKey; }
+			set {
+				whichData |= MenuItemDataFlags.CmdVirtualKey;
+				cmdVirtualKey = value;
+			}
+		}
+		
+		#endregion
+		
+		#region 'Has' properties
+		
+		public bool HasText {
+			get { return (whichData & MenuItemDataFlags.Text) != 0; }
+		}
+		
+		public bool HasMark {
+			get { return (whichData & MenuItemDataFlags.Mark) != 0; }
+		}
+		
+		public bool HasCommandKey {
+			get { return (whichData & MenuItemDataFlags.CmdKey) != 0; }
+		}
+		
+		public bool HasCommandKeyGlyph {
+			get { return (whichData & MenuItemDataFlags.CmdKeyGlyph) != 0; }
+		}
+		
+		public bool HasCommandKeyModifiers {
+			get { return (whichData & MenuItemDataFlags.CmdKeyModifiers) != 0; }
+		}
+		
+		public bool HasStyle {
+			get { return (whichData & MenuItemDataFlags.Style) != 0; }
+		}
+		
+		public bool HasEnabled {
+			get { return (whichData & MenuItemDataFlags.Enabled) != 0; }
+		}
+		
+		public bool HasIconEnabled {
+			get { return (whichData & MenuItemDataFlags.IconEnabled) != 0; }
+		}
+		
+		public bool HasIconID {
+			get { return (whichData & MenuItemDataFlags.IconID) != 0; }
+		}
+		
+		public bool HasIconHandle {
+			get { return (whichData & MenuItemDataFlags.IconHandle) != 0; }
+		}
+		
+		public bool HasCommandID {
+			get { return (whichData & MenuItemDataFlags.CommandID) != 0; }
+		}
+		
+		public bool HasEncoding {
+			get { return (whichData & MenuItemDataFlags.TextEncoding) != 0; }
+		}
+		
+		public bool HasSubmenuID {
+			get { return (whichData & MenuItemDataFlags.SubmenuID) != 0; }
+		}
+		
+		public bool HasSubmenuHandle {
+			get { return (whichData & MenuItemDataFlags.SubmenuHandle) != 0; }
+		}
+		
+		public bool HasFontID {
+			get { return (whichData & MenuItemDataFlags.FontID) != 0; }
+		}
+		
+		public bool HasRefcon {
+			get { return (whichData & MenuItemDataFlags.Refcon) != 0; }
+		}
+		
+		public bool HasAttributes {
+			get { return (whichData & MenuItemDataFlags.Attributes) != 0; }
+		}
+		
+		public bool HasCFText {
+			get { return (whichData & MenuItemDataFlags.CFString) != 0; }
+		}
+		
+		public bool HasProperties {
+			get { return (whichData & MenuItemDataFlags.Properties) != 0; }
+		}
+		
+		public bool HasIndent {
+			get { return (whichData & MenuItemDataFlags.Indent) != 0; }
+		}
+		
+		public bool HasCommandVirtualKey {
+			get { return (whichData & MenuItemDataFlags.CmdVirtualKey) != 0; }
+		}
+		
+		#endregion
+	}
+	
+	struct HIIconHandle
+	{
+		IntPtr _ref;
+		uint type;
+		
+		public HIIconHandle (IntPtr @ref, uint type)
+		{
+			this._ref = @ref;
+			this.type = type;
+		}
+		
+		public IntPtr Ref { get { return _ref; } }
+		public uint Type { get { return type; } }
+	}
+	
+	enum CarbonTextEncoding : uint
+	{
+	}
+	
+	enum MenuItemDataFlags : ulong
+	{
+		Text = (1 << 0),
+		Mark = (1 << 1),
+		CmdKey = (1 << 2),
+		CmdKeyGlyph = (1 << 3),
+		CmdKeyModifiers = (1 << 4),
+		Style = (1 << 5),
+		Enabled = (1 << 6),
+		IconEnabled = (1 << 7),
+		IconID = (1 << 8),
+		IconHandle = (1 << 9),
+		CommandID = (1 << 10),
+		TextEncoding = (1 << 11),
+		SubmenuID = (1 << 12),
+		SubmenuHandle = (1 << 13),
+		FontID = (1 << 14),
+		Refcon = (1 << 15),
+		Attributes = (1 << 16),
+		CFString = (1 << 17),
+		Properties = (1 << 18),
+		Indent = (1 << 19),
+		CmdVirtualKey = (1 << 20),
+		AllDataVersionOne = 0x000FFFFF,
+		AllDataVersionTwo = AllDataVersionOne | CmdVirtualKey,
 	}
 }

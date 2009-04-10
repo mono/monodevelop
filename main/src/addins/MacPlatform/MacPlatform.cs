@@ -36,13 +36,14 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui;
+using OSXIntegration.Framework;
 
 namespace MonoDevelop.Platform
 {
 	public class MacPlatform : PlatformService
 	{
 		bool igeInited, igeExists;
-		bool menuFail;
+		bool menuFail, initedAppMenu;
 		
 		static Dictionary<string, string> mimemap;
 
@@ -121,24 +122,47 @@ namespace MonoDevelop.Platform
 			return true;
 		}
 		
+		static Dictionary<object,CarbonCommandID> cmdIdMap
+			= new Dictionary<object, CarbonCommandID> ()
+		{
+			{ EditCommands.Copy, CarbonCommandID.Copy },
+			{ EditCommands.Cut, CarbonCommandID.Cut },
+			//TODO: for some reason mapping this causes two menu items to be created
+	//		{ EditCommands.MonodevelopPreferences, CarbonCommandID.Preferences }, 
+			{ EditCommands.Redo, CarbonCommandID.Redo },
+			{ EditCommands.Undo, CarbonCommandID.Undo },
+			{ EditCommands.SelectAll, CarbonCommandID.SelectAll },
+			{ FileCommands.NewFile, CarbonCommandID.New },
+			{ FileCommands.OpenFile, CarbonCommandID.Open },
+			{ FileCommands.Save, CarbonCommandID.Save },
+			{ FileCommands.SaveAs, CarbonCommandID.SaveAs },
+			{ FileCommands.CloseFile, CarbonCommandID.Close },
+			{ FileCommands.Exit, CarbonCommandID.Quit },
+			{ FileCommands.ReloadFile, CarbonCommandID.Revert },
+			{ HelpCommands.About, CarbonCommandID.About },
+			{ HelpCommands.Help, CarbonCommandID.AppHelp },
+		};
+		
+		HashSet<object> ignoreCommands = new HashSet<object> () {
+			HelpCommands.About,
+			EditCommands.DefaultPolicies,
+			EditCommands.MonodevelopPreferences,
+		};
+		
 		public override bool SetGlobalMenu (CommandManager commandManager, string commandMenuAddinPath)
 		{
 			IgeExists ();
 			
 			//FIXME: disabled, as it doesn't fully work yet
-			return false;
+			//return false;
 			
 			if (menuFail)
 				return false;
 			
 			try {
-				var ignoreCommands = new HashSet<object> () {
-					MonoDevelop.Ide.Commands.HelpCommands.About,
-					MonoDevelop.Ide.Commands.EditCommands.DefaultPolicies,
-					MonoDevelop.Ide.Commands.EditCommands.MonodevelopPreferences,
-				};
 				CommandEntrySet ces = commandManager.CreateCommandEntrySet (commandMenuAddinPath);
-				OSXIntegration.OSXMenu.Update (commandManager, ces, ignoreCommands);
+				OSXIntegration.OSXMenu.Update (commandManager, ces, cmdIdMap, ignoreCommands);
+				InitAppMenu (commandManager);
 			} catch (Exception ex) {
 				try {
 					OSXIntegration.OSXMenu.Destroy (true);
@@ -151,20 +175,18 @@ namespace MonoDevelop.Platform
 			return true;
 		}
 		
-		//add quit, preferences, about to the app menu group
+		void InitAppMenu (CommandManager commandManager)
+		{
+			if (initedAppMenu)
+				return;
+			initedAppMenu = true;
+			OSXIntegration.OSXMenu.SetAppQuitCommand (FileCommands.Exit);
+			OSXIntegration.OSXMenu.AddAppMenuItems (commandManager, cmdIdMap, HelpCommands.About, Command.Separator,
+			                                        EditCommands.DefaultPolicies, EditCommands.MonodevelopPreferences);
+		}
+		
 		void IgeSetup ()
 		{
-			IgeMacMenu.QuitMenuItem = new CommandMenuItem (FileCommands.Exit, IdeApp.CommandService);
-			
-			IgeMacMenuGroup aboutGroup = IgeMacMenu.AddAppMenuGroup ();
-			object cmdId = HelpCommands.About;
-			aboutGroup.AddMenuItem (new CommandMenuItem (cmdId, IdeApp.CommandService), IdeApp.CommandService.GetCommand (cmdId).Text.Replace ("_", ""));
-			
-			IgeMacMenuGroup prefsGroup = IgeMacMenu.AddAppMenuGroup ();
-			cmdId = EditCommands.MonodevelopPreferences;
-			prefsGroup.AddMenuItem (new CommandMenuItem (cmdId, IdeApp.CommandService), IdeApp.CommandService.GetCommand (cmdId).Text.Replace ("_", ""));
-			cmdId = EditCommands.DefaultPolicies;
-			prefsGroup.AddMenuItem (new CommandMenuItem (cmdId, IdeApp.CommandService), IdeApp.CommandService.GetCommand (cmdId).Text.Replace ("_", ""));	
 			IgeMacDock.Default.QuitActivate += delegate {
 				IdeApp.Exit ();
 			};

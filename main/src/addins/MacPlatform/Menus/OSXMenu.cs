@@ -40,15 +40,18 @@ namespace OSXIntegration
 	{
 		static IntPtr rootMenu;
 		
-		static IntPtr openingHandlerRef, updateHandlerRef, commandHandlerRef;
+		static IntPtr openingHandlerRef, updateHandlerRef, commandHandlerRef, closedHandlerRef;
 		
 		static CommandManager manager;
 		
-		static uint cmdSeq;
+		static uint cmdSeq = 1; //reserve 0, since it gets used by submenus' parent items
 		static ushort idSeq;
 		
 		static Dictionary<uint,object> commands = new Dictionary<uint,object> ();
+		static Dictionary<uint,object> appMenuCommands = new Dictionary<uint,object> ();
 		static Dictionary<IntPtr,string> menus = new Dictionary<IntPtr,string> ();
+		
+		static Gdk.Keymap keymap = Gdk.Keymap.Default;
 		
 		static string GetName (CommandEntrySet ces)
 		{
@@ -56,7 +59,8 @@ namespace OSXIntegration
 			return text.Replace ("_", "");
 		}
 		
-		public static void Update (CommandManager manager, CommandEntrySet entrySet, HashSet<object> ignoreCommands)
+		public static void Update (CommandManager manager, CommandEntrySet entrySet,
+		                            Dictionary<object,CarbonCommandID> cmdIdMap, HashSet<object> ignoreCommands) 
 		{
 			if (manager == null)
 				throw new ArgumentException ("manager");
@@ -64,17 +68,27 @@ namespace OSXIntegration
 			
 			if (rootMenu == IntPtr.Zero) {
 				rootMenu = HIToolbox.CreateMenu (idSeq++, GetName (entrySet), 0);
-				CreateChildren (rootMenu, entrySet, ignoreCommands);
+				CreateChildren (rootMenu, entrySet, cmdIdMap, ignoreCommands);
 				InstallRootMenu ();
 			} else {
 				Destroy (false);
-				CreateChildren (rootMenu, entrySet, ignoreCommands);
+				CreateChildren (rootMenu, entrySet, cmdIdMap, ignoreCommands);
 			}
 		}
-
-		static void CreateChildren (IntPtr parentMenu, CommandEntrySet entrySet, HashSet<object> ignoreCommands) 
+		
+		static void InstallRootMenu ()
 		{
-			Gdk.Keymap keymap = Gdk.Keymap.Default;
+			HIToolbox.CheckResult (HIToolbox.SetRootMenu (rootMenu));
+			
+			openingHandlerRef = Carbon.InstallApplicationEventHandler (HandleMenuOpening, CarbonEventMenu.Opening);
+			closedHandlerRef = Carbon.InstallApplicationEventHandler (HandleMenuClosed, CarbonEventMenu.Closed);
+			commandHandlerRef = Carbon.InstallApplicationEventHandler (HandleMenuCommand, CarbonEventCommand.Process);
+			updateHandlerRef = Carbon.InstallApplicationEventHandler (HandleMenuCommandUpdate, CarbonEventCommand.UpdateStatus);
+		}
+
+		static void CreateChildren (IntPtr parentMenu, CommandEntrySet entrySet, 
+		                            Dictionary<object,CarbonCommandID> cmdIdMap, HashSet<object> ignoreCommands) 
+		{
 			foreach (CommandEntry entry in entrySet){
 				CommandEntrySet ces = entry as CommandEntrySet;
 
@@ -103,58 +117,160 @@ namespace OSXIntegration
 							continue;
 						}
 						
-						commands[cmdSeq] = cmd.Id;
+						uint macCmdId = GetNewMenuItemId (cmd, cmdIdMap);
 
 						bool isArray = acmd.CommandArray;
 						
-						pos = HIToolbox.AppendMenuItem (parentMenu, (cmd.Text ?? "").Replace ("_", ""), 0, cmdSeq++);
-						
-						uint modeKey, key;
-						Gdk.ModifierType modeMod, mod;
-						
-						if (KeyBindingManager.BindingToKeys (cmd.AccelKey, out modeKey, out modeMod, out key, out mod)){
-							Gdk.KeymapKey [] map = keymap.GetEntriesForKeyval (key);
-							if (map != null && map.Length > 0){
-								HIToolbox.SetMenuItemCommandKey (parentMenu, pos, true, (short) map [0].Keycode);
-								MenuModifier menu_mod = 0;
-								
-								if ((mod & Gdk.ModifierType.Mod1Mask) != 0)
-									menu_mod |= MenuModifier.OptionModifier;
-								if ((mod & Gdk.ModifierType.ShiftMask) != 0)
-									menu_mod |= MenuModifier.ShiftModifier;
-								if ((mod & Gdk.ModifierType.ControlMask) != 0)
-									menu_mod |= MenuModifier.ControlModifier;
-								
-								// This is inverted, because by default on OSX no setting means use the Command-key
-								if ((mod & Gdk.ModifierType.MetaMask) == 0)
-									menu_mod |= MenuModifier.NoCommandModifier;
-								
-								HIToolbox.SetMenuItemModifiers (parentMenu, pos, menu_mod);
-							}
-						}
+						pos = HIToolbox.AppendMenuItem (parentMenu, (cmd.Text ?? "").Replace ("_", ""), 0, macCmdId);
+						SetMenuAccelerator (new HIMenuItem (parentMenu, pos), cmd.AccelKey);
 						
 						// Deal with checked items here.
 					}
 				} else {
-					IntPtr menuRef = HIToolbox.CreateMenu (idSeq++, GetName (ces), 0);
+					IntPtr menuRef = HIToolbox.CreateMenu (idSeq++, GetName (ces), MenuAttributes.CondenseSeparators);
 					menus [menuRef] = GetName (ces);
-					CreateChildren (menuRef, ces, ignoreCommands);
+					CreateChildren (menuRef, ces, cmdIdMap, ignoreCommands);
 					ushort pos = HIToolbox.AppendMenuItem (parentMenu, GetName (ces), 0, 0);
 					HIToolbox.CheckResult (HIToolbox.SetMenuItemHierarchicalMenu (parentMenu, pos, menuRef));
 				}
 			}
 		}
-
-		static void InstallRootMenu ()
+		
+		static void SetMenuAccelerator (HIMenuItem item, string accelKey)
 		{
-			HIToolbox.CheckResult (HIToolbox.SetRootMenu (rootMenu));
-			
-			openingHandlerRef = Carbon.InstallApplicationEventHandler (HandleMenuOpening, CarbonEventMenu.Opening);
-			commandHandlerRef = Carbon.InstallApplicationEventHandler (HandleMenuCommand, CarbonEventCommand.Process);
-			updateHandlerRef = Carbon.InstallApplicationEventHandler (HandleMenuCommandUpdate, CarbonEventCommand.UpdateStatus);
+			ushort key;
+			MenuAccelModifier mod;
+			if (GetAcceleratorKeys (accelKey, out key, out mod)) {
+				HIToolbox.SetMenuItemCommandKey (item.MenuRef, item.Index, true, key);
+				HIToolbox.SetMenuItemModifiers (item.MenuRef, item.Index, mod);
+			}
 		}
 		
-		static CarbonEventReturn HandleMenuOpening (IntPtr callRef, IntPtr eventRef, IntPtr user_data)
+		//FIXME: handle the mode key
+		static bool GetAcceleratorKeys (string accelKey, out ushort outKey, out MenuAccelModifier outMod)
+		{
+			uint modeKey, key;
+			Gdk.ModifierType modeMod, mod;
+			
+			if (KeyBindingManager.BindingToKeys (accelKey, out modeKey, out modeMod, out key, out mod)){
+				Gdk.KeymapKey [] map = keymap.GetEntriesForKeyval (key);
+				if (map != null && map.Length > 0){
+					outKey = (ushort) map [0].Keycode;
+					outMod = 0;
+					
+					if ((mod & Gdk.ModifierType.Mod1Mask) != 0)
+						outMod |= MenuAccelModifier.OptionModifier;
+					if ((mod & Gdk.ModifierType.ShiftMask) != 0)
+						outMod |= MenuAccelModifier.ShiftModifier;
+					if ((mod & Gdk.ModifierType.ControlMask) != 0)
+						outMod |= MenuAccelModifier.ControlModifier;
+					
+					// This is inverted, because by default on OSX no setting means use the Command-key
+					if ((mod & Gdk.ModifierType.MetaMask) == 0)
+						outMod |= MenuAccelModifier.None;
+					
+					if (modeKey != 0) {
+						System.Console.WriteLine("WARNING: Cannot display accelerators with mode keys ({0})", accelKey);
+						return false;
+					}
+					
+					return true;
+				}
+			}
+			outKey = 0;
+			outMod = (MenuAccelModifier) 0;
+			return false;
+		}
+		
+		static uint GetNewMenuItemId (Command cmd, Dictionary<object,CarbonCommandID> cmdIdMap)
+		{
+			uint macCmdId;
+			CarbonCommandID standardId;
+			if (cmdIdMap.TryGetValue (cmd.Id, out standardId))
+				macCmdId = (uint) standardId;
+			else
+				macCmdId = cmdSeq++;
+			
+			commands[macCmdId] = cmd.Id;
+			return macCmdId;
+		}
+		
+		static void SetMenuItemAttributes (HIMenuItem item, CommandInfo ci)
+		{
+			MenuItemData data = new MenuItemData ();
+			IntPtr text = IntPtr.Zero;
+			try {
+				if (!ci.Visible) {
+					data.Attributes |= MenuItemAttributes.Hidden;
+				} else {
+					data.CFText = CoreFoundation.CreateString (GetCleanCommandText (ci));
+					
+					//disable also when MD main window doesn't have toplevel focus, or commands will be 
+					//accessible when modal dialogs are active
+					bool disabled = !ci.Enabled || !MonoDevelop.Ide.Gui.IdeApp.Workbench.RootWindow.HasToplevelFocus;
+					data.Enabled = !disabled;
+					if (disabled)
+						data.Attributes |= MenuItemAttributes.Disabled;
+					
+					ushort key;
+					MenuAccelModifier mod;
+					if (GetAcceleratorKeys (ci.AccelKey, out key, out mod)) {
+						data.CommandKeyModifiers = mod;
+						data.Attributes |= MenuItemAttributes.UseVirtualKey;
+						data.CommandVirtualKey = key;
+					}
+				}
+				HIToolbox.SetMenuItemData (item.MenuRef, item.Index, false, data);
+			} finally {
+				if (text != IntPtr.Zero)
+					CoreFoundation.Release (text);
+			}
+		}
+		
+		//FIXME: remove markup
+		static string GetCleanCommandText (CommandInfo ci)
+		{
+			if (ci.Text == null)
+				return "";
+			
+			return ci.Text.Replace ("_", "");
+		}
+		
+		#region App menu
+		
+		public static void SetAppQuitCommand (object cmdID)
+		{
+			appMenuCommands[(uint)CarbonCommandID.Quit] = cmdID;
+		}
+		
+		public static void AddAppMenuItems (CommandManager manager, Dictionary<object,CarbonCommandID> cmdIdMap, params object [] cmdIds)
+		{
+			HIMenuItem mnu = HIToolbox.GetMenuItem ((uint)CarbonCommandID.Hide);
+			for (int i = cmdIds.Length - 1; i >= 0; i--) {
+				object cmdId = cmdIds[i];
+				if (cmdId == Command.Separator) {
+					HIToolbox.InsertMenuSeparator (mnu.MenuRef, 0);
+					continue;
+				}
+				
+				Command cmd = manager.GetCommand (cmdId);
+				if (cmd == null){
+					Console.Error.WriteLine ("ERROR: Null command");
+					continue;
+				}
+				
+				uint macCmdId = GetNewMenuItemId (cmd, cmdIdMap);
+				System.Console.WriteLine(cmd.Text);
+				ushort pos = HIToolbox.InsertMenuItem (mnu.MenuRef, (cmd.Text ?? "").Replace ("_", ""), 0, 0, macCmdId);
+				SetMenuAccelerator (new HIMenuItem (mnu.MenuRef, pos), cmd.AccelKey);
+			}
+		}
+		
+		#endregion
+		
+		#region Event handlers
+		
+		static CarbonEventHandlerStatus HandleMenuOpening (IntPtr callRef, IntPtr eventRef, IntPtr user_data)
 		{
 			try {
 				IntPtr menuRef = Carbon.GetEventParameter (eventRef, CarbonEventParameterName.DirectObject, CarbonEventParameterType.MenuRef);
@@ -168,44 +284,72 @@ namespace OSXIntegration
 				System.Console.WriteLine (ex);
 			}
 			
-			return CarbonEventReturn.NotHandled;
+			return CarbonEventHandlerStatus.NotHandled;
 		}
 		
-		static CarbonEventReturn HandleMenuCommand (IntPtr callRef, IntPtr eventRef, IntPtr userData)
+		static CarbonEventHandlerStatus HandleMenuClosed (IntPtr callRef, IntPtr eventRef, IntPtr user_data)
 		{
 			try {
-				CarbonHICommand cmd = Carbon.GetEventParameter<CarbonHICommand> (eventRef, CarbonEventParameterName.DirectObject, CarbonEventParameterType.HICommand);
-				object cmdID;
-				if (commands.TryGetValue (cmd.CommandID, out cmdID)) {
-					manager.DispatchCommand (cmdID);
-				} else {
-					MonoDevelop.Core.LoggingService.LogError ("Command not found for Mac menu {0} {1}", cmd.MenuItem.MenuRef, cmd.MenuItem.Index);
+				IntPtr menuRef = Carbon.GetEventParameter (eventRef, CarbonEventParameterName.DirectObject, CarbonEventParameterType.MenuRef);
+			//	uint cmd = HIToolbox.GetMenuItemCommandID (new HIMenuItem (menuRef, 0));
+				string name;
+				if (menus.TryGetValue (menuRef, out name))
+					Console.WriteLine ("Menu closed: {0}", name);
+				else
+					System.Console.WriteLine ("Menu not found");
+			} catch (Exception ex) {
+				System.Console.WriteLine (ex);
+			}
+			
+			return CarbonEventHandlerStatus.NotHandled;
+		}
+		
+		static object GetCommandID (CarbonHICommand cmdEvent)
+		{
+			object cmdID;
+			if (!commands.TryGetValue (cmdEvent.CommandID, out cmdID))
+				appMenuCommands.TryGetValue (cmdEvent.CommandID, out cmdID);
+			return cmdID;
+		}
+		
+		static CarbonHICommand GetCarbonHICommand (IntPtr eventRef)
+		{
+			return Carbon.GetEventParameter<CarbonHICommand> (eventRef, CarbonEventParameterName.DirectObject,
+			                                                  CarbonEventParameterType.HICommand);
+		}
+		
+		static CarbonEventHandlerStatus HandleMenuCommand (IntPtr callRef, IntPtr eventRef, IntPtr userData)
+		{
+			try {
+				object cmdID = GetCommandID (GetCarbonHICommand (eventRef));
+				if (cmdID != null) {
+					//need to return before we execute the command, so that the menu unhighlights
+					Gtk.Application.Invoke (delegate { manager.DispatchCommand (cmdID); });
+					return CarbonEventHandlerStatus.Handled;
 				}
 			} catch (Exception ex) {
-				System.Console.WriteLine(ex);
+				MonoDevelop.Core.LoggingService.LogError ("Unhandled error handling menu command", ex);
 			}
-			return CarbonEventReturn.NotHandled;
+			return CarbonEventHandlerStatus.NotHandled;
 		}
 		
-		static CarbonEventReturn HandleMenuCommandUpdate (IntPtr callRef, IntPtr eventRef, IntPtr userData)
+		static CarbonEventHandlerStatus HandleMenuCommandUpdate (IntPtr callRef, IntPtr eventRef, IntPtr userData)
 		{
 			try {
-				CarbonHICommand cmd = Carbon.GetEventParameter<CarbonHICommand> (eventRef, CarbonEventParameterName.DirectObject, CarbonEventParameterType.HICommand);
-				object cmdID;
-				if (commands.TryGetValue (cmd.CommandID, out cmdID)) {
+				CarbonHICommand cmdEvent = GetCarbonHICommand (eventRef);
+				object cmdID = GetCommandID (cmdEvent);
+				if (cmdID != null) {
 					CommandInfo cinfo = manager.GetCommandInfo (cmdID, null);
-					if (cinfo.Enabled)
-						HIToolbox.EnableMenuItem (cmd.MenuItem);
-					else
-						HIToolbox.DisableMenuItem (cmd.MenuItem);
-				} else {
-					MonoDevelop.Core.LoggingService.LogError ("Command not found for Mac menu {0} {1}", cmd.MenuItem.MenuRef, cmd.MenuItem.Index);
+					SetMenuItemAttributes (cmdEvent.MenuItem, cinfo);
+					return CarbonEventHandlerStatus.Handled;
 				}
 			} catch (Exception ex) {
-				System.Console.WriteLine(ex);
+				MonoDevelop.Core.LoggingService.LogError ("Unhandled error handling menu command update", ex);
 			}
-			return CarbonEventReturn.NotHandled;
+			return CarbonEventHandlerStatus.NotHandled;
 		}
+		
+		#endregion
 		
 		public static void Destroy (bool removeRoot)
 		{
@@ -226,9 +370,10 @@ namespace OSXIntegration
 				HIToolbox.CheckResult (HIToolbox.SetRootMenu (IntPtr.Zero));
 				Carbon.RemoveEventHandler (commandHandlerRef);
 				Carbon.RemoveEventHandler (openingHandlerRef);
+				Carbon.RemoveEventHandler (closedHandlerRef);
 				Carbon.RemoveEventHandler (updateHandlerRef);
 				commandHandlerRef = openingHandlerRef = updateHandlerRef = rootMenu = IntPtr.Zero;
-				cmdSeq = 0;
+				cmdSeq = 1;
 				idSeq = 0;
 			}
 		}

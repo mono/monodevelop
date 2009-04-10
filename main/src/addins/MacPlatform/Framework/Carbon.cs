@@ -30,7 +30,7 @@ using System.Runtime.InteropServices;
 
 namespace OSXIntegration.Framework
 {
-	internal delegate CarbonEventReturn EventDelegate (IntPtr callRef, IntPtr eventRef, IntPtr userData);
+	internal delegate CarbonEventHandlerStatus EventDelegate (IntPtr callRef, IntPtr eventRef, IntPtr userData);
 	
 	internal static class Carbon
 	{
@@ -57,11 +57,11 @@ namespace OSXIntegration.Framework
 		#region Event handler installation
 		
 		[DllImport (CarbonLib)]
-		static extern OSStatus InstallEventHandler (IntPtr target, EventDelegate handler, uint count,
-		                                            CarbonEventTypeSpec [] types, IntPtr user_data, out IntPtr handlerRef);
+		static extern EventStatus InstallEventHandler (IntPtr target, EventDelegate handler, uint count,
+		                                               CarbonEventTypeSpec [] types, IntPtr user_data, out IntPtr handlerRef);
 		
 		[DllImport (CarbonLib)]
-		public static extern OSStatus RemoveEventHandler (IntPtr handlerRef);
+		public static extern EventStatus RemoveEventHandler (IntPtr handlerRef);
 		
 		public static IntPtr InstallEventHandler (IntPtr target, EventDelegate handler, CarbonEventTypeSpec [] types)
 		{
@@ -89,8 +89,8 @@ namespace OSXIntegration.Framework
 		
 		
 		[DllImport (CarbonLib)]
-		public static extern OSStatus GetEventParameter (IntPtr eventRef, CarbonEventParameterName name, CarbonEventParameterType desiredType,
-		                                                 out CarbonEventParameterType actualType, uint size, ref uint outSize, ref IntPtr outPtr);
+		public static extern EventStatus GetEventParameter (IntPtr eventRef, CarbonEventParameterName name, CarbonEventParameterType desiredType,
+		                                                    out CarbonEventParameterType actualType, uint size, ref uint outSize, ref IntPtr outPtr);
 		
 		public static IntPtr GetEventParameter (IntPtr eventRef, CarbonEventParameterName name, CarbonEventParameterType desiredType)
 		{
@@ -102,8 +102,8 @@ namespace OSXIntegration.Framework
 		} 
 		
 		[DllImport (CarbonLib)]
-		static extern OSStatus GetEventParameter (IntPtr eventRef, CarbonEventParameterName name, CarbonEventParameterType desiredType,	
-		                                          out CarbonEventParameterType actualType, uint size, ref uint outSize, IntPtr dataBuffer);
+		static extern EventStatus GetEventParameter (IntPtr eventRef, CarbonEventParameterName name, CarbonEventParameterType desiredType,	
+		                                             out CarbonEventParameterType actualType, uint size, ref uint outSize, IntPtr dataBuffer);
 		  
 		public static T GetEventParameter<T> (IntPtr eventRef, CarbonEventParameterName name, CarbonEventParameterType desiredType) where T : struct
 		{
@@ -117,11 +117,11 @@ namespace OSXIntegration.Framework
 			return val;
 		}                                     
 		
-		public static void CheckReturn (OSStatus status)
+		public static void CheckReturn (EventStatus status)
 		{
 			int intStatus = (int) status;
 			if (intStatus < 0)
-				throw new OSStatusException (status);
+				throw new EventStatusException (status);
 		}
 		
 		internal static int ConvertCharCode (string code)
@@ -140,10 +140,10 @@ namespace OSXIntegration.Framework
 		}
 	}
 	
-	internal enum CarbonEventReturn
+	internal enum CarbonEventHandlerStatus //this is an OSStatus
 	{
-		NotHandled = 0,
-		Handled = -9874,
+		Handled = 0,
+		NotHandled = -9874,
 	}
 	
 	internal enum CarbonEventParameterName : uint
@@ -182,7 +182,7 @@ namespace OSXIntegration.Framework
 		HIObject = 1751740258, // 'hiob'
 	}
 	
-	internal enum CarbonCommandID
+	public enum CarbonCommandID : uint
 	{
 		OK = 1869291552, // 'ok  '
 		Cancel = 1852797985, // 'not!'
@@ -205,28 +205,27 @@ namespace OSXIntegration.Framework
 		Print = 1886547572, // 'prnt'
 		PageSetup = 1885431653, // 'page',
 		AppHelp = 1634233456, //'ahlp'
-	/*	
+		
 		//menu manager handles these automatically
 		
-		Hide                = 'hide',
-		HideOthers          = 'hido',
-		ShowAll             = 'shal',
-		ZoomWindow          = 'zoom',
-		MinimizeWindow      = 'mini',
-		MinimizeAll         = 'mina',
-		MaximizeAll         = 'maxa',
-		ArrangeInFront      = 'frnt',
-		BringAllToFront     = 'bfrt',
-		SelectWindow        = 'swin',
-		RotateWindowsForward = 'rotw',
-		RotateWindowsBackward = 'rotb',
-		RotateFloatingWindowsForward = 'rtfw',
-		RotateFloatingWindowsBackward = 'rtfb',
-		
+		Hide = 1751737445, // 'hide'
+		HideOthers = 1751737455, // 'hido'
+		ShowAll = 1936220524, // 'shal'
+		ZoomWindow = 2054123373, // 'zoom'
+		MinimizeWindow = 1835626089, // 'mini'
+		MinimizeAll = 1835626081, // 'mina'
+		MaximizeAll = 1835104353, // 'maxa'
+		ArrangeInFront = 1718775412, // 'frnt'
+		BringAllToFront = 1650881140, // 'bfrt'
+		SelectWindow = 1937205614, // 'swin'
+		RotateWindowsForward = 1919906935, // 'rotw'
+		RotateWindowsBackward = 1919906914, // 'rotb'
+		RotateFloatingWindowsForward = 1920231031, // 'rtfw'
+		RotateFloatingWindowsBackward = 1920231010, // 'rtfb'
 		
 		//created automatically -- used for inserting before/after the default window list
-		WindowListSeparator = 'wldv',
-		WindowListTerminator = 'wlst',*/
+		WindowListSeparator = 2003592310, // 'wldv'
+		WindowListTerminator = 2003596148, // 'wlst'
 	}
 	
 	internal enum CarbonEventCommand : uint
@@ -246,7 +245,7 @@ namespace OSXIntegration.Framework
 		MatchKey = 7,
 	}
 	
-	[StructLayout(LayoutKind.Sequential)]
+	[StructLayout(LayoutKind.Sequential, Pack = 2)]
 	struct CarbonEventTypeSpec
 	{
 		public CarbonEventClass EventClass;
@@ -277,21 +276,21 @@ namespace OSXIntegration.Framework
 		}
 	}
 	
-	class OSStatusException : SystemException
+	class EventStatusException : SystemException
 	{
-		public OSStatusException (OSStatus status)
+		public EventStatusException (EventStatus status)
 		{
 			StatusCode = status;
 		}
 		
-		public OSStatus StatusCode {
+		public EventStatus StatusCode {
 			get; private set;
 		}
 	}
 	
-	enum OSStatus
+	enum EventStatus // this is an OSStatus
 	{
-		NoErr = 0,
+		Ok = 0,
 		
 		//event manager
 		EventAlreadyPostedErr = -9860,
@@ -347,7 +346,7 @@ namespace OSXIntegration.Framework
 		}
 	}
 	
-	[StructLayout(LayoutKind.Sequential)]
+	[StructLayout(LayoutKind.Sequential, Pack = 2)]
 	struct HIMenuItem
 	{
 		IntPtr menuRef;
