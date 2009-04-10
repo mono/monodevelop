@@ -1,3 +1,8 @@
+2009-04-10  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Made the
+	  'undo' of code completion operations more intelligent.
+
 2009-04-08  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: Track api

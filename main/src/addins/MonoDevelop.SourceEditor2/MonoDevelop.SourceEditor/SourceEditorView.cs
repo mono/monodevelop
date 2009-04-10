@@ -919,8 +919,10 @@ namespace MonoDevelop.SourceEditor
 			int length = String.IsNullOrEmpty (partial_word) ? 0 : partial_word.Length;
 			
 			triggerOffset += TextEditor.GetTextEditorData ().EnsureCaretIsNotVirtual ();
+			this.widget.TextEditor.Document.EndAtomicUndo ();
 			this.widget.TextEditor.Replace (triggerOffset, length, complete_word);
-			this.widget.TextEditor.Caret.Offset = triggerOffset + idx;
+			this.widget.TextEditor.Caret.Offset += complete_word.Length - length;
+			this.widget.TextEditor.Document.BeginAtomicUndo ();
 		}
 		
 		void FireCompletionContextChanged ()
