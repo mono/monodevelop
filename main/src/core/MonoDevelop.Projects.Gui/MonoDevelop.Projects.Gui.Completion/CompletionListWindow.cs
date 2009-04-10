@@ -61,10 +61,19 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 		}
 		
-		public static bool ProcessKeyEvent (Gdk.Key key, Gdk.ModifierType modifier)
+		public static bool PreProcessKeyEvent (Gdk.Key key, Gdk.ModifierType modifier, out KeyAction ka)
 		{
-			if (!wnd.Visible) return false;
-			return wnd.ProcessKeyEvent (key, modifier);
+			if (!wnd.Visible) {
+				ka = KeyAction.None;
+				return false;
+			}
+			return wnd.PreProcessKeyEvent (key, modifier, out ka);
+		}
+		
+		
+		public static void PostProcessKeyEvent (KeyAction ka)
+		{
+			wnd.PostProcessKeyEvent (ka);
 		}
 		
 		public static void HideWindow ()
@@ -103,21 +112,23 @@ namespace MonoDevelop.Projects.Gui.Completion
 			base.OnDestroyed ();
 		}
 
-		public bool ProcessKeyEvent (Gdk.Key key, Gdk.ModifierType modifier)
+		public void PostProcessKeyEvent (KeyAction ka)
 		{
-			ListWindow.KeyAction ka = ProcessKey (key, modifier);
-			
-			if ((ka & ListWindow.KeyAction.CloseWindow) != 0)
-				Hide ();
-				
-			if ((ka & ListWindow.KeyAction.Complete) != 0) {
+			if ((ka & KeyAction.Complete) != 0) 
 				UpdateWord ();
-			}
+		}
+		
+		public bool PreProcessKeyEvent (Gdk.Key key, Gdk.ModifierType modifier, out KeyAction ka)
+		{
+			 ka = ProcessKey (key, modifier);
 			
-			if ((ka & ListWindow.KeyAction.Ignore) != 0)
+			if ((ka & KeyAction.CloseWindow) != 0)
+				Hide ();
+			
+			if ((ka & KeyAction.Ignore) != 0)
 				return true;
 
-			if ((ka & ListWindow.KeyAction.Process) != 0) {
+			if ((ka & KeyAction.Process) != 0) {
 				if (key == Gdk.Key.Left || key == Gdk.Key.Right) {
 					// Close if there's a modifier active EXCEPT lock keys and Modifiers
 					// Makes an exception for Mod1Mask (usually alt), shift and control
@@ -140,7 +151,6 @@ namespace MonoDevelop.Projects.Gui.Completion
 					return true;
 				}
 			}
-
 			return false;
 		}
 		

@@ -33,6 +33,9 @@ using System.Text;
 
 namespace MonoDevelop.Projects.Gui.Completion
 {
+	[Flags]
+	public enum KeyAction { None=0, Process=1, Ignore=2, CloseWindow=4, Complete=8 } 
+
 	internal class ListWindow: Gtk.Window
 	{
 		VScrollbar scrollbar;
@@ -44,9 +47,6 @@ namespace MonoDevelop.Projects.Gui.Completion
 		StringBuilder word;
 		int curPos;
 		
-		[Flags]
-		public enum KeyAction { Process=1, Ignore=2, CloseWindow=4, Complete=8 } 
-
 		public ListWindow (): base (Gtk.WindowType.Popup)
 		{
 			vbox = new VBox ();
