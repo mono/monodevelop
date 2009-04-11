@@ -42,8 +42,8 @@ namespace MonoDevelop.Components.Commands
 		bool useMarkup;
 		bool bypass;
 		bool checkedInconsistent;
-		internal object DataItem; 
-		internal CommandArrayInfo ArrayInfo;
+		public object DataItem; 
+		public CommandArrayInfo ArrayInfo;
 		internal bool IsArraySeparator;
 		internal object UpdateHandlerData;
 		

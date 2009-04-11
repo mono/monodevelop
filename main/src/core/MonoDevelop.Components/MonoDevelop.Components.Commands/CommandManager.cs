@@ -560,7 +560,7 @@ namespace MonoDevelop.Components.Commands
 			return false;
 		}
 		
-	 public CommandInfo GetCommandInfo (object commandId, object initialTarget)
+		public CommandInfo GetCommandInfo (object commandId, object initialTarget)
 		{
 			ActionCommand cmd = GetActionCommand (commandId);
 			if (cmd == null)
