@@ -39,19 +39,41 @@ namespace OSXIntegration
 	public static class OSXMenu
 	{
 		static IntPtr rootMenu;
+		static IntPtr appMenu;
 		
-		static IntPtr openingHandlerRef, updateHandlerRef, commandHandlerRef, closedHandlerRef;
+		static IntPtr openingHandlerRef, commandHandlerRef, closedHandlerRef;
 		
 		static CommandManager manager;
 		
 		static uint cmdSeq = 1; //reserve 0, since it gets used by submenus' parent items
 		static ushort idSeq;
 		
+		static HashSet<IntPtr> mainMenus = new HashSet<IntPtr> ();
 		static Dictionary<uint,object> commands = new Dictionary<uint,object> ();
 		static Dictionary<object,CarbonCommandID> cmdIdMap = new Dictionary<object, CarbonCommandID> ();
-		static Dictionary<IntPtr,string> menus = new Dictionary<IntPtr,string> ();
+		
+		static List<object> objectsToDestroyOnMenuClose = new List<object> ();
+		static int menuOpenDepth = 0;
 		
 		static Gdk.Keymap keymap = Gdk.Keymap.Default;
+		
+		private class DestructableMenu
+		{
+			public DestructableMenu (IntPtr ptr)
+			{
+				Ref = ptr;
+			}
+			
+			public void Destroy ()
+			{
+				if (Ref != IntPtr.Zero) {
+					HIToolbox.DeleteMenu (Ref);
+					CoreFoundation.Release (Ref);
+					Ref = IntPtr.Zero;
+				}
+			}
+			IntPtr Ref;
+		}
 		
 		static string GetName (CommandEntrySet ces)
 		{
@@ -89,7 +111,6 @@ namespace OSXIntegration
 			openingHandlerRef = Carbon.InstallApplicationEventHandler (HandleMenuOpening, CarbonEventMenu.Opening);
 			closedHandlerRef = Carbon.InstallApplicationEventHandler (HandleMenuClosed, CarbonEventMenu.Closed);
 			commandHandlerRef = Carbon.InstallApplicationEventHandler (HandleMenuCommand, CarbonEventCommand.Process);
-			updateHandlerRef = Carbon.InstallApplicationEventHandler (HandleMenuCommandUpdate, CarbonEventCommand.UpdateStatus);
 		}
 
 		static void CreateChildren (IntPtr parentMenu, CommandEntrySet entrySet, HashSet<object> ignoreCommands) 
@@ -133,7 +154,7 @@ namespace OSXIntegration
 					}
 				} else {
 					IntPtr menuRef = HIToolbox.CreateMenu (idSeq++, GetName (ces), MenuAttributes.CondenseSeparators);
-					menus [menuRef] = GetName (ces);
+					mainMenus.Add (menuRef);
 					CreateChildren (menuRef, ces, ignoreCommands);
 					ushort pos = HIToolbox.AppendMenuItem (parentMenu, GetName (ces), 0, 0);
 					HIToolbox.CheckResult (HIToolbox.SetMenuItemHierarchicalMenu (parentMenu, pos, menuRef));
@@ -207,7 +228,7 @@ namespace OSXIntegration
 			return macCmdId;
 		}
 		
-		static void SetMenuItemAttributes (HIMenuItem item, CommandInfo ci)
+		static void SetMenuItemAttributes (HIMenuItem item, CommandInfo ci, uint refcon)
 		{
 			MenuItemData data = new MenuItemData ();
 			IntPtr text = IntPtr.Zero;
@@ -231,8 +252,16 @@ namespace OSXIntegration
 						data.Attributes |= MenuItemAttributes.UseVirtualKey;
 						data.CommandVirtualKey = key;
 					}
+					
+					data.Mark = ci.Checked
+						? ci.CheckedInconsistent
+							? '-' //FIXME: is this a good symbol for CheckedInconsistent?
+							: (char)MenuGlyphs.Checkmark
+						: '\0';
+					
+					data.ReferenceConstant = refcon;
 				}
-				HIToolbox.SetMenuItemData (item.MenuRef, item.Index, false, data);
+				HIToolbox.SetMenuItemData (item.MenuRef, item.Index, false, ref data);
 			} finally {
 				if (text != IntPtr.Zero)
 					CoreFoundation.Release (text);
@@ -260,6 +289,7 @@ namespace OSXIntegration
 			//FIXME: we assume we get first pick of cmdIDs
 			
 			HIMenuItem mnu = HIToolbox.GetMenuItem ((uint)CarbonCommandID.Hide);
+			appMenu = mnu.MenuRef;
 			for (int i = cmdIds.Length - 1; i >= 0; i--) {
 				object cmdId = cmdIds[i];
 				if (cmdId == Command.Separator) {
@@ -283,16 +313,31 @@ namespace OSXIntegration
 		
 		#region Event handlers
 		
+		//updates commands and populates arrays and dynamic menus
 		static CarbonEventHandlerStatus HandleMenuOpening (IntPtr callRef, IntPtr eventRef, IntPtr user_data)
 		{
+			DestroyOldMenuObjects ();
+			menuOpenDepth++;
 			try {
 				IntPtr menuRef = Carbon.GetEventParameter (eventRef, CarbonEventParameterName.DirectObject, CarbonEventParameterType.MenuRef);
+				
+				//don't update dynamic menus recursively
+				if (!mainMenus.Contains (menuRef) && menuRef != appMenu)
+					return CarbonEventHandlerStatus.NotHandled;
+				
 			//	uint cmd = HIToolbox.GetMenuItemCommandID (new HIMenuItem (menuRef, 0));
-				string name;
-				if (menus.TryGetValue (menuRef, out name))
-					Console.WriteLine ("Menu opened: {0}", name);
-				else
-					System.Console.WriteLine ("Menu not found");
+				
+				ushort count = HIToolbox.CountMenuItems (menuRef);
+				for (ushort i = 1; i <= count; i++) {
+					HIMenuItem mi = new HIMenuItem (menuRef, i);
+					uint macCmdID = HIToolbox.GetMenuItemCommandID (mi);
+					object cmdID;
+					if (!commands.TryGetValue (macCmdID, out cmdID) || cmdID == null)
+						continue;
+					
+					CommandInfo cinfo = manager.GetCommandInfo (cmdID, null);
+					UpdateMenuItem (menuRef, menuRef, ref i, ref count, macCmdID, cinfo);
+				}
 			} catch (Exception ex) {
 				System.Console.WriteLine (ex);
 			}
@@ -300,21 +345,75 @@ namespace OSXIntegration
 			return CarbonEventHandlerStatus.NotHandled;
 		}
 		
+		static void BuildDynamicSubMenu (IntPtr rootMenu, IntPtr parentMenu, ushort index, uint macCmdID, CommandInfoSet cinfoSet)
+		{
+			IntPtr menuRef = HIToolbox.CreateMenu (idSeq++, GetCleanCommandText (cinfoSet), MenuAttributes.CondenseSeparators);
+			objectsToDestroyOnMenuClose.Add (new DestructableMenu (menuRef));
+			HIToolbox.CheckResult (HIToolbox.SetMenuItemHierarchicalMenu (parentMenu, index, menuRef));
+			
+			ushort count = (ushort) cinfoSet.CommandInfos.Count;
+			for (ushort i = 1, j = 0; i <= count; i++) {
+				CommandInfo ci = cinfoSet.CommandInfos[j++];
+				HIToolbox.AppendMenuItem (menuRef, ci.Text, 0, macCmdID);
+				UpdateMenuItem (rootMenu, menuRef, ref i, ref count, macCmdID, ci);
+			}
+		}
+		
+		static void UpdateMenuItem (IntPtr rootMenu, IntPtr menuRef, ref ushort index, ref ushort count,
+		                            uint macCmdID, CommandInfo cinfo)
+		{
+			if (cinfo.ArrayInfo != null) {
+				//remove the existing items
+				do {
+					HIToolbox.DeleteMenuItem (menuRef, index);
+					count--;
+				} while (index <= count && HIToolbox.GetMenuItemCommandID (new HIMenuItem (menuRef, index)) == macCmdID);
+				index--;
+				
+				//add the new items
+				foreach (CommandInfo ci in cinfo.ArrayInfo) {
+					count++;
+					HIToolbox.InsertMenuItem (menuRef, ci.Text, index++, 0, macCmdID);
+					
+					//associate a reference constant with the menu, used to index the DataItem
+					//it's one-based, so that 0 can be used as a flag that there's no associated object
+					objectsToDestroyOnMenuClose.Add (ci.DataItem);
+					uint refcon = (uint)objectsToDestroyOnMenuClose.Count;
+					
+					SetMenuItemAttributes (new HIMenuItem (menuRef, index), ci, refcon);
+					if (ci is CommandInfoSet)
+						BuildDynamicSubMenu (rootMenu, menuRef, index, macCmdID, (CommandInfoSet)ci);
+				}
+			} else {
+				SetMenuItemAttributes (new HIMenuItem (menuRef, index), cinfo, 0);
+				if (cinfo is CommandInfoSet)
+					BuildDynamicSubMenu (rootMenu, menuRef, index, macCmdID, (CommandInfoSet)cinfo);
+			}
+		}
+		
+		//this releases resources and gc-prevention handles from dynamic menu creation
 		static CarbonEventHandlerStatus HandleMenuClosed (IntPtr callRef, IntPtr eventRef, IntPtr user_data)
 		{
-			try {
-				IntPtr menuRef = Carbon.GetEventParameter (eventRef, CarbonEventParameterName.DirectObject, CarbonEventParameterType.MenuRef);
-			//	uint cmd = HIToolbox.GetMenuItemCommandID (new HIMenuItem (menuRef, 0));
-				string name;
-				if (menus.TryGetValue (menuRef, out name))
-					Console.WriteLine ("Menu closed: {0}", name);
-				else
-					System.Console.WriteLine ("Menu not found");
-			} catch (Exception ex) {
-				System.Console.WriteLine (ex);
-			}
-			
+			menuOpenDepth--;
+			//we can't destroy the menu objects here, since the command handler is invoked later
+			//FIXME: maybe we can get the close reason, and handle the command here?
 			return CarbonEventHandlerStatus.NotHandled;
+		}
+		
+		static void DestroyOldMenuObjects ()
+		{
+			if (menuOpenDepth > 0)
+				return;
+			System.Console.WriteLine("Releasing {0} old menu objects", objectsToDestroyOnMenuClose.Count);
+			foreach (object o in objectsToDestroyOnMenuClose) {
+				if (o is DestructableMenu)
+					try {
+						((DestructableMenu)o).Destroy ();
+					} catch (Exception ex) {
+						MonoDevelop.Core.LoggingService.LogError ("Unhandled exception while destroying old menu objects", ex);
+					}
+			}
+			objectsToDestroyOnMenuClose.Clear ();
 		}
 		
 		static object GetCommandID (CarbonHICommand cmdEvent)
@@ -333,10 +432,19 @@ namespace OSXIntegration
 		static CarbonEventHandlerStatus HandleMenuCommand (IntPtr callRef, IntPtr eventRef, IntPtr userData)
 		{
 			try {
-				object cmdID = GetCommandID (GetCarbonHICommand (eventRef));
+				CarbonHICommand hiCmd = GetCarbonHICommand (eventRef);
+				uint refCon = HIToolbox.GetMenuItemReferenceConstant (hiCmd.MenuItem);
+				object cmdID = GetCommandID (hiCmd);
+				System.Console.WriteLine("Running {0}", cmdID);
 				if (cmdID != null) {
-					//need to return before we execute the command, so that the menu unhighlights
-					Gtk.Application.Invoke (delegate { manager.DispatchCommand (cmdID); });
+					if (refCon > 0) {
+						object data = objectsToDestroyOnMenuClose[(int)refCon - 1];
+						//need to return before we execute the command, so that the menu unhighlights
+						Gtk.Application.Invoke (delegate { manager.DispatchCommand (cmdID, data); });
+					} else {
+						Gtk.Application.Invoke (delegate { manager.DispatchCommand (cmdID); });
+					}
+					DestroyOldMenuObjects ();
 					return CarbonEventHandlerStatus.Handled;
 				}
 			} catch (Exception ex) {
@@ -345,30 +453,16 @@ namespace OSXIntegration
 			return CarbonEventHandlerStatus.NotHandled;
 		}
 		
-		static CarbonEventHandlerStatus HandleMenuCommandUpdate (IntPtr callRef, IntPtr eventRef, IntPtr userData)
-		{
-			try {
-				CarbonHICommand cmdEvent = GetCarbonHICommand (eventRef);
-				object cmdID = GetCommandID (cmdEvent);
-				if (cmdID != null) {
-					CommandInfo cinfo = manager.GetCommandInfo (cmdID, null);
-					SetMenuItemAttributes (cmdEvent.MenuItem, cinfo);
-					return CarbonEventHandlerStatus.Handled;
-				}
-			} catch (Exception ex) {
-				MonoDevelop.Core.LoggingService.LogError ("Unhandled error handling menu command update", ex);
-			}
-			return CarbonEventHandlerStatus.NotHandled;
-		}
-		
 		#endregion
 		
 		public static void Destroy (bool removeRoot)
 		{
-			if (commands.Count > 0 || menus.Count > 0) {
-				foreach (IntPtr menu in menus.Keys)
-					CoreFoundation.Release (menu);
-				menus.Clear ();
+			if (mainMenus.Count > 0) {
+				foreach (IntPtr ptr in mainMenus) {
+					HIToolbox.DeleteMenu (ptr);
+					CoreFoundation.Release (ptr);
+				}
+				mainMenus.Clear ();
 				idSeq = 1;
 			}
 			
@@ -381,8 +475,7 @@ namespace OSXIntegration
 				Carbon.RemoveEventHandler (commandHandlerRef);
 				Carbon.RemoveEventHandler (openingHandlerRef);
 				Carbon.RemoveEventHandler (closedHandlerRef);
-				Carbon.RemoveEventHandler (updateHandlerRef);
-				commandHandlerRef = openingHandlerRef = updateHandlerRef = rootMenu = IntPtr.Zero;
+				commandHandlerRef = openingHandlerRef = rootMenu = IntPtr.Zero;
 				idSeq = 0;
 			}
 		}

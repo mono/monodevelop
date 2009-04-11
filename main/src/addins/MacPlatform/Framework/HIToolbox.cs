@@ -56,6 +56,12 @@ namespace OSXIntegration.Framework
 		internal static extern void ClearMenuBar ();
 		
 		[DllImport (hiToolboxLib)]
+		internal static extern ushort CountMenuItems (IntPtr menuRef);
+		
+		[DllImport (hiToolboxLib)]
+		internal static extern void DeleteMenuItem (IntPtr menuRef, ushort index);
+		
+		[DllImport (hiToolboxLib)]
 		internal static extern void InsertMenu (IntPtr menuRef, ushort before_id);
 		
 		[DllImport (hiToolboxLib)]
@@ -167,20 +173,24 @@ namespace OSXIntegration.Framework
 		public static extern CarbonMenuStatus CancelMenuTracking (IntPtr rootMenu, bool inImmediate, MenuDismissalReason reason);
 		
 		[DllImport (hiToolboxLib)]
-		static extern CarbonMenuStatus SetMenuItemData (IntPtr menu, uint indexOrCommandID, bool isCommandID, IntPtr dataPtr);
+		public static extern CarbonMenuStatus SetMenuItemData (IntPtr menu, uint indexOrCommandID, bool isCommandID, ref MenuItemData data);
 		
-		public static void SetMenuItemData (IntPtr menu, uint indexOrCommandID, bool isCommandID, MenuItemData data)
+		[DllImport (hiToolboxLib)]
+		static extern CarbonMenuStatus SetMenuItemRefCon (IntPtr menuRef, ushort index, uint inRefCon);
+		
+		public static void SetMenuItemReferenceConstant (HIMenuItem item, uint value)
 		{
-			int len = Marshal.SizeOf (typeof (MenuItemData));
-			IntPtr bufferPtr = IntPtr.Zero;
-			try {
-				bufferPtr = Marshal.AllocHGlobal (len);
-				Marshal.StructureToPtr (data, bufferPtr, false);
-				CheckResult (SetMenuItemData (menu, indexOrCommandID, isCommandID, bufferPtr));
-			} finally {
-				if (bufferPtr != IntPtr.Zero)
-					Marshal.FreeHGlobal (bufferPtr);
-			}
+			CheckResult (SetMenuItemRefCon (item.MenuRef, item.Index, value));
+		}
+		
+		[DllImport (hiToolboxLib)]
+		static extern CarbonMenuStatus GetMenuItemRefCon (IntPtr menuRef, ushort index, out uint inRefCon);
+		
+		public static uint GetMenuItemReferenceConstant (HIMenuItem item)
+		{
+			uint val;
+			CheckResult (GetMenuItemRefCon (item.MenuRef, item.Index, out val));
+			return val;
 		}
 		
 		internal static void CheckResult (CarbonMenuStatus result)
@@ -432,7 +442,7 @@ namespace OSXIntegration.Framework
 			}
 		}
 		
-		public uint Refcon {
+		public uint ReferenceConstant {
 			get { return refcon; }
 			set {
 				whichData |= MenuItemDataFlags.Refcon;
@@ -616,4 +626,67 @@ namespace OSXIntegration.Framework
 		AllDataVersionOne = 0x000FFFFF,
 		AllDataVersionTwo = AllDataVersionOne | CmdVirtualKey,
 	}
+	
+	enum MenuGlyphs : byte //char
+	{
+		None = 0x00,
+		TabRight = 0x02,
+		TabLeft = 0x03,
+		Enter = 0x04,
+		Shift = 0x05,
+		Control = 0x06,
+		Option = 0x07,
+		Space = 0x09,
+		DeleteRight = 0x0A,
+		Return = 0x0B,
+		ReturnR2L = 0x0C,
+		NonmarkingReturn = 0x0D,
+		Pencil = 0x0F,
+		DownwardArrowDashed = 0x10,
+		Command = 0x11,
+		Checkmark = 0x12,
+		Diamond = 0x13,
+		AppleLogoFilled = 0x14,
+		ParagraphKorean = 0x15,
+		DeleteLeft = 0x17,
+		LeftArrowDashed = 0x18,
+		UpArrowDashed = 0x19,
+		RightArrowDashed = 0x1A,
+		Escape = 0x1B,
+		Clear = 0x1C,
+		LeftDoubleQuotesJapanese = 0x1D,
+		RightDoubleQuotesJapanese = 0x1E,
+		TrademarkJapanese = 0x1F,
+		Blank = 0x61,
+		PageUp = 0x62,
+		CapsLock = 0x63,
+		LeftArrow = 0x64,
+		RightArrow = 0x65,
+		NorthwestArrow = 0x66,
+		Help = 0x67,
+		UpArrow = 0x68,
+		SoutheastArrow = 0x69,
+		DownArrow = 0x6A,
+		PageDown = 0x6B,
+		AppleLogoOutline = 0x6C,
+		ContextualMenu = 0x6D,
+		Power = 0x6E,
+		F1 = 0x6F,
+		F2 = 0x70,
+		F3 = 0x71,
+		F4 = 0x72,
+		F5 = 0x73,
+		F6 = 0x74,
+		F7 = 0x75,
+		F8 = 0x76,
+		F9 = 0x77,
+		F10 = 0x78,
+		F11 = 0x79,
+		F12 = 0x7A,
+		F13 = 0x87,
+		F14 = 0x88,
+		F15 = 0x89,
+		ControlISO = 0x8A,
+		Eject = 0x8C
+	};
 }

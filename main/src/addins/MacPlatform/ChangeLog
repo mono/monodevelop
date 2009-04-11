@@ -1,5 +1,12 @@
 2009-04-10  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Menus/OSXMenu.cs: Implement support for array commands and
+	  dynamically populated submenus.
+
+	* Framework/HIToolbox.cs: More P/Invokes and enums.
+
+2009-04-10  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Menus/OSXMenu.cs: Keep commands ID mappings around
 	  permanently, so that recreation is cleaner. Fixes app menu
 	  commands after recreation.
