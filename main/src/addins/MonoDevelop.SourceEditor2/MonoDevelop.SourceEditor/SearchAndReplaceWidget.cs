@@ -80,6 +80,12 @@ namespace MonoDevelop.SourceEditor
 			get { return entrySearch.Entry.Text; }
 			set { entrySearch.Entry.Text = value; }
 		}
+		
+		public bool SearchFocused {
+			get {
+				return entrySearch.Entry.HasFocus;
+			}
+		}
 
 		public SearchAndReplaceWidget (SourceEditorWidget widget)
 		{

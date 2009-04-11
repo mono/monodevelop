@@ -920,6 +920,13 @@ namespace MonoDevelop.SourceEditor
 				ResetFocusChain ();
 			}
 			searchAndReplaceWidget.IsReplaceMode = replace;
+			if (searchAndReplaceWidget.SearchFocused) {
+				if (replace) {
+					this.Replace ();
+				} else {
+					this.FindNext ();
+				}
+			}
 			searchAndReplaceWidget.Focus ();
 		}
 		
