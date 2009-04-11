@@ -19,13 +19,22 @@ fi
 AC_SUBST(PATH)
 AC_SUBST(LD_LIBRARY_PATH)
 
+default_gnomeplatform=no
+default_windowsplatform=no
+default_macplatform=no
+
+case `uname` in
+    Darwin) default_macplatform=yes ;;
+    CYGWIN*) default_windowsplatform=yes ;;
+    *) default_gnomeplatform=yes ;;
+esac
+
 dnl Add MD's mimetypes to mime and desktop databases
 AC_ARG_ENABLE(update-mimedb,
    AC_HELP_STRING([--disable-update-mimedb],
                    [disable the update-mime-database after install [default=no]]),,
-    enable_update_mimedb=yes)
+    enable_update_mimedb=$default_gnomeplatform)
  AM_CONDITIONAL(ENABLE_UPDATE_MIMEDB, test x$enable_update_mimedb = xyes)
-
 if test "x$enable_update_mimedb" = "xyes"; then
   AC_PATH_PROG(UPDATE_MIME_DB, update-mime-database, no)
   if test "x$UPDATE_MIME_DB" = "xno"; then
@@ -37,7 +46,7 @@ AC_SUBST(UPDATE_MIME_DB)
 AC_ARG_ENABLE(update-desktopdb,
    AC_HELP_STRING([--disable-update-desktopdb],
                   [disable the update-desktop-database after install [default=no]]),,
-                  enable_update_desktopdb=yes)
+                  enable_update_desktopdb=default_gnomeplatform)
    AM_CONDITIONAL(ENABLE_UPDATE_DESKTOPDB, test x$enable_update_desktopdb = xyes)
 
 if test "x$enable_update_desktopdb" = "xyes"; then
@@ -169,8 +178,8 @@ platform_bindings=""
 # Gnome platform addin
 AC_ARG_ENABLE(gnomeplatform,
 	AC_HELP_STRING([--enable-gnomeplatform],
-		[enable Gnome platform support [default=yes]]),
-		enable_gnomeplatform=${enableval}, enable_gnomeplatform=yes)
+		[enable Gnome platform support [default=autodetect]]),
+		enable_gnomeplatform=${enableval}, enable_gnomeplatform=$default_gnomeplatform)
 
 if test x$enable_gnomeplatform = xyes; then
 	if test x$gnome_sharp = xno; then
@@ -190,8 +199,8 @@ AM_CONDITIONAL(ENABLE_GNOMEPLATFORM, [test x$enable_gnomeplatform = xyes])
 # Mac platform addin
 AC_ARG_ENABLE(macplatform,
 	AC_HELP_STRING([--enable-macplatform],
-		[enable Mac platform support [default=no]]),
-		enable_macplatform=${enableval}, enable_macplatform=no)
+		[enable Mac platform support [default=autodetect]]),
+		enable_macplatform=${enableval}, enable_macplatform=$default_macplatform)
 
 if test x$enable_macplatform = xyes; then
 	platform_bindings="${platform_bindings}Mac "

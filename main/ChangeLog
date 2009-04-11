@@ -1,3 +1,8 @@
+2009-04-11  Miguel de Icaza  <miguel@novell.com>
+
+	* configure.in: Make autoconf actually autoconfigure MonoDevelop
+	as opposed to requiring a litany of --enable and --disable junk.
+
 2009-03-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AUTHORS: Add missing mike.
