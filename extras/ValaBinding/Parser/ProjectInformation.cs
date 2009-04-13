@@ -92,9 +92,9 @@ namespace MonoDevelop.ValaBinding.Parser
 
 		private void RestartParser ()
 		{
-			// Don't restart more often than once/second
+			// Don't restart more often than once/five seconds
 			lock (lockme) {
-				if (0 > DateTime.Now.AddSeconds (-1).CompareTo (lastRestarted)){ return; }
+				if (0 > DateTime.Now.AddSeconds (-5).CompareTo (lastRestarted)){ return; }
 				lastRestarted = DateTime.Now;
 			}
             
@@ -109,7 +109,8 @@ namespace MonoDevelop.ValaBinding.Parser
 				}
 			}
 			
-			cache = new Dictionary<string,List<CodeNode>> ();
+			// Don't destroy old cached results
+			// cache = new Dictionary<string,List<CodeNode>> ();
 			
 			if (DepsInstalled) {
 				p = Runtime.ProcessService.StartProcess ("vsc-shell", string.Empty, ".", (ProcessEventHandler)null, null, null, true);
@@ -198,7 +199,8 @@ namespace MonoDevelop.ValaBinding.Parser
 			files = new HashSet<string> ();
 			packages = new HashSet<string> ();
 			methods = new Dictionary<string,List<Function>> ();
-			lastRestarted = DateTime.Now.AddSeconds(-1);
+			cache = new Dictionary<string, List<CodeNode>> ();
+			lastRestarted = DateTime.Now.AddSeconds(-6);
 			RestartParser ();
 		}
 
@@ -305,7 +307,10 @@ namespace MonoDevelop.ValaBinding.Parser
 		/// </summary>
 		public void AddFile (string filename)
 		{
-			lock (files){ files.Add (filename); }
+			lock (files) {
+				if (files.Contains (filename)){ return; }
+				files.Add (filename);
+			}
 			ParseCommand ("add-source {0}", filename);
 		}// AddFile
 
@@ -314,7 +319,7 @@ namespace MonoDevelop.ValaBinding.Parser
 		/// </summary>
 		public void RemoveFile (string filename)
 		{
-			lock (files){ files.Remove (filename); }
+			lock (files) { files.Remove (filename); }
 			ParseCommand ("remove-source {0}", filename);
 		}// RemoveFile
 
@@ -323,7 +328,10 @@ namespace MonoDevelop.ValaBinding.Parser
 		/// </summary>
 		public void AddPackage (string packagename)
 		{
-			lock (packages){ packages.Add (packagename); }
+			lock (packages) { 
+				if (packages.Contains (packagename)){ return; }
+				packages.Add (packagename);
+			}
 			ParseCommand ("add-package {0}", packagename);
 		}// AddPackage
 
@@ -468,7 +476,7 @@ namespace MonoDevelop.ValaBinding.Parser
 			});
 		}// GetSymbolsVisibleFrom
 		
-		private static Regex completionRegex = new Regex (@"^\s*vsc-shell - (?<type>[^:]+):(?<name>[^\s:]+)(:(?<modifier>[^;]*);(?<static>[^:]*))?(:(?<returntype>[^;]*);(?<ownership>[^:]*))?(:(?<args>[^:]*);)?((?<file>[^:]*):(?<first_line>\d+);(?<last_line>\d+);)?", RegexOptions.Compiled);
+		private static Regex completionRegex = new Regex (@"^\s*vsc-shell - (?<type>[^:]+):(?<name>[^\s:]+)(:(?<modifier>[^;]*);(?<static>[^:]*))?(:(?<returntype>[^;]*);(?<ownership>[^:]*))?(:(?<args>[^:]*);)?((?<file>[^:]*):(?<first_line>\d+);((?<last_line>\d+);)?)?", RegexOptions.Compiled);
 		/// <summary>
 		/// Parse out a CodeNode from a vsc-shell description string
 		/// </summary>
@@ -484,7 +492,7 @@ namespace MonoDevelop.ValaBinding.Parser
 				string baseTypeName = argtokens[argtokens.Length-1];
 				string file = match.Groups["file"].Success? match.Groups["file"].Value: string.Empty;
 				int first_line = match.Groups["first_line"].Success? int.Parse(match.Groups["first_line"].Value): 0;
-				int last_line = match.Groups["last_line"].Success? int.Parse(match.Groups["last_line"].Value): 0;
+				int last_line = match.Groups["last_line"].Success? int.Parse(match.Groups["last_line"].Value): first_line;
 				
 				switch (match.Groups["modifier"].Value) {
 				case "private":

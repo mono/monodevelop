@@ -1,3 +1,7 @@
+2009-04-13  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* Parser/ProjectInformation.cs: Parser adjustments.
+
 2009-04-10  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* Parser/ProjectInformation.cs: Handle it more gracefully 
