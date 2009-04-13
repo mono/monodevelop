@@ -444,7 +444,7 @@ namespace Mono.TextEditor.Highlighting
 				
 				inWord = isWordPart;
 				
-				if (CurRule.HasMatches) {
+				if (CurRule.HasMatches && i - curChunk.Offset == 0) {
 					Match foundMatch = null;
 					int   foundMatchLength = 0;
 					foreach (Match ruleMatch in CurRule.Matches) {

@@ -1,3 +1,8 @@
+2009-04-13  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor.Highlighting/SyntaxMode.cs: fixed little
+	  issue with regex match highlighting.
+
 2009-04-09  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor.Highlighting/Rule.cs:
