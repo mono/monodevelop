@@ -30,6 +30,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 
 using Mono.Addins;
 
@@ -92,9 +93,14 @@ namespace MonoDevelop.ValaBinding.Navigation
 			bool publicOnly = treeBuilder.Options["PublicApiOnly"];
 			CodeNode thisCodeNode = (CodeNode)dataObject;
 
-			foreach (CodeNode child in info.GetChildren (thisCodeNode)) {
-				treeBuilder.AddChild (child);
-			}
+			ThreadPool.QueueUserWorkItem (delegate (object o) {
+				foreach (CodeNode child in info.GetChildren (thisCodeNode)) {
+					CodeNode clone = child.Clone ();
+					Gtk.Application.Invoke (delegate (object ob, EventArgs ea) {
+						treeBuilder.AddChild (clone);
+					});
+				}
+			});
 		}
 
 		/// <summary>

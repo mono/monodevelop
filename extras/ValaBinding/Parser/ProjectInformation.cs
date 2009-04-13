@@ -144,12 +144,13 @@ namespace MonoDevelop.ValaBinding.Parser
 			
 			p.OutputDataReceived += gotdata;
 
-			for (int i=0; i<100; ++i) {
+			// for (int i=0; i<100; ++i) {
+			for (;;) {
 				p.BeginOutputReadLine ();
 				Thread.Sleep (50);
 				p.CancelOutputRead ();
 				lock (result) {
-					if (count < result.Count){ i = 0; }
+					// if (count < result.Count){ i = 0; }
 					if (0 < result.Count && endOutputRegex.Match(result[result.Count-1]).Success) {
 						break;
 					}
@@ -391,20 +392,24 @@ namespace MonoDevelop.ValaBinding.Parser
 		{
 			string[] tokens = typename.Split ('.');
 			string baseTypeName = tokens[tokens.Length-1];
+			List<Function> constructors = new List<Function> ();
 			
-			List<Function> constructors = CacheCompleteType (typename, filename, line, column, null).FindAll (delegate (CodeNode node){ 
-				return ("method" == node.NodeType && 
-				        (baseTypeName == node.Name || node.Name.StartsWith (baseTypeName + ".")));
-			}).ConvertAll<Function> (delegate (CodeNode node){ 
-				if (null != results) {
-					CompletionData datum = new CompletionData (node);
-					Gtk.Application.Invoke (delegate (object sender, EventArgs args){
-						results.Add (datum);
-						results.IsChanging = true;
-					});
-				}
-				return node as Function; 
-			});
+			if (cache.ContainsKey (typename)) {
+				constructors = cache[typename].FindAll (delegate (CodeNode node){ 
+					return ("method" == node.NodeType && 
+					    (baseTypeName == node.Name || node.Name.StartsWith (baseTypeName + ".")));
+				}).ConvertAll<Function> (delegate (CodeNode node){ 
+					if (null != results) {
+						CompletionData datum = new CompletionData (node);
+						Gtk.Application.Invoke (delegate (object sender, EventArgs args){
+							results.Add (datum);
+							results.IsChanging = true;
+						});
+					}
+					return node as Function; 
+				});
+			}
+			ThreadPool.QueueUserWorkItem (delegate (object o){ CacheCompleteType (typename, filename, line, column, null); });
 			
 			if (null != results) {
 				Gtk.Application.Invoke (delegate (object sender, EventArgs args){

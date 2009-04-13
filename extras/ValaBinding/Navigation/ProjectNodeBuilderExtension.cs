@@ -77,17 +77,19 @@ namespace MonoDevelop.ValaBinding.Navigation
 			if (o == null) return;
 			ProjectInformation pi = ProjectInformationManager.Instance.Get (p);
 			
-			try {
-				foreach (ProjectFile f in p.Files) {
-					if (f.BuildAction == BuildAction.Compile)
-						pi.AddFile (f.FilePath);
+			ThreadPool.QueueUserWorkItem (delegate (object ob) {
+				try {
+					foreach (ProjectFile f in p.Files) {
+						if (f.BuildAction == BuildAction.Compile)
+							pi.AddFile (f.FilePath);
+					}
+					foreach (ProjectPackage package in p.Packages) {
+						if(!package.IsProject){ pi.AddPackage (p.Name); }
+					}
+				} catch (IOException) {
+					return;
 				}
-				foreach (ProjectPackage package in p.Packages) {
-					if(!package.IsProject){ pi.AddPackage (p.Name); }
-				}
-			} catch (IOException) {
-				return;
-			}
+			});
 		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder,
@@ -109,9 +111,14 @@ namespace MonoDevelop.ValaBinding.Navigation
 			ProjectInformation info = ProjectInformationManager.Instance.Get (p);
 			
 			// Namespaces
-			foreach (CodeNode node in info.GetChildren (null)) {
-				builder.AddChild (node);
-			}
+			ThreadPool.QueueUserWorkItem (delegate (object o) {
+				foreach (CodeNode child in info.GetChildren (null)) {
+					CodeNode clone = child.Clone ();
+					Gtk.Application.Invoke (delegate (object ob, EventArgs ea) {
+						builder.AddChild (clone);
+					});
+				}
+			});
 		}
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)

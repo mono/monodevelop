@@ -41,7 +41,7 @@ namespace MonoDevelop.ValaBinding.Parser
 	public class Function: CodeNode
 	{
 		public string ReturnType{ get; protected set; }
-		public KeyValuePair<string,string>[] Parameters{ get; protected set; }
+		public KeyValuePair<string,string>[] Parameters{ get; set; }
 		
 		public override string Description {
 			get {
@@ -62,6 +62,16 @@ namespace MonoDevelop.ValaBinding.Parser
 		{
 			ReturnType = returnType;
 			Parameters = parameters;
+		}
+		
+		public override CodeNode Clone ()
+		{
+			Function clone = new Function (NodeType, Name, string.Empty, File, FirstLine, LastLine, Access, ReturnType, null);
+			clone.FullName = FullName;
+			KeyValuePair<string,string>[] parameters = new KeyValuePair<string, string>[Parameters.Length];
+			Parameters.CopyTo (parameters, 0);
+			clone.Parameters = parameters;
+			return clone;
 		}
 	}
 }

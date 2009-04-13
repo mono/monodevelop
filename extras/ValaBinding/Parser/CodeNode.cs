@@ -124,6 +124,16 @@ namespace MonoDevelop.ValaBinding.Parser
 		{
 			Access = access;
 		}
+		
+		/// <summary>
+		/// Clone the current CodeNode
+		/// </summary>
+		public virtual CodeNode Clone ()
+		{
+			CodeNode clone = new CodeNode (NodeType, Name, string.Empty, File, FirstLine, LastLine, Access);
+			clone.FullName = FullName;
+			return clone;
+		}
 
 		public static string GetIconForType (string nodeType, AccessModifier visibility)
 		{
