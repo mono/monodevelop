@@ -407,7 +407,6 @@ namespace Mono.TextEditor.Highlighting
 				curChunk.Offset = offset;
 				curChunk.Length = match.Length;
 				curChunk.Style  = GetChunkStyle (span);
-				Console.WriteLine ("style:" + curChunk.Style);
 				AddChunk (ref curChunk, 0, curChunk.Style);
 				/*
 				curChunk.Length = offset - curChunk.Offset;
