@@ -1,5 +1,10 @@
 2009-04-14  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: changed
+	  default value for "CompleteWithSpaceOrPunctuation".
+
+2009-04-14  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: fixed
 	  "Bug 494565 - New auto-complete behavior is improperly
 	  labeled.".
