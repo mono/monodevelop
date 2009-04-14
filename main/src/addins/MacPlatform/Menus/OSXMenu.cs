@@ -45,7 +45,10 @@ namespace OSXIntegration
 		
 		static CommandManager manager;
 		
-		static uint cmdSeq = 1; //reserve 0, since it gets used by submenus' parent items
+		//reserve 0, since it gets used by submenus' parent items
+		const uint linkCommandId = 1;
+		static uint cmdSeq = 2;
+		
 		static ushort idSeq;
 		
 		static HashSet<IntPtr> mainMenus = new HashSet<IntPtr> ();
@@ -53,6 +56,7 @@ namespace OSXIntegration
 		static Dictionary<object,CarbonCommandID> cmdIdMap = new Dictionary<object, CarbonCommandID> ();
 		
 		static List<object> objectsToDestroyOnMenuClose = new List<object> ();
+		static List<string> linkCommands = new List<string> ();
 		static int menuOpenDepth = 0;
 		
 		static Gdk.Keymap keymap = Gdk.Keymap.Default;
@@ -128,30 +132,39 @@ namespace OSXIntegration
 						HIToolbox.AppendMenuSeparator (parentMenu);
 						continue;
 					}
+					
+					if (entry is LinkCommandEntry) {
+						LinkCommandEntry lce = (LinkCommandEntry)entry;
+						pos = HIToolbox.AppendMenuItem (parentMenu, (lce.Text ?? "").Replace ("_", ""), 0, linkCommandId);
+						HIToolbox.SetMenuItemReferenceConstant (new HIMenuItem (parentMenu, pos), (uint)linkCommands.Count);
+						linkCommands.Add (lce.Url);
+						continue;
+					}
 
 					Command cmd = manager.GetCommand (entry.CommandId);
-					if (cmd == null){
-						Console.Error.WriteLine ("ERROR: Null command");
+					if (cmd == null) {
+						MonoDevelop.Core.LoggingService.LogError (
+							"Mac main menu '{0}' child '{1}' maps to null command", entrySet.Name, entry.CommandId);
 						continue;
-					} else if (cmd is CustomCommand){
-						Console.Error.WriteLine ("Warning: CustomCommands not supported on OSX");
-					} else {
-						ActionCommand acmd = cmd as ActionCommand;
-
-						if (acmd == null){
-							Console.Error.WriteLine ("Not sure how to handle {0}", cmd);
-							continue;
-						}
-						
-						uint macCmdId = GetNewMenuItemId (cmd);
-
-						bool isArray = acmd.CommandArray;
-						
-						pos = HIToolbox.AppendMenuItem (parentMenu, (cmd.Text ?? "").Replace ("_", ""), 0, macCmdId);
-						SetMenuAccelerator (new HIMenuItem (parentMenu, pos), cmd.AccelKey);
-						
-						// Deal with checked items here.
 					}
+
+					if (cmd is CustomCommand) {
+						MonoDevelop.Core.LoggingService.LogWarning (
+							"Mac main menu does not support custom command widgets for command '{0}'", entry.CommandId);
+						continue;
+					}
+					
+					ActionCommand acmd = cmd as ActionCommand;
+					if (acmd == null) {
+						MonoDevelop.Core.LoggingService.LogWarning (
+							"Mac main menu does not support command type '{0}' for command '{1}'", cmd.GetType (), entry.CommandId);
+						continue;
+					}
+					
+					uint macCmdId = GetNewMenuItemId (cmd);
+					bool isArray = acmd.CommandArray;
+					
+					pos = HIToolbox.AppendMenuItem (parentMenu, (cmd.Text ?? "").Replace ("_", ""), 0, macCmdId);
 				} else {
 					IntPtr menuRef = HIToolbox.CreateMenu (idSeq++, GetName (ces), MenuAttributes.CondenseSeparators);
 					mainMenus.Add (menuRef);
@@ -228,6 +241,12 @@ namespace OSXIntegration
 			return macCmdId;
 		}
 		
+		static bool IsGloballyDisabled {
+			get {
+				return !MonoDevelop.Ide.Gui.IdeApp.Workbench.RootWindow.HasToplevelFocus;
+			}
+		}
+		
 		static void SetMenuItemAttributes (HIMenuItem item, CommandInfo ci, uint refcon)
 		{
 			MenuItemData data = new MenuItemData ();
@@ -240,7 +259,7 @@ namespace OSXIntegration
 					
 					//disable also when MD main window doesn't have toplevel focus, or commands will be 
 					//accessible when modal dialogs are active
-					bool disabled = !ci.Enabled || !MonoDevelop.Ide.Gui.IdeApp.Workbench.RootWindow.HasToplevelFocus;
+					bool disabled = !ci.Enabled || IsGloballyDisabled;
 					data.Enabled = !disabled;
 					if (disabled)
 						data.Attributes |= MenuItemAttributes.Disabled;
@@ -299,7 +318,7 @@ namespace OSXIntegration
 				
 				Command cmd = manager.GetCommand (cmdId);
 				if (cmd == null){
-					Console.Error.WriteLine ("ERROR: Null command");
+					MonoDevelop.Core.LoggingService.LogError ("Null command in Mac app menu for ID {0}", cmdId);
 					continue;
 				}
 				
@@ -332,6 +351,17 @@ namespace OSXIntegration
 					HIMenuItem mi = new HIMenuItem (menuRef, i);
 					uint macCmdID = HIToolbox.GetMenuItemCommandID (mi);
 					object cmdID;
+					
+					//link items
+					if (macCmdID == linkCommandId) {
+						if (IsGloballyDisabled)
+							HIToolbox.DisableMenuItem (mi);
+						else
+							HIToolbox.EnableMenuItem (mi);
+						continue;
+					}
+					
+					//items that map to command objects
 					if (!commands.TryGetValue (macCmdID, out cmdID) || cmdID == null)
 						continue;
 					
@@ -406,7 +436,6 @@ namespace OSXIntegration
 		{
 			if (menuOpenDepth > 0)
 				return;
-			System.Console.WriteLine("Releasing {0} old menu objects", objectsToDestroyOnMenuClose.Count);
 			foreach (object o in objectsToDestroyOnMenuClose) {
 				if (o is DestructableMenu)
 					try {
@@ -436,8 +465,24 @@ namespace OSXIntegration
 			try {
 				CarbonHICommand hiCmd = GetCarbonHICommand (eventRef);
 				uint refCon = HIToolbox.GetMenuItemReferenceConstant (hiCmd.MenuItem);
+				
+				//link commands
+				if (hiCmd.CommandID == linkCommandId) {
+					string url = "";
+					try {
+						url = linkCommands[(int)refCon];
+						System.Diagnostics.Process.Start (url);
+					} catch (Exception ex) {
+						Gtk.Application.Invoke (delegate {
+							MonoDevelop.Core.Gui.MessageService.ShowException (ex, MonoDevelop.Core.GettextCatalog.GetString ("Could not open the url {0}", url));
+						});
+					}
+					DestroyOldMenuObjects ();
+					return CarbonEventHandlerStatus.Handled;
+				}
+				
+				//normal commands
 				object cmdID = GetCommandID (hiCmd);
-				System.Console.WriteLine("Running {0}", cmdID);
 				if (cmdID != null) {
 					if (refCon > 0) {
 						object data = objectsToDestroyOnMenuClose[(int)refCon - 1];
@@ -449,6 +494,7 @@ namespace OSXIntegration
 					DestroyOldMenuObjects ();
 					return CarbonEventHandlerStatus.Handled;
 				}
+				
 			} catch (Exception ex) {
 				MonoDevelop.Core.LoggingService.LogError ("Unhandled error handling menu command", ex);
 			}
@@ -464,7 +510,9 @@ namespace OSXIntegration
 					HIToolbox.DeleteMenu (ptr);
 					CoreFoundation.Release (ptr);
 				}
+				DestroyOldMenuObjects ();
 				mainMenus.Clear ();
+				linkCommands.Clear ();
 				idSeq = 1;
 			}
 			
