@@ -35,20 +35,45 @@ namespace Mono.TextTemplating.Tests
 	
 	[TestFixture]
 	public class GenerationTests
-	{
-		
+	{	
 		[Test]
 		public void Generate ()
 		{
+			string Input = ParsingTests.ParseSample1;
+			string Output = OutputSample1;
+			Generate (Input, Output, "\n");
+		}
+		
+		[Test]
+		public void GenerateMacNewlines ()
+		{
+			string MacInput = ParsingTests.ParseSample1.Replace ("\n", "\r");
+			string MacOutput = OutputSample1.Replace ("\\n", "\\r").Replace ("\n", "\r");;
+			Generate (MacInput, MacOutput, "\r");
+		}
+		
+		[Test]
+		public void GenerateWindowsNewlines ()
+		{
+			string WinInput = ParsingTests.ParseSample1.Replace ("\n", "\r\n");
+			string WinOutput = OutputSample1.Replace ("\\n", "\\r\\n").Replace ("\n", "\r\n");
+			Generate (WinInput, WinOutput, "\r\n");
+		}
+		
+		//NOTE: we set the newline property on the code generator so that the whole files has matching newlines,
+		// in order to match the newlines in the verbatim code blocks
+		void Generate (string input, string expectedOutput, string newline)
+		{
 			DummyHost host = new DummyHost ();
-			string code = GenerateCode (host, ParsingTests.ParseSample1, "GeneratedTextTransformation4f504ca0");
+			string className = "GeneratedTextTransformation4f504ca0";
+			string code = GenerateCode (host, input, className, newline);
 			Assert.AreEqual (0, host.Errors.Count);
-			Assert.AreEqual (OutputSample1, code);
+			Assert.AreEqual (expectedOutput, code);
 		}
 		
 		#region Helpers
 		
-		string GenerateCode (ITextTemplatingEngineHost host, string content, string name)
+		string GenerateCode (ITextTemplatingEngineHost host, string content, string name, string generatorNewline)
 		{
 			ParsedTemplate pt = ParsedTemplate.FromText (content, host);
 			if (pt.Errors.HasErrors) {
@@ -72,6 +97,7 @@ namespace Mono.TextTemplating.Tests
 			
 			var opts = new System.CodeDom.Compiler.CodeGeneratorOptions ();
 			using (var writer = new System.IO.StringWriter ()) {
+				writer.NewLine = generatorNewline;
 				settings.Provider.GenerateCodeFromCompileUnit (ccu, writer, opts);
 				return writer.ToString ();
 			}

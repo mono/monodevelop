@@ -1,3 +1,7 @@
+2009-04-13  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* GenerationTests.cs: Add tests for Windows/Mac newlines.
+
 2009-04-03  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.TextTemplating.Tests.csproj: Updated.
