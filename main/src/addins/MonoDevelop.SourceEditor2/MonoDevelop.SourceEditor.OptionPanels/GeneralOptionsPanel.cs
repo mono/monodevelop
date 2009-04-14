@@ -56,7 +56,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.foldingCheckbutton.Active        = DefaultSourceEditorOptions.Instance.ShowFoldMargin;
 			this.foldregionsCheckbutton.Active    = DefaultSourceEditorOptions.Instance.DefaultRegionsFolding;
 			this.foldCommentsCheckbutton.Active   = DefaultSourceEditorOptions.Instance.DefaultCommentFolding;
-			this.spaceOrPunctiuationCheckbutton.Active = DefaultSourceEditorOptions.Instance.EnableAutoCodeCompletion;
+			this.autoCodeCompletionCheckbutton.Active = DefaultSourceEditorOptions.Instance.EnableAutoCodeCompletion;
 			this.spaceOrPunctiuationCheckbutton.Active = DefaultSourceEditorOptions.Instance.CompleteWithSpaceOrPunctuation;
 			
 			this.radiobutton1.Active              = DefaultSourceEditorOptions.Instance.EditorFontType == EditorFontType.DefaultMonospace;
@@ -76,7 +76,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			DefaultSourceEditorOptions.Instance.FontName             = this.fontselection.FontName;
 			DefaultSourceEditorOptions.Instance.DefaultRegionsFolding = this.foldregionsCheckbutton.Active;
 			DefaultSourceEditorOptions.Instance.DefaultCommentFolding = this.foldCommentsCheckbutton.Active;
-			DefaultSourceEditorOptions.Instance.EnableAutoCodeCompletion = this.spaceOrPunctiuationCheckbutton.Active;
+			DefaultSourceEditorOptions.Instance.EnableAutoCodeCompletion = this.autoCodeCompletionCheckbutton.Active;
 			DefaultSourceEditorOptions.Instance.CompleteWithSpaceOrPunctuation = this.spaceOrPunctiuationCheckbutton.Active;
 		}
 
