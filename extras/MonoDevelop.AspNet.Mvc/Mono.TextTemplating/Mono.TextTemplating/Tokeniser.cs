@@ -92,17 +92,20 @@ namespace Mono.TextTemplating
 				char c = content[position];
 				nextStateTagStartLocation = nextStateLocation;
 				nextStateLocation = nextStateLocation.AddCol ();
-				if (c == '\n') {
-					nextStateLocation = nextStateLocation.AddLine ();
+				if (c == '\r') {
+					if (position + 1 < content.Length && content[position + 1] == '\n')
+						position++;
+					nextStateLocation = nextStateLocation.AddLine();
+				} else if (c == '\n') {
+					nextStateLocation = nextStateLocation.AddLine();
 				} else if (c =='>' && content[position-1] == '#' && content[position-2] != '\\') {
 					value = content.Substring (start, position - start - 1);
 					position++;
 					TagEndLocation = nextStateLocation;
 					
 					//skip newlines directly after blocks, unless they're expressions
-					if (State != State.Expression && position < content.Length && content[position] == '\n') {
+					if (State != State.Expression && (position += IsNewLine()) > 0) {
 						nextStateLocation = nextStateLocation.AddLine ();
-						position ++;
 					}
 					return State.Content;
 				}
@@ -132,8 +135,12 @@ namespace Mono.TextTemplating
 			for (; position < content.Length; position++) {
 				char c = content[position];
 				nextStateLocation = nextStateLocation.AddCol ();
-				if (c == '\n')
-					nextStateLocation = nextStateLocation.AddLine ();
+				if (c == '\r') {
+					if (position + 1 < content.Length && content[position + 1] == '\n')
+						position++;
+					nextStateLocation = nextStateLocation.AddLine();
+				} else if (c == '\n')
+					nextStateLocation = nextStateLocation.AddLine();
 				if (delimiter == '\0') {
 					if (c == '\'' || c == '"') {
 						start = position;
@@ -159,8 +166,12 @@ namespace Mono.TextTemplating
 				char c = content[position];
 				nextStateTagStartLocation = nextStateLocation;
 				nextStateLocation = nextStateLocation.AddCol ();
-				if (c == '\n') {
-					nextStateLocation = nextStateLocation.AddLine ();
+				if (c == '\r') {
+					if (position + 1 < content.Length && content[position + 1] == '\n')
+						position++;
+					nextStateLocation = nextStateLocation.AddLine();
+				} else if (c == '\n') {
+					nextStateLocation = nextStateLocation.AddLine();
 				} else if (c =='<' && position + 2 < content.Length && content[position+1] == '#') {
 					TagEndLocation = nextStateLocation;
 					char type = content[position+2];
@@ -191,13 +202,28 @@ namespace Mono.TextTemplating
 			value = content.Substring (start);
 			return State.EOF;
 		}
+
+		int IsNewLine() {
+			int found = 0;
+
+			if (position < content.Length && content[position] == '\r') {
+				found++;
+			}
+			if (position+found < content.Length && content[position+found] == '\n') {
+				found++;
+			}
+			return found;
+		}
 		
-		State NextStateInDirective ()
-		{
+		State NextStateInDirective () {
 			for (; position < content.Length; position++) {
 				char c = content[position];
-				if (c == '\n') {
-					nextStateLocation = nextStateLocation.AddLine ();
+				if (c == '\r') {
+					if (position + 1 < content.Length && content[position + 1] == '\n')
+						position++;
+					nextStateLocation = nextStateLocation.AddLine();
+				} else if (c == '\n') {
+					nextStateLocation = nextStateLocation.AddLine();
 				} else if (Char.IsLetter (c)) {
 					return State.DirectiveName;
 				} else if (c == '=') {
@@ -210,11 +236,10 @@ namespace Mono.TextTemplating
 					nextStateLocation = nextStateLocation.AddCols (3);
 					
 					//skip newlines directly after directives
-					if (position < content.Length && content[position] == '\n') {
-						nextStateLocation = nextStateLocation.AddLine ();
-						position++;
-					} 
-					
+					if ((position += IsNewLine()) > 0) {
+						nextStateLocation = nextStateLocation.AddLine();
+					}
+
 					return State.Content;
 				} else if (!Char.IsWhiteSpace (c)) {
 					throw new ParserException ("Directive ended unexpectedly with character '" + c + "'", nextStateLocation);

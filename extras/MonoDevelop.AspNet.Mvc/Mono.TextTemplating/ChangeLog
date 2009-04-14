@@ -1,3 +1,17 @@
+2009-04-13  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextTemplating/Tokeniser.cs: Add support for Mac and
+	  Windows newlines.
+
+	* Mono.TextTemplating/TemplatingEngine.cs: Keep temp files
+	  when in debug mode, so that the generated code can be
+	  debugged.
+
+	* Mono.TextTemplating/ParsedTemplate.cs: Fixes for csc
+	  compilation.
+
+	Thanks to Stuart Carnie for this patch.
+
 2009-04-03  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.TextTemplating.csproj:

@@ -87,9 +87,16 @@ namespace Mono.TextTemplating
 		{
 			CompilerParameters pars = new CompilerParameters ();
 			pars.GenerateExecutable = false;
-			pars.GenerateInMemory = !settings.Debug;
-			pars.IncludeDebugInformation = settings.Debug;
 			
+			if (settings.Debug) {
+				pars.GenerateInMemory = false;
+				pars.IncludeDebugInformation = true;
+				pars.TempFiles.KeepFiles = true;
+			} else {
+				pars.GenerateInMemory = true;
+				pars.IncludeDebugInformation = false;
+			}
+
 			//resolve and add assembly references
 			HashSet<string> assemblies = new HashSet<string> ();
 			assemblies.UnionWith (settings.Assemblies);
@@ -103,9 +110,10 @@ namespace Mono.TextTemplating
 					return null;
 				}
 			}
-			
 			CompilerResults results = settings.Provider.CompileAssemblyFromDom (pars, ccu);
 			pt.Errors.AddRange (results.Errors);
+			if (pt.Errors.HasErrors)
+				return null;
 			return results.CompiledAssembly;
 		}
 		

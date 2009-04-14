@@ -275,11 +275,11 @@ namespace Mono.TextTemplating
 	
 	public struct Location : IEquatable<Location>
 	{
-		public Location (string fileName, int line, int column)
+		public Location (string fileName, int line, int column) : this()
 		{
-			this.FileName = fileName;
-			this.Column = column;
-			this.Line = line;
+			FileName = fileName;
+			Column = column;
+			Line = line;
 		}
 		
 		public int Line { get; private set; }
