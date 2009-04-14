@@ -288,8 +288,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 					return KeyAction.Process;
 				} else {
 					word.Remove (curPos, 1);
-					return c == '<' ? KeyAction.Complete | KeyAction.Ignore | KeyAction.CloseWindow : 
-						              KeyAction.Complete | KeyAction.Process | KeyAction.CloseWindow;
+					return KeyAction.Complete | KeyAction.Process | KeyAction.CloseWindow;
 				}
 			}
 			

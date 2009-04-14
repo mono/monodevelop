@@ -1,5 +1,10 @@
 2009-04-14  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Fixed
+	  "Bug 494566 - Problem with generics completion.".
+
+2009-04-14  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: changed
 	  default value for "CompleteWithSpaceOrPunctuation".
 
