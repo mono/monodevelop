@@ -1,5 +1,12 @@
 2009-04-13  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Microsoft.VisualStudio.TextTemplating/ToStringHelper.cs: Use
+	  IConvertible.ToString (formatProvider) when possible.
+	
+	Thanks to Stuart Carnie for this patch.
+
+2009-04-13  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Mono.TextTemplating/Tokeniser.cs: Add support for Mac and
 	  Windows newlines.
 

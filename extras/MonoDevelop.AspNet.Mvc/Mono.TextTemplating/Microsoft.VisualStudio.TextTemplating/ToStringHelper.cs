@@ -34,22 +34,32 @@ namespace Microsoft.VisualStudio.TextTemplating
 	
 	public static class ToStringHelper
 	{
-		static object [] formatProvider = new object[] { System.Globalization.CultureInfo.InvariantCulture };
-		
+		static object [] formatProviderAsParameterArray;
+		static IFormatProvider formatProvider = System.Globalization.CultureInfo.InvariantCulture;
+
+		static ToStringHelper ()
+		{
+			formatProviderAsParameterArray = new object[] { formatProvider };
+		}
+
 		public static string ToStringWithCulture (object objectToConvert)
 		{
 			if (objectToConvert == null)
 				return null;
+
+			IConvertible conv = objectToConvert as IConvertible;
+			if (conv != null)
+				return conv.ToString (formatProvider);
 			
 			MethodInfo mi = objectToConvert.GetType ().GetMethod ("ToString", new Type[] { typeof (IFormatProvider) });
 			if (mi != null && mi.ReturnType == typeof (String))
-				return (string) mi.Invoke (objectToConvert, formatProvider);
+				return (string) mi.Invoke (objectToConvert, formatProviderAsParameterArray);
 			return objectToConvert.ToString ();
 		}
 		
 		public static IFormatProvider FormatProvider {
-			get { return (IFormatProvider)formatProvider[0]; }
-			set { formatProvider[0] = value; }
+			get { return (IFormatProvider)formatProviderAsParameterArray[0]; }
+			set { formatProviderAsParameterArray[0] = formatProvider = value; }
 		}
 	}
 }
