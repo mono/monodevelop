@@ -1,3 +1,10 @@
+2009-04-14  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorOptions.cs:
+	* MonoDevelop.SourceEditor.OptionPanels/GeneralOptionsPanel.cs:
+	  fixed "Bug 494565 - New auto-complete behavior is improperly
+	  labeled.".
+
 2009-04-11  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs:

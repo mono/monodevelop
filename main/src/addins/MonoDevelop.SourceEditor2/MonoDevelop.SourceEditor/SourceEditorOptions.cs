@@ -149,7 +149,7 @@ namespace MonoDevelop.SourceEditor
 			this.defaultCommentFolding      =  PropertyService.Get ("DefaultCommentFolding", true);
 			this.useViModes = PropertyService.Get ("UseViModes", false);
 			this.enableAutoCodeCompletion = PropertyService.Get ("EnableAutoCodeCompletion", true);
-			
+			this.completeWithSpaceOrPunctuation = PropertyService.Get ("CompleteWithSpaceOrPunctuation", true);
 			this.ControlLeftRightMode =  (ControlLeftRightMode)Enum.Parse (typeof (ControlLeftRightMode), PropertyService.Get ("ControlLeftRightMode", IdeApp.Services.PlatformService.DefaultControlLeftRightBehavior));
 		}
 		
@@ -163,6 +163,19 @@ namespace MonoDevelop.SourceEditor
 				if (value != enableAutoCodeCompletion) {
 					enableAutoCodeCompletion = value;
 					PropertyService.Set ("EnableAutoCodeCompletion", value);
+				}
+			}
+		}
+		
+		bool completeWithSpaceOrPunctuation;
+		public bool CompleteWithSpaceOrPunctuation {
+			get {
+				return completeWithSpaceOrPunctuation;
+			}
+			set {
+				if (value != completeWithSpaceOrPunctuation) {
+					completeWithSpaceOrPunctuation = value;
+					PropertyService.Set ("CompleteWithSpaceOrPunctuation", value);
 				}
 			}
 		}
