@@ -232,7 +232,11 @@ class ShellTextView (SourceView, ICompletionWidget):
 		_reset.Show()
 	
 	override def OnKeyPressEvent (ev as Gdk.EventKey):
-		if CompletionWindowManager.ProcessKeyEvent (ev.Key, ev.State):
+		ka as KeyAction
+		processkeyresult as bool
+		processkeyresult = CompletionWindowManager.PreProcessKeyEvent (ev.Key, ev.State, ka)
+		CompletionWindowManager.PostProcessKeyEvent (ka)
+		if processkeyresult:
 			return true
 		
 		// Short circuit to avoid getting moved back to the input line
