@@ -21,13 +21,6 @@ FILES =  \
 	Framework/Carbon.cs \
 	Framework/CoreFoundation.cs \
 	Framework/HIToolbox.cs \
-	Ige/IgeMacAttentionRequest.cs \
-	Ige/IgeMacAttentionType.cs \
-	Ige/IgeMacBundle.cs \
-	Ige/IgeMacDock.cs \
-	Ige/IgeMacMenu.cs \
-	Ige/IgeMacMenuGroup.cs \
-	Ige/ObjectManager.cs \
 	MacPlatform.cs \
 	Menus/OSXMenu.cs
 

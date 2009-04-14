@@ -1,3 +1,25 @@
+2009-04-13  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* MacPlatform.csproj: Updated.
+
+	* Ige:
+	* Ige/IgeMacDock.cs:
+	* Ige/IgeMacMenu.cs:
+	* Ige/IgeMacBundle.cs:
+	* Ige/ObjectManager.cs:
+	* Ige/IgeMacMenuGroup.cs:
+	* Ige/IgeMacAttentionType.cs:
+	* Ige/IgeMacAttentionRequest.cs: Remove IGE, as it's no longer
+	  used.
+
+	* Menus/OSXMenu.cs: Make comment clearer.
+
+	* MacPlatform.cs: Remove IGE. Add dock quit and click support.
+	  Stub doc open support.
+
+	* Framework/Carbon.cs: Add some more definitions.
+
 2009-04-10  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Menus/OSXMenu.cs: Implement support for array commands and

@@ -31,7 +31,6 @@ using System.IO;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
-using IgeMacIntegration;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Commands;
@@ -42,8 +41,7 @@ namespace MonoDevelop.Platform
 {
 	public class MacPlatform : PlatformService
 	{
-		bool igeInited, igeExists;
-		bool menuFail, initedAppMenu;
+		bool menuFail, initedAppMenu, initedDock;
 		
 		static Dictionary<string, string> mimemap;
 
@@ -87,7 +85,7 @@ namespace MonoDevelop.Platform
 			// All recent Macs should have this file; if not we'll just die silently
 			try {
 				StreamReader reader = new StreamReader (File.OpenRead ("/etc/apache2/mime.types"));
-				Regex mime = new Regex ("([a-zA-Z]+/[a-zA-z0-9+-_.]+)\t+([a-zA-Z]+)");
+				Regex mime = new Regex ("([a-zA-Z]+/[a-zA-z0-9+-_.]+)\t+([a-zA-Z]+)", RegexOptions.Compiled);
 				string line;
 				while ((line = reader.ReadLine ()) != null) {
 					Match m = mime.Match (line);
@@ -99,29 +97,6 @@ namespace MonoDevelop.Platform
 			}
 		}
 		
-		[System.Runtime.InteropServices.DllImport("libigemacintegration.dylib")]
-		static extern void ige_mac_menu_set_global_key_handler_enabled (bool enabled);
-		
-		bool IgeExists ()
-		{
-			if (igeInited)
-				return igeExists;
-			igeInited = true;
-			
-			try {
-				//disabled, as the IGE menu integration can't handle our menus
-				ige_mac_menu_set_global_key_handler_enabled (false);
-			}
-			catch (Exception ex) {
-				MonoDevelop.Core.LoggingService.LogError ("Could not load libigemacintegration. Main Menu integration disabled.", ex);
-				return false;
-			}
-			
-			IgeSetup ();
-			igeExists = true;
-			return true;
-		}
-		
 		HashSet<object> ignoreCommands = new HashSet<object> () {
 			HelpCommands.About,
 			EditCommands.DefaultPolicies,
@@ -131,7 +106,7 @@ namespace MonoDevelop.Platform
 		
 		public override bool SetGlobalMenu (CommandManager commandManager, string commandMenuAddinPath)
 		{
-			IgeExists ();
+			GlobalSetup ();
 			
 			if (menuFail)
 				return false;
@@ -183,18 +158,42 @@ namespace MonoDevelop.Platform
 			                                        EditCommands.DefaultPolicies, EditCommands.MonodevelopPreferences);
 		}
 		
-		void IgeSetup ()
+		void GlobalSetup ()
 		{
-			IgeMacDock.Default.QuitActivate += delegate {
-				IdeApp.Exit ();
-			};
+			if (initedDock)
+				return;
+			initedDock = true;
 			
-			IgeMacDock.Default.Clicked += delegate {
-				IdeApp.Workbench.RootWindow.Deiconify ();
-				IdeApp.Workbench.RootWindow.Visible = true;
-			};
-			
-			IdeApp.Workbench.RootWindow.DeleteEvent += HandleDeleteEvent;
+			try {
+				//FIXME: remove these when finalizing
+				Carbon.InstallApplicationEventHandler (HandleAppReopen, CarbonEventApple.ReopenApplication);
+				Carbon.InstallApplicationEventHandler (HandleAppQuit, CarbonEventApple.QuitApplication);
+				//Carbon.InstallApplicationEventHandler (HandleAppDocOpen, CarbonEventApple.OpenDocuments); //kAEOpenDocuments
+				IdeApp.Workbench.RootWindow.DeleteEvent += HandleDeleteEvent;
+			} catch (Exception ex) {
+				MonoDevelop.Core.LoggingService.LogError ("Could not install app event handlers", ex);
+				menuFail = true;
+			}
+		}
+		
+		static CarbonEventHandlerStatus HandleAppReopen (IntPtr callRef, IntPtr eventRef, IntPtr user_data)
+		{
+			IdeApp.Workbench.RootWindow.Deiconify ();
+			IdeApp.Workbench.RootWindow.Visible = true;
+			return CarbonEventHandlerStatus.Handled;
+		}
+		
+		static CarbonEventHandlerStatus HandleAppQuit (IntPtr callRef, IntPtr eventRef, IntPtr user_data)
+		{
+			IdeApp.Exit ();
+			return CarbonEventHandlerStatus.Handled;
+		}
+		
+		static CarbonEventHandlerStatus HandleAppDocOpen (IntPtr callRef, IntPtr eventRef, IntPtr user_data)
+		{
+			IntPtr list = Carbon.GetEventParameter (eventRef, CarbonEventParameterName.DirectObject, CarbonEventParameterType.AEList);
+			System.Console.WriteLine("Items: {0}", Carbon.AECountItems (list));
+			return CarbonEventHandlerStatus.Handled;
 		}
 		
 		[GLib.ConnectBefore]

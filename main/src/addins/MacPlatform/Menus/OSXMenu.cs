@@ -395,7 +395,7 @@ namespace OSXIntegration
 		static CarbonEventHandlerStatus HandleMenuClosed (IntPtr callRef, IntPtr eventRef, IntPtr user_data)
 		{
 			menuOpenDepth--;
-			//we can't destroy the menu objects here, since the command handler is invoked later
+			//we can't destroy the menu objects instantly, since the command handler is invoked after the close event
 			//FIXME: maybe we can get the close reason, and handle the command here?
 			return CarbonEventHandlerStatus.NotHandled;
 		}

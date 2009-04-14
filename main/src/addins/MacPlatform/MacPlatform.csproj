@@ -75,13 +75,6 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="MacPlatform.cs" />
-    <Compile Include="Ige\IgeMacAttentionRequest.cs" />
-    <Compile Include="Ige\IgeMacAttentionType.cs" />
-    <Compile Include="Ige\IgeMacBundle.cs" />
-    <Compile Include="Ige\IgeMacDock.cs" />
-    <Compile Include="Ige\IgeMacMenu.cs" />
-    <Compile Include="Ige\IgeMacMenuGroup.cs" />
-    <Compile Include="Ige\ObjectManager.cs" />
     <Compile Include="Menus\OSXMenu.cs" />
     <Compile Include="Framework\Carbon.cs" />
     <Compile Include="Framework\CoreFoundation.cs" />

@@ -115,13 +115,33 @@ namespace OSXIntegration.Framework
 			T val = (T)Marshal.PtrToStructure (bufferPtr, typeof (T));
 			Marshal.FreeHGlobal (bufferPtr);
 			return val;
-		}                                     
+		}  
+		
+		#region AEList manipulation
+		
+		[DllImport (CarbonLib)]
+		static extern int AECountItems (IntPtr descList, out long count); //return an OSErr
+		
+		public static long AECountItems (IntPtr descList)
+		{
+			long count;
+			CheckReturn (AECountItems (descList, out count));
+			return count;
+		}
+		
+		#endregion
 		
 		public static void CheckReturn (EventStatus status)
 		{
 			int intStatus = (int) status;
 			if (intStatus < 0)
 				throw new EventStatusException (status);
+		}
+		
+		public static void CheckReturn (int osErr)
+		{
+			if (osErr != 0)
+				throw new SystemException ("Unexpected OS error code " + osErr + "");
 		}
 		
 		internal static int ConvertCharCode (string code)
@@ -138,6 +158,13 @@ namespace OSXIntegration.Framework
 				(char)(0xFF & i),
 			});
 		}
+	}
+	
+	[StructLayout(LayoutKind.Sequential, Pack = 2)]
+	struct AEDesc
+	{
+		uint descriptorType;
+		IntPtr dataHandle;
 	}
 	
 	internal enum CarbonEventHandlerStatus //this is an OSStatus
@@ -159,6 +186,7 @@ namespace OSXIntegration.Framework
 		Char = 1413830740, // 'TEXT'
 		UInt32 = 1835100014, // 'magn'
 		UnicodeText = 1970567284, // 'utxt'
+		AEList = 1818850164, // 'list'
 	}
 	
 	internal enum CarbonEventClass : uint
@@ -180,6 +208,7 @@ namespace OSXIntegration.Framework
 		ToolbarItem = 1952606580, // 'tbit'
 		Accessibility = 1633903461, // 'acce'
 		HIObject = 1751740258, // 'hiob'
+		Apple = 1634039412, // 'aevt'
 	}
 	
 	public enum CarbonCommandID : uint
@@ -245,6 +274,18 @@ namespace OSXIntegration.Framework
 		MatchKey = 7,
 	}
 	
+	internal enum CarbonEventApple
+	{
+		OpenApplication = 1868656752, // 'oapp'
+		ReopenApplication = 1918988400, //'rapp'
+		OpenDocuments = 1868853091, // 'odoc'
+		PrintDocuments = 188563030, // 'pdoc'
+		OpenContents = 1868787566, // 'ocon'
+		QuitApplication =  1903520116, // 'quit'
+		ShowPreferences = 1886545254, // 'pref'
+		ApplicationDied = 1868720500, // 'obit'
+	}
+	
 	[StructLayout(LayoutKind.Sequential, Pack = 2)]
 	struct CarbonEventTypeSpec
 	{
@@ -265,12 +306,21 @@ namespace OSXIntegration.Framework
 		{
 		}
 		
+		public CarbonEventTypeSpec (CarbonEventApple kind) : this (CarbonEventClass.Apple, (uint) kind)
+		{
+		}
+		
 		public static implicit operator CarbonEventTypeSpec (CarbonEventMenu kind)
 		{
 			return new CarbonEventTypeSpec (kind);
 		}
 		
 		public static implicit operator CarbonEventTypeSpec (CarbonEventCommand kind)
+		{
+			return new CarbonEventTypeSpec (kind);
+		}
+		
+		public static implicit operator CarbonEventTypeSpec (CarbonEventApple kind)
 		{
 			return new CarbonEventTypeSpec (kind);
 		}
