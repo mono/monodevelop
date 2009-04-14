@@ -125,6 +125,15 @@ namespace OSXIntegration.Framework
 		}
 		
 		[DllImport (hiToolboxLib)]
+		static extern CarbonMenuStatus ChangeMenuItemAttributes (IntPtr menu, ushort item, MenuItemAttributes setTheseAttributes, 
+		                                                         MenuItemAttributes clearTheseAttributes);
+		
+		public static void ChangeMenuItemAttributes (HIMenuItem item, MenuItemAttributes toSet, MenuItemAttributes toClear)
+		{
+			CheckResult (ChangeMenuItemAttributes (item.MenuRef, item.Index, toSet, toClear));
+		}
+		
+		[DllImport (hiToolboxLib)]
 		internal static extern CarbonMenuStatus SetMenuItemHierarchicalMenu (IntPtr parentMenu, ushort parent_index, IntPtr submenu);
 
 		[DllImport (hiToolboxLib)]

@@ -1,5 +1,13 @@
 2009-04-13  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Menus/OSXMenu.cs: When array commands have no items, leave
+	  an invisible item in the list so it can still get updated
+	  later.
+
+	* Framework/HIToolbox.cs: More P/Invokes.
+
+2009-04-13  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Makefile.am:
 	* MacPlatform.csproj: Updated.
 

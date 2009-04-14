@@ -363,11 +363,13 @@ namespace OSXIntegration
 		                            uint macCmdID, CommandInfo cinfo)
 		{
 			if (cinfo.ArrayInfo != null) {
-				//remove the existing items
-				do {
+				//remove the existing items, except one, which we hide, so it gets updated next time even if the list is empty
+				HIToolbox.ChangeMenuItemAttributes (new HIMenuItem (menuRef, index), MenuItemAttributes.Hidden, 0);
+				index++;
+				while (index <= count && HIToolbox.GetMenuItemCommandID (new HIMenuItem (menuRef, index)) == macCmdID) {
 					HIToolbox.DeleteMenuItem (menuRef, index);
 					count--;
-				} while (index <= count && HIToolbox.GetMenuItemCommandID (new HIMenuItem (menuRef, index)) == macCmdID);
+				}
 				index--;
 				
 				//add the new items
