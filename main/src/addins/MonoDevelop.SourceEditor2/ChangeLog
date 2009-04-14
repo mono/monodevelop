@@ -1,5 +1,12 @@
 2009-04-14  Mike Krüger  <mkrueger@novell.com>
 
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.SourceEditor.OptionPanels/GeneralOptionsPanel.cs:
+	* gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs:
+	  Fixed compilation error.
+
+2009-04-14  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/SourceEditorOptions.cs: changed
 	  default value for 'CompleteWithSpaceOrPunctuation'
 
