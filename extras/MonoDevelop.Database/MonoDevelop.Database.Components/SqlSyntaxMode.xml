@@ -1,0 +1,266 @@
+<!-- CSharpSyntaxMode.xml
+
+ Author:
+   Luciano N. Callero <lnc19@hotmail.com>
+
+ Copyright (c) 2009 Luciano N. Callero
+
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ THE SOFTWARE. -->
+ 
+<SyntaxMode name = "Sql" mimeTypes="text/x-sql">
+
+	<EolSpan color = "comment" rule="Comment" tagColor="comment.tag">-</EolSpan>
+	
+	<Span color = "comment.block" rule="Comment" tagColor="comment.tag.block">
+		<Begin>/*</Begin>
+		<End>*/</End>
+	</Span>
+	
+	<Span color = "string" rule="String" stopateol = "true" escape='\"'>
+		<Begin>"</Begin>
+		<End>"</End>
+	</Span>
+	
+	<Span color = "string" rule="String" stopateol = "true" escape='\"'>
+		<Begin>'</Begin>
+		<End>'</End>
+	</Span>
+	
+	<Keywords color = "keyword.access">
+	</Keywords>
+	
+	<Keywords ignorecase="true" color = "keyword.operator">
+		<Word>+</Word>
+		<Word>-</Word>
+		<Word>=</Word>
+		<Word>AND</Word>
+		<Word>ON</Word>
+		<Word>OR</Word>
+		<Word>IN</Word>
+		<Word>NOT</Word>
+		<Word>(</Word>
+		<Word>)</Word>
+		<Word>&lt;</Word>
+		<Word>&gt;</Word>
+		<Word>&lt;=</Word>
+		<Word>=&gt;</Word>
+		<Word>As</Word>
+		<Word>CAST</Word>
+		<Word>CONVERT</Word>
+		<Word>BETWEEN</Word>
+		<Word>&amp;</Word>
+		<Word>|</Word>
+		<Word>!</Word>
+		<Word>/</Word>
+		<Word>IS NOT NULL</Word>
+		<Word>IS NOT</Word>
+		<Word>IS NULL</Word>
+		<Word>LIKE</Word>
+		
+	</Keywords>
+	
+	<Keywords ignorecase="true" color = "keyword.selection">
+		<Word>SELECT</Word>
+		<Word>FROM</Word>
+		<Word>WHERE</Word>
+		<Word>INNER</Word>
+		<Word>LEFT</Word>
+		<Word>RIGHT</Word>
+		<Word>JOIN</Word>
+		<Word>CASE</Word>
+		<Word>WHEN</Word>
+		<Word>IF</Word>
+		<Word>THEN</Word>
+		<Word>ELSE</Word>
+		<Word>IFNULL</Word>
+		<Word>NULLIF</Word>
+		<Word>UNION</Word>
+		<Word>TOP</Word>
+		<Word>LIMIT</Word>
+		<Word>FETCH</Word>
+		<Word>USE</Word>
+		<Word>DROP</Word>
+		<Word>DATABASE</Word>
+		<Word>ALTER</Word>
+		<Word>INDEX</Word>
+		<Word>RENAME</Word>
+		<Word>DELETE</Word>
+		<Word>HANDLER</Word>
+		<Word>LOAD DATA INFILE</Word>
+		<Word>REPLACE</Word>
+		<Word>TRUNCATE</Word>
+		<Word>UPDATE</Word>
+		<Word>INSERT INTO</Word>
+		<Word>VALUES</Word>
+		<Word>PREPARE</Word>
+		<Word>EXEC</Word>
+		<Word>EXECUTE</Word>
+		<Word>DEALLOCATE</Word>
+		<Word>TRANSACTION</Word>
+		<Word>COMMIT</Word>
+		<Word>ROLLBACK</Word>
+		<Word>COMM</Word>
+		<Word>ROLL</Word>
+		<Word>USING</Word>
+		<Word>SET</Word>
+		<Word>@</Word>
+		<Word>SHOW</Word>
+		<Word>START</Word>
+		<Word>GROUP BY</Word>
+		<Word>ORDER BY</Word>
+		<Word>HAVING</Word>
+		<Word>DEFINER</Word>
+		<Word>EXISTS</Word>
+	</Keywords>
+	
+	<Keywords ignorecase="true" color = "keyword.iteration">
+		<Word>DO</Word>
+		<Word>FOR</Word>
+		<Word>FOREACH</Word>
+		<Word>WHILE</Word>
+	</Keywords>
+	
+	<Keywords ignorecase="true" color = "keyword.jump">
+		<Word>BREAK</Word>
+		<Word>RETURN</Word>
+		<Word>RETURNS</Word>
+	</Keywords>
+	
+	<Keywords color = "keyword.context">
+	</Keywords>
+	
+	<Keywords color = "keyword.exceptions">
+	</Keywords>
+	
+	<Keywords ignorecase="true" color = "constant.language">
+		<Word>TRUE</Word>
+		<Word>FALSE</Word>
+		<Word>NULL</Word>
+	</Keywords>
+	
+	<Keywords ignorecase="true" color = "keyword.modifier">
+		<Word>UNSIGNED</Word>
+		<Word>NOT NULL</Word>
+		<Word>DEFAULT</Word>
+	</Keywords>
+	
+	<Keywords ignorecase="true" color = "keyword.type">
+		<Word>SmallInt</Word>
+		<Word>Integer</Word>
+		<Word>BigInt</Word>
+		<Word>Decimal</Word>
+		<Word>Numeric</Word>
+		<Word>Real</Word>
+		<Word>Double Precision</Word>
+		<Word>Serial</Word>
+		<Word>BigSerial</Word>
+		<Word>Money</Word>
+		<Word>Character</Word>
+		<Word>Text</Word>
+		<Word>Bytea</Word>
+		<Word>TimeStamp</Word>
+		<Word>Interval</Word>
+		<Word>Date</Word>
+		<Word>Time</Word>
+		<Word>Point</Word>
+		<Word>Line</Word>
+		<Word>Lseg</Word>
+		<Word>Box</Word>
+		<Word>Path</Word>
+		<Word>Polygon</Word>
+		<Word>Circle</Word>
+		<Word>Cidr</Word>
+		<Word>Inet</Word>
+		<Word>MacAddr</Word>
+		<Word>Bit</Word>
+		<Word>Any</Word>
+		<Word>AnyArray</Word>
+		<Word>AnyElement</Word>
+		<Word>CString</Word>
+		<Word>Internal</Word>
+		<Word>Record</Word>
+		<Word>Trigger</Word>
+		<Word>void</Word>
+		<Word>Opaque</Word>
+		<Word>Int</Word>
+		<Word>TinyInt</Word>
+		<Word>Bit</Word>
+		<Word>Numeric</Word>
+		<Word>SmallMoney</Word>
+		<Word>Float</Word>
+		<Word>DateTime</Word>
+		<Word>SmallDateTime</Word>
+		<Word>Char</Word>
+		<Word>VarChar</Word>
+		<Word>NText</Word>
+		<Word>NChar</Word>
+		<Word>NVarChar</Word>
+		<Word>Binary</Word>
+		<Word>VarBinary</Word>
+		<Word>Image</Word>
+		<Word>TinyText</Word>
+		<Word>Text</Word>
+		<Word>Blob</Word>
+		<Word>LongBlob</Word>
+		<Word>MediumBlob</Word>
+		<Word>MediumText</Word>
+		<Word>LongText</Word>
+		<Word>MediumInt</Word>
+		<Word>TimeStamp</Word>
+		<Word>Enum</Word>
+		<Word>Set</Word>
+		<Word>Year</Word>
+		<Word>Boolean</Word>
+	</Keywords>
+	
+	<Keywords ignorecase="true" color = "keyword.declaration">
+		<Word>CREATE</Word>
+		<Word>ALTER</Word>
+		<Word>FUNCTION</Word>
+		<Word>PROCEDURE</Word>
+		<Word>TABLE</Word>
+		<Word>VIEW</Word>
+		<Word>TRIGGER</Word>
+		<Word>BEGIN</Word>
+		<Word>END</Word>
+	</Keywords>
+	
+	<Keywords ignorecase="true" color = "keyword.parameter">
+		<Word>DECLARE</Word>
+		<Word>IN</Word>
+		<Word>OUT</Word>
+	</Keywords>
+
+	<Rule name = "text.preprocessor">
+		<Keywords color="text.preprocessor.keyword">
+		</Keywords>
+	</Rule>
+	
+	<Rule name = "Comment">
+		<Keywords color="comment.keyword.todo" ignorecase="True">
+			<Word>TODO</Word>
+			<Word>FIXME</Word>
+			<Word>HACK</Word>
+			<Word>UNDONE</Word>
+		</Keywords>	
+	</Rule>
+	
+	<Rule name = "String">
+	</Rule>
+</SyntaxMode>

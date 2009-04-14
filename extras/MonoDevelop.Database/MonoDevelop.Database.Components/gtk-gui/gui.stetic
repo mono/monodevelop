@@ -11,6 +11,7 @@
     <widget-library name="Mono.TextEditor, Version=1.0.0.0, Culture=neutral" />
     <widget-library name="MonoDevelop.Projects.Gui, Version=0.0.0.0, Culture=neutral" />
     <widget-library name="../../build/MonoDevelop.Database.Components.dll" internal="true" />
+    <widget-library name="../../../../main/build/AddIns/MonoDevelop.SourceEditor2.dll" />
   </import>
   <widget class="Gtk.Dialog" id="MonoDevelop.Database.Components.SelectColumnDialog" design-size="400 300">
     <property name="MemberName" />

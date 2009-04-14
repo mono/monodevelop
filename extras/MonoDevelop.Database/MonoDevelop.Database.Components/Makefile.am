@@ -5,6 +5,7 @@ REFS =  \
 	$(GTK_SHARP_LIBS) \
 	$(MONO_ADDINS_LIBS) \
 	$(MONODEVELOP_LIBS) \
+	-r:../../../main/build/AddIns/MonoDevelop.SourceEditor2.dll \
 	-r:../build/MonoDevelop.Database.Sql.dll \
 	-r:Mono.Posix \
 	-r:System \
@@ -72,7 +73,8 @@ FILES =  \
 RES =  \
 	gtk-gui/gui.stetic \
 	gtk-gui/objects.xml \
-	MonoDevelop.Database.Components.addin.xml
+	MonoDevelop.Database.Components.addin.xml \
+	SqlSyntaxMode.xml
 
 all: $(ASSEMBLY)
 

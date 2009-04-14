@@ -19,6 +19,8 @@
 		<Addin id="Core.Gui" version="1.9.2"/>
 		<Addin id="Ide" version="1.9.2"/>
 		<Addin id="Database.Sql" version="1.9.2"/>
+		<Addin id="SourceEditor2" version="1.9.2"/>
+		<Addin id="Projects" version="1.9.2"/>
 	</Dependencies>
 	
 	<ExtensionPoint path = "/MonoDevelop/Database/DataGrid/Renderers" name = "DataGrid renderers">
@@ -38,6 +40,10 @@
 	<ExtensionPoint path = "/MonoDevelop/Database/ContextMenu/SqlEditor">
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
+
+	<Extension path = "/MonoDevelop/SourceEditor2/SyntaxModes">
+		<Templates resource="SqlSyntaxMode.xml" />
+	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/Commands">
 		<Category _name = "Database" id = "Database">

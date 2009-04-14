@@ -34,6 +34,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Database.Sql;
+using MonoDevelop.SourceEditor;
 
 namespace MonoDevelop.Database.Components
 {
@@ -52,10 +53,14 @@ namespace MonoDevelop.Database.Components
 			this.Build();
 			
 			sourceView = new Mono.TextEditor.TextEditor ();
+			// The SourceEditor Addin should be initialized before opening any Project.
+			// Database Addin works with or without project opened.
+			MonoDevelop.SourceEditor.Extension.TemplateExtensionNodeLoader.Init ();
 			sourceView.Document.MimeType = "text/x-sql";
+			
 			// TODO: Set styling ?
-		//	sourceView.Options = new MonoDevelop.SourceEditor.StyledSourceEditorOptions (null);
-		//	sourceView.ShowLineNumbers = true;
+			//	sourceView.Options = new MonoDevelop.SourceEditor.StyledSourceEditorOptions (null);
+			//	sourceView.ShowLineNumbers = true;
 			
 			sourceView.Document.TextReplaced += BufferChanged;
 			sourceView.TextViewMargin.ButtonPressed += delegate (object s, MarginMouseEventArgs args) {

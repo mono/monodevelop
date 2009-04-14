@@ -1,3 +1,14 @@
+2009-04-13  Luciano N. Callero  <lnc19@hotmail.com>
+	
+	* MonoDevelop.Database.Components.addin.xml:
+	* SqlSyntaxMode.xml: Added Sql Syntax Mode Support.
+
+	* Widgets/SqlEditorWidget.cs: Set the correct mime-Type.
+
+	* MonoDevelop.Database.Components.csproj:
+	* Makefile.am:
+	* gtk-gui/gui.stetic: Updated.
+
 2009-02-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Database.Components.csproj: Updated references.
