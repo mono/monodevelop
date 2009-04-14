@@ -183,6 +183,12 @@ namespace MonoDevelop.Projects.Gui.Completion
 			get { return list; }
 		}
 		
+		bool CompleteWithSpaceOrPunctuation {
+			get {
+				return MonoDevelop.Core.PropertyService.Get ("CompleteWithSpaceOrPunctuation", true);
+			}
+		}
+		
 		public KeyAction ProcessKey (Gdk.Key key, Gdk.ModifierType modifier)
 		{
 			switch (key)
@@ -261,7 +267,6 @@ namespace MonoDevelop.Projects.Gui.Completion
 				case Gdk.Key.ISO_Level3_Shift:	// AltGr
 					return KeyAction.Process;
 			}
-			
 			char c = (char)(uint)key;
 			if (c == ' ' && (modifier & ModifierType.ShiftMask) == ModifierType.ShiftMask)
 				return KeyAction.CloseWindow | KeyAction.Process;
@@ -271,6 +276,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 				UpdateWordSelection ();
 				return KeyAction.Process;
 			} else if (System.Char.IsPunctuation (c) || c == ' ' || c == '<') {
+				if (!CompleteWithSpaceOrPunctuation) 
+					return KeyAction.CloseWindow | KeyAction.Process;
 				//punctuation is only accepted if it actually matches an item in the list
 				word.Insert (curPos, c);
 				bool hasMismatches;
