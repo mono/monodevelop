@@ -117,7 +117,7 @@ namespace MonoDevelop.ValaBinding.Parser
 			FullName = (string.IsNullOrEmpty (parentname))? Name: string.Format ("{0}.{1}", parentname, name);
 			File = file;
 			FirstLine = first_line;
-			LastLine = last_line;
+			LastLine = (0 != last_line && last_line != first_line)? last_line-1: last_line;
 		}
 		
 		public CodeNode (string type, string name, string parentname, string file, int first_line, int last_line, AccessModifier access): this (type, name, parentname, file, first_line, last_line)
