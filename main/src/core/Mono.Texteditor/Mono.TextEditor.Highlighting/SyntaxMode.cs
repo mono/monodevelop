@@ -567,7 +567,7 @@ namespace Mono.TextEditor.Highlighting
 						result.IgnoreCase = Boolean.Parse (reader.GetAttribute ("ignorecase"));
 					return true;
 				case Rule.Node:
-					result.rules.Add (Rule.Read (result, reader));
+					result.rules.Add (Rule.Read (result, reader, result.IgnoreCase));
 					return true;
 				}
 				return result.ReadNode (reader, matches);

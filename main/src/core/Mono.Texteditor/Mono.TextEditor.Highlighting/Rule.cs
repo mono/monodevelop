@@ -141,7 +141,7 @@ namespace Mono.TextEditor.Highlighting
 		
 		KeyTable[] table = new KeyTable[255];
 		
-		void AddToTable (Keywords keywords, string word)
+		void AddToTable (Keywords keywords, char[] word)
 		{
 			KeyTable[] curTable = table;
 			for (int i = 0; i < word.Length; i++) {
@@ -175,6 +175,7 @@ namespace Mono.TextEditor.Highlighting
 			return curTable[idx].keywords;
 		}
 		
+		
 		protected bool ReadNode (XmlReader reader, List<Match> matchList)
 		{
 			switch (reader.LocalName) {
@@ -188,8 +189,20 @@ namespace Mono.TextEditor.Highlighting
 			case Mono.TextEditor.Highlighting.Keywords.Node:
 				Keywords keywords = Mono.TextEditor.Highlighting.Keywords.Read (reader, IgnoreCase);
 				this.keywords.Add (keywords);
-				foreach (string word in keywords.Words) {
-					AddToTable (keywords, word);
+				if (keywords.IgnoreCase) {
+					foreach (string wordStr in keywords.Words) {
+						char[] word = wordStr.ToCharArray ();
+						for (int i = 0; i < (1 << word.Length) - 1; i++) {
+							for (int j = 0; j < word.Length; j++) {
+								word[j] = (i & (1 << j)) == (1 << j) ? Char.ToLower (word[j]) : Char.ToUpper (word[j]);
+							}
+							AddToTable (keywords, word);
+						}
+					}
+				} else {
+					foreach (string word in keywords.Words) {
+						AddToTable (keywords, word.ToCharArray ());
+					}
 				}
 				return true;
 			case Marker.PrevMarker:
@@ -259,11 +272,12 @@ namespace Mono.TextEditor.Highlighting
 //		}
 		
 		public const string Node = "Rule";
-		public static Rule Read (SyntaxMode mode, XmlReader reader)
+		public static Rule Read (SyntaxMode mode, XmlReader reader, bool ignoreCaseDefault)
 		{
 			Rule result = new Rule (mode);
 			result.Name         = reader.GetAttribute ("name");
 			result.DefaultColor = reader.GetAttribute ("color");
+			result.IgnoreCase   = ignoreCaseDefault;
 			if (!String.IsNullOrEmpty (reader.GetAttribute ("ignorecase")))
 				result.IgnoreCase = Boolean.Parse (reader.GetAttribute ("ignorecase"));
 			List<Match> matches = new List<Match> ();

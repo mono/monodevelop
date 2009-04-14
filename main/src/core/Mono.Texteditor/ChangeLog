@@ -1,3 +1,10 @@
+2009-04-14  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor.Highlighting/Rule.cs:
+	* Mono.TextEditor.Highlighting/SyntaxMode.cs: fixed 'Bug
+	  494534 - ignorecase="true" attribute isn't working on xml
+	  "Syntax Mode" files.'.
+
 2009-04-13  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor.Highlighting/SyntaxMode.cs: fixed little
