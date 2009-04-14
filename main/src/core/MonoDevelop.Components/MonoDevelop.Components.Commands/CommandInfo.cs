@@ -42,8 +42,6 @@ namespace MonoDevelop.Components.Commands
 		bool useMarkup;
 		bool bypass;
 		bool checkedInconsistent;
-		public object DataItem; 
-		public CommandArrayInfo ArrayInfo;
 		internal bool IsArraySeparator;
 		internal object UpdateHandlerData;
 		
@@ -121,6 +119,14 @@ namespace MonoDevelop.Components.Commands
 		public bool Bypass {
 			get { return bypass; }
 			set { bypass = value; }
+		}
+		
+		public CommandArrayInfo ArrayInfo {
+			get; internal set;
+		}
+		
+		public object DataItem {
+			get; internal set;
 		}
 	}
 }

@@ -1,3 +1,8 @@
+2009-04-14  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Components.Commands/CommandInfo.cs: Don't
+	  publicly expose ArrayInfo/DataItem setters.
+
 2009-04-11  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Components.Commands/CommandManager.cs: made one
