@@ -37,17 +37,13 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 	{
 		static string[] filetypes = {"dll", "exe"};
 		
-		public bool ShouldIsolate {
-			get { return false; }
-		}
-
 		public string[] FileTypes {
 			get {
 				return filetypes;
 			}
 		}
 		
-		public IList<ItemToolboxNode> Load (string filename)
+		public IList<ItemToolboxNode> Load (LoaderContext ctx, string filename)
 		{
 			MC.AssemblyDefinition assem = MC.AssemblyFactory.GetAssembly (filename);
 			Mono.Linker.AssemblyResolver resolver = new Mono.Linker.AssemblyResolver ();

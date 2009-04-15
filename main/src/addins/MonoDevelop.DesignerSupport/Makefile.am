@@ -17,6 +17,7 @@ REFS =  \
 	-r:Mono.Cairo \
 	-r:Mono.Posix \
 	-r:System \
+	-r:System.Core \
 	-r:System.Design \
 	-r:System.Drawing \
 	-r:System.Drawing.Design \

@@ -131,29 +131,17 @@ namespace MonoDevelop.DesignerSupport
 			}
 		}
 		
-		void AddUserItems (string fileName)
+		void AddUserItems (LoaderContext ctx, string fileName)
 		{			
-			foreach (IToolboxLoader loader in loaders) {
-				//check whether the loader can handle this file extension
-				bool match = false;
-				foreach (string ext in loader.FileTypes)
-					if (fileName.EndsWith (ext))
-						match = true;
-				if (!match)
-					continue;
-				
-				System.Collections.Generic.IList<ItemToolboxNode> loadedItems = loader.Load (fileName);
-				
-				//prevent user from loading the same items again
-				foreach (ItemToolboxNode node in loadedItems) {
-					bool found = false;
-					foreach (ItemToolboxNode n in Configuration.ItemList) {
-						if (node.Equals (n))
-							found = true;
-					}
-					if (!found)
-						Configuration.ItemList.Add (node);
+			//prevent user from loading the same items again
+			foreach (ItemToolboxNode node in GetFileItems (ctx, fileName)) {
+				bool found = false;
+				foreach (ItemToolboxNode n in Configuration.ItemList) {
+					if (node.Equals (n))
+						found = true;
 				}
+				if (!found)
+					Configuration.ItemList.Add (node);
 			}
 		}
 		
@@ -177,8 +165,13 @@ namespace MonoDevelop.DesignerSupport
 				
 				IEnumerable<string> files = provider.GetDefaultFiles ();
 				if (files != null) {
-					foreach (string f in files)
-						AddUserItems (f);
+					LoaderContext ctx = new LoaderContext ();
+					try {
+						foreach (string f in files)
+							AddUserItems (ctx, f);
+					} finally {
+						ctx.Dispose ();
+					}
 				}
 				SaveConfiguration ();
 				OnToolboxContentsChanged ();
@@ -195,63 +188,33 @@ namespace MonoDevelop.DesignerSupport
 			}
 		}
 		
-		internal IList<ItemToolboxNode> GetFileItems (string fileName)
+		internal IList<ItemToolboxNode> GetFileItems (LoaderContext ctx, string fileName)
 		{
 			// Gets the list of items provided by a file.
-			// It checks every toolbox loader, and loads the file in an external
-			// process if required.
-			
 			List<ItemToolboxNode> items = new List<ItemToolboxNode> ();
-			bool isolatedLoaded = false;
+			
 			foreach (IToolboxLoader loader in loaders) {
+				//check whether the loader can handle this file extension
+				bool match = false;
+				foreach (string ext in loader.FileTypes) {
+					if (fileName.EndsWith (ext)) {
+						match = true;
+						break;
+					}
+				}
+				if (!match)
+					continue;
+				
 				if (!fileName.EndsWith (loader.FileTypes[0]))
 					continue;
 				
 				try {
-					if (loader.ShouldIsolate) {
-						// Load the widgets in an external process. ExternalFileLoader.Load() class will
-						// load the file using all loaders which require isolation.
-						if (isolatedLoaded)
-							continue;
-						isolatedLoaded = true;
-						ExternalFileLoader eloader = (ExternalFileLoader) Runtime.ProcessService.CreateExternalProcessObject (typeof(ExternalFileLoader),true);
-						string s = eloader.LoadFile (fileName);
-						XmlDataSerializer ser = new XmlDataSerializer (Services.ProjectService.DataContext);
-						ToolboxList list = (ToolboxList) ser.Deserialize (new StringReader (s), typeof(ToolboxList));
-						items.AddRange (list);
-					}
-					else {
-						IList<ItemToolboxNode> loadedItems = loader.Load (fileName);
-						items.AddRange (loadedItems);
-					}
+					IList<ItemToolboxNode> loadedItems = loader.Load (ctx, fileName);
+					items.AddRange (loadedItems);
 				}
 				catch (Exception ex) {
 					// Ignore
 					LoggingService.LogError (ex.ToString ());
-				}
-			}
-			return items;
-		}
-		
-		internal IList<ItemToolboxNode> InternalGetFileItems (string fileName)
-		{
-			// Method called by from the external process to get the items of
-			// a file. Only loaders requiring isolation are used here, since
-			// the other loaders are handled in the main process.
-			
-			List<ItemToolboxNode> items = new List<ItemToolboxNode> ();
-			foreach (IToolboxLoader loader in loaders) {
-				if (!fileName.EndsWith (loader.FileTypes[0]))
-					continue;
-				
-				try {
-					if (loader.ShouldIsolate) {
-						IList<ItemToolboxNode> loadedItems = loader.Load (fileName);
-						items.AddRange (loadedItems);
-					}
-				}
-				catch {
-					// Ignore
 				}
 			}
 			return items;
@@ -567,11 +530,11 @@ namespace MonoDevelop.DesignerSupport
 			
 			// Get the list of assemblies that need to be updated
 			
-			Hashtable files = new Hashtable ();
+			HashSet<string> files = new HashSet<string> ();
 			List<ComponentIndexFile> toupdate = new List<ComponentIndexFile> ();
 			List<ComponentIndexFile> todelete = new List<ComponentIndexFile> ();
 			foreach (ComponentIndexFile ia in index.Files) {
-				files [ia.FileName] = ia.FileName;
+				files.Add (ia.FileName);
 				if (!File.Exists (ia.FileName))
 					todelete.Add (ia);
 				if (ia.NeedsUpdate)
@@ -582,14 +545,16 @@ namespace MonoDevelop.DesignerSupport
 			
 			// Look for new assemblies
 			
-			foreach (SystemAssembly asm in Runtime.SystemAssemblyService.GetAssemblies ()) {
-				if (!files.Contains (asm.Location)) {
-					ComponentIndexFile c = new ComponentIndexFile (asm.Location);
-					index.Files.Add (c);
-					toupdate.Add (c);
+			foreach (TargetRuntime runtime in Runtime.SystemAssemblyService.GetTargetRuntimes ()) {
+				foreach (SystemAssembly asm in runtime.GetAssemblies ()) {
+					if (files.Add (asm.Location)) {
+						ComponentIndexFile c = new ComponentIndexFile (asm.Location);
+						index.Files.Add (c);
+						toupdate.Add (c);
+					}
+					if (monitor.IsCancelRequested)
+						return index;
 				}
-				if (monitor.IsCancelRequested)
-					return index;
 			}
 			
 			foreach (ComponentIndexFile ia in todelete) {
@@ -598,13 +563,18 @@ namespace MonoDevelop.DesignerSupport
 			
 			if (toupdate.Count > 0) {
 				monitor.BeginTask (GettextCatalog.GetString ("Looking for components..."), toupdate.Count);
-				foreach (ComponentIndexFile ia in toupdate) {
-					ia.Update ();
-					monitor.Step (1);
-					if (monitor.IsCancelRequested)
-						return index;
+				LoaderContext ctx = new LoaderContext ();
+				try {
+					foreach (ComponentIndexFile ia in toupdate) {
+						ia.Update (ctx);
+						monitor.Step (1);
+						if (monitor.IsCancelRequested)
+							return index;
+					}
+				} finally {
+					ctx.Dispose ();
+					monitor.EndTask ();
 				}
-				monitor.EndTask ();
 			}
 			
 			if (toupdate.Count > 0 || todelete.Count > 0)
@@ -660,7 +630,12 @@ namespace MonoDevelop.DesignerSupport
 		public ComponentIndexFile AddFile (string file)
 		{
 			ComponentIndexFile cf = new ComponentIndexFile (file);
-			cf.Update ();
+			LoaderContext ctx = new LoaderContext ();
+			try {
+				cf.Update (ctx);
+			} finally {
+				ctx.Dispose ();
+			}
 			if (cf.Components.Count == 0)
 				return null;
 			else {
@@ -732,9 +707,9 @@ namespace MonoDevelop.DesignerSupport
 			}
 		}
 
-		public void Update ()
+		public void Update (LoaderContext ctx)
 		{
-			IList<ItemToolboxNode> items = DesignerSupport.Service.ToolboxService.GetFileItems (fileName);
+			IList<ItemToolboxNode> items = DesignerSupport.Service.ToolboxService.GetFileItems (ctx, fileName);
 			
 			location = null;
 			this.timestamp = GetFileTimestamp (fileName);
@@ -742,30 +717,13 @@ namespace MonoDevelop.DesignerSupport
 			
 			// Set the location field only if this is a widget library
 			if (entries.Count > 0 && Runtime.SystemAssemblyService.GetPackageFromPath (fileName) != null)
-				location = Runtime.SystemAssemblyService.GetAssemblyFullName (fileName);
+				location = Runtime.SystemAssemblyService.DefaultRuntime.GetAssemblyFullName (fileName);
 		}
 		
 		string GetFileTimestamp (string file)
 		{
 			DateTime tim = File.GetLastWriteTime (file);
 			return System.Xml.XmlConvert.ToString (tim, System.Xml.XmlDateTimeSerializationMode.Utc);
-		}
-	}
-	
-	[MonoDevelop.Core.Execution.AddinDependency ("MonoDevelop.DesignerSupport")] 
-	class ExternalFileLoader: RemoteProcessObject
-	{
-		public string LoadFile (string file)
-		{
-			Gtk.Application.Init ();
-			ToolboxService service = new ToolboxService ();
-			XmlDataSerializer ser = new XmlDataSerializer (Services.ProjectService.DataContext);
-			ToolboxList tl = new ToolboxList ();
-			IList<ItemToolboxNode> list = service.InternalGetFileItems (file);
-			tl.AddRange (list);
-			StringWriter sw = new StringWriter ();
-			ser.Serialize (sw, tl);
-			return sw.ToString ();
 		}
 	}
 	
@@ -822,4 +780,5 @@ namespace MonoDevelop.DesignerSupport
 			get { return consumer; }
 		}
 	}
+
 }

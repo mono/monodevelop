@@ -1,3 +1,13 @@
+2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.DesignerSupport.csproj:
+	* MonoDevelop.DesignerSupport/ToolboxService.cs:
+	* MonoDevelop.DesignerSupport.Toolbox/IToolboxLoader.cs:
+	* MonoDevelop.DesignerSupport.Toolbox/CecilToolboxItemLoader.cs:
+	* MonoDevelop.DesignerSupport.Toolbox/ToolboxItemToolboxLoader.cs:
+	  Add support for multiple target runtimes.
+
 2009-03-23  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:

@@ -35,23 +35,47 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing.Design;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
 	
-	public abstract class ToolboxItemToolboxLoader : IToolboxLoader
+	public abstract class ToolboxItemToolboxLoader : IToolboxLoader, IExternalToolboxLoader
 	{
 		bool initialized;
 		
-		public bool ShouldIsolate {
-			get { return true; }
-		}
-
 		public string[] FileTypes {
 			get { return new string[] {"dll", "exe"}; }
 		}
 		
-		public IList<ItemToolboxNode> Load (string filename)
+		public IList<ItemToolboxNode> Load (LoaderContext ctx, string filename)
+		{
+			List<ItemToolboxNode> items = new List<ItemToolboxNode> ();
+			foreach (TargetRuntime runtime in GetSupportedRuntimes (filename)) {
+				items.AddRange (ctx.LoadItemsIsolated (runtime, GetType (), filename));
+			}
+			return items;
+		}
+		
+		IEnumerable<TargetRuntime> GetSupportedRuntimes (string filename)
+		{
+			bool found = false;
+			foreach (TargetRuntime runtime in Runtime.SystemAssemblyService.GetTargetRuntimes ()) {
+				SystemPackage p = runtime.GetPackageFromPath (filename);
+				if (p != null) {
+					found = true;
+					yield return p.TargetRuntime;
+				}
+			}
+			if (!found) {
+				// If the file does not belong to any known package, assume it is a wild assembly and make it
+				// avaliable to all frameworks
+				foreach (TargetRuntime runtime in Runtime.SystemAssemblyService.GetTargetRuntimes ())
+					yield return runtime;
+			}
+		}
+		
+		IList<ItemToolboxNode> IExternalToolboxLoader.Load (string filename)
 		{
 			List<ItemToolboxNode> list = new List<ItemToolboxNode> ();
 			System.Reflection.Assembly scanAssem;
@@ -62,9 +86,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				    + filename + "'", ex);
 				return list;
 			}
-			
-			MonoDevelop.Core.SystemPackage package
-				= MonoDevelop.Core.Runtime.SystemAssemblyService.GetPackageFromPath (filename);
+		
+			TargetRuntime runtime = Runtime.SystemAssemblyService.CurrentRuntime;
+			MonoDevelop.Core.SystemPackage package = runtime.GetPackageFromPath (filename);
 			
 			//need to initialise if this if out of the main process
 			//in order to be able to load icons etc.
@@ -120,8 +144,11 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				
 				try {
 					ItemToolboxNode node = GetNode (t, tba, cat, package != null? filename : null, clrVersion);
-					if (node != null)
+					if (node != null) {
+						// Make sure this item is only shown for the correct runtime
+						node.ItemFilters.Add (new ToolboxItemFilterAttribute ("TargetRuntime." + runtime.Id, ToolboxItemFilterType.Require));
 						list.Add (node);
+					}
 				} catch (Exception ex) {
 					MonoDevelop.Core.LoggingService.LogError (
 					    "Unhandled error in toolbox node loader '" + GetType ().FullName 
