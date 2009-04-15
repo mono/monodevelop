@@ -1,3 +1,9 @@
+2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MakefileData.cs:
+	* SimpleProjectMakefileHandler.cs: Track api changes to
+	  support multiple target runtimes.
+
 2009-02-26  Mike Krüger  <mkrueger@novell.com>
 
 	* PropertyProvider.cs: Worked on propertygrid localization.

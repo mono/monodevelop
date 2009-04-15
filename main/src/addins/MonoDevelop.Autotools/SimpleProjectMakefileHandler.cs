@@ -519,7 +519,7 @@ namespace MonoDevelop.Autotools
 					else 
 					{
 						refWriter.WriteLine (" \\");			// store all refs for easy access
-						AssemblyName assembly = Runtime.SystemAssemblyService.ParseAssemblyName (reference.Reference);
+						AssemblyName assembly = SystemAssemblyService.ParseAssemblyName (reference.Reference);
 						refWriter.Write ("\t" + assembly.Name);
 						refWriter.Write ("");
 					}
