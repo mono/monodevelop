@@ -69,12 +69,12 @@ namespace MonoDevelop.Components.Commands
 			
 			if (isMac) {
 				SelectionModifierAlt = Gdk.ModifierType.Mod5Mask;
-				SelectionModifierControl = Gdk.ModifierType.Mod1Mask | Gdk.ModifierType.MetaMask;
+				SelectionModifierControl = Gdk.ModifierType.Mod1Mask | META_MASK;
 				SelectionModifierSuper = Gdk.ModifierType.ControlMask;
 			} else {
 				SelectionModifierAlt = Gdk.ModifierType.Mod5Mask;
 				SelectionModifierControl = Gdk.ModifierType.ControlMask;
-				SelectionModifierSuper = Gdk.ModifierType.SuperMask;
+				SelectionModifierSuper = SUPER_MASK;
 			}
 		}
 		
@@ -708,9 +708,9 @@ namespace MonoDevelop.Components.Commands
 		static string AppleMapModifierToSymbols (Gdk.ModifierType mod)
 		{
 			string ret = "";
-			if ((mod & Gdk.ModifierType.MetaMask) != 0) {
+			if ((mod & META_MASK) != 0) {
 				ret += "⌘";
-				mod ^= Gdk.ModifierType.MetaMask;
+				mod ^= META_MASK;
 			}
 			if ((mod & Gdk.ModifierType.ControlMask) != 0) {
 				ret += "⌃";
