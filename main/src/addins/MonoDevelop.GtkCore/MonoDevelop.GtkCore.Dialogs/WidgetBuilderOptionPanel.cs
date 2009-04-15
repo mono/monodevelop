@@ -65,10 +65,11 @@ namespace MonoDevelop.GtkCore.Dialogs
 				Gtk.Label lbl = new Gtk.Label (GettextCatalog.GetString ("Target Gtk# version:"));
 				box.PackStart (lbl, false, false, 0);
 				comboVersions = ComboBox.NewText ();
-				foreach (string v in ReferenceManager.SupportedGtkVersions)
-					comboVersions.AppendText (v);
 				ReferenceManager refmgr = new ReferenceManager (project as DotNetProject);
-				comboVersions.Active = ReferenceManager.SupportedGtkVersions.IndexOf (refmgr.GtkPackageVersion);
+				foreach (string v in refmgr.SupportedGtkVersions)
+					comboVersions.AppendText (v);
+				comboVersions.Active = refmgr.SupportedGtkVersions.IndexOf (refmgr.GtkPackageVersion);
+				refmgr.Dispose ();
 				box.PackStart (comboVersions, false, false, 0);
 				box.ShowAll ();
 				PackStart (box, false, false, 0);
@@ -113,6 +114,7 @@ namespace MonoDevelop.GtkCore.Dialogs
 					info.GuiBuilderProject.SteticProject.TargetGtkVersion = comboVersions.ActiveText;
 					info.GuiBuilderProject.Save (false);
 				}
+				refmgr.Dispose ();
 			}
 		}
 		

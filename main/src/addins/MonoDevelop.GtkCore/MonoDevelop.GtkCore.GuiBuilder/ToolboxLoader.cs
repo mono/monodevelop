@@ -37,24 +37,19 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 {
 	public class ToolboxLoader: IToolboxLoader
 	{
-		
-		public virtual bool ShouldIsolate {
-			get { return false; }
-		}
-
 		public virtual string[] FileTypes {
 			get { return new string [] { "dll", "exe" }; }
 		}
 
-		public virtual IList<ItemToolboxNode> Load (string filename)
+		public virtual IList<ItemToolboxNode> Load (LoaderContext ctx, string filename)
 		{
-			SystemPackage sp = Runtime.SystemAssemblyService.GetPackageFromPath (filename);
+			SystemPackage sp = Runtime.SystemAssemblyService.DefaultRuntime.GetPackageFromPath (filename);
 			ReferenceType rt;
 			string rname;
 			
 			if (sp != null) {
 				rt = ReferenceType.Gac;
-				rname = Runtime.SystemAssemblyService.GetAssemblyFullName (filename);
+				rname = Runtime.SystemAssemblyService.DefaultRuntime.GetAssemblyFullName (filename);
 			} else {
 				rt = ReferenceType.Assembly;
 				rname = filename;

@@ -63,11 +63,11 @@ namespace MonoDevelop.GtkCore
 		[ItemProperty (DefaultValue="Mono.Unix.Catalog")]
 		string gettextClass = "Mono.Unix.Catalog";
 		
-		public GtkDesignInfo ()
+		GtkDesignInfo ()
 		{
 		}
 		
-		public GtkDesignInfo (DotNetProject project)
+		GtkDesignInfo (DotNetProject project)
 		{
 			IExtendedDataItem item = (IExtendedDataItem) project;
 			item.ExtendedProperties ["GtkDesignInfo"] = this;
@@ -85,6 +85,8 @@ namespace MonoDevelop.GtkCore
 					project.FileChangedInProject -= OnFileEvent;
 					project.FileRemovedFromProject -= OnFileEvent;
 					binding = null;
+					if (referenceManager != null)
+						referenceManager.Dispose ();
 					referenceManager = null;
 				}
 				project = value;
@@ -113,6 +115,8 @@ namespace MonoDevelop.GtkCore
 			if (builderProject != null)
 				builderProject.Dispose ();
 			builderProject = null;
+			if (referenceManager != null)
+				referenceManager.Dispose ();
 			referenceManager = null;
 			Project = null;
 		}

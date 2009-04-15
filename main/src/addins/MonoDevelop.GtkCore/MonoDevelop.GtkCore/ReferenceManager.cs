@@ -40,11 +40,18 @@ namespace MonoDevelop.GtkCore {
 		public ReferenceManager (DotNetProject project)
 		{
 			this.project = project;
+			project.TargetRuntime.PackagesChanged += ResetSupportedVersions;
 		}
 
 		public void Dispose ()
 		{
+			project.TargetRuntime.PackagesChanged -= ResetSupportedVersions;
 			project = null;
+		}
+		
+		void ResetSupportedVersions (object o, EventArgs a)
+		{
+			supported_versions = null;
 		}
 		
 		string CurrentAssemblyVersion {
@@ -87,12 +94,13 @@ namespace MonoDevelop.GtkCore {
 				return String.Empty;
 			}
 		}
-		static string GetGtkAssemblyVersion (string pkg_version)
+		
+		string GetGtkAssemblyVersion (string pkg_version)
 		{
 			if (String.IsNullOrEmpty (pkg_version))
 				return String.Empty;
 
-			foreach (SystemPackage p in Runtime.SystemAssemblyService.GetPackages (TargetFramework.Default)) {
+			foreach (SystemPackage p in project.TargetRuntime.GetPackages (TargetFramework.Default)) {
 				if (p.Name != "gtk-sharp-2.0" || p.Version != pkg_version)
 					continue;
 
@@ -105,12 +113,12 @@ namespace MonoDevelop.GtkCore {
 			return String.Empty;
 		}
 
-		static string GetGtkPackageVersion (string assembly_version)
+		string GetGtkPackageVersion (string assembly_version)
 		{
 			if (String.IsNullOrEmpty (assembly_version))
 				return String.Empty;
 
-			foreach (SystemPackage p in Runtime.SystemAssemblyService.GetPackages (TargetFramework.Default)) {
+			foreach (SystemPackage p in project.TargetRuntime.GetPackages (TargetFramework.Default)) {
 				if (p.Name != "gtk-sharp-2.0")
 					continue;
 
@@ -180,8 +188,8 @@ namespace MonoDevelop.GtkCore {
 				
 			if (!posix && info.GenerateGettext && info.GettextClass == "Mono.Unix.Catalog") {
 				// Add a reference to Mono.Posix. Use the version for the selected project's runtime version.
-				string aname = Runtime.SystemAssemblyService.FindInstalledAssembly ("Mono.Posix, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756", null);
-				aname = Runtime.SystemAssemblyService.GetAssemblyNameForVersion (aname, project.TargetFramework);
+				string aname = project.TargetRuntime.FindInstalledAssembly ("Mono.Posix, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756", null);
+				aname = project.TargetRuntime.GetAssemblyNameForVersion (aname, project.TargetFramework);
 				project.References.Add (new ProjectReference (ReferenceType.Gac, aname));
 				changed = true;
 			}
@@ -201,7 +209,6 @@ namespace MonoDevelop.GtkCore {
 		{
 			IdeApp.Workspace.ReferenceAddedToProject += OnReferenceAdded;
 			IdeApp.Workspace.ReferenceRemovedFromProject += OnReferenceRemoved;
-			Runtime.SystemAssemblyService.PackagesChanged += delegate { supported_versions = null; };
 		}
 		
 		static void OnReferenceAdded (object o, ProjectReferenceEventArgs args)
@@ -254,10 +261,10 @@ namespace MonoDevelop.GtkCore {
 			return false;
 		}
 
-		static List<string> supported_versions;
-		static string default_version;
+		List<string> supported_versions;
+		string default_version;
 
-		public static string DefaultGtkVersion {
+		public string DefaultGtkVersion {
 			get {
 				if (SupportedGtkVersions.Count > 0 && default_version == null)
 					default_version = SupportedGtkVersions [0];
@@ -265,11 +272,11 @@ namespace MonoDevelop.GtkCore {
 			}
 		}
 
-		public static List<string> SupportedGtkVersions {
+		public List<string> SupportedGtkVersions {
 			get {
 				if (supported_versions == null) {
 					supported_versions = new List<string> ();
-					foreach (SystemPackage p in Runtime.SystemAssemblyService.GetPackages (TargetFramework.Default)) {
+					foreach (SystemPackage p in project.TargetRuntime.GetPackages (TargetFramework.Default)) {
 						if (p.Name == "gtk-sharp-2.0") {
 							supported_versions.Add (p.Version);
 							if (p.Version.StartsWith ("2.8"))

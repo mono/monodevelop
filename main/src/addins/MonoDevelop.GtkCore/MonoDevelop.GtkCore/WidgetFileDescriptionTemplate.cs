@@ -81,7 +81,8 @@ namespace MonoDevelop.GtkCore
 		{
 			if (!GtkDesignInfo.SupportsDesigner (project)) {
 				ReferenceManager mgr = new ReferenceManager (project as DotNetProject);
-				mgr.GtkPackageVersion = ReferenceManager.DefaultGtkVersion;
+				mgr.GtkPackageVersion = mgr.DefaultGtkVersion;
+				mgr.Dispose ();
 			}
 
 			GtkDesignInfo info = GtkDesignInfo.FromProject ((DotNetProject) project);

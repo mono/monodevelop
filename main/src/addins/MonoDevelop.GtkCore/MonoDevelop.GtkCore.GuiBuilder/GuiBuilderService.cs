@@ -103,7 +103,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		static string OnAssemblyResolve (string assemblyName)
 		{
-			return Runtime.SystemAssemblyService.GetAssemblyLocation (assemblyName);
+			return Runtime.SystemAssemblyService.DefaultRuntime.GetAssemblyLocation (assemblyName);
 		}
 		
 		static string OnMimeResolve (string url)
@@ -213,7 +213,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 			else {
 				// Some gtk# packages don't include the .pc file unless you install gtk-sharp-devel
-				if (Runtime.SystemAssemblyService.GetPackage ("gtk-sharp-2.0") == null) {
+				if (Runtime.SystemAssemblyService.DefaultRuntime.GetPackage ("gtk-sharp-2.0") == null) {
 					string msg = GettextCatalog.GetString ("ERROR: MonoDevelop could not find the Gtk# 2.0 development package. Compilation of projects depending on Gtk# libraries will fail. You may need to install development packages for gtk-sharp-2.0.");
 					args.ProgressMonitor.Log.WriteLine ();
 					args.ProgressMonitor.Log.WriteLine (msg);

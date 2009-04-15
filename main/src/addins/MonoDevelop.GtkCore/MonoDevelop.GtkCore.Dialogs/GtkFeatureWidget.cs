@@ -16,9 +16,11 @@ namespace MonoDevelop.GtkCore.Dialogs
 			Spacing = 6;
 			
 			versionCombo = Gtk.ComboBox.NewText ();
-			foreach (string v in ReferenceManager.SupportedGtkVersions)
+			ReferenceManager refmgr = new ReferenceManager (project);
+			foreach (string v in refmgr.SupportedGtkVersions)
 				versionCombo.AppendText (v);
 			versionCombo.Active = 0;
+			refmgr.Dispose ();
 			
 			// GTK# version selector
 			HBox box = new HBox (false, 6);
@@ -61,6 +63,7 @@ namespace MonoDevelop.GtkCore.Dialogs
 			GtkFeatureWidget fw = (GtkFeatureWidget) editor;
 			ReferenceManager refmgr = new ReferenceManager ((DotNetProject) entry);
 			refmgr.GtkPackageVersion = fw.SelectedVersion;
+			refmgr.Dispose ();
 		}
 		
 		public string Validate (SolutionFolder parentCombine, SolutionItem entry, Gtk.Widget editor)

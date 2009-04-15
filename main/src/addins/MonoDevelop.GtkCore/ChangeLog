@@ -1,3 +1,16 @@
+2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.GtkCore/GtkDesignInfo.cs:
+	* MonoDevelop.GtkCore/ReferenceManager.cs:
+	* MonoDevelop.GtkCore.Dialogs/GtkFeatureWidget.cs:
+	* MonoDevelop.GtkCore.GuiBuilder/ToolboxLoader.cs:
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs:
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs:
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:
+	* MonoDevelop.GtkCore/WidgetFileDescriptionTemplate.cs:
+	* MonoDevelop.GtkCore.Dialogs/WidgetBuilderOptionPanel.cs: Add
+	  support for multiple target runtimes.
+
 2009-03-17  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs:
