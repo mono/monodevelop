@@ -373,9 +373,10 @@ namespace Mono.TextEditor
 					data.Caret.Offset = curLine.Offset + lineCol + lines[i].Length;
 				}
 				
-				data.MainSelection = new Selection (data.Document.OffsetToLocation (insertionOffset),
+/*				data.MainSelection = new Selection (data.Document.OffsetToLocation (insertionOffset),
 				                                    data.Caret.Location,
-				                                    lines.Length > 1 ? SelectionMode.Block : SelectionMode.Normal);
+				                                    lines.Length > 1 ? SelectionMode.Block : SelectionMode.Normal);*/
+				data.ClearSelection ();
 				data.Caret.PreserveSelection = false;
 				data.Document.EndAtomicUndo ();
 			});

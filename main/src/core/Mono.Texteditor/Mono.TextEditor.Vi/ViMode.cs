@@ -136,6 +136,8 @@ namespace Mono.TextEditor.Vi
 		
 		void ResetEditorState (TextEditorData data)
 		{
+			if (data == null)
+				return;
 			data.ClearSelection ();
 			if (!data.Caret.IsInInsertMode)
 				data.Caret.IsInInsertMode = true;
@@ -199,13 +201,15 @@ namespace Mono.TextEditor.Vi
 
 					case 'V':
 						Status = "-- VISUAL LINE --";
-						Data.MainSelection.Anchor = Caret.Location;
 						Data.SetSelectLines (Caret.Line, Caret.Line);
+						Data.MainSelection.Anchor = Caret.Location;
 						state = State.VisualLine;
 						return;
 						
 					case 'v':
 						Status = "-- VISUAL --";
+						if (Data.MainSelection == null)
+							Data.MainSelection = new Selection (Caret.Location, Caret.Location);
 						Data.MainSelection.Anchor = Caret.Location;
 						state = State.Visual;
 						return;

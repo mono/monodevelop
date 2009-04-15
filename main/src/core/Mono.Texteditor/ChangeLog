@@ -1,5 +1,11 @@
 2009-04-15  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor.Vi/ViMode.cs:
+	* Mono.TextEditor/ClipboardActions.cs: Fixed some issues in
+	  vim mode.
+
+2009-04-15  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor.Highlighting/Rule.cs:
 	* Mono.TextEditor.Highlighting/SyntaxMode.cs: Fixed text
 	  editor issues.
