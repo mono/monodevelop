@@ -197,16 +197,30 @@ namespace OSXIntegration
 					outKey = (ushort) map [0].Keycode;
 					outMod = 0;
 					
-					if ((mod & Gdk.ModifierType.Mod1Mask) != 0)
+					if ((mod & Gdk.ModifierType.Mod1Mask) != 0) {
 						outMod |= MenuAccelModifier.OptionModifier;
-					if ((mod & Gdk.ModifierType.ShiftMask) != 0)
+						mod ^= Gdk.ModifierType.Mod1Mask;
+					}
+					if ((mod & Gdk.ModifierType.ShiftMask) != 0) {
 						outMod |= MenuAccelModifier.ShiftModifier;
-					if ((mod & Gdk.ModifierType.ControlMask) != 0)
+						mod ^= Gdk.ModifierType.ShiftMask;
+					}
+					if ((mod & Gdk.ModifierType.ControlMask) != 0) {
 						outMod |= MenuAccelModifier.ControlModifier;
+						mod ^= Gdk.ModifierType.ControlMask;
+					}
 					
 					// This is inverted, because by default on OSX no setting means use the Command-key
-					if ((mod & Gdk.ModifierType.MetaMask) == 0)
+					if ((mod & Gdk.ModifierType.MetaMask) == 0) {
 						outMod |= MenuAccelModifier.None;
+					} else {
+						mod ^= Gdk.ModifierType.MetaMask;
+					}
+					
+					if (mod != 0) {
+						System.Console.WriteLine("WARNING: Cannot display accelerators with modifiers: {0}", mod);
+						return false;
+					}
 					
 					if (modeKey != 0) {
 						System.Console.WriteLine("WARNING: Cannot display accelerators with mode keys ({0})", accelKey);
@@ -241,6 +255,8 @@ namespace OSXIntegration
 			return macCmdId;
 		}
 		
+		//NOTE: This is used to disable the whole menu when there's a modal dialog.
+		// We can justify this because safari 3.2.1 does it ("do you want to close all tabs?").
 		static bool IsGloballyDisabled {
 			get {
 				return !MonoDevelop.Ide.Gui.IdeApp.Workbench.RootWindow.HasToplevelFocus;

@@ -1,3 +1,8 @@
+2009-04-15  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Menus/OSXMenu.cs: Add some notes. Don't show accelerators
+	  with modifiers we can't display.
+
 2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:
