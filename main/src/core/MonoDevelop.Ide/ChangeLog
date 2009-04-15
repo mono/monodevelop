@@ -1,3 +1,11 @@
+2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:
+	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:
+	  Track api changes to support multiple target runtimes.
+
 2009-04-15  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Gui/Document.cs: Added patch from Levi Bard

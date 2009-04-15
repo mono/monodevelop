@@ -32,6 +32,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 	{
 		SelectReferenceDialog selectDialog;
 		TargetFramework version;
+		TargetRuntime runtime;
 
 		ListStore store;
 		TreeView treeView;
@@ -79,9 +80,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			BorderWidth = 6;
 		}
 		
-		public void SetTargetFramework (TargetFramework version)
+		public void SetTargetFramework (TargetRuntime runtime, TargetFramework version)
 		{
 			this.version = version;
+			this.runtime = runtime;
 		}
 		
 		int SortTree (TreeModel model, TreeIter first, TreeIter second)
@@ -140,7 +142,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		void PrintCache()
 		{
-			foreach (SystemAssembly asm in Runtime.SystemAssemblyService.GetAssemblies (version)) {
+			foreach (SystemAssembly asm in runtime.GetAssemblies (version)) {
 				string pn = asm.Package.Name;
 				if (pn == "mscorlib")
 					continue;
