@@ -1,3 +1,10 @@
+2009-04-15  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui/Document.cs: Added patch from Levi Bard
+	  <taktaktaktaktaktaktaktaktaktak@gmail.com>: Perform initial
+	  parse asynchronously.
+
+
 2009-04-10  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Gui.Content/CompletionTextEditorExtension.cs:

@@ -455,7 +455,8 @@ namespace MonoDevelop.Ide.Gui
 			if (editor == null)
 				return;
 			editor.TextChanged += OnDocumentChanged;
-			this.parsedDocument = MonoDevelop.Projects.Dom.Parser.ProjectDomService.Parse (Project, FileName, MonoDevelop.Core.Gui.Services.PlatformService.GetMimeTypeForUri (FileName), TextEditor.Text);
+			//this.parsedDocument = MonoDevelop.Projects.Dom.Parser.ProjectDomService.Parse (Project, FileName, MonoDevelop.Core.Gui.Services.PlatformService.GetMimeTypeForUri (FileName), TextEditor.Text);
+			OnDocumentChanged (this, null);
 
 			// If the new document is a text editor, attach the extensions
 			
