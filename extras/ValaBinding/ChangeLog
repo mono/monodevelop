@@ -1,3 +1,9 @@
+2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* configure.in:
+	* AssemblyInfo.cs:
+	* ValaBinding.addin.xml: Bump MD version.
+
 2009-04-14  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* Parser/*: Improvements to dom interaction.

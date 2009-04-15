@@ -13,9 +13,9 @@
 	</Runtime>
 
 	<Dependencies>
-		<Addin id="Core" version="1.9.2"/>
-		<Addin id="Core.Gui" version="1.9.2"/>
-		<Addin id="Ide" version="1.9.2"/>
+		<Addin id="Core" version="2.1.0"/>
+		<Addin id="Core.Gui" version="2.1.0"/>
+		<Addin id="Ide" version="2.1.0"/>
 	</Dependencies>
 	
 	<ExtensionPoint path = "/MonoDevelop/Profiling/ToolBar/ProfilingPad" name = "Profiling pad toolbar">

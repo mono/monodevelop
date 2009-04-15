@@ -1,3 +1,7 @@
+2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* configure: Bump MD version.
+
 2009-02-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Debugger.Mdb.sln: Flush.

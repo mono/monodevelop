@@ -1,3 +1,8 @@
+2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AssemblyInfo.cs:
+	* MonoDevelop.Database.Designer.addin.xml: Bump MD version.
+
 2009-02-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Database.Designer.csproj: Updated references.

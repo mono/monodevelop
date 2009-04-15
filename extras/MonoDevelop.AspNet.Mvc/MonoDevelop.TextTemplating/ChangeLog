@@ -1,3 +1,7 @@
+2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.TextTemplating.addin.xml: Bump MD version.
+
 2009-04-09  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Parser/T4Parser.cs: Track parser API.

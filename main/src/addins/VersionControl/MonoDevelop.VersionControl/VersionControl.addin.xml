@@ -7,7 +7,7 @@
        description = "A MonoDevelop addin for using version control systems like Subversion"
        category    = "Version Control"
        flags = "Hidden"
-       version   = "1.9.2">
+       version   = "2.1.0">
  
 	<Runtime>
 		<Import assembly="Diff.dll"/>
@@ -15,11 +15,11 @@
 	</Runtime>
 
 	<Dependencies>
-	    <Addin id="Core" version="1.9.2"/>
-	    <Addin id="Core.Gui" version="1.9.2"/>
-		<Addin id="Projects" version="1.9.2"/>
-		<Addin id="Projects.Gui" version="1.9.2"/>
-	    <Addin id="Ide" version="1.9.2"/>
+	    <Addin id="Core" version="2.1.0"/>
+	    <Addin id="Core.Gui" version="2.1.0"/>
+		<Addin id="Projects" version="2.1.0"/>
+		<Addin id="Projects.Gui" version="2.1.0"/>
+	    <Addin id="Ide" version="2.1.0"/>
 	</Dependencies>
 	
 	<ExtensionPoint path = "/MonoDevelop/VersionControl/VersionControlSystems" name = "Version control systems">

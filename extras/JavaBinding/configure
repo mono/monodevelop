@@ -1,10 +1,10 @@
 #!/bin/bash
-VERSION=1.9.2
+VERSION=2.1.0
 PACKAGE=monodevelop-java
 prefix=/usr/local
 config=DEBUG
 configurations=" RELEASE DEBUG"
-required_packages="mono-addins;0.3 gtk-sharp-2.0;2.8.3 glade-sharp-2.0;2.8.3 monodevelop;1.9.2"
+required_packages="mono-addins;0.3 gtk-sharp-2.0;2.8.3 glade-sharp-2.0;2.8.3 monodevelop;2.1.0"
 
 usage ()
 {

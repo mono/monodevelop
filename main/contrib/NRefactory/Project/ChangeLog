@@ -1,3 +1,7 @@
+2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Configuration/AssemblyInfo.cs: Bump MD version.
+
 2009-03-31  Mike Krüger  <mkrueger@novell.com>
 
 	* Src/Parser/CSharp/cs.ATG:

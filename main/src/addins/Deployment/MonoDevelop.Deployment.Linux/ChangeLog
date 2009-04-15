@@ -1,3 +1,8 @@
+2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AssemblyInfo.cs:
+	* MonoDevelop.Deployment.Linux.addin.xml: Bump MD version.
+
 2009-03-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Deployment.Linux/LinuxDeployExtension.cs: If

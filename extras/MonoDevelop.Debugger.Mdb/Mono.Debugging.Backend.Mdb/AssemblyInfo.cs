@@ -5,5 +5,5 @@ using System.Reflection;
 [assembly: AssemblyProduct ("MonoDevelop")]
 [assembly: AssemblyTitle ("MDB support for Mono.Debugging")]
 [assembly: AssemblyDescription ("Managed Debugging Engine support for MDB")]
-[assembly: AssemblyVersion ("1.9.2")]
+[assembly: AssemblyVersion ("2.1.0")]
 [assembly: AssemblyCopyright ("MIT X11")]

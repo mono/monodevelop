@@ -1,3 +1,7 @@
+2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Profiling.HeapBuddy.addin.xml: Bump MD version.
+
 2009/02/03  Lluis Sanchez Gual  <lluis@novell.com>
 
  * AssemblyInfo.cs:

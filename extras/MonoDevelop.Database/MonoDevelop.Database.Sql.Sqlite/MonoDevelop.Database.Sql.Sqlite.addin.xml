@@ -6,7 +6,7 @@
 	url		= "http://www.monodevelop.com"
 	description	= "Database Module"
 	category    = "Database"
-	version		= "1.9.2">
+	version		= "2.1.0">
     
 	<Runtime>
 		<Import assembly="MonoDevelop.Database.Sql.Sqlite.dll"/>
@@ -15,12 +15,12 @@
   	<Localizer type="Gettext" catalog="monodevelop-database"/>
   
 	<Dependencies>
-		<Addin id="Core" version="1.9.2"/>
-		<Addin id="Core.Gui" version="1.9.2"/>
-		<Addin id="Ide" version="1.9.2"/>
-		<Addin id="Database.Sql" version="1.9.2"/>
-		<Addin id="Database.Components" version="1.9.2"/>
-		<Addin id="Database.Designer" version="1.9.2"/>
+		<Addin id="Core" version="2.1.0"/>
+		<Addin id="Core.Gui" version="2.1.0"/>
+		<Addin id="Ide" version="2.1.0"/>
+		<Addin id="Database.Sql" version="2.1.0"/>
+		<Addin id="Database.Components" version="2.1.0"/>
+		<Addin id="Database.Designer" version="2.1.0"/>
 	</Dependencies>
 
 	<Extension path = "/MonoDevelop/Database/Sql">

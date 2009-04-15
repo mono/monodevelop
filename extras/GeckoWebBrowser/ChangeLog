@@ -1,3 +1,10 @@
+2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* configure:
+	* AssemblyInfo.cs:
+	* MonoDevelop.WebBrowsers.GeckoWebBrowser.addin.xml: Bump MD
+	  version.
+
 2009-02-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* GeckoWebBrowser.sln: Flush.

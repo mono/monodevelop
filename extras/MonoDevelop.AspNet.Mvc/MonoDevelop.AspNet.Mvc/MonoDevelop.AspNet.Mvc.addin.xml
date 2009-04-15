@@ -6,7 +6,7 @@
        url         = "http://monodevelop.com/"
        description = "Support for ASP.NET MVC projects."
        category    = "Web Development"
-       version     = "1.9.2">
+       version     = "2.1.0">
 	
 	<Runtime>
 		<Import file = "Templates/Controller.xft.xml"/>
@@ -24,15 +24,15 @@
 	</Runtime>
 	
 	<Dependencies>
-		<Addin id="Core" version="1.9.2"/>
-		<Addin id="Core.Gui" version="1.9.2"/>
-		<Addin id="Projects" version="1.9.2"/>
-		<Addin id="Projects.Gui" version="1.9.2"/>
-		<Addin id="Ide" version="1.9.2"/>
-		<Addin id="XmlEditor" version="1.9.2" />
-		<Addin id="AspNet" version="1.9.2" />
-		<Addin id="SourceEditor2" version="1.9.2" />
-		<Addin id="TextTemplating" version="1.9.2" />
+		<Addin id="Core" version="2.1.0"/>
+		<Addin id="Core.Gui" version="2.1.0"/>
+		<Addin id="Projects" version="2.1.0"/>
+		<Addin id="Projects.Gui" version="2.1.0"/>
+		<Addin id="Ide" version="2.1.0"/>
+		<Addin id="XmlEditor" version="2.1.0" />
+		<Addin id="AspNet" version="2.1.0" />
+		<Addin id="SourceEditor2" version="2.1.0" />
+		<Addin id="TextTemplating" version="2.1.0" />
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">

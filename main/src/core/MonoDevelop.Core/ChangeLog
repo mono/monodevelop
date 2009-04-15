@@ -1,5 +1,10 @@
 2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* AssemblyInfo.cs:
+	* MonoDevelop.Core.addin.xml: Bump MD version.
+
+2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Makefile.am:
 	* frameworks.xml:
 	* MonoDevelop.Core.csproj:

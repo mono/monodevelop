@@ -1,3 +1,8 @@
+2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AssemblyInfo.cs:
+	* ChangeLogAddIn.addin.xml: Bump MD version.
+
 2009-03-19  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* OldChangeLogData.cs: Don't set value for commit message

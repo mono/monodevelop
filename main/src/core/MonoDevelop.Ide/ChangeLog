@@ -1,5 +1,11 @@
 2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* AssemblyInfo.cs:
+	* BuildVariables.cs:
+	* MonoDevelop.Ide.addin.xml: Bump MD version.
+
+2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui/ProjectOperations.cs:
 	* MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs:
 	* MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:

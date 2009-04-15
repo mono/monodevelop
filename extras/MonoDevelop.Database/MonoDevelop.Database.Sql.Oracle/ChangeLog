@@ -1,3 +1,8 @@
+2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AssemblyInfo.cs:
+	* MonoDevelop.Database.Sql.Oracle.addin.xml: Bump MD version.
+
 2009-03-04  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Database.Sql.Oracle.csproj: Updated format.

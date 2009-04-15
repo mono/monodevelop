@@ -1,5 +1,10 @@
 2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* AssemblyInfo.cs:
+	* MonoDevelop.AspNet.addin.xml: Bump MD version.
+
+2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.AspNet/WebTypeManager.cs:
 	* MonoDevelop.AspNet/AspNetAppProject.cs:
 	* MonoDevelop.AspNet/AspNetToolboxNode.cs:

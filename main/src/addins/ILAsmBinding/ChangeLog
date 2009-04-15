@@ -1,3 +1,8 @@
+2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AssemblyInfo.cs:
+	* ILAsmBinding.addin.xml: Bump MD version.
+
 2009-02-25  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* ILAsmLanguageBinding.cs:

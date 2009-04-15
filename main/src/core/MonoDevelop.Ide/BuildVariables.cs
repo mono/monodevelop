@@ -2,8 +2,8 @@ namespace MonoDevelop.Ide
 {
 	internal class BuildVariables
 	{
-		public static string PackageVersion = "1.9.2";
-		public static string PackageVersionLabel = "2.0 Beta 1";
+		public static string PackageVersion = "2.1.0";
+		public static string PackageVersionLabel = "2.1.0";
 	}
 }
 

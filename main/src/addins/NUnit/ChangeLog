@@ -1,3 +1,8 @@
+2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AssemblyInfo.cs:
+	* MonoDevelopNUnit.addin.xml: Bump MD version.
+
 2009-03-20  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* templates/NUnitProject.xpt.xml: Reference the version of

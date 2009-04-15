@@ -1,3 +1,8 @@
+2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AssemblyInfo.cs:
+	* GnomePlatform.addin.xml: Bump MD version.
+
 2009-02-26  Mike Kestner  <mkestner@novell.com>
 
 	* Gio.cs: remove an unref that can cause double frees, even

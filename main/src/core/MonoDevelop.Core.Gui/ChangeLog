@@ -1,3 +1,8 @@
+2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AssemblyInfo.cs:
+	* MonoDevelop.Core.Gui.addin.xml: Bump MD version.
+
 2009-04-06  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Core.Gui/PlatformService.cs: Change the platform

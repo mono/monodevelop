@@ -1,3 +1,8 @@
+2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AssemblyInfo.cs:
+	* MonoDevelop.Database.Sql.Sqlite.addin.xml: Bump MD version.
+
 2009-02-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Database.Sql.Sqlite.csproj: Updated references.

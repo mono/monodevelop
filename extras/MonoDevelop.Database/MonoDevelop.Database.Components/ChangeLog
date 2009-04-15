@@ -1,3 +1,8 @@
+2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AssemblyInfo.cs:
+	* MonoDevelop.Database.Components.addin.xml: Bump MD version.
+
 2009-04-13  Luciano N. Callero  <lnc19@hotmail.com>
 	
 	* MonoDevelop.Database.Components.addin.xml:

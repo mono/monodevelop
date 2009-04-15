@@ -5,5 +5,5 @@ using System.Reflection;
 [assembly: AssemblyProduct ("MonoDevelop")]
 [assembly: AssemblyTitle ("WebKit Web Browser")]
 [assembly: AssemblyDescription ("WebKit Web Browser component")]
-[assembly: AssemblyVersion ("1.9.2")]
+[assembly: AssemblyVersion ("2.1.0")]
 [assembly: AssemblyCopyright ("MIT X11")]

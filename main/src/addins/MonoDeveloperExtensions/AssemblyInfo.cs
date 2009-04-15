@@ -5,5 +5,5 @@ using System.Reflection;
 [assembly: AssemblyProduct ("MonoDevelop")]
 [assembly: AssemblyTitle ("IDE Extensions for developers of the Mono framework")]
 [assembly: AssemblyDescription ("Provides some IDE extensions useful for developing and building the Mono class libraries.")]
-[assembly: AssemblyVersion ("1.9.2")]
+[assembly: AssemblyVersion ("2.1.0")]
 [assembly: AssemblyCopyright ("(c) 2005 Novell, Inc.")]

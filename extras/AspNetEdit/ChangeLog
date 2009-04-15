@@ -1,3 +1,9 @@
+2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* configure:
+	* AssemblyInfo.cs:
+	* AspNetEdit.addin.xml: Bump MD version.
+
 2009-02-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AspNetEdit.sln: Flush.

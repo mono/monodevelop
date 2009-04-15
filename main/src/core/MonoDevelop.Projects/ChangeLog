@@ -1,5 +1,10 @@
 2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* AssemblyInfo.cs:
+	* MonoDevelop.Projects.addin.xml: Bump MD version.
+
+2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects/DotNetProject.cs:
 	* MonoDevelop.Projects/ProjectReference.cs:
 	* MonoDevelop.Projects.Dom.Parser/IParserDatabase.cs:

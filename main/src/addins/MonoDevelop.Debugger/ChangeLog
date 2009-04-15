@@ -1,5 +1,10 @@
 2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* AssemblyInfo.cs:
+	* MonoDevelop.Debugger.addin.xml: Bump MD version.
+
+2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Debugger/ExceptionsDialog.cs: Track api changes
 	  to support multiple target runtimes.
 

@@ -6,7 +6,7 @@
 	url		= "http://www.monodevelop.com"
 	description	= "Database Module"
 	category	= "Database"
-	version		= "1.9.2">
+	version		= "2.1.0">
     
 	<Runtime>
 		<Import assembly="MonoDevelop.Database.Sql.dll"/>

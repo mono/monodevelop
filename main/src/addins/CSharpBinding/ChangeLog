@@ -1,3 +1,8 @@
+2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AssemblyInfo.cs:
+	* CSharpBinding.addin.xml: Bump MD version.
+
 2009-04-09  Mike Krüger  <mkrueger@novell.com>
 
 	* Gui/NRefactoryResolver.cs: fixed "Bug 429034 - Class alias

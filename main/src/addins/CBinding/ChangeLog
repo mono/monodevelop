@@ -1,3 +1,8 @@
+2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AssemblyInfo.cs:
+	* CBinding.addin.xml: Bump MD version.
+
 2009-03-13  Andrés G. Aragoneses  <aaragoneses@novell.com>
 
 	* gtk-gui/gui.stetic:
