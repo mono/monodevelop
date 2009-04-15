@@ -330,6 +330,7 @@ namespace MonoDevelop.SourceEditor
 		
 		void OnParseInformationChanged (object sender, ParsedDocumentEventArgs args)
 		{
+			/*
 			if (this.isDisposed || args == null || args.ParsedDocument == null || this.view == null) {
 				return;
 			}
@@ -342,6 +343,21 @@ namespace MonoDevelop.SourceEditor
 			bool canShowBrowser = ParsedDocument != null && ParsedDocument.CompilationUnit != null;
 			if (canShowBrowser)
 				Gtk.Application.Invoke (delegate { this.CanShowClassBrowser = canShowBrowser; } );
+			*/
+			Gtk.Application.Invoke (delegate {
+				if (this.isDisposed || args == null || args.ParsedDocument == null || this.view == null) {
+					return;
+				}
+				
+				string fileName = this.view.IsUntitled ? this.view.UntitledName : this.view.ContentName;
+				if (fileName != args.FileName)
+					return;
+				
+				ParsedDocument = args.ParsedDocument;
+				bool canShowBrowser = ParsedDocument != null && ParsedDocument.CompilationUnit != null;
+				if (canShowBrowser)
+					this.CanShowClassBrowser = canShowBrowser; 
+			});
 		}
 		
 		public ParsedDocument ParsedDocument  {

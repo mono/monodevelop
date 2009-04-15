@@ -1,3 +1,11 @@
+2009-04-15  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Added patch
+	  from Levi Bard
+	  <taktaktaktaktaktaktaktaktaktak@gmail.com>:Make sure GUI
+	  operations are performed in the GUI thread.
+
+
 2009-04-14  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor.OptionPanels/GeneralOptionsPanel.cs:
