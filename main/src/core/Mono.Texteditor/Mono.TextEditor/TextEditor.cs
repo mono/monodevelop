@@ -44,6 +44,9 @@ namespace Mono.TextEditor
 	[System.ComponentModel.ToolboxItem(true)]
 	public class TextEditor : Gtk.DrawingArea, ITextEditorDataProvider
 	{
+		const Gdk.ModifierType META_MASK = (Gdk.ModifierType) 0x10000000; //FIXME GTK+ 2.12: Gdk.ModifierType.MetaMask;
+		const Gdk.ModifierType SUPER_MASK = (Gdk.ModifierType) 0x40000000; //FIXME GTK+ 2.12: Gdk.ModifierType.SuperMask;
+		
 		TextEditorData textEditorData;
 		
 		protected IconMargin       iconMargin;
@@ -635,7 +638,7 @@ namespace Mono.TextEditor
 		
 		public void SimulateKeyPress (Gdk.Key key, uint unicodeKey, Gdk.ModifierType modifier)
 		{
-			if ((modifier & Gdk.ModifierType.ControlMask) == Gdk.ModifierType.ControlMask) 
+			if ((modifier & (Gdk.ModifierType.Mod1Mask | Gdk.ModifierType.ControlMask | META_MASK | SUPER_MASK)) != 0) 
 				unicodeKey = 0;
 			CurrentMode.InternalHandleKeypress (this, textEditorData, key, unicodeKey, modifier);
 			textViewMargin.ResetCaretBlink ();

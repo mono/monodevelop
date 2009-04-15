@@ -1,3 +1,8 @@
+2009-04-15  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextEditor/TextEditor.cs: Don't interpret keystrokes as
+	  text input when alt, meta or super modifiers are active.
+
 2009-04-15  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor.Vi/ViMode.cs:
