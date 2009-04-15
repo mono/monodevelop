@@ -1,3 +1,9 @@
+2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:
+	* MonoDevelop.AssemblyBrowser/ReferenceFolderNodeBuilder.cs:
+	  Track api changes to support multiple target runtimes.
+
 2009-03-27  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs: fixed
