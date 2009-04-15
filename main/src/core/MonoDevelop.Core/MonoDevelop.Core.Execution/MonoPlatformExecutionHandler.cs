@@ -33,6 +33,14 @@ namespace MonoDevelop.Core.Execution
 {
 	public class MonoPlatformExecutionHandler: NativePlatformExecutionHandler
 	{
+		public MonoPlatformExecutionHandler ()
+		{
+		}
+		
+		public MonoPlatformExecutionHandler (IDictionary<string, string> defaultEnvironmentVariables): base (defaultEnvironmentVariables)
+		{
+		}
+		
 		public override IProcessAsyncOperation Execute (string command, string arguments, string workingDirectory, IDictionary<string, string> environmentVariables, IConsole console)
 		{
 			string args = string.Format ("--debug \"{0}\" {1}", command, arguments);

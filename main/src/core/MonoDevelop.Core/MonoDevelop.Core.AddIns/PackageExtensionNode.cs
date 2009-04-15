@@ -68,34 +68,23 @@ namespace MonoDevelop.Core.AddIns
 			}
 		}
 		
-		public string Name {
-			get { return name; }
-		}
-		
-		public string Version {
-			get { return version; }
-		}
-		
-		public string TargetFrameworkVersion {
-			get {
-				if (fxVersion != null)
-					return fxVersion;
-				else if (clrVersion == ClrVersion.Net_1_1)
-					return "1.1";
-				else if (clrVersion == ClrVersion.Net_2_0)
-					return "2.0";
-				else
-					return null;
-			}
-		}
-		
-		public string GacRoot {
-			get {
-				if (hasGacRoot)
-					return Addin.GetFilePath (".");
-				else
-					return null;
-			}
+		public SystemPackageInfo GetPackageInfo ()
+		{
+			SystemPackageInfo pi = new SystemPackageInfo ();
+			pi.Name = name;
+			pi.Version = version;
+			
+			if (fxVersion != null)
+				pi.TargetFramework = fxVersion;
+			else if (clrVersion == ClrVersion.Net_1_1)
+				pi.TargetFramework = "1.1";
+			else if (clrVersion == ClrVersion.Net_2_0)
+				pi.TargetFramework = "2.0";
+			
+			if (hasGacRoot)
+				pi.GacRoot = Addin.GetFilePath (".");
+			
+			return pi;
 		}
 	}
 }

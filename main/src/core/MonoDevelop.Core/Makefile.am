@@ -6,6 +6,7 @@ FILES =  \
 	MonoDevelop.Core.AddIns/ApplicationExtensionNode.cs \
 	MonoDevelop.Core.AddIns/AssemblyExtensionNode.cs \
 	MonoDevelop.Core.AddIns/ExecutionModeNode.cs \
+	MonoDevelop.Core.AddIns/ITargetRuntimeFactory.cs \
 	MonoDevelop.Core.AddIns/PackageExtensionNode.cs \
 	MonoDevelop.Core.AddIns/PackageInstalledCondition.cs \
 	MonoDevelop.Core.Collections/ReadOnlyDictionary.cs \
@@ -90,6 +91,8 @@ FILES =  \
 	MonoDevelop.Core/ICustomXmlSerializer.cs \
 	MonoDevelop.Core/IProgressMonitor.cs \
 	MonoDevelop.Core/LoggingService.cs \
+	MonoDevelop.Core/MonoTargetRuntime.cs \
+	MonoDevelop.Core/MonoTargetRuntimeFactory.cs \
 	MonoDevelop.Core/Properties.cs \
 	MonoDevelop.Core/PropertyChangedEventArgs.cs \
 	MonoDevelop.Core/PropertyService.cs \
@@ -99,6 +102,7 @@ FILES =  \
 	MonoDevelop.Core/SystemAssemblyService.cs \
 	MonoDevelop.Core/SystemPackage.cs \
 	MonoDevelop.Core/TargetFramework.cs \
+	MonoDevelop.Core/TargetRuntime.cs \
 	MonoDevelop.Core/UserException.cs \
 	MonoDevelop.Core/XmlReadHelper.cs
 

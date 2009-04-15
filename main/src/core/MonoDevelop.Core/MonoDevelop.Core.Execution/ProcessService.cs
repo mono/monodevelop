@@ -270,6 +270,11 @@ namespace MonoDevelop.Core.Execution
 			return ob;
 		}
 		
+		public RemoteProcessObject CreateExternalProcessObject (Type type, TargetRuntime runtime)
+		{
+			return CreateExternalProcessObject (type, runtime.GetExecutionHandler ());
+		}
+		
 		public RemoteProcessObject CreateExternalProcessObject (Type type, IExecutionHandler executionHandler)
 		{
 			return GetHost (type.ToString(), false, executionHandler).CreateInstance (type.Assembly.Location, type.FullName, GetRequiredAddins (type));
@@ -289,7 +294,7 @@ namespace MonoDevelop.Core.Execution
 		{
 			foreach (KeyValuePair<RemoteProcessObject,ProcessHostController> ob in runningObjects) {
 				if (ob.Key == obj) {
-					ob.Value.ReleaseInstance (obj);
+					ob.Value.ReleaseInstance (obj, timeout);
 					return;
 				}
 			}

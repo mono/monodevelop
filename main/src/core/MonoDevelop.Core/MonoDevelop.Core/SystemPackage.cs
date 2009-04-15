@@ -41,16 +41,24 @@ namespace MonoDevelop.Core
 		string targetFramework;
 		string gacRoot;
 		bool gacPackage;
+		TargetRuntime targetRuntime;
 		
-		internal void Initialize (string name, string version, string description, IEnumerable<SystemAssembly> assemblies, string targetFramework, string gacRoot, bool isInternal, bool gacPackage)
+		internal SystemPackage (TargetRuntime targetRuntime)
+		{
+			this.targetRuntime = targetRuntime;
+		}
+		
+		internal void Initialize (SystemPackageInfo info, IEnumerable<SystemAssembly> assemblies, bool isInternal)
 		{
 			this.isInternal = isInternal;
-			this.name = name;
-			this.version = version;
-			this.description = description;
-			this.targetFramework = targetFramework;
-			this.gacRoot = gacRoot;
-			this.gacPackage = gacPackage;
+			this.name = info.Name ?? string.Empty;
+			this.version = info.Version ?? string.Empty;
+			this.description = info.Description ?? string.Empty;
+			this.targetFramework = info.TargetFramework;
+			this.gacRoot = info.GacRoot;
+			this.gacPackage = info.IsGacPackage;
+			IsFrameworkPackage = info.IsFrameworkPackage;
+			IsCorePackage = info.IsCorePackage;
 
 			SystemAssembly last = null;
 			foreach (SystemAssembly asm in assemblies) {
@@ -63,6 +71,10 @@ namespace MonoDevelop.Core
 					last.NextSamePackage = asm;
 				last = asm;
 			}
+		}
+		
+		public TargetRuntime TargetRuntime {
+			get { return targetRuntime; }
 		}
 		
 		public string Name {
@@ -116,5 +128,31 @@ namespace MonoDevelop.Core
 				}
 			}
 		}
+	}
+	
+	public class SystemPackageInfo
+	{
+		public SystemPackageInfo ()
+		{
+			IsGacPackage = true;
+		}
+		
+		public string Name { get; set; }
+		
+		public string GacRoot { get; set; }
+		
+		public bool IsGacPackage { get; set; }
+		
+		public string Version { get; set; }
+		
+		public string Description { get; set; }
+		
+		public string TargetFramework { get; set; }
+		
+		// The package is part of the core mono SDK
+		public bool IsCorePackage { get; set; }
+		
+		// The package is part of the mono SDK (unlike IsCorePackage, it may be provided by a non-core package)
+		public bool IsFrameworkPackage { get; set; }
 	}
 }

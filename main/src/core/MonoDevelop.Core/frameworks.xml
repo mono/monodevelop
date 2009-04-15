@@ -1,6 +1,5 @@
 <FrameworkList>
 	<TargetFramework id="1.1" _name="Mono / .NET 1.1" clrVersion="Net_1_1">
-		<AssembliesDir>1.0</AssembliesDir>
 		<Assemblies>
 			<!-- The first assembly is used to check if the framework is installed -->
 			<Assembly>System</Assembly>
@@ -69,7 +68,6 @@
 	
 	<TargetFramework id="2.0" _name="Mono / .NET 2.0" clrVersion="Net_2_0">
 		<CompatibleWithFramework>1.1</CompatibleWithFramework>
-		<AssembliesDir>2.0</AssembliesDir>
 		<Assemblies>
 			<!-- The first assembly is used to check if the framework is installed -->
 			<Assembly>System.Configuration</Assembly>
@@ -86,7 +84,6 @@
 	
 	<TargetFramework id="3.0" _name="Mono / .NET 3.0" clrVersion="Net_2_0">
 		<ExtendsFramework>2.0</ExtendsFramework>
-		<AssembliesDir>3.0</AssembliesDir>
 		<Package>olive</Package>
 		<Assemblies>
 			<!-- The first assembly is used to check if the framework is installed -->
@@ -120,7 +117,6 @@
 	
 	<TargetFramework id="3.5" _name="Mono / .NET 3.5" clrVersion="Net_2_0">
 		<ExtendsFramework>3.0</ExtendsFramework>
-		<AssembliesDir>2.0</AssembliesDir>
 		<Assemblies>
 			<!-- The first assembly is used to check if the framework is installed -->
 			<Assembly>System.Core</Assembly>
@@ -153,7 +149,6 @@
 	</TargetFramework>
 	
 	<TargetFramework id="2.1" _name="Moonlight / Silverlight 2.0" clrVersion="Clr_2_1">
-		<AssembliesDir>2.1</AssembliesDir>
 		<SubsetOfFramework>3.5</SubsetOfFramework>
 		<Assemblies>
 			<!-- The first assembly is used to check if the framework is installed -->

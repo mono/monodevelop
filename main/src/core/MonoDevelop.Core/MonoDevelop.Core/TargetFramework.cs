@@ -45,7 +45,7 @@ namespace MonoDevelop.Core
 		List<string> compatibleFrameworks = new List<string> ();
 		List<string> extendedFrameworks = new List<string> ();
 
-		public bool RelationsBuilt;
+		internal bool RelationsBuilt;
 
 		public static TargetFramework Default {
 			get { return Runtime.SystemAssemblyService.GetTargetFramework ("1.1"); }
@@ -61,7 +61,6 @@ namespace MonoDevelop.Core
 			this.name = id;
 			clrVersion = ClrVersion.Default;
 			Assemblies = new string[0];
-			AssembliesDir = string.Empty;
 			IsSupported = false;
 			compatibleFrameworks.Add (id);
 			extendedFrameworks.Add (id);
@@ -106,9 +105,6 @@ namespace MonoDevelop.Core
 		public bool IsSupported { get; internal set; }
 		
 		[ItemProperty]
-		internal string AssembliesDir { get; set; }
-		
-		[ItemProperty]
 		internal string ExtendsFramework { get; set; }
 		
 		[ItemProperty]
@@ -116,9 +112,6 @@ namespace MonoDevelop.Core
 		
 		[ItemProperty]
 		internal string SubsetOfFramework { get; set; }
-		
-		[ItemProperty]
-		internal string Package { get; set; }
 		
 		[ItemProperty]
 		[ItemProperty ("Assembly", Scope="*")]

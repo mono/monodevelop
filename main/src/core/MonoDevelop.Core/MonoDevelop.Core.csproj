@@ -150,6 +150,10 @@
     <Compile Include="MonoDevelop.Core\SystemAssembly.cs" />
     <Compile Include="MonoDevelop.Core\ComponentModelLocalization.cs" />
     <Compile Include="MonoDevelop.Core.ProgressMonitoring\SimpleProgressMonitor.cs" />
+    <Compile Include="MonoDevelop.Core\TargetRuntime.cs" />
+    <Compile Include="MonoDevelop.Core\MonoTargetRuntime.cs" />
+    <Compile Include="MonoDevelop.Core.AddIns\ITargetRuntimeFactory.cs" />
+    <Compile Include="MonoDevelop.Core\MonoTargetRuntimeFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

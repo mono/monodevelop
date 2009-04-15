@@ -37,8 +37,17 @@
 		<ExtensionNode name="Package" type="MonoDevelop.Core.AddIns.PackageExtensionNode"/>
 	</ExtensionPoint>
 	
+	<ExtensionPoint path = "/MonoDevelop/Core/Runtimes">
+		<Description>Runtime factories.</Description>
+		<ExtensionNode name="Class" objectType="MonoDevelop.Core.AddIns.ITargetRuntimeFactory"/>
+	</ExtensionPoint>
+	
 	<Extension path = "/MonoDevelop/Core/ExecutionModes">
 		<Mode id="Default" _name="Default" class="MonoDevelop.Core.Execution.DefaultExecutionHandlerFactory"/>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Core/Runtimes">
+		<Class class="MonoDevelop.Core.MonoTargetRuntimeFactory"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/ExecutionHandlers">

@@ -47,7 +47,7 @@ namespace MonoDevelop.Core
 		internal static SystemAssembly FromFile (string file)
 		{
 			System.Reflection.AssemblyName an = System.Reflection.AssemblyName.GetAssemblyName (file);
-			string aname = SystemAssemblyService.NormalizeAsmName (an.FullName);
+			string aname = TargetRuntime.NormalizeAsmName (an.FullName);
 			return new SystemAssembly (file, aname);
 		}
 		

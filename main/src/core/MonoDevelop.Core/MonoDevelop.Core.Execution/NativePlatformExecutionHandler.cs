@@ -34,9 +34,33 @@ namespace MonoDevelop.Core.Execution
 {
 	public class NativePlatformExecutionHandler: IExecutionHandler
 	{
+		IDictionary<string, string> defaultEnvironmentVariables;
+		
+		public NativePlatformExecutionHandler ()
+		{
+		}
+		
+		public NativePlatformExecutionHandler (IDictionary<string, string> defaultEnvironmentVariables)
+		{
+			this.defaultEnvironmentVariables = defaultEnvironmentVariables;
+		}
+		
 		public virtual IProcessAsyncOperation Execute (string command, string arguments, string workingDirectory, IDictionary<string, string> environmentVariables, IConsole console)
 		{
-			return Runtime.ProcessService.StartConsoleProcess (command, arguments, workingDirectory, environmentVariables, console, null);
+			IDictionary<string, string> vars;
+			if (defaultEnvironmentVariables != null && defaultEnvironmentVariables.Count > 0) {
+				if (environmentVariables == null || environmentVariables.Count == 0) {
+					vars = defaultEnvironmentVariables;
+				} else {
+					// Merge the variables.
+					vars = new Dictionary<string, string> (defaultEnvironmentVariables);
+					foreach (KeyValuePair<string,string> evar in environmentVariables)
+						vars [evar.Key] = evar.Value;
+				}
+			} else
+				vars = environmentVariables;
+			
+			return Runtime.ProcessService.StartConsoleProcess (command, arguments, workingDirectory, vars, console, null);
 		}
 	
 		public virtual bool CanExecute (string command)

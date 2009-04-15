@@ -1,3 +1,31 @@
+2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* frameworks.xml:
+	* MonoDevelop.Core.csproj:
+	* MonoDevelop.Core.addin.xml:
+	* MonoDevelop.Core/Runtime.cs:
+	* MonoDevelop.Core/SystemPackage.cs:
+	* MonoDevelop.Core/TargetRuntime.cs:
+	* MonoDevelop.Core/SystemAssembly.cs:
+	* MonoDevelop.Core/TargetFramework.cs:
+	* MonoDevelop.Core/MonoTargetRuntime.cs:
+	* MonoDevelop.Core/SystemAssemblyService.cs:
+	* MonoDevelop.Core/MonoTargetRuntimeFactory.cs:
+	* MonoDevelop.Core.AddIns/PackageExtensionNode.cs:
+	* MonoDevelop.Core.AddIns/ITargetRuntimeFactory.cs:
+	* MonoDevelop.Core.AddIns/PackageInstalledCondition.cs:
+	  Initial support for multiple target runtimes.
+
+	* MonoDevelop.Core.Execution/MonoPlatformExecutionHandler.cs:
+	* MonoDevelop.Core.Execution/NativePlatformExecutionHandler.cs:
+	  Allow specifying a default set of env vars to be defined
+	  when creating a new process.
+
+	* MonoDevelop.Core.Execution/ProcessService.cs: Allow
+	  specifying the target runtime to use when creating an
+	  external process object.
+
 2009-03-22  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Core/ComponentModelLocalization.cs: Fixed

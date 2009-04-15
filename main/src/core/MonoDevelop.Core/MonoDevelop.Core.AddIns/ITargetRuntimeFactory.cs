@@ -1,5 +1,5 @@
 // 
-// PackageInstalledCondition.cs
+// ITargetRuntimeFactory.cs
 //  
 // Author:
 //       Lluis Sanchez Gual <lluis@novell.com>
@@ -25,36 +25,12 @@
 // THE SOFTWARE.
 
 using System;
-using Mono.Addins;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Core.AddIns
 {
-	public class PackageInstalledCondition: ConditionType
+	public interface ITargetRuntimeFactory
 	{
-		public override bool Evaluate (Mono.Addins.NodeElement conditionNode)
-		{
-			string pname = conditionNode.GetAttribute ("name");
-			SystemPackage pkg = Runtime.SystemAssemblyService.CurrentRuntime.GetPackage (pname);
-			if (pkg == null)
-				return false;
-			string ver = conditionNode.GetAttribute ("version");
-			if (ver.Length > 0)
-				return ver == pkg.Version;
-			ver = conditionNode.GetAttribute ("minVersion");
-			if (ver.Length > 0)
-				return Addin.CompareVersions (ver, pkg.Version) >= 0;
-			ver = conditionNode.GetAttribute ("maxVersion");
-			if (ver.Length > 0)
-				return Addin.CompareVersions (ver, pkg.Version) <= 0;
-			return true;
-		}
-	}
-	
-	public class PackageNotInstalledCondition: PackageInstalledCondition
-	{
-		public override bool Evaluate (Mono.Addins.NodeElement conditionNode)
-		{
-			return !base.Evaluate (conditionNode);
-		}
+		IEnumerable<TargetRuntime> CreateRuntimes ();
 	}
 }

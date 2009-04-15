@@ -74,6 +74,7 @@ namespace MonoDevelop.Core
 			setupService.Repositories.RegisterRepository (null, mainRep, false);
 
 			systemAssemblyService = new SystemAssemblyService ();
+			systemAssemblyService.Initialize ();
 		}
 		
 		static void OnLoadError (object s, AddinErrorEventArgs args)
