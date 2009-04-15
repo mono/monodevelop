@@ -1,5 +1,11 @@
 2009-04-15  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor.Highlighting/Rule.cs:
+	* Mono.TextEditor.Highlighting/SyntaxMode.cs: Fixed text
+	  editor issues.
+
+2009-04-15  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/Selection.cs:
 	* Mono.TextEditor.Vi/ViMode.cs:
 	* Mono.TextEditor/TextEditor.cs:

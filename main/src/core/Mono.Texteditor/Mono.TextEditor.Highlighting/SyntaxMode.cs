@@ -383,7 +383,8 @@ namespace Mono.TextEditor.Highlighting
 					spanStack.Push (span);
 					return result;
 				}
-				if (spanStack.Peek ().Rule.StartsWith ("mode:"))
+				string rule = spanStack.Peek ().Rule;
+				if (!string.IsNullOrEmpty (rule) && rule.StartsWith ("mode:"))
 					return defaultStyle;
 				return spanStack.Peek ().Color;
 			}

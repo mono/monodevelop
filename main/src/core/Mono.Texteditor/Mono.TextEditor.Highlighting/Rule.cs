@@ -1,4 +1,4 @@
-// Rule.cs
+ // Rule.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -192,7 +192,7 @@ namespace Mono.TextEditor.Highlighting
 				if (keywords.IgnoreCase) {
 					foreach (string wordStr in keywords.Words) {
 						char[] word = wordStr.ToCharArray ();
-						for (int i = 0; i < (1 << word.Length) - 1; i++) {
+						for (int i = 0; i < (1 << word.Length); i++) {
 							for (int j = 0; j < word.Length; j++) {
 								word[j] = (i & (1 << j)) == (1 << j) ? Char.ToLower (word[j]) : Char.ToUpper (word[j]);
 							}
