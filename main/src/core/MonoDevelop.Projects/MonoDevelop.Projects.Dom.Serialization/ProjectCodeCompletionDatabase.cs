@@ -192,8 +192,8 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			}
 			
 			// Gets the name and version of the mscorlib assembly required by the project
-			string requiredRefUri = "Assembly:";
-			SystemAssembly asm = Runtime.SystemAssemblyService.GetAssemblyForVersion (typeof(object).Assembly.FullName, null, prj.TargetFramework);
+			string requiredRefUri = "Assembly:" + prj.TargetRuntime.Id + ":";
+			SystemAssembly asm = prj.TargetRuntime.GetAssemblyForVersion (typeof(object).Assembly.FullName, null, prj.TargetFramework);
 			requiredRefUri += asm.Location;
 			
 			// Replace the old reference if the target version has changed
@@ -212,8 +212,10 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		bool IsCorlibReference (ReferenceEntry re)
 		{
-			if (re.Uri.StartsWith ("Assembly:"))
-				return Path.GetFileNameWithoutExtension (re.Uri.Substring (9)) == "mscorlib";
+			TargetRuntime tr;
+			string file;
+			if (ProjectDomService.ParseAssemblyUri (re.Uri, out tr, out file))
+				return Path.GetFileNameWithoutExtension (file) == "mscorlib";
 			else
 				return false;
 		}
@@ -224,8 +226,9 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				Project referencedProject = project.ParentSolution.FindProjectByName (pr.Reference);
 				yield return "Project:" + (referencedProject != null ? referencedProject.FileName : "null");
 			} else {
+				string runtimeId = ((DotNetProject)project).TargetRuntime.Id;
 				foreach (string s in pr.GetReferencedFileNames (ProjectService.DefaultConfiguration))
-					yield return "Assembly:" + Path.GetFullPath (s);
+					yield return "Assembly:" + runtimeId + ":" + Path.GetFullPath (s);
 			}
 		}
 		

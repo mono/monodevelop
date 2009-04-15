@@ -176,9 +176,9 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			return new DatabaseProjectDom (this, new SimpleCodeCompletionDatabase (file, this));
 		}
 
-		public ProjectDom LoadAssemblyDom (string file)
+		public ProjectDom LoadAssemblyDom (TargetRuntime runtime, string file)
 		{
-			return new DatabaseProjectDom (this, new AssemblyCodeCompletionDatabase (file, this));
+			return new DatabaseProjectDom (this, new AssemblyCodeCompletionDatabase (runtime, file, this));
 		}
 
 		public ProjectDom LoadProjectDom (Project project)

@@ -27,13 +27,14 @@
 
 using System;
 using MonoDevelop.Projects;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Dom.Parser
 {
 	public interface IParserDatabase
 	{
 		void Initialize ();
-		ProjectDom LoadAssemblyDom (string file);
+		ProjectDom LoadAssemblyDom (TargetRuntime runtime, string file);
 		ProjectDom LoadSingleFileDom (string file);
 		ProjectDom LoadProjectDom (Project project);
 	}

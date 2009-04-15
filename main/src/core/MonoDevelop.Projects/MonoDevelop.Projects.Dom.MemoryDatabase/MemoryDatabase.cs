@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using MonoDevelop.Core;
 using MonoDevelop.Projects.Dom.Parser;
 
 namespace MonoDevelop.Projects.Dom.MemoryDatabase
@@ -36,7 +37,7 @@ namespace MonoDevelop.Projects.Dom.MemoryDatabase
 		{
 		}
 		
-		public ProjectDom LoadAssemblyDom (string file)
+		public ProjectDom LoadAssemblyDom (TargetRuntime runtime, string file)
 		{
 			return new AssemblyProjectDom (file);
 		}

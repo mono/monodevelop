@@ -379,23 +379,23 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return GetDom ("Project:" + project.FileName);
 		}
 		
-		public static ProjectDom GetAssemblyDom (string assemblyName)
+		public static ProjectDom GetAssemblyDom (TargetRuntime runtime, string assemblyName)
 		{
-			return GetDom ("Assembly:" + assemblyName);
+			return GetDom ("Assembly:" + runtime.Id + ":" + assemblyName);
 		}
 		
-		public static string LoadAssembly (string file)
+		public static string LoadAssembly (TargetRuntime runtime, string file)
 		{
-			string name = "Assembly:" + Path.GetFullPath (file);
+			string name = "Assembly:" + runtime.Id + ":" + Path.GetFullPath (file);
 			if (GetDom (name, true) != null)
 				return name;
 			else
 				return null;
 		}
 		
-		public static void UnloadAssembly (string file)
+		public static void UnloadAssembly (TargetRuntime runtime, string file)
 		{
-			string name = "Assembly:" + Path.GetFullPath (file);
+			string name = "Assembly:" + runtime.Id + ":" + Path.GetFullPath (file);
 			UnrefDom (name);
 		}
 		
@@ -517,9 +517,11 @@ namespace MonoDevelop.Projects.Dom.Parser
 				if (!databases.TryGetValue (uri, out db)) {
 					// Create/load the database
 					
-					if (uri.StartsWith ("Assembly:")) {
-						string file = uri.Substring (9);
-						db = parserDatabase.LoadAssemblyDom (file);
+					TargetRuntime tr = null;
+					string file;
+					
+					if (ParseAssemblyUri (uri, out tr, out file)) {
+						db = parserDatabase.LoadAssemblyDom (tr, file);
 						RegisterDom (db, uri);
 					}
 				}
@@ -527,6 +529,27 @@ namespace MonoDevelop.Projects.Dom.Parser
 					db.ReferenceCount++;
 				return db;
 			}
+		}
+		
+		internal static bool ParseAssemblyUri (string uri, out TargetRuntime runtime, out string file)
+		{
+			if (uri.StartsWith ("Assembly:")) {
+				runtime = null;
+				int i = uri.IndexOf (':', 9);
+				if (i != -1) {
+					string rid = uri.Substring (9, i - 9);
+					runtime = Runtime.SystemAssemblyService.GetTargetRuntime (rid);
+					file = uri.Substring (i + 1);
+				} else
+					file = uri.Substring (9);
+				
+				if (runtime == null)
+					runtime = Runtime.SystemAssemblyService.DefaultRuntime;
+				return true;
+			}
+			file = null;
+			runtime = null;
+			return false;
 		}
 
 		static int DecLoadCount (object ob)

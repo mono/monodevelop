@@ -178,6 +178,10 @@ namespace MonoDevelop.Projects
 				NotifyModified ("TargetFramework");
 			}
 		}
+		
+		public TargetRuntime TargetRuntime {
+			get { return Runtime.SystemAssemblyService.DefaultRuntime; }
+		}
 
 		void SetDefaultFramework ()
 		{
@@ -670,7 +674,7 @@ namespace MonoDevelop.Projects
 			
 			foreach (ProjectReference pref in References) {
 				if (pref.ReferenceType == ReferenceType.Gac) {
-					string newRef = Runtime.SystemAssemblyService.GetAssemblyNameForVersion (pref.Reference, pref.Package != null ? pref.Package.Name : null, this.TargetFramework);
+					string newRef = TargetRuntime.GetAssemblyNameForVersion (pref.Reference, pref.Package != null ? pref.Package.Name : null, this.TargetFramework);
 					if (newRef == null) {
 						// re-add the reference. It will be shown as invalid.
 						toDelete.Add (pref);

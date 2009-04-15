@@ -168,7 +168,7 @@ namespace MonoDevelop.Projects.Dom.MemoryDatabase
 			
 			// Gets the name and version of the mscorlib assembly required by the project
 			string requiredRefUri = "Assembly:";
-			SystemAssembly asm = Runtime.SystemAssemblyService.GetAssemblyForVersion (typeof(object).Assembly.FullName, null, prj.TargetFramework);
+			SystemAssembly asm = Runtime.SystemAssemblyService.CurrentRuntime.GetAssemblyForVersion (typeof(object).Assembly.FullName, null, prj.TargetFramework);
 			requiredRefUri += asm.Location;
 			
 			// Replace the old reference if the target version has changed

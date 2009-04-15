@@ -38,6 +38,7 @@ using System.Reflection;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Projects.Dom.Parser;
+using TargetRuntime = MonoDevelop.Core.TargetRuntime;
 
 namespace MonoDevelop.Projects.Dom.Serialization
 {	
@@ -49,16 +50,18 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		bool isPackageAssembly;
 		bool parsing;
 		string assemblyFile;
+		TargetRuntime runtime;
 		
 		// This is the package version of the assembly. It is serialized.
 		string packageVersion;
 		
-		public AssemblyCodeCompletionDatabase (string assemblyFile, ParserDatabase pdb): this (assemblyFile, pdb, false)
+		public AssemblyCodeCompletionDatabase (TargetRuntime runtime, string assemblyFile, ParserDatabase pdb): this (runtime, assemblyFile, pdb, false)
 		{
 		}
 		
-		public AssemblyCodeCompletionDatabase (string assemblyFile, ParserDatabase pdb, bool isTempDatabase): base (pdb, false)
+		public AssemblyCodeCompletionDatabase (TargetRuntime runtime, string assemblyFile, ParserDatabase pdb, bool isTempDatabase): base (pdb, false)
 		{
+			this.runtime = runtime;
 			this.assemblyFile = assemblyFile;
 			
 			if (!File.Exists (assemblyFile)) {
@@ -140,11 +143,6 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			return (!file.DisableParse && (versionMismatch || file.LastParseTime == DateTime.MinValue || file.ParseErrorRetries > 0));
 		}
 		
-		public static string GetFullAssemblyName (string s)
-		{
-			return Runtime.SystemAssemblyService.GetAssemblyFullName (s);
-		}
-		
 		internal bool LoadError {
 			get { return loadError; }
 		}
@@ -192,7 +190,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				{
 					using (DatabaseGenerator helper = GetGenerator (true))
 					{
-						string tmpDbFile = helper.GenerateDatabase (baseDir, assemblyFile);
+						string tmpDbFile = helper.GenerateDatabase (runtime.Id, baseDir, assemblyFile);
 						if (Disposed) {
 							if (tmpDbFile != null)
 								File.Delete (tmpDbFile);
@@ -281,23 +279,24 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 			AssemblyNameReferenceCollection names = asm.MainModule.AssemblyReferences;
 			foreach (AssemblyNameReference aname in names) {
-				string afile = Runtime.SystemAssemblyService.GetAssemblyLocation (aname.FullName);
+				string afile = runtime.GetAssemblyLocation (aname.FullName);
 				if (afile != null)
-					yield return "Assembly:" + Path.GetFullPath (afile);
+					yield return "Assembly:" + runtime.Id + ":" + Path.GetFullPath (afile);
 			}
 		}
 	}
 	
 	internal class DatabaseGenerator: RemoteProcessObject
 	{
-		public string GenerateDatabase (string baseDir, string assemblyFile)
+		public string GenerateDatabase (string baseDir, string assemblyFile, string runtimeId)
 		{
 			try {
 				Runtime.Initialize (false);
 				ParserDatabase pdb = new ParserDatabase ();
+				TargetRuntime runtime = Runtime.SystemAssemblyService.GetTargetRuntime (runtimeId);
 
 				// Generate the new db in a temp file. The main process will move the file if required.
-				using (AssemblyCodeCompletionDatabase db = new AssemblyCodeCompletionDatabase (assemblyFile, pdb, true)) {
+				using (AssemblyCodeCompletionDatabase db = new AssemblyCodeCompletionDatabase (runtime, assemblyFile, pdb, true)) {
 					if (db.LoadError)
 						throw new InvalidOperationException ("Could find assembly: " + assemblyFile);
 					db.ParseInExternalProcess = false;

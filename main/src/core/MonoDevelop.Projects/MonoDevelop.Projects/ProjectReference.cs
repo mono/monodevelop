@@ -230,7 +230,7 @@ namespace MonoDevelop.Projects
 					return reference;
 				
 				case ReferenceType.Gac:
-					string file = Runtime.SystemAssemblyService.GetAssemblyLocation (Reference, package);
+					string file = TargetRuntime.GetAssemblyLocation (Reference, package);
 					return file == null ? reference : file;
 				case ReferenceType.Project:
 					if (ownerProject != null) {
@@ -260,15 +260,15 @@ namespace MonoDevelop.Projects
 		{
 			if (referenceType == ReferenceType.Gac) {
 				notFound = false;
-				string cref = Runtime.SystemAssemblyService.FindInstalledAssembly (reference, package);
+				string cref = TargetRuntime.FindInstalledAssembly (reference, package);
 				if (ownerProject != null) {
 					if (cref == null)
 						cref = reference;
-					cref = Runtime.SystemAssemblyService.GetAssemblyNameForVersion (cref, package, ownerProject.TargetFramework);
+					cref = TargetRuntime.GetAssemblyNameForVersion (cref, package, ownerProject.TargetFramework);
 					notFound = (cref == null);
 				}
 				if (cref != null && cref != reference) {
-					SystemAssembly asm = Runtime.SystemAssemblyService.GetAssemblyFromFullName (cref, package);
+					SystemAssembly asm = TargetRuntime.GetAssemblyFromFullName (cref, package);
 					bool isFrameworkAssembly = asm != null && asm.Package.IsFrameworkPackage;
 					if (loadedReference == null && !isFrameworkAssembly) {
 						loadedReference = reference;
@@ -279,18 +279,28 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
+		TargetRuntime TargetRuntime {
+			get {
+				if (ownerProject != null)
+					return ownerProject.TargetRuntime;
+				else
+					return Runtime.SystemAssemblyService.DefaultRuntime;
+			}
+		}
+		
 		public SystemPackage Package {
 			get {
 				if (referenceType == ReferenceType.Gac) {
 					if (cachedPackage != null)
 						return cachedPackage;
+					
 					if (package != null)
-						return Runtime.SystemAssemblyService.GetPackage (package);
+						return TargetRuntime.GetPackage (package);
 
 					// No package is specified, get any of the registered assemblies, giving priority to gaced assemblies
 					// (because non-gac assemblies should have a package name set)
 					SystemAssembly best = null;
-					foreach (SystemAssembly asm in Runtime.SystemAssemblyService.GetAssembliesFromFullName (reference)) {
+					foreach (SystemAssembly asm in TargetRuntime.GetAssembliesFromFullName (reference)) {
 						if (asm.Package.IsGacPackage) {
 							best = asm;
 							break;
