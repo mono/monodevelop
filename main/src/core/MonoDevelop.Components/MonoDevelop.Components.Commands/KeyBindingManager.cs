@@ -72,7 +72,7 @@ namespace MonoDevelop.Components.Commands
 				SelectionModifierControl = Gdk.ModifierType.Mod1Mask | META_MASK;
 				SelectionModifierSuper = Gdk.ModifierType.ControlMask;
 			} else {
-				SelectionModifierAlt = Gdk.ModifierType.Mod5Mask;
+				SelectionModifierAlt = Gdk.ModifierType.Mod1Mask;
 				SelectionModifierControl = Gdk.ModifierType.ControlMask;
 				SelectionModifierSuper = SUPER_MASK;
 			}
