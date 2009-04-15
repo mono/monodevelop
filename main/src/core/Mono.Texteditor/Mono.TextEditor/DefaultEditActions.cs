@@ -93,12 +93,13 @@ namespace Mono.TextEditor
 		public static void RemoveIndentSelection (TextEditorData data)
 		{
 			Debug.Assert (data.IsSomethingSelected);
-			int startLineNr = data.IsSomethingSelected ? data.Document.OffsetToLineNumber (data.SelectionRange.Offset) : data.Caret.Line;
-			int endLineNr   = data.IsSomethingSelected ? data.Document.OffsetToLineNumber (data.SelectionRange.EndOffset) : data.Caret.Line;
+			int startLineNr = data.IsSomethingSelected ? data.MainSelection.Anchor.Line : data.Caret.Line;
+			int endLineNr   = data.IsSomethingSelected ? data.MainSelection.Lead.Line : data.Caret.Line;
+			
 			if (endLineNr < 0)
 				endLineNr = data.Document.LineCount;
-			LineSegment anchorLine   = data.IsSomethingSelected ? data.Document.GetLineByOffset (data.SelectionAnchor) : null;
-			int         anchorColumn = data.IsSomethingSelected ? data.SelectionAnchor - anchorLine.Offset : -1;
+			LineSegment anchorLine   = data.IsSomethingSelected ? data.Document.GetLine (data.MainSelection.Anchor.Line) : null;
+			int         anchorColumn = data.IsSomethingSelected ? data.MainSelection.Anchor.Column : -1;
 			data.Document.BeginAtomicUndo ();
 			int first = -1;
 			int last  = 0;
@@ -109,10 +110,10 @@ namespace Mono.TextEditor
 			}
 			
 			if (data.IsSomethingSelected) {
-				if (data.SelectionAnchor < data.Caret.Offset) {
-					data.SelectionAnchor = System.Math.Min (anchorLine.Offset + anchorLine.EditableLength, System.Math.Max (anchorLine.Offset, data.SelectionAnchor - first));
+				if (data.MainSelection.GetAnchorOffset (data) < data.Caret.Offset) {
+					data.MainSelection.Anchor = data.Document.OffsetToLocation (System.Math.Min (anchorLine.Offset + anchorLine.EditableLength, System.Math.Max (anchorLine.Offset, data.MainSelection.GetAnchorOffset (data) - first)));
 				} else {
-					data.SelectionAnchor = System.Math.Min (anchorLine.Offset + anchorLine.EditableLength, System.Math.Max (anchorLine.Offset, anchorLine.Offset + anchorColumn - last));
+					data.MainSelection.Anchor = data.Document.OffsetToLocation (System.Math.Min (anchorLine.Offset + anchorLine.EditableLength, System.Math.Max (anchorLine.Offset, anchorLine.Offset + anchorColumn - last)));
 				}
 			}
 			
@@ -158,26 +159,26 @@ namespace Mono.TextEditor
 		
 		public static void IndentSelection (TextEditorData data)
 		{
-			int startLineNr = data.IsSomethingSelected ? data.Document.OffsetToLineNumber (data.SelectionRange.Offset) : data.Caret.Line;
-			int endLineNr   = data.IsSomethingSelected ? data.Document.OffsetToLineNumber (data.SelectionRange.EndOffset) : data.Caret.Line;
+			int startLineNr = data.IsSomethingSelected ? data.MainSelection.Anchor.Line : data.Caret.Line;
+			int endLineNr   = data.IsSomethingSelected ? data.MainSelection.Lead.Line : data.Caret.Line;
 			if (endLineNr < 0)
 				endLineNr = data.Document.LineCount;
 			
-			LineSegment anchorLine   = data.IsSomethingSelected ? data.Document.GetLineByOffset (data.SelectionAnchor) : null;
-			int         anchorColumn = data.IsSomethingSelected ? data.SelectionAnchor - anchorLine.Offset : -1;
+			LineSegment anchorLine   = data.IsSomethingSelected ? data.Document.GetLine (data.MainSelection.Anchor.Line) : null;
+			int         anchorColumn = data.IsSomethingSelected ? data.MainSelection.Anchor.Column : -1;
 			data.Document.BeginAtomicUndo ();
 			foreach (LineSegment line in data.SelectedLines) {
 				data.Insert (line.Offset, data.Options.IndentationString);
 			}
 			if (data.IsSomethingSelected) {
-				if (data.SelectionAnchor < data.Caret.Offset) {
+				if (data.MainSelection.GetAnchorOffset (data) < data.Caret.Offset) {
 					if (anchorColumn != 0) 
-						data.SelectionAnchor = System.Math.Min (anchorLine.Offset + anchorLine.EditableLength, System.Math.Max (anchorLine.Offset, data.SelectionAnchor + data.Options.IndentationString.Length));
+						data.MainSelection.Anchor = data.Document.OffsetToLocation (System.Math.Min (anchorLine.Offset + anchorLine.EditableLength, System.Math.Max (anchorLine.Offset, data.MainSelection.GetAnchorOffset (data) + data.Options.IndentationString.Length)));
 				} else {
 					if (anchorColumn != 0) {
-						data.SelectionAnchor = System.Math.Min (anchorLine.Offset + anchorLine.EditableLength, System.Math.Max (anchorLine.Offset, anchorLine.Offset + anchorColumn + data.Options.IndentationString.Length));
+						data.MainSelection.Anchor = data.Document.OffsetToLocation (System.Math.Min (anchorLine.Offset + anchorLine.EditableLength, System.Math.Max (anchorLine.Offset, anchorLine.Offset + anchorColumn + data.Options.IndentationString.Length)));
 					} else {
-						data.SelectionAnchor = anchorLine.Offset;
+						data.MainSelection.Anchor = data.Document.OffsetToLocation (anchorLine.Offset);
 					}
 				}
 			}

@@ -204,7 +204,7 @@ namespace Mono.TextEditor
 				if (curVisualColumn > visualColumn)
 					return i;
 			}
-			return EditableLength;
+			return EditableLength + (visualColumn - curVisualColumn);
 		}
 		
 		public int GetVisualColumn (TextEditorData editor, IBuffer doc, int logicalColumn)

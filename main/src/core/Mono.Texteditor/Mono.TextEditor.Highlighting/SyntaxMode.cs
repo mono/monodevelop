@@ -480,6 +480,7 @@ namespace Mono.TextEditor.Highlighting
 			{
 				SyntaxModeService.ScanSpans (doc, mode, CurRule, spanStack, line.Offset, offset);
 				curOffset = offset;
+				length = System.Math.Min (doc.Length - offset, length);
 				str = length > 0 ? doc.GetTextAt (offset, length) : null;
 				curChunk = new Chunk (offset, 0, GetSpanStyle ());
 				ParseSpans (offset, length);

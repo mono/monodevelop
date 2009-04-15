@@ -356,6 +356,20 @@ namespace Mono.TextEditor
 				ISegment segment = textEditor.SelectionRange;
 				selectionStart = segment.Offset;
 				selectionEnd   = segment.EndOffset;
+				
+				if (textEditor.SelectionMode == SelectionMode.Block) {
+					DocumentLocation start = textEditor.MainSelection.Anchor;
+					DocumentLocation end   = textEditor.MainSelection.Lead;
+					
+					DocumentLocation visStart = Document.LogicalToVisualLocation (this.textEditor.GetTextEditorData (), start);
+					DocumentLocation visEnd   = Document.LogicalToVisualLocation (this.textEditor.GetTextEditorData (), end);
+					
+					if (segment.Contains (line.Offset) || segment.Contains (line.EndOffset)) {
+						
+						selectionStart = line.Offset + line.GetLogicalColumn (this.textEditor.GetTextEditorData (), Document, System.Math.Min (visStart.Column, visEnd.Column));
+						selectionEnd   = line.Offset + line.GetLogicalColumn (this.textEditor.GetTextEditorData (), Document, System.Math.Max (visStart.Column, visEnd.Column));
+					}
+				} 
 			}
 			int visibleColumn = 0;
 			string curStyle = "text";
@@ -664,8 +678,8 @@ namespace Mono.TextEditor
 			
 			inSelectionDrag = false;
 			inDrag = false;
-			ISegment selection = textEditor.SelectionRange;
-			int anchor         = textEditor.SelectionAnchor;
+			Selection selection = textEditor.MainSelection;
+			int anchor         = selection != null ?  selection.GetAnchorOffset (this.textEditor.GetTextEditorData ()) : -1;
 			int oldOffset      = textEditor.Caret.Offset;
 			
 			string link = GetLink (args);
@@ -684,7 +698,7 @@ namespace Mono.TextEditor
 				}
 
 				if (!textEditor.IsSomethingSelected) {
-					textEditor.SelectionAnchorLocation = clickLocation;
+					textEditor.MainSelection  = new Selection (clickLocation, clickLocation);
 				}
 
 				int offset = Document.LocationToOffset (clickLocation);
@@ -692,7 +706,7 @@ namespace Mono.TextEditor
 					textEditor.RunAction (CaretMoveActions.ToDocumentEnd);
 					return;
 				}
-				if (args.Button == 2 && selection != null && selection.Contains (offset)) {
+				if (args.Button == 2 && selection != null && selection.Contains (Document.OffsetToLocation (offset))) {
 					textEditor.ClearSelection ();
 					return;
 				}
@@ -701,13 +715,15 @@ namespace Mono.TextEditor
 					int start = ScanWord (offset, false);
 					int end   = ScanWord (offset, true);
 					Caret.Offset = end;
-					textEditor.SelectionAnchor = start;
-					textEditor.SelectionRange = new Segment (start, end - start);
+					textEditor.MainSelection = new Selection (textEditor.Document.OffsetToLocation (start),
+					                                          textEditor.Document.OffsetToLocation (end));
 					inSelectionDrag = true;
 					mouseSelectionMode = MouseSelectionMode.Word;
 					return;
 				} else if (args.Type == EventType.ThreeButtonPress) {
-					textEditor.SelectionRange = Document.GetLineByOffset (offset);
+					int lineNr = Document.OffsetToLineNumber (offset);
+					textEditor.SetSelectLines (lineNr, lineNr);
+					
 					inSelectionDrag = true;
 					mouseSelectionMode = MouseSelectionMode.WholeLine;
 					return;
@@ -721,7 +737,7 @@ namespace Mono.TextEditor
 					if ((args.ModifierState & Gdk.ModifierType.ShiftMask) == ModifierType.ShiftMask) {
 						Caret.PreserveSelection = true;
 						if (!textEditor.IsSomethingSelected)
-							textEditor.SelectionAnchor = Caret.Offset;
+							textEditor.MainSelection  = new Selection (Caret.Location, Caret.Location);
 						Caret.Location = clickLocation;
 						Caret.PreserveSelection = false;
 						textEditor.ExtendSelectionTo (clickLocation);
@@ -738,10 +754,11 @@ namespace Mono.TextEditor
 				int length = ClipboardActions.PasteFromPrimary (textEditor.GetTextEditorData (), offset);
 				int newOffset = textEditor.Caret.Offset;
 				if (selection != null) {
-					if (newOffset < selection.EndOffset) {
+					ISegment selectionRange = textEditor.SelectionRange;
+					if (newOffset < selectionRange.EndOffset) {
 						oldOffset += length;
 						anchor   += length;
-						selection = new Segment (selection.Offset + length + 1, selection.Length);
+						selection = new Selection (Document.OffsetToLocation (selectionRange.Offset + length + 1), Document.OffsetToLocation (selectionRange.Offset + length + 1 + selectionRange.Length));
 					}
 					bool autoScroll = textEditor.Caret.AutoScrollToCaret;
 					textEditor.Caret.AutoScrollToCaret = false;
@@ -750,8 +767,8 @@ namespace Mono.TextEditor
 					} finally {
 						textEditor.Caret.AutoScrollToCaret = autoScroll;
 					}
-					textEditor.SelectionAnchor = anchor;
-					textEditor.SelectionRange  = selection;
+					//textEditor.SelectionAnchor = anchor;
+					textEditor.MainSelection  = selection;
 				} else {
 					textEditor.Caret.Offset = oldOffset;
 				}
@@ -867,6 +884,7 @@ namespace Mono.TextEditor
 				}
 				return;
 			}
+			
 			if (inSelectionDrag) {
 				DocumentLocation loc = VisualToDocumentLocation (args.X, args.Y);
 				Caret.PreserveSelection = true;
@@ -888,16 +906,23 @@ namespace Mono.TextEditor
 						end   = ScanWord (offset, true);
 						Caret.Offset = end;
 					}
-					textEditor.SelectionRange = new Segment (start, end - start);
+					textEditor.MainSelection.Lead = Caret.Location;
 					break;
 				case MouseSelectionMode.WholeLine:
-					textEditor.SetSelectLines (loc.Line, textEditor.SelectionAnchorLocation.Line);
+					//textEditor.SetSelectLines (loc.Line, textEditor.MainSelection.Anchor.Line);
 					LineSegment line1 = textEditor.Document.GetLine (loc.Line);
 					LineSegment line2 = textEditor.Document.GetLineByOffset (textEditor.SelectionAnchor);
 					Caret.Offset = line1.Offset < line2.Offset ? line1.Offset : line1.EndOffset;
+					textEditor.MainSelection.Lead = Caret.Location;
 					break;
 				}
 				Caret.PreserveSelection = false;
+				if ((args.ModifierState & Gdk.ModifierType.Mod1Mask) == ModifierType.Mod1Mask) {
+					textEditor.SelectionMode = SelectionMode.Block;
+				} else {
+					textEditor.SelectionMode = SelectionMode.Normal;
+				}
+				
 //				textEditor.RedrawLines (System.Math.Min (oldLine, Caret.Line), System.Math.Max (oldLine, Caret.Line));
 			}
 		}
@@ -915,16 +940,16 @@ namespace Mono.TextEditor
 		
 		public int ColumnToVisualX (LineSegment line, int column)
 		{
-			if (line == null || line.EditableLength == 0)
-				return 0;
 			Pango.Layout measureLayout = new Pango.Layout (textEditor.PangoContext);
+			int lineXPos  = 0;
+			int curColumn = 0;
+			int visibleColumn = 0;
+			if (line == null || line.EditableLength == 0)
+				goto exit;
 			measureLayout.Alignment = Pango.Alignment.Left;
 			measureLayout.FontDescription = textEditor.Options.Font;
 			
-			int lineXPos  = 0;
 			SyntaxMode mode = Document.SyntaxMode != null && this.textEditor.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : SyntaxMode.Default;
-			int curColumn = 0;
-			int visibleColumn = 0;
 			for (Chunk chunk = mode.GetChunks (Document, this.ColorStyle, line, line.Offset, line.EditableLength); chunk != null; chunk = chunk.Next) {
 				for (int i = 0; i < chunk.Length; i++) {
 					int delta;
@@ -955,8 +980,9 @@ namespace Mono.TextEditor
 			}
 		 exit:
 			measureLayout.Dispose ();
-			if (column > line.EditableLength)
-				lineXPos += (line.EditableLength - column + 1) * this.charWidth;
+			if (column > visibleColumn) {
+				lineXPos += (column - visibleColumn) * this.charWidth;
+			}
 			return lineXPos;
 		}
 		
@@ -1141,11 +1167,44 @@ namespace Mono.TextEditor
 			if (line.EndOffset - offset > 0)
 				DrawLinePart (win, line, offset, line.Offset + line.EditableLength - offset, ref xPos, y, area.Right);
 			
-			bool isEolSelected = textEditor.IsSomethingSelected && textEditor.SelectionRange.Contains (line.Offset + line.EditableLength);
+			bool isEolSelected = textEditor.IsSomethingSelected && textEditor.SelectionMode == SelectionMode.Normal && textEditor.SelectionRange.Contains (line.Offset + line.EditableLength);
 			
 			lineArea.X     = xPos;
 			lineArea.Width = textEditor.Allocation.Width - xPos;
+			
+			if (textEditor.SelectionMode == SelectionMode.Block && textEditor.IsSomethingSelected && textEditor.SelectionRange.Contains (line.Offset + line.EditableLength)) {
+				DocumentLocation start = textEditor.MainSelection.Anchor;
+				DocumentLocation end   = textEditor.MainSelection.Lead;
+				
+				DocumentLocation visStart = Document.LogicalToVisualLocation (this.textEditor.GetTextEditorData (), start);
+				DocumentLocation visEnd   = Document.LogicalToVisualLocation (this.textEditor.GetTextEditorData (), end);
+				
+				int x1 = this.ColumnToVisualX (line, visStart.Column);
+				int x2 = this.ColumnToVisualX (line, visEnd.Column);
+				if (x1 > x2) {
+					int tmp = x1;
+					x1 = x2;
+					x2 = tmp;
+				}
+				x1 += (int)(XOffset - textEditor.HAdjustment.Value);
+				x2 += (int)(XOffset - textEditor.HAdjustment.Value);
+				
+				if (x2 > lineArea.X) {
+					if (x1 - lineArea.X > 0) {
+						DrawRectangleWithRuler (win, x, new Gdk.Rectangle (lineArea.X, lineArea.Y, x1 - lineArea.X, lineArea.Height), defaultBgColor);
+						lineArea.X = x1;
+					}
+					
+					DrawRectangleWithRuler (win, x, new Gdk.Rectangle (lineArea.X, lineArea.Y, x2 - lineArea.X, lineArea.Height), this.ColorStyle.Selection.BackgroundColor);
+					
+					lineArea.X = x2;
+					lineArea.Width = textEditor.Allocation.Width - lineArea.X;
+					
+				}
+			}
 			DrawRectangleWithRuler (win, x, lineArea, isEolSelected ? this.ColorStyle.Selection.BackgroundColor : defaultBgColor);
+			
+			
 			
 			if (textEditor.Options.ShowEolMarkers)
 				DrawEolMarker (win, isEolSelected, xPos, y);

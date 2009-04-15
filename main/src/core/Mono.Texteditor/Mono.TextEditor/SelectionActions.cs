@@ -61,8 +61,9 @@ namespace Mono.TextEditor
 		public static void StartSelection (TextEditorData data)
 		{
 			data.Caret.PreserveSelection = true;
-			if (!data.IsSomethingSelected)
-				data.SelectionAnchor = data.Caret.Offset;
+			if (!data.IsSomethingSelected) {
+				data.MainSelection = new Selection (data.Caret.Location, data.Caret.Location);
+			}
 		}
 		
 		public static void EndSelection (TextEditorData data)
@@ -86,10 +87,15 @@ namespace Mono.TextEditor
 		public static void EndLineSelection (TextEditorData data)
 		{
 			if (null != data.SelectionRange) {
-				if (data.Caret.Offset < data.SelectionAnchor)
-					data.SetSelectLines (data.Caret.Line, data.Document.OffsetToLineNumber (data.SelectionAnchor));
-				else data.SetSelectLines (data.Document.OffsetToLineNumber (data.SelectionAnchor), data.Caret.Line);
-			} else data.SetSelectLines (data.Caret.Line, data.Caret.Line);
+				if (data.Caret.Location < data.MainSelection.Anchor) {
+					data.SetSelectLines (data.Caret.Line, data.MainSelection.Anchor.Line);
+				} else {
+					data.SetSelectLines (data.MainSelection.Anchor.Line, data.Caret.Line);
+				}
+				
+			} else {
+				data.SetSelectLines (data.Caret.Line, data.Caret.Line);
+			}
 			data.Caret.PreserveSelection = false;
 		}
 
@@ -97,9 +103,9 @@ namespace Mono.TextEditor
 		{
 			data.Caret.AutoScrollToCaret = false;
 			data.Caret.PreserveSelection = true;
-			data.SelectionAnchor = 0;
 			CaretMoveActions.ToDocumentEnd (data);
-			data.ExtendSelectionTo (data.Document.Length);
+			data.MainSelection = new Selection (new DocumentLocation (0, 0),
+			                                    data.LogicalToVisualLocation (data.Caret.Location));
 			data.Caret.PreserveSelection = false;
 			data.Caret.AutoScrollToCaret = true;
 		}

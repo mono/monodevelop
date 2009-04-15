@@ -81,13 +81,12 @@ namespace Mono.TextEditor
 				DocumentLocation loc = new DocumentLocation (lineNumber, 0);
 				LineSegment line = args.LineSegment;
 				if (args.Type == EventType.TwoButtonPress) {
-					editor.SelectionRange = line;
-					editor.SelectionAnchor = editor.Document.LocationToOffset (loc);
+					editor.MainSelection = new Selection (loc, new DocumentLocation (lineNumber, line.EditableLength));
 				} else if (extendSelection) {
 					if (!editor.IsSomethingSelected) {
-						editor.SelectionAnchor = editor.Caret.Offset;
+						editor.MainSelection = new Selection (loc, loc);
 					} 
-					editor.SetSelectLines (editor.SelectionAnchorLocation.Line, lineNumber);
+					editor.MainSelection.Lead   = loc;
 				} else {
 					editor.ClearSelection ();
 				}
@@ -113,12 +112,13 @@ namespace Mono.TextEditor
 		{
 			base.MouseHover (args);
 			
-			if (args.Button == 1) {
+				if (args.Button == 1) {
+				DocumentLocation loc = editor.Document.LogicalToVisualLocation (editor.GetTextEditorData (), editor.Caret.Location);
 				if (!editor.IsSomethingSelected) {
-					editor.SelectionAnchor = editor.Caret.Offset;
+					editor.MainSelection = new Selection (loc, loc);
 				} 
 				int lineNumber = args.LineNumber != -1 ? args.LineNumber : editor.Document.LineCount - 1;
-				editor.SetSelectLines (editor.SelectionAnchorLocation.Line, lineNumber);
+				editor.MainSelection.Lead   = loc;
 				editor.Caret.PreserveSelection = true;
 				editor.Caret.Location = new DocumentLocation (lineNumber, 0);
 				editor.Caret.PreserveSelection = false;

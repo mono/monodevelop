@@ -37,8 +37,6 @@ using Mono.TextEditor.Highlighting;
 
 namespace Mono.TextEditor
 {
-	
-	
 	public static class ClipboardActions
 	{
 		public static void Cut (TextEditorData data)
@@ -65,23 +63,25 @@ namespace Mono.TextEditor
 	
 		public class CopyOperation
 		{
-			public const int TextType     = 1;		
+			public const int TextType     = 1;
 			public const int RichTextType = 2;
+			public const int MonoTextType = 3;
 			
 			const int UTF8_FORMAT = 8;
 			
 			public static readonly Gdk.Atom CLIPBOARD_ATOM        = Gdk.Atom.Intern ("CLIPBOARD", false);
 			public static readonly Gdk.Atom PRIMARYCLIPBOARD_ATOM = Gdk.Atom.Intern ("PRIMARY", false);
-			static readonly Gdk.Atom RTF_ATOM = Gdk.Atom.Intern ("text/rtf", false);
+			public static readonly Gdk.Atom RTF_ATOM = Gdk.Atom.Intern ("text/rtf", false);
+			public static readonly Gdk.Atom MD_ATOM  = Gdk.Atom.Intern ("text/monotext", false);
 			
 			TextEditorData data;
-			ISegment selection;
+			Selection selection;
 			
 			public CopyOperation ()	
 			{
 			}
 			
-			public CopyOperation (TextEditorData data, ISegment selection)	
+			public CopyOperation (TextEditorData data, Selection selection)	
 			{
 				this.data = data;
 				this.selection = selection;
@@ -98,6 +98,9 @@ namespace Mono.TextEditor
 				case RichTextType:
 					selection_data.Set (RTF_ATOM, UTF8_FORMAT, System.Text.Encoding.UTF8.GetBytes (GenerateRtf (copiedDocument, mode, docStyle, options)));
 					break;
+				case MonoTextType:
+					selection_data.Set (MD_ATOM, UTF8_FORMAT, System.Text.Encoding.UTF8.GetBytes (monoDocument.Text));
+					break;
 				}
 			}
 				
@@ -112,6 +115,7 @@ namespace Mono.TextEditor
 			}
 	
 			public Document copiedDocument;
+			public Document monoDocument; // has a slightly different format !!!
 			public Mono.TextEditor.Highlighting.Style docStyle;
 			ITextEditorOptions options;
 			Mono.TextEditor.Highlighting.SyntaxMode mode;
@@ -232,47 +236,62 @@ namespace Mono.TextEditor
 				get {
 					Gtk.TargetList list = new Gtk.TargetList ();
 					list.Add (RTF_ATOM, /* FLAGS */ 0, RichTextType);
+					list.Add (MD_ATOM, /* FLAGS */ 0, MonoTextType);
 					list.AddTextTargets (TextType);
 					return list;
 				}
 			}
 			
-			void CopyData (TextEditorData data, ISegment segment)
+			void CopyData (TextEditorData data, Selection selection)
 			{
 				if (copiedDocument != null) {
 					copiedDocument.Dispose ();
 					copiedDocument = null;
 				}
-				if (segment != null && data != null && data.Document != null) {
+				if (monoDocument != null) {
+					monoDocument.Dispose ();
+					monoDocument = null;
+				}
+				if (selection != null && data != null && data.Document != null) {
 					copiedDocument = new Document ();
-					
-					
+					monoDocument = new Document ();
 					this.docStyle = data.ColorStyle;
 					this.options  = data.Options;
 					this.mode = data.Document.SyntaxMode != null && data.Options.EnableSyntaxHighlighting ? data.Document.SyntaxMode : Mono.TextEditor.Highlighting.SyntaxMode.Default;
-					copiedDocument.Text = segment != null && segment.Length > 0 ? this.mode.GetTextWithoutMarkup (data.Document, data.ColorStyle, segment.Offset, segment.Length) : "";
-					
-					LineSegment line    = data.Document.GetLineByOffset (segment.Offset);
-					Stack<Span> spanStack = line.StartSpan != null ? new Stack<Span> (line.StartSpan) : new Stack<Span> ();
-					SyntaxModeService.ScanSpans (data.Document, this.mode, this.mode, spanStack, line.Offset, segment.Offset);
-	
-					this.copiedDocument.GetLine (0).StartSpan = spanStack.ToArray ();
-					
-	
-					/*
-					try {
-						text = segment.Length > 0 ? data.Document.GetTextAt (segment) : "";
-					} catch (Exception) {
-						System.Console.WriteLine("Copy data failed - unable to get text at:" + segment);
-						throw;
+					switch (selection.SelectionMode) {
+					case SelectionMode.Normal:
+						ISegment segment = selection.GetSelectionRange (data);
+						copiedDocument.Text = this.mode.GetTextWithoutMarkup (data.Document, data.ColorStyle, segment.Offset, segment.Length);
+						monoDocument.Text   = this.mode.GetTextWithoutMarkup (data.Document, data.ColorStyle, segment.Offset, segment.Length);
+						LineSegment line    = data.Document.GetLineByOffset (segment.Offset);
+						Stack<Span> spanStack = line.StartSpan != null ? new Stack<Span> (line.StartSpan) : new Stack<Span> ();
+						SyntaxModeService.ScanSpans (data.Document, this.mode, this.mode, spanStack, line.Offset, segment.Offset);
+						this.copiedDocument.GetLine (0).StartSpan = spanStack.ToArray ();
+						break;
+					case SelectionMode.Block:
+						DocumentLocation visStart = data.LogicalToVisualLocation (selection.Anchor);
+						DocumentLocation visEnd   = data.LogicalToVisualLocation (selection.Lead);
+						int startCol = System.Math.Min (visStart.Column, visEnd.Column);
+						int endCol   = System.Math.Max (visStart.Column, visEnd.Column);
+						for (int lineNr = selection.MinLine; lineNr <= selection.MaxLine; lineNr++) {
+							LineSegment curLine = data.Document.GetLine (lineNr);
+							int col1 = curLine.GetLogicalColumn (data, data.Document, startCol);
+							int col2 = curLine.GetLogicalColumn (data, data.Document, endCol);
+							((IBuffer)copiedDocument).Insert (copiedDocument.Length, data.Document.GetTextAt (curLine.Offset  + col1, col2 - col1));
+							((IBuffer)monoDocument).Insert (monoDocument.Length, data.Document.GetTextAt (curLine.Offset  + col1, col2 - col1));
+							if (lineNr < selection.MaxLine) {
+								// Clipboard line end needs to be system dependend and not the document one.
+								((IBuffer)copiedDocument).Insert (copiedDocument.Length, Environment.NewLine);
+								// \r in mono document stands for block selection line end.
+								((IBuffer)monoDocument).Insert (monoDocument.Length, "\r");
+							}
+						}
+						line    = data.Document.GetLine (selection.MinLine);
+						spanStack = line.StartSpan != null ? new Stack<Span> (line.StartSpan) : new Stack<Span> ();
+						SyntaxModeService.ScanSpans (data.Document, this.mode, this.mode, spanStack, line.Offset, line.Offset + startCol);
+						this.copiedDocument.GetLine (0).StartSpan = spanStack.ToArray ();
+						break;
 					}
-					
-					try {
-						rtf  = GenerateRtf (data);
-					} catch (Exception) {
-						System.Console.WriteLine("Copy data failed - unable to generate rtf for text at:" + segment);
-						throw;
-					}*/
 				} else {
 					copiedDocument = null;
 				}
@@ -280,8 +299,13 @@ namespace Mono.TextEditor
 			
 			public void CopyData (TextEditorData data)
 			{
-				ISegment segment = data.IsSomethingSelected ? data.SelectionRange : data.Document.GetLine (data.Caret.Line);
-				CopyData (data, segment);
+				Selection selection;
+				if (data.IsSomethingSelected) {
+					 selection = data.MainSelection;
+				} else {
+					selection = new Selection (new DocumentLocation (data.Caret.Line, 0), new DocumentLocation (data.Caret.Line, data.Document.GetLine (data.Caret.Line).Length));
+				}
+				CopyData (data, selection);
 				
 				if (Copy != null)
 					Copy (copiedDocument != null ? copiedDocument.Text : null);
@@ -302,7 +326,7 @@ namespace Mono.TextEditor
 		
 		public static void CopyToPrimary (TextEditorData data)
 		{
-			CopyOperation operation = new CopyOperation (data, data.SelectionRange);
+			CopyOperation operation = new CopyOperation (data, data.MainSelection);
 			Clipboard clipboard = Clipboard.Get (CopyOperation.PRIMARYCLIPBOARD_ATOM);
 			clipboard.SetWithData ((Gtk.TargetEntry[])CopyOperation.TargetList, operation.ClipboardGetFuncLazy,
 			                       operation.ClipboardClearFunc);
@@ -319,25 +343,65 @@ namespace Mono.TextEditor
 			int result = -1;
 			if (!data.CanEdit (data.Document.OffsetToLineNumber (insertionOffset)))
 				return result;
-			clipboard.RequestText (delegate (Clipboard clp, string text) {
+			clipboard.RequestContents (CopyOperation.MD_ATOM, delegate (Clipboard clp, SelectionData selectionData) {
+				string text = System.Text.Encoding.UTF8.GetString (selectionData.Data);
 				data.Document.BeginAtomicUndo ();
 				if (preserveSelection && data.IsSomethingSelected) 
 					data.DeleteSelectedText ();
 				
 				data.Caret.PreserveSelection = true;
+				string[] lines = text.Split ('\r');
+				int lineNr = data.Document.OffsetToLineNumber (insertionOffset);
+				int col = insertionOffset - data.Document.GetLine (lineNr).Offset;
+				int visCol = data.Document.GetLine (lineNr).GetVisualColumn (data, data.Document, col);
+				LineSegment curLine;
+				int lineCol = col;
+				result = 0;
+				for (int i = 0; i < lines.Length; i++) {
+					while (data.Document.LineCount <= lineNr + i) {
+						data.Insert (data.Document.Length, Environment.NewLine);
+						result += Environment.NewLine.Length;
+					}
+					curLine = data.Document.GetLine (lineNr + i);
+					lineCol = curLine.GetLogicalColumn (data, data.Document, visCol);
+					if (curLine.EditableLength < lineCol) {
+						result += lineCol - curLine.EditableLength;
+						data.Insert (curLine.Offset + curLine.EditableLength, new string (' ', lineCol - curLine.EditableLength));
+					}
+					data.Insert (curLine.Offset + lineCol, lines[i]);
+					result += lines[i].Length;
+					data.Caret.Offset = curLine.Offset + lineCol + lines[i].Length;
+				}
 				
-				//int oldLine = data.Caret.Line;
-				int textLength = data.Insert (insertionOffset, text);
-				result = textLength;
-				if (data.Caret.Offset >= insertionOffset) 
-					data.Caret.Offset += textLength;
-				if (data.IsSomethingSelected && data.SelectionRange.Offset >= insertionOffset) 
-					data.SelectionRange.Offset += textLength;
-				if (data.IsSomethingSelected && data.SelectionAnchor >= insertionOffset) 
-					data.SelectionAnchor += textLength;
+				data.MainSelection = new Selection (data.Document.OffsetToLocation (insertionOffset),
+				                                    data.Caret.Location,
+				                                    lines.Length > 1 ? SelectionMode.Block : SelectionMode.Normal);
 				data.Caret.PreserveSelection = false;
 				data.Document.EndAtomicUndo ();
 			});
+			
+			if (result < 0) {
+				clipboard.RequestText (delegate (Clipboard clp, string text) {
+					data.Document.BeginAtomicUndo ();
+					if (preserveSelection && data.IsSomethingSelected) 
+						data.DeleteSelectedText ();
+					
+					data.Caret.PreserveSelection = true;
+					
+					//int oldLine = data.Caret.Line;
+					int textLength = data.Insert (insertionOffset, text);
+					result = textLength;
+					if (data.Caret.Offset >= insertionOffset) 
+						data.Caret.Offset += textLength;
+					if (data.IsSomethingSelected && data.SelectionRange.Offset >= insertionOffset) 
+						data.SelectionRange.Offset += textLength;
+					if (data.IsSomethingSelected && data.MainSelection.GetAnchorOffset (data) >= insertionOffset) 
+						data.MainSelection.Anchor = data.Document.OffsetToLocation (data.MainSelection.GetAnchorOffset (data) + textLength);
+					data.Caret.PreserveSelection = false;
+					data.Document.EndAtomicUndo ();
+				});
+			}
+			
 			return result;
 		}
 		

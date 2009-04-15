@@ -341,62 +341,69 @@ namespace Mono.TextEditor
 			ResetIMContext ();
 		}
 		
-		ISegment oldSelection = null;
+		Selection oldSelection = null;
 		void TextEditorDataSelectionChanged (object sender, EventArgs args)
 		{
-			if (IsSomethingSelected && SelectionRange.Offset >= 0 && SelectionRange.EndOffset < Document.Length) {
-				ClipboardActions.CopyToPrimary (this.textEditorData);
+			if (IsSomethingSelected) {
+				ISegment selectionRange = MainSelection.GetSelectionRange (textEditorData);
+				if (selectionRange.Offset >= 0 && selectionRange.EndOffset < Document.Length)
+					ClipboardActions.CopyToPrimary (this.textEditorData);
 			} else {
 				ClipboardActions.ClearPrimary ();
 			}
 				
 			// Handle redraw
-			ISegment selection = SelectionRange;
-			int startLine    = selection != null ? Document.OffsetToLineNumber (selection.Offset) : -1;
-			int endLine      = selection != null ? Document.OffsetToLineNumber (selection.EndOffset) : -1;
-			int oldStartLine = oldSelection != null ? Document.OffsetToLineNumber (oldSelection.Offset) : -1;
-			int oldEndLine   = oldSelection != null ? Document.OffsetToLineNumber (oldSelection.EndOffset) : -1;
-			
-			if (endLine < 0 && startLine >=0)
-				endLine = Document.LineCount;
-			if (oldEndLine < 0 && oldStartLine >=0)
-				oldEndLine = Document.LineCount;
-			int from = oldEndLine, to = endLine;
-			if (selection != null && oldSelection != null) {
-				if (startLine != oldStartLine && endLine != oldEndLine) {
-					from = System.Math.Min (startLine, oldStartLine);
-					to   = System.Math.Max (endLine, oldEndLine);
-				} else if (startLine != oldStartLine) {
-					from = startLine;
-					to   = oldStartLine;
-				} else if (endLine != oldEndLine) {
-					from = endLine;
-					to   = oldEndLine;
-				} else if (startLine == oldStartLine && endLine == oldEndLine)  {
-					if (selection.Offset == oldSelection.Offset) {
-						this.RedrawLine (endLine);
-					} else if (selection.EndOffset == oldSelection.EndOffset) {
-						this.RedrawLine (startLine);
-					} else { // 3rd case - may happen when changed programmatically
-						this.RedrawLine (endLine);
-						this.RedrawLine (startLine);
-					}
-					from = to = -1;
-				}
+			Selection selection = Selection.Clone (MainSelection);
+			int startLine    = selection != null ? selection.Anchor.Line : -1;
+			int endLine      = selection != null ? selection.Lead.Line : -1;
+			int oldStartLine = oldSelection != null ? oldSelection.Anchor.Line : -1;
+			int oldEndLine   = oldSelection != null ? oldSelection.Lead.Line : -1;
+			if (SelectionMode == SelectionMode.Block) {
+				this.RedrawLines (System.Math.Min (System.Math.Min (oldStartLine, oldEndLine), System.Math.Min (startLine, endLine)),
+					               System.Math.Max (System.Math.Max (oldStartLine, oldEndLine), System.Math.Max (startLine, endLine)));
+				oldSelection = selection;
 			} else {
-				if (selection == null) {
-					from = oldStartLine;
-					to = oldEndLine;
-				} else if (oldSelection == null) {
-					from = startLine;
-					to = endLine;
-				} 
-			}
-			
-			if (from >= 0 && to >= 0) {
-				oldSelection = selection != null ? new Segment (selection.Offset, selection.Length) : null;
-				this.RedrawLines (System.Math.Max (0, System.Math.Min (from, to) - 1),
-				                  System.Math.Max (from, to));
+				if (endLine < 0 && startLine >=0)
+					endLine = Document.LineCount;
+				if (oldEndLine < 0 && oldStartLine >=0)
+					oldEndLine = Document.LineCount;
+				int from = oldEndLine, to = endLine;
+				if (selection != null && oldSelection != null) {
+					if (startLine != oldStartLine && endLine != oldEndLine) {
+						from = System.Math.Min (startLine, oldStartLine);
+						to   = System.Math.Max (endLine, oldEndLine);
+					} else if (startLine != oldStartLine) {
+						from = startLine;
+						to   = oldStartLine;
+					} else if (endLine != oldEndLine) {
+						from = endLine;
+						to   = oldEndLine;
+					} else if (startLine == oldStartLine && endLine == oldEndLine)  {
+						if (selection.Anchor == oldSelection.Anchor) {
+							this.RedrawLine (endLine);
+						} else if (selection.Lead == oldSelection.Lead) {
+							this.RedrawLine (startLine);
+						} else { // 3rd case - may happen when changed programmatically
+							this.RedrawLine (endLine);
+							this.RedrawLine (startLine);
+						}
+						from = to = -1;
+					}
+				} else {
+					if (selection == null) {
+						from = oldStartLine;
+						to = oldEndLine;
+					} else if (oldSelection == null) {
+						from = startLine;
+						to = endLine;
+					} 
+				}
+				
+				if (from >= 0 && to >= 0) {
+					oldSelection = selection;
+					this.RedrawLines (System.Math.Max (0, System.Math.Min (from, to) - 1),
+					                  System.Math.Max (from, to));
+				}
 			}
 			
 			OnSelectionChanged (EventArgs.Empty);
@@ -747,7 +754,7 @@ namespace Mono.TextEditor
 		bool dragOver = false;
 		ClipboardActions.CopyOperation dragContents = null;
 		DocumentLocation defaultCaretPos, dragCaretPos;
-		ISegment selection = null;
+		Selection selection = null;
 		DragContext dragContext;
 		
 		public bool IsInDrag {
@@ -771,14 +778,13 @@ namespace Mono.TextEditor
 		{
 			int offset = Caret.Offset;
 			if (CanEdit (Caret.Line)) {
-				textEditorData.Remove (selection.Offset, selection.Length);
-				if (offset >= selection.Offset) {
-					Caret.PreserveSelection = true;
-					Caret.Offset = offset - selection.Length;
-					Caret.PreserveSelection = false;
-				}
-				if (this.textEditorData.IsSomethingSelected && selection.Offset <= this.textEditorData.SelectionRange.Offset) {
-					this.textEditorData.SelectionRange.Offset -= selection.Length;
+				Caret.PreserveSelection = true;
+				textEditorData.DeleteSelection (selection);
+				Caret.PreserveSelection = false;
+				
+				if (this.textEditorData.IsSomethingSelected && selection.GetSelectionRange (textEditorData).Offset <= this.textEditorData.SelectionRange.Offset) {
+					this.textEditorData.SelectionRange = new Segment (this.textEditorData.SelectionRange.Offset - selection.GetSelectionRange (textEditorData).Length, this.textEditorData.SelectionRange.Length);
+					this.textEditorData.SelectionMode = selection.SelectionMode;
 				}
 				selection = null;
 				textEditorData.Document.MergeUndoOperations (2);
@@ -812,23 +818,25 @@ namespace Mono.TextEditor
 				Caret.Location = dragCaretPos;
 				if (CanEdit (dragCaretPos.Line)) {
 					int offset = Caret.Offset;
-					if (selection != null && selection.Offset >= offset)
-						selection = new Segment (selection.Offset + selection_data.Text.Length, selection.Length);
+					if (selection != null && selection.GetSelectionRange (textEditorData).Offset >= offset)
+						selection = new Selection (Document.OffsetToLocation (selection.GetSelectionRange (textEditorData).Offset + selection_data.Text.Length), Document.OffsetToLocation (selection.GetSelectionRange (textEditorData).Offset + selection_data.Text.Length + selection.GetSelectionRange (textEditorData).Length));
 					textEditorData.Insert (offset, selection_data.Text);
 					Caret.Offset = offset + selection_data.Text.Length;
-					SelectionRange = new Segment (offset, selection_data.Text.Length);
+					MainSelection = new Selection (Document.OffsetToLocation (offset), Document.OffsetToLocation (offset + selection_data.Text.Length));
 				}
 				dragOver  = false;
 				context   = null;
 			}
 			base.OnDragDataReceived (context, x, y, selection_data, info, time_);
 		}
-		DragAction GetSuggestedDragAction ()
+		DragAction GetSuggestedDragAction (DragContext context)
 		{
 /*			if (keyPressed.ContainsKey (Gdk.Key.Control_L) && keyPressed [Gdk.Key.Control_L] || 
 			    keyPressed.ContainsKey (Gdk.Key.Control_R) && keyPressed[Gdk.Key.Control_R])
-				return DragAction.Copy;*/
-			return DragAction.Move;
+				return DragAction.Copy;
+			return DragAction.Move;*/
+			
+			return context.SuggestedAction;
 		}
 		protected override bool OnDragMotion (DragContext context, int x, int y, uint time_)
 		{
@@ -844,14 +852,14 @@ namespace Mono.TextEditor
 			Caret.PreserveSelection = true;
 			dragCaretPos = VisualToDocumentLocation (x - textViewMargin.XOffset, y);
 			int offset = Document.LocationToOffset (dragCaretPos);
-			if (selection != null && offset >= this.selection.Offset && offset < this.selection.EndOffset) {
+			if (selection != null && offset >= this.selection.GetSelectionRange (textEditorData).Offset && offset < this.selection.GetSelectionRange (textEditorData).EndOffset) {
 				Gdk.Drag.Status (context, DragAction.Default, time_);
 				Caret.Location = defaultCaretPos;
 			} else {
 				if (this.dragContext != null && context.StartTime == this.dragContext.StartTime) {
-					Gdk.Drag.Status (context, GetSuggestedDragAction (), time_);
+					Gdk.Drag.Status (context, GetSuggestedDragAction (context), time_);
 				} else {
-					Gdk.Drag.Status (context, GetSuggestedDragAction (), time_);
+					Gdk.Drag.Status (context, GetSuggestedDragAction (context), time_);
 				}
 				Caret.Location = dragCaretPos; 
 			}
@@ -887,7 +895,7 @@ namespace Mono.TextEditor
 				DragContext context = Gtk.Drag.Begin (this, ClipboardActions.CopyOperation.TargetList, DragAction.Copy | DragAction.Move, 1, e);
 				CodeSegmentPreviewWindow window = new CodeSegmentPreviewWindow (this, textEditorData.SelectionRange, 300, 300);
 				Gtk.Drag.SetIconWidget (context, window, 0, 0);
-				selection = SelectionRange;
+				selection = Selection.Clone (MainSelection);
 				textViewMargin.inDrag = false;
 			} else if (margin != null) {
 				margin.MouseHover (new MarginMouseEventArgs (this, mouseButtonPressed, (int)(e.X - startPos), (int)e.Y, EventType.MotionNotify, e.State));
@@ -1217,24 +1225,24 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public int SelectionAnchor {
+		public Selection MainSelection {
 			get {
-				return this.textEditorData.SelectionAnchor;
+				return textEditorData.MainSelection;
 			}
 			set {
-				this.textEditorData.SelectionAnchor = value;
+				textEditorData.MainSelection = value;
 			}
 		}
 		
-		public DocumentLocation SelectionAnchorLocation {
+		public SelectionMode SelectionMode {
 			get {
-				return Document.OffsetToLocation (SelectionAnchor);
+				return textEditorData.SelectionMode;
 			}
 			set {
-				SelectionAnchor = Document.LocationToOffset (value);
+				textEditorData.SelectionMode = value;
 			}
 		}
-		
+
 		public ISegment SelectionRange {
 			get {
 				return this.textEditorData.SelectionRange;
@@ -1243,13 +1251,22 @@ namespace Mono.TextEditor
 				this.textEditorData.SelectionRange = value;
 			}
 		}
-		
+				
 		public string SelectedText {
 			get {
 				return this.textEditorData.SelectedText;
 			}
 			set {
 				this.textEditorData.SelectedText = value;
+			}
+		}
+		
+		public int SelectionAnchor {
+			get {
+				return this.textEditorData.SelectionAnchor;
+			}
+			set {
+				this.textEditorData.SelectionAnchor = value;
 			}
 		}
 		

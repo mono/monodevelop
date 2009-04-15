@@ -199,14 +199,14 @@ namespace Mono.TextEditor.Vi
 
 					case 'V':
 						Status = "-- VISUAL LINE --";
-						Data.SelectionAnchor = Caret.Offset;
+						Data.MainSelection.Anchor = Caret.Location;
 						Data.SetSelectLines (Caret.Line, Caret.Line);
 						state = State.VisualLine;
 						return;
 						
 					case 'v':
 						Status = "-- VISUAL --";
-						Data.SelectionAnchor = Caret.Offset;
+						Data.MainSelection.Anchor = Caret.Location;
 						state = State.Visual;
 						return;
 						
@@ -298,7 +298,7 @@ namespace Mono.TextEditor.Vi
 					case 'S':
 						if (!Data.IsSomethingSelected)
 							RunAction (SelectionActions.LineActionFromMoveAction (CaretMoveActions.LineEnd));
-						else Data.SetSelectLines (Data.Document.OffsetToLineNumber (Data.SelectionAnchor), Data.Caret.Line);
+						else Data.SetSelectLines (Data.MainSelection.Anchor.Line, Data.Caret.Line);
 						RunAction (ClipboardActions.Cut);
 						goto case 'i';
 						
@@ -639,7 +639,7 @@ namespace Mono.TextEditor.Vi
 					Status = "-- INSERT --";
 					return;
 				case 'S':
-					Data.SetSelectLines (Data.Document.OffsetToLineNumber (Data.SelectionAnchor), Data.Caret.Line);
+					Data.SetSelectLines (Data.MainSelection.Anchor.Line, Data.Caret.Line);
 					goto case 'c';
 					
 				case '>':
