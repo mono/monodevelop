@@ -161,7 +161,7 @@ namespace MonoDevelop.AspNet.Parser
 			
 			IType type = null;
 			if (0 == string.Compare (tagPrefix, "asp", StringComparison.OrdinalIgnoreCase)) {
-				type = WebTypeManager.SystemTypeLookup (tagName, WebTypeManager.GetProjectTargetFramework (doc.Project));
+				type = WebTypeManager.SystemTypeLookup (tagName, doc.Project);
 				if (type != null)
 					return type;
 			}
@@ -240,7 +240,7 @@ namespace MonoDevelop.AspNet.Parser
 			if (desiredPrefix == null)
 				prefix = GetPrefix (control);
 			
-			System.Reflection.AssemblyName an = MonoDevelop.Core.Runtime.SystemAssemblyService.ParseAssemblyName (assemblyName);
+			System.Reflection.AssemblyName an = MonoDevelop.Core.SystemAssemblyService.ParseAssemblyName (assemblyName);
 			
 			string directive = string.Format ("{0}<%@ Register TagPrefix=\"{1}\" Namespace=\"{2}\" Assembly=\"{3}\" %>",
 			    Environment.NewLine, prefix, control.Namespace, an.Name);

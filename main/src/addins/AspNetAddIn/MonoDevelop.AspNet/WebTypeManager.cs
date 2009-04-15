@@ -251,23 +251,23 @@ namespace MonoDevelop.AspNet
 		
 		public static string SystemTypeNameLookup (string tagName, AspNetAppProject project)
 		{
-			return SystemTypeNameLookup (tagName, WebTypeManager.GetProjectTargetFramework (project));
+			return SystemTypeNameLookup (tagName, project.TargetRuntime, WebTypeManager.GetProjectTargetFramework (project));
 		}
 		
 		public static IType SystemTypeLookup (string tagName, AspNetAppProject project)
 		{
-			return SystemTypeLookup (tagName, WebTypeManager.GetProjectTargetFramework (project));
+			return SystemTypeLookup (tagName, project.TargetRuntime,  WebTypeManager.GetProjectTargetFramework (project));
 		}
 		
-		public static string SystemTypeNameLookup (string tagName, MonoDevelop.Core.TargetFramework targetFramework)
+		public static string SystemTypeNameLookup (string tagName, MonoDevelop.Core.TargetRuntime runtime, MonoDevelop.Core.TargetFramework targetFramework)
 		{
-			IType cls = SystemTypeLookup (tagName, targetFramework);
+			IType cls = SystemTypeLookup (tagName, runtime, targetFramework);
 			return cls != null? cls.FullName : null;
 		}
 		
-		public static IType SystemTypeLookup (string tagName, MonoDevelop.Core.TargetFramework targetFramework)
+		public static IType SystemTypeLookup (string tagName, MonoDevelop.Core.TargetRuntime runtime, MonoDevelop.Core.TargetFramework targetFramework)
 		{
-			return AssemblyTypeLookup (GetSystemWebDom (targetFramework), "System.Web.UI.WebControls", tagName);
+			return AssemblyTypeLookup (GetSystemWebDom (runtime, targetFramework), "System.Web.UI.WebControls", tagName);
 		}
 		
 		public static string AssemblyTypeNameLookup (ProjectDom assemblyDatabase, string namespac, string tagName)
@@ -297,20 +297,20 @@ namespace MonoDevelop.AspNet
 		{
 			string path;
 			if (project == null) {
-				assemblyName = Runtime.SystemAssemblyService.GetAssemblyFullName (assemblyName);
+				assemblyName = project.TargetRuntime.GetAssemblyFullName (assemblyName);
 				if (assemblyName == null)
 					return null;
-				assemblyName = Runtime.SystemAssemblyService.GetAssemblyNameForVersion (assemblyName, TargetFramework.Default);
+				assemblyName = project.TargetRuntime.GetAssemblyNameForVersion (assemblyName, TargetFramework.Default);
 				if (assemblyName == null)
 					return null;
-				path = Runtime.SystemAssemblyService.GetAssemblyLocation (assemblyName);
+				path = project.TargetRuntime.GetAssemblyLocation (assemblyName);
 			} else {
 				path = project.ResolveAssembly (assemblyName);
 			}
 			
 			if (path == null)
 				return null;
-			return MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetAssemblyDom (path);
+			return MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetAssemblyDom (project.TargetRuntime, path);
 		}
 		
 		#region System type listings
@@ -322,18 +322,18 @@ namespace MonoDevelop.AspNet
 		
 		public static ProjectDom GetSystemWebDom (AspNetAppProject project)
 		{
-			return GetSystemWebDom (GetProjectTargetFramework (project));
+			return GetSystemWebDom (project.TargetRuntime, GetProjectTargetFramework (project));
 		}
 		
-		static ProjectDom GetSystemWebDom (MonoDevelop.Core.TargetFramework targetFramework)
+		static ProjectDom GetSystemWebDom (MonoDevelop.Core.TargetRuntime runtime, MonoDevelop.Core.TargetFramework targetFramework)
 		{
-			string file = Runtime.SystemAssemblyService.GetAssemblyNameForVersion ("System.Web, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", targetFramework);
+			string file = runtime.GetAssemblyNameForVersion ("System.Web, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", targetFramework);
 			if (String.IsNullOrEmpty (file))
 				throw new Exception ("System.Web assembly name not found for framework " + targetFramework.Id);
-			file = Runtime.SystemAssemblyService.GetAssemblyLocation (file);
+			file = runtime.GetAssemblyLocation (file);
 			if (String.IsNullOrEmpty (file))
 				throw new Exception ("System.Web assembly file not found for framework " + targetFramework.Id);
-			ProjectDom dom = ProjectDomService.GetAssemblyDom (file);
+			ProjectDom dom = ProjectDomService.GetAssemblyDom (runtime, file);
 			if (dom == null)
 				throw new Exception ("System.Web parse database not found for framework " + targetFramework.Id + " file '" + file + "'");
 			return dom;
@@ -404,7 +404,7 @@ namespace MonoDevelop.AspNet
 			//FIXME: actually look up the type
 			//or maybe it's not necessary, as the compilers can't handle the types because
 			//they're only generated when the UserControl is hit.
-			return AssemblyTypeLookup (GetSystemWebDom (GetProjectTargetFramework (project)), "System.Web.UI", "UserControl");
+			return AssemblyTypeLookup (GetSystemWebDom (project), "System.Web.UI", "UserControl");
 		}
 		
 		#region Global control registration tracking

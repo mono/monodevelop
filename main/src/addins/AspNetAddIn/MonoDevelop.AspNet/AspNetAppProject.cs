@@ -355,20 +355,20 @@ namespace MonoDevelop.AspNet
 		
 		public string ResolveAssembly (string assemblyName)
 		{
-			System.Reflection.AssemblyName parsed = Runtime.SystemAssemblyService.ParseAssemblyName (assemblyName);
+			System.Reflection.AssemblyName parsed = SystemAssemblyService.ParseAssemblyName (assemblyName);
 			if (string.IsNullOrEmpty (parsed.Name))
 				return null;
 			string localName = Path.Combine (Path.Combine (BaseDirectory, "bin"), parsed.Name + ".dll");
 			if (File.Exists (localName))
 				return localName;
 			
-			assemblyName = Runtime.SystemAssemblyService.GetAssemblyFullName (assemblyName);
+			assemblyName = TargetRuntime.GetAssemblyFullName (assemblyName);
 			if (assemblyName == null)
 				return null;
-			assemblyName = Runtime.SystemAssemblyService.GetAssemblyNameForVersion (assemblyName, TargetFramework);
+			assemblyName = TargetRuntime.GetAssemblyNameForVersion (assemblyName, TargetFramework);
 			if (assemblyName == null)
 				return null;
-			return Runtime.SystemAssemblyService.GetAssemblyLocation (assemblyName);
+			return TargetRuntime.GetAssemblyLocation (assemblyName);
 		}
 		
 		public ProjectFile ResolveVirtualPath (string virtualPath, string relativeToFile)

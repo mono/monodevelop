@@ -125,8 +125,7 @@ namespace MonoDevelop.AspNet
 				MonoDevelop.Projects.Dom.Parser.ProjectDomService.Parse (project, path, mime)
 					as MonoDevelop.AspNet.Parser.AspNetParsedDocument;
 			
-			System.Reflection.AssemblyName assemName = 
-				MonoDevelop.Core.Runtime.SystemAssemblyService.ParseAssemblyName (Type.AssemblyName);
+			System.Reflection.AssemblyName assemName = SystemAssemblyService.ParseAssemblyName (Type.AssemblyName);
 			
 			string prefix = cu.Document.ReferenceManager.AddAssemblyReferenceToDocument (cls, assemName.Name);
 			

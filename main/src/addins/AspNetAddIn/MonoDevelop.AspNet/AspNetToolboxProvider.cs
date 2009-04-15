@@ -44,15 +44,15 @@ namespace MonoDevelop.AspNet
 		public IEnumerable<string> GetDefaultFiles ()
 		{
 			string location;
-			location = Runtime.SystemAssemblyService.GetAssemblyLocation ("System.Web, Version=1.0.5000.0");
+			location = Runtime.SystemAssemblyService.DefaultRuntime.GetAssemblyLocation ("System.Web, Version=1.0.5000.0");
 			if (!string.IsNullOrEmpty (location))
 				yield return location;
 			
-			location = Runtime.SystemAssemblyService.GetAssemblyLocation ("System.Web, Version=2.0.0.0");
+			location = Runtime.SystemAssemblyService.DefaultRuntime.GetAssemblyLocation ("System.Web, Version=2.0.0.0");
 			if (!string.IsNullOrEmpty (location))
 				yield return location;
 			
-			location = Runtime.SystemAssemblyService.GetAssemblyLocation ("System.Web.Extensions");
+			location = Runtime.SystemAssemblyService.DefaultRuntime.GetAssemblyLocation ("System.Web.Extensions");
 			if (!string.IsNullOrEmpty (location))
 				yield return location;
 		}
