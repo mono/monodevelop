@@ -1,3 +1,7 @@
+2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MsPrjHelper.cs: Add support for multiple target runtimes.
+
 2009-03-13  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* prj2make-sharp-lib.csproj: Don't local-copy project refs.
