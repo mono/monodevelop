@@ -29,6 +29,7 @@ using System;
 using System.Collections.Generic;
 using Gtk;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
@@ -83,10 +84,10 @@ namespace MonoDevelop.Debugger
 			else {
 				string asm = typeof(Uri).Assembly.Location;
 				if (!systemLoaded) {
-					ProjectDomService.LoadAssembly (asm);
+					ProjectDomService.LoadAssembly (Runtime.SystemAssemblyService.CurrentRuntime, asm);
 					systemLoaded = true;
 				}
-				dom = ProjectDomService.GetAssemblyDom (asm);
+				dom = ProjectDomService.GetAssemblyDom (Runtime.SystemAssemblyService.CurrentRuntime, asm);
 			}
 			foreach (IType t in dom.GetSubclasses (dom.GetType ("System.Exception", true)))
 				classes.Add (t.FullName);
@@ -126,7 +127,7 @@ namespace MonoDevelop.Debugger
 		protected override void OnDestroyed ()
 		{
 			if (systemLoaded)
-				ProjectDomService.UnloadAssembly (typeof(Uri).Assembly.Location);
+				ProjectDomService.UnloadAssembly (Runtime.SystemAssemblyService.CurrentRuntime, typeof(Uri).Assembly.Location);
 			base.OnDestroyed ();
 		}
 
