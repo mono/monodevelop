@@ -171,9 +171,10 @@ namespace MonoDevelop.Components.Commands
 		[GLib.ConnectBefore]
 		void OnKeyPressed (object o, Gtk.KeyPressEventArgs e)
 		{
-			string accel = KeyBindingManager.AccelFromKey (e.Event.Key, e.Event.State);
+			bool complete;
+			string accel = KeyBindingManager.AccelFromKey (e.Event.Key, e.Event.State, out complete);
 			
-			if (accel == null) {
+			if (!complete) {
 				// incomplete accel
 				e.RetVal = true;
 				return;

@@ -192,7 +192,7 @@ namespace MonoDevelop.Components.Commands
 				}
 				
 				if (cmdInfo.AccelKey != null)
-					accel_label.Text = "    " + KeyBindingManager.BindingToLabel (cmdInfo.AccelKey);
+					accel_label.Text = "    " + KeyBindingManager.BindingToDisplayLabel (cmdInfo.AccelKey, true);
 				else
 					accel_label.Text = String.Empty;
 				

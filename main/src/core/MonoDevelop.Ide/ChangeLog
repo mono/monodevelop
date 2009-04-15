@@ -1,3 +1,10 @@
+2009-04-15  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs: Use
+	  BindingToDisplayLabel to format the commands in a
+	  platform-specific way. Do KeyBindingManager to do the
+	  captures, since it handle platform-specific issues.
+
 2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:

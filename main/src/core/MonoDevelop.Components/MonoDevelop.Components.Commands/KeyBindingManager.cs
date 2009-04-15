@@ -28,6 +28,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 // Terminology:
 //   mode: A 'mode' is a key binding prefix / modifier meant to allow a
@@ -48,9 +49,58 @@ namespace MonoDevelop.Components.Commands
 {
 	public class KeyBindingManager : IDisposable
 	{
+		const Gdk.ModifierType META_MASK = (Gdk.ModifierType) 0x10000000; //FIXME GTK+ 2.12: Gdk.ModifierType.MetaMask;
+		const Gdk.ModifierType SUPER_MASK = (Gdk.ModifierType) 0x40000000; //FIXME GTK+ 2.12: Gdk.ModifierType.SuperMask;
+		
+		static bool isMac = false;
+		static bool isX11 = false;
+		
 		Dictionary<string, List<Command>> bindings = new Dictionary<string, List<Command>> ();
 		Dictionary<string, int> modes = new Dictionary<string, int> ();
 		List<Command> commands = new List<Command> ();
+		
+		[DllImport ("libc")]
+		static extern int uname (IntPtr buf);
+		
+		static KeyBindingManager ()
+		{
+			isMac = IsRunningOnMac ();
+			isX11 = !isMac && System.Environment.OSVersion.Platform == PlatformID.Unix;
+			
+			if (isMac) {
+				SelectionModifierAlt = Gdk.ModifierType.Mod5Mask;
+				SelectionModifierControl = Gdk.ModifierType.Mod1Mask | Gdk.ModifierType.MetaMask;
+				SelectionModifierSuper = Gdk.ModifierType.ControlMask;
+			} else {
+				SelectionModifierAlt = Gdk.ModifierType.Mod5Mask;
+				SelectionModifierControl = Gdk.ModifierType.ControlMask;
+				SelectionModifierSuper = Gdk.ModifierType.SuperMask;
+			}
+		}
+		
+		//From Managed.Windows.Forms/XplatUI
+		static bool IsRunningOnMac ()
+		{
+			IntPtr buf = IntPtr.Zero;
+			try {
+				buf = Marshal.AllocHGlobal (8192);
+				// This is a hacktastic way of getting sysname from uname ()
+				if (uname (buf) == 0) {
+					string os = Marshal.PtrToStringAnsi (buf);
+					if (os == "Darwin")
+						return true;
+				}
+			} catch (Exception ex) {
+			} finally {
+				if (buf != IntPtr.Zero)
+					Marshal.FreeHGlobal (buf);
+			}
+			return false;
+		}
+		
+		public static bool IsMac {
+			get { return isMac; }
+		}
 		
 		public void Dispose ()
 		{
@@ -62,12 +112,29 @@ namespace MonoDevelop.Components.Commands
 			commands = null;
 		}
 		
-#region Static Public Helpers For Building Key-Binding Strings
+		#region Platform-dependent selection modifiers
+		
+		public static Gdk.ModifierType SelectionModifierAlt {
+			get; private set;
+		}
+		
+		public static Gdk.ModifierType SelectionModifierControl {
+			get; private set;
+		}
+		
+		public static Gdk.ModifierType SelectionModifierSuper {
+			get; private set;
+		}
+		
+		#endregion
+		
+		#region Static Public Helpers For Building Key-Binding Strings
+		
 		static string KeyToString (Gdk.Key key)
 		{
-			char c;
+			char c = (char) Gdk.Keyval.ToUnicode ((uint) key);
 			
-			if ((c = (char) Gdk.Keyval.ToUnicode ((uint) key)) != 0) {
+			if (c != 0) {
 				if (c == ' ')
 					return "Space";
 				
@@ -92,50 +159,34 @@ namespace MonoDevelop.Components.Commands
 			return key.ToString ();
 		}
 		
-		public static string AccelFromKey (Gdk.Key key, Gdk.ModifierType modifier)
+		//USED INTERNALLY ONLY
+		static string AccelFromKey (Gdk.Key key, Gdk.ModifierType modifier)
 		{
-			string accel = String.Empty;
-			
-			switch (key) {
-			case Gdk.Key.Alt_L:
-				// incomplete accel
-				return null;
-			case Gdk.Key.Alt_R:
-				// incomplete accel
-				return null;
-			case Gdk.Key.Meta_L:
-				// incomplete accel
-				return null;
-			case Gdk.Key.Meta_R:
-				// incomplete accel
-				return null;
-			case Gdk.Key.Shift_L:
-				// incomplete accel
-				return null;
-			case Gdk.Key.Shift_R:
-				// incomplete accel
-				return null;
-			case Gdk.Key.Control_L:
-				// incomplete accel
-				return null;
-			case Gdk.Key.Control_R:
-				// incomplete accel
-				return null;
-			}
-			
-			if ((modifier & Gdk.ModifierType.ControlMask) != 0)
-				accel += "Control+";
-			if ((modifier & Gdk.ModifierType.Mod1Mask) != 0)
-				accel += "Alt+";
-			if ((modifier & Gdk.ModifierType.ShiftMask) != 0)
-				accel += "Shift+";
-			
-			accel += KeyToString (key);
-			
-			return accel;
+			bool complete;
+			return AccelFromKey (key, modifier, out complete, false);
 		}
 		
-		static bool AccelToKey (string accel, ref int i, out uint key, out Gdk.ModifierType modifier)
+		public static string AccelFromKey (Gdk.Key key, Gdk.ModifierType modifier, out bool complete)
+		{
+			return AccelFromKey (key, modifier, out complete, true);
+		}
+		
+		static string AccelFromKey (Gdk.Key key, Gdk.ModifierType modifier, out bool complete, bool remapRawKeys)
+		{
+			if (remapRawKeys)
+				MapRawKeys (ref modifier, ref key);
+			bool keyIsModifier;
+			string modifierlabel = ModifierToPartialAccel (modifier, key, out keyIsModifier);
+			complete = !keyIsModifier;
+			
+			if (keyIsModifier) {
+				return modifierlabel;
+			} else {
+				return modifierlabel + KeyToString (key);
+			}
+		}
+		
+		static bool AccelToKeyPartial (string accel, ref int i, out uint key, out Gdk.ModifierType modifier)
 		{
 			Gdk.ModifierType mod, mask = 0;
 			string str;
@@ -172,16 +223,13 @@ namespace MonoDevelop.Components.Commands
 			
 			i = j;
 			
-			if (k == 0)
-				return false;
-			
 			modifier = mask;
 			key = k;
 			
-			return true;
+			return k != 0;
 		}
 		
-		public static bool AccelToKey (string accel, out uint key, out Gdk.ModifierType modifier)
+		static bool AccelToKeyPartial (string accel, out uint key, out Gdk.ModifierType modifier)
 		{
 			int i = 0;
 			
@@ -191,16 +239,22 @@ namespace MonoDevelop.Components.Commands
 			if (accel == null || accel == String.Empty)
 				return false;
 			
-			if (AccelToKey (accel, ref i, out key, out modifier) && i == accel.Length)
+			if (AccelToKeyPartial (accel, ref i, out key, out modifier) && i == accel.Length)
 				return true;
-			
-			modifier = Gdk.ModifierType.None;
-			key = 0;
 			
 			return false;
 		}
 		
-		public static bool BindingToKeys (string binding, out uint modeKey, out Gdk.ModifierType modeModifier, out uint key, out Gdk.ModifierType modifier)
+		public static bool AccelToKey (string accel, out uint key, out Gdk.ModifierType modifier)
+		{
+			if (AccelToKeyPartial (accel, out key, out modifier))
+				return true;
+			modifier = Gdk.ModifierType.None;
+			key = 0;
+			return false;
+		}
+		
+		static bool BindingToKeysPartial (string binding, out uint modeKey, out Gdk.ModifierType modeModifier, out uint key, out Gdk.ModifierType modifier)
 		{
 			int i = 0;
 			
@@ -212,7 +266,7 @@ namespace MonoDevelop.Components.Commands
 			if (binding == null || binding == String.Empty)
 				return false;
 			
-			if (!AccelToKey (binding, ref i, out key, out modifier))
+			if (!AccelToKeyPartial (binding, ref i, out key, out modifier))
 				return false;
 			
 			if (i == binding.Length) {
@@ -229,14 +283,19 @@ namespace MonoDevelop.Components.Commands
 			modeKey = key;
 			i++;
 			
-			return AccelToKey (binding, ref i, out key, out modifier) && i == binding.Length;
+			return AccelToKeyPartial (binding, ref i, out key, out modifier) && i == binding.Length;
 		}
 		
-		public static string BindingFromKey (string mode, Gdk.Key key, Gdk.ModifierType modifier)
+		public static bool BindingToKeys (string binding, out uint modeKey, out Gdk.ModifierType modeModifier, out uint key, out Gdk.ModifierType modifier)
 		{
-			return Binding (mode, AccelFromKey (key, modifier));
+			if (BindingToKeysPartial (binding, out modeKey, out modeModifier, out key, out modifier))
+				return true;
+			
+			modeModifier = modifier = Gdk.ModifierType.None;
+			modeKey = key = 0;
+			return false;
 		}
-		
+				
 		public static string Binding (string mode, string accel)
 		{
 			if (mode == null) {
@@ -252,33 +311,119 @@ namespace MonoDevelop.Components.Commands
 			return mode + "|" + accel;
 		}
 		
-		static string ModifierToLabel (Gdk.ModifierType mod)
+		//this is a workaround for a common X mapping issue
+		//where shift-alt is translated to the meta key
+		static void MapRawKeys (ref Gdk.ModifierType mod, ref Gdk.Key key)
+		{
+			if (isX11) {
+				if (key.Equals (Gdk.Key.Meta_L) || key.Equals (Gdk.Key.Meta_R))
+					key = Gdk.Key.Alt_L;
+			}
+			
+			if (isMac && !isX11) {
+				if ((mod & Gdk.ModifierType.Mod1Mask) != 0) {
+					mod ^= Gdk.ModifierType.Mod1Mask;
+					mod |= META_MASK;
+				}
+				if ((mod & Gdk.ModifierType.Mod5Mask) != 0) {
+					mod |= Gdk.ModifierType.Mod1Mask;
+					mod ^= Gdk.ModifierType.Mod5Mask;
+				}
+			}
+		}
+		
+		static string ModifierToPartialAccel (Gdk.ModifierType mod, Gdk.Key key, out bool keyIsModifier)
 		{
 			string label = String.Empty;
 			
 			if ((mod & Gdk.ModifierType.ControlMask) != 0)
-				label += "Ctrl+";
+				label += "Control+";
 			if ((mod & Gdk.ModifierType.Mod1Mask) != 0)
 				label += "Alt+";
 			if ((mod & Gdk.ModifierType.ShiftMask) != 0)
 				label += "Shift+";
+			if ((mod & META_MASK) != 0)
+				label += "Meta+";
+			if ((mod & SUPER_MASK) != 0)
+				label += "Super+";
+			
+			keyIsModifier = true;
+			if (key.Equals (Gdk.Key.Control_L) || key.Equals (Gdk.Key.Control_R))
+				label += "Control+";
+			else if (key.Equals (Gdk.Key.Alt_L) || key.Equals (Gdk.Key.Alt_R))
+				label += "Alt+";
+			else if (key.Equals (Gdk.Key.Shift_L) || key.Equals (Gdk.Key.Shift_R))
+				label += "Shift+";
+			else if (key.Equals (Gdk.Key.Meta_L) || key.Equals (Gdk.Key.Meta_R))
+				label += "Meta+";
+			else if (key.Equals (Gdk.Key.Super_L) || key.Equals (Gdk.Key.Super_L))
+				label += "Super+";
+			else
+				keyIsModifier = false;
 			
 			return label;
 		}
 		
-		public static string BindingToLabel (string binding)
+		#endregion
+		
+		#region Display label formatting
+		
+		public static string BindingToDisplayLabel (string binding, bool concise)
+		{
+			return BindingToDisplayLabel (binding, concise, false);
+		}
+		
+		public static string BindingToDisplayLabel (string binding, bool concise, bool includeIncomplete)
 		{
 			Gdk.ModifierType modeMod, mod;
 			string label = String.Empty;
 			uint modeKey, key;
 			
-			if (!BindingToKeys (binding, out modeKey, out modeMod, out key, out mod))
+			if (includeIncomplete) {
+				BindingToKeysPartial (binding, out modeKey, out modeMod, out key, out mod);
+			} else if (!BindingToKeys (binding, out modeKey, out modeMod, out key, out mod)) {
 				return null;
+			}
 			
-			if (modeKey != 0)
-				label += ModifierToLabel (modeMod) + KeyToString ((Gdk.Key) modeKey) + " ";
+			if (modeKey != 0) {
+				label += ModifierToDisplayLabel (modeMod, concise) + KeyToDisplayLabel ((Gdk.Key)modeKey) + (isMac? " " : "|");
+			}
+			label += ModifierToDisplayLabel (mod, concise);
+			if (key != 0)
+				label += KeyToDisplayLabel ((Gdk.Key)key);
 			
-			label += ModifierToLabel (mod) + KeyToString ((Gdk.Key) key);
+			return label;
+		}
+		
+		static string KeyToDisplayLabel (Gdk.Key key)
+		{
+			if (isMac) {
+				char appl = AppleMapKeyToSymbol (key);
+				if (appl != '\0') {
+					return new string (appl, 1);
+				}
+			}
+			return KeyToString (key);
+		}
+		
+		static string ModifierToDisplayLabel (Gdk.ModifierType mod, bool concise)
+		{
+			if (isMac) {
+				return AppleMapModifierToSymbols (mod);
+			}
+			
+			string label = String.Empty;
+			
+			if ((mod & Gdk.ModifierType.ControlMask) != 0)
+				label += "Control+";
+			if ((mod & Gdk.ModifierType.Mod1Mask) != 0)
+				label += "Alt+";
+			if ((mod & Gdk.ModifierType.ShiftMask) != 0)
+				label += "Shift+";
+			if ((mod & META_MASK) != 0)
+				label += "Meta+";
+			if ((mod & SUPER_MASK) != 0)
+				label += "Super+";
 			
 			return label;
 		}
@@ -291,7 +436,12 @@ namespace MonoDevelop.Components.Commands
 			case "Shift":
 				return Gdk.ModifierType.ShiftMask;
 			case "Control":
+			case "Ctrl":
 				return Gdk.ModifierType.ControlMask;
+			case "Meta":
+				return META_MASK;
+			case "Super":
+				return SUPER_MASK;
 			default:
 				return Gdk.ModifierType.None;
 			}
@@ -383,9 +533,11 @@ namespace MonoDevelop.Components.Commands
 			
 			return Binding (mode, accel);
 		}
-#endregion
 		
-#region Public Methods
+		#endregion
+		
+		#region Public Methods
+		
 		public bool BindingExists (string binding)
 		{
 			return bindings.ContainsKey (binding);
@@ -548,7 +700,150 @@ namespace MonoDevelop.Components.Commands
 			
 			return bindings[binding];
 		}
-#endregion
+		
+		#endregion
+		
+		#region Apple symbol mappings
+		
+		static string AppleMapModifierToSymbols (Gdk.ModifierType mod)
+		{
+			string ret = "";
+			if ((mod & Gdk.ModifierType.MetaMask) != 0) {
+				ret += "⌘";
+				mod ^= Gdk.ModifierType.MetaMask;
+			}
+			if ((mod & Gdk.ModifierType.ControlMask) != 0) {
+				ret += "⌃";
+				mod ^= Gdk.ModifierType.ControlMask;
+			}
+			if ((mod & Gdk.ModifierType.ShiftMask) != 0) {
+				ret += "⇧";
+				mod ^= Gdk.ModifierType.ShiftMask;
+			}
+			if ((mod & Gdk.ModifierType.Mod1Mask) != 0) {
+				ret += "⌥";
+				mod ^= Gdk.ModifierType.Mod1Mask;
+			}
+			if (mod != 0)
+				throw new InvalidOperationException ();
+			return ret;
+		}
+		
+		static char AppleMapKeyToSymbol (Gdk.Key key)
+		{
+			// unicode codes from http://macbiblioblog.blogspot.com/2005/05/special-key-symbols.html
+			// unmapped:
+			// ⇤ tab back
+			// ⌤ enter
+			
+			switch (key) {
+			case Gdk.Key.Escape:
+				return '⎋';
+			case Gdk.Key.Tab:
+				return '⇥';
+			case Gdk.Key.Caps_Lock:
+				return '⇪';
+			case Gdk.Key.Shift_L:
+			case Gdk.Key.Shift_R:
+				return '⇧';
+			case Gdk.Key.Control_L:
+			case Gdk.Key.Control_R:
+				return '⌃';
+			case Gdk.Key.BackSpace:
+				return '⌫';
+			case Gdk.Key.Delete:
+				return '⌦';
+			case Gdk.Key.Home:
+				return '⇱';
+			case Gdk.Key.End:
+				return '⇲';
+			case Gdk.Key.Page_Up:
+				return '⇞';
+			case Gdk.Key.Page_Down:
+				return '⇟';
+			case Gdk.Key.Up:
+				return '↑';
+			case Gdk.Key.Down:
+				return '↓';
+			case Gdk.Key.Left:
+				return '←';
+			case Gdk.Key.Right:
+				return '→';
+			case Gdk.Key.Clear:
+				return '⌧';
+			case Gdk.Key.Num_Lock:
+				return '⇭';
+			case Gdk.Key.Return:
+				return '⏎';
+			case Gdk.Key.space:
+				return '␣';
+			case Gdk.Key.Meta_L:
+			case Gdk.Key.Meta_R:
+				return '⌘';
+			case Gdk.Key.Alt_L:
+			case Gdk.Key.Alt_R:
+				return '⌥';
+			}
+			return (char)0;
+		}
+		
+		static Gdk.Key AppleMapSymbolToKey (char ch)
+		{
+			// unicode codes from http://macbiblioblog.blogspot.com/2005/05/special-key-symbols.html
+			// unmapped:
+			// ⇤ tab back
+			// ⌥ option (alt, alternative)
+			// ⌘ command
+			// ⌤ enter
+			
+			switch (ch) {
+			case '⎋':
+				return Gdk.Key.Escape;
+			case '⇥':
+				return Gdk.Key.Tab;
+			case '⇪':
+				return Gdk.Key.Caps_Lock;
+			case '⇧':
+				return Gdk.Key.Shift_L;
+			case '⌃':
+				return Gdk.Key.Control_L;
+			case '⌫':
+				return Gdk.Key.BackSpace;
+			case '⌦':
+				return Gdk.Key.Delete;
+			case '⇱':
+				return Gdk.Key.Home;
+			case '⇲':
+				return Gdk.Key.End;
+			case '⇞':
+				return Gdk.Key.Page_Up;
+			case '⇟':
+				return Gdk.Key.Page_Down;
+			case '↑':
+				return Gdk.Key.Up;
+			case '↓':
+				return Gdk.Key.Down;
+			case '←':
+				return Gdk.Key.Left;
+			case '→':
+				return Gdk.Key.Right;
+			case '⌧':
+				return Gdk.Key.Clear;
+			case '⇭':
+				return Gdk.Key.Num_Lock;
+			case '⏎':
+				return Gdk.Key.Return;
+			case '␣':
+				return Gdk.Key.space;
+			case '⌘':
+				return Gdk.Key.Meta_L;
+			case '⌥':
+				return Gdk.Key.Alt_L;
+			}
+			return (Gdk.Key)0;
+		}
+		
+		#endregion
 	}
 	
 //#region KeyBindingException

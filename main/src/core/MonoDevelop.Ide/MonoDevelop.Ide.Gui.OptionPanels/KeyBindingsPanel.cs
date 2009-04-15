@@ -77,7 +77,19 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			col.AddAttribute (crt, "weight", boldCol);
 			keyTreeView.AppendColumn (col);
 			
-			keyTreeView.AppendColumn (GettextCatalog.GetString ("Key Binding"), new CellRendererText (), "text", bindingCol);
+			
+			TreeViewColumn bindingTVCol = new TreeViewColumn ();
+			bindingTVCol.Title = GettextCatalog.GetString ("Key Binding");
+			CellRendererText bindingRenderer = new CellRendererText ();
+			bindingTVCol.PackStart (bindingRenderer, false);
+			bindingTVCol.SetCellDataFunc (bindingRenderer, delegate (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter) {
+				string binding = (model.GetValue (iter, bindingCol) as string) ?? "";
+				((CellRendererText)cell).Text = binding.Length > 0
+					? KeyBindingManager.BindingToDisplayLabel (binding, false)
+					: binding;
+			});
+			keyTreeView.AppendColumn (bindingTVCol);
+			
 			keyTreeView.AppendColumn (GettextCatalog.GetString ("Description"), new CellRendererText (), "text", descCol);
 			
 			keyTreeView.Selection.Changed += new EventHandler (OnKeysTreeViewSelectionChange);
@@ -219,13 +231,13 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			
 			if (sel.GetSelected (out model, out iter) && model.GetValue (iter,commandCol) != null) {
 				accelEntry.Sensitive = true;
-				accelEntry.Text = (string) model.GetValue (iter, bindingCol);
+				CurrentBinding = (string) model.GetValue (iter, bindingCol);
 				accelEntry.GrabFocus ();
 				accelIncomplete = false;
 				accelComplete = true;
 			} else {
 				accelEntry.Sensitive = false;
-				accelEntry.Text = string.Empty;
+				CurrentBinding = string.Empty;
 			}
 		}
 		
@@ -239,7 +251,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			e.RetVal = true;
 			
 			if (accelComplete) {
-				accelEntry.Text = String.Empty;
+				CurrentBinding = String.Empty;
 				accelIncomplete = false;
 				accelComplete = false;
 				mode = null;
@@ -249,40 +261,37 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			}
 			
 			accelComplete = false;
-			if ((accel = KeyBindingManager.AccelFromKey (key, mod)) != null) {
-				accelEntry.Text = KeyBindingManager.Binding (mode, accel);
+			bool combinationComplete;
+			accel = KeyBindingManager.AccelFromKey (key, mod, out combinationComplete);
+			if (combinationComplete) {
+				CurrentBinding = KeyBindingManager.Binding (mode, accel);
 				accelIncomplete = false;
 				if (mode != null)
 					accelComplete = true;
 				else
 					mode = accel;
 			} else {
-				accel = mode != null ? mode + "|" : String.Empty;
+				accel = (mode != null ? mode + "|" : String.Empty) + accel;
 				accelIncomplete = true;
-				
-				if ((mod & Gdk.ModifierType.ControlMask) != 0)
-					accel += "Control+";
-				if ((mod & Gdk.ModifierType.Mod1Mask) != 0 ||
-				    (key.Equals (Gdk.Key.Meta_L) || key.Equals (Gdk.Key.Meta_R)))
-					accel += "Alt+";
-				if ((mod & Gdk.ModifierType.ShiftMask) != 0)
-					accel += "Shift+";
-				
-				if (key.Equals (Gdk.Key.Control_L) || key.Equals (Gdk.Key.Control_R))
-					accel += "Control+";
-				else if (key.Equals (Gdk.Key.Alt_L) || key.Equals (Gdk.Key.Alt_R))
-					accel += "Alt+";
-				else if (key.Equals (Gdk.Key.Shift_L) || key.Equals (Gdk.Key.Shift_R))
-					accel += "Shift+";
-				
-				accelEntry.Text = accel;
+				CurrentBinding = accel;
+			}
+		}
+		
+		string _realBinding;
+		string CurrentBinding {
+			get {
+				return _realBinding;
+			}
+			set {
+				_realBinding = value;
+				accelEntry.Text = _realBinding == null? "" : KeyBindingManager.BindingToDisplayLabel (_realBinding, false, true);
 			}
 		}
 		
 		void OnAccelEntryKeyRelease (object sender, KeyReleaseEventArgs e)
 		{
 			if (accelIncomplete)
-				accelEntry.Text = mode != null ? mode : String.Empty;
+				CurrentBinding = mode != null ? mode : String.Empty;
 		}
 		
 		void OnUpdateButtonClick (object sender, EventArgs e)
@@ -293,8 +302,8 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			if (sel.GetSelected (out iter)) {
 				Command cmd = (Command) keyStore.GetValue (iter, commandCol);
 				if (cmd != null) {
-					keyStore.SetValue (iter, bindingCol, accelEntry.Text);
-					currentBindings.SetBinding (cmd, accelEntry.Text);
+					keyStore.SetValue (iter, bindingCol, CurrentBinding);
+					currentBindings.SetBinding (cmd, CurrentBinding);
 					SelectCurrentScheme ();
 				}
 			}
@@ -355,7 +364,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 
 		void UpdateWarningLabel ()
 		{
-			if (accelEntry.Text.Length == 0) {
+			if (CurrentBinding.Length == 0) {
 				labelMessage.Visible = false;
 				return;
 			}
@@ -370,7 +379,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				return;
 			}
 			
-			var bindings = FindBindings (accelEntry.Text);
+			var bindings = FindBindings (CurrentBinding);
 			bindings.Remove (cmd);
 			
 			if (bindings.Count > 0) {
