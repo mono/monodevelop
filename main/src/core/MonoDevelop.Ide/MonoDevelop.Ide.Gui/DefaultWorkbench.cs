@@ -685,9 +685,12 @@ namespace MonoDevelop.Ide.Gui
 
 		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
 		{
+			//FIXME: Mac-ify this. The control key use is hardcoded into DocumentSwitcher too
+			Gdk.ModifierType tabSwitchModifier = Gdk.ModifierType.ControlMask;
+			
 			// Handle Tab+Control == NextWindow, Tab+Shift+Control == PrevWindow commands.
 			if (evnt.Key == Gdk.Key.Tab || evnt.Key == Gdk.Key.ISO_Left_Tab) {
-				if ((evnt.State & Gdk.ModifierType.ControlMask) == Gdk.ModifierType.ControlMask) {
+				if ((evnt.State & tabSwitchModifier) != 0) {
 					bool selectNext = (evnt.State & Gdk.ModifierType.ShiftMask) != Gdk.ModifierType.ShiftMask;
 					if (PropertyService.Get ("MonoDevelop.Core.Gui.EnableDocumentSwitchDialog", true)) {
 						DocumentSwitcher switcher = new DocumentSwitcher (this, selectNext);
@@ -701,7 +704,11 @@ namespace MonoDevelop.Ide.Gui
 			}
 			
 			// Handle Alt+1-0 keys
-			if ((evnt.State & Gdk.ModifierType.Mod1Mask) == Gdk.ModifierType.Mod1Mask) {		
+			Gdk.ModifierType winSwitchModifier = KeyBindingManager.IsMac
+				? KeyBindingManager.SelectionModifierControl
+				: KeyBindingManager.SelectionModifierAlt;
+			
+			if ((evnt.State & winSwitchModifier) != 0) {		
 				switch (evnt.Key) {
 				case Gdk.Key.KP_1:
 				case Gdk.Key.Key_1:

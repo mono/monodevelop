@@ -1,5 +1,15 @@
 2009-04-16  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide.Gui/DocumentSwitcher.cs: Present the parent
+	  window is after switching, since some windows managers
+	  (Mac!) may not restore focus automatically.
+
+	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs:
+	* MonoDevelop.Ide.Commands/WindowCommands.cs: Use Mac command
+	  key for numbered tab switching.
+
+2009-04-16  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.Gui/IdeStartup.cs: Remove the www prexfix
 	  from the MD homepage URL.Thanks to Grzegorz Sobanski for the
 	  patch.

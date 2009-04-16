@@ -335,7 +335,9 @@ namespace MonoDevelop.Ide
 						pad.BringToFront ();
 				}
 				ret = base.OnKeyReleaseEvent (evnt);
+				Gtk.Window parent = this.TransientFor;
 				this.Destroy ();
+				parent.Present ();
 			} else {
 				ret = base.OnKeyReleaseEvent (evnt);
 			}
