@@ -540,18 +540,8 @@ namespace Mono.TextEditor
 		
 		public void SetSelectLines (int from, int to)
 		{
-			if (to < from) {
-				int tmp = from;
-				from = to;
-				to = tmp;
-			}
-			LineSegment fromLine = Document.GetLine (from);
-			LineSegment toLine = Document.GetLine (to);
-			
-			if (MainSelection == null)
-				MainSelection = new Selection (DocumentLocation.Empty, DocumentLocation.Empty);
-			MainSelection.Anchor = document.OffsetToLocation (fromLine.Offset);
-			MainSelection.Lead = document.OffsetToLocation (toLine.EndOffset);
+			MainSelection = new Selection (document.OffsetToLocation (Document.GetLine (from).Offset), 
+			                               document.OffsetToLocation (Document.GetLine (to).EndOffset));
 		}
 		
 		internal void DeleteSelection (Selection selection)

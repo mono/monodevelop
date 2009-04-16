@@ -1,7 +1,21 @@
+2009-04-16  Mike Krüger  <mkrueger@novell.com>
+
+	* ChangeLog:
+	* Mono.TextEditor.Vi/ViMode.cs:
+	* Mono.TextEditor/TextEditorData.cs:
+	* Mono.TextEditor/SelectionActions.cs: Added vi mode patch
+	  from levi bard.
+
 2009-04-15  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.TextEditor/TextEditor.cs: Don't interpret keystrokes as
 	  text input when alt, meta or super modifiers are active.
+
+2009-04-15  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* Mono.TextEditor.Vi/ViMode.cs:
+	* Mono.TextEditor/SelectionActions.cs:
+	* Mono.TextEditor/TextEditorData.cs: Fix line-visual vi mode.
 
 2009-04-15  Mike Krüger  <mkrueger@novell.com>
 

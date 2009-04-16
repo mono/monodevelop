@@ -202,7 +202,6 @@ namespace Mono.TextEditor.Vi
 					case 'V':
 						Status = "-- VISUAL LINE --";
 						Data.SetSelectLines (Caret.Line, Caret.Line);
-						Data.MainSelection.Anchor = Caret.Location;
 						state = State.VisualLine;
 						return;
 						

@@ -86,16 +86,7 @@ namespace Mono.TextEditor
 
 		public static void EndLineSelection (TextEditorData data)
 		{
-			if (null != data.SelectionRange) {
-				if (data.Caret.Location < data.MainSelection.Anchor) {
-					data.SetSelectLines (data.Caret.Line, data.MainSelection.Anchor.Line);
-				} else {
-					data.SetSelectLines (data.MainSelection.Anchor.Line, data.Caret.Line);
-				}
-				
-			} else {
-				data.SetSelectLines (data.Caret.Line, data.Caret.Line);
-			}
+			data.SetSelectLines (data.MainSelection.Anchor.Line, data.Caret.Line);
 			data.Caret.PreserveSelection = false;
 		}
 
