@@ -1,3 +1,12 @@
+2009-04-16  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.CodeTemplates/EditTemplateDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.CodeTemplates.EditTemplateDialog.cs:
+	  Worked on edit template dialog.
+
+	* gtk-gui/gui.stetic:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow.cs: 
+
 2009-04-16  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui/ProjectOperations.cs:

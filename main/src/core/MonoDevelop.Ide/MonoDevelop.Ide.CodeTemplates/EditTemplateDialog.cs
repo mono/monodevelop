@@ -31,6 +31,8 @@ using MonoDevelop.Components;
 using Gtk;
  
 using MonoDevelop.Core;
+using Gdk;
+
 
 namespace MonoDevelop.Ide.CodeTemplates
 {
@@ -41,8 +43,10 @@ namespace MonoDevelop.Ide.CodeTemplates
 		CodeTemplate template;
 		Mono.TextEditor.TextEditor textEditor = new Mono.TextEditor.TextEditor ();
 		
-		ListStore variablesStore;
+		ListStore variablesListStore;
 		List<CodeTemplateVariable> variables = new List<CodeTemplateVariable> ();
+		
+		TreeStore variableStore;
 		
 		public EditTemplateDialog (CodeTemplate template, bool isNew)
 		{
@@ -61,6 +65,45 @@ namespace MonoDevelop.Ide.CodeTemplates
 			
 			scrolledwindow1.Child = textEditor;
 			textEditor.ShowAll ();
+			textEditor.Caret.PositionChanged += delegate {
+				comboboxVariables.Active = -1;
+				int offset = textEditor.Caret.Offset;
+				int start = offset;
+				while (start >= 0 && start < textEditor.Document.Length) { // caret offset may be behind the text
+					char ch = textEditor.Document.GetCharAt (start);
+					if (ch == '$')
+						break;
+					if (!char.IsLetterOrDigit (ch) && ch != '_')
+						return;
+					start--;
+				}
+				
+				int end = offset;
+				while (end < textEditor.Document.Length) {
+					char ch = textEditor.Document.GetCharAt (end);
+					if (ch == '$')
+						break;
+					if (!char.IsLetterOrDigit (ch) && ch != '_')
+						return;
+					end++;
+				}
+				if (start >= 0 && end < textEditor.Document.Length) {
+					string varName = textEditor.Document.GetTextBetween (start, end).Trim ('$');
+					TreeIter iter;
+					if (variablesListStore.GetIterFirst (out iter)) {
+						int i = -1;
+						do {
+							i++;
+							CodeTemplateVariable var = (CodeTemplateVariable)variablesListStore.GetValue (iter, 1);
+							if (var.Name == varName) {
+								comboboxVariables.Active = i;
+								break;
+							}
+						} while (variablesListStore.IterNext (ref iter));
+					}
+					
+				}
+			};
 			Mono.TextEditor.TextEditorOptions options = new Mono.TextEditor.TextEditorOptions ();
 			options.ShowLineNumberMargin = false;
 			options.ShowFoldMargin = false;
@@ -119,8 +162,33 @@ namespace MonoDevelop.Ide.CodeTemplates
 				textEditor.QueueDraw ();
 			};
 			
-			variablesStore = new ListStore (typeof (CodeTemplateVariable));
-			treeviewVariables.Model = variablesStore;
+			variablesListStore = new ListStore (typeof (string), typeof (CodeTemplateVariable));
+			comboboxVariables.Model = variablesListStore;
+			comboboxVariables.Changed += delegate { 
+				if (comboboxVariables.Active < 0) {
+					this.FillVariableTree (null);
+					return;
+				}
+				TreeIter iter;
+				if (variablesListStore.GetIterFromString (out iter, comboboxVariables.Active.ToString ())) {
+					this.FillVariableTree ((CodeTemplateVariable)variablesListStore.GetValue (iter, 1));
+				} else {
+					this.FillVariableTree (null);
+				}
+				
+			};
+			
+			variableStore = new TreeStore (typeof (string), typeof (CodeTemplateVariable), typeof (string), typeof (int));
+			treeviewVariable.Model = variableStore;
+			treeviewVariable.HeadersVisible = false;
+			
+			treeviewVariable.AppendColumn ("", new Gtk.CellRendererText (), "text", 0);
+			CellRendererText nameRenderer = new CellRendererText ();
+			treeviewVariable.AppendColumn ("", nameRenderer, delegate (TreeViewColumn col, CellRenderer cell, TreeModel model, TreeIter iter) {
+				nameRenderer.Markup = ((string)model.GetValue (iter, 2));
+			});
+			
+/*			
 			treeviewVariables.HeadersClickable = true;
 			
 			#region NameColumn
@@ -231,17 +299,44 @@ namespace MonoDevelop.Ide.CodeTemplates
 				}
 			});
 			#endregion
+			*/
 			UpdateVariables ();
+		}
+		class CellRendererProperty : CellRendererText
+		{
+			
+		}
+		void FillVariableTree (CodeTemplateVariable var)
+		{
+			variableStore.Clear ();
+			if (var == null)
+				return;
+			
+			variableStore.AppendValues (GettextCatalog.GetString ("Name"), var, GLib.Markup.EscapeText (var.Name ?? ""), 0);
+			variableStore.AppendValues (GettextCatalog.GetString ("Tooltip"), var, GLib.Markup.EscapeText (var.ToolTip ?? ""), 1);
+			variableStore.AppendValues (GettextCatalog.GetString ("Default"), var, GLib.Markup.EscapeText (var.Default ?? ""), 2);
+			variableStore.AppendValues (GettextCatalog.GetString ("Editable"), var, var.IsEditable ? "True" : "False", 3);
+			variableStore.AppendValues (GettextCatalog.GetString ("Function"), var, GLib.Markup.EscapeText (var.Function ?? ""), 4);
+			string valueStr;
+			
+			if (var.Values.Count == 0) {
+				valueStr = "<span foreground=\"" + CodeTemplatePanelWidget.GetColorString (Style.Text (StateType.Insensitive)) + "\">(empty)</span>";
+			} else if (var.Values.Count == 1) {
+				valueStr = GLib.Markup.EscapeText (var.Values[0].Value);
+			} else { 
+				valueStr = GLib.Markup.EscapeText (var.Values[0].Value) + ", ...";
+			}
+			variableStore.AppendValues (GettextCatalog.GetString ("Values"), var, valueStr, 5);
 		}
 		
 		void UpdateVariables ()
 		{
-			variablesStore.Clear ();
+			variablesListStore.Clear ();
 			foreach (CodeTemplateVariable var in variables) {
-				variablesStore.AppendValues (var);
+				variablesListStore.AppendValues (var.Name, var);
 			}
 			foreach (CodeTemplateVariable var in template.Variables) {
-				variablesStore.AppendValues (var);
+				variablesListStore.AppendValues (var.Name, var);
 			}
 			
 		}

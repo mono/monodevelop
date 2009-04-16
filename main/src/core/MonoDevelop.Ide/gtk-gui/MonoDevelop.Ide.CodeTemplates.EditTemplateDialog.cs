@@ -13,6 +13,8 @@ namespace MonoDevelop.Ide.CodeTemplates {
     
     public partial class EditTemplateDialog {
         
+        private Gtk.HPaned hpaned1;
+        
         private Gtk.VBox vbox2;
         
         private Gtk.Table table2;
@@ -43,8 +45,6 @@ namespace MonoDevelop.Ide.CodeTemplates {
         
         private Gtk.Label label3;
         
-        private Gtk.VPaned vpaned1;
-        
         private Gtk.VBox vbox3;
         
         private Gtk.HBox hbox3;
@@ -59,15 +59,11 @@ namespace MonoDevelop.Ide.CodeTemplates {
         
         private Gtk.VBox vbox4;
         
-        private Gtk.HBox hbox4;
+        private Gtk.ComboBox comboboxVariables;
         
-        private Gtk.Label label7;
+        private Gtk.ScrolledWindow scrolledwindow2;
         
-        private Gtk.Fixed fixed2;
-        
-        private Gtk.ScrolledWindow GtkScrolledWindow;
-        
-        private Gtk.TreeView treeviewVariables;
+        private Gtk.TreeView treeviewVariable;
         
         private Gtk.Button buttonCancel;
         
@@ -89,6 +85,11 @@ namespace MonoDevelop.Ide.CodeTemplates {
             w1.Spacing = 6;
             w1.BorderWidth = ((uint)(2));
             // Container child dialog1_VBox.Gtk.Box+BoxChild
+            this.hpaned1 = new Gtk.HPaned();
+            this.hpaned1.CanFocus = true;
+            this.hpaned1.Name = "hpaned1";
+            this.hpaned1.Position = 555;
+            // Container child hpaned1.Gtk.Paned+PanedChild
             this.vbox2 = new Gtk.VBox();
             this.vbox2.Name = "vbox2";
             this.vbox2.Spacing = 6;
@@ -145,6 +146,7 @@ namespace MonoDevelop.Ide.CodeTemplates {
             this.entryShortcut1 = new Gtk.Entry();
             this.entryShortcut1.CanFocus = true;
             this.entryShortcut1.Name = "entryShortcut1";
+            this.entryShortcut1.Text = Mono.Unix.Catalog.GetString(" ");
             this.entryShortcut1.IsEditable = true;
             this.entryShortcut1.InvisibleChar = '●';
             this.hbox2.Add(this.entryShortcut1);
@@ -234,11 +236,6 @@ namespace MonoDevelop.Ide.CodeTemplates {
             w15.Expand = false;
             w15.Fill = false;
             // Container child vbox2.Gtk.Box+BoxChild
-            this.vpaned1 = new Gtk.VPaned();
-            this.vpaned1.CanFocus = true;
-            this.vpaned1.Name = "vpaned1";
-            this.vpaned1.Position = 157;
-            // Container child vpaned1.Gtk.Paned+PanedChild
             this.vbox3 = new Gtk.VBox();
             this.vbox3.Name = "vbox3";
             this.vbox3.Spacing = 6;
@@ -288,65 +285,47 @@ namespace MonoDevelop.Ide.CodeTemplates {
             this.vbox3.Add(this.scrolledwindow1);
             Gtk.Box.BoxChild w20 = ((Gtk.Box.BoxChild)(this.vbox3[this.scrolledwindow1]));
             w20.Position = 1;
-            this.vpaned1.Add(this.vbox3);
-            Gtk.Paned.PanedChild w21 = ((Gtk.Paned.PanedChild)(this.vpaned1[this.vbox3]));
-            w21.Resize = false;
-            // Container child vpaned1.Gtk.Paned+PanedChild
+            this.vbox2.Add(this.vbox3);
+            Gtk.Box.BoxChild w21 = ((Gtk.Box.BoxChild)(this.vbox2[this.vbox3]));
+            w21.Position = 1;
+            this.hpaned1.Add(this.vbox2);
+            Gtk.Paned.PanedChild w22 = ((Gtk.Paned.PanedChild)(this.hpaned1[this.vbox2]));
+            w22.Resize = false;
+            // Container child hpaned1.Gtk.Paned+PanedChild
             this.vbox4 = new Gtk.VBox();
             this.vbox4.Name = "vbox4";
             this.vbox4.Spacing = 6;
-            this.vbox4.BorderWidth = ((uint)(6));
             // Container child vbox4.Gtk.Box+BoxChild
-            this.hbox4 = new Gtk.HBox();
-            this.hbox4.Name = "hbox4";
-            this.hbox4.Spacing = 6;
-            // Container child hbox4.Gtk.Box+BoxChild
-            this.label7 = new Gtk.Label();
-            this.label7.Name = "label7";
-            this.label7.Xalign = 0F;
-            this.label7.LabelProp = Mono.Unix.Catalog.GetString("Variables:");
-            this.hbox4.Add(this.label7);
-            Gtk.Box.BoxChild w22 = ((Gtk.Box.BoxChild)(this.hbox4[this.label7]));
-            w22.Position = 0;
-            w22.Expand = false;
-            w22.Fill = false;
-            // Container child hbox4.Gtk.Box+BoxChild
-            this.fixed2 = new Gtk.Fixed();
-            this.fixed2.Name = "fixed2";
-            this.fixed2.HasWindow = false;
-            this.hbox4.Add(this.fixed2);
-            Gtk.Box.BoxChild w23 = ((Gtk.Box.BoxChild)(this.hbox4[this.fixed2]));
-            w23.Position = 1;
-            this.vbox4.Add(this.hbox4);
-            Gtk.Box.BoxChild w24 = ((Gtk.Box.BoxChild)(this.vbox4[this.hbox4]));
-            w24.Position = 0;
-            w24.Expand = false;
-            w24.Fill = false;
+            this.comboboxVariables = Gtk.ComboBox.NewText();
+            this.comboboxVariables.Name = "comboboxVariables";
+            this.vbox4.Add(this.comboboxVariables);
+            Gtk.Box.BoxChild w23 = ((Gtk.Box.BoxChild)(this.vbox4[this.comboboxVariables]));
+            w23.Position = 0;
+            w23.Expand = false;
+            w23.Fill = false;
             // Container child vbox4.Gtk.Box+BoxChild
-            this.GtkScrolledWindow = new Gtk.ScrolledWindow();
-            this.GtkScrolledWindow.Name = "GtkScrolledWindow";
-            this.GtkScrolledWindow.ShadowType = ((Gtk.ShadowType)(1));
-            // Container child GtkScrolledWindow.Gtk.Container+ContainerChild
-            this.treeviewVariables = new Gtk.TreeView();
-            this.treeviewVariables.CanFocus = true;
-            this.treeviewVariables.Name = "treeviewVariables";
-            this.GtkScrolledWindow.Add(this.treeviewVariables);
-            this.vbox4.Add(this.GtkScrolledWindow);
-            Gtk.Box.BoxChild w26 = ((Gtk.Box.BoxChild)(this.vbox4[this.GtkScrolledWindow]));
-            w26.Position = 1;
-            this.vpaned1.Add(this.vbox4);
-            this.vbox2.Add(this.vpaned1);
-            Gtk.Box.BoxChild w28 = ((Gtk.Box.BoxChild)(this.vbox2[this.vpaned1]));
-            w28.Position = 1;
-            w1.Add(this.vbox2);
-            Gtk.Box.BoxChild w29 = ((Gtk.Box.BoxChild)(w1[this.vbox2]));
-            w29.Position = 0;
+            this.scrolledwindow2 = new Gtk.ScrolledWindow();
+            this.scrolledwindow2.CanFocus = true;
+            this.scrolledwindow2.Name = "scrolledwindow2";
+            this.scrolledwindow2.ShadowType = ((Gtk.ShadowType)(1));
+            // Container child scrolledwindow2.Gtk.Container+ContainerChild
+            this.treeviewVariable = new Gtk.TreeView();
+            this.treeviewVariable.CanFocus = true;
+            this.treeviewVariable.Name = "treeviewVariable";
+            this.scrolledwindow2.Add(this.treeviewVariable);
+            this.vbox4.Add(this.scrolledwindow2);
+            Gtk.Box.BoxChild w25 = ((Gtk.Box.BoxChild)(this.vbox4[this.scrolledwindow2]));
+            w25.Position = 1;
+            this.hpaned1.Add(this.vbox4);
+            w1.Add(this.hpaned1);
+            Gtk.Box.BoxChild w27 = ((Gtk.Box.BoxChild)(w1[this.hpaned1]));
+            w27.Position = 0;
             // Internal child MonoDevelop.Ide.CodeTemplates.EditTemplateDialog.ActionArea
-            Gtk.HButtonBox w30 = this.ActionArea;
-            w30.Name = "dialog1_ActionArea";
-            w30.Spacing = 6;
-            w30.BorderWidth = ((uint)(5));
-            w30.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
+            Gtk.HButtonBox w28 = this.ActionArea;
+            w28.Name = "dialog1_ActionArea";
+            w28.Spacing = 6;
+            w28.BorderWidth = ((uint)(5));
+            w28.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
             this.buttonCancel = new Gtk.Button();
             this.buttonCancel.CanDefault = true;
@@ -356,9 +335,9 @@ namespace MonoDevelop.Ide.CodeTemplates {
             this.buttonCancel.UseUnderline = true;
             this.buttonCancel.Label = "gtk-cancel";
             this.AddActionWidget(this.buttonCancel, -6);
-            Gtk.ButtonBox.ButtonBoxChild w31 = ((Gtk.ButtonBox.ButtonBoxChild)(w30[this.buttonCancel]));
-            w31.Expand = false;
-            w31.Fill = false;
+            Gtk.ButtonBox.ButtonBoxChild w29 = ((Gtk.ButtonBox.ButtonBoxChild)(w28[this.buttonCancel]));
+            w29.Expand = false;
+            w29.Fill = false;
             // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
             this.buttonOk = new Gtk.Button();
             this.buttonOk.CanDefault = true;
@@ -368,14 +347,14 @@ namespace MonoDevelop.Ide.CodeTemplates {
             this.buttonOk.UseUnderline = true;
             this.buttonOk.Label = "gtk-ok";
             this.AddActionWidget(this.buttonOk, -5);
-            Gtk.ButtonBox.ButtonBoxChild w32 = ((Gtk.ButtonBox.ButtonBoxChild)(w30[this.buttonOk]));
-            w32.Position = 1;
-            w32.Expand = false;
-            w32.Fill = false;
+            Gtk.ButtonBox.ButtonBoxChild w30 = ((Gtk.ButtonBox.ButtonBoxChild)(w28[this.buttonOk]));
+            w30.Position = 1;
+            w30.Expand = false;
+            w30.Fill = false;
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
-            this.DefaultWidth = 655;
+            this.DefaultWidth = 859;
             this.DefaultHeight = 494;
             this.Show();
         }
