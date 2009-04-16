@@ -1,5 +1,10 @@
 2009-04-16  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/Caret.cs: Respect caret behind eol setting
+	  in SetColumn method.
+
+2009-04-16  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextViewMargin.cs:
 	* Mono.TextEditor/ClipboardActions.cs: Handled possible
 	  cut&paste exceptions.

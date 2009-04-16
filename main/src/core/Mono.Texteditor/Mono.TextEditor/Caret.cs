@@ -181,6 +181,9 @@ namespace Mono.TextEditor
 			if (curLine.GetVisualColumn (editor, document, this.location.Column) < this.desiredColumn) {
 				this.location.Column = editor.GetNextVirtualColumn (Line, this.location.Column);
 			}
+			
+			if (!AllowCaretBehindLineEnd)
+				this.Column = System.Math.Min (curLine.EditableLength, System.Math.Max (0, this.Column));
 		}
 		
 		public override string ToString ()
