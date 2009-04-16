@@ -189,6 +189,10 @@ namespace MonoDevelop.Core.Gui
 		
 		public Gdk.Pixbuf GetIcon (string name, Gtk.IconSize size)
 		{
+			if (string.IsNullOrEmpty (name)) {
+				LoggingService.LogWarning ("Empty icon requested. Stack Trace: " + Environment.NewLine + Environment.StackTrace);
+				return GetColourBlock ("#FF0000", size);
+			}
 			//if an icon name begins with '#', we assume it's a hex colour
 			if (name.Length > 0 && name[0] == '#')
 				return GetColourBlock (name, size);

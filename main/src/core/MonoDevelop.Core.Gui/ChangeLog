@@ -1,3 +1,8 @@
+2009-04-16  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Core.Gui/ResourceService.cs: Fixed "Bug 495375 -
+	  Exception while trying to rename a field.".
+
 2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:
