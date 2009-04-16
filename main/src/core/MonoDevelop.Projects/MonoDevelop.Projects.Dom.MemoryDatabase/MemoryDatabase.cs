@@ -27,6 +27,7 @@
 using System;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.Core.Assemblies;
 
 namespace MonoDevelop.Projects.Dom.MemoryDatabase
 {

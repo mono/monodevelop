@@ -42,6 +42,7 @@ using System.Drawing.Design;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
+using MonoDevelop.Core.Assemblies;
 using Mono.Addins;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;

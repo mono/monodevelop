@@ -41,6 +41,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Deployment;
+using MonoDevelop.Core.Assemblies;
 
 using MonoDevelop.AspNet.Parser;
 using MonoDevelop.AspNet.Parser.Dom;

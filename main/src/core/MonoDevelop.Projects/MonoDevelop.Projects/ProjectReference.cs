@@ -28,6 +28,7 @@ using MonoDevelop.Core;
 using System.ComponentModel;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;
+using MonoDevelop.Core.Assemblies;
 
 namespace MonoDevelop.Projects
 {

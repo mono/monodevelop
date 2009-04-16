@@ -39,6 +39,7 @@ using MonoDevelop.Projects.Policies;
 using MonoDevelop.Projects.Formats.MD1;
 using MonoDevelop.Projects.Extensions;
 using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Core.Assemblies;
 
 namespace MonoDevelop.Projects
 {

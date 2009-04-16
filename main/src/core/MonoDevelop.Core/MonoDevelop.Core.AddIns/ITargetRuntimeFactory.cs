@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using MonoDevelop.Core.Assemblies;
 
 namespace MonoDevelop.Core.AddIns
 {

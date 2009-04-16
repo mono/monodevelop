@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 
 using MonoDevelop.Core;
+using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 

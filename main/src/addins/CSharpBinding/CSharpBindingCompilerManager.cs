@@ -32,6 +32,7 @@ using System.Threading;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Projects;
+using MonoDevelop.Core.Assemblies;
 
 namespace CSharpBinding
 {

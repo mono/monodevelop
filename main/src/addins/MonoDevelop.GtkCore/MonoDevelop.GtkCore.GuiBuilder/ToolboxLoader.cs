@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using MonoDevelop.DesignerSupport.Toolbox;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Assemblies;
 using Stetic;
 
 namespace MonoDevelop.GtkCore.GuiBuilder

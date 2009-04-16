@@ -41,6 +41,7 @@ using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects;
+using MonoDevelop.Core.Assemblies;
 
 namespace MonoDevelop.Autotools
 {

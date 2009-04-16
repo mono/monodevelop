@@ -1,3 +1,9 @@
+2009-04-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* CSharpBindingCompilerManager.cs: Moved SystemAssemblyService
+	  and related classes to the namespace
+	  MonoDevelop.Core.Assemblies.
+
 2009-04-16  Mike Krüger  <mkrueger@novell.com>
 
 	* FormattingStrategy/CSharpIndentEngine.cs: fixed 'Bug 494568

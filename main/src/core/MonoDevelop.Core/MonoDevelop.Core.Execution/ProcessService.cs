@@ -40,6 +40,7 @@ using System.Runtime.Remoting.Channels.Tcp;
 
 using MonoDevelop.Core.AddIns;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Assemblies;
 using Mono.Addins;
 
 namespace MonoDevelop.Core.Execution

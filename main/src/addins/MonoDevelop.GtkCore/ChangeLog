@@ -1,3 +1,10 @@
+2009-04-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.GtkCore/ReferenceManager.cs:
+	* MonoDevelop.GtkCore.GuiBuilder/ToolboxLoader.cs: Moved
+	  SystemAssemblyService and related classes to the namespace
+	  MonoDevelop.Core.Assemblies.
+
 2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:

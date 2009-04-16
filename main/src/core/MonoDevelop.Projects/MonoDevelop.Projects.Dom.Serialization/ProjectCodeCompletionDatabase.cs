@@ -34,6 +34,7 @@ using System.IO;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.Core.Assemblies;
 using System.Reflection;
 
 namespace MonoDevelop.Projects.Dom.Serialization

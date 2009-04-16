@@ -22,6 +22,7 @@ using System;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Assemblies;
 
 using Gtk;
 

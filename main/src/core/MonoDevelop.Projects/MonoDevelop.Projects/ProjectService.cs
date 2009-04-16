@@ -35,6 +35,7 @@ using MonoDevelop.Core;
 using Mono.Addins;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core.Execution;
+using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Projects.Extensions;
 using Mono.Unix;
 

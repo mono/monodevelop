@@ -28,6 +28,7 @@ using Mono.Addins;
 using MonoDevelop.Projects;
 using MonoDevelop.Deployment;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Assemblies;
 
 namespace MonoDevelop.Autotools
 {

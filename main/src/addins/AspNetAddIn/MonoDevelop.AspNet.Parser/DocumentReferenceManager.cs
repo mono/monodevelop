@@ -240,7 +240,7 @@ namespace MonoDevelop.AspNet.Parser
 			if (desiredPrefix == null)
 				prefix = GetPrefix (control);
 			
-			System.Reflection.AssemblyName an = MonoDevelop.Core.SystemAssemblyService.ParseAssemblyName (assemblyName);
+			System.Reflection.AssemblyName an = MonoDevelop.Core.Assemblies.SystemAssemblyService.ParseAssemblyName (assemblyName);
 			
 			string directive = string.Format ("{0}<%@ Register TagPrefix=\"{1}\" Namespace=\"{2}\" Assembly=\"{3}\" %>",
 			    Environment.NewLine, prefix, control.Namespace, an.Name);

@@ -30,6 +30,7 @@ using System;
 using System.IO;
 using System.Collections;
 using Mono.Addins;
+using MonoDevelop.Core.Assemblies;
 
 namespace MonoDevelop.Core.AddIns
 {

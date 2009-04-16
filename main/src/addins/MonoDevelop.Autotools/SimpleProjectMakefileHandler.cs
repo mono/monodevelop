@@ -28,6 +28,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Collections;
+using MonoDevelop.Core.Assemblies;
 using Mono.Addins;
 using MonoDevelop.Deployment;
 

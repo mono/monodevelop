@@ -35,6 +35,7 @@ using System.IO;
 using System.Threading;
 using Monodoc;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core.Collections;
 using MonoDevelop.Projects;

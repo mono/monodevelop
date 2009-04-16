@@ -36,6 +36,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing.Design;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Assemblies;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
@@ -88,7 +89,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 		
 			TargetRuntime runtime = Runtime.SystemAssemblyService.CurrentRuntime;
-			MonoDevelop.Core.SystemPackage package = runtime.GetPackageFromPath (filename);
+			SystemPackage package = runtime.GetPackageFromPath (filename);
 			
 			//need to initialise if this if out of the main process
 			//in order to be able to load icons etc.

@@ -54,7 +54,6 @@
     <Compile Include="MonoDevelop.Core\StringParserService.cs" />
     <Compile Include="MonoDevelop.Core\UserException.cs" />
     <Compile Include="MonoDevelop.Core\Runtime.cs" />
-    <Compile Include="MonoDevelop.Core\SystemAssemblyService.cs" />
     <Compile Include="MonoDevelop.Core.Execution\AddinDependencyAttribute.cs" />
     <Compile Include="MonoDevelop.Core.Execution\BreakpointEventHandler.cs" />
     <Compile Include="MonoDevelop.Core.Execution\IBreakpoint.cs" />
@@ -83,7 +82,6 @@
     <Compile Include="MonoDevelop.Core.ProgressMonitoring\AggregatedOperationMonitor.cs" />
     <Compile Include="MonoDevelop.Core.ProgressMonitoring\SynchronizedProgressMonitor.cs" />
     <Compile Include="MonoDevelop.Core\ClrVersion.cs" />
-    <Compile Include="MonoDevelop.Core\SystemPackage.cs" />
     <Compile Include="MonoDevelop.Core\FileService.cs" />
     <Compile Include="MonoDevelop.Core\FileEventArgs.cs" />
     <Compile Include="MonoDevelop.Core.FileSystem\FileSystemExtension.cs" />
@@ -144,16 +142,18 @@
     <Compile Include="MonoDevelop.Core.Collections\Set.cs" />
     <Compile Include="MonoDevelop.Core.Collections\ReadOnlyDictionary.cs" />
     <Compile Include="MonoDevelop.Core\Gettext.cs" />
-    <Compile Include="MonoDevelop.Core\TargetFramework.cs" />
     <Compile Include="MonoDevelop.Core.ProgressMonitoring\AsyncOperation.cs" />
     <Compile Include="MonoDevelop.Core.AddIns\PackageInstalledCondition.cs" />
-    <Compile Include="MonoDevelop.Core\SystemAssembly.cs" />
     <Compile Include="MonoDevelop.Core\ComponentModelLocalization.cs" />
     <Compile Include="MonoDevelop.Core.ProgressMonitoring\SimpleProgressMonitor.cs" />
-    <Compile Include="MonoDevelop.Core\TargetRuntime.cs" />
-    <Compile Include="MonoDevelop.Core\MonoTargetRuntime.cs" />
     <Compile Include="MonoDevelop.Core.AddIns\ITargetRuntimeFactory.cs" />
-    <Compile Include="MonoDevelop.Core\MonoTargetRuntimeFactory.cs" />
+    <Compile Include="MonoDevelop.Core.Assemblies\SystemAssembly.cs" />
+    <Compile Include="MonoDevelop.Core.Assemblies\SystemPackage.cs" />
+    <Compile Include="MonoDevelop.Core.Assemblies\MonoTargetRuntime.cs" />
+    <Compile Include="MonoDevelop.Core.Assemblies\MonoTargetRuntimeFactory.cs" />
+    <Compile Include="MonoDevelop.Core.Assemblies\TargetRuntime.cs" />
+    <Compile Include="MonoDevelop.Core.Assemblies\TargetFramework.cs" />
+    <Compile Include="MonoDevelop.Core.Assemblies\SystemAssemblyService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -179,4 +179,7 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
+  <ItemGroup>
+    <Folder Include="MonoDevelop.Core.Assemblies\" />
+  </ItemGroup>
 </Project>

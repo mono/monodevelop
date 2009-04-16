@@ -31,6 +31,7 @@ using System.Linq;
 
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Assemblies;
 
 namespace MonoDevelop.Projects.Dom.MemoryDatabase
 {

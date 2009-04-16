@@ -50,6 +50,7 @@ using MonoDevelop.Projects.Utility;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.Core.Assemblies;
 
 namespace MonoDevelop.Projects.Dom.Serialization
 {

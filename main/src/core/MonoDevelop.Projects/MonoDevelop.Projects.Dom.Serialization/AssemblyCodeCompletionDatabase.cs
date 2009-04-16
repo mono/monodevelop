@@ -38,7 +38,8 @@ using System.Reflection;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Projects.Dom.Parser;
-using TargetRuntime = MonoDevelop.Core.TargetRuntime;
+using MonoDevelop.Core.Assemblies;
+using TargetRuntime = MonoDevelop.Core.Assemblies.TargetRuntime;
 
 namespace MonoDevelop.Projects.Dom.Serialization
 {	

@@ -35,6 +35,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Projects.Gui.Dialogs;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Assemblies;
 
 using Gtk;
 

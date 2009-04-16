@@ -31,6 +31,7 @@ using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Deployment;
+using MonoDevelop.Core.Assemblies;
 
 using Mono.Unix.Native;
 

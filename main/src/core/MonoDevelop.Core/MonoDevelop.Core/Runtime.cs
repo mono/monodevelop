@@ -32,6 +32,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 
 using MonoDevelop.Core;
+using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core.AddIns;
 using MonoDevelop.Core.Execution;
 using Mono.Addins;

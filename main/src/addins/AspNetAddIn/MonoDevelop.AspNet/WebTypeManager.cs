@@ -43,6 +43,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects.Gui.Completion;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.Core.Assemblies;
 
 namespace MonoDevelop.AspNet
 {
@@ -259,13 +260,13 @@ namespace MonoDevelop.AspNet
 			return SystemTypeLookup (tagName, project.TargetRuntime,  WebTypeManager.GetProjectTargetFramework (project));
 		}
 		
-		public static string SystemTypeNameLookup (string tagName, MonoDevelop.Core.TargetRuntime runtime, MonoDevelop.Core.TargetFramework targetFramework)
+		public static string SystemTypeNameLookup (string tagName, TargetRuntime runtime, TargetFramework targetFramework)
 		{
 			IType cls = SystemTypeLookup (tagName, runtime, targetFramework);
 			return cls != null? cls.FullName : null;
 		}
 		
-		public static IType SystemTypeLookup (string tagName, MonoDevelop.Core.TargetRuntime runtime, MonoDevelop.Core.TargetFramework targetFramework)
+		public static IType SystemTypeLookup (string tagName, TargetRuntime runtime, TargetFramework targetFramework)
 		{
 			return AssemblyTypeLookup (GetSystemWebDom (runtime, targetFramework), "System.Web.UI.WebControls", tagName);
 		}
@@ -315,9 +316,9 @@ namespace MonoDevelop.AspNet
 		
 		#region System type listings
 		
-		public static MonoDevelop.Core.TargetFramework GetProjectTargetFramework (AspNetAppProject project)
+		public static TargetFramework GetProjectTargetFramework (AspNetAppProject project)
 		{
-			return project == null? MonoDevelop.Core.TargetFramework.Default : project.TargetFramework;
+			return project == null? TargetFramework.Default : project.TargetFramework;
 		}
 		
 		public static ProjectDom GetSystemWebDom (AspNetAppProject project)
@@ -325,7 +326,7 @@ namespace MonoDevelop.AspNet
 			return GetSystemWebDom (project.TargetRuntime, GetProjectTargetFramework (project));
 		}
 		
-		static ProjectDom GetSystemWebDom (MonoDevelop.Core.TargetRuntime runtime, MonoDevelop.Core.TargetFramework targetFramework)
+		static ProjectDom GetSystemWebDom (TargetRuntime runtime, TargetFramework targetFramework)
 		{
 			string file = runtime.GetAssemblyNameForVersion ("System.Web, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", targetFramework);
 			if (String.IsNullOrEmpty (file))

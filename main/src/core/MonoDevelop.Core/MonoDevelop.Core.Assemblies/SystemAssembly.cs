@@ -1,5 +1,5 @@
 // 
-// PackageInstalledCondition.cs
+// SystemAssembly.cs
 //  
 // Author:
 //       Lluis Sanchez Gual <lluis@novell.com>
@@ -25,37 +25,53 @@
 // THE SOFTWARE.
 
 using System;
-using Mono.Addins;
-using MonoDevelop.Core.Assemblies;
 
-namespace MonoDevelop.Core.AddIns
+namespace MonoDevelop.Core.Assemblies
 {
-	public class PackageInstalledCondition: ConditionType
+	public class SystemAssembly
 	{
-		public override bool Evaluate (Mono.Addins.NodeElement conditionNode)
+		public string FullName { get; internal set; }
+		public string Location { get; private set; }
+		
+		public SystemPackage Package { get; internal set; }
+		
+		internal SystemAssembly NextSameName;
+		internal SystemAssembly NextSamePackage;
+		
+		public SystemAssembly (string file, string name)
 		{
-			string pname = conditionNode.GetAttribute ("name");
-			SystemPackage pkg = Runtime.SystemAssemblyService.CurrentRuntime.GetPackage (pname);
-			if (pkg == null)
-				return false;
-			string ver = conditionNode.GetAttribute ("version");
-			if (ver.Length > 0)
-				return ver == pkg.Version;
-			ver = conditionNode.GetAttribute ("minVersion");
-			if (ver.Length > 0)
-				return Addin.CompareVersions (ver, pkg.Version) >= 0;
-			ver = conditionNode.GetAttribute ("maxVersion");
-			if (ver.Length > 0)
-				return Addin.CompareVersions (ver, pkg.Version) <= 0;
-			return true;
+			FullName = name;
+			Location = file;
 		}
-	}
-	
-	public class PackageNotInstalledCondition: PackageInstalledCondition
-	{
-		public override bool Evaluate (Mono.Addins.NodeElement conditionNode)
+		
+		internal static SystemAssembly FromFile (string file)
 		{
-			return !base.Evaluate (conditionNode);
+			System.Reflection.AssemblyName an = System.Reflection.AssemblyName.GetAssemblyName (file);
+			string aname = TargetRuntime.NormalizeAsmName (an.FullName);
+			return new SystemAssembly (file, aname);
+		}
+		
+		public string Name {
+			get {
+				int i = FullName.IndexOf (',');
+				if (i != -1)
+					return FullName.Substring (0, i).Trim ();
+				else
+					return FullName;
+			}
+		}
+		
+		public string Version {
+			get {
+				int i = FullName.IndexOf ("Version=");
+				if (i == -1)
+					return string.Empty;
+				i += 8;
+				int j = FullName.IndexOf (',', i);
+				if (j == -1)
+					j = FullName.Length;
+				return FullName.Substring (i, j - i);
+			}
 		}
 	}
 }

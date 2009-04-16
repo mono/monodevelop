@@ -9,6 +9,13 @@ FILES =  \
 	MonoDevelop.Core.AddIns/ITargetRuntimeFactory.cs \
 	MonoDevelop.Core.AddIns/PackageExtensionNode.cs \
 	MonoDevelop.Core.AddIns/PackageInstalledCondition.cs \
+	MonoDevelop.Core.Assemblies/MonoTargetRuntime.cs \
+	MonoDevelop.Core.Assemblies/MonoTargetRuntimeFactory.cs \
+	MonoDevelop.Core.Assemblies/SystemAssembly.cs \
+	MonoDevelop.Core.Assemblies/SystemAssemblyService.cs \
+	MonoDevelop.Core.Assemblies/SystemPackage.cs \
+	MonoDevelop.Core.Assemblies/TargetFramework.cs \
+	MonoDevelop.Core.Assemblies/TargetRuntime.cs \
 	MonoDevelop.Core.Collections/ReadOnlyDictionary.cs \
 	MonoDevelop.Core.Collections/Set.cs \
 	MonoDevelop.Core.Execution/AddinDependencyAttribute.cs \
@@ -91,18 +98,11 @@ FILES =  \
 	MonoDevelop.Core/ICustomXmlSerializer.cs \
 	MonoDevelop.Core/IProgressMonitor.cs \
 	MonoDevelop.Core/LoggingService.cs \
-	MonoDevelop.Core/MonoTargetRuntime.cs \
-	MonoDevelop.Core/MonoTargetRuntimeFactory.cs \
 	MonoDevelop.Core/Properties.cs \
 	MonoDevelop.Core/PropertyChangedEventArgs.cs \
 	MonoDevelop.Core/PropertyService.cs \
 	MonoDevelop.Core/Runtime.cs \
 	MonoDevelop.Core/StringParserService.cs \
-	MonoDevelop.Core/SystemAssembly.cs \
-	MonoDevelop.Core/SystemAssemblyService.cs \
-	MonoDevelop.Core/SystemPackage.cs \
-	MonoDevelop.Core/TargetFramework.cs \
-	MonoDevelop.Core/TargetRuntime.cs \
 	MonoDevelop.Core/UserException.cs \
 	MonoDevelop.Core/XmlReadHelper.cs
 

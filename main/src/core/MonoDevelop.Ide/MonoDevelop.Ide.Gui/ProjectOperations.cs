@@ -52,6 +52,7 @@ using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Ide.Tasks;
 using MonoDevelop.Ide.Gui.Dialogs;
 using Mono.Debugging.Client;
+using MonoDevelop.Core.Assemblies;
 
 namespace MonoDevelop.Ide.Gui
 {

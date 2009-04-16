@@ -47,7 +47,7 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/Runtimes">
-		<Class class="MonoDevelop.Core.MonoTargetRuntimeFactory"/>
+		<Class class="MonoDevelop.Core.Assemblies.MonoTargetRuntimeFactory"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/ExecutionHandlers">

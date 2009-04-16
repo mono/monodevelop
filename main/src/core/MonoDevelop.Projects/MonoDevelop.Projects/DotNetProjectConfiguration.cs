@@ -30,6 +30,7 @@ using System;
 using System.Collections;
 using System.IO;
 using MonoDevelop.Core.Serialization;
+using MonoDevelop.Core.Assemblies;
 
 namespace MonoDevelop.Projects
 {
@@ -72,7 +73,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		public MonoDevelop.Core.TargetFramework TargetFramework {
+		public TargetFramework TargetFramework {
 			get {
 				DotNetProject prj = ParentItem as DotNetProject;
 				if (prj != null)
