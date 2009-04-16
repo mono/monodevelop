@@ -288,7 +288,7 @@ namespace MonoDevelop.Ide.Gui
 					if (n <= 9000) {
 						string msg = "Inotify watch limit is too low (" + n + ").\n";
 						msg += "MonoDevelop will switch to managed file watching.\n";
-						msg += "See http://www.monodevelop.com/Inotify_Watches_Limit for more info.";
+						msg += "See http://monodevelop.com/Inotify_Watches_Limit for more info.";
 						LoggingService.LogWarning (msg);
 						Runtime.ProcessService.EnvironmentVariableOverrides["MONO_MANAGED_WATCHER"] = 
 							Environment.GetEnvironmentVariable ("MONO_MANAGED_WATCHER");

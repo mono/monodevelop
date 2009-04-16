@@ -1,3 +1,9 @@
+2009-04-16  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Gui/IdeStartup.cs: Remove the www prexfix
+	  from the MD homepage URL.Thanks to Grzegorz Sobanski for the
+	  patch.
+
 2009-04-16  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.CodeTemplates/EditTemplateDialog.cs:
