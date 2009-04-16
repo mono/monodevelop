@@ -532,23 +532,22 @@ namespace CSharpBinding.FormattingStrategy {
 				
 				stack.Push (Inside.Case, "switch", curLineNr, 0);
 			} else if (canBeLabel) {
-				GotoLabelIndentStyle style = FormattingProperties.GotoLabelIndentStyle;
-				
+				//GotoLabelIndentStyle style = FormattingProperties.GotoLabelIndentStyle;
+				GotoLabelIndentStyle style = GotoLabelIndentStyle.OneLess;
 				// indent goto labels as specified
 				switch (style) {
 				case GotoLabelIndentStyle.LeftJustify:
 					needsReindent = true;
-					curIndent = " ";
+			//		curIndent = " ";
 					break;
 				case GotoLabelIndentStyle.OneLess:
 					needsReindent = true;
 					TrimIndent ();
-					curIndent += " ";
+			//		curIndent += " ";
 					break;
 				default:
 					break;
 				}
-				
 				canBeLabel = false;
 			} else if (pc == ':') {
 				// :: operator, need to undo the "unindent label" operation we did for the previous ':'
@@ -776,7 +775,7 @@ namespace CSharpBinding.FormattingStrategy {
 					if ((keyword == "default" || keyword == "case") || canBeLabel)
 						break;
 					
-					PushFoldedStatement ();
+					//PushFoldedStatement ();
 					break;
 				case '[':
 					// handled elsewhere

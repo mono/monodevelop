@@ -1,3 +1,8 @@
+2009-04-16  Mike Krüger  <mkrueger@novell.com>
+
+	* FormattingStrategy/CSharpIndentEngine.cs: fixed 'Bug 494568
+	  - Indentation after C# labels is wrong.'.
+
 2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:
