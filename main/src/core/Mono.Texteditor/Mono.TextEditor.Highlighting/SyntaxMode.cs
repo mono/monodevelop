@@ -174,6 +174,8 @@ namespace Mono.TextEditor.Highlighting
 			
 			protected Rule CurRule {
 				get {
+					if (ruleStack.Count == 0)
+						return new Rule (null);
 					return ruleStack.Peek ();
 				}
 			}
@@ -190,19 +192,19 @@ namespace Mono.TextEditor.Highlighting
 			{
 				if (doc == null)
 					throw new ArgumentNullException ("doc");
-				if (mode == null)
-					throw new ArgumentNullException ("mode");
 				this.doc  = doc;
 				this.mode = mode;
 				this.line = line;
-				this.spanStack = spanStack ?? new Stack<Span> (line.StartSpan != null ? line.StartSpan : new Span[0]);
+				this.spanStack = spanStack ?? new Stack<Span> (line != null && line.StartSpan != null ? line.StartSpan : new Span[0]);
 				//this.ruleStack = ruleStack ?? new Stack<Span> (line.StartRule != null ? line.StartRule : new Rule[0]);
 				
 				ruleStack = new Stack<Rule> ();
-				ruleStack.Push (mode);
-				foreach (Span span in this.spanStack) {
-					Rule rule = CurRule.GetRule (span.Rule);
-					ruleStack.Push (rule ?? CurRule);
+				if (mode != null) {
+					ruleStack.Push (mode);
+					foreach (Span span in this.spanStack) {
+						Rule rule = CurRule.GetRule (span.Rule);
+						ruleStack.Push (rule ?? CurRule);
+					}
 				}
 			}
 			
