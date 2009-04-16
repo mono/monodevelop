@@ -1,3 +1,8 @@
+2009-04-16  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* Parser/ValaDocumentParser.cs: Allow non-project files 
+	  to be parsed.
+
 2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* configure.in:

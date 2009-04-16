@@ -57,7 +57,7 @@ namespace MonoDevelop.ValaBinding.Parser
 		public override ParsedDocument Parse (ProjectDom dom, string fileName, string content)
 		{
 			ParsedDocument doc = new ParsedDocument (fileName);
-			ProjectInformation pi = ProjectInformationManager.Instance.Get (dom.Project);
+			ProjectInformation pi = ProjectInformationManager.Instance.Get ((null == dom)? null: dom.Project);
 			if(null == doc.CompilationUnit){ doc.CompilationUnit = new CompilationUnit (fileName); }
 			CompilationUnit cu = (CompilationUnit)doc.CompilationUnit;
 			int lastLine = 0;
