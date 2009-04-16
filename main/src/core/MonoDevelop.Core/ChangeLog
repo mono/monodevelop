@@ -1,5 +1,19 @@
 2009-04-16  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Core.Assemblies: 
+
+	* MonoDevelop.Core/TargetRuntime.cs:
+	* MonoDevelop.Core/SystemPackage.cs:
+	* MonoDevelop.Core/SystemAssembly.cs:
+	* MonoDevelop.Core/TargetFramework.cs:
+	* MonoDevelop.Core/MonoTargetRuntime.cs:
+	* MonoDevelop.Core/SystemAssemblyService.cs:
+	* MonoDevelop.Core/MonoTargetRuntimeFactory.cs: Moved
+	  SystemAssemblyService and related classes to the namespace
+	  MonoDevelop.Core.Assemblies.
+
+2009-04-16  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Core.csproj:
 	* MonoDevelop.Core.addin.xml:
