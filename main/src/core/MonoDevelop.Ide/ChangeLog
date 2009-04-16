@@ -1,3 +1,9 @@
+2009-04-16  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui/BackgroundProgressMonitor.cs: Handled
+	  null icon for background progress. (Bug 495375 - Exception
+	  while trying to rename a field.)
+
 2009-04-15  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs: Use

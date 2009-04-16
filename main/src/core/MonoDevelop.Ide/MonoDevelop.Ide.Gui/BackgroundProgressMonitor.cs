@@ -45,12 +45,14 @@ namespace MonoDevelop.Ide.Gui
 		public BackgroundProgressMonitor (string title, string iconName)
 		{
 			this.title = title;
-			Application.Invoke (delegate {
-				Gdk.Pixbuf img = Services.Resources.GetBitmap (iconName, Gtk.IconSize.Menu);
-				icon = IdeApp.Workbench.StatusBar.ShowStatusIcon (img);
-				if (icon == null)
-					LoggingService.LogError ("Icon '" + iconName + "' not found.");
-			});
+			if (!string.IsNullOrEmpty (iconName)) {
+				Application.Invoke (delegate {
+					Gdk.Pixbuf img = Services.Resources.GetBitmap (iconName, Gtk.IconSize.Menu);
+					icon = IdeApp.Workbench.StatusBar.ShowStatusIcon (img);
+					if (icon == null)
+						LoggingService.LogError ("Icon '" + iconName + "' not found.");
+				});
+			}
 		}
 		
 		protected override void OnProgressChanged ()
