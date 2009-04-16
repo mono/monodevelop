@@ -1,5 +1,11 @@
 2009-04-16  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextViewMargin.cs:
+	* Mono.TextEditor/ClipboardActions.cs: Handled possible
+	  cut&paste exceptions.
+
+2009-04-16  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor.Highlighting/SyntaxMode.cs: fixed "Bug
 	  495263 - when trying to edit an 'unrecognized' xml file, an
 	  exception occurs (and sometimes crashes MD) when I try to

@@ -754,7 +754,7 @@ namespace Mono.TextEditor
 				int length = ClipboardActions.PasteFromPrimary (textEditor.GetTextEditorData (), offset);
 				int newOffset = textEditor.Caret.Offset;
 				if (selection != null) {
-					ISegment selectionRange = textEditor.SelectionRange;
+					ISegment selectionRange = selection.GetSelectionRange (this.textEditor.GetTextEditorData ());
 					if (newOffset < selectionRange.EndOffset) {
 						oldOffset += length;
 						anchor   += length;

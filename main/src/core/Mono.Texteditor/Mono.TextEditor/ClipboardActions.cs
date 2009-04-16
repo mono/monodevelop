@@ -344,41 +344,45 @@ namespace Mono.TextEditor
 			if (!data.CanEdit (data.Document.OffsetToLineNumber (insertionOffset)))
 				return result;
 			clipboard.RequestContents (CopyOperation.MD_ATOM, delegate (Clipboard clp, SelectionData selectionData) {
-				string text = System.Text.Encoding.UTF8.GetString (selectionData.Data);
-				data.Document.BeginAtomicUndo ();
-				if (preserveSelection && data.IsSomethingSelected) 
-					data.DeleteSelectedText ();
-				
-				data.Caret.PreserveSelection = true;
-				string[] lines = text.Split ('\r');
-				int lineNr = data.Document.OffsetToLineNumber (insertionOffset);
-				int col = insertionOffset - data.Document.GetLine (lineNr).Offset;
-				int visCol = data.Document.GetLine (lineNr).GetVisualColumn (data, data.Document, col);
-				LineSegment curLine;
-				int lineCol = col;
-				result = 0;
-				for (int i = 0; i < lines.Length; i++) {
-					while (data.Document.LineCount <= lineNr + i) {
-						data.Insert (data.Document.Length, Environment.NewLine);
-						result += Environment.NewLine.Length;
+				if (selectionData.Length > 0) {
+					byte[] selBytes = selectionData.Data;
+					
+					string text = System.Text.Encoding.UTF8.GetString (selBytes);
+					data.Document.BeginAtomicUndo ();
+					if (preserveSelection && data.IsSomethingSelected) 
+						data.DeleteSelectedText ();
+					
+					data.Caret.PreserveSelection = true;
+					string[] lines = text.Split ('\r');
+					int lineNr = data.Document.OffsetToLineNumber (insertionOffset);
+					int col = insertionOffset - data.Document.GetLine (lineNr).Offset;
+					int visCol = data.Document.GetLine (lineNr).GetVisualColumn (data, data.Document, col);
+					LineSegment curLine;
+					int lineCol = col;
+					result = 0;
+					for (int i = 0; i < lines.Length; i++) {
+						while (data.Document.LineCount <= lineNr + i) {
+							data.Insert (data.Document.Length, Environment.NewLine);
+							result += Environment.NewLine.Length;
+						}
+						curLine = data.Document.GetLine (lineNr + i);
+						lineCol = curLine.GetLogicalColumn (data, data.Document, visCol);
+						if (curLine.EditableLength < lineCol) {
+							result += lineCol - curLine.EditableLength;
+							data.Insert (curLine.Offset + curLine.EditableLength, new string (' ', lineCol - curLine.EditableLength));
+						}
+						data.Insert (curLine.Offset + lineCol, lines[i]);
+						result += lines[i].Length;
+						data.Caret.Offset = curLine.Offset + lineCol + lines[i].Length;
 					}
-					curLine = data.Document.GetLine (lineNr + i);
-					lineCol = curLine.GetLogicalColumn (data, data.Document, visCol);
-					if (curLine.EditableLength < lineCol) {
-						result += lineCol - curLine.EditableLength;
-						data.Insert (curLine.Offset + curLine.EditableLength, new string (' ', lineCol - curLine.EditableLength));
-					}
-					data.Insert (curLine.Offset + lineCol, lines[i]);
-					result += lines[i].Length;
-					data.Caret.Offset = curLine.Offset + lineCol + lines[i].Length;
+					
+	/*				data.MainSelection = new Selection (data.Document.OffsetToLocation (insertionOffset),
+					                                    data.Caret.Location,
+					                                    lines.Length > 1 ? SelectionMode.Block : SelectionMode.Normal);*/
+					data.ClearSelection ();
+					data.Caret.PreserveSelection = false;
+					data.Document.EndAtomicUndo ();
 				}
-				
-/*				data.MainSelection = new Selection (data.Document.OffsetToLocation (insertionOffset),
-				                                    data.Caret.Location,
-				                                    lines.Length > 1 ? SelectionMode.Block : SelectionMode.Normal);*/
-				data.ClearSelection ();
-				data.Caret.PreserveSelection = false;
-				data.Document.EndAtomicUndo ();
 			});
 			
 			if (result < 0) {
