@@ -1,3 +1,10 @@
+2009-04-17  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects/Project.cs:
+	* MonoDevelop.Projects/DotNetProject.cs:
+	* MonoDevelop.Projects/IDotNetLanguageBinding.cs: Removed icon
+	  service.
+
 2009-04-16  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects.Dom.Serialization/AssemblyCodeCompletionDatabase.cs:

@@ -266,6 +266,8 @@ namespace MonoDevelop.Projects
 		{
 			language = languageName;
 			languageBinding = FindLanguage (language);
+			if (languageBinding != null)
+				this.StockIcon = languageBinding.ProjectStockIcon;
 			this.usePartialTypes = SupportsPartialTypes;
 		}
 		
@@ -284,6 +286,7 @@ namespace MonoDevelop.Projects
 			}
 			
 			if (languageBinding != null) {
+				this.StockIcon = languageBinding.ProjectStockIcon;
 				LanguageParameters = languageBinding.CreateProjectParameters (projectOptions);
 				if (projectOptions != null)
 					projectOptions.SetAttribute ("DefineDebug", "True");

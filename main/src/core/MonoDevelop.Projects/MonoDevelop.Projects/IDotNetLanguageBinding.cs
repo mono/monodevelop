@@ -35,6 +35,10 @@ namespace MonoDevelop.Projects
 	/// </summary>
 	public interface IDotNetLanguageBinding: ILanguageBinding
 	{
+		string ProjectStockIcon {
+			get;
+		}
+		
 		BuildResult Compile (ProjectItemCollection items, DotNetProjectConfiguration configuration, IProgressMonitor monitor);
 
 		ProjectParameters CreateProjectParameters (XmlElement projectOptions);

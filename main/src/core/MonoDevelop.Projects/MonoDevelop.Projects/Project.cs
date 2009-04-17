@@ -106,6 +106,16 @@ namespace MonoDevelop.Projects
 			get;
 		}
 		
+		string stockIcon = "md-project";
+		public virtual string StockIcon {
+			get {
+				return stockIcon;
+			}
+			set {
+				this.stockIcon = value;
+			}
+		}
+		
 		public virtual Ambience Ambience {
 			get { return new NetAmbience (); }
 		}
