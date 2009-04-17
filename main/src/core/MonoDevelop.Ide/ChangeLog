@@ -1,5 +1,10 @@
 2009-04-16  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide.Gui.Pads/MonodocTreePad.cs: Use new
+	  Node.PublicUrl property when possible (Mono 2.6+).
+
+2009-04-16  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.Gui/Ide.cs: Add an OpenFiles method.
 
 	* MonoDevelop.Ide.Gui/IdeStartup.cs: Avoid unnecessary
