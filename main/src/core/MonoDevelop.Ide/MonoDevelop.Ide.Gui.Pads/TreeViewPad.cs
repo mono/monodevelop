@@ -107,14 +107,14 @@ namespace MonoDevelop.Ide.Gui.Pads
 		#endregion
 		
 		#region IMementoCapable
-		ICustomXmlSerializer IMementoCapable.CreateMemento ()
-		{
-			return treeView.SaveTreeState ();
-		}
-
-		void IMementoCapable.SetMemento (ICustomXmlSerializer memento)
-		{
-			treeView.RestoreTreeState ((NodeState)memento);
+		
+		public ICustomXmlSerializer Memento {
+			get {
+				return treeView.SaveTreeState ();
+			}
+			set {
+				treeView.RestoreTreeState ((NodeState)value);
+			}
 		}
 		#endregion
 	}

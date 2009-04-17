@@ -240,16 +240,15 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public ICustomXmlSerializer CreateMemento()
-		{
-			return new SdiWorkbenchLayoutMemento (initialized ? toolbarFrame.GetStatus () : new DockToolbarFrameStatus ()).ToProperties ();
-		}
-		
-		public void SetMemento (ICustomXmlSerializer memento)
-		{
-			initialized = true;
-			SdiWorkbenchLayoutMemento m = new SdiWorkbenchLayoutMemento ((Properties)memento);
-			toolbarFrame.SetStatus (m.Status);
+		public ICustomXmlSerializer Memento {
+			get {
+				return new SdiWorkbenchLayoutMemento (initialized ? toolbarFrame.GetStatus () : new DockToolbarFrameStatus ()).ToProperties ();
+			}
+			set {
+				initialized = true;
+				SdiWorkbenchLayoutMemento m = new SdiWorkbenchLayoutMemento ((Properties)value);
+				toolbarFrame.SetStatus (m.Status);
+			}
 		}
 		
 		void OnTabsReordered (Widget widget, int oldPlacement, int newPlacement)

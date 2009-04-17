@@ -1,5 +1,14 @@
 2009-04-17  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Gui/Document.cs:
+	* MonoDevelop.Ide.Gui/Workbench.cs:
+	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs:
+	* MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs:
+	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Changed
+	  IMementoCapable interface.
+
+2009-04-17  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.Gui/Ide.cs:
 	* MonoDevelop.Ide.Gui/Workbench.cs:
 	* MonoDevelop.Ide.Commands/FileCommands.cs:

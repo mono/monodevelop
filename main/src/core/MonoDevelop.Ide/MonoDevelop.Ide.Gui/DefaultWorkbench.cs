@@ -295,7 +295,7 @@ namespace MonoDevelop.Ide.Gui
 				try {
 					Properties memento = GetStoredMemento(content);
 					if (memento != null) {
-						((IMementoCapable)content).SetMemento(memento);
+						((IMementoCapable)content).Memento = memento;
 					}
 				} catch (Exception e) {
 					LoggingService.LogError ("Can't get/set memento : " + e.ToString());
@@ -427,46 +427,44 @@ namespace MonoDevelop.Ide.Gui
 			return null;
 		}
 		
-		// interface IMementoCapable
-		public ICustomXmlSerializer CreateMemento()
-		{
-			WorkbenchMemento memento   = new WorkbenchMemento (new Properties ());
-			int x, y, width, height;
-			GetPosition (out x, out y);
-			GetSize (out width, out height);
-			if (GdkWindow.State == 0) {
-				memento.Bounds = new Rectangle (x, y, width, height);
-			} else {
-				memento.Bounds = normalBounds;
-			}
-			memento.WindowState = GdkWindow.State;
-
-			memento.FullScreen  = fullscreen;
-			if (layout != null)
-				memento.LayoutMemento = (Properties)layout.CreateMemento ();
-			return memento.ToProperties ();
-		}
-		
-		public void SetMemento (ICustomXmlSerializer xmlMemento)
-		{
-			if (xmlMemento != null) {
-				WorkbenchMemento memento = new WorkbenchMemento ((Properties)xmlMemento);
-				
-				normalBounds = memento.Bounds;
-				Move (normalBounds.X, normalBounds.Y);
-				Resize (normalBounds.Width, normalBounds.Height);
-				if (memento.WindowState == Gdk.WindowState.Maximized) {
-					Maximize ();
-				} else if (memento.WindowState == Gdk.WindowState.Iconified) {
-					Iconify ();
+		public ICustomXmlSerializer Memento {
+			get {
+				WorkbenchMemento memento   = new WorkbenchMemento (new Properties ());
+				int x, y, width, height;
+				GetPosition (out x, out y);
+				GetSize (out width, out height);
+				if (GdkWindow.State == 0) {
+					memento.Bounds = new Rectangle (x, y, width, height);
+				} else {
+					memento.Bounds = normalBounds;
 				}
-				//GdkWindow.State = memento.WindowState;
-				FullScreen = memento.FullScreen;
-
-				if (layout != null && memento.LayoutMemento != null)
-					layout.SetMemento (memento.LayoutMemento);
+				memento.WindowState = GdkWindow.State;
+	
+				memento.FullScreen  = fullscreen;
+				if (layout != null)
+					memento.LayoutMemento = (Properties)layout.Memento;
+				return memento.ToProperties ();
 			}
-			Decorated = true;
+			set {
+				if (value != null) {
+					WorkbenchMemento memento = new WorkbenchMemento ((Properties)value);
+					
+					normalBounds = memento.Bounds;
+					Move (normalBounds.X, normalBounds.Y);
+					Resize (normalBounds.Width, normalBounds.Height);
+					if (memento.WindowState == Gdk.WindowState.Maximized) {
+						Maximize ();
+					} else if (memento.WindowState == Gdk.WindowState.Iconified) {
+						Iconify ();
+					}
+					//GdkWindow.State = memento.WindowState;
+					FullScreen = memento.FullScreen;
+	
+					if (layout != null && memento.LayoutMemento != null)
+						layout.Memento = memento.LayoutMemento;
+				}
+				Decorated = true;
+			}
 		}
 		
 		void CheckRemovedFile(object sender, FileEventArgs e)
@@ -556,7 +554,7 @@ namespace MonoDevelop.Ide.Gui
 			CloseAllViews ();
 			
 			IdeApp.Workspace.Close (false);
-			PropertyService.Set ("SharpDevelop.Workbench.WorkbenchMemento", CreateMemento());
+			PropertyService.Set ("SharpDevelop.Workbench.WorkbenchMemento", this.Memento);
 			IdeApp.OnExited ();
 			OnClosed (null);
 			return true;

@@ -108,7 +108,7 @@ namespace MonoDevelop.Ide.Gui
 		internal void Show (string workbenchMemento)
 		{
 			RootWindow.Realize ();
-			workbench.SetMemento (PropertyService.Get (workbenchMemento, new Properties ()));
+			workbench.Memento = PropertyService.Get (workbenchMemento, new Properties ());
 			RootWindow.Visible = true;
 			workbench.Context = WorkbenchContext.Edit;
 			
@@ -766,7 +766,7 @@ namespace MonoDevelop.Ide.Gui
 			foreach (Pad pad in Pads) {
 				IMementoCapable mc = pad.GetMementoCapable ();
 				if (mc != null) {
-					ICustomXmlSerializer mem = mc.CreateMemento ();
+					ICustomXmlSerializer mem = mc.Memento;
 					if (mem != null) {
 						PadUserPrefs data = new PadUserPrefs ();
 						data.Id = pad.Id;
@@ -809,9 +809,9 @@ namespace MonoDevelop.Ide.Gui
 							IMementoCapable m = (IMementoCapable) pad.Content; 
 							XmlReader innerReader = new XmlTextReader (new StringReader (xml));
 							innerReader.MoveToContent ();
-							ICustomXmlSerializer cs = (ICustomXmlSerializer)m.CreateMemento ();
+							ICustomXmlSerializer cs = (ICustomXmlSerializer)m.Memento;
 							if (cs != null)
-								m.SetMemento (cs.ReadFrom (innerReader));
+								m.Memento = cs.ReadFrom (innerReader);
 						} catch (Exception ex) {
 							LoggingService.LogError ("Error loading view memento.", ex);
 						}

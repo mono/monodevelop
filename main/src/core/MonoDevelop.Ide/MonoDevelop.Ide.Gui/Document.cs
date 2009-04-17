@@ -176,11 +176,11 @@ namespace MonoDevelop.Ide.Gui
 			ICustomXmlSerializer memento = null;
 			IMementoCapable mc = GetContent<IMementoCapable> ();
 			if (mc != null) {
-				memento = mc.CreateMemento();
+				memento = mc.Memento;
 			}
 			window.ViewContent.Load (window.ViewContent.ContentName);
 			if (memento != null) {
-				mc.SetMemento(memento);
+				mc.Memento = memento;
 			}
 		}
 		
