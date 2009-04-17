@@ -283,7 +283,6 @@
     <Compile Include="MonoDevelop.Ide.Gui.BrowserDisplayBinding\HtmlViewPane.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Content\IBookmarkBuffer.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Content\IClipboardHandler.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Content\ICustomizedCommands.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Content\IEditableTextBuffer.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Content\IParsableContent.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Content\IPrintable.cs" />

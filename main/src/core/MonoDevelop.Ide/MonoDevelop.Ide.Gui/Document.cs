@@ -227,13 +227,6 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (Window.ViewContent.IsViewOnly || !Window.ViewContent.IsFile)
 				return;
-
-			ICustomizedCommands cmds = GetContent <ICustomizedCommands> ();
-			if (cmds != null) {
-				if (!cmds.SaveAsCommand()) {
-					return;
-				}
-			}
 			
 			string encoding = null;
 			

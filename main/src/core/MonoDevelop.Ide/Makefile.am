@@ -141,7 +141,6 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Content/DocumentStateTracker.cs \
 	MonoDevelop.Ide.Gui.Content/IBookmarkBuffer.cs \
 	MonoDevelop.Ide.Gui.Content/IClipboardHandler.cs \
-	MonoDevelop.Ide.Gui.Content/ICustomizedCommands.cs \
 	MonoDevelop.Ide.Gui.Content/IEditableTextBuffer.cs \
 	MonoDevelop.Ide.Gui.Content/IEncodedTextContent.cs \
 	MonoDevelop.Ide.Gui.Content/IExtensibleTextEditor.cs \
